@@ -7,66 +7,67 @@ X-Spam-Status: No, score=-16.8 required=3.0 tests=BAYES_00,
 	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_GIT
 	autolearn=ham autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2DE86C4332D
-	for <iommu@archiver.kernel.org>; Wed, 10 Mar 2021 09:07:05 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id BB436C433E6
+	for <iommu@archiver.kernel.org>; Wed, 10 Mar 2021 09:07:06 +0000 (UTC)
 Received: from smtp4.osuosl.org (smtp4.osuosl.org [140.211.166.137])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id B5DA264FFD
-	for <iommu@archiver.kernel.org>; Wed, 10 Mar 2021 09:07:04 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org B5DA264FFD
+	by mail.kernel.org (Postfix) with ESMTPS id 4CCD764FFC
+	for <iommu@archiver.kernel.org>; Wed, 10 Mar 2021 09:07:06 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 4CCD764FFC
 Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=huawei.com
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by smtp4.osuosl.org (Postfix) with ESMTP id 109324EC86;
+	by smtp4.osuosl.org (Postfix) with ESMTP id 58C7B4EBFB;
 	Wed, 10 Mar 2021 09:07:04 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
 Received: from smtp4.osuosl.org ([127.0.0.1])
 	by localhost (smtp4.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id An88QJtXeWhc; Wed, 10 Mar 2021 09:07:02 +0000 (UTC)
+	with ESMTP id 418IjPkKRlKB; Wed, 10 Mar 2021 09:07:03 +0000 (UTC)
 Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by smtp4.osuosl.org (Postfix) with ESMTP id 372154EC4D;
+	by smtp4.osuosl.org (Postfix) with ESMTP id 8A9884EBDC;
 	Wed, 10 Mar 2021 09:07:02 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 90581C0018;
+	by lists.linuxfoundation.org (Postfix) with ESMTP id BC9D0C000E;
 	Wed, 10 Mar 2021 09:07:01 +0000 (UTC)
 Received: from smtp1.osuosl.org (smtp1.osuosl.org [IPv6:2605:bc80:3010::138])
- by lists.linuxfoundation.org (Postfix) with ESMTP id D3912C001E
- for <iommu@lists.linux-foundation.org>; Wed, 10 Mar 2021 09:06:58 +0000 (UTC)
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 16E0EC000A
+ for <iommu@lists.linux-foundation.org>; Wed, 10 Mar 2021 09:06:59 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by smtp1.osuosl.org (Postfix) with ESMTP id EB597842D8
- for <iommu@lists.linux-foundation.org>; Wed, 10 Mar 2021 09:06:56 +0000 (UTC)
+ by smtp1.osuosl.org (Postfix) with ESMTP id 6F061842DB
+ for <iommu@lists.linux-foundation.org>; Wed, 10 Mar 2021 09:06:57 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
 Received: from smtp1.osuosl.org ([127.0.0.1])
  by localhost (smtp1.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id mVrlMweNH7_a for <iommu@lists.linux-foundation.org>;
- Wed, 10 Mar 2021 09:06:54 +0000 (UTC)
+ with ESMTP id GxtBajDhYC6f for <iommu@lists.linux-foundation.org>;
+ Wed, 10 Mar 2021 09:06:56 +0000 (UTC)
 X-Greylist: domain auto-whitelisted by SQLgrey-1.8.0
 Received: from szxga05-in.huawei.com (szxga05-in.huawei.com [45.249.212.191])
- by smtp1.osuosl.org (Postfix) with ESMTPS id E2FD3842F1
- for <iommu@lists.linux-foundation.org>; Wed, 10 Mar 2021 09:06:53 +0000 (UTC)
+ by smtp1.osuosl.org (Postfix) with ESMTPS id 5082D84357
+ for <iommu@lists.linux-foundation.org>; Wed, 10 Mar 2021 09:06:56 +0000 (UTC)
 Received: from DGGEMS409-HUB.china.huawei.com (unknown [172.30.72.60])
- by szxga05-in.huawei.com (SkyGuard) with ESMTP id 4DwR3z1svGzrTKL;
+ by szxga05-in.huawei.com (SkyGuard) with ESMTP id 4DwR3z0lTdzrTKk;
  Wed, 10 Mar 2021 17:05:03 +0800 (CST)
 Received: from DESKTOP-5IS4806.china.huawei.com (10.174.184.42) by
  DGGEMS409-HUB.china.huawei.com (10.3.19.209) with Microsoft SMTP Server id
- 14.3.498.0; Wed, 10 Mar 2021 17:06:23 +0800
+ 14.3.498.0; Wed, 10 Mar 2021 17:06:19 +0800
 From: Keqian Zhu <zhukeqian1@huawei.com>
 To: <linux-kernel@vger.kernel.org>, <linux-arm-kernel@lists.infradead.org>,
  <iommu@lists.linux-foundation.org>, Alex Williamson
  <alex.williamson@redhat.com>, Robin Murphy <robin.murphy@arm.com>, Yi Sun
  <yi.y.sun@linux.intel.com>, Will Deacon <will@kernel.org>
-Subject: [PATCH v2 06/11] iommu/arm-smmu-v3: Scan leaf TTD to sync hardware
- dirty log
-Date: Wed, 10 Mar 2021 17:06:09 +0800
-Message-ID: <20210310090614.26668-7-zhukeqian1@huawei.com>
+Subject: [PATCH v2 01/11] iommu/arm-smmu-v3: Add support for Hardware
+ Translation Table Update
+Date: Wed, 10 Mar 2021 17:06:04 +0800
+Message-ID: <20210310090614.26668-2-zhukeqian1@huawei.com>
 X-Mailer: git-send-email 2.8.4.windows.1
 In-Reply-To: <20210310090614.26668-1-zhukeqian1@huawei.com>
 References: <20210310090614.26668-1-zhukeqian1@huawei.com>
 MIME-Version: 1.0
 X-Originating-IP: [10.174.184.42]
 X-CFilter-Loop: Reflected
-Cc: Mark Rutland <mark.rutland@arm.com>, jiangkunkun@huawei.com,
+Cc: Mark Rutland <mark.rutland@arm.com>,
+ Jean-Philippe Brucker <jean-philippe@linaro.org>, jiangkunkun@huawei.com,
  Suzuki K Poulose <suzuki.poulose@arm.com>, Marc Zyngier <maz@kernel.org>,
  Cornelia Huck <cohuck@redhat.com>, lushenming@huawei.com,
  Kirti Wankhede <kwankhede@nvidia.com>, James Morse <james.morse@arm.com>,
@@ -88,304 +89,158 @@ Content-Transfer-Encoding: 7bit
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-From: jiangkunkun <jiangkunkun@huawei.com>
+From: Jean-Philippe Brucker <jean-philippe@linaro.org>
 
-During dirty log tracking, user will try to retrieve dirty log from
-iommu if it supports hardware dirty log.
+If the SMMU supports it and the kernel was built with HTTU support,
+enable hardware update of access and dirty flags. This is essential for
+shared page tables, to reduce the number of access faults on the fault
+queue. Normal DMA with io-pgtables doesn't currently use the access or
+dirty flags.
 
-This adds a new interface named sync_dirty_log in iommu layer and
-arm smmuv3 implements it, which scans leaf TTD and treats it's dirty
-if it's writable (As we just enable HTTU for stage1, so check whether
-AP[2] is not set).
+We can enable HTTU even if CPUs don't support it, because the kernel
+always checks for HW dirty bit and updates the PTE flags atomically.
 
-Co-developed-by: Keqian Zhu <zhukeqian1@huawei.com>
-Signed-off-by: Kunkun Jiang <jiangkunkun@huawei.com>
+Signed-off-by: Jean-Philippe Brucker <jean-philippe@linaro.org>
 ---
+ .../iommu/arm/arm-smmu-v3/arm-smmu-v3-sva.c   |  2 +
+ drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c   | 41 ++++++++++++++++++-
+ drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.h   |  8 ++++
+ 3 files changed, 50 insertions(+), 1 deletion(-)
 
-changelog:
-
-v2:
- - Add new sanity check in arm_smmu_sync_dirty_log(). (smmu_domain->stage != ARM_SMMU_DOMAIN_S1)
- - Document the purpose of flush_iotlb in arm_smmu_sync_dirty_log(). (Robin)
+diff --git a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3-sva.c b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3-sva.c
+index bb251cab61f3..ae075e675892 100644
+--- a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3-sva.c
++++ b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3-sva.c
+@@ -121,10 +121,12 @@ static struct arm_smmu_ctx_desc *arm_smmu_alloc_shared_cd(struct mm_struct *mm)
+ 	if (err)
+ 		goto out_free_asid;
  
----
- drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c | 30 +++++++
- drivers/iommu/io-pgtable-arm.c              | 90 +++++++++++++++++++++
- drivers/iommu/iommu.c                       | 38 +++++++++
- include/linux/io-pgtable.h                  |  4 +
- include/linux/iommu.h                       | 18 +++++
- 5 files changed, 180 insertions(+)
-
++	/* HA and HD will be filtered out later if not supported by the SMMU */
+ 	tcr = FIELD_PREP(CTXDESC_CD_0_TCR_T0SZ, 64ULL - vabits_actual) |
+ 	      FIELD_PREP(CTXDESC_CD_0_TCR_IRGN0, ARM_LPAE_TCR_RGN_WBWA) |
+ 	      FIELD_PREP(CTXDESC_CD_0_TCR_ORGN0, ARM_LPAE_TCR_RGN_WBWA) |
+ 	      FIELD_PREP(CTXDESC_CD_0_TCR_SH0, ARM_LPAE_TCR_SH_IS) |
++	      CTXDESC_CD_0_TCR_HA | CTXDESC_CD_0_TCR_HD |
+ 	      CTXDESC_CD_0_TCR_EPD1 | CTXDESC_CD_0_AA64;
+ 
+ 	switch (PAGE_SIZE) {
 diff --git a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
-index ac0d881c77b8..7407896a710e 100644
+index 8594b4a83043..b6d965504f44 100644
 --- a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
 +++ b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
-@@ -2637,6 +2637,35 @@ static int arm_smmu_stop_dirty_log(struct iommu_domain *domain,
+@@ -1012,10 +1012,17 @@ int arm_smmu_write_ctx_desc(struct arm_smmu_domain *smmu_domain, int ssid,
+ 		 * this substream's traffic
+ 		 */
+ 	} else { /* (1) and (2) */
++		u64 tcr = cd->tcr;
++
+ 		cdptr[1] = cpu_to_le64(cd->ttbr & CTXDESC_CD_1_TTB0_MASK);
+ 		cdptr[2] = 0;
+ 		cdptr[3] = cpu_to_le64(cd->mair);
+ 
++		if (!(smmu->features & ARM_SMMU_FEAT_HD))
++			tcr &= ~CTXDESC_CD_0_TCR_HD;
++		if (!(smmu->features & ARM_SMMU_FEAT_HA))
++			tcr &= ~CTXDESC_CD_0_TCR_HA;
++
+ 		/*
+ 		 * STE is live, and the SMMU might read dwords of this CD in any
+ 		 * order. Ensure that it observes valid values before reading
+@@ -1023,7 +1030,7 @@ int arm_smmu_write_ctx_desc(struct arm_smmu_domain *smmu_domain, int ssid,
+ 		 */
+ 		arm_smmu_sync_cd(smmu_domain, ssid, true);
+ 
+-		val = cd->tcr |
++		val = tcr |
+ #ifdef __BIG_ENDIAN
+ 			CTXDESC_CD_0_ENDI |
+ #endif
+@@ -3196,6 +3203,28 @@ static int arm_smmu_device_reset(struct arm_smmu_device *smmu, bool bypass)
  	return 0;
  }
  
-+static int arm_smmu_sync_dirty_log(struct iommu_domain *domain,
-+				   unsigned long iova, size_t size,
-+				   unsigned long *bitmap,
-+				   unsigned long base_iova,
-+				   unsigned long bitmap_pgshift)
++static void arm_smmu_get_httu(struct arm_smmu_device *smmu, u32 reg)
 +{
-+	struct arm_smmu_domain *smmu_domain = to_smmu_domain(domain);
-+	struct io_pgtable_ops *ops = smmu_domain->pgtbl_ops;
-+	struct arm_smmu_device *smmu = smmu_domain->smmu;
++	u32 fw_features = smmu->features & (ARM_SMMU_FEAT_HA | ARM_SMMU_FEAT_HD);
++	u32 features = 0;
 +
-+	if (!(smmu->features & ARM_SMMU_FEAT_HD))
-+		return -ENODEV;
-+	if (smmu_domain->stage != ARM_SMMU_DOMAIN_S1)
-+		return -EINVAL;
-+
-+	if (!ops || !ops->sync_dirty_log) {
-+		pr_err("io-pgtable don't realize sync dirty log\n");
-+		return -ENODEV;
++	switch (FIELD_GET(IDR0_HTTU, reg)) {
++	case IDR0_HTTU_ACCESS_DIRTY:
++		features |= ARM_SMMU_FEAT_HD;
++		fallthrough;
++	case IDR0_HTTU_ACCESS:
++		features |= ARM_SMMU_FEAT_HA;
 +	}
 +
-+	/*
-+	 * Flush iotlb to ensure all inflight transactions are completed.
-+	 * See doc IHI0070Da 3.13.4 "HTTU behavior summary".
-+	 */
-+	arm_smmu_flush_iotlb_all(domain);
-+	return ops->sync_dirty_log(ops, iova, size, bitmap, base_iova,
-+				   bitmap_pgshift);
++	if (smmu->dev->of_node)
++		smmu->features |= features;
++	else if (features != fw_features)
++		/* ACPI IORT sets the HTTU bits */
++		dev_warn(smmu->dev,
++			 "IDR0.HTTU overridden by FW configuration (0x%x)\n",
++			 fw_features);
 +}
 +
- static int arm_smmu_of_xlate(struct device *dev, struct of_phandle_args *args)
+ static int arm_smmu_device_hw_probe(struct arm_smmu_device *smmu)
  {
- 	return iommu_fwspec_add_ids(dev, args->args, 1);
-@@ -2740,6 +2769,7 @@ static struct iommu_ops arm_smmu_ops = {
- 	.start_dirty_log	= arm_smmu_start_dirty_log,
- 	.merge_page		= arm_smmu_merge_page,
- 	.stop_dirty_log		= arm_smmu_stop_dirty_log,
-+	.sync_dirty_log		= arm_smmu_sync_dirty_log,
- 	.of_xlate		= arm_smmu_of_xlate,
- 	.get_resv_regions	= arm_smmu_get_resv_regions,
- 	.put_resv_regions	= generic_iommu_put_resv_regions,
-diff --git a/drivers/iommu/io-pgtable-arm.c b/drivers/iommu/io-pgtable-arm.c
-index 9028328b99b0..67a208a05ab2 100644
---- a/drivers/iommu/io-pgtable-arm.c
-+++ b/drivers/iommu/io-pgtable-arm.c
-@@ -877,6 +877,95 @@ static size_t arm_lpae_merge_page(struct io_pgtable_ops *ops, unsigned long iova
- 	return __arm_lpae_merge_page(data, iova, paddr, size, lvl, ptep, prot);
+ 	u32 reg;
+@@ -3256,6 +3285,8 @@ static int arm_smmu_device_hw_probe(struct arm_smmu_device *smmu)
+ 			smmu->features |= ARM_SMMU_FEAT_E2H;
+ 	}
+ 
++	arm_smmu_get_httu(smmu, reg);
++
+ 	/*
+ 	 * The coherency feature as set by FW is used in preference to the ID
+ 	 * register, but warn on mismatch.
+@@ -3441,6 +3472,14 @@ static int arm_smmu_device_acpi_probe(struct platform_device *pdev,
+ 	if (iort_smmu->flags & ACPI_IORT_SMMU_V3_COHACC_OVERRIDE)
+ 		smmu->features |= ARM_SMMU_FEAT_COHERENCY;
+ 
++	switch (FIELD_GET(ACPI_IORT_SMMU_V3_HTTU_OVERRIDE, iort_smmu->flags)) {
++	case IDR0_HTTU_ACCESS_DIRTY:
++		smmu->features |= ARM_SMMU_FEAT_HD;
++		fallthrough;
++	case IDR0_HTTU_ACCESS:
++		smmu->features |= ARM_SMMU_FEAT_HA;
++	}
++
+ 	return 0;
  }
+ #else
+diff --git a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.h b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.h
+index f985817c967a..26d6b935b383 100644
+--- a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.h
++++ b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.h
+@@ -33,6 +33,9 @@
+ #define IDR0_ASID16			(1 << 12)
+ #define IDR0_ATS			(1 << 10)
+ #define IDR0_HYP			(1 << 9)
++#define IDR0_HTTU			GENMASK(7, 6)
++#define IDR0_HTTU_ACCESS		1
++#define IDR0_HTTU_ACCESS_DIRTY		2
+ #define IDR0_COHACC			(1 << 4)
+ #define IDR0_TTF			GENMASK(3, 2)
+ #define IDR0_TTF_AARCH64		2
+@@ -285,6 +288,9 @@
+ #define CTXDESC_CD_0_TCR_IPS		GENMASK_ULL(34, 32)
+ #define CTXDESC_CD_0_TCR_TBI0		(1ULL << 38)
  
-+static int __arm_lpae_sync_dirty_log(struct arm_lpae_io_pgtable *data,
-+				     unsigned long iova, size_t size,
-+				     int lvl, arm_lpae_iopte *ptep,
-+				     unsigned long *bitmap,
-+				     unsigned long base_iova,
-+				     unsigned long bitmap_pgshift)
-+{
-+	arm_lpae_iopte pte;
-+	struct io_pgtable *iop = &data->iop;
-+	size_t base, next_size;
-+	unsigned long offset;
-+	int nbits, ret;
++#define CTXDESC_CD_0_TCR_HA		(1UL << 43)
++#define CTXDESC_CD_0_TCR_HD		(1UL << 42)
 +
-+	if (WARN_ON(lvl == ARM_LPAE_MAX_LEVELS))
-+		return -EINVAL;
-+
-+	ptep += ARM_LPAE_LVL_IDX(iova, lvl, data);
-+	pte = READ_ONCE(*ptep);
-+	if (WARN_ON(!pte))
-+		return -EINVAL;
-+
-+	if (size == ARM_LPAE_BLOCK_SIZE(lvl, data)) {
-+		if (iopte_leaf(pte, lvl, iop->fmt)) {
-+			if (pte & ARM_LPAE_PTE_AP_RDONLY)
-+				return 0;
-+
-+			/* It is writable, set the bitmap */
-+			nbits = size >> bitmap_pgshift;
-+			offset = (iova - base_iova) >> bitmap_pgshift;
-+			bitmap_set(bitmap, offset, nbits);
-+			return 0;
-+		} else {
-+			/* To traverse next level */
-+			next_size = ARM_LPAE_BLOCK_SIZE(lvl + 1, data);
-+			ptep = iopte_deref(pte, data);
-+			for (base = 0; base < size; base += next_size) {
-+				ret = __arm_lpae_sync_dirty_log(data,
-+						iova + base, next_size, lvl + 1,
-+						ptep, bitmap, base_iova, bitmap_pgshift);
-+				if (ret)
-+					return ret;
-+			}
-+			return 0;
-+		}
-+	} else if (iopte_leaf(pte, lvl, iop->fmt)) {
-+		if (pte & ARM_LPAE_PTE_AP_RDONLY)
-+			return 0;
-+
-+		/* Though the size is too small, also set bitmap */
-+		nbits = size >> bitmap_pgshift;
-+		offset = (iova - base_iova) >> bitmap_pgshift;
-+		bitmap_set(bitmap, offset, nbits);
-+		return 0;
-+	}
-+
-+	/* Keep on walkin */
-+	ptep = iopte_deref(pte, data);
-+	return __arm_lpae_sync_dirty_log(data, iova, size, lvl + 1, ptep,
-+			bitmap, base_iova, bitmap_pgshift);
-+}
-+
-+static int arm_lpae_sync_dirty_log(struct io_pgtable_ops *ops,
-+				   unsigned long iova, size_t size,
-+				   unsigned long *bitmap,
-+				   unsigned long base_iova,
-+				   unsigned long bitmap_pgshift)
-+{
-+	struct arm_lpae_io_pgtable *data = io_pgtable_ops_to_data(ops);
-+	arm_lpae_iopte *ptep = data->pgd;
-+	int lvl = data->start_level;
-+	struct io_pgtable_cfg *cfg = &data->iop.cfg;
-+	long iaext = (s64)iova >> cfg->ias;
-+
-+	if (WARN_ON(!size || (size & cfg->pgsize_bitmap) != size))
-+		return -EINVAL;
-+
-+	if (cfg->quirks & IO_PGTABLE_QUIRK_ARM_TTBR1)
-+		iaext = ~iaext;
-+	if (WARN_ON(iaext))
-+		return -EINVAL;
-+
-+	if (data->iop.fmt != ARM_64_LPAE_S1 &&
-+	    data->iop.fmt != ARM_32_LPAE_S1)
-+		return -EINVAL;
-+
-+	return __arm_lpae_sync_dirty_log(data, iova, size, lvl, ptep,
-+					 bitmap, base_iova, bitmap_pgshift);
-+}
-+
- static void arm_lpae_restrict_pgsizes(struct io_pgtable_cfg *cfg)
- {
- 	unsigned long granule, page_sizes;
-@@ -957,6 +1046,7 @@ arm_lpae_alloc_pgtable(struct io_pgtable_cfg *cfg)
- 		.iova_to_phys	= arm_lpae_iova_to_phys,
- 		.split_block	= arm_lpae_split_block,
- 		.merge_page	= arm_lpae_merge_page,
-+		.sync_dirty_log	= arm_lpae_sync_dirty_log,
- 	};
+ #define CTXDESC_CD_0_AA64		(1UL << 41)
+ #define CTXDESC_CD_0_S			(1UL << 44)
+ #define CTXDESC_CD_0_R			(1UL << 45)
+@@ -607,6 +613,8 @@ struct arm_smmu_device {
+ #define ARM_SMMU_FEAT_BTM		(1 << 16)
+ #define ARM_SMMU_FEAT_SVA		(1 << 17)
+ #define ARM_SMMU_FEAT_E2H		(1 << 18)
++#define ARM_SMMU_FEAT_HA		(1 << 19)
++#define ARM_SMMU_FEAT_HD		(1 << 20)
+ 	u32				features;
  
- 	return data;
-diff --git a/drivers/iommu/iommu.c b/drivers/iommu/iommu.c
-index 2a10294b62a3..44dfb78f9050 100644
---- a/drivers/iommu/iommu.c
-+++ b/drivers/iommu/iommu.c
-@@ -2850,6 +2850,44 @@ int iommu_stop_dirty_log(struct iommu_domain *domain, unsigned long iova,
- }
- EXPORT_SYMBOL_GPL(iommu_stop_dirty_log);
- 
-+int iommu_sync_dirty_log(struct iommu_domain *domain, unsigned long iova,
-+			 size_t size, unsigned long *bitmap,
-+			 unsigned long base_iova, unsigned long bitmap_pgshift)
-+{
-+	const struct iommu_ops *ops = domain->ops;
-+	unsigned int min_pagesz;
-+	size_t pgsize;
-+	int ret = 0;
-+
-+	if (unlikely(!ops || !ops->sync_dirty_log))
-+		return -ENODEV;
-+
-+	min_pagesz = 1 << __ffs(domain->pgsize_bitmap);
-+	if (!IS_ALIGNED(iova | size, min_pagesz)) {
-+		pr_err("unaligned: iova 0x%lx size 0x%zx min_pagesz 0x%x\n",
-+		       iova, size, min_pagesz);
-+		return -EINVAL;
-+	}
-+
-+	while (size) {
-+		pgsize = iommu_pgsize(domain, iova, size);
-+
-+		ret = ops->sync_dirty_log(domain, iova, pgsize,
-+					  bitmap, base_iova, bitmap_pgshift);
-+		if (ret)
-+			break;
-+
-+		pr_debug("dirty_log_sync handle: iova 0x%lx pagesz 0x%zx\n",
-+			 iova, pgsize);
-+
-+		iova += pgsize;
-+		size -= pgsize;
-+	}
-+
-+	return ret;
-+}
-+EXPORT_SYMBOL_GPL(iommu_sync_dirty_log);
-+
- void iommu_get_resv_regions(struct device *dev, struct list_head *list)
- {
- 	const struct iommu_ops *ops = dev->bus->iommu_ops;
-diff --git a/include/linux/io-pgtable.h b/include/linux/io-pgtable.h
-index 38b4e17c70f0..5107a9d4ac79 100644
---- a/include/linux/io-pgtable.h
-+++ b/include/linux/io-pgtable.h
-@@ -171,6 +171,10 @@ struct io_pgtable_ops {
- 			      size_t size);
- 	size_t (*merge_page)(struct io_pgtable_ops *ops, unsigned long iova,
- 			     phys_addr_t phys, size_t size, int prot);
-+	int (*sync_dirty_log)(struct io_pgtable_ops *ops,
-+			      unsigned long iova, size_t size,
-+			      unsigned long *bitmap, unsigned long base_iova,
-+			      unsigned long bitmap_pgshift);
- };
- 
- /**
-diff --git a/include/linux/iommu.h b/include/linux/iommu.h
-index 28111009cf6f..7d5777acfdb7 100644
---- a/include/linux/iommu.h
-+++ b/include/linux/iommu.h
-@@ -209,6 +209,7 @@ struct iommu_iotlb_gather {
-  * @start_dirty_log: Perform actions to start dirty log tracking
-  * @merge_page: Merge page mapping into block mapping
-  * @stop_dirty_log: Perform actions to stop dirty log tracking
-+ * @sync_dirty_log: Sync dirty log from IOMMU into a dirty bitmap
-  * @get_resv_regions: Request list of reserved regions for a device
-  * @put_resv_regions: Free list of reserved regions for a device
-  * @apply_resv_region: Temporary helper call-back for iova reserved ranges
-@@ -273,6 +274,10 @@ struct iommu_ops {
- 			  phys_addr_t phys, size_t size, int prot);
- 	int (*stop_dirty_log)(struct iommu_domain *domain, unsigned long iova,
- 			      size_t size, int prot);
-+	int (*sync_dirty_log)(struct iommu_domain *domain,
-+			      unsigned long iova, size_t size,
-+			      unsigned long *bitmap, unsigned long base_iova,
-+			      unsigned long bitmap_pgshift);
- 
- 	/* Request/Free a list of reserved regions for a device */
- 	void (*get_resv_regions)(struct device *dev, struct list_head *list);
-@@ -533,6 +538,10 @@ extern int iommu_merge_page(struct iommu_domain *domain, unsigned long iova,
- 			    size_t size, int prot);
- extern int iommu_stop_dirty_log(struct iommu_domain *domain,
- 				unsigned long iova, size_t size, int prot);
-+extern int iommu_sync_dirty_log(struct iommu_domain *domain, unsigned long iova,
-+				size_t size, unsigned long *bitmap,
-+				unsigned long base_iova,
-+				unsigned long bitmap_pgshift);
- 
- /* Window handling function prototypes */
- extern int iommu_domain_window_enable(struct iommu_domain *domain, u32 wnd_nr,
-@@ -949,6 +958,15 @@ static inline int iommu_stop_dirty_log(struct iommu_domain *domain,
- 	return -EINVAL;
- }
- 
-+static inline int iommu_sync_dirty_log(struct iommu_domain *domain,
-+				       unsigned long iova, size_t size,
-+				       unsigned long *bitmap,
-+				       unsigned long base_iova,
-+				       unsigned long pgshift)
-+{
-+	return -EINVAL;
-+}
-+
- static inline int  iommu_device_register(struct iommu_device *iommu)
- {
- 	return -ENODEV;
+ #define ARM_SMMU_OPT_SKIP_PREFETCH	(1 << 0)
 -- 
 2.19.1
 
