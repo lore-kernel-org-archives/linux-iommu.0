@@ -2,90 +2,88 @@ Return-Path: <SRS0=kCyf=II=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-15.3 required=3.0 tests=BAYES_00,DKIM_INVALID,
-	DKIM_SIGNED,INCLUDES_CR_TRAILER,INCLUDES_PATCH,MAILING_LIST_MULTI,
-	SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_SANE_1 autolearn=ham
-	autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-5.3 required=3.0 tests=BAYES_00,
+	HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,NICE_REPLY_A,SPF_HELO_NONE,
+	SPF_PASS,URIBL_BLOCKED,USER_AGENT_SANE_1 autolearn=no autolearn_force=no
+	version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8CC86C433DB
-	for <iommu@archiver.kernel.org>; Wed, 10 Mar 2021 16:08:04 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E78A3C433E0
+	for <iommu@archiver.kernel.org>; Wed, 10 Mar 2021 17:52:46 +0000 (UTC)
 Received: from smtp2.osuosl.org (smtp2.osuosl.org [140.211.166.133])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 2E9FB64F9B
-	for <iommu@archiver.kernel.org>; Wed, 10 Mar 2021 16:08:04 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 2E9FB64F9B
-Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=kernel.org
+	by mail.kernel.org (Postfix) with ESMTPS id 1791E64F8D
+	for <iommu@archiver.kernel.org>; Wed, 10 Mar 2021 17:52:46 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 1791E64F8D
+Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=huawei.com
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by smtp2.osuosl.org (Postfix) with ESMTP id EB2AA43196;
-	Wed, 10 Mar 2021 16:08:03 +0000 (UTC)
+	by smtp2.osuosl.org (Postfix) with ESMTP id C60DD431C7;
+	Wed, 10 Mar 2021 17:52:45 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
 Received: from smtp2.osuosl.org ([127.0.0.1])
 	by localhost (smtp2.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id hmnTwImOSZyl; Wed, 10 Mar 2021 16:08:03 +0000 (UTC)
-Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [IPv6:2605:bc80:3010:104::8cd3:938])
-	by smtp2.osuosl.org (Postfix) with ESMTP id D207D431C1;
-	Wed, 10 Mar 2021 16:08:02 +0000 (UTC)
+	with ESMTP id g67gSbv4sCEx; Wed, 10 Mar 2021 17:52:45 +0000 (UTC)
+Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
+	by smtp2.osuosl.org (Postfix) with ESMTP id B475142FC6;
+	Wed, 10 Mar 2021 17:52:44 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id A934CC000A;
-	Wed, 10 Mar 2021 16:08:02 +0000 (UTC)
-Received: from smtp2.osuosl.org (smtp2.osuosl.org [IPv6:2605:bc80:3010::133])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 3D587C0001
- for <iommu@lists.linux-foundation.org>; Wed, 10 Mar 2021 16:08:01 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 9D9EEC000B;
+	Wed, 10 Mar 2021 17:52:44 +0000 (UTC)
+Received: from smtp2.osuosl.org (smtp2.osuosl.org [140.211.166.133])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id AA8F5C0001
+ for <iommu@lists.linux-foundation.org>; Wed, 10 Mar 2021 17:52:42 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by smtp2.osuosl.org (Postfix) with ESMTP id 1CC9643196
- for <iommu@lists.linux-foundation.org>; Wed, 10 Mar 2021 16:08:01 +0000 (UTC)
+ by smtp2.osuosl.org (Postfix) with ESMTP id 998E2430E6
+ for <iommu@lists.linux-foundation.org>; Wed, 10 Mar 2021 17:52:42 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
 Received: from smtp2.osuosl.org ([127.0.0.1])
  by localhost (smtp2.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id 1WfOn6FKbYEn for <iommu@lists.linux-foundation.org>;
- Wed, 10 Mar 2021 16:08:00 +0000 (UTC)
+ with ESMTP id N-T_jr9tqIU0 for <iommu@lists.linux-foundation.org>;
+ Wed, 10 Mar 2021 17:52:40 +0000 (UTC)
 X-Greylist: domain auto-whitelisted by SQLgrey-1.8.0
-Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
- by smtp2.osuosl.org (Postfix) with ESMTPS id 7B816431C1
- for <iommu@lists.linux-foundation.org>; Wed, 10 Mar 2021 16:08:00 +0000 (UTC)
-Received: by mail.kernel.org (Postfix) with ESMTPSA id E45D564F4C;
- Wed, 10 Mar 2021 16:07:52 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
- s=k20201202; t=1615392478;
- bh=7sTMvplzl4qRhmylBff3JMaWNZ6VDs7GHryb8IWMb8E=;
- h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
- b=PIIVIbrunaUx2mEUOz6ZJxHRH1se7E+5o1HDWFnKHf8eRzIiylHjOZmg5NZShqUGW
- hjBa9elVXNdk4eDdsGhTeXYuzv3/BXbX9p/KFb7ybT6VG90bTEx1lnCRZOw2RFaiFz
- xUEZGv0mJM9hDLsvPxYJiJZDiqjW49MgbOGmc1zY8E3cbyvNj4DU6HwresgdU5wkaD
- /6Nzn59UjeidTCW1K7nx7/asBj1lP/sYdEKM7aFPidqM8CVyvFTnzvC3yn1XacZioJ
- H8pxELt905xod7Mk5tdYLPuc5q0SIB1frKl7tHHxsimgV+p7eYBm76eNyVHMHiOgX+
- s9X5laJqNqC3Q==
-Date: Wed, 10 Mar 2021 16:07:48 +0000
-From: Will Deacon <will@kernel.org>
-To: Claire Chang <tientzu@chromium.org>
-Subject: Re: [PATCH v4 13/14] dt-bindings: of: Add restricted DMA pool
-Message-ID: <20210310160747.GA29834@willie-the-truck>
-References: <20210209062131.2300005-1-tientzu@chromium.org>
- <20210209062131.2300005-14-tientzu@chromium.org>
+Received: from frasgout.his.huawei.com (frasgout.his.huawei.com
+ [185.176.79.56])
+ by smtp2.osuosl.org (Postfix) with ESMTPS id 9D81142FC6
+ for <iommu@lists.linux-foundation.org>; Wed, 10 Mar 2021 17:52:40 +0000 (UTC)
+Received: from fraeml742-chm.china.huawei.com (unknown [172.18.147.206])
+ by frasgout.his.huawei.com (SkyGuard) with ESMTP id 4Dwfdq1XQyz67wf3;
+ Thu, 11 Mar 2021 01:46:39 +0800 (CST)
+Received: from lhreml724-chm.china.huawei.com (10.201.108.75) by
+ fraeml742-chm.china.huawei.com (10.206.15.223) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2106.2; Wed, 10 Mar 2021 18:52:37 +0100
+Received: from [10.47.10.208] (10.47.10.208) by lhreml724-chm.china.huawei.com
+ (10.201.108.75) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256) id 15.1.2106.2; Wed, 10 Mar
+ 2021 17:52:36 +0000
+Subject: Re: [PATCH 1/1] Revert "iommu/iova: Retry from last rb tree node if
+ iova search fails"
+From: John Garry <john.garry@huawei.com>
+To: Robin Murphy <robin.murphy@arm.com>, "Leizhen (ThunderTown)"
+ <thunder.leizhen@huawei.com>, Will Deacon <will@kernel.org>, Joerg Roedel
+ <joro@8bytes.org>, iommu <iommu@lists.linux-foundation.org>, linux-kernel
+ <linux-kernel@vger.kernel.org>
+References: <20210129092120.1482-1-thunder.leizhen@huawei.com>
+ <5505b1e5-2450-d5c4-6d77-5bb21fd0b6a1@huawei.com>
+ <e8ff095f-7b7c-da38-3675-cd3c1ee84b1a@arm.com>
+ <7e18829a-3e7e-cc82-9d33-366cf2025624@huawei.com>
+ <4c634a22-7168-b51c-a012-2009fc03e6c3@arm.com>
+ <d090b869-b3ac-fecc-9efd-d870e43e0d99@huawei.com>
+ <eacd5ccd-ab5a-27fe-6542-deaefd597d11@arm.com>
+ <c58abbec-7220-b440-98d4-d1026a8feed4@huawei.com>
+Message-ID: <8b526177-758e-eee4-74ee-6aa855072e70@huawei.com>
+Date: Wed, 10 Mar 2021 17:50:34 +0000
+User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; rv:68.0) Gecko/20100101
+ Thunderbird/68.1.2
 MIME-Version: 1.0
-Content-Disposition: inline
-In-Reply-To: <20210209062131.2300005-14-tientzu@chromium.org>
-User-Agent: Mutt/1.10.1 (2018-07-13)
-Cc: heikki.krogerus@linux.intel.com, peterz@infradead.org,
- benh@kernel.crashing.org, grant.likely@arm.com, paulus@samba.org,
- Frank Rowand <frowand.list@gmail.com>, mingo@kernel.org,
- sstabellini@kernel.org, Saravana Kannan <saravanak@google.com>,
- mpe@ellerman.id.au, "Rafael J . Wysocki" <rafael.j.wysocki@intel.com>,
- Christoph Hellwig <hch@lst.de>,
- Bartosz Golaszewski <bgolaszewski@baylibre.com>,
- xen-devel@lists.xenproject.org, Thierry Reding <treding@nvidia.com>,
- linux-devicetree <devicetree@vger.kernel.org>,
- Konrad Rzeszutek Wilk <konrad.wilk@oracle.com>,
- Dan Williams <dan.j.williams@intel.com>, linuxppc-dev@lists.ozlabs.org,
- Rob Herring <robh+dt@kernel.org>, boris.ostrovsky@oracle.com,
- Andy Shevchenko <andriy.shevchenko@linux.intel.com>, jgross@suse.com,
- Nicolas Boichat <drinkcat@chromium.org>, Greg KH <gregkh@linuxfoundation.org>,
- Randy Dunlap <rdunlap@infradead.org>, lkml <linux-kernel@vger.kernel.org>,
- "list@263.net:IOMMU DRIVERS" <iommu@lists.linux-foundation.org>,
- Jim Quinlan <james.quinlan@broadcom.com>, xypron.glpk@gmx.de,
- Robin Murphy <robin.murphy@arm.com>, bauerman@linux.ibm.com
+In-Reply-To: <c58abbec-7220-b440-98d4-d1026a8feed4@huawei.com>
+Content-Language: en-US
+X-Originating-IP: [10.47.10.208]
+X-ClientProxiedBy: lhreml705-chm.china.huawei.com (10.201.108.54) To
+ lhreml724-chm.china.huawei.com (10.201.108.75)
+X-CFilter-Loop: Reflected
+Cc: Vijayanand Jitta <vjitta@codeaurora.org>, Linuxarm <linuxarm@huawei.com>
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -98,86 +96,36 @@ List-Post: <mailto:iommu@lists.linux-foundation.org>
 List-Help: <mailto:iommu-request@lists.linux-foundation.org?subject=help>
 List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
  <mailto:iommu-request@lists.linux-foundation.org?subject=subscribe>
-Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset="us-ascii"; Format="flowed"
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-Hi Claire,
-
-On Tue, Feb 09, 2021 at 02:21:30PM +0800, Claire Chang wrote:
-> Introduce the new compatible string, restricted-dma-pool, for restricted
-> DMA. One can specify the address and length of the restricted DMA memory
-> region by restricted-dma-pool in the reserved-memory node.
+On 08/03/2021 16:22, John Garry wrote:
 > 
-> Signed-off-by: Claire Chang <tientzu@chromium.org>
-> ---
->  .../reserved-memory/reserved-memory.txt       | 24 +++++++++++++++++++
->  1 file changed, 24 insertions(+)
+>>
+>>>> While max32_alloc_size indirectly tracks the largest*contiguous* 
+>>>> available space, one of the ideas from which it grew was to simply keep
+>>>> count of the total number of free PFNs. If you're really spending
+>>>> significant time determining that the tree is full, as opposed to just
+>>>> taking longer to eventually succeed, then it might be relatively
+>>>> innocuous to tack on that semi-redundant extra accounting as a
+>>>> self-contained quick fix for that worst case.
+>>>>
 > 
-> diff --git a/Documentation/devicetree/bindings/reserved-memory/reserved-memory.txt b/Documentation/devicetree/bindings/reserved-memory/reserved-memory.txt
-> index e8d3096d922c..fc9a12c2f679 100644
-> --- a/Documentation/devicetree/bindings/reserved-memory/reserved-memory.txt
-> +++ b/Documentation/devicetree/bindings/reserved-memory/reserved-memory.txt
-> @@ -51,6 +51,20 @@ compatible (optional) - standard definition
->            used as a shared pool of DMA buffers for a set of devices. It can
->            be used by an operating system to instantiate the necessary pool
->            management subsystem if necessary.
-> +        - restricted-dma-pool: This indicates a region of memory meant to be
-> +          used as a pool of restricted DMA buffers for a set of devices. The
-> +          memory region would be the only region accessible to those devices.
-> +          When using this, the no-map and reusable properties must not be set,
-> +          so the operating system can create a virtual mapping that will be used
-> +          for synchronization. The main purpose for restricted DMA is to
-> +          mitigate the lack of DMA access control on systems without an IOMMU,
-> +          which could result in the DMA accessing the system memory at
-> +          unexpected times and/or unexpected addresses, possibly leading to data
-> +          leakage or corruption. The feature on its own provides a basic level
-> +          of protection against the DMA overwriting buffer contents at
-> +          unexpected times. However, to protect against general data leakage and
-> +          system memory corruption, the system needs to provide way to lock down
-> +          the memory access, e.g., MPU.
+> ...
 
-As far as I can tell, these pools work with both static allocations (which
-seem to match your use-case where firmware has preconfigured the DMA ranges)
-but also with dynamic allocations where a 'size' property is present instead
-of the 'reg' property and the kernel is responsible for allocating the
-reservation during boot. Am I right and, if so, is that deliberate?
+So since the retry means that we search through the complete pfn range 
+most of the time (due to poor success rate quoted), we should be able to 
+do a better job at maintaining an accurate max alloc size, by 
+calculating it during the failed search, and not relying on max alloc 
+failed or resetting it frequently. Hopefully that would mean that we're 
+smarter about quickly failing the allocation.
 
-I ask because I think that would potentially be useful to us for the
-Protected KVM work, where we need to bounce virtio memory accesses via
-guest-determined windows because the guest memory is generally inaccessible
-to the host. We've been hacking this using a combination of "swiotlb=force"
-and set_memory_{decrypted,encrypted}() but it would be much better to
-leverage the stuff you have here.
+I'll further look at that.
 
-Also:
-
-> +
-> +		restricted_dma_mem_reserved: restricted_dma_mem_reserved {
-> +			compatible = "restricted-dma-pool";
-> +			reg = <0x50000000 0x400000>;
-> +		};
->  	};
->  
->  	/* ... */
-> @@ -138,4 +157,9 @@ one for multimedia processing (named multimedia-memory@77000000, 64MiB).
->  		memory-region = <&multimedia_reserved>;
->  		/* ... */
->  	};
-> +
-> +	pcie_device: pcie_device@0,0 {
-> +		memory-region = <&restricted_dma_mem_reserved>;
-> +		/* ... */
-> +	};
-
-I find this example a bit weird, as I didn't think we usually had DT nodes
-for PCI devices; rather they are discovered as a result of probing config
-space. Is the idea that you have one reserved memory region attached to the
-RC and all the PCI devices below that share the region, or is there a need
-for a mapping mechanism?
-
-Will
+Thanks,
+John
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
