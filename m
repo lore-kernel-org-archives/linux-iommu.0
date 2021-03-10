@@ -2,69 +2,89 @@ Return-Path: <SRS0=kCyf=II=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-5.2 required=3.0 tests=BAYES_00,
-	HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,
-	URIBL_BLOCKED,USER_AGENT_SANE_1 autolearn=no autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-5.3 required=3.0 tests=BAYES_00,DKIM_INVALID,
+	DKIM_SIGNED,MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,
+	USER_AGENT_SANE_1 autolearn=no autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4C18AC433E6
-	for <iommu@archiver.kernel.org>; Wed, 10 Mar 2021 09:25:44 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D136EC433E6
+	for <iommu@archiver.kernel.org>; Wed, 10 Mar 2021 10:56:02 +0000 (UTC)
 Received: from smtp3.osuosl.org (smtp3.osuosl.org [140.211.166.136])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 97F1164FC4
-	for <iommu@archiver.kernel.org>; Wed, 10 Mar 2021 09:25:43 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 97F1164FC4
-Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=lst.de
+	by mail.kernel.org (Postfix) with ESMTPS id 2DE3A64FE5
+	for <iommu@archiver.kernel.org>; Wed, 10 Mar 2021 10:56:02 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 2DE3A64FE5
+Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=kernel.org
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by smtp3.osuosl.org (Postfix) with ESMTP id 303486F521;
-	Wed, 10 Mar 2021 09:25:43 +0000 (UTC)
+	by smtp3.osuosl.org (Postfix) with ESMTP id BBAF56F81D;
+	Wed, 10 Mar 2021 10:56:01 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
 Received: from smtp3.osuosl.org ([127.0.0.1])
 	by localhost (smtp3.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id mchWsEDzrPMR; Wed, 10 Mar 2021 09:25:42 +0000 (UTC)
-Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [IPv6:2605:bc80:3010:104::8cd3:938])
-	by smtp3.osuosl.org (Postfix) with ESMTP id 21259605C1;
-	Wed, 10 Mar 2021 09:25:42 +0000 (UTC)
+	with ESMTP id 4SG-4Ka3y51K; Wed, 10 Mar 2021 10:56:01 +0000 (UTC)
+Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
+	by smtp3.osuosl.org (Postfix) with ESMTP id AB2B96F585;
+	Wed, 10 Mar 2021 10:56:00 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id A55EAC000B;
-	Wed, 10 Mar 2021 09:25:41 +0000 (UTC)
-Received: from smtp2.osuosl.org (smtp2.osuosl.org [140.211.166.133])
- by lists.linuxfoundation.org (Postfix) with ESMTP id E31BEC0001;
- Wed, 10 Mar 2021 09:25:40 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 85317C000A;
+	Wed, 10 Mar 2021 10:56:00 +0000 (UTC)
+Received: from smtp4.osuosl.org (smtp4.osuosl.org [140.211.166.137])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id A1460C0001;
+ Wed, 10 Mar 2021 10:55:59 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by smtp2.osuosl.org (Postfix) with ESMTP id D0D45431A5;
- Wed, 10 Mar 2021 09:25:40 +0000 (UTC)
+ by smtp4.osuosl.org (Postfix) with ESMTP id 788E34EC58;
+ Wed, 10 Mar 2021 10:55:59 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from smtp2.osuosl.org ([127.0.0.1])
- by localhost (smtp2.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id V1bcMZgOaSoK; Wed, 10 Mar 2021 09:25:40 +0000 (UTC)
-X-Greylist: from auto-whitelisted by SQLgrey-1.8.0
-X-Greylist: from auto-whitelisted by SQLgrey-1.8.0
-Received: from verein.lst.de (verein.lst.de [213.95.11.211])
- by smtp2.osuosl.org (Postfix) with ESMTPS id 34A924314A;
- Wed, 10 Mar 2021 09:25:40 +0000 (UTC)
-Received: by verein.lst.de (Postfix, from userid 2407)
- id 2657568B05; Wed, 10 Mar 2021 10:25:34 +0100 (CET)
-Date: Wed, 10 Mar 2021 10:25:33 +0100
-From: Christoph Hellwig <hch@lst.de>
-To: Robin Murphy <robin.murphy@arm.com>
-Subject: Re: [PATCH 14/17] iommu: remove DOMAIN_ATTR_DMA_USE_FLUSH_QUEUE
-Message-ID: <20210310092533.GA6819@lst.de>
+Authentication-Results: smtp4.osuosl.org (amavisd-new);
+ dkim=pass (2048-bit key) header.d=kernel.org
+Received: from smtp4.osuosl.org ([127.0.0.1])
+ by localhost (smtp4.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+ with ESMTP id FknPplhW73ik; Wed, 10 Mar 2021 10:55:58 +0000 (UTC)
+X-Greylist: domain auto-whitelisted by SQLgrey-1.8.0
+X-Greylist: domain auto-whitelisted by SQLgrey-1.8.0
+Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
+ by smtp4.osuosl.org (Postfix) with ESMTPS id BA2EA4EC57;
+ Wed, 10 Mar 2021 10:55:58 +0000 (UTC)
+Received: by mail.kernel.org (Postfix) with ESMTPSA id 0375464FBA;
+ Wed, 10 Mar 2021 10:55:54 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+ s=k20201202; t=1615373758;
+ bh=l5F4mRFTlCcuvK65v3+ubAAIjsEOKjTToYBZnVrSV8Q=;
+ h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+ b=Snrq3o6NQfFy8T13bWkjeS0t+DUxWxLJ7ItwwsFvYQUN059elyy12JfOlinrWY9b9
+ HZXz58NlMVNMAanXaV4jMPtH+wZ63zpj4onuFCjkYAw0y6Itf99qSovicg/AvxjLlu
+ dC1gGgjIjClyM+tZEQc82j0YPmrepv2haKqVn9pXRXBSHMvhcAemlq17an5DZjsRLD
+ GavAs3RvhjKvztQsc6QzDP7siwQGDfGWNWfSNCMIjao9k51gQwMEycEcBk2+iaZ2FD
+ GfnBGnq0Lliwgyj+ZV+DmU7+2pHmPC7dDWTA6KQMdLwYszXdvPO5XE4k7J4bo7MxuP
+ Ok+UecEar6NwQ==
+Date: Wed, 10 Mar 2021 10:55:51 +0000
+From: Will Deacon <will@kernel.org>
+To: Christoph Hellwig <hch@lst.de>
+Subject: Re: [Freedreno] [PATCH 16/17] iommu: remove DOMAIN_ATTR_IO_PGTABLE_CFG
+Message-ID: <20210310105550.GA29270@willie-the-truck>
 References: <20210301084257.945454-1-hch@lst.de>
- <20210301084257.945454-15-hch@lst.de>
- <1658805c-ed28-b650-7385-a56fab3383e3@arm.com> <20210310091501.GC5928@lst.de>
+ <20210301084257.945454-17-hch@lst.de>
+ <d567ad5c-5f89-effa-7260-88c6d86b4695@arm.com>
+ <CAF6AEGtTs-=aO-Ntp0Qn6mYDSv4x0-q3y217QxU7kZ6H1b1fiQ@mail.gmail.com>
+ <20210305100012.GB22536@willie-the-truck>
+ <20210310085806.GB5928@lst.de>
 MIME-Version: 1.0
 Content-Disposition: inline
-In-Reply-To: <20210310091501.GC5928@lst.de>
-User-Agent: Mutt/1.5.17 (2007-11-01)
-Cc: kvm@vger.kernel.org, Will Deacon <will@kernel.org>,
- linuxppc-dev@lists.ozlabs.org, dri-devel@lists.freedesktop.org,
- Li Yang <leoyang.li@nxp.com>, iommu@lists.linux-foundation.org,
- netdev@vger.kernel.org, David Woodhouse <dwmw2@infradead.org>,
- linux-arm-kernel@lists.infradead.org, Michael Ellerman <mpe@ellerman.id.au>,
- virtualization@lists.linux-foundation.org, freedreno@lists.freedesktop.org,
- Christoph Hellwig <hch@lst.de>, linux-arm-msm@vger.kernel.org
+In-Reply-To: <20210310085806.GB5928@lst.de>
+User-Agent: Mutt/1.10.1 (2018-07-13)
+Cc: freedreno <freedreno@lists.freedesktop.org>, kvm@vger.kernel.org,
+ Michael Ellerman <mpe@ellerman.id.au>,
+ linuxppc-dev <linuxppc-dev@lists.ozlabs.org>,
+ dri-devel <dri-devel@lists.freedesktop.org>, Li Yang <leoyang.li@nxp.com>,
+ "list@263.net:IOMMU DRIVERS <iommu@lists.linux-foundation.org>,
+ Joerg Roedel <joro@8bytes.org>, " <iommu@lists.linux-foundation.org>,
+ David Woodhouse <dwmw2@infradead.org>,
+ linux-arm-msm <linux-arm-msm@vger.kernel.org>,
+ virtualization@lists.linux-foundation.org, Robin Murphy <robin.murphy@arm.com>,
+ netdev@vger.kernel.org,
+ "moderated list:ARM/FREESCALE IMX / MXC ARM ARCHITECTURE"
+ <linux-arm-kernel@lists.infradead.org>
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -82,32 +102,20 @@ Content-Transfer-Encoding: 7bit
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-On Wed, Mar 10, 2021 at 10:15:01AM +0100, Christoph Hellwig wrote:
-> On Thu, Mar 04, 2021 at 03:25:27PM +0000, Robin Murphy wrote:
-> > On 2021-03-01 08:42, Christoph Hellwig wrote:
-> >> Use explicit methods for setting and querying the information instead.
-> >
-> > Now that everyone's using iommu-dma, is there any point in bouncing this 
-> > through the drivers at all? Seems like it would make more sense for the x86 
-> > drivers to reflect their private options back to iommu_dma_strict (and 
-> > allow Intel's caching mode to override it as well), then have 
-> > iommu_dma_init_domain just test !iommu_dma_strict && 
-> > domain->ops->flush_iotlb_all.
+On Wed, Mar 10, 2021 at 09:58:06AM +0100, Christoph Hellwig wrote:
+> On Fri, Mar 05, 2021 at 10:00:12AM +0000, Will Deacon wrote:
+> > > But one thing I'm not sure about is whether
+> > > IO_PGTABLE_QUIRK_ARM_OUTER_WBWA is something that other devices
+> > > *should* be using as well, but just haven't gotten around to yet.
+> > 
+> > The intention is certainly that this would be a place to collate per-domain
+> > pgtable quirks, so I'd prefer not to tie that to the GPU.
 > 
-> Hmm.  I looked at this, and kill off ->dma_enable_flush_queue for
-> the ARM drivers and just looking at iommu_dma_strict seems like a
-> very clear win.
-> 
-> OTOH x86 is a little more complicated.  AMD and intel defaul to lazy
-> mode, so we'd have to change the global iommu_dma_strict if they are
-> initialized.  Also Intel has not only a "static" option to disable
-> lazy mode, but also a "dynamic" one where it iterates structure.  So
-> I think on the get side we're stuck with the method, but it still
-> simplifies the whole thing.
+> So the overall consensus is to just keep this as-is for now?
 
-Actually... Just mirroring the iommu_dma_strict value into
-struct iommu_domain should solve all of that with very little
-boilerplate code. 
+Yes, please. If it doesn't see wider adoption then we can revisit it.
+
+Will
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
