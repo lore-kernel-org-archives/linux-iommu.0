@@ -2,95 +2,71 @@ Return-Path: <SRS0=dgoC=IK=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-10.1 required=3.0 tests=BAYES_00,DKIM_INVALID,
-	DKIM_SIGNED,HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,
-	NICE_REPLY_A,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_SANE_1
-	autolearn=ham autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-5.3 required=3.0 tests=BAYES_00,
+	HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,NICE_REPLY_A,SPF_HELO_NONE,
+	SPF_PASS,URIBL_BLOCKED,USER_AGENT_SANE_1 autolearn=no autolearn_force=no
+	version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E6F6FC433DB
-	for <iommu@archiver.kernel.org>; Fri, 12 Mar 2021 17:03:56 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E55C0C433E0
+	for <iommu@archiver.kernel.org>; Fri, 12 Mar 2021 17:46:49 +0000 (UTC)
 Received: from smtp2.osuosl.org (smtp2.osuosl.org [140.211.166.133])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 6AAF765024
-	for <iommu@archiver.kernel.org>; Fri, 12 Mar 2021 17:03:56 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 6AAF765024
-Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=deltatee.com
+	by mail.kernel.org (Postfix) with ESMTPS id 7D34064E90
+	for <iommu@archiver.kernel.org>; Fri, 12 Mar 2021 17:46:49 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 7D34064E90
+Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=arm.com
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by smtp2.osuosl.org (Postfix) with ESMTP id 19AC54305A;
-	Fri, 12 Mar 2021 17:03:56 +0000 (UTC)
+	by smtp2.osuosl.org (Postfix) with ESMTP id 36D0442FD7;
+	Fri, 12 Mar 2021 17:46:49 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
 Received: from smtp2.osuosl.org ([127.0.0.1])
 	by localhost (smtp2.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id w1WNAchd-sXX; Fri, 12 Mar 2021 17:03:55 +0000 (UTC)
-Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [IPv6:2605:bc80:3010:104::8cd3:938])
-	by smtp2.osuosl.org (Postfix) with ESMTP id C626643030;
-	Fri, 12 Mar 2021 17:03:54 +0000 (UTC)
+	with ESMTP id kzaI1Za-ne-E; Fri, 12 Mar 2021 17:46:47 +0000 (UTC)
+Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
+	by smtp2.osuosl.org (Postfix) with ESMTP id 8C12042FD6;
+	Fri, 12 Mar 2021 17:46:47 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id AEFDBC000A;
-	Fri, 12 Mar 2021 17:03:54 +0000 (UTC)
-Received: from smtp1.osuosl.org (smtp1.osuosl.org [140.211.166.138])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 59FF4C0001
- for <iommu@lists.linux-foundation.org>; Fri, 12 Mar 2021 17:03:53 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 3CD4BC000B;
+	Fri, 12 Mar 2021 17:46:47 +0000 (UTC)
+Received: from smtp3.osuosl.org (smtp3.osuosl.org [140.211.166.136])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 1CE01C0001
+ for <iommu@lists.linux-foundation.org>; Fri, 12 Mar 2021 17:46:46 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by smtp1.osuosl.org (Postfix) with ESMTP id 3CE5084455
- for <iommu@lists.linux-foundation.org>; Fri, 12 Mar 2021 17:03:53 +0000 (UTC)
+ by smtp3.osuosl.org (Postfix) with ESMTP id 0AB9360661
+ for <iommu@lists.linux-foundation.org>; Fri, 12 Mar 2021 17:46:46 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Authentication-Results: smtp1.osuosl.org (amavisd-new);
- dkim=pass (2048-bit key) header.d=deltatee.com
-Received: from smtp1.osuosl.org ([127.0.0.1])
- by localhost (smtp1.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id HJJIUyFar7to for <iommu@lists.linux-foundation.org>;
- Fri, 12 Mar 2021 17:03:52 +0000 (UTC)
+Received: from smtp3.osuosl.org ([127.0.0.1])
+ by localhost (smtp3.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+ with ESMTP id JzeaB48j2_5F for <iommu@lists.linux-foundation.org>;
+ Fri, 12 Mar 2021 17:46:44 +0000 (UTC)
 X-Greylist: domain auto-whitelisted by SQLgrey-1.8.0
-Received: from ale.deltatee.com (ale.deltatee.com [204.191.154.188])
- by smtp1.osuosl.org (Postfix) with ESMTPS id 6177283C2D
- for <iommu@lists.linux-foundation.org>; Fri, 12 Mar 2021 17:03:52 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
- d=deltatee.com; s=20200525; h=Subject:In-Reply-To:MIME-Version:Date:
- Message-ID:From:References:Cc:To:content-disposition;
- bh=V/VslKJywQsa+B9YAC8dghP1OO6CVmZUKXpLzW4pIhQ=; b=hvIdFq2DAqZRf+jqWidcKj23gK
- 25AAfGpLmwIThDbmmZoRtxX0b8MWQN1I83BkIkCfG35j4ZNKIf8B6ZTZ/jgdT003ovN4T5xlZVcsy
- jMqI7v7ZgfNyjIK9Y3gz/UFDtQLfV2L/5OTBbVO+4EeCF29eUe/Xs8yA4hGkodsUWqZMHjl9ObvbT
- UlWR/0K94BQ0t2VXgd4rlsJO1VCweVLuaREQlx4mCqN1D2xxRvOOd5SQUMQBcFk3W6Kuukq0HeoG5
- sUeZeX9ISQJYUCc+e8SQ1CtaHLsHhzcptg5958i8F1nX8awDpGpn036mCjZazwTrRxyKMG3rEht3H
- HLX9E1fA==;
-Received: from s01060023bee90a7d.cg.shawcable.net ([24.64.145.4]
- helo=[192.168.0.10])
- by ale.deltatee.com with esmtpsa (TLS1.3:ECDHE_RSA_AES_128_GCM_SHA256:128)
- (Exim 4.92) (envelope-from <logang@deltatee.com>)
- id 1lKlCO-0007pn-Nb; Fri, 12 Mar 2021 10:03:41 -0700
-To: Robin Murphy <robin.murphy@arm.com>, linux-kernel@vger.kernel.org,
+Received: from foss.arm.com (foss.arm.com [217.140.110.172])
+ by smtp3.osuosl.org (Postfix) with ESMTP id A2D8E605DF
+ for <iommu@lists.linux-foundation.org>; Fri, 12 Mar 2021 17:46:44 +0000 (UTC)
+Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
+ by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id EA4DC1FB;
+ Fri, 12 Mar 2021 09:46:43 -0800 (PST)
+Received: from [10.57.52.136] (unknown [10.57.52.136])
+ by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id 74DF03F7D7;
+ Fri, 12 Mar 2021 09:46:38 -0800 (PST)
+Subject: Re: [RFC PATCH v2 00/11] Add support to dma_map_sg for P2PDMA
+To: Logan Gunthorpe <logang@deltatee.com>, linux-kernel@vger.kernel.org,
  linux-nvme@lists.infradead.org, linux-block@vger.kernel.org,
  linux-pci@vger.kernel.org, linux-mm@kvack.org,
  iommu@lists.linux-foundation.org
 References: <20210311233142.7900-1-logang@deltatee.com>
- <20210311233142.7900-9-logang@deltatee.com>
- <accd4187-7a9d-a8fc-f216-98ec24e3411a@arm.com>
-From: Logan Gunthorpe <logang@deltatee.com>
-Message-ID: <45701356-ee41-1ad2-0e06-ca74af87b05a@deltatee.com>
-Date: Fri, 12 Mar 2021 10:03:38 -0700
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
- Thunderbird/78.8.0
+ <6b9be188-1ec7-527c-ae47-3f5b4e153758@arm.com>
+ <c66d247e-5da9-4866-8e6b-ee2ec4bc03d5@deltatee.com>
+From: Robin Murphy <robin.murphy@arm.com>
+Message-ID: <90a2825c-da2f-c031-a70f-08c5efb3db56@arm.com>
+Date: Fri, 12 Mar 2021 17:46:31 +0000
+User-Agent: Mozilla/5.0 (Windows NT 10.0; rv:78.0) Gecko/20100101
+ Thunderbird/78.7.1
 MIME-Version: 1.0
-In-Reply-To: <accd4187-7a9d-a8fc-f216-98ec24e3411a@arm.com>
-Content-Language: en-CA
-X-SA-Exim-Connect-IP: 24.64.145.4
-X-SA-Exim-Rcpt-To: jianxin.xiong@intel.com, hch@lst.de,
- andrzej.jakowski@intel.com, sbates@raithlin.com, dan.j.williams@intel.com,
- daniel.vetter@ffwll.ch, jason@jlekstrand.net, jgg@ziepe.ca,
- christian.koenig@amd.com, willy@infradead.org, iweiny@intel.com,
- dave.hansen@linux.intel.com, jhubbard@nvidia.com, dave.b.minturn@intel.com,
- iommu@lists.linux-foundation.org, linux-mm@kvack.org,
- linux-pci@vger.kernel.org, linux-block@vger.kernel.org,
- linux-nvme@lists.infradead.org, linux-kernel@vger.kernel.org,
- robin.murphy@arm.com
-X-SA-Exim-Mail-From: logang@deltatee.com
-Subject: Re: [RFC PATCH v2 08/11] iommu/dma: Support PCI P2PDMA pages in
- dma-iommu map_sg
-X-SA-Exim-Version: 4.2.1 (built Wed, 08 May 2019 21:11:16 +0000)
-X-SA-Exim-Scanned: Yes (on ale.deltatee.com)
+In-Reply-To: <c66d247e-5da9-4866-8e6b-ee2ec4bc03d5@deltatee.com>
+Content-Language: en-GB
 Cc: Minturn Dave B <dave.b.minturn@intel.com>,
  John Hubbard <jhubbard@nvidia.com>, Dave Hansen <dave.hansen@linux.intel.com>,
  Ira Weiny <iweiny@intel.com>, Christoph Hellwig <hch@lst.de>,
@@ -113,123 +89,99 @@ List-Post: <mailto:iommu@lists.linux-foundation.org>
 List-Help: <mailto:iommu-request@lists.linux-foundation.org?subject=help>
 List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
  <mailto:iommu-request@lists.linux-foundation.org?subject=subscribe>
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
+Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset="us-ascii"; Format="flowed"
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-CgpPbiAyMDIxLTAzLTEyIDg6NTIgYS5tLiwgUm9iaW4gTXVycGh5IHdyb3RlOgo+IE9uIDIwMjEt
-MDMtMTEgMjM6MzEsIExvZ2FuIEd1bnRob3JwZSB3cm90ZToKPj4gV2hlbiBhIFBDSSBQMlBETUEg
-cGFnZSBpcyBzZWVuLCBzZXQgdGhlIElPVkEgbGVuZ3RoIG9mIHRoZSBzZWdtZW50Cj4+IHRvIHpl
-cm8gc28gdGhhdCBpdCBpcyBub3QgbWFwcGVkIGludG8gdGhlIElPVkEuIFRoZW4sIGluIGZpbmFs
-aXNlX3NnKCksCj4+IGFwcGx5IHRoZSBhcHByb3ByaWF0ZSBidXMgYWRkcmVzcyB0byB0aGUgc2Vn
-bWVudC4gVGhlIElPVkEgaXMgbm90Cj4+IGNyZWF0ZWQgaWYgdGhlIHNjYXR0ZXJsaXN0IG9ubHkg
-Y29uc2lzdHMgb2YgUDJQRE1BIHBhZ2VzLgo+IAo+IFRoaXMgbWlzbGVkIG1lIGF0IGZpcnN0LCBi
-dXQgSSBzZWUgdGhlIGltcGxlbWVudGF0aW9uIGRvZXMgYWN0dWFsbHkKPiBhcHBlYXIgdG8gYWNj
-b21vZGF0ZSB0aGUgY2FzZSBvZiB3b3JraW5nIEFDUyB3aGVyZSBQMlAgKndvdWxkKiBzdGlsbAo+
-IG5lZWQgdG8gYmUgbWFwcGVkIGF0IHRoZSBJT01NVS4KClllcywgdGhhdCdzIGNvcnJlY3QuCj4+
-IMKgIHN0YXRpYyBpbnQgX19maW5hbGlzZV9zZyhzdHJ1Y3QgZGV2aWNlICpkZXYsIHN0cnVjdCBz
-Y2F0dGVybGlzdCAqc2csCj4+IGludCBuZW50cywKPj4gLcKgwqDCoMKgwqDCoMKgIGRtYV9hZGRy
-X3QgZG1hX2FkZHIpCj4+ICvCoMKgwqDCoMKgwqDCoCBkbWFfYWRkcl90IGRtYV9hZGRyLCB1bnNp
-Z25lZCBsb25nIGF0dHJzKQo+PiDCoCB7Cj4+IMKgwqDCoMKgwqAgc3RydWN0IHNjYXR0ZXJsaXN0
-ICpzLCAqY3VyID0gc2c7Cj4+IMKgwqDCoMKgwqAgdW5zaWduZWQgbG9uZyBzZWdfbWFzayA9IGRt
-YV9nZXRfc2VnX2JvdW5kYXJ5KGRldik7Cj4+IEBAIC04NjQsNiArODY1LDIwIEBAIHN0YXRpYyBp
-bnQgX19maW5hbGlzZV9zZyhzdHJ1Y3QgZGV2aWNlICpkZXYsCj4+IHN0cnVjdCBzY2F0dGVybGlz
-dCAqc2csIGludCBuZW50cywKPj4gwqDCoMKgwqDCoMKgwqDCoMKgIHNnX2RtYV9hZGRyZXNzKHMp
-ID0gRE1BX01BUFBJTkdfRVJST1I7Cj4+IMKgwqDCoMKgwqDCoMKgwqDCoCBzZ19kbWFfbGVuKHMp
-ID0gMDsKPj4gwqAgK8KgwqDCoMKgwqDCoMKgIGlmIChpc19wY2lfcDJwZG1hX3BhZ2Uoc2dfcGFn
-ZShzKSkgJiYgIXNfaW92YV9sZW4pIHsKPj4gK8KgwqDCoMKgwqDCoMKgwqDCoMKgwqAgaWYgKGkg
-PiAwKQo+PiArwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgIGN1ciA9IHNnX25leHQoY3Vy
-KTsKPj4gKwo+PiArwqDCoMKgwqDCoMKgwqDCoMKgwqDCoCBzZ19kbWFfYWRkcmVzcyhjdXIpID0g
-c2dfcGh5cyhzKSArIHMtPm9mZnNldCAtCj4gCj4gQXJlIHlvdSBzdXJlIGFib3V0IHRoYXQ/IDsp
-CgpEbyB5b3Ugc2VlIGEgYnVnPyBJIGRvbid0IGZvbGxvdyB5b3UuLi4KCj4+ICvCoMKgwqDCoMKg
-wqDCoMKgwqDCoMKgwqDCoMKgwqAgcGNpX3AycGRtYV9idXNfb2Zmc2V0KHNnX3BhZ2UocykpOwo+
-IAo+IENhbiB0aGUgYnVzIG9mZnNldCBtYWtlIFAyUCBhZGRyZXNzZXMgb3ZlcmxhcCB3aXRoIHJl
-Z2lvbnMgb2YgbWVtIHNwYWNlCj4gdGhhdCB3ZSBtaWdodCB1c2UgZm9yIHJlZ3VsYXIgSU9WQSBh
-bGxvY2F0aW9uPyBUaGF0IHdvdWxkIGJlIHZlcnkgYmFkLi4uCgpOby4gSU9NTVUgZHJpdmVycyBh
-bHJlYWR5IGRpc2FsbG93IGFsbCBQQ0kgYWRkcmVzc2VzIGZyb20gYmVpbmcgdXNlZCBhcwpJT1ZB
-IGFkZHJlc3Nlcy4gU2VlLCBmb3IgZXhhbXBsZSwgIGRtYXJfaW5pdF9yZXNlcnZlZF9yYW5nZXMo
-KS4gSXQgd291bGQKYmUgYSBodWdlIHByb2JsZW0gZm9yIGEgd2hvbGUgbG90IG9mIG90aGVyIHJl
-YXNvbnMgaWYgaXQgZGlkbid0LgoKCj4+IEBAIC05NjAsMTEgKzk3NSwxMiBAQCBzdGF0aWMgaW50
-IGlvbW11X2RtYV9tYXBfc2coc3RydWN0IGRldmljZSAqZGV2LAo+PiBzdHJ1Y3Qgc2NhdHRlcmxp
-c3QgKnNnLAo+PiDCoMKgwqDCoMKgIHN0cnVjdCBpb21tdV9kbWFfY29va2llICpjb29raWUgPSBk
-b21haW4tPmlvdmFfY29va2llOwo+PiDCoMKgwqDCoMKgIHN0cnVjdCBpb3ZhX2RvbWFpbiAqaW92
-YWQgPSAmY29va2llLT5pb3ZhZDsKPj4gwqDCoMKgwqDCoCBzdHJ1Y3Qgc2NhdHRlcmxpc3QgKnMs
-ICpwcmV2ID0gTlVMTDsKPj4gK8KgwqDCoCBzdHJ1Y3QgZGV2X3BhZ2VtYXAgKnBnbWFwID0gTlVM
-TDsKPj4gwqDCoMKgwqDCoCBpbnQgcHJvdCA9IGRtYV9pbmZvX3RvX3Byb3QoZGlyLCBkZXZfaXNf
-ZG1hX2NvaGVyZW50KGRldiksIGF0dHJzKTsKPj4gwqDCoMKgwqDCoCBkbWFfYWRkcl90IGlvdmE7
-Cj4+IMKgwqDCoMKgwqAgc2l6ZV90IGlvdmFfbGVuID0gMDsKPj4gwqDCoMKgwqDCoCB1bnNpZ25l
-ZCBsb25nIG1hc2sgPSBkbWFfZ2V0X3NlZ19ib3VuZGFyeShkZXYpOwo+PiAtwqDCoMKgIGludCBp
-Owo+PiArwqDCoMKgIGludCBpLCBtYXAgPSAtMSwgcmV0ID0gMDsKPj4gwqAgwqDCoMKgwqDCoCBp
-ZiAoc3RhdGljX2JyYW5jaF91bmxpa2VseSgmaW9tbXVfZGVmZXJyZWRfYXR0YWNoX2VuYWJsZWQp
-ICYmCj4+IMKgwqDCoMKgwqDCoMKgwqDCoCBpb21tdV9kZWZlcnJlZF9hdHRhY2goZGV2LCBkb21h
-aW4pKQo+PiBAQCAtOTkzLDYgKzEwMDksMjMgQEAgc3RhdGljIGludCBpb21tdV9kbWFfbWFwX3Nn
-KHN0cnVjdCBkZXZpY2UgKmRldiwKPj4gc3RydWN0IHNjYXR0ZXJsaXN0ICpzZywKPj4gwqDCoMKg
-wqDCoMKgwqDCoMKgIHNfbGVuZ3RoID0gaW92YV9hbGlnbihpb3ZhZCwgc19sZW5ndGggKyBzX2lv
-dmFfb2ZmKTsKPj4gwqDCoMKgwqDCoMKgwqDCoMKgIHMtPmxlbmd0aCA9IHNfbGVuZ3RoOwo+PiDC
-oCArwqDCoMKgwqDCoMKgwqAgaWYgKGlzX3BjaV9wMnBkbWFfcGFnZShzZ19wYWdlKHMpKSkgewo+
-PiArwqDCoMKgwqDCoMKgwqDCoMKgwqDCoCBpZiAoc2dfcGFnZShzKS0+cGdtYXAgIT0gcGdtYXAp
-IHsKPj4gK8KgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoCBwZ21hcCA9IHNnX3BhZ2Uocykt
-PnBnbWFwOwo+PiArwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgIG1hcCA9IHBjaV9wMnBk
-bWFfZG1hX21hcF90eXBlKGRldiwgcGdtYXApOwo+PiArwqDCoMKgwqDCoMKgwqDCoMKgwqDCoCB9
-Cj4+ICsKPj4gK8KgwqDCoMKgwqDCoMKgwqDCoMKgwqAgaWYgKG1hcCA8IDApIHsKPiAKPiBJdCBy
-YXRoZXIgZmVlbHMgbGlrZSBpdCBzaG91bGQgYmUgdGhlIGpvYiBvZiB3aG9ldmVyIGNyZWF0ZXMg
-dGhlIGxpc3QgaW4KPiB0aGUgZmlyc3QgcGxhY2Ugbm90IHRvIHB1dCB1bnVzYWJsZSBwYWdlcyBp
-biBpdCwgZXNwZWNpYWxseSBzaW5jZSB0aGUKPiBwMnBkbWFfbWFwX3R5cGUgbG9va3MgdG8gYmUg
-YSBmYWlybHkgY29hcnNlLWdyYWluZWQgYW5kIHN0YXRpYyB0aGluZy4KPiBUaGUgRE1BIEFQSSBp
-c24ndCByZXNwb25zaWJsZSBmb3IgdmFsaWRhdGluZyBub3JtYWwgbWVtb3J5IHBhZ2VzLCBzbwo+
-IHdoYXQgbWFrZXMgUDJQIHNwZWNpYWw/CgpZZXMsIHRoYXQgd291bGQgYmUgaWRlYWwsIGJ1dCB0
-aGVyZSdzIHNvbWUgZGlmZmljdWx0aWVzIHRoZXJlLiBGb3IgdGhlCmRyaXZlciB0byBjaGVjayB0
-aGUgcGFnZXMsIGl0IHdvdWxkIG5lZWQgdG8gbG9vcCB0aHJvdWdoIHRoZSBlbnRpcmUgU0cKb25l
-IG1vcmUgdGltZSBvbiBldmVyeSB0cmFuc2FjdGlvbiwgcmVnYXJkbGVzcyBvZiB3aGV0aGVyIHRo
-ZXJlIGFyZQpQMlBETUEgcGFnZXMsIG9yIG5vdC4gU28gdGhhdCB3aWxsIGhhdmUgYSBwZXJmb3Jt
-YW5jZSBpbXBhY3QgZXZlbiB3aGVuCnRoZSBmZWF0dXJlIGlzbid0IGJlaW5nIHVzZWQuIEkgZG9u
-J3QgdGhpbmsgdGhhdCdsbCBiZSBhY2NlcHRhYmxlIGZvcgptYW55IGRyaXZlcnMuCgpUaGUgb3Ro
-ZXIgcG9zc2liaWxpdHkgaXMgZm9yIEdVUCB0byBkbyBpdCB3aGVuIGl0IGdldHMgdGhlIHBhZ2Vz
-IGZyb20KdXNlcnNwYWNlLiBCdXQgR1VQIGRvZXNuJ3QgaGF2ZSBhbGwgdGhlIGluZm9ybWF0aW9u
-IHRvIGRvIHRoaXMgYXQgdGhlCm1vbWVudC4gV2UnZCBoYXZlIHRvIHBhc3MgdGhlIHN0cnVjdCBk
-ZXZpY2UgdGhhdCB3aWxsIGV2ZW50dWFsbHkgbWFwIHRoZQpwYWdlcyB0aHJvdWdoIGFsbCB0aGUg
-bmVzdGVkIGZ1bmN0aW9ucyBpbiB0aGUgR1VQIHRvIGRvIHRoYXQgdGVzdCBhdAp0aGF0IHRpbWUu
-IFRoaXMgbWlnaHQgbm90IGJlIGEgYmFkIG9wdGlvbiAodGhhdCBJIGhhbGYgbG9va2VkIGludG8p
-LCBidXQKSSdtIG5vdCBzdXJlIGhvdyBhY2NlcHRhYmxlIGl0IHdvdWxkIGJlIHRvIHRoZSBHVVAg
-ZGV2ZWxvcGVycy4KCkJ1dCBldmVuIGlmIHdlIGRvIHZlcmlmeSB0aGUgcGFnZXMgYWhlYWQgb2Yg
-dGltZSwgd2Ugc3RpbGwgbmVlZCB0aGUgc2FtZQppbmZyYXN0cnVjdHVyZSBpbiBkbWFfbWFwX3Nn
-KCk7IGl0IGNvdWxkIG9ubHkgbm93IGJlIGEgQlVHIGlmIHRoZSBkcml2ZXIKc2VudCBpbnZhbGlk
-IHBhZ2VzIGluc3RlYWQgb2YgYW4gZXJyb3IgcmV0dXJuLgoKPj4gK8KgwqDCoMKgwqDCoMKgwqDC
-oMKgwqDCoMKgwqDCoCByZXQgPSAtRVJFTU9URUlPOwo+PiArwqDCoMKgwqDCoMKgwqDCoMKgwqDC
-oMKgwqDCoMKgIGdvdG8gb3V0X3Jlc3RvcmVfc2c7Cj4+ICvCoMKgwqDCoMKgwqDCoMKgwqDCoMKg
-IH0KPj4gKwo+PiArwqDCoMKgwqDCoMKgwqDCoMKgwqDCoCBpZiAobWFwKSB7Cj4+ICvCoMKgwqDC
-oMKgwqDCoMKgwqDCoMKgwqDCoMKgwqAgcy0+bGVuZ3RoID0gMDsKPiAKPiBJJ20gbm90IHJlYWxs
-eSB0aHJpbGxlZCBhYm91dCB0aGUgaWRlYSBvZiBwYXNzaW5nIHplcm8tbGVuZ3RoIHNlZ21lbnRz
-Cj4gdG8gaW9tbXVfbWFwX3NnKCkuIFllcywgaXQgaGFwcGVucyB0byB0cmljayB0aGUgY29uY2F0
-ZW5hdGlvbiBsb2dpYyBpbgo+IHRoZSBjdXJyZW50IGltcGxlbWVudGF0aW9uIGludG8gZG9pbmcg
-d2hhdCB5b3Ugd2FudCwgYnV0IGl0IGZlZWxzIGZyYWdpbGUuCgpXZSdyZSBub3QgcGFzc2luZyB6
-ZXJvIGxlbmd0aCBzZWdtZW50cyB0byBpb21tdV9tYXBfc2coKSAob3IgYW55CmZ1bmN0aW9uKS4g
-VGhpcyBsb29wIGlzIGp1c3Qgc2Nhbm5pbmcgdG8gY2FsY3VsYXRlIHRoZSBsZW5ndGggb2YgdGhl
-CnJlcXVpcmVkIElPVkEuIF9fZmluYWxpc2Vfc2coKSAod2hpY2ggaXMgaW50aW1hdGVseSB0aWVk
-IHRvIHRoaXMgbG9vcCkKdGhlbiBuZWVkcyBhIHdheSB0byBkZXRlcm1pbmUgd2hpY2ggc2VnbWVu
-dHMgd2VyZSBQMlAgc2VnbWVudHMuIFRoZQpleGlzdGluZyBjb2RlIGFscmVhZHkgb3ZlcndyaXRl
-cyBzLT5sZW5ndGggd2l0aCBhbiBhbGlnbmVkIGxlbmd0aCBhbmQKc3RvcmVzIHRoZSBvcmlnaW5h
-bCBsZW5ndGggaW4gc2dfZG1hX2xlbi4gU28gd2UncmUgbm90IHJlbHlpbmcgb24KdHJpY2tpbmcg
-YW55IGxvZ2ljIGhlcmUuCgoKPj4gwqAgfQo+PiDCoCDCoCBzdGF0aWMgdm9pZCBpb21tdV9kbWFf
-dW5tYXBfc2coc3RydWN0IGRldmljZSAqZGV2LCBzdHJ1Y3QKPj4gc2NhdHRlcmxpc3QgKnNnLAo+
-PiDCoMKgwqDCoMKgwqDCoMKgwqAgaW50IG5lbnRzLCBlbnVtIGRtYV9kYXRhX2RpcmVjdGlvbiBk
-aXIsIHVuc2lnbmVkIGxvbmcgYXR0cnMpCj4+IMKgIHsKPj4gLcKgwqDCoCBkbWFfYWRkcl90IHN0
-YXJ0LCBlbmQ7Cj4+ICvCoMKgwqAgZG1hX2FkZHJfdCBlbmQsIHN0YXJ0ID0gRE1BX01BUFBJTkdf
-RVJST1I7Cj4+IMKgwqDCoMKgwqAgc3RydWN0IHNjYXR0ZXJsaXN0ICp0bXA7Cj4+IMKgwqDCoMKg
-wqAgaW50IGk7Cj4+IMKgIEBAIC0xMDU0LDE0ICsxMDkwLDIwIEBAIHN0YXRpYyB2b2lkIGlvbW11
-X2RtYV91bm1hcF9zZyhzdHJ1Y3QgZGV2aWNlCj4+ICpkZXYsIHN0cnVjdCBzY2F0dGVybGlzdCAq
-c2csCj4+IMKgwqDCoMKgwqDCoCAqIFRoZSBzY2F0dGVybGlzdCBzZWdtZW50cyBhcmUgbWFwcGVk
-IGludG8gYSBzaW5nbGUKPj4gwqDCoMKgwqDCoMKgICogY29udGlndW91cyBJT1ZBIGFsbG9jYXRp
-b24sIHNvIHRoaXMgaXMgaW5jcmVkaWJseSBlYXN5Lgo+PiDCoMKgwqDCoMKgwqAgKi8KPj4gLcKg
-wqDCoCBzdGFydCA9IHNnX2RtYV9hZGRyZXNzKHNnKTsKPj4gLcKgwqDCoCBmb3JfZWFjaF9zZyhz
-Z19uZXh0KHNnKSwgdG1wLCBuZW50cyAtIDEsIGkpIHsKPj4gK8KgwqDCoCBmb3JfZWFjaF9zZyhz
-ZywgdG1wLCBuZW50cywgaSkgewo+PiArwqDCoMKgwqDCoMKgwqAgaWYgKHNnX2lzX3BjaV9wMnBk
-bWEodG1wKSkKPiAKPiBTaW5jZSB0aGUgZmxhZyBpcyBhc3NvY2lhdGVkIHdpdGggdGhlIERNQSBh
-ZGRyZXNzIHdoaWNoIHdpbGwgbm8gbG9uZ2VyCj4gYmUgdmFsaWQsIHNob3VsZG4ndCBpdCBiZSBj
-bGVhcmVkPyBUaGUgY2lyY3Vtc3RhbmNlcyBpbiB3aGljaCBsZWF2aW5nIGl0Cj4gYXJvdW5kIGNv
-dWxkIGNhdXNlIGEgcHJvYmxlbSBhcmUgdGVudW91cywgYnV0IGRlZmluaXRlbHkgcG9zc2libGUu
-CgpZZXMsIHRoYXQncyBhIGdvb2QgaWRlYS4KClRoYW5rcyBmb3IgdGhlIHJldmlldyEKCkxvZ2Fu
-Cl9fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fCmlvbW11IG1h
-aWxpbmcgbGlzdAppb21tdUBsaXN0cy5saW51eC1mb3VuZGF0aW9uLm9yZwpodHRwczovL2xpc3Rz
-LmxpbnV4Zm91bmRhdGlvbi5vcmcvbWFpbG1hbi9saXN0aW5mby9pb21tdQ==
+On 2021-03-12 16:18, Logan Gunthorpe wrote:
+> 
+> 
+> On 2021-03-12 8:51 a.m., Robin Murphy wrote:
+>> On 2021-03-11 23:31, Logan Gunthorpe wrote:
+>>> Hi,
+>>>
+>>> This is a rework of the first half of my RFC for doing P2PDMA in
+>>> userspace
+>>> with O_DIRECT[1].
+>>>
+>>> The largest issue with that series was the gross way of flagging P2PDMA
+>>> SGL segments. This RFC proposes a different approach, (suggested by
+>>> Dan Williams[2]) which uses the third bit in the page_link field of the
+>>> SGL.
+>>>
+>>> This approach is a lot less hacky but comes at the cost of adding a
+>>> CONFIG_64BIT dependency to CONFIG_PCI_P2PDMA and using up the last
+>>> scarce bit in the page_link. For our purposes, a 64BIT restriction is
+>>> acceptable but it's not clear if this is ok for all usecases hoping
+>>> to make use of P2PDMA.
+>>>
+>>> Matthew Wilcox has already suggested (off-list) that this is the wrong
+>>> approach, preferring a new dma mapping operation and an SGL
+>>> replacement. I
+>>> don't disagree that something along those lines would be a better long
+>>> term solution, but it involves overcoming a lot of challenges to get
+>>> there. Creating a new mapping operation still means adding support to
+>>> more
+>>> than 25 dma_map_ops implementations (many of which are on obscure
+>>> architectures) or creating a redundant path to fallback with dma_map_sg()
+>>> for every driver that uses the new operation. This RFC is an approach
+>>> that doesn't require overcoming these blocks.
+>>
+>> I don't really follow that argument - you're only adding support to two
+>> implementations with the awkward flag, so why would using a dedicated
+>> operation instead be any different? Whatever callers need to do if
+>> dma_pci_p2pdma_supported() says no, they could equally do if
+>> dma_map_p2p_sg() (or whatever) returns -ENXIO, no?
+> 
+> The thing is if the dma_map_sg doesn't support P2PDMA then P2PDMA
+> transactions cannot be done, but regular transactions can still go
+> through as they always did.
+> 
+> But replacing dma_map_sg() with dma_map_new() affects all operations,
+> P2PDMA or otherwise. If dma_map_new() isn't supported it can't simply
+> not support P2PDMA; it has to maintain a fallback path to dma_map_sg().
+
+But AFAICS the equivalent fallback path still has to exist either way. 
+My impression so far is that callers would end up looking something like 
+this:
+
+	if (dma_pci_p2pdma_supported()) {
+		if (dma_map_sg(...) < 0)
+			//do non-p2p fallback due to p2p failure
+	} else {
+		//do non-p2p fallback due to lack of support
+	}
+
+at which point, simply:
+
+	if (dma_map_sg_p2p(...) < 0)
+		//do non-p2p fallback either way
+
+seems entirely reasonable. What am I missing?
+
+Let's not pretend that overloading an existing API means we can start 
+feeding P2P pages into any old subsystem/driver without further changes 
+- there already *are* at least some that retry ad infinitum if DMA 
+mapping fails (the USB layer springs to mind...) and thus wouldn't 
+handle the PCI_P2PDMA_MAP_NOT_SUPPORTED case acceptably.
+
+> Given that the inputs and outputs for dma_map_new() will be completely
+> different data structures this will be quite a lot of similar paths
+> required in the driver. (ie mapping a bvec to the input struct and the
+> output struct to hardware requirements) If a bug crops up in the old
+> dma_map_sg(), developers might not notice it for some time seeing it
+> won't be used on the most popular architectures.
+
+Huh? I'm specifically suggesting a new interface that takes the *same* 
+data structure (at least to begin with), but just gives us more 
+flexibility in terms of introducing p2p-aware behaviour somewhat more 
+safely. Yes, we already know that we ultimately want something better 
+than scatterlists for representing things like this and dma-buf imports, 
+but that hardly has to happen overnight.
+
+Robin.
+_______________________________________________
+iommu mailing list
+iommu@lists.linux-foundation.org
+https://lists.linuxfoundation.org/mailman/listinfo/iommu
