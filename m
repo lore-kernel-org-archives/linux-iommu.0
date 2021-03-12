@@ -2,99 +2,78 @@ Return-Path: <SRS0=dgoC=IK=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-2.0 required=3.0 tests=BAYES_00,DKIM_ADSP_CUSTOM_MED,
-	DKIM_INVALID,DKIM_SIGNED,FREEMAIL_FORGED_FROMDOMAIN,FREEMAIL_FROM,
-	HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,
-	URIBL_BLOCKED,USER_AGENT_SANE_1 autolearn=no autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-13.6 required=3.0 tests=BAYES_00,DKIM_INVALID,
+	DKIM_SIGNED,HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_CR_TRAILER,INCLUDES_PATCH,
+	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED autolearn=ham
+	autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id AF354C433E0
-	for <iommu@archiver.kernel.org>; Fri, 12 Mar 2021 01:11:53 +0000 (UTC)
-Received: from smtp4.osuosl.org (smtp4.osuosl.org [140.211.166.137])
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 475D2C433DB
+	for <iommu@archiver.kernel.org>; Fri, 12 Mar 2021 01:42:58 +0000 (UTC)
+Received: from smtp1.osuosl.org (smtp1.osuosl.org [140.211.166.138])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 725AC64F7E
-	for <iommu@archiver.kernel.org>; Fri, 12 Mar 2021 01:11:53 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 725AC64F7E
-Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=gmail.com
+	by mail.kernel.org (Postfix) with ESMTPS id CE1A264F93
+	for <iommu@archiver.kernel.org>; Fri, 12 Mar 2021 01:42:57 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org CE1A264F93
+Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=ideasonboard.com
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by smtp4.osuosl.org (Postfix) with ESMTP id 31DAC4ECA1;
-	Fri, 12 Mar 2021 01:11:53 +0000 (UTC)
+	by smtp1.osuosl.org (Postfix) with ESMTP id 7084E844B6;
+	Fri, 12 Mar 2021 01:42:57 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from smtp4.osuosl.org ([127.0.0.1])
-	by localhost (smtp4.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id x_tSHh3MwY8i; Fri, 12 Mar 2021 01:11:52 +0000 (UTC)
+Received: from smtp1.osuosl.org ([127.0.0.1])
+	by localhost (smtp1.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+	with ESMTP id oToLPSOqaoz4; Fri, 12 Mar 2021 01:42:56 +0000 (UTC)
 Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by smtp4.osuosl.org (Postfix) with ESMTP id F294D4ED33;
-	Fri, 12 Mar 2021 01:11:51 +0000 (UTC)
+	by smtp1.osuosl.org (Postfix) with ESMTP id E13FB844B4;
+	Fri, 12 Mar 2021 01:42:55 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id BBC04C000A;
-	Fri, 12 Mar 2021 01:11:51 +0000 (UTC)
-Received: from smtp4.osuosl.org (smtp4.osuosl.org [IPv6:2605:bc80:3010::137])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 01DC1C0001
- for <iommu@lists.linux-foundation.org>; Fri, 12 Mar 2021 01:11:49 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id B4AF5C000B;
+	Fri, 12 Mar 2021 01:42:55 +0000 (UTC)
+Received: from smtp3.osuosl.org (smtp3.osuosl.org [140.211.166.136])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 68A1CC0001
+ for <iommu@lists.linux-foundation.org>; Fri, 12 Mar 2021 01:42:54 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by smtp4.osuosl.org (Postfix) with ESMTP id C363147E1F
- for <iommu@lists.linux-foundation.org>; Fri, 12 Mar 2021 01:11:49 +0000 (UTC)
+ by smtp3.osuosl.org (Postfix) with ESMTP id 5C28B6F940
+ for <iommu@lists.linux-foundation.org>; Fri, 12 Mar 2021 01:42:54 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from smtp4.osuosl.org ([127.0.0.1])
- by localhost (smtp4.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id 6FVNWpsIUPNO for <iommu@lists.linux-foundation.org>;
- Fri, 12 Mar 2021 01:11:49 +0000 (UTC)
-X-Greylist: whitelisted by SQLgrey-1.8.0
-Received: from mail-pj1-x102d.google.com (mail-pj1-x102d.google.com
- [IPv6:2607:f8b0:4864:20::102d])
- by smtp4.osuosl.org (Postfix) with ESMTPS id 19C154ED37
- for <iommu@lists.linux-foundation.org>; Fri, 12 Mar 2021 01:11:49 +0000 (UTC)
-Received: by mail-pj1-x102d.google.com with SMTP id
- q6-20020a17090a4306b02900c42a012202so10241691pjg.5
- for <iommu@lists.linux-foundation.org>; Thu, 11 Mar 2021 17:11:49 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=gmail.com; s=20161025;
- h=date:from:to:cc:subject:message-id:references:mime-version
- :content-disposition:content-transfer-encoding:in-reply-to
- :user-agent; bh=16+EGqIhvzNXbdawWsI24XgIQiUgZzzrwVqWt5tsI6Q=;
- b=k9/V8e9h7lxJGy3+MvDbuIN+ZYqSyUG2tRF5AcbhR75EaTsDgVFbTPeXzQFoCt5Y0z
- maWum4fpgZCnxzMCM1UnW6bV7Mc2dki6/0AEPh09DM69U4ozafluPUirqWTSkR3qG5ZL
- TSs0o2z4duN4aAcf3R0oLBDNGwGZ6IBeAhMoS8/4GEYwtyNOWYRgduR3Ucky7rCRJaQS
- Xd54+6SIcYHnOWuWSRZt5t6f4pxRxV0n12IFfwY3Or+u6tch+nNOSe8ZrKzL38zFBgs5
- F6esRhGL1FrhBS8hrao32eJDPriSrnDFQBn2dPFJML18s58L0JOwcbt0p9QzSH/54iOD
- y+PQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
- d=1e100.net; s=20161025;
- h=x-gm-message-state:date:from:to:cc:subject:message-id:references
- :mime-version:content-disposition:content-transfer-encoding
- :in-reply-to:user-agent;
- bh=16+EGqIhvzNXbdawWsI24XgIQiUgZzzrwVqWt5tsI6Q=;
- b=nSUNWBGky05JfhJhYhZwJri4v5qP/N7hUQJ3gZvy9jlNtW2XDAawcAwSLJv4JWIJlr
- jPrcWqqM+wrmhE0Vw1weWNjKqg2ZYRF7ISRAjfgQbe0MwIapaCJ8vwhBgNae2Zbbjnoh
- 5V0T3SsCC4A+X5m9ImvBmazJnNW8Zhrx2c5ADiv01q8Xg4qwF7kZPIs7qj5PTXEVtS3X
- +SQ7Fbe3YOxr6Qdezdml6HefZ8U64FnLDJtgxumyfu7nTqf1VAlWci9XCDaL9XAMbQWF
- bGmQqGPC3XiA8iS5uri1nVSVM+R4dFVXOwOPWujzGA+Hbwz/T24V76YhlByTB1WaMGA7
- hP6g==
-X-Gm-Message-State: AOAM531SJNOcuzpYhi3tZ4w0iJrEysKJIX5UBHbwYFXhyQDj5SSfHSG0
- rPbvfdWJfx1dNz2C9QaYI2M=
-X-Google-Smtp-Source: ABdhPJzra0SHtLriT5uJdvG596fUt/NZvuBX6OT9xr5DxY7UWyuTAm+swZOTYPYO+BHr8ri+MLVl2Q==
-X-Received: by 2002:a17:90a:f82:: with SMTP id
- 2mr11837097pjz.196.1615511508531; 
- Thu, 11 Mar 2021 17:11:48 -0800 (PST)
-Received: from Asurada-Nvidia (thunderhill.nvidia.com. [216.228.112.22])
- by smtp.gmail.com with ESMTPSA id y7sm268087pja.25.2021.03.11.17.11.47
- (version=TLS1_2 cipher=ECDHE-ECDSA-CHACHA20-POLY1305 bits=256/256);
- Thu, 11 Mar 2021 17:11:48 -0800 (PST)
-Date: Thu, 11 Mar 2021 17:09:33 -0800
-From: Nicolin Chen <nicoleotsuka@gmail.com>
-To: Dmitry Osipenko <digetx@gmail.com>
-Subject: Re: [PATCH v2] iommu/tegra-smmu: Add pagetable mappings to debugfs
-Message-ID: <20210312010932.GB29926@Asurada-Nvidia>
-References: <20210310033614.16772-1-nicoleotsuka@gmail.com>
- <abcedfa6-fbad-b34d-fba1-d3a778fbf5b4@gmail.com>
+Authentication-Results: smtp3.osuosl.org (amavisd-new);
+ dkim=pass (1024-bit key) header.d=ideasonboard.com
+Received: from smtp3.osuosl.org ([127.0.0.1])
+ by localhost (smtp3.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+ with ESMTP id sJ4jDQ1yzstv for <iommu@lists.linux-foundation.org>;
+ Fri, 12 Mar 2021 01:42:52 +0000 (UTC)
+X-Greylist: domain auto-whitelisted by SQLgrey-1.8.0
+Received: from perceval.ideasonboard.com (perceval.ideasonboard.com
+ [213.167.242.64])
+ by smtp3.osuosl.org (Postfix) with ESMTPS id 0CBA66F93D
+ for <iommu@lists.linux-foundation.org>; Fri, 12 Mar 2021 01:42:51 +0000 (UTC)
+Received: from pendragon.ideasonboard.com (62-78-145-57.bb.dnainternet.fi
+ [62.78.145.57])
+ by perceval.ideasonboard.com (Postfix) with ESMTPSA id C88A388F;
+ Fri, 12 Mar 2021 02:42:47 +0100 (CET)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=ideasonboard.com;
+ s=mail; t=1615513368;
+ bh=LTIaTV7mffTrdyRJC8ui13p8XsUlKMW/n9oF3otuqpM=;
+ h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+ b=twFyMFNC1TPi99RCmuMG60hIhZBUNFqP+kTmzPDRlDoILwJdd6pp93iz70HVZEl4D
+ d/axZoD4Dcg3V8JpNEzCjhlDCbZTz59IOHkaIGLD36kdz/0TOxBrYsl7RGDKejDpHF
+ AD5IZiyIC+GwX96TPavxtcj1h2JFv+a3o14vjIgE=
+Date: Fri, 12 Mar 2021 03:42:13 +0200
+From: Laurent Pinchart <laurent.pinchart@ideasonboard.com>
+To: Christoph Hellwig <hch@lst.de>
+Subject: Re: [PATCH 6/6] media: uvcvideo: Use dma_alloc_noncontiguos API
+Message-ID: <YErG9WUOiAzfHB1N@pendragon.ideasonboard.com>
+References: <20210301085236.947011-1-hch@lst.de>
+ <20210301085236.947011-7-hch@lst.de>
 MIME-Version: 1.0
 Content-Disposition: inline
-In-Reply-To: <abcedfa6-fbad-b34d-fba1-d3a778fbf5b4@gmail.com>
-User-Agent: Mutt/1.9.4 (2018-02-28)
-Cc: linux-kernel@vger.kernel.org, iommu@lists.linux-foundation.org,
- jonathanh@nvidia.com, thierry.reding@gmail.com, linux-tegra@vger.kernel.org,
- will@kernel.org
+In-Reply-To: <20210301085236.947011-7-hch@lst.de>
+Cc: Mauro Carvalho Chehab <mchehab@kernel.org>, linux-media@vger.kernel.org,
+ linux-doc@vger.kernel.org, linux-kernel@vger.kernel.org,
+ iommu@lists.linux-foundation.org, Ricardo Ribalda <ribalda@chromium.org>,
+ Sergey Senozhatsky <senozhatsky@google.com>,
+ Robin Murphy <robin.murphy@arm.com>
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -107,25 +86,315 @@ List-Post: <mailto:iommu@lists.linux-foundation.org>
 List-Help: <mailto:iommu-request@lists.linux-foundation.org?subject=help>
 List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
  <mailto:iommu-request@lists.linux-foundation.org?subject=subscribe>
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-T24gVGh1LCBNYXIgMTEsIDIwMjEgYXQgMDU6MDQ6MDZQTSArMDMwMCwgRG1pdHJ5IE9zaXBlbmtv
-IHdyb3RlOgo+IDEwLjAzLjIwMjEgMDY6MzYsIE5pY29saW4gQ2hlbiDQv9C40YjQtdGCOgo+IC4u
-Lgo+ID4gK3N0YXRpYyBpbnQgdGVncmFfc21tdV9tYXBwaW5nc19zaG93KHN0cnVjdCBzZXFfZmls
-ZSAqcywgdm9pZCAqZGF0YSkKPiA+ICt7Cj4gPiArCXN0cnVjdCB0ZWdyYV9zbW11X2dyb3VwX2Rl
-YnVnICpncm91cF9kZWJ1ZyA9IHMtPnByaXZhdGU7Cj4gPiArCWNvbnN0IHN0cnVjdCB0ZWdyYV9z
-bW11X3N3Z3JvdXAgKmdyb3VwOwo+ID4gKwlzdHJ1Y3QgdGVncmFfc21tdV9hcyAqYXM7Cj4gPiAr
-CXN0cnVjdCB0ZWdyYV9zbW11ICpzbW11Owo+ID4gKwlpbnQgcGRfaW5kZXgsIHB0X2luZGV4Owo+
-IAo+ID4gK0RFRklORV9TSE9XX0FUVFJJQlVURSh0ZWdyYV9zbW11X21hcHBpbmdzKTsKPiA+ICsK
-PiA+ICBzdGF0aWMgdm9pZCB0ZWdyYV9zbW11X2RlYnVnZnNfaW5pdChzdHJ1Y3QgdGVncmFfc21t
-dSAqc21tdSkKPiA+ICB7Cj4gPiArCWNvbnN0IHN0cnVjdCB0ZWdyYV9zbW11X3NvYyAqc29jID0g
-c21tdS0+c29jOwo+ID4gKwlzdHJ1Y3QgdGVncmFfc21tdV9ncm91cF9kZWJ1ZyAqZ3JvdXBfZGVi
-dWc7Cj4gPiArCXN0cnVjdCBkZXZpY2UgKmRldiA9IHNtbXUtPmRldjsKPiA+ICsJc3RydWN0IGRl
-bnRyeSAqZDsKPiA+ICsJaW50IGk7Cj4gCj4gWW91IHNob3VsZCB1c2UgdW5zaWduZWQgdHlwZXMg
-Zm9yIGV2ZXJ5dGhpbmcgdGhhdCBpc24ndCBzaWduZWQuCgpPa2F5LiBXaWxsIGZpeC4gVGhhbmtz
-IQpfX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fXwppb21tdSBt
-YWlsaW5nIGxpc3QKaW9tbXVAbGlzdHMubGludXgtZm91bmRhdGlvbi5vcmcKaHR0cHM6Ly9saXN0
-cy5saW51eGZvdW5kYXRpb24ub3JnL21haWxtYW4vbGlzdGluZm8vaW9tbXU=
+Hi Christoph and Ricardo,
+
+Thank you for the patch.
+
+On Mon, Mar 01, 2021 at 09:52:36AM +0100, Christoph Hellwig wrote:
+> From: Ricardo Ribalda <ribalda@chromium.org>
+> 
+> On architectures where the is no coherent caching such as ARM use the
+
+s/the is/there is/
+
+> dma_alloc_noncontiguos API and handle manually the cache flushing using
+
+s/dma_alloc_noncontiguos/dma_alloc_noncontiguous/
+
+(and in the subject line too)
+
+> dma_sync_sgtable().
+> 
+> With this patch on the affected architectures we can measure up to 20x
+> performance improvement in uvc_video_copy_data_work().
+> 
+> Eg: aarch64 with an external usb camera
+> 
+> NON_CONTIGUOUS
+> frames:  999
+> packets: 999
+> empty:   0 (0 %)
+> errors:  0
+> invalid: 0
+> pts: 0 early, 0 initial, 999 ok
+> scr: 0 count ok, 0 diff ok
+> sof: 2048 <= sof <= 0, freq 0.000 kHz
+> bytes 67034480 : duration 33303
+> FPS: 29.99
+> URB: 523446/4993 uS/qty: 104.836 avg 132.532 std 13.230 min 831.094 max (uS)
+> header: 76564/4993 uS/qty: 15.334 avg 15.229 std 3.438 min 186.875 max (uS)
+> latency: 468945/4992 uS/qty: 93.939 avg 132.577 std 9.531 min 824.010 max (uS)
+> decode: 54161/4993 uS/qty: 10.847 avg 6.313 std 1.614 min 111.458 max (uS)
+> raw decode speed: 9.931 Gbits/s
+> raw URB handling speed: 1.025 Gbits/s
+> throughput: 16.102 Mbits/s
+> URB decode CPU usage 0.162600 %
+> 
+> COHERENT
+> frames:  999
+> packets: 999
+> empty:   0 (0 %)
+> errors:  0
+> invalid: 0
+> pts: 0 early, 0 initial, 999 ok
+> scr: 0 count ok, 0 diff ok
+> sof: 2048 <= sof <= 0, freq 0.000 kHz
+> bytes 54683536 : duration 33302
+> FPS: 29.99
+> URB: 1478135/4000 uS/qty: 369.533 avg 390.357 std 22.968 min 3337.865 max (uS)
+> header: 79761/4000 uS/qty: 19.940 avg 18.495 std 1.875 min 336.719 max (uS)
+> latency: 281077/4000 uS/qty: 70.269 avg 83.102 std 5.104 min 735.000 max (uS)
+> decode: 1197057/4000 uS/qty: 299.264 avg 318.080 std 1.615 min 2806.667 max (uS)
+> raw decode speed: 365.470 Mbits/s
+> raw URB handling speed: 295.986 Mbits/s
+> throughput: 13.136 Mbits/s
+> URB decode CPU usage 3.594500 %
+> 
+> Signed-off-by: Ricardo Ribalda <ribalda@chromium.org>
+> Reviewed-by: Tomasz Figa <tfiga@chromium.org>
+> Signed-off-by: Christoph Hellwig <hch@lst.de>
+> ---
+>  drivers/media/usb/uvc/uvc_video.c | 79 ++++++++++++++++++++++---------
+>  drivers/media/usb/uvc/uvcvideo.h  |  4 +-
+>  2 files changed, 60 insertions(+), 23 deletions(-)
+> 
+> diff --git a/drivers/media/usb/uvc/uvc_video.c b/drivers/media/usb/uvc/uvc_video.c
+> index f2f565281e63ff..d008c68fb6c806 100644
+> --- a/drivers/media/usb/uvc/uvc_video.c
+> +++ b/drivers/media/usb/uvc/uvc_video.c
+> @@ -6,11 +6,13 @@
+>   *          Laurent Pinchart (laurent.pinchart@ideasonboard.com)
+>   */
+>  
+
+Should we include <linux/dma-mapping.h> ?
+
+> +#include <linux/highmem.h>
+>  #include <linux/kernel.h>
+>  #include <linux/list.h>
+>  #include <linux/module.h>
+>  #include <linux/slab.h>
+>  #include <linux/usb.h>
+> +#include <linux/usb/hcd.h>
+>  #include <linux/videodev2.h>
+>  #include <linux/vmalloc.h>
+>  #include <linux/wait.h>
+> @@ -1096,6 +1098,26 @@ static int uvc_video_decode_start(struct uvc_streaming *stream,
+>  	return data[0];
+>  }
+>  
+> +static inline struct device *stream_to_dmadev(struct uvc_streaming *stream)
+> +{
+> +	return bus_to_hcd(stream->dev->udev->bus)->self.sysdev;
+> +}
+> +
+> +static void uvc_urb_dma_sync(struct uvc_urb *uvc_urb, bool for_device)
+> +{
+> +	struct device *dma_dev = stream_to_dmadev(uvc_urb->stream);
+> +
+> +	if (for_device) {
+> +		dma_sync_sgtable_for_device(dma_dev, uvc_urb->sgt,
+> +					    DMA_FROM_DEVICE);
+
+The uvcvideo driver also supports video output devices (they are fairly
+rare, but they exist). We thus need to handle DMA_TO_DEVICE too.
+
+> +	} else {
+> +		dma_sync_sgtable_for_cpu(dma_dev, uvc_urb->sgt,
+> +					 DMA_FROM_DEVICE);
+> +		invalidate_kernel_vmap_range(uvc_urb->buffer,
+> +					     uvc_urb->stream->urb_size);
+> +	}
+> +}
+> +
+>  /*
+>   * uvc_video_decode_data_work: Asynchronous memcpy processing
+>   *
+> @@ -1117,6 +1139,8 @@ static void uvc_video_copy_data_work(struct work_struct *work)
+>  		uvc_queue_buffer_release(op->buf);
+>  	}
+>  
+> +	uvc_urb_dma_sync(uvc_urb, true);
+> +
+>  	ret = usb_submit_urb(uvc_urb->urb, GFP_KERNEL);
+>  	if (ret < 0)
+>  		dev_err(&uvc_urb->stream->intf->dev,
+> @@ -1541,10 +1565,12 @@ static void uvc_video_complete(struct urb *urb)
+>  	 * Process the URB headers, and optionally queue expensive memcpy tasks
+>  	 * to be deferred to a work queue.
+>  	 */
+> +	uvc_urb_dma_sync(uvc_urb, false);
+>  	stream->decode(uvc_urb, buf, buf_meta);
+>  
+>  	/* If no async work is needed, resubmit the URB immediately. */
+>  	if (!uvc_urb->async_operations) {
+> +		uvc_urb_dma_sync(uvc_urb, true);
+>  		ret = usb_submit_urb(uvc_urb->urb, GFP_ATOMIC);
+>  		if (ret < 0)
+>  			dev_err(&stream->intf->dev,
+> @@ -1560,24 +1586,46 @@ static void uvc_video_complete(struct urb *urb)
+>   */
+>  static void uvc_free_urb_buffers(struct uvc_streaming *stream)
+>  {
+> +	struct device *dma_dev = stream_to_dmadev(stream);
+>  	struct uvc_urb *uvc_urb;
+>  
+>  	for_each_uvc_urb(uvc_urb, stream) {
+>  		if (!uvc_urb->buffer)
+>  			continue;
+>  
+> -#ifndef CONFIG_DMA_NONCOHERENT
+> -		usb_free_coherent(stream->dev->udev, stream->urb_size,
+> -				  uvc_urb->buffer, uvc_urb->dma);
+> -#else
+> -		kfree(uvc_urb->buffer);
+> -#endif
+> +		dma_vunmap_noncontiguous(dma_dev, uvc_urb->buffer);
+> +		dma_free_noncontiguous(dma_dev, stream->urb_size, uvc_urb->sgt,
+> +				       DMA_FROM_DEVICE);
+> +
+>  		uvc_urb->buffer = NULL;
+
+Maybe also
+
+		uvc_urb->sgt = NULL;
+
+? It's not strictly mandatory, but may make use-after-free bugs easier
+to spot.
+
+>  	}
+>  
+>  	stream->urb_size = 0;
+>  }
+>  
+> +static bool uvc_alloc_urb_buffer(struct uvc_streaming *stream,
+> +				 struct uvc_urb *uvc_urb, gfp_t gfp_flags)
+> +{
+> +	struct device *dma_dev = stream_to_dmadev(stream);
+> +
+> +
+
+Extra blank line.
+
+> +	uvc_urb->sgt = dma_alloc_noncontiguous(dma_dev, stream->urb_size,
+> +					       DMA_FROM_DEVICE, gfp_flags, 0);
+> +	if (!uvc_urb->sgt)
+> +		return false;
+> +	uvc_urb->dma = uvc_urb->sgt->sgl->dma_address;
+> +
+> +	uvc_urb->buffer = dma_vmap_noncontiguous(dma_dev, stream->urb_size,
+> +						 uvc_urb->sgt);
+> +	if (!uvc_urb->buffer) {
+> +		dma_free_noncontiguous(dma_dev, stream->urb_size,
+> +				       uvc_urb->sgt, DMA_FROM_DEVICE);
+
+Same here,
+
+		uvc_urb->sgt = NULL;
+
+> +		return false;
+> +	}
+> +
+> +	return true;
+> +}
+> +
+>  /*
+>   * Allocate transfer buffers. This function can be called with buffers
+>   * already allocated when resuming from suspend, in which case it will
+> @@ -1608,19 +1656,11 @@ static int uvc_alloc_urb_buffers(struct uvc_streaming *stream,
+>  
+>  	/* Retry allocations until one succeed. */
+>  	for (; npackets > 1; npackets /= 2) {
+> +		stream->urb_size = psize * npackets;
+
+A blank line here would be nice.
+
+>  		for (i = 0; i < UVC_URBS; ++i) {
+>  			struct uvc_urb *uvc_urb = &stream->uvc_urb[i];
+>  
+> -			stream->urb_size = psize * npackets;
+> -#ifndef CONFIG_DMA_NONCOHERENT
+> -			uvc_urb->buffer = usb_alloc_coherent(
+> -				stream->dev->udev, stream->urb_size,
+> -				gfp_flags | __GFP_NOWARN, &uvc_urb->dma);
+> -#else
+> -			uvc_urb->buffer =
+> -			    kmalloc(stream->urb_size, gfp_flags | __GFP_NOWARN);
+> -#endif
+> -			if (!uvc_urb->buffer) {
+> +			if (!uvc_alloc_urb_buffer(stream, uvc_urb, gfp_flags)) {
+>  				uvc_free_urb_buffers(stream);
+>  				break;
+>  			}
+> @@ -1730,12 +1770,8 @@ static int uvc_init_video_isoc(struct uvc_streaming *stream,
+>  		urb->context = uvc_urb;
+>  		urb->pipe = usb_rcvisocpipe(stream->dev->udev,
+>  				ep->desc.bEndpointAddress);
+> -#ifndef CONFIG_DMA_NONCOHERENT
+>  		urb->transfer_flags = URB_ISO_ASAP | URB_NO_TRANSFER_DMA_MAP;
+>  		urb->transfer_dma = uvc_urb->dma;
+> -#else
+> -		urb->transfer_flags = URB_ISO_ASAP;
+> -#endif
+>  		urb->interval = ep->desc.bInterval;
+>  		urb->transfer_buffer = uvc_urb->buffer;
+>  		urb->complete = uvc_video_complete;
+> @@ -1795,10 +1831,8 @@ static int uvc_init_video_bulk(struct uvc_streaming *stream,
+>  
+>  		usb_fill_bulk_urb(urb, stream->dev->udev, pipe,	uvc_urb->buffer,
+>  				  size, uvc_video_complete, uvc_urb);
+> -#ifndef CONFIG_DMA_NONCOHERENT
+>  		urb->transfer_flags = URB_NO_TRANSFER_DMA_MAP;
+>  		urb->transfer_dma = uvc_urb->dma;
+> -#endif
+>  
+>  		uvc_urb->urb = urb;
+>  	}
+> @@ -1895,6 +1929,7 @@ static int uvc_video_start_transfer(struct uvc_streaming *stream,
+>  
+>  	/* Submit the URBs. */
+>  	for_each_uvc_urb(uvc_urb, stream) {
+> +		uvc_urb_dma_sync(uvc_urb, true);
+>  		ret = usb_submit_urb(uvc_urb->urb, gfp_flags);
+>  		if (ret < 0) {
+>  			dev_err(&stream->intf->dev,
+> diff --git a/drivers/media/usb/uvc/uvcvideo.h b/drivers/media/usb/uvc/uvcvideo.h
+> index 97df5ecd66c9a7..fec24f1eca1c96 100644
+> --- a/drivers/media/usb/uvc/uvcvideo.h
+> +++ b/drivers/media/usb/uvc/uvcvideo.h
+> @@ -545,7 +545,8 @@ struct uvc_copy_op {
+>   * @urb: the URB described by this context structure
+>   * @stream: UVC streaming context
+>   * @buffer: memory storage for the URB
+> - * @dma: DMA coherent addressing for the urb_buffer
+> + * @dma: Allocated DMA handle
+> + * @sgt: sgt_table with the urb locations in memory
+>   * @async_operations: counter to indicate the number of copy operations
+>   * @copy_operations: work descriptors for asynchronous copy operations
+>   * @work: work queue entry for asynchronous decode
+> @@ -556,6 +557,7 @@ struct uvc_urb {
+>  
+>  	char *buffer;
+>  	dma_addr_t dma;
+> +	struct sg_table *sgt;
+
+A forward declaration of struct sg_table with the other forward
+declarations would be useful.
+
+>  
+>  	unsigned int async_operations;
+>  	struct uvc_copy_op copy_operations[UVC_MAX_PACKETS];
+
+-- 
+Regards,
+
+Laurent Pinchart
+_______________________________________________
+iommu mailing list
+iommu@lists.linux-foundation.org
+https://lists.linuxfoundation.org/mailman/listinfo/iommu
