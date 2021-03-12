@@ -7,78 +7,79 @@ X-Spam-Status: No, score=-16.5 required=3.0 tests=BAYES_00,DKIM_INVALID,
 	MAILING_LIST_MULTI,MSGID_FROM_MTA_HEADER,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,
 	USER_AGENT_GIT autolearn=ham autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C5F08C43381
-	for <iommu@archiver.kernel.org>; Fri, 12 Mar 2021 08:55:28 +0000 (UTC)
-Received: from smtp3.osuosl.org (smtp3.osuosl.org [140.211.166.136])
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 68036C433E6
+	for <iommu@archiver.kernel.org>; Fri, 12 Mar 2021 08:55:27 +0000 (UTC)
+Received: from smtp1.osuosl.org (smtp1.osuosl.org [140.211.166.138])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 8519564FE0
-	for <iommu@archiver.kernel.org>; Fri, 12 Mar 2021 08:55:26 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 8519564FE0
+	by mail.kernel.org (Postfix) with ESMTPS id 2822A64FFB
+	for <iommu@archiver.kernel.org>; Fri, 12 Mar 2021 08:55:27 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 2822A64FFB
 Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=amd.com
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by smtp3.osuosl.org (Postfix) with ESMTP id 60CDF6F9BC;
-	Fri, 12 Mar 2021 08:55:26 +0000 (UTC)
-X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from smtp3.osuosl.org ([127.0.0.1])
-	by localhost (smtp3.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id WdZI2VI_BHfU; Fri, 12 Mar 2021 08:55:25 +0000 (UTC)
-Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [IPv6:2605:bc80:3010:104::8cd3:938])
-	by smtp3.osuosl.org (Postfix) with ESMTP id 333856F93D;
+	by smtp1.osuosl.org (Postfix) with ESMTP id BB0C384535;
 	Fri, 12 Mar 2021 08:55:25 +0000 (UTC)
-Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 1D612C000B;
-	Fri, 12 Mar 2021 08:55:25 +0000 (UTC)
-Received: from smtp1.osuosl.org (smtp1.osuosl.org [140.211.166.138])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 577FFC0001
- for <iommu@lists.linux-foundation.org>; Fri, 12 Mar 2021 08:55:24 +0000 (UTC)
-Received: from localhost (localhost [127.0.0.1])
- by smtp1.osuosl.org (Postfix) with ESMTP id 36E298453F
- for <iommu@lists.linux-foundation.org>; Fri, 12 Mar 2021 08:55:24 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Authentication-Results: smtp1.osuosl.org (amavisd-new);
- dkim=pass (1024-bit key) header.d=amd.com
 Received: from smtp1.osuosl.org ([127.0.0.1])
- by localhost (smtp1.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id KBpew4v05Uc2 for <iommu@lists.linux-foundation.org>;
- Fri, 12 Mar 2021 08:55:23 +0000 (UTC)
+	by localhost (smtp1.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+	with ESMTP id DPG4tVz6hI1H; Fri, 12 Mar 2021 08:55:24 +0000 (UTC)
+Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
+	by smtp1.osuosl.org (Postfix) with ESMTP id 56E048453D;
+	Fri, 12 Mar 2021 08:55:23 +0000 (UTC)
+Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
+	by lists.linuxfoundation.org (Postfix) with ESMTP id C8973C0018;
+	Fri, 12 Mar 2021 08:55:22 +0000 (UTC)
+Received: from smtp4.osuosl.org (smtp4.osuosl.org [140.211.166.137])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id A1288C0001
+ for <iommu@lists.linux-foundation.org>; Fri, 12 Mar 2021 08:55:21 +0000 (UTC)
+Received: from localhost (localhost [127.0.0.1])
+ by smtp4.osuosl.org (Postfix) with ESMTP id 8E8314ED64
+ for <iommu@lists.linux-foundation.org>; Fri, 12 Mar 2021 08:55:21 +0000 (UTC)
+X-Virus-Scanned: amavisd-new at osuosl.org
+Authentication-Results: smtp4.osuosl.org (amavisd-new);
+ dkim=pass (1024-bit key) header.d=amd.com
+Received: from smtp4.osuosl.org ([127.0.0.1])
+ by localhost (smtp4.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+ with ESMTP id CoEUH8ixroeB for <iommu@lists.linux-foundation.org>;
+ Fri, 12 Mar 2021 08:55:20 +0000 (UTC)
 X-Greylist: whitelisted by SQLgrey-1.8.0
-Received: from NAM12-MW2-obe.outbound.protection.outlook.com
- (mail-mw2nam12on2080.outbound.protection.outlook.com [40.107.244.80])
- by smtp1.osuosl.org (Postfix) with ESMTPS id EC40C84522
- for <iommu@lists.linux-foundation.org>; Fri, 12 Mar 2021 08:55:22 +0000 (UTC)
+Received: from NAM11-CO1-obe.outbound.protection.outlook.com
+ (mail-co1nam11on20611.outbound.protection.outlook.com
+ [IPv6:2a01:111:f400:7eab::611])
+ by smtp4.osuosl.org (Postfix) with ESMTPS id 1CF7C4ED67
+ for <iommu@lists.linux-foundation.org>; Fri, 12 Mar 2021 08:55:20 +0000 (UTC)
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=TNsx7Lu0Rac8AXDUx2mi51Wsgmp/xJSsJ7elDMtomG1inVnRT+oAVZ6vJK9luQgKKnrU3LiXjgvUNyo0vD9d5U8PmZaPmKTnkkjrRkXRRNImOHsdAJgIENDCUDfr7VW09mmVxufkxjUY0Z4bDzc1xbnli1Ks2kXetEOsTTVxsm4QY113GMj+QRGvsiDOQMB4tC4YrWkQekKQVHqiyM+KFpYPLJry5h+Kc9feq6ICML5YzDcVKmukGWp+bxGyc3mlo5s9Ffvkxldtn2UwpT3T+bul51+gtM3MernhsuZo0ZcVzUtXMMUf9oK6D0CcFrTlaqUD8fRiwsOtHmigA8tiDg==
+ b=Qoe/ZSHKmgp4OpOYHS2o/oucuPT3mZuJFLzWiz3g1GqmTk7V9w8TDEHnfCd+SY4yL8jGfymCWjUdslYd3rDFxXWg6qgP53/aEtrvesPdN8wpYVDYff42k39BfPJL/sVr3Awbae6gFko7MVR+KkCZk0z+KPVHTcSmOwb1jRn8RAtpuuhDDDYWYdyBmAC+vpstxaxFmT2rva8BUu8EUhb24ILSfknz6LHOI8/IcYKHEZwOp6BFoOyQ/egd+EGBu8vhxMQmrF2LRv6HtHbSsRFjOxOieXVWNkQTJydjIj7w34BPI6+N9+YxNI2P7Oaj8OljfUkGLS0yHwa9dwgdYGY+cw==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com; 
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=kp00RgzTlDfb/okqSIV6M3N9sErA+psNz0tvHQixVXk=;
- b=RbFMYQVw4JkumW9kmZfEU1ttZrOXWmUQE303Z/mz71YTfQwViVK3mRY+Yo41uOxDy+yu45J2QDCOsPka4TXkg7yZa6YBv8jLYQ8wKOxRZr+nD8PtsTgy0rf3Yo37Cy/4FV5UyTofx4D/ci0jgf0k76SMH9bCCeBSg11MvhnQzVutbYm1551eP7A56wbs5hoUSd+Vs8WPzU/mlUPteIowC8zv5hXTfszrSINHhU/9hJoa+e+w1U8Y8RnrLil81vNO7xAng0n5Sybf0L+B3HL9iuLrsMRMJKpU9CVdVIBMUAq99YZP4eeJlLPnek2iMpK2l+PjmFn4dpec9la+GWzdbg==
+ bh=34hYoeHiA/oyMdwTB8jZDnp9L9ptveDwkb/TtlfKU/4=;
+ b=TZIm3TsGVPQyo7z2Em7vAw2FznQi5ZoMNuS5hUWran3B6b3zj1nWkC6NNbgWpfhLyNSjBdn0znVk/1bOPWkhZGl9J37Yr1KhWboqBWpixDfcel5muCLqDro9eH8OFQdHTcNoUea6TVknt3BwT3W2/itauJpyDsV9hFs6XDvmsAKs07GF7FIWM9gqMU625hSEMTiu75EmiCvp3vCcniBZrG30LDUXo3XLP8LTBqBO6kNCd0ia2de7EcCFc6s76uzp/fx7B3WGNTTsZaxV30I1NyRgonzsQhNgVVaQsHXxTUfFqadbidMp7dCyK7Cfb39YiQoqT+70g4bpnuRTNpk/og==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
  smtp.mailfrom=amd.com; dmarc=pass action=none header.from=amd.com; dkim=pass
  header.d=amd.com; arc=none
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=amd.com; s=selector1; 
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=kp00RgzTlDfb/okqSIV6M3N9sErA+psNz0tvHQixVXk=;
- b=SAWovRuB9hPoQTW0QjiMny7m9O55HiJnpFyf5FzIQNGi4HsYWoCyjrGy9iRTp8wl9zoiApnqhaLrb7dWk741pTpUlal4oRg8dki2lQsV4w4WjUeYLtpx9/kB6DG8eCa433dGuuhrbUiqOkhR/+dFjhvXANg1zBTRUneCZX/l5jQ=
+ bh=34hYoeHiA/oyMdwTB8jZDnp9L9ptveDwkb/TtlfKU/4=;
+ b=j2MgNTmFOgxwytW8m5RnCupWIHae3abU6xy5jXpvs15147eFYLuvTRsAS1L8/SKc+avrCktxVWMk1aaaZfCGMggrKfI52sYM7KrGK7zZOLEXSMhg34o+zSuge6A+sk0fGsEg8iLP4fmP2ByiQxYzPUiyBnlJ+NpcGaeahTCfBO8=
 Authentication-Results: vger.kernel.org; dkim=none (message not signed)
  header.d=none;vger.kernel.org; dmarc=none action=none header.from=amd.com;
 Received: from BYAPR12MB4597.namprd12.prod.outlook.com (2603:10b6:a03:10b::14)
- by BYAPR12MB2840.namprd12.prod.outlook.com (2603:10b6:a03:62::32)
+ by BYAPR12MB3144.namprd12.prod.outlook.com (2603:10b6:a03:d6::16)
  with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3846.25; Fri, 12 Mar
- 2021 08:55:19 +0000
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3933.31; Fri, 12 Mar
+ 2021 08:55:18 +0000
 Received: from BYAPR12MB4597.namprd12.prod.outlook.com
  ([fe80::a95a:7202:81db:1972]) by BYAPR12MB4597.namprd12.prod.outlook.com
  ([fe80::a95a:7202:81db:1972%7]) with mapi id 15.20.3912.031; Fri, 12 Mar 2021
- 08:55:19 +0000
+ 08:55:18 +0000
 From: Suravee Suthikulpanit <suravee.suthikulpanit@amd.com>
 To: linux-kernel@vger.kernel.org,
 	iommu@lists.linux-foundation.org
-Subject: [RFC PATCH 5/7] iommu/amd: Add support for Guest IO protection
-Date: Fri, 12 Mar 2021 03:04:09 -0600
-Message-Id: <20210312090411.6030-6-suravee.suthikulpanit@amd.com>
+Subject: [RFC PATCH 4/7] iommu/amd: Initial support for AMD IOMMU v2 page table
+Date: Fri, 12 Mar 2021 03:04:08 -0600
+Message-Id: <20210312090411.6030-5-suravee.suthikulpanit@amd.com>
 X-Mailer: git-send-email 2.17.1
 In-Reply-To: <20210312090411.6030-1-suravee.suthikulpanit@amd.com>
 References: <20210312090411.6030-1-suravee.suthikulpanit@amd.com>
@@ -92,54 +93,54 @@ Received: from ethanolx5673host.amd.com (165.204.78.2) by
  SN7PR04CA0040.namprd04.prod.outlook.com (2603:10b6:806:120::15) with
  Microsoft SMTP Server (version=TLS1_2,
  cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3912.18 via Frontend
- Transport; Fri, 12 Mar 2021 08:55:18 +0000
+ Transport; Fri, 12 Mar 2021 08:55:16 +0000
 X-MS-PublicTrafficType: Email
 X-MS-Office365-Filtering-HT: Tenant
-X-MS-Office365-Filtering-Correlation-Id: 32a1fc37-817b-485f-b026-08d8e534902f
-X-MS-TrafficTypeDiagnostic: BYAPR12MB2840:
+X-MS-Office365-Filtering-Correlation-Id: 040da038-f487-44a2-8d1a-08d8e5348f30
+X-MS-TrafficTypeDiagnostic: BYAPR12MB3144:
 X-MS-Exchange-Transport-Forked: True
-X-Microsoft-Antispam-PRVS: <BYAPR12MB28401270F35BCFDC36DF0F3BF36F9@BYAPR12MB2840.namprd12.prod.outlook.com>
-X-MS-Oob-TLC-OOBClassifiers: OLM:1013;
+X-Microsoft-Antispam-PRVS: <BYAPR12MB3144140D3B5AD431A5B9AF6BF36F9@BYAPR12MB3144.namprd12.prod.outlook.com>
+X-MS-Oob-TLC-OOBClassifiers: OLM:2803;
 X-MS-Exchange-SenderADCheck: 1
 X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: KgJAfTlS8B9VsGt4gzGACYgZxo+9FV+0hEVjD1peBEZok+f167RnhHC39bSlHPR4a+y+w1R4B4uU7KWcIal21HxEG0CXLMWXvF0P9eazS05EUn9aqRWt0/UKe6s0OgH9ixn9Lqil5S5qxS3iSHUu0QB4HBK2U82PBQgkt5CtTL7YLroF0Ho1NYHJ670TQiuqlt2gFAdbcSwvGXWhTEk8vxGDqRyys5q4QRr07g8X2rpcLEJVwh1w06Xlt9GUdFSaKrlTi2xKjWgRMMh46HItbmaRuGL7JrHqYHH2XrUV9CSNFqBx8NBg27aiTHpPZQ7aymadd6ZysR0VyqUTRWWLnzBpde6/B/v8BDy3TW7sO6mYUA+ffgriMavfpQKWuMmZ56DhTqW4tYTA0jVoCRXVMMlnYMR71YiDx4Ozdl1oAbL6s0CFqnZO8i+oq/7D9K7OiKyAXKFA8dcL2VFUzwPIeSrEWGoK9324zdeTLZ+aHTo85Owhuj5pYDtRrnPejy4M//lbpAxz6oVjkEvYWwE3YA==
+X-Microsoft-Antispam-Message-Info: tDDrpiSImqTYW+8tRWMahV+dPLNZ36ysOTxF57joqx2riQQQLgtdURmUJWuMF+nM2qEkOVqpMjNInh2pz02ka5gtCaQHi/QM3y+zPxmXIrFKmPaKBZ/f+ejKXeXvQtpDPPoXSyIcfaD6snSENShGBLDGjPLrbd8uNXEX5sYz5IQAH21dNV9dk5mIRnwD+F6pDdncychekykAlVCY5/B8TpNqNtUcwY3kxWLxLCq+xtYQq9CTwCzHfrmdDnmNfW1x2r8FDHSv7k3YMt35EAQYLlkk2aBRbYXAIXBrpM9K5ffX7CBUV9L5HwkZrDF8nAQ1JaiPHQKj+/+LOIXII+S+IpCzPqK0qMn4eAUWwqjSFaT/9+KJlch4BjUxvjxVFwdc8Bwphi5m5VWdNlBeFkv8pZmXu/mJh817VRfUZrQuO/LzgufQ90pTOSfFekqvYR+v00dRkPRIkPskkvaw+r0WpiHEjmL2QADh17SltJLdvXFTJ8ts5N/MjdbmCR6sHzwSDXSYr+ZhTWmBgAS6xAlFBBFyaC3bMXeKfR+7Ck0wLYmWrmJXU5fpqB41wm6BebH1
 X-Forefront-Antispam-Report: CIP:255.255.255.255; CTRY:; LANG:en; SCL:1; SRV:;
  IPV:NLI; SFV:NSPM; H:BYAPR12MB4597.namprd12.prod.outlook.com; PTR:; CAT:NONE;
- SFS:(4636009)(366004)(39860400002)(376002)(396003)(346002)(136003)(8936002)(36756003)(86362001)(2906002)(8676002)(316002)(1076003)(26005)(956004)(2616005)(66946007)(6666004)(186003)(6486002)(5660300002)(7696005)(16526019)(44832011)(66556008)(52116002)(4326008)(66476007)(478600001)(83380400001);
+ SFS:(4636009)(136003)(39860400002)(366004)(396003)(376002)(346002)(6486002)(6666004)(316002)(7696005)(8676002)(16526019)(1076003)(5660300002)(956004)(66556008)(86362001)(52116002)(478600001)(44832011)(2616005)(8936002)(66946007)(36756003)(4326008)(26005)(2906002)(66476007)(186003)(83380400001);
  DIR:OUT; SFP:1101; 
-X-MS-Exchange-AntiSpam-MessageData: =?us-ascii?Q?AQ5/htT73mV6wnhjxTg1a1QBbpeR6zgit27kn7ikwZhA/G/CUG+StsPGNX/z?=
- =?us-ascii?Q?5d24QTZTwqIq5PT9u3dTC/pCnbiwu+M57P26ishjh3t2CI7mjQzop5JCPXjl?=
- =?us-ascii?Q?PT95DFkiVjeKbEjq6kzecPuGV59pw4ly7EWAdZNW1Pe2zGU++wyf8d9Ok77S?=
- =?us-ascii?Q?AMlIfOgSelRsPYLylRKhAnv4j9Iv1FKiZvSqDGGPkoaBRijwOxL/1d1s9oBv?=
- =?us-ascii?Q?qPRJqzs1FjOu284v8H2a15mhvJq3/+UGSVKf66PbgtnSIlkn3ceGW71n7jYA?=
- =?us-ascii?Q?NRX0I+vp0uF7LgO+yz+XBYnHXjI5yyg3TlBnfDPQrsZOJUJG54XEh3fDoXMK?=
- =?us-ascii?Q?kcwu9UcYgYUQiSiwsEcuxjOKLJaZ8fUKr9pKzjub9iCYOtEdMTyW53iJxp7h?=
- =?us-ascii?Q?0aqxst9L3j7qAQUkQqFVYuIJfguxWuqWpPTZXdFwHKRmAU6j1VqP6s1+ukf0?=
- =?us-ascii?Q?eVEXKhuB5OXtoWLTD4eqPoR7IuJVm6xlh5h6exxc65ojykWg1mcQsE8Y5Hbi?=
- =?us-ascii?Q?/DxgKj5gaGL3P238LKyWORr3s09l2YbfBKh5cfbfkj9A93UsqjHHFoOPWzTF?=
- =?us-ascii?Q?S3bYdtYyNAjI3Fx56o+8Jdr3+hwBDIJb6qrEWtgQwoRmMI1+bpV9WYwPkJiw?=
- =?us-ascii?Q?32V7e0ZWDWkswG9ZPd969iZIKM4EzJB/70hu/h6sh9ZbG71SYhGBkAs//fu+?=
- =?us-ascii?Q?e7iFs0NYVfMvafpvW5dDSXeLpYhQ0O6eijn4EQaG2zshOwePn8EGs5aBK7lY?=
- =?us-ascii?Q?Jd/czVx7Q8zTqoQXX7dbxameEi/BqZrs3e/e+PBFcAwML5Eo6V9aLm9CMhOe?=
- =?us-ascii?Q?cr1ViPJE/MeyU8Qg1DW5oinNNjSEMYK+yjuAJdfCrYt2POgiq2TUi572P8pd?=
- =?us-ascii?Q?rVWXI9PkSNL8y0+gcyaLzpzeOSu1iUeRrD20PkolaQ7x1xWHbi8jfQNmlRh0?=
- =?us-ascii?Q?xeOu5S+SeWuZEXyVRFnNLxHW/KesPMTT8GeYRx5i4i30mI+aga8M47z88X6R?=
- =?us-ascii?Q?bXjWdPgnn+i5dy/+DNH2rVdqnv3iBY4Uiv1nuxsywpWtbDNh7+zvMiL53bXi?=
- =?us-ascii?Q?EsyxXWxGMT/JOz7O2sAtYANrwyEtxCdt1MCRZYtcmsbEdanFYo9ZwU2BUATm?=
- =?us-ascii?Q?/4MUt3yN+kekBKIZPb98Ypjy9cDJuT1gjc3re0YzVu/LvVhjSspT4KXNvtlH?=
- =?us-ascii?Q?CiYcKpHEiIf9idxtkJ8m+WZtVVBpMDZ/KOFQXEsc63x9Fjcu8/9S1Ro65I7W?=
- =?us-ascii?Q?JGRF2a+nmzIr8kSbLFyAL19h4kzb98o5v8nopPusQMJ2sOHFpTsjChwTlGMk?=
- =?us-ascii?Q?a53srCdsuB0645plmZzr5u9b?=
+X-MS-Exchange-AntiSpam-MessageData: =?us-ascii?Q?Ogs8wGHFy8k3Nz7WwdYsUf0+aq5lCne3Dx7d8KZ54TUpEqNC8E9FgBjWOQ40?=
+ =?us-ascii?Q?xr5fOdwQKj6EWgW2bv801PH4IEhKT8OsDZ/2QfgegURt48KQdKzNSl++ZZbe?=
+ =?us-ascii?Q?ahp3ednB9IEy3GvuTGNO7Qeb1BqZebE3Csj2Ut2XtkfaQGSfrFWH5J9xHP+6?=
+ =?us-ascii?Q?l/A6G6dEsCtAirXIahrsEc57kslg80p2jwf/s6DfKdxa1u+ROarCiXSgZu3S?=
+ =?us-ascii?Q?H7IwjZfMFfTLCfp0adJcFoeBeOJjR4G9XEZ4ohjaib0xB7fFVd+UpZZlWzWK?=
+ =?us-ascii?Q?AZll2Vt8spKy2wekF91JzwxsMLfWjKlNihGCSICy2C8q/2wWGvdmy2ID87fD?=
+ =?us-ascii?Q?oXBedOZ+mKF1ESM4lVDhTSfd49BKKTlmQf0JEJ5YxNz0/LXCGSVwkilH4slN?=
+ =?us-ascii?Q?AeLnAGZVTwAf40I0/rUmqQRiLAbuXyOTBoI4dRrAooBflP8aVEack93Qc19U?=
+ =?us-ascii?Q?se3y/peJNEN3Ws/bDWe9G0KSzbE/cbafNqoBkDuRB4TcObpX7IUuwg9ISBWq?=
+ =?us-ascii?Q?41dNAmBW4mROHLHEidTbmIITkr9R4mLk7yxBE0CJ8YmVchIOVt6x6B/NdPS5?=
+ =?us-ascii?Q?+gYkCs+OregifzDEJJD0Kqz8p+obg3MYcPjzf39h//yyJWxOY9rBQQv5e7BP?=
+ =?us-ascii?Q?rycCsIqhm0J2TNSDgB7wXfFZg3gzt1TmA8un2/asJx96my/2pZ1v14DC5cpl?=
+ =?us-ascii?Q?upvUni403F14CZ2aDua7IAQyLBAno819or4dswHNf2EIuPInF+LSq/FoPlTV?=
+ =?us-ascii?Q?X5Fu+lQ0kOumlULRByCZL91LL8DmrGis0pH/StzAHpOiiGwPIdLsNq51dYoB?=
+ =?us-ascii?Q?WE5rxxFNZfkEAin05BpRfIgg63p6reHGcI6rOU63H5Q0OqqXjHMPw+7AUy8V?=
+ =?us-ascii?Q?0QB5NZcbobColO0vLmyUOjhvKjpD5j1I4R2EYY/775VMxZ2Z5EcZ+fp48ix9?=
+ =?us-ascii?Q?CzEZxIuotLd43/35u2ubVfsfta34ekAcyvJOmO5mxzKNlJYHPqljAvAVmufX?=
+ =?us-ascii?Q?nHUhwUS7mehYBkmKkk8I/TxEPerb+iJYQe79AllmCtKmFluhjvAnAKkiqh6N?=
+ =?us-ascii?Q?Pp6TnwVwunKAybi0nKf3/0EcXhltLR6LH0V/sbbTcot5Lk900zLPgnGNT2K+?=
+ =?us-ascii?Q?Alpa4huN4/2MDYNYuvgJUosVTx/d4pvNwsgd1daCzIPerziT48uo4fzpG7ja?=
+ =?us-ascii?Q?mbuCUmb7+DTVOemUzDhjOZQKC/Utf2Dbrxs47g/6IqI6PbbQTKd94AFi3F4Q?=
+ =?us-ascii?Q?h/vqN26Ntb2u1ww6SPtNDOgRnl/9S9JzFlJdueBnXSXQZAsu8Msc1w3rugSA?=
+ =?us-ascii?Q?J5k5igOvHepHiPss2B7aQoDL?=
 X-OriginatorOrg: amd.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 32a1fc37-817b-485f-b026-08d8e534902f
+X-MS-Exchange-CrossTenant-Network-Message-Id: 040da038-f487-44a2-8d1a-08d8e5348f30
 X-MS-Exchange-CrossTenant-AuthSource: BYAPR12MB4597.namprd12.prod.outlook.com
 X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 12 Mar 2021 08:55:19.5888 (UTC)
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 12 Mar 2021 08:55:17.9657 (UTC)
 X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
 X-MS-Exchange-CrossTenant-Id: 3dd8961f-e488-4e60-8e11-a82d994e183d
 X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: +dZXhXTrHPSLr0YJuK/i49v5WQ0zNYIjcvJ1kWMPQ9wlZdniTN1k0NaBqNT3hH3Kvulmf0pOeb4FYMClthGK3A==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: BYAPR12MB2840
+X-MS-Exchange-CrossTenant-UserPrincipalName: TzTuCjpYGNe/X9lelNK4ppF4MBvVjyiOb23q/xlQFEoEcY6D11m7kw0B+AKke1l9TtMh1RemCnCdRyyTXsTeCw==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: BYAPR12MB3144
 Cc: Jon.Grimm@amd.com, Wei.Huang2@amd.com
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
@@ -158,85 +159,324 @@ Content-Transfer-Encoding: 7bit
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-AMD IOMMU introduces support for Guest I/O protection where the request
-from the I/O device without a PASID are treated as if they have PASID 0.
+Introduce IO page table framework support for AMD IOMMU v2 page table.
 
 Signed-off-by: Suravee Suthikulpanit <suravee.suthikulpanit@amd.com>
 ---
- drivers/iommu/amd/amd_iommu_types.h | 3 +++
- drivers/iommu/amd/init.c            | 8 ++++++++
- drivers/iommu/amd/iommu.c           | 4 ++++
- 3 files changed, 15 insertions(+)
+ drivers/iommu/amd/Makefile          |   2 +-
+ drivers/iommu/amd/amd_iommu_types.h |   2 +
+ drivers/iommu/amd/io_pgtable_v2.c   | 239 ++++++++++++++++++++++++++++
+ drivers/iommu/io-pgtable.c          |   1 +
+ include/linux/io-pgtable.h          |   2 +
+ 5 files changed, 245 insertions(+), 1 deletion(-)
+ create mode 100644 drivers/iommu/amd/io_pgtable_v2.c
 
+diff --git a/drivers/iommu/amd/Makefile b/drivers/iommu/amd/Makefile
+index a935f8f4b974..773d8aa00283 100644
+--- a/drivers/iommu/amd/Makefile
++++ b/drivers/iommu/amd/Makefile
+@@ -1,4 +1,4 @@
+ # SPDX-License-Identifier: GPL-2.0-only
+-obj-$(CONFIG_AMD_IOMMU) += iommu.o init.o quirks.o io_pgtable.o
++obj-$(CONFIG_AMD_IOMMU) += iommu.o init.o quirks.o io_pgtable.o io_pgtable_v2.o
+ obj-$(CONFIG_AMD_IOMMU_DEBUGFS) += debugfs.o
+ obj-$(CONFIG_AMD_IOMMU_V2) += iommu_v2.o
 diff --git a/drivers/iommu/amd/amd_iommu_types.h b/drivers/iommu/amd/amd_iommu_types.h
-index 25062eb86c8b..876ba1adf73e 100644
+index 6937e3674a16..25062eb86c8b 100644
 --- a/drivers/iommu/amd/amd_iommu_types.h
 +++ b/drivers/iommu/amd/amd_iommu_types.h
-@@ -93,6 +93,7 @@
- #define FEATURE_HE		(1ULL<<8)
- #define FEATURE_PC		(1ULL<<9)
- #define FEATURE_GAM_VAPIC	(1ULL<<21)
-+#define FEATURE_GIOSUP		(1ULL<<48)
- #define FEATURE_EPHSUP		(1ULL<<50)
- #define FEATURE_SNP		(1ULL<<63)
+@@ -265,6 +265,7 @@
+  * 512GB Pages are not supported due to a hardware bug
+  */
+ #define AMD_IOMMU_PGSIZES	((~0xFFFUL) & ~(2ULL << 38))
++#define AMD_IOMMU_PGSIZES_V2	(PAGE_SIZE | (1ULL << 12) | (1ULL << 30))
  
-@@ -366,6 +367,7 @@
- #define DTE_FLAG_IW (1ULL << 62)
+ /* Bit value definition for dte irq remapping fields*/
+ #define DTE_IRQ_PHYS_ADDR_MASK	(((1ULL << 45)-1) << 6)
+@@ -503,6 +504,7 @@ struct amd_io_pgtable {
+ 	int			mode;
+ 	u64			*root;
+ 	atomic64_t		pt_root;    /* pgtable root and pgtable mode */
++	struct mm_struct	v2_mm;
+ };
  
- #define DTE_FLAG_IOTLB	(1ULL << 32)
-+#define DTE_FLAG_GIOV	(1ULL << 54)
- #define DTE_FLAG_GV	(1ULL << 55)
- #define DTE_FLAG_MASK	(0x3ffULL << 32)
- #define DTE_GLX_SHIFT	(56)
-@@ -519,6 +521,7 @@ struct protection_domain {
- 	spinlock_t lock;	/* mostly used to lock the page table*/
- 	u16 id;			/* the domain id written to the device table */
- 	int glx;		/* Number of levels for GCR3 table */
-+	bool giov;		/* guest IO protection domain */
- 	u64 *gcr3_tbl;		/* Guest CR3 table */
- 	unsigned long flags;	/* flags to find out type of domain */
- 	unsigned dev_cnt;	/* devices assigned to this domain */
-diff --git a/drivers/iommu/amd/init.c b/drivers/iommu/amd/init.c
-index 5def566de6f6..9265c1bf1d84 100644
---- a/drivers/iommu/amd/init.c
-+++ b/drivers/iommu/amd/init.c
-@@ -1895,6 +1895,12 @@ static int __init iommu_init_pci(struct amd_iommu *iommu)
- 
- 	init_iommu_perf_ctr(iommu);
- 
-+	if (amd_iommu_pgtable == AMD_IOMMU_V2 &&
-+	    !iommu_feature(iommu, FEATURE_GIOSUP)) {
-+		pr_warn("Cannot enable v2 page table for DMA-API. Fallback to v1.\n");
-+		amd_iommu_pgtable = AMD_IOMMU_V1;
+ /*
+diff --git a/drivers/iommu/amd/io_pgtable_v2.c b/drivers/iommu/amd/io_pgtable_v2.c
+new file mode 100644
+index 000000000000..b0b6ba2d8d35
+--- /dev/null
++++ b/drivers/iommu/amd/io_pgtable_v2.c
+@@ -0,0 +1,239 @@
++// SPDX-License-Identifier: GPL-2.0-only
++/*
++ * CPU-agnostic AMD IO page table v2 allocator.
++ *
++ * Copyright (C) 2020 Advanced Micro Devices, Inc.
++ * Author: Suravee Suthikulpanit <suravee.suthikulpanit@amd.com>
++ */
++
++#define pr_fmt(fmt)     "AMD-Vi: " fmt
++#define dev_fmt(fmt)    pr_fmt(fmt)
++
++#include <linux/atomic.h>
++#include <linux/bitops.h>
++#include <linux/io-pgtable.h>
++#include <linux/kernel.h>
++#include <linux/sizes.h>
++#include <linux/slab.h>
++#include <linux/types.h>
++#include <linux/dma-mapping.h>
++#include <linux/mmu_context.h>
++
++#include <asm/barrier.h>
++#include <asm/pgalloc.h>
++
++#include "amd_iommu_types.h"
++#include "amd_iommu.h"
++
++static pte_t *fetch_pte(struct amd_io_pgtable *pgtable,
++		      unsigned long iova,
++		      unsigned long *page_size)
++{
++	int level;
++	pte_t *ptep;
++
++	ptep = lookup_address_in_mm(&pgtable->v2_mm, iova, &level);
++	if (!ptep || pte_none(*ptep) || (level == PG_LEVEL_NONE))
++		return NULL;
++
++	*page_size = PTE_LEVEL_PAGE_SIZE(level-1);
++	return ptep;
++}
++
++static pte_t *v2_pte_alloc_map(struct mm_struct *mm, unsigned long vaddr)
++{
++	pgd_t *pgd;
++	p4d_t *p4d;
++	pud_t *pud;
++	pmd_t *pmd;
++	pte_t *pte;
++
++	pgd = pgd_offset(mm, vaddr);
++	p4d = p4d_alloc(mm, pgd, vaddr);
++	if (!p4d)
++		return NULL;
++	pud = pud_alloc(mm, p4d, vaddr);
++	if (!pud)
++		return NULL;
++	pmd = pmd_alloc(mm, pud, vaddr);
++	if (!pmd)
++		return NULL;
++	pte = pte_alloc_map(mm, pmd, vaddr);
++	return pte;
++}
++
++static int iommu_v2_map_page(struct io_pgtable_ops *ops, unsigned long iova,
++			  phys_addr_t paddr, size_t size, int prot, gfp_t gfp)
++{
++	struct protection_domain *dom = io_pgtable_ops_to_domain(ops);
++	struct amd_io_pgtable *pgtable = io_pgtable_ops_to_data(ops);
++	pte_t *pte;
++	int ret, i, count;
++	bool updated = false;
++	unsigned long o_iova = iova;
++	unsigned long pte_pgsize;
++
++	BUG_ON(!IS_ALIGNED(iova, size) || !IS_ALIGNED(paddr, size));
++
++	ret = -EINVAL;
++	if (!(prot & IOMMU_PROT_MASK))
++		goto out;
++
++	count = PAGE_SIZE_PTE_COUNT(size);
++
++	for (i = 0; i < count; ++i, iova += PAGE_SIZE, paddr += PAGE_SIZE) {
++		pte = fetch_pte(pgtable, iova, &pte_pgsize);
++		if (!pte || pte_none(*pte)) {
++			pte = v2_pte_alloc_map(&dom->iop.v2_mm, iova);
++			if (!pte)
++				goto out;
++		} else {
++			updated = true;
++		}
++		set_pte(pte, __pte((paddr & PAGE_MASK)|_PAGE_PRESENT|_PAGE_USER));
++		if (prot & IOMMU_PROT_IW)
++			*pte = pte_mkwrite(*pte);
 +	}
 +
- 	if (is_rd890_iommu(iommu->dev)) {
- 		int i, j;
- 
-@@ -1969,6 +1975,8 @@ static void print_iommu_info(void)
- 		if (amd_iommu_xt_mode == IRQ_REMAP_X2APIC_MODE)
- 			pr_info("X2APIC enabled\n");
- 	}
-+	if (amd_iommu_pgtable == AMD_IOMMU_V2)
-+		pr_info("GIOV enabled\n");
- }
- 
- static int __init amd_iommu_init_pci(void)
-diff --git a/drivers/iommu/amd/iommu.c b/drivers/iommu/amd/iommu.c
-index f3800efdbb29..e29ece6e1e68 100644
---- a/drivers/iommu/amd/iommu.c
-+++ b/drivers/iommu/amd/iommu.c
-@@ -1405,6 +1405,10 @@ static void set_dte_entry(u16 devid, struct protection_domain *domain,
- 
- 	pte_root |= (domain->iop.mode & DEV_ENTRY_MODE_MASK)
- 		    << DEV_ENTRY_MODE_SHIFT;
++	if (updated) {
++		if (count > 1)
++			amd_iommu_flush_tlb(&dom->domain, 0);
++		else
++			amd_iommu_flush_page(&dom->domain, 0, o_iova);
++	}
 +
-+	if (domain->giov && (domain->flags & PD_IOMMUV2_MASK))
-+		pte_root |= DTE_FLAG_GIOV;
++	ret = 0;
++out:
++	return ret;
++}
 +
- 	pte_root |= DTE_FLAG_IR | DTE_FLAG_IW | DTE_FLAG_V | DTE_FLAG_TV;
++static unsigned long iommu_v2_unmap_page(struct io_pgtable_ops *ops,
++				      unsigned long iova,
++				      size_t size,
++				      struct iommu_iotlb_gather *gather)
++{
++	struct amd_io_pgtable *pgtable = io_pgtable_ops_to_data(ops);
++	unsigned long vaddr_end, vaddr_next;
++	unsigned long long unmapped;
++	unsigned long pte_pgsize;
++	pte_t *ptep;
++
++	BUG_ON(!is_power_of_2(size));
++
++	unmapped = 0;
++	vaddr_next = iova;
++	vaddr_end = iova + size;
++
++	for (; iova < vaddr_end; iova = vaddr_next) {
++		ptep = fetch_pte(pgtable, iova, &pte_pgsize);
++		if (!ptep || pte_none(*ptep))
++			return 0;
++		pte_unmap(ptep);
++		unmapped += pte_pgsize;
++		vaddr_next = (iova & PAGE_MASK) + pte_pgsize;
++	}
++
++	BUG_ON(unmapped && !is_power_of_2(unmapped));
++	return unmapped;
++}
++
++static phys_addr_t iommu_v2_iova_to_phys(struct io_pgtable_ops *ops, unsigned long iova)
++{
++	struct amd_io_pgtable *pgtable = io_pgtable_ops_to_data(ops);
++	unsigned long offset_mask, pte_pgsize;
++	u64 __pte;
++	pte_t *ptep;
++
++	if (pgtable->mode == PAGE_MODE_NONE)
++		return iova;
++
++	ptep = fetch_pte(pgtable, iova, &pte_pgsize);
++
++	if (!ptep || pte_none(*ptep))
++		return 0;
++
++	offset_mask = pte_pgsize - 1;
++	__pte	    = __sme_clr(ptep->pte & PM_ADDR_MASK);
++
++	return (__pte & ~offset_mask) | (iova & offset_mask);
++}
++
++/*
++ * ----------------------------------------------------
++ */
++static void v2_tlb_flush_all(void *cookie)
++{
++}
++
++static void v2_tlb_flush_walk(unsigned long iova, size_t size,
++				  size_t granule, void *cookie)
++{
++}
++
++static void v2_tlb_add_page(struct iommu_iotlb_gather *gather,
++					 unsigned long iova, size_t granule,
++					 void *cookie)
++{
++}
++
++static const struct iommu_flush_ops v2_flush_ops = {
++	.tlb_flush_all	= v2_tlb_flush_all,
++	.tlb_flush_walk = v2_tlb_flush_walk,
++	.tlb_add_page	= v2_tlb_add_page,
++};
++
++static void v2_free_pgtable(struct io_pgtable *iop)
++{
++	struct amd_io_pgtable *pgtable = container_of(iop, struct amd_io_pgtable, iop);
++	struct protection_domain *pdom;
++	pgd_t *pgd;
++	struct mm_struct *mm;
++
++	pdom = container_of(pgtable, struct protection_domain, iop);
++	if (!(pdom->flags & PD_IOMMUV2_MASK))
++		return;
++
++	/* Update data structure */
++	mm = &pdom->iop.v2_mm;
++	pgd = mm->pgd;
++	pgd_free(mm, pgd);
++
++	/* Make changes visible to IOMMUs */
++	amd_iommu_domain_update(pdom);
++	amd_iommu_domain_clear_gcr3(&pdom->domain, 0);
++}
++
++/*
++ * Assume protection_domain already setup at this point
++ */
++static struct io_pgtable *v2_alloc_pgtable(struct io_pgtable_cfg *cfg, void *cookie)
++{
++	int ret;
++	struct amd_io_pgtable *pgtable = io_pgtable_cfg_to_data(cfg);
++	struct protection_domain *pdom = (struct protection_domain *)cookie;
++	struct mm_struct *mm = &pdom->iop.v2_mm;
++
++	mm->pgd = pgd_alloc(mm);
++	if (!mm->pgd)
++		return NULL;
++
++	ret = amd_iommu_domain_set_gcr3(&pdom->domain, 0, __pa(mm->pgd));
++	if (ret)
++		return NULL;
++
++	pgtable->iop.ops.map          = iommu_v2_map_page;
++	pgtable->iop.ops.unmap        = iommu_v2_unmap_page;
++	pgtable->iop.ops.iova_to_phys = iommu_v2_iova_to_phys;
++
++	cfg->pgsize_bitmap = AMD_IOMMU_PGSIZES_V2,
++	cfg->ias           = IOMMU_IN_ADDR_BIT_SIZE,
++	cfg->oas           = IOMMU_OUT_ADDR_BIT_SIZE,
++	cfg->tlb           = &v2_flush_ops;
++
++	return &pgtable->iop;
++}
++
++struct io_pgtable_init_fns io_pgtable_amd_iommu_v2_init_fns = {
++	.alloc	= v2_alloc_pgtable,
++	.free	= v2_free_pgtable,
++};
+diff --git a/drivers/iommu/io-pgtable.c b/drivers/iommu/io-pgtable.c
+index 6e9917ce980f..6494657e4a34 100644
+--- a/drivers/iommu/io-pgtable.c
++++ b/drivers/iommu/io-pgtable.c
+@@ -26,6 +26,7 @@ io_pgtable_init_table[IO_PGTABLE_NUM_FMTS] = {
+ #endif
+ #ifdef CONFIG_AMD_IOMMU
+ 	[AMD_IOMMU_V1] = &io_pgtable_amd_iommu_v1_init_fns,
++	[AMD_IOMMU_V2] = &io_pgtable_amd_iommu_v2_init_fns,
+ #endif
+ };
  
- 	flags = amd_iommu_dev_table[devid].data[1];
+diff --git a/include/linux/io-pgtable.h b/include/linux/io-pgtable.h
+index a4c9ca2c31f1..17951204126e 100644
+--- a/include/linux/io-pgtable.h
++++ b/include/linux/io-pgtable.h
+@@ -16,6 +16,7 @@ enum io_pgtable_fmt {
+ 	ARM_V7S,
+ 	ARM_MALI_LPAE,
+ 	AMD_IOMMU_V1,
++	AMD_IOMMU_V2,
+ 	IO_PGTABLE_NUM_FMTS,
+ };
+ 
+@@ -250,5 +251,6 @@ extern struct io_pgtable_init_fns io_pgtable_arm_64_lpae_s2_init_fns;
+ extern struct io_pgtable_init_fns io_pgtable_arm_v7s_init_fns;
+ extern struct io_pgtable_init_fns io_pgtable_arm_mali_lpae_init_fns;
+ extern struct io_pgtable_init_fns io_pgtable_amd_iommu_v1_init_fns;
++extern struct io_pgtable_init_fns io_pgtable_amd_iommu_v2_init_fns;
+ 
+ #endif /* __IO_PGTABLE_H */
 -- 
 2.17.1
 
