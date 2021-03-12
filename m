@@ -2,219 +2,95 @@ Return-Path: <SRS0=dgoC=IK=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-15.0 required=3.0 tests=BAYES_00,DKIM_INVALID,
+X-Spam-Status: No, score=-16.6 required=3.0 tests=BAYES_00,DKIM_INVALID,
 	DKIM_SIGNED,HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_CR_TRAILER,INCLUDES_PATCH,
-	MAILING_LIST_MULTI,MSGID_FROM_MTA_HEADER,NICE_REPLY_A,SPF_HELO_NONE,SPF_PASS,
-	UNPARSEABLE_RELAY,URIBL_BLOCKED,USER_AGENT_SANE_1 autolearn=ham
-	autolearn_force=no version=3.4.0
+	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_GIT
+	autolearn=ham autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 881E7C433DB
-	for <iommu@archiver.kernel.org>; Fri, 12 Mar 2021 12:54:57 +0000 (UTC)
-Received: from smtp1.osuosl.org (smtp1.osuosl.org [140.211.166.138])
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 26E07C433E6
+	for <iommu@archiver.kernel.org>; Fri, 12 Mar 2021 12:57:25 +0000 (UTC)
+Received: from smtp3.osuosl.org (smtp3.osuosl.org [140.211.166.136])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 33A5864FA8
-	for <iommu@archiver.kernel.org>; Fri, 12 Mar 2021 12:54:57 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 33A5864FA8
-Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=arm.com
+	by mail.kernel.org (Postfix) with ESMTPS id A3A4F64FC3
+	for <iommu@archiver.kernel.org>; Fri, 12 Mar 2021 12:57:24 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org A3A4F64FC3
+Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=chromium.org
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by smtp1.osuosl.org (Postfix) with ESMTP id F3CEE84565;
-	Fri, 12 Mar 2021 12:54:56 +0000 (UTC)
+	by smtp3.osuosl.org (Postfix) with ESMTP id 575F96FACA;
+	Fri, 12 Mar 2021 12:57:24 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from smtp1.osuosl.org ([127.0.0.1])
-	by localhost (smtp1.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id Uocw-X9cXf_3; Fri, 12 Mar 2021 12:54:56 +0000 (UTC)
+Received: from smtp3.osuosl.org ([127.0.0.1])
+	by localhost (smtp3.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+	with ESMTP id mNv8ndpvCAJR; Fri, 12 Mar 2021 12:57:22 +0000 (UTC)
 Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by smtp1.osuosl.org (Postfix) with ESMTP id A9BF884544;
-	Fri, 12 Mar 2021 12:54:55 +0000 (UTC)
+	by smtp3.osuosl.org (Postfix) with ESMTP id 3E59760650;
+	Fri, 12 Mar 2021 12:57:22 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 6DF56C000B;
-	Fri, 12 Mar 2021 12:54:55 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 141FBC000B;
+	Fri, 12 Mar 2021 12:57:22 +0000 (UTC)
 Received: from smtp4.osuosl.org (smtp4.osuosl.org [IPv6:2605:bc80:3010::137])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 56A8FC0001;
- Fri, 12 Mar 2021 12:54:54 +0000 (UTC)
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 452E9C0001
+ for <iommu@lists.linux-foundation.org>; Fri, 12 Mar 2021 12:57:20 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by smtp4.osuosl.org (Postfix) with ESMTP id 440ED4ED3C;
- Fri, 12 Mar 2021 12:54:54 +0000 (UTC)
+ by smtp4.osuosl.org (Postfix) with ESMTP id 2CCAF4ED3C
+ for <iommu@lists.linux-foundation.org>; Fri, 12 Mar 2021 12:57:20 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
 Authentication-Results: smtp4.osuosl.org (amavisd-new);
- dkim=pass (1024-bit key) header.d=armh.onmicrosoft.com
- header.b="skGs8jWU"; dkim=pass (1024-bit key)
- header.d=armh.onmicrosoft.com header.b="skGs8jWU"
+ dkim=pass (1024-bit key) header.d=chromium.org
 Received: from smtp4.osuosl.org ([127.0.0.1])
  by localhost (smtp4.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id 6wNkXV-8FuMm; Fri, 12 Mar 2021 12:54:52 +0000 (UTC)
+ with ESMTP id Snli8RpfUpln for <iommu@lists.linux-foundation.org>;
+ Fri, 12 Mar 2021 12:57:18 +0000 (UTC)
 X-Greylist: whitelisted by SQLgrey-1.8.0
-X-Greylist: whitelisted by SQLgrey-1.8.0
-Received: from EUR02-VE1-obe.outbound.protection.outlook.com
- (mail-ve1eur02on0619.outbound.protection.outlook.com
- [IPv6:2a01:111:f400:fe06::619])
- by smtp4.osuosl.org (Postfix) with ESMTPS id 886B84ED2C;
- Fri, 12 Mar 2021 12:54:51 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=armh.onmicrosoft.com; 
- s=selector2-armh-onmicrosoft-com;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=gRYCWlv+yZFwJ1ufp3rdlK0vAL1StXhbu8EYeu5DYDk=;
- b=skGs8jWUvaTL/2qby5xQYRXMMoK4TWGzYymU1ALK9TL4GEvbeGe7hfO9Y4kXT+jedS1pFrDbf1sk8cgjtLHBXl6BPTCwpHgXczMhYZpwCo+L38ibGp1ao7v44Y9S3HgNbZH2vrmcIJf3wrN8oTNcmDhK0tdwp6VVqbHo+bXsG7k=
-Received: from AM6P191CA0072.EURP191.PROD.OUTLOOK.COM (2603:10a6:209:7f::49)
- by AM9PR08MB6129.eurprd08.prod.outlook.com (2603:10a6:20b:284::8) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3933.31; Fri, 12 Mar
- 2021 12:54:45 +0000
-Received: from AM5EUR03FT057.eop-EUR03.prod.protection.outlook.com
- (2603:10a6:209:7f:cafe::fc) by AM6P191CA0072.outlook.office365.com
- (2603:10a6:209:7f::49) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3912.17 via Frontend
- Transport; Fri, 12 Mar 2021 12:54:45 +0000
-X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 63.35.35.123)
- smtp.mailfrom=arm.com; lists.linux-foundation.org; dkim=pass (signature was
- verified) header.d=armh.onmicrosoft.com;lists.linux-foundation.org;
- dmarc=pass action=none header.from=arm.com;
-Received-SPF: Pass (protection.outlook.com: domain of arm.com designates
- 63.35.35.123 as permitted sender) receiver=protection.outlook.com;
- client-ip=63.35.35.123; helo=64aa7808-outbound-1.mta.getcheckrecipient.com;
-Received: from 64aa7808-outbound-1.mta.getcheckrecipient.com (63.35.35.123) by
- AM5EUR03FT057.mail.protection.outlook.com (10.152.17.44) with
- Microsoft SMTP
- Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.20.3933.31 via Frontend Transport; Fri, 12 Mar 2021 12:54:43 +0000
-Received: ("Tessian outbound e7a0046930fb:v71");
- Fri, 12 Mar 2021 12:54:43 +0000
-X-CheckRecipientChecked: true
-X-CR-MTA-CID: 230b1e90ae6dbc93
-X-CR-MTA-TID: 64aa7808
-Received: from 284725744c93.1
- by 64aa7808-outbound-1.mta.getcheckrecipient.com id
- D2915C79-F415-4FB2-93F9-9F031B334791.1; 
- Fri, 12 Mar 2021 12:54:37 +0000
-Received: from EUR04-HE1-obe.outbound.protection.outlook.com
- by 64aa7808-outbound-1.mta.getcheckrecipient.com with ESMTPS id 284725744c93.1
- (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384);
- Fri, 12 Mar 2021 12:54:37 +0000
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=Vfb012yQDGQwLjIyh4znW2BfO/XahhpplLWCPoPQ/SV3TOP+nBYQ0KTgDweXywHP4ee+ITNVygm0lelXZxUSReZQU/V7WaFSTHL9iN6PoPXNU95/Yzt7WoFMuMsWRBwWLD7oYtieqXfP5p04/pB8INMNV+iqh1J7PPsFKPSxPn4FnBdzN0a1v+mndHPNS3T0RCVcYKsOATdHNzR41hxjERH6eiRjYS8eBjH2V1wGW1g9ot+gdNI7IHH+ojCxswy3iR21r1aCs2bKjTs4F78zXA2V3spZmWYYJeLNyIBuaJznVYnN/IYZq/wStIECPTJM7CMU7X09CwabM8C7Stj4xA==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com; 
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=gRYCWlv+yZFwJ1ufp3rdlK0vAL1StXhbu8EYeu5DYDk=;
- b=JsFmMK7S+FIr608uBydXSqjKPxSNa5202eveNWlvmrgYY9hxHj2h8rPrutH+Bz/W6RK9OKkvu6psk329lBhByhHQguy2tNL+JJt3+1m2WVz5YbsBEPXYTBWifBvxRtV9z0/PmkI2r6zEZQw1m0fhI4c0Oc6gZ21nqmIfWHhu1adhjV5deoDxM9P853msk/cOauH0HrJcfHtb8jPAzMozj3RAMjJAxdBZlZ7dsNwgIF8Lt99qb+WlOfxjDwEWWLb6rszlXDC+XWY31kAXwkhd72xWgf+JA7z8UhEMaBtoA0QChD1TkZGUW45g0n3P/M6hf9pAr7hrLy//5sxB8hHbGg==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=arm.com; dmarc=pass action=none header.from=arm.com; dkim=pass
- header.d=arm.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=armh.onmicrosoft.com; 
- s=selector2-armh-onmicrosoft-com;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=gRYCWlv+yZFwJ1ufp3rdlK0vAL1StXhbu8EYeu5DYDk=;
- b=skGs8jWUvaTL/2qby5xQYRXMMoK4TWGzYymU1ALK9TL4GEvbeGe7hfO9Y4kXT+jedS1pFrDbf1sk8cgjtLHBXl6BPTCwpHgXczMhYZpwCo+L38ibGp1ao7v44Y9S3HgNbZH2vrmcIJf3wrN8oTNcmDhK0tdwp6VVqbHo+bXsG7k=
-Authentication-Results-Original: huawei.com; dkim=none (message not signed)
- header.d=none;huawei.com; dmarc=none action=none header.from=arm.com;
-Received: from AM0PR08MB3268.eurprd08.prod.outlook.com (2603:10a6:208:65::26)
- by AM0PR08MB4403.eurprd08.prod.outlook.com (2603:10a6:208:141::17)
- with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3933.31; Fri, 12 Mar
- 2021 12:54:33 +0000
-Received: from AM0PR08MB3268.eurprd08.prod.outlook.com
- ([fe80::b55a:5a00:982b:a685]) by AM0PR08MB3268.eurprd08.prod.outlook.com
- ([fe80::b55a:5a00:982b:a685%6]) with mapi id 15.20.3933.032; Fri, 12 Mar 2021
- 12:54:33 +0000
-Subject: Re: [PATCH RFC v1 06/15] iommu/virtio: Add headers for table format
- probing
-To: Jean-Philippe Brucker <jean-philippe@linaro.org>
-References: <20210115121342.15093-1-vivek.gautam@arm.com>
- <20210115121342.15093-7-vivek.gautam@arm.com> <YD/ExjIwG/as52CI@myrica>
-From: Vivek Kumar Gautam <vivek.gautam@arm.com>
-Message-ID: <375eae7c-4bfd-331d-4dbb-2cba857ae369@arm.com>
-Date: Fri, 12 Mar 2021 18:24:25 +0530
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
- Thunderbird/68.10.0
-In-Reply-To: <YD/ExjIwG/as52CI@myrica>
-Content-Language: en-US
-X-Originating-IP: [217.140.105.56]
-X-ClientProxiedBy: PN1PR0101CA0001.INDPRD01.PROD.OUTLOOK.COM
- (2603:1096:c00:e::11) To AM0PR08MB3268.eurprd08.prod.outlook.com
- (2603:10a6:208:65::26)
+Received: from mail-ej1-x636.google.com (mail-ej1-x636.google.com
+ [IPv6:2a00:1450:4864:20::636])
+ by smtp4.osuosl.org (Postfix) with ESMTPS id 36ACC4ED2C
+ for <iommu@lists.linux-foundation.org>; Fri, 12 Mar 2021 12:57:18 +0000 (UTC)
+Received: by mail-ej1-x636.google.com with SMTP id mj10so53155030ejb.5
+ for <iommu@lists.linux-foundation.org>; Fri, 12 Mar 2021 04:57:18 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=chromium.org; s=google;
+ h=from:to:subject:date:message-id:mime-version
+ :content-transfer-encoding;
+ bh=Yiwv8WNEW7aHclTouK3WQPtt4wKGEcN0iK77qOa5K7c=;
+ b=gX25FwvDzIGc80ynmI0sHXJeCMm5ecDyFYpi1ycf07mbTK0McyA33kTynIueywXLS0
+ tVRfWHIYgJgbWQtlCFsF9/umlwtkqBkLem8yPA+VAd3oTYN7PjCLJf7UOacSw+tLZomN
+ 5DBZWS6n9Q2ZZd36YlOqWJHK0UwmEfAZYiYsM=
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+ d=1e100.net; s=20161025;
+ h=x-gm-message-state:from:to:subject:date:message-id:mime-version
+ :content-transfer-encoding;
+ bh=Yiwv8WNEW7aHclTouK3WQPtt4wKGEcN0iK77qOa5K7c=;
+ b=V4Zi7ABLrEwQa2Qij4jJ4mCmYaCzePm3Kh8v6pGVWp06kic6PzsRyRGVg4cA2dYCF6
+ L9NDzrqhrs8QkPcD95VKGnMCpXdCXb/i7dcz26oy+zCahP/o3uPReLRQ0Hzokujq8bPE
+ hccG7t+cGFCG7iCbmHPixfi3Qm0Py45k1K2mgP2vL6CM8+ATyFGLyoPhU3oHjDx8I5IL
+ nBym1hs908bLNJ+gorvBIaMG3k324HgBTwj6GmreKd9778jOWcH5kesOsWkvP4xPD2+t
+ HYni5DX46YFDnnT5UyD6a+cC7KJ1pG4yI1M66zVMje0NluHbFASj81/MwtL/N2NyxERu
+ HFjg==
+X-Gm-Message-State: AOAM532HuECt8hGSigpG8lIK754NBrlMgF38JxZxSP7dC1XJXkWb8QBr
+ Cou1X8QbijUR+yrRAU9m5JBtzg==
+X-Google-Smtp-Source: ABdhPJxE94wC7/2OPbX4NFpr3qVgjSEwLXqWkrYReAVPCcB5IW2n0uQI+d5aA04l8yBGrEiVmehVww==
+X-Received: by 2002:a17:907:2093:: with SMTP id
+ pv19mr8439806ejb.134.1615553836383; 
+ Fri, 12 Mar 2021 04:57:16 -0800 (PST)
+Received: from alco.lan ([80.71.134.83])
+ by smtp.gmail.com with ESMTPSA id u13sm2729712ejy.31.2021.03.12.04.57.15
+ (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+ Fri, 12 Mar 2021 04:57:15 -0800 (PST)
+From: Ricardo Ribalda <ribalda@chromium.org>
+To: Christoph Hellwig <hch@lst.de>, Mauro Carvalho Chehab <mchehab@kernel.org>,
+ Marek Szyprowski <m.szyprowski@samsung.com>,
+ Tomasz Figa <tfiga@chromium.org>, Ricardo Ribalda <ribalda@chromium.org>,
+ Sergey Senozhatsky <senozhatsky@google.com>,
+ Laurent Pinchart <laurent.pinchart@ideasonboard.com>,
+ iommu@lists.linux-foundation.org, Robin Murphy <robin.murphy@arm.com>,
+ linux-kernel@vger.kernel.org, linux-media@vger.kernel.org
+Subject: [PATCH v2 6/6] media: uvcvideo: Use dma_alloc_noncontiguous API
+Date: Fri, 12 Mar 2021 13:57:09 +0100
+Message-Id: <20210312125709.1347177-1-ribalda@chromium.org>
+X-Mailer: git-send-email 2.31.0.rc2.261.g7f71774620-goog
 MIME-Version: 1.0
-X-MS-Exchange-MessageSentRepresentingType: 1
-Received: from [10.162.16.71] (217.140.105.56) by
- PN1PR0101CA0001.INDPRD01.PROD.OUTLOOK.COM (2603:1096:c00:e::11) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3912.17 via Frontend
- Transport; Fri, 12 Mar 2021 12:54:29 +0000
-X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-HT: Tenant
-X-MS-Office365-Filtering-Correlation-Id: 3de73828-c112-4a14-744e-08d8e5560216
-X-MS-TrafficTypeDiagnostic: AM0PR08MB4403:|AM9PR08MB6129:
-X-MS-Exchange-Transport-Forked: True
-X-Microsoft-Antispam-PRVS: <AM9PR08MB61299E351142AA929E2F7F41896F9@AM9PR08MB6129.eurprd08.prod.outlook.com>
-x-checkrecipientrouted: true
-NoDisclaimer: true
-X-MS-Oob-TLC-OOBClassifiers: OLM:8882;OLM:8882;
-X-MS-Exchange-SenderADCheck: 1
-X-Microsoft-Antispam-Untrusted: BCL:0;
-X-Microsoft-Antispam-Message-Info-Original: E9678DsWv6Y7XvWJ9/ZYkCxLWtRMcrBFELBvGejU0RJ/S/ymPdwxdQthkiglqipmvBO6uNKyflMJL4dOetv8lF0vo7Jp4o42JiKumFTlCmBIzHNHURwolOkR518i6gPXPDpfcGW3uVvy2R2lWQ/NcD0LiuErUh63WYzNLgkauvk6SOYm5L8UEMWxaW5GE3U90ynRoT1MS/448gpqG5VwMjMhPimDPZ10a5VBl7XjFQLT651q7YnuWk8JH6o+7yAx+ok2k6UKfL4kMm0HlQz1PqOvJ9ZClkmCaxR7xIbT46R4+98IbLPsrzg11Lzy5tu0OuXLa4mx6OevAXJ4ntcSn+f256Zf/1N+RFuCQ6ZDXH43Mn+1X+qu8NIG+RvVuFaVe7GUHxkstYEfY2cJ+PYOTjr7QUjden8Bym3EPJsrnBi2sBtN5FLPkSB2NOed1KN+0ph5ollYrdd9YdG3t7/bGZr3KaPxUifdVIcU58j9onZzTuAqiOk6WHKGJqamFwIrcB3bhIvXpl1P7rr0M0zehu5Bsv09rf/L4gjdgbBQfF//rPOcN+oZNeWlrSCYOs/m2iqKRxBlcgxNSyDnYm9i3sGiyOujtq04Kh5sezjVJtw2dWOUY11TOhm0jW0xSzJW5qdWXUf1aiQk73eAmnU0CBC3Q0N+E1AIPXYtIXwGbFK5wkS7s0Vs0mFpqo7t0mYI9KdkOyDCRzi98fz3Q+Azd6S273e75hyrrnUDf0pZjX4=
-X-Forefront-Antispam-Report-Untrusted: CIP:255.255.255.255; CTRY:; LANG:en;
- SCL:1; SRV:; IPV:NLI; SFV:NSPM; H:AM0PR08MB3268.eurprd08.prod.outlook.com;
- PTR:; CAT:NONE;
- SFS:(4636009)(346002)(376002)(39860400002)(136003)(396003)(366004)(83380400001)(36756003)(52116002)(31696002)(31686004)(53546011)(316002)(86362001)(16576012)(6486002)(66946007)(6916009)(66556008)(66476007)(5660300002)(966005)(8936002)(478600001)(8676002)(2906002)(4326008)(16526019)(186003)(6666004)(26005)(7416002)(956004)(2616005)(43740500002)(45980500001);
- DIR:OUT; SFP:1101; 
-X-MS-Exchange-AntiSpam-MessageData: =?utf-8?B?cngvNURjaVJvbFFIVlBxZWkzRGV2ZjRsRXJDQW9haFJ4WlpDUlM3TWphVyt4?=
- =?utf-8?B?L3pES0NOTXJKZHorUjdqZjZUTW1EOWhpMzNEdTdnOXBzRUdSYlkrblMzT011?=
- =?utf-8?B?V3UwNEc5MmJpUkt5UTI1TldyLzdITG1sKzRiUytQNGFVQkNtM2kzeUV6ZnZx?=
- =?utf-8?B?MGV2VHRkUXgrOVNjcUtyc3dhMFJpOEFNZTZMVEUwdFFrMEl3S2gzR2JxbXQy?=
- =?utf-8?B?Rjhqb3ZQSnAxWml1QXpTVWNhN2tsVkk0WWx6bWpzVkx6Q1pLRXQ3eGQ4MjF4?=
- =?utf-8?B?MnVaYTFEZHFzZHFIUG9FRkI2R1pjSUVMYS9Xa3VnTjZkY21sTmJoQjRtRjdv?=
- =?utf-8?B?NlArZW5DWjdBekVvS0t6MVhSQklXZ0tpYW9jOUFVN0ZzYnhTRXc2d1EzcGpj?=
- =?utf-8?B?cHhadXZIaVBpTEZaQm9qRnpHS1FuTE41ZGxycWpSV1JFRjJ0V3EybmxkZzdr?=
- =?utf-8?B?ZzlRQ2U2NTNRcDJMYnBzNk9Jc3FwM1c3cFVCQVNnZlR4cSsxTUNrNkJ4RDBL?=
- =?utf-8?B?dnNXblZZRFZjWW1mbVJ0WE5zR2pRdTlIZ3ROd0hJLzN1TlE1YzNKVUxURWU3?=
- =?utf-8?B?ZnduNVM3Y1BEbGUwUmd5TjM0ZXBsOEprRC8zaVF0cUZoN3FOSHR1UlZjdjZ1?=
- =?utf-8?B?eFBYSDQvS3F5UDZ4amJHU00waDk3bG9sVmZtRm9yOVQwWWo1U05Mb25WUDFz?=
- =?utf-8?B?QSt5SWlUTkZQd084WjEyenMzREs5YVY1bElmWk83a1J2Q24zNTBIdnBVMzlT?=
- =?utf-8?B?L1U1UmlCTTUvYlVhZURvc0RyQUJFMlQxQVRoaGhZSFBMcUFTTUxtVEhMdzRN?=
- =?utf-8?B?U2NPTGVSd0UwcEZxZEZacTVpY2V3WllxeEhkWVgvUEJvNXZYWmp2aFhCZ2cw?=
- =?utf-8?B?OUdVMmtueXYvQ09tMHltekN4dEdIWXJaVWJxZnZpZlJBR3lLWjZhRjAzZXdi?=
- =?utf-8?B?S1ZBSFBaRlBWSWRGQXJscjRqVGFHRFNBMEdEMUQ0YmRJMW4yUGxCZ2RvM0x4?=
- =?utf-8?B?OFBldktTT2dNNHZHaDFvUmQ2MnpRZW5oQVhqaEVZK0V1aS9qT3VPbmhxR0Na?=
- =?utf-8?B?NlJYa3o0d3ZEL1ZHaWdEcW5aUHcrQTZwRWl6SUFVc3dJY1RMSXF5dEg2c0h4?=
- =?utf-8?B?UTZUd2czMEJLZE5hRVc1NGhEK1R3aVFFQk1mb05CdGp0RWpsTUFCdDhVd1ZT?=
- =?utf-8?B?eTlLampSUktxMzdaV01jcjlKOUNaU3FPQTFQN3l5NWlucTR4NmRNb2VucExo?=
- =?utf-8?B?QUlKUCtVYlZsdXh0WFlqcTc0MVNMMmlzRG4xQkRXK2FDUjhlSzdTcU9GQWRa?=
- =?utf-8?B?OS9JQnVrcU9hNTB3T1VOazNFaFg2SEhpbDl3ZDIxVmVOdFJySHhCKzdMN3VD?=
- =?utf-8?B?ZTVHQmR5ZklhVzlsMk9QMkNpM0J4YmdoTmtkRVNiN3JFQnB2b3NCdFc0WXo3?=
- =?utf-8?B?Q0taclNONDFEeU1oSHBtVEdXOGNJeGRudFdzTExoMFdIUkdNZEZ5dXdSeitu?=
- =?utf-8?B?YUNaSjNnY2NBa2hMSC9pNWl0SlExTHR6Wk1EdXpmLzZGQ3BxaExIMG12aGNQ?=
- =?utf-8?B?WFhOUzZyc1hwVVpyNW95MGFORjBGUGF4eFpOWjhXQ2NJNC93WmI2L1pXZGFG?=
- =?utf-8?B?eE51UXloVE5aUFNCMUQ4eEZ6T1NRekE3RlRXREMweHZVU0RkZjFTbGZLYlFn?=
- =?utf-8?B?MkFkc240Um92dEcxcjViMG5FNWdXcFVuMjE1NWJhWFI0OVJxY1FTQ0NSWGtV?=
- =?utf-8?Q?7Yjv8/bDDzwA5N7O8YnpYXU4lsn8WE7wxj8CQ7e?=
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: AM0PR08MB4403
-Original-Authentication-Results: huawei.com; dkim=none (message not signed)
- header.d=none;huawei.com; dmarc=none action=none header.from=arm.com;
-X-EOPAttributedMessage: 0
-X-MS-Exchange-Transport-CrossTenantHeadersStripped: AM5EUR03FT057.eop-EUR03.prod.protection.outlook.com
-X-MS-Office365-Filtering-Correlation-Id-Prvs: 4f1a8829-bd5d-4ef5-8560-08d8e555fb48
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: 6Fqp1b3LqjgIZB/Uo56kKrFz7KwIh/VD/EcWgVev9P7guHttSCGSrWSlMHtqEs26agLsYxdEuyruUPg9VSC2fVLV7j+Pa+TSMkh7mnyBii5tfltVWoGBFAXBPyupOD1lPq8U19vjGufORFcTRjGQUhaHjlzSJjURntklkfhskEt7dqJAyQNkv2IH+KjwC0mHypipkxhSbLH2lbnCFoohitOeNt7m5WzU6zNanOXHefJWURpb3vR+NveZ44fzwps3zdTN6kzvXM8JPOP0fMBddw8eEK2sJurkSScaOxzibdO2sZ2ovm6bogr433IuzPlbIzOkoUwzFIEbGw+Mf5OmQlUOYlI1hyA+qbXWrf7HDsv2r4We7wSCNOGl+9PLVSHZknCKf4XMOfiWC5OYQTyuHsoNoaeX79jL2O+1BQXC8cvFiwq+Aoc8abCFNWDp9qk3v/4FC+f8V+AphvThfDbNSPxLtk43VrQpLafiSXBTfcoNl4UsRD69V2rRq9c1IJ/Nybyl/03xEq1CZfp5ex2K4MyhQIJTi9P8fhGmomcpbFPbmo6lNygvHU7Bfznv6iaVifRA+Ws2eDtgEO+k+wl70l0I8au6x3YVJYnFPLiDW2MJTRCnE8mDDPyFPw8HsKpUSEmFVQGgTWxZ7ZUcTni5OClUIZuBHBPEVmSq86INTZN2U9lZoTuzwM/YbGMqKmN/KsWj9HX1ZrBov00/v/naObe5cjLkVu+B9R8n2ictroRg94nc89YTTxcVKWwanERJ1T760551sBjt17CBkoH7MQ==
-X-Forefront-Antispam-Report: CIP:63.35.35.123; CTRY:IE; LANG:en; SCL:1; SRV:;
- IPV:CAL; SFV:NSPM; H:64aa7808-outbound-1.mta.getcheckrecipient.com;
- PTR:ec2-63-35-35-123.eu-west-1.compute.amazonaws.com; CAT:NONE;
- SFS:(4636009)(136003)(396003)(39860400002)(376002)(346002)(36840700001)(46966006)(107886003)(6486002)(956004)(70586007)(26005)(6666004)(16526019)(6862004)(186003)(5660300002)(2616005)(70206006)(16576012)(2906002)(316002)(47076005)(82740400003)(31686004)(81166007)(36756003)(966005)(478600001)(83380400001)(31696002)(36860700001)(82310400003)(336012)(86362001)(8676002)(53546011)(450100002)(4326008)(356005)(8936002)(43740500002);
- DIR:OUT; SFP:1101; 
-X-OriginatorOrg: arm.com
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 12 Mar 2021 12:54:43.7109 (UTC)
-X-MS-Exchange-CrossTenant-Network-Message-Id: 3de73828-c112-4a14-744e-08d8e5560216
-X-MS-Exchange-CrossTenant-Id: f34e5979-57d9-4aaa-ad4d-b122a662184d
-X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=f34e5979-57d9-4aaa-ad4d-b122a662184d; Ip=[63.35.35.123];
- Helo=[64aa7808-outbound-1.mta.getcheckrecipient.com]
-X-MS-Exchange-CrossTenant-AuthSource: AM5EUR03FT057.eop-EUR03.prod.protection.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Anonymous
-X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: AM9PR08MB6129
-Cc: kevin.tian@intel.com, alex.williamson@redhat.com, mst@redhat.com,
- will.deacon@arm.com, linux-kernel@vger.kernel.org,
- virtualization@lists.linux-foundation.org, iommu@lists.linux-foundation.org,
- robin.murphy@arm.com, linux-arm-kernel@lists.infradead.org
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -227,144 +103,295 @@ List-Post: <mailto:iommu@lists.linux-foundation.org>
 List-Help: <mailto:iommu-request@lists.linux-foundation.org?subject=help>
 List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
  <mailto:iommu-request@lists.linux-foundation.org?subject=subscribe>
+Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
-Content-Type: text/plain; charset="us-ascii"; Format="flowed"
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
+On architectures where there is no coherent caching such as ARM use the
+dma_alloc_noncontiguous API and handle manually the cache flushing using
+dma_sync_sgtable().
 
+With this patch on the affected architectures we can measure up to 20x
+performance improvement in uvc_video_copy_data_work().
 
-On 3/3/21 10:47 PM, Jean-Philippe Brucker wrote:
-> On Fri, Jan 15, 2021 at 05:43:33PM +0530, Vivek Gautam wrote:
->> From: Jean-Philippe Brucker <jean-philippe.brucker@arm.com>
->>
->> Add required UAPI defines for probing table format for underlying
->> iommu hardware. The device may provide information about hardware
->> tables and additional capabilities for each device.
->> This allows guest to correctly fabricate stage-1 page tables.
->>
->> Signed-off-by: Jean-Philippe Brucker <jean-philippe.brucker@arm.com>
->> [Vivek: Use a single "struct virtio_iommu_probe_table_format" rather
->>          than separate structures for page table and pasid table format.
-> 
-> Makes sense. I've integrated that into the spec draft, added more precise
-> documentation and modified some of the definitions.
-> 
-> The current draft is here:
-> https://jpbrucker.net/virtio-iommu/spec/virtio-iommu-v0.13.pdf
-> Posted on the list here
-> https://lists.oasis-open.org/archives/virtio-dev/202102/msg00012.html
+Eg: aarch64 with an external usb camera
 
-Thanks, I took an initial look, will review it this week.
+NON_CONTIGUOUS
+frames:  999
+packets: 999
+empty:   0 (0 %)
+errors:  0
+invalid: 0
+pts: 0 early, 0 initial, 999 ok
+scr: 0 count ok, 0 diff ok
+sof: 2048 <= sof <= 0, freq 0.000 kHz
+bytes 67034480 : duration 33303
+FPS: 29.99
+URB: 523446/4993 uS/qty: 104.836 avg 132.532 std 13.230 min 831.094 max (uS)
+header: 76564/4993 uS/qty: 15.334 avg 15.229 std 3.438 min 186.875 max (uS)
+latency: 468945/4992 uS/qty: 93.939 avg 132.577 std 9.531 min 824.010 max (uS)
+decode: 54161/4993 uS/qty: 10.847 avg 6.313 std 1.614 min 111.458 max (uS)
+raw decode speed: 9.931 Gbits/s
+raw URB handling speed: 1.025 Gbits/s
+throughput: 16.102 Mbits/s
+URB decode CPU usage 0.162600 %
 
-> 
->> 	Also update commit message.]
->> Signed-off-by: Vivek Gautam <vivek.gautam@arm.com>
->> Cc: Joerg Roedel <joro@8bytes.org>
->> Cc: Will Deacon <will.deacon@arm.com>
->> Cc: Michael S. Tsirkin <mst@redhat.com>
->> Cc: Robin Murphy <robin.murphy@arm.com>
->> Cc: Jean-Philippe Brucker <jean-philippe@linaro.org>
->> Cc: Eric Auger <eric.auger@redhat.com>
->> Cc: Alex Williamson <alex.williamson@redhat.com>
->> Cc: Kevin Tian <kevin.tian@intel.com>
->> Cc: Jacob Pan <jacob.jun.pan@linux.intel.com>
->> Cc: Liu Yi L <yi.l.liu@intel.com>
->> Cc: Lorenzo Pieralisi <lorenzo.pieralisi@arm.com>
->> Cc: Shameerali Kolothum Thodi <shameerali.kolothum.thodi@huawei.com>
->> ---
->>   include/uapi/linux/virtio_iommu.h | 44 ++++++++++++++++++++++++++++++-
->>   1 file changed, 43 insertions(+), 1 deletion(-)
->>
->> diff --git a/include/uapi/linux/virtio_iommu.h b/include/uapi/linux/virtio_iommu.h
->> index 237e36a280cb..43821e33e7af 100644
->> --- a/include/uapi/linux/virtio_iommu.h
->> +++ b/include/uapi/linux/virtio_iommu.h
->> @@ -2,7 +2,7 @@
->>   /*
->>    * Virtio-iommu definition v0.12
->>    *
->> - * Copyright (C) 2019 Arm Ltd.
->> + * Copyright (C) 2019-2021 Arm Ltd.
-> 
-> Not strictly necessary. But if you're modifying this comment please also
-> remove the "v0.12" above
+COHERENT
+frames:  999
+packets: 999
+empty:   0 (0 %)
+errors:  0
+invalid: 0
+pts: 0 early, 0 initial, 999 ok
+scr: 0 count ok, 0 diff ok
+sof: 2048 <= sof <= 0, freq 0.000 kHz
+bytes 54683536 : duration 33302
+FPS: 29.99
+URB: 1478135/4000 uS/qty: 369.533 avg 390.357 std 22.968 min 3337.865 max (uS)
+header: 79761/4000 uS/qty: 19.940 avg 18.495 std 1.875 min 336.719 max (uS)
+latency: 281077/4000 uS/qty: 70.269 avg 83.102 std 5.104 min 735.000 max (uS)
+decode: 1197057/4000 uS/qty: 299.264 avg 318.080 std 1.615 min 2806.667 max (uS)
+raw decode speed: 365.470 Mbits/s
+raw URB handling speed: 295.986 Mbits/s
+throughput: 13.136 Mbits/s
+URB decode CPU usage 3.594500 %
 
-Sure, let me keep the copyright year unchanged until we finalize the 
-changes in draft spec.
+Signed-off-by: Ricardo Ribalda <ribalda@chromium.org>
+Reviewed-by: Tomasz Figa <tfiga@chromium.org>
+Signed-off-by: Christoph Hellwig <hch@lst.de>
+---
 
-> 
->>    */
->>   #ifndef _UAPI_LINUX_VIRTIO_IOMMU_H
->>   #define _UAPI_LINUX_VIRTIO_IOMMU_H
->> @@ -111,6 +111,12 @@ struct virtio_iommu_req_unmap {
->>   
->>   #define VIRTIO_IOMMU_PROBE_T_NONE		0
->>   #define VIRTIO_IOMMU_PROBE_T_RESV_MEM		1
->> +#define VIRTIO_IOMMU_PROBE_T_PAGE_SIZE_MASK	2
->> +#define VIRTIO_IOMMU_PROBE_T_INPUT_RANGE	3
->> +#define VIRTIO_IOMMU_PROBE_T_OUTPUT_SIZE	4
->> +#define VIRTIO_IOMMU_PROBE_T_PASID_SIZE		5
->> +#define VIRTIO_IOMMU_PROBE_T_PAGE_TABLE_FMT	6
->> +#define VIRTIO_IOMMU_PROBE_T_PASID_TABLE_FMT	7
-> 
-> Since there is a single struct we can have a single
-> VIRTIO_IOMMU_PROBE_T_TABLE_FORMAT.
+Changelog from v2: (Thanks Laurent)
 
-Right, that would make sense.
+- Fix typos
+- Use the right dma direction if not capturing
+- Clear sgt during free
 
-> 
->>   
->>   #define VIRTIO_IOMMU_PROBE_T_MASK		0xfff
->>   
->> @@ -130,6 +136,42 @@ struct virtio_iommu_probe_resv_mem {
->>   	__le64					end;
->>   };
->>   
->> +struct virtio_iommu_probe_page_size_mask {
->> +	struct virtio_iommu_probe_property	head;
->> +	__u8					reserved[4];
->> +	__le64					mask;
->> +};
->> +
->> +struct virtio_iommu_probe_input_range {
->> +	struct virtio_iommu_probe_property	head;
->> +	__u8					reserved[4];
->> +	__le64					start;
->> +	__le64					end;
->> +};
->> +
->> +struct virtio_iommu_probe_output_size {
->> +	struct virtio_iommu_probe_property	head;
->> +	__u8					bits;
->> +	__u8					reserved[3];
->> +};
->> +
->> +struct virtio_iommu_probe_pasid_size {
->> +	struct virtio_iommu_probe_property	head;
->> +	__u8					bits;
->> +	__u8					reserved[3];
->> +};
->> +
->> +/* Arm LPAE page table format */
->> +#define VIRTIO_IOMMU_FOMRAT_PGTF_ARM_LPAE	1
-> 
-> s/FOMRAT/FORMAT
+ drivers/media/usb/uvc/uvc_video.c | 92 +++++++++++++++++++++++--------
+ drivers/media/usb/uvc/uvcvideo.h  |  5 +-
+ 2 files changed, 74 insertions(+), 23 deletions(-)
 
-Sure.
+diff --git a/drivers/media/usb/uvc/uvc_video.c b/drivers/media/usb/uvc/uvc_video.c
+index f2f565281e63..8e60f81e2257 100644
+--- a/drivers/media/usb/uvc/uvc_video.c
++++ b/drivers/media/usb/uvc/uvc_video.c
+@@ -6,11 +6,14 @@
+  *          Laurent Pinchart (laurent.pinchart@ideasonboard.com)
+  */
+ 
++#include <linux/dma-mapping.h>
++#include <linux/highmem.h>
+ #include <linux/kernel.h>
+ #include <linux/list.h>
+ #include <linux/module.h>
+ #include <linux/slab.h>
+ #include <linux/usb.h>
++#include <linux/usb/hcd.h>
+ #include <linux/videodev2.h>
+ #include <linux/vmalloc.h>
+ #include <linux/wait.h>
+@@ -1096,6 +1099,34 @@ static int uvc_video_decode_start(struct uvc_streaming *stream,
+ 	return data[0];
+ }
+ 
++static inline enum dma_data_direction stream_dir(struct uvc_streaming *stream)
++{
++	if (stream->type == V4L2_BUF_TYPE_VIDEO_CAPTURE)
++		return DMA_FROM_DEVICE;
++	else
++		return DMA_TO_DEVICE;
++}
++
++static inline struct device *stream_to_dmadev(struct uvc_streaming *stream)
++{
++	return bus_to_hcd(stream->dev->udev->bus)->self.sysdev;
++}
++
++static void uvc_urb_dma_sync(struct uvc_urb *uvc_urb, bool for_device)
++{
++	struct device *dma_dev = stream_to_dmadev(uvc_urb->stream);
++
++	if (for_device) {
++		dma_sync_sgtable_for_device(dma_dev, uvc_urb->sgt,
++					    stream_dir(uvc_urb->stream));
++	} else {
++		dma_sync_sgtable_for_cpu(dma_dev, uvc_urb->sgt,
++					 stream_dir(uvc_urb->stream));
++		invalidate_kernel_vmap_range(uvc_urb->buffer,
++					     uvc_urb->stream->urb_size);
++	}
++}
++
+ /*
+  * uvc_video_decode_data_work: Asynchronous memcpy processing
+  *
+@@ -1117,6 +1148,8 @@ static void uvc_video_copy_data_work(struct work_struct *work)
+ 		uvc_queue_buffer_release(op->buf);
+ 	}
+ 
++	uvc_urb_dma_sync(uvc_urb, true);
++
+ 	ret = usb_submit_urb(uvc_urb->urb, GFP_KERNEL);
+ 	if (ret < 0)
+ 		dev_err(&uvc_urb->stream->intf->dev,
+@@ -1541,10 +1574,12 @@ static void uvc_video_complete(struct urb *urb)
+ 	 * Process the URB headers, and optionally queue expensive memcpy tasks
+ 	 * to be deferred to a work queue.
+ 	 */
++	uvc_urb_dma_sync(uvc_urb, false);
+ 	stream->decode(uvc_urb, buf, buf_meta);
+ 
+ 	/* If no async work is needed, resubmit the URB immediately. */
+ 	if (!uvc_urb->async_operations) {
++		uvc_urb_dma_sync(uvc_urb, true);
+ 		ret = usb_submit_urb(uvc_urb->urb, GFP_ATOMIC);
+ 		if (ret < 0)
+ 			dev_err(&stream->intf->dev,
+@@ -1560,24 +1595,49 @@ static void uvc_video_complete(struct urb *urb)
+  */
+ static void uvc_free_urb_buffers(struct uvc_streaming *stream)
+ {
++	struct device *dma_dev = stream_to_dmadev(stream);
+ 	struct uvc_urb *uvc_urb;
+ 
+ 	for_each_uvc_urb(uvc_urb, stream) {
+ 		if (!uvc_urb->buffer)
+ 			continue;
+ 
+-#ifndef CONFIG_DMA_NONCOHERENT
+-		usb_free_coherent(stream->dev->udev, stream->urb_size,
+-				  uvc_urb->buffer, uvc_urb->dma);
+-#else
+-		kfree(uvc_urb->buffer);
+-#endif
++		dma_vunmap_noncontiguous(dma_dev, uvc_urb->buffer);
++		dma_free_noncontiguous(dma_dev, stream->urb_size, uvc_urb->sgt,
++				       stream_dir(stream));
++
+ 		uvc_urb->buffer = NULL;
++		uvc_urb->sgt = NULL;
+ 	}
+ 
+ 	stream->urb_size = 0;
+ }
+ 
++static bool uvc_alloc_urb_buffer(struct uvc_streaming *stream,
++				 struct uvc_urb *uvc_urb, gfp_t gfp_flags)
++{
++	struct device *dma_dev = stream_to_dmadev(stream);
++
++	uvc_urb->sgt = dma_alloc_noncontiguous(dma_dev, stream->urb_size,
++					       stream_dir(stream),
++					       gfp_flags, 0);
++	if (!uvc_urb->sgt)
++		return false;
++	uvc_urb->dma = uvc_urb->sgt->sgl->dma_address;
++
++	uvc_urb->buffer = dma_vmap_noncontiguous(dma_dev, stream->urb_size,
++						 uvc_urb->sgt);
++	if (!uvc_urb->buffer) {
++		dma_free_noncontiguous(dma_dev, stream->urb_size,
++				       uvc_urb->sgt,
++				       stream_dir(stream));
++		uvc_urb->sgt = NULL;
++		return false;
++	}
++
++	return true;
++}
++
+ /*
+  * Allocate transfer buffers. This function can be called with buffers
+  * already allocated when resuming from suspend, in which case it will
+@@ -1608,19 +1668,12 @@ static int uvc_alloc_urb_buffers(struct uvc_streaming *stream,
+ 
+ 	/* Retry allocations until one succeed. */
+ 	for (; npackets > 1; npackets /= 2) {
++		stream->urb_size = psize * npackets;
++
+ 		for (i = 0; i < UVC_URBS; ++i) {
+ 			struct uvc_urb *uvc_urb = &stream->uvc_urb[i];
+ 
+-			stream->urb_size = psize * npackets;
+-#ifndef CONFIG_DMA_NONCOHERENT
+-			uvc_urb->buffer = usb_alloc_coherent(
+-				stream->dev->udev, stream->urb_size,
+-				gfp_flags | __GFP_NOWARN, &uvc_urb->dma);
+-#else
+-			uvc_urb->buffer =
+-			    kmalloc(stream->urb_size, gfp_flags | __GFP_NOWARN);
+-#endif
+-			if (!uvc_urb->buffer) {
++			if (!uvc_alloc_urb_buffer(stream, uvc_urb, gfp_flags)) {
+ 				uvc_free_urb_buffers(stream);
+ 				break;
+ 			}
+@@ -1730,12 +1783,8 @@ static int uvc_init_video_isoc(struct uvc_streaming *stream,
+ 		urb->context = uvc_urb;
+ 		urb->pipe = usb_rcvisocpipe(stream->dev->udev,
+ 				ep->desc.bEndpointAddress);
+-#ifndef CONFIG_DMA_NONCOHERENT
+ 		urb->transfer_flags = URB_ISO_ASAP | URB_NO_TRANSFER_DMA_MAP;
+ 		urb->transfer_dma = uvc_urb->dma;
+-#else
+-		urb->transfer_flags = URB_ISO_ASAP;
+-#endif
+ 		urb->interval = ep->desc.bInterval;
+ 		urb->transfer_buffer = uvc_urb->buffer;
+ 		urb->complete = uvc_video_complete;
+@@ -1795,10 +1844,8 @@ static int uvc_init_video_bulk(struct uvc_streaming *stream,
+ 
+ 		usb_fill_bulk_urb(urb, stream->dev->udev, pipe,	uvc_urb->buffer,
+ 				  size, uvc_video_complete, uvc_urb);
+-#ifndef CONFIG_DMA_NONCOHERENT
+ 		urb->transfer_flags = URB_NO_TRANSFER_DMA_MAP;
+ 		urb->transfer_dma = uvc_urb->dma;
+-#endif
+ 
+ 		uvc_urb->urb = urb;
+ 	}
+@@ -1895,6 +1942,7 @@ static int uvc_video_start_transfer(struct uvc_streaming *stream,
+ 
+ 	/* Submit the URBs. */
+ 	for_each_uvc_urb(uvc_urb, stream) {
++		uvc_urb_dma_sync(uvc_urb, true);
+ 		ret = usb_submit_urb(uvc_urb->urb, gfp_flags);
+ 		if (ret < 0) {
+ 			dev_err(&stream->intf->dev,
+diff --git a/drivers/media/usb/uvc/uvcvideo.h b/drivers/media/usb/uvc/uvcvideo.h
+index 97df5ecd66c9..cce5e38133cd 100644
+--- a/drivers/media/usb/uvc/uvcvideo.h
++++ b/drivers/media/usb/uvc/uvcvideo.h
+@@ -219,6 +219,7 @@
+  */
+ 
+ struct gpio_desc;
++struct sg_table;
+ struct uvc_device;
+ 
+ /* TODO: Put the most frequently accessed fields at the beginning of
+@@ -545,7 +546,8 @@ struct uvc_copy_op {
+  * @urb: the URB described by this context structure
+  * @stream: UVC streaming context
+  * @buffer: memory storage for the URB
+- * @dma: DMA coherent addressing for the urb_buffer
++ * @dma: Allocated DMA handle
++ * @sgt: sgt_table with the urb locations in memory
+  * @async_operations: counter to indicate the number of copy operations
+  * @copy_operations: work descriptors for asynchronous copy operations
+  * @work: work queue entry for asynchronous decode
+@@ -556,6 +558,7 @@ struct uvc_urb {
+ 
+ 	char *buffer;
+ 	dma_addr_t dma;
++	struct sg_table *sgt;
+ 
+ 	unsigned int async_operations;
+ 	struct uvc_copy_op copy_operations[UVC_MAX_PACKETS];
+-- 
+2.31.0.rc2.261.g7f71774620-goog
 
-> 
->> +/* Arm smmu-v3 type PASID table format */
->> +#define VIRTIO_IOMMU_FORMAT_PSTF_ARM_SMMU_V3	2
-> 
-> These should be with the Arm-specific definitions patches 11 and 14
-
-Right, will add these definitions with Arm specific patches.
-
-Best regards
-Vivek
-
-[snip]
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
