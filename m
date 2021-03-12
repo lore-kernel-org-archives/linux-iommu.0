@@ -8,61 +8,65 @@ X-Spam-Status: No, score=-15.0 required=3.0 tests=BAYES_00,DKIM_INVALID,
 	UNPARSEABLE_RELAY,URIBL_BLOCKED,USER_AGENT_SANE_1 autolearn=ham
 	autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 94E84C433DB
-	for <iommu@archiver.kernel.org>; Fri, 12 Mar 2021 12:49:54 +0000 (UTC)
-Received: from smtp4.osuosl.org (smtp4.osuosl.org [140.211.166.137])
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 881E7C433DB
+	for <iommu@archiver.kernel.org>; Fri, 12 Mar 2021 12:54:57 +0000 (UTC)
+Received: from smtp1.osuosl.org (smtp1.osuosl.org [140.211.166.138])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 49E2464FE0
-	for <iommu@archiver.kernel.org>; Fri, 12 Mar 2021 12:49:54 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 49E2464FE0
+	by mail.kernel.org (Postfix) with ESMTPS id 33A5864FA8
+	for <iommu@archiver.kernel.org>; Fri, 12 Mar 2021 12:54:57 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 33A5864FA8
 Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=arm.com
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by smtp4.osuosl.org (Postfix) with ESMTP id 1B1254ED3C;
-	Fri, 12 Mar 2021 12:49:54 +0000 (UTC)
+	by smtp1.osuosl.org (Postfix) with ESMTP id F3CEE84565;
+	Fri, 12 Mar 2021 12:54:56 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from smtp4.osuosl.org ([127.0.0.1])
-	by localhost (smtp4.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id r2pOalsjbpic; Fri, 12 Mar 2021 12:49:52 +0000 (UTC)
+Received: from smtp1.osuosl.org ([127.0.0.1])
+	by localhost (smtp1.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+	with ESMTP id Uocw-X9cXf_3; Fri, 12 Mar 2021 12:54:56 +0000 (UTC)
 Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by smtp4.osuosl.org (Postfix) with ESMTP id 940CF467FF;
-	Fri, 12 Mar 2021 12:49:52 +0000 (UTC)
+	by smtp1.osuosl.org (Postfix) with ESMTP id A9BF884544;
+	Fri, 12 Mar 2021 12:54:55 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 76FA0C000B;
-	Fri, 12 Mar 2021 12:49:52 +0000 (UTC)
-Received: from smtp4.osuosl.org (smtp4.osuosl.org [140.211.166.137])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 77672C0001;
- Fri, 12 Mar 2021 12:49:51 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 6DF56C000B;
+	Fri, 12 Mar 2021 12:54:55 +0000 (UTC)
+Received: from smtp4.osuosl.org (smtp4.osuosl.org [IPv6:2605:bc80:3010::137])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 56A8FC0001;
+ Fri, 12 Mar 2021 12:54:54 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by smtp4.osuosl.org (Postfix) with ESMTP id 645D14ED2C;
- Fri, 12 Mar 2021 12:49:51 +0000 (UTC)
+ by smtp4.osuosl.org (Postfix) with ESMTP id 440ED4ED3C;
+ Fri, 12 Mar 2021 12:54:54 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
+Authentication-Results: smtp4.osuosl.org (amavisd-new);
+ dkim=pass (1024-bit key) header.d=armh.onmicrosoft.com
+ header.b="skGs8jWU"; dkim=pass (1024-bit key)
+ header.d=armh.onmicrosoft.com header.b="skGs8jWU"
 Received: from smtp4.osuosl.org ([127.0.0.1])
  by localhost (smtp4.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id dQ97I2WJZw61; Fri, 12 Mar 2021 12:49:49 +0000 (UTC)
+ with ESMTP id 6wNkXV-8FuMm; Fri, 12 Mar 2021 12:54:52 +0000 (UTC)
 X-Greylist: whitelisted by SQLgrey-1.8.0
 X-Greylist: whitelisted by SQLgrey-1.8.0
-Received: from EUR02-HE1-obe.outbound.protection.outlook.com
- (mail-he1eur02on0612.outbound.protection.outlook.com
- [IPv6:2a01:111:f400:fe05::612])
- by smtp4.osuosl.org (Postfix) with ESMTPS id 3E15F467FF;
- Fri, 12 Mar 2021 12:49:49 +0000 (UTC)
+Received: from EUR02-VE1-obe.outbound.protection.outlook.com
+ (mail-ve1eur02on0619.outbound.protection.outlook.com
+ [IPv6:2a01:111:f400:fe06::619])
+ by smtp4.osuosl.org (Postfix) with ESMTPS id 886B84ED2C;
+ Fri, 12 Mar 2021 12:54:51 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=armh.onmicrosoft.com; 
  s=selector2-armh-onmicrosoft-com;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=E4YCe9ZI3MUPLdITUwFbvybwd2udMN9GCnKhkMHjF94=;
- b=gXqZiAi4J+18FRoPEEe2I/Eyq/C6YesckMP+/X4PuH9chs7ABkF/r1YnME8qsC0XED5iqdK6G32DzHi4Zk2DSRBMBgzsqypjrP/gab8vRts6YXNF4Q4lvtOgA94oT2hqmM8yD0qlfNSykpXhn4uXu5r6MiyGTtxupXIb88NPfeI=
-Received: from DB6P193CA0015.EURP193.PROD.OUTLOOK.COM (2603:10a6:6:29::25) by
- DB8PR08MB5259.eurprd08.prod.outlook.com (2603:10a6:10:bf::13) with
- Microsoft
- SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.20.3890.28; Fri, 12 Mar 2021 12:49:41 +0000
-Received: from DB5EUR03FT041.eop-EUR03.prod.protection.outlook.com
- (2603:10a6:6:29:cafe::7b) by DB6P193CA0015.outlook.office365.com
- (2603:10a6:6:29::25) with Microsoft SMTP Server (version=TLS1_2,
+ bh=gRYCWlv+yZFwJ1ufp3rdlK0vAL1StXhbu8EYeu5DYDk=;
+ b=skGs8jWUvaTL/2qby5xQYRXMMoK4TWGzYymU1ALK9TL4GEvbeGe7hfO9Y4kXT+jedS1pFrDbf1sk8cgjtLHBXl6BPTCwpHgXczMhYZpwCo+L38ibGp1ao7v44Y9S3HgNbZH2vrmcIJf3wrN8oTNcmDhK0tdwp6VVqbHo+bXsG7k=
+Received: from AM6P191CA0072.EURP191.PROD.OUTLOOK.COM (2603:10a6:209:7f::49)
+ by AM9PR08MB6129.eurprd08.prod.outlook.com (2603:10a6:20b:284::8) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3933.31; Fri, 12 Mar
+ 2021 12:54:45 +0000
+Received: from AM5EUR03FT057.eop-EUR03.prod.protection.outlook.com
+ (2603:10a6:209:7f:cafe::fc) by AM6P191CA0072.outlook.office365.com
+ (2603:10a6:209:7f::49) with Microsoft SMTP Server (version=TLS1_2,
  cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3912.17 via Frontend
- Transport; Fri, 12 Mar 2021 12:49:41 +0000
+ Transport; Fri, 12 Mar 2021 12:54:45 +0000
 X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 63.35.35.123)
  smtp.mailfrom=arm.com; lists.linux-foundation.org; dkim=pass (signature was
  verified) header.d=armh.onmicrosoft.com;lists.linux-foundation.org;
@@ -71,141 +75,142 @@ Received-SPF: Pass (protection.outlook.com: domain of arm.com designates
  63.35.35.123 as permitted sender) receiver=protection.outlook.com;
  client-ip=63.35.35.123; helo=64aa7808-outbound-1.mta.getcheckrecipient.com;
 Received: from 64aa7808-outbound-1.mta.getcheckrecipient.com (63.35.35.123) by
- DB5EUR03FT041.mail.protection.outlook.com (10.152.21.4) with
+ AM5EUR03FT057.mail.protection.outlook.com (10.152.17.44) with
  Microsoft SMTP
  Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.20.3933.30 via Frontend Transport; Fri, 12 Mar 2021 12:49:41 +0000
-Received: ("Tessian outbound 520e67c3dd94:v71");
- Fri, 12 Mar 2021 12:49:40 +0000
+ 15.20.3933.31 via Frontend Transport; Fri, 12 Mar 2021 12:54:43 +0000
+Received: ("Tessian outbound e7a0046930fb:v71");
+ Fri, 12 Mar 2021 12:54:43 +0000
 X-CheckRecipientChecked: true
-X-CR-MTA-CID: 0852768d57652db3
+X-CR-MTA-CID: 230b1e90ae6dbc93
 X-CR-MTA-TID: 64aa7808
-Received: from 6f0a22f58ec3.1
+Received: from 284725744c93.1
  by 64aa7808-outbound-1.mta.getcheckrecipient.com id
- 08AFE571-33A0-4D69-98EA-C604AEFCB22D.1; 
- Fri, 12 Mar 2021 12:49:35 +0000
-Received: from EUR05-DB8-obe.outbound.protection.outlook.com
- by 64aa7808-outbound-1.mta.getcheckrecipient.com with ESMTPS id 6f0a22f58ec3.1
+ D2915C79-F415-4FB2-93F9-9F031B334791.1; 
+ Fri, 12 Mar 2021 12:54:37 +0000
+Received: from EUR04-HE1-obe.outbound.protection.outlook.com
+ by 64aa7808-outbound-1.mta.getcheckrecipient.com with ESMTPS id 284725744c93.1
  (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384);
- Fri, 12 Mar 2021 12:49:35 +0000
+ Fri, 12 Mar 2021 12:54:37 +0000
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=LJZ3fDMQs5NnC22NN4k4RVZHc99cHYRqXBjz6Eo1R933GoqOK2cZ+7npKqyLla/iaSblv3n1OnRyWDjP9KVHcxWElpN62RUOMdFYjeLJP7da2jxa2hI6lyErJJU7XHlOHkcH0/T6K0Khq3wCurJfqphauu/yWVhuk13++mgGmwD4Z3Qz3StVZ3g9usufNIYmuMe9AXAOIYvUEZda3asLYIeD/HQF2uj+sXAvpa30+OKg76G+YU5vUkhUwPmznyWYIPM2V+hHvjun9dZ3X/xfa4NwpbbTmEh6YDKpevQcf5g+KFnfX0VD/uNUUBGWBRhTnnuCuu0Y6lvO2WFxOuhhGA==
+ b=Vfb012yQDGQwLjIyh4znW2BfO/XahhpplLWCPoPQ/SV3TOP+nBYQ0KTgDweXywHP4ee+ITNVygm0lelXZxUSReZQU/V7WaFSTHL9iN6PoPXNU95/Yzt7WoFMuMsWRBwWLD7oYtieqXfP5p04/pB8INMNV+iqh1J7PPsFKPSxPn4FnBdzN0a1v+mndHPNS3T0RCVcYKsOATdHNzR41hxjERH6eiRjYS8eBjH2V1wGW1g9ot+gdNI7IHH+ojCxswy3iR21r1aCs2bKjTs4F78zXA2V3spZmWYYJeLNyIBuaJznVYnN/IYZq/wStIECPTJM7CMU7X09CwabM8C7Stj4xA==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com; 
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=E4YCe9ZI3MUPLdITUwFbvybwd2udMN9GCnKhkMHjF94=;
- b=VzNE3YB9NcayhgbujPxMa0s+mScM5bXPyT7qtpiKnZywSqtib+6CdZquU8L1RQdxkQonoTSdepIdYz9X99BGvRKDgwTwuNs5n6zdpAzkoOO3dvo3Zhgu3zMMoeR8ynLyDjQB5MEsT6sVp1s6HOBOmCrAPRbgk24CteCgLF4G+PuHSTIW82ZuPsH52LzVkgRG4qxHXCXIOjCO8T9L/Fh7fFOHA+SN+zhpA+RvFwLvwuUFblyckQPXXe5If8bXSWhZHld0NGNLYsfxNCakTk5NBb9d+NDVGkd41umKktAXUdkq52G8jkLEgk2vladeLJqtLtNZ3OoHE2djAEaVIxqR4Q==
+ bh=gRYCWlv+yZFwJ1ufp3rdlK0vAL1StXhbu8EYeu5DYDk=;
+ b=JsFmMK7S+FIr608uBydXSqjKPxSNa5202eveNWlvmrgYY9hxHj2h8rPrutH+Bz/W6RK9OKkvu6psk329lBhByhHQguy2tNL+JJt3+1m2WVz5YbsBEPXYTBWifBvxRtV9z0/PmkI2r6zEZQw1m0fhI4c0Oc6gZ21nqmIfWHhu1adhjV5deoDxM9P853msk/cOauH0HrJcfHtb8jPAzMozj3RAMjJAxdBZlZ7dsNwgIF8Lt99qb+WlOfxjDwEWWLb6rszlXDC+XWY31kAXwkhd72xWgf+JA7z8UhEMaBtoA0QChD1TkZGUW45g0n3P/M6hf9pAr7hrLy//5sxB8hHbGg==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
  smtp.mailfrom=arm.com; dmarc=pass action=none header.from=arm.com; dkim=pass
  header.d=arm.com; arc=none
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=armh.onmicrosoft.com; 
  s=selector2-armh-onmicrosoft-com;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=E4YCe9ZI3MUPLdITUwFbvybwd2udMN9GCnKhkMHjF94=;
- b=gXqZiAi4J+18FRoPEEe2I/Eyq/C6YesckMP+/X4PuH9chs7ABkF/r1YnME8qsC0XED5iqdK6G32DzHi4Zk2DSRBMBgzsqypjrP/gab8vRts6YXNF4Q4lvtOgA94oT2hqmM8yD0qlfNSykpXhn4uXu5r6MiyGTtxupXIb88NPfeI=
+ bh=gRYCWlv+yZFwJ1ufp3rdlK0vAL1StXhbu8EYeu5DYDk=;
+ b=skGs8jWUvaTL/2qby5xQYRXMMoK4TWGzYymU1ALK9TL4GEvbeGe7hfO9Y4kXT+jedS1pFrDbf1sk8cgjtLHBXl6BPTCwpHgXczMhYZpwCo+L38ibGp1ao7v44Y9S3HgNbZH2vrmcIJf3wrN8oTNcmDhK0tdwp6VVqbHo+bXsG7k=
 Authentication-Results-Original: huawei.com; dkim=none (message not signed)
  header.d=none;huawei.com; dmarc=none action=none header.from=arm.com;
 Received: from AM0PR08MB3268.eurprd08.prod.outlook.com (2603:10a6:208:65::26)
- by AM9PR08MB5890.eurprd08.prod.outlook.com (2603:10a6:20b:281::23)
+ by AM0PR08MB4403.eurprd08.prod.outlook.com (2603:10a6:208:141::17)
  with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3912.17; Fri, 12 Mar
- 2021 12:49:31 +0000
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3933.31; Fri, 12 Mar
+ 2021 12:54:33 +0000
 Received: from AM0PR08MB3268.eurprd08.prod.outlook.com
  ([fe80::b55a:5a00:982b:a685]) by AM0PR08MB3268.eurprd08.prod.outlook.com
  ([fe80::b55a:5a00:982b:a685%6]) with mapi id 15.20.3933.032; Fri, 12 Mar 2021
- 12:49:31 +0000
-Subject: Re: [PATCH RFC v1 05/15] iommu/arm-smmu-v3: Set sync op from consumer
- driver of cd-lib
+ 12:54:33 +0000
+Subject: Re: [PATCH RFC v1 06/15] iommu/virtio: Add headers for table format
+ probing
 To: Jean-Philippe Brucker <jean-philippe@linaro.org>
 References: <20210115121342.15093-1-vivek.gautam@arm.com>
- <20210115121342.15093-6-vivek.gautam@arm.com> <YD/ETcVwWATG4M6e@myrica>
+ <20210115121342.15093-7-vivek.gautam@arm.com> <YD/ExjIwG/as52CI@myrica>
 From: Vivek Kumar Gautam <vivek.gautam@arm.com>
-Message-ID: <8ca14697-06d8-86f7-50d9-fd9a7fdfda11@arm.com>
-Date: Fri, 12 Mar 2021 18:19:23 +0530
+Message-ID: <375eae7c-4bfd-331d-4dbb-2cba857ae369@arm.com>
+Date: Fri, 12 Mar 2021 18:24:25 +0530
 User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
  Thunderbird/68.10.0
-In-Reply-To: <YD/ETcVwWATG4M6e@myrica>
+In-Reply-To: <YD/ExjIwG/as52CI@myrica>
 Content-Language: en-US
 X-Originating-IP: [217.140.105.56]
-X-ClientProxiedBy: PN1PR01CA0096.INDPRD01.PROD.OUTLOOK.COM (2603:1096:c00::12)
- To AM0PR08MB3268.eurprd08.prod.outlook.com
+X-ClientProxiedBy: PN1PR0101CA0001.INDPRD01.PROD.OUTLOOK.COM
+ (2603:1096:c00:e::11) To AM0PR08MB3268.eurprd08.prod.outlook.com
  (2603:10a6:208:65::26)
 MIME-Version: 1.0
 X-MS-Exchange-MessageSentRepresentingType: 1
 Received: from [10.162.16.71] (217.140.105.56) by
- PN1PR01CA0096.INDPRD01.PROD.OUTLOOK.COM (2603:1096:c00::12) with Microsoft
- SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.20.3912.17 via Frontend Transport; Fri, 12 Mar 2021 12:49:28 +0000
+ PN1PR0101CA0001.INDPRD01.PROD.OUTLOOK.COM (2603:1096:c00:e::11) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3912.17 via Frontend
+ Transport; Fri, 12 Mar 2021 12:54:29 +0000
 X-MS-PublicTrafficType: Email
 X-MS-Office365-Filtering-HT: Tenant
-X-MS-Office365-Filtering-Correlation-Id: a501ba40-58ab-40f4-9ade-08d8e5554da6
-X-MS-TrafficTypeDiagnostic: AM9PR08MB5890:|DB8PR08MB5259:
+X-MS-Office365-Filtering-Correlation-Id: 3de73828-c112-4a14-744e-08d8e5560216
+X-MS-TrafficTypeDiagnostic: AM0PR08MB4403:|AM9PR08MB6129:
 X-MS-Exchange-Transport-Forked: True
-X-Microsoft-Antispam-PRVS: <DB8PR08MB52598603DE9A6174D9CA7532896F9@DB8PR08MB5259.eurprd08.prod.outlook.com>
+X-Microsoft-Antispam-PRVS: <AM9PR08MB61299E351142AA929E2F7F41896F9@AM9PR08MB6129.eurprd08.prod.outlook.com>
 x-checkrecipientrouted: true
 NoDisclaimer: true
 X-MS-Oob-TLC-OOBClassifiers: OLM:8882;OLM:8882;
 X-MS-Exchange-SenderADCheck: 1
 X-Microsoft-Antispam-Untrusted: BCL:0;
-X-Microsoft-Antispam-Message-Info-Original: xpFnz6OsoqM9FlYkZoFWr/++HkjFIxIbTmk2pIM8etQWcgpZG0a1hnnX5kvUr31ZfkCiZHDAoSTzHX3C1Xo5kT/nLLBvNC2URZ6QBajgrdyUfpPsnKChrsrouhfz1jt64qId+NNrOit8C3ZAydMJtvHuP99ahy84bVkafIgNBrmW6K+ohBdbWwyxklhIW+z8KVfMMua1rQ1nBOi2tILvgT0hDnfSRKuhQCDW15jNxdb1XJqoxrlWujdqbWJacQ8wwmN2yA7svJrheBJDueXjnDW/GgXW4v1RZoU9sg50p146maf89BIN6j6mOH7Og11qIUyX0x4W2YKRH5up8ckkU85qQXYAEaLZ54sbAmjO5z3IyOPzVqm47rFbytdmFhmCfXSkqm3A1Rl7VOGSXI4rqrcj9upgLO+SD16FX9LrFOQQEf2fO/BmftPJaGQToFhm0HJWp0kjIOUMCLdAdx3VBbd/wW3Pj7a4Ca3m6HRLYR0gBxrPFe2RAfAvQmFZ+P7qRie18AIbQeLrclmKDzsPNu2a5ez5FSUXn8UeflSFeeT9t1nF82vm3ZHIGVXRvnKWFS0v3CgZhG+domBOJkBLT3GHFvxZ+b1On+vLIvEhkPg=
+X-Microsoft-Antispam-Message-Info-Original: E9678DsWv6Y7XvWJ9/ZYkCxLWtRMcrBFELBvGejU0RJ/S/ymPdwxdQthkiglqipmvBO6uNKyflMJL4dOetv8lF0vo7Jp4o42JiKumFTlCmBIzHNHURwolOkR518i6gPXPDpfcGW3uVvy2R2lWQ/NcD0LiuErUh63WYzNLgkauvk6SOYm5L8UEMWxaW5GE3U90ynRoT1MS/448gpqG5VwMjMhPimDPZ10a5VBl7XjFQLT651q7YnuWk8JH6o+7yAx+ok2k6UKfL4kMm0HlQz1PqOvJ9ZClkmCaxR7xIbT46R4+98IbLPsrzg11Lzy5tu0OuXLa4mx6OevAXJ4ntcSn+f256Zf/1N+RFuCQ6ZDXH43Mn+1X+qu8NIG+RvVuFaVe7GUHxkstYEfY2cJ+PYOTjr7QUjden8Bym3EPJsrnBi2sBtN5FLPkSB2NOed1KN+0ph5ollYrdd9YdG3t7/bGZr3KaPxUifdVIcU58j9onZzTuAqiOk6WHKGJqamFwIrcB3bhIvXpl1P7rr0M0zehu5Bsv09rf/L4gjdgbBQfF//rPOcN+oZNeWlrSCYOs/m2iqKRxBlcgxNSyDnYm9i3sGiyOujtq04Kh5sezjVJtw2dWOUY11TOhm0jW0xSzJW5qdWXUf1aiQk73eAmnU0CBC3Q0N+E1AIPXYtIXwGbFK5wkS7s0Vs0mFpqo7t0mYI9KdkOyDCRzi98fz3Q+Azd6S273e75hyrrnUDf0pZjX4=
 X-Forefront-Antispam-Report-Untrusted: CIP:255.255.255.255; CTRY:; LANG:en;
  SCL:1; SRV:; IPV:NLI; SFV:NSPM; H:AM0PR08MB3268.eurprd08.prod.outlook.com;
  PTR:; CAT:NONE;
- SFS:(4636009)(376002)(396003)(346002)(366004)(39860400002)(136003)(86362001)(478600001)(8936002)(16526019)(186003)(31696002)(6666004)(956004)(2616005)(5660300002)(6916009)(66476007)(31686004)(66946007)(66556008)(16576012)(26005)(52116002)(83380400001)(316002)(53546011)(8676002)(2906002)(6486002)(4326008)(7416002)(36756003)(43740500002)(45980500001);
+ SFS:(4636009)(346002)(376002)(39860400002)(136003)(396003)(366004)(83380400001)(36756003)(52116002)(31696002)(31686004)(53546011)(316002)(86362001)(16576012)(6486002)(66946007)(6916009)(66556008)(66476007)(5660300002)(966005)(8936002)(478600001)(8676002)(2906002)(4326008)(16526019)(186003)(6666004)(26005)(7416002)(956004)(2616005)(43740500002)(45980500001);
  DIR:OUT; SFP:1101; 
-X-MS-Exchange-AntiSpam-MessageData: =?utf-8?B?RElyQjBBclZYRW8rdmZWMlFoWVBNNUtvL3lrZEZGVWxqQzAybWNaV09aOEx5?=
- =?utf-8?B?RUdmbUJCSjVLdXNTNkI1K0w5enVBbzJmS1dpdDRmTE1sTjVIMUlkWkphTXhW?=
- =?utf-8?B?TE0zYXNFME9CY1l6TUhZVEhaRGtNczNMNFhRSFhFZVBaYzM1eHhkT2R3enJK?=
- =?utf-8?B?Q2hiQnZ4d29uS1BKZ3F0K1drYk44UEFudng1OGp2cjVhR1MvazdCUG9aYitr?=
- =?utf-8?B?dWg5N3NvK2xBSmt6dWdXcDFIbEZtSGd3N1BRYUREL2IxdkdFaGlNQ2g5NUNH?=
- =?utf-8?B?V3lPUC81MXRScldlZ0JTdlp0a1ZiN3oyK1BwbllySDBMNjVwQXRTRkZoSTFx?=
- =?utf-8?B?VmwvVGl3QVlMVGJydXBaTlc3ZkNESmxnYkhTaFlienQwZFRKSHYxWjNyS3oy?=
- =?utf-8?B?ODE3QWtMVE5LV2FRVHBKS0tsNVUzK0NkTElzM0FRaXUyMlRvVHpCdVVnU1NZ?=
- =?utf-8?B?b1hpNnNqdEJQL3RWMDlLaitmWFZ4OEI4TGRJZkFMa05wdGNxVk42eVVnZ3VJ?=
- =?utf-8?B?UVNvM3BHMzlGSEtSa0UwWWZIMkN4TVNKeDVYN1RXRUIrMFhTT3JkWmF1Qmx0?=
- =?utf-8?B?V1VCWStqM21UaUVHdUJ4c3oxSDlZOHZ5TG1WbkpqSkZZYkRXRjV2RnRhWXZY?=
- =?utf-8?B?RmJSeHNJM1Q3S3hxcUVEUU00VVZRc0J2Tnp2L0oybVA4UjdJenRTTlVYbUpH?=
- =?utf-8?B?TlE1b1VRYzdxNk9KbUFrcW1LRzZjL1cvQUFhZHdQcXpkTjhNMFRLTGxMRWVk?=
- =?utf-8?B?NUlieGtQZFphWlJRN01vajF0WU1BcVZ5Y1VvRUdjYlAxb0xmcGI4dlp4RFZo?=
- =?utf-8?B?Y3FVeHJYRjhYbjQvM0lGNzFRTk53YVNjZWNHQ0FDRG1QQnBjRlMzUjhhZUxs?=
- =?utf-8?B?ZHpRa1UybjdHWHFHVXlBRk9hOTJZRWNLMkFOYURNOFgwcHIxdXJSZmV6MEEv?=
- =?utf-8?B?SjB0MFB0NmVYc0RNMlg2c0NDdG1JdkJPQ1V5OUJKYmhrRFdDNjNabXlERTZ5?=
- =?utf-8?B?TWpIT2VPZFNrcExGbGJnUVRLM1dRbHl3bFFRYmtab1hiVk1PTjBzeWJjOURJ?=
- =?utf-8?B?dkhDWmtPdytyMXY1Q2VMWW5HNHdTdFh2MjJIVXU2N0VjUVNNdldlNW43cUh4?=
- =?utf-8?B?RkJlQU1Id1I2RUtMUXdWMk1hQ2h2bklXeGhZaWJlUW42UEpyS052UmF0OFNQ?=
- =?utf-8?B?Zy9xeVdRSW40VWlJd3d0eFJidzlRK2dEV3JKcjVSRW9JY0ZBWWY5ams1NmhL?=
- =?utf-8?B?TkVMbFFGUCtvODhxV2JVNE5sUXo0Q1orYVdPcmUvTUxXbWkyV2dEUjRKWU04?=
- =?utf-8?B?eUV0U3gzK3RHdmEzNGVEWllUdmdRNy8xYllxMWFlall3OUQra1Z6QllJWHJK?=
- =?utf-8?B?ZVdZZ1VJT3NEdkRxYlpCTjRiaGhSUUNTZXRrRmxWTHZMcy82Q3g4NTBybDBj?=
- =?utf-8?B?RVUyTFVzWlVPMDZNTzNNd1B6dm9MdmRCZGFZM1IrTFQyaG4wQ3VEQ3BSazFE?=
- =?utf-8?B?VDVUdVo3VGtaVDA1WE9RWktrNytiYUo2akZ4RXpkODRBampFMkJid1YybnZX?=
- =?utf-8?B?RFZwczBvTU43dm9sOGFJcCtHQk1DanJNekp3RVFBYlFiUG1wbXY1Z0UvYUpY?=
- =?utf-8?B?M0RLZUhjUVJOK21JMWpvY2pHQ0FMTTlLcWdxOUNyVnR4Z0FyVEcwdVI3d1g1?=
- =?utf-8?B?N2tueFdWMnptVHlwSStxaHBtcU0vOGJKOTlMaHEyM3ErK0NneU55SjJEMGo1?=
- =?utf-8?Q?R7YDRa9veMqAVS+msCkImDtb3hSblT1yFW6VGhp?=
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: AM9PR08MB5890
+X-MS-Exchange-AntiSpam-MessageData: =?utf-8?B?cngvNURjaVJvbFFIVlBxZWkzRGV2ZjRsRXJDQW9haFJ4WlpDUlM3TWphVyt4?=
+ =?utf-8?B?L3pES0NOTXJKZHorUjdqZjZUTW1EOWhpMzNEdTdnOXBzRUdSYlkrblMzT011?=
+ =?utf-8?B?V3UwNEc5MmJpUkt5UTI1TldyLzdITG1sKzRiUytQNGFVQkNtM2kzeUV6ZnZx?=
+ =?utf-8?B?MGV2VHRkUXgrOVNjcUtyc3dhMFJpOEFNZTZMVEUwdFFrMEl3S2gzR2JxbXQy?=
+ =?utf-8?B?Rjhqb3ZQSnAxWml1QXpTVWNhN2tsVkk0WWx6bWpzVkx6Q1pLRXQ3eGQ4MjF4?=
+ =?utf-8?B?MnVaYTFEZHFzZHFIUG9FRkI2R1pjSUVMYS9Xa3VnTjZkY21sTmJoQjRtRjdv?=
+ =?utf-8?B?NlArZW5DWjdBekVvS0t6MVhSQklXZ0tpYW9jOUFVN0ZzYnhTRXc2d1EzcGpj?=
+ =?utf-8?B?cHhadXZIaVBpTEZaQm9qRnpHS1FuTE41ZGxycWpSV1JFRjJ0V3EybmxkZzdr?=
+ =?utf-8?B?ZzlRQ2U2NTNRcDJMYnBzNk9Jc3FwM1c3cFVCQVNnZlR4cSsxTUNrNkJ4RDBL?=
+ =?utf-8?B?dnNXblZZRFZjWW1mbVJ0WE5zR2pRdTlIZ3ROd0hJLzN1TlE1YzNKVUxURWU3?=
+ =?utf-8?B?ZnduNVM3Y1BEbGUwUmd5TjM0ZXBsOEprRC8zaVF0cUZoN3FOSHR1UlZjdjZ1?=
+ =?utf-8?B?eFBYSDQvS3F5UDZ4amJHU00waDk3bG9sVmZtRm9yOVQwWWo1U05Mb25WUDFz?=
+ =?utf-8?B?QSt5SWlUTkZQd084WjEyenMzREs5YVY1bElmWk83a1J2Q24zNTBIdnBVMzlT?=
+ =?utf-8?B?L1U1UmlCTTUvYlVhZURvc0RyQUJFMlQxQVRoaGhZSFBMcUFTTUxtVEhMdzRN?=
+ =?utf-8?B?U2NPTGVSd0UwcEZxZEZacTVpY2V3WllxeEhkWVgvUEJvNXZYWmp2aFhCZ2cw?=
+ =?utf-8?B?OUdVMmtueXYvQ09tMHltekN4dEdIWXJaVWJxZnZpZlJBR3lLWjZhRjAzZXdi?=
+ =?utf-8?B?S1ZBSFBaRlBWSWRGQXJscjRqVGFHRFNBMEdEMUQ0YmRJMW4yUGxCZ2RvM0x4?=
+ =?utf-8?B?OFBldktTT2dNNHZHaDFvUmQ2MnpRZW5oQVhqaEVZK0V1aS9qT3VPbmhxR0Na?=
+ =?utf-8?B?NlJYa3o0d3ZEL1ZHaWdEcW5aUHcrQTZwRWl6SUFVc3dJY1RMSXF5dEg2c0h4?=
+ =?utf-8?B?UTZUd2czMEJLZE5hRVc1NGhEK1R3aVFFQk1mb05CdGp0RWpsTUFCdDhVd1ZT?=
+ =?utf-8?B?eTlLampSUktxMzdaV01jcjlKOUNaU3FPQTFQN3l5NWlucTR4NmRNb2VucExo?=
+ =?utf-8?B?QUlKUCtVYlZsdXh0WFlqcTc0MVNMMmlzRG4xQkRXK2FDUjhlSzdTcU9GQWRa?=
+ =?utf-8?B?OS9JQnVrcU9hNTB3T1VOazNFaFg2SEhpbDl3ZDIxVmVOdFJySHhCKzdMN3VD?=
+ =?utf-8?B?ZTVHQmR5ZklhVzlsMk9QMkNpM0J4YmdoTmtkRVNiN3JFQnB2b3NCdFc0WXo3?=
+ =?utf-8?B?Q0taclNONDFEeU1oSHBtVEdXOGNJeGRudFdzTExoMFdIUkdNZEZ5dXdSeitu?=
+ =?utf-8?B?YUNaSjNnY2NBa2hMSC9pNWl0SlExTHR6Wk1EdXpmLzZGQ3BxaExIMG12aGNQ?=
+ =?utf-8?B?WFhOUzZyc1hwVVpyNW95MGFORjBGUGF4eFpOWjhXQ2NJNC93WmI2L1pXZGFG?=
+ =?utf-8?B?eE51UXloVE5aUFNCMUQ4eEZ6T1NRekE3RlRXREMweHZVU0RkZjFTbGZLYlFn?=
+ =?utf-8?B?MkFkc240Um92dEcxcjViMG5FNWdXcFVuMjE1NWJhWFI0OVJxY1FTQ0NSWGtV?=
+ =?utf-8?Q?7Yjv8/bDDzwA5N7O8YnpYXU4lsn8WE7wxj8CQ7e?=
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: AM0PR08MB4403
 Original-Authentication-Results: huawei.com; dkim=none (message not signed)
  header.d=none;huawei.com; dmarc=none action=none header.from=arm.com;
 X-EOPAttributedMessage: 0
-X-MS-Exchange-Transport-CrossTenantHeadersStripped: DB5EUR03FT041.eop-EUR03.prod.protection.outlook.com
-X-MS-Office365-Filtering-Correlation-Id-Prvs: f1b31c8b-ac77-4f31-463f-08d8e5554767
+X-MS-Exchange-Transport-CrossTenantHeadersStripped: AM5EUR03FT057.eop-EUR03.prod.protection.outlook.com
+X-MS-Office365-Filtering-Correlation-Id-Prvs: 4f1a8829-bd5d-4ef5-8560-08d8e555fb48
 X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: UHQiYlbmPFEVBjAugODf090aRD46X/4997S+Km1tyFWutqZpCJrj+A3aYlWYGQMccthrk7kioe6dMidYZ0opwiSBUVbrrULMYMCQuZFnIiTkLQkaslNl0bF3+1GrDUPFIvriTmTNMnWFFd/29b7/WTCW2UzKDoeNL7ZfM1iKInbJIvXwokU+zUncjpaeEZNtGtSukutz7DSCECgiU3ZR6SG+Yzq3LZ93nEchVhgZv98P5DOgzxrVI/4eSBponypD0osAY/xgLFvs27cd5jdm+8POXTrhfBZM8PetHjG2DqwhTxIHkFpmeGeLwfK2g3FmoQeDKWEkK/yaSDrYbntDkbDUThnfaVTWtOsfAba6WeiEbukF7wDg8+H2bx2v1uf7+QSAa6AxsXaL3OJyqS1x/zgYfL0hLoYWcyR5l0SQRmJD344b5BDa16eZB52GFIDVAnxuUpS+zk1wAZVaZkV2tsp672FdlBf2rQdetFphl+bDLkBexjZQbNfnnJNk6QfbEm0KrR+SoUJ7/qpQrvCprtOZTZW1c5h2vYNVzgcYCBEdN7jqGV37yCkqPKnefWGo0+FORs9YrbJCMUP1eGJvh5ZcuAEBMC9K7vJkEjqIy9Qp7HJg40VRdCRrE304ywgq6GI30rBzxWpX0d+cWa2QAoQnuinrv0HjRmASEXmKK4cVKWy2y3RVe4RZr2N8r3uw
+X-Microsoft-Antispam-Message-Info: 6Fqp1b3LqjgIZB/Uo56kKrFz7KwIh/VD/EcWgVev9P7guHttSCGSrWSlMHtqEs26agLsYxdEuyruUPg9VSC2fVLV7j+Pa+TSMkh7mnyBii5tfltVWoGBFAXBPyupOD1lPq8U19vjGufORFcTRjGQUhaHjlzSJjURntklkfhskEt7dqJAyQNkv2IH+KjwC0mHypipkxhSbLH2lbnCFoohitOeNt7m5WzU6zNanOXHefJWURpb3vR+NveZ44fzwps3zdTN6kzvXM8JPOP0fMBddw8eEK2sJurkSScaOxzibdO2sZ2ovm6bogr433IuzPlbIzOkoUwzFIEbGw+Mf5OmQlUOYlI1hyA+qbXWrf7HDsv2r4We7wSCNOGl+9PLVSHZknCKf4XMOfiWC5OYQTyuHsoNoaeX79jL2O+1BQXC8cvFiwq+Aoc8abCFNWDp9qk3v/4FC+f8V+AphvThfDbNSPxLtk43VrQpLafiSXBTfcoNl4UsRD69V2rRq9c1IJ/Nybyl/03xEq1CZfp5ex2K4MyhQIJTi9P8fhGmomcpbFPbmo6lNygvHU7Bfznv6iaVifRA+Ws2eDtgEO+k+wl70l0I8au6x3YVJYnFPLiDW2MJTRCnE8mDDPyFPw8HsKpUSEmFVQGgTWxZ7ZUcTni5OClUIZuBHBPEVmSq86INTZN2U9lZoTuzwM/YbGMqKmN/KsWj9HX1ZrBov00/v/naObe5cjLkVu+B9R8n2ictroRg94nc89YTTxcVKWwanERJ1T760551sBjt17CBkoH7MQ==
 X-Forefront-Antispam-Report: CIP:63.35.35.123; CTRY:IE; LANG:en; SCL:1; SRV:;
  IPV:CAL; SFV:NSPM; H:64aa7808-outbound-1.mta.getcheckrecipient.com;
  PTR:ec2-63-35-35-123.eu-west-1.compute.amazonaws.com; CAT:NONE;
- SFS:(4636009)(396003)(346002)(136003)(376002)(39860400002)(36840700001)(46966006)(82740400003)(70586007)(36860700001)(6486002)(47076005)(8676002)(26005)(5660300002)(478600001)(2906002)(4326008)(186003)(2616005)(6862004)(8936002)(107886003)(31686004)(70206006)(86362001)(6666004)(450100002)(31696002)(336012)(82310400003)(53546011)(356005)(956004)(16526019)(316002)(81166007)(83380400001)(16576012)(36756003)(43740500002);
+ SFS:(4636009)(136003)(396003)(39860400002)(376002)(346002)(36840700001)(46966006)(107886003)(6486002)(956004)(70586007)(26005)(6666004)(16526019)(6862004)(186003)(5660300002)(2616005)(70206006)(16576012)(2906002)(316002)(47076005)(82740400003)(31686004)(81166007)(36756003)(966005)(478600001)(83380400001)(31696002)(36860700001)(82310400003)(336012)(86362001)(8676002)(53546011)(450100002)(4326008)(356005)(8936002)(43740500002);
  DIR:OUT; SFP:1101; 
 X-OriginatorOrg: arm.com
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 12 Mar 2021 12:49:41.0570 (UTC)
-X-MS-Exchange-CrossTenant-Network-Message-Id: a501ba40-58ab-40f4-9ade-08d8e5554da6
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 12 Mar 2021 12:54:43.7109 (UTC)
+X-MS-Exchange-CrossTenant-Network-Message-Id: 3de73828-c112-4a14-744e-08d8e5560216
 X-MS-Exchange-CrossTenant-Id: f34e5979-57d9-4aaa-ad4d-b122a662184d
 X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=f34e5979-57d9-4aaa-ad4d-b122a662184d; Ip=[63.35.35.123];
  Helo=[64aa7808-outbound-1.mta.getcheckrecipient.com]
-X-MS-Exchange-CrossTenant-AuthSource: DB5EUR03FT041.eop-EUR03.prod.protection.outlook.com
+X-MS-Exchange-CrossTenant-AuthSource: AM5EUR03FT057.eop-EUR03.prod.protection.outlook.com
 X-MS-Exchange-CrossTenant-AuthAs: Anonymous
 X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: DB8PR08MB5259
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: AM9PR08MB6129
 Cc: kevin.tian@intel.com, alex.williamson@redhat.com, mst@redhat.com,
  will.deacon@arm.com, linux-kernel@vger.kernel.org,
  virtualization@lists.linux-foundation.org, iommu@lists.linux-foundation.org,
@@ -229,14 +234,35 @@ Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
 
 
-On 3/3/21 10:45 PM, Jean-Philippe Brucker wrote:
-> On Fri, Jan 15, 2021 at 05:43:32PM +0530, Vivek Gautam wrote:
->> Te change allows different consumers of arm-smmu-v3-cd-lib to set
->> their respective sync op for pasid entries.
+On 3/3/21 10:47 PM, Jean-Philippe Brucker wrote:
+> On Fri, Jan 15, 2021 at 05:43:33PM +0530, Vivek Gautam wrote:
+>> From: Jean-Philippe Brucker <jean-philippe.brucker@arm.com>
 >>
+>> Add required UAPI defines for probing table format for underlying
+>> iommu hardware. The device may provide information about hardware
+>> tables and additional capabilities for each device.
+>> This allows guest to correctly fabricate stage-1 page tables.
+>>
+>> Signed-off-by: Jean-Philippe Brucker <jean-philippe.brucker@arm.com>
+>> [Vivek: Use a single "struct virtio_iommu_probe_table_format" rather
+>>          than separate structures for page table and pasid table format.
+> 
+> Makes sense. I've integrated that into the spec draft, added more precise
+> documentation and modified some of the definitions.
+> 
+> The current draft is here:
+> https://jpbrucker.net/virtio-iommu/spec/virtio-iommu-v0.13.pdf
+> Posted on the list here
+> https://lists.oasis-open.org/archives/virtio-dev/202102/msg00012.html
+
+Thanks, I took an initial look, will review it this week.
+
+> 
+>> 	Also update commit message.]
 >> Signed-off-by: Vivek Gautam <vivek.gautam@arm.com>
 >> Cc: Joerg Roedel <joro@8bytes.org>
 >> Cc: Will Deacon <will.deacon@arm.com>
+>> Cc: Michael S. Tsirkin <mst@redhat.com>
 >> Cc: Robin Murphy <robin.murphy@arm.com>
 >> Cc: Jean-Philippe Brucker <jean-philippe@linaro.org>
 >> Cc: Eric Auger <eric.auger@redhat.com>
@@ -247,48 +273,98 @@ On 3/3/21 10:45 PM, Jean-Philippe Brucker wrote:
 >> Cc: Lorenzo Pieralisi <lorenzo.pieralisi@arm.com>
 >> Cc: Shameerali Kolothum Thodi <shameerali.kolothum.thodi@huawei.com>
 >> ---
->>   drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3-cd-lib.c | 1 -
->>   drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c        | 7 +++++++
->>   2 files changed, 7 insertions(+), 1 deletion(-)
+>>   include/uapi/linux/virtio_iommu.h | 44 ++++++++++++++++++++++++++++++-
+>>   1 file changed, 43 insertions(+), 1 deletion(-)
 >>
->> diff --git a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3-cd-lib.c b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3-cd-lib.c
->> index ec37476c8d09..acaa09acecdd 100644
->> --- a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3-cd-lib.c
->> +++ b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3-cd-lib.c
->> @@ -265,7 +265,6 @@ struct iommu_vendor_psdtable_ops arm_cd_table_ops = {
->>   	.free	 = arm_smmu_free_cd_tables,
->>   	.prepare = arm_smmu_prepare_cd,
->>   	.write	 = arm_smmu_write_ctx_desc,
->> -	.sync	 = arm_smmu_sync_cd,
+>> diff --git a/include/uapi/linux/virtio_iommu.h b/include/uapi/linux/virtio_iommu.h
+>> index 237e36a280cb..43821e33e7af 100644
+>> --- a/include/uapi/linux/virtio_iommu.h
+>> +++ b/include/uapi/linux/virtio_iommu.h
+>> @@ -2,7 +2,7 @@
+>>   /*
+>>    * Virtio-iommu definition v0.12
+>>    *
+>> - * Copyright (C) 2019 Arm Ltd.
+>> + * Copyright (C) 2019-2021 Arm Ltd.
+> 
+> Not strictly necessary. But if you're modifying this comment please also
+> remove the "v0.12" above
+
+Sure, let me keep the copyright year unchanged until we finalize the 
+changes in draft spec.
+
+> 
+>>    */
+>>   #ifndef _UAPI_LINUX_VIRTIO_IOMMU_H
+>>   #define _UAPI_LINUX_VIRTIO_IOMMU_H
+>> @@ -111,6 +111,12 @@ struct virtio_iommu_req_unmap {
+>>   
+>>   #define VIRTIO_IOMMU_PROBE_T_NONE		0
+>>   #define VIRTIO_IOMMU_PROBE_T_RESV_MEM		1
+>> +#define VIRTIO_IOMMU_PROBE_T_PAGE_SIZE_MASK	2
+>> +#define VIRTIO_IOMMU_PROBE_T_INPUT_RANGE	3
+>> +#define VIRTIO_IOMMU_PROBE_T_OUTPUT_SIZE	4
+>> +#define VIRTIO_IOMMU_PROBE_T_PASID_SIZE		5
+>> +#define VIRTIO_IOMMU_PROBE_T_PAGE_TABLE_FMT	6
+>> +#define VIRTIO_IOMMU_PROBE_T_PASID_TABLE_FMT	7
+> 
+> Since there is a single struct we can have a single
+> VIRTIO_IOMMU_PROBE_T_TABLE_FORMAT.
+
+Right, that would make sense.
+
+> 
+>>   
+>>   #define VIRTIO_IOMMU_PROBE_T_MASK		0xfff
+>>   
+>> @@ -130,6 +136,42 @@ struct virtio_iommu_probe_resv_mem {
+>>   	__le64					end;
 >>   };
 >>   
->>   struct iommu_pasid_table *arm_smmu_register_cd_table(struct device *dev,
->> diff --git a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
->> index 2f86c6ac42b6..0c644be22b4b 100644
->> --- a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
->> +++ b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
->> @@ -1869,6 +1869,13 @@ static int arm_smmu_domain_finalise_s1(struct arm_smmu_domain *smmu_domain,
->>   	if (ret)
->>   		goto out_free_cd_tables;
->>   
->> +	/*
->> +	 * Strange to setup an op here?
->> +	 * cd-lib is the actual user of sync op, and therefore the platform
->> +	 * drivers should assign this sync/maintenance ops as per need.
->> +	 */
->> +	tbl->ops->sync = arm_smmu_sync_cd;
+>> +struct virtio_iommu_probe_page_size_mask {
+>> +	struct virtio_iommu_probe_property	head;
+>> +	__u8					reserved[4];
+>> +	__le64					mask;
+>> +};
 >> +
+>> +struct virtio_iommu_probe_input_range {
+>> +	struct virtio_iommu_probe_property	head;
+>> +	__u8					reserved[4];
+>> +	__le64					start;
+>> +	__le64					end;
+>> +};
+>> +
+>> +struct virtio_iommu_probe_output_size {
+>> +	struct virtio_iommu_probe_property	head;
+>> +	__u8					bits;
+>> +	__u8					reserved[3];
+>> +};
+>> +
+>> +struct virtio_iommu_probe_pasid_size {
+>> +	struct virtio_iommu_probe_property	head;
+>> +	__u8					bits;
+>> +	__u8					reserved[3];
+>> +};
+>> +
+>> +/* Arm LPAE page table format */
+>> +#define VIRTIO_IOMMU_FOMRAT_PGTF_ARM_LPAE	1
 > 
-> Modifying a static struct from here doesn't feel right. I think the
-> interface should be roughly similar to io-pgtable since the principle is
-> the same. So the sync() op should be separate from arm_cd_table_ops since
-> it's a callback into the driver. Maybe pass it to
-> iommu_register_pasid_table().
+> s/FOMRAT/FORMAT
 
-Sure, will take care of this.
+Sure.
 
-Thanks & regards
+> 
+>> +/* Arm smmu-v3 type PASID table format */
+>> +#define VIRTIO_IOMMU_FORMAT_PSTF_ARM_SMMU_V3	2
+> 
+> These should be with the Arm-specific definitions patches 11 and 14
+
+Right, will add these definitions with Arm specific patches.
+
+Best regards
 Vivek
+
+[snip]
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
