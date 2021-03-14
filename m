@@ -2,95 +2,101 @@ Return-Path: <SRS0=2lDQ=IM=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-15.1 required=3.0 tests=BAYES_00,DKIM_INVALID,
-	DKIM_SIGNED,HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_CR_TRAILER,INCLUDES_PATCH,
-	MAILING_LIST_MULTI,NICE_REPLY_A,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,
-	USER_AGENT_SANE_1 autolearn=unavailable autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-12.0 required=3.0 tests=BAYES_00,
+	DKIM_ADSP_CUSTOM_MED,DKIM_INVALID,DKIM_SIGNED,FREEMAIL_FORGED_FROMDOMAIN,
+	FREEMAIL_FROM,HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_CR_TRAILER,
+	INCLUDES_PATCH,MAILING_LIST_MULTI,NICE_REPLY_A,SPF_HELO_NONE,SPF_PASS,
+	URIBL_BLOCKED,USER_AGENT_SANE_1 autolearn=ham autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 79E40C433E6
-	for <iommu@archiver.kernel.org>; Sun, 14 Mar 2021 10:45:11 +0000 (UTC)
-Received: from smtp1.osuosl.org (smtp1.osuosl.org [140.211.166.138])
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 12664C433DB
+	for <iommu@archiver.kernel.org>; Sun, 14 Mar 2021 14:49:28 +0000 (UTC)
+Received: from smtp2.osuosl.org (smtp2.osuosl.org [140.211.166.133])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 1A70F64E27
-	for <iommu@archiver.kernel.org>; Sun, 14 Mar 2021 10:45:11 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 1A70F64E27
-Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=redhat.com
+	by mail.kernel.org (Postfix) with ESMTPS id 8869164EBD
+	for <iommu@archiver.kernel.org>; Sun, 14 Mar 2021 14:49:27 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 8869164EBD
+Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=gmail.com
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by smtp1.osuosl.org (Postfix) with ESMTP id D24EE83D2D;
-	Sun, 14 Mar 2021 10:45:10 +0000 (UTC)
+	by smtp2.osuosl.org (Postfix) with ESMTP id 33BA04015A;
+	Sun, 14 Mar 2021 14:49:27 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from smtp1.osuosl.org ([127.0.0.1])
-	by localhost (smtp1.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id GS04td9yWPuS; Sun, 14 Mar 2021 10:45:09 +0000 (UTC)
-Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [IPv6:2605:bc80:3010:104::8cd3:938])
-	by smtp1.osuosl.org (Postfix) with ESMTP id 5847683A89;
-	Sun, 14 Mar 2021 10:45:09 +0000 (UTC)
+Received: from smtp2.osuosl.org ([127.0.0.1])
+	by localhost (smtp2.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+	with ESMTP id eJLHnUybVy_g; Sun, 14 Mar 2021 14:49:26 +0000 (UTC)
+Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
+	by smtp2.osuosl.org (Postfix) with ESMTP id CA71240153;
+	Sun, 14 Mar 2021 14:49:25 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 3A828C000B;
-	Sun, 14 Mar 2021 10:45:09 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 9D893C000B;
+	Sun, 14 Mar 2021 14:49:25 +0000 (UTC)
 Received: from smtp4.osuosl.org (smtp4.osuosl.org [140.211.166.137])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 2A3A5C0001
- for <iommu@lists.linux-foundation.org>; Sun, 14 Mar 2021 10:45:08 +0000 (UTC)
+ by lists.linuxfoundation.org (Postfix) with ESMTP id E9ED8C0001
+ for <iommu@lists.linux-foundation.org>; Sun, 14 Mar 2021 14:49:23 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by smtp4.osuosl.org (Postfix) with ESMTP id 0F4C449DB8
- for <iommu@lists.linux-foundation.org>; Sun, 14 Mar 2021 10:45:08 +0000 (UTC)
+ by smtp4.osuosl.org (Postfix) with ESMTP id D743B485AB
+ for <iommu@lists.linux-foundation.org>; Sun, 14 Mar 2021 14:49:23 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
 Authentication-Results: smtp4.osuosl.org (amavisd-new);
- dkim=pass (1024-bit key) header.d=redhat.com
+ dkim=pass (2048-bit key) header.d=gmail.com
 Received: from smtp4.osuosl.org ([127.0.0.1])
  by localhost (smtp4.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id c4AM7l4IiwcH for <iommu@lists.linux-foundation.org>;
- Sun, 14 Mar 2021 10:45:06 +0000 (UTC)
-X-Greylist: domain auto-whitelisted by SQLgrey-1.8.0
-Received: from us-smtp-delivery-124.mimecast.com
- (us-smtp-delivery-124.mimecast.com [216.205.24.124])
- by smtp4.osuosl.org (Postfix) with ESMTPS id 51259499F3
- for <iommu@lists.linux-foundation.org>; Sun, 14 Mar 2021 10:45:06 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
- s=mimecast20190719; t=1615718704;
- h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
- to:to:cc:cc:mime-version:mime-version:content-type:content-type:
- content-transfer-encoding:content-transfer-encoding:
- in-reply-to:in-reply-to:references:references;
- bh=eHpIhrioLYh4eORQxM4GKdpIFT9gzCBjG8gZQYhgxOo=;
- b=BNUEqBol45kseqvzTBOR54Pa24zEZS7K0LHZJOcLZawURXZFJ++X02vp/Mr7+KHvbs2VQ+
- Nmknh3AklVZHLktuJD2zGCU5jMEkMLa8beYxspqCSwPRcslWHlx3ez+WWJVBpu8oUUqvMk
- vF8WXUnfszzlfWaqtbLWbIWe2iKMKp8=
-Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
- [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-503-E9yVcn_5PrqLH04e4dxJbg-1; Sun, 14 Mar 2021 06:45:02 -0400
-X-MC-Unique: E9yVcn_5PrqLH04e4dxJbg-1
-Received: from smtp.corp.redhat.com (int-mx01.intmail.prod.int.phx2.redhat.com
- [10.5.11.11])
- (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
- (No client certificate requested)
- by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 82E7E800C78;
- Sun, 14 Mar 2021 10:44:59 +0000 (UTC)
-Received: from [10.36.112.254] (ovpn-112-254.ams2.redhat.com [10.36.112.254])
- by smtp.corp.redhat.com (Postfix) with ESMTPS id ED7A9620DE;
- Sun, 14 Mar 2021 10:44:54 +0000 (UTC)
-Subject: Re: [PATCH 15/17] iommu: remove DOMAIN_ATTR_NESTING
-To: Christoph Hellwig <hch@lst.de>, Joerg Roedel <joro@8bytes.org>,
- Will Deacon <will@kernel.org>, Li Yang <leoyang.li@nxp.com>
-References: <20210301084257.945454-1-hch@lst.de>
- <20210301084257.945454-16-hch@lst.de>
-From: Auger Eric <eric.auger@redhat.com>
-Message-ID: <3e8f1078-9222-0017-3fa8-4d884dbc848e@redhat.com>
-Date: Sun, 14 Mar 2021 11:44:52 +0100
+ with ESMTP id PapMomESCZgD for <iommu@lists.linux-foundation.org>;
+ Sun, 14 Mar 2021 14:49:22 +0000 (UTC)
+X-Greylist: whitelisted by SQLgrey-1.8.0
+Received: from mail-lj1-x235.google.com (mail-lj1-x235.google.com
+ [IPv6:2a00:1450:4864:20::235])
+ by smtp4.osuosl.org (Postfix) with ESMTPS id 01D0C4833A
+ for <iommu@lists.linux-foundation.org>; Sun, 14 Mar 2021 14:49:21 +0000 (UTC)
+Received: by mail-lj1-x235.google.com with SMTP id f26so13188949ljp.8
+ for <iommu@lists.linux-foundation.org>; Sun, 14 Mar 2021 07:49:21 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=gmail.com; s=20161025;
+ h=subject:to:cc:references:from:message-id:date:user-agent
+ :mime-version:in-reply-to:content-language:content-transfer-encoding;
+ bh=tWgDrwjuSGHNr/Jwi4GNVEPVMpjAbqpRkbs/GJ+MEPw=;
+ b=s3+h8c0kkDIz8lWxVLVL/gCuzG0UgVW75WfNZGRKWgGfRHtDKM25SEziXtgiCYtulD
+ 0ZqwZjvV03mx1ind0ki5nvjnpbSBToInPtRzJtbZhCZguznTGxVmuw0LvtRKtXIyNmjv
+ oqku7lIHvgQXOh2GhbcqEhlr3Sr8/sqeY6dGX9bDWM4TfjU2+AgH/5dmBTjictVQlM+s
+ 6dLSZyqdCpAkf/6YYM6YDEK5bnrTc/jiDFcntk+lfUafdQwBHYE4CU2dfZTK7vAgrhbt
+ vqhr6bSlBhlWfgz11RbheNjY2caAQ+CFLiQLoGdh/NUHfEcVa//vTpZMO5EqDwTo8lDp
+ k+og==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+ d=1e100.net; s=20161025;
+ h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+ :user-agent:mime-version:in-reply-to:content-language
+ :content-transfer-encoding;
+ bh=tWgDrwjuSGHNr/Jwi4GNVEPVMpjAbqpRkbs/GJ+MEPw=;
+ b=mARDfrxykhixh/ioZPS152Nnw/NnsXYdCXFSxg+1Mt9sRbLENG3BVn9LCO3RYP5kH4
+ UBu7/hTVW+dTIQokuhpkVIKeSIzM64mSKPFSz6LUj1RQIqnMy6MT59HVfemJYCL0xkO+
+ orEgkkKsUMRZl2dZay7TOQVB2QayJnWpHdq43XuO79trh0uxigIjBWmyeaNJ6U+W1jsU
+ /cZd3VO1IeLESFpXaTgVqGkqmDoEu+cBrhCrOKxpiLTbl9kVzwlTYx6hnuDyOkHImI+a
+ vx7p4IvXa7VHr0acI+ZSAKjeba1zSUgAe+7MNFoxgCtYejpWE5pdYapLWQ+pScKHCD/A
+ rM9w==
+X-Gm-Message-State: AOAM533yW9ln2FV3rZblvh61Ay8F+1Oie2SSINh/NT0okCM2B88QiEfF
+ GC2Hu1uMBhe781BeUdinHCY=
+X-Google-Smtp-Source: ABdhPJxRv3E0IJazNsp4AGTTrrYy9SXTRGCiTHMhtI8ONJu3xtHaxWulEkofg7WGfhR+lu7J0+brOw==
+X-Received: by 2002:a2e:9a4e:: with SMTP id k14mr8142435ljj.116.1615733359705; 
+ Sun, 14 Mar 2021 07:49:19 -0700 (PDT)
+Received: from [192.168.2.145] (109-252-193-52.dynamic.spd-mgts.ru.
+ [109.252.193.52])
+ by smtp.googlemail.com with ESMTPSA id z14sm2643171ljk.33.2021.03.14.07.49.18
+ (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+ Sun, 14 Mar 2021 07:49:19 -0700 (PDT)
+Subject: Re: [PATCH v3] iommu/tegra-smmu: Add pagetable mappings to debugfs
+To: Nicolin Chen <nicoleotsuka@gmail.com>, joro@8bytes.org,
+ thierry.reding@gmail.com, will@kernel.org
+References: <20210314080653.29374-1-nicoleotsuka@gmail.com>
+From: Dmitry Osipenko <digetx@gmail.com>
+Message-ID: <3392a4a9-b3f1-9c90-3de2-008241a98270@gmail.com>
+Date: Sun, 14 Mar 2021 17:49:18 +0300
 User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
- Thunderbird/78.7.0
+ Thunderbird/78.4.2
 MIME-Version: 1.0
-In-Reply-To: <20210301084257.945454-16-hch@lst.de>
+In-Reply-To: <20210314080653.29374-1-nicoleotsuka@gmail.com>
 Content-Language: en-US
-X-Scanned-By: MIMEDefang 2.79 on 10.5.11.11
-Cc: kvm@vger.kernel.org, Michael Ellerman <mpe@ellerman.id.au>,
- linux-arm-msm@vger.kernel.org, linuxppc-dev@lists.ozlabs.org,
- dri-devel@lists.freedesktop.org, virtualization@lists.linux-foundation.org,
- iommu@lists.linux-foundation.org, netdev@vger.kernel.org,
- freedreno@lists.freedesktop.org, David Woodhouse <dwmw2@infradead.org>,
- linux-arm-kernel@lists.infradead.org
+Cc: linux-tegra@vger.kernel.org, linux-kernel@vger.kernel.org,
+ iommu@lists.linux-foundation.org, jonathanh@nvidia.com
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -103,286 +109,230 @@ List-Post: <mailto:iommu@lists.linux-foundation.org>
 List-Help: <mailto:iommu-request@lists.linux-foundation.org?subject=help>
 List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
  <mailto:iommu-request@lists.linux-foundation.org?subject=subscribe>
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-Hi Christoph,
-
-On 3/1/21 9:42 AM, Christoph Hellwig wrote:
-> Signed-off-by: Christoph Hellwig <hch@lst.de>
-> ---
->  drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c | 40 ++++++---------------
->  drivers/iommu/arm/arm-smmu/arm-smmu.c       | 30 ++++++++++------
->  drivers/iommu/intel/iommu.c                 | 28 +++++----------
->  drivers/iommu/iommu.c                       |  8 +++++
->  drivers/vfio/vfio_iommu_type1.c             |  5 +--
->  include/linux/iommu.h                       |  4 ++-
->  6 files changed, 50 insertions(+), 65 deletions(-)
-
-As mentionned by Robin, there are series planning to use
-DOMAIN_ATTR_NESTING to get info about the nested caps of the iommu (ARM
-and Intel):
-
-[Patch v8 00/10] vfio: expose virtual Shared Virtual Addressing to VMs
-patches 1, 2, 3
-
-Is the plan to introduce a new domain_get_nesting_info ops then?
-
-Thanks
-
-Eric	
-
-
-> 
-> diff --git a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
-> index bf96172e8c1f71..8e6fee3ea454d3 100644
-> --- a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
-> +++ b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
-> @@ -2466,41 +2466,21 @@ static void arm_smmu_dma_enable_flush_queue(struct iommu_domain *domain)
->  	to_smmu_domain(domain)->non_strict = true;
->  }
->  
-> -static int arm_smmu_domain_set_attr(struct iommu_domain *domain,
-> -				    enum iommu_attr attr, void *data)
-> +static int arm_smmu_domain_enable_nesting(struct iommu_domain *domain)
->  {
-> -	int ret = 0;
->  	struct arm_smmu_domain *smmu_domain = to_smmu_domain(domain);
-> +	int ret = -EPERM;
->  
-> -	mutex_lock(&smmu_domain->init_mutex);
-> +	if (domain->type != IOMMU_DOMAIN_UNMANAGED)
-> +		return -EINVAL;
->  
-> -	switch (domain->type) {
-> -	case IOMMU_DOMAIN_UNMANAGED:
-> -		switch (attr) {
-> -		case DOMAIN_ATTR_NESTING:
-> -			if (smmu_domain->smmu) {
-> -				ret = -EPERM;
-> -				goto out_unlock;
-> -			}
-> -
-> -			if (*(int *)data)
-> -				smmu_domain->stage = ARM_SMMU_DOMAIN_NESTED;
-> -			else
-> -				smmu_domain->stage = ARM_SMMU_DOMAIN_S1;
-> -			break;
-> -		default:
-> -			ret = -ENODEV;
-> -		}
-> -		break;
-> -	case IOMMU_DOMAIN_DMA:
-> -		ret = -ENODEV;
-> -		break;
-> -	default:
-> -		ret = -EINVAL;
-> +	mutex_lock(&smmu_domain->init_mutex);
-> +	if (!smmu_domain->smmu) {
-> +		smmu_domain->stage = ARM_SMMU_DOMAIN_NESTED;
-> +		ret = 0;
->  	}
-> -
-> -out_unlock:
->  	mutex_unlock(&smmu_domain->init_mutex);
-> +
->  	return ret;
->  }
->  
-> @@ -2603,7 +2583,7 @@ static struct iommu_ops arm_smmu_ops = {
->  	.device_group		= arm_smmu_device_group,
->  	.dma_use_flush_queue	= arm_smmu_dma_use_flush_queue,
->  	.dma_enable_flush_queue	= arm_smmu_dma_enable_flush_queue,
-> -	.domain_set_attr	= arm_smmu_domain_set_attr,
-> +	.domain_enable_nesting	= arm_smmu_domain_enable_nesting,
->  	.of_xlate		= arm_smmu_of_xlate,
->  	.get_resv_regions	= arm_smmu_get_resv_regions,
->  	.put_resv_regions	= generic_iommu_put_resv_regions,
-> diff --git a/drivers/iommu/arm/arm-smmu/arm-smmu.c b/drivers/iommu/arm/arm-smmu/arm-smmu.c
-> index e7893e96f5177a..2e17d990d04481 100644
-> --- a/drivers/iommu/arm/arm-smmu/arm-smmu.c
-> +++ b/drivers/iommu/arm/arm-smmu/arm-smmu.c
-> @@ -1497,6 +1497,24 @@ static void arm_smmu_dma_enable_flush_queue(struct iommu_domain *domain)
->  	to_smmu_domain(domain)->pgtbl_cfg.quirks |= IO_PGTABLE_QUIRK_NON_STRICT;
->  }
->  
-> +static int arm_smmu_domain_enable_nesting(struct iommu_domain *domain)
-> +{
-> +	struct arm_smmu_domain *smmu_domain = to_smmu_domain(domain);
-> +	int ret = -EPERM;
-> +	
-> +	if (domain->type != IOMMU_DOMAIN_UNMANAGED)
-> +		return -EINVAL;
-> +
-> +	mutex_lock(&smmu_domain->init_mutex);
-> +	if (!smmu_domain->smmu) {
-> +		smmu_domain->stage = ARM_SMMU_DOMAIN_NESTED;
-> +		ret = 0;
-> +	}
-> +	mutex_unlock(&smmu_domain->init_mutex);
-> +
-> +	return ret;
-> +}
-> +
->  static int arm_smmu_domain_set_attr(struct iommu_domain *domain,
->  				    enum iommu_attr attr, void *data)
->  {
-> @@ -1508,17 +1526,6 @@ static int arm_smmu_domain_set_attr(struct iommu_domain *domain,
->  	switch(domain->type) {
->  	case IOMMU_DOMAIN_UNMANAGED:
->  		switch (attr) {
-> -		case DOMAIN_ATTR_NESTING:
-> -			if (smmu_domain->smmu) {
-> -				ret = -EPERM;
-> -				goto out_unlock;
-> -			}
-> -
-> -			if (*(int *)data)
-> -				smmu_domain->stage = ARM_SMMU_DOMAIN_NESTED;
-> -			else
-> -				smmu_domain->stage = ARM_SMMU_DOMAIN_S1;
-> -			break;
->  		case DOMAIN_ATTR_IO_PGTABLE_CFG: {
->  			struct io_pgtable_domain_attr *pgtbl_cfg = data;
->  
-> @@ -1603,6 +1610,7 @@ static struct iommu_ops arm_smmu_ops = {
->  	.dma_use_flush_queue	= arm_smmu_dma_use_flush_queue,
->  	.dma_enable_flush_queue	= arm_smmu_dma_enable_flush_queue,
->  	.domain_set_attr	= arm_smmu_domain_set_attr,
-> +	.domain_enable_nesting	= arm_smmu_domain_enable_nesting,
->  	.of_xlate		= arm_smmu_of_xlate,
->  	.get_resv_regions	= arm_smmu_get_resv_regions,
->  	.put_resv_regions	= generic_iommu_put_resv_regions,
-> diff --git a/drivers/iommu/intel/iommu.c b/drivers/iommu/intel/iommu.c
-> index eaa80c33f4bc91..0f1374d6612a60 100644
-> --- a/drivers/iommu/intel/iommu.c
-> +++ b/drivers/iommu/intel/iommu.c
-> @@ -5423,32 +5423,22 @@ static bool intel_iommu_is_attach_deferred(struct iommu_domain *domain,
->  }
->  
->  static int
-> -intel_iommu_domain_set_attr(struct iommu_domain *domain,
-> -			    enum iommu_attr attr, void *data)
-> +intel_iommu_domain_enable_nesting(struct iommu_domain *domain)
->  {
->  	struct dmar_domain *dmar_domain = to_dmar_domain(domain);
->  	unsigned long flags;
-> -	int ret = 0;
-> +	int ret = -ENODEV;
->  
->  	if (domain->type != IOMMU_DOMAIN_UNMANAGED)
->  		return -EINVAL;
->  
-> -	switch (attr) {
-> -	case DOMAIN_ATTR_NESTING:
-> -		spin_lock_irqsave(&device_domain_lock, flags);
-> -		if (nested_mode_support() &&
-> -		    list_empty(&dmar_domain->devices)) {
-> -			dmar_domain->flags |= DOMAIN_FLAG_NESTING_MODE;
-> -			dmar_domain->flags &= ~DOMAIN_FLAG_USE_FIRST_LEVEL;
-> -		} else {
-> -			ret = -ENODEV;
-> -		}
-> -		spin_unlock_irqrestore(&device_domain_lock, flags);
-> -		break;
-> -	default:
-> -		ret = -EINVAL;
-> -		break;
-> +	spin_lock_irqsave(&device_domain_lock, flags);
-> +	if (nested_mode_support() && list_empty(&dmar_domain->devices)) {
-> +		dmar_domain->flags |= DOMAIN_FLAG_NESTING_MODE;
-> +		dmar_domain->flags &= ~DOMAIN_FLAG_USE_FIRST_LEVEL;
-> +		ret = 0;
->  	}
-> +	spin_unlock_irqrestore(&device_domain_lock, flags);
->  
->  	return ret;
->  }
-> @@ -5556,7 +5546,7 @@ const struct iommu_ops intel_iommu_ops = {
->  	.domain_alloc		= intel_iommu_domain_alloc,
->  	.domain_free		= intel_iommu_domain_free,
->  	.dma_use_flush_queue	= intel_iommu_dma_use_flush_queue,
-> -	.domain_set_attr	= intel_iommu_domain_set_attr,
-> +	.domain_enable_nesting	= intel_iommu_domain_enable_nesting,
->  	.attach_dev		= intel_iommu_attach_device,
->  	.detach_dev		= intel_iommu_detach_device,
->  	.aux_attach_dev		= intel_iommu_aux_attach_device,
-> diff --git a/drivers/iommu/iommu.c b/drivers/iommu/iommu.c
-> index 0f12c4d58cdc42..2e9e058501a953 100644
-> --- a/drivers/iommu/iommu.c
-> +++ b/drivers/iommu/iommu.c
-> @@ -2685,6 +2685,14 @@ int iommu_domain_set_attr(struct iommu_domain *domain,
->  }
->  EXPORT_SYMBOL_GPL(iommu_domain_set_attr);
->  
-> +int iommu_domain_enable_nesting(struct iommu_domain *domain)
-> +{
-> +	if (!domain->ops->domain_enable_nesting)
-> +		return -EINVAL;
-> +	return domain->ops->domain_enable_nesting(domain);
-> +}
-> +EXPORT_SYMBOL_GPL(iommu_domain_enable_nesting);
-> +
->  void iommu_get_resv_regions(struct device *dev, struct list_head *list)
->  {
->  	const struct iommu_ops *ops = dev->bus->iommu_ops;
-> diff --git a/drivers/vfio/vfio_iommu_type1.c b/drivers/vfio/vfio_iommu_type1.c
-> index c8e57f22f421c5..9cea4d80dd66ed 100644
-> --- a/drivers/vfio/vfio_iommu_type1.c
-> +++ b/drivers/vfio/vfio_iommu_type1.c
-> @@ -2320,10 +2320,7 @@ static int vfio_iommu_type1_attach_group(void *iommu_data,
->  	}
->  
->  	if (iommu->nesting) {
-> -		int attr = 1;
-> -
-> -		ret = iommu_domain_set_attr(domain->domain, DOMAIN_ATTR_NESTING,
-> -					    &attr);
-> +		ret = iommu_domain_enable_nesting(domain->domain);
->  		if (ret)
->  			goto out_domain;
->  	}
-> diff --git a/include/linux/iommu.h b/include/linux/iommu.h
-> index f30de33c6ff56e..aed88aa3bd3edf 100644
-> --- a/include/linux/iommu.h
-> +++ b/include/linux/iommu.h
-> @@ -107,7 +107,6 @@ enum iommu_cap {
->   */
->  
->  enum iommu_attr {
-> -	DOMAIN_ATTR_NESTING,	/* two stages of translation */
->  	DOMAIN_ATTR_IO_PGTABLE_CFG,
->  	DOMAIN_ATTR_MAX,
->  };
-> @@ -196,6 +195,7 @@ struct iommu_iotlb_gather {
->   * @dma_use_flush_queue: Returns %true if a DMA flush queue is used
->   * @dma_enable_flush_queue: Try to enable the DMA flush queue
->   * @domain_set_attr: Change domain attributes
-> + * @domain_enable_nesting: Enable nesting
->   * @get_resv_regions: Request list of reserved regions for a device
->   * @put_resv_regions: Free list of reserved regions for a device
->   * @apply_resv_region: Temporary helper call-back for iova reserved ranges
-> @@ -248,6 +248,7 @@ struct iommu_ops {
->  	void (*dma_enable_flush_queue)(struct iommu_domain *domain);
->  	int (*domain_set_attr)(struct iommu_domain *domain,
->  			       enum iommu_attr attr, void *data);
-> +	int (*domain_enable_nesting)(struct iommu_domain *domain);
->  
->  	/* Request/Free a list of reserved regions for a device */
->  	void (*get_resv_regions)(struct device *dev, struct list_head *list);
-> @@ -494,6 +495,7 @@ extern struct iommu_domain *iommu_group_default_domain(struct iommu_group *);
->  bool iommu_dma_use_flush_queue(struct iommu_domain *domain);
->  extern int iommu_domain_set_attr(struct iommu_domain *domain, enum iommu_attr,
->  				 void *data);
-> +int iommu_domain_enable_nesting(struct iommu_domain *domain);
->  
->  extern int report_iommu_fault(struct iommu_domain *domain, struct device *dev,
->  			      unsigned long iova, int flags);
-> 
-
-_______________________________________________
-iommu mailing list
-iommu@lists.linux-foundation.org
-https://lists.linuxfoundation.org/mailman/listinfo/iommu
+MTQuMDMuMjAyMSAxMTowNiwgTmljb2xpbiBDaGVuINC/0LjRiNC10YI6Cj4gVGhpcyBwYXRjaCBk
+dW1wcyBhbGwgYWN0aXZlIG1hcHBpbmcgZW50cmllcyBmcm9tIHBhZ2V0YWJsZQo+IHRvIGEgZGVi
+dWdmcyBkaXJlY3RvcnkgbmFtZWQgIm1hcHBpbmdzIi4KPiAKPiBBdGFjaGluZyBhbiBleGFtcGxl
+Ogo+IAo+IFNXR1JPVVA6IGhjCj4gQVNJRDogMAo+IHJlZzogMHgyNTAKPiBQVEJfQVNJRDogMHhl
+MDA4MDAwNAo+IGFzLT5wZF9kbWE6IDB4ODAwMDQwMDAKPiB7Cj4gICAgICAgICBbMTAyM10gMHhm
+MDA4MDAwYiAoMSkKPiAgICAgICAgIHsKPiAgICAgICAgICAgICAgICAgUFRFIFJBTkdFICAgICAg
+fCBBVFRSIHwgUEhZUyAgICAgICAgICAgICAgIHwgSU9WQSAgICAgICAgICAgICAgIHwgU0laRQo+
+ICAgICAgICAgICAgICAgICBbIzEwMjMsICMxMDIzXSB8IDB4NSAgfCAweDAwMDAwMDAxMTFhOGQw
+MDAgfCAweDAwMDAwMDAwZmZmZmYwMDAgfCAweDEwMDAKPiAgICAgICAgIH0KPiB9Cj4gVG90YWwg
+UERFIGNvdW50OiAxCj4gVG90YWwgUFRFIGNvdW50OiAxCj4gCj4gU2lnbmVkLW9mZi1ieTogTmlj
+b2xpbiBDaGVuIDxuaWNvbGVvdHN1a2FAZ21haWwuY29tPgo+IC0tLQo+IENoYW5nZWxvZwo+IHYz
+Ogo+ICAqIEZpeGVkIFBIWVMgYW5kIElPVkEgcHJpbnQgZm9ybWF0cwo+ICAqIENoYW5nZWQgdmFy
+aWFibGVzIHRvIHVuc2lnbmVkIGludCB0eXBlCj4gICogQ2hhbmdlZCB0aGUgdGFibGUgb3V0cHV0
+cyB0byBiZSBjb21wYWN0Cj4gdjI6IGh0dHBzOi8vbGttbC5vcmcvbGttbC8yMDIxLzMvOS8xMzgy
+Cj4gICogRXhwYW5kZWQgbXV0ZXggcmFuZ2UgdG8gdGhlIGVudGlyZSBmdW5jdGlvbgo+ICAqIEFk
+ZGVkIGFzLT5sb2NrIHRvIHByb3RlY3QgcGFnZXRhYmxlIHdhbGt0aHJvdWdoCj4gICogUmVwbGFj
+ZWQgZGV2bV9remFsbG9jIHdpdGggZGV2bV9rY2FsbG9jIGZvciBncm91cF9kZWJ1Zwo+ICAqIEFk
+ZGVkICJQVEUgUkFOR0UiIGFuZCAiU0laRSIgY29sdW1ucyB0byBncm91cCBjb250aWd1b3VzIG1h
+cHBpbmdzCj4gICogRHJvcHBlZCBhcy0+Y291bnQgY2hlY2s7IGFkZGVkIFdBUk5fT04gd2hlbiBh
+cy0+Y291bnQgbWlzbWF0Y2hlcyBwZFtwZF9pbmRleF0KPiB2MTogaHR0cHM6Ly9sa21sLm9yZy9s
+a21sLzIwMjAvOS8yNi83MAo+IAo+ICBkcml2ZXJzL2lvbW11L3RlZ3JhLXNtbXUuYyB8IDE3NSAr
+KysrKysrKysrKysrKysrKysrKysrKysrKysrKysrKysrKy0tCj4gIDEgZmlsZSBjaGFuZ2VkLCAx
+NzAgaW5zZXJ0aW9ucygrKSwgNSBkZWxldGlvbnMoLSkKPiAKPiBkaWZmIC0tZ2l0IGEvZHJpdmVy
+cy9pb21tdS90ZWdyYS1zbW11LmMgYi9kcml2ZXJzL2lvbW11L3RlZ3JhLXNtbXUuYwo+IGluZGV4
+IDk3ZWI2MmY2NjdkMi4uMjY5NzM3ZDUxYWQ0IDEwMDY0NAo+IC0tLSBhL2RyaXZlcnMvaW9tbXUv
+dGVncmEtc21tdS5jCj4gKysrIGIvZHJpdmVycy9pb21tdS90ZWdyYS1zbW11LmMKPiBAQCAtMTks
+NiArMTksMTEgQEAKPiAgI2luY2x1ZGUgPHNvYy90ZWdyYS9haGIuaD4KPiAgI2luY2x1ZGUgPHNv
+Yy90ZWdyYS9tYy5oPgo+ICAKPiArc3RydWN0IHRlZ3JhX3NtbXVfZ3JvdXBfZGVidWcgewo+ICsJ
+Y29uc3Qgc3RydWN0IHRlZ3JhX3NtbXVfc3dncm91cCAqZ3JvdXA7Cj4gKwl2b2lkICpwcml2Owo+
+ICt9Owo+ICsKPiAgc3RydWN0IHRlZ3JhX3NtbXVfZ3JvdXAgewo+ICAJc3RydWN0IGxpc3RfaGVh
+ZCBsaXN0Owo+ICAJc3RydWN0IHRlZ3JhX3NtbXUgKnNtbXU7Cj4gQEAgLTQ3LDYgKzUyLDggQEAg
+c3RydWN0IHRlZ3JhX3NtbXUgewo+ICAJc3RydWN0IGRlbnRyeSAqZGVidWdmczsKPiAgCj4gIAlz
+dHJ1Y3QgaW9tbXVfZGV2aWNlIGlvbW11OwkvKiBJT01NVSBDb3JlIGNvZGUgaGFuZGxlICovCj4g
+Kwo+ICsJc3RydWN0IHRlZ3JhX3NtbXVfZ3JvdXBfZGVidWcgKmdyb3VwX2RlYnVnOwo+ICB9Owo+
+ICAKPiAgc3RydWN0IHRlZ3JhX3NtbXVfYXMgewo+IEBAIC0xNTIsNiArMTU5LDkgQEAgc3RhdGlj
+IGlubGluZSB1MzIgc21tdV9yZWFkbChzdHJ1Y3QgdGVncmFfc21tdSAqc21tdSwgdW5zaWduZWQg
+bG9uZyBvZmZzZXQpCj4gIAo+ICAjZGVmaW5lIFNNTVVfUERFX0FUVFIJCShTTU1VX1BERV9SRUFE
+QUJMRSB8IFNNTVVfUERFX1dSSVRBQkxFIHwgXAo+ICAJCQkJIFNNTVVfUERFX05PTlNFQ1VSRSkK
+PiArI2RlZmluZSBTTU1VX1BURV9BVFRSCQkoU01NVV9QVEVfUkVBREFCTEUgfCBTTU1VX1BURV9X
+UklUQUJMRSB8IFwKPiArCQkJCSBTTU1VX1BURV9OT05TRUNVUkUpCj4gKyNkZWZpbmUgU01NVV9Q
+VEVfQVRUUl9TSElGVAkoMjkpCj4gIAo+ICBzdGF0aWMgdW5zaWduZWQgaW50IGlvdmFfcGRfaW5k
+ZXgodW5zaWduZWQgbG9uZyBpb3ZhKQo+ICB7Cj4gQEAgLTE2Myw2ICsxNzMsMTIgQEAgc3RhdGlj
+IHVuc2lnbmVkIGludCBpb3ZhX3B0X2luZGV4KHVuc2lnbmVkIGxvbmcgaW92YSkKPiAgCXJldHVy
+biAoaW92YSA+PiBTTU1VX1BURV9TSElGVCkgJiAoU01NVV9OVU1fUFRFIC0gMSk7Cj4gIH0KPiAg
+Cj4gK3N0YXRpYyB1bnNpZ25lZCBsb25nIHBkX3B0X2luZGV4X2lvdmEodW5zaWduZWQgaW50IHBk
+X2luZGV4LCB1bnNpZ25lZCBpbnQgcHRfaW5kZXgpCj4gK3sKPiArCXJldHVybiAoKGRtYV9hZGRy
+X3QpcGRfaW5kZXggJiAoU01NVV9OVU1fUERFIC0gMSkpIDw8IFNNTVVfUERFX1NISUZUIHwKPiAr
+CSAgICAgICAoKGRtYV9hZGRyX3QpcHRfaW5kZXggJiAoU01NVV9OVU1fUFRFIC0gMSkpIDw8IFNN
+TVVfUFRFX1NISUZUOwo+ICt9Cj4gKwo+ICBzdGF0aWMgYm9vbCBzbW11X2RtYV9hZGRyX3ZhbGlk
+KHN0cnVjdCB0ZWdyYV9zbW11ICpzbW11LCBkbWFfYWRkcl90IGFkZHIpCj4gIHsKPiAgCWFkZHIg
+Pj49IDEyOwo+IEBAIC0zMzQsNyArMzUwLDcgQEAgc3RhdGljIHZvaWQgdGVncmFfc21tdV9kb21h
+aW5fZnJlZShzdHJ1Y3QgaW9tbXVfZG9tYWluICpkb21haW4pCj4gIH0KPiAgCj4gIHN0YXRpYyBj
+b25zdCBzdHJ1Y3QgdGVncmFfc21tdV9zd2dyb3VwICoKPiAtdGVncmFfc21tdV9maW5kX3N3Z3Jv
+dXAoc3RydWN0IHRlZ3JhX3NtbXUgKnNtbXUsIHVuc2lnbmVkIGludCBzd2dyb3VwKQo+ICt0ZWdy
+YV9zbW11X2ZpbmRfc3dncm91cChzdHJ1Y3QgdGVncmFfc21tdSAqc21tdSwgdW5zaWduZWQgaW50
+IHN3Z3JvdXAsIGludCAqaW5kZXgpCj4gIHsKPiAgCWNvbnN0IHN0cnVjdCB0ZWdyYV9zbW11X3N3
+Z3JvdXAgKmdyb3VwID0gTlVMTDsKPiAgCXVuc2lnbmVkIGludCBpOwo+IEBAIC0zNDIsNiArMzU4
+LDggQEAgdGVncmFfc21tdV9maW5kX3N3Z3JvdXAoc3RydWN0IHRlZ3JhX3NtbXUgKnNtbXUsIHVu
+c2lnbmVkIGludCBzd2dyb3VwKQo+ICAJZm9yIChpID0gMDsgaSA8IHNtbXUtPnNvYy0+bnVtX3N3
+Z3JvdXBzOyBpKyspIHsKPiAgCQlpZiAoc21tdS0+c29jLT5zd2dyb3Vwc1tpXS5zd2dyb3VwID09
+IHN3Z3JvdXApIHsKPiAgCQkJZ3JvdXAgPSAmc21tdS0+c29jLT5zd2dyb3Vwc1tpXTsKPiArCQkJ
+aWYgKGluZGV4KQo+ICsJCQkJKmluZGV4ID0gaTsKPiAgCQkJYnJlYWs7Cj4gIAkJfQo+ICAJfQo+
+IEBAIC0zNTAsMTkgKzM2OCwyMiBAQCB0ZWdyYV9zbW11X2ZpbmRfc3dncm91cChzdHJ1Y3QgdGVn
+cmFfc21tdSAqc21tdSwgdW5zaWduZWQgaW50IHN3Z3JvdXApCj4gIH0KPiAgCj4gIHN0YXRpYyB2
+b2lkIHRlZ3JhX3NtbXVfZW5hYmxlKHN0cnVjdCB0ZWdyYV9zbW11ICpzbW11LCB1bnNpZ25lZCBp
+bnQgc3dncm91cCwKPiAtCQkJICAgICAgdW5zaWduZWQgaW50IGFzaWQpCj4gKwkJCSAgICAgIHN0
+cnVjdCB0ZWdyYV9zbW11X2FzICphcykKPiAgewo+ICAJY29uc3Qgc3RydWN0IHRlZ3JhX3NtbXVf
+c3dncm91cCAqZ3JvdXA7Cj4gKwl1bnNpZ25lZCBpbnQgYXNpZCA9IGFzLT5pZDsKPiAgCXVuc2ln
+bmVkIGludCBpOwo+ICAJdTMyIHZhbHVlOwo+ICAKPiAtCWdyb3VwID0gdGVncmFfc21tdV9maW5k
+X3N3Z3JvdXAoc21tdSwgc3dncm91cCk7Cj4gKwlncm91cCA9IHRlZ3JhX3NtbXVfZmluZF9zd2dy
+b3VwKHNtbXUsIHN3Z3JvdXAsICZpKTsKPiAgCWlmIChncm91cCkgewo+ICAJCXZhbHVlID0gc21t
+dV9yZWFkbChzbW11LCBncm91cC0+cmVnKTsKPiAgCQl2YWx1ZSAmPSB+U01NVV9BU0lEX01BU0s7
+Cj4gIAkJdmFsdWUgfD0gU01NVV9BU0lEX1ZBTFVFKGFzaWQpOwo+ICAJCXZhbHVlIHw9IFNNTVVf
+QVNJRF9FTkFCTEU7Cj4gIAkJc21tdV93cml0ZWwoc21tdSwgdmFsdWUsIGdyb3VwLT5yZWcpOwo+
+ICsJCWlmIChzbW11LT5ncm91cF9kZWJ1ZykKPiArCQkJc21tdS0+Z3JvdXBfZGVidWdbaV0ucHJp
+diA9IGFzOwo+ICAJfSBlbHNlIHsKPiAgCQlwcl93YXJuKCIlcyBncm91cCBmcm9tIHN3Z3JvdXAg
+JXUgbm90IGZvdW5kXG4iLCBfX2Z1bmNfXywKPiAgCQkJCXN3Z3JvdXApOwo+IEBAIC0zODksMTMg
+KzQxMCwxNSBAQCBzdGF0aWMgdm9pZCB0ZWdyYV9zbW11X2Rpc2FibGUoc3RydWN0IHRlZ3JhX3Nt
+bXUgKnNtbXUsIHVuc2lnbmVkIGludCBzd2dyb3VwLAo+ICAJdW5zaWduZWQgaW50IGk7Cj4gIAl1
+MzIgdmFsdWU7Cj4gIAo+IC0JZ3JvdXAgPSB0ZWdyYV9zbW11X2ZpbmRfc3dncm91cChzbW11LCBz
+d2dyb3VwKTsKPiArCWdyb3VwID0gdGVncmFfc21tdV9maW5kX3N3Z3JvdXAoc21tdSwgc3dncm91
+cCwgJmkpOwo+ICAJaWYgKGdyb3VwKSB7Cj4gIAkJdmFsdWUgPSBzbW11X3JlYWRsKHNtbXUsIGdy
+b3VwLT5yZWcpOwo+ICAJCXZhbHVlICY9IH5TTU1VX0FTSURfTUFTSzsKPiAgCQl2YWx1ZSB8PSBT
+TU1VX0FTSURfVkFMVUUoYXNpZCk7Cj4gIAkJdmFsdWUgJj0gflNNTVVfQVNJRF9FTkFCTEU7Cj4g
+IAkJc21tdV93cml0ZWwoc21tdSwgdmFsdWUsIGdyb3VwLT5yZWcpOwo+ICsJCWlmIChzbW11LT5n
+cm91cF9kZWJ1ZykKPiArCQkJc21tdS0+Z3JvdXBfZGVidWdbaV0ucHJpdiA9IE5VTEw7Cj4gIAl9
+Cj4gIAo+ICAJZm9yIChpID0gMDsgaSA8IHNtbXUtPnNvYy0+bnVtX2NsaWVudHM7IGkrKykgewo+
+IEBAIC00OTksNyArNTIyLDcgQEAgc3RhdGljIGludCB0ZWdyYV9zbW11X2F0dGFjaF9kZXYoc3Ry
+dWN0IGlvbW11X2RvbWFpbiAqZG9tYWluLAo+ICAJCWlmIChlcnIpCj4gIAkJCWdvdG8gZGlzYWJs
+ZTsKPiAgCj4gLQkJdGVncmFfc21tdV9lbmFibGUoc21tdSwgZndzcGVjLT5pZHNbaW5kZXhdLCBh
+cy0+aWQpOwo+ICsJCXRlZ3JhX3NtbXVfZW5hYmxlKHNtbXUsIGZ3c3BlYy0+aWRzW2luZGV4XSwg
+YXMpOwo+ICAJfQo+ICAKPiAgCWlmIChpbmRleCA9PSAwKQo+IEBAIC0xMDU4LDggKzEwODEsMTM1
+IEBAIHN0YXRpYyBpbnQgdGVncmFfc21tdV9jbGllbnRzX3Nob3coc3RydWN0IHNlcV9maWxlICpz
+LCB2b2lkICpkYXRhKQo+ICAKPiAgREVGSU5FX1NIT1dfQVRUUklCVVRFKHRlZ3JhX3NtbXVfY2xp
+ZW50cyk7Cj4gIAo+ICtzdGF0aWMgaW50IHRlZ3JhX3NtbXVfbWFwcGluZ3Nfc2hvdyhzdHJ1Y3Qg
+c2VxX2ZpbGUgKnMsIHZvaWQgKmRhdGEpCj4gK3sKPiArCXN0cnVjdCB0ZWdyYV9zbW11X2dyb3Vw
+X2RlYnVnICpncm91cF9kZWJ1ZyA9IHMtPnByaXZhdGU7Cj4gKwljb25zdCBzdHJ1Y3QgdGVncmFf
+c21tdV9zd2dyb3VwICpncm91cDsKPiArCXN0cnVjdCB0ZWdyYV9zbW11X2FzICphczsKPiArCXN0
+cnVjdCB0ZWdyYV9zbW11ICpzbW11Owo+ICsJdW5zaWduZWQgaW50IHBkX2luZGV4Owo+ICsJdW5z
+aWduZWQgaW50IHB0X2luZGV4Owo+ICsJdW5zaWduZWQgbG9uZyBmbGFnczsKPiArCXU2NCBwdGVf
+Y291bnQgPSAwOwo+ICsJdTMyIHBkZV9jb3VudCA9IDA7Cj4gKwl1MzIgdmFsLCBwdGJfcmVnOwo+
+ICsJdTMyICpwZDsKPiArCj4gKwlpZiAoIWdyb3VwX2RlYnVnIHx8ICFncm91cF9kZWJ1Zy0+cHJp
+diB8fCAhZ3JvdXBfZGVidWctPmdyb3VwKQo+ICsJCXJldHVybiAwOwo+ICsKPiArCWdyb3VwID0g
+Z3JvdXBfZGVidWctPmdyb3VwOwo+ICsJYXMgPSBncm91cF9kZWJ1Zy0+cHJpdjsKPiArCXNtbXUg
+PSBhcy0+c21tdTsKPiArCj4gKwltdXRleF9sb2NrKCZzbW11LT5sb2NrKTsKPiArCj4gKwl2YWwg
+PSBzbW11X3JlYWRsKHNtbXUsIGdyb3VwLT5yZWcpICYgU01NVV9BU0lEX0VOQUJMRTsKPiArCWlm
+ICghdmFsKQo+ICsJCWdvdG8gdW5sb2NrOwo+ICsKPiArCXBkID0gcGFnZV9hZGRyZXNzKGFzLT5w
+ZCk7Cj4gKwlpZiAoIXBkKQo+ICsJCWdvdG8gdW5sb2NrOwo+ICsKPiArCXNlcV9wcmludGYocywg
+IlxuU1dHUk9VUDogJXNcbkFTSUQ6ICVkXG5yZWc6IDB4JXhcbiIsIGdyb3VwLT5uYW1lLCBhcy0+
+aWQsIGdyb3VwLT5yZWcpOwo+ICsKPiArCXNtbXVfd3JpdGVsKHNtbXUsIGFzLT5pZCAmIDB4N2Ys
+IFNNTVVfUFRCX0FTSUQpOwo+ICsJcHRiX3JlZyA9IHNtbXVfcmVhZGwoc21tdSwgU01NVV9QVEJf
+REFUQSk7Cj4gKwo+ICsJc2VxX3ByaW50ZihzLCAiUFRCX0FTSUQ6IDB4JXhcbmFzLT5wZF9kbWE6
+IDB4JWxseFxuIiwgcHRiX3JlZywgYXMtPnBkX2RtYSk7Cj4gKwlzZXFfcHV0cyhzLCAie1xuIik7
+Cj4gKwo+ICsJc3Bpbl9sb2NrX2lycXNhdmUoJmFzLT5sb2NrLCBmbGFncyk7Cj4gKwo+ICsJZm9y
+IChwZF9pbmRleCA9IDA7IHBkX2luZGV4IDwgU01NVV9OVU1fUERFOyBwZF9pbmRleCsrKSB7Cj4g
+KwkJc3RydWN0IHBhZ2UgKnB0X3BhZ2U7Cj4gKwkJdTMyICphZGRyOwo+ICsJCWludCBpOwo+ICsK
+PiArCQkvKiBBbiBlbXB0eSBQREUgc2hvdWxkIG5vdCBoYXZlIGEgcHRlIHVzZSBjb3VudCAqLwo+
+ICsJCVdBUk5fT05fT05DRSghcGRbcGRfaW5kZXhdIF4gIWFzLT5jb3VudFtwZF9pbmRleF0pOwo+
+ICsKPiArCQkvKiBTa2lwIHRoaXMgZW1wdHkgUERFICovCj4gKwkJaWYgKCFwZFtwZF9pbmRleF0p
+Cj4gKwkJCWNvbnRpbnVlOwo+ICsKPiArCQlwZGVfY291bnQrKzsKPiArCQlwdGVfY291bnQgKz0g
+YXMtPmNvdW50W3BkX2luZGV4XTsKPiArCQlzZXFfcHJpbnRmKHMsICJcdFslZF0gMHgleCAoJWQp
+XG4iLCBwZF9pbmRleCwgcGRbcGRfaW5kZXhdLCBhcy0+Y291bnRbcGRfaW5kZXhdKTsKPiArCQlw
+dF9wYWdlID0gYXMtPnB0c1twZF9pbmRleF07Cj4gKwkJYWRkciA9IHBhZ2VfYWRkcmVzcyhwdF9w
+YWdlKTsKPiArCj4gKwkJc2VxX3B1dHMocywgIlx0e1xuIik7Cj4gKwkJc2VxX3ByaW50ZihzLCAi
+XHRcdCUtMTRzIHwgJS00cyB8ICUtMTBzJThzIHwgJS0xMHMlOHMgfCAlLTExc1xuIiwKPiArCQkJ
+ICAgIlBURSBSQU5HRSIsICJBVFRSIiwgIlBIWVMiLCBzaXplb2YocGh5c19hZGRyX3QpID4gNCA/
+ICIgIiA6ICIiLAo+ICsJCQkgICAiSU9WQSIsIHNpemVvZih1bnNpZ25lZCBsb25nKSA+IDQgPyAi
+ICIgOiAiIiwgIlNJWkUiKTsKPiArCQlmb3IgKHB0X2luZGV4ID0gMDsgcHRfaW5kZXggPCBTTU1V
+X05VTV9QVEU7IHB0X2luZGV4ICs9IGkpIHsKPiArCQkJc2l6ZV90IHNpemUgPSBTTU1VX1NJWkVf
+UFQ7Cj4gKwkJCXVuc2lnbmVkIGxvbmcgaW92YTsKPiArCQkJcGh5c19hZGRyX3QgcGE7Cj4gKwo+
+ICsJCQlpID0gMTsKPiArCj4gKwkJCWlmICghYWRkcltwdF9pbmRleF0pCj4gKwkJCQljb250aW51
+ZTsKPiArCj4gKwkJCWlvdmEgPSBwZF9wdF9pbmRleF9pb3ZhKHBkX2luZGV4LCBwdF9pbmRleCk7
+Cj4gKwkJCXBhID0gU01NVV9QRk5fUEhZUyhhZGRyW3B0X2luZGV4XSAmIH5TTU1VX1BURV9BVFRS
+KTsKPiArCj4gKwkJCS8qIENoZWNrIGNvbnRpZ3VvdXMgbWFwcGluZ3MgYW5kIGluY3JlYXNlIHNp
+emUgKi8KPiArCQkJd2hpbGUgKHB0X2luZGV4ICsgaSA8IFNNTVVfTlVNX1BURSkgewo+ICsJCQkJ
+cGh5c19hZGRyX3QgbmV4dF9wYTsKPiArCQkJCXU2NCBuZXh0X2lvdmE7Cj4gKwo+ICsJCQkJaWYg
+KCFhZGRyW3B0X2luZGV4ICsgaV0pCj4gKwkJCQkJYnJlYWs7Cj4gKwo+ICsJCQkJbmV4dF9pb3Zh
+ID0gcGRfcHRfaW5kZXhfaW92YShwZF9pbmRleCwgcHRfaW5kZXggKyBpKTsKPiArCQkJCW5leHRf
+cGEgPSBTTU1VX1BGTl9QSFlTKGFkZHJbcHRfaW5kZXggKyBpXSAmIH5TTU1VX1BURV9BVFRSKTsK
+PiArCj4gKwkJCQkvKiBCcmVhayBhdCB0aGUgZW5kIG9mIGEgbGluZWFyIG1hcHBpbmcgKi8KPiAr
+CQkJCWlmICgobmV4dF9pb3ZhIC0gaW92YSAhPSBTTU1VX1NJWkVfUFQgKiBpKSB8fAo+ICsJCQkJ
+ICAgIChuZXh0X3BhIC0gcGEgIT0gU01NVV9TSVpFX1BUICogaSkpCj4gKwkJCQkJYnJlYWs7Cj4g
+Kwo+ICsJCQkJaSsrOwo+ICsJCQl9Cj4gKwo+ICsJCQlzZXFfcHJpbnRmKHMsICJcdFx0WyMlLTRk
+LCAjJS00ZF0gfCAweCUtMnggfCAlcGEgfCAlcGFkIHwgMHglLTlseFxuIiwKPiArCQkJCSAgIHB0
+X2luZGV4LCBwdF9pbmRleCArIGkgLSAxLAo+ICsJCQkJICAgYWRkcltwdF9pbmRleF0gPj4gU01N
+VV9QVEVfQVRUUl9TSElGVCwKPiArCQkJCSAgICZwYSwgJmlvdmEsIHNpemUgKiBpKTsKClRoZSBm
+b3JtYXR0aW5nIGlzIHN0aWxsIGluY29ycmVjdDoKCmRyaXZlcnMvaW9tbXUvdGVncmEtc21tdS5j
+OiBJbiBmdW5jdGlvbiDigJh0ZWdyYV9zbW11X21hcHBpbmdzX3Nob3figJk6CmRyaXZlcnMvaW9t
+bXUvdGVncmEtc21tdS5jOjExMTk6NTA6IHdhcm5pbmc6IGZvcm1hdCDigJglbGx44oCZIGV4cGVj
+dHMgYXJndW1lbnQgb2YgdHlwZSDigJhsb25nIGxvbmcgdW5zaWduZWQgaW504oCZLCBidXQgYXJn
+dW1lbnQgNCBoYXMgdHlwZSDigJhkbWFfYWRkcl904oCZIHtha2Eg4oCYdW5zaWduZWQgaW504oCZ
+fSBbLVdmb3JtYXQ9XQogMTExOSB8ICBzZXFfcHJpbnRmKHMsICJQVEJfQVNJRDogMHgleFxuYXMt
+PnBkX2RtYTogMHglbGx4XG4iLCBwdGJfcmVnLCBhcy0+cGRfZG1hKTsKICAgICAgfCAgICAgICAg
+ICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgfn5+XiAgICAgICAgICAgICAg
+fn5+fn5+fn5+fgogICAgICB8ICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAg
+ICAgICAgICAgICB8ICAgICAgICAgICAgICAgIHwKICAgICAgfCAgICAgICAgICAgICAgICAgICAg
+ICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgfCAgICAgICAgICAgICAgICBkbWFfYWRkcl90
+IHtha2EgdW5zaWduZWQgaW50fQogICAgICB8ICAgICAgICAgICAgICAgICAgICAgICAgICAgICAg
+ICAgICAgICAgICAgICAgICAgICBsb25nIGxvbmcgdW5zaWduZWQgaW50CiAgICAgIHwgICAgICAg
+ICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICV4CmRyaXZlcnMvaW9tbXUv
+dGVncmEtc21tdS5jOjExNzg6Njg6IHdhcm5pbmc6IGZvcm1hdCDigJglbHjigJkgZXhwZWN0cyBh
+cmd1bWVudCBvZiB0eXBlIOKAmGxvbmcgdW5zaWduZWQgaW504oCZLCBidXQgYXJndW1lbnQgOCBo
+YXMgdHlwZSDigJhzaXplX3TigJkge2FrYSDigJh1bnNpZ25lZCBpbnTigJl9IFstV2Zvcm1hdD1d
+CiAxMTc4IHwgICAgc2VxX3ByaW50ZihzLCAiXHRcdFsjJS00ZCwgIyUtNGRdIHwgMHglLTJ4IHwg
+JXBhIHwgJXBhZCB8IDB4JS05bHhcbiIsCiAgICAgIHwgICAgICAgICAgICAgICAgICAgICAgICAg
+ICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgfn5+fl4KICAgICAgfCAgICAg
+ICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAg
+ICAgICAgfAogICAgICB8ICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAg
+ICAgICAgICAgICAgICAgICAgICAgICAgICBsb25nIHVuc2lnbmVkIGludAogICAgICB8ICAgICAg
+ICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAg
+ICUtOXgKLi4uLi4uCiAxMTgxIHwgICAgICAgICZwYSwgJmlvdmEsIHNpemUgKiBpKTsKICAgICAg
+fCAgICAgICAgICAgICAgICAgICAgfn5+fn5+fn4gICAgICAgICAgICAgICAgICAgICAgICAgICAg
+ICAgICAgICAgICAgIAogICAgICB8ICAgICAgICAgICAgICAgICAgICAgICAgIHwKICAgICAgfCAg
+ICAgICAgICAgICAgICAgICAgICAgICBzaXplX3Qge2FrYSB1bnNpZ25lZCBpbnR9CgoKCkkgZml4
+ZWQgaXQgdXAgbGlrZSB0aGlzOgoKZGlmZiAtLWdpdCBhL2RyaXZlcnMvaW9tbXUvdGVncmEtc21t
+dS5jIGIvZHJpdmVycy9pb21tdS90ZWdyYS1zbW11LmMKaW5kZXggZGFmNzRlMjZmMTRlLi5kYmYy
+ZDQwMDMxMzIgMTAwNjQ0Ci0tLSBhL2RyaXZlcnMvaW9tbXUvdGVncmEtc21tdS5jCisrKyBiL2Ry
+aXZlcnMvaW9tbXUvdGVncmEtc21tdS5jCkBAIC0xMTExLDEyICsxMTExLDE0IEBAIHN0YXRpYyBp
+bnQgdGVncmFfc21tdV9tYXBwaW5nc19zaG93KHN0cnVjdCBzZXFfZmlsZSAqcywgdm9pZCAqZGF0
+YSkKIAlpZiAoIXBkKQogCQlnb3RvIHVubG9jazsKIAotCXNlcV9wcmludGYocywgIlxuU1dHUk9V
+UDogJXNcbkFTSUQ6ICVkXG5yZWc6IDB4JXhcbiIsIGdyb3VwLT5uYW1lLCBhcy0+aWQsIGdyb3Vw
+LT5yZWcpOworCXNlcV9wcmludGYocywgIlxuU1dHUk9VUDogJXNcbkFTSUQ6ICVkXG5yZWc6IDB4
+JXhcbiIsCisJCSAgIGdyb3VwLT5uYW1lLCBhcy0+aWQsIGdyb3VwLT5yZWcpOwogCiAJc21tdV93
+cml0ZWwoc21tdSwgYXMtPmlkICYgMHg3ZiwgU01NVV9QVEJfQVNJRCk7CiAJcHRiX3JlZyA9IHNt
+bXVfcmVhZGwoc21tdSwgU01NVV9QVEJfREFUQSk7CiAKLQlzZXFfcHJpbnRmKHMsICJQVEJfQVNJ
+RDogMHgleFxuYXMtPnBkX2RtYTogMHglbGx4XG4iLCBwdGJfcmVnLCBhcy0+cGRfZG1hKTsKKwlz
+ZXFfcHJpbnRmKHMsICJQVEJfQVNJRDogMHgleFxuYXMtPnBkX2RtYTogJXBhZFxuIiwKKwkJICAg
+cHRiX3JlZywgJmFzLT5wZF9kbWEpOwogCXNlcV9wdXRzKHMsICJ7XG4iKTsKIAogCXNwaW5fbG9j
+a19pcnFzYXZlKCZhcy0+bG9jaywgZmxhZ3MpOwpAQCAtMTEzNSwxNyArMTEzNywyMCBAQCBzdGF0
+aWMgaW50IHRlZ3JhX3NtbXVfbWFwcGluZ3Nfc2hvdyhzdHJ1Y3Qgc2VxX2ZpbGUgKnMsIHZvaWQg
+KmRhdGEpCiAKIAkJcGRlX2NvdW50Kys7CiAJCXB0ZV9jb3VudCArPSBhcy0+Y291bnRbcGRfaW5k
+ZXhdOwotCQlzZXFfcHJpbnRmKHMsICJcdFslZF0gMHgleCAoJWQpXG4iLCBwZF9pbmRleCwgcGRb
+cGRfaW5kZXhdLCBhcy0+Y291bnRbcGRfaW5kZXhdKTsKKwkJc2VxX3ByaW50ZihzLCAiXHRbJWRd
+IDB4JXggKCVkKVxuIiwKKwkJCSAgIHBkX2luZGV4LCBwZFtwZF9pbmRleF0sIGFzLT5jb3VudFtw
+ZF9pbmRleF0pOwogCQlwdF9wYWdlID0gYXMtPnB0c1twZF9pbmRleF07CiAJCWFkZHIgPSBwYWdl
+X2FkZHJlc3MocHRfcGFnZSk7CiAKIAkJc2VxX3B1dHMocywgIlx0e1xuIik7Ci0JCXNlcV9wcmlu
+dGYocywgIlx0XHQlLTE0cyB8ICUtNHMgfCAlLTEwcyU4cyB8ICUtMTBzJThzIHwgJS0xMXNcbiIs
+Ci0JCQkgICAiUFRFIFJBTkdFIiwgIkFUVFIiLCAiUEhZUyIsIHNpemVvZihwaHlzX2FkZHJfdCkg
+PiA0ID8gIiAiIDogIiIsCi0JCQkgICAiSU9WQSIsIHNpemVvZih1bnNpZ25lZCBsb25nKSA+IDQg
+PyAiICIgOiAiIiwgIlNJWkUiKTsKKwkJc2VxX3ByaW50ZihzLCAiXHRcdCUtMTRzIHwgJS00cyB8
+ICUtMTBzJXMgfCAlLTEwcyVzIHwgJS0xMXNcbiIsCisJCQkgICAiUFRFIFJBTkdFIiwgIkFUVFIi
+LAorCQkJICAgIlBIWVMiLCBzaXplb2YocGh5c19hZGRyX3QpID4gNCA/ICIgICAgICAgICIgOiAi
+IiwKKwkJCSAgICJJT1ZBIiwgc2l6ZW9mKGRtYV9hZGRyX3QpICA+IDQgPyAiICAgICAgICAiIDog
+IiIsCisJCQkgICAiU0laRSIpOwogCQlmb3IgKHB0X2luZGV4ID0gMDsgcHRfaW5kZXggPCBTTU1V
+X05VTV9QVEU7IHB0X2luZGV4ICs9IGkpIHsKIAkJCXNpemVfdCBzaXplID0gU01NVV9TSVpFX1BU
+OwotCQkJdW5zaWduZWQgbG9uZyBpb3ZhOworCQkJZG1hX2FkZHJfdCBpb3ZhOwogCQkJcGh5c19h
+ZGRyX3QgcGE7CiAKIAkJCWkgPSAxOwpAQCAtMTE1OCw4ICsxMTYzLDggQEAgc3RhdGljIGludCB0
+ZWdyYV9zbW11X21hcHBpbmdzX3Nob3coc3RydWN0IHNlcV9maWxlICpzLCB2b2lkICpkYXRhKQog
+CiAJCQkvKiBDaGVjayBjb250aWd1b3VzIG1hcHBpbmdzIGFuZCBpbmNyZWFzZSBzaXplICovCiAJ
+CQl3aGlsZSAocHRfaW5kZXggKyBpIDwgU01NVV9OVU1fUFRFKSB7CisJCQkJZG1hX2FkZHJfdCBu
+ZXh0X2lvdmE7CiAJCQkJcGh5c19hZGRyX3QgbmV4dF9wYTsKLQkJCQl1NjQgbmV4dF9pb3ZhOwog
+CiAJCQkJaWYgKCFhZGRyW3B0X2luZGV4ICsgaV0pCiAJCQkJCWJyZWFrOwpAQCAtMTE3NSw3ICsx
+MTgwLDcgQEAgc3RhdGljIGludCB0ZWdyYV9zbW11X21hcHBpbmdzX3Nob3coc3RydWN0IHNlcV9m
+aWxlICpzLCB2b2lkICpkYXRhKQogCQkJCWkrKzsKIAkJCX0KIAotCQkJc2VxX3ByaW50ZihzLCAi
+XHRcdFsjJS00ZCwgIyUtNGRdIHwgMHglLTJ4IHwgJXBhIHwgJXBhZCB8IDB4JS05bHhcbiIsCisJ
+CQlzZXFfcHJpbnRmKHMsICJcdFx0WyMlLTRkLCAjJS00ZF0gfCAweCUtMnggfCAlcGEgfCAlcGFk
+IHwgMHglLTl6eFxuIiwKIAkJCQkgICBwdF9pbmRleCwgcHRfaW5kZXggKyBpIC0gMSwKIAkJCQkg
+ICBhZGRyW3B0X2luZGV4XSA+PiBTTU1VX1BURV9BVFRSX1NISUZULAogCQkJCSAgICZwYSwgJmlv
+dmEsIHNpemUgKiBpKTsKCl9fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19f
+X19fX19fCmlvbW11IG1haWxpbmcgbGlzdAppb21tdUBsaXN0cy5saW51eC1mb3VuZGF0aW9uLm9y
+ZwpodHRwczovL2xpc3RzLmxpbnV4Zm91bmRhdGlvbi5vcmcvbWFpbG1hbi9saXN0aW5mby9pb21t
+dQ==
