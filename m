@@ -2,94 +2,95 @@ Return-Path: <SRS0=2lDQ=IM=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-13.5 required=3.0 tests=BAYES_00,
-	DKIM_ADSP_CUSTOM_MED,DKIM_INVALID,DKIM_SIGNED,FREEMAIL_FORGED_FROMDOMAIN,
-	FREEMAIL_FROM,HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_CR_TRAILER,
-	INCLUDES_PATCH,MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,
-	USER_AGENT_GIT autolearn=ham autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-15.1 required=3.0 tests=BAYES_00,DKIM_INVALID,
+	DKIM_SIGNED,HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_CR_TRAILER,INCLUDES_PATCH,
+	MAILING_LIST_MULTI,NICE_REPLY_A,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,
+	USER_AGENT_SANE_1 autolearn=unavailable autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5E5CFC433E0
-	for <iommu@archiver.kernel.org>; Sun, 14 Mar 2021 08:09:14 +0000 (UTC)
-Received: from smtp3.osuosl.org (smtp3.osuosl.org [140.211.166.136])
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 79E40C433E6
+	for <iommu@archiver.kernel.org>; Sun, 14 Mar 2021 10:45:11 +0000 (UTC)
+Received: from smtp1.osuosl.org (smtp1.osuosl.org [140.211.166.138])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id D85A464EC0
-	for <iommu@archiver.kernel.org>; Sun, 14 Mar 2021 08:09:13 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org D85A464EC0
-Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=gmail.com
+	by mail.kernel.org (Postfix) with ESMTPS id 1A70F64E27
+	for <iommu@archiver.kernel.org>; Sun, 14 Mar 2021 10:45:11 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 1A70F64E27
+Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=redhat.com
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by smtp3.osuosl.org (Postfix) with ESMTP id 8BCF36ECA6;
-	Sun, 14 Mar 2021 08:09:13 +0000 (UTC)
+	by smtp1.osuosl.org (Postfix) with ESMTP id D24EE83D2D;
+	Sun, 14 Mar 2021 10:45:10 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from smtp3.osuosl.org ([127.0.0.1])
-	by localhost (smtp3.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id YRUZxzPo8YVG; Sun, 14 Mar 2021 08:09:12 +0000 (UTC)
-Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by smtp3.osuosl.org (Postfix) with ESMTP id 18538605E1;
-	Sun, 14 Mar 2021 08:09:12 +0000 (UTC)
+Received: from smtp1.osuosl.org ([127.0.0.1])
+	by localhost (smtp1.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+	with ESMTP id GS04td9yWPuS; Sun, 14 Mar 2021 10:45:09 +0000 (UTC)
+Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [IPv6:2605:bc80:3010:104::8cd3:938])
+	by smtp1.osuosl.org (Postfix) with ESMTP id 5847683A89;
+	Sun, 14 Mar 2021 10:45:09 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id F0EACC000B;
-	Sun, 14 Mar 2021 08:09:11 +0000 (UTC)
-Received: from smtp4.osuosl.org (smtp4.osuosl.org [IPv6:2605:bc80:3010::137])
- by lists.linuxfoundation.org (Postfix) with ESMTP id C6480C0001
- for <iommu@lists.linux-foundation.org>; Sun, 14 Mar 2021 08:09:10 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 3A828C000B;
+	Sun, 14 Mar 2021 10:45:09 +0000 (UTC)
+Received: from smtp4.osuosl.org (smtp4.osuosl.org [140.211.166.137])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 2A3A5C0001
+ for <iommu@lists.linux-foundation.org>; Sun, 14 Mar 2021 10:45:08 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by smtp4.osuosl.org (Postfix) with ESMTP id AB36143B5B
- for <iommu@lists.linux-foundation.org>; Sun, 14 Mar 2021 08:09:10 +0000 (UTC)
+ by smtp4.osuosl.org (Postfix) with ESMTP id 0F4C449DB8
+ for <iommu@lists.linux-foundation.org>; Sun, 14 Mar 2021 10:45:08 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
 Authentication-Results: smtp4.osuosl.org (amavisd-new);
- dkim=pass (2048-bit key) header.d=gmail.com
+ dkim=pass (1024-bit key) header.d=redhat.com
 Received: from smtp4.osuosl.org ([127.0.0.1])
  by localhost (smtp4.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id T50pjCaKGzZR for <iommu@lists.linux-foundation.org>;
- Sun, 14 Mar 2021 08:09:09 +0000 (UTC)
-X-Greylist: whitelisted by SQLgrey-1.8.0
-Received: from mail-pl1-x632.google.com (mail-pl1-x632.google.com
- [IPv6:2607:f8b0:4864:20::632])
- by smtp4.osuosl.org (Postfix) with ESMTPS id 5C355438EB
- for <iommu@lists.linux-foundation.org>; Sun, 14 Mar 2021 08:09:09 +0000 (UTC)
-Received: by mail-pl1-x632.google.com with SMTP id w7so10341514pll.8
- for <iommu@lists.linux-foundation.org>; Sun, 14 Mar 2021 00:09:09 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=gmail.com; s=20161025;
- h=from:to:cc:subject:date:message-id;
- bh=W7dU+Q7qoaFaxTyGRI+L/PrRz/7v4KYJxFg8oE5hPEU=;
- b=vfIaUoeP/ybextRTFvKL2FE1tEeVOBZxhG1aRhfkONh5WeD6sYlniqc+RiX+akr4Xa
- vIE5mQe+6hz41dNz0Xo/38rJhohSkfK35m67R3SCPuAI6KWgvk5VohrljSbytnSILaQT
- IyAWHk8Ijjg2IMX4yezqWLY4m8jvIy61JQGVsC0mPO3xXcn/i+lfkOwusbKxuXAGB7/l
- C5S3zw3z+TiO3k/MAdTqYVZ+/ksnlUCgTucVFJ3vQYvPENQLIOB+miJZpxFiC4KbMXbK
- LtrtLBzUcW/oxzQcrqV5z0iOYTSOQ547vIyqSUTH+uzxXgEcl1v2abs4G9IH8VeLr4DD
- QWxg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
- d=1e100.net; s=20161025;
- h=x-gm-message-state:from:to:cc:subject:date:message-id;
- bh=W7dU+Q7qoaFaxTyGRI+L/PrRz/7v4KYJxFg8oE5hPEU=;
- b=MFe3DoX6jsdutSZctAIJp4gfImScfTpmLLU7b8332TR5reK85RBElc8pcrx4BebxLv
- IwsMTd5O1Ysmzybvr+++ShLMgAV74GGQCWJa4H/SWygzXCVPnPCn6CIuQc0RJzJJddKP
- SLYBa9sBk6XHuO+MGMRm8VjoW3miF/OI5zCpKl+/5SWbQ4Y/FC7GeBH4fQUZrEDkIMSe
- h+VeYxCJfeiUKeqYh6wtmNlskMPAV7Z59kz7mNkE9tIak0/eXf44sHQoy+ZfmS/9YCFa
- dJDIRCMe9zjbmNOZnl71c9CSI6DOglMMioYesTQ8lEhlPGcIbQ/pRCQYB/CSSZGQPUjw
- DDXw==
-X-Gm-Message-State: AOAM5305qzfY6JiFXrx8U+ieauTYMFBINAPiMK2ZaSf3VVLxL34RbY3s
- 2qF4i8DGnx8Cw0rtK5Cp/AE=
-X-Google-Smtp-Source: ABdhPJwQZYVqnTiPOx6zi/CgIHcmp9o5X77/1YmNKdmSMyRI9pGI5heZKvLc9SZlX4Aw44rnAkKHNg==
-X-Received: by 2002:a17:90b:809:: with SMTP id
- bk9mr6963506pjb.83.1615709348699; 
- Sun, 14 Mar 2021 00:09:08 -0800 (PST)
-Received: from Asurada-Nvidia.nvidia.com (thunderhill.nvidia.com.
- [216.228.112.22])
- by smtp.gmail.com with ESMTPSA id c128sm9209422pfc.76.2021.03.14.00.09.07
- (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
- Sun, 14 Mar 2021 00:09:08 -0800 (PST)
-From: Nicolin Chen <nicoleotsuka@gmail.com>
-To: joro@8bytes.org, thierry.reding@gmail.com, will@kernel.org,
- digetx@gmail.com
-Subject: [PATCH v3] iommu/tegra-smmu: Add pagetable mappings to debugfs
-Date: Sun, 14 Mar 2021 00:06:53 -0800
-Message-Id: <20210314080653.29374-1-nicoleotsuka@gmail.com>
-X-Mailer: git-send-email 2.17.1
-Cc: linux-tegra@vger.kernel.org, linux-kernel@vger.kernel.org,
- iommu@lists.linux-foundation.org, jonathanh@nvidia.com
+ with ESMTP id c4AM7l4IiwcH for <iommu@lists.linux-foundation.org>;
+ Sun, 14 Mar 2021 10:45:06 +0000 (UTC)
+X-Greylist: domain auto-whitelisted by SQLgrey-1.8.0
+Received: from us-smtp-delivery-124.mimecast.com
+ (us-smtp-delivery-124.mimecast.com [216.205.24.124])
+ by smtp4.osuosl.org (Postfix) with ESMTPS id 51259499F3
+ for <iommu@lists.linux-foundation.org>; Sun, 14 Mar 2021 10:45:06 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+ s=mimecast20190719; t=1615718704;
+ h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+ to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+ content-transfer-encoding:content-transfer-encoding:
+ in-reply-to:in-reply-to:references:references;
+ bh=eHpIhrioLYh4eORQxM4GKdpIFT9gzCBjG8gZQYhgxOo=;
+ b=BNUEqBol45kseqvzTBOR54Pa24zEZS7K0LHZJOcLZawURXZFJ++X02vp/Mr7+KHvbs2VQ+
+ Nmknh3AklVZHLktuJD2zGCU5jMEkMLa8beYxspqCSwPRcslWHlx3ez+WWJVBpu8oUUqvMk
+ vF8WXUnfszzlfWaqtbLWbIWe2iKMKp8=
+Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
+ [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-503-E9yVcn_5PrqLH04e4dxJbg-1; Sun, 14 Mar 2021 06:45:02 -0400
+X-MC-Unique: E9yVcn_5PrqLH04e4dxJbg-1
+Received: from smtp.corp.redhat.com (int-mx01.intmail.prod.int.phx2.redhat.com
+ [10.5.11.11])
+ (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+ (No client certificate requested)
+ by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 82E7E800C78;
+ Sun, 14 Mar 2021 10:44:59 +0000 (UTC)
+Received: from [10.36.112.254] (ovpn-112-254.ams2.redhat.com [10.36.112.254])
+ by smtp.corp.redhat.com (Postfix) with ESMTPS id ED7A9620DE;
+ Sun, 14 Mar 2021 10:44:54 +0000 (UTC)
+Subject: Re: [PATCH 15/17] iommu: remove DOMAIN_ATTR_NESTING
+To: Christoph Hellwig <hch@lst.de>, Joerg Roedel <joro@8bytes.org>,
+ Will Deacon <will@kernel.org>, Li Yang <leoyang.li@nxp.com>
+References: <20210301084257.945454-1-hch@lst.de>
+ <20210301084257.945454-16-hch@lst.de>
+From: Auger Eric <eric.auger@redhat.com>
+Message-ID: <3e8f1078-9222-0017-3fa8-4d884dbc848e@redhat.com>
+Date: Sun, 14 Mar 2021 11:44:52 +0100
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
+ Thunderbird/78.7.0
+MIME-Version: 1.0
+In-Reply-To: <20210301084257.945454-16-hch@lst.de>
+Content-Language: en-US
+X-Scanned-By: MIMEDefang 2.79 on 10.5.11.11
+Cc: kvm@vger.kernel.org, Michael Ellerman <mpe@ellerman.id.au>,
+ linux-arm-msm@vger.kernel.org, linuxppc-dev@lists.ozlabs.org,
+ dri-devel@lists.freedesktop.org, virtualization@lists.linux-foundation.org,
+ iommu@lists.linux-foundation.org, netdev@vger.kernel.org,
+ freedreno@lists.freedesktop.org, David Woodhouse <dwmw2@infradead.org>,
+ linux-arm-kernel@lists.infradead.org
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -102,327 +103,284 @@ List-Post: <mailto:iommu@lists.linux-foundation.org>
 List-Help: <mailto:iommu-request@lists.linux-foundation.org?subject=help>
 List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
  <mailto:iommu-request@lists.linux-foundation.org?subject=subscribe>
-MIME-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-This patch dumps all active mapping entries from pagetable
-to a debugfs directory named "mappings".
+Hi Christoph,
 
-Ataching an example:
+On 3/1/21 9:42 AM, Christoph Hellwig wrote:
+> Signed-off-by: Christoph Hellwig <hch@lst.de>
+> ---
+>  drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c | 40 ++++++---------------
+>  drivers/iommu/arm/arm-smmu/arm-smmu.c       | 30 ++++++++++------
+>  drivers/iommu/intel/iommu.c                 | 28 +++++----------
+>  drivers/iommu/iommu.c                       |  8 +++++
+>  drivers/vfio/vfio_iommu_type1.c             |  5 +--
+>  include/linux/iommu.h                       |  4 ++-
+>  6 files changed, 50 insertions(+), 65 deletions(-)
 
-SWGROUP: hc
-ASID: 0
-reg: 0x250
-PTB_ASID: 0xe0080004
-as->pd_dma: 0x80004000
-{
-        [1023] 0xf008000b (1)
-        {
-                PTE RANGE      | ATTR | PHYS               | IOVA               | SIZE
-                [#1023, #1023] | 0x5  | 0x0000000111a8d000 | 0x00000000fffff000 | 0x1000
-        }
-}
-Total PDE count: 1
-Total PTE count: 1
+As mentionned by Robin, there are series planning to use
+DOMAIN_ATTR_NESTING to get info about the nested caps of the iommu (ARM
+and Intel):
 
-Signed-off-by: Nicolin Chen <nicoleotsuka@gmail.com>
----
-Changelog
-v3:
- * Fixed PHYS and IOVA print formats
- * Changed variables to unsigned int type
- * Changed the table outputs to be compact
-v2: https://lkml.org/lkml/2021/3/9/1382
- * Expanded mutex range to the entire function
- * Added as->lock to protect pagetable walkthrough
- * Replaced devm_kzalloc with devm_kcalloc for group_debug
- * Added "PTE RANGE" and "SIZE" columns to group contiguous mappings
- * Dropped as->count check; added WARN_ON when as->count mismatches pd[pd_index]
-v1: https://lkml.org/lkml/2020/9/26/70
+[Patch v8 00/10] vfio: expose virtual Shared Virtual Addressing to VMs
+patches 1, 2, 3
 
- drivers/iommu/tegra-smmu.c | 175 +++++++++++++++++++++++++++++++++++--
- 1 file changed, 170 insertions(+), 5 deletions(-)
+Is the plan to introduce a new domain_get_nesting_info ops then?
 
-diff --git a/drivers/iommu/tegra-smmu.c b/drivers/iommu/tegra-smmu.c
-index 97eb62f667d2..269737d51ad4 100644
---- a/drivers/iommu/tegra-smmu.c
-+++ b/drivers/iommu/tegra-smmu.c
-@@ -19,6 +19,11 @@
- #include <soc/tegra/ahb.h>
- #include <soc/tegra/mc.h>
- 
-+struct tegra_smmu_group_debug {
-+	const struct tegra_smmu_swgroup *group;
-+	void *priv;
-+};
-+
- struct tegra_smmu_group {
- 	struct list_head list;
- 	struct tegra_smmu *smmu;
-@@ -47,6 +52,8 @@ struct tegra_smmu {
- 	struct dentry *debugfs;
- 
- 	struct iommu_device iommu;	/* IOMMU Core code handle */
-+
-+	struct tegra_smmu_group_debug *group_debug;
- };
- 
- struct tegra_smmu_as {
-@@ -152,6 +159,9 @@ static inline u32 smmu_readl(struct tegra_smmu *smmu, unsigned long offset)
- 
- #define SMMU_PDE_ATTR		(SMMU_PDE_READABLE | SMMU_PDE_WRITABLE | \
- 				 SMMU_PDE_NONSECURE)
-+#define SMMU_PTE_ATTR		(SMMU_PTE_READABLE | SMMU_PTE_WRITABLE | \
-+				 SMMU_PTE_NONSECURE)
-+#define SMMU_PTE_ATTR_SHIFT	(29)
- 
- static unsigned int iova_pd_index(unsigned long iova)
- {
-@@ -163,6 +173,12 @@ static unsigned int iova_pt_index(unsigned long iova)
- 	return (iova >> SMMU_PTE_SHIFT) & (SMMU_NUM_PTE - 1);
- }
- 
-+static unsigned long pd_pt_index_iova(unsigned int pd_index, unsigned int pt_index)
-+{
-+	return ((dma_addr_t)pd_index & (SMMU_NUM_PDE - 1)) << SMMU_PDE_SHIFT |
-+	       ((dma_addr_t)pt_index & (SMMU_NUM_PTE - 1)) << SMMU_PTE_SHIFT;
-+}
-+
- static bool smmu_dma_addr_valid(struct tegra_smmu *smmu, dma_addr_t addr)
- {
- 	addr >>= 12;
-@@ -334,7 +350,7 @@ static void tegra_smmu_domain_free(struct iommu_domain *domain)
- }
- 
- static const struct tegra_smmu_swgroup *
--tegra_smmu_find_swgroup(struct tegra_smmu *smmu, unsigned int swgroup)
-+tegra_smmu_find_swgroup(struct tegra_smmu *smmu, unsigned int swgroup, int *index)
- {
- 	const struct tegra_smmu_swgroup *group = NULL;
- 	unsigned int i;
-@@ -342,6 +358,8 @@ tegra_smmu_find_swgroup(struct tegra_smmu *smmu, unsigned int swgroup)
- 	for (i = 0; i < smmu->soc->num_swgroups; i++) {
- 		if (smmu->soc->swgroups[i].swgroup == swgroup) {
- 			group = &smmu->soc->swgroups[i];
-+			if (index)
-+				*index = i;
- 			break;
- 		}
- 	}
-@@ -350,19 +368,22 @@ tegra_smmu_find_swgroup(struct tegra_smmu *smmu, unsigned int swgroup)
- }
- 
- static void tegra_smmu_enable(struct tegra_smmu *smmu, unsigned int swgroup,
--			      unsigned int asid)
-+			      struct tegra_smmu_as *as)
- {
- 	const struct tegra_smmu_swgroup *group;
-+	unsigned int asid = as->id;
- 	unsigned int i;
- 	u32 value;
- 
--	group = tegra_smmu_find_swgroup(smmu, swgroup);
-+	group = tegra_smmu_find_swgroup(smmu, swgroup, &i);
- 	if (group) {
- 		value = smmu_readl(smmu, group->reg);
- 		value &= ~SMMU_ASID_MASK;
- 		value |= SMMU_ASID_VALUE(asid);
- 		value |= SMMU_ASID_ENABLE;
- 		smmu_writel(smmu, value, group->reg);
-+		if (smmu->group_debug)
-+			smmu->group_debug[i].priv = as;
- 	} else {
- 		pr_warn("%s group from swgroup %u not found\n", __func__,
- 				swgroup);
-@@ -389,13 +410,15 @@ static void tegra_smmu_disable(struct tegra_smmu *smmu, unsigned int swgroup,
- 	unsigned int i;
- 	u32 value;
- 
--	group = tegra_smmu_find_swgroup(smmu, swgroup);
-+	group = tegra_smmu_find_swgroup(smmu, swgroup, &i);
- 	if (group) {
- 		value = smmu_readl(smmu, group->reg);
- 		value &= ~SMMU_ASID_MASK;
- 		value |= SMMU_ASID_VALUE(asid);
- 		value &= ~SMMU_ASID_ENABLE;
- 		smmu_writel(smmu, value, group->reg);
-+		if (smmu->group_debug)
-+			smmu->group_debug[i].priv = NULL;
- 	}
- 
- 	for (i = 0; i < smmu->soc->num_clients; i++) {
-@@ -499,7 +522,7 @@ static int tegra_smmu_attach_dev(struct iommu_domain *domain,
- 		if (err)
- 			goto disable;
- 
--		tegra_smmu_enable(smmu, fwspec->ids[index], as->id);
-+		tegra_smmu_enable(smmu, fwspec->ids[index], as);
- 	}
- 
- 	if (index == 0)
-@@ -1058,8 +1081,135 @@ static int tegra_smmu_clients_show(struct seq_file *s, void *data)
- 
- DEFINE_SHOW_ATTRIBUTE(tegra_smmu_clients);
- 
-+static int tegra_smmu_mappings_show(struct seq_file *s, void *data)
-+{
-+	struct tegra_smmu_group_debug *group_debug = s->private;
-+	const struct tegra_smmu_swgroup *group;
-+	struct tegra_smmu_as *as;
-+	struct tegra_smmu *smmu;
-+	unsigned int pd_index;
-+	unsigned int pt_index;
-+	unsigned long flags;
-+	u64 pte_count = 0;
-+	u32 pde_count = 0;
-+	u32 val, ptb_reg;
-+	u32 *pd;
-+
-+	if (!group_debug || !group_debug->priv || !group_debug->group)
-+		return 0;
-+
-+	group = group_debug->group;
-+	as = group_debug->priv;
-+	smmu = as->smmu;
-+
-+	mutex_lock(&smmu->lock);
-+
-+	val = smmu_readl(smmu, group->reg) & SMMU_ASID_ENABLE;
-+	if (!val)
-+		goto unlock;
-+
-+	pd = page_address(as->pd);
-+	if (!pd)
-+		goto unlock;
-+
-+	seq_printf(s, "\nSWGROUP: %s\nASID: %d\nreg: 0x%x\n", group->name, as->id, group->reg);
-+
-+	smmu_writel(smmu, as->id & 0x7f, SMMU_PTB_ASID);
-+	ptb_reg = smmu_readl(smmu, SMMU_PTB_DATA);
-+
-+	seq_printf(s, "PTB_ASID: 0x%x\nas->pd_dma: 0x%llx\n", ptb_reg, as->pd_dma);
-+	seq_puts(s, "{\n");
-+
-+	spin_lock_irqsave(&as->lock, flags);
-+
-+	for (pd_index = 0; pd_index < SMMU_NUM_PDE; pd_index++) {
-+		struct page *pt_page;
-+		u32 *addr;
-+		int i;
-+
-+		/* An empty PDE should not have a pte use count */
-+		WARN_ON_ONCE(!pd[pd_index] ^ !as->count[pd_index]);
-+
-+		/* Skip this empty PDE */
-+		if (!pd[pd_index])
-+			continue;
-+
-+		pde_count++;
-+		pte_count += as->count[pd_index];
-+		seq_printf(s, "\t[%d] 0x%x (%d)\n", pd_index, pd[pd_index], as->count[pd_index]);
-+		pt_page = as->pts[pd_index];
-+		addr = page_address(pt_page);
-+
-+		seq_puts(s, "\t{\n");
-+		seq_printf(s, "\t\t%-14s | %-4s | %-10s%8s | %-10s%8s | %-11s\n",
-+			   "PTE RANGE", "ATTR", "PHYS", sizeof(phys_addr_t) > 4 ? " " : "",
-+			   "IOVA", sizeof(unsigned long) > 4 ? " " : "", "SIZE");
-+		for (pt_index = 0; pt_index < SMMU_NUM_PTE; pt_index += i) {
-+			size_t size = SMMU_SIZE_PT;
-+			unsigned long iova;
-+			phys_addr_t pa;
-+
-+			i = 1;
-+
-+			if (!addr[pt_index])
-+				continue;
-+
-+			iova = pd_pt_index_iova(pd_index, pt_index);
-+			pa = SMMU_PFN_PHYS(addr[pt_index] & ~SMMU_PTE_ATTR);
-+
-+			/* Check contiguous mappings and increase size */
-+			while (pt_index + i < SMMU_NUM_PTE) {
-+				phys_addr_t next_pa;
-+				u64 next_iova;
-+
-+				if (!addr[pt_index + i])
-+					break;
-+
-+				next_iova = pd_pt_index_iova(pd_index, pt_index + i);
-+				next_pa = SMMU_PFN_PHYS(addr[pt_index + i] & ~SMMU_PTE_ATTR);
-+
-+				/* Break at the end of a linear mapping */
-+				if ((next_iova - iova != SMMU_SIZE_PT * i) ||
-+				    (next_pa - pa != SMMU_SIZE_PT * i))
-+					break;
-+
-+				i++;
-+			}
-+
-+			seq_printf(s, "\t\t[#%-4d, #%-4d] | 0x%-2x | %pa | %pad | 0x%-9lx\n",
-+				   pt_index, pt_index + i - 1,
-+				   addr[pt_index] >> SMMU_PTE_ATTR_SHIFT,
-+				   &pa, &iova, size * i);
-+		}
-+		seq_puts(s, "\t}\n");
-+	}
-+
-+	spin_unlock_irqrestore(&as->lock, flags);
-+
-+	seq_puts(s, "}\n");
-+	seq_printf(s, "Total PDE count: %d\n", pde_count);
-+	seq_printf(s, "Total PTE count: %lld\n", pte_count);
-+
-+unlock:
-+	mutex_unlock(&smmu->lock);
-+
-+	return 0;
-+}
-+
-+DEFINE_SHOW_ATTRIBUTE(tegra_smmu_mappings);
-+
- static void tegra_smmu_debugfs_init(struct tegra_smmu *smmu)
- {
-+	const struct tegra_smmu_soc *soc = smmu->soc;
-+	struct tegra_smmu_group_debug *group_debug;
-+	struct device *dev = smmu->dev;
-+	struct dentry *d;
-+	unsigned int i;
-+
-+	group_debug = devm_kcalloc(dev, soc->num_swgroups, sizeof(*group_debug), GFP_KERNEL);
-+	if (!group_debug)
-+		return;
-+
- 	smmu->debugfs = debugfs_create_dir("smmu", NULL);
- 	if (!smmu->debugfs)
- 		return;
-@@ -1068,6 +1218,21 @@ static void tegra_smmu_debugfs_init(struct tegra_smmu *smmu)
- 			    &tegra_smmu_swgroups_fops);
- 	debugfs_create_file("clients", S_IRUGO, smmu->debugfs, smmu,
- 			    &tegra_smmu_clients_fops);
-+	d = debugfs_create_dir("mappings", smmu->debugfs);
-+
-+	for (i = 0; i < soc->num_swgroups; i++) {
-+		const struct tegra_smmu_swgroup *group = &soc->swgroups[i];
-+
-+		if (!group->name)
-+			continue;
-+
-+		group_debug[i].group = group;
-+
-+		debugfs_create_file(group->name, 0444, d, &group_debug[i],
-+				    &tegra_smmu_mappings_fops);
-+	}
-+
-+	smmu->group_debug = group_debug;
- }
- 
- static void tegra_smmu_debugfs_exit(struct tegra_smmu *smmu)
--- 
-2.17.1
+Thanks
+
+Eric	
+
+
+> 
+> diff --git a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
+> index bf96172e8c1f71..8e6fee3ea454d3 100644
+> --- a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
+> +++ b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
+> @@ -2466,41 +2466,21 @@ static void arm_smmu_dma_enable_flush_queue(struct iommu_domain *domain)
+>  	to_smmu_domain(domain)->non_strict = true;
+>  }
+>  
+> -static int arm_smmu_domain_set_attr(struct iommu_domain *domain,
+> -				    enum iommu_attr attr, void *data)
+> +static int arm_smmu_domain_enable_nesting(struct iommu_domain *domain)
+>  {
+> -	int ret = 0;
+>  	struct arm_smmu_domain *smmu_domain = to_smmu_domain(domain);
+> +	int ret = -EPERM;
+>  
+> -	mutex_lock(&smmu_domain->init_mutex);
+> +	if (domain->type != IOMMU_DOMAIN_UNMANAGED)
+> +		return -EINVAL;
+>  
+> -	switch (domain->type) {
+> -	case IOMMU_DOMAIN_UNMANAGED:
+> -		switch (attr) {
+> -		case DOMAIN_ATTR_NESTING:
+> -			if (smmu_domain->smmu) {
+> -				ret = -EPERM;
+> -				goto out_unlock;
+> -			}
+> -
+> -			if (*(int *)data)
+> -				smmu_domain->stage = ARM_SMMU_DOMAIN_NESTED;
+> -			else
+> -				smmu_domain->stage = ARM_SMMU_DOMAIN_S1;
+> -			break;
+> -		default:
+> -			ret = -ENODEV;
+> -		}
+> -		break;
+> -	case IOMMU_DOMAIN_DMA:
+> -		ret = -ENODEV;
+> -		break;
+> -	default:
+> -		ret = -EINVAL;
+> +	mutex_lock(&smmu_domain->init_mutex);
+> +	if (!smmu_domain->smmu) {
+> +		smmu_domain->stage = ARM_SMMU_DOMAIN_NESTED;
+> +		ret = 0;
+>  	}
+> -
+> -out_unlock:
+>  	mutex_unlock(&smmu_domain->init_mutex);
+> +
+>  	return ret;
+>  }
+>  
+> @@ -2603,7 +2583,7 @@ static struct iommu_ops arm_smmu_ops = {
+>  	.device_group		= arm_smmu_device_group,
+>  	.dma_use_flush_queue	= arm_smmu_dma_use_flush_queue,
+>  	.dma_enable_flush_queue	= arm_smmu_dma_enable_flush_queue,
+> -	.domain_set_attr	= arm_smmu_domain_set_attr,
+> +	.domain_enable_nesting	= arm_smmu_domain_enable_nesting,
+>  	.of_xlate		= arm_smmu_of_xlate,
+>  	.get_resv_regions	= arm_smmu_get_resv_regions,
+>  	.put_resv_regions	= generic_iommu_put_resv_regions,
+> diff --git a/drivers/iommu/arm/arm-smmu/arm-smmu.c b/drivers/iommu/arm/arm-smmu/arm-smmu.c
+> index e7893e96f5177a..2e17d990d04481 100644
+> --- a/drivers/iommu/arm/arm-smmu/arm-smmu.c
+> +++ b/drivers/iommu/arm/arm-smmu/arm-smmu.c
+> @@ -1497,6 +1497,24 @@ static void arm_smmu_dma_enable_flush_queue(struct iommu_domain *domain)
+>  	to_smmu_domain(domain)->pgtbl_cfg.quirks |= IO_PGTABLE_QUIRK_NON_STRICT;
+>  }
+>  
+> +static int arm_smmu_domain_enable_nesting(struct iommu_domain *domain)
+> +{
+> +	struct arm_smmu_domain *smmu_domain = to_smmu_domain(domain);
+> +	int ret = -EPERM;
+> +	
+> +	if (domain->type != IOMMU_DOMAIN_UNMANAGED)
+> +		return -EINVAL;
+> +
+> +	mutex_lock(&smmu_domain->init_mutex);
+> +	if (!smmu_domain->smmu) {
+> +		smmu_domain->stage = ARM_SMMU_DOMAIN_NESTED;
+> +		ret = 0;
+> +	}
+> +	mutex_unlock(&smmu_domain->init_mutex);
+> +
+> +	return ret;
+> +}
+> +
+>  static int arm_smmu_domain_set_attr(struct iommu_domain *domain,
+>  				    enum iommu_attr attr, void *data)
+>  {
+> @@ -1508,17 +1526,6 @@ static int arm_smmu_domain_set_attr(struct iommu_domain *domain,
+>  	switch(domain->type) {
+>  	case IOMMU_DOMAIN_UNMANAGED:
+>  		switch (attr) {
+> -		case DOMAIN_ATTR_NESTING:
+> -			if (smmu_domain->smmu) {
+> -				ret = -EPERM;
+> -				goto out_unlock;
+> -			}
+> -
+> -			if (*(int *)data)
+> -				smmu_domain->stage = ARM_SMMU_DOMAIN_NESTED;
+> -			else
+> -				smmu_domain->stage = ARM_SMMU_DOMAIN_S1;
+> -			break;
+>  		case DOMAIN_ATTR_IO_PGTABLE_CFG: {
+>  			struct io_pgtable_domain_attr *pgtbl_cfg = data;
+>  
+> @@ -1603,6 +1610,7 @@ static struct iommu_ops arm_smmu_ops = {
+>  	.dma_use_flush_queue	= arm_smmu_dma_use_flush_queue,
+>  	.dma_enable_flush_queue	= arm_smmu_dma_enable_flush_queue,
+>  	.domain_set_attr	= arm_smmu_domain_set_attr,
+> +	.domain_enable_nesting	= arm_smmu_domain_enable_nesting,
+>  	.of_xlate		= arm_smmu_of_xlate,
+>  	.get_resv_regions	= arm_smmu_get_resv_regions,
+>  	.put_resv_regions	= generic_iommu_put_resv_regions,
+> diff --git a/drivers/iommu/intel/iommu.c b/drivers/iommu/intel/iommu.c
+> index eaa80c33f4bc91..0f1374d6612a60 100644
+> --- a/drivers/iommu/intel/iommu.c
+> +++ b/drivers/iommu/intel/iommu.c
+> @@ -5423,32 +5423,22 @@ static bool intel_iommu_is_attach_deferred(struct iommu_domain *domain,
+>  }
+>  
+>  static int
+> -intel_iommu_domain_set_attr(struct iommu_domain *domain,
+> -			    enum iommu_attr attr, void *data)
+> +intel_iommu_domain_enable_nesting(struct iommu_domain *domain)
+>  {
+>  	struct dmar_domain *dmar_domain = to_dmar_domain(domain);
+>  	unsigned long flags;
+> -	int ret = 0;
+> +	int ret = -ENODEV;
+>  
+>  	if (domain->type != IOMMU_DOMAIN_UNMANAGED)
+>  		return -EINVAL;
+>  
+> -	switch (attr) {
+> -	case DOMAIN_ATTR_NESTING:
+> -		spin_lock_irqsave(&device_domain_lock, flags);
+> -		if (nested_mode_support() &&
+> -		    list_empty(&dmar_domain->devices)) {
+> -			dmar_domain->flags |= DOMAIN_FLAG_NESTING_MODE;
+> -			dmar_domain->flags &= ~DOMAIN_FLAG_USE_FIRST_LEVEL;
+> -		} else {
+> -			ret = -ENODEV;
+> -		}
+> -		spin_unlock_irqrestore(&device_domain_lock, flags);
+> -		break;
+> -	default:
+> -		ret = -EINVAL;
+> -		break;
+> +	spin_lock_irqsave(&device_domain_lock, flags);
+> +	if (nested_mode_support() && list_empty(&dmar_domain->devices)) {
+> +		dmar_domain->flags |= DOMAIN_FLAG_NESTING_MODE;
+> +		dmar_domain->flags &= ~DOMAIN_FLAG_USE_FIRST_LEVEL;
+> +		ret = 0;
+>  	}
+> +	spin_unlock_irqrestore(&device_domain_lock, flags);
+>  
+>  	return ret;
+>  }
+> @@ -5556,7 +5546,7 @@ const struct iommu_ops intel_iommu_ops = {
+>  	.domain_alloc		= intel_iommu_domain_alloc,
+>  	.domain_free		= intel_iommu_domain_free,
+>  	.dma_use_flush_queue	= intel_iommu_dma_use_flush_queue,
+> -	.domain_set_attr	= intel_iommu_domain_set_attr,
+> +	.domain_enable_nesting	= intel_iommu_domain_enable_nesting,
+>  	.attach_dev		= intel_iommu_attach_device,
+>  	.detach_dev		= intel_iommu_detach_device,
+>  	.aux_attach_dev		= intel_iommu_aux_attach_device,
+> diff --git a/drivers/iommu/iommu.c b/drivers/iommu/iommu.c
+> index 0f12c4d58cdc42..2e9e058501a953 100644
+> --- a/drivers/iommu/iommu.c
+> +++ b/drivers/iommu/iommu.c
+> @@ -2685,6 +2685,14 @@ int iommu_domain_set_attr(struct iommu_domain *domain,
+>  }
+>  EXPORT_SYMBOL_GPL(iommu_domain_set_attr);
+>  
+> +int iommu_domain_enable_nesting(struct iommu_domain *domain)
+> +{
+> +	if (!domain->ops->domain_enable_nesting)
+> +		return -EINVAL;
+> +	return domain->ops->domain_enable_nesting(domain);
+> +}
+> +EXPORT_SYMBOL_GPL(iommu_domain_enable_nesting);
+> +
+>  void iommu_get_resv_regions(struct device *dev, struct list_head *list)
+>  {
+>  	const struct iommu_ops *ops = dev->bus->iommu_ops;
+> diff --git a/drivers/vfio/vfio_iommu_type1.c b/drivers/vfio/vfio_iommu_type1.c
+> index c8e57f22f421c5..9cea4d80dd66ed 100644
+> --- a/drivers/vfio/vfio_iommu_type1.c
+> +++ b/drivers/vfio/vfio_iommu_type1.c
+> @@ -2320,10 +2320,7 @@ static int vfio_iommu_type1_attach_group(void *iommu_data,
+>  	}
+>  
+>  	if (iommu->nesting) {
+> -		int attr = 1;
+> -
+> -		ret = iommu_domain_set_attr(domain->domain, DOMAIN_ATTR_NESTING,
+> -					    &attr);
+> +		ret = iommu_domain_enable_nesting(domain->domain);
+>  		if (ret)
+>  			goto out_domain;
+>  	}
+> diff --git a/include/linux/iommu.h b/include/linux/iommu.h
+> index f30de33c6ff56e..aed88aa3bd3edf 100644
+> --- a/include/linux/iommu.h
+> +++ b/include/linux/iommu.h
+> @@ -107,7 +107,6 @@ enum iommu_cap {
+>   */
+>  
+>  enum iommu_attr {
+> -	DOMAIN_ATTR_NESTING,	/* two stages of translation */
+>  	DOMAIN_ATTR_IO_PGTABLE_CFG,
+>  	DOMAIN_ATTR_MAX,
+>  };
+> @@ -196,6 +195,7 @@ struct iommu_iotlb_gather {
+>   * @dma_use_flush_queue: Returns %true if a DMA flush queue is used
+>   * @dma_enable_flush_queue: Try to enable the DMA flush queue
+>   * @domain_set_attr: Change domain attributes
+> + * @domain_enable_nesting: Enable nesting
+>   * @get_resv_regions: Request list of reserved regions for a device
+>   * @put_resv_regions: Free list of reserved regions for a device
+>   * @apply_resv_region: Temporary helper call-back for iova reserved ranges
+> @@ -248,6 +248,7 @@ struct iommu_ops {
+>  	void (*dma_enable_flush_queue)(struct iommu_domain *domain);
+>  	int (*domain_set_attr)(struct iommu_domain *domain,
+>  			       enum iommu_attr attr, void *data);
+> +	int (*domain_enable_nesting)(struct iommu_domain *domain);
+>  
+>  	/* Request/Free a list of reserved regions for a device */
+>  	void (*get_resv_regions)(struct device *dev, struct list_head *list);
+> @@ -494,6 +495,7 @@ extern struct iommu_domain *iommu_group_default_domain(struct iommu_group *);
+>  bool iommu_dma_use_flush_queue(struct iommu_domain *domain);
+>  extern int iommu_domain_set_attr(struct iommu_domain *domain, enum iommu_attr,
+>  				 void *data);
+> +int iommu_domain_enable_nesting(struct iommu_domain *domain);
+>  
+>  extern int report_iommu_fault(struct iommu_domain *domain, struct device *dev,
+>  			      unsigned long iova, int flags);
+> 
 
 _______________________________________________
 iommu mailing list
