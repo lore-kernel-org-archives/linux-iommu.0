@@ -2,100 +2,93 @@ Return-Path: <SRS0=3mOG=IN=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-7.0 required=3.0 tests=BAYES_00,DKIM_ADSP_CUSTOM_MED,
-	DKIM_INVALID,DKIM_SIGNED,FREEMAIL_FORGED_FROMDOMAIN,FREEMAIL_FROM,
-	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_CR_TRAILER,MAILING_LIST_MULTI,
-	SPF_HELO_NONE,SPF_PASS,URIBL_RED,USER_AGENT_SANE_1 autolearn=no
-	autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-13.5 required=3.0 tests=BAYES_00,
+	DKIM_ADSP_CUSTOM_MED,DKIM_INVALID,DKIM_SIGNED,FREEMAIL_FORGED_FROMDOMAIN,
+	FREEMAIL_FROM,HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_CR_TRAILER,
+	INCLUDES_PATCH,MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,URIBL_RED,
+	USER_AGENT_GIT autolearn=ham autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A8919C433E0
-	for <iommu@archiver.kernel.org>; Mon, 15 Mar 2021 20:02:15 +0000 (UTC)
-Received: from smtp2.osuosl.org (smtp2.osuosl.org [140.211.166.133])
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B7BC8C433E0
+	for <iommu@archiver.kernel.org>; Mon, 15 Mar 2021 20:38:54 +0000 (UTC)
+Received: from smtp3.osuosl.org (smtp3.osuosl.org [140.211.166.136])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 40AAA64E83
-	for <iommu@archiver.kernel.org>; Mon, 15 Mar 2021 20:02:15 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 40AAA64E83
+	by mail.kernel.org (Postfix) with ESMTPS id 2FB4C64F0F
+	for <iommu@archiver.kernel.org>; Mon, 15 Mar 2021 20:38:54 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 2FB4C64F0F
 Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=gmail.com
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by smtp2.osuosl.org (Postfix) with ESMTP id 031684313B;
-	Mon, 15 Mar 2021 20:02:15 +0000 (UTC)
+	by smtp3.osuosl.org (Postfix) with ESMTP id E431B6F580;
+	Mon, 15 Mar 2021 20:38:53 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from smtp2.osuosl.org ([127.0.0.1])
-	by localhost (smtp2.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id nOXVNYIymBFa; Mon, 15 Mar 2021 20:02:14 +0000 (UTC)
+Received: from smtp3.osuosl.org ([127.0.0.1])
+	by localhost (smtp3.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+	with ESMTP id oaWs2bj4eZAG; Mon, 15 Mar 2021 20:38:52 +0000 (UTC)
 Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by smtp2.osuosl.org (Postfix) with ESMTP id EF82240003;
-	Mon, 15 Mar 2021 20:02:13 +0000 (UTC)
+	by smtp3.osuosl.org (Postfix) with ESMTP id 71DD260642;
+	Mon, 15 Mar 2021 20:38:52 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id C115FC000A;
-	Mon, 15 Mar 2021 20:02:13 +0000 (UTC)
-Received: from smtp1.osuosl.org (smtp1.osuosl.org [IPv6:2605:bc80:3010::138])
- by lists.linuxfoundation.org (Postfix) with ESMTP id F15D8C0001
- for <iommu@lists.linux-foundation.org>; Mon, 15 Mar 2021 20:02:12 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 44512C000B;
+	Mon, 15 Mar 2021 20:38:52 +0000 (UTC)
+Received: from smtp2.osuosl.org (smtp2.osuosl.org [IPv6:2605:bc80:3010::133])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 8F8F4C0001
+ for <iommu@lists.linux-foundation.org>; Mon, 15 Mar 2021 20:38:50 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by smtp1.osuosl.org (Postfix) with ESMTP id CA1848344C
- for <iommu@lists.linux-foundation.org>; Mon, 15 Mar 2021 20:02:12 +0000 (UTC)
+ by smtp2.osuosl.org (Postfix) with ESMTP id 692F341476
+ for <iommu@lists.linux-foundation.org>; Mon, 15 Mar 2021 20:38:50 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Authentication-Results: smtp1.osuosl.org (amavisd-new);
+Authentication-Results: smtp2.osuosl.org (amavisd-new);
  dkim=pass (2048-bit key) header.d=gmail.com
-Received: from smtp1.osuosl.org ([127.0.0.1])
- by localhost (smtp1.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id sE4UAgDbCWaY for <iommu@lists.linux-foundation.org>;
- Mon, 15 Mar 2021 20:02:12 +0000 (UTC)
+Received: from smtp2.osuosl.org ([127.0.0.1])
+ by localhost (smtp2.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+ with ESMTP id qclMDMXYJrFJ for <iommu@lists.linux-foundation.org>;
+ Mon, 15 Mar 2021 20:38:49 +0000 (UTC)
 X-Greylist: whitelisted by SQLgrey-1.8.0
-Received: from mail-pj1-x102f.google.com (mail-pj1-x102f.google.com
- [IPv6:2607:f8b0:4864:20::102f])
- by smtp1.osuosl.org (Postfix) with ESMTPS id 44D22836EA
- for <iommu@lists.linux-foundation.org>; Mon, 15 Mar 2021 20:02:12 +0000 (UTC)
-Received: by mail-pj1-x102f.google.com with SMTP id bt4so9398240pjb.5
- for <iommu@lists.linux-foundation.org>; Mon, 15 Mar 2021 13:02:12 -0700 (PDT)
+Received: from mail-pg1-x534.google.com (mail-pg1-x534.google.com
+ [IPv6:2607:f8b0:4864:20::534])
+ by smtp2.osuosl.org (Postfix) with ESMTPS id 4B9E540002
+ for <iommu@lists.linux-foundation.org>; Mon, 15 Mar 2021 20:38:49 +0000 (UTC)
+Received: by mail-pg1-x534.google.com with SMTP id l2so21175938pgb.1
+ for <iommu@lists.linux-foundation.org>; Mon, 15 Mar 2021 13:38:49 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=gmail.com; s=20161025;
- h=date:from:to:cc:subject:message-id:references:mime-version
- :content-disposition:content-transfer-encoding:in-reply-to
- :user-agent; bh=rL3vKYH4+4i5CC0aVunrWlzK1wduuZG220EJ/vhziQw=;
- b=ELopI56GAtnJ9od1YG8FNmWchTUFYHQzQnDiLKLf6uFJ6rH401bfejAp18uGs91+1i
- GWgTfleCV6Uh5T2r2Pxj6Web9vw7JQJTQu2ly9AYPV7FqhK9lHHqPEwCmSFLrXt7xO75
- b7MBkKnfT2hK7IVL5qsXRpWHDJZz9q7PqyhnurW04j3isnCcgZt4m1zgzxGireYB/1MD
- AhUISweOYG+oDxLUgzuZceLwibRCeMZ50hM9Gq0o67b8ySWu5W+45c89PUleZR0VCE1K
- WiJ1orcF8r8PVYuF3sNOXmBrIltsrTZy9K2zlTsqmEG9jdkuJNhEhU/P44raIFgYXE/F
- BPMQ==
+ h=from:to:cc:subject:date:message-id;
+ bh=JI5gjZqD2xEbJnqMP+YxSmCk5ElN95HtSiD6k6zxrCs=;
+ b=fFTYrpvM5ORm3shjjJorGw/YfeEq+dLrmMr7fCTrbm5TV6KZpL3IxXzb+tzn9zr0FQ
+ UhNzWFyQ1NdiseZFF9spqEf8ShasJJgNkYk1urY5W7LhBeEH4yXPsZUkBd4cuwpcQSgG
+ NXmAEtBtAFwNfInkQIf4/lQRwjTmaKOu6ggP3AGQqpYiTSYd2tSg6Y6YhY4LXJGrUMCo
+ vv+SBUEWLKy68bfI9W6qwY/RtkT22Xt+Q3YXWV9PAfeOy5dLadaD9sJ0/qujwLdrCngW
+ ayKwHPvndIR8CCvCaNrGtdS1sUxglxDoNl1Zj8u0wdwidocQxBqaIb5zfNuwKw2Z/PU+
+ F2yA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
  d=1e100.net; s=20161025;
- h=x-gm-message-state:date:from:to:cc:subject:message-id:references
- :mime-version:content-disposition:content-transfer-encoding
- :in-reply-to:user-agent;
- bh=rL3vKYH4+4i5CC0aVunrWlzK1wduuZG220EJ/vhziQw=;
- b=advtAbjY7Nc4FnaaZW6t/AjhHmq14LU9bPbsN8JZMukJrMRCHrASmKD+FJ7vWufT30
- 9jSO/Eb3wxZCduNbBW4t3rcegPP+APjX3mZBcdf4RnGvvW5yP7YzGW+/PdPBZaeoCVwi
- F3+yeNIIvK5Day93Z4KydtQvFnKAbOnjaj1KYAUYcT23RPXInpdGFnMqQ4Thsbd7+vgu
- zTbVAnxIUgufgun+lSSiBezcD3e9MylvwYPpS2NUnDumkvvlaCSsJHxqjRnCYEtoztVF
- gglHpHrS/4siIgD8dDBw5DS4GeohKs5WNXgVjCqSLb9NU9RhS1gPA3V+OrULwPo/3GXS
- 0w1Q==
-X-Gm-Message-State: AOAM530/L7fowbl1d13Z6d+cFZ9WRzZU1/PhktiKW1mhBvo3scSCLYlk
- Cs/jQvFpSS+wVwGaLB+qvY4=
-X-Google-Smtp-Source: ABdhPJybiLZqEI+XjPqVHFhLW3Gu6zqMwtmPntvElOc45gnu6cMWEQmVLZXXRngR/RiMCkr7ZNGVeQ==
-X-Received: by 2002:a17:90a:9d82:: with SMTP id k2mr807500pjp.48.1615838531534; 
- Mon, 15 Mar 2021 13:02:11 -0700 (PDT)
-Received: from Asurada-Nvidia (thunderhill.nvidia.com. [216.228.112.22])
- by smtp.gmail.com with ESMTPSA id 11sm4712300pfn.146.2021.03.15.13.02.10
- (version=TLS1_2 cipher=ECDHE-ECDSA-CHACHA20-POLY1305 bits=256/256);
- Mon, 15 Mar 2021 13:02:11 -0700 (PDT)
-Date: Mon, 15 Mar 2021 12:59:57 -0700
+ h=x-gm-message-state:from:to:cc:subject:date:message-id;
+ bh=JI5gjZqD2xEbJnqMP+YxSmCk5ElN95HtSiD6k6zxrCs=;
+ b=YLdTRcOZPXZQH4naBhS//B2xqXHQ+Te6EnfSkjja5888vvkmuXdfnoEed9Wd7T1oa9
+ ev+G1Uc3BdGQUbsNi4r0S6CgUbsIWO/qbFQIKCZX+1Ja4kc7S/cPRoWK6BDV59WA2hZm
+ tUFgwcDZjZFqrrfdJ47pyP8opKlV5X/HeXnnSAr0Sy0PJLSmucR+Dke9Srv/HLqH6Mi+
+ d8H9Mks8OuEXz9lQQJHCBNenUUb1rmVW+Q1JzBXfsVQTV05OOEQof7N8DqaPSnMAMs2/
+ 9RHxy+kvBxUBeJt8SCle4nh2cdaP+So1fb445bicDDkoVICidMpGrF2cPiPQJJkt/OBB
+ 9taA==
+X-Gm-Message-State: AOAM531aAvTWexmQuoIC2qXq3Rtfajf6W0pVwgnjA5h3rOR8M7ny6+IE
+ BPogWJBtCaNa0YnBiR+CGcE=
+X-Google-Smtp-Source: ABdhPJyH9KRRilmgJCb752bMDst7wp3eGhZJGUFdzlaK6g+zBevlaFvofwnwBDdT2j/AluZPlqyQxQ==
+X-Received: by 2002:a63:fc12:: with SMTP id j18mr779988pgi.334.1615840728663; 
+ Mon, 15 Mar 2021 13:38:48 -0700 (PDT)
+Received: from Asurada-Nvidia.nvidia.com (thunderhill.nvidia.com.
+ [216.228.112.22])
+ by smtp.gmail.com with ESMTPSA id x19sm14183014pfi.220.2021.03.15.13.38.47
+ (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+ Mon, 15 Mar 2021 13:38:48 -0700 (PDT)
 From: Nicolin Chen <nicoleotsuka@gmail.com>
-To: Dmitry Osipenko <digetx@gmail.com>
-Subject: Re: [PATCH v4] iommu/tegra-smmu: Add pagetable mappings to debugfs
-Message-ID: <20210315195956.GA16172@Asurada-Nvidia>
-References: <20210315033504.23937-1-nicoleotsuka@gmail.com>
- <c57a805a-cf14-1d78-ae2a-dfce4f643db1@gmail.com>
-MIME-Version: 1.0
-Content-Disposition: inline
-In-Reply-To: <c57a805a-cf14-1d78-ae2a-dfce4f643db1@gmail.com>
-User-Agent: Mutt/1.9.4 (2018-02-28)
-Cc: linux-kernel@vger.kernel.org, iommu@lists.linux-foundation.org,
- jonathanh@nvidia.com, thierry.reding@gmail.com, linux-tegra@vger.kernel.org,
- will@kernel.org
+To: joro@8bytes.org, thierry.reding@gmail.com, will@kernel.org,
+ digetx@gmail.com
+Subject: [PATCH v5] iommu/tegra-smmu: Add pagetable mappings to debugfs
+Date: Mon, 15 Mar 2021 13:36:31 -0700
+Message-Id: <20210315203631.24990-1-nicoleotsuka@gmail.com>
+X-Mailer: git-send-email 2.17.1
+Cc: linux-tegra@vger.kernel.org, linux-kernel@vger.kernel.org,
+ iommu@lists.linux-foundation.org, jonathanh@nvidia.com
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -108,37 +101,346 @@ List-Post: <mailto:iommu@lists.linux-foundation.org>
 List-Help: <mailto:iommu-request@lists.linux-foundation.org?subject=help>
 List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
  <mailto:iommu-request@lists.linux-foundation.org?subject=subscribe>
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
+MIME-Version: 1.0
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-T24gTW9uLCBNYXIgMTUsIDIwMjEgYXQgMDk6NTM6MDlQTSArMDMwMCwgRG1pdHJ5IE9zaXBlbmtv
-IHdyb3RlOgo+IDE1LjAzLjIwMjEgMDY6MzUsIE5pY29saW4gQ2hlbiDQv9C40YjQtdGCOgo+ID4g
-VGhpcyBwYXRjaCBkdW1wcyBhbGwgYWN0aXZlIG1hcHBpbmcgZW50cmllcyBmcm9tIHBhZ2V0YWJs
-ZQo+ID4gdG8gYSBkZWJ1Z2ZzIGRpcmVjdG9yeSBuYW1lZCAibWFwcGluZ3MiLgo+ID4gCj4gPiBB
-dGFjaGluZyBhbiBleGFtcGxlOgo+IAo+IEF0dGFjaGluZwo+IAo+ID4gCj4gPiBTV0dST1VQOiBo
-Ywo+ID4gQVNJRDogMAo+ID4gcmVnOiAweDI1MAo+ID4gUFRCX0FTSUQ6IDB4ZTAwODAwMDQKPiA+
-IGFzLT5wZF9kbWE6IDB4ODAwMDQwMDAKPiA+IHsKPiA+ICAgICAgICAgWzEwMjNdIDB4ZjAwODAw
-MGIgKDEpCj4gPiAgICAgICAgIHsKPiA+ICAgICAgICAgICAgICAgICBQVEUgUkFOR0UgICAgICB8
-IEFUVFIgfCBQSFlTICAgICAgICAgICAgICAgfCBJT1ZBICAgICAgICAgICAgICAgfCBTSVpFCj4g
-PiAgICAgICAgICAgICAgICAgWyMxMDIzLCAjMTAyM10gfCAweDUgIHwgMHgwMDAwMDAwMTExYThk
-MDAwIHwgMHgwMDAwMDAwMGZmZmZmMDAwIHwgMHgxMDAwCj4gPiAgICAgICAgIH0KPiA+IH0KPiA+
-IFRvdGFsIFBERSBjb3VudDogMQo+ID4gVG90YWwgUFRFIGNvdW50OiAxCj4gPiAKPiA+IFNpZ25l
-ZC1vZmYtYnk6IE5pY29saW4gQ2hlbiA8bmljb2xlb3RzdWthQGdtYWlsLmNvbT4KPiA+IC0tLQo+
-IAo+IEdvb2QgdG8gbWUsIHRoYW5rcy4KPiAKPiBUZXN0ZWQtYnk6IERtaXRyeSBPc2lwZW5rbyA8
-ZGlnZXR4QGdtYWlsLmNvbT4KPiBSZXZpZXdlZC1ieTogRG1pdHJ5IE9zaXBlbmtvIDxkaWdldHhA
-Z21haWwuY29tPgo+IAo+ID4gKwlmb3IgKHBkX2luZGV4ID0gMDsgcGRfaW5kZXggPCBTTU1VX05V
-TV9QREU7IHBkX2luZGV4KyspIHsKPiA+ICsJCXN0cnVjdCBwYWdlICpwdF9wYWdlOwo+ID4gKwkJ
-dTMyICphZGRyOwo+ID4gKwkJdW5zaWduZWQgaW50IGk7Cj4gCj4gVW5pbXBvcnRhbnQgbml0OiBJ
-J2Qga2VlcCBsaW5lcyBhcnJhbmdlZCBieSBsZW5ndGggZm9yIGNvbnNpc3RlbmN5IHdpdGgKPiB0
-aGUgcmVzdCBvZiB0aGUgY29kZS4KPiAKPiAuLi4KPiA+ICsJZ3JvdXBfZGVidWcgPSBkZXZtX2tj
-YWxsb2MoZGV2LCBzb2MtPm51bV9zd2dyb3Vwcywgc2l6ZW9mKCpncm91cF9kZWJ1ZyksIEdGUF9L
-RVJORUwpOwo+IAo+IEFub3RoZXIgbml0OiB0aGlzIGlzIGEgbG9uZyBsaW5lLCBJJ2Qgc3BsaXQg
-aXQgaW50byB0d28gbGluZXMgdG8ga2VlcAo+IGNvZGluZyBzdHlsZSBjb25zaXN0ZW50IGFuZCB0
-byBpbXByb3ZlIHJlYWRhYmlsaXR5IGZvciB0aG9zZSB3aG8gaGF2ZSBhCj4gc2lkZS1ieS1zaWRl
-IGNvZGUgdmlld2luZyBzZXR1cC4KClNlbmRpbmcgdjUuIFdpbGwgYWRkIHlvdXIgVGVzdGVkLWJ5
-IGFuZCBSZXZpZXdlZC1ieSBzaW5jZSB0aGVyZSdkCmJlIG5vIGZ1bmN0aW9uYWwgY2hhbmdlcy4g
-VGhhbmtzIQpfX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fXwpp
-b21tdSBtYWlsaW5nIGxpc3QKaW9tbXVAbGlzdHMubGludXgtZm91bmRhdGlvbi5vcmcKaHR0cHM6
-Ly9saXN0cy5saW51eGZvdW5kYXRpb24ub3JnL21haWxtYW4vbGlzdGluZm8vaW9tbXU=
+This patch dumps all active mapping entries from pagetable
+to a debugfs directory named "mappings".
+
+Attaching an example:
+
+SWGROUP: hc
+ASID: 0
+reg: 0x250
+PTB_ASID: 0xe0080004
+as->pd_dma: 0x80004000
+{
+        [1023] 0xf008000b (1)
+        {
+                PTE RANGE      | ATTR | PHYS               | IOVA               | SIZE
+                [#1023, #1023] | 0x5  | 0x0000000111a8d000 | 0x00000000fffff000 | 0x1000
+        }
+}
+Total PDE count: 1
+Total PTE count: 1
+
+Tested-by: Dmitry Osipenko <digetx@gmail.com>
+Reviewed-by: Dmitry Osipenko <digetx@gmail.com>
+Signed-off-by: Nicolin Chen <nicoleotsuka@gmail.com>
+---
+
+Changelog
+v5:
+ * Fixed a typo in commit message
+ * Splitted a long line into two lines
+ * Rearranged variable defines by length
+ * Added Tested-by and Reviewed-by from Dmitry
+v4: https://lkml.org/lkml/2021/3/14/429
+ * Changed %d to %u for unsigned variables
+ * Fixed print format mismatch warnings on ARM32
+v3: https://lkml.org/lkml/2021/3/14/30
+ * Fixed PHYS and IOVA print formats
+ * Changed variables to unsigned int type
+ * Changed the table outputs to be compact
+v2: https://lkml.org/lkml/2021/3/9/1382
+ * Expanded mutex range to the entire function
+ * Added as->lock to protect pagetable walkthrough
+ * Replaced devm_kzalloc with devm_kcalloc for group_debug
+ * Added "PTE RANGE" and "SIZE" columns to group contiguous mappings
+ * Dropped as->count check; added WARN_ON when as->count mismatches pd[pd_index]
+v1: https://lkml.org/lkml/2020/9/26/70
+
+ drivers/iommu/tegra-smmu.c | 181 ++++++++++++++++++++++++++++++++++++-
+ 1 file changed, 176 insertions(+), 5 deletions(-)
+
+diff --git a/drivers/iommu/tegra-smmu.c b/drivers/iommu/tegra-smmu.c
+index 97eb62f667d2..b728cae63314 100644
+--- a/drivers/iommu/tegra-smmu.c
++++ b/drivers/iommu/tegra-smmu.c
+@@ -19,6 +19,11 @@
+ #include <soc/tegra/ahb.h>
+ #include <soc/tegra/mc.h>
+ 
++struct tegra_smmu_group_debug {
++	const struct tegra_smmu_swgroup *group;
++	void *priv;
++};
++
+ struct tegra_smmu_group {
+ 	struct list_head list;
+ 	struct tegra_smmu *smmu;
+@@ -47,6 +52,8 @@ struct tegra_smmu {
+ 	struct dentry *debugfs;
+ 
+ 	struct iommu_device iommu;	/* IOMMU Core code handle */
++
++	struct tegra_smmu_group_debug *group_debug;
+ };
+ 
+ struct tegra_smmu_as {
+@@ -152,6 +159,9 @@ static inline u32 smmu_readl(struct tegra_smmu *smmu, unsigned long offset)
+ 
+ #define SMMU_PDE_ATTR		(SMMU_PDE_READABLE | SMMU_PDE_WRITABLE | \
+ 				 SMMU_PDE_NONSECURE)
++#define SMMU_PTE_ATTR		(SMMU_PTE_READABLE | SMMU_PTE_WRITABLE | \
++				 SMMU_PTE_NONSECURE)
++#define SMMU_PTE_ATTR_SHIFT	(29)
+ 
+ static unsigned int iova_pd_index(unsigned long iova)
+ {
+@@ -163,6 +173,12 @@ static unsigned int iova_pt_index(unsigned long iova)
+ 	return (iova >> SMMU_PTE_SHIFT) & (SMMU_NUM_PTE - 1);
+ }
+ 
++static unsigned long pd_pt_index_iova(unsigned int pd_index, unsigned int pt_index)
++{
++	return ((dma_addr_t)pd_index & (SMMU_NUM_PDE - 1)) << SMMU_PDE_SHIFT |
++	       ((dma_addr_t)pt_index & (SMMU_NUM_PTE - 1)) << SMMU_PTE_SHIFT;
++}
++
+ static bool smmu_dma_addr_valid(struct tegra_smmu *smmu, dma_addr_t addr)
+ {
+ 	addr >>= 12;
+@@ -334,7 +350,7 @@ static void tegra_smmu_domain_free(struct iommu_domain *domain)
+ }
+ 
+ static const struct tegra_smmu_swgroup *
+-tegra_smmu_find_swgroup(struct tegra_smmu *smmu, unsigned int swgroup)
++tegra_smmu_find_swgroup(struct tegra_smmu *smmu, unsigned int swgroup, int *index)
+ {
+ 	const struct tegra_smmu_swgroup *group = NULL;
+ 	unsigned int i;
+@@ -342,6 +358,8 @@ tegra_smmu_find_swgroup(struct tegra_smmu *smmu, unsigned int swgroup)
+ 	for (i = 0; i < smmu->soc->num_swgroups; i++) {
+ 		if (smmu->soc->swgroups[i].swgroup == swgroup) {
+ 			group = &smmu->soc->swgroups[i];
++			if (index)
++				*index = i;
+ 			break;
+ 		}
+ 	}
+@@ -350,19 +368,22 @@ tegra_smmu_find_swgroup(struct tegra_smmu *smmu, unsigned int swgroup)
+ }
+ 
+ static void tegra_smmu_enable(struct tegra_smmu *smmu, unsigned int swgroup,
+-			      unsigned int asid)
++			      struct tegra_smmu_as *as)
+ {
+ 	const struct tegra_smmu_swgroup *group;
++	unsigned int asid = as->id;
+ 	unsigned int i;
+ 	u32 value;
+ 
+-	group = tegra_smmu_find_swgroup(smmu, swgroup);
++	group = tegra_smmu_find_swgroup(smmu, swgroup, &i);
+ 	if (group) {
+ 		value = smmu_readl(smmu, group->reg);
+ 		value &= ~SMMU_ASID_MASK;
+ 		value |= SMMU_ASID_VALUE(asid);
+ 		value |= SMMU_ASID_ENABLE;
+ 		smmu_writel(smmu, value, group->reg);
++		if (smmu->group_debug)
++			smmu->group_debug[i].priv = as;
+ 	} else {
+ 		pr_warn("%s group from swgroup %u not found\n", __func__,
+ 				swgroup);
+@@ -389,13 +410,15 @@ static void tegra_smmu_disable(struct tegra_smmu *smmu, unsigned int swgroup,
+ 	unsigned int i;
+ 	u32 value;
+ 
+-	group = tegra_smmu_find_swgroup(smmu, swgroup);
++	group = tegra_smmu_find_swgroup(smmu, swgroup, &i);
+ 	if (group) {
+ 		value = smmu_readl(smmu, group->reg);
+ 		value &= ~SMMU_ASID_MASK;
+ 		value |= SMMU_ASID_VALUE(asid);
+ 		value &= ~SMMU_ASID_ENABLE;
+ 		smmu_writel(smmu, value, group->reg);
++		if (smmu->group_debug)
++			smmu->group_debug[i].priv = NULL;
+ 	}
+ 
+ 	for (i = 0; i < smmu->soc->num_clients; i++) {
+@@ -499,7 +522,7 @@ static int tegra_smmu_attach_dev(struct iommu_domain *domain,
+ 		if (err)
+ 			goto disable;
+ 
+-		tegra_smmu_enable(smmu, fwspec->ids[index], as->id);
++		tegra_smmu_enable(smmu, fwspec->ids[index], as);
+ 	}
+ 
+ 	if (index == 0)
+@@ -1058,8 +1081,141 @@ static int tegra_smmu_clients_show(struct seq_file *s, void *data)
+ 
+ DEFINE_SHOW_ATTRIBUTE(tegra_smmu_clients);
+ 
++static int tegra_smmu_mappings_show(struct seq_file *s, void *data)
++{
++	struct tegra_smmu_group_debug *group_debug = s->private;
++	const struct tegra_smmu_swgroup *group;
++	struct tegra_smmu_as *as;
++	struct tegra_smmu *smmu;
++	unsigned int pd_index;
++	unsigned int pt_index;
++	unsigned long flags;
++	u64 pte_count = 0;
++	u32 pde_count = 0;
++	u32 val, ptb_reg;
++	u32 *pd;
++
++	if (!group_debug || !group_debug->priv || !group_debug->group)
++		return 0;
++
++	group = group_debug->group;
++	as = group_debug->priv;
++	smmu = as->smmu;
++
++	mutex_lock(&smmu->lock);
++
++	val = smmu_readl(smmu, group->reg) & SMMU_ASID_ENABLE;
++	if (!val)
++		goto unlock;
++
++	pd = page_address(as->pd);
++	if (!pd)
++		goto unlock;
++
++	seq_printf(s, "\nSWGROUP: %s\nASID: %d\nreg: 0x%x\n",
++		   group->name, as->id, group->reg);
++
++	smmu_writel(smmu, as->id & 0x7f, SMMU_PTB_ASID);
++	ptb_reg = smmu_readl(smmu, SMMU_PTB_DATA);
++
++	seq_printf(s, "PTB_ASID: 0x%x\nas->pd_dma: %pad\n",
++		   ptb_reg, &as->pd_dma);
++	seq_puts(s, "{\n");
++
++	spin_lock_irqsave(&as->lock, flags);
++
++	for (pd_index = 0; pd_index < SMMU_NUM_PDE; pd_index++) {
++		struct page *pt_page;
++		unsigned int i;
++		u32 *addr;
++
++		/* An empty PDE should not have a pte use count */
++		WARN_ON_ONCE(!pd[pd_index] ^ !as->count[pd_index]);
++
++		/* Skip this empty PDE */
++		if (!pd[pd_index])
++			continue;
++
++		pde_count++;
++		pte_count += as->count[pd_index];
++		seq_printf(s, "\t[%u] 0x%x (%d)\n",
++			   pd_index, pd[pd_index], as->count[pd_index]);
++		pt_page = as->pts[pd_index];
++		addr = page_address(pt_page);
++
++		seq_puts(s, "\t{\n");
++		seq_printf(s, "\t\t%-14s | %-4s | %-10s%s | %-10s%s | %-11s\n",
++			   "PTE RANGE", "ATTR",
++			   "PHYS", sizeof(phys_addr_t) > 4 ? "        " : "",
++			   "IOVA", sizeof(dma_addr_t)  > 4 ? "        " : "",
++			   "SIZE");
++		for (pt_index = 0; pt_index < SMMU_NUM_PTE; pt_index += i) {
++			size_t size = SMMU_SIZE_PT;
++			dma_addr_t iova;
++			phys_addr_t pa;
++
++			i = 1;
++
++			if (!addr[pt_index])
++				continue;
++
++			iova = pd_pt_index_iova(pd_index, pt_index);
++			pa = SMMU_PFN_PHYS(addr[pt_index] & ~SMMU_PTE_ATTR);
++
++			/* Check contiguous mappings and increase size */
++			while (pt_index + i < SMMU_NUM_PTE) {
++				dma_addr_t next_iova;
++				phys_addr_t next_pa;
++
++				if (!addr[pt_index + i])
++					break;
++
++				next_iova = pd_pt_index_iova(pd_index, pt_index + i);
++				next_pa = SMMU_PFN_PHYS(addr[pt_index + i] & ~SMMU_PTE_ATTR);
++
++				/* Break at the end of a linear mapping */
++				if ((next_iova - iova != SMMU_SIZE_PT * i) ||
++				    (next_pa - pa != SMMU_SIZE_PT * i))
++					break;
++
++				i++;
++			}
++
++			seq_printf(s, "\t\t[#%-4u, #%-4u] | 0x%-2x | %pa | %pad | 0x%-9zx\n",
++				   pt_index, pt_index + i - 1,
++				   addr[pt_index] >> SMMU_PTE_ATTR_SHIFT,
++				   &pa, &iova, size * i);
++		}
++		seq_puts(s, "\t}\n");
++	}
++
++	spin_unlock_irqrestore(&as->lock, flags);
++
++	seq_puts(s, "}\n");
++	seq_printf(s, "Total PDE count: %u\n", pde_count);
++	seq_printf(s, "Total PTE count: %llu\n", pte_count);
++
++unlock:
++	mutex_unlock(&smmu->lock);
++
++	return 0;
++}
++
++DEFINE_SHOW_ATTRIBUTE(tegra_smmu_mappings);
++
+ static void tegra_smmu_debugfs_init(struct tegra_smmu *smmu)
+ {
++	const struct tegra_smmu_soc *soc = smmu->soc;
++	struct tegra_smmu_group_debug *group_debug;
++	struct device *dev = smmu->dev;
++	struct dentry *d;
++	unsigned int i;
++
++	group_debug = devm_kcalloc(dev, soc->num_swgroups,
++				   sizeof(*group_debug), GFP_KERNEL);
++	if (!group_debug)
++		return;
++
+ 	smmu->debugfs = debugfs_create_dir("smmu", NULL);
+ 	if (!smmu->debugfs)
+ 		return;
+@@ -1068,6 +1224,21 @@ static void tegra_smmu_debugfs_init(struct tegra_smmu *smmu)
+ 			    &tegra_smmu_swgroups_fops);
+ 	debugfs_create_file("clients", S_IRUGO, smmu->debugfs, smmu,
+ 			    &tegra_smmu_clients_fops);
++	d = debugfs_create_dir("mappings", smmu->debugfs);
++
++	for (i = 0; i < soc->num_swgroups; i++) {
++		const struct tegra_smmu_swgroup *group = &soc->swgroups[i];
++
++		if (!group->name)
++			continue;
++
++		group_debug[i].group = group;
++
++		debugfs_create_file(group->name, 0444, d, &group_debug[i],
++				    &tegra_smmu_mappings_fops);
++	}
++
++	smmu->group_debug = group_debug;
+ }
+ 
+ static void tegra_smmu_debugfs_exit(struct tegra_smmu *smmu)
+-- 
+2.17.1
+
+_______________________________________________
+iommu mailing list
+iommu@lists.linux-foundation.org
+https://lists.linuxfoundation.org/mailman/listinfo/iommu
