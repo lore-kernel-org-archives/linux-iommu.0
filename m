@@ -2,80 +2,103 @@ Return-Path: <SRS0=3mOG=IN=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-16.6 required=3.0 tests=BAYES_00,DKIM_INVALID,
+X-Spam-Status: No, score=-15.1 required=3.0 tests=BAYES_00,DKIM_INVALID,
 	DKIM_SIGNED,HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_CR_TRAILER,INCLUDES_PATCH,
-	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,URIBL_RED,USER_AGENT_GIT
-	autolearn=unavailable autolearn_force=no version=3.4.0
+	MAILING_LIST_MULTI,NICE_REPLY_A,SPF_HELO_NONE,SPF_PASS,URIBL_RED,
+	USER_AGENT_SANE_1 autolearn=ham autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 31714C433E0
-	for <iommu@archiver.kernel.org>; Mon, 15 Mar 2021 12:06:29 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id CB631C433DB
+	for <iommu@archiver.kernel.org>; Mon, 15 Mar 2021 16:27:33 +0000 (UTC)
 Received: from smtp4.osuosl.org (smtp4.osuosl.org [140.211.166.137])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 9C92664E98
-	for <iommu@archiver.kernel.org>; Mon, 15 Mar 2021 12:06:28 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 9C92664E98
-Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=infradead.org
+	by mail.kernel.org (Postfix) with ESMTPS id 14C7A64F23
+	for <iommu@archiver.kernel.org>; Mon, 15 Mar 2021 16:27:33 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 14C7A64F23
+Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=deltatee.com
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by smtp4.osuosl.org (Postfix) with ESMTP id 4518446B7B;
-	Mon, 15 Mar 2021 12:06:28 +0000 (UTC)
+	by smtp4.osuosl.org (Postfix) with ESMTP id BA22747B15;
+	Mon, 15 Mar 2021 16:27:32 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
 Received: from smtp4.osuosl.org ([127.0.0.1])
 	by localhost (smtp4.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id 7A8Gg4aUKCl5; Mon, 15 Mar 2021 12:06:27 +0000 (UTC)
+	with ESMTP id 6XwMcLIlCIau; Mon, 15 Mar 2021 16:27:31 +0000 (UTC)
 Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by smtp4.osuosl.org (Postfix) with ESMTP id C2B154480F;
-	Mon, 15 Mar 2021 12:06:26 +0000 (UTC)
+	by smtp4.osuosl.org (Postfix) with ESMTP id 622A044BD9;
+	Mon, 15 Mar 2021 16:27:31 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 9B636C000A;
-	Mon, 15 Mar 2021 12:06:26 +0000 (UTC)
-Received: from smtp3.osuosl.org (smtp3.osuosl.org [IPv6:2605:bc80:3010::136])
- by lists.linuxfoundation.org (Postfix) with ESMTP id F0B24C0001
- for <iommu@lists.linux-foundation.org>; Mon, 15 Mar 2021 12:06:25 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 37E2EC000B;
+	Mon, 15 Mar 2021 16:27:31 +0000 (UTC)
+Received: from smtp2.osuosl.org (smtp2.osuosl.org [IPv6:2605:bc80:3010::133])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 82184C0001
+ for <iommu@lists.linux-foundation.org>; Mon, 15 Mar 2021 16:27:30 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by smtp3.osuosl.org (Postfix) with ESMTP id CFE736F549
- for <iommu@lists.linux-foundation.org>; Mon, 15 Mar 2021 12:06:25 +0000 (UTC)
+ by smtp2.osuosl.org (Postfix) with ESMTP id 5B91441503
+ for <iommu@lists.linux-foundation.org>; Mon, 15 Mar 2021 16:27:30 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Authentication-Results: smtp3.osuosl.org (amavisd-new);
- dkim=pass (2048-bit key) header.d=infradead.org
-Received: from smtp3.osuosl.org ([127.0.0.1])
- by localhost (smtp3.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id oSJA8t7g3qKn for <iommu@lists.linux-foundation.org>;
- Mon, 15 Mar 2021 12:06:24 +0000 (UTC)
-X-Greylist: delayed 00:51:10 by SQLgrey-1.8.0
-Received: from desiato.infradead.org (desiato.infradead.org
- [IPv6:2001:8b0:10b:1:d65d:64ff:fe57:4e05])
- by smtp3.osuosl.org (Postfix) with ESMTPS id 3F2986F530
- for <iommu@lists.linux-foundation.org>; Mon, 15 Mar 2021 12:06:24 +0000 (UTC)
+Authentication-Results: smtp2.osuosl.org (amavisd-new);
+ dkim=pass (2048-bit key) header.d=deltatee.com
+Received: from smtp2.osuosl.org ([127.0.0.1])
+ by localhost (smtp2.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+ with ESMTP id 3ZpmsjQxSfRz for <iommu@lists.linux-foundation.org>;
+ Mon, 15 Mar 2021 16:27:29 +0000 (UTC)
+X-Greylist: domain auto-whitelisted by SQLgrey-1.8.0
+Received: from ale.deltatee.com (ale.deltatee.com [204.191.154.188])
+ by smtp2.osuosl.org (Postfix) with ESMTPS id 2481640196
+ for <iommu@lists.linux-foundation.org>; Mon, 15 Mar 2021 16:27:28 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
- d=infradead.org; s=desiato.20200630; h=Sender:Content-Transfer-Encoding:
- MIME-Version:Message-Id:Date:Subject:Cc:To:From:Reply-To:Content-Type:
- Content-ID:Content-Description:In-Reply-To:References;
- bh=wYk19foR0NdhgMjWstK6udYO/Zyawyo/Qzqsxoi3rt4=; b=fzumvFOSL8Taz/qc1bDNhAW40H
- O+nRKudLxtQDciVnnuZAs5TfWUKsg1m8CzjtBvztzeqXJbHTFoEbkoBXd2Ik3J/qAcJxP6O/gpt8U
- 6B9hZGLBCvQ0z7HEKKE0vGWoZtqnG85M3uUD7enjz2j9c/0ZqsTTxQW6tola/seuxLeuzAwjhPRbl
- 8FVa5jj9aSBfh1aw2GqKtgsAK9tOsUo4KFGkGmCSzqWgbyKQPrmQm6XCeHZx37AEocFluUZL2oUcl
- WueMhIJoHmXkR5O/Qf1k2NB710/IdRYhb93xJrw9/cLWua6OR7yOblnvaCE61zwihQE1dlsoRaIfN
- l3oU/2+Q==;
-Received: from i7.infradead.org ([2001:8b0:10b:1:21e:67ff:fecb:7a92])
- by desiato.infradead.org with esmtpsa (Exim 4.94 #2 (Red Hat Linux))
- id 1lLlBf-00FdvK-BP; Mon, 15 Mar 2021 11:15:08 +0000
-Received: from dwoodhou by i7.infradead.org with local (Exim 4.94 #2 (Red Hat
- Linux)) id 1lLlBe-001qao-So; Mon, 15 Mar 2021 11:15:02 +0000
-From: David Woodhouse <dwmw2@infradead.org>
-To: Joerg Roedel <joro@8bytes.org>
-Subject: [PATCH] iommu/amd: Don't initialise remapping irqdomain if IOMMU is
- disabled
-Date: Mon, 15 Mar 2021 11:15:02 +0000
-Message-Id: <20210315111502.440451-1-dwmw2@infradead.org>
-X-Mailer: git-send-email 2.29.2
+ d=deltatee.com; s=20200525; h=Subject:In-Reply-To:MIME-Version:Date:
+ Message-ID:From:References:Cc:To:content-disposition;
+ bh=m8eFPt4Ky/TIsfccDRiBKAA6Im8fSHoSL1rWmfMykMo=; b=litugTKON8LXh2E4fNWf+tdFsh
+ q2CsD9IDYGKKVIawn8gamhxRH644MuufqFWDCKKprPoZHtnAsUpBhIfbDLYsRIwcTEv0TojuuQngh
+ 9J3WiaV60JpGFYmjOv2GNCbeGl6swiX0xF3BgMcQ26cgzBguK1z1MH20QdPZRSQUkmZ+cHM0b8weO
+ nMw1zNo5ZDzrtWTjylir56GRiIHipKmvmqBkHqMQTaNXL2ccxzXkV9uRTIH6IoeArfVAH59w8/LqW
+ lQKk+yTetQfXb8ka5Hd5m4l/qqdvdrI67gA7aRHbkH+i+GOkWx0VzhB9jVE/dO+eFCXLyB281bkpf
+ Y9mF4fFg==;
+Received: from guinness.priv.deltatee.com ([172.16.1.162])
+ by ale.deltatee.com with esmtp (Exim 4.92)
+ (envelope-from <logang@deltatee.com>)
+ id 1lLq3k-0000KL-25; Mon, 15 Mar 2021 10:27:13 -0600
+To: Ira Weiny <ira.weiny@intel.com>
+References: <20210311233142.7900-1-logang@deltatee.com>
+ <20210311233142.7900-5-logang@deltatee.com>
+ <20210313013856.GA3402637@iweiny-DESK2.sc.intel.com>
+From: Logan Gunthorpe <logang@deltatee.com>
+Message-ID: <7509243d-b605-953b-6941-72876a60d527@deltatee.com>
+Date: Mon, 15 Mar 2021 10:27:08 -0600
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
+ Thunderbird/78.7.0
 MIME-Version: 1.0
-X-SRS-Rewrite: SMTP reverse-path rewritten from <dwmw2@infradead.org> by
- desiato.infradead.org. See http://www.infradead.org/rpr.html
-Cc: Steven Barrett <steven@liquorix.net>, linux-kernel@vger.kernel.org,
- iommu@lists.linux-foundation.org, matejm98mthw@gmail.com,
- Will Deacon <will@kernel.org>, Mav <basic89@gmail.com>
+In-Reply-To: <20210313013856.GA3402637@iweiny-DESK2.sc.intel.com>
+Content-Language: en-CA
+X-SA-Exim-Connect-IP: 172.16.1.162
+X-SA-Exim-Rcpt-To: jianxin.xiong@intel.com, dave.hansen@linux.intel.com,
+ jason@jlekstrand.net, dave.b.minturn@intel.com, andrzej.jakowski@intel.com,
+ daniel.vetter@ffwll.ch, willy@infradead.org, ddutile@redhat.com,
+ jhubbard@nvidia.com, iweiny@intel.com, christian.koenig@amd.com, jgg@ziepe.ca,
+ dan.j.williams@intel.com, hch@lst.de, sbates@raithlin.com,
+ iommu@lists.linux-foundation.org, linux-mm@kvack.org,
+ linux-pci@vger.kernel.org, linux-block@vger.kernel.org,
+ linux-nvme@lists.infradead.org, linux-kernel@vger.kernel.org,
+ ira.weiny@intel.com
+X-SA-Exim-Mail-From: logang@deltatee.com
+Subject: Re: [RFC PATCH v2 04/11] PCI/P2PDMA: Introduce
+ pci_p2pdma_should_map_bus() and pci_p2pdma_bus_offset()
+X-SA-Exim-Version: 4.2.1 (built Wed, 08 May 2019 21:11:16 +0000)
+X-SA-Exim-Scanned: Yes (on ale.deltatee.com)
+Cc: Minturn Dave B <dave.b.minturn@intel.com>,
+ Matthew Wilcox <willy@infradead.org>, Jason Gunthorpe <jgg@ziepe.ca>,
+ linux-pci@vger.kernel.org, Daniel Vetter <daniel.vetter@ffwll.ch>,
+ Dave Hansen <dave.hansen@linux.intel.com>, Ira Weiny <iweiny@intel.com>,
+ linux-kernel@vger.kernel.org, linux-nvme@lists.infradead.org,
+ Stephen Bates <sbates@raithlin.com>, linux-block@vger.kernel.org,
+ linux-mm@kvack.org, iommu@lists.linux-foundation.org,
+ =?UTF-8?Q?Christian_K=c3=b6nig?= <christian.koenig@amd.com>,
+ Jason Ekstrand <jason@jlekstrand.net>, John Hubbard <jhubbard@nvidia.com>,
+ Dan Williams <dan.j.williams@intel.com>,
+ Jakowski Andrzej <andrzej.jakowski@intel.com>, Christoph Hellwig <hch@lst.de>,
+ Xiong Jianxin <jianxin.xiong@intel.com>
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -93,73 +116,60 @@ Content-Transfer-Encoding: 7bit
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-From: David Woodhouse <dwmw@amazon.co.uk>
 
-When the IOMMU is disabled, the driver still enumerates and initialises
-the hardware in order to turn it off. Because IRQ remapping setup is
-done early, the irqdomain is set up opportunistically.
 
-In commit b34f10c2dc59 ("iommu/amd: Stop irq_remapping_select() matching
-when remapping is disabled") I already make the irq_remapping_select()
-function check the amd_iommu_irq_setup flag because that might get
-cleared only after the irqdomain setup is done, when the IVRS is parsed.
+On 2021-03-12 6:38 p.m., Ira Weiny wrote:
+> On Thu, Mar 11, 2021 at 04:31:34PM -0700, Logan Gunthorpe wrote:
+>> Introduce pci_p2pdma_should_map_bus() which is meant to be called by
+>> DMA map functions to determine how to map a given p2pdma page.
+>>
+>> pci_p2pdma_bus_offset() is also added to allow callers to get the bus
+>> offset if they need to map the bus address.
+>>
+>> Signed-off-by: Logan Gunthorpe <logang@deltatee.com>
+>> ---
+>>  drivers/pci/p2pdma.c       | 50 ++++++++++++++++++++++++++++++++++++++
+>>  include/linux/pci-p2pdma.h | 11 +++++++++
+>>  2 files changed, 61 insertions(+)
+>>
+>> diff --git a/drivers/pci/p2pdma.c b/drivers/pci/p2pdma.c
+>> index 7f6836732bce..66d16b7eb668 100644
+>> --- a/drivers/pci/p2pdma.c
+>> +++ b/drivers/pci/p2pdma.c
+>> @@ -912,6 +912,56 @@ void pci_p2pdma_unmap_sg_attrs(struct device *dev, struct scatterlist *sg,
+>>  }
+>>  EXPORT_SYMBOL_GPL(pci_p2pdma_unmap_sg_attrs);
+>>  
+>> +/**
+>> + * pci_p2pdma_bus_offset - returns the bus offset for a given page
+>> + * @page: page to get the offset for
+>> + *
+>> + * Must be passed a PCI p2pdma page.
+>> + */
+>> +u64 pci_p2pdma_bus_offset(struct page *page)
+>> +{
+>> +	struct pci_p2pdma_pagemap *p2p_pgmap = to_p2p_pgmap(page->pgmap);
+>> +
+>> +	WARN_ON(!is_pci_p2pdma_page(page));
+> 
+> Shouldn't this check be before the to_p2p_pgmap() call?  
 
-However, in the case where 'amd_iommu=off' is passed on the command line,
-the IRQ remapping setup isn't done but the amd_iommu_irq_setup flag is
-still set by the early IRQ remap init code. Stop it doing that, by
-bailing out of amd_iommu_prepare() early when it's disabled.
+The to_p2p_pgmap() call is just doing pointer arithmetic, so strictly
+speaking it doesn't need to be before. We just can't access p2p_pgmap
+until it has been checked.
 
-This avoids the crash in irq_remapping_select() as it dereferences the
-NULL amd_iommu_rlookup_table[]:
+> And I've been told not
+> to introduce WARN_ON's.  Should this be?
+> 
+> 	if (!is_pci_p2pdma_page(page))
+> 		return -1;
 
-[    0.243659] Switched APIC routing to physical x2apic.
-[    0.262206] BUG: kernel NULL pointer dereference, address: 0000000000000500
-[    0.262927] #PF: supervisor read access in kernel mode
-[    0.263390] #PF: error_code(0x0000) - not-present page
-[    0.263844] PGD 0 P4D 0
-[    0.264135] Oops: 0000 [#1] SMP PTI
-[    0.264460] CPU: 0 PID: 0 Comm: swapper/0 Not tainted 5.12.0-rc3 #831
-[    0.265069] Hardware name: QEMU Standard PC (Q35 + ICH9, 2009), BIOS 1.14.0-1.fc33 04/01/2014
-[    0.265825] RIP: 0010:irq_remapping_select+0x57/0xb0
-[    0.266327] Code: 4b 0c 48 3d 30 e0 a7 9e 75 0d eb 35 48 8b 00 48 3d 30 e0 a7 9e 74 2a 0f b6 50 10 39 d1 75 ed 0f b7 40 12 48 8b 15 69 e3 d2 01 <48> 8b 14 c2 48 85 d2 74 0e b8 01 00 00 00 48 3b aa 90 04 00 00 74
-[    0.268412] RSP: 0000:ffffffff9e803db0 EFLAGS: 00010246
-[    0.268919] RAX: 00000000000000a0 RBX: ffffffff9e803df8 RCX: 0000000000000000
-[    0.269550] RDX: 0000000000000000 RSI: 0000000000000000 RDI: ffff98120112fe79
-[    0.270245] RBP: ffff9812011c8218 R08: 0000000000000001 R09: 000000000000000a
-[    0.270922] R10: 000000000000000a R11: f000000000000000 R12: ffff9812011c8218
-[    0.271549] R13: ffff98120181ed88 R14: 0000000000000000 R15: 0000000000000000
-[    0.272221] FS:  0000000000000000(0000) GS:ffff98127dc00000(0000) knlGS:0000000000000000
-[    0.272997] CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
-[    0.273508] CR2: 0000000000000500 CR3: 0000000030810000 CR4: 00000000000006b0
-[    0.274178] Call Trace:
-[    0.274416]  irq_find_matching_fwspec+0x41/0xc0
-[    0.274812]  mp_irqdomain_create+0x65/0x150
-[    0.275251]  setup_IO_APIC+0x70/0x811
+In this case the WARN_ON is just to guard against misuse of the
+function. It should never happen unless a developer changes the code in
+a way that is incorrect. So I think that's the correct use of WARN_ON.
+Though I might change it to WARN and return, that seems safer.
 
-Fixes: a1a785b57242 ("iommu/amd: Implement select() method on remapping irqdomain")
-Bugzilla: https://bugzilla.kernel.org/show_bug.cgi?id=212017
-Signed-off-by: David Woodhouse <dwmw@amazon.co.uk>
----
- drivers/iommu/amd/init.c | 3 +++
- 1 file changed, 3 insertions(+)
-
-diff --git a/drivers/iommu/amd/init.c b/drivers/iommu/amd/init.c
-index 9126efcbaf2c..07edd837b076 100644
---- a/drivers/iommu/amd/init.c
-+++ b/drivers/iommu/amd/init.c
-@@ -2998,6 +2998,9 @@ int __init amd_iommu_prepare(void)
- {
- 	int ret;
- 
-+	if (amd_iommu_disabled)
-+		return -ENODEV;
-+
- 	amd_iommu_irq_remap = true;
- 
- 	ret = iommu_go_to_state(IOMMU_ACPI_FINISHED);
--- 
-2.29.2
-
+Logan
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
