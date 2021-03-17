@@ -3,89 +3,190 @@ X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
 X-Spam-Status: No, score=-3.5 required=3.0 tests=BAYES_00,DKIM_INVALID,
-	DKIM_SIGNED,HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,SPF_HELO_NONE,
-	SPF_PASS,URIBL_RED autolearn=no autolearn_force=no version=3.4.0
+	DKIM_SIGNED,HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,
+	MSGID_FROM_MTA_HEADER,SPF_HELO_NONE,SPF_PASS,URIBL_RED autolearn=no
+	autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B0F3DC433DB
-	for <iommu@archiver.kernel.org>; Wed, 17 Mar 2021 15:18:32 +0000 (UTC)
-Received: from smtp1.osuosl.org (smtp1.osuosl.org [140.211.166.138])
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B1F5CC433DB
+	for <iommu@archiver.kernel.org>; Wed, 17 Mar 2021 17:52:22 +0000 (UTC)
+Received: from smtp2.osuosl.org (smtp2.osuosl.org [140.211.166.133])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 1AE3E64EFC
-	for <iommu@archiver.kernel.org>; Wed, 17 Mar 2021 15:18:32 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 1AE3E64EFC
-Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=redhat.com
+	by mail.kernel.org (Postfix) with ESMTPS id 198CF64F07
+	for <iommu@archiver.kernel.org>; Wed, 17 Mar 2021 17:52:21 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 198CF64F07
+Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=oracle.com
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by smtp1.osuosl.org (Postfix) with ESMTP id A4D9B83ED4;
-	Wed, 17 Mar 2021 15:18:31 +0000 (UTC)
+	by smtp2.osuosl.org (Postfix) with ESMTP id 83FBD42FB1;
+	Wed, 17 Mar 2021 17:52:21 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from smtp1.osuosl.org ([127.0.0.1])
-	by localhost (smtp1.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id b5TZ-iQZ1uo8; Wed, 17 Mar 2021 15:18:30 +0000 (UTC)
+Received: from smtp2.osuosl.org ([127.0.0.1])
+	by localhost (smtp2.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+	with ESMTP id QUlQxm_S0xaI; Wed, 17 Mar 2021 17:52:20 +0000 (UTC)
 Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [IPv6:2605:bc80:3010:104::8cd3:938])
-	by smtp1.osuosl.org (Postfix) with ESMTP id 5C775830A7;
-	Wed, 17 Mar 2021 15:18:30 +0000 (UTC)
+	by smtp2.osuosl.org (Postfix) with ESMTP id 60C904150B;
+	Wed, 17 Mar 2021 17:52:20 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 3D893C000A;
-	Wed, 17 Mar 2021 15:18:30 +0000 (UTC)
-Received: from smtp4.osuosl.org (smtp4.osuosl.org [140.211.166.137])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 5E8CAC0001
- for <iommu@lists.linux-foundation.org>; Wed, 17 Mar 2021 15:18:29 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 48477C000A;
+	Wed, 17 Mar 2021 17:52:20 +0000 (UTC)
+Received: from smtp3.osuosl.org (smtp3.osuosl.org [140.211.166.136])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 8E5E7C0001
+ for <iommu@lists.linux-foundation.org>; Wed, 17 Mar 2021 17:52:19 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by smtp4.osuosl.org (Postfix) with ESMTP id 4C29D4EDB9
- for <iommu@lists.linux-foundation.org>; Wed, 17 Mar 2021 15:18:29 +0000 (UTC)
+ by smtp3.osuosl.org (Postfix) with ESMTP id 7005D60682
+ for <iommu@lists.linux-foundation.org>; Wed, 17 Mar 2021 17:52:19 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Authentication-Results: smtp4.osuosl.org (amavisd-new);
- dkim=pass (1024-bit key) header.d=redhat.com
-Received: from smtp4.osuosl.org ([127.0.0.1])
- by localhost (smtp4.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id e_RcHg-YDFwj for <iommu@lists.linux-foundation.org>;
- Wed, 17 Mar 2021 15:18:28 +0000 (UTC)
+Authentication-Results: smtp3.osuosl.org (amavisd-new);
+ dkim=pass (2048-bit key) header.d=oracle.com header.b="q7MYbIvZ";
+ dkim=pass (1024-bit key) header.d=oracle.onmicrosoft.com
+ header.b="zfL6FH13"
+Received: from smtp3.osuosl.org ([127.0.0.1])
+ by localhost (smtp3.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+ with ESMTP id YCkVUN7SZ15x for <iommu@lists.linux-foundation.org>;
+ Wed, 17 Mar 2021 17:52:17 +0000 (UTC)
 X-Greylist: domain auto-whitelisted by SQLgrey-1.8.0
-Received: from us-smtp-delivery-124.mimecast.com
- (us-smtp-delivery-124.mimecast.com [170.10.133.124])
- by smtp4.osuosl.org (Postfix) with ESMTPS id 408244EDB4
- for <iommu@lists.linux-foundation.org>; Wed, 17 Mar 2021 15:18:28 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
- s=mimecast20190719; t=1615994307;
- h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
- to:to:cc:cc:mime-version:mime-version:content-type:content-type:
- content-transfer-encoding:content-transfer-encoding:
- in-reply-to:in-reply-to:references:references;
- bh=WweFpqYPPp1PxeahFEtVPdauE7cc3RkHtQdhRhNh4Lw=;
- b=eBiz8yccujkSF80u6VkIwt+T3dNIdCaPbIcqgLqlX4fAcoGzdmCJgiSY4QAnEbd4WRUQ92
- DP5ocx34OppasaNqCunKN1TxUXrOmRVbCrgAHhFrfuGhfXIgvwAXQvno6CsR/b+khQc5QD
- Yu1Cu1KnbTQR66NVaEMe3EFuTVDmeHA=
-Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
- [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-200-Ay-bCL7yMjeinaiYmuah3w-1; Wed, 17 Mar 2021 11:18:23 -0400
-X-MC-Unique: Ay-bCL7yMjeinaiYmuah3w-1
-Received: from smtp.corp.redhat.com (int-mx03.intmail.prod.int.phx2.redhat.com
- [10.5.11.13])
- (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
- (No client certificate requested)
- by mimecast-mx01.redhat.com (Postfix) with ESMTPS id C0AC1CC624;
- Wed, 17 Mar 2021 15:18:21 +0000 (UTC)
-Received: from omen.home.shazbot.org (ovpn-112-255.phx2.redhat.com
- [10.3.112.255])
- by smtp.corp.redhat.com (Postfix) with ESMTP id 1FC7E6E419;
- Wed, 17 Mar 2021 15:18:21 +0000 (UTC)
-Date: Wed, 17 Mar 2021 09:18:20 -0600
-From: Alex Williamson <alex.williamson@redhat.com>
-To: Lu Baolu <baolu.lu@linux.intel.com>
-Subject: Re: A problem of Intel IOMMU hardware =?UTF-8?B?77yf?=
-Message-ID: <20210317091820.5f4ab69e@omen.home.shazbot.org>
-In-Reply-To: <692186fd-42b8-4054-ead2-f6c6b1bf5b2d@linux.intel.com>
-References: <670baaf8-4ff8-4e84-4be3-030b95ab5a5e@huawei.com>
- <692186fd-42b8-4054-ead2-f6c6b1bf5b2d@linux.intel.com>
+Received: from userp2120.oracle.com (userp2120.oracle.com [156.151.31.85])
+ by smtp3.osuosl.org (Postfix) with ESMTPS id 4D4F36063F
+ for <iommu@lists.linux-foundation.org>; Wed, 17 Mar 2021 17:52:17 +0000 (UTC)
+Received: from pps.filterd (userp2120.oracle.com [127.0.0.1])
+ by userp2120.oracle.com (8.16.0.42/8.16.0.42) with SMTP id 12HHjfH8009868;
+ Wed, 17 Mar 2021 17:52:04 GMT
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=oracle.com;
+ h=date : from : to : cc
+ : subject : message-id : references : content-type : in-reply-to :
+ mime-version; s=corp-2020-01-29;
+ bh=AuI7WZwh+THy66uOk/dX3AZL5VQVLUSbLO1vN8BYNn0=;
+ b=q7MYbIvZ6XMGjyOchRWzSW4ZJV9PXDxgAxsHR0bCU11jzHqB/0qlMbzS3LR1GwamuOw2
+ WGAsF+dk2sTsXcFjn3Ep5sB6cZFzB0l1SZwuw3qVfusDBr0u2qHzdLrZpcBUbt6cWt9b
+ GPypjNYpqC7IN5y0SL3GpbZ6Syyx8iTesdRhrGgYBJSR/etjfiKlCpKYAz3+7ykbf/PV
+ 5K3Hkey9IOQya3dHeRFJ+dO+8kKyESEFG4UZjKkUnn5UeitjYfIOuUcBza3f9zce5LF1
+ eHF1ufETgY/oRCyEeyi87FMVH6XNwAPu9ca0hzlE2pzd4nXTLslJyWiKxurd0gNsX5Am tg== 
+Received: from aserp3030.oracle.com (aserp3030.oracle.com [141.146.126.71])
+ by userp2120.oracle.com with ESMTP id 378p1nvxtx-1
+ (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+ Wed, 17 Mar 2021 17:52:04 +0000
+Received: from pps.filterd (aserp3030.oracle.com [127.0.0.1])
+ by aserp3030.oracle.com (8.16.0.42/8.16.0.42) with SMTP id 12HHolTG188948;
+ Wed, 17 Mar 2021 17:52:03 GMT
+Received: from nam10-bn7-obe.outbound.protection.outlook.com
+ (mail-bn7nam10lp2108.outbound.protection.outlook.com [104.47.70.108])
+ by aserp3030.oracle.com with ESMTP id 3796yv54qa-1
+ (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+ Wed, 17 Mar 2021 17:52:03 +0000
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=Kcn/OjkRge8LRRP9YU/yXyzkWHOmNItw1fflnCQtErFqe43UOBpVw/FXv2hgRoNipg6yCqhebnN8HMd+pYJwPVuUgl6jY/noZ/u+hrjO8j9kkVP40XTNyKcBCTD7mwcmV/URn9aWl7ceK/hz8ns6oTU7mh195Ur8WxXn3LmEZenbl7jsx8plEe14shYAw0gE0DHH4hH1tHk17Co7VYohUf3EWIVoTCS4pkQQoziIM7mjBBPeqP+Bb+deOqdvEeAqRT1i7OzgXmGQdbXC+TdBxf+rCea73JMHUm+Rpr6P1B/zOAtHECHQdlgXiY3mZua9jUctRyD5m7SxiMUxqzJgEg==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com; 
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=AuI7WZwh+THy66uOk/dX3AZL5VQVLUSbLO1vN8BYNn0=;
+ b=oSYlbGapY7yAud4JHRULDxIdcFgcRiWIVoYYb1MMcgGKqy6sGKKDR6sYcucR+6huAwI7iTbrLSWiW0hhStMiAu7t2Aoezm1GPFZvH4U5vvs4uhEof+uZrAGo5wdWClXFR1obEnYK2HrB9i+9p4EsBLV2A9ZVo+0P+iYs8WgmQ9A719Ch04jnrTP6V8OTcvKTQkTO41Eo96mjpzQUfhdvFy8Q1kh3mQbR9NgZaaegoFsuRlXmfWggICuTwkIM5I+k9bjNL2NpKwIlVoiFtqsYFuirPVzb3elhERj7twf8OEScJkMb6upOJ07V/d1Ty8Wtw4woAZfoZyHfXbR5ZlmH1w==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=oracle.com; dmarc=pass action=none header.from=oracle.com;
+ dkim=pass header.d=oracle.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+ d=oracle.onmicrosoft.com; s=selector2-oracle-onmicrosoft-com;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=AuI7WZwh+THy66uOk/dX3AZL5VQVLUSbLO1vN8BYNn0=;
+ b=zfL6FH13MdOTEy+2aWuMUWZXnarmlVGA9yqKLcNVH/ruodNqoCx3nSr5i+xV9uwxm+3SUOLWhj6/VW1qJR5omKaTK3b3pLufrKLZ66AhgWzcyGXhL6WoN3jJ1vOrvsucvpj1p107v7eLPo78TZzvsC6h5uiGKZCmpopdHH/zSJU=
+Authentication-Results: lst.de; dkim=none (message not signed)
+ header.d=none;lst.de; dmarc=none action=none header.from=oracle.com;
+Received: from BYAPR10MB2999.namprd10.prod.outlook.com (2603:10b6:a03:85::27)
+ by BYAPR10MB3685.namprd10.prod.outlook.com (2603:10b6:a03:124::33)
+ with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3933.32; Wed, 17 Mar
+ 2021 17:52:01 +0000
+Received: from BYAPR10MB2999.namprd10.prod.outlook.com
+ ([fe80::50f2:e203:1cc5:d4f7]) by BYAPR10MB2999.namprd10.prod.outlook.com
+ ([fe80::50f2:e203:1cc5:d4f7%6]) with mapi id 15.20.3955.018; Wed, 17 Mar 2021
+ 17:52:01 +0000
+Date: Wed, 17 Mar 2021 13:51:56 -0400
+From: Konrad Rzeszutek Wilk <konrad.wilk@oracle.com>
+To: Christoph Hellwig <hch@lst.de>
+Subject: Re: [PATCH 12/14] swiotlb: move global variables into a new
+ io_tlb_mem structure
+Message-ID: <YFJBvFjtZUiBQj4k@Konrads-MacBook-Pro.local>
+References: <20210301074436.919889-1-hch@lst.de>
+ <20210301074436.919889-13-hch@lst.de>
+ <20210317134204.GA315788@konrad-char-us-oracle-com.allregionaliads.osdevelopmeniad.oraclevcn.com>
+ <20210317135327.GA10797@lst.de>
+Content-Disposition: inline
+In-Reply-To: <20210317135327.GA10797@lst.de>
+X-Originating-IP: [138.3.200.3]
+X-ClientProxiedBy: SJ0PR13CA0157.namprd13.prod.outlook.com
+ (2603:10b6:a03:2c7::12) To BYAPR10MB2999.namprd10.prod.outlook.com
+ (2603:10b6:a03:85::27)
 MIME-Version: 1.0
-X-Scanned-By: MIMEDefang 2.79 on 10.5.11.13
-Cc: chenjiashang@huawei.com, dwmw2@infradead.org,
- LKML <linux-kernel@vger.kernel.org>, iommu@lists.linux-foundation.org,
- "Gonglei \(Arei\)" <arei.gonglei@huawei.com>, "Longpeng \(Mike,
- Cloud Infrastructure Service Product Dept.\)" <longpeng2@huawei.com>,
- will@kernel.org
+X-MS-Exchange-MessageSentRepresentingType: 1
+Received: from Konrads-MacBook-Pro.local (138.3.200.3) by
+ SJ0PR13CA0157.namprd13.prod.outlook.com (2603:10b6:a03:2c7::12) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3977.9 via Frontend
+ Transport; Wed, 17 Mar 2021 17:52:00 +0000
+X-MS-PublicTrafficType: Email
+X-MS-Office365-Filtering-Correlation-Id: 7fbf9615-15e3-487b-32ef-08d8e96d5e39
+X-MS-TrafficTypeDiagnostic: BYAPR10MB3685:
+X-MS-Exchange-Transport-Forked: True
+X-Microsoft-Antispam-PRVS: <BYAPR10MB3685B8A2D0DE7D5B105A71AE896A9@BYAPR10MB3685.namprd10.prod.outlook.com>
+X-MS-Oob-TLC-OOBClassifiers: OLM:8273;
+X-MS-Exchange-SenderADCheck: 1
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: cg6vtXO6MX/vimR6TjsQK3eGF7dB1pf/RHbbE/yxEHzIpd43hQ4lNXA1O4mM/0q4O2BDRSLiuW/desJr6Lqo22PJgRHWhFbgQL+2kziLt8xMoWcKVTAwd7JYEkdesN5VZao+Zrxm5lB4Bcf7oIHzr+LokzLdmZQoSwoC6sHPQpUBxS6sPW3N2UX7L4FgwYbz8ypk0w7/9Em+CdiFnvqfLgL/+0AXvw7vjR6bPVfRWMBu71PRN7GbZ/0KyrHsKRyKSsTyiBwruage4hNuKMRiT3RmkLLVLmSn4amNIrUABsu7ZLHKVh53myhYMFegW/q/5zFEZh+q4BA6gUxPc+c2aroz21R1xrJDW9pKoIIzabN6ucPPkpRREnjZp6UBlu73p/amgqcc7ao6G102wTl0DU17cETBT8X3Lp+MxIBQw4WV22lbOeg2IKQNwUUbptfsLqHkbp/7y70iR3ypmM+K+KfBJCLjz7RJjjNGmu5iqKw9PiJjlNElCwBz1p0yOH1S1qIqIWCK97/I4KB1+fp5arG0mYBfJ/gGOyf71HXyVXH+ob1FMAX+4F/E18EwkNR0
+X-Forefront-Antispam-Report: CIP:255.255.255.255; CTRY:; LANG:en; SCL:1; SRV:;
+ IPV:NLI; SFV:NSPM; H:BYAPR10MB2999.namprd10.prod.outlook.com; PTR:; CAT:NONE;
+ SFS:(39860400002)(376002)(396003)(136003)(366004)(346002)(9686003)(478600001)(107886003)(16526019)(956004)(4326008)(186003)(55016002)(26005)(52116002)(54906003)(86362001)(6666004)(83380400001)(66556008)(2906002)(6916009)(4744005)(8936002)(5660300002)(66946007)(7696005)(66476007)(6506007)(8676002)(316002);
+ DIR:OUT; SFP:1101; 
+X-MS-Exchange-AntiSpam-MessageData: =?us-ascii?Q?pFahNcWwbr+sh5HdDal7q2UqMPQ5bGD0l0l+kCf79QilCOQvTr+8iLTPRWMx?=
+ =?us-ascii?Q?lsbkwOiEoP4oFpERPxfbqL5tlPCHfMgwcjoWK/K5PWO13lzHRDhgKMWWVGRX?=
+ =?us-ascii?Q?kA3AyabgIFN7VTYzbONsr/zhCaTmWlCF15l3sADlGp3Fa0Sn23YKBFl8a+1A?=
+ =?us-ascii?Q?YbRVOdDu82odfOej1PCUI5GV88CqHIvnL5N5zfEo1uwZg/wga/MOJNr2J+3Z?=
+ =?us-ascii?Q?WsvCY1flmMxEBrvClV1cEbBRsHsXje6FmgCVMhDdp3uMGUJ/CEBnVBHtHg9/?=
+ =?us-ascii?Q?uX1EJOYLQ7OPtgWPXg3lObGyz2zdvfUcV9Jw0QDhLLGIfGDvAyS7CEJge3go?=
+ =?us-ascii?Q?hUwdocRbhc1v+QA1XukKKu6yPCt0vPIsCC/gX29HzBpUjPmAZHlQvNMpsTqu?=
+ =?us-ascii?Q?ONgObmKaE1OMlDgFAQfl4hKtDKILPHX31Z3TPmS1793vKMr9bgwuBg4qfqLk?=
+ =?us-ascii?Q?7xUkVveiG00YNfA9k3R3HfAF1TBlY94GAZWrHoJYS5Fc324PYVsVnAr8hSjf?=
+ =?us-ascii?Q?qvhOzeuJmJMiWgI9bsy7Od1ZSKTKhNbqX5S/8He/BdUj37QuJcARu8n46LHh?=
+ =?us-ascii?Q?FND/lAc7iIlxsLiXWGw5IaKGEwyqRdJMxWY/uBokjO8LwVxL4qMBVsWTgdrX?=
+ =?us-ascii?Q?gK/yzjMTGi++lEr9GkZH0Vm0+JQBU59M+uRm86cja/z6bOdhKB7+Q++N4tvj?=
+ =?us-ascii?Q?GENnWLErIJddMOaLzKm4X6Ym+hNA7x3AH0fio5kgZxozODfE+LbZcia8nvA8?=
+ =?us-ascii?Q?4dHuW+HfsBBz2PVeawU3PlSkKN1pN17NV2j0RN2Sasfv6J2d8fajbwgEo5Nt?=
+ =?us-ascii?Q?QW30RBSpoFgasw21s4xXE/2F0oNb7NuP44hItFC8WOcP/0qk+TwaTXRb+650?=
+ =?us-ascii?Q?P+WxjqQBQC3ya1R99iWqMIhtJOP40M89yM8C/tFUyf5G2kUeN600LF4ljdfX?=
+ =?us-ascii?Q?iVkIcYF0QD8pYhbnroz2hiNKqL/49EuNP8eYrZCrYM3jY0B9f7VyzWQnGk9c?=
+ =?us-ascii?Q?bCbEzHJDNsxo4YR/+QA1LxYbiwhLkY+i35LP3IjEJyYCptn6sGchJocVslDa?=
+ =?us-ascii?Q?/YQVR0J5a/rZ/l/h3OGrPuzkWroBd/QshiPMH3BCDXkN6PEdUiON4KsNjrDt?=
+ =?us-ascii?Q?EvmfYMPtRlXHYHORQTpAGIq+2SG6kFkxytWR4cYbu5yHsNWjq7eVeClxF3Um?=
+ =?us-ascii?Q?s7BFLsrGenkp3bVbxpxNj0HxWXbnb6U181zEAv3jdQ4Ji6FgvuSgNF7k6/lD?=
+ =?us-ascii?Q?eQZzledKoRnPYnMCLs5NmcJdfxz/4qB4Lxg9gA7XmENBZm9u2lDEVKEb8bzS?=
+ =?us-ascii?Q?Ljz9mVtM0NWuuvNj9MkR+C4H?=
+X-OriginatorOrg: oracle.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 7fbf9615-15e3-487b-32ef-08d8e96d5e39
+X-MS-Exchange-CrossTenant-AuthSource: BYAPR10MB2999.namprd10.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 17 Mar 2021 17:52:01.5958 (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 4e2c6054-71cb-48f1-bd6c-3a9705aca71b
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: m/8aLUIRs+feJbm4KItJpG0Ipp0ZNh2sYGazLu/mxiZBrxNC3dcUS2K2QRWICEvQzErxzpvKggL0kf42ENh5vw==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: BYAPR10MB3685
+X-Proofpoint-Virus-Version: vendor=nai engine=6200 definitions=9926
+ signatures=668683
+X-Proofpoint-Spam-Details: rule=notspam policy=default score=0 phishscore=0
+ malwarescore=0 spamscore=0
+ bulkscore=0 mlxlogscore=999 mlxscore=0 suspectscore=0 adultscore=0
+ classifier=spam adjust=0 reason=mlx scancount=1 engine=8.12.0-2009150000
+ definitions=main-2103170123
+X-Proofpoint-Virus-Version: vendor=nai engine=6200 definitions=9926
+ signatures=668683
+X-Proofpoint-Spam-Details: rule=notspam policy=default score=0 mlxscore=0
+ suspectscore=0 adultscore=0
+ spamscore=0 clxscore=1011 phishscore=0 malwarescore=0 priorityscore=1501
+ bulkscore=0 mlxlogscore=999 lowpriorityscore=0 impostorscore=0
+ classifier=spam adjust=0 reason=mlx scancount=1 engine=8.12.0-2009150000
+ definitions=main-2103170122
+Cc: xen-devel@lists.xenproject.org, Michael Ellerman <mpe@ellerman.id.au>,
+ iommu@lists.linux-foundation.org, Dongli Zhang <dongli.zhang@oracle.com>,
+ Claire Chang <tientzu@chromium.org>, linuxppc-dev@lists.ozlabs.org
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -103,125 +204,25 @@ Content-Transfer-Encoding: 7bit
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-On Wed, 17 Mar 2021 13:16:58 +0800
-Lu Baolu <baolu.lu@linux.intel.com> wrote:
+On Wed, Mar 17, 2021 at 02:53:27PM +0100, Christoph Hellwig wrote:
+> On Wed, Mar 17, 2021 at 01:42:07PM +0000, Konrad Rzeszutek Wilk wrote:
+> > > -	alloc_size = PAGE_ALIGN(io_tlb_nslabs * sizeof(size_t));
+> > > -	io_tlb_alloc_size = memblock_alloc(alloc_size, PAGE_SIZE);
+> > > -	if (!io_tlb_alloc_size)
+> > > -		panic("%s: Failed to allocate %zu bytes align=0x%lx\n",
+> > > -		      __func__, alloc_size, PAGE_SIZE);
+> > 
+> > Shouldn't this be converted to:
+> > 	mem->alloc_size = memblock_alloc(alloc_size, PAGE_SIZE);
+> > 	if (...)
+> > 
+> > Seems that it got lost in the search and replace?
+> 
+> Yes, I messed that up during the rebase.  That being said it magically
+> gets fixed in the next patch..
 
-> Hi Longpeng,
-> 
-> On 3/17/21 11:16 AM, Longpeng (Mike, Cloud Infrastructure Service 
-> Product Dept.) wrote:
-> > Hi guys,
-> > 
-> > We find the Intel iommu cache (i.e. iotlb) maybe works wrong in a special
-> > situation, it would cause DMA fails or get wrong data.
-> > 
-> > The reproducer (based on Alex's vfio testsuite[1]) is in attachment, it can
-> > reproduce the problem with high probability (~50%).
-> > 
-> > The machine we used is:
-> > processor	: 47
-> > vendor_id	: GenuineIntel
-> > cpu family	: 6
-> > model		: 85
-> > model name	: Intel(R) Xeon(R) Gold 6146 CPU @ 3.20GHz
-> > stepping	: 4
-> > microcode	: 0x2000069
-> > 
-> > And the iommu capability reported is:
-> > ver 1:0 cap 8d2078c106f0466 ecap f020df
-> > (caching mode = 0 , page-selective invalidation = 1)
-> > 
-> > (The problem is also on 'Intel(R) Xeon(R) Silver 4114 CPU @ 2.20GHz' and
-> > 'Intel(R) Xeon(R) Platinum 8378A CPU @ 3.00GHz')
-> > 
-> > We run the reproducer on Linux 4.18 and it works as follow:
-> > 
-> > Step 1. alloc 4G *2M-hugetlb* memory (N.B. no problem with 4K-page mapping)  
-> 
-> I don't understand 2M-hugetlb here means exactly. The IOMMU hardware
-> supports both 2M and 1G super page. The mapping physical memory is 4G.
-> Why couldn't it use 1G super page?
-> 
-> > Step 2. DMA Map 4G memory
-> > Step 3.
-> >      while (1) {
-> >          {UNMAP, 0x0, 0xa0000}, ------------------------------------ (a)
-> >          {UNMAP, 0xc0000, 0xbff40000},  
-> 
-> Have these two ranges been mapped before? Does the IOMMU driver
-> complains when you trying to unmap a range which has never been
-> mapped? The IOMMU driver implicitly assumes that mapping and
-> unmapping are paired.
->
-> >          {MAP,   0x0, 0xc0000000}, --------------------------------- (b)
-> >                  use GDB to pause at here, and then DMA read IOVA=0,  
-> 
-> IOVA 0 seems to be a special one. Have you verified with other addresses
-> than IOVA 0?
-
-It is???  That would be a problem.
-
-> >                  sometimes DMA success (as expected),
-> >                  but sometimes DMA error (report not-present).
-> >          {UNMAP, 0x0, 0xc0000000}, --------------------------------- (c)
-> >          {MAP,   0x0, 0xa0000},
-> >          {MAP,   0xc0000, 0xbff40000},
-> >      }
-
-The interesting thing about this test sequence seems to be how it will
-implicitly switch between super pages and regular pages.  Also note
-that the test is using the original vfio type1 API rather than the v2
-API that's more commonly used today.  This older API allows unmaps to
-split mappings, but we don't really know how much the IOMMU is
-unmapping without reading the unmap.size field returned by the ioctl.
-What I expect to happen is that the IOMMU will make use of superpages
-when mapping the full range.  When we unmap {0-bffff}, that's likely
-going to be covered by a 2M (or more) superpage, therefore the unmap
-will actually unmap {0-1fffff}.  The subsequent unmap starting at
-0xc0000 might already have {a0000-1fffff} unmapped.  However, when we
-then map {0 - bffff} the IOMMU will (should) switch back to 4K pages.
-The mapping at 0xc0000 should use 4K pages up through 0x1fffff, then
-might switch to 2M or 1G pages depending on physical memory layout.  So
-the {0-2MB} IOVA range could be switching back and forth between a
-superpage mapping and 4K mapping, and I can certainly imagine that
-could lead to page table, if not cache management bugs.  Thanks,
-
-Alex
-
-
-> > 
-> > The DMA read operations sholud success between (b) and (c), it should NOT report
-> > not-present at least!
-> > 
-> > After analysis the problem, we think maybe it's caused by the Intel iommu iotlb.
-> > It seems the DMA Remapping hardware still uses the IOTLB or other caches of (a).
-> > 
-> > When do DMA unmap at (a), the iotlb will be flush:
-> >      intel_iommu_unmap
-> >          domain_unmap
-> >              iommu_flush_iotlb_psi
-> > 
-> > When do DMA map at (b), no need to flush the iotlb according to the capability
-> > of this iommu:
-> >      intel_iommu_map
-> >          domain_pfn_mapping
-> >              domain_mapping
-> >                  __mapping_notify_one
-> >                      if (cap_caching_mode(iommu->cap)) // FALSE
-> >                          iommu_flush_iotlb_psi  
-> 
-> That's true. The iotlb flushing is not needed in case of PTE been
-> changed from non-present to present unless caching mode.
-> 
-> > But the problem will disappear if we FORCE flush here. So we suspect the iommu
-> > hardware.
-> > 
-> > Do you have any suggestion ?  
-> 
-> Best regards,
-> baolu
-> 
-
+Yes. However if someone does a bisection they are going to be mighty unhappy
+with you.
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
