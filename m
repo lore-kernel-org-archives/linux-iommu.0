@@ -1,104 +1,192 @@
-Return-Path: <SRS0=0/W0=IO=lists.linux-foundation.org=iommu-bounces@kernel.org>
+Return-Path: <SRS0=kdPY=IP=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-2.0 required=3.0 tests=BAYES_00,DKIM_ADSP_CUSTOM_MED,
-	DKIM_INVALID,DKIM_SIGNED,FREEMAIL_FORGED_FROMDOMAIN,FREEMAIL_FROM,
-	HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,NICE_REPLY_A,SPF_HELO_NONE,
-	SPF_PASS,URIBL_BLOCKED,USER_AGENT_SANE_1 autolearn=no autolearn_force=no
-	version=3.4.0
+X-Spam-Status: No, score=-10.0 required=3.0 tests=BAYES_00,DKIM_INVALID,
+	DKIM_SIGNED,HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_CR_TRAILER,
+	MAILING_LIST_MULTI,MSGID_FROM_MTA_HEADER,SPF_HELO_NONE,SPF_PASS,URIBL_RED,
+	USER_AGENT_SANE_1 autolearn=ham autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3419EC433DB
-	for <iommu@archiver.kernel.org>; Tue, 16 Mar 2021 23:50:14 +0000 (UTC)
-Received: from smtp1.osuosl.org (smtp1.osuosl.org [140.211.166.138])
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 049AAC433E0
+	for <iommu@archiver.kernel.org>; Wed, 17 Mar 2021 00:25:02 +0000 (UTC)
+Received: from smtp3.osuosl.org (smtp3.osuosl.org [140.211.166.136])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id C85F164F0C
-	for <iommu@archiver.kernel.org>; Tue, 16 Mar 2021 23:50:13 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org C85F164F0C
-Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=gmail.com
+	by mail.kernel.org (Postfix) with ESMTPS id 9447364F51
+	for <iommu@archiver.kernel.org>; Wed, 17 Mar 2021 00:25:01 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 9447364F51
+Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=oracle.com
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by smtp1.osuosl.org (Postfix) with ESMTP id 9047182F96;
-	Tue, 16 Mar 2021 23:50:13 +0000 (UTC)
+	by smtp3.osuosl.org (Postfix) with ESMTP id 57ACF6F48C;
+	Wed, 17 Mar 2021 00:25:01 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from smtp1.osuosl.org ([127.0.0.1])
-	by localhost (smtp1.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id ifRLK0DueiVa; Tue, 16 Mar 2021 23:50:12 +0000 (UTC)
-Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [IPv6:2605:bc80:3010:104::8cd3:938])
-	by smtp1.osuosl.org (Postfix) with ESMTP id 8D45C82F87;
-	Tue, 16 Mar 2021 23:50:12 +0000 (UTC)
+Received: from smtp3.osuosl.org ([127.0.0.1])
+	by localhost (smtp3.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+	with ESMTP id vLTzwV_ftt9d; Wed, 17 Mar 2021 00:25:00 +0000 (UTC)
+Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
+	by smtp3.osuosl.org (Postfix) with ESMTP id 3F8A9605E8;
+	Wed, 17 Mar 2021 00:25:00 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 734BDC000B;
-	Tue, 16 Mar 2021 23:50:12 +0000 (UTC)
-Received: from smtp4.osuosl.org (smtp4.osuosl.org [140.211.166.137])
- by lists.linuxfoundation.org (Postfix) with ESMTP id D16A4C000A
- for <iommu@lists.linux-foundation.org>; Tue, 16 Mar 2021 23:50:11 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 02FF2C000C;
+	Wed, 17 Mar 2021 00:25:00 +0000 (UTC)
+Received: from smtp1.osuosl.org (smtp1.osuosl.org [IPv6:2605:bc80:3010::138])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 50687C000A
+ for <iommu@lists.linux-foundation.org>; Wed, 17 Mar 2021 00:24:58 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by smtp4.osuosl.org (Postfix) with ESMTP id AACF44C8F7
- for <iommu@lists.linux-foundation.org>; Tue, 16 Mar 2021 23:50:11 +0000 (UTC)
+ by smtp1.osuosl.org (Postfix) with ESMTP id 32C0082E1A
+ for <iommu@lists.linux-foundation.org>; Wed, 17 Mar 2021 00:24:58 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Authentication-Results: smtp4.osuosl.org (amavisd-new);
- dkim=pass (2048-bit key) header.d=gmail.com
-Received: from smtp4.osuosl.org ([127.0.0.1])
- by localhost (smtp4.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id LBCY0l1ZvhtY for <iommu@lists.linux-foundation.org>;
- Tue, 16 Mar 2021 23:50:10 +0000 (UTC)
-X-Greylist: whitelisted by SQLgrey-1.8.0
-Received: from mail-lf1-x133.google.com (mail-lf1-x133.google.com
- [IPv6:2a00:1450:4864:20::133])
- by smtp4.osuosl.org (Postfix) with ESMTPS id A839A474F3
- for <iommu@lists.linux-foundation.org>; Tue, 16 Mar 2021 23:50:10 +0000 (UTC)
-Received: by mail-lf1-x133.google.com with SMTP id 20so174809lfj.13
- for <iommu@lists.linux-foundation.org>; Tue, 16 Mar 2021 16:50:10 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=gmail.com; s=20161025;
- h=subject:to:cc:references:from:message-id:date:user-agent
- :mime-version:in-reply-to:content-language:content-transfer-encoding;
- bh=oXB6+xyPHDZii/8O9jaaLZrloHiccp9uG7TidAIdX0k=;
- b=kRHoWji8jQln8q8Emkhm9fn17e4lS/p8UsvjfB5cvTetb/Da63gDE39WRgw7dvhu1Y
- gy9nj9oRpezB2IaqX5GzqvU2ADGDh4HIKqVzPI4WY7cpZl+FguNoXGiiJaeK8d50sht4
- +w+h2GLqWvKcPGtM2SMGz7s9oNORggO/J2jqjO2PimXt69AEeXMWM0lresu3Jl/eLVEO
- EveER/6JmJfTjne35NEzUHAecHg2u6oiAruMfEs5YZu57FHHmPCgrkc96jOCUCCUF7TQ
- ZQvuHF6AT/9HBL4yYzDXgC+fJWbw/UUPh7Z2EfPix4qSYjWCxJJCxz//DoP99uWiJeVS
- Dv9g==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
- d=1e100.net; s=20161025;
- h=x-gm-message-state:subject:to:cc:references:from:message-id:date
- :user-agent:mime-version:in-reply-to:content-language
- :content-transfer-encoding;
- bh=oXB6+xyPHDZii/8O9jaaLZrloHiccp9uG7TidAIdX0k=;
- b=hS+eP9cbaTI85VU3HVUl1347uFkbZxIy7acEuJBwK2xLemwX76GCHaz1k45Rt5Qk1o
- mjbGeqH0QC397/dVqJQCk0w3Xvj0klyPPAIWfaLSRGply1akhH+xqPJ9AqAfg0ImNglh
- VDpQJNjVUSOea5s41I+/Oi9UfwcmE3uqrFqYtZuXXlyeZNLqjhDvl3uaKNXV/+ew3q8V
- kbIT3i3CrE8XmxItwYADEzO3icUHDiiO+/ktUfKRUAKgOodGLkSxuwdW6d9bvoG47mLz
- idVlXbW6Xqf54QQpZpJiGkYAvJA2UpRgxaAU3CcT5vahMYk0kNmAuX/bGCBPnnGsvzJJ
- eytg==
-X-Gm-Message-State: AOAM530cVT/qBiZAzfxRFqQGLJaS2IlQSyYssL0rfu7qQq3p/3V6tCfa
- tkcN1iHXD2OSuafNTYs7134=
-X-Google-Smtp-Source: ABdhPJxOjUQ/S1fQWKKSlk4V0vmyKUunbtYbvY0y9KlqnwZngvig7Kfff6LvYs+wNYWkZY8F4UebjQ==
-X-Received: by 2002:a05:6512:3709:: with SMTP id
- z9mr628448lfr.557.1615938608636; 
- Tue, 16 Mar 2021 16:50:08 -0700 (PDT)
-Received: from [192.168.2.145] (109-252-193-52.dynamic.spd-mgts.ru.
- [109.252.193.52])
- by smtp.googlemail.com with ESMTPSA id g21sm3170038lfr.212.2021.03.16.16.50.08
- (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
- Tue, 16 Mar 2021 16:50:08 -0700 (PDT)
-Subject: Re: [PATCH v5] iommu/tegra-smmu: Add pagetable mappings to debugfs
-To: Thierry Reding <thierry.reding@gmail.com>,
- Nicolin Chen <nicoleotsuka@gmail.com>
-References: <20210315203631.24990-1-nicoleotsuka@gmail.com>
- <YFCTmwpg9pMQqcSu@orome.fritz.box>
-From: Dmitry Osipenko <digetx@gmail.com>
-Message-ID: <d338d407-8e0a-a94a-dcff-80556174492e@gmail.com>
-Date: Wed, 17 Mar 2021 02:50:07 +0300
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
- Thunderbird/78.8.1
+Authentication-Results: smtp1.osuosl.org (amavisd-new);
+ dkim=pass (2048-bit key) header.d=oracle.com header.b="DEK439we";
+ dkim=pass (1024-bit key) header.d=oracle.onmicrosoft.com
+ header.b="c7cEMMfJ"
+Received: from smtp1.osuosl.org ([127.0.0.1])
+ by localhost (smtp1.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+ with ESMTP id mKjfRm99319Q for <iommu@lists.linux-foundation.org>;
+ Wed, 17 Mar 2021 00:24:55 +0000 (UTC)
+X-Greylist: domain auto-whitelisted by SQLgrey-1.8.0
+Received: from userp2120.oracle.com (userp2120.oracle.com [156.151.31.85])
+ by smtp1.osuosl.org (Postfix) with ESMTPS id 9D80882E0E
+ for <iommu@lists.linux-foundation.org>; Wed, 17 Mar 2021 00:24:55 +0000 (UTC)
+Received: from pps.filterd (userp2120.oracle.com [127.0.0.1])
+ by userp2120.oracle.com (8.16.0.42/8.16.0.42) with SMTP id 12H0Dbdr128230;
+ Wed, 17 Mar 2021 00:24:43 GMT
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=oracle.com;
+ h=date : from : to : cc
+ : subject : message-id : references : content-type : in-reply-to :
+ mime-version; s=corp-2020-01-29;
+ bh=ajlBZqg6etRYPnU9lgBgBWTJ3x93HiaJoEjobjGKwIU=;
+ b=DEK439wemGAVuqgHCjxBKpe+OiTCLf3GJVoeuVxfVgV7L2xLzJVynSlgWGSuz5UdBTb2
+ kZZX15lHwAAFh4sP4Z++almUaiC9WSCeESH4ar6uCcP8env3ZsZBhIqhfx1pfWySQj4b
+ oqOofWW1AS1nvTStRdso5o6yVxbC6iZa0nHDiVpLVy1rKVbdmn6opJZbFO6L2GHVY5lY
+ sBJRBFO3AR1go4B+6ufZcPPKF9E9UL059zdPnqN9VwlpJNHD/qDHV10aQ2HiGdpNKTHH
+ hqPMQBbleT5tCq+rkwxq+LCRtd3+PKPm/tGxDBOH404gENSwg6ogq6yRglwd2Nam/l34 6g== 
+Received: from userp3030.oracle.com (userp3030.oracle.com [156.151.31.80])
+ by userp2120.oracle.com with ESMTP id 378p1ntc12-1
+ (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+ Wed, 17 Mar 2021 00:24:42 +0000
+Received: from pps.filterd (userp3030.oracle.com [127.0.0.1])
+ by userp3030.oracle.com (8.16.0.42/8.16.0.42) with SMTP id 12H0FuaT030472;
+ Wed, 17 Mar 2021 00:24:42 GMT
+Received: from nam12-mw2-obe.outbound.protection.outlook.com
+ (mail-mw2nam12lp2046.outbound.protection.outlook.com [104.47.66.46])
+ by userp3030.oracle.com with ESMTP id 3797b0t33a-1
+ (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+ Wed, 17 Mar 2021 00:24:42 +0000
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=PtUuh9Mhg9F8vSNFzz6E4JBR6RpqXRN/zBsvkR44cz0P05bTD8RoKPBK8YxxIxeI07DnYPJ9YcpTjkyro0Ym1yYwU995y6Mc6KeDgASDSViDoDI4JMInY+TyhOCwQyj+Jx7nqXEkkTtdvEup6NECHUjZeErDtFtp0ZB7vwvF+QN6IWj7JaCmrR3/7qLE/s6G7jf5cNZlr3R7BJYJud7/4En8+OF0/xSPtgIkqdW6c1V8xrikznpGTexZau7xiPERyT9cpQ08TAYph1dNoCayD/0XMPK6ucgaGzQSh4n5shOv4X5zWothUaKu1cU6dJ+Oeke+Pbh9BdSqFEc7gBod1g==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com; 
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=ajlBZqg6etRYPnU9lgBgBWTJ3x93HiaJoEjobjGKwIU=;
+ b=dOLDENHauXGEySfMGwA7hcII501RhZeTn7fcKuB90cyywAWg+8fG993YhrvifhG6IFFm5j1ZxnkojfQB+/QeZLwEciouhr8Ulom/85B8P45DRLHNW/0U3g1hWAUaxr2gXjeTH/bbFXjavtkUPlx0DGQxznqqwxLarKXNuhzsBUE7NG0VJeLW9oNU9t6+cZvMaIrQa14oQzQYXkcnqsbgy+fnh7ETVdkkrhRZF73jcsa4HeKKZGNa2PgLNYXwh1yxzl5G/Hjzrtwv0YyOLqC+a8B68qZrTj9f2hOJlngYANY45q9zrRNdxBA/EfkJPW8dYt2zv5NTp/uZsr1kv0O8pg==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=oracle.com; dmarc=pass action=none header.from=oracle.com;
+ dkim=pass header.d=oracle.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+ d=oracle.onmicrosoft.com; s=selector2-oracle-onmicrosoft-com;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=ajlBZqg6etRYPnU9lgBgBWTJ3x93HiaJoEjobjGKwIU=;
+ b=c7cEMMfJAORiEiTH1VG6G6k2QURYByDj4A1VxI50uIp7UAtNPuOv5a9UVkO73B+B3P0WPAR1AH/yxPVq2LiEGAY1QbYRJugk4BMTef0+dyl0uw5Ps8XVs9/iO1mUgmEERFCZb/XnEWS2g65lntoI/WO3ml+37wZUCA5yWSqQhvk=
+Authentication-Results: lst.de; dkim=none (message not signed)
+ header.d=none;lst.de; dmarc=none action=none header.from=oracle.com;
+Received: from BYAPR10MB2999.namprd10.prod.outlook.com (2603:10b6:a03:85::27)
+ by BY5PR10MB4113.namprd10.prod.outlook.com (2603:10b6:a03:20d::20)
+ with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3933.32; Wed, 17 Mar
+ 2021 00:24:40 +0000
+Received: from BYAPR10MB2999.namprd10.prod.outlook.com
+ ([fe80::50f2:e203:1cc5:d4f7]) by BYAPR10MB2999.namprd10.prod.outlook.com
+ ([fe80::50f2:e203:1cc5:d4f7%6]) with mapi id 15.20.3955.018; Wed, 17 Mar 2021
+ 00:24:40 +0000
+Date: Wed, 17 Mar 2021 00:24:36 +0000
+From: Konrad Rzeszutek Wilk <konrad.wilk@oracle.com>
+To: Christoph Hellwig <hch@lst.de>
+Subject: Re: [PATCH 02/14] swiotlb: remove the alloc_size parameter to
+ swiotlb_tbl_unmap_single
+Message-ID: <20210317002433.GA80752@konrad-char-us-oracle-com.allregionaliads.osdevelopmeniad.oraclevcn.com>
+References: <20210301074436.919889-1-hch@lst.de>
+ <20210301074436.919889-3-hch@lst.de>
+Content-Disposition: inline
+In-Reply-To: <20210301074436.919889-3-hch@lst.de>
+User-Agent: Mutt/1.10.1 (2018-07-13)
+X-Originating-IP: [209.17.40.37]
+X-ClientProxiedBy: SJ0PR03CA0071.namprd03.prod.outlook.com
+ (2603:10b6:a03:331::16) To BYAPR10MB2999.namprd10.prod.outlook.com
+ (2603:10b6:a03:85::27)
 MIME-Version: 1.0
-In-Reply-To: <YFCTmwpg9pMQqcSu@orome.fritz.box>
-Content-Language: en-US
-Cc: linux-kernel@vger.kernel.org, iommu@lists.linux-foundation.org,
- jonathanh@nvidia.com, linux-tegra@vger.kernel.org, will@kernel.org
+X-MS-Exchange-MessageSentRepresentingType: 1
+Received: from
+ konrad-char-us-oracle-com.allregionaliads.osdevelopmeniad.oraclevcn.com
+ (209.17.40.37) by SJ0PR03CA0071.namprd03.prod.outlook.com
+ (2603:10b6:a03:331::16) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3933.32 via Frontend
+ Transport; Wed, 17 Mar 2021 00:24:39 +0000
+X-MS-PublicTrafficType: Email
+X-MS-Office365-Filtering-Correlation-Id: 518c6071-4445-4074-d04c-08d8e8db0e25
+X-MS-TrafficTypeDiagnostic: BY5PR10MB4113:
+X-MS-Exchange-Transport-Forked: True
+X-Microsoft-Antispam-PRVS: <BY5PR10MB41132A1EC72B929F8BD34874896A9@BY5PR10MB4113.namprd10.prod.outlook.com>
+X-MS-Oob-TLC-OOBClassifiers: OLM:2733;
+X-MS-Exchange-SenderADCheck: 1
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: v8J01Q++C1M0bY9xSJV4J6+AMmIvKZFMUnVCgCuaWf62kGns0Jez0Xx2EGsgywoIg+tneE5ji3/c5UfJOHEgQsU+WniYVY88uQSHqy5ARVT3XQYHECzqqLcJsvVTcTgg+Bgsh9UOeggB1pbV4bDWJlby4kkt0yF72BgE1CPob2I4Qm1PLBK06ZO8BCBEclEomevu2R+jnIhEwX4BhUy7r2xt1ZR9WsyeTvxwvXW8N8HxOiA8VcoZMGd2jOiN+0QL8354HmAtWs3JUFPvDb/nwJIi9GoGFfqmorw9CaOxNn4VuB2q27xQhfXfcHNM2e17MAEU20vDn3emIzj6gJcPcjIWt6MhDATq1LwM6l6a1ecFmKPPOhMdlUoPgTVnhMKX0tUeIW8G4DTm7U81x0B5kQthosybzaYdknIfDQcuXFV9mYFfSi7L4CZnNJDiTgZQbsSsbmztSjgdKUjFkKV9t2Lj/vUqr2/VaZJMei/Ed60o8DhRkIEpgfz/D+qHBaGBMk0YU0syZ4bgSjAqGxCyUIPXG6r61P0KZKsTBnMZnpw+/oeZaUTC7qErNZXxrokj
+X-Forefront-Antispam-Report: CIP:255.255.255.255; CTRY:; LANG:en; SCL:1; SRV:;
+ IPV:NLI; SFV:NSPM; H:BYAPR10MB2999.namprd10.prod.outlook.com; PTR:; CAT:NONE;
+ SFS:(396003)(39860400002)(346002)(366004)(376002)(136003)(5660300002)(54906003)(478600001)(4326008)(6916009)(316002)(1076003)(9686003)(55016002)(186003)(558084003)(107886003)(8936002)(2906002)(52116002)(7696005)(86362001)(66556008)(66476007)(6666004)(26005)(16526019)(6506007)(956004)(66946007)(8676002)(33656002);
+ DIR:OUT; SFP:1101; 
+X-MS-Exchange-AntiSpam-MessageData: =?us-ascii?Q?2OiDiTVsNE3Hr73ctb1olDqr8owqrPQUiyAYgnup7uKhyW6EEWRLMMODlcOA?=
+ =?us-ascii?Q?YNC9ab6QSRIOQUSCk2Cm2hK+3ITqaJhM6O3+Xn3ejKlPREWJDRgfzLniDqFd?=
+ =?us-ascii?Q?pQrin8vC737wIi85qXvGL6oVh7lFLfJjoJLR4XwC9MIuJMl6cOUL4vA1pfF9?=
+ =?us-ascii?Q?bWLtxrXOj0ccYKeQMxQlRSOXslpFzeqVqK25bZUDw4zalDqfYPGtZwZT4Sg9?=
+ =?us-ascii?Q?ROU1mlfXZs1nTt5ianmpATapJowMzGNF+UKX5WaBanWTs9XgH3/c072mKW/c?=
+ =?us-ascii?Q?GE9ZWwCQn4tc9qhv6Ym7V+Qf+WAYjHnuB6gKkqRtkvFoHxTCJAJiClr/PKNI?=
+ =?us-ascii?Q?gAZUZUhM2e5lPvBdjSApftkBLdvWPTkPjO2BmkwSXXmAa9/LuEeL2Z2jhDDD?=
+ =?us-ascii?Q?p6gTAXoWtK+jLZfGvSNHCNJ5SqQJ/6aMWbSF9kqjpzLrI1hydZ/uzhdKxduh?=
+ =?us-ascii?Q?PxeX8sXj7xmbygucsKavcBwImKEbpCwg3mbsIQhPZcvq069Cym9dyNoZa3QX?=
+ =?us-ascii?Q?TqHacX+CDga/MvVxdfNWt6sVolXruMu1fQ/cOccnnaqgkwc8sKF4jaAC3HMh?=
+ =?us-ascii?Q?qnuM3HJgWvkwpKmbWYdW9ZtYkbzUm7RFaZQ+GLMj3kF+AE34ugGs4UckSFbx?=
+ =?us-ascii?Q?huDrI9lRvJImAqBueSjjkNXOpnv8pfJGxyANuy7HgCyCYT9qnE5K0cHCwfGH?=
+ =?us-ascii?Q?jOL9IP4Eyqr+UEMRVChRiF8kuq4xRGC/gWSznGPCLYrL9pAxTv2HT8kGcl2z?=
+ =?us-ascii?Q?TqwpcSwn47qPQZfufMfPN55Z7sydijTwUQkPKTovACVw2PEDmxeIp90OkpoH?=
+ =?us-ascii?Q?rx0DaJeOM/N3q6H9oQXKJ5SOtOAtHBY92iVW5FHkXefVP6S8h76iAX450HPX?=
+ =?us-ascii?Q?/Jz3mj8s0yemegNyLRcGEqUkGXu5EbIE4+q8eKKWdRH0IuDFtpYxDgc5q0Uk?=
+ =?us-ascii?Q?AMJmtiTMG+Sioq4g0ga2/giAHHCJMMRmjhu9TQanJ0l9P+kHnmEAKCDTKKQl?=
+ =?us-ascii?Q?SrL3hqmlZXwbxUxJ30iq/SYRVznwMI5xPbkiTb9Mgip1XwZJn4dHpzs42P7k?=
+ =?us-ascii?Q?5utDm96Ioo+LyFjJV7ROUAWhQjJK045V5UNrok8rA1DP4QDXyyMDQ8wZTGqq?=
+ =?us-ascii?Q?gQpmxSZNup9POK+nfZ8B70Ei2SWFEKS9f3HR2fN84hlHeqlUBPjsipWCfRB3?=
+ =?us-ascii?Q?V4qP+tTRwCjIlNLoVejCUWVRN5FQUSsm4eI4eqiJzsWUc0MgJDd71JvahrDG?=
+ =?us-ascii?Q?wjFTMewOHbcJF3znkmQzFhzDLlbqT5YJsuOQKHnZ214apA/4R1lp5B9ea1nL?=
+ =?us-ascii?Q?t7NgC1H7wAGANFaCOQUpf8p0?=
+X-OriginatorOrg: oracle.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 518c6071-4445-4074-d04c-08d8e8db0e25
+X-MS-Exchange-CrossTenant-AuthSource: BYAPR10MB2999.namprd10.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 17 Mar 2021 00:24:40.7455 (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 4e2c6054-71cb-48f1-bd6c-3a9705aca71b
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: oGS0AMie1F3nrVReND0XmoKp9saY/bwGAU2qblU3uQNo/h9Q1kpsbl2Yj5cC28bA6+Ec29tb7b6pkhZtJEj6Ng==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: BY5PR10MB4113
+X-Proofpoint-Virus-Version: vendor=nai engine=6200 definitions=9925
+ signatures=668683
+X-Proofpoint-Spam-Details: rule=notspam policy=default score=0 suspectscore=0
+ spamscore=0 bulkscore=0
+ malwarescore=0 adultscore=0 mlxscore=0 mlxlogscore=999 phishscore=0
+ classifier=spam adjust=0 reason=mlx scancount=1 engine=8.12.0-2009150000
+ definitions=main-2103170000
+X-Proofpoint-Virus-Version: vendor=nai engine=6200 definitions=9925
+ signatures=668683
+X-Proofpoint-Spam-Details: rule=notspam policy=default score=0 mlxscore=0
+ suspectscore=0 adultscore=0
+ spamscore=0 clxscore=1015 phishscore=0 malwarescore=0 priorityscore=1501
+ bulkscore=0 mlxlogscore=999 lowpriorityscore=0 impostorscore=0
+ classifier=spam adjust=0 reason=mlx scancount=1 engine=8.12.0-2009150000
+ definitions=main-2103170000
+Cc: xen-devel@lists.xenproject.org, Michael Ellerman <mpe@ellerman.id.au>,
+ iommu@lists.linux-foundation.org, Dongli Zhang <dongli.zhang@oracle.com>,
+ Claire Chang <tientzu@chromium.org>, linuxppc-dev@lists.ozlabs.org
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -111,19 +199,17 @@ List-Post: <mailto:iommu@lists.linux-foundation.org>
 List-Help: <mailto:iommu-request@lists.linux-foundation.org?subject=help>
 List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
  <mailto:iommu-request@lists.linux-foundation.org?subject=subscribe>
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-MTYuMDMuMjAyMSAxNDoxNiwgVGhpZXJyeSBSZWRpbmcg0L/QuNGI0LXRgjoKPj4gKwlzZXFfcHV0
-cyhzLCAifVxuIik7Cj4+ICsJc2VxX3ByaW50ZihzLCAiVG90YWwgUERFIGNvdW50OiAldVxuIiwg
-cGRlX2NvdW50KTsKPj4gKwlzZXFfcHJpbnRmKHMsICJUb3RhbCBQVEUgY291bnQ6ICVsbHVcbiIs
-IHB0ZV9jb3VudCk7Cj4gU29tZSBvZiB0aGUgYWJvdmUgbG9va3MgbGlrZSBpdCB3b3VsZG4ndCBi
-ZSB2ZXJ5IGVhc2lseSBjb25zdW1lZCBieQo+IHNjcmlwdHMuIElzIHRoYXQgc29tZXRoaW5nIHdl
-IHdhbnQgdG8gZG8/IE9yIGlzIHRoaXMgdGFyZ2V0dGVkIHByaW1hcmlseQo+IGF0IGh1bWFuIGNv
-bnN1bXB0aW9uPwoKT3V0cHV0IHNob3VsZCBiZSBwYXJzYWJsZSB1c2luZyBhIHNpbXBsZSByZWdl
-eC4gQ291bGQgeW91IHBsZWFzZSBjbGFyaWZ5CndoYXQgZXhhY3RseSBpc24ndCBlYXN5PwpfX19f
-X19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fXwppb21tdSBtYWlsaW5n
-IGxpc3QKaW9tbXVAbGlzdHMubGludXgtZm91bmRhdGlvbi5vcmcKaHR0cHM6Ly9saXN0cy5saW51
-eGZvdW5kYXRpb24ub3JnL21haWxtYW4vbGlzdGluZm8vaW9tbXU=
+On Mon, Mar 01, 2021 at 08:44:24AM +0100, Christoph Hellwig wrote:
+> Now that swiotlb remembers the allocation size there is no need to pass
+> it back to swiotlb_tbl_unmap_single.
+Reviewed-by: Konrad Rzeszutek Wilk <konrad.wilk@oracle.com>
+
+_______________________________________________
+iommu mailing list
+iommu@lists.linux-foundation.org
+https://lists.linuxfoundation.org/mailman/listinfo/iommu
