@@ -2,85 +2,150 @@ Return-Path: <SRS0=kdPY=IP=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-0.6 required=3.0 tests=BAYES_00,
-	CHARSET_FARAWAY_HEADER,HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,
-	SPF_HELO_NONE,SPF_PASS,URIBL_RED autolearn=no autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-3.5 required=3.0 tests=BAYES_00,DKIM_INVALID,
+	DKIM_SIGNED,HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,
+	MSGID_FROM_MTA_HEADER,SPF_HELO_NONE,SPF_PASS,URIBL_RED autolearn=no
+	autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 922EFC433DB
-	for <iommu@archiver.kernel.org>; Wed, 17 Mar 2021 09:40:48 +0000 (UTC)
-Received: from smtp1.osuosl.org (smtp1.osuosl.org [140.211.166.138])
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 37388C433DB
+	for <iommu@archiver.kernel.org>; Wed, 17 Mar 2021 10:48:09 +0000 (UTC)
+Received: from smtp4.osuosl.org (smtp4.osuosl.org [140.211.166.137])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id DFAB664F51
-	for <iommu@archiver.kernel.org>; Wed, 17 Mar 2021 09:40:47 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org DFAB664F51
-Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=huawei.com
+	by mail.kernel.org (Postfix) with ESMTPS id B5B9064F21
+	for <iommu@archiver.kernel.org>; Wed, 17 Mar 2021 10:48:08 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org B5B9064F21
+Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=amd.com
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by smtp1.osuosl.org (Postfix) with ESMTP id 98A6783F13;
-	Wed, 17 Mar 2021 09:40:47 +0000 (UTC)
+	by smtp4.osuosl.org (Postfix) with ESMTP id 3F28B4EDC2;
+	Wed, 17 Mar 2021 10:48:08 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from smtp1.osuosl.org ([127.0.0.1])
-	by localhost (smtp1.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id f1ROSPigFLlX; Wed, 17 Mar 2021 09:40:46 +0000 (UTC)
+Received: from smtp4.osuosl.org ([127.0.0.1])
+	by localhost (smtp4.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+	with ESMTP id LvHVNR567jtb; Wed, 17 Mar 2021 10:48:07 +0000 (UTC)
 Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by smtp1.osuosl.org (Postfix) with ESMTP id 546B48377F;
-	Wed, 17 Mar 2021 09:40:46 +0000 (UTC)
+	by smtp4.osuosl.org (Postfix) with ESMTP id B94274EDAC;
+	Wed, 17 Mar 2021 10:48:06 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 28895C000A;
-	Wed, 17 Mar 2021 09:40:46 +0000 (UTC)
-Received: from smtp1.osuosl.org (smtp1.osuosl.org [140.211.166.138])
- by lists.linuxfoundation.org (Postfix) with ESMTP id E8545C0001
- for <iommu@lists.linux-foundation.org>; Wed, 17 Mar 2021 09:40:44 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 8F411C000B;
+	Wed, 17 Mar 2021 10:48:06 +0000 (UTC)
+Received: from smtp1.osuosl.org (smtp1.osuosl.org [IPv6:2605:bc80:3010::138])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id D3514C0001
+ for <iommu@lists.linux-foundation.org>; Wed, 17 Mar 2021 10:48:04 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by smtp1.osuosl.org (Postfix) with ESMTP id DCED083E91
- for <iommu@lists.linux-foundation.org>; Wed, 17 Mar 2021 09:40:44 +0000 (UTC)
+ by smtp1.osuosl.org (Postfix) with ESMTP id B3B7F83FB3
+ for <iommu@lists.linux-foundation.org>; Wed, 17 Mar 2021 10:48:04 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
+Authentication-Results: smtp1.osuosl.org (amavisd-new);
+ dkim=pass (1024-bit key) header.d=amd.com
 Received: from smtp1.osuosl.org ([127.0.0.1])
  by localhost (smtp1.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id fwGY14vGO6nG for <iommu@lists.linux-foundation.org>;
- Wed, 17 Mar 2021 09:40:43 +0000 (UTC)
-X-Greylist: domain auto-whitelisted by SQLgrey-1.8.0
-Received: from szxga08-in.huawei.com (szxga08-in.huawei.com [45.249.212.255])
- by smtp1.osuosl.org (Postfix) with ESMTPS id 922F68377F
- for <iommu@lists.linux-foundation.org>; Wed, 17 Mar 2021 09:40:43 +0000 (UTC)
-Received: from DGGEMM402-HUB.china.huawei.com (unknown [172.30.72.53])
- by szxga08-in.huawei.com (SkyGuard) with ESMTP id 4F0lSJ2nc2z141y3;
- Wed, 17 Mar 2021 17:37:36 +0800 (CST)
-Received: from dggpemm100011.china.huawei.com (7.185.36.112) by
- DGGEMM402-HUB.china.huawei.com (10.3.20.210) with Microsoft SMTP Server (TLS)
- id 14.3.498.0; Wed, 17 Mar 2021 17:40:37 +0800
-Received: from dggpeml500016.china.huawei.com (7.185.36.70) by
- dggpemm100011.china.huawei.com (7.185.36.112) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2106.2; Wed, 17 Mar 2021 17:40:37 +0800
-Received: from dggpeml500016.china.huawei.com ([7.185.36.70]) by
- dggpeml500016.china.huawei.com ([7.185.36.70]) with mapi id 15.01.2106.013;
- Wed, 17 Mar 2021 17:40:37 +0800
-From: "Longpeng (Mike, Cloud Infrastructure Service Product Dept.)"
- <longpeng2@huawei.com>
-To: Lu Baolu <baolu.lu@linux.intel.com>, "dwmw2@infradead.org"
- <dwmw2@infradead.org>, "joro@8bytes.org" <joro@8bytes.org>, "will@kernel.org"
- <will@kernel.org>, "alex.williamson@redhat.com" <alex.williamson@redhat.com>
-Subject: =?gb2312?B?UkU6IEEgcHJvYmxlbSBvZiBJbnRlbCBJT01NVSBoYXJkd2FyZSCjvw==?=
-Thread-Topic: =?gb2312?B?QSBwcm9ibGVtIG9mIEludGVsIElPTU1VIGhhcmR3YXJlIKO/?=
-Thread-Index: AQHXGtwEduPlUZeCNUCbiy3s/+KwAaqHHa0AgADFS4A=
-Date: Wed, 17 Mar 2021 09:40:37 +0000
-Message-ID: <a6315a46fadd4171bc69b5e53e3ad67b@huawei.com>
-References: <670baaf8-4ff8-4e84-4be3-030b95ab5a5e@huawei.com>
- <692186fd-42b8-4054-ead2-f6c6b1bf5b2d@linux.intel.com>
-In-Reply-To: <692186fd-42b8-4054-ead2-f6c6b1bf5b2d@linux.intel.com>
-Accept-Language: zh-CN, en-US
-Content-Language: zh-CN
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-x-originating-ip: [10.174.151.207]
+ with ESMTP id 2hHM94CIkRCE for <iommu@lists.linux-foundation.org>;
+ Wed, 17 Mar 2021 10:48:03 +0000 (UTC)
+X-Greylist: whitelisted by SQLgrey-1.8.0
+Received: from NAM11-DM6-obe.outbound.protection.outlook.com
+ (mail-dm6nam11on2089.outbound.protection.outlook.com [40.107.223.89])
+ by smtp1.osuosl.org (Postfix) with ESMTPS id 11FBC83FAC
+ for <iommu@lists.linux-foundation.org>; Wed, 17 Mar 2021 10:48:02 +0000 (UTC)
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=A+jT3bj9REKrlJrdSYOWlS3q3tdVHTHwdDFJJlYBEhqCBshGXjDFY53cn2+35Y/pNCUp6k129E+DFGta+D7pMi1Dw+eWLCMbp9pbYc6n8EsLTedv3baTTeaUeDBpo5N95fx8ug0fYfszRwRrzlD2rANMaRK7AeK+HCWVcumLXj40E5obEdXe0QKLpQdNTTUWfHUg8CwI/tuqTdEWHRKsul9xAcUZzFFacrXMXjyv6ls6fxrA+jvfPbHhfQnWBb/bprKNdUub/VAW+AhpHmw5AGMXDKoxw3ljTbzGHRdZwRw3Mx0pqEXTzx/OEQnKHPnkMTjH80Ll83bu90yF8Dtawg==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com; 
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=lkaBXnLcL6uwF4bis8UzVH0TXclV33vNF9rElS27uX8=;
+ b=H+P2kO3ZTw/FwL9y536D0AsL7RPfvol6CApxWbnPLchnZatvoMpvoVJj+15YAsHPyCLB/gQ4mt96a0p+4Y1mLwtlWY5iXPBcEcZHsY8MMkh0z+a27UFuoI3P4HnwhV87Hrn772Ev8jG17UuR52/KVe8AtXxxIOgpHOunoPJKb1BBM+7OjyOkvM5IBNgZkZiOxnu25hpOcDWplsCe7qgmOT7Ny4Y4IKgcVuKmHkmcy7FYZmRhXhdVR0Wamsm1sU0aP6sUMxtQRsPy+6xg6NPDP5AU8mA5VTwlh9jMvFsXEgwQj5MuHcbk0H2FDu/F2ho9BoIl/MAkIbJEW4vYqebOWw==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=amd.com; dmarc=pass action=none header.from=amd.com; dkim=pass
+ header.d=amd.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=amd.com; s=selector1; 
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=lkaBXnLcL6uwF4bis8UzVH0TXclV33vNF9rElS27uX8=;
+ b=wB0UEbT79ELX3Wbfnl+/fkGkJpu5kd7MhRhL3sgtnLhKUU9bQQwIlryXln4kcXAlJ2Kpb6xcN4CIrGpv/k4W77I71+OBNlcX6wqaU9KaswXL5ZuUACKaWND+9aVnDbMfoLFdrCILRJURXTPP3vSTVaglVR36pe82K+3K1iDWSn0=
+Authentication-Results: suse.de; dkim=none (message not signed)
+ header.d=none;suse.de; dmarc=none action=none header.from=amd.com;
+Received: from MWHPR12MB1248.namprd12.prod.outlook.com (2603:10b6:300:12::21)
+ by MWHPR12MB1790.namprd12.prod.outlook.com (2603:10b6:300:109::21)
+ with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3933.32; Wed, 17 Mar
+ 2021 10:47:59 +0000
+Received: from MWHPR12MB1248.namprd12.prod.outlook.com
+ ([fe80::5094:3a69:806f:8a28]) by MWHPR12MB1248.namprd12.prod.outlook.com
+ ([fe80::5094:3a69:806f:8a28%5]) with mapi id 15.20.3955.018; Wed, 17 Mar 2021
+ 10:47:59 +0000
+Date: Wed, 17 Mar 2021 18:46:56 +0800
+From: Huang Rui <ray.huang@amd.com>
+To: Joerg Roedel <jroedel@suse.de>
+Subject: Re: [PATCH] iommu/amd: Fix iommu remap panic while amd_iommu is set
+ to disable
+Message-ID: <20210317104656.GA2508995@hr-amd>
+References: <20210311142807.705080-1-ray.huang@amd.com>
+ <YFCvsort3oZGfDBy@suse.de> <20210316133602.GB2497230@hr-amd>
+ <YFDICtszzhFzX8cH@suse.de>
+Content-Disposition: inline
+In-Reply-To: <YFDICtszzhFzX8cH@suse.de>
+X-Originating-IP: [58.247.170.245]
+X-ClientProxiedBy: HK0PR03CA0119.apcprd03.prod.outlook.com
+ (2603:1096:203:b0::35) To MWHPR12MB1248.namprd12.prod.outlook.com
+ (2603:10b6:300:12::21)
 MIME-Version: 1.0
-X-CFilter-Loop: Reflected
-Cc: chenjiashang <chenjiashang@huawei.com>,
+X-MS-Exchange-MessageSentRepresentingType: 1
+Received: from hr-amd (58.247.170.245) by
+ HK0PR03CA0119.apcprd03.prod.outlook.com (2603:1096:203:b0::35) with Microsoft
+ SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.20.3955.18 via Frontend Transport; Wed, 17 Mar 2021 10:47:56 +0000
+X-MS-PublicTrafficType: Email
+X-MS-Office365-Filtering-HT: Tenant
+X-MS-Office365-Filtering-Correlation-Id: ca33137b-cea6-487a-a6bd-08d8e9322108
+X-MS-TrafficTypeDiagnostic: MWHPR12MB1790:
+X-MS-Exchange-Transport-Forked: True
+X-Microsoft-Antispam-PRVS: <MWHPR12MB1790A718EDED6D72574726C1EC6A9@MWHPR12MB1790.namprd12.prod.outlook.com>
+X-MS-Oob-TLC-OOBClassifiers: OLM:10000;
+X-MS-Exchange-SenderADCheck: 1
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: d8iJGyBavNDd7TO9YUvoiy2pTElrRRNMsQVyDAPyu6o8hRZ1UXe6qAzWEIsbt0PCwXLvUCMUqE4SPX5qYIcx6jdIgsELywAZh0mfQSn/oXKMdbp/gbLkvWiVLWarzwARyeesmNs/3YjracmXRs5SYXC4EUsNzyiUCOb1NzFb6UWGKrXaLjaild5iWER98u1jn71is7uN6c60ctK+LrtjckoyBTGsp6J9ooh4iwPBlQS1Iid6FmWZSsmF9WaYSMvE+SL+thYHEruyJPM9lJdoOCmTX+zWQzPV7k2yYM7FkWW+NV4cc/aO1AsIPkSr2UZz3JoXwn6TpQCMRftKTCshnhNY/D37YCsBOt3CVutHpgOrTEc5l4b4ReyDMVQu19q4hdAV/aU59eV4NQh4OgfGCZWC2xcaZtlWE7IHnbMENax4GkVOuKJeZDMKqzumpATR4tKySScvg9hTKRx4FldjLs5SgEXMGRdHnJuuBalEDcaas3EaVVcPyhj9/glqYZbgvMZ5tYaNQPMFKTRTErcdqF+J701vtX0+RrgzXxGJThretNX+3kys/rfEgBWJIhCP
+X-Forefront-Antispam-Report: CIP:255.255.255.255; CTRY:; LANG:en; SCL:1; SRV:;
+ IPV:NLI; SFV:NSPM; H:MWHPR12MB1248.namprd12.prod.outlook.com; PTR:; CAT:NONE;
+ SFS:(4636009)(136003)(376002)(346002)(366004)(396003)(39860400002)(316002)(66476007)(6496006)(26005)(66946007)(956004)(33716001)(55016002)(33656002)(8676002)(83380400001)(8936002)(186003)(16526019)(66556008)(52116002)(478600001)(6916009)(4326008)(1076003)(5660300002)(2906002)(86362001)(54906003)(9686003);
+ DIR:OUT; SFP:1101; 
+X-MS-Exchange-AntiSpam-MessageData: =?us-ascii?Q?l6Y2H2CJ7KpKdZbRYjevIBUSO97dnPSmgDFpBrx9ohr0zyGiHObl7Q1rFwdc?=
+ =?us-ascii?Q?KgHdgCthjMHyKdo9Jqbw2GIcUxiH4CIC/Gy8aMHV863RggDvxW7lL7kEHZd7?=
+ =?us-ascii?Q?J/+fLPTzRevckx2dgCWIPTyY5leKeXF1J9UXpv+ooCNQPezrSStL+JJ6cNC1?=
+ =?us-ascii?Q?LpHgqoH1vhxhyAmVQSvI745oMdbeKwh790H/CLGWzXYW6IsqE02AE1ToyGng?=
+ =?us-ascii?Q?9/HU4kZSUTolDb76SRhi96srHIBwRrYceR9A/rymS5dTdY4pislHfWxmSOUY?=
+ =?us-ascii?Q?tLNENP6OuwFxYqhLreJ5aoNrZyx+HBypczE69lNjAlNlrwf3GObz08fR1tUb?=
+ =?us-ascii?Q?kUunLORJktF6bmFIxgyjCKqkthurR/E2Y0ty2OGI7edWtWI/zZ0fxukDmVNo?=
+ =?us-ascii?Q?s2z7aqcresti38oZqxgoAusG+TxVglsZ+byrtBnIGOU0xWhWbYn0otdvqbRb?=
+ =?us-ascii?Q?AE5s1SYYuwkiV+nlX8Fu0rwDQnr7vr97ZLIf94uJdv4upj5TCwYAlotBPEdU?=
+ =?us-ascii?Q?UosJGJtfX7O449Sxvxm4NOl7kIfNxSlN/lXek7Xnfy3W8AYC6NCGYOkuYJjE?=
+ =?us-ascii?Q?0fS8Cj0DZ3nceaKgdjjfq3o00BY27Af3Rg/m5nldXe6vueB6jhpiaazdopEe?=
+ =?us-ascii?Q?OcQpaq/DpncE4iEj5rq3OOQ6o3sjXn4ZjW0TXdvW8oKT6BIx5Ep4t/IKlZcm?=
+ =?us-ascii?Q?/ztWXAxKwr6p25dRHhTPN/QfM8yGdQwvE6+4UL0b/GAq8ivRyFuygGlMRxoS?=
+ =?us-ascii?Q?XBQzxePttulFccwQITV6SHmEbiGZo5mZjgAasJgyGiBS+XrGns9KYGZ2OrOV?=
+ =?us-ascii?Q?pL7YhSg9upHJFtP14xeGe2fSTF5XfQ490KTnWWwZepDXNDs31mHqBVyMxLoy?=
+ =?us-ascii?Q?dkE1hCkNW8eFkqQ8hnBWlgq1tNkG1LZsyA82gSQIuyoI8kVBdFWPlBVxZAJ2?=
+ =?us-ascii?Q?zWOwi7eUDLK1wIhHQRz9No+Okq69Ofda7tK+L3s8nvXJ6gO5RhJYUDREzKla?=
+ =?us-ascii?Q?DWek5LISbOj7jCxtNIeDjg59ehPhnK2IJrD7Pokfx2+Z9dirnxvT6QTTPFM4?=
+ =?us-ascii?Q?qlilyV8u2JFvwzsc9cVLb2fsPAGabH4wRIws9jpNnv9J1js0jvx66wRYPSXF?=
+ =?us-ascii?Q?5ZAsrgMlSXm7EjoVC7UaeYeG3msFarj2M7dQ1jhlH6bgc2h4UUqLjNkQ79WA?=
+ =?us-ascii?Q?0BH3cFhWz5ADDTE1mIBO5BF3O+63dkShTL/vWPjxw+Wbu04UHw2pr1HZSo1q?=
+ =?us-ascii?Q?9RxJOR7z7w03tAeHf/jgj3PzbFlAS91O81+mskbrpU874D60i0BEieyP46OW?=
+ =?us-ascii?Q?WjIq7Tz0OVF3ew7dITCQPDuR?=
+X-OriginatorOrg: amd.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: ca33137b-cea6-487a-a6bd-08d8e9322108
+X-MS-Exchange-CrossTenant-AuthSource: MWHPR12MB1248.namprd12.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 17 Mar 2021 10:47:58.8365 (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 3dd8961f-e488-4e60-8e11-a82d994e183d
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: VjsXGL6xxw8RGroOTBI4u+r42T0m7iM2TM5GbQ9i3XANRp4STKaIU9WGtVuO8fvk7yRo6BP6Mvz0zC7ei/42Bw==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: MWHPR12MB1790
+Cc: "Du, Xiaojian" <Xiaojian.Du@amd.com>,
+ "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+ "stable@vger.kernel.org" <stable@vger.kernel.org>,
  "iommu@lists.linux-foundation.org" <iommu@lists.linux-foundation.org>,
- "Gonglei \(Arei\)" <arei.gonglei@huawei.com>,
- LKML <linux-kernel@vger.kernel.org>
+ "Deucher, Alexander" <Alexander.Deucher@amd.com>
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -93,97 +158,79 @@ List-Post: <mailto:iommu@lists.linux-foundation.org>
 List-Help: <mailto:iommu-request@lists.linux-foundation.org?subject=help>
 List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
  <mailto:iommu-request@lists.linux-foundation.org?subject=subscribe>
-Content-Type: text/plain; charset="gb2312"
-Content-Transfer-Encoding: base64
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-SGkgQmFvbHUsDQoNCj4gLS0tLS1PcmlnaW5hbCBNZXNzYWdlLS0tLS0NCj4gRnJvbTogTHUgQmFv
-bHUgW21haWx0bzpiYW9sdS5sdUBsaW51eC5pbnRlbC5jb21dDQo+IFNlbnQ6IFdlZG5lc2RheSwg
-TWFyY2ggMTcsIDIwMjEgMToxNyBQTQ0KPiBUbzogTG9uZ3BlbmcgKE1pa2UsIENsb3VkIEluZnJh
-c3RydWN0dXJlIFNlcnZpY2UgUHJvZHVjdCBEZXB0LikNCj4gPGxvbmdwZW5nMkBodWF3ZWkuY29t
-PjsgZHdtdzJAaW5mcmFkZWFkLm9yZzsgam9yb0A4Ynl0ZXMub3JnOw0KPiB3aWxsQGtlcm5lbC5v
-cmc7IGFsZXgud2lsbGlhbXNvbkByZWRoYXQuY29tDQo+IENjOiBiYW9sdS5sdUBsaW51eC5pbnRl
-bC5jb207IGlvbW11QGxpc3RzLmxpbnV4LWZvdW5kYXRpb24ub3JnOyBMS01MDQo+IDxsaW51eC1r
-ZXJuZWxAdmdlci5rZXJuZWwub3JnPjsgR29uZ2xlaSAoQXJlaSkgPGFyZWkuZ29uZ2xlaUBodWF3
-ZWkuY29tPjsNCj4gY2hlbmppYXNoYW5nIDxjaGVuamlhc2hhbmdAaHVhd2VpLmNvbT4NCj4gU3Vi
-amVjdDogUmU6IEEgcHJvYmxlbSBvZiBJbnRlbCBJT01NVSBoYXJkd2FyZSCjvw0KPiANCj4gSGkg
-TG9uZ3BlbmcsDQo+IA0KPiBPbiAzLzE3LzIxIDExOjE2IEFNLCBMb25ncGVuZyAoTWlrZSwgQ2xv
-dWQgSW5mcmFzdHJ1Y3R1cmUgU2VydmljZSBQcm9kdWN0IERlcHQuKQ0KPiB3cm90ZToNCj4gPiBI
-aSBndXlzLA0KPiA+DQo+ID4gV2UgZmluZCB0aGUgSW50ZWwgaW9tbXUgY2FjaGUgKGkuZS4gaW90
-bGIpIG1heWJlIHdvcmtzIHdyb25nIGluIGENCj4gPiBzcGVjaWFsIHNpdHVhdGlvbiwgaXQgd291
-bGQgY2F1c2UgRE1BIGZhaWxzIG9yIGdldCB3cm9uZyBkYXRhLg0KPiA+DQo+ID4gVGhlIHJlcHJv
-ZHVjZXIgKGJhc2VkIG9uIEFsZXgncyB2ZmlvIHRlc3RzdWl0ZVsxXSkgaXMgaW4gYXR0YWNobWVu
-dCwNCj4gPiBpdCBjYW4gcmVwcm9kdWNlIHRoZSBwcm9ibGVtIHdpdGggaGlnaCBwcm9iYWJpbGl0
-eSAofjUwJSkuDQo+ID4NCj4gPiBUaGUgbWFjaGluZSB3ZSB1c2VkIGlzOg0KPiA+IHByb2Nlc3Nv
-cgk6IDQ3DQo+ID4gdmVuZG9yX2lkCTogR2VudWluZUludGVsDQo+ID4gY3B1IGZhbWlseQk6IDYN
-Cj4gPiBtb2RlbAkJOiA4NQ0KPiA+IG1vZGVsIG5hbWUJOiBJbnRlbChSKSBYZW9uKFIpIEdvbGQg
-NjE0NiBDUFUgQCAzLjIwR0h6DQo+ID4gc3RlcHBpbmcJOiA0DQo+ID4gbWljcm9jb2RlCTogMHgy
-MDAwMDY5DQo+ID4NCj4gPiBBbmQgdGhlIGlvbW11IGNhcGFiaWxpdHkgcmVwb3J0ZWQgaXM6DQo+
-ID4gdmVyIDE6MCBjYXAgOGQyMDc4YzEwNmYwNDY2IGVjYXAgZjAyMGRmIChjYWNoaW5nIG1vZGUg
-PSAwICwNCj4gPiBwYWdlLXNlbGVjdGl2ZSBpbnZhbGlkYXRpb24gPSAxKQ0KPiA+DQo+ID4gKFRo
-ZSBwcm9ibGVtIGlzIGFsc28gb24gJ0ludGVsKFIpIFhlb24oUikgU2lsdmVyIDQxMTQgQ1BVIEAg
-Mi4yMEdIeicNCj4gPiBhbmQNCj4gPiAnSW50ZWwoUikgWGVvbihSKSBQbGF0aW51bSA4Mzc4QSBD
-UFUgQCAzLjAwR0h6JykNCj4gPg0KPiA+IFdlIHJ1biB0aGUgcmVwcm9kdWNlciBvbiBMaW51eCA0
-LjE4IGFuZCBpdCB3b3JrcyBhcyBmb2xsb3c6DQo+ID4NCj4gPiBTdGVwIDEuIGFsbG9jIDRHICoy
-TS1odWdldGxiKiBtZW1vcnkgKE4uQi4gbm8gcHJvYmxlbSB3aXRoIDRLLXBhZ2UNCj4gPiBtYXBw
-aW5nKQ0KPiANCj4gSSBkb24ndCB1bmRlcnN0YW5kIDJNLWh1Z2V0bGIgaGVyZSBtZWFucyBleGFj
-dGx5LiBUaGUgSU9NTVUgaGFyZHdhcmUNCj4gc3VwcG9ydHMgYm90aCAyTSBhbmQgMUcgc3VwZXIg
-cGFnZS4gVGhlIG1hcHBpbmcgcGh5c2ljYWwgbWVtb3J5IGlzIDRHLg0KPiBXaHkgY291bGRuJ3Qg
-aXQgdXNlIDFHIHN1cGVyIHBhZ2U/DQo+IA0KDQpXZSB1c2UgaHVnZXRsYmZzKHN1cHBvcnQgMUcg
-YW5kIDJNLCBidXQgd2UgY2hvb3NlIDJNIGluIG91ciBjYXNlKSB0byByZXF1ZXN0DQp0aGUgbWVt
-b3J5IGluIHVzZXJzcGFjZTogDQp2YWRkciA9ICh1bnNpZ25lZCBsb25nKW1tYXAoMCwgTUFQX1NJ
-WkUsIFBST1RfUkVBRCB8IFBST1RfV1JJVEUsDQoJCQkJICAgIE1BUF9QUklWQVRFIHwgTUFQX0FO
-T05ZTU9VUyB8ICpNQVBfSFVHRVRMQiosIDAsIDApOw0KDQpZZXAsIElPTU1VIHN1cHBvcnQgYm90
-aCAyTSBhbmQgMUcgc3VwZXJwYWdlLCB3ZSBqdXN0IGhhdmVuJ3QgdG8gdGVzdCB0aGUgMUcgY2Fz
-ZQ0KeWV0LCBiZWNhdXNlIG91ciBwcm9kdWN0aW9ucyB1c2UgMk0gaHVnZXRsYmZzIHBhZ2UuDQoN
-Cj4gPiBTdGVwIDIuIERNQSBNYXAgNEcgbWVtb3J5DQo+ID4gU3RlcCAzLg0KPiA+ICAgICAgd2hp
-bGUgKDEpIHsNCj4gPiAgICAgICAgICB7VU5NQVAsIDB4MCwgMHhhMDAwMH0sIC0tLS0tLS0tLS0t
-LS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLSAoYSkNCj4gPiAgICAgICAgICB7VU5NQVAsIDB4YzAw
-MDAsIDB4YmZmNDAwMDB9LA0KPiANCj4gSGF2ZSB0aGVzZSB0d28gcmFuZ2VzIGJlZW4gbWFwcGVk
-IGJlZm9yZT8gRG9lcyB0aGUgSU9NTVUgZHJpdmVyIGNvbXBsYWlucw0KPiB3aGVuIHlvdSB0cnlp
-bmcgdG8gdW5tYXAgYSByYW5nZSB3aGljaCBoYXMgbmV2ZXIgYmVlbiBtYXBwZWQ/IFRoZSBJT01N
-VQ0KPiBkcml2ZXIgaW1wbGljaXRseSBhc3N1bWVzIHRoYXQgbWFwcGluZyBhbmQgdW5tYXBwaW5n
-IGFyZSBwYWlyZWQuDQo+IA0KDQpPZiBjb3Vyc2UgeWVzLCBwbGVhc2UgU3RlcC0yLCB3ZSBETUEg
-bWFwcGVkIGFsbCB0aGUgbWVtb3J5KDRHKSBiZWZvcmUgdGhlIHdoaWxlIGxvb3AuDQpUaGUgZHJp
-dmVyIG5ldmVyIGNvbXBsYWluZWQgZHVyaW5nIE1BUCBhbmQgVU5NQVAgb3BlcmF0aW9ucy4NCg0K
-PiA+ICAgICAgICAgIHtNQVAsICAgMHgwLCAweGMwMDAwMDAwfSwgLS0tLS0tLS0tLS0tLS0tLS0t
-LS0tLS0tLS0tLS0tLS0tIChiKQ0KPiA+ICAgICAgICAgICAgICAgICAgdXNlIEdEQiB0byBwYXVz
-ZSBhdCBoZXJlLCBhbmQgdGhlbiBETUEgcmVhZCBJT1ZBPTAsDQo+IA0KPiBJT1ZBIDAgc2VlbXMg
-dG8gYmUgYSBzcGVjaWFsIG9uZS4gSGF2ZSB5b3UgdmVyaWZpZWQgd2l0aCBvdGhlciBhZGRyZXNz
-ZXMgdGhhbg0KPiBJT1ZBIDA/DQo+IA0KDQpZZXMsIHdlIGFsc28gdGVzdCBJT1ZBPTB4MTAwMCwg
-aXQgaGFzIHByb2JsZW0gdG9vLg0KDQpCdXQgb25lIG9mIHRoZSBkaWZmZXJlY2VzIGJldHdlZW4g
-KDB4MCwgMHhhMDAwMCkgYW5kICgweDAsIDB4YzAwMDAwMDApIGlzIHRoZSBmb3JtZXINCmNhbiBv
-bmx5IHVzZSA0SyBtYXBwaW5nIGluIERNQSBwYWdldGFibGUgYnV0IHRoZSBsYXR0ZXIgdXNlcyAy
-TSBtYXBwaW5nLiBJcyBpdCBwb3NzaWJsZQ0KdGhlIGhhcmR3YXJlIGNhY2hlIG1hbmFnZW1lbnQg
-d29ya3Mgc29tZXRoaW5nIHdyb25nIGluIHRoaXMgY2FzZT8NCg0KPiA+ICAgICAgICAgICAgICAg
-ICAgc29tZXRpbWVzIERNQSBzdWNjZXNzIChhcyBleHBlY3RlZCksDQo+ID4gICAgICAgICAgICAg
-ICAgICBidXQgc29tZXRpbWVzIERNQSBlcnJvciAocmVwb3J0IG5vdC1wcmVzZW50KS4NCj4gPiAg
-ICAgICAgICB7VU5NQVAsIDB4MCwgMHhjMDAwMDAwMH0sIC0tLS0tLS0tLS0tLS0tLS0tLS0tLS0t
-LS0tLS0tLS0tLSAoYykNCj4gPiAgICAgICAgICB7TUFQLCAgIDB4MCwgMHhhMDAwMH0sDQo+ID4g
-ICAgICAgICAge01BUCwgICAweGMwMDAwLCAweGJmZjQwMDAwfSwNCj4gPiAgICAgIH0NCj4gPg0K
-PiA+IFRoZSBETUEgcmVhZCBvcGVyYXRpb25zIHNob2x1ZCBzdWNjZXNzIGJldHdlZW4gKGIpIGFu
-ZCAoYyksIGl0IHNob3VsZA0KPiA+IE5PVCByZXBvcnQgbm90LXByZXNlbnQgYXQgbGVhc3QhDQo+
-ID4NCj4gPiBBZnRlciBhbmFseXNpcyB0aGUgcHJvYmxlbSwgd2UgdGhpbmsgbWF5YmUgaXQncyBj
-YXVzZWQgYnkgdGhlIEludGVsIGlvbW11IGlvdGxiLg0KPiA+IEl0IHNlZW1zIHRoZSBETUEgUmVt
-YXBwaW5nIGhhcmR3YXJlIHN0aWxsIHVzZXMgdGhlIElPVExCIG9yIG90aGVyIGNhY2hlcyBvZg0K
-PiAoYSkuDQo+ID4NCj4gPiBXaGVuIGRvIERNQSB1bm1hcCBhdCAoYSksIHRoZSBpb3RsYiB3aWxs
-IGJlIGZsdXNoOg0KPiA+ICAgICAgaW50ZWxfaW9tbXVfdW5tYXANCj4gPiAgICAgICAgICBkb21h
-aW5fdW5tYXANCj4gPiAgICAgICAgICAgICAgaW9tbXVfZmx1c2hfaW90bGJfcHNpDQo+ID4NCj4g
-PiBXaGVuIGRvIERNQSBtYXAgYXQgKGIpLCBubyBuZWVkIHRvIGZsdXNoIHRoZSBpb3RsYiBhY2Nv
-cmRpbmcgdG8gdGhlDQo+ID4gY2FwYWJpbGl0eSBvZiB0aGlzIGlvbW11Og0KPiA+ICAgICAgaW50
-ZWxfaW9tbXVfbWFwDQo+ID4gICAgICAgICAgZG9tYWluX3Bmbl9tYXBwaW5nDQo+ID4gICAgICAg
-ICAgICAgIGRvbWFpbl9tYXBwaW5nDQo+ID4gICAgICAgICAgICAgICAgICBfX21hcHBpbmdfbm90
-aWZ5X29uZQ0KPiA+ICAgICAgICAgICAgICAgICAgICAgIGlmIChjYXBfY2FjaGluZ19tb2RlKGlv
-bW11LT5jYXApKSAvLyBGQUxTRQ0KPiA+ICAgICAgICAgICAgICAgICAgICAgICAgICBpb21tdV9m
-bHVzaF9pb3RsYl9wc2kNCj4gDQo+IFRoYXQncyB0cnVlLiBUaGUgaW90bGIgZmx1c2hpbmcgaXMg
-bm90IG5lZWRlZCBpbiBjYXNlIG9mIFBURSBiZWVuIGNoYW5nZWQgZnJvbQ0KPiBub24tcHJlc2Vu
-dCB0byBwcmVzZW50IHVubGVzcyBjYWNoaW5nIG1vZGUuDQo+IA0KDQpZZXMsIEkgYWxzbyB0aGlu
-ayB0aGUgZHJpdmVyIGNvZGUgaXMgY29ycmVjdC4gQnV0IGl0J3Mgc28gY29uZnVzZWQgdGhhdCB0
-aGUgcHJvYmxlbQ0KaXMgZGlzYXBwZWFyIGlmIHdlIGZvcmNlIGl0IHRvIGZsdXNoIGhlcmUuDQoN
-Cj4gPiBCdXQgdGhlIHByb2JsZW0gd2lsbCBkaXNhcHBlYXIgaWYgd2UgRk9SQ0UgZmx1c2ggaGVy
-ZS4gU28gd2Ugc3VzcGVjdA0KPiA+IHRoZSBpb21tdSBoYXJkd2FyZS4NCj4gPg0KPiA+IERvIHlv
-dSBoYXZlIGFueSBzdWdnZXN0aW9uID8NCj4gDQo+IEJlc3QgcmVnYXJkcywNCj4gYmFvbHUNCl9f
-X19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fCmlvbW11IG1haWxp
-bmcgbGlzdAppb21tdUBsaXN0cy5saW51eC1mb3VuZGF0aW9uLm9yZwpodHRwczovL2xpc3RzLmxp
-bnV4Zm91bmRhdGlvbi5vcmcvbWFpbG1hbi9saXN0aW5mby9pb21tdQ==
+On Tue, Mar 16, 2021 at 11:00:26PM +0800, Joerg Roedel wrote:
+> On Tue, Mar 16, 2021 at 09:36:02PM +0800, Huang Rui wrote:
+> > Thanks for the comments. Could you please elaborate this?
+> > 
+> > Do you mean while amd_iommu=off, we won't prepare the IVRS, and even
+> > needn't get all ACPI talbes. Because they are never be used and the next
+> > state will always goes into IOMMU_CMDLINE_DISABLED, am I right?
+> 
+> The first problem was that amd_iommu_irq_remap is never set back to
+> false when irq-remapping initialization fails in amd_iommu_prepare().
+> 
+> But there are other problems, like that even when the IOMMU is set to
+> disabled on the command line with amd_iommu=off, the code still sets up
+> all IOMMUs and registers IRQ domains for them.
+> 
+
+Yes, that was the problem I found in my side. No very clear about the
+orignal intention. But if you said this is a problem, that makes sense...
+
+> Later the code checks wheter the IOMMU should stay disabled and tears
+> everything down, except for the IRQ domains, which stay in the global
+> list.
+> 
+> The APIs do not really support tearing down IRQ domains well, so its not
+> so easy to add this to the tear-down path. Now that the IRQ domains stay
+> in the list, the ACPI code will come along later and calls the
+> ->select() call-back for every IRQ domain, which gets execution to
+> irq_remapping_select(), depite IOMMU being disabled and
+> amd_iommu_rlookup_table already de-allocated. But since
+> amd_iommu_irq_remap is still true the NULL pointer is dereferenced,
+> causing the crash.
+
+OK. We found some memleaks here before as well. It looks cause by iommu data
+buffer initialization and not be cleared. And yes, if setup iommu here, it
+actually causes many issues.
+
+unreferenced object 0xffff888332047500 (size 224):
+  comm "swapper/0", pid 0, jiffies 4294892296 (age 362.192s)
+  hex dump (first 32 bytes):
+    b0 22 03 00 00 00 00 00 00 00 00 40 00 00 00 00  .".........@....
+    06 00 00 00 00 00 00 00 00 20 00 00 00 20 00 00  ......... ... ..
+  backtrace:
+    [<000000008f162024>] kmem_cache_alloc+0x145/0x440
+    [<00000000420093ba>] kmem_cache_create_usercopy+0x127/0x2c0
+    [<00000000f5ed7ff0>] kmem_cache_create+0x16/0x20
+    [<000000004c1e4f47>] iommu_go_to_state+0x8e4/0x165d
+    [<00000000a191b705>] amd_iommu_prepare+0x1a/0x2f
+    [<00000000afe5b97e>] irq_remapping_prepare+0x35/0x6d
+    [<00000000209f36b5>] enable_IR_x2apic+0x2b/0x1ae
+    [<00000000b64491b5>] default_setup_apic_routing+0x16/0x65
+    [<00000000e89c64a1>] apic_intr_mode_init+0x81/0x10a
+    [<00000000eaa14bf6>] x86_late_time_init+0x24/0x35
+    [<00000000e291fc71>] start_kernel+0x509/0x5c7
+    [<0000000099930dfe>] x86_64_start_reservations+0x24/0x26
+    [<00000000b369765d>] x86_64_start_kernel+0x75/0x79
+    [<000000004f411919>] secondary_startup_64_no_verify+0xb0/0xbb
+
+> 
+> When the IRQ domains would not be around, this would also not happen. So
+> my patches also change the initializtion to not do all the setup work
+> when amd_iommu=off was passed on the command line.
+> 
+
+Thanks for the fix and explaination. :-)
+
+Best Regards,
+Ray
+_______________________________________________
+iommu mailing list
+iommu@lists.linux-foundation.org
+https://lists.linuxfoundation.org/mailman/listinfo/iommu
