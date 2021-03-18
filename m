@@ -2,71 +2,73 @@ Return-Path: <SRS0=56b4=IQ=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-15.3 required=3.0 tests=BAYES_00,
-	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_CR_TRAILER,INCLUDES_PATCH,
-	MAILING_LIST_MULTI,NICE_REPLY_A,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,
-	USER_AGENT_SANE_1 autolearn=ham autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-5.2 required=3.0 tests=BAYES_00,
+	HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,
+	URIBL_BLOCKED,USER_AGENT_SANE_1 autolearn=no autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id ECF98C433DB
-	for <iommu@archiver.kernel.org>; Thu, 18 Mar 2021 11:43:52 +0000 (UTC)
-Received: from smtp4.osuosl.org (smtp4.osuosl.org [140.211.166.137])
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 49BECC433DB
+	for <iommu@archiver.kernel.org>; Thu, 18 Mar 2021 12:38:28 +0000 (UTC)
+Received: from smtp2.osuosl.org (smtp2.osuosl.org [140.211.166.133])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 5A91A64F2B
-	for <iommu@archiver.kernel.org>; Thu, 18 Mar 2021 11:43:52 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 5A91A64F2B
+	by mail.kernel.org (Postfix) with ESMTPS id AC01D64F4D
+	for <iommu@archiver.kernel.org>; Thu, 18 Mar 2021 12:38:27 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org AC01D64F4D
 Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=arm.com
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by smtp4.osuosl.org (Postfix) with ESMTP id EB7C14EC97;
-	Thu, 18 Mar 2021 11:43:51 +0000 (UTC)
+	by smtp2.osuosl.org (Postfix) with ESMTP id 57DC6400AE;
+	Thu, 18 Mar 2021 12:38:27 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from smtp4.osuosl.org ([127.0.0.1])
-	by localhost (smtp4.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id B8cNRF34dGoZ; Thu, 18 Mar 2021 11:43:51 +0000 (UTC)
-Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by smtp4.osuosl.org (Postfix) with ESMTP id D858E4ED4E;
-	Thu, 18 Mar 2021 11:43:50 +0000 (UTC)
+Received: from smtp2.osuosl.org ([127.0.0.1])
+	by localhost (smtp2.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+	with ESMTP id exZk1kx4zvms; Thu, 18 Mar 2021 12:38:26 +0000 (UTC)
+Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [IPv6:2605:bc80:3010:104::8cd3:938])
+	by smtp2.osuosl.org (Postfix) with ESMTP id 510D5400A9;
+	Thu, 18 Mar 2021 12:38:26 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 2C50AC0012;
-	Thu, 18 Mar 2021 11:43:50 +0000 (UTC)
-Received: from smtp4.osuosl.org (smtp4.osuosl.org [140.211.166.137])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 47EB7C0001;
- Thu, 18 Mar 2021 11:43:49 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 29554C000A;
+	Thu, 18 Mar 2021 12:38:26 +0000 (UTC)
+Received: from smtp3.osuosl.org (smtp3.osuosl.org [140.211.166.136])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 44F6AC0001
+ for <iommu@lists.linux-foundation.org>; Thu, 18 Mar 2021 12:38:25 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by smtp4.osuosl.org (Postfix) with ESMTP id 25CE74EC25;
- Thu, 18 Mar 2021 11:43:49 +0000 (UTC)
+ by smtp3.osuosl.org (Postfix) with ESMTP id 259616F840
+ for <iommu@lists.linux-foundation.org>; Thu, 18 Mar 2021 12:38:25 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from smtp4.osuosl.org ([127.0.0.1])
- by localhost (smtp4.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id B5nW4drxCz7U; Thu, 18 Mar 2021 11:43:48 +0000 (UTC)
-X-Greylist: domain auto-whitelisted by SQLgrey-1.8.0
+Received: from smtp3.osuosl.org ([127.0.0.1])
+ by localhost (smtp3.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+ with ESMTP id 44btvBmbr1dd for <iommu@lists.linux-foundation.org>;
+ Thu, 18 Mar 2021 12:38:24 +0000 (UTC)
 X-Greylist: domain auto-whitelisted by SQLgrey-1.8.0
 Received: from foss.arm.com (foss.arm.com [217.140.110.172])
- by smtp4.osuosl.org (Postfix) with ESMTP id 38CA64E22C;
- Thu, 18 Mar 2021 11:43:48 +0000 (UTC)
+ by smtp3.osuosl.org (Postfix) with ESMTP id 16AB2606A9
+ for <iommu@lists.linux-foundation.org>; Thu, 18 Mar 2021 12:38:23 +0000 (UTC)
 Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
- by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 6E89FED1;
- Thu, 18 Mar 2021 04:43:47 -0700 (PDT)
-Received: from [10.57.50.37] (unknown [10.57.50.37])
- by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id C3F013F792;
- Thu, 18 Mar 2021 04:43:44 -0700 (PDT)
-Subject: Re: [PATCH 3/3] iommu/virtio: Enable x86 support
-To: Jean-Philippe Brucker <jean-philippe@linaro.org>, rjw@rjwysocki.net,
- lenb@kernel.org, joro@8bytes.org, mst@redhat.com
-References: <20210316191652.3401335-1-jean-philippe@linaro.org>
- <20210316191652.3401335-4-jean-philippe@linaro.org>
-From: Robin Murphy <robin.murphy@arm.com>
-Message-ID: <2d57860b-8a1c-f345-1105-62680c003fb5@arm.com>
-Date: Thu, 18 Mar 2021 11:43:38 +0000
-User-Agent: Mozilla/5.0 (Windows NT 10.0; rv:78.0) Gecko/20100101
- Thunderbird/78.8.1
+ by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 4CB1831B;
+ Thu, 18 Mar 2021 05:38:23 -0700 (PDT)
+Received: from e121166-lin.cambridge.arm.com (e121166-lin.cambridge.arm.com
+ [10.1.196.255])
+ by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id 158C53F718;
+ Thu, 18 Mar 2021 05:38:21 -0700 (PDT)
+Date: Thu, 18 Mar 2021 12:38:17 +0000
+From: Lorenzo Pieralisi <lorenzo.pieralisi@arm.com>
+To: "joro@8bytes.org" <joro@8bytes.org>
+Subject: Re: [PATCH v4 0/2] VMD MSI Remapping Bypass
+Message-ID: <20210318123817.GA27487@e121166-lin.cambridge.arm.com>
+References: <20210210161315.316097-1-jonathan.derrick@intel.com>
+ <0a70914085c25cf99536d106a280b27819328fff.camel@intel.com>
+ <YFMYWrghas6og2pN@8bytes.org>
 MIME-Version: 1.0
-In-Reply-To: <20210316191652.3401335-4-jean-philippe@linaro.org>
-Content-Language: en-GB
-Cc: kevin.tian@intel.com, virtualization@lists.linux-foundation.org,
- linux-acpi@vger.kernel.org, iommu@lists.linux-foundation.org,
- sebastien.boeuf@intel.com, will@kernel.org
+Content-Disposition: inline
+In-Reply-To: <YFMYWrghas6og2pN@8bytes.org>
+User-Agent: Mutt/1.9.4 (2018-02-28)
+Cc: "kw@linux.com" <kw@linux.com>, "Patel, Nirmal" <nirmal.patel@intel.com>,
+ "linux-pci@vger.kernel.org" <linux-pci@vger.kernel.org>, "Karkra,
+ Kapil" <kapil.karkra@intel.com>,
+ "iommu@lists.linux-foundation.org" <iommu@lists.linux-foundation.org>,
+ "helgaas@kernel.org" <helgaas@kernel.org>, "Derrick,
+ Jonathan" <jonathan.derrick@intel.com>
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -79,44 +81,21 @@ List-Post: <mailto:iommu@lists.linux-foundation.org>
 List-Help: <mailto:iommu-request@lists.linux-foundation.org?subject=help>
 List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
  <mailto:iommu-request@lists.linux-foundation.org?subject=subscribe>
+Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
-Content-Type: text/plain; charset="us-ascii"; Format="flowed"
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-On 2021-03-16 19:16, Jean-Philippe Brucker wrote:
-> With the VIOT support in place, x86 platforms can now use the
-> virtio-iommu.
+On Thu, Mar 18, 2021 at 10:07:38AM +0100, joro@8bytes.org wrote:
+> On Wed, Mar 17, 2021 at 07:14:17PM +0000, Derrick, Jonathan wrote:
+> > Gentle reminder, for v5.13 ?
 > 
-> The arm64 Kconfig selects IOMMU_DMA, while x86 IOMMU drivers select it
-> themselves.
+> This should go through the PCI tree, Bjorn?
 
-Actually, now that both AMD and Intel are converted over, maybe it's 
-finally time to punt that to x86 arch code to match arm64?
+I will start queuing code next week, noted.
 
-Robin.
-
-> Signed-off-by: Jean-Philippe Brucker <jean-philippe@linaro.org>
-> ---
->   drivers/iommu/Kconfig | 3 ++-
->   1 file changed, 2 insertions(+), 1 deletion(-)
-> 
-> diff --git a/drivers/iommu/Kconfig b/drivers/iommu/Kconfig
-> index 2819b5c8ec30..ccca83ef2f06 100644
-> --- a/drivers/iommu/Kconfig
-> +++ b/drivers/iommu/Kconfig
-> @@ -400,8 +400,9 @@ config HYPERV_IOMMU
->   config VIRTIO_IOMMU
->   	tristate "Virtio IOMMU driver"
->   	depends on VIRTIO
-> -	depends on ARM64
-> +	depends on (ARM64 || X86)
->   	select IOMMU_API
-> +	select IOMMU_DMA if X86
->   	select INTERVAL_TREE
->   	select ACPI_VIOT if ACPI
->   	help
-> 
+Thanks,
+Lorenzo
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
