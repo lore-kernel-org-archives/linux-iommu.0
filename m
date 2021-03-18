@@ -2,64 +2,66 @@ Return-Path: <SRS0=56b4=IQ=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-8.8 required=3.0 tests=BAYES_00,
-	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,SPF_HELO_NONE,
-	SPF_PASS,URIBL_BLOCKED autolearn=ham autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-13.8 required=3.0 tests=BAYES_00,
+	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_CR_TRAILER,INCLUDES_PATCH,
+	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED autolearn=ham
+	autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 90DD2C433DB
-	for <iommu@archiver.kernel.org>; Thu, 18 Mar 2021 10:43:09 +0000 (UTC)
-Received: from smtp3.osuosl.org (smtp3.osuosl.org [140.211.166.136])
+	by smtp.lore.kernel.org (Postfix) with ESMTP id EC38EC433E0
+	for <iommu@archiver.kernel.org>; Thu, 18 Mar 2021 10:45:02 +0000 (UTC)
+Received: from smtp2.osuosl.org (smtp2.osuosl.org [140.211.166.133])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id DF57C64E01
-	for <iommu@archiver.kernel.org>; Thu, 18 Mar 2021 10:43:08 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org DF57C64E01
+	by mail.kernel.org (Postfix) with ESMTPS id 59FEF64F40
+	for <iommu@archiver.kernel.org>; Thu, 18 Mar 2021 10:45:02 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 59FEF64F40
 Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=8bytes.org
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by smtp3.osuosl.org (Postfix) with ESMTP id 836ED6FA35;
-	Thu, 18 Mar 2021 10:43:08 +0000 (UTC)
+	by smtp2.osuosl.org (Postfix) with ESMTP id EF5924327B;
+	Thu, 18 Mar 2021 10:45:01 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from smtp3.osuosl.org ([127.0.0.1])
-	by localhost (smtp3.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id sIGsGWxqWikQ; Thu, 18 Mar 2021 10:43:07 +0000 (UTC)
+Received: from smtp2.osuosl.org ([127.0.0.1])
+	by localhost (smtp2.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+	with ESMTP id OSqrSfPRn3VH; Thu, 18 Mar 2021 10:45:01 +0000 (UTC)
 Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [IPv6:2605:bc80:3010:104::8cd3:938])
-	by smtp3.osuosl.org (Postfix) with ESMTP id 69519606BF;
-	Thu, 18 Mar 2021 10:43:07 +0000 (UTC)
+	by smtp2.osuosl.org (Postfix) with ESMTP id D131341566;
+	Thu, 18 Mar 2021 10:45:00 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 31849C000B;
-	Thu, 18 Mar 2021 10:43:07 +0000 (UTC)
-Received: from smtp3.osuosl.org (smtp3.osuosl.org [IPv6:2605:bc80:3010::136])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 8654EC0001
- for <iommu@lists.linux-foundation.org>; Thu, 18 Mar 2021 10:43:06 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id B3AA7C000B;
+	Thu, 18 Mar 2021 10:45:00 +0000 (UTC)
+Received: from smtp1.osuosl.org (smtp1.osuosl.org [IPv6:2605:bc80:3010::138])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 4805EC0001;
+ Thu, 18 Mar 2021 10:44:59 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by smtp3.osuosl.org (Postfix) with ESMTP id 6D8C6606A5
- for <iommu@lists.linux-foundation.org>; Thu, 18 Mar 2021 10:43:06 +0000 (UTC)
+ by smtp1.osuosl.org (Postfix) with ESMTP id 2977D84048;
+ Thu, 18 Mar 2021 10:44:59 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from smtp3.osuosl.org ([127.0.0.1])
- by localhost (smtp3.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id 2hXnPxHDRcZN for <iommu@lists.linux-foundation.org>;
- Thu, 18 Mar 2021 10:43:06 +0000 (UTC)
+Received: from smtp1.osuosl.org ([127.0.0.1])
+ by localhost (smtp1.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+ with ESMTP id yRlDMoEq_vTc; Thu, 18 Mar 2021 10:44:58 +0000 (UTC)
+X-Greylist: from auto-whitelisted by SQLgrey-1.8.0
 X-Greylist: from auto-whitelisted by SQLgrey-1.8.0
 Received: from theia.8bytes.org (8bytes.org
  [IPv6:2a01:238:4383:600:38bc:a715:4b6d:a889])
- by smtp3.osuosl.org (Postfix) with ESMTPS id D21476064D
- for <iommu@lists.linux-foundation.org>; Thu, 18 Mar 2021 10:43:05 +0000 (UTC)
+ by smtp1.osuosl.org (Postfix) with ESMTPS id 6CFDA84036;
+ Thu, 18 Mar 2021 10:44:58 +0000 (UTC)
 Received: by theia.8bytes.org (Postfix, from userid 1000)
- id 9A82B2D8; Thu, 18 Mar 2021 11:43:03 +0100 (CET)
-Date: Thu, 18 Mar 2021 11:43:02 +0100
+ id 2D8572D8; Thu, 18 Mar 2021 11:44:56 +0100 (CET)
+Date: Thu, 18 Mar 2021 11:44:54 +0100
 From: Joerg Roedel <joro@8bytes.org>
-To: Jacob Pan <jacob.jun.pan@linux.intel.com>
-Subject: Re: [PATCH v2 0/4] Misc vSVA fixes for VT-d
-Message-ID: <YFMutnvP1mKhumx0@8bytes.org>
-References: <1614680040-1989-1-git-send-email-jacob.jun.pan@linux.intel.com>
+To: Jean-Philippe Brucker <jean-philippe@linaro.org>
+Subject: Re: [PATCH 3/3] iommu/virtio: Enable x86 support
+Message-ID: <YFMvJiK+VBloYVf3@8bytes.org>
+References: <20210316191652.3401335-1-jean-philippe@linaro.org>
+ <20210316191652.3401335-4-jean-philippe@linaro.org>
 MIME-Version: 1.0
 Content-Disposition: inline
-In-Reply-To: <1614680040-1989-1-git-send-email-jacob.jun.pan@linux.intel.com>
-Cc: "Tian, Kevin" <kevin.tian@intel.com>, Raj Ashok <ashok.raj@intel.com>,
- Jean-Philippe Brucker <jean-philippe@linaro.com>,
- LKML <linux-kernel@vger.kernel.org>, iommu@lists.linux-foundation.org,
- David Woodhouse <dwmw2@infradead.org>
+In-Reply-To: <20210316191652.3401335-4-jean-philippe@linaro.org>
+Cc: kevin.tian@intel.com, mst@redhat.com, robin.murphy@arm.com,
+ rjw@rjwysocki.net, virtualization@lists.linux-foundation.org,
+ linux-acpi@vger.kernel.org, iommu@lists.linux-foundation.org,
+ sebastien.boeuf@intel.com, will@kernel.org, lenb@kernel.org
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -77,34 +79,35 @@ Content-Transfer-Encoding: 7bit
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-On Tue, Mar 02, 2021 at 02:13:56AM -0800, Jacob Pan wrote:
-> Hi Baolu et al,
+On Tue, Mar 16, 2021 at 08:16:54PM +0100, Jean-Philippe Brucker wrote:
+> With the VIOT support in place, x86 platforms can now use the
+> virtio-iommu.
 > 
-> This is a collection of SVA-related fixes.
+> The arm64 Kconfig selects IOMMU_DMA, while x86 IOMMU drivers select it
+> themselves.
 > 
-> ChangeLog:
+> Signed-off-by: Jean-Philippe Brucker <jean-philippe@linaro.org>
+> ---
+>  drivers/iommu/Kconfig | 3 ++-
+>  1 file changed, 2 insertions(+), 1 deletion(-)
 > 
-> v2:
-> 	- For guest SVA, call pasid_set_wpe directly w/o checking host CR0.wp
-> 	  (Review comments by Kevin T.)
-> 	- Added fixes tag
-> 
-> Thanks,
-> 
-> Jacob
-> 
-> Jacob Pan (4):
->   iommu/vt-d: Enable write protect for supervisor SVM
->   iommu/vt-d: Enable write protect propagation from guest
->   iommu/vt-d: Reject unsupported page request modes
->   iommu/vt-d: Calculate and set flags for handle_mm_fault
-> 
->  drivers/iommu/intel/pasid.c | 29 +++++++++++++++++++++++++++++
->  drivers/iommu/intel/svm.c   | 21 +++++++++++++++++----
->  include/uapi/linux/iommu.h  |  3 ++-
->  3 files changed, 48 insertions(+), 5 deletions(-)
+> diff --git a/drivers/iommu/Kconfig b/drivers/iommu/Kconfig
+> index 2819b5c8ec30..ccca83ef2f06 100644
+> --- a/drivers/iommu/Kconfig
+> +++ b/drivers/iommu/Kconfig
+> @@ -400,8 +400,9 @@ config HYPERV_IOMMU
+>  config VIRTIO_IOMMU
+>  	tristate "Virtio IOMMU driver"
+>  	depends on VIRTIO
+> -	depends on ARM64
+> +	depends on (ARM64 || X86)
+>  	select IOMMU_API
+> +	select IOMMU_DMA if X86
+>  	select INTERVAL_TREE
+>  	select ACPI_VIOT if ACPI
+>  	help
 
-Applied, thanks.
+Acked-by: Joerg Roedel <jroedel@suse.de>
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
