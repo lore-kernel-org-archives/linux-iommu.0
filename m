@@ -2,159 +2,74 @@ Return-Path: <SRS0=56b4=IQ=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-8.6 required=3.0 tests=BAYES_00,DKIM_INVALID,
-	DKIM_SIGNED,HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_CR_TRAILER,
-	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED autolearn=ham
-	autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-16.8 required=3.0 tests=BAYES_00,
+	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_CR_TRAILER,INCLUDES_PATCH,
+	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_GIT
+	autolearn=ham autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 993F9C433E0
-	for <iommu@archiver.kernel.org>; Thu, 18 Mar 2021 00:25:56 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5CD36C433DB
+	for <iommu@archiver.kernel.org>; Thu, 18 Mar 2021 01:03:06 +0000 (UTC)
 Received: from smtp3.osuosl.org (smtp3.osuosl.org [140.211.166.136])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id F2AFE64DDC
-	for <iommu@archiver.kernel.org>; Thu, 18 Mar 2021 00:25:55 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org F2AFE64DDC
-Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=nvidia.com
+	by mail.kernel.org (Postfix) with ESMTPS id A696A64EF2
+	for <iommu@archiver.kernel.org>; Thu, 18 Mar 2021 01:03:05 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org A696A64EF2
+Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=linux.intel.com
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by smtp3.osuosl.org (Postfix) with ESMTP id 78F666F65A;
-	Thu, 18 Mar 2021 00:25:55 +0000 (UTC)
+	by smtp3.osuosl.org (Postfix) with ESMTP id 2CAB26FA1E;
+	Thu, 18 Mar 2021 01:03:05 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
 Received: from smtp3.osuosl.org ([127.0.0.1])
 	by localhost (smtp3.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id 6p6nMMjTLEqG; Thu, 18 Mar 2021 00:25:54 +0000 (UTC)
+	with ESMTP id H8ygJJ22PKFk; Thu, 18 Mar 2021 01:03:04 +0000 (UTC)
 Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by smtp3.osuosl.org (Postfix) with ESMTP id 5830260667;
-	Thu, 18 Mar 2021 00:25:54 +0000 (UTC)
+	by smtp3.osuosl.org (Postfix) with ESMTP id DD3AA6F9F8;
+	Thu, 18 Mar 2021 01:03:03 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 1DDB0C000B;
-	Thu, 18 Mar 2021 00:25:54 +0000 (UTC)
-Received: from smtp2.osuosl.org (smtp2.osuosl.org [IPv6:2605:bc80:3010::133])
- by lists.linuxfoundation.org (Postfix) with ESMTP id C472CC0001
- for <iommu@lists.linux-foundation.org>; Thu, 18 Mar 2021 00:25:52 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id ABD2AC000D;
+	Thu, 18 Mar 2021 01:03:03 +0000 (UTC)
+Received: from smtp1.osuosl.org (smtp1.osuosl.org [140.211.166.138])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 9EFBFC000B
+ for <iommu@lists.linux-foundation.org>; Thu, 18 Mar 2021 01:03:02 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by smtp2.osuosl.org (Postfix) with ESMTP id 9B8CE430A8
- for <iommu@lists.linux-foundation.org>; Thu, 18 Mar 2021 00:25:52 +0000 (UTC)
+ by smtp1.osuosl.org (Postfix) with ESMTP id 7E898841A2
+ for <iommu@lists.linux-foundation.org>; Thu, 18 Mar 2021 01:03:02 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Authentication-Results: smtp2.osuosl.org (amavisd-new);
- dkim=pass (2048-bit key) header.d=nvidia.com
-Received: from smtp2.osuosl.org ([127.0.0.1])
- by localhost (smtp2.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id w8HEQbKgwvMo for <iommu@lists.linux-foundation.org>;
- Thu, 18 Mar 2021 00:25:51 +0000 (UTC)
-X-Greylist: whitelisted by SQLgrey-1.8.0
-Received: from NAM04-BN3-obe.outbound.protection.outlook.com
- (mail-eopbgr680084.outbound.protection.outlook.com [40.107.68.84])
- by smtp2.osuosl.org (Postfix) with ESMTPS id 996864308E
- for <iommu@lists.linux-foundation.org>; Thu, 18 Mar 2021 00:25:51 +0000 (UTC)
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=DDTRLvEvzbSUQJOK5Ul+iflQ3+8f1oyWyhbOz836AS/NNMMcBTjd9lj3UEy4wUpdse7tLXHorKZiY3xxvCsr9sQTHkveFqy32p+R8J/zmbrCI+yvhSe3ZP9a1uoCy/9VcicrQ5gwOy1jkl/s/ET3Pbj6G7jeMEEQ9xb2PGe8Wxu7H89g7JBjscoohKq1oVzvICGss0espSWdGrJpJIOlSy3maZyQ2XwQKov8ZCMeIvKM4hD4yBzsR7qtnxMuGyuTjQv/R73umN5JSCBbTu82raGF7foSIdcw6Ls2BCK4Cl3pjXN1JSQcGXTFAV0QNlTOaoSRP/Ffba5wi8uu/kYYMw==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com; 
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=ZHOdsLutLeX3JfUXLmTv+ny7fTWfYCZ8Yaf6/lT0LTQ=;
- b=SQ5SEFrDn/8fklfBT8McNdppAWNUsiOC0Yd33WgbqqOnqJtJgFSf9CiaFLS5RDgpFzX9xuYtLjMk1kBmczcWqFiQAmg6g5r1Xz+IRH5yRl4Ti5G3MDkjS0Q6nMhZdbkZXv79NuBNlq+iV0QeXRGR8C7aXJozWkXxGa27m12RfG23UxHHzAlQ2sKcSkvm14bGRX7iLic5v6fI3EPr/T89VEY0x3JUaQ2Vj5DkRQe77wBVSI4dx7LKARbfFOO8BU6qon4ijn4KdnZMVwf8LkgAIMPqMx1+6jDKR+USB6HIHJ0c3aeln22DKFXXfcKP7g1A0nq+l4QAjvJLxs7AYNBGHQ==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=nvidia.com; dmarc=pass action=none header.from=nvidia.com;
- dkim=pass header.d=nvidia.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
- s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=ZHOdsLutLeX3JfUXLmTv+ny7fTWfYCZ8Yaf6/lT0LTQ=;
- b=p5Ljjs1kbjP/nSOf1xiucuEW8fquVfOkHXN/l2GfnzBPh0TgSTou/2jVGmHS1coGWOTlBJY81/GF7u0s793ra2g80yAzo0Ptcog+NJIzn3CIB5YhKFw1/iai/jvExaTzF+Waa+FM6ivVDAvFj2FJSGHj3JrgLenBcJarZc3TLbDY76btpksCVGCH5GKOqm97BTYzL8oSNysU/pdHNO/BqBfnb+16SbZ+Hj0c5Thi/13q7twB2fcrYlJ+I22B5Oll4DMa1HvHvRoPtMkeZE5tr0bz5kaCp5LfdWKlkPWESM0ojCT7QjEfqpA4fzGbZlVdS2TRdw7eEeUQUb+94VA60A==
-Received: from BY5PR12MB3764.namprd12.prod.outlook.com (2603:10b6:a03:1ac::17)
- by BY5PR12MB4869.namprd12.prod.outlook.com (2603:10b6:a03:1d9::23)
- with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3933.31; Thu, 18 Mar
- 2021 00:25:48 +0000
-Received: from BY5PR12MB3764.namprd12.prod.outlook.com
- ([fe80::11bb:b39e:3f42:d2af]) by BY5PR12MB3764.namprd12.prod.outlook.com
- ([fe80::11bb:b39e:3f42:d2af%7]) with mapi id 15.20.3933.032; Thu, 18 Mar 2021
- 00:25:48 +0000
-From: Krishna Reddy <vdumpa@nvidia.com>
-To: Jean-Philippe Brucker <jean-philippe@linaro.org>, "joro@8bytes.org"
- <joro@8bytes.org>, "will@kernel.org" <will@kernel.org>
-Subject: RE: [PATCH v13 00/10] iommu: I/O page faults for SMMUv3
-Thread-Topic: [PATCH v13 00/10] iommu: I/O page faults for SMMUv3
-Thread-Index: AQHXD0drlTdxumYxFk+ZFSU15kg2EqqI+WNw
-Date: Thu, 18 Mar 2021 00:25:48 +0000
-Message-ID: <BY5PR12MB3764F891751224804232725AB3699@BY5PR12MB3764.namprd12.prod.outlook.com>
-References: <20210302092644.2553014-1-jean-philippe@linaro.org>
-In-Reply-To: <20210302092644.2553014-1-jean-philippe@linaro.org>
-Accept-Language: en-US
-Content-Language: en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-authentication-results: linaro.org; dkim=none (message not signed)
- header.d=none;linaro.org; dmarc=none action=none header.from=nvidia.com;
-x-originating-ip: [216.228.112.22]
-x-ms-publictraffictype: Email
-x-ms-office365-filtering-correlation-id: 73015e1f-e84b-4fb4-fb1f-08d8e9a460f9
-x-ms-traffictypediagnostic: BY5PR12MB4869:
-x-ms-exchange-transport-forked: True
-x-microsoft-antispam-prvs: <BY5PR12MB4869E84D6D5B475B0DA60AC6B3699@BY5PR12MB4869.namprd12.prod.outlook.com>
-x-ms-oob-tlc-oobclassifiers: OLM:5516;
-x-ms-exchange-senderadcheck: 1
-x-microsoft-antispam: BCL:0;
-x-microsoft-antispam-message-info: PvgZc90fBJz51fyw9reG5N579j0W+oEVlHMhXylkUEFIB/kOSWGt2QhHv1MdTVwv7B+1K7vOmRNJIwemfzSQE9yZ1U0hAjKBwOPiVwbvru7bIzlkWWl1tVBFijbVmknC2rySRVxZyQOIe/Za96x05mRkTbr367aQnulvlGdJOzlzzYnWwU5L2NxDW917Rxjx2mbhmutyEjGTqOHh3h3q/Yh8C2Y7Dn1gSpYNZ1pdkWIDOfbhcASEqUXNzPRpvbprh+wCdI3t6mkslUgASO543lzGRHZGXkiyaLvzkjDSETadKkv9fVNQfMnuwMkKkklJbS0kN8XiyaxDjZx+ZLIYmhwhe4l6fpOIAQvm+T8evwVqqYI0+FaTGQhmy8RxS/PwuWRoqdU7O3ig3jq1VxRFXOJioonEa1vhiXyXQr+gSj0E+5nHUzSyL3qZm8Gdrm1zHOi9hHzwVBDrZENgSml5CKlTH1cVQG/G376iuwK9w1c+PwHnTUXjqOHRvvGGyGjH7A5kiB7djDFFNMA87A7KPn1vTn3wB03qsBg2/twAaxcgpOKancJf6b9ygJXe/p3Ka8CngVe3OtNMdh4MempWYStmTHIOxI3nv6WKIUvuwW23rLStk/fRrKwmCp8XCjaf
-x-forefront-antispam-report: CIP:255.255.255.255; CTRY:; LANG:en; SCL:1; SRV:;
- IPV:NLI; SFV:NSPM; H:BY5PR12MB3764.namprd12.prod.outlook.com; PTR:; CAT:NONE;
- SFS:(4636009)(366004)(39860400002)(396003)(136003)(376002)(346002)(7416002)(5660300002)(2906002)(55016002)(83380400001)(71200400001)(186003)(4326008)(8676002)(9686003)(478600001)(33656002)(558084003)(86362001)(110136005)(316002)(26005)(7696005)(66476007)(66556008)(76116006)(66946007)(107886003)(6506007)(8936002)(54906003)(52536014)(38100700001)(64756008)(66446008);
- DIR:OUT; SFP:1101; 
-x-ms-exchange-antispam-messagedata: =?us-ascii?Q?umGjHxGPPjoF6fW95E59yn+CmKmOoq4S7F5Ao+5OX1ddiD3He1eaMa4Sn//m?=
- =?us-ascii?Q?QYl7VlpqzfxePCwHFgR+c7+OBW2ke9YC2i9vU6W0frLQX2NwRM30mjejjtKV?=
- =?us-ascii?Q?vazwzD+m0isi6H8/I58sJlTKCYP/6fFdnKma+7Jbvp1Cpa0chuRi85GJQJ1j?=
- =?us-ascii?Q?c8Qfea/DP7Evj6zBcCWHpiXLcmoKhJuHFgZWHbE+yftmKojKJL7MmINQzqk6?=
- =?us-ascii?Q?GlJXDHsxCEh/sT+zfVB2R9CHddZvF+ST3Tv4rk4tBERv+Bq3cciw0Fd2yIp/?=
- =?us-ascii?Q?uzhSImG8yvYBuUNWa3OuQBTbd7Smffv57FKCYK3kpAD3RwO8mNW20FmVmICl?=
- =?us-ascii?Q?e5pfQDln+A6J4sr9Re9Vv/xQUepDSlZKXmzXX+T5fKkEdp4Ub69irDPAZu4v?=
- =?us-ascii?Q?lz6ZEyBGFvgS9x9/sC2JH6GZ3/xttTxL5upKxD/bSn2KLYQ86T+owgYPO+zg?=
- =?us-ascii?Q?SZZ8nQu8wAv2XO+HJ6qCGkhx0KJ3eV8Qn5od/yjkX6z3q08Vsyeh73IpRpyt?=
- =?us-ascii?Q?+jdnxdFSPrads1AmdLxJUPDRqIuhz/QAf7H9yFVd5pbwSPyoRR4t1kNuTOFi?=
- =?us-ascii?Q?D1fK3OlrgF6EqLqQOPVXuYDHBksCv2lbGtEL+ygyECQKhXgULF9fyu8PU+o1?=
- =?us-ascii?Q?tPsgimcBcgKmkmcwAcSPTz6lNB+1joHJcFkzMI1+ff3NEzCVoJUhy5f0R8HI?=
- =?us-ascii?Q?/MVjaHJ2oDj/3Sd6q0iR3XdTZDLM1d9sAH2AzIXjgdN+y/EjjAxakeN46qiX?=
- =?us-ascii?Q?vm8cm+Q+CGLSu5dJQsYHbtKLARNRvY3BKFctFbTtP3Wv9+DaflFLOH/2MN3M?=
- =?us-ascii?Q?ae7J7Hg0lD8NYLj0tqTge+vgDAgxaiFoytUM67YWJH3Oej+lX5a1AtPWUxrg?=
- =?us-ascii?Q?WwbxSVHdxqD5OypkDb2SD+ZyoV808LnfBbL79jAgpTINyzq0/1AjLPwOaJWv?=
- =?us-ascii?Q?1HXg/ZpCmgeg6LZPt5VfkNYeHlkpSJJx5+xGqbpgBnbtcbX1/B8c3XrxzUhL?=
- =?us-ascii?Q?Go6VsnxS2J3Ez2iNIcFe4pMws4vIPhD/Yyjxtro1uQda/p6N2UBSDx1q1iap?=
- =?us-ascii?Q?DPgIv4g6Cy/B2l1Yw6q1ZRTeh2OlXYZdfH7V9O3xOx3Q6/r3mxfalWY5hKW6?=
- =?us-ascii?Q?d15u3aYBPulkKIOZpJGlMo1NU8n0FmY1AzzyHVIoq8ZATRM9X1pZhnhHDnTk?=
- =?us-ascii?Q?71zqbwxC74m39jVPNCgzWiazYBaiIcRA14EQI0SNLUCIMzg7bXnFpnIyrA2U?=
- =?us-ascii?Q?fZsc3CVwwPV1NqplSdZ2cLfESZkAfiD9ly6BKiuVg9eP3KAx8v3TXsWvzRGN?=
- =?us-ascii?Q?rSxcVaKgRRzx4tKK68qtdV59?=
+Received: from smtp1.osuosl.org ([127.0.0.1])
+ by localhost (smtp1.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+ with ESMTP id q21lL-a3lb6d for <iommu@lists.linux-foundation.org>;
+ Thu, 18 Mar 2021 01:03:01 +0000 (UTC)
+X-Greylist: domain auto-whitelisted by SQLgrey-1.8.0
+Received: from mga06.intel.com (mga06.intel.com [134.134.136.31])
+ by smtp1.osuosl.org (Postfix) with ESMTPS id 84CD484140
+ for <iommu@lists.linux-foundation.org>; Thu, 18 Mar 2021 01:03:01 +0000 (UTC)
+IronPort-SDR: q3jeQVpzvr5A1owSO7RmyTMXDI5FI186QEluS+R1Fjb+QnEGWf/J0HyTgI0K8g2lGE3H1/N/nW
+ i8HALxSwwjUw==
+X-IronPort-AV: E=McAfee;i="6000,8403,9926"; a="250933586"
+X-IronPort-AV: E=Sophos;i="5.81,257,1610438400"; d="scan'208";a="250933586"
+Received: from orsmga007.jf.intel.com ([10.7.209.58])
+ by orsmga104.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384;
+ 17 Mar 2021 18:03:00 -0700
+IronPort-SDR: y4Z6Tm6N5tJ/EywPAX9K3WS0oeqz/xnz6cDJ3oijPsrc+n5o4cJ4Qdlx8+0zcGHkXQ6TtqGdxE
+ /UXzSnoCniDQ==
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.81,257,1610438400"; d="scan'208";a="411680283"
+Received: from allen-box.sh.intel.com ([10.239.159.128])
+ by orsmga007.jf.intel.com with ESMTP; 17 Mar 2021 18:02:58 -0700
+From: Lu Baolu <baolu.lu@linux.intel.com>
+To: Joerg Roedel <joro@8bytes.org>,
+	Will Deacon <will@kernel.org>
+Subject: [PATCH 1/1] iommu/vt-d: Report more information about invalidation
+ errors
+Date: Thu, 18 Mar 2021 08:53:40 +0800
+Message-Id: <20210318005340.187311-1-baolu.lu@linux.intel.com>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
-X-OriginatorOrg: Nvidia.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-AuthSource: BY5PR12MB3764.namprd12.prod.outlook.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 73015e1f-e84b-4fb4-fb1f-08d8e9a460f9
-X-MS-Exchange-CrossTenant-originalarrivaltime: 18 Mar 2021 00:25:48.0211 (UTC)
-X-MS-Exchange-CrossTenant-fromentityheader: Hosted
-X-MS-Exchange-CrossTenant-id: 43083d15-7273-40c1-b7db-39efd9ccc17a
-X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: pC5lM2x0MYQ2nQGaz0lydUhpUhU3K/u57z55PI0gnv/9bIXDIgScmBfCwXhtoI6r8lyS52tyKQuFjllQWABLZA==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: BY5PR12MB4869
-Cc: "vivek.gautam@arm.com" <vivek.gautam@arm.com>,
- "guohanjun@huawei.com" <guohanjun@huawei.com>, Yu-Huan Hsu <YHsu@nvidia.com>,
- Terje Bergstrom <tbergstrom@nvidia.com>,
- "iommu@lists.linux-foundation.org" <iommu@lists.linux-foundation.org>,
- Vikram Sethi <vsethi@nvidia.com>,
- "linux-acpi@vger.kernel.org" <linux-acpi@vger.kernel.org>,
- Nicolin Chen <nicolinc@nvidia.com>,
- "zhangfei.gao@linaro.org" <zhangfei.gao@linaro.org>,
- "lenb@kernel.org" <lenb@kernel.org>,
- "devicetree@vger.kernel.org" <devicetree@vger.kernel.org>,
- "kevin.tian@intel.com" <kevin.tian@intel.com>,
- Bryan Huntsman <bhuntsman@nvidia.com>,
- Pritesh Raithatha <praithatha@nvidia.com>, Sachin Nikam <Snikam@nvidia.com>,
- "robh+dt@kernel.org" <robh+dt@kernel.org>,
- "linux-arm-kernel@lists.infradead.org" <linux-arm-kernel@lists.infradead.org>,
- "rjw@rjwysocki.net" <rjw@rjwysocki.net>,
- "sudeep.holla@arm.com" <sudeep.holla@arm.com>,
- "robin.murphy@arm.com" <robin.murphy@arm.com>,
- "linux-accelerators@lists.ozlabs.org" <linux-accelerators@lists.ozlabs.org>
+Cc: Guo Kaijie <Kaijie.Guo@intel.com>, Dave Jiang <dave.jiang@intel.com>,
+ Ashok Raj <ashok.raj@intel.com>, linux-kernel@vger.kernel.org,
+ iommu@lists.linux-foundation.org
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -172,12 +87,162 @@ Content-Transfer-Encoding: 7bit
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-Tested-by: Krishna Reddy <vdumpa@nvidia.com>
+When the invalidation queue errors are encountered, dump the information
+logged by the VT-d hardware together with the pending queue invalidation
+descriptors.
 
-Validated v13 patches in context of nested translations validation for NVMe PCIe device assigned to Guest VM.
-V12 patches(v13 is yet to be tested) has been tested for SVA functionality on Native OS and is functional. 
+Signed-off-by: Ashok Raj <ashok.raj@intel.com>
+Tested-by: Guo Kaijie <Kaijie.Guo@intel.com>
+Signed-off-by: Lu Baolu <baolu.lu@linux.intel.com>
+---
+ drivers/iommu/intel/dmar.c  | 68 ++++++++++++++++++++++++++++++++++---
+ include/linux/intel-iommu.h |  6 ++++
+ 2 files changed, 70 insertions(+), 4 deletions(-)
 
--KR
+diff --git a/drivers/iommu/intel/dmar.c b/drivers/iommu/intel/dmar.c
+index d5c51b5c20af..6971397805f3 100644
+--- a/drivers/iommu/intel/dmar.c
++++ b/drivers/iommu/intel/dmar.c
+@@ -1205,6 +1205,63 @@ static inline void reclaim_free_desc(struct q_inval *qi)
+ 	}
+ }
+ 
++static const char *qi_type_string(u8 type)
++{
++	switch (type) {
++	case QI_CC_TYPE:
++		return "Context-cache Invalidation";
++	case QI_IOTLB_TYPE:
++		return "IOTLB Invalidation";
++	case QI_DIOTLB_TYPE:
++		return "Device-TLB Invalidation";
++	case QI_IEC_TYPE:
++		return "Interrupt Entry Cache Invalidation";
++	case QI_IWD_TYPE:
++		return "Invalidation Wait";
++	case QI_EIOTLB_TYPE:
++		return "PASID-based IOTLB Invalidation";
++	case QI_PC_TYPE:
++		return "PASID-cache Invalidation";
++	case QI_DEIOTLB_TYPE:
++		return "PASID-based Device-TLB Invalidation";
++	case QI_PGRP_RESP_TYPE:
++		return "Page Group Response";
++	default:
++		return "UNKNOWN";
++	}
++}
++
++static void qi_dump_fault(struct intel_iommu *iommu, u32 fault)
++{
++	unsigned int head = dmar_readl(iommu->reg + DMAR_IQH_REG);
++	u64 iqe_err = dmar_readq(iommu->reg + DMAR_IQER_REG);
++	struct qi_desc *desc = iommu->qi->desc + head;
++
++	if (fault & DMA_FSTS_IQE)
++		pr_err("VT-d detected Invalidation Queue Error: Reason %llx",
++		       DMAR_IQER_REG_IQEI(iqe_err));
++	if (fault & DMA_FSTS_ITE)
++		pr_err("VT-d detected Invalidation Time-out Error: SID %llx",
++		       DMAR_IQER_REG_ITESID(iqe_err));
++	if (fault & DMA_FSTS_ICE)
++		pr_err("VT-d detected Invalidation Completion Error: SID %llx",
++		       DMAR_IQER_REG_ICESID(iqe_err));
++
++	pr_err("QI HEAD: %s qw0 = 0x%llx, qw1 = 0x%llx\n",
++	       qi_type_string(desc->qw0 & 0xf),
++	       (unsigned long long)desc->qw0,
++	       (unsigned long long)desc->qw1);
++
++	head = ((head >> qi_shift(iommu)) + QI_LENGTH - 1) % QI_LENGTH;
++	head <<= qi_shift(iommu);
++	desc = iommu->qi->desc + head;
++
++	pr_err("QI PRIOR: %s qw0 = 0x%llx, qw1 = 0x%llx\n",
++	       qi_type_string(desc->qw0 & 0xf),
++	       (unsigned long long)desc->qw0,
++	       (unsigned long long)desc->qw1);
++}
++
+ static int qi_check_fault(struct intel_iommu *iommu, int index, int wait_index)
+ {
+ 	u32 fault;
+@@ -1216,6 +1273,8 @@ static int qi_check_fault(struct intel_iommu *iommu, int index, int wait_index)
+ 		return -EAGAIN;
+ 
+ 	fault = readl(iommu->reg + DMAR_FSTS_REG);
++	if (fault & (DMA_FSTS_IQE | DMA_FSTS_ITE | DMA_FSTS_ICE))
++		qi_dump_fault(iommu, fault);
+ 
+ 	/*
+ 	 * If IQE happens, the head points to the descriptor associated
+@@ -1232,12 +1291,10 @@ static int qi_check_fault(struct intel_iommu *iommu, int index, int wait_index)
+ 			 * used by software as private data. We won't print
+ 			 * out these two qw's for security consideration.
+ 			 */
+-			pr_err("VT-d detected invalid descriptor: qw0 = %llx, qw1 = %llx\n",
+-			       (unsigned long long)desc->qw0,
+-			       (unsigned long long)desc->qw1);
+ 			memcpy(desc, qi->desc + (wait_index << shift),
+ 			       1 << shift);
+ 			writel(DMA_FSTS_IQE, iommu->reg + DMAR_FSTS_REG);
++			pr_info("Invalidation Queue Error (IQE) cleared\n");
+ 			return -EINVAL;
+ 		}
+ 	}
+@@ -1254,6 +1311,7 @@ static int qi_check_fault(struct intel_iommu *iommu, int index, int wait_index)
+ 		tail = ((tail >> shift) - 1 + QI_LENGTH) % QI_LENGTH;
+ 
+ 		writel(DMA_FSTS_ITE, iommu->reg + DMAR_FSTS_REG);
++		pr_info("Invalidation Time-out Error (ITE) cleared\n");
+ 
+ 		do {
+ 			if (qi->desc_status[head] == QI_IN_USE)
+@@ -1265,8 +1323,10 @@ static int qi_check_fault(struct intel_iommu *iommu, int index, int wait_index)
+ 			return -EAGAIN;
+ 	}
+ 
+-	if (fault & DMA_FSTS_ICE)
++	if (fault & DMA_FSTS_ICE) {
+ 		writel(DMA_FSTS_ICE, iommu->reg + DMAR_FSTS_REG);
++		pr_info("Invalidation Completion Error (ICE) cleared\n");
++	}
+ 
+ 	return 0;
+ }
+diff --git a/include/linux/intel-iommu.h b/include/linux/intel-iommu.h
+index d1f32b33415a..76f974da8ca4 100644
+--- a/include/linux/intel-iommu.h
++++ b/include/linux/intel-iommu.h
+@@ -20,6 +20,7 @@
+ #include <linux/io-64-nonatomic-lo-hi.h>
+ #include <linux/dmar.h>
+ #include <linux/ioasid.h>
++#include <linux/bitfield.h>
+ 
+ #include <asm/cacheflush.h>
+ #include <asm/iommu.h>
+@@ -80,6 +81,7 @@
+ #define DMAR_IQ_SHIFT	4	/* Invalidation queue head/tail shift */
+ #define DMAR_IQA_REG	0x90	/* Invalidation queue addr register */
+ #define DMAR_ICS_REG	0x9c	/* Invalidation complete status register */
++#define DMAR_IQER_REG	0xb0	/* Invalidation queue error record register */
+ #define DMAR_IRTA_REG	0xb8    /* Interrupt remapping table addr register */
+ #define DMAR_PQH_REG	0xc0	/* Page request queue head register */
+ #define DMAR_PQT_REG	0xc8	/* Page request queue tail register */
+@@ -126,6 +128,10 @@
+ #define DMAR_VCMD_REG		0xe10 /* Virtual command register */
+ #define DMAR_VCRSP_REG		0xe20 /* Virtual command response register */
+ 
++#define DMAR_IQER_REG_IQEI(reg)		FIELD_GET(GENMASK_ULL(3, 0), reg)
++#define DMAR_IQER_REG_ITESID(reg)	FIELD_GET(GENMASK_ULL(47, 32), reg)
++#define DMAR_IQER_REG_ICESID(reg)	FIELD_GET(GENMASK_ULL(63, 48), reg)
++
+ #define OFFSET_STRIDE		(9)
+ 
+ #define dmar_readq(a) readq(a)
+-- 
+2.25.1
 
 _______________________________________________
 iommu mailing list
