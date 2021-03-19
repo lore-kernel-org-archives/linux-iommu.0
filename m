@@ -7,57 +7,57 @@ X-Spam-Status: No, score=-16.8 required=3.0 tests=BAYES_00,
 	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,USER_AGENT_GIT autolearn=ham
 	autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id DE40AC433DB
-	for <iommu@archiver.kernel.org>; Fri, 19 Mar 2021 13:30:29 +0000 (UTC)
-Received: from smtp3.osuosl.org (smtp3.osuosl.org [140.211.166.136])
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 108A5C433E0
+	for <iommu@archiver.kernel.org>; Fri, 19 Mar 2021 13:30:33 +0000 (UTC)
+Received: from smtp4.osuosl.org (smtp4.osuosl.org [140.211.166.137])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 9BC8664F4D
-	for <iommu@archiver.kernel.org>; Fri, 19 Mar 2021 13:30:29 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 9BC8664F4D
+	by mail.kernel.org (Postfix) with ESMTPS id C1EFA64F4D
+	for <iommu@archiver.kernel.org>; Fri, 19 Mar 2021 13:30:32 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org C1EFA64F4D
 Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=huawei.com
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by smtp3.osuosl.org (Postfix) with ESMTP id 74F3A6071D;
-	Fri, 19 Mar 2021 13:30:29 +0000 (UTC)
+	by smtp4.osuosl.org (Postfix) with ESMTP id 98F0F4ED79;
+	Fri, 19 Mar 2021 13:30:32 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from smtp3.osuosl.org ([127.0.0.1])
-	by localhost (smtp3.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id vvo6EsxgTu_V; Fri, 19 Mar 2021 13:30:28 +0000 (UTC)
+Received: from smtp4.osuosl.org ([127.0.0.1])
+	by localhost (smtp4.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+	with ESMTP id oZKmJNTs6S6w; Fri, 19 Mar 2021 13:30:31 +0000 (UTC)
 Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by smtp3.osuosl.org (Postfix) with ESMTP id 422476072A;
-	Fri, 19 Mar 2021 13:30:28 +0000 (UTC)
+	by smtp4.osuosl.org (Postfix) with ESMTP id 46B4C4BC25;
+	Fri, 19 Mar 2021 13:30:31 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id E5681C0016;
-	Fri, 19 Mar 2021 13:30:27 +0000 (UTC)
-Received: from smtp3.osuosl.org (smtp3.osuosl.org [140.211.166.136])
- by lists.linuxfoundation.org (Postfix) with ESMTP id C3E16C0001
- for <iommu@lists.linux-foundation.org>; Fri, 19 Mar 2021 13:30:25 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 247F8C000A;
+	Fri, 19 Mar 2021 13:30:31 +0000 (UTC)
+Received: from smtp3.osuosl.org (smtp3.osuosl.org [IPv6:2605:bc80:3010::136])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 8CCC8C0001
+ for <iommu@lists.linux-foundation.org>; Fri, 19 Mar 2021 13:30:28 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by smtp3.osuosl.org (Postfix) with ESMTP id A612460714
- for <iommu@lists.linux-foundation.org>; Fri, 19 Mar 2021 13:30:25 +0000 (UTC)
+ by smtp3.osuosl.org (Postfix) with ESMTP id 6E4496E6E7
+ for <iommu@lists.linux-foundation.org>; Fri, 19 Mar 2021 13:30:28 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
 Received: from smtp3.osuosl.org ([127.0.0.1])
  by localhost (smtp3.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id p-JunXpzFCNW for <iommu@lists.linux-foundation.org>;
- Fri, 19 Mar 2021 13:30:24 +0000 (UTC)
+ with ESMTP id Fk4Ym_57Z24X for <iommu@lists.linux-foundation.org>;
+ Fri, 19 Mar 2021 13:30:27 +0000 (UTC)
 X-Greylist: domain auto-whitelisted by SQLgrey-1.8.0
 Received: from szxga05-in.huawei.com (szxga05-in.huawei.com [45.249.212.191])
- by smtp3.osuosl.org (Postfix) with ESMTPS id 03C436070B
- for <iommu@lists.linux-foundation.org>; Fri, 19 Mar 2021 13:30:20 +0000 (UTC)
+ by smtp3.osuosl.org (Postfix) with ESMTPS id 781E460714
+ for <iommu@lists.linux-foundation.org>; Fri, 19 Mar 2021 13:30:27 +0000 (UTC)
 Received: from DGGEMS403-HUB.china.huawei.com (unknown [172.30.72.59])
- by szxga05-in.huawei.com (SkyGuard) with ESMTP id 4F24T269c5zPkbj;
+ by szxga05-in.huawei.com (SkyGuard) with ESMTP id 4F24T24tC4zPkFh;
  Fri, 19 Mar 2021 21:27:50 +0800 (CST)
 Received: from localhost.localdomain (10.69.192.58) by
  DGGEMS403-HUB.china.huawei.com (10.3.19.203) with Microsoft SMTP Server id
- 14.3.498.0; Fri, 19 Mar 2021 21:30:06 +0800
+ 14.3.498.0; Fri, 19 Mar 2021 21:30:08 +0800
 From: John Garry <john.garry@huawei.com>
 To: <joro@8bytes.org>, <will@kernel.org>, <jejb@linux.ibm.com>,
  <martin.petersen@oracle.com>, <hch@lst.de>, <m.szyprowski@samsung.com>,
  <robin.murphy@arm.com>
-Subject: [PATCH 1/6] iommu: Move IOVA power-of-2 roundup into allocator
-Date: Fri, 19 Mar 2021 21:25:43 +0800
-Message-ID: <1616160348-29451-2-git-send-email-john.garry@huawei.com>
+Subject: [PATCH 5/6] dma-mapping/iommu: Add dma_set_max_opt_size()
+Date: Fri, 19 Mar 2021 21:25:47 +0800
+Message-ID: <1616160348-29451-6-git-send-email-john.garry@huawei.com>
 X-Mailer: git-send-email 2.8.1
 In-Reply-To: <1616160348-29451-1-git-send-email-john.garry@huawei.com>
 References: <1616160348-29451-1-git-send-email-john.garry@huawei.com>
@@ -83,134 +83,91 @@ Content-Transfer-Encoding: 7bit
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-Move the IOVA size power-of-2 rcache roundup into the IOVA allocator.
-
-This is to eventually make it possible to be able to configure the upper
-limit of the IOVA rcache range.
+Add a function to allow the max size which we want to optimise DMA mappings
+for.
 
 Signed-off-by: John Garry <john.garry@huawei.com>
 ---
- drivers/iommu/dma-iommu.c |  8 ------
- drivers/iommu/iova.c      | 51 ++++++++++++++++++++++++++-------------
- 2 files changed, 34 insertions(+), 25 deletions(-)
+ drivers/iommu/dma-iommu.c   |  2 +-
+ include/linux/dma-map-ops.h |  1 +
+ include/linux/dma-mapping.h |  5 +++++
+ kernel/dma/mapping.c        | 11 +++++++++++
+ 4 files changed, 18 insertions(+), 1 deletion(-)
 
 diff --git a/drivers/iommu/dma-iommu.c b/drivers/iommu/dma-iommu.c
-index af765c813cc8..15b7270a5c2a 100644
+index a5dfbd6c0496..d35881fcfb9c 100644
 --- a/drivers/iommu/dma-iommu.c
 +++ b/drivers/iommu/dma-iommu.c
-@@ -429,14 +429,6 @@ static dma_addr_t iommu_dma_alloc_iova(struct iommu_domain *domain,
- 
- 	shift = iova_shift(iovad);
- 	iova_len = size >> shift;
--	/*
--	 * Freeing non-power-of-two-sized allocations back into the IOVA caches
--	 * will come back to bite us badly, so we have to waste a bit of space
--	 * rounding up anything cacheable to make sure that can't happen. The
--	 * order of the unadjusted size will still match upon freeing.
--	 */
--	if (iova_len < (1 << (IOVA_RANGE_CACHE_MAX_SIZE - 1)))
--		iova_len = roundup_pow_of_two(iova_len);
- 
- 	dma_limit = min_not_zero(dma_limit, dev->bus_dma_limit);
- 
-diff --git a/drivers/iommu/iova.c b/drivers/iommu/iova.c
-index e6e2fa85271c..e62e9e30b30c 100644
---- a/drivers/iommu/iova.c
-+++ b/drivers/iommu/iova.c
-@@ -179,7 +179,7 @@ iova_insert_rbtree(struct rb_root *root, struct iova *iova,
- 
- static int __alloc_and_insert_iova_range(struct iova_domain *iovad,
- 		unsigned long size, unsigned long limit_pfn,
--			struct iova *new, bool size_aligned)
-+			struct iova *new, bool size_aligned, bool fast)
- {
- 	struct rb_node *curr, *prev;
- 	struct iova *curr_iova;
-@@ -188,6 +188,15 @@ static int __alloc_and_insert_iova_range(struct iova_domain *iovad,
- 	unsigned long align_mask = ~0UL;
- 	unsigned long high_pfn = limit_pfn, low_pfn = iovad->start_pfn;
- 
-+	/*
-+	 * Freeing non-power-of-two-sized allocations back into the IOVA caches
-+	 * will come back to bite us badly, so we have to waste a bit of space
-+	 * rounding up anything cacheable to make sure that can't happen. The
-+	 * order of the unadjusted size will still match upon freeing.
-+	 */
-+	if (fast && size < (1 << (IOVA_RANGE_CACHE_MAX_SIZE - 1)))
-+		size = roundup_pow_of_two(size);
-+
- 	if (size_aligned)
- 		align_mask <<= fls_long(size - 1);
- 
-@@ -288,21 +297,10 @@ void iova_cache_put(void)
+@@ -447,7 +447,6 @@ static dma_addr_t iommu_dma_alloc_iova(struct iommu_domain *domain,
+ 	return (dma_addr_t)iova << shift;
  }
- EXPORT_SYMBOL_GPL(iova_cache_put);
  
--/**
-- * alloc_iova - allocates an iova
-- * @iovad: - iova domain in question
-- * @size: - size of page frames to allocate
-- * @limit_pfn: - max limit address
-- * @size_aligned: - set if size_aligned address range is required
-- * This function allocates an iova in the range iovad->start_pfn to limit_pfn,
-- * searching top-down from limit_pfn to iovad->start_pfn. If the size_aligned
-- * flag is set then the allocated address iova->pfn_lo will be naturally
-- * aligned on roundup_power_of_two(size).
-- */
--struct iova *
--alloc_iova(struct iova_domain *iovad, unsigned long size,
-+static struct iova *
-+__alloc_iova(struct iova_domain *iovad, unsigned long size,
- 	unsigned long limit_pfn,
--	bool size_aligned)
-+	bool size_aligned, bool fast)
+-__maybe_unused
+ static void iommu_dma_set_opt_size(struct device *dev, size_t size)
  {
- 	struct iova *new_iova;
- 	int ret;
-@@ -312,7 +310,7 @@ alloc_iova(struct iova_domain *iovad, unsigned long size,
- 		return NULL;
+ 	struct iommu_domain *domain = iommu_get_dma_domain(dev);
+@@ -1278,6 +1277,7 @@ static const struct dma_map_ops iommu_dma_ops = {
+ 	.map_resource		= iommu_dma_map_resource,
+ 	.unmap_resource		= iommu_dma_unmap_resource,
+ 	.get_merge_boundary	= iommu_dma_get_merge_boundary,
++	.set_max_opt_size	= iommu_dma_set_opt_size,
+ };
  
- 	ret = __alloc_and_insert_iova_range(iovad, size, limit_pfn + 1,
--			new_iova, size_aligned);
-+			new_iova, size_aligned, fast);
+ /*
+diff --git a/include/linux/dma-map-ops.h b/include/linux/dma-map-ops.h
+index 51872e736e7b..fed7a183b3b9 100644
+--- a/include/linux/dma-map-ops.h
++++ b/include/linux/dma-map-ops.h
+@@ -64,6 +64,7 @@ struct dma_map_ops {
+ 	u64 (*get_required_mask)(struct device *dev);
+ 	size_t (*max_mapping_size)(struct device *dev);
+ 	unsigned long (*get_merge_boundary)(struct device *dev);
++	void (*set_max_opt_size)(struct device *dev, size_t size);
+ };
  
- 	if (ret) {
- 		free_iova_mem(new_iova);
-@@ -321,6 +319,25 @@ alloc_iova(struct iova_domain *iovad, unsigned long size,
- 
- 	return new_iova;
+ #ifdef CONFIG_DMA_OPS
+diff --git a/include/linux/dma-mapping.h b/include/linux/dma-mapping.h
+index 2a984cb4d1e0..91fe770145d4 100644
+--- a/include/linux/dma-mapping.h
++++ b/include/linux/dma-mapping.h
+@@ -144,6 +144,7 @@ u64 dma_get_required_mask(struct device *dev);
+ size_t dma_max_mapping_size(struct device *dev);
+ bool dma_need_sync(struct device *dev, dma_addr_t dma_addr);
+ unsigned long dma_get_merge_boundary(struct device *dev);
++void dma_set_max_opt_size(struct device *dev, size_t size);
+ #else /* CONFIG_HAS_DMA */
+ static inline dma_addr_t dma_map_page_attrs(struct device *dev,
+ 		struct page *page, size_t offset, size_t size,
+@@ -257,6 +258,10 @@ static inline unsigned long dma_get_merge_boundary(struct device *dev)
+ {
+ 	return 0;
  }
-+
-+/**
-+ * alloc_iova - allocates an iova
-+ * @iovad: - iova domain in question
-+ * @size: - size of page frames to allocate
-+ * @limit_pfn: - max limit address
-+ * @size_aligned: - set if size_aligned address range is required
-+ * This function allocates an iova in the range iovad->start_pfn to limit_pfn,
-+ * searching top-down from limit_pfn to iovad->start_pfn. If the size_aligned
-+ * flag is set then the allocated address iova->pfn_lo will be naturally
-+ * aligned on roundup_power_of_two(size).
-+ */
-+struct iova *
-+alloc_iova(struct iova_domain *iovad, unsigned long size,
-+	unsigned long limit_pfn,
-+	bool size_aligned)
++static inline void dma_set_max_opt_size(struct device *dev, size_t size)
 +{
-+	return __alloc_iova(iovad, size, limit_pfn, size_aligned, false);
 +}
- EXPORT_SYMBOL_GPL(alloc_iova);
++
+ #endif /* CONFIG_HAS_DMA */
  
- static struct iova *
-@@ -433,7 +450,7 @@ alloc_iova_fast(struct iova_domain *iovad, unsigned long size,
- 		return iova_pfn;
- 
- retry:
--	new_iova = alloc_iova(iovad, size, limit_pfn, true);
-+	new_iova = __alloc_iova(iovad, size, limit_pfn, true, true);
- 	if (!new_iova) {
- 		unsigned int cpu;
- 
+ struct page *dma_alloc_pages(struct device *dev, size_t size,
+diff --git a/kernel/dma/mapping.c b/kernel/dma/mapping.c
+index b6a633679933..59e6acb1c471 100644
+--- a/kernel/dma/mapping.c
++++ b/kernel/dma/mapping.c
+@@ -608,3 +608,14 @@ unsigned long dma_get_merge_boundary(struct device *dev)
+ 	return ops->get_merge_boundary(dev);
+ }
+ EXPORT_SYMBOL_GPL(dma_get_merge_boundary);
++
++void dma_set_max_opt_size(struct device *dev, size_t size)
++{
++	const struct dma_map_ops *ops = get_dma_ops(dev);
++
++	if (!ops || !ops->set_max_opt_size)
++		return;
++
++	ops->set_max_opt_size(dev, size);
++}
++EXPORT_SYMBOL_GPL(dma_set_max_opt_size);
 -- 
 2.26.2
 
