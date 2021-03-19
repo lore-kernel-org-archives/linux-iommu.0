@@ -2,67 +2,104 @@ Return-Path: <SRS0=1/OX=IR=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-16.8 required=3.0 tests=BAYES_00,
-	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_CR_TRAILER,INCLUDES_PATCH,
-	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_GIT
-	autolearn=ham autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-13.6 required=3.0 tests=BAYES_00,DKIM_INVALID,
+	DKIM_SIGNED,HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_CR_TRAILER,INCLUDES_PATCH,
+	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no
+	version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 85BCFC433DB
-	for <iommu@archiver.kernel.org>; Fri, 19 Mar 2021 12:52:14 +0000 (UTC)
-Received: from smtp1.osuosl.org (smtp1.osuosl.org [140.211.166.138])
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 02093C433E0
+	for <iommu@archiver.kernel.org>; Fri, 19 Mar 2021 13:05:40 +0000 (UTC)
+Received: from smtp4.osuosl.org (smtp4.osuosl.org [140.211.166.137])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 2C93464E5B
-	for <iommu@archiver.kernel.org>; Fri, 19 Mar 2021 12:52:14 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 2C93464E5B
-Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=arm.com
+	by mail.kernel.org (Postfix) with ESMTPS id 6533464ED7
+	for <iommu@archiver.kernel.org>; Fri, 19 Mar 2021 13:05:39 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 6533464ED7
+Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=chromium.org
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by smtp1.osuosl.org (Postfix) with ESMTP id 078A283C38;
-	Fri, 19 Mar 2021 12:52:14 +0000 (UTC)
+	by smtp4.osuosl.org (Postfix) with ESMTP id 1369A4ED9D;
+	Fri, 19 Mar 2021 13:05:39 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from smtp1.osuosl.org ([127.0.0.1])
-	by localhost (smtp1.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id AEp3bYiGNxut; Fri, 19 Mar 2021 12:52:11 +0000 (UTC)
-Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by smtp1.osuosl.org (Postfix) with ESMTP id 43DB883C46;
-	Fri, 19 Mar 2021 12:52:11 +0000 (UTC)
+Received: from smtp4.osuosl.org ([127.0.0.1])
+	by localhost (smtp4.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+	with ESMTP id 9Sd9SuecV3Em; Fri, 19 Mar 2021 13:05:37 +0000 (UTC)
+Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [IPv6:2605:bc80:3010:104::8cd3:938])
+	by smtp4.osuosl.org (Postfix) with ESMTP id 219BA4EBB8;
+	Fri, 19 Mar 2021 13:05:37 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 38CF9C000F;
-	Fri, 19 Mar 2021 12:52:11 +0000 (UTC)
-Received: from smtp3.osuosl.org (smtp3.osuosl.org [IPv6:2605:bc80:3010::136])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 90A96C0001
- for <iommu@lists.linux-foundation.org>; Fri, 19 Mar 2021 12:52:09 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id F0385C000B;
+	Fri, 19 Mar 2021 13:05:36 +0000 (UTC)
+Received: from smtp3.osuosl.org (smtp3.osuosl.org [140.211.166.136])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id E11B7C0001
+ for <iommu@lists.linux-foundation.org>; Fri, 19 Mar 2021 13:05:35 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by smtp3.osuosl.org (Postfix) with ESMTP id 72FAA6063B
- for <iommu@lists.linux-foundation.org>; Fri, 19 Mar 2021 12:52:09 +0000 (UTC)
+ by smtp3.osuosl.org (Postfix) with ESMTP id CDB236063B
+ for <iommu@lists.linux-foundation.org>; Fri, 19 Mar 2021 13:05:35 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
+Authentication-Results: smtp3.osuosl.org (amavisd-new);
+ dkim=pass (1024-bit key) header.d=chromium.org
 Received: from smtp3.osuosl.org ([127.0.0.1])
  by localhost (smtp3.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id fJseU30HXCmx for <iommu@lists.linux-foundation.org>;
- Fri, 19 Mar 2021 12:52:08 +0000 (UTC)
-X-Greylist: domain auto-whitelisted by SQLgrey-1.8.0
-Received: from foss.arm.com (foss.arm.com [217.140.110.172])
- by smtp3.osuosl.org (Postfix) with ESMTP id 34C78605D0
- for <iommu@lists.linux-foundation.org>; Fri, 19 Mar 2021 12:52:08 +0000 (UTC)
-Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
- by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 7D9F2101E;
- Fri, 19 Mar 2021 05:52:07 -0700 (PDT)
-Received: from e110467-lin.cambridge.arm.com (e110467-lin.cambridge.arm.com
- [10.1.196.41])
- by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPA id CD1A83F718;
- Fri, 19 Mar 2021 05:52:06 -0700 (PDT)
-From: Robin Murphy <robin.murphy@arm.com>
-To: joro@8bytes.org
-Subject: [PATCH 2/2] iommu: Streamline registration interface
-Date: Fri, 19 Mar 2021 12:52:02 +0000
-Message-Id: <95f69c593aa9dd57a5333e490dc06b8bae27fedf.1616157612.git.robin.murphy@arm.com>
-X-Mailer: git-send-email 2.21.0.dirty
-In-Reply-To: <f4de29d8330981301c1935e667b507254a2691ae.1616157612.git.robin.murphy@arm.com>
-References: <f4de29d8330981301c1935e667b507254a2691ae.1616157612.git.robin.murphy@arm.com>
+ with ESMTP id Xk9tjLxtptLI for <iommu@lists.linux-foundation.org>;
+ Fri, 19 Mar 2021 13:05:34 +0000 (UTC)
+X-Greylist: whitelisted by SQLgrey-1.8.0
+Received: from mail-io1-xd36.google.com (mail-io1-xd36.google.com
+ [IPv6:2607:f8b0:4864:20::d36])
+ by smtp3.osuosl.org (Postfix) with ESMTPS id A6A24605A8
+ for <iommu@lists.linux-foundation.org>; Fri, 19 Mar 2021 13:05:34 +0000 (UTC)
+Received: by mail-io1-xd36.google.com with SMTP id v3so5981435ioq.2
+ for <iommu@lists.linux-foundation.org>; Fri, 19 Mar 2021 06:05:34 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=chromium.org; s=google;
+ h=mime-version:references:in-reply-to:from:date:message-id:subject:to;
+ bh=KWuxw1inOcqj3EwZy9r71xuQ98wMZ+z2RlZ3sbxApKk=;
+ b=FtC9IxmrhHW3gUSITTJXm0t4knPP6xR7ZqP6pmKPjK9Ad2lAAF373Hics9Z2frogQ4
+ 3GsP1OOV8LjDkIvmdAg7ZHfr/Lf4MPBeIqGYz+tY3n5qaXtz/VJXxYlLXCpSEz5C2GKm
+ szIDQqffmc1mynTgjOLjoqC6nnxGlr+GA9hN0=
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+ d=1e100.net; s=20161025;
+ h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+ :message-id:subject:to;
+ bh=KWuxw1inOcqj3EwZy9r71xuQ98wMZ+z2RlZ3sbxApKk=;
+ b=Y2nkIXgjzjaNTCvPnFOg7bN5j8KweK78yia+qxTjXEp2XMpjduBc/ZYSqyF6as0YB7
+ RQQnWQEFyyjJZKmf7SkHO4BtaK4sQGc+pTbcaj0JsKLnTCRE4XLMUut6uc162GBUXX5c
+ 9/Pdkm76q9V1I6z+W4RFOxLRgq2LIcEOiLKkzAXIpqEs7uJjftPugdITo3XMePZiwQZg
+ YFavQUl/n2zaam0lqqVBWhaje+qbjO+eXerbI/Td+ORRugk+OISuTI0jmdqtnav6W6JI
+ /PRbQ1i2I0//c9SRBk1JDD1lFpNfDj4ZGl0IHKylK/dNoGNBv0rgwpRf4hht0PGTBhqx
+ cmXQ==
+X-Gm-Message-State: AOAM533mF8LfjwOEmOXnb54QVbFrYwoE4ucQUSavCdNFy8oC/MLcEhFA
+ eJXFkmWxCu+T/nQ7Dw8a3tFNVnqrOS899EdR
+X-Google-Smtp-Source: ABdhPJwfbFYevwKVtrT6HojpRjDE5rJ8wVZAaWV3D4ra/3Ucbu0dFxldtfVpSwIFJdzINjJ18vGptQ==
+X-Received: by 2002:a5d:97c9:: with SMTP id k9mr2695002ios.45.1616159133392;
+ Fri, 19 Mar 2021 06:05:33 -0700 (PDT)
+Received: from mail-il1-f170.google.com (mail-il1-f170.google.com.
+ [209.85.166.170])
+ by smtp.gmail.com with ESMTPSA id j20sm2605245ilo.78.2021.03.19.06.05.32
+ for <iommu@lists.linux-foundation.org>
+ (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+ Fri, 19 Mar 2021 06:05:32 -0700 (PDT)
+Received: by mail-il1-f170.google.com with SMTP id t6so7945442ilp.11
+ for <iommu@lists.linux-foundation.org>; Fri, 19 Mar 2021 06:05:32 -0700 (PDT)
+X-Received: by 2002:a92:6510:: with SMTP id z16mr2505216ilb.71.1616159131757; 
+ Fri, 19 Mar 2021 06:05:31 -0700 (PDT)
 MIME-Version: 1.0
-Cc: iommu@lists.linux-foundation.org, will@kernel.org,
- linux-kernel@vger.kernel.org
+References: <20210312235521.1408503-1-ribalda@chromium.org>
+In-Reply-To: <20210312235521.1408503-1-ribalda@chromium.org>
+From: Ricardo Ribalda <ribalda@chromium.org>
+Date: Fri, 19 Mar 2021 14:05:21 +0100
+X-Gmail-Original-Message-ID: <CANiDSCunsYwjB=PYYJnpaEnB3pg7No40gOE1jTVwxJkJJpE2Nw@mail.gmail.com>
+Message-ID: <CANiDSCunsYwjB=PYYJnpaEnB3pg7No40gOE1jTVwxJkJJpE2Nw@mail.gmail.com>
+Subject: Re: [PATCH v4 6/6] media: uvcvideo: Use dma_alloc_noncontiguous API
+To: Christoph Hellwig <hch@lst.de>, Mauro Carvalho Chehab <mchehab@kernel.org>,
+ Marek Szyprowski <m.szyprowski@samsung.com>, Tomasz Figa <tfiga@chromium.org>, 
+ Ricardo Ribalda <ribalda@chromium.org>,
+ Sergey Senozhatsky <senozhatsky@google.com>, 
+ Laurent Pinchart <laurent.pinchart@ideasonboard.com>, 
+ "list@263.net:IOMMU DRIVERS <iommu@lists.linux-foundation.org>,
+ Joerg Roedel <joro@8bytes.org>, " <iommu@lists.linux-foundation.org>,
+ Robin Murphy <robin.murphy@arm.com>, 
+ Linux Kernel Mailing List <linux-kernel@vger.kernel.org>, 
+ Linux Media Mailing List <linux-media@vger.kernel.org>
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -80,429 +117,363 @@ Content-Transfer-Encoding: 7bit
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-Rather than have separate opaque setter functions that are easy to
-overlook and lead to repetitive boilerplate in drivers, let's pass the
-relevant initialisation parameters directly to iommu_device_register().
+Hi Christoph
 
-Signed-off-by: Robin Murphy <robin.murphy@arm.com>
----
- drivers/iommu/amd/init.c                    |  3 +--
- drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c |  5 +---
- drivers/iommu/arm/arm-smmu/arm-smmu.c       |  5 +---
- drivers/iommu/arm/arm-smmu/qcom_iommu.c     |  5 +---
- drivers/iommu/exynos-iommu.c                |  5 +---
- drivers/iommu/fsl_pamu_domain.c             |  4 +--
- drivers/iommu/intel/dmar.c                  |  4 +--
- drivers/iommu/intel/iommu.c                 |  3 +--
- drivers/iommu/iommu.c                       |  7 ++++-
- drivers/iommu/ipmmu-vmsa.c                  |  6 +----
- drivers/iommu/msm_iommu.c                   |  5 +---
- drivers/iommu/mtk_iommu.c                   |  5 +---
- drivers/iommu/mtk_iommu_v1.c                |  4 +--
- drivers/iommu/omap-iommu.c                  |  5 +---
- drivers/iommu/rockchip-iommu.c              |  5 +---
- drivers/iommu/s390-iommu.c                  |  4 +--
- drivers/iommu/sprd-iommu.c                  |  5 +---
- drivers/iommu/sun50i-iommu.c                |  5 +---
- drivers/iommu/tegra-gart.c                  |  5 +---
- drivers/iommu/tegra-smmu.c                  |  5 +---
- drivers/iommu/virtio-iommu.c                |  5 +---
- include/linux/iommu.h                       | 29 ++++-----------------
- 22 files changed, 31 insertions(+), 98 deletions(-)
+While backporting the patch I realised of a bug.
 
-diff --git a/drivers/iommu/amd/init.c b/drivers/iommu/amd/init.c
-index 321f5906e6ed..e1ef922d9f8f 100644
---- a/drivers/iommu/amd/init.c
-+++ b/drivers/iommu/amd/init.c
-@@ -1935,8 +1935,7 @@ static int __init iommu_init_pci(struct amd_iommu *iommu)
- 
- 	iommu_device_sysfs_add(&iommu->iommu, &iommu->dev->dev,
- 			       amd_iommu_groups, "ivhd%d", iommu->index);
--	iommu_device_set_ops(&iommu->iommu, &amd_iommu_ops);
--	iommu_device_register(&iommu->iommu);
-+	iommu_device_register(&iommu->iommu, &amd_iommu_ops, NULL);
- 
- 	return pci_enable_device(iommu->dev);
- }
-diff --git a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
-index b82000519af6..ecc6cfe3ae90 100644
---- a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
-+++ b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
-@@ -3621,10 +3621,7 @@ static int arm_smmu_device_probe(struct platform_device *pdev)
- 	if (ret)
- 		return ret;
- 
--	iommu_device_set_ops(&smmu->iommu, &arm_smmu_ops);
--	iommu_device_set_fwnode(&smmu->iommu, dev->fwnode);
--
--	ret = iommu_device_register(&smmu->iommu);
-+	ret = iommu_device_register(&smmu->iommu, &arm_smmu_ops, dev);
- 	if (ret) {
- 		dev_err(dev, "Failed to register iommu\n");
- 		return ret;
-diff --git a/drivers/iommu/arm/arm-smmu/arm-smmu.c b/drivers/iommu/arm/arm-smmu/arm-smmu.c
-index 11ca963c4b93..0a697cb0d2f8 100644
---- a/drivers/iommu/arm/arm-smmu/arm-smmu.c
-+++ b/drivers/iommu/arm/arm-smmu/arm-smmu.c
-@@ -2222,10 +2222,7 @@ static int arm_smmu_device_probe(struct platform_device *pdev)
- 		return err;
- 	}
- 
--	iommu_device_set_ops(&smmu->iommu, &arm_smmu_ops);
--	iommu_device_set_fwnode(&smmu->iommu, dev->fwnode);
--
--	err = iommu_device_register(&smmu->iommu);
-+	err = iommu_device_register(&smmu->iommu, &arm_smmu_ops, dev);
- 	if (err) {
- 		dev_err(dev, "Failed to register iommu\n");
- 		return err;
-diff --git a/drivers/iommu/arm/arm-smmu/qcom_iommu.c b/drivers/iommu/arm/arm-smmu/qcom_iommu.c
-index 7f280c8d5c53..4294abe389b2 100644
---- a/drivers/iommu/arm/arm-smmu/qcom_iommu.c
-+++ b/drivers/iommu/arm/arm-smmu/qcom_iommu.c
-@@ -847,10 +847,7 @@ static int qcom_iommu_device_probe(struct platform_device *pdev)
- 		return ret;
- 	}
- 
--	iommu_device_set_ops(&qcom_iommu->iommu, &qcom_iommu_ops);
--	iommu_device_set_fwnode(&qcom_iommu->iommu, dev->fwnode);
--
--	ret = iommu_device_register(&qcom_iommu->iommu);
-+	ret = iommu_device_register(&qcom_iommu->iommu, &qcom_iommu_ops, dev);
- 	if (ret) {
- 		dev_err(dev, "Failed to register iommu\n");
- 		return ret;
-diff --git a/drivers/iommu/exynos-iommu.c b/drivers/iommu/exynos-iommu.c
-index de324b4eedfe..f887c3e111c1 100644
---- a/drivers/iommu/exynos-iommu.c
-+++ b/drivers/iommu/exynos-iommu.c
-@@ -630,10 +630,7 @@ static int exynos_sysmmu_probe(struct platform_device *pdev)
- 	if (ret)
- 		return ret;
- 
--	iommu_device_set_ops(&data->iommu, &exynos_iommu_ops);
--	iommu_device_set_fwnode(&data->iommu, &dev->of_node->fwnode);
--
--	ret = iommu_device_register(&data->iommu);
-+	ret = iommu_device_register(&data->iommu, &exynos_iommu_ops, dev);
- 	if (ret)
- 		return ret;
- 
-diff --git a/drivers/iommu/fsl_pamu_domain.c b/drivers/iommu/fsl_pamu_domain.c
-index b2110767caf4..1a15bd5da358 100644
---- a/drivers/iommu/fsl_pamu_domain.c
-+++ b/drivers/iommu/fsl_pamu_domain.c
-@@ -1053,9 +1053,7 @@ int __init pamu_domain_init(void)
- 	if (ret)
- 		return ret;
- 
--	iommu_device_set_ops(&pamu_iommu, &fsl_pamu_ops);
--
--	ret = iommu_device_register(&pamu_iommu);
-+	ret = iommu_device_register(&pamu_iommu, &fsl_pamu_ops, NULL);
- 	if (ret) {
- 		iommu_device_sysfs_remove(&pamu_iommu);
- 		pr_err("Can't register iommu device\n");
-diff --git a/drivers/iommu/intel/dmar.c b/drivers/iommu/intel/dmar.c
-index 6971397805f3..1757ac1e1623 100644
---- a/drivers/iommu/intel/dmar.c
-+++ b/drivers/iommu/intel/dmar.c
-@@ -1140,9 +1140,7 @@ static int alloc_iommu(struct dmar_drhd_unit *drhd)
- 		if (err)
- 			goto err_unmap;
- 
--		iommu_device_set_ops(&iommu->iommu, &intel_iommu_ops);
--
--		err = iommu_device_register(&iommu->iommu);
-+		err = iommu_device_register(&iommu->iommu, &intel_iommu_ops, NULL);
- 		if (err)
- 			goto err_unmap;
- 	}
-diff --git a/drivers/iommu/intel/iommu.c b/drivers/iommu/intel/iommu.c
-index 167219ea8d70..db0addebefc3 100644
---- a/drivers/iommu/intel/iommu.c
-+++ b/drivers/iommu/intel/iommu.c
-@@ -4379,8 +4379,7 @@ int __init intel_iommu_init(void)
- 		iommu_device_sysfs_add(&iommu->iommu, NULL,
- 				       intel_iommu_groups,
- 				       "%s", iommu->name);
--		iommu_device_set_ops(&iommu->iommu, &intel_iommu_ops);
--		iommu_device_register(&iommu->iommu);
-+		iommu_device_register(&iommu->iommu, &intel_iommu_ops, NULL);
- 	}
- 	up_read(&dmar_global_lock);
- 
-diff --git a/drivers/iommu/iommu.c b/drivers/iommu/iommu.c
-index e10cfa99057c..bef7325661d6 100644
---- a/drivers/iommu/iommu.c
-+++ b/drivers/iommu/iommu.c
-@@ -152,8 +152,13 @@ static int __init iommu_subsys_init(void)
- }
- subsys_initcall(iommu_subsys_init);
- 
--int iommu_device_register(struct iommu_device *iommu)
-+int iommu_device_register(struct iommu_device *iommu, const struct iommu_ops *ops,
-+			    struct device *hwdev)
- {
-+	iommu->ops = ops;
-+	if (hwdev)
-+		iommu->fwnode = hwdev->fwnode;
-+
- 	spin_lock(&iommu_device_lock);
- 	list_add_tail(&iommu->list, &iommu_device_list);
- 	spin_unlock(&iommu_device_lock);
-diff --git a/drivers/iommu/ipmmu-vmsa.c b/drivers/iommu/ipmmu-vmsa.c
-index eaaec0a55cc6..aaa6a4d59057 100644
---- a/drivers/iommu/ipmmu-vmsa.c
-+++ b/drivers/iommu/ipmmu-vmsa.c
-@@ -1076,11 +1076,7 @@ static int ipmmu_probe(struct platform_device *pdev)
- 		if (ret)
- 			return ret;
- 
--		iommu_device_set_ops(&mmu->iommu, &ipmmu_ops);
--		iommu_device_set_fwnode(&mmu->iommu,
--					&pdev->dev.of_node->fwnode);
--
--		ret = iommu_device_register(&mmu->iommu);
-+		ret = iommu_device_register(&mmu->iommu, &ipmmu_ops, &pdev->dev);
- 		if (ret)
- 			return ret;
- 
-diff --git a/drivers/iommu/msm_iommu.c b/drivers/iommu/msm_iommu.c
-index f0ba6a09b434..7880f307cb2d 100644
---- a/drivers/iommu/msm_iommu.c
-+++ b/drivers/iommu/msm_iommu.c
-@@ -792,10 +792,7 @@ static int msm_iommu_probe(struct platform_device *pdev)
- 		goto fail;
- 	}
- 
--	iommu_device_set_ops(&iommu->iommu, &msm_iommu_ops);
--	iommu_device_set_fwnode(&iommu->iommu, &pdev->dev.of_node->fwnode);
--
--	ret = iommu_device_register(&iommu->iommu);
-+	ret = iommu_device_register(&iommu->iommu, &msm_iommu_ops, &pdev->dev);
- 	if (ret) {
- 		pr_err("Could not register msm-smmu at %pa\n", &ioaddr);
- 		goto fail;
-diff --git a/drivers/iommu/mtk_iommu.c b/drivers/iommu/mtk_iommu.c
-index 6ecc007f07cd..fb3abc23a000 100644
---- a/drivers/iommu/mtk_iommu.c
-+++ b/drivers/iommu/mtk_iommu.c
-@@ -898,10 +898,7 @@ static int mtk_iommu_probe(struct platform_device *pdev)
- 	if (ret)
- 		goto out_link_remove;
- 
--	iommu_device_set_ops(&data->iommu, &mtk_iommu_ops);
--	iommu_device_set_fwnode(&data->iommu, &pdev->dev.of_node->fwnode);
--
--	ret = iommu_device_register(&data->iommu);
-+	ret = iommu_device_register(&data->iommu, &mtk_iommu_ops, dev);
- 	if (ret)
- 		goto out_sysfs_remove;
- 
-diff --git a/drivers/iommu/mtk_iommu_v1.c b/drivers/iommu/mtk_iommu_v1.c
-index 82ddfe9170d4..3aa07995060b 100644
---- a/drivers/iommu/mtk_iommu_v1.c
-+++ b/drivers/iommu/mtk_iommu_v1.c
-@@ -620,9 +620,7 @@ static int mtk_iommu_probe(struct platform_device *pdev)
- 	if (ret)
- 		return ret;
- 
--	iommu_device_set_ops(&data->iommu, &mtk_iommu_ops);
--
--	ret = iommu_device_register(&data->iommu);
-+	ret = iommu_device_register(&data->iommu, &mtk_iommu_ops, dev);
- 	if (ret)
- 		return ret;
- 
-diff --git a/drivers/iommu/omap-iommu.c b/drivers/iommu/omap-iommu.c
-index 71f29c0927fc..26e517eb0dd3 100644
---- a/drivers/iommu/omap-iommu.c
-+++ b/drivers/iommu/omap-iommu.c
-@@ -1235,10 +1235,7 @@ static int omap_iommu_probe(struct platform_device *pdev)
- 		if (err)
- 			goto out_group;
- 
--		iommu_device_set_ops(&obj->iommu, &omap_iommu_ops);
--		iommu_device_set_fwnode(&obj->iommu, &of->fwnode);
--
--		err = iommu_device_register(&obj->iommu);
-+		err = iommu_device_register(&obj->iommu, &omap_iommu_ops, &pdev->dev);
- 		if (err)
- 			goto out_sysfs;
- 	}
-diff --git a/drivers/iommu/rockchip-iommu.c b/drivers/iommu/rockchip-iommu.c
-index e5d86b7177de..7a2932772fdf 100644
---- a/drivers/iommu/rockchip-iommu.c
-+++ b/drivers/iommu/rockchip-iommu.c
-@@ -1196,10 +1196,7 @@ static int rk_iommu_probe(struct platform_device *pdev)
- 	if (err)
- 		goto err_put_group;
- 
--	iommu_device_set_ops(&iommu->iommu, &rk_iommu_ops);
--	iommu_device_set_fwnode(&iommu->iommu, &dev->of_node->fwnode);
--
--	err = iommu_device_register(&iommu->iommu);
-+	err = iommu_device_register(&iommu->iommu, &rk_iommu_ops, dev);
- 	if (err)
- 		goto err_remove_sysfs;
- 
-diff --git a/drivers/iommu/s390-iommu.c b/drivers/iommu/s390-iommu.c
-index 8895dbb705eb..6019e58ce4fb 100644
---- a/drivers/iommu/s390-iommu.c
-+++ b/drivers/iommu/s390-iommu.c
-@@ -333,9 +333,7 @@ int zpci_init_iommu(struct zpci_dev *zdev)
- 	if (rc)
- 		goto out_err;
- 
--	iommu_device_set_ops(&zdev->iommu_dev, &s390_iommu_ops);
--
--	rc = iommu_device_register(&zdev->iommu_dev);
-+	rc = iommu_device_register(&zdev->iommu_dev, &s390_iommu_ops, NULL);
- 	if (rc)
- 		goto out_sysfs;
- 
-diff --git a/drivers/iommu/sprd-iommu.c b/drivers/iommu/sprd-iommu.c
-index 024a0cdd26a6..0b5f88a28417 100644
---- a/drivers/iommu/sprd-iommu.c
-+++ b/drivers/iommu/sprd-iommu.c
-@@ -508,10 +508,7 @@ static int sprd_iommu_probe(struct platform_device *pdev)
- 	if (ret)
- 		goto put_group;
- 
--	iommu_device_set_ops(&sdev->iommu, &sprd_iommu_ops);
--	iommu_device_set_fwnode(&sdev->iommu, &dev->of_node->fwnode);
--
--	ret = iommu_device_register(&sdev->iommu);
-+	ret = iommu_device_register(&sdev->iommu, &sprd_iommu_ops, dev);
- 	if (ret)
- 		goto remove_sysfs;
- 
-diff --git a/drivers/iommu/sun50i-iommu.c b/drivers/iommu/sun50i-iommu.c
-index ea6db1341916..181bb1c3437c 100644
---- a/drivers/iommu/sun50i-iommu.c
-+++ b/drivers/iommu/sun50i-iommu.c
-@@ -968,10 +968,7 @@ static int sun50i_iommu_probe(struct platform_device *pdev)
- 	if (ret)
- 		goto err_free_group;
- 
--	iommu_device_set_ops(&iommu->iommu, &sun50i_iommu_ops);
--	iommu_device_set_fwnode(&iommu->iommu, &pdev->dev.of_node->fwnode);
--
--	ret = iommu_device_register(&iommu->iommu);
-+	ret = iommu_device_register(&iommu->iommu, &sun50i_iommu_ops, &pdev->dev);
- 	if (ret)
- 		goto err_remove_sysfs;
- 
-diff --git a/drivers/iommu/tegra-gart.c b/drivers/iommu/tegra-gart.c
-index 6f130e51f072..6a358f92c7e5 100644
---- a/drivers/iommu/tegra-gart.c
-+++ b/drivers/iommu/tegra-gart.c
-@@ -353,10 +353,7 @@ struct gart_device *tegra_gart_probe(struct device *dev, struct tegra_mc *mc)
- 	if (err)
- 		goto free_gart;
- 
--	iommu_device_set_ops(&gart->iommu, &gart_iommu_ops);
--	iommu_device_set_fwnode(&gart->iommu, dev->fwnode);
--
--	err = iommu_device_register(&gart->iommu);
-+	err = iommu_device_register(&gart->iommu, &gart_iommu_ops, dev);
- 	if (err)
- 		goto remove_sysfs;
- 
-diff --git a/drivers/iommu/tegra-smmu.c b/drivers/iommu/tegra-smmu.c
-index 602aab98c079..1e98dc63ad13 100644
---- a/drivers/iommu/tegra-smmu.c
-+++ b/drivers/iommu/tegra-smmu.c
-@@ -1145,10 +1145,7 @@ struct tegra_smmu *tegra_smmu_probe(struct device *dev,
- 	if (err)
- 		return ERR_PTR(err);
- 
--	iommu_device_set_ops(&smmu->iommu, &tegra_smmu_ops);
--	iommu_device_set_fwnode(&smmu->iommu, dev->fwnode);
--
--	err = iommu_device_register(&smmu->iommu);
-+	err = iommu_device_register(&smmu->iommu, &tegra_smmu_ops, dev);
- 	if (err)
- 		goto remove_sysfs;
- 
-diff --git a/drivers/iommu/virtio-iommu.c b/drivers/iommu/virtio-iommu.c
-index 594ed827e944..7c02481a81b4 100644
---- a/drivers/iommu/virtio-iommu.c
-+++ b/drivers/iommu/virtio-iommu.c
-@@ -1066,10 +1066,7 @@ static int viommu_probe(struct virtio_device *vdev)
- 	if (ret)
- 		goto err_free_vqs;
- 
--	iommu_device_set_ops(&viommu->iommu, &viommu_ops);
--	iommu_device_set_fwnode(&viommu->iommu, parent_dev->fwnode);
--
--	iommu_device_register(&viommu->iommu);
-+	iommu_device_register(&viommu->iommu, &viommu_ops, parent_dev);
- 
- #ifdef CONFIG_PCI
- 	if (pci_bus_type.iommu_ops != &viommu_ops) {
-diff --git a/include/linux/iommu.h b/include/linux/iommu.h
-index dce8c5e12ea0..e70c1b859b9f 100644
---- a/include/linux/iommu.h
-+++ b/include/linux/iommu.h
-@@ -368,7 +368,8 @@ struct dev_iommu {
- 	void				*priv;
- };
- 
--int  iommu_device_register(struct iommu_device *iommu);
-+int iommu_device_register(struct iommu_device *iommu, const struct iommu_ops *ops,
-+			  struct device *hwdev);
- void iommu_device_unregister(struct iommu_device *iommu);
- int  iommu_device_sysfs_add(struct iommu_device *iommu,
- 			    struct device *parent,
-@@ -379,18 +380,6 @@ int  iommu_device_link(struct iommu_device   *iommu, struct device *link);
- void iommu_device_unlink(struct iommu_device *iommu, struct device *link);
- int iommu_deferred_attach(struct device *dev, struct iommu_domain *domain);
- 
--static inline void iommu_device_set_ops(struct iommu_device *iommu,
--					  const struct iommu_ops *ops)
--{
--	iommu->ops = ops;
--}
--
--static inline void iommu_device_set_fwnode(struct iommu_device *iommu,
--					   struct fwnode_handle *fwnode)
--{
--	iommu->fwnode = fwnode;
--}
--
- static inline struct iommu_device *dev_to_iommu_device(struct device *dev)
- {
- 	return (struct iommu_device *)dev_get_drvdata(dev);
-@@ -894,21 +883,13 @@ static inline int iommu_domain_set_attr(struct iommu_domain *domain,
- 	return -EINVAL;
- }
- 
--static inline int  iommu_device_register(struct iommu_device *iommu)
-+static inline int iommu_device_register(struct iommu_device *iommu,
-+					const struct iommu_ops *ops,
-+					struct device *hwdev)
- {
- 	return -ENODEV;
- }
- 
--static inline void iommu_device_set_ops(struct iommu_device *iommu,
--					const struct iommu_ops *ops)
--{
--}
--
--static inline void iommu_device_set_fwnode(struct iommu_device *iommu,
--					   struct fwnode_handle *fwnode)
--{
--}
--
- static inline struct iommu_device *dev_to_iommu_device(struct device *dev)
- {
- 	return NULL;
+On Sat, Mar 13, 2021 at 12:55 AM Ricardo Ribalda <ribalda@chromium.org> wrote:
+>
+> On architectures where there is no coherent caching such as ARM use the
+> dma_alloc_noncontiguous API and handle manually the cache flushing using
+> dma_sync_sgtable().
+>
+> If the architechture has coherent cache, the API falls back to
+> alloc_dma_pages, so we can remove the coherent caching code-path from the
+> driver, making it simpler.
+>
+> With this patch on the affected architectures we can measure up to 20x
+> performance improvement in uvc_video_copy_data_work().
+>
+> Eg: aarch64 with an external usb camera
+>
+> NON_CONTIGUOUS
+> frames:  999
+> packets: 999
+> empty:   0 (0 %)
+> errors:  0
+> invalid: 0
+> pts: 0 early, 0 initial, 999 ok
+> scr: 0 count ok, 0 diff ok
+> sof: 2048 <= sof <= 0, freq 0.000 kHz
+> bytes 67034480 : duration 33303
+> FPS: 29.99
+> URB: 523446/4993 uS/qty: 104.836 avg 132.532 std 13.230 min 831.094 max (uS)
+> header: 76564/4993 uS/qty: 15.334 avg 15.229 std 3.438 min 186.875 max (uS)
+> latency: 468945/4992 uS/qty: 93.939 avg 132.577 std 9.531 min 824.010 max (uS)
+> decode: 54161/4993 uS/qty: 10.847 avg 6.313 std 1.614 min 111.458 max (uS)
+> raw decode speed: 9.931 Gbits/s
+> raw URB handling speed: 1.025 Gbits/s
+> throughput: 16.102 Mbits/s
+> URB decode CPU usage 0.162600 %
+>
+> COHERENT
+> frames:  999
+> packets: 999
+> empty:   0 (0 %)
+> errors:  0
+> invalid: 0
+> pts: 0 early, 0 initial, 999 ok
+> scr: 0 count ok, 0 diff ok
+> sof: 2048 <= sof <= 0, freq 0.000 kHz
+> bytes 54683536 : duration 33302
+> FPS: 29.99
+> URB: 1478135/4000 uS/qty: 369.533 avg 390.357 std 22.968 min 3337.865 max (uS)
+> header: 79761/4000 uS/qty: 19.940 avg 18.495 std 1.875 min 336.719 max (uS)
+> latency: 281077/4000 uS/qty: 70.269 avg 83.102 std 5.104 min 735.000 max (uS)
+> decode: 1197057/4000 uS/qty: 299.264 avg 318.080 std 1.615 min 2806.667 max (uS)
+> raw decode speed: 365.470 Mbits/s
+> raw URB handling speed: 295.986 Mbits/s
+> throughput: 13.136 Mbits/s
+> URB decode CPU usage 3.594500 %
+>
+> In non-affected architectures we see no significant impact.
+>
+> Eg: x86 with an external usb camera
+>
+> NON_CONTIGUOUS
+> frames:  999
+> packets: 999
+> empty:   0 (0 %)
+> errors:  0
+> invalid: 0
+> pts: 0 early, 0 initial, 999 ok
+> scr: 0 count ok, 0 diff ok
+> sof: 2048 <= sof <= 0, freq 0.000 kHz
+> bytes 70179056 : duration 33301
+> FPS: 29.99
+> URB: 288901/4897 uS/qty: 58.995 avg 26.022 std 4.319 min 253.853 max (uS)
+> header: 54792/4897 uS/qty: 11.189 avg 6.218 std 0.620 min 61.750 max (uS)
+> latency: 236602/4897 uS/qty: 48.315 avg 24.244 std 1.764 min 240.924 max (uS)
+> decode: 52298/4897 uS/qty: 10.679 avg 8.299 std 1.638 min 108.861 max (uS)
+> raw decode speed: 10.796 Gbits/s
+> raw URB handling speed: 1.949 Gbits/s
+> throughput: 16.859 Mbits/s
+> URB decode CPU usage 0.157000 %
+>
+> COHERENT
+> frames:  999
+> packets: 999
+> empty:   0 (0 %)
+> errors:  0
+> invalid: 0
+> pts: 0 early, 0 initial, 999 ok
+> scr: 0 count ok, 0 diff ok
+> sof: 2048 <= sof <= 0, freq 0.000 kHz
+> bytes 71818320 : duration 33301
+> FPS: 29.99
+> URB: 321021/5000 uS/qty: 64.204 avg 23.001 std 10.430 min 268.837 max (uS)
+> header: 54308/5000 uS/qty: 10.861 avg 5.104 std 0.778 min 54.736 max (uS)
+> latency: 268799/5000 uS/qty: 53.759 avg 21.827 std 6.095 min 255.153 max (uS)
+> decode: 52222/5000 uS/qty: 10.444 avg 7.137 std 1.874 min 71.103 max (uS)
+> raw decode speed: 11.048 Gbits/s
+> raw URB handling speed: 1.789 Gbits/s
+> throughput: 17.253 Mbits/s
+> URB decode CPU usage 0.156800 %
+>
+> Signed-off-by: Ricardo Ribalda <ribalda@chromium.org>
+> Reviewed-by: Laurent Pinchart <laurent.pinchart@ideasonboard.com>
+> Reviewed-by: Tomasz Figa <tfiga@chromium.org>
+> Signed-off-by: Christoph Hellwig <hch@lst.de>
+> ---
+>
+> Changelog from v3 (Thanks Laurent!):
+>
+> - Rename stream_dir and stream_to_dmadev to avoid collisions
+> - Improve commit message
+>
+>  drivers/media/usb/uvc/uvc_video.c | 94 +++++++++++++++++++++++--------
+>  drivers/media/usb/uvc/uvcvideo.h  |  5 +-
+>  2 files changed, 73 insertions(+), 26 deletions(-)
+>
+> diff --git a/drivers/media/usb/uvc/uvc_video.c b/drivers/media/usb/uvc/uvc_video.c
+> index f2f565281e63..cdd8eb500bb7 100644
+> --- a/drivers/media/usb/uvc/uvc_video.c
+> +++ b/drivers/media/usb/uvc/uvc_video.c
+> @@ -6,11 +6,14 @@
+>   *          Laurent Pinchart (laurent.pinchart@ideasonboard.com)
+>   */
+>
+> +#include <linux/dma-mapping.h>
+> +#include <linux/highmem.h>
+>  #include <linux/kernel.h>
+>  #include <linux/list.h>
+>  #include <linux/module.h>
+>  #include <linux/slab.h>
+>  #include <linux/usb.h>
+> +#include <linux/usb/hcd.h>
+>  #include <linux/videodev2.h>
+>  #include <linux/vmalloc.h>
+>  #include <linux/wait.h>
+> @@ -1096,6 +1099,29 @@ static int uvc_video_decode_start(struct uvc_streaming *stream,
+>         return data[0];
+>  }
+>
+> +static inline enum dma_data_direction uvc_stream_dir(
+> +                               struct uvc_streaming *stream)
+> +{
+> +       if (stream->type == V4L2_BUF_TYPE_VIDEO_CAPTURE)
+> +               return DMA_FROM_DEVICE;
+> +       else
+> +               return DMA_TO_DEVICE;
+> +}
+> +
+> +static inline struct device *uvc_stream_to_dmadev(struct uvc_streaming *stream)
+> +{
+> +       return bus_to_hcd(stream->dev->udev->bus)->self.sysdev;
+> +}
+> +
+> +static int uvc_submit_urb(struct uvc_urb *uvc_urb, gfp_t mem_flags)
+> +{
+> +       /* Sync DMA. */
+> +       dma_sync_sgtable_for_device(uvc_stream_to_dmadev(uvc_urb->stream),
+> +                                   uvc_urb->sgt,
+> +                                   uvc_stream_dir(uvc_urb->stream));
+> +       return usb_submit_urb(uvc_urb->urb, GFP_KERNEL);
+> +}
+
+We should have mem_flags instead of GFP_KERNEL here
+
+
+Is it too late to fix it in your tree? Do I need to send a patch to fix it?
+
+Sorry :(
+
+Thanks!
+
+> +
+>  /*
+>   * uvc_video_decode_data_work: Asynchronous memcpy processing
+>   *
+> @@ -1117,7 +1143,7 @@ static void uvc_video_copy_data_work(struct work_struct *work)
+>                 uvc_queue_buffer_release(op->buf);
+>         }
+>
+> -       ret = usb_submit_urb(uvc_urb->urb, GFP_KERNEL);
+> +       ret = uvc_submit_urb(uvc_urb, GFP_KERNEL);
+>         if (ret < 0)
+>                 dev_err(&uvc_urb->stream->intf->dev,
+>                         "Failed to resubmit video URB (%d).\n", ret);
+> @@ -1537,6 +1563,12 @@ static void uvc_video_complete(struct urb *urb)
+>         /* Re-initialise the URB async work. */
+>         uvc_urb->async_operations = 0;
+>
+> +       /* Sync DMA and invalidate vmap range. */
+> +       dma_sync_sgtable_for_cpu(uvc_stream_to_dmadev(uvc_urb->stream),
+> +                                uvc_urb->sgt, uvc_stream_dir(stream));
+> +       invalidate_kernel_vmap_range(uvc_urb->buffer,
+> +                                    uvc_urb->stream->urb_size);
+> +
+>         /*
+>          * Process the URB headers, and optionally queue expensive memcpy tasks
+>          * to be deferred to a work queue.
+> @@ -1545,7 +1577,7 @@ static void uvc_video_complete(struct urb *urb)
+>
+>         /* If no async work is needed, resubmit the URB immediately. */
+>         if (!uvc_urb->async_operations) {
+> -               ret = usb_submit_urb(uvc_urb->urb, GFP_ATOMIC);
+> +               ret = uvc_submit_urb(uvc_urb, GFP_ATOMIC);
+>                 if (ret < 0)
+>                         dev_err(&stream->intf->dev,
+>                                 "Failed to resubmit video URB (%d).\n", ret);
+> @@ -1560,24 +1592,49 @@ static void uvc_video_complete(struct urb *urb)
+>   */
+>  static void uvc_free_urb_buffers(struct uvc_streaming *stream)
+>  {
+> +       struct device *dma_dev = uvc_stream_to_dmadev(stream);
+>         struct uvc_urb *uvc_urb;
+>
+>         for_each_uvc_urb(uvc_urb, stream) {
+>                 if (!uvc_urb->buffer)
+>                         continue;
+>
+> -#ifndef CONFIG_DMA_NONCOHERENT
+> -               usb_free_coherent(stream->dev->udev, stream->urb_size,
+> -                                 uvc_urb->buffer, uvc_urb->dma);
+> -#else
+> -               kfree(uvc_urb->buffer);
+> -#endif
+> +               dma_vunmap_noncontiguous(dma_dev, uvc_urb->buffer);
+> +               dma_free_noncontiguous(dma_dev, stream->urb_size, uvc_urb->sgt,
+> +                                      uvc_stream_dir(stream));
+> +
+>                 uvc_urb->buffer = NULL;
+> +               uvc_urb->sgt = NULL;
+>         }
+>
+>         stream->urb_size = 0;
+>  }
+>
+> +static bool uvc_alloc_urb_buffer(struct uvc_streaming *stream,
+> +                                struct uvc_urb *uvc_urb, gfp_t gfp_flags)
+> +{
+> +       struct device *dma_dev = uvc_stream_to_dmadev(stream);
+> +
+> +       uvc_urb->sgt = dma_alloc_noncontiguous(dma_dev, stream->urb_size,
+> +                                              uvc_stream_dir(stream),
+> +                                              gfp_flags, 0);
+> +       if (!uvc_urb->sgt)
+> +               return false;
+> +       uvc_urb->dma = uvc_urb->sgt->sgl->dma_address;
+> +
+> +       uvc_urb->buffer = dma_vmap_noncontiguous(dma_dev, stream->urb_size,
+> +                                                uvc_urb->sgt);
+> +       if (!uvc_urb->buffer) {
+> +               dma_free_noncontiguous(dma_dev, stream->urb_size,
+> +                                      uvc_urb->sgt,
+> +                                      uvc_stream_dir(stream));
+> +               uvc_urb->sgt = NULL;
+> +               return false;
+> +       }
+> +
+> +       return true;
+> +}
+> +
+>  /*
+>   * Allocate transfer buffers. This function can be called with buffers
+>   * already allocated when resuming from suspend, in which case it will
+> @@ -1608,19 +1665,12 @@ static int uvc_alloc_urb_buffers(struct uvc_streaming *stream,
+>
+>         /* Retry allocations until one succeed. */
+>         for (; npackets > 1; npackets /= 2) {
+> +               stream->urb_size = psize * npackets;
+> +
+>                 for (i = 0; i < UVC_URBS; ++i) {
+>                         struct uvc_urb *uvc_urb = &stream->uvc_urb[i];
+>
+> -                       stream->urb_size = psize * npackets;
+> -#ifndef CONFIG_DMA_NONCOHERENT
+> -                       uvc_urb->buffer = usb_alloc_coherent(
+> -                               stream->dev->udev, stream->urb_size,
+> -                               gfp_flags | __GFP_NOWARN, &uvc_urb->dma);
+> -#else
+> -                       uvc_urb->buffer =
+> -                           kmalloc(stream->urb_size, gfp_flags | __GFP_NOWARN);
+> -#endif
+> -                       if (!uvc_urb->buffer) {
+> +                       if (!uvc_alloc_urb_buffer(stream, uvc_urb, gfp_flags)) {
+>                                 uvc_free_urb_buffers(stream);
+>                                 break;
+>                         }
+> @@ -1730,12 +1780,8 @@ static int uvc_init_video_isoc(struct uvc_streaming *stream,
+>                 urb->context = uvc_urb;
+>                 urb->pipe = usb_rcvisocpipe(stream->dev->udev,
+>                                 ep->desc.bEndpointAddress);
+> -#ifndef CONFIG_DMA_NONCOHERENT
+>                 urb->transfer_flags = URB_ISO_ASAP | URB_NO_TRANSFER_DMA_MAP;
+>                 urb->transfer_dma = uvc_urb->dma;
+> -#else
+> -               urb->transfer_flags = URB_ISO_ASAP;
+> -#endif
+>                 urb->interval = ep->desc.bInterval;
+>                 urb->transfer_buffer = uvc_urb->buffer;
+>                 urb->complete = uvc_video_complete;
+> @@ -1795,10 +1841,8 @@ static int uvc_init_video_bulk(struct uvc_streaming *stream,
+>
+>                 usb_fill_bulk_urb(urb, stream->dev->udev, pipe, uvc_urb->buffer,
+>                                   size, uvc_video_complete, uvc_urb);
+> -#ifndef CONFIG_DMA_NONCOHERENT
+>                 urb->transfer_flags = URB_NO_TRANSFER_DMA_MAP;
+>                 urb->transfer_dma = uvc_urb->dma;
+> -#endif
+>
+>                 uvc_urb->urb = urb;
+>         }
+> @@ -1895,7 +1939,7 @@ static int uvc_video_start_transfer(struct uvc_streaming *stream,
+>
+>         /* Submit the URBs. */
+>         for_each_uvc_urb(uvc_urb, stream) {
+> -               ret = usb_submit_urb(uvc_urb->urb, gfp_flags);
+> +               ret = uvc_submit_urb(uvc_urb, gfp_flags);
+>                 if (ret < 0) {
+>                         dev_err(&stream->intf->dev,
+>                                 "Failed to submit URB %u (%d).\n",
+> diff --git a/drivers/media/usb/uvc/uvcvideo.h b/drivers/media/usb/uvc/uvcvideo.h
+> index 97df5ecd66c9..cce5e38133cd 100644
+> --- a/drivers/media/usb/uvc/uvcvideo.h
+> +++ b/drivers/media/usb/uvc/uvcvideo.h
+> @@ -219,6 +219,7 @@
+>   */
+>
+>  struct gpio_desc;
+> +struct sg_table;
+>  struct uvc_device;
+>
+>  /* TODO: Put the most frequently accessed fields at the beginning of
+> @@ -545,7 +546,8 @@ struct uvc_copy_op {
+>   * @urb: the URB described by this context structure
+>   * @stream: UVC streaming context
+>   * @buffer: memory storage for the URB
+> - * @dma: DMA coherent addressing for the urb_buffer
+> + * @dma: Allocated DMA handle
+> + * @sgt: sgt_table with the urb locations in memory
+>   * @async_operations: counter to indicate the number of copy operations
+>   * @copy_operations: work descriptors for asynchronous copy operations
+>   * @work: work queue entry for asynchronous decode
+> @@ -556,6 +558,7 @@ struct uvc_urb {
+>
+>         char *buffer;
+>         dma_addr_t dma;
+> +       struct sg_table *sgt;
+>
+>         unsigned int async_operations;
+>         struct uvc_copy_op copy_operations[UVC_MAX_PACKETS];
+> --
+> 2.31.0.rc2.261.g7f71774620-goog
+>
+
+
 -- 
-2.21.0.dirty
-
+Ricardo Ribalda
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
