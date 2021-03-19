@@ -6,64 +6,65 @@ X-Spam-Status: No, score=-5.3 required=3.0 tests=BAYES_00,
 	HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,
 	USER_AGENT_SANE_1 autolearn=no autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A00D1C433E0
-	for <iommu@archiver.kernel.org>; Fri, 19 Mar 2021 13:07:41 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 729C9C433DB
+	for <iommu@archiver.kernel.org>; Fri, 19 Mar 2021 13:10:21 +0000 (UTC)
 Received: from smtp3.osuosl.org (smtp3.osuosl.org [140.211.166.136])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 330F364ED7
-	for <iommu@archiver.kernel.org>; Fri, 19 Mar 2021 13:07:41 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 330F364ED7
+	by mail.kernel.org (Postfix) with ESMTPS id 024D764EE6
+	for <iommu@archiver.kernel.org>; Fri, 19 Mar 2021 13:10:20 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 024D764EE6
 Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=lst.de
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by smtp3.osuosl.org (Postfix) with ESMTP id DD1996067C;
-	Fri, 19 Mar 2021 13:07:40 +0000 (UTC)
+	by smtp3.osuosl.org (Postfix) with ESMTP id 9EB8C6071A;
+	Fri, 19 Mar 2021 13:10:20 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
 Received: from smtp3.osuosl.org ([127.0.0.1])
 	by localhost (smtp3.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id R4bHUgRAnq4O; Fri, 19 Mar 2021 13:07:39 +0000 (UTC)
-Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [IPv6:2605:bc80:3010:104::8cd3:938])
-	by smtp3.osuosl.org (Postfix) with ESMTP id 851C16063B;
-	Fri, 19 Mar 2021 13:07:39 +0000 (UTC)
+	with ESMTP id uLJeP2f0XWGI; Fri, 19 Mar 2021 13:10:18 +0000 (UTC)
+Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
+	by smtp3.osuosl.org (Postfix) with ESMTP id 02E9F6063B;
+	Fri, 19 Mar 2021 13:10:17 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 61682C000B;
-	Fri, 19 Mar 2021 13:07:39 +0000 (UTC)
-Received: from smtp2.osuosl.org (smtp2.osuosl.org [140.211.166.133])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 455FDC0001
- for <iommu@lists.linux-foundation.org>; Fri, 19 Mar 2021 13:07:38 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id CB804C000B;
+	Fri, 19 Mar 2021 13:10:17 +0000 (UTC)
+Received: from smtp2.osuosl.org (smtp2.osuosl.org [IPv6:2605:bc80:3010::133])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 3014BC0001
+ for <iommu@lists.linux-foundation.org>; Fri, 19 Mar 2021 13:10:17 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by smtp2.osuosl.org (Postfix) with ESMTP id 225A4400C0
- for <iommu@lists.linux-foundation.org>; Fri, 19 Mar 2021 13:07:38 +0000 (UTC)
+ by smtp2.osuosl.org (Postfix) with ESMTP id 09E22400C0
+ for <iommu@lists.linux-foundation.org>; Fri, 19 Mar 2021 13:10:17 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
 Received: from smtp2.osuosl.org ([127.0.0.1])
  by localhost (smtp2.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id mhmF8bJeeAoB for <iommu@lists.linux-foundation.org>;
- Fri, 19 Mar 2021 13:07:37 +0000 (UTC)
+ with ESMTP id wc1PQqXhi91A for <iommu@lists.linux-foundation.org>;
+ Fri, 19 Mar 2021 13:10:16 +0000 (UTC)
 X-Greylist: from auto-whitelisted by SQLgrey-1.8.0
 Received: from verein.lst.de (verein.lst.de [213.95.11.211])
- by smtp2.osuosl.org (Postfix) with ESMTPS id 0B791400AB
- for <iommu@lists.linux-foundation.org>; Fri, 19 Mar 2021 13:07:36 +0000 (UTC)
+ by smtp2.osuosl.org (Postfix) with ESMTPS id 7687A400AB
+ for <iommu@lists.linux-foundation.org>; Fri, 19 Mar 2021 13:10:16 +0000 (UTC)
 Received: by verein.lst.de (Postfix, from userid 2407)
- id DE0B568BFE; Fri, 19 Mar 2021 14:07:31 +0100 (CET)
-Date: Fri, 19 Mar 2021 14:07:31 +0100
+ id 3E99C68BFE; Fri, 19 Mar 2021 14:10:12 +0100 (CET)
+Date: Fri, 19 Mar 2021 14:10:11 +0100
 From: Christoph Hellwig <hch@lst.de>
-To: Florian Fainelli <f.fainelli@gmail.com>
-Subject: Re: [PATCH] ARM: Qualify enabling of swiotlb_init()
-Message-ID: <20210319130731.GB2624@lst.de>
-References: <20210319040333.183827-1-f.fainelli@gmail.com>
+To: Ricardo Ribalda <ribalda@chromium.org>
+Subject: Re: [PATCH v4 6/6] media: uvcvideo: Use dma_alloc_noncontiguous API
+Message-ID: <20210319131011.GA3372@lst.de>
+References: <20210312235521.1408503-1-ribalda@chromium.org>
+ <CANiDSCunsYwjB=PYYJnpaEnB3pg7No40gOE1jTVwxJkJJpE2Nw@mail.gmail.com>
 MIME-Version: 1.0
 Content-Disposition: inline
-In-Reply-To: <20210319040333.183827-1-f.fainelli@gmail.com>
+In-Reply-To: <CANiDSCunsYwjB=PYYJnpaEnB3pg7No40gOE1jTVwxJkJJpE2Nw@mail.gmail.com>
 User-Agent: Mutt/1.5.17 (2007-11-01)
-Cc: opendmb@gmail.com, Konrad Rzeszutek Wilk <konrad.wilk@oracle.com>,
- Ard Biesheuvel <ardb@kernel.org>, Catalin Marinas <catalin.marinas@arm.com>,
- open list <linux-kernel@vger.kernel.org>, Russell King <linux@armlinux.org.uk>,
- Max Filippov <jcmvbkbc@gmail.com>,
- "open list:SWIOTLB SUBSYSTEM" <iommu@lists.linux-foundation.org>,
- Mike Rapoport <rppt@kernel.org>, Andrew Morton <akpm@linux-foundation.org>,
- Robin Murphy <robin.murphy@arm.com>, Christoph Hellwig <hch@lst.de>,
- linux-arm-kernel@lists.infradead.org
+Cc: Sergey Senozhatsky <senozhatsky@google.com>,
+ Linux Media Mailing List <linux-media@vger.kernel.org>,
+ Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+ "list@263.net:IOMMU DRIVERS <iommu@lists.linux-foundation.org>,
+ Joerg Roedel <joro@8bytes.org>, " <iommu@lists.linux-foundation.org>,
+ Laurent Pinchart <laurent.pinchart@ideasonboard.com>,
+ Mauro Carvalho Chehab <mchehab@kernel.org>,
+ Robin Murphy <robin.murphy@arm.com>, Christoph Hellwig <hch@lst.de>
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -81,24 +82,19 @@ Content-Transfer-Encoding: 7bit
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-On Thu, Mar 18, 2021 at 09:03:33PM -0700, Florian Fainelli wrote:
->  #ifdef CONFIG_ARM_LPAE
-> +	if (swiotlb_force == SWIOTLB_FORCE ||
-> +	    max_pfn > arm_dma_pfn_limit)
+On Fri, Mar 19, 2021 at 02:05:21PM +0100, Ricardo Ribalda wrote:
+> > +                                   uvc_urb->sgt,
+> > +                                   uvc_stream_dir(uvc_urb->stream));
+> > +       return usb_submit_urb(uvc_urb->urb, GFP_KERNEL);
+> > +}
+> 
+> We should have mem_flags instead of GFP_KERNEL here
+> 
+> 
+> Is it too late to fix it in your tree? Do I need to send a patch to fix it?
 
-Does arm_dma_pfn_limit do the right thing even with the weirdest
-remapping ranges?  Maybe a commen here would be useful.
-
-> +		swiotlb_init(1);
-> +	else
-> +		swiotlb_force = SWIOTLB_NO_FORCE;
-
-Konrad: what do you think of setting swiotlb_force to SWIOTLB_NO_FORCE
-and only switching it to SWIOTLB_NORMAL when swiotlb_init* is called?
-That kind makes more sense than forcing the callers to do it.
-
-While we're at it, I think swiotlb_force should probably be renamed to
-swiotlb_mode or somethng like that.
+As far as I know we don't have anything that has pulled in the tree yet,
+so I can just fold the fix in.
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
