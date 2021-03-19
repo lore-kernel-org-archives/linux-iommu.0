@@ -4,67 +4,66 @@ X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 X-Spam-Level: 
 X-Spam-Status: No, score=-15.3 required=3.0 tests=BAYES_00,
 	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_CR_TRAILER,INCLUDES_PATCH,
-	MAILING_LIST_MULTI,NICE_REPLY_A,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,
-	USER_AGENT_SANE_1 autolearn=ham autolearn_force=no version=3.4.0
+	MAILING_LIST_MULTI,NICE_REPLY_A,SPF_HELO_NONE,SPF_PASS,USER_AGENT_SANE_1
+	autolearn=ham autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id CF3DCC433C1
-	for <iommu@archiver.kernel.org>; Fri, 19 Mar 2021 16:25:52 +0000 (UTC)
-Received: from smtp3.osuosl.org (smtp3.osuosl.org [140.211.166.136])
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 155E1C433DB
+	for <iommu@archiver.kernel.org>; Fri, 19 Mar 2021 17:00:27 +0000 (UTC)
+Received: from smtp2.osuosl.org (smtp2.osuosl.org [140.211.166.133])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 61E826197D
-	for <iommu@archiver.kernel.org>; Fri, 19 Mar 2021 16:25:52 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 61E826197D
+	by mail.kernel.org (Postfix) with ESMTPS id 948AC61980
+	for <iommu@archiver.kernel.org>; Fri, 19 Mar 2021 17:00:26 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 948AC61980
 Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=arm.com
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by smtp3.osuosl.org (Postfix) with ESMTP id 1A8B86F49D;
-	Fri, 19 Mar 2021 16:25:52 +0000 (UTC)
-X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from smtp3.osuosl.org ([127.0.0.1])
-	by localhost (smtp3.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id tNfDn0GK4mCr; Fri, 19 Mar 2021 16:25:51 +0000 (UTC)
-Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [IPv6:2605:bc80:3010:104::8cd3:938])
-	by smtp3.osuosl.org (Postfix) with ESMTP id DFF1F606B6;
-	Fri, 19 Mar 2021 16:25:50 +0000 (UTC)
-Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id C5954C000B;
-	Fri, 19 Mar 2021 16:25:50 +0000 (UTC)
-Received: from smtp2.osuosl.org (smtp2.osuosl.org [140.211.166.133])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 668DDC0001
- for <iommu@lists.linux-foundation.org>; Fri, 19 Mar 2021 16:25:49 +0000 (UTC)
-Received: from localhost (localhost [127.0.0.1])
- by smtp2.osuosl.org (Postfix) with ESMTP id 5AB7A4014F
- for <iommu@lists.linux-foundation.org>; Fri, 19 Mar 2021 16:25:49 +0000 (UTC)
+	by smtp2.osuosl.org (Postfix) with ESMTP id 577A740153;
+	Fri, 19 Mar 2021 17:00:26 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
 Received: from smtp2.osuosl.org ([127.0.0.1])
- by localhost (smtp2.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id LhspgHQCbXgR for <iommu@lists.linux-foundation.org>;
- Fri, 19 Mar 2021 16:25:48 +0000 (UTC)
+	by localhost (smtp2.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+	with ESMTP id NjiLrBAWx6O8; Fri, 19 Mar 2021 17:00:25 +0000 (UTC)
+Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [IPv6:2605:bc80:3010:104::8cd3:938])
+	by smtp2.osuosl.org (Postfix) with ESMTP id 27BBE4012F;
+	Fri, 19 Mar 2021 17:00:25 +0000 (UTC)
+Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 02051C000B;
+	Fri, 19 Mar 2021 17:00:25 +0000 (UTC)
+Received: from smtp3.osuosl.org (smtp3.osuosl.org [140.211.166.136])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id E0B5EC0001
+ for <iommu@lists.linux-foundation.org>; Fri, 19 Mar 2021 17:00:23 +0000 (UTC)
+Received: from localhost (localhost [127.0.0.1])
+ by smtp3.osuosl.org (Postfix) with ESMTP id 719CD60758
+ for <iommu@lists.linux-foundation.org>; Fri, 19 Mar 2021 17:00:23 +0000 (UTC)
+X-Virus-Scanned: amavisd-new at osuosl.org
+Received: from smtp3.osuosl.org ([127.0.0.1])
+ by localhost (smtp3.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+ with ESMTP id kXIxVb4-cOC8 for <iommu@lists.linux-foundation.org>;
+ Fri, 19 Mar 2021 17:00:21 +0000 (UTC)
 X-Greylist: domain auto-whitelisted by SQLgrey-1.8.0
 Received: from foss.arm.com (foss.arm.com [217.140.110.172])
- by smtp2.osuosl.org (Postfix) with ESMTP id 1B86F4012F
- for <iommu@lists.linux-foundation.org>; Fri, 19 Mar 2021 16:25:47 +0000 (UTC)
+ by smtp3.osuosl.org (Postfix) with ESMTP id 8C091605F9
+ for <iommu@lists.linux-foundation.org>; Fri, 19 Mar 2021 17:00:21 +0000 (UTC)
 Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
- by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id EFF2931B;
- Fri, 19 Mar 2021 09:25:46 -0700 (PDT)
+ by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 92EC0ED1;
+ Fri, 19 Mar 2021 10:00:20 -0700 (PDT)
 Received: from [10.57.50.37] (unknown [10.57.50.37])
- by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id 9CA283F718;
- Fri, 19 Mar 2021 09:25:44 -0700 (PDT)
-Subject: Re: [PATCH 3/6] iova: Allow rcache range upper limit to be
- configurable
+ by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id DD3C63F70D;
+ Fri, 19 Mar 2021 10:00:18 -0700 (PDT)
+Subject: Re: [PATCH 5/6] dma-mapping/iommu: Add dma_set_max_opt_size()
 To: John Garry <john.garry@huawei.com>, joro@8bytes.org, will@kernel.org,
  jejb@linux.ibm.com, martin.petersen@oracle.com, hch@lst.de,
  m.szyprowski@samsung.com
 References: <1616160348-29451-1-git-send-email-john.garry@huawei.com>
- <1616160348-29451-4-git-send-email-john.garry@huawei.com>
+ <1616160348-29451-6-git-send-email-john.garry@huawei.com>
 From: Robin Murphy <robin.murphy@arm.com>
-Message-ID: <26fb1b79-2e46-09f6-1814-48fec4205f32@arm.com>
-Date: Fri, 19 Mar 2021 16:25:39 +0000
+Message-ID: <9ecb6980-7f40-0333-572f-f9d4b8238353@arm.com>
+Date: Fri, 19 Mar 2021 17:00:12 +0000
 User-Agent: Mozilla/5.0 (Windows NT 10.0; rv:78.0) Gecko/20100101
  Thunderbird/78.8.1
 MIME-Version: 1.0
-In-Reply-To: <1616160348-29451-4-git-send-email-john.garry@huawei.com>
+In-Reply-To: <1616160348-29451-6-git-send-email-john.garry@huawei.com>
 Content-Language: en-GB
 Cc: iommu@lists.linux-foundation.org, linux-kernel@vger.kernel.org,
  linux-scsi@vger.kernel.org, linuxarm@huawei.com
@@ -86,160 +85,114 @@ Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
 On 2021-03-19 13:25, John Garry wrote:
-> Some LLDs may request DMA mappings whose IOVA length exceeds that of the
-> current rcache upper limit.
-> 
-> This means that allocations for those IOVAs will never be cached, and
-> always must be allocated and freed from the RB tree per DMA mapping cycle.
-> This has a significant effect on performance, more so since commit
-> 4e89dce72521 ("iommu/iova: Retry from last rb tree node if iova search
-> fails"), as discussed at [0].
-> 
-> Allow the range of cached IOVAs to be increased, by providing an API to set
-> the upper limit, which is capped at IOVA_RANGE_CACHE_MAX_SIZE.
-> 
-> For simplicity, the full range of IOVA rcaches is allocated and initialized
-> at IOVA domain init time.
-> 
-> Setting the range upper limit will fail if the domain is already live
-> (before the tree contains IOVA nodes). This must be done to ensure any
-> IOVAs cached comply with rule of size being a power-of-2.
-> 
-> [0] https://lore.kernel.org/linux-iommu/20210129092120.1482-1-thunder.leizhen@huawei.com/
-> 
-> Signed-off-by: John Garry <john.garry@huawei.com>
-> ---
->   drivers/iommu/iova.c | 37 +++++++++++++++++++++++++++++++++++--
->   include/linux/iova.h | 11 ++++++++++-
->   2 files changed, 45 insertions(+), 3 deletions(-)
-> 
-> diff --git a/drivers/iommu/iova.c b/drivers/iommu/iova.c
-> index cecc74fb8663..d4f2f7fbbd84 100644
-> --- a/drivers/iommu/iova.c
-> +++ b/drivers/iommu/iova.c
-> @@ -49,6 +49,7 @@ init_iova_domain(struct iova_domain *iovad, unsigned long granule,
->   	iovad->flush_cb = NULL;
->   	iovad->fq = NULL;
->   	iovad->anchor.pfn_lo = iovad->anchor.pfn_hi = IOVA_ANCHOR;
-> +	iovad->rcache_max_size = IOVA_RANGE_CACHE_DEFAULT_SIZE;
->   	rb_link_node(&iovad->anchor.node, NULL, &iovad->rbroot.rb_node);
->   	rb_insert_color(&iovad->anchor.node, &iovad->rbroot);
->   	init_iova_rcaches(iovad);
-> @@ -194,7 +195,7 @@ static int __alloc_and_insert_iova_range(struct iova_domain *iovad,
->   	 * rounding up anything cacheable to make sure that can't happen. The
->   	 * order of the unadjusted size will still match upon freeing.
->   	 */
-> -	if (fast && size < (1 << (IOVA_RANGE_CACHE_MAX_SIZE - 1)))
-> +	if (fast && size < (1 << (iovad->rcache_max_size - 1)))
->   		size = roundup_pow_of_two(size);
->   
->   	if (size_aligned)
-> @@ -901,7 +902,7 @@ static bool iova_rcache_insert(struct iova_domain *iovad, unsigned long pfn,
->   {
->   	unsigned int log_size = order_base_2(size);
->   
-> -	if (log_size >= IOVA_RANGE_CACHE_MAX_SIZE)
-> +	if (log_size >= iovad->rcache_max_size)
->   		return false;
->   
->   	return __iova_rcache_insert(iovad, &iovad->rcaches[log_size], pfn);
-> @@ -946,6 +947,38 @@ static unsigned long __iova_rcache_get(struct iova_rcache *rcache,
->   	return iova_pfn;
->   }
->   
-> +void iova_rcache_set_upper_limit(struct iova_domain *iovad,
-> +				 unsigned long iova_len)
-> +{
-> +	unsigned int rcache_index = order_base_2(iova_len) + 1;
-> +	struct rb_node *rb_node = &iovad->anchor.node;
-> +	unsigned long flags;
-> +	int count = 0;
-> +
-> +	spin_lock_irqsave(&iovad->iova_rbtree_lock, flags);
-> +	if (rcache_index <= iovad->rcache_max_size)
-> +		goto out;
-> +
-> +	while (1) {
-> +		rb_node = rb_prev(rb_node);
-> +		if (!rb_node)
-> +			break;
-> +		count++;
-> +	}
-> +
-> +	/*
-> +	 * If there are already IOVA nodes present in the tree, then don't
-> +	 * allow range upper limit to be set.
-> +	 */
-> +	if (count != iovad->reserved_node_count)
-> +		goto out;
-> +
-> +	iovad->rcache_max_size = min_t(unsigned long, rcache_index,
-> +				       IOVA_RANGE_CACHE_MAX_SIZE);
-> +out:
-> +	spin_unlock_irqrestore(&iovad->iova_rbtree_lock, flags);
-> +}
-> +
->   /*
->    * Try to satisfy IOVA allocation range from rcache.  Fail if requested
->    * size is too big or the DMA limit we are given isn't satisfied by the
-> diff --git a/include/linux/iova.h b/include/linux/iova.h
-> index fd3217a605b2..952b81b54ef7 100644
-> --- a/include/linux/iova.h
-> +++ b/include/linux/iova.h
-> @@ -25,7 +25,8 @@ struct iova {
->   struct iova_magazine;
->   struct iova_cpu_rcache;
->   
-> -#define IOVA_RANGE_CACHE_MAX_SIZE 6	/* log of max cached IOVA range size (in pages) */
-> +#define IOVA_RANGE_CACHE_DEFAULT_SIZE 6
-> +#define IOVA_RANGE_CACHE_MAX_SIZE 10 /* log of max cached IOVA range size (in pages) */
+> Add a function to allow the max size which we want to optimise DMA mappings
+> for.
 
-No.
+It seems neat in theory - particularly for packet-based interfaces that 
+might have a known fixed size of data unit that they're working on at 
+any given time - but aren't there going to be many cases where the 
+driver has no idea because it depends on whatever size(s) of request 
+userspace happens to throw at it? Even if it does know the absolute 
+maximum size of thing it could ever transfer, that could be 
+impractically large in areas like video/AI/etc., so it could still be 
+hard to make a reasonable decision.
 
-And why? If we're going to allocate massive caches anyway, whatever is 
-the point of *not* using all of them?
+Being largely workload-dependent is why I still think this should be a 
+command-line or sysfs tuneable - we could set the default based on how 
+much total memory is available, but ultimately it's the end user who 
+knows what the workload is going to be and what they care about 
+optimising for.
 
-It only makes sense for a configuration knob to affect the actual rcache 
-and depot allocations - that way, big high-throughput systems with 
-plenty of memory can spend it on better performance, while small systems 
-- that often need IOMMU scatter-gather precisely *because* memory is 
-tight and thus easily fragmented - don't have to pay the (not 
-insignificant) cost for caches they don't need.
+Another thought (which I'm almost reluctant to share) is that I would 
+*love* to try implementing a self-tuning strategy that can detect high 
+contention on particular allocation sizes and adjust the caches on the 
+fly, but I can easily imagine that having enough inherent overhead to 
+end up being an impractical (but fun) waste of time.
 
 Robin.
 
->   #define MAX_GLOBAL_MAGS 32	/* magazines per bin */
->   
->   struct iova_rcache {
-> @@ -74,6 +75,7 @@ struct iova_domain {
->   	unsigned long	start_pfn;	/* Lower limit for this domain */
->   	unsigned long	dma_32bit_pfn;
->   	unsigned long	max32_alloc_size; /* Size of last failed allocation */
-> +	unsigned long	rcache_max_size; /* Upper limit of cached IOVA RANGE */
->   	struct iova_fq __percpu *fq;	/* Flush Queue */
->   
->   	atomic64_t	fq_flush_start_cnt;	/* Number of TLB flushes that
-> @@ -158,6 +160,8 @@ int init_iova_flush_queue(struct iova_domain *iovad,
->   struct iova *find_iova(struct iova_domain *iovad, unsigned long pfn);
->   void put_iova_domain(struct iova_domain *iovad);
->   void free_cpu_cached_iovas(unsigned int cpu, struct iova_domain *iovad);
-> +void iova_rcache_set_upper_limit(struct iova_domain *iovad,
-> +				 unsigned long iova_len);
->   #else
->   static inline int iova_cache_get(void)
->   {
-> @@ -238,6 +242,11 @@ static inline void free_cpu_cached_iovas(unsigned int cpu,
->   					 struct iova_domain *iovad)
->   {
+> Signed-off-by: John Garry <john.garry@huawei.com>
+> ---
+>   drivers/iommu/dma-iommu.c   |  2 +-
+>   include/linux/dma-map-ops.h |  1 +
+>   include/linux/dma-mapping.h |  5 +++++
+>   kernel/dma/mapping.c        | 11 +++++++++++
+>   4 files changed, 18 insertions(+), 1 deletion(-)
+> 
+> diff --git a/drivers/iommu/dma-iommu.c b/drivers/iommu/dma-iommu.c
+> index a5dfbd6c0496..d35881fcfb9c 100644
+> --- a/drivers/iommu/dma-iommu.c
+> +++ b/drivers/iommu/dma-iommu.c
+> @@ -447,7 +447,6 @@ static dma_addr_t iommu_dma_alloc_iova(struct iommu_domain *domain,
+>   	return (dma_addr_t)iova << shift;
 >   }
-> +
-> +static inline void iova_rcache_set_upper_limit(struct iova_domain *iovad,
-> +					       unsigned long iova_len)
+>   
+> -__maybe_unused
+>   static void iommu_dma_set_opt_size(struct device *dev, size_t size)
+>   {
+>   	struct iommu_domain *domain = iommu_get_dma_domain(dev);
+> @@ -1278,6 +1277,7 @@ static const struct dma_map_ops iommu_dma_ops = {
+>   	.map_resource		= iommu_dma_map_resource,
+>   	.unmap_resource		= iommu_dma_unmap_resource,
+>   	.get_merge_boundary	= iommu_dma_get_merge_boundary,
+> +	.set_max_opt_size	= iommu_dma_set_opt_size,
+>   };
+>   
+>   /*
+> diff --git a/include/linux/dma-map-ops.h b/include/linux/dma-map-ops.h
+> index 51872e736e7b..fed7a183b3b9 100644
+> --- a/include/linux/dma-map-ops.h
+> +++ b/include/linux/dma-map-ops.h
+> @@ -64,6 +64,7 @@ struct dma_map_ops {
+>   	u64 (*get_required_mask)(struct device *dev);
+>   	size_t (*max_mapping_size)(struct device *dev);
+>   	unsigned long (*get_merge_boundary)(struct device *dev);
+> +	void (*set_max_opt_size)(struct device *dev, size_t size);
+>   };
+>   
+>   #ifdef CONFIG_DMA_OPS
+> diff --git a/include/linux/dma-mapping.h b/include/linux/dma-mapping.h
+> index 2a984cb4d1e0..91fe770145d4 100644
+> --- a/include/linux/dma-mapping.h
+> +++ b/include/linux/dma-mapping.h
+> @@ -144,6 +144,7 @@ u64 dma_get_required_mask(struct device *dev);
+>   size_t dma_max_mapping_size(struct device *dev);
+>   bool dma_need_sync(struct device *dev, dma_addr_t dma_addr);
+>   unsigned long dma_get_merge_boundary(struct device *dev);
+> +void dma_set_max_opt_size(struct device *dev, size_t size);
+>   #else /* CONFIG_HAS_DMA */
+>   static inline dma_addr_t dma_map_page_attrs(struct device *dev,
+>   		struct page *page, size_t offset, size_t size,
+> @@ -257,6 +258,10 @@ static inline unsigned long dma_get_merge_boundary(struct device *dev)
+>   {
+>   	return 0;
+>   }
+> +static inline void dma_set_max_opt_size(struct device *dev, size_t size)
 > +{
 > +}
->   #endif
+> +
+>   #endif /* CONFIG_HAS_DMA */
 >   
->   #endif
+>   struct page *dma_alloc_pages(struct device *dev, size_t size,
+> diff --git a/kernel/dma/mapping.c b/kernel/dma/mapping.c
+> index b6a633679933..59e6acb1c471 100644
+> --- a/kernel/dma/mapping.c
+> +++ b/kernel/dma/mapping.c
+> @@ -608,3 +608,14 @@ unsigned long dma_get_merge_boundary(struct device *dev)
+>   	return ops->get_merge_boundary(dev);
+>   }
+>   EXPORT_SYMBOL_GPL(dma_get_merge_boundary);
+> +
+> +void dma_set_max_opt_size(struct device *dev, size_t size)
+> +{
+> +	const struct dma_map_ops *ops = get_dma_ops(dev);
+> +
+> +	if (!ops || !ops->set_max_opt_size)
+> +		return;
+> +
+> +	ops->set_max_opt_size(dev, size);
+> +}
+> +EXPORT_SYMBOL_GPL(dma_set_max_opt_size);
 > 
 _______________________________________________
 iommu mailing list
