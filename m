@@ -5,97 +5,97 @@ X-Spam-Level:
 X-Spam-Status: No, score=-13.5 required=3.0 tests=BAYES_00,
 	DKIM_ADSP_CUSTOM_MED,DKIM_INVALID,DKIM_SIGNED,FREEMAIL_FORGED_FROMDOMAIN,
 	FREEMAIL_FROM,HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_CR_TRAILER,
-	INCLUDES_PATCH,MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,USER_AGENT_GIT
-	autolearn=ham autolearn_force=no version=3.4.0
+	INCLUDES_PATCH,MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,
+	USER_AGENT_GIT autolearn=ham autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 30597C433DB
-	for <iommu@archiver.kernel.org>; Fri, 19 Mar 2021 04:02:11 +0000 (UTC)
-Received: from smtp2.osuosl.org (smtp2.osuosl.org [140.211.166.133])
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2A544C433DB
+	for <iommu@archiver.kernel.org>; Fri, 19 Mar 2021 04:03:43 +0000 (UTC)
+Received: from smtp1.osuosl.org (smtp1.osuosl.org [140.211.166.138])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 9D75A64E37
-	for <iommu@archiver.kernel.org>; Fri, 19 Mar 2021 04:02:10 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 9D75A64E37
+	by mail.kernel.org (Postfix) with ESMTPS id C044364E38
+	for <iommu@archiver.kernel.org>; Fri, 19 Mar 2021 04:03:42 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org C044364E38
 Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=gmail.com
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by smtp2.osuosl.org (Postfix) with ESMTP id 4E40540102;
-	Fri, 19 Mar 2021 04:02:10 +0000 (UTC)
+	by smtp1.osuosl.org (Postfix) with ESMTP id 0A90783A54;
+	Fri, 19 Mar 2021 04:03:42 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from smtp2.osuosl.org ([127.0.0.1])
-	by localhost (smtp2.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id gK-Uv35xKERA; Fri, 19 Mar 2021 04:02:09 +0000 (UTC)
-Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [IPv6:2605:bc80:3010:104::8cd3:938])
-	by smtp2.osuosl.org (Postfix) with ESMTP id 53720400FC;
-	Fri, 19 Mar 2021 04:02:09 +0000 (UTC)
+Received: from smtp1.osuosl.org ([127.0.0.1])
+	by localhost (smtp1.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+	with ESMTP id AFjOCwKjjesn; Fri, 19 Mar 2021 04:03:41 +0000 (UTC)
+Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
+	by smtp1.osuosl.org (Postfix) with ESMTP id C2FE483A7C;
+	Fri, 19 Mar 2021 04:03:40 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 281CDC000B;
-	Fri, 19 Mar 2021 04:02:09 +0000 (UTC)
-Received: from smtp4.osuosl.org (smtp4.osuosl.org [IPv6:2605:bc80:3010::137])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 27650C0001
- for <iommu@lists.linux-foundation.org>; Fri, 19 Mar 2021 04:02:08 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 99A1CC000B;
+	Fri, 19 Mar 2021 04:03:40 +0000 (UTC)
+Received: from smtp1.osuosl.org (smtp1.osuosl.org [IPv6:2605:bc80:3010::138])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 93A2DC0001
+ for <iommu@lists.linux-foundation.org>; Fri, 19 Mar 2021 04:03:39 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by smtp4.osuosl.org (Postfix) with ESMTP id 147ED4EC4F
- for <iommu@lists.linux-foundation.org>; Fri, 19 Mar 2021 04:02:08 +0000 (UTC)
+ by smtp1.osuosl.org (Postfix) with ESMTP id 7F3F783A54
+ for <iommu@lists.linux-foundation.org>; Fri, 19 Mar 2021 04:03:39 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Authentication-Results: smtp4.osuosl.org (amavisd-new);
- dkim=pass (2048-bit key) header.d=gmail.com
-Received: from smtp4.osuosl.org ([127.0.0.1])
- by localhost (smtp4.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id Gzf879oF6OtS for <iommu@lists.linux-foundation.org>;
- Fri, 19 Mar 2021 04:02:07 +0000 (UTC)
+Received: from smtp1.osuosl.org ([127.0.0.1])
+ by localhost (smtp1.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+ with ESMTP id bno38Prn-6U2 for <iommu@lists.linux-foundation.org>;
+ Fri, 19 Mar 2021 04:03:38 +0000 (UTC)
 X-Greylist: whitelisted by SQLgrey-1.8.0
-Received: from mail-pf1-x434.google.com (mail-pf1-x434.google.com
- [IPv6:2607:f8b0:4864:20::434])
- by smtp4.osuosl.org (Postfix) with ESMTPS id 724254ECA1
- for <iommu@lists.linux-foundation.org>; Fri, 19 Mar 2021 04:02:07 +0000 (UTC)
-Received: by mail-pf1-x434.google.com with SMTP id h3so4952371pfr.12
- for <iommu@lists.linux-foundation.org>; Thu, 18 Mar 2021 21:02:07 -0700 (PDT)
+Received: from mail-pj1-x1033.google.com (mail-pj1-x1033.google.com
+ [IPv6:2607:f8b0:4864:20::1033])
+ by smtp1.osuosl.org (Postfix) with ESMTPS id 4879583478
+ for <iommu@lists.linux-foundation.org>; Fri, 19 Mar 2021 04:03:38 +0000 (UTC)
+Received: by mail-pj1-x1033.google.com with SMTP id bt4so3982155pjb.5
+ for <iommu@lists.linux-foundation.org>; Thu, 18 Mar 2021 21:03:38 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=gmail.com; s=20161025;
- h=from:to:cc:subject:date:message-id:in-reply-to:references
- :mime-version:content-transfer-encoding;
- bh=G7mFIfrzw76jaQ9BbBSTUMUy/Bx5PZFnj8PSi3nxWPw=;
- b=vT5gF/rP53wrLkt5FgWCnTvzL2Lm4+0MTd2LwNkfliI0IofCaUUuhYXBqnGH8mgQse
- XVRj9uu6bkRZ6TnndZ88Via39/wpmpS0U7pogW2EtRIk5hI896hyTVe9S2E1Zj5MZoMB
- WLIWtZYnsytiJ7l3VGQgZbDeQLPIe6yQAfIU0oPK4kGMQtCZoVxDTY8/guk+M9ZCS8YE
- NCeFxN6Y30db9cdXAPgn7UyKg5RtQZWd43qWuFWe51rF/gOApFxwsMGpf03s6OC2YFJZ
- LRsPB+10LblXK4BlELJjHLCIYPMwEoMwzJMT82XSrN8jTlQ94VM7wa6diGZpUXjoiy5r
- 6DIQ==
+ h=from:to:cc:subject:date:message-id:mime-version
+ :content-transfer-encoding;
+ bh=ryeZqjeyYgMVyJ2yaoJp0ylfGz6ueh5H5F2dT0FCD+4=;
+ b=NEapts2xA7NIOuh03lb2AfHJiMCEq2c9+HhCbqNF1ZLNnT3sOAOrgUHGF8LylRFR64
+ 54Oo13jXEFjx27m3Blc1t1sOFcxy2ajFjm48s2K2HdKcoj/R9LPGBV7r7/+vWshTgyuw
+ lTv23UVUs7HckciSLX98yORfNgmVndcjlhnuzx+r/LB51spj65OJBzqVt8rI2OdTa7AF
+ 1IXKDoP7EQLYyB5prCP6meBtuGt0JThbFkswykK80FWRYblqrP6pC3e77L+nWCWZXuBN
+ IIBuMO1vYsVuROQiMUKF2zjoBnw1HyGirYSYI/zFlnLGo6TFGUyEQx/x7UA+Du17zsZd
+ S5Mg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
  d=1e100.net; s=20161025;
- h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
- :references:mime-version:content-transfer-encoding;
- bh=G7mFIfrzw76jaQ9BbBSTUMUy/Bx5PZFnj8PSi3nxWPw=;
- b=GS+kkG9w1t8VrY90+cfjEm219zBAGwRRBSd5Zk1+Zcmo2uJZsv54z6hI/YmjfLVNnB
- NvVT4E0q3SkJdk3UQhBih4tH7b78RoX+iFiGZ3Wt3gX3cqc+1cbch/g6cdr+A3YCjPvX
- ljXFwrmZ24gV3eX+04woWyD9HfqvQL3zIKu8ZHu13UVZ7NSlsAuv6cXHK73QZ/eoXqXu
- IFVi2YxrHa0Fx/ToU2GN9V85qKHiFQt5Q9NI52Sp/heKnu2+39PCQCWKx50WhA5EdKmS
- IlzaJ8gxX3AC8R9nN6aPz2Rxj4UFRtOV4rP5aGgA4TaSwpwTbsunZh6tIKIzPUcM3aMZ
- jMPg==
-X-Gm-Message-State: AOAM532O9xp0NODlNapgfF9FVt5REUntl6AdCHS2OfdWjlo6viiaIq6g
- 6Kq6q2ZigaiAKZk9Q10vZTY=
-X-Google-Smtp-Source: ABdhPJwOT5v2SjIr5oPyeuziHKydK5prtvXzLz9YHJ/Nhd6vYqvzGx7avXYViGHQxS9NCyperggkcg==
-X-Received: by 2002:a62:cfc4:0:b029:200:49d8:6f29 with SMTP id
- b187-20020a62cfc40000b029020049d86f29mr7012389pfg.45.1616126526798; 
- Thu, 18 Mar 2021 21:02:06 -0700 (PDT)
+ h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+ :content-transfer-encoding;
+ bh=ryeZqjeyYgMVyJ2yaoJp0ylfGz6ueh5H5F2dT0FCD+4=;
+ b=JrlP72wuv8ZgxvKbTCahwZ12AmiCETla9rEs5j2Dr5MtuvC2OXLl1VqWJB/PfH9lrL
+ eD7nJ4mII12H0YjEG+4KWAUUyXUcww8sZcZA0tIcGN7+h9WUDqdHO04ZnO31HKv57nl9
+ /CfXy5Q+Kt1PyW/m5tndGKGY/JpwsWMjGCw/cNjon34RLmCavhfbRohWAr9qGfrCZf+C
+ wP7Ev+5rbGqk6umwcXJG7HoM8iRsfYEeMwLjJWNbYL3OMjqj2EG1HO5FxsjsqiaRDOYf
+ 6aXFm7l4NRVcyFXkM+hOP3trYVOjHK0h6dyunrpp2+OYHvj14pEBbRyvgbuZCvFRVdof
+ O8eg==
+X-Gm-Message-State: AOAM530FUMCYIte2DBEgA3YgcC/8qEzFCEdRbkY5Tadpv0LMtyGIhzj9
+ ni1EaJudxf3Sa5zZ8X0F3Ss=
+X-Google-Smtp-Source: ABdhPJxZ3c4SvE803b8zFFu+UyX5aqgBp0K5SuPW9aexu1KTNF02FpBMiTobs5HTmQueK0iWEmUBOA==
+X-Received: by 2002:a17:90b:fd2:: with SMTP id
+ gd18mr7792951pjb.115.1616126617718; 
+ Thu, 18 Mar 2021 21:03:37 -0700 (PDT)
 Received: from fainelli-desktop.igp.broadcom.net ([192.19.223.252])
- by smtp.gmail.com with ESMTPSA id s22sm3347487pgv.94.2021.03.18.21.02.05
+ by smtp.gmail.com with ESMTPSA id c24sm3752517pfi.193.2021.03.18.21.03.36
  (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
- Thu, 18 Mar 2021 21:02:06 -0700 (PDT)
+ Thu, 18 Mar 2021 21:03:37 -0700 (PDT)
 From: Florian Fainelli <f.fainelli@gmail.com>
-To: linux-kernel@vger.kernel.org
-Subject: [PATCH] swiotlb: Make SWIOTLB_NO_FORCE perform no allocation
-Date: Thu, 18 Mar 2021 21:00:54 -0700
-Message-Id: <20210319040055.183433-1-f.fainelli@gmail.com>
+To: linux-arm-kernel@lists.infradead.org
+Subject: [PATCH] ARM: Qualify enabling of swiotlb_init()
+Date: Thu, 18 Mar 2021 21:03:33 -0700
+Message-Id: <20210319040333.183827-1-f.fainelli@gmail.com>
 X-Mailer: git-send-email 2.25.1
-In-Reply-To: <20210318191816.4185226-1-f.fainelli@gmail.com>
-References: <20210318191816.4185226-1-f.fainelli@gmail.com>
 MIME-Version: 1.0
 Cc: Florian Fainelli <f.fainelli@gmail.com>,
  Konrad Rzeszutek Wilk <konrad.wilk@oracle.com>,
+ Ard Biesheuvel <ardb@kernel.org>, Catalin Marinas <catalin.marinas@arm.com>,
+ open list <linux-kernel@vger.kernel.org>, Russell King <linux@armlinux.org.uk>,
+ Max Filippov <jcmvbkbc@gmail.com>,
  "open list:SWIOTLB SUBSYSTEM" <iommu@lists.linux-foundation.org>,
- opendmb@gmail.com, Robin Murphy <robin.murphy@arm.com>,
- Christoph Hellwig <hch@lst.de>
+ opendmb@gmail.com, Andrew Morton <akpm@linux-foundation.org>,
+ Robin Murphy <robin.murphy@arm.com>, Christoph Hellwig <hch@lst.de>,
+ Mike Rapoport <rppt@kernel.org>
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -113,59 +113,33 @@ Content-Transfer-Encoding: 7bit
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-When SWIOTLB_NO_FORCE is used, there should really be no allocations of
-io_tlb_nslabs to occur since we are not going to use those slabs. If a
-platform was somehow setting swiotlb_no_force and a later call to
-swiotlb_init() was to be made we would still be proceeding with
-allocating the default SWIOTLB size (64MB), whereas if swiotlb=noforce
-was set on the kernel command line we would have only allocated 2KB.
+We do not need a SWIOTLB unless we have DRAM that is addressable beyond
+the arm_dma_limit. Compare max_pfn with arm_dma_pfn_limit to determine
+whether we do need a SWIOTLB to be initialized.
 
-This would be inconsistent and the point of initializing io_tlb_nslabs
-to 1, was to avoid hitting the test for io_tlb_nslabs being 0/not
-initialized.
-
+Fixes: ad3c7b18c5b3 ("arm: use swiotlb for bounce buffering on LPAE configs")
 Signed-off-by: Florian Fainelli <f.fainelli@gmail.com>
 ---
- kernel/dma/swiotlb.c | 10 ++++++----
- 1 file changed, 6 insertions(+), 4 deletions(-)
+ arch/arm/mm/init.c | 6 +++++-
+ 1 file changed, 5 insertions(+), 1 deletion(-)
 
-diff --git a/kernel/dma/swiotlb.c b/kernel/dma/swiotlb.c
-index c10e855a03bc..526c8321b76f 100644
---- a/kernel/dma/swiotlb.c
-+++ b/kernel/dma/swiotlb.c
-@@ -121,12 +121,10 @@ setup_io_tlb_npages(char *str)
- 	}
- 	if (*str == ',')
- 		++str;
--	if (!strcmp(str, "force")) {
-+	if (!strcmp(str, "force"))
- 		swiotlb_force = SWIOTLB_FORCE;
--	} else if (!strcmp(str, "noforce")) {
-+	else if (!strcmp(str, "noforce"))
- 		swiotlb_force = SWIOTLB_NO_FORCE;
--		io_tlb_nslabs = 1;
--	}
+diff --git a/arch/arm/mm/init.c b/arch/arm/mm/init.c
+index 828a2561b229..8356bf1daa28 100644
+--- a/arch/arm/mm/init.c
++++ b/arch/arm/mm/init.c
+@@ -301,7 +301,11 @@ static void __init free_highpages(void)
+ void __init mem_init(void)
+ {
+ #ifdef CONFIG_ARM_LPAE
+-	swiotlb_init(1);
++	if (swiotlb_force == SWIOTLB_FORCE ||
++	    max_pfn > arm_dma_pfn_limit)
++		swiotlb_init(1);
++	else
++		swiotlb_force = SWIOTLB_NO_FORCE;
+ #endif
  
- 	return 0;
- }
-@@ -284,6 +282,9 @@ swiotlb_init(int verbose)
- 	unsigned char *vstart;
- 	unsigned long bytes;
- 
-+	if (swiotlb_force == SWIOTLB_NO_FORCE)
-+		goto out;
-+
- 	if (!io_tlb_nslabs) {
- 		io_tlb_nslabs = (default_size >> IO_TLB_SHIFT);
- 		io_tlb_nslabs = ALIGN(io_tlb_nslabs, IO_TLB_SEGSIZE);
-@@ -302,6 +303,7 @@ swiotlb_init(int verbose)
- 		io_tlb_start = 0;
- 	}
- 	pr_warn("Cannot allocate buffer");
-+out:
- 	no_iotlb_memory = true;
- }
- 
+ 	set_max_mapnr(pfn_to_page(max_pfn) - mem_map);
 -- 
 2.25.1
 
