@@ -2,186 +2,112 @@ Return-Path: <SRS0=3kXM=IU=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-18.6 required=3.0 tests=BAYES_00,DKIM_INVALID,
-	DKIM_SIGNED,HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_CR_TRAILER,INCLUDES_PATCH,
-	MAILING_LIST_MULTI,MENTIONS_GIT_HOSTING,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED
-	autolearn=unavailable autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-3.5 required=3.0 tests=BAYES_00,DKIM_INVALID,
+	DKIM_SIGNED,HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,SPF_HELO_NONE,
+	SPF_PASS,URIBL_BLOCKED autolearn=no autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2FBE1C433C1
-	for <iommu@archiver.kernel.org>; Mon, 22 Mar 2021 22:12:12 +0000 (UTC)
-Received: from smtp2.osuosl.org (smtp2.osuosl.org [140.211.166.133])
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7F6ECC433C1
+	for <iommu@archiver.kernel.org>; Mon, 22 Mar 2021 22:18:03 +0000 (UTC)
+Received: from smtp4.osuosl.org (smtp4.osuosl.org [140.211.166.137])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id AA7A1619A9
-	for <iommu@archiver.kernel.org>; Mon, 22 Mar 2021 22:12:11 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org AA7A1619A9
-Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=intel.com
+	by mail.kernel.org (Postfix) with ESMTPS id CF979619A5
+	for <iommu@archiver.kernel.org>; Mon, 22 Mar 2021 22:18:02 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org CF979619A5
+Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=lists.linux-foundation.org
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by smtp2.osuosl.org (Postfix) with ESMTP id 51D9840331;
-	Mon, 22 Mar 2021 22:12:11 +0000 (UTC)
+	by smtp4.osuosl.org (Postfix) with ESMTP id 764C440442;
+	Mon, 22 Mar 2021 22:18:02 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from smtp2.osuosl.org ([127.0.0.1])
-	by localhost (smtp2.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id X2NEvMD7k1Wv; Mon, 22 Mar 2021 22:12:10 +0000 (UTC)
+Received: from smtp4.osuosl.org ([127.0.0.1])
+	by localhost (smtp4.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+	with ESMTP id 21I4V8V5rAkS; Mon, 22 Mar 2021 22:18:01 +0000 (UTC)
 Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by smtp2.osuosl.org (Postfix) with ESMTP id 012E54031B;
-	Mon, 22 Mar 2021 22:12:09 +0000 (UTC)
+	by smtp4.osuosl.org (Postfix) with ESMTP id CFAF040440;
+	Mon, 22 Mar 2021 22:18:00 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id CC70EC000A;
-	Mon, 22 Mar 2021 22:12:09 +0000 (UTC)
-Received: from smtp3.osuosl.org (smtp3.osuosl.org [140.211.166.136])
- by lists.linuxfoundation.org (Postfix) with ESMTP id EEBF6C0001
- for <iommu@lists.linux-foundation.org>; Mon, 22 Mar 2021 21:58:02 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id A3A19C000A;
+	Mon, 22 Mar 2021 22:18:00 +0000 (UTC)
+Received: from smtp2.osuosl.org (smtp2.osuosl.org [140.211.166.133])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id B5747C0001
+ for <iommu@lists.linux-foundation.org>; Mon, 22 Mar 2021 22:17:58 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by smtp3.osuosl.org (Postfix) with ESMTP id D03D9607F0
- for <iommu@lists.linux-foundation.org>; Mon, 22 Mar 2021 21:58:02 +0000 (UTC)
+ by smtp2.osuosl.org (Postfix) with ESMTP id 8E64A40330
+ for <iommu@lists.linux-foundation.org>; Mon, 22 Mar 2021 22:17:58 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Authentication-Results: smtp3.osuosl.org (amavisd-new);
- dkim=pass (1024-bit key) header.d=intel.onmicrosoft.com
-Received: from smtp3.osuosl.org ([127.0.0.1])
- by localhost (smtp3.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id hUOagyIPRXaG for <iommu@lists.linux-foundation.org>;
- Mon, 22 Mar 2021 21:58:01 +0000 (UTC)
-X-Greylist: domain auto-whitelisted by SQLgrey-1.8.0
-Received: from mga05.intel.com (mga05.intel.com [192.55.52.43])
- by smtp3.osuosl.org (Postfix) with ESMTPS id 7C245607E5
- for <iommu@lists.linux-foundation.org>; Mon, 22 Mar 2021 21:58:01 +0000 (UTC)
-IronPort-SDR: 2OO/RX/NPe61hUYUG6g1N6LPF28hU9uXEQHBS9/TP8wH5yey5kyZRYSOfnW803htGxHYrwGkqQ
- S7xeR8R8Jx+A==
-X-IronPort-AV: E=McAfee;i="6000,8403,9931"; a="275456742"
-X-IronPort-AV: E=Sophos;i="5.81,269,1610438400"; d="scan'208";a="275456742"
-Received: from fmsmga004.fm.intel.com ([10.253.24.48])
- by fmsmga105.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384;
- 22 Mar 2021 14:58:00 -0700
-IronPort-SDR: o23FJf0azAakSji4HPKSNhRtJTf5f6rcqJ9JN3WxEY6mtQjG3b7xRivuotMtZQ5THxCzZ0G3FX
- 0ICq/mjLMzJw==
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.81,269,1610438400"; d="scan'208";a="435306889"
-Received: from orsmsx603.amr.corp.intel.com ([10.22.229.16])
- by fmsmga004.fm.intel.com with ESMTP; 22 Mar 2021 14:58:00 -0700
-Received: from orsmsx607.amr.corp.intel.com (10.22.229.20) by
- ORSMSX603.amr.corp.intel.com (10.22.229.16) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2106.2; Mon, 22 Mar 2021 14:57:59 -0700
-Received: from ORSEDG601.ED.cps.intel.com (10.7.248.6) by
- orsmsx607.amr.corp.intel.com (10.22.229.20) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2106.2
- via Frontend Transport; Mon, 22 Mar 2021 14:57:59 -0700
-Received: from NAM10-MW2-obe.outbound.protection.outlook.com (104.47.55.108)
- by edgegateway.intel.com (134.134.137.102) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.1.2106.2; Mon, 22 Mar 2021 14:57:59 -0700
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=SuGWaFzR69/Cd1kGwep/l0pTfOwpGBhZ09OhccfddrL8v2gEDPuW7/0PtLeolqRml4VJUl5/HNusSy62OVdXySrm/m7SJA9h0ieSwUniSCZtLODFnGRgCCwWC0vVyikH4YTkGwvvDhxjRkYv9R0Q1EOGLZs+uFv9pnaenOu/lFLmy6ZAx+0hSELemn08ds9Io61D9ANGawLI+9WYZRrtqtLsHTQNlyXRe3h5pLzrQIlieFEe/zl0jJzjeWxGt25wYFus6NlTEP2a5JnNJN1UgCFUnn7sSNz9hP0iiqCzeFqst5vYk5+MPQOvYT+DFqyLiFUJl74x/hJ9O10otl+pLA==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com; 
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=GQwMQTJpFs+SbA/4PyNqZt9JWvE4yNlstMJOMb+1kA0=;
- b=VNOTCh2SRm/ihVbaYivLppkH3s+9r8/Bi5seiNxMGCH3gPv/RT14Zm5VUXy6UQo5GtayECZGi3WqFClvwY8FQzgpJVx6f0sW4eQLjsLzAfKjJVwUGR3pOzkCSBog4DltnzFYE2/4ARMinZlHwZK8ZexR7f9cMtKLSIHHAEwIgy8PB/9V1osqdxKGF7Ja6V6dGtQ8Pz3AckobUekf6snT6d+dUgZ/uFLluM23ABnhWqGVGg2GPlG4hHWZ5xffzO1hkIaOlPcT0THNe0aabigDbh9EYHDNDcCA2b2ftZzQi+WQfOWOUjpWzdAcTsrnhhjSGK+DUPrc6BQ6yr2QTqTQ7A==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=intel.com; dmarc=pass action=none header.from=intel.com;
- dkim=pass header.d=intel.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=intel.onmicrosoft.com; 
- s=selector2-intel-onmicrosoft-com;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=GQwMQTJpFs+SbA/4PyNqZt9JWvE4yNlstMJOMb+1kA0=;
- b=eNWDpA8HKYuNFhBtA5UQWPHDpokwcS7G/MBy1hzAt5+w5vNVWFEpl80npSw/498zKDleqWu1n0Z5xYD8paf/IP5KF47D52W8vzLEWeUvYeEQkfdCA8E9XglGe8HyczlkfRXMIPW4WLDMFwjoooCdT3twKvMRjH8G3ZHI+JHOmeI=
-Received: from MWHPR11MB1599.namprd11.prod.outlook.com (2603:10b6:301:e::16)
- by MWHPR11MB1567.namprd11.prod.outlook.com (2603:10b6:301:d::7) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3955.18; Mon, 22 Mar
- 2021 21:57:58 +0000
-Received: from MWHPR11MB1599.namprd11.prod.outlook.com
- ([fe80::b874:3c43:9abe:d35e]) by MWHPR11MB1599.namprd11.prod.outlook.com
- ([fe80::b874:3c43:9abe:d35e%5]) with mapi id 15.20.3955.027; Mon, 22 Mar 2021
- 21:57:58 +0000
-From: "Kaneda, Erik" <erik.kaneda@intel.com>
-To: Shameerali Kolothum Thodi <shameerali.kolothum.thodi@huawei.com>,
- "linux-arm-kernel@lists.infradead.org"
- <linux-arm-kernel@lists.infradead.org>, "linux-acpi@vger.kernel.org"
- <linux-acpi@vger.kernel.org>, "iommu@lists.linux-foundation.org"
- <iommu@lists.linux-foundation.org>, "devel@acpica.org" <devel@acpica.org>,
- Lorenzo Pieralisi <lorenzo.pieralisi@arm.com>, "Moore, Robert"
- <robert.moore@intel.com>
-Subject: RE: [RFC PATCH v2 1/8] ACPICA: IORT: Update for revision E
-Thread-Topic: [RFC PATCH v2 1/8] ACPICA: IORT: Update for revision E
-Thread-Index: AQHXHwc4z+izlmn+GkWYqA4mAb6Fp6qQh6Kg
-Date: Mon, 22 Mar 2021 21:57:58 +0000
-Message-ID: <MWHPR11MB1599238526CF0529394CD9D7F0659@MWHPR11MB1599.namprd11.prod.outlook.com>
-References: <20201119121150.3316-1-shameerali.kolothum.thodi@huawei.com>
- <20201119121150.3316-2-shameerali.kolothum.thodi@huawei.com>
- <b7a2424941214b33803e34ba3e532440@huawei.com>
-In-Reply-To: <b7a2424941214b33803e34ba3e532440@huawei.com>
-Accept-Language: en-US
-Content-Language: en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-dlp-version: 11.5.1.3
-dlp-product: dlpe-windows
-dlp-reaction: no-action
-authentication-results: huawei.com; dkim=none (message not signed)
- header.d=none;huawei.com; dmarc=none action=none header.from=intel.com;
-x-originating-ip: [174.25.99.223]
-x-ms-publictraffictype: Email
-x-ms-office365-filtering-correlation-id: 2b8cb1c8-e5f0-478a-4488-08d8ed7d8e43
-x-ms-traffictypediagnostic: MWHPR11MB1567:
-x-ms-exchange-transport-forked: True
-x-microsoft-antispam-prvs: <MWHPR11MB156720352E693E134657E5F3F0659@MWHPR11MB1567.namprd11.prod.outlook.com>
-x-ms-oob-tlc-oobclassifiers: OLM:2803;
-x-ms-exchange-senderadcheck: 1
-x-microsoft-antispam: BCL:0;
-x-microsoft-antispam-message-info: sAIb49Ht4E4ls/6faeXVH8S1pbqmpTOrmOU5IJh22KaZNOLLLmdQLFyzdegUO2kHzBuylf0xPuZId/BcTGTshCMSyN0kWHICS7/v+zODX/Mh4pjx3jJALANmgDUDs49yUmjGhrUajLhDJ6NgKRSCyp39NKtzJNDAi+16Nf8Q7cqkpdqVjBSkwtKns9+i1rGGD6w0V+/TkpW3Bs13ByyP2meUmX8kgxn/VfKwWHZsxvCJKdQfFoYH5HhVUTa96J3ZCtBoCKGuhA/bH0nerzKxAnYjr/2x6EOKWUaWsuzs/9ZAsHb8pYewep+SvuJE4As3Gz3DTRf+hbuS0V8b35fLxRO2+MY4X+dUGAZS4cbKWTQnTkA+CqYXFNUj8D0uzZWSBwL9oHVHZ0JEk6apyD6sprN4YLLhthOtJOpF+xUhr4GLxudBiqohF17sj1sOjyksIg4TH4Az1Om5mQNxwLPDf4mp7yQbaKdQ6iS20EeETUIBpVleQ0s7DfhaYsISUnnaocToa8kvl8M0NXpcf1+Cip99Wkn2ESH/tAp47sUP2fggNeWIeH/lhxQx9swSxuuopEMKyf6fEuXCjOT6tiN4WUgxuxMQabcQ1ESdjyePCCw09ocm1nPLQhazpUvL7F30fpCaqaCItge3faZzEYmkF4+E7/D/9p9zePVqxxW3dmf6lfMGyYXmGP/qoVh/NaQDxGek0pXu9JNfcfArRiInntZdOzi9ulcbqAaOZRcL38MiL4LFIaR3tXhBb2E9yGwS
-x-forefront-antispam-report: CIP:255.255.255.255; CTRY:; LANG:en; SCL:1; SRV:;
- IPV:NLI; SFV:NSPM; H:MWHPR11MB1599.namprd11.prod.outlook.com; PTR:; CAT:NONE;
- SFS:(366004)(346002)(376002)(136003)(39860400002)(396003)(66446008)(66556008)(66946007)(316002)(76116006)(8676002)(110136005)(83380400001)(54906003)(8936002)(86362001)(66476007)(64756008)(33656002)(15650500001)(2906002)(26005)(53546011)(6506007)(5660300002)(71200400001)(478600001)(966005)(4326008)(6636002)(55016002)(7416002)(52536014)(186003)(38100700001)(7696005)(9686003);
- DIR:OUT; SFP:1102; 
-x-ms-exchange-antispam-messagedata: =?utf-8?B?NFhBK1dBS2o1cVMySTQrNGN2ZUpDbnF2L1c1R2N1b3dybFV1djdHVkhNNS9h?=
- =?utf-8?B?MFpQUmlNYnNtWGVnK3RKN0c3V3JYaitMZVZiVkxpeFlzK2NEd2hqYXFZcGZh?=
- =?utf-8?B?V3ZlR3JxT2FmKzN6dGpIaFBERHRDSUc2ZjBXT1lNV0pFcGs3SnRGYjFia3BN?=
- =?utf-8?B?aVE1ZHNIdFZRZ3RFRWFGV1dsV3ZUU29jZjd0WFFyazVUU0pUVi9aRnliS3VK?=
- =?utf-8?B?KzJHSWR3Sk96cTc0M2gwTjl6YnpvT2ZJdlBRdXZiMElEaHMzbmFmOGJkMm1H?=
- =?utf-8?B?RVB5NUVvdC9COXRlODBORitYSHVDWTU0U0dVSSsrUHNDTHNMS3Z3SWFnR1dF?=
- =?utf-8?B?eVR2Y2RwOVZjUmcxWTZMczVDd3JnOTlpRVErUUhmMXBLTWZCRVlhaFNNdFl2?=
- =?utf-8?B?ay9sSFNTb2lFYlRTWUUyblRJZHJ5c0hWRDVRaHhKUk12dG1CaksvZzhNQlZE?=
- =?utf-8?B?ZVdYM2QzSWlLR3gvdHRqd2pEVXZvUThRcjlnM2s2WU5qRFhTYmMyUWpOdUxl?=
- =?utf-8?B?K1A3cUdCKzFwRXo1aENWbTJaV3h6OFpGSDV5Y3lmelo2Wm9Rc1ViN01uWUI3?=
- =?utf-8?B?SlowY2N2SEtESUxKUTR3RzhSZlFuSU9iRk9SdkJoQnBoQXNuaFBETFdBRUJ2?=
- =?utf-8?B?L0s3WnpLY0kwZ3NXenlTVVpIVUdQZUhOc1FMdFc2WmlJZDhsQVY0a3RJb2N3?=
- =?utf-8?B?UXVCbjhGVmpGWFZiNmMwY0NGeGtOZ0N0SzVwWmx3NC81S04vVTJydlBhUkxT?=
- =?utf-8?B?UFFzL3NkTW11a21yckM4M0EyQkNRc0huVW0zcTlLMmhZcGN1OEx5Qm5aYTdG?=
- =?utf-8?B?NUR2YTlBS1NyUTlJWXJXbDBPTmg5ZXNLRlJTZ0xlNGkzNk8rTDV4djBwNmxv?=
- =?utf-8?B?RkxpalE2TnhQdEZIejVRb0lMS3ZhVWZ1OEVHYXgwQkVsenJtQkdQVHoyRjVx?=
- =?utf-8?B?MzVhVkJ6WjlBWmtFY2RRbXQrblhJdVZWSmJFSlBtUVF0VkprNXZBWGU0S1Rs?=
- =?utf-8?B?UDFyWnBKNUVjWWR3UFl3NldHaFN6aFcrZmRrYVlPTlB6RFRDRldVRUY3Z2xO?=
- =?utf-8?B?ZDZxY1RuTHNpTXA3MUZMdndkcTNmRUZyOXllTzlsMjB3QVA5SWhLeXVQRHph?=
- =?utf-8?B?RVI4WkYwcUQ1aktyM1V4eFc5ZXhUWEdjRFhZL1BxMldYZXpESlBEWWJ1YWNp?=
- =?utf-8?B?dXFwOTVnZ2sveU9vTFNKcVdlSDRiRWFsNWluMkJCU1p2UmhxY2YrZDlaei9m?=
- =?utf-8?B?cmNGVlUxMnh0eGI3ejNqQjlkNm5JbEo2VW94SnExcUhTaERyTXppdXRGSUcw?=
- =?utf-8?B?U0VldGdBQjFWNGZxbU9idDlBVlFaUXFsandCRzBzRDFNeUVySGcva3crVDdq?=
- =?utf-8?B?QkFPeEdkMGNZb05zM0x6UXVaaXd6V0JCU08rUUFoYzRiNU9lVXdRN28rdnFZ?=
- =?utf-8?B?cGptZ2dHdWdNem41azBkSE1TMjlaTWZxOHVOazFjUGhtNXA2S0FKYTZ6Mllq?=
- =?utf-8?B?SDdUSUpZWWxpVTg0WVFOYnNJVUhTVFljSldYckVXOS80ZDNkb2U3NzdwK0o2?=
- =?utf-8?B?YldDMXZqdFpGaGZXUmFDeGNibTRGY1J4ZzZ6elZteWRtSmV3S0ZobWRSWmtm?=
- =?utf-8?B?aXp5VzlZMUIybWVwV25SSXoxbUhpVEk4VU5pdm1NczdIV2xYMFNKUTBDVFlv?=
- =?utf-8?B?ZEZtWnZ0WE5Fa084eFFpOUh5YmwwTkxmWTkwM2ZtdmNBZDBROVlSZm5hRUtO?=
- =?utf-8?Q?Zz3KAUMFKTN6htelypylgjPaK05jme0PfxnU8gI?=
-MIME-Version: 1.0
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-AuthSource: MWHPR11MB1599.namprd11.prod.outlook.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 2b8cb1c8-e5f0-478a-4488-08d8ed7d8e43
-X-MS-Exchange-CrossTenant-originalarrivaltime: 22 Mar 2021 21:57:58.5463 (UTC)
-X-MS-Exchange-CrossTenant-fromentityheader: Hosted
-X-MS-Exchange-CrossTenant-id: 46c98d88-e344-4ed4-8496-4ed7712e255d
-X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: 3dBhBEZRzraddWR86fo9FdEdJeuyQusx8KKrJ1gMe8u2cP9cQLacalX01WE22b3PX9Rx9h3d5XdplNYo+zYx0A==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: MWHPR11MB1567
-X-OriginatorOrg: intel.com
-X-Mailman-Approved-At: Mon, 22 Mar 2021 22:12:09 +0000
-Cc: "Sami.Mujawar@arm.com" <Sami.Mujawar@arm.com>,
- "robin.murphy@arm.com" <robin.murphy@arm.com>, Linuxarm <linuxarm@huawei.com>,
- wanghuiqiang <wanghuiqiang@huawei.com>,
- "steven.price@arm.com" <steven.price@arm.com>
+Authentication-Results: smtp2.osuosl.org (amavisd-new);
+ dkim=pass (2048-bit key) header.d=svenpeter.dev header.b="FTv+4Fla";
+ dkim=pass (2048-bit key) header.d=messagingengine.com
+ header.b="jYDkRuJq"
+Received: from smtp2.osuosl.org ([127.0.0.1])
+ by localhost (smtp2.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+ with ESMTP id ujfHc4NgmpXj for <iommu@lists.linux-foundation.org>;
+ Mon, 22 Mar 2021 22:17:57 +0000 (UTC)
+X-Greylist: from auto-whitelisted by SQLgrey-1.8.0
+Received: from new4-smtp.messagingengine.com (new4-smtp.messagingengine.com
+ [66.111.4.230])
+ by smtp2.osuosl.org (Postfix) with ESMTPS id 8DAF14032D
+ for <iommu@lists.linux-foundation.org>; Mon, 22 Mar 2021 22:17:57 +0000 (UTC)
+Received: from compute3.internal (compute3.nyi.internal [10.202.2.43])
+ by mailnew.nyi.internal (Postfix) with ESMTP id 685E45804DD;
+ Mon, 22 Mar 2021 18:17:54 -0400 (EDT)
+Received: from imap21 ([10.202.2.71])
+ by compute3.internal (MEProxy); Mon, 22 Mar 2021 18:17:54 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=svenpeter.dev;
+ h=mime-version:message-id:in-reply-to:references:date:from:to
+ :cc:subject:content-type; s=fm1; bh=ZWi4GtAKz6MJnR4YgJPLnmK6aRpu
+ RQjPkHSWuDbn2hw=; b=FTv+4FlaBI3nXkxsa7BojoAkYJrOjRcOzmC3RGEeEswA
+ zcn8SGPQ5MDiSZvzFOoQaHhYWjY5Zfu8w6RbXJIlX/lkeoihJehq7b3DmVqRdgei
+ Kc31ki6aj6L015JQbET5Eo+gfJ7zO7PslknCI2/93BWPjgsxaLRbjE1bW3T7mVBR
+ zrqQ9K5WjwtmcJBrjd5qLVRW85hTHBXmKYntfSL6+AJkRc0qmIUPWUq4hZlJjpbf
+ r1ruGJJJChwjGlb0/NQb8Opdu7Mq8uLmMy0F1VqyKPl5RfAjj/NVnueqQrE7PzM1
+ lU3fIxS5Wo9wPleZ1Sm+QuIck8u4mVcse0bDVuFM5g==
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
+ messagingengine.com; h=cc:content-type:date:from:in-reply-to
+ :message-id:mime-version:references:subject:to:x-me-proxy
+ :x-me-proxy:x-me-sender:x-me-sender:x-sasl-enc; s=fm2; bh=ZWi4Gt
+ AKz6MJnR4YgJPLnmK6aRpuRQjPkHSWuDbn2hw=; b=jYDkRuJqLc1gQX1YIg6lJR
+ EsuKs8DlVizuIL6jBEDPwauOF4v77Kf+sA44eeK22O9inufF2Le8r+aQUVL7fEtH
+ +nQvt9LISbklUqPjiIyJfcQajHG4NmUSYBDewSwt57lE8KoxivY8N7SV0jO+Pl6Q
+ HXb3wzkG9q6sPDM3NPQlw/BYj/iX0pNPAzIYQDckl2qN52KbgZQyKAVuVdbhvbzy
+ o4jvi2muKlUsKldoEMnLCgtvPzIIjr/Tt2zIG9NVAU/5DKsyXQqrx7DUF0lhjM/u
+ CYCZpRIfrXF3/mWtyx6EB6Q2wswoZY4f5xEnolb9K48m3Jq+WRcvY37Db8IlkOaw
+ ==
+X-ME-Sender: <xms:kBdZYNZa_zfBQyNVqg09XWG6y_omDyN7S6Hvrsx8qMyDD4TFPPNKfA>
+ <xme:kBdZYEYNlNxESbTnoJGMgIF6hSh_bxnzoFNENRh0y4wTcKfFAkxk-UaC0XN3dVazd
+ nBK6VLtV0Dy9crO_H4>
+X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgeduledrudeggedgudehlecutefuodetggdotefrod
+ ftvfcurfhrohhfihhlvgemucfhrghsthforghilhdpqfgfvfdpuffrtefokffrpgfnqfgh
+ necuuegrihhlohhuthemuceftddtnecusecvtfgvtghiphhivghnthhsucdlqddutddtmd
+ enucfjughrpefofgggkfgjfhffhffvufgtsehttdertderredtnecuhfhrohhmpedfufhv
+ vghnucfrvghtvghrfdcuoehsvhgvnhesshhvvghnphgvthgvrhdruggvvheqnecuggftrf
+ grthhtvghrnhepgfeigeeiffeuhfettdejgfetjeetfeelfefgfefgvddvtdfghfffudeh
+ vdefkeffnecuvehluhhsthgvrhfuihiivgeptdenucfrrghrrghmpehmrghilhhfrhhomh
+ epshhvvghnsehsvhgvnhhpvghtvghrrdguvghv
+X-ME-Proxy: <xmx:kBdZYP_i3tbdtKRRVGfAidaUBrJnQ0ERc1r6toG6BtKRdzoY2EmZiA>
+ <xmx:kBdZYLosz2ZP4J8_IYekp6RhbP_T-TOe8aNKqDu9Ba2iqYePJKy8DQ>
+ <xmx:kBdZYIrrIKxv0MGFn75u8QDj-K-S7v1xpZwhrzL4eJ_vaKdBK_pOsw>
+ <xmx:khdZYNShY084XZvHOtsreFHxtDtzB6GQOSOVksjUZj2QLQvb6XLGLNuk4ys>
+Received: by mailuser.nyi.internal (Postfix, from userid 501)
+ id 811F851C005E; Mon, 22 Mar 2021 18:17:52 -0400 (EDT)
+X-Mailer: MessagingEngine.com Webmail Interface
+User-Agent: Cyrus-JMAP/3.5.0-alpha0-271-g88286cf463-fm-20210318.001-g88286cf4
+Mime-Version: 1.0
+Message-Id: <d280843b-77e3-4fa8-9452-5a2f8a45052e@www.fastmail.com>
+In-Reply-To: <c1bcc0be8ae6e500@bloch.sibelius.xs4all.nl>
+References: <20210320151903.60759-1-sven@svenpeter.dev>
+ <c1bcc0609e920bc6@bloch.sibelius.xs4all.nl>
+ <8360b3b3-296c-450d-abc3-bb47159bf4e1@www.fastmail.com>
+ <c1bcc0be8ae6e500@bloch.sibelius.xs4all.nl>
+Date: Mon, 22 Mar 2021 23:17:31 +0100
+To: "Mark Kettenis" <mark.kettenis@xs4all.nl>
+Subject: Re: [PATCH 0/3] Apple M1 DART IOMMU driver
+Cc: arnd@kernel.org, devicetree@vger.kernel.org, will@kernel.org,
+ marcan@marcan.st, linux-kernel@vger.kernel.org,
+ iommu@lists.linux-foundation.org, robh+dt@kernel.org, maz@kernel.org,
+ mohamed.mediouni@caramail.com, robin.murphy@arm.com,
+ linux-arm-kernel@lists.infradead.org, stan@corellium.com
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -194,113 +120,146 @@ List-Post: <mailto:iommu@lists.linux-foundation.org>
 List-Help: <mailto:iommu-request@lists.linux-foundation.org?subject=help>
 List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
  <mailto:iommu-request@lists.linux-foundation.org?subject=subscribe>
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
+From: Sven Peter via iommu <iommu@lists.linux-foundation.org>
+Reply-To: Sven Peter <sven@svenpeter.dev>
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-DQoNCj4gLS0tLS1PcmlnaW5hbCBNZXNzYWdlLS0tLS0NCj4gRnJvbTogU2hhbWVlcmFsaSBLb2xv
-dGh1bSBUaG9kaQ0KPiA8c2hhbWVlcmFsaS5rb2xvdGh1bS50aG9kaUBodWF3ZWkuY29tPg0KPiBT
-ZW50OiBNb25kYXksIE1hcmNoIDIyLCAyMDIxIDM6MzYgQU0NCj4gVG86IEthbmVkYSwgRXJpayA8
-ZXJpay5rYW5lZGFAaW50ZWwuY29tPjsgbGludXgtYXJtLQ0KPiBrZXJuZWxAbGlzdHMuaW5mcmFk
-ZWFkLm9yZzsgbGludXgtYWNwaUB2Z2VyLmtlcm5lbC5vcmc7IGlvbW11QGxpc3RzLmxpbnV4LQ0K
-PiBmb3VuZGF0aW9uLm9yZzsgZGV2ZWxAYWNwaWNhLm9yZzsgTG9yZW56byBQaWVyYWxpc2kNCj4g
-PGxvcmVuem8ucGllcmFsaXNpQGFybS5jb20+OyBNb29yZSwgUm9iZXJ0IDxyb2JlcnQubW9vcmVA
-aW50ZWwuY29tPg0KPiBDYzogTGludXhhcm0gPGxpbnV4YXJtQGh1YXdlaS5jb20+OyBzdGV2ZW4u
-cHJpY2VAYXJtLmNvbTsNCj4gU2FtaS5NdWphd2FyQGFybS5jb207IHJvYmluLm11cnBoeUBhcm0u
-Y29tOyB3YW5naHVpcWlhbmcNCj4gPHdhbmdodWlxaWFuZ0BodWF3ZWkuY29tPg0KPiBTdWJqZWN0
-OiBbRGV2ZWxdIFJlOiBbUkZDIFBBVENIIHYyIDEvOF0gQUNQSUNBOiBJT1JUOiBVcGRhdGUgZm9y
-IHJldmlzaW9uIEUNCj4gDQo+IFsrXQ0KPiANCj4gSGkgRXJpaywNCj4gDQo+IEFzIHRoaXMgaXMg
-bm93IGp1c3QgbWVyZ2VkIGlubyBhY3BpY2EtbWFzdGVyIGFuZCBiYXNlZCBvbiB0aGUgZGlzY3Vz
-c2lvbiB3ZQ0KPiBoYWQgaGVyZSwNCj4gDQo+IGh0dHBzOi8vZ2l0aHViLmNvbS9hY3BpY2EvYWNw
-aWNhL3B1bGwvNjM4DQo+IA0KPiBJIGhhZCBhIGRpc2N1c3Npb24gd2l0aCBBUk0gZm9sa3MoTG9y
-ZW56bykgaW4gdGhlIGxpbmFyby1vcGVuLWRpc2N1c3Npb25zIGNhbGwNCj4gYW5kDQo+IGNhbiBj
-b25maXJtIHRoYXQgdGhlIElPUlQgUmV2aXNpb24gRSBpcyBub3QgdGhlIGZpbmFsIHNwZWNpZmlj
-YXRpb24gYW5kIGhhcw0KPiBzb21lIGlzc3Vlcw0KPiB3aGljaCBpcyBub3cgY29ycmVjdGVkIGlu
-IHRoZSBsYXRlc3QgRS5iIHJldmlzaW9uWzFdLiBBbHNvIHRoZXJlIGFyZSBubyBjdXJyZW50DQo+
-IHVzZXJzDQo+IGZvciB0aGUgUmV2IEUgYW5kIGl0IG1heSBub3QgYmUgYSBnb29kIGlkZWEgdG8g
-cHVzaCB0aGlzIHZlcnNpb24gaW50byB0aGUgTGludXgNCj4ga2VybmVsDQo+IG9yIGVsc2V3aGVy
-ZS4NCj4gDQo+IFNvIGNvdWxkIHlvdSBwbGVhc2UgcmV2ZXJ0IHRoZSBtZXJnZSBhbmQgSSBhbSBw
-bGFubmluZyB0byB3b3JrIG9uIHRoZSBFLmINCj4gc29vbi4NCkhpLA0KDQo+IFBsZWFzZSBsZXQg
-bWUga25vdyBpZiBJIG5lZWQgdG8gZXhwbGljaXRseSBzZW5kIGEgcmV2ZXJ0IHB1bGwgcmVxdWVz
-dCBvciBub3QuDQoNClBsZWFzZSBzZW5kIGEgcmV2ZXJ0IHB1bGwgcmVxdWVzdCBhbmQgSSdsbCBy
-ZW1lbWJlciB0byBub3Qgc3VibWl0IExpbnV4LWl6ZSB0aGUgSU9SVCBwYXRjaGVzLg0KDQpGcm9t
-IGFsbCBvZiB0aGUgYWN0aXZpdHkgdGhhdCBJJ3ZlIHNlZW4gd2l0aCB0aGUgSU9SVCBzcGVjaWZp
-Y2F0aW9uLCBpdCBsb29rcyBsaWtlIHRoaXMgdGFibGUgaXMgbm9udHJpdmlhbCB0byBkZXNpZ24g
-YW5kIG1haW50YWluLiBUaGUgZGlmZmljdWx0eSBJIGhhdmUgd2l0aCB0aGUgdGFibGUgaXMgdGhh
-dCBJIGRvIG5vdCB1bmRlcnN0YW5kIHdoaWNoIHRhYmxlIHJldmlzaW9ucyBhcmUgaW4gYWN0aXZl
-IHVzZS4NCg0KU28gbXkgcXVlc3Rpb24gaXMgdGhpczogd2hpY2ggSU9SVCByZXZpc2lvbnMgYXJl
-IGJlaW5nIGFjdGl2ZWx5IHVzZWQ/DQoNClRoYW5rcywNCkVyaWsNCj4gDQo+IFRoYW5rcywNCj4g
-U2hhbWVlcg0KPiANCj4gMS4gaHR0cHM6Ly9kZXZlbG9wZXIuYXJtLmNvbS9kb2N1bWVudGF0aW9u
-L2RlbjAwNDkvbGF0ZXN0Lw0KPiANCj4gPiAtLS0tLU9yaWdpbmFsIE1lc3NhZ2UtLS0tLQ0KPiA+
-IEZyb206IGlvbW11IFttYWlsdG86aW9tbXUtYm91bmNlc0BsaXN0cy5saW51eC1mb3VuZGF0aW9u
-Lm9yZ10gT24NCj4gQmVoYWxmIE9mDQo+ID4gU2hhbWVlciBLb2xvdGh1bQ0KPiA+IFNlbnQ6IDE5
-IE5vdmVtYmVyIDIwMjAgMTI6MTINCj4gPiBUbzogbGludXgtYXJtLWtlcm5lbEBsaXN0cy5pbmZy
-YWRlYWQub3JnOyBsaW51eC1hY3BpQHZnZXIua2VybmVsLm9yZzsNCj4gPiBpb21tdUBsaXN0cy5s
-aW51eC1mb3VuZGF0aW9uLm9yZzsgZGV2ZWxAYWNwaWNhLm9yZw0KPiA+IENjOiBMaW51eGFybSA8
-bGludXhhcm1AaHVhd2VpLmNvbT47IHN0ZXZlbi5wcmljZUBhcm0uY29tOw0KPiBHdW9oYW5qdW4N
-Cj4gPiAoSGFuanVuIEd1bykgPGd1b2hhbmp1bkBodWF3ZWkuY29tPjsgU2FtaS5NdWphd2FyQGFy
-bS5jb207DQo+ID4gcm9iaW4ubXVycGh5QGFybS5jb207IHdhbmdodWlxaWFuZyA8d2FuZ2h1aXFp
-YW5nQGh1YXdlaS5jb20+DQo+ID4gU3ViamVjdDogW1JGQyBQQVRDSCB2MiAxLzhdIEFDUElDQTog
-SU9SVDogVXBkYXRlIGZvciByZXZpc2lvbiBFDQo+ID4NCj4gPiBJT1JUIHJldmlzaW9uIEUgY29u
-dGFpbnMgYSBmZXcgYWRkaXRpb25zIGxpa2UsDQo+ID4gwqAgwqAgLUFkZGVkIGFuIGlkZW50aWZp
-ZXIgZmllbGQgaW4gdGhlIG5vZGUgZGVzY3JpcHRvcnMgdG8gYWlkIHRhYmxlDQo+ID4gwqAgwqAg
-wqBjcm9zcy1yZWZlcmVuY2luZy4NCj4gPiDCoCDCoCAtSW50cm9kdWNlZCB0aGUgUmVzZXJ2ZWQg
-TWVtb3J5IFJhbmdlKFJNUikgbm9kZS4gVGhpcyBpcyB1c2VkDQo+ID4gIMKgIMKgIHRvIGRlc2Ny
-aWJlIG1lbW9yeSByYW5nZXMgdGhhdCBhcmUgdXNlZCBieSBlbmRwb2ludHMgYW5kIHJlcXVpcmVz
-DQo+ID4gIMKgIMKgIGEgdW5pdHkgbWFwcGluZyBpbiBTTU1VLg0KPiA+ICAgICAtSW50cm9kdWNl
-ZCBhIGZsYWcgaW4gdGhlIFJDIG5vZGUgdG8gZXhwcmVzcyBzdXBwb3J0IGZvciBQUkkuDQo+ID4N
-Cj4gPiBTaWduZWQtb2ZmLWJ5OiBTaGFtZWVyIEtvbG90aHVtDQo+IDxzaGFtZWVyYWxpLmtvbG90
-aHVtLnRob2RpQGh1YXdlaS5jb20+DQo+ID4gLS0tDQo+ID4gIGluY2x1ZGUvYWNwaS9hY3RibDIu
-aCB8IDI1ICsrKysrKysrKysrKysrKysrKystLS0tLS0NCj4gPiAgMSBmaWxlIGNoYW5nZWQsIDE5
-IGluc2VydGlvbnMoKyksIDYgZGVsZXRpb25zKC0pDQo+ID4NCj4gPiBkaWZmIC0tZ2l0IGEvaW5j
-bHVkZS9hY3BpL2FjdGJsMi5oIGIvaW5jbHVkZS9hY3BpL2FjdGJsMi5oIGluZGV4DQo+ID4gZWM2
-Njc3OWNiMTkzLi4yNzRmY2U3YjVjMDEgMTAwNjQ0DQo+ID4gLS0tIGEvaW5jbHVkZS9hY3BpL2Fj
-dGJsMi5oDQo+ID4gKysrIGIvaW5jbHVkZS9hY3BpL2FjdGJsMi5oDQo+ID4gQEAgLTY4LDcgKzY4
-LDcgQEANCj4gPiAgICogSU9SVCAtIElPIFJlbWFwcGluZyBUYWJsZQ0KPiA+ICAgKg0KPiA+ICAg
-KiBDb25mb3JtcyB0byAiSU8gUmVtYXBwaW5nIFRhYmxlIFN5c3RlbSBTb2Z0d2FyZSBvbiBBUk0g
-UGxhdGZvcm1zIiwNCj4gPiAtICogRG9jdW1lbnQgbnVtYmVyOiBBUk0gREVOIDAwNDlELCBNYXJj
-aCAyMDE4DQo+ID4gKyAqIERvY3VtZW50IG51bWJlcjogQVJNIERFTiAwMDQ5RSwgSnVuZSAyMDIw
-DQo+ID4gICAqDQo+ID4NCj4gPg0KPiAqKioqKioqKioqKioqKioqKioqKioqKioqKioqKioqKioq
-KioqKioqKioqKioqKioqKioqKioqKioqDQo+ICoqKioqKg0KPiA+ICoqKioqKioqKioqKioqLw0K
-PiA+DQo+ID4gQEAgLTg2LDcgKzg2LDggQEAgc3RydWN0IGFjcGlfaW9ydF9ub2RlIHsNCj4gPiAg
-CXU4IHR5cGU7DQo+ID4gIAl1MTYgbGVuZ3RoOw0KPiA+ICAJdTggcmV2aXNpb247DQo+ID4gLQl1
-MzIgcmVzZXJ2ZWQ7DQo+ID4gKwl1MTYgcmVzZXJ2ZWQ7DQo+ID4gKwl1MTYgaWRlbnRpZmllcjsN
-Cj4gPiAgCXUzMiBtYXBwaW5nX2NvdW50Ow0KPiA+ICAJdTMyIG1hcHBpbmdfb2Zmc2V0Ow0KPiA+
-ICAJY2hhciBub2RlX2RhdGFbMV07DQo+ID4gQEAgLTEwMCw3ICsxMDEsOCBAQCBlbnVtIGFjcGlf
-aW9ydF9ub2RlX3R5cGUgew0KPiA+ICAJQUNQSV9JT1JUX05PREVfUENJX1JPT1RfQ09NUExFWCA9
-IDB4MDIsDQo+ID4gIAlBQ1BJX0lPUlRfTk9ERV9TTU1VID0gMHgwMywNCj4gPiAgCUFDUElfSU9S
-VF9OT0RFX1NNTVVfVjMgPSAweDA0LA0KPiA+IC0JQUNQSV9JT1JUX05PREVfUE1DRyA9IDB4MDUN
-Cj4gPiArCUFDUElfSU9SVF9OT0RFX1BNQ0cgPSAweDA1LA0KPiA+ICsJQUNQSV9JT1JUX05PREVf
-Uk1SID0gMHgwNiwNCj4gPiAgfTsNCj4gPg0KPiA+ICBzdHJ1Y3QgYWNwaV9pb3J0X2lkX21hcHBp
-bmcgew0KPiA+IEBAIC0xNjcsMTAgKzE2OSwxMCBAQCBzdHJ1Y3QgYWNwaV9pb3J0X3Jvb3RfY29t
-cGxleCB7DQo+ID4gIAl1OCByZXNlcnZlZFszXTsJCS8qIFJlc2VydmVkLCBtdXN0IGJlIHplcm8g
-Ki8NCj4gPiAgfTsNCj4gPg0KPiA+IC0vKiBWYWx1ZXMgZm9yIGF0c19hdHRyaWJ1dGUgZmllbGQg
-YWJvdmUgKi8NCj4gPiArLyogTWFza3MgZm9yIGF0c19hdHRyaWJ1dGUgZmllbGQgYWJvdmUgKi8N
-Cj4gPg0KPiA+IC0jZGVmaW5lIEFDUElfSU9SVF9BVFNfU1VQUE9SVEVEICAgICAgICAgMHgwMDAw
-MDAwMQkvKiBUaGUgcm9vdA0KPiA+IGNvbXBsZXggc3VwcG9ydHMgQVRTICovDQo+ID4gLSNkZWZp
-bmUgQUNQSV9JT1JUX0FUU19VTlNVUFBPUlRFRCAgICAgICAweDAwMDAwMDAwCS8qIFRoZSByb290
-DQo+ID4gY29tcGxleCBkb2Vzbid0IHN1cHBvcnQgQVRTICovDQo+ID4gKyNkZWZpbmUgQUNQSV9J
-T1JUX0FUU19TVVBQT1JURUQgICAgICAgICAoMSkJLyogVGhlIHJvb3QgY29tcGxleA0KPiA+IHN1
-cHBvcnRzIEFUUyAqLw0KPiA+ICsjZGVmaW5lIEFDUElfSU9SVF9QUklfU1VQUE9SVEVEICAgICAg
-ICAgKDE8PDEpCS8qIFRoZSByb290IGNvbXBsZXgNCj4gPiBzdXBwb3J0cyBQUkkgKi8NCj4gPg0K
-PiA+ICBzdHJ1Y3QgYWNwaV9pb3J0X3NtbXUgew0KPiA+ICAJdTY0IGJhc2VfYWRkcmVzczsJLyog
-U01NVSBiYXNlIGFkZHJlc3MgKi8NCj4gPiBAQCAtMjQxLDYgKzI0MywxNyBAQCBzdHJ1Y3QgYWNw
-aV9pb3J0X3BtY2cgew0KPiA+ICAJdTY0IHBhZ2UxX2Jhc2VfYWRkcmVzczsNCj4gPiAgfTsNCj4g
-Pg0KPiA+ICtzdHJ1Y3QgYWNwaV9pb3J0X3JtciB7DQo+ID4gKwl1MzIgcm1yX2NvdW50Ow0KPiA+
-ICsJdTMyIHJtcl9vZmZzZXQ7DQo+ID4gK307DQo+ID4gKw0KPiA+ICtzdHJ1Y3QgYWNwaV9pb3J0
-X3Jtcl9kZXNjIHsNCj4gPiArCXU2NCBiYXNlX2FkZHJlc3M7DQo+ID4gKwl1NjQgbGVuZ3RoOw0K
-PiA+ICsJdTMyIHJlc2VydmVkOw0KPiA+ICt9Ow0KPiA+ICsNCj4gPg0KPiA+DQo+IC8qKioqKioq
-KioqKioqKioqKioqKioqKioqKioqKioqKioqKioqKioqKioqKioqKioqKioqKioqKioqDQo+ICoq
-KioqDQo+ID4gKioqKioqKioqKioqKioqKg0KPiA+ICAgKg0KPiA+ICAgKiBJVlJTIC0gSS9PIFZp
-cnR1YWxpemF0aW9uIFJlcG9ydGluZyBTdHJ1Y3R1cmUNCj4gPiAtLQ0KPiA+IDIuMTcuMQ0KPiA+
-DQo+ID4gX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX18NCj4g
-PiBpb21tdSBtYWlsaW5nIGxpc3QNCj4gPiBpb21tdUBsaXN0cy5saW51eC1mb3VuZGF0aW9uLm9y
-Zw0KPiA+IGh0dHBzOi8vbGlzdHMubGludXhmb3VuZGF0aW9uLm9yZy9tYWlsbWFuL2xpc3RpbmZv
-L2lvbW11DQo+IF9fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19f
-DQo+IERldmVsIG1haWxpbmcgbGlzdCAtLSBkZXZlbEBhY3BpY2Eub3JnDQo+IFRvIHVuc3Vic2Ny
-aWJlIHNlbmQgYW4gZW1haWwgdG8gZGV2ZWwtbGVhdmVAYWNwaWNhLm9yZw0KPiAlKHdlYl9wYWdl
-X3VybClzbGlzdGluZm8lKGNnaWV4dClzLyUoX2ludGVybmFsX25hbWUpcw0KX19fX19fX19fX19f
-X19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX18KaW9tbXUgbWFpbGluZyBsaXN0Cmlv
-bW11QGxpc3RzLmxpbnV4LWZvdW5kYXRpb24ub3JnCmh0dHBzOi8vbGlzdHMubGludXhmb3VuZGF0
-aW9uLm9yZy9tYWlsbWFuL2xpc3RpbmZvL2lvbW11
+
+Hi Mark,
+
+On Sun, Mar 21, 2021, at 19:35, Mark Kettenis wrote:
+>
+> Guess we do need to understand a little bit better how the USB DART
+> actually works.  My hypothesis (based on our discussion on #asahi) is
+> that the XHCI host controller and the peripheral controller of the
+> DWC3 block use different DMA "streams" that are handled by the
+> different sub-DARTs.
+
+I've done some more experiments and the situation is unfortunately more
+complicated: Most DMA transfers are translated with the first DART.
+But sometimes (and I have not been able to figure out the exact conditions)
+transfers instead have to go through the second DART. 
+This happens e.g. with one of my USB keyboards after a stop EP command
+is issued: Suddenly the xhci_ep_ctx struct must be translated through the
+second DART.
+
+What this likely means is that we'll need to point both DARTs
+to the same pagetables and just issue the TLB maintenance operations
+as a group.
+
+> 
+> The Corellium folks use a DART + sub-DART model in their driver and a
+> single node in the device tree that represents both.  That might sense
+> since the error registers and interrupts are shared.  Maybe it would
+> make sense to select the appropriate sub-DART based on the DMA stream
+> ID?
+
+dwc3 specifically seems to require stream id #1 from the DART
+at <0x5 0x02f00000> and stream id #0 from the DART at <0x5 0x02f80000>.
+Both of these only share a IRQ line but are otherwise completely independent.
+Each has their own error registers, etc. and we need some way to
+specify these two DARTs + the appropriate stream ID.
+
+Essentially we have three options to represent this now:
+
+1) Add both DARTs as separate regs, use #iommu-cells = <2> and have the
+   first cell select the DART and the second one the stream ID.
+   We could allow #iommu-cells = <1> in case only one reg is specified
+   for the PCIe DART:
+
+   usb_dart1@502f00000 {
+     compatible = "apple,t8103-dart";
+     reg = <0x5 0x02f00000 0x0 0x4000>, <0x5 0x02f80000 0x0 0x4000>;
+     #iommu-cells = <2>;
+     ...
+   };
+
+   usb1 {
+     iommus = <&usb_dart1 0 1>, <&usb_dart1 1 0>;
+     ...
+   };
+
+   I prefer this option because we fully describe the DART in a single
+   device node here. It also feels natural to group them like this because
+   they need to share some properties (like dma-window and the interrupt)
+   anyway. 
+
+2) Create two DART nodes which share the same IRQ line and attach them
+   both to the master node:
+
+   usb_dart1a@502f00000 {
+     compatible = "apple,t8103-dart";
+     reg = <0x5 0x02f00000 0x0 0x4000>;
+     #iommu-cells = <1>;
+     ...
+   };
+   usb_dart1b@502f80000 {
+     compatible = "apple,t8103-dart";
+     reg = <0x5 0x02f80000 0x0 0x4000>;
+     #iommu-cells = <1>;
+     ...
+   };
+
+   usb1 {
+     iommus = <&usb_dart1a 1>, <&usb_dart1b 0>;
+     ...
+   };
+
+   I dislike this one because attaching those two DARTs to a single device
+   seems rather unusual. We'd also have to duplicate the dma-window setting,
+   make sure it's the same for both DARTs and there are probably even more
+   complications I can't think of right now. It seems like this would also
+   make the device tree very verbose and the implementation itself more
+   complicated.
+
+3) Introduce another property and let the DART driver take care of
+   mirroring the pagetables. I believe this would be similar to
+   the sid-remap property:
+
+   usb_dart1@502f00000 {
+     compatible = "apple,t8103-dart";
+     reg = <0x5 0x02f00000 0x0 0x4000>, <0x5 0x02f80000 0x0 0x4000>;
+     #iommu-cells = <1>;
+     sid-remap = <0 1>;
+   };
+   usb1 {
+     iommus = <&usb_dart1 0>;
+   };
+
+   I slightly dislike this one because we now specify which stream id 
+   to use in two places: Once in the device node and another time in the
+   new property in the DART node. I also don't think the binding is much
+   simpler than the first one.
+
+
+> > where #dma-address-cells and #dma-size-cells default to
+> > #address-cells and #size-cells respectively if I understand
+> > the code correctly. That way we could also just always use
+> > a 64bit address and size in the DT, e.g.
+> > 
+> >   pcie_dart {
+> >       [ ... ]
+> >       dma-window = <0 0x100000 0 0x3fe00000>;
+> >       [ ... ]
+> >   };
+> 
+> That sounds like a serious contender to me!  Hopefully one of the
+> Linux kernel developers can give this some sort of blessing.
+> 
+> I think it would make sense for us to just rely on the #address-cells
+> and #size-cells defaults for the M1 device tree.
+>
+
+Agreed.
+
+
+Best,
+
+Sven
+_______________________________________________
+iommu mailing list
+iommu@lists.linux-foundation.org
+https://lists.linuxfoundation.org/mailman/listinfo/iommu
