@@ -2,78 +2,77 @@ Return-Path: <SRS0=ZOt4=IV=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-20.2 required=3.0 tests=BAYES_00,
-	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_CR_TRAILER,INCLUDES_PATCH,
-	MAILING_LIST_MULTI,MENTIONS_GIT_HOSTING,SPF_HELO_NONE,SPF_PASS,URIBL_RED,
-	USER_AGENT_SANE_1 autolearn=ham autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-8.6 required=3.0 tests=BAYES_00,DKIM_INVALID,
+	DKIM_SIGNED,HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_CR_TRAILER,
+	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,URIBL_RED autolearn=ham
+	autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E6643C433DB
-	for <iommu@archiver.kernel.org>; Tue, 23 Mar 2021 15:53:51 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 231CBC433DB
+	for <iommu@archiver.kernel.org>; Tue, 23 Mar 2021 17:27:26 +0000 (UTC)
 Received: from smtp2.osuosl.org (smtp2.osuosl.org [140.211.166.133])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 7441A619BA
-	for <iommu@archiver.kernel.org>; Tue, 23 Mar 2021 15:53:51 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 7441A619BA
-Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=arm.com
+	by mail.kernel.org (Postfix) with ESMTPS id AF12C619AE
+	for <iommu@archiver.kernel.org>; Tue, 23 Mar 2021 17:27:25 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org AF12C619AE
+Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=infradead.org
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by smtp2.osuosl.org (Postfix) with ESMTP id 3F247400BB;
-	Tue, 23 Mar 2021 15:53:51 +0000 (UTC)
+	by smtp2.osuosl.org (Postfix) with ESMTP id 7104040332;
+	Tue, 23 Mar 2021 17:27:25 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
 Received: from smtp2.osuosl.org ([127.0.0.1])
 	by localhost (smtp2.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id XADEw0gg6GAs; Tue, 23 Mar 2021 15:53:50 +0000 (UTC)
-Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [IPv6:2605:bc80:3010:104::8cd3:938])
-	by smtp2.osuosl.org (Postfix) with ESMTP id E22DA400B8;
-	Tue, 23 Mar 2021 15:53:49 +0000 (UTC)
+	with ESMTP id 4fC0XhawJFng; Tue, 23 Mar 2021 17:27:24 +0000 (UTC)
+Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
+	by smtp2.osuosl.org (Postfix) with ESMTP id 6011F400B8;
+	Tue, 23 Mar 2021 17:27:24 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id B6DEDC000A;
-	Tue, 23 Mar 2021 15:53:49 +0000 (UTC)
-Received: from smtp1.osuosl.org (smtp1.osuosl.org [IPv6:2605:bc80:3010::138])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 682A7C0001
- for <iommu@lists.linux-foundation.org>; Tue, 23 Mar 2021 15:53:48 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 38BBEC000A;
+	Tue, 23 Mar 2021 17:27:24 +0000 (UTC)
+Received: from smtp2.osuosl.org (smtp2.osuosl.org [IPv6:2605:bc80:3010::133])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id B0653C0001
+ for <iommu@lists.linux-foundation.org>; Tue, 23 Mar 2021 17:27:21 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by smtp1.osuosl.org (Postfix) with ESMTP id 5655483ED0
- for <iommu@lists.linux-foundation.org>; Tue, 23 Mar 2021 15:53:48 +0000 (UTC)
+ by smtp2.osuosl.org (Postfix) with ESMTP id 90076400BD
+ for <iommu@lists.linux-foundation.org>; Tue, 23 Mar 2021 17:27:21 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from smtp1.osuosl.org ([127.0.0.1])
- by localhost (smtp1.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id 6yVMNcrpbpAO for <iommu@lists.linux-foundation.org>;
- Tue, 23 Mar 2021 15:53:44 +0000 (UTC)
-X-Greylist: domain auto-whitelisted by SQLgrey-1.8.0
-Received: from foss.arm.com (foss.arm.com [217.140.110.172])
- by smtp1.osuosl.org (Postfix) with ESMTP id B433D83EA8
- for <iommu@lists.linux-foundation.org>; Tue, 23 Mar 2021 15:53:44 +0000 (UTC)
-Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
- by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 47F1FD6E;
- Tue, 23 Mar 2021 08:53:43 -0700 (PDT)
-Received: from e121166-lin.cambridge.arm.com (e121166-lin.cambridge.arm.com
- [10.1.196.255])
- by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id B47EA3F718;
- Tue, 23 Mar 2021 08:53:41 -0700 (PDT)
-Date: Tue, 23 Mar 2021 15:53:36 +0000
-From: Lorenzo Pieralisi <lorenzo.pieralisi@arm.com>
-To: "Kaneda, Erik" <erik.kaneda@intel.com>
-Subject: Re: [RFC PATCH v2 1/8] ACPICA: IORT: Update for revision E
-Message-ID: <20210323155336.GA1639@e121166-lin.cambridge.arm.com>
-References: <20201119121150.3316-1-shameerali.kolothum.thodi@huawei.com>
- <20201119121150.3316-2-shameerali.kolothum.thodi@huawei.com>
- <b7a2424941214b33803e34ba3e532440@huawei.com>
- <MWHPR11MB1599238526CF0529394CD9D7F0659@MWHPR11MB1599.namprd11.prod.outlook.com>
+Received: from smtp2.osuosl.org ([127.0.0.1])
+ by localhost (smtp2.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+ with ESMTP id Rk01BtLRyJri for <iommu@lists.linux-foundation.org>;
+ Tue, 23 Mar 2021 17:27:20 +0000 (UTC)
+X-Greylist: from auto-whitelisted by SQLgrey-1.8.0
+Received: from casper.infradead.org (casper.infradead.org
+ [IPv6:2001:8b0:10b:1236::1])
+ by smtp2.osuosl.org (Postfix) with ESMTPS id 13E71400B8
+ for <iommu@lists.linux-foundation.org>; Tue, 23 Mar 2021 17:27:19 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+ d=infradead.org; s=casper.20170209; h=In-Reply-To:Content-Type:MIME-Version:
+ References:Message-ID:Subject:Cc:To:From:Date:Sender:Reply-To:
+ Content-Transfer-Encoding:Content-ID:Content-Description;
+ bh=L5dFTyCaSNfaB9YJWhZaMNMyn1Bz//1qVMaB8rmLs2o=; b=e1H9ZYlZwj7JfhkW4XKra6Or6S
+ AVthsN0BACiP0ZggL1LeDnaV6+hPlQM2pgyPTUlmzD4hvJq3nsjR7+wAmzl+2hB3TecJb8kY86bsN
+ obAQ+tiZmX7RJe7ynqeg3mZsg3B6FQ/PmBLBpGNWa7GhDP0fgl9SmzEBpmybpc6jaVU9nkxDM2vhc
+ IZPtTrw+tF3wy+HKwQo9tFES9CPDEtPKVXMgEupfTHs8x6KX7SEEbmPZ+ZqHXHIapcVi01gxrba3J
+ oL3adKN6Tqxi8jquaTLwcTh/QyARjmFnD+x7RqVVimvVPX3IC09pzmQo3D9BY4GQ9SoRGscguMRqy
+ fxYvnttg==;
+Received: from hch by casper.infradead.org with local (Exim 4.94 #2 (Red Hat
+ Linux)) id 1lOknB-00AL9W-8F; Tue, 23 Mar 2021 17:26:34 +0000
+Date: Tue, 23 Mar 2021 17:26:09 +0000
+From: Christoph Hellwig <hch@infradead.org>
+To: Lu Baolu <baolu.lu@linux.intel.com>
+Subject: Re: [PATCH 1/5] iommu/vt-d: Remove unused dma map/unmap trace events
+Message-ID: <20210323172609.GB2463754@infradead.org>
+References: <20210323010600.678627-1-baolu.lu@linux.intel.com>
+ <20210323010600.678627-2-baolu.lu@linux.intel.com>
 MIME-Version: 1.0
 Content-Disposition: inline
-In-Reply-To: <MWHPR11MB1599238526CF0529394CD9D7F0659@MWHPR11MB1599.namprd11.prod.outlook.com>
-User-Agent: Mutt/1.9.4 (2018-02-28)
-Cc: "Moore, Robert" <robert.moore@intel.com>, Linuxarm <linuxarm@huawei.com>,
- "linux-acpi@vger.kernel.org" <linux-acpi@vger.kernel.org>,
- "iommu@lists.linux-foundation.org" <iommu@lists.linux-foundation.org>,
- wanghuiqiang <wanghuiqiang@huawei.com>,
- "Sami.Mujawar@arm.com" <Sami.Mujawar@arm.com>,
- "steven.price@arm.com" <steven.price@arm.com>,
- "robin.murphy@arm.com" <robin.murphy@arm.com>,
- "linux-arm-kernel@lists.infradead.org" <linux-arm-kernel@lists.infradead.org>,
- "devel@acpica.org" <devel@acpica.org>
+In-Reply-To: <20210323010600.678627-2-baolu.lu@linux.intel.com>
+X-SRS-Rewrite: SMTP reverse-path rewritten from <hch@infradead.org> by
+ casper.infradead.org. See http://www.infradead.org/rpr.html
+Cc: kevin.tian@intel.com, ashok.raj@intel.com, linux-kernel@vger.kernel.org,
+ iommu@lists.linux-foundation.org, jacob.jun.pan@intel.com,
+ Will Deacon <will@kernel.org>
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -86,220 +85,21 @@ List-Post: <mailto:iommu@lists.linux-foundation.org>
 List-Help: <mailto:iommu-request@lists.linux-foundation.org?subject=help>
 List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
  <mailto:iommu-request@lists.linux-foundation.org?subject=subscribe>
-Content-Type: text/plain; charset="iso-8859-1"
-Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-On Mon, Mar 22, 2021 at 09:57:58PM +0000, Kaneda, Erik wrote:
-> =
+On Tue, Mar 23, 2021 at 09:05:56AM +0800, Lu Baolu wrote:
+> With commit c588072bba6b5 ("iommu/vt-d: Convert intel iommu driver to
+> the iommu ops"), the trace events for dma map/unmap have no users any
+> more. Cleanup them to make the code neat.
+> 
+> Signed-off-by: Lu Baolu <baolu.lu@linux.intel.com>
 
-> =
+Looks good,
 
-> > -----Original Message-----
-> > From: Shameerali Kolothum Thodi
-> > <shameerali.kolothum.thodi@huawei.com>
-> > Sent: Monday, March 22, 2021 3:36 AM
-> > To: Kaneda, Erik <erik.kaneda@intel.com>; linux-arm-
-> > kernel@lists.infradead.org; linux-acpi@vger.kernel.org; iommu@lists.lin=
-ux-
-> > foundation.org; devel@acpica.org; Lorenzo Pieralisi
-> > <lorenzo.pieralisi@arm.com>; Moore, Robert <robert.moore@intel.com>
-> > Cc: Linuxarm <linuxarm@huawei.com>; steven.price@arm.com;
-> > Sami.Mujawar@arm.com; robin.murphy@arm.com; wanghuiqiang
-> > <wanghuiqiang@huawei.com>
-> > Subject: [Devel] Re: [RFC PATCH v2 1/8] ACPICA: IORT: Update for revisi=
-on E
-> > =
-
-> > [+]
-> > =
-
-> > Hi Erik,
-> > =
-
-> > As this is now just merged ino acpica-master and based on the discussio=
-n we
-> > had here,
-> > =
-
-> > https://github.com/acpica/acpica/pull/638
-> > =
-
-> > I had a discussion with ARM folks(Lorenzo) in the linaro-open-discussio=
-ns call
-> > and
-> > can confirm that the IORT Revision E is not the final specification and=
- has
-> > some issues
-> > which is now corrected in the latest E.b revision[1]. Also there are no=
- current
-> > users
-> > for the Rev E and it may not be a good idea to push this version into t=
-he Linux
-> > kernel
-> > or elsewhere.
-> > =
-
-> > So could you please revert the merge and I am planning to work on the E=
-.b
-> > soon.
-> Hi,
-> =
-
-> > Please let me know if I need to explicitly send a revert pull request o=
-r not.
-> =
-
-> Please send a revert pull request and I'll remember to not submit Linux-i=
-ze the IORT patches.
-> =
-
-> From all of the activity that I've seen with the IORT specification,
-> it looks like this table is nontrivial to design and maintain. The
-> difficulty I have with the table is that I do not understand which
-> table revisions are in active use.
-
-Possibly all of them in firmware in the field - I am not sure what you
-are asking though; if you can elaborate I'd be grateful.
-
-> So my question is this: which IORT revisions are being actively used?
-
-See above.
-
-Thanks,
-Lorenzo
-
-> =
-
-> Thanks,
-> Erik
-> > =
-
-> > Thanks,
-> > Shameer
-> > =
-
-> > 1. https://developer.arm.com/documentation/den0049/latest/
-> > =
-
-> > > -----Original Message-----
-> > > From: iommu [mailto:iommu-bounces@lists.linux-foundation.org] On
-> > Behalf Of
-> > > Shameer Kolothum
-> > > Sent: 19 November 2020 12:12
-> > > To: linux-arm-kernel@lists.infradead.org; linux-acpi@vger.kernel.org;
-> > > iommu@lists.linux-foundation.org; devel@acpica.org
-> > > Cc: Linuxarm <linuxarm@huawei.com>; steven.price@arm.com;
-> > Guohanjun
-> > > (Hanjun Guo) <guohanjun@huawei.com>; Sami.Mujawar@arm.com;
-> > > robin.murphy@arm.com; wanghuiqiang <wanghuiqiang@huawei.com>
-> > > Subject: [RFC PATCH v2 1/8] ACPICA: IORT: Update for revision E
-> > >
-> > > IORT revision E contains a few additions like,
-> > > =A0 =A0 -Added an identifier field in the node descriptors to aid tab=
-le
-> > > =A0 =A0 =A0cross-referencing.
-> > > =A0 =A0 -Introduced the Reserved Memory Range(RMR) node. This is used
-> > >  =A0 =A0 to describe memory ranges that are used by endpoints and req=
-uires
-> > >  =A0 =A0 a unity mapping in SMMU.
-> > >     -Introduced a flag in the RC node to express support for PRI.
-> > >
-> > > Signed-off-by: Shameer Kolothum
-> > <shameerali.kolothum.thodi@huawei.com>
-> > > ---
-> > >  include/acpi/actbl2.h | 25 +++++++++++++++++++------
-> > >  1 file changed, 19 insertions(+), 6 deletions(-)
-> > >
-> > > diff --git a/include/acpi/actbl2.h b/include/acpi/actbl2.h index
-> > > ec66779cb193..274fce7b5c01 100644
-> > > --- a/include/acpi/actbl2.h
-> > > +++ b/include/acpi/actbl2.h
-> > > @@ -68,7 +68,7 @@
-> > >   * IORT - IO Remapping Table
-> > >   *
-> > >   * Conforms to "IO Remapping Table System Software on ARM Platforms",
-> > > - * Document number: ARM DEN 0049D, March 2018
-> > > + * Document number: ARM DEN 0049E, June 2020
-> > >   *
-> > >
-> > >
-> > **********************************************************
-> > ******
-> > > **************/
-> > >
-> > > @@ -86,7 +86,8 @@ struct acpi_iort_node {
-> > >  	u8 type;
-> > >  	u16 length;
-> > >  	u8 revision;
-> > > -	u32 reserved;
-> > > +	u16 reserved;
-> > > +	u16 identifier;
-> > >  	u32 mapping_count;
-> > >  	u32 mapping_offset;
-> > >  	char node_data[1];
-> > > @@ -100,7 +101,8 @@ enum acpi_iort_node_type {
-> > >  	ACPI_IORT_NODE_PCI_ROOT_COMPLEX =3D 0x02,
-> > >  	ACPI_IORT_NODE_SMMU =3D 0x03,
-> > >  	ACPI_IORT_NODE_SMMU_V3 =3D 0x04,
-> > > -	ACPI_IORT_NODE_PMCG =3D 0x05
-> > > +	ACPI_IORT_NODE_PMCG =3D 0x05,
-> > > +	ACPI_IORT_NODE_RMR =3D 0x06,
-> > >  };
-> > >
-> > >  struct acpi_iort_id_mapping {
-> > > @@ -167,10 +169,10 @@ struct acpi_iort_root_complex {
-> > >  	u8 reserved[3];		/* Reserved, must be zero */
-> > >  };
-> > >
-> > > -/* Values for ats_attribute field above */
-> > > +/* Masks for ats_attribute field above */
-> > >
-> > > -#define ACPI_IORT_ATS_SUPPORTED         0x00000001	/* The root
-> > > complex supports ATS */
-> > > -#define ACPI_IORT_ATS_UNSUPPORTED       0x00000000	/* The root
-> > > complex doesn't support ATS */
-> > > +#define ACPI_IORT_ATS_SUPPORTED         (1)	/* The root complex
-> > > supports ATS */
-> > > +#define ACPI_IORT_PRI_SUPPORTED         (1<<1)	/* The root complex
-> > > supports PRI */
-> > >
-> > >  struct acpi_iort_smmu {
-> > >  	u64 base_address;	/* SMMU base address */
-> > > @@ -241,6 +243,17 @@ struct acpi_iort_pmcg {
-> > >  	u64 page1_base_address;
-> > >  };
-> > >
-> > > +struct acpi_iort_rmr {
-> > > +	u32 rmr_count;
-> > > +	u32 rmr_offset;
-> > > +};
-> > > +
-> > > +struct acpi_iort_rmr_desc {
-> > > +	u64 base_address;
-> > > +	u64 length;
-> > > +	u32 reserved;
-> > > +};
-> > > +
-> > >
-> > >
-> > /**********************************************************
-> > *****
-> > > ****************
-> > >   *
-> > >   * IVRS - I/O Virtualization Reporting Structure
-> > > --
-> > > 2.17.1
-> > >
-> > > _______________________________________________
-> > > iommu mailing list
-> > > iommu@lists.linux-foundation.org
-> > > https://lists.linuxfoundation.org/mailman/listinfo/iommu
-> > _______________________________________________
-> > Devel mailing list -- devel@acpica.org
-> > To unsubscribe send an email to devel-leave@acpica.org
-> > %(web_page_url)slistinfo%(cgiext)s/%(_internal_name)s
+Reviewed-by: Christoph Hellwig <hch@lst.de>
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
