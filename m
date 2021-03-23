@@ -2,99 +2,79 @@ Return-Path: <SRS0=ZOt4=IV=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-13.5 required=3.0 tests=BAYES_00,
-	DKIM_ADSP_CUSTOM_MED,DKIM_INVALID,DKIM_SIGNED,FREEMAIL_FORGED_FROMDOMAIN,
-	FREEMAIL_FROM,HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_CR_TRAILER,
-	INCLUDES_PATCH,MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,USER_AGENT_GIT
+X-Spam-Status: No, score=-15.3 required=3.0 tests=BAYES_00,
+	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_CR_TRAILER,INCLUDES_PATCH,
+	MAILING_LIST_MULTI,NICE_REPLY_A,SPF_HELO_NONE,SPF_PASS,USER_AGENT_SANE_1
 	autolearn=ham autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id F0E0FC433C1
-	for <iommu@archiver.kernel.org>; Tue, 23 Mar 2021 01:53:57 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A870EC433DB
+	for <iommu@archiver.kernel.org>; Tue, 23 Mar 2021 02:06:39 +0000 (UTC)
 Received: from smtp4.osuosl.org (smtp4.osuosl.org [140.211.166.137])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 62228619A8
-	for <iommu@archiver.kernel.org>; Tue, 23 Mar 2021 01:53:57 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 62228619A8
-Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=gmail.com
+	by mail.kernel.org (Postfix) with ESMTPS id 176FB6196C
+	for <iommu@archiver.kernel.org>; Tue, 23 Mar 2021 02:06:39 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 176FB6196C
+Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=linux.intel.com
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by smtp4.osuosl.org (Postfix) with ESMTP id 1543D40378;
-	Tue, 23 Mar 2021 01:53:57 +0000 (UTC)
+	by smtp4.osuosl.org (Postfix) with ESMTP id C995E4045A;
+	Tue, 23 Mar 2021 02:06:38 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
 Received: from smtp4.osuosl.org ([127.0.0.1])
 	by localhost (smtp4.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id f1EUd0wpF7rJ; Tue, 23 Mar 2021 01:53:56 +0000 (UTC)
-Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [IPv6:2605:bc80:3010:104::8cd3:938])
-	by smtp4.osuosl.org (Postfix) with ESMTP id B916E401F3;
-	Tue, 23 Mar 2021 01:53:55 +0000 (UTC)
+	with ESMTP id h61-InIRQCRc; Tue, 23 Mar 2021 02:06:37 +0000 (UTC)
+Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
+	by smtp4.osuosl.org (Postfix) with ESMTP id 6635840423;
+	Tue, 23 Mar 2021 02:06:37 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 7CDFEC000B;
-	Tue, 23 Mar 2021 01:53:55 +0000 (UTC)
-Received: from smtp2.osuosl.org (smtp2.osuosl.org [IPv6:2605:bc80:3010::133])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 303EEC0001
- for <iommu@lists.linux-foundation.org>; Tue, 23 Mar 2021 01:53:54 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 259B8C000B;
+	Tue, 23 Mar 2021 02:06:37 +0000 (UTC)
+Received: from smtp1.osuosl.org (smtp1.osuosl.org [140.211.166.138])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id A936DC0001
+ for <iommu@lists.linux-foundation.org>; Tue, 23 Mar 2021 02:06:35 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by smtp2.osuosl.org (Postfix) with ESMTP id 17A4240348
- for <iommu@lists.linux-foundation.org>; Tue, 23 Mar 2021 01:53:54 +0000 (UTC)
+ by smtp1.osuosl.org (Postfix) with ESMTP id 899F583D83
+ for <iommu@lists.linux-foundation.org>; Tue, 23 Mar 2021 02:06:35 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Authentication-Results: smtp2.osuosl.org (amavisd-new);
- dkim=pass (2048-bit key) header.d=gmail.com
-Received: from smtp2.osuosl.org ([127.0.0.1])
- by localhost (smtp2.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id kYzP7W1exsN7 for <iommu@lists.linux-foundation.org>;
- Tue, 23 Mar 2021 01:53:53 +0000 (UTC)
-X-Greylist: whitelisted by SQLgrey-1.8.0
-Received: from mail-pg1-x530.google.com (mail-pg1-x530.google.com
- [IPv6:2607:f8b0:4864:20::530])
- by smtp2.osuosl.org (Postfix) with ESMTPS id 82D28402FE
- for <iommu@lists.linux-foundation.org>; Tue, 23 Mar 2021 01:53:53 +0000 (UTC)
-Received: by mail-pg1-x530.google.com with SMTP id k24so10135968pgl.6
- for <iommu@lists.linux-foundation.org>; Mon, 22 Mar 2021 18:53:53 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=gmail.com; s=20161025;
- h=from:to:cc:subject:date:message-id:in-reply-to:references
- :mime-version:content-transfer-encoding;
- bh=UN25kkS2KebRuu15wRF3YovKapnV4LybmIZMwea2YYo=;
- b=X4Hl65Vht8ypMH0BrR0aS/wzxgY9EdKWM8THL1iBDBWDVa03DGOeOvbQqxUp2Qlfr0
- LCivPy5VLWfs8Gz9CxuhYn5VzH6AB9vifmRKFmoakKCvnDTDv9e9ri6mU87ekvCqn8vB
- waPxprwZ3hVctrMPlk2o4AgKEm/KOVAqxZ4PIJ2h6645pCiMNEGzhqvc04g59k5Rzw2r
- LYh+Apd6aQNlfwW5KUMCm8wLJUMZhXgDcGL+VG9iyvBbYKiSJyPmSVUNe1dOc7UJY1ZB
- tXu/y/Hnyfa7DY5P1e3aO123voc/qDI6fNDlvCdzPn76uA0Y2NNejeoNZHSequ1NIn87
- jIYg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
- d=1e100.net; s=20161025;
- h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
- :references:mime-version:content-transfer-encoding;
- bh=UN25kkS2KebRuu15wRF3YovKapnV4LybmIZMwea2YYo=;
- b=ejUKlrsqWDxv4xQbSn6C9OcJ6JvxAVLPoP5nu0n1KESJfnWiChgQvRo95phqkUiGFv
- TBYAq1XUlEMbGybbD3/rAk/4SeUaHMptSlBpBL4zpWnWw/FHfG2CA0ySkj5E6xRezE0L
- 3ofJ48PnUKYYmYjp7T6+uEVaJT2w7u54XkVFtdBcjko9iKPAAxraw+Iz/tRFzKuVQXWR
- 4Z1TvpS3O0BHwmGXbPhWO3h3+croZU4itcXwUh+7UR0aleV1OUiRG6f0kqTG1Vgy1Kzi
- ZnKPajqPuezLq++kp0kxdF2Ulev/Os4p/aasA5cDF8cE/oR9Z1ThUTuyqHBGOX1f/11Z
- cLZQ==
-X-Gm-Message-State: AOAM533wIwcw3bc9EhzE/guDQVMbT4irQeEBTJogiFF8wou+YdFB1c8F
- H2JpIHoWEyNCrbymnOhE28A=
-X-Google-Smtp-Source: ABdhPJyqE1ohS2TSgebv7K5iabFQEl7wcTcGFvBsF7yvXcxIbElsqBcsJY3s4Q6L/Rom+/w3AzJBdg==
-X-Received: by 2002:a62:f248:0:b029:20a:f9d5:dac3 with SMTP id
- y8-20020a62f2480000b029020af9d5dac3mr2159803pfl.13.1616464432788; 
- Mon, 22 Mar 2021 18:53:52 -0700 (PDT)
-Received: from fainelli-desktop.igp.broadcom.net ([192.19.223.252])
- by smtp.gmail.com with ESMTPSA id 14sm3721376pfl.1.2021.03.22.18.53.51
- (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
- Mon, 22 Mar 2021 18:53:52 -0700 (PDT)
-From: Florian Fainelli <f.fainelli@gmail.com>
-To: linux-kernel@vger.kernel.org
-Subject: [PATCH v3] swiotlb: Make SWIOTLB_NO_FORCE perform no allocation
-Date: Mon, 22 Mar 2021 18:53:49 -0700
-Message-Id: <20210323015350.399493-1-f.fainelli@gmail.com>
-X-Mailer: git-send-email 2.25.1
-In-Reply-To: <20210321033740.312500-1-f.fainelli@gmail.com>
-References: <20210321033740.312500-1-f.fainelli@gmail.com>
+Received: from smtp1.osuosl.org ([127.0.0.1])
+ by localhost (smtp1.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+ with ESMTP id jyQR0ZhoTtuG for <iommu@lists.linux-foundation.org>;
+ Tue, 23 Mar 2021 02:06:34 +0000 (UTC)
+X-Greylist: domain auto-whitelisted by SQLgrey-1.8.0
+Received: from mga12.intel.com (mga12.intel.com [192.55.52.136])
+ by smtp1.osuosl.org (Postfix) with ESMTPS id BB64E83D81
+ for <iommu@lists.linux-foundation.org>; Tue, 23 Mar 2021 02:06:34 +0000 (UTC)
+IronPort-SDR: 3baKE71soQOTtB/aV1zLCssXet5J4rurDmYXEan5d5kZn4vrOgFzHJmV7O1XdhVjGlBSgr0OKE
+ FdzDy7lcq59Q==
+X-IronPort-AV: E=McAfee;i="6000,8403,9931"; a="169719068"
+X-IronPort-AV: E=Sophos;i="5.81,270,1610438400"; d="scan'208";a="169719068"
+Received: from fmsmga004.fm.intel.com ([10.253.24.48])
+ by fmsmga106.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384;
+ 22 Mar 2021 19:06:34 -0700
+IronPort-SDR: 0SGTCZ4RM8Nt9ZUPWX8VYrhcTHoRFl085zSc6JqB12wAOvXBtNF8uSmc5l0c5W+X8lgwVoVlmC
+ wSR2ZODFfi1g==
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.81,270,1610438400"; d="scan'208";a="435375555"
+Received: from allen-box.sh.intel.com (HELO [10.239.159.128])
+ ([10.239.159.128])
+ by fmsmga004.fm.intel.com with ESMTP; 22 Mar 2021 19:06:31 -0700
+Subject: Re: [PATCH 2/3] iommu/vt-d: Remove IOVA domain rcache flushing for
+ CPU offlining
+To: John Garry <john.garry@huawei.com>, dwmw2@infradead.org, joro@8bytes.org, 
+ will@kernel.org
+References: <1614600741-15696-1-git-send-email-john.garry@huawei.com>
+ <1614600741-15696-3-git-send-email-john.garry@huawei.com>
+From: Lu Baolu <baolu.lu@linux.intel.com>
+Message-ID: <f1743fc8-3968-2977-27fe-19b4a3babef9@linux.intel.com>
+Date: Tue, 23 Mar 2021 09:57:13 +0800
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
+ Thunderbird/68.10.0
 MIME-Version: 1.0
-Cc: Florian Fainelli <f.fainelli@gmail.com>,
- Konrad Rzeszutek Wilk <konrad.wilk@oracle.com>,
- "open list:SWIOTLB SUBSYSTEM" <iommu@lists.linux-foundation.org>,
- Robin Murphy <robin.murphy@arm.com>, Christoph Hellwig <hch@lst.de>
+In-Reply-To: <1614600741-15696-3-git-send-email-john.garry@huawei.com>
+Content-Language: en-US
+Cc: robin.murphy@arm.com, iommu@lists.linux-foundation.org, linuxarm@huawei.com,
+ linux-kernel@vger.kernel.org
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -107,97 +87,88 @@ List-Post: <mailto:iommu@lists.linux-foundation.org>
 List-Help: <mailto:iommu-request@lists.linux-foundation.org?subject=help>
 List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
  <mailto:iommu-request@lists.linux-foundation.org?subject=subscribe>
-Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset="us-ascii"; Format="flowed"
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-When SWIOTLB_NO_FORCE is used, there should really be no allocations of
-default_nslabs to occur since we are not going to use those slabs. If a
-platform was somehow setting swiotlb_no_force and a later call to
-swiotlb_init() was to be made we would still be proceeding with
-allocating the default SWIOTLB size (64MB), whereas if swiotlb=noforce
-was set on the kernel command line we would have only allocated 2KB.
+On 3/1/21 8:12 PM, John Garry wrote:
+> Now that the core code handles flushing per-IOVA domain CPU rcaches,
+> remove the handling here.
+> 
+> Signed-off-by: John Garry <john.garry@huawei.com>
+> ---
+>   drivers/iommu/intel/iommu.c | 31 -------------------------------
+>   include/linux/cpuhotplug.h  |  1 -
+>   2 files changed, 32 deletions(-)
+> 
+> diff --git a/drivers/iommu/intel/iommu.c b/drivers/iommu/intel/iommu.c
+> index ee0932307d64..d1e66e1b07b8 100644
+> --- a/drivers/iommu/intel/iommu.c
+> +++ b/drivers/iommu/intel/iommu.c
+> @@ -4065,35 +4065,6 @@ static struct notifier_block intel_iommu_memory_nb = {
+>   	.priority = 0
+>   };
+>   
+> -static void free_all_cpu_cached_iovas(unsigned int cpu)
+> -{
+> -	int i;
+> -
+> -	for (i = 0; i < g_num_of_iommus; i++) {
+> -		struct intel_iommu *iommu = g_iommus[i];
+> -		struct dmar_domain *domain;
+> -		int did;
+> -
+> -		if (!iommu)
+> -			continue;
+> -
+> -		for (did = 0; did < cap_ndoms(iommu->cap); did++) {
+> -			domain = get_iommu_domain(iommu, (u16)did);
+> -
+> -			if (!domain || domain->domain.type != IOMMU_DOMAIN_DMA)
+> -				continue;
+> -
+> -			iommu_dma_free_cpu_cached_iovas(cpu, &domain->domain);
+> -		}
+> -	}
+> -}
+> -
+> -static int intel_iommu_cpu_dead(unsigned int cpu)
+> -{
+> -	free_all_cpu_cached_iovas(cpu);
+> -	return 0;
+> -}
+> -
+>   static void intel_disable_iommus(void)
+>   {
+>   	struct intel_iommu *iommu = NULL;
+> @@ -4388,8 +4359,6 @@ int __init intel_iommu_init(void)
+>   	bus_set_iommu(&pci_bus_type, &intel_iommu_ops);
+>   	if (si_domain && !hw_pass_through)
+>   		register_memory_notifier(&intel_iommu_memory_nb);
+> -	cpuhp_setup_state(CPUHP_IOMMU_INTEL_DEAD, "iommu/intel:dead", NULL,
+> -			  intel_iommu_cpu_dead);
+>   
+>   	down_read(&dmar_global_lock);
+>   	if (probe_acpi_namespace_devices())
+> diff --git a/include/linux/cpuhotplug.h b/include/linux/cpuhotplug.h
+> index cedac9986557..85996494bec1 100644
+> --- a/include/linux/cpuhotplug.h
+> +++ b/include/linux/cpuhotplug.h
+> @@ -57,7 +57,6 @@ enum cpuhp_state {
+>   	CPUHP_PAGE_ALLOC_DEAD,
+>   	CPUHP_NET_DEV_DEAD,
+>   	CPUHP_PCI_XGENE_DEAD,
+> -	CPUHP_IOMMU_INTEL_DEAD,
+>   	CPUHP_IOMMU_IOVA_DEAD,
+>   	CPUHP_LUSTRE_CFS_DEAD,
+>   	CPUHP_AP_ARM_CACHE_B15_RAC_DEAD,
+> 
 
-This would be inconsistent and the point of initializing default_nslabs
-to 1, was intended to allocate the minimum amount of memory possible, so
-simply remove that minimal allocation period.
+Reviewed-by: Lu Baolu <baolu.lu@linux.intel.com>
 
-Signed-off-by: Florian Fainelli <f.fainelli@gmail.com>
----
-Changes in v3:
-- patch all call sites that can allocate SWIOTLB memory
-
-Changes in v2:
-
-- rebased against devel/for-linus-5.13
-- updated commit message to reflect variable names
-
- kernel/dma/swiotlb.c | 18 ++++++++++++++----
- 1 file changed, 14 insertions(+), 4 deletions(-)
-
-diff --git a/kernel/dma/swiotlb.c b/kernel/dma/swiotlb.c
-index 539c76beb52e..0a5b6f7e75bc 100644
---- a/kernel/dma/swiotlb.c
-+++ b/kernel/dma/swiotlb.c
-@@ -83,12 +83,10 @@ setup_io_tlb_npages(char *str)
- 	}
- 	if (*str == ',')
- 		++str;
--	if (!strcmp(str, "force")) {
-+	if (!strcmp(str, "force"))
- 		swiotlb_force = SWIOTLB_FORCE;
--	} else if (!strcmp(str, "noforce")) {
-+	else if (!strcmp(str, "noforce"))
- 		swiotlb_force = SWIOTLB_NO_FORCE;
--		default_nslabs = 1;
--	}
- 
- 	return 0;
- }
-@@ -174,6 +172,9 @@ int __init swiotlb_init_with_tbl(char *tlb, unsigned long nslabs, int verbose)
- 	struct io_tlb_mem *mem;
- 	size_t alloc_size;
- 
-+	if (swiotlb_force == SWIOTLB_NO_FORCE)
-+		return 0;
-+
- 	/* protect against double initialization */
- 	if (WARN_ON_ONCE(io_tlb_default_mem))
- 		return -ENOMEM;
-@@ -211,6 +212,9 @@ swiotlb_init(int verbose)
- 	size_t bytes = PAGE_ALIGN(default_nslabs << IO_TLB_SHIFT);
- 	void *tlb;
- 
-+	if (swiotlb_force == SWIOTLB_NO_FORCE)
-+		return;
-+
- 	/* Get IO TLB memory from the low pages */
- 	tlb = memblock_alloc_low(bytes, PAGE_SIZE);
- 	if (!tlb)
-@@ -240,6 +244,9 @@ swiotlb_late_init_with_default_size(size_t default_size)
- 	unsigned int order;
- 	int rc = 0;
- 
-+	if (swiotlb_force == SWIOTLB_NO_FORCE)
-+		return 0;
-+
- 	/*
- 	 * Get IO TLB memory from the low pages
- 	 */
-@@ -276,6 +283,9 @@ swiotlb_late_init_with_tbl(char *tlb, unsigned long nslabs)
- 	unsigned long bytes = nslabs << IO_TLB_SHIFT, i;
- 	struct io_tlb_mem *mem;
- 
-+	if (swiotlb_force == SWIOTLB_NO_FORCE)
-+		return 0;
-+
- 	/* protect against double initialization */
- 	if (WARN_ON_ONCE(io_tlb_default_mem))
- 		return -ENOMEM;
--- 
-2.25.1
-
+Best regards,
+baolu
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
