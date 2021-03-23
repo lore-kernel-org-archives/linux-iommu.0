@@ -2,88 +2,110 @@ Return-Path: <SRS0=ZOt4=IV=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-4.0 required=3.0 tests=BAYES_00,MAILING_LIST_MULTI,
-	SPF_HELO_NONE,SPF_PASS,URIBL_RED autolearn=no autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-3.5 required=3.0 tests=BAYES_00,DKIM_INVALID,
+	DKIM_SIGNED,HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,SPF_HELO_NONE,
+	SPF_PASS,URIBL_RED autolearn=no autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id EFCF8C433DB
-	for <iommu@archiver.kernel.org>; Tue, 23 Mar 2021 20:53:53 +0000 (UTC)
-Received: from smtp1.osuosl.org (smtp1.osuosl.org [140.211.166.138])
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 92335C433DB
+	for <iommu@archiver.kernel.org>; Tue, 23 Mar 2021 21:05:36 +0000 (UTC)
+Received: from smtp4.osuosl.org (smtp4.osuosl.org [140.211.166.137])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 98DCD619BF
-	for <iommu@archiver.kernel.org>; Tue, 23 Mar 2021 20:53:53 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 98DCD619BF
-Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=kernel.org
+	by mail.kernel.org (Postfix) with ESMTPS id 033ED619A5
+	for <iommu@archiver.kernel.org>; Tue, 23 Mar 2021 21:05:35 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 033ED619A5
+Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=lists.linux-foundation.org
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by smtp1.osuosl.org (Postfix) with ESMTP id 603AE8414E;
-	Tue, 23 Mar 2021 20:53:53 +0000 (UTC)
+	by smtp4.osuosl.org (Postfix) with ESMTP id B1CDE40524;
+	Tue, 23 Mar 2021 21:05:35 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from smtp1.osuosl.org ([127.0.0.1])
-	by localhost (smtp1.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id 5BDnUfXbroe1; Tue, 23 Mar 2021 20:53:52 +0000 (UTC)
+Received: from smtp4.osuosl.org ([127.0.0.1])
+	by localhost (smtp4.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+	with ESMTP id td6HokCAx8SP; Tue, 23 Mar 2021 21:05:34 +0000 (UTC)
 Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [IPv6:2605:bc80:3010:104::8cd3:938])
-	by smtp1.osuosl.org (Postfix) with ESMTP id 3B6C784119;
-	Tue, 23 Mar 2021 20:53:52 +0000 (UTC)
+	by smtp4.osuosl.org (Postfix) with ESMTP id 47D8940447;
+	Tue, 23 Mar 2021 21:05:34 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 152DCC000E;
-	Tue, 23 Mar 2021 20:53:52 +0000 (UTC)
-Received: from smtp3.osuosl.org (smtp3.osuosl.org [140.211.166.136])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 66016C000A
- for <iommu@lists.linux-foundation.org>; Tue, 23 Mar 2021 20:53:50 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 1D349C000D;
+	Tue, 23 Mar 2021 21:05:34 +0000 (UTC)
+Received: from smtp4.osuosl.org (smtp4.osuosl.org [140.211.166.137])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id B3996C000A
+ for <iommu@lists.linux-foundation.org>; Tue, 23 Mar 2021 21:05:32 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by smtp3.osuosl.org (Postfix) with ESMTP id 3F0AF6059D
- for <iommu@lists.linux-foundation.org>; Tue, 23 Mar 2021 20:53:50 +0000 (UTC)
+ by smtp4.osuosl.org (Postfix) with ESMTP id 9304240447
+ for <iommu@lists.linux-foundation.org>; Tue, 23 Mar 2021 21:05:32 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from smtp3.osuosl.org ([127.0.0.1])
- by localhost (smtp3.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id f7Lf38yqXQzk for <iommu@lists.linux-foundation.org>;
- Tue, 23 Mar 2021 20:53:49 +0000 (UTC)
-X-Greylist: whitelisted by SQLgrey-1.8.0
-Received: from mail-il1-f182.google.com (mail-il1-f182.google.com
- [209.85.166.182])
- by smtp3.osuosl.org (Postfix) with ESMTPS id 5D3E860661
- for <iommu@lists.linux-foundation.org>; Tue, 23 Mar 2021 20:53:49 +0000 (UTC)
-Received: by mail-il1-f182.google.com with SMTP id y17so7778786ila.6
- for <iommu@lists.linux-foundation.org>; Tue, 23 Mar 2021 13:53:49 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
- d=1e100.net; s=20161025;
- h=x-gm-message-state:date:from:to:cc:subject:message-id:references
- :mime-version:content-disposition:in-reply-to;
- bh=PHYJdMOhlozVGJVh1oALPNAZWOy/E29w1l72RoruR20=;
- b=Mmcb8LAOqb2eRLblBUCSjXZal5nItBuiriluXxBXVRjnduGpkgNe1vLzSraT2LJtut
- 7gCE0JqwIl2OrWEKg3tPjgK+gQ5gztXUdj8CUVDy4u8voTWcjpQE2DtWCWewDgopQaRK
- abxLWn6H4VMFhnvE80Hejnak7GG+6eOn9FeyH6t+QsGQHoDCs+c4B84DE1Rc0/ZKt2hU
- M+kBa9PytMhsC7F56AFnIDCEM3DVInMDSLb4QAnTh15BZfC+UPHnzxu1krLF2sEGOeNu
- X6w0Jib41hbmOgdRW5qbvohOFDXbIXHWdahiUpuOq4SPMff6sF1Bqc/J6y9knf7reOqW
- 2bxg==
-X-Gm-Message-State: AOAM533wbT2jvbacOkCl6XbQwEmiTjdYIEQCn5JLcgkk0piHUMjUiOTb
- JMWZ2q2MEJPfeMOtQU5+mw==
-X-Google-Smtp-Source: ABdhPJwAkhqmMD7d8QqODSssQ97V2pFypdhqwqehElXuGTHngBGyJOmgjnNRf8y1zQyPvSz1qRMvEA==
-X-Received: by 2002:a05:6e02:158c:: with SMTP id
- m12mr75161ilu.121.1616532828308; 
- Tue, 23 Mar 2021 13:53:48 -0700 (PDT)
-Received: from robh.at.kernel.org ([64.188.179.253])
- by smtp.gmail.com with ESMTPSA id d3sm11345ilo.32.2021.03.23.13.53.47
- (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
- Tue, 23 Mar 2021 13:53:47 -0700 (PDT)
-Received: (nullmailer pid 1302881 invoked by uid 1000);
- Tue, 23 Mar 2021 20:53:46 -0000
-Date: Tue, 23 Mar 2021 14:53:46 -0600
-From: Rob Herring <robh@kernel.org>
-To: Mark Kettenis <mark.kettenis@xs4all.nl>
-Subject: Re: [PATCH 0/3] Apple M1 DART IOMMU driver
-Message-ID: <20210323205346.GA1283560@robh.at.kernel.org>
+Received: from smtp4.osuosl.org ([127.0.0.1])
+ by localhost (smtp4.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+ with ESMTP id SbbcejCStX_E for <iommu@lists.linux-foundation.org>;
+ Tue, 23 Mar 2021 21:05:31 +0000 (UTC)
+X-Greylist: from auto-whitelisted by SQLgrey-1.8.0
+Received: from new4-smtp.messagingengine.com (new4-smtp.messagingengine.com
+ [66.111.4.230])
+ by smtp4.osuosl.org (Postfix) with ESMTPS id A2B4440444
+ for <iommu@lists.linux-foundation.org>; Tue, 23 Mar 2021 21:05:31 +0000 (UTC)
+Received: from compute3.internal (compute3.nyi.internal [10.202.2.43])
+ by mailnew.nyi.internal (Postfix) with ESMTP id 869E65808F8;
+ Tue, 23 Mar 2021 17:05:28 -0400 (EDT)
+Received: from imap21 ([10.202.2.71])
+ by compute3.internal (MEProxy); Tue, 23 Mar 2021 17:05:28 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=svenpeter.dev;
+ h=mime-version:message-id:in-reply-to:references:date:from:to
+ :cc:subject:content-type; s=fm1; bh=7AwKQ20yTUlj5ILOqFiSR0NWHgZy
+ DvHCZx+iOwKTD9A=; b=33vdjbL9sLaxm4AVMCxAQw5cEedmH7+oy/Fol1wpmhlj
+ KdbaZ6dLGDLHYxj6iX6SCtu7c6rgc/fZ/I/6st7CLWfCeM+kQ4Qs3YTS/VZ4gLpx
+ 0c2qsGmGZAOVGdQw/3mLVJ0SzX18hvoTGg60spR3+6A59D8wcoXHAB7OI56wzTVL
+ 9MsRSi/+3NNH+YSeak3vpzpGZe545A5O3vnz0GXTsSn7EarKaOX+U4H9PgVMOaJf
+ RT3gTktsyPdWLhnGjG1Vw8fh5URfj9u8WeovTGLk1cOzIScIoAN+2N6gZdQfMtFe
+ RNY9jl5HcdkWZ6f+p8CfwwlvlfNzkTg/kjxObDoEfw==
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
+ messagingengine.com; h=cc:content-type:date:from:in-reply-to
+ :message-id:mime-version:references:subject:to:x-me-proxy
+ :x-me-proxy:x-me-sender:x-me-sender:x-sasl-enc; s=fm2; bh=7AwKQ2
+ 0yTUlj5ILOqFiSR0NWHgZyDvHCZx+iOwKTD9A=; b=PVMsmS///9y5o8YHEheE21
+ Ehga8Q/Dd7zacqoBBQsG7g05XKAjstaEXqWdfvEq+y2wiU/RfJtTCR80j6M5EqtZ
+ pT4k96c5LTlTpM8DhSyb9gX3AN6dnX2QjQ3/Noftpaaof+2bX2ALJhsvllnWxacS
+ Z3wIm/j3W4TnyingfrbcOtBBmvzB4j2q3V4GGmNl07PJ1el7p2bp44PLhqdndp43
+ 0fL/oBYye5E9Lj/1n4SYNYjmmdUhQfi8TCCHZNndfnF5KJw5SnKLhvP7qb4k0Pp5
+ P5HlkGIYXwnjtjMGMc2FKAWqx33tgAqiJ2uFsUNODZMch2Q5hLJ4nJay+y8gsdgg
+ ==
+X-ME-Sender: <xms:FlhaYCbdxiCd3Xy-QRdw1eFowKJpQjPqM_2gyz0bSSZtoKH2xwIGBg>
+ <xme:FlhaYFZpWroX_2mhT2wHqTBJ7TOOsKlW3xax4OoEmqxEckesCbX_vcR2vbm-MIPVI
+ wc9r6SJ0k1oyOWgJxA>
+X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgeduledrudegiedgudegiecutefuodetggdotefrod
+ ftvfcurfhrohhfihhlvgemucfhrghsthforghilhdpqfgfvfdpuffrtefokffrpgfnqfgh
+ necuuegrihhlohhuthemuceftddtnecusecvtfgvtghiphhivghnthhsucdlqddutddtmd
+ enucfjughrpefofgggkfgjfhffhffvufgtsehttdertderredtnecuhfhrohhmpedfufhv
+ vghnucfrvghtvghrfdcuoehsvhgvnhesshhvvghnphgvthgvrhdruggvvheqnecuggftrf
+ grthhtvghrnhepgfeigeeiffeuhfettdejgfetjeetfeelfefgfefgvddvtdfghfffudeh
+ vdefkeffnecuvehluhhsthgvrhfuihiivgeptdenucfrrghrrghmpehmrghilhhfrhhomh
+ epshhvvghnsehsvhgvnhhpvghtvghrrdguvghv
+X-ME-Proxy: <xmx:FlhaYM91yjkKujZIiGQXQwr4p0AzmHmCl4Y15vufH5r-wMXDO3xcLw>
+ <xmx:FlhaYEqPw-LOLHpPTlOLJWFp0IMDzhSVOezJZ8_rSBVA4CwcyyHvkA>
+ <xmx:FlhaYNpCfMBJ-mlHOLKLkuMZOH_YS14lW5PhOK6Ut9Hnm_ToFHeTxg>
+ <xmx:GFhaYOQSV0XszcUHR0EH4S7HdHZdWCw1IEnnt2PPdxowpn5ZQsDhkkHU8QQ>
+Received: by mailuser.nyi.internal (Postfix, from userid 501)
+ id 30D0E51C005F; Tue, 23 Mar 2021 17:05:26 -0400 (EDT)
+X-Mailer: MessagingEngine.com Webmail Interface
+User-Agent: Cyrus-JMAP/3.5.0-alpha0-273-g8500d2492d-fm-20210323.002-g8500d249
+Mime-Version: 1.0
+Message-Id: <1a2da66b-221a-404f-a0af-d2b247ced0b0@www.fastmail.com>
+In-Reply-To: <c1bcca33753f71d3@bloch.sibelius.xs4all.nl>
 References: <20210320151903.60759-1-sven@svenpeter.dev>
  <c1bcc0609e920bc6@bloch.sibelius.xs4all.nl>
-MIME-Version: 1.0
-Content-Disposition: inline
-In-Reply-To: <c1bcc0609e920bc6@bloch.sibelius.xs4all.nl>
-Cc: arnd@kernel.org, Sven Peter <sven@svenpeter.dev>,
- devicetree@vger.kernel.org, will@kernel.org, marcan@marcan.st,
- linux-kernel@vger.kernel.org, iommu@lists.linux-foundation.org, maz@kernel.org,
- mohamed.mediouni@caramail.com, robin.murphy@arm.com,
- linux-arm-kernel@lists.infradead.org, stan@corellium.com
+ <8360b3b3-296c-450d-abc3-bb47159bf4e1@www.fastmail.com>
+ <c1bcc0be8ae6e500@bloch.sibelius.xs4all.nl>
+ <d280843b-77e3-4fa8-9452-5a2f8a45052e@www.fastmail.com>
+ <c1bcca33753f71d3@bloch.sibelius.xs4all.nl>
+Date: Tue, 23 Mar 2021 22:03:45 +0100
+To: "Mark Kettenis" <mark.kettenis@xs4all.nl>
+Subject: Re: [PATCH 0/3] Apple M1 DART IOMMU driver
+Cc: Arnd Bergmann <arnd@kernel.org>, devicetree@vger.kernel.org,
+ will@kernel.org, marcan@marcan.st, linux-kernel@vger.kernel.org,
+ iommu@lists.linux-foundation.org, robh+dt@kernel.org,
+ Marc Zyngier <maz@kernel.org>, mohamed.mediouni@caramail.com,
+ robin.murphy@arm.com, linux-arm-kernel@lists.infradead.org, stan@corellium.com
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -96,109 +118,71 @@ List-Post: <mailto:iommu@lists.linux-foundation.org>
 List-Help: <mailto:iommu-request@lists.linux-foundation.org?subject=help>
 List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
  <mailto:iommu-request@lists.linux-foundation.org?subject=subscribe>
+From: Sven Peter via iommu <iommu@lists.linux-foundation.org>
+Reply-To: Sven Peter <sven@svenpeter.dev>
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-On Sun, Mar 21, 2021 at 05:00:50PM +0100, Mark Kettenis wrote:
-> > Date: Sat, 20 Mar 2021 15:19:33 +0000
-> > From: Sven Peter <sven@svenpeter.dev>
-> > 
-> > Hi,
-> > 
-> > After Hector's initial work [1] to bring up Linux on Apple's M1 it's time to
-> > bring up more devices. Most peripherals connected to the SoC are behind a iommu
-> > which Apple calls "Device Address Resolution Table", or DART for short [2].
-> > Unfortunately, it only shares the name with PowerPC's DART.
-> > Configuring this iommu is mandatory if these peripherals require DMA access.
-> > 
-> > This patchset implements initial support for this iommu. The hardware itself
-> > uses a pagetable format that's very similar to the one already implement in
-> > io-pgtable.c. There are some minor modifications, namely some details of the
-> > PTE format and that there are always three pagetable levels, which I've
-> > implement as a new format variant.
-> > 
-> > I have mainly tested this with the USB controller in device mode which is
-> > compatible with Linux's dwc3 driver. Some custom PHY initialization (which is
-> > not yet ready or fully understood) is required though to bring up the ports,
-> > see e.g. my patches to our m1n1 bootloader [3,4]. If you want to test the same
-> > setup you will probably need that branch for now and add the nodes from
-> > the DT binding specification example to your device tree.
-> > 
-> > Even though each DART instances could support up to 16 devices usually only
-> > a single device is actually connected. Different devices generally just use
-> > an entirely separate DART instance with a seperate MMIO range, IRQ, etc.
-> > 
-> > I have just noticed today though that at least the USB DWC3 controller in host
-> > mode uses *two* darts at the same time. I'm not sure yet which parts seem to
-> > require which DART instance.
-> > 
-> > This means that we might need to support devices attached to two iommus
-> > simultaneously and just create the same iova mappings. Currently this only
-> > seems to be required for USB according to Apple's Device Tree.
-> > 
-> > I see two options for this and would like to get feedback before
-> > I implement either one:
-> > 
-> >     1) Change #iommu-cells = <1>; to #iommu-cells = <2>; and use the first cell
-> >        to identify the DART and the second one to identify the master.
-> >        The DART DT node would then also take two register ranges that would
-> >        correspond to the two DARTs. Both instances use the same IRQ and the
-> >        same clocks according to Apple's device tree and my experiments.
-> >        This would keep a single device node and the DART driver would then
-> >        simply map iovas in both DARTs if required.
-> > 
-> >     2) Keep #iommu-cells as-is but support
-> >             iommus = <&usb_dart1a 1>, <&usb_dart1b 0>;
-> >        instead.
-> >        This would then require two devices nodes for the two DART instances and
-> >        some housekeeping in the DART driver to support mapping iovas in both
-> >        DARTs.
-> >        I believe omap-iommu.c supports this setup but I will have to read
-> >        more code to understand the details there and figure out how to implement
-> >        this in a sane way.
-> > 
-> > I currently prefer the first option but I don't understand enough details of
-> > the iommu system to actually make an informed decision.
+Hi Mark,
 
-Please don't mix what does the h/w look like and what's easy to 
-implement in Linux's IOMMU subsytem. It's pretty clear (at least 
-from the description here) that option 2 reflects the h/w. 
+On Tue, Mar 23, 2021, at 21:00, Mark Kettenis wrote:
+> The problem with both #1 and #2 is that you end up with two references
+> to (effectively) different iommu's in the dwc3 device node.  I don't
+> see how that is compatible with the idea of using a single translation
+> table for both sub-DARTs.
 
-> > I'm obviously also open to more options :-)
-> 
-> Hi Sven,
-> 
-> I don't think the first option is going to work for PCIe.  PCIe
-> devices will have to use "iommu-map" properties to map PCI devices to
-> the right iommu, and the currently implementation seems to assume that
-> #iommu-cells = <1>.  The devictree binding[1] doesn't explicitly state
-> that it relies on #iommu-cells = <1>, but it isn't clear how the
-> rid-base to iommu-base mapping mechanism would work when that isn't
-> the case.
-> 
-> Now the PCIe DARTs are simpler and seem to have only one "instance"
-> per DART.  So if we keep #iommu-cells = <1> for those, you'd still be
-> fine using the first approach.
-> 
-> As I mentioned before, not all DARTs support the full 32-bit aperture.
-> In particular the PCIe DARTs support a smaller address-space.  It is
-> not clear whether this is a restriction of the PCIe host controller or
-> the DART, but the Apple Device Tree has "vm-base" and "vm-size"
-> properties that encode the base address and size of the aperture.
-> These single-cell properties which is probably why for the USB DARTs
-> only "vm-base" is given; since "vm-base" is 0, a 32-bit number
-> wouldn't be able to encode the full aperture size.  We could make them
-> 64-bit numbers in the Linux device tree though and always be explicit
-> about the size.  Older Sun SPARC machines used a single "virtual-dma"
-> property to encode the aperture.  We could do someting similar.  You
-> would use this property to initialize domain->geometry.aperture_start
-> and domain->geometry.aperture_end in diff 3/3 of this series.
+I don't have a strong opinion about this fwiw.
+Option #1 and #2 seem to have precedence in the already existing
+iommu bindings though [1,2,3].
+I just want to make sure we've thought through all options and understand
+their advantages/disadvantages before we take a decision.
 
-'dma-ranges' is what should be used here.
 
-Rob
+I've been reading some more Linux iommu code and here's how I understand
+it now / how I could implement at least #1 with a single shared pagetable.
+This might also be possible for option #2, but I'll need to think that through
+in more detail.
+
+An iommu domain is a collection of devices that share a virtual address space.
+During domain allocation I can just allocate a single DART pagetable and
+not have anything point to it for now.
+
+A stream identifies the smallest unit the iommu hardware can differentiate.
+For the DART we have 16 of these with a single TCR + the four TTBR register
+for each stream.
+
+A device is assigned to individual streams using the "iommus" property. When
+a device is attached to a domain we now simply setup the TTBR registers to
+point to the iommu domain pagetable. It doesn't matter here if it's a single
+stream or multiple ones or even multiple devices sharing a single stream as
+long as they're attached to the same domain.
+
+All operations (map, unmap, etc.) now simply first modify the domain
+pagetable and then issue the TLB maintenance operations for attached streams.
+
+
+> 
+> If you no longer think that is desirable, you'll still have the
+> problem that you'll need to modify the dwc3 driver code such that it
+> uses the right IOMMU to do its DMA address translation.  Given what
+> you write above that sounds really ugly and confusing.  I would
+> certainly want to avoid doing that in OpenBSD.
+
+Yeah, I absolutely don't want to hack on the dwc3 code at all.
+That will end up being *very* ugly.
+
+
+
+Best,
+
+Sven
+
+
+[1] Documentation/devicetree/bindings/iommu/iommu.txt "Multiple-master IOMMU"
+[2] Documentation/devicetree/bindings/qcom,iommu.txt last example
+[3] Documentation/devicetree/bindings/arm,smmu.yaml first example
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
