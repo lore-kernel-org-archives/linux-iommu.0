@@ -2,100 +2,70 @@ Return-Path: <SRS0=ZOt4=IV=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-3.5 required=3.0 tests=BAYES_00,DKIM_INVALID,
-	DKIM_SIGNED,HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,SPF_HELO_NONE,
-	SPF_PASS,URIBL_RED autolearn=no autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-12.5 required=3.0 tests=BAYES_00,
+	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_CR_TRAILER,INCLUDES_PATCH,
+	MAILING_LIST_MULTI,NICE_REPLY_A,SPF_HELO_NONE,SPF_PASS,UNWANTED_LANGUAGE_BODY,
+	URIBL_RED,USER_AGENT_SANE_1 autolearn=ham autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A1BDFC433DB
-	for <iommu@archiver.kernel.org>; Tue, 23 Mar 2021 10:53:34 +0000 (UTC)
-Received: from smtp1.osuosl.org (smtp1.osuosl.org [140.211.166.138])
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E6601C433DB
+	for <iommu@archiver.kernel.org>; Tue, 23 Mar 2021 12:45:38 +0000 (UTC)
+Received: from smtp3.osuosl.org (smtp3.osuosl.org [140.211.166.136])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 40065619BD
-	for <iommu@archiver.kernel.org>; Tue, 23 Mar 2021 10:53:34 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 40065619BD
-Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=linaro.org
+	by mail.kernel.org (Postfix) with ESMTPS id 45E8F619B8
+	for <iommu@archiver.kernel.org>; Tue, 23 Mar 2021 12:45:38 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 45E8F619B8
+Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=arm.com
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by smtp1.osuosl.org (Postfix) with ESMTP id CD71B835F2;
-	Tue, 23 Mar 2021 10:53:33 +0000 (UTC)
+	by smtp3.osuosl.org (Postfix) with ESMTP id D5B8A6081A;
+	Tue, 23 Mar 2021 12:45:37 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from smtp1.osuosl.org ([127.0.0.1])
-	by localhost (smtp1.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id 3GaOSzVIeKqY; Tue, 23 Mar 2021 10:53:33 +0000 (UTC)
+Received: from smtp3.osuosl.org ([127.0.0.1])
+	by localhost (smtp3.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+	with ESMTP id 79NroTrHMuKL; Tue, 23 Mar 2021 12:45:37 +0000 (UTC)
 Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by smtp1.osuosl.org (Postfix) with ESMTP id A7F2E827FA;
-	Tue, 23 Mar 2021 10:53:32 +0000 (UTC)
+	by smtp3.osuosl.org (Postfix) with ESMTP id AA088606A5;
+	Tue, 23 Mar 2021 12:45:36 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 59F03C000B;
-	Tue, 23 Mar 2021 10:53:32 +0000 (UTC)
-Received: from smtp3.osuosl.org (smtp3.osuosl.org [IPv6:2605:bc80:3010::136])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 09A59C0001
- for <iommu@lists.linux-foundation.org>; Tue, 23 Mar 2021 10:53:31 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 90F44C000B;
+	Tue, 23 Mar 2021 12:45:36 +0000 (UTC)
+Received: from smtp3.osuosl.org (smtp3.osuosl.org [140.211.166.136])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id EE1DCC0001
+ for <iommu@lists.linux-foundation.org>; Tue, 23 Mar 2021 12:45:34 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by smtp3.osuosl.org (Postfix) with ESMTP id E8B1C6081A
- for <iommu@lists.linux-foundation.org>; Tue, 23 Mar 2021 10:53:30 +0000 (UTC)
+ by smtp3.osuosl.org (Postfix) with ESMTP id DC92E6081A
+ for <iommu@lists.linux-foundation.org>; Tue, 23 Mar 2021 12:45:34 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Authentication-Results: smtp3.osuosl.org (amavisd-new);
- dkim=pass (2048-bit key) header.d=linaro.org
 Received: from smtp3.osuosl.org ([127.0.0.1])
  by localhost (smtp3.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id XoarBOkdC-V1 for <iommu@lists.linux-foundation.org>;
- Tue, 23 Mar 2021 10:53:30 +0000 (UTC)
-X-Greylist: whitelisted by SQLgrey-1.8.0
-Received: from mail-wr1-x430.google.com (mail-wr1-x430.google.com
- [IPv6:2a00:1450:4864:20::430])
- by smtp3.osuosl.org (Postfix) with ESMTPS id 036796068A
- for <iommu@lists.linux-foundation.org>; Tue, 23 Mar 2021 10:53:29 +0000 (UTC)
-Received: by mail-wr1-x430.google.com with SMTP id j7so20291337wrd.1
- for <iommu@lists.linux-foundation.org>; Tue, 23 Mar 2021 03:53:29 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linaro.org; s=google;
- h=date:from:to:cc:subject:message-id:references:mime-version
- :content-disposition:in-reply-to;
- bh=WGlnCIX+gPkt5saLRl1AO/eSfyQX4KhnrSrkJYnpgYY=;
- b=lIV8cb4KFfS7wkzFGd10vbdRrumERBd84XwjQG3DjbGuRdwbmikbg0jk61DgpoawxN
- BBl7QlKsTaJXnPCOF2y6MKlpThqG96Zmz81Yrp+FEZ6nTCt8av7uCsN5iwc29SpdsQSl
- EiW8j9VDV469niDRLYcAmzwI0D62kxpgUkue6nlgB7GxWnCpKMJp7zKfYmw4LCttdy0W
- G+gypPOTuKhWasizmui5cLDWk8ApZ/QXiji5JiDhmE2Nqmn2He3ID9hBKFsjODY4B8Q9
- b/M0eeC82xya4hZASNOjs2fKQtd+/3nIbS+1xCePGaJtlOEzWWikRqqdme5aVwM8jGf1
- rxZg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
- d=1e100.net; s=20161025;
- h=x-gm-message-state:date:from:to:cc:subject:message-id:references
- :mime-version:content-disposition:in-reply-to;
- bh=WGlnCIX+gPkt5saLRl1AO/eSfyQX4KhnrSrkJYnpgYY=;
- b=kbTWEKUc50RvlzS8MzQDatrsA9agFM9qQD6ID6mgMRsO6y0vq7aslfcUhygdWdmKwS
- nGzNTiachiAFKvVXaroYSXWNjsD5SVw5I5YDesR22E3+SPioxb0jcn4sfi3GtNrcs2rt
- /z1rq4fWHIczy5IHurJKSV1XCUDIMnkafyx05b8kN5LhJdFdZIV+HbXod3fTyAbPYsD4
- p1NwxoNH5+KYDFR1RGVdv1RBZ5Qj1+oei+Cr7sg0N/xc+MdUEAXRskqm1smCFpMKtVFo
- 60T6PLpXv5b3qqy+mFp2yjKZKODTCFE5MLNsmeDaPY3Q4IKfDnhEONtt2H8nKsuE+TKF
- fjDw==
-X-Gm-Message-State: AOAM533U115oenlNG+/shjMu6nvlkk4A/v4hI0/ztgK53L/5Ij2pnS6v
- deCVeyWSG71cI6wyFkT5cT9j/w==
-X-Google-Smtp-Source: ABdhPJxsZ4rfGrv8Gu+78757z6bQt9fLbU/W53+clBFuohI6UOhnceZv0BUdjXF3LdKpnrW2LNNtVA==
-X-Received: by 2002:a5d:4d01:: with SMTP id z1mr3253375wrt.133.1616496808336; 
- Tue, 23 Mar 2021 03:53:28 -0700 (PDT)
-Received: from myrica ([2001:1715:4e26:a7e0:116c:c27a:3e7f:5eaf])
- by smtp.gmail.com with ESMTPSA id z1sm23063818wru.95.2021.03.23.03.53.27
- (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
- Tue, 23 Mar 2021 03:53:27 -0700 (PDT)
-Date: Tue, 23 Mar 2021 11:53:10 +0100
-From: Jean-Philippe Brucker <jean-philippe@linaro.org>
-To: "Raj, Ashok" <ashok.raj@intel.com>
-Subject: Re: [PATCH v13 06/10] iommu: Add a page fault handler
-Message-ID: <YFnIlrecY6nkq5pP@myrica>
-References: <20210302092644.2553014-1-jean-philippe@linaro.org>
- <20210302092644.2553014-7-jean-philippe@linaro.org>
- <20210303055727.GF1914@otc-nc-03>
+ with ESMTP id P_TBXxlr3GCD for <iommu@lists.linux-foundation.org>;
+ Tue, 23 Mar 2021 12:45:34 +0000 (UTC)
+X-Greylist: domain auto-whitelisted by SQLgrey-1.8.0
+Received: from foss.arm.com (foss.arm.com [217.140.110.172])
+ by smtp3.osuosl.org (Postfix) with ESMTP id D9AF0606A5
+ for <iommu@lists.linux-foundation.org>; Tue, 23 Mar 2021 12:45:33 +0000 (UTC)
+Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
+ by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id D6F23D6E;
+ Tue, 23 Mar 2021 05:45:32 -0700 (PDT)
+Received: from [10.57.50.37] (unknown [10.57.50.37])
+ by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id 972D93F719;
+ Tue, 23 Mar 2021 05:45:31 -0700 (PDT)
+Subject: Re: [PATCH 1/3] iova: Add CPU hotplug handler to flush rcaches
+To: John Garry <john.garry@huawei.com>, dwmw2@infradead.org,
+ baolu.lu@linux.intel.com, joro@8bytes.org, will@kernel.org
+References: <1614600741-15696-1-git-send-email-john.garry@huawei.com>
+ <1614600741-15696-2-git-send-email-john.garry@huawei.com>
+From: Robin Murphy <robin.murphy@arm.com>
+Message-ID: <7085b559-3d84-2bc1-5c36-8e034a66f8fc@arm.com>
+Date: Tue, 23 Mar 2021 12:45:29 +0000
+User-Agent: Mozilla/5.0 (Windows NT 10.0; rv:78.0) Gecko/20100101
+ Thunderbird/78.8.1
 MIME-Version: 1.0
-Content-Disposition: inline
-In-Reply-To: <20210303055727.GF1914@otc-nc-03>
-Cc: vivek.gautam@arm.com, guohanjun@huawei.com, will@kernel.org,
- linux-acpi@vger.kernel.org, zhangfei.gao@linaro.org, lenb@kernel.org,
- devicetree@vger.kernel.org, kevin.tian@intel.com, robh+dt@kernel.org,
- linux-arm-kernel@lists.infradead.org, rjw@rjwysocki.net,
- iommu@lists.linux-foundation.org, sudeep.holla@arm.com, robin.murphy@arm.com,
- linux-accelerators@lists.ozlabs.org
+In-Reply-To: <1614600741-15696-2-git-send-email-john.garry@huawei.com>
+Content-Language: en-GB
+Cc: iommu@lists.linux-foundation.org, linux-kernel@vger.kernel.org,
+ linuxarm@huawei.com
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -108,43 +78,125 @@ List-Post: <mailto:iommu@lists.linux-foundation.org>
 List-Help: <mailto:iommu-request@lists.linux-foundation.org?subject=help>
 List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
  <mailto:iommu-request@lists.linux-foundation.org?subject=subscribe>
-Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset="us-ascii"; Format="flowed"
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-On Tue, Mar 02, 2021 at 09:57:27PM -0800, Raj, Ashok wrote:
-> > +	ret = handle_mm_fault(vma, prm->addr, fault_flags, NULL);
+On 2021-03-01 12:12, John Garry wrote:
+> Like the intel IOMMU driver already does, flush the per-IOVA domain
+> CPU rcache when a CPU goes offline - there's no point in keeping it.
+
+Thanks John!
+
+Reviewed-by: Robin Murphy <robin.murphy@arm.com>
+
+> Signed-off-by: John Garry <john.garry@huawei.com>
+> ---
+>   drivers/iommu/iova.c       | 30 +++++++++++++++++++++++++++++-
+>   include/linux/cpuhotplug.h |  1 +
+>   include/linux/iova.h       |  1 +
+>   3 files changed, 31 insertions(+), 1 deletion(-)
 > 
-> Should we add a trace similar to trace_page_fault_user() or kernel in
-> arch/x86/kernel/mm/fault.c 
-
-Yes that would definitely be useful for debugging hardware and developping
-applications. I can send a separate patch to add tracepoints here and in
-the lower-level device fault path.
-
-> or maybe add a perf_sw_event() for device faults? 
-
-It does seem like that would fit well alongside the existing
-PERF_COUNT_SW_PAGE_FAULTS, but I don't think it would be useful in
-practice, because we can't provide a context for the event. Since we're
-handling these faults remotely, the only way for a user to get IOPF events
-is to enable them on all CPUs and all tasks. Tracepoints can have 'pasid'
-and 'device' fields to identify an event, but the perf_sw_event wouldn't
-have any useful metadata apart from the faulting address.
-
-We could also add tracepoints on bind(), so users can get the PASID
-obtained with the PID they care about and filter fault events based on
-that.
-
-I've been wondering about associating a PASID with a PID internally,
-because we don't currently have anywhere to send SEGV signals for
-unhandled page faults. But I think it would be best to notify the device
-driver on unhandled fault and let them deal with it. They'll probably want
-that information anyway.
-
-Thanks,
-Jean
+> diff --git a/drivers/iommu/iova.c b/drivers/iommu/iova.c
+> index e6e2fa85271c..c78312560425 100644
+> --- a/drivers/iommu/iova.c
+> +++ b/drivers/iommu/iova.c
+> @@ -25,6 +25,17 @@ static void init_iova_rcaches(struct iova_domain *iovad);
+>   static void free_iova_rcaches(struct iova_domain *iovad);
+>   static void fq_destroy_all_entries(struct iova_domain *iovad);
+>   static void fq_flush_timeout(struct timer_list *t);
+> +
+> +static int iova_cpuhp_dead(unsigned int cpu, struct hlist_node *node)
+> +{
+> +	struct iova_domain *iovad;
+> +
+> +	iovad = hlist_entry_safe(node, struct iova_domain, cpuhp_dead);
+> +
+> +	free_cpu_cached_iovas(cpu, iovad);
+> +	return 0;
+> +}
+> +
+>   static void free_global_cached_iovas(struct iova_domain *iovad);
+>   
+>   void
+> @@ -51,6 +62,7 @@ init_iova_domain(struct iova_domain *iovad, unsigned long granule,
+>   	iovad->anchor.pfn_lo = iovad->anchor.pfn_hi = IOVA_ANCHOR;
+>   	rb_link_node(&iovad->anchor.node, NULL, &iovad->rbroot.rb_node);
+>   	rb_insert_color(&iovad->anchor.node, &iovad->rbroot);
+> +	cpuhp_state_add_instance_nocalls(CPUHP_IOMMU_IOVA_DEAD, &iovad->cpuhp_dead);
+>   	init_iova_rcaches(iovad);
+>   }
+>   EXPORT_SYMBOL_GPL(init_iova_domain);
+> @@ -257,10 +269,21 @@ int iova_cache_get(void)
+>   {
+>   	mutex_lock(&iova_cache_mutex);
+>   	if (!iova_cache_users) {
+> +		int ret;
+> +
+> +		ret = cpuhp_setup_state_multi(CPUHP_IOMMU_IOVA_DEAD, "iommu/iova:dead", NULL,
+> +					iova_cpuhp_dead);
+> +		if (ret) {
+> +			mutex_unlock(&iova_cache_mutex);
+> +			pr_err("Couldn't register cpuhp handler\n");
+> +			return ret;
+> +		}
+> +
+>   		iova_cache = kmem_cache_create(
+>   			"iommu_iova", sizeof(struct iova), 0,
+>   			SLAB_HWCACHE_ALIGN, NULL);
+>   		if (!iova_cache) {
+> +			cpuhp_remove_multi_state(CPUHP_IOMMU_IOVA_DEAD);
+>   			mutex_unlock(&iova_cache_mutex);
+>   			pr_err("Couldn't create iova cache\n");
+>   			return -ENOMEM;
+> @@ -282,8 +305,10 @@ void iova_cache_put(void)
+>   		return;
+>   	}
+>   	iova_cache_users--;
+> -	if (!iova_cache_users)
+> +	if (!iova_cache_users) {
+> +		cpuhp_remove_multi_state(CPUHP_IOMMU_IOVA_DEAD);
+>   		kmem_cache_destroy(iova_cache);
+> +	}
+>   	mutex_unlock(&iova_cache_mutex);
+>   }
+>   EXPORT_SYMBOL_GPL(iova_cache_put);
+> @@ -606,6 +631,9 @@ void put_iova_domain(struct iova_domain *iovad)
+>   {
+>   	struct iova *iova, *tmp;
+>   
+> +	cpuhp_state_remove_instance_nocalls(CPUHP_IOMMU_IOVA_DEAD,
+> +					    &iovad->cpuhp_dead);
+> +
+>   	free_iova_flush_queue(iovad);
+>   	free_iova_rcaches(iovad);
+>   	rbtree_postorder_for_each_entry_safe(iova, tmp, &iovad->rbroot, node)
+> diff --git a/include/linux/cpuhotplug.h b/include/linux/cpuhotplug.h
+> index f14adb882338..cedac9986557 100644
+> --- a/include/linux/cpuhotplug.h
+> +++ b/include/linux/cpuhotplug.h
+> @@ -58,6 +58,7 @@ enum cpuhp_state {
+>   	CPUHP_NET_DEV_DEAD,
+>   	CPUHP_PCI_XGENE_DEAD,
+>   	CPUHP_IOMMU_INTEL_DEAD,
+> +	CPUHP_IOMMU_IOVA_DEAD,
+>   	CPUHP_LUSTRE_CFS_DEAD,
+>   	CPUHP_AP_ARM_CACHE_B15_RAC_DEAD,
+>   	CPUHP_PADATA_DEAD,
+> diff --git a/include/linux/iova.h b/include/linux/iova.h
+> index c834c01c0a5b..4be6c0ab4997 100644
+> --- a/include/linux/iova.h
+> +++ b/include/linux/iova.h
+> @@ -95,6 +95,7 @@ struct iova_domain {
+>   						   flush-queues */
+>   	atomic_t fq_timer_on;			/* 1 when timer is active, 0
+>   						   when not */
+> +	struct hlist_node	cpuhp_dead;
+>   };
+>   
+>   static inline unsigned long iova_size(struct iova *iova)
+> 
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
