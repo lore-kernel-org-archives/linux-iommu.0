@@ -2,85 +2,158 @@ Return-Path: <SRS0=zuxH=IW=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-5.2 required=3.0 tests=BAYES_00,
-	HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,
-	URIBL_BLOCKED,USER_AGENT_SANE_2 autolearn=no autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-3.5 required=3.0 tests=BAYES_00,DKIM_INVALID,
+	DKIM_SIGNED,HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,
+	MSGID_FROM_MTA_HEADER,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED autolearn=no
+	autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 55ACEC433DB
-	for <iommu@archiver.kernel.org>; Wed, 24 Mar 2021 17:00:39 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E226FC433C1
+	for <iommu@archiver.kernel.org>; Wed, 24 Mar 2021 17:03:47 +0000 (UTC)
 Received: from smtp1.osuosl.org (smtp1.osuosl.org [140.211.166.138])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id F2A6061A10
-	for <iommu@archiver.kernel.org>; Wed, 24 Mar 2021 17:00:38 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org F2A6061A10
-Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=linux.intel.com
+	by mail.kernel.org (Postfix) with ESMTPS id 87D4161A13
+	for <iommu@archiver.kernel.org>; Wed, 24 Mar 2021 17:03:47 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 87D4161A13
+Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=nvidia.com
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by smtp1.osuosl.org (Postfix) with ESMTP id B590C849B8;
-	Wed, 24 Mar 2021 17:00:38 +0000 (UTC)
+	by smtp1.osuosl.org (Postfix) with ESMTP id 55E32849BE;
+	Wed, 24 Mar 2021 17:03:47 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
 Received: from smtp1.osuosl.org ([127.0.0.1])
 	by localhost (smtp1.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id ZnJBjxcCuXTN; Wed, 24 Mar 2021 17:00:37 +0000 (UTC)
+	with ESMTP id qCbQxOOzUTbZ; Wed, 24 Mar 2021 17:03:46 +0000 (UTC)
 Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [IPv6:2605:bc80:3010:104::8cd3:938])
-	by smtp1.osuosl.org (Postfix) with ESMTP id 9394C849AA;
-	Wed, 24 Mar 2021 17:00:37 +0000 (UTC)
+	by smtp1.osuosl.org (Postfix) with ESMTP id 412A28499B;
+	Wed, 24 Mar 2021 17:03:46 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 63779C000D;
-	Wed, 24 Mar 2021 17:00:37 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 0B362C000D;
+	Wed, 24 Mar 2021 17:03:46 +0000 (UTC)
 Received: from smtp2.osuosl.org (smtp2.osuosl.org [IPv6:2605:bc80:3010::133])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 106F9C000A
- for <iommu@lists.linux-foundation.org>; Wed, 24 Mar 2021 17:00:36 +0000 (UTC)
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 3D076C000A
+ for <iommu@lists.linux-foundation.org>; Wed, 24 Mar 2021 17:03:44 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by smtp2.osuosl.org (Postfix) with ESMTP id EAD9B400D3
- for <iommu@lists.linux-foundation.org>; Wed, 24 Mar 2021 17:00:35 +0000 (UTC)
+ by smtp2.osuosl.org (Postfix) with ESMTP id 1314940151
+ for <iommu@lists.linux-foundation.org>; Wed, 24 Mar 2021 17:03:44 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
+Authentication-Results: smtp2.osuosl.org (amavisd-new);
+ dkim=pass (2048-bit key) header.d=nvidia.com
 Received: from smtp2.osuosl.org ([127.0.0.1])
  by localhost (smtp2.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id IKSjNFucAm1j for <iommu@lists.linux-foundation.org>;
- Wed, 24 Mar 2021 17:00:34 +0000 (UTC)
-X-Greylist: domain auto-whitelisted by SQLgrey-1.8.0
-Received: from mga18.intel.com (mga18.intel.com [134.134.136.126])
- by smtp2.osuosl.org (Postfix) with ESMTPS id B202E4013C
- for <iommu@lists.linux-foundation.org>; Wed, 24 Mar 2021 17:00:34 +0000 (UTC)
-IronPort-SDR: /eFbE4FsR6Xmc0vYLloPQV5kyuBy6I7RSpbxYY4OBcGnHMHjnKRjCcnNhIyhQU87+Va92ZWS4e
- ElaXRY/4u4Sw==
-X-IronPort-AV: E=McAfee;i="6000,8403,9933"; a="178301799"
-X-IronPort-AV: E=Sophos;i="5.81,275,1610438400"; d="scan'208";a="178301799"
-Received: from orsmga005.jf.intel.com ([10.7.209.41])
- by orsmga106.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384;
- 24 Mar 2021 10:00:33 -0700
-IronPort-SDR: YaXrQdlMK3wx/87Gouc8P/JcmCFUnmxlV9XMFtnEUTpfgHtOYwd8VKOOu4hPqOQ8ocZEoUbDJh
- 55GbULgN11QA==
-X-IronPort-AV: E=Sophos;i="5.81,275,1610438400"; d="scan'208";a="593442260"
-Received: from jacob-builder.jf.intel.com (HELO jacob-builder) ([10.7.199.155])
- by orsmga005-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384;
- 24 Mar 2021 10:00:32 -0700
-Date: Wed, 24 Mar 2021 10:02:46 -0700
-From: Jacob Pan <jacob.jun.pan@linux.intel.com>
-To: Jean-Philippe Brucker <jean-philippe@linaro.org>
+ with ESMTP id eVtmQ2QfxoGv for <iommu@lists.linux-foundation.org>;
+ Wed, 24 Mar 2021 17:03:43 +0000 (UTC)
+X-Greylist: whitelisted by SQLgrey-1.8.0
+Received: from NAM12-MW2-obe.outbound.protection.outlook.com
+ (mail-mw2nam12on2081.outbound.protection.outlook.com [40.107.244.81])
+ by smtp2.osuosl.org (Postfix) with ESMTPS id E2DF440145
+ for <iommu@lists.linux-foundation.org>; Wed, 24 Mar 2021 17:03:42 +0000 (UTC)
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=C2nTVZFzGpXDYpLVEq4bo9vjptZBad6SW3kBxFag8WiS2sT1cOnrWw9xEf6wtBzSGNJzC+ZQsC+QGboLhQbPVXWjlzk3eNqL7SZfCSEdE2v9izDQ6T/rUn2+HV5D7zl2q/VI+2QOeic9Trg7i+ykMQedBg43oDbriRinEqE8WP2PPp3tsp/iien9f1vtRSD8hQTo/3sS/lBoQNbNDFLS9D3i7U1OZZFgE1xRCCxxuvQuu0u0acFOwP3nRe/zajpApuTJmpy7wtN2ftyuGpk0+Yn0/Y8G9QiavdQzGX5xyAyp6QKD5oQLDtpzQcjLf2Lxo1iErulKbnz4wkHEu1K70Q==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com; 
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=Uzr+K3BRDxSN1riRVVfJ2WL/Ho0CU52QiKj0ERMcv9w=;
+ b=IcdlC0aeNmSwYczrTN9ocxYnVy6NQI85m63r0JOzpOoDb5TES9wDcyeO1TlDhQyamhhjSYp5k/i8Xb6xs330XeBQlw/wsGqXL/sONkLQ4j8o3Jp12TM2FBHhIeqUyD+tLYraRkmryh0o9HlzAym4QCmVnqI8t4bLnCEsb5tp131amv1L7XpE/thyCLEZxZuEzcvm84x1sSiAJu+59As+16Yt9c8XKoIYQhUTwZzMcNJ4F2MxhCSqGovQNWBub+keBVGhp4B7l0zRODBo31hAzXZQjRCV+Vtsj3n1zOk0xex1VmmpimITG5WZnV54Ts3Q0HNxGa/RxGOjScYN3Sb0nQ==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=nvidia.com; dmarc=pass action=none header.from=nvidia.com;
+ dkim=pass header.d=nvidia.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
+ s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=Uzr+K3BRDxSN1riRVVfJ2WL/Ho0CU52QiKj0ERMcv9w=;
+ b=sDdOckxwkgSHEz6mRMpkT1XRJw4UZByb2yMGmmn4/mUdLEWzt6FfXd/XnRtMqUtkaTLKPdUxTlqu6yB2a/aYctAamkuBn6JUwz9E9YTzmKN2go+YJ/0aZ+qNjPn1rI79l+w3U4BMQlnyK4SmTj8991e0N/PdYMNS0eofgfhUlyGlqOc+2D6fvTZDl2rm2HhjPkLFrLteNnUAakll6PnhqQxKbVNViHJW8rybDLjmcFSSrcoSOt83o74J5iHWrYM2kwYprSKLW73S3bkkatns53VHK3X2JkoiYknLpFQ7oT0SNYkDCFq6XzfuFBge9O0FxhxN7TaZWHVMEf3xaHtT0g==
+Authentication-Results: linux.intel.com; dkim=none (message not signed)
+ header.d=none; linux.intel.com; dmarc=none action=none header.from=nvidia.com; 
+Received: from DM6PR12MB3834.namprd12.prod.outlook.com (2603:10b6:5:14a::12)
+ by DM6PR12MB4810.namprd12.prod.outlook.com (2603:10b6:5:1f7::15) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3955.18; Wed, 24 Mar
+ 2021 17:03:41 +0000
+Received: from DM6PR12MB3834.namprd12.prod.outlook.com
+ ([fe80::1c62:7fa3:617b:ab87]) by DM6PR12MB3834.namprd12.prod.outlook.com
+ ([fe80::1c62:7fa3:617b:ab87%6]) with mapi id 15.20.3955.027; Wed, 24 Mar 2021
+ 17:03:41 +0000
+Date: Wed, 24 Mar 2021 14:03:38 -0300
+From: Jason Gunthorpe <jgg@nvidia.com>
+To: Jacob Pan <jacob.jun.pan@linux.intel.com>
 Subject: Re: [PATCH V4 05/18] iommu/ioasid: Redefine IOASID set and
  allocation APIs
-Message-ID: <20210324100246.4e6b8aa1@jacob-builder>
-In-Reply-To: <YFhiMLR35WWMW/Hu@myrica>
+Message-ID: <20210324170338.GM2356281@nvidia.com>
 References: <1614463286-97618-1-git-send-email-jacob.jun.pan@linux.intel.com>
  <1614463286-97618-6-git-send-email-jacob.jun.pan@linux.intel.com>
  <20210318172234.3e8c34f7@jacob-builder> <YFR10eeDVf5ZHV5l@myrica>
  <20210319124645.GP2356281@nvidia.com> <YFSqDNJ5yagk4eO+@myrica>
  <20210319135432.GT2356281@nvidia.com>
  <20210319112221.5123b984@jacob-builder> <YFhiMLR35WWMW/Hu@myrica>
-Organization: OTC
-X-Mailer: Claws Mail 3.17.5 (GTK+ 2.24.32; x86_64-pc-linux-gnu)
+ <20210324100246.4e6b8aa1@jacob-builder>
+Content-Disposition: inline
+In-Reply-To: <20210324100246.4e6b8aa1@jacob-builder>
+X-Originating-IP: [206.223.160.26]
+X-ClientProxiedBy: YT1PR01CA0087.CANPRD01.PROD.OUTLOOK.COM
+ (2603:10b6:b01:2d::26) To DM6PR12MB3834.namprd12.prod.outlook.com
+ (2603:10b6:5:14a::12)
 MIME-Version: 1.0
-Cc: "Tian, Kevin" <kevin.tian@intel.com>,
- Alex Williamson <alex.williamson@redhat.com>, Raj Ashok <ashok.raj@intel.com>,
- Jonathan Corbet <corbet@lwn.net>,
+X-MS-Exchange-MessageSentRepresentingType: 1
+Received: from mlx.ziepe.ca (206.223.160.26) by
+ YT1PR01CA0087.CANPRD01.PROD.OUTLOOK.COM (2603:10b6:b01:2d::26) with Microsoft
+ SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.20.3955.24 via Frontend Transport; Wed, 24 Mar 2021 17:03:40 +0000
+Received: from jgg by mlx with local (Exim 4.94)	(envelope-from
+ <jgg@nvidia.com>)	id 1lP6uw-00257V-F6; Wed, 24 Mar 2021 14:03:38 -0300
+X-MS-PublicTrafficType: Email
+X-MS-Office365-Filtering-Correlation-Id: 7a4038da-8c20-459f-2356-08d8eee6c63e
+X-MS-TrafficTypeDiagnostic: DM6PR12MB4810:
+X-Microsoft-Antispam-PRVS: <DM6PR12MB48108A1D7D7D240A0EFAB60BC2639@DM6PR12MB4810.namprd12.prod.outlook.com>
+X-MS-Oob-TLC-OOBClassifiers: OLM:8273;
+X-MS-Exchange-SenderADCheck: 1
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: FIjY2HL58TrYFhGy6Gov0cEmLIuon7XC4/aa1+9tcMvuo55O4WoVU6Lwgil6enWrJDv2x+A8J5bClHp3eEBsPmlR+Q6BNBhb2jcVndKyG4uXOcAAH5JodXGPevKxz0BTXF+MXet07nxd6Ez70VUnw4roTJDE7VJh60jB0jcsVsQ2x6wPFYZuwW/gp6PQ9rrFRO34B/l7Bl+BAUbXzoG8mi036qI8Gc7+fIZR8ZwfTJsZoz+976U77GcK7ZOSXVXaqJOqYNTEvpkTcCt3hRBu40cih1xjy/+cLnOCXcSlg1r8NcsqjNc13+smVzplY7t/un7vNv2xX3K7WWyPaqLdrZRAGvKkWCilohN8z3ikHFduLvC0tN/XuzZ+ZXgGPHI0EOLfORq88X/RgZJWT/pIwOh0SQdpNH5Kpg09ezRBYJ3nPidMotD8tVIXUwyPxPO5EiwhqFOmr5uKtdBbYSGhfVrEayfV+Z1MOcpRG/uUTCHJbQxpIPdJIegEHTDS7KDPDGFocEDfMB9QkTlAQTL/JuHRHgCdU05iqJhoC0/C1IhNhprVBaO/7Z/aSlx6xZ99bOM2vkVF3Wm4PWa/WR8+ac6lDFVZxh69Z+OOMx30jGbYEf3ZCm+I3VuxLRSB5+QGan84eztV68YH+ylOwz0zXLWlL/Tc7DPDSz/05hVQAgo=
+X-Forefront-Antispam-Report: CIP:255.255.255.255; CTRY:; LANG:en; SCL:1; SRV:;
+ IPV:NLI; SFV:NSPM; H:DM6PR12MB3834.namprd12.prod.outlook.com; PTR:; CAT:NONE;
+ SFS:(4636009)(376002)(39860400002)(346002)(396003)(366004)(136003)(4326008)(7416002)(5660300002)(6916009)(54906003)(8676002)(186003)(26005)(8936002)(2616005)(316002)(1076003)(9786002)(36756003)(66946007)(33656002)(2906002)(83380400001)(66476007)(66556008)(86362001)(9746002)(426003)(38100700001)(478600001);
+ DIR:OUT; SFP:1101; 
+X-MS-Exchange-AntiSpam-MessageData: =?us-ascii?Q?vAtRwbinABwNOKNJMZQOaqV/hbG4QbbZUU2Hu4k9B/fsnZViP8rTU5BewDdu?=
+ =?us-ascii?Q?eKPZSvwQbPUs1qIBLcnp5ctjeW8ykaArS+LpOHmfNjeDKz+RHArse5tBtJAI?=
+ =?us-ascii?Q?G9M2I3VnuHN6BjNU41kinl2FRjN+bp4sx5eAAcrLVKILEXwjTVySnXwC4lFM?=
+ =?us-ascii?Q?d+rpeEi2CbVY7B1l5o15OCPlWjxJzcwBCnnLeJje3N+UYdqYPuKyTBMUixCA?=
+ =?us-ascii?Q?o7I4rNykfmc4JQvgtWPMMdGzV/KXgoVIEFJzu7ml6PxJa/6P/mubM2xCFM+1?=
+ =?us-ascii?Q?u9xlXjeYLJz2lMFrQv8PWCs9xf/sc4AYnOUSUNV8pCiAPFU19ufE1tn4tpND?=
+ =?us-ascii?Q?oQ8et8ZUPNtvmO9kz+JF/w6c3mN4KQfbiHwbSR/fuO0PwJMcFpxXBthzs5W2?=
+ =?us-ascii?Q?RQR3NoxzrJe4qVLgdM8WrzzGghxSJD9P6l1uDafJhrB/TID1KgCqgzm6bddk?=
+ =?us-ascii?Q?b3vAiSqtTH2ZJJOp0AAMYot8544aM7o7maEh82MYTJTMAQk4b5oEOB2MZ72x?=
+ =?us-ascii?Q?XCyBYJY8JFzUrCxZ5Cv7Gl3g5JZbPxyI6oMsx+L15x9Tbsh2GBZD8OkVodg4?=
+ =?us-ascii?Q?emqUlb1/nuyI/smiSMaE8Tu4g3L13hKA7ue4CVgMvwSStHP2npZ+Hev6K4To?=
+ =?us-ascii?Q?25JVz69wLR/z1w2gucV0O3zZHppjZp9xlekGQerWzRf5sfJ2FcRh7jxufzy2?=
+ =?us-ascii?Q?i0PL6PnuHCB5RlAu8C8L9ZeF0yV5G7ulW+wRoKF7JCLRtyqfOEPLMDjsUF0n?=
+ =?us-ascii?Q?3OQcTzly2e/tWzZ/pBqS/NoNPmosXov6FRMDJ1lrzkOWtAQlq09mabCraknD?=
+ =?us-ascii?Q?l6DXWcf99DzTft6FHXjfkiuf1c5d4cNdwYOGkFYy8LNBfnosJJf3TfaO7D2Z?=
+ =?us-ascii?Q?VB2Sab0OuoA5n5kxBhunH6PubkXrvxF1IRigZI8AYJpiEmCA7PaGUgI/9CzP?=
+ =?us-ascii?Q?p9fv1UCxr2jUurDTv59t5LfsjuiyuwscmcFW1xnL0JzJB5B1ASBBma8HrJb5?=
+ =?us-ascii?Q?WzOb4yiTA6eXjlmBjn7gXdPRZngzRGkC1wTCma211XWE1jmAeU/HokNBcHJo?=
+ =?us-ascii?Q?dBi7V69rKzDBjXszcG+b46XFKXjJbg2tg8/0SjLDfBEUn1SZtY/p4nWu7t4f?=
+ =?us-ascii?Q?8K7x5K6ak8A2dy6M73cuSNxLxQmyNuNhQ7azRBSgY7lco2TjvwLzCAdTDyS5?=
+ =?us-ascii?Q?j3CoQQ/KBoNf4gZQ4c9Zi40I6syDZ2Zc/S5EKRAxEbmBaHxT2gBf4saQbNyg?=
+ =?us-ascii?Q?vESEJNJv266CIwQPNt6JBREniYWsRzvAFPaCBRKBmIH9nZEWQNcLGiACLFVd?=
+ =?us-ascii?Q?FS4nwMMm43HnH+W5mLunIY4s?=
+X-OriginatorOrg: Nvidia.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 7a4038da-8c20-459f-2356-08d8eee6c63e
+X-MS-Exchange-CrossTenant-AuthSource: DM6PR12MB3834.namprd12.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 24 Mar 2021 17:03:41.1433 (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: s7P3+7kjQ79bxO/F3WqJA3zWpNtU31C0pyC0hMBMbK9qkGZCqGe8P+7cFVtzxbX4
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: DM6PR12MB4810
+Cc: Jean-Philippe Brucker <jean-philippe@linaro.org>, "Tian,
+ Kevin" <kevin.tian@intel.com>, Alex Williamson <alex.williamson@redhat.com>,
+ Raj Ashok <ashok.raj@intel.com>, Jonathan Corbet <corbet@lwn.net>,
  Jean-Philippe Brucker <jean-philippe@linaro.com>,
  LKML <linux-kernel@vger.kernel.org>, Dave Jiang <dave.jiang@intel.com>,
  iommu@lists.linux-foundation.org, Li Zefan <lizefan@huawei.com>,
- Jason Gunthorpe <jgg@nvidia.com>, Johannes Weiner <hannes@cmpxchg.org>,
- Tejun Heo <tj@kernel.org>, cgroups@vger.kernel.org, Wu Hao <hao.wu@intel.com>,
+ Johannes Weiner <hannes@cmpxchg.org>, Tejun Heo <tj@kernel.org>,
+ cgroups@vger.kernel.org, Wu Hao <hao.wu@intel.com>,
  David Woodhouse <dwmw2@infradead.org>
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
@@ -94,88 +167,34 @@ List-Post: <mailto:iommu@lists.linux-foundation.org>
 List-Help: <mailto:iommu-request@lists.linux-foundation.org?subject=help>
 List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
  <mailto:iommu-request@lists.linux-foundation.org?subject=subscribe>
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-SGkgSmVhbi1QaGlsaXBwZSwKCk9uIE1vbiwgMjIgTWFyIDIwMjEgMTA6MjQ6MDAgKzAxMDAsIEpl
-YW4tUGhpbGlwcGUgQnJ1Y2tlcgo8amVhbi1waGlsaXBwZUBsaW5hcm8ub3JnPiB3cm90ZToKCj4g
-T24gRnJpLCBNYXIgMTksIDIwMjEgYXQgMTE6MjI6MjFBTSAtMDcwMCwgSmFjb2IgUGFuIHdyb3Rl
-Ogo+ID4gSGkgSmFzb24sCj4gPiAKPiA+IE9uIEZyaSwgMTkgTWFyIDIwMjEgMTA6NTQ6MzIgLTAz
-MDAsIEphc29uIEd1bnRob3JwZSA8amdnQG52aWRpYS5jb20+Cj4gPiB3cm90ZTogCj4gPiA+IE9u
-IEZyaSwgTWFyIDE5LCAyMDIxIGF0IDAyOjQxOjMyUE0gKzAxMDAsIEplYW4tUGhpbGlwcGUgQnJ1
-Y2tlcgo+ID4gPiB3cm90ZTogIAo+ID4gPiA+IE9uIEZyaSwgTWFyIDE5LCAyMDIxIGF0IDA5OjQ2
-OjQ1QU0gLTAzMDAsIEphc29uIEd1bnRob3JwZSB3cm90ZTogICAgCj4gPiA+ID4gPiBPbiBGcmks
-IE1hciAxOSwgMjAyMSBhdCAxMDo1ODo0MUFNICswMTAwLCBKZWFuLVBoaWxpcHBlIEJydWNrZXIK
-PiA+ID4gPiA+IHdyb3RlOiAKPiA+ID4gPiA+ID4gQWx0aG91Z2ggdGhlcmUgaXMgbm8gdXNlIGZv
-ciBpdCBhdCB0aGUgbW9tZW50IChvbmx5IHR3byB1cHN0cmVhbQo+ID4gPiA+ID4gPiB1c2VycyBh
-bmQgaXQgbG9va3MgbGlrZSBhbWRrZmQgYWx3YXlzIHVzZXMgY3VycmVudCB0b28pLCBJIHF1aXRl
-Cj4gPiA+ID4gPiA+IGxpa2UgdGhlIGNsaWVudC1zZXJ2ZXIgbW9kZWwgd2hlcmUgdGhlIHByaXZp
-bGVnZWQgcHJvY2VzcyBkb2VzCj4gPiA+ID4gPiA+IGJpbmQoKSBhbmQgcHJvZ3JhbXMgdGhlIGhh
-cmR3YXJlIHF1ZXVlIG9uIGJlaGFsZiBvZiB0aGUgY2xpZW50Cj4gPiA+ID4gPiA+IHByb2Nlc3Mu
-ICAgIAo+ID4gPiA+ID4gCj4gPiA+ID4gPiBUaGlzIGNyZWF0ZXMgYSBsb3QgY29tcGxleGl0eSwg
-aG93IGRvIGRvZXMgcHJvY2VzcyBBIGdldCBhIHNlY3VyZQo+ID4gPiA+ID4gcmVmZXJlbmNlIHRv
-IEI/IEhvdyBkb2VzIGl0IGFjY2VzcyB0aGUgbWVtb3J5IGluIEIgdG8gc2V0dXAgdGhlCj4gPiA+
-ID4gPiBIVz8gICAgCj4gPiA+ID4gCj4gPiA+ID4gbW1fYWNjZXNzKCkgZm9yIGV4YW1wbGUsIGFu
-ZCBwYXNzaW5nIGFkZHJlc3NlcyB2aWEgSVBDICAgIAo+ID4gPiAKPiA+ID4gSSdkIHJhdGhlciB0
-aGUgc291cmNlIHByb2Nlc3MgZXN0YWJsaXNoIGl0cyBvd24gUEFTSUQgYW5kIHRoZW4gcGFzcwo+
-ID4gPiB0aGUgcmlnaHRzIHRvIHVzZSBpdCB0byBzb21lIG90aGVyIHByb2Nlc3MgdmlhIEZEIHBh
-c3NpbmcgdGhhbiB0cnkgdG8KPiA+ID4gZ28gdGhlIG90aGVyIHdheS4gVGhlcmUgYXJlIGxvdHMg
-b2Ygc2VjdXJpdHkgcXVlc3Rpb25zIHdpdGggc29tZXRoaW5nCj4gPiA+IGxpa2UgbW1fYWNjZXNz
-Lgo+ID4gPiAgIAo+ID4gCj4gPiBUaGFuayB5b3UgYWxsIGZvciB0aGUgaW5wdXQsIGl0IHNvdW5k
-cyBsaWtlIHdlIGFyZSBPSyB0byByZW1vdmUgbW0KPiA+IGFyZ3VtZW50IGZyb20gaW9tbXVfc3Zh
-X2JpbmRfZGV2aWNlKCkgYW5kIGlvbW11X3N2YV9hbGxvY19wYXNpZCgpIGZvcgo+ID4gbm93PyAg
-Cj4gCj4gRmluZSBieSBtZS4gQnkgdGhlIHdheSB0aGUgSURYRCBjdXJyZW50bHkgbWlzc3VlcyB0
-aGUgYmluZCBBUEkgZm9yCj4gc3VwZXJ2aXNvciBQQVNJRCwgYW5kIHRoZSBkcnZkYXRhIHBhcmFt
-ZXRlciBpc24ndCBvdGhlcndpc2UgdXNlZC4gVGhpcwo+IHdvdWxkIGJlIGEgZ29vZCBvY2Nhc2lv
-biB0byBjbGVhbiBib3RoLiBUaGUgbmV3IGJpbmQgcHJvdG90eXBlIGNvdWxkIGJlOgo+IAo+IHN0
-cnVjdCBpb21tdV9zdmEgKmlvbW11X3N2YV9iaW5kX2RldmljZShzdHJ1Y3QgZGV2aWNlICpkZXYs
-IGludCBmbGFncykKPiAKeWVzLCB3ZSByZWFsbHkganVzdCBoaWphY2tlZCBkcnZkYXRhIGFzIGZs
-YWdzLCBpdCB3b3VsZCBiZSBjbGVhbmVyIHRvIHVzZQpmbGFncyBleHBsaWNpdGx5LgoKPiBBbmQg
-YSBmbGFnIElPTU1VX1NWQV9CSU5EX1NVUEVSVklTT1IgKG5vdCB0aGF0IEkgcGxhbiB0byBpbXBs
-ZW1lbnQgaXQgaW4KPiB0aGUgU01NVSwgYnV0IEkgdGhpbmsgd2UgbmVlZCB0byBjbGVhbiB0aGUg
-Y3VycmVudCB1c2FnZSkKPiAKWW91IG1lYW4gbW92ZSAjZGVmaW5lIFNWTV9GTEFHX1NVUEVSVklT
-T1JfTU9ERSBvdXQgb2YgSW50ZWwgY29kZSB0byBiZSBhCmdlbmVyaWMgZmxhZyBpbiBpb21tdS1z
-dmEtbGliLmggY2FsbGVkIElPTU1VX1NWQV9CSU5EX1NVUEVSVklTT1I/CgpJIGFncmVlIGlmIHRo
-YXQgaXMgdGhlIHByb3Bvc2FsLgoKPiA+IAo+ID4gTGV0IG1lIHRyeSB0byBzdW1tYXJpemUgUEFT
-SUQgYWxsb2NhdGlvbiBhcyBiZWxvdzoKPiA+IAo+ID4gSW50ZXJmYWNlcwl8IFVzYWdlCXwgIExp
-bWl0CXwgYmluZMK5IHxVc2VyIHZpc2libGUKPiA+IC0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0t
-LS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tCj4gPiAvZGV2L2lvYXNp
-ZMKyCXwgRy1TVkEvSU9WQQl8ICBjZ3JvdXAJfCBObwo+ID4gfFllcwo+ID4gLS0tLS0tLS0tLS0t
-LS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0K
-PiA+IGNoYXIgZGV2wrMJfCBTVkEJCXwgIGNncm91cAl8IFllcwl8Tm8KPiA+IC0tLS0tLS0tLS0t
-LS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0t
-Cj4gPiBpb21tdSBkcml2ZXIJfCBkZWZhdWx0IFBBU0lEfCAgbm8JCXwgTm8JfE5vCj4gPiAgCj4g
-Cj4gSXMgdGhpcyBQQVNJRCAjMD8KPiAKVHJ1ZSBmb3IgbmF0aXZlIGNhc2UgYnV0IG5vdCBsaW1p
-dGVkIHRvIFBBU0lEIzAgZm9yIGd1ZXN0IGNhc2UuIEUuZy4gZm9yCm1kZXYgYXNzaWdubWVudCB3
-aXRoIGd1ZXN0IElPVkEsIHRoZSBndWVzdCBQQVNJRCB3b3VsZCAjMCwgYnV0IHRoZSBob3N0IGF1
-eApkb21haW4gZGVmYXVsdCBQQVNJRCBjYW4gYmUgbm9uLXplcm8uIEhlcmUgSSBtZWFudCB0byBp
-bmNsdWRlIGJvdGggY2FzZXMuCgo+ID4gLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0t
-LS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0KPiA+IGtlcm5lbAkJfCBzdXBlciBT
-VkEJfCBubwkJfCB5ZXMgICB8Tm8KPiA+IC0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0t
-LS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tICAKPiAKPiBBbHNvIHdvbmRlcmlu
-ZyBhYm91dCBkZXZpY2UgZHJpdmVyIGFsbG9jYXRpbmcgYXV4aWxpYXJ5IGRvbWFpbnMgZm9yIHRo
-ZWlyCj4gcHJpdmF0ZSB1c2UsIHRvIGRvIGlvbW11X21hcC91bm1hcCBvbiBwcml2YXRlIFBBU0lE
-cyAoYSBjbGVhbiByZXBsYWNlbWVudAo+IHRvIHN1cGVyIFNWQSwgZm9yIGV4YW1wbGUpLiBXb3Vs
-ZCB0aGF0IGdvIHRocm91Z2ggdGhlIHNhbWUgcGF0aCBhcwo+IC9kZXYvaW9hc2lkIGFuZCB1c2Ug
-dGhlIGNncm91cCBvZiBjdXJyZW50IHRhc2s/Cj4KRm9yIHRoZSBpbi1rZXJuZWwgcHJpdmF0ZSB1
-c2UsIEkgZG9uJ3QgdGhpbmsgd2Ugc2hvdWxkIHJlc3RyaWN0IGJhc2VkIG9uCmNncm91cCwgc2lu
-Y2UgdGhlcmUgaXMgbm8gYWZmaW5pdHkgdG8gdXNlciBwcm9jZXNzZXMuIEkgYWxzbyB0aGluayB0
-aGUKUEFTSUQgYWxsb2NhdGlvbiBzaG91bGQganVzdCB1c2Uga2VybmVsIEFQSSBpbnN0ZWFkIG9m
-IC9kZXYvaW9hc2lkLiBXaHkKd291bGQgdXNlciBzcGFjZSBuZWVkIHRvIGtub3cgdGhlIGFjdHVh
-bCBQQVNJRCAjIGZvciBkZXZpY2UgcHJpdmF0ZSBkb21haW5zPwpNYXliZSBJIG1pc3NlZCB5b3Vy
-IGlkZWE/Cgo+IFRoYW5rcywKPiBKZWFuCj4gCj4gPiAKPiA+IMK5IEFsbG9jYXRlZCBkdXJpbmcg
-U1ZBIGJpbmQKPiA+IMKyIFBBU0lEcyBhbGxvY2F0ZWQgdmlhIC9kZXYvaW9hc2lkIGFyZSBub3Qg
-Ym91bmQgdG8gYW55IG1tLiBCdXQgaXRzCj4gPiAgIG93bmVyc2hpcCBpcyBhc3NpZ25lZCB0byB0
-aGUgcHJvY2VzcyB0aGF0IGRvZXMgdGhlIGFsbG9jYXRpb24uCj4gPiDCsyBJbmNsdWRlIHVhY2Nl
-LCBvdGhlciBwcml2YXRlIGRldmljZSBkcml2ZXIgY2hhciBkZXYgc3VjaCBhcyBpZHhkCj4gPiAK
-PiA+IEN1cnJlbnRseSwgdGhlIHByb3Bvc2VkIC9kZXYvaW9hc2lkIGludGVyZmFjZSBkb2VzIG5v
-dCBtYXAgaW5kaXZpZHVhbAo+ID4gUEFTSUQgd2l0aCBhbiBGRC4gVGhlIEZEIGlzIGF0IHRoZSBp
-b2FzaWRfc2V0IGdyYW51bGFyaXR5IGFuZCBib25kIHRvCj4gPiB0aGUgY3VycmVudCBtbS4gV2Ug
-Y291bGQgZXh0ZW5kIHRoZSBJT0NUTHMgdG8gY292ZXIgaW5kaXZpZHVhbCBQQVNJRC1GRAo+ID4g
-cGFzc2luZyBjYXNlIHdoZW4gdXNlIGNhc2VzIGFyaXNlLiBXb3VsZCB0aGlzIHdvcms/Cj4gPiAK
-PiA+IFRoYW5rcywKPiA+IAo+ID4gSmFjb2IgIAoKClRoYW5rcywKCkphY29iCl9fX19fX19fX19f
-X19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fCmlvbW11IG1haWxpbmcgbGlzdApp
-b21tdUBsaXN0cy5saW51eC1mb3VuZGF0aW9uLm9yZwpodHRwczovL2xpc3RzLmxpbnV4Zm91bmRh
-dGlvbi5vcmcvbWFpbG1hbi9saXN0aW5mby9pb21tdQ==
+On Wed, Mar 24, 2021 at 10:02:46AM -0700, Jacob Pan wrote:
+> > Also wondering about device driver allocating auxiliary domains for their
+> > private use, to do iommu_map/unmap on private PASIDs (a clean replacement
+> > to super SVA, for example). Would that go through the same path as
+> > /dev/ioasid and use the cgroup of current task?
+>
+> For the in-kernel private use, I don't think we should restrict based on
+> cgroup, since there is no affinity to user processes. I also think the
+> PASID allocation should just use kernel API instead of /dev/ioasid. Why
+> would user space need to know the actual PASID # for device private domains?
+> Maybe I missed your idea?
+
+There is not much in the kernel that isn't triggered by a process, I
+would be careful about the idea that there is a class of users that
+can consume a cgroup controlled resource without being inside the
+cgroup.
+
+We've got into trouble before overlooking this and with something
+greenfield like PASID it would be best built in to the API to prevent
+a mistake. eg accepting a cgroup or process input to the allocator.
+
+Jason
+_______________________________________________
+iommu mailing list
+iommu@lists.linux-foundation.org
+https://lists.linuxfoundation.org/mailman/listinfo/iommu
