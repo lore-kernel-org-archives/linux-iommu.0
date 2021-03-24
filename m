@@ -2,73 +2,86 @@ Return-Path: <SRS0=zuxH=IW=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-15.3 required=3.0 tests=BAYES_00,
-	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_CR_TRAILER,INCLUDES_PATCH,
-	MAILING_LIST_MULTI,NICE_REPLY_A,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,
-	USER_AGENT_SANE_1 autolearn=ham autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-5.2 required=3.0 tests=BAYES_00,
+	HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,
+	URIBL_BLOCKED,USER_AGENT_SANE_2 autolearn=no autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3276FC433C1
-	for <iommu@archiver.kernel.org>; Wed, 24 Mar 2021 16:38:15 +0000 (UTC)
-Received: from smtp3.osuosl.org (smtp3.osuosl.org [140.211.166.136])
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 55ACEC433DB
+	for <iommu@archiver.kernel.org>; Wed, 24 Mar 2021 17:00:39 +0000 (UTC)
+Received: from smtp1.osuosl.org (smtp1.osuosl.org [140.211.166.138])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id A49E7619F8
-	for <iommu@archiver.kernel.org>; Wed, 24 Mar 2021 16:38:14 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org A49E7619F8
-Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=arm.com
+	by mail.kernel.org (Postfix) with ESMTPS id F2A6061A10
+	for <iommu@archiver.kernel.org>; Wed, 24 Mar 2021 17:00:38 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org F2A6061A10
+Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=linux.intel.com
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by smtp3.osuosl.org (Postfix) with ESMTP id 51AD460733;
-	Wed, 24 Mar 2021 16:38:14 +0000 (UTC)
+	by smtp1.osuosl.org (Postfix) with ESMTP id B590C849B8;
+	Wed, 24 Mar 2021 17:00:38 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from smtp3.osuosl.org ([127.0.0.1])
-	by localhost (smtp3.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id erSz7gKdfnhN; Wed, 24 Mar 2021 16:38:12 +0000 (UTC)
+Received: from smtp1.osuosl.org ([127.0.0.1])
+	by localhost (smtp1.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+	with ESMTP id ZnJBjxcCuXTN; Wed, 24 Mar 2021 17:00:37 +0000 (UTC)
 Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [IPv6:2605:bc80:3010:104::8cd3:938])
-	by smtp3.osuosl.org (Postfix) with ESMTP id 608A16070B;
-	Wed, 24 Mar 2021 16:38:12 +0000 (UTC)
+	by smtp1.osuosl.org (Postfix) with ESMTP id 9394C849AA;
+	Wed, 24 Mar 2021 17:00:37 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 43631C000D;
-	Wed, 24 Mar 2021 16:38:12 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 63779C000D;
+	Wed, 24 Mar 2021 17:00:37 +0000 (UTC)
 Received: from smtp2.osuosl.org (smtp2.osuosl.org [IPv6:2605:bc80:3010::133])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 2EB30C000A
- for <iommu@lists.linux-foundation.org>; Wed, 24 Mar 2021 16:38:11 +0000 (UTC)
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 106F9C000A
+ for <iommu@lists.linux-foundation.org>; Wed, 24 Mar 2021 17:00:36 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by smtp2.osuosl.org (Postfix) with ESMTP id 13F234013D
- for <iommu@lists.linux-foundation.org>; Wed, 24 Mar 2021 16:38:11 +0000 (UTC)
+ by smtp2.osuosl.org (Postfix) with ESMTP id EAD9B400D3
+ for <iommu@lists.linux-foundation.org>; Wed, 24 Mar 2021 17:00:35 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
 Received: from smtp2.osuosl.org ([127.0.0.1])
  by localhost (smtp2.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id UTqm1o-Zq6se for <iommu@lists.linux-foundation.org>;
- Wed, 24 Mar 2021 16:38:09 +0000 (UTC)
+ with ESMTP id IKSjNFucAm1j for <iommu@lists.linux-foundation.org>;
+ Wed, 24 Mar 2021 17:00:34 +0000 (UTC)
 X-Greylist: domain auto-whitelisted by SQLgrey-1.8.0
-Received: from foss.arm.com (foss.arm.com [217.140.110.172])
- by smtp2.osuosl.org (Postfix) with ESMTP id E9CA04013C
- for <iommu@lists.linux-foundation.org>; Wed, 24 Mar 2021 16:38:08 +0000 (UTC)
-Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
- by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id D6786D6E;
- Wed, 24 Mar 2021 09:38:07 -0700 (PDT)
-Received: from [10.57.50.37] (unknown [10.57.50.37])
- by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id 98D4F3F7D7;
- Wed, 24 Mar 2021 09:38:05 -0700 (PDT)
-Subject: Re: [PATCH 1/3] iommu: io-pgtable: add DART pagetable format
-To: Sven Peter <sven@svenpeter.dev>, iommu@lists.linux-foundation.org
-References: <20210320151903.60759-1-sven@svenpeter.dev>
- <20210320151903.60759-2-sven@svenpeter.dev>
-From: Robin Murphy <robin.murphy@arm.com>
-Message-ID: <2e7e4002-4f37-9348-40e6-aaa523207472@arm.com>
-Date: Wed, 24 Mar 2021 16:37:57 +0000
-User-Agent: Mozilla/5.0 (Windows NT 10.0; rv:78.0) Gecko/20100101
- Thunderbird/78.8.1
+Received: from mga18.intel.com (mga18.intel.com [134.134.136.126])
+ by smtp2.osuosl.org (Postfix) with ESMTPS id B202E4013C
+ for <iommu@lists.linux-foundation.org>; Wed, 24 Mar 2021 17:00:34 +0000 (UTC)
+IronPort-SDR: /eFbE4FsR6Xmc0vYLloPQV5kyuBy6I7RSpbxYY4OBcGnHMHjnKRjCcnNhIyhQU87+Va92ZWS4e
+ ElaXRY/4u4Sw==
+X-IronPort-AV: E=McAfee;i="6000,8403,9933"; a="178301799"
+X-IronPort-AV: E=Sophos;i="5.81,275,1610438400"; d="scan'208";a="178301799"
+Received: from orsmga005.jf.intel.com ([10.7.209.41])
+ by orsmga106.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384;
+ 24 Mar 2021 10:00:33 -0700
+IronPort-SDR: YaXrQdlMK3wx/87Gouc8P/JcmCFUnmxlV9XMFtnEUTpfgHtOYwd8VKOOu4hPqOQ8ocZEoUbDJh
+ 55GbULgN11QA==
+X-IronPort-AV: E=Sophos;i="5.81,275,1610438400"; d="scan'208";a="593442260"
+Received: from jacob-builder.jf.intel.com (HELO jacob-builder) ([10.7.199.155])
+ by orsmga005-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384;
+ 24 Mar 2021 10:00:32 -0700
+Date: Wed, 24 Mar 2021 10:02:46 -0700
+From: Jacob Pan <jacob.jun.pan@linux.intel.com>
+To: Jean-Philippe Brucker <jean-philippe@linaro.org>
+Subject: Re: [PATCH V4 05/18] iommu/ioasid: Redefine IOASID set and
+ allocation APIs
+Message-ID: <20210324100246.4e6b8aa1@jacob-builder>
+In-Reply-To: <YFhiMLR35WWMW/Hu@myrica>
+References: <1614463286-97618-1-git-send-email-jacob.jun.pan@linux.intel.com>
+ <1614463286-97618-6-git-send-email-jacob.jun.pan@linux.intel.com>
+ <20210318172234.3e8c34f7@jacob-builder> <YFR10eeDVf5ZHV5l@myrica>
+ <20210319124645.GP2356281@nvidia.com> <YFSqDNJ5yagk4eO+@myrica>
+ <20210319135432.GT2356281@nvidia.com>
+ <20210319112221.5123b984@jacob-builder> <YFhiMLR35WWMW/Hu@myrica>
+Organization: OTC
+X-Mailer: Claws Mail 3.17.5 (GTK+ 2.24.32; x86_64-pc-linux-gnu)
 MIME-Version: 1.0
-In-Reply-To: <20210320151903.60759-2-sven@svenpeter.dev>
-Content-Language: en-GB
-Cc: Arnd Bergmann <arnd@kernel.org>, devicetree@vger.kernel.org,
- Marc Zyngier <maz@kernel.org>, Hector Martin <marcan@marcan.st>,
- linux-kernel@vger.kernel.org, Rob Herring <robh+dt@kernel.org>,
- Mohamed Mediouni <mohamed.mediouni@caramail.com>,
- Stan Skowronek <stan@corellium.com>, Will Deacon <will@kernel.org>,
- linux-arm-kernel@lists.infradead.org, Mark Kettenis <mark.kettenis@xs4all.nl>
+Cc: "Tian, Kevin" <kevin.tian@intel.com>,
+ Alex Williamson <alex.williamson@redhat.com>, Raj Ashok <ashok.raj@intel.com>,
+ Jonathan Corbet <corbet@lwn.net>,
+ Jean-Philippe Brucker <jean-philippe@linaro.com>,
+ LKML <linux-kernel@vger.kernel.org>, Dave Jiang <dave.jiang@intel.com>,
+ iommu@lists.linux-foundation.org, Li Zefan <lizefan@huawei.com>,
+ Jason Gunthorpe <jgg@nvidia.com>, Johannes Weiner <hannes@cmpxchg.org>,
+ Tejun Heo <tj@kernel.org>, cgroups@vger.kernel.org, Wu Hao <hao.wu@intel.com>,
+ David Woodhouse <dwmw2@infradead.org>
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -81,246 +94,88 @@ List-Post: <mailto:iommu@lists.linux-foundation.org>
 List-Help: <mailto:iommu-request@lists.linux-foundation.org?subject=help>
 List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
  <mailto:iommu-request@lists.linux-foundation.org?subject=subscribe>
-Content-Transfer-Encoding: 7bit
-Content-Type: text/plain; charset="us-ascii"; Format="flowed"
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-On 2021-03-20 15:19, Sven Peter wrote:
-> Apple's DART iommu uses a pagetable format that's very similar to the ones
-> already implemented by io-pgtable.c.
-> Add a new format variant to support the required differences.
-
-TBH there look to be more differences than similarities, but I guess we 
-already opened that door with the Mali format, and nobody likes writing 
-pagetable code :)
-
-> Signed-off-by: Sven Peter <sven@svenpeter.dev>
-> ---
->   drivers/iommu/Kconfig          | 13 +++++++
->   drivers/iommu/io-pgtable-arm.c | 70 ++++++++++++++++++++++++++++++++++
->   drivers/iommu/io-pgtable.c     |  3 ++
->   include/linux/io-pgtable.h     |  6 +++
->   4 files changed, 92 insertions(+)
-> 
-> diff --git a/drivers/iommu/Kconfig b/drivers/iommu/Kconfig
-> index 192ef8f61310..3c95c8524abe 100644
-> --- a/drivers/iommu/Kconfig
-> +++ b/drivers/iommu/Kconfig
-> @@ -39,6 +39,19 @@ config IOMMU_IO_PGTABLE_LPAE
->   	  sizes at both stage-1 and stage-2, as well as address spaces
->   	  up to 48-bits in size.
-> 
-> +config IOMMU_IO_PGTABLE_APPLE_DART
-
-Does this really need to be configurable? I don't think there's an 
-appreciable code saving to be had, and it's not like we do it for any of 
-the other sub-formats.
-
-> +	bool "Apple DART Descriptor Format"
-> +	select IOMMU_IO_PGTABLE
-> +	select IOMMU_IO_PGTABLE_LPAE
-> +	depends on ARM64 || (COMPILE_TEST && !GENERIC_ATOMIC64)
-> +	help
-> +	  Enable support for the Apple DART iommu pagetable format.
-> +	  This format is a variant of the ARMv7/v8 Long Descriptor
-> +	  Format specific to Apple's iommu found in their SoCs.
-> +
-> +	  Say Y here if you have a Apple SoC like the M1 which
-> +	  contains DART iommus.
-> +
->   config IOMMU_IO_PGTABLE_LPAE_SELFTEST
->   	bool "LPAE selftests"
->   	depends on IOMMU_IO_PGTABLE_LPAE
-> diff --git a/drivers/iommu/io-pgtable-arm.c b/drivers/iommu/io-pgtable-arm.c
-> index 87def58e79b5..18674469313d 100644
-> --- a/drivers/iommu/io-pgtable-arm.c
-> +++ b/drivers/iommu/io-pgtable-arm.c
-> @@ -127,6 +127,10 @@
->   #define ARM_MALI_LPAE_MEMATTR_IMP_DEF	0x88ULL
->   #define ARM_MALI_LPAE_MEMATTR_WRITE_ALLOC 0x8DULL
-> 
-> +/* APPLE_DART_PTE_PROT_NO_WRITE actually maps to ARM_LPAE_PTE_AP_RDONLY  */
-> +#define APPLE_DART_PTE_PROT_NO_WRITE (1<<7)
-Given that there's apparently zero similarity with any of the other 
-attributes/permissions, this seems more like a coincidence that probably 
-doesn't need to be called out.
-
-> +#define APPLE_DART_PTE_PROT_NO_READ (1<<8)
-> +
-
-Do you have XN permission? How about memory type attributes?
-
->   /* IOPTE accessors */
->   #define iopte_deref(pte,d) __va(iopte_to_paddr(pte, d))
-> 
-> @@ -381,6 +385,17 @@ static arm_lpae_iopte arm_lpae_prot_to_pte(struct arm_lpae_io_pgtable *data,
->   {
->   	arm_lpae_iopte pte;
-> 
-> +#ifdef CONFIG_IOMMU_IO_PGTABLE_APPLE_DART
-
-As a general tip, prefer IS_ENABLED() to inline #ifdefs.
-
-> +	if (data->iop.fmt == ARM_APPLE_DART) { > +		pte = 0;
-> +		if (!(prot & IOMMU_WRITE))
-> +			pte |= APPLE_DART_PTE_PROT_NO_WRITE;
-> +		if (!(prot & IOMMU_READ))
-> +			pte |= APPLE_DART_PTE_PROT_NO_READ;
-> +		return pte;
-> +	}
-> +#endif
-> +
->   	if (data->iop.fmt == ARM_64_LPAE_S1 ||
->   	    data->iop.fmt == ARM_32_LPAE_S1) {
->   		pte = ARM_LPAE_PTE_nG;
-> @@ -1043,6 +1058,54 @@ arm_mali_lpae_alloc_pgtable(struct io_pgtable_cfg *cfg, void *cookie)
->   	return NULL;
->   }
-> 
-> +#ifdef CONFIG_IOMMU_IO_PGTABLE_APPLE_DART
-
-Similarly, prefer __maybe_unused rather than #ifdefing functions if they 
-don't contain any config-dependent references.
-
-> +static struct io_pgtable *
-> +apple_dart_alloc_pgtable(struct io_pgtable_cfg *cfg, void *cookie)
-> +{
-> +	struct arm_lpae_io_pgtable *data;
-> +
-> +	if (cfg->ias > 38)
-> +		return NULL;
-> +	if (cfg->oas > 36)
-> +		return NULL;
-> +
-> +	if (!cfg->coherent_walk)
-> +		return NULL;
-
-For completeness you should probably also reject any quirks, since none 
-of them are applicable either.
-
-> +
-> +	cfg->pgsize_bitmap &= SZ_16K;
-
-No block mappings?
-
-> +	if (!cfg->pgsize_bitmap)
-> +		return NULL;
-> +
-> +	data = arm_lpae_alloc_pgtable(cfg);
-> +	if (!data)
-> +		return NULL;
-> +
-> +	/*
-> +	 * the hardware only supports this specific three level pagetable layout with
-> +	 * the first level being encoded into four hardware registers
-> +	 */
-> +	data->start_level = ARM_LPAE_MAX_LEVELS - 2;
-
-The comment implies that walks should start at level 1 (for a 3-level 
-table), but the code here says (in an unnecessarily roundabout manner) 
-level 2 :/
-
-Which is it?
-
-> +	data->pgd_bits = 13;
-
-What if ias < 38? Couldn't we get away with only allocating as much as 
-we actually need?
-
-> +	data->bits_per_level = 11;
-> +
-> +	data->pgd = __arm_lpae_alloc_pages(ARM_LPAE_PGD_SIZE(data), GFP_KERNEL,
-> +					   cfg);
-> +	if (!data->pgd)
-> +		goto out_free_data;
-> +
-> +	cfg->apple_dart_cfg.pgd[0] = virt_to_phys(data->pgd);
-> +	cfg->apple_dart_cfg.pgd[1] = virt_to_phys(data->pgd + 0x4000);
-> +	cfg->apple_dart_cfg.pgd[2] = virt_to_phys(data->pgd + 0x8000);
-> +	cfg->apple_dart_cfg.pgd[3] = virt_to_phys(data->pgd + 0xc000);
-> +
-> +	return &data->iop;
-> +
-> +out_free_data:
-> +	kfree(data);
-> +	return NULL;
-> +}
-> +#endif
-> +
->   struct io_pgtable_init_fns io_pgtable_arm_64_lpae_s1_init_fns = {
->   	.alloc	= arm_64_lpae_alloc_pgtable_s1,
->   	.free	= arm_lpae_free_pgtable,
-> @@ -1068,6 +1131,13 @@ struct io_pgtable_init_fns io_pgtable_arm_mali_lpae_init_fns = {
->   	.free	= arm_lpae_free_pgtable,
->   };
-> 
-> +#ifdef CONFIG_IOMMU_IO_PGTABLE_APPLE_DART
-> +struct io_pgtable_init_fns io_pgtable_apple_dart_init_fns = {
-> +	.alloc	= apple_dart_alloc_pgtable,
-> +	.free	= arm_lpae_free_pgtable,
-> +};
-> +#endif
-> +
->   #ifdef CONFIG_IOMMU_IO_PGTABLE_LPAE_SELFTEST
-> 
->   static struct io_pgtable_cfg *cfg_cookie __initdata;
-> diff --git a/drivers/iommu/io-pgtable.c b/drivers/iommu/io-pgtable.c
-> index 6e9917ce980f..d86590b0673a 100644
-> --- a/drivers/iommu/io-pgtable.c
-> +++ b/drivers/iommu/io-pgtable.c
-> @@ -27,6 +27,9 @@ io_pgtable_init_table[IO_PGTABLE_NUM_FMTS] = {
->   #ifdef CONFIG_AMD_IOMMU
->   	[AMD_IOMMU_V1] = &io_pgtable_amd_iommu_v1_init_fns,
->   #endif
-> +#ifdef CONFIG_IOMMU_IO_PGTABLE_APPLE_DART
-> +	[ARM_APPLE_DART] = &io_pgtable_apple_dart_init_fns,
-> +#endif
->   };
-> 
->   struct io_pgtable_ops *alloc_io_pgtable_ops(enum io_pgtable_fmt fmt,
-> diff --git a/include/linux/io-pgtable.h b/include/linux/io-pgtable.h
-> index a4c9ca2c31f1..19d9b631d319 100644
-> --- a/include/linux/io-pgtable.h
-> +++ b/include/linux/io-pgtable.h
-> @@ -16,6 +16,7 @@ enum io_pgtable_fmt {
->   	ARM_V7S,
->   	ARM_MALI_LPAE,
->   	AMD_IOMMU_V1,
-> +	ARM_APPLE_DART,
->   	IO_PGTABLE_NUM_FMTS,
->   };
-> 
-> @@ -136,6 +137,10 @@ struct io_pgtable_cfg {
->   			u64	transtab;
->   			u64	memattr;
->   		} arm_mali_lpae_cfg;
-> +
-> +		struct {
-> +			u64 pgd[4];
-
-Nit: in the driver you call the registers "TTBR" rather than "PGD". The 
-config here tries to represent hardware/architecture definitions rather 
-than internal abstractions.
-
-Robin.
-
-> +		} apple_dart_cfg;
->   	};
->   };
-> 
-> @@ -250,5 +255,6 @@ extern struct io_pgtable_init_fns io_pgtable_arm_64_lpae_s2_init_fns;
->   extern struct io_pgtable_init_fns io_pgtable_arm_v7s_init_fns;
->   extern struct io_pgtable_init_fns io_pgtable_arm_mali_lpae_init_fns;
->   extern struct io_pgtable_init_fns io_pgtable_amd_iommu_v1_init_fns;
-> +extern struct io_pgtable_init_fns io_pgtable_apple_dart_init_fns;
-> 
->   #endif /* __IO_PGTABLE_H */
-> --
-> 2.25.1
-> 
-> 
-_______________________________________________
-iommu mailing list
-iommu@lists.linux-foundation.org
-https://lists.linuxfoundation.org/mailman/listinfo/iommu
+SGkgSmVhbi1QaGlsaXBwZSwKCk9uIE1vbiwgMjIgTWFyIDIwMjEgMTA6MjQ6MDAgKzAxMDAsIEpl
+YW4tUGhpbGlwcGUgQnJ1Y2tlcgo8amVhbi1waGlsaXBwZUBsaW5hcm8ub3JnPiB3cm90ZToKCj4g
+T24gRnJpLCBNYXIgMTksIDIwMjEgYXQgMTE6MjI6MjFBTSAtMDcwMCwgSmFjb2IgUGFuIHdyb3Rl
+Ogo+ID4gSGkgSmFzb24sCj4gPiAKPiA+IE9uIEZyaSwgMTkgTWFyIDIwMjEgMTA6NTQ6MzIgLTAz
+MDAsIEphc29uIEd1bnRob3JwZSA8amdnQG52aWRpYS5jb20+Cj4gPiB3cm90ZTogCj4gPiA+IE9u
+IEZyaSwgTWFyIDE5LCAyMDIxIGF0IDAyOjQxOjMyUE0gKzAxMDAsIEplYW4tUGhpbGlwcGUgQnJ1
+Y2tlcgo+ID4gPiB3cm90ZTogIAo+ID4gPiA+IE9uIEZyaSwgTWFyIDE5LCAyMDIxIGF0IDA5OjQ2
+OjQ1QU0gLTAzMDAsIEphc29uIEd1bnRob3JwZSB3cm90ZTogICAgCj4gPiA+ID4gPiBPbiBGcmks
+IE1hciAxOSwgMjAyMSBhdCAxMDo1ODo0MUFNICswMTAwLCBKZWFuLVBoaWxpcHBlIEJydWNrZXIK
+PiA+ID4gPiA+IHdyb3RlOiAKPiA+ID4gPiA+ID4gQWx0aG91Z2ggdGhlcmUgaXMgbm8gdXNlIGZv
+ciBpdCBhdCB0aGUgbW9tZW50IChvbmx5IHR3byB1cHN0cmVhbQo+ID4gPiA+ID4gPiB1c2VycyBh
+bmQgaXQgbG9va3MgbGlrZSBhbWRrZmQgYWx3YXlzIHVzZXMgY3VycmVudCB0b28pLCBJIHF1aXRl
+Cj4gPiA+ID4gPiA+IGxpa2UgdGhlIGNsaWVudC1zZXJ2ZXIgbW9kZWwgd2hlcmUgdGhlIHByaXZp
+bGVnZWQgcHJvY2VzcyBkb2VzCj4gPiA+ID4gPiA+IGJpbmQoKSBhbmQgcHJvZ3JhbXMgdGhlIGhh
+cmR3YXJlIHF1ZXVlIG9uIGJlaGFsZiBvZiB0aGUgY2xpZW50Cj4gPiA+ID4gPiA+IHByb2Nlc3Mu
+ICAgIAo+ID4gPiA+ID4gCj4gPiA+ID4gPiBUaGlzIGNyZWF0ZXMgYSBsb3QgY29tcGxleGl0eSwg
+aG93IGRvIGRvZXMgcHJvY2VzcyBBIGdldCBhIHNlY3VyZQo+ID4gPiA+ID4gcmVmZXJlbmNlIHRv
+IEI/IEhvdyBkb2VzIGl0IGFjY2VzcyB0aGUgbWVtb3J5IGluIEIgdG8gc2V0dXAgdGhlCj4gPiA+
+ID4gPiBIVz8gICAgCj4gPiA+ID4gCj4gPiA+ID4gbW1fYWNjZXNzKCkgZm9yIGV4YW1wbGUsIGFu
+ZCBwYXNzaW5nIGFkZHJlc3NlcyB2aWEgSVBDICAgIAo+ID4gPiAKPiA+ID4gSSdkIHJhdGhlciB0
+aGUgc291cmNlIHByb2Nlc3MgZXN0YWJsaXNoIGl0cyBvd24gUEFTSUQgYW5kIHRoZW4gcGFzcwo+
+ID4gPiB0aGUgcmlnaHRzIHRvIHVzZSBpdCB0byBzb21lIG90aGVyIHByb2Nlc3MgdmlhIEZEIHBh
+c3NpbmcgdGhhbiB0cnkgdG8KPiA+ID4gZ28gdGhlIG90aGVyIHdheS4gVGhlcmUgYXJlIGxvdHMg
+b2Ygc2VjdXJpdHkgcXVlc3Rpb25zIHdpdGggc29tZXRoaW5nCj4gPiA+IGxpa2UgbW1fYWNjZXNz
+Lgo+ID4gPiAgIAo+ID4gCj4gPiBUaGFuayB5b3UgYWxsIGZvciB0aGUgaW5wdXQsIGl0IHNvdW5k
+cyBsaWtlIHdlIGFyZSBPSyB0byByZW1vdmUgbW0KPiA+IGFyZ3VtZW50IGZyb20gaW9tbXVfc3Zh
+X2JpbmRfZGV2aWNlKCkgYW5kIGlvbW11X3N2YV9hbGxvY19wYXNpZCgpIGZvcgo+ID4gbm93PyAg
+Cj4gCj4gRmluZSBieSBtZS4gQnkgdGhlIHdheSB0aGUgSURYRCBjdXJyZW50bHkgbWlzc3VlcyB0
+aGUgYmluZCBBUEkgZm9yCj4gc3VwZXJ2aXNvciBQQVNJRCwgYW5kIHRoZSBkcnZkYXRhIHBhcmFt
+ZXRlciBpc24ndCBvdGhlcndpc2UgdXNlZC4gVGhpcwo+IHdvdWxkIGJlIGEgZ29vZCBvY2Nhc2lv
+biB0byBjbGVhbiBib3RoLiBUaGUgbmV3IGJpbmQgcHJvdG90eXBlIGNvdWxkIGJlOgo+IAo+IHN0
+cnVjdCBpb21tdV9zdmEgKmlvbW11X3N2YV9iaW5kX2RldmljZShzdHJ1Y3QgZGV2aWNlICpkZXYs
+IGludCBmbGFncykKPiAKeWVzLCB3ZSByZWFsbHkganVzdCBoaWphY2tlZCBkcnZkYXRhIGFzIGZs
+YWdzLCBpdCB3b3VsZCBiZSBjbGVhbmVyIHRvIHVzZQpmbGFncyBleHBsaWNpdGx5LgoKPiBBbmQg
+YSBmbGFnIElPTU1VX1NWQV9CSU5EX1NVUEVSVklTT1IgKG5vdCB0aGF0IEkgcGxhbiB0byBpbXBs
+ZW1lbnQgaXQgaW4KPiB0aGUgU01NVSwgYnV0IEkgdGhpbmsgd2UgbmVlZCB0byBjbGVhbiB0aGUg
+Y3VycmVudCB1c2FnZSkKPiAKWW91IG1lYW4gbW92ZSAjZGVmaW5lIFNWTV9GTEFHX1NVUEVSVklT
+T1JfTU9ERSBvdXQgb2YgSW50ZWwgY29kZSB0byBiZSBhCmdlbmVyaWMgZmxhZyBpbiBpb21tdS1z
+dmEtbGliLmggY2FsbGVkIElPTU1VX1NWQV9CSU5EX1NVUEVSVklTT1I/CgpJIGFncmVlIGlmIHRo
+YXQgaXMgdGhlIHByb3Bvc2FsLgoKPiA+IAo+ID4gTGV0IG1lIHRyeSB0byBzdW1tYXJpemUgUEFT
+SUQgYWxsb2NhdGlvbiBhcyBiZWxvdzoKPiA+IAo+ID4gSW50ZXJmYWNlcwl8IFVzYWdlCXwgIExp
+bWl0CXwgYmluZMK5IHxVc2VyIHZpc2libGUKPiA+IC0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0t
+LS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tCj4gPiAvZGV2L2lvYXNp
+ZMKyCXwgRy1TVkEvSU9WQQl8ICBjZ3JvdXAJfCBObwo+ID4gfFllcwo+ID4gLS0tLS0tLS0tLS0t
+LS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0K
+PiA+IGNoYXIgZGV2wrMJfCBTVkEJCXwgIGNncm91cAl8IFllcwl8Tm8KPiA+IC0tLS0tLS0tLS0t
+LS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0t
+Cj4gPiBpb21tdSBkcml2ZXIJfCBkZWZhdWx0IFBBU0lEfCAgbm8JCXwgTm8JfE5vCj4gPiAgCj4g
+Cj4gSXMgdGhpcyBQQVNJRCAjMD8KPiAKVHJ1ZSBmb3IgbmF0aXZlIGNhc2UgYnV0IG5vdCBsaW1p
+dGVkIHRvIFBBU0lEIzAgZm9yIGd1ZXN0IGNhc2UuIEUuZy4gZm9yCm1kZXYgYXNzaWdubWVudCB3
+aXRoIGd1ZXN0IElPVkEsIHRoZSBndWVzdCBQQVNJRCB3b3VsZCAjMCwgYnV0IHRoZSBob3N0IGF1
+eApkb21haW4gZGVmYXVsdCBQQVNJRCBjYW4gYmUgbm9uLXplcm8uIEhlcmUgSSBtZWFudCB0byBp
+bmNsdWRlIGJvdGggY2FzZXMuCgo+ID4gLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0t
+LS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0KPiA+IGtlcm5lbAkJfCBzdXBlciBT
+VkEJfCBubwkJfCB5ZXMgICB8Tm8KPiA+IC0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0t
+LS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tICAKPiAKPiBBbHNvIHdvbmRlcmlu
+ZyBhYm91dCBkZXZpY2UgZHJpdmVyIGFsbG9jYXRpbmcgYXV4aWxpYXJ5IGRvbWFpbnMgZm9yIHRo
+ZWlyCj4gcHJpdmF0ZSB1c2UsIHRvIGRvIGlvbW11X21hcC91bm1hcCBvbiBwcml2YXRlIFBBU0lE
+cyAoYSBjbGVhbiByZXBsYWNlbWVudAo+IHRvIHN1cGVyIFNWQSwgZm9yIGV4YW1wbGUpLiBXb3Vs
+ZCB0aGF0IGdvIHRocm91Z2ggdGhlIHNhbWUgcGF0aCBhcwo+IC9kZXYvaW9hc2lkIGFuZCB1c2Ug
+dGhlIGNncm91cCBvZiBjdXJyZW50IHRhc2s/Cj4KRm9yIHRoZSBpbi1rZXJuZWwgcHJpdmF0ZSB1
+c2UsIEkgZG9uJ3QgdGhpbmsgd2Ugc2hvdWxkIHJlc3RyaWN0IGJhc2VkIG9uCmNncm91cCwgc2lu
+Y2UgdGhlcmUgaXMgbm8gYWZmaW5pdHkgdG8gdXNlciBwcm9jZXNzZXMuIEkgYWxzbyB0aGluayB0
+aGUKUEFTSUQgYWxsb2NhdGlvbiBzaG91bGQganVzdCB1c2Uga2VybmVsIEFQSSBpbnN0ZWFkIG9m
+IC9kZXYvaW9hc2lkLiBXaHkKd291bGQgdXNlciBzcGFjZSBuZWVkIHRvIGtub3cgdGhlIGFjdHVh
+bCBQQVNJRCAjIGZvciBkZXZpY2UgcHJpdmF0ZSBkb21haW5zPwpNYXliZSBJIG1pc3NlZCB5b3Vy
+IGlkZWE/Cgo+IFRoYW5rcywKPiBKZWFuCj4gCj4gPiAKPiA+IMK5IEFsbG9jYXRlZCBkdXJpbmcg
+U1ZBIGJpbmQKPiA+IMKyIFBBU0lEcyBhbGxvY2F0ZWQgdmlhIC9kZXYvaW9hc2lkIGFyZSBub3Qg
+Ym91bmQgdG8gYW55IG1tLiBCdXQgaXRzCj4gPiAgIG93bmVyc2hpcCBpcyBhc3NpZ25lZCB0byB0
+aGUgcHJvY2VzcyB0aGF0IGRvZXMgdGhlIGFsbG9jYXRpb24uCj4gPiDCsyBJbmNsdWRlIHVhY2Nl
+LCBvdGhlciBwcml2YXRlIGRldmljZSBkcml2ZXIgY2hhciBkZXYgc3VjaCBhcyBpZHhkCj4gPiAK
+PiA+IEN1cnJlbnRseSwgdGhlIHByb3Bvc2VkIC9kZXYvaW9hc2lkIGludGVyZmFjZSBkb2VzIG5v
+dCBtYXAgaW5kaXZpZHVhbAo+ID4gUEFTSUQgd2l0aCBhbiBGRC4gVGhlIEZEIGlzIGF0IHRoZSBp
+b2FzaWRfc2V0IGdyYW51bGFyaXR5IGFuZCBib25kIHRvCj4gPiB0aGUgY3VycmVudCBtbS4gV2Ug
+Y291bGQgZXh0ZW5kIHRoZSBJT0NUTHMgdG8gY292ZXIgaW5kaXZpZHVhbCBQQVNJRC1GRAo+ID4g
+cGFzc2luZyBjYXNlIHdoZW4gdXNlIGNhc2VzIGFyaXNlLiBXb3VsZCB0aGlzIHdvcms/Cj4gPiAK
+PiA+IFRoYW5rcywKPiA+IAo+ID4gSmFjb2IgIAoKClRoYW5rcywKCkphY29iCl9fX19fX19fX19f
+X19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fCmlvbW11IG1haWxpbmcgbGlzdApp
+b21tdUBsaXN0cy5saW51eC1mb3VuZGF0aW9uLm9yZwpodHRwczovL2xpc3RzLmxpbnV4Zm91bmRh
+dGlvbi5vcmcvbWFpbG1hbi9saXN0aW5mby9pb21tdQ==
