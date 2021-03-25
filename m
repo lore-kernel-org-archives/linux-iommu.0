@@ -2,89 +2,92 @@ Return-Path: <SRS0=Fh/M=IX=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-14.0 required=3.0 tests=BAYES_00,INCLUDES_CR_TRAILER,
-	INCLUDES_PATCH,MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,URIBL_RED
-	autolearn=ham autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-5.3 required=3.0 tests=BAYES_00,DKIM_INVALID,
+	DKIM_SIGNED,MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,USER_AGENT_SANE_1
+	autolearn=no autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9420EC433DB
-	for <iommu@archiver.kernel.org>; Thu, 25 Mar 2021 17:23:32 +0000 (UTC)
-Received: from smtp1.osuosl.org (smtp1.osuosl.org [140.211.166.138])
+	by smtp.lore.kernel.org (Postfix) with ESMTP id DEB41C433E0
+	for <iommu@archiver.kernel.org>; Thu, 25 Mar 2021 17:33:22 +0000 (UTC)
+Received: from smtp4.osuosl.org (smtp4.osuosl.org [140.211.166.137])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 3FBB761A28
-	for <iommu@archiver.kernel.org>; Thu, 25 Mar 2021 17:23:32 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 3FBB761A28
+	by mail.kernel.org (Postfix) with ESMTPS id 8360D61A28
+	for <iommu@archiver.kernel.org>; Thu, 25 Mar 2021 17:33:22 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 8360D61A28
 Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=kernel.org
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by smtp1.osuosl.org (Postfix) with ESMTP id 88E5584A4A;
-	Thu, 25 Mar 2021 17:23:31 +0000 (UTC)
+	by smtp4.osuosl.org (Postfix) with ESMTP id 355A640EEC;
+	Thu, 25 Mar 2021 17:33:22 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from smtp1.osuosl.org ([127.0.0.1])
-	by localhost (smtp1.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id 1FeZ-oYW7S2q; Thu, 25 Mar 2021 17:23:30 +0000 (UTC)
+Received: from smtp4.osuosl.org ([127.0.0.1])
+	by localhost (smtp4.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+	with ESMTP id D6QYRcyrz0wA; Thu, 25 Mar 2021 17:33:21 +0000 (UTC)
 Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [IPv6:2605:bc80:3010:104::8cd3:938])
-	by smtp1.osuosl.org (Postfix) with ESMTP id 449C6848FA;
-	Thu, 25 Mar 2021 17:23:30 +0000 (UTC)
+	by smtp4.osuosl.org (Postfix) with ESMTP id CA18640E92;
+	Thu, 25 Mar 2021 17:33:20 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 00435C000D;
-	Thu, 25 Mar 2021 17:23:30 +0000 (UTC)
-Received: from smtp1.osuosl.org (smtp1.osuosl.org [140.211.166.138])
- by lists.linuxfoundation.org (Postfix) with ESMTP id F0764C000A
- for <iommu@lists.linux-foundation.org>; Thu, 25 Mar 2021 17:23:27 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 99266C000D;
+	Thu, 25 Mar 2021 17:33:20 +0000 (UTC)
+Received: from smtp3.osuosl.org (smtp3.osuosl.org [IPv6:2605:bc80:3010::136])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 80277C000A
+ for <iommu@lists.linux-foundation.org>; Thu, 25 Mar 2021 17:33:18 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by smtp1.osuosl.org (Postfix) with ESMTP id CDB6C84A3F
- for <iommu@lists.linux-foundation.org>; Thu, 25 Mar 2021 17:23:27 +0000 (UTC)
+ by smtp3.osuosl.org (Postfix) with ESMTP id 6D8C860B2A
+ for <iommu@lists.linux-foundation.org>; Thu, 25 Mar 2021 17:33:18 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from smtp1.osuosl.org ([127.0.0.1])
- by localhost (smtp1.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id 98s06hC9JgrA for <iommu@lists.linux-foundation.org>;
- Thu, 25 Mar 2021 17:23:27 +0000 (UTC)
+Authentication-Results: smtp3.osuosl.org (amavisd-new);
+ dkim=pass (2048-bit key) header.d=kernel.org
+Received: from smtp3.osuosl.org ([127.0.0.1])
+ by localhost (smtp3.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+ with ESMTP id ZZ7zre035-9n for <iommu@lists.linux-foundation.org>;
+ Thu, 25 Mar 2021 17:33:17 +0000 (UTC)
 X-Greylist: domain auto-whitelisted by SQLgrey-1.8.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
- by smtp1.osuosl.org (Postfix) with ESMTPS id 15D98848FA
- for <iommu@lists.linux-foundation.org>; Thu, 25 Mar 2021 17:23:27 +0000 (UTC)
-Received: from disco-boy.misterjones.org (disco-boy.misterjones.org
- [51.254.78.96])
- (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
- (No client certificate requested)
- by mail.kernel.org (Postfix) with ESMTPSA id 9060461A01;
- Thu, 25 Mar 2021 17:23:26 +0000 (UTC)
-Received: from 78.163-31-62.static.virginmediabusiness.co.uk ([62.31.163.78]
- helo=why.misterjones.org)
- by disco-boy.misterjones.org with esmtpsa (TLS1.3) tls
- TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384 (Exim 4.94)
- (envelope-from <maz@kernel.org>)
- id 1lPThc-003nDC-DO; Thu, 25 Mar 2021 17:23:24 +0000
-Date: Thu, 25 Mar 2021 17:23:23 +0000
-Message-ID: <871rc3rvuc.wl-maz@kernel.org>
-From: Marc Zyngier <maz@kernel.org>
-To: Megha Dey <megha.dey@intel.com>
-Subject: Re: [Patch V2 08/13] genirq: Set auxiliary data for an interrupt
-In-Reply-To: <1614370277-23235-9-git-send-email-megha.dey@intel.com>
-References: <1614370277-23235-1-git-send-email-megha.dey@intel.com>
- <1614370277-23235-9-git-send-email-megha.dey@intel.com>
-User-Agent: Wanderlust/2.15.9 (Almost Unreal) SEMI-EPG/1.14.7 (Harue)
- FLIM-LB/1.14.9 (=?UTF-8?B?R29qxY0=?=) APEL-LB/10.8 EasyPG/1.0.0 Emacs/27.1
- (x86_64-pc-linux-gnu) MULE/6.0 (HANACHIRUSATO)
-MIME-Version: 1.0 (generated by SEMI-EPG 1.14.7 - "Harue")
-X-SA-Exim-Connect-IP: 62.31.163.78
-X-SA-Exim-Rcpt-To: megha.dey@intel.com, tglx@linutronix.de,
- linux-kernel@vger.kernel.org, dave.jiang@intel.com, ashok.raj@intel.com,
- kevin.tian@intel.com, dwmw@amazon.co.uk, x86@kernel.org, tony.luck@intel.com,
- dan.j.williams@intel.com, jgg@mellanox.com, kvm@vger.kernel.org,
- iommu@lists.linux-foundation.org, alex.williamson@redhat.com,
- bhelgaas@google.com, linux-pci@vger.kernel.org, baolu.lu@linux.intel.com,
- ravi.v.shankar@intel.com
-X-SA-Exim-Mail-From: maz@kernel.org
-X-SA-Exim-Scanned: No (on disco-boy.misterjones.org);
- SAEximRunCond expanded to false
-Cc: alex.williamson@redhat.com, kevin.tian@intel.com, tony.luck@intel.com,
- dave.jiang@intel.com, ashok.raj@intel.com, kvm@vger.kernel.org,
- ravi.v.shankar@intel.com, linux-pci@vger.kernel.org, x86@kernel.org,
- linux-kernel@vger.kernel.org, iommu@lists.linux-foundation.org,
- jgg@mellanox.com, bhelgaas@google.com, tglx@linutronix.de,
- dan.j.williams@intel.com, dwmw@amazon.co.uk
+ by smtp3.osuosl.org (Postfix) with ESMTPS id AEAE660B28
+ for <iommu@lists.linux-foundation.org>; Thu, 25 Mar 2021 17:33:17 +0000 (UTC)
+Received: by mail.kernel.org (Postfix) with ESMTPSA id 0A18261A28;
+ Thu, 25 Mar 2021 17:33:14 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+ s=k20201202; t=1616693597;
+ bh=qGpX3MaAi6iipXhij0xGuclaojia9d6LXGpZk4lS3FA=;
+ h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+ b=OpgdYXmTWs8MRabNzxRiFlKzCDpQS5h96vnrJxN9G4TZvg0WRGitBgXLTk+GnnXil
+ f8b5nAYnfp30PmCcOMovoLPgDhNtradrGc8Y6FhFhQ36jubqzqqO6zBwewg68FYuJf
+ Jv7k7kjnmjdLlFV3ePCk4UFG8Vd9Clf1rwUIugVfKpJsBtO7/w+BaxYqHIGJ7eDHwI
+ mCIthIJWR0FmNz1DYmj+Kqua1EmULEJwj1xk8HRopvlZ1bKjcDSPYNKMZbYPYp8xr5
+ TB9H5N62ZZMc3cBLXsUHr1mLRfZ6+pM2RtMNb99RhaB1IXnJpl6MiGYMIdbKb9KY+r
+ w0OsMID+O3r1w==
+Date: Thu, 25 Mar 2021 17:33:11 +0000
+From: Will Deacon <will@kernel.org>
+To: Sai Prakash Ranjan <saiprakash.ranjan@codeaurora.org>
+Subject: Re: [PATCH 2/3] iommu/io-pgtable-arm: Add IOMMU_LLC page protection
+ flag
+Message-ID: <20210325173311.GA15504@willie-the-truck>
+References: <3f589e7de3f9fa93e84c83420c5270c546a0c368.1610372717.git.saiprakash.ranjan@codeaurora.org>
+ <20210129090516.GB3998@willie-the-truck>
+ <5d23fce629323bcda71594010824aad0@codeaurora.org>
+ <20210201111556.GA7172@willie-the-truck>
+ <CAF6AEGsARmkAFsjaQLfa2miMgeijo183MWDKGtW_ti-UCpzBqA@mail.gmail.com>
+ <20210201182016.GA21629@jcrouse1-lnx.qualcomm.com>
+ <7e9aade14d0b7f69285852ade4a5a9f4@codeaurora.org>
+ <20210203214612.GB19847@willie-the-truck>
+ <4988e2ef35f76a0c2f1fe3f66f023a3b@codeaurora.org>
+ <9362873a3bcf37cdd073a6128f29c683@codeaurora.org>
+MIME-Version: 1.0
+Content-Disposition: inline
+In-Reply-To: <9362873a3bcf37cdd073a6128f29c683@codeaurora.org>
+User-Agent: Mutt/1.10.1 (2018-07-13)
+Cc: "Isaac J. Manjarres" <isaacm@codeaurora.org>,
+ David Airlie <airlied@linux.ie>, Sean Paul <sean@poorly.run>,
+ Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+ dri-devel <dri-devel@lists.freedesktop.org>,
+ Akhil P Oommen <akhilpo@codeaurora.org>, "list@263.net:IOMMU DRIVERS ,
+ Joerg Roedel <joro@8bytes.org>, " <iommu@lists.linux-foundation.org>,
+ Kristian H Kristensen <hoegsberg@google.com>, Daniel Vetter <daniel@ffwll.ch>,
+ linux-arm-msm <linux-arm-msm@vger.kernel.org>,
+ freedreno <freedreno@lists.freedesktop.org>,
+ linux-arm-kernel@lists.infradead.org, Robin Murphy <robin.murphy@arm.com>
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -102,117 +105,99 @@ Content-Transfer-Encoding: 7bit
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-On Fri, 26 Feb 2021 20:11:12 +0000,
-Megha Dey <megha.dey@intel.com> wrote:
+On Tue, Mar 09, 2021 at 12:10:44PM +0530, Sai Prakash Ranjan wrote:
+> On 2021-02-05 17:38, Sai Prakash Ranjan wrote:
+> > On 2021-02-04 03:16, Will Deacon wrote:
+> > > On Tue, Feb 02, 2021 at 11:56:27AM +0530, Sai Prakash Ranjan wrote:
+> > > > On 2021-02-01 23:50, Jordan Crouse wrote:
+> > > > > On Mon, Feb 01, 2021 at 08:20:44AM -0800, Rob Clark wrote:
+> > > > > > On Mon, Feb 1, 2021 at 3:16 AM Will Deacon <will@kernel.org> wrote:
+> > > > > > > On Fri, Jan 29, 2021 at 03:12:59PM +0530, Sai Prakash Ranjan wrote:
+> > > > > > > > On 2021-01-29 14:35, Will Deacon wrote:
+> > > > > > > > > On Mon, Jan 11, 2021 at 07:45:04PM +0530, Sai Prakash Ranjan wrote:
+> > > > > > > > > > +#define IOMMU_LLC        (1 << 6)
+> > > > > > > > >
+> > > > > > > > > On reflection, I'm a bit worried about exposing this because I think it
+> > > > > > > > > will
+> > > > > > > > > introduce a mismatched virtual alias with the CPU (we don't even have a
+> > > > > > > > > MAIR
+> > > > > > > > > set up for this memory type). Now, we also have that issue for the PTW,
+> > > > > > > > > but
+> > > > > > > > > since we always use cache maintenance (i.e. the streaming API) for
+> > > > > > > > > publishing the page-tables to a non-coheren walker, it works out.
+> > > > > > > > > However,
+> > > > > > > > > if somebody expects IOMMU_LLC to be coherent with a DMA API coherent
+> > > > > > > > > allocation, then they're potentially in for a nasty surprise due to the
+> > > > > > > > > mismatched outer-cacheability attributes.
+> > > > > > > > >
+> > > > > > > >
+> > > > > > > > Can't we add the syscached memory type similar to what is done on android?
+> > > > > > >
+> > > > > > > Maybe. How does the GPU driver map these things on the CPU side?
+> > > > > >
+> > > > > > Currently we use writecombine mappings for everything, although there
+> > > > > > are some cases that we'd like to use cached (but have not merged
+> > > > > > patches that would give userspace a way to flush/invalidate)
+> > > > > >
+> > > > >
+> > > > > LLC/system cache doesn't have a relationship with the CPU cache.  Its
+> > > > > just a
+> > > > > little accelerator that sits on the connection from the GPU to DDR and
+> > > > > caches
+> > > > > accesses. The hint that Sai is suggesting is used to mark the buffers as
+> > > > > 'no-write-allocate' to prevent GPU write operations from being cached in
+> > > > > the LLC
+> > > > > which a) isn't interesting and b) takes up cache space for read
+> > > > > operations.
+> > > > >
+> > > > > Its easiest to think of the LLC as a bonus accelerator that has no cost
+> > > > > for
+> > > > > us to use outside of the unfortunate per buffer hint.
+> > > > >
+> > > > > We do have to worry about the CPU cache w.r.t I/O coherency (which is a
+> > > > > different hint) and in that case we have all of concerns that Will
+> > > > > identified.
+> > > > >
+> > > > 
+> > > > For mismatched outer cacheability attributes which Will
+> > > > mentioned, I was
+> > > > referring to [1] in android kernel.
+> > > 
+> > > I've lost track of the conversation here :/
+> > > 
+> > > When the GPU has a buffer mapped with IOMMU_LLC, is the buffer also
+> > > mapped
+> > > into the CPU and with what attributes? Rob said "writecombine for
+> > > everything" -- does that mean ioremap_wc() / MEMREMAP_WC?
+> > > 
+> > 
+> > Rob answered this.
+> > 
+> > > Finally, we need to be careful when we use the word "hint" as
+> > > "allocation
+> > > hint" has a specific meaning in the architecture, and if we only
+> > > mismatch on
+> > > those then we're actually ok. But I think IOMMU_LLC is more than
+> > > just a
+> > > hint, since it actually drives eviction policy (i.e. it enables
+> > > writeback).
+> > > 
+> > > Sorry for the pedantry, but I just want to make sure we're all talking
+> > > about the same things!
+> > > 
+> > 
+> > Sorry for the confusion which probably was caused by my mentioning of
+> > android, NWA(no write allocate) is an allocation hint which we can
+> > ignore
+> > for now as it is not introduced yet in upstream.
+> > 
 > 
-> Introduce a new function pointer in the irq_chip structure(irq_set_auxdata)
-> which is responsible for updating data which is stored in a shared register
-> or data storage. For example, the idxd driver uses the auxiliary data API
-> to enable/set and disable PASID field that is in the IMS entry (introduced
-> in a later patch) and that data are not typically present in MSI entry.
-> 
-> Reviewed-by: Tony Luck <tony.luck@intel.com>
-> Signed-off-by: Megha Dey <megha.dey@intel.com>
-> ---
->  include/linux/interrupt.h |  2 ++
->  include/linux/irq.h       |  4 ++++
->  kernel/irq/manage.c       | 32 ++++++++++++++++++++++++++++++++
->  3 files changed, 38 insertions(+)
-> 
-> diff --git a/include/linux/interrupt.h b/include/linux/interrupt.h
-> index 967e257..461ed1c 100644
-> --- a/include/linux/interrupt.h
-> +++ b/include/linux/interrupt.h
-> @@ -496,6 +496,8 @@ extern int irq_get_irqchip_state(unsigned int irq, enum irqchip_irq_state which,
->  extern int irq_set_irqchip_state(unsigned int irq, enum irqchip_irq_state which,
->  				 bool state);
->  
-> +int irq_set_auxdata(unsigned int irq, unsigned int which, u64 val);
-> +
->  #ifdef CONFIG_IRQ_FORCED_THREADING
->  # ifdef CONFIG_PREEMPT_RT
->  #  define force_irqthreads	(true)
-> diff --git a/include/linux/irq.h b/include/linux/irq.h
-> index 2efde6a..fc19f32 100644
-> --- a/include/linux/irq.h
-> +++ b/include/linux/irq.h
-> @@ -491,6 +491,8 @@ static inline irq_hw_number_t irqd_to_hwirq(struct irq_data *d)
->   *				irq_request_resources
->   * @irq_compose_msi_msg:	optional to compose message content for MSI
->   * @irq_write_msi_msg:	optional to write message content for MSI
-> + * @irq_set_auxdata:	Optional function to update auxiliary data e.g. in
-> + *			shared registers
->   * @irq_get_irqchip_state:	return the internal state of an interrupt
->   * @irq_set_irqchip_state:	set the internal state of a interrupt
->   * @irq_set_vcpu_affinity:	optional to target a vCPU in a virtual machine
-> @@ -538,6 +540,8 @@ struct irq_chip {
->  	void		(*irq_compose_msi_msg)(struct irq_data *data, struct msi_msg *msg);
->  	void		(*irq_write_msi_msg)(struct irq_data *data, struct msi_msg *msg);
->  
-> +	int		(*irq_set_auxdata)(struct irq_data *data, unsigned int which, u64 auxval);
-> +
->  	int		(*irq_get_irqchip_state)(struct irq_data *data, enum irqchip_irq_state which, bool *state);
->  	int		(*irq_set_irqchip_state)(struct irq_data *data, enum irqchip_irq_state which, bool state);
->  
-> diff --git a/kernel/irq/manage.c b/kernel/irq/manage.c
-> index 85ede4e..68ff559 100644
-> --- a/kernel/irq/manage.c
-> +++ b/kernel/irq/manage.c
-> @@ -2860,3 +2860,35 @@ bool irq_check_status_bit(unsigned int irq, unsigned int bitmask)
->  	return res;
->  }
->  EXPORT_SYMBOL_GPL(irq_check_status_bit);
-> +
-> +/**
-> + * irq_set_auxdata - Set auxiliary data
-> + * @irq:	Interrupt to update
-> + * @which:	Selector which data to update
-> + * @auxval:	Auxiliary data value
-> + *
-> + * Function to update auxiliary data for an interrupt, e.g. to update data
-> + * which is stored in a shared register or data storage (e.g. IMS).
-> + */
-> +int irq_set_auxdata(unsigned int irq, unsigned int which, u64 val)
+> Any chance of taking this forward? We do not want to miss out on small fps
+> gain when the product gets released.
 
-This looks to me like a massively generalised version of
-irq_set_irqchip_state(), only without any defined semantics when it
-comes to the 'which' state, making it look like the irqchip version of
-an ioctl.
+Do we have a solution to the mismatched virtual alias?
 
-We also have the irq_set_vcpu_affinity() callback that is used to
-perpetrate all sort of sins (and I have abused this interface more
-than I should admit it).
-
-Can we try and converge on a single interface that allows for
-"side-band state" to be communicated, with documented state?
-
-> +{
-> +	struct irq_desc *desc;
-> +	struct irq_data *data;
-> +	unsigned long flags;
-> +	int res = -ENODEV;
-> +
-> +	desc = irq_get_desc_buslock(irq, &flags, 0);
-> +	if (!desc)
-> +		return -EINVAL;
-> +
-> +	for (data = &desc->irq_data; data; data = irqd_get_parent_data(data)) {
-> +		if (data->chip->irq_set_auxdata) {
-> +			res = data->chip->irq_set_auxdata(data, which, val);
-
-And this is where things can break: because you don't define what
-'which' is, you can end-up with two stacked layers clashing in their
-interpretation of 'which', potentially doing the wrong thing.
-
-Short of having a global, cross architecture definition of all the
-possible states, this is frankly dodgy.
-
-Thanks,
-
-	M.
-
--- 
-Without deviation from the norm, progress is not possible.
+Will
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
