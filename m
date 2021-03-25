@@ -2,107 +2,103 @@ Return-Path: <SRS0=Fh/M=IX=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-3.5 required=3.0 tests=BAYES_00,DKIM_INVALID,
-	DKIM_SIGNED,HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,SPF_HELO_NONE,
-	SPF_PASS,URIBL_RED autolearn=no autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-18.6 required=3.0 tests=BAYES_00,DKIM_INVALID,
+	DKIM_SIGNED,HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_CR_TRAILER,INCLUDES_PATCH,
+	MAILING_LIST_MULTI,MENTIONS_GIT_HOSTING,SPF_HELO_NONE,SPF_PASS,URIBL_RED
+	autolearn=ham autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id AE575C433DB
-	for <iommu@archiver.kernel.org>; Thu, 25 Mar 2021 07:59:03 +0000 (UTC)
-Received: from smtp3.osuosl.org (smtp3.osuosl.org [140.211.166.136])
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0195DC433DB
+	for <iommu@archiver.kernel.org>; Thu, 25 Mar 2021 08:41:14 +0000 (UTC)
+Received: from smtp2.osuosl.org (smtp2.osuosl.org [140.211.166.133])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 0E0E5619FB
-	for <iommu@archiver.kernel.org>; Thu, 25 Mar 2021 07:59:02 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 0E0E5619FB
-Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=lists.linux-foundation.org
+	by mail.kernel.org (Postfix) with ESMTPS id 840B561A1A
+	for <iommu@archiver.kernel.org>; Thu, 25 Mar 2021 08:41:13 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 840B561A1A
+Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=solid-run.com
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by smtp3.osuosl.org (Postfix) with ESMTP id 9245160751;
-	Thu, 25 Mar 2021 07:59:01 +0000 (UTC)
+	by smtp2.osuosl.org (Postfix) with ESMTP id 25F0B401C6;
+	Thu, 25 Mar 2021 08:41:13 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from smtp3.osuosl.org ([127.0.0.1])
-	by localhost (smtp3.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id oPiuFunhmF1R; Thu, 25 Mar 2021 07:59:00 +0000 (UTC)
-Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by smtp3.osuosl.org (Postfix) with ESMTP id 5EC41606D4;
-	Thu, 25 Mar 2021 07:59:00 +0000 (UTC)
+Received: from smtp2.osuosl.org ([127.0.0.1])
+	by localhost (smtp2.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+	with ESMTP id XcQOkbmK5Liw; Thu, 25 Mar 2021 08:41:12 +0000 (UTC)
+Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [IPv6:2605:bc80:3010:104::8cd3:938])
+	by smtp2.osuosl.org (Postfix) with ESMTP id B960E40187;
+	Thu, 25 Mar 2021 08:41:11 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 453BFC0011;
-	Thu, 25 Mar 2021 07:59:00 +0000 (UTC)
-Received: from smtp3.osuosl.org (smtp3.osuosl.org [IPv6:2605:bc80:3010::136])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 51F43C000A
- for <iommu@lists.linux-foundation.org>; Thu, 25 Mar 2021 07:58:58 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 9194FC000E;
+	Thu, 25 Mar 2021 08:41:11 +0000 (UTC)
+Received: from smtp1.osuosl.org (smtp1.osuosl.org [140.211.166.138])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 43F8FC000A
+ for <iommu@lists.linux-foundation.org>; Thu, 25 Mar 2021 08:41:10 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by smtp3.osuosl.org (Postfix) with ESMTP id 40D7060751
- for <iommu@lists.linux-foundation.org>; Thu, 25 Mar 2021 07:58:58 +0000 (UTC)
+ by smtp1.osuosl.org (Postfix) with ESMTP id 1D50D8496C
+ for <iommu@lists.linux-foundation.org>; Thu, 25 Mar 2021 08:41:10 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from smtp3.osuosl.org ([127.0.0.1])
- by localhost (smtp3.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id DCIftJcCJMic for <iommu@lists.linux-foundation.org>;
- Thu, 25 Mar 2021 07:58:57 +0000 (UTC)
-X-Greylist: from auto-whitelisted by SQLgrey-1.8.0
-Received: from new3-smtp.messagingengine.com (new3-smtp.messagingengine.com
- [66.111.4.229])
- by smtp3.osuosl.org (Postfix) with ESMTPS id 8DBEE606D4
- for <iommu@lists.linux-foundation.org>; Thu, 25 Mar 2021 07:58:57 +0000 (UTC)
-Received: from compute3.internal (compute3.nyi.internal [10.202.2.43])
- by mailnew.nyi.internal (Postfix) with ESMTP id 91068580A76;
- Thu, 25 Mar 2021 03:58:56 -0400 (EDT)
-Received: from imap21 ([10.202.2.71])
- by compute3.internal (MEProxy); Thu, 25 Mar 2021 03:58:56 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=svenpeter.dev;
- h=mime-version:message-id:in-reply-to:references:date:from:to
- :cc:subject:content-type; s=fm1; bh=+T7CqVyoWdNN8bzlePUROPAX6ed7
- sRoD/m/fHmI9qo4=; b=LpbxgVCzrqQ9ltk79TitEh6KZ0xv+/E3QIvusbwQguuN
- RJLWtkF7PuJQnsag4PYsVCIkM83ZhZniDcWqK4pj4MqlOx0sPD/sIxgaXUH5WHeN
- 0M+TFrnbDvMFrxIiU8NuFbFzRERTkTD2fYqmXFPVN6c3bBqxaN2jRd3zxXlHXsoc
- GDT+pXcOB4oR7zn6T90E0iGX8IPIA0RzLQKkoDMmdPbdLHc+ftJJ2pThrVwR9Ptn
- 4QvmlA3AyUuaOO1N11IzIesXf4RWryEwT7lx8byZhdQbv4cbPCOmevWbFp9h+5ck
- a5HYr61KhiPlAujeYERIxz/Cavcb8fZM24AJIP802A==
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
- messagingengine.com; h=cc:content-type:date:from:in-reply-to
- :message-id:mime-version:references:subject:to:x-me-proxy
- :x-me-proxy:x-me-sender:x-me-sender:x-sasl-enc; s=fm2; bh=+T7CqV
- yoWdNN8bzlePUROPAX6ed7sRoD/m/fHmI9qo4=; b=hCyXTtepAEJYQhogfMllqO
- jQxW0FyZbsaIAaGo6XADIRxGbO2rcoJy7LqQUcEVoBJpYEAF55gs5tNV2jnGKRO5
- M9fnE2Lnxwpr5qHqqNAFNIK5s6j2Ngomuk4/d9p0P7qym2HJTO8u5FiHi4+u1YNR
- 1oDRoS7oOjIVQHUcGUSvqZ3ex56WRYy8q3jOltcf59b1WDwsIIq6f33HvMbqAxjV
- PpfOQ7YF0DU8aj6uGzFwcnQDws2AwuEk0Otdf/EQrWQ0XSL/5LDa+zN0QcspfX8g
- h6vHf3q80gomzUv+WlsADLvmek5wvca77JCOwoh+mBYWhT2qkYvmxNGYVa94N8PQ
- ==
-X-ME-Sender: <xms:v0JcYArC25zHz2V26Ua7EqGjVk7-5p3h7rvzBq2onaRw7MXuY8viHQ>
- <xme:v0JcYGq2FA_YmyvHTlvCFbmVPR1Fkkk-t9XNzeVKfpYEFgc9oltPKQm8Ox6bnY1hZ
- SfJQKWNNEA9ohnz4wM>
-X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgeduledrudegledguddufecutefuodetggdotefrod
- ftvfcurfhrohhfihhlvgemucfhrghsthforghilhdpqfgfvfdpuffrtefokffrpgfnqfgh
- necuuegrihhlohhuthemuceftddtnecusecvtfgvtghiphhivghnthhsucdlqddutddtmd
- enucfjughrpefofgggkfgjfhffhffvufgtsehttdertderredtnecuhfhrohhmpedfufhv
- vghnucfrvghtvghrfdcuoehsvhgvnhesshhvvghnphgvthgvrhdruggvvheqnecuggftrf
- grthhtvghrnhepgfeigeeiffeuhfettdejgfetjeetfeelfefgfefgvddvtdfghfffudeh
- vdefkeffnecuvehluhhsthgvrhfuihiivgepudenucfrrghrrghmpehmrghilhhfrhhomh
- epshhvvghnsehsvhgvnhhpvghtvghrrdguvghv
-X-ME-Proxy: <xmx:v0JcYFM_zRQhKUXd3JaCDMcGtfUZoM7DDDYFrbEP_m3GQ5MkKktVOg>
- <xmx:v0JcYH70r-HSbiG5uFjLNuVhJCAUSFZ8d2dJ3Wmtd2-onZ1PgkNpaA>
- <xmx:v0JcYP4RABId_lUiZScL_EZ5aIKOuy4DwNz9Lg3DCRti39X3-G6zLw>
- <xmx:wEJcYDjaRy8l2GQ-99NYJlF457U5BixsylPCdCPBuPmttvyxNZ21Q-C5iwY>
-Received: by mailuser.nyi.internal (Postfix, from userid 501)
- id 0FBF751C005E; Thu, 25 Mar 2021 03:58:54 -0400 (EDT)
-X-Mailer: MessagingEngine.com Webmail Interface
-User-Agent: Cyrus-JMAP/3.5.0-alpha0-273-g8500d2492d-fm-20210323.002-g8500d249
-Mime-Version: 1.0
-Message-Id: <b05337f3-a4bf-4add-a68d-b9f5c9b8b10d@www.fastmail.com>
-In-Reply-To: <9b9d771a-f6d4-2d27-7516-f5b8315909ed@arm.com>
-References: <20210320151903.60759-1-sven@svenpeter.dev>
- <9b9d771a-f6d4-2d27-7516-f5b8315909ed@arm.com>
-Date: Thu, 25 Mar 2021 08:58:16 +0100
-To: "Robin Murphy" <robin.murphy@arm.com>, iommu@lists.linux-foundation.org
-Subject: Re: [PATCH 0/3] Apple M1 DART IOMMU driver
-Cc: Arnd Bergmann <arnd@kernel.org>, devicetree@vger.kernel.org,
- Marc Zyngier <maz@kernel.org>, Hector Martin <marcan@marcan.st>,
- linux-kernel@vger.kernel.org, Rob Herring <robh+dt@kernel.org>,
- Mohamed Mediouni <mohamed.mediouni@caramail.com>,
- Stan Skowronek <stan@corellium.com>, Will Deacon <will@kernel.org>,
- linux-arm-kernel@lists.infradead.org, Mark Kettenis <mark.kettenis@xs4all.nl>
+Authentication-Results: smtp1.osuosl.org (amavisd-new);
+ dkim=pass (2048-bit key) header.d=solid-run-com.20150623.gappssmtp.com
+Received: from smtp1.osuosl.org ([127.0.0.1])
+ by localhost (smtp1.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+ with ESMTP id GanpHPOumrxo for <iommu@lists.linux-foundation.org>;
+ Thu, 25 Mar 2021 08:41:09 +0000 (UTC)
+X-Greylist: whitelisted by SQLgrey-1.8.0
+Received: from mail-ed1-x52d.google.com (mail-ed1-x52d.google.com
+ [IPv6:2a00:1450:4864:20::52d])
+ by smtp1.osuosl.org (Postfix) with ESMTPS id D503A84984
+ for <iommu@lists.linux-foundation.org>; Thu, 25 Mar 2021 08:41:08 +0000 (UTC)
+Received: by mail-ed1-x52d.google.com with SMTP id l18so1453407edc.9
+ for <iommu@lists.linux-foundation.org>; Thu, 25 Mar 2021 01:41:08 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+ d=solid-run-com.20150623.gappssmtp.com; s=20150623;
+ h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+ :cc; bh=WsfdlrzZwaQUGlbzbbRFzp2tp5Odd7hk+8T93wyQeVk=;
+ b=AGRdPZJf107faAWLYl2hiDFZtQiwGsNLdZGgIm0Uuh5uIMA7x0K+3s/B0Ru6hH+WSG
+ WGt+cPuGLVYOA8HpnNn53HD7zD0thWM8J4mdRUPZ7kQ6W80fMMHsxSuvYh5vr3tHQ3Pe
+ xlTWgSj/abYDMryHkX58UELCFL/tQnKy5ytVadUk36kQSLZm4DEPOE+GewEz1/IiARLp
+ GPPY8JIdFt1x1nfme2l8wbLtWTPe8aIkfuVsHJ2K37kD103BgCbhMna5Y/OhFItJc8/A
+ X99A9ubqADAZqCHRWJbgyToqL0KJAqPiz8ExIn9WXzBPLttDaykEhUjXpJyisn+OHAvo
+ MvNQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+ d=1e100.net; s=20161025;
+ h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+ :message-id:subject:to:cc;
+ bh=WsfdlrzZwaQUGlbzbbRFzp2tp5Odd7hk+8T93wyQeVk=;
+ b=t0goJ1RS25smgjka5NxWBiM8MgwyE1iRqpVpuLaXrl7JOY3Zmw3eWKSU88Mh+WBspi
+ 1MZaOKVNQiooY1/DLlkM+ujgjdavVR/gfucw0/01jQ4mgpgqDjsStUL+RYb1l3cCuuq1
+ 1kB18p/yX5s42BtDUSmKufuFPSsDcrEgIwZsu3auK5oPPM/gRBhBdKkcA3OUN+spH+9B
+ iLwLI9kycz8BenMS6vElq/quekOSaxMJ+z2xa/aZjpysst2Uz4nDq0orIwfKMYi39GFU
+ WjT+2jOsX4zgFtK9BTyTkZhoZBDuDs4lhMx65T39SFJOnEuM8Khs9OwNwuDE4GfcIjch
+ bG6g==
+X-Gm-Message-State: AOAM532BwNv3iukvXCWDZZy/sGCPhuazs5Xxt8vtiblpDH+98M5yILjh
+ r1/EBP5dAsQOzQz3TPzWk/sctEEQKSt0E6U2B8uMTw==
+X-Google-Smtp-Source: ABdhPJz5d82sxLC89VlxaSjlkGqOftoNRfakhu8Zm+u1x5+OI5OjnA4F90hSLeEU2bBqOB0BGdxncDG7YwW4euoUEsI=
+X-Received: by 2002:a05:6402:31a7:: with SMTP id
+ dj7mr7852439edb.33.1616661666928; 
+ Thu, 25 Mar 2021 01:41:06 -0700 (PDT)
+MIME-Version: 1.0
+References: <20201119121150.3316-1-shameerali.kolothum.thodi@huawei.com>
+ <20201119121150.3316-2-shameerali.kolothum.thodi@huawei.com>
+ <b7a2424941214b33803e34ba3e532440@huawei.com>
+In-Reply-To: <b7a2424941214b33803e34ba3e532440@huawei.com>
+From: Jon Nettleton <jon@solid-run.com>
+Date: Thu, 25 Mar 2021 09:40:29 +0100
+Message-ID: <CABdtJHtZPyWpXN9JZbgdu=HswreTc2o2pRhrwHFzQJqz-kFSBw@mail.gmail.com>
+Subject: Re: [RFC PATCH v2 1/8] ACPICA: IORT: Update for revision E
+To: Shameerali Kolothum Thodi <shameerali.kolothum.thodi@huawei.com>
+Cc: "erik.kaneda@intel.com" <erik.kaneda@intel.com>,
+ "robert.moore@intel.com" <robert.moore@intel.com>,
+ Linuxarm <linuxarm@huawei.com>,
+ "linux-acpi@vger.kernel.org" <linux-acpi@vger.kernel.org>,
+ "iommu@lists.linux-foundation.org" <iommu@lists.linux-foundation.org>,
+ wanghuiqiang <wanghuiqiang@huawei.com>,
+ "Guohanjun \(Hanjun Guo\)" <guohanjun@huawei.com>,
+ "Sami.Mujawar@arm.com" <Sami.Mujawar@arm.com>,
+ "steven.price@arm.com" <steven.price@arm.com>,
+ "robin.murphy@arm.com" <robin.murphy@arm.com>,
+ "linux-arm-kernel@lists.infradead.org" <linux-arm-kernel@lists.infradead.org>,
+ "devel@acpica.org" <devel@acpica.org>
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -115,89 +111,158 @@ List-Post: <mailto:iommu@lists.linux-foundation.org>
 List-Help: <mailto:iommu-request@lists.linux-foundation.org?subject=help>
 List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
  <mailto:iommu-request@lists.linux-foundation.org?subject=subscribe>
-From: Sven Peter via iommu <iommu@lists.linux-foundation.org>
-Reply-To: Sven Peter <sven@svenpeter.dev>
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-Hi Robin,
+On Mon, Mar 22, 2021 at 11:37 AM Shameerali Kolothum Thodi
+<shameerali.kolothum.thodi@huawei.com> wrote:
+>
+> [+]
+>
+> Hi Erik,
+>
+> As this is now just merged ino acpica-master and based on the discussion we had here,
+>
+> https://github.com/acpica/acpica/pull/638
+>
+> I had a discussion with ARM folks(Lorenzo) in the linaro-open-discussions call and
+> can confirm that the IORT Revision E is not the final specification and has some issues
+> which is now corrected in the latest E.b revision[1]. Also there are no current users
+> for the Rev E and it may not be a good idea to push this version into the Linux kernel
+> or elsewhere.
 
+Well it was a released revision, although it was found to have issues.
+Currently
+HoneyComb Systems Ready certified firmware does include support for this table,
+although incomplete.  Without agreement on mainline support I am fine to update
+to the latest spec bump.
 
-On Wed, Mar 24, 2021, at 16:29, Robin Murphy wrote:
-> On 2021-03-20 15:19, Sven Peter wrote:
-> > 
-> > I have just noticed today though that at least the USB DWC3 controller in host
-> > mode uses *two* darts at the same time. I'm not sure yet which parts seem to
-> > require which DART instance.
-> > 
-> > This means that we might need to support devices attached to two iommus
-> > simultaneously and just create the same iova mappings. Currently this only
-> > seems to be required for USB according to Apple's Device Tree.
-> > 
-> > I see two options for this and would like to get feedback before
-> > I implement either one:
-> > 
-> >      1) Change #iommu-cells = <1>; to #iommu-cells = <2>; and use the first cell
-> >         to identify the DART and the second one to identify the master.
-> >         The DART DT node would then also take two register ranges that would
-> >         correspond to the two DARTs. Both instances use the same IRQ and the
-> >         same clocks according to Apple's device tree and my experiments.
-> >         This would keep a single device node and the DART driver would then
-> >         simply map iovas in both DARTs if required.
-> 
-> This is broadly similar to the approach used by rockchip-iommu and the 
-> special arm-smmu-nvidia implementation, where there are multiple 
-> instances which require programming identically, that are abstracted 
-> behind a single "device". Your case is a little different since you're 
-> not programming both *entirely* identically, although maybe that's a 
-> possibility if each respective ID isn't used by anything else on the 
-> "other" DART?
+>
+> So could you please revert the merge and I am planning to work on the E.b soon.
+> Please let me know if I need to explicitly send a revert pull request or not.
 
-That would be possible. The only difference is that I need to
-program ID 0 of the first DART and ID 1 of the second one. Both
-of these IDs are only connected to the same USB controller.
+Can you please CC. me on your next release.  I was planning on spending time
+on this regardless.  I already have a patchset for the fsl-mc-bus driver that
+needs to change in order to function properly with RMR support.
 
+Thanks.
 
-> 
-> Overall I tend to view this approach as a bit of a hack because it's not 
-> really describing the hardware truthfully - just because two distinct 
-> functional blocks have their IRQ lines wired together doesn't suddenly 
-> make them a single monolithic block with multiple interfaces - and tends 
-> to be done for the sake of making the driver implementation easier in 
-> terms of the Linux IOMMU API (which, note, hasn't evolved all that far 
-> from its PCI-centric origins and isn't exactly great for arbitrary SoC 
-> topologies).
-
-Yes, the easier driver implementation was my reason to favour this option.
-
-> 
-> >      2) Keep #iommu-cells as-is but support
-> >              iommus = <&usb_dart1a 1>, <&usb_dart1b 0>;
-> >         instead.
-> >         This would then require two devices nodes for the two DART instances and
-> >         some housekeeping in the DART driver to support mapping iovas in both
-> >         DARTs.
-> >         I believe omap-iommu.c supports this setup but I will have to read
-> >         more code to understand the details there and figure out how to implement
-> >         this in a sane way.
-> 
-> This approach is arguably the most honest, and more robust in terms of 
-> making fewer assumptions, and is used by at least exynos-iommu and 
-> omap-iommu. In Linux it currently takes a little bit more housekeeping 
-> to keep track of linked instances within the driver since the IOMMU API 
-> holds the notion that any given client device is associated with "an 
-> IOMMU", but that's always free to change at any time, unlike the design 
-> of a DT binding.
-
-Sounds good. I'll read those drivers and give it a try for v2.
-
-
-Thanks,
-
-
-Sven
+>
+> Thanks,
+> Shameer
+>
+> 1. https://developer.arm.com/documentation/den0049/latest/
+>
+> > -----Original Message-----
+> > From: iommu [mailto:iommu-bounces@lists.linux-foundation.org] On Behalf Of
+> > Shameer Kolothum
+> > Sent: 19 November 2020 12:12
+> > To: linux-arm-kernel@lists.infradead.org; linux-acpi@vger.kernel.org;
+> > iommu@lists.linux-foundation.org; devel@acpica.org
+> > Cc: Linuxarm <linuxarm@huawei.com>; steven.price@arm.com; Guohanjun
+> > (Hanjun Guo) <guohanjun@huawei.com>; Sami.Mujawar@arm.com;
+> > robin.murphy@arm.com; wanghuiqiang <wanghuiqiang@huawei.com>
+> > Subject: [RFC PATCH v2 1/8] ACPICA: IORT: Update for revision E
+> >
+> > IORT revision E contains a few additions like,
+> >     -Added an identifier field in the node descriptors to aid table
+> >      cross-referencing.
+> >     -Introduced the Reserved Memory Range(RMR) node. This is used
+> >      to describe memory ranges that are used by endpoints and requires
+> >      a unity mapping in SMMU.
+> >     -Introduced a flag in the RC node to express support for PRI.
+> >
+> > Signed-off-by: Shameer Kolothum <shameerali.kolothum.thodi@huawei.com>
+> > ---
+> >  include/acpi/actbl2.h | 25 +++++++++++++++++++------
+> >  1 file changed, 19 insertions(+), 6 deletions(-)
+> >
+> > diff --git a/include/acpi/actbl2.h b/include/acpi/actbl2.h index
+> > ec66779cb193..274fce7b5c01 100644
+> > --- a/include/acpi/actbl2.h
+> > +++ b/include/acpi/actbl2.h
+> > @@ -68,7 +68,7 @@
+> >   * IORT - IO Remapping Table
+> >   *
+> >   * Conforms to "IO Remapping Table System Software on ARM Platforms",
+> > - * Document number: ARM DEN 0049D, March 2018
+> > + * Document number: ARM DEN 0049E, June 2020
+> >   *
+> >
+> > ****************************************************************
+> > **************/
+> >
+> > @@ -86,7 +86,8 @@ struct acpi_iort_node {
+> >       u8 type;
+> >       u16 length;
+> >       u8 revision;
+> > -     u32 reserved;
+> > +     u16 reserved;
+> > +     u16 identifier;
+> >       u32 mapping_count;
+> >       u32 mapping_offset;
+> >       char node_data[1];
+> > @@ -100,7 +101,8 @@ enum acpi_iort_node_type {
+> >       ACPI_IORT_NODE_PCI_ROOT_COMPLEX = 0x02,
+> >       ACPI_IORT_NODE_SMMU = 0x03,
+> >       ACPI_IORT_NODE_SMMU_V3 = 0x04,
+> > -     ACPI_IORT_NODE_PMCG = 0x05
+> > +     ACPI_IORT_NODE_PMCG = 0x05,
+> > +     ACPI_IORT_NODE_RMR = 0x06,
+> >  };
+> >
+> >  struct acpi_iort_id_mapping {
+> > @@ -167,10 +169,10 @@ struct acpi_iort_root_complex {
+> >       u8 reserved[3];         /* Reserved, must be zero */
+> >  };
+> >
+> > -/* Values for ats_attribute field above */
+> > +/* Masks for ats_attribute field above */
+> >
+> > -#define ACPI_IORT_ATS_SUPPORTED         0x00000001   /* The root
+> > complex supports ATS */
+> > -#define ACPI_IORT_ATS_UNSUPPORTED       0x00000000   /* The root
+> > complex doesn't support ATS */
+> > +#define ACPI_IORT_ATS_SUPPORTED         (1)  /* The root complex
+> > supports ATS */
+> > +#define ACPI_IORT_PRI_SUPPORTED         (1<<1)       /* The root complex
+> > supports PRI */
+> >
+> >  struct acpi_iort_smmu {
+> >       u64 base_address;       /* SMMU base address */
+> > @@ -241,6 +243,17 @@ struct acpi_iort_pmcg {
+> >       u64 page1_base_address;
+> >  };
+> >
+> > +struct acpi_iort_rmr {
+> > +     u32 rmr_count;
+> > +     u32 rmr_offset;
+> > +};
+> > +
+> > +struct acpi_iort_rmr_desc {
+> > +     u64 base_address;
+> > +     u64 length;
+> > +     u32 reserved;
+> > +};
+> > +
+> >
+> > /***************************************************************
+> > ****************
+> >   *
+> >   * IVRS - I/O Virtualization Reporting Structure
+> > --
+> > 2.17.1
+> >
+> > _______________________________________________
+> > iommu mailing list
+> > iommu@lists.linux-foundation.org
+> > https://lists.linuxfoundation.org/mailman/listinfo/iommu
+> _______________________________________________
+> linux-arm-kernel mailing list
+> linux-arm-kernel@lists.infradead.org
+> http://lists.infradead.org/mailman/listinfo/linux-arm-kernel
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
