@@ -7,67 +7,68 @@ X-Spam-Status: No, score=-15.3 required=3.0 tests=BAYES_00,DKIM_INVALID,
 	SPF_HELO_NONE,SPF_PASS,USER_AGENT_SANE_1 autolearn=ham autolearn_force=no
 	version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id AB737C433E0
-	for <iommu@archiver.kernel.org>; Thu, 25 Mar 2021 17:37:05 +0000 (UTC)
-Received: from smtp2.osuosl.org (smtp2.osuosl.org [140.211.166.133])
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 31210C433DB
+	for <iommu@archiver.kernel.org>; Thu, 25 Mar 2021 17:38:05 +0000 (UTC)
+Received: from smtp4.osuosl.org (smtp4.osuosl.org [140.211.166.137])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 557EB61A2C
-	for <iommu@archiver.kernel.org>; Thu, 25 Mar 2021 17:37:05 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 557EB61A2C
+	by mail.kernel.org (Postfix) with ESMTPS id D0F0F61A30
+	for <iommu@archiver.kernel.org>; Thu, 25 Mar 2021 17:38:04 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org D0F0F61A30
 Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=kernel.org
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by smtp2.osuosl.org (Postfix) with ESMTP id 216CB401DE;
-	Thu, 25 Mar 2021 17:37:05 +0000 (UTC)
+	by smtp4.osuosl.org (Postfix) with ESMTP id 990BD40F1D;
+	Thu, 25 Mar 2021 17:38:04 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from smtp2.osuosl.org ([127.0.0.1])
-	by localhost (smtp2.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id t91fTPcxniKp; Thu, 25 Mar 2021 17:37:04 +0000 (UTC)
+Received: from smtp4.osuosl.org ([127.0.0.1])
+	by localhost (smtp4.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+	with ESMTP id oW-B22I38q5R; Thu, 25 Mar 2021 17:38:03 +0000 (UTC)
 Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by smtp2.osuosl.org (Postfix) with ESMTP id 09456401D9;
-	Thu, 25 Mar 2021 17:37:04 +0000 (UTC)
+	by smtp4.osuosl.org (Postfix) with ESMTP id 4C9C140E92;
+	Thu, 25 Mar 2021 17:38:03 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id DAD48C000D;
-	Thu, 25 Mar 2021 17:37:03 +0000 (UTC)
-Received: from smtp2.osuosl.org (smtp2.osuosl.org [140.211.166.133])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 98F36C000A
- for <iommu@lists.linux-foundation.org>; Thu, 25 Mar 2021 17:37:02 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 26A5EC000D;
+	Thu, 25 Mar 2021 17:38:03 +0000 (UTC)
+Received: from smtp1.osuosl.org (smtp1.osuosl.org [IPv6:2605:bc80:3010::138])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 0D1D2C000A
+ for <iommu@lists.linux-foundation.org>; Thu, 25 Mar 2021 17:38:02 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by smtp2.osuosl.org (Postfix) with ESMTP id 8751A401D9
- for <iommu@lists.linux-foundation.org>; Thu, 25 Mar 2021 17:37:02 +0000 (UTC)
+ by smtp1.osuosl.org (Postfix) with ESMTP id 08A4E84A61
+ for <iommu@lists.linux-foundation.org>; Thu, 25 Mar 2021 17:38:02 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from smtp2.osuosl.org ([127.0.0.1])
- by localhost (smtp2.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id zMORLY__We2Q for <iommu@lists.linux-foundation.org>;
- Thu, 25 Mar 2021 17:37:02 +0000 (UTC)
+Authentication-Results: smtp1.osuosl.org (amavisd-new);
+ dkim=pass (2048-bit key) header.d=kernel.org
+Received: from smtp1.osuosl.org ([127.0.0.1])
+ by localhost (smtp1.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+ with ESMTP id Q7WyneSz5Lx7 for <iommu@lists.linux-foundation.org>;
+ Thu, 25 Mar 2021 17:38:01 +0000 (UTC)
 X-Greylist: domain auto-whitelisted by SQLgrey-1.8.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
- by smtp2.osuosl.org (Postfix) with ESMTPS id 097B840191
- for <iommu@lists.linux-foundation.org>; Thu, 25 Mar 2021 17:37:01 +0000 (UTC)
-Received: by mail.kernel.org (Postfix) with ESMTPSA id 9F76561A0E;
- Thu, 25 Mar 2021 17:36:57 +0000 (UTC)
+ by smtp1.osuosl.org (Postfix) with ESMTPS id 85F5884A5D
+ for <iommu@lists.linux-foundation.org>; Thu, 25 Mar 2021 17:38:01 +0000 (UTC)
+Received: by mail.kernel.org (Postfix) with ESMTPSA id 3D01861A28;
+ Thu, 25 Mar 2021 17:37:57 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
- s=k20201202; t=1616693821;
- bh=M2twXmtu97j9otFWI5zh//Nf5kn2DxkZlOPXyLaNlOw=;
+ s=k20201202; t=1616693881;
+ bh=kLU4dMuIpS+s+W/i7Bpf406Q9DoXN9YHgPK4PWuvqqw=;
  h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
- b=L2mrJVQplXi1fO3DchQqGuhtH1RRLKh+h5UoD9SCVT+ufeR6GzNO5MqWdWmuFbgC6
- gQ8hlsWvwAkeCpHoy7mtUPzWvZeVZ0VeA/7e+GUHZAkRWdKxUr33y9JRIIt8JMzCAG
- cI3Wm4ygdcH94MuNj/rX91vO7+4+/kM+a5NBcLZo4eyzhnSEQkhCNIOjKmD4oYAOEz
- eaVl30CEfM5piQ5rGCAI0yDVa57n528Da7sCVH7Vg5YzNIHlAX6K8KlS/wamZAVDX2
- kpRtyKskGkDaV30Q18Hec+e3lV1v9nVllMWKi0P9o6qcnGOOS5JhMZEcPcpsMo74CE
- XeC+56tfazvmg==
-Date: Thu, 25 Mar 2021 17:36:54 +0000
+ b=i7F02zsvW5dF2qOyc0dqsQKG32TjW3bT97zlZn+2iAnDga/2TG37hUAE/4J3bXFcl
+ HVA07BhW1NVdoJ05AOUQ9hfTidbZzhSpcaL65eedcLytYKRRrTornGWQo2WgqHIjD1
+ fGK/+tkAohjvKGMZiKht+liPFkHq/o4mQuOGq+DY1HqwwtiO7JLt+Bm4dLC1mQIB1J
+ qiJFP4X9DxYvO/LoezN/z+SfcOBml/5kJa/E/Qmj61gKhAYcxm+uewRWx7jNzZQudn
+ pjOBfCV5bvYS6e/90TadJdfPWpnuvnM/Ta4Z9cDUyJN55iJ6EhSl9M0yGvGlL20kYt
+ 2CcHyVUXG1frg==
+Date: Thu, 25 Mar 2021 17:37:53 +0000
 From: Will Deacon <will@kernel.org>
 To: Jean-Philippe Brucker <jean-philippe@linaro.org>
-Subject: Re: [PATCH v13 02/10] iommu/arm-smmu-v3: Use device properties for
- pasid-num-bits
-Message-ID: <20210325173654.GB15504@willie-the-truck>
+Subject: Re: [PATCH v13 01/10] iommu: Fix comment for struct iommu_fwspec
+Message-ID: <20210325173753.GC15504@willie-the-truck>
 References: <20210302092644.2553014-1-jean-philippe@linaro.org>
- <20210302092644.2553014-3-jean-philippe@linaro.org>
+ <20210302092644.2553014-2-jean-philippe@linaro.org>
 MIME-Version: 1.0
 Content-Disposition: inline
-In-Reply-To: <20210302092644.2553014-3-jean-philippe@linaro.org>
+In-Reply-To: <20210302092644.2553014-2-jean-philippe@linaro.org>
 User-Agent: Mutt/1.10.1 (2018-07-13)
 Cc: vivek.gautam@arm.com, guohanjun@huawei.com, linux-acpi@vger.kernel.org,
  zhangfei.gao@linaro.org, lenb@kernel.org, devicetree@vger.kernel.org,
@@ -91,21 +92,17 @@ Content-Transfer-Encoding: 7bit
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-On Tue, Mar 02, 2021 at 10:26:38AM +0100, Jean-Philippe Brucker wrote:
-> The pasid-num-bits property shouldn't need a dedicated fwspec field,
-> it's a job for device properties. Add properties for IORT, and access
-> the number of PASID bits using device_property_read_u32().
+On Tue, Mar 02, 2021 at 10:26:37AM +0100, Jean-Philippe Brucker wrote:
+> Commit 986d5ecc5699 ("iommu: Move fwspec->iommu_priv to struct
+> dev_iommu") removed iommu_priv from fwspec and commit 5702ee24182f
+> ("ACPI/IORT: Check ATS capability in root complex nodes") added @flags.
+> Update the struct doc.
 > 
-> Suggested-by: Robin Murphy <robin.murphy@arm.com>
 > Acked-by: Jonathan Cameron <Jonathan.Cameron@huawei.com>
-> Reviewed-by: Eric Auger <eric.auger@redhat.com>
 > Signed-off-by: Jean-Philippe Brucker <jean-philippe@linaro.org>
 > ---
->  include/linux/iommu.h                       |  2 --
->  drivers/acpi/arm64/iort.c                   | 13 +++++++------
->  drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c |  3 ++-
->  drivers/iommu/of_iommu.c                    |  5 -----
->  4 files changed, 9 insertions(+), 14 deletions(-)
+>  include/linux/iommu.h | 2 +-
+>  1 file changed, 1 insertion(+), 1 deletion(-)
 
 Acked-by: Will Deacon <will@kernel.org>
 
