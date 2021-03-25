@@ -6,86 +6,107 @@ X-Spam-Status: No, score=-3.5 required=3.0 tests=BAYES_00,DKIM_INVALID,
 	DKIM_SIGNED,HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,SPF_HELO_NONE,
 	SPF_PASS,URIBL_RED autolearn=no autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 86CA0C433C1
-	for <iommu@archiver.kernel.org>; Thu, 25 Mar 2021 07:45:34 +0000 (UTC)
-Received: from smtp2.osuosl.org (smtp2.osuosl.org [140.211.166.133])
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3F992C433C1
+	for <iommu@archiver.kernel.org>; Thu, 25 Mar 2021 07:54:27 +0000 (UTC)
+Received: from smtp4.osuosl.org (smtp4.osuosl.org [140.211.166.137])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 1352761A0A
-	for <iommu@archiver.kernel.org>; Thu, 25 Mar 2021 07:45:34 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 1352761A0A
-Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=codeaurora.org
+	by mail.kernel.org (Postfix) with ESMTPS id C53CF61A1A
+	for <iommu@archiver.kernel.org>; Thu, 25 Mar 2021 07:54:26 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org C53CF61A1A
+Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=lists.linux-foundation.org
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by smtp2.osuosl.org (Postfix) with ESMTP id CC3984013A;
-	Thu, 25 Mar 2021 07:45:33 +0000 (UTC)
+	by smtp4.osuosl.org (Postfix) with ESMTP id 785EF40ED9;
+	Thu, 25 Mar 2021 07:54:26 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from smtp2.osuosl.org ([127.0.0.1])
-	by localhost (smtp2.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id QYUVr0-9Sco7; Thu, 25 Mar 2021 07:45:33 +0000 (UTC)
-Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by smtp2.osuosl.org (Postfix) with ESMTP id A76EA400CC;
-	Thu, 25 Mar 2021 07:45:32 +0000 (UTC)
+Received: from smtp4.osuosl.org ([127.0.0.1])
+	by localhost (smtp4.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+	with ESMTP id lFYQjPma8IeY; Thu, 25 Mar 2021 07:54:25 +0000 (UTC)
+Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [IPv6:2605:bc80:3010:104::8cd3:938])
+	by smtp4.osuosl.org (Postfix) with ESMTP id D2B2F40644;
+	Thu, 25 Mar 2021 07:54:24 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 7BAC7C000D;
-	Thu, 25 Mar 2021 07:45:32 +0000 (UTC)
-Received: from smtp2.osuosl.org (smtp2.osuosl.org [140.211.166.133])
- by lists.linuxfoundation.org (Postfix) with ESMTP id CDF02C000A
- for <iommu@lists.linux-foundation.org>; Thu, 25 Mar 2021 07:45:30 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id BAF58C000D;
+	Thu, 25 Mar 2021 07:54:24 +0000 (UTC)
+Received: from smtp2.osuosl.org (smtp2.osuosl.org [IPv6:2605:bc80:3010::133])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id A6861C000A
+ for <iommu@lists.linux-foundation.org>; Thu, 25 Mar 2021 07:54:23 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by smtp2.osuosl.org (Postfix) with UTF8SMTP id A71F94013A
- for <iommu@lists.linux-foundation.org>; Thu, 25 Mar 2021 07:45:30 +0000 (UTC)
+ by smtp2.osuosl.org (Postfix) with ESMTP id 889B04050B
+ for <iommu@lists.linux-foundation.org>; Thu, 25 Mar 2021 07:54:23 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
+Authentication-Results: smtp2.osuosl.org (amavisd-new);
+ dkim=pass (2048-bit key) header.d=svenpeter.dev header.b="tO7AbqGr";
+ dkim=pass (2048-bit key) header.d=messagingengine.com
+ header.b="thdfhC9x"
 Received: from smtp2.osuosl.org ([127.0.0.1])
  by localhost (smtp2.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with UTF8SMTP id IYepyNCmKl-M for <iommu@lists.linux-foundation.org>;
- Thu, 25 Mar 2021 07:45:28 +0000 (UTC)
-X-Greylist: delayed 00:05:03 by SQLgrey-1.8.0
-Received: from m43-7.mailgun.net (m43-7.mailgun.net [69.72.43.7])
- by smtp2.osuosl.org (Postfix) with UTF8SMTPS id 86094400CC
- for <iommu@lists.linux-foundation.org>; Thu, 25 Mar 2021 07:45:28 +0000 (UTC)
-DKIM-Signature: a=rsa-sha256; v=1; c=relaxed/relaxed; d=mg.codeaurora.org;
- q=dns/txt; 
- s=smtp; t=1616658328; h=Message-ID: References: In-Reply-To: Subject:
- Cc: To: From: Date: Content-Transfer-Encoding: Content-Type:
- MIME-Version: Sender; bh=5V/X73Qvmby+KZEDF3giACHPZGd7oaDcpBQsgLRANQE=;
- b=NaHvV+n1G4st/VP+GzPMDer4tKE+1ZfcFA+J+XXu7gjKPuNT3cZ8m8Nlea2iD9wU5o8pF7Nt
- hZkgkjOn9q2Ju1sTdKJoxautl3lmfLaU8IjzwxJ0atPDAEmVDf8XrXrxbClmL10ZefmlhoBk
- uareal2/6H5Hri+spXYHznpEvkU=
-X-Mailgun-Sending-Ip: 69.72.43.7
-X-Mailgun-Sid: WyI3NDkwMCIsICJpb21tdUBsaXN0cy5saW51eC1mb3VuZGF0aW9uLm9yZyIsICJiZTllNGEiXQ==
-Received: from smtp.codeaurora.org
- (ec2-35-166-182-171.us-west-2.compute.amazonaws.com [35.166.182.171]) by
- smtp-out-n06.prod.us-east-1.postgun.com with SMTP id
- 605c3e5e9114a69de7c4e891 (version=TLS1.2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256); Thu, 25 Mar 2021 07:40:14
- GMT
-Received: by smtp.codeaurora.org (Postfix, from userid 1001)
- id E7FCBC43464; Thu, 25 Mar 2021 07:40:13 +0000 (UTC)
-Received: from mail.codeaurora.org (localhost.localdomain [127.0.0.1])
- (using TLSv1 with cipher ECDHE-RSA-AES256-SHA (256/256 bits))
- (No client certificate requested)
- (Authenticated sender: saiprakash.ranjan)
- by smtp.codeaurora.org (Postfix) with ESMTPSA id DB834C433C6;
- Thu, 25 Mar 2021 07:40:12 +0000 (UTC)
-MIME-Version: 1.0
-Date: Thu, 25 Mar 2021 13:10:12 +0530
-From: Sai Prakash Ranjan <saiprakash.ranjan@codeaurora.org>
-To: Will Deacon <will@kernel.org>
-Subject: Re: [PATCHv2 2/2] iommu/arm-smmu-qcom: Move the adreno smmu specific
- impl earlier
-In-Reply-To: <8cfaed1915ad6dd0c34ac7eb2391b410@codeaurora.org>
-References: <YDlIrjkfv16o4Nu3@builder.lan>
- <20210227135321.420-1-saiprakash.ranjan@codeaurora.org>
- <YEqn1SjsGgK0V8K4@builder.lan>
- <8cfaed1915ad6dd0c34ac7eb2391b410@codeaurora.org>
-Message-ID: <727fa9fe2e644f88ba35c2877d71788e@codeaurora.org>
-X-Sender: saiprakash.ranjan@codeaurora.org
-User-Agent: Roundcube Webmail/1.3.9
-Cc: linux-kernel@vger.kernel.org, linux-arm-msm@vger.kernel.org,
- jcrouse@codeaurora.org, akhilpo@codeaurora.org,
- iommu@lists.linux-foundation.org, robin.murphy@arm.com,
- linux-arm-kernel@lists.infradead.org
+ with ESMTP id LKtkbgdfL893 for <iommu@lists.linux-foundation.org>;
+ Thu, 25 Mar 2021 07:54:22 +0000 (UTC)
+X-Greylist: from auto-whitelisted by SQLgrey-1.8.0
+Received: from new3-smtp.messagingengine.com (new3-smtp.messagingengine.com
+ [66.111.4.229])
+ by smtp2.osuosl.org (Postfix) with ESMTPS id 9ED55400CC
+ for <iommu@lists.linux-foundation.org>; Thu, 25 Mar 2021 07:54:22 +0000 (UTC)
+Received: from compute3.internal (compute3.nyi.internal [10.202.2.43])
+ by mailnew.nyi.internal (Postfix) with ESMTP id 57F9E580A83;
+ Thu, 25 Mar 2021 03:54:20 -0400 (EDT)
+Received: from imap21 ([10.202.2.71])
+ by compute3.internal (MEProxy); Thu, 25 Mar 2021 03:54:20 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=svenpeter.dev;
+ h=mime-version:message-id:in-reply-to:references:date:from:to
+ :cc:subject:content-type; s=fm1; bh=wywrE1Y+RTZ0wMV7aq8mui1sDFBC
+ V4PPf7ndEvyaysc=; b=tO7AbqGrZXdNYcrptturPfOMfhE6RT5aAIc9AHZKnnBl
+ sEMBxc6HcN87LsWBynZbRw3DZE8TUCFprSD+BXmBm49lbfB27BbAhqrzqukHx5Lb
+ J/wbYXmMZeAS5GWQxpX+ndQzY8bmfvH6GAXB2dQEsOYkhapUuTwZMEU37VsfedLr
+ XcSKniRJEqZQx6o/ZtIscj487A6SiG0hEy/AeX98FHXBFFWi8x+3eWPZM8FMuYTz
+ B5DqDIY0cmpIv8K1vCyMHSPbykvERTPhMiNvzGiWnvXhIpiFx+TUmRtHAQYFAtHm
+ w6jpu12gjHBeu6txZjGyBOk3sefr/+lqOB75iZN1gA==
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
+ messagingengine.com; h=cc:content-type:date:from:in-reply-to
+ :message-id:mime-version:references:subject:to:x-me-proxy
+ :x-me-proxy:x-me-sender:x-me-sender:x-sasl-enc; s=fm2; bh=wywrE1
+ Y+RTZ0wMV7aq8mui1sDFBCV4PPf7ndEvyaysc=; b=thdfhC9x1k6+U/idpOw8uK
+ JP1ss8GfXrXCOAlLiOKB+KCrp8+iwu4gZ5JNHcT4WLESbCP7Iniep/mnrXZGkznC
+ oULlEyILJH4XdCozHUUf9zakTlZnrEFdMpKqdZ5X62xYoDAIxK6Dzt7AxZdUR54I
+ IrhIOiL0JP0lONMFpvWP9eHVzMrhi2CgU76/Ig8TuWWzHYXaDrLpC4uUTXuPs9XU
+ Era8IrS9/U+Fj5jGNqPOV4vlqxsxmcXI6hxrxx/A5hHo3gGBsmnYc+MStTbLaWbk
+ ir4Yx50CxM7v2QK5lbBahWH9opxawKETgS7QLz5/Vb10FhTqiyl4YkxL5s5RDiqQ
+ ==
+X-ME-Sender: <xms:q0FcYAC4xvDw2XGH5YJBWg0w0SpUArnmxy9fd_wqpwcjSrfOrjNYIA>
+ <xme:q0FcYCh04vVJD5jBgyYUF9WOAGdSyBPIhOGqNpXxmoxO9TackILAGkfTMQ5PPtC52
+ p9DBng2oAQqYlN1TaE>
+X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgeduledrudegledguddufecutefuodetggdotefrod
+ ftvfcurfhrohhfihhlvgemucfhrghsthforghilhdpqfgfvfdpuffrtefokffrpgfnqfgh
+ necuuegrihhlohhuthemuceftddtnecusecvtfgvtghiphhivghnthhsucdlqddutddtmd
+ enucfjughrpefofgggkfgjfhffhffvufgtsehttdertderredtnecuhfhrohhmpedfufhv
+ vghnucfrvghtvghrfdcuoehsvhgvnhesshhvvghnphgvthgvrhdruggvvheqnecuggftrf
+ grthhtvghrnhepgfeigeeiffeuhfettdejgfetjeetfeelfefgfefgvddvtdfghfffudeh
+ vdefkeffnecuvehluhhsthgvrhfuihiivgeptdenucfrrghrrghmpehmrghilhhfrhhomh
+ epshhvvghnsehsvhgvnhhpvghtvghrrdguvghv
+X-ME-Proxy: <xmx:q0FcYDm9B-I3U7bjkF3DRcGV1nd9-bZ4bWb-mxepQXTg-SH0gKMtpA>
+ <xmx:q0FcYGwzvFTnSfH0yFiCj-ltuIJAOxk6NEfjEM_IIBlAS4Lk5v0sCw>
+ <xmx:q0FcYFSxKHaZEEnwVzxD8W6Fa0lzMHAscvUuCh7lxp3r4Npat-XVlQ>
+ <xmx:rEFcYFYZmfOY1o68g8gmSfX2U77kKv-_jfrb_z7-bSxfNi1YvCPtBat8cDA>
+Received: by mailuser.nyi.internal (Postfix, from userid 501)
+ id 224FE51C005E; Thu, 25 Mar 2021 03:54:19 -0400 (EDT)
+X-Mailer: MessagingEngine.com Webmail Interface
+User-Agent: Cyrus-JMAP/3.5.0-alpha0-273-g8500d2492d-fm-20210323.002-g8500d249
+Mime-Version: 1.0
+Message-Id: <43685c67-6d9c-4e72-b320-0462c2273bf0@www.fastmail.com>
+In-Reply-To: <20210323205346.GA1283560@robh.at.kernel.org>
+References: <20210320151903.60759-1-sven@svenpeter.dev>
+ <c1bcc0609e920bc6@bloch.sibelius.xs4all.nl>
+ <20210323205346.GA1283560@robh.at.kernel.org>
+Date: Thu, 25 Mar 2021 08:53:18 +0100
+To: "Rob Herring" <robh@kernel.org>, "Mark Kettenis" <mark.kettenis@xs4all.nl>
+Subject: Re: [PATCH 0/3] Apple M1 DART IOMMU driver
+Cc: Arnd Bergmann <arnd@kernel.org>, devicetree@vger.kernel.org,
+ will@kernel.org, marcan@marcan.st, linux-kernel@vger.kernel.org,
+ iommu@lists.linux-foundation.org, Marc Zyngier <maz@kernel.org>,
+ mohamed.mediouni@caramail.com, Robin Murphy <robin.murphy@arm.com>,
+ linux-arm-kernel@lists.infradead.org, stan@corellium.com
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -98,134 +119,117 @@ List-Post: <mailto:iommu@lists.linux-foundation.org>
 List-Help: <mailto:iommu-request@lists.linux-foundation.org?subject=help>
 List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
  <mailto:iommu-request@lists.linux-foundation.org?subject=subscribe>
+From: Sven Peter via iommu <iommu@lists.linux-foundation.org>
+Reply-To: Sven Peter <sven@svenpeter.dev>
+Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
-Content-Type: text/plain; charset="us-ascii"; Format="flowed"
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-Hi Will,
 
-On 2021-03-15 00:31, Sai Prakash Ranjan wrote:
-> On 2021-03-12 04:59, Bjorn Andersson wrote:
->> On Sat 27 Feb 07:53 CST 2021, Sai Prakash Ranjan wrote:
->> 
->>> Hi Bjorn,
->>> 
->>> On 2021-02-27 00:44, Bjorn Andersson wrote:
->>> > On Fri 26 Feb 12:23 CST 2021, Rob Clark wrote:
->>> >
->>> >
->>> > The current logic picks one of:
->>> > 1) is the compatible mentioned in qcom_smmu_impl_of_match[]
->>> > 2) is the compatible an adreno
->>> > 3) no quirks needed
->>> >
->>> > The change flips the order of these, so the only way I can see this
->>> > change affecting things is if we expected a match on #2, but we got one
->>> > on #1.
->>> >
->>> > Which implies that the instance that we want to act according to the
->>> > adreno impl was listed in qcom_smmu_impl_of_match[] - which either is
->>> > wrong, or there's a single instance that needs both behaviors.
->>> >
->>> > (And I believe Jordan's answer confirms the latter - there's a single
->>> > SMMU instance that needs all them quirks at once)
->>> >
->>> 
->>> Let me go through the problem statement in case my commit message 
->>> wasn't
->>> clear. There are two SMMUs (APSS and GPU) on SC7280 and both are 
->>> SMMU500
->>> (ARM SMMU IP).
->>> 
->>> APSS SMMU compatible - ("qcom,sc7280-smmu-500", "arm,mmu-500")
->>> GPU SMMU compatible - ("qcom,sc7280-smmu-500", "qcom,adreno-smmu", 
->>> "arm,mmu-500")
->>> 
->>> Now if we take SC7180 as an example, GPU SMMU was QSMMU(QCOM SMMU IP)
->>> and APSS SMMU was SMMU500(ARM SMMU IP).
->>> 
->>> APSS SMMU compatible - ("qcom,sc7180-smmu-500", "arm,mmu-500")
->>> GPU SMMU compatible - ("qcom,sc7180-smmu-v2", "qcom,adreno-smmu", 
->>> "qcom,smmu-v2")
->>> 
->>> Current code sequence without this patch,
->>> 
->>> if (of_match_node(qcom_smmu_impl_of_match, np))
->>>                  return qcom_smmu_create(smmu, &qcom_smmu_impl);
->>> 
->>> if (of_device_is_compatible(np, "qcom,adreno-smmu"))
->>>         return qcom_smmu_create(smmu, &qcom_adreno_smmu_impl);
->>> 
->>> Now if we look at the compatible for SC7180, there is no problem 
->>> because
->>> the APSS SMMU will match the one in qcom_smmu_impl_of_match[] and GPU 
->>> SMMU
->>> will match "qcom,adreno-smmu" because the compatible strings are 
->>> different.
->>> But for SC7280, both the APSS SMMU and GPU SMMU 
->>> compatible("qcom,sc7280-smmu-500")
->>> are same. So GPU SMMU will match with the one in 
->>> qcom_smmu_impl_of_match[]
->>> i.e.., "qcom,sc7280-smmu-500" which functionally doesn't cause any 
->>> problem
->>> but we will miss settings for split pagetables which are part of GPU 
->>> SMMU
->>> specific implementation.
->>> 
->>> We can avoid this with yet another new compatible for GPU SMMU 
->>> something like
->>> "qcom,sc7280-adreno-smmu-500" but since we can handle this easily in 
->>> the
->>> driver and since the IPs are same, meaning if there was a hardware 
->>> quirk
->>> required, then we would need to apply to both of them and would this 
->>> additional
->>> compatible be of any help?
->>> 
->> 
->> No, I think you're doing the right thing of having them both. I just
->> didn't remember us doing that.
->> 
->>> Coming to the part of quirks now, you are right saying both SMMUs 
->>> will need
->>> to have the same quirks in SC7280 and similar others where both are 
->>> based on
->>> same IPs but those should probably be *hardware quirks* and if they 
->>> are
->>> software based like the S2CR quirk depending on the firmware, then it 
->>> might
->>> not be applicable to both. In case if it is applicable, then as 
->>> Jordan mentioned,
->>> we can add the same quirks in GPU SMMU implementation.
->>> 
->> 
->> I do suspect that at some point (probably sooner than later) we'd have
->> to support both inheriting of stream from the bootloader and the 
->> Adreno
->> "quirks" in the same instance.
->> 
->> But for now this is okay to me.
->> 
+
+On Tue, Mar 23, 2021, at 21:53, Rob Herring wrote:
+> On Sun, Mar 21, 2021 at 05:00:50PM +0100, Mark Kettenis wrote:
+> > > Date: Sat, 20 Mar 2021 15:19:33 +0000
+> > > From: Sven Peter <sven@svenpeter.dev>
+> > > I have just noticed today though that at least the USB DWC3 controller in host
+> > > mode uses *two* darts at the same time. I'm not sure yet which parts seem to
+> > > require which DART instance.
+> > > 
+> > > This means that we might need to support devices attached to two iommus
+> > > simultaneously and just create the same iova mappings. Currently this only
+> > > seems to be required for USB according to Apple's Device Tree.
+> > > 
+> > > I see two options for this and would like to get feedback before
+> > > I implement either one:
+> > > 
+> > >     1) Change #iommu-cells = <1>; to #iommu-cells = <2>; and use the first cell
+> > >        to identify the DART and the second one to identify the master.
+> > >        The DART DT node would then also take two register ranges that would
+> > >        correspond to the two DARTs. Both instances use the same IRQ and the
+> > >        same clocks according to Apple's device tree and my experiments.
+> > >        This would keep a single device node and the DART driver would then
+> > >        simply map iovas in both DARTs if required.
+> > > 
+> > >     2) Keep #iommu-cells as-is but support
+> > >             iommus = <&usb_dart1a 1>, <&usb_dart1b 0>;
+> > >        instead.
+> > >        This would then require two devices nodes for the two DART instances and
+> > >        some housekeeping in the DART driver to support mapping iovas in both
+> > >        DARTs.
+> > >        I believe omap-iommu.c supports this setup but I will have to read
+> > >        more code to understand the details there and figure out how to implement
+> > >        this in a sane way.
+> > > 
+> > > I currently prefer the first option but I don't understand enough details of
+> > > the iommu system to actually make an informed decision.
 > 
-> Sure, let me know if you or anyone face any issues without it and I 
-> will
-> add it. I will resend this series with the dt-bindings patch for sc7280 
-> smmu
-> which wasn't cc'd to smmu folks by mistake.
+> Please don't mix what does the h/w look like and what's easy to 
+> implement in Linux's IOMMU subsytem. It's pretty clear (at least 
+> from the description here) that option 2 reflects the h/w. 
 > 
 
-I think there is consensus on this series. I can resend if required but 
-it
-still applies cleanly, let me know if you have any comments?
+Good point, I'll keep that in mind and give option 2 a try.
+
+> > 
+> > As I mentioned before, not all DARTs support the full 32-bit aperture.
+> > In particular the PCIe DARTs support a smaller address-space.  It is
+> > not clear whether this is a restriction of the PCIe host controller or
+> > the DART, but the Apple Device Tree has "vm-base" and "vm-size"
+> > properties that encode the base address and size of the aperture.
+> > These single-cell properties which is probably why for the USB DARTs
+> > only "vm-base" is given; since "vm-base" is 0, a 32-bit number
+> > wouldn't be able to encode the full aperture size.  We could make them
+> > 64-bit numbers in the Linux device tree though and always be explicit
+> > about the size.  Older Sun SPARC machines used a single "virtual-dma"
+> > property to encode the aperture.  We could do someting similar.  You
+> > would use this property to initialize domain->geometry.aperture_start
+> > and domain->geometry.aperture_end in diff 3/3 of this series.
+> 
+> 'dma-ranges' is what should be used here.
+> 
+
+The iommu binding documentation [1] mentions that
+
+    The device tree node of the IOMMU device's parent bus must contain a valid
+    "dma-ranges" property that describes how the physical address space of the
+    IOMMU maps to memory. An empty "dma-ranges" property means that there is a 
+    1:1 mapping from IOMMU to memory.
+
+which, if I understand this correctly, means that the 'dma-ranges' for the
+parent bus of the iommu should be empty since the DART hardware can see the
+full physical address space with a 1:1 mapping.
+
+
+The documentation also mentions that
+
+     When an "iommus" property is specified in a device tree node, the IOMMU
+     will be used for address translation. If a "dma-ranges" property exists
+     in the device's parent node it will be ignored.
+
+which means that specifying a 'dma-ranges' in the parent bus of any devices
+that use the iommu will just be ignored.
+
+As a concrete example, the PCIe DART IOMMU only allows translations from iovas
+within 0x00100000...0x3ff00000 to the entire physical address space (though
+realistically it will only map to 16GB RAM starting at 0x800000000 on the M1).
+
+I'm probably just confused or maybe the documentation is outdated but I don't
+see how I could specify "this device can only use DMA addresses from
+0x00100000...0x3ff00000 but can map these via the iommu to any physical
+address" using 'dma-ranges'.
+
+Could you maybe point me to the right direction or give me a small example?
+That would help a lot!
+
+
 
 Thanks,
-Sai
 
--- 
-QUALCOMM INDIA, on behalf of Qualcomm Innovation Center, Inc. is a 
-member
-of Code Aurora Forum, hosted by The Linux Foundation
+Sven
+
+
+[1] Documentation/devicetree/bindings/iommu/iommu.txt
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
