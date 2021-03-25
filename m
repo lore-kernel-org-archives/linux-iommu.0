@@ -2,88 +2,90 @@ Return-Path: <SRS0=Fh/M=IX=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-5.2 required=3.0 tests=BAYES_00,
-	HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,
-	URIBL_BLOCKED,URIBL_RED,USER_AGENT_SANE_2 autolearn=no autolearn_force=no
-	version=3.4.0
+X-Spam-Status: No, score=-14.0 required=3.0 tests=BAYES_00,INCLUDES_CR_TRAILER,
+	INCLUDES_PATCH,MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,URIBL_RED
+	autolearn=ham autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 73551C433C1
-	for <iommu@archiver.kernel.org>; Thu, 25 Mar 2021 17:00:15 +0000 (UTC)
-Received: from smtp4.osuosl.org (smtp4.osuosl.org [140.211.166.137])
+	by smtp.lore.kernel.org (Postfix) with ESMTP id BAD6AC433E0
+	for <iommu@archiver.kernel.org>; Thu, 25 Mar 2021 17:08:24 +0000 (UTC)
+Received: from smtp3.osuosl.org (smtp3.osuosl.org [140.211.166.136])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id C87A061A28
-	for <iommu@archiver.kernel.org>; Thu, 25 Mar 2021 17:00:14 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org C87A061A28
-Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=linux.intel.com
+	by mail.kernel.org (Postfix) with ESMTPS id 699E9619C2
+	for <iommu@archiver.kernel.org>; Thu, 25 Mar 2021 17:08:24 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 699E9619C2
+Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=kernel.org
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by smtp4.osuosl.org (Postfix) with ESMTP id 6788440ED2;
-	Thu, 25 Mar 2021 17:00:14 +0000 (UTC)
+	by smtp3.osuosl.org (Postfix) with ESMTP id 367C16076C;
+	Thu, 25 Mar 2021 17:08:24 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from smtp4.osuosl.org ([127.0.0.1])
-	by localhost (smtp4.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id puTQVTxGPppL; Thu, 25 Mar 2021 17:00:13 +0000 (UTC)
+Received: from smtp3.osuosl.org ([127.0.0.1])
+	by localhost (smtp3.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+	with ESMTP id hXv8GKrobbPx; Thu, 25 Mar 2021 17:08:23 +0000 (UTC)
 Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by smtp4.osuosl.org (Postfix) with ESMTP id 0566F40ED4;
-	Thu, 25 Mar 2021 17:00:12 +0000 (UTC)
+	by smtp3.osuosl.org (Postfix) with ESMTP id 124E26075D;
+	Thu, 25 Mar 2021 17:08:23 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id CEB38C000E;
-	Thu, 25 Mar 2021 17:00:12 +0000 (UTC)
-Received: from smtp1.osuosl.org (smtp1.osuosl.org [IPv6:2605:bc80:3010::138])
- by lists.linuxfoundation.org (Postfix) with ESMTP id B98C1C000A
- for <iommu@lists.linux-foundation.org>; Thu, 25 Mar 2021 17:00:11 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id ED77FC000D;
+	Thu, 25 Mar 2021 17:08:22 +0000 (UTC)
+Received: from smtp2.osuosl.org (smtp2.osuosl.org [140.211.166.133])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id F1984C000A
+ for <iommu@lists.linux-foundation.org>; Thu, 25 Mar 2021 17:08:21 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by smtp1.osuosl.org (Postfix) with ESMTP id B48E784995
- for <iommu@lists.linux-foundation.org>; Thu, 25 Mar 2021 17:00:11 +0000 (UTC)
+ by smtp2.osuosl.org (Postfix) with ESMTP id E6673401D7
+ for <iommu@lists.linux-foundation.org>; Thu, 25 Mar 2021 17:08:21 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from smtp1.osuosl.org ([127.0.0.1])
- by localhost (smtp1.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id QvhmzNApPGri for <iommu@lists.linux-foundation.org>;
- Thu, 25 Mar 2021 17:00:10 +0000 (UTC)
+Received: from smtp2.osuosl.org ([127.0.0.1])
+ by localhost (smtp2.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+ with ESMTP id rtnna2muHtt0 for <iommu@lists.linux-foundation.org>;
+ Thu, 25 Mar 2021 17:08:21 +0000 (UTC)
 X-Greylist: domain auto-whitelisted by SQLgrey-1.8.0
-Received: from mga06.intel.com (mga06.intel.com [134.134.136.31])
- by smtp1.osuosl.org (Postfix) with ESMTPS id F0A9684984
- for <iommu@lists.linux-foundation.org>; Thu, 25 Mar 2021 17:00:09 +0000 (UTC)
-IronPort-SDR: J7CtvYoqn/AIpM/CnIafMVCwCWt1Cdr1gI8nk2LNs30UfkuLZsXilbJKHKaqSx9EHfCnSy2927
- wa2RjjuUSFCQ==
-X-IronPort-AV: E=McAfee;i="6000,8403,9934"; a="252332086"
-X-IronPort-AV: E=Sophos;i="5.81,278,1610438400"; d="scan'208";a="252332086"
-Received: from orsmga006.jf.intel.com ([10.7.209.51])
- by orsmga104.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384;
- 25 Mar 2021 10:00:09 -0700
-IronPort-SDR: 2y+6feWtrUcXYxfBHPesWqNmZ6kIWcDDsLyjiaRoSEn254L4SReT6/Tck0Lc0DbYE10KjtxKlE
- wtU3q2hP7nrw==
-X-IronPort-AV: E=Sophos;i="5.81,278,1610438400"; d="scan'208";a="376922132"
-Received: from jacob-builder.jf.intel.com (HELO jacob-builder) ([10.7.199.155])
- by orsmga006-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384;
- 25 Mar 2021 10:00:08 -0700
-Date: Thu, 25 Mar 2021 10:02:36 -0700
-From: Jacob Pan <jacob.jun.pan@linux.intel.com>
-To: Jean-Philippe Brucker <jean-philippe@linaro.org>
-Subject: Re: [PATCH V4 05/18] iommu/ioasid: Redefine IOASID set and
- allocation APIs
-Message-ID: <20210325100236.17241a1c@jacob-builder>
-In-Reply-To: <YFxkNEz3THJKzW0b@myrica>
-References: <20210318172234.3e8c34f7@jacob-builder> <YFR10eeDVf5ZHV5l@myrica>
- <20210319124645.GP2356281@nvidia.com> <YFSqDNJ5yagk4eO+@myrica>
- <20210319135432.GT2356281@nvidia.com>
- <20210319112221.5123b984@jacob-builder> <YFhiMLR35WWMW/Hu@myrica>
- <20210324100246.4e6b8aa1@jacob-builder>
- <20210324170338.GM2356281@nvidia.com>
- <20210324151230.466fd47a@jacob-builder> <YFxkNEz3THJKzW0b@myrica>
-Organization: OTC
-X-Mailer: Claws Mail 3.17.5 (GTK+ 2.24.32; x86_64-pc-linux-gnu)
-MIME-Version: 1.0
-Cc: "Tian, Kevin" <kevin.tian@intel.com>,
- Alex Williamson <alex.williamson@redhat.com>, Raj Ashok <ashok.raj@intel.com>,
- Jonathan Corbet <corbet@lwn.net>,
- Jean-Philippe Brucker <jean-philippe@linaro.com>,
- LKML <linux-kernel@vger.kernel.org>, Dave Jiang <dave.jiang@intel.com>,
- iommu@lists.linux-foundation.org, Li Zefan <lizefan@huawei.com>,
- Jason Gunthorpe <jgg@nvidia.com>, Johannes Weiner <hannes@cmpxchg.org>,
- Tejun Heo <tj@kernel.org>, cgroups@vger.kernel.org, Wu Hao <hao.wu@intel.com>,
- David Woodhouse <dwmw2@infradead.org>
+Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
+ by smtp2.osuosl.org (Postfix) with ESMTPS id 45F8E401D4
+ for <iommu@lists.linux-foundation.org>; Thu, 25 Mar 2021 17:08:21 +0000 (UTC)
+Received: from disco-boy.misterjones.org (disco-boy.misterjones.org
+ [51.254.78.96])
+ (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+ (No client certificate requested)
+ by mail.kernel.org (Postfix) with ESMTPSA id E1791619C2;
+ Thu, 25 Mar 2021 17:08:16 +0000 (UTC)
+Received: from 78.163-31-62.static.virginmediabusiness.co.uk ([62.31.163.78]
+ helo=why.misterjones.org)
+ by disco-boy.misterjones.org with esmtpsa (TLS1.3) tls
+ TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384 (Exim 4.94)
+ (envelope-from <maz@kernel.org>)
+ id 1lPTSw-003n47-M2; Thu, 25 Mar 2021 17:08:14 +0000
+Date: Thu, 25 Mar 2021 17:08:13 +0000
+Message-ID: <8735wjrwjm.wl-maz@kernel.org>
+From: Marc Zyngier <maz@kernel.org>
+To: Megha Dey <megha.dey@intel.com>
+Subject: Re: [Patch V2 07/13] irqdomain/msi: Provide msi_alloc/free_store()
+ callbacks
+In-Reply-To: <1614370277-23235-8-git-send-email-megha.dey@intel.com>
+References: <1614370277-23235-1-git-send-email-megha.dey@intel.com>
+ <1614370277-23235-8-git-send-email-megha.dey@intel.com>
+User-Agent: Wanderlust/2.15.9 (Almost Unreal) SEMI-EPG/1.14.7 (Harue)
+ FLIM-LB/1.14.9 (=?UTF-8?B?R29qxY0=?=) APEL-LB/10.8 EasyPG/1.0.0 Emacs/27.1
+ (x86_64-pc-linux-gnu) MULE/6.0 (HANACHIRUSATO)
+MIME-Version: 1.0 (generated by SEMI-EPG 1.14.7 - "Harue")
+X-SA-Exim-Connect-IP: 62.31.163.78
+X-SA-Exim-Rcpt-To: megha.dey@intel.com, tglx@linutronix.de,
+ linux-kernel@vger.kernel.org, dave.jiang@intel.com, ashok.raj@intel.com,
+ kevin.tian@intel.com, dwmw@amazon.co.uk, x86@kernel.org, tony.luck@intel.com,
+ dan.j.williams@intel.com, jgg@mellanox.com, kvm@vger.kernel.org,
+ iommu@lists.linux-foundation.org, alex.williamson@redhat.com,
+ bhelgaas@google.com, linux-pci@vger.kernel.org, baolu.lu@linux.intel.com,
+ ravi.v.shankar@intel.com
+X-SA-Exim-Mail-From: maz@kernel.org
+X-SA-Exim-Scanned: No (on disco-boy.misterjones.org);
+ SAEximRunCond expanded to false
+Cc: alex.williamson@redhat.com, kevin.tian@intel.com, tony.luck@intel.com,
+ dave.jiang@intel.com, ashok.raj@intel.com, kvm@vger.kernel.org,
+ ravi.v.shankar@intel.com, linux-pci@vger.kernel.org, x86@kernel.org,
+ linux-kernel@vger.kernel.org, iommu@lists.linux-foundation.org,
+ jgg@mellanox.com, bhelgaas@google.com, tglx@linutronix.de,
+ dan.j.williams@intel.com, dwmw@amazon.co.uk
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -101,76 +103,86 @@ Content-Transfer-Encoding: 7bit
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-Hi Jean-Philippe,
-
-On Thu, 25 Mar 2021 11:21:40 +0100, Jean-Philippe Brucker
-<jean-philippe@linaro.org> wrote:
-
-> On Wed, Mar 24, 2021 at 03:12:30PM -0700, Jacob Pan wrote:
-> > Hi Jason,
-> > 
-> > On Wed, 24 Mar 2021 14:03:38 -0300, Jason Gunthorpe <jgg@nvidia.com>
-> > wrote: 
-> > > On Wed, Mar 24, 2021 at 10:02:46AM -0700, Jacob Pan wrote:  
-> > > > > Also wondering about device driver allocating auxiliary domains
-> > > > > for their private use, to do iommu_map/unmap on private PASIDs (a
-> > > > > clean replacement to super SVA, for example). Would that go
-> > > > > through the same path as /dev/ioasid and use the cgroup of
-> > > > > current task?    
-> > > >
-> > > > For the in-kernel private use, I don't think we should restrict
-> > > > based on cgroup, since there is no affinity to user processes. I
-> > > > also think the PASID allocation should just use kernel API instead
-> > > > of /dev/ioasid. Why would user space need to know the actual PASID
-> > > > # for device private domains? Maybe I missed your idea?    
-> > > 
-> > > There is not much in the kernel that isn't triggered by a process, I
-> > > would be careful about the idea that there is a class of users that
-> > > can consume a cgroup controlled resource without being inside the
-> > > cgroup.
-> > > 
-> > > We've got into trouble before overlooking this and with something
-> > > greenfield like PASID it would be best built in to the API to prevent
-> > > a mistake. eg accepting a cgroup or process input to the allocator.
-> > >   
-> > Make sense. But I think we only allow charging the current cgroup, how
-> > about I add the following to ioasid_alloc():
-> > 
-> > 	misc_cg = get_current_misc_cg();
-> > 	ret = misc_cg_try_charge(MISC_CG_RES_IOASID, misc_cg, 1);
-> > 	if (ret) {
-> > 		put_misc_cg(misc_cg);
-> > 		return ret;
-> > 	}  
+On Fri, 26 Feb 2021 20:11:11 +0000,
+Megha Dey <megha.dey@intel.com> wrote:
 > 
-> Does that allow PASID allocation during driver probe, in kernel_init or
-> modprobe context?
+> From: Thomas Gleixner <tglx@linutronix.de>
 > 
-Good point. Yes, you can get cgroup subsystem state in kernel_init for
-charging/uncharging. I would think module_init should work also since it is
-after kernel_init. I have tried the following:
-static int __ref kernel_init(void *unused)
- {
-        int ret;
-+       struct cgroup_subsys_state *css;
-+       css = task_get_css(current, pids_cgrp_id);
-
-But that would imply:
-1. IOASID has to be built-in, not as module
-2. IOASIDs charged on PID1/init would not subject to cgroup limit since it
-will be in the root cgroup and we don't support migration nor will migrate.
-
-Then it comes back to the question of why do we try to limit in-kernel
-users per cgroup if we can't enforce these cases.
-
-> Thanks,
-> Jean
+> For devices which don't have a standard storage for MSI messages like the
+> upcoming IMS (Interrupt Message Store) it's required to allocate storage
+> space before allocating interrupts and after freeing them.
 > 
+> This could be achieved with the existing callbacks, but that would be
+> awkward because they operate on msi_alloc_info_t which is not uniform
+> across architectures. Also these callbacks are invoked per interrupt but
+> the allocation might have bulk requirements depending on the device.
+> 
+> As such devices can operate on different architectures it is simpler to
+> have separate callbacks which operate on struct device. The resulting
+> storage information has to be stored in struct msi_desc so the underlying
+> irq chip implementation can retrieve it for the relevant operations.
+> 
+> Reviewed-by: Tony Luck <tony.luck@intel.com>
+> Signed-off-by: Thomas Gleixner <tglx@linutronix.de>
+> Signed-off-by: Megha Dey <megha.dey@intel.com>
+> ---
+>  include/linux/msi.h |  8 ++++++++
+>  kernel/irq/msi.c    | 11 +++++++++++
+>  2 files changed, 19 insertions(+)
+> 
+> diff --git a/include/linux/msi.h b/include/linux/msi.h
+> index 46e879c..e915932 100644
+> --- a/include/linux/msi.h
+> +++ b/include/linux/msi.h
+> @@ -323,6 +323,10 @@ struct msi_domain_info;
+>   *			function.
+>   * @domain_free_irqs:	Optional function to override the default free
+>   *			function.
+> + * @msi_alloc_store:	Optional callback to allocate storage in a device
+> + *			specific non-standard MSI store
+> + * @msi_alloc_free:	Optional callback to free storage in a device
+> + *			specific non-standard MSI store
+>   *
+>   * @get_hwirq, @msi_init and @msi_free are callbacks used by
+>   * msi_create_irq_domain() and related interfaces
+> @@ -372,6 +376,10 @@ struct msi_domain_ops {
+>  					     struct device *dev, int nvec);
+>  	void		(*domain_free_irqs)(struct irq_domain *domain,
+>  					    struct device *dev);
+> +	int		(*msi_alloc_store)(struct irq_domain *domain,
+> +					   struct device *dev, int nvec);
+> +	void		(*msi_free_store)(struct irq_domain *domain,
+> +					  struct device *dev);
+>  };
+>  
+>  /**
+> diff --git a/kernel/irq/msi.c b/kernel/irq/msi.c
+> index c54316d..047b59d 100644
+> --- a/kernel/irq/msi.c
+> +++ b/kernel/irq/msi.c
+> @@ -434,6 +434,12 @@ int __msi_domain_alloc_irqs(struct irq_domain *domain, struct device *dev,
+>  	if (ret)
+>  		return ret;
+>  
+> +	if (ops->msi_alloc_store) {
+> +		ret = ops->msi_alloc_store(domain, dev, nvec);
 
+What is supposed to happen if we get aliasing devices (similar to what
+we have with devices behind a PCI bridge)?
+
+The ITS code goes through all kind of hoops to try and detect this
+case when sizing the translation tables (in the .prepare callback),
+and I have the feeling that sizing the message store is analogous.
+
+Or do we all have the warm fuzzy feeling that aliasing is a thing of
+the past and that we can ignore this potential problem?
 
 Thanks,
 
-Jacob
+	M.
+
+-- 
+Without deviation from the norm, progress is not possible.
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
