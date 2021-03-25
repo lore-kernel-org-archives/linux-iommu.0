@@ -2,90 +2,72 @@ Return-Path: <SRS0=Fh/M=IX=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-14.0 required=3.0 tests=BAYES_00,INCLUDES_CR_TRAILER,
-	INCLUDES_PATCH,MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,URIBL_RED
-	autolearn=ham autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-15.3 required=3.0 tests=BAYES_00,DKIM_INVALID,
+	DKIM_SIGNED,INCLUDES_CR_TRAILER,INCLUDES_PATCH,MAILING_LIST_MULTI,
+	SPF_HELO_NONE,SPF_PASS,URIBL_RED,USER_AGENT_SANE_1 autolearn=ham
+	autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id BAD6AC433E0
-	for <iommu@archiver.kernel.org>; Thu, 25 Mar 2021 17:08:24 +0000 (UTC)
-Received: from smtp3.osuosl.org (smtp3.osuosl.org [140.211.166.136])
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E0D5CC433DB
+	for <iommu@archiver.kernel.org>; Thu, 25 Mar 2021 17:09:01 +0000 (UTC)
+Received: from smtp2.osuosl.org (smtp2.osuosl.org [140.211.166.133])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 699E9619C2
-	for <iommu@archiver.kernel.org>; Thu, 25 Mar 2021 17:08:24 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 699E9619C2
+	by mail.kernel.org (Postfix) with ESMTPS id 8D4F6619FB
+	for <iommu@archiver.kernel.org>; Thu, 25 Mar 2021 17:09:01 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 8D4F6619FB
 Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=kernel.org
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by smtp3.osuosl.org (Postfix) with ESMTP id 367C16076C;
-	Thu, 25 Mar 2021 17:08:24 +0000 (UTC)
+	by smtp2.osuosl.org (Postfix) with ESMTP id 6387D401DD;
+	Thu, 25 Mar 2021 17:09:01 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from smtp3.osuosl.org ([127.0.0.1])
-	by localhost (smtp3.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id hXv8GKrobbPx; Thu, 25 Mar 2021 17:08:23 +0000 (UTC)
+Received: from smtp2.osuosl.org ([127.0.0.1])
+	by localhost (smtp2.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+	with ESMTP id AtZgq7yJTbsQ; Thu, 25 Mar 2021 17:09:00 +0000 (UTC)
 Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by smtp3.osuosl.org (Postfix) with ESMTP id 124E26075D;
-	Thu, 25 Mar 2021 17:08:23 +0000 (UTC)
+	by smtp2.osuosl.org (Postfix) with ESMTP id 6417C40191;
+	Thu, 25 Mar 2021 17:09:00 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id ED77FC000D;
-	Thu, 25 Mar 2021 17:08:22 +0000 (UTC)
-Received: from smtp2.osuosl.org (smtp2.osuosl.org [140.211.166.133])
- by lists.linuxfoundation.org (Postfix) with ESMTP id F1984C000A
- for <iommu@lists.linux-foundation.org>; Thu, 25 Mar 2021 17:08:21 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 3D738C000D;
+	Thu, 25 Mar 2021 17:09:00 +0000 (UTC)
+Received: from smtp2.osuosl.org (smtp2.osuosl.org [IPv6:2605:bc80:3010::133])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 42D9DC000A
+ for <iommu@lists.linux-foundation.org>; Thu, 25 Mar 2021 17:08:59 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by smtp2.osuosl.org (Postfix) with ESMTP id E6673401D7
- for <iommu@lists.linux-foundation.org>; Thu, 25 Mar 2021 17:08:21 +0000 (UTC)
+ by smtp2.osuosl.org (Postfix) with ESMTP id 3F654401D4
+ for <iommu@lists.linux-foundation.org>; Thu, 25 Mar 2021 17:08:59 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
 Received: from smtp2.osuosl.org ([127.0.0.1])
  by localhost (smtp2.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id rtnna2muHtt0 for <iommu@lists.linux-foundation.org>;
- Thu, 25 Mar 2021 17:08:21 +0000 (UTC)
+ with ESMTP id AmcvLu73aPHD for <iommu@lists.linux-foundation.org>;
+ Thu, 25 Mar 2021 17:08:58 +0000 (UTC)
 X-Greylist: domain auto-whitelisted by SQLgrey-1.8.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
- by smtp2.osuosl.org (Postfix) with ESMTPS id 45F8E401D4
- for <iommu@lists.linux-foundation.org>; Thu, 25 Mar 2021 17:08:21 +0000 (UTC)
-Received: from disco-boy.misterjones.org (disco-boy.misterjones.org
- [51.254.78.96])
- (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
- (No client certificate requested)
- by mail.kernel.org (Postfix) with ESMTPSA id E1791619C2;
- Thu, 25 Mar 2021 17:08:16 +0000 (UTC)
-Received: from 78.163-31-62.static.virginmediabusiness.co.uk ([62.31.163.78]
- helo=why.misterjones.org)
- by disco-boy.misterjones.org with esmtpsa (TLS1.3) tls
- TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384 (Exim 4.94)
- (envelope-from <maz@kernel.org>)
- id 1lPTSw-003n47-M2; Thu, 25 Mar 2021 17:08:14 +0000
-Date: Thu, 25 Mar 2021 17:08:13 +0000
-Message-ID: <8735wjrwjm.wl-maz@kernel.org>
-From: Marc Zyngier <maz@kernel.org>
-To: Megha Dey <megha.dey@intel.com>
-Subject: Re: [Patch V2 07/13] irqdomain/msi: Provide msi_alloc/free_store()
- callbacks
-In-Reply-To: <1614370277-23235-8-git-send-email-megha.dey@intel.com>
-References: <1614370277-23235-1-git-send-email-megha.dey@intel.com>
- <1614370277-23235-8-git-send-email-megha.dey@intel.com>
-User-Agent: Wanderlust/2.15.9 (Almost Unreal) SEMI-EPG/1.14.7 (Harue)
- FLIM-LB/1.14.9 (=?UTF-8?B?R29qxY0=?=) APEL-LB/10.8 EasyPG/1.0.0 Emacs/27.1
- (x86_64-pc-linux-gnu) MULE/6.0 (HANACHIRUSATO)
-MIME-Version: 1.0 (generated by SEMI-EPG 1.14.7 - "Harue")
-X-SA-Exim-Connect-IP: 62.31.163.78
-X-SA-Exim-Rcpt-To: megha.dey@intel.com, tglx@linutronix.de,
- linux-kernel@vger.kernel.org, dave.jiang@intel.com, ashok.raj@intel.com,
- kevin.tian@intel.com, dwmw@amazon.co.uk, x86@kernel.org, tony.luck@intel.com,
- dan.j.williams@intel.com, jgg@mellanox.com, kvm@vger.kernel.org,
- iommu@lists.linux-foundation.org, alex.williamson@redhat.com,
- bhelgaas@google.com, linux-pci@vger.kernel.org, baolu.lu@linux.intel.com,
- ravi.v.shankar@intel.com
-X-SA-Exim-Mail-From: maz@kernel.org
-X-SA-Exim-Scanned: No (on disco-boy.misterjones.org);
- SAEximRunCond expanded to false
-Cc: alex.williamson@redhat.com, kevin.tian@intel.com, tony.luck@intel.com,
- dave.jiang@intel.com, ashok.raj@intel.com, kvm@vger.kernel.org,
- ravi.v.shankar@intel.com, linux-pci@vger.kernel.org, x86@kernel.org,
- linux-kernel@vger.kernel.org, iommu@lists.linux-foundation.org,
- jgg@mellanox.com, bhelgaas@google.com, tglx@linutronix.de,
- dan.j.williams@intel.com, dwmw@amazon.co.uk
+ by smtp2.osuosl.org (Postfix) with ESMTPS id BA0AB40191
+ for <iommu@lists.linux-foundation.org>; Thu, 25 Mar 2021 17:08:58 +0000 (UTC)
+Received: by mail.kernel.org (Postfix) with ESMTPSA id 8D909619E4;
+ Thu, 25 Mar 2021 17:08:57 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+ s=k20201202; t=1616692138;
+ bh=56A0l6+2zQ5O9rkIHutwsEMDBdqlpzUskFaOTpTah6s=;
+ h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+ b=GDkVZOYAKaFCu9XhG9L6xlZbZpW0FDhNpktbHw7nxXpTlKGvTOW17UDX7lFkpPVJV
+ vXCCZaLsNUjtc6IoKIr8pnqm+gVceFCpouLM0mKP/nlO9IHre6h+/zjhDpXzhg2x9e
+ TDTNluUinlB5azg/97/5Dd5a7MKmcwIcbbMlPOEqm4NJJntlWYKoShXcrb/o7iQWIk
+ 4Lm8Ve4UdIyZObOtCUeGKNfRbZI7Ifdlxh3euALR6Mp/XKOWEy2l4UPi6htlmNlwmD
+ 03K7HvBQPH4SJ/ttC5uIrmmGUBTKhRa9LMaD2V7m4wDitiOzCG3qx8QbjcLA3yP7IM
+ ofYPAgelluGBg==
+Date: Thu, 25 Mar 2021 17:08:54 +0000
+From: Will Deacon <will@kernel.org>
+To: Robin Murphy <robin.murphy@arm.com>
+Subject: Re: [PATCH 1/2] iommu: Statically set module owner
+Message-ID: <20210325170853.GA15337@willie-the-truck>
+References: <f4de29d8330981301c1935e667b507254a2691ae.1616157612.git.robin.murphy@arm.com>
+MIME-Version: 1.0
+Content-Disposition: inline
+In-Reply-To: <f4de29d8330981301c1935e667b507254a2691ae.1616157612.git.robin.murphy@arm.com>
+User-Agent: Mutt/1.10.1 (2018-07-13)
+Cc: iommu@lists.linux-foundation.org, linux-kernel@vger.kernel.org
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -103,86 +85,31 @@ Content-Transfer-Encoding: 7bit
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-On Fri, 26 Feb 2021 20:11:11 +0000,
-Megha Dey <megha.dey@intel.com> wrote:
+On Fri, Mar 19, 2021 at 12:52:01PM +0000, Robin Murphy wrote:
+> It happens that the 3 drivers which first supported being modular are
+> also ones which play games with their pgsize_bitmap, so have non-const
+> iommu_ops where dynamically setting the owner manages to work out OK.
+> However, it's less than ideal to force that upon all drivers which want
+> to be modular - like the new sprd-iommu driver which now has a potential
+> bug in that regard - so let's just statically set the module owner and
+> let ops remain const wherever possible.
 > 
-> From: Thomas Gleixner <tglx@linutronix.de>
-> 
-> For devices which don't have a standard storage for MSI messages like the
-> upcoming IMS (Interrupt Message Store) it's required to allocate storage
-> space before allocating interrupts and after freeing them.
-> 
-> This could be achieved with the existing callbacks, but that would be
-> awkward because they operate on msi_alloc_info_t which is not uniform
-> across architectures. Also these callbacks are invoked per interrupt but
-> the allocation might have bulk requirements depending on the device.
-> 
-> As such devices can operate on different architectures it is simpler to
-> have separate callbacks which operate on struct device. The resulting
-> storage information has to be stored in struct msi_desc so the underlying
-> irq chip implementation can retrieve it for the relevant operations.
-> 
-> Reviewed-by: Tony Luck <tony.luck@intel.com>
-> Signed-off-by: Thomas Gleixner <tglx@linutronix.de>
-> Signed-off-by: Megha Dey <megha.dey@intel.com>
+> Signed-off-by: Robin Murphy <robin.murphy@arm.com>
 > ---
->  include/linux/msi.h |  8 ++++++++
->  kernel/irq/msi.c    | 11 +++++++++++
->  2 files changed, 19 insertions(+)
 > 
-> diff --git a/include/linux/msi.h b/include/linux/msi.h
-> index 46e879c..e915932 100644
-> --- a/include/linux/msi.h
-> +++ b/include/linux/msi.h
-> @@ -323,6 +323,10 @@ struct msi_domain_info;
->   *			function.
->   * @domain_free_irqs:	Optional function to override the default free
->   *			function.
-> + * @msi_alloc_store:	Optional callback to allocate storage in a device
-> + *			specific non-standard MSI store
-> + * @msi_alloc_free:	Optional callback to free storage in a device
-> + *			specific non-standard MSI store
->   *
->   * @get_hwirq, @msi_init and @msi_free are callbacks used by
->   * msi_create_irq_domain() and related interfaces
-> @@ -372,6 +376,10 @@ struct msi_domain_ops {
->  					     struct device *dev, int nvec);
->  	void		(*domain_free_irqs)(struct irq_domain *domain,
->  					    struct device *dev);
-> +	int		(*msi_alloc_store)(struct irq_domain *domain,
-> +					   struct device *dev, int nvec);
-> +	void		(*msi_free_store)(struct irq_domain *domain,
-> +					  struct device *dev);
->  };
->  
->  /**
-> diff --git a/kernel/irq/msi.c b/kernel/irq/msi.c
-> index c54316d..047b59d 100644
-> --- a/kernel/irq/msi.c
-> +++ b/kernel/irq/msi.c
-> @@ -434,6 +434,12 @@ int __msi_domain_alloc_irqs(struct irq_domain *domain, struct device *dev,
->  	if (ret)
->  		return ret;
->  
-> +	if (ops->msi_alloc_store) {
-> +		ret = ops->msi_alloc_store(domain, dev, nvec);
+> This is something I hadn't got round to sending earlier, so now rebased
+> onto iommu/next to accommodate the new driver :)
+> 
+>  drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c | 1 +
+>  drivers/iommu/arm/arm-smmu/arm-smmu.c       | 1 +
+>  drivers/iommu/sprd-iommu.c                  | 1 +
+>  drivers/iommu/virtio-iommu.c                | 1 +
+>  include/linux/iommu.h                       | 9 +--------
+>  5 files changed, 5 insertions(+), 8 deletions(-)
 
-What is supposed to happen if we get aliasing devices (similar to what
-we have with devices behind a PCI bridge)?
+Acked-by: Will Deacon <will@kernel.org>
 
-The ITS code goes through all kind of hoops to try and detect this
-case when sizing the translation tables (in the .prepare callback),
-and I have the feeling that sizing the message store is analogous.
-
-Or do we all have the warm fuzzy feeling that aliasing is a thing of
-the past and that we can ignore this potential problem?
-
-Thanks,
-
-	M.
-
--- 
-Without deviation from the norm, progress is not possible.
+Will
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
