@@ -2,99 +2,155 @@ Return-Path: <SRS0=Fh/M=IX=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-13.5 required=3.0 tests=BAYES_00,
-	DKIM_ADSP_CUSTOM_MED,DKIM_INVALID,DKIM_SIGNED,FREEMAIL_FORGED_FROMDOMAIN,
-	FREEMAIL_FROM,HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_CR_TRAILER,
-	INCLUDES_PATCH,MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,
-	URIBL_RED,USER_AGENT_GIT autolearn=ham autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-10.0 required=3.0 tests=BAYES_00,DKIM_INVALID,
+	DKIM_SIGNED,HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,
+	MSGID_FROM_MTA_HEADER,NICE_REPLY_A,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,
+	URIBL_RED,USER_AGENT_SANE_1 autolearn=ham autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 70A4FC433C1
-	for <iommu@archiver.kernel.org>; Thu, 25 Mar 2021 13:03:53 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2A510C433C1
+	for <iommu@archiver.kernel.org>; Thu, 25 Mar 2021 13:06:23 +0000 (UTC)
 Received: from smtp2.osuosl.org (smtp2.osuosl.org [140.211.166.133])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 2B88F61A17
-	for <iommu@archiver.kernel.org>; Thu, 25 Mar 2021 13:03:53 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 2B88F61A17
-Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=gmail.com
+	by mail.kernel.org (Postfix) with ESMTPS id B419461A1B
+	for <iommu@archiver.kernel.org>; Thu, 25 Mar 2021 13:06:22 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org B419461A1B
+Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=amd.com
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by smtp2.osuosl.org (Postfix) with ESMTP id 075D44053F;
-	Thu, 25 Mar 2021 13:03:53 +0000 (UTC)
+	by smtp2.osuosl.org (Postfix) with ESMTP id 79D27401CA;
+	Thu, 25 Mar 2021 13:06:22 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
 Received: from smtp2.osuosl.org ([127.0.0.1])
 	by localhost (smtp2.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id DSL4Hxh3hx5q; Thu, 25 Mar 2021 13:03:52 +0000 (UTC)
+	with ESMTP id NtotO7JI5pKY; Thu, 25 Mar 2021 13:06:21 +0000 (UTC)
 Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by smtp2.osuosl.org (Postfix) with ESMTP id C912940546;
-	Thu, 25 Mar 2021 13:03:51 +0000 (UTC)
+	by smtp2.osuosl.org (Postfix) with ESMTP id 485114016B;
+	Thu, 25 Mar 2021 13:06:21 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id B4418C000D;
-	Thu, 25 Mar 2021 13:03:51 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 2C814C000D;
+	Thu, 25 Mar 2021 13:06:21 +0000 (UTC)
 Received: from smtp1.osuosl.org (smtp1.osuosl.org [140.211.166.138])
- by lists.linuxfoundation.org (Postfix) with ESMTP id B76C4C000A
- for <iommu@lists.linux-foundation.org>; Thu, 25 Mar 2021 13:03:50 +0000 (UTC)
+ by lists.linuxfoundation.org (Postfix) with ESMTP id A5BE5C000A
+ for <iommu@lists.linux-foundation.org>; Thu, 25 Mar 2021 13:06:19 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by smtp1.osuosl.org (Postfix) with ESMTP id 972AC84A0D
- for <iommu@lists.linux-foundation.org>; Thu, 25 Mar 2021 13:03:50 +0000 (UTC)
+ by smtp1.osuosl.org (Postfix) with ESMTP id 87BEF84066
+ for <iommu@lists.linux-foundation.org>; Thu, 25 Mar 2021 13:06:19 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
 Authentication-Results: smtp1.osuosl.org (amavisd-new);
- dkim=pass (2048-bit key) header.d=gmail.com
+ dkim=pass (1024-bit key) header.d=amd.com
 Received: from smtp1.osuosl.org ([127.0.0.1])
  by localhost (smtp1.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id 9sZTo8yjZ6J1 for <iommu@lists.linux-foundation.org>;
- Thu, 25 Mar 2021 13:03:49 +0000 (UTC)
+ with ESMTP id IJyzUdCAOEvF for <iommu@lists.linux-foundation.org>;
+ Thu, 25 Mar 2021 13:06:18 +0000 (UTC)
 X-Greylist: whitelisted by SQLgrey-1.8.0
-Received: from mail-wr1-x431.google.com (mail-wr1-x431.google.com
- [IPv6:2a00:1450:4864:20::431])
- by smtp1.osuosl.org (Postfix) with ESMTPS id 9938584A0E
- for <iommu@lists.linux-foundation.org>; Thu, 25 Mar 2021 13:03:49 +0000 (UTC)
-Received: by mail-wr1-x431.google.com with SMTP id x13so2194613wrs.9
- for <iommu@lists.linux-foundation.org>; Thu, 25 Mar 2021 06:03:49 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=gmail.com; s=20161025;
- h=from:to:cc:subject:date:message-id:in-reply-to:references
- :mime-version:content-transfer-encoding;
- bh=HWrTtgh451XNTYUh7MYwf0jtrS/IRGKbgAcQpXTVRtA=;
- b=aeZ4EqkUQVIkENKtka9ksMtF3Wt9X/9vBfnSl1ufHd5OxLLz9SOkLtW2pqsdFTd28G
- bpHv4gBuM9tQ02U3yJh3ZmOfcXQ2rycEv/7zRYHJEtgpSYbyPLOC0t6u3VfJEXnEy8O8
- vvKTdVhDp+BGSIEtr1/eTI/GUSMhTjmKttGGYD2B9N5KjRIRc5jl7ZVVPhtw3Q+UfXh7
- qH8GJDbUb+cMh8XPxRavbO9nglVPCQfFxA0K4iDFe1BxR5nq7Ak0FCv8h6LQReUnumhl
- K1cp5apsIwmyoBL9MT+tmgk3bJDoksmefeFxvCj2x9DWyv2MORW78zO0KnAQ4TH8nJ3l
- 3P0w==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
- d=1e100.net; s=20161025;
- h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
- :references:mime-version:content-transfer-encoding;
- bh=HWrTtgh451XNTYUh7MYwf0jtrS/IRGKbgAcQpXTVRtA=;
- b=uQv89No9RztDPm5EIbNEwGBzWh4N5Hl9wEFAElsfwScbr5QQrtNQtQ9BCQiDdNDd5F
- PsQtLP59Kpn4Fn1p6e8Bqc2sYJ0Yn5BuUtiMDn48xwZ2mDM4qevbJjaoSrOiCMi4xmS7
- Qx8sN8RwhiByTwQ5KQBzodW039KaldkQaU7WOCO/PHpX9M4L3R6JlQyRcOWRbHv2ifrv
- EJpAUb/KEsmAfFVp9zwzSPRcJyBC0VhWYlIp4C8SUJFVToXJgv30BSzw6NiRY/ljwmOS
- 5sjFMMavA07uaGS25UeogXwvh/UNXmBVTQZSnf7wNQFgsD7j630GjfZvCNIbx5ghMncb
- bigw==
-X-Gm-Message-State: AOAM530HQmVAi3ZziG29QUaCZvNLffoCFvrcJW9RU3/b+7H6leTYMgMA
- mdd/99GvnW/tPBuLt2dsmE8=
-X-Google-Smtp-Source: ABdhPJwQF6addbpB1WFubIFn2+aMaPvU+1BziyVFj8h2qaPjRSiM/Oi4tqMd670pNzH8iPgp3VNrIw==
-X-Received: by 2002:adf:9261:: with SMTP id 88mr8602996wrj.270.1616677427840; 
- Thu, 25 Mar 2021 06:03:47 -0700 (PDT)
-Received: from localhost ([62.96.65.119])
- by smtp.gmail.com with ESMTPSA id m11sm7865904wri.44.2021.03.25.06.03.46
- (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
- Thu, 25 Mar 2021 06:03:46 -0700 (PDT)
-From: Thierry Reding <thierry.reding@gmail.com>
-To: Thierry Reding <thierry.reding@gmail.com>, Will Deacon <will@kernel.org>,
- Robin Murphy <robin.murphy@arm.com>, Joerg Roedel <joro@8bytes.org>,
- Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>
-Subject: [PATCH 9/9] arm64: tegra: Enable SMMU support on Tegra194
-Date: Thu, 25 Mar 2021 14:03:32 +0100
-Message-Id: <20210325130332.778208-10-thierry.reding@gmail.com>
-X-Mailer: git-send-email 2.30.2
-In-Reply-To: <20210325130332.778208-1-thierry.reding@gmail.com>
-References: <20210325130332.778208-1-thierry.reding@gmail.com>
+Received: from NAM11-DM6-obe.outbound.protection.outlook.com
+ (mail-dm6nam11on2085.outbound.protection.outlook.com [40.107.223.85])
+ by smtp1.osuosl.org (Postfix) with ESMTPS id 110998405D
+ for <iommu@lists.linux-foundation.org>; Thu, 25 Mar 2021 13:06:17 +0000 (UTC)
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=AiP7uXGk6SpdnjHfEBLXR+nDSfTb8HG3Q10ejdhDZ9ww5Ju03pNQ8iRt4cgzOi5pQYzD61TqfidYixxnnX6UrVmtkUXZ+LehB/FHO8/EXfWip98v/ATfWqi3wymjtVAmTjxHXICXv2pb+pWUXy0/o/cTMLzbc0ETGsJ2TOoaY+iIG04Sq5UN/5/1CneTrdnjesYFV9RdbWHTXe7v/KfGT7bAvcLhB+2N+A9ZWI5h8eYkYbtU1tbPYFSk/+/N8Ld1WmqI0MV+RKmVvHkKFVxYHwJCYV9S+rLykVKw4aBWXMXRCZoAi31ESOTAgWIA5ter6r34F6wvMIBb/KLhM6OGow==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com; 
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=CEDDo/jfzaynQccNMxeOsb8m7Ja4rOTcp/yQZuIX2QY=;
+ b=mTJJTT8vI8Rl04rYR5QfbY83XCrkXT1Z/yySbUHB9pr1H0JRFw8meG6RGxt8UVhXCsG2aeBHgPB3r/xOx3kFWyOtQE2cW1c9eXwWCZWHd3idFckRKiHlQ0PpfAVlg7YwtueZ7rErrq+CQtzbS9zG0QYCMnBxZsRyYg5n4R6h16zn1V2wJvwOOEyUBQdSWGoarS9xFvOs4WkqgH0zjFGn8Rw+CppZb48YHaAG67uXxw1rfptsZeP+VBV+++Ux6xp7+z6iCxV6iZpwDfrVC9sbwrCUDNvXWOJWUzzjB+B+a8xXl8OqXNduiY2El68lza8EAxqCy7bcqikbQRkow/5eFg==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=amd.com; dmarc=pass action=none header.from=amd.com; dkim=pass
+ header.d=amd.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=amd.com; s=selector1; 
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=CEDDo/jfzaynQccNMxeOsb8m7Ja4rOTcp/yQZuIX2QY=;
+ b=aKk9u7NsL4n3MAu3Oc2a41cRsGlH92VhRx0mrj/Ylmvd0aJDnFQ2VwOnsDFDJ3GzBO41WZJnqz5nGInlb8DyAyyXTEdljv5ANqP7PSzvGQoqSYUUYtK82ebRqYvAFr2EoPs7744kyQmvAkPjst17v2MrnvV9IWgxwggEYcrZuOo=
+Authentication-Results: amd.com; dkim=none (message not signed)
+ header.d=none;amd.com; dmarc=none action=none header.from=amd.com;
+Received: from BYAPR12MB4597.namprd12.prod.outlook.com (2603:10b6:a03:10b::14)
+ by BYAPR12MB2597.namprd12.prod.outlook.com (2603:10b6:a03:6e::20)
+ with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3977.26; Thu, 25 Mar
+ 2021 13:06:15 +0000
+Received: from BYAPR12MB4597.namprd12.prod.outlook.com
+ ([fe80::cc86:d78a:bb1d:5109]) by BYAPR12MB4597.namprd12.prod.outlook.com
+ ([fe80::cc86:d78a:bb1d:5109%5]) with mapi id 15.20.3955.027; Thu, 25 Mar 2021
+ 13:06:15 +0000
+Subject: Re: [RFC PATCH 5/7] iommu/amd: Add support for Guest IO protection
+To: Joerg Roedel <joro@8bytes.org>
+References: <20210312090411.6030-1-suravee.suthikulpanit@amd.com>
+ <20210312090411.6030-6-suravee.suthikulpanit@amd.com>
+ <YFNyUZg0JAgBLWwX@8bytes.org>
+From: Suravee Suthikulpanit <suravee.suthikulpanit@amd.com>
+Message-ID: <ac209589-f351-d8a9-e47c-0ae622fd0b13@amd.com>
+Date: Thu, 25 Mar 2021 20:06:05 +0700
+User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.16; rv:78.0)
+ Gecko/20100101 Thunderbird/78.8.0
+In-Reply-To: <YFNyUZg0JAgBLWwX@8bytes.org>
+Content-Language: en-US
+X-Originating-IP: [124.122.77.106]
+X-ClientProxiedBy: KL1PR06CA0063.apcprd06.prod.outlook.com
+ (2603:1096:802:14::31) To BYAPR12MB4597.namprd12.prod.outlook.com
+ (2603:10b6:a03:10b::14)
 MIME-Version: 1.0
-Cc: iommu@lists.linux-foundation.org, Jon Hunter <jonathanh@nvidia.com>,
- Nicolin Chen <nicolinc@nvidia.com>, linux-tegra@vger.kernel.org,
- linux-arm-kernel@lists.infradead.org
+X-MS-Exchange-MessageSentRepresentingType: 1
+Received: from Suravees-MacBook-Pro.local (124.122.77.106) by
+ KL1PR06CA0063.apcprd06.prod.outlook.com (2603:1096:802:14::31) with Microsoft
+ SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.20.3977.28 via Frontend Transport; Thu, 25 Mar 2021 13:06:13 +0000
+X-MS-PublicTrafficType: Email
+X-MS-Office365-Filtering-HT: Tenant
+X-MS-Office365-Filtering-Correlation-Id: 6b690cc3-7f25-4ac8-9f13-08d8ef8ec5aa
+X-MS-TrafficTypeDiagnostic: BYAPR12MB2597:
+X-MS-Exchange-Transport-Forked: True
+X-Microsoft-Antispam-PRVS: <BYAPR12MB2597ECE954E86F272E208B64F3629@BYAPR12MB2597.namprd12.prod.outlook.com>
+X-MS-Oob-TLC-OOBClassifiers: OLM:5797;
+X-MS-Exchange-SenderADCheck: 1
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: 9dQdiUeTB8Hmsm9kivX/GuTi8r6VFyyLEYyi6rHrRJvMFNPbMMEbCU+Zcdrs+EHQ6P+hWGa5zCuyRT2RLYglt5AxxPd3LN32KAoM4dwUbISYQIwegIXVxg2L9AUSLUaRrGoqbdZRuJkYcE2wSqjhEnK753MZvf7yfTbdx6Z5EndoEV6t3gU46wdpjj7ofmHWCP6YCo+AJlBPxaTG/S/oL6boNK0GoXNVy2Dw6BWxR1WuP1EI3iULqox8x1YdmbfSiIlKPtJ4jjjmvO1dD6lCklf5W8LL52G/JHGr0+68lN/GEQiIxasnlGGBV4Z51PrNeQ4cr5qxepOKpYLywJxqCGYEVJpJp61CZ36wvp2CyQ2jti8VMGqXi1h1pbtJsMCZ4cxgxrU+gy9q2am+9Ms87N8js+2FNveOz37QvgjYgT5dxcxB1j1k27TkJFlT7FJxz/wqOD5yjQKfY8XoEBOISDEh/+vpcsAAW0hvP2r4u9x2f6MYiL6W1vtaklZL+CF+GKcRaxHrnLNfzam4b2iJVvNVC7wsConzuV/BRInSECZsygd+k5nOrwiugdqvhGHd897bgNiyk3ro8AEqz8qbghDnSlWDebOg8sAxkwn19hBwhxKhMllb/hUejIX8rFl9XkznLYpq/LS49Zu3LydJ2Nj4XVZ+GdijmUaIbmwMHEPz6KGUEfTiXHJv683PBGY3OmGoUpz7mumoBpP0ZDN0GDu4/5hKf8LNH4HXjZmVEuE=
+X-Forefront-Antispam-Report: CIP:255.255.255.255; CTRY:; LANG:en; SCL:1; SRV:;
+ IPV:NLI; SFV:NSPM; H:BYAPR12MB4597.namprd12.prod.outlook.com; PTR:; CAT:NONE;
+ SFS:(4636009)(396003)(39860400002)(376002)(366004)(346002)(136003)(186003)(16526019)(6916009)(6512007)(31696002)(26005)(38100700001)(66946007)(316002)(66556008)(66476007)(52116002)(6506007)(36756003)(4326008)(6486002)(83380400001)(53546011)(5660300002)(8676002)(8936002)(478600001)(956004)(2616005)(44832011)(86362001)(2906002)(6666004)(4744005)(31686004)(45980500001)(43740500002);
+ DIR:OUT; SFP:1101; 
+X-MS-Exchange-AntiSpam-MessageData: =?utf-8?B?MDFvRHlIdFZiaGJhaDBhU1puc1FYdVhhUHhQNHlMdWdIKzZjVHBHUFo5elEw?=
+ =?utf-8?B?bXdsZDQ3TUcxZzdTNXV2RmkrSjg4ZlZXR1F1MWFNTzdweC91QlU0Tkl6aXRL?=
+ =?utf-8?B?WkJNbzlSaktrOHhsMzByeUtzS01kdE91ZVA2aHQzeEM2RlZudmhoL0RkZkc5?=
+ =?utf-8?B?TmRhSi82ZWdSTE9iNmVPR2o0WEREY1ZkSTRYY3hyTGNXL0s1YjBpRXdZNkpT?=
+ =?utf-8?B?dU5HMTNwSWtKM1NnVXpvQWs0ajBXNlFNYnY0WFNyVVhXQVp3Ky8vR2kzazBC?=
+ =?utf-8?B?MHpBMk5CdVJISE1LVHJwQi81ZmEzWEczaVprZTNCYTlqU2swSzJNaXhXQ0NU?=
+ =?utf-8?B?bmg3YUl4bTJCZU15ODl2czZtaHg3bmtwQmQyL1BNQW5xNmYyL1JvQWg2N2Vp?=
+ =?utf-8?B?QzlYdW9KS0lYT2hxS1Ntd0x4aXpJM2ExakNtU1I3ZlF6ckhyVG1MVkw3emxs?=
+ =?utf-8?B?cVhmWkQxV3Q3RE16MWloTVFLT2hweUNJQUk4RW1NTHpoMjJ1MU10SERVVTJO?=
+ =?utf-8?B?VDRqVGFWaTdRZ2RtZW9TQWRqMll5eW5tcFVDMEIrbXlmQm5KWUJOREtwUVdT?=
+ =?utf-8?B?TTd0NklTTUhZZjlHK0ZNMFpPQmVFRU9FOUlmVDN0QlRIOUJiR2FIUFlGQzBP?=
+ =?utf-8?B?bmduZnFjQ3pEUlFobEZkVjkvVnRPeVRHaU5KRVcvTWFmVVJSd01mbkVXUDVE?=
+ =?utf-8?B?NUVqY0g0OEo1MmlORG1Ndlh6Y3NJK1JweHY5enJNdTNRcTNtYVk0VkYvSFd3?=
+ =?utf-8?B?MHRBWWZCZlg5M3BMNXpSMmM5bC9waGUyaEFsR2ZyYk1yakszVWdXMVRBT3I1?=
+ =?utf-8?B?OXQzMVFCS1dRUmlKZms1dUJwMlJJVi9rbFAwdk5TTlZGbDhPMmFZSGdHdDc3?=
+ =?utf-8?B?M24xaVFCSjQ1S1lXUlh2Rkg3UEIrNjBNSEdEM1ErQkUvUnRmWDFpY0N5d2hU?=
+ =?utf-8?B?TXR1aEZEaS9sdnliZWp2ckVFNjV2K1NuMXdPbDBJS2VjZ1hRSXB4RU9ud1hj?=
+ =?utf-8?B?MGVXa0hmaGNyYm9rYkNqb2lHbTZXeEthVnhxMjNieENhZ2oxa1RhaldBTm9h?=
+ =?utf-8?B?WGhRUFNJK1N3UVJnOWcyRDZ3MUZjUzZZbnBSNlBJSTFISGRkYzVmMC83dGdp?=
+ =?utf-8?B?bWhaREZQcEZKQTRFMU9HTGFDMUI2c2VxZmFwYThvVE5jQTJHdWY3Q0FTbXM0?=
+ =?utf-8?B?VmUzNXcvZStCbEtmcHdZbkdVNzdhTjJQeUpmOC9ZZnpPaEphQmtPcUVJREo3?=
+ =?utf-8?B?Uk83S2U5YUI2cmZmZVBtWVFaWHpYaktaWUZlUEZHVThlQ2xFSWhYWDg1Q1l2?=
+ =?utf-8?B?L1VYRDhrSU5WL1d1aHV4bmJQT0RoTE1nT1QrNjc3ZllDMVlVMFMwMXRZZmFL?=
+ =?utf-8?B?VnNxdDdNMHVpUWQvYkdmeVYxMG1wMFRPcDlDaXZRVFUzV3lZN2J5dXBUSEIx?=
+ =?utf-8?B?WWFjaW1wQmJjWGhoZFdYWDlUUVRzNUxBT2NOWnZOVTE2U2VJYmZsTE5Na25L?=
+ =?utf-8?B?c0pjSDdLcEZDS29lQmYvOW1ldksxNy84OWd0aDBCRWJlRGUzNjkvcXJvUEEr?=
+ =?utf-8?B?WjJhcUZmb3g5aDlBVGt5TjFtMnd0cHdueDlhMi9WbW51dzhsQ21wWUcrdTMr?=
+ =?utf-8?B?elVlVERoQW9nNmtjUmRJaGNlcy9vUmF5bUxsdko1VEhEdW4rYU02OUF1cDZI?=
+ =?utf-8?B?YUl1cVNBUDYvZGlialdQMm9DMlBSZEhrTjdqZndTLys0QzNuT3VPYW5qcVhz?=
+ =?utf-8?Q?5jPinNjz52CY2qH2edbWdpiGqEzxNQnbCMPMQpJ?=
+X-OriginatorOrg: amd.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 6b690cc3-7f25-4ac8-9f13-08d8ef8ec5aa
+X-MS-Exchange-CrossTenant-AuthSource: BYAPR12MB4597.namprd12.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 25 Mar 2021 13:06:15.5781 (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 3dd8961f-e488-4e60-8e11-a82d994e183d
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: wx83H/Zyk78X8yZZ0Ty3UG0JhlXRByVku5ihjWHh+U/pKYfXvzcQESpdJL/FcQ9NpCb7MtL3wPh2sFUhyAzz4g==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: BYAPR12MB2597
+Cc: iommu@lists.linux-foundation.org, Jon.Grimm@amd.com,
+ linux-kernel@vger.kernel.org, Wei.Huang2@amd.com
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -107,177 +163,28 @@ List-Post: <mailto:iommu@lists.linux-foundation.org>
 List-Help: <mailto:iommu-request@lists.linux-foundation.org?subject=help>
 List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
  <mailto:iommu-request@lists.linux-foundation.org?subject=subscribe>
-Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset="us-ascii"; Format="flowed"
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-From: Thierry Reding <treding@nvidia.com>
+Joerg,
 
-Add the device tree node for the dual-SMMU found on Tegra194 and hook up
-peripherals such as host1x, BPMP, HDA, SDMMC, EQOS and VIC.
+On 3/18/21 10:31 PM, Joerg Roedel wrote:
+> On Fri, Mar 12, 2021 at 03:04:09AM -0600, Suravee Suthikulpanit wrote:
+>> @@ -519,6 +521,7 @@ struct protection_domain {
+>>   	spinlock_t lock;	/* mostly used to lock the page table*/
+>>   	u16 id;			/* the domain id written to the device table */
+>>   	int glx;		/* Number of levels for GCR3 table */
+>> +	bool giov;		/* guest IO protection domain */
+> 
+> Could this be turned into a flag?
+> 
 
-Signed-off-by: Thierry Reding <treding@nvidia.com>
----
- arch/arm64/boot/dts/nvidia/tegra194.dtsi | 86 ++++++++++++++++++++++++
- 1 file changed, 86 insertions(+)
+Good point. I'll convert to use the protection_domain.flags.
 
-diff --git a/arch/arm64/boot/dts/nvidia/tegra194.dtsi b/arch/arm64/boot/dts/nvidia/tegra194.dtsi
-index 9449156fae39..3c1231a9ff62 100644
---- a/arch/arm64/boot/dts/nvidia/tegra194.dtsi
-+++ b/arch/arm64/boot/dts/nvidia/tegra194.dtsi
-@@ -62,6 +62,7 @@ ethernet@2490000 {
- 			interconnects = <&mc TEGRA194_MEMORY_CLIENT_EQOSR &emc>,
- 					<&mc TEGRA194_MEMORY_CLIENT_EQOSW &emc>;
- 			interconnect-names = "dma-mem", "write";
-+			iommus = <&smmu TEGRA194_SID_EQOS>;
- 			status = "disabled";
- 
- 			snps,write-requests = <1>;
-@@ -733,6 +734,7 @@ sdmmc1: mmc@3400000 {
- 			interconnects = <&mc TEGRA194_MEMORY_CLIENT_SDMMCRA &emc>,
- 					<&mc TEGRA194_MEMORY_CLIENT_SDMMCWA &emc>;
- 			interconnect-names = "dma-mem", "write";
-+			iommus = <&smmu TEGRA194_SID_SDMMC1>;
- 			nvidia,pad-autocal-pull-up-offset-3v3-timeout =
- 									<0x07>;
- 			nvidia,pad-autocal-pull-down-offset-3v3-timeout =
-@@ -759,6 +761,7 @@ sdmmc3: mmc@3440000 {
- 			interconnects = <&mc TEGRA194_MEMORY_CLIENT_SDMMCR &emc>,
- 					<&mc TEGRA194_MEMORY_CLIENT_SDMMCW &emc>;
- 			interconnect-names = "dma-mem", "write";
-+			iommus = <&smmu TEGRA194_SID_SDMMC3>;
- 			nvidia,pad-autocal-pull-up-offset-1v8 = <0x00>;
- 			nvidia,pad-autocal-pull-down-offset-1v8 = <0x7a>;
- 			nvidia,pad-autocal-pull-up-offset-3v3-timeout = <0x07>;
-@@ -790,6 +793,7 @@ sdmmc4: mmc@3460000 {
- 			interconnects = <&mc TEGRA194_MEMORY_CLIENT_SDMMCRAB &emc>,
- 					<&mc TEGRA194_MEMORY_CLIENT_SDMMCWAB &emc>;
- 			interconnect-names = "dma-mem", "write";
-+			iommus = <&smmu TEGRA194_SID_SDMMC4>;
- 			nvidia,pad-autocal-pull-up-offset-hs400 = <0x00>;
- 			nvidia,pad-autocal-pull-down-offset-hs400 = <0x00>;
- 			nvidia,pad-autocal-pull-up-offset-1v8-timeout = <0x0a>;
-@@ -821,6 +825,7 @@ hda@3510000 {
- 			interconnects = <&mc TEGRA194_MEMORY_CLIENT_HDAR &emc>,
- 					<&mc TEGRA194_MEMORY_CLIENT_HDAW &emc>;
- 			interconnect-names = "dma-mem", "write";
-+			iommus = <&smmu TEGRA194_SID_HDA>;
- 			status = "disabled";
- 		};
- 
-@@ -1300,6 +1305,84 @@ pmc: pmc@c360000 {
- 			interrupt-controller;
- 		};
- 
-+		smmu: iommu@12000000 {
-+			compatible = "nvidia,tegra194-smmu", "arm,mmu-500";
-+			reg = <0x12000000 0x800000>,
-+			      <0x11000000 0x800000>;
-+			interrupts = <GIC_SPI 170 IRQ_TYPE_LEVEL_HIGH>,
-+				     <GIC_SPI 232 IRQ_TYPE_LEVEL_HIGH>,
-+				     <GIC_SPI 170 IRQ_TYPE_LEVEL_HIGH>,
-+				     <GIC_SPI 170 IRQ_TYPE_LEVEL_HIGH>,
-+				     <GIC_SPI 170 IRQ_TYPE_LEVEL_HIGH>,
-+				     <GIC_SPI 170 IRQ_TYPE_LEVEL_HIGH>,
-+				     <GIC_SPI 170 IRQ_TYPE_LEVEL_HIGH>,
-+				     <GIC_SPI 170 IRQ_TYPE_LEVEL_HIGH>,
-+				     <GIC_SPI 170 IRQ_TYPE_LEVEL_HIGH>,
-+				     <GIC_SPI 170 IRQ_TYPE_LEVEL_HIGH>,
-+				     <GIC_SPI 170 IRQ_TYPE_LEVEL_HIGH>,
-+				     <GIC_SPI 170 IRQ_TYPE_LEVEL_HIGH>,
-+				     <GIC_SPI 170 IRQ_TYPE_LEVEL_HIGH>,
-+				     <GIC_SPI 170 IRQ_TYPE_LEVEL_HIGH>,
-+				     <GIC_SPI 170 IRQ_TYPE_LEVEL_HIGH>,
-+				     <GIC_SPI 170 IRQ_TYPE_LEVEL_HIGH>,
-+				     <GIC_SPI 170 IRQ_TYPE_LEVEL_HIGH>,
-+				     <GIC_SPI 170 IRQ_TYPE_LEVEL_HIGH>,
-+				     <GIC_SPI 170 IRQ_TYPE_LEVEL_HIGH>,
-+				     <GIC_SPI 170 IRQ_TYPE_LEVEL_HIGH>,
-+				     <GIC_SPI 170 IRQ_TYPE_LEVEL_HIGH>,
-+				     <GIC_SPI 170 IRQ_TYPE_LEVEL_HIGH>,
-+				     <GIC_SPI 170 IRQ_TYPE_LEVEL_HIGH>,
-+				     <GIC_SPI 170 IRQ_TYPE_LEVEL_HIGH>,
-+				     <GIC_SPI 170 IRQ_TYPE_LEVEL_HIGH>,
-+				     <GIC_SPI 170 IRQ_TYPE_LEVEL_HIGH>,
-+				     <GIC_SPI 170 IRQ_TYPE_LEVEL_HIGH>,
-+				     <GIC_SPI 170 IRQ_TYPE_LEVEL_HIGH>,
-+				     <GIC_SPI 170 IRQ_TYPE_LEVEL_HIGH>,
-+				     <GIC_SPI 170 IRQ_TYPE_LEVEL_HIGH>,
-+				     <GIC_SPI 170 IRQ_TYPE_LEVEL_HIGH>,
-+				     <GIC_SPI 170 IRQ_TYPE_LEVEL_HIGH>,
-+				     <GIC_SPI 170 IRQ_TYPE_LEVEL_HIGH>,
-+				     <GIC_SPI 170 IRQ_TYPE_LEVEL_HIGH>,
-+				     <GIC_SPI 170 IRQ_TYPE_LEVEL_HIGH>,
-+				     <GIC_SPI 170 IRQ_TYPE_LEVEL_HIGH>,
-+				     <GIC_SPI 170 IRQ_TYPE_LEVEL_HIGH>,
-+				     <GIC_SPI 170 IRQ_TYPE_LEVEL_HIGH>,
-+				     <GIC_SPI 170 IRQ_TYPE_LEVEL_HIGH>,
-+				     <GIC_SPI 170 IRQ_TYPE_LEVEL_HIGH>,
-+				     <GIC_SPI 170 IRQ_TYPE_LEVEL_HIGH>,
-+				     <GIC_SPI 170 IRQ_TYPE_LEVEL_HIGH>,
-+				     <GIC_SPI 170 IRQ_TYPE_LEVEL_HIGH>,
-+				     <GIC_SPI 170 IRQ_TYPE_LEVEL_HIGH>,
-+				     <GIC_SPI 170 IRQ_TYPE_LEVEL_HIGH>,
-+				     <GIC_SPI 170 IRQ_TYPE_LEVEL_HIGH>,
-+				     <GIC_SPI 170 IRQ_TYPE_LEVEL_HIGH>,
-+				     <GIC_SPI 170 IRQ_TYPE_LEVEL_HIGH>,
-+				     <GIC_SPI 170 IRQ_TYPE_LEVEL_HIGH>,
-+				     <GIC_SPI 170 IRQ_TYPE_LEVEL_HIGH>,
-+				     <GIC_SPI 170 IRQ_TYPE_LEVEL_HIGH>,
-+				     <GIC_SPI 170 IRQ_TYPE_LEVEL_HIGH>,
-+				     <GIC_SPI 170 IRQ_TYPE_LEVEL_HIGH>,
-+				     <GIC_SPI 170 IRQ_TYPE_LEVEL_HIGH>,
-+				     <GIC_SPI 170 IRQ_TYPE_LEVEL_HIGH>,
-+				     <GIC_SPI 170 IRQ_TYPE_LEVEL_HIGH>,
-+				     <GIC_SPI 170 IRQ_TYPE_LEVEL_HIGH>,
-+				     <GIC_SPI 170 IRQ_TYPE_LEVEL_HIGH>,
-+				     <GIC_SPI 170 IRQ_TYPE_LEVEL_HIGH>,
-+				     <GIC_SPI 170 IRQ_TYPE_LEVEL_HIGH>,
-+				     <GIC_SPI 170 IRQ_TYPE_LEVEL_HIGH>,
-+				     <GIC_SPI 170 IRQ_TYPE_LEVEL_HIGH>,
-+				     <GIC_SPI 170 IRQ_TYPE_LEVEL_HIGH>,
-+				     <GIC_SPI 170 IRQ_TYPE_LEVEL_HIGH>,
-+				     <GIC_SPI 170 IRQ_TYPE_LEVEL_HIGH>,
-+				     <GIC_SPI 170 IRQ_TYPE_LEVEL_HIGH>;
-+			stream-match-mask = <0x7f80>;
-+			#global-interrupts = <2>;
-+			#iommu-cells = <1>;
-+
-+			nvidia,memory-controller = <&mc>;
-+			status = "okay";
-+		};
-+
- 		host1x@13e00000 {
- 			compatible = "nvidia,tegra194-host1x";
- 			reg = <0x13e00000 0x10000>,
-@@ -1319,6 +1402,7 @@ host1x@13e00000 {
- 			ranges = <0x15000000 0x15000000 0x01000000>;
- 			interconnects = <&mc TEGRA194_MEMORY_CLIENT_HOST1XDMAR &emc>;
- 			interconnect-names = "dma-mem";
-+			iommus = <&smmu TEGRA194_SID_HOST1X>;
- 
- 			display-hub@15200000 {
- 				compatible = "nvidia,tegra194-display";
-@@ -1430,6 +1514,7 @@ vic@15340000 {
- 				interconnects = <&mc TEGRA194_MEMORY_CLIENT_VICSRD &emc>,
- 						<&mc TEGRA194_MEMORY_CLIENT_VICSWR &emc>;
- 				interconnect-names = "dma-mem", "write";
-+				iommus = <&smmu TEGRA194_SID_VIC>;
- 			};
- 
- 			dpaux0: dpaux@155c0000 {
-@@ -2136,6 +2221,7 @@ bpmp: bpmp {
- 				<&mc TEGRA194_MEMORY_CLIENT_BPMPDMAR &emc>,
- 				<&mc TEGRA194_MEMORY_CLIENT_BPMPDMAW &emc>;
- 		interconnect-names = "read", "write", "dma-mem", "dma-write";
-+		iommus = <&smmu TEGRA194_SID_BPMP>;
- 
- 		bpmp_i2c: i2c {
- 			compatible = "nvidia,tegra186-bpmp-i2c";
--- 
-2.30.2
-
+Thanks,
+Suravee
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
