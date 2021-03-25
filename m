@@ -7,63 +7,64 @@ X-Spam-Status: No, score=-15.3 required=3.0 tests=BAYES_00,
 	MAILING_LIST_MULTI,NICE_REPLY_A,SPF_HELO_NONE,SPF_PASS,URIBL_RED,
 	USER_AGENT_SANE_1 autolearn=ham autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 875CFC433C1
-	for <iommu@archiver.kernel.org>; Thu, 25 Mar 2021 14:27:23 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 79440C433C1
+	for <iommu@archiver.kernel.org>; Thu, 25 Mar 2021 14:27:30 +0000 (UTC)
 Received: from smtp1.osuosl.org (smtp1.osuosl.org [140.211.166.138])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 06923619FE
-	for <iommu@archiver.kernel.org>; Thu, 25 Mar 2021 14:27:22 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 06923619FE
+	by mail.kernel.org (Postfix) with ESMTPS id DB62B619FE
+	for <iommu@archiver.kernel.org>; Thu, 25 Mar 2021 14:27:29 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org DB62B619FE
 Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=arm.com
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by smtp1.osuosl.org (Postfix) with ESMTP id C380A84A0E;
-	Thu, 25 Mar 2021 14:27:22 +0000 (UTC)
+	by smtp1.osuosl.org (Postfix) with ESMTP id 9DA9184A14;
+	Thu, 25 Mar 2021 14:27:29 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
 Received: from smtp1.osuosl.org ([127.0.0.1])
 	by localhost (smtp1.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id izkcfMzxBKjR; Thu, 25 Mar 2021 14:27:21 +0000 (UTC)
+	with ESMTP id mtL-R3ipVe9u; Thu, 25 Mar 2021 14:27:28 +0000 (UTC)
 Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by smtp1.osuosl.org (Postfix) with ESMTP id 8310984A07;
-	Thu, 25 Mar 2021 14:27:21 +0000 (UTC)
+	by smtp1.osuosl.org (Postfix) with ESMTP id AE1E784A0D;
+	Thu, 25 Mar 2021 14:27:27 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 51E05C000E;
-	Thu, 25 Mar 2021 14:27:21 +0000 (UTC)
-Received: from smtp1.osuosl.org (smtp1.osuosl.org [140.211.166.138])
- by lists.linuxfoundation.org (Postfix) with ESMTP id BA264C000A
- for <iommu@lists.linux-foundation.org>; Thu, 25 Mar 2021 14:27:19 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 95B3CC000E;
+	Thu, 25 Mar 2021 14:27:27 +0000 (UTC)
+Received: from smtp2.osuosl.org (smtp2.osuosl.org [IPv6:2605:bc80:3010::133])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id E89FBC000A
+ for <iommu@lists.linux-foundation.org>; Thu, 25 Mar 2021 14:27:26 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by smtp1.osuosl.org (Postfix) with ESMTP id A136884A0A
- for <iommu@lists.linux-foundation.org>; Thu, 25 Mar 2021 14:27:19 +0000 (UTC)
+ by smtp2.osuosl.org (Postfix) with ESMTP id CB1C34054B
+ for <iommu@lists.linux-foundation.org>; Thu, 25 Mar 2021 14:27:26 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from smtp1.osuosl.org ([127.0.0.1])
- by localhost (smtp1.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id iQP2nvjPjBK4 for <iommu@lists.linux-foundation.org>;
- Thu, 25 Mar 2021 14:27:18 +0000 (UTC)
+Received: from smtp2.osuosl.org ([127.0.0.1])
+ by localhost (smtp2.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+ with ESMTP id Vty0nWShQW6x for <iommu@lists.linux-foundation.org>;
+ Thu, 25 Mar 2021 14:27:26 +0000 (UTC)
 X-Greylist: domain auto-whitelisted by SQLgrey-1.8.0
 Received: from foss.arm.com (foss.arm.com [217.140.110.172])
- by smtp1.osuosl.org (Postfix) with ESMTP id 8791584A07
- for <iommu@lists.linux-foundation.org>; Thu, 25 Mar 2021 14:27:18 +0000 (UTC)
+ by smtp2.osuosl.org (Postfix) with ESMTP id DA0B340549
+ for <iommu@lists.linux-foundation.org>; Thu, 25 Mar 2021 14:27:25 +0000 (UTC)
 Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
- by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 74462143D;
- Thu, 25 Mar 2021 07:27:17 -0700 (PDT)
+ by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 18E91143D;
+ Thu, 25 Mar 2021 07:27:25 -0700 (PDT)
 Received: from [10.57.50.37] (unknown [10.57.50.37])
- by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id A88963F792;
- Thu, 25 Mar 2021 07:27:15 -0700 (PDT)
-Subject: Re: [PATCH 3/9] memory: tegra: Implement SID override programming
+ by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id 840A13F792;
+ Thu, 25 Mar 2021 07:27:23 -0700 (PDT)
+Subject: Re: [PATCH 5/9] iommu/arm-smmu: tegra: Detect number of instances at
+ runtime
 To: Thierry Reding <thierry.reding@gmail.com>, Will Deacon <will@kernel.org>, 
  Joerg Roedel <joro@8bytes.org>,
  Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>
 References: <20210325130332.778208-1-thierry.reding@gmail.com>
- <20210325130332.778208-4-thierry.reding@gmail.com>
+ <20210325130332.778208-6-thierry.reding@gmail.com>
 From: Robin Murphy <robin.murphy@arm.com>
-Message-ID: <e994810f-7c3c-0f3a-b5af-b318b6eb31f8@arm.com>
-Date: Thu, 25 Mar 2021 14:27:10 +0000
+Message-ID: <2f2039a0-bf7e-9261-62f6-bea118c64b38@arm.com>
+Date: Thu, 25 Mar 2021 14:27:22 +0000
 User-Agent: Mozilla/5.0 (Windows NT 10.0; rv:78.0) Gecko/20100101
  Thunderbird/78.8.1
 MIME-Version: 1.0
-In-Reply-To: <20210325130332.778208-4-thierry.reding@gmail.com>
+In-Reply-To: <20210325130332.778208-6-thierry.reding@gmail.com>
 Content-Language: en-GB
 Cc: iommu@lists.linux-foundation.org, Jon Hunter <jonathanh@nvidia.com>,
  Nicolin Chen <nicolinc@nvidia.com>, linux-tegra@vger.kernel.org,
@@ -88,148 +89,167 @@ Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 On 2021-03-25 13:03, Thierry Reding wrote:
 > From: Thierry Reding <treding@nvidia.com>
 > 
-> Instead of programming all SID overrides during early boot, perform the
-> operation on-demand after the SMMU translations have been set up for a
-> device. This reuses data from device tree to match memory clients for a
-> device and programs the SID specified in device tree, which corresponds
-> to the SID used for the SMMU context banks for the device.
-
-Can you clarify what exactly the SID override does? I'm guessing it's 
-more than just changing the ID presented to the SMMU from one value to 
-another, since that alone wouldn't help under disable_bypass.
-
+> Parse the reg property in device tree and detect the number of instances
+> represented by a device tree node. This is subsequently needed in order
+> to support single-instance SMMUs with the Tegra implementation because
+> additional programming is needed to properly configure the SID override
+> registers in the memory controller.
+> 
 > Signed-off-by: Thierry Reding <treding@nvidia.com>
 > ---
->   drivers/memory/tegra/tegra186.c | 70 +++++++++++++++++++++++++++++++++
->   include/soc/tegra/mc.h          | 10 +++++
->   2 files changed, 80 insertions(+)
+>   drivers/iommu/arm/arm-smmu/arm-smmu-nvidia.c | 49 ++++++++++++++------
+>   1 file changed, 34 insertions(+), 15 deletions(-)
 > 
-> diff --git a/drivers/memory/tegra/tegra186.c b/drivers/memory/tegra/tegra186.c
-> index efa922d51d83..a89e8e40d875 100644
-> --- a/drivers/memory/tegra/tegra186.c
-> +++ b/drivers/memory/tegra/tegra186.c
-> @@ -4,6 +4,7 @@
+> diff --git a/drivers/iommu/arm/arm-smmu/arm-smmu-nvidia.c b/drivers/iommu/arm/arm-smmu/arm-smmu-nvidia.c
+> index 29117444e5a0..5b1170b028f0 100644
+> --- a/drivers/iommu/arm/arm-smmu/arm-smmu-nvidia.c
+> +++ b/drivers/iommu/arm/arm-smmu/arm-smmu-nvidia.c
+> @@ -20,13 +20,19 @@
+>    * The third instance usage is through standard arm-smmu driver itself and
+>    * is out of scope of this implementation.
 >    */
+> -#define NUM_SMMU_INSTANCES 2
+> +#define MAX_SMMU_INSTANCES 2
 >   
->   #include <linux/io.h>
-> +#include <linux/iommu.h>
->   #include <linux/module.h>
->   #include <linux/mod_devicetable.h>
->   #include <linux/of_device.h>
-> @@ -19,6 +20,10 @@
->   #include <dt-bindings/memory/tegra194-mc.h>
->   #endif
->   
-> +#define MC_SID_STREAMID_OVERRIDE_MASK GENMASK(7, 0)
-> +#define MC_SID_STREAMID_SECURITY_WRITE_ACCESS_DISABLED BIT(16)
-> +#define MC_SID_STREAMID_SECURITY_OVERRIDE BIT(8)
-> +
->   struct tegra186_mc_client {
->   	const char *name;
->   	unsigned int id;
-> @@ -1808,6 +1813,71 @@ static struct platform_driver tegra186_mc_driver = {
->   };
->   module_platform_driver(tegra186_mc_driver);
->   
-> +static void tegra186_mc_client_sid_override(struct tegra_mc *mc,
-> +					    const struct tegra186_mc_client *client,
-> +					    unsigned int sid)
-> +{
-> +	u32 value, old;
-> +
-> +	value = readl(mc->regs + client->regs.security);
-> +	if ((value & MC_SID_STREAMID_SECURITY_OVERRIDE) == 0) {
-> +		/*
-> +		 * If the secure firmware has locked this down the override
-> +		 * for this memory client, there's nothing we can do here.
-> +		 */
-> +		if (value & MC_SID_STREAMID_SECURITY_WRITE_ACCESS_DISABLED)
-> +			return;
+>   struct nvidia_smmu {
+> -	struct arm_smmu_device	smmu;
+> -	void __iomem		*bases[NUM_SMMU_INSTANCES];
+> +	struct arm_smmu_device smmu;
+> +	void __iomem *bases[MAX_SMMU_INSTANCES];
+> +	unsigned int num_instances;
 
-How likely is that in practice? If it's anything more than vanishingly 
-rare then that would seem to be a strong pointer back towards 
-persevering with the common solution that will work for everyone.
+Surely it would make more sense to just add a second set of 
+implementation ops without all the overrides that aren't needed for a 
+single instance?
 
-> +
-> +		/*
-> +		 * Otherwise, try to set the override itself. Typically the
-> +		 * secure firmware will never have set this configuration.
-> +		 * Instead, it will either have disabled write access to
-> +		 * this field, or it will already have set an explicit
-> +		 * override itself.
-> +		 */
-> +		WARN_ON((value & MC_SID_STREAMID_SECURITY_OVERRIDE) == 0);
-
-Given the context that's just WARN_ON(1), but either way I'm struggling 
-to understand who the report is for and what they're supposed to do 
-about it :/
+Also note that the binding currently requires the Tegra-specific 
+compatible to have exactly two regions.
 
 Robin.
 
-> +
-> +		value |= MC_SID_STREAMID_SECURITY_OVERRIDE;
-> +		writel(value, mc->regs + client->regs.security);
-> +	}
-> +
-> +	value = readl(mc->regs + client->regs.override);
-> +	old = value & MC_SID_STREAMID_OVERRIDE_MASK;
-> +
-> +	if (old != sid) {
-> +		dev_dbg(mc->dev, "overriding SID %x for %s with %x\n", old,
-> +			client->name, sid);
-> +		writel(sid, mc->regs + client->regs.override);
-> +	}
-> +}
-> +
-> +int tegra186_mc_probe_device(struct tegra_mc *mc, struct device *dev)
-> +{
-> +	struct iommu_fwspec *fwspec = dev_iommu_fwspec_get(dev);
-> +	struct of_phandle_args args;
-> +	unsigned int i, index = 0;
-> +
-> +	while (!of_parse_phandle_with_args(dev->of_node, "interconnects", "#interconnect-cells",
-> +					   index, &args)) {
-> +		if (args.np == mc->dev->of_node && args.args_count != 0) {
-> +			for (i = 0; i < mc->soc->num_clients; i++) {
-> +				const struct tegra186_mc_client *client = &mc->soc->clients[i];
-> +
-> +				if (client->id == args.args[0]) {
-> +					u32 sid = fwspec->ids[0] & MC_SID_STREAMID_OVERRIDE_MASK;
-> +
-> +					tegra186_mc_client_sid_override(mc, client, sid);
-> +				}
-> +			}
-> +		}
-> +
-> +		index++;
-> +	}
-> +
-> +	return 0;
-> +}
-> +EXPORT_SYMBOL_GPL(tegra186_mc_probe_device);
-> +
->   MODULE_AUTHOR("Thierry Reding <treding@nvidia.com>");
->   MODULE_DESCRIPTION("NVIDIA Tegra186 Memory Controller driver");
->   MODULE_LICENSE("GPL v2");
-> diff --git a/include/soc/tegra/mc.h b/include/soc/tegra/mc.h
-> index 7be8441c6e9e..73d5ecf0e76a 100644
-> --- a/include/soc/tegra/mc.h
-> +++ b/include/soc/tegra/mc.h
-> @@ -168,4 +168,14 @@ devm_tegra_memory_controller_get(struct device *dev)
->   }
->   #endif
+>   };
 >   
-> +#if IS_ENABLED(CONFIG_ARCH_TEGRA_186_SOC) || \
-> +    IS_ENABLED(CONFIG_ARCH_TEGRA_194_SOC)
-> +int tegra186_mc_probe_device(struct tegra_mc *mc, struct device *dev);
-> +#else
-> +static inline int tegra186_mc_probe_device(struct tegra_mc *mc, struct device *dev)
+> +static inline struct nvidia_smmu *to_nvidia_smmu(struct arm_smmu_device *smmu)
 > +{
-> +	return 0;
+> +	return container_of(smmu, struct nvidia_smmu, smmu);
 > +}
-> +#endif
 > +
->   #endif /* __SOC_TEGRA_MC_H__ */
+>   static inline void __iomem *nvidia_smmu_page(struct arm_smmu_device *smmu,
+>   					     unsigned int inst, int page)
+>   {
+> @@ -47,9 +53,10 @@ static u32 nvidia_smmu_read_reg(struct arm_smmu_device *smmu,
+>   static void nvidia_smmu_write_reg(struct arm_smmu_device *smmu,
+>   				  int page, int offset, u32 val)
+>   {
+> +	struct nvidia_smmu *nvidia = to_nvidia_smmu(smmu);
+>   	unsigned int i;
+>   
+> -	for (i = 0; i < NUM_SMMU_INSTANCES; i++) {
+> +	for (i = 0; i < nvidia->num_instances; i++) {
+>   		void __iomem *reg = nvidia_smmu_page(smmu, i, page) + offset;
+>   
+>   		writel_relaxed(val, reg);
+> @@ -67,9 +74,10 @@ static u64 nvidia_smmu_read_reg64(struct arm_smmu_device *smmu,
+>   static void nvidia_smmu_write_reg64(struct arm_smmu_device *smmu,
+>   				    int page, int offset, u64 val)
+>   {
+> +	struct nvidia_smmu *nvidia = to_nvidia_smmu(smmu);
+>   	unsigned int i;
+>   
+> -	for (i = 0; i < NUM_SMMU_INSTANCES; i++) {
+> +	for (i = 0; i < nvidia->num_instances; i++) {
+>   		void __iomem *reg = nvidia_smmu_page(smmu, i, page) + offset;
+>   
+>   		writeq_relaxed(val, reg);
+> @@ -79,6 +87,7 @@ static void nvidia_smmu_write_reg64(struct arm_smmu_device *smmu,
+>   static void nvidia_smmu_tlb_sync(struct arm_smmu_device *smmu, int page,
+>   				 int sync, int status)
+>   {
+> +	struct nvidia_smmu *nvidia = to_nvidia_smmu(smmu);
+>   	unsigned int delay;
+>   
+>   	arm_smmu_writel(smmu, page, sync, 0);
+> @@ -90,7 +99,7 @@ static void nvidia_smmu_tlb_sync(struct arm_smmu_device *smmu, int page,
+>   			u32 val = 0;
+>   			unsigned int i;
+>   
+> -			for (i = 0; i < NUM_SMMU_INSTANCES; i++) {
+> +			for (i = 0; i < nvidia->num_instances; i++) {
+>   				void __iomem *reg;
+>   
+>   				reg = nvidia_smmu_page(smmu, i, page) + status;
+> @@ -112,9 +121,10 @@ static void nvidia_smmu_tlb_sync(struct arm_smmu_device *smmu, int page,
+>   
+>   static int nvidia_smmu_reset(struct arm_smmu_device *smmu)
+>   {
+> +	struct nvidia_smmu *nvidia = to_nvidia_smmu(smmu);
+>   	unsigned int i;
+>   
+> -	for (i = 0; i < NUM_SMMU_INSTANCES; i++) {
+> +	for (i = 0; i < nvidia->num_instances; i++) {
+>   		u32 val;
+>   		void __iomem *reg = nvidia_smmu_page(smmu, i, ARM_SMMU_GR0) +
+>   				    ARM_SMMU_GR0_sGFSR;
+> @@ -157,8 +167,9 @@ static irqreturn_t nvidia_smmu_global_fault(int irq, void *dev)
+>   	unsigned int inst;
+>   	irqreturn_t ret = IRQ_NONE;
+>   	struct arm_smmu_device *smmu = dev;
+> +	struct nvidia_smmu *nvidia = to_nvidia_smmu(smmu);
+>   
+> -	for (inst = 0; inst < NUM_SMMU_INSTANCES; inst++) {
+> +	for (inst = 0; inst < nvidia->num_instances; inst++) {
+>   		irqreturn_t irq_ret;
+>   
+>   		irq_ret = nvidia_smmu_global_fault_inst(irq, smmu, inst);
+> @@ -202,11 +213,13 @@ static irqreturn_t nvidia_smmu_context_fault(int irq, void *dev)
+>   	struct arm_smmu_device *smmu;
+>   	struct iommu_domain *domain = dev;
+>   	struct arm_smmu_domain *smmu_domain;
+> +	struct nvidia_smmu *nvidia;
+>   
+>   	smmu_domain = container_of(domain, struct arm_smmu_domain, domain);
+>   	smmu = smmu_domain->smmu;
+> +	nvidia = to_nvidia_smmu(smmu);
+>   
+> -	for (inst = 0; inst < NUM_SMMU_INSTANCES; inst++) {
+> +	for (inst = 0; inst < nvidia->num_instances; inst++) {
+>   		irqreturn_t irq_ret;
+>   
+>   		/*
+> @@ -241,6 +254,7 @@ struct arm_smmu_device *nvidia_smmu_impl_init(struct arm_smmu_device *smmu)
+>   	struct device *dev = smmu->dev;
+>   	struct nvidia_smmu *nvidia_smmu;
+>   	struct platform_device *pdev = to_platform_device(dev);
+> +	unsigned int i;
+>   
+>   	nvidia_smmu = devm_krealloc(dev, smmu, sizeof(*nvidia_smmu), GFP_KERNEL);
+>   	if (!nvidia_smmu)
+> @@ -248,14 +262,19 @@ struct arm_smmu_device *nvidia_smmu_impl_init(struct arm_smmu_device *smmu)
+>   
+>   	/* Instance 0 is ioremapped by arm-smmu.c. */
+>   	nvidia_smmu->bases[0] = smmu->base;
+> +	nvidia_smmu->num_instances++;
+> +
+> +	for (i = 1; i < MAX_SMMU_INSTANCES; i++) {
+> +		res = platform_get_resource(pdev, IORESOURCE_MEM, i);
+> +		if (!res)
+> +			break;
+>   
+> -	res = platform_get_resource(pdev, IORESOURCE_MEM, 1);
+> -	if (!res)
+> -		return ERR_PTR(-ENODEV);
+> +		nvidia_smmu->bases[i] = devm_ioremap_resource(dev, res);
+> +		if (IS_ERR(nvidia_smmu->bases[i]))
+> +			return ERR_CAST(nvidia_smmu->bases[i]);
+>   
+> -	nvidia_smmu->bases[1] = devm_ioremap_resource(dev, res);
+> -	if (IS_ERR(nvidia_smmu->bases[1]))
+> -		return ERR_CAST(nvidia_smmu->bases[1]);
+> +		nvidia_smmu->num_instances++;
+> +	}
+>   
+>   	nvidia_smmu->smmu.impl = &nvidia_smmu_impl;
+>   
 > 
 _______________________________________________
 iommu mailing list
