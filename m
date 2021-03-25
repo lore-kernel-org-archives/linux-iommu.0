@@ -2,90 +2,75 @@ Return-Path: <SRS0=Fh/M=IX=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-14.0 required=3.0 tests=BAYES_00,INCLUDES_CR_TRAILER,
-	INCLUDES_PATCH,MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED
-	autolearn=ham autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-5.3 required=3.0 tests=BAYES_00,DKIM_INVALID,
+	DKIM_SIGNED,MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,USER_AGENT_SANE_1
+	autolearn=no autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7ED37C433C1
-	for <iommu@archiver.kernel.org>; Thu, 25 Mar 2021 17:53:21 +0000 (UTC)
-Received: from smtp1.osuosl.org (smtp1.osuosl.org [140.211.166.138])
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C6753C433DB
+	for <iommu@archiver.kernel.org>; Thu, 25 Mar 2021 17:54:02 +0000 (UTC)
+Received: from smtp3.osuosl.org (smtp3.osuosl.org [140.211.166.136])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 2EF2361A30
-	for <iommu@archiver.kernel.org>; Thu, 25 Mar 2021 17:53:21 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 2EF2361A30
+	by mail.kernel.org (Postfix) with ESMTPS id 6498B619AB
+	for <iommu@archiver.kernel.org>; Thu, 25 Mar 2021 17:54:02 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 6498B619AB
 Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=kernel.org
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by smtp1.osuosl.org (Postfix) with ESMTP id F2A8F84A48;
-	Thu, 25 Mar 2021 17:53:20 +0000 (UTC)
+	by smtp3.osuosl.org (Postfix) with ESMTP id 1D3A060B22;
+	Thu, 25 Mar 2021 17:54:02 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from smtp1.osuosl.org ([127.0.0.1])
-	by localhost (smtp1.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id ihA9-LTluTrO; Thu, 25 Mar 2021 17:53:20 +0000 (UTC)
-Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by smtp1.osuosl.org (Postfix) with ESMTP id D549B84A42;
-	Thu, 25 Mar 2021 17:53:19 +0000 (UTC)
+Received: from smtp3.osuosl.org ([127.0.0.1])
+	by localhost (smtp3.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+	with ESMTP id ag6r7RfP4iyb; Thu, 25 Mar 2021 17:54:01 +0000 (UTC)
+Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [IPv6:2605:bc80:3010:104::8cd3:938])
+	by smtp3.osuosl.org (Postfix) with ESMTP id 13FB060633;
+	Thu, 25 Mar 2021 17:54:01 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id AFBE0C000D;
-	Thu, 25 Mar 2021 17:53:19 +0000 (UTC)
-Received: from smtp4.osuosl.org (smtp4.osuosl.org [IPv6:2605:bc80:3010::137])
- by lists.linuxfoundation.org (Postfix) with ESMTP id DB4B0C000A
- for <iommu@lists.linux-foundation.org>; Thu, 25 Mar 2021 17:53:18 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id E9BAEC000D;
+	Thu, 25 Mar 2021 17:54:00 +0000 (UTC)
+Received: from smtp1.osuosl.org (smtp1.osuosl.org [140.211.166.138])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 39ECCC000A
+ for <iommu@lists.linux-foundation.org>; Thu, 25 Mar 2021 17:54:00 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by smtp4.osuosl.org (Postfix) with ESMTP id BEC9240E62
- for <iommu@lists.linux-foundation.org>; Thu, 25 Mar 2021 17:53:18 +0000 (UTC)
+ by smtp1.osuosl.org (Postfix) with ESMTP id 2723184A41
+ for <iommu@lists.linux-foundation.org>; Thu, 25 Mar 2021 17:54:00 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from smtp4.osuosl.org ([127.0.0.1])
- by localhost (smtp4.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id H9pzQTRoc2B2 for <iommu@lists.linux-foundation.org>;
- Thu, 25 Mar 2021 17:53:17 +0000 (UTC)
+Authentication-Results: smtp1.osuosl.org (amavisd-new);
+ dkim=pass (2048-bit key) header.d=kernel.org
+Received: from smtp1.osuosl.org ([127.0.0.1])
+ by localhost (smtp1.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+ with ESMTP id CWCAHKwxuzAi for <iommu@lists.linux-foundation.org>;
+ Thu, 25 Mar 2021 17:53:59 +0000 (UTC)
 X-Greylist: domain auto-whitelisted by SQLgrey-1.8.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
- by smtp4.osuosl.org (Postfix) with ESMTPS id E6BEC40E53
- for <iommu@lists.linux-foundation.org>; Thu, 25 Mar 2021 17:53:17 +0000 (UTC)
-Received: from disco-boy.misterjones.org (disco-boy.misterjones.org
- [51.254.78.96])
- (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
- (No client certificate requested)
- by mail.kernel.org (Postfix) with ESMTPSA id 6D9C961A2C;
- Thu, 25 Mar 2021 17:53:17 +0000 (UTC)
-Received: from 78.163-31-62.static.virginmediabusiness.co.uk ([62.31.163.78]
- helo=why.misterjones.org)
- by disco-boy.misterjones.org with esmtpsa (TLS1.3) tls
- TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384 (Exim 4.94)
- (envelope-from <maz@kernel.org>)
- id 1lPUAV-003ngb-6P; Thu, 25 Mar 2021 17:53:15 +0000
-Date: Thu, 25 Mar 2021 17:53:14 +0000
-Message-ID: <87y2ebqfw5.wl-maz@kernel.org>
-From: Marc Zyngier <maz@kernel.org>
-To: Megha Dey <megha.dey@intel.com>
-Subject: Re: [Patch V2 13/13] genirq/msi: Provide helpers to return Linux
- IRQ/dev_msi hw IRQ number
-In-Reply-To: <1614370277-23235-14-git-send-email-megha.dey@intel.com>
-References: <1614370277-23235-1-git-send-email-megha.dey@intel.com>
- <1614370277-23235-14-git-send-email-megha.dey@intel.com>
-User-Agent: Wanderlust/2.15.9 (Almost Unreal) SEMI-EPG/1.14.7 (Harue)
- FLIM-LB/1.14.9 (=?UTF-8?B?R29qxY0=?=) APEL-LB/10.8 EasyPG/1.0.0 Emacs/27.1
- (x86_64-pc-linux-gnu) MULE/6.0 (HANACHIRUSATO)
-MIME-Version: 1.0 (generated by SEMI-EPG 1.14.7 - "Harue")
-X-SA-Exim-Connect-IP: 62.31.163.78
-X-SA-Exim-Rcpt-To: megha.dey@intel.com, tglx@linutronix.de,
- linux-kernel@vger.kernel.org, dave.jiang@intel.com, ashok.raj@intel.com,
- kevin.tian@intel.com, dwmw@amazon.co.uk, x86@kernel.org, tony.luck@intel.com,
- dan.j.williams@intel.com, jgg@mellanox.com, kvm@vger.kernel.org,
- iommu@lists.linux-foundation.org, alex.williamson@redhat.com,
- bhelgaas@google.com, linux-pci@vger.kernel.org, baolu.lu@linux.intel.com,
- ravi.v.shankar@intel.com
-X-SA-Exim-Mail-From: maz@kernel.org
-X-SA-Exim-Scanned: No (on disco-boy.misterjones.org);
- SAEximRunCond expanded to false
-Cc: alex.williamson@redhat.com, kevin.tian@intel.com, tony.luck@intel.com,
- dave.jiang@intel.com, ashok.raj@intel.com, kvm@vger.kernel.org,
- ravi.v.shankar@intel.com, linux-pci@vger.kernel.org, x86@kernel.org,
- linux-kernel@vger.kernel.org, iommu@lists.linux-foundation.org,
- jgg@mellanox.com, bhelgaas@google.com, tglx@linutronix.de,
- dan.j.williams@intel.com, dwmw@amazon.co.uk
+ by smtp1.osuosl.org (Postfix) with ESMTPS id B7987847EF
+ for <iommu@lists.linux-foundation.org>; Thu, 25 Mar 2021 17:53:59 +0000 (UTC)
+Received: by mail.kernel.org (Postfix) with ESMTPSA id 005376192E;
+ Thu, 25 Mar 2021 17:53:57 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+ s=k20201202; t=1616694839;
+ bh=p9Fw2VLMXBm9WgC0jrRce9sCideLVwWWxngLieDXLLw=;
+ h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+ b=ggTDTbr92KwP/mo+C2q0J3WFddw0H+IKJWQBbaFFSjZ5oY8Dmu4wHRa9QVpWJLR2M
+ O3/vjS5TtRUHfnaRhuhH/rNtOQTOO2a2fJIzlzll1Y5bQ5WFqn1+hqZKhytwGgCoCO
+ TNj7hpKX3eWJHHdHVJDt6rUNRefcyfO8Cti2AkVjjcdUqTt1NWAtxMoBMCloPgTEpo
+ vzkR5v1+RT5byZy9E8NSsabT0RHHcbeKAzNgxrRERVo7GSEt5GxYjDpuN5k6vnGkg2
+ I+luU5xrMQsGQiAvflIQDX0P5uf5qLkgkPJw/RrXiCRCGzyFk9yZgbzmMXf9fEqWQf
+ 5SFPdUDzKptyg==
+Date: Thu, 25 Mar 2021 17:53:54 +0000
+From: Will Deacon <will@kernel.org>
+To: John Garry <john.garry@huawei.com>
+Subject: Re: [PATCH v2 0/4] iommu/iova: Add CPU hotplug handler to flush
+ rcaches to core code
+Message-ID: <20210325175354.GE15504@willie-the-truck>
+References: <1616675401-151997-1-git-send-email-john.garry@huawei.com>
+MIME-Version: 1.0
+Content-Disposition: inline
+In-Reply-To: <1616675401-151997-1-git-send-email-john.garry@huawei.com>
+User-Agent: Mutt/1.10.1 (2018-07-13)
+Cc: dwmw2@infradead.org, linux-kernel@vger.kernel.org, linuxarm@huawei.com,
+ iommu@lists.linux-foundation.org, robin.murphy@arm.com
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -103,102 +88,31 @@ Content-Transfer-Encoding: 7bit
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-On Fri, 26 Feb 2021 20:11:17 +0000,
-Megha Dey <megha.dey@intel.com> wrote:
+On Thu, Mar 25, 2021 at 08:29:57PM +0800, John Garry wrote:
+> The Intel IOMMU driver supports flushing the per-CPU rcaches when a CPU is
+> offlined.
 > 
-> From: Dave Jiang <dave.jiang@intel.com>
+> Let's move it to core code, so everyone can take advantage.
 > 
-> Add new helpers to get the Linux IRQ number and device specific index
-> for given device-relative vector so that the drivers don't need to
-> allocate their own arrays to keep track of the vectors and hwirq for
-> the multi vector device MSI case.
+> Also throw in a patch to stop exporting free_iova_fast().
 > 
-> Reviewed-by: Tony Luck <tony.luck@intel.com>
-> Signed-off-by: Dave Jiang <dave.jiang@intel.com>
-> Signed-off-by: Megha Dey <megha.dey@intel.com>
-> ---
->  include/linux/msi.h |  2 ++
->  kernel/irq/msi.c    | 44 ++++++++++++++++++++++++++++++++++++++++++++
->  2 files changed, 46 insertions(+)
+> Differences to v1:
+> - Add RB tags (thanks!)
+> - Add patch to stop exporting free_iova_fast()
+> - Drop patch to correct comment
+> - Add patch to delete iommu_dma_free_cpu_cached_iovas() and associated
+>   changes
 > 
-> diff --git a/include/linux/msi.h b/include/linux/msi.h
-> index 24abec0..d60a6ba 100644
-> --- a/include/linux/msi.h
-> +++ b/include/linux/msi.h
-> @@ -451,6 +451,8 @@ struct irq_domain *platform_msi_create_irq_domain(struct fwnode_handle *fwnode,
->  int platform_msi_domain_alloc_irqs(struct device *dev, unsigned int nvec,
->  				   irq_write_msi_msg_t write_msi_msg);
->  void platform_msi_domain_free_irqs(struct device *dev);
-> +int msi_irq_vector(struct device *dev, unsigned int nr);
-> +int dev_msi_hwirq(struct device *dev, unsigned int nr);
->  
->  /* When an MSI domain is used as an intermediate domain */
->  int msi_domain_prepare_irqs(struct irq_domain *domain, struct device *dev,
-> diff --git a/kernel/irq/msi.c b/kernel/irq/msi.c
-> index 047b59d..f2a8f55 100644
-> --- a/kernel/irq/msi.c
-> +++ b/kernel/irq/msi.c
-> @@ -581,4 +581,48 @@ struct msi_domain_info *msi_get_domain_info(struct irq_domain *domain)
->  	return (struct msi_domain_info *)domain->host_data;
->  }
->  
-> +/**
-> + * msi_irq_vector - Get the Linux IRQ number of a device vector
-> + * @dev: device to operate on
-> + * @nr: device-relative interrupt vector index (0-based).
-> + *
-> + * Returns the Linux IRQ number of a device vector.
-> + */
-> +int msi_irq_vector(struct device *dev, unsigned int nr)
-> +{
-> +	struct msi_desc *entry;
-> +	int i = 0;
-> +
-> +	for_each_msi_entry(entry, dev) {
-> +		if (i == nr)
-> +			return entry->irq;
-> +		i++;
+> John Garry (4):
+>   iova: Add CPU hotplug handler to flush rcaches
+>   iommu/vt-d: Remove IOVA domain rcache flushing for CPU offlining
+>   iommu: Delete iommu_dma_free_cpu_cached_iovas()
+>   iommu: Stop exporting free_iova_fast()
 
-This obviously doesn't work with Multi-MSI, does it?
+Looks like this is all set for 5.13, so hopefully Joerg can stick it in
+-next for a bit more exposure.
 
-> +	}
-> +	WARN_ON_ONCE(1);
-> +	return -EINVAL;
-> +}
-> +EXPORT_SYMBOL_GPL(msi_irq_vector);
-> +
-> +/**
-> + * dev_msi_hwirq - Get the device MSI hw IRQ number of a device vector
-> + * @dev: device to operate on
-> + * @nr: device-relative interrupt vector index (0-based).
-> + *
-> + * Return the dev_msi hw IRQ number of a device vector.
-> + */
-> +int dev_msi_hwirq(struct device *dev, unsigned int nr)
-> +{
-> +	struct msi_desc *entry;
-> +	int i = 0;
-> +
-> +	for_each_msi_entry(entry, dev) {
-> +		if (i == nr)
-> +			return entry->device_msi.hwirq;
-> +		i++;
-> +	}
-> +	WARN_ON_ONCE(1);
-> +	return -EINVAL;
-> +}
-> +EXPORT_SYMBOL_GPL(dev_msi_hwirq);
-> +
->  #endif /* CONFIG_GENERIC_MSI_IRQ_DOMAIN */
-
-And what uses these helpers?
-
-Thanks,
-
-	M.
-
--- 
-Without deviation from the norm, progress is not possible.
+Will
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
