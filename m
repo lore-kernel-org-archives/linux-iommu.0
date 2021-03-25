@@ -2,158 +2,89 @@ Return-Path: <SRS0=Fh/M=IX=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-3.5 required=3.0 tests=BAYES_00,DKIM_INVALID,
-	DKIM_SIGNED,HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,
-	MSGID_FROM_MTA_HEADER,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,URIBL_RED
-	autolearn=no autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-14.0 required=3.0 tests=BAYES_00,INCLUDES_CR_TRAILER,
+	INCLUDES_PATCH,MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,URIBL_RED
+	autolearn=ham autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 41549C433C1
-	for <iommu@archiver.kernel.org>; Thu, 25 Mar 2021 17:16:58 +0000 (UTC)
-Received: from smtp4.osuosl.org (smtp4.osuosl.org [140.211.166.137])
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9420EC433DB
+	for <iommu@archiver.kernel.org>; Thu, 25 Mar 2021 17:23:32 +0000 (UTC)
+Received: from smtp1.osuosl.org (smtp1.osuosl.org [140.211.166.138])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id D992361A1E
-	for <iommu@archiver.kernel.org>; Thu, 25 Mar 2021 17:16:57 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org D992361A1E
-Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=nvidia.com
+	by mail.kernel.org (Postfix) with ESMTPS id 3FBB761A28
+	for <iommu@archiver.kernel.org>; Thu, 25 Mar 2021 17:23:32 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 3FBB761A28
+Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=kernel.org
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by smtp4.osuosl.org (Postfix) with ESMTP id A511F40F1D;
-	Thu, 25 Mar 2021 17:16:57 +0000 (UTC)
+	by smtp1.osuosl.org (Postfix) with ESMTP id 88E5584A4A;
+	Thu, 25 Mar 2021 17:23:31 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from smtp4.osuosl.org ([127.0.0.1])
-	by localhost (smtp4.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id efnk7izYUfcw; Thu, 25 Mar 2021 17:16:56 +0000 (UTC)
-Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by smtp4.osuosl.org (Postfix) with ESMTP id 353CC40F23;
-	Thu, 25 Mar 2021 17:16:56 +0000 (UTC)
+Received: from smtp1.osuosl.org ([127.0.0.1])
+	by localhost (smtp1.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+	with ESMTP id 1FeZ-oYW7S2q; Thu, 25 Mar 2021 17:23:30 +0000 (UTC)
+Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [IPv6:2605:bc80:3010:104::8cd3:938])
+	by smtp1.osuosl.org (Postfix) with ESMTP id 449C6848FA;
+	Thu, 25 Mar 2021 17:23:30 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id F05ACC000D;
-	Thu, 25 Mar 2021 17:16:55 +0000 (UTC)
-Received: from smtp4.osuosl.org (smtp4.osuosl.org [140.211.166.137])
- by lists.linuxfoundation.org (Postfix) with ESMTP id C6761C000A
- for <iommu@lists.linux-foundation.org>; Thu, 25 Mar 2021 17:16:54 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 00435C000D;
+	Thu, 25 Mar 2021 17:23:30 +0000 (UTC)
+Received: from smtp1.osuosl.org (smtp1.osuosl.org [140.211.166.138])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id F0764C000A
+ for <iommu@lists.linux-foundation.org>; Thu, 25 Mar 2021 17:23:27 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by smtp4.osuosl.org (Postfix) with ESMTP id A590C40F23
- for <iommu@lists.linux-foundation.org>; Thu, 25 Mar 2021 17:16:54 +0000 (UTC)
+ by smtp1.osuosl.org (Postfix) with ESMTP id CDB6C84A3F
+ for <iommu@lists.linux-foundation.org>; Thu, 25 Mar 2021 17:23:27 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from smtp4.osuosl.org ([127.0.0.1])
- by localhost (smtp4.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id TmfSDEZSUTHD for <iommu@lists.linux-foundation.org>;
- Thu, 25 Mar 2021 17:16:53 +0000 (UTC)
-X-Greylist: whitelisted by SQLgrey-1.8.0
-Received: from NAM04-MW2-obe.outbound.protection.outlook.com
- (mail-mw2nam08on20603.outbound.protection.outlook.com
- [IPv6:2a01:111:f400:7e8c::603])
- by smtp4.osuosl.org (Postfix) with ESMTPS id DBFFB40F1D
- for <iommu@lists.linux-foundation.org>; Thu, 25 Mar 2021 17:16:52 +0000 (UTC)
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=bO1nhAUlgH32lI/8vxVQ8AWCeNsVtTb1da5Aqyd7qsiwC2bIuCV/g4YG77xuZtPyX3bnb4WO7npSG6/IEnoeZKGfOpUPFS0gQ3KX3R1uOc1HLvJnLb91p3hsKY6C0/NeCjfLlctBpKJC8NjjYQjbIJbw/i/E1Uj0kabDW2QBEc1CV1NNIgBR70fmoxGmcPZZgZcXCoMNBqoCtLWeVBJQye734wva4bEDVyy/GJlBxsqs9CNdoZHWCmKNZdzdUHIBd2ipRRQfaJJwAUqKNNDhcSrONZr1BBauABQZmNX2K1eFL73n7jeNLI7xaWetJz5TquXMCetOM7VeuiW/5xiBeQ==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com; 
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=8497p9PafWXumWQXnOpf6+OujpPkbtt2AmI5jMKNvrE=;
- b=amzf6zrCNhrqgr+CzKuTBKChBDJmB5mUBeIlLtNnEB1gP7SDa8J2D3qzwYnfHii+fyO2YpaXBDISK/Rs4htEPOmelvIszu05QQUP25epChSyKn5055rxNfqKVH48TIJP6S0zu+7X3HTxPI00G86cxOb0TtEhrmFkVaRJ7QfElW4T05iRiIlcCGPvrZnIQOFbKkxXFGCtQlvHvNwCUOYz1InXQJ2OU7eIy5EP3DfZXX1m2UGh9n+Illa29V6BCQdLbEWMwL4yyGV1EIsCk/rdjOOOlFEvTkDBDVGIY4wkRIeITtkt8zekvXACQD5+KHj9vtVGqlRhfdgJHKzwdleUdw==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=nvidia.com; dmarc=pass action=none header.from=nvidia.com;
- dkim=pass header.d=nvidia.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
- s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=8497p9PafWXumWQXnOpf6+OujpPkbtt2AmI5jMKNvrE=;
- b=gVoXJlLxayE3FyCpqoudz9IgiUywhEuDf2CNijaRiBcvW2xU18IghecsLD5uRVD9MoGGmmyz0L5PzPGqorDGT07/e4nggWF2iBf8DH2xcO0Nu/yAzwLKvtWI+Nr9DnhTdz5u4zj2lX877EZqotl6/GlLtal/9krr5ACapJsToQQ7yHh64/WGoqPmSJMVTNG2MZnLjts+rzg5i9x0pnWGWohGuUeCD5jWu0Xb2y5SDVDF9XGzLVrtahmgybUZvFErR95QYrkGAad1gpgEVeu0+0V0BPIH4XrZaNFnz1RKRR5LHouHAnAsFqJq0biy4ctEZGBwT8tMqkCLpA3PTxWTzA==
-Authentication-Results: linux.intel.com; dkim=none (message not signed)
- header.d=none; linux.intel.com; dmarc=none action=none header.from=nvidia.com; 
-Received: from DM6PR12MB3834.namprd12.prod.outlook.com (2603:10b6:5:14a::12)
- by DM6PR12MB4578.namprd12.prod.outlook.com (2603:10b6:5:2a9::22) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3977.25; Thu, 25 Mar
- 2021 17:16:48 +0000
-Received: from DM6PR12MB3834.namprd12.prod.outlook.com
- ([fe80::1c62:7fa3:617b:ab87]) by DM6PR12MB3834.namprd12.prod.outlook.com
- ([fe80::1c62:7fa3:617b:ab87%6]) with mapi id 15.20.3977.029; Thu, 25 Mar 2021
- 17:16:48 +0000
-Date: Thu, 25 Mar 2021 14:16:45 -0300
-From: Jason Gunthorpe <jgg@nvidia.com>
-To: Jacob Pan <jacob.jun.pan@linux.intel.com>
-Subject: Re: [PATCH V4 05/18] iommu/ioasid: Redefine IOASID set and
- allocation APIs
-Message-ID: <20210325171645.GF2356281@nvidia.com>
-References: <20210319124645.GP2356281@nvidia.com> <YFSqDNJ5yagk4eO+@myrica>
- <20210319135432.GT2356281@nvidia.com>
- <20210319112221.5123b984@jacob-builder> <YFhiMLR35WWMW/Hu@myrica>
- <20210324100246.4e6b8aa1@jacob-builder>
- <20210324170338.GM2356281@nvidia.com>
- <20210324151230.466fd47a@jacob-builder> <YFxkNEz3THJKzW0b@myrica>
- <20210325100236.17241a1c@jacob-builder>
-Content-Disposition: inline
-In-Reply-To: <20210325100236.17241a1c@jacob-builder>
-X-Originating-IP: [206.223.160.26]
-X-ClientProxiedBy: CH0PR08CA0019.namprd08.prod.outlook.com
- (2603:10b6:610:33::24) To DM6PR12MB3834.namprd12.prod.outlook.com
- (2603:10b6:5:14a::12)
-MIME-Version: 1.0
-X-MS-Exchange-MessageSentRepresentingType: 1
-Received: from mlx.ziepe.ca (206.223.160.26) by
- CH0PR08CA0019.namprd08.prod.outlook.com (2603:10b6:610:33::24) with Microsoft
- SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.20.3977.25 via Frontend Transport; Thu, 25 Mar 2021 17:16:47 +0000
-Received: from jgg by mlx with local (Exim 4.94)	(envelope-from
- <jgg@nvidia.com>)	id 1lPTbB-002kEu-RZ; Thu, 25 Mar 2021 14:16:45 -0300
-X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: 86ced7c9-5fdd-434b-3766-08d8efb1c55e
-X-MS-TrafficTypeDiagnostic: DM6PR12MB4578:
-X-Microsoft-Antispam-PRVS: <DM6PR12MB45787C44A24D41BB5DCC9134C2629@DM6PR12MB4578.namprd12.prod.outlook.com>
-X-MS-Oob-TLC-OOBClassifiers: OLM:8882;
-X-MS-Exchange-SenderADCheck: 1
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: fBgacF4LcDGkZUS7tqwyJnECaSGeCNhnxb4tg8Pbkho5r1XmhUn4RdqnJY0e8VDPLE22QSK2oKuq/WUt3yEgaOkCcZlzX3RFAKnv56crFAKaIK19Vb00WbxKpGXQPddsbAc24yP8fHhWcICPL64AKL8ygYnr4hTiwB51xGmNAly4ugO0ivVlYjkDigTmlXN5rfAmE28wQwLe6LuAMh+GYcc3ApCldyHNLISQbsYL5qddL9ZQXhT1g4KoERRbwAPvaMwfmllpiadvx1DGAHrXBbDaL3M+8XfH2NzHdwsaDsG5AmMwx1IdQDinrJTSPCQcNOcihDuYBeGE5quLrhtM+oCZYsqCcrcn1UEp64gxebLPruj6hlCKqjOiAUOmmuju+vZ4S672eohIRrfRfwxFZlltr7HvVCzVDTSdGKwjN1VUWxakpeVJkp5fXXIY8UHH+RlJo0PZmViuri3IKZOTHp7b2t5DneRqW6qdJZpTJmIR5HTAizcN6f0CxX16q6KyLyQGivJ/KAyC+Jw+u+tDortTS2a+T8VL5BdUXrlVI1orlIqXeYvfgf5i4SQj2D034s8e9d43q6Op9GdQ0qq3IgQbCWEeKkSUcb7J2lvgMXaFdJDgZUWhH+e0qzc8eI4KZcAJ08/jnBHBXL1CORtSTKwHKQkv2bNSpXmoSESr9VE=
-X-Forefront-Antispam-Report: CIP:255.255.255.255; CTRY:; LANG:en; SCL:1; SRV:;
- IPV:NLI; SFV:NSPM; H:DM6PR12MB3834.namprd12.prod.outlook.com; PTR:; CAT:NONE;
- SFS:(4636009)(366004)(376002)(136003)(346002)(39860400002)(396003)(66946007)(186003)(4326008)(8676002)(5660300002)(1076003)(2616005)(426003)(66556008)(66476007)(6916009)(33656002)(8936002)(9786002)(478600001)(36756003)(86362001)(26005)(54906003)(7416002)(2906002)(38100700001)(316002)(83380400001)(9746002);
- DIR:OUT; SFP:1101; 
-X-MS-Exchange-AntiSpam-MessageData: =?us-ascii?Q?vVpbq3uLXgLkr01I90HXRbypE4HyEIHniP30mEtwI+Ur+4wLdIoAD3iE2eDR?=
- =?us-ascii?Q?tE18TP6mG5a6F/OWtkF6TQoUk8EtmgvqjNn2e7NkqOk44DmFNflevRh/ul/J?=
- =?us-ascii?Q?tq9mc3CYyFRcRG4lyPn3rjXV/fnLKhtG/q0uVVPuGcknFR9PqRV8upuQ8Vi0?=
- =?us-ascii?Q?QzRFr/ejKWzmp2PFNRDbFi9cR29Crku6WiXvvUeu5awDjbPtq2MkAn0JzOWQ?=
- =?us-ascii?Q?FMZP3xOpZ18wX1IGULsQnu4/N/3CFA95heROqEr8TzFk+/WHtgd7r96VQYrc?=
- =?us-ascii?Q?NDImoGdrsGV0C2Dxq+IzxOp9ecvK0CD1BTCgwwdIOSMQruWf6dEeT/9f8VD6?=
- =?us-ascii?Q?qKkq9ZBx4frUa/cCkY52YFzABl9ODSgDo+bsqWkVeF43jKbO+PD3ppjkcBBe?=
- =?us-ascii?Q?tbzv/BgH+KerMhrVb5B7rvdI4Ey4SSVONGmxsri0iqAVsJ0f+PsQ5K/kpckn?=
- =?us-ascii?Q?YO9pzVuh7Pn5WZd+XzA+Lf8GI80WRH57fb2ps9LIe1p1ACSvJtfHw/TwROBc?=
- =?us-ascii?Q?VGNV2CxkZAIODQxU8abzmQ5AC/GK5szO+KlNWOPEZ2Y4iQkpaknTMYnH2HWM?=
- =?us-ascii?Q?2Kbs8x1DRkhvjUEnzQm19RFf9p1bCxRbAJ/0FukrmNM/OSG3sb9NM4/b/i0r?=
- =?us-ascii?Q?oZSP0RrYKAiCXsKPQt4CJ2TpY9VQlcgYqBkQw17wcC/m9DgHbp5Kg1Y50MCy?=
- =?us-ascii?Q?MrjyJHGXywFFH5XHmF4MPkBs7IdlhEpHILyT634CLpGaeo10j2/CUq23BNE8?=
- =?us-ascii?Q?EcPjeLDHjkIsJb1r2ApIocbOjPD3DDymbmdWcg5rRvbWWhmEWj21LzKNk0TP?=
- =?us-ascii?Q?A49r3huP5Va2yLabvrkPkSAsmfv5mrAtYIaLe2cKYvOyYNJBgUjxrnz/BA18?=
- =?us-ascii?Q?Gw7FcUv6b+3ztQTpvCgMI1xYFwe0r5brE42IL8tLl/tN42nkLXOBGPqYw6po?=
- =?us-ascii?Q?3xF5WaJJ4r1nwNjnZbzrwI/WKOObQF1Q8bH1vTLboK7lUeIfhtJ6fRyTWL13?=
- =?us-ascii?Q?zsdh+DmSbZc+KehCUgkiyhqmg6HIU11uZXd/xgUKJLr9OA9B7VDZrirr/7gn?=
- =?us-ascii?Q?Ra0acAqRDFXK9CBPuXbl+UB9BQb0eh+5qZPsS+B7EzvdpeUdZmuPmS7x/rBV?=
- =?us-ascii?Q?HorIQ0iLHNViV3G/mlDVVBIu918oMwWdcNYu0aOAdw0E+9AcvCdNOk4mW23r?=
- =?us-ascii?Q?xXCDipHeqOg/gbuwZB33uAup0+06TuVWF7Kh2z0quiTWYiTktZOLChjf5Oku?=
- =?us-ascii?Q?xLPQepxP9OIsJUoNJdgod1PxZYDy50Rtvmc+uzSYnkDKBaoiDZZb5sCxlAdM?=
- =?us-ascii?Q?qwxg/bQPuD6iCph3LFIKBTbk?=
-X-OriginatorOrg: Nvidia.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 86ced7c9-5fdd-434b-3766-08d8efb1c55e
-X-MS-Exchange-CrossTenant-AuthSource: DM6PR12MB3834.namprd12.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 25 Mar 2021 17:16:47.7148 (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: cKvPdCxve+uAGrivm3shTyG1fPvAM0TfDZbZ3lROxswu5USGdza5lvBmygLlUDQL
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: DM6PR12MB4578
-Cc: Jean-Philippe Brucker <jean-philippe@linaro.org>, "Tian,
- Kevin" <kevin.tian@intel.com>, Alex Williamson <alex.williamson@redhat.com>,
- Raj Ashok <ashok.raj@intel.com>, Jonathan Corbet <corbet@lwn.net>,
- Jean-Philippe Brucker <jean-philippe@linaro.com>,
- LKML <linux-kernel@vger.kernel.org>, Dave Jiang <dave.jiang@intel.com>,
- iommu@lists.linux-foundation.org, Li Zefan <lizefan@huawei.com>,
- Johannes Weiner <hannes@cmpxchg.org>, Tejun Heo <tj@kernel.org>,
- cgroups@vger.kernel.org, Wu Hao <hao.wu@intel.com>,
- David Woodhouse <dwmw2@infradead.org>
+Received: from smtp1.osuosl.org ([127.0.0.1])
+ by localhost (smtp1.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+ with ESMTP id 98s06hC9JgrA for <iommu@lists.linux-foundation.org>;
+ Thu, 25 Mar 2021 17:23:27 +0000 (UTC)
+X-Greylist: domain auto-whitelisted by SQLgrey-1.8.0
+Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
+ by smtp1.osuosl.org (Postfix) with ESMTPS id 15D98848FA
+ for <iommu@lists.linux-foundation.org>; Thu, 25 Mar 2021 17:23:27 +0000 (UTC)
+Received: from disco-boy.misterjones.org (disco-boy.misterjones.org
+ [51.254.78.96])
+ (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+ (No client certificate requested)
+ by mail.kernel.org (Postfix) with ESMTPSA id 9060461A01;
+ Thu, 25 Mar 2021 17:23:26 +0000 (UTC)
+Received: from 78.163-31-62.static.virginmediabusiness.co.uk ([62.31.163.78]
+ helo=why.misterjones.org)
+ by disco-boy.misterjones.org with esmtpsa (TLS1.3) tls
+ TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384 (Exim 4.94)
+ (envelope-from <maz@kernel.org>)
+ id 1lPThc-003nDC-DO; Thu, 25 Mar 2021 17:23:24 +0000
+Date: Thu, 25 Mar 2021 17:23:23 +0000
+Message-ID: <871rc3rvuc.wl-maz@kernel.org>
+From: Marc Zyngier <maz@kernel.org>
+To: Megha Dey <megha.dey@intel.com>
+Subject: Re: [Patch V2 08/13] genirq: Set auxiliary data for an interrupt
+In-Reply-To: <1614370277-23235-9-git-send-email-megha.dey@intel.com>
+References: <1614370277-23235-1-git-send-email-megha.dey@intel.com>
+ <1614370277-23235-9-git-send-email-megha.dey@intel.com>
+User-Agent: Wanderlust/2.15.9 (Almost Unreal) SEMI-EPG/1.14.7 (Harue)
+ FLIM-LB/1.14.9 (=?UTF-8?B?R29qxY0=?=) APEL-LB/10.8 EasyPG/1.0.0 Emacs/27.1
+ (x86_64-pc-linux-gnu) MULE/6.0 (HANACHIRUSATO)
+MIME-Version: 1.0 (generated by SEMI-EPG 1.14.7 - "Harue")
+X-SA-Exim-Connect-IP: 62.31.163.78
+X-SA-Exim-Rcpt-To: megha.dey@intel.com, tglx@linutronix.de,
+ linux-kernel@vger.kernel.org, dave.jiang@intel.com, ashok.raj@intel.com,
+ kevin.tian@intel.com, dwmw@amazon.co.uk, x86@kernel.org, tony.luck@intel.com,
+ dan.j.williams@intel.com, jgg@mellanox.com, kvm@vger.kernel.org,
+ iommu@lists.linux-foundation.org, alex.williamson@redhat.com,
+ bhelgaas@google.com, linux-pci@vger.kernel.org, baolu.lu@linux.intel.com,
+ ravi.v.shankar@intel.com
+X-SA-Exim-Mail-From: maz@kernel.org
+X-SA-Exim-Scanned: No (on disco-boy.misterjones.org);
+ SAEximRunCond expanded to false
+Cc: alex.williamson@redhat.com, kevin.tian@intel.com, tony.luck@intel.com,
+ dave.jiang@intel.com, ashok.raj@intel.com, kvm@vger.kernel.org,
+ ravi.v.shankar@intel.com, linux-pci@vger.kernel.org, x86@kernel.org,
+ linux-kernel@vger.kernel.org, iommu@lists.linux-foundation.org,
+ jgg@mellanox.com, bhelgaas@google.com, tglx@linutronix.de,
+ dan.j.williams@intel.com, dwmw@amazon.co.uk
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -171,77 +102,117 @@ Content-Transfer-Encoding: 7bit
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-On Thu, Mar 25, 2021 at 10:02:36AM -0700, Jacob Pan wrote:
-> Hi Jean-Philippe,
+On Fri, 26 Feb 2021 20:11:12 +0000,
+Megha Dey <megha.dey@intel.com> wrote:
 > 
-> On Thu, 25 Mar 2021 11:21:40 +0100, Jean-Philippe Brucker
-> <jean-philippe@linaro.org> wrote:
+> Introduce a new function pointer in the irq_chip structure(irq_set_auxdata)
+> which is responsible for updating data which is stored in a shared register
+> or data storage. For example, the idxd driver uses the auxiliary data API
+> to enable/set and disable PASID field that is in the IMS entry (introduced
+> in a later patch) and that data are not typically present in MSI entry.
 > 
-> > On Wed, Mar 24, 2021 at 03:12:30PM -0700, Jacob Pan wrote:
-> > > Hi Jason,
-> > > 
-> > > On Wed, 24 Mar 2021 14:03:38 -0300, Jason Gunthorpe <jgg@nvidia.com>
-> > > wrote: 
-> > > > On Wed, Mar 24, 2021 at 10:02:46AM -0700, Jacob Pan wrote:  
-> > > > > > Also wondering about device driver allocating auxiliary domains
-> > > > > > for their private use, to do iommu_map/unmap on private PASIDs (a
-> > > > > > clean replacement to super SVA, for example). Would that go
-> > > > > > through the same path as /dev/ioasid and use the cgroup of
-> > > > > > current task?    
-> > > > >
-> > > > > For the in-kernel private use, I don't think we should restrict
-> > > > > based on cgroup, since there is no affinity to user processes. I
-> > > > > also think the PASID allocation should just use kernel API instead
-> > > > > of /dev/ioasid. Why would user space need to know the actual PASID
-> > > > > # for device private domains? Maybe I missed your idea?    
-> > > > 
-> > > > There is not much in the kernel that isn't triggered by a process, I
-> > > > would be careful about the idea that there is a class of users that
-> > > > can consume a cgroup controlled resource without being inside the
-> > > > cgroup.
-> > > > 
-> > > > We've got into trouble before overlooking this and with something
-> > > > greenfield like PASID it would be best built in to the API to prevent
-> > > > a mistake. eg accepting a cgroup or process input to the allocator.
-> > > >   
-> > > Make sense. But I think we only allow charging the current cgroup, how
-> > > about I add the following to ioasid_alloc():
-> > > 
-> > > 	misc_cg = get_current_misc_cg();
-> > > 	ret = misc_cg_try_charge(MISC_CG_RES_IOASID, misc_cg, 1);
-> > > 	if (ret) {
-> > > 		put_misc_cg(misc_cg);
-> > > 		return ret;
-> > > 	}  
-> > 
-> > Does that allow PASID allocation during driver probe, in kernel_init or
-> > modprobe context?
-> > 
-> Good point. Yes, you can get cgroup subsystem state in kernel_init for
-> charging/uncharging. I would think module_init should work also since it is
-> after kernel_init. I have tried the following:
-> static int __ref kernel_init(void *unused)
->  {
->         int ret;
-> +       struct cgroup_subsys_state *css;
-> +       css = task_get_css(current, pids_cgrp_id);
+> Reviewed-by: Tony Luck <tony.luck@intel.com>
+> Signed-off-by: Megha Dey <megha.dey@intel.com>
+> ---
+>  include/linux/interrupt.h |  2 ++
+>  include/linux/irq.h       |  4 ++++
+>  kernel/irq/manage.c       | 32 ++++++++++++++++++++++++++++++++
+>  3 files changed, 38 insertions(+)
 > 
-> But that would imply:
-> 1. IOASID has to be built-in, not as module
-> 2. IOASIDs charged on PID1/init would not subject to cgroup limit since it
-> will be in the root cgroup and we don't support migration nor will migrate.
-> 
-> Then it comes back to the question of why do we try to limit in-kernel
-> users per cgroup if we can't enforce these cases.
+> diff --git a/include/linux/interrupt.h b/include/linux/interrupt.h
+> index 967e257..461ed1c 100644
+> --- a/include/linux/interrupt.h
+> +++ b/include/linux/interrupt.h
+> @@ -496,6 +496,8 @@ extern int irq_get_irqchip_state(unsigned int irq, enum irqchip_irq_state which,
+>  extern int irq_set_irqchip_state(unsigned int irq, enum irqchip_irq_state which,
+>  				 bool state);
+>  
+> +int irq_set_auxdata(unsigned int irq, unsigned int which, u64 val);
+> +
+>  #ifdef CONFIG_IRQ_FORCED_THREADING
+>  # ifdef CONFIG_PREEMPT_RT
+>  #  define force_irqthreads	(true)
+> diff --git a/include/linux/irq.h b/include/linux/irq.h
+> index 2efde6a..fc19f32 100644
+> --- a/include/linux/irq.h
+> +++ b/include/linux/irq.h
+> @@ -491,6 +491,8 @@ static inline irq_hw_number_t irqd_to_hwirq(struct irq_data *d)
+>   *				irq_request_resources
+>   * @irq_compose_msi_msg:	optional to compose message content for MSI
+>   * @irq_write_msi_msg:	optional to write message content for MSI
+> + * @irq_set_auxdata:	Optional function to update auxiliary data e.g. in
+> + *			shared registers
+>   * @irq_get_irqchip_state:	return the internal state of an interrupt
+>   * @irq_set_irqchip_state:	set the internal state of a interrupt
+>   * @irq_set_vcpu_affinity:	optional to target a vCPU in a virtual machine
+> @@ -538,6 +540,8 @@ struct irq_chip {
+>  	void		(*irq_compose_msi_msg)(struct irq_data *data, struct msi_msg *msg);
+>  	void		(*irq_write_msi_msg)(struct irq_data *data, struct msi_msg *msg);
+>  
+> +	int		(*irq_set_auxdata)(struct irq_data *data, unsigned int which, u64 auxval);
+> +
+>  	int		(*irq_get_irqchip_state)(struct irq_data *data, enum irqchip_irq_state which, bool *state);
+>  	int		(*irq_set_irqchip_state)(struct irq_data *data, enum irqchip_irq_state which, bool state);
+>  
+> diff --git a/kernel/irq/manage.c b/kernel/irq/manage.c
+> index 85ede4e..68ff559 100644
+> --- a/kernel/irq/manage.c
+> +++ b/kernel/irq/manage.c
+> @@ -2860,3 +2860,35 @@ bool irq_check_status_bit(unsigned int irq, unsigned int bitmask)
+>  	return res;
+>  }
+>  EXPORT_SYMBOL_GPL(irq_check_status_bit);
+> +
+> +/**
+> + * irq_set_auxdata - Set auxiliary data
+> + * @irq:	Interrupt to update
+> + * @which:	Selector which data to update
+> + * @auxval:	Auxiliary data value
+> + *
+> + * Function to update auxiliary data for an interrupt, e.g. to update data
+> + * which is stored in a shared register or data storage (e.g. IMS).
+> + */
+> +int irq_set_auxdata(unsigned int irq, unsigned int which, u64 val)
 
-Are these real use cases? Why would a driver binding to a device
-create a single kernel pasid at bind time? Why wouldn't it use
-untagged DMA?
+This looks to me like a massively generalised version of
+irq_set_irqchip_state(), only without any defined semantics when it
+comes to the 'which' state, making it look like the irqchip version of
+an ioctl.
 
-When someone needs it they can rework it and explain why they are
-doing something sane.
+We also have the irq_set_vcpu_affinity() callback that is used to
+perpetrate all sort of sins (and I have abused this interface more
+than I should admit it).
 
-Jason
+Can we try and converge on a single interface that allows for
+"side-band state" to be communicated, with documented state?
+
+> +{
+> +	struct irq_desc *desc;
+> +	struct irq_data *data;
+> +	unsigned long flags;
+> +	int res = -ENODEV;
+> +
+> +	desc = irq_get_desc_buslock(irq, &flags, 0);
+> +	if (!desc)
+> +		return -EINVAL;
+> +
+> +	for (data = &desc->irq_data; data; data = irqd_get_parent_data(data)) {
+> +		if (data->chip->irq_set_auxdata) {
+> +			res = data->chip->irq_set_auxdata(data, which, val);
+
+And this is where things can break: because you don't define what
+'which' is, you can end-up with two stacked layers clashing in their
+interpretation of 'which', potentially doing the wrong thing.
+
+Short of having a global, cross architecture definition of all the
+possible states, this is frankly dodgy.
+
+Thanks,
+
+	M.
+
+-- 
+Without deviation from the norm, progress is not possible.
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
