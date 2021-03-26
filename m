@@ -2,82 +2,77 @@ Return-Path: <SRS0=A+5j=IY=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-5.3 required=3.0 tests=BAYES_00,
-	HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,NICE_REPLY_A,SPF_HELO_NONE,
-	SPF_PASS,URIBL_BLOCKED,USER_AGENT_SANE_1 autolearn=no autolearn_force=no
-	version=3.4.0
+X-Spam-Status: No, score=-16.7 required=3.0 tests=BAYES_00,
+	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_CR_TRAILER,INCLUDES_PATCH,
+	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,UNPARSEABLE_RELAY,URIBL_BLOCKED,
+	USER_AGENT_GIT autolearn=ham autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A7F5FC433C1
-	for <iommu@archiver.kernel.org>; Fri, 26 Mar 2021 01:04:07 +0000 (UTC)
-Received: from smtp3.osuosl.org (smtp3.osuosl.org [140.211.166.136])
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 025C4C433C1
+	for <iommu@archiver.kernel.org>; Fri, 26 Mar 2021 03:23:56 +0000 (UTC)
+Received: from smtp1.osuosl.org (smtp1.osuosl.org [140.211.166.138])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 137C461A1E
-	for <iommu@archiver.kernel.org>; Fri, 26 Mar 2021 01:04:06 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 137C461A1E
-Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=intel.com
+	by mail.kernel.org (Postfix) with ESMTPS id 5B96761A26
+	for <iommu@archiver.kernel.org>; Fri, 26 Mar 2021 03:23:56 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 5B96761A26
+Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=mediatek.com
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by smtp3.osuosl.org (Postfix) with ESMTP id BA59B6067A;
-	Fri, 26 Mar 2021 01:04:06 +0000 (UTC)
-X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from smtp3.osuosl.org ([127.0.0.1])
-	by localhost (smtp3.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id ECCykEdY1UXH; Fri, 26 Mar 2021 01:04:05 +0000 (UTC)
-Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [IPv6:2605:bc80:3010:104::8cd3:938])
-	by smtp3.osuosl.org (Postfix) with ESMTP id 6FB216069D;
-	Fri, 26 Mar 2021 01:04:05 +0000 (UTC)
-Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 4DB43C000E;
-	Fri, 26 Mar 2021 01:04:05 +0000 (UTC)
-Received: from smtp1.osuosl.org (smtp1.osuosl.org [IPv6:2605:bc80:3010::138])
- by lists.linuxfoundation.org (Postfix) with ESMTP id CC3DCC000A
- for <iommu@lists.linux-foundation.org>; Fri, 26 Mar 2021 01:04:04 +0000 (UTC)
-Received: from localhost (localhost [127.0.0.1])
- by smtp1.osuosl.org (Postfix) with ESMTP id C80388429F
- for <iommu@lists.linux-foundation.org>; Fri, 26 Mar 2021 01:04:04 +0000 (UTC)
+	by smtp1.osuosl.org (Postfix) with ESMTP id 1CBD684BF8;
+	Fri, 26 Mar 2021 03:23:56 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
 Received: from smtp1.osuosl.org ([127.0.0.1])
- by localhost (smtp1.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id CGptaxJ5Bxj4 for <iommu@lists.linux-foundation.org>;
- Fri, 26 Mar 2021 01:04:01 +0000 (UTC)
+	by localhost (smtp1.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+	with ESMTP id b0pvTgX4MCCE; Fri, 26 Mar 2021 03:23:55 +0000 (UTC)
+Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
+	by smtp1.osuosl.org (Postfix) with ESMTP id 214D184BFA;
+	Fri, 26 Mar 2021 03:23:55 +0000 (UTC)
+Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
+	by lists.linuxfoundation.org (Postfix) with ESMTP id ED168C000D;
+	Fri, 26 Mar 2021 03:23:54 +0000 (UTC)
+Received: from smtp2.osuosl.org (smtp2.osuosl.org [IPv6:2605:bc80:3010::133])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 6A083C000A
+ for <iommu@lists.linux-foundation.org>; Fri, 26 Mar 2021 03:23:53 +0000 (UTC)
+Received: from localhost (localhost [127.0.0.1])
+ by smtp2.osuosl.org (Postfix) with ESMTP id 43E4D405BA
+ for <iommu@lists.linux-foundation.org>; Fri, 26 Mar 2021 03:23:53 +0000 (UTC)
+X-Virus-Scanned: amavisd-new at osuosl.org
+Received: from smtp2.osuosl.org ([127.0.0.1])
+ by localhost (smtp2.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+ with ESMTP id vwYshpyrHqwU for <iommu@lists.linux-foundation.org>;
+ Fri, 26 Mar 2021 03:23:51 +0000 (UTC)
 X-Greylist: domain auto-whitelisted by SQLgrey-1.8.0
-Received: from mga05.intel.com (mga05.intel.com [192.55.52.43])
- by smtp1.osuosl.org (Postfix) with ESMTPS id 3343F84011
- for <iommu@lists.linux-foundation.org>; Fri, 26 Mar 2021 01:04:01 +0000 (UTC)
-IronPort-SDR: BunBmfV94+qFJ0QeupjFjZ9x7CTHPou7Px3yauW/1BQhwcSCt2bEeBKoAg3tSIrdVjCZXMsF1A
- 3d6tZN1AmhwQ==
-X-IronPort-AV: E=McAfee;i="6000,8403,9934"; a="276179489"
-X-IronPort-AV: E=Sophos;i="5.81,278,1610438400"; d="scan'208";a="276179489"
-Received: from orsmga004.jf.intel.com ([10.7.209.38])
- by fmsmga105.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384;
- 25 Mar 2021 18:04:00 -0700
-IronPort-SDR: i/t+GBh+pimmH2clQEO7DHHzuKyakP9WT7fBKDiAFncZY+OdlPgEH4JY3/F61NzvRWcFausUHX
- huRfojb5IuNw==
-X-IronPort-AV: E=Sophos;i="5.81,278,1610438400"; d="scan'208";a="525855417"
-Received: from meghadey-mobl1.amr.corp.intel.com (HELO [10.209.174.55])
- ([10.209.174.55])
- by orsmga004-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384;
- 25 Mar 2021 18:03:58 -0700
-Subject: Re: [Patch V2 12/13] irqchip: Add IMS (Interrupt Message Store) driver
-To: Thomas Gleixner <tglx@linutronix.de>, Marc Zyngier <maz@kernel.org>
-References: <1614370277-23235-1-git-send-email-megha.dey@intel.com>
- <1614370277-23235-13-git-send-email-megha.dey@intel.com>
- <87zgyrqgbm.wl-maz@kernel.org> <87eeg3vyph.fsf@nanos.tec.linutronix.de>
-From: "Dey, Megha" <megha.dey@intel.com>
-Message-ID: <cc98407b-877c-317b-04c6-514db2ea09a4@intel.com>
-Date: Thu, 25 Mar 2021 18:03:57 -0700
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:78.0) Gecko/20100101
- Thunderbird/78.7.1
+Received: from mailgw02.mediatek.com (unknown [210.61.82.184])
+ by smtp2.osuosl.org (Postfix) with ESMTP id 1339B401E3
+ for <iommu@lists.linux-foundation.org>; Fri, 26 Mar 2021 03:23:50 +0000 (UTC)
+X-UUID: e8e2e366388342db8bebe07cf6d2f5b0-20210326
+X-UUID: e8e2e366388342db8bebe07cf6d2f5b0-20210326
+Received: from mtkcas10.mediatek.inc [(172.21.101.39)] by mailgw02.mediatek.com
+ (envelope-from <yong.wu@mediatek.com>)
+ (Cellopoint E-mail Firewall v4.1.14 Build 0819 with TLSv1.2
+ ECDHE-RSA-AES256-SHA384 256/256)
+ with ESMTP id 1594774408; Fri, 26 Mar 2021 11:23:46 +0800
+Received: from mtkcas11.mediatek.inc (172.21.101.40) by
+ mtkmbs07n2.mediatek.inc (172.21.101.141) with Microsoft SMTP Server (TLS) id
+ 15.0.1497.2; Fri, 26 Mar 2021 11:23:45 +0800
+Received: from localhost.localdomain (10.17.3.153) by mtkcas11.mediatek.inc
+ (172.21.101.73) with Microsoft SMTP Server id 15.0.1497.2 via Frontend
+ Transport; Fri, 26 Mar 2021 11:23:44 +0800
+From: Yong Wu <yong.wu@mediatek.com>
+To: Joerg Roedel <joro@8bytes.org>, Matthias Brugger <matthias.bgg@gmail.com>, 
+ Will Deacon <will@kernel.org>
+Subject: [PATCH v2 1/2] iommu/mediatek-v1: Allow building as module
+Date: Fri, 26 Mar 2021 11:23:36 +0800
+Message-ID: <20210326032337.24578-1-yong.wu@mediatek.com>
+X-Mailer: git-send-email 2.18.0
 MIME-Version: 1.0
-In-Reply-To: <87eeg3vyph.fsf@nanos.tec.linutronix.de>
-Content-Language: en-US
-Cc: alex.williamson@redhat.com, kevin.tian@intel.com, tony.luck@intel.com,
- dave.jiang@intel.com, ashok.raj@intel.com, kvm@vger.kernel.org,
- ravi.v.shankar@intel.com, linux-pci@vger.kernel.org, x86@kernel.org,
- linux-kernel@vger.kernel.org, iommu@lists.linux-foundation.org,
- jgg@mellanox.com, bhelgaas@google.com, dan.j.williams@intel.com,
- dwmw@amazon.co.uk
+X-MTK: N
+Cc: youlin.pei@mediatek.com, anan.sun@mediatek.com,
+ Nicolas Boichat <drinkcat@chromium.org>, srv_heupstream@mediatek.com,
+ linux-kernel@vger.kernel.org, Krzysztof Kozlowski <krzk@kernel.org>,
+ chao.hao@mediatek.com, iommu@lists.linux-foundation.org,
+ linux-mediatek@lists.infradead.org, Robin Murphy <robin.murphy@arm.com>,
+ linux-arm-kernel@lists.infradead.org
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -90,37 +85,76 @@ List-Post: <mailto:iommu@lists.linux-foundation.org>
 List-Help: <mailto:iommu-request@lists.linux-foundation.org?subject=help>
 List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
  <mailto:iommu-request@lists.linux-foundation.org?subject=subscribe>
+Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
-Content-Type: text/plain; charset="us-ascii"; Format="flowed"
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-Hi Thomas/Marc,
+This patch only adds support for building the IOMMU-v1 driver as module.
+Correspondingly switch the config to tristate and update the iommu_ops's
+owner to THIS_MODULE.
 
-On 3/25/2021 12:07 PM, Thomas Gleixner wrote:
-> On Thu, Mar 25 2021 at 17:43, Marc Zyngier wrote:
->> On Fri, 26 Feb 2021 20:11:16 +0000,
->> Megha Dey <megha.dey@intel.com> wrote:
->>> +
->>> +#include <linux/irqchip/irq-ims-msi.h>
->>> +
->>> +#ifdef CONFIG_IMS_MSI_ARRAY
->> Given that this covers the whole driver, what is this #defined used
->> for? You might as well make the driver depend on this config option.
-> That's a leftover from the initial version I wrote which had also
-> support for IMS_MSI_QUEUE to store the message in queue memory, but we
-> have no use case yet for it.
->
-> But yes, as things stand now it does not make any sense and IIRC at the
-> end they do not share anything in the C file except for some includes at
-> the very end.
-Sure, I will make this change.
->
-> Thanks,
->
->          tglx
->
->
+Signed-off-by: Yong Wu <yong.wu@mediatek.com>
+---
+v2: change note:
+    a) Update iommu_ops's owner to THIS_MODULE
+    b) Fix typo in the title from "Alloc" to "Allow"
+
+v1: rebase on v5.12-rc2
+---
+ drivers/iommu/Kconfig        |  2 +-
+ drivers/iommu/mtk_iommu_v1.c | 10 +++++-----
+ 2 files changed, 6 insertions(+), 6 deletions(-)
+
+diff --git a/drivers/iommu/Kconfig b/drivers/iommu/Kconfig
+index 192ef8f61310..bc93da48bed0 100644
+--- a/drivers/iommu/Kconfig
++++ b/drivers/iommu/Kconfig
+@@ -364,7 +364,7 @@ config MTK_IOMMU
+ 	  If unsure, say N here.
+ 
+ config MTK_IOMMU_V1
+-	bool "MTK IOMMU Version 1 (M4U gen1) Support"
++	tristate "MediaTek IOMMU Version 1 (M4U gen1) Support"
+ 	depends on ARM
+ 	depends on ARCH_MEDIATEK || COMPILE_TEST
+ 	select ARM_DMA_USE_IOMMU
+diff --git a/drivers/iommu/mtk_iommu_v1.c b/drivers/iommu/mtk_iommu_v1.c
+index 82ddfe9170d4..be1b20e3f20e 100644
+--- a/drivers/iommu/mtk_iommu_v1.c
++++ b/drivers/iommu/mtk_iommu_v1.c
+@@ -20,6 +20,7 @@
+ #include <linux/iommu.h>
+ #include <linux/iopoll.h>
+ #include <linux/list.h>
++#include <linux/module.h>
+ #include <linux/of_address.h>
+ #include <linux/of_iommu.h>
+ #include <linux/of_irq.h>
+@@ -529,6 +530,7 @@ static const struct iommu_ops mtk_iommu_ops = {
+ 	.def_domain_type = mtk_iommu_def_domain_type,
+ 	.device_group	= generic_device_group,
+ 	.pgsize_bitmap	= ~0UL << MT2701_IOMMU_PAGE_SHIFT,
++	.owner          = THIS_MODULE,
+ };
+ 
+ static const struct of_device_id mtk_iommu_of_ids[] = {
+@@ -691,9 +693,7 @@ static struct platform_driver mtk_iommu_driver = {
+ 		.pm = &mtk_iommu_pm_ops,
+ 	}
+ };
++module_platform_driver(mtk_iommu_driver);
+ 
+-static int __init m4u_init(void)
+-{
+-	return platform_driver_register(&mtk_iommu_driver);
+-}
+-subsys_initcall(m4u_init);
++MODULE_DESCRIPTION("IOMMU API for MediaTek M4U v1 implementations");
++MODULE_LICENSE("GPL v2");
+-- 
+2.18.0
+
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
