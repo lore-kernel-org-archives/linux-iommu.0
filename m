@@ -2,76 +2,77 @@ Return-Path: <SRS0=A+5j=IY=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-4.0 required=3.0 tests=BAYES_00,MAILING_LIST_MULTI,
-	SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED autolearn=no autolearn_force=no
-	version=3.4.0
+X-Spam-Status: No, score=-14.0 required=3.0 tests=BAYES_00,INCLUDES_CR_TRAILER,
+	INCLUDES_PATCH,MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED
+	autolearn=ham autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D554FC433E0
-	for <iommu@archiver.kernel.org>; Fri, 26 Mar 2021 10:32:57 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 28FC2C433DB
+	for <iommu@archiver.kernel.org>; Fri, 26 Mar 2021 12:58:47 +0000 (UTC)
 Received: from smtp4.osuosl.org (smtp4.osuosl.org [140.211.166.137])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 4C4FF61A0A
-	for <iommu@archiver.kernel.org>; Fri, 26 Mar 2021 10:32:57 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 4C4FF61A0A
+	by mail.kernel.org (Postfix) with ESMTPS id 74D4061601
+	for <iommu@archiver.kernel.org>; Fri, 26 Mar 2021 12:58:46 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 74D4061601
 Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=kernel.org
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by smtp4.osuosl.org (Postfix) with ESMTP id D6B7C40F7D;
-	Fri, 26 Mar 2021 10:32:56 +0000 (UTC)
+	by smtp4.osuosl.org (Postfix) with ESMTP id 18D6940FB5;
+	Fri, 26 Mar 2021 12:58:46 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
 Received: from smtp4.osuosl.org ([127.0.0.1])
 	by localhost (smtp4.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id AgWSoCjRWA1S; Fri, 26 Mar 2021 10:32:55 +0000 (UTC)
+	with ESMTP id K8V0qsoc6jyM; Fri, 26 Mar 2021 12:58:44 +0000 (UTC)
 Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [IPv6:2605:bc80:3010:104::8cd3:938])
-	by smtp4.osuosl.org (Postfix) with ESMTP id CAF9940F68;
-	Fri, 26 Mar 2021 10:32:54 +0000 (UTC)
+	by smtp4.osuosl.org (Postfix) with ESMTP id 91D0440F97;
+	Fri, 26 Mar 2021 12:58:44 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 807F0C000D;
-	Fri, 26 Mar 2021 10:32:54 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 73875C000D;
+	Fri, 26 Mar 2021 12:58:44 +0000 (UTC)
 Received: from smtp2.osuosl.org (smtp2.osuosl.org [IPv6:2605:bc80:3010::133])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 03421C000A
- for <iommu@lists.linux-foundation.org>; Fri, 26 Mar 2021 10:32:52 +0000 (UTC)
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 80527C000A
+ for <iommu@lists.linux-foundation.org>; Fri, 26 Mar 2021 12:58:43 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by smtp2.osuosl.org (Postfix) with ESMTP id CC38A4025C
- for <iommu@lists.linux-foundation.org>; Fri, 26 Mar 2021 10:32:52 +0000 (UTC)
+ by smtp2.osuosl.org (Postfix) with ESMTP id 5DC0A400D6
+ for <iommu@lists.linux-foundation.org>; Fri, 26 Mar 2021 12:58:43 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
 Received: from smtp2.osuosl.org ([127.0.0.1])
  by localhost (smtp2.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id Vq3BdxpP5ins for <iommu@lists.linux-foundation.org>;
- Fri, 26 Mar 2021 10:32:52 +0000 (UTC)
+ with ESMTP id 0_3J_Far22ho for <iommu@lists.linux-foundation.org>;
+ Fri, 26 Mar 2021 12:58:42 +0000 (UTC)
 X-Greylist: domain auto-whitelisted by SQLgrey-1.8.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
- by smtp2.osuosl.org (Postfix) with ESMTPS id 388C840251
- for <iommu@lists.linux-foundation.org>; Fri, 26 Mar 2021 10:32:52 +0000 (UTC)
+ by smtp2.osuosl.org (Postfix) with ESMTPS id 99CF6400C3
+ for <iommu@lists.linux-foundation.org>; Fri, 26 Mar 2021 12:58:42 +0000 (UTC)
 Received: from disco-boy.misterjones.org (disco-boy.misterjones.org
  [51.254.78.96])
  (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
  (No client certificate requested)
- by mail.kernel.org (Postfix) with ESMTPSA id DF24E61A48;
- Fri, 26 Mar 2021 10:32:49 +0000 (UTC)
+ by mail.kernel.org (Postfix) with ESMTPSA id 489C7619BF;
+ Fri, 26 Mar 2021 12:58:40 +0000 (UTC)
 Received: from 78.163-31-62.static.virginmediabusiness.co.uk ([62.31.163.78]
  helo=wait-a-minute.misterjones.org)
  by disco-boy.misterjones.org with esmtpsa (TLS1.3) tls
  TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384 (Exim 4.94)
  (envelope-from <maz@kernel.org>)
- id 1lPjln-003xXC-LI; Fri, 26 Mar 2021 10:32:47 +0000
-Date: Fri, 26 Mar 2021 10:32:45 +0000
-Message-ID: <87v99efbn6.wl-maz@kernel.org>
+ id 1lPm2w-003yqm-1z; Fri, 26 Mar 2021 12:58:38 +0000
+Date: Fri, 26 Mar 2021 12:58:37 +0000
+Message-ID: <87r1k2f4w2.wl-maz@kernel.org>
 From: Marc Zyngier <maz@kernel.org>
-To: Thomas Gleixner <tglx@linutronix.de>
-Subject: Re: [Patch V2 08/13] genirq: Set auxiliary data for an interrupt
-In-Reply-To: <87im5fvz2z.fsf@nanos.tec.linutronix.de>
+To: "Dey, Megha" <megha.dey@intel.com>
+Subject: Re: [Patch V2 13/13] genirq/msi: Provide helpers to return Linux
+ IRQ/dev_msi hw IRQ number
+In-Reply-To: <5bed6fea-32e1-d909-0a5c-439d0f0a7dfe@intel.com>
 References: <1614370277-23235-1-git-send-email-megha.dey@intel.com>
- <1614370277-23235-9-git-send-email-megha.dey@intel.com>
- <871rc3rvuc.wl-maz@kernel.org>
- <87im5fvz2z.fsf@nanos.tec.linutronix.de>
+ <1614370277-23235-14-git-send-email-megha.dey@intel.com>
+ <87y2ebqfw5.wl-maz@kernel.org>
+ <5bed6fea-32e1-d909-0a5c-439d0f0a7dfe@intel.com>
 User-Agent: Wanderlust/2.15.9 (Almost Unreal) SEMI-EPG/1.14.7 (Harue)
  FLIM-LB/1.14.9 (=?UTF-8?B?R29qxY0=?=) APEL-LB/10.8 EasyPG/1.0.0 Emacs/27.1
  (x86_64-pc-linux-gnu) MULE/6.0 (HANACHIRUSATO)
 MIME-Version: 1.0 (generated by SEMI-EPG 1.14.7 - "Harue")
 X-SA-Exim-Connect-IP: 62.31.163.78
-X-SA-Exim-Rcpt-To: tglx@linutronix.de, megha.dey@intel.com,
+X-SA-Exim-Rcpt-To: megha.dey@intel.com, tglx@linutronix.de,
  linux-kernel@vger.kernel.org, dave.jiang@intel.com, ashok.raj@intel.com,
  kevin.tian@intel.com, dwmw@amazon.co.uk, x86@kernel.org, tony.luck@intel.com,
  dan.j.williams@intel.com, jgg@mellanox.com, kvm@vger.kernel.org,
@@ -85,7 +86,7 @@ Cc: alex.williamson@redhat.com, kevin.tian@intel.com, tony.luck@intel.com,
  dave.jiang@intel.com, ashok.raj@intel.com, kvm@vger.kernel.org,
  ravi.v.shankar@intel.com, linux-pci@vger.kernel.org, x86@kernel.org,
  linux-kernel@vger.kernel.org, iommu@lists.linux-foundation.org,
- jgg@mellanox.com, Megha Dey <megha.dey@intel.com>, bhelgaas@google.com,
+ jgg@mellanox.com, bhelgaas@google.com, tglx@linutronix.de,
  dan.j.williams@intel.com, dwmw@amazon.co.uk
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
@@ -104,65 +105,151 @@ Content-Transfer-Encoding: 7bit
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-On Thu, 25 Mar 2021 18:59:48 +0000,
-Thomas Gleixner <tglx@linutronix.de> wrote:
+On Fri, 26 Mar 2021 01:02:43 +0000,
+"Dey, Megha" <megha.dey@intel.com> wrote:
 > 
-> On Thu, Mar 25 2021 at 17:23, Marc Zyngier wrote:
+> Hi Marc,
+> 
+> On 3/25/2021 10:53 AM, Marc Zyngier wrote:
+> > On Fri, 26 Feb 2021 20:11:17 +0000,
+> > Megha Dey <megha.dey@intel.com> wrote:
+> >> From: Dave Jiang <dave.jiang@intel.com>
+> >> 
+> >> Add new helpers to get the Linux IRQ number and device specific index
+> >> for given device-relative vector so that the drivers don't need to
+> >> allocate their own arrays to keep track of the vectors and hwirq for
+> >> the multi vector device MSI case.
+> >> 
+> >> Reviewed-by: Tony Luck <tony.luck@intel.com>
+> >> Signed-off-by: Dave Jiang <dave.jiang@intel.com>
+> >> Signed-off-by: Megha Dey <megha.dey@intel.com>
+> >> ---
+> >>   include/linux/msi.h |  2 ++
+> >>   kernel/irq/msi.c    | 44 ++++++++++++++++++++++++++++++++++++++++++++
+> >>   2 files changed, 46 insertions(+)
+> >> 
+> >> diff --git a/include/linux/msi.h b/include/linux/msi.h
+> >> index 24abec0..d60a6ba 100644
+> >> --- a/include/linux/msi.h
+> >> +++ b/include/linux/msi.h
+> >> @@ -451,6 +451,8 @@ struct irq_domain *platform_msi_create_irq_domain(struct fwnode_handle *fwnode,
+> >>   int platform_msi_domain_alloc_irqs(struct device *dev, unsigned int nvec,
+> >>   				   irq_write_msi_msg_t write_msi_msg);
+> >>   void platform_msi_domain_free_irqs(struct device *dev);
+> >> +int msi_irq_vector(struct device *dev, unsigned int nr);
+> >> +int dev_msi_hwirq(struct device *dev, unsigned int nr);
+> >>     /* When an MSI domain is used as an intermediate domain */
+> >>   int msi_domain_prepare_irqs(struct irq_domain *domain, struct device *dev,
+> >> diff --git a/kernel/irq/msi.c b/kernel/irq/msi.c
+> >> index 047b59d..f2a8f55 100644
+> >> --- a/kernel/irq/msi.c
+> >> +++ b/kernel/irq/msi.c
+> >> @@ -581,4 +581,48 @@ struct msi_domain_info *msi_get_domain_info(struct irq_domain *domain)
+> >>   	return (struct msi_domain_info *)domain->host_data;
+> >>   }
+> >>   +/**
+> >> + * msi_irq_vector - Get the Linux IRQ number of a device vector
+> >> + * @dev: device to operate on
+> >> + * @nr: device-relative interrupt vector index (0-based).
+> >> + *
+> >> + * Returns the Linux IRQ number of a device vector.
+> >> + */
+> >> +int msi_irq_vector(struct device *dev, unsigned int nr)
 > >> +{
-> >> +	struct irq_desc *desc;
-> >> +	struct irq_data *data;
-> >> +	unsigned long flags;
-> >> +	int res = -ENODEV;
+> >> +	struct msi_desc *entry;
+> >> +	int i = 0;
 > >> +
-> >> +	desc = irq_get_desc_buslock(irq, &flags, 0);
-> >> +	if (!desc)
-> >> +		return -EINVAL;
+> >> +	for_each_msi_entry(entry, dev) {
+> >> +		if (i == nr)
+> >> +			return entry->irq;
+> >> +		i++;
+> > This obviously doesn't work with Multi-MSI, does it?
+> 
+> This API is only for devices that support device MSI interrupts. They
+> follow MSI-x format and don't support multi MSI (part of MSI).
+> 
+> Not sure if I am missing something here, can you please let me know?
+
+Nothing in the prototype of the function indicates this limitation,
+nor does the documentation. And I'm not sure why you should exclude
+part of the MSI functionality here. It can't be for performance
+reason, so you might as well make sure this works for all the MSI
+variants:
+
+int msi_irq_vector(struct device *dev, unsigned int nr)
+{
+	struct msi_desc *entry;
+	int irq, index = 0;
+
+	for_each_msi_vector(entry, irq, dev) {
+		if (index == nr}
+			return irq;
+		index++;
+	}
+
+	return WARN_ON_ONCE(-EINVAL);
+}
+
+>
+> > 
+> >> +	}
+> >> +	WARN_ON_ONCE(1);
+> >> +	return -EINVAL;
+> >> +}
+> >> +EXPORT_SYMBOL_GPL(msi_irq_vector);
 > >> +
-> >> +	for (data = &desc->irq_data; data; data = irqd_get_parent_data(data)) {
-> >> +		if (data->chip->irq_set_auxdata) {
-> >> +			res = data->chip->irq_set_auxdata(data, which, val);
-> >
-> > And this is where things can break: because you don't define what
-> > 'which' is, you can end-up with two stacked layers clashing in their
-> > interpretation of 'which', potentially doing the wrong thing.
-> >
-> > Short of having a global, cross architecture definition of all the
-> > possible states, this is frankly dodgy.
-> 
-> My bad, I suggested this in the first place.
-> 
-> So what you suggest is to make 'which' an enum and have that in
-> include/linux/whatever.h so we end up with unique identifiers accross
-> architectures, irqdomains and whatever, right?
+> >> +/**
+> >> + * dev_msi_hwirq - Get the device MSI hw IRQ number of a device vector
+> >> + * @dev: device to operate on
+> >> + * @nr: device-relative interrupt vector index (0-based).
+> >> + *
+> >> + * Return the dev_msi hw IRQ number of a device vector.
+> >> + */
+> >> +int dev_msi_hwirq(struct device *dev, unsigned int nr)
+> >> +{
+> >> +	struct msi_desc *entry;
+> >> +	int i = 0;
+> >> +
+> >> +	for_each_msi_entry(entry, dev) {
+> >> +		if (i == nr)
+> >> +			return entry->device_msi.hwirq;
+> >> +		i++;
+> >> +	}
+> >> +	WARN_ON_ONCE(1);
+> >> +	return -EINVAL;
+> >> +}
 
-Exactly. As long as 'which' is unique and unambiguous, we can solve
-the stacking issue (which is oddly starting to smell like the ghost of
-the SVR3 STREAMS... /me runs ;-).
+And this helper would be more generally useful if it returned the n-th
+msi_desc entry rather than some obscure field in a substructure.
 
-Once we have that, I can start killing the irq_set_vcpu_affinity()
-abuse I have been guilty of over the past years. Even more, we could
-kill irq_set_vcpu_affinity() altogether, because we have a generic way
-of passing side-band information from a driver down to the IRQ stack.
+struct msi_desc *msi_get_nth_desc(struct device *dev, unsigned int nth)
+{
+	struct msi_desc *entry = NULL;
+	unsigned int i = 0;
 
-> That makes a lot of sense.
-> 
-> Though that leaves the question of the data type for 'val'. While u64 is
-> probably good enough for most stuff, anything which needs more than that
-> is left out (again). union as arguments are horrible especially if you
-> need the counterpart irq_get_auxdata() for which you need a pointer and
-> then you can't do a forward declaration. Something like this might work
-> though and avoid to make the pointer business unconditional:
-> 
->         struct irq_auxdata {
->                union {
->         	     u64        val;
->                      struct foo *foo;
->                };
->         };
+	for_each_msi_entry(entry, dev) {
+		if (i == nth)
+			return entry;
 
-I guess that at some point, irq_get_auxdata() will become a
-requirement so we might as well bite the bullet now, and the above
-looks like a good start to me.
+		i++;
+	}
+
+	WARN_ON_ONCE(!entry);
+	return entry;
+}
+
+You can always wrap it for your particular use case.
+
+> >> +EXPORT_SYMBOL_GPL(dev_msi_hwirq);
+> >> +
+> >>   #endif /* CONFIG_GENERIC_MSI_IRQ_DOMAIN */
+> > And what uses these helpers?]
+> These helpers are to be used by a driver series(Intel's IDXD driver)
+> which is currently stuck due to VFIO refactoring.
+
+Then I's suggest you keep the helpers together with the actual user,
+unless this can generally be useful to existing users (exported
+symbols without in-tree users is always a bit odd).
 
 Thanks,
 
