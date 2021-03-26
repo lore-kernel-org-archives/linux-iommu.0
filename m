@@ -1,93 +1,84 @@
-Return-Path: <SRS0=Fh/M=IX=lists.linux-foundation.org=iommu-bounces@kernel.org>
+Return-Path: <SRS0=A+5j=IY=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-3.8 required=3.0 tests=BAYES_00,DKIM_INVALID,
-	DKIM_SIGNED,MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED
-	autolearn=no autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-15.3 required=3.0 tests=BAYES_00,
+	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_CR_TRAILER,INCLUDES_PATCH,
+	MAILING_LIST_MULTI,NICE_REPLY_A,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,
+	USER_AGENT_SANE_1 autolearn=ham autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4B6A1C433DB
-	for <iommu@archiver.kernel.org>; Thu, 25 Mar 2021 21:41:30 +0000 (UTC)
-Received: from smtp4.osuosl.org (smtp4.osuosl.org [140.211.166.137])
+	by smtp.lore.kernel.org (Postfix) with ESMTP id DF98FC433DB
+	for <iommu@archiver.kernel.org>; Fri, 26 Mar 2021 01:02:58 +0000 (UTC)
+Received: from smtp2.osuosl.org (smtp2.osuosl.org [140.211.166.133])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id E761461A25
-	for <iommu@archiver.kernel.org>; Thu, 25 Mar 2021 21:41:29 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org E761461A25
-Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=kernel.org
+	by mail.kernel.org (Postfix) with ESMTPS id 5F26361A42
+	for <iommu@archiver.kernel.org>; Fri, 26 Mar 2021 01:02:58 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 5F26361A42
+Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=intel.com
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by smtp4.osuosl.org (Postfix) with ESMTP id A1DD240EB0;
-	Thu, 25 Mar 2021 21:41:29 +0000 (UTC)
+	by smtp2.osuosl.org (Postfix) with ESMTP id 1F81E405A8;
+	Fri, 26 Mar 2021 01:02:58 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from smtp4.osuosl.org ([127.0.0.1])
-	by localhost (smtp4.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id eyRHFteX8ZOC; Thu, 25 Mar 2021 21:41:28 +0000 (UTC)
-Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [IPv6:2605:bc80:3010:104::8cd3:938])
-	by smtp4.osuosl.org (Postfix) with ESMTP id 6B16B40EBD;
-	Thu, 25 Mar 2021 21:41:28 +0000 (UTC)
+Received: from smtp2.osuosl.org ([127.0.0.1])
+	by localhost (smtp2.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+	with ESMTP id vo1YvRaLYF44; Fri, 26 Mar 2021 01:02:57 +0000 (UTC)
+Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
+	by smtp2.osuosl.org (Postfix) with ESMTP id 04FFA405A2;
+	Fri, 26 Mar 2021 01:02:57 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 325B4C000D;
-	Thu, 25 Mar 2021 21:41:28 +0000 (UTC)
-Received: from smtp3.osuosl.org (smtp3.osuosl.org [140.211.166.136])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 0FA15C000A
- for <iommu@lists.linux-foundation.org>; Thu, 25 Mar 2021 21:41:27 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id C4242C000E;
+	Fri, 26 Mar 2021 01:02:56 +0000 (UTC)
+Received: from smtp1.osuosl.org (smtp1.osuosl.org [IPv6:2605:bc80:3010::138])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 57CD7C000A
+ for <iommu@lists.linux-foundation.org>; Fri, 26 Mar 2021 01:02:55 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by smtp3.osuosl.org (Postfix) with ESMTP id E9E8060B65
- for <iommu@lists.linux-foundation.org>; Thu, 25 Mar 2021 21:41:26 +0000 (UTC)
+ by smtp1.osuosl.org (Postfix) with ESMTP id 46AE784BCF
+ for <iommu@lists.linux-foundation.org>; Fri, 26 Mar 2021 01:02:55 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Authentication-Results: smtp3.osuosl.org (amavisd-new);
- dkim=pass (2048-bit key) header.d=kernel.org
-Received: from smtp3.osuosl.org ([127.0.0.1])
- by localhost (smtp3.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id DGMqPRxOlQpV for <iommu@lists.linux-foundation.org>;
- Thu, 25 Mar 2021 21:41:26 +0000 (UTC)
+Received: from smtp1.osuosl.org ([127.0.0.1])
+ by localhost (smtp1.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+ with ESMTP id 46pn1E9fzg9S for <iommu@lists.linux-foundation.org>;
+ Fri, 26 Mar 2021 01:02:54 +0000 (UTC)
 X-Greylist: domain auto-whitelisted by SQLgrey-1.8.0
-Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
- by smtp3.osuosl.org (Postfix) with ESMTPS id 5B60E60B2C
- for <iommu@lists.linux-foundation.org>; Thu, 25 Mar 2021 21:41:26 +0000 (UTC)
-Received: by mail.kernel.org (Postfix) with ESMTPSA id CF5AA61A25
- for <iommu@lists.linux-foundation.org>; Thu, 25 Mar 2021 21:41:25 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
- s=k20201202; t=1616708485;
- bh=RPr0+GAQJYl2SXFGMPkIt54GGFqTX+CVANOyfY1QFiY=;
- h=References:In-Reply-To:From:Date:Subject:To:Cc:From;
- b=k5NiMFpnmGFDfTsTgKkHIfzy4Q87nBn6/uezhrr7m3mdolnhlED3LoG2wzf7SLR0T
- 6pJzRE49SLYcBdd4RAg+iDP6Hp19foyZiJFV1U4ve6HWe9qMn5bVFVEFjZ1V15mpeV
- in8BH2QDhzOkk4kZeC/xFj0gzIgg2AIUXregXyHPu4glOXPYvR7pCBjb9tYWgChXnG
- D+eZZZCxkB6I66pyymVQi+/j4qs6M9S0Lb1FncI41V8nC1n7SFypn5EVyWrbNgdIGv
- eD8ZxcfeA9cYjZODc8ytNDL+5RbW8uEXJnrsSvNWz/E1/QPT7wOpKO2oz5jn4NSMzz
- JkxGn/cloYGJQ==
-Received: by mail-ot1-f41.google.com with SMTP id
- 91-20020a9d08640000b0290237d9c40382so3366006oty.12
- for <iommu@lists.linux-foundation.org>; Thu, 25 Mar 2021 14:41:25 -0700 (PDT)
-X-Gm-Message-State: AOAM532Qw11nGjQgKOQt4eRJTkWyLHnItlIKdKgpO46qJk1iZa6eX/pU
- /fEHOfRbetDfqfMlVvg2YJvwXY52rEenfLKMZz8=
-X-Google-Smtp-Source: ABdhPJxlCcqleUvoMM0qnZXW4lBarEjgZ1ug3Hjq78DPfvPnEuxx7Lua3VGxdB55kpr9ovRvIeqvFoRKnXWmtETo1pU=
-X-Received: by 2002:a05:6830:148c:: with SMTP id
- s12mr9471035otq.251.1616708485174; 
- Thu, 25 Mar 2021 14:41:25 -0700 (PDT)
+Received: from mga02.intel.com (mga02.intel.com [134.134.136.20])
+ by smtp1.osuosl.org (Postfix) with ESMTPS id EE37684BCE
+ for <iommu@lists.linux-foundation.org>; Fri, 26 Mar 2021 01:02:53 +0000 (UTC)
+IronPort-SDR: esBWeSC4bg0vp9RaSavOoh0JnTzPaxgHe+CGDiCy8V4O7UcmwL1GkXQNkUKNbayCWcbp1NdPUl
+ /1mmQ1Pki2QQ==
+X-IronPort-AV: E=McAfee;i="6000,8403,9934"; a="178173426"
+X-IronPort-AV: E=Sophos;i="5.81,278,1610438400"; d="scan'208";a="178173426"
+Received: from orsmga004.jf.intel.com ([10.7.209.38])
+ by orsmga101.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384;
+ 25 Mar 2021 18:02:53 -0700
+IronPort-SDR: UDjVUON9MNVL2rohRWqpB9EM7W7/zF4vDcaB4PowV6aLek7/WP4/rjNZWtDjs4gYTRNHM2jka3
+ JoITW8peb0vw==
+X-IronPort-AV: E=Sophos;i="5.81,278,1610438400"; d="scan'208";a="525855122"
+Received: from meghadey-mobl1.amr.corp.intel.com (HELO [10.209.174.55])
+ ([10.209.174.55])
+ by orsmga004-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384;
+ 25 Mar 2021 18:02:50 -0700
+Subject: Re: [Patch V2 13/13] genirq/msi: Provide helpers to return Linux
+ IRQ/dev_msi hw IRQ number
+To: Marc Zyngier <maz@kernel.org>
+References: <1614370277-23235-1-git-send-email-megha.dey@intel.com>
+ <1614370277-23235-14-git-send-email-megha.dey@intel.com>
+ <87y2ebqfw5.wl-maz@kernel.org>
+From: "Dey, Megha" <megha.dey@intel.com>
+Message-ID: <5bed6fea-32e1-d909-0a5c-439d0f0a7dfe@intel.com>
+Date: Thu, 25 Mar 2021 18:02:43 -0700
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:78.0) Gecko/20100101
+ Thunderbird/78.7.1
 MIME-Version: 1.0
-References: <20210320151903.60759-1-sven@svenpeter.dev>
- <c1bcc0609e920bc6@bloch.sibelius.xs4all.nl>
- <20210323205346.GA1283560@robh.at.kernel.org>
- <43685c67-6d9c-4e72-b320-0462c2273bf0@www.fastmail.com>
-In-Reply-To: <43685c67-6d9c-4e72-b320-0462c2273bf0@www.fastmail.com>
-From: Arnd Bergmann <arnd@kernel.org>
-Date: Thu, 25 Mar 2021 22:41:09 +0100
-X-Gmail-Original-Message-ID: <CAK8P3a0fvnYLrG=cGiOQ6u8aZnriTeM0R=MW7FX=94mO13Rq0w@mail.gmail.com>
-Message-ID: <CAK8P3a0fvnYLrG=cGiOQ6u8aZnriTeM0R=MW7FX=94mO13Rq0w@mail.gmail.com>
-Subject: Re: [PATCH 0/3] Apple M1 DART IOMMU driver
-To: Sven Peter <sven@svenpeter.dev>
-Cc: Rob Herring <robh@kernel.org>, DTML <devicetree@vger.kernel.org>,
- Will Deacon <will@kernel.org>, Hector Martin <marcan@marcan.st>,
- Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
- "open list:IOMMU DRIVERS" <iommu@lists.linux-foundation.org>,
- Marc Zyngier <maz@kernel.org>,
- Mohamed Mediouni <mohamed.mediouni@caramail.com>,
- Stan Skowronek <stan@corellium.com>, Robin Murphy <robin.murphy@arm.com>,
- Linux ARM <linux-arm-kernel@lists.infradead.org>,
- Mark Kettenis <mark.kettenis@xs4all.nl>
+In-Reply-To: <87y2ebqfw5.wl-maz@kernel.org>
+Content-Language: en-US
+Cc: alex.williamson@redhat.com, kevin.tian@intel.com, tony.luck@intel.com,
+ dave.jiang@intel.com, ashok.raj@intel.com, kvm@vger.kernel.org,
+ ravi.v.shankar@intel.com, linux-pci@vger.kernel.org, x86@kernel.org,
+ linux-kernel@vger.kernel.org, iommu@lists.linux-foundation.org,
+ jgg@mellanox.com, bhelgaas@google.com, tglx@linutronix.de,
+ dan.j.williams@intel.com, dwmw@amazon.co.uk
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -100,34 +91,113 @@ List-Post: <mailto:iommu@lists.linux-foundation.org>
 List-Help: <mailto:iommu-request@lists.linux-foundation.org?subject=help>
 List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
  <mailto:iommu-request@lists.linux-foundation.org?subject=subscribe>
-Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset="us-ascii"; Format="flowed"
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-On Thu, Mar 25, 2021 at 8:53 AM Sven Peter <sven@svenpeter.dev> wrote:
-> On Tue, Mar 23, 2021, at 21:53, Rob Herring wrote:
+Hi Marc,
+
+On 3/25/2021 10:53 AM, Marc Zyngier wrote:
+> On Fri, 26 Feb 2021 20:11:17 +0000,
+> Megha Dey <megha.dey@intel.com> wrote:
+>> From: Dave Jiang <dave.jiang@intel.com>
+>>
+>> Add new helpers to get the Linux IRQ number and device specific index
+>> for given device-relative vector so that the drivers don't need to
+>> allocate their own arrays to keep track of the vectors and hwirq for
+>> the multi vector device MSI case.
+>>
+>> Reviewed-by: Tony Luck <tony.luck@intel.com>
+>> Signed-off-by: Dave Jiang <dave.jiang@intel.com>
+>> Signed-off-by: Megha Dey <megha.dey@intel.com>
+>> ---
+>>   include/linux/msi.h |  2 ++
+>>   kernel/irq/msi.c    | 44 ++++++++++++++++++++++++++++++++++++++++++++
+>>   2 files changed, 46 insertions(+)
+>>
+>> diff --git a/include/linux/msi.h b/include/linux/msi.h
+>> index 24abec0..d60a6ba 100644
+>> --- a/include/linux/msi.h
+>> +++ b/include/linux/msi.h
+>> @@ -451,6 +451,8 @@ struct irq_domain *platform_msi_create_irq_domain(struct fwnode_handle *fwnode,
+>>   int platform_msi_domain_alloc_irqs(struct device *dev, unsigned int nvec,
+>>   				   irq_write_msi_msg_t write_msi_msg);
+>>   void platform_msi_domain_free_irqs(struct device *dev);
+>> +int msi_irq_vector(struct device *dev, unsigned int nr);
+>> +int dev_msi_hwirq(struct device *dev, unsigned int nr);
+>>   
+>>   /* When an MSI domain is used as an intermediate domain */
+>>   int msi_domain_prepare_irqs(struct irq_domain *domain, struct device *dev,
+>> diff --git a/kernel/irq/msi.c b/kernel/irq/msi.c
+>> index 047b59d..f2a8f55 100644
+>> --- a/kernel/irq/msi.c
+>> +++ b/kernel/irq/msi.c
+>> @@ -581,4 +581,48 @@ struct msi_domain_info *msi_get_domain_info(struct irq_domain *domain)
+>>   	return (struct msi_domain_info *)domain->host_data;
+>>   }
+>>   
+>> +/**
+>> + * msi_irq_vector - Get the Linux IRQ number of a device vector
+>> + * @dev: device to operate on
+>> + * @nr: device-relative interrupt vector index (0-based).
+>> + *
+>> + * Returns the Linux IRQ number of a device vector.
+>> + */
+>> +int msi_irq_vector(struct device *dev, unsigned int nr)
+>> +{
+>> +	struct msi_desc *entry;
+>> +	int i = 0;
+>> +
+>> +	for_each_msi_entry(entry, dev) {
+>> +		if (i == nr)
+>> +			return entry->irq;
+>> +		i++;
+> This obviously doesn't work with Multi-MSI, does it?
+
+This API is only for devices that support device MSI interrupts. They 
+follow MSI-x format and don't support multi MSI (part of MSI).
+
+Not sure if I am missing something here, can you please let me know?
+
 >
-> I'm probably just confused or maybe the documentation is outdated but I don't
-> see how I could specify "this device can only use DMA addresses from
-> 0x00100000...0x3ff00000 but can map these via the iommu to any physical
-> address" using 'dma-ranges'.
-
-It sounds like this is a holdover from the original powerpc iommu, which also
-had a limited set of virtual addresses in the iommu.
-
-I would think it's sufficient to describe it in the iommu itself,
-since the limitation
-is more "addresses coming into the iommu must be this range" than "this device
-must use that address range for talking to the iommu".
-
-If the addresses are allocated by the iommu driver, and each iommu only has
-one DMA master attached to it, having a simple range property in the iommu
-node should do the trick here. If there might be multiple devices on the same
-iommu but with different address ranges (which I don't think is the case), then
-it could be part of the reference to the iommu.
-
-         Arnd
+>> +	}
+>> +	WARN_ON_ONCE(1);
+>> +	return -EINVAL;
+>> +}
+>> +EXPORT_SYMBOL_GPL(msi_irq_vector);
+>> +
+>> +/**
+>> + * dev_msi_hwirq - Get the device MSI hw IRQ number of a device vector
+>> + * @dev: device to operate on
+>> + * @nr: device-relative interrupt vector index (0-based).
+>> + *
+>> + * Return the dev_msi hw IRQ number of a device vector.
+>> + */
+>> +int dev_msi_hwirq(struct device *dev, unsigned int nr)
+>> +{
+>> +	struct msi_desc *entry;
+>> +	int i = 0;
+>> +
+>> +	for_each_msi_entry(entry, dev) {
+>> +		if (i == nr)
+>> +			return entry->device_msi.hwirq;
+>> +		i++;
+>> +	}
+>> +	WARN_ON_ONCE(1);
+>> +	return -EINVAL;
+>> +}
+>> +EXPORT_SYMBOL_GPL(dev_msi_hwirq);
+>> +
+>>   #endif /* CONFIG_GENERIC_MSI_IRQ_DOMAIN */
+> And what uses these helpers?]
+These helpers are to be used by a driver series(Intel's IDXD driver) 
+which is currently stuck due to VFIO refactoring.
+>
+> Thanks,
+>
+> 	M.
+>
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
