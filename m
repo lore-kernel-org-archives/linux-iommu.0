@@ -6,78 +6,78 @@ X-Spam-Status: No, score=-3.5 required=3.0 tests=BAYES_00,DKIM_INVALID,
 	DKIM_SIGNED,HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,SPF_HELO_NONE,
 	SPF_PASS,URIBL_RED autolearn=no autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7D574C433DB
-	for <iommu@archiver.kernel.org>; Sat, 27 Mar 2021 15:31:13 +0000 (UTC)
-Received: from smtp4.osuosl.org (smtp4.osuosl.org [140.211.166.137])
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 12C1EC433C1
+	for <iommu@archiver.kernel.org>; Sat, 27 Mar 2021 15:34:21 +0000 (UTC)
+Received: from smtp2.osuosl.org (smtp2.osuosl.org [140.211.166.133])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id DDA6D61991
-	for <iommu@archiver.kernel.org>; Sat, 27 Mar 2021 15:31:12 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org DDA6D61991
+	by mail.kernel.org (Postfix) with ESMTPS id 931666192B
+	for <iommu@archiver.kernel.org>; Sat, 27 Mar 2021 15:34:20 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 931666192B
 Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=lists.linux-foundation.org
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by smtp4.osuosl.org (Postfix) with ESMTP id 9EEB64063C;
-	Sat, 27 Mar 2021 15:31:12 +0000 (UTC)
+	by smtp2.osuosl.org (Postfix) with ESMTP id 5C4B34019B;
+	Sat, 27 Mar 2021 15:34:20 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from smtp4.osuosl.org ([127.0.0.1])
-	by localhost (smtp4.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id FmOV7dg-9Xvu; Sat, 27 Mar 2021 15:31:11 +0000 (UTC)
+Received: from smtp2.osuosl.org ([127.0.0.1])
+	by localhost (smtp2.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+	with ESMTP id BdCfpuUrHe7o; Sat, 27 Mar 2021 15:34:19 +0000 (UTC)
 Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [IPv6:2605:bc80:3010:104::8cd3:938])
-	by smtp4.osuosl.org (Postfix) with ESMTP id 3B1EB40628;
-	Sat, 27 Mar 2021 15:31:11 +0000 (UTC)
+	by smtp2.osuosl.org (Postfix) with ESMTP id DC2FE40139;
+	Sat, 27 Mar 2021 15:34:18 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 003F1C000B;
-	Sat, 27 Mar 2021 15:31:11 +0000 (UTC)
-Received: from smtp1.osuosl.org (smtp1.osuosl.org [IPv6:2605:bc80:3010::138])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 1FC78C000A
- for <iommu@lists.linux-foundation.org>; Sat, 27 Mar 2021 15:31:09 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id B549CC000B;
+	Sat, 27 Mar 2021 15:34:18 +0000 (UTC)
+Received: from smtp3.osuosl.org (smtp3.osuosl.org [IPv6:2605:bc80:3010::136])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id CF2F1C000A
+ for <iommu@lists.linux-foundation.org>; Sat, 27 Mar 2021 15:34:17 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by smtp1.osuosl.org (Postfix) with ESMTP id 0722784D91
- for <iommu@lists.linux-foundation.org>; Sat, 27 Mar 2021 15:31:09 +0000 (UTC)
+ by smtp3.osuosl.org (Postfix) with ESMTP id AC27A605FF
+ for <iommu@lists.linux-foundation.org>; Sat, 27 Mar 2021 15:34:17 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Authentication-Results: smtp1.osuosl.org (amavisd-new);
- dkim=pass (2048-bit key) header.d=svenpeter.dev header.b="UDIqOyXp";
+Authentication-Results: smtp3.osuosl.org (amavisd-new);
+ dkim=pass (2048-bit key) header.d=svenpeter.dev header.b="cejNuovT";
  dkim=pass (2048-bit key) header.d=messagingengine.com
- header.b="Qm1zA1/f"
-Received: from smtp1.osuosl.org ([127.0.0.1])
- by localhost (smtp1.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id 175zorJ0XEf2 for <iommu@lists.linux-foundation.org>;
- Sat, 27 Mar 2021 15:31:08 +0000 (UTC)
+ header.b="KSStNAPR"
+Received: from smtp3.osuosl.org ([127.0.0.1])
+ by localhost (smtp3.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+ with ESMTP id gg6EdmXN8Ijh for <iommu@lists.linux-foundation.org>;
+ Sat, 27 Mar 2021 15:34:15 +0000 (UTC)
 X-Greylist: from auto-whitelisted by SQLgrey-1.8.0
 Received: from new4-smtp.messagingengine.com (new4-smtp.messagingengine.com
  [66.111.4.230])
- by smtp1.osuosl.org (Postfix) with ESMTPS id EBE9784D8C
- for <iommu@lists.linux-foundation.org>; Sat, 27 Mar 2021 15:31:07 +0000 (UTC)
+ by smtp3.osuosl.org (Postfix) with ESMTPS id C0B83605BC
+ for <iommu@lists.linux-foundation.org>; Sat, 27 Mar 2021 15:34:14 +0000 (UTC)
 Received: from compute3.internal (compute3.nyi.internal [10.202.2.43])
- by mailnew.nyi.internal (Postfix) with ESMTP id DC64858043D;
- Sat, 27 Mar 2021 11:31:04 -0400 (EDT)
+ by mailnew.nyi.internal (Postfix) with ESMTP id 67F1258055A;
+ Sat, 27 Mar 2021 11:34:12 -0400 (EDT)
 Received: from imap21 ([10.202.2.71])
- by compute3.internal (MEProxy); Sat, 27 Mar 2021 11:31:04 -0400
+ by compute3.internal (MEProxy); Sat, 27 Mar 2021 11:34:12 -0400
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=svenpeter.dev;
  h=mime-version:message-id:in-reply-to:references:date:from:to
- :cc:subject:content-type; s=fm1; bh=x2m3pCDfFJux8o5j+dJWq42C3lpC
- 8BI/9Q73L1x239U=; b=UDIqOyXp4GWRmI2pzioG2zuL3bKG4h5t1oaqrMF+A9/U
- WD6G5vyt+h7rjWV/2rwtSLbM79Vc6xOB+j5gjjCrs5su1k2oL+8cfR/ZTns61zkY
- /ZgRT37gx/5oJkS578CTTr4NyZoB20uA0Pixc3tqyAEaRNWy+oFtztYFIzWZe+WV
- gZMIYrwa3xPb63OrvhNqjMn8AO4NetnpDRAIE/gx1ae8Y0VJbJUdRI0Wuf9v0MM0
- 7qby21vBt8sfsJ1HUeBUUYqYnp+ZpczL2CZrfHaifor5yodI6/JUM7iAW3YPo2tP
- mf5gEGpTAbMa9WFRQ/FgmLTJV7MNsF6Z5hrTanQmHg==
+ :cc:subject:content-type; s=fm1; bh=C7jUmzBlfmU9VFdYvmkyNor1Zqsj
+ 5fCr/9TW5SN6eG4=; b=cejNuovTAzdGTboZGSEobUwyj2OEBYn4LYOBN+UDnLmH
+ f55CfBtYftdhKeCuZ+MGt8o7smZ0EaSsAfy9iVYge7EJ2AbYWRo1xUnr41Bsj5WC
+ JfWy44cCOpuaKx9B37gWO3zrJa8jVeRXYWbzNs8k3Yqk+49lM5BhCWgHc6rnpnO7
+ 3wttehSaRphhIJ091wvtCkbu7dF8xxNryyGWIQzkq8y5wRdeQqep4R6dVRt33gCQ
+ w3HIl+vARuRnFz9mUMMKR66Kfo1No4Szo0sW2mPFQa0kAmh74tIPEi3kNSHbEUX8
+ MkGRf++HdPhPu6V7OjWwMP6vxHsLoyVuVe6ZUNfvdg==
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
  messagingengine.com; h=cc:content-type:date:from:in-reply-to
  :message-id:mime-version:references:subject:to:x-me-proxy
- :x-me-proxy:x-me-sender:x-me-sender:x-sasl-enc; s=fm2; bh=x2m3pC
- DfFJux8o5j+dJWq42C3lpC8BI/9Q73L1x239U=; b=Qm1zA1/fn0kTeXiwtso6EV
- aQkQ4AY2qawCC2OVtoUViubYu+WsOw1jQwFekQ8xdoF5uuCZdryL939THsvpPPzU
- 4rOR3Km4Mng0Iq+Ah9/Q10bk8RibabwJ0Sys1zcKzV6bdMnIEJ4TNDNqF+sOHcoI
- p6qNu/yWphfM6qoNqG/cKhLRIrlKOCvar1RjqtpS/tgLAfBgyaKS3DreVCoWKyjY
- eseRKUzeRP4tHuKd1o5v1/9OpTJU5Wq/9axhSQ9Lk9ZkMekn2FggipTDkym9eBmW
- 9RnEFvi5h71ATTWWJy6ftG2jq7msXnnLBGd+dIFfAuRtnxw65itdDxKZLyy7DTPw
+ :x-me-proxy:x-me-sender:x-me-sender:x-sasl-enc; s=fm2; bh=C7jUmz
+ BlfmU9VFdYvmkyNor1Zqsj5fCr/9TW5SN6eG4=; b=KSStNAPRTX4FY94hwirZH5
+ NtxQPIDTc2Tgq/dWZS3eABO/xJiFidm9zflpeUlb6i3Q6DAwnXeIYyVRqx1AcKLS
+ 1qz7rYzsaNhX+T//2nR9xIwnQM9K0NNPkBSEQIS+phXRVysFUK3lhqaps3z3lHrE
+ F+9rTCBH0TKNRbHB5Y6roDui4sL0VdPnYuaQBSIYPO83epf8r2kGsg9eOp7b8JZa
+ F0+XDu/dxfdZQvTO7HCp/wTbXjZEnAZhte+dAi6doLS88uyE8twBdGVHcyZBHGPg
+ dpQ/9Y21a3E7TS2fZ4SJqnuOW5Z0qzShqpqbIu+WsrMMqxluMExX9TqFQwdfhPHQ
  ==
-X-ME-Sender: <xms:tk9fYM-wL0B-ssgg9z0qy-E1Tdnazb_7gG3k5DVNgKb4RZx-zkRPjw>
- <xme:tk9fYEte8vVqBPVcM0n4C4-j8dFfoQM8k9IbizgghsKsB3WkA2VRNkkebaBU3To5V
- dRRyQRAHQ4pT1cLGdM>
-X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgeduledrudehgedgjeejucetufdoteggodetrfdotf
+X-ME-Sender: <xms:clBfYOFPFuws3Bogj8L6vut9IW4jx38qBwnkGazFCO1hfksMFHfvtw>
+ <xme:clBfYPVEppoHRsrWMflX_-brzskMBca5R-sXBE2kVM8R6P9Fz9EFP366wzJsdWzj8
+ apJiIt9R_HhOVossw4>
+X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgeduledrudehgedgjeekucetufdoteggodetrfdotf
  fvucfrrhhofhhilhgvmecuhfgrshhtofgrihhlpdfqfgfvpdfurfetoffkrfgpnffqhgen
  uceurghilhhouhhtmecufedttdenucesvcftvggtihhpihgvnhhtshculddquddttddmne
  cujfgurhepofgfggfkjghffffhvffutgesthdtredtreertdenucfhrhhomhepfdfuvhgv
@@ -85,41 +85,31 @@ X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgeduledrudehgedgjeejucetufdoteggod
  htthgvrhhnpefgieegieffuefhtedtjefgteejteefleefgfefgfdvvddtgffhffduhedv
  feekffenucevlhhushhtvghrufhiiigvpedtnecurfgrrhgrmhepmhgrihhlfhhrohhmpe
  hsvhgvnhesshhvvghnphgvthgvrhdruggvvh
-X-ME-Proxy: <xmx:tk9fYCDgbWfypTawmrTRQahtLUj_AZ4k2hlWzSjC8rnqIFJSybsz8A>
- <xmx:tk9fYMeZiGML7OoQyWmZn1p6pkXgSugaqg2rPMEPCIgShey6U_UDKA>
- <xmx:tk9fYBMICq18U5WBFnWHIfdjcICF8E5K0jFGYsglQu3be_vi8ChWXg>
- <xmx:uE9fYGmdn6EfIzaVGHaTEbtMBtQE7VGMkEnxt84jozNUQRflI1jnYKkSFWo>
+X-ME-Proxy: <xmx:clBfYILS-zl8gTS50EZ6Xnlf0E7o21PnqahQbGpOM0GfyYJ9tL70GA>
+ <xmx:clBfYIHZFADctNDkDLF7q5lbiLRj-gRWHR9icvvmgbK1GtMPbOoTxQ>
+ <xmx:clBfYEVGemGhCYso8sTXthkYfvkPDIe96iyd9aMHfUdaQo0fGTSzzw>
+ <xmx:c1BfYDNrk4QCK_Cx8E802W2WRJYlwHEiW_qIyGoCM2tjsK1kUrDCZIeZ8f4>
 Received: by mailuser.nyi.internal (Postfix, from userid 501)
- id 732A051C005E; Sat, 27 Mar 2021 11:31:02 -0400 (EDT)
+ id 6169E51C005E; Sat, 27 Mar 2021 11:34:10 -0400 (EDT)
 X-Mailer: MessagingEngine.com Webmail Interface
 User-Agent: Cyrus-JMAP/3.5.0-alpha0-273-g8500d2492d-fm-20210323.002-g8500d249
 Mime-Version: 1.0
-Message-Id: <c62dd4c1-2680-4eab-a2d7-fff390f3f11a@www.fastmail.com>
-In-Reply-To: <CAK8P3a1+BOmT39k=OqFU+LtgfW=SDCp5W69YW58sVGf66mSppw@mail.gmail.com>
+Message-Id: <26c9b3cc-a04f-444d-ada4-0c9bc99684e5@www.fastmail.com>
+In-Reply-To: <33b3ce35-c42f-331a-79a2-e38917d588ef@arm.com>
 References: <20210320151903.60759-1-sven@svenpeter.dev>
  <c1bcc0609e920bc6@bloch.sibelius.xs4all.nl>
  <20210323205346.GA1283560@robh.at.kernel.org>
  <43685c67-6d9c-4e72-b320-0462c2273bf0@www.fastmail.com>
- <CAK8P3a0fvnYLrG=cGiOQ6u8aZnriTeM0R=MW7FX=94mO13Rq0w@mail.gmail.com>
- <c1bcd90d344c2b68@bloch.sibelius.xs4all.nl>
- <9f06872d-f0ec-43c3-9b53-d144337100b3@www.fastmail.com>
- <CAK8P3a2b7k6JkxecW=yu-NF+fkNCxJ3Ja36nQ7LK8hsuO=4=sw@mail.gmail.com>
- <c1bcd9821a8f8c05@bloch.sibelius.xs4all.nl>
- <e03833b1-1368-c5c3-424b-59e34bef19f3@arm.com>
- <45faaadd-eda7-464f-96ff-7324f566669e@www.fastmail.com>
- <CAK8P3a1+BOmT39k=OqFU+LtgfW=SDCp5W69YW58sVGf66mSppw@mail.gmail.com>
-Date: Sat, 27 Mar 2021 16:30:41 +0100
-To: "Arnd Bergmann" <arnd@kernel.org>
+ <33b3ce35-c42f-331a-79a2-e38917d588ef@arm.com>
+Date: Sat, 27 Mar 2021 16:33:29 +0100
+To: "Robin Murphy" <robin.murphy@arm.com>, "Rob Herring" <robh@kernel.org>,
+ "Mark Kettenis" <mark.kettenis@xs4all.nl>
 Subject: Re: [PATCH 0/3] Apple M1 DART IOMMU driver
-Cc: Rob Herring <robh@kernel.org>, DTML <devicetree@vger.kernel.org>,
- Will Deacon <will@kernel.org>, Hector Martin <marcan@marcan.st>,
- Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
- "open list:IOMMU DRIVERS" <iommu@lists.linux-foundation.org>,
- Marc Zyngier <maz@kernel.org>,
- Mohamed Mediouni <mohamed.mediouni@caramail.com>,
- Stan Skowronek <stan@corellium.com>, Robin Murphy <robin.murphy@arm.com>,
- Linux ARM <linux-arm-kernel@lists.infradead.org>,
- Mark Kettenis <mark.kettenis@xs4all.nl>
+Cc: Arnd Bergmann <arnd@kernel.org>, devicetree@vger.kernel.org,
+ Marc Zyngier <maz@kernel.org>, Hector Martin <marcan@marcan.st>,
+ linux-kernel@vger.kernel.org, iommu@lists.linux-foundation.org,
+ mohamed.mediouni@caramail.com, Will Deacon <will@kernel.org>,
+ linux-arm-kernel@lists.infradead.org, stan@corellium.com
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -139,58 +129,52 @@ Content-Transfer-Encoding: 7bit
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
+Hi Robin,
 
 
-On Fri, Mar 26, 2021, at 20:59, Arnd Bergmann wrote:
-> On Fri, Mar 26, 2021 at 6:51 PM Sven Peter <sven@svenpeter.dev> wrote:
-> >   dart-sio: 0021c000 fbde4000 (at least their Secure Enclave/TPM co-processor)
+On Thu, Mar 25, 2021, at 12:50, Robin Murphy wrote:
+> On 2021-03-25 07:53, Sven Peter wrote:
+> > The iommu binding documentation [1] mentions that
+> > 
+> >      The device tree node of the IOMMU device's parent bus must contain a valid
+> >      "dma-ranges" property that describes how the physical address space of the
+> >      IOMMU maps to memory. An empty "dma-ranges" property means that there is a
+> >      1:1 mapping from IOMMU to memory.
+> > 
+> > which, if I understand this correctly, means that the 'dma-ranges' for the
+> > parent bus of the iommu should be empty since the DART hardware can see the
+> > full physical address space with a 1:1 mapping.
+> > 
+> > 
+> > The documentation also mentions that
+> > 
+> >       When an "iommus" property is specified in a device tree node, the IOMMU
+> >       will be used for address translation. If a "dma-ranges" property exists
+> >       in the device's parent node it will be ignored.
+> > 
+> > which means that specifying a 'dma-ranges' in the parent bus of any devices
+> > that use the iommu will just be ignored.
 > 
-> Same here:
->     dart-sio {
->        vm-base = <0x0>;
->        vm-size = <0xfc000000>;
->        pio-vm-base = <0xfd000000>;
->       pio-vm-size = <0x2000000>;
->       pio-granularity = <0x1000000>;
->    }
+> I think that's just wrong and wants updating (or at least clarifying). 
+> The high-level view now is that we use "dma-ranges" to describe 
+> limitations imposed by a bridge or interconnect segment, and that can 
+> certainly happen upstream of an IOMMU. As it happens, I've just recently 
+> sent a patch for precisely that case[1].
 > 
-> There are clearly two distinct ranges that split up the 4GB space again,
-> with a small hole of 16MB (==pio-granularity) at the end of each range.
-> 
-> The "pio" name might indicate that this is a range of addresses that
-> can be programmed to point at I/O registers in another device, rather
-> than pointing to RAM.
-> 
->            Arnd
->
+> I guess what it might have been trying to say is that "dma-ranges" 
+> *does* become irrelevant in terms of constraining what physical memory 
+> is usable for DMA, but that shouldn't imply that its meaning doesn't 
+> just shift to a different purpose.
 
-Very interesting observation!
-
-Mark and I have discussed this a little bit further on IRC. Mark also successfully
-used the PCIe DARTs with a DMA window outside of the one specified by vm-base/vm-size
-in the ADT.
-
-I believe that the (pio-)vm-base/size properties merely specify the ranges their
-allocator uses and do not describe actual hardware limitations. Mark also suggested
-that they might reserve memory at the beginning to find bugs similar to how one
-might not allow to map memory at 0x0.
-
-I have also done a few more experiments and figured out that if I put the IOMMU
-into bypass mode (which doesn't seem to work for all IOMMUs/master combinations
-which is why I'll leave it out of this series for now until I figure out more
-details) I *can* use the full address space. I think the limitation
-is therefore imposed by the translation hardware inside the IOMMU and not by
-the bus/the interconnect.
-
-If that's correct I think the right place to enforce this is to just limit
-the aperture inside the DART driver to a 32bit address space whenever address
-translation is enabled.
+Should I add a patch to clarify this paragraph for v2 or submit a separate
+one-off patch? I'm not entirely sure about the process here but I could add
+a Suggested-by: to the commit if that's fine with you.
 
 
-Thanks,
+
+Best,
 
 Sven
-
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
