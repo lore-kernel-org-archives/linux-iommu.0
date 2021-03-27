@@ -2,92 +2,64 @@ Return-Path: <SRS0=Y/a2=IZ=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-0.5 required=3.0 tests=BAYES_00,DKIM_ADSP_CUSTOM_MED,
-	DKIM_INVALID,DKIM_SIGNED,FREEMAIL_FORGED_FROMDOMAIN,FREEMAIL_FROM,
-	HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS
-	autolearn=no autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-5.3 required=3.0 tests=BAYES_00,
+	HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,NICE_REPLY_A,SPF_HELO_NONE,
+	SPF_PASS,USER_AGENT_SANE_1 autolearn=no autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E402EC433DB
-	for <iommu@archiver.kernel.org>; Sat, 27 Mar 2021 04:36:55 +0000 (UTC)
-Received: from smtp3.osuosl.org (smtp3.osuosl.org [140.211.166.136])
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 12227C433DB
+	for <iommu@archiver.kernel.org>; Sat, 27 Mar 2021 05:37:37 +0000 (UTC)
+Received: from smtp2.osuosl.org (smtp2.osuosl.org [140.211.166.133])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 258DC61993
-	for <iommu@archiver.kernel.org>; Sat, 27 Mar 2021 04:36:55 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 258DC61993
-Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=gmail.com
+	by mail.kernel.org (Postfix) with ESMTPS id 88FD461A0D
+	for <iommu@archiver.kernel.org>; Sat, 27 Mar 2021 05:37:36 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 88FD461A0D
+Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=linux.intel.com
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by smtp3.osuosl.org (Postfix) with ESMTP id C318D6060E;
-	Sat, 27 Mar 2021 04:36:54 +0000 (UTC)
+	by smtp2.osuosl.org (Postfix) with ESMTP id 4114140296;
+	Sat, 27 Mar 2021 05:37:36 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from smtp3.osuosl.org ([127.0.0.1])
-	by localhost (smtp3.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id QPCCSRdDTnk9; Sat, 27 Mar 2021 04:36:53 +0000 (UTC)
+Received: from smtp2.osuosl.org ([127.0.0.1])
+	by localhost (smtp2.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+	with ESMTP id bxgNV9ppTOaU; Sat, 27 Mar 2021 05:37:35 +0000 (UTC)
 Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by smtp3.osuosl.org (Postfix) with ESMTP id 9441E6058A;
-	Sat, 27 Mar 2021 04:36:53 +0000 (UTC)
+	by smtp2.osuosl.org (Postfix) with ESMTP id 25A654028B;
+	Sat, 27 Mar 2021 05:37:35 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 5C159C000B;
-	Sat, 27 Mar 2021 04:36:53 +0000 (UTC)
-Received: from smtp4.osuosl.org (smtp4.osuosl.org [IPv6:2605:bc80:3010::137])
- by lists.linuxfoundation.org (Postfix) with ESMTP id B6875C000A
- for <iommu@lists.linux-foundation.org>; Sat, 27 Mar 2021 04:36:51 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id E3FFDC000C;
+	Sat, 27 Mar 2021 05:37:34 +0000 (UTC)
+Received: from smtp2.osuosl.org (smtp2.osuosl.org [IPv6:2605:bc80:3010::133])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 59D9BC000A
+ for <iommu@lists.linux-foundation.org>; Sat, 27 Mar 2021 05:37:33 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by smtp4.osuosl.org (Postfix) with ESMTP id 95FBA418BF
- for <iommu@lists.linux-foundation.org>; Sat, 27 Mar 2021 04:36:51 +0000 (UTC)
+ by smtp2.osuosl.org (Postfix) with ESMTP id 4EEC74028F
+ for <iommu@lists.linux-foundation.org>; Sat, 27 Mar 2021 05:37:33 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Authentication-Results: smtp4.osuosl.org (amavisd-new);
- dkim=pass (2048-bit key) header.d=gmail.com
-Received: from smtp4.osuosl.org ([127.0.0.1])
- by localhost (smtp4.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id 0CowJB7vjwEV for <iommu@lists.linux-foundation.org>;
- Sat, 27 Mar 2021 04:36:50 +0000 (UTC)
-X-Greylist: whitelisted by SQLgrey-1.8.0
-Received: from mail-pj1-x1031.google.com (mail-pj1-x1031.google.com
- [IPv6:2607:f8b0:4864:20::1031])
- by smtp4.osuosl.org (Postfix) with ESMTPS id 8D717418B8
- for <iommu@lists.linux-foundation.org>; Sat, 27 Mar 2021 04:36:50 +0000 (UTC)
-Received: by mail-pj1-x1031.google.com with SMTP id w8so3498515pjf.4
- for <iommu@lists.linux-foundation.org>; Fri, 26 Mar 2021 21:36:50 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=gmail.com; s=20161025;
- h=from:message-id:mime-version:subject:date:in-reply-to:cc:to
- :references; bh=mkD8zOj3vYUxpklE5crr2Nc4MGr1kO5p6EdWYvS18hQ=;
- b=ncTg2Hsdw0l7VdTT1O9MouzHlSNItIIqMwfOeFwd0xpnARcBugYq5oCBKD1bbXZnt2
- dDMrHvS/oQs0sLTZrOspI+Xy2Ga3C7E/9XIrMJI4zTrX9jta+H1PKxLmLVenaK3HSms1
- I9OTnRm92lNMIi0SlQYK36SPKqexTwfuCkUBpBQU6oZjmY43IOOymAlYqM2UcOrOhNTD
- +uvcMuP4kONNxhM3zVL7oSAJU1I56j33TActSFOeZgrepZMfVL1EK9NcdjlIcRIN0OIY
- eLJapXUTi5+b0FwMgG9uf4+g7Bq0fiLBp64b4wWjCqNwvqecpHkL9P89SsBqW4trv9bZ
- qLsg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
- d=1e100.net; s=20161025;
- h=x-gm-message-state:from:message-id:mime-version:subject:date
- :in-reply-to:cc:to:references;
- bh=mkD8zOj3vYUxpklE5crr2Nc4MGr1kO5p6EdWYvS18hQ=;
- b=ZzxzuwPPRz0qJMIZ4ENFGmRcjoMCJenm8RxJeDpzvtYvvreJIREGK/CYSQ2uBp6pwz
- bx+UqKXVQI3TFnYWwM+2W7eDyTgWAujdkOHiMbd21hAn8MOhpX00AadFeWE7loZPHvTE
- Txj6Mamh7FP3BXQhAgWLfK9nAX8nCJXGuxrLfj3LE2zVdBXg7oyJBWP+L9q8qTM0Yjy1
- wdFlMrgcghgv7PRRaN0bBf2KnI3C83HZHo0y6hgp4K44Gj/6m+ic6qwVyv0lS2QXikj+
- Pddp7aCxul4kNnq0Bjp/gAY3LQzlvVwpEl3wwksj+KCaUYKEf50Mc1iR7vrNC6K5xcT6
- oRHQ==
-X-Gm-Message-State: AOAM531pVR9T06SWgGCyhJxpOzxIPryhHraRiF4nhAljDfg7sCA9m4Gm
- bWqZxScc0oZHtyMJVBLyyyc=
-X-Google-Smtp-Source: ABdhPJztdRRCfYBCQaJM3p9Go8WBNZPrCGTEYryZrJpFQOrm8DnyUGICJ4lrSxBhHjDP4MFc6D8+Kw==
-X-Received: by 2002:a17:90a:a414:: with SMTP id
- y20mr16640992pjp.77.1616819809644; 
- Fri, 26 Mar 2021 21:36:49 -0700 (PDT)
-Received: from [192.168.88.245] (c-24-6-216-183.hsd1.ca.comcast.net.
- [24.6.216.183])
- by smtp.gmail.com with ESMTPSA id p25sm10875717pfe.100.2021.03.26.21.36.48
- (version=TLS1_2 cipher=ECDHE-ECDSA-AES128-GCM-SHA256 bits=128/128);
- Fri, 26 Mar 2021 21:36:48 -0700 (PDT)
-From: Nadav Amit <nadav.amit@gmail.com>
-Message-Id: <55A4B205-BC38-4F16-9EB9-54026C326E60@gmail.com>
-Mime-Version: 1.0 (Mac OS X Mail 14.0 \(3654.60.0.2.21\))
-Subject: =?utf-8?Q?Re=3A_A_problem_of_Intel_IOMMU_hardware_=EF=BC=9F?=
-Date: Fri, 26 Mar 2021 21:36:46 -0700
-In-Reply-To: <14fe0083-cbff-884c-34db-ce3227e026f5@linux.intel.com>
-To: Lu Baolu <baolu.lu@linux.intel.com>
+Received: from smtp2.osuosl.org ([127.0.0.1])
+ by localhost (smtp2.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+ with ESMTP id rz3ZQ9a2-408 for <iommu@lists.linux-foundation.org>;
+ Sat, 27 Mar 2021 05:37:30 +0000 (UTC)
+X-Greylist: domain auto-whitelisted by SQLgrey-1.8.0
+Received: from mga12.intel.com (mga12.intel.com [192.55.52.136])
+ by smtp2.osuosl.org (Postfix) with ESMTPS id 9135E4028B
+ for <iommu@lists.linux-foundation.org>; Sat, 27 Mar 2021 05:37:30 +0000 (UTC)
+IronPort-SDR: glHwIjR+0DrKxnvVD3of+M1Mxv7PKjMuY0OjpwKjcp+KNvdXUEFvXyXq9AHmKGwmOh2nfcXRgK
+ IMOVfz90jiCw==
+X-IronPort-AV: E=McAfee;i="6000,8403,9935"; a="170651593"
+X-IronPort-AV: E=Sophos;i="5.81,282,1610438400"; d="scan'208";a="170651593"
+Received: from fmsmga004.fm.intel.com ([10.253.24.48])
+ by fmsmga106.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384;
+ 26 Mar 2021 22:37:27 -0700
+IronPort-SDR: bgF6J/eTFtCsGnhomTqp8fKEOdrPLkhq+Gv4zxNugwHsoY99GhSq49Lz7y9Tvi3KwXbRYRNjDD
+ 9Z+7P4gvWVHA==
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.81,282,1610438400"; d="scan'208";a="437134133"
+Received: from allen-box.sh.intel.com (HELO [10.239.159.128])
+ ([10.239.159.128])
+ by fmsmga004.fm.intel.com with ESMTP; 26 Mar 2021 22:37:24 -0700
+Subject: =?UTF-8?Q?Re=3a_A_problem_of_Intel_IOMMU_hardware_=ef=bc=9f?=
+To: Nadav Amit <nadav.amit@gmail.com>
 References: <670baaf8-4ff8-4e84-4be3-030b95ab5a5e@huawei.com>
  <FB4E11A5-84D4-4DAF-889E-FAA1BCD2E66F@gmail.com>
  <6a218e7fe42d41489d02f0b4e3ad2756@huawei.com>
@@ -99,7 +71,15 @@ References: <670baaf8-4ff8-4e84-4be3-030b95ab5a5e@huawei.com>
  <e5b262c1ee14481ab68074be2a76b9d9@huawei.com>
  <55E334BA-C6D2-4892-9207-32654FBF4360@gmail.com>
  <14fe0083-cbff-884c-34db-ce3227e026f5@linux.intel.com>
-X-Mailer: Apple Mail (2.3654.60.0.2.21)
+ <55A4B205-BC38-4F16-9EB9-54026C326E60@gmail.com>
+From: Lu Baolu <baolu.lu@linux.intel.com>
+Message-ID: <a49ec650-5dae-0045-1ea3-1978009b3b1f@linux.intel.com>
+Date: Sat, 27 Mar 2021 13:27:59 +0800
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
+ Thunderbird/68.10.0
+MIME-Version: 1.0
+In-Reply-To: <55A4B205-BC38-4F16-9EB9-54026C326E60@gmail.com>
+Content-Language: en-US
 Cc: chenjiashang <chenjiashang@huawei.com>, "Tian,
  Kevin" <kevin.tian@intel.com>,
  "alex.williamson@redhat.com" <alex.williamson@redhat.com>,
@@ -120,152 +100,96 @@ List-Post: <mailto:iommu@lists.linux-foundation.org>
 List-Help: <mailto:iommu-request@lists.linux-foundation.org?subject=help>
 List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
  <mailto:iommu-request@lists.linux-foundation.org?subject=subscribe>
-Content-Type: multipart/mixed; boundary="===============0827179654087546388=="
+Content-Transfer-Encoding: base64
+Content-Type: text/plain; charset="utf-8"; Format="flowed"
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-
---===============0827179654087546388==
-Content-Type: multipart/signed;
-	boundary="Apple-Mail=_35D28607-8F18-4860-BA01-DF07CD351738";
-	protocol="application/pgp-signature";
-	micalg=pgp-sha256
-
-
---Apple-Mail=_35D28607-8F18-4860-BA01-DF07CD351738
-Content-Transfer-Encoding: quoted-printable
-Content-Type: text/plain;
-	charset=utf-8
-
-
-
-> On Mar 26, 2021, at 7:31 PM, Lu Baolu <baolu.lu@linux.intel.com> =
-wrote:
->=20
-> Hi Nadav,
->=20
-> On 3/19/21 12:46 AM, Nadav Amit wrote:
->> So here is my guess:
->> Intel probably used as a basis for the IOTLB an implementation of
->> some other (regular) TLB design.
->> Intel SDM says regarding TLBs (4.10.4.2 =E2=80=9CRecommended =
-Invalidation=E2=80=9D):
->> "Software wishing to prevent this uncertainty should not write to
->> a paging-structure entry in a way that would change, for any linear
->> address, both the page size and either the page frame, access rights,
->> or other attributes.=E2=80=9D
->> Now the aforementioned uncertainty is a bit different (multiple
->> *valid*  translations of a single address). Yet, perhaps this is
->> yet another thing that might happen.
->> =46rom a brief look on the handling of MMU (not IOMMU) hugepages
->> in Linux, indeed the PMD is first cleared and flushed before a
->> new valid PMD is set. This is possible for MMUs since they
->> allow the software to handle spurious page-faults gracefully.
->> This is not the case for the IOMMU though (without PRI).
->> Not sure this explains everything though. If that is the problem,
->> then during a mapping that changes page-sizes, a TLB flush is
->> needed, similarly to the one Longpeng did manually.
->=20
-> I have been working with Longpeng on this issue these days. It turned
-> out that your guess is right. The PMD is first cleared but not flushed
-> before a new valid one is set. The previous entry might be cached in =
-the
-> paging structure caches hence leads to disaster.
->=20
-> In __domain_mapping():
->=20
-> 2352                                 /*
-> 2353                                  * Ensure that old small page =
-tables are
-> 2354                                  * removed to make room for =
-superpage(s).
-> 2355                                  * We're adding new large pages, =
-so make sure
-> 2356                                  * we don't remove their parent =
-tables.
-> 2357                                  */
-> 2358                                 dma_pte_free_pagetable(domain, =
-iov_pfn, end_pfn,
-> 2359 largepage_lvl + 1);
->=20
-> I guess adding a cache flush operation after PMD switching should =
-solve
-> the problem.
->=20
-> I am still not clear about this comment:
->=20
-> "
-> This is possible for MMUs since they allow the software to handle
-> spurious page-faults gracefully. This is not the case for the IOMMU
-> though (without PRI).
-> "
->=20
-> Can you please shed more light on this?
-
-I was looking at the code in more detail, and apparently my concern
-is incorrect.
-
-I was under the assumption that the IOMMU map/unmap can merge/split
-(specifically split) huge-pages. For instance, if you map 2MB and
-then unmap 4KB out of the 2MB, then you would split the hugepage
-and keep the rest of the mappings alive. This is the way MMU is
-usually managed. To my defense, I also saw such partial unmappings
-in Longpeng=E2=80=99s first scenario.
-
-If this was possible, then you would have a case in which out of 2MB
-(for instance), 4KB were unmapped, and you need to split the 2MB
-hugepage into 4KB pages. If you try to clear the PMD, flush, and then
-set the PMD to point to table with live 4KB PTES, you can have
-an interim state in which the PMD is not present. DMAs that arrive
-at this stage might fault, and without PRI (and device support)
-you do not have a way of restarting the DMA after the hugepage split
-is completed.
-
-Anyhow, this concern is apparently not relevant. I guess I was too
-naive to assume the IOMMU management is similar to the MMU. I now
-see that there is a comment in intel_iommu_unmap() saying:
-
-        /* Cope with horrid API which requires us to unmap more than the
-           size argument if it happens to be a large-page mapping. */
-
-Regards,
-Nadav
-
---Apple-Mail=_35D28607-8F18-4860-BA01-DF07CD351738
-Content-Transfer-Encoding: 7bit
-Content-Disposition: attachment;
-	filename=signature.asc
-Content-Type: application/pgp-signature;
-	name=signature.asc
-Content-Description: Message signed with OpenPGP
-
------BEGIN PGP SIGNATURE-----
-
-iQIzBAEBCAAdFiEESJL3osl5Ymx/w9I1HaAqSabaD1oFAmBetl8ACgkQHaAqSaba
-D1q61Q/8CfEICk6tmSsbLNtp21OH6a/otwOCJzIOCoEAqSaRv5FlXXe+FedJWQqX
-mg4KN1XuohWP7jxqXCBWTKxRF+TgEHoT3wfUp7JqmJxu040UQd9EUkcCwdzcBB+1
-B7I3lf7AYPLYeIAy7iC+BMiiIrOASBThl4qzgBnNgigrYrOgVlnzF7YBs4lUTPKs
-WZUqrrhLmzV/l58TuYsbtAtH/oQMdpaMKDAxCdagNMQbsAsZtz50B+vv1e+Olog7
-bbKhec9psqhjR8zPfspwqyH6QR1UPM81eo8sHBeCBqbzn4bCELdm2jvCLTVhvszz
-eo+z/InVgnji9PqObA5b8dFU6HFsld89nAb/ePQc49i3NcmZg50+j6tU9QaDi2Uk
-1IR3X8shJSdm6pLxXhE+POJ4Ynrph0gbhdDJJNcWgDEr2h6GUjkY58yGhrSA+z02
-JDWC5yaLYju75rnCnYvKcVzyGdKujvrWTVk201fILGJgQJGSqN8ixZKSouAjAPC9
-cMernmrugecbMWB0yGL86XNMY8wjIOvhLIKcjzIGOfuiTTqaxMtVuY8u9fpRLR8/
-00bqfwIkej9vBTDUF/zSy5WQeYrT+6OJXUgdxqaP1U1Qw+Fse50bsZjbxSWso512
-KuqyucJkBJ+p6yVoENmQzEy+VLjODiRjMG9lYz37TcbaJWJ97ys=
-=Vr9C
------END PGP SIGNATURE-----
-
---Apple-Mail=_35D28607-8F18-4860-BA01-DF07CD351738--
-
---===============0827179654087546388==
-Content-Type: text/plain; charset="us-ascii"
-MIME-Version: 1.0
-Content-Transfer-Encoding: 7bit
-Content-Disposition: inline
-
-_______________________________________________
-iommu mailing list
-iommu@lists.linux-foundation.org
-https://lists.linuxfoundation.org/mailman/listinfo/iommu
---===============0827179654087546388==--
+SGkgTmFkYXYsCgpPbiAzLzI3LzIxIDEyOjM2IFBNLCBOYWRhdiBBbWl0IHdyb3RlOgo+IAo+IAo+
+PiBPbiBNYXIgMjYsIDIwMjEsIGF0IDc6MzEgUE0sIEx1IEJhb2x1IDxiYW9sdS5sdUBsaW51eC5p
+bnRlbC5jb20+IHdyb3RlOgo+Pgo+PiBIaSBOYWRhdiwKPj4KPj4gT24gMy8xOS8yMSAxMjo0NiBB
+TSwgTmFkYXYgQW1pdCB3cm90ZToKPj4+IFNvIGhlcmUgaXMgbXkgZ3Vlc3M6Cj4+PiBJbnRlbCBw
+cm9iYWJseSB1c2VkIGFzIGEgYmFzaXMgZm9yIHRoZSBJT1RMQiBhbiBpbXBsZW1lbnRhdGlvbiBv
+Zgo+Pj4gc29tZSBvdGhlciAocmVndWxhcikgVExCIGRlc2lnbi4KPj4+IEludGVsIFNETSBzYXlz
+IHJlZ2FyZGluZyBUTEJzICg0LjEwLjQuMiDigJxSZWNvbW1lbmRlZCBJbnZhbGlkYXRpb27igJ0p
+Ogo+Pj4gIlNvZnR3YXJlIHdpc2hpbmcgdG8gcHJldmVudCB0aGlzIHVuY2VydGFpbnR5IHNob3Vs
+ZCBub3Qgd3JpdGUgdG8KPj4+IGEgcGFnaW5nLXN0cnVjdHVyZSBlbnRyeSBpbiBhIHdheSB0aGF0
+IHdvdWxkIGNoYW5nZSwgZm9yIGFueSBsaW5lYXIKPj4+IGFkZHJlc3MsIGJvdGggdGhlIHBhZ2Ug
+c2l6ZSBhbmQgZWl0aGVyIHRoZSBwYWdlIGZyYW1lLCBhY2Nlc3MgcmlnaHRzLAo+Pj4gb3Igb3Ro
+ZXIgYXR0cmlidXRlcy7igJ0KPj4+IE5vdyB0aGUgYWZvcmVtZW50aW9uZWQgdW5jZXJ0YWludHkg
+aXMgYSBiaXQgZGlmZmVyZW50IChtdWx0aXBsZQo+Pj4gKnZhbGlkKiAgdHJhbnNsYXRpb25zIG9m
+IGEgc2luZ2xlIGFkZHJlc3MpLiBZZXQsIHBlcmhhcHMgdGhpcyBpcwo+Pj4geWV0IGFub3RoZXIg
+dGhpbmcgdGhhdCBtaWdodCBoYXBwZW4uCj4+PiAgRnJvbSBhIGJyaWVmIGxvb2sgb24gdGhlIGhh
+bmRsaW5nIG9mIE1NVSAobm90IElPTU1VKSBodWdlcGFnZXMKPj4+IGluIExpbnV4LCBpbmRlZWQg
+dGhlIFBNRCBpcyBmaXJzdCBjbGVhcmVkIGFuZCBmbHVzaGVkIGJlZm9yZSBhCj4+PiBuZXcgdmFs
+aWQgUE1EIGlzIHNldC4gVGhpcyBpcyBwb3NzaWJsZSBmb3IgTU1VcyBzaW5jZSB0aGV5Cj4+PiBh
+bGxvdyB0aGUgc29mdHdhcmUgdG8gaGFuZGxlIHNwdXJpb3VzIHBhZ2UtZmF1bHRzIGdyYWNlZnVs
+bHkuCj4+PiBUaGlzIGlzIG5vdCB0aGUgY2FzZSBmb3IgdGhlIElPTU1VIHRob3VnaCAod2l0aG91
+dCBQUkkpLgo+Pj4gTm90IHN1cmUgdGhpcyBleHBsYWlucyBldmVyeXRoaW5nIHRob3VnaC4gSWYg
+dGhhdCBpcyB0aGUgcHJvYmxlbSwKPj4+IHRoZW4gZHVyaW5nIGEgbWFwcGluZyB0aGF0IGNoYW5n
+ZXMgcGFnZS1zaXplcywgYSBUTEIgZmx1c2ggaXMKPj4+IG5lZWRlZCwgc2ltaWxhcmx5IHRvIHRo
+ZSBvbmUgTG9uZ3BlbmcgZGlkIG1hbnVhbGx5Lgo+Pgo+PiBJIGhhdmUgYmVlbiB3b3JraW5nIHdp
+dGggTG9uZ3Blbmcgb24gdGhpcyBpc3N1ZSB0aGVzZSBkYXlzLiBJdCB0dXJuZWQKPj4gb3V0IHRo
+YXQgeW91ciBndWVzcyBpcyByaWdodC4gVGhlIFBNRCBpcyBmaXJzdCBjbGVhcmVkIGJ1dCBub3Qg
+Zmx1c2hlZAo+PiBiZWZvcmUgYSBuZXcgdmFsaWQgb25lIGlzIHNldC4gVGhlIHByZXZpb3VzIGVu
+dHJ5IG1pZ2h0IGJlIGNhY2hlZCBpbiB0aGUKPj4gcGFnaW5nIHN0cnVjdHVyZSBjYWNoZXMgaGVu
+Y2UgbGVhZHMgdG8gZGlzYXN0ZXIuCj4+Cj4+IEluIF9fZG9tYWluX21hcHBpbmcoKToKPj4KPj4g
+MjM1MiAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgIC8qCj4+IDIzNTMgICAgICAgICAg
+ICAgICAgICAgICAgICAgICAgICAgICAgKiBFbnN1cmUgdGhhdCBvbGQgc21hbGwgcGFnZSB0YWJs
+ZXMgYXJlCj4+IDIzNTQgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgKiByZW1vdmVk
+IHRvIG1ha2Ugcm9vbSBmb3Igc3VwZXJwYWdlKHMpLgo+PiAyMzU1ICAgICAgICAgICAgICAgICAg
+ICAgICAgICAgICAgICAgICogV2UncmUgYWRkaW5nIG5ldyBsYXJnZSBwYWdlcywgc28gbWFrZSBz
+dXJlCj4+IDIzNTYgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgKiB3ZSBkb24ndCBy
+ZW1vdmUgdGhlaXIgcGFyZW50IHRhYmxlcy4KPj4gMjM1NyAgICAgICAgICAgICAgICAgICAgICAg
+ICAgICAgICAgICAqLwo+PiAyMzU4ICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgZG1h
+X3B0ZV9mcmVlX3BhZ2V0YWJsZShkb21haW4sIGlvdl9wZm4sIGVuZF9wZm4sCj4+IDIzNTkgbGFy
+Z2VwYWdlX2x2bCArIDEpOwo+Pgo+PiBJIGd1ZXNzIGFkZGluZyBhIGNhY2hlIGZsdXNoIG9wZXJh
+dGlvbiBhZnRlciBQTUQgc3dpdGNoaW5nIHNob3VsZCBzb2x2ZQo+PiB0aGUgcHJvYmxlbS4KPj4K
+Pj4gSSBhbSBzdGlsbCBub3QgY2xlYXIgYWJvdXQgdGhpcyBjb21tZW50Ogo+Pgo+PiAiCj4+IFRo
+aXMgaXMgcG9zc2libGUgZm9yIE1NVXMgc2luY2UgdGhleSBhbGxvdyB0aGUgc29mdHdhcmUgdG8g
+aGFuZGxlCj4+IHNwdXJpb3VzIHBhZ2UtZmF1bHRzIGdyYWNlZnVsbHkuIFRoaXMgaXMgbm90IHRo
+ZSBjYXNlIGZvciB0aGUgSU9NTVUKPj4gdGhvdWdoICh3aXRob3V0IFBSSSkuCj4+ICIKPj4KPj4g
+Q2FuIHlvdSBwbGVhc2Ugc2hlZCBtb3JlIGxpZ2h0IG9uIHRoaXM/Cj4gCj4gSSB3YXMgbG9va2lu
+ZyBhdCB0aGUgY29kZSBpbiBtb3JlIGRldGFpbCwgYW5kIGFwcGFyZW50bHkgbXkgY29uY2Vybgo+
+IGlzIGluY29ycmVjdC4KPiAKPiBJIHdhcyB1bmRlciB0aGUgYXNzdW1wdGlvbiB0aGF0IHRoZSBJ
+T01NVSBtYXAvdW5tYXAgY2FuIG1lcmdlL3NwbGl0Cj4gKHNwZWNpZmljYWxseSBzcGxpdCkgaHVn
+ZS1wYWdlcy4gRm9yIGluc3RhbmNlLCBpZiB5b3UgbWFwIDJNQiBhbmQKPiB0aGVuIHVubWFwIDRL
+QiBvdXQgb2YgdGhlIDJNQiwgdGhlbiB5b3Ugd291bGQgc3BsaXQgdGhlIGh1Z2VwYWdlCj4gYW5k
+IGtlZXAgdGhlIHJlc3Qgb2YgdGhlIG1hcHBpbmdzIGFsaXZlLiBUaGlzIGlzIHRoZSB3YXkgTU1V
+IGlzCj4gdXN1YWxseSBtYW5hZ2VkLiBUbyBteSBkZWZlbnNlLCBJIGFsc28gc2F3IHN1Y2ggcGFy
+dGlhbCB1bm1hcHBpbmdzCj4gaW4gTG9uZ3BlbmfigJlzIGZpcnN0IHNjZW5hcmlvLgo+IAo+IElm
+IHRoaXMgd2FzIHBvc3NpYmxlLCB0aGVuIHlvdSB3b3VsZCBoYXZlIGEgY2FzZSBpbiB3aGljaCBv
+dXQgb2YgMk1CCj4gKGZvciBpbnN0YW5jZSksIDRLQiB3ZXJlIHVubWFwcGVkLCBhbmQgeW91IG5l
+ZWQgdG8gc3BsaXQgdGhlIDJNQgo+IGh1Z2VwYWdlIGludG8gNEtCIHBhZ2VzLiBJZiB5b3UgdHJ5
+IHRvIGNsZWFyIHRoZSBQTUQsIGZsdXNoLCBhbmQgdGhlbgo+IHNldCB0aGUgUE1EIHRvIHBvaW50
+IHRvIHRhYmxlIHdpdGggbGl2ZSA0S0IgUFRFUywgeW91IGNhbiBoYXZlCj4gYW4gaW50ZXJpbSBz
+dGF0ZSBpbiB3aGljaCB0aGUgUE1EIGlzIG5vdCBwcmVzZW50LiBETUFzIHRoYXQgYXJyaXZlCj4g
+YXQgdGhpcyBzdGFnZSBtaWdodCBmYXVsdCwgYW5kIHdpdGhvdXQgUFJJIChhbmQgZGV2aWNlIHN1
+cHBvcnQpCj4geW91IGRvIG5vdCBoYXZlIGEgd2F5IG9mIHJlc3RhcnRpbmcgdGhlIERNQSBhZnRl
+ciB0aGUgaHVnZXBhZ2Ugc3BsaXQKPiBpcyBjb21wbGV0ZWQuCgpHZXQgeW91IGFuZCB0aGFua3Mg
+YSBsb3QgZm9yIHNoYXJpbmcuCgpGb3IgY3VycmVudCBJT01NVSB1c2FnZSwgSSBjYW4ndCBzZWUg
+YW55IGNhc2UgdG8gc3BsaXQgYSBodWdlIHBhZ2UgaW50bwo0S0IgcGFnZXMsIGJ1dCBpbiB0aGUg
+bmVhciBmdXR1cmUsIHdlIGRvIGhhdmUgYSBuZWVkIG9mIHNwbGl0dGluZyBodWdlCnBhZ2VzLiBG
+b3IgZXhhbXBsZSwgd2hlbiB3ZSB3YW50IHRvIHVzZSB0aGUgQS9EIGJpdCB0byB0cmFjayB0aGUg
+RE1BCmRpcnR5IHBhZ2VzIGR1cmluZyBWTSBtaWdyYXRpb24sIGl0J3MgYW4gb3B0aW1pemF0aW9u
+IGlmIHdlIGNvdWxkIHNwbGl0CmEgaHVnZSBwYWdlIGludG8gNEsgb25lcy4gU28gZmFyLCB0aGUg
+c29sdXRpb24gSSBoYXZlIGNvbnNpZGVyZWQgaXM6CgoxKSBQcmVwYXJlIHRoZSBzcGxpdCBzdWJ0
+YWJsZXMgaW4gYWR2YW5jZTsKICAgIFtpdCdzIGlkZW50aWNhbCB0byB0aGUgZXhpc3Rpbmcgb25l
+IG9ubHkgdXNlIDRrIHBhZ2VzIGluc3RlYWQgb2YgaHVnZQogICAgIHBhZ2UuXQoyKSBTd2l0Y2gg
+dGhlIHN1cGVyIChodWdlKSBwYWdlJ3MgbGVhZiBlbnRyeTsKICAgIFthdCB0aGlzIHBvaW50LCBo
+YXJkd2FyZSBjb3VsZCB1c2UgYm90aCBzdWJ0YWJsZXMuIEkgYW0gbm90IHN1cmUKICAgICB3aGV0
+aGVyIHRoZSBoYXJkd2FyZSBhbGxvd3MgYSBkeW5hbWljIHN3aXRjaCBvZiBwYWdlIHRhYmxlIGVu
+dHJ5CiAgICAgZnJvbSBvbiB2YWxpZCBlbnRyeSB0byBhbm90aGVyIHZhbGlkIG9uZS5dCjMpIEZs
+dXNoIHRoZSBjYWNoZS4KICAgIFtoYXJkd2FyZSB3aWxsIHVzZSB0aGUgbmV3IHN1YnRhYmxlXQoK
+QXMgbG9uZyBhcyB3ZSBjYW4gbWFrZSBzdXJlIHRoYXQgdGhlIG9sZCBzdWJ0YWJsZSB3b24ndCBi
+ZSB1c2VkIGJ5CmhhcmR3YXJlLCB3ZSBjYW4gc2FmZWx5IHJlbGVhc2UgdGhlIG9sZCB0YWJsZS4K
+Cj4gCj4gQW55aG93LCB0aGlzIGNvbmNlcm4gaXMgYXBwYXJlbnRseSBub3QgcmVsZXZhbnQuIEkg
+Z3Vlc3MgSSB3YXMgdG9vCj4gbmFpdmUgdG8gYXNzdW1lIHRoZSBJT01NVSBtYW5hZ2VtZW50IGlz
+IHNpbWlsYXIgdG8gdGhlIE1NVS4gSSBub3cKPiBzZWUgdGhhdCB0aGVyZSBpcyBhIGNvbW1lbnQg
+aW4gaW50ZWxfaW9tbXVfdW5tYXAoKSBzYXlpbmc6Cj4gCj4gICAgICAgICAgLyogQ29wZSB3aXRo
+IGhvcnJpZCBBUEkgd2hpY2ggcmVxdWlyZXMgdXMgdG8gdW5tYXAgbW9yZSB0aGFuIHRoZQo+ICAg
+ICAgICAgICAgIHNpemUgYXJndW1lbnQgaWYgaXQgaGFwcGVucyB0byBiZSBhIGxhcmdlLXBhZ2Ug
+bWFwcGluZy4gKi8KPiAKPiBSZWdhcmRzLAo+IE5hZGF2Cj4gCgpCZXN0IHJlZ2FyZHMsCmJhb2x1
+Cl9fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fCmlvbW11IG1h
+aWxpbmcgbGlzdAppb21tdUBsaXN0cy5saW51eC1mb3VuZGF0aW9uLm9yZwpodHRwczovL2xpc3Rz
+LmxpbnV4Zm91bmRhdGlvbi5vcmcvbWFpbG1hbi9saXN0aW5mby9pb21tdQ==
