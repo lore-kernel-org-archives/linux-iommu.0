@@ -2,77 +2,96 @@ Return-Path: <SRS0=H7Zn=I4=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-15.3 required=3.0 tests=BAYES_00,
-	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_CR_TRAILER,INCLUDES_PATCH,
-	MAILING_LIST_MULTI,NICE_REPLY_A,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,
-	USER_AGENT_SANE_1 autolearn=unavailable autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-3.5 required=3.0 tests=BAYES_00,DKIM_INVALID,
+	DKIM_SIGNED,HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,SPF_HELO_NONE,
+	SPF_PASS,URIBL_BLOCKED autolearn=no autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 17697C433DB
-	for <iommu@archiver.kernel.org>; Tue, 30 Mar 2021 16:28:33 +0000 (UTC)
-Received: from smtp2.osuosl.org (smtp2.osuosl.org [140.211.166.133])
+	by smtp.lore.kernel.org (Postfix) with ESMTP id EC79FC433C1
+	for <iommu@archiver.kernel.org>; Tue, 30 Mar 2021 17:18:20 +0000 (UTC)
+Received: from smtp4.osuosl.org (smtp4.osuosl.org [140.211.166.137])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 6FC63619C8
-	for <iommu@archiver.kernel.org>; Tue, 30 Mar 2021 16:28:32 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 6FC63619C8
-Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=arm.com
+	by mail.kernel.org (Postfix) with ESMTPS id 70E02619CD
+	for <iommu@archiver.kernel.org>; Tue, 30 Mar 2021 17:18:20 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 70E02619CD
+Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=linaro.org
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by smtp2.osuosl.org (Postfix) with ESMTP id 07F21401D1;
-	Tue, 30 Mar 2021 16:28:32 +0000 (UTC)
+	by smtp4.osuosl.org (Postfix) with ESMTP id 3B82B404CA;
+	Tue, 30 Mar 2021 17:18:20 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from smtp2.osuosl.org ([127.0.0.1])
-	by localhost (smtp2.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id JRwjUIjiogpo; Tue, 30 Mar 2021 16:28:31 +0000 (UTC)
-Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [IPv6:2605:bc80:3010:104::8cd3:938])
-	by smtp2.osuosl.org (Postfix) with ESMTP id E7DDB401BE;
-	Tue, 30 Mar 2021 16:28:30 +0000 (UTC)
+Received: from smtp4.osuosl.org ([127.0.0.1])
+	by localhost (smtp4.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+	with ESMTP id qf3z5P_N8J5G; Tue, 30 Mar 2021 17:18:19 +0000 (UTC)
+Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
+	by smtp4.osuosl.org (Postfix) with ESMTP id E3926404C8;
+	Tue, 30 Mar 2021 17:18:18 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id B4153C000B;
-	Tue, 30 Mar 2021 16:28:30 +0000 (UTC)
-Received: from smtp3.osuosl.org (smtp3.osuosl.org [IPv6:2605:bc80:3010::136])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 27238C000A;
- Tue, 30 Mar 2021 16:28:29 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id B1704C000C;
+	Tue, 30 Mar 2021 17:18:18 +0000 (UTC)
+Received: from smtp4.osuosl.org (smtp4.osuosl.org [IPv6:2605:bc80:3010::137])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 54163C000A
+ for <iommu@lists.linux-foundation.org>; Tue, 30 Mar 2021 17:18:17 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by smtp3.osuosl.org (Postfix) with ESMTP id 12227606FD;
- Tue, 30 Mar 2021 16:28:29 +0000 (UTC)
+ by smtp4.osuosl.org (Postfix) with ESMTP id 407B1404C9
+ for <iommu@lists.linux-foundation.org>; Tue, 30 Mar 2021 17:18:17 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from smtp3.osuosl.org ([127.0.0.1])
- by localhost (smtp3.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id ReP8siV3L_vY; Tue, 30 Mar 2021 16:28:27 +0000 (UTC)
-X-Greylist: domain auto-whitelisted by SQLgrey-1.8.0
-X-Greylist: domain auto-whitelisted by SQLgrey-1.8.0
-Received: from foss.arm.com (foss.arm.com [217.140.110.172])
- by smtp3.osuosl.org (Postfix) with ESMTP id 9C22C600B9;
- Tue, 30 Mar 2021 16:28:27 +0000 (UTC)
-Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
- by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 79B92D6E;
- Tue, 30 Mar 2021 09:28:26 -0700 (PDT)
-Received: from [10.57.24.208] (unknown [10.57.24.208])
- by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id C45EC3F719;
- Tue, 30 Mar 2021 09:28:22 -0700 (PDT)
-Subject: Re: [PATCH 16/18] iommu: remove DOMAIN_ATTR_DMA_USE_FLUSH_QUEUE
-To: Will Deacon <will@kernel.org>
-References: <20210316153825.135976-1-hch@lst.de>
- <20210316153825.135976-17-hch@lst.de>
- <20210330131149.GP5908@willie-the-truck>
- <a6952aa7-4d7e-54f0-339e-e15f88596dcc@arm.com>
- <20210330135801.GA6187@willie-the-truck>
-From: Robin Murphy <robin.murphy@arm.com>
-Message-ID: <578d6aa5-4239-f5d7-2e9f-686b18e52bba@arm.com>
-Date: Tue, 30 Mar 2021 17:28:19 +0100
-User-Agent: Mozilla/5.0 (Windows NT 10.0; rv:78.0) Gecko/20100101
- Thunderbird/78.9.0
+Received: from smtp4.osuosl.org ([127.0.0.1])
+ by localhost (smtp4.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+ with ESMTP id rQakx1wZ2B6w for <iommu@lists.linux-foundation.org>;
+ Tue, 30 Mar 2021 17:18:16 +0000 (UTC)
+X-Greylist: whitelisted by SQLgrey-1.8.0
+Received: from mail-wm1-x329.google.com (mail-wm1-x329.google.com
+ [IPv6:2a00:1450:4864:20::329])
+ by smtp4.osuosl.org (Postfix) with ESMTPS id 3B9E3404C8
+ for <iommu@lists.linux-foundation.org>; Tue, 30 Mar 2021 17:18:16 +0000 (UTC)
+Received: by mail-wm1-x329.google.com with SMTP id
+ r10-20020a05600c35cab029010c946c95easo8810173wmq.4
+ for <iommu@lists.linux-foundation.org>; Tue, 30 Mar 2021 10:18:16 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linaro.org; s=google;
+ h=date:from:to:cc:subject:message-id:references:mime-version
+ :content-disposition:in-reply-to;
+ bh=wv5s2hFIUo2gKQ4gDxjTXneaufMswuUrX5PqppLDZlw=;
+ b=seDS3AbA2YxPNbqBPGSiqi1kOqb8GqtxtF3q5yGUPHMl1LYormxa50YHLOoSgwqCDW
+ 5d6MoW+Pws1fvmGJqeXGtRh+udchEEFs0PXDaL+xsUI3W2PRpkxMMPcg3sr1EHiDYOJQ
+ EA23RAX+U3yXZ65A3V6zan94Pho1p3fVlmwrVbF7LAQ9ua0EcVcxCTWE2Et65UYpX45O
+ Zd5wznq/kir0bQmALsIbGIcMeJbRm9e0tWOY/vSjITj429wVOiULFcgCRU8G/r16D96I
+ BjWkLOry9XIGmTIz4QIkexKAzhE7SrJloVxD7zET0HsPEGAw4JTdwMlyQpcZ0Jkkyr/z
+ SH4Q==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+ d=1e100.net; s=20161025;
+ h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+ :mime-version:content-disposition:in-reply-to;
+ bh=wv5s2hFIUo2gKQ4gDxjTXneaufMswuUrX5PqppLDZlw=;
+ b=rwOBlMtH/mFII9TS0fk+UTP2uNndPgOvrhtcuvH0exTr0aa1WNeS+AsQF0NtGvYPoB
+ kAPZ2edIiPNNdVpmGSiPTKnQ//pw7vb/KdN4KVtD/CrVzxSFsp/5/ObeswxdFRgbNtfC
+ 4P5PVv0Q5L75HQ3TZvrSjEzIY3Ifkq79u59KYz4JXGI9NFUB3yCay8J+WxSsFVcP3dle
+ LnTkymAr1jw8qTxYJYOxUUuTzlBZKkE7D4Y+k8f+TbBLhDWu6CyKxtN2TyttlIa1b6Nv
+ nLOEqD+inI/T2s1lZtuFpxIMM1Fn8d56xCKmKvwQ2kgs7nLiph6/28f52TJMDx5+oeSN
+ kBMQ==
+X-Gm-Message-State: AOAM530aATVmklddXuWHnHyyttUPE4w8HXansAETjsCsFhiaeGVnccEz
+ AGYJZhdoDWHvN6xBuGdWe+hMvQ==
+X-Google-Smtp-Source: ABdhPJxWMhf+gc+wpTtm59XgeUZsbWjnVM7+DjvkPDd2IW2QmwXRwSkIh4AEvc7E/VkGQxzV/6eMNw==
+X-Received: by 2002:a7b:c848:: with SMTP id c8mr5130672wml.97.1617124694446;
+ Tue, 30 Mar 2021 10:18:14 -0700 (PDT)
+Received: from myrica ([2001:1715:4e26:a7e0:116c:c27a:3e7f:5eaf])
+ by smtp.gmail.com with ESMTPSA id a6sm6542927wmm.0.2021.03.30.10.18.13
+ (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+ Tue, 30 Mar 2021 10:18:13 -0700 (PDT)
+Date: Tue, 30 Mar 2021 19:17:55 +0200
+From: Jean-Philippe Brucker <jean-philippe@linaro.org>
+To: joro@8bytes.org, will@kernel.org
+Subject: Re: [PATCH v13 00/10] iommu: I/O page faults for SMMUv3
+Message-ID: <YGNdQ863Mohizx7A@myrica>
+References: <20210302092644.2553014-1-jean-philippe@linaro.org>
 MIME-Version: 1.0
-In-Reply-To: <20210330135801.GA6187@willie-the-truck>
-Content-Language: en-GB
-Cc: freedreno@lists.freedesktop.org, kvm@vger.kernel.org,
- Michael Ellerman <mpe@ellerman.id.au>, linuxppc-dev@lists.ozlabs.org,
- dri-devel@lists.freedesktop.org, Li Yang <leoyang.li@nxp.com>,
- iommu@lists.linux-foundation.org, netdev@vger.kernel.org,
- linux-arm-msm@vger.kernel.org, virtualization@lists.linux-foundation.org,
- David Woodhouse <dwmw2@infradead.org>, Christoph Hellwig <hch@lst.de>,
- linux-arm-kernel@lists.infradead.org
+Content-Disposition: inline
+In-Reply-To: <20210302092644.2553014-1-jean-philippe@linaro.org>
+Cc: vivek.gautam@arm.com, guohanjun@huawei.com, linux-acpi@vger.kernel.org,
+ zhangfei.gao@linaro.org, lenb@kernel.org, devicetree@vger.kernel.org,
+ kevin.tian@intel.com, robh+dt@kernel.org, linux-arm-kernel@lists.infradead.org,
+ rjw@rjwysocki.net, iommu@lists.linux-foundation.org, sudeep.holla@arm.com,
+ robin.murphy@arm.com, linux-accelerators@lists.ozlabs.org
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -85,88 +104,24 @@ List-Post: <mailto:iommu@lists.linux-foundation.org>
 List-Help: <mailto:iommu-request@lists.linux-foundation.org?subject=help>
 List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
  <mailto:iommu-request@lists.linux-foundation.org?subject=subscribe>
+Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
-Content-Type: text/plain; charset="us-ascii"; Format="flowed"
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-On 2021-03-30 14:58, Will Deacon wrote:
-> On Tue, Mar 30, 2021 at 02:19:38PM +0100, Robin Murphy wrote:
->> On 2021-03-30 14:11, Will Deacon wrote:
->>> On Tue, Mar 16, 2021 at 04:38:22PM +0100, Christoph Hellwig wrote:
->>>> From: Robin Murphy <robin.murphy@arm.com>
->>>>
->>>> Instead make the global iommu_dma_strict paramete in iommu.c canonical by
->>>> exporting helpers to get and set it and use those directly in the drivers.
->>>>
->>>> This make sure that the iommu.strict parameter also works for the AMD and
->>>> Intel IOMMU drivers on x86.  As those default to lazy flushing a new
->>>> IOMMU_CMD_LINE_STRICT is used to turn the value into a tristate to
->>>> represent the default if not overriden by an explicit parameter.
->>>>
->>>> Signed-off-by: Robin Murphy <robin.murphy@arm.com>.
->>>> [ported on top of the other iommu_attr changes and added a few small
->>>>    missing bits]
->>>> Signed-off-by: Christoph Hellwig <hch@lst.de>
->>>> ---
->>>>    drivers/iommu/amd/iommu.c                   | 23 +-------
->>>>    drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c | 50 +---------------
->>>>    drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.h |  1 -
->>>>    drivers/iommu/arm/arm-smmu/arm-smmu.c       | 27 +--------
->>>>    drivers/iommu/dma-iommu.c                   |  9 +--
->>>>    drivers/iommu/intel/iommu.c                 | 64 ++++-----------------
->>>>    drivers/iommu/iommu.c                       | 27 ++++++---
->>>>    include/linux/iommu.h                       |  4 +-
->>>>    8 files changed, 40 insertions(+), 165 deletions(-)
->>>
->>> I really like this cleanup, but I can't help wonder if it's going in the
->>> wrong direction. With SoCs often having multiple IOMMU instances and a
->>> distinction between "trusted" and "untrusted" devices, then having the
->>> flush-queue enabled on a per-IOMMU or per-domain basis doesn't sound
->>> unreasonable to me, but this change makes it a global property.
->>
->> The intent here was just to streamline the existing behaviour of stuffing a
->> global property into a domain attribute then pulling it out again in the
->> illusion that it was in any way per-domain. We're still checking
->> dev_is_untrusted() before making an actual decision, and it's not like we
->> can't add more factors at that point if we want to.
-> 
-> Like I say, the cleanup is great. I'm just wondering whether there's a
-> better way to express the complicated logic to decide whether or not to use
-> the flush queue than what we end up with:
-> 
-> 	if (!cookie->fq_domain && (!dev || !dev_is_untrusted(dev)) &&
-> 	    domain->ops->flush_iotlb_all && !iommu_get_dma_strict())
-> 
-> which is mixing up globals, device properties and domain properties. The
-> result is that the driver code ends up just using the global to determine
-> whether or not to pass IO_PGTABLE_QUIRK_NON_STRICT to the page-table code,
-> which is a departure from the current way of doing things.
+Hi Will, Joerg,
 
-But previously, SMMU only ever saw the global policy piped through the 
-domain attribute by iommu_group_alloc_default_domain(), so there's no 
-functional change there.
+On Tue, Mar 02, 2021 at 10:26:36AM +0100, Jean-Philippe Brucker wrote:
+> Add stall support to the SMMUv3 driver, along with a common I/O Page
+> Fault handler.
 
-Obviously some of the above checks could be factored out into some kind 
-of iommu_use_flush_queue() helper that IOMMU drivers can also call if 
-they need to keep in sync. Or maybe we just allow iommu-dma to set 
-IO_PGTABLE_QUIRK_NON_STRICT directly via iommu_set_pgtable_quirks() if 
-we're treating that as a generic thing now.
+I only have review/ack tags and one assert_lockdep to add to this series.
+Should I send a v14 now or wait a little longer?  Just making sure we can
+get at least patches 1-6 in v5.13.
 
->>> For example, see the recent patch from Lu Baolu:
->>>
->>> https://lore.kernel.org/r/20210225061454.2864009-1-baolu.lu@linux.intel.com
->>
->> Erm, this patch is based on that one, it's right there in the context :/
-> 
-> Ah, sorry, I didn't spot that! I was just trying to illustrate that this
-> is per-device.
+Thanks,
+Jean
 
-Sure, I understand - and I'm just trying to bang home that despite 
-appearances it's never actually been treated as such for SMMU, so 
-anything that's wrong after this change was already wrong before.
-
-Robin.
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
