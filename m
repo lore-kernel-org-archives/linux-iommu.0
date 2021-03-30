@@ -2,148 +2,106 @@ Return-Path: <SRS0=H7Zn=I4=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-10.1 required=3.0 tests=BAYES_00,DKIM_INVALID,
-	DKIM_SIGNED,HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_CR_TRAILER,
-	MAILING_LIST_MULTI,NICE_REPLY_A,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,
-	USER_AGENT_SANE_1 autolearn=ham autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-0.5 required=3.0 tests=BAYES_00,DKIM_ADSP_CUSTOM_MED,
+	DKIM_INVALID,DKIM_SIGNED,FREEMAIL_FORGED_FROMDOMAIN,FREEMAIL_FROM,
+	HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,
+	URIBL_BLOCKED autolearn=no autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C12EFC433C1
-	for <iommu@archiver.kernel.org>; Tue, 30 Mar 2021 19:02:26 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6A04CC433DB
+	for <iommu@archiver.kernel.org>; Tue, 30 Mar 2021 21:12:47 +0000 (UTC)
 Received: from smtp3.osuosl.org (smtp3.osuosl.org [140.211.166.136])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 08CD661985
-	for <iommu@archiver.kernel.org>; Tue, 30 Mar 2021 19:02:25 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 08CD661985
-Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=roeck-us.net
+	by mail.kernel.org (Postfix) with ESMTPS id 0BC05619C2
+	for <iommu@archiver.kernel.org>; Tue, 30 Mar 2021 21:12:46 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 0BC05619C2
+Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=gmail.com
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by smtp3.osuosl.org (Postfix) with ESMTP id A619160857;
-	Tue, 30 Mar 2021 19:02:25 +0000 (UTC)
+	by smtp3.osuosl.org (Postfix) with ESMTP id BD3006085B;
+	Tue, 30 Mar 2021 21:12:46 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
 Received: from smtp3.osuosl.org ([127.0.0.1])
 	by localhost (smtp3.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id tYno47uL87Qz; Tue, 30 Mar 2021 19:02:24 +0000 (UTC)
+	with ESMTP id TFtNMGYDlF1o; Tue, 30 Mar 2021 21:12:46 +0000 (UTC)
 Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by smtp3.osuosl.org (Postfix) with ESMTP id 9F37E6076C;
-	Tue, 30 Mar 2021 19:02:24 +0000 (UTC)
+	by smtp3.osuosl.org (Postfix) with ESMTP id B8D8E60875;
+	Tue, 30 Mar 2021 21:12:45 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 82551C000B;
-	Tue, 30 Mar 2021 19:02:24 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 9259FC000C;
+	Tue, 30 Mar 2021 21:12:45 +0000 (UTC)
 Received: from smtp2.osuosl.org (smtp2.osuosl.org [140.211.166.133])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 06F83C000A
- for <iommu@lists.linux-foundation.org>; Tue, 30 Mar 2021 19:02:23 +0000 (UTC)
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 8FE6AC000A
+ for <iommu@lists.linux-foundation.org>; Tue, 30 Mar 2021 21:12:44 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by smtp2.osuosl.org (Postfix) with ESMTP id E12A6401D9
- for <iommu@lists.linux-foundation.org>; Tue, 30 Mar 2021 19:02:22 +0000 (UTC)
+ by smtp2.osuosl.org (Postfix) with ESMTP id 7E4094037D
+ for <iommu@lists.linux-foundation.org>; Tue, 30 Mar 2021 21:12:44 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
 Authentication-Results: smtp2.osuosl.org (amavisd-new);
  dkim=pass (2048-bit key) header.d=gmail.com
 Received: from smtp2.osuosl.org ([127.0.0.1])
  by localhost (smtp2.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id HDbYGJ-QhT55 for <iommu@lists.linux-foundation.org>;
- Tue, 30 Mar 2021 19:02:22 +0000 (UTC)
+ with ESMTP id 3U3UUnB3ehDw for <iommu@lists.linux-foundation.org>;
+ Tue, 30 Mar 2021 21:12:43 +0000 (UTC)
 X-Greylist: whitelisted by SQLgrey-1.8.0
-Received: from mail-oi1-x236.google.com (mail-oi1-x236.google.com
- [IPv6:2607:f8b0:4864:20::236])
- by smtp2.osuosl.org (Postfix) with ESMTPS id 2231D401D3
- for <iommu@lists.linux-foundation.org>; Tue, 30 Mar 2021 19:02:22 +0000 (UTC)
-Received: by mail-oi1-x236.google.com with SMTP id i81so17509440oif.6
- for <iommu@lists.linux-foundation.org>; Tue, 30 Mar 2021 12:02:22 -0700 (PDT)
+Received: from mail-qt1-x833.google.com (mail-qt1-x833.google.com
+ [IPv6:2607:f8b0:4864:20::833])
+ by smtp2.osuosl.org (Postfix) with ESMTPS id 24E684034A
+ for <iommu@lists.linux-foundation.org>; Tue, 30 Mar 2021 21:12:43 +0000 (UTC)
+Received: by mail-qt1-x833.google.com with SMTP id y12so5882716qtx.11
+ for <iommu@lists.linux-foundation.org>; Tue, 30 Mar 2021 14:12:43 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=gmail.com; s=20161025;
- h=sender:subject:to:cc:references:from:autocrypt:message-id:date
- :user-agent:mime-version:in-reply-to:content-language
- :content-transfer-encoding;
- bh=qRUADsNexwQJ5AK1zhgDj9nFAcKrUHDQ7pCsYBlcPNg=;
- b=VxsUgV/9FyE0P1bYn/jIBt2QhQGsFOdit/Z0YqX9kRwJdXLjW9qx83lALMnJ6j4ur0
- o4P7pvmUBmeBXDFozpFG5hMyuTbMXoP+R6ktoFFbc9esPfMG6EwmTrmb3ZNf2E+9CXu2
- nYjTsFAEvuv8iBWuVVL4Om23t4rXxqPleLqxBgVwAcQCldXurbMsNjLTTSq6MaJTvrSM
- o65hI997ZPxtkKrg7r9UJSs8oLKn4CI1tTzsq3zUTTi4thePaIB+fJvbI/TQsYZXxdSR
- iAaKh9uCmUkJiRktaH5Y0Yq3kgZlpThHV9AC7OR4LhJB01ijuln2zMPSP8S3eJ2BC711
- Y+HA==
+ h=date:from:to:cc:subject:message-id:mail-followup-to:references
+ :mime-version:content-disposition:in-reply-to;
+ bh=rvg5KeeLafDks20d9MA0DVK+cDxKZn2jW/3PZAzDQ/c=;
+ b=k33NE2CXIobJjoB4dL34gEB0xWjLB3X1YdTxpiNE4m0w39+avHYjIPTlPYWXgE++hd
+ CGQkltFiOHlY66qiAVKRvXxWVeakz1vHzUgjMGABg2PdcXzfe4r3i+hllFqwhr/VX80V
+ uTac3mVQxYNW6lBVUmFdY/ZTI21BQcj9z97C+l86gNTTNqfOUpNO1cef3VITKGOdj5ZS
+ ptEdf7sJdINv/ay1cfflAq7AeGQma+759sqdmJKNeuL+0T3qU0k3TxjPWmmAuFuQt/qP
+ SnTM8sTfRkspWWUd4gwPfQngwZ66vFuqI7L5F8zrbvx6YUTXzNQsV6Apc9bQGppT2onR
+ AZyg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
  d=1e100.net; s=20161025;
- h=x-gm-message-state:sender:subject:to:cc:references:from:autocrypt
- :message-id:date:user-agent:mime-version:in-reply-to
- :content-language:content-transfer-encoding;
- bh=qRUADsNexwQJ5AK1zhgDj9nFAcKrUHDQ7pCsYBlcPNg=;
- b=asNZzjkFhqRbBDSclktBzFJzMEC6xnisJOI2wUdFV6KrXBGyr7I83K85Ns1xaOBsSt
- hl/WN/esicqlLeG8bYDeXJSHzMvMEuvNQ0THqnrVW3PYHyzWuz+cF9PDny1ssmg2FX1j
- BFVMCoeFpuAKpgR3uWdmDaxcBG3+KCO6nzJnfTKXjVaQ44zV6fQi7N4Knr+/Fiar5TG1
- SDTn1XRwfooRSlQRMwjryBI1vtC7fn4773looLMWJC4mbBvrwv+WmqnOzGnbIW/iSpr4
- 0u//8bIYT/1PUC082wFt/eHCXSqDkHmkqYB7JSkPCReya5AgpL8fiPiVencaBgAbmXLF
- g6tA==
-X-Gm-Message-State: AOAM5316Tt2bk2PwRv5+ual1QmcstgYpRT5NsXq61piQTkcWyRI89dHj
- WahNCIa9XNXCoZe50boVD7o=
-X-Google-Smtp-Source: ABdhPJx5pu+RMJra/rUnSLm3qOoWg3Jh0yJbizRmsC4F3Dr8CYoMvjkAi6LOnUcmygrIXc3pG4RTRg==
-X-Received: by 2002:aca:b9c1:: with SMTP id j184mr4202039oif.5.1617130941154; 
- Tue, 30 Mar 2021 12:02:21 -0700 (PDT)
-Received: from server.roeck-us.net ([2600:1700:e321:62f0:329c:23ff:fee3:9d7c])
- by smtp.gmail.com with ESMTPSA id
- h59sm5318040otb.29.2021.03.30.12.02.18
- (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
- Tue, 30 Mar 2021 12:02:20 -0700 (PDT)
-Subject: Re: [PATCH v2 1/4] iommu/vt-d: Enable write protect for supervisor SVM
-To: Jacob Pan <jacob.jun.pan@linux.intel.com>
-References: <1614680040-1989-1-git-send-email-jacob.jun.pan@linux.intel.com>
- <1614680040-1989-2-git-send-email-jacob.jun.pan@linux.intel.com>
- <20210322175338.GA24424@roeck-us.net> <20210330105200.418bc42b@jacob-builder>
-From: Guenter Roeck <linux@roeck-us.net>
-Autocrypt: addr=linux@roeck-us.net; keydata=
- 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
- mDW4+i+XlNFUPUYMrIKi9joBhu18ssf5i5Q=
-Message-ID: <d43efcb9-23bd-bea4-1b27-429a171dcb65@roeck-us.net>
-Date: Tue, 30 Mar 2021 12:02:17 -0700
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
- Thunderbird/68.10.0
+ h=x-gm-message-state:date:from:to:cc:subject:message-id
+ :mail-followup-to:references:mime-version:content-disposition
+ :in-reply-to;
+ bh=rvg5KeeLafDks20d9MA0DVK+cDxKZn2jW/3PZAzDQ/c=;
+ b=WYcMWmxW9lJ50M9GP/PrsJnT4rQLQsYsb2yAhYjMnw3Etssl1F41aUZkPvNgaj8pqm
+ hg8aNgM0NLw/JX8znPWCib/KGKVC5DpvzJO7YMbyZL7/cAQWLpEQfcL7AN97J43TGNyA
+ LIAf0CxK2U6oeKcR847LXKGZGDMs88PR71FGItcijElei99JsTefChEaDfNLdVkw/zPj
+ iVoCpxR9DjmIFHNwYdRNw0EGy1Qz9O4+m4JbpIfMmqCgJK1i1rzX2cQefIcDEs9UVKNN
+ UddRfxg/CmTsC6r4iPxidsyKb1b7jOMkFXOpbUxH54ooLRMpedCZ7OaHAtRRDoKMYUYF
+ 2Ipg==
+X-Gm-Message-State: AOAM5311+NdW+JFlitA+pyYoluptwe9k+BSKvPEz0y8lgMlxz9Jml1q7
+ TdLa71JiXRykl50rjwz5RTQ=
+X-Google-Smtp-Source: ABdhPJzBICbv2tB+pZHOQUhX9mgUx+2f/OIMBmWy7u6Wt0v1ME2jB1BtLU0fWk8lwylmTW63ROdomw==
+X-Received: by 2002:a05:622a:454:: with SMTP id
+ o20mr28861530qtx.292.1617138762074; 
+ Tue, 30 Mar 2021 14:12:42 -0700 (PDT)
+Received: from Gentoo ([143.244.44.215])
+ by smtp.gmail.com with ESMTPSA id b2sm119921qtb.54.2021.03.30.14.12.36
+ (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+ Tue, 30 Mar 2021 14:12:41 -0700 (PDT)
+Date: Wed, 31 Mar 2021 02:42:21 +0530
+From: Bhaskar Chowdhury <unixbhaskar@gmail.com>
+To: Vinod Koul <vkoul@kernel.org>
+Subject: Re: [PATCH 14/30] Revert "s3c24xx-dma.c: Fix a typo"
+Message-ID: <YGOUNbCJOHLmeHm9@Gentoo>
+Mail-Followup-To: Bhaskar Chowdhury <unixbhaskar@gmail.com>,
+ Vinod Koul <vkoul@kernel.org>, dmaengine@vger.kernel.org,
+ dri-devel@lists.freedesktop.org, hch@lst.de,
+ iommu@lists.linux-foundation.org, linuxppc-dev@lists.ozlabs.org,
+ dave.jiang@intel.com, dan.j.williams@intel.com,
+ rdunlap@infradead.org, linux-kernel@vger.kernel.org
+References: <cover.1616971780.git.unixbhaskar@gmail.com>
+ <1d989f71fbebd15de633c187d88cb3be3a0f2723.1616971780.git.unixbhaskar@gmail.com>
+ <YGNgFuLWc91aGoQj@vkoul-mobl.Dlink>
 MIME-Version: 1.0
-In-Reply-To: <20210330105200.418bc42b@jacob-builder>
-Content-Language: en-US
-Cc: "Tian, Kevin" <kevin.tian@intel.com>, "Luck, Tony" <tony.luck@intel.com>,
- Raj Ashok <ashok.raj@intel.com>,
- Jean-Philippe Brucker <jean-philippe@linaro.com>,
- Sanjay Kumar <sanjay.k.kumar@intel.com>, LKML <linux-kernel@vger.kernel.org>,
- iommu@lists.linux-foundation.org, David Woodhouse <dwmw2@infradead.org>
+In-Reply-To: <YGNgFuLWc91aGoQj@vkoul-mobl.Dlink>
+Cc: dave.jiang@intel.com, rdunlap@infradead.org, linux-kernel@vger.kernel.org,
+ dri-devel@lists.freedesktop.org, iommu@lists.linux-foundation.org,
+ dmaengine@vger.kernel.org, dan.j.williams@intel.com,
+ linuxppc-dev@lists.ozlabs.org, hch@lst.de
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -156,57 +114,69 @@ List-Post: <mailto:iommu@lists.linux-foundation.org>
 List-Help: <mailto:iommu-request@lists.linux-foundation.org?subject=help>
 List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
  <mailto:iommu-request@lists.linux-foundation.org?subject=subscribe>
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
+Content-Type: multipart/mixed; boundary="===============6939639901505712488=="
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-On 3/30/21 10:52 AM, Jacob Pan wrote:
-> Hi Guenter,
-> 
-> On Mon, 22 Mar 2021 10:53:38 -0700, Guenter Roeck <linux@roeck-us.net>
-> wrote:
-> 
->> On Tue, Mar 02, 2021 at 02:13:57AM -0800, Jacob Pan wrote:
->>> Write protect bit, when set, inhibits supervisor writes to the read-only
->>> pages. In supervisor shared virtual addressing (SVA), where page tables
->>> are shared between CPU and DMA, IOMMU PASID entry WPE bit should match
->>> CR0.WP bit in the CPU.
->>> This patch sets WPE bit for supervisor PASIDs if CR0.WP is set.
->>>
->>> Signed-off-by: Sanjay Kumar <sanjay.k.kumar@intel.com>
->>> Signed-off-by: Jacob Pan <jacob.jun.pan@linux.intel.com>
->>> ---  
+
+--===============6939639901505712488==
+Content-Type: multipart/signed; micalg=pgp-sha256;
+	protocol="application/pgp-signature"; boundary="yapxdGUX50HbkJ4L"
+Content-Disposition: inline
+
+
+--yapxdGUX50HbkJ4L
+Content-Type: text/plain; charset=us-ascii; format=flowed
+Content-Disposition: inline
+
+On 22:59 Tue 30 Mar 2021, Vinod Koul wrote:
+>On 29-03-21, 05:23, Bhaskar Chowdhury wrote:
+>> s/transferred/transfered/
 >>
->> ia64:defconfig:
->>
->> drivers/iommu/intel/pasid.c: In function 'pasid_enable_wpe':
->> drivers/iommu/intel/pasid.c:536:22: error: implicit declaration of
->> function 'read_cr0' drivers/iommu/intel/pasid.c:539:23: error:
->> 'X86_CR0_WP' undeclared
->>
->> Maybe it _is_ time to retire ia64 ?
-> 
-> Good catch, sorry for the late reply. I guess otherwise I will have to do
-> some #ifdef?
-> 
+>> This reverts commit a2ddb8aea8106bd5552f8516ad7a8a26b9282a8f.
+>
+>This is not upstream, why not squash in. Also would make sense to write
+>sensible changelog and not phrases and use the right subsystem
+>conventions!
+>
+Changes like this don't deserve a history to tell, specific to changelog, one
+line is suffice.
 
-I really can't tell you how to resolve this.
+>Droped the series now
+>
+This is a bad commit slip in , not suppose to be there, thanks for catching
+it.
 
-> There are many basic x86 helpers are missing in ia64.
-> 
-I'd say that Intel needs to decide what to do with the ia64 architecture.
+Sorry for the noise.
+>
+>--
+>~Vinod
 
-Guenter
+--yapxdGUX50HbkJ4L
+Content-Type: application/pgp-signature; name="signature.asc"
 
-> +Tony
-> 
-> Thanks,
-> 
-> Jacob
-> 
+-----BEGIN PGP SIGNATURE-----
+
+iQEzBAABCAAdFiEEnwF+nWawchZUPOuwsjqdtxFLKRUFAmBjlDIACgkQsjqdtxFL
+KRXbEQf9HOVQ3RETxBGqN9aTy39IsbyS5nu7/kFDhcZEJysEreLDXKPWNNQ2PX5w
+cirIvKOlvWXDyrO8kTzZj7lyhdV4i20kBx+wWdBZ5Pzgxv7EsC29/u3MLwHH9eWk
+/yvTPpfI8KLYpPNMU8bMS8NKR+hP+75gM0gGO4zmirTubaAIH9709n3MVg4A7Qlj
+ZdJE1MCUqt+VHUnBqZzu2Afv10gBlrsy671OsH0K/m8/ZOWoIKg50Epc7s2/LPEg
+DnYTel5gyXWtZh4thSXcjV0hm5Q6jzE0DQjGE7NDxeI8yIz4c6hZBJ2OOTXp1h2A
+O5yOuKgqXzo95RFK6W9QSbfhv3erIA==
+=mURO
+-----END PGP SIGNATURE-----
+
+--yapxdGUX50HbkJ4L--
+
+--===============6939639901505712488==
+Content-Type: text/plain; charset="us-ascii"
+MIME-Version: 1.0
+Content-Transfer-Encoding: 7bit
+Content-Disposition: inline
 
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
 https://lists.linuxfoundation.org/mailman/listinfo/iommu
+--===============6939639901505712488==--
