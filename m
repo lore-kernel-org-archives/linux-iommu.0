@@ -2,102 +2,71 @@ Return-Path: <SRS0=H7Zn=I4=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-12.0 required=3.0 tests=BAYES_00,
-	DKIM_ADSP_CUSTOM_MED,DKIM_INVALID,DKIM_SIGNED,FREEMAIL_FORGED_FROMDOMAIN,
-	FREEMAIL_FROM,HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_CR_TRAILER,
-	INCLUDES_PATCH,MAILING_LIST_MULTI,NICE_REPLY_A,SPF_HELO_NONE,SPF_PASS,
-	URIBL_BLOCKED,USER_AGENT_SANE_1 autolearn=ham autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-15.3 required=3.0 tests=BAYES_00,
+	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_CR_TRAILER,INCLUDES_PATCH,
+	MAILING_LIST_MULTI,NICE_REPLY_A,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,
+	USER_AGENT_SANE_1 autolearn=unavailable autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 986DBC433C1
-	for <iommu@archiver.kernel.org>; Tue, 30 Mar 2021 11:00:04 +0000 (UTC)
-Received: from smtp3.osuosl.org (smtp3.osuosl.org [140.211.166.136])
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C9AE7C433E0
+	for <iommu@archiver.kernel.org>; Tue, 30 Mar 2021 11:43:43 +0000 (UTC)
+Received: from smtp2.osuosl.org (smtp2.osuosl.org [140.211.166.133])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 122B561928
-	for <iommu@archiver.kernel.org>; Tue, 30 Mar 2021 11:00:03 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 122B561928
-Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=gmail.com
+	by mail.kernel.org (Postfix) with ESMTPS id 33F1C6199A
+	for <iommu@archiver.kernel.org>; Tue, 30 Mar 2021 11:43:43 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 33F1C6199A
+Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=arm.com
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by smtp3.osuosl.org (Postfix) with ESMTP id 9FF2B606C6;
-	Tue, 30 Mar 2021 11:00:03 +0000 (UTC)
+	by smtp2.osuosl.org (Postfix) with ESMTP id D9A8B400B8;
+	Tue, 30 Mar 2021 11:43:42 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from smtp3.osuosl.org ([127.0.0.1])
-	by localhost (smtp3.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id 4GV4CD53KzA4; Tue, 30 Mar 2021 11:00:02 +0000 (UTC)
+Received: from smtp2.osuosl.org ([127.0.0.1])
+	by localhost (smtp2.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+	with ESMTP id EG0CjzgntSjI; Tue, 30 Mar 2021 11:43:42 +0000 (UTC)
 Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by smtp3.osuosl.org (Postfix) with ESMTP id 555BD606E3;
-	Tue, 30 Mar 2021 11:00:02 +0000 (UTC)
+	by smtp2.osuosl.org (Postfix) with ESMTP id D7CF5401AD;
+	Tue, 30 Mar 2021 11:43:41 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 1CA3FC000B;
-	Tue, 30 Mar 2021 11:00:02 +0000 (UTC)
-Received: from smtp3.osuosl.org (smtp3.osuosl.org [140.211.166.136])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 6BE9EC000A
- for <iommu@lists.linux-foundation.org>; Tue, 30 Mar 2021 11:00:00 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 8D262C000C;
+	Tue, 30 Mar 2021 11:43:41 +0000 (UTC)
+Received: from smtp3.osuosl.org (smtp3.osuosl.org [IPv6:2605:bc80:3010::136])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 294F4C000A
+ for <iommu@lists.linux-foundation.org>; Tue, 30 Mar 2021 11:43:40 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by smtp3.osuosl.org (Postfix) with ESMTP id 57727606E3
- for <iommu@lists.linux-foundation.org>; Tue, 30 Mar 2021 11:00:00 +0000 (UTC)
+ by smtp3.osuosl.org (Postfix) with ESMTP id 123E4606B8
+ for <iommu@lists.linux-foundation.org>; Tue, 30 Mar 2021 11:43:40 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
 Received: from smtp3.osuosl.org ([127.0.0.1])
  by localhost (smtp3.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id QwXdWv9JUViX for <iommu@lists.linux-foundation.org>;
- Tue, 30 Mar 2021 10:59:59 +0000 (UTC)
-X-Greylist: whitelisted by SQLgrey-1.8.0
-Received: from mail-wm1-x32f.google.com (mail-wm1-x32f.google.com
- [IPv6:2a00:1450:4864:20::32f])
- by smtp3.osuosl.org (Postfix) with ESMTPS id 812C46068B
- for <iommu@lists.linux-foundation.org>; Tue, 30 Mar 2021 10:59:59 +0000 (UTC)
-Received: by mail-wm1-x32f.google.com with SMTP id
- j4-20020a05600c4104b029010c62bc1e20so8162912wmi.3
- for <iommu@lists.linux-foundation.org>; Tue, 30 Mar 2021 03:59:59 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=gmail.com; s=20161025;
- h=subject:from:to:cc:references:message-id:date:user-agent
- :mime-version:in-reply-to:content-language:content-transfer-encoding;
- bh=hwv0VGtVRsToH5qSgnXqGQzyHEdaY5YNe1vOOamTk0o=;
- b=LmqF8R4YAf+VUo/T1bNZVx6Q0HOyjAAROmCGqhpYe10LzFmMO1x0RSINSVOQKv+moQ
- C1fmsz/UMW4IxsBSCIM+0UcOd0YHxoECpP7nGOJym0ERY/dedzkLtVPWXsKFLrPK556z
- ZH+a4OEssjMGp9qzK2zOp5WRcNx55yvyavWOVwA0KZ8IdAY4hz7ba+YAtt72lY9fBSDk
- EVAwI8j1zOhBk9tNbZlRIuKLJAfmNfPEcXwHMbUjwMY7UjIM5rc2zsnr6WHYAZtsrFcf
- Lgxqc07GX9COiSWfR6J8jnPJtNPUoGVpelrCFu2tALZztLmAp6T0XQp2ZL2+Clls4IXG
- PKPA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
- d=1e100.net; s=20161025;
- h=x-gm-message-state:subject:from:to:cc:references:message-id:date
- :user-agent:mime-version:in-reply-to:content-language
- :content-transfer-encoding;
- bh=hwv0VGtVRsToH5qSgnXqGQzyHEdaY5YNe1vOOamTk0o=;
- b=RREM1Mux7akm6RfLs6me6XFv7MOy0PfEryPFjxWk8Ai2ySvyaiDHVfeFq3/GHtOYLv
- ORaNK0a8lo56Q9RLEvvmNzmNDTFcdmmwKIqOv/Ztgb+fWTmMMLZUT8Sq0OvOqbqkUETK
- m2L0BoC4R0q6o+pFI68bFhs24Xr0LNeE8nGDKHglftL23ULF6dwVukW11JIpkJXxRak5
- anIscsjxcKEUWJU69JNiK4SzpIvHWsj66QObeKCHruyjrbmHwCk5E4EW3DGfWyiebNwR
- Zfc7JL6n1ydUbvIbFfVCL0e4W9HcZhequ8cjNHwpD/T/hVbGDf7qmMSZmw8WjoAXutX/
- dmTg==
-X-Gm-Message-State: AOAM530GM503MZvvqCoVW63xAXA8RTMah8KfdrofwxU3D03ao57m2Ufi
- vQzvup7RrLPCT4g/zxdjdN6P8AqvvEpMug==
-X-Google-Smtp-Source: ABdhPJyN1sfXezAEQOAbG2VeIahwtmvGMyuqyNib2+BIVv/DwUJp6TwxTAbSzDQdvqFLm860qKiitw==
-X-Received: by 2002:a7b:c418:: with SMTP id k24mr3470278wmi.169.1617101997378; 
- Tue, 30 Mar 2021 03:59:57 -0700 (PDT)
-Received: from ?IPv6:2003:ea:8f1f:bb00:9424:822a:45ae:b5bd?
- (p200300ea8f1fbb009424822a45aeb5bd.dip0.t-ipconnect.de.
- [2003:ea:8f1f:bb00:9424:822a:45ae:b5bd])
- by smtp.googlemail.com with ESMTPSA id i4sm2772266wmq.12.2021.03.30.03.59.56
- (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
- Tue, 30 Mar 2021 03:59:57 -0700 (PDT)
-Subject: Re: [PATCH] dma-mapping: add unlikely hint to error path in
- dma_mapping_error
-From: Heiner Kallweit <hkallweit1@gmail.com>
-To: Christoph Hellwig <hch@lst.de>,
- Marek Szyprowski <m.szyprowski@samsung.com>,
- Robin Murphy <robin.murphy@arm.com>
-References: <78757abc-ef8f-9a29-9020-967370eec365@gmail.com>
-Message-ID: <81bda15b-beb0-02e5-4e5a-f3fa88a5bb9d@gmail.com>
-Date: Tue, 30 Mar 2021 12:59:51 +0200
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:78.0) Gecko/20100101
- Thunderbird/78.9.0
+ with ESMTP id eBFZ5QWHZqne for <iommu@lists.linux-foundation.org>;
+ Tue, 30 Mar 2021 11:43:38 +0000 (UTC)
+X-Greylist: domain auto-whitelisted by SQLgrey-1.8.0
+Received: from foss.arm.com (foss.arm.com [217.140.110.172])
+ by smtp3.osuosl.org (Postfix) with ESMTP id CD47760593
+ for <iommu@lists.linux-foundation.org>; Tue, 30 Mar 2021 11:43:38 +0000 (UTC)
+Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
+ by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 0F0231FB;
+ Tue, 30 Mar 2021 04:43:38 -0700 (PDT)
+Received: from [10.57.27.121] (unknown [10.57.27.121])
+ by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id 6DF003F694;
+ Tue, 30 Mar 2021 04:43:36 -0700 (PDT)
+Subject: Re: [PATCH 24/30] Kconfig: Change Synopsys to Synopsis
+To: Bhaskar Chowdhury <unixbhaskar@gmail.com>, dmaengine@vger.kernel.org,
+ dri-devel@lists.freedesktop.org, hch@lst.de,
+ iommu@lists.linux-foundation.org, linuxppc-dev@lists.ozlabs.org,
+ dave.jiang@intel.com, dan.j.williams@intel.com
+References: <cover.1616971780.git.unixbhaskar@gmail.com>
+ <1262e9e62498f961e5172205e66a9ef7c6f0f69d.1616971780.git.unixbhaskar@gmail.com>
+From: Robin Murphy <robin.murphy@arm.com>
+Message-ID: <8f80fb1b-b2d0-b66a-24b0-bd92dc6cd4b6@arm.com>
+Date: Tue, 30 Mar 2021 12:43:31 +0100
+User-Agent: Mozilla/5.0 (Windows NT 10.0; rv:78.0) Gecko/20100101
+ Thunderbird/78.8.1
 MIME-Version: 1.0
-In-Reply-To: <78757abc-ef8f-9a29-9020-967370eec365@gmail.com>
-Content-Language: en-US
-Cc: "open list:AMD IOMMU \(AMD-VI\)" <iommu@lists.linux-foundation.org>
+In-Reply-To: <1262e9e62498f961e5172205e66a9ef7c6f0f69d.1616971780.git.unixbhaskar@gmail.com>
+Content-Language: en-GB
+Cc: rdunlap@infradead.org, linux-kernel@vger.kernel.org
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -110,42 +79,74 @@ List-Post: <mailto:iommu@lists.linux-foundation.org>
 List-Help: <mailto:iommu-request@lists.linux-foundation.org?subject=help>
 List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
  <mailto:iommu-request@lists.linux-foundation.org?subject=subscribe>
-Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset="us-ascii"; Format="flowed"
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-On 26.03.2021 22:03, Heiner Kallweit wrote:
-> Zillions of drivers use the unlikely() hint when checking the result of
-> dma_mapping_error(). This is an inline function anyway, so we can move
-> the hint into the function and remove it from drivers over time.
-> 
-> Signed-off-by: Heiner Kallweit <hkallweit1@gmail.com>
-> ---
-> This is a resend of a patch from Dec 2020 when I tried to do it
-> tree-wide. Now start with the actual change, drivers can be changed
-> afterwards, maybe per subsystem.
-> ---
->  include/linux/dma-mapping.h | 2 +-
->  1 file changed, 1 insertion(+), 1 deletion(-)
-> 
-> diff --git a/include/linux/dma-mapping.h b/include/linux/dma-mapping.h
-> index e9d19b974..183e7103a 100644
-> --- a/include/linux/dma-mapping.h
-> +++ b/include/linux/dma-mapping.h
-> @@ -95,7 +95,7 @@ static inline int dma_mapping_error(struct device *dev, dma_addr_t dma_addr)
->  {
->  	debug_dma_mapping_error(dev, dma_addr);
->  
-> -	if (dma_addr == DMA_MAPPING_ERROR)
-> +	if (unlikely(dma_addr == DMA_MAPPING_ERROR))
->  		return -ENOMEM;
->  	return 0;
->  }
-> 
+On 2021-03-29 00:53, Bhaskar Chowdhury wrote:
+> s/Synopsys/Synopsis/  .....two different places.
 
+Erm, that is definitely not a typo... :/
 
-Reviewed-by: Robin Murphy <robin.murphy@arm.com>
+> ..and for some unknown reason it introduce a empty line deleted and added
+> back.
+
+Presumably your editor is configured to trim trailing whitespace on save.
+
+Furthermore, there are several instances in the other patches where your 
+"corrections" are grammatically incorrect, I'm not sure what the deal is 
+with patch #14, and you've also used the wrong subsystem name (it should 
+be "dmaengine"). It's great to want to clean things up, but please pay a 
+bit of care and attention to what you're actually doing.
+
+Robin.
+
+> Signed-off-by: Bhaskar Chowdhury <unixbhaskar@gmail.com>
+> ---
+>   drivers/dma/Kconfig | 8 ++++----
+>   1 file changed, 4 insertions(+), 4 deletions(-)
+> 
+> diff --git a/drivers/dma/Kconfig b/drivers/dma/Kconfig
+> index 0c2827fd8c19..30e8cc26f43b 100644
+> --- a/drivers/dma/Kconfig
+> +++ b/drivers/dma/Kconfig
+> @@ -170,15 +170,15 @@ config DMA_SUN6I
+>   	  Support for the DMA engine first found in Allwinner A31 SoCs.
+> 
+>   config DW_AXI_DMAC
+> -	tristate "Synopsys DesignWare AXI DMA support"
+> +	tristate "Synopsis DesignWare AXI DMA support"
+>   	depends on OF || COMPILE_TEST
+>   	depends on HAS_IOMEM
+>   	select DMA_ENGINE
+>   	select DMA_VIRTUAL_CHANNELS
+>   	help
+> -	  Enable support for Synopsys DesignWare AXI DMA controller.
+> +	  Enable support for Synopsis DesignWare AXI DMA controller.
+>   	  NOTE: This driver wasn't tested on 64 bit platform because
+> -	  of lack 64 bit platform with Synopsys DW AXI DMAC.
+> +	  of lack 64 bit platform with Synopsis DW AXI DMAC.
+> 
+>   config EP93XX_DMA
+>   	bool "Cirrus Logic EP93xx DMA support"
+> @@ -394,7 +394,7 @@ config MOXART_DMA
+>   	select DMA_VIRTUAL_CHANNELS
+>   	help
+>   	  Enable support for the MOXA ART SoC DMA controller.
+> -
+> +
+>   	  Say Y here if you enabled MMP ADMA, otherwise say N.
+> 
+>   config MPC512X_DMA
+> --
+> 2.26.3
+> 
+> _______________________________________________
+> iommu mailing list
+> iommu@lists.linux-foundation.org
+> https://lists.linuxfoundation.org/mailman/listinfo/iommu
+> 
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
