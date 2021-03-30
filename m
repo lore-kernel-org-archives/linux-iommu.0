@@ -2,80 +2,65 @@ Return-Path: <SRS0=H7Zn=I4=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-15.3 required=3.0 tests=BAYES_00,DKIM_INVALID,
-	DKIM_SIGNED,INCLUDES_CR_TRAILER,INCLUDES_PATCH,MAILING_LIST_MULTI,
-	SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_SANE_1 autolearn=ham
-	autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-16.8 required=3.0 tests=BAYES_00,
+	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_CR_TRAILER,INCLUDES_PATCH,
+	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_GIT
+	autolearn=ham autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4F0EEC433E0
-	for <iommu@archiver.kernel.org>; Tue, 30 Mar 2021 13:00:30 +0000 (UTC)
-Received: from smtp2.osuosl.org (smtp2.osuosl.org [140.211.166.133])
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 06BADC433DB
+	for <iommu@archiver.kernel.org>; Tue, 30 Mar 2021 13:03:06 +0000 (UTC)
+Received: from smtp1.osuosl.org (smtp1.osuosl.org [140.211.166.138])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 1020E619C6
-	for <iommu@archiver.kernel.org>; Tue, 30 Mar 2021 13:00:30 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 1020E619C6
-Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=kernel.org
+	by mail.kernel.org (Postfix) with ESMTPS id 54329619C8
+	for <iommu@archiver.kernel.org>; Tue, 30 Mar 2021 13:03:05 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 54329619C8
+Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=hisilicon.com
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by smtp2.osuosl.org (Postfix) with ESMTP id DF7BC400B8;
-	Tue, 30 Mar 2021 13:00:29 +0000 (UTC)
+	by smtp1.osuosl.org (Postfix) with ESMTP id 2310882B1B;
+	Tue, 30 Mar 2021 13:03:05 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from smtp2.osuosl.org ([127.0.0.1])
-	by localhost (smtp2.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id VLrx5I7C3TSz; Tue, 30 Mar 2021 13:00:29 +0000 (UTC)
+Received: from smtp1.osuosl.org ([127.0.0.1])
+	by localhost (smtp1.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+	with ESMTP id 2X_wfR-cio9w; Tue, 30 Mar 2021 13:03:04 +0000 (UTC)
 Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [IPv6:2605:bc80:3010:104::8cd3:938])
-	by smtp2.osuosl.org (Postfix) with ESMTP id D4EFC40193;
-	Tue, 30 Mar 2021 13:00:28 +0000 (UTC)
+	by smtp1.osuosl.org (Postfix) with ESMTP id 1DF8383E26;
+	Tue, 30 Mar 2021 13:03:04 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 718B0C0013;
-	Tue, 30 Mar 2021 13:00:28 +0000 (UTC)
-Received: from smtp3.osuosl.org (smtp3.osuosl.org [IPv6:2605:bc80:3010::136])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 1C2A9C000A;
- Tue, 30 Mar 2021 13:00:26 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id EAF53C000B;
+	Tue, 30 Mar 2021 13:03:03 +0000 (UTC)
+Received: from smtp1.osuosl.org (smtp1.osuosl.org [140.211.166.138])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 2AC9AC000A
+ for <iommu@lists.linux-foundation.org>; Tue, 30 Mar 2021 13:03:02 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by smtp3.osuosl.org (Postfix) with ESMTP id F1BAF60708;
- Tue, 30 Mar 2021 13:00:25 +0000 (UTC)
+ by smtp1.osuosl.org (Postfix) with ESMTP id 0300B83E26
+ for <iommu@lists.linux-foundation.org>; Tue, 30 Mar 2021 13:03:02 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Authentication-Results: smtp3.osuosl.org (amavisd-new);
- dkim=pass (2048-bit key) header.d=kernel.org
-Received: from smtp3.osuosl.org ([127.0.0.1])
- by localhost (smtp3.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id c2ykLNjIJlHO; Tue, 30 Mar 2021 13:00:25 +0000 (UTC)
+Received: from smtp1.osuosl.org ([127.0.0.1])
+ by localhost (smtp1.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+ with ESMTP id CkdW6rFneS3X for <iommu@lists.linux-foundation.org>;
+ Tue, 30 Mar 2021 13:03:01 +0000 (UTC)
 X-Greylist: domain auto-whitelisted by SQLgrey-1.8.0
-X-Greylist: domain auto-whitelisted by SQLgrey-1.8.0
-Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
- by smtp3.osuosl.org (Postfix) with ESMTPS id 5536960596;
- Tue, 30 Mar 2021 13:00:25 +0000 (UTC)
-Received: by mail.kernel.org (Postfix) with ESMTPSA id 6723461959;
- Tue, 30 Mar 2021 13:00:22 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
- s=k20201202; t=1617109224;
- bh=m3TvkxvqPC7Tpakpaq16UQpVjJGrx5gC57aV7gCm8GE=;
- h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
- b=q+OSrGSvrWc7WYths8Js73WEMx795hdLZQgMXoL3dU2M1loRm7gpXJPstw5r96wE+
- MHERTkZdUmMqt0s1BPvMPCPEFoJZkJamnTKDq4K4rys4fqbm/nejUkGZhZ84T7bvZv
- Ler6sSRcp45AsVGHeW+zKyc/iZ0K+xWrwbiiAvOv9AdkdKTu7n28KdSWcWg3TCBiwH
- efhhakrMIGdlWHG5y8cLowYyjKPeJvPwVS1ZDVu/G3v2OfwKusR9D1kPYvmwIyRcwB
- RPVE1raY7AUORsYfBkgmuAg8ie5APSgAugC4iRu1nKmYUKDnrH6tc0xtIdlm9sb2o9
- UNwLXhfk0L68Q==
-Date: Tue, 30 Mar 2021 14:00:19 +0100
-From: Will Deacon <will@kernel.org>
-To: Christoph Hellwig <hch@lst.de>
-Subject: Re: [PATCH 13/18] iommu: remove DOMAIN_ATTR_GEOMETRY
-Message-ID: <20210330130019.GM5908@willie-the-truck>
-References: <20210316153825.135976-1-hch@lst.de>
- <20210316153825.135976-14-hch@lst.de>
+Received: from szxga04-in.huawei.com (szxga04-in.huawei.com [45.249.212.190])
+ by smtp1.osuosl.org (Postfix) with ESMTPS id C3A3882B1B
+ for <iommu@lists.linux-foundation.org>; Tue, 30 Mar 2021 13:03:00 +0000 (UTC)
+Received: from DGGEMS403-HUB.china.huawei.com (unknown [172.30.72.58])
+ by szxga04-in.huawei.com (SkyGuard) with ESMTP id 4F8qL65NDMznVgB;
+ Tue, 30 Mar 2021 21:00:14 +0800 (CST)
+Received: from localhost.localdomain (10.69.192.58) by
+ DGGEMS403-HUB.china.huawei.com (10.3.19.203) with Microsoft SMTP Server id
+ 14.3.498.0; Tue, 30 Mar 2021 21:02:43 +0800
+From: chenxiang <chenxiang66@hisilicon.com>
+To: <robin.murphy@arm.com>, <will@kernel.org>
+Subject: [PATCH v2] iommu/arm-smmu-v3: Add a check to avoid invalid iotlb sync
+Date: Tue, 30 Mar 2021 20:58:26 +0800
+Message-ID: <1617109106-121844-1-git-send-email-chenxiang66@hisilicon.com>
+X-Mailer: git-send-email 2.8.1
 MIME-Version: 1.0
-Content-Disposition: inline
-In-Reply-To: <20210316153825.135976-14-hch@lst.de>
-User-Agent: Mutt/1.10.1 (2018-07-13)
-Cc: freedreno@lists.freedesktop.org, kvm@vger.kernel.org,
- Michael Ellerman <mpe@ellerman.id.au>, linuxppc-dev@lists.ozlabs.org,
- dri-devel@lists.freedesktop.org, Li Yang <leoyang.li@nxp.com>,
- iommu@lists.linux-foundation.org, netdev@vger.kernel.org,
- linux-arm-msm@vger.kernel.org, virtualization@lists.linux-foundation.org,
- David Woodhouse <dwmw2@infradead.org>, linux-arm-kernel@lists.infradead.org
+X-Originating-IP: [10.69.192.58]
+X-CFilter-Loop: Reflected
+Cc: iommu@lists.linux-foundation.org, linuxarm@openeuler.org
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -93,22 +78,34 @@ Content-Transfer-Encoding: 7bit
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-On Tue, Mar 16, 2021 at 04:38:19PM +0100, Christoph Hellwig wrote:
-> The geometry information can be trivially queried from the iommu_domain
-> struture.
-> 
-> Signed-off-by: Christoph Hellwig <hch@lst.de>
-> Acked-by: Li Yang <leoyang.li@nxp.com>
-> ---
->  drivers/iommu/iommu.c           | 20 +++-----------------
->  drivers/vfio/vfio_iommu_type1.c | 26 ++++++++++++--------------
->  drivers/vhost/vdpa.c            | 10 +++-------
->  include/linux/iommu.h           |  1 -
->  4 files changed, 18 insertions(+), 39 deletions(-)
+From: Xiang Chen <chenxiang66@hisilicon.com>
 
-Acked-by: Will Deacon <will@kernel.org>
+It may send a invalid tlb sync for smmuv3 if iotlb_gather is not valid
+(iotlb_gather->pgsize = 0). So add a check to avoid invalid iotlb sync
+for it.
 
-Will
+Signed-off-by: Xiang Chen <chenxiang66@hisilicon.com>
+---
+ drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c | 3 +++
+ 1 file changed, 3 insertions(+)
+
+diff --git a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
+index 8594b4a..941ba54 100644
+--- a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
++++ b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
+@@ -2305,6 +2305,9 @@ static void arm_smmu_iotlb_sync(struct iommu_domain *domain,
+ {
+ 	struct arm_smmu_domain *smmu_domain = to_smmu_domain(domain);
+ 
++	if (!gather->pgsize)
++		return;
++
+ 	arm_smmu_tlb_inv_range_domain(gather->start,
+ 				      gather->end - gather->start + 1,
+ 				      gather->pgsize, true, smmu_domain);
+-- 
+2.8.1
+
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
