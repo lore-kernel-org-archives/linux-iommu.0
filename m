@@ -7,59 +7,59 @@ X-Spam-Status: No, score=-13.8 required=3.0 tests=BAYES_00,
 	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no
 	version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9446BC433DB
-	for <iommu@archiver.kernel.org>; Wed, 31 Mar 2021 08:01:47 +0000 (UTC)
-Received: from smtp4.osuosl.org (smtp4.osuosl.org [140.211.166.137])
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4221AC433DB
+	for <iommu@archiver.kernel.org>; Wed, 31 Mar 2021 08:08:32 +0000 (UTC)
+Received: from smtp1.osuosl.org (smtp1.osuosl.org [140.211.166.138])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 09955619CF
-	for <iommu@archiver.kernel.org>; Wed, 31 Mar 2021 08:01:46 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 09955619CF
+	by mail.kernel.org (Postfix) with ESMTPS id AEACD619CF
+	for <iommu@archiver.kernel.org>; Wed, 31 Mar 2021 08:08:30 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org AEACD619CF
 Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=huawei.com
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by smtp4.osuosl.org (Postfix) with ESMTP id BEC90404A4;
-	Wed, 31 Mar 2021 08:01:46 +0000 (UTC)
+	by smtp1.osuosl.org (Postfix) with ESMTP id 6A6EE83A6A;
+	Wed, 31 Mar 2021 08:08:30 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from smtp4.osuosl.org ([127.0.0.1])
-	by localhost (smtp4.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id XgLIpNMq_YPD; Wed, 31 Mar 2021 08:01:45 +0000 (UTC)
-Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [IPv6:2605:bc80:3010:104::8cd3:938])
-	by smtp4.osuosl.org (Postfix) with ESMTP id 014ED404A8;
-	Wed, 31 Mar 2021 08:01:44 +0000 (UTC)
+Received: from smtp1.osuosl.org ([127.0.0.1])
+	by localhost (smtp1.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+	with ESMTP id 0CePZmT2LWOq; Wed, 31 Mar 2021 08:08:29 +0000 (UTC)
+Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
+	by smtp1.osuosl.org (Postfix) with ESMTP id 0C61A83979;
+	Wed, 31 Mar 2021 08:08:29 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id C817AC000B;
-	Wed, 31 Mar 2021 08:01:44 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id DBD4AC000E;
+	Wed, 31 Mar 2021 08:08:28 +0000 (UTC)
 Received: from smtp4.osuosl.org (smtp4.osuosl.org [IPv6:2605:bc80:3010::137])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 2C49FC000A
- for <iommu@lists.linux-foundation.org>; Wed, 31 Mar 2021 08:01:43 +0000 (UTC)
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 01660C000A
+ for <iommu@lists.linux-foundation.org>; Wed, 31 Mar 2021 08:08:28 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by smtp4.osuosl.org (Postfix) with ESMTP id 183D6404A8
- for <iommu@lists.linux-foundation.org>; Wed, 31 Mar 2021 08:01:43 +0000 (UTC)
+ by smtp4.osuosl.org (Postfix) with ESMTP id F0838404B7
+ for <iommu@lists.linux-foundation.org>; Wed, 31 Mar 2021 08:08:27 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
 Received: from smtp4.osuosl.org ([127.0.0.1])
  by localhost (smtp4.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id 9qGa3BEYuvAh for <iommu@lists.linux-foundation.org>;
- Wed, 31 Mar 2021 08:01:41 +0000 (UTC)
+ with ESMTP id FEjZlzKldY9B for <iommu@lists.linux-foundation.org>;
+ Wed, 31 Mar 2021 08:08:26 +0000 (UTC)
 X-Greylist: domain auto-whitelisted by SQLgrey-1.8.0
 Received: from frasgout.his.huawei.com (frasgout.his.huawei.com
  [185.176.79.56])
- by smtp4.osuosl.org (Postfix) with ESMTPS id D8876404A4
- for <iommu@lists.linux-foundation.org>; Wed, 31 Mar 2021 08:01:40 +0000 (UTC)
-Received: from fraeml704-chm.china.huawei.com (unknown [172.18.147.200])
- by frasgout.his.huawei.com (SkyGuard) with ESMTP id 4F9JWK4cvMz684bH;
- Wed, 31 Mar 2021 15:54:53 +0800 (CST)
-Received: from lhreml723-chm.china.huawei.com (10.201.108.74) by
- fraeml704-chm.china.huawei.com (10.206.15.53) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id
- 15.1.2106.2; Wed, 31 Mar 2021 10:01:37 +0200
+ by smtp4.osuosl.org (Postfix) with ESMTPS id 48066402EA
+ for <iommu@lists.linux-foundation.org>; Wed, 31 Mar 2021 08:08:26 +0000 (UTC)
+Received: from fraeml742-chm.china.huawei.com (unknown [172.18.147.226])
+ by frasgout.his.huawei.com (SkyGuard) with ESMTP id 4F9JcH0vpGz6842b;
+ Wed, 31 Mar 2021 15:59:11 +0800 (CST)
+Received: from lhreml735-chm.china.huawei.com (10.201.108.86) by
+ fraeml742-chm.china.huawei.com (10.206.15.223) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2106.2; Wed, 31 Mar 2021 10:08:18 +0200
 Received: from lhreml703-chm.china.huawei.com (10.201.108.52) by
- lhreml723-chm.china.huawei.com (10.201.108.74) with Microsoft SMTP Server
+ lhreml735-chm.china.huawei.com (10.201.108.86) with Microsoft SMTP Server
  (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256) id
- 15.1.2106.2; Wed, 31 Mar 2021 09:01:36 +0100
+ 15.1.2106.2; Wed, 31 Mar 2021 09:08:18 +0100
 Received: from lhreml703-chm.china.huawei.com ([10.201.68.198]) by
  lhreml703-chm.china.huawei.com ([10.201.68.198]) with mapi id 15.01.2106.013; 
- Wed, 31 Mar 2021 09:01:36 +0100
+ Wed, 31 Mar 2021 09:08:18 +0100
 From: Salil Mehta <salil.mehta@huawei.com>
 To: Robin Murphy <robin.murphy@arm.com>, John Garry <john.garry@huawei.com>,
  "joro@8bytes.org" <joro@8bytes.org>, "will@kernel.org" <will@kernel.org>,
@@ -68,9 +68,9 @@ To: Robin Murphy <robin.murphy@arm.com>, John Garry <john.garry@huawei.com>,
  "m.szyprowski@samsung.com" <m.szyprowski@samsung.com>
 Subject: RE: [PATCH 5/6] dma-mapping/iommu: Add dma_set_max_opt_size()
 Thread-Topic: [PATCH 5/6] dma-mapping/iommu: Add dma_set_max_opt_size()
-Thread-Index: AQHXHMQXnn0Ai8cuTkuBkW77wwOhrKqLiR4AgBJBpmA=
-Date: Wed, 31 Mar 2021 08:01:36 +0000
-Message-ID: <4eda43a40b8c4940a982787e0f542458@huawei.com>
+Thread-Index: AQHXHMQXnn0Ai8cuTkuBkW77wwOhrKqLiR4AgBJGVlA=
+Date: Wed, 31 Mar 2021 08:08:18 +0000
+Message-ID: <e9ec4d0117f049fc87d985dde6c0d7e1@huawei.com>
 References: <1616160348-29451-1-git-send-email-john.garry@huawei.com>
  <1616160348-29451-6-git-send-email-john.garry@huawei.com>
  <9ecb6980-7f40-0333-572f-f9d4b8238353@arm.com>
@@ -103,6 +103,8 @@ Content-Transfer-Encoding: 7bit
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
+(+) correction below, sorry for the typo in earlier post.
+
 > From: iommu [mailto:iommu-bounces@lists.linux-foundation.org] On Behalf Of
 > Robin Murphy
 > Sent: Friday, March 19, 2021 5:00 PM
@@ -127,9 +129,8 @@ Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 > hard to make a reasonable decision.
 
 
-This is also the case in networking workloads where we have MTU set but
+This is also the case for networking workloads where we have MTU set but
 actual packet sizes might vary.
-
 
 > 
 > Being largely workload-dependent is why I still think this should be a
@@ -144,8 +145,9 @@ actual packet sizes might vary.
 > fly, but I can easily imagine that having enough inherent overhead to
 > end up being an impractical (but fun) waste of time.
 
+
 This might be particularly useful for the NICs where packet sizes vary
-from 64K to 9K. Hence, without optimal strategy this can affect the
+from 64B to 9K. But without optimal strategy this can affect the
 performance of networking workloads.
 
 
