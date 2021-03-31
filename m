@@ -2,78 +2,82 @@ Return-Path: <SRS0=WBHG=I5=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-5.3 required=3.0 tests=BAYES_00,
-	HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,NICE_REPLY_A,SPF_HELO_NONE,
-	SPF_PASS,USER_AGENT_SANE_1 autolearn=no autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-16.8 required=3.0 tests=BAYES_00,
+	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_CR_TRAILER,INCLUDES_PATCH,
+	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,USER_AGENT_GIT
+	autolearn=unavailable autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 82375C433C1
-	for <iommu@archiver.kernel.org>; Wed, 31 Mar 2021 09:58:51 +0000 (UTC)
-Received: from smtp3.osuosl.org (smtp3.osuosl.org [140.211.166.136])
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 51624C433C1
+	for <iommu@archiver.kernel.org>; Wed, 31 Mar 2021 10:04:57 +0000 (UTC)
+Received: from smtp2.osuosl.org (smtp2.osuosl.org [140.211.166.133])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 1768E61878
-	for <iommu@archiver.kernel.org>; Wed, 31 Mar 2021 09:58:51 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 1768E61878
-Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=arm.com
+	by mail.kernel.org (Postfix) with ESMTPS id CF4E761969
+	for <iommu@archiver.kernel.org>; Wed, 31 Mar 2021 10:04:56 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org CF4E761969
+Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=glider.be
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by smtp3.osuosl.org (Postfix) with ESMTP id C552E60AA9;
-	Wed, 31 Mar 2021 09:58:50 +0000 (UTC)
+	by smtp2.osuosl.org (Postfix) with ESMTP id 94D784023D;
+	Wed, 31 Mar 2021 10:04:56 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from smtp3.osuosl.org ([127.0.0.1])
-	by localhost (smtp3.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id qWo0JHkAW7Gd; Wed, 31 Mar 2021 09:58:49 +0000 (UTC)
+Received: from smtp2.osuosl.org ([127.0.0.1])
+	by localhost (smtp2.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+	with ESMTP id cW2h3SS6ZuFT; Wed, 31 Mar 2021 10:04:55 +0000 (UTC)
 Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by smtp3.osuosl.org (Postfix) with ESMTP id 98EB8607B0;
-	Wed, 31 Mar 2021 09:58:49 +0000 (UTC)
+	by smtp2.osuosl.org (Postfix) with ESMTP id 85E5840141;
+	Wed, 31 Mar 2021 10:04:55 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 6823FC000B;
-	Wed, 31 Mar 2021 09:58:49 +0000 (UTC)
-Received: from smtp4.osuosl.org (smtp4.osuosl.org [IPv6:2605:bc80:3010::137])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 78087C000A
- for <iommu@lists.linux-foundation.org>; Wed, 31 Mar 2021 09:58:47 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 4EAD4C000C;
+	Wed, 31 Mar 2021 10:04:55 +0000 (UTC)
+Received: from smtp2.osuosl.org (smtp2.osuosl.org [140.211.166.133])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id A785DC000A
+ for <iommu@lists.linux-foundation.org>; Wed, 31 Mar 2021 10:04:53 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by smtp4.osuosl.org (Postfix) with ESMTP id 72F844063D
- for <iommu@lists.linux-foundation.org>; Wed, 31 Mar 2021 09:58:47 +0000 (UTC)
+ by smtp2.osuosl.org (Postfix) with ESMTP id 80C1240230
+ for <iommu@lists.linux-foundation.org>; Wed, 31 Mar 2021 10:04:53 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from smtp4.osuosl.org ([127.0.0.1])
- by localhost (smtp4.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id 2vdwWLk5I5oZ for <iommu@lists.linux-foundation.org>;
- Wed, 31 Mar 2021 09:58:43 +0000 (UTC)
-X-Greylist: domain auto-whitelisted by SQLgrey-1.8.0
-Received: from foss.arm.com (foss.arm.com [217.140.110.172])
- by smtp4.osuosl.org (Postfix) with ESMTP id B86C8405F0
- for <iommu@lists.linux-foundation.org>; Wed, 31 Mar 2021 09:58:43 +0000 (UTC)
-Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
- by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 9CB561042;
- Wed, 31 Mar 2021 02:58:42 -0700 (PDT)
-Received: from [10.57.24.208] (unknown [10.57.24.208])
- by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id E5A3F3F792;
- Wed, 31 Mar 2021 02:58:40 -0700 (PDT)
-Subject: Re: [PATCH 1/6] iommu: Move IOVA power-of-2 roundup into allocator
-To: John Garry <john.garry@huawei.com>, "joro@8bytes.org" <joro@8bytes.org>,
- "will@kernel.org" <will@kernel.org>, "jejb@linux.ibm.com"
- <jejb@linux.ibm.com>, "martin.petersen@oracle.com"
- <martin.petersen@oracle.com>, "hch@lst.de" <hch@lst.de>,
- "m.szyprowski@samsung.com" <m.szyprowski@samsung.com>
-References: <1616160348-29451-1-git-send-email-john.garry@huawei.com>
- <1616160348-29451-2-git-send-email-john.garry@huawei.com>
- <ee935a6d-a94c-313e-f0ed-e14cc6dac055@arm.com>
- <73d459de-b5cc-e2f5-bcd7-2ee23c8d5075@huawei.com>
- <afc2fc05-a799-cb14-debd-d36afed8f456@arm.com>
- <08c0f4b9-8713-fa97-3986-3cfb0d6b820b@huawei.com>
-From: Robin Murphy <robin.murphy@arm.com>
-Message-ID: <e4b9146a-ca32-50f5-4fe0-42aa0b66d2d6@arm.com>
-Date: Wed, 31 Mar 2021 10:58:36 +0100
-User-Agent: Mozilla/5.0 (Windows NT 10.0; rv:78.0) Gecko/20100101
- Thunderbird/78.9.0
+Received: from smtp2.osuosl.org ([127.0.0.1])
+ by localhost (smtp2.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+ with ESMTP id 3NizpxqrJ3UL for <iommu@lists.linux-foundation.org>;
+ Wed, 31 Mar 2021 10:04:52 +0000 (UTC)
+X-Greylist: delayed 00:05:01 by SQLgrey-1.8.0
+Received: from baptiste.telenet-ops.be (baptiste.telenet-ops.be
+ [IPv6:2a02:1800:120:4::f00:13])
+ by smtp2.osuosl.org (Postfix) with ESMTPS id A77DF40141
+ for <iommu@lists.linux-foundation.org>; Wed, 31 Mar 2021 10:04:51 +0000 (UTC)
+Received: from ramsan.of.borg ([IPv6:2a02:1810:ac12:ed20:ada2:b4da:6568:5ad5])
+ by baptiste.telenet-ops.be with bizsmtp
+ id mxzd240015W9KJv01xzdKe; Wed, 31 Mar 2021 11:59:48 +0200
+Received: from rox.of.borg ([192.168.97.57])
+ by ramsan.of.borg with esmtps (TLS1.3) tls
+ TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384 (Exim 4.93)
+ (envelope-from <geert@linux-m68k.org>)
+ id 1lRXdQ-00BseR-73; Wed, 31 Mar 2021 11:59:36 +0200
+Received: from geert by rox.of.borg with local (Exim 4.93)
+ (envelope-from <geert@linux-m68k.org>)
+ id 1lRXBt-001bpo-DX; Wed, 31 Mar 2021 11:31:09 +0200
+From: Geert Uytterhoeven <geert+renesas@glider.be>
+To: Joerg Roedel <joro@8bytes.org>, Will Deacon <will@kernel.org>,
+ Steven Rostedt <rostedt@goodmis.org>, Ingo Molnar <mingo@redhat.com>,
+ Petr Mladek <pmladek@suse.com>,
+ Sergey Senozhatsky <sergey.senozhatsky@gmail.com>
+Subject: [PATCH 3/3] lib/vsprintf: Use pr_crit() instead of long fancy messages
+Date: Wed, 31 Mar 2021 11:31:04 +0200
+Message-Id: <20210331093104.383705-4-geert+renesas@glider.be>
+X-Mailer: git-send-email 2.25.1
+In-Reply-To: <20210331093104.383705-1-geert+renesas@glider.be>
+References: <20210331093104.383705-1-geert+renesas@glider.be>
 MIME-Version: 1.0
-In-Reply-To: <08c0f4b9-8713-fa97-3986-3cfb0d6b820b@huawei.com>
-Content-Language: en-GB
-Cc: "iommu@lists.linux-foundation.org" <iommu@lists.linux-foundation.org>,
- "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
- "linux-scsi@vger.kernel.org" <linux-scsi@vger.kernel.org>,
- Linuxarm <linuxarm@huawei.com>
+Cc: Marco Elver <elver@google.com>, linux-embedded@vger.kernel.org,
+ John Ogness <john.ogness@linutronix.de>, Gary R Hook <gary.hook@amd.com>,
+ Randy Dunlap <rdunlap@infradead.org>,
+ Rasmus Villemoes <linux@rasmusvillemoes.dk>, linux-kernel@vger.kernel.org,
+ iommu@lists.linux-foundation.org, Geert Uytterhoeven <geert+renesas@glider.be>,
+ Andrew Morton <akpm@linux-foundation.org>,
+ Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
+ Linus Torvalds <torvalds@linux-foundation.org>,
+ Vlastimil Babka <vbabka@suse.cz>
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -86,42 +90,64 @@ List-Post: <mailto:iommu@lists.linux-foundation.org>
 List-Help: <mailto:iommu-request@lists.linux-foundation.org?subject=help>
 List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
  <mailto:iommu-request@lists.linux-foundation.org?subject=subscribe>
+Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
-Content-Type: text/plain; charset="us-ascii"; Format="flowed"
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-On 2021-03-22 15:01, John Garry wrote:
-> On 19/03/2021 19:20, Robin Murphy wrote:
-> 
-> Hi Robin,
-> 
->>> So then we have the issue of how to dynamically increase this rcache
->>> threshold. The problem is that we may have many devices associated with
->>> the same domain. So, in theory, we can't assume that when we increase
->>> the threshold that some other device will try to fast free an IOVA which
->>> was allocated prior to the increase and was not rounded up.
->>>
->>> I'm very open to better (or less bad) suggestions on how to do this ...
->> ...but yes, regardless of exactly where it happens, rounding up or not
->> is the problem for rcaches in general. I've said several times that my
->> preferred approach is to not change it that dynamically at all, but
->> instead treat it more like we treat the default domain type.
->>
-> 
-> Can you remind me of that idea? I don't remember you mentioning using 
-> default domain handling as a reference in any context.
+While long fancy messages have a higher probability of being seen than
+small messages, they may scroll of the screen fast, if visible at all,
+and may still be missed.  In addition, they increase boot time and
+kernel size.
 
-Sorry if the phrasing was unclear there - the allusion to default 
-domains is new, it just occurred to me that what we do there is in fact 
-fairly close to what I've suggested previously for this. In that case, 
-we have a global policy set by the command line, which *can* be 
-overridden per-domain via sysfs at runtime, provided the user is willing 
-to tear the whole thing down. Using a similar approach here would give a 
-fair degree of flexibility but still mean that changes never have to be 
-made dynamically to a live domain.
+The correct mechanism to increase importance of a kernel message is not
+to draw fancy boxes with more text, but to shout louder, i.e. increase
+the message's reporting level.  Making sure the administrator of the
+system is aware of such a message is a system policy, and is the
+responsability of a user-space log daemon.
 
-Robin.
+Fix this by increasing the reporting level from KERN_WARNING to
+KERN_CRIT, and removing irrelevant text and graphics.
+
+This reduces kernel size by ca. 0.5 KiB.
+
+Fixes: 5ead723a20e0447b ("lib/vsprintf: no_hash_pointers prints all addresses as unhashed")
+Signed-off-by: Geert Uytterhoeven <geert+renesas@glider.be>
+---
+ lib/vsprintf.c | 17 +++--------------
+ 1 file changed, 3 insertions(+), 14 deletions(-)
+
+diff --git a/lib/vsprintf.c b/lib/vsprintf.c
+index 9b423359bb6433d3..0293f1b89064b287 100644
+--- a/lib/vsprintf.c
++++ b/lib/vsprintf.c
+@@ -2193,20 +2193,9 @@ static int __init no_hash_pointers_enable(char *str)
+ 
+ 	no_hash_pointers = true;
+ 
+-	pr_warn("**********************************************************\n");
+-	pr_warn("**   NOTICE NOTICE NOTICE NOTICE NOTICE NOTICE NOTICE   **\n");
+-	pr_warn("**                                                      **\n");
+-	pr_warn("** This system shows unhashed kernel memory addresses   **\n");
+-	pr_warn("** via the console, logs, and other interfaces. This    **\n");
+-	pr_warn("** might reduce the security of your system.            **\n");
+-	pr_warn("**                                                      **\n");
+-	pr_warn("** If you see this message and you are not debugging    **\n");
+-	pr_warn("** the kernel, report this immediately to your system   **\n");
+-	pr_warn("** administrator!                                       **\n");
+-	pr_warn("**                                                      **\n");
+-	pr_warn("**   NOTICE NOTICE NOTICE NOTICE NOTICE NOTICE NOTICE   **\n");
+-	pr_warn("**********************************************************\n");
+-
++	pr_crit("This system shows unhashed kernel memory addresses\n");
++	pr_crit("via the console, logs, and other interfaces. This\n");
++	pr_crit("might reduce the security of your system.\n");
+ 	return 0;
+ }
+ early_param("no_hash_pointers", no_hash_pointers_enable);
+-- 
+2.25.1
+
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
