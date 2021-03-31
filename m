@@ -2,85 +2,163 @@ Return-Path: <SRS0=WBHG=I5=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-15.3 required=3.0 tests=BAYES_00,DKIM_INVALID,
-	DKIM_SIGNED,INCLUDES_CR_TRAILER,INCLUDES_PATCH,MAILING_LIST_MULTI,
-	SPF_HELO_NONE,SPF_PASS,USER_AGENT_SANE_1 autolearn=unavailable
-	autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-3.5 required=3.0 tests=BAYES_00,DKIM_INVALID,
+	DKIM_SIGNED,HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,
+	MSGID_FROM_MTA_HEADER,SPF_HELO_NONE,SPF_PASS autolearn=no autolearn_force=no
+	version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3D5FAC433DB
-	for <iommu@archiver.kernel.org>; Wed, 31 Mar 2021 11:50:00 +0000 (UTC)
-Received: from smtp1.osuosl.org (smtp1.osuosl.org [140.211.166.138])
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 79F63C43461
+	for <iommu@archiver.kernel.org>; Wed, 31 Mar 2021 12:34:15 +0000 (UTC)
+Received: from smtp4.osuosl.org (smtp4.osuosl.org [140.211.166.137])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 9DFD26198F
-	for <iommu@archiver.kernel.org>; Wed, 31 Mar 2021 11:49:59 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 9DFD26198F
-Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=kernel.org
+	by mail.kernel.org (Postfix) with ESMTPS id 3643E61A49
+	for <iommu@archiver.kernel.org>; Wed, 31 Mar 2021 12:28:17 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 3643E61A49
+Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=nvidia.com
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by smtp1.osuosl.org (Postfix) with ESMTP id 3D26A83EA3;
-	Wed, 31 Mar 2021 11:49:59 +0000 (UTC)
+	by smtp4.osuosl.org (Postfix) with ESMTP id AC8554065F;
+	Wed, 31 Mar 2021 12:28:16 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from smtp1.osuosl.org ([127.0.0.1])
-	by localhost (smtp1.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id 9rPoSnPLWx_p; Wed, 31 Mar 2021 11:49:57 +0000 (UTC)
-Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by smtp1.osuosl.org (Postfix) with ESMTP id 1B06E83CAF;
-	Wed, 31 Mar 2021 11:49:57 +0000 (UTC)
-Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id EA4D7C000B;
-	Wed, 31 Mar 2021 11:49:56 +0000 (UTC)
-Received: from smtp4.osuosl.org (smtp4.osuosl.org [140.211.166.137])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 8CC59C000A;
- Wed, 31 Mar 2021 11:49:55 +0000 (UTC)
-Received: from localhost (localhost [127.0.0.1])
- by smtp4.osuosl.org (Postfix) with ESMTP id 79D0640500;
- Wed, 31 Mar 2021 11:49:55 +0000 (UTC)
-X-Virus-Scanned: amavisd-new at osuosl.org
-Authentication-Results: smtp4.osuosl.org (amavisd-new);
- dkim=pass (2048-bit key) header.d=kernel.org
 Received: from smtp4.osuosl.org ([127.0.0.1])
- by localhost (smtp4.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id wjYwjZLK6Jdr; Wed, 31 Mar 2021 11:49:54 +0000 (UTC)
-X-Greylist: domain auto-whitelisted by SQLgrey-1.8.0
-X-Greylist: domain auto-whitelisted by SQLgrey-1.8.0
-Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
- by smtp4.osuosl.org (Postfix) with ESMTPS id 7EB5C404FF;
- Wed, 31 Mar 2021 11:49:54 +0000 (UTC)
-Received: by mail.kernel.org (Postfix) with ESMTPSA id EC88860249;
- Wed, 31 Mar 2021 11:49:50 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
- s=k20201202; t=1617191393;
- bh=9Tvk8pMagcUqHlxEfpmAq3P1z5xVSb6AxBC9iuF3UAo=;
- h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
- b=kMlovUr/+JWR2ZHUYmDPMJ2ndHmdrz5lm7unGTt4nXLsAYiYuNHKr5e0oMkxx6fDz
- QR2rHHP5l9HS5rEud3McAg/yhn1jEjy25vdtAyZhr/OaEDrBLA51RShgMt6ADFGgKk
- uQaFZLkdzt19pPW2qgqzcDG9l8DRiLheZZlrvUgMDXhydKLRJqDVIU4Tnw+ks2cwPl
- dKj97SK7OA1MiDUHwOiBDXkDUo1pSJ37y/5yx0ulUHqGh/GEBy/gsrfNl6Wm5GhbkI
- DEukmD+vjCBTbLqtDliJ10g6+dV8RwrdEMhaaSt1c6K7yQWHZYOPwwIVQ8ExC6hyFf
- jZwkG9F4BmZKw==
-Date: Wed, 31 Mar 2021 12:49:47 +0100
-From: Will Deacon <will@kernel.org>
-To: Robin Murphy <robin.murphy@arm.com>
-Subject: Re: [PATCH 16/18] iommu: remove DOMAIN_ATTR_DMA_USE_FLUSH_QUEUE
-Message-ID: <20210331114947.GA7626@willie-the-truck>
-References: <20210316153825.135976-1-hch@lst.de>
- <20210316153825.135976-17-hch@lst.de>
- <20210330131149.GP5908@willie-the-truck>
- <a6952aa7-4d7e-54f0-339e-e15f88596dcc@arm.com>
- <20210330135801.GA6187@willie-the-truck>
- <578d6aa5-4239-f5d7-2e9f-686b18e52bba@arm.com>
-MIME-Version: 1.0
+	by localhost (smtp4.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+	with ESMTP id RSb9yynbM6D8; Wed, 31 Mar 2021 12:28:15 +0000 (UTC)
+Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
+	by smtp4.osuosl.org (Postfix) with ESMTP id 3FB9A40E4C;
+	Wed, 31 Mar 2021 12:28:15 +0000 (UTC)
+Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 12B9CC000C;
+	Wed, 31 Mar 2021 12:28:15 +0000 (UTC)
+Received: from smtp1.osuosl.org (smtp1.osuosl.org [140.211.166.138])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 09DAEC000A
+ for <iommu@lists.linux-foundation.org>; Wed, 31 Mar 2021 12:28:14 +0000 (UTC)
+Received: from localhost (localhost [127.0.0.1])
+ by smtp1.osuosl.org (Postfix) with ESMTP id E839184832
+ for <iommu@lists.linux-foundation.org>; Wed, 31 Mar 2021 12:28:13 +0000 (UTC)
+X-Virus-Scanned: amavisd-new at osuosl.org
+Authentication-Results: smtp1.osuosl.org (amavisd-new);
+ dkim=pass (2048-bit key) header.d=nvidia.com
+Received: from smtp1.osuosl.org ([127.0.0.1])
+ by localhost (smtp1.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+ with ESMTP id yYE9qpa2-BXN for <iommu@lists.linux-foundation.org>;
+ Wed, 31 Mar 2021 12:28:12 +0000 (UTC)
+X-Greylist: whitelisted by SQLgrey-1.8.0
+Received: from NAM10-DM6-obe.outbound.protection.outlook.com
+ (mail-dm6nam10on20610.outbound.protection.outlook.com
+ [IPv6:2a01:111:f400:7e88::610])
+ by smtp1.osuosl.org (Postfix) with ESMTPS id C200384833
+ for <iommu@lists.linux-foundation.org>; Wed, 31 Mar 2021 12:28:12 +0000 (UTC)
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=Hw0ihldKbdEkDmZPJvOY4tzAMf7w6A8zf0KFP0tTc0yaGmWiScoIPj3N/3KO7BmMZJDu0+AieplLpkvGFwL+n28meF19nNjsVFniGKT+Jdw45rLirbkPAWv7ujJ86zJrMMAcAW9zSIi3Nk+G+gGecjEQaViBRUvY2IEetEp5B6pIxlpIKq9DoMMOUtxxI+1sI32V579eae1TMMjX+V2KR6GbYgY64pb+846W7t1cAnoNR7WKW+m76q+fV/byNl/GaA434v8Rxpap28+nWzR3iOdC/vqzzFM1SU8+Bu3fSIABINv45v2gjrEFcgUOVD/rgzw2WRK2GVPJ4b9KWVy6ew==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com; 
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=BxbQytUr9+fpQTmbz09WMWQ5YuxnEIGMLAZU/zYwuzY=;
+ b=aXUFxJdpPJ6POO2Ky4to7Lvq2wjOWcyBxZ/YEJB+tpev2da8GbYgxBLFNO7Qzl2ZYyKm4NJZqSBsIVZ5VjqQiloVR5hIlf3Yr7lbAFtjsmSr3u1SQq88cn401BBI7IwTgKrNWXHnvsQ2i/H4YYgBlPrElZ97kbM/ko4QAI0BhkVwDBhq5FG1yZE52lPPOnHX1E6paPEL/NBTScjyYNpFBN4vHe2fqe56n2sJXOunoSlpoynCyP0QqTJLNZclU26/sJIUc1e3SyIj6u4q1DGynAGW9GHIxi3GBzftsLaBO3FTUSPoPw5uPKo8tfpPo6FaYBX2UXgZQQ24UmWMTM8Spg==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=nvidia.com; dmarc=pass action=none header.from=nvidia.com;
+ dkim=pass header.d=nvidia.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
+ s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=BxbQytUr9+fpQTmbz09WMWQ5YuxnEIGMLAZU/zYwuzY=;
+ b=jtbNqQBqs4lspf4bAsJofdQyYdMMpAAoID+L8q3Btti2yolcmrP9OlM8RJG1cL6xEc3Cu6Sgl9pljQCgeA3tjL05QFtWgd8T46myaAzoLiQRmnZzDFyXOPO827cq2knIo8LE++9IowAXzgYOORpnK+x43Fn84vnWghiKTrE8/KyIwuDtXiwxob4xf1Z/qIOvVuTIFEuOQ2NzUoWE/D3DC/KQAvhfqY2ajxsl5e52PoWs4DXajdcD4yaDXIfJBZTQqGmATwRybkDN2Hy4xNT0gRwyLh25rVcNEoqFfZT6LUhBW2YdnWOVZIJ2FRjQeNurbAy8WkP8udSZepoPXKmpkA==
+Authentication-Results: linux.intel.com; dkim=none (message not signed)
+ header.d=none; linux.intel.com; dmarc=none action=none header.from=nvidia.com; 
+Received: from DM6PR12MB3834.namprd12.prod.outlook.com (2603:10b6:5:14a::12)
+ by DM5PR12MB2584.namprd12.prod.outlook.com (2603:10b6:4:b0::37) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3977.25; Wed, 31 Mar
+ 2021 12:28:08 +0000
+Received: from DM6PR12MB3834.namprd12.prod.outlook.com
+ ([fe80::1c62:7fa3:617b:ab87]) by DM6PR12MB3834.namprd12.prod.outlook.com
+ ([fe80::1c62:7fa3:617b:ab87%6]) with mapi id 15.20.3977.033; Wed, 31 Mar 2021
+ 12:28:08 +0000
+Date: Wed, 31 Mar 2021 09:28:05 -0300
+From: Jason Gunthorpe <jgg@nvidia.com>
+To: Jacob Pan <jacob.jun.pan@linux.intel.com>
+Subject: Re: [PATCH V4 05/18] iommu/ioasid: Redefine IOASID set and
+ allocation APIs
+Message-ID: <20210331122805.GC1463678@nvidia.com>
+References: <20210319124645.GP2356281@nvidia.com> <YFSqDNJ5yagk4eO+@myrica>
+ <20210319135432.GT2356281@nvidia.com>
+ <20210319112221.5123b984@jacob-builder>
+ <20210322120300.GU2356281@nvidia.com>
+ <20210324120528.24d82dbd@jacob-builder>
+ <20210329163147.GG2356281@nvidia.com>
+ <20210329155526.2ad791a9@jacob-builder>
+ <20210330134313.GP2356281@nvidia.com>
+ <20210330171041.70f2d7d0@jacob-builder>
 Content-Disposition: inline
-In-Reply-To: <578d6aa5-4239-f5d7-2e9f-686b18e52bba@arm.com>
-User-Agent: Mutt/1.10.1 (2018-07-13)
-Cc: freedreno@lists.freedesktop.org, kvm@vger.kernel.org,
- Michael Ellerman <mpe@ellerman.id.au>, linuxppc-dev@lists.ozlabs.org,
- dri-devel@lists.freedesktop.org, Li Yang <leoyang.li@nxp.com>,
- iommu@lists.linux-foundation.org, netdev@vger.kernel.org,
- linux-arm-msm@vger.kernel.org, virtualization@lists.linux-foundation.org,
- David Woodhouse <dwmw2@infradead.org>, Christoph Hellwig <hch@lst.de>,
- linux-arm-kernel@lists.infradead.org
+In-Reply-To: <20210330171041.70f2d7d0@jacob-builder>
+X-Originating-IP: [142.162.115.133]
+X-ClientProxiedBy: MN2PR10CA0016.namprd10.prod.outlook.com
+ (2603:10b6:208:120::29) To DM6PR12MB3834.namprd12.prod.outlook.com
+ (2603:10b6:5:14a::12)
+MIME-Version: 1.0
+X-MS-Exchange-MessageSentRepresentingType: 1
+Received: from mlx.ziepe.ca (142.162.115.133) by
+ MN2PR10CA0016.namprd10.prod.outlook.com (2603:10b6:208:120::29) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3977.26 via Frontend
+ Transport; Wed, 31 Mar 2021 12:28:06 +0000
+Received: from jgg by mlx with local (Exim 4.94)	(envelope-from
+ <jgg@nvidia.com>)	id 1lRZx7-006K42-QG; Wed, 31 Mar 2021 09:28:05 -0300
+X-MS-PublicTrafficType: Email
+X-MS-Office365-Filtering-Correlation-Id: d0af4e41-be95-44ce-507a-08d8f440702d
+X-MS-TrafficTypeDiagnostic: DM5PR12MB2584:
+X-Microsoft-Antispam-PRVS: <DM5PR12MB25842282B017188EA6AB410FC27C9@DM5PR12MB2584.namprd12.prod.outlook.com>
+X-MS-Oob-TLC-OOBClassifiers: OLM:10000;
+X-MS-Exchange-SenderADCheck: 1
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: vdE7lSu/oq7mePjVgzKe+nf57N2FFePYmgaENkoPB/NVfMb122og/D9Jxe7bS2RT9jdWjVd5kg1N/IDILXjYg87gqB0+80QMxuziTVMU9pdd3n9d/ApN+YWN8FDE28bxCxfwM80eULiLSo4bEk/U60u1CyHFrVkGDHB/1rbLtOid8Sl7SIsSrwezNbFGDaL9liqdcWirllOboegrhEJ0/+Z65MfAoVr8nmQ7mfyYtXrerQWJzD3DeC0GYMaWGByj4/BCrC4onTyllb7ybTCuI+sNyFF6r9P0Uqd8fFF0YwVTt46A+cGoTdYweaHSiNTm3Cot3MG7ZhBJ8hOOOADNPLJxlxnhViLisH1zGtyGDEzH65rn0U5wV6gfkaAkYV//FtLSHnpm+7b+dBGeJ1T7rFHr0kVoPm79p7OUH+5y8MppmDczJxOTSdO7PZtt11PrtBQ0pecOR9bQelGY4KldPM3GGThff+OEuaCG+GLq96NEdQo4ZVsuZ3V8kqACznhutIdP90YSWBfQRKHu9aajWIFpsfcX6qYXI5uPQyZTqcxggLaBwq8uoh043Hv4+csicuVQzccMwK+O7QiXV+toYlCTwGhwx97qRA+RGIydYbdBqR3yiUPyIEFvBo5DgmIgf/9MH13Z9i9SDpbwOQYZZozhwdDWDpO4TKZcaf0yYv4=
+X-Forefront-Antispam-Report: CIP:255.255.255.255; CTRY:; LANG:en; SCL:1; SRV:;
+ IPV:NLI; SFV:NSPM; H:DM6PR12MB3834.namprd12.prod.outlook.com; PTR:; CAT:NONE;
+ SFS:(4636009)(346002)(366004)(396003)(376002)(39860400002)(136003)(26005)(8936002)(36756003)(54906003)(7416002)(9746002)(9786002)(316002)(86362001)(8676002)(186003)(66556008)(33656002)(1076003)(66476007)(2616005)(66946007)(2906002)(4326008)(83380400001)(38100700001)(478600001)(5660300002)(6916009)(426003);
+ DIR:OUT; SFP:1101; 
+X-MS-Exchange-AntiSpam-MessageData: =?us-ascii?Q?H3yjkPhZfU0HuT/V/8ocuNpcAC6KzH+n3UKUv2yh2F/wwamTZ9QFYwAY5Txg?=
+ =?us-ascii?Q?8jMxJc/ETXtoGHiruRUtVF3MAbEQpbHPZDY+DsxdWM3ISDTRIN0lbSm7z3v2?=
+ =?us-ascii?Q?5v3ZTh6++hWQhK6NODYFa4hlWzy27aT3o9Oj/Zzz16Fu5O/JZIl86rclnOyz?=
+ =?us-ascii?Q?8iYSmmyR7FDKV5NSTv9GhTCL2R8kQwD2PIAqAst65jfA2WLU3FXUlSFGEDap?=
+ =?us-ascii?Q?YZzN8EKGOLNtzKvrxmbIZ0qg5a09jfk5LoxzxJwY3DVEzjC3YwHEXPs9CeNj?=
+ =?us-ascii?Q?kZyBhCapnWDOo7PhEQzKUvz/023V9Eei/o0DjsqN11AioCwH2VavIEgs28cf?=
+ =?us-ascii?Q?wsugqcAoNkliUT8hjsPvXQz7Gdd26NPZxv9ks6cvwW/IcBxGk0RkC1VGMKAP?=
+ =?us-ascii?Q?sEENxuOj+vnE9hIZ+l7hPmuJR5iqcQ8An9YEA0Z0KynQF1BGreWawaCEEz/C?=
+ =?us-ascii?Q?N303VYYur/2+HcUOlmQL0tQTiVNxRvi7+Z8ibWdKel6L0AL5f85qA3A8FQhN?=
+ =?us-ascii?Q?2jgWtcJl/vBHzevtyxPtbhWFa2nlmuLDKde6DJcYyIIOSWnO8ErMPFnt/YuM?=
+ =?us-ascii?Q?jxTezFlW4I7ZHWMWo9lTXColRfk71H9nh57TjKebJlDl6X+NHMgXOPD1ekxf?=
+ =?us-ascii?Q?NHR/Co317UZnSv3U8wIgJW3Yt5IS2IrRgMh+9Q0yXw2kA2NLQ2grweY7mC9i?=
+ =?us-ascii?Q?ZNx0tfcG2/RTuSYif55FgsyZXzkK6FRMsp3OPO+pX8Qhu3iaV9KBTdJ18isq?=
+ =?us-ascii?Q?TtF8DgkT/xx734uhGBG2JAh3yFK0J4nb+jg2eYjrNXc09u9sMZGsat5AOi/x?=
+ =?us-ascii?Q?aBfqToORcz9FXReNDQ1+uJGNcdzzkFfF8kIvHNzpgz7PDYSAbDq+xUYtDX/Z?=
+ =?us-ascii?Q?Snc6xFhiOKhu7in4m7Bq6TxDOOJoANK/hlImmNBTux3VigKdM97QY5Pvym6Z?=
+ =?us-ascii?Q?SGUM3YhS0URzXxReFwf889pQK00GK2u4uXcKBlyJlfxkXCGJrlO8vSuGH7UR?=
+ =?us-ascii?Q?/N0H2rklW+k0wA0oUZo5t80NKhi9bDU9ZEvgAnb/imfvtfcWcgOmcMCighzX?=
+ =?us-ascii?Q?uMlVxb9gxOSG3GIC2RrVR9cSLHlpOKQ0CaaNVr7pSc/FtIiQaftWK1EmW5HM?=
+ =?us-ascii?Q?p1Jbo7EBxHuEOr11kZtxOSkpbtJo551cGhexT2T6+hlUFQ4OJNQRUma7yr/r?=
+ =?us-ascii?Q?OEkYttBasNgNXE6NP0D+5kAmulK9i2SKd5JMi5GxOKMNRyh/ZpekxfZXbWgU?=
+ =?us-ascii?Q?TIzFNnZpjoCZzpk/bm4cTDfa4yJxDlYcCfI3FM6UU+2B6xk4qZVcXaWtDqTT?=
+ =?us-ascii?Q?wgB4ZN0PfvG2ladRMS7vxuetlR3OCERKVfY9pawvFACipA=3D=3D?=
+X-OriginatorOrg: Nvidia.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: d0af4e41-be95-44ce-507a-08d8f440702d
+X-MS-Exchange-CrossTenant-AuthSource: DM6PR12MB3834.namprd12.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 31 Mar 2021 12:28:07.4065 (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: SwOv0bDaUVUZiA2FNEQbkbSQMrogUl1HmDtxx8t0uyzP+1Wf356U1JVr5qgVBIX/
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: DM5PR12MB2584
+Cc: Jean-Philippe Brucker <jean-philippe@linaro.org>, "Tian,
+ Kevin" <kevin.tian@intel.com>, Alex Williamson <alex.williamson@redhat.com>,
+ Raj Ashok <ashok.raj@intel.com>, Jonathan Corbet <corbet@lwn.net>,
+ Jean-Philippe Brucker <jean-philippe@linaro.com>,
+ LKML <linux-kernel@vger.kernel.org>, Dave Jiang <dave.jiang@intel.com>,
+ iommu@lists.linux-foundation.org, Li Zefan <lizefan@huawei.com>,
+ Johannes Weiner <hannes@cmpxchg.org>, Tejun Heo <tj@kernel.org>,
+ cgroups@vger.kernel.org, Wu Hao <hao.wu@intel.com>,
+ David Woodhouse <dwmw2@infradead.org>
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -98,76 +176,90 @@ Content-Transfer-Encoding: 7bit
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-On Tue, Mar 30, 2021 at 05:28:19PM +0100, Robin Murphy wrote:
-> On 2021-03-30 14:58, Will Deacon wrote:
-> > On Tue, Mar 30, 2021 at 02:19:38PM +0100, Robin Murphy wrote:
-> > > On 2021-03-30 14:11, Will Deacon wrote:
-> > > > On Tue, Mar 16, 2021 at 04:38:22PM +0100, Christoph Hellwig wrote:
-> > > > > From: Robin Murphy <robin.murphy@arm.com>
-> > > > > 
-> > > > > Instead make the global iommu_dma_strict paramete in iommu.c canonical by
-> > > > > exporting helpers to get and set it and use those directly in the drivers.
-> > > > > 
-> > > > > This make sure that the iommu.strict parameter also works for the AMD and
-> > > > > Intel IOMMU drivers on x86.  As those default to lazy flushing a new
-> > > > > IOMMU_CMD_LINE_STRICT is used to turn the value into a tristate to
-> > > > > represent the default if not overriden by an explicit parameter.
-> > > > > 
-> > > > > Signed-off-by: Robin Murphy <robin.murphy@arm.com>.
-> > > > > [ported on top of the other iommu_attr changes and added a few small
-> > > > >    missing bits]
-> > > > > Signed-off-by: Christoph Hellwig <hch@lst.de>
-> > > > > ---
-> > > > >    drivers/iommu/amd/iommu.c                   | 23 +-------
-> > > > >    drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c | 50 +---------------
-> > > > >    drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.h |  1 -
-> > > > >    drivers/iommu/arm/arm-smmu/arm-smmu.c       | 27 +--------
-> > > > >    drivers/iommu/dma-iommu.c                   |  9 +--
-> > > > >    drivers/iommu/intel/iommu.c                 | 64 ++++-----------------
-> > > > >    drivers/iommu/iommu.c                       | 27 ++++++---
-> > > > >    include/linux/iommu.h                       |  4 +-
-> > > > >    8 files changed, 40 insertions(+), 165 deletions(-)
-> > > > 
-> > > > I really like this cleanup, but I can't help wonder if it's going in the
-> > > > wrong direction. With SoCs often having multiple IOMMU instances and a
-> > > > distinction between "trusted" and "untrusted" devices, then having the
-> > > > flush-queue enabled on a per-IOMMU or per-domain basis doesn't sound
-> > > > unreasonable to me, but this change makes it a global property.
-> > > 
-> > > The intent here was just to streamline the existing behaviour of stuffing a
-> > > global property into a domain attribute then pulling it out again in the
-> > > illusion that it was in any way per-domain. We're still checking
-> > > dev_is_untrusted() before making an actual decision, and it's not like we
-> > > can't add more factors at that point if we want to.
-> > 
-> > Like I say, the cleanup is great. I'm just wondering whether there's a
-> > better way to express the complicated logic to decide whether or not to use
-> > the flush queue than what we end up with:
-> > 
-> > 	if (!cookie->fq_domain && (!dev || !dev_is_untrusted(dev)) &&
-> > 	    domain->ops->flush_iotlb_all && !iommu_get_dma_strict())
-> > 
-> > which is mixing up globals, device properties and domain properties. The
-> > result is that the driver code ends up just using the global to determine
-> > whether or not to pass IO_PGTABLE_QUIRK_NON_STRICT to the page-table code,
-> > which is a departure from the current way of doing things.
+On Tue, Mar 30, 2021 at 05:10:41PM -0700, Jacob Pan wrote:
+> Hi Jason,
 > 
-> But previously, SMMU only ever saw the global policy piped through the
-> domain attribute by iommu_group_alloc_default_domain(), so there's no
-> functional change there.
+> On Tue, 30 Mar 2021 10:43:13 -0300, Jason Gunthorpe <jgg@nvidia.com> wrote:
+> 
+> > > If two mdevs from the same PF dev are assigned to two VMs, the PASID
+> > > table will be shared. IOASID set ensures one VM cannot program another
+> > > VM's PASIDs. I assume 'secure context' is per VM when it comes to host
+> > > PASID.  
+> > 
+> > No, the mdev device driver must enforce this directly. It is the one
+> > that programms the physical shared HW, it is the one that needs a list
+> > of PASID's it is allowed to program *for each mdev*
+> > 
+> This requires the mdev driver to obtain a list of allowed PASIDs(possibly
+> during PASID bind time) prior to do enforcement. IMHO, the PASID enforcement
+> points are:
+> 1. During WQ configuration (e.g.program MSI)
+> 2. During work submission
+> 
+> For VT-d shared workqueue, there is no way to enforce #2 in mdev driver in
+> that the PASID is obtained from PASID MSR from the CPU and submitted w/o
+> driver involvement.
 
-For DMA domains sure, but I don't think that's the case for unmanaged
-domains such as those used by VFIO.
+I assume that the PASID MSR is privileged and only qemu can program
+it? Otherwise this seems like a security problem.
 
-> Obviously some of the above checks could be factored out into some kind of
-> iommu_use_flush_queue() helper that IOMMU drivers can also call if they need
-> to keep in sync. Or maybe we just allow iommu-dma to set
-> IO_PGTABLE_QUIRK_NON_STRICT directly via iommu_set_pgtable_quirks() if we're
-> treating that as a generic thing now.
+If qemu controls it then the idxd userspace driver in qemu must ensure
+it is only ever programmed to an authorized PASID.
 
-I think a helper that takes a domain would be a good starting point.
+> The enforcement for #2 is in the KVM PASID translation table, which
+> is per VM.
 
-Will
+I don't understand why KVM gets involved in PASID??
+
+Doesn't work submission go either to the mdev driver or through the
+secure PASID of #1?
+
+> For our current VFIO mdev model, bind guest page table does not involve
+> mdev driver. So this is a gap we must fill, i.e. include a callback from
+> mdev driver?
+
+No not a callback, tell the mdev driver with a VFIO IOCTL that it is
+authorized to use a specific PASID because the vIOMMU was told to
+allow it by the guest kernel. Simple and straightforward.
+
+> > ioasid_set doesn't seem to help at all, certainly not as a concept
+> > tied to /dev/ioasid.
+> > 
+> Yes, we can take the security role off ioasid_set once we have per mdev
+> list. However, ioasid_set being a per VM/mm entity also bridge
+> communications among kernel subsystems that don't have direct call path.
+> e.g. KVM, VDCM and IOMMU.
+
+Everything should revolve around the /dev/ioasid FD. qemu should pass
+it to all places that need to know about PASID's in the VM.
+
+We should try to avoid hidden behind the scenes kernel
+interconnections between subsystems.
+
+
+> > So when you 'allow' a mdev to access a PASID you want to say:
+> >  Allow Guest PASID A, map it to host PASID B on this /dev/ioasid FD
+> > 
+
+> Host and guest PASID value, as well as device info are available through
+> iommu_uapi_sva_bind_gpasid(), we just need to feed that info to mdev driver.
+
+You need that IOCTL to exist on the *mdev driver*. It is a VFIO ioctl,
+not a iommu or ioasid or sva IOCTL.
+ 
+> > That seems like a good helper library to provide for drivers to use,
+> > but it should be a construct entirely contained in the driver.
+> why? would it be cleaner if it is in the common code?
+
+No, it is the "mid layer" problematic design.
+
+Having the iommu layer store driver-specific data on behalf of a
+driver will just make a mess. Use the natural layering we have and
+store driver specific data in the driver structs.
+
+Add a library to help build the datastructure if it necessary.
+
+Jason
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
