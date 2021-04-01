@@ -2,82 +2,163 @@ Return-Path: <SRS0=bVsO=I6=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-5.3 required=3.0 tests=BAYES_00,
-	HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,NICE_REPLY_A,SPF_HELO_NONE,
-	SPF_PASS,URIBL_BLOCKED,USER_AGENT_SANE_1 autolearn=no autolearn_force=no
-	version=3.4.0
+X-Spam-Status: No, score=-3.5 required=3.0 tests=BAYES_00,DKIM_INVALID,
+	DKIM_SIGNED,HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,
+	MSGID_FROM_MTA_HEADER,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED autolearn=no
+	autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 87B05C433ED
-	for <iommu@archiver.kernel.org>; Thu,  1 Apr 2021 11:28:26 +0000 (UTC)
-Received: from smtp2.osuosl.org (smtp2.osuosl.org [140.211.166.133])
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 709D7C433ED
+	for <iommu@archiver.kernel.org>; Thu,  1 Apr 2021 11:46:58 +0000 (UTC)
+Received: from smtp1.osuosl.org (smtp1.osuosl.org [140.211.166.138])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 2E9AA6108F
-	for <iommu@archiver.kernel.org>; Thu,  1 Apr 2021 11:28:26 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 2E9AA6108F
-Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=arm.com
+	by mail.kernel.org (Postfix) with ESMTPS id 124B960FDC
+	for <iommu@archiver.kernel.org>; Thu,  1 Apr 2021 11:46:58 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 124B960FDC
+Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=nvidia.com
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by smtp2.osuosl.org (Postfix) with ESMTP id CD29C40555;
-	Thu,  1 Apr 2021 11:28:25 +0000 (UTC)
+	by smtp1.osuosl.org (Postfix) with ESMTP id C177684A4E;
+	Thu,  1 Apr 2021 11:46:57 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from smtp2.osuosl.org ([127.0.0.1])
-	by localhost (smtp2.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id VRA2cvzFxFBC; Thu,  1 Apr 2021 11:28:25 +0000 (UTC)
+Received: from smtp1.osuosl.org ([127.0.0.1])
+	by localhost (smtp1.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+	with ESMTP id JeQ_BDd1GaPQ; Thu,  1 Apr 2021 11:46:56 +0000 (UTC)
 Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by smtp2.osuosl.org (Postfix) with ESMTP id B8004400CE;
-	Thu,  1 Apr 2021 11:28:24 +0000 (UTC)
+	by smtp1.osuosl.org (Postfix) with ESMTP id 8B5B484A4A;
+	Thu,  1 Apr 2021 11:46:56 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 8F427C000B;
-	Thu,  1 Apr 2021 11:28:24 +0000 (UTC)
-Received: from smtp2.osuosl.org (smtp2.osuosl.org [140.211.166.133])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 8E2A8C000A
- for <iommu@lists.linux-foundation.org>; Thu,  1 Apr 2021 11:28:23 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 65232C000B;
+	Thu,  1 Apr 2021 11:46:56 +0000 (UTC)
+Received: from smtp3.osuosl.org (smtp3.osuosl.org [IPv6:2605:bc80:3010::136])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 04F0EC000A
+ for <iommu@lists.linux-foundation.org>; Thu,  1 Apr 2021 11:46:55 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by smtp2.osuosl.org (Postfix) with ESMTP id 89AF640554
- for <iommu@lists.linux-foundation.org>; Thu,  1 Apr 2021 11:28:23 +0000 (UTC)
+ by smtp3.osuosl.org (Postfix) with ESMTP id D964660BB4
+ for <iommu@lists.linux-foundation.org>; Thu,  1 Apr 2021 11:46:54 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from smtp2.osuosl.org ([127.0.0.1])
- by localhost (smtp2.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id 55lfCjPAKxxe for <iommu@lists.linux-foundation.org>;
- Thu,  1 Apr 2021 11:28:20 +0000 (UTC)
-X-Greylist: domain auto-whitelisted by SQLgrey-1.8.0
-Received: from foss.arm.com (foss.arm.com [217.140.110.172])
- by smtp2.osuosl.org (Postfix) with ESMTP id D2301400CE
- for <iommu@lists.linux-foundation.org>; Thu,  1 Apr 2021 11:28:20 +0000 (UTC)
-Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
- by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id E2E66152D;
- Thu,  1 Apr 2021 04:28:19 -0700 (PDT)
-Received: from [10.57.24.208] (unknown [10.57.24.208])
- by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id A1E573F694;
- Thu,  1 Apr 2021 04:28:16 -0700 (PDT)
-Subject: Re: [PATCH 2/3] tracing: Use pr_crit() instead of long fancy messages
-To: Geert Uytterhoeven <geert@linux-m68k.org>,
- Steven Rostedt <rostedt@goodmis.org>
-References: <20210331093104.383705-1-geert+renesas@glider.be>
- <20210331093104.383705-3-geert+renesas@glider.be>
- <20210331094007.77aa5194@gandalf.local.home>
- <CAMuHMdUvgRiYfsVOJdocB3peLhnDWe=Kn1MLW64sh8zpd2XoLA@mail.gmail.com>
-From: Robin Murphy <robin.murphy@arm.com>
-Message-ID: <b8dba57b-860b-0bd4-2ca0-e8f2e26571bd@arm.com>
-Date: Thu, 1 Apr 2021 12:28:11 +0100
-User-Agent: Mozilla/5.0 (Windows NT 10.0; rv:78.0) Gecko/20100101
- Thunderbird/78.9.0
+Authentication-Results: smtp3.osuosl.org (amavisd-new);
+ dkim=pass (2048-bit key) header.d=nvidia.com
+Received: from smtp3.osuosl.org ([127.0.0.1])
+ by localhost (smtp3.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+ with ESMTP id w4aTCNJLdcXC for <iommu@lists.linux-foundation.org>;
+ Thu,  1 Apr 2021 11:46:53 +0000 (UTC)
+X-Greylist: whitelisted by SQLgrey-1.8.0
+Received: from NAM11-BN8-obe.outbound.protection.outlook.com
+ (mail-bn8nam11on2054.outbound.protection.outlook.com [40.107.236.54])
+ by smtp3.osuosl.org (Postfix) with ESMTPS id 7385E60BAF
+ for <iommu@lists.linux-foundation.org>; Thu,  1 Apr 2021 11:46:53 +0000 (UTC)
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=TvSyXFxzJ/eaUP2Wd5uuxUMf/uCNHXrBHiXWELP/rzDpc/cNAz+y3IUzwasi4b6GJGDQAK9xiphm//hLuJI0OARRCl+GIf3MUyH2O/Cdhjh+pZnJVQvo5lmk6Spp894vjX0K5ejzr+EYGtE9trsZKKNPEB6Rc+1yVU0MU+GUI+fTBUHBJgET2PkK8FOyIFM6ATb0H06HWPgQXKW9NRnk9NCBApkN+B4M7oiq9UzIz5UhXFUt25lt0MAOzsBuJEAs8UZGLiQ8L9/91tCVRrN0/IYywBZ9pxB051ftBZyfsyJjTlI9tl6rGfBFc5CatiBZfpmwSouCXkQNaJmLDTpklA==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com; 
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=QB7ETdOOSqNiwN0jeb2a8uAGrb0Crvt+uIkVaGv4B/g=;
+ b=iNTD2d9PSQ3YxIioKfVUJ4p3Fznn0fNMpifPXj12HqeyJjf7xB2x7w8UAtPdjx2P41aeRZMuPrx2Cu9BqqdUZe5gB0u7GVmrAYQDlGxe69JWeMBVy3jVu0Dtd5BfLCoX+atp64B6BES03Yoi0VhrH4rSjQ5is0DoBr5KAFmMBMEwvQ+F5X8xg42MhTdFNI5wWGGSca1kLmqWiKyT7gRouyyEbnc1YBML2DjUiXdbu8R4UvN9h03f24qhZdcwpqYO8nDU7h79cKxcamqFJjpGLu/mRx5KQll/Cnerk5FOKQVAEGTFq1pWtfRRqEfbJ0Xyfm903Vvj89apC2jHXkHY3A==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=nvidia.com; dmarc=pass action=none header.from=nvidia.com;
+ dkim=pass header.d=nvidia.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
+ s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=QB7ETdOOSqNiwN0jeb2a8uAGrb0Crvt+uIkVaGv4B/g=;
+ b=iPfpRV6LrLzrf5O/1m9biJLk5b3xUOR8KcqzPKhAFyra/baTxbPBO/0Kc4FB4veUdsq1yVW12xIbp6vQ/BzQ/8L0jTNql+s6h/IxwVZMW0E+x13nxwYrD0B13Wll2lQ2kPnb77zgwB7wb8j3I976TJ41A4fms0xMvs7ykQtJcdhiRDicRyDHSwIJ6WkAOvztq0dx09g7gWTWyxbQGSCO8oAdi8yJI+Vmp6kCDLW7iYlEGOi8pbeLfV8VBNaMbL6Yl8pGRmhCR9/N+qTkTNg0qXqUWVvgV5wzlaAH9rrfuFJlZNk5+nr66vhCw3zNQ9sr66wMS5WFppRNQMz8BqVY/w==
+Authentication-Results: intel.com; dkim=none (message not signed)
+ header.d=none;intel.com; dmarc=none action=none header.from=nvidia.com;
+Received: from DM6PR12MB3834.namprd12.prod.outlook.com (2603:10b6:5:14a::12)
+ by DM5PR12MB1884.namprd12.prod.outlook.com (2603:10b6:3:10d::12) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3999.26; Thu, 1 Apr
+ 2021 11:46:50 +0000
+Received: from DM6PR12MB3834.namprd12.prod.outlook.com
+ ([fe80::1c62:7fa3:617b:ab87]) by DM6PR12MB3834.namprd12.prod.outlook.com
+ ([fe80::1c62:7fa3:617b:ab87%6]) with mapi id 15.20.3999.028; Thu, 1 Apr 2021
+ 11:46:50 +0000
+Date: Thu, 1 Apr 2021 08:46:48 -0300
+From: Jason Gunthorpe <jgg@nvidia.com>
+To: "Liu, Yi L" <yi.l.liu@intel.com>
+Subject: Re: [PATCH V4 05/18] iommu/ioasid: Redefine IOASID set and
+ allocation APIs
+Message-ID: <20210401114648.GX1463678@nvidia.com>
+References: <20210319135432.GT2356281@nvidia.com>
+ <20210319112221.5123b984@jacob-builder>
+ <20210322120300.GU2356281@nvidia.com>
+ <20210324120528.24d82dbd@jacob-builder>
+ <20210329163147.GG2356281@nvidia.com>
+ <MWHPR11MB188639EE54B48B0E1321C8198C7D9@MWHPR11MB1886.namprd11.prod.outlook.com>
+ <20210330132830.GO2356281@nvidia.com>
+ <BN6PR11MB40688F5AA2323AB8CC8E65E7C37C9@BN6PR11MB4068.namprd11.prod.outlook.com>
+ <20210331124038.GE1463678@nvidia.com>
+ <BN6PR11MB406854CAE9D7CE86BEAB3E23C37B9@BN6PR11MB4068.namprd11.prod.outlook.com>
+Content-Disposition: inline
+In-Reply-To: <BN6PR11MB406854CAE9D7CE86BEAB3E23C37B9@BN6PR11MB4068.namprd11.prod.outlook.com>
+X-Originating-IP: [142.162.115.133]
+X-ClientProxiedBy: BL1PR13CA0384.namprd13.prod.outlook.com
+ (2603:10b6:208:2c0::29) To DM6PR12MB3834.namprd12.prod.outlook.com
+ (2603:10b6:5:14a::12)
 MIME-Version: 1.0
-In-Reply-To: <CAMuHMdUvgRiYfsVOJdocB3peLhnDWe=Kn1MLW64sh8zpd2XoLA@mail.gmail.com>
-Content-Language: en-GB
-Cc: Petr Mladek <pmladek@suse.com>, Marco Elver <elver@google.com>,
- Linux Embedded <linux-embedded@vger.kernel.org>,
- John Ogness <john.ogness@linutronix.de>, Will Deacon <will@kernel.org>,
- Randy Dunlap <rdunlap@infradead.org>,
- Rasmus Villemoes <linux@rasmusvillemoes.dk>,
- Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
- Sergey Senozhatsky <sergey.senozhatsky@gmail.com>,
- Linux IOMMU <iommu@lists.linux-foundation.org>, Ingo Molnar <mingo@redhat.com>,
- Gary R Hook <gary.hook@amd.com>, Andrew Morton <akpm@linux-foundation.org>,
- Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
- Linus Torvalds <torvalds@linux-foundation.org>,
- Vlastimil Babka <vbabka@suse.cz>
+X-MS-Exchange-MessageSentRepresentingType: 1
+Received: from mlx.ziepe.ca (142.162.115.133) by
+ BL1PR13CA0384.namprd13.prod.outlook.com (2603:10b6:208:2c0::29) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4020.9 via Frontend
+ Transport; Thu, 1 Apr 2021 11:46:49 +0000
+Received: from jgg by mlx with local (Exim 4.94)	(envelope-from
+ <jgg@nvidia.com>)	id 1lRvmi-006j6M-4H; Thu, 01 Apr 2021 08:46:48 -0300
+X-MS-PublicTrafficType: Email
+X-MS-Office365-Filtering-Correlation-Id: c07f9a3e-b78f-440e-06e5-08d8f503d5fc
+X-MS-TrafficTypeDiagnostic: DM5PR12MB1884:
+X-Microsoft-Antispam-PRVS: <DM5PR12MB18847B5208F8DBE4151E06E5C27B9@DM5PR12MB1884.namprd12.prod.outlook.com>
+X-MS-Oob-TLC-OOBClassifiers: OLM:8273;
+X-MS-Exchange-SenderADCheck: 1
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: s5MaWb4gjwcgh4Wl0+ohnyg6PdPGI7q/qOu77yGP1+2eLDBIlF3aJ+nXVHs0KxdaIO6xZMNe7A0yNFch/+brjyOE3CeRbbgYJuJNHC0Tadao28d/dD8/INNvrDAIxCIw8y3kYepBqlCGtwLsPH2LqM0NxHWjZktX0Mph2MT5NL6TI2Orrk9/TXDsaXXATkau87HB6NHA9Pq/3EYDJyKnR1uW6AfwJlQvqww5/r/dC6pqPCwz6t7dpopXdXbPZmyroculQrEKWjL+/O7rkva/oNGX102tM6VlX5IYp8j6HrTTboZGZMOgzkXmjZcXGbXsCfRvtQ96pqGS8Act8oWGEaQG+5X6HXbF5pzjbib0KfP9qGfCW3Qt2H6OETVTYxyiorttKz5cG/n95GOWzm1HjqhCv0mt6JXxoQDaF/Km0ALlh/MHQTzJLAJf3wvZ5yLHR/+/FfCz2MjMEjlHCSQlr7/cjPxXCrG2GVN3SYqZvrDJLULymikEJ9akLW5CKnh9zAeE3EJPmvOxSU33jo2At+9YN6JHlRLeUOOABRmrKE6/cpPu1uWvBBOMQ0G9KLUPtp55ueRVvrSc7Kweh+N+e/YtlC+XdwfVf8qaiSAnivAuixb4OiJAlw3oEsubmOEYzJ2BWyGWfvzsAMWNY8mBdIhriizqE7/j+t4YO1YP2OA=
+X-Forefront-Antispam-Report: CIP:255.255.255.255; CTRY:; LANG:en; SCL:1; SRV:;
+ IPV:NLI; SFV:NSPM; H:DM6PR12MB3834.namprd12.prod.outlook.com; PTR:; CAT:NONE;
+ SFS:(4636009)(396003)(136003)(366004)(39860400002)(346002)(376002)(26005)(83380400001)(8936002)(4326008)(6916009)(426003)(2906002)(478600001)(66476007)(9786002)(38100700001)(66556008)(66946007)(9746002)(86362001)(8676002)(33656002)(1076003)(5660300002)(36756003)(2616005)(7416002)(316002)(54906003)(186003);
+ DIR:OUT; SFP:1101; 
+X-MS-Exchange-AntiSpam-MessageData: =?us-ascii?Q?V4GcDEQu7Z+V6pQGKMi57Nag6rWfAu5Sgf7jho0/ZOYWhUBcLtrbBen00Jff?=
+ =?us-ascii?Q?XbhvnwF0SUQoed7d4a3STJ2uQzhNwDGy6JnsWEcTwGgRerwtwA4GKPMg0clW?=
+ =?us-ascii?Q?L+/NwAhj4fm+qVz4LLDtviuthWCJ0D2EWDOYyqqp2evpRlYC2QKUwLbyAfXL?=
+ =?us-ascii?Q?SbHfuv9kC5Rqkh0YWRrTczcBzv/mx/LB38hohrckDuCIyN+73FA0+lCdFi5c?=
+ =?us-ascii?Q?CzIX/9RZdZy0FWSNS46zhXM5qqQNkGTdNDKIH2TVxNCfPpDu8pr9cbHfQK6j?=
+ =?us-ascii?Q?pa6Ix/Ulj4htNJE9Pnww8o/qV4DIrPpqAX4jQFUWOEsE4PKt9inJhUoTEp6J?=
+ =?us-ascii?Q?18k3ssmltyNSGHhNbgN6gInYiKPG+cl4EHyJghlUXC+txdIPSn9DFx5cb/D1?=
+ =?us-ascii?Q?dilcNJ6Dt9jypZ5PHI1FXCYWr7IQv2+GvII34mP3pBfEt4OpJURBwGm/A2RI?=
+ =?us-ascii?Q?8GSeAMtUm2OXZfGKLt1vzO6/F0LU3yYh2hH1VvY1m5WPveunhf8awJyu2n8s?=
+ =?us-ascii?Q?MjG2KpYUkdrvnhdsrERUklFUSCFFoTNrjwnWsZV2bMP1g0OB9Mji55s4yS4/?=
+ =?us-ascii?Q?OZ/rdRbQtoolozz7SNs/eIM1F1MTSKPd5vBo4zIV/YKXPUq89PL34zdccCkx?=
+ =?us-ascii?Q?Fja9hj2PRrAGyJZZC3ESDGyuZQP4LavAmi8Vswf/FW8kznPLq42a3k3TtxiE?=
+ =?us-ascii?Q?ZcQzkiP1SBcA9w79fk/uj111NNmv11cT+q50OHqoIsgvJ6+Cy2sbW10UZndz?=
+ =?us-ascii?Q?lS1f1GTS0FnCNeIKWuWpm2uOHWtWIj0veZSEquKmpjJWeAV3/dHU0gpsXevz?=
+ =?us-ascii?Q?u878ucVMkH8Yq4zZY5+6NN4o+5R37PJKM5/dFlHu+VuyDjUKuIDwAJLepGhk?=
+ =?us-ascii?Q?kycN5fln4ctdaZHoGgXOhPgQHnYD7EJUInQZQwy9syf6j/lJDwVoQoEydp9V?=
+ =?us-ascii?Q?PpBbOsKQYzkFoi/GjF2KlEGoRl5IxJqIA556pN/5tYLQGBIVikRCe4aKzrmX?=
+ =?us-ascii?Q?qJaXDjnPuts9aeR5hl1Ok3/HKHba2CcFMsjdujy/l81MOUDTvKcWE5SUttmU?=
+ =?us-ascii?Q?VY2OUtRgEpLPoa2t0BfmwdxT//ZZKacFZHo2DtAj2luGxU7C+m9dmncy3SNt?=
+ =?us-ascii?Q?i3X438FgTnYstDa11q2Zpb0LZUa3MBUpXujWg34dMwmFzNK+ZQ+W+C198bqb?=
+ =?us-ascii?Q?2b6dLNFolbC6sSaTqsH7P+bFxZ1/ssNmzj4CLtoVoCFSU7iZeOiNliOQCL0D?=
+ =?us-ascii?Q?bc7Og8o9MjX9GN9eEYCTRxgOiTD3hMJoorWc0PzWwFBNJ9iNwU0lcDEtMYIF?=
+ =?us-ascii?Q?rlW7uLp38/ZF+veljmUWC7zpi7LMPFTrFAcpV+1gditYdw=3D=3D?=
+X-OriginatorOrg: Nvidia.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: c07f9a3e-b78f-440e-06e5-08d8f503d5fc
+X-MS-Exchange-CrossTenant-AuthSource: DM6PR12MB3834.namprd12.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 01 Apr 2021 11:46:50.1573 (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: +g/TTE7GfYiMg5BZNhN9UQels9Cd8ERUxLsh7GIMvGBiL4gY+B0ogp6h9cgeien+
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: DM5PR12MB1884
+Cc: Jean-Philippe Brucker <jean-philippe@linaro.org>, "Tian,
+ Kevin" <kevin.tian@intel.com>, Alex Williamson <alex.williamson@redhat.com>,
+ "Raj, Ashok" <ashok.raj@intel.com>, Jonathan Corbet <corbet@lwn.net>,
+ Jean-Philippe Brucker <jean-philippe@linaro.com>,
+ LKML <linux-kernel@vger.kernel.org>, "Jiang, Dave" <dave.jiang@intel.com>,
+ "iommu@lists.linux-foundation.org" <iommu@lists.linux-foundation.org>,
+ Li Zefan <lizefan@huawei.com>, Johannes Weiner <hannes@cmpxchg.org>,
+ Tejun Heo <tj@kernel.org>, "cgroups@vger.kernel.org" <cgroups@vger.kernel.org>,
+ "Wu, Hao" <hao.wu@intel.com>, David Woodhouse <dwmw2@infradead.org>
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -90,32 +171,99 @@ List-Post: <mailto:iommu@lists.linux-foundation.org>
 List-Help: <mailto:iommu-request@lists.linux-foundation.org?subject=help>
 List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
  <mailto:iommu-request@lists.linux-foundation.org?subject=subscribe>
+Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
-Content-Type: text/plain; charset="us-ascii"; Format="flowed"
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-On 2021-04-01 10:39, Geert Uytterhoeven wrote:
-> Hi Steven,
+On Thu, Apr 01, 2021 at 04:38:44AM +0000, Liu, Yi L wrote:
+> > From: Jason Gunthorpe <jgg@nvidia.com>
+> > Sent: Wednesday, March 31, 2021 8:41 PM
+> > 
+> > On Wed, Mar 31, 2021 at 07:38:36AM +0000, Liu, Yi L wrote:
+> > 
+> > > The reason is /dev/ioasid FD is per-VM since the ioasid allocated to
+> > > the VM should be able to be shared by all assigned device for the VM.
+> > > But the SVA operations (bind/unbind page table, cache_invalidate) should
+> > > be per-device.
+> > 
+> > It is not *per-device* it is *per-ioasid*
+> >
+> > And as /dev/ioasid is an interface for controlling multiple ioasid's
+> > there is no issue to also multiplex the page table manipulation for
+> > multiple ioasids as well.
+> > 
+> > What you should do next is sketch out in some RFC the exactl ioctls
+> > each FD would have and show how the parts I outlined would work and
+> > point out any remaining gaps.
+> > 
+> > The device FD is something like the vfio_device FD from VFIO, it has
+> > *nothing* to do with PASID beyond having a single ioctl to authorize
+> > the device to use the PASID. All control of the PASID is in
+> > /dev/ioasid.
 > 
-> On Wed, Mar 31, 2021 at 3:40 PM Steven Rostedt <rostedt@goodmis.org> wrote:
->> On Wed, 31 Mar 2021 11:31:03 +0200
->> Geert Uytterhoeven <geert+renesas@glider.be> wrote:
->>
->>> This reduces kernel size by ca. 0.5 KiB.
->>
->> If you are worried about size, disable tracing and it will go away
->> entirely. 0.5KiB is a drop in the bucket compared to what tracing adds in
->> size overhead.
+> good to see this reply. Your idea is much clearer to me now. If I'm getting
+> you correctly. I think the skeleton is something like below:
 > 
-> Fair enough for this particular case, as tracing can be disabled.
+> 1) userspace opens a /dev/ioasid, meanwhile there will be an ioasid
+>    allocated and a per-ioasid context which can be used to do bind page
+>    table and cache invalidate, an ioasid FD returned to userspace.
+> 2) userspace passes the ioasid FD to VFIO, let it associated with a device
+>    FD (like vfio_device FD).
+> 3) userspace binds page table on the ioasid FD with the page table info.
+> 4) userspace unbinds the page table on the ioasid FD
+> 5) userspace de-associates the ioasid FD and device FD
+> 
+> Does above suit your outline?
 
-I think the same argument can be applied to patch #1 - it's hard to 
-imaging anyone debugging an IOMMU driver on a system where a few hundred 
-bytes makes the slightest bit of difference, and for people not 
-debugging IOMMU drivers it should be moot (per the message itself).
+Seems so
 
-Robin.
+> If yes, I still have below concern and wish to see your opinion.
+> - the ioasid FD and device association will happen at runtime instead of
+>   just happen in the setup phase.
+
+Of course, this is required for security. The vIOMMU must perform the
+device association when the guest requires it. Otherwise a guest
+cannot isolate a PASID to a single process/device pair.
+
+I'm worried Intel views the only use of PASID in a guest is with
+ENQCMD, but that is not consistent with the industry. We need to see
+normal nested PASID support with assigned PCI VFs.
+
+> - how about AMD and ARM's vSVA support? Their PASID allocation and page table
+>   happens within guest. They only need to bind the guest PASID table to host.
+>   Above model seems unable to fit them. (Jean, Eric, Jacob please feel free
+>   to correct me)
+
+No, everything needs the device association step or it is not
+secure. 
+
+You can give a PASID to a guest and allow it to manipulate it's memory
+map directly, nested under the guest's CPU page tables.
+
+However the guest cannot authorize a PCI BDF to utilize that PASID
+without going through some kind of step in the hypervisor. A Guest
+should not be able to authorize a PASID for a BDF it doesn't have
+access to - only the hypervisor can enforce this.
+
+This all must also fit into the mdev model where only the
+device-specific mdev driver can do the device specific PASID
+authorization. A hypercall is essential, or we need to stop pretending
+mdev is a good idea.
+
+I'm sure there will be some small differences, and you should clearly
+explain the entire uAPI surface so that soneone from AMD and ARM can
+review it.
+
+> - this per-ioasid SVA operations is not aligned with the native SVA usage
+>   model. Native SVA bind is per-device.
+
+Seems like that is an error in native SVA.
+
+SVA is a particular mode of the PASID's memory mapping table, it has
+nothing to do with a device.
+
+Jason
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
