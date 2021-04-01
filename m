@@ -2,89 +2,76 @@ Return-Path: <SRS0=bVsO=I6=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-3.8 required=3.0 tests=BAYES_00,
+X-Spam-Status: No, score=-5.2 required=3.0 tests=BAYES_00,
 	HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,
-	URIBL_BLOCKED autolearn=no autolearn_force=no version=3.4.0
+	URIBL_BLOCKED,USER_AGENT_SANE_1 autolearn=no autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 29834C433B4
-	for <iommu@archiver.kernel.org>; Thu,  1 Apr 2021 09:40:07 +0000 (UTC)
-Received: from smtp3.osuosl.org (smtp3.osuosl.org [140.211.166.136])
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C5C3CC433ED
+	for <iommu@archiver.kernel.org>; Thu,  1 Apr 2021 09:59:54 +0000 (UTC)
+Received: from smtp4.osuosl.org (smtp4.osuosl.org [140.211.166.137])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 69B0B610CA
-	for <iommu@archiver.kernel.org>; Thu,  1 Apr 2021 09:40:06 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 69B0B610CA
-Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=linux-m68k.org
+	by mail.kernel.org (Postfix) with ESMTPS id E839D610A5
+	for <iommu@archiver.kernel.org>; Thu,  1 Apr 2021 09:59:53 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org E839D610A5
+Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=lst.de
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by smtp3.osuosl.org (Postfix) with ESMTP id 140C260A97;
-	Thu,  1 Apr 2021 09:40:06 +0000 (UTC)
+	by smtp4.osuosl.org (Postfix) with ESMTP id 6B10741465;
+	Thu,  1 Apr 2021 09:59:53 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from smtp3.osuosl.org ([127.0.0.1])
-	by localhost (smtp3.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id p7vDIJqUzl90; Thu,  1 Apr 2021 09:40:05 +0000 (UTC)
+Received: from smtp4.osuosl.org ([127.0.0.1])
+	by localhost (smtp4.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+	with ESMTP id QoaGsyOt2Fi7; Thu,  1 Apr 2021 09:59:52 +0000 (UTC)
 Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by smtp3.osuosl.org (Postfix) with ESMTP id 0E83D606E7;
-	Thu,  1 Apr 2021 09:40:04 +0000 (UTC)
+	by smtp4.osuosl.org (Postfix) with ESMTP id 2B67A40F94;
+	Thu,  1 Apr 2021 09:59:52 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id ECA1DC000B;
-	Thu,  1 Apr 2021 09:40:04 +0000 (UTC)
-Received: from smtp1.osuosl.org (smtp1.osuosl.org [140.211.166.138])
- by lists.linuxfoundation.org (Postfix) with ESMTP id A9CADC000A
- for <iommu@lists.linux-foundation.org>; Thu,  1 Apr 2021 09:40:03 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id E566EC000B;
+	Thu,  1 Apr 2021 09:59:51 +0000 (UTC)
+Received: from smtp4.osuosl.org (smtp4.osuosl.org [140.211.166.137])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 08662C000A;
+ Thu,  1 Apr 2021 09:59:50 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by smtp1.osuosl.org (Postfix) with ESMTP id 89FEE84A2F
- for <iommu@lists.linux-foundation.org>; Thu,  1 Apr 2021 09:40:03 +0000 (UTC)
+ by smtp4.osuosl.org (Postfix) with ESMTP id EA42240F96;
+ Thu,  1 Apr 2021 09:59:49 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from smtp1.osuosl.org ([127.0.0.1])
- by localhost (smtp1.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id iNgl9uppKQDb for <iommu@lists.linux-foundation.org>;
- Thu,  1 Apr 2021 09:40:02 +0000 (UTC)
-X-Greylist: whitelisted by SQLgrey-1.8.0
-Received: from mail-vs1-f48.google.com (mail-vs1-f48.google.com
- [209.85.217.48])
- by smtp1.osuosl.org (Postfix) with ESMTPS id 995BD84A2B
- for <iommu@lists.linux-foundation.org>; Thu,  1 Apr 2021 09:40:02 +0000 (UTC)
-Received: by mail-vs1-f48.google.com with SMTP id h11so928633vsl.2
- for <iommu@lists.linux-foundation.org>; Thu, 01 Apr 2021 02:40:02 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
- d=1e100.net; s=20161025;
- h=x-gm-message-state:mime-version:references:in-reply-to:from:date
- :message-id:subject:to:cc;
- bh=xlZPhLbLjyArTWcGf9vQn5+R2JQ3oOIwh7hu7M8eTGE=;
- b=Q+3rhg+Nyk6p+Qdb5j8c2CXaNknCz7E/KiF+VIDhHN1nuXjy5ER8fsHboKE3+aDc00
- 0w4QbNaxDjLUrNIi0bM1Bbz6SkihmXpfxJbJ9nFEshNEPSMtBP9sj1m8A1xpsnbriyyh
- RQjgA5SHquTux0WyNjY+tZGMxlMMnkQ/0qpp8Di8uXQDfcNrB4b110IUavJBIsH8nGxe
- XCLaQ4kYpIbU0z84KsvpvgHkPslZd5O7fB3txu+uttdULpW6GGnuKMiRWFVUwTYr+gja
- 2c9bKGlQ7DSzPKua3BZj7uOkrgZ+ru6sUIoj2LfCry2DQoN44nBEZl3065TsnHbYroEf
- v+GA==
-X-Gm-Message-State: AOAM531M95oxslhBTbOAZ8991F6bwQTdYlaRBwpVZZ/3kAVVmQ/twO0t
- F6jXtx4n6fCp/XCol8zmuB85JbpfKewE1G8vwS0=
-X-Google-Smtp-Source: ABdhPJwtjhpCL5W/EAZ6ZkPr/6GjXlFv2xr2ixEs/0hAzf8mGhOjkLhWBwxFQthEFvBZl9MIhgLDiGsTQqnyLl4S9Nc=
-X-Received: by 2002:a67:1ac7:: with SMTP id a190mr4490994vsa.18.1617270001553; 
- Thu, 01 Apr 2021 02:40:01 -0700 (PDT)
+Received: from smtp4.osuosl.org ([127.0.0.1])
+ by localhost (smtp4.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+ with ESMTP id DelkhhGzKkKg; Thu,  1 Apr 2021 09:59:49 +0000 (UTC)
+X-Greylist: from auto-whitelisted by SQLgrey-1.8.0
+X-Greylist: from auto-whitelisted by SQLgrey-1.8.0
+Received: from verein.lst.de (verein.lst.de [213.95.11.211])
+ by smtp4.osuosl.org (Postfix) with ESMTPS id 4597D40F94;
+ Thu,  1 Apr 2021 09:59:49 +0000 (UTC)
+Received: by verein.lst.de (Postfix, from userid 2407)
+ id C639468B05; Thu,  1 Apr 2021 11:59:45 +0200 (CEST)
+Date: Thu, 1 Apr 2021 11:59:45 +0200
+From: Christoph Hellwig <hch@lst.de>
+To: Robin Murphy <robin.murphy@arm.com>
+Subject: Re: [PATCH 16/18] iommu: remove DOMAIN_ATTR_DMA_USE_FLUSH_QUEUE
+Message-ID: <20210401095945.GA6726@lst.de>
+References: <20210316153825.135976-1-hch@lst.de>
+ <20210316153825.135976-17-hch@lst.de>
+ <20210330131149.GP5908@willie-the-truck>
+ <a6952aa7-4d7e-54f0-339e-e15f88596dcc@arm.com>
+ <20210330135801.GA6187@willie-the-truck>
+ <578d6aa5-4239-f5d7-2e9f-686b18e52bba@arm.com>
+ <20210331114947.GA7626@willie-the-truck>
+ <ef895942-e115-7878-ab86-37e8a1614df5@arm.com>
+ <20210331153256.GA7815@willie-the-truck>
+ <81dd27fe-28ee-c800-fe5d-aaa64cb93513@arm.com>
 MIME-Version: 1.0
-References: <20210331093104.383705-1-geert+renesas@glider.be>
- <20210331093104.383705-3-geert+renesas@glider.be>
- <20210331094007.77aa5194@gandalf.local.home>
-In-Reply-To: <20210331094007.77aa5194@gandalf.local.home>
-From: Geert Uytterhoeven <geert@linux-m68k.org>
-Date: Thu, 1 Apr 2021 11:39:50 +0200
-Message-ID: <CAMuHMdUvgRiYfsVOJdocB3peLhnDWe=Kn1MLW64sh8zpd2XoLA@mail.gmail.com>
-Subject: Re: [PATCH 2/3] tracing: Use pr_crit() instead of long fancy messages
-To: Steven Rostedt <rostedt@goodmis.org>
-Cc: Petr Mladek <pmladek@suse.com>, Marco Elver <elver@google.com>,
- Linux Embedded <linux-embedded@vger.kernel.org>,
- John Ogness <john.ogness@linutronix.de>,
- Linus Torvalds <torvalds@linux-foundation.org>,
- Randy Dunlap <rdunlap@infradead.org>,
- Rasmus Villemoes <linux@rasmusvillemoes.dk>,
- Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
- Sergey Senozhatsky <sergey.senozhatsky@gmail.com>,
- Linux IOMMU <iommu@lists.linux-foundation.org>, Ingo Molnar <mingo@redhat.com>,
- Vlastimil Babka <vbabka@suse.cz>, Andrew Morton <akpm@linux-foundation.org>,
- Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
- Will Deacon <will@kernel.org>, Gary R Hook <gary.hook@amd.com>
+Content-Disposition: inline
+In-Reply-To: <81dd27fe-28ee-c800-fe5d-aaa64cb93513@arm.com>
+User-Agent: Mutt/1.5.17 (2007-11-01)
+Cc: kvm@vger.kernel.org, Will Deacon <will@kernel.org>,
+ linux-arm-msm@vger.kernel.org, linuxppc-dev@lists.ozlabs.org,
+ dri-devel@lists.freedesktop.org, Li Yang <leoyang.li@nxp.com>,
+ iommu@lists.linux-foundation.org, netdev@vger.kernel.org,
+ Christoph Hellwig <hch@lst.de>, Michael Ellerman <mpe@ellerman.id.au>,
+ virtualization@lists.linux-foundation.org, freedreno@lists.freedesktop.org,
+ David Woodhouse <dwmw2@infradead.org>, linux-arm-kernel@lists.infradead.org
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -102,30 +89,9 @@ Content-Transfer-Encoding: 7bit
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-Hi Steven,
-
-On Wed, Mar 31, 2021 at 3:40 PM Steven Rostedt <rostedt@goodmis.org> wrote:
-> On Wed, 31 Mar 2021 11:31:03 +0200
-> Geert Uytterhoeven <geert+renesas@glider.be> wrote:
->
-> > This reduces kernel size by ca. 0.5 KiB.
->
-> If you are worried about size, disable tracing and it will go away
-> entirely. 0.5KiB is a drop in the bucket compared to what tracing adds in
-> size overhead.
-
-Fair enough for this particular case, as tracing can be disabled.
-
-Gr{oetje,eeting}s,
-
-                        Geert
-
--- 
-Geert Uytterhoeven -- There's lots of Linux beyond ia32 -- geert@linux-m68k.org
-
-In personal conversations with technical people, I call myself a hacker. But
-when I'm talking to journalists I just say "programmer" or something like that.
-                                -- Linus Torvalds
+For now I'll just pass the iommu_domain to iommu_get_dma_strict,
+so that we can check for it.  We can do additional cleanups on top
+of that later.
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
