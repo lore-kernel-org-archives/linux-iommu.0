@@ -7,61 +7,64 @@ X-Spam-Status: No, score=-16.8 required=3.0 tests=BAYES_00,DKIM_INVALID,
 	SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_GIT autolearn=ham
 	autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 71F59C433B4
-	for <iommu@archiver.kernel.org>; Thu,  1 Apr 2021 16:48:40 +0000 (UTC)
-Received: from smtp3.osuosl.org (smtp3.osuosl.org [140.211.166.136])
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B97C2C43460
+	for <iommu@archiver.kernel.org>; Thu,  1 Apr 2021 16:48:41 +0000 (UTC)
+Received: from smtp1.osuosl.org (smtp1.osuosl.org [140.211.166.138])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 254FF61391
-	for <iommu@archiver.kernel.org>; Thu,  1 Apr 2021 16:48:40 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 254FF61391
+	by mail.kernel.org (Postfix) with ESMTPS id 5F6CB61391
+	for <iommu@archiver.kernel.org>; Thu,  1 Apr 2021 16:48:41 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 5F6CB61391
 Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=kernel.org
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by smtp3.osuosl.org (Postfix) with ESMTP id 04D7660BE4;
-	Thu,  1 Apr 2021 16:48:40 +0000 (UTC)
+	by smtp1.osuosl.org (Postfix) with ESMTP id 377ED84ABB;
+	Thu,  1 Apr 2021 16:48:41 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from smtp3.osuosl.org ([127.0.0.1])
-	by localhost (smtp3.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id Vy2bsa7TySTE; Thu,  1 Apr 2021 16:48:39 +0000 (UTC)
+Received: from smtp1.osuosl.org ([127.0.0.1])
+	by localhost (smtp1.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+	with ESMTP id 91imL4DgK_6Y; Thu,  1 Apr 2021 16:48:40 +0000 (UTC)
 Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by smtp3.osuosl.org (Postfix) with ESMTP id DD94E60BE0;
-	Thu,  1 Apr 2021 16:48:38 +0000 (UTC)
+	by smtp1.osuosl.org (Postfix) with ESMTP id 1F69A84AC1;
+	Thu,  1 Apr 2021 16:48:40 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id C158EC000C;
-	Thu,  1 Apr 2021 16:48:38 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 0733EC000C;
+	Thu,  1 Apr 2021 16:48:40 +0000 (UTC)
 Received: from smtp3.osuosl.org (smtp3.osuosl.org [140.211.166.136])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 46E48C000A
- for <iommu@lists.linux-foundation.org>; Thu,  1 Apr 2021 16:48:37 +0000 (UTC)
+ by lists.linuxfoundation.org (Postfix) with ESMTP id E4527C000A
+ for <iommu@lists.linux-foundation.org>; Thu,  1 Apr 2021 16:48:38 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by smtp3.osuosl.org (Postfix) with ESMTP id 3120F60BDE
- for <iommu@lists.linux-foundation.org>; Thu,  1 Apr 2021 16:48:37 +0000 (UTC)
+ by smtp3.osuosl.org (Postfix) with ESMTP id D1A3260BDC
+ for <iommu@lists.linux-foundation.org>; Thu,  1 Apr 2021 16:48:38 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
+Authentication-Results: smtp3.osuosl.org (amavisd-new);
+ dkim=pass (2048-bit key) header.d=kernel.org
 Received: from smtp3.osuosl.org ([127.0.0.1])
  by localhost (smtp3.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id PBLv1Z6nzlDE for <iommu@lists.linux-foundation.org>;
- Thu,  1 Apr 2021 16:48:36 +0000 (UTC)
+ with ESMTP id EWCpsNEBIqRz for <iommu@lists.linux-foundation.org>;
+ Thu,  1 Apr 2021 16:48:37 +0000 (UTC)
 X-Greylist: domain auto-whitelisted by SQLgrey-1.8.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
- by smtp3.osuosl.org (Postfix) with ESMTPS id 26F7260BE0
- for <iommu@lists.linux-foundation.org>; Thu,  1 Apr 2021 16:48:36 +0000 (UTC)
-Received: by mail.kernel.org (Postfix) with ESMTPSA id A013A61384;
- Thu,  1 Apr 2021 16:48:34 +0000 (UTC)
+ by smtp3.osuosl.org (Postfix) with ESMTPS id C824B60BE0
+ for <iommu@lists.linux-foundation.org>; Thu,  1 Apr 2021 16:48:37 +0000 (UTC)
+Received: by mail.kernel.org (Postfix) with ESMTPSA id 53F8C6138D;
+ Thu,  1 Apr 2021 16:48:36 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
- s=k20201202; t=1617295715;
- bh=p4hoXNujhDB52s4CkDR3mvKvMLihsFk6ec9xg1tPeII=;
+ s=k20201202; t=1617295717;
+ bh=N+JQHEXYptK0jkhRJ2ALB6gJZB1U2b6jwOELVOFQslc=;
  h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
- b=HjXHx5Wcc0eFWhBXlm6rO7YJkyJ7ISLX/ZG6hikgYM0O4Dv6A8PZ+BJvSevosmyID
- BMQHqPjKuj9LWOkmQBsN2muIcjZTGAE2S9vpZ0sZyqdl7coMotpFWX4qkB9DASdAdA
- 8MOYbNkn1wTKrQKd9ElOL38sqBegH///SqfyTM38A9hpPK/aN5tj6UmNSjt5wr21zl
- BEE7c57t1BkZB+Txn4rPCbRMopaWbR81Q0MfM4/F0ybVIPYJcb5sQmEA17MS2mYWRv
- 6cJA2/T8yfcQnbM5oXhZ76tbrih3c8kbk+J0gmyWhpKEDFlqjqyaLgPyIOPNP5j71X
- YE5ETBtoFYGLA==
+ b=dyBIUYidA0aR58n5PWMp820F/rDFXTSM8yCGLBKWONn4w4YyyWHoki6al//cvPPJZ
+ lTL0cUXAKkdpFPNrBAugtS7PfjXac63FEpX3R/N2JXxnGgNMiWzNDObQUPvhPe6Glx
+ Tb1ISVZvD6fu4o7lVVi1WOJrSuQ3hHCToh9IxIahdQgXDVcl1tV1V4nfU4LQ5A5DSZ
+ BJUqTeEE66z94WutT0LUndVp65sIc5EeYSUaSdHcnOKcyFTG8L0axwPJFAndsZN/QV
+ MXSt+6///1Yq/aEGrqu2CYE+svzFLP0DRQ4dMO0beaGS1AL+5Mk5lp2R3dP1sckHvl
+ 2v+vFHB5TYdfg==
 From: Will Deacon <will@kernel.org>
 To: iommu@lists.linux-foundation.org
-Subject: [RFC PATCH 2/6] iommu: Add an unmap_pages() op for IOMMU drivers
-Date: Thu,  1 Apr 2021 17:47:34 +0100
-Message-Id: <20210401164738.9513-3-will@kernel.org>
+Subject: [RFC PATCH 3/6] iommu: Use bitmap to calculate page size in
+ iommu_pgsize()
+Date: Thu,  1 Apr 2021 17:47:35 +0100
+Message-Id: <20210401164738.9513-4-will@kernel.org>
 X-Mailer: git-send-email 2.20.1
 In-Reply-To: <20210401164738.9513-1-will@kernel.org>
 References: <20210401164738.9513-1-will@kernel.org>
@@ -86,46 +89,69 @@ Content-Transfer-Encoding: 7bit
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-From: "Isaac J. Manjarres" <isaacm@codeaurora.org>
+Avoid the potential for shifting values by amounts greater than the
+width of their type by using a bitmap to compute page size in
+iommu_pgsize().
 
-Add a callback for IOMMU drivers to provide a path for the
-IOMMU framework to call into an IOMMU driver, which can call
-into the io-pgtable code, to unmap a virtually contiguous
-range of pages of the same size.
-
-For IOMMU drivers that do not specify an unmap_pages() callback,
-the existing logic of unmapping memory one page block at a time
-will be used.
-
-Signed-off-by: Isaac J. Manjarres <isaacm@codeaurora.org>
-Suggested-by: Will Deacon <will@kernel.org>
 Signed-off-by: Will Deacon <will@kernel.org>
 ---
- include/linux/iommu.h | 4 ++++
- 1 file changed, 4 insertions(+)
+ drivers/iommu/iommu.c | 31 ++++++++++++-------------------
+ 1 file changed, 12 insertions(+), 19 deletions(-)
 
-diff --git a/include/linux/iommu.h b/include/linux/iommu.h
-index 5e7fe519430a..9cf81242581a 100644
---- a/include/linux/iommu.h
-+++ b/include/linux/iommu.h
-@@ -193,6 +193,7 @@ struct iommu_iotlb_gather {
-  * @detach_dev: detach device from an iommu domain
-  * @map: map a physically contiguous memory region to an iommu domain
-  * @unmap: unmap a physically contiguous memory region from an iommu domain
-+ * @unmap_pages: unmap a number of pages of the same size from an iommu domain
-  * @flush_iotlb_all: Synchronously flush all hardware TLBs for this domain
-  * @iotlb_sync_map: Sync mappings created recently using @map to the hardware
-  * @iotlb_sync: Flush all queued ranges from the hardware TLBs and empty flush
-@@ -245,6 +246,9 @@ struct iommu_ops {
- 		   phys_addr_t paddr, size_t size, int prot, gfp_t gfp);
- 	size_t (*unmap)(struct iommu_domain *domain, unsigned long iova,
- 		     size_t size, struct iommu_iotlb_gather *iotlb_gather);
-+	size_t (*unmap_pages)(struct iommu_domain *domain, unsigned long iova,
-+			      size_t pgsize, size_t pgcount,
-+			      struct iommu_iotlb_gather *iotlb_gather);
- 	void (*flush_iotlb_all)(struct iommu_domain *domain);
- 	void (*iotlb_sync_map)(struct iommu_domain *domain, unsigned long iova,
- 			       size_t size);
+diff --git a/drivers/iommu/iommu.c b/drivers/iommu/iommu.c
+index d0b0a15dba84..bcd623862bf9 100644
+--- a/drivers/iommu/iommu.c
++++ b/drivers/iommu/iommu.c
+@@ -8,6 +8,7 @@
+ 
+ #include <linux/device.h>
+ #include <linux/kernel.h>
++#include <linux/bits.h>
+ #include <linux/bug.h>
+ #include <linux/types.h>
+ #include <linux/init.h>
+@@ -2360,30 +2361,22 @@ static size_t iommu_pgsize(struct iommu_domain *domain,
+ 			   unsigned long addr_merge, size_t size)
+ {
+ 	unsigned int pgsize_idx;
++	unsigned long pgsizes;
+ 	size_t pgsize;
+ 
+-	/* Max page size that still fits into 'size' */
+-	pgsize_idx = __fls(size);
++	/* Page sizes supported by the hardware and small enough for @size */
++	pgsizes = domain->pgsize_bitmap & GENMASK(__fls(size), 0);
+ 
+-	/* need to consider alignment requirements ? */
+-	if (likely(addr_merge)) {
+-		/* Max page size allowed by address */
+-		unsigned int align_pgsize_idx = __ffs(addr_merge);
+-		pgsize_idx = min(pgsize_idx, align_pgsize_idx);
+-	}
+-
+-	/* build a mask of acceptable page sizes */
+-	pgsize = (1UL << (pgsize_idx + 1)) - 1;
+-
+-	/* throw away page sizes not supported by the hardware */
+-	pgsize &= domain->pgsize_bitmap;
++	/* Constrain the page sizes further based on the maximum alignment */
++	if (likely(addr_merge))
++		pgsizes &= GENMASK(__ffs(addr_merge), 0);
+ 
+-	/* make sure we're still sane */
+-	BUG_ON(!pgsize);
++	/* Make sure we have at least one suitable page size */
++	BUG_ON(!pgsizes);
+ 
+-	/* pick the biggest page */
+-	pgsize_idx = __fls(pgsize);
+-	pgsize = 1UL << pgsize_idx;
++	/* Pick the biggest page size remaining */
++	pgsize_idx = __fls(pgsizes);
++	pgsize = BIT(pgsize_idx);
+ 
+ 	return pgsize;
+ }
 -- 
 2.31.0.291.g576ba9dcdaf-goog
 
