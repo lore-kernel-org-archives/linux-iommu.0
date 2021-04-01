@@ -2,66 +2,68 @@ Return-Path: <SRS0=bVsO=I6=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-10.3 required=3.0 tests=BAYES_00,
-	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,NICE_REPLY_A,
-	SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_SANE_1 autolearn=ham
-	autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-15.3 required=3.0 tests=BAYES_00,
+	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_CR_TRAILER,INCLUDES_PATCH,
+	MAILING_LIST_MULTI,NICE_REPLY_A,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,
+	USER_AGENT_SANE_1 autolearn=ham autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id F01C6C433B4
-	for <iommu@archiver.kernel.org>; Thu,  1 Apr 2021 15:34:03 +0000 (UTC)
-Received: from smtp2.osuosl.org (smtp2.osuosl.org [140.211.166.133])
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E1E96C433ED
+	for <iommu@archiver.kernel.org>; Thu,  1 Apr 2021 15:35:07 +0000 (UTC)
+Received: from smtp1.osuosl.org (smtp1.osuosl.org [140.211.166.138])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 52F2161355
-	for <iommu@archiver.kernel.org>; Thu,  1 Apr 2021 15:34:03 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 52F2161355
+	by mail.kernel.org (Postfix) with ESMTPS id 77E1A61374
+	for <iommu@archiver.kernel.org>; Thu,  1 Apr 2021 15:35:07 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 77E1A61374
 Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=arm.com
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by smtp2.osuosl.org (Postfix) with ESMTP id DA09B40599;
-	Thu,  1 Apr 2021 15:34:02 +0000 (UTC)
-X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from smtp2.osuosl.org ([127.0.0.1])
-	by localhost (smtp2.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id QcxDmDpidPYg; Thu,  1 Apr 2021 15:34:02 +0000 (UTC)
-Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [IPv6:2605:bc80:3010:104::8cd3:938])
-	by smtp2.osuosl.org (Postfix) with ESMTP id 9459B4058C;
-	Thu,  1 Apr 2021 15:34:01 +0000 (UTC)
-Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 61D05C000B;
-	Thu,  1 Apr 2021 15:34:01 +0000 (UTC)
-Received: from smtp1.osuosl.org (smtp1.osuosl.org [IPv6:2605:bc80:3010::138])
- by lists.linuxfoundation.org (Postfix) with ESMTP id C714CC000A
- for <iommu@lists.linux-foundation.org>; Thu,  1 Apr 2021 15:34:00 +0000 (UTC)
-Received: from localhost (localhost [127.0.0.1])
- by smtp1.osuosl.org (Postfix) with ESMTP id B2C58848B6
- for <iommu@lists.linux-foundation.org>; Thu,  1 Apr 2021 15:34:00 +0000 (UTC)
+	by smtp1.osuosl.org (Postfix) with ESMTP id 2EB3C848ED;
+	Thu,  1 Apr 2021 15:35:07 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
 Received: from smtp1.osuosl.org ([127.0.0.1])
- by localhost (smtp1.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id Vrs0-iBL5wJA for <iommu@lists.linux-foundation.org>;
- Thu,  1 Apr 2021 15:33:59 +0000 (UTC)
+	by localhost (smtp1.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+	with ESMTP id wmYdt3F3ZTut; Thu,  1 Apr 2021 15:35:06 +0000 (UTC)
+Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
+	by smtp1.osuosl.org (Postfix) with ESMTP id D01B884A12;
+	Thu,  1 Apr 2021 15:35:05 +0000 (UTC)
+Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
+	by lists.linuxfoundation.org (Postfix) with ESMTP id AF443C000B;
+	Thu,  1 Apr 2021 15:35:05 +0000 (UTC)
+Received: from smtp2.osuosl.org (smtp2.osuosl.org [IPv6:2605:bc80:3010::133])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 8CCD3C000A
+ for <iommu@lists.linux-foundation.org>; Thu,  1 Apr 2021 15:35:04 +0000 (UTC)
+Received: from localhost (localhost [127.0.0.1])
+ by smtp2.osuosl.org (Postfix) with ESMTP id 7AD3F40196
+ for <iommu@lists.linux-foundation.org>; Thu,  1 Apr 2021 15:35:04 +0000 (UTC)
+X-Virus-Scanned: amavisd-new at osuosl.org
+Received: from smtp2.osuosl.org ([127.0.0.1])
+ by localhost (smtp2.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+ with ESMTP id EK-oSBaiCI9W for <iommu@lists.linux-foundation.org>;
+ Thu,  1 Apr 2021 15:35:03 +0000 (UTC)
 X-Greylist: domain auto-whitelisted by SQLgrey-1.8.0
 Received: from foss.arm.com (foss.arm.com [217.140.110.172])
- by smtp1.osuosl.org (Postfix) with ESMTP id 95DD5848B5
- for <iommu@lists.linux-foundation.org>; Thu,  1 Apr 2021 15:33:59 +0000 (UTC)
+ by smtp2.osuosl.org (Postfix) with ESMTP id 9222E40122
+ for <iommu@lists.linux-foundation.org>; Thu,  1 Apr 2021 15:35:03 +0000 (UTC)
 Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
- by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 83ECD161B;
- Thu,  1 Apr 2021 08:33:58 -0700 (PDT)
+ by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id DA783161B;
+ Thu,  1 Apr 2021 08:35:02 -0700 (PDT)
 Received: from [10.57.24.208] (unknown [10.57.24.208])
- by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id 8995E3F719;
- Thu,  1 Apr 2021 08:33:57 -0700 (PDT)
-Subject: Re: [RFC PATCH 0/5] Optimization for unmapping iommu mapped buffers
+ by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id 8EF4D3F719;
+ Thu,  1 Apr 2021 08:35:01 -0700 (PDT)
+Subject: Re: [RFC PATCH 3/5] iommu: Add support for the unmap_pages IOMMU
+ callback
 To: "Isaac J. Manjarres" <isaacm@codeaurora.org>,
  iommu@lists.linux-foundation.org, linux-arm-kernel@lists.infradead.org
 References: <20210331030042.13348-1-isaacm@codeaurora.org>
+ <20210331030042.13348-4-isaacm@codeaurora.org>
 From: Robin Murphy <robin.murphy@arm.com>
-Message-ID: <f4931afb-7530-ff96-44e0-25e3e86de336@arm.com>
-Date: Thu, 1 Apr 2021 16:33:53 +0100
+Message-ID: <f57e2151-1199-46f0-21ed-e401be358857@arm.com>
+Date: Thu, 1 Apr 2021 16:34:37 +0100
 User-Agent: Mozilla/5.0 (Windows NT 10.0; rv:78.0) Gecko/20100101
  Thunderbird/78.9.0
 MIME-Version: 1.0
-In-Reply-To: <20210331030042.13348-1-isaacm@codeaurora.org>
+In-Reply-To: <20210331030042.13348-4-isaacm@codeaurora.org>
 Content-Language: en-GB
 Cc: pratikp@codeaurora.org, will@kernel.org
 X-BeenThere: iommu@lists.linux-foundation.org
@@ -82,73 +84,119 @@ Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
 On 2021-03-31 04:00, Isaac J. Manjarres wrote:
-> When unmapping a buffer from an IOMMU domain, the IOMMU framework unmaps
-> the buffer at a granule of the largest page size that is supported by
-> the IOMMU hardware and fits within the buffer. For every block that
-> is unmapped, the IOMMU framework will call into the IOMMU driver, and
-> then the io-pgtable framework to walk the page tables to find the entry
-> that corresponds to the IOVA, and then unmaps the entry.
+> The IOMMU framework currently unmaps memory one page block at a time,
+> per the page block sizes that are supported by the IOMMU hardware.
+> Now that IOMMU drivers can supply a callback for unmapping multiple
+> in one call, add support in the IOMMU framework to calculate how many
+> page mappings of the same size can be unmapped in one shot, and invoke the
+> IOMMU driver's unmap_pages callback if it has one. Otherwise, the
+> existing behavior will be used.
 > 
-> This can be suboptimal in scenarios where a buffer or a piece of a
-> buffer can be split into several contiguous page blocks of the same size.
-> For example, consider an IOMMU that supports 4 KB page blocks, 2 MB page
-> blocks, and 1 GB page blocks, and a buffer that is 4 MB in size is being
-> unmapped at IOVA 0. The current call-flow will result in 4 indirect calls,
-> and 2 page table walks, to unmap 2 entries that are next to each other in
-> the page-tables, when both entries could have been unmapped in one shot
-> by clearing both page table entries in the same call.
-
-s/unmap/map/ and s/clear/set/ and those two paragraphs are still just as 
-valid. I'd say If it's worth doing anything at all then it's worth doing 
-more than just half the job ;)
-
-> These patches implement a callback called unmap_pages to the io-pgtable
-> code and IOMMU drivers which unmaps an IOVA range that consists of a
-> number of pages of the same page size that is supported by the IOMMU
-> hardware, and allows for clearing multiple entries in the same set of
-> indirect calls. The reason for introducing unmap_pages is to give
-> other IOMMU drivers/io-pgtable formats time to change to using the new
-> unmap_pages callback, so that the transition to using this approach can be
-> done piecemeal.
+> Signed-off-by: Isaac J. Manjarres <isaacm@codeaurora.org>
+> Suggested-by: Will Deacon <will@kernel.org>
+> ---
+>   drivers/iommu/iommu.c | 44 +++++++++++++++++++++++++++++++++++++------
+>   1 file changed, 38 insertions(+), 6 deletions(-)
 > 
-> The same optimization is applicable for mapping buffers, however, the
-> error handling in the io-pgtable layer couldn't be handled cleanly, as we
-> would need to invoke iommu_unmap to unmap the parts of the buffer that
-> were mapped, and then do any TLB maintenance. However, that seemed like a
-> layering violation.
+> diff --git a/drivers/iommu/iommu.c b/drivers/iommu/iommu.c
+> index d0b0a15dba84..dc4295f6bc7f 100644
+> --- a/drivers/iommu/iommu.c
+> +++ b/drivers/iommu/iommu.c
+> @@ -2356,8 +2356,8 @@ phys_addr_t iommu_iova_to_phys(struct iommu_domain *domain, dma_addr_t iova)
+>   }
+>   EXPORT_SYMBOL_GPL(iommu_iova_to_phys);
+>   
+> -static size_t iommu_pgsize(struct iommu_domain *domain,
+> -			   unsigned long addr_merge, size_t size)
+> +static size_t __iommu_pgsize(struct iommu_domain *domain,
+> +			     unsigned long addr_merge, size_t size)
+>   {
+>   	unsigned int pgsize_idx;
+>   	size_t pgsize;
+> @@ -2388,6 +2388,24 @@ static size_t iommu_pgsize(struct iommu_domain *domain,
+>   	return pgsize;
+>   }
+>   
+> +static size_t iommu_pgsize(struct iommu_domain *domain,
+> +			   unsigned long addr_merge, size_t size,
+> +			   size_t *pgcount)
+> +{
+> +	size_t pgsize = __iommu_pgsize(domain, addr_merge, size);
+> +	size_t pgs = 0;
+> +
+> +	do {
+> +		pgs++;
+> +		size -= pgsize;
+> +		addr_merge += pgsize;
+> +	} while (size && __iommu_pgsize(domain, addr_merge, size) == pgsize);
 
-Why couldn't it just return the partial mapping and let the caller roll 
-it back?
+This looks horrifically inefficient. As part of calculating the best 
+current page size it should then be pretty trivial to calculate "(size & 
+next_pgsize_up - 1) >> pgsize_idx" for the number of current-size pages 
+up to the next-better-size boundary (with next_pgsize_up being 0 if 
+pgsize is already the largest possible for the relative alignment of 
+physical and virtual address). A loop is just... yuck :(
 
-Note that having a weird asymmetric interface was how things started out 
-way back when - see bd13969b9524 ("iommu: Split iommu_unmaps") for context.
+> +
+> +	*pgcount = pgs;
+> +
+> +	return pgsize;
+> +}
+> +
+>   static int __iommu_map(struct iommu_domain *domain, unsigned long iova,
+>   		       phys_addr_t paddr, size_t size, int prot, gfp_t gfp)
+>   {
+> @@ -2422,7 +2440,7 @@ static int __iommu_map(struct iommu_domain *domain, unsigned long iova,
+>   	pr_debug("map: iova 0x%lx pa %pa size 0x%zx\n", iova, &paddr, size);
+>   
+>   	while (size) {
+> -		size_t pgsize = iommu_pgsize(domain, iova | paddr, size);
+> +		size_t pgsize = __iommu_pgsize(domain, iova | paddr, size);
+>   
+>   		pr_debug("mapping: iova 0x%lx pa %pa pgsize 0x%zx\n",
+>   			 iova, &paddr, pgsize);
+> @@ -2473,6 +2491,21 @@ int iommu_map_atomic(struct iommu_domain *domain, unsigned long iova,
+>   }
+>   EXPORT_SYMBOL_GPL(iommu_map_atomic);
+>   
+> +static size_t __iommu_unmap_pages(struct iommu_domain *domain, unsigned long iova,
+> +				  size_t size, struct iommu_iotlb_gather *iotlb_gather)
+> +{
+> +	const struct iommu_ops *ops = domain->ops;
+> +	size_t pgsize, pgcount;
+> +
+> +	if (ops->unmap_pages) {
+> +		pgsize = iommu_pgsize(domain, iova, size, &pgcount);
+> +		return ops->unmap_pages(domain, iova, pgsize, pgcount, iotlb_gather);
+> +	}
+> +
+> +	pgsize = __iommu_pgsize(domain, iova, size);
+> +	return ops->unmap(domain, iova, pgsize, iotlb_gather);
+> +}
+> +
+>   static size_t __iommu_unmap(struct iommu_domain *domain,
+>   			    unsigned long iova, size_t size,
+>   			    struct iommu_iotlb_gather *iotlb_gather)
+> @@ -2510,9 +2543,8 @@ static size_t __iommu_unmap(struct iommu_domain *domain,
+>   	 * or we hit an area that isn't mapped.
+>   	 */
+>   	while (unmapped < size) {
+> -		size_t pgsize = iommu_pgsize(domain, iova, size - unmapped);
+> -
+> -		unmapped_page = ops->unmap(domain, iova, pgsize, iotlb_gather);
+> +		unmapped_page = __iommu_unmap_pages(domain, iova, size - unmapped,
+> +						    iotlb_gather);
 
-> Any feedback is very much appreciated.
-
-Do you have any real-world performance figures? I proposed this as an 
-approach because it was clear it could give *some* benefit for 
-relatively low impact, but I'm curious to find out exactly how much, and 
-in particular whether it appears to leave anything on the table vs. 
-punting the entire operation down into the drivers.
+I think it would make more sense to restructure the basic function 
+around handling a page range, then just have a little inner loop to 
+iterate over the individual pages if the driver doesn't provide the new 
+callback.
 
 Robin.
 
-> Thanks,
-> Isaac
-> 
-> Isaac J. Manjarres (5):
->    iommu/io-pgtable: Introduce unmap_pages() as a page table op
->    iommu: Add an unmap_pages() op for IOMMU drivers
->    iommu: Add support for the unmap_pages IOMMU callback
->    iommu/io-pgtable-arm: Implement arm_lpae_unmap_pages()
->    iommu/arm-smmu: Implement the unmap_pages IOMMU driver callback
-> 
->   drivers/iommu/arm/arm-smmu/arm-smmu.c |  19 +++++
->   drivers/iommu/io-pgtable-arm.c        | 114 +++++++++++++++++++++-----
->   drivers/iommu/iommu.c                 |  44 ++++++++--
->   include/linux/io-pgtable.h            |   4 +
->   include/linux/iommu.h                 |   4 +
->   5 files changed, 159 insertions(+), 26 deletions(-)
+>   		if (!unmapped_page)
+>   			break;
+>   
 > 
 _______________________________________________
 iommu mailing list
