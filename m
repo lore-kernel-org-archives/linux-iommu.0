@@ -2,67 +2,192 @@ Return-Path: <SRS0=bVsO=I6=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-16.8 required=3.0 tests=BAYES_00,
-	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_CR_TRAILER,INCLUDES_PATCH,
-	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_GIT
-	autolearn=ham autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-3.5 required=3.0 tests=BAYES_00,DKIM_INVALID,
+	DKIM_SIGNED,HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,SPF_HELO_NONE,
+	SPF_PASS,URIBL_BLOCKED autolearn=no autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A581FC433B4
-	for <iommu@archiver.kernel.org>; Thu,  1 Apr 2021 13:56:41 +0000 (UTC)
-Received: from smtp3.osuosl.org (smtp3.osuosl.org [140.211.166.136])
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 55CE9C433ED
+	for <iommu@archiver.kernel.org>; Thu,  1 Apr 2021 14:08:31 +0000 (UTC)
+Received: from smtp4.osuosl.org (smtp4.osuosl.org [140.211.166.137])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 37E436115C
-	for <iommu@archiver.kernel.org>; Thu,  1 Apr 2021 13:56:41 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 37E436115C
-Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=arm.com
+	by mail.kernel.org (Postfix) with ESMTPS id 017F661286
+	for <iommu@archiver.kernel.org>; Thu,  1 Apr 2021 14:08:30 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 017F661286
+Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=intel.com
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by smtp3.osuosl.org (Postfix) with ESMTP id D62DB60BB8;
-	Thu,  1 Apr 2021 13:56:40 +0000 (UTC)
+	by smtp4.osuosl.org (Postfix) with ESMTP id 9DC604059D;
+	Thu,  1 Apr 2021 14:08:30 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from smtp3.osuosl.org ([127.0.0.1])
-	by localhost (smtp3.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id hnYQYJjAlBAb; Thu,  1 Apr 2021 13:56:39 +0000 (UTC)
+Received: from smtp4.osuosl.org ([127.0.0.1])
+	by localhost (smtp4.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+	with ESMTP id R3S-jxiYKVPV; Thu,  1 Apr 2021 14:08:29 +0000 (UTC)
 Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by smtp3.osuosl.org (Postfix) with ESMTP id 578BB6061F;
-	Thu,  1 Apr 2021 13:56:39 +0000 (UTC)
+	by smtp4.osuosl.org (Postfix) with ESMTP id 126974047C;
+	Thu,  1 Apr 2021 14:08:29 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 37214C000B;
-	Thu,  1 Apr 2021 13:56:39 +0000 (UTC)
-Received: from smtp3.osuosl.org (smtp3.osuosl.org [IPv6:2605:bc80:3010::136])
- by lists.linuxfoundation.org (Postfix) with ESMTP id BFBADC000A
- for <iommu@lists.linux-foundation.org>; Thu,  1 Apr 2021 13:56:37 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id E9BE5C000B;
+	Thu,  1 Apr 2021 14:08:28 +0000 (UTC)
+Received: from smtp2.osuosl.org (smtp2.osuosl.org [IPv6:2605:bc80:3010::133])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id B190EC000A
+ for <iommu@lists.linux-foundation.org>; Thu,  1 Apr 2021 14:08:27 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by smtp3.osuosl.org (Postfix) with ESMTP id 9CF9060BAF
- for <iommu@lists.linux-foundation.org>; Thu,  1 Apr 2021 13:56:37 +0000 (UTC)
+ by smtp2.osuosl.org (Postfix) with ESMTP id 92C8F40025
+ for <iommu@lists.linux-foundation.org>; Thu,  1 Apr 2021 14:08:27 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from smtp3.osuosl.org ([127.0.0.1])
- by localhost (smtp3.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id T8sO5XCkVRQC for <iommu@lists.linux-foundation.org>;
- Thu,  1 Apr 2021 13:56:36 +0000 (UTC)
+Authentication-Results: smtp2.osuosl.org (amavisd-new);
+ dkim=pass (1024-bit key) header.d=intel.onmicrosoft.com
+Received: from smtp2.osuosl.org ([127.0.0.1])
+ by localhost (smtp2.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+ with ESMTP id xHpx6-Om9BEm for <iommu@lists.linux-foundation.org>;
+ Thu,  1 Apr 2021 14:08:26 +0000 (UTC)
 X-Greylist: domain auto-whitelisted by SQLgrey-1.8.0
-Received: from foss.arm.com (foss.arm.com [217.140.110.172])
- by smtp3.osuosl.org (Postfix) with ESMTP id 5607A6061F
- for <iommu@lists.linux-foundation.org>; Thu,  1 Apr 2021 13:56:36 +0000 (UTC)
-Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
- by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id C0F6E1576;
- Thu,  1 Apr 2021 06:56:35 -0700 (PDT)
-Received: from e110467-lin.cambridge.arm.com (e110467-lin.cambridge.arm.com
- [10.1.196.41])
- by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPA id DAFA93F719;
- Thu,  1 Apr 2021 06:56:34 -0700 (PDT)
-From: Robin Murphy <robin.murphy@arm.com>
-To: joro@8bytes.org
-Subject: [PATCH v2 2/2] iommu: Streamline registration interface
-Date: Thu,  1 Apr 2021 14:56:26 +0100
-Message-Id: <ab001b87c533b6f4db71eb90db6f888953986c36.1617285386.git.robin.murphy@arm.com>
-X-Mailer: git-send-email 2.21.0.dirty
-In-Reply-To: <31423b99ff609c3d4b291c701a7a7a810d9ce8dc.1617285386.git.robin.murphy@arm.com>
-References: <31423b99ff609c3d4b291c701a7a7a810d9ce8dc.1617285386.git.robin.murphy@arm.com>
+Received: from mga05.intel.com (mga05.intel.com [192.55.52.43])
+ by smtp2.osuosl.org (Postfix) with ESMTPS id 641C640004
+ for <iommu@lists.linux-foundation.org>; Thu,  1 Apr 2021 14:08:26 +0000 (UTC)
+IronPort-SDR: cSASJ4CpN5xV+2qyrEyMmJCf8CweL2Jb5tkpXKptQK2Ck3dhWCp3VT19rDOafx3m9BlapJFe97
+ R27u5Us7twFA==
+X-IronPort-AV: E=McAfee;i="6000,8403,9941"; a="277436427"
+X-IronPort-AV: E=Sophos;i="5.81,296,1610438400"; d="scan'208";a="277436427"
+Received: from orsmga002.jf.intel.com ([10.7.209.21])
+ by fmsmga105.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384;
+ 01 Apr 2021 07:08:25 -0700
+IronPort-SDR: UjMwzev5mUBqbD+7jOmFM8b/vOw9+mCSm5BBsTius43CTADjYiUUJ5Sh1HfASu067N8ShnCVaa
+ ce7o6tYDQDgQ==
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.81,296,1610438400"; d="scan'208";a="394536457"
+Received: from fmsmsx601.amr.corp.intel.com ([10.18.126.81])
+ by orsmga002.jf.intel.com with ESMTP; 01 Apr 2021 07:08:21 -0700
+Received: from fmsmsx608.amr.corp.intel.com (10.18.126.88) by
+ fmsmsx601.amr.corp.intel.com (10.18.126.81) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2106.2; Thu, 1 Apr 2021 07:08:21 -0700
+Received: from fmsmsx601.amr.corp.intel.com (10.18.126.81) by
+ fmsmsx608.amr.corp.intel.com (10.18.126.88) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2106.2; Thu, 1 Apr 2021 07:08:20 -0700
+Received: from fmsedg601.ED.cps.intel.com (10.1.192.135) by
+ fmsmsx601.amr.corp.intel.com (10.18.126.81) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2106.2
+ via Frontend Transport; Thu, 1 Apr 2021 07:08:20 -0700
+Received: from NAM02-SN1-obe.outbound.protection.outlook.com (104.47.36.51) by
+ edgegateway.intel.com (192.55.55.70) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.1.2106.2; Thu, 1 Apr 2021 07:08:19 -0700
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=bg1D6O9Vqxff7khHQBIm6RY7bRDjsIsmpq7sFtPHqjLim3fpLw/HGMrfQzKmuSytPStTg8Fn0KXjTiqwknYEDjatPsQNbQasI/fmsjqX2uzbFedvejpTFy6lADA29AFxJPrzRx9gFWGoM4Z8roULcH0+5vhJ7jeUUNGIqXymM0hcCuGQ3G376avZ7E9L3Mp2F+/bOgdbu9Dw1400kWuJXo71lGwVrf48R8aUTbmaRfCRvFeJPgM2uVaSkkAliVKLzIfeWpamvtGB3CqKL40NVjSbhlXx/WcuSsPuZ+KdVeS3ezAr8VdAw+g8CV+wPGPfowPCKG1OYhrwHcYLu3Sx4Q==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com; 
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=DFuA5/QeuJCFioCyUFaV/Plim1BRp3FYkUDyZm2u+XM=;
+ b=YocmRkg4OrG6QsioQjhYpc+Zw8wKiGCpnH/ykAVUlhxWh4K3b5kgbvRE+ukXlKBk/hjm6wpB0Q5Vdk/kVOin9enZDlgmazFDQwhIM7Zm+J7CfS4ttq07ydT+VRlTesH8CuM8YciHTtQQ/ObiKSiiMvy6+CzPoYFreee4JRRtfvCFMPTbeoQ9nDyjTOZ8cwLUTbVq+nOXGBFh3+Hw1ClumppumFw5sK4zc53aicWsZcUqKZH5JYlynV1w0P146fgYzqsMfsFXRUPvMblIhib2XNyTGPM9zn5CVYMzM4T9L82JkbMU6pfx8uIHJeg1gwLRKacPT/GbSNn2R4zihi51qA==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=intel.com; dmarc=pass action=none header.from=intel.com;
+ dkim=pass header.d=intel.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=intel.onmicrosoft.com; 
+ s=selector2-intel-onmicrosoft-com;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=DFuA5/QeuJCFioCyUFaV/Plim1BRp3FYkUDyZm2u+XM=;
+ b=JC5p7wl5hhnHL7WfZBquMNLPHbMEJA0EEeoxBkQxPvdK8WOSsBWPzTulH20ipJPFBe40IYXORmSRpEM4of8RySWeuSQ5YLE/h1T1igw8mUOOPLW8jN4AxHRXYx9FbCYRO6T1g6RMUD9FpPMRCZfNzaAPsnRPxXiRH6d4Dn2f00w=
+Received: from BN6PR11MB4068.namprd11.prod.outlook.com (2603:10b6:405:7c::31)
+ by BN6PR11MB1796.namprd11.prod.outlook.com (2603:10b6:404:103::8)
+ with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3999.29; Thu, 1 Apr
+ 2021 14:08:18 +0000
+Received: from BN6PR11MB4068.namprd11.prod.outlook.com
+ ([fe80::5404:7a7d:4c2a:1c1d]) by BN6PR11MB4068.namprd11.prod.outlook.com
+ ([fe80::5404:7a7d:4c2a:1c1d%3]) with mapi id 15.20.3977.033; Thu, 1 Apr 2021
+ 14:08:18 +0000
+From: "Liu, Yi L" <yi.l.liu@intel.com>
+To: Jason Gunthorpe <jgg@nvidia.com>
+Subject: RE: [PATCH V4 05/18] iommu/ioasid: Redefine IOASID set and allocation
+ APIs
+Thread-Topic: [PATCH V4 05/18] iommu/ioasid: Redefine IOASID set and
+ allocation APIs
+Thread-Index: AQHXDZuc1/oaTFwUU0WheDxUmLBHiqqKkLIAgACg94CAAC72gIAAD04AgAADogCAAErUgIAETQEAgAOaswCAB7C3gIAAmFuAgADGxQCAAR7PEIAAZiYAgAECgOCAACyd0IAAWUMAgAASa2CAAAjaAIAAAHQw
+Date: Thu, 1 Apr 2021 14:08:17 +0000
+Message-ID: <BN6PR11MB4068C4DE7AF43D44DE70F4C1C37B9@BN6PR11MB4068.namprd11.prod.outlook.com>
+References: <20210324120528.24d82dbd@jacob-builder>
+ <20210329163147.GG2356281@nvidia.com>
+ <MWHPR11MB188639EE54B48B0E1321C8198C7D9@MWHPR11MB1886.namprd11.prod.outlook.com>
+ <20210330132830.GO2356281@nvidia.com>
+ <BN6PR11MB40688F5AA2323AB8CC8E65E7C37C9@BN6PR11MB4068.namprd11.prod.outlook.com>
+ <20210331124038.GE1463678@nvidia.com>
+ <BN6PR11MB406854CAE9D7CE86BEAB3E23C37B9@BN6PR11MB4068.namprd11.prod.outlook.com>
+ <BN6PR11MB40687428F0D0F3B5F13EA3E0C37B9@BN6PR11MB4068.namprd11.prod.outlook.com>
+ <YGW27KFt9eQB9X2z@myrica>
+ <BN6PR11MB4068171CD1D4B823515F7EFBC37B9@BN6PR11MB4068.namprd11.prod.outlook.com>
+ <20210401134236.GF1463678@nvidia.com>
+In-Reply-To: <20210401134236.GF1463678@nvidia.com>
+Accept-Language: en-US
+Content-Language: en-US
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+dlp-reaction: no-action
+dlp-version: 11.5.1.3
+dlp-product: dlpe-windows
+authentication-results: nvidia.com; dkim=none (message not signed)
+ header.d=none;nvidia.com; dmarc=none action=none header.from=intel.com;
+x-originating-ip: [192.102.204.51]
+x-ms-publictraffictype: Email
+x-ms-office365-filtering-correlation-id: fac2ab35-ec20-4861-695e-08d8f517997e
+x-ms-traffictypediagnostic: BN6PR11MB1796:
+x-ld-processed: 46c98d88-e344-4ed4-8496-4ed7712e255d,ExtAddr
+x-ms-exchange-transport-forked: True
+x-microsoft-antispam-prvs: <BN6PR11MB17969400EA3F768005F66673C37B9@BN6PR11MB1796.namprd11.prod.outlook.com>
+x-ms-oob-tlc-oobclassifiers: OLM:7691;
+x-ms-exchange-senderadcheck: 1
+x-microsoft-antispam: BCL:0;
+x-microsoft-antispam-message-info: +nDiygaKdNAeX+QLTmqoVYvcHPGj6V1naBefUbLboD1vLFsBay2SaMA+XcjNT8PjjbRjpLNCeF+6kVgAvV1VWso9UCImnEevYpFuXmpmJJFCZ5KLUrQIUCG7kdQVgtLMYhUF1awfMb1yao8+HogOoIXi3DzPoYy9tkMFaJRVEGluF5wiMz80Mx5kbWUXqmh1CEtPLIo3GT0VK1BmZVKmdKniuaj9h6mu1BCwhNxy+k6dN8cKGxWJCxZxqlfHPR8o2l+R6fDJ6Z98T3WlDqNjKcenyFd8ekaMQ4nloWeBemdRCI7k6OEUdy9JIXsAAgvpOwZybLx/A2ZpzyuOItPLMvgqi8D7FqJZYMkkC0ul/e3YQPWJ9Z/a7dO7yPRLbjLHqORYtvl50elZs9eFHTu1AQ33sftFquD+IAqTca+EX5qqKIkvq9b0jHryP5OU0qkrnQ22rS9OOlTM6ISTOn+n7EpM3eGg9bG8Db1oQOmnnJ/J0sI1PHuVoMsYvzPYyHOLTFKyaga5iGYHRxAHBvaYUWBnbDbTz1I5sc4khMFvMb1h3mXXonPDTsYORlvm6LHMyXEJFw4w6XiciD23Sy2YHXpci9EUm7K71lMsYA/MrsZiWlSivAqF1e8Wo0jX+XBvaxxkfWlf3SUzA0UbwwowQchWu7YS1BsLiqTLriOU694XN2LVFi/xPTwp9Oum8HyYkWoKQSr6u6ZTTXbOH1NAZwpsjEiQVB+xviv4rYy6l7XEP5WauoMfYnGzdSzQDfKq
+x-forefront-antispam-report: CIP:255.255.255.255; CTRY:; LANG:en; SCL:1; SRV:;
+ IPV:NLI; SFV:NSPM; H:BN6PR11MB4068.namprd11.prod.outlook.com; PTR:; CAT:NONE;
+ SFS:(396003)(39860400002)(136003)(366004)(376002)(346002)(9686003)(83380400001)(5660300002)(38100700001)(7416002)(26005)(186003)(52536014)(4326008)(86362001)(71200400001)(478600001)(8936002)(316002)(966005)(8676002)(2906002)(6506007)(6916009)(7696005)(54906003)(66476007)(64756008)(66446008)(55016002)(33656002)(66556008)(66946007)(76116006);
+ DIR:OUT; SFP:1102; 
+x-ms-exchange-antispam-messagedata: =?us-ascii?Q?RYSin7oavo1ZfSY8dUNdPYzPVxAjG2rZa0EjZfR1kIRublytw77XnbAJePn4?=
+ =?us-ascii?Q?NFL4N87OF82dZe6ZpMZAopjlmP+a+tJb6QKgNpUxqE3e/c9P6r0SxHtZRhhd?=
+ =?us-ascii?Q?v/zOHpn4xkimrsUR/DWl1IwNT2ktR5T9RyhjG6x6gAucMDg7pdfQCkMLsARq?=
+ =?us-ascii?Q?Dry/HMGz5Ufgjh0UJvBuMmxiYN0Jb33grjpLCVbRa1MeWx/qDA4yrs+1nkFJ?=
+ =?us-ascii?Q?Z4gg+u9/MBu9uVCsec6tvJAwf9Zpc6WqlIrlOasEMqSoS/lQoz2WiFI86csd?=
+ =?us-ascii?Q?WVJACukxtU/Y1J3RmkCRazQO3ZYsQajFKu953DIrai42XMv1ouQGlJOtM4Ty?=
+ =?us-ascii?Q?Ij4uHnHVPhmkewwsDei9xlFsraMQkzu/lrW7QJA0JYACvH5lUgFQtR4q4BQZ?=
+ =?us-ascii?Q?WRxea5BEqkE5jcEzTtGUnHI/EGmv25r/buo2ZFQyM7RhcWXGe7tCNBgipT09?=
+ =?us-ascii?Q?X7FvYFuje1QjphfMvlVMhkmb//45okK6Dmq6JqEf4lX/ofz5qjpG/ySSSXPW?=
+ =?us-ascii?Q?V81famsYXqz4fdIcRcaiwHi//How4bESVSLJrnyAq/fENOPyY6DxtKL8K0tI?=
+ =?us-ascii?Q?tBUa/Lo46b53DlTV4kQK1/WmRk8kS9/E728ADLhWzaF+J9/K2xUi2ovPqfQu?=
+ =?us-ascii?Q?+CL0uCP0kKixHxYFHKJhRMI8WxTDgRSN2/Pd7BsPHYc2ZbsspsOti4YoKqvJ?=
+ =?us-ascii?Q?/jNGfCaVZ6RNmUH9qwaHmhD3KxXD1wsPrBejdBCnfB4xP9hjgzfyjN0bT4QW?=
+ =?us-ascii?Q?4bOoH3JARUJs89g1ZghT2EYyVwgV0urdTY2N9PSFxq5NmX00HFvXdlcrKX4m?=
+ =?us-ascii?Q?5i0bCx1AqJLKKH5GDz6nXXqlQQf5omY+L9L+2SO5/zCrVPiqtEFNQZInEyV3?=
+ =?us-ascii?Q?xLXYQVfemRrSD/jq+TizxFeQhCh9BSpmWhH+jZjhyHHUMuMJnMCF1rAC6rLo?=
+ =?us-ascii?Q?6X/vqPsms3edcreSyDio0fx7zf0fQj/3Fc4fc6aN6YGZ1BeB00kbGaPrbFNC?=
+ =?us-ascii?Q?Sg5Mm2NItME2mj7t89Y6xs9AsS76zJ1XPU8dvpKip6gmV8a35FA5D3Hnzl/S?=
+ =?us-ascii?Q?bbyvoKiu2HrMdTWav1cdAqhfSnO9CRql0bOp76mpX3MxK2n5iYd9PgzXv11x?=
+ =?us-ascii?Q?mvWjIjrbWyCOy5u8OLakaonZcVVUdhl3yLOv38Jz52FiofxFmG0fHv/HMg47?=
+ =?us-ascii?Q?6hClKppppuxQuvwc1d3eUuuTJCNvEFjKnQkT2ohcpbeN9tTisaXVjRnpZGgz?=
+ =?us-ascii?Q?P1ok8w5Li7zNfNPFgSHJgAY20qymmwqnxhhTUNCFdNCK/NbDWgoGku4KbpHZ?=
+ =?us-ascii?Q?i7UiOj1HHwLerj9P+ovHaEpf?=
 MIME-Version: 1.0
-Cc: iommu@lists.linux-foundation.org, will@kernel.org,
- linux-kernel@vger.kernel.org, hch@lst.de
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-AuthSource: BN6PR11MB4068.namprd11.prod.outlook.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: fac2ab35-ec20-4861-695e-08d8f517997e
+X-MS-Exchange-CrossTenant-originalarrivaltime: 01 Apr 2021 14:08:17.8967 (UTC)
+X-MS-Exchange-CrossTenant-fromentityheader: Hosted
+X-MS-Exchange-CrossTenant-id: 46c98d88-e344-4ed4-8496-4ed7712e255d
+X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
+X-MS-Exchange-CrossTenant-userprincipalname: lkDhNI7HUiyj7HDLt/trE6W+PEa7bRniamW4BbylmhjBQHvj87YNiF1UgObrDf3RZYSuIBSzRjOeobZW/opOrg==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: BN6PR11MB1796
+X-OriginatorOrg: intel.com
+Cc: Jean-Philippe Brucker <jean-philippe@linaro.org>, "Tian,
+ Kevin" <kevin.tian@intel.com>, Alex
+ Williamson <alex.williamson@redhat.com>, "Raj, Ashok" <ashok.raj@intel.com>,
+ Jonathan Corbet <corbet@lwn.net>,
+ Jean-Philippe Brucker <jean-philippe@linaro.com>,
+ LKML <linux-kernel@vger.kernel.org>, "Jiang, Dave" <dave.jiang@intel.com>,
+ "iommu@lists.linux-foundation.org" <iommu@lists.linux-foundation.org>,
+ Li Zefan <lizefan@huawei.com>, Johannes Weiner <hannes@cmpxchg.org>,
+ Tejun Heo <tj@kernel.org>, "cgroups@vger.kernel.org" <cgroups@vger.kernel.org>,
+ "Wu, Hao" <hao.wu@intel.com>, David Woodhouse <dwmw2@infradead.org>
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -80,451 +205,74 @@ Content-Transfer-Encoding: 7bit
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-Rather than have separate opaque setter functions that are easy to
-overlook and lead to repetitive boilerplate in drivers, let's pass the
-relevant initialisation parameters directly to iommu_device_register().
+> From: Jason Gunthorpe <jgg@nvidia.com>
+> Sent: Thursday, April 1, 2021 9:43 PM
+> 
+> On Thu, Apr 01, 2021 at 01:38:46PM +0000, Liu, Yi L wrote:
+> > > From: Jean-Philippe Brucker <jean-philippe@linaro.org>
+> > > Sent: Thursday, April 1, 2021 8:05 PM
+> > [...]
+> > >
+> > > Also wondering about:
+> > >
+> > > * Querying IOMMU nesting capabilities before binding page tables
+> (which
+> > >   page table formats are supported?). We were planning to have a VFIO
+> cap,
+> > >   but I'm guessing we need to go back to the sysfs solution?
+> >
+> > I think it can also be with /dev/ioasid.
+> 
+> Sure, anything to do with page table formats and setting page tables
+> should go through ioasid.
+> 
+> > > * Invalidation, probably an ioasid_fd ioctl?
+> >
+> > yeah, if we are doing bind/unbind_pagtable via ioasid_fd, then yes,
+> > invalidation should go this way as well. This is why I worried it may
+> > fail to meet the requirement from you and Eric.
+> 
+> Yes, all manipulation of page tables, including removing memory ranges, or
+> setting memory ranges to trigger a page fault behavior should go
+> through here.
+> 
+> > > * Page faults, page response. From and to devices, and don't necessarily
+> > >   have a PASID. But needed by vdpa as well, so that's also going through
+> > >   /dev/ioasid?
+> >
+> > page faults should still be per-device, but the fault event fd may be stored
+> > in /dev/ioasid. page response would be in /dev/ioasid just like invalidation.
+> 
+> Here you mean non-SVA page faults that are delegated to userspace to
+> handle?
 
-Acked-by: Will Deacon <will@kernel.org>
-Signed-off-by: Robin Murphy <robin.murphy@arm.com>
+no, just SVA page faults. otherwise, no need to let userspace handle.
 
----
+> 
+> Why would that be per-device?
+>
+> Can you show the flow you imagine?
 
-v2: Add some kerneldoc and an attempt to sanity-check modules
+DMA page faults are delivered to root-complex via page request message and
+it is per-device according to PCIe spec. Page request handling flow is:
 
-FWIW I'm hoping to fold the sysfs registration in here too, such that
-@hwdev can also represent the sysfs parent, but I haven't yet figured
-out why virtio-iommu is the odd one out in that regard.
----
- drivers/iommu/amd/init.c                    |  3 +--
- drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c |  5 +---
- drivers/iommu/arm/arm-smmu/arm-smmu.c       |  5 +---
- drivers/iommu/arm/arm-smmu/qcom_iommu.c     |  5 +---
- drivers/iommu/exynos-iommu.c                |  5 +---
- drivers/iommu/fsl_pamu_domain.c             |  4 +--
- drivers/iommu/intel/dmar.c                  |  4 +--
- drivers/iommu/intel/iommu.c                 |  3 +--
- drivers/iommu/iommu.c                       | 19 ++++++++++++-
- drivers/iommu/ipmmu-vmsa.c                  |  6 +----
- drivers/iommu/msm_iommu.c                   |  5 +---
- drivers/iommu/mtk_iommu.c                   |  5 +---
- drivers/iommu/mtk_iommu_v1.c                |  4 +--
- drivers/iommu/omap-iommu.c                  |  5 +---
- drivers/iommu/rockchip-iommu.c              |  5 +---
- drivers/iommu/s390-iommu.c                  |  4 +--
- drivers/iommu/sprd-iommu.c                  |  5 +---
- drivers/iommu/sun50i-iommu.c                |  5 +---
- drivers/iommu/tegra-gart.c                  |  5 +---
- drivers/iommu/tegra-smmu.c                  |  5 +---
- drivers/iommu/virtio-iommu.c                |  5 +---
- include/linux/iommu.h                       | 30 +++++----------------
- 22 files changed, 44 insertions(+), 98 deletions(-)
+1) iommu driver receives a page request from device
+2) iommu driver parses the page request message. Get the RID,PASID, faulted
+   page and requested permissions etc.
+3) iommu driver triggers fault handler registered by device driver with
+   iommu_report_device_fault()
+4) device driver's fault handler signals an event FD to notify userspace to
+   fetch the information about the page fault. If it's VM case, inject the
+   page fault to VM and let guest to solve it.
 
-diff --git a/drivers/iommu/amd/init.c b/drivers/iommu/amd/init.c
-index 321f5906e6ed..e1ef922d9f8f 100644
---- a/drivers/iommu/amd/init.c
-+++ b/drivers/iommu/amd/init.c
-@@ -1935,8 +1935,7 @@ static int __init iommu_init_pci(struct amd_iommu *iommu)
- 
- 	iommu_device_sysfs_add(&iommu->iommu, &iommu->dev->dev,
- 			       amd_iommu_groups, "ivhd%d", iommu->index);
--	iommu_device_set_ops(&iommu->iommu, &amd_iommu_ops);
--	iommu_device_register(&iommu->iommu);
-+	iommu_device_register(&iommu->iommu, &amd_iommu_ops, NULL);
- 
- 	return pci_enable_device(iommu->dev);
- }
-diff --git a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
-index b82000519af6..ecc6cfe3ae90 100644
---- a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
-+++ b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
-@@ -3621,10 +3621,7 @@ static int arm_smmu_device_probe(struct platform_device *pdev)
- 	if (ret)
- 		return ret;
- 
--	iommu_device_set_ops(&smmu->iommu, &arm_smmu_ops);
--	iommu_device_set_fwnode(&smmu->iommu, dev->fwnode);
--
--	ret = iommu_device_register(&smmu->iommu);
-+	ret = iommu_device_register(&smmu->iommu, &arm_smmu_ops, dev);
- 	if (ret) {
- 		dev_err(dev, "Failed to register iommu\n");
- 		return ret;
-diff --git a/drivers/iommu/arm/arm-smmu/arm-smmu.c b/drivers/iommu/arm/arm-smmu/arm-smmu.c
-index 11ca963c4b93..0a697cb0d2f8 100644
---- a/drivers/iommu/arm/arm-smmu/arm-smmu.c
-+++ b/drivers/iommu/arm/arm-smmu/arm-smmu.c
-@@ -2222,10 +2222,7 @@ static int arm_smmu_device_probe(struct platform_device *pdev)
- 		return err;
- 	}
- 
--	iommu_device_set_ops(&smmu->iommu, &arm_smmu_ops);
--	iommu_device_set_fwnode(&smmu->iommu, dev->fwnode);
--
--	err = iommu_device_register(&smmu->iommu);
-+	err = iommu_device_register(&smmu->iommu, &arm_smmu_ops, dev);
- 	if (err) {
- 		dev_err(dev, "Failed to register iommu\n");
- 		return err;
-diff --git a/drivers/iommu/arm/arm-smmu/qcom_iommu.c b/drivers/iommu/arm/arm-smmu/qcom_iommu.c
-index 7f280c8d5c53..4294abe389b2 100644
---- a/drivers/iommu/arm/arm-smmu/qcom_iommu.c
-+++ b/drivers/iommu/arm/arm-smmu/qcom_iommu.c
-@@ -847,10 +847,7 @@ static int qcom_iommu_device_probe(struct platform_device *pdev)
- 		return ret;
- 	}
- 
--	iommu_device_set_ops(&qcom_iommu->iommu, &qcom_iommu_ops);
--	iommu_device_set_fwnode(&qcom_iommu->iommu, dev->fwnode);
--
--	ret = iommu_device_register(&qcom_iommu->iommu);
-+	ret = iommu_device_register(&qcom_iommu->iommu, &qcom_iommu_ops, dev);
- 	if (ret) {
- 		dev_err(dev, "Failed to register iommu\n");
- 		return ret;
-diff --git a/drivers/iommu/exynos-iommu.c b/drivers/iommu/exynos-iommu.c
-index de324b4eedfe..f887c3e111c1 100644
---- a/drivers/iommu/exynos-iommu.c
-+++ b/drivers/iommu/exynos-iommu.c
-@@ -630,10 +630,7 @@ static int exynos_sysmmu_probe(struct platform_device *pdev)
- 	if (ret)
- 		return ret;
- 
--	iommu_device_set_ops(&data->iommu, &exynos_iommu_ops);
--	iommu_device_set_fwnode(&data->iommu, &dev->of_node->fwnode);
--
--	ret = iommu_device_register(&data->iommu);
-+	ret = iommu_device_register(&data->iommu, &exynos_iommu_ops, dev);
- 	if (ret)
- 		return ret;
- 
-diff --git a/drivers/iommu/fsl_pamu_domain.c b/drivers/iommu/fsl_pamu_domain.c
-index b2110767caf4..1a15bd5da358 100644
---- a/drivers/iommu/fsl_pamu_domain.c
-+++ b/drivers/iommu/fsl_pamu_domain.c
-@@ -1053,9 +1053,7 @@ int __init pamu_domain_init(void)
- 	if (ret)
- 		return ret;
- 
--	iommu_device_set_ops(&pamu_iommu, &fsl_pamu_ops);
--
--	ret = iommu_device_register(&pamu_iommu);
-+	ret = iommu_device_register(&pamu_iommu, &fsl_pamu_ops, NULL);
- 	if (ret) {
- 		iommu_device_sysfs_remove(&pamu_iommu);
- 		pr_err("Can't register iommu device\n");
-diff --git a/drivers/iommu/intel/dmar.c b/drivers/iommu/intel/dmar.c
-index 6971397805f3..1757ac1e1623 100644
---- a/drivers/iommu/intel/dmar.c
-+++ b/drivers/iommu/intel/dmar.c
-@@ -1140,9 +1140,7 @@ static int alloc_iommu(struct dmar_drhd_unit *drhd)
- 		if (err)
- 			goto err_unmap;
- 
--		iommu_device_set_ops(&iommu->iommu, &intel_iommu_ops);
--
--		err = iommu_device_register(&iommu->iommu);
-+		err = iommu_device_register(&iommu->iommu, &intel_iommu_ops, NULL);
- 		if (err)
- 			goto err_unmap;
- 	}
-diff --git a/drivers/iommu/intel/iommu.c b/drivers/iommu/intel/iommu.c
-index 167219ea8d70..db0addebefc3 100644
---- a/drivers/iommu/intel/iommu.c
-+++ b/drivers/iommu/intel/iommu.c
-@@ -4379,8 +4379,7 @@ int __init intel_iommu_init(void)
- 		iommu_device_sysfs_add(&iommu->iommu, NULL,
- 				       intel_iommu_groups,
- 				       "%s", iommu->name);
--		iommu_device_set_ops(&iommu->iommu, &intel_iommu_ops);
--		iommu_device_register(&iommu->iommu);
-+		iommu_device_register(&iommu->iommu, &intel_iommu_ops, NULL);
- 	}
- 	up_read(&dmar_global_lock);
- 
-diff --git a/drivers/iommu/iommu.c b/drivers/iommu/iommu.c
-index e10cfa99057c..d5bd4988399a 100644
---- a/drivers/iommu/iommu.c
-+++ b/drivers/iommu/iommu.c
-@@ -152,8 +152,25 @@ static int __init iommu_subsys_init(void)
- }
- subsys_initcall(iommu_subsys_init);
- 
--int iommu_device_register(struct iommu_device *iommu)
-+/**
-+ * iommu_device_register() - Register an IOMMU hardware instance
-+ * @iommu: IOMMU handle for the instance
-+ * @ops:   IOMMU ops to associate with the instance
-+ * @hwdev: (optional) actual instance device, used for fwnode lookup
-+ *
-+ * Return: 0 on success, or an error.
-+ */
-+int iommu_device_register(struct iommu_device *iommu,
-+			  const struct iommu_ops *ops, struct device *hwdev)
- {
-+	/* We need to be able to take module references appropriately */
-+	if (WARN_ON(is_module_address((unsigned long)ops) && !ops->owner))
-+		return -EINVAL;
-+
-+	iommu->ops = ops;
-+	if (hwdev)
-+		iommu->fwnode = hwdev->fwnode;
-+
- 	spin_lock(&iommu_device_lock);
- 	list_add_tail(&iommu->list, &iommu_device_list);
- 	spin_unlock(&iommu_device_lock);
-diff --git a/drivers/iommu/ipmmu-vmsa.c b/drivers/iommu/ipmmu-vmsa.c
-index eaaec0a55cc6..aaa6a4d59057 100644
---- a/drivers/iommu/ipmmu-vmsa.c
-+++ b/drivers/iommu/ipmmu-vmsa.c
-@@ -1076,11 +1076,7 @@ static int ipmmu_probe(struct platform_device *pdev)
- 		if (ret)
- 			return ret;
- 
--		iommu_device_set_ops(&mmu->iommu, &ipmmu_ops);
--		iommu_device_set_fwnode(&mmu->iommu,
--					&pdev->dev.of_node->fwnode);
--
--		ret = iommu_device_register(&mmu->iommu);
-+		ret = iommu_device_register(&mmu->iommu, &ipmmu_ops, &pdev->dev);
- 		if (ret)
- 			return ret;
- 
-diff --git a/drivers/iommu/msm_iommu.c b/drivers/iommu/msm_iommu.c
-index f0ba6a09b434..7880f307cb2d 100644
---- a/drivers/iommu/msm_iommu.c
-+++ b/drivers/iommu/msm_iommu.c
-@@ -792,10 +792,7 @@ static int msm_iommu_probe(struct platform_device *pdev)
- 		goto fail;
- 	}
- 
--	iommu_device_set_ops(&iommu->iommu, &msm_iommu_ops);
--	iommu_device_set_fwnode(&iommu->iommu, &pdev->dev.of_node->fwnode);
--
--	ret = iommu_device_register(&iommu->iommu);
-+	ret = iommu_device_register(&iommu->iommu, &msm_iommu_ops, &pdev->dev);
- 	if (ret) {
- 		pr_err("Could not register msm-smmu at %pa\n", &ioaddr);
- 		goto fail;
-diff --git a/drivers/iommu/mtk_iommu.c b/drivers/iommu/mtk_iommu.c
-index 6ecc007f07cd..fb3abc23a000 100644
---- a/drivers/iommu/mtk_iommu.c
-+++ b/drivers/iommu/mtk_iommu.c
-@@ -898,10 +898,7 @@ static int mtk_iommu_probe(struct platform_device *pdev)
- 	if (ret)
- 		goto out_link_remove;
- 
--	iommu_device_set_ops(&data->iommu, &mtk_iommu_ops);
--	iommu_device_set_fwnode(&data->iommu, &pdev->dev.of_node->fwnode);
--
--	ret = iommu_device_register(&data->iommu);
-+	ret = iommu_device_register(&data->iommu, &mtk_iommu_ops, dev);
- 	if (ret)
- 		goto out_sysfs_remove;
- 
-diff --git a/drivers/iommu/mtk_iommu_v1.c b/drivers/iommu/mtk_iommu_v1.c
-index 82ddfe9170d4..3aa07995060b 100644
---- a/drivers/iommu/mtk_iommu_v1.c
-+++ b/drivers/iommu/mtk_iommu_v1.c
-@@ -620,9 +620,7 @@ static int mtk_iommu_probe(struct platform_device *pdev)
- 	if (ret)
- 		return ret;
- 
--	iommu_device_set_ops(&data->iommu, &mtk_iommu_ops);
--
--	ret = iommu_device_register(&data->iommu);
-+	ret = iommu_device_register(&data->iommu, &mtk_iommu_ops, dev);
- 	if (ret)
- 		return ret;
- 
-diff --git a/drivers/iommu/omap-iommu.c b/drivers/iommu/omap-iommu.c
-index 71f29c0927fc..26e517eb0dd3 100644
---- a/drivers/iommu/omap-iommu.c
-+++ b/drivers/iommu/omap-iommu.c
-@@ -1235,10 +1235,7 @@ static int omap_iommu_probe(struct platform_device *pdev)
- 		if (err)
- 			goto out_group;
- 
--		iommu_device_set_ops(&obj->iommu, &omap_iommu_ops);
--		iommu_device_set_fwnode(&obj->iommu, &of->fwnode);
--
--		err = iommu_device_register(&obj->iommu);
-+		err = iommu_device_register(&obj->iommu, &omap_iommu_ops, &pdev->dev);
- 		if (err)
- 			goto out_sysfs;
- 	}
-diff --git a/drivers/iommu/rockchip-iommu.c b/drivers/iommu/rockchip-iommu.c
-index e5d86b7177de..7a2932772fdf 100644
---- a/drivers/iommu/rockchip-iommu.c
-+++ b/drivers/iommu/rockchip-iommu.c
-@@ -1196,10 +1196,7 @@ static int rk_iommu_probe(struct platform_device *pdev)
- 	if (err)
- 		goto err_put_group;
- 
--	iommu_device_set_ops(&iommu->iommu, &rk_iommu_ops);
--	iommu_device_set_fwnode(&iommu->iommu, &dev->of_node->fwnode);
--
--	err = iommu_device_register(&iommu->iommu);
-+	err = iommu_device_register(&iommu->iommu, &rk_iommu_ops, dev);
- 	if (err)
- 		goto err_remove_sysfs;
- 
-diff --git a/drivers/iommu/s390-iommu.c b/drivers/iommu/s390-iommu.c
-index 8895dbb705eb..6019e58ce4fb 100644
---- a/drivers/iommu/s390-iommu.c
-+++ b/drivers/iommu/s390-iommu.c
-@@ -333,9 +333,7 @@ int zpci_init_iommu(struct zpci_dev *zdev)
- 	if (rc)
- 		goto out_err;
- 
--	iommu_device_set_ops(&zdev->iommu_dev, &s390_iommu_ops);
--
--	rc = iommu_device_register(&zdev->iommu_dev);
-+	rc = iommu_device_register(&zdev->iommu_dev, &s390_iommu_ops, NULL);
- 	if (rc)
- 		goto out_sysfs;
- 
-diff --git a/drivers/iommu/sprd-iommu.c b/drivers/iommu/sprd-iommu.c
-index b5edf0e82176..f5d826ab3807 100644
---- a/drivers/iommu/sprd-iommu.c
-+++ b/drivers/iommu/sprd-iommu.c
-@@ -508,10 +508,7 @@ static int sprd_iommu_probe(struct platform_device *pdev)
- 	if (ret)
- 		goto put_group;
- 
--	iommu_device_set_ops(&sdev->iommu, &sprd_iommu_ops);
--	iommu_device_set_fwnode(&sdev->iommu, &dev->of_node->fwnode);
--
--	ret = iommu_device_register(&sdev->iommu);
-+	ret = iommu_device_register(&sdev->iommu, &sprd_iommu_ops, dev);
- 	if (ret)
- 		goto remove_sysfs;
- 
-diff --git a/drivers/iommu/sun50i-iommu.c b/drivers/iommu/sun50i-iommu.c
-index ea6db1341916..181bb1c3437c 100644
---- a/drivers/iommu/sun50i-iommu.c
-+++ b/drivers/iommu/sun50i-iommu.c
-@@ -968,10 +968,7 @@ static int sun50i_iommu_probe(struct platform_device *pdev)
- 	if (ret)
- 		goto err_free_group;
- 
--	iommu_device_set_ops(&iommu->iommu, &sun50i_iommu_ops);
--	iommu_device_set_fwnode(&iommu->iommu, &pdev->dev.of_node->fwnode);
--
--	ret = iommu_device_register(&iommu->iommu);
-+	ret = iommu_device_register(&iommu->iommu, &sun50i_iommu_ops, &pdev->dev);
- 	if (ret)
- 		goto err_remove_sysfs;
- 
-diff --git a/drivers/iommu/tegra-gart.c b/drivers/iommu/tegra-gart.c
-index 6f130e51f072..6a358f92c7e5 100644
---- a/drivers/iommu/tegra-gart.c
-+++ b/drivers/iommu/tegra-gart.c
-@@ -353,10 +353,7 @@ struct gart_device *tegra_gart_probe(struct device *dev, struct tegra_mc *mc)
- 	if (err)
- 		goto free_gart;
- 
--	iommu_device_set_ops(&gart->iommu, &gart_iommu_ops);
--	iommu_device_set_fwnode(&gart->iommu, dev->fwnode);
--
--	err = iommu_device_register(&gart->iommu);
-+	err = iommu_device_register(&gart->iommu, &gart_iommu_ops, dev);
- 	if (err)
- 		goto remove_sysfs;
- 
-diff --git a/drivers/iommu/tegra-smmu.c b/drivers/iommu/tegra-smmu.c
-index 602aab98c079..1e98dc63ad13 100644
---- a/drivers/iommu/tegra-smmu.c
-+++ b/drivers/iommu/tegra-smmu.c
-@@ -1145,10 +1145,7 @@ struct tegra_smmu *tegra_smmu_probe(struct device *dev,
- 	if (err)
- 		return ERR_PTR(err);
- 
--	iommu_device_set_ops(&smmu->iommu, &tegra_smmu_ops);
--	iommu_device_set_fwnode(&smmu->iommu, dev->fwnode);
--
--	err = iommu_device_register(&smmu->iommu);
-+	err = iommu_device_register(&smmu->iommu, &tegra_smmu_ops, dev);
- 	if (err)
- 		goto remove_sysfs;
- 
-diff --git a/drivers/iommu/virtio-iommu.c b/drivers/iommu/virtio-iommu.c
-index 594ed827e944..7c02481a81b4 100644
---- a/drivers/iommu/virtio-iommu.c
-+++ b/drivers/iommu/virtio-iommu.c
-@@ -1066,10 +1066,7 @@ static int viommu_probe(struct virtio_device *vdev)
- 	if (ret)
- 		goto err_free_vqs;
- 
--	iommu_device_set_ops(&viommu->iommu, &viommu_ops);
--	iommu_device_set_fwnode(&viommu->iommu, parent_dev->fwnode);
--
--	iommu_device_register(&viommu->iommu);
-+	iommu_device_register(&viommu->iommu, &viommu_ops, parent_dev);
- 
- #ifdef CONFIG_PCI
- 	if (pci_bus_type.iommu_ops != &viommu_ops) {
-diff --git a/include/linux/iommu.h b/include/linux/iommu.h
-index dce8c5e12ea0..a17bda39e9d2 100644
---- a/include/linux/iommu.h
-+++ b/include/linux/iommu.h
-@@ -368,7 +368,9 @@ struct dev_iommu {
- 	void				*priv;
- };
- 
--int  iommu_device_register(struct iommu_device *iommu);
-+int iommu_device_register(struct iommu_device *iommu,
-+			  const struct iommu_ops *ops,
-+			  struct device *hwdev);
- void iommu_device_unregister(struct iommu_device *iommu);
- int  iommu_device_sysfs_add(struct iommu_device *iommu,
- 			    struct device *parent,
-@@ -379,18 +381,6 @@ int  iommu_device_link(struct iommu_device   *iommu, struct device *link);
- void iommu_device_unlink(struct iommu_device *iommu, struct device *link);
- int iommu_deferred_attach(struct device *dev, struct iommu_domain *domain);
- 
--static inline void iommu_device_set_ops(struct iommu_device *iommu,
--					  const struct iommu_ops *ops)
--{
--	iommu->ops = ops;
--}
--
--static inline void iommu_device_set_fwnode(struct iommu_device *iommu,
--					   struct fwnode_handle *fwnode)
--{
--	iommu->fwnode = fwnode;
--}
--
- static inline struct iommu_device *dev_to_iommu_device(struct device *dev)
- {
- 	return (struct iommu_device *)dev_get_drvdata(dev);
-@@ -894,21 +884,13 @@ static inline int iommu_domain_set_attr(struct iommu_domain *domain,
- 	return -EINVAL;
- }
- 
--static inline int  iommu_device_register(struct iommu_device *iommu)
-+static inline int iommu_device_register(struct iommu_device *iommu,
-+					const struct iommu_ops *ops,
-+					struct device *hwdev)
- {
- 	return -ENODEV;
- }
- 
--static inline void iommu_device_set_ops(struct iommu_device *iommu,
--					const struct iommu_ops *ops)
--{
--}
--
--static inline void iommu_device_set_fwnode(struct iommu_device *iommu,
--					   struct fwnode_handle *fwnode)
--{
--}
--
- static inline struct iommu_device *dev_to_iommu_device(struct device *dev)
- {
- 	return NULL;
--- 
-2.21.0.dirty
+Eric has sent below series for the page fault reporting for VM with passthru
+device.
+https://lore.kernel.org/kvm/20210223210625.604517-5-eric.auger@redhat.com/
 
+Regards,
+Yi Liu
+
+> Jason
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
