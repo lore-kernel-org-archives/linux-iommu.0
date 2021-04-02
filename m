@@ -2,76 +2,74 @@ Return-Path: <SRS0=DOhO=I7=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-16.6 required=3.0 tests=BAYES_00,DKIM_INVALID,
-	DKIM_SIGNED,HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_CR_TRAILER,INCLUDES_PATCH,
-	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,USER_AGENT_GIT autolearn=ham
-	autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-11.6 required=3.0 tests=BAYES_00,DKIM_INVALID,
+	DKIM_SIGNED,HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,
+	SPF_HELO_NONE,SPF_PASS,USER_AGENT_GIT autolearn=ham autolearn_force=no
+	version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id DC6C6C433ED
-	for <iommu@archiver.kernel.org>; Fri,  2 Apr 2021 01:35:21 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 79F15C433B4
+	for <iommu@archiver.kernel.org>; Fri,  2 Apr 2021 01:35:22 +0000 (UTC)
 Received: from smtp2.osuosl.org (smtp2.osuosl.org [140.211.166.133])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 9CB68610CB
-	for <iommu@archiver.kernel.org>; Fri,  2 Apr 2021 01:35:21 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 9CB68610CB
+	by mail.kernel.org (Postfix) with ESMTPS id 34086610CB
+	for <iommu@archiver.kernel.org>; Fri,  2 Apr 2021 01:35:22 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 34086610CB
 Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=codeaurora.org
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by smtp2.osuosl.org (Postfix) with ESMTP id 7196740620;
+	by smtp2.osuosl.org (Postfix) with ESMTP id 877B540623;
 	Fri,  2 Apr 2021 01:35:21 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
 Received: from smtp2.osuosl.org ([127.0.0.1])
 	by localhost (smtp2.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id MNyRB_1TJuLs; Fri,  2 Apr 2021 01:35:20 +0000 (UTC)
-Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [IPv6:2605:bc80:3010:104::8cd3:938])
-	by smtp2.osuosl.org (Postfix) with ESMTP id 1C98940200;
+	with ESMTP id xk4xDldb4LuC; Fri,  2 Apr 2021 01:35:20 +0000 (UTC)
+Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
+	by smtp2.osuosl.org (Postfix) with ESMTP id 7822740625;
 	Fri,  2 Apr 2021 01:35:20 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id E9E3FC000D;
-	Fri,  2 Apr 2021 01:35:19 +0000 (UTC)
-Received: from smtp4.osuosl.org (smtp4.osuosl.org [IPv6:2605:bc80:3010::137])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 42C66C000A
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 43FF9C000A;
+	Fri,  2 Apr 2021 01:35:20 +0000 (UTC)
+Received: from smtp2.osuosl.org (smtp2.osuosl.org [140.211.166.133])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id E53A4C0011
  for <iommu@lists.linux-foundation.org>; Fri,  2 Apr 2021 01:35:17 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by smtp4.osuosl.org (Postfix) with UTF8SMTP id 2C89D41940
+ by smtp2.osuosl.org (Postfix) with UTF8SMTP id D585540605
  for <iommu@lists.linux-foundation.org>; Fri,  2 Apr 2021 01:35:17 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Authentication-Results: smtp4.osuosl.org (amavisd-new);
- dkim=pass (1024-bit key) header.d=mg.codeaurora.org
-Received: from smtp4.osuosl.org ([127.0.0.1])
- by localhost (smtp4.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with UTF8SMTP id WIfhaJJwlsIy for <iommu@lists.linux-foundation.org>;
+Received: from smtp2.osuosl.org ([127.0.0.1])
+ by localhost (smtp2.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+ with UTF8SMTP id 8XQyvE6PrH1a for <iommu@lists.linux-foundation.org>;
  Fri,  2 Apr 2021 01:35:16 +0000 (UTC)
 X-Greylist: from auto-whitelisted by SQLgrey-1.8.0
-Received: from m43-7.mailgun.net (m43-7.mailgun.net [69.72.43.7])
- by smtp4.osuosl.org (Postfix) with UTF8SMTPS id D84C04193B
- for <iommu@lists.linux-foundation.org>; Fri,  2 Apr 2021 01:35:15 +0000 (UTC)
+Received: from so254-9.mailgun.net (so254-9.mailgun.net [198.61.254.9])
+ by smtp2.osuosl.org (Postfix) with UTF8SMTPS id 4D5884017B
+ for <iommu@lists.linux-foundation.org>; Fri,  2 Apr 2021 01:35:14 +0000 (UTC)
 DKIM-Signature: a=rsa-sha256; v=1; c=relaxed/relaxed; d=mg.codeaurora.org;
  q=dns/txt; 
- s=smtp; t=1617327315; h=Content-Transfer-Encoding: MIME-Version:
- References: In-Reply-To: Message-Id: Date: Subject: Cc: To: From:
- Sender; bh=AAPsoactlu+0HH1xgmPl13LuTN95ZLCQB0chSwxBBwk=;
- b=mNH8Y1PddLELxy0Mv8yYfvYrwmzPPjMpz1Jzfyer5L9cnF3cf9XbjjrzpRNK7UMloqZnOQb4
- d15IHjlGBW4o7joNkUVueqVgiKCoXKQ9mILtaZSPFfjCLd5RpM0Gl7W4GBOwh9N5DO6ikLAa
- L4mrsSzBqf94NA+p0qBxJWr/eug=
-X-Mailgun-Sending-Ip: 69.72.43.7
+ s=smtp; t=1617327316; h=Content-Transfer-Encoding: MIME-Version:
+ Message-Id: Date: Subject: Cc: To: From: Sender;
+ bh=CT+4abI4TFfH94RkyWUSnWETSNvyyN2buhCcJ59C9kU=;
+ b=MkmWZ0qMCxaFcuYULNYsDK4HZKcyoFF+2XIm0HAhjGeAUn/U3GRqNmTFqQHR0kHdIWIXqRXG
+ WfPG19IbbaLd7Ak8GMcn5sovRC6JMzr1AnKdW6YcZbn0n6DQnGQeiSxnbBhvwiaVCFqb5M6Z
+ ALMlU+zm2pEyoLnE59pbRTk1XX0=
+X-Mailgun-Sending-Ip: 198.61.254.9
 X-Mailgun-Sid: WyI3NDkwMCIsICJpb21tdUBsaXN0cy5saW51eC1mb3VuZGF0aW9uLm9yZyIsICJiZTllNGEiXQ==
 Received: from smtp.codeaurora.org
  (ec2-35-166-182-171.us-west-2.compute.amazonaws.com [35.166.182.171]) by
- smtp-out-n03.prod.us-east-1.postgun.com with SMTP id
- 606674d203cfff34523bdf0e (version=TLS1.2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256); Fri, 02 Apr 2021 01:35:14
+ smtp-out-n07.prod.us-west-2.postgun.com with SMTP id
+ 606674c4e0e9c9a6b6db1c53 (version=TLS1.2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256); Fri, 02 Apr 2021 01:35:00
  GMT
 Received: by smtp.codeaurora.org (Postfix, from userid 1001)
- id C17F7C43462; Fri,  2 Apr 2021 01:35:13 +0000 (UTC)
+ id 393D3C433CA; Fri,  2 Apr 2021 01:35:00 +0000 (UTC)
 Received: from isaacm-linux.qualcomm.com (i-global254.qualcomm.com
  [199.106.103.254])
  (using TLSv1.2 with cipher ECDHE-RSA-AES128-SHA256 (128/128 bits))
  (No client certificate requested) (Authenticated sender: isaacm)
- by smtp.codeaurora.org (Postfix) with ESMTPSA id DE79FC43463;
- Fri,  2 Apr 2021 01:35:12 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 smtp.codeaurora.org DE79FC43463
+ by smtp.codeaurora.org (Postfix) with ESMTPSA id 0C2B1C433C6;
+ Fri,  2 Apr 2021 01:34:58 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 smtp.codeaurora.org 0C2B1C433C6
 Authentication-Results: aws-us-west-2-caf-mail-1.web.codeaurora.org;
  dmarc=none (p=none dis=none) header.from=codeaurora.org
 Authentication-Results: aws-us-west-2-caf-mail-1.web.codeaurora.org;
@@ -79,13 +77,10 @@ Authentication-Results: aws-us-west-2-caf-mail-1.web.codeaurora.org;
 From: "Isaac J. Manjarres" <isaacm@codeaurora.org>
 To: iommu@lists.linux-foundation.org,
 	linux-arm-kernel@lists.infradead.org
-Subject: [PATCH v2 11/12] iommu/arm-smmu: Implement the unmap_pages() IOMMU
- driver callback
-Date: Thu,  1 Apr 2021 18:34:50 -0700
-Message-Id: <20210402013452.4013-12-isaacm@codeaurora.org>
+Subject: [RFC PATCH v2 00/12] Optimizing iommu_[map/unmap] performance
+Date: Thu,  1 Apr 2021 18:34:39 -0700
+Message-Id: <20210402013452.4013-1-isaacm@codeaurora.org>
 X-Mailer: git-send-email 2.31.0
-In-Reply-To: <20210402013452.4013-1-isaacm@codeaurora.org>
-References: <20210402013452.4013-1-isaacm@codeaurora.org>
 MIME-Version: 1.0
 Cc: "Isaac J. Manjarres" <isaacm@codeaurora.org>, robin.murphy@arm.com,
  will@kernel.org, pratikp@codeaurora.org
@@ -106,53 +101,67 @@ Content-Transfer-Encoding: 7bit
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-Implement the unmap_pages() callback for the ARM SMMU driver
-to allow calls from iommu_unmap to unmap multiple pages of
-the same size in one call.
+When unmapping a buffer from an IOMMU domain, the IOMMU framework unmaps
+the buffer at a granule of the largest page size that is supported by
+the IOMMU hardware and fits within the buffer. For every block that
+is unmapped, the IOMMU framework will call into the IOMMU driver, and
+then the io-pgtable framework to walk the page tables to find the entry
+that corresponds to the IOVA, and then unmaps the entry.
 
-Signed-off-by: Isaac J. Manjarres <isaacm@codeaurora.org>
-Suggested-by: Will Deacon <will@kernel.org>
----
- drivers/iommu/arm/arm-smmu/arm-smmu.c | 19 +++++++++++++++++++
- 1 file changed, 19 insertions(+)
+This can be suboptimal in scenarios where a buffer or a piece of a
+buffer can be split into several contiguous page blocks of the same size.
+For example, consider an IOMMU that supports 4 KB page blocks, 2 MB page
+blocks, and 1 GB page blocks, and a buffer that is 4 MB in size is being
+unmapped at IOVA 0. The current call-flow will result in 4 indirect calls,
+and 2 page table walks, to unmap 2 entries that are next to each other in
+the page-tables, when both entries could have been unmapped in one shot
+by clearing both page table entries in the same call.
 
-diff --git a/drivers/iommu/arm/arm-smmu/arm-smmu.c b/drivers/iommu/arm/arm-smmu/arm-smmu.c
-index d8c6bfde6a61..f29f1fb109f8 100644
---- a/drivers/iommu/arm/arm-smmu/arm-smmu.c
-+++ b/drivers/iommu/arm/arm-smmu/arm-smmu.c
-@@ -1225,6 +1225,24 @@ static size_t arm_smmu_unmap(struct iommu_domain *domain, unsigned long iova,
- 	return ret;
- }
- 
-+static size_t arm_smmu_unmap_pages(struct iommu_domain *domain, unsigned long iova,
-+				   size_t pgsize, size_t pgcount,
-+				   struct iommu_iotlb_gather *iotlb_gather)
-+{
-+	struct io_pgtable_ops *ops = to_smmu_domain(domain)->pgtbl_ops;
-+	struct arm_smmu_device *smmu = to_smmu_domain(domain)->smmu;
-+	size_t ret;
-+
-+	if (!ops)
-+		return 0;
-+
-+	arm_smmu_rpm_get(smmu);
-+	ret = ops->unmap_pages(ops, iova, pgsize, pgcount, iotlb_gather);
-+	arm_smmu_rpm_put(smmu);
-+
-+	return ret;
-+}
-+
- static void arm_smmu_flush_iotlb_all(struct iommu_domain *domain)
- {
- 	struct arm_smmu_domain *smmu_domain = to_smmu_domain(domain);
-@@ -1625,6 +1643,7 @@ static struct iommu_ops arm_smmu_ops = {
- 	.attach_dev		= arm_smmu_attach_dev,
- 	.map			= arm_smmu_map,
- 	.unmap			= arm_smmu_unmap,
-+	.unmap_pages		= arm_smmu_unmap_pages,
- 	.flush_iotlb_all	= arm_smmu_flush_iotlb_all,
- 	.iotlb_sync		= arm_smmu_iotlb_sync,
- 	.iova_to_phys		= arm_smmu_iova_to_phys,
+The same optimization is applicable to mapping buffers as well, so
+these patches implement a set of callbacks called unmap_pages and
+map_pages to the io-pgtable code and IOMMU drivers which unmaps or maps
+an IOVA range that consists of a number of pages of the same
+page size that is supported by the IOMMU hardware, and allows for
+manipulating multiple page table entries in the same set of indirect
+calls. The reason for introducing these callbacks is to give other IOMMU
+drivers/io-pgtable formats time to change to using the new callbacks, so
+that the transition to using this approach can be done piecemeal.
+
+Changes since V1:
+
+* Implemented the map_pages() callbacks
+* Integrated Will's patches into this series which
+  address several concerns about how iommu_pgsize() partitioned a
+  buffer (I made a minor change to the patch which changes
+  iommu_pgsize() to use bitmaps by using the ULL variants of
+  the bitops)
+
+Any feedback is very much appreciated.
+
+Isaac J. Manjarres (9):
+  iommu/io-pgtable: Introduce unmap_pages() as a page table op
+  iommu: Add an unmap_pages() op for IOMMU drivers
+  iommu/io-pgtable: Introduce map_pages() as a page table op
+  iommu: Add a map_pages() op for IOMMU drivers
+  iommu: Add support for the map_pages() callback
+  iommu/io-pgtable-arm: Implement arm_lpae_unmap_pages()
+  iommu/io-pgtable-arm: Implement arm_lpae_map_pages()
+  iommu/arm-smmu: Implement the unmap_pages() IOMMU driver callback
+  iommu/arm-smmu: Implement the map_pages() IOMMU driver callback
+
+Will Deacon (3):
+  iommu: Use bitmap to calculate page size in iommu_pgsize()
+  iommu: Split 'addr_merge' argument to iommu_pgsize() into separate
+    parts
+  iommu: Hook up '->unmap_pages' driver callback
+
+ drivers/iommu/arm/arm-smmu/arm-smmu.c |  38 +++++
+ drivers/iommu/io-pgtable-arm.c        | 219 ++++++++++++++++++++++----
+ drivers/iommu/iommu.c                 | 128 +++++++++++----
+ include/linux/io-pgtable.h            |   8 +
+ include/linux/iommu.h                 |   9 ++
+ 5 files changed, 343 insertions(+), 59 deletions(-)
+
 -- 
 The Qualcomm Innovation Center, Inc. is a member of the Code Aurora Forum,
 a Linux Foundation Collaborative Project
