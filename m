@@ -7,65 +7,66 @@ X-Spam-Status: No, score=-16.6 required=3.0 tests=BAYES_00,DKIM_INVALID,
 	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,USER_AGENT_GIT autolearn=ham
 	autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 023EFC433B4
-	for <iommu@archiver.kernel.org>; Fri,  2 Apr 2021 14:33:28 +0000 (UTC)
-Received: from smtp4.osuosl.org (smtp4.osuosl.org [140.211.166.137])
+	by smtp.lore.kernel.org (Postfix) with ESMTP id DCAB5C433ED
+	for <iommu@archiver.kernel.org>; Fri,  2 Apr 2021 14:33:29 +0000 (UTC)
+Received: from smtp2.osuosl.org (smtp2.osuosl.org [140.211.166.133])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id A51DC610CB
-	for <iommu@archiver.kernel.org>; Fri,  2 Apr 2021 14:33:27 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org A51DC610CB
+	by mail.kernel.org (Postfix) with ESMTPS id 985BE610CE
+	for <iommu@archiver.kernel.org>; Fri,  2 Apr 2021 14:33:29 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 985BE610CE
 Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=lst.de
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by smtp4.osuosl.org (Postfix) with ESMTP id 788D54146B;
-	Fri,  2 Apr 2021 14:33:27 +0000 (UTC)
+	by smtp2.osuosl.org (Postfix) with ESMTP id 6E2334066C;
+	Fri,  2 Apr 2021 14:33:29 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from smtp4.osuosl.org ([127.0.0.1])
-	by localhost (smtp4.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id iErEY6dat7cF; Fri,  2 Apr 2021 14:33:26 +0000 (UTC)
-Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [IPv6:2605:bc80:3010:104::8cd3:938])
-	by smtp4.osuosl.org (Postfix) with ESMTP id 2E82940FA3;
-	Fri,  2 Apr 2021 14:33:26 +0000 (UTC)
+Received: from smtp2.osuosl.org ([127.0.0.1])
+	by localhost (smtp2.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+	with ESMTP id meFdaTli_MgI; Fri,  2 Apr 2021 14:33:28 +0000 (UTC)
+Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
+	by smtp2.osuosl.org (Postfix) with ESMTP id 4A43440224;
+	Fri,  2 Apr 2021 14:33:28 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 02F5DC000B;
-	Fri,  2 Apr 2021 14:33:26 +0000 (UTC)
-Received: from smtp1.osuosl.org (smtp1.osuosl.org [140.211.166.138])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 30CE1C000A
- for <iommu@lists.linux-foundation.org>; Fri,  2 Apr 2021 14:33:24 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 35B68C000B;
+	Fri,  2 Apr 2021 14:33:28 +0000 (UTC)
+Received: from smtp1.osuosl.org (smtp1.osuosl.org [IPv6:2605:bc80:3010::138])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id B06CCC000A
+ for <iommu@lists.linux-foundation.org>; Fri,  2 Apr 2021 14:33:26 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by smtp1.osuosl.org (Postfix) with ESMTP id 0D81D84C81
- for <iommu@lists.linux-foundation.org>; Fri,  2 Apr 2021 14:33:24 +0000 (UTC)
+ by smtp1.osuosl.org (Postfix) with ESMTP id 9CBC084BB2
+ for <iommu@lists.linux-foundation.org>; Fri,  2 Apr 2021 14:33:26 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
 Authentication-Results: smtp1.osuosl.org (amavisd-new);
  dkim=pass (2048-bit key) header.d=infradead.org
 Received: from smtp1.osuosl.org ([127.0.0.1])
  by localhost (smtp1.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id NVZUgzb9wCqr for <iommu@lists.linux-foundation.org>;
- Fri,  2 Apr 2021 14:33:23 +0000 (UTC)
+ with ESMTP id cBbWVuEaspOg for <iommu@lists.linux-foundation.org>;
+ Fri,  2 Apr 2021 14:33:26 +0000 (UTC)
 X-Greylist: from auto-whitelisted by SQLgrey-1.8.0
 Received: from bombadil.infradead.org (bombadil.infradead.org
  [IPv6:2607:7c80:54:e::133])
- by smtp1.osuosl.org (Postfix) with ESMTPS id 7042F84C77
- for <iommu@lists.linux-foundation.org>; Fri,  2 Apr 2021 14:33:23 +0000 (UTC)
+ by smtp1.osuosl.org (Postfix) with ESMTPS id 0543984BCF
+ for <iommu@lists.linux-foundation.org>; Fri,  2 Apr 2021 14:33:25 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
  d=infradead.org; s=bombadil.20210309; h=Content-Transfer-Encoding:
  MIME-Version:References:In-Reply-To:Message-Id:Date:Subject:Cc:To:From:Sender
  :Reply-To:Content-Type:Content-ID:Content-Description;
- bh=O6atzcUAuHyx4KNuM3iyA6420Zclk51V2q1xoL6iKGk=; b=MZwBTi/4DHEnvBYR+ioQbSquSs
- TE6eVxdeJ6A37dOCVfGkKXaudLWmC5j2miFI9ipDqXQvi3qXqFlGW7zGAuY0djSUGWmU8lt66iScH
- bTD7Rbhehf9rebFA4C3DhyvipBTjc4bIm3AsBba7xDac1gL7RmqjKfuLtsLpWUXqxsO5Hzo2bLyKE
- fYYESK5GsvK8mLh/kNWg3N2KR8smeSlK2PFoYMycQOcPbz4NDHoZ9KcEdR+rsana11UC5YnOtYc3z
- FSnTompFd7AHGESj13xY5SjwTFZJUqNTQMmhala9VxFxA9DSQDRZXsgUYNz1ZFYkjzASQDU1WqV5m
- IbqzDgdA==;
+ bh=RCaGDS64Qjh91OzspK20qUmcNHQhy3C1RLZNGlz0c+0=; b=yKviUgHCtKj5qPUOm33g+by/VE
+ WtVxMpnsXrLEU6c8VUNfRhq/HcUAdGky8hZviN46looHzcGewJWwkD6c92SKaKIAq4nRm3WODPjYN
+ 1IqpYcv+mleLEBLAKLR93xccpa03E2couGbrQF+u9GYRyA+hsz5nSBN72G3SPOsdKB1G+MwCDGwVa
+ VP961q66Uc1EqbFbHWt8rNT50Pz9kPtSiXgBaSXW3bVAdVBkwFdbM0JWf12yGEhl318Xtjn4zFqMM
+ hykrI+1V/3AA4Vt+pkZVditOKwQ40GAGKtGu8H7EIVUp79v7Mq7rgJsLDhnIQIuP+TRZ+8tCiFybK
+ BHo9afzQ==;
 Received: from [2001:4bb8:180:7517:6acc:e698:6fa4:15da] (helo=localhost)
  by bombadil.infradead.org with esmtpsa (Exim 4.94 #2 (Red Hat Linux))
- id 1lSKrS-00FAFc-Cs; Fri, 02 Apr 2021 14:33:22 +0000
+ id 1lSKrU-00FAFi-VQ; Fri, 02 Apr 2021 14:33:25 +0000
 From: Christoph Hellwig <hch@lst.de>
 To: Joerg Roedel <joro@8bytes.org>
-Subject: [PATCH 3/4] iommu/amd: remove a few unused exports
-Date: Fri,  2 Apr 2021 16:33:11 +0200
-Message-Id: <20210402143312.372386-4-hch@lst.de>
+Subject: [PATCH 4/4] iommu/amd: move a few prototypes to
+ include/linux/amd-iommu.h
+Date: Fri,  2 Apr 2021 16:33:12 +0200
+Message-Id: <20210402143312.372386-5-hch@lst.de>
 X-Mailer: git-send-email 2.30.1
 In-Reply-To: <20210402143312.372386-1-hch@lst.de>
 References: <20210402143312.372386-1-hch@lst.de>
@@ -90,55 +91,116 @@ Content-Transfer-Encoding: 7bit
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-Remove exports for functions that are only used in the AMD IOMMU driver
-itself, or the also always builtin perf events support.
+A few functions that were intentended for the perf events support are
+currently declared in arch/x86/events/amd/iommu.h, which mens they are
+not in scope for the actual function definition.  Also amdkfd has started
+using a few of them using externs in a .c file.  End that misery by
+moving the prototypes to the proper header.
 
 Signed-off-by: Christoph Hellwig <hch@lst.de>
 ---
- drivers/iommu/amd/init.c | 5 -----
- 1 file changed, 5 deletions(-)
+ arch/x86/events/amd/iommu.c            |  1 +
+ arch/x86/events/amd/iommu.h            | 19 -------------------
+ drivers/gpu/drm/amd/amdkfd/kfd_iommu.c |  4 ----
+ drivers/iommu/amd/amd_iommu.h          |  1 -
+ include/linux/amd-iommu.h              | 12 ++++++++++++
+ 5 files changed, 13 insertions(+), 24 deletions(-)
 
-diff --git a/drivers/iommu/amd/init.c b/drivers/iommu/amd/init.c
-index 321f5906e6ed3a..52ede54d7cc97a 100644
---- a/drivers/iommu/amd/init.c
-+++ b/drivers/iommu/amd/init.c
-@@ -208,7 +208,6 @@ u16 *amd_iommu_alias_table;
-  * for a specific device. It is also indexed by the PCI device id.
+diff --git a/arch/x86/events/amd/iommu.c b/arch/x86/events/amd/iommu.c
+index be50ef8572cceb..a573fac1ece8c8 100644
+--- a/arch/x86/events/amd/iommu.c
++++ b/arch/x86/events/amd/iommu.c
+@@ -14,6 +14,7 @@
+ #include <linux/init.h>
+ #include <linux/cpumask.h>
+ #include <linux/slab.h>
++#include <linux/amd-iommu.h>
+ 
+ #include "../perf_event.h"
+ #include "iommu.h"
+diff --git a/arch/x86/events/amd/iommu.h b/arch/x86/events/amd/iommu.h
+index 0e5c036fd7bea1..095505c6213b03 100644
+--- a/arch/x86/events/amd/iommu.h
++++ b/arch/x86/events/amd/iommu.h
+@@ -21,23 +21,4 @@
+ #define PC_MAX_SPEC_BNKS			64
+ #define PC_MAX_SPEC_CNTRS			16
+ 
+-struct amd_iommu;
+-
+-/* amd_iommu_init.c external support functions */
+-extern int amd_iommu_get_num_iommus(void);
+-
+-extern bool amd_iommu_pc_supported(void);
+-
+-extern u8 amd_iommu_pc_get_max_banks(unsigned int idx);
+-
+-extern u8 amd_iommu_pc_get_max_counters(unsigned int idx);
+-
+-extern int amd_iommu_pc_set_reg(struct amd_iommu *iommu, u8 bank, u8 cntr,
+-				u8 fxn, u64 *value);
+-
+-extern int amd_iommu_pc_get_reg(struct amd_iommu *iommu, u8 bank, u8 cntr,
+-				u8 fxn, u64 *value);
+-
+-extern struct amd_iommu *get_amd_iommu(int idx);
+-
+ #endif /*_PERF_EVENT_AMD_IOMMU_H_*/
+diff --git a/drivers/gpu/drm/amd/amdkfd/kfd_iommu.c b/drivers/gpu/drm/amd/amdkfd/kfd_iommu.c
+index 66bbca61e3ef5e..3c56333bbb9cdd 100644
+--- a/drivers/gpu/drm/amd/amdkfd/kfd_iommu.c
++++ b/drivers/gpu/drm/amd/amdkfd/kfd_iommu.c
+@@ -329,10 +329,6 @@ int kfd_iommu_resume(struct kfd_dev *kfd)
+ 	return 0;
+ }
+ 
+-extern bool amd_iommu_pc_supported(void);
+-extern u8 amd_iommu_pc_get_max_banks(u16 devid);
+-extern u8 amd_iommu_pc_get_max_counters(u16 devid);
+-
+ /** kfd_iommu_add_perf_counters - Add IOMMU performance counters to topology
   */
- struct amd_iommu **amd_iommu_rlookup_table;
--EXPORT_SYMBOL(amd_iommu_rlookup_table);
+ int kfd_iommu_add_perf_counters(struct kfd_topology_device *kdev)
+diff --git a/drivers/iommu/amd/amd_iommu.h b/drivers/iommu/amd/amd_iommu.h
+index ed46dc754a2ad4..55dd38d814d926 100644
+--- a/drivers/iommu/amd/amd_iommu.h
++++ b/drivers/iommu/amd/amd_iommu.h
+@@ -11,7 +11,6 @@
  
+ #include "amd_iommu_types.h"
+ 
+-extern int amd_iommu_get_num_iommus(void);
+ extern int amd_iommu_init_dma_ops(void);
+ extern int amd_iommu_init_passthrough(void);
+ extern irqreturn_t amd_iommu_int_thread(int irq, void *data);
+diff --git a/include/linux/amd-iommu.h b/include/linux/amd-iommu.h
+index 474065ed88a495..58e6c3806c09d4 100644
+--- a/include/linux/amd-iommu.h
++++ b/include/linux/amd-iommu.h
+@@ -10,6 +10,8 @@
+ 
+ #include <linux/types.h>
+ 
++struct amd_iommu;
++
  /*
-  * This table is used to find the irq remapping table for a given device id
-@@ -268,7 +267,6 @@ bool translation_pre_enabled(struct amd_iommu *iommu)
- {
- 	return (iommu->flags & AMD_IOMMU_FLAG_TRANS_PRE_ENABLED);
+  * This is mainly used to communicate information back-and-forth
+  * between SVM and IOMMU for setting up and tearing down posted
+@@ -194,4 +196,14 @@ static inline int amd_iommu_deactivate_guest_mode(void *data)
  }
--EXPORT_SYMBOL(translation_pre_enabled);
+ #endif /* defined(CONFIG_AMD_IOMMU) && defined(CONFIG_IRQ_REMAP) */
  
- static void clear_translation_pre_enabled(struct amd_iommu *iommu)
- {
-@@ -3277,7 +3275,6 @@ struct amd_iommu *get_amd_iommu(unsigned int idx)
- 			return iommu;
- 	return NULL;
- }
--EXPORT_SYMBOL(get_amd_iommu);
- 
- /****************************************************************************
-  *
-@@ -3359,7 +3356,6 @@ int amd_iommu_pc_get_reg(struct amd_iommu *iommu, u8 bank, u8 cntr, u8 fxn, u64
- 
- 	return iommu_pc_get_set_reg(iommu, bank, cntr, fxn, value, false);
- }
--EXPORT_SYMBOL(amd_iommu_pc_get_reg);
- 
- int amd_iommu_pc_set_reg(struct amd_iommu *iommu, u8 bank, u8 cntr, u8 fxn, u64 *value)
- {
-@@ -3368,4 +3364,3 @@ int amd_iommu_pc_set_reg(struct amd_iommu *iommu, u8 bank, u8 cntr, u8 fxn, u64
- 
- 	return iommu_pc_get_set_reg(iommu, bank, cntr, fxn, value, true);
- }
--EXPORT_SYMBOL(amd_iommu_pc_set_reg);
++int amd_iommu_get_num_iommus(void);
++bool amd_iommu_pc_supported(void);
++u8 amd_iommu_pc_get_max_banks(unsigned int idx);
++u8 amd_iommu_pc_get_max_counters(unsigned int idx);
++int amd_iommu_pc_set_reg(struct amd_iommu *iommu, u8 bank, u8 cntr, u8 fxn,
++		u64 *value);
++int amd_iommu_pc_get_reg(struct amd_iommu *iommu, u8 bank, u8 cntr, u8 fxn,
++		u64 *value);
++struct amd_iommu *get_amd_iommu(unsigned int idx);
++
+ #endif /* _ASM_X86_AMD_IOMMU_H */
 -- 
 2.30.1
 
