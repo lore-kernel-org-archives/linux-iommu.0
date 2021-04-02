@@ -7,65 +7,66 @@ X-Spam-Status: No, score=-16.6 required=3.0 tests=BAYES_00,DKIM_INVALID,
 	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,USER_AGENT_GIT autolearn=ham
 	autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C4542C433B4
-	for <iommu@archiver.kernel.org>; Fri,  2 Apr 2021 14:33:22 +0000 (UTC)
-Received: from smtp4.osuosl.org (smtp4.osuosl.org [140.211.166.137])
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7B6FBC43460
+	for <iommu@archiver.kernel.org>; Fri,  2 Apr 2021 14:33:24 +0000 (UTC)
+Received: from smtp1.osuosl.org (smtp1.osuosl.org [140.211.166.138])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 7259C60551
-	for <iommu@archiver.kernel.org>; Fri,  2 Apr 2021 14:33:22 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 7259C60551
+	by mail.kernel.org (Postfix) with ESMTPS id 3E6BA610CE
+	for <iommu@archiver.kernel.org>; Fri,  2 Apr 2021 14:33:24 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 3E6BA610CE
 Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=lst.de
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by smtp4.osuosl.org (Postfix) with ESMTP id 331FF40F0D;
-	Fri,  2 Apr 2021 14:33:22 +0000 (UTC)
+	by smtp1.osuosl.org (Postfix) with ESMTP id 0FD8C84C84;
+	Fri,  2 Apr 2021 14:33:24 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from smtp4.osuosl.org ([127.0.0.1])
-	by localhost (smtp4.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id cBFVyYO5aBd9; Fri,  2 Apr 2021 14:33:21 +0000 (UTC)
-Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [IPv6:2605:bc80:3010:104::8cd3:938])
-	by smtp4.osuosl.org (Postfix) with ESMTP id C54A440F7E;
-	Fri,  2 Apr 2021 14:33:20 +0000 (UTC)
-Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 790C9C0013;
-	Fri,  2 Apr 2021 14:33:20 +0000 (UTC)
-Received: from smtp1.osuosl.org (smtp1.osuosl.org [140.211.166.138])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 0DAE7C000B
- for <iommu@lists.linux-foundation.org>; Fri,  2 Apr 2021 14:33:19 +0000 (UTC)
-Received: from localhost (localhost [127.0.0.1])
- by smtp1.osuosl.org (Postfix) with ESMTP id E193384BCF
- for <iommu@lists.linux-foundation.org>; Fri,  2 Apr 2021 14:33:18 +0000 (UTC)
-X-Virus-Scanned: amavisd-new at osuosl.org
-Authentication-Results: smtp1.osuosl.org (amavisd-new);
- dkim=pass (2048-bit key) header.d=infradead.org
 Received: from smtp1.osuosl.org ([127.0.0.1])
- by localhost (smtp1.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id QM_xKw0l7JRc for <iommu@lists.linux-foundation.org>;
- Fri,  2 Apr 2021 14:33:18 +0000 (UTC)
+	by localhost (smtp1.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+	with ESMTP id A-B3kP9ITgPB; Fri,  2 Apr 2021 14:33:23 +0000 (UTC)
+Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
+	by smtp1.osuosl.org (Postfix) with ESMTP id F3D0584BCF;
+	Fri,  2 Apr 2021 14:33:22 +0000 (UTC)
+Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
+	by lists.linuxfoundation.org (Postfix) with ESMTP id C2448C000B;
+	Fri,  2 Apr 2021 14:33:22 +0000 (UTC)
+Received: from smtp2.osuosl.org (smtp2.osuosl.org [IPv6:2605:bc80:3010::133])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 64599C000A
+ for <iommu@lists.linux-foundation.org>; Fri,  2 Apr 2021 14:33:21 +0000 (UTC)
+Received: from localhost (localhost [127.0.0.1])
+ by smtp2.osuosl.org (Postfix) with ESMTP id 456254064A
+ for <iommu@lists.linux-foundation.org>; Fri,  2 Apr 2021 14:33:21 +0000 (UTC)
+X-Virus-Scanned: amavisd-new at osuosl.org
+Authentication-Results: smtp2.osuosl.org (amavisd-new);
+ dkim=pass (2048-bit key) header.d=infradead.org
+Received: from smtp2.osuosl.org ([127.0.0.1])
+ by localhost (smtp2.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+ with ESMTP id Me2eZnaJgOoM for <iommu@lists.linux-foundation.org>;
+ Fri,  2 Apr 2021 14:33:20 +0000 (UTC)
 X-Greylist: from auto-whitelisted by SQLgrey-1.8.0
 Received: from bombadil.infradead.org (bombadil.infradead.org
  [IPv6:2607:7c80:54:e::133])
- by smtp1.osuosl.org (Postfix) with ESMTPS id 42BF484BB2
- for <iommu@lists.linux-foundation.org>; Fri,  2 Apr 2021 14:33:18 +0000 (UTC)
+ by smtp2.osuosl.org (Postfix) with ESMTPS id B35C240224
+ for <iommu@lists.linux-foundation.org>; Fri,  2 Apr 2021 14:33:20 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
  d=infradead.org; s=bombadil.20210309; h=Content-Transfer-Encoding:
  MIME-Version:References:In-Reply-To:Message-Id:Date:Subject:Cc:To:From:Sender
  :Reply-To:Content-Type:Content-ID:Content-Description;
- bh=i8ncPWCApj/t/hZ33IDsyfWcY+KQkVA6sgGOCcGSJrs=; b=ISZvaMXW6FF7lDU/TTGRKu5lCH
- BW2UU2SrT6+ltA5McGzv2qWETMAC7fCAkJ1qhgSd2AQnC2BWnEMddPgfE3JVL2X7A/5gJb79dwI1M
- cEWVOP44EctmDNc5MuVzo9fKV+INYqQtcSncG56zRRqvRcyGHnnKA4bNtT3AuxNgOnJkrO89L14b8
- 5t8BIERsohjPW7u2h4MHQR6l2sp9/OdNOqOlSYaOT6vso+sZ20oBMpSvsBtrJXHBJoAnjBZ+XwBVO
- aZZDpfjBndN43RIagW10U5lf0n43m8yGJwAwsEZbWmf4zxtZom6CyvJTU1cjct0LnVARoKxPBfhFr
- FBqGC2RQ==;
+ bh=7d4w1MQ58wkPpyi6Y13RnhFSX3lz3QOpT4LAyaT/2YA=; b=d0eU+IBGV6Je7o6EmQNVav3ZW2
+ HjyGUVNqPy29mzvqWxofRtCrzdOo+Nt/FB783Vn/65LFLXhNfBfrelbblSvPCHO8quU+qKy3pO73Y
+ UgMESRwhxQfrWmghdA1v6bSFxC+WW0lGFXbq0NUvb9/4FC7aUQ4JzGpSnLxl3SAX/hKqbefygFGCx
+ MI7fDXdiZv2hELACGKUwDs00U1Lgl7YUroiOspi+xGSU2YitpXAah9p6NMkxGwgTeN+RmPOqjkADg
+ Q9DqRFS+T8tyyLu25gu6fR1G85dLFkiP9qz1jRgBNkaNZIS3f8AHCnSk6njTrYsRfdRbW9jpJ7ISf
+ AvUtYy4Q==;
 Received: from [2001:4bb8:180:7517:6acc:e698:6fa4:15da] (helo=localhost)
  by bombadil.infradead.org with esmtpsa (Exim 4.94 #2 (Red Hat Linux))
- id 1lSKrN-00FAFT-74; Fri, 02 Apr 2021 14:33:17 +0000
+ id 1lSKrP-00FAFX-Mf; Fri, 02 Apr 2021 14:33:20 +0000
 From: Christoph Hellwig <hch@lst.de>
 To: Joerg Roedel <joro@8bytes.org>
-Subject: [PATCH 1/4] iommu/amd: remove the unused device errata code
-Date: Fri,  2 Apr 2021 16:33:09 +0200
-Message-Id: <20210402143312.372386-2-hch@lst.de>
+Subject: [PATCH 2/4] iommu/amd: remove the unused amd_iommu_get_v2_domain
+ function
+Date: Fri,  2 Apr 2021 16:33:10 +0200
+Message-Id: <20210402143312.372386-3-hch@lst.de>
 X-Mailer: git-send-email 2.30.1
 In-Reply-To: <20210402143312.372386-1-hch@lst.de>
 References: <20210402143312.372386-1-hch@lst.de>
@@ -90,149 +91,69 @@ Content-Transfer-Encoding: 7bit
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-The device errata mechism is entirely unused, so remove it.
-
 Signed-off-by: Christoph Hellwig <hch@lst.de>
 ---
- drivers/iommu/amd/amd_iommu_types.h |  1 -
- drivers/iommu/amd/iommu.c           | 56 ++---------------------------
- include/linux/amd-iommu.h           | 18 ----------
- 3 files changed, 3 insertions(+), 72 deletions(-)
+ drivers/iommu/amd/amd_iommu.h |  1 -
+ drivers/iommu/amd/iommu.c     | 34 ----------------------------------
+ 2 files changed, 35 deletions(-)
 
-diff --git a/drivers/iommu/amd/amd_iommu_types.h b/drivers/iommu/amd/amd_iommu_types.h
-index 6937e3674a16e2..94c1a7a9876d55 100644
---- a/drivers/iommu/amd/amd_iommu_types.h
-+++ b/drivers/iommu/amd/amd_iommu_types.h
-@@ -693,7 +693,6 @@ struct iommu_dev_data {
- 	} ats;				  /* ATS state */
- 	bool pri_tlp;			  /* PASID TLB required for
- 					     PPR completions */
--	u32 errata;			  /* Bitmap for errata to apply */
- 	bool use_vapic;			  /* Enable device to use vapic mode */
- 	bool defer_attach;
+diff --git a/drivers/iommu/amd/amd_iommu.h b/drivers/iommu/amd/amd_iommu.h
+index 026ce7f8d993b0..ed46dc754a2ad4 100644
+--- a/drivers/iommu/amd/amd_iommu.h
++++ b/drivers/iommu/amd/amd_iommu.h
+@@ -65,7 +65,6 @@ extern int amd_iommu_flush_tlb(struct iommu_domain *dom, u32 pasid);
+ extern int amd_iommu_domain_set_gcr3(struct iommu_domain *dom, u32 pasid,
+ 				     unsigned long cr3);
+ extern int amd_iommu_domain_clear_gcr3(struct iommu_domain *dom, u32 pasid);
+-extern struct iommu_domain *amd_iommu_get_v2_domain(struct pci_dev *pdev);
  
+ #ifdef CONFIG_IRQ_REMAP
+ extern int amd_iommu_create_irq_domain(struct amd_iommu *iommu);
 diff --git a/drivers/iommu/amd/iommu.c b/drivers/iommu/amd/iommu.c
-index a69a8b573e40d0..65ef07b048934c 100644
+index 65ef07b048934c..42bd8f93e74ddf 100644
 --- a/drivers/iommu/amd/iommu.c
 +++ b/drivers/iommu/amd/iommu.c
-@@ -290,15 +290,6 @@ static bool pci_iommuv2_capable(struct pci_dev *pdev)
- 	return true;
+@@ -2525,40 +2525,6 @@ int amd_iommu_complete_ppr(struct pci_dev *pdev, u32 pasid,
  }
+ EXPORT_SYMBOL(amd_iommu_complete_ppr);
  
--static bool pdev_pri_erratum(struct pci_dev *pdev, u32 erratum)
+-struct iommu_domain *amd_iommu_get_v2_domain(struct pci_dev *pdev)
 -{
+-	struct protection_domain *pdomain;
 -	struct iommu_dev_data *dev_data;
+-	struct device *dev = &pdev->dev;
+-	struct iommu_domain *io_domain;
 -
--	dev_data = dev_iommu_priv_get(&pdev->dev);
+-	if (!check_device(dev))
+-		return NULL;
 -
--	return dev_data->errata & (1 << erratum) ? true : false;
--}
+-	dev_data  = dev_iommu_priv_get(&pdev->dev);
+-	pdomain   = dev_data->domain;
+-	io_domain = iommu_get_domain_for_dev(dev);
 -
- /*
-  * This function checks if the driver got a valid device from the caller to
-  * avoid dereferencing invalid pointers.
-@@ -1531,33 +1522,9 @@ static void pdev_iommuv2_disable(struct pci_dev *pdev)
- 	pci_disable_pasid(pdev);
- }
- 
--/* FIXME: Change generic reset-function to do the same */
--static int pri_reset_while_enabled(struct pci_dev *pdev)
--{
--	u16 control;
--	int pos;
--
--	pos = pci_find_ext_capability(pdev, PCI_EXT_CAP_ID_PRI);
--	if (!pos)
--		return -EINVAL;
--
--	pci_read_config_word(pdev, pos + PCI_PRI_CTRL, &control);
--	control |= PCI_PRI_CTRL_RESET;
--	pci_write_config_word(pdev, pos + PCI_PRI_CTRL, control);
--
--	return 0;
--}
--
- static int pdev_iommuv2_enable(struct pci_dev *pdev)
- {
--	bool reset_enable;
--	int reqs, ret;
--
--	/* FIXME: Hardcode number of outstanding requests for now */
--	reqs = 32;
--	if (pdev_pri_erratum(pdev, AMD_PRI_DEV_ERRATUM_LIMIT_REQ_ONE))
--		reqs = 1;
--	reset_enable = pdev_pri_erratum(pdev, AMD_PRI_DEV_ERRATUM_ENABLE_RESET);
-+	int ret;
- 
- 	/* Only allow access to user-accessible pages */
- 	ret = pci_enable_pasid(pdev, 0);
-@@ -1570,16 +1537,11 @@ static int pdev_iommuv2_enable(struct pci_dev *pdev)
- 		goto out_err;
- 
- 	/* Enable PRI */
--	ret = pci_enable_pri(pdev, reqs);
-+	/* FIXME: Hardcode number of outstanding requests for now */
-+	ret = pci_enable_pri(pdev, 32);
- 	if (ret)
- 		goto out_err;
- 
--	if (reset_enable) {
--		ret = pri_reset_while_enabled(pdev);
--		if (ret)
--			goto out_err;
+-	if (pdomain == NULL && dev_data->defer_attach) {
+-		dev_data->defer_attach = false;
+-		pdomain = to_pdomain(io_domain);
+-		attach_device(dev, pdomain);
 -	}
 -
- 	ret = pci_enable_ats(pdev, PAGE_SHIFT);
- 	if (ret)
- 		goto out_err;
-@@ -2597,18 +2559,6 @@ struct iommu_domain *amd_iommu_get_v2_domain(struct pci_dev *pdev)
- }
- EXPORT_SYMBOL(amd_iommu_get_v2_domain);
- 
--void amd_iommu_enable_device_erratum(struct pci_dev *pdev, u32 erratum)
--{
--	struct iommu_dev_data *dev_data;
+-	if (pdomain == NULL)
+-		return NULL;
 -
--	if (!amd_iommu_v2_supported())
--		return;
+-	if (io_domain->type != IOMMU_DOMAIN_DMA)
+-		return NULL;
 -
--	dev_data = dev_iommu_priv_get(&pdev->dev);
--	dev_data->errata |= (1 << erratum);
+-	/* Only return IOMMUv2 domains */
+-	if (!(pdomain->flags & PD_IOMMUV2_MASK))
+-		return NULL;
+-
+-	return &pdomain->domain;
 -}
--EXPORT_SYMBOL(amd_iommu_enable_device_erratum);
+-EXPORT_SYMBOL(amd_iommu_get_v2_domain);
 -
  int amd_iommu_device_info(struct pci_dev *pdev,
                            struct amd_iommu_device_info *info)
  {
-diff --git a/include/linux/amd-iommu.h b/include/linux/amd-iommu.h
-index 450717299928bb..474065ed88a495 100644
---- a/include/linux/amd-iommu.h
-+++ b/include/linux/amd-iommu.h
-@@ -32,24 +32,6 @@ struct pci_dev;
- extern int amd_iommu_detect(void);
- extern int amd_iommu_init_hardware(void);
- 
--/**
-- * amd_iommu_enable_device_erratum() - Enable erratum workaround for device
-- *				       in the IOMMUv2 driver
-- * @pdev: The PCI device the workaround is necessary for
-- * @erratum: The erratum workaround to enable
-- *
-- * The function needs to be called before amd_iommu_init_device().
-- * Possible values for the erratum number are for now:
-- * - AMD_PRI_DEV_ERRATUM_ENABLE_RESET - Reset PRI capability when PRI
-- *					is enabled
-- * - AMD_PRI_DEV_ERRATUM_LIMIT_REQ_ONE - Limit number of outstanding PRI
-- *					 requests to one
-- */
--#define AMD_PRI_DEV_ERRATUM_ENABLE_RESET		0
--#define AMD_PRI_DEV_ERRATUM_LIMIT_REQ_ONE		1
--
--extern void amd_iommu_enable_device_erratum(struct pci_dev *pdev, u32 erratum);
--
- /**
-  * amd_iommu_init_device() - Init device for use with IOMMUv2 driver
-  * @pdev: The PCI device to initialize
 -- 
 2.30.1
 
