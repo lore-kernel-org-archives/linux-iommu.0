@@ -7,90 +7,97 @@ X-Spam-Status: No, score=-16.6 required=3.0 tests=BAYES_00,DKIM_INVALID,
 	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,URIBL_RED,USER_AGENT_GIT
 	autolearn=unavailable autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 41469C433B4
-	for <iommu@archiver.kernel.org>; Tue,  6 Apr 2021 16:04:43 +0000 (UTC)
-Received: from smtp3.osuosl.org (smtp3.osuosl.org [140.211.166.136])
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4E5B7C433ED
+	for <iommu@archiver.kernel.org>; Tue,  6 Apr 2021 16:40:21 +0000 (UTC)
+Received: from smtp2.osuosl.org (smtp2.osuosl.org [140.211.166.133])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id DDBC3613E4
-	for <iommu@archiver.kernel.org>; Tue,  6 Apr 2021 16:04:42 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org DDBC3613E4
-Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=chromium.org
+	by mail.kernel.org (Postfix) with ESMTPS id E6294613D8
+	for <iommu@archiver.kernel.org>; Tue,  6 Apr 2021 16:40:20 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org E6294613D8
+Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=oracle.com
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by smtp3.osuosl.org (Postfix) with ESMTP id AB8886068B;
-	Tue,  6 Apr 2021 16:04:42 +0000 (UTC)
+	by smtp2.osuosl.org (Postfix) with ESMTP id B0DD34054B;
+	Tue,  6 Apr 2021 16:40:20 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from smtp3.osuosl.org ([127.0.0.1])
-	by localhost (smtp3.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id yTJWERPB14Nl; Tue,  6 Apr 2021 16:04:41 +0000 (UTC)
+Received: from smtp2.osuosl.org ([127.0.0.1])
+	by localhost (smtp2.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+	with ESMTP id ALQ1kVjaehbk; Tue,  6 Apr 2021 16:40:19 +0000 (UTC)
 Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [IPv6:2605:bc80:3010:104::8cd3:938])
-	by smtp3.osuosl.org (Postfix) with ESMTP id 5CA63605D9;
-	Tue,  6 Apr 2021 16:04:41 +0000 (UTC)
+	by smtp2.osuosl.org (Postfix) with ESMTP id 8783440109;
+	Tue,  6 Apr 2021 16:40:19 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 345E4C000C;
-	Tue,  6 Apr 2021 16:04:41 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 55F3AC000C;
+	Tue,  6 Apr 2021 16:40:19 +0000 (UTC)
 Received: from smtp1.osuosl.org (smtp1.osuosl.org [140.211.166.138])
- by lists.linuxfoundation.org (Postfix) with ESMTP id BEFEBC000A
- for <iommu@lists.linux-foundation.org>; Tue,  6 Apr 2021 16:04:40 +0000 (UTC)
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 1FA7DC000A
+ for <iommu@lists.linux-foundation.org>; Tue,  6 Apr 2021 16:37:11 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by smtp1.osuosl.org (Postfix) with ESMTP id A05FE83FB3
- for <iommu@lists.linux-foundation.org>; Tue,  6 Apr 2021 16:04:40 +0000 (UTC)
+ by smtp1.osuosl.org (Postfix) with ESMTP id 0222284A1F
+ for <iommu@lists.linux-foundation.org>; Tue,  6 Apr 2021 16:37:11 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
 Authentication-Results: smtp1.osuosl.org (amavisd-new);
- dkim=pass (1024-bit key) header.d=chromium.org
+ dkim=pass (2048-bit key) header.d=oracle.com
 Received: from smtp1.osuosl.org ([127.0.0.1])
  by localhost (smtp1.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id UrnTq1shEjDR for <iommu@lists.linux-foundation.org>;
- Tue,  6 Apr 2021 16:04:40 +0000 (UTC)
-X-Greylist: whitelisted by SQLgrey-1.8.0
-Received: from mail-ed1-x52f.google.com (mail-ed1-x52f.google.com
- [IPv6:2a00:1450:4864:20::52f])
- by smtp1.osuosl.org (Postfix) with ESMTPS id CB2B1837A4
- for <iommu@lists.linux-foundation.org>; Tue,  6 Apr 2021 16:04:39 +0000 (UTC)
-Received: by mail-ed1-x52f.google.com with SMTP id k8so9803964edn.6
- for <iommu@lists.linux-foundation.org>; Tue, 06 Apr 2021 09:04:39 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=chromium.org; s=google;
- h=from:to:cc:subject:date:message-id:mime-version
- :content-transfer-encoding;
- bh=y9UWeHSBoySzTHkOgKQzF5RiGebYchxO96+3Wf+rxXc=;
- b=Xa3fFCTQCoUijqu6po9q3HjZRjXP27V6wL5ACYsFzPZbcSqjqqMU1RIM6ZZ7fDYhUg
- inNmTU5i2JKGLgCVpqGzf5vmZ/SiLojWM338IOj+7vCfJ+o2ibNViO+2xg+rTQaCXNW6
- n7jmS0tPAe4YlLmXaDge4BF8Tkua+GP0ZnJGA=
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
- d=1e100.net; s=20161025;
- h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
- :content-transfer-encoding;
- bh=y9UWeHSBoySzTHkOgKQzF5RiGebYchxO96+3Wf+rxXc=;
- b=h6W+hZm6cQA+qPv4Ih2gTkwsGN2qf7dU9yoQw0uk47RqegggLxRb/bmJi18sDh8Met
- kxCZQhyMkeLZ6789XhJrthdMcIgCVo3ReAMkxRNjQTH2w39oRrxcfvAcbATrADG6WMzz
- 03yiFrMpMOBRAOEBlPwZDQCP6IyqDwe2A2qz7EI1nTHe5zIhvVpRboU5+hd21h0sYKo5
- p9qYnu03t1oCgpIJ/TtXccc3Nv9eZycsJodNN88unKPZzP0/7CMnjCx/TJS/iugKKrOe
- l26XATZJ7e1jOeOA1dCk0ed//CYqkUpeaOx0I6/GkdTuL4055sTMMGI5PUGFwxSmPvB3
- u+YA==
-X-Gm-Message-State: AOAM531g2DV0FC8pa66guFw2f2QQ6rSRkaLyqyMxqrvTh7kUYKPxrt5Q
- /jyt6wo5In+/G/QRBfkebzSZlw==
-X-Google-Smtp-Source: ABdhPJyP6fqRB9nYYchphWa0F5/357LF8RkkaedmGdLVe2OQDDAEKML5Y1zJxywfpsUsfk80MJzHpA==
-X-Received: by 2002:a05:6402:c:: with SMTP id
- d12mr38059165edu.100.1617725078058; 
- Tue, 06 Apr 2021 09:04:38 -0700 (PDT)
-Received: from alco.lan ([80.71.134.83])
- by smtp.gmail.com with ESMTPSA id hz24sm6411140ejc.119.2021.04.06.09.04.37
- (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
- Tue, 06 Apr 2021 09:04:37 -0700 (PDT)
-From: Ricardo Ribalda <ribalda@chromium.org>
-To: Tomasz Figa <tfiga@chromium.org>,
- Marek Szyprowski <m.szyprowski@samsung.com>,
- Mauro Carvalho Chehab <mchehab@kernel.org>,
- Daniel Vetter <daniel.vetter@ffwll.ch>, linux-media@vger.kernel.org,
- linux-kernel@vger.kernel.org, Christoph Hellwig <hch@lst.de>,
- iommu@lists.linux-foundation.org
-Subject: [PATCH RESEND] lib/scatterlist: Fix NULL pointer deference
-Date: Tue,  6 Apr 2021 18:04:35 +0200
-Message-Id: <20210406160435.206115-1-ribalda@chromium.org>
-X-Mailer: git-send-email 2.31.0.208.g409f899ff0-goog
+ with ESMTP id 6NEV0Dx-E1mv for <iommu@lists.linux-foundation.org>;
+ Tue,  6 Apr 2021 16:37:10 +0000 (UTC)
+X-Greylist: domain auto-whitelisted by SQLgrey-1.8.0
+Received: from userp2130.oracle.com (userp2130.oracle.com [156.151.31.86])
+ by smtp1.osuosl.org (Postfix) with ESMTPS id 5BE3A84A1D
+ for <iommu@lists.linux-foundation.org>; Tue,  6 Apr 2021 16:37:10 +0000 (UTC)
+Received: from pps.filterd (userp2130.oracle.com [127.0.0.1])
+ by userp2130.oracle.com (8.16.0.42/8.16.0.42) with SMTP id 136GZQ03100512;
+ Tue, 6 Apr 2021 16:36:48 GMT
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=oracle.com;
+ h=from : to : cc :
+ subject : date : message-id : mime-version : content-transfer-encoding;
+ s=corp-2020-01-29; bh=54xdP4UfJjTEKOCwjGvefkJl3tOpBsoNuArXb7g+ZC4=;
+ b=pT1YE90PPPCiq1CIWl8XQH6Bu3q6ZaA7r/8GkEFtvgbKpnYXJjHrVWQF2kPL98XexEOd
+ SHc2PbJ8XJ3eVCPJ6hPR90ecYbrNXU/y6hw5MQPlOF9ARxsncy+G6TOworox/JhjahPs
+ TwidN7sMYqxvjKRZ5GBcAS3PjgtChnrnZz1LGIjFPV0teAzkbjixzzuNBDOrTXx855Yt
+ 4qzRFHfu2ico3B3wbrKqHWa5humGhYTIa4RYmPyIIbdND/f06T4dDtiNfaMNNj0Gs/ti
+ rw5WJGCeCkX55gEgeNS+LW2YxSdEz5kbuWTm+4rwhJHdAzi7nCxJ21sENWqrqGrIoo0j qQ== 
+Received: from userp3030.oracle.com (userp3030.oracle.com [156.151.31.80])
+ by userp2130.oracle.com with ESMTP id 37qfuxdgka-1
+ (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+ Tue, 06 Apr 2021 16:36:48 +0000
+Received: from pps.filterd (userp3030.oracle.com [127.0.0.1])
+ by userp3030.oracle.com (8.16.0.42/8.16.0.42) with SMTP id 136GZt1t155979;
+ Tue, 6 Apr 2021 16:36:48 GMT
+Received: from pps.reinject (localhost [127.0.0.1])
+ by userp3030.oracle.com with ESMTP id 37qa3jpsf8-1
+ (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+ Tue, 06 Apr 2021 16:36:48 +0000
+Received: from userp3030.oracle.com (userp3030.oracle.com [127.0.0.1])
+ by pps.reinject (8.16.0.36/8.16.0.36) with SMTP id 136GalRL160127;
+ Tue, 6 Apr 2021 16:36:47 GMT
+Received: from ca-dev112.us.oracle.com (ca-dev112.us.oracle.com [10.147.25.63])
+ by userp3030.oracle.com with ESMTP id 37qa3jpsf0-1;
+ Tue, 06 Apr 2021 16:36:46 +0000
+From: Saeed Mirzamohammadi <saeed.mirzamohammadi@oracle.com>
+To: 
+Subject: [PATCH v5.4 1/1] iommu/vt-d: Fix agaw for a supported 48 bit guest
+ address width
+Date: Tue,  6 Apr 2021 09:35:34 -0700
+Message-Id: <20210406163534.40735-1-saeed.mirzamohammadi@oracle.com>
+X-Mailer: git-send-email 2.27.0
 MIME-Version: 1.0
-Cc: stable@vger.kernel.org, Ricardo Ribalda <ribalda@chromium.org>
+X-Proofpoint-GUID: 6YEVIvROgVzTKHZpJSxKjieOWVJdhLTU
+X-Proofpoint-ORIG-GUID: 6YEVIvROgVzTKHZpJSxKjieOWVJdhLTU
+X-Proofpoint-Virus-Version: vendor=nai engine=6200 definitions=9946
+ signatures=668683
+X-Proofpoint-Spam-Details: rule=notspam policy=default score=0 clxscore=1011
+ malwarescore=0
+ suspectscore=0 impostorscore=0 mlxscore=0 priorityscore=1501
+ mlxlogscore=999 bulkscore=0 spamscore=0 adultscore=0 phishscore=0
+ lowpriorityscore=0 classifier=spam adjust=0 reason=mlx scancount=1
+ engine=8.12.0-2104030000 definitions=main-2104060111
+X-Mailman-Approved-At: Tue, 06 Apr 2021 16:40:18 +0000
+Cc: saeed.mirzamohammadi@oracle.com, Camille Lu <camille.lu@hpe.com>,
+ linux-kernel@vger.kernel.org, iommu@lists.linux-foundation.org,
+ David Woodhouse <dwmw2@infradead.org>
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -108,57 +115,60 @@ Content-Transfer-Encoding: 7bit
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-When sg_alloc_table_from_pages is called with n_pages = 0, we write in a
-non-allocated page. Fix it by checking early the error condition.
+The IOMMU driver calculates the guest addressability for a DMA request
+based on the value of the mgaw reported from the IOMMU. However, this
+is a fused value and as mentioned in the spec, the guest width
+should be calculated based on the supported adjusted guest address width
+(SAGAW).
 
-[    7.666801] BUG: kernel NULL pointer dereference, address: 0000000000000010
-[    7.667487] #PF: supervisor read access in kernel mode
-[    7.667970] #PF: error_code(0x0000) - not-present page
-[    7.668448] PGD 0 P4D 0
-[    7.668690] Oops: 0000 [#1] SMP NOPTI
-[    7.669037] CPU: 0 PID: 184 Comm: modprobe Not tainted 5.11.0+ #2
-[    7.669606] Hardware name: QEMU Standard PC (i440FX + PIIX, 1996), BIOS 1.14.0-2 04/01/2014
-[    7.670378] RIP: 0010:__sg_alloc_table_from_pages+0x2c5/0x4a0
-[    7.670924] Code: c9 01 48 c7 40 08 00 00 00 00 48 89 08 8b 47 0c 41 8d 44 00 ff 89 47 0c 48 81 fa 00 f0 ff ff 0f 87 d4 01 00 00 49 8b 16 89 d8 <4a> 8b 74 fd 00 4c 89 d1 44 29 f8 c1 e0 0c 44 29 d8 4c 39 d0 48 0f
-[    7.672643] RSP: 0018:ffffba1e8028fb30 EFLAGS: 00010287
-[    7.673133] RAX: 0000000000000001 RBX: 0000000000000001 RCX: 0000000000000002
-[    7.673791] RDX: 0000000000000002 RSI: ffffffffada6d0ba RDI: ffff9afe01fff820
-[    7.674448] RBP: 0000000000000010 R08: 0000000000000001 R09: 0000000000000001
-[    7.675100] R10: 0000000000000000 R11: 0000000000000000 R12: 0000000000000000
-[    7.675754] R13: 00000000fffff000 R14: ffff9afe01fff800 R15: 0000000000000000
-[    7.676409] FS:  00007fb0f448f540(0000) GS:ffff9afe07a00000(0000) knlGS:0000000000000000
-[    7.677151] CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
-[    7.677681] CR2: 0000000000000010 CR3: 0000000002184001 CR4: 0000000000370ef0
-[    7.678342] DR0: 0000000000000000 DR1: 0000000000000000 DR2: 0000000000000000
-[    7.679019] DR3: 0000000000000000 DR6: 00000000fffe0ff0 DR7: 0000000000000400
-[    7.680349] Call Trace:
-[    7.680605]  ? device_add+0x146/0x810
-[    7.681021]  sg_alloc_table_from_pages+0x11/0x30
-[    7.681511]  vb2_dma_sg_alloc+0x162/0x280 [videobuf2_dma_sg]
+This is from specification:
+"Guest addressability for a given DMA request is limited to the
+minimum of the value reported through this field and the adjusted
+guest address width of the corresponding page-table structure.
+(Adjusted guest address widths supported by hardware are reported
+through the SAGAW field)."
 
-Cc: stable@vger.kernel.org
-Fixes: efc42bc98058 ("scatterlist: add sg_alloc_table_from_pages function")
-Signed-off-by: Ricardo Ribalda <ribalda@chromium.org>
+This causes domain initialization to fail and following
+errors appear for EHCI PCI driver:
+
+[    2.486393] ehci-pci 0000:01:00.4: EHCI Host Controller
+[    2.486624] ehci-pci 0000:01:00.4: new USB bus registered, assigned bus
+number 1
+[    2.489127] ehci-pci 0000:01:00.4: DMAR: Allocating domain failed
+[    2.489350] ehci-pci 0000:01:00.4: DMAR: 32bit DMA uses non-identity
+mapping
+[    2.489359] ehci-pci 0000:01:00.4: can't setup: -12
+[    2.489531] ehci-pci 0000:01:00.4: USB bus 1 deregistered
+[    2.490023] ehci-pci 0000:01:00.4: init 0000:01:00.4 fail, -12
+[    2.490358] ehci-pci: probe of 0000:01:00.4 failed with error -12
+
+This issue happens when the value of the sagaw corresponds to a
+48-bit agaw. This fix updates the calculation of the agaw based on
+the IOMMU's sagaw value.
+
+Signed-off-by: Saeed Mirzamohammadi <saeed.mirzamohammadi@oracle.com>
+Tested-by: Camille Lu <camille.lu@hpe.com>
 ---
- lib/scatterlist.c | 3 +++
- 1 file changed, 3 insertions(+)
+ drivers/iommu/intel-iommu.c | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
-diff --git a/lib/scatterlist.c b/lib/scatterlist.c
-index a59778946404..1e83b6a3d930 100644
---- a/lib/scatterlist.c
-+++ b/lib/scatterlist.c
-@@ -435,6 +435,9 @@ struct scatterlist *__sg_alloc_table_from_pages(struct sg_table *sgt,
- 	unsigned int added_nents = 0;
- 	struct scatterlist *s = prv;
+diff --git a/drivers/iommu/intel-iommu.c b/drivers/iommu/intel-iommu.c
+index 953d86ca6d2b..396e14fad54b 100644
+--- a/drivers/iommu/intel-iommu.c
++++ b/drivers/iommu/intel-iommu.c
+@@ -1867,8 +1867,8 @@ static int domain_init(struct dmar_domain *domain, struct intel_iommu *iommu,
+ 	domain_reserve_special_ranges(domain);
  
-+	if (n_pages == 0)
-+		return ERR_PTR(-EINVAL);
-+
- 	/*
- 	 * The algorithm below requires max_segment to be aligned to PAGE_SIZE
- 	 * otherwise it can overshoot.
+ 	/* calculate AGAW */
+-	if (guest_width > cap_mgaw(iommu->cap))
+-		guest_width = cap_mgaw(iommu->cap);
++	if (guest_width > agaw_to_width(iommu->agaw))
++		guest_width = agaw_to_width(iommu->agaw);
+ 	domain->gaw = guest_width;
+ 	adjust_width = guestwidth_to_adjustwidth(guest_width);
+ 	agaw = width_to_agaw(adjust_width);
 -- 
-2.31.0.208.g409f899ff0-goog
+2.27.0
 
 _______________________________________________
 iommu mailing list
