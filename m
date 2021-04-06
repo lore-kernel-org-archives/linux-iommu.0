@@ -7,67 +7,68 @@ X-Spam-Status: No, score=-15.3 required=3.0 tests=BAYES_00,DKIM_INVALID,
 	SPF_HELO_NONE,SPF_PASS,URIBL_RED,USER_AGENT_SANE_1 autolearn=ham
 	autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6C69AC433B4
-	for <iommu@archiver.kernel.org>; Tue,  6 Apr 2021 11:57:49 +0000 (UTC)
-Received: from smtp4.osuosl.org (smtp4.osuosl.org [140.211.166.137])
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0CD6AC433ED
+	for <iommu@archiver.kernel.org>; Tue,  6 Apr 2021 11:58:17 +0000 (UTC)
+Received: from smtp3.osuosl.org (smtp3.osuosl.org [140.211.166.136])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 20B66613B8
-	for <iommu@archiver.kernel.org>; Tue,  6 Apr 2021 11:57:49 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 20B66613B8
+	by mail.kernel.org (Postfix) with ESMTPS id B6C07611AF
+	for <iommu@archiver.kernel.org>; Tue,  6 Apr 2021 11:58:16 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org B6C07611AF
 Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=kernel.org
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by smtp4.osuosl.org (Postfix) with ESMTP id AE399402D7;
-	Tue,  6 Apr 2021 11:57:48 +0000 (UTC)
+	by smtp3.osuosl.org (Postfix) with ESMTP id 8B78160664;
+	Tue,  6 Apr 2021 11:58:16 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from smtp4.osuosl.org ([127.0.0.1])
-	by localhost (smtp4.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id 4gB0IBV59_dx; Tue,  6 Apr 2021 11:57:47 +0000 (UTC)
+Received: from smtp3.osuosl.org ([127.0.0.1])
+	by localhost (smtp3.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+	with ESMTP id Cw2mBHJc7biQ; Tue,  6 Apr 2021 11:58:15 +0000 (UTC)
 Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by smtp4.osuosl.org (Postfix) with ESMTP id 5E104401D0;
-	Tue,  6 Apr 2021 11:57:47 +0000 (UTC)
+	by smtp3.osuosl.org (Postfix) with ESMTP id 7CEA46062E;
+	Tue,  6 Apr 2021 11:58:15 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 1DEB4C000B;
-	Tue,  6 Apr 2021 11:57:47 +0000 (UTC)
-Received: from smtp4.osuosl.org (smtp4.osuosl.org [IPv6:2605:bc80:3010::137])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 75290C000A
- for <iommu@lists.linux-foundation.org>; Tue,  6 Apr 2021 11:57:45 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 5BD03C000B;
+	Tue,  6 Apr 2021 11:58:15 +0000 (UTC)
+Received: from smtp4.osuosl.org (smtp4.osuosl.org [140.211.166.137])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 2187AC000A
+ for <iommu@lists.linux-foundation.org>; Tue,  6 Apr 2021 11:58:14 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by smtp4.osuosl.org (Postfix) with ESMTP id 6291F402D7
- for <iommu@lists.linux-foundation.org>; Tue,  6 Apr 2021 11:57:45 +0000 (UTC)
+ by smtp4.osuosl.org (Postfix) with ESMTP id 0E980402D7
+ for <iommu@lists.linux-foundation.org>; Tue,  6 Apr 2021 11:58:14 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
+Authentication-Results: smtp4.osuosl.org (amavisd-new);
+ dkim=pass (2048-bit key) header.d=kernel.org
 Received: from smtp4.osuosl.org ([127.0.0.1])
  by localhost (smtp4.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id FMkap9D3qnWY for <iommu@lists.linux-foundation.org>;
- Tue,  6 Apr 2021 11:57:44 +0000 (UTC)
+ with ESMTP id kUlvyz0rV068 for <iommu@lists.linux-foundation.org>;
+ Tue,  6 Apr 2021 11:58:13 +0000 (UTC)
 X-Greylist: domain auto-whitelisted by SQLgrey-1.8.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
- by smtp4.osuosl.org (Postfix) with ESMTPS id A2DF7401D0
- for <iommu@lists.linux-foundation.org>; Tue,  6 Apr 2021 11:57:44 +0000 (UTC)
-Received: by mail.kernel.org (Postfix) with ESMTPSA id 508D6613B3;
- Tue,  6 Apr 2021 11:57:43 +0000 (UTC)
+ by smtp4.osuosl.org (Postfix) with ESMTPS id 47C80401D0
+ for <iommu@lists.linux-foundation.org>; Tue,  6 Apr 2021 11:58:13 +0000 (UTC)
+Received: by mail.kernel.org (Postfix) with ESMTPSA id A1D6061019;
+ Tue,  6 Apr 2021 11:58:11 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
- s=k20201202; t=1617710264;
- bh=kMBq36ttYBn25xInlOZKxP1/qXt+qqhvwqWmyd1Dln8=;
+ s=k20201202; t=1617710292;
+ bh=x1kNZt9arPO+gkS4yLBAeurwV80dRJyxHFz/hfkha+8=;
  h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
- b=gXev4GvIBjXhDbxah9AysmMr/0AW/8gbpH7tY4WisGKlQ+ef9ieu5n6GjrrOlfaxs
- tjb1B8KyfF+qtWhDI13tyQ3n4AtODS8/H8RVxjMb5+BouYxAumKQ9X4Jut4THk6myO
- 90elXiUc9HXI7u2r5eza1zY8s+89HVRdZ++wBFtK1aZ+7vLDZUZ8qXdHtcc0yir906
- QhAchivm6Hewn7MIk9QNhkPg/BwIpq2VKFwOX0VOI6uoD36RrnzvcjVNQSjToCp7cD
- P8GpkziCOaM9MbkYyCQowk57ghPAaO1eOYUNZQsJOgYnNQKLpu8Si128S9O+ysXr8+
- +yX9hVdlSo6cw==
-Date: Tue, 6 Apr 2021 12:57:40 +0100
+ b=Np72cHPqUv7pxv4nJ1w/sPDpMm1G+4QBjDmqYktQkhWFO/FcxBCyNFHkZOIebQA7G
+ +KUn2/gaYlO+1Ksaz/wPXYFrtgd592O72g/+JKKlkSkIsYId8yTdP9KG1NLNsEd1c0
+ dWw4egO5XPcFjh0am0w2sac/45vW8a+qqAB9DwbryBkKD5FwRMskiR7exZlXGLlDO7
+ cr2nY7rFjuqSBCSctE5fqD7HMHkYi+hsossA3UisY6p/kU8OxUPgr7EMIBHkfMAgJQ
+ 1WI559QyLq8rdbn+2+ZkHoBnJJYF/RWKPn03q1hi/9qB48CYRl1Wii28MaJ2hBK36s
+ rkTWXIisQEK9g==
+Date: Tue, 6 Apr 2021 12:58:08 +0100
 From: Will Deacon <will@kernel.org>
 To: "Isaac J. Manjarres" <isaacm@codeaurora.org>
-Subject: Re: [RFC PATCH v3 03/12] iommu/io-pgtable: Introduce map_pages() as
- a page table op
-Message-ID: <20210406115739.GD13747@willie-the-truck>
+Subject: Re: [RFC PATCH v3 04/12] iommu: Add a map_pages() op for IOMMU drivers
+Message-ID: <20210406115808.GE13747@willie-the-truck>
 References: <20210405191112.28192-1-isaacm@codeaurora.org>
- <20210405191112.28192-4-isaacm@codeaurora.org>
+ <20210405191112.28192-5-isaacm@codeaurora.org>
 MIME-Version: 1.0
 Content-Disposition: inline
-In-Reply-To: <20210405191112.28192-4-isaacm@codeaurora.org>
+In-Reply-To: <20210405191112.28192-5-isaacm@codeaurora.org>
 User-Agent: Mutt/1.10.1 (2018-07-13)
 Cc: pratikp@codeaurora.org, iommu@lists.linux-foundation.org,
  robin.murphy@arm.com, linux-arm-kernel@lists.infradead.org
@@ -88,45 +89,44 @@ Content-Transfer-Encoding: 7bit
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-On Mon, Apr 05, 2021 at 12:11:03PM -0700, Isaac J. Manjarres wrote:
-> Mapping memory into io-pgtables follows the same semantics
-> that unmapping memory used to follow (i.e. a buffer will be
-> mapped one page block per call to the io-pgtable code). This
-> means that it can be optimized in the same way that unmapping
-> memory was, so add a map_pages() callback to the io-pgtable
-> ops structure, so that a range of pages of the same size
-> can be mapped within the same call.
+On Mon, Apr 05, 2021 at 12:11:04PM -0700, Isaac J. Manjarres wrote:
+> Add a callback for IOMMU drivers to provide a path for the
+> IOMMU framework to call into an IOMMU driver, which can
+> call into the io-pgtable code, to map a physically contiguous
+> rnage of pages of the same size.
+> 
+> For IOMMU drivers that do not specify a map_pages() callback,
+> the existing logic of mapping memory one page block at a time
+> will be used.
 > 
 > Signed-off-by: Isaac J. Manjarres <isaacm@codeaurora.org>
 > Suggested-by: Will Deacon <will@kernel.org>
 > ---
->  include/linux/io-pgtable.h | 4 ++++
->  1 file changed, 4 insertions(+)
+>  include/linux/iommu.h | 5 +++++
+>  1 file changed, 5 insertions(+)
 > 
-> diff --git a/include/linux/io-pgtable.h b/include/linux/io-pgtable.h
-> index 2ed0c057d9e7..019149b204b8 100644
-> --- a/include/linux/io-pgtable.h
-> +++ b/include/linux/io-pgtable.h
-> @@ -143,6 +143,7 @@ struct io_pgtable_cfg {
->   * struct io_pgtable_ops - Page table manipulation API for IOMMU drivers.
->   *
->   * @map:          Map a physically contiguous memory region.
-> + * @map_pages:    Map a physically contiguous range of pages of the same size.
->   * @unmap:        Unmap a physically contiguous memory region.
->   * @unmap_pages:  Unmap a range of virtually contiguous pages of the same size.
->   * @iova_to_phys: Translate iova to physical address.
-> @@ -153,6 +154,9 @@ struct io_pgtable_cfg {
->  struct io_pgtable_ops {
->  	int (*map)(struct io_pgtable_ops *ops, unsigned long iova,
+> diff --git a/include/linux/iommu.h b/include/linux/iommu.h
+> index 9cf81242581a..528d6a58479e 100644
+> --- a/include/linux/iommu.h
+> +++ b/include/linux/iommu.h
+> @@ -192,6 +192,8 @@ struct iommu_iotlb_gather {
+>   * @attach_dev: attach device to an iommu domain
+>   * @detach_dev: detach device from an iommu domain
+>   * @map: map a physically contiguous memory region to an iommu domain
+> + * @map_pages: map a physically contiguous set of pages of the same size to
+> + *             an iommu domain.
+>   * @unmap: unmap a physically contiguous memory region from an iommu domain
+>   * @unmap_pages: unmap a number of pages of the same size from an iommu domain
+>   * @flush_iotlb_all: Synchronously flush all hardware TLBs for this domain
+> @@ -244,6 +246,9 @@ struct iommu_ops {
+>  	void (*detach_dev)(struct iommu_domain *domain, struct device *dev);
+>  	int (*map)(struct iommu_domain *domain, unsigned long iova,
 >  		   phys_addr_t paddr, size_t size, int prot, gfp_t gfp);
-> +	int (*map_pages)(struct io_pgtable_ops *ops, unsigned long iova,
+> +	int (*map_pages)(struct iommu_domain *domain, unsigned long iova,
 > +			 phys_addr_t paddr, size_t pgsize, size_t pgcount,
 > +			 int prot, gfp_t gfp, size_t *mapped);
 
-How about returning 'size_t' and using IS_ERR_VALUE() instead of adding
-the extra 'mapped' argument (i.e. return the size of the region mapped
-or an error code)? I don't think we realistically need to care about map
-sizes that overlap with the error region.
+(same comment as for the io-pgtable callback).
 
 Will
 _______________________________________________
