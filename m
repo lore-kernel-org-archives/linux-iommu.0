@@ -6,59 +6,63 @@ X-Spam-Status: No, score=-3.8 required=3.0 tests=BAYES_00,
 	HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,
 	URIBL_BLOCKED autolearn=no autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id EA178C433B4
-	for <iommu@archiver.kernel.org>; Wed,  7 Apr 2021 10:01:16 +0000 (UTC)
-Received: from smtp4.osuosl.org (smtp4.osuosl.org [140.211.166.137])
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 47772C43460
+	for <iommu@archiver.kernel.org>; Wed,  7 Apr 2021 10:05:04 +0000 (UTC)
+Received: from smtp2.osuosl.org (smtp2.osuosl.org [140.211.166.133])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 5B1F46135D
-	for <iommu@archiver.kernel.org>; Wed,  7 Apr 2021 10:01:16 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 5B1F46135D
+	by mail.kernel.org (Postfix) with ESMTPS id C6F14613D4
+	for <iommu@archiver.kernel.org>; Wed,  7 Apr 2021 10:05:03 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org C6F14613D4
 Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=8bytes.org
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by smtp4.osuosl.org (Postfix) with ESMTP id EB39940E82;
-	Wed,  7 Apr 2021 10:01:15 +0000 (UTC)
+	by smtp2.osuosl.org (Postfix) with ESMTP id 74A07405B0;
+	Wed,  7 Apr 2021 10:05:03 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from smtp4.osuosl.org ([127.0.0.1])
-	by localhost (smtp4.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id JGEaqp41joJs; Wed,  7 Apr 2021 10:01:15 +0000 (UTC)
-Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [IPv6:2605:bc80:3010:104::8cd3:938])
-	by smtp4.osuosl.org (Postfix) with ESMTP id 947B140E78;
-	Wed,  7 Apr 2021 10:01:14 +0000 (UTC)
+Received: from smtp2.osuosl.org ([127.0.0.1])
+	by localhost (smtp2.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+	with ESMTP id 9RZBNYngMbar; Wed,  7 Apr 2021 10:05:02 +0000 (UTC)
+Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
+	by smtp2.osuosl.org (Postfix) with ESMTP id 688FC400BF;
+	Wed,  7 Apr 2021 10:05:02 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 6314CC000C;
-	Wed,  7 Apr 2021 10:01:14 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 41F65C000B;
+	Wed,  7 Apr 2021 10:05:02 +0000 (UTC)
 Received: from smtp2.osuosl.org (smtp2.osuosl.org [140.211.166.133])
- by lists.linuxfoundation.org (Postfix) with ESMTP id BE881C000A
- for <iommu@lists.linux-foundation.org>; Wed,  7 Apr 2021 10:01:13 +0000 (UTC)
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 55CC4C000A
+ for <iommu@lists.linux-foundation.org>; Wed,  7 Apr 2021 10:05:00 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by smtp2.osuosl.org (Postfix) with ESMTP id 9C6EA405BD
- for <iommu@lists.linux-foundation.org>; Wed,  7 Apr 2021 10:01:13 +0000 (UTC)
+ by smtp2.osuosl.org (Postfix) with ESMTP id 41935403FD
+ for <iommu@lists.linux-foundation.org>; Wed,  7 Apr 2021 10:05:00 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
 Received: from smtp2.osuosl.org ([127.0.0.1])
  by localhost (smtp2.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id er1bhdKh1S5K for <iommu@lists.linux-foundation.org>;
- Wed,  7 Apr 2021 10:01:13 +0000 (UTC)
+ with ESMTP id uXlQmYtQ_vfC for <iommu@lists.linux-foundation.org>;
+ Wed,  7 Apr 2021 10:04:59 +0000 (UTC)
 X-Greylist: from auto-whitelisted by SQLgrey-1.8.0
-Received: from theia.8bytes.org (8bytes.org [81.169.241.247])
- by smtp2.osuosl.org (Postfix) with ESMTPS id 0BF5C405C1
- for <iommu@lists.linux-foundation.org>; Wed,  7 Apr 2021 10:01:12 +0000 (UTC)
+Received: from theia.8bytes.org (8bytes.org
+ [IPv6:2a01:238:4383:600:38bc:a715:4b6d:a889])
+ by smtp2.osuosl.org (Postfix) with ESMTPS id A6BDD400BF
+ for <iommu@lists.linux-foundation.org>; Wed,  7 Apr 2021 10:04:59 +0000 (UTC)
 Received: by theia.8bytes.org (Postfix, from userid 1000)
- id 3C04A2A6; Wed,  7 Apr 2021 12:01:09 +0200 (CEST)
-Date: Wed, 7 Apr 2021 12:01:07 +0200
+ id 005BD2A6; Wed,  7 Apr 2021 12:04:56 +0200 (CEST)
+Date: Wed, 7 Apr 2021 12:04:55 +0200
 From: Joerg Roedel <joro@8bytes.org>
-To: Nadav Amit <nadav.amit@gmail.com>
-Subject: Re: [PATCH] iommu/amd: page-specific invalidations for more than one
- page
-Message-ID: <YG2C42UdIEsWex2L@8bytes.org>
-References: <20210323210619.513069-1-namit@vmware.com>
+To: Paul Menzel <pmenzel@molgen.mpg.de>
+Subject: Re: [PATCH] Revert "iommu/amd: Fix performance counter initialization"
+Message-ID: <YG2Dx3cZyfh6yfFo@8bytes.org>
+References: <20210303121156.76621-1-pmenzel@molgen.mpg.de>
+ <a803de32-eec8-a0b1-69e6-43259ba5c656@amd.com>
+ <alpine.LNX.2.20.13.2103031648190.15170@monopod.intra.ispras.ru>
+ <0a910a80-5783-1f3d-a8ea-5e10cba0e206@molgen.mpg.de>
 MIME-Version: 1.0
 Content-Disposition: inline
-In-Reply-To: <20210323210619.513069-1-namit@vmware.com>
-Cc: Nadav Amit <namit@vmware.com>, iommu@lists.linux-foundation.org,
- Will Deacon <will@kernel.org>, Jiajun Cao <caojiajun@vmware.com>,
- linux-kernel@vger.kernel.org
+In-Reply-To: <0a910a80-5783-1f3d-a8ea-5e10cba0e206@molgen.mpg.de>
+Cc: Sasha Levin <sashal@kernel.org>, David Coe <david.coe@live.co.uk>,
+ Greg KH <gregkh@linuxfoundation.org>, Alexander Monakov <amonakov@ispras.ru>,
+ stable@vger.kernel.org, iommu@lists.linux-foundation.org,
+ Shuah Khan <skhan@linuxfoundation.org>, Tj <ml.linux@elloe.vision>
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -71,43 +75,19 @@ List-Post: <mailto:iommu@lists.linux-foundation.org>
 List-Help: <mailto:iommu-request@lists.linux-foundation.org?subject=help>
 List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
  <mailto:iommu-request@lists.linux-foundation.org?subject=subscribe>
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-On Tue, Mar 23, 2021 at 02:06:19PM -0700, Nadav Amit wrote:
-> From: Nadav Amit <namit@vmware.com>
-> 
-> Currently, IOMMU invalidations and device-IOTLB invalidations using
-> AMD IOMMU fall back to full address-space invalidation if more than a
-> single page need to be flushed.
-> 
-> Full flushes are especially inefficient when the IOMMU is virtualized by
-> a hypervisor, since it requires the hypervisor to synchronize the entire
-> address-space.
-> 
-> AMD IOMMUs allow to provide a mask to perform page-specific
-> invalidations for multiple pages that match the address. The mask is
-> encoded as part of the address, and the first zero bit in the address
-> (in bits [51:12]) indicates the mask size.
-> 
-> Use this hardware feature to perform selective IOMMU and IOTLB flushes.
-> Combine the logic between both for better code reuse.
-> 
-> The IOMMU invalidations passed a smoke-test. The device IOTLB
-> invalidations are untested.
-
-Have you thoroughly tested this on real hardware? I had a patch-set
-doing the same many years ago and it lead to data corruption under load.
-Back then it could have been a bug in my code of course, but it made me
-cautious about using targeted invalidations.
-
-Regards,
-
-	Joerg
-
-_______________________________________________
-iommu mailing list
-iommu@lists.linux-foundation.org
-https://lists.linuxfoundation.org/mailman/listinfo/iommu
+SGkgUGF1bCwKCk9uIFRodSwgTWFyIDE4LCAyMDIxIGF0IDEwOjIwOjE2QU0gKzAxMDAsIFBhdWwg
+TWVuemVsIHdyb3RlOgo+IErDtnJnLCBJIGtub3cgeW91IGFyZSBwcm9iYWJseSBidXN5LCBidXQg
+dGhlIHBhdGNoIHdhcyBhcHBsaWVkIHRvIHRoZSBzdGFibGUKPiBzZXJpZXMgKHY1LjExLjcpLiBU
+aGVyZSBhcmUgc3RpbGwgdG9vIG1hbnkgcXVlc3Rpb24gb3BlbiByZWdhcmRpbmcgdGhlCj4gcGF0
+Y2gsIGFuZCBTdXJhdmVlIGhhcyBub3QgeWV0IGFkZHJlc3NlZCB0aGUgY29tbWVudHMuIEl04oCZ
+ZCBiZSBncmVhdCwgaWYgeW91Cj4gY291bGQgcmV2ZXJ0IGl0LgoKV2UgYXJlIGN1cnJlbnRseSBk
+aXNjdXNzaW5nIHRoZSBuZXh0IHN0ZXBzIGhlcmUuIE1heWJlIHRoZSByZXRyeSBsb2dpYwpjYW4g
+YmUgcmVtb3ZlZCBlbnRpcmVseS4KClJlZ2FyZHMsCgoJSm9lcmcKX19fX19fX19fX19fX19fX19f
+X19fX19fX19fX19fX19fX19fX19fX19fX19fX18KaW9tbXUgbWFpbGluZyBsaXN0CmlvbW11QGxp
+c3RzLmxpbnV4LWZvdW5kYXRpb24ub3JnCmh0dHBzOi8vbGlzdHMubGludXhmb3VuZGF0aW9uLm9y
+Zy9tYWlsbWFuL2xpc3RpbmZvL2lvbW11
