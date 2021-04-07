@@ -2,86 +2,75 @@ Return-Path: <SRS0=DRkM=JE=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-8.8 required=3.0 tests=BAYES_00,
-	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,SPF_HELO_NONE,
-	SPF_PASS,URIBL_BLOCKED autolearn=ham autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-15.3 required=3.0 tests=BAYES_00,
+	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_CR_TRAILER,INCLUDES_PATCH,
+	MAILING_LIST_MULTI,NICE_REPLY_A,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,
+	USER_AGENT_SANE_1 autolearn=unavailable autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2A985C43460
-	for <iommu@archiver.kernel.org>; Wed,  7 Apr 2021 06:35:56 +0000 (UTC)
-Received: from smtp1.osuosl.org (smtp1.osuosl.org [140.211.166.138])
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E3F2CC43462
+	for <iommu@archiver.kernel.org>; Wed,  7 Apr 2021 07:39:51 +0000 (UTC)
+Received: from smtp4.osuosl.org (smtp4.osuosl.org [140.211.166.137])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 8D9C5613C0
-	for <iommu@archiver.kernel.org>; Wed,  7 Apr 2021 06:35:55 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 8D9C5613C0
+	by mail.kernel.org (Postfix) with ESMTPS id 73034613A0
+	for <iommu@archiver.kernel.org>; Wed,  7 Apr 2021 07:39:51 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 73034613A0
 Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=huawei.com
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by smtp1.osuosl.org (Postfix) with ESMTP id 3ABF38493E;
-	Wed,  7 Apr 2021 06:35:55 +0000 (UTC)
+	by smtp4.osuosl.org (Postfix) with ESMTP id 28EA140F58;
+	Wed,  7 Apr 2021 07:39:51 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from smtp1.osuosl.org ([127.0.0.1])
-	by localhost (smtp1.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id p6V7l4CMK3ug; Wed,  7 Apr 2021 06:35:54 +0000 (UTC)
-Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by smtp1.osuosl.org (Postfix) with ESMTP id 029EC84852;
-	Wed,  7 Apr 2021 06:35:53 +0000 (UTC)
+Received: from smtp4.osuosl.org ([127.0.0.1])
+	by localhost (smtp4.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+	with ESMTP id ReVKphMQYCrg; Wed,  7 Apr 2021 07:39:49 +0000 (UTC)
+Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [IPv6:2605:bc80:3010:104::8cd3:938])
+	by smtp4.osuosl.org (Postfix) with ESMTP id 5BB7640F50;
+	Wed,  7 Apr 2021 07:39:49 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id DB99EC000B;
-	Wed,  7 Apr 2021 06:35:53 +0000 (UTC)
-Received: from smtp3.osuosl.org (smtp3.osuosl.org [IPv6:2605:bc80:3010::136])
- by lists.linuxfoundation.org (Postfix) with ESMTP id AC1D9C000A
- for <iommu@lists.linux-foundation.org>; Wed,  7 Apr 2021 06:35:51 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 404D4C000C;
+	Wed,  7 Apr 2021 07:39:49 +0000 (UTC)
+Received: from smtp3.osuosl.org (smtp3.osuosl.org [140.211.166.136])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 3CDB9C000A
+ for <iommu@lists.linux-foundation.org>; Wed,  7 Apr 2021 07:39:48 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by smtp3.osuosl.org (Postfix) with ESMTP id 92FDB60BD4
- for <iommu@lists.linux-foundation.org>; Wed,  7 Apr 2021 06:35:51 +0000 (UTC)
+ by smtp3.osuosl.org (Postfix) with ESMTP id 38401606B3
+ for <iommu@lists.linux-foundation.org>; Wed,  7 Apr 2021 07:39:48 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
 Received: from smtp3.osuosl.org ([127.0.0.1])
  by localhost (smtp3.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id rRVm9B2E6_pI for <iommu@lists.linux-foundation.org>;
- Wed,  7 Apr 2021 06:35:50 +0000 (UTC)
+ with ESMTP id EJ3xPb83hVSQ for <iommu@lists.linux-foundation.org>;
+ Wed,  7 Apr 2021 07:39:47 +0000 (UTC)
 X-Greylist: domain auto-whitelisted by SQLgrey-1.8.0
-Received: from szxga02-in.huawei.com (szxga02-in.huawei.com [45.249.212.188])
- by smtp3.osuosl.org (Postfix) with ESMTPS id C05D060BC7
- for <iommu@lists.linux-foundation.org>; Wed,  7 Apr 2021 06:35:49 +0000 (UTC)
-Received: from DGGEML401-HUB.china.huawei.com (unknown [172.30.72.54])
- by szxga02-in.huawei.com (SkyGuard) with ESMTP id 4FFZNP6mZ2zRZHy;
- Wed,  7 Apr 2021 14:33:41 +0800 (CST)
-Received: from dggpemm100007.china.huawei.com (7.185.36.116) by
- DGGEML401-HUB.china.huawei.com (10.3.17.32) with Microsoft SMTP Server (TLS)
- id 14.3.498.0; Wed, 7 Apr 2021 14:35:41 +0800
-Received: from dggpeml500016.china.huawei.com (7.185.36.70) by
- dggpemm100007.china.huawei.com (7.185.36.116) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2106.2; Wed, 7 Apr 2021 14:35:41 +0800
-Received: from dggpeml500016.china.huawei.com ([7.185.36.70]) by
- dggpeml500016.china.huawei.com ([7.185.36.70]) with mapi id 15.01.2106.013;
- Wed, 7 Apr 2021 14:35:41 +0800
-From: "Longpeng (Mike, Cloud Infrastructure Service Product Dept.)"
- <longpeng2@huawei.com>
-To: Lu Baolu <baolu.lu@linux.intel.com>, "iommu@lists.linux-foundation.org"
- <iommu@lists.linux-foundation.org>, "linux-kernel@vger.kernel.org"
- <linux-kernel@vger.kernel.org>
-Subject: RE: [PATCH] iommu/vt-d: Force to flush iotlb before creating superpage
-Thread-Topic: [PATCH] iommu/vt-d: Force to flush iotlb before creating
- superpage
-Thread-Index: AQHXJsdJgAXY3vlVHUqi4t5f0DX/hKqgIfAAgAh+GPA=
-Date: Wed, 7 Apr 2021 06:35:41 +0000
-Message-ID: <611cb5849c9a497b8289004dddb71150@huawei.com>
-References: <20210401071834.1639-1-longpeng2@huawei.com>
- <9c368419-6e45-6b27-0f34-26b581589fa7@linux.intel.com>
-In-Reply-To: <9c368419-6e45-6b27-0f34-26b581589fa7@linux.intel.com>
-Accept-Language: zh-CN, en-US
-Content-Language: zh-CN
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-x-originating-ip: [10.174.151.207]
+Received: from szxga04-in.huawei.com (szxga04-in.huawei.com [45.249.212.190])
+ by smtp3.osuosl.org (Postfix) with ESMTPS id 9C9BB60662
+ for <iommu@lists.linux-foundation.org>; Wed,  7 Apr 2021 07:39:46 +0000 (UTC)
+Received: from DGGEMS410-HUB.china.huawei.com (unknown [172.30.72.58])
+ by szxga04-in.huawei.com (SkyGuard) with ESMTP id 4FFbp23T1xz19GSt;
+ Wed,  7 Apr 2021 15:37:30 +0800 (CST)
+Received: from [10.174.185.179] (10.174.185.179) by
+ DGGEMS410-HUB.china.huawei.com (10.3.19.210) with Microsoft SMTP Server id
+ 14.3.498.0; Wed, 7 Apr 2021 15:39:33 +0800
+Subject: Re: [PATCH v14 08/13] dma-iommu: Implement NESTED_MSI cookie
+To: Eric Auger <eric.auger@redhat.com>
+References: <20210223205634.604221-1-eric.auger@redhat.com>
+ <20210223205634.604221-9-eric.auger@redhat.com>
+From: Zenghui Yu <yuzenghui@huawei.com>
+Message-ID: <791bb74a-cd74-7b96-1f0d-cf7a602eb159@huawei.com>
+Date: Wed, 7 Apr 2021 15:39:30 +0800
+User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; rv:68.0) Gecko/20100101
+ Thunderbird/68.9.0
 MIME-Version: 1.0
+In-Reply-To: <20210223205634.604221-9-eric.auger@redhat.com>
+Content-Language: en-US
+X-Originating-IP: [10.174.185.179]
 X-CFilter-Loop: Reflected
-Cc: Kevin Tian <kevin.tian@intel.com>, David Woodhouse <dwmw2@infradead.org>,
- "stable@vger.kernel.org" <stable@vger.kernel.org>,
- Alex Williamson <alex.williamson@redhat.com>,
- "Gonglei \(Arei\)" <arei.gonglei@huawei.com>
+Cc: kvm@vger.kernel.org, vivek.gautam@arm.com, kvmarm@lists.cs.columbia.edu,
+ eric.auger.pro@gmail.com, jean-philippe@linaro.org, wangxingang5@huawei.com,
+ maz@kernel.org, jiangkunkun@huawei.com, vsethi@nvidia.com,
+ zhangfei.gao@linaro.org, will@kernel.org, alex.williamson@redhat.com,
+ wanghaibin.wang@huawei.com, linux-kernel@vger.kernel.org,
+ lushenming@huawei.com, iommu@lists.linux-foundation.org, robin.murphy@arm.com
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -94,64 +83,318 @@ List-Post: <mailto:iommu@lists.linux-foundation.org>
 List-Help: <mailto:iommu-request@lists.linux-foundation.org?subject=help>
 List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
  <mailto:iommu-request@lists.linux-foundation.org?subject=subscribe>
-Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset="us-ascii"; Format="flowed"
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-Hi Baolu,
+Hi Eric,
 
-> -----Original Message-----
-> From: Lu Baolu [mailto:baolu.lu@linux.intel.com]
-> Sent: Friday, April 2, 2021 12:44 PM
-> To: Longpeng (Mike, Cloud Infrastructure Service Product Dept.)
-> <longpeng2@huawei.com>; iommu@lists.linux-foundation.org;
-> linux-kernel@vger.kernel.org
-> Cc: baolu.lu@linux.intel.com; David Woodhouse <dwmw2@infradead.org>; Nadav
-> Amit <nadav.amit@gmail.com>; Alex Williamson <alex.williamson@redhat.com>;
-> Kevin Tian <kevin.tian@intel.com>; Gonglei (Arei) <arei.gonglei@huawei.com>;
-> stable@vger.kernel.org
-> Subject: Re: [PATCH] iommu/vt-d: Force to flush iotlb before creating superpage
+On 2021/2/24 4:56, Eric Auger wrote:
+> Up to now, when the type was UNMANAGED, we used to
+> allocate IOVA pages within a reserved IOVA MSI range.
 > 
-> Hi Longpeng,
+> If both the host and the guest are exposed with SMMUs, each
+> would allocate an IOVA. The guest allocates an IOVA (gIOVA)
+> to map onto the guest MSI doorbell (gDB). The Host allocates
+> another IOVA (hIOVA) to map onto the physical doorbell (hDB).
 > 
-> On 4/1/21 3:18 PM, Longpeng(Mike) wrote:
-> > diff --git a/drivers/iommu/intel/iommu.c b/drivers/iommu/intel/iommu.c
-> > index ee09323..cbcb434 100644
-> > --- a/drivers/iommu/intel/iommu.c
-> > +++ b/drivers/iommu/intel/iommu.c
-> > @@ -2342,9 +2342,20 @@ static inline int hardware_largepage_caps(struct
-> dmar_domain *domain,
-> >   				 * removed to make room for superpage(s).
-> >   				 * We're adding new large pages, so make sure
-> >   				 * we don't remove their parent tables.
-> > +				 *
-> > +				 * We also need to flush the iotlb before creating
-> > +				 * superpage to ensure it does not perserves any
-> > +				 * obsolete info.
-> >   				 */
-> > -				dma_pte_free_pagetable(domain, iov_pfn, end_pfn,
-> > -						       largepage_lvl + 1);
-> > +				if (dma_pte_present(pte)) {
+> So we end up with 2 unrelated mappings, at S1 and S2:
+>           S1             S2
+> gIOVA    ->     gDB
+>                 hIOVA    ->    hDB
 > 
-> The dma_pte_free_pagetable() clears a batch of PTEs. So checking current PTE is
-> insufficient. How about removing this check and always performing cache
-> invalidation?
+> The PCI device would be programmed with hIOVA.
+> No stage 1 mapping would existing, causing the MSIs to fault.
 > 
+> iommu_dma_bind_guest_msi() allows to pass gIOVA/gDB
+> to the host so that gIOVA can be used by the host instead of
+> re-allocating a new hIOVA.
+> 
+>           S1           S2
+> gIOVA    ->    gDB    ->    hDB
+> 
+> this time, the PCI device can be programmed with the gIOVA MSI
+> doorbell which is correctly mapped through both stages.
+> 
+> Nested mode is not compatible with HW MSI regions as in that
+> case gDB and hDB should have a 1-1 mapping. This check will
+> be done when attaching each device to the IOMMU domain.
+> 
+> Signed-off-by: Eric Auger <eric.auger@redhat.com>
 
-Um...the PTE here may be present( e.g. 4K mapping --> superpage mapping ) or NOT-present ( e.g. create a totally new superpage mapping ), but we only need to call free_pagetable and flush_iotlb in the former case, right ?
+[...]
 
-> > +					int i;
-> > +
-> > +					dma_pte_free_pagetable(domain, iov_pfn, end_pfn,
-> > +							       largepage_lvl + 1);
-> > +					for_each_domain_iommu(i, domain)
-> > +						iommu_flush_iotlb_psi(g_iommus[i], domain,
-> > +								      iov_pfn, nr_pages, 0, 0);
-> > +
-> 
-> Best regards,
-> baolu
+> diff --git a/drivers/iommu/dma-iommu.c b/drivers/iommu/dma-iommu.c
+> index f659395e7959..d25eb7cecaa7 100644
+> --- a/drivers/iommu/dma-iommu.c
+> +++ b/drivers/iommu/dma-iommu.c
+> @@ -19,6 +19,7 @@
+>   #include <linux/irq.h>
+>   #include <linux/mm.h>
+>   #include <linux/mutex.h>
+> +#include <linux/mutex.h>
+
+Duplicated include.
+
+>   #include <linux/pci.h>
+>   #include <linux/swiotlb.h>
+>   #include <linux/scatterlist.h>
+> @@ -29,12 +30,15 @@
+>   struct iommu_dma_msi_page {
+>   	struct list_head	list;
+>   	dma_addr_t		iova;
+> +	dma_addr_t		gpa;
+>   	phys_addr_t		phys;
+> +	size_t			s1_granule;
+>   };
+>   
+>   enum iommu_dma_cookie_type {
+>   	IOMMU_DMA_IOVA_COOKIE,
+>   	IOMMU_DMA_MSI_COOKIE,
+> +	IOMMU_DMA_NESTED_MSI_COOKIE,
+>   };
+>   
+>   struct iommu_dma_cookie {
+> @@ -46,6 +50,7 @@ struct iommu_dma_cookie {
+>   		dma_addr_t		msi_iova;
+
+msi_iova is unused in the nested mode, but we still set it to the start
+address of the RESV_SW_MSI region (in iommu_get_msi_cookie()), which
+looks a bit strange to me.
+
+>   	};
+>   	struct list_head		msi_page_list;
+> +	spinlock_t			msi_lock;
+
+Should msi_lock be grabbed everywhere msi_page_list is populated?
+Especially in iommu_dma_get_msi_page(), which can be invoked from the
+irqchip driver.
+
+>   
+>   	/* Domain for flush queue callback; NULL if flush queue not in use */
+>   	struct iommu_domain		*fq_domain;
+> @@ -87,6 +92,7 @@ static struct iommu_dma_cookie *cookie_alloc(enum iommu_dma_cookie_type type)
+>   
+>   	cookie = kzalloc(sizeof(*cookie), GFP_KERNEL);
+>   	if (cookie) {
+> +		spin_lock_init(&cookie->msi_lock);
+>   		INIT_LIST_HEAD(&cookie->msi_page_list);
+>   		cookie->type = type;
+>   	}
+> @@ -120,14 +126,17 @@ EXPORT_SYMBOL(iommu_get_dma_cookie);
+>    *
+>    * Users who manage their own IOVA allocation and do not want DMA API support,
+>    * but would still like to take advantage of automatic MSI remapping, can use
+> - * this to initialise their own domain appropriately. Users should reserve a
+> + * this to initialise their own domain appropriately. Users may reserve a
+>    * contiguous IOVA region, starting at @base, large enough to accommodate the
+>    * number of PAGE_SIZE mappings necessary to cover every MSI doorbell address
+> - * used by the devices attached to @domain.
+> + * used by the devices attached to @domain. The other way round is to provide
+> + * usable iova pages through the iommu_dma_bind_doorbell API (nested stages
+
+s/iommu_dma_bind_doorbell/iommu_dma_bind_guest_msi/ ?
+
+> + * use case)
+>    */
+>   int iommu_get_msi_cookie(struct iommu_domain *domain, dma_addr_t base)
+>   {
+>   	struct iommu_dma_cookie *cookie;
+> +	int nesting, ret;
+>   
+>   	if (domain->type != IOMMU_DOMAIN_UNMANAGED)
+>   		return -EINVAL;
+> @@ -135,7 +144,12 @@ int iommu_get_msi_cookie(struct iommu_domain *domain, dma_addr_t base)
+>   	if (domain->iova_cookie)
+>   		return -EEXIST;
+>   
+> -	cookie = cookie_alloc(IOMMU_DMA_MSI_COOKIE);
+> +	ret =  iommu_domain_get_attr(domain, DOMAIN_ATTR_NESTING, &nesting);
+
+Redundant space.
+
+> +	if (!ret && nesting)
+> +		cookie = cookie_alloc(IOMMU_DMA_NESTED_MSI_COOKIE);
+> +	else
+> +		cookie = cookie_alloc(IOMMU_DMA_MSI_COOKIE);
+> +
+>   	if (!cookie)
+>   		return -ENOMEM;
+>   
+> @@ -156,6 +170,7 @@ void iommu_put_dma_cookie(struct iommu_domain *domain)
+>   {
+>   	struct iommu_dma_cookie *cookie = domain->iova_cookie;
+>   	struct iommu_dma_msi_page *msi, *tmp;
+> +	bool s2_unmap = false;
+>   
+>   	if (!cookie)
+>   		return;
+> @@ -163,7 +178,15 @@ void iommu_put_dma_cookie(struct iommu_domain *domain)
+>   	if (cookie->type == IOMMU_DMA_IOVA_COOKIE && cookie->iovad.granule)
+>   		put_iova_domain(&cookie->iovad);
+>   
+> +	if (cookie->type == IOMMU_DMA_NESTED_MSI_COOKIE)
+> +		s2_unmap = true;
+> +
+>   	list_for_each_entry_safe(msi, tmp, &cookie->msi_page_list, list) {
+> +		if (s2_unmap && msi->phys) {
+
+I don't think @s2_unmap is necessary. Checking 'cookie->type==NESTED'
+directly shouldn't be that expensive.
+
+> +			size_t size = cookie_msi_granule(cookie);
+> +
+> +			WARN_ON(iommu_unmap(domain, msi->gpa, size) != size);
+> +		}
+>   		list_del(&msi->list);
+>   		kfree(msi);
+>   	}
+> @@ -172,6 +195,92 @@ void iommu_put_dma_cookie(struct iommu_domain *domain)
+>   }
+>   EXPORT_SYMBOL(iommu_put_dma_cookie);
+>   
+> +/**
+> + * iommu_dma_bind_guest_msi - Allows to pass the stage 1
+> + * binding of a virtual MSI doorbell used by @dev.
+> + *
+> + * @domain: domain handle
+> + * @iova: guest iova
+
+Can we change it to 'giova' (to match the unbind side)?
+
+> + * @gpa: gpa of the virtual doorbell
+> + * @size: size of the granule used for the stage1 mapping
+> + *
+> + * In nested stage use case, the user can provide IOVA/IPA bindings
+> + * corresponding to a guest MSI stage 1 mapping. When the host needs
+> + * to map its own MSI doorbells, it can use @gpa as stage 2 input
+> + * and map it onto the physical MSI doorbell.
+> + */
+> +int iommu_dma_bind_guest_msi(struct iommu_domain *domain,
+> +			     dma_addr_t iova, phys_addr_t gpa, size_t size)
+> +{
+> +	struct iommu_dma_cookie *cookie = domain->iova_cookie;
+> +	struct iommu_dma_msi_page *msi;
+> +	int ret = 0;
+> +
+> +	if (!cookie)
+> +		return -EINVAL;
+> +
+> +	if (cookie->type != IOMMU_DMA_NESTED_MSI_COOKIE)
+> +		return -EINVAL;
+> +
+> +	iova = iova & ~(dma_addr_t)(size - 1);
+> +	gpa = gpa & ~(phys_addr_t)(size - 1);
+> +
+> +	spin_lock(&cookie->msi_lock);
+> +
+> +	list_for_each_entry(msi, &cookie->msi_page_list, list) {
+> +		if (msi->iova == iova)
+> +			goto unlock; /* this page is already registered */
+> +	}
+> +
+> +	msi = kzalloc(sizeof(*msi), GFP_ATOMIC);
+> +	if (!msi) {
+> +		ret = -ENOMEM;
+> +		goto unlock;
+> +	}
+> +
+> +	msi->iova = iova;
+> +	msi->gpa = gpa;
+> +	msi->s1_granule = size;
+> +	list_add(&msi->list, &cookie->msi_page_list);
+> +unlock:
+> +	spin_unlock(&cookie->msi_lock);
+> +	return ret;
+> +}
+> +EXPORT_SYMBOL(iommu_dma_bind_guest_msi);
+> +
+> +void iommu_dma_unbind_guest_msi(struct iommu_domain *domain, dma_addr_t giova)
+> +{
+> +	struct iommu_dma_cookie *cookie = domain->iova_cookie;
+> +	struct iommu_dma_msi_page *msi;
+> +
+> +	if (!cookie)
+> +		return;
+> +
+> +	if (cookie->type != IOMMU_DMA_NESTED_MSI_COOKIE)
+> +		return;
+> +
+> +	spin_lock(&cookie->msi_lock);
+> +
+> +	list_for_each_entry(msi, &cookie->msi_page_list, list) {
+> +		dma_addr_t aligned_giova =
+> +			giova & ~(dma_addr_t)(msi->s1_granule - 1);
+> +
+> +		if (msi->iova == aligned_giova) {
+> +			if (msi->phys) {
+> +				/* unmap the stage 2 */
+> +				size_t size = cookie_msi_granule(cookie);
+> +
+> +				WARN_ON(iommu_unmap(domain, msi->gpa, size) != size);
+> +			}
+> +			list_del(&msi->list);
+> +			kfree(msi);
+> +			break;
+> +		}
+> +	}
+> +	spin_unlock(&cookie->msi_lock);
+> +}
+> +EXPORT_SYMBOL(iommu_dma_unbind_guest_msi);
+> +
+>   /**
+>    * iommu_dma_get_resv_regions - Reserved region driver helper
+>    * @dev: Device from iommu_get_resv_regions()
+> @@ -1343,6 +1452,33 @@ static struct iommu_dma_msi_page *iommu_dma_get_msi_page(struct device *dev,
+>   		if (msi_page->phys == msi_addr)
+>   			return msi_page;
+>   
+> +	/*
+> +	 * In nested stage mode, we do not allocate an MSI page in
+> +	 * a range provided by the user. Instead, IOVA/IPA bindings are
+> +	 * individually provided. We reuse thise IOVAs to build the
+
+s/thise/these/
+
+> +	 * GIOVA -> GPA -> MSI HPA nested stage mapping.
+> +	 */
+> +	if (cookie->type == IOMMU_DMA_NESTED_MSI_COOKIE) {
+> +		list_for_each_entry(msi_page, &cookie->msi_page_list, list)
+> +			if (!msi_page->phys) {
+> +				int ret;
+> +
+> +				/* do the stage 2 mapping */
+> +				ret = iommu_map(domain,
+> +						msi_page->gpa, msi_addr, size,
+
+Shouldn't we make sure that the size of S2 mapping is not less than
+s1_granule? Although what we need is actually a 32-bit TRANSLATER
+register, we don't know where it is mapped in S1.
+
+> +						IOMMU_MMIO | IOMMU_WRITE);
+
+Is it intentional to drop the IOMMU_NOEXEC flag (from @prot)?
+
+> +				if (ret) {
+> +					pr_warn("MSI S2 mapping failed (%d)\n",
+> +						ret);
+> +					return NULL;
+> +				}
+> +				msi_page->phys = msi_addr;
+> +				return msi_page;
+> +			}
+> +		pr_warn("%s no MSI binding found\n", __func__);
+> +		return NULL;
+> +	}
+> +
+>   	msi_page = kzalloc(sizeof(*msi_page), GFP_KERNEL);
+>   	if (!msi_page)
+>   		return NULL;
+
+
+Thanks,
+Zenghui
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
