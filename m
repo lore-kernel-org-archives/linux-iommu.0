@@ -2,189 +2,111 @@ Return-Path: <SRS0=DRkM=JE=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-9.6 required=3.0 tests=BAYES_00,DKIM_INVALID,
-	DKIM_SIGNED,HEADER_FROM_DIFFERENT_DOMAINS,HTML_MESSAGE,INCLUDES_CR_TRAILER,
-	INCLUDES_PATCH,MAILING_LIST_MULTI,PDS_BAD_THREAD_QP_64,SPF_HELO_NONE,SPF_PASS,
-	URIBL_BLOCKED autolearn=ham autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-3.5 required=3.0 tests=BAYES_00,DKIM_INVALID,
+	DKIM_SIGNED,HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,SPF_HELO_NONE,
+	SPF_PASS,URIBL_BLOCKED autolearn=no autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6E55EC433B4
-	for <iommu@archiver.kernel.org>; Wed,  7 Apr 2021 18:41:59 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6DDD3C433ED
+	for <iommu@archiver.kernel.org>; Wed,  7 Apr 2021 18:44:15 +0000 (UTC)
 Received: from smtp1.osuosl.org (smtp1.osuosl.org [140.211.166.138])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 13E9061246
-	for <iommu@archiver.kernel.org>; Wed,  7 Apr 2021 18:41:59 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 13E9061246
-Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=oracle.com
+	by mail.kernel.org (Postfix) with ESMTPS id 131C961353
+	for <iommu@archiver.kernel.org>; Wed,  7 Apr 2021 18:44:15 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 131C961353
+Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=linaro.org
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by smtp1.osuosl.org (Postfix) with ESMTP id D2C0784C6D;
-	Wed,  7 Apr 2021 18:41:58 +0000 (UTC)
+	by smtp1.osuosl.org (Postfix) with ESMTP id D5AEC84C6D;
+	Wed,  7 Apr 2021 18:44:14 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
 Received: from smtp1.osuosl.org ([127.0.0.1])
 	by localhost (smtp1.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id JMauBOj43tWA; Wed,  7 Apr 2021 18:41:57 +0000 (UTC)
-Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by smtp1.osuosl.org (Postfix) with ESMTP id 7DBF384C54;
-	Wed,  7 Apr 2021 18:41:57 +0000 (UTC)
+	with ESMTP id Mjotde_C1csT; Wed,  7 Apr 2021 18:44:13 +0000 (UTC)
+Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [IPv6:2605:bc80:3010:104::8cd3:938])
+	by smtp1.osuosl.org (Postfix) with ESMTP id 0014D83857;
+	Wed,  7 Apr 2021 18:44:12 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 5AACFC000B;
-	Wed,  7 Apr 2021 18:41:57 +0000 (UTC)
-Received: from smtp4.osuosl.org (smtp4.osuosl.org [IPv6:2605:bc80:3010::137])
- by lists.linuxfoundation.org (Postfix) with ESMTP id D66C5C000A
- for <iommu@lists.linux-foundation.org>; Wed,  7 Apr 2021 18:41:56 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id C82E5C000B;
+	Wed,  7 Apr 2021 18:44:12 +0000 (UTC)
+Received: from smtp2.osuosl.org (smtp2.osuosl.org [IPv6:2605:bc80:3010::133])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id BB35EC000A
+ for <iommu@lists.linux-foundation.org>; Wed,  7 Apr 2021 18:44:11 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by smtp4.osuosl.org (Postfix) with ESMTP id C40C5418B2
- for <iommu@lists.linux-foundation.org>; Wed,  7 Apr 2021 18:41:56 +0000 (UTC)
+ by smtp2.osuosl.org (Postfix) with ESMTP id A2FE440406
+ for <iommu@lists.linux-foundation.org>; Wed,  7 Apr 2021 18:44:11 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Authentication-Results: smtp4.osuosl.org (amavisd-new);
- dkim=pass (2048-bit key) header.d=oracle.com header.b="zNxfIFBc";
- dkim=pass (1024-bit key) header.d=oracle.onmicrosoft.com
- header.b="m2k9rsRQ"
-Received: from smtp4.osuosl.org ([127.0.0.1])
- by localhost (smtp4.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id h9oDO4zRjmxs for <iommu@lists.linux-foundation.org>;
- Wed,  7 Apr 2021 18:41:55 +0000 (UTC)
-X-Greylist: domain auto-whitelisted by SQLgrey-1.8.0
-Received: from userp2130.oracle.com (userp2130.oracle.com [156.151.31.86])
- by smtp4.osuosl.org (Postfix) with ESMTPS id 67C51418AE
- for <iommu@lists.linux-foundation.org>; Wed,  7 Apr 2021 18:41:55 +0000 (UTC)
-Received: from pps.filterd (userp2130.oracle.com [127.0.0.1])
- by userp2130.oracle.com (8.16.0.42/8.16.0.42) with SMTP id 137ITUxO056660;
- Wed, 7 Apr 2021 18:41:44 GMT
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=oracle.com;
- h=from : to : cc :
- subject : date : message-id : references : in-reply-to : content-type :
- mime-version; s=corp-2020-01-29;
- bh=LPb4rhoqJLpGX6u7Mh6lxwnKmHcHdt8MeBe2p2soRuI=;
- b=zNxfIFBcgOOoXN1++98DD3v/TGI+FrttQQwjuuBxZ4/HqrOuM4Ciw1sb5eH+WaJaEdAk
- 2nsQZprdg7kpM3Qo79fDvmkYzieIlF3fO5Llsxf9D9QDpMegwhMPVZVy6ZUEX7WZyneW
- 2awJU9oSabDA+V0OeMtagMlzVhh9P+S54w/ka6e5UeuVQTu43+LGnq1bzPAj+GTRrvZD
- c5gD8uzfHIU2jx7M9RTisHYnVDgsVAXibe1a/4cF8egjJTtgzH7TeMX14wPRNM67bGkx
- nyAj5UkXUs8CJO1HFh8GKJc+99NcnkptPP9qvbJ4UO2fKbocDHQKwZhMIqxOwtQoyRZ6 Hg== 
-Received: from aserp3030.oracle.com (aserp3030.oracle.com [141.146.126.71])
- by userp2130.oracle.com with ESMTP id 37rva63jp8-1
- (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
- Wed, 07 Apr 2021 18:41:44 +0000
-Received: from pps.filterd (aserp3030.oracle.com [127.0.0.1])
- by aserp3030.oracle.com (8.16.0.42/8.16.0.42) with SMTP id 137IQ7X9039055;
- Wed, 7 Apr 2021 18:41:43 GMT
-Received: from nam10-mw2-obe.outbound.protection.outlook.com
- (mail-mw2nam10lp2103.outbound.protection.outlook.com [104.47.55.103])
- by aserp3030.oracle.com with ESMTP id 37rvbfcrhv-1
- (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
- Wed, 07 Apr 2021 18:41:43 +0000
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=TRWB/XQQTt0DEfzf9HL5uKLSokSXpGnIAXWpiRT/MV89qi5SETk402SXzJr0YFHYC1g4Qtc6KQluh9IBOFTdMt1Ai9WdeeK3XYcqim0VxXH/fCEZd/2zwTVsjOOY+M+X8CUClv/rNKQfc6UZNwDirGmBMqmjLJVK/WhQwwQPoR4Zo+HOCwuAAp1ntsBZ0mdJieMKxLcQiHKR+qyHHWK6igROa0/qHfYZUvW4BlcTAmQj5M+4nzsysnuocMhUenvmzoHUxthJ1XvtSk3axYYz1Yo9T8WdLyozqqoZBGs5zL18jg3hyPSYDXUmYxKQVgyKGp/0UbmdB0KcwGJHvV6shg==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com; 
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=LPb4rhoqJLpGX6u7Mh6lxwnKmHcHdt8MeBe2p2soRuI=;
- b=i6Kk46voIydW9jWrrEB/RDFLgfAdlwrruAjXVNyu6l1L97Rhm+Fu4Yly59JL20LwT+bQkhU/f+OOX8ej8UqxIYpC6Dgs8sLnKRUWYPw4yE+b/mKgdKPsCqdY9ZhCuGSkFGQvv9GZSUQ7mR6bPEbY5XLVwKAaEPrC7UGkabLTcsvEZi15UNK+wBafN3Kq0u4Ux0RXV3AW0tpl10pwn3WU9kJdryBxQGVGsiGoLImyitvygXe88ZmjSt/fKudKxoYMTqHZihT9FZNaOCvkbOtTDmFksa/v8wnJDvde+w3QbsT+oWtSy1qjQMFfdWHcemhsGqXEEoMzlgBmst8JpFqnEw==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=oracle.com; dmarc=pass action=none header.from=oracle.com;
- dkim=pass header.d=oracle.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
- d=oracle.onmicrosoft.com; s=selector2-oracle-onmicrosoft-com;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=LPb4rhoqJLpGX6u7Mh6lxwnKmHcHdt8MeBe2p2soRuI=;
- b=m2k9rsRQj0dwnI/mFuMzPJcMRMhypYSdZTaGa1H+SflGpSKYIfhj+RJm53It07NMWRTYGTSXK4vm8UTO4LsHVPRsMtE2cJTQA4CShFxhPJ7V/c2NJ267wG6OtH6n9rEjiJNcSv1JI2xxjuh7Ax03ozoO62I6fafg/573G99aL7E=
-Received: from BN8PR10MB3571.namprd10.prod.outlook.com (2603:10b6:408:ad::23)
- by BN0PR10MB5061.namprd10.prod.outlook.com (2603:10b6:408:12b::5)
- with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3999.27; Wed, 7 Apr
- 2021 18:41:41 +0000
-Received: from BN8PR10MB3571.namprd10.prod.outlook.com
- ([fe80::437:6c10:f7a5:5b70]) by BN8PR10MB3571.namprd10.prod.outlook.com
- ([fe80::437:6c10:f7a5:5b70%5]) with mapi id 15.20.3999.032; Wed, 7 Apr 2021
- 18:41:41 +0000
-From: Saeed Mirzamohammadi <saeed.mirzamohammadi@oracle.com>
-To: Lu Baolu <baolu.lu@linux.intel.com>
-Subject: Re: [PATCH v5.4 1/1] iommu/vt-d: Fix agaw for a supported 48 bit
- guest address width
-Thread-Topic: [PATCH v5.4 1/1] iommu/vt-d: Fix agaw for a supported 48 bit
- guest address width
-Thread-Index: AQHXKwMKTbWvCOW9WEuta/5vuIDFzKqoSOQAgAEcYQA=
-Date: Wed, 7 Apr 2021 18:41:41 +0000
-Message-ID: <129708CB-7EBC-4091-8F32-C54D58672FAC@oracle.com>
-References: <20210406163534.40735-1-saeed.mirzamohammadi@oracle.com>
- <c525cdda-2286-c8db-bae4-e0092e5c830a@linux.intel.com>
-In-Reply-To: <c525cdda-2286-c8db-bae4-e0092e5c830a@linux.intel.com>
-Accept-Language: en-US
-Content-Language: en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-x-mailer: Apple Mail (2.3608.120.23.2.4)
-authentication-results: linux.intel.com; dkim=none (message not signed)
- header.d=none; linux.intel.com; dmarc=none action=none header.from=oracle.com; 
-x-originating-ip: [136.52.113.136]
-x-ms-publictraffictype: Email
-x-ms-office365-filtering-correlation-id: 7272f4fb-23e6-4e72-3ebc-08d8f9f4c919
-x-ms-traffictypediagnostic: BN0PR10MB5061:
-x-microsoft-antispam-prvs: <BN0PR10MB50610187F440E64788A6C11FF1759@BN0PR10MB5061.namprd10.prod.outlook.com>
-x-ms-oob-tlc-oobclassifiers: OLM:7691;
-x-ms-exchange-senderadcheck: 1
-x-microsoft-antispam: BCL:0;
-x-microsoft-antispam-message-info: mg27enmo1ytEnq0V5pbHE4u+H410nAfMyMannKwe1cAZtTqp/m3nq2XnXP260WpHBrFcqgR5ip+y8LmPplPdcVBbL5HnIXc9HaQ2IdlFCqVBQ/WwSn7F/9Cl+xodKM1BRyIHoJgfWYyJ/lLpH8YPqz9VIY2QtRXLsKJvo1VsHF/ftCMgSd//X2siI8GB+2Wg9o5Tdt1ILqAYEe8gIwn2eQsJrajYQaYaiftR0qpYr+TWXv1vM7sRxjBkZlMnS66qKih7fqxOYk/7yE/fhRRb+MMmRLHw17LOicN5iUGxQzLT0FBx5coCB2LvjNRjWU9fhFnbWBVxEjGj2kunXUGmXZtcp+nw0Uh8IpOBfnVeTtTx+MzORhWGisnJRcNUb0FFYN+0WnYagijrnNezMthtTEeuxK5NNab/d3zuF97L/stHWVyddkLWsS75DgId5y4f1pFrWVfg9RA9xJwYuqV4pvBW95k2I878KKfVxZzgJ2s0f/UF3m9kk2WYHr/aX9ZI2w07NVJ9nfj3T+Q1PCS09lYoieoiYRxujNHZcGh25CM6Sz8ju9caT5F7XOo36weLRlwIxzBEOCh1Tjq1g9Gs9Sqbaa/LRVPT0N2YFh7NUvoWFornzdjH4QsiddJZRnCUPWZeLkMYy2zvbMqcWGpYnnOAfrIXB5+pOUnF7u8WCGyfZ/8egV7bRbrNE+x+WpJ9
-x-forefront-antispam-report: CIP:255.255.255.255; CTRY:; LANG:en; SCL:1; SRV:;
- IPV:NLI; SFV:NSPM; H:BN8PR10MB3571.namprd10.prod.outlook.com; PTR:; CAT:NONE;
- SFS:(136003)(396003)(376002)(39860400002)(346002)(366004)(76116006)(91956017)(54906003)(8936002)(6486002)(6916009)(2906002)(36756003)(6506007)(478600001)(8676002)(83380400001)(5660300002)(33656002)(316002)(66556008)(66476007)(44832011)(66446008)(64756008)(2616005)(186003)(6512007)(26005)(71200400001)(86362001)(38100700001)(53546011)(66946007)(4326008)(45980500001);
- DIR:OUT; SFP:1101; 
-x-ms-exchange-antispam-messagedata: =?us-ascii?Q?adi1o2LYbyg99HxSLadgo5FZ+sgnMM1lFkq3zitR2tb/vBPm+9Wn8IdU8jKq?=
- =?us-ascii?Q?gmNl2fHtSBIBrY9fd6r7SVLgV5m/LHNZurrX0ySqThb32K2Chxapx8WuD9KD?=
- =?us-ascii?Q?HKF3DV/d4/CVGpLNTMFhanFKWQmxZ7vs+NujEwAdE1o0bRss2Fae9OWnPOC3?=
- =?us-ascii?Q?9oE8NzJaZs6eZqohO1NiwJULvqHISOmfLo7zj0wcaeyk7F/AvGg+V0ux0WaV?=
- =?us-ascii?Q?VeW3RBGL86eSHCnYFoJJQydpGTQvwIG5fl80b2wF3uf2aj2+//2I1bhFgkjD?=
- =?us-ascii?Q?FnZ/flGQF2LBdVnmvL9sGdAdG867E684JqAzp7n6CjG7KXQmB4IkuQ8srPvt?=
- =?us-ascii?Q?fq+UGKop45S7airlorprQ4D2wfjKsCmJnbTkL8apS3Lgzg4REEKLlVR0RCMv?=
- =?us-ascii?Q?b2cqBSETvs5/Rai9aCJ9ysmIIAdgLIts62XKQ4mAljQhgIDh0DG65uQuwBAn?=
- =?us-ascii?Q?drx3QvtGHzpVcL5W3EJyIT5J9qnWnYYdXJhmz7b4CVDIQ8nXSM4m69pU0yEn?=
- =?us-ascii?Q?NkICGzxqfmikXkQRqJ/rPAL/BhALpphYGc8lSy2Z1MU2tj312eTdglFr6PAi?=
- =?us-ascii?Q?XIj/QYR6jhUPBNd5wFoV6SQWKV+fMGrxXQcDIJlcLWp5Fgs59EyhiNX5883u?=
- =?us-ascii?Q?NVlUOnQg1qCTFCx3yI2ER+sTYyWE8LJ1mX9kLDTOBuXHujbSqBIzgQLfGs7d?=
- =?us-ascii?Q?Hd936DU2XkLfIWHoy9ELxHiTXHF92J/nKlAlYjESyaJE3q2gyIzaZdVqKLZu?=
- =?us-ascii?Q?yNFkUMACdC67nLEhmRqhHtScj8+cxNdoVH3VWrGVJqy7D7qff72827LbzLGA?=
- =?us-ascii?Q?GM/xjyp1G7mNL7dfHvKBafU4NDU34ULKTsJdfWzV2aO8OMEyUZ4se/mfSeeC?=
- =?us-ascii?Q?Mf3AEoHibtzhbOj7owwiaPS7Ll3U8Lag/NlLv8treWNhm3UKf34ZzTg7tkUi?=
- =?us-ascii?Q?S6e/BIJq+iieMmhjPQSwrNEoNUPXlw4TxpApbKCNSD3lIrRuSiThxSINgVDD?=
- =?us-ascii?Q?o29U25/tAXCoHTZQIVDZ4WE2E+f95rUahGTo7aNAGDhk2m6DO51FsZAhZMYw?=
- =?us-ascii?Q?CamQA6jiiL69kZt05BG8/3gd0C2OqltzTiFtKA+0yntXlMaMJmj8bWcXt2g9?=
- =?us-ascii?Q?S7c50mWn+66PWO2cp+/hoAh9U67o4YxRFJqFO6YT736qiADdBtLEe8I+WtRw?=
- =?us-ascii?Q?/2Y+UsjkOVTs3bOqLBiwgSivL79uehiFr7ghCbiRgHU/hA9IKTOwYUaAhONj?=
- =?us-ascii?Q?/SI70y8+G6uWNNYDVNFDGVMni9PMftBUBPq+OMizfONoGGmY8fSAqaWoqPBa?=
- =?us-ascii?Q?AYZQvRxznHUz6flAa6HyvigkGJDPBvO/AC8rG3ipZM4MzQ=3D=3D?=
-x-ms-exchange-transport-forked: True
+Authentication-Results: smtp2.osuosl.org (amavisd-new);
+ dkim=pass (2048-bit key) header.d=linaro.org
+Received: from smtp2.osuosl.org ([127.0.0.1])
+ by localhost (smtp2.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+ with ESMTP id 1p6ubWRS9GFZ for <iommu@lists.linux-foundation.org>;
+ Wed,  7 Apr 2021 18:44:10 +0000 (UTC)
+X-Greylist: whitelisted by SQLgrey-1.8.0
+Received: from mail-wm1-x329.google.com (mail-wm1-x329.google.com
+ [IPv6:2a00:1450:4864:20::329])
+ by smtp2.osuosl.org (Postfix) with ESMTPS id 9DFEE4013F
+ for <iommu@lists.linux-foundation.org>; Wed,  7 Apr 2021 18:44:10 +0000 (UTC)
+Received: by mail-wm1-x329.google.com with SMTP id
+ w203-20020a1c49d40000b029010c706d0642so3008071wma.0
+ for <iommu@lists.linux-foundation.org>; Wed, 07 Apr 2021 11:44:10 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linaro.org; s=google;
+ h=date:from:to:cc:subject:message-id:references:mime-version
+ :content-disposition:in-reply-to;
+ bh=U09jkuhbNd4GqgIa8gbKdPQlfgb0wMDSk0hVwDV1gRw=;
+ b=ngd4o4PyyH4y4MwaG4cnoC6BYaNJKVmTUn1FLk6iHOAPaNG8DeUfZzhymKYlRt0WBF
+ HGIOklvd6ZH0GhYEpHVm1LuvZ4z2wBSgD26kvfyaBhMfmn663lBk1uddv969zUJdaAYt
+ 3YBKSHQAb6fT2Vyy/1JMWOttU9895pAjrlIlWnXHy+8Vp2NPYpaGV+sB+0StjU9OeP98
+ tRy0QHfn3hsF8zE1Aq/BMXcz9eW6XrmshNU6mzVrbRp5IwhAeUJu2P0HNXcKc1pCQV2C
+ WnUNExQdMC8rBcwLKpfweD2zJQ7hiRYL85Z0298BXC5qxaHuANgjHZkaqk2CWglrqSDR
+ vunA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+ d=1e100.net; s=20161025;
+ h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+ :mime-version:content-disposition:in-reply-to;
+ bh=U09jkuhbNd4GqgIa8gbKdPQlfgb0wMDSk0hVwDV1gRw=;
+ b=IMp7TOLfAM2f/TwQb3Cv3ow6DDit8QVnlxrsduwtqvFWvkN7iB+cuRiWoZI9AZTBHd
+ CF5hPoPIAbAIrTtC4Bx5F1QxOFwPtHlS3pvZ0e9eZbVc87IId1Oj/QiRYb/6zFQkgn3k
+ 8SXacX9q5q7kbAv5gnbk4CzBuDFXgD7cfMfay4oNuySB0KkmJx0q3MUKJ6ZJDH4CQcW9
+ wgcqBIEMojSj/km1dPcn/HaqP8+QP6BMgCJP5PiugYzICbfttEl/Qy929KTnLk63veRP
+ gXH5GjDI7lhEgJy+8mk205YIBwPzs9M06zKngKh1pGV9NoTFbuDvXAeSfCr0QTH9l1oo
+ QVbA==
+X-Gm-Message-State: AOAM53008ZSWmK+d91PPfTPVnalR/opQi25FWyw58+hE6UBMHrHC5gpb
+ nuMCFjzRmmFM8TNXh1tFkJsBqw==
+X-Google-Smtp-Source: ABdhPJx50nBlSlPltZQfbuboqkROjZuWadRs8Z0ewQ8YyTlzSb94+cWlQubdOFAHHuYz9UMUXOaQzw==
+X-Received: by 2002:a1c:23d6:: with SMTP id j205mr4416562wmj.120.1617821048827; 
+ Wed, 07 Apr 2021 11:44:08 -0700 (PDT)
+Received: from myrica ([2001:1715:4e26:a7e0:116c:c27a:3e7f:5eaf])
+ by smtp.gmail.com with ESMTPSA id u10sm8410862wrt.75.2021.04.07.11.44.07
+ (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+ Wed, 07 Apr 2021 11:44:08 -0700 (PDT)
+Date: Wed, 7 Apr 2021 20:43:50 +0200
+From: Jean-Philippe Brucker <jean-philippe@linaro.org>
+To: "Tian, Kevin" <kevin.tian@intel.com>
+Subject: Re: [PATCH V4 05/18] iommu/ioasid: Redefine IOASID set and
+ allocation APIs
+Message-ID: <YG39ZtnTuyn5uBOa@myrica>
+References: <20210322120300.GU2356281@nvidia.com>
+ <20210324120528.24d82dbd@jacob-builder>
+ <20210329163147.GG2356281@nvidia.com>
+ <MWHPR11MB188639EE54B48B0E1321C8198C7D9@MWHPR11MB1886.namprd11.prod.outlook.com>
+ <20210330132830.GO2356281@nvidia.com>
+ <MWHPR11MB1886CAD48AFC156BFC7C1D398C7A9@MWHPR11MB1886.namprd11.prod.outlook.com>
+ <20210405234230.GF7405@nvidia.com>
+ <fa57bde5-472f-6e66-3521-bfac7d6e4f8d@redhat.com>
+ <20210406124251.GO7405@nvidia.com>
+ <MWHPR11MB1886A7E4C6F3E3A81240517B8C759@MWHPR11MB1886.namprd11.prod.outlook.com>
 MIME-Version: 1.0
-X-OriginatorOrg: oracle.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-AuthSource: BN8PR10MB3571.namprd10.prod.outlook.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 7272f4fb-23e6-4e72-3ebc-08d8f9f4c919
-X-MS-Exchange-CrossTenant-originalarrivaltime: 07 Apr 2021 18:41:41.1947 (UTC)
-X-MS-Exchange-CrossTenant-fromentityheader: Hosted
-X-MS-Exchange-CrossTenant-id: 4e2c6054-71cb-48f1-bd6c-3a9705aca71b
-X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: sTijc8rXqg/nF3pXIR7EcS+ArO+3E5KSoeOz0xONBrOpT+8nlSiaDU1VE7FAYEkV2NEpB9gE5z5p9un7EKIG/4HGTMbWDOBUs+jf147Vc6o=
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: BN0PR10MB5061
-X-Proofpoint-Virus-Version: vendor=nai engine=6200 definitions=9947
- signatures=668683
-X-Proofpoint-Spam-Details: rule=notspam policy=default score=0 adultscore=0
- mlxlogscore=999
- malwarescore=0 mlxscore=0 phishscore=0 spamscore=0 bulkscore=0
- suspectscore=0 classifier=spam adjust=0 reason=mlx scancount=1
- engine=8.12.0-2104060000 definitions=main-2104070127
-X-Proofpoint-GUID: Ly5Ns8u7ZWCGINiL64pG2a211fjfzKlL
-X-Proofpoint-ORIG-GUID: Ly5Ns8u7ZWCGINiL64pG2a211fjfzKlL
-X-Proofpoint-Virus-Version: vendor=nai engine=6200 definitions=9947
- signatures=668683
-X-Proofpoint-Spam-Details: rule=notspam policy=default score=0 malwarescore=0
- clxscore=1015
- lowpriorityscore=0 suspectscore=0 adultscore=0 mlxlogscore=999 bulkscore=0
- priorityscore=1501 impostorscore=0 phishscore=0 mlxscore=0 spamscore=0
- classifier=spam adjust=0 reason=mlx scancount=1 engine=8.12.0-2104060000
- definitions=main-2104070127
-Cc: David Woodhouse <dwmw2@infradead.org>, Camille Lu <camille.lu@hpe.com>,
+Content-Disposition: inline
+In-Reply-To: <MWHPR11MB1886A7E4C6F3E3A81240517B8C759@MWHPR11MB1886.namprd11.prod.outlook.com>
+Cc: "Jiang, Dave" <dave.jiang@intel.com>, "Raj, Ashok" <ashok.raj@intel.com>,
+ Jonathan Corbet <corbet@lwn.net>, David Woodhouse <dwmw2@infradead.org>,
+ Jason Wang <jasowang@redhat.com>, LKML <linux-kernel@vger.kernel.org>,
  "iommu@lists.linux-foundation.org" <iommu@lists.linux-foundation.org>,
- "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
+ Alex Williamson <alex.williamson@redhat.com>, Li Zefan <lizefan@huawei.com>,
+ Jason Gunthorpe <jgg@nvidia.com>, Johannes Weiner <hannes@cmpxchg.org>,
+ Tejun Heo <tj@kernel.org>, "cgroups@vger.kernel.org" <cgroups@vger.kernel.org>,
+ Jean-Philippe Brucker <jean-philippe@linaro.com>, "Wu, Hao" <hao.wu@intel.com>
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -197,366 +119,87 @@ List-Post: <mailto:iommu@lists.linux-foundation.org>
 List-Help: <mailto:iommu-request@lists.linux-foundation.org?subject=help>
 List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
  <mailto:iommu-request@lists.linux-foundation.org?subject=subscribe>
-Content-Type: multipart/mixed; boundary="===============0073173735929734647=="
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
---===============0073173735929734647==
-Content-Language: en-US
-Content-Type: multipart/alternative;
-	boundary="_000_129708CB7EBC40918F32C54D58672FACoraclecom_"
+On Wed, Apr 07, 2021 at 08:17:50AM +0000, Tian, Kevin wrote:
+> btw this discussion was raised when discussing the I/O page fault handling
+> process. Currently the IOMMU layer implements a per-device fault reporting
+> mechanism, which requires VFIO to register a handler to receive all faults 
+> on its device and then forwards to ioasid if it's due to 1st-level. Possibly it 
+> makes more sense to convert it into a per-pgtable reporting scheme, and 
+> then the owner of each pgtable should register its own handler.
 
---_000_129708CB7EBC40918F32C54D58672FACoraclecom_
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: quoted-printable
+Maybe, but you do need device information in there, since that's how the
+fault is reported to the guest and how the response is routed back to the
+faulting device (only PASID+PRGI would cause aliasing). And we need to
+report non-recoverable faults, as well as recoverable ones without PASID,
+once we hand control of level-1 page tables to guests.
 
-Hi Lu,
+> It means
+> for 1) VFIO will register a 2nd-level pgtable handler while /dev/ioasid
+> will register a 1st-level pgtable handler, while for 3) /dev/ioasid will register 
+> handlers for both 1st-level and 2nd-level pgtable. Jean? also want to know 
+> your thoughts...  
 
+Moving all IOMMU controls to /dev/ioasid rather that splitting them is
+probably better. Hopefully the implementation can reuse most of
+vfio_iommu_type1.
 
-On Apr 6, 2021, at 6:43 PM, Lu Baolu <baolu.lu@linux.intel.com<mailto:baolu=
-.lu@linux.intel.com>> wrote:
+I'm trying to sketch what may work for Arm, if we have to reuse
+/dev/ioasid to avoid duplication of fault and inval queues:
 
-Hi Saeed,
+* Get a container handle out of /dev/ioasid (or /dev/iommu, really.)
+  No operation available since we don't know what the device and IOMMU
+  capabilities are.
 
-On 4/7/21 12:35 AM, Saeed Mirzamohammadi wrote:
-The IOMMU driver calculates the guest addressability for a DMA request
-based on the value of the mgaw reported from the IOMMU. However, this
-is a fused value and as mentioned in the spec, the guest width
-should be calculated based on the supported adjusted guest address width
-(SAGAW).
-This is from specification:
-"Guest addressability for a given DMA request is limited to the
-minimum of the value reported through this field and the adjusted
-guest address width of the corresponding page-table structure.
-(Adjusted guest address widths supported by hardware are reported
-through the SAGAW field)."
-This causes domain initialization to fail and following
-errors appear for EHCI PCI driver:
-[    2.486393] ehci-pci 0000:01:00.4: EHCI Host Controller
-[    2.486624] ehci-pci 0000:01:00.4: new USB bus registered, assigned bus
-number 1
-[    2.489127] ehci-pci 0000:01:00.4: DMAR: Allocating domain failed
-[    2.489350] ehci-pci 0000:01:00.4: DMAR: 32bit DMA uses non-identity
-mapping
-[    2.489359] ehci-pci 0000:01:00.4: can't setup: -12
-[    2.489531] ehci-pci 0000:01:00.4: USB bus 1 deregistered
-[    2.490023] ehci-pci 0000:01:00.4: init 0000:01:00.4 fail, -12
-[    2.490358] ehci-pci: probe of 0000:01:00.4 failed with error -12
-This issue happens when the value of the sagaw corresponds to a
-48-bit agaw. This fix updates the calculation of the agaw based on
-the IOMMU's sagaw value.
-Signed-off-by: Saeed Mirzamohammadi <saeed.mirzamohammadi@oracle.com<mailto=
-:saeed.mirzamohammadi@oracle.com>>
-Tested-by: Camille Lu <camille.lu@hpe.com<mailto:camille.lu@hpe.com>>
----
- drivers/iommu/intel-iommu.c | 4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
-diff --git a/drivers/iommu/intel-iommu.c b/drivers/iommu/intel-iommu.c
-index 953d86ca6d2b..396e14fad54b 100644
---- a/drivers/iommu/intel-iommu.c
-+++ b/drivers/iommu/intel-iommu.c
-@@ -1867,8 +1867,8 @@ static int domain_init(struct dmar_domain *domain, st=
-ruct intel_iommu *iommu,
-  domain_reserve_special_ranges(domain);
-    /* calculate AGAW */
-- if (guest_width > cap_mgaw(iommu->cap))
-- guest_width =3D cap_mgaw(iommu->cap);
-+ if (guest_width > agaw_to_width(iommu->agaw))
-+ guest_width =3D agaw_to_width(iommu->agaw);
+* Attach the handle to a VF. With VFIO that would be
+  VFIO_GROUP_SET_CONTAINER. That causes the kernel to associate an IOMMU
+  with the handle, and decide which operations are available.
 
-The spec requires to use a minimum of MGAW and AGAW, so why not,
+* With a map/unmap vIOMMU (or shadow mappings), a single translation level
+  is supported. With a nesting vIOMMU, we're populating the level-2
+  translation (some day maybe by binding the KVM page tables, but
+  currently with map/unmap ioctl).
 
-cap_width =3D min_t(int, cap_mgaw(iommu->cap), agaw_to_width(iommu->agaw));
-if (guest_width > cap_width)
-guest_width =3D cap_width;
+  Single-level translation needs single VF per container. Two level would
+  allow sharing stage-2 between multiple VFs, though it's a pain to define
+  and implement.
 
-Yes, this works better. I just sent the v2.
+* Without a vIOMMU or if the vIOMMU starts in bypass, populate the
+  container page tables.
+
+Start the guest.
+
+* With a map/unmap vIOMMU, guest creates mappings, userspace populates the
+  page tables with map/unmap ioctl.
+
+  It would be possible to add a PASID mode there: guest requests an
+  address space with a specific PASID, userspace derives an IOASID handle
+  from the container handle and populate that address space with map/unmap
+  ioctl. That would enable PASID on sub-VF assignment, which requires the
+  host to control which PASID is programmed into the VF (with
+  DEVICE_ALLOW_IOASID, I guess). And either the host allocates the PASID
+  in this case (which isn't supported by a vSMMU) or we have to do a
+  vPASID -> pPASID. I don't know if it's worth the effort.
+
+Or
+* With a nesting vIOMMU, the guest attaches a PASID table to a VF,
+  userspace issues a SET_PASID_TABLE ioctl on the container handle. If
+  we support multiple VFs per container, we first need to derive a child
+  container from the main one and the device, then attach the PASID table.
+
+  Guest programs the PASID table, sends invalidations when removing
+  mappings which are relayed to the host on the child container. Page
+  faults and response queue would be per container, so if multiple VF per
+  container, we could have one queue for the parent (level-2 faults) and
+  one for each child (level-1 faults).
 
 Thanks,
-Saeed
-
-
-Best regards,
-baolu
-
-  domain->gaw =3D guest_width;
-  adjust_width =3D guestwidth_to_adjustwidth(guest_width);
-  agaw =3D width_to_agaw(adjust_width);
-
-
---_000_129708CB7EBC40918F32C54D58672FACoraclecom_
-Content-Type: text/html; charset="us-ascii"
-Content-ID: <27E423C02940D84DB5E498AED7D17B5A@namprd10.prod.outlook.com>
-Content-Transfer-Encoding: quoted-printable
-
-<html>
-<head>
-<meta http-equiv=3D"Content-Type" content=3D"text/html; charset=3Dus-ascii"=
->
-</head>
-<body style=3D"word-wrap: break-word; -webkit-nbsp-mode: space; line-break:=
- after-white-space;" class=3D"">
-Hi Lu,
-<div class=3D""><br class=3D"">
-<div><br class=3D"">
-<blockquote type=3D"cite" class=3D"">
-<div class=3D"">On Apr 6, 2021, at 6:43 PM, Lu Baolu &lt;<a href=3D"mailto:=
-baolu.lu@linux.intel.com" class=3D"">baolu.lu@linux.intel.com</a>&gt; wrote=
-:</div>
-<br class=3D"Apple-interchange-newline">
-<div class=3D""><span style=3D"caret-color: rgb(0, 0, 0); font-family: Helv=
-etica; font-size: 12px; font-style: normal; font-variant-caps: normal; font=
--weight: normal; letter-spacing: normal; text-align: start; text-indent: 0p=
-x; text-transform: none; white-space: normal; word-spacing: 0px; -webkit-te=
-xt-stroke-width: 0px; text-decoration: none; float: none; display: inline !=
-important;" class=3D"">Hi
- Saeed,</span><br style=3D"caret-color: rgb(0, 0, 0); font-family: Helvetic=
-a; font-size: 12px; font-style: normal; font-variant-caps: normal; font-wei=
-ght: normal; letter-spacing: normal; text-align: start; text-indent: 0px; t=
-ext-transform: none; white-space: normal; word-spacing: 0px; -webkit-text-s=
-troke-width: 0px; text-decoration: none;" class=3D"">
-<br style=3D"caret-color: rgb(0, 0, 0); font-family: Helvetica; font-size: =
-12px; font-style: normal; font-variant-caps: normal; font-weight: normal; l=
-etter-spacing: normal; text-align: start; text-indent: 0px; text-transform:=
- none; white-space: normal; word-spacing: 0px; -webkit-text-stroke-width: 0=
-px; text-decoration: none;" class=3D"">
-<span style=3D"caret-color: rgb(0, 0, 0); font-family: Helvetica; font-size=
-: 12px; font-style: normal; font-variant-caps: normal; font-weight: normal;=
- letter-spacing: normal; text-align: start; text-indent: 0px; text-transfor=
-m: none; white-space: normal; word-spacing: 0px; -webkit-text-stroke-width:=
- 0px; text-decoration: none; float: none; display: inline !important;" clas=
-s=3D"">On
- 4/7/21 12:35 AM, Saeed Mirzamohammadi wrote:</span><br style=3D"caret-colo=
-r: rgb(0, 0, 0); font-family: Helvetica; font-size: 12px; font-style: norma=
-l; font-variant-caps: normal; font-weight: normal; letter-spacing: normal; =
-text-align: start; text-indent: 0px; text-transform: none; white-space: nor=
-mal; word-spacing: 0px; -webkit-text-stroke-width: 0px; text-decoration: no=
-ne;" class=3D"">
-<blockquote type=3D"cite" style=3D"font-family: Helvetica; font-size: 12px;=
- font-style: normal; font-variant-caps: normal; font-weight: normal; letter=
--spacing: normal; orphans: auto; text-align: start; text-indent: 0px; text-=
-transform: none; white-space: normal; widows: auto; word-spacing: 0px; -web=
-kit-text-size-adjust: auto; -webkit-text-stroke-width: 0px; text-decoration=
-: none;" class=3D"">
-The IOMMU driver calculates the guest addressability for a DMA request<br c=
-lass=3D"">
-based on the value of the mgaw reported from the IOMMU. However, this<br cl=
-ass=3D"">
-is a fused value and as mentioned in the spec, the guest width<br class=3D"=
-">
-should be calculated based on the supported adjusted guest address width<br=
- class=3D"">
-(SAGAW).<br class=3D"">
-This is from specification:<br class=3D"">
-&quot;Guest addressability for a given DMA request is limited to the<br cla=
-ss=3D"">
-minimum of the value reported through this field and the adjusted<br class=
-=3D"">
-guest address width of the corresponding page-table structure.<br class=3D"=
-">
-(Adjusted guest address widths supported by hardware are reported<br class=
-=3D"">
-through the SAGAW field).&quot;<br class=3D"">
-This causes domain initialization to fail and following<br class=3D"">
-errors appear for EHCI PCI driver:<br class=3D"">
-[ &nbsp;&nbsp;&nbsp;2.486393] ehci-pci 0000:01:00.4: EHCI Host Controller<b=
-r class=3D"">
-[ &nbsp;&nbsp;&nbsp;2.486624] ehci-pci 0000:01:00.4: new USB bus registered=
-, assigned bus<br class=3D"">
-number 1<br class=3D"">
-[ &nbsp;&nbsp;&nbsp;2.489127] ehci-pci 0000:01:00.4: DMAR: Allocating domai=
-n failed<br class=3D"">
-[ &nbsp;&nbsp;&nbsp;2.489350] ehci-pci 0000:01:00.4: DMAR: 32bit DMA uses n=
-on-identity<br class=3D"">
-mapping<br class=3D"">
-[ &nbsp;&nbsp;&nbsp;2.489359] ehci-pci 0000:01:00.4: can't setup: -12<br cl=
-ass=3D"">
-[ &nbsp;&nbsp;&nbsp;2.489531] ehci-pci 0000:01:00.4: USB bus 1 deregistered=
-<br class=3D"">
-[ &nbsp;&nbsp;&nbsp;2.490023] ehci-pci 0000:01:00.4: init 0000:01:00.4 fail=
-, -12<br class=3D"">
-[ &nbsp;&nbsp;&nbsp;2.490358] ehci-pci: probe of 0000:01:00.4 failed with e=
-rror -12<br class=3D"">
-This issue happens when the value of the sagaw corresponds to a<br class=3D=
-"">
-48-bit agaw. This fix updates the calculation of the agaw based on<br class=
-=3D"">
-the IOMMU's sagaw value.<br class=3D"">
-Signed-off-by: Saeed Mirzamohammadi &lt;<a href=3D"mailto:saeed.mirzamohamm=
-adi@oracle.com" class=3D"">saeed.mirzamohammadi@oracle.com</a>&gt;<br class=
-=3D"">
-Tested-by: Camille Lu &lt;<a href=3D"mailto:camille.lu@hpe.com" class=3D"">=
-camille.lu@hpe.com</a>&gt;<br class=3D"">
----<br class=3D"">
-&nbsp;drivers/iommu/intel-iommu.c | 4 ++--<br class=3D"">
-&nbsp;1 file changed, 2 insertions(+), 2 deletions(-)<br class=3D"">
-diff --git a/drivers/iommu/intel-iommu.c b/drivers/iommu/intel-iommu.c<br c=
-lass=3D"">
-index 953d86ca6d2b..396e14fad54b 100644<br class=3D"">
---- a/drivers/iommu/intel-iommu.c<br class=3D"">
-+++ b/drivers/iommu/intel-iommu.c<br class=3D"">
-@@ -1867,8 +1867,8 @@ static int domain_init(struct dmar_domain *domain, st=
-ruct intel_iommu *iommu,<br class=3D"">
-&nbsp;<span class=3D"Apple-tab-span" style=3D"white-space: pre;"> </span>do=
-main_reserve_special_ranges(domain);<br class=3D"">
-&nbsp;&nbsp;&nbsp;<span class=3D"Apple-tab-span" style=3D"white-space: pre;=
-"> </span>/* calculate AGAW */<br class=3D"">
--<span class=3D"Apple-tab-span" style=3D"white-space: pre;"> </span>if (gue=
-st_width &gt; cap_mgaw(iommu-&gt;cap))<br class=3D"">
--<span class=3D"Apple-tab-span" style=3D"white-space: pre;"> </span><span c=
-lass=3D"Apple-tab-span" style=3D"white-space: pre;"></span>guest_width =3D =
-cap_mgaw(iommu-&gt;cap);<br class=3D"">
-+<span class=3D"Apple-tab-span" style=3D"white-space: pre;"> </span>if (gue=
-st_width &gt; agaw_to_width(iommu-&gt;agaw))<br class=3D"">
-+<span class=3D"Apple-tab-span" style=3D"white-space: pre;"> </span><span c=
-lass=3D"Apple-tab-span" style=3D"white-space: pre;"></span>guest_width =3D =
-agaw_to_width(iommu-&gt;agaw);<br class=3D"">
-</blockquote>
-<br style=3D"caret-color: rgb(0, 0, 0); font-family: Helvetica; font-size: =
-12px; font-style: normal; font-variant-caps: normal; font-weight: normal; l=
-etter-spacing: normal; text-align: start; text-indent: 0px; text-transform:=
- none; white-space: normal; word-spacing: 0px; -webkit-text-stroke-width: 0=
-px; text-decoration: none;" class=3D"">
-<span style=3D"caret-color: rgb(0, 0, 0); font-family: Helvetica; font-size=
-: 12px; font-style: normal; font-variant-caps: normal; font-weight: normal;=
- letter-spacing: normal; text-align: start; text-indent: 0px; text-transfor=
-m: none; white-space: normal; word-spacing: 0px; -webkit-text-stroke-width:=
- 0px; text-decoration: none; float: none; display: inline !important;" clas=
-s=3D"">The
- spec requires to use a minimum of MGAW and AGAW, so why not,</span><br sty=
-le=3D"caret-color: rgb(0, 0, 0); font-family: Helvetica; font-size: 12px; f=
-ont-style: normal; font-variant-caps: normal; font-weight: normal; letter-s=
-pacing: normal; text-align: start; text-indent: 0px; text-transform: none; =
-white-space: normal; word-spacing: 0px; -webkit-text-stroke-width: 0px; tex=
-t-decoration: none;" class=3D"">
-<br style=3D"caret-color: rgb(0, 0, 0); font-family: Helvetica; font-size: =
-12px; font-style: normal; font-variant-caps: normal; font-weight: normal; l=
-etter-spacing: normal; text-align: start; text-indent: 0px; text-transform:=
- none; white-space: normal; word-spacing: 0px; -webkit-text-stroke-width: 0=
-px; text-decoration: none;" class=3D"">
-<span class=3D"Apple-tab-span" style=3D"caret-color: rgb(0, 0, 0); font-fam=
-ily: Helvetica; font-size: 12px; font-style: normal; font-variant-caps: nor=
-mal; font-weight: normal; letter-spacing: normal; text-align: start; text-i=
-ndent: 0px; text-transform: none; white-space: pre; word-spacing: 0px; -web=
-kit-text-stroke-width: 0px; text-decoration: none;"></span><span style=3D"c=
-aret-color: rgb(0, 0, 0); font-family: Helvetica; font-size: 12px; font-sty=
-le: normal; font-variant-caps: normal; font-weight: normal; letter-spacing:=
- normal; text-align: start; text-indent: 0px; text-transform: none; white-s=
-pace: normal; word-spacing: 0px; -webkit-text-stroke-width: 0px; text-decor=
-ation: none; float: none; display: inline !important;" class=3D"">cap_width
- =3D min_t(int, cap_mgaw(iommu-&gt;cap), agaw_to_width(iommu-&gt;agaw));</s=
-pan><br style=3D"caret-color: rgb(0, 0, 0); font-family: Helvetica; font-si=
-ze: 12px; font-style: normal; font-variant-caps: normal; font-weight: norma=
-l; letter-spacing: normal; text-align: start; text-indent: 0px; text-transf=
-orm: none; white-space: normal; word-spacing: 0px; -webkit-text-stroke-widt=
-h: 0px; text-decoration: none;" class=3D"">
-<span class=3D"Apple-tab-span" style=3D"caret-color: rgb(0, 0, 0); font-fam=
-ily: Helvetica; font-size: 12px; font-style: normal; font-variant-caps: nor=
-mal; font-weight: normal; letter-spacing: normal; text-align: start; text-i=
-ndent: 0px; text-transform: none; white-space: pre; word-spacing: 0px; -web=
-kit-text-stroke-width: 0px; text-decoration: none;"></span><span style=3D"c=
-aret-color: rgb(0, 0, 0); font-family: Helvetica; font-size: 12px; font-sty=
-le: normal; font-variant-caps: normal; font-weight: normal; letter-spacing:=
- normal; text-align: start; text-indent: 0px; text-transform: none; white-s=
-pace: normal; word-spacing: 0px; -webkit-text-stroke-width: 0px; text-decor=
-ation: none; float: none; display: inline !important;" class=3D"">if
- (guest_width &gt; cap_width)</span><br style=3D"caret-color: rgb(0, 0, 0);=
- font-family: Helvetica; font-size: 12px; font-style: normal; font-variant-=
-caps: normal; font-weight: normal; letter-spacing: normal; text-align: star=
-t; text-indent: 0px; text-transform: none; white-space: normal; word-spacin=
-g: 0px; -webkit-text-stroke-width: 0px; text-decoration: none;" class=3D"">
-<span class=3D"Apple-tab-span" style=3D"caret-color: rgb(0, 0, 0); font-fam=
-ily: Helvetica; font-size: 12px; font-style: normal; font-variant-caps: nor=
-mal; font-weight: normal; letter-spacing: normal; text-align: start; text-i=
-ndent: 0px; text-transform: none; white-space: pre; word-spacing: 0px; -web=
-kit-text-stroke-width: 0px; text-decoration: none;"></span><span class=3D"A=
-pple-tab-span" style=3D"caret-color: rgb(0, 0, 0); font-family: Helvetica; =
-font-size: 12px; font-style: normal; font-variant-caps: normal; font-weight=
-: normal; letter-spacing: normal; text-align: start; text-indent: 0px; text=
--transform: none; white-space: pre; word-spacing: 0px; -webkit-text-stroke-=
-width: 0px; text-decoration: none;"></span><span style=3D"caret-color: rgb(=
-0, 0, 0); font-family: Helvetica; font-size: 12px; font-style: normal; font=
--variant-caps: normal; font-weight: normal; letter-spacing: normal; text-al=
-ign: start; text-indent: 0px; text-transform: none; white-space: normal; wo=
-rd-spacing: 0px; -webkit-text-stroke-width: 0px; text-decoration: none; flo=
-at: none; display: inline !important;" class=3D"">guest_width
- =3D cap_width;</span><br style=3D"caret-color: rgb(0, 0, 0); font-family: =
-Helvetica; font-size: 12px; font-style: normal; font-variant-caps: normal; =
-font-weight: normal; letter-spacing: normal; text-align: start; text-indent=
-: 0px; text-transform: none; white-space: normal; word-spacing: 0px; -webki=
-t-text-stroke-width: 0px; text-decoration: none;" class=3D"">
-</div>
-</blockquote>
-<div><br class=3D"">
-</div>
-<div>Yes, this works better. I just sent the v2.</div>
-<div><br class=3D"">
-</div>
-<div>Thanks,</div>
-<div>Saeed</div>
-<br class=3D"">
-<blockquote type=3D"cite" class=3D"">
-<div class=3D""><br style=3D"caret-color: rgb(0, 0, 0); font-family: Helvet=
-ica; font-size: 12px; font-style: normal; font-variant-caps: normal; font-w=
-eight: normal; letter-spacing: normal; text-align: start; text-indent: 0px;=
- text-transform: none; white-space: normal; word-spacing: 0px; -webkit-text=
--stroke-width: 0px; text-decoration: none;" class=3D"">
-<span style=3D"caret-color: rgb(0, 0, 0); font-family: Helvetica; font-size=
-: 12px; font-style: normal; font-variant-caps: normal; font-weight: normal;=
- letter-spacing: normal; text-align: start; text-indent: 0px; text-transfor=
-m: none; white-space: normal; word-spacing: 0px; -webkit-text-stroke-width:=
- 0px; text-decoration: none; float: none; display: inline !important;" clas=
-s=3D"">Best
- regards,</span><br style=3D"caret-color: rgb(0, 0, 0); font-family: Helvet=
-ica; font-size: 12px; font-style: normal; font-variant-caps: normal; font-w=
-eight: normal; letter-spacing: normal; text-align: start; text-indent: 0px;=
- text-transform: none; white-space: normal; word-spacing: 0px; -webkit-text=
--stroke-width: 0px; text-decoration: none;" class=3D"">
-<span style=3D"caret-color: rgb(0, 0, 0); font-family: Helvetica; font-size=
-: 12px; font-style: normal; font-variant-caps: normal; font-weight: normal;=
- letter-spacing: normal; text-align: start; text-indent: 0px; text-transfor=
-m: none; white-space: normal; word-spacing: 0px; -webkit-text-stroke-width:=
- 0px; text-decoration: none; float: none; display: inline !important;" clas=
-s=3D"">baolu</span><br style=3D"caret-color: rgb(0, 0, 0); font-family: Hel=
-vetica; font-size: 12px; font-style: normal; font-variant-caps: normal; fon=
-t-weight: normal; letter-spacing: normal; text-align: start; text-indent: 0=
-px; text-transform: none; white-space: normal; word-spacing: 0px; -webkit-t=
-ext-stroke-width: 0px; text-decoration: none;" class=3D"">
-<br style=3D"caret-color: rgb(0, 0, 0); font-family: Helvetica; font-size: =
-12px; font-style: normal; font-variant-caps: normal; font-weight: normal; l=
-etter-spacing: normal; text-align: start; text-indent: 0px; text-transform:=
- none; white-space: normal; word-spacing: 0px; -webkit-text-stroke-width: 0=
-px; text-decoration: none;" class=3D"">
-<blockquote type=3D"cite" style=3D"font-family: Helvetica; font-size: 12px;=
- font-style: normal; font-variant-caps: normal; font-weight: normal; letter=
--spacing: normal; orphans: auto; text-align: start; text-indent: 0px; text-=
-transform: none; white-space: normal; widows: auto; word-spacing: 0px; -web=
-kit-text-size-adjust: auto; -webkit-text-stroke-width: 0px; text-decoration=
-: none;" class=3D"">
-&nbsp;<span class=3D"Apple-tab-span" style=3D"white-space: pre;"> </span>do=
-main-&gt;gaw =3D guest_width;<br class=3D"">
-&nbsp;<span class=3D"Apple-tab-span" style=3D"white-space: pre;"> </span>ad=
-just_width =3D guestwidth_to_adjustwidth(guest_width);<br class=3D"">
-&nbsp;<span class=3D"Apple-tab-span" style=3D"white-space: pre;"> </span>ag=
-aw =3D width_to_agaw(adjust_width);</blockquote>
-</div>
-</blockquote>
-</div>
-<br class=3D"">
-</div>
-</body>
-</html>
-
---_000_129708CB7EBC40918F32C54D58672FACoraclecom_--
-
---===============0073173735929734647==
-Content-Type: text/plain; charset="us-ascii"
-MIME-Version: 1.0
-Content-Transfer-Encoding: 7bit
-Content-Disposition: inline
-
+Jean
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
 https://lists.linuxfoundation.org/mailman/listinfo/iommu
---===============0073173735929734647==--
