@@ -3,73 +3,71 @@ X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
 X-Spam-Status: No, score=-16.5 required=3.0 tests=BAYES_00,DKIM_INVALID,
-	DKIM_SIGNED,HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_CR_TRAILER,INCLUDES_PATCH,
-	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_GIT
+	DKIM_SIGNED,HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,
+	MENTIONS_GIT_HOSTING,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_GIT
 	autolearn=unavailable autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 32E30C43616
-	for <iommu@archiver.kernel.org>; Thu,  8 Apr 2021 17:01:44 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 73241C001E3
+	for <iommu@archiver.kernel.org>; Thu,  8 Apr 2021 17:01:46 +0000 (UTC)
 Received: from smtp2.osuosl.org (smtp2.osuosl.org [140.211.166.133])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id D8B176113A
-	for <iommu@archiver.kernel.org>; Thu,  8 Apr 2021 17:01:43 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org D8B176113A
+	by mail.kernel.org (Postfix) with ESMTPS id 2204B611F0
+	for <iommu@archiver.kernel.org>; Thu,  8 Apr 2021 17:01:46 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 2204B611F0
 Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=deltatee.com
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by smtp2.osuosl.org (Postfix) with ESMTP id A282C40E61;
-	Thu,  8 Apr 2021 17:01:43 +0000 (UTC)
+	by smtp2.osuosl.org (Postfix) with ESMTP id BBF1940626;
+	Thu,  8 Apr 2021 17:01:44 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
 Received: from smtp2.osuosl.org ([127.0.0.1])
 	by localhost (smtp2.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id N4wX7GBIYhsP; Thu,  8 Apr 2021 17:01:42 +0000 (UTC)
+	with ESMTP id V2kCnqGspDLs; Thu,  8 Apr 2021 17:01:43 +0000 (UTC)
 Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by smtp2.osuosl.org (Postfix) with ESMTP id 71CE440626;
-	Thu,  8 Apr 2021 17:01:42 +0000 (UTC)
+	by smtp2.osuosl.org (Postfix) with ESMTP id 74FE440E60;
+	Thu,  8 Apr 2021 17:01:43 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 5729BC000C;
+	by lists.linuxfoundation.org (Postfix) with ESMTP id BD25CC000C;
 	Thu,  8 Apr 2021 17:01:42 +0000 (UTC)
 Received: from smtp2.osuosl.org (smtp2.osuosl.org [IPv6:2605:bc80:3010::133])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 6034EC000C
- for <iommu@lists.linux-foundation.org>; Thu,  8 Apr 2021 17:01:39 +0000 (UTC)
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 35358C000A
+ for <iommu@lists.linux-foundation.org>; Thu,  8 Apr 2021 17:01:41 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by smtp2.osuosl.org (Postfix) with ESMTP id 4F6B2402B2
- for <iommu@lists.linux-foundation.org>; Thu,  8 Apr 2021 17:01:39 +0000 (UTC)
+ by smtp2.osuosl.org (Postfix) with ESMTP id 101F240E5B
+ for <iommu@lists.linux-foundation.org>; Thu,  8 Apr 2021 17:01:41 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
 Received: from smtp2.osuosl.org ([127.0.0.1])
  by localhost (smtp2.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id OJtRl-BMpvmr for <iommu@lists.linux-foundation.org>;
- Thu,  8 Apr 2021 17:01:38 +0000 (UTC)
+ with ESMTP id CFWEV5XqEeyE for <iommu@lists.linux-foundation.org>;
+ Thu,  8 Apr 2021 17:01:40 +0000 (UTC)
 X-Greylist: domain auto-whitelisted by SQLgrey-1.8.0
 Received: from ale.deltatee.com (ale.deltatee.com [204.191.154.188])
- by smtp2.osuosl.org (Postfix) with ESMTPS id AA9CA40107
- for <iommu@lists.linux-foundation.org>; Thu,  8 Apr 2021 17:01:38 +0000 (UTC)
+ by smtp2.osuosl.org (Postfix) with ESMTPS id 2EF51402AB
+ for <iommu@lists.linux-foundation.org>; Thu,  8 Apr 2021 17:01:40 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
- d=deltatee.com; s=20200525; h=Subject:MIME-Version:References:In-Reply-To:
- Message-Id:Date:Cc:To:From:content-disposition;
- bh=SVnj1+oSzpqKVO2sKwUH12TGDWlucr8BFIiDjxJcbS8=; b=K5LYomURiCDPVY97WcsROKl/wc
- 7ZfgWDaaI+F8nr9JH7B9zmwtL+7bsX+nMblgI6lSd3IdUMyFZ0kbUO9v3YnhmJhBtWbby/pBKU9Tr
- 9lf1hKXKzR9Rh4oYbLKmMtxfmlhE2wR/CZl0auq8Kbc+2oTSLIGl/au06Ag38x7kku6oicrr4jO6s
- mynGCsIT/gDkzmeNVeVm9nsZPhTsfIsJZpNY0JMudxGzTBr2YbmtHnZxkEc84xMt9RrHEoEv7OkcF
- 9syz9dChXZfwaM+7lJ5MtAHMy18a9KkyefSvBq18GqKVAzEXFO9DFr8r/EY1Z8+/CeezeprfqAPqu
- 9hessKJQ==;
+ d=deltatee.com; s=20200525; h=Subject:MIME-Version:Message-Id:Date:Cc:To:From
+ :references:content-disposition:in-reply-to;
+ bh=Yy165qiMfoD9wU7CLZMIhX0c30z5a4gBueBDk54t1c0=; b=l3U4k9Yq7Ab3rHMmVRrXGLuL9F
+ KA5oYwXOoTAUBnmx584u9OeRdYiIh9OGOOdFpZhsNK0UKDaGVBt86ZgRxp2KC1bV+aK4uvzYgcG0k
+ 70wJ6jtR2dBxAAoqK/Ga5s3FtdLpb1TGLPgCMj2er64H0dcya5Xz/nXpJB2KLjGYL8kaMSOsDh1bf
+ mJVhd4GQlUHMlNYkhRrqk0hbMG/ypOXGbOwwKnDYVCm6FK5jABHvaIInCDtj6zzPX2v6rjeN3x26S
+ ahxbZgEnmAkO6giDEjzqFx5v2QNxnzLYIVeF+kN9tSUyrPZGpZABeNmdiDkW/pGr7gDCEze+wmkcw
+ Q8BaL1pw==;
 Received: from cgy1-donard.priv.deltatee.com ([172.16.1.31])
  by ale.deltatee.com with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
  (Exim 4.92) (envelope-from <gunthorp@deltatee.com>)
- id 1lUY29-0002Ln-II; Thu, 08 Apr 2021 11:01:34 -0600
+ id 1lUY26-0002Li-Kj; Thu, 08 Apr 2021 11:01:32 -0600
 Received: from gunthorp by cgy1-donard.priv.deltatee.com with local (Exim 4.92)
  (envelope-from <gunthorp@deltatee.com>)
- id 1lUY27-0002JR-2X; Thu, 08 Apr 2021 11:01:31 -0600
+ id 1lUY20-0002Ij-Vl; Thu, 08 Apr 2021 11:01:25 -0600
 From: Logan Gunthorpe <logang@deltatee.com>
 To: linux-kernel@vger.kernel.org, linux-nvme@lists.infradead.org,
  linux-block@vger.kernel.org, linux-pci@vger.kernel.org, linux-mm@kvack.org,
  iommu@lists.linux-foundation.org
-Date: Thu,  8 Apr 2021 11:01:22 -0600
-Message-Id: <20210408170123.8788-16-logang@deltatee.com>
+Date: Thu,  8 Apr 2021 11:01:07 -0600
+Message-Id: <20210408170123.8788-1-logang@deltatee.com>
 X-Mailer: git-send-email 2.20.1
-In-Reply-To: <20210408170123.8788-1-logang@deltatee.com>
-References: <20210408170123.8788-1-logang@deltatee.com>
 MIME-Version: 1.0
 X-SA-Exim-Connect-IP: 172.16.1.31
 X-SA-Exim-Rcpt-To: linux-nvme@lists.infradead.org, linux-kernel@vger.kernel.org,
@@ -82,7 +80,7 @@ X-SA-Exim-Rcpt-To: linux-nvme@lists.infradead.org, linux-kernel@vger.kernel.org,
  jianxin.xiong@intel.com, ira.weiny@intel.com, robin.murphy@arm.com,
  logang@deltatee.com
 X-SA-Exim-Mail-From: gunthorp@deltatee.com
-Subject: [PATCH 15/16] RDMA/rw: use dma_map_sg_p2pdma()
+Subject: [PATCH 00/16] Add new DMA mapping operation for P2PDMA
 X-SA-Exim-Version: 4.2.1 (built Wed, 08 May 2019 21:11:16 +0000)
 X-SA-Exim-Scanned: Yes (on ale.deltatee.com)
 Cc: Minturn Dave B <dave.b.minturn@intel.com>, Ira Weiny <ira.weiny@intel.com>,
@@ -112,179 +110,89 @@ Content-Transfer-Encoding: 7bit
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-Drop the use of pci_p2pdma_map_sg() in favour of dma_map_sg_p2pdma().
+Hi,
 
-The new interface allows mapping scatterlists that mix both regular
-and P2PDMA pages and will verify that the dma device can communicate
-with the device the pages are on.
+This patchset continues my work to to add P2PDMA support to the common
+dma map operations. This allows for creating SGLs that have both P2PDMA
+and regular pages which is a necessary step to allowing P2PDMA pages in
+userspace.
 
-Signed-off-by: Logan Gunthorpe <logang@deltatee.com>
----
- drivers/infiniband/core/rw.c | 50 ++++++++++--------------------------
- include/rdma/ib_verbs.h      | 32 +++++++++++++++++++++++
- 2 files changed, 46 insertions(+), 36 deletions(-)
+The earlier RFC[1] generated a lot of great feedback and I heard no show
+stopping objections. Thus, I've incorporated all the feedback and have
+decided to post this as a proper patch series with hopes of eventually
+getting it in mainline.
 
-diff --git a/drivers/infiniband/core/rw.c b/drivers/infiniband/core/rw.c
-index 31156e22d3e7..0c6213d9b044 100644
---- a/drivers/infiniband/core/rw.c
-+++ b/drivers/infiniband/core/rw.c
-@@ -273,26 +273,6 @@ static int rdma_rw_init_single_wr(struct rdma_rw_ctx *ctx, struct ib_qp *qp,
- 	return 1;
- }
- 
--static void rdma_rw_unmap_sg(struct ib_device *dev, struct scatterlist *sg,
--			     u32 sg_cnt, enum dma_data_direction dir)
--{
--	if (is_pci_p2pdma_page(sg_page(sg)))
--		pci_p2pdma_unmap_sg(dev->dma_device, sg, sg_cnt, dir);
--	else
--		ib_dma_unmap_sg(dev, sg, sg_cnt, dir);
--}
--
--static int rdma_rw_map_sg(struct ib_device *dev, struct scatterlist *sg,
--			  u32 sg_cnt, enum dma_data_direction dir)
--{
--	if (is_pci_p2pdma_page(sg_page(sg))) {
--		if (WARN_ON_ONCE(ib_uses_virt_dma(dev)))
--			return 0;
--		return pci_p2pdma_map_sg(dev->dma_device, sg, sg_cnt, dir);
--	}
--	return ib_dma_map_sg(dev, sg, sg_cnt, dir);
--}
--
- /**
-  * rdma_rw_ctx_init - initialize a RDMA READ/WRITE context
-  * @ctx:	context to initialize
-@@ -315,9 +295,9 @@ int rdma_rw_ctx_init(struct rdma_rw_ctx *ctx, struct ib_qp *qp, u8 port_num,
- 	struct ib_device *dev = qp->pd->device;
- 	int ret;
- 
--	ret = rdma_rw_map_sg(dev, sg, sg_cnt, dir);
--	if (!ret)
--		return -ENOMEM;
-+	ret = ib_dma_map_sg_p2pdma(dev, sg, sg_cnt, dir);
-+	if (ret < 0)
-+		return ret;
- 	sg_cnt = ret;
- 
- 	/*
-@@ -354,7 +334,7 @@ int rdma_rw_ctx_init(struct rdma_rw_ctx *ctx, struct ib_qp *qp, u8 port_num,
- 	return ret;
- 
- out_unmap_sg:
--	rdma_rw_unmap_sg(dev, sg, sg_cnt, dir);
-+	ib_dma_unmap_sg(dev, sg, sg_cnt, dir);
- 	return ret;
- }
- EXPORT_SYMBOL(rdma_rw_ctx_init);
-@@ -394,17 +374,15 @@ int rdma_rw_ctx_signature_init(struct rdma_rw_ctx *ctx, struct ib_qp *qp,
- 		return -EINVAL;
- 	}
- 
--	ret = rdma_rw_map_sg(dev, sg, sg_cnt, dir);
--	if (!ret)
--		return -ENOMEM;
-+	ret = ib_dma_map_sg_p2pdma(dev, sg, sg_cnt, dir);
-+	if (ret < 0)
-+		return ret;
- 	sg_cnt = ret;
- 
- 	if (prot_sg_cnt) {
--		ret = rdma_rw_map_sg(dev, prot_sg, prot_sg_cnt, dir);
--		if (!ret) {
--			ret = -ENOMEM;
-+		ret = ib_dma_map_sg_p2pdma(dev, prot_sg, prot_sg_cnt, dir);
-+		if (ret < 0)
- 			goto out_unmap_sg;
--		}
- 		prot_sg_cnt = ret;
- 	}
- 
-@@ -469,9 +447,9 @@ int rdma_rw_ctx_signature_init(struct rdma_rw_ctx *ctx, struct ib_qp *qp,
- 	kfree(ctx->reg);
- out_unmap_prot_sg:
- 	if (prot_sg_cnt)
--		rdma_rw_unmap_sg(dev, prot_sg, prot_sg_cnt, dir);
-+		ib_dma_unmap_sg(dev, prot_sg, prot_sg_cnt, dir);
- out_unmap_sg:
--	rdma_rw_unmap_sg(dev, sg, sg_cnt, dir);
-+	ib_dma_unmap_sg(dev, sg, sg_cnt, dir);
- 	return ret;
- }
- EXPORT_SYMBOL(rdma_rw_ctx_signature_init);
-@@ -603,7 +581,7 @@ void rdma_rw_ctx_destroy(struct rdma_rw_ctx *ctx, struct ib_qp *qp, u8 port_num,
- 		break;
- 	}
- 
--	rdma_rw_unmap_sg(qp->pd->device, sg, sg_cnt, dir);
-+	ib_dma_unmap_sg(qp->pd->device, sg, sg_cnt, dir);
- }
- EXPORT_SYMBOL(rdma_rw_ctx_destroy);
- 
-@@ -631,8 +609,8 @@ void rdma_rw_ctx_destroy_signature(struct rdma_rw_ctx *ctx, struct ib_qp *qp,
- 	kfree(ctx->reg);
- 
- 	if (prot_sg_cnt)
--		rdma_rw_unmap_sg(qp->pd->device, prot_sg, prot_sg_cnt, dir);
--	rdma_rw_unmap_sg(qp->pd->device, sg, sg_cnt, dir);
-+		ib_dma_unmap_sg(qp->pd->device, prot_sg, prot_sg_cnt, dir);
-+	ib_dma_unmap_sg(qp->pd->device, sg, sg_cnt, dir);
- }
- EXPORT_SYMBOL(rdma_rw_ctx_destroy_signature);
- 
-diff --git a/include/rdma/ib_verbs.h b/include/rdma/ib_verbs.h
-index ca28fca5736b..a541ed1702f5 100644
---- a/include/rdma/ib_verbs.h
-+++ b/include/rdma/ib_verbs.h
-@@ -4028,6 +4028,17 @@ static inline int ib_dma_map_sg_attrs(struct ib_device *dev,
- 				dma_attrs);
- }
- 
-+static inline int ib_dma_map_sg_p2pdma_attrs(struct ib_device *dev,
-+					     struct scatterlist *sg, int nents,
-+					     enum dma_data_direction direction,
-+					     unsigned long dma_attrs)
-+{
-+	if (ib_uses_virt_dma(dev))
-+		return ib_dma_virt_map_sg(dev, sg, nents);
-+	return dma_map_sg_p2pdma_attrs(dev->dma_device, sg, nents, direction,
-+				       dma_attrs);
-+}
-+
- static inline void ib_dma_unmap_sg_attrs(struct ib_device *dev,
- 					 struct scatterlist *sg, int nents,
- 					 enum dma_data_direction direction,
-@@ -4052,6 +4063,27 @@ static inline int ib_dma_map_sg(struct ib_device *dev,
- 	return ib_dma_map_sg_attrs(dev, sg, nents, direction, 0);
- }
- 
-+/**
-+ * ib_dma_map_sg_p2pdma - Map a scatter/gather list to DMA addresses
-+ * @dev: The device for which the DMA addresses are to be created
-+ * @sg: The array of scatter/gather entries
-+ * @nents: The number of scatter/gather entries
-+ * @direction: The direction of the DMA
-+ *
-+ * Map an scatter/gather list that might contain P2PDMA pages.
-+ * Unlike ib_dma_map_sg() it will return either a negative errno or
-+ * a positive value indicating the number of dma segments. See
-+ * dma_map_sg_p2pdma_attrs() for details.
-+ *
-+ * The resulting list should be unmapped with ib_dma_unmap_sg().
-+ */
-+static inline int ib_dma_map_sg_p2pdma(struct ib_device *dev,
-+				       struct scatterlist *sg, int nents,
-+				       enum dma_data_direction direction)
-+{
-+	return ib_dma_map_sg_p2pdma_attrs(dev, sg, nents, direction, 0);
-+}
-+
- /**
-  * ib_dma_unmap_sg - Unmap a scatter/gather list of DMA addresses
-  * @dev: The device for which the DMA addresses were created
--- 
+I'm happy to do a few more passes if anyone has any further feedback
+or better ideas.
+
+This series is based on v5.12-rc6 and a git branch can be found here:
+
+  https://github.com/sbates130272/linux-p2pmem/  p2pdma_map_ops_v1
+
+Thanks,
+
+Logan
+
+[1] https://lore.kernel.org/linux-block/20210311233142.7900-1-logang@deltatee.com/
+
+
+Changes since the RFC:
+ * Added comment and fixed up the pci_get_slot patch. (per Bjorn)
+ * Fixed glaring sg_phys() double offset bug. (per Robin)
+ * Created a new map operation (dma_map_sg_p2pdma()) with a new calling
+   convention instead of modifying the calling convention of
+   dma_map_sg(). (per Robin)
+ * Integrated the two similar pci_p2pdma_dma_map_type() and
+   pci_p2pdma_map_type() functions into one (per Ira)
+ * Reworked some of the logic in the map_sg() implementations into
+   helpers in the p2pdma code. (per Christoph)
+ * Dropped a bunch of unnecessary symbol exports (per Christoph)
+ * Expanded the code in dma_pci_p2pdma_supported() for clarity. (per
+   Ira and Christoph)
+ * Finished off using the new dma_map_sg_p2pdma() call in rdma_rw
+   and removed the old pci_p2pdma_[un]map_sg(). (per Jason)
+
+--
+
+Logan Gunthorpe (16):
+  PCI/P2PDMA: Pass gfp_mask flags to upstream_bridge_distance_warn()
+  PCI/P2PDMA: Avoid pci_get_slot() which sleeps
+  PCI/P2PDMA: Attempt to set map_type if it has not been set
+  PCI/P2PDMA: Refactor pci_p2pdma_map_type() to take pagmap and device
+  dma-mapping: Introduce dma_map_sg_p2pdma()
+  lib/scatterlist: Add flag for indicating P2PDMA segments in an SGL
+  PCI/P2PDMA: Make pci_p2pdma_map_type() non-static
+  PCI/P2PDMA: Introduce helpers for dma_map_sg implementations
+  dma-direct: Support PCI P2PDMA pages in dma-direct map_sg
+  dma-mapping: Add flags to dma_map_ops to indicate PCI P2PDMA support
+  iommu/dma: Support PCI P2PDMA pages in dma-iommu map_sg
+  nvme-pci: Check DMA ops when indicating support for PCI P2PDMA
+  nvme-pci: Convert to using dma_map_sg_p2pdma for p2pdma pages
+  nvme-rdma: Ensure dma support when using p2pdma
+  RDMA/rw: use dma_map_sg_p2pdma()
+  PCI/P2PDMA: Remove pci_p2pdma_[un]map_sg()
+
+ drivers/infiniband/core/rw.c |  50 +++-------
+ drivers/iommu/dma-iommu.c    |  66 ++++++++++--
+ drivers/nvme/host/core.c     |   3 +-
+ drivers/nvme/host/nvme.h     |   2 +-
+ drivers/nvme/host/pci.c      |  39 ++++----
+ drivers/nvme/target/rdma.c   |   3 +-
+ drivers/pci/Kconfig          |   2 +-
+ drivers/pci/p2pdma.c         | 188 +++++++++++++++++++----------------
+ include/linux/dma-map-ops.h  |   3 +
+ include/linux/dma-mapping.h  |  20 ++++
+ include/linux/pci-p2pdma.h   |  53 ++++++----
+ include/linux/scatterlist.h  |  49 ++++++++-
+ include/rdma/ib_verbs.h      |  32 ++++++
+ kernel/dma/direct.c          |  25 ++++-
+ kernel/dma/mapping.c         |  70 +++++++++++--
+ 15 files changed, 416 insertions(+), 189 deletions(-)
+
+
+base-commit: e49d033bddf5b565044e2abe4241353959bc9120
+--
 2.20.1
-
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
