@@ -5,70 +5,68 @@ X-Spam-Level:
 X-Spam-Status: No, score=-16.5 required=3.0 tests=BAYES_00,DKIM_INVALID,
 	DKIM_SIGNED,HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_CR_TRAILER,INCLUDES_PATCH,
 	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_GIT
-	autolearn=ham autolearn_force=no version=3.4.0
+	autolearn=unavailable autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7300FC4361A
-	for <iommu@archiver.kernel.org>; Thu,  8 Apr 2021 17:01:50 +0000 (UTC)
-Received: from smtp1.osuosl.org (smtp1.osuosl.org [140.211.166.138])
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 653D3C43611
+	for <iommu@archiver.kernel.org>; Thu,  8 Apr 2021 17:01:53 +0000 (UTC)
+Received: from smtp3.osuosl.org (smtp3.osuosl.org [140.211.166.136])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 30AEB60FDB
-	for <iommu@archiver.kernel.org>; Thu,  8 Apr 2021 17:01:50 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 30AEB60FDB
+	by mail.kernel.org (Postfix) with ESMTPS id 249FE61175
+	for <iommu@archiver.kernel.org>; Thu,  8 Apr 2021 17:01:53 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 249FE61175
 Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=deltatee.com
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by smtp1.osuosl.org (Postfix) with ESMTP id C080284D96;
-	Thu,  8 Apr 2021 17:01:48 +0000 (UTC)
+	by smtp3.osuosl.org (Postfix) with ESMTP id EBA1C607BC;
+	Thu,  8 Apr 2021 17:01:52 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from smtp1.osuosl.org ([127.0.0.1])
-	by localhost (smtp1.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id 7l6FAkzaSxaz; Thu,  8 Apr 2021 17:01:48 +0000 (UTC)
-Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by smtp1.osuosl.org (Postfix) with ESMTP id AC2A984D75;
-	Thu,  8 Apr 2021 17:01:47 +0000 (UTC)
+Received: from smtp3.osuosl.org ([127.0.0.1])
+	by localhost (smtp3.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+	with ESMTP id nfSZW-alxcs9; Thu,  8 Apr 2021 17:01:52 +0000 (UTC)
+Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [IPv6:2605:bc80:3010:104::8cd3:938])
+	by smtp3.osuosl.org (Postfix) with ESMTP id B220F60DE9;
+	Thu,  8 Apr 2021 17:01:51 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id D94EFC001E;
-	Thu,  8 Apr 2021 17:01:46 +0000 (UTC)
-Received: from smtp4.osuosl.org (smtp4.osuosl.org [IPv6:2605:bc80:3010::137])
- by lists.linuxfoundation.org (Postfix) with ESMTP id E07CBC000A
- for <iommu@lists.linux-foundation.org>; Thu,  8 Apr 2021 17:01:43 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 0E4BBC001A;
+	Thu,  8 Apr 2021 17:01:51 +0000 (UTC)
+Received: from smtp3.osuosl.org (smtp3.osuosl.org [IPv6:2605:bc80:3010::136])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 82EC8C000A
+ for <iommu@lists.linux-foundation.org>; Thu,  8 Apr 2021 17:01:49 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by smtp4.osuosl.org (Postfix) with ESMTP id C6F9C4199A
- for <iommu@lists.linux-foundation.org>; Thu,  8 Apr 2021 17:01:43 +0000 (UTC)
+ by smtp3.osuosl.org (Postfix) with ESMTP id 69A1960DE8
+ for <iommu@lists.linux-foundation.org>; Thu,  8 Apr 2021 17:01:49 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Authentication-Results: smtp4.osuosl.org (amavisd-new);
- dkim=pass (2048-bit key) header.d=deltatee.com
-Received: from smtp4.osuosl.org ([127.0.0.1])
- by localhost (smtp4.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id 1VswfdQ2nEYe for <iommu@lists.linux-foundation.org>;
- Thu,  8 Apr 2021 17:01:43 +0000 (UTC)
+Received: from smtp3.osuosl.org ([127.0.0.1])
+ by localhost (smtp3.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+ with ESMTP id DMIzaOG-oiGX for <iommu@lists.linux-foundation.org>;
+ Thu,  8 Apr 2021 17:01:48 +0000 (UTC)
 X-Greylist: domain auto-whitelisted by SQLgrey-1.8.0
 Received: from ale.deltatee.com (ale.deltatee.com [204.191.154.188])
- by smtp4.osuosl.org (Postfix) with ESMTPS id 19CC041992
- for <iommu@lists.linux-foundation.org>; Thu,  8 Apr 2021 17:01:43 +0000 (UTC)
+ by smtp3.osuosl.org (Postfix) with ESMTPS id AF7D360C27
+ for <iommu@lists.linux-foundation.org>; Thu,  8 Apr 2021 17:01:48 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
  d=deltatee.com; s=20200525; h=Subject:MIME-Version:References:In-Reply-To:
  Message-Id:Date:Cc:To:From:content-disposition;
- bh=Jsen3Rk7WnWhMAW7aoLvus8u5s3n5eBOCfCKJv0hWQo=; b=qvxda6axIz8iA8AMPtdNklE76m
- GR8YP4YR9/RRaTdPJfLWDb0urlIIVK6VTxuOVAVTYQFQwz4lKX8JHDefmOzKb5z0icaB84Q+HH3JV
- t5p3f7Y5Lr4uReAXB1WFNJ5wHPqj66/Q8cyntUPjQyEjT+c2ebXIJskU4tRElmkB0X2XY00frTPFu
- X6AMPwKwCM+aLIXOHd95sij9iijvF22EUWmy8zy1yPSQB+ilW+B+PIPbK3po4TzF8c8InN3OF4GYJ
- ACob0AUY1H1L3qihEp4hGJESZM7rXYBZzsK2BXUoroRf5qNYKml2fp9CD4W2K/25bykpV7MszQLm9
- hbDrH1Pg==;
+ bh=uXiKrFyXaAefvOiT5cN0TCFrNlPAA0LK9YR7L1CT5bI=; b=FxEnbvbU2Agdx7q+Yxd6XlpRiK
+ XDF1iCN7hRgpi6EDG5WHxSbYPgU51hVDO2LzOjNRQr7uck3JMprt3npS9lazNpBTQ9/CUYdRRogmd
+ MfnAsGj5WLQyRRf0fVUeNEP5Mu7WLgiWncmcAA21ZMVRxbAE3hQWtpZrQq8FTndaDvY1G9lFlpfmc
+ 5R/jIv5MzQ2J1w6SwJFGsAwmIGHWzTbEvi4/kZ/4FTg5hwGbxWWcBHnNCfeKYtT+1/aUTdXf/0KNK
+ 9iatQsZcqx8HWxC6lCIJaJoExvJzbXhmel4aoBp4LMD/U7sx4H9UcdHR/Wl37nmyqikEYJl2KxMJB
+ 6RVLSP9A==;
 Received: from cgy1-donard.priv.deltatee.com ([172.16.1.31])
  by ale.deltatee.com with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
  (Exim 4.92) (envelope-from <gunthorp@deltatee.com>)
- id 1lUY29-0002Lm-HW; Thu, 08 Apr 2021 11:01:38 -0600
+ id 1lUY2F-0002Ln-PB; Thu, 08 Apr 2021 11:01:40 -0600
 Received: from gunthorp by cgy1-donard.priv.deltatee.com with local (Exim 4.92)
  (envelope-from <gunthorp@deltatee.com>)
- id 1lUY26-0002JO-Tz; Thu, 08 Apr 2021 11:01:30 -0600
+ id 1lUY26-0002J9-53; Thu, 08 Apr 2021 11:01:30 -0600
 From: Logan Gunthorpe <logang@deltatee.com>
 To: linux-kernel@vger.kernel.org, linux-nvme@lists.infradead.org,
  linux-block@vger.kernel.org, linux-pci@vger.kernel.org, linux-mm@kvack.org,
  iommu@lists.linux-foundation.org
-Date: Thu,  8 Apr 2021 11:01:21 -0600
-Message-Id: <20210408170123.8788-15-logang@deltatee.com>
+Date: Thu,  8 Apr 2021 11:01:16 -0600
+Message-Id: <20210408170123.8788-10-logang@deltatee.com>
 X-Mailer: git-send-email 2.20.1
 In-Reply-To: <20210408170123.8788-1-logang@deltatee.com>
 References: <20210408170123.8788-1-logang@deltatee.com>
@@ -84,7 +82,8 @@ X-SA-Exim-Rcpt-To: linux-nvme@lists.infradead.org, linux-kernel@vger.kernel.org,
  jianxin.xiong@intel.com, ira.weiny@intel.com, robin.murphy@arm.com,
  logang@deltatee.com
 X-SA-Exim-Mail-From: gunthorp@deltatee.com
-Subject: [PATCH 14/16] nvme-rdma: Ensure dma support when using p2pdma
+Subject: [PATCH 09/16] dma-direct: Support PCI P2PDMA pages in dma-direct
+ map_sg
 X-SA-Exim-Version: 4.2.1 (built Wed, 08 May 2019 21:11:16 +0000)
 X-SA-Exim-Scanned: Yes (on ale.deltatee.com)
 Cc: Minturn Dave B <dave.b.minturn@intel.com>, Ira Weiny <ira.weiny@intel.com>,
@@ -114,29 +113,79 @@ Content-Transfer-Encoding: 7bit
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-Ensure the dma operations support p2pdma before using the RDMA
-device for P2PDMA. This allows switching the RDMA driver from
-pci_p2pdma_map_sg() to dma_map_sg_p2pdma().
+Add PCI P2PDMA support for dma_direct_map_sg() so that it can map
+PCI P2PDMA pages directly without a hack in the callers. This allows
+for heterogeneous SGLs that contain both P2PDMA and regular pages.
+
+SGL segments that contain PCI bus addresses are marked with
+sg_mark_pci_p2pdma() and are ignored when unmapped.
 
 Signed-off-by: Logan Gunthorpe <logang@deltatee.com>
 ---
- drivers/nvme/target/rdma.c | 3 ++-
- 1 file changed, 2 insertions(+), 1 deletion(-)
+ kernel/dma/direct.c | 25 ++++++++++++++++++++++---
+ 1 file changed, 22 insertions(+), 3 deletions(-)
 
-diff --git a/drivers/nvme/target/rdma.c b/drivers/nvme/target/rdma.c
-index 6c1f3ab7649c..3ec7e77e5416 100644
---- a/drivers/nvme/target/rdma.c
-+++ b/drivers/nvme/target/rdma.c
-@@ -414,7 +414,8 @@ static int nvmet_rdma_alloc_rsp(struct nvmet_rdma_device *ndev,
- 	if (ib_dma_mapping_error(ndev->device, r->send_sge.addr))
- 		goto out_free_rsp;
+diff --git a/kernel/dma/direct.c b/kernel/dma/direct.c
+index 002268262c9a..108dfb4ecbd5 100644
+--- a/kernel/dma/direct.c
++++ b/kernel/dma/direct.c
+@@ -13,6 +13,7 @@
+ #include <linux/vmalloc.h>
+ #include <linux/set_memory.h>
+ #include <linux/slab.h>
++#include <linux/pci-p2pdma.h>
+ #include "direct.h"
  
--	if (!ib_uses_virt_dma(ndev->device))
-+	if (!ib_uses_virt_dma(ndev->device) &&
-+	    dma_pci_p2pdma_supported(&ndev->device->dev))
- 		r->req.p2p_client = &ndev->device->dev;
- 	r->send_sge.length = sizeof(*r->req.cqe);
- 	r->send_sge.lkey = ndev->pd->local_dma_lkey;
+ /*
+@@ -387,19 +388,37 @@ void dma_direct_unmap_sg(struct device *dev, struct scatterlist *sgl,
+ 	struct scatterlist *sg;
+ 	int i;
+ 
+-	for_each_sg(sgl, sg, nents, i)
++	for_each_sg(sgl, sg, nents, i) {
++		if (sg_is_pci_p2pdma(sg)) {
++			sg_unmark_pci_p2pdma(sg);
++			continue;
++		}
++
+ 		dma_direct_unmap_page(dev, sg->dma_address, sg_dma_len(sg), dir,
+ 			     attrs);
++	}
+ }
+ #endif
+ 
+ int dma_direct_map_sg(struct device *dev, struct scatterlist *sgl, int nents,
+ 		enum dma_data_direction dir, unsigned long attrs)
+ {
+-	int i;
++	struct pci_p2pdma_map_state p2pdma_state = {};
+ 	struct scatterlist *sg;
++	int i, ret = 0;
+ 
+ 	for_each_sg(sgl, sg, nents, i) {
++		if (is_pci_p2pdma_page(sg_page(sg))) {
++			ret = pci_p2pdma_map_segment(&p2pdma_state, dev, sg,
++						     attrs);
++			if (ret < 0) {
++				goto out_unmap;
++			} else if (ret) {
++				ret = 0;
++				continue;
++			}
++		}
++
+ 		sg->dma_address = dma_direct_map_page(dev, sg_page(sg),
+ 				sg->offset, sg->length, dir, attrs);
+ 		if (sg->dma_address == DMA_MAPPING_ERROR)
+@@ -411,7 +430,7 @@ int dma_direct_map_sg(struct device *dev, struct scatterlist *sgl, int nents,
+ 
+ out_unmap:
+ 	dma_direct_unmap_sg(dev, sgl, i, dir, attrs | DMA_ATTR_SKIP_CPU_SYNC);
+-	return 0;
++	return ret;
+ }
+ 
+ dma_addr_t dma_direct_map_resource(struct device *dev, phys_addr_t paddr,
 -- 
 2.20.1
 
