@@ -7,67 +7,67 @@ X-Spam-Status: No, score=-15.3 required=3.0 tests=BAYES_00,DKIM_INVALID,
 	SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_SANE_1 autolearn=ham
 	autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id CF0EAC433B4
-	for <iommu@archiver.kernel.org>; Thu,  8 Apr 2021 13:58:17 +0000 (UTC)
-Received: from smtp1.osuosl.org (smtp1.osuosl.org [140.211.166.138])
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 23D9AC433ED
+	for <iommu@archiver.kernel.org>; Thu,  8 Apr 2021 13:59:11 +0000 (UTC)
+Received: from smtp4.osuosl.org (smtp4.osuosl.org [140.211.166.137])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 704E66102A
-	for <iommu@archiver.kernel.org>; Thu,  8 Apr 2021 13:58:17 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 704E66102A
+	by mail.kernel.org (Postfix) with ESMTPS id BF7E4610FA
+	for <iommu@archiver.kernel.org>; Thu,  8 Apr 2021 13:59:10 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org BF7E4610FA
 Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=kernel.org
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by smtp1.osuosl.org (Postfix) with ESMTP id 390AF84B0A;
-	Thu,  8 Apr 2021 13:58:17 +0000 (UTC)
+	by smtp4.osuosl.org (Postfix) with ESMTP id 84BD0404F3;
+	Thu,  8 Apr 2021 13:59:10 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from smtp1.osuosl.org ([127.0.0.1])
-	by localhost (smtp1.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id xZXenhjbRG4Y; Thu,  8 Apr 2021 13:58:16 +0000 (UTC)
-Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by smtp1.osuosl.org (Postfix) with ESMTP id 2457B84AF7;
-	Thu,  8 Apr 2021 13:58:16 +0000 (UTC)
+Received: from smtp4.osuosl.org ([127.0.0.1])
+	by localhost (smtp4.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+	with ESMTP id UX5pUPQ3KnRV; Thu,  8 Apr 2021 13:59:09 +0000 (UTC)
+Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [IPv6:2605:bc80:3010:104::8cd3:938])
+	by smtp4.osuosl.org (Postfix) with ESMTP id 43532400D3;
+	Thu,  8 Apr 2021 13:59:09 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id EE069C000B;
-	Thu,  8 Apr 2021 13:58:15 +0000 (UTC)
-Received: from smtp1.osuosl.org (smtp1.osuosl.org [140.211.166.138])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 46A4DC000B
- for <iommu@lists.linux-foundation.org>; Thu,  8 Apr 2021 13:58:13 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 21B43C000D;
+	Thu,  8 Apr 2021 13:59:09 +0000 (UTC)
+Received: from smtp4.osuosl.org (smtp4.osuosl.org [140.211.166.137])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id A16B2C000A
+ for <iommu@lists.linux-foundation.org>; Thu,  8 Apr 2021 13:59:07 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by smtp1.osuosl.org (Postfix) with ESMTP id 2806B84B0A
- for <iommu@lists.linux-foundation.org>; Thu,  8 Apr 2021 13:58:13 +0000 (UTC)
+ by smtp4.osuosl.org (Postfix) with ESMTP id 8FD4E404F3
+ for <iommu@lists.linux-foundation.org>; Thu,  8 Apr 2021 13:59:07 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from smtp1.osuosl.org ([127.0.0.1])
- by localhost (smtp1.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id p5ZcddjvY7Wz for <iommu@lists.linux-foundation.org>;
- Thu,  8 Apr 2021 13:58:12 +0000 (UTC)
+Received: from smtp4.osuosl.org ([127.0.0.1])
+ by localhost (smtp4.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+ with ESMTP id MMDnMqg5I6UN for <iommu@lists.linux-foundation.org>;
+ Thu,  8 Apr 2021 13:59:06 +0000 (UTC)
 X-Greylist: domain auto-whitelisted by SQLgrey-1.8.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
- by smtp1.osuosl.org (Postfix) with ESMTPS id AA52F84AF7
- for <iommu@lists.linux-foundation.org>; Thu,  8 Apr 2021 13:58:12 +0000 (UTC)
-Received: by mail.kernel.org (Postfix) with ESMTPSA id 2177D610FB;
- Thu,  8 Apr 2021 13:58:10 +0000 (UTC)
+ by smtp4.osuosl.org (Postfix) with ESMTPS id E6F15404DD
+ for <iommu@lists.linux-foundation.org>; Thu,  8 Apr 2021 13:59:06 +0000 (UTC)
+Received: by mail.kernel.org (Postfix) with ESMTPSA id 71230610E5;
+ Thu,  8 Apr 2021 13:59:05 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
- s=k20201202; t=1617890292;
- bh=sE1Qram1VeOU1YRXJK66SXAyjytxycG6cooodItBbOg=;
+ s=k20201202; t=1617890346;
+ bh=8IWsl6GMqV37UR3jv77+NqftgTcuKg05o/NA/LPP4A8=;
  h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
- b=gAa3xHbEsySDocFO0l126rUM6WglwRSvMNmU6KhY9EiZH30VgD3H2weMujNwNPn+m
- 8aT+c27X+WP/Bav9yB4lhEr89xiLcPKLUq+dgw1OygwV5CSx5ZBjSY1J/qjBKk8bLD
- TfajsOyOV6CzKvn8/QyC2llHhifHms7wBXJaT0/s6Au7vLvE6/T8Wml4q0nWVoF4nx
- p72glfnIf5yTTMyuq+hxf/5b2WBTPUlVtkA/dnZ86webbRqNKwzT11m2Zx6gBTIyIT
- Y3MoeXeTodIanOSzu0rjXacHor9lc0Nu9zwrCt8dPMBoN1lPwqaXNq5cjAEdPw7UZW
- TnDTVFyDHpMIw==
-Date: Thu, 8 Apr 2021 14:58:07 +0100
+ b=u/oPYDZbpEOEszEg/96PQJpKDuG1uU70tsaXBC+UBvWu9kwgxiQ6H1WbC0O8MiOcm
+ kiJP9FhX9EHzzDblJnpvQ4nKl9fgAIF+fKgk3bgHQ3npgq8S/qnT03xEVFM1eadnpr
+ MoKH4vtF+uWEg5acT5ZXAwaPZQNLpaOxfcy5YCr/pSj1IdQdD36gac8mY3PpxTy674
+ wY4cxxCQl9y170YtFGx5xfDmBfgLGF7r0CW9x0NLTlXjPBRRb5dU8VJdk53EbRJVHg
+ 4KfxPMHgNBr11+a+4vrYdHoBriB2i0Tn/FKAFXh+K0gEIVU9J3XWzHMByZWD6s5EHA
+ kxvB0wRZNjBDw==
+Date: Thu, 8 Apr 2021 14:59:02 +0100
 From: Will Deacon <will@kernel.org>
 To: "Isaac J. Manjarres" <isaacm@codeaurora.org>
-Subject: Re: [RFC PATCH v4 12/15] iommu/io-pgtable-arm-v7s: Implement
- arm_v7s_unmap_pages()
-Message-ID: <20210408135807.GA17998@willie-the-truck>
+Subject: Re: [RFC PATCH v4 06/15] iommu: Split 'addr_merge' argument to
+ iommu_pgsize() into separate parts
+Message-ID: <20210408135901.GB17998@willie-the-truck>
 References: <20210408045241.27316-1-isaacm@codeaurora.org>
- <20210408045241.27316-13-isaacm@codeaurora.org>
+ <20210408045241.27316-7-isaacm@codeaurora.org>
 MIME-Version: 1.0
 Content-Disposition: inline
-In-Reply-To: <20210408045241.27316-13-isaacm@codeaurora.org>
+In-Reply-To: <20210408045241.27316-7-isaacm@codeaurora.org>
 User-Agent: Mutt/1.10.1 (2018-07-13)
 Cc: pratikp@codeaurora.org, iommu@lists.linux-foundation.org,
  robin.murphy@arm.com, linux-arm-kernel@lists.infradead.org
@@ -88,50 +88,47 @@ Content-Transfer-Encoding: 7bit
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-On Wed, Apr 07, 2021 at 09:52:38PM -0700, Isaac J. Manjarres wrote:
-> Implement the unmap_pages() callback for the ARM v7s io-pgtable
-> format.
+On Wed, Apr 07, 2021 at 09:52:32PM -0700, Isaac J. Manjarres wrote:
+> From: Will Deacon <will@kernel.org>
 > 
+> The 'addr_merge' parameter to iommu_pgsize() is a fabricated address
+> intended to describe the alignment requirements to consider when
+> choosing an appropriate page size. On the iommu_map() path, this address
+> is the logical OR of the virtual and physical addresses.
+> 
+> Subsequent improvements to iommu_pgsize() will need to check the
+> alignment of the virtual and physical components of 'addr_merge'
+> independently, so pass them in as separate parameters and reconstruct
+> 'addr_merge' locally.
+> 
+> No functional change.
+> 
+> Signed-off-by: Will Deacon <will@kernel.org>
 > Signed-off-by: Isaac J. Manjarres <isaacm@codeaurora.org>
 > ---
->  drivers/iommu/io-pgtable-arm-v7s.c | 23 ++++++++++++++++++++---
->  1 file changed, 20 insertions(+), 3 deletions(-)
+>  drivers/iommu/iommu.c | 10 ++++++----
+>  1 file changed, 6 insertions(+), 4 deletions(-)
 > 
-> diff --git a/drivers/iommu/io-pgtable-arm-v7s.c b/drivers/iommu/io-pgtable-arm-v7s.c
-> index d4004bcf333a..5e203e03c352 100644
-> --- a/drivers/iommu/io-pgtable-arm-v7s.c
-> +++ b/drivers/iommu/io-pgtable-arm-v7s.c
-> @@ -710,15 +710,32 @@ static size_t __arm_v7s_unmap(struct arm_v7s_io_pgtable *data,
->  	return __arm_v7s_unmap(data, gather, iova, size, lvl + 1, ptep);
+> diff --git a/drivers/iommu/iommu.c b/drivers/iommu/iommu.c
+> index bcd623862bf9..ab689611a03b 100644
+> --- a/drivers/iommu/iommu.c
+> +++ b/drivers/iommu/iommu.c
+> @@ -2357,12 +2357,13 @@ phys_addr_t iommu_iova_to_phys(struct iommu_domain *domain, dma_addr_t iova)
 >  }
+>  EXPORT_SYMBOL_GPL(iommu_iova_to_phys);
 >  
-> -static size_t arm_v7s_unmap(struct io_pgtable_ops *ops, unsigned long iova,
-> -			    size_t size, struct iommu_iotlb_gather *gather)
-> +static size_t arm_v7s_unmap_pages(struct io_pgtable_ops *ops, unsigned long iova,
-> +				  size_t pgsize, size_t pgcount,
-> +				  struct iommu_iotlb_gather *gather)
+> -static size_t iommu_pgsize(struct iommu_domain *domain,
+> -			   unsigned long addr_merge, size_t size)
+> +static size_t iommu_pgsize(struct iommu_domain *domain, unsigned long iova,
+> +			   phys_addr_t paddr, size_t size)
 >  {
->  	struct arm_v7s_io_pgtable *data = io_pgtable_ops_to_data(ops);
-> +	size_t unmapped = 0, ret;
->  
->  	if (WARN_ON(iova >= (1ULL << data->iop.cfg.ias)))
->  		return 0;
->  
-> -	return __arm_v7s_unmap(data, gather, iova, size, 1, data->pgd);
-> +	while (pgcount--) {
-> +		ret = __arm_v7s_unmap(data, gather, iova, pgsize, 1, data->pgd);
-> +		if (!ret)
-> +			break;
-> +
-> +		unmapped += pgsize;
-> +		iova += pgsize;
-> +	}
-> +
-> +	return unmapped;
-> +}
+>  	unsigned int pgsize_idx;
+>  	unsigned long pgsizes;
+>  	size_t pgsize;
+> +	phys_addr_t addr_merge = paddr | iova;
 
-Wait -- don't you need to hook this up somewhere (likewise for ->map_pages)?
-How are you testing this?
+^^^ this needs to be 'unsigned long' as it was before (otherwise using
+GENMASK _is_ a problem).
 
 Will
 _______________________________________________
