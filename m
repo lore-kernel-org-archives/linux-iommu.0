@@ -2,169 +2,97 @@ Return-Path: <SRS0=d8dU=JF=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-3.5 required=3.0 tests=BAYES_00,DKIM_INVALID,
-	DKIM_SIGNED,HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,
-	MSGID_FROM_MTA_HEADER,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED autolearn=no
-	autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-15.1 required=3.0 tests=BAYES_00,DKIM_INVALID,
+	DKIM_SIGNED,HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_CR_TRAILER,INCLUDES_PATCH,
+	MAILING_LIST_MULTI,NICE_REPLY_A,SPF_HELO_NONE,SPF_PASS,USER_AGENT_SANE_1
+	autolearn=unavailable autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 034E2C433B4
-	for <iommu@archiver.kernel.org>; Thu,  8 Apr 2021 11:41:22 +0000 (UTC)
-Received: from smtp2.osuosl.org (smtp2.osuosl.org [140.211.166.133])
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B44BAC43461
+	for <iommu@archiver.kernel.org>; Thu,  8 Apr 2021 12:30:45 +0000 (UTC)
+Received: from smtp1.osuosl.org (smtp1.osuosl.org [140.211.166.138])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 9F2BC61139
-	for <iommu@archiver.kernel.org>; Thu,  8 Apr 2021 11:41:21 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 9F2BC61139
-Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=nvidia.com
+	by mail.kernel.org (Postfix) with ESMTPS id 44A9661165
+	for <iommu@archiver.kernel.org>; Thu,  8 Apr 2021 12:30:45 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 44A9661165
+Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=redhat.com
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by smtp2.osuosl.org (Postfix) with ESMTP id 3F4BC400EC;
-	Thu,  8 Apr 2021 11:41:21 +0000 (UTC)
+	by smtp1.osuosl.org (Postfix) with ESMTP id 0E58F848D5;
+	Thu,  8 Apr 2021 12:30:45 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from smtp2.osuosl.org ([127.0.0.1])
-	by localhost (smtp2.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id k76M_9MsHbtc; Thu,  8 Apr 2021 11:41:20 +0000 (UTC)
+Received: from smtp1.osuosl.org ([127.0.0.1])
+	by localhost (smtp1.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+	with ESMTP id 5F1Vcs_2k8ip; Thu,  8 Apr 2021 12:30:44 +0000 (UTC)
 Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by smtp2.osuosl.org (Postfix) with ESMTP id 338BF400A7;
-	Thu,  8 Apr 2021 11:41:20 +0000 (UTC)
+	by smtp1.osuosl.org (Postfix) with ESMTP id D92F984888;
+	Thu,  8 Apr 2021 12:30:43 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id EC147C000B;
-	Thu,  8 Apr 2021 11:41:19 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id AC57EC000C;
+	Thu,  8 Apr 2021 12:30:43 +0000 (UTC)
 Received: from smtp2.osuosl.org (smtp2.osuosl.org [IPv6:2605:bc80:3010::133])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 807C0C000A
- for <iommu@lists.linux-foundation.org>; Thu,  8 Apr 2021 11:41:18 +0000 (UTC)
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 86C86C000A
+ for <iommu@lists.linux-foundation.org>; Thu,  8 Apr 2021 12:30:42 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by smtp2.osuosl.org (Postfix) with ESMTP id 6EC3C400EB
- for <iommu@lists.linux-foundation.org>; Thu,  8 Apr 2021 11:41:18 +0000 (UTC)
+ by smtp2.osuosl.org (Postfix) with ESMTP id 6CAF2400FD
+ for <iommu@lists.linux-foundation.org>; Thu,  8 Apr 2021 12:30:42 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
+Authentication-Results: smtp2.osuosl.org (amavisd-new);
+ dkim=pass (1024-bit key) header.d=redhat.com
 Received: from smtp2.osuosl.org ([127.0.0.1])
  by localhost (smtp2.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id GQHnSesllXqY for <iommu@lists.linux-foundation.org>;
- Thu,  8 Apr 2021 11:41:17 +0000 (UTC)
-X-Greylist: whitelisted by SQLgrey-1.8.0
-Received: from NAM02-SN1-obe.outbound.protection.outlook.com
- (mail-sn1nam02on062a.outbound.protection.outlook.com
- [IPv6:2a01:111:f400:fe44::62a])
- by smtp2.osuosl.org (Postfix) with ESMTPS id 4CCEF400A7
- for <iommu@lists.linux-foundation.org>; Thu,  8 Apr 2021 11:41:17 +0000 (UTC)
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=dirQRXoh1J8XF+FPqZFBwaa/X88vpba1m3dikJIr9t92bWLCoj4nQAR5UGZWOQrdpm9g6NsTAw0aP26tx228R7SnY8EuFl/fkMpDb5Us9CBJ7oy//wlPfZiNZwDzsWTagWGhI3KMZw0Xwq86zkaHRKmIjktoEBRUiALu1o1T3qs3/d80hqBf8c0NEfUdMPJ02FGyG8EQhRk/mfE2TtlQjIBvTrWPnYtu6CfARWuF38X5a0WHyLq2+4poRbVRDLp0ZserlfwXmEywEJrQf21PHfzVWD5yIv67yZZ6ydJFcgVw8nPrrqsQqdzCnSPkXKFzOoTtd1h5dsumhklJHmn0IA==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com; 
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=48OHsp5mI3yQn9DHcjJ1PrziL5UqaHpzIRwLXkKu7z0=;
- b=PwzogAIPPemmNz20lWPnCoYecb0fWp1uQEeeD52aHsVxpDGu+8b0XXdVluuTwkbMyG867r4LCj/MusPU6RtHqR4WH3KEi1MOcECzotq+Tq0Kdb009DBeoS4LfLFf2H4b2U9YGjJumT98DByeI3asn4suxSQajR9Hb6eOnyp7S1/DGJiwg1bCP1VEdn6iDJfPSe//1gtAzdXsSC028C/MR6MS5vSCdS9cjglGN63EBhXmd5ckg1WAVZuifdH2aRP1mZWuhFSnhonOF++Yxgptk+GKb7YbeQLi2rjfazfvqImclRsnGu1cdXbuReGSzLpdGUGyrofTwjrkjcQS6vwpYA==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=nvidia.com; dmarc=pass action=none header.from=nvidia.com;
- dkim=pass header.d=nvidia.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
- s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=48OHsp5mI3yQn9DHcjJ1PrziL5UqaHpzIRwLXkKu7z0=;
- b=eHaPZOGQChk9LAHLgFwQD7YeZuLpMvNdeyclyCf7PB2H4FY7mAjGNyAp7qO0UO6KK+5AgDh1WrBY/2ZIimgmxDh1B38HLLStt1FjSV6mn4qmMB1QDKZjtlI1xwbWO5c2PeW2y2XMrUBVtdZ1oCXMNkzwZ3LDY6FybWDl9/brPgvQ2yvnEtCyocJQs1WQXF5soAHdnch8E5O+gJiwayiVFaOKsOjgbexxddaVlBxQT7yEnQTq4PjHmTYHSlMcxw0GOCCCGD76njQxYXp+8sjhAIWzuu4Z5htTQqNdjA0sbhqAzykjShPpDIztYCzULHzZVAHwlLkx+4wvNhfIxuwoag==
-Authentication-Results: intel.com; dkim=none (message not signed)
- header.d=none;intel.com; dmarc=none action=none header.from=nvidia.com;
-Received: from DM6PR12MB3834.namprd12.prod.outlook.com (2603:10b6:5:14a::12)
- by DM6PR12MB3113.namprd12.prod.outlook.com (2603:10b6:5:11b::28) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3999.27; Thu, 8 Apr
- 2021 11:41:15 +0000
-Received: from DM6PR12MB3834.namprd12.prod.outlook.com
- ([fe80::1c62:7fa3:617b:ab87]) by DM6PR12MB3834.namprd12.prod.outlook.com
- ([fe80::1c62:7fa3:617b:ab87%6]) with mapi id 15.20.3999.032; Thu, 8 Apr 2021
- 11:41:15 +0000
-Date: Thu, 8 Apr 2021 08:41:13 -0300
-From: Jason Gunthorpe <jgg@nvidia.com>
-To: "Tian, Kevin" <kevin.tian@intel.com>
-Subject: Re: [PATCH V4 05/18] iommu/ioasid: Redefine IOASID set and
- allocation APIs
-Message-ID: <20210408114113.GN7405@nvidia.com>
-References: <20210329163147.GG2356281@nvidia.com>
- <MWHPR11MB188639EE54B48B0E1321C8198C7D9@MWHPR11MB1886.namprd11.prod.outlook.com>
- <20210330132830.GO2356281@nvidia.com>
- <MWHPR11MB1886CAD48AFC156BFC7C1D398C7A9@MWHPR11MB1886.namprd11.prod.outlook.com>
- <20210405234230.GF7405@nvidia.com>
- <MWHPR11MB1886CF7C11ECE0396A0215078C769@MWHPR11MB1886.namprd11.prod.outlook.com>
- <20210406123451.GN7405@nvidia.com>
- <MWHPR11MB1886CB8F558C6C17F921F77F8C759@MWHPR11MB1886.namprd11.prod.outlook.com>
- <20210407122042.GF7405@nvidia.com>
- <MWHPR11MB1886AEAE97A9E6972C63CACF8C759@MWHPR11MB1886.namprd11.prod.outlook.com>
-Content-Disposition: inline
-In-Reply-To: <MWHPR11MB1886AEAE97A9E6972C63CACF8C759@MWHPR11MB1886.namprd11.prod.outlook.com>
-X-Originating-IP: [142.162.115.133]
-X-ClientProxiedBy: BLAPR03CA0076.namprd03.prod.outlook.com
- (2603:10b6:208:329::21) To DM6PR12MB3834.namprd12.prod.outlook.com
- (2603:10b6:5:14a::12)
+ with ESMTP id 8kTKI-dCqrAT for <iommu@lists.linux-foundation.org>;
+ Thu,  8 Apr 2021 12:30:41 +0000 (UTC)
+X-Greylist: domain auto-whitelisted by SQLgrey-1.8.0
+Received: from us-smtp-delivery-124.mimecast.com
+ (us-smtp-delivery-124.mimecast.com [216.205.24.124])
+ by smtp2.osuosl.org (Postfix) with ESMTPS id 4C2B8400F5
+ for <iommu@lists.linux-foundation.org>; Thu,  8 Apr 2021 12:30:41 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+ s=mimecast20190719; t=1617885040;
+ h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+ to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+ content-transfer-encoding:content-transfer-encoding:
+ in-reply-to:in-reply-to:references:references;
+ bh=s64/vAfSrBNQsCpuAMqXq7sIP9uWm8iiIR6se2Ly0S4=;
+ b=G5F3DP3HsldUnfyy9lyy0LAyFdhf+eSaPOaP/apRf/Atw85RINEsKiVKrc6Al1Ifz+Z9g9
+ nxpQ1K8PjweYk8TtxHlq8TbsTDqurPBTwrwjCHb4M3467uLap2cmfEISk0LY4C/UgGtuTH
+ VBpL6Q3v61fMGkB9ICDfIFh1h6qIYGE=
+Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
+ [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-363-TqiEpuyWMnmjarYH6YNu5g-1; Thu, 08 Apr 2021 08:30:35 -0400
+X-MC-Unique: TqiEpuyWMnmjarYH6YNu5g-1
+Received: from smtp.corp.redhat.com (int-mx08.intmail.prod.int.phx2.redhat.com
+ [10.5.11.23])
+ (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+ (No client certificate requested)
+ by mimecast-mx01.redhat.com (Postfix) with ESMTPS id D8D10107ACC7;
+ Thu,  8 Apr 2021 12:30:31 +0000 (UTC)
+Received: from [10.36.115.214] (ovpn-115-214.ams2.redhat.com [10.36.115.214])
+ by smtp.corp.redhat.com (Postfix) with ESMTPS id 5BEDB196E3;
+ Thu,  8 Apr 2021 12:30:16 +0000 (UTC)
+Subject: Re: [PATCH v14 06/13] iommu/smmuv3: Allow stage 1 invalidation with
+ unmanaged ASIDs
+To: Kunkun Jiang <jiangkunkun@huawei.com>, eric.auger.pro@gmail.com,
+ iommu@lists.linux-foundation.org, linux-kernel@vger.kernel.org,
+ kvm@vger.kernel.org, kvmarm@lists.cs.columbia.edu, will@kernel.org,
+ maz@kernel.org, robin.murphy@arm.com, joro@8bytes.org,
+ alex.williamson@redhat.com, tn@semihalf.com, zhukeqian1@huawei.com
+References: <20210223205634.604221-1-eric.auger@redhat.com>
+ <20210223205634.604221-7-eric.auger@redhat.com>
+ <901720e6-6ca5-eb9a-1f24-0ca479bcfecc@huawei.com>
+From: Auger Eric <eric.auger@redhat.com>
+Message-ID: <0246aec2-162d-0584-3ca4-b9c304ef3c8a@redhat.com>
+Date: Thu, 8 Apr 2021 14:30:13 +0200
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
+ Thunderbird/78.8.0
 MIME-Version: 1.0
-X-MS-Exchange-MessageSentRepresentingType: 1
-Received: from mlx.ziepe.ca (142.162.115.133) by
- BLAPR03CA0076.namprd03.prod.outlook.com (2603:10b6:208:329::21) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4020.17 via Frontend
- Transport; Thu, 8 Apr 2021 11:41:14 +0000
-Received: from jgg by mlx with local (Exim 4.94)	(envelope-from
- <jgg@nvidia.com>)	id 1lUT29-002gu0-Bb; Thu, 08 Apr 2021 08:41:13 -0300
-X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: bf2ee5d3-ae12-43db-37d0-08d8fa833743
-X-MS-TrafficTypeDiagnostic: DM6PR12MB3113:
-X-Microsoft-Antispam-PRVS: <DM6PR12MB311345EA793C5FA1CDA9C122C2749@DM6PR12MB3113.namprd12.prod.outlook.com>
-X-MS-Oob-TLC-OOBClassifiers: OLM:2887;
-X-MS-Exchange-SenderADCheck: 1
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: x7f86JSlLT3HDyCU3AtMKPNBzH7riFib8cjWXyYC7QZ777SSYTNLMpKmT8M7TrFOyoehBeVv9yuN6ywvrknJtPXc0XMMMMVZtGjkUIw9aLI0t2hjG6eQ7cUERmpMmkV9sstw8GM6jLQ9Q8GXYdH3XMZk+ieJahv/XFLtoOlhKvcK8lZ87SCg2FQepxQJCbPLeQtCGBDdNEuK6FdSzZYQjnfV0zDNJxW8CTE6MvC3fqX7XxX/c+wsolc7reWflCvxO2yOIMD5Ygz8If+UU1j4HifdNrMrA3vLJxT3DoANhtJwQgmXXFLE2rMH8BPBg4+L+hsZI31WrIvwYLyaflimRWEEWP29RsEb3nVO+2yI6Pakge84sEpHjEpw49LTOPGzCTvbC0W7H6cIsnIK1Jq+fabmfKjDFh83KNoJf/n/hYtda3qhmLJY9Pzp18c4Hk4DzoIIxdxRh9jNGaepVwfgeiXx1S3bqwkI/WNSXJZEeoVYQKGPujifxHRdhntMPoWMCAFxWXY/r1T0aufXx/7o6qzF45a2F7m51ZM1W5TxxaD5T51o8K3RthE/RSLJu+2LhUoBfQyR1h28wWk411g6amg5PI7gjJmKhcN9TTDhZKndcchRIoKGRafIgaeteUnB6sikdBaNu7CsoiFG6UvftmE1lDfsRu+Fix0C2w9CwaU=
-X-Forefront-Antispam-Report: CIP:255.255.255.255; CTRY:; LANG:en; SCL:1; SRV:;
- IPV:NLI; SFV:NSPM; H:DM6PR12MB3834.namprd12.prod.outlook.com; PTR:; CAT:NONE;
- SFS:(4636009)(346002)(396003)(136003)(39860400002)(366004)(376002)(426003)(36756003)(54906003)(9746002)(8676002)(9786002)(2616005)(8936002)(66476007)(66556008)(66946007)(316002)(83380400001)(6916009)(2906002)(478600001)(38100700001)(7416002)(186003)(86362001)(5660300002)(1076003)(4326008)(26005)(33656002);
- DIR:OUT; SFP:1101; 
-X-MS-Exchange-AntiSpam-MessageData: =?utf-8?B?Sk1IcllHYkJ4MXdzOWx1a01sTU8wRG1HNnpIaGVXVEg4TGpVSFFEVGtzS2NS?=
- =?utf-8?B?R1l5cUhTODE3cHNzL2paR3FsOGc1eExOamlja1R0R1lIY1FXVzgwYmxNalRJ?=
- =?utf-8?B?Wnl3SE9STG5iNEkxbXZldHdaQ3Z0VjJwZFE1ZjZMMVIvUnEyQlRPOVRDQWZk?=
- =?utf-8?B?Z0trcW1qNGdMRHdSTEYxZG5HU1k4Q0dBRVovcTM0eFdyeHJmZnJ3bEpnYnh4?=
- =?utf-8?B?ZStuelVIT1hDaTk3V1ZLakg2WkVzc2hRWG5Cakgrb0ZQank2YmlBeUVFbEVW?=
- =?utf-8?B?cFNOWWFGU3dXV2loeFRuU3p6V0lGeG1BUHVSNmVxSXFBeExQdGhmMTJVbmEr?=
- =?utf-8?B?SlpaaHo3RnkxOGFGZ0xsNlR3Wk40b2dydlU5eUVBNVRweFVqYVFBMGh6TUZt?=
- =?utf-8?B?dEszSFpsM25RRnBRVXYyU1dlalRtYnZuRDd5V2JicWlUVU5lMGJaaHFLU3FT?=
- =?utf-8?B?TEQ3VVFNdHMyZTEveHYzZnoyUjFsQWduUmtUNmhVbDJSWWtZQmhneDh6eHJa?=
- =?utf-8?B?WVJvNnZWNGlzSmtaWThKYkpCaUdveVhGMXZXN21xZWVxdDBWd21EL01QRG5o?=
- =?utf-8?B?d3JJNnRYZnRHNk1wemkrb1NLejY3RDcwSGxWcmt1NFBMaTR2V0YzQm5YWWhH?=
- =?utf-8?B?cXgwblhHaG9JcGdBb2VhMEJiOVZneVZsdHZVbXBtTEZxWWJzRkwxQVdlc2lk?=
- =?utf-8?B?STJaR1BXSWZXdlVYMTE5RFd6MUEvZ1RjR0g2VWZPOGJxOWIrNGQ5Sm5xZENL?=
- =?utf-8?B?YWpsbXgxSHRuOUl5QXg0SlZUSnVpOThpY2NqQmZCSjZvY2FkUTBITW9zTjhN?=
- =?utf-8?B?Q1IwazRHSUNPZVFUdFZEemI2d1JBamYyOWdacFJ5TVAyQmlROHhVYzBoOVcx?=
- =?utf-8?B?ZHdBc3BWMjJodWxDWFZ5bkg4bEczTWhzTnRESWhVN3R1ZzAvZFhBS2Q3VUUy?=
- =?utf-8?B?eTJPRUhJaUlrTmFaL0MwS0FLZzVQVzZxOUh1VjZtY1dDTXhxbks0b2tQamxj?=
- =?utf-8?B?K2czMGtPMkZBSDlSNzBYZlZBaTRpMmlVRzYrL1NCNUxxOGVlMXlackd4eE1h?=
- =?utf-8?B?VU56Zk9mdHBoNzFtS1NzQ2svMytLQlg4dHRrSEpJd0tXMnRqSnROSUZOUElp?=
- =?utf-8?B?YXRrZWJOVk1TbjZmaUlEMjcvQ2RjQjdqYTEzSklwYVRpMWRoUkhXdkJoRmt1?=
- =?utf-8?B?L0Q3Q2RCYkw5aEJHcVlWNkUrdmZXeTAxWW9WMzh0bThuc25RTGEvbk9QRXpK?=
- =?utf-8?B?QXN4SW1ENVdiZDFWYWE5RGd2d1M3blFVdXdKd09YS3RxSnVLWTIxdmpTZy9T?=
- =?utf-8?B?YXB0RVJ2UHdadGZZVFhhbjA1MmFiMXJhMkJYdGh4bkF0UmMrRHVyVG5NUU9J?=
- =?utf-8?B?Y01ERzJQTTltcXJJMGRMMUpwQnk4YTJlYzdPeTZ6Qmt1cDAzdC8vVURmTG9h?=
- =?utf-8?B?ZHgyR1p6RTN1bGJhTHhaNzZkRUNzT2d4U1l3dUl4T21NT1JHS08yUEVDVHdy?=
- =?utf-8?B?cy9Ta01jZGphc2R2cGJnMmVnRVc0cGVjZWI1N2srMDlTOEJ5OVQwcTlWbm9T?=
- =?utf-8?B?dldqRFE2L0pTSitMNmRxY2d5SW9aYnVveHpIUy9yVHlBbnVTeWo5dEJIOVlq?=
- =?utf-8?B?M2xnaFk1by9vRU51aGlIM1E5QXBYZWxJSDRaMXE1alljRC94TXBWSm5XNkZY?=
- =?utf-8?B?SnVWT0ZFa3IyRUcySHFPcy9MSmxEVDljaTVieGdJSVlxeUtNbGtSNjlwenBK?=
- =?utf-8?Q?QAWFtUsbdhD0gxbrxFu/UNafD6EyR4MMjqOccyl?=
-X-OriginatorOrg: Nvidia.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: bf2ee5d3-ae12-43db-37d0-08d8fa833743
-X-MS-Exchange-CrossTenant-AuthSource: DM6PR12MB3834.namprd12.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 08 Apr 2021 11:41:15.0315 (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: hppP1EQxIDE2JqzFbsRJneV2TEDenuRBviLxrHQiWtijBlptfVI53YJZUxNCBwwr
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: DM6PR12MB3113
-Cc: Jean-Philippe Brucker <jean-philippe@linaro.org>, "Jiang,
- Dave" <dave.jiang@intel.com>, "Raj, Ashok" <ashok.raj@intel.com>,
- Jonathan Corbet <corbet@lwn.net>, David Woodhouse <dwmw2@infradead.org>,
- Jason Wang <jasowang@redhat.com>, LKML <linux-kernel@vger.kernel.org>,
- "iommu@lists.linux-foundation.org" <iommu@lists.linux-foundation.org>,
- Alex Williamson <alex.williamson@redhat.com>, Li Zefan <lizefan@huawei.com>,
- Johannes Weiner <hannes@cmpxchg.org>, Tejun Heo <tj@kernel.org>,
- "cgroups@vger.kernel.org" <cgroups@vger.kernel.org>,
- Jean-Philippe Brucker <jean-philippe@linaro.com>, "Wu, Hao" <hao.wu@intel.com>
+In-Reply-To: <901720e6-6ca5-eb9a-1f24-0ca479bcfecc@huawei.com>
+Content-Language: en-US
+X-Scanned-By: MIMEDefang 2.84 on 10.5.11.23
+Cc: jean-philippe@linaro.org, wangxingang5@huawei.com, lushenming@huawei.com,
+ wanghaibin.wang@huawei.com, vivek.gautam@arm.com, vsethi@nvidia.com,
+ zhangfei.gao@linaro.org
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -182,49 +110,131 @@ Content-Transfer-Encoding: base64
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-T24gV2VkLCBBcHIgMDcsIDIwMjEgYXQgMTE6NTA6MDJQTSArMDAwMCwgVGlhbiwgS2V2aW4gd3Jv
-dGU6Cj4gPiBGcm9tOiBKYXNvbiBHdW50aG9ycGUgPGpnZ0BudmlkaWEuY29tPgo+ID4gU2VudDog
-V2VkbmVzZGF5LCBBcHJpbCA3LCAyMDIxIDg6MjEgUE0KPiA+IAo+ID4gT24gV2VkLCBBcHIgMDcs
-IDIwMjEgYXQgMDI6MDg6MzNBTSArMDAwMCwgVGlhbiwgS2V2aW4gd3JvdGU6Cj4gPiAKPiA+ID4g
-PiBCZWNhdXNlIGlmIHlvdSBkb24ndCB0aGVuIHdlIGVudGVyIGluc2FuZSB3b3JsZCB3aGVyZSBh
-IFBBU0lEIGlzIGJlaW5nCj4gPiA+ID4gY3JlYXRlZCB1bmRlciAvZGV2L2lvYXNpZCBidXQgaXRz
-IHRyYW5zbGF0aW9uIHBhdGggZmxvd3MgdGhyb3VnaCBzZXR1cAo+ID4gPiA+IGRvbmUgYnkgVkZJ
-TyBhbmQgdGhlIHdob2xlIHVzZXIgQVBJIGJlY29tZXMgYW4gaW5jb21wcmVoZW5zaWJsZQo+ID4g
-bWVzcy4KPiA+ID4gPgo+ID4gPiA+IEhvdyB3aWxsIHlvdSBldmVuIGFzc29jaWF0ZSB0aGUgUEFT
-SUQgd2l0aCB0aGUgb3RoZXIgdHJhbnNsYXRpb24/Pwo+ID4gPgo+ID4gPiBQQVNJRCBpcyBhdHRh
-Y2hlZCB0byBhIHNwZWNpZmljIGlvbW11IGRvbWFpbiAoY3JlYXRlZCBieSBWRklPL1ZEUEEpLAo+
-ID4gd2hpY2gKPiA+ID4gaGFzIEdQQS0+SFBBIG1hcHBpbmdzIGFscmVhZHkgY29uZmlndXJlZC4g
-SWYgd2UgdmlldyB0aGF0IG1hcHBpbmcgYXMgYW4KPiA+ID4gYXR0cmlidXRlIG9mIHRoZSBpb21t
-dSBkb21haW4sIGl0J3MgcmVhc29uYWJsZSB0byBoYXZlIHRoZSB1c2Vyc3BhY2UtCj4gPiBib3Vu
-ZAo+ID4gPiBwZ3RhYmxlIHRocm91Z2ggL2Rldi9pb2FzaWQgdG8gbmVzdCBvbiBpdC4KPiA+IAo+
-ID4gQSB1c2VyIGNvbnRyb2xsZWQgcGFnZSB0YWJsZSBzaG91bGQgYWJzb2x1dGVseSBub3QgYmUg
-YW4gYXR0cmlidXRlIG9mCj4gPiBhIGhpZGRlbiBrZXJuZWwgb2JqZWN0LCBub3Igc2hvdWxkIHR3
-byBwYXJ0cyBvZiB0aGUga2VybmVsIHNpbGVudGx5Cj4gPiBjb25uZWN0IHRvIGVhY2ggb3RoZXIg
-dmlhIGEgaGlkZGVuIGludGVybmFsIG9iamVjdHMgbGlrZSB0aGlzLgo+ID4gCj4gPiBTZWN1cml0
-eSBpcyBpbXBvcnRhbnQgLSB0aGUga2luZCBvZiBjb25uZWN0aW9uIG11c3QgdXNlIHNvbWUgZXhw
-bGljaXQKPiA+IEZEIGF1dGhvcml6YXRpb24gdG8gYWNjZXNzIHNoYXJlZCBvYmplY3RzLCBub3Qg
-YmUgbWFkZSBpbXBsaWNpdCEKPiA+IAo+ID4gSU1ITyB0aGlzIGRpcmVjdGlvbiBpcyBhIGRlYWQg
-ZW5kIGZvciB0aGlzIHJlYXNvbi4KPiA+IAo+IAo+IENvdWxkIHlvdSBlbGFib3JhdGUgd2hhdCBl
-eGFjdCBzZWN1cml0eSBwcm9ibGVtIGlzIGJyb3VnaHQgd2l0aCB0aGlzIAo+IGFwcHJvYWNoPyBJ
-c24ndCBBTExPV19QQVNJRCB0aGUgYXV0aG9yaXphdGlvbiBpbnRlcmZhY2UgZm9yIHRoZQo+IGNv
-bm5lY3Rpb24/CgpJZiB0aGUga2VybmVsIG9iamVjdHMgZG9uJ3QgY29tZSBvdXQgb2YgRkRzIHRo
-ZW4gbm8uCgo+IElzIGl0IHJlYWxseSB0aGUgb25seSBwcmFjdGljZSBpbiBMaW51eCB0aGF0IGFu
-eSBuZXcgZmVhdHVyZSBoYXMgdG8gYmUKPiBibG9ja2VkIGFzIGxvbmcgYXMgYSByZWZhY3Rvcmlu
-ZyB3b3JrIGlzIGlkZW50aWZpZWQ/IAoKVGhlIHByYWN0aWNlIGlzIHRvIGRlZmluZSB1QVBJcyB0
-aGF0IG1ha2Ugc2Vuc2UgYW5kIGhhdmUgYSBnb29kIGNoYW5jZQp0byBiZSBzdXBwb3J0ZWQgb3Zl
-ciBhIGxvbmcgdGltZSBwZXJpb2QsIGFzIHRoZSBzb2Z0d2FyZSBldm9sdmVzLCBub3QKdG8gaGFj
-a3kgaGFja3kgYSBnYWludCB1QVBJIG1lc3MganVzdCB0byBnZXQgc29tZSBmZWF0dXJlIG91dCB0
-aGUKZG9vci4gCgpUaGlzIHByb3Bvc2FsIGFzIGl0IHdhcyBvcmluZ2lhbCBzaG93biBpcyBleGFj
-dGx5IHRoZSBraW5kIG9mIGhhY2t5CmhhY2t5IHVhcGkgbm9ib2R5IHdhbnRzIHRvIHNlZS4gVHVu
-bmVsaW5nIGFuIElPTU1VIHVhcGkgdGhyb3VnaCBhCndob2xlIGJ1bmNoIG9mIG90aGVyIEZEcyBp
-cyBjb21wbGV0ZWx5IG51dHouCgpJbnRlbCBzaG91bGQgYmFzaWNhbGx5IGJlIGludmVzdGluZyBt
-b3N0IG9mIGl0cyB0aW1lIGJ1aWxkaW5nIGEgcm9idXN0CmFuZCB3ZWxsIGRlc2lnbmVkIHVBUEkg
-aGVyZSwgYW5kIGRvbid0IGNvbXBsYWluIHRoYXQgdGhlIGNvbW11bml0eSBpcwpub3QgZG9pbmcg
-SW50ZWwncyBqb2IgZm9yIGZyZWUuCgo+IERvbid0IHBlb3BsZSBhY2NlcHQgYW55IGJhbGFuY2Ug
-YmV0d2VlbiBlbmFibGluZyBuZXcgZmVhdHVyZXMgYW5kCj4gY29tcGxldGluZyByZWZhY3Rvcmlu
-ZyB3b3JrIHRocm91Z2ggYSBzdGFnaW5nIGFwcHJvYWNoLCBhcyBsb25nIGFzCj4gd2UgZG9uJ3Qg
-aW50cm9kdWNlIGFuIHVBUEkgc3BlY2lmaWNhbGx5IGZvciB0aGUgc3RhZ2luZyBwdXJwb3NlPyDi
-mLkKClNpbmNlIHRoaXMgaXMgYWxsIHVhcGkgSSBkb24ndCBzZWUgaXQgYXMgYXBwbGljYWJsZSBo
-ZXJlLgoKSmFzb24KX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19f
-X18KaW9tbXUgbWFpbGluZyBsaXN0CmlvbW11QGxpc3RzLmxpbnV4LWZvdW5kYXRpb24ub3JnCmh0
-dHBzOi8vbGlzdHMubGludXhmb3VuZGF0aW9uLm9yZy9tYWlsbWFuL2xpc3RpbmZvL2lvbW11
+SGkgS3Vua3VuLAoKT24gNC8xLzIxIDI6MzcgUE0sIEt1bmt1biBKaWFuZyB3cm90ZToKPiBIaSBF
+cmljLAo+IAo+IE9uIDIwMjEvMi8yNCA0OjU2LCBFcmljIEF1Z2VyIHdyb3RlOgo+PiBXaXRoIG5l
+c3RlZCBzdGFnZSBzdXBwb3J0LCBzb29uIHdlIHdpbGwgbmVlZCB0byBpbnZhbGlkYXRlCj4+IFMx
+IGNvbnRleHRzIGFuZCByYW5nZXMgdGFnZ2VkIHdpdGggYW4gdW5tYW5hZ2VkIGFzaWQsIHRoaXMK
+Pj4gbGF0dGVyIGJlaW5nIG1hbmFnZWQgYnkgdGhlIGd1ZXN0LiBTbyBsZXQncyBpbnRyb2R1Y2Ug
+MiBoZWxwZXJzCj4+IHRoYXQgYWxsb3cgdG8gaW52YWxpZGF0ZSB3aXRoIGV4dGVybmFsbHkgbWFu
+YWdlZCBBU0lEcwo+Pgo+PiBTaWduZWQtb2ZmLWJ5OiBFcmljIEF1Z2VyIDxlcmljLmF1Z2VyQHJl
+ZGhhdC5jb20+Cj4+Cj4+IC0tLQo+Pgo+PiB2MTMgLT4gdjE0Cj4+IC0gQWN0dWFsbHkgc2VuZCB0
+aGUgTkhfQVNJRCBjb21tYW5kIChyZXBvcnRlZCBieSBYaW5nYW5nIFdhbmcpCj4+IC0tLQo+PiDC
+oCBkcml2ZXJzL2lvbW11L2FybS9hcm0tc21tdS12My9hcm0tc21tdS12My5jIHwgMzggKysrKysr
+KysrKysrKysrKy0tLS0tCj4+IMKgIDEgZmlsZSBjaGFuZ2VkLCAyOSBpbnNlcnRpb25zKCspLCA5
+IGRlbGV0aW9ucygtKQo+Pgo+PiBkaWZmIC0tZ2l0IGEvZHJpdmVycy9pb21tdS9hcm0vYXJtLXNt
+bXUtdjMvYXJtLXNtbXUtdjMuYwo+PiBiL2RyaXZlcnMvaW9tbXUvYXJtL2FybS1zbW11LXYzL2Fy
+bS1zbW11LXYzLmMKPj4gaW5kZXggNTU3OWVjNGZjY2M4Li40YzE5YTExMTRkZTQgMTAwNjQ0Cj4+
+IC0tLSBhL2RyaXZlcnMvaW9tbXUvYXJtL2FybS1zbW11LXYzL2FybS1zbW11LXYzLmMKPj4gKysr
+IGIvZHJpdmVycy9pb21tdS9hcm0vYXJtLXNtbXUtdjMvYXJtLXNtbXUtdjMuYwo+PiBAQCAtMTg0
+Myw5ICsxODQzLDkgQEAgaW50IGFybV9zbW11X2F0Y19pbnZfZG9tYWluKHN0cnVjdAo+PiBhcm1f
+c21tdV9kb21haW4gKnNtbXVfZG9tYWluLCBpbnQgc3NpZCwKPj4gwqAgfQo+PiDCoCDCoCAvKiBJ
+T19QR1RBQkxFIEFQSSAqLwo+PiAtc3RhdGljIHZvaWQgYXJtX3NtbXVfdGxiX2ludl9jb250ZXh0
+KHZvaWQgKmNvb2tpZSkKPj4gK3N0YXRpYyB2b2lkIF9fYXJtX3NtbXVfdGxiX2ludl9jb250ZXh0
+KHN0cnVjdCBhcm1fc21tdV9kb21haW4KPj4gKnNtbXVfZG9tYWluLAo+PiArwqDCoMKgwqDCoMKg
+wqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqAgaW50IGV4dF9hc2lkKQo+PiDCoCB7Cj4+
+IC3CoMKgwqAgc3RydWN0IGFybV9zbW11X2RvbWFpbiAqc21tdV9kb21haW4gPSBjb29raWU7Cj4+
+IMKgwqDCoMKgwqAgc3RydWN0IGFybV9zbW11X2RldmljZSAqc21tdSA9IHNtbXVfZG9tYWluLT5z
+bW11Owo+PiDCoMKgwqDCoMKgIHN0cnVjdCBhcm1fc21tdV9jbWRxX2VudCBjbWQ7Cj4+IMKgIEBA
+IC0xODU2LDcgKzE4NTYsMTMgQEAgc3RhdGljIHZvaWQgYXJtX3NtbXVfdGxiX2ludl9jb250ZXh0
+KHZvaWQKPj4gKmNvb2tpZSkKPj4gwqDCoMKgwqDCoMKgICogaW5zZXJ0aW9uIHRvIGd1YXJhbnRl
+ZSB0aG9zZSBhcmUgb2JzZXJ2ZWQgYmVmb3JlIHRoZSBUTEJJLiBEbyBiZQo+PiDCoMKgwqDCoMKg
+wqAgKiBjYXJlZnVsLCAwMDcuCj4+IMKgwqDCoMKgwqDCoCAqLwo+PiAtwqDCoMKgIGlmIChzbW11
+X2RvbWFpbi0+c3RhZ2UgPT0gQVJNX1NNTVVfRE9NQUlOX1MxKSB7Cj4+ICvCoMKgwqAgaWYgKGV4
+dF9hc2lkID49IDApIHsgLyogZ3Vlc3Qgc3RhZ2UgMSBpbnZhbGlkYXRpb24gKi8KPj4gK8KgwqDC
+oMKgwqDCoMKgIGNtZC5vcGNvZGXCoMKgwqAgPSBDTURRX09QX1RMQklfTkhfQVNJRDsKPj4gK8Kg
+wqDCoMKgwqDCoMKgIGNtZC50bGJpLmFzaWTCoMKgwqAgPSBleHRfYXNpZDsKPj4gK8KgwqDCoMKg
+wqDCoMKgIGNtZC50bGJpLnZtaWTCoMKgwqAgPSBzbW11X2RvbWFpbi0+czJfY2ZnLnZtaWQ7Cj4+
+ICvCoMKgwqDCoMKgwqDCoCBhcm1fc21tdV9jbWRxX2lzc3VlX2NtZChzbW11LCAmY21kKTsKPj4g
+K8KgwqDCoMKgwqDCoMKgIGFybV9zbW11X2NtZHFfaXNzdWVfc3luYyhzbW11KTsKPj4gK8KgwqDC
+oCB9IGVsc2UgaWYgKHNtbXVfZG9tYWluLT5zdGFnZSA9PSBBUk1fU01NVV9ET01BSU5fUzEpIHsK
+Pj4gwqDCoMKgwqDCoMKgwqDCoMKgIGFybV9zbW11X3RsYl9pbnZfYXNpZChzbW11LCBzbW11X2Rv
+bWFpbi0+czFfY2ZnLmNkLmFzaWQpOwo+PiDCoMKgwqDCoMKgIH0gZWxzZSB7Cj4+IMKgwqDCoMKg
+wqDCoMKgwqDCoCBjbWQub3Bjb2RlwqDCoMKgID0gQ01EUV9PUF9UTEJJX1MxMl9WTUFMTDsKPj4g
+QEAgLTE4NjcsNiArMTg3MywxMyBAQCBzdGF0aWMgdm9pZCBhcm1fc21tdV90bGJfaW52X2NvbnRl
+eHQodm9pZCAqY29va2llKQo+PiDCoMKgwqDCoMKgIGFybV9zbW11X2F0Y19pbnZfZG9tYWluKHNt
+bXVfZG9tYWluLCAwLCAwLCAwKTsKPj4gwqAgfQo+PiDCoCArc3RhdGljIHZvaWQgYXJtX3NtbXVf
+dGxiX2ludl9jb250ZXh0KHZvaWQgKmNvb2tpZSkKPj4gK3sKPj4gK8KgwqDCoCBzdHJ1Y3QgYXJt
+X3NtbXVfZG9tYWluICpzbW11X2RvbWFpbiA9IGNvb2tpZTsKPj4gKwo+PiArwqDCoMKgIF9fYXJt
+X3NtbXVfdGxiX2ludl9jb250ZXh0KHNtbXVfZG9tYWluLCAtMSk7Cj4+ICt9Cj4+ICsKPj4gwqAg
+c3RhdGljIHZvaWQgX19hcm1fc21tdV90bGJfaW52X3JhbmdlKHN0cnVjdCBhcm1fc21tdV9jbWRx
+X2VudCAqY21kLAo+PiDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDC
+oCB1bnNpZ25lZCBsb25nIGlvdmEsIHNpemVfdCBzaXplLAo+PiDCoMKgwqDCoMKgwqDCoMKgwqDC
+oMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoCBzaXplX3QgZ3JhbnVsZSwKPj4gQEAgLTE5MjYsOSAr
+MTkzOSwxMCBAQCBzdGF0aWMgdm9pZCBfX2FybV9zbW11X3RsYl9pbnZfcmFuZ2Uoc3RydWN0Cj4+
+IGFybV9zbW11X2NtZHFfZW50ICpjbWQsCj4+IMKgwqDCoMKgwqAgYXJtX3NtbXVfY21kcV9iYXRj
+aF9zdWJtaXQoc21tdSwgJmNtZHMpOwo+PiDCoCB9Cj4+IMKgIAo+IEhlcmUgaXMgdGhlIHBhcnQg
+b2YgY29kZSBpbiBfX2FybV9zbW11X3RsYl9pbnZfcmFuZ2UoKToKPj4gwqDCoMKgwqDCoMKgwqAg
+aWYgKHNtbXUtPmZlYXR1cmVzICYgQVJNX1NNTVVfRkVBVF9SQU5HRV9JTlYpIHsKPj4gwqDCoMKg
+wqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgIC8qIEdldCB0aGUgbGVhZiBwYWdlIHNpemUgKi8KPj4g
+wqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgIHRnID0gX19mZnMoc21tdV9kb21haW4tPmRv
+bWFpbi5wZ3NpemVfYml0bWFwKTsKPj4KPj4gwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKg
+IC8qIENvbnZlcnQgcGFnZSBzaXplIG9mIDEyLDE0LDE2IChsb2cyKSB0byAxLDIsMyAqLwo+PiDC
+oMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqAgY21kLT50bGJpLnRnID0gKHRnIC0gMTApIC8g
+MjsKPj4KPj4gwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgIC8qIERldGVybWluZSB3aGF0
+IGxldmVsIHRoZSBncmFudWxlIGlzIGF0ICovCj4+IMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKg
+wqDCoCBjbWQtPnRsYmkudHRsID0gNCAtICgoaWxvZzIoZ3JhbnVsZSkgLSAzKSAvICh0ZyAtIDMp
+KTsKPj4KPj4gwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgIG51bV9wYWdlcyA9IHNpemUg
+Pj4gdGc7Cj4+IMKgwqDCoMKgwqDCoMKgIH0KPiBXaGVuIHBTTU1VIHN1cHBvcnRzIFJJTCwgd2Ug
+Z2V0IHRoZSBsZWFmIHBhZ2Ugc2l6ZSBieSBfX2ZmcyhzbW11X2RvbWFpbi0+Cj4gZG9tYWluLnBn
+c2l6ZV9iaXRtYXApLiBJbiBuZXN0ZWQgbW9kZSwgaXQgaXMgZGV0ZXJtaW5lZCBieSBob3N0Cj4g
+UEFHRV9TSVpFLiBJZgo+IHRoZSBob3N0IGtlcm5lbCBhbmQgZ3Vlc3Qga2VybmVsIGhhcyBkaWZm
+ZXJlbnQgdHJhbnNsYXRpb24gZ3JhbnVsZSAoZS5nLgo+IGhvc3QgMTZLLAo+IGd1ZXN0IDRLKSwg
+X19hcm1fc21tdV90bGJfaW52X3JhbmdlKCkgd2lsbCBpc3N1ZSBhbiBpbmNvcnJlY3QgdGxiaSBj
+b21tYW5kLgo+IAo+IERvIHlvdSBoYXZlIGFueSBpZGVhIGFib3V0IHRoaXMgaXNzdWU/CgpJIHRo
+aW5rIHRoaXMgaXMgdGhlIHNhbWUgaXNzdWUgYXMgdGhlIG9uZSByZXBvcnRlZCBieSBDaGVueGlh
+bmcKCmh0dHBzOi8vbG9yZS5rZXJuZWwub3JnL2xrbWwvMTU5MzhlZDUtMjA5NS1lOTAzLWEyOTAt
+MzMzYzI5OTAxNWEyQGhpc2lsaWNvbi5jb20vCgpJbiBjYXNlIFJJTCBpcyBub3Qgc3VwcG9ydGVk
+IGJ5IHRoZSBob3N0LCBuZXh0IHZlcnNpb24gd2lsbCB1c2UgdGhlCnNtYWxsZXN0IHBTTU1VIHN1
+cHBvcnRlZCBwYWdlIHNpemUsIGFzIGRvbmUgaW4gX19hcm1fc21tdV90bGJfaW52X3JhbmdlCgpU
+aGFua3MKCkVyaWMKCj4gCj4gQmVzdCBSZWdhcmRzLAo+IEt1bmt1biBKaWFuZwo+PiAtc3RhdGlj
+IHZvaWQgYXJtX3NtbXVfdGxiX2ludl9yYW5nZV9kb21haW4odW5zaWduZWQgbG9uZyBpb3ZhLCBz
+aXplX3QKPj4gc2l6ZSwKPj4gLcKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKg
+wqDCoCBzaXplX3QgZ3JhbnVsZSwgYm9vbCBsZWFmLAo+PiAtwqDCoMKgwqDCoMKgwqDCoMKgwqDC
+oMKgwqDCoMKgwqDCoMKgwqDCoMKgIHN0cnVjdCBhcm1fc21tdV9kb21haW4gKnNtbXVfZG9tYWlu
+KQo+PiArc3RhdGljIHZvaWQKPj4gK2FybV9zbW11X3RsYl9pbnZfcmFuZ2VfZG9tYWluKHVuc2ln
+bmVkIGxvbmcgaW92YSwgc2l6ZV90IHNpemUsCj4+ICvCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDC
+oMKgwqDCoMKgIHNpemVfdCBncmFudWxlLCBib29sIGxlYWYsIGludCBleHRfYXNpZCwKPj4gK8Kg
+wqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqAgc3RydWN0IGFybV9zbW11X2RvbWFpbiAq
+c21tdV9kb21haW4pCj4+IMKgIHsKPj4gwqDCoMKgwqDCoCBzdHJ1Y3QgYXJtX3NtbXVfY21kcV9l
+bnQgY21kID0gewo+PiDCoMKgwqDCoMKgwqDCoMKgwqAgLnRsYmkgPSB7Cj4+IEBAIC0xOTM2LDcg
+KzE5NTAsMTIgQEAgc3RhdGljIHZvaWQKPj4gYXJtX3NtbXVfdGxiX2ludl9yYW5nZV9kb21haW4o
+dW5zaWduZWQgbG9uZyBpb3ZhLCBzaXplX3Qgc2l6ZSwKPj4gwqDCoMKgwqDCoMKgwqDCoMKgIH0s
+Cj4+IMKgwqDCoMKgwqAgfTsKPj4gwqAgLcKgwqDCoCBpZiAoc21tdV9kb21haW4tPnN0YWdlID09
+IEFSTV9TTU1VX0RPTUFJTl9TMSkgewo+PiArwqDCoMKgIGlmIChleHRfYXNpZCA+PSAwKSB7wqAg
+LyogZ3Vlc3Qgc3RhZ2UgMSBpbnZhbGlkYXRpb24gKi8KPj4gK8KgwqDCoMKgwqDCoMKgIGNtZC5v
+cGNvZGXCoMKgwqAgPSBzbW11X2RvbWFpbi0+c21tdS0+ZmVhdHVyZXMgJgo+PiBBUk1fU01NVV9G
+RUFUX0UySCA/Cj4+ICvCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgIENNRFFfT1Bf
+VExCSV9FTDJfVkEgOiBDTURRX09QX1RMQklfTkhfVkE7Cj4+ICvCoMKgwqDCoMKgwqDCoCBjbWQu
+dGxiaS5hc2lkwqDCoMKgID0gZXh0X2FzaWQ7Cj4+ICvCoMKgwqDCoMKgwqDCoCBjbWQudGxiaS52
+bWlkwqDCoMKgID0gc21tdV9kb21haW4tPnMyX2NmZy52bWlkOwo+PiArwqDCoMKgIH0gZWxzZSBp
+ZiAoc21tdV9kb21haW4tPnN0YWdlID09IEFSTV9TTU1VX0RPTUFJTl9TMSkgewo+PiDCoMKgwqDC
+oMKgwqDCoMKgwqAgY21kLm9wY29kZcKgwqDCoCA9IHNtbXVfZG9tYWluLT5zbW11LT5mZWF0dXJl
+cyAmCj4+IEFSTV9TTU1VX0ZFQVRfRTJIID8KPj4gwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDC
+oMKgwqDCoMKgwqAgQ01EUV9PUF9UTEJJX0VMMl9WQSA6IENNRFFfT1BfVExCSV9OSF9WQTsKPj4g
+wqDCoMKgwqDCoMKgwqDCoMKgIGNtZC50bGJpLmFzaWTCoMKgwqAgPSBzbW11X2RvbWFpbi0+czFf
+Y2ZnLmNkLmFzaWQ7Cj4+IEBAIC0xOTQ0LDYgKzE5NjMsNyBAQCBzdGF0aWMgdm9pZAo+PiBhcm1f
+c21tdV90bGJfaW52X3JhbmdlX2RvbWFpbih1bnNpZ25lZCBsb25nIGlvdmEsIHNpemVfdCBzaXpl
+LAo+PiDCoMKgwqDCoMKgwqDCoMKgwqAgY21kLm9wY29kZcKgwqDCoCA9IENNRFFfT1BfVExCSV9T
+Ml9JUEE7Cj4+IMKgwqDCoMKgwqDCoMKgwqDCoCBjbWQudGxiaS52bWlkwqDCoMKgID0gc21tdV9k
+b21haW4tPnMyX2NmZy52bWlkOwo+PiDCoMKgwqDCoMKgIH0KPj4gKwo+PiDCoMKgwqDCoMKgIF9f
+YXJtX3NtbXVfdGxiX2ludl9yYW5nZSgmY21kLCBpb3ZhLCBzaXplLCBncmFudWxlLCBzbW11X2Rv
+bWFpbik7Cj4+IMKgIMKgwqDCoMKgwqAgLyoKPj4gQEAgLTE5ODIsNyArMjAwMiw3IEBAIHN0YXRp
+YyB2b2lkIGFybV9zbW11X3RsYl9pbnZfcGFnZV9ub3N5bmMoc3RydWN0Cj4+IGlvbW11X2lvdGxi
+X2dhdGhlciAqZ2F0aGVyLAo+PiDCoCBzdGF0aWMgdm9pZCBhcm1fc21tdV90bGJfaW52X3dhbGso
+dW5zaWduZWQgbG9uZyBpb3ZhLCBzaXplX3Qgc2l6ZSwKPj4gwqDCoMKgwqDCoMKgwqDCoMKgwqDC
+oMKgwqDCoMKgwqDCoMKgwqAgc2l6ZV90IGdyYW51bGUsIHZvaWQgKmNvb2tpZSkKPj4gwqAgewo+
+PiAtwqDCoMKgIGFybV9zbW11X3RsYl9pbnZfcmFuZ2VfZG9tYWluKGlvdmEsIHNpemUsIGdyYW51
+bGUsIGZhbHNlLCBjb29raWUpOwo+PiArwqDCoMKgIGFybV9zbW11X3RsYl9pbnZfcmFuZ2VfZG9t
+YWluKGlvdmEsIHNpemUsIGdyYW51bGUsIGZhbHNlLCAtMSwKPj4gY29va2llKTsKPj4gwqAgfQo+
+PiDCoCDCoCBzdGF0aWMgY29uc3Qgc3RydWN0IGlvbW11X2ZsdXNoX29wcyBhcm1fc21tdV9mbHVz
+aF9vcHMgPSB7Cj4+IEBAIC0yNTIzLDcgKzI1NDMsNyBAQCBzdGF0aWMgdm9pZCBhcm1fc21tdV9p
+b3RsYl9zeW5jKHN0cnVjdAo+PiBpb21tdV9kb21haW4gKmRvbWFpbiwKPj4gwqAgwqDCoMKgwqDC
+oCBhcm1fc21tdV90bGJfaW52X3JhbmdlX2RvbWFpbihnYXRoZXItPnN0YXJ0LAo+PiDCoMKgwqDC
+oMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgIGdhdGhlci0+ZW5kIC0gZ2F0
+aGVyLT5zdGFydCArIDEsCj4+IC3CoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDC
+oMKgwqAgZ2F0aGVyLT5wZ3NpemUsIHRydWUsIHNtbXVfZG9tYWluKTsKPj4gK8KgwqDCoMKgwqDC
+oMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoCBnYXRoZXItPnBnc2l6ZSwgdHJ1ZSwgLTEs
+IHNtbXVfZG9tYWluKTsKPj4gwqAgfQo+PiDCoCDCoCBzdGF0aWMgcGh5c19hZGRyX3QKPiAKPiAK
+Cl9fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fCmlvbW11IG1h
+aWxpbmcgbGlzdAppb21tdUBsaXN0cy5saW51eC1mb3VuZGF0aW9uLm9yZwpodHRwczovL2xpc3Rz
+LmxpbnV4Zm91bmRhdGlvbi5vcmcvbWFpbG1hbi9saXN0aW5mby9pb21tdQ==
