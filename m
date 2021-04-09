@@ -4,98 +4,98 @@ X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 X-Spam-Level: 
 X-Spam-Status: No, score=-13.6 required=3.0 tests=BAYES_00,DKIM_INVALID,
 	DKIM_SIGNED,HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_CR_TRAILER,INCLUDES_PATCH,
-	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED autolearn=ham
+	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED autolearn=unavailable
 	autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0E58AC43460
-	for <iommu@archiver.kernel.org>; Fri,  9 Apr 2021 10:22:49 +0000 (UTC)
-Received: from smtp1.osuosl.org (smtp1.osuosl.org [140.211.166.138])
+	by smtp.lore.kernel.org (Postfix) with ESMTP id ACA14C433ED
+	for <iommu@archiver.kernel.org>; Fri,  9 Apr 2021 11:21:03 +0000 (UTC)
+Received: from smtp3.osuosl.org (smtp3.osuosl.org [140.211.166.136])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id ACA3A61181
-	for <iommu@archiver.kernel.org>; Fri,  9 Apr 2021 10:22:48 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org ACA3A61181
-Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=linaro.org
+	by mail.kernel.org (Postfix) with ESMTPS id 1386661108
+	for <iommu@archiver.kernel.org>; Fri,  9 Apr 2021 11:21:03 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 1386661108
+Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=redhat.com
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by smtp1.osuosl.org (Postfix) with ESMTP id 62BF983DEC;
-	Fri,  9 Apr 2021 10:22:48 +0000 (UTC)
+	by smtp3.osuosl.org (Postfix) with ESMTP id B9623607DB;
+	Fri,  9 Apr 2021 11:21:02 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from smtp1.osuosl.org ([127.0.0.1])
-	by localhost (smtp1.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id 1cA6rZZpSOWh; Fri,  9 Apr 2021 10:22:47 +0000 (UTC)
-Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [IPv6:2605:bc80:3010:104::8cd3:938])
-	by smtp1.osuosl.org (Postfix) with ESMTP id C43FA83DC0;
-	Fri,  9 Apr 2021 10:22:46 +0000 (UTC)
+Received: from smtp3.osuosl.org ([127.0.0.1])
+	by localhost (smtp3.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+	with ESMTP id qvzlHVxFdV9b; Fri,  9 Apr 2021 11:21:01 +0000 (UTC)
+Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
+	by smtp3.osuosl.org (Postfix) with ESMTP id A20676071A;
+	Fri,  9 Apr 2021 11:21:00 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 92A13C000B;
-	Fri,  9 Apr 2021 10:22:46 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 6582DC000C;
+	Fri,  9 Apr 2021 11:21:00 +0000 (UTC)
 Received: from smtp4.osuosl.org (smtp4.osuosl.org [IPv6:2605:bc80:3010::137])
- by lists.linuxfoundation.org (Postfix) with ESMTP id D0936C000A
- for <iommu@lists.linux-foundation.org>; Fri,  9 Apr 2021 10:22:44 +0000 (UTC)
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 4C005C000A
+ for <iommu@lists.linux-foundation.org>; Fri,  9 Apr 2021 11:20:59 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by smtp4.osuosl.org (Postfix) with ESMTP id B4F784189D
- for <iommu@lists.linux-foundation.org>; Fri,  9 Apr 2021 10:22:44 +0000 (UTC)
+ by smtp4.osuosl.org (Postfix) with ESMTP id 41172418AA
+ for <iommu@lists.linux-foundation.org>; Fri,  9 Apr 2021 11:20:59 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
 Authentication-Results: smtp4.osuosl.org (amavisd-new);
- dkim=pass (2048-bit key) header.d=linaro.org
+ dkim=pass (1024-bit key) header.d=redhat.com
 Received: from smtp4.osuosl.org ([127.0.0.1])
  by localhost (smtp4.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id vIPMVQ-RxJry for <iommu@lists.linux-foundation.org>;
- Fri,  9 Apr 2021 10:22:42 +0000 (UTC)
-X-Greylist: whitelisted by SQLgrey-1.8.0
-Received: from mail-wm1-x331.google.com (mail-wm1-x331.google.com
- [IPv6:2a00:1450:4864:20::331])
- by smtp4.osuosl.org (Postfix) with ESMTPS id 1607E4189C
- for <iommu@lists.linux-foundation.org>; Fri,  9 Apr 2021 10:22:42 +0000 (UTC)
-Received: by mail-wm1-x331.google.com with SMTP id
- u5-20020a7bcb050000b029010e9316b9d5so2701727wmj.2
- for <iommu@lists.linux-foundation.org>; Fri, 09 Apr 2021 03:22:41 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linaro.org; s=google;
- h=date:from:to:cc:subject:message-id:references:mime-version
- :content-disposition:content-transfer-encoding:in-reply-to;
- bh=h8loozQhQDzs7nHwl8xJn4TRxBIj1K3cGWjw3oRBoU0=;
- b=islthBkMQqRbw64epWxFzCXc3YFHEjM1Sewl5U9uuuF9oTf+V9MaRnzGe6RkSIW3um
- AmP+7giwQhUK1DLesRxaAAX+koP9UfkL8h5yfECFs4iZnhheYwLwZmDNFguNd+usjPll
- WEUmZW5twh2Jb2vM9m9iZKak8glz/fQ4YI33aftQUNOaTW8FUFORrPVuxkBUokvPGoY4
- 7UT3tGiRWzBtD1i8R3q3v+/+I23JN3SxPVXK7ZzoorSLNiQKZzAVXpBIh8g/ivMpMo1s
- qCtzIgzBVIl6jQjeO/A9AeQ8vLiHB7QLoy+TYOL0iOvzUIgj1cQT6yuAvG1RbIQ3cmi7
- bkpA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
- d=1e100.net; s=20161025;
- h=x-gm-message-state:date:from:to:cc:subject:message-id:references
- :mime-version:content-disposition:content-transfer-encoding
- :in-reply-to;
- bh=h8loozQhQDzs7nHwl8xJn4TRxBIj1K3cGWjw3oRBoU0=;
- b=gm8qcvnPcaEFXKMjpu/KLp5cmn8GGRdi4EUsk3G+DKTwdUp7DilvRkSq0IT+pF5xWg
- g1e63BB7eptaYhBYqi4JFJayEMBS6j72wMQoaCxzeZyE9epykcotjqapSw13BUDlmFnD
- dvLCsXEPOSsG2iT77joJriuTiesbzvCTN3GrSyNQQbU7YAayYuB+Y6BUnxvyaK2439zf
- /wGLQBnPx9SigjdFS4OQm3iD49RA5bQ060pbgydFn3UGLUGQXjfrZuXlg1pXW2iwt8Uo
- i7slY2r8k15UC4qzAq9v3ZhZVjPLzDbzM4hSlJHqtQAdcHulGEL3C6eR23kerSVsAW3W
- hyaw==
-X-Gm-Message-State: AOAM531H3EX9n5UhOg3N7mObUTw5emukakb2wazVEVi2Th+HVqqgGHSI
- wQhUg/3CfY6ui35yWi382jsFig==
-X-Google-Smtp-Source: ABdhPJxmUdxdb8jarrUKTZ13cJgQBwllQW+/Xy6G9fQDYsKGI8ff/P4JTjfVI53A+4Re4mo/3Ga6+A==
-X-Received: by 2002:a1c:2c85:: with SMTP id s127mr13049633wms.83.1617963760188; 
- Fri, 09 Apr 2021 03:22:40 -0700 (PDT)
-Received: from myrica ([2001:1715:4e26:a7e0:116c:c27a:3e7f:5eaf])
- by smtp.gmail.com with ESMTPSA id l4sm1142714wrx.24.2021.04.09.03.22.39
- (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
- Fri, 09 Apr 2021 03:22:39 -0700 (PDT)
-Date: Fri, 9 Apr 2021 12:22:21 +0200
-From: Jean-Philippe Brucker <jean-philippe@linaro.org>
-To: Jacob Pan <jacob.jun.pan@linux.intel.com>
-Subject: Re: [PATCH 1/2] iommu/sva: Tighten SVA bind API with explicit flags
-Message-ID: <YHAq3Y5ld+7QtXgZ@myrica>
-References: <1617901736-24788-1-git-send-email-jacob.jun.pan@linux.intel.com>
+ with ESMTP id oNd09RCdQyLY for <iommu@lists.linux-foundation.org>;
+ Fri,  9 Apr 2021 11:20:56 +0000 (UTC)
+X-Greylist: domain auto-whitelisted by SQLgrey-1.8.0
+Received: from us-smtp-delivery-124.mimecast.com
+ (us-smtp-delivery-124.mimecast.com [63.128.21.124])
+ by smtp4.osuosl.org (Postfix) with ESMTPS id C9EFC40F70
+ for <iommu@lists.linux-foundation.org>; Fri,  9 Apr 2021 11:20:56 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+ s=mimecast20190719; t=1617967255;
+ h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+ to:to:cc:cc:mime-version:mime-version:
+ content-transfer-encoding:content-transfer-encoding;
+ bh=PD3Q7CnsV9MqbBn+Rr4TRlOA2dr68nSidgD5C8Dw+e8=;
+ b=L1E9B3SrAfWzawEHvLR0PaTpeG4SfliS34cOKEJqN7Wk1Ub0LVQeiqE3eX2RkMyYjLGfOD
+ Be5DuVh9kRu7SxkxtqLJOXcshBsSiGZKFDGTGaIuRTpFZDAjktXqLlOAanylinK+areJqN
+ vhWadZ1sBUT79Y6qN1qHQfRKwLBSPUo=
+Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
+ [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-558-ohRWwxMiOb2g9zARlvyeqQ-1; Fri, 09 Apr 2021 07:20:53 -0400
+X-MC-Unique: ohRWwxMiOb2g9zARlvyeqQ-1
+Received: from smtp.corp.redhat.com (int-mx04.intmail.prod.int.phx2.redhat.com
+ [10.5.11.14])
+ (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+ (No client certificate requested)
+ by mimecast-mx01.redhat.com (Postfix) with ESMTPS id EBD7664157;
+ Fri,  9 Apr 2021 11:20:48 +0000 (UTC)
+Received: from t480s.redhat.com (ovpn-115-11.ams2.redhat.com [10.36.115.11])
+ by smtp.corp.redhat.com (Postfix) with ESMTP id 0F4195D9E3;
+ Fri,  9 Apr 2021 11:20:35 +0000 (UTC)
+From: David Hildenbrand <david@redhat.com>
+To: linux-kernel@vger.kernel.org
+Subject: [PATCH v3] drivers: introduce and use WANT_DMA_CMA for soft
+ dependencies on DMA_CMA
+Date: Fri,  9 Apr 2021 13:20:35 +0200
+Message-Id: <20210409112035.27221-1-david@redhat.com>
 MIME-Version: 1.0
-Content-Disposition: inline
-In-Reply-To: <1617901736-24788-1-git-send-email-jacob.jun.pan@linux.intel.com>
-Cc: vkoul@kernel.org, "Tian, Kevin" <kevin.tian@intel.com>,
- Dave Jiang <dave.jiang@intel.com>, Raj Ashok <ashok.raj@intel.com>,
- LKML <linux-kernel@vger.kernel.org>, iommu@lists.linux-foundation.org,
- Jason Gunthorpe <jgg@nvidia.com>, zhangfei.gao@linaro.org,
- Jean-Philippe Brucker <jean-philippe@linaro.com>
+X-Scanned-By: MIMEDefang 2.79 on 10.5.11.14
+Cc: linux-fbdev@vger.kernel.org, linux-aspeed@lists.ozlabs.org,
+ David Hildenbrand <david@redhat.com>, David Airlie <airlied@linux.ie>,
+ Linus Walleij <linus.walleij@linaro.org>, dri-devel@lists.freedesktop.org,
+ Paul Cercueil <paul@crapouillou.net>, Eric Anholt <eric@anholt.net>,
+ Christoph Hellwig <hch@lst.de>, Masahiro Yamada <masahiroy@kernel.org>,
+ Michal Simek <michal.simek@xilinx.com>, Jason Gunthorpe <jgg@ziepe.ca>,
+ Joel Stanley <joel@jms.id.au>, Russell King <linux+etnaviv@armlinux.org.uk>,
+ Thomas Zimmermann <tzimmermann@suse.de>, Arnd Bergmann <arnd@arndb.de>,
+ Bartlomiej Zolnierkiewicz <b.zolnierkie@samsung.com>,
+ Maarten Lankhorst <maarten.lankhorst@linux.intel.com>,
+ etnaviv@lists.freedesktop.org, Maxime Ripard <mripard@kernel.org>,
+ Christian Gmeiner <christian.gmeiner@gmail.com>,
+ Peter Collingbourne <pcc@google.com>, linux-arm-kernel@lists.infradead.org,
+ "Alexander A. Klimov" <grandmaster@al2klimov.de>, linux-mm@kvack.org,
+ Andrew Jeffery <andrew@aj.id.au>, linux-mips@vger.kernel.org,
+ iommu@lists.linux-foundation.org, Daniel Vetter <daniel@ffwll.ch>,
+ Andrew Morton <akpm@linux-foundation.org>, Robin Murphy <robin.murphy@arm.com>,
+ Mike Rapoport <rppt@kernel.org>, Lucas Stach <l.stach@pengutronix.de>
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -108,280 +108,262 @@ List-Post: <mailto:iommu@lists.linux-foundation.org>
 List-Help: <mailto:iommu-request@lists.linux-foundation.org?subject=help>
 List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
  <mailto:iommu-request@lists.linux-foundation.org?subject=subscribe>
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-T24gVGh1LCBBcHIgMDgsIDIwMjEgYXQgMTA6MDg6NTVBTSAtMDcwMCwgSmFjb2IgUGFuIHdyb3Rl
-Ogo+IFRoZSB2b2lkKiBkcnZkYXRhIHBhcmFtZXRlciBpc24ndCByZWFsbHkgdXNlZCBpbsKgaW9t
-bXVfc3ZhX2JpbmRfZGV2aWNlKCkKPiBBUEksCgpSaWdodCwgaXQgdXNlZCB0byBiZSBhIGNvb2tp
-ZSBwYXNzZWQgdG8gdGhlIGRldmljZSBkcml2ZXIgaW4gdGhlIGV4aXRfbW0oKQpjYWxsYmFjaywg
-YnV0IHRoYXQgd2VudCBhd2F5IHdpdGggZWRjYzQwZDJhYjVmICgiaW9tbXU6IFJlbW92ZQppb21t
-dV9zdmFfb3BzOjptbV9leGl0KCkiKQoKPiB0aGUgY3VycmVudCBJRFhEIGNvZGUgImJvcnJvd3Mi
-IHRoZSBkcnZkYXRhIGZvciBhIFZULWQgcHJpdmF0ZSBmbGFnCj4gZm9yIHN1cGVydmlzb3IgU1ZB
-IHVzYWdlLgo+IAo+IFN1cGVydmlzb3IvUHJpdmlsZWdlZCBtb2RlIHJlcXVlc3QgaXMgYSBnZW5l
-cmljIGZlYXR1cmUuIEl0IHNob3VsZCBiZQo+IHByb21vdGVkIGZyb20gdGhlIFZULWQgdmVuZG9y
-IGRyaXZlciB0byB0aGUgZ2VuZXJpYyBjb2RlLgo+IAo+IFRoaXMgcGF0Y2ggcmVwbGFjZXMgdm9p
-ZCogZHJ2ZGF0YSB3aXRoIGEgdW5zaWduZWQgaW50IGZsYWdzIHBhcmFtZXRlcgo+IGFuZCBhZGp1
-c3RzIGNhbGxlcnMgYWNjb3JkaW5nbHkuCgpUaGFua3MgZm9yIGNsZWFuaW5nIHRoaXMgdXAuIE1h
-a2luZyBmbGFncyB1bnNpZ25lZCBsb25nIHNlZW1zIG1vcmUgY29tbW9uCihJIHN1Z2dlc3RlZCBp
-bnQgd2l0aG91dCB0aGlua2luZykuIEJ1dCBpdCBkb2Vzbid0IG1hdHRlciBtdWNoLCB3ZSB3b24n
-dApnZXQgdG8gMzIgZmxhZ3MuCgo+IAo+IExpbms6IGh0dHBzOi8vbG9yZS5rZXJuZWwub3JnL2xp
-bnV4LWlvbW11L1lGaGlNTFIzNVdXTVclMkZIdUBteXJpY2EvCj4gU3VnZ2VzdGVkLWJ5OiBKZWFu
-LVBoaWxpcHBlIEJydWNrZXIgPGplYW4tcGhpbGlwcGVAbGluYXJvLm9yZz4KPiBTaWduZWQtb2Zm
-LWJ5OiBKYWNvYiBQYW4gPGphY29iLmp1bi5wYW5AbGludXguaW50ZWwuY29tPgo+IC0tLQo+ICBk
-cml2ZXJzL2RtYS9pZHhkL2NkZXYuYyAgICAgICAgICAgICAgICAgICAgICAgICB8ICAyICstCj4g
-IGRyaXZlcnMvZG1hL2lkeGQvaW5pdC5jICAgICAgICAgICAgICAgICAgICAgICAgIHwgIDYgKysr
-LS0tCj4gIGRyaXZlcnMvaW9tbXUvYXJtL2FybS1zbW11LXYzL2FybS1zbW11LXYzLXN2YS5jIHwg
-IDIgKy0KPiAgZHJpdmVycy9pb21tdS9hcm0vYXJtLXNtbXUtdjMvYXJtLXNtbXUtdjMuaCAgICAg
-fCAgNCArKy0tCj4gIGRyaXZlcnMvaW9tbXUvaW50ZWwvS2NvbmZpZyAgICAgICAgICAgICAgICAg
-ICAgIHwgIDEgKwo+ICBkcml2ZXJzL2lvbW11L2ludGVsL3N2bS5jICAgICAgICAgICAgICAgICAg
-ICAgICB8IDE4ICsrKysrKy0tLS0tLS0tLS0tLQo+ICBkcml2ZXJzL2lvbW11L2lvbW11LmMgICAg
-ICAgICAgICAgICAgICAgICAgICAgICB8ICA5ICsrKysrKy0tLQo+ICBkcml2ZXJzL21pc2MvdWFj
-Y2UvdWFjY2UuYyAgICAgICAgICAgICAgICAgICAgICB8ICAyICstCj4gIGluY2x1ZGUvbGludXgv
-aW50ZWwtaW9tbXUuaCAgICAgICAgICAgICAgICAgICAgIHwgIDIgKy0KPiAgaW5jbHVkZS9saW51
-eC9pbnRlbC1zdm0uaCAgICAgICAgICAgICAgICAgICAgICAgfCAxNyArKy0tLS0tLS0tLS0tLS0t
-LQo+ICBpbmNsdWRlL2xpbnV4L2lvbW11LmggICAgICAgICAgICAgICAgICAgICAgICAgICB8IDE5
-ICsrKysrKysrKysrKysrKystLS0KPiAgMTEgZmlsZXMgY2hhbmdlZCwgNDAgaW5zZXJ0aW9ucygr
-KSwgNDIgZGVsZXRpb25zKC0pCj4gCj4gZGlmZiAtLWdpdCBhL2RyaXZlcnMvZG1hL2lkeGQvY2Rl
-di5jIGIvZHJpdmVycy9kbWEvaWR4ZC9jZGV2LmMKPiBpbmRleCAwZGI5YjgyLi4yMWVjODJiIDEw
-MDY0NAo+IC0tLSBhL2RyaXZlcnMvZG1hL2lkeGQvY2Rldi5jCj4gKysrIGIvZHJpdmVycy9kbWEv
-aWR4ZC9jZGV2LmMKPiBAQCAtMTAzLDcgKzEwMyw3IEBAIHN0YXRpYyBpbnQgaWR4ZF9jZGV2X29w
-ZW4oc3RydWN0IGlub2RlICppbm9kZSwgc3RydWN0IGZpbGUgKmZpbHApCj4gIAlmaWxwLT5wcml2
-YXRlX2RhdGEgPSBjdHg7Cj4gIAo+ICAJaWYgKGRldmljZV9wYXNpZF9lbmFibGVkKGlkeGQpKSB7
-Cj4gLQkJc3ZhID0gaW9tbXVfc3ZhX2JpbmRfZGV2aWNlKGRldiwgY3VycmVudC0+bW0sIE5VTEwp
-Owo+ICsJCXN2YSA9IGlvbW11X3N2YV9iaW5kX2RldmljZShkZXYsIGN1cnJlbnQtPm1tLCAwKTsK
-PiAgCQlpZiAoSVNfRVJSKHN2YSkpIHsKPiAgCQkJcmMgPSBQVFJfRVJSKHN2YSk7Cj4gIAkJCWRl
-dl9lcnIoZGV2LCAicGFzaWQgYWxsb2NhdGlvbiBmYWlsZWQ6ICVkXG4iLCByYyk7Cj4gZGlmZiAt
-LWdpdCBhL2RyaXZlcnMvZG1hL2lkeGQvaW5pdC5jIGIvZHJpdmVycy9kbWEvaWR4ZC9pbml0LmMK
-PiBpbmRleCAwODVhMGMzLi5jZGM4NWYxIDEwMDY0NAo+IC0tLSBhL2RyaXZlcnMvZG1hL2lkeGQv
-aW5pdC5jCj4gKysrIGIvZHJpdmVycy9kbWEvaWR4ZC9pbml0LmMKPiBAQCAtMzAwLDEzICszMDAs
-MTMgQEAgc3RhdGljIHN0cnVjdCBpZHhkX2RldmljZSAqaWR4ZF9hbGxvYyhzdHJ1Y3QgcGNpX2Rl
-diAqcGRldikKPiAgCj4gIHN0YXRpYyBpbnQgaWR4ZF9lbmFibGVfc3lzdGVtX3Bhc2lkKHN0cnVj
-dCBpZHhkX2RldmljZSAqaWR4ZCkKPiAgewo+IC0JaW50IGZsYWdzOwo+ICsJdW5zaWduZWQgaW50
-IGZsYWdzOwo+ICAJdW5zaWduZWQgaW50IHBhc2lkOwo+ICAJc3RydWN0IGlvbW11X3N2YSAqc3Zh
-Owo+ICAKPiAtCWZsYWdzID0gU1ZNX0ZMQUdfU1VQRVJWSVNPUl9NT0RFOwo+ICsJZmxhZ3MgPSBJ
-T01NVV9TVkFfQklORF9TVVBFUlZJU09SOwo+ICAKPiAtCXN2YSA9IGlvbW11X3N2YV9iaW5kX2Rl
-dmljZSgmaWR4ZC0+cGRldi0+ZGV2LCBOVUxMLCAmZmxhZ3MpOwo+ICsJc3ZhID0gaW9tbXVfc3Zh
-X2JpbmRfZGV2aWNlKCZpZHhkLT5wZGV2LT5kZXYsIE5VTEwsIGZsYWdzKTsKPiAgCWlmIChJU19F
-UlIoc3ZhKSkgewo+ICAJCWRldl93YXJuKCZpZHhkLT5wZGV2LT5kZXYsCj4gIAkJCSAiaW9tbXUg
-c3ZhIGJpbmQgZmFpbGVkOiAlbGRcbiIsIFBUUl9FUlIoc3ZhKSk7Cj4gZGlmZiAtLWdpdCBhL2Ry
-aXZlcnMvaW9tbXUvYXJtL2FybS1zbW11LXYzL2FybS1zbW11LXYzLXN2YS5jIGIvZHJpdmVycy9p
-b21tdS9hcm0vYXJtLXNtbXUtdjMvYXJtLXNtbXUtdjMtc3ZhLmMKPiBpbmRleCBiYjI1MWNhLi4y
-M2UyODdlIDEwMDY0NAo+IC0tLSBhL2RyaXZlcnMvaW9tbXUvYXJtL2FybS1zbW11LXYzL2FybS1z
-bW11LXYzLXN2YS5jCj4gKysrIGIvZHJpdmVycy9pb21tdS9hcm0vYXJtLXNtbXUtdjMvYXJtLXNt
-bXUtdjMtc3ZhLmMKPiBAQCAtMzU0LDcgKzM1NCw3IEBAIF9fYXJtX3NtbXVfc3ZhX2JpbmQoc3Ry
-dWN0IGRldmljZSAqZGV2LCBzdHJ1Y3QgbW1fc3RydWN0ICptbSkKPiAgfQo+ICAKPiAgc3RydWN0
-IGlvbW11X3N2YSAqCj4gLWFybV9zbW11X3N2YV9iaW5kKHN0cnVjdCBkZXZpY2UgKmRldiwgc3Ry
-dWN0IG1tX3N0cnVjdCAqbW0sIHZvaWQgKmRydmRhdGEpCj4gK2FybV9zbW11X3N2YV9iaW5kKHN0
-cnVjdCBkZXZpY2UgKmRldiwgc3RydWN0IG1tX3N0cnVjdCAqbW0sIHVuc2lnbmVkIGludCBmbGFn
-cykKCkNvdWxkIHlvdSBhZGQgYSBjaGVjayBvbiBmbGFnczoKCmRpZmYgLS1naXQgYS9kcml2ZXJz
-L2lvbW11L2FybS9hcm0tc21tdS12My9hcm0tc21tdS12My1zdmEuYyBiL2RyaXZlcnMvaW9tbXUv
-YXJtL2FybS1zbW11LXYzL2FybS1zbW11LXYzLXN2YS5jCmluZGV4IGJiMjUxY2FiNjFmMy4uMTQ1
-Y2ViMmZjNWRhIDEwMDY0NAotLS0gYS9kcml2ZXJzL2lvbW11L2FybS9hcm0tc21tdS12My9hcm0t
-c21tdS12My1zdmEuYworKysgYi9kcml2ZXJzL2lvbW11L2FybS9hcm0tc21tdS12My9hcm0tc21t
-dS12My1zdmEuYwpAQCAtMzU0LDEyICszNTQsMTUgQEAgX19hcm1fc21tdV9zdmFfYmluZChzdHJ1
-Y3QgZGV2aWNlICpkZXYsIHN0cnVjdCBtbV9zdHJ1Y3QgKm1tKQogfQoKIHN0cnVjdCBpb21tdV9z
-dmEgKgotYXJtX3NtbXVfc3ZhX2JpbmQoc3RydWN0IGRldmljZSAqZGV2LCBzdHJ1Y3QgbW1fc3Ry
-dWN0ICptbSwgdm9pZCAqZHJ2ZGF0YSkKK2FybV9zbW11X3N2YV9iaW5kKHN0cnVjdCBkZXZpY2Ug
-KmRldiwgc3RydWN0IG1tX3N0cnVjdCAqbW0sIHVuc2lnbmVkIGludCBmbGFncykKIHsKIAlzdHJ1
-Y3QgaW9tbXVfc3ZhICpoYW5kbGU7CiAJc3RydWN0IGlvbW11X2RvbWFpbiAqZG9tYWluID0gaW9t
-bXVfZ2V0X2RvbWFpbl9mb3JfZGV2KGRldik7CiAJc3RydWN0IGFybV9zbW11X2RvbWFpbiAqc21t
-dV9kb21haW4gPSB0b19zbW11X2RvbWFpbihkb21haW4pOwoKKwlpZiAoZmxhZ3MpCisJCXJldHVy
-biBFUlJfUFRSKC1FSU5WQUwpOworCiAJaWYgKHNtbXVfZG9tYWluLT5zdGFnZSAhPSBBUk1fU01N
-VV9ET01BSU5fUzEpCiAJCXJldHVybiBFUlJfUFRSKC1FSU5WQUwpOwoKCgo+ICB7Cj4gIAlzdHJ1
-Y3QgaW9tbXVfc3ZhICpoYW5kbGU7Cj4gIAlzdHJ1Y3QgaW9tbXVfZG9tYWluICpkb21haW4gPSBp
-b21tdV9nZXRfZG9tYWluX2Zvcl9kZXYoZGV2KTsKPiBkaWZmIC0tZ2l0IGEvZHJpdmVycy9pb21t
-dS9hcm0vYXJtLXNtbXUtdjMvYXJtLXNtbXUtdjMuaCBiL2RyaXZlcnMvaW9tbXUvYXJtL2FybS1z
-bW11LXYzL2FybS1zbW11LXYzLmgKPiBpbmRleCBmOTg1ODE3Li5iOTcxZDRkIDEwMDY0NAo+IC0t
-LSBhL2RyaXZlcnMvaW9tbXUvYXJtL2FybS1zbW11LXYzL2FybS1zbW11LXYzLmgKPiArKysgYi9k
-cml2ZXJzL2lvbW11L2FybS9hcm0tc21tdS12My9hcm0tc21tdS12My5oCj4gQEAgLTcxMSw3ICs3
-MTEsNyBAQCBib29sIGFybV9zbW11X21hc3Rlcl9zdmFfZW5hYmxlZChzdHJ1Y3QgYXJtX3NtbXVf
-bWFzdGVyICptYXN0ZXIpOwo+ICBpbnQgYXJtX3NtbXVfbWFzdGVyX2VuYWJsZV9zdmEoc3RydWN0
-IGFybV9zbW11X21hc3RlciAqbWFzdGVyKTsKPiAgaW50IGFybV9zbW11X21hc3Rlcl9kaXNhYmxl
-X3N2YShzdHJ1Y3QgYXJtX3NtbXVfbWFzdGVyICptYXN0ZXIpOwo+ICBzdHJ1Y3QgaW9tbXVfc3Zh
-ICphcm1fc21tdV9zdmFfYmluZChzdHJ1Y3QgZGV2aWNlICpkZXYsIHN0cnVjdCBtbV9zdHJ1Y3Qg
-Km1tLAo+IC0JCQkJICAgIHZvaWQgKmRydmRhdGEpOwo+ICsJCQkJICAgIHVuc2lnbmVkIGludCBm
-bGFncyk7Cj4gIHZvaWQgYXJtX3NtbXVfc3ZhX3VuYmluZChzdHJ1Y3QgaW9tbXVfc3ZhICpoYW5k
-bGUpOwo+ICB1MzIgYXJtX3NtbXVfc3ZhX2dldF9wYXNpZChzdHJ1Y3QgaW9tbXVfc3ZhICpoYW5k
-bGUpOwo+ICB2b2lkIGFybV9zbW11X3N2YV9ub3RpZmllcl9zeW5jaHJvbml6ZSh2b2lkKTsKPiBA
-QCAtNzQyLDcgKzc0Miw3IEBAIHN0YXRpYyBpbmxpbmUgaW50IGFybV9zbW11X21hc3Rlcl9kaXNh
-YmxlX3N2YShzdHJ1Y3QgYXJtX3NtbXVfbWFzdGVyICptYXN0ZXIpCj4gIH0KPiAgCj4gIHN0YXRp
-YyBpbmxpbmUgc3RydWN0IGlvbW11X3N2YSAqCj4gLWFybV9zbW11X3N2YV9iaW5kKHN0cnVjdCBk
-ZXZpY2UgKmRldiwgc3RydWN0IG1tX3N0cnVjdCAqbW0sIHZvaWQgKmRydmRhdGEpCj4gK2FybV9z
-bW11X3N2YV9iaW5kKHN0cnVjdCBkZXZpY2UgKmRldiwgc3RydWN0IG1tX3N0cnVjdCAqbW0sIHVu
-c2lnbmVkIGludCBmbGFncykKPiAgewo+ICAJcmV0dXJuIEVSUl9QVFIoLUVOT0RFVik7Cj4gIH0K
-PiBkaWZmIC0tZ2l0IGEvZHJpdmVycy9pb21tdS9pbnRlbC9LY29uZmlnIGIvZHJpdmVycy9pb21t
-dS9pbnRlbC9LY29uZmlnCj4gaW5kZXggMjhhM2QxNS4uNTQxNTA1MiAxMDA2NDQKPiAtLS0gYS9k
-cml2ZXJzL2lvbW11L2ludGVsL0tjb25maWcKPiArKysgYi9kcml2ZXJzL2lvbW11L2ludGVsL0tj
-b25maWcKPiBAQCAtNDEsNiArNDEsNyBAQCBjb25maWcgSU5URUxfSU9NTVVfU1ZNCj4gIAlzZWxl
-Y3QgUENJX1BSSQo+ICAJc2VsZWN0IE1NVV9OT1RJRklFUgo+ICAJc2VsZWN0IElPQVNJRAo+ICsJ
-c2VsZWN0IElPTU1VX1NWQV9MSUIKCk5vdCBuZWVkZWQgaGVyZT8KCj4gIAloZWxwCj4gIAkgIFNo
-YXJlZCBWaXJ0dWFsIE1lbW9yeSAoU1ZNKSBwcm92aWRlcyBhIGZhY2lsaXR5IGZvciBkZXZpY2Vz
-Cj4gIAkgIHRvIGFjY2VzcyBETUEgcmVzb3VyY2VzIHRocm91Z2ggcHJvY2VzcyBhZGRyZXNzIHNw
-YWNlIGJ5Cj4gZGlmZiAtLWdpdCBhL2RyaXZlcnMvaW9tbXUvaW50ZWwvc3ZtLmMgYi9kcml2ZXJz
-L2lvbW11L2ludGVsL3N2bS5jCj4gaW5kZXggNTc0YTdlNi4uNGI1ZjhiMCAxMDA2NDQKPiAtLS0g
-YS9kcml2ZXJzL2lvbW11L2ludGVsL3N2bS5jCj4gKysrIGIvZHJpdmVycy9pb21tdS9pbnRlbC9z
-dm0uYwo+IEBAIC00ODYsMTIgKzQ4Niw5IEBAIGludGVsX3N2bV9iaW5kX21tKHN0cnVjdCBkZXZp
-Y2UgKmRldiwgdW5zaWduZWQgaW50IGZsYWdzLAo+ICAJfSBlbHNlCj4gIAkJcGFzaWRfbWF4ID0g
-MSA8PCAyMDsKPiAgCj4gLQkvKiBCaW5kIHN1cGVydmlzb3IgUEFTSUQgc2h1bGQgaGF2ZSBtbSA9
-IE5VTEwgKi8KPiAtCWlmIChmbGFncyAmIFNWTV9GTEFHX1NVUEVSVklTT1JfTU9ERSkgewo+IC0J
-CWlmICghZWNhcF9zcnMoaW9tbXUtPmVjYXApIHx8IG1tKSB7Cj4gLQkJCXByX2VycigiU3VwZXJ2
-aXNvciBQQVNJRCB3aXRoIHVzZXIgcHJvdmlkZWQgbW0uXG4iKTsKPiAtCQkJcmV0dXJuIC1FSU5W
-QUw7Cj4gLQkJfQo+ICsJaWYgKChmbGFncyAmIElPTU1VX1NWQV9CSU5EX1NVUEVSVklTT1IpICYm
-ICFlY2FwX3Nycyhpb21tdS0+ZWNhcCkpIHsKPiArCQlwcl9lcnIoIlN1cGVydmlzb3IgUEFTSUQg
-bm90IHN1cHBvcnRlZC5cbiIpOwo+ICsJCXJldHVybiAtRUlOVkFMOwo+ICAJfQo+ICAKPiAgCWlm
-ICghKGZsYWdzICYgU1ZNX0ZMQUdfUFJJVkFURV9QQVNJRCkpIHsKPiBAQCAtNTkzLDcgKzU5MCw3
-IEBAIGludGVsX3N2bV9iaW5kX21tKHN0cnVjdCBkZXZpY2UgKmRldiwgdW5zaWduZWQgaW50IGZs
-YWdzLAo+ICAJCXJldCA9IGludGVsX3Bhc2lkX3NldHVwX2ZpcnN0X2xldmVsKGlvbW11LCBkZXYs
-Cj4gIAkJCQltbSA/IG1tLT5wZ2QgOiBpbml0X21tLnBnZCwKPiAgCQkJCXN2bS0+cGFzaWQsIEZM
-UFRfREVGQVVMVF9ESUQsCj4gLQkJCQkobW0gPyAwIDogUEFTSURfRkxBR19TVVBFUlZJU09SX01P
-REUpIHwKPiArCQkJCShtbSA/IDAgOiBJT01NVV9TVkFfQklORF9TVVBFUlZJU09SKSB8Cj4gIAkJ
-CQkoY3B1X2ZlYXR1cmVfZW5hYmxlZChYODZfRkVBVFVSRV9MQTU3KSA/Cj4gIAkJCQkgUEFTSURf
-RkxBR19GTDVMUCA6IDApKTsKPiAgCQlzcGluX3VubG9ja19pcnFyZXN0b3JlKCZpb21tdS0+bG9j
-aywgaWZsYWdzKTsKPiBAQCAtNjIwLDcgKzYxNyw3IEBAIGludGVsX3N2bV9iaW5kX21tKHN0cnVj
-dCBkZXZpY2UgKmRldiwgdW5zaWduZWQgaW50IGZsYWdzLAo+ICAJCXJldCA9IGludGVsX3Bhc2lk
-X3NldHVwX2ZpcnN0X2xldmVsKGlvbW11LCBkZXYsCj4gIAkJCQkJCW1tID8gbW0tPnBnZCA6IGlu
-aXRfbW0ucGdkLAo+ICAJCQkJCQlzdm0tPnBhc2lkLCBGTFBUX0RFRkFVTFRfRElELAo+IC0JCQkJ
-CQkobW0gPyAwIDogUEFTSURfRkxBR19TVVBFUlZJU09SX01PREUpIHwKPiArCQkJCQkJKG1tID8g
-MCA6IElPTU1VX1NWQV9CSU5EX1NVUEVSVklTT1IpIHwKPiAgCQkJCQkJKGNwdV9mZWF0dXJlX2Vu
-YWJsZWQoWDg2X0ZFQVRVUkVfTEE1NykgPwo+ICAJCQkJCQlQQVNJRF9GTEFHX0ZMNUxQIDogMCkp
-Owo+ICAJCXNwaW5fdW5sb2NrX2lycXJlc3RvcmUoJmlvbW11LT5sb2NrLCBpZmxhZ3MpOwo+IEBA
-IC0xMDU5LDExICsxMDU2LDEwIEBAIHN0YXRpYyBpcnFyZXR1cm5fdCBwcnFfZXZlbnRfdGhyZWFk
-KGludCBpcnEsIHZvaWQgKmQpCj4gIAo+ICAjZGVmaW5lIHRvX2ludGVsX3N2bV9kZXYoaGFuZGxl
-KSBjb250YWluZXJfb2YoaGFuZGxlLCBzdHJ1Y3QgaW50ZWxfc3ZtX2Rldiwgc3ZhKQo+ICBzdHJ1
-Y3QgaW9tbXVfc3ZhICoKPiAtaW50ZWxfc3ZtX2JpbmQoc3RydWN0IGRldmljZSAqZGV2LCBzdHJ1
-Y3QgbW1fc3RydWN0ICptbSwgdm9pZCAqZHJ2ZGF0YSkKPiAraW50ZWxfc3ZtX2JpbmQoc3RydWN0
-IGRldmljZSAqZGV2LCBzdHJ1Y3QgbW1fc3RydWN0ICptbSwgdW5zaWduZWQgaW50IGZsYWdzKQo+
-ICB7Cj4gIAlzdHJ1Y3QgaW9tbXVfc3ZhICpzdmEgPSBFUlJfUFRSKC1FSU5WQUwpOwo+ICAJc3Ry
-dWN0IGludGVsX3N2bV9kZXYgKnNkZXYgPSBOVUxMOwo+IC0JdW5zaWduZWQgaW50IGZsYWdzID0g
-MDsKPiAgCWludCByZXQ7Cj4gIAo+ICAJLyoKPiBAQCAtMTA3MSw4ICsxMDY3LDYgQEAgaW50ZWxf
-c3ZtX2JpbmQoc3RydWN0IGRldmljZSAqZGV2LCBzdHJ1Y3QgbW1fc3RydWN0ICptbSwgdm9pZCAq
-ZHJ2ZGF0YSkKPiAgCSAqIEl0IHdpbGwgcmVxdWlyZSBzaGFyZWQgU1ZNIGRhdGEgc3RydWN0dXJl
-cywgaS5lLiBjb21iaW5lIGlvX21tCj4gIAkgKiBhbmQgaW50ZWxfc3ZtIGV0Yy4KPiAgCSAqLwo+
-IC0JaWYgKGRydmRhdGEpCj4gLQkJZmxhZ3MgPSAqKHVuc2lnbmVkIGludCAqKWRydmRhdGE7Cj4g
-IAltdXRleF9sb2NrKCZwYXNpZF9tdXRleCk7Cj4gIAlyZXQgPSBpbnRlbF9zdm1fYmluZF9tbShk
-ZXYsIGZsYWdzLCBOVUxMLCBtbSwgJnNkZXYpOwo+ICAJaWYgKHJldCkKPiBkaWZmIC0tZ2l0IGEv
-ZHJpdmVycy9pb21tdS9pb21tdS5jIGIvZHJpdmVycy9pb21tdS9pb21tdS5jCj4gaW5kZXggZDBi
-MGExNS4uYmYwYTIwZiAxMDA2NDQKPiAtLS0gYS9kcml2ZXJzL2lvbW11L2lvbW11LmMKPiArKysg
-Yi9kcml2ZXJzL2lvbW11L2lvbW11LmMKPiBAQCAtMjk2Miw2ICsyOTYyLDcgQEAgRVhQT1JUX1NZ
-TUJPTF9HUEwoaW9tbXVfYXV4X2dldF9wYXNpZCk7Cj4gICAqIGlvbW11X3N2YV9iaW5kX2Rldmlj
-ZSgpIC0gQmluZCBhIHByb2Nlc3MgYWRkcmVzcyBzcGFjZSB0byBhIGRldmljZQo+ICAgKiBAZGV2
-OiB0aGUgZGV2aWNlCj4gICAqIEBtbTogdGhlIG1tIHRvIGJpbmQsIGNhbGxlciBtdXN0IGhvbGQg
-YSByZWZlcmVuY2UgdG8gaXQKPiArICogQGZsYWdzOiBvcHRpb25zIGZvciB0aGUgYmluZCBvcGVy
-YXRpb24KCkNvdWxkIGFsc28gc3BlY2lmeSB2YWxpZCBmbGFncyAiSU9NTVVfU1ZBX0JJTkRfKiIK
-Cj4gICAqCj4gICAqIENyZWF0ZSBhIGJvbmQgYmV0d2VlbiBkZXZpY2UgYW5kIGFkZHJlc3Mgc3Bh
-Y2UsIGFsbG93aW5nIHRoZSBkZXZpY2UgdG8gYWNjZXNzCj4gICAqIHRoZSBtbSB1c2luZyB0aGUg
-cmV0dXJuZWQgUEFTSUQuIElmIGEgYm9uZCBhbHJlYWR5IGV4aXN0cyBiZXR3ZWVuIEBkZXZpY2Ug
-YW5kCj4gQEAgLTI5NzQsNyArMjk3NSw3IEBAIEVYUE9SVF9TWU1CT0xfR1BMKGlvbW11X2F1eF9n
-ZXRfcGFzaWQpOwo+ICAgKiBPbiBlcnJvciwgcmV0dXJucyBhbiBFUlJfUFRSIHZhbHVlLgo+ICAg
-Ki8KPiAgc3RydWN0IGlvbW11X3N2YSAqCj4gLWlvbW11X3N2YV9iaW5kX2RldmljZShzdHJ1Y3Qg
-ZGV2aWNlICpkZXYsIHN0cnVjdCBtbV9zdHJ1Y3QgKm1tLCB2b2lkICpkcnZkYXRhKQo+ICtpb21t
-dV9zdmFfYmluZF9kZXZpY2Uoc3RydWN0IGRldmljZSAqZGV2LCBzdHJ1Y3QgbW1fc3RydWN0ICpt
-bSwgdW5zaWduZWQgaW50IGZsYWdzKQo+ICB7Cj4gIAlzdHJ1Y3QgaW9tbXVfZ3JvdXAgKmdyb3Vw
-Owo+ICAJc3RydWN0IGlvbW11X3N2YSAqaGFuZGxlID0gRVJSX1BUUigtRUlOVkFMKTsKPiBAQCAt
-Mjk4Nyw2ICsyOTg4LDkgQEAgaW9tbXVfc3ZhX2JpbmRfZGV2aWNlKHN0cnVjdCBkZXZpY2UgKmRl
-diwgc3RydWN0IG1tX3N0cnVjdCAqbW0sIHZvaWQgKmRydmRhdGEpCj4gIAlpZiAoIWdyb3VwKQo+
-ICAJCXJldHVybiBFUlJfUFRSKC1FTk9ERVYpOwo+ICAKPiArCS8qIFN1cGVydmlzb3IgU1ZBIGRv
-ZXMgbm90IG5lZWQgdGhlIGN1cnJlbnQgbW0gKi8KPiArCWlmICgoZmxhZ3MgJiBJT01NVV9TVkFf
-QklORF9TVVBFUlZJU09SKSAmJiBtbSkKPiArCQlyZXR1cm4gRVJSX1BUUigtRUlOVkFMKTsKPiAg
-CS8qIEVuc3VyZSBkZXZpY2UgY291bnQgYW5kIGRvbWFpbiBkb24ndCBjaGFuZ2Ugd2hpbGUgd2Un
-cmUgYmluZGluZyAqLwo+ICAJbXV0ZXhfbG9jaygmZ3JvdXAtPm11dGV4KTsKPiAgCj4gQEAgLTI5
-OTksOCArMzAwMyw3IEBAIGlvbW11X3N2YV9iaW5kX2RldmljZShzdHJ1Y3QgZGV2aWNlICpkZXYs
-IHN0cnVjdCBtbV9zdHJ1Y3QgKm1tLCB2b2lkICpkcnZkYXRhKQo+ICAJaWYgKGlvbW11X2dyb3Vw
-X2RldmljZV9jb3VudChncm91cCkgIT0gMSkKPiAgCQlnb3RvIG91dF91bmxvY2s7Cj4gIAo+IC0J
-aGFuZGxlID0gb3BzLT5zdmFfYmluZChkZXYsIG1tLCBkcnZkYXRhKTsKPiAtCj4gKwloYW5kbGUg
-PSBvcHMtPnN2YV9iaW5kKGRldiwgbW0sIGZsYWdzKTsKPiAgb3V0X3VubG9jazoKPiAgCW11dGV4
-X3VubG9jaygmZ3JvdXAtPm11dGV4KTsKPiAgCWlvbW11X2dyb3VwX3B1dChncm91cCk7Cj4gZGlm
-ZiAtLWdpdCBhL2RyaXZlcnMvbWlzYy91YWNjZS91YWNjZS5jIGIvZHJpdmVycy9taXNjL3VhY2Nl
-L3VhY2NlLmMKPiBpbmRleCBkMDdhZjRlLi4yN2UwZTA0IDEwMDY0NAo+IC0tLSBhL2RyaXZlcnMv
-bWlzYy91YWNjZS91YWNjZS5jCj4gKysrIGIvZHJpdmVycy9taXNjL3VhY2NlL3VhY2NlLmMKPiBA
-QCAtOTksNyArOTksNyBAQCBzdGF0aWMgaW50IHVhY2NlX2JpbmRfcXVldWUoc3RydWN0IHVhY2Nl
-X2RldmljZSAqdWFjY2UsIHN0cnVjdCB1YWNjZV9xdWV1ZSAqcSkKPiAgCWlmICghKHVhY2NlLT5m
-bGFncyAmIFVBQ0NFX0RFVl9TVkEpKQo+ICAJCXJldHVybiAwOwo+ICAKPiAtCWhhbmRsZSA9IGlv
-bW11X3N2YV9iaW5kX2RldmljZSh1YWNjZS0+cGFyZW50LCBjdXJyZW50LT5tbSwgTlVMTCk7Cj4g
-KwloYW5kbGUgPSBpb21tdV9zdmFfYmluZF9kZXZpY2UodWFjY2UtPnBhcmVudCwgY3VycmVudC0+
-bW0sIDApOwo+ICAJaWYgKElTX0VSUihoYW5kbGUpKQo+ICAJCXJldHVybiBQVFJfRVJSKGhhbmRs
-ZSk7Cj4gIAo+IGRpZmYgLS1naXQgYS9pbmNsdWRlL2xpbnV4L2ludGVsLWlvbW11LmggYi9pbmNs
-dWRlL2xpbnV4L2ludGVsLWlvbW11LmgKPiBpbmRleCAxYmM0NmI4Li5jZGZmNzUyIDEwMDY0NAo+
-IC0tLSBhL2luY2x1ZGUvbGludXgvaW50ZWwtaW9tbXUuaAo+ICsrKyBiL2luY2x1ZGUvbGludXgv
-aW50ZWwtaW9tbXUuaAo+IEBAIC03NTcsNyArNzU3LDcgQEAgaW50IGludGVsX3N2bV9iaW5kX2dw
-YXNpZChzdHJ1Y3QgaW9tbXVfZG9tYWluICpkb21haW4sIHN0cnVjdCBkZXZpY2UgKmRldiwKPiAg
-CQkJICBzdHJ1Y3QgaW9tbXVfZ3Bhc2lkX2JpbmRfZGF0YSAqZGF0YSk7Cj4gIGludCBpbnRlbF9z
-dm1fdW5iaW5kX2dwYXNpZChzdHJ1Y3QgZGV2aWNlICpkZXYsIHUzMiBwYXNpZCk7Cj4gIHN0cnVj
-dCBpb21tdV9zdmEgKmludGVsX3N2bV9iaW5kKHN0cnVjdCBkZXZpY2UgKmRldiwgc3RydWN0IG1t
-X3N0cnVjdCAqbW0sCj4gLQkJCQkgdm9pZCAqZHJ2ZGF0YSk7Cj4gKwkJCQkgdW5zaWduZWQgaW50
-IGZsYWdzKTsKPiAgdm9pZCBpbnRlbF9zdm1fdW5iaW5kKHN0cnVjdCBpb21tdV9zdmEgKmhhbmRs
-ZSk7Cj4gIHUzMiBpbnRlbF9zdm1fZ2V0X3Bhc2lkKHN0cnVjdCBpb21tdV9zdmEgKmhhbmRsZSk7
-Cj4gIGludCBpbnRlbF9zdm1fcGFnZV9yZXNwb25zZShzdHJ1Y3QgZGV2aWNlICpkZXYsIHN0cnVj
-dCBpb21tdV9mYXVsdF9ldmVudCAqZXZ0LAo+IGRpZmYgLS1naXQgYS9pbmNsdWRlL2xpbnV4L2lu
-dGVsLXN2bS5oIGIvaW5jbHVkZS9saW51eC9pbnRlbC1zdm0uaAo+IGluZGV4IDM5ZDM2OGEuLmVm
-NmI3NTMgMTAwNjQ0Cj4gLS0tIGEvaW5jbHVkZS9saW51eC9pbnRlbC1zdm0uaAo+ICsrKyBiL2lu
-Y2x1ZGUvbGludXgvaW50ZWwtc3ZtLmgKPiBAQCAtMzAsMzAgKzMwLDE3IEBAIHN0cnVjdCBzdm1f
-ZGV2X29wcyB7Cj4gICAqIGlmIHRoZXJlIGlzIG5vIG90aGVyIHdheSB0byBkbyBzby4gSXQgc2hv
-dWxkIGJlIHVzZWQgc3BhcmluZ2x5LCBpZiBhdCBhbGwuCj4gICAqLwo+ICAjZGVmaW5lIFNWTV9G
-TEFHX1BSSVZBVEVfUEFTSUQJCSgxPDwwKQo+IC0KPiAtLyoKPiAtICogVGhlIFNWTV9GTEFHX1NV
-UEVSVklTT1JfTU9ERSBmbGFnIHJlcXVlc3RzIGEgUEFTSUQgd2hpY2ggY2FuIGJlIHVzZWQgb25s
-eQo+IC0gKiBmb3IgYWNjZXNzIHRvIGtlcm5lbCBhZGRyZXNzZXMuIE5vIElPVExCIGZsdXNoZXMg
-YXJlIGF1dG9tYXRpY2FsbHkgZG9uZQo+IC0gKiBmb3Iga2VybmVsIG1hcHBpbmdzOyBpdCBpcyB2
-YWxpZCBvbmx5IGZvciBhY2Nlc3MgdG8gdGhlIGtlcm5lbCdzIHN0YXRpYwo+IC0gKiAxOjEgbWFw
-cGluZyBvZiBwaHlzaWNhbCBtZW1vcnkg4oCUIG5vdCB0byB2bWFsbG9jIG9yIGV2ZW4gbW9kdWxl
-IG1hcHBpbmdzLgo+IC0gKiBBIGZ1dHVyZSBBUEkgYWRkaXRpb24gbWF5IHBlcm1pdCB0aGUgdXNl
-IG9mIHN1Y2ggcmFuZ2VzLCBieSBtZWFucyBvZiBhbgo+IC0gKiBleHBsaWNpdCBJT1RMQiBmbHVz
-aCBjYWxsIChha2luIHRvIHRoZSBETUEgQVBJJ3MgdW5tYXAgbWV0aG9kKS4KPiAtICoKPiAtICog
-SXQgaXMgdW5saWtlbHkgdGhhdCB3ZSB3aWxsIGV2ZXIgaG9vayBpbnRvIGZsdXNoX3RsYl9rZXJu
-ZWxfcmFuZ2UoKSB0bwo+IC0gKiBkbyBzdWNoIElPVExCIGZsdXNoZXMgYXV0b21hdGljYWxseS4K
-PiAtICovCj4gLSNkZWZpbmUgU1ZNX0ZMQUdfU1VQRVJWSVNPUl9NT0RFCSgxPDwxKQo+ICAvKgo+
-ICAgKiBUaGUgU1ZNX0ZMQUdfR1VFU1RfTU9ERSBmbGFnIGlzIHVzZWQgd2hlbiBhIFBBU0lEIGJp
-bmQgaXMgZm9yIGd1ZXN0Cj4gICAqIHByb2Nlc3Nlcy4gQ29tcGFyZWQgdG8gdGhlIGhvc3QgYmlu
-ZCwgdGhlIHByaW1hcnkgZGlmZmVyZW5jZXMgYXJlOgo+ICAgKiAxLiBtbSBsaWZlIGN5Y2xlIG1h
-bmFnZW1lbnQKPiAgICogMi4gZmF1bHQgcmVwb3J0aW5nCj4gICAqLwo+IC0jZGVmaW5lIFNWTV9G
-TEFHX0dVRVNUX01PREUJCSgxPDwyKQo+ICsjZGVmaW5lIFNWTV9GTEFHX0dVRVNUX01PREUJCSgx
-PDwxKQo+ICAvKgo+ICAgKiBUaGUgU1ZNX0ZMQUdfR1VFU1RfUEFTSUQgZmxhZyBpcyB1c2VkIHdo
-ZW4gYSBndWVzdCBoYXMgaXRzIG93biBQQVNJRCBzcGFjZSwKPiAgICogd2hpY2ggcmVxdWlyZXMg
-Z3Vlc3QgYW5kIGhvc3QgUEFTSUQgdHJhbnNsYXRpb24gYXQgYm90aCBkaXJlY3Rpb25zLgo+ICAg
-Ki8KPiAtI2RlZmluZSBTVk1fRkxBR19HVUVTVF9QQVNJRAkJKDE8PDMpCj4gKyNkZWZpbmUgU1ZN
-X0ZMQUdfR1VFU1RfUEFTSUQJCSgxPDwyKQo+ICAKPiAgI2VuZGlmIC8qIF9fSU5URUxfU1ZNX0hf
-XyAqLwo+IGRpZmYgLS1naXQgYS9pbmNsdWRlL2xpbnV4L2lvbW11LmggYi9pbmNsdWRlL2xpbnV4
-L2lvbW11LmgKPiBpbmRleCA1ZTdmZTUxLi5hM2ZiYWEyIDEwMDY0NAo+IC0tLSBhL2luY2x1ZGUv
-bGludXgvaW9tbXUuaAo+ICsrKyBiL2luY2x1ZGUvbGludXgvaW9tbXUuaAo+IEBAIC0xNjYsNiAr
-MTY2LDE5IEBAIGVudW0gaW9tbXVfZGV2X2ZlYXR1cmVzIHsKPiAgCj4gICNpZmRlZiBDT05GSUdf
-SU9NTVVfQVBJCj4gIAo+ICsvKgo+ICsgKiBUaGUgSU9NTVVfU1ZBX0JJTkRfU1VQRVJWSVNPUiBm
-bGFnIHJlcXVlc3RzIGEgUEFTSUQgd2hpY2ggY2FuIGJlIHVzZWQgb25seQo+ICsgKiBmb3IgYWNj
-ZXNzIHRvIGtlcm5lbCBhZGRyZXNzZXMuIE5vIElPVExCIGZsdXNoZXMgYXJlIGF1dG9tYXRpY2Fs
-bHkgZG9uZQo+ICsgKiBmb3Iga2VybmVsIG1hcHBpbmdzOyBpdCBpcyB2YWxpZCBvbmx5IGZvciBh
-Y2Nlc3MgdG8gdGhlIGtlcm5lbCdzIHN0YXRpYwo+ICsgKiAxOjEgbWFwcGluZyBvZiBwaHlzaWNh
-bCBtZW1vcnkg4oCUIG5vdCB0byB2bWFsbG9jIG9yIGV2ZW4gbW9kdWxlIG1hcHBpbmdzLgo+ICsg
-KiBBIGZ1dHVyZSBBUEkgYWRkaXRpb24gbWF5IHBlcm1pdCB0aGUgdXNlIG9mIHN1Y2ggcmFuZ2Vz
-LCBieSBtZWFucyBvZiBhbgo+ICsgKiBleHBsaWNpdCBJT1RMQiBmbHVzaCBjYWxsIChha2luIHRv
-IHRoZSBETUEgQVBJJ3MgdW5tYXAgbWV0aG9kKS4KPiArICoKPiArICogSXQgaXMgdW5saWtlbHkg
-dGhhdCB3ZSB3aWxsIGV2ZXIgaG9vayBpbnRvIGZsdXNoX3RsYl9rZXJuZWxfcmFuZ2UoKSB0bwo+
-ICsgKiBkbyBzdWNoIElPVExCIGZsdXNoZXMgYXV0b21hdGljYWxseS4KPiArICovCj4gKyNkZWZp
-bmUgSU9NTVVfU1ZBX0JJTkRfU1VQRVJWSVNPUiAgICAgICBCSVQoMCkKPiArCgpJdCBuZWVkcyB0
-byBiZSBkZWZpbmVkIGJlZm9yZSB0aGUgI2lmZGVmIENPTkZJR19JT01NVV9BUEksIG90aGVyd2lz
-ZQpkcml2ZXJzIHVzaW5nIGl0IHdvbid0IGJ1aWxkIHdpdGggIUNPTkZJR19JT01NVV9BUEkKClRo
-YW5rcywKSmVhbgoKPiAgLyoqCj4gICAqIHN0cnVjdCBpb21tdV9pb3RsYl9nYXRoZXIgLSBSYW5n
-ZSBpbmZvcm1hdGlvbiBmb3IgYSBwZW5kaW5nIElPVExCIGZsdXNoCj4gICAqCj4gQEAgLTI4Nyw3
-ICszMDAsNyBAQCBzdHJ1Y3QgaW9tbXVfb3BzIHsKPiAgCWludCAoKmF1eF9nZXRfcGFzaWQpKHN0
-cnVjdCBpb21tdV9kb21haW4gKmRvbWFpbiwgc3RydWN0IGRldmljZSAqZGV2KTsKPiAgCj4gIAlz
-dHJ1Y3QgaW9tbXVfc3ZhICooKnN2YV9iaW5kKShzdHJ1Y3QgZGV2aWNlICpkZXYsIHN0cnVjdCBt
-bV9zdHJ1Y3QgKm1tLAo+IC0JCQkJICAgICAgdm9pZCAqZHJ2ZGF0YSk7Cj4gKwkJCQkgICAgICB1
-bnNpZ25lZCBpbnQgZmxhZ3MpOwo+ICAJdm9pZCAoKnN2YV91bmJpbmQpKHN0cnVjdCBpb21tdV9z
-dmEgKmhhbmRsZSk7Cj4gIAl1MzIgKCpzdmFfZ2V0X3Bhc2lkKShzdHJ1Y3QgaW9tbXVfc3ZhICpo
-YW5kbGUpOwo+ICAKPiBAQCAtNjQwLDcgKzY1Myw3IEBAIGludCBpb21tdV9hdXhfZ2V0X3Bhc2lk
-KHN0cnVjdCBpb21tdV9kb21haW4gKmRvbWFpbiwgc3RydWN0IGRldmljZSAqZGV2KTsKPiAgCj4g
-IHN0cnVjdCBpb21tdV9zdmEgKmlvbW11X3N2YV9iaW5kX2RldmljZShzdHJ1Y3QgZGV2aWNlICpk
-ZXYsCj4gIAkJCQkJc3RydWN0IG1tX3N0cnVjdCAqbW0sCj4gLQkJCQkJdm9pZCAqZHJ2ZGF0YSk7
-Cj4gKwkJCQkJdW5zaWduZWQgaW50IGZsYWdzKTsKPiAgdm9pZCBpb21tdV9zdmFfdW5iaW5kX2Rl
-dmljZShzdHJ1Y3QgaW9tbXVfc3ZhICpoYW5kbGUpOwo+ICB1MzIgaW9tbXVfc3ZhX2dldF9wYXNp
-ZChzdHJ1Y3QgaW9tbXVfc3ZhICpoYW5kbGUpOwo+ICAKPiBAQCAtMTAxNSw3ICsxMDI4LDcgQEAg
-aW9tbXVfYXV4X2dldF9wYXNpZChzdHJ1Y3QgaW9tbXVfZG9tYWluICpkb21haW4sIHN0cnVjdCBk
-ZXZpY2UgKmRldikKPiAgfQo+ICAKPiAgc3RhdGljIGlubGluZSBzdHJ1Y3QgaW9tbXVfc3ZhICoK
-PiAtaW9tbXVfc3ZhX2JpbmRfZGV2aWNlKHN0cnVjdCBkZXZpY2UgKmRldiwgc3RydWN0IG1tX3N0
-cnVjdCAqbW0sIHZvaWQgKmRydmRhdGEpCj4gK2lvbW11X3N2YV9iaW5kX2RldmljZShzdHJ1Y3Qg
-ZGV2aWNlICpkZXYsIHN0cnVjdCBtbV9zdHJ1Y3QgKm1tLCB1bnNpZ25lZCBpbnQgZmxhZ3MpCj4g
-IHsKPiAgCXJldHVybiBOVUxMOwo+ICB9Cj4gLS0gCj4gMi43LjQKPiAKX19fX19fX19fX19fX19f
-X19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX18KaW9tbXUgbWFpbGluZyBsaXN0CmlvbW11
-QGxpc3RzLmxpbnV4LWZvdW5kYXRpb24ub3JnCmh0dHBzOi8vbGlzdHMubGludXhmb3VuZGF0aW9u
-Lm9yZy9tYWlsbWFuL2xpc3RpbmZvL2lvbW11
+Random drivers should not override a user configuration of core knobs
+(e.g., CONFIG_DMA_CMA=n). Applicable drivers would like to use DMA_CMA,
+which depends on CMA, if possible; however, these drivers also have to
+tolerate if DMA_CMA is not available/functioning, for example, if no CMA
+area for DMA_CMA use has been setup via "cma=X". In the worst case, the
+driver cannot do it's job properly in some configurations.
+
+For example, commit 63f5677544b3 ("drm/etnaviv: select CMA and DMA_CMA if
+available") documents
+	While this is no build dependency, etnaviv will only work correctly
+	on most systems if CMA and DMA_CMA are enabled. Select both options
+	if available to avoid users ending up with a non-working GPU due to
+	a lacking kernel config.
+So etnaviv really wants to have DMA_CMA, however, can deal with some cases
+where it is not available.
+
+Let's introduce WANT_DMA_CMA and use it in most cases where drivers
+select CMA/DMA_CMA, or depend on DMA_CMA (in a wrong way via CMA because
+of recursive dependency issues).
+
+We'll assume that any driver that selects DRM_GEM_CMA_HELPER or
+DRM_KMS_CMA_HELPER would like to use DMA_CMA if possible.
+
+With this change, distributions can disable CONFIG_CMA or
+CONFIG_DMA_CMA, without it silently getting enabled again by random
+drivers. Also, we'll now automatically try to enabled both, CONFIG_CMA
+and CONFIG_DMA_CMA if they are unspecified and any driver is around that
+selects WANT_DMA_CMA -- also implicitly via DRM_GEM_CMA_HELPER or
+DRM_KMS_CMA_HELPER.
+
+For example, if any driver selects WANT_DMA_CMA and we do a
+"make olddefconfig":
+
+1. With "# CONFIG_CMA is not set" and no specification of
+   "CONFIG_DMA_CMA"
+
+-> CONFIG_DMA_CMA won't be part of .config
+
+2. With no specification of CONFIG_CMA or CONFIG_DMA_CMA
+
+Contiguous Memory Allocator (CMA) [Y/n/?] (NEW)
+DMA Contiguous Memory Allocator (DMA_CMA) [Y/n/?] (NEW)
+
+3. With "# CONFIG_CMA is not set" and "# CONFIG_DMA_CMA is not set"
+
+-> CONFIG_DMA_CMA will be removed from .config
+
+Note: drivers/remoteproc seems to be special; commit c51e882cd711
+("remoteproc/davinci: Update Kconfig to depend on DMA_CMA") explains that
+there is a real dependency to DMA_CMA for it to work; leave that dependency
+in place and don't convert it to a soft dependency.
+
+Cc: Maarten Lankhorst <maarten.lankhorst@linux.intel.com>
+Cc: Maxime Ripard <mripard@kernel.org>
+Cc: Thomas Zimmermann <tzimmermann@suse.de>
+Cc: David Airlie <airlied@linux.ie>
+Cc: Daniel Vetter <daniel@ffwll.ch>
+Cc: Joel Stanley <joel@jms.id.au>
+Cc: Andrew Jeffery <andrew@aj.id.au>
+Cc: Lucas Stach <l.stach@pengutronix.de>
+Cc: Russell King <linux+etnaviv@armlinux.org.uk>
+Cc: Christian Gmeiner <christian.gmeiner@gmail.com>
+Cc: Paul Cercueil <paul@crapouillou.net>
+Cc: Linus Walleij <linus.walleij@linaro.org>
+Cc: Christoph Hellwig <hch@lst.de>
+Cc: Marek Szyprowski <m.szyprowski@samsung.com>
+Cc: Robin Murphy <robin.murphy@arm.com>
+Cc: Andrew Morton <akpm@linux-foundation.org>
+Cc: Mike Rapoport <rppt@kernel.org>
+Cc: Arnd Bergmann <arnd@arndb.de>
+Cc: Bartlomiej Zolnierkiewicz <b.zolnierkie@samsung.com>
+Cc: Eric Anholt <eric@anholt.net>
+Cc: Michal Simek <michal.simek@xilinx.com>
+Cc: Masahiro Yamada <masahiroy@kernel.org>
+Cc: "Alexander A. Klimov" <grandmaster@al2klimov.de>
+Cc: Peter Collingbourne <pcc@google.com>
+Cc: Suman Anna <s-anna@ti.com>
+Cc: Jason Gunthorpe <jgg@ziepe.ca>
+Cc: dri-devel@lists.freedesktop.org
+Cc: linux-aspeed@lists.ozlabs.org
+Cc: linux-arm-kernel@lists.infradead.org
+Cc: etnaviv@lists.freedesktop.org
+Cc: linux-mips@vger.kernel.org
+Cc: linux-fbdev@vger.kernel.org
+Cc: iommu@lists.linux-foundation.org
+Signed-off-by: David Hildenbrand <david@redhat.com>
+---
+
+Let's see if this approach is better for soft dependencies (and if we
+actually have some hard dependencies in there). This is the follow-up
+of
+  https://lkml.kernel.org/r/20210408092011.52763-1-david@redhat.com
+  https://lkml.kernel.org/r/20210408100523.63356-1-david@redhat.com
+
+I was wondering if it would make sense in some drivers to warn if either
+CONFIG_DMA_CMA is not available or if DRM_CMA has not been configured
+properly - just to give people a heads up that something might more likely
+go wrong; that would, however, be future work.
+
+v2 -> v3:
+- Don't use "imply" but instead use a new WANT_DMA_CMA and make the default
+  of CMA and DMA_CMA depend on it.
+- Also adjust ingenic, mcde, tve200; these sound like soft dependencies as
+  well (although DMA_CMA is really desired)
+
+v1 -> v2:
+- Fix DRM_CMA -> DMA_CMA
+
+---
+ drivers/gpu/drm/Kconfig         | 2 ++
+ drivers/gpu/drm/aspeed/Kconfig  | 2 --
+ drivers/gpu/drm/etnaviv/Kconfig | 3 +--
+ drivers/gpu/drm/ingenic/Kconfig | 1 -
+ drivers/gpu/drm/mcde/Kconfig    | 1 -
+ drivers/gpu/drm/tve200/Kconfig  | 1 -
+ drivers/video/fbdev/Kconfig     | 2 +-
+ kernel/dma/Kconfig              | 7 +++++++
+ mm/Kconfig                      | 1 +
+ 9 files changed, 12 insertions(+), 8 deletions(-)
+
+diff --git a/drivers/gpu/drm/Kconfig b/drivers/gpu/drm/Kconfig
+index 85b79a7fee63..6f9989adfa93 100644
+--- a/drivers/gpu/drm/Kconfig
++++ b/drivers/gpu/drm/Kconfig
+@@ -201,12 +201,14 @@ config DRM_TTM_HELPER
+ config DRM_GEM_CMA_HELPER
+ 	bool
+ 	depends on DRM
++	select WANT_DMA_CMA
+ 	help
+ 	  Choose this if you need the GEM CMA helper functions
+ 
+ config DRM_KMS_CMA_HELPER
+ 	bool
+ 	depends on DRM
++	select WANT_DMA_CMA
+ 	select DRM_GEM_CMA_HELPER
+ 	help
+ 	  Choose this if you need the KMS CMA helper functions
+diff --git a/drivers/gpu/drm/aspeed/Kconfig b/drivers/gpu/drm/aspeed/Kconfig
+index 5e95bcea43e9..e5ff33f85f21 100644
+--- a/drivers/gpu/drm/aspeed/Kconfig
++++ b/drivers/gpu/drm/aspeed/Kconfig
+@@ -6,8 +6,6 @@ config DRM_ASPEED_GFX
+ 	depends on MMU
+ 	select DRM_KMS_HELPER
+ 	select DRM_KMS_CMA_HELPER
+-	select DMA_CMA if HAVE_DMA_CONTIGUOUS
+-	select CMA if HAVE_DMA_CONTIGUOUS
+ 	select MFD_SYSCON
+ 	help
+ 	  Chose this option if you have an ASPEED AST2500 SOC Display
+diff --git a/drivers/gpu/drm/etnaviv/Kconfig b/drivers/gpu/drm/etnaviv/Kconfig
+index faa7fc68b009..a3e7649b44a7 100644
+--- a/drivers/gpu/drm/etnaviv/Kconfig
++++ b/drivers/gpu/drm/etnaviv/Kconfig
+@@ -9,8 +9,7 @@ config DRM_ETNAVIV
+ 	select THERMAL if DRM_ETNAVIV_THERMAL
+ 	select TMPFS
+ 	select WANT_DEV_COREDUMP
+-	select CMA if HAVE_DMA_CONTIGUOUS
+-	select DMA_CMA if HAVE_DMA_CONTIGUOUS
++	select WANT_DMA_CMA
+ 	select DRM_SCHED
+ 	help
+ 	  DRM driver for Vivante GPUs.
+diff --git a/drivers/gpu/drm/ingenic/Kconfig b/drivers/gpu/drm/ingenic/Kconfig
+index 3b57f8be007c..156b11b7bbb8 100644
+--- a/drivers/gpu/drm/ingenic/Kconfig
++++ b/drivers/gpu/drm/ingenic/Kconfig
+@@ -2,7 +2,6 @@ config DRM_INGENIC
+ 	tristate "DRM Support for Ingenic SoCs"
+ 	depends on MIPS || COMPILE_TEST
+ 	depends on DRM
+-	depends on CMA
+ 	depends on OF
+ 	depends on COMMON_CLK
+ 	select DRM_BRIDGE
+diff --git a/drivers/gpu/drm/mcde/Kconfig b/drivers/gpu/drm/mcde/Kconfig
+index 71c689b573c9..217d54c4babc 100644
+--- a/drivers/gpu/drm/mcde/Kconfig
++++ b/drivers/gpu/drm/mcde/Kconfig
+@@ -1,7 +1,6 @@
+ config DRM_MCDE
+ 	tristate "DRM Support for ST-Ericsson MCDE (Multichannel Display Engine)"
+ 	depends on DRM
+-	depends on CMA
+ 	depends on ARM || COMPILE_TEST
+ 	depends on OF
+ 	depends on COMMON_CLK
+diff --git a/drivers/gpu/drm/tve200/Kconfig b/drivers/gpu/drm/tve200/Kconfig
+index e2d163c74ed6..d04b7322c770 100644
+--- a/drivers/gpu/drm/tve200/Kconfig
++++ b/drivers/gpu/drm/tve200/Kconfig
+@@ -2,7 +2,6 @@
+ config DRM_TVE200
+ 	tristate "DRM Support for Faraday TV Encoder TVE200"
+ 	depends on DRM
+-	depends on CMA
+ 	depends on ARM || COMPILE_TEST
+ 	depends on OF
+ 	select DRM_BRIDGE
+diff --git a/drivers/video/fbdev/Kconfig b/drivers/video/fbdev/Kconfig
+index 4f02db65dede..e8acd4f77d41 100644
+--- a/drivers/video/fbdev/Kconfig
++++ b/drivers/video/fbdev/Kconfig
+@@ -2186,7 +2186,7 @@ config FB_HYPERV
+ 	select FB_CFB_COPYAREA
+ 	select FB_CFB_IMAGEBLIT
+ 	select FB_DEFERRED_IO
+-	select DMA_CMA if HAVE_DMA_CONTIGUOUS && CMA
++	select WANT_DMA_CMA
+ 	help
+ 	  This framebuffer driver supports Microsoft Hyper-V Synthetic Video.
+ 
+diff --git a/kernel/dma/Kconfig b/kernel/dma/Kconfig
+index 77b405508743..928f16d2461d 100644
+--- a/kernel/dma/Kconfig
++++ b/kernel/dma/Kconfig
+@@ -103,8 +103,15 @@ config DMA_DIRECT_REMAP
+ 	select DMA_REMAP
+ 	select DMA_COHERENT_POOL
+ 
++config WANT_DMA_CMA
++	bool
++	help
++	  Drivers should "select" this option if they desire to use the
++	  DMA_CMA mechanism.
++
+ config DMA_CMA
+ 	bool "DMA Contiguous Memory Allocator"
++	default y if WANT_DMA_CMA
+ 	depends on HAVE_DMA_CONTIGUOUS && CMA
+ 	help
+ 	  This enables the Contiguous Memory Allocator which allows drivers
+diff --git a/mm/Kconfig b/mm/Kconfig
+index 24c045b24b95..169598ee56b1 100644
+--- a/mm/Kconfig
++++ b/mm/Kconfig
+@@ -485,6 +485,7 @@ config FRONTSWAP
+ 
+ config CMA
+ 	bool "Contiguous Memory Allocator"
++	default y if WANT_DMA_CMA
+ 	depends on MMU
+ 	select MIGRATION
+ 	select MEMORY_ISOLATION
+-- 
+2.30.2
+
+_______________________________________________
+iommu mailing list
+iommu@lists.linux-foundation.org
+https://lists.linuxfoundation.org/mailman/listinfo/iommu
