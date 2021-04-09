@@ -2,91 +2,100 @@ Return-Path: <SRS0=LjD4=JG=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-3.8 required=3.0 tests=BAYES_00,DKIM_INVALID,
-	DKIM_SIGNED,MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED
-	autolearn=no autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-10.1 required=3.0 tests=BAYES_00,DKIM_INVALID,
+	DKIM_SIGNED,HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_CR_TRAILER,
+	MAILING_LIST_MULTI,NICE_REPLY_A,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,
+	USER_AGENT_SANE_1 autolearn=unavailable autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9E678C43460
-	for <iommu@archiver.kernel.org>; Fri,  9 Apr 2021 19:38:37 +0000 (UTC)
-Received: from smtp4.osuosl.org (smtp4.osuosl.org [140.211.166.137])
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0F71CC43462
+	for <iommu@archiver.kernel.org>; Fri,  9 Apr 2021 20:00:42 +0000 (UTC)
+Received: from smtp2.osuosl.org (smtp2.osuosl.org [140.211.166.133])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 51105610F7
-	for <iommu@archiver.kernel.org>; Fri,  9 Apr 2021 19:38:37 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 51105610F7
-Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=kernel.org
+	by mail.kernel.org (Postfix) with ESMTPS id A85726105A
+	for <iommu@archiver.kernel.org>; Fri,  9 Apr 2021 20:00:41 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org A85726105A
+Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=linuxfoundation.org
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by smtp4.osuosl.org (Postfix) with ESMTP id 1E6E6404FB;
-	Fri,  9 Apr 2021 19:38:37 +0000 (UTC)
+	by smtp2.osuosl.org (Postfix) with ESMTP id 71EB6401CF;
+	Fri,  9 Apr 2021 20:00:41 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from smtp4.osuosl.org ([127.0.0.1])
-	by localhost (smtp4.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id B9UWdKuKI6Yq; Fri,  9 Apr 2021 19:38:36 +0000 (UTC)
+Received: from smtp2.osuosl.org ([127.0.0.1])
+	by localhost (smtp2.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+	with ESMTP id eyfcO2Ktg8pJ; Fri,  9 Apr 2021 20:00:40 +0000 (UTC)
 Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by smtp4.osuosl.org (Postfix) with ESMTP id AA0B540503;
-	Fri,  9 Apr 2021 19:38:35 +0000 (UTC)
+	by smtp2.osuosl.org (Postfix) with ESMTP id 2B0A1401C9;
+	Fri,  9 Apr 2021 20:00:40 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 856F7C000C;
-	Fri,  9 Apr 2021 19:38:35 +0000 (UTC)
-Received: from smtp2.osuosl.org (smtp2.osuosl.org [140.211.166.133])
- by lists.linuxfoundation.org (Postfix) with ESMTP id CF0C0C000A
- for <iommu@lists.linux-foundation.org>; Fri,  9 Apr 2021 19:38:34 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 0E29AC000C;
+	Fri,  9 Apr 2021 20:00:40 +0000 (UTC)
+Received: from smtp2.osuosl.org (smtp2.osuosl.org [IPv6:2605:bc80:3010::133])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 37B4FC000A
+ for <iommu@lists.linux-foundation.org>; Fri,  9 Apr 2021 20:00:38 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by smtp2.osuosl.org (Postfix) with ESMTP id BD5D4401C9
- for <iommu@lists.linux-foundation.org>; Fri,  9 Apr 2021 19:38:34 +0000 (UTC)
+ by smtp2.osuosl.org (Postfix) with ESMTP id 19071401CF
+ for <iommu@lists.linux-foundation.org>; Fri,  9 Apr 2021 20:00:38 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Authentication-Results: smtp2.osuosl.org (amavisd-new);
- dkim=pass (2048-bit key) header.d=kernel.org
 Received: from smtp2.osuosl.org ([127.0.0.1])
  by localhost (smtp2.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id TKo_eE4CgdmG for <iommu@lists.linux-foundation.org>;
- Fri,  9 Apr 2021 19:38:34 +0000 (UTC)
-X-Greylist: domain auto-whitelisted by SQLgrey-1.8.0
-Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
- by smtp2.osuosl.org (Postfix) with ESMTPS id 26AA840118
- for <iommu@lists.linux-foundation.org>; Fri,  9 Apr 2021 19:38:34 +0000 (UTC)
-Received: by mail.kernel.org (Postfix) with ESMTPSA id B81606115B
- for <iommu@lists.linux-foundation.org>; Fri,  9 Apr 2021 19:38:32 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
- s=k20201202; t=1617997112;
- bh=AqqKRuGB+aYlSpd2XHtxaxortNgbyhw4JfrwsQxNLN4=;
- h=References:In-Reply-To:From:Date:Subject:To:Cc:From;
- b=CXwi9Dy+zfc80o7ZkIWXRhs9/ZKsvO31vSVYQYVnq6OvP5VeIuRcuhRudglZoQrQQ
- XI7tsH+VIwCw4CT/GnM0ZR5PZ3WRQlV38xh0JeEDw9VHzjDIvP+9nHId9Ptt3/kCzR
- FVppS1H7u4g5ES4XvCWAkfAIZq5W0YPmRb5at5f2GEFA6Jmd5EEwa+qZFj1DXJRmmw
- sbbUjDjd4yuWNHTnUXnSPTG3vvDp+NXA0HsQ/WZdOgBfMQ/LOtOFCivjxmL0lIb2J7
- w874TcijUzFj4URMPQq49VLnSCESPe5wYkuv2LFIrfTqsGYl4mp3Xw41AQDRyHnMFr
- 3ALhcqp8DJlkQ==
-Received: by mail-oi1-f171.google.com with SMTP id c16so6917518oib.3
- for <iommu@lists.linux-foundation.org>; Fri, 09 Apr 2021 12:38:32 -0700 (PDT)
-X-Gm-Message-State: AOAM533UAtNny3p0m+FG+zA7w7ttSAR4tylJ9fXG1xAe4ogjFfUTUfux
- kj9NSJ/UAt6uflT8oTi/5Ock+OxG37RCqBUOINQ=
-X-Google-Smtp-Source: ABdhPJwPRkeRcHq2LQ4abuG/9/wDbgW0Bv24YoYSOQZ4hFRrWtMj03Zbtndge10mz92YsjqjXfAUKkMC/mJSZ/pM/cI=
-X-Received: by 2002:a05:6808:3d3:: with SMTP id
- o19mr1577825oie.4.1617997112043; 
- Fri, 09 Apr 2021 12:38:32 -0700 (PDT)
+ with ESMTP id jTywaVHeGM2x for <iommu@lists.linux-foundation.org>;
+ Fri,  9 Apr 2021 20:00:36 +0000 (UTC)
+X-Greylist: whitelisted by SQLgrey-1.8.0
+Received: from mail-io1-xd29.google.com (mail-io1-xd29.google.com
+ [IPv6:2607:f8b0:4864:20::d29])
+ by smtp2.osuosl.org (Postfix) with ESMTPS id D9D45401C9
+ for <iommu@lists.linux-foundation.org>; Fri,  9 Apr 2021 20:00:36 +0000 (UTC)
+Received: by mail-io1-xd29.google.com with SMTP id x17so7132585iog.2
+ for <iommu@lists.linux-foundation.org>; Fri, 09 Apr 2021 13:00:36 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+ d=linuxfoundation.org; s=google;
+ h=subject:to:cc:references:from:message-id:date:user-agent
+ :mime-version:in-reply-to:content-language:content-transfer-encoding;
+ bh=cgshE6EYnolIShLRm5FI9d7+7bz8uNIyn1uZIy0SnYk=;
+ b=P+0ssMYSZARmrpU7MaDh0LAz4Nsm9BirVFy68Wgek1heXXY45shgwR8l2yCLMRixvM
+ gHejADh8yLI1kWEwJsl96uXZXuXBktI7xPT76f+/Iq9q3JV//4UITVQpA4y1ENRQE9LF
+ aRbV35/My1YsmojhyfG/Pxadmg73YZ+GzD6Aw=
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+ d=1e100.net; s=20161025;
+ h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+ :user-agent:mime-version:in-reply-to:content-language
+ :content-transfer-encoding;
+ bh=cgshE6EYnolIShLRm5FI9d7+7bz8uNIyn1uZIy0SnYk=;
+ b=B74sJ1rcmQOYewswdnL2vVtMv3ItJmVgsoZ7UcvaROYKGTC+pgA3jYI986aU0IB0IW
+ fTTNolqNH2XgoJZPjjTLh1MNyLmqFd4UIzfrahFa0n7lAOIf8pm89WYFcSQ7t+G/gWnl
+ EQ/GeWaT5wSMOyHA1MWh2OKC69rOy/vsCIm9Fi/eOTIOiuCHkAno/iBZ+lq+QmP//sec
+ O4Ag7LUt/MIPQeA2f7DSUHpVifOzRAGZBglXOnWorww2Uehyaom3ddYCl/k4rOXaTfn6
+ Qbz5+63fFXoYS8+vT+d1k6F5dodMsyEn43j/2CGhSaU/maN4YIRBR1wUPS22wYM/zwCy
+ aARw==
+X-Gm-Message-State: AOAM531SOr27TJ27LK0BxoBQESqd4PMSdOKJ4oN6m8+bs2mFEilmy737
+ 4br2hLfcbT+RM+MHaansXXlGEIZm
+X-Google-Smtp-Source: ABdhPJzChhxXyqliGmiCUhlRXZWNybL45CB4wGrK1sdALXTbkRB6XEqjA6pDuJdJ5sHy+1Fcaz75uQ==
+X-Received: by 2002:a02:850a:: with SMTP id g10mr16476595jai.140.1617998435941; 
+ Fri, 09 Apr 2021 13:00:35 -0700 (PDT)
+Received: from [192.168.1.112] (c-24-9-64-241.hsd1.co.comcast.net.
+ [24.9.64.241])
+ by smtp.gmail.com with ESMTPSA id o6sm1658992ioa.21.2021.04.09.13.00.34
+ (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+ Fri, 09 Apr 2021 13:00:35 -0700 (PDT)
+Subject: Re: [PATCH 2/2] iommu/amd: Remove performance counter
+ pre-initialization test
+To: Suravee Suthikulpanit <suravee.suthikulpanit@amd.com>,
+ linux-kernel@vger.kernel.org, iommu@lists.linux-foundation.org
+References: <20210409085848.3908-1-suravee.suthikulpanit@amd.com>
+ <20210409085848.3908-3-suravee.suthikulpanit@amd.com>
+From: Shuah Khan <skhan@linuxfoundation.org>
+Message-ID: <4f007897-afac-35e3-9c76-281c94d660c7@linuxfoundation.org>
+Date: Fri, 9 Apr 2021 14:00:34 -0600
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
+ Thunderbird/78.7.1
 MIME-Version: 1.0
-References: <20210328074009.95932-1-sven@svenpeter.dev>
- <20210328074009.95932-2-sven@svenpeter.dev>
- <20210407104425.GB15173@willie-the-truck>
- <e0d9af36-fc6c-4470-a87c-61b9161bdf8f@www.fastmail.com>
-In-Reply-To: <e0d9af36-fc6c-4470-a87c-61b9161bdf8f@www.fastmail.com>
-From: Arnd Bergmann <arnd@kernel.org>
-Date: Fri, 9 Apr 2021 21:38:15 +0200
-X-Gmail-Original-Message-ID: <CAK8P3a11O7JVDv+4rfky13C1pZFD7eE_B_54zRN8UQVpBrQJcA@mail.gmail.com>
-Message-ID: <CAK8P3a11O7JVDv+4rfky13C1pZFD7eE_B_54zRN8UQVpBrQJcA@mail.gmail.com>
-Subject: Re: [PATCH v2 1/3] iommu: io-pgtable: add DART pagetable format
-To: Sven Peter <sven@svenpeter.dev>
-Cc: DTML <devicetree@vger.kernel.org>, Will Deacon <will@kernel.org>,
- Hector Martin <marcan@marcan.st>,
- Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
- Petr Mladek via iommu <iommu@lists.linux-foundation.org>,
- Rob Herring <robh+dt@kernel.org>, Marc Zyngier <maz@kernel.org>,
- Mohamed Mediouni <mohamed.mediouni@caramail.com>,
- Mark Kettenis <mark.kettenis@xs4all.nl>, Robin Murphy <robin.murphy@arm.com>,
- Linux ARM <linux-arm-kernel@lists.infradead.org>,
- Stan Skowronek <stan@corellium.com>
+In-Reply-To: <20210409085848.3908-3-suravee.suthikulpanit@amd.com>
+Content-Language: en-US
+Cc: pmenzel@molgen.mpg.de, Alexander Monakov <amonakov@ispras.ru>,
+ David Coe <david.coe@live.co.uk>, Jon.Grimm@amd.com,
+ Shuah Khan <skhan@linuxfoundation.org>, Tj <ml.linux@elloe.vision>,
+ will@kernel.org
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -99,86 +108,116 @@ List-Post: <mailto:iommu@lists.linux-foundation.org>
 List-Help: <mailto:iommu-request@lists.linux-foundation.org?subject=help>
 List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
  <mailto:iommu-request@lists.linux-foundation.org?subject=subscribe>
-Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset="us-ascii"; Format="flowed"
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-On Fri, Apr 9, 2021 at 6:56 PM Sven Peter <sven@svenpeter.dev> wrote:
-> On Wed, Apr 7, 2021, at 12:44, Will Deacon wrote:
-> > On Sun, Mar 28, 2021 at 09:40:07AM +0200, Sven Peter wrote:
-> >
-> > > +   cfg->pgsize_bitmap &= SZ_16K;
-> > > +   if (!cfg->pgsize_bitmap)
-> > > +           return NULL;
-> >
-> > This is worrying (and again, I don't think this belongs here). How is this
-> > thing supposed to work if the CPU is using 4k pages?
->
-> This SoC is just full of fun surprises!
-> I didn't even think about that case since I've always been using 16k pages so far.
->
-> I've checked again and wasn't able to find any way to configure the pagesize
-> of the IOMMU. There seem to be variants of this IP in older iPhones which
-> support a 4k pagesize but to the best of my knowledge this is hard wired
-> and not configurable in software.
->
-> When booting with 4k pages I hit the BUG_ON in iova.c that ensures that the
-> iommu pagesize has to be <= the cpu page size.
->
-> I see two options here and I'm not sure I like either of them:
->
-> 1) Just don't support 4k CPU pages together with IOMMU translations and only
->    allow full bypass mode there.
->    This would however mean that PCIe (i.e. ethernet, usb ports on the Mac
->    mini) and possibly Thunderbolt support would not be possible since these
->    devices don't seem to like iommu bypass mode at all.
+On 4/9/21 2:58 AM, Suravee Suthikulpanit wrote:
+> In early AMD desktop/mobile platforms (during 2013), when the IOMMU
+> Performance Counter (PMC) support was first introduced in
+> commit 30861ddc9cca ("perf/x86/amd: Add IOMMU Performance Counter
+> resource management"), there was a HW bug where the counters could not
+> be accessed. The result was reading of the counter always return zero.
+> 
+> At the time, the suggested workaround was to add a test logic prior
+> to initializing the PMC feature to check if the counters can be programmed
+> and read back the same value. This has been working fine until the more
+> recent desktop/mobile platforms start enabling power gating for the PMC,
+> which prevents access to the counters. This results in the PMC support
+> being disabled unnecesarily.
+> 
+> Unfortunatly, there is no documentation of since which generation
+> of hardware the original PMC HW bug was fixed. Although, it was fixed
+> soon after the first introduction of the PMC. Base on this, we assume
+> that the buggy platforms are less likely to be in used, and it should
+> be relatively safe to remove this legacy logic.
+> 
+> Link: https://lore.kernel.org/linux-iommu/alpine.LNX.3.20.13.2006030935570.3181@monopod.intra.ispras.ru/
+> Bugzilla: https://bugzilla.kernel.org/show_bug.cgi?id=201753
+> Cc: Tj (Elloe Linux) <ml.linux@elloe.vision>
+> Cc: Shuah Khan <skhan@linuxfoundation.org>
+> Cc: Alexander Monakov <amonakov@ispras.ru>
+> Cc: David Coe <david.coe@live.co.uk>
+> Cc: Paul Menzel <pmenzel@molgen.mpg.de>
+> Signed-off-by: Suravee Suthikulpanit <suravee.suthikulpanit@amd.com>
+> ---
 
-It should be possible to do a fake bypass mode by just programming a
-static page table for as much address space as you can, and then
-use swiotlb to address any memory beyond that. This won't perform
-well because it requires bounce buffers for any high memory, but it
-can be a last resort if a dart instance cannot do normal bypass mode.
 
-> 2) I've had a brief discussion on IRC with Arnd about this [1] and he pointed
->    out that the dma_map_sg API doesn't make any guarantees about the returned
->    iovas and that it might be possible to make this work at least for devices
->    that go through the normal DMA API.
->
->    I've then replaced the page size check with a WARN_ON in iova.c just to see
->    what happens. At least normal devices that go through the DMA API seem to
->    work with my configuration. iommu_dma_alloc took the iommu_dma_alloc_remap
->    path which was called with the cpu page size but then used
->    domain->pgsize_bitmap to increase that to 16k. So this kinda works out, but
->    there are other functions in dma-iommu.c that I believe rely on the fact that
->    the iommu can map single cpu pages. This feels very fragile right now and
->    would probably require some rather invasive changes.
+Tested-by: Shuah Khan <skhan@linuxfoundation.org>
 
-The other second-to-last resort here would be to duplicate the code from
-the dma-iommu code and implement the dma-mapping API directly on
-top of the dart hardware instead of the iommu layer. This would probably
-be much faster than the swiotlb on top of a bypass or a linear map,
-but it's a really awful abstraction that would require adding special cases
-into a lot of generic code.
+thanks,
+-- Shuah
 
->    Any driver that tries to use the iommu API directly could be trouble
->    as well if they make similar assumptions.
+Results with this patch on AMD Ryzen 5 PRO 2400GE w/ Radeon Vega
+Graphics
 
-I think pretty much all drivers using the iommu API directly already
-depends on having a matching page size.  I don't see any way to use
-e.g. PCI device assignment using vfio, or a GPU driver with per-process
-contexts when the iotlb page size is larger than the CPU's.
+sudo ./perf stat -e 'amd_iommu_0/cmd_processed/, 
+amd_iommu_0/cmd_processed_inv/, amd_iommu_0/ign_rd_wr_mmio_1ff8h/, 
+amd_iommu_0/int_dte_hit/, amd_iommu_0/int_dte_mis/, 
+amd_iommu_0/mem_dte_hit/, amd_iommu_0/mem_dte_mis/, 
+amd_iommu_0/mem_iommu_tlb_pde_hit/, amd_iommu_0/mem_iommu_tlb_pde_mis/, 
+amd_iommu_0/mem_iommu_tlb_pte_hit/, amd_iommu_0/mem_iommu_tlb_pte_mis/, 
+amd_iommu_0/mem_pass_excl/, amd_iommu_0/mem_pass_pretrans/, 
+amd_iommu_0/mem_pass_untrans/, amd_iommu_0/mem_target_abort/, 
+amd_iommu_0/mem_trans_total/, amd_iommu_0/page_tbl_read_gst/, 
+amd_iommu_0/page_tbl_read_nst/, amd_iommu_0/page_tbl_read_tot/, 
+amd_iommu_0/smi_blk/, amd_iommu_0/smi_recv/, amd_iommu_0/tlb_inv/, 
+amd_iommu_0/vapic_int_guest/, amd_iommu_0/vapic_int_non_guest/' sleep 10
 
->    Is this something you would even want to support in the iommu subsytem
->    and is it even possible to do this in a sane way?
+  Performance counter stats for 'system wide':
 
-I don't know how hard it is to do adjust the dma-iommu implementation
-to allow this, but as long as we can work out the DT binding to support
-both normal dma-iommu mode with 16KB pages and some kind of
-passthrough mode (emulated or not) with 4KB pages, it can be left
-as a possible optimization for later.
+                156      amd_iommu_0/cmd_processed/ 
+                 (33.30%)
+                 80       amd_iommu_0/cmd_processed_inv/ 
+                      (33.38%)
+                  0       amd_iommu_0/ign_rd_wr_mmio_1ff8h/ 
+                         (33.40%)
+                  0       amd_iommu_0/int_dte_hit/ 
+                (33.43%)
+                325       amd_iommu_0/int_dte_mis/ 
+                (33.44%)
+              1,951       amd_iommu_0/mem_dte_hit/ 
+                (33.45%)
+              7,589       amd_iommu_0/mem_dte_mis/ 
+                (33.49%)
+                325       amd_iommu_0/mem_iommu_tlb_pde_hit/ 
+                          (33.45%)
+              2,460       amd_iommu_0/mem_iommu_tlb_pde_mis/ 
+                          (33.41%)
+              2,510       amd_iommu_0/mem_iommu_tlb_pte_hit/ 
+                          (33.38%)
+              5,526       amd_iommu_0/mem_iommu_tlb_pte_mis/ 
+                          (33.33%)
+                  0       amd_iommu_0/mem_pass_excl/ 
+                  (33.29%)
+                  0       amd_iommu_0/mem_pass_pretrans/ 
+                      (33.28%)
+              1,556       amd_iommu_0/mem_pass_untrans/ 
+                     (33.27%)
+                  0       amd_iommu_0/mem_target_abort/ 
+                     (33.26%)
+              3,112       amd_iommu_0/mem_trans_total/ 
+                    (33.29%)
+                  0       amd_iommu_0/page_tbl_read_gst/ 
+                      (33.29%)
+              1,813       amd_iommu_0/page_tbl_read_nst/ 
+                      (33.25%)
+              2,242       amd_iommu_0/page_tbl_read_tot/ 
+                      (33.27%)
+                  0       amd_iommu_0/smi_blk/ 
+                (33.29%)
+                  0       amd_iommu_0/smi_recv/ 
+                (33.28%)
+                  0       amd_iommu_0/tlb_inv/ 
+                (33.28%)
+                  0       amd_iommu_0/vapic_int_guest/ 
+                    (33.25%)
+                  0       amd_iommu_0/vapic_int_non_guest/ 
+                        (33.26%)
 
-        Arnd
+       10.003200316 seconds time elapsed
+
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
