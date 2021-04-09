@@ -2,74 +2,85 @@ Return-Path: <SRS0=LjD4=JG=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-16.7 required=3.0 tests=BAYES_00,
+X-Spam-Status: No, score=-15.3 required=3.0 tests=BAYES_00,
 	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_CR_TRAILER,INCLUDES_PATCH,
-	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_GIT
-	autolearn=unavailable autolearn_force=no version=3.4.0
+	MAILING_LIST_MULTI,NICE_REPLY_A,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,
+	USER_AGENT_SANE_1 autolearn=ham autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7A1A0C4360C
-	for <iommu@archiver.kernel.org>; Fri,  9 Apr 2021 03:44:59 +0000 (UTC)
-Received: from smtp4.osuosl.org (smtp4.osuosl.org [140.211.166.137])
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 22529C433ED
+	for <iommu@archiver.kernel.org>; Fri,  9 Apr 2021 04:48:48 +0000 (UTC)
+Received: from smtp2.osuosl.org (smtp2.osuosl.org [140.211.166.133])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 1FE6E61055
-	for <iommu@archiver.kernel.org>; Fri,  9 Apr 2021 03:44:59 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 1FE6E61055
+	by mail.kernel.org (Postfix) with ESMTPS id ACE2661178
+	for <iommu@archiver.kernel.org>; Fri,  9 Apr 2021 04:48:47 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org ACE2661178
 Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=huawei.com
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by smtp4.osuosl.org (Postfix) with ESMTP id DD315419B6;
-	Fri,  9 Apr 2021 03:44:58 +0000 (UTC)
+	by smtp2.osuosl.org (Postfix) with ESMTP id 6F8F3402BB;
+	Fri,  9 Apr 2021 04:48:47 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from smtp4.osuosl.org ([127.0.0.1])
-	by localhost (smtp4.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id XXOk4iHM48hd; Fri,  9 Apr 2021 03:44:57 +0000 (UTC)
+Received: from smtp2.osuosl.org ([127.0.0.1])
+	by localhost (smtp2.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+	with ESMTP id lOOvXuU2o28J; Fri,  9 Apr 2021 04:48:46 +0000 (UTC)
 Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by smtp4.osuosl.org (Postfix) with ESMTP id E1D5E419E7;
-	Fri,  9 Apr 2021 03:44:56 +0000 (UTC)
+	by smtp2.osuosl.org (Postfix) with ESMTP id 408FA40164;
+	Fri,  9 Apr 2021 04:48:46 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 42CD8C0019;
-	Fri,  9 Apr 2021 03:44:56 +0000 (UTC)
-Received: from smtp1.osuosl.org (smtp1.osuosl.org [140.211.166.138])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 57994C000A
- for <iommu@lists.linux-foundation.org>; Fri,  9 Apr 2021 03:44:55 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 1F994C000B;
+	Fri,  9 Apr 2021 04:48:46 +0000 (UTC)
+Received: from smtp3.osuosl.org (smtp3.osuosl.org [IPv6:2605:bc80:3010::136])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id C98B4C000A
+ for <iommu@lists.linux-foundation.org>; Fri,  9 Apr 2021 04:48:43 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by smtp1.osuosl.org (Postfix) with ESMTP id 3AAD1849D7
- for <iommu@lists.linux-foundation.org>; Fri,  9 Apr 2021 03:44:55 +0000 (UTC)
+ by smtp3.osuosl.org (Postfix) with ESMTP id B28CE60E4A
+ for <iommu@lists.linux-foundation.org>; Fri,  9 Apr 2021 04:48:43 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from smtp1.osuosl.org ([127.0.0.1])
- by localhost (smtp1.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id wU3kBbNzpkdI for <iommu@lists.linux-foundation.org>;
- Fri,  9 Apr 2021 03:44:54 +0000 (UTC)
+Received: from smtp3.osuosl.org ([127.0.0.1])
+ by localhost (smtp3.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+ with ESMTP id GCq_CyYYVFJr for <iommu@lists.linux-foundation.org>;
+ Fri,  9 Apr 2021 04:48:42 +0000 (UTC)
 X-Greylist: domain auto-whitelisted by SQLgrey-1.8.0
-Received: from szxga06-in.huawei.com (szxga06-in.huawei.com [45.249.212.32])
- by smtp1.osuosl.org (Postfix) with ESMTPS id BC4C084924
- for <iommu@lists.linux-foundation.org>; Fri,  9 Apr 2021 03:44:53 +0000 (UTC)
-Received: from DGGEMS414-HUB.china.huawei.com (unknown [172.30.72.60])
- by szxga06-in.huawei.com (SkyGuard) with ESMTP id 4FGkVZ6HPszlWqS;
- Fri,  9 Apr 2021 11:43:02 +0800 (CST)
-Received: from DESKTOP-7FEPK9S.china.huawei.com (10.174.184.135) by
- DGGEMS414-HUB.china.huawei.com (10.3.19.214) with Microsoft SMTP Server id
- 14.3.498.0; Fri, 9 Apr 2021 11:44:43 +0800
-From: Shenming Lu <lushenming@huawei.com>
-To: Alex Williamson <alex.williamson@redhat.com>, Cornelia Huck
- <cohuck@redhat.com>, Will Deacon <will@kernel.org>, Robin Murphy
- <robin.murphy@arm.com>, Joerg Roedel <joro@8bytes.org>, Jean-Philippe Brucker
- <jean-philippe@linaro.org>, Eric Auger <eric.auger@redhat.com>,
- <kvm@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
- <linux-arm-kernel@lists.infradead.org>, <iommu@lists.linux-foundation.org>,
- <linux-api@vger.kernel.org>
-Subject: [RFC PATCH v3 7/8] vfio/type1: Add selective DMA faulting support
-Date: Fri, 9 Apr 2021 11:44:19 +0800
-Message-ID: <20210409034420.1799-8-lushenming@huawei.com>
-X-Mailer: git-send-email 2.27.0.windows.1
-In-Reply-To: <20210409034420.1799-1-lushenming@huawei.com>
-References: <20210409034420.1799-1-lushenming@huawei.com>
+Received: from szxga03-in.huawei.com (szxga03-in.huawei.com [45.249.212.189])
+ by smtp3.osuosl.org (Postfix) with ESMTPS id E7194606D5
+ for <iommu@lists.linux-foundation.org>; Fri,  9 Apr 2021 04:48:41 +0000 (UTC)
+Received: from DGGEML401-HUB.china.huawei.com (unknown [172.30.72.54])
+ by szxga03-in.huawei.com (SkyGuard) with ESMTP id 4FGlv16vY3z5mLB;
+ Fri,  9 Apr 2021 12:45:49 +0800 (CST)
+Received: from dggema765-chm.china.huawei.com (10.1.198.207) by
+ DGGEML401-HUB.china.huawei.com (10.3.17.32) with Microsoft SMTP Server (TLS)
+ id 14.3.498.0; Fri, 9 Apr 2021 12:48:37 +0800
+Received: from [10.174.185.210] (10.174.185.210) by
+ dggema765-chm.china.huawei.com (10.1.198.207) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id
+ 15.1.2106.2; Fri, 9 Apr 2021 12:48:36 +0800
+Subject: Re: [PATCH v14 06/13] iommu/smmuv3: Allow stage 1 invalidation with
+ unmanaged ASIDs
+To: Auger Eric <eric.auger@redhat.com>, <eric.auger.pro@gmail.com>,
+ <iommu@lists.linux-foundation.org>, <linux-kernel@vger.kernel.org>,
+ <kvm@vger.kernel.org>, <kvmarm@lists.cs.columbia.edu>, <will@kernel.org>,
+ <maz@kernel.org>, <robin.murphy@arm.com>, <joro@8bytes.org>,
+ <alex.williamson@redhat.com>, <tn@semihalf.com>, <zhukeqian1@huawei.com>
+References: <20210223205634.604221-1-eric.auger@redhat.com>
+ <20210223205634.604221-7-eric.auger@redhat.com>
+ <901720e6-6ca5-eb9a-1f24-0ca479bcfecc@huawei.com>
+ <0246aec2-162d-0584-3ca4-b9c304ef3c8a@redhat.com>
+From: Kunkun Jiang <jiangkunkun@huawei.com>
+Message-ID: <46f3760a-9ab5-1710-598e-38fbc1f5fb5c@huawei.com>
+Date: Fri, 9 Apr 2021 12:48:35 +0800
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:78.0) Gecko/20100101
+ Thunderbird/78.8.1
 MIME-Version: 1.0
-X-Originating-IP: [10.174.184.135]
+In-Reply-To: <0246aec2-162d-0584-3ca4-b9c304ef3c8a@redhat.com>
+Content-Language: en-US
+X-Originating-IP: [10.174.185.210]
+X-ClientProxiedBy: dggeme702-chm.china.huawei.com (10.1.199.98) To
+ dggema765-chm.china.huawei.com (10.1.198.207)
 X-CFilter-Loop: Reflected
-Cc: Kevin Tian <kevin.tian@intel.com>, Christoph Hellwig <hch@infradead.org>,
- lushenming@huawei.com, wanghaibin.wang@huawei.com
+Cc: jean-philippe@linaro.org, wangxingang5@huawei.com, lushenming@huawei.com,
+ wanghaibin.wang@huawei.com, vivek.gautam@arm.com, vsethi@nvidia.com,
+ zhangfei.gao@linaro.org
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -82,565 +93,157 @@ List-Post: <mailto:iommu@lists.linux-foundation.org>
 List-Help: <mailto:iommu-request@lists.linux-foundation.org?subject=help>
 List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
  <mailto:iommu-request@lists.linux-foundation.org?subject=subscribe>
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: base64
+Content-Type: text/plain; charset="utf-8"; Format="flowed"
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-Some devices only allow selective DMA faulting. Similar to the selective
-dirty page tracking, the vendor driver can call vfio_pin_pages() to
-indicate the non-faultable scope, we add a new struct vfio_range to
-record it, then when the IOPF handler receives any page request out
-of the scope, we can directly return with an invalid response.
-
-Suggested-by: Kevin Tian <kevin.tian@intel.com>
-Signed-off-by: Shenming Lu <lushenming@huawei.com>
----
- drivers/vfio/vfio.c             |   4 +-
- drivers/vfio/vfio_iommu_type1.c | 357 +++++++++++++++++++++++++++++++-
- include/linux/vfio.h            |   1 +
- 3 files changed, 358 insertions(+), 4 deletions(-)
-
-diff --git a/drivers/vfio/vfio.c b/drivers/vfio/vfio.c
-index 38779e6fd80c..44c8dfabf7de 100644
---- a/drivers/vfio/vfio.c
-+++ b/drivers/vfio/vfio.c
-@@ -2013,7 +2013,8 @@ int vfio_unpin_pages(struct device *dev, unsigned long *user_pfn, int npage)
- 	container = group->container;
- 	driver = container->iommu_driver;
- 	if (likely(driver && driver->ops->unpin_pages))
--		ret = driver->ops->unpin_pages(container->iommu_data, user_pfn,
-+		ret = driver->ops->unpin_pages(container->iommu_data,
-+					       group->iommu_group, user_pfn,
- 					       npage);
- 	else
- 		ret = -ENOTTY;
-@@ -2112,6 +2113,7 @@ int vfio_group_unpin_pages(struct vfio_group *group,
- 	driver = container->iommu_driver;
- 	if (likely(driver && driver->ops->unpin_pages))
- 		ret = driver->ops->unpin_pages(container->iommu_data,
-+					       group->iommu_group,
- 					       user_iova_pfn, npage);
- 	else
- 		ret = -ENOTTY;
-diff --git a/drivers/vfio/vfio_iommu_type1.c b/drivers/vfio/vfio_iommu_type1.c
-index dcc93c3b258c..ba2b5a1cf6e9 100644
---- a/drivers/vfio/vfio_iommu_type1.c
-+++ b/drivers/vfio/vfio_iommu_type1.c
-@@ -150,10 +150,19 @@ struct vfio_regions {
- static struct rb_root iopf_group_list = RB_ROOT;
- static DEFINE_MUTEX(iopf_group_list_lock);
- 
-+struct vfio_range {
-+	struct rb_node		node;
-+	dma_addr_t		base_iova;
-+	size_t			span;
-+	unsigned int		ref_count;
-+};
-+
- struct vfio_iopf_group {
- 	struct rb_node		node;
- 	struct iommu_group	*iommu_group;
- 	struct vfio_iommu	*iommu;
-+	struct rb_root		pinned_range_list;
-+	bool			selective_faulting;
- };
- 
- #define IS_IOMMU_CAP_DOMAIN_IN_CONTAINER(iommu)	\
-@@ -496,6 +505,255 @@ static void vfio_unlink_iopf_group(struct vfio_iopf_group *old)
- 	mutex_unlock(&iopf_group_list_lock);
- }
- 
-+/*
-+ * Helper functions for range list, handle one page at a time.
-+ */
-+static struct vfio_range *vfio_find_range(struct rb_root *range_list,
-+					  dma_addr_t iova)
-+{
-+	struct rb_node *node = range_list->rb_node;
-+	struct vfio_range *range;
-+
-+	while (node) {
-+		range = rb_entry(node, struct vfio_range, node);
-+
-+		if (iova + PAGE_SIZE <= range->base_iova)
-+			node = node->rb_left;
-+		else if (iova >= range->base_iova + range->span)
-+			node = node->rb_right;
-+		else
-+			return range;
-+	}
-+
-+	return NULL;
-+}
-+
-+/* Do the possible merge adjacent to the input range. */
-+static void vfio_merge_range_list(struct rb_root *range_list,
-+				  struct vfio_range *range)
-+{
-+	struct rb_node *node_prev = rb_prev(&range->node);
-+	struct rb_node *node_next = rb_next(&range->node);
-+
-+	if (node_next) {
-+		struct vfio_range *range_next = rb_entry(node_next,
-+							 struct vfio_range,
-+							 node);
-+
-+		if (range_next->base_iova == (range->base_iova + range->span) &&
-+		    range_next->ref_count == range->ref_count) {
-+			rb_erase(node_next, range_list);
-+			range->span += range_next->span;
-+			kfree(range_next);
-+		}
-+	}
-+
-+	if (node_prev) {
-+		struct vfio_range *range_prev = rb_entry(node_prev,
-+							 struct vfio_range,
-+							 node);
-+
-+		if (range->base_iova == (range_prev->base_iova + range_prev->span)
-+		    && range->ref_count == range_prev->ref_count) {
-+			rb_erase(&range->node, range_list);
-+			range_prev->span += range->span;
-+			kfree(range);
-+		}
-+	}
-+}
-+
-+static void vfio_link_range(struct rb_root *range_list, struct vfio_range *new)
-+{
-+	struct rb_node **link, *parent = NULL;
-+	struct vfio_range *range;
-+
-+	link = &range_list->rb_node;
-+
-+	while (*link) {
-+		parent = *link;
-+		range = rb_entry(parent, struct vfio_range, node);
-+
-+		if (new->base_iova < range->base_iova)
-+			link = &(*link)->rb_left;
-+		else
-+			link = &(*link)->rb_right;
-+	}
-+
-+	rb_link_node(&new->node, parent, link);
-+	rb_insert_color(&new->node, range_list);
-+
-+	vfio_merge_range_list(range_list, new);
-+}
-+
-+static int vfio_add_to_range_list(struct rb_root *range_list,
-+				  dma_addr_t iova)
-+{
-+	struct vfio_range *range = vfio_find_range(range_list, iova);
-+
-+	if (range) {
-+		struct vfio_range *new_prev, *new_next;
-+		size_t span_prev, span_next;
-+
-+		/* May split the found range into three parts. */
-+		span_prev = iova - range->base_iova;
-+		span_next = range->span - span_prev - PAGE_SIZE;
-+
-+		if (span_prev) {
-+			new_prev = kzalloc(sizeof(*new_prev), GFP_KERNEL);
-+			if (!new_prev)
-+				return -ENOMEM;
-+
-+			new_prev->base_iova = range->base_iova;
-+			new_prev->span = span_prev;
-+			new_prev->ref_count = range->ref_count;
-+		}
-+
-+		if (span_next) {
-+			new_next = kzalloc(sizeof(*new_next), GFP_KERNEL);
-+			if (!new_next) {
-+				if (span_prev)
-+					kfree(new_prev);
-+				return -ENOMEM;
-+			}
-+
-+			new_next->base_iova = iova + PAGE_SIZE;
-+			new_next->span = span_next;
-+			new_next->ref_count = range->ref_count;
-+		}
-+
-+		range->base_iova = iova;
-+		range->span = PAGE_SIZE;
-+		range->ref_count++;
-+		vfio_merge_range_list(range_list, range);
-+
-+		if (span_prev)
-+			vfio_link_range(range_list, new_prev);
-+
-+		if (span_next)
-+			vfio_link_range(range_list, new_next);
-+	} else {
-+		struct vfio_range *new;
-+
-+		new = kzalloc(sizeof(*new), GFP_KERNEL);
-+		if (!new)
-+			return -ENOMEM;
-+
-+		new->base_iova = iova;
-+		new->span = PAGE_SIZE;
-+		new->ref_count = 1;
-+
-+		vfio_link_range(range_list, new);
-+	}
-+
-+	return 0;
-+}
-+
-+static int vfio_remove_from_range_list(struct rb_root *range_list,
-+				       dma_addr_t iova)
-+{
-+	struct vfio_range *range = vfio_find_range(range_list, iova);
-+	struct vfio_range *news[3];
-+	size_t span_prev, span_in, span_next;
-+	int i, num_news;
-+
-+	if (!range)
-+		return 0;
-+
-+	span_prev = iova - range->base_iova;
-+	span_in = range->ref_count > 1 ? PAGE_SIZE : 0;
-+	span_next = range->span - span_prev - PAGE_SIZE;
-+
-+	num_news = (int)!!span_prev + (int)!!span_in + (int)!!span_next;
-+	if (!num_news) {
-+		rb_erase(&range->node, range_list);
-+		kfree(range);
-+		return 0;
-+	}
-+
-+	for (i = 0; i < num_news - 1; i++) {
-+		news[i] = kzalloc(sizeof(struct vfio_range), GFP_KERNEL);
-+		if (!news[i]) {
-+			if (i > 0)
-+				kfree(news[0]);
-+			return -ENOMEM;
-+		}
-+	}
-+	/* Reuse the found range. */
-+	news[i] = range;
-+
-+	i = 0;
-+	if (span_prev) {
-+		news[i]->base_iova = range->base_iova;
-+		news[i]->span = span_prev;
-+		news[i++]->ref_count = range->ref_count;
-+	}
-+	if (span_in) {
-+		news[i]->base_iova = iova;
-+		news[i]->span = span_in;
-+		news[i++]->ref_count = range->ref_count - 1;
-+	}
-+	if (span_next) {
-+		news[i]->base_iova = iova + PAGE_SIZE;
-+		news[i]->span = span_next;
-+		news[i]->ref_count = range->ref_count;
-+	}
-+
-+	vfio_merge_range_list(range_list, range);
-+
-+	for (i = 0; i < num_news - 1; i++)
-+		vfio_link_range(range_list, news[i]);
-+
-+	return 0;
-+}
-+
-+static void vfio_range_list_free(struct rb_root *range_list)
-+{
-+	struct rb_node *n;
-+
-+	while ((n = rb_first(range_list))) {
-+		struct vfio_range *range = rb_entry(n, struct vfio_range, node);
-+
-+		rb_erase(&range->node, range_list);
-+		kfree(range);
-+	}
-+}
-+
-+static int vfio_range_list_get_copy(struct vfio_iopf_group *iopf_group,
-+				    struct rb_root *range_list_copy)
-+{
-+	struct rb_root *range_list = &iopf_group->pinned_range_list;
-+	struct rb_node *n, **link = &range_list_copy->rb_node, *parent = NULL;
-+	int ret;
-+
-+	for (n = rb_first(range_list); n; n = rb_next(n)) {
-+		struct vfio_range *range, *range_copy;
-+
-+		range = rb_entry(n, struct vfio_range, node);
-+
-+		range_copy = kzalloc(sizeof(*range_copy), GFP_KERNEL);
-+		if (!range_copy) {
-+			ret = -ENOMEM;
-+			goto out_free;
-+		}
-+
-+		range_copy->base_iova = range->base_iova;
-+		range_copy->span = range->span;
-+		range_copy->ref_count = range->ref_count;
-+
-+		rb_link_node(&range_copy->node, parent, link);
-+		rb_insert_color(&range_copy->node, range_list_copy);
-+
-+		parent = *link;
-+		link = &(*link)->rb_right;
-+	}
-+
-+	return 0;
-+
-+out_free:
-+	vfio_range_list_free(range_list_copy);
-+	return ret;
-+}
-+
- static int vfio_lock_acct(struct vfio_dma *dma, long npage, bool async)
- {
- 	struct mm_struct *mm;
-@@ -910,6 +1168,9 @@ static int vfio_unpin_page_external(struct vfio_dma *dma, dma_addr_t iova,
- 	return unlocked;
- }
- 
-+static struct vfio_group *find_iommu_group(struct vfio_domain *domain,
-+					   struct iommu_group *iommu_group);
-+
- static int vfio_iommu_type1_pin_pages(void *iommu_data,
- 				      struct iommu_group *iommu_group,
- 				      unsigned long *user_pfn,
-@@ -923,6 +1184,8 @@ static int vfio_iommu_type1_pin_pages(void *iommu_data,
- 	struct vfio_dma *dma;
- 	bool do_accounting;
- 	dma_addr_t iova;
-+	struct vfio_iopf_group *iopf_group = NULL;
-+	struct rb_root range_list_copy = RB_ROOT;
- 
- 	if (!iommu || !user_pfn || !phys_pfn)
- 		return -EINVAL;
-@@ -955,6 +1218,31 @@ static int vfio_iommu_type1_pin_pages(void *iommu_data,
- 		goto pin_done;
- 	}
- 
-+	/*
-+	 * Some devices only allow selective DMA faulting. Similar to the
-+	 * selective dirty tracking, the vendor driver can call vfio_pin_pages()
-+	 * to indicate the non-faultable scope, and we record it to filter
-+	 * out the invalid page requests in the IOPF handler.
-+	 */
-+	if (iommu->iopf_enabled) {
-+		iopf_group = vfio_find_iopf_group(iommu_group);
-+		if (iopf_group) {
-+			/*
-+			 * We don't want to work on the original range
-+			 * list as the list gets modified and in case
-+			 * of failure we have to retain the original
-+			 * list. Get a copy here.
-+			 */
-+			ret = vfio_range_list_get_copy(iopf_group,
-+						       &range_list_copy);
-+			if (ret)
-+				goto pin_done;
-+		} else {
-+			WARN_ON(!find_iommu_group(iommu->external_domain,
-+						  iommu_group));
-+		}
-+	}
-+
- 	/*
- 	 * If iommu capable domain exist in the container then all pages are
- 	 * already pinned and accounted. Accouting should be done if there is no
-@@ -981,6 +1269,15 @@ static int vfio_iommu_type1_pin_pages(void *iommu_data,
- 		vpfn = vfio_iova_get_vfio_pfn(dma, iova);
- 		if (vpfn) {
- 			phys_pfn[i] = vpfn->pfn;
-+			if (iopf_group) {
-+				ret = vfio_add_to_range_list(&range_list_copy,
-+							     iova);
-+				if (ret) {
-+					vfio_unpin_page_external(dma, iova,
-+								 do_accounting);
-+					goto pin_unwind;
-+				}
-+			}
- 			continue;
- 		}
- 
-@@ -997,6 +1294,15 @@ static int vfio_iommu_type1_pin_pages(void *iommu_data,
- 			goto pin_unwind;
- 		}
- 
-+		if (iopf_group) {
-+			ret = vfio_add_to_range_list(&range_list_copy, iova);
-+			if (ret) {
-+				vfio_unpin_page_external(dma, iova,
-+							 do_accounting);
-+				goto pin_unwind;
-+			}
-+		}
-+
- 		if (iommu->dirty_page_tracking) {
- 			unsigned long pgshift = __ffs(iommu->pgsize_bitmap);
- 
-@@ -1010,6 +1316,13 @@ static int vfio_iommu_type1_pin_pages(void *iommu_data,
- 	}
- 	ret = i;
- 
-+	if (iopf_group) {
-+		vfio_range_list_free(&iopf_group->pinned_range_list);
-+		iopf_group->pinned_range_list.rb_node = range_list_copy.rb_node;
-+		if (!iopf_group->selective_faulting)
-+			iopf_group->selective_faulting = true;
-+	}
-+
- 	group = vfio_iommu_find_iommu_group(iommu, iommu_group);
- 	if (!group->pinned_page_dirty_scope) {
- 		group->pinned_page_dirty_scope = true;
-@@ -1019,6 +1332,8 @@ static int vfio_iommu_type1_pin_pages(void *iommu_data,
- 	goto pin_done;
- 
- pin_unwind:
-+	if (iopf_group)
-+		vfio_range_list_free(&range_list_copy);
- 	phys_pfn[i] = 0;
- 	for (j = 0; j < i; j++) {
- 		dma_addr_t iova;
-@@ -1034,12 +1349,14 @@ static int vfio_iommu_type1_pin_pages(void *iommu_data,
- }
- 
- static int vfio_iommu_type1_unpin_pages(void *iommu_data,
-+					struct iommu_group *iommu_group,
- 					unsigned long *user_pfn,
- 					int npage)
- {
- 	struct vfio_iommu *iommu = iommu_data;
-+	struct vfio_iopf_group *iopf_group = NULL;
- 	bool do_accounting;
--	int i;
-+	int i, ret;
- 
- 	if (!iommu || !user_pfn)
- 		return -EINVAL;
-@@ -1050,6 +1367,13 @@ static int vfio_iommu_type1_unpin_pages(void *iommu_data,
- 
- 	mutex_lock(&iommu->lock);
- 
-+	if (iommu->iopf_enabled) {
-+		iopf_group = vfio_find_iopf_group(iommu_group);
-+		if (!iopf_group)
-+			WARN_ON(!find_iommu_group(iommu->external_domain,
-+						  iommu_group));
-+	}
-+
- 	do_accounting = !IS_IOMMU_CAP_DOMAIN_IN_CONTAINER(iommu) ||
- 			iommu->iopf_enabled;
- 	for (i = 0; i < npage; i++) {
-@@ -1058,14 +1382,24 @@ static int vfio_iommu_type1_unpin_pages(void *iommu_data,
- 
- 		iova = user_pfn[i] << PAGE_SHIFT;
- 		dma = vfio_find_dma(iommu, iova, PAGE_SIZE);
--		if (!dma)
-+		if (!dma) {
-+			ret = -EINVAL;
- 			goto unpin_exit;
-+		}
-+
-+		if (iopf_group) {
-+			ret = vfio_remove_from_range_list(
-+					&iopf_group->pinned_range_list, iova);
-+			if (ret)
-+				goto unpin_exit;
-+		}
-+
- 		vfio_unpin_page_external(dma, iova, do_accounting);
- 	}
- 
- unpin_exit:
- 	mutex_unlock(&iommu->lock);
--	return i > npage ? npage : (i > 0 ? i : -EINVAL);
-+	return i > npage ? npage : (i > 0 ? i : ret);
- }
- 
- static long vfio_sync_unpin(struct vfio_dma *dma, struct vfio_domain *domain,
-@@ -2591,6 +2925,7 @@ static int vfio_iommu_type1_attach_group(void *iommu_data,
- 
- 		iopf_group->iommu_group = iommu_group;
- 		iopf_group->iommu = iommu;
-+		iopf_group->pinned_range_list = RB_ROOT;
- 
- 		vfio_link_iopf_group(iopf_group);
- 	}
-@@ -2886,6 +3221,8 @@ static void vfio_iommu_type1_detach_group(void *iommu_data,
- 
- 			iopf_group = vfio_find_iopf_group(iommu_group);
- 			if (!WARN_ON(!iopf_group)) {
-+				WARN_ON(!RB_EMPTY_ROOT(
-+						&iopf_group->pinned_range_list));
- 				vfio_unlink_iopf_group(iopf_group);
- 				kfree(iopf_group);
- 			}
-@@ -3482,6 +3819,7 @@ static int vfio_iommu_type1_dma_map_iopf(struct iommu_fault *fault, void *data)
- 	struct vfio_iommu *iommu;
- 	struct vfio_dma *dma;
- 	struct vfio_batch batch;
-+	struct vfio_range *range;
- 	dma_addr_t iova = ALIGN_DOWN(fault->prm.addr, PAGE_SIZE);
- 	int access_flags = 0;
- 	size_t premap_len, map_len, mapped_len = 0;
-@@ -3506,6 +3844,12 @@ static int vfio_iommu_type1_dma_map_iopf(struct iommu_fault *fault, void *data)
- 
- 	mutex_lock(&iommu->lock);
- 
-+	if (iopf_group->selective_faulting) {
-+		range = vfio_find_range(&iopf_group->pinned_range_list, iova);
-+		if (!range)
-+			goto out_invalid;
-+	}
-+
- 	ret = vfio_find_dma_valid(iommu, iova, PAGE_SIZE, &dma);
- 	if (ret < 0)
- 		goto out_invalid;
-@@ -3523,6 +3867,12 @@ static int vfio_iommu_type1_dma_map_iopf(struct iommu_fault *fault, void *data)
- 
- 	premap_len = IOPF_PREMAP_LEN << PAGE_SHIFT;
- 	npages = dma->size >> PAGE_SHIFT;
-+	if (iopf_group->selective_faulting) {
-+		dma_addr_t range_end = range->base_iova + range->span;
-+
-+		if (range_end < dma->iova + dma->size)
-+			npages = (range_end - dma->iova) >> PAGE_SHIFT;
-+	}
- 	map_len = PAGE_SIZE;
- 	for (i = bit_offset + 1; i < npages; i++) {
- 		if (map_len >= premap_len || IOPF_MAPPED_BITMAP_GET(dma, i))
-@@ -3647,6 +3997,7 @@ static int vfio_iommu_type1_enable_iopf(struct vfio_iommu *iommu)
- 
- 			iopf_group->iommu_group = g->iommu_group;
- 			iopf_group->iommu = iommu;
-+			iopf_group->pinned_range_list = RB_ROOT;
- 
- 			vfio_link_iopf_group(iopf_group);
- 		}
-diff --git a/include/linux/vfio.h b/include/linux/vfio.h
-index b7e18bde5aa8..a7b426d579df 100644
---- a/include/linux/vfio.h
-+++ b/include/linux/vfio.h
-@@ -87,6 +87,7 @@ struct vfio_iommu_driver_ops {
- 				     int npage, int prot,
- 				     unsigned long *phys_pfn);
- 	int		(*unpin_pages)(void *iommu_data,
-+				       struct iommu_group *group,
- 				       unsigned long *user_pfn, int npage);
- 	int		(*register_notifier)(void *iommu_data,
- 					     unsigned long *events,
--- 
-2.19.1
-
-_______________________________________________
-iommu mailing list
-iommu@lists.linux-foundation.org
-https://lists.linuxfoundation.org/mailman/listinfo/iommu
+SGkgRXJpYywKCk9uIDIwMjEvNC84IDIwOjMwLCBBdWdlciBFcmljIHdyb3RlOgo+IEhpIEt1bmt1
+biwKPgo+IE9uIDQvMS8yMSAyOjM3IFBNLCBLdW5rdW4gSmlhbmcgd3JvdGU6Cj4+IEhpIEVyaWMs
+Cj4+Cj4+IE9uIDIwMjEvMi8yNCA0OjU2LCBFcmljIEF1Z2VyIHdyb3RlOgo+Pj4gV2l0aCBuZXN0
+ZWQgc3RhZ2Ugc3VwcG9ydCwgc29vbiB3ZSB3aWxsIG5lZWQgdG8gaW52YWxpZGF0ZQo+Pj4gUzEg
+Y29udGV4dHMgYW5kIHJhbmdlcyB0YWdnZWQgd2l0aCBhbiB1bm1hbmFnZWQgYXNpZCwgdGhpcwo+
+Pj4gbGF0dGVyIGJlaW5nIG1hbmFnZWQgYnkgdGhlIGd1ZXN0LiBTbyBsZXQncyBpbnRyb2R1Y2Ug
+MiBoZWxwZXJzCj4+PiB0aGF0IGFsbG93IHRvIGludmFsaWRhdGUgd2l0aCBleHRlcm5hbGx5IG1h
+bmFnZWQgQVNJRHMKPj4+Cj4+PiBTaWduZWQtb2ZmLWJ5OiBFcmljIEF1Z2VyIDxlcmljLmF1Z2Vy
+QHJlZGhhdC5jb20+Cj4+Pgo+Pj4gLS0tCj4+Pgo+Pj4gdjEzIC0+IHYxNAo+Pj4gLSBBY3R1YWxs
+eSBzZW5kIHRoZSBOSF9BU0lEIGNvbW1hbmQgKHJlcG9ydGVkIGJ5IFhpbmdhbmcgV2FuZykKPj4+
+IC0tLQo+Pj4gIMKgIGRyaXZlcnMvaW9tbXUvYXJtL2FybS1zbW11LXYzL2FybS1zbW11LXYzLmMg
+fCAzOCArKysrKysrKysrKysrKysrLS0tLS0KPj4+ICDCoCAxIGZpbGUgY2hhbmdlZCwgMjkgaW5z
+ZXJ0aW9ucygrKSwgOSBkZWxldGlvbnMoLSkKPj4+Cj4+PiBkaWZmIC0tZ2l0IGEvZHJpdmVycy9p
+b21tdS9hcm0vYXJtLXNtbXUtdjMvYXJtLXNtbXUtdjMuYwo+Pj4gYi9kcml2ZXJzL2lvbW11L2Fy
+bS9hcm0tc21tdS12My9hcm0tc21tdS12My5jCj4+PiBpbmRleCA1NTc5ZWM0ZmNjYzguLjRjMTlh
+MTExNGRlNCAxMDA2NDQKPj4+IC0tLSBhL2RyaXZlcnMvaW9tbXUvYXJtL2FybS1zbW11LXYzL2Fy
+bS1zbW11LXYzLmMKPj4+ICsrKyBiL2RyaXZlcnMvaW9tbXUvYXJtL2FybS1zbW11LXYzL2FybS1z
+bW11LXYzLmMKPj4+IEBAIC0xODQzLDkgKzE4NDMsOSBAQCBpbnQgYXJtX3NtbXVfYXRjX2ludl9k
+b21haW4oc3RydWN0Cj4+PiBhcm1fc21tdV9kb21haW4gKnNtbXVfZG9tYWluLCBpbnQgc3NpZCwK
+Pj4+ICDCoCB9Cj4+PiAgwqAgwqAgLyogSU9fUEdUQUJMRSBBUEkgKi8KPj4+IC1zdGF0aWMgdm9p
+ZCBhcm1fc21tdV90bGJfaW52X2NvbnRleHQodm9pZCAqY29va2llKQo+Pj4gK3N0YXRpYyB2b2lk
+IF9fYXJtX3NtbXVfdGxiX2ludl9jb250ZXh0KHN0cnVjdCBhcm1fc21tdV9kb21haW4KPj4+ICpz
+bW11X2RvbWFpbiwKPj4+ICvCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKg
+wqDCoCBpbnQgZXh0X2FzaWQpCj4+PiAgwqAgewo+Pj4gLcKgwqDCoCBzdHJ1Y3QgYXJtX3NtbXVf
+ZG9tYWluICpzbW11X2RvbWFpbiA9IGNvb2tpZTsKPj4+ICDCoMKgwqDCoMKgIHN0cnVjdCBhcm1f
+c21tdV9kZXZpY2UgKnNtbXUgPSBzbW11X2RvbWFpbi0+c21tdTsKPj4+ICDCoMKgwqDCoMKgIHN0
+cnVjdCBhcm1fc21tdV9jbWRxX2VudCBjbWQ7Cj4+PiAgwqAgQEAgLTE4NTYsNyArMTg1NiwxMyBA
+QCBzdGF0aWMgdm9pZCBhcm1fc21tdV90bGJfaW52X2NvbnRleHQodm9pZAo+Pj4gKmNvb2tpZSkK
+Pj4+ICDCoMKgwqDCoMKgwqAgKiBpbnNlcnRpb24gdG8gZ3VhcmFudGVlIHRob3NlIGFyZSBvYnNl
+cnZlZCBiZWZvcmUgdGhlIFRMQkkuIERvIGJlCj4+PiAgwqDCoMKgwqDCoMKgICogY2FyZWZ1bCwg
+MDA3Lgo+Pj4gIMKgwqDCoMKgwqDCoCAqLwo+Pj4gLcKgwqDCoCBpZiAoc21tdV9kb21haW4tPnN0
+YWdlID09IEFSTV9TTU1VX0RPTUFJTl9TMSkgewo+Pj4gK8KgwqDCoCBpZiAoZXh0X2FzaWQgPj0g
+MCkgeyAvKiBndWVzdCBzdGFnZSAxIGludmFsaWRhdGlvbiAqLwo+Pj4gK8KgwqDCoMKgwqDCoMKg
+IGNtZC5vcGNvZGXCoMKgwqAgPSBDTURRX09QX1RMQklfTkhfQVNJRDsKPj4+ICvCoMKgwqDCoMKg
+wqDCoCBjbWQudGxiaS5hc2lkwqDCoMKgID0gZXh0X2FzaWQ7Cj4+PiArwqDCoMKgwqDCoMKgwqAg
+Y21kLnRsYmkudm1pZMKgwqDCoCA9IHNtbXVfZG9tYWluLT5zMl9jZmcudm1pZDsKPj4+ICvCoMKg
+wqDCoMKgwqDCoCBhcm1fc21tdV9jbWRxX2lzc3VlX2NtZChzbW11LCAmY21kKTsKPj4+ICvCoMKg
+wqDCoMKgwqDCoCBhcm1fc21tdV9jbWRxX2lzc3VlX3N5bmMoc21tdSk7Cj4+PiArwqDCoMKgIH0g
+ZWxzZSBpZiAoc21tdV9kb21haW4tPnN0YWdlID09IEFSTV9TTU1VX0RPTUFJTl9TMSkgewo+Pj4g
+IMKgwqDCoMKgwqDCoMKgwqDCoCBhcm1fc21tdV90bGJfaW52X2FzaWQoc21tdSwgc21tdV9kb21h
+aW4tPnMxX2NmZy5jZC5hc2lkKTsKPj4+ICDCoMKgwqDCoMKgIH0gZWxzZSB7Cj4+PiAgwqDCoMKg
+wqDCoMKgwqDCoMKgIGNtZC5vcGNvZGXCoMKgwqAgPSBDTURRX09QX1RMQklfUzEyX1ZNQUxMOwo+
+Pj4gQEAgLTE4NjcsNiArMTg3MywxMyBAQCBzdGF0aWMgdm9pZCBhcm1fc21tdV90bGJfaW52X2Nv
+bnRleHQodm9pZCAqY29va2llKQo+Pj4gIMKgwqDCoMKgwqAgYXJtX3NtbXVfYXRjX2ludl9kb21h
+aW4oc21tdV9kb21haW4sIDAsIDAsIDApOwo+Pj4gIMKgIH0KPj4+ICDCoCArc3RhdGljIHZvaWQg
+YXJtX3NtbXVfdGxiX2ludl9jb250ZXh0KHZvaWQgKmNvb2tpZSkKPj4+ICt7Cj4+PiArwqDCoMKg
+IHN0cnVjdCBhcm1fc21tdV9kb21haW4gKnNtbXVfZG9tYWluID0gY29va2llOwo+Pj4gKwo+Pj4g
+K8KgwqDCoCBfX2FybV9zbW11X3RsYl9pbnZfY29udGV4dChzbW11X2RvbWFpbiwgLTEpOwo+Pj4g
+K30KPj4+ICsKPj4+ICDCoCBzdGF0aWMgdm9pZCBfX2FybV9zbW11X3RsYl9pbnZfcmFuZ2Uoc3Ry
+dWN0IGFybV9zbW11X2NtZHFfZW50ICpjbWQsCj4+PiAgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKg
+wqDCoMKgwqDCoMKgwqDCoMKgwqAgdW5zaWduZWQgbG9uZyBpb3ZhLCBzaXplX3Qgc2l6ZSwKPj4+
+ICDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoCBzaXplX3QgZ3Jh
+bnVsZSwKPj4+IEBAIC0xOTI2LDkgKzE5MzksMTAgQEAgc3RhdGljIHZvaWQgX19hcm1fc21tdV90
+bGJfaW52X3JhbmdlKHN0cnVjdAo+Pj4gYXJtX3NtbXVfY21kcV9lbnQgKmNtZCwKPj4+ICDCoMKg
+wqDCoMKgIGFybV9zbW11X2NtZHFfYmF0Y2hfc3VibWl0KHNtbXUsICZjbWRzKTsKPj4+ICDCoCB9
+Cj4+PiAgICAKPj4gSGVyZSBpcyB0aGUgcGFydCBvZiBjb2RlIGluIF9fYXJtX3NtbXVfdGxiX2lu
+dl9yYW5nZSgpOgo+Pj4gIMKgwqDCoMKgwqDCoMKgIGlmIChzbW11LT5mZWF0dXJlcyAmIEFSTV9T
+TU1VX0ZFQVRfUkFOR0VfSU5WKSB7Cj4+PiAgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKg
+IC8qIEdldCB0aGUgbGVhZiBwYWdlIHNpemUgKi8KPj4+ICDCoMKgwqDCoMKgwqDCoMKgwqDCoMKg
+wqDCoMKgwqAgdGcgPSBfX2ZmcyhzbW11X2RvbWFpbi0+ZG9tYWluLnBnc2l6ZV9iaXRtYXApOwo+
+Pj4KPj4+ICDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqAgLyogQ29udmVydCBwYWdlIHNp
+emUgb2YgMTIsMTQsMTYgKGxvZzIpIHRvIDEsMiwzICovCj4+PiAgwqDCoMKgwqDCoMKgwqDCoMKg
+wqDCoMKgwqDCoMKgIGNtZC0+dGxiaS50ZyA9ICh0ZyAtIDEwKSAvIDI7Cj4+Pgo+Pj4gIMKgwqDC
+oMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoCAvKiBEZXRlcm1pbmUgd2hhdCBsZXZlbCB0aGUgZ3Jh
+bnVsZSBpcyBhdCAqLwo+Pj4gIMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoCBjbWQtPnRs
+YmkudHRsID0gNCAtICgoaWxvZzIoZ3JhbnVsZSkgLSAzKSAvICh0ZyAtIDMpKTsKPj4+Cj4+PiAg
+wqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgIG51bV9wYWdlcyA9IHNpemUgPj4gdGc7Cj4+
+PiAgwqDCoMKgwqDCoMKgwqAgfQo+PiBXaGVuIHBTTU1VIHN1cHBvcnRzIFJJTCwgd2UgZ2V0IHRo
+ZSBsZWFmIHBhZ2Ugc2l6ZSBieSBfX2ZmcyhzbW11X2RvbWFpbi0+Cj4+IGRvbWFpbi5wZ3NpemVf
+Yml0bWFwKS4gSW4gbmVzdGVkIG1vZGUsIGl0IGlzIGRldGVybWluZWQgYnkgaG9zdAo+PiBQQUdF
+X1NJWkUuIElmCj4+IHRoZSBob3N0IGtlcm5lbCBhbmQgZ3Vlc3Qga2VybmVsIGhhcyBkaWZmZXJl
+bnQgdHJhbnNsYXRpb24gZ3JhbnVsZSAoZS5nLgo+PiBob3N0IDE2SywKPj4gZ3Vlc3QgNEspLCBf
+X2FybV9zbW11X3RsYl9pbnZfcmFuZ2UoKSB3aWxsIGlzc3VlIGFuIGluY29ycmVjdCB0bGJpIGNv
+bW1hbmQuCj4+Cj4+IERvIHlvdSBoYXZlIGFueSBpZGVhIGFib3V0IHRoaXMgaXNzdWU/Cj4gSSB0
+aGluayB0aGlzIGlzIHRoZSBzYW1lIGlzc3VlIGFzIHRoZSBvbmUgcmVwb3J0ZWQgYnkgQ2hlbnhp
+YW5nCj4KPiBodHRwczovL2xvcmUua2VybmVsLm9yZy9sa21sLzE1OTM4ZWQ1LTIwOTUtZTkwMy1h
+MjkwLTMzM2MyOTkwMTVhMkBoaXNpbGljb24uY29tLwo+Cj4gSW4gY2FzZSBSSUwgaXMgbm90IHN1
+cHBvcnRlZCBieSB0aGUgaG9zdCwgbmV4dCB2ZXJzaW9uIHdpbGwgdXNlIHRoZQo+IHNtYWxsZXN0
+IHBTTU1VIHN1cHBvcnRlZCBwYWdlIHNpemUsIGFzIGRvbmUgaW4gX19hcm1fc21tdV90bGJfaW52
+X3JhbmdlCj4KPiBUaGFua3MKPgo+IEVyaWMKSSB0aGluayB0aGV5IGFyZSBkaWZmZXJlbnQuIElu
+IG5vcm1hbCBjYXNlcywgd2hlbiB3ZSB3YW50IHRvIGludmFsaWRhdGUgdGhlCmNhY2hlIG9mIHN0
+YWdlIDEsIHdlIHNob3VsZCB1c2UgdGhlIGdyYW51bGUgc2l6ZSBzdXBwb3J0ZWQgYnkgdlNNTVUg
+dG8KaW1wbGVtZW50IGFuZCBpc3N1ZSBhbiB0bGJpIGNvbW1hbmQgaWYgcFNNTVUgc3VwcG9ydHMg
+UklMLgoKQnV0IGluIHRoZSBjdXJyZW50IF9fYXJtX3NtbXVfdGxiX2ludl9yYW5nZSgpLCBpdCBh
+bHdheXMgdXNlcyB0aGUgZ3JhbnVsZQpzaXplIHN1cHBvcnRlZCBieSBob3N0LgoodGcgPSBfX2Zm
+cyhzbW11X2RvbWFpbi0+ZG9tYWluLnBnc2l6ZV9iaXRtYXApOykKCkxldCBtZSBleHBsYWluIG1v
+cmUgY2xlYXJseS4KUHJlY29uZGl0aW9ucyBvZiB0aGlzIGlzc3VlOgoxLiBwU01NVSBzdXBwb3J0
+cyBSSUwKMi4gaG9zdCBhbmQgZ3Vlc3QgdXNlIGRpZmZlcmVudCB0cmFuc2xhdGlvbiBncmFudWxl
+IChlLmcuIGhvc3QgMTZLLCAKZ3Vlc3QgNEspCgpHdWVzdCB3YW50cyB0byBpbnZhbGlkYXRlIDRL
+LCBzbyBpbmZvLT5ncmFudWxlX3NpemUgPSA0Sy4KSW4gX19hcm1fc21tdV90bGJfaW52X3Jhbmdl
+KCksIMKgIGlmIHBTTU1VIHN1cHBvcnRzIFJJTCBhbmQgaG9zdCAxNkssCnRnID0gMTQsIHRsYmku
+dGcgPSAyLCB0bGJpLnR0bCA9IDQsIHRsYmkuc2NhbGUgPSAwLCB0bGJpLm51bSA9IC0xLiBJdCBp
+cyAKYW4gaW5jb3JyZWN0CnRsYmkgY29tbWFuZC4KClNvIGl0IHdvdWxkIGJlIGJldHRlciB0byBw
+YXNzIHRoZSBsZWFmIHBhZ2Ugc2l6ZSBzdXBwb3J0ZWQgYnkgdlNNTVUgdG8KaG9zdC7CoCBQZXJo
+YXBzIHRoaXMgaXNzdWUgYW5kIHRoZSBvbmUgcmVwb3J0ZWQgYnkgQ2hlbnhpYW5nIGNhbiBiZSBz
+b2x2ZWQKdG9nZXRoZXIuCgpUaGFua3MsCkt1bmt1biBKaWFuZwo+PiBCZXN0IFJlZ2FyZHMsCj4+
+IEt1bmt1biBKaWFuZwo+Pj4gLXN0YXRpYyB2b2lkIGFybV9zbW11X3RsYl9pbnZfcmFuZ2VfZG9t
+YWluKHVuc2lnbmVkIGxvbmcgaW92YSwgc2l6ZV90Cj4+PiBzaXplLAo+Pj4gLcKgwqDCoMKgwqDC
+oMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoCBzaXplX3QgZ3JhbnVsZSwgYm9vbCBsZWFm
+LAo+Pj4gLcKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoCBzdHJ1Y3Qg
+YXJtX3NtbXVfZG9tYWluICpzbW11X2RvbWFpbikKPj4+ICtzdGF0aWMgdm9pZAo+Pj4gK2FybV9z
+bW11X3RsYl9pbnZfcmFuZ2VfZG9tYWluKHVuc2lnbmVkIGxvbmcgaW92YSwgc2l6ZV90IHNpemUs
+Cj4+PiArwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoCBzaXplX3QgZ3JhbnVsZSwg
+Ym9vbCBsZWFmLCBpbnQgZXh0X2FzaWQsCj4+PiArwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDC
+oMKgwqDCoCBzdHJ1Y3QgYXJtX3NtbXVfZG9tYWluICpzbW11X2RvbWFpbikKPj4+ICDCoCB7Cj4+
+PiAgwqDCoMKgwqDCoCBzdHJ1Y3QgYXJtX3NtbXVfY21kcV9lbnQgY21kID0gewo+Pj4gIMKgwqDC
+oMKgwqDCoMKgwqDCoCAudGxiaSA9IHsKPj4+IEBAIC0xOTM2LDcgKzE5NTAsMTIgQEAgc3RhdGlj
+IHZvaWQKPj4+IGFybV9zbW11X3RsYl9pbnZfcmFuZ2VfZG9tYWluKHVuc2lnbmVkIGxvbmcgaW92
+YSwgc2l6ZV90IHNpemUsCj4+PiAgwqDCoMKgwqDCoMKgwqDCoMKgIH0sCj4+PiAgwqDCoMKgwqDC
+oCB9Owo+Pj4gIMKgIC3CoMKgwqAgaWYgKHNtbXVfZG9tYWluLT5zdGFnZSA9PSBBUk1fU01NVV9E
+T01BSU5fUzEpIHsKPj4+ICvCoMKgwqAgaWYgKGV4dF9hc2lkID49IDApIHvCoCAvKiBndWVzdCBz
+dGFnZSAxIGludmFsaWRhdGlvbiAqLwo+Pj4gK8KgwqDCoMKgwqDCoMKgIGNtZC5vcGNvZGXCoMKg
+wqAgPSBzbW11X2RvbWFpbi0+c21tdS0+ZmVhdHVyZXMgJgo+Pj4gQVJNX1NNTVVfRkVBVF9FMkgg
+Pwo+Pj4gK8KgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqAgQ01EUV9PUF9UTEJJX0VM
+Ml9WQSA6IENNRFFfT1BfVExCSV9OSF9WQTsKPj4+ICvCoMKgwqDCoMKgwqDCoCBjbWQudGxiaS5h
+c2lkwqDCoMKgID0gZXh0X2FzaWQ7Cj4+PiArwqDCoMKgwqDCoMKgwqAgY21kLnRsYmkudm1pZMKg
+wqDCoCA9IHNtbXVfZG9tYWluLT5zMl9jZmcudm1pZDsKPj4+ICvCoMKgwqAgfSBlbHNlIGlmIChz
+bW11X2RvbWFpbi0+c3RhZ2UgPT0gQVJNX1NNTVVfRE9NQUlOX1MxKSB7Cj4+PiAgwqDCoMKgwqDC
+oMKgwqDCoMKgIGNtZC5vcGNvZGXCoMKgwqAgPSBzbW11X2RvbWFpbi0+c21tdS0+ZmVhdHVyZXMg
+Jgo+Pj4gQVJNX1NNTVVfRkVBVF9FMkggPwo+Pj4gIMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKg
+wqDCoMKgwqDCoMKgIENNRFFfT1BfVExCSV9FTDJfVkEgOiBDTURRX09QX1RMQklfTkhfVkE7Cj4+
+PiAgwqDCoMKgwqDCoMKgwqDCoMKgIGNtZC50bGJpLmFzaWTCoMKgwqAgPSBzbW11X2RvbWFpbi0+
+czFfY2ZnLmNkLmFzaWQ7Cj4+PiBAQCAtMTk0NCw2ICsxOTYzLDcgQEAgc3RhdGljIHZvaWQKPj4+
+IGFybV9zbW11X3RsYl9pbnZfcmFuZ2VfZG9tYWluKHVuc2lnbmVkIGxvbmcgaW92YSwgc2l6ZV90
+IHNpemUsCj4+PiAgwqDCoMKgwqDCoMKgwqDCoMKgIGNtZC5vcGNvZGXCoMKgwqAgPSBDTURRX09Q
+X1RMQklfUzJfSVBBOwo+Pj4gIMKgwqDCoMKgwqDCoMKgwqDCoCBjbWQudGxiaS52bWlkwqDCoMKg
+ID0gc21tdV9kb21haW4tPnMyX2NmZy52bWlkOwo+Pj4gIMKgwqDCoMKgwqAgfQo+Pj4gKwo+Pj4g
+IMKgwqDCoMKgwqAgX19hcm1fc21tdV90bGJfaW52X3JhbmdlKCZjbWQsIGlvdmEsIHNpemUsIGdy
+YW51bGUsIHNtbXVfZG9tYWluKTsKPj4+ICDCoCDCoMKgwqDCoMKgIC8qCj4+PiBAQCAtMTk4Miw3
+ICsyMDAyLDcgQEAgc3RhdGljIHZvaWQgYXJtX3NtbXVfdGxiX2ludl9wYWdlX25vc3luYyhzdHJ1
+Y3QKPj4+IGlvbW11X2lvdGxiX2dhdGhlciAqZ2F0aGVyLAo+Pj4gIMKgIHN0YXRpYyB2b2lkIGFy
+bV9zbW11X3RsYl9pbnZfd2Fsayh1bnNpZ25lZCBsb25nIGlvdmEsIHNpemVfdCBzaXplLAo+Pj4g
+IMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgIHNpemVfdCBncmFudWxlLCB2
+b2lkICpjb29raWUpCj4+PiAgwqAgewo+Pj4gLcKgwqDCoCBhcm1fc21tdV90bGJfaW52X3Jhbmdl
+X2RvbWFpbihpb3ZhLCBzaXplLCBncmFudWxlLCBmYWxzZSwgY29va2llKTsKPj4+ICvCoMKgwqAg
+YXJtX3NtbXVfdGxiX2ludl9yYW5nZV9kb21haW4oaW92YSwgc2l6ZSwgZ3JhbnVsZSwgZmFsc2Us
+IC0xLAo+Pj4gY29va2llKTsKPj4+ICDCoCB9Cj4+PiAgwqAgwqAgc3RhdGljIGNvbnN0IHN0cnVj
+dCBpb21tdV9mbHVzaF9vcHMgYXJtX3NtbXVfZmx1c2hfb3BzID0gewo+Pj4gQEAgLTI1MjMsNyAr
+MjU0Myw3IEBAIHN0YXRpYyB2b2lkIGFybV9zbW11X2lvdGxiX3N5bmMoc3RydWN0Cj4+PiBpb21t
+dV9kb21haW4gKmRvbWFpbiwKPj4+ICDCoCDCoMKgwqDCoMKgIGFybV9zbW11X3RsYl9pbnZfcmFu
+Z2VfZG9tYWluKGdhdGhlci0+c3RhcnQsCj4+PiAgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDC
+oMKgwqDCoMKgwqDCoMKgwqDCoCBnYXRoZXItPmVuZCAtIGdhdGhlci0+c3RhcnQgKyAxLAo+Pj4g
+LcKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoCBnYXRoZXItPnBnc2l6
+ZSwgdHJ1ZSwgc21tdV9kb21haW4pOwo+Pj4gK8KgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDC
+oMKgwqDCoMKgwqDCoCBnYXRoZXItPnBnc2l6ZSwgdHJ1ZSwgLTEsIHNtbXVfZG9tYWluKTsKPj4+
+ICDCoCB9Cj4+PiAgwqAgwqAgc3RhdGljIHBoeXNfYWRkcl90Cj4+Cj4gLgoKCl9fX19fX19fX19f
+X19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fCmlvbW11IG1haWxpbmcgbGlzdApp
+b21tdUBsaXN0cy5saW51eC1mb3VuZGF0aW9uLm9yZwpodHRwczovL2xpc3RzLmxpbnV4Zm91bmRh
+dGlvbi5vcmcvbWFpbG1hbi9saXN0aW5mby9pb21tdQ==
