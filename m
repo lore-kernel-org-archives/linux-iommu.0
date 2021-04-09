@@ -2,85 +2,85 @@ Return-Path: <SRS0=LjD4=JG=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-15.3 required=3.0 tests=BAYES_00,
-	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_CR_TRAILER,INCLUDES_PATCH,
-	MAILING_LIST_MULTI,NICE_REPLY_A,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,
-	USER_AGENT_SANE_1 autolearn=ham autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-10.3 required=3.0 tests=BAYES_00,
+	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,NICE_REPLY_A,
+	SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_SANE_1 autolearn=ham
+	autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 22529C433ED
-	for <iommu@archiver.kernel.org>; Fri,  9 Apr 2021 04:48:48 +0000 (UTC)
-Received: from smtp2.osuosl.org (smtp2.osuosl.org [140.211.166.133])
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 63AC4C433ED
+	for <iommu@archiver.kernel.org>; Fri,  9 Apr 2021 05:40:53 +0000 (UTC)
+Received: from smtp4.osuosl.org (smtp4.osuosl.org [140.211.166.137])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id ACE2661178
-	for <iommu@archiver.kernel.org>; Fri,  9 Apr 2021 04:48:47 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org ACE2661178
-Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=huawei.com
+	by mail.kernel.org (Postfix) with ESMTPS id E11FC61108
+	for <iommu@archiver.kernel.org>; Fri,  9 Apr 2021 05:40:52 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org E11FC61108
+Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=linux.intel.com
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by smtp2.osuosl.org (Postfix) with ESMTP id 6F8F3402BB;
-	Fri,  9 Apr 2021 04:48:47 +0000 (UTC)
+	by smtp4.osuosl.org (Postfix) with ESMTP id 94FA2419E0;
+	Fri,  9 Apr 2021 05:40:52 +0000 (UTC)
+X-Virus-Scanned: amavisd-new at osuosl.org
+Received: from smtp4.osuosl.org ([127.0.0.1])
+	by localhost (smtp4.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+	with ESMTP id w_wR1c48ewjO; Fri,  9 Apr 2021 05:40:51 +0000 (UTC)
+Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
+	by smtp4.osuosl.org (Postfix) with ESMTP id E0911419D0;
+	Fri,  9 Apr 2021 05:40:50 +0000 (UTC)
+Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
+	by lists.linuxfoundation.org (Postfix) with ESMTP id ABB97C000C;
+	Fri,  9 Apr 2021 05:40:50 +0000 (UTC)
+Received: from smtp2.osuosl.org (smtp2.osuosl.org [IPv6:2605:bc80:3010::133])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 2A6F0C000A
+ for <iommu@lists.linux-foundation.org>; Fri,  9 Apr 2021 05:40:49 +0000 (UTC)
+Received: from localhost (localhost [127.0.0.1])
+ by smtp2.osuosl.org (Postfix) with ESMTP id 051CC40168
+ for <iommu@lists.linux-foundation.org>; Fri,  9 Apr 2021 05:40:49 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
 Received: from smtp2.osuosl.org ([127.0.0.1])
-	by localhost (smtp2.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id lOOvXuU2o28J; Fri,  9 Apr 2021 04:48:46 +0000 (UTC)
-Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by smtp2.osuosl.org (Postfix) with ESMTP id 408FA40164;
-	Fri,  9 Apr 2021 04:48:46 +0000 (UTC)
-Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 1F994C000B;
-	Fri,  9 Apr 2021 04:48:46 +0000 (UTC)
-Received: from smtp3.osuosl.org (smtp3.osuosl.org [IPv6:2605:bc80:3010::136])
- by lists.linuxfoundation.org (Postfix) with ESMTP id C98B4C000A
- for <iommu@lists.linux-foundation.org>; Fri,  9 Apr 2021 04:48:43 +0000 (UTC)
-Received: from localhost (localhost [127.0.0.1])
- by smtp3.osuosl.org (Postfix) with ESMTP id B28CE60E4A
- for <iommu@lists.linux-foundation.org>; Fri,  9 Apr 2021 04:48:43 +0000 (UTC)
-X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from smtp3.osuosl.org ([127.0.0.1])
- by localhost (smtp3.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id GCq_CyYYVFJr for <iommu@lists.linux-foundation.org>;
- Fri,  9 Apr 2021 04:48:42 +0000 (UTC)
+ by localhost (smtp2.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+ with ESMTP id G5K5bbzPBwSH for <iommu@lists.linux-foundation.org>;
+ Fri,  9 Apr 2021 05:40:47 +0000 (UTC)
 X-Greylist: domain auto-whitelisted by SQLgrey-1.8.0
-Received: from szxga03-in.huawei.com (szxga03-in.huawei.com [45.249.212.189])
- by smtp3.osuosl.org (Postfix) with ESMTPS id E7194606D5
- for <iommu@lists.linux-foundation.org>; Fri,  9 Apr 2021 04:48:41 +0000 (UTC)
-Received: from DGGEML401-HUB.china.huawei.com (unknown [172.30.72.54])
- by szxga03-in.huawei.com (SkyGuard) with ESMTP id 4FGlv16vY3z5mLB;
- Fri,  9 Apr 2021 12:45:49 +0800 (CST)
-Received: from dggema765-chm.china.huawei.com (10.1.198.207) by
- DGGEML401-HUB.china.huawei.com (10.3.17.32) with Microsoft SMTP Server (TLS)
- id 14.3.498.0; Fri, 9 Apr 2021 12:48:37 +0800
-Received: from [10.174.185.210] (10.174.185.210) by
- dggema765-chm.china.huawei.com (10.1.198.207) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id
- 15.1.2106.2; Fri, 9 Apr 2021 12:48:36 +0800
-Subject: Re: [PATCH v14 06/13] iommu/smmuv3: Allow stage 1 invalidation with
- unmanaged ASIDs
-To: Auger Eric <eric.auger@redhat.com>, <eric.auger.pro@gmail.com>,
- <iommu@lists.linux-foundation.org>, <linux-kernel@vger.kernel.org>,
- <kvm@vger.kernel.org>, <kvmarm@lists.cs.columbia.edu>, <will@kernel.org>,
- <maz@kernel.org>, <robin.murphy@arm.com>, <joro@8bytes.org>,
- <alex.williamson@redhat.com>, <tn@semihalf.com>, <zhukeqian1@huawei.com>
-References: <20210223205634.604221-1-eric.auger@redhat.com>
- <20210223205634.604221-7-eric.auger@redhat.com>
- <901720e6-6ca5-eb9a-1f24-0ca479bcfecc@huawei.com>
- <0246aec2-162d-0584-3ca4-b9c304ef3c8a@redhat.com>
-From: Kunkun Jiang <jiangkunkun@huawei.com>
-Message-ID: <46f3760a-9ab5-1710-598e-38fbc1f5fb5c@huawei.com>
-Date: Fri, 9 Apr 2021 12:48:35 +0800
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:78.0) Gecko/20100101
- Thunderbird/78.8.1
+Received: from mga04.intel.com (mga04.intel.com [192.55.52.120])
+ by smtp2.osuosl.org (Postfix) with ESMTPS id C342140167
+ for <iommu@lists.linux-foundation.org>; Fri,  9 Apr 2021 05:40:47 +0000 (UTC)
+IronPort-SDR: xFg7xwgpZHsZahN61Mvc62NKGyitN+h3dMyLHJ0YNOQeW41BpZH4pF3Or81+7UO8nBHdY6W/tY
+ OLpHZqp4+VlQ==
+X-IronPort-AV: E=McAfee;i="6000,8403,9948"; a="191542600"
+X-IronPort-AV: E=Sophos;i="5.82,208,1613462400"; d="scan'208";a="191542600"
+Received: from fmsmga004.fm.intel.com ([10.253.24.48])
+ by fmsmga104.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384;
+ 08 Apr 2021 22:40:47 -0700
+IronPort-SDR: /X6XxwF8QUIcsBf4ySsyhcfciHB1Uv1U61kGpXcX8CUDFZ2ZVSmnxfj/uBBpNQtWXkyJDzfS16
+ 4gUHPQ9qA0+A==
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.82,208,1613462400"; d="scan'208";a="442028760"
+Received: from allen-box.sh.intel.com (HELO [10.239.159.128])
+ ([10.239.159.128])
+ by fmsmga004.fm.intel.com with ESMTP; 08 Apr 2021 22:40:44 -0700
+Subject: Re: [PATCH] iommu/vt-d: Force to flush iotlb before creating superpage
+To: "Longpeng (Mike, Cloud Infrastructure Service Product Dept.)"
+ <longpeng2@huawei.com>,
+ "iommu@lists.linux-foundation.org" <iommu@lists.linux-foundation.org>,
+ "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
+References: <20210401071834.1639-1-longpeng2@huawei.com>
+ <9c368419-6e45-6b27-0f34-26b581589fa7@linux.intel.com>
+ <611cb5849c9a497b8289004dddb71150@huawei.com>
+ <808394ea-9ff0-7a6d-72e7-f037e5cd3110@linux.intel.com>
+ <54ec81edcf074533867c18f0d86b837b@huawei.com>
+From: Lu Baolu <baolu.lu@linux.intel.com>
+Message-ID: <c3b8c8da-2c05-d051-3403-1f3f4f2cb36b@linux.intel.com>
+Date: Fri, 9 Apr 2021 13:31:13 +0800
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
+ Thunderbird/78.7.1
 MIME-Version: 1.0
-In-Reply-To: <0246aec2-162d-0584-3ca4-b9c304ef3c8a@redhat.com>
+In-Reply-To: <54ec81edcf074533867c18f0d86b837b@huawei.com>
 Content-Language: en-US
-X-Originating-IP: [10.174.185.210]
-X-ClientProxiedBy: dggeme702-chm.china.huawei.com (10.1.199.98) To
- dggema765-chm.china.huawei.com (10.1.198.207)
-X-CFilter-Loop: Reflected
-Cc: jean-philippe@linaro.org, wangxingang5@huawei.com, lushenming@huawei.com,
- wanghaibin.wang@huawei.com, vivek.gautam@arm.com, vsethi@nvidia.com,
- zhangfei.gao@linaro.org
+Cc: Kevin Tian <kevin.tian@intel.com>, David Woodhouse <dwmw2@infradead.org>,
+ "stable@vger.kernel.org" <stable@vger.kernel.org>,
+ Alex Williamson <alex.williamson@redhat.com>,
+ "Gonglei \(Arei\)" <arei.gonglei@huawei.com>
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -93,157 +93,214 @@ List-Post: <mailto:iommu@lists.linux-foundation.org>
 List-Help: <mailto:iommu-request@lists.linux-foundation.org?subject=help>
 List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
  <mailto:iommu-request@lists.linux-foundation.org?subject=subscribe>
-Content-Transfer-Encoding: base64
-Content-Type: text/plain; charset="utf-8"; Format="flowed"
+Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset="us-ascii"; Format="flowed"
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-SGkgRXJpYywKCk9uIDIwMjEvNC84IDIwOjMwLCBBdWdlciBFcmljIHdyb3RlOgo+IEhpIEt1bmt1
-biwKPgo+IE9uIDQvMS8yMSAyOjM3IFBNLCBLdW5rdW4gSmlhbmcgd3JvdGU6Cj4+IEhpIEVyaWMs
-Cj4+Cj4+IE9uIDIwMjEvMi8yNCA0OjU2LCBFcmljIEF1Z2VyIHdyb3RlOgo+Pj4gV2l0aCBuZXN0
-ZWQgc3RhZ2Ugc3VwcG9ydCwgc29vbiB3ZSB3aWxsIG5lZWQgdG8gaW52YWxpZGF0ZQo+Pj4gUzEg
-Y29udGV4dHMgYW5kIHJhbmdlcyB0YWdnZWQgd2l0aCBhbiB1bm1hbmFnZWQgYXNpZCwgdGhpcwo+
-Pj4gbGF0dGVyIGJlaW5nIG1hbmFnZWQgYnkgdGhlIGd1ZXN0LiBTbyBsZXQncyBpbnRyb2R1Y2Ug
-MiBoZWxwZXJzCj4+PiB0aGF0IGFsbG93IHRvIGludmFsaWRhdGUgd2l0aCBleHRlcm5hbGx5IG1h
-bmFnZWQgQVNJRHMKPj4+Cj4+PiBTaWduZWQtb2ZmLWJ5OiBFcmljIEF1Z2VyIDxlcmljLmF1Z2Vy
-QHJlZGhhdC5jb20+Cj4+Pgo+Pj4gLS0tCj4+Pgo+Pj4gdjEzIC0+IHYxNAo+Pj4gLSBBY3R1YWxs
-eSBzZW5kIHRoZSBOSF9BU0lEIGNvbW1hbmQgKHJlcG9ydGVkIGJ5IFhpbmdhbmcgV2FuZykKPj4+
-IC0tLQo+Pj4gIMKgIGRyaXZlcnMvaW9tbXUvYXJtL2FybS1zbW11LXYzL2FybS1zbW11LXYzLmMg
-fCAzOCArKysrKysrKysrKysrKysrLS0tLS0KPj4+ICDCoCAxIGZpbGUgY2hhbmdlZCwgMjkgaW5z
-ZXJ0aW9ucygrKSwgOSBkZWxldGlvbnMoLSkKPj4+Cj4+PiBkaWZmIC0tZ2l0IGEvZHJpdmVycy9p
-b21tdS9hcm0vYXJtLXNtbXUtdjMvYXJtLXNtbXUtdjMuYwo+Pj4gYi9kcml2ZXJzL2lvbW11L2Fy
-bS9hcm0tc21tdS12My9hcm0tc21tdS12My5jCj4+PiBpbmRleCA1NTc5ZWM0ZmNjYzguLjRjMTlh
-MTExNGRlNCAxMDA2NDQKPj4+IC0tLSBhL2RyaXZlcnMvaW9tbXUvYXJtL2FybS1zbW11LXYzL2Fy
-bS1zbW11LXYzLmMKPj4+ICsrKyBiL2RyaXZlcnMvaW9tbXUvYXJtL2FybS1zbW11LXYzL2FybS1z
-bW11LXYzLmMKPj4+IEBAIC0xODQzLDkgKzE4NDMsOSBAQCBpbnQgYXJtX3NtbXVfYXRjX2ludl9k
-b21haW4oc3RydWN0Cj4+PiBhcm1fc21tdV9kb21haW4gKnNtbXVfZG9tYWluLCBpbnQgc3NpZCwK
-Pj4+ICDCoCB9Cj4+PiAgwqAgwqAgLyogSU9fUEdUQUJMRSBBUEkgKi8KPj4+IC1zdGF0aWMgdm9p
-ZCBhcm1fc21tdV90bGJfaW52X2NvbnRleHQodm9pZCAqY29va2llKQo+Pj4gK3N0YXRpYyB2b2lk
-IF9fYXJtX3NtbXVfdGxiX2ludl9jb250ZXh0KHN0cnVjdCBhcm1fc21tdV9kb21haW4KPj4+ICpz
-bW11X2RvbWFpbiwKPj4+ICvCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKg
-wqDCoCBpbnQgZXh0X2FzaWQpCj4+PiAgwqAgewo+Pj4gLcKgwqDCoCBzdHJ1Y3QgYXJtX3NtbXVf
-ZG9tYWluICpzbW11X2RvbWFpbiA9IGNvb2tpZTsKPj4+ICDCoMKgwqDCoMKgIHN0cnVjdCBhcm1f
-c21tdV9kZXZpY2UgKnNtbXUgPSBzbW11X2RvbWFpbi0+c21tdTsKPj4+ICDCoMKgwqDCoMKgIHN0
-cnVjdCBhcm1fc21tdV9jbWRxX2VudCBjbWQ7Cj4+PiAgwqAgQEAgLTE4NTYsNyArMTg1NiwxMyBA
-QCBzdGF0aWMgdm9pZCBhcm1fc21tdV90bGJfaW52X2NvbnRleHQodm9pZAo+Pj4gKmNvb2tpZSkK
-Pj4+ICDCoMKgwqDCoMKgwqAgKiBpbnNlcnRpb24gdG8gZ3VhcmFudGVlIHRob3NlIGFyZSBvYnNl
-cnZlZCBiZWZvcmUgdGhlIFRMQkkuIERvIGJlCj4+PiAgwqDCoMKgwqDCoMKgICogY2FyZWZ1bCwg
-MDA3Lgo+Pj4gIMKgwqDCoMKgwqDCoCAqLwo+Pj4gLcKgwqDCoCBpZiAoc21tdV9kb21haW4tPnN0
-YWdlID09IEFSTV9TTU1VX0RPTUFJTl9TMSkgewo+Pj4gK8KgwqDCoCBpZiAoZXh0X2FzaWQgPj0g
-MCkgeyAvKiBndWVzdCBzdGFnZSAxIGludmFsaWRhdGlvbiAqLwo+Pj4gK8KgwqDCoMKgwqDCoMKg
-IGNtZC5vcGNvZGXCoMKgwqAgPSBDTURRX09QX1RMQklfTkhfQVNJRDsKPj4+ICvCoMKgwqDCoMKg
-wqDCoCBjbWQudGxiaS5hc2lkwqDCoMKgID0gZXh0X2FzaWQ7Cj4+PiArwqDCoMKgwqDCoMKgwqAg
-Y21kLnRsYmkudm1pZMKgwqDCoCA9IHNtbXVfZG9tYWluLT5zMl9jZmcudm1pZDsKPj4+ICvCoMKg
-wqDCoMKgwqDCoCBhcm1fc21tdV9jbWRxX2lzc3VlX2NtZChzbW11LCAmY21kKTsKPj4+ICvCoMKg
-wqDCoMKgwqDCoCBhcm1fc21tdV9jbWRxX2lzc3VlX3N5bmMoc21tdSk7Cj4+PiArwqDCoMKgIH0g
-ZWxzZSBpZiAoc21tdV9kb21haW4tPnN0YWdlID09IEFSTV9TTU1VX0RPTUFJTl9TMSkgewo+Pj4g
-IMKgwqDCoMKgwqDCoMKgwqDCoCBhcm1fc21tdV90bGJfaW52X2FzaWQoc21tdSwgc21tdV9kb21h
-aW4tPnMxX2NmZy5jZC5hc2lkKTsKPj4+ICDCoMKgwqDCoMKgIH0gZWxzZSB7Cj4+PiAgwqDCoMKg
-wqDCoMKgwqDCoMKgIGNtZC5vcGNvZGXCoMKgwqAgPSBDTURRX09QX1RMQklfUzEyX1ZNQUxMOwo+
-Pj4gQEAgLTE4NjcsNiArMTg3MywxMyBAQCBzdGF0aWMgdm9pZCBhcm1fc21tdV90bGJfaW52X2Nv
-bnRleHQodm9pZCAqY29va2llKQo+Pj4gIMKgwqDCoMKgwqAgYXJtX3NtbXVfYXRjX2ludl9kb21h
-aW4oc21tdV9kb21haW4sIDAsIDAsIDApOwo+Pj4gIMKgIH0KPj4+ICDCoCArc3RhdGljIHZvaWQg
-YXJtX3NtbXVfdGxiX2ludl9jb250ZXh0KHZvaWQgKmNvb2tpZSkKPj4+ICt7Cj4+PiArwqDCoMKg
-IHN0cnVjdCBhcm1fc21tdV9kb21haW4gKnNtbXVfZG9tYWluID0gY29va2llOwo+Pj4gKwo+Pj4g
-K8KgwqDCoCBfX2FybV9zbW11X3RsYl9pbnZfY29udGV4dChzbW11X2RvbWFpbiwgLTEpOwo+Pj4g
-K30KPj4+ICsKPj4+ICDCoCBzdGF0aWMgdm9pZCBfX2FybV9zbW11X3RsYl9pbnZfcmFuZ2Uoc3Ry
-dWN0IGFybV9zbW11X2NtZHFfZW50ICpjbWQsCj4+PiAgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKg
-wqDCoMKgwqDCoMKgwqDCoMKgwqAgdW5zaWduZWQgbG9uZyBpb3ZhLCBzaXplX3Qgc2l6ZSwKPj4+
-ICDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoCBzaXplX3QgZ3Jh
-bnVsZSwKPj4+IEBAIC0xOTI2LDkgKzE5MzksMTAgQEAgc3RhdGljIHZvaWQgX19hcm1fc21tdV90
-bGJfaW52X3JhbmdlKHN0cnVjdAo+Pj4gYXJtX3NtbXVfY21kcV9lbnQgKmNtZCwKPj4+ICDCoMKg
-wqDCoMKgIGFybV9zbW11X2NtZHFfYmF0Y2hfc3VibWl0KHNtbXUsICZjbWRzKTsKPj4+ICDCoCB9
-Cj4+PiAgICAKPj4gSGVyZSBpcyB0aGUgcGFydCBvZiBjb2RlIGluIF9fYXJtX3NtbXVfdGxiX2lu
-dl9yYW5nZSgpOgo+Pj4gIMKgwqDCoMKgwqDCoMKgIGlmIChzbW11LT5mZWF0dXJlcyAmIEFSTV9T
-TU1VX0ZFQVRfUkFOR0VfSU5WKSB7Cj4+PiAgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKg
-IC8qIEdldCB0aGUgbGVhZiBwYWdlIHNpemUgKi8KPj4+ICDCoMKgwqDCoMKgwqDCoMKgwqDCoMKg
-wqDCoMKgwqAgdGcgPSBfX2ZmcyhzbW11X2RvbWFpbi0+ZG9tYWluLnBnc2l6ZV9iaXRtYXApOwo+
-Pj4KPj4+ICDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqAgLyogQ29udmVydCBwYWdlIHNp
-emUgb2YgMTIsMTQsMTYgKGxvZzIpIHRvIDEsMiwzICovCj4+PiAgwqDCoMKgwqDCoMKgwqDCoMKg
-wqDCoMKgwqDCoMKgIGNtZC0+dGxiaS50ZyA9ICh0ZyAtIDEwKSAvIDI7Cj4+Pgo+Pj4gIMKgwqDC
-oMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoCAvKiBEZXRlcm1pbmUgd2hhdCBsZXZlbCB0aGUgZ3Jh
-bnVsZSBpcyBhdCAqLwo+Pj4gIMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoCBjbWQtPnRs
-YmkudHRsID0gNCAtICgoaWxvZzIoZ3JhbnVsZSkgLSAzKSAvICh0ZyAtIDMpKTsKPj4+Cj4+PiAg
-wqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgIG51bV9wYWdlcyA9IHNpemUgPj4gdGc7Cj4+
-PiAgwqDCoMKgwqDCoMKgwqAgfQo+PiBXaGVuIHBTTU1VIHN1cHBvcnRzIFJJTCwgd2UgZ2V0IHRo
-ZSBsZWFmIHBhZ2Ugc2l6ZSBieSBfX2ZmcyhzbW11X2RvbWFpbi0+Cj4+IGRvbWFpbi5wZ3NpemVf
-Yml0bWFwKS4gSW4gbmVzdGVkIG1vZGUsIGl0IGlzIGRldGVybWluZWQgYnkgaG9zdAo+PiBQQUdF
-X1NJWkUuIElmCj4+IHRoZSBob3N0IGtlcm5lbCBhbmQgZ3Vlc3Qga2VybmVsIGhhcyBkaWZmZXJl
-bnQgdHJhbnNsYXRpb24gZ3JhbnVsZSAoZS5nLgo+PiBob3N0IDE2SywKPj4gZ3Vlc3QgNEspLCBf
-X2FybV9zbW11X3RsYl9pbnZfcmFuZ2UoKSB3aWxsIGlzc3VlIGFuIGluY29ycmVjdCB0bGJpIGNv
-bW1hbmQuCj4+Cj4+IERvIHlvdSBoYXZlIGFueSBpZGVhIGFib3V0IHRoaXMgaXNzdWU/Cj4gSSB0
-aGluayB0aGlzIGlzIHRoZSBzYW1lIGlzc3VlIGFzIHRoZSBvbmUgcmVwb3J0ZWQgYnkgQ2hlbnhp
-YW5nCj4KPiBodHRwczovL2xvcmUua2VybmVsLm9yZy9sa21sLzE1OTM4ZWQ1LTIwOTUtZTkwMy1h
-MjkwLTMzM2MyOTkwMTVhMkBoaXNpbGljb24uY29tLwo+Cj4gSW4gY2FzZSBSSUwgaXMgbm90IHN1
-cHBvcnRlZCBieSB0aGUgaG9zdCwgbmV4dCB2ZXJzaW9uIHdpbGwgdXNlIHRoZQo+IHNtYWxsZXN0
-IHBTTU1VIHN1cHBvcnRlZCBwYWdlIHNpemUsIGFzIGRvbmUgaW4gX19hcm1fc21tdV90bGJfaW52
-X3JhbmdlCj4KPiBUaGFua3MKPgo+IEVyaWMKSSB0aGluayB0aGV5IGFyZSBkaWZmZXJlbnQuIElu
-IG5vcm1hbCBjYXNlcywgd2hlbiB3ZSB3YW50IHRvIGludmFsaWRhdGUgdGhlCmNhY2hlIG9mIHN0
-YWdlIDEsIHdlIHNob3VsZCB1c2UgdGhlIGdyYW51bGUgc2l6ZSBzdXBwb3J0ZWQgYnkgdlNNTVUg
-dG8KaW1wbGVtZW50IGFuZCBpc3N1ZSBhbiB0bGJpIGNvbW1hbmQgaWYgcFNNTVUgc3VwcG9ydHMg
-UklMLgoKQnV0IGluIHRoZSBjdXJyZW50IF9fYXJtX3NtbXVfdGxiX2ludl9yYW5nZSgpLCBpdCBh
-bHdheXMgdXNlcyB0aGUgZ3JhbnVsZQpzaXplIHN1cHBvcnRlZCBieSBob3N0LgoodGcgPSBfX2Zm
-cyhzbW11X2RvbWFpbi0+ZG9tYWluLnBnc2l6ZV9iaXRtYXApOykKCkxldCBtZSBleHBsYWluIG1v
-cmUgY2xlYXJseS4KUHJlY29uZGl0aW9ucyBvZiB0aGlzIGlzc3VlOgoxLiBwU01NVSBzdXBwb3J0
-cyBSSUwKMi4gaG9zdCBhbmQgZ3Vlc3QgdXNlIGRpZmZlcmVudCB0cmFuc2xhdGlvbiBncmFudWxl
-IChlLmcuIGhvc3QgMTZLLCAKZ3Vlc3QgNEspCgpHdWVzdCB3YW50cyB0byBpbnZhbGlkYXRlIDRL
-LCBzbyBpbmZvLT5ncmFudWxlX3NpemUgPSA0Sy4KSW4gX19hcm1fc21tdV90bGJfaW52X3Jhbmdl
-KCksIMKgIGlmIHBTTU1VIHN1cHBvcnRzIFJJTCBhbmQgaG9zdCAxNkssCnRnID0gMTQsIHRsYmku
-dGcgPSAyLCB0bGJpLnR0bCA9IDQsIHRsYmkuc2NhbGUgPSAwLCB0bGJpLm51bSA9IC0xLiBJdCBp
-cyAKYW4gaW5jb3JyZWN0CnRsYmkgY29tbWFuZC4KClNvIGl0IHdvdWxkIGJlIGJldHRlciB0byBw
-YXNzIHRoZSBsZWFmIHBhZ2Ugc2l6ZSBzdXBwb3J0ZWQgYnkgdlNNTVUgdG8KaG9zdC7CoCBQZXJo
-YXBzIHRoaXMgaXNzdWUgYW5kIHRoZSBvbmUgcmVwb3J0ZWQgYnkgQ2hlbnhpYW5nIGNhbiBiZSBz
-b2x2ZWQKdG9nZXRoZXIuCgpUaGFua3MsCkt1bmt1biBKaWFuZwo+PiBCZXN0IFJlZ2FyZHMsCj4+
-IEt1bmt1biBKaWFuZwo+Pj4gLXN0YXRpYyB2b2lkIGFybV9zbW11X3RsYl9pbnZfcmFuZ2VfZG9t
-YWluKHVuc2lnbmVkIGxvbmcgaW92YSwgc2l6ZV90Cj4+PiBzaXplLAo+Pj4gLcKgwqDCoMKgwqDC
-oMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoCBzaXplX3QgZ3JhbnVsZSwgYm9vbCBsZWFm
-LAo+Pj4gLcKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoCBzdHJ1Y3Qg
-YXJtX3NtbXVfZG9tYWluICpzbW11X2RvbWFpbikKPj4+ICtzdGF0aWMgdm9pZAo+Pj4gK2FybV9z
-bW11X3RsYl9pbnZfcmFuZ2VfZG9tYWluKHVuc2lnbmVkIGxvbmcgaW92YSwgc2l6ZV90IHNpemUs
-Cj4+PiArwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoCBzaXplX3QgZ3JhbnVsZSwg
-Ym9vbCBsZWFmLCBpbnQgZXh0X2FzaWQsCj4+PiArwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDC
-oMKgwqDCoCBzdHJ1Y3QgYXJtX3NtbXVfZG9tYWluICpzbW11X2RvbWFpbikKPj4+ICDCoCB7Cj4+
-PiAgwqDCoMKgwqDCoCBzdHJ1Y3QgYXJtX3NtbXVfY21kcV9lbnQgY21kID0gewo+Pj4gIMKgwqDC
-oMKgwqDCoMKgwqDCoCAudGxiaSA9IHsKPj4+IEBAIC0xOTM2LDcgKzE5NTAsMTIgQEAgc3RhdGlj
-IHZvaWQKPj4+IGFybV9zbW11X3RsYl9pbnZfcmFuZ2VfZG9tYWluKHVuc2lnbmVkIGxvbmcgaW92
-YSwgc2l6ZV90IHNpemUsCj4+PiAgwqDCoMKgwqDCoMKgwqDCoMKgIH0sCj4+PiAgwqDCoMKgwqDC
-oCB9Owo+Pj4gIMKgIC3CoMKgwqAgaWYgKHNtbXVfZG9tYWluLT5zdGFnZSA9PSBBUk1fU01NVV9E
-T01BSU5fUzEpIHsKPj4+ICvCoMKgwqAgaWYgKGV4dF9hc2lkID49IDApIHvCoCAvKiBndWVzdCBz
-dGFnZSAxIGludmFsaWRhdGlvbiAqLwo+Pj4gK8KgwqDCoMKgwqDCoMKgIGNtZC5vcGNvZGXCoMKg
-wqAgPSBzbW11X2RvbWFpbi0+c21tdS0+ZmVhdHVyZXMgJgo+Pj4gQVJNX1NNTVVfRkVBVF9FMkgg
-Pwo+Pj4gK8KgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqAgQ01EUV9PUF9UTEJJX0VM
-Ml9WQSA6IENNRFFfT1BfVExCSV9OSF9WQTsKPj4+ICvCoMKgwqDCoMKgwqDCoCBjbWQudGxiaS5h
-c2lkwqDCoMKgID0gZXh0X2FzaWQ7Cj4+PiArwqDCoMKgwqDCoMKgwqAgY21kLnRsYmkudm1pZMKg
-wqDCoCA9IHNtbXVfZG9tYWluLT5zMl9jZmcudm1pZDsKPj4+ICvCoMKgwqAgfSBlbHNlIGlmIChz
-bW11X2RvbWFpbi0+c3RhZ2UgPT0gQVJNX1NNTVVfRE9NQUlOX1MxKSB7Cj4+PiAgwqDCoMKgwqDC
-oMKgwqDCoMKgIGNtZC5vcGNvZGXCoMKgwqAgPSBzbW11X2RvbWFpbi0+c21tdS0+ZmVhdHVyZXMg
-Jgo+Pj4gQVJNX1NNTVVfRkVBVF9FMkggPwo+Pj4gIMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKg
-wqDCoMKgwqDCoMKgIENNRFFfT1BfVExCSV9FTDJfVkEgOiBDTURRX09QX1RMQklfTkhfVkE7Cj4+
-PiAgwqDCoMKgwqDCoMKgwqDCoMKgIGNtZC50bGJpLmFzaWTCoMKgwqAgPSBzbW11X2RvbWFpbi0+
-czFfY2ZnLmNkLmFzaWQ7Cj4+PiBAQCAtMTk0NCw2ICsxOTYzLDcgQEAgc3RhdGljIHZvaWQKPj4+
-IGFybV9zbW11X3RsYl9pbnZfcmFuZ2VfZG9tYWluKHVuc2lnbmVkIGxvbmcgaW92YSwgc2l6ZV90
-IHNpemUsCj4+PiAgwqDCoMKgwqDCoMKgwqDCoMKgIGNtZC5vcGNvZGXCoMKgwqAgPSBDTURRX09Q
-X1RMQklfUzJfSVBBOwo+Pj4gIMKgwqDCoMKgwqDCoMKgwqDCoCBjbWQudGxiaS52bWlkwqDCoMKg
-ID0gc21tdV9kb21haW4tPnMyX2NmZy52bWlkOwo+Pj4gIMKgwqDCoMKgwqAgfQo+Pj4gKwo+Pj4g
-IMKgwqDCoMKgwqAgX19hcm1fc21tdV90bGJfaW52X3JhbmdlKCZjbWQsIGlvdmEsIHNpemUsIGdy
-YW51bGUsIHNtbXVfZG9tYWluKTsKPj4+ICDCoCDCoMKgwqDCoMKgIC8qCj4+PiBAQCAtMTk4Miw3
-ICsyMDAyLDcgQEAgc3RhdGljIHZvaWQgYXJtX3NtbXVfdGxiX2ludl9wYWdlX25vc3luYyhzdHJ1
-Y3QKPj4+IGlvbW11X2lvdGxiX2dhdGhlciAqZ2F0aGVyLAo+Pj4gIMKgIHN0YXRpYyB2b2lkIGFy
-bV9zbW11X3RsYl9pbnZfd2Fsayh1bnNpZ25lZCBsb25nIGlvdmEsIHNpemVfdCBzaXplLAo+Pj4g
-IMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgIHNpemVfdCBncmFudWxlLCB2
-b2lkICpjb29raWUpCj4+PiAgwqAgewo+Pj4gLcKgwqDCoCBhcm1fc21tdV90bGJfaW52X3Jhbmdl
-X2RvbWFpbihpb3ZhLCBzaXplLCBncmFudWxlLCBmYWxzZSwgY29va2llKTsKPj4+ICvCoMKgwqAg
-YXJtX3NtbXVfdGxiX2ludl9yYW5nZV9kb21haW4oaW92YSwgc2l6ZSwgZ3JhbnVsZSwgZmFsc2Us
-IC0xLAo+Pj4gY29va2llKTsKPj4+ICDCoCB9Cj4+PiAgwqAgwqAgc3RhdGljIGNvbnN0IHN0cnVj
-dCBpb21tdV9mbHVzaF9vcHMgYXJtX3NtbXVfZmx1c2hfb3BzID0gewo+Pj4gQEAgLTI1MjMsNyAr
-MjU0Myw3IEBAIHN0YXRpYyB2b2lkIGFybV9zbW11X2lvdGxiX3N5bmMoc3RydWN0Cj4+PiBpb21t
-dV9kb21haW4gKmRvbWFpbiwKPj4+ICDCoCDCoMKgwqDCoMKgIGFybV9zbW11X3RsYl9pbnZfcmFu
-Z2VfZG9tYWluKGdhdGhlci0+c3RhcnQsCj4+PiAgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDC
-oMKgwqDCoMKgwqDCoMKgwqDCoCBnYXRoZXItPmVuZCAtIGdhdGhlci0+c3RhcnQgKyAxLAo+Pj4g
-LcKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoCBnYXRoZXItPnBnc2l6
-ZSwgdHJ1ZSwgc21tdV9kb21haW4pOwo+Pj4gK8KgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDC
-oMKgwqDCoMKgwqDCoCBnYXRoZXItPnBnc2l6ZSwgdHJ1ZSwgLTEsIHNtbXVfZG9tYWluKTsKPj4+
-ICDCoCB9Cj4+PiAgwqAgwqAgc3RhdGljIHBoeXNfYWRkcl90Cj4+Cj4gLgoKCl9fX19fX19fX19f
-X19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fCmlvbW11IG1haWxpbmcgbGlzdApp
-b21tdUBsaXN0cy5saW51eC1mb3VuZGF0aW9uLm9yZwpodHRwczovL2xpc3RzLmxpbnV4Zm91bmRh
-dGlvbi5vcmcvbWFpbG1hbi9saXN0aW5mby9pb21tdQ==
+Hi Longpeng,
+
+On 4/8/21 3:37 PM, Longpeng (Mike, Cloud Infrastructure Service Product 
+Dept.) wrote:
+> Hi Baolu,
+> 
+>> -----Original Message-----
+>> From: Lu Baolu [mailto:baolu.lu@linux.intel.com]
+>> Sent: Thursday, April 8, 2021 12:32 PM
+>> To: Longpeng (Mike, Cloud Infrastructure Service Product Dept.)
+>> <longpeng2@huawei.com>; iommu@lists.linux-foundation.org;
+>> linux-kernel@vger.kernel.org
+>> Cc: baolu.lu@linux.intel.com; David Woodhouse <dwmw2@infradead.org>; Nadav
+>> Amit <nadav.amit@gmail.com>; Alex Williamson <alex.williamson@redhat.com>;
+>> Kevin Tian <kevin.tian@intel.com>; Gonglei (Arei) <arei.gonglei@huawei.com>;
+>> stable@vger.kernel.org
+>> Subject: Re: [PATCH] iommu/vt-d: Force to flush iotlb before creating superpage
+>>
+>> Hi Longpeng,
+>>
+>> On 4/7/21 2:35 PM, Longpeng (Mike, Cloud Infrastructure Service Product
+>> Dept.) wrote:
+>>> Hi Baolu,
+>>>
+>>>> -----Original Message-----
+>>>> From: Lu Baolu [mailto:baolu.lu@linux.intel.com]
+>>>> Sent: Friday, April 2, 2021 12:44 PM
+>>>> To: Longpeng (Mike, Cloud Infrastructure Service Product Dept.)
+>>>> <longpeng2@huawei.com>; iommu@lists.linux-foundation.org;
+>>>> linux-kernel@vger.kernel.org
+>>>> Cc: baolu.lu@linux.intel.com; David Woodhouse <dwmw2@infradead.org>;
+>>>> Nadav Amit <nadav.amit@gmail.com>; Alex Williamson
+>>>> <alex.williamson@redhat.com>; Kevin Tian <kevin.tian@intel.com>;
+>>>> Gonglei (Arei) <arei.gonglei@huawei.com>; stable@vger.kernel.org
+>>>> Subject: Re: [PATCH] iommu/vt-d: Force to flush iotlb before creating
+>>>> superpage
+>>>>
+>>>> Hi Longpeng,
+>>>>
+>>>> On 4/1/21 3:18 PM, Longpeng(Mike) wrote:
+>>>>> diff --git a/drivers/iommu/intel/iommu.c
+>>>>> b/drivers/iommu/intel/iommu.c index ee09323..cbcb434 100644
+>>>>> --- a/drivers/iommu/intel/iommu.c
+>>>>> +++ b/drivers/iommu/intel/iommu.c
+>>>>> @@ -2342,9 +2342,20 @@ static inline int
+>>>>> hardware_largepage_caps(struct
+>>>> dmar_domain *domain,
+>>>>>     				 * removed to make room for superpage(s).
+>>>>>     				 * We're adding new large pages, so make sure
+>>>>>     				 * we don't remove their parent tables.
+>>>>> +				 *
+>>>>> +				 * We also need to flush the iotlb before creating
+>>>>> +				 * superpage to ensure it does not perserves any
+>>>>> +				 * obsolete info.
+>>>>>     				 */
+>>>>> -				dma_pte_free_pagetable(domain, iov_pfn, end_pfn,
+>>>>> -						       largepage_lvl + 1);
+>>>>> +				if (dma_pte_present(pte)) {
+>>>>
+>>>> The dma_pte_free_pagetable() clears a batch of PTEs. So checking
+>>>> current PTE is insufficient. How about removing this check and always
+>>>> performing cache invalidation?
+>>>>
+>>>
+>>> Um...the PTE here may be present( e.g. 4K mapping --> superpage mapping )
+>> orNOT-present ( e.g. create a totally new superpage mapping ), but we only need to
+>> call free_pagetable and flush_iotlb in the former case, right ?
+>>
+>> But this code covers multiple PTEs and perhaps crosses the page boundary.
+>>
+>> How about moving this code into a separated function and check PTE presence
+>> there. A sample code could look like below: [compiled but not tested!]
+>>
+>> diff --git a/drivers/iommu/intel/iommu.c b/drivers/iommu/intel/iommu.c index
+>> d334f5b4e382..0e04d450c38a 100644
+>> --- a/drivers/iommu/intel/iommu.c
+>> +++ b/drivers/iommu/intel/iommu.c
+>> @@ -2300,6 +2300,41 @@ static inline int hardware_largepage_caps(struct
+>> dmar_domain *domain,
+>>           return level;
+>>    }
+>>
+>> +/*
+>> + * Ensure that old small page tables are removed to make room for
+>> superpage(s).
+>> + * We're going to add new large pages, so make sure we don't remove
+>> their parent
+>> + * tables. The IOTLB/devTLBs should be flushed if any PDE/PTEs are cleared.
+>> + */
+>> +static void switch_to_super_page(struct dmar_domain *domain,
+>> +                                unsigned long start_pfn,
+>> +                                unsigned long end_pfn, int level) {
+> 
+> Maybe "swith_to" will lead people to think "remove old and then setup new", so how about something like "remove_room_for_super_page" or "prepare_for_super_page" ?
+
+I named it like this because we also want to have a opposite operation
+split_from_super_page() which switch a PDE or PDPE from super page
+setting up to small pages, which is needed to optimize dirty bit
+tracking during VM live migration.
+
+> 
+>> +       unsigned long lvl_pages = lvl_to_nr_pages(level);
+>> +       struct dma_pte *pte = NULL;
+>> +       int i;
+>> +
+>> +       while (start_pfn <= end_pfn) {
+> 
+> start_pfn < end_pfn ?
+
+end_pfn is inclusive.
+
+> 
+>> +               if (!pte)
+>> +                       pte = pfn_to_dma_pte(domain, start_pfn, &level);
+>> +
+>> +               if (dma_pte_present(pte)) {
+>> +                       dma_pte_free_pagetable(domain, start_pfn,
+>> +                                              start_pfn + lvl_pages - 1,
+>> +                                              level + 1);
+>> +
+>> +                       for_each_domain_iommu(i, domain)
+>> +                               iommu_flush_iotlb_psi(g_iommus[i],
+>> domain,
+>> +                                                     start_pfn,
+>> lvl_pages,
+>> +                                                     0, 0);
+>> +               }
+>> +
+>> +               pte++;
+>> +               start_pfn += lvl_pages;
+>> +               if (first_pte_in_page(pte))
+>> +                       pte = NULL;
+>> +       }
+>> +}
+>> +
+>>    static int
+>>    __domain_mapping(struct dmar_domain *domain, unsigned long iov_pfn,
+>>                    unsigned long phys_pfn, unsigned long nr_pages, int prot)
+>> @@ -2341,22 +2376,11 @@ __domain_mapping(struct dmar_domain *domain,
+>> unsigned long iov_pfn,
+>>                                   return -ENOMEM;
+>>                           /* It is large page*/
+>>                           if (largepage_lvl > 1) {
+>> -                               unsigned long nr_superpages, end_pfn;
+>> +                               unsigned long end_pfn;
+>>
+>>                                   pteval |= DMA_PTE_LARGE_PAGE;
+>> -                               lvl_pages = lvl_to_nr_pages(largepage_lvl);
+>> -
+>> -                               nr_superpages = nr_pages / lvl_pages;
+>> -                               end_pfn = iov_pfn + nr_superpages *
+>> lvl_pages - 1;
+>> -
+>> -                               /*
+>> -                                * Ensure that old small page tables are
+>> -                                * removed to make room for superpage(s).
+>> -                                * We're adding new large pages, so make
+>> sure
+>> -                                * we don't remove their parent tables.
+>> -                                */
+>> -                               dma_pte_free_pagetable(domain, iov_pfn,
+>> end_pfn,
+>> -                                                      largepage_lvl +
+>> 1);
+>> +                               end_pfn = ((iov_pfn + nr_pages) &
+>> level_mask(largepage_lvl)) - 1;
+>> +                               switch_to_super_page(domain, iov_pfn,
+>> end_pfn, largepage_lvl);
+>>                           } else {
+>>                                   pteval &=
+>> ~(uint64_t)DMA_PTE_LARGE_PAGE;
+>>                           }
+>>
+>> I will send you the diff patch off list. Any thoughts?
+>>
+> 
+> The solution looks good to me.
+> 
+> It's free for you to send this patch if you want, I'll send V2 if you have no plan to send it :)
+
+Please go ahead with a new version. Thank you for catching this and
+managing to fix it.
+
+Best regards,
+baolu
+
+> 
+>> Best regards,
+>> baolu
+>>
+>>>
+>>>>> +					int i;
+>>>>> +
+>>>>> +					dma_pte_free_pagetable(domain, iov_pfn, end_pfn,
+>>>>> +							       largepage_lvl + 1);
+>>>>> +					for_each_domain_iommu(i, domain)
+>>>>> +						iommu_flush_iotlb_psi(g_iommus[i], domain,
+>>>>> +								      iov_pfn, nr_pages, 0, 0);
+>>>>> +
+>>>>
+>>>> Best regards,
+>>>> baolu
+_______________________________________________
+iommu mailing list
+iommu@lists.linux-foundation.org
+https://lists.linuxfoundation.org/mailman/listinfo/iommu
