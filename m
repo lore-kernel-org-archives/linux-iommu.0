@@ -7,64 +7,63 @@ X-Spam-Status: No, score=-16.7 required=3.0 tests=BAYES_00,
 	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,UNPARSEABLE_RELAY,USER_AGENT_GIT
 	autolearn=ham autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5D00EC43460
-	for <iommu@archiver.kernel.org>; Sat, 10 Apr 2021 09:13:56 +0000 (UTC)
-Received: from smtp3.osuosl.org (smtp3.osuosl.org [140.211.166.136])
+	by smtp.lore.kernel.org (Postfix) with ESMTP id AE478C43460
+	for <iommu@archiver.kernel.org>; Sat, 10 Apr 2021 09:14:15 +0000 (UTC)
+Received: from smtp1.osuosl.org (smtp1.osuosl.org [140.211.166.138])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 12B7061184
-	for <iommu@archiver.kernel.org>; Sat, 10 Apr 2021 09:13:56 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 12B7061184
+	by mail.kernel.org (Postfix) with ESMTPS id 6C00D61184
+	for <iommu@archiver.kernel.org>; Sat, 10 Apr 2021 09:14:15 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 6C00D61184
 Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=mediatek.com
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by smtp3.osuosl.org (Postfix) with ESMTP id E3141605E7;
-	Sat, 10 Apr 2021 09:13:55 +0000 (UTC)
+	by smtp1.osuosl.org (Postfix) with ESMTP id 4064482D62;
+	Sat, 10 Apr 2021 09:14:15 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from smtp3.osuosl.org ([127.0.0.1])
-	by localhost (smtp3.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id x10LhV6__iUO; Sat, 10 Apr 2021 09:13:55 +0000 (UTC)
+Received: from smtp1.osuosl.org ([127.0.0.1])
+	by localhost (smtp1.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+	with ESMTP id v5kI_jgaEMsL; Sat, 10 Apr 2021 09:14:14 +0000 (UTC)
 Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [IPv6:2605:bc80:3010:104::8cd3:938])
-	by smtp3.osuosl.org (Postfix) with ESMTP id D33A2605DD;
-	Sat, 10 Apr 2021 09:13:54 +0000 (UTC)
+	by smtp1.osuosl.org (Postfix) with ESMTP id 2161D82C3B;
+	Sat, 10 Apr 2021 09:14:14 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id B8916C000B;
-	Sat, 10 Apr 2021 09:13:54 +0000 (UTC)
-Received: from smtp1.osuosl.org (smtp1.osuosl.org [IPv6:2605:bc80:3010::138])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 75644C000A
- for <iommu@lists.linux-foundation.org>; Sat, 10 Apr 2021 09:13:54 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id ECF31C000B;
+	Sat, 10 Apr 2021 09:14:13 +0000 (UTC)
+Received: from smtp1.osuosl.org (smtp1.osuosl.org [140.211.166.138])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id B7730C000A
+ for <iommu@lists.linux-foundation.org>; Sat, 10 Apr 2021 09:14:12 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by smtp1.osuosl.org (Postfix) with ESMTP id 4F03D83C64
- for <iommu@lists.linux-foundation.org>; Sat, 10 Apr 2021 09:13:54 +0000 (UTC)
+ by smtp1.osuosl.org (Postfix) with ESMTP id 920A582C8E
+ for <iommu@lists.linux-foundation.org>; Sat, 10 Apr 2021 09:14:12 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
 Received: from smtp1.osuosl.org ([127.0.0.1])
  by localhost (smtp1.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id vE6tY__ORYEl for <iommu@lists.linux-foundation.org>;
- Sat, 10 Apr 2021 09:13:53 +0000 (UTC)
+ with ESMTP id oJF0YoDz_Xua for <iommu@lists.linux-foundation.org>;
+ Sat, 10 Apr 2021 09:14:12 +0000 (UTC)
 X-Greylist: domain auto-whitelisted by SQLgrey-1.8.0
 Received: from mailgw02.mediatek.com (unknown [210.61.82.184])
- by smtp1.osuosl.org (Postfix) with ESMTP id 89C2283C09
- for <iommu@lists.linux-foundation.org>; Sat, 10 Apr 2021 09:13:53 +0000 (UTC)
-X-UUID: 68abb4a745da44c7825d28f3c4282dfc-20210410
-X-UUID: 68abb4a745da44c7825d28f3c4282dfc-20210410
-Received: from mtkmbs10n2.mediatek.inc [(172.21.101.183)] by
- mailgw02.mediatek.com (envelope-from <yong.wu@mediatek.com>)
+ by smtp1.osuosl.org (Postfix) with ESMTP id CED4282C3B
+ for <iommu@lists.linux-foundation.org>; Sat, 10 Apr 2021 09:14:11 +0000 (UTC)
+X-UUID: c51c7e73423f4d1ca9169e358b7496a9-20210410
+X-UUID: c51c7e73423f4d1ca9169e358b7496a9-20210410
+Received: from mtkcas06.mediatek.inc [(172.21.101.30)] by mailgw02.mediatek.com
+ (envelope-from <yong.wu@mediatek.com>)
  (Cellopoint E-mail Firewall v4.1.14 Build 0819 with TLSv1.2
- ECDHE-RSA-AES256-GCM-SHA384 256/256)
- with ESMTP id 95457198; Sat, 10 Apr 2021 17:13:52 +0800
+ ECDHE-RSA-AES256-SHA384 256/256)
+ with ESMTP id 70493827; Sat, 10 Apr 2021 17:14:05 +0800
 Received: from MTKCAS06.mediatek.inc (172.21.101.30) by
- mtkmbs07n2.mediatek.inc (172.21.101.141) with Microsoft SMTP Server (TLS) id
- 15.0.1497.2; Sat, 10 Apr 2021 17:13:50 +0800
+ mtkmbs07n1.mediatek.inc (172.21.101.16) with Microsoft SMTP Server (TLS) id
+ 15.0.1497.2; Sat, 10 Apr 2021 17:14:03 +0800
 Received: from localhost.localdomain (10.17.3.153) by MTKCAS06.mediatek.inc
  (172.21.101.73) with Microsoft SMTP Server id 15.0.1497.2 via Frontend
- Transport; Sat, 10 Apr 2021 17:13:49 +0800
+ Transport; Sat, 10 Apr 2021 17:14:02 +0800
 From: Yong Wu <yong.wu@mediatek.com>
 To: Matthias Brugger <matthias.bgg@gmail.com>, Joerg Roedel <joro@8bytes.org>, 
  Rob Herring <robh+dt@kernel.org>, Krzysztof Kozlowski <krzk@kernel.org>
-Subject: [PATCH v5 12/16] media: mtk-vcodec: Use pm_runtime_resume_and_get for
- PM get_sync
-Date: Sat, 10 Apr 2021 17:11:24 +0800
-Message-ID: <20210410091128.31823-13-yong.wu@mediatek.com>
+Subject: [PATCH v5 14/16] memory: mtk-smi: Get rid of mtk_smi_larb_get/put
+Date: Sat, 10 Apr 2021 17:11:26 +0800
+Message-ID: <20210410091128.31823-15-yong.wu@mediatek.com>
 X-Mailer: git-send-email 2.18.0
 In-Reply-To: <20210410091128.31823-1-yong.wu@mediatek.com>
 References: <20210410091128.31823-1-yong.wu@mediatek.com>
@@ -96,32 +95,74 @@ Content-Transfer-Encoding: 7bit
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-pm_runtime_get_sync will increment pm usage counter even it failed.
-This patch use pm_runtime_resume_and_get instead of
-pm_runtime_get_sync to keep usage counter balanced.
+After adding device_link between the iommu consumer and smi-larb,
+the pm_runtime_get(_sync) of smi-larb and smi-common will be called
+automatically. we can get rid of mtk_smi_larb_get/put.
 
+CC: Matthias Brugger <matthias.bgg@gmail.com>
 Signed-off-by: Yong Wu <yong.wu@mediatek.com>
+Reviewed-by: Evan Green <evgreen@chromium.org>
 ---
- drivers/media/platform/mtk-vcodec/mtk_vcodec_dec_pm.c | 5 +++--
- 1 file changed, 3 insertions(+), 2 deletions(-)
+ drivers/memory/mtk-smi.c   | 14 --------------
+ include/soc/mediatek/smi.h | 20 --------------------
+ 2 files changed, 34 deletions(-)
 
-diff --git a/drivers/media/platform/mtk-vcodec/mtk_vcodec_dec_pm.c b/drivers/media/platform/mtk-vcodec/mtk_vcodec_dec_pm.c
-index ddee7046ce42..32e1858e9f1d 100644
---- a/drivers/media/platform/mtk-vcodec/mtk_vcodec_dec_pm.c
-+++ b/drivers/media/platform/mtk-vcodec/mtk_vcodec_dec_pm.c
-@@ -92,9 +92,10 @@ void mtk_vcodec_dec_pw_on(struct mtk_vcodec_pm *pm)
- {
- 	int ret;
- 
--	ret = pm_runtime_get_sync(pm->dev);
-+	ret = pm_runtime_resume_and_get(pm->dev);
- 	if (ret)
--		mtk_v4l2_err("pm_runtime_get_sync fail %d", ret);
-+		mtk_v4l2_err("pm_runtime_resume_and_get fail %d", ret);
-+
+diff --git a/drivers/memory/mtk-smi.c b/drivers/memory/mtk-smi.c
+index c5fb51f73b34..7c61c924e220 100644
+--- a/drivers/memory/mtk-smi.c
++++ b/drivers/memory/mtk-smi.c
+@@ -134,20 +134,6 @@ static void mtk_smi_clk_disable(const struct mtk_smi *smi)
+ 	clk_disable_unprepare(smi->clk_apb);
  }
  
- void mtk_vcodec_dec_pw_off(struct mtk_vcodec_pm *pm)
+-int mtk_smi_larb_get(struct device *larbdev)
+-{
+-	int ret = pm_runtime_resume_and_get(larbdev);
+-
+-	return (ret < 0) ? ret : 0;
+-}
+-EXPORT_SYMBOL_GPL(mtk_smi_larb_get);
+-
+-void mtk_smi_larb_put(struct device *larbdev)
+-{
+-	pm_runtime_put_sync(larbdev);
+-}
+-EXPORT_SYMBOL_GPL(mtk_smi_larb_put);
+-
+ static int
+ mtk_smi_larb_bind(struct device *dev, struct device *master, void *data)
+ {
+diff --git a/include/soc/mediatek/smi.h b/include/soc/mediatek/smi.h
+index 15e3397cec58..11f7d6b59642 100644
+--- a/include/soc/mediatek/smi.h
++++ b/include/soc/mediatek/smi.h
+@@ -19,26 +19,6 @@ struct mtk_smi_larb_iommu {
+ 	unsigned char  bank[32];
+ };
+ 
+-/*
+- * mtk_smi_larb_get: Enable the power domain and clocks for this local arbiter.
+- *                   It also initialize some basic setting(like iommu).
+- * mtk_smi_larb_put: Disable the power domain and clocks for this local arbiter.
+- * Both should be called in non-atomic context.
+- *
+- * Returns 0 if successful, negative on failure.
+- */
+-int mtk_smi_larb_get(struct device *larbdev);
+-void mtk_smi_larb_put(struct device *larbdev);
+-
+-#else
+-
+-static inline int mtk_smi_larb_get(struct device *larbdev)
+-{
+-	return 0;
+-}
+-
+-static inline void mtk_smi_larb_put(struct device *larbdev) { }
+-
+ #endif
+ 
+ #endif
 -- 
 2.18.0
 
