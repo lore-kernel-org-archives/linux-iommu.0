@@ -2,78 +2,88 @@ Return-Path: <SRS0=/53O=JI=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-15.3 required=3.0 tests=BAYES_00,
-	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_CR_TRAILER,INCLUDES_PATCH,
-	MAILING_LIST_MULTI,NICE_REPLY_A,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,
-	USER_AGENT_SANE_1 autolearn=ham autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-13.6 required=3.0 tests=BAYES_00,DKIM_INVALID,
+	DKIM_SIGNED,HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,
+	MENTIONS_GIT_HOSTING,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED
+	autolearn=unavailable autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 958B6C433ED
-	for <iommu@archiver.kernel.org>; Sun, 11 Apr 2021 07:56:26 +0000 (UTC)
-Received: from smtp3.osuosl.org (smtp3.osuosl.org [140.211.166.136])
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 007C9C43460
+	for <iommu@archiver.kernel.org>; Sun, 11 Apr 2021 11:13:01 +0000 (UTC)
+Received: from smtp1.osuosl.org (smtp1.osuosl.org [140.211.166.138])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 309A8611CE
-	for <iommu@archiver.kernel.org>; Sun, 11 Apr 2021 07:56:26 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 309A8611CE
-Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=linux.intel.com
+	by mail.kernel.org (Postfix) with ESMTPS id 7D05E611AD
+	for <iommu@archiver.kernel.org>; Sun, 11 Apr 2021 11:13:00 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 7D05E611AD
+Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=redhat.com
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by smtp3.osuosl.org (Postfix) with ESMTP id E7578605F1;
-	Sun, 11 Apr 2021 07:56:25 +0000 (UTC)
+	by smtp1.osuosl.org (Postfix) with ESMTP id 43140839CF;
+	Sun, 11 Apr 2021 11:13:00 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from smtp3.osuosl.org ([127.0.0.1])
-	by localhost (smtp3.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id H4Gnz6ppMBAa; Sun, 11 Apr 2021 07:56:25 +0000 (UTC)
-Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [IPv6:2605:bc80:3010:104::8cd3:938])
-	by smtp3.osuosl.org (Postfix) with ESMTP id EA5096075C;
-	Sun, 11 Apr 2021 07:56:24 +0000 (UTC)
+Received: from smtp1.osuosl.org ([127.0.0.1])
+	by localhost (smtp1.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+	with ESMTP id j0gxmNmgDur4; Sun, 11 Apr 2021 11:12:59 +0000 (UTC)
+Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
+	by smtp1.osuosl.org (Postfix) with ESMTP id F0A48839BD;
+	Sun, 11 Apr 2021 11:12:58 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id BF694C000C;
-	Sun, 11 Apr 2021 07:56:24 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id D8975C000C;
+	Sun, 11 Apr 2021 11:12:58 +0000 (UTC)
 Received: from smtp4.osuosl.org (smtp4.osuosl.org [140.211.166.137])
- by lists.linuxfoundation.org (Postfix) with ESMTP id ABFF1C000A
- for <iommu@lists.linux-foundation.org>; Sun, 11 Apr 2021 07:56:23 +0000 (UTC)
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 550D1C000A
+ for <iommu@lists.linux-foundation.org>; Sun, 11 Apr 2021 11:12:57 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by smtp4.osuosl.org (Postfix) with ESMTP id 89D44403A6
- for <iommu@lists.linux-foundation.org>; Sun, 11 Apr 2021 07:56:23 +0000 (UTC)
+ by smtp4.osuosl.org (Postfix) with ESMTP id 2F60140386
+ for <iommu@lists.linux-foundation.org>; Sun, 11 Apr 2021 11:12:57 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
+Authentication-Results: smtp4.osuosl.org (amavisd-new);
+ dkim=pass (1024-bit key) header.d=redhat.com
 Received: from smtp4.osuosl.org ([127.0.0.1])
  by localhost (smtp4.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id hlN9wcMPXOn3 for <iommu@lists.linux-foundation.org>;
- Sun, 11 Apr 2021 07:56:22 +0000 (UTC)
+ with ESMTP id ugL-1w8k04zV for <iommu@lists.linux-foundation.org>;
+ Sun, 11 Apr 2021 11:12:55 +0000 (UTC)
 X-Greylist: domain auto-whitelisted by SQLgrey-1.8.0
-Received: from mga11.intel.com (mga11.intel.com [192.55.52.93])
- by smtp4.osuosl.org (Postfix) with ESMTPS id 46309403A3
- for <iommu@lists.linux-foundation.org>; Sun, 11 Apr 2021 07:56:21 +0000 (UTC)
-IronPort-SDR: QlGo1/v1r+qaZOyeWHynFHhS7Noiviw6GKltCG/BmaYdhJemDaQRUdgA3lE3W1S7RwVEVBJEWr
- ouxQJl8xOGpA==
-X-IronPort-AV: E=McAfee;i="6000,8403,9950"; a="190817663"
-X-IronPort-AV: E=Sophos;i="5.82,213,1613462400"; d="scan'208";a="190817663"
-Received: from fmsmga004.fm.intel.com ([10.253.24.48])
- by fmsmga102.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384;
- 11 Apr 2021 00:56:20 -0700
-IronPort-SDR: LpBm9mbWSifoYze1iueqgKVnmshJ3hp+KegkzKkyfcvtirNgCZfidWTUKBwstADd1EfIW861tI
- erjvBtIBTopQ==
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.82,213,1613462400"; d="scan'208";a="442696473"
-Received: from allen-box.sh.intel.com (HELO [10.239.159.128])
- ([10.239.159.128])
- by fmsmga004.fm.intel.com with ESMTP; 11 Apr 2021 00:56:18 -0700
-Subject: Re: [PATCH] iommu/vt-d: Fix an error handling path in
- 'intel_prepare_irq_remapping()'
-To: Christophe JAILLET <christophe.jaillet@wanadoo.fr>, dwmw2@infradead.org,
- joro@8bytes.org, will@kernel.org, kyung.min.park@intel.com
-References: <98d531caabe66012b4fffc7813fd4b9470afd517.1618124777.git.christophe.jaillet@wanadoo.fr>
-From: Lu Baolu <baolu.lu@linux.intel.com>
-Message-ID: <f43ba8b7-8977-c1e7-ffa2-7f7b5306c7f2@linux.intel.com>
-Date: Sun, 11 Apr 2021 15:46:44 +0800
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
- Thunderbird/78.7.1
+Received: from us-smtp-delivery-124.mimecast.com
+ (us-smtp-delivery-124.mimecast.com [170.10.133.124])
+ by smtp4.osuosl.org (Postfix) with ESMTPS id 5FE1140385
+ for <iommu@lists.linux-foundation.org>; Sun, 11 Apr 2021 11:12:55 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+ s=mimecast20190719; t=1618139573;
+ h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+ to:to:cc:cc:mime-version:mime-version:
+ content-transfer-encoding:content-transfer-encoding;
+ bh=VZ5ZgqkLKGzZ6mZcaLAP7WgqAO/FhHDbjCu61E17AlI=;
+ b=Q6jshScRkg03K8KhCPXDs26Qadk36hUyLsXSZQPMWVg4rL/o60CLtvTLQEhiumW47MHsg+
+ o8B99VJnNvsel9FDAoX12P6vHWmVtbbquXGH1/VD7hoPi2Lvzh4iLPfLN9wgrM+GkekILK
+ EhExRGFvpxJD1LNp5sSg1cr0wjLVe6Q=
+Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
+ [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-424-Lz5o6dudMNmUzPQlCMbKnQ-1; Sun, 11 Apr 2021 07:12:51 -0400
+X-MC-Unique: Lz5o6dudMNmUzPQlCMbKnQ-1
+Received: from smtp.corp.redhat.com (int-mx07.intmail.prod.int.phx2.redhat.com
+ [10.5.11.22])
+ (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+ (No client certificate requested)
+ by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 61CFD107ACC7;
+ Sun, 11 Apr 2021 11:12:48 +0000 (UTC)
+Received: from laptop.redhat.com (ovpn-112-22.ams2.redhat.com [10.36.112.22])
+ by smtp.corp.redhat.com (Postfix) with ESMTP id B064C100164A;
+ Sun, 11 Apr 2021 11:12:32 +0000 (UTC)
+From: Eric Auger <eric.auger@redhat.com>
+To: eric.auger.pro@gmail.com, eric.auger@redhat.com,
+ iommu@lists.linux-foundation.org, linux-kernel@vger.kernel.org,
+ kvm@vger.kernel.org, kvmarm@lists.cs.columbia.edu, will@kernel.org,
+ maz@kernel.org, robin.murphy@arm.com, joro@8bytes.org,
+ alex.williamson@redhat.com, tn@semihalf.com, zhukeqian1@huawei.com
+Subject: [PATCH v15 00/12] SMMUv3 Nested Stage Setup (IOMMU part)
+Date: Sun, 11 Apr 2021 13:12:16 +0200
+Message-Id: <20210411111228.14386-1-eric.auger@redhat.com>
 MIME-Version: 1.0
-In-Reply-To: <98d531caabe66012b4fffc7813fd4b9470afd517.1618124777.git.christophe.jaillet@wanadoo.fr>
-Content-Language: en-US
-Cc: iommu@lists.linux-foundation.org, kernel-janitors@vger.kernel.org,
- linux-kernel@vger.kernel.org
+X-Scanned-By: MIMEDefang 2.84 on 10.5.11.22
+Cc: jean-philippe@linaro.org, wangxingang5@huawei.com, lushenming@huawei.com,
+ vivek.gautam@arm.com, vsethi@nvidia.com, zhangfei.gao@linaro.org,
+ jiangkunkun@huawei.com
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -86,45 +96,112 @@ List-Post: <mailto:iommu@lists.linux-foundation.org>
 List-Help: <mailto:iommu-request@lists.linux-foundation.org?subject=help>
 List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
  <mailto:iommu-request@lists.linux-foundation.org?subject=subscribe>
+Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
-Content-Type: text/plain; charset="us-ascii"; Format="flowed"
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-On 4/11/21 3:08 PM, Christophe JAILLET wrote:
-> If 'intel_cap_audit()' fails, we should return directly, as already done in
-> the surrounding error handling path.
-> 
-> Fixes: ad3d19029979 ("iommu/vt-d: Audit IOMMU Capabilities and add helper functions")
-> Signed-off-by: Christophe JAILLET <christophe.jaillet@wanadoo.fr>
-> ---
-> This patch is completely speculative.
-> It is based on a spurious mix-up of direct return and goto.
-> ---
->   drivers/iommu/intel/irq_remapping.c | 2 +-
->   1 file changed, 1 insertion(+), 1 deletion(-)
-> 
-> diff --git a/drivers/iommu/intel/irq_remapping.c b/drivers/iommu/intel/irq_remapping.c
-> index 75429a5373ec..f912fe45bea2 100644
-> --- a/drivers/iommu/intel/irq_remapping.c
-> +++ b/drivers/iommu/intel/irq_remapping.c
-> @@ -736,7 +736,7 @@ static int __init intel_prepare_irq_remapping(void)
->   		return -ENODEV;
->   
->   	if (intel_cap_audit(CAP_AUDIT_STATIC_IRQR, NULL))
-> -		goto error;
-> +		return -ENODEV;
->   
->   	if (!dmar_ir_support())
->   		return -ENODEV;
-> 
+SMMUv3 Nested Stage Setup (IOMMU part)
 
-Thanks!
+This series brings the IOMMU part of HW nested paging support
+in the SMMUv3. The VFIO part is submitted separately.
 
-Acked-by: Lu Baolu <baolu.lu@linux.intel.com>
+This is based on Jean-Philippe's
+[PATCH v14 00/10] iommu: I/O page faults for SMMUv3
+https://www.spinics.net/lists/arm-kernel/msg886518.html
+(including the patches that were not pulled for 5.13)
 
-Best regards,
-baolu
+The IOMMU API is extended to support 2 new API functionalities:
+1) pass the guest stage 1 configuration
+2) pass stage 1 MSI bindings
+
+Then those capabilities gets implemented in the SMMUv3 driver.
+
+The virtualizer passes information through the VFIO user API
+which cascades them to the iommu subsystem. This allows the guest
+to own stage 1 tables and context descriptors (so-called PASID
+table) while the host owns stage 2 tables and main configuration
+structures (STE).
+
+Best Regards
+
+Eric
+
+This series can be found at:
+v5.12-rc6-jean-iopf-14-2stage-v15
+(including the VFIO part in its last version: v13)
+
+The VFIO series is sent separately.
+
+History:
+
+Previous version:
+https://github.com/eauger/linux/tree/v5.11-stallv12-2stage-v14
+
+v14 -> v15:
+- on S1 invalidation, always use CMDQ_OP_TLBI_NH_VA
+  independently on host ARM_SMMU_FEAT_E2H support (Zenghui)
+- remove  iommu/smmuv3: Accept configs with more than one
+  context descriptor
+- Remove spurious arm_smmu_cmdq_issue_sync in
+  IOMMU_INV_GRANU_ADDR cache invalidation (Zenghui)
+- dma-iommu.c changes induced by Zenghui's comments
+  including the locking rework
+- fix cache invalidation when guest uses RIL
+  and host does not support it (Chenxiang)
+- removed iommu/smmuv3: Accept configs with more than one
+  context descriptor (Zenghui, Shameer)
+- At this point I have kept the MSI binding API.
+
+v13 -> v14:
+- Took into account all received comments I think. Great
+  thanks to all the testers for their effort and sometimes
+  tentative fixes. I am really grateful to you!
+- numerous fixes including guest running in
+  noiommu, iommu.strict=0, iommu.passthrough=on,
+  enable_unsafe_noiommu_mode
+
+v12 -> v13:
+- fixed compilation issue with CONFIG_ARM_SMMU_V3_SVA
+  reported by Shameer. This urged me to revisit patch 4 into
+  iommu/smmuv3: Allow s1 and s2 configs to coexist where
+  s1_cfg and s2_cfg are not dynamically allocated anymore.
+  Instead I use a new set field in existing structs
+- fixed 2 others config checks
+- Updated "iommu/arm-smmu-v3: Maintain a SID->device structure"
+  according to the last version
+
+v11 -> v12:
+- rebase on top of v5.10-rc4
+
+
+Eric Auger (12):
+  iommu: Introduce attach/detach_pasid_table API
+  iommu: Introduce bind/unbind_guest_msi
+  iommu/smmuv3: Allow s1 and s2 configs to coexist
+  iommu/smmuv3: Get prepared for nested stage support
+  iommu/smmuv3: Implement attach/detach_pasid_table
+  iommu/smmuv3: Allow stage 1 invalidation with unmanaged ASIDs
+  iommu/smmuv3: Implement cache_invalidate
+  dma-iommu: Implement NESTED_MSI cookie
+  iommu/smmuv3: Nested mode single MSI doorbell per domain enforcement
+  iommu/smmuv3: Enforce incompatibility between nested mode and HW MSI
+    regions
+  iommu/smmuv3: Implement bind/unbind_guest_msi
+  iommu/smmuv3: report additional recoverable faults
+
+ drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c | 463 ++++++++++++++++++--
+ drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.h |  14 +-
+ drivers/iommu/dma-iommu.c                   | 180 +++++++-
+ drivers/iommu/iommu.c                       | 106 +++++
+ include/linux/dma-iommu.h                   |  16 +
+ include/linux/iommu.h                       |  47 ++
+ include/uapi/linux/iommu.h                  |  54 +++
+ 7 files changed, 838 insertions(+), 42 deletions(-)
+
+-- 
+2.26.3
+
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
