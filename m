@@ -7,79 +7,79 @@ X-Spam-Status: No, score=-13.6 required=3.0 tests=BAYES_00,DKIM_INVALID,
 	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED autolearn=unavailable
 	autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1BC21C433B4
-	for <iommu@archiver.kernel.org>; Sun, 11 Apr 2021 11:13:24 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 497BEC43461
+	for <iommu@archiver.kernel.org>; Sun, 11 Apr 2021 11:13:28 +0000 (UTC)
 Received: from smtp3.osuosl.org (smtp3.osuosl.org [140.211.166.136])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id C73DE60FE6
-	for <iommu@archiver.kernel.org>; Sun, 11 Apr 2021 11:13:23 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org C73DE60FE6
+	by mail.kernel.org (Postfix) with ESMTPS id 0B26061026
+	for <iommu@archiver.kernel.org>; Sun, 11 Apr 2021 11:13:28 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 0B26061026
 Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=redhat.com
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by smtp3.osuosl.org (Postfix) with ESMTP id 9C08E608DD;
-	Sun, 11 Apr 2021 11:13:23 +0000 (UTC)
+	by smtp3.osuosl.org (Postfix) with ESMTP id D9D4C608E2;
+	Sun, 11 Apr 2021 11:13:27 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
 Received: from smtp3.osuosl.org ([127.0.0.1])
 	by localhost (smtp3.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id Lm5LJMECrKRp; Sun, 11 Apr 2021 11:13:22 +0000 (UTC)
+	with ESMTP id tXJOgAM_OjbB; Sun, 11 Apr 2021 11:13:26 +0000 (UTC)
 Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by smtp3.osuosl.org (Postfix) with ESMTP id 61B2B608DC;
-	Sun, 11 Apr 2021 11:13:22 +0000 (UTC)
+	by smtp3.osuosl.org (Postfix) with ESMTP id A6B76608DC;
+	Sun, 11 Apr 2021 11:13:26 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 4BF61C000C;
-	Sun, 11 Apr 2021 11:13:22 +0000 (UTC)
-Received: from smtp4.osuosl.org (smtp4.osuosl.org [140.211.166.137])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 7CAF0C000A
- for <iommu@lists.linux-foundation.org>; Sun, 11 Apr 2021 11:13:20 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 859AEC000C;
+	Sun, 11 Apr 2021 11:13:26 +0000 (UTC)
+Received: from smtp4.osuosl.org (smtp4.osuosl.org [IPv6:2605:bc80:3010::137])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id B6560C000A
+ for <iommu@lists.linux-foundation.org>; Sun, 11 Apr 2021 11:13:25 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by smtp4.osuosl.org (Postfix) with ESMTP id 6A9E140385
- for <iommu@lists.linux-foundation.org>; Sun, 11 Apr 2021 11:13:20 +0000 (UTC)
+ by smtp4.osuosl.org (Postfix) with ESMTP id A42A040386
+ for <iommu@lists.linux-foundation.org>; Sun, 11 Apr 2021 11:13:25 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
 Authentication-Results: smtp4.osuosl.org (amavisd-new);
  dkim=pass (1024-bit key) header.d=redhat.com
 Received: from smtp4.osuosl.org ([127.0.0.1])
  by localhost (smtp4.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id A0beOTFG3vcA for <iommu@lists.linux-foundation.org>;
- Sun, 11 Apr 2021 11:13:19 +0000 (UTC)
+ with ESMTP id ESOydHXE2E42 for <iommu@lists.linux-foundation.org>;
+ Sun, 11 Apr 2021 11:13:24 +0000 (UTC)
 X-Greylist: domain auto-whitelisted by SQLgrey-1.8.0
 Received: from us-smtp-delivery-124.mimecast.com
- (us-smtp-delivery-124.mimecast.com [216.205.24.124])
- by smtp4.osuosl.org (Postfix) with ESMTPS id 4596340387
- for <iommu@lists.linux-foundation.org>; Sun, 11 Apr 2021 11:13:19 +0000 (UTC)
+ (us-smtp-delivery-124.mimecast.com [170.10.133.124])
+ by smtp4.osuosl.org (Postfix) with ESMTPS id 8A84640385
+ for <iommu@lists.linux-foundation.org>; Sun, 11 Apr 2021 11:13:24 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
- s=mimecast20190719; t=1618139597;
+ s=mimecast20190719; t=1618139603;
  h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
  to:to:cc:cc:mime-version:mime-version:
  content-transfer-encoding:content-transfer-encoding:
  in-reply-to:in-reply-to:references:references;
- bh=1kqksPPzAwDoQ254grbXdEk37cxjtH5AOIpHFZeHPWc=;
- b=Lpq4fnoHwALn5aQOAgXDXAMMxJPRS/r7RP0GobZFUSYZ+gcMGFoxmqXtL+4I/1KKuU6icF
- 7h24ccsAS1TO77RJHJelORt5SwiyuBAAd7mAAozLb0BLIDzXxwpCT0pR1K4Y+joIGsd4kx
- l2lps3ebmn5bwn81sDH60CZVkVUPWCM=
+ bh=4MRTBriUvDsWoAKPG21Y5ko0Ss3BMOgxkWYlZi8C70U=;
+ b=Iw5jIwsiiw6wNUjyNw47ASePn3VIb6LR0cMvda+x1ybe3vWzvJ6IlOuklFDBwPju1fTLin
+ xZeAyW3uVPvnk9Wq6cTBDaubHtj1zzV9hO2KUt6wErXAxqTRbzVnYHGCDMz40tDm2pwKrV
+ ypWkoW9d/EKDKfj9T9a9kCaRnT4iBnc=
 Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
  [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-307-V9tQZ2CGP_uQGzPeRk-F0w-1; Sun, 11 Apr 2021 07:13:14 -0400
-X-MC-Unique: V9tQZ2CGP_uQGzPeRk-F0w-1
+ us-mta-106-QaoSahq2NECQ4uRbduRryQ-1; Sun, 11 Apr 2021 07:13:21 -0400
+X-MC-Unique: QaoSahq2NECQ4uRbduRryQ-1
 Received: from smtp.corp.redhat.com (int-mx07.intmail.prod.int.phx2.redhat.com
  [10.5.11.22])
  (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
  (No client certificate requested)
- by mimecast-mx01.redhat.com (Postfix) with ESMTPS id D7FB718397A0;
- Sun, 11 Apr 2021 11:13:10 +0000 (UTC)
+ by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 925EF5B378;
+ Sun, 11 Apr 2021 11:13:18 +0000 (UTC)
 Received: from laptop.redhat.com (ovpn-112-22.ams2.redhat.com [10.36.112.22])
- by smtp.corp.redhat.com (Postfix) with ESMTP id BEA3A100164A;
- Sun, 11 Apr 2021 11:12:57 +0000 (UTC)
+ by smtp.corp.redhat.com (Postfix) with ESMTP id 3CA38101E24A;
+ Sun, 11 Apr 2021 11:13:11 +0000 (UTC)
 From: Eric Auger <eric.auger@redhat.com>
 To: eric.auger.pro@gmail.com, eric.auger@redhat.com,
  iommu@lists.linux-foundation.org, linux-kernel@vger.kernel.org,
  kvm@vger.kernel.org, kvmarm@lists.cs.columbia.edu, will@kernel.org,
  maz@kernel.org, robin.murphy@arm.com, joro@8bytes.org,
  alex.williamson@redhat.com, tn@semihalf.com, zhukeqian1@huawei.com
-Subject: [PATCH v15 02/12] iommu: Introduce bind/unbind_guest_msi
-Date: Sun, 11 Apr 2021 13:12:18 +0200
-Message-Id: <20210411111228.14386-3-eric.auger@redhat.com>
+Subject: [PATCH v15 03/12] iommu/smmuv3: Allow s1 and s2 configs to coexist
+Date: Sun, 11 Apr 2021 13:12:19 +0200
+Message-Id: <20210411111228.14386-4-eric.auger@redhat.com>
 In-Reply-To: <20210411111228.14386-1-eric.auger@redhat.com>
 References: <20210411111228.14386-1-eric.auger@redhat.com>
 MIME-Version: 1.0
@@ -104,165 +104,166 @@ Content-Transfer-Encoding: 7bit
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-On ARM, MSI are translated by the SMMU. An IOVA is allocated
-for each MSI doorbell. If both the host and the guest are exposed
-with SMMUs, we end up with 2 different IOVAs allocated by each.
-guest allocates an IOVA (gIOVA) to map onto the guest MSI
-doorbell (gDB). The Host allocates another IOVA (hIOVA) to map
-onto the physical doorbell (hDB).
+In true nested mode, both s1_cfg and s2_cfg will coexist.
+Let's remove the union and add a "set" field in each
+config structure telling whether the config is set and needs
+to be applied when writing the STE. In legacy nested mode,
+only the second stage is used. In true nested mode, both stages
+are used and the S1 config is "set" when the guest passes
+its pasid table.
 
-So we end up with 2 untied mappings:
-         S1            S2
-gIOVA    ->    gDB
-              hIOVA    ->    hDB
-
-Currently the PCI device is programmed by the host with hIOVA
-as MSI doorbell. So this does not work.
-
-This patch introduces an API to pass gIOVA/gDB to the host so
-that gIOVA can be reused by the host instead of re-allocating
-a new IOVA. So the goal is to create the following nested mapping:
-
-         S1            S2
-gIOVA    ->    gDB     ->    hDB
-
-and program the PCI device with gIOVA MSI doorbell.
-
-In case we have several devices attached to this nested domain
-(devices belonging to the same group), they cannot be isolated
-on guest side either. So they should also end up in the same domain
-on guest side. We will enforce that all the devices attached to
-the host iommu domain use the same physical doorbell and similarly
-a single virtual doorbell mapping gets registered (1 single
-virtual doorbell is used on guest as well).
+No functional change intended.
 
 Signed-off-by: Eric Auger <eric.auger@redhat.com>
 
 ---
 
 v13 -> v14:
-- s/iova/giova in iommu_unbind_guest_msi proto (Kequian)
+- slight reword of the commit message
 
-v7 -> v8:
-- dummy iommu_unbind_guest_msi turned into a void function
-
-v6 -> v7:
-- remove the device handle parameter.
-- Add comments saying there can only be a single MSI binding
-  registered per iommu_domain
-v5 -> v6:
--fix compile issue when IOMMU_API is not set
-
-v3 -> v4:
-- add unbind
-
-v2 -> v3:
-- add a struct device handle
+v12 -> v13:
+- does not dynamically allocate s1-cfg and s2_cfg anymore. Add
+  the set field
 ---
- drivers/iommu/iommu.c | 37 +++++++++++++++++++++++++++++++++++++
- include/linux/iommu.h | 20 ++++++++++++++++++++
- 2 files changed, 57 insertions(+)
+ drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c | 43 +++++++++++++--------
+ drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.h |  8 ++--
+ 2 files changed, 31 insertions(+), 20 deletions(-)
 
-diff --git a/drivers/iommu/iommu.c b/drivers/iommu/iommu.c
-index 90bacf000789..1853279216eb 100644
---- a/drivers/iommu/iommu.c
-+++ b/drivers/iommu/iommu.c
-@@ -2282,6 +2282,43 @@ static void __iommu_detach_device(struct iommu_domain *domain,
- 	trace_detach_device_from_domain(dev);
- }
+diff --git a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
+index 53abad8fdd91..22fb39a9ef31 100644
+--- a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
++++ b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
+@@ -1239,8 +1239,8 @@ static void arm_smmu_write_strtab_ent(struct arm_smmu_master *master, u32 sid,
+ 	u64 val = le64_to_cpu(dst[0]);
+ 	bool ste_live = false;
+ 	struct arm_smmu_device *smmu = NULL;
+-	struct arm_smmu_s1_cfg *s1_cfg = NULL;
+-	struct arm_smmu_s2_cfg *s2_cfg = NULL;
++	struct arm_smmu_s1_cfg *s1_cfg;
++	struct arm_smmu_s2_cfg *s2_cfg;
+ 	struct arm_smmu_domain *smmu_domain = NULL;
+ 	struct arm_smmu_cmdq_ent prefetch_cmd = {
+ 		.opcode		= CMDQ_OP_PREFETCH_CFG,
+@@ -1255,13 +1255,24 @@ static void arm_smmu_write_strtab_ent(struct arm_smmu_master *master, u32 sid,
+ 	}
  
-+/**
-+ * iommu_bind_guest_msi - Passes the stage1 GIOVA/GPA mapping of a
-+ * virtual doorbell
-+ *
-+ * @domain: iommu domain the stage 1 mapping will be attached to
-+ * @iova: iova allocated by the guest
-+ * @gpa: guest physical address of the virtual doorbell
-+ * @size: granule size used for the mapping
-+ *
-+ * The associated IOVA can be reused by the host to create a nested
-+ * stage2 binding mapping translating into the physical doorbell used
-+ * by the devices attached to the domain.
-+ *
-+ * All devices within the domain must share the same physical doorbell.
-+ * A single MSI GIOVA/GPA mapping can be attached to an iommu_domain.
-+ */
+ 	if (smmu_domain) {
++		s1_cfg = &smmu_domain->s1_cfg;
++		s2_cfg = &smmu_domain->s2_cfg;
 +
-+int iommu_bind_guest_msi(struct iommu_domain *domain,
-+			 dma_addr_t giova, phys_addr_t gpa, size_t size)
-+{
-+	if (unlikely(!domain->ops->bind_guest_msi))
-+		return -ENODEV;
-+
-+	return domain->ops->bind_guest_msi(domain, giova, gpa, size);
-+}
-+EXPORT_SYMBOL_GPL(iommu_bind_guest_msi);
-+
-+void iommu_unbind_guest_msi(struct iommu_domain *domain,
-+			    dma_addr_t giova)
-+{
-+	if (unlikely(!domain->ops->unbind_guest_msi))
-+		return;
-+
-+	domain->ops->unbind_guest_msi(domain, giova);
-+}
-+EXPORT_SYMBOL_GPL(iommu_unbind_guest_msi);
-+
- void iommu_detach_device(struct iommu_domain *domain, struct device *dev)
+ 		switch (smmu_domain->stage) {
+ 		case ARM_SMMU_DOMAIN_S1:
+-			s1_cfg = &smmu_domain->s1_cfg;
++			s1_cfg->set = true;
++			s2_cfg->set = false;
+ 			break;
+ 		case ARM_SMMU_DOMAIN_S2:
++			s1_cfg->set = false;
++			s2_cfg->set = true;
++			break;
+ 		case ARM_SMMU_DOMAIN_NESTED:
+-			s2_cfg = &smmu_domain->s2_cfg;
++			/*
++			 * Actual usage of stage 1 depends on nested mode:
++			 * legacy (2d stage only) or true nested mode
++			 */
++			s2_cfg->set = true;
+ 			break;
+ 		default:
+ 			break;
+@@ -1288,7 +1299,7 @@ static void arm_smmu_write_strtab_ent(struct arm_smmu_master *master, u32 sid,
+ 	val = STRTAB_STE_0_V;
+ 
+ 	/* Bypass/fault */
+-	if (!smmu_domain || !(s1_cfg || s2_cfg)) {
++	if (!smmu_domain || !(s1_cfg->set || s2_cfg->set)) {
+ 		if (!smmu_domain && disable_bypass)
+ 			val |= FIELD_PREP(STRTAB_STE_0_CFG, STRTAB_STE_0_CFG_ABORT);
+ 		else
+@@ -1307,7 +1318,7 @@ static void arm_smmu_write_strtab_ent(struct arm_smmu_master *master, u32 sid,
+ 		return;
+ 	}
+ 
+-	if (s1_cfg) {
++	if (s1_cfg->set) {
+ 		u64 strw = smmu->features & ARM_SMMU_FEAT_E2H ?
+ 			STRTAB_STE_1_STRW_EL2 : STRTAB_STE_1_STRW_NSEL1;
+ 
+@@ -1329,7 +1340,7 @@ static void arm_smmu_write_strtab_ent(struct arm_smmu_master *master, u32 sid,
+ 			FIELD_PREP(STRTAB_STE_0_S1FMT, s1_cfg->s1fmt);
+ 	}
+ 
+-	if (s2_cfg) {
++	if (s2_cfg->set) {
+ 		BUG_ON(ste_live);
+ 		dst[2] = cpu_to_le64(
+ 			 FIELD_PREP(STRTAB_STE_2_S2VMID, s2_cfg->vmid) |
+@@ -2020,24 +2031,24 @@ static void arm_smmu_domain_free(struct iommu_domain *domain)
  {
- 	struct iommu_group *group;
-diff --git a/include/linux/iommu.h b/include/linux/iommu.h
-index c4422975359e..72bda5d93951 100644
---- a/include/linux/iommu.h
-+++ b/include/linux/iommu.h
-@@ -241,6 +241,8 @@ struct iommu_iotlb_gather {
-  * @sva_unbind_gpasid: unbind guest pasid and mm
-  * @attach_pasid_table: attach a pasid table
-  * @detach_pasid_table: detach the pasid table
-+ * @bind_guest_msi: provides a stage1 giova/gpa MSI doorbell mapping
-+ * @unbind_guest_msi: withdraw a stage1 giova/gpa MSI doorbell mapping
-  * @def_domain_type: device default domain type, return value:
-  *		- IOMMU_DOMAIN_IDENTITY: must use an identity domain
-  *		- IOMMU_DOMAIN_DMA: must use a dma domain
-@@ -322,6 +324,10 @@ struct iommu_ops {
+ 	struct arm_smmu_domain *smmu_domain = to_smmu_domain(domain);
+ 	struct arm_smmu_device *smmu = smmu_domain->smmu;
++	struct arm_smmu_s1_cfg *s1_cfg = &smmu_domain->s1_cfg;
++	struct arm_smmu_s2_cfg *s2_cfg = &smmu_domain->s2_cfg;
  
- 	int (*def_domain_type)(struct device *dev);
+ 	iommu_put_dma_cookie(domain);
+ 	free_io_pgtable_ops(smmu_domain->pgtbl_ops);
  
-+	int (*bind_guest_msi)(struct iommu_domain *domain,
-+			      dma_addr_t giova, phys_addr_t gpa, size_t size);
-+	void (*unbind_guest_msi)(struct iommu_domain *domain, dma_addr_t giova);
-+
- 	unsigned long pgsize_bitmap;
- 	struct module *owner;
+ 	/* Free the CD and ASID, if we allocated them */
+-	if (smmu_domain->stage == ARM_SMMU_DOMAIN_S1) {
+-		struct arm_smmu_s1_cfg *cfg = &smmu_domain->s1_cfg;
+-
++	if (s1_cfg->set) {
+ 		/* Prevent SVA from touching the CD while we're freeing it */
+ 		mutex_lock(&arm_smmu_asid_lock);
+-		if (cfg->cdcfg.cdtab)
++		if (s1_cfg->cdcfg.cdtab)
+ 			arm_smmu_free_cd_tables(smmu_domain);
+-		arm_smmu_free_asid(&cfg->cd);
++		arm_smmu_free_asid(&s1_cfg->cd);
+ 		mutex_unlock(&arm_smmu_asid_lock);
+-	} else {
+-		struct arm_smmu_s2_cfg *cfg = &smmu_domain->s2_cfg;
+-		if (cfg->vmid)
+-			arm_smmu_bitmap_free(smmu->vmid_map, cfg->vmid);
++	}
++	if (s2_cfg->set) {
++		if (s2_cfg->vmid)
++			arm_smmu_bitmap_free(smmu->vmid_map, s2_cfg->vmid);
+ 	}
+ 
+ 	kfree(smmu_domain);
+diff --git a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.h b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.h
+index 59af0bbd2f7b..ec2b77596b6a 100644
+--- a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.h
++++ b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.h
+@@ -598,12 +598,14 @@ struct arm_smmu_s1_cfg {
+ 	struct arm_smmu_ctx_desc	cd;
+ 	u8				s1fmt;
+ 	u8				s1cdmax;
++	bool				set;
  };
-@@ -464,6 +470,10 @@ extern int iommu_attach_pasid_table(struct iommu_domain *domain,
- extern int iommu_uapi_attach_pasid_table(struct iommu_domain *domain,
- 					 void __user *udata);
- extern void iommu_detach_pasid_table(struct iommu_domain *domain);
-+extern int iommu_bind_guest_msi(struct iommu_domain *domain,
-+				dma_addr_t giova, phys_addr_t gpa, size_t size);
-+extern void iommu_unbind_guest_msi(struct iommu_domain *domain,
-+				   dma_addr_t giova);
- extern struct iommu_domain *iommu_get_domain_for_dev(struct device *dev);
- extern struct iommu_domain *iommu_get_dma_domain(struct device *dev);
- extern int iommu_map(struct iommu_domain *domain, unsigned long iova,
-@@ -1101,6 +1111,16 @@ static inline struct iommu_fwspec *dev_iommu_fwspec_get(struct device *dev)
- {
- 	return NULL;
- }
-+
-+static inline
-+int iommu_bind_guest_msi(struct iommu_domain *domain,
-+			 dma_addr_t giova, phys_addr_t gpa, size_t size)
-+{
-+	return -ENODEV;
-+}
-+static inline
-+void iommu_unbind_guest_msi(struct iommu_domain *domain, dma_addr_t giova) {}
-+
- #endif /* CONFIG_IOMMU_API */
  
- /**
+ struct arm_smmu_s2_cfg {
+ 	u16				vmid;
+ 	u64				vttbr;
+ 	u64				vtcr;
++	bool				set;
+ };
+ 
+ struct arm_smmu_strtab_cfg {
+@@ -718,10 +720,8 @@ struct arm_smmu_domain {
+ 	atomic_t			nr_ats_masters;
+ 
+ 	enum arm_smmu_domain_stage	stage;
+-	union {
+-		struct arm_smmu_s1_cfg	s1_cfg;
+-		struct arm_smmu_s2_cfg	s2_cfg;
+-	};
++	struct arm_smmu_s1_cfg	s1_cfg;
++	struct arm_smmu_s2_cfg	s2_cfg;
+ 
+ 	struct iommu_domain		domain;
+ 
 -- 
 2.26.3
 
