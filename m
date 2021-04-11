@@ -2,68 +2,79 @@ Return-Path: <SRS0=/53O=JI=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-5.2 required=3.0 tests=BAYES_00,
+X-Spam-Status: No, score=-3.7 required=3.0 tests=BAYES_00,
 	HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,
-	URIBL_BLOCKED,USER_AGENT_SANE_1 autolearn=no autolearn_force=no version=3.4.0
+	UNPARSEABLE_RELAY,URIBL_BLOCKED autolearn=no autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 46F67C433B4
-	for <iommu@archiver.kernel.org>; Sun, 11 Apr 2021 20:44:10 +0000 (UTC)
-Received: from smtp1.osuosl.org (smtp1.osuosl.org [140.211.166.138])
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A565AC433B4
+	for <iommu@archiver.kernel.org>; Sun, 11 Apr 2021 21:08:24 +0000 (UTC)
+Received: from smtp2.osuosl.org (smtp2.osuosl.org [140.211.166.133])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 6D3856102A
-	for <iommu@archiver.kernel.org>; Sun, 11 Apr 2021 20:44:09 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 6D3856102A
-Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=ispras.ru
+	by mail.kernel.org (Postfix) with ESMTPS id C1D886101B
+	for <iommu@archiver.kernel.org>; Sun, 11 Apr 2021 21:08:23 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org C1D886101B
+Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=perches.com
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by smtp1.osuosl.org (Postfix) with ESMTP id 14F9882B51;
-	Sun, 11 Apr 2021 20:44:09 +0000 (UTC)
+	by smtp2.osuosl.org (Postfix) with ESMTP id 58D62403A4;
+	Sun, 11 Apr 2021 21:08:23 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from smtp1.osuosl.org ([127.0.0.1])
-	by localhost (smtp1.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id JE76EwqfepCi; Sun, 11 Apr 2021 20:44:08 +0000 (UTC)
+Received: from smtp2.osuosl.org ([127.0.0.1])
+	by localhost (smtp2.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+	with ESMTP id MRbEL_ByclGZ; Sun, 11 Apr 2021 21:08:22 +0000 (UTC)
 Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by smtp1.osuosl.org (Postfix) with ESMTP id 13A13818C0;
-	Sun, 11 Apr 2021 20:44:08 +0000 (UTC)
+	by smtp2.osuosl.org (Postfix) with ESMTP id 4DD62403A5;
+	Sun, 11 Apr 2021 21:08:22 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id C8F49C000B;
-	Sun, 11 Apr 2021 20:44:07 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 1DB71C000C;
+	Sun, 11 Apr 2021 21:08:22 +0000 (UTC)
 Received: from smtp3.osuosl.org (smtp3.osuosl.org [IPv6:2605:bc80:3010::136])
- by lists.linuxfoundation.org (Postfix) with ESMTP id D9EA1C000A
- for <iommu@lists.linux-foundation.org>; Sun, 11 Apr 2021 20:44:06 +0000 (UTC)
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 530EBC000A
+ for <iommu@lists.linux-foundation.org>; Sun, 11 Apr 2021 21:08:20 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by smtp3.osuosl.org (Postfix) with ESMTP id C13356065C
- for <iommu@lists.linux-foundation.org>; Sun, 11 Apr 2021 20:44:06 +0000 (UTC)
+ by smtp3.osuosl.org (Postfix) with ESMTP id 48CCE606A8
+ for <iommu@lists.linux-foundation.org>; Sun, 11 Apr 2021 21:08:20 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
 Received: from smtp3.osuosl.org ([127.0.0.1])
  by localhost (smtp3.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id 4_XGfYg-4_y1 for <iommu@lists.linux-foundation.org>;
- Sun, 11 Apr 2021 20:44:04 +0000 (UTC)
-X-Greylist: domain auto-whitelisted by SQLgrey-1.8.0
-Received: from mail.ispras.ru (mail.ispras.ru [83.149.199.84])
- by smtp3.osuosl.org (Postfix) with ESMTPS id CD9E16064C
- for <iommu@lists.linux-foundation.org>; Sun, 11 Apr 2021 20:44:03 +0000 (UTC)
-Received: from monopod.intra.ispras.ru (unknown [10.10.3.121])
- by mail.ispras.ru (Postfix) with ESMTPS id 1A99340D3BFF;
- Sun, 11 Apr 2021 20:43:53 +0000 (UTC)
-Date: Sun, 11 Apr 2021 23:43:53 +0300 (MSK)
-From: Alexander Monakov <amonakov@ispras.ru>
-To: John Ogness <john.ogness@linutronix.de>
+ with ESMTP id qOD75CeXSS9P for <iommu@lists.linux-foundation.org>;
+ Sun, 11 Apr 2021 21:08:19 +0000 (UTC)
+X-Greylist: delayed 09:29:32 by SQLgrey-1.8.0
+Received: from smtprelay.hostedemail.com (smtprelay0252.hostedemail.com
+ [216.40.44.252])
+ by smtp3.osuosl.org (Postfix) with ESMTPS id 7E14E606A6
+ for <iommu@lists.linux-foundation.org>; Sun, 11 Apr 2021 21:08:19 +0000 (UTC)
+Received: from omf16.hostedemail.com (clb03-v110.bra.tucows.net [216.40.38.60])
+ by smtprelay02.hostedemail.com (Postfix) with ESMTP id EBD491DF1;
+ Sun, 11 Apr 2021 21:08:17 +0000 (UTC)
+Received: from [HIDDEN] (Authenticated sender: joe@perches.com) by
+ omf16.hostedemail.com (Postfix) with ESMTPA id 532C12550F1; 
+ Sun, 11 Apr 2021 21:08:16 +0000 (UTC)
+Message-ID: <9a9246c417587f17009543f8048d5f9b7a2ed68f.camel@perches.com>
 Subject: Re: [PATCH] iommu/amd: Fix extended features logging
+From: Joe Perches <joe@perches.com>
+To: John Ogness <john.ogness@linutronix.de>, Alexander Monakov
+ <amonakov@ispras.ru>
+Date: Sun, 11 Apr 2021 14:08:14 -0700
 In-Reply-To: <87o8ekioo4.fsf@jogness.linutronix.de>
-Message-ID: <alpine.LNX.2.20.13.2104112326460.11104@monopod.intra.ispras.ru>
 References: <20210410211152.1938-1-amonakov@ispras.ru>
  <e884200f-55a4-59b5-4311-964e6ddc94d1@molgen.mpg.de>
  <alpine.LNX.2.20.13.2104111410340.11104@monopod.intra.ispras.ru>
  <87o8ekioo4.fsf@jogness.linutronix.de>
-User-Agent: Alpine 2.20.13 (LNX 116 2015-12-14)
+User-Agent: Evolution 3.38.1-1 
 MIME-Version: 1.0
+X-Rspamd-Server: rspamout03
+X-Rspamd-Queue-Id: 532C12550F1
+X-Stat-Signature: eagcefjgbbk7hk8ng65r7rhy6cygbpet
+X-Session-Marker: 6A6F6540706572636865732E636F6D
+X-Session-ID: U2FsdGVkX1/lZU62XoRvdiKemSYJQ3VV6E25IAI9M3o=
+X-HE-Tag: 1618175296-55556
 Cc: Paul Menzel <pmenzel@molgen.mpg.de>, Joerg Roedel <jroedel@suse.de>,
  Petr Mladek <pmladek@suse.com>, LKML <linux-kernel@vger.kernel.org>,
  Steven Rostedt <rostedt@goodmis.org>,
  Sergey Senozhatsky <senozhatsky@chromium.org>,
- iommu@lists.linux-foundation.org, Joe Perches <joe@perches.com>
+ iommu@lists.linux-foundation.org
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -81,34 +92,31 @@ Content-Transfer-Encoding: 7bit
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-On Sun, 11 Apr 2021, John Ogness wrote:
-
-> > pr_info("") will also prepend 'AMD-Vi:' to the feature list, which is
-> > nice.
-> 
+On Sun, 2021-04-11 at 21:52 +0200, John Ogness wrote:
 > I'd rather fix dev_info callers to allow pr_cont and then fix any code
 > that is using this workaround.
 
-Note that existing two users of pr_info("") that I found are not using that
-as a workaround: efi.c is using that when it announced a list of EFI tables:
+Assuming you mean all dev_<level>() uses, me too.
 
-efi: ACPI=0xadffe000 ACPI 2.0=0xadffe014 TPMFinalLog=0xadf2d000 ESRT=0xab70d618 SMBIOS=0xab70b000 SMBIOS 3.0=0xab709000 RNG=0xab707b98 TPMEventLog=0x9602c018
+> And if the print maintainers agree it is OK to encourage
+> pr_cont(LOGLEVEL "...") usage, then people should really start using
+> that if the loglevel on those pieces is important.
 
-and uvesafb.c similarly uses it to print a list of conditionally-present
-strings. In both cases it is really a standalone message, not a continuation
-for something previously printed.
+I have no stong feeling about the use of pr_cont(<KERN_LEVEL>
+as valuable or not.  I think it's just a trivial bit that
+could be somewhat useful when interleaving occurs.
 
-In contrast, my patch deals with a continuation line. I wouldn't really like
-the decoded feature list to appear on the same line as the previous message,
-because it would end up quite long:
+A somewhat better mechanism would be to have an explicit
+cookie use like:
 
-[    0.266332] pci 0000:00:00.2: AMD-Vi: Extended features (0x206d73ef22254ade):
-[    0.266334] AMD-Vi:  PPR X2APIC NX GT IA GA PC GA_vAPIC
+	cookie = printk_multipart_init(KERN_LEVEL, fmt, ...);
+	while (<condition>)
+		printk_multipart_cont(cookie, fmt, ...);
+	printk_multipark_end(cookie, fmt, ...);
 
-I think a good compromise is to change the first line from pci_info to pr_info,
-losing the pci bus address. I'll send a v2.
+And separately, there should be a pr_debug_cont or equivalent.
 
-Alexander
+
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
