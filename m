@@ -2,85 +2,84 @@ Return-Path: <SRS0=/53O=JI=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-13.6 required=3.0 tests=BAYES_00,DKIM_INVALID,
+X-Spam-Status: No, score=-13.5 required=3.0 tests=BAYES_00,DKIM_INVALID,
 	DKIM_SIGNED,HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_CR_TRAILER,INCLUDES_PATCH,
-	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED autolearn=unavailable
+	MAILING_LIST_MULTI,SPF_HELO_NONE,URIBL_BLOCKED autolearn=unavailable
 	autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 97F0EC43460
-	for <iommu@archiver.kernel.org>; Sun, 11 Apr 2021 11:14:05 +0000 (UTC)
-Received: from smtp3.osuosl.org (smtp3.osuosl.org [140.211.166.136])
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0F792C433B4
+	for <iommu@archiver.kernel.org>; Sun, 11 Apr 2021 11:14:14 +0000 (UTC)
+Received: from smtp2.osuosl.org (smtp2.osuosl.org [140.211.166.133])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 453DA610E9
-	for <iommu@archiver.kernel.org>; Sun, 11 Apr 2021 11:14:05 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 453DA610E9
+	by mail.kernel.org (Postfix) with ESMTPS id C6FAB611C9
+	for <iommu@archiver.kernel.org>; Sun, 11 Apr 2021 11:14:13 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org C6FAB611C9
 Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=redhat.com
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by smtp3.osuosl.org (Postfix) with ESMTP id 0490B608E5;
-	Sun, 11 Apr 2021 11:14:05 +0000 (UTC)
+	by smtp2.osuosl.org (Postfix) with ESMTP id 9280040297;
+	Sun, 11 Apr 2021 11:14:13 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from smtp3.osuosl.org ([127.0.0.1])
-	by localhost (smtp3.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id GuiG1YdM4nVk; Sun, 11 Apr 2021 11:14:02 +0000 (UTC)
-Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [IPv6:2605:bc80:3010:104::8cd3:938])
-	by smtp3.osuosl.org (Postfix) with ESMTP id 41989608DD;
-	Sun, 11 Apr 2021 11:14:02 +0000 (UTC)
+Received: from smtp2.osuosl.org ([127.0.0.1])
+	by localhost (smtp2.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+	with ESMTP id 5w9fBzvjcJV6; Sun, 11 Apr 2021 11:14:12 +0000 (UTC)
+Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
+	by smtp2.osuosl.org (Postfix) with ESMTP id 7F505400E0;
+	Sun, 11 Apr 2021 11:14:12 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 27E0CC000C;
-	Sun, 11 Apr 2021 11:14:02 +0000 (UTC)
-Received: from smtp1.osuosl.org (smtp1.osuosl.org [IPv6:2605:bc80:3010::138])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 18E4DC000A
- for <iommu@lists.linux-foundation.org>; Sun, 11 Apr 2021 11:14:01 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 63D81C000F;
+	Sun, 11 Apr 2021 11:14:12 +0000 (UTC)
+Received: from smtp3.osuosl.org (smtp3.osuosl.org [140.211.166.136])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 5F684C000A
+ for <iommu@lists.linux-foundation.org>; Sun, 11 Apr 2021 11:14:11 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by smtp1.osuosl.org (Postfix) with ESMTP id 08C73839CF
- for <iommu@lists.linux-foundation.org>; Sun, 11 Apr 2021 11:14:01 +0000 (UTC)
+ by smtp3.osuosl.org (Postfix) with ESMTP id 3EDDA608DC
+ for <iommu@lists.linux-foundation.org>; Sun, 11 Apr 2021 11:14:10 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Authentication-Results: smtp1.osuosl.org (amavisd-new);
+Authentication-Results: smtp3.osuosl.org (amavisd-new);
  dkim=pass (1024-bit key) header.d=redhat.com
-Received: from smtp1.osuosl.org ([127.0.0.1])
- by localhost (smtp1.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id 3XVVA4rOxJfF for <iommu@lists.linux-foundation.org>;
- Sun, 11 Apr 2021 11:14:00 +0000 (UTC)
+Received: from smtp3.osuosl.org ([127.0.0.1])
+ by localhost (smtp3.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+ with ESMTP id nUmOHl-jeynX for <iommu@lists.linux-foundation.org>;
+ Sun, 11 Apr 2021 11:14:09 +0000 (UTC)
 X-Greylist: domain auto-whitelisted by SQLgrey-1.8.0
 Received: from us-smtp-delivery-124.mimecast.com
- (us-smtp-delivery-124.mimecast.com [216.205.24.124])
- by smtp1.osuosl.org (Postfix) with ESMTPS id 3F1AC839BD
- for <iommu@lists.linux-foundation.org>; Sun, 11 Apr 2021 11:14:00 +0000 (UTC)
+ (us-smtp-delivery-124.mimecast.com [170.10.133.124])
+ by smtp3.osuosl.org (Postfix) with ESMTPS id 61D48605C1
+ for <iommu@lists.linux-foundation.org>; Sun, 11 Apr 2021 11:14:09 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
- s=mimecast20190719; t=1618139639;
+ s=mimecast20190719; t=1618139648;
  h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
  to:to:cc:cc:mime-version:mime-version:
  content-transfer-encoding:content-transfer-encoding:
  in-reply-to:in-reply-to:references:references;
- bh=mRYnhQhb05B8YhcVRfZApDTriNBnSPCrLNpmbX3DZG4=;
- b=X2s3ZuKWGvHVh4VyiLh/Ny4tqGboiqu7eZJgIckW+3uncsA3TSjpFoyy/IU8f5bgai+UFx
- g4Rf5CjGO1uVn4eKiTC+O+PMPFxGEie4lGrn8St4wYHinNXnRMD0O9oYP9UBBWbXxfDb9a
- 4ZAeCZQ8eCI2zU60EGbZYCSYNs4NhOY=
+ bh=4cFlj/1AeQfl9sLv9z3wLrqxiFp8jmwkjiJsT07pmm8=;
+ b=Zz+555JyMPQv9QobC0/5SW5Ye09ltJ4sgX4FzSzd8UpvyPtJoMbDUcpBzEb+Brcqx5kk/p
+ cMZWG9O5f2hPUeR1n6mrKonCQnmi8W0zybmLPxBUKtxDjOSer94r/JsOnu1JEDmhosjFE5
+ PSh3t9l8NRxSdQ30UhKMSLfekLAZ4rw=
 Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
  [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-311-XJGgJKNXNuaVMQuWS6eKKQ-1; Sun, 11 Apr 2021 07:13:57 -0400
-X-MC-Unique: XJGgJKNXNuaVMQuWS6eKKQ-1
+ us-mta-318---LZYghMOO-qmosDt4pXtg-1; Sun, 11 Apr 2021 07:14:04 -0400
+X-MC-Unique: --LZYghMOO-qmosDt4pXtg-1
 Received: from smtp.corp.redhat.com (int-mx07.intmail.prod.int.phx2.redhat.com
  [10.5.11.22])
  (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
  (No client certificate requested)
- by mimecast-mx01.redhat.com (Postfix) with ESMTPS id E99491006C80;
- Sun, 11 Apr 2021 11:13:53 +0000 (UTC)
+ by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 9CDED80D6A8;
+ Sun, 11 Apr 2021 11:14:01 +0000 (UTC)
 Received: from laptop.redhat.com (ovpn-112-22.ams2.redhat.com [10.36.112.22])
- by smtp.corp.redhat.com (Postfix) with ESMTP id 00708100164A;
- Sun, 11 Apr 2021 11:13:40 +0000 (UTC)
+ by smtp.corp.redhat.com (Postfix) with ESMTP id 4E76B100164A;
+ Sun, 11 Apr 2021 11:13:54 +0000 (UTC)
 From: Eric Auger <eric.auger@redhat.com>
 To: eric.auger.pro@gmail.com, eric.auger@redhat.com,
  iommu@lists.linux-foundation.org, linux-kernel@vger.kernel.org,
  kvm@vger.kernel.org, kvmarm@lists.cs.columbia.edu, will@kernel.org,
  maz@kernel.org, robin.murphy@arm.com, joro@8bytes.org,
  alex.williamson@redhat.com, tn@semihalf.com, zhukeqian1@huawei.com
-Subject: [PATCH v15 06/12] iommu/smmuv3: Allow stage 1 invalidation with
- unmanaged ASIDs
-Date: Sun, 11 Apr 2021 13:12:22 +0200
-Message-Id: <20210411111228.14386-7-eric.auger@redhat.com>
+Subject: [PATCH v15 07/12] iommu/smmuv3: Implement cache_invalidate
+Date: Sun, 11 Apr 2021 13:12:23 +0200
+Message-Id: <20210411111228.14386-8-eric.auger@redhat.com>
 In-Reply-To: <20210411111228.14386-1-eric.auger@redhat.com>
 References: <20210411111228.14386-1-eric.auger@redhat.com>
 MIME-Version: 1.0
@@ -105,129 +104,154 @@ Content-Transfer-Encoding: 7bit
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-With nested stage support, soon we will need to invalidate
-S1 contexts and ranges tagged with an unmanaged asid, this
-latter being managed by the guest. So let's introduce 2 helpers
-that allow to invalidate with externally managed ASIDs
+Implement domain-selective, pasid selective and page-selective
+IOTLB invalidations.
 
 Signed-off-by: Eric Auger <eric.auger@redhat.com>
 
 ---
+v4 -> v15:
+- remove the redundant arm_smmu_cmdq_issue_sync(smmu)
+  in IOMMU_INV_GRANU_ADDR case (Zenghui)
+- if RIL is not supported by the host, make sure the granule_size
+  that is passed by the userspace is supported or fix it
+  (Chenxiang)
 
-v14 -> v15:
-- Always send CMDQ_OP_TLBI_NH_VA and do not test
-  smmu_domain->smmu->features & ARM_SMMU_FEAT_E2H as the guest does
-  not run in hyp mode atm (Zenghui).
+v13 -> v14:
+- Add domain invalidation
+- do global inval when asid is not provided with addr
+  granularity
 
-v13 -> v14
-- Actually send the NH_ASID command (reported by Xingang Wang)
+v7 -> v8:
+- ASID based invalidation using iommu_inv_pasid_info
+- check ARCHID/PASID flags in addr based invalidation
+- use __arm_smmu_tlb_inv_context and __arm_smmu_tlb_inv_range_nosync
+
+v6 -> v7
+- check the uapi version
+
+v3 -> v4:
+- adapt to changes in the uapi
+- add support for leaf parameter
+- do not use arm_smmu_tlb_inv_range_nosync or arm_smmu_tlb_inv_context
+  anymore
+
+v2 -> v3:
+- replace __arm_smmu_tlb_sync by arm_smmu_cmdq_issue_sync
+
+v1 -> v2:
+- properly pass the asid
 ---
- drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c | 42 ++++++++++++++++-----
- 1 file changed, 33 insertions(+), 9 deletions(-)
+ drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c | 89 +++++++++++++++++++++
+ 1 file changed, 89 insertions(+)
 
 diff --git a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
-index 44cdc6df09c1..56a301fbe75a 100644
+index 56a301fbe75a..bfc112cc0d38 100644
 --- a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
 +++ b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
-@@ -1851,9 +1851,9 @@ int arm_smmu_atc_inv_domain(struct arm_smmu_domain *smmu_domain, int ssid,
+@@ -2961,6 +2961,94 @@ static void arm_smmu_detach_pasid_table(struct iommu_domain *domain)
+ 	mutex_unlock(&smmu_domain->init_mutex);
  }
  
- /* IO_PGTABLE API */
--static void arm_smmu_tlb_inv_context(void *cookie)
-+static void __arm_smmu_tlb_inv_context(struct arm_smmu_domain *smmu_domain,
-+				       int ext_asid)
- {
--	struct arm_smmu_domain *smmu_domain = cookie;
- 	struct arm_smmu_device *smmu = smmu_domain->smmu;
- 	struct arm_smmu_cmdq_ent cmd;
- 
-@@ -1864,7 +1864,13 @@ static void arm_smmu_tlb_inv_context(void *cookie)
- 	 * insertion to guarantee those are observed before the TLBI. Do be
- 	 * careful, 007.
- 	 */
--	if (smmu_domain->stage == ARM_SMMU_DOMAIN_S1) {
-+	if (ext_asid >= 0) { /* guest stage 1 invalidation */
-+		cmd.opcode	= CMDQ_OP_TLBI_NH_ASID;
-+		cmd.tlbi.asid	= ext_asid;
-+		cmd.tlbi.vmid	= smmu_domain->s2_cfg.vmid;
-+		arm_smmu_cmdq_issue_cmd(smmu, &cmd);
-+		arm_smmu_cmdq_issue_sync(smmu);
-+	} else if (smmu_domain->stage == ARM_SMMU_DOMAIN_S1) {
- 		arm_smmu_tlb_inv_asid(smmu, smmu_domain->s1_cfg.cd.asid);
- 	} else {
- 		cmd.opcode	= CMDQ_OP_TLBI_S12_VMALL;
-@@ -1875,6 +1881,13 @@ static void arm_smmu_tlb_inv_context(void *cookie)
- 	arm_smmu_atc_inv_domain(smmu_domain, 0, 0, 0);
- }
- 
-+static void arm_smmu_tlb_inv_context(void *cookie)
++static int
++arm_smmu_cache_invalidate(struct iommu_domain *domain, struct device *dev,
++			  struct iommu_cache_invalidate_info *inv_info)
 +{
-+	struct arm_smmu_domain *smmu_domain = cookie;
++	struct arm_smmu_cmdq_ent cmd = {.opcode = CMDQ_OP_TLBI_NSNH_ALL};
++	struct arm_smmu_domain *smmu_domain = to_smmu_domain(domain);
++	struct arm_smmu_device *smmu = smmu_domain->smmu;
 +
-+	__arm_smmu_tlb_inv_context(smmu_domain, -1);
++	if (smmu_domain->stage != ARM_SMMU_DOMAIN_NESTED)
++		return -EINVAL;
++
++	if (!smmu)
++		return -EINVAL;
++
++	if (inv_info->version != IOMMU_CACHE_INVALIDATE_INFO_VERSION_1)
++		return -EINVAL;
++
++	if (inv_info->cache & IOMMU_CACHE_INV_TYPE_PASID ||
++	    inv_info->cache & IOMMU_CACHE_INV_TYPE_DEV_IOTLB) {
++		return -ENOENT;
++	}
++
++	if (!(inv_info->cache & IOMMU_CACHE_INV_TYPE_IOTLB))
++		return -EINVAL;
++
++	/* IOTLB invalidation */
++
++	switch (inv_info->granularity) {
++	case IOMMU_INV_GRANU_PASID:
++	{
++		struct iommu_inv_pasid_info *info =
++			&inv_info->granu.pasid_info;
++
++		if (info->flags & IOMMU_INV_ADDR_FLAGS_PASID)
++			return -ENOENT;
++		if (!(info->flags & IOMMU_INV_PASID_FLAGS_ARCHID))
++			return -EINVAL;
++
++		__arm_smmu_tlb_inv_context(smmu_domain, info->archid);
++		return 0;
++	}
++	case IOMMU_INV_GRANU_ADDR:
++	{
++		struct iommu_inv_addr_info *info = &inv_info->granu.addr_info;
++		size_t granule_size  = info->granule_size;
++		size_t size = info->nb_granules * info->granule_size;
++		bool leaf = info->flags & IOMMU_INV_ADDR_FLAGS_LEAF;
++		int tg;
++
++		if (info->flags & IOMMU_INV_ADDR_FLAGS_PASID)
++			return -ENOENT;
++
++		if (!(info->flags & IOMMU_INV_ADDR_FLAGS_ARCHID))
++			break;
++
++		tg = __ffs(granule_size);
++		if (granule_size & ~(1 << tg))
++			return -EINVAL;
++		/*
++		 * When RIL is not supported, make sure the granule size that is
++		 * passed is supported. In RIL mode, this is enforced in
++		 * __arm_smmu_tlb_inv_range()
++		 */
++		if (!(smmu->features & ARM_SMMU_FEAT_RANGE_INV) &&
++		    !(granule_size & smmu_domain->domain.pgsize_bitmap)) {
++			tg = __ffs(smmu_domain->domain.pgsize_bitmap);
++			granule_size = 1 << tg;
++			size = size >> tg;
++		}
++
++		arm_smmu_tlb_inv_range_domain(info->addr, size,
++					      granule_size, leaf,
++					      info->archid, smmu_domain);
++		return 0;
++	}
++	case IOMMU_INV_GRANU_DOMAIN:
++		break;
++	default:
++		return -EINVAL;
++	}
++
++	/* Global S1 invalidation */
++	cmd.tlbi.vmid   = smmu_domain->s2_cfg.vmid;
++	arm_smmu_cmdq_issue_cmd(smmu, &cmd);
++	arm_smmu_cmdq_issue_sync(smmu);
++	return 0;
 +}
 +
- static void __arm_smmu_tlb_inv_range(struct arm_smmu_cmdq_ent *cmd,
- 				     unsigned long iova, size_t size,
- 				     size_t granule,
-@@ -1934,9 +1947,10 @@ static void __arm_smmu_tlb_inv_range(struct arm_smmu_cmdq_ent *cmd,
- 	arm_smmu_cmdq_batch_submit(smmu, &cmds);
- }
- 
--static void arm_smmu_tlb_inv_range_domain(unsigned long iova, size_t size,
--					  size_t granule, bool leaf,
--					  struct arm_smmu_domain *smmu_domain)
-+static void
-+arm_smmu_tlb_inv_range_domain(unsigned long iova, size_t size,
-+			      size_t granule, bool leaf, int ext_asid,
-+			      struct arm_smmu_domain *smmu_domain)
+ static bool arm_smmu_dev_has_feature(struct device *dev,
+ 				     enum iommu_dev_features feat)
  {
- 	struct arm_smmu_cmdq_ent cmd = {
- 		.tlbi = {
-@@ -1944,7 +1958,16 @@ static void arm_smmu_tlb_inv_range_domain(unsigned long iova, size_t size,
- 		},
- 	};
- 
--	if (smmu_domain->stage == ARM_SMMU_DOMAIN_S1) {
-+	if (ext_asid >= 0) {  /* guest stage 1 invalidation */
-+		/*
-+		 * At the moment the guest only uses NS-EL1, to be
-+		 * revisited when nested virt gets supported with E2H
-+		 * exposed.
-+		 */
-+		cmd.opcode	= CMDQ_OP_TLBI_NH_VA;
-+		cmd.tlbi.asid	= ext_asid;
-+		cmd.tlbi.vmid	= smmu_domain->s2_cfg.vmid;
-+	} else if (smmu_domain->stage == ARM_SMMU_DOMAIN_S1) {
- 		cmd.opcode	= smmu_domain->smmu->features & ARM_SMMU_FEAT_E2H ?
- 				  CMDQ_OP_TLBI_EL2_VA : CMDQ_OP_TLBI_NH_VA;
- 		cmd.tlbi.asid	= smmu_domain->s1_cfg.cd.asid;
-@@ -1952,6 +1975,7 @@ static void arm_smmu_tlb_inv_range_domain(unsigned long iova, size_t size,
- 		cmd.opcode	= CMDQ_OP_TLBI_S2_IPA;
- 		cmd.tlbi.vmid	= smmu_domain->s2_cfg.vmid;
- 	}
-+
- 	__arm_smmu_tlb_inv_range(&cmd, iova, size, granule, smmu_domain);
- 
- 	/*
-@@ -1990,7 +2014,7 @@ static void arm_smmu_tlb_inv_page_nosync(struct iommu_iotlb_gather *gather,
- static void arm_smmu_tlb_inv_walk(unsigned long iova, size_t size,
- 				  size_t granule, void *cookie)
- {
--	arm_smmu_tlb_inv_range_domain(iova, size, granule, false, cookie);
-+	arm_smmu_tlb_inv_range_domain(iova, size, granule, false, -1, cookie);
- }
- 
- static const struct iommu_flush_ops arm_smmu_flush_ops = {
-@@ -2531,7 +2555,7 @@ static void arm_smmu_iotlb_sync(struct iommu_domain *domain,
- 
- 	arm_smmu_tlb_inv_range_domain(gather->start,
- 				      gather->end - gather->start + 1,
--				      gather->pgsize, true, smmu_domain);
-+				      gather->pgsize, true, -1, smmu_domain);
- }
- 
- static phys_addr_t
+@@ -3060,6 +3148,7 @@ static struct iommu_ops arm_smmu_ops = {
+ 	.put_resv_regions	= generic_iommu_put_resv_regions,
+ 	.attach_pasid_table	= arm_smmu_attach_pasid_table,
+ 	.detach_pasid_table	= arm_smmu_detach_pasid_table,
++	.cache_invalidate	= arm_smmu_cache_invalidate,
+ 	.dev_has_feat		= arm_smmu_dev_has_feature,
+ 	.dev_feat_enabled	= arm_smmu_dev_feature_enabled,
+ 	.dev_enable_feat	= arm_smmu_dev_enable_feature,
 -- 
 2.26.3
 
