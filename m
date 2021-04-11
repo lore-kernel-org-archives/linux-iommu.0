@@ -6,93 +6,85 @@ X-Spam-Status: No, score=-3.5 required=3.0 tests=BAYES_00,DKIM_INVALID,
 	DKIM_SIGNED,HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,SPF_HELO_NONE,
 	SPF_PASS,URIBL_BLOCKED autolearn=no autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 57966C433B4
-	for <iommu@archiver.kernel.org>; Sun, 11 Apr 2021 20:07:51 +0000 (UTC)
-Received: from smtp1.osuosl.org (smtp1.osuosl.org [140.211.166.138])
+	by smtp.lore.kernel.org (Postfix) with ESMTP id F253EC433ED
+	for <iommu@archiver.kernel.org>; Sun, 11 Apr 2021 20:09:54 +0000 (UTC)
+Received: from smtp4.osuosl.org (smtp4.osuosl.org [140.211.166.137])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id E602E61029
-	for <iommu@archiver.kernel.org>; Sun, 11 Apr 2021 20:07:50 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org E602E61029
-Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=vt.edu
+	by mail.kernel.org (Postfix) with ESMTPS id 79A3C610A6
+	for <iommu@archiver.kernel.org>; Sun, 11 Apr 2021 20:09:54 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 79A3C610A6
+Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=linutronix.de
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by smtp1.osuosl.org (Postfix) with ESMTP id AECDA833A0;
-	Sun, 11 Apr 2021 20:07:50 +0000 (UTC)
+	by smtp4.osuosl.org (Postfix) with ESMTP id 43301402F5;
+	Sun, 11 Apr 2021 20:09:54 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from smtp1.osuosl.org ([127.0.0.1])
-	by localhost (smtp1.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id DEXy-hrAKd4e; Sun, 11 Apr 2021 20:07:49 +0000 (UTC)
+Received: from smtp4.osuosl.org ([127.0.0.1])
+	by localhost (smtp4.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+	with ESMTP id bih51rPLTEd3; Sun, 11 Apr 2021 20:09:48 +0000 (UTC)
 Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by smtp1.osuosl.org (Postfix) with ESMTP id B952183396;
-	Sun, 11 Apr 2021 20:07:48 +0000 (UTC)
+	by smtp4.osuosl.org (Postfix) with ESMTP id 2ACFF402F4;
+	Sun, 11 Apr 2021 20:09:48 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 93CD4C000B;
-	Sun, 11 Apr 2021 20:07:48 +0000 (UTC)
-Received: from smtp3.osuosl.org (smtp3.osuosl.org [IPv6:2605:bc80:3010::136])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 3D94AC000A
- for <iommu@lists.linux-foundation.org>; Sun, 11 Apr 2021 20:07:47 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 04AA3C000B;
+	Sun, 11 Apr 2021 20:09:48 +0000 (UTC)
+Received: from smtp2.osuosl.org (smtp2.osuosl.org [IPv6:2605:bc80:3010::133])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 96D21C000A
+ for <iommu@lists.linux-foundation.org>; Sun, 11 Apr 2021 19:53:08 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by smtp3.osuosl.org (Postfix) with ESMTP id 1705E605C6
- for <iommu@lists.linux-foundation.org>; Sun, 11 Apr 2021 20:07:47 +0000 (UTC)
+ by smtp2.osuosl.org (Postfix) with ESMTP id 83E054016B
+ for <iommu@lists.linux-foundation.org>; Sun, 11 Apr 2021 19:53:08 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Authentication-Results: smtp3.osuosl.org (amavisd-new);
- dkim=pass (2048-bit key) header.d=vt-edu.20150623.gappssmtp.com
-Received: from smtp3.osuosl.org ([127.0.0.1])
- by localhost (smtp3.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id lI6vu6nsouqc for <iommu@lists.linux-foundation.org>;
- Sun, 11 Apr 2021 20:07:46 +0000 (UTC)
-X-Greylist: whitelisted by SQLgrey-1.8.0
-Received: from mail-qk1-x731.google.com (mail-qk1-x731.google.com
- [IPv6:2607:f8b0:4864:20::731])
- by smtp3.osuosl.org (Postfix) with ESMTPS id 1EE376058A
- for <iommu@lists.linux-foundation.org>; Sun, 11 Apr 2021 20:07:45 +0000 (UTC)
-Received: by mail-qk1-x731.google.com with SMTP id e13so1468440qkl.6
- for <iommu@lists.linux-foundation.org>; Sun, 11 Apr 2021 13:07:45 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
- d=vt-edu.20150623.gappssmtp.com; s=20150623;
- h=sender:from:to:cc:subject:mime-version:content-transfer-encoding
- :date:message-id;
- bh=vVteGm197WS+Pak+/03TURfJdtAKD0/wWNPTtY/GWDI=;
- b=wDsEMJNSELb4D9d8wRNn0MbMRRWFXjdzSA7q/kyUPTt3sHrv50eaai5yZPPumSweIa
- 8k4TpNFR7hd5n/U/hYnGJKKf5i2WNXrMADJ6Rj8Y1hYcxAoJzZy1toNQIiK/LsK2uqjN
- P0Ap0VXL/4IBAmXsSfE3DH6XcmAGg9K2vwkQTEY5jTdV46N/1V4N8e+ZcBjkhba2cRJ3
- 3XTmKMtGmdIzxN0AOoYZTMJi8K4UYLQHfQLAT0TGPTL74HtmFg6iXerq83xQUFzwxAu7
- DS1vav5shfWwDpe4P8O2p0b4mPaUtEAo9ByGkiX1MApQr4YCviRVtvO1Q0wUuEmmGavR
- b9HQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
- d=1e100.net; s=20161025;
- h=x-gm-message-state:sender:from:to:cc:subject:mime-version
- :content-transfer-encoding:date:message-id;
- bh=vVteGm197WS+Pak+/03TURfJdtAKD0/wWNPTtY/GWDI=;
- b=i8VeUgXVGNdVFL+A/MU50Xv8ucMWEvr8IHErA487UG28NbyQGoLBG2FO9Wzo4VlHtg
- JXwZdICnRAy2ScK+7j4AEMTGR6XcW3wYDsacU/5rQUs42lJg9B0YJImHC+LO3IDUe8Nu
- g7/jnhKFH8410gx1kxvIjBkWNHEXwZYypXEaO6fzn+vX53Oem31obDkJXyVULK5bJWPm
- MjX2O2UZ5u6d2LmqGwl5JgPT4uZH9hFRLV8ZsNiufDjHJVu17sfMRvH87r7loHLjVeiZ
- PHbozVJEKXlAjkvzAPcf7/BFuQex3k4PbIG2+qG0bA+LbfUKxgm0C+WnyqKOAp9tE9VY
- x7Cg==
-X-Gm-Message-State: AOAM531VEJNl7uaqQyIjCHHwd55NW+mAWjB81Vi90VX6MfayPwOHef3k
- s1C7hFHvBz7uUr7Sg79TaM2Zsw==
-X-Google-Smtp-Source: ABdhPJyAChITVeE/MPh85xPT3C4GtprBydVBUFkQXQgUgMw/idzip7Ea7PWDwcBBiq0rEPbkfjkx2Q==
-X-Received: by 2002:a05:620a:110a:: with SMTP id
- o10mr1706986qkk.148.1618171664926; 
- Sun, 11 Apr 2021 13:07:44 -0700 (PDT)
-Received: from turing-police ([2601:5c0:c380:d61::359])
- by smtp.gmail.com with ESMTPSA id h9sm6275557qtk.6.2021.04.11.13.07.43
- (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
- Sun, 11 Apr 2021 13:07:44 -0700 (PDT)
-From: "Valdis =?utf-8?Q?Kl=c4=93tnieks?=" <valdis.kletnieks@vt.edu>
-X-Google-Original-From: "Valdis =?utf-8?Q?Kl=c4=93tnieks?="
- <Valdis.Kletnieks@vt.edu>
-X-Mailer: exmh version 2.9.0 11/07/2018 with nmh-1.7+dev
-To: Yong Wu <yong.wu@mediatek.com>, Joerg Roedel <jroedel@suse.de>,
- Will Deacon <will@kernel.org>
-Subject: next-20210409 build breakage in drivers/iommu/mtk_iommu_v1.c
-Mime-Version: 1.0
-Date: Sun, 11 Apr 2021 16:07:43 -0400
-Message-ID: <14335.1618171663@turing-police>
-Cc: iommu@lists.linux-foundation.org, linux-mediatek@lists.infradead.org,
- linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org
+Authentication-Results: smtp2.osuosl.org (amavisd-new);
+ dkim=pass (2048-bit key) header.d=linutronix.de header.b="O/8j5zxz";
+ dkim=neutral reason="invalid (unsupported algorithm ed25519-sha256)"
+ header.d=linutronix.de header.b="2Y4rHV+3"
+Received: from smtp2.osuosl.org ([127.0.0.1])
+ by localhost (smtp2.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+ with ESMTP id Ymo8RNwRNT3j for <iommu@lists.linux-foundation.org>;
+ Sun, 11 Apr 2021 19:53:07 +0000 (UTC)
+X-Greylist: domain auto-whitelisted by SQLgrey-1.8.0
+Received: from galois.linutronix.de (Galois.linutronix.de [193.142.43.55])
+ by smtp2.osuosl.org (Postfix) with ESMTPS id 7687940015
+ for <iommu@lists.linux-foundation.org>; Sun, 11 Apr 2021 19:53:07 +0000 (UTC)
+From: John Ogness <john.ogness@linutronix.de>
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linutronix.de;
+ s=2020; t=1618170784;
+ h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+ to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+ in-reply-to:in-reply-to:references:references;
+ bh=pLj4iEVWjEfoLen81vZfMShrSTB9qSmLODc6mlQpPts=;
+ b=O/8j5zxzfsEoacpfhIMlDwyDAz7fG7rq7z9JL6tjjONsrnRrZK3LmpvKG7f5vrbfj2osqG
+ /kxV++4YLHFHu4vYFOnWVqgqX7k/WbXnLpnRJlSWMbeLsp+PTY7z4b7M1Ew0/Um7A+lIIS
+ S39G86Niw50FPBAFqTqr9IKWMvYumjXG5PN4auJCHTEVklilcXagfJUsudNyIQXu9rPSEW
+ tv+qFSubOPggachPQ8Z3aqPneHg80AGBMXlPrGnFds10/51LSSOYFTt8zdXnyHHpn2LycM
+ jB8fj1VvhOpsPWz1lBmV6SdKTwpHnsEkG/4LxXPe95kvcwa2BR1g088OnA2OnA==
+DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=linutronix.de;
+ s=2020e; t=1618170784;
+ h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+ to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+ in-reply-to:in-reply-to:references:references;
+ bh=pLj4iEVWjEfoLen81vZfMShrSTB9qSmLODc6mlQpPts=;
+ b=2Y4rHV+3K/SSU3S87el+srxsqJ4vYV/VrqXTNMHSIIHaTf73PBDwsjK0DVnA+RWITyCh2u
+ 7T7KRgT74c07zcCw==
+To: Alexander Monakov <amonakov@ispras.ru>
+Subject: Re: [PATCH] iommu/amd: Fix extended features logging
+References: <20210410211152.1938-1-amonakov@ispras.ru>
+ <e884200f-55a4-59b5-4311-964e6ddc94d1@molgen.mpg.de>
+ <alpine.LNX.2.20.13.2104111410340.11104@monopod.intra.ispras.ru>
+Date: Sun, 11 Apr 2021 21:52:59 +0200
+In-Reply-To: <alpine.LNX.2.20.13.2104111410340.11104@monopod.intra.ispras.ru>
+ (Alexander Monakov's message of "Sun, 11 Apr 2021 14:22:14 +0300
+ (MSK)")
+Message-ID: <87o8ekioo4.fsf@jogness.linutronix.de>
+MIME-Version: 1.0
+X-Mailman-Approved-At: Sun, 11 Apr 2021 20:09:47 +0000
+Cc: Paul Menzel <pmenzel@molgen.mpg.de>, Joerg Roedel <jroedel@suse.de>,
+ Petr Mladek <pmladek@suse.com>, LKML <linux-kernel@vger.kernel.org>,
+ Steven Rostedt <rostedt@goodmis.org>,
+ Sergey Senozhatsky <senozhatsky@chromium.org>,
+ iommu@lists.linux-foundation.org, Joe Perches <joe@perches.com>
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -105,72 +97,89 @@ List-Post: <mailto:iommu@lists.linux-foundation.org>
 List-Help: <mailto:iommu-request@lists.linux-foundation.org?subject=help>
 List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
  <mailto:iommu-request@lists.linux-foundation.org?subject=subscribe>
-Content-Type: multipart/mixed; boundary="===============2511136223008717815=="
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
---===============2511136223008717815==
-Content-Type: multipart/signed; boundary="==_Exmh_1618171662_13593P";
-	 micalg=pgp-sha1; protocol="application/pgp-signature"
-Content-Transfer-Encoding: 7bit
+On 2021-04-11, Alexander Monakov <amonakov@ispras.ru> wrote:
+>>> The second line is emitted via 'pr_cont', which causes it to have a
+>>> different ('warn') loglevel compared to the previous line ('info').
+>>> 
+>>> Commit 9a295ff0ffc9 attempted to rectify this by removing the newline
+>>> from the pci_info format string, but this doesn't work, as pci_info
+>>> calls implicitly append a newline anyway.
+>> 
+>> Hmm, did I really screw that up during my testing? I am sorry about that.
+>> 
+>> I tried to wrap my head around, where the newline is implicitly appended, and
+>> only found the definitions below.
+>> 
+>>     include/linux/pci.h:#define pci_info(pdev, fmt, arg...)
+>> dev_info(&(pdev)->dev, fmt, ##arg)
+>> 
+>>     include/linux/dev_printk.h:#define dev_info(dev, fmt, ...)
+>> \
+>>     include/linux/dev_printk.h:     _dev_info(dev, dev_fmt(fmt),
+>> ##__VA_ARGS__)
+>> 
+>>     include/linux/dev_printk.h:__printf(2, 3) __cold
+>>     include/linux/dev_printk.h:void _dev_info(const struct device *dev, const
+>> char *fmt, ...);
+>> 
+>>     include/linux/compiler_attributes.h:#define __printf(a, b)
+>> __attribute__((__format__(printf, a, b)))
+>
+> Yeah, it's not obvious: it happens in kernel/printk/printk.c:vprintk_store
+> where it does
+>
+> 	if (dev_info)
+> 		lflags |= LOG_NEWLINE;
+>
+> It doesn't seem to be documented; I think it prevents using pr_cont with
+> "rich" printk facilities that go via _dev_info.
+>
+> I suspect it quietly changed in commit c313af145b9bc ("printk() - isolate
+> KERN_CONT users from ordinary complete lines").
 
---==_Exmh_1618171662_13593P
-Content-Type: text/plain; charset=us-ascii
+Yes, this behavior has been around for a while. I see no reason why it
+should be that way. These days printk does not care if there is dev_info
+included or not.
 
-This commit:
+>> In the discussion *smpboot: CPU numbers printed as warning* [1] John wrote:
+>> 
+>>> It is supported to provide loglevels for CONT messages. The loglevel is
+>>> then only used if the append fails:
+>>> 
+>>>     pr_cont(KERN_INFO "message part");
+>>> 
+>>> I don't know if we want to go down that path. But it is supported.
+>
+> Yeah, I saw that, but decided to go with the 'pr_info("")' solution, because
+> it is less magic, and already used in two other drivers.
 
-commit 8de000cf0265eaa4f63aff9f2c7a3876d2dda9b6
-Author: Yong Wu <yong.wu@mediatek.com>
-Date:   Fri Mar 26 11:23:36 2021 +0800
+Note that what I was suggesting was to fix a different issue: If the
+pr_cont() caller is interrupted by another printk user, then the
+following pr_cont() calls will use the default loglevel. By explicitly
+specifying the loglevel in pr_cont(), you can be sure that those pieces
+get the desired loglevel, even if those pieces get separated off because
+of an interrupting printk user.
 
-    iommu/mediatek-v1: Allow building as module
+So even if we fix dev_info to allow pr_cont continuation, it still may
+be desirable to specify the loglevel in the pr_cont pieces.
 
-changes drivers/iommu/Kcconfig
+> pr_info("") will also prepend 'AMD-Vi:' to the feature list, which is
+> nice.
 
- config MTK_IOMMU_V1
--       bool "MTK IOMMU Version 1 (M4U gen1) Support"
-+       tristate "MediaTek IOMMU Version 1 (M4U gen1) Support"
+I'd rather fix dev_info callers to allow pr_cont and then fix any code
+that is using this workaround.
 
-Unfortunately, this doesn't actually build properly as a module, because:
+And if the print maintainers agree it is OK to encourage
+pr_cont(LOGLEVEL "...") usage, then people should really start using
+that if the loglevel on those pieces is important.
 
-  MODPOST modules-only.symvers
-ERROR: modpost: "of_phandle_iterator_args" [drivers/iommu/mtk_iommu_v1.ko] undefined!
-make[2]: *** [/usr/src/linux-next/scripts/Makefile.modpost:150: modules-only.symvers] Error 1
-
-There's no EXPORT_SYMBOL and drivers/of/base.o is a built-in, so
-the symbol isn't available to modules.
-
---==_Exmh_1618171662_13593P
-Content-Type: application/pgp-signature
-
------BEGIN PGP SIGNATURE-----
-Comment: Exmh version 2.9.0 11/07/2018
-
-iQIVAwUBYHNXDgdmEQWDXROgAQI3Kg//UWC6smWytHYy158jtuNo7OaHGa9t9z7H
-lAii0QD95wLc+gUO/BnzXGuNubA9NdVlesFcQv2U9oIdKcAZ3fZCJPf/u8Rr97Zc
-a5+au4AJza/4tYVU8z0+W/xqGU6vqv/vA7dJgyN8BbOZLD+rjHUj97ZPm23vcnd+
-5NQI42xXvbCREQi9xy1JwGd+7TAZsht27XaUbU+2es69bmDfW0g3O+sDqqn6mt4+
-sExSalCV+F75JENIYpPV/xd2FU7naYSngtOASLFr5jzcQmaRf0HJsplnpzdm2da+
-FskOg2KzHVybqM458G6hZhoTS+Z7DGVAY/COLV35ino9JWVnfO0u9Gid0uFeQes+
-VVtXumGlnTuKgIQbIIBJ3pfX6DT3tTUbgSe3Z/0eI4L4xi6yQCCS4zlwBCnl10ry
-gH1sCvYC9FQivqIoEBmM3MCXG06AwEbRkEHtdhLOrFCzRq7RWaHug0yvT9QGKHWe
-e34rB6PHzKKSPGMinaOyqHcLS5L0va1W5v8LSltW2xtElcqahI7eCNZXI72i2aZH
-TB6APLeQqlCStsDLWGVGWBFO2c8mYH/Ww42UyI7YSTVpQOf4O7oLrkG/5d2WZqGB
-8qYnaoomGsCl6Npi9wzDZ9FWK6PTa2KaovEp9EiwzA9NHVZ2OyHg5IXZBwMiz8BY
-GvvNXIphQXU=
-=yc6U
------END PGP SIGNATURE-----
-
---==_Exmh_1618171662_13593P--
-
---===============2511136223008717815==
-Content-Type: text/plain; charset="us-ascii"
-MIME-Version: 1.0
-Content-Transfer-Encoding: 7bit
-Content-Disposition: inline
-
+John Ogness
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
 https://lists.linuxfoundation.org/mailman/listinfo/iommu
---===============2511136223008717815==--
