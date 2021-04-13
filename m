@@ -2,103 +2,105 @@ Return-Path: <SRS0=gU7u=JK=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-6.7 required=3.0 tests=BAYES_00,
-	HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,
-	URIBL_BLOCKED,USER_AGENT_GIT autolearn=no autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-8.5 required=3.0 tests=BAYES_00,DKIM_ADSP_CUSTOM_MED,
+	DKIM_INVALID,DKIM_SIGNED,FREEMAIL_FORGED_FROMDOMAIN,FREEMAIL_FROM,
+	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,SPF_HELO_NONE,
+	SPF_PASS,URIBL_BLOCKED,USER_AGENT_GIT autolearn=unavailable
+	autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 04DE5C433B4
-	for <iommu@archiver.kernel.org>; Tue, 13 Apr 2021 14:58:52 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id DD3E8C433ED
+	for <iommu@archiver.kernel.org>; Tue, 13 Apr 2021 15:37:38 +0000 (UTC)
 Received: from smtp2.osuosl.org (smtp2.osuosl.org [140.211.166.133])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 9D6AB613B6
-	for <iommu@archiver.kernel.org>; Tue, 13 Apr 2021 14:58:51 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 9D6AB613B6
-Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=canonical.com
+	by mail.kernel.org (Postfix) with ESMTPS id 6BB496128C
+	for <iommu@archiver.kernel.org>; Tue, 13 Apr 2021 15:37:38 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 6BB496128C
+Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=gmail.com
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by smtp2.osuosl.org (Postfix) with ESMTP id 6B621405D0;
-	Tue, 13 Apr 2021 14:58:51 +0000 (UTC)
+	by smtp2.osuosl.org (Postfix) with ESMTP id 1E1D1401CA;
+	Tue, 13 Apr 2021 15:37:38 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
 Received: from smtp2.osuosl.org ([127.0.0.1])
 	by localhost (smtp2.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id 5bi0kA91dXZ8; Tue, 13 Apr 2021 14:58:50 +0000 (UTC)
+	with ESMTP id em8cguYhgnfg; Tue, 13 Apr 2021 15:37:37 +0000 (UTC)
 Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by smtp2.osuosl.org (Postfix) with ESMTP id 7F7B9405E2;
-	Tue, 13 Apr 2021 14:58:50 +0000 (UTC)
+	by smtp2.osuosl.org (Postfix) with ESMTP id 09F2D400E3;
+	Tue, 13 Apr 2021 15:37:37 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 5DC13C000C;
-	Tue, 13 Apr 2021 14:58:50 +0000 (UTC)
-Received: from smtp2.osuosl.org (smtp2.osuosl.org [IPv6:2605:bc80:3010::133])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 24844C000A
- for <iommu@lists.linux-foundation.org>; Tue, 13 Apr 2021 14:58:49 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id D1244C000B;
+	Tue, 13 Apr 2021 15:37:36 +0000 (UTC)
+Received: from smtp2.osuosl.org (smtp2.osuosl.org [140.211.166.133])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 3EEE8C000A
+ for <iommu@lists.linux-foundation.org>; Tue, 13 Apr 2021 15:22:35 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by smtp2.osuosl.org (Postfix) with ESMTP id 13463405E2
- for <iommu@lists.linux-foundation.org>; Tue, 13 Apr 2021 14:58:49 +0000 (UTC)
+ by smtp2.osuosl.org (Postfix) with ESMTP id 1B9A640100
+ for <iommu@lists.linux-foundation.org>; Tue, 13 Apr 2021 15:22:35 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
 Received: from smtp2.osuosl.org ([127.0.0.1])
  by localhost (smtp2.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id 6PQk4WyGj6FE for <iommu@lists.linux-foundation.org>;
- Tue, 13 Apr 2021 14:58:48 +0000 (UTC)
-X-Greylist: domain auto-whitelisted by SQLgrey-1.8.0
-Received: from youngberry.canonical.com (youngberry.canonical.com
- [91.189.89.112])
- by smtp2.osuosl.org (Postfix) with ESMTPS id E0C56405DE
- for <iommu@lists.linux-foundation.org>; Tue, 13 Apr 2021 14:58:42 +0000 (UTC)
-Received: from mail-ej1-f71.google.com ([209.85.218.71])
- by youngberry.canonical.com with esmtps
- (TLS1.2:ECDHE_RSA_AES_128_GCM_SHA256:128) (Exim 4.86_2)
- (envelope-from <krzysztof.kozlowski@canonical.com>)
- id 1lWKUz-0005Ga-5s
- for iommu@lists.linux-foundation.org; Tue, 13 Apr 2021 14:58:41 +0000
-Received: by mail-ej1-f71.google.com with SMTP id t23so3407665ejx.11
- for <iommu@lists.linux-foundation.org>; Tue, 13 Apr 2021 07:58:41 -0700 (PDT)
+ with ESMTP id OAT_-DeFY0Og for <iommu@lists.linux-foundation.org>;
+ Tue, 13 Apr 2021 15:22:34 +0000 (UTC)
+X-Greylist: whitelisted by SQLgrey-1.8.0
+Received: from mail-pl1-x634.google.com (mail-pl1-x634.google.com
+ [IPv6:2607:f8b0:4864:20::634])
+ by smtp2.osuosl.org (Postfix) with ESMTPS id 82688400E3
+ for <iommu@lists.linux-foundation.org>; Tue, 13 Apr 2021 15:22:34 +0000 (UTC)
+Received: by mail-pl1-x634.google.com with SMTP id p16so4445253plf.12
+ for <iommu@lists.linux-foundation.org>; Tue, 13 Apr 2021 08:22:34 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=gmail.com; s=20161025;
+ h=from:to:cc:subject:date:message-id:mime-version
+ :content-transfer-encoding;
+ bh=+srfers9E9q4+P9qtsCb4JStuWkS4WZj6vAcaSoVbMo=;
+ b=BxpjZ6O/1c8XzgIAhlhju9pI7snp8yqWAuS8roa86byjm18CBnlXvlPSDp4K9ogLCA
+ md0ln4yPw4zxAALH2i/ba9zXaZ6xqI5anhWQWsKTyXcjTA4PqPlOPAz4bVVBRKUdz1dw
+ tFv19azdKvuMaVlNG1M78WQRzIKeeH2Yd81Lo+4JqXIkRzd++1sVVqFjHEHAnlc2uZmg
+ hcNXFAYNfdrNLJ9IdG6DrMk0dn1h0KZrWl939rgLUvGMphJGsxCbkLNsZt8n2KWAvdOh
+ pTS12g3TaF9aS/Undgp9qlRJeG/Q3B5s2DllAhmLTGxzifFjsah62AIskhiq0qHFiaLJ
+ lQvw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
  d=1e100.net; s=20161025;
- h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
- :references:mime-version:content-transfer-encoding;
- bh=Ph9+/mYhqHgYa9Fj9YRroZ2f7XAlKgwCaPOsxelpWRE=;
- b=aNKYmLD+qqqpoYAzSNoUaEeS1fit97SbktlIuVRrKoz93uJLINxQpPfAxrBuW73NiP
- +gmhpJdHmwHUps14nv0y441uwR7O2WLKQ34uqSM25OiDd9kJSOMBclVhtw7URWVKkQ0C
- GWFBHM1WcTTANZmUjJK/PUCvzAU/6fdTkbaYceywCyk6G1GyXbKqdxzWVOFhcEmKNYy4
- dinPq0twJwejSRUf1tVr8hefBXGHDvTELvVVQHv75o0k62MR8MHL8pTCEOnya91gEpWq
- zV/SVq8IfnvhocH+bkjn2r5F3AajpE6dhrZFDXxuiTIi5tlqvlK6Lfgis3kA1yUltliw
- Kq6A==
-X-Gm-Message-State: AOAM530I5uqSyP7AqqlHbO5GCx1IZ7izt8GzF6yWGuu9STPMTWeMlv13
- PZ9+eP1FR6YTxG1QRC40n28tXxuLbbzwSm+Ef+aICQ2d4ZZJbL9GYl1YllyyWD15KUXUWp1AQsJ
- ULORPCToz+faR6c0kbWGkGbb6KJwIgc8FttJvSqwPr17XYnQ=
-X-Received: by 2002:a17:906:c7ca:: with SMTP id
- dc10mr13614394ejb.294.1618325910748; 
- Tue, 13 Apr 2021 07:58:30 -0700 (PDT)
-X-Google-Smtp-Source: ABdhPJwgRCGqwTKY1uXNFzYOC/YmWaq5iHZG/z/5N5f+QW5qWm9hQs1h7yWI+1JNCO0I2BVghLszFQ==
-X-Received: by 2002:a17:906:c7ca:: with SMTP id
- dc10mr13614363ejb.294.1618325910652; 
- Tue, 13 Apr 2021 07:58:30 -0700 (PDT)
-Received: from localhost.localdomain (xdsl-188-155-192-147.adslplus.ch.
- [188.155.192.147])
- by smtp.gmail.com with ESMTPSA id p3sm4395217ejd.65.2021.04.13.07.58.29
+ h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+ :content-transfer-encoding;
+ bh=+srfers9E9q4+P9qtsCb4JStuWkS4WZj6vAcaSoVbMo=;
+ b=XLUKQGFl2+u547poViFRbYk8hqjHOwUK+IJHRkaVRFFS2RDywK/9x2TU7Q89H3sbRd
+ FSBWCgZm+xHSNJGrHKcG4RZKS7ZIxVJjIDf12IGpQP3JziMzzOJ8Ke3aLzQpOs1fUb2C
+ yi2noB0SoRBVwgeHQwwruo8uJtKUCLqsg92xLy1yInZjm3lU6M/5BOexny2s7U8ST8TG
+ bBC9TK2gELm4b3uSidtdUMam24pgIN6C3BomEzNCutRn+ddUKVcDzDNL6IyIfSCcrKRh
+ /HAKoL3O/h59CIVrPww36GTwAZublERkHlokIxMnypFKZ0LXHpKdPb5p9gfBy5BRw7JG
+ OqwA==
+X-Gm-Message-State: AOAM530PsVCNrljlU5h0mpBuEcB2lXgNjtjfHsSYp+E/acvpUfD2HAsb
+ lw3uY72gQ3oXgPHtjyGpqpI=
+X-Google-Smtp-Source: ABdhPJxkj7EMiqnlNwZhemaad9k8TJwF36mYJkC/cilAzSTY6lmSj1a708p3PUSfYTswP4gAS4KdrA==
+X-Received: by 2002:a17:90a:5407:: with SMTP id
+ z7mr581197pjh.228.1618327353881; 
+ Tue, 13 Apr 2021 08:22:33 -0700 (PDT)
+Received: from ubuntu-Virtual-Machine.corp.microsoft.com
+ ([2001:4898:80e8:36:5b29:fe1a:45c9:c61c])
+ by smtp.gmail.com with ESMTPSA id y3sm12882026pfg.145.2021.04.13.08.22.33
  (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
- Tue, 13 Apr 2021 07:58:30 -0700 (PDT)
-From: Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>
-To: Yong Wu <yong.wu@mediatek.com>, Rob Herring <robh+dt@kernel.org>,
- Krzysztof Kozlowski <krzk@kernel.org>,
- Matthias Brugger <matthias.bgg@gmail.com>, Joerg Roedel <joro@8bytes.org>
-Subject: Re: (subset) [PATCH v5 00/16] Clean up "mediatek,larb"
-Date: Tue, 13 Apr 2021 16:58:24 +0200
-Message-Id: <161832589345.71964.1780926932144222450.b4-ty@canonical.com>
+ Tue, 13 Apr 2021 08:22:33 -0700 (PDT)
+From: Tianyu Lan <ltykernel@gmail.com>
+To: kys@microsoft.com, haiyangz@microsoft.com, sthemmin@microsoft.com,
+ wei.liu@kernel.org, tglx@linutronix.de, mingo@redhat.com, bp@alien8.de,
+ x86@kernel.org, hpa@zytor.com, arnd@arndb.de, akpm@linux-foundation.org,
+ gregkh@linuxfoundation.org, konrad.wilk@oracle.com, hch@lst.de,
+ m.szyprowski@samsung.com, robin.murphy@arm.com, joro@8bytes.org,
+ will@kernel.org, davem@davemloft.net, kuba@kernel.org, jejb@linux.ibm.com,
+ martin.petersen@oracle.com
+Subject: [RFC V2 PATCH 00/12] x86/Hyper-V: Add Hyper-V Isolation VM support
+Date: Tue, 13 Apr 2021 11:22:05 -0400
+Message-Id: <20210413152217.3386288-1-ltykernel@gmail.com>
 X-Mailer: git-send-email 2.25.1
-In-Reply-To: <20210410091128.31823-1-yong.wu@mediatek.com>
-References: <20210410091128.31823-1-yong.wu@mediatek.com>
 MIME-Version: 1.0
-Cc: youlin.pei@mediatek.com, anan.sun@mediatek.com,
- Nicolas Boichat <drinkcat@chromium.org>, srv_heupstream@mediatek.com,
- acourbot@chromium.org, Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>,
- devicetree@vger.kernel.org, Will Deacon <will.deacon@arm.com>,
- linux-kernel@vger.kernel.org, Evan Green <evgreen@chromium.org>,
- eizan@chromium.org, iommu@lists.linux-foundation.org,
- Matthias Kaehlcke <mka@chromium.org>, linux-mediatek@lists.infradead.org,
- chao.hao@mediatek.com, ming-fan.chen@mediatek.com, yi.kuo@mediatek.com,
- Robin Murphy <robin.murphy@arm.com>, linux-arm-kernel@lists.infradead.org
+X-Mailman-Approved-At: Tue, 13 Apr 2021 15:37:35 +0000
+Cc: linux-arch@vger.kernel.org, thomas.lendacky@amd.com,
+ linux-hyperv@vger.kernel.org, Tianyu Lan <Tianyu.Lan@microsoft.com>,
+ linux-scsi@vger.kernel.org, netdev@vger.kernel.org,
+ linux-kernel@vger.kernel.org, linux-mm@kvack.org,
+ iommu@lists.linux-foundation.org, brijesh.singh@amd.com, vkuznets@redhat.com,
+ sunilmut@microsoft.com
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -116,30 +118,89 @@ Content-Transfer-Encoding: 7bit
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-On Sat, 10 Apr 2021 17:11:12 +0800, Yong Wu wrote:
-> MediaTek IOMMU block diagram always like below:
-> 
->         M4U
->          |
->     smi-common
->          |
->   -------------
->   |         |  ...
->   |         |
-> larb1     larb2
->   |         |
-> vdec       venc
-> 
-> [...]
+From: Tianyu Lan <Tianyu.Lan@microsoft.com>
 
-Applied, thanks!
 
-[04/16] memory: mtk-smi: Add device-link between smi-larb and smi-common
-        commit: 6ce2c05b21189eb17b3aa26720cc5841acf9dce8
+Hyper-V provides two kinds of Isolation VMs. VBS(Virtualization-based
+security) and AMD SEV-SNP unenlightened Isolation VMs. This patchset
+is to add support for these Isolation VM support in Linux.
 
-Best regards,
+The memory of these vms are encrypted and host can't access guest
+memory directly. Hyper-V provides new host visibility hvcall and
+the guest needs to call new hvcall to mark memory visible to host
+before sharing memory with host. For security, all network/storage
+stack memory should not be shared with host and so there is bounce
+buffer requests.
+
+Vmbus channel ring buffer already plays bounce buffer role because
+all data from/to host needs to copy from/to between the ring buffer
+and IO stack memory. So mark vmbus channel ring buffer visible to
+host.
+
+There are two exceptions - packets sent by vmbus_sendpacket_
+pagebuffer() and vmbus_sendpacket_mpb_desc(). These packets
+contains IO stack memory address and host will access these memory.
+So add Hyper-V DMA Ops and use DMA API in the netvsc and storvsc
+drivers to allocate bounce buffer via swiotlb interface.
+
+For SNP isolation VM, guest needs to access the shared memory via
+extra address space which is specified by Hyper-V CPUID HYPERV_CPUID_
+ISOLATION_CONFIG. The access physical address of the shared memory
+should be bounce buffer memory GPA plus with shared_gpa_boundary
+reported by CPUID.
+
+Change since v1:
+       * Add DMA API support in the netvsc and storvsc driver.
+       * Add Hyper-V DMA ops.
+       * Add static branch for the check of isolation type snp.
+       * Fix some code style comments.
+
+Tianyu Lan (12):
+  x86/HV: Initialize GHCB page in Isolation VM
+  x86/HV: Initialize shared memory boundary in Isolation VM
+  x86/Hyper-V: Add new hvcall guest address host visibility support
+  HV: Add Write/Read MSR registers via ghcb
+  HV: Add ghcb hvcall support for SNP VM
+  HV/Vmbus: Add SNP support for VMbus channel initiate message
+  HV/Vmbus: Initialize VMbus ring buffer for Isolation VM
+  UIO/Hyper-V: Not load UIO HV driver in the isolation VM.
+  swiotlb: Add bounce buffer remap address setting function
+  HV/IOMMU: Add Hyper-V dma ops support
+  HV/Netvsc: Add Isolation VM support for netvsc driver
+  HV/Storvsc: Add Isolation VM support for storvsc driver
+
+ arch/x86/hyperv/Makefile           |   2 +-
+ arch/x86/hyperv/hv_init.c          |  70 +++++--
+ arch/x86/hyperv/ivm.c              | 289 +++++++++++++++++++++++++++++
+ arch/x86/include/asm/hyperv-tlfs.h |  22 +++
+ arch/x86/include/asm/mshyperv.h    |  90 +++++++--
+ arch/x86/kernel/cpu/mshyperv.c     |   5 +
+ arch/x86/kernel/pci-swiotlb.c      |   3 +-
+ drivers/hv/channel.c               |  44 ++++-
+ drivers/hv/connection.c            |  68 ++++++-
+ drivers/hv/hv.c                    |  73 ++++++--
+ drivers/hv/hyperv_vmbus.h          |   3 +
+ drivers/hv/ring_buffer.c           |  83 ++++++---
+ drivers/hv/vmbus_drv.c             |   3 +
+ drivers/iommu/hyperv-iommu.c       | 127 +++++++++++++
+ drivers/net/hyperv/hyperv_net.h    |  11 ++
+ drivers/net/hyperv/netvsc.c        | 137 +++++++++++++-
+ drivers/net/hyperv/rndis_filter.c  |   3 +
+ drivers/scsi/storvsc_drv.c         |  67 ++++++-
+ drivers/uio/uio_hv_generic.c       |   5 +
+ include/asm-generic/hyperv-tlfs.h  |   1 +
+ include/asm-generic/mshyperv.h     |  18 +-
+ include/linux/hyperv.h             |  12 +-
+ include/linux/swiotlb.h            |   5 +
+ kernel/dma/swiotlb.c               |  13 +-
+ mm/ioremap.c                       |   1 +
+ mm/vmalloc.c                       |   1 +
+ 26 files changed, 1068 insertions(+), 88 deletions(-)
+ create mode 100644 arch/x86/hyperv/ivm.c
+
 -- 
-Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>
+2.25.1
+
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
