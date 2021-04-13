@@ -2,104 +2,115 @@ Return-Path: <SRS0=gU7u=JK=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-13.5 required=3.0 tests=BAYES_00,
-	DKIM_ADSP_CUSTOM_MED,DKIM_INVALID,DKIM_SIGNED,FREEMAIL_FORGED_FROMDOMAIN,
-	FREEMAIL_FROM,HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_CR_TRAILER,
-	INCLUDES_PATCH,MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,
-	USER_AGENT_GIT autolearn=unavailable autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-5.5 required=3.0 tests=BAYES_00,DKIM_INVALID,
+	DKIM_SIGNED,HEADER_FROM_DIFFERENT_DOMAINS,HTML_MESSAGE,INCLUDES_CR_TRAILER,
+	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,UNPARSEABLE_RELAY,URIBL_BLOCKED
+	autolearn=no autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1FC1AC43461
-	for <iommu@archiver.kernel.org>; Tue, 13 Apr 2021 15:37:40 +0000 (UTC)
-Received: from smtp1.osuosl.org (smtp1.osuosl.org [140.211.166.138])
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 91881C43460
+	for <iommu@archiver.kernel.org>; Tue, 13 Apr 2021 17:53:32 +0000 (UTC)
+Received: from smtp4.osuosl.org (smtp4.osuosl.org [140.211.166.137])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id AD0616128C
-	for <iommu@archiver.kernel.org>; Tue, 13 Apr 2021 15:37:39 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org AD0616128C
-Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=gmail.com
+	by mail.kernel.org (Postfix) with ESMTPS id EEBFD613B6
+	for <iommu@archiver.kernel.org>; Tue, 13 Apr 2021 17:53:31 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org EEBFD613B6
+Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=oracle.com
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by smtp1.osuosl.org (Postfix) with ESMTP id 77F7B844E1;
-	Tue, 13 Apr 2021 15:37:39 +0000 (UTC)
+	by smtp4.osuosl.org (Postfix) with ESMTP id 90D7340E71;
+	Tue, 13 Apr 2021 17:53:31 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from smtp1.osuosl.org ([127.0.0.1])
-	by localhost (smtp1.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id 9YYTslaQDgfa; Tue, 13 Apr 2021 15:37:38 +0000 (UTC)
-Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by smtp1.osuosl.org (Postfix) with ESMTP id 24085844CC;
-	Tue, 13 Apr 2021 15:37:38 +0000 (UTC)
+Received: from smtp4.osuosl.org ([127.0.0.1])
+	by localhost (smtp4.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+	with ESMTP id kC00tKWfrqdr; Tue, 13 Apr 2021 17:53:30 +0000 (UTC)
+Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [IPv6:2605:bc80:3010:104::8cd3:938])
+	by smtp4.osuosl.org (Postfix) with ESMTP id B993140E6A;
+	Tue, 13 Apr 2021 17:53:29 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 6ABC5C0014;
-	Tue, 13 Apr 2021 15:37:37 +0000 (UTC)
-Received: from smtp3.osuosl.org (smtp3.osuosl.org [IPv6:2605:bc80:3010::136])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 4C511C000A
- for <iommu@lists.linux-foundation.org>; Tue, 13 Apr 2021 15:22:43 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 98746C000B;
+	Tue, 13 Apr 2021 17:53:29 +0000 (UTC)
+Received: from smtp1.osuosl.org (smtp1.osuosl.org [IPv6:2605:bc80:3010::138])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 957E3C000A
+ for <iommu@lists.linux-foundation.org>; Tue, 13 Apr 2021 17:53:28 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by smtp3.osuosl.org (Postfix) with ESMTP id 3BC84607A3
- for <iommu@lists.linux-foundation.org>; Tue, 13 Apr 2021 15:22:43 +0000 (UTC)
+ by smtp1.osuosl.org (Postfix) with ESMTP id 7C26C84579
+ for <iommu@lists.linux-foundation.org>; Tue, 13 Apr 2021 17:53:28 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Authentication-Results: smtp3.osuosl.org (amavisd-new);
- dkim=pass (2048-bit key) header.d=gmail.com
-Received: from smtp3.osuosl.org ([127.0.0.1])
- by localhost (smtp3.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id FV0mm1e-1zMT for <iommu@lists.linux-foundation.org>;
- Tue, 13 Apr 2021 15:22:42 +0000 (UTC)
-X-Greylist: whitelisted by SQLgrey-1.8.0
-Received: from mail-pj1-x102a.google.com (mail-pj1-x102a.google.com
- [IPv6:2607:f8b0:4864:20::102a])
- by smtp3.osuosl.org (Postfix) with ESMTPS id 724EF60676
- for <iommu@lists.linux-foundation.org>; Tue, 13 Apr 2021 15:22:42 +0000 (UTC)
-Received: by mail-pj1-x102a.google.com with SMTP id r13so4858859pjf.2
- for <iommu@lists.linux-foundation.org>; Tue, 13 Apr 2021 08:22:42 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=gmail.com; s=20161025;
- h=from:to:cc:subject:date:message-id:in-reply-to:references
- :mime-version:content-transfer-encoding;
- bh=BJQLwkA9W/535NLWBZWmq8i7UzFGYSRLRmzJAHK8gIA=;
- b=R1teh1L2juNnfr6XYKlzfdoXR2CJDnx16An/yRdKpEPyP/m0e6QhHjhUYTQamrh7vp
- hB6Rk1PIBMkc1qBVwkcxZTkACjxShsdG7QpK5XILnAQHy3ALmH6Ab86ghJcWP2dZTy23
- vzuEqDaGLhaqBykIfqOcDFhV1ciJkjacJIeF7UF3e+8if4hTjaqUTJU3TTeW/AguVuD2
- DiOInrSzmU0/eTNizGE2SxYm+/AYEVaXoU46t5ynBZOGqWUVf8s4ez1bc75oklNZr4RC
- xZYs+RMnuJVSYK2X1FvNIuiU0zkL2aK6VZHIEfQwFQdFomN07TdjOj0p9dNBkFZShFjW
- 78nw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
- d=1e100.net; s=20161025;
- h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
- :references:mime-version:content-transfer-encoding;
- bh=BJQLwkA9W/535NLWBZWmq8i7UzFGYSRLRmzJAHK8gIA=;
- b=UBhqMU5w+iGZYeKz/8IEx9J4h/tTasxQlBAkF4EwNVgnTiIZgmT/4oEg0ffaeXaCRI
- aGQ+wh4bctnUjCoCwlm00aKKWncnh2DvwQM//5uj+qheX+7gsVC8RVaT+F/lwIFl7GuV
- rfSJZN+8vX/D6DRr1uqIJgolkBl2af7kbOM0fuJshxNVKuM0EbpdOhUydQvI+RD8QV6Q
- z8FXv+5cPjTpwSEA6mnrgXcmkQXrz+dM9tIiUMO1i4V2amROkfb+Bu0c3Ap4GDlzShcw
- +99zRbD7HqlYjrEwfd2Ov1e/FSo3ndBVwMJY+fmePRM6/PYo982zGysiywkzIWvEqZ+m
- BtRg==
-X-Gm-Message-State: AOAM533U685rjLguDZEgiJehSfN7iumSdrXS49CqSpCUa9pKen+zkOM7
- 1mXvKPKWXj267v3EZs9ckdQ=
-X-Google-Smtp-Source: ABdhPJyTxJq92DljeecCsOiqoXPTSxiL+2hkQODoamYZe9GkOHCa7d3zR8s/T5VUleXnajYIwgikZA==
-X-Received: by 2002:a17:90a:7e8f:: with SMTP id
- j15mr553127pjl.71.1618327361879; 
- Tue, 13 Apr 2021 08:22:41 -0700 (PDT)
-Received: from ubuntu-Virtual-Machine.corp.microsoft.com
- ([2001:4898:80e8:36:5b29:fe1a:45c9:c61c])
- by smtp.gmail.com with ESMTPSA id y3sm12882026pfg.145.2021.04.13.08.22.41
- (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
- Tue, 13 Apr 2021 08:22:41 -0700 (PDT)
-From: Tianyu Lan <ltykernel@gmail.com>
-To: konrad.wilk@oracle.com, tglx@linutronix.de, mingo@redhat.com, bp@alien8.de,
- x86@kernel.org, hpa@zytor.com, kys@microsoft.com, haiyangz@microsoft.com,
- sthemmin@microsoft.com, wei.liu@kernel.org, joro@8bytes.org,
- will@kernel.org
-Subject: [RFC V2 PATCH 10/12] HV/IOMMU: Add Hyper-V dma ops support
-Date: Tue, 13 Apr 2021 11:22:15 -0400
-Message-Id: <20210413152217.3386288-11-ltykernel@gmail.com>
-X-Mailer: git-send-email 2.25.1
-In-Reply-To: <20210413152217.3386288-1-ltykernel@gmail.com>
-References: <20210413152217.3386288-1-ltykernel@gmail.com>
-MIME-Version: 1.0
-X-Mailman-Approved-At: Tue, 13 Apr 2021 15:37:35 +0000
-Cc: thomas.lendacky@amd.com, linux-hyperv@vger.kernel.org,
- Tianyu Lan <Tianyu.Lan@microsoft.com>, linux-kernel@vger.kernel.org,
- iommu@lists.linux-foundation.org, brijesh.singh@amd.com, vkuznets@redhat.com,
- sunilmut@microsoft.com
+Authentication-Results: smtp1.osuosl.org (amavisd-new);
+ dkim=pass (2048-bit key) header.d=oracle.com
+Received: from smtp1.osuosl.org ([127.0.0.1])
+ by localhost (smtp1.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+ with ESMTP id 1uEk67usBLfv for <iommu@lists.linux-foundation.org>;
+ Tue, 13 Apr 2021 17:53:27 +0000 (UTC)
+X-Greylist: domain auto-whitelisted by SQLgrey-1.8.0
+Received: from userp2120.oracle.com (userp2120.oracle.com [156.151.31.85])
+ by smtp1.osuosl.org (Postfix) with ESMTPS id 8D04784576
+ for <iommu@lists.linux-foundation.org>; Tue, 13 Apr 2021 17:53:27 +0000 (UTC)
+Received: from pps.filterd (userp2120.oracle.com [127.0.0.1])
+ by userp2120.oracle.com (8.16.0.42/8.16.0.42) with SMTP id 13DHZWXh006380;
+ Tue, 13 Apr 2021 17:53:14 GMT
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=oracle.com;
+ h=from : message-id :
+ content-type : mime-version : subject : date : in-reply-to : cc : to :
+ references; s=corp-2020-01-29;
+ bh=UuNW+7uwvXfs4D5aydLi6MTfORxEtuXoAsmOKQNcpz0=;
+ b=kqKMuCdbPSnSgCbbdCKB/snBWO/jiIBpZ7xB4i/GI/AYVBV1LYi5NmwSy3m33pVQkCTV
+ cmxxKWR9C9KfrJYfkq+CVfmHO5KY1RpeWVFVAq2zyFKWw2OLSeJeatv3+ltgiW/LSfDL
+ Af4OXcJg5rS2AgV+2CqSb7d2RRP4L0BZzzdAx4Kf0zHKnZ1EaM/5HVe2QKOt5gZxqHXF
+ tDbrd3VErn2hzagczPCYRtuJ5HObTCmobQYf6tZmJ/QE6p81P3F2qjqJccoY7J8oidym
+ dP1uWhibzVVrjtD1YitDDwebZjIQqlYXg+DUZA2fCXxUo5aYnjHle+M9LcHlM6Jqz1Ok fA== 
+Received: from userp3020.oracle.com (userp3020.oracle.com [156.151.31.79])
+ by userp2120.oracle.com with ESMTP id 37u4nnfxam-1
+ (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+ Tue, 13 Apr 2021 17:53:14 +0000
+Received: from pps.filterd (userp3020.oracle.com [127.0.0.1])
+ by userp3020.oracle.com (8.16.0.42/8.16.0.42) with SMTP id 13DHZS9L057122;
+ Tue, 13 Apr 2021 17:53:12 GMT
+Received: from userv0121.oracle.com (userv0121.oracle.com [156.151.31.72])
+ by userp3020.oracle.com with ESMTP id 37unssq9xs-1
+ (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+ Tue, 13 Apr 2021 17:53:12 +0000
+Received: from abhmp0003.oracle.com (abhmp0003.oracle.com [141.146.116.9])
+ by userv0121.oracle.com (8.14.4/8.13.8) with ESMTP id 13DHr9ww028782;
+ Tue, 13 Apr 2021 17:53:09 GMT
+Received: from dhcp-10-159-224-82.vpn.oracle.com (/10.159.224.82)
+ by default (Oracle Beehive Gateway v4.0)
+ with ESMTP ; Tue, 13 Apr 2021 17:53:09 +0000
+From: Saeed Mirzamohammadi <saeed.mirzamohammadi@oracle.com>
+Message-Id: <DD146005-CC5A-45E0-8E23-421051EE7FAD@oracle.com>
+Mime-Version: 1.0 (Mac OS X Mail 13.4 \(3608.120.23.2.4\))
+Subject: Re: [PATCH 5.4 v3 1/1] iommu/vt-d: Fix agaw for a supported 48 bit
+ guest address width
+Date: Tue, 13 Apr 2021 10:53:07 -0700
+In-Reply-To: <YHVJDM4CXINrO1KE@kroah.com>
+To: Greg KH <gregkh@linuxfoundation.org>
+References: <20210412202736.70765-1-saeed.mirzamohammadi@oracle.com>
+ <YHVJDM4CXINrO1KE@kroah.com>
+X-Mailer: Apple Mail (2.3608.120.23.2.4)
+X-Proofpoint-IMR: 1
+X-Proofpoint-Virus-Version: vendor=nai engine=6200 definitions=9953
+ signatures=668683
+X-Proofpoint-Spam-Details: rule=notspam policy=default score=0 mlxlogscore=999
+ adultscore=0
+ malwarescore=0 suspectscore=0 bulkscore=0 mlxscore=0 spamscore=0
+ phishscore=0 classifier=spam adjust=0 reason=mlx scancount=1
+ engine=8.12.0-2104060000 definitions=main-2104130120
+X-Proofpoint-ORIG-GUID: LXI8C9aasPhkN6FiTis5pA02c4DgNhKB
+X-Proofpoint-GUID: LXI8C9aasPhkN6FiTis5pA02c4DgNhKB
+X-Proofpoint-Virus-Version: vendor=nai engine=6200 definitions=9953
+ signatures=668683
+X-Proofpoint-Spam-Details: rule=notspam policy=default score=0 adultscore=0
+ malwarescore=0
+ phishscore=0 suspectscore=0 mlxlogscore=999 priorityscore=1501
+ clxscore=1015 lowpriorityscore=0 spamscore=0 impostorscore=0 bulkscore=0
+ mlxscore=0 classifier=spam adjust=0 reason=mlx scancount=1
+ engine=8.12.0-2104060000 definitions=main-2104130120
+Cc: Saeed Mirzamohammadi <saeed.mirzamohammadi@oracle.com>,
+ Camille Lu <camille.lu@hpe.com>,
+ Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+ "# v4 . 16+" <stable@vger.kernel.org>, iommu@lists.linux-foundation.org,
+ David Woodhouse <dwmw2@infradead.org>
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -112,248 +123,245 @@ List-Post: <mailto:iommu@lists.linux-foundation.org>
 List-Help: <mailto:iommu-request@lists.linux-foundation.org?subject=help>
 List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
  <mailto:iommu-request@lists.linux-foundation.org?subject=subscribe>
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
+Content-Type: multipart/mixed; boundary="===============2729248921982906517=="
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-From: Tianyu Lan <Tianyu.Lan@microsoft.com>
 
-Hyper-V Isolation VM requires bounce buffer support. To use swiotlb
-bounce buffer, add Hyper-V dma ops and use swiotlb functions in the
-map and unmap callback.
+--===============2729248921982906517==
+Content-Type: multipart/alternative;
+	boundary="Apple-Mail=_EC17D4B7-959B-4F5E-9BB0-64659F7F834B"
 
-Allocate bounce buffer in the Hyper-V code because bounce buffer
-needs to be accessed via extra address space(e.g, address above 39bit)
-in the AMD SEV SNP based Isolation VM.
 
-ioremap_cache() can't use in the hyperv_iommu_swiotlb_init() which
-is too early place and remap bounce buffer in the hyperv_iommu_swiotlb_
-later_init().
+--Apple-Mail=_EC17D4B7-959B-4F5E-9BB0-64659F7F834B
+Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain;
+	charset=utf-8
 
-Signed-off-by: Tianyu Lan <Tianyu.Lan@microsoft.com>
----
- arch/x86/kernel/pci-swiotlb.c |   3 +-
- drivers/hv/vmbus_drv.c        |   3 +
- drivers/iommu/hyperv-iommu.c  | 127 ++++++++++++++++++++++++++++++++++
- 3 files changed, 132 insertions(+), 1 deletion(-)
+Hi Greg,
 
-diff --git a/arch/x86/kernel/pci-swiotlb.c b/arch/x86/kernel/pci-swiotlb.c
-index c2cfa5e7c152..caaf68c06f24 100644
---- a/arch/x86/kernel/pci-swiotlb.c
-+++ b/arch/x86/kernel/pci-swiotlb.c
-@@ -15,6 +15,7 @@
- #include <asm/iommu_table.h>
- 
- int swiotlb __read_mostly;
-+extern int hyperv_swiotlb;
- 
- /*
-  * pci_swiotlb_detect_override - set swiotlb to 1 if necessary
-@@ -68,7 +69,7 @@ void __init pci_swiotlb_init(void)
- void __init pci_swiotlb_late_init(void)
- {
- 	/* An IOMMU turned us off. */
--	if (!swiotlb)
-+	if (!swiotlb && !hyperv_swiotlb)
- 		swiotlb_exit();
- 	else {
- 		printk(KERN_INFO "PCI-DMA: "
-diff --git a/drivers/hv/vmbus_drv.c b/drivers/hv/vmbus_drv.c
-index 10dce9f91216..0ee6ec3a5de6 100644
---- a/drivers/hv/vmbus_drv.c
-+++ b/drivers/hv/vmbus_drv.c
-@@ -23,6 +23,7 @@
- #include <linux/cpu.h>
- #include <linux/sched/task_stack.h>
- 
-+#include <linux/dma-map-ops.h>
- #include <linux/delay.h>
- #include <linux/notifier.h>
- #include <linux/ptrace.h>
-@@ -2030,6 +2031,7 @@ struct hv_device *vmbus_device_create(const guid_t *type,
- 	return child_device_obj;
- }
- 
-+static u64 vmbus_dma_mask = DMA_BIT_MASK(64);
- /*
-  * vmbus_device_register - Register the child device
-  */
-@@ -2070,6 +2072,7 @@ int vmbus_device_register(struct hv_device *child_device_obj)
- 	}
- 	hv_debug_add_dev_dir(child_device_obj);
- 
-+	child_device_obj->device.dma_mask = &vmbus_dma_mask;
- 	return 0;
- 
- err_kset_unregister:
-diff --git a/drivers/iommu/hyperv-iommu.c b/drivers/iommu/hyperv-iommu.c
-index e285a220c913..588ba847f0cc 100644
---- a/drivers/iommu/hyperv-iommu.c
-+++ b/drivers/iommu/hyperv-iommu.c
-@@ -13,19 +13,28 @@
- #include <linux/irq.h>
- #include <linux/iommu.h>
- #include <linux/module.h>
-+#include <linux/hyperv.h>
- 
-+#include <asm/io.h>
- #include <asm/apic.h>
- #include <asm/cpu.h>
- #include <asm/hw_irq.h>
- #include <asm/io_apic.h>
-+#include <asm/iommu.h>
-+#include <asm/iommu_table.h>
- #include <asm/irq_remapping.h>
- #include <asm/hypervisor.h>
- #include <asm/mshyperv.h>
-+#include <asm/swiotlb.h>
-+#include <linux/dma-map-ops.h>
-+#include <linux/dma-direct.h>
- 
- #include "irq_remapping.h"
- 
- #ifdef CONFIG_IRQ_REMAP
- 
-+int hyperv_swiotlb __read_mostly;
-+
- /*
-  * According 82093AA IO-APIC spec , IO APIC has a 24-entry Interrupt
-  * Redirection Table. Hyper-V exposes one single IO-APIC and so define
-@@ -36,6 +45,10 @@
- static cpumask_t ioapic_max_cpumask = { CPU_BITS_NONE };
- static struct irq_domain *ioapic_ir_domain;
- 
-+static unsigned long hyperv_io_tlb_start, *hyperv_io_tlb_end; 
-+static unsigned long hyperv_io_tlb_nslabs, hyperv_io_tlb_size;
-+static void *hyperv_io_tlb_remap;
-+
- static int hyperv_ir_set_affinity(struct irq_data *data,
- 		const struct cpumask *mask, bool force)
- {
-@@ -337,4 +350,118 @@ static const struct irq_domain_ops hyperv_root_ir_domain_ops = {
- 	.free = hyperv_root_irq_remapping_free,
- };
- 
-+static dma_addr_t hyperv_map_page(struct device *dev, struct page *page,
-+				  unsigned long offset, size_t size,
-+				  enum dma_data_direction dir,
-+				  unsigned long attrs)
-+{
-+	phys_addr_t map, phys = (page_to_pfn(page) << PAGE_SHIFT) + offset;
-+
-+	if (!hv_is_isolation_supported())
-+		return phys;
-+
-+	map = swiotlb_tbl_map_single(dev, phys, size, HV_HYP_PAGE_SIZE, dir,
-+				     attrs);
-+	if (map == (phys_addr_t)DMA_MAPPING_ERROR)
-+		return DMA_MAPPING_ERROR;
-+
-+	return map;
-+}
-+
-+static void hyperv_unmap_page(struct device *dev, dma_addr_t dev_addr,
-+		size_t size, enum dma_data_direction dir, unsigned long attrs)
-+{
-+	if (!hv_is_isolation_supported())
-+		return;
-+
-+	swiotlb_tbl_unmap_single(dev, dev_addr, size, HV_HYP_PAGE_SIZE, dir,
-+				attrs);
-+}
-+
-+int __init hyperv_swiotlb_init(void)
-+{
-+	unsigned long bytes;
-+	void *vstart = 0;
-+
-+	bytes = 200 * 1024 * 1024;
-+	vstart = memblock_alloc_low(PAGE_ALIGN(bytes), PAGE_SIZE);
-+	hyperv_io_tlb_nslabs = bytes >> IO_TLB_SHIFT;
-+	hyperv_io_tlb_size = bytes;
-+
-+	if (!vstart) {
-+		pr_warn("Fail to allocate swiotlb.\n");
-+		return -ENOMEM;
-+	}
-+
-+	hyperv_io_tlb_start = virt_to_phys(vstart);
-+	if (!hyperv_io_tlb_start)
-+		panic("%s: Failed to allocate %lu bytes align=0x%lx.\n",
-+		      __func__, PAGE_ALIGN(bytes), PAGE_SIZE);
-+
-+	if (swiotlb_init_with_tbl(vstart, hyperv_io_tlb_nslabs, 1))
-+		panic("%s: Cannot allocate SWIOTLB buffer.\n", __func__);
-+
-+	swiotlb_set_max_segment(PAGE_SIZE);
-+	hyperv_io_tlb_end = hyperv_io_tlb_start + bytes;
-+	return 0;
-+}
-+
-+const struct dma_map_ops hyperv_dma_ops = {
-+	.map_page = hyperv_map_page,
-+	.unmap_page = hyperv_unmap_page,
-+};
-+
-+int __init hyperv_swiotlb_detect(void)
-+{
-+	dma_ops = &hyperv_dma_ops;
-+
-+	if (hypervisor_is_type(X86_HYPER_MS_HYPERV)
-+	    && hv_is_isolation_supported()) {
-+		/*
-+		 * Disable generic swiotlb and allocate Hyper-v swiotlb
-+		 * in the hyperv_iommu_swiotlb_init().
-+		 */
-+		swiotlb = 0;
-+		hyperv_swiotlb = 1;
-+
-+		return 1;
-+	}
-+
-+	return 0;
-+}
-+
-+void __init hyperv_iommu_swiotlb_init(void)
-+{
-+	hyperv_swiotlb_init();
-+}
-+
-+void __init hyperv_iommu_swiotlb_later_init(void)
-+{
-+	int ret;
-+
-+	/* Mask bounce buffer visible to host and remap extra address. */
-+	if (hv_isolation_type_snp()) {
-+		ret = hv_set_mem_host_visibility(
-+				phys_to_virt(hyperv_io_tlb_start),
-+				hyperv_io_tlb_size,
-+				VMBUS_PAGE_VISIBLE_READ_WRITE);
-+		if (ret)
-+			panic("%s: Fail to mark Hyper-v swiotlb buffer visible to host. err=%d\n",
-+			      __func__, ret);
-+
-+		hyperv_io_tlb_remap = ioremap_cache(hyperv_io_tlb_start
-+					    + ms_hyperv.shared_gpa_boundary,
-+						    hyperv_io_tlb_size);
-+		if (!hyperv_io_tlb_remap)
-+			panic("%s: Fail to remap io tlb.\n", __func__);
-+
-+		memset(hyperv_io_tlb_remap, 0x00, hyperv_io_tlb_size);
-+		swiotlb_set_bounce_remap(hyperv_io_tlb_remap);
-+	}
-+}
-+
-+IOMMU_INIT_FINISH(hyperv_swiotlb_detect,
-+		  NULL, hyperv_iommu_swiotlb_init,
-+		  hyperv_iommu_swiotlb_later_init);
-+
- #endif
--- 
-2.25.1
+I don=E2=80=99t have any commit ID since the fix is not in mainline or =
+any Linus=E2=80=99 tree yet. The driver has completely changed for newer =
+stable versions (and also mainline) and the fix only applies for 5.4, =
+4.19, and 4.14 stable kernels.
+
+Thanks,
+Saeed
+
+
+> On Apr 13, 2021, at 12:32 AM, Greg KH <gregkh@linuxfoundation.org> =
+wrote:
+>=20
+> <meta comment, please fix your email client to put proper things in =
+the
+> To: line so that we can correctly respond to patches...>
+>=20
+> On Mon, Apr 12, 2021 at 01:27:35PM -0700, Saeed Mirzamohammadi wrote:
+>> The IOMMU driver calculates the guest addressability for a DMA =
+request
+>> based on the value of the mgaw reported from the IOMMU. However, this
+>> is a fused value and as mentioned in the spec, the guest width
+>> should be calculated based on the minimum of supported adjusted guest
+>> address width (SAGAW) and MGAW.
+>>=20
+>> This is from specification:
+>> "Guest addressability for a given DMA request is limited to the
+>> minimum of the value reported through this field and the adjusted
+>> guest address width of the corresponding page-table structure.
+>> (Adjusted guest address widths supported by hardware are reported
+>> through the SAGAW field)."
+>>=20
+>> This causes domain initialization to fail and following
+>> errors appear for EHCI PCI driver:
+>>=20
+>> [    2.486393] ehci-pci 0000:01:00.4: EHCI Host Controller
+>> [    2.486624] ehci-pci 0000:01:00.4: new USB bus registered, =
+assigned bus
+>> number 1
+>> [    2.489127] ehci-pci 0000:01:00.4: DMAR: Allocating domain failed
+>> [    2.489350] ehci-pci 0000:01:00.4: DMAR: 32bit DMA uses =
+non-identity
+>> mapping
+>> [    2.489359] ehci-pci 0000:01:00.4: can't setup: -12
+>> [    2.489531] ehci-pci 0000:01:00.4: USB bus 1 deregistered
+>> [    2.490023] ehci-pci 0000:01:00.4: init 0000:01:00.4 fail, -12
+>> [    2.490358] ehci-pci: probe of 0000:01:00.4 failed with error -12
+>>=20
+>> This issue happens when the value of the sagaw corresponds to a
+>> 48-bit agaw. This fix updates the calculation of the agaw based on
+>> the minimum of IOMMU's sagaw value and MGAW.
+>>=20
+>> Cc: stable@vger.kernel.org
+>> Signed-off-by: Saeed Mirzamohammadi <saeed.mirzamohammadi@oracle.com>
+>> Tested-by: Camille Lu <camille.lu@hpe.com>
+>> Reviewed-by: Lu Baolu <baolu.lu@linux.intel.com>
+>=20
+> What is the git commit id of this patch in Linus's tree?
+>=20
+> thanks,
+>=20
+> greg k-h
+
+
+--Apple-Mail=_EC17D4B7-959B-4F5E-9BB0-64659F7F834B
+Content-Transfer-Encoding: quoted-printable
+Content-Type: text/html;
+	charset=utf-8
+
+<html><head><meta http-equiv=3D"Content-Type" content=3D"text/html; =
+charset=3Dutf-8"></head><body style=3D"word-wrap: break-word; =
+-webkit-nbsp-mode: space; line-break: after-white-space;" class=3D"">Hi =
+Greg,<div class=3D""><br class=3D""></div><div class=3D""><div>I don=E2=80=
+=99t have any commit ID since the fix is not in mainline or any Linus=E2=80=
+=99 tree yet. The driver has completely changed for newer stable =
+versions (and also mainline) and the fix only applies for 5.4, 4.19, and =
+4.14 stable kernels.</div><div><br =
+class=3D""></div><div>Thanks,</div><div>Saeed</div><div><br =
+class=3D""></div><div><br class=3D""><blockquote type=3D"cite" =
+class=3D""><div class=3D"">On Apr 13, 2021, at 12:32 AM, Greg KH &lt;<a =
+href=3D"mailto:gregkh@linuxfoundation.org" =
+class=3D"">gregkh@linuxfoundation.org</a>&gt; wrote:</div><br =
+class=3D"Apple-interchange-newline"><div class=3D""><span =
+style=3D"caret-color: rgb(0, 0, 0); font-family: Helvetica; font-size: =
+12px; font-style: normal; font-variant-caps: normal; font-weight: =
+normal; letter-spacing: normal; text-align: start; text-indent: 0px; =
+text-transform: none; white-space: normal; word-spacing: 0px; =
+-webkit-text-stroke-width: 0px; text-decoration: none; float: none; =
+display: inline !important;" class=3D"">&lt;meta comment, please fix =
+your email client to put proper things in the</span><br =
+style=3D"caret-color: rgb(0, 0, 0); font-family: Helvetica; font-size: =
+12px; font-style: normal; font-variant-caps: normal; font-weight: =
+normal; letter-spacing: normal; text-align: start; text-indent: 0px; =
+text-transform: none; white-space: normal; word-spacing: 0px; =
+-webkit-text-stroke-width: 0px; text-decoration: none;" class=3D""><span =
+style=3D"caret-color: rgb(0, 0, 0); font-family: Helvetica; font-size: =
+12px; font-style: normal; font-variant-caps: normal; font-weight: =
+normal; letter-spacing: normal; text-align: start; text-indent: 0px; =
+text-transform: none; white-space: normal; word-spacing: 0px; =
+-webkit-text-stroke-width: 0px; text-decoration: none; float: none; =
+display: inline !important;" class=3D"">To: line so that we can =
+correctly respond to patches...&gt;</span><br style=3D"caret-color: =
+rgb(0, 0, 0); font-family: Helvetica; font-size: 12px; font-style: =
+normal; font-variant-caps: normal; font-weight: normal; letter-spacing: =
+normal; text-align: start; text-indent: 0px; text-transform: none; =
+white-space: normal; word-spacing: 0px; -webkit-text-stroke-width: 0px; =
+text-decoration: none;" class=3D""><br style=3D"caret-color: rgb(0, 0, =
+0); font-family: Helvetica; font-size: 12px; font-style: normal; =
+font-variant-caps: normal; font-weight: normal; letter-spacing: normal; =
+text-align: start; text-indent: 0px; text-transform: none; white-space: =
+normal; word-spacing: 0px; -webkit-text-stroke-width: 0px; =
+text-decoration: none;" class=3D""><span style=3D"caret-color: rgb(0, 0, =
+0); font-family: Helvetica; font-size: 12px; font-style: normal; =
+font-variant-caps: normal; font-weight: normal; letter-spacing: normal; =
+text-align: start; text-indent: 0px; text-transform: none; white-space: =
+normal; word-spacing: 0px; -webkit-text-stroke-width: 0px; =
+text-decoration: none; float: none; display: inline !important;" =
+class=3D"">On Mon, Apr 12, 2021 at 01:27:35PM -0700, Saeed =
+Mirzamohammadi wrote:</span><br style=3D"caret-color: rgb(0, 0, 0); =
+font-family: Helvetica; font-size: 12px; font-style: normal; =
+font-variant-caps: normal; font-weight: normal; letter-spacing: normal; =
+text-align: start; text-indent: 0px; text-transform: none; white-space: =
+normal; word-spacing: 0px; -webkit-text-stroke-width: 0px; =
+text-decoration: none;" class=3D""><blockquote type=3D"cite" =
+style=3D"font-family: Helvetica; font-size: 12px; font-style: normal; =
+font-variant-caps: normal; font-weight: normal; letter-spacing: normal; =
+orphans: auto; text-align: start; text-indent: 0px; text-transform: =
+none; white-space: normal; widows: auto; word-spacing: 0px; =
+-webkit-text-size-adjust: auto; -webkit-text-stroke-width: 0px; =
+text-decoration: none;" class=3D"">The IOMMU driver calculates the guest =
+addressability for a DMA request<br class=3D"">based on the value of the =
+mgaw reported from the IOMMU. However, this<br class=3D"">is a fused =
+value and as mentioned in the spec, the guest width<br class=3D"">should =
+be calculated based on the minimum of supported adjusted guest<br =
+class=3D"">address width (SAGAW) and MGAW.<br class=3D""><br =
+class=3D"">This is from specification:<br class=3D"">"Guest =
+addressability for a given DMA request is limited to the<br =
+class=3D"">minimum of the value reported through this field and the =
+adjusted<br class=3D"">guest address width of the corresponding =
+page-table structure.<br class=3D"">(Adjusted guest address widths =
+supported by hardware are reported<br class=3D"">through the SAGAW =
+field)."<br class=3D""><br class=3D"">This causes domain initialization =
+to fail and following<br class=3D"">errors appear for EHCI PCI =
+driver:<br class=3D""><br class=3D"">[ &nbsp;&nbsp;&nbsp;2.486393] =
+ehci-pci 0000:01:00.4: EHCI Host Controller<br class=3D"">[ =
+&nbsp;&nbsp;&nbsp;2.486624] ehci-pci 0000:01:00.4: new USB bus =
+registered, assigned bus<br class=3D"">number 1<br class=3D"">[ =
+&nbsp;&nbsp;&nbsp;2.489127] ehci-pci 0000:01:00.4: DMAR: Allocating =
+domain failed<br class=3D"">[ &nbsp;&nbsp;&nbsp;2.489350] ehci-pci =
+0000:01:00.4: DMAR: 32bit DMA uses non-identity<br class=3D"">mapping<br =
+class=3D"">[ &nbsp;&nbsp;&nbsp;2.489359] ehci-pci 0000:01:00.4: can't =
+setup: -12<br class=3D"">[ &nbsp;&nbsp;&nbsp;2.489531] ehci-pci =
+0000:01:00.4: USB bus 1 deregistered<br class=3D"">[ =
+&nbsp;&nbsp;&nbsp;2.490023] ehci-pci 0000:01:00.4: init 0000:01:00.4 =
+fail, -12<br class=3D"">[ &nbsp;&nbsp;&nbsp;2.490358] ehci-pci: probe of =
+0000:01:00.4 failed with error -12<br class=3D""><br class=3D"">This =
+issue happens when the value of the sagaw corresponds to a<br =
+class=3D"">48-bit agaw. This fix updates the calculation of the agaw =
+based on<br class=3D"">the minimum of IOMMU's sagaw value and MGAW.<br =
+class=3D""><br class=3D"">Cc: <a href=3D"mailto:stable@vger.kernel.org" =
+class=3D"">stable@vger.kernel.org</a><br class=3D"">Signed-off-by: Saeed =
+Mirzamohammadi &lt;<a href=3D"mailto:saeed.mirzamohammadi@oracle.com" =
+class=3D"">saeed.mirzamohammadi@oracle.com</a>&gt;<br =
+class=3D"">Tested-by: Camille Lu &lt;<a href=3D"mailto:camille.lu@hpe.com"=
+ class=3D"">camille.lu@hpe.com</a>&gt;<br class=3D"">Reviewed-by: Lu =
+Baolu &lt;<a href=3D"mailto:baolu.lu@linux.intel.com" =
+class=3D"">baolu.lu@linux.intel.com</a>&gt;<br class=3D""></blockquote><br=
+ style=3D"caret-color: rgb(0, 0, 0); font-family: Helvetica; font-size: =
+12px; font-style: normal; font-variant-caps: normal; font-weight: =
+normal; letter-spacing: normal; text-align: start; text-indent: 0px; =
+text-transform: none; white-space: normal; word-spacing: 0px; =
+-webkit-text-stroke-width: 0px; text-decoration: none;" class=3D""><span =
+style=3D"caret-color: rgb(0, 0, 0); font-family: Helvetica; font-size: =
+12px; font-style: normal; font-variant-caps: normal; font-weight: =
+normal; letter-spacing: normal; text-align: start; text-indent: 0px; =
+text-transform: none; white-space: normal; word-spacing: 0px; =
+-webkit-text-stroke-width: 0px; text-decoration: none; float: none; =
+display: inline !important;" class=3D"">What is the git commit id of =
+this patch in Linus's tree?</span><br style=3D"caret-color: rgb(0, 0, =
+0); font-family: Helvetica; font-size: 12px; font-style: normal; =
+font-variant-caps: normal; font-weight: normal; letter-spacing: normal; =
+text-align: start; text-indent: 0px; text-transform: none; white-space: =
+normal; word-spacing: 0px; -webkit-text-stroke-width: 0px; =
+text-decoration: none;" class=3D""><br style=3D"caret-color: rgb(0, 0, =
+0); font-family: Helvetica; font-size: 12px; font-style: normal; =
+font-variant-caps: normal; font-weight: normal; letter-spacing: normal; =
+text-align: start; text-indent: 0px; text-transform: none; white-space: =
+normal; word-spacing: 0px; -webkit-text-stroke-width: 0px; =
+text-decoration: none;" class=3D""><span style=3D"caret-color: rgb(0, 0, =
+0); font-family: Helvetica; font-size: 12px; font-style: normal; =
+font-variant-caps: normal; font-weight: normal; letter-spacing: normal; =
+text-align: start; text-indent: 0px; text-transform: none; white-space: =
+normal; word-spacing: 0px; -webkit-text-stroke-width: 0px; =
+text-decoration: none; float: none; display: inline !important;" =
+class=3D"">thanks,</span><br style=3D"caret-color: rgb(0, 0, 0); =
+font-family: Helvetica; font-size: 12px; font-style: normal; =
+font-variant-caps: normal; font-weight: normal; letter-spacing: normal; =
+text-align: start; text-indent: 0px; text-transform: none; white-space: =
+normal; word-spacing: 0px; -webkit-text-stroke-width: 0px; =
+text-decoration: none;" class=3D""><br style=3D"caret-color: rgb(0, 0, =
+0); font-family: Helvetica; font-size: 12px; font-style: normal; =
+font-variant-caps: normal; font-weight: normal; letter-spacing: normal; =
+text-align: start; text-indent: 0px; text-transform: none; white-space: =
+normal; word-spacing: 0px; -webkit-text-stroke-width: 0px; =
+text-decoration: none;" class=3D""><span style=3D"caret-color: rgb(0, 0, =
+0); font-family: Helvetica; font-size: 12px; font-style: normal; =
+font-variant-caps: normal; font-weight: normal; letter-spacing: normal; =
+text-align: start; text-indent: 0px; text-transform: none; white-space: =
+normal; word-spacing: 0px; -webkit-text-stroke-width: 0px; =
+text-decoration: none; float: none; display: inline !important;" =
+class=3D"">greg k-h</span></div></blockquote></div><br =
+class=3D""></div></body></html>=
+
+--Apple-Mail=_EC17D4B7-959B-4F5E-9BB0-64659F7F834B--
+
+--===============2729248921982906517==
+Content-Type: text/plain; charset="us-ascii"
+MIME-Version: 1.0
+Content-Transfer-Encoding: 7bit
+Content-Disposition: inline
 
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
 https://lists.linuxfoundation.org/mailman/listinfo/iommu
+--===============2729248921982906517==--
