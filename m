@@ -8,94 +8,98 @@ X-Spam-Status: No, score=-13.5 required=3.0 tests=BAYES_00,
 	INCLUDES_PATCH,MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,
 	USER_AGENT_GIT autolearn=unavailable autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A17C7C433B4
-	for <iommu@archiver.kernel.org>; Tue, 13 Apr 2021 15:37:39 +0000 (UTC)
-Received: from smtp2.osuosl.org (smtp2.osuosl.org [140.211.166.133])
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1FC1AC43461
+	for <iommu@archiver.kernel.org>; Tue, 13 Apr 2021 15:37:40 +0000 (UTC)
+Received: from smtp1.osuosl.org (smtp1.osuosl.org [140.211.166.138])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 24F7A61221
+	by mail.kernel.org (Postfix) with ESMTPS id AD0616128C
 	for <iommu@archiver.kernel.org>; Tue, 13 Apr 2021 15:37:39 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 24F7A61221
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org AD0616128C
 Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=gmail.com
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by smtp2.osuosl.org (Postfix) with ESMTP id 9F426402AE;
-	Tue, 13 Apr 2021 15:37:38 +0000 (UTC)
+	by smtp1.osuosl.org (Postfix) with ESMTP id 77F7B844E1;
+	Tue, 13 Apr 2021 15:37:39 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from smtp2.osuosl.org ([127.0.0.1])
-	by localhost (smtp2.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id v9h19kPXc9b4; Tue, 13 Apr 2021 15:37:37 +0000 (UTC)
+Received: from smtp1.osuosl.org ([127.0.0.1])
+	by localhost (smtp1.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+	with ESMTP id 9YYTslaQDgfa; Tue, 13 Apr 2021 15:37:38 +0000 (UTC)
 Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by smtp2.osuosl.org (Postfix) with ESMTP id 829654010A;
-	Tue, 13 Apr 2021 15:37:37 +0000 (UTC)
+	by smtp1.osuosl.org (Postfix) with ESMTP id 24085844CC;
+	Tue, 13 Apr 2021 15:37:38 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 17ECFC000A;
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 6ABC5C0014;
 	Tue, 13 Apr 2021 15:37:37 +0000 (UTC)
-Received: from smtp2.osuosl.org (smtp2.osuosl.org [140.211.166.133])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 57D98C000A
- for <iommu@lists.linux-foundation.org>; Tue, 13 Apr 2021 15:22:42 +0000 (UTC)
+Received: from smtp3.osuosl.org (smtp3.osuosl.org [IPv6:2605:bc80:3010::136])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 4C511C000A
+ for <iommu@lists.linux-foundation.org>; Tue, 13 Apr 2021 15:22:43 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by smtp2.osuosl.org (Postfix) with ESMTP id 4742A40100
- for <iommu@lists.linux-foundation.org>; Tue, 13 Apr 2021 15:22:42 +0000 (UTC)
+ by smtp3.osuosl.org (Postfix) with ESMTP id 3BC84607A3
+ for <iommu@lists.linux-foundation.org>; Tue, 13 Apr 2021 15:22:43 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from smtp2.osuosl.org ([127.0.0.1])
- by localhost (smtp2.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id fx61t6GWR01y for <iommu@lists.linux-foundation.org>;
- Tue, 13 Apr 2021 15:22:41 +0000 (UTC)
+Authentication-Results: smtp3.osuosl.org (amavisd-new);
+ dkim=pass (2048-bit key) header.d=gmail.com
+Received: from smtp3.osuosl.org ([127.0.0.1])
+ by localhost (smtp3.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+ with ESMTP id FV0mm1e-1zMT for <iommu@lists.linux-foundation.org>;
+ Tue, 13 Apr 2021 15:22:42 +0000 (UTC)
 X-Greylist: whitelisted by SQLgrey-1.8.0
-Received: from mail-pl1-x630.google.com (mail-pl1-x630.google.com
- [IPv6:2607:f8b0:4864:20::630])
- by smtp2.osuosl.org (Postfix) with ESMTPS id A71B0400E3
- for <iommu@lists.linux-foundation.org>; Tue, 13 Apr 2021 15:22:41 +0000 (UTC)
-Received: by mail-pl1-x630.google.com with SMTP id h20so8409789plr.4
- for <iommu@lists.linux-foundation.org>; Tue, 13 Apr 2021 08:22:41 -0700 (PDT)
+Received: from mail-pj1-x102a.google.com (mail-pj1-x102a.google.com
+ [IPv6:2607:f8b0:4864:20::102a])
+ by smtp3.osuosl.org (Postfix) with ESMTPS id 724EF60676
+ for <iommu@lists.linux-foundation.org>; Tue, 13 Apr 2021 15:22:42 +0000 (UTC)
+Received: by mail-pj1-x102a.google.com with SMTP id r13so4858859pjf.2
+ for <iommu@lists.linux-foundation.org>; Tue, 13 Apr 2021 08:22:42 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=gmail.com; s=20161025;
  h=from:to:cc:subject:date:message-id:in-reply-to:references
  :mime-version:content-transfer-encoding;
- bh=SNYshAOIhIfYWplCoKI3GKQhqu3xrQdJgtDgLoPsrVY=;
- b=jp8qbqTxevt3fdyQq8b90lIy5Mw3k9Z6yoHsMiBXwH4fDpxjxdLMTa8PGmUGYRVo15
- UuyUCWEMXA6prtck9kKNZi8q5cIvXOQdT1AfgdK4H8IabvykjPZKs0WeIaB2S3g0lrf+
- Em6ziCnIcHB9pEqBFotRuVBu03DKULXJy8+g7S78YqgQEWZqfqDpvBGVmBDF+SKWmu3i
- m1djg6mYmWmSPiqLAADMVltOnyDP91MH+xEIL5xUgoNfsTiycItmhWshzQWfODOcwqPJ
- LKeqyXHHjrY7yhcUaCVGSvPMJTQ1QqM4GYYBpkhy/d5ZzdKvINdHsphO8hgpkaupFrgB
- g7Hw==
+ bh=BJQLwkA9W/535NLWBZWmq8i7UzFGYSRLRmzJAHK8gIA=;
+ b=R1teh1L2juNnfr6XYKlzfdoXR2CJDnx16An/yRdKpEPyP/m0e6QhHjhUYTQamrh7vp
+ hB6Rk1PIBMkc1qBVwkcxZTkACjxShsdG7QpK5XILnAQHy3ALmH6Ab86ghJcWP2dZTy23
+ vzuEqDaGLhaqBykIfqOcDFhV1ciJkjacJIeF7UF3e+8if4hTjaqUTJU3TTeW/AguVuD2
+ DiOInrSzmU0/eTNizGE2SxYm+/AYEVaXoU46t5ynBZOGqWUVf8s4ez1bc75oklNZr4RC
+ xZYs+RMnuJVSYK2X1FvNIuiU0zkL2aK6VZHIEfQwFQdFomN07TdjOj0p9dNBkFZShFjW
+ 78nw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
  d=1e100.net; s=20161025;
  h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
  :references:mime-version:content-transfer-encoding;
- bh=SNYshAOIhIfYWplCoKI3GKQhqu3xrQdJgtDgLoPsrVY=;
- b=JXyvUyFx+RtkaFfl49Hh+QphmyKGyZ/luriXSm1PFf2hVRdkHYVpgxgR7tOC0kXrpu
- AbMLp01FaMm6zDBJ8RCCNcGz7dGl9EXjwEmzVcODMim/fjl6O1o5wD721nYtlyXCvcYx
- raPSMQN2wvXZU4C8SFMxWxiMlM6uQ82wMxjIuVSd/22zwCBI8Uc3d8F/O0mTRX2BgBGl
- RUqsR23/9hiQ7GSvgPYRdsxaLyjZqTPZs/vahEQ6cV5QPznAljl2OfB7h8lsqwGt7CgT
- 6D2n04nZwp8VY3HIFEqXMfhHfWxRp3CW1zzDi6OasDNEp5MEnwrXAy7noDL55PYi+m80
- joOA==
-X-Gm-Message-State: AOAM531Ky1Gbg0g3Par8xmCClDh5Yoi+9jKKzv7Mf+4JOoUGpAUQX4Kb
- EN5Q+oVgr/yH6MVrRrMqxTo=
-X-Google-Smtp-Source: ABdhPJzxOadIW9AoyD8BTTDKf7rAcHW65iwBoDDGNL6nNN1XC0+VeHv+FxJbtWQNFGR2CFI0/fzDKQ==
-X-Received: by 2002:a17:902:dac8:b029:eb:14e1:5057 with SMTP id
- q8-20020a170902dac8b02900eb14e15057mr7667402plx.65.1618327361177; 
+ bh=BJQLwkA9W/535NLWBZWmq8i7UzFGYSRLRmzJAHK8gIA=;
+ b=UBhqMU5w+iGZYeKz/8IEx9J4h/tTasxQlBAkF4EwNVgnTiIZgmT/4oEg0ffaeXaCRI
+ aGQ+wh4bctnUjCoCwlm00aKKWncnh2DvwQM//5uj+qheX+7gsVC8RVaT+F/lwIFl7GuV
+ rfSJZN+8vX/D6DRr1uqIJgolkBl2af7kbOM0fuJshxNVKuM0EbpdOhUydQvI+RD8QV6Q
+ z8FXv+5cPjTpwSEA6mnrgXcmkQXrz+dM9tIiUMO1i4V2amROkfb+Bu0c3Ap4GDlzShcw
+ +99zRbD7HqlYjrEwfd2Ov1e/FSo3ndBVwMJY+fmePRM6/PYo982zGysiywkzIWvEqZ+m
+ BtRg==
+X-Gm-Message-State: AOAM533U685rjLguDZEgiJehSfN7iumSdrXS49CqSpCUa9pKen+zkOM7
+ 1mXvKPKWXj267v3EZs9ckdQ=
+X-Google-Smtp-Source: ABdhPJyTxJq92DljeecCsOiqoXPTSxiL+2hkQODoamYZe9GkOHCa7d3zR8s/T5VUleXnajYIwgikZA==
+X-Received: by 2002:a17:90a:7e8f:: with SMTP id
+ j15mr553127pjl.71.1618327361879; 
  Tue, 13 Apr 2021 08:22:41 -0700 (PDT)
 Received: from ubuntu-Virtual-Machine.corp.microsoft.com
  ([2001:4898:80e8:36:5b29:fe1a:45c9:c61c])
- by smtp.gmail.com with ESMTPSA id y3sm12882026pfg.145.2021.04.13.08.22.40
+ by smtp.gmail.com with ESMTPSA id y3sm12882026pfg.145.2021.04.13.08.22.41
  (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
- Tue, 13 Apr 2021 08:22:40 -0700 (PDT)
+ Tue, 13 Apr 2021 08:22:41 -0700 (PDT)
 From: Tianyu Lan <ltykernel@gmail.com>
-To: konrad.wilk@oracle.com, hch@lst.de, m.szyprowski@samsung.com,
- robin.murphy@arm.com
-Subject: [RFC V2 PATCH 9/12] swiotlb: Add bounce buffer remap address setting
- function
-Date: Tue, 13 Apr 2021 11:22:14 -0400
-Message-Id: <20210413152217.3386288-10-ltykernel@gmail.com>
+To: konrad.wilk@oracle.com, tglx@linutronix.de, mingo@redhat.com, bp@alien8.de,
+ x86@kernel.org, hpa@zytor.com, kys@microsoft.com, haiyangz@microsoft.com,
+ sthemmin@microsoft.com, wei.liu@kernel.org, joro@8bytes.org,
+ will@kernel.org
+Subject: [RFC V2 PATCH 10/12] HV/IOMMU: Add Hyper-V dma ops support
+Date: Tue, 13 Apr 2021 11:22:15 -0400
+Message-Id: <20210413152217.3386288-11-ltykernel@gmail.com>
 X-Mailer: git-send-email 2.25.1
 In-Reply-To: <20210413152217.3386288-1-ltykernel@gmail.com>
 References: <20210413152217.3386288-1-ltykernel@gmail.com>
 MIME-Version: 1.0
 X-Mailman-Approved-At: Tue, 13 Apr 2021 15:37:35 +0000
-Cc: thomas.lendacky@amd.com, Tianyu Lan <Tianyu.Lan@microsoft.com>,
- linux-kernel@vger.kernel.org, iommu@lists.linux-foundation.org,
- brijesh.singh@amd.com, vkuznets@redhat.com, sunilmut@microsoft.com
+Cc: thomas.lendacky@amd.com, linux-hyperv@vger.kernel.org,
+ Tianyu Lan <Tianyu.Lan@microsoft.com>, linux-kernel@vger.kernel.org,
+ iommu@lists.linux-foundation.org, brijesh.singh@amd.com, vkuznets@redhat.com,
+ sunilmut@microsoft.com
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -115,74 +119,237 @@ Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
 From: Tianyu Lan <Tianyu.Lan@microsoft.com>
 
-For Hyper-V isolation VM with AMD SEV SNP, the bounce buffer(shared memory)
-needs to be accessed via extra address space(e.g address above bit39).
-Hyper-V code may remap extra address space outside of swiotlb. swiotlb_bounce()
-needs to use remap virtual address to copy data from/to bounce buffer. Add
-new interface swiotlb_set_bounce_remap() to do that.
+Hyper-V Isolation VM requires bounce buffer support. To use swiotlb
+bounce buffer, add Hyper-V dma ops and use swiotlb functions in the
+map and unmap callback.
+
+Allocate bounce buffer in the Hyper-V code because bounce buffer
+needs to be accessed via extra address space(e.g, address above 39bit)
+in the AMD SEV SNP based Isolation VM.
+
+ioremap_cache() can't use in the hyperv_iommu_swiotlb_init() which
+is too early place and remap bounce buffer in the hyperv_iommu_swiotlb_
+later_init().
 
 Signed-off-by: Tianyu Lan <Tianyu.Lan@microsoft.com>
 ---
- include/linux/swiotlb.h |  5 +++++
- kernel/dma/swiotlb.c    | 13 ++++++++++++-
- 2 files changed, 17 insertions(+), 1 deletion(-)
+ arch/x86/kernel/pci-swiotlb.c |   3 +-
+ drivers/hv/vmbus_drv.c        |   3 +
+ drivers/iommu/hyperv-iommu.c  | 127 ++++++++++++++++++++++++++++++++++
+ 3 files changed, 132 insertions(+), 1 deletion(-)
 
-diff --git a/include/linux/swiotlb.h b/include/linux/swiotlb.h
-index d9c9fc9ca5d2..3ccd08116683 100644
---- a/include/linux/swiotlb.h
-+++ b/include/linux/swiotlb.h
-@@ -82,8 +82,13 @@ unsigned int swiotlb_max_segment(void);
- size_t swiotlb_max_mapping_size(struct device *dev);
- bool is_swiotlb_active(void);
- void __init swiotlb_adjust_size(unsigned long new_size);
-+void swiotlb_set_bounce_remap(unsigned char *vaddr);
- #else
- #define swiotlb_force SWIOTLB_NO_FORCE
-+static inline void swiotlb_set_bounce_remap(unsigned char *vaddr)
-+{
-+}
-+
- static inline bool is_swiotlb_buffer(phys_addr_t paddr)
- {
- 	return false;
-diff --git a/kernel/dma/swiotlb.c b/kernel/dma/swiotlb.c
-index 7c42df6e6100..5fd2db6aa149 100644
---- a/kernel/dma/swiotlb.c
-+++ b/kernel/dma/swiotlb.c
-@@ -94,6 +94,7 @@ static unsigned int io_tlb_index;
-  * not be bounced (unless SWIOTLB_FORCE is set).
-  */
- static unsigned int max_segment;
-+static unsigned char *swiotlb_bounce_remap_addr;
+diff --git a/arch/x86/kernel/pci-swiotlb.c b/arch/x86/kernel/pci-swiotlb.c
+index c2cfa5e7c152..caaf68c06f24 100644
+--- a/arch/x86/kernel/pci-swiotlb.c
++++ b/arch/x86/kernel/pci-swiotlb.c
+@@ -15,6 +15,7 @@
+ #include <asm/iommu_table.h>
+ 
+ int swiotlb __read_mostly;
++extern int hyperv_swiotlb;
  
  /*
-  * We need to save away the original address corresponding to a mapped entry
-@@ -421,6 +422,11 @@ void __init swiotlb_exit(void)
- 	swiotlb_cleanup();
+  * pci_swiotlb_detect_override - set swiotlb to 1 if necessary
+@@ -68,7 +69,7 @@ void __init pci_swiotlb_init(void)
+ void __init pci_swiotlb_late_init(void)
+ {
+ 	/* An IOMMU turned us off. */
+-	if (!swiotlb)
++	if (!swiotlb && !hyperv_swiotlb)
+ 		swiotlb_exit();
+ 	else {
+ 		printk(KERN_INFO "PCI-DMA: "
+diff --git a/drivers/hv/vmbus_drv.c b/drivers/hv/vmbus_drv.c
+index 10dce9f91216..0ee6ec3a5de6 100644
+--- a/drivers/hv/vmbus_drv.c
++++ b/drivers/hv/vmbus_drv.c
+@@ -23,6 +23,7 @@
+ #include <linux/cpu.h>
+ #include <linux/sched/task_stack.h>
+ 
++#include <linux/dma-map-ops.h>
+ #include <linux/delay.h>
+ #include <linux/notifier.h>
+ #include <linux/ptrace.h>
+@@ -2030,6 +2031,7 @@ struct hv_device *vmbus_device_create(const guid_t *type,
+ 	return child_device_obj;
  }
  
-+void swiotlb_set_bounce_remap(unsigned char *vaddr)
-+{
-+	swiotlb_bounce_remap_addr = vaddr;
-+}
++static u64 vmbus_dma_mask = DMA_BIT_MASK(64);
+ /*
+  * vmbus_device_register - Register the child device
+  */
+@@ -2070,6 +2072,7 @@ int vmbus_device_register(struct hv_device *child_device_obj)
+ 	}
+ 	hv_debug_add_dev_dir(child_device_obj);
+ 
++	child_device_obj->device.dma_mask = &vmbus_dma_mask;
+ 	return 0;
+ 
+ err_kset_unregister:
+diff --git a/drivers/iommu/hyperv-iommu.c b/drivers/iommu/hyperv-iommu.c
+index e285a220c913..588ba847f0cc 100644
+--- a/drivers/iommu/hyperv-iommu.c
++++ b/drivers/iommu/hyperv-iommu.c
+@@ -13,19 +13,28 @@
+ #include <linux/irq.h>
+ #include <linux/iommu.h>
+ #include <linux/module.h>
++#include <linux/hyperv.h>
+ 
++#include <asm/io.h>
+ #include <asm/apic.h>
+ #include <asm/cpu.h>
+ #include <asm/hw_irq.h>
+ #include <asm/io_apic.h>
++#include <asm/iommu.h>
++#include <asm/iommu_table.h>
+ #include <asm/irq_remapping.h>
+ #include <asm/hypervisor.h>
+ #include <asm/mshyperv.h>
++#include <asm/swiotlb.h>
++#include <linux/dma-map-ops.h>
++#include <linux/dma-direct.h>
+ 
+ #include "irq_remapping.h"
+ 
+ #ifdef CONFIG_IRQ_REMAP
+ 
++int hyperv_swiotlb __read_mostly;
 +
  /*
-  * Bounce: copy the swiotlb buffer from or back to the original dma location
-  */
-@@ -428,7 +434,12 @@ static void swiotlb_bounce(phys_addr_t orig_addr, phys_addr_t tlb_addr,
- 			   size_t size, enum dma_data_direction dir)
- {
- 	unsigned long pfn = PFN_DOWN(orig_addr);
--	unsigned char *vaddr = phys_to_virt(tlb_addr);
-+	unsigned char *vaddr;
-+
-+	if (swiotlb_bounce_remap_addr)
-+		vaddr = swiotlb_bounce_remap_addr + tlb_addr - io_tlb_start;
-+	else
-+		vaddr = phys_to_virt(tlb_addr);
+  * According 82093AA IO-APIC spec , IO APIC has a 24-entry Interrupt
+  * Redirection Table. Hyper-V exposes one single IO-APIC and so define
+@@ -36,6 +45,10 @@
+ static cpumask_t ioapic_max_cpumask = { CPU_BITS_NONE };
+ static struct irq_domain *ioapic_ir_domain;
  
- 	if (PageHighMem(pfn_to_page(pfn))) {
- 		/* The buffer does not have a mapping.  Map it in and copy */
++static unsigned long hyperv_io_tlb_start, *hyperv_io_tlb_end; 
++static unsigned long hyperv_io_tlb_nslabs, hyperv_io_tlb_size;
++static void *hyperv_io_tlb_remap;
++
+ static int hyperv_ir_set_affinity(struct irq_data *data,
+ 		const struct cpumask *mask, bool force)
+ {
+@@ -337,4 +350,118 @@ static const struct irq_domain_ops hyperv_root_ir_domain_ops = {
+ 	.free = hyperv_root_irq_remapping_free,
+ };
+ 
++static dma_addr_t hyperv_map_page(struct device *dev, struct page *page,
++				  unsigned long offset, size_t size,
++				  enum dma_data_direction dir,
++				  unsigned long attrs)
++{
++	phys_addr_t map, phys = (page_to_pfn(page) << PAGE_SHIFT) + offset;
++
++	if (!hv_is_isolation_supported())
++		return phys;
++
++	map = swiotlb_tbl_map_single(dev, phys, size, HV_HYP_PAGE_SIZE, dir,
++				     attrs);
++	if (map == (phys_addr_t)DMA_MAPPING_ERROR)
++		return DMA_MAPPING_ERROR;
++
++	return map;
++}
++
++static void hyperv_unmap_page(struct device *dev, dma_addr_t dev_addr,
++		size_t size, enum dma_data_direction dir, unsigned long attrs)
++{
++	if (!hv_is_isolation_supported())
++		return;
++
++	swiotlb_tbl_unmap_single(dev, dev_addr, size, HV_HYP_PAGE_SIZE, dir,
++				attrs);
++}
++
++int __init hyperv_swiotlb_init(void)
++{
++	unsigned long bytes;
++	void *vstart = 0;
++
++	bytes = 200 * 1024 * 1024;
++	vstart = memblock_alloc_low(PAGE_ALIGN(bytes), PAGE_SIZE);
++	hyperv_io_tlb_nslabs = bytes >> IO_TLB_SHIFT;
++	hyperv_io_tlb_size = bytes;
++
++	if (!vstart) {
++		pr_warn("Fail to allocate swiotlb.\n");
++		return -ENOMEM;
++	}
++
++	hyperv_io_tlb_start = virt_to_phys(vstart);
++	if (!hyperv_io_tlb_start)
++		panic("%s: Failed to allocate %lu bytes align=0x%lx.\n",
++		      __func__, PAGE_ALIGN(bytes), PAGE_SIZE);
++
++	if (swiotlb_init_with_tbl(vstart, hyperv_io_tlb_nslabs, 1))
++		panic("%s: Cannot allocate SWIOTLB buffer.\n", __func__);
++
++	swiotlb_set_max_segment(PAGE_SIZE);
++	hyperv_io_tlb_end = hyperv_io_tlb_start + bytes;
++	return 0;
++}
++
++const struct dma_map_ops hyperv_dma_ops = {
++	.map_page = hyperv_map_page,
++	.unmap_page = hyperv_unmap_page,
++};
++
++int __init hyperv_swiotlb_detect(void)
++{
++	dma_ops = &hyperv_dma_ops;
++
++	if (hypervisor_is_type(X86_HYPER_MS_HYPERV)
++	    && hv_is_isolation_supported()) {
++		/*
++		 * Disable generic swiotlb and allocate Hyper-v swiotlb
++		 * in the hyperv_iommu_swiotlb_init().
++		 */
++		swiotlb = 0;
++		hyperv_swiotlb = 1;
++
++		return 1;
++	}
++
++	return 0;
++}
++
++void __init hyperv_iommu_swiotlb_init(void)
++{
++	hyperv_swiotlb_init();
++}
++
++void __init hyperv_iommu_swiotlb_later_init(void)
++{
++	int ret;
++
++	/* Mask bounce buffer visible to host and remap extra address. */
++	if (hv_isolation_type_snp()) {
++		ret = hv_set_mem_host_visibility(
++				phys_to_virt(hyperv_io_tlb_start),
++				hyperv_io_tlb_size,
++				VMBUS_PAGE_VISIBLE_READ_WRITE);
++		if (ret)
++			panic("%s: Fail to mark Hyper-v swiotlb buffer visible to host. err=%d\n",
++			      __func__, ret);
++
++		hyperv_io_tlb_remap = ioremap_cache(hyperv_io_tlb_start
++					    + ms_hyperv.shared_gpa_boundary,
++						    hyperv_io_tlb_size);
++		if (!hyperv_io_tlb_remap)
++			panic("%s: Fail to remap io tlb.\n", __func__);
++
++		memset(hyperv_io_tlb_remap, 0x00, hyperv_io_tlb_size);
++		swiotlb_set_bounce_remap(hyperv_io_tlb_remap);
++	}
++}
++
++IOMMU_INIT_FINISH(hyperv_swiotlb_detect,
++		  NULL, hyperv_iommu_swiotlb_init,
++		  hyperv_iommu_swiotlb_later_init);
++
+ #endif
 -- 
 2.25.1
 
