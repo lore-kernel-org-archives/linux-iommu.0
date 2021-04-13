@@ -7,50 +7,50 @@ X-Spam-Status: No, score=-16.7 required=3.0 tests=BAYES_00,
 	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_GIT
 	autolearn=ham autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A8995C43460
-	for <iommu@archiver.kernel.org>; Tue, 13 Apr 2021 08:55:30 +0000 (UTC)
-Received: from smtp3.osuosl.org (smtp3.osuosl.org [140.211.166.136])
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 50D44C433B4
+	for <iommu@archiver.kernel.org>; Tue, 13 Apr 2021 08:55:31 +0000 (UTC)
+Received: from smtp1.osuosl.org (smtp1.osuosl.org [140.211.166.138])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 6E447613AE
-	for <iommu@archiver.kernel.org>; Tue, 13 Apr 2021 08:55:30 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 6E447613AE
+	by mail.kernel.org (Postfix) with ESMTPS id 150B2613B1
+	for <iommu@archiver.kernel.org>; Tue, 13 Apr 2021 08:55:31 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 150B2613B1
 Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=huawei.com
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by smtp3.osuosl.org (Postfix) with ESMTP id 3E5D960BAE;
+	by smtp1.osuosl.org (Postfix) with ESMTP id DC5AD84336;
 	Tue, 13 Apr 2021 08:55:30 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from smtp3.osuosl.org ([127.0.0.1])
-	by localhost (smtp3.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id tPyp2WPM09Ds; Tue, 13 Apr 2021 08:55:29 +0000 (UTC)
-Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by smtp3.osuosl.org (Postfix) with ESMTP id 1A39860B8F;
+Received: from smtp1.osuosl.org ([127.0.0.1])
+	by localhost (smtp1.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+	with ESMTP id 1NiC9xVDq8ad; Tue, 13 Apr 2021 08:55:29 +0000 (UTC)
+Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [IPv6:2605:bc80:3010:104::8cd3:938])
+	by smtp1.osuosl.org (Postfix) with ESMTP id 7074D8434C;
 	Tue, 13 Apr 2021 08:55:29 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 040E1C000C;
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 325EAC0014;
 	Tue, 13 Apr 2021 08:55:29 +0000 (UTC)
-Received: from smtp1.osuosl.org (smtp1.osuosl.org [IPv6:2605:bc80:3010::138])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 2E6B0C0012
+Received: from smtp4.osuosl.org (smtp4.osuosl.org [140.211.166.137])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 7CF48C000A
  for <iommu@lists.linux-foundation.org>; Tue, 13 Apr 2021 08:55:26 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by smtp1.osuosl.org (Postfix) with ESMTP id 1C2438434A
+ by smtp4.osuosl.org (Postfix) with ESMTP id 6B25D40677
  for <iommu@lists.linux-foundation.org>; Tue, 13 Apr 2021 08:55:26 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from smtp1.osuosl.org ([127.0.0.1])
- by localhost (smtp1.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id u6x41RqlQqXH for <iommu@lists.linux-foundation.org>;
+Received: from smtp4.osuosl.org ([127.0.0.1])
+ by localhost (smtp4.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+ with ESMTP id sBmZpnT_iHMb for <iommu@lists.linux-foundation.org>;
  Tue, 13 Apr 2021 08:55:25 +0000 (UTC)
 X-Greylist: domain auto-whitelisted by SQLgrey-1.8.0
 Received: from szxga05-in.huawei.com (szxga05-in.huawei.com [45.249.212.191])
- by smtp1.osuosl.org (Postfix) with ESMTPS id EC13484342
- for <iommu@lists.linux-foundation.org>; Tue, 13 Apr 2021 08:55:24 +0000 (UTC)
+ by smtp4.osuosl.org (Postfix) with ESMTPS id 28E6D4067F
+ for <iommu@lists.linux-foundation.org>; Tue, 13 Apr 2021 08:55:25 +0000 (UTC)
 Received: from DGGEMS407-HUB.china.huawei.com (unknown [172.30.72.60])
- by szxga05-in.huawei.com (SkyGuard) with ESMTP id 4FKK9p6NCRzPqkV;
- Tue, 13 Apr 2021 16:52:30 +0800 (CST)
+ by szxga05-in.huawei.com (SkyGuard) with ESMTP id 4FKK9q0tRVzPqkg;
+ Tue, 13 Apr 2021 16:52:31 +0800 (CST)
 Received: from DESKTOP-5IS4806.china.huawei.com (10.174.187.224) by
  DGGEMS407-HUB.china.huawei.com (10.3.19.207) with Microsoft SMTP Server id
- 14.3.498.0; Tue, 13 Apr 2021 16:55:15 +0800
+ 14.3.498.0; Tue, 13 Apr 2021 16:55:13 +0800
 From: Keqian Zhu <zhukeqian1@huawei.com>
 To: <linux-kernel@vger.kernel.org>, <linux-arm-kernel@lists.infradead.org>,
  <iommu@lists.linux-foundation.org>, Robin Murphy <robin.murphy@arm.com>,
@@ -58,9 +58,9 @@ To: <linux-kernel@vger.kernel.org>, <linux-arm-kernel@lists.infradead.org>,
  <yi.y.sun@linux.intel.com>, Jean-Philippe Brucker <jean-philippe@linaro.org>, 
  Jonathan Cameron <Jonathan.Cameron@huawei.com>, Tian Kevin
  <kevin.tian@intel.com>, Lu Baolu <baolu.lu@linux.intel.com>
-Subject: [PATCH v3 11/12] iommu/arm-smmu-v3: Realize clear_dirty_log iommu ops
-Date: Tue, 13 Apr 2021 16:54:56 +0800
-Message-ID: <20210413085457.25400-12-zhukeqian1@huawei.com>
+Subject: [PATCH v3 08/12] iommu/arm-smmu-v3: Realize merge_page iommu ops
+Date: Tue, 13 Apr 2021 16:54:53 +0800
+Message-ID: <20210413085457.25400-9-zhukeqian1@huawei.com>
 X-Mailer: git-send-email 2.8.4.windows.1
 In-Reply-To: <20210413085457.25400-1-zhukeqian1@huawei.com>
 References: <20210413085457.25400-1-zhukeqian1@huawei.com>
@@ -89,187 +89,173 @@ Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
 From: Kunkun Jiang <jiangkunkun@huawei.com>
 
-After dirty log is retrieved, user should clear dirty log to re-enable
-dirty log tracking for these dirtied pages. This clears the dirty state
-(As we just enable HTTU for stage1, so set the AP[2] bit) of these leaf
-TTDs that are specified by the user provided bitmap.
+This reinstalls block mappings and unmap the span of page mappings.
+BBML1 or BBML2 feature is required.
+
+Merging page does not simultaneously work with other pgtable ops,
+as the only designed user is vfio, which always hold a lock, so race
+condition is not considered in the pgtable ops.
 
 Co-developed-by: Keqian Zhu <zhukeqian1@huawei.com>
 Signed-off-by: Kunkun Jiang <jiangkunkun@huawei.com>
 ---
- drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c | 25 ++++++
- drivers/iommu/io-pgtable-arm.c              | 95 +++++++++++++++++++++
- include/linux/io-pgtable.h                  |  4 +
- 3 files changed, 124 insertions(+)
+ drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c | 28 ++++++++
+ drivers/iommu/io-pgtable-arm.c              | 78 +++++++++++++++++++++
+ include/linux/io-pgtable.h                  |  2 +
+ 3 files changed, 108 insertions(+)
 
 diff --git a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
-index 9eb209a07acc..59bb1d198631 100644
+index cfa83fa03c89..4d8495d88be2 100644
 --- a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
 +++ b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
-@@ -2656,6 +2656,30 @@ static int arm_smmu_sync_dirty_log(struct iommu_domain *domain,
- 				   bitmap_pgshift);
+@@ -2563,6 +2563,33 @@ static int arm_smmu_split_block(struct iommu_domain *domain,
+ 	return 0;
  }
  
-+static int arm_smmu_clear_dirty_log(struct iommu_domain *domain,
-+				    unsigned long iova, size_t size,
-+				    unsigned long *bitmap,
-+				    unsigned long base_iova,
-+				    unsigned long bitmap_pgshift)
++static int arm_smmu_merge_page(struct iommu_domain *domain,
++			       unsigned long iova, phys_addr_t paddr,
++			       size_t size, int prot)
 +{
 +	struct arm_smmu_domain *smmu_domain = to_smmu_domain(domain);
-+	struct io_pgtable_ops *ops = smmu_domain->pgtbl_ops;
 +	struct arm_smmu_device *smmu = smmu_domain->smmu;
++	struct io_pgtable_ops *ops = smmu_domain->pgtbl_ops;
++	size_t handled_size;
 +
-+	if (!(smmu->features & ARM_SMMU_FEAT_HD))
++	if (!(smmu->features & (ARM_SMMU_FEAT_BBML1 | ARM_SMMU_FEAT_BBML2))) {
++		dev_err(smmu->dev, "don't support BBML1/2, can't merge page\n");
 +		return -ENODEV;
-+	if (smmu_domain->stage != ARM_SMMU_DOMAIN_S1)
-+		return -EINVAL;
-+
-+	if (!ops || !ops->clear_dirty_log) {
-+		pr_err("io-pgtable don't realize clear dirty log\n");
++	}
++	if (!ops || !ops->merge_page) {
++		pr_err("io-pgtable don't realize merge page\n");
 +		return -ENODEV;
 +	}
 +
-+	return ops->clear_dirty_log(ops, iova, size, bitmap, base_iova,
-+				    bitmap_pgshift);
++	handled_size = ops->merge_page(ops, iova, paddr, size, prot);
++	if (handled_size != size) {
++		pr_err("merge page failed\n");
++		return -EFAULT;
++	}
++
++	return 0;
 +}
 +
  static int arm_smmu_of_xlate(struct device *dev, struct of_phandle_args *args)
  {
  	return iommu_fwspec_add_ids(dev, args->args, 1);
-@@ -2759,6 +2783,7 @@ static struct iommu_ops arm_smmu_ops = {
- 	.merge_page		= arm_smmu_merge_page,
- 	.switch_dirty_log	= arm_smmu_switch_dirty_log,
- 	.sync_dirty_log		= arm_smmu_sync_dirty_log,
-+	.clear_dirty_log	= arm_smmu_clear_dirty_log,
+@@ -2663,6 +2690,7 @@ static struct iommu_ops arm_smmu_ops = {
+ 	.domain_get_attr	= arm_smmu_domain_get_attr,
+ 	.domain_set_attr	= arm_smmu_domain_set_attr,
+ 	.split_block		= arm_smmu_split_block,
++	.merge_page		= arm_smmu_merge_page,
  	.of_xlate		= arm_smmu_of_xlate,
  	.get_resv_regions	= arm_smmu_get_resv_regions,
  	.put_resv_regions	= generic_iommu_put_resv_regions,
 diff --git a/drivers/iommu/io-pgtable-arm.c b/drivers/iommu/io-pgtable-arm.c
-index 67a208a05ab2..e3ef0f50611c 100644
+index 4c4eec3c0698..9028328b99b0 100644
 --- a/drivers/iommu/io-pgtable-arm.c
 +++ b/drivers/iommu/io-pgtable-arm.c
-@@ -966,6 +966,100 @@ static int arm_lpae_sync_dirty_log(struct io_pgtable_ops *ops,
- 					 bitmap, base_iova, bitmap_pgshift);
+@@ -800,6 +800,83 @@ static size_t arm_lpae_split_block(struct io_pgtable_ops *ops,
+ 	return __arm_lpae_split_block(data, iova, size, lvl, ptep);
  }
  
-+static int __arm_lpae_clear_dirty_log(struct arm_lpae_io_pgtable *data,
-+				      unsigned long iova, size_t size,
-+				      int lvl, arm_lpae_iopte *ptep,
-+				      unsigned long *bitmap,
-+				      unsigned long base_iova,
-+				      unsigned long bitmap_pgshift)
++static size_t __arm_lpae_merge_page(struct arm_lpae_io_pgtable *data,
++				    unsigned long iova, phys_addr_t paddr,
++				    size_t size, int lvl, arm_lpae_iopte *ptep,
++				    arm_lpae_iopte prot)
 +{
-+	arm_lpae_iopte pte;
++	arm_lpae_iopte pte, *tablep;
 +	struct io_pgtable *iop = &data->iop;
-+	unsigned long offset;
-+	size_t base, next_size;
-+	int nbits, ret, i;
++	struct io_pgtable_cfg *cfg = &data->iop.cfg;
 +
 +	if (WARN_ON(lvl == ARM_LPAE_MAX_LEVELS))
-+		return -EINVAL;
++		return 0;
 +
 +	ptep += ARM_LPAE_LVL_IDX(iova, lvl, data);
 +	pte = READ_ONCE(*ptep);
 +	if (WARN_ON(!pte))
-+		return -EINVAL;
++		return 0;
 +
 +	if (size == ARM_LPAE_BLOCK_SIZE(lvl, data)) {
-+		if (iopte_leaf(pte, lvl, iop->fmt)) {
-+			if (pte & ARM_LPAE_PTE_AP_RDONLY)
-+				return 0;
++		if (iopte_leaf(pte, lvl, iop->fmt))
++			return size;
 +
-+			/* Ensure all corresponding bits are set */
-+			nbits = size >> bitmap_pgshift;
-+			offset = (iova - base_iova) >> bitmap_pgshift;
-+			for (i = offset; i < offset + nbits; i++) {
-+				if (!test_bit(i, bitmap))
-+					return 0;
-+			}
++		/* Race does not exist */
++		if (cfg->quirks & IO_PGTABLE_QUIRK_ARM_BBML1) {
++			prot |= ARM_LPAE_PTE_NT;
++			__arm_lpae_init_pte(data, paddr, prot, lvl, ptep);
++			io_pgtable_tlb_flush_walk(iop, iova, size,
++						  ARM_LPAE_GRANULE(data));
 +
-+			/* Race does not exist */
-+			pte |= ARM_LPAE_PTE_AP_RDONLY;
-+			__arm_lpae_set_pte(ptep, pte, &iop->cfg);
-+			return 0;
++			prot &= ~(ARM_LPAE_PTE_NT);
++			__arm_lpae_init_pte(data, paddr, prot, lvl, ptep);
 +		} else {
-+			/* To traverse next level */
-+			next_size = ARM_LPAE_BLOCK_SIZE(lvl + 1, data);
-+			ptep = iopte_deref(pte, data);
-+			for (base = 0; base < size; base += next_size) {
-+				ret = __arm_lpae_clear_dirty_log(data,
-+						iova + base, next_size, lvl + 1,
-+						ptep, bitmap, base_iova,
-+						bitmap_pgshift);
-+				if (ret)
-+					return ret;
-+			}
-+			return 0;
++			__arm_lpae_init_pte(data, paddr, prot, lvl, ptep);
 +		}
-+	} else if (iopte_leaf(pte, lvl, iop->fmt)) {
-+		/* Though the size is too small, it is already clean */
-+		if (pte & ARM_LPAE_PTE_AP_RDONLY)
-+			return 0;
 +
-+		return -EINVAL;
++		tablep = iopte_deref(pte, data);
++		__arm_lpae_free_pgtable(data, lvl + 1, tablep);
++		return size;
++	} else if (iopte_leaf(pte, lvl, iop->fmt)) {
++		/* The size is too small, already merged */
++		return size;
 +	}
 +
 +	/* Keep on walkin */
 +	ptep = iopte_deref(pte, data);
-+	return __arm_lpae_clear_dirty_log(data, iova, size, lvl + 1, ptep,
-+			bitmap, base_iova, bitmap_pgshift);
++	return __arm_lpae_merge_page(data, iova, paddr, size, lvl + 1, ptep, prot);
 +}
 +
-+static int arm_lpae_clear_dirty_log(struct io_pgtable_ops *ops,
-+				    unsigned long iova, size_t size,
-+				    unsigned long *bitmap,
-+				    unsigned long base_iova,
-+				    unsigned long bitmap_pgshift)
++static size_t arm_lpae_merge_page(struct io_pgtable_ops *ops, unsigned long iova,
++				  phys_addr_t paddr, size_t size, int iommu_prot)
 +{
 +	struct arm_lpae_io_pgtable *data = io_pgtable_ops_to_data(ops);
++	struct io_pgtable_cfg *cfg = &data->iop.cfg;
 +	arm_lpae_iopte *ptep = data->pgd;
 +	int lvl = data->start_level;
-+	struct io_pgtable_cfg *cfg = &data->iop.cfg;
++	arm_lpae_iopte prot;
 +	long iaext = (s64)iova >> cfg->ias;
 +
++	/* If no access, then nothing to do */
++	if (!(iommu_prot & (IOMMU_READ | IOMMU_WRITE)))
++		return size;
++
 +	if (WARN_ON(!size || (size & cfg->pgsize_bitmap) != size))
-+		return -EINVAL;
++		return 0;
 +
 +	if (cfg->quirks & IO_PGTABLE_QUIRK_ARM_TTBR1)
 +		iaext = ~iaext;
-+	if (WARN_ON(iaext))
-+		return -EINVAL;
++	if (WARN_ON(iaext || paddr >> cfg->oas))
++		return 0;
 +
-+	if (data->iop.fmt != ARM_64_LPAE_S1 &&
-+	    data->iop.fmt != ARM_32_LPAE_S1)
-+		return -EINVAL;
++	/* If it is smallest granule, then nothing to do */
++	if (size == ARM_LPAE_BLOCK_SIZE(ARM_LPAE_MAX_LEVELS - 1, data))
++		return size;
 +
-+	return __arm_lpae_clear_dirty_log(data, iova, size, lvl, ptep,
-+			bitmap, base_iova, bitmap_pgshift);
++	prot = arm_lpae_prot_to_pte(data, iommu_prot);
++	return __arm_lpae_merge_page(data, iova, paddr, size, lvl, ptep, prot);
 +}
 +
  static void arm_lpae_restrict_pgsizes(struct io_pgtable_cfg *cfg)
  {
  	unsigned long granule, page_sizes;
-@@ -1047,6 +1141,7 @@ arm_lpae_alloc_pgtable(struct io_pgtable_cfg *cfg)
+@@ -879,6 +956,7 @@ arm_lpae_alloc_pgtable(struct io_pgtable_cfg *cfg)
+ 		.unmap		= arm_lpae_unmap,
+ 		.iova_to_phys	= arm_lpae_iova_to_phys,
  		.split_block	= arm_lpae_split_block,
- 		.merge_page	= arm_lpae_merge_page,
- 		.sync_dirty_log	= arm_lpae_sync_dirty_log,
-+		.clear_dirty_log = arm_lpae_clear_dirty_log,
++		.merge_page	= arm_lpae_merge_page,
  	};
  
  	return data;
 diff --git a/include/linux/io-pgtable.h b/include/linux/io-pgtable.h
-index 9e2757d12066..ad65b9099be6 100644
+index 47aa8f20849b..dbee6170de7f 100644
 --- a/include/linux/io-pgtable.h
 +++ b/include/linux/io-pgtable.h
-@@ -175,6 +175,10 @@ struct io_pgtable_ops {
- 			      unsigned long iova, size_t size,
- 			      unsigned long *bitmap, unsigned long base_iova,
- 			      unsigned long bitmap_pgshift);
-+	int (*clear_dirty_log)(struct io_pgtable_ops *ops,
-+			       unsigned long iova, size_t size,
-+			       unsigned long *bitmap, unsigned long base_iova,
-+			       unsigned long bitmap_pgshift);
+@@ -169,6 +169,8 @@ struct io_pgtable_ops {
+ 				    unsigned long iova);
+ 	size_t (*split_block)(struct io_pgtable_ops *ops, unsigned long iova,
+ 			      size_t size);
++	size_t (*merge_page)(struct io_pgtable_ops *ops, unsigned long iova,
++			     phys_addr_t phys, size_t size, int prot);
  };
  
  /**
