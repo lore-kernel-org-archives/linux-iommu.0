@@ -6,56 +6,57 @@ X-Spam-Status: No, score=-5.3 required=3.0 tests=BAYES_00,
 	HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,
 	USER_AGENT_SANE_1 autolearn=no autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 07C30C433B4
-	for <iommu@archiver.kernel.org>; Wed, 14 Apr 2021 15:47:38 +0000 (UTC)
-Received: from smtp1.osuosl.org (smtp1.osuosl.org [140.211.166.138])
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7E03DC433B4
+	for <iommu@archiver.kernel.org>; Wed, 14 Apr 2021 15:50:24 +0000 (UTC)
+Received: from smtp2.osuosl.org (smtp2.osuosl.org [140.211.166.133])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id B3A9F611C9
-	for <iommu@archiver.kernel.org>; Wed, 14 Apr 2021 15:47:37 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org B3A9F611C9
+	by mail.kernel.org (Postfix) with ESMTPS id 3CC146112F
+	for <iommu@archiver.kernel.org>; Wed, 14 Apr 2021 15:50:24 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 3CC146112F
 Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=lst.de
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by smtp1.osuosl.org (Postfix) with ESMTP id 81081842BB;
-	Wed, 14 Apr 2021 15:47:37 +0000 (UTC)
+	by smtp2.osuosl.org (Postfix) with ESMTP id 0ABB7400D2;
+	Wed, 14 Apr 2021 15:50:24 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from smtp1.osuosl.org ([127.0.0.1])
-	by localhost (smtp1.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id WFWnlPjl5B9g; Wed, 14 Apr 2021 15:47:36 +0000 (UTC)
-Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by smtp1.osuosl.org (Postfix) with ESMTP id 701E082419;
-	Wed, 14 Apr 2021 15:47:36 +0000 (UTC)
+Received: from smtp2.osuosl.org ([127.0.0.1])
+	by localhost (smtp2.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+	with ESMTP id sRTLN5Hpg5_Y; Wed, 14 Apr 2021 15:50:23 +0000 (UTC)
+Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [IPv6:2605:bc80:3010:104::8cd3:938])
+	by smtp2.osuosl.org (Postfix) with ESMTP id 063404016A;
+	Wed, 14 Apr 2021 15:50:23 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 555F2C000C;
-	Wed, 14 Apr 2021 15:47:36 +0000 (UTC)
-Received: from smtp1.osuosl.org (smtp1.osuosl.org [IPv6:2605:bc80:3010::138])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 4A55CC000A
- for <iommu@lists.linux-foundation.org>; Wed, 14 Apr 2021 15:47:35 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id D541AC000C;
+	Wed, 14 Apr 2021 15:50:22 +0000 (UTC)
+Received: from smtp2.osuosl.org (smtp2.osuosl.org [140.211.166.133])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id B6099C000A
+ for <iommu@lists.linux-foundation.org>; Wed, 14 Apr 2021 15:50:21 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by smtp1.osuosl.org (Postfix) with ESMTP id 2C07D842BB
- for <iommu@lists.linux-foundation.org>; Wed, 14 Apr 2021 15:47:35 +0000 (UTC)
+ by smtp2.osuosl.org (Postfix) with ESMTP id A27F24016A
+ for <iommu@lists.linux-foundation.org>; Wed, 14 Apr 2021 15:50:21 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from smtp1.osuosl.org ([127.0.0.1])
- by localhost (smtp1.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id T0l1q2TZ1yTp for <iommu@lists.linux-foundation.org>;
- Wed, 14 Apr 2021 15:47:34 +0000 (UTC)
+Received: from smtp2.osuosl.org ([127.0.0.1])
+ by localhost (smtp2.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+ with ESMTP id yjVmZ4bUf8BS for <iommu@lists.linux-foundation.org>;
+ Wed, 14 Apr 2021 15:50:21 +0000 (UTC)
 X-Greylist: from auto-whitelisted by SQLgrey-1.8.0
 Received: from verein.lst.de (verein.lst.de [213.95.11.211])
- by smtp1.osuosl.org (Postfix) with ESMTPS id 81A5282419
- for <iommu@lists.linux-foundation.org>; Wed, 14 Apr 2021 15:47:34 +0000 (UTC)
+ by smtp2.osuosl.org (Postfix) with ESMTPS id EB944400D2
+ for <iommu@lists.linux-foundation.org>; Wed, 14 Apr 2021 15:50:20 +0000 (UTC)
 Received: by verein.lst.de (Postfix, from userid 2407)
- id 0127168C7B; Wed, 14 Apr 2021 17:47:30 +0200 (CEST)
-Date: Wed, 14 Apr 2021 17:47:29 +0200
+ id 10BD568C7B; Wed, 14 Apr 2021 17:50:17 +0200 (CEST)
+Date: Wed, 14 Apr 2021 17:50:16 +0200
 From: Christoph Hellwig <hch@lst.de>
 To: Tianyu Lan <ltykernel@gmail.com>
-Subject: Re: [Resend RFC PATCH V2 10/12] HV/IOMMU: Add Hyper-V dma ops support
-Message-ID: <20210414154729.GD32045@lst.de>
+Subject: Re: [Resend RFC PATCH V2 11/12] HV/Netvsc: Add Isolation VM
+ support for netvsc driver
+Message-ID: <20210414155016.GE32045@lst.de>
 References: <20210414144945.3460554-1-ltykernel@gmail.com>
- <20210414144945.3460554-11-ltykernel@gmail.com>
+ <20210414144945.3460554-12-ltykernel@gmail.com>
 MIME-Version: 1.0
 Content-Disposition: inline
-In-Reply-To: <20210414144945.3460554-11-ltykernel@gmail.com>
+In-Reply-To: <20210414144945.3460554-12-ltykernel@gmail.com>
 User-Agent: Mutt/1.5.17 (2007-11-01)
 Cc: linux-hyperv@vger.kernel.org, brijesh.singh@amd.com, linux-mm@kvack.org,
  hpa@zytor.com, kys@microsoft.com, will@kernel.org, hch@lst.de,
@@ -85,50 +86,44 @@ Content-Transfer-Encoding: 7bit
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-> +static dma_addr_t hyperv_map_page(struct device *dev, struct page *page,
-> +				  unsigned long offset, size_t size,
-> +				  enum dma_data_direction dir,
-> +				  unsigned long attrs)
-> +{
-> +	phys_addr_t map, phys = (page_to_pfn(page) << PAGE_SHIFT) + offset;
-> +
-> +	if (!hv_is_isolation_supported())
-> +		return phys;
-> +
-> +	map = swiotlb_tbl_map_single(dev, phys, size, HV_HYP_PAGE_SIZE, dir,
-> +				     attrs);
-> +	if (map == (phys_addr_t)DMA_MAPPING_ERROR)
-> +		return DMA_MAPPING_ERROR;
-> +
-> +	return map;
-> +}
+> +struct dma_range {
+> +	dma_addr_t dma;
+> +	u32 mapping_size;
+> +};
 
-This largerly duplicates what dma-direct + swiotlb does.  Please use
-force_dma_unencrypted to force bounce buffering and just use the generic
-code.
+That's a rather generic name that is bound to create a conflict sooner
+or later.
+
+>  #include "hyperv_net.h"
+>  #include "netvsc_trace.h"
+> +#include "../../hv/hyperv_vmbus.h"
+
+Please move public interfaces out of the private header rather than doing
+this.
 
 > +	if (hv_isolation_type_snp()) {
-> +		ret = hv_set_mem_host_visibility(
-> +				phys_to_virt(hyperv_io_tlb_start),
-> +				hyperv_io_tlb_size,
-> +				VMBUS_PAGE_VISIBLE_READ_WRITE);
-> +		if (ret)
-> +			panic("%s: Fail to mark Hyper-v swiotlb buffer visible to host. err=%d\n",
-> +			      __func__, ret);
-> +
-> +		hyperv_io_tlb_remap = ioremap_cache(hyperv_io_tlb_start
-> +					    + ms_hyperv.shared_gpa_boundary,
-> +						    hyperv_io_tlb_size);
-> +		if (!hyperv_io_tlb_remap)
-> +			panic("%s: Fail to remap io tlb.\n", __func__);
-> +
-> +		memset(hyperv_io_tlb_remap, 0x00, hyperv_io_tlb_size);
-> +		swiotlb_set_bounce_remap(hyperv_io_tlb_remap);
+> +		area = get_vm_area(buf_size, VM_IOREMAP);
 
-And this really needs to go into a common hook where we currently just
-call set_memory_decrypted so that all the different schemes for these
-trusted VMs (we have about half a dozen now) can share code rather than
-reinventing it.
+Err, no.  get_vm_area is private a for a reason.
+
+> +		if (!area)
+> +			goto cleanup;
+> +
+> +		vaddr = (unsigned long)area->addr;
+> +		for (i = 0; i < buf_size / HV_HYP_PAGE_SIZE; i++) {
+> +			extra_phys = (virt_to_hvpfn(net_device->recv_buf + i * HV_HYP_PAGE_SIZE)
+> +				<< HV_HYP_PAGE_SHIFT) + ms_hyperv.shared_gpa_boundary;
+> +			ret |= ioremap_page_range(vaddr + i * HV_HYP_PAGE_SIZE,
+> +					   vaddr + (i + 1) * HV_HYP_PAGE_SIZE,
+> +					   extra_phys, PAGE_KERNEL_IO);
+> +		}
+> +
+> +		if (ret)
+> +			goto cleanup;
+
+And this is not something a driver should ever do.  I think you are badly
+reimplementing functionality that should be in the dma coherent allocator
+here.
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
