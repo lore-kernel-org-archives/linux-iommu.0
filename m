@@ -2,108 +2,90 @@ Return-Path: <SRS0=7Zqx=JL=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-8.6 required=3.0 tests=BAYES_00,DKIM_INVALID,
-	DKIM_SIGNED,HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_CR_TRAILER,
-	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no
-	version=3.4.0
+X-Spam-Status: No, score=-5.3 required=3.0 tests=BAYES_00,
+	HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,NICE_REPLY_A,SPF_HELO_NONE,
+	SPF_PASS,USER_AGENT_SANE_1 autolearn=no autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 622C0C43462
-	for <iommu@archiver.kernel.org>; Wed, 14 Apr 2021 16:17:53 +0000 (UTC)
-Received: from smtp1.osuosl.org (smtp1.osuosl.org [140.211.166.138])
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E079AC433B4
+	for <iommu@archiver.kernel.org>; Wed, 14 Apr 2021 17:47:48 +0000 (UTC)
+Received: from smtp2.osuosl.org (smtp2.osuosl.org [140.211.166.133])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id E36BE6120E
-	for <iommu@archiver.kernel.org>; Wed, 14 Apr 2021 16:17:52 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org E36BE6120E
-Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=networkplumber.org
+	by mail.kernel.org (Postfix) with ESMTPS id 64A0061177
+	for <iommu@archiver.kernel.org>; Wed, 14 Apr 2021 17:47:48 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 64A0061177
+Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=huawei.com
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by smtp1.osuosl.org (Postfix) with ESMTP id ACF2E84568;
-	Wed, 14 Apr 2021 16:17:52 +0000 (UTC)
+	by smtp2.osuosl.org (Postfix) with ESMTP id F1E9540189;
+	Wed, 14 Apr 2021 17:47:47 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from smtp1.osuosl.org ([127.0.0.1])
-	by localhost (smtp1.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id 4qzNAgsulCSo; Wed, 14 Apr 2021 16:17:52 +0000 (UTC)
-Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by smtp1.osuosl.org (Postfix) with ESMTP id ADE168268F;
-	Wed, 14 Apr 2021 16:17:51 +0000 (UTC)
-Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 8078FC000B;
-	Wed, 14 Apr 2021 16:17:51 +0000 (UTC)
-Received: from smtp2.osuosl.org (smtp2.osuosl.org [140.211.166.133])
- by lists.linuxfoundation.org (Postfix) with ESMTP id C47E9C000A
- for <iommu@lists.linux-foundation.org>; Wed, 14 Apr 2021 16:17:49 +0000 (UTC)
-Received: from localhost (localhost [127.0.0.1])
- by smtp2.osuosl.org (Postfix) with ESMTP id 9D9E340189
- for <iommu@lists.linux-foundation.org>; Wed, 14 Apr 2021 16:17:49 +0000 (UTC)
-X-Virus-Scanned: amavisd-new at osuosl.org
-Authentication-Results: smtp2.osuosl.org (amavisd-new);
- dkim=pass (2048-bit key)
- header.d=networkplumber-org.20150623.gappssmtp.com
 Received: from smtp2.osuosl.org ([127.0.0.1])
- by localhost (smtp2.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id IUgI2CAhTiog for <iommu@lists.linux-foundation.org>;
- Wed, 14 Apr 2021 16:17:49 +0000 (UTC)
-X-Greylist: whitelisted by SQLgrey-1.8.0
-Received: from mail-pl1-x629.google.com (mail-pl1-x629.google.com
- [IPv6:2607:f8b0:4864:20::629])
- by smtp2.osuosl.org (Postfix) with ESMTPS id EBCCC400D2
- for <iommu@lists.linux-foundation.org>; Wed, 14 Apr 2021 16:17:48 +0000 (UTC)
-Received: by mail-pl1-x629.google.com with SMTP id y2so10400844plg.5
- for <iommu@lists.linux-foundation.org>; Wed, 14 Apr 2021 09:17:48 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
- d=networkplumber-org.20150623.gappssmtp.com; s=20150623;
- h=date:from:to:cc:subject:message-id:in-reply-to:references
- :mime-version:content-transfer-encoding;
- bh=0eL/B6Xsq6Q/24IYguuLfwVoh9qvE+Qw7MZOf5nGHyg=;
- b=DWKLnEjIRc6nqOLRuoo9K6bOLQMW5c1mqbVDL7yGhVs88fhUl8h/izys8YK3f/gwVM
- PcQzKMKIFq9o0hwsUhKISfLDewBl34wWHl1mNxtvbMhH9ULpfprQDggqRkhav/DB3fq5
- Lt6TuRqVyREjop1FfnrZ4OwusSTzbuxed+y0o4pqUcZLeuQPE7o9Q0ERP1T2859SlHBK
- swDXpNsO2sseabX97kJN/6O4FliaKLmz/0n5+zOfFOhIc71jVo20vJcnie48mgAzBh32
- YSPSVWZiitdeHf/qr6sagNpJv+45RDkOHNv90Ca9f1wMkoDLDoLK0Hka9u0ctg+akLmV
- r8Lw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
- d=1e100.net; s=20161025;
- h=x-gm-message-state:date:from:to:cc:subject:message-id:in-reply-to
- :references:mime-version:content-transfer-encoding;
- bh=0eL/B6Xsq6Q/24IYguuLfwVoh9qvE+Qw7MZOf5nGHyg=;
- b=o9WVkzEnkTI5m3DctAkfDfXcbJCxVb1RdKnhf13x+VM3F2oipkn7obktO1meXc4bIj
- 2ZC8wvL7N/UPjP0t/jmcUBEuFJR+OSpY8V0g0FG6TqQ7T5mU0Js4dhrg+fp+AO2+BRvK
- cySeNiUGHpka26e4NlTYs3OwnUV+YKxZF+umKqEDV7eQIDxgjkopn2dhFP/aEF4BbJEX
- N7iuyYG8KEDgqzhZAu13n64zab7YEfkzbVAY63WpnC09riJaYXkfEjN1MiS5Kad6bgaF
- SUdwYYRJp5xlUyXfP/cFFWMRdEZA1MlgUDSVoxg+FZ/yHepj9OxVW+4dDm+/dCucFs+7
- WR6w==
-X-Gm-Message-State: AOAM5317rCaaVN7gxBpP3W46oGSHXN/1R6Wkg4xQ0wI6PSfQObVPdAWM
- Q08q5UIfZy1cgfHG+3uzfflQFg==
-X-Google-Smtp-Source: ABdhPJx5Ic6DX2vQpbh90Yradu9W82hKhZ9FhXc7n7c05NjGIO6V9+vgFJUqzgqafzt2aOiNHdkPHQ==
-X-Received: by 2002:a17:902:cec1:b029:eb:66ee:6da0 with SMTP id
- d1-20020a170902cec1b02900eb66ee6da0mr1001099plg.84.1618417068337; 
- Wed, 14 Apr 2021 09:17:48 -0700 (PDT)
-Received: from hermes.local (76-14-218-44.or.wavecable.com. [76.14.218.44])
- by smtp.gmail.com with ESMTPSA id r5sm5092591pjd.38.2021.04.14.09.17.46
- (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
- Wed, 14 Apr 2021 09:17:48 -0700 (PDT)
-Date: Wed, 14 Apr 2021 09:17:38 -0700
-From: Stephen Hemminger <stephen@networkplumber.org>
-To: Greg KH <gregkh@linuxfoundation.org>
-Subject: Re: [Resend RFC PATCH V2 08/12] UIO/Hyper-V: Not load UIO HV driver
- in the isolation VM.
-Message-ID: <20210414091738.3df4bed5@hermes.local>
-In-Reply-To: <YHcOL+HlEoh5jPb8@kroah.com>
-References: <20210414144945.3460554-1-ltykernel@gmail.com>
- <20210414144945.3460554-9-ltykernel@gmail.com>
- <YHcOL+HlEoh5jPb8@kroah.com>
+	by localhost (smtp2.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+	with ESMTP id 1sNDCNTCQTKS; Wed, 14 Apr 2021 17:47:47 +0000 (UTC)
+Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
+	by smtp2.osuosl.org (Postfix) with ESMTP id D60D5401B7;
+	Wed, 14 Apr 2021 17:47:46 +0000 (UTC)
+Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
+	by lists.linuxfoundation.org (Postfix) with ESMTP id B6317C000C;
+	Wed, 14 Apr 2021 17:47:46 +0000 (UTC)
+Received: from smtp3.osuosl.org (smtp3.osuosl.org [140.211.166.136])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 82EDEC000A
+ for <iommu@lists.linux-foundation.org>; Wed, 14 Apr 2021 17:47:44 +0000 (UTC)
+Received: from localhost (localhost [127.0.0.1])
+ by smtp3.osuosl.org (Postfix) with ESMTP id 5D094607DF
+ for <iommu@lists.linux-foundation.org>; Wed, 14 Apr 2021 17:47:44 +0000 (UTC)
+X-Virus-Scanned: amavisd-new at osuosl.org
+Received: from smtp3.osuosl.org ([127.0.0.1])
+ by localhost (smtp3.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+ with ESMTP id f2mrXgMH_3Cl for <iommu@lists.linux-foundation.org>;
+ Wed, 14 Apr 2021 17:47:42 +0000 (UTC)
+X-Greylist: domain auto-whitelisted by SQLgrey-1.8.0
+Received: from frasgout.his.huawei.com (frasgout.his.huawei.com
+ [185.176.79.56])
+ by smtp3.osuosl.org (Postfix) with ESMTPS id 81C8C606B8
+ for <iommu@lists.linux-foundation.org>; Wed, 14 Apr 2021 17:47:36 +0000 (UTC)
+Received: from fraeml738-chm.china.huawei.com (unknown [172.18.147.226])
+ by frasgout.his.huawei.com (SkyGuard) with ESMTP id 4FL8nJ6kwxz6898S;
+ Thu, 15 Apr 2021 01:37:40 +0800 (CST)
+Received: from lhreml724-chm.china.huawei.com (10.201.108.75) by
+ fraeml738-chm.china.huawei.com (10.206.15.219) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2106.2; Wed, 14 Apr 2021 19:47:33 +0200
+Received: from [10.47.25.158] (10.47.25.158) by lhreml724-chm.china.huawei.com
+ (10.201.108.75) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2106.2; Wed, 14 Apr
+ 2021 18:47:32 +0100
+From: John Garry <john.garry@huawei.com>
+Subject: Re: [PATCH 1/6] iommu: Move IOVA power-of-2 roundup into allocator
+To: Robin Murphy <robin.murphy@arm.com>, "joro@8bytes.org" <joro@8bytes.org>, 
+ "will@kernel.org" <will@kernel.org>, "jejb@linux.ibm.com"
+ <jejb@linux.ibm.com>, "martin.petersen@oracle.com"
+ <martin.petersen@oracle.com>, "hch@lst.de" <hch@lst.de>,
+ "m.szyprowski@samsung.com" <m.szyprowski@samsung.com>
+References: <1616160348-29451-1-git-send-email-john.garry@huawei.com>
+ <1616160348-29451-2-git-send-email-john.garry@huawei.com>
+ <ee935a6d-a94c-313e-f0ed-e14cc6dac055@arm.com>
+ <73d459de-b5cc-e2f5-bcd7-2ee23c8d5075@huawei.com>
+ <afc2fc05-a799-cb14-debd-d36afed8f456@arm.com>
+ <08c0f4b9-8713-fa97-3986-3cfb0d6b820b@huawei.com>
+ <e4b9146a-ca32-50f5-4fe0-42aa0b66d2d6@arm.com>
+ <4914d134-5a63-f683-b14b-25ab71a57cd4@huawei.com>
+Message-ID: <8fce915b-18fa-2bfb-66d7-325cb7837894@huawei.com>
+Date: Wed, 14 Apr 2021 18:44:58 +0100
+User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; rv:68.0) Gecko/20100101
+ Thunderbird/68.1.2
 MIME-Version: 1.0
-Cc: linux-hyperv@vger.kernel.org, brijesh.singh@amd.com, linux-mm@kvack.org,
- hpa@zytor.com, kys@microsoft.com, will@kernel.org, hch@lst.de,
- linux-arch@vger.kernel.org, wei.liu@kernel.org, sthemmin@microsoft.com,
- linux-scsi@vger.kernel.org, x86@kernel.org, Tianyu Lan <ltykernel@gmail.com>,
- mingo@redhat.com, kuba@kernel.org, jejb@linux.ibm.com, thomas.lendacky@amd.com,
- Tianyu Lan <Tianyu.Lan@microsoft.com>, arnd@arndb.de, konrad.wilk@oracle.com,
- haiyangz@microsoft.com, bp@alien8.de, tglx@linutronix.de, vkuznets@redhat.com,
- martin.petersen@oracle.com, netdev@vger.kernel.org, sunilmut@microsoft.com,
- linux-kernel@vger.kernel.org, iommu@lists.linux-foundation.org,
- akpm@linux-foundation.org, robin.murphy@arm.com, davem@davemloft.net
+In-Reply-To: <4914d134-5a63-f683-b14b-25ab71a57cd4@huawei.com>
+Content-Language: en-US
+X-Originating-IP: [10.47.25.158]
+X-ClientProxiedBy: lhreml730-chm.china.huawei.com (10.201.108.81) To
+ lhreml724-chm.china.huawei.com (10.201.108.75)
+X-CFilter-Loop: Reflected
+Cc: "iommu@lists.linux-foundation.org" <iommu@lists.linux-foundation.org>,
+ "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+ "linux-scsi@vger.kernel.org" <linux-scsi@vger.kernel.org>,
+ Linuxarm <linuxarm@huawei.com>
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -116,27 +98,53 @@ List-Post: <mailto:iommu@lists.linux-foundation.org>
 List-Help: <mailto:iommu-request@lists.linux-foundation.org?subject=help>
 List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
  <mailto:iommu-request@lists.linux-foundation.org?subject=subscribe>
-Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset="us-ascii"; Format="flowed"
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-On Wed, 14 Apr 2021 17:45:51 +0200
-Greg KH <gregkh@linuxfoundation.org> wrote:
+On 06/04/2021 17:54, John Garry wrote:
 
-> On Wed, Apr 14, 2021 at 10:49:41AM -0400, Tianyu Lan wrote:
-> > From: Tianyu Lan <Tianyu.Lan@microsoft.com>
-> > 
-> > UIO HV driver should not load in the isolation VM for security reason.
-> > Return ENOTSUPP in the hv_uio_probe() in the isolation VM.
-> > 
-> > Signed-off-by: Tianyu Lan <Tianyu.Lan@microsoft.com>
+Hi Robin,
 
-This is debatable, in isolation VM's shouldn't userspace take responsibility
-to validate host communication. If that is an issue please participate with
-the DPDK community (main user of this) to make sure netvsc userspace driver
-has the required checks.
+> 
+>> Sorry if the phrasing was unclear there - the allusion to default 
+>> domains is new, it just occurred to me that what we do there is in 
+>> fact fairly close to what I've suggested previously for this. In that 
+>> case, we have a global policy set by the command line, which *can* be 
+>> overridden per-domain via sysfs at runtime, provided the user is 
+>> willing to tear the whole thing down. Using a similar approach here 
+>> would give a fair degree of flexibility but still mean that changes 
+>> never have to be made dynamically to a live domain.
+> 
+> So are you saying that we can handle it similar to how we now can handle 
+> changing default domain for an IOMMU group via sysfs? If so, that just 
+> is not practical here. Reason being that this particular DMA engine 
+> provides the block device giving / mount point, so if we unbind the 
+> driver, we lose / mount point.
+> 
+> And I am not sure if the end user would even know how to set such a 
+> tunable. Or, in this case, why the end user would not want the optimized 
+> range configured always.
+> 
+> I'd still rather if the device driver could provide info which can be 
+> used to configure this before or during probing.
 
+As a new solution, how about do both of these:
+a. Add a per-IOMMU group sysfs file to set this tunable. Works same as 
+how we change the default domain, and has all the same 
+restrictions/steps. I think that this is what you are already suggesting.
+b. Provide a DMA mapping API to set this value, similar to this current 
+series. In the IOMMU backend for that API, we record a new range value 
+and return -EPROBE_DEFER when successful. In the reprobe we reset the 
+default domain for the devices' IOMMU group, with the IOVA domain rcache 
+range configured as previously requested. Again, allocating the new 
+default domain is similar to how we change default domain type today.
+This means that we don't play with a live domain. Downside is that we 
+need to defer the probe.
+
+Thanks,
+John
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
