@@ -2,79 +2,111 @@ Return-Path: <SRS0=SOau=JM=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-15.3 required=3.0 tests=BAYES_00,
-	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_CR_TRAILER,INCLUDES_PATCH,
-	MAILING_LIST_MULTI,NICE_REPLY_A,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,
-	USER_AGENT_SANE_1 autolearn=unavailable autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-2.0 required=3.0 tests=BAYES_00,DKIM_ADSP_CUSTOM_MED,
+	DKIM_INVALID,DKIM_SIGNED,FREEMAIL_FORGED_FROMDOMAIN,FREEMAIL_FROM,
+	HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,NICE_REPLY_A,SPF_HELO_NONE,
+	SPF_PASS,URIBL_BLOCKED,USER_AGENT_SANE_1 autolearn=no autolearn_force=no
+	version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 910BCC433B4
-	for <iommu@archiver.kernel.org>; Thu, 15 Apr 2021 07:43:35 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2B056C433B4
+	for <iommu@archiver.kernel.org>; Thu, 15 Apr 2021 08:14:02 +0000 (UTC)
 Received: from smtp4.osuosl.org (smtp4.osuosl.org [140.211.166.137])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 0D32B6113B
-	for <iommu@archiver.kernel.org>; Thu, 15 Apr 2021 07:43:35 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 0D32B6113B
-Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=huawei.com
+	by mail.kernel.org (Postfix) with ESMTPS id C0B2E61158
+	for <iommu@archiver.kernel.org>; Thu, 15 Apr 2021 08:14:01 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org C0B2E61158
+Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=gmail.com
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by smtp4.osuosl.org (Postfix) with ESMTP id BFFE640FB1;
-	Thu, 15 Apr 2021 07:43:34 +0000 (UTC)
+	by smtp4.osuosl.org (Postfix) with ESMTP id 9063A40524;
+	Thu, 15 Apr 2021 08:14:01 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
 Received: from smtp4.osuosl.org ([127.0.0.1])
 	by localhost (smtp4.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id 1hquY4CPSZkC; Thu, 15 Apr 2021 07:43:29 +0000 (UTC)
+	with ESMTP id Iu3vTPRI8WYg; Thu, 15 Apr 2021 08:13:56 +0000 (UTC)
 Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by smtp4.osuosl.org (Postfix) with ESMTP id A0FB740FA5;
-	Thu, 15 Apr 2021 07:43:28 +0000 (UTC)
+	by smtp4.osuosl.org (Postfix) with ESMTP id B851340412;
+	Thu, 15 Apr 2021 08:13:55 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 84A24C000B;
-	Thu, 15 Apr 2021 07:43:28 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 95314C000C;
+	Thu, 15 Apr 2021 08:13:55 +0000 (UTC)
 Received: from smtp3.osuosl.org (smtp3.osuosl.org [IPv6:2605:bc80:3010::136])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 27138C000A
- for <iommu@lists.linux-foundation.org>; Thu, 15 Apr 2021 07:43:27 +0000 (UTC)
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 73612C000A
+ for <iommu@lists.linux-foundation.org>; Thu, 15 Apr 2021 08:13:54 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by smtp3.osuosl.org (Postfix) with ESMTP id 06A1760D74
- for <iommu@lists.linux-foundation.org>; Thu, 15 Apr 2021 07:43:27 +0000 (UTC)
+ by smtp3.osuosl.org (Postfix) with ESMTP id 5FA5460815
+ for <iommu@lists.linux-foundation.org>; Thu, 15 Apr 2021 08:13:54 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
+Authentication-Results: smtp3.osuosl.org (amavisd-new);
+ dkim=pass (2048-bit key) header.d=gmail.com
 Received: from smtp3.osuosl.org ([127.0.0.1])
  by localhost (smtp3.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id tVoicjbvqXwO for <iommu@lists.linux-foundation.org>;
- Thu, 15 Apr 2021 07:43:25 +0000 (UTC)
-X-Greylist: domain auto-whitelisted by SQLgrey-1.8.0
-Received: from szxga04-in.huawei.com (szxga04-in.huawei.com [45.249.212.190])
- by smtp3.osuosl.org (Postfix) with ESMTPS id 3E3A160D86
- for <iommu@lists.linux-foundation.org>; Thu, 15 Apr 2021 07:43:24 +0000 (UTC)
-Received: from DGGEMS401-HUB.china.huawei.com (unknown [172.30.72.60])
- by szxga04-in.huawei.com (SkyGuard) with ESMTP id 4FLWTj2pXpzpYNv;
- Thu, 15 Apr 2021 15:40:25 +0800 (CST)
-Received: from [10.174.187.224] (10.174.187.224) by
- DGGEMS401-HUB.china.huawei.com (10.3.19.201) with Microsoft SMTP Server id
- 14.3.498.0; Thu, 15 Apr 2021 15:43:09 +0800
-Subject: Re: [PATCH v3 01/12] iommu: Introduce dirty log tracking framework
-To: Lu Baolu <baolu.lu@linux.intel.com>, <linux-kernel@vger.kernel.org>,
- <linux-arm-kernel@lists.infradead.org>, <iommu@lists.linux-foundation.org>,
- Robin Murphy <robin.murphy@arm.com>, Will Deacon <will@kernel.org>, "Joerg
- Roedel" <joro@8bytes.org>, Yi Sun <yi.y.sun@linux.intel.com>, "Jean-Philippe
- Brucker" <jean-philippe@linaro.org>, Jonathan Cameron
- <Jonathan.Cameron@huawei.com>, Tian Kevin <kevin.tian@intel.com>
-References: <20210413085457.25400-1-zhukeqian1@huawei.com>
- <20210413085457.25400-2-zhukeqian1@huawei.com>
- <fe337950-f8d0-3d21-a7b1-98b385d71f3e@linux.intel.com>
- <e42373e3-10d5-5a34-8f33-8bb82d64fb19@huawei.com>
- <56b001fa-b4fe-c595-dc5e-f362d2f07a19@linux.intel.com>
-From: Keqian Zhu <zhukeqian1@huawei.com>
-Message-ID: <88cba608-2f22-eb83-f22e-50cb547b6ee8@huawei.com>
-Date: Thu, 15 Apr 2021 15:43:08 +0800
-User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; rv:45.0) Gecko/20100101
- Thunderbird/45.7.1
+ with ESMTP id otcZTYtKnch4 for <iommu@lists.linux-foundation.org>;
+ Thu, 15 Apr 2021 08:13:53 +0000 (UTC)
+X-Greylist: whitelisted by SQLgrey-1.8.0
+Received: from mail-pg1-x532.google.com (mail-pg1-x532.google.com
+ [IPv6:2607:f8b0:4864:20::532])
+ by smtp3.osuosl.org (Postfix) with ESMTPS id B311360654
+ for <iommu@lists.linux-foundation.org>; Thu, 15 Apr 2021 08:13:53 +0000 (UTC)
+Received: by mail-pg1-x532.google.com with SMTP id f29so16382513pgm.8
+ for <iommu@lists.linux-foundation.org>; Thu, 15 Apr 2021 01:13:53 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=gmail.com; s=20161025;
+ h=subject:to:cc:references:from:message-id:date:user-agent
+ :mime-version:in-reply-to:content-language:content-transfer-encoding;
+ bh=fHEMmI0zE+vS0F59KD+p8uLBPHfbYBHWkM9/N8ompfg=;
+ b=soGoMktoPpdmcNOzFk1ITFDuDtu3Bms6GteRh5tLiO6qb0bvu2ZpKl/SQUxnJZVhIy
+ TZByoPlO2do1WWZ1mSqK2SULn034q1AHzgoZKCn8bh+JZVf3F6F6PB7g20X/Nh1WpAHF
+ rCBCP3iFqt4C1IuZLp4HVH8Pfaz9ffUilpbXSsLHdoKjMpv5l2AhgJxNUtRKf5pKGRRa
+ 95wZ67Np7MfVTeLuR4irmligwiqSTYlfHtXkkfjZSOcWleOgpSFBA/fc79RIp3kM1TcP
+ PP7bCdAai6YFnjMRcKLl7cDXD/3rCBRVrWlkJt0NHB4UQEIOQQycVlS65Yq0aMOH/E/g
+ 9lkQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+ d=1e100.net; s=20161025;
+ h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+ :user-agent:mime-version:in-reply-to:content-language
+ :content-transfer-encoding;
+ bh=fHEMmI0zE+vS0F59KD+p8uLBPHfbYBHWkM9/N8ompfg=;
+ b=pLYRczJ6Ky+m/X8PByJ0hRhaiWA6kdObDX974lGNlw0t0z4DC0bMuPHbtZWWW39uiZ
+ G4e35ohhV19GDS113YpZi9+sfAxf3nqWu8aBED5O+OsAqv00t33jNm3zLfQ8w1OUcY9Q
+ tV7ZbossSBDpSxQ6RW5v4dQd4YYqk2I1eQglSqj+eINr9RkI8hMM2GcR0jnAPJjv7r4w
+ A+BiWO0Zv/MHu695XJLcKBM99vFPenVnizFlZJN6ColdFjGzy4S9jjmWWtsZc6GuSA8m
+ 3h+v3b+7BvH49dOXPbOvBp4jsokw1pjsPuuq/vpHa1THz6lD7okuptpBe6Y1KzXoF/+S
+ OVJg==
+X-Gm-Message-State: AOAM532L7j8as9qzkA56We5U+5HUBScRE8l8q92gL5i/pqTRGRZLDRg/
+ 19yXeERsGDAsmV4QFnTQ8hw=
+X-Google-Smtp-Source: ABdhPJxO29fqU99JC5dI1dJM618j9ehjc6CzkxxJfsgiXjKmSO/GcguSS35F2oL6Ti4QORoZgkAHpg==
+X-Received: by 2002:a63:36ce:: with SMTP id d197mr2329852pga.237.1618474433176; 
+ Thu, 15 Apr 2021 01:13:53 -0700 (PDT)
+Received: from ?IPv6:2404:f801:0:6:8000::a31c? ([2404:f801:9000:1a:efeb::a31c])
+ by smtp.gmail.com with ESMTPSA id u21sm771781pfm.89.2021.04.15.01.13.44
+ (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+ Thu, 15 Apr 2021 01:13:52 -0700 (PDT)
+Subject: Re: [Resend RFC PATCH V2 03/12] x86/Hyper-V: Add new hvcall guest
+ address host visibility support
+To: Christoph Hellwig <hch@lst.de>
+References: <20210414144945.3460554-1-ltykernel@gmail.com>
+ <20210414144945.3460554-4-ltykernel@gmail.com>
+ <20210414154028.GA32045@lst.de>
+From: Tianyu Lan <ltykernel@gmail.com>
+Message-ID: <d79e4a79-2259-6a5a-ca7d-3580f6d9dc8f@gmail.com>
+Date: Thu, 15 Apr 2021 16:13:42 +0800
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:78.0) Gecko/20100101
+ Thunderbird/78.9.1
 MIME-Version: 1.0
-In-Reply-To: <56b001fa-b4fe-c595-dc5e-f362d2f07a19@linux.intel.com>
-X-Originating-IP: [10.174.187.224]
-X-CFilter-Loop: Reflected
-Cc: jiangkunkun@huawei.com, Cornelia Huck <cohuck@redhat.com>,
- Kirti Wankhede <kwankhede@nvidia.com>, lushenming@huawei.com,
- Alex Williamson <alex.williamson@redhat.com>, wanghaibin.wang@huawei.com
+In-Reply-To: <20210414154028.GA32045@lst.de>
+Content-Language: en-US
+Cc: linux-hyperv@vger.kernel.org, brijesh.singh@amd.com, linux-mm@kvack.org,
+ hpa@zytor.com, kys@microsoft.com, will@kernel.org, sunilmut@microsoft.com,
+ linux-arch@vger.kernel.org, wei.liu@kernel.org, sthemmin@microsoft.com,
+ linux-scsi@vger.kernel.org, x86@kernel.org, mingo@redhat.com, kuba@kernel.org,
+ jejb@linux.ibm.com, thomas.lendacky@amd.com,
+ Tianyu Lan <Tianyu.Lan@microsoft.com>, arnd@arndb.de, konrad.wilk@oracle.com,
+ haiyangz@microsoft.com, bp@alien8.de, tglx@linutronix.de, vkuznets@redhat.com,
+ martin.petersen@oracle.com, gregkh@linuxfoundation.org,
+ linux-kernel@vger.kernel.org, iommu@lists.linux-foundation.org,
+ netdev@vger.kernel.org, akpm@linux-foundation.org, robin.murphy@arm.com,
+ davem@davemloft.net
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -87,167 +119,53 @@ List-Post: <mailto:iommu@lists.linux-foundation.org>
 List-Help: <mailto:iommu-request@lists.linux-foundation.org?subject=help>
 List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
  <mailto:iommu-request@lists.linux-foundation.org?subject=subscribe>
-Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset="us-ascii"; Format="flowed"
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
+Hi Christoph:
+	Thanks for your review.
 
-
-On 2021/4/15 15:03, Lu Baolu wrote:
-> On 4/15/21 2:18 PM, Keqian Zhu wrote:
->> Hi Baolu,
->>
->> Thanks for the review!
->>
->> On 2021/4/14 15:00, Lu Baolu wrote:
->>> Hi Keqian,
->>>
->>> On 4/13/21 4:54 PM, Keqian Zhu wrote:
->>>> Some types of IOMMU are capable of tracking DMA dirty log, such as
->>>> ARM SMMU with HTTU or Intel IOMMU with SLADE. This introduces the
->>>> dirty log tracking framework in the IOMMU base layer.
->>>>
->>>> Three new essential interfaces are added, and we maintaince the status
->>>> of dirty log tracking in iommu_domain.
->>>> 1. iommu_switch_dirty_log: Perform actions to start|stop dirty log tracking
->>>> 2. iommu_sync_dirty_log: Sync dirty log from IOMMU into a dirty bitmap
->>>> 3. iommu_clear_dirty_log: Clear dirty log of IOMMU by a mask bitmap
->>>>
->>>> A new dev feature are added to indicate whether a specific type of
->>>> iommu hardware supports and its driver realizes them.
->>>>
->>>> Signed-off-by: Keqian Zhu <zhukeqian1@huawei.com>
->>>> Signed-off-by: Kunkun Jiang <jiangkunkun@huawei.com>
->>>> ---
->>>>    drivers/iommu/iommu.c | 150 ++++++++++++++++++++++++++++++++++++++++++
->>>>    include/linux/iommu.h |  53 +++++++++++++++
->>>>    2 files changed, 203 insertions(+)
->>>>
->>>> diff --git a/drivers/iommu/iommu.c b/drivers/iommu/iommu.c
->>>> index d0b0a15dba84..667b2d6d2fc0 100644
->>>> --- a/drivers/iommu/iommu.c
->>>> +++ b/drivers/iommu/iommu.c
->>>> @@ -1922,6 +1922,7 @@ static struct iommu_domain *__iommu_domain_alloc(struct bus_type *bus,
->>>>        domain->type = type;
->>>>        /* Assume all sizes by default; the driver may override this later */
->>>>        domain->pgsize_bitmap  = bus->iommu_ops->pgsize_bitmap;
->>>> +    mutex_init(&domain->switch_log_lock);
->>>>          return domain;
->>>>    }
->>>> @@ -2720,6 +2721,155 @@ int iommu_domain_set_attr(struct iommu_domain *domain,
->>>>    }
->>>>    EXPORT_SYMBOL_GPL(iommu_domain_set_attr);
->>>>    +int iommu_switch_dirty_log(struct iommu_domain *domain, bool enable,
->>>> +               unsigned long iova, size_t size, int prot)
->>>> +{
->>>> +    const struct iommu_ops *ops = domain->ops;
->>>> +    int ret;
->>>> +
->>>> +    if (unlikely(!ops || !ops->switch_dirty_log))
->>>> +        return -ENODEV;
->>>> +
->>>> +    mutex_lock(&domain->switch_log_lock);
->>>> +    if (enable && domain->dirty_log_tracking) {
->>>> +        ret = -EBUSY;
->>>> +        goto out;
->>>> +    } else if (!enable && !domain->dirty_log_tracking) {
->>>> +        ret = -EINVAL;
->>>> +        goto out;
->>>> +    }
->>>> +
->>>> +    ret = ops->switch_dirty_log(domain, enable, iova, size, prot);
->>>> +    if (ret)
->>>> +        goto out;
->>>> +
->>>> +    domain->dirty_log_tracking = enable;
->>>> +out:
->>>> +    mutex_unlock(&domain->switch_log_lock);
->>>> +    return ret;
->>>> +}
->>>> +EXPORT_SYMBOL_GPL(iommu_switch_dirty_log);
->>>
->>> Since you also added IOMMU_DEV_FEAT_HWDBM, I am wondering what's the
->>> difference between
->>>
->>> iommu_switch_dirty_log(on) vs. iommu_dev_enable_feature(IOMMU_DEV_FEAT_HWDBM)
->>>
->>> iommu_switch_dirty_log(off) vs. iommu_dev_disable_feature(IOMMU_DEV_FEAT_HWDBM)
->> Indeed. As I can see, IOMMU_DEV_FEAT_AUX is not switchable, so enable/disable
->> are not applicable for it. IOMMU_DEV_FEAT_SVA is switchable, so we can use these
->> interfaces for it.
->>
->> IOMMU_DEV_FEAT_HWDBM is used to indicate whether hardware supports HWDBM, so we should
+On 4/14/2021 11:40 PM, Christoph Hellwig wrote:
+>> +/*
+>> + * hv_set_mem_host_visibility - Set host visibility for specified memory.
+>> + */
 > 
-> Previously we had iommu_dev_has_feature() and then was cleaned up due to
-> lack of real users. If you have a real case for it, why not bringing it
-> back?
-Yep, good suggestion.
+> I don't think this comment really clarifies anything over the function
+> name.  What is 'host visibility'
+
+OK. Will update the comment.
 
 > 
->> design it as not switchable. I will modify the commit message of patch#12, thanks!
+>> +int hv_set_mem_host_visibility(void *kbuffer, u32 size, u32 visibility)
 > 
-> I am not sure that I fully get your point. But I can't see any gaps of
-> using iommu_dev_enable/disable_feature() to switch dirty log on and off.
-> Probably I missed anything.
-IOMMU_DEV_FEAT_HWDBM just tells user whether underlying IOMMU driver supports
-dirty tracking, it is not used to management the status of dirty log tracking.
+> Should size be a size_t?
+> Should visibility be an enum of some kind?
+> 
 
-The feature reporting is per device, but the status management is per iommu_domain.
-Only when all devices in a domain support HWDBM, we can start dirty log for the domain.
+Will update.
 
-And I think we'd better not mix the feature reporting and status management. Thoughts?
+>> +int hv_mark_gpa_visibility(u16 count, const u64 pfn[], u32 visibility)
+> 
+> Not sure what this does either.
+
+Will add a comment.
 
 > 
->>
->>>
->>>> +
->>>> +int iommu_sync_dirty_log(struct iommu_domain *domain, unsigned long iova,
->>>> +             size_t size, unsigned long *bitmap,
->>>> +             unsigned long base_iova, unsigned long bitmap_pgshift)
->>>> +{
->>>> +    const struct iommu_ops *ops = domain->ops;
->>>> +    unsigned int min_pagesz;
->>>> +    size_t pgsize;
->>>> +    int ret = 0;
->>>> +
->>>> +    if (unlikely(!ops || !ops->sync_dirty_log))
->>>> +        return -ENODEV;
->>>> +
->>>> +    min_pagesz = 1 << __ffs(domain->pgsize_bitmap);
->>>> +    if (!IS_ALIGNED(iova | size, min_pagesz)) {
->>>> +        pr_err("unaligned: iova 0x%lx size 0x%zx min_pagesz 0x%x\n",
->>>> +               iova, size, min_pagesz);
->>>> +        return -EINVAL;
->>>> +    }
->>>> +
->>>> +    mutex_lock(&domain->switch_log_lock);
->>>> +    if (!domain->dirty_log_tracking) {
->>>> +        ret = -EINVAL;
->>>> +        goto out;
->>>> +    }
->>>> +
->>>> +    while (size) {
->>>> +        pgsize = iommu_pgsize(domain, iova, size);
->>>> +
->>>> +        ret = ops->sync_dirty_log(domain, iova, pgsize,
->>>> +                      bitmap, base_iova, bitmap_pgshift);
->>>
->>> Any reason why do you want to do this in a per-4K page manner? This can
->>> lead to a lot of indirect calls and bad performance.
->>>
->>> How about a sync_dirty_pages()?
->> The function name of iommu_pgsize() is a bit puzzling. Actually it will try to
->> compute the max size that fit into size, so the pgsize can be a large page size
->> even if the underlying mapping is 4K. The __iommu_unmap() also has a similar logic.
+>> +	local_irq_save(flags);
+>> +	input_pcpu = (struct hv_input_modify_sparse_gpa_page_host_visibility **)
 > 
-> This series has some improvement on the iommu_pgsize() helper.
-> 
-> https://lore.kernel.org/linux-iommu/20210405191112.28192-1-isaacm@codeaurora.org/
-OK, I get your idea. I will look into that, thanks!
+> Is there a chance we could find a shorter but still descriptive
+> name for this variable?  Why do we need the cast?
 
-BRs,
-Keqian
+Sure. The cast is to avoid build error due to "incompatible-pointer-types"
+> 
+>> +#define VMBUS_PAGE_VISIBLE_READ_ONLY HV_MAP_GPA_READABLE
+>> +#define VMBUS_PAGE_VISIBLE_READ_WRITE (HV_MAP_GPA_READABLE|HV_MAP_GPA_WRITABLE)
+> 
+> pointlessly overlong line.
+> 
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
