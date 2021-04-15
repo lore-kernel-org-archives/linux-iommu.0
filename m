@@ -6,59 +6,56 @@ X-Spam-Status: No, score=-8.8 required=3.0 tests=BAYES_00,
 	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,SPF_HELO_NONE,
 	SPF_PASS,URIBL_BLOCKED autolearn=ham autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D9B28C433ED
-	for <iommu@archiver.kernel.org>; Thu, 15 Apr 2021 13:36:31 +0000 (UTC)
-Received: from smtp1.osuosl.org (smtp1.osuosl.org [140.211.166.138])
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 34729C433ED
+	for <iommu@archiver.kernel.org>; Thu, 15 Apr 2021 13:40:38 +0000 (UTC)
+Received: from smtp2.osuosl.org (smtp2.osuosl.org [140.211.166.133])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 7EF54613B4
-	for <iommu@archiver.kernel.org>; Thu, 15 Apr 2021 13:36:31 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 7EF54613B4
+	by mail.kernel.org (Postfix) with ESMTPS id B49B2613C0
+	for <iommu@archiver.kernel.org>; Thu, 15 Apr 2021 13:40:37 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org B49B2613C0
 Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=8bytes.org
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by smtp1.osuosl.org (Postfix) with ESMTP id 47F5F8473B;
-	Thu, 15 Apr 2021 13:36:31 +0000 (UTC)
+	by smtp2.osuosl.org (Postfix) with ESMTP id 5AB3640129;
+	Thu, 15 Apr 2021 13:40:37 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from smtp1.osuosl.org ([127.0.0.1])
-	by localhost (smtp1.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id Ie1Kf04td3oy; Thu, 15 Apr 2021 13:36:26 +0000 (UTC)
+Received: from smtp2.osuosl.org ([127.0.0.1])
+	by localhost (smtp2.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+	with ESMTP id F0cCbcexZ5SY; Thu, 15 Apr 2021 13:40:36 +0000 (UTC)
 Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [IPv6:2605:bc80:3010:104::8cd3:938])
-	by smtp1.osuosl.org (Postfix) with ESMTP id A2E8C846D0;
-	Thu, 15 Apr 2021 13:36:25 +0000 (UTC)
+	by smtp2.osuosl.org (Postfix) with ESMTP id 6935540228;
+	Thu, 15 Apr 2021 13:40:36 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 876CAC000B;
-	Thu, 15 Apr 2021 13:36:25 +0000 (UTC)
-Received: from smtp3.osuosl.org (smtp3.osuosl.org [IPv6:2605:bc80:3010::136])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 86A27C000A
- for <iommu@lists.linux-foundation.org>; Thu, 15 Apr 2021 13:36:24 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 518E4C000B;
+	Thu, 15 Apr 2021 13:40:36 +0000 (UTC)
+Received: from smtp4.osuosl.org (smtp4.osuosl.org [IPv6:2605:bc80:3010::137])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 75E1EC000A
+ for <iommu@lists.linux-foundation.org>; Thu, 15 Apr 2021 13:40:34 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by smtp3.osuosl.org (Postfix) with ESMTP id 674B36068A
- for <iommu@lists.linux-foundation.org>; Thu, 15 Apr 2021 13:36:24 +0000 (UTC)
+ by smtp4.osuosl.org (Postfix) with ESMTP id 566794069D
+ for <iommu@lists.linux-foundation.org>; Thu, 15 Apr 2021 13:40:34 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from smtp3.osuosl.org ([127.0.0.1])
- by localhost (smtp3.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id r3dAz3UD0TEL for <iommu@lists.linux-foundation.org>;
- Thu, 15 Apr 2021 13:36:21 +0000 (UTC)
+Received: from smtp4.osuosl.org ([127.0.0.1])
+ by localhost (smtp4.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+ with ESMTP id NdMEFlQ2vHke for <iommu@lists.linux-foundation.org>;
+ Thu, 15 Apr 2021 13:40:33 +0000 (UTC)
 X-Greylist: from auto-whitelisted by SQLgrey-1.8.0
 Received: from theia.8bytes.org (8bytes.org [81.169.241.247])
- by smtp3.osuosl.org (Postfix) with ESMTPS id C819B60625
- for <iommu@lists.linux-foundation.org>; Thu, 15 Apr 2021 13:36:21 +0000 (UTC)
+ by smtp4.osuosl.org (Postfix) with ESMTPS id B1C6540693
+ for <iommu@lists.linux-foundation.org>; Thu, 15 Apr 2021 13:40:33 +0000 (UTC)
 Received: by theia.8bytes.org (Postfix, from userid 1000)
- id DC95B387; Thu, 15 Apr 2021 15:36:17 +0200 (CEST)
-Date: Thu, 15 Apr 2021 15:36:16 +0200
+ id 5A1C5387; Thu, 15 Apr 2021 15:40:31 +0200 (CEST)
+Date: Thu, 15 Apr 2021 15:40:29 +0200
 From: Joerg Roedel <joro@8bytes.org>
-To: Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>
-Subject: Re: [PATCH] iommu: exynos: remove unneeded local variable
- initialization
-Message-ID: <YHhBUBe9ZT+P9TfJ@8bytes.org>
-References: <20210408201622.78009-1-krzysztof.kozlowski@canonical.com>
+To: Shaokun Zhang <zhangshaokun@hisilicon.com>
+Subject: Re: [PATCH RESEND] iommu/amd: Remove duplicate check of devid
+Message-ID: <YHhCTfdFR+ATH8zl@8bytes.org>
+References: <1617939040-35579-1-git-send-email-zhangshaokun@hisilicon.com>
 MIME-Version: 1.0
 Content-Disposition: inline
-In-Reply-To: <20210408201622.78009-1-krzysztof.kozlowski@canonical.com>
-Cc: linux-samsung-soc@vger.kernel.org, linux-kernel@vger.kernel.org,
- iommu@lists.linux-foundation.org, Will Deacon <will@kernel.org>,
- linux-arm-kernel@lists.infradead.org
+In-Reply-To: <1617939040-35579-1-git-send-email-zhangshaokun@hisilicon.com>
+Cc: iommu@lists.linux-foundation.org, Will Deacon <will@kernel.org>
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -76,9 +73,9 @@ Content-Transfer-Encoding: 7bit
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-On Thu, Apr 08, 2021 at 10:16:22PM +0200, Krzysztof Kozlowski wrote:
->  drivers/iommu/exynos-iommu.c | 2 +-
->  1 file changed, 1 insertion(+), 1 deletion(-)
+On Fri, Apr 09, 2021 at 11:30:40AM +0800, Shaokun Zhang wrote:
+>  drivers/iommu/amd/iommu.c | 9 +--------
+>  1 file changed, 1 insertion(+), 8 deletions(-)
 
 Applied, thanks.
 _______________________________________________
