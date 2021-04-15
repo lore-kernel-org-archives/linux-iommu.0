@@ -3,97 +3,99 @@ X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
 X-Spam-Status: No, score=-8.6 required=3.0 tests=BAYES_00,DKIM_INVALID,
-	DKIM_SIGNED,HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,
-	SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED autolearn=unavailable autolearn_force=no
-	version=3.4.0
+	DKIM_SIGNED,HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_CR_TRAILER,
+	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED autolearn=ham
+	autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 25E31C433B4
-	for <iommu@archiver.kernel.org>; Thu, 15 Apr 2021 14:32:26 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B7C30C43461
+	for <iommu@archiver.kernel.org>; Thu, 15 Apr 2021 14:36:42 +0000 (UTC)
 Received: from smtp1.osuosl.org (smtp1.osuosl.org [140.211.166.138])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id B9D456117A
-	for <iommu@archiver.kernel.org>; Thu, 15 Apr 2021 14:32:25 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org B9D456117A
+	by mail.kernel.org (Postfix) with ESMTPS id 6EA4361182
+	for <iommu@archiver.kernel.org>; Thu, 15 Apr 2021 14:36:42 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 6EA4361182
 Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=linaro.org
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by smtp1.osuosl.org (Postfix) with ESMTP id 82F638473F;
-	Thu, 15 Apr 2021 14:32:25 +0000 (UTC)
+	by smtp1.osuosl.org (Postfix) with ESMTP id 3C74A84354;
+	Thu, 15 Apr 2021 14:36:42 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
 Received: from smtp1.osuosl.org ([127.0.0.1])
 	by localhost (smtp1.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id CZZ4HirgLWG1; Thu, 15 Apr 2021 14:32:24 +0000 (UTC)
+	with ESMTP id Ubl-HZMI1pVy; Thu, 15 Apr 2021 14:36:41 +0000 (UTC)
 Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [IPv6:2605:bc80:3010:104::8cd3:938])
-	by smtp1.osuosl.org (Postfix) with ESMTP id 2262A84536;
-	Thu, 15 Apr 2021 14:32:24 +0000 (UTC)
+	by smtp1.osuosl.org (Postfix) with ESMTP id 27AF183C46;
+	Thu, 15 Apr 2021 14:36:41 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id EC6DFC000C;
-	Thu, 15 Apr 2021 14:32:23 +0000 (UTC)
-Received: from smtp1.osuosl.org (smtp1.osuosl.org [IPv6:2605:bc80:3010::138])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 95350C000A
- for <iommu@lists.linux-foundation.org>; Thu, 15 Apr 2021 14:32:22 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 008BDC000C;
+	Thu, 15 Apr 2021 14:36:41 +0000 (UTC)
+Received: from smtp2.osuosl.org (smtp2.osuosl.org [IPv6:2605:bc80:3010::133])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 5D172C000A
+ for <iommu@lists.linux-foundation.org>; Thu, 15 Apr 2021 14:36:40 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by smtp1.osuosl.org (Postfix) with ESMTP id 6D51884712
- for <iommu@lists.linux-foundation.org>; Thu, 15 Apr 2021 14:32:22 +0000 (UTC)
+ by smtp2.osuosl.org (Postfix) with ESMTP id 3711F40220
+ for <iommu@lists.linux-foundation.org>; Thu, 15 Apr 2021 14:36:40 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from smtp1.osuosl.org ([127.0.0.1])
- by localhost (smtp1.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id Klorno4KKBOm for <iommu@lists.linux-foundation.org>;
- Thu, 15 Apr 2021 14:32:21 +0000 (UTC)
+Authentication-Results: smtp2.osuosl.org (amavisd-new);
+ dkim=pass (2048-bit key) header.d=linaro.org
+Received: from smtp2.osuosl.org ([127.0.0.1])
+ by localhost (smtp2.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+ with ESMTP id 3toK1DDl3f41 for <iommu@lists.linux-foundation.org>;
+ Thu, 15 Apr 2021 14:36:39 +0000 (UTC)
 X-Greylist: whitelisted by SQLgrey-1.8.0
-Received: from mail-ej1-x634.google.com (mail-ej1-x634.google.com
- [IPv6:2a00:1450:4864:20::634])
- by smtp1.osuosl.org (Postfix) with ESMTPS id 3C7B984536
- for <iommu@lists.linux-foundation.org>; Thu, 15 Apr 2021 14:32:21 +0000 (UTC)
-Received: by mail-ej1-x634.google.com with SMTP id v6so35901137ejo.6
- for <iommu@lists.linux-foundation.org>; Thu, 15 Apr 2021 07:32:21 -0700 (PDT)
+Received: from mail-ej1-x629.google.com (mail-ej1-x629.google.com
+ [IPv6:2a00:1450:4864:20::629])
+ by smtp2.osuosl.org (Postfix) with ESMTPS id 4238140228
+ for <iommu@lists.linux-foundation.org>; Thu, 15 Apr 2021 14:36:39 +0000 (UTC)
+Received: by mail-ej1-x629.google.com with SMTP id u21so37208629ejo.13
+ for <iommu@lists.linux-foundation.org>; Thu, 15 Apr 2021 07:36:39 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linaro.org; s=google;
  h=date:from:to:cc:subject:message-id:references:mime-version
  :content-disposition:in-reply-to;
- bh=L82sLuZY0ugbSU18HFCt4zSNof75oOUHwMqo8db7PQo=;
- b=XC47iwRnhn5XxvNoHrSMRTYvMmyylMQea6n3cWehQolID7mQODwsyWFXqzyKtpD4cs
- y8lOrmekf/VJB7hm75G9IUitAhmx4d+XZd+tjHGu3aWmW+aDmt4abDn+Ynv/ewsMjD7A
- tB0toxYzfUjG+MkdueLYPSPI/1KP93N1NvBZrUlvpN5zAT23UL15VsLC7gUs3VSdkeGC
- ytoBapMgadlW/VJrxUHk3dQInzWu4OnHiXIZR9z98djB2162qBKMTn2JtUAfdO+7x8wF
- DNzNM51J/DAqBEYV3l6a7zY+vpSzDa8a1ysLpVwehMew50NF6/0lqnr/LH1SzT/P5/2l
- AkVA==
+ bh=mjhKqmO4P/HOjUJ1FPn/2ppNQrINwg9izlySqB9JB+o=;
+ b=dQZZhJUIg9fPycLxp1hIWYbqTlefJ9fS+5+3rx52g5lZ7R7l35A2B6Jk8Zv1ifQtl1
+ FbvQhhMy++oWabaMTxmc3+n7aE2dKX/HhYmxsFwR3ACD/4oXzdGcRmTX7AtZDBI68+XL
+ GiZiY7hJuSNwF1xthc6mUuIUt65fEc4YW9S+PFkFCB5OGH31pNIO8a8gPjxAp6ok3M0z
+ lb02YlOr9jG1ltSD9X9/TY4ZKNuJnSotaJPn18OAEHFWufO9HQk5HOkecplCbRoUmwzo
+ 39EWdXnowOPmqd4LXuQEIzd2Sj5Cbr1g5DrpouiwNWVbTLHT/BTs5ZQnehxDa+TAtlCn
+ VnVA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
  d=1e100.net; s=20161025;
  h=x-gm-message-state:date:from:to:cc:subject:message-id:references
  :mime-version:content-disposition:in-reply-to;
- bh=L82sLuZY0ugbSU18HFCt4zSNof75oOUHwMqo8db7PQo=;
- b=dARabkVrE7I0yBiekomEMBh4II/q2KMYEuu+yoerhGf+7mLUrKG5Ilzgp5NlwIUZf8
- V4aEmtX6LyfGTorESx6A6NB2D3f/KUmpzFYP9MpOPKvG/UtgHazmeqrywyJKQr0nt9Ri
- GsbMcjRM11OfhDIx7zM/G9gjaDR757NSbDJmiFcPhyUzGNHU5ofqF9kJ2g8sv4ZMaME/
- hrKS7I/1UM1XY6ocqqzphOlEIrbEjyRGsARDndzWUqh3wR51XYS/LU6aAk7nNSbO0DRd
- jGl56kavFrPOL2XiTqwP/M94hkcERA7Lda2E4OkNIbCqOyfp6FztF0fXRXGoF/7YEOj+
- vOEA==
-X-Gm-Message-State: AOAM532+TZO7+lfHN959AwjXbd+Z56C2N1DdWIIFC8kn++fLHteFAtwH
- Ii2cZ6NBVycAgXld9Laby6zJoA==
-X-Google-Smtp-Source: ABdhPJz9xJvjMDtMrGsFu9juT6y5sozB8e2gd0vOrar2nkBQBIR6iW9LlDQfSnkGDtNTNQcx16PR0g==
-X-Received: by 2002:a17:906:32d1:: with SMTP id
- k17mr3752201ejk.94.1618497139334; 
- Thu, 15 Apr 2021 07:32:19 -0700 (PDT)
+ bh=mjhKqmO4P/HOjUJ1FPn/2ppNQrINwg9izlySqB9JB+o=;
+ b=KtI38ujbuZ93PArTEewMuK8ccbLCoSlbS+Bf1palXDcztG/TarqL10g3jy04f1Yl5N
+ RW0mRh5tfBidMms7QvAtn4xgPvCtcBmDQOnZQfUtOCSZYItiOAA/5M2uaLX1avRDeag9
+ ldTKhjN+1MCCaXVRa9w9xXjJmtKobhTTDef/sGKEQ0T+jXnQNGqu6lxhy7rbmeApdwhc
+ FJx5Apsm5mZPY5xMhV0VMlLXOtNQJmZFtJVRatVKcZhETw8MP67FOmN/yXNtVOsGC2Lg
+ 5XllBnhEtqF7zhrOlU8flU1VtbLWUV9TmCnoNoNhVM/3R84rV+BsAIaI7S/FvhEoWlZf
+ H7cA==
+X-Gm-Message-State: AOAM531j8w/gr6P3ZnEeShtoAdplgu0Br3mN3y2Dwc/m2JdXcib3hCog
+ ICqIbI8Xws0pOysA4a6Xguaklw==
+X-Google-Smtp-Source: ABdhPJxT42RtxEVSUyx6KmXpl8AEmphR/mLq1GM6Y9HSFmPvxfBq2sTK8w7eGMSiQrfyfZIiwQtvKQ==
+X-Received: by 2002:a17:907:20f2:: with SMTP id
+ rh18mr3764125ejb.466.1618497397471; 
+ Thu, 15 Apr 2021 07:36:37 -0700 (PDT)
 Received: from myrica ([2001:1715:4e26:a7e0:116c:c27a:3e7f:5eaf])
- by smtp.gmail.com with ESMTPSA id o17sm1975482edt.92.2021.04.15.07.32.18
+ by smtp.gmail.com with ESMTPSA id g20sm2776358edu.91.2021.04.15.07.36.36
  (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
- Thu, 15 Apr 2021 07:32:18 -0700 (PDT)
-Date: Thu, 15 Apr 2021 16:31:59 +0200
+ Thu, 15 Apr 2021 07:36:37 -0700 (PDT)
+Date: Thu, 15 Apr 2021 16:36:17 +0200
 From: Jean-Philippe Brucker <jean-philippe@linaro.org>
-To: Robin Murphy <robin.murphy@arm.com>
-Subject: Re: [PATCH 2/3] ACPI: Add driver for the VIOT table
-Message-ID: <YHhOX6yZi1bxifDp@myrica>
+To: Auger Eric <eric.auger@redhat.com>
+Subject: Re: [PATCH 1/3] ACPICA: iASL: Add definitions for the VIOT table
+Message-ID: <YHhPYYXx/gTsx52x@myrica>
 References: <20210316191652.3401335-1-jean-philippe@linaro.org>
- <20210316191652.3401335-3-jean-philippe@linaro.org>
- <2f081b8f-98e2-2ce1-6be6-bb81aab8e153@arm.com>
+ <20210316191652.3401335-2-jean-philippe@linaro.org>
+ <83d8f573-0a96-5869-2c22-249bf2db7399@redhat.com>
 MIME-Version: 1.0
 Content-Disposition: inline
-In-Reply-To: <2f081b8f-98e2-2ce1-6be6-bb81aab8e153@arm.com>
-Cc: kevin.tian@intel.com, mst@redhat.com, rjw@rjwysocki.net,
- virtualization@lists.linux-foundation.org, linux-acpi@vger.kernel.org,
- iommu@lists.linux-foundation.org, sebastien.boeuf@intel.com, will@kernel.org,
- lenb@kernel.org
+In-Reply-To: <83d8f573-0a96-5869-2c22-249bf2db7399@redhat.com>
+Cc: kevin.tian@intel.com, mst@redhat.com, robin.murphy@arm.com,
+ rjw@rjwysocki.net, virtualization@lists.linux-foundation.org,
+ linux-acpi@vger.kernel.org, iommu@lists.linux-foundation.org,
+ sebastien.boeuf@intel.com, will@kernel.org, lenb@kernel.org
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -111,181 +113,16 @@ Content-Transfer-Encoding: 7bit
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-On Thu, Mar 18, 2021 at 07:36:50PM +0000, Robin Murphy wrote:
-> On 2021-03-16 19:16, Jean-Philippe Brucker wrote:
-> > The ACPI Virtual I/O Translation Table describes topology of
-> > para-virtual platforms. For now it describes the relation between
-> > virtio-iommu and the endpoints it manages. Supporting that requires
-> > three steps:
-> > 
-> > (1) acpi_viot_init(): parse the VIOT table, build a list of endpoints
-> >      and vIOMMUs.
-> > 
-> > (2) acpi_viot_set_iommu_ops(): when the vIOMMU driver is loaded and the
-> >      device probed, register it to the VIOT driver. This step is required
-> >      because unlike similar drivers, VIOT doesn't create the vIOMMU
-> >      device.
-> 
-> Note that you're basically the same as the DT case in this regard, so I'd
-> expect things to be closer to that pattern than to that of IORT.
-> 
-> [...]
-> > @@ -1506,12 +1507,17 @@ int acpi_dma_configure_id(struct device *dev, enum dev_dma_attr attr,
-> >   {
-> >   	const struct iommu_ops *iommu;
-> >   	u64 dma_addr = 0, size = 0;
-> > +	int ret;
-> >   	if (attr == DEV_DMA_NOT_SUPPORTED) {
-> >   		set_dma_ops(dev, &dma_dummy_ops);
-> >   		return 0;
-> >   	}
-> > +	ret = acpi_viot_dma_setup(dev, attr);
-> > +	if (ret)
-> > +		return ret > 0 ? 0 : ret;
-> 
-> I think things could do with a fair bit of refactoring here. Ideally we want
-> to process a possible _DMA method (acpi_dma_get_range()) regardless of which
-> flavour of IOMMU table might be present, and the amount of duplication we
-> fork into at this point is unfortunate.
-> 
-> > +
-> >   	iort_dma_setup(dev, &dma_addr, &size);
-> 
-> For starters I think most of that should be dragged out to this level here -
-> it's really only the {rc,nc}_dma_get_range() bit that deserves to be the
-> IORT-specific call.
+On Thu, Mar 18, 2021 at 06:52:44PM +0100, Auger Eric wrote:
+> Besides
+> Reviewed-by: Eric Auger <eric.auger@redhat.com>
 
-Makes sense, though I'll move it to drivers/acpi/arm64/dma.c instead of
-here, because it has only ever run on CONFIG_ARM64. I don't want to
-accidentally break some x86 platform with an invalid _DMA method (same
-reason 7ad426398082 and 18b709beb503 kept this code in IORT)
-
-> 
-> >   	iommu = iort_iommu_configure_id(dev, input_id);
-> 
-> Similarly, it feels like it's only the table scan part in the middle of that
-> that needs dispatching between IORT/VIOT, and its head and tail pulled out
-> into a common path.
-
-Agreed
-
-> 
-> [...]
-> > +static const struct iommu_ops *viot_iommu_setup(struct device *dev)
-> > +{
-> > +	struct iommu_fwspec *fwspec = dev_iommu_fwspec_get(dev);
-> > +	struct viot_iommu *viommu = NULL;
-> > +	struct viot_endpoint *ep;
-> > +	u32 epid;
-> > +	int ret;
-> > +
-> > +	/* Already translated? */
-> > +	if (fwspec && fwspec->ops)
-> > +		return NULL;
-> > +
-> > +	mutex_lock(&viommus_lock);
-> > +	list_for_each_entry(ep, &viot_endpoints, list) {
-> > +		if (viot_device_match(dev, &ep->dev_id, &epid)) {
-> > +			epid += ep->endpoint_id;
-> > +			viommu = ep->viommu;
-> > +			break;
-> > +		}
-> > +	}
-> > +	mutex_unlock(&viommus_lock);
-> > +	if (!viommu)
-> > +		return NULL;
-> > +
-> > +	/* We're not translating ourself */
-> > +	if (viot_device_match(dev, &viommu->dev_id, &epid))
-> > +		return NULL;
-> > +
-> > +	/*
-> > +	 * If we found a PCI range managed by the viommu, we're the one that has
-> > +	 * to request ACS.
-> > +	 */
-> > +	if (dev_is_pci(dev))
-> > +		pci_request_acs();
-> > +
-> > +	if (!viommu->ops || WARN_ON(!viommu->dev))
-> > +		return ERR_PTR(-EPROBE_DEFER);
-> 
-> Can you create (or look up) a viommu->fwnode when initially parsing the VIOT
-> to represent the IOMMU devices to wait for, such that the
-> viot_device_match() lookup can resolve to that and let you fall into the
-> standard iommu_ops_from_fwnode() path? That's what I mean about following
-> the DT pattern - I guess it might need a bit of trickery to rewrite things
-> if iommu_device_register() eventually turns up with a new fwnode, so I doubt
-> we can get away without *some* kind of private interface between
-> virtio-iommu and VIOT, but it would be nice for the common(ish) DMA paths to
-> stay as unaware of the specifics as possible.
-
-Yes I can reuse iommu_ops_from_fwnode(). Turns out it's really easy: if we
-move the VIOT initialization after acpi_scan_init(), we can use
-pci_get_domain_bus_and_slot() directly and create missing fwnodes. That
-gets rid of any need for a private interface between virtio-iommu and
-VIOT.
-
-> 
-> > +
-> > +	ret = iommu_fwspec_init(dev, viommu->dev->fwnode, viommu->ops);
-> > +	if (ret)
-> > +		return ERR_PTR(ret);
-> > +
-> > +	iommu_fwspec_add_ids(dev, &epid, 1);
-> > +
-> > +	/*
-> > +	 * If we have reason to believe the IOMMU driver missed the initial
-> > +	 * add_device callback for dev, replay it to get things in order.
-> > +	 */
-> > +	if (dev->bus && !device_iommu_mapped(dev))
-> > +		iommu_probe_device(dev);
-> > +
-> > +	return viommu->ops;
-> > +}
-> > +
-> > +/**
-> > + * acpi_viot_dma_setup - Configure DMA for an endpoint described in VIOT
-> > + * @dev: the endpoint
-> > + * @attr: coherency property of the endpoint
-> > + *
-> > + * Setup the DMA and IOMMU ops for an endpoint described by the VIOT table.
-> > + *
-> > + * Return:
-> > + * * 0 - @dev doesn't match any VIOT node
-> > + * * 1 - ops for @dev were successfully installed
-> > + * * -EPROBE_DEFER - ops for @dev aren't yet available
-> > + */
-> > +int acpi_viot_dma_setup(struct device *dev, enum dev_dma_attr attr)
-> > +{
-> > +	const struct iommu_ops *iommu_ops = viot_iommu_setup(dev);
-> > +
-> > +	if (IS_ERR_OR_NULL(iommu_ops)) {
-> > +		int ret = PTR_ERR(iommu_ops);
-> > +
-> > +		if (ret == -EPROBE_DEFER || ret == 0)
-> > +			return ret;
-> > +		dev_err(dev, "error %d while setting up virt IOMMU\n", ret);
-> > +		return 0;
-> > +	}
-> > +
-> > +#ifdef CONFIG_ARCH_HAS_SETUP_DMA_OPS
-> > +	arch_setup_dma_ops(dev, 0, ~0ULL, iommu_ops, attr == DEV_DMA_COHERENT);
-> > +#else
-> > +	iommu_setup_dma_ops(dev, 0, ~0ULL);
-> > +#endif
-> 
-> Duplicating all of this feels particularly wrong... :(
-
-Right, I still don't have a good solution for this last part. Ideally I'd
-implement arch_setup_dma_ops() on x86 but virtio-iommu alone isn't enough
-justification and changing DMAR and IVRS to use it is too much work. For
-the next version I added a probe_finalize() method in virtio-iommu that
-does the same as Vt-d and AMD IOMMU on x86. Hopefully the only wart in the
-series.
+Thanks, though this patch comes from ACPICA and has now been merged with
+the other ACPICA updates:
+https://lore.kernel.org/linux-acpi/20210406213028.718796-1-erik.kaneda@intel.com/
 
 Thanks,
 Jean
-
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
