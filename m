@@ -2,71 +2,74 @@ Return-Path: <SRS0=SOau=JM=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-3.5 required=3.0 tests=BAYES_00,DKIM_INVALID,
-	DKIM_SIGNED,HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,SPF_HELO_NONE,
-	SPF_PASS,URIBL_BLOCKED autolearn=no autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-8.6 required=3.0 tests=BAYES_00,DKIM_INVALID,
+	DKIM_SIGNED,HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,
+	SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED autolearn=ham autolearn_force=no
+	version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9690CC433ED
-	for <iommu@archiver.kernel.org>; Thu, 15 Apr 2021 06:40:46 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id AC625C433B4
+	for <iommu@archiver.kernel.org>; Thu, 15 Apr 2021 06:45:13 +0000 (UTC)
 Received: from smtp2.osuosl.org (smtp2.osuosl.org [140.211.166.133])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 259D561152
-	for <iommu@archiver.kernel.org>; Thu, 15 Apr 2021 06:40:46 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 259D561152
+	by mail.kernel.org (Postfix) with ESMTPS id 33F676113D
+	for <iommu@archiver.kernel.org>; Thu, 15 Apr 2021 06:45:13 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 33F676113D
 Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=infradead.org
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by smtp2.osuosl.org (Postfix) with ESMTP id DDC0640645;
-	Thu, 15 Apr 2021 06:40:45 +0000 (UTC)
+	by smtp2.osuosl.org (Postfix) with ESMTP id 0383040645;
+	Thu, 15 Apr 2021 06:45:13 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
 Received: from smtp2.osuosl.org ([127.0.0.1])
 	by localhost (smtp2.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id VyLHSMUuLnsc; Thu, 15 Apr 2021 06:40:45 +0000 (UTC)
+	with ESMTP id aODL_WjbGdF7; Thu, 15 Apr 2021 06:45:12 +0000 (UTC)
 Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by smtp2.osuosl.org (Postfix) with ESMTP id DACE740204;
-	Thu, 15 Apr 2021 06:40:44 +0000 (UTC)
+	by smtp2.osuosl.org (Postfix) with ESMTP id DD72C401E4;
+	Thu, 15 Apr 2021 06:45:11 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id B0CE3C000C;
-	Thu, 15 Apr 2021 06:40:44 +0000 (UTC)
-Received: from smtp2.osuosl.org (smtp2.osuosl.org [IPv6:2605:bc80:3010::133])
- by lists.linuxfoundation.org (Postfix) with ESMTP id C58A1C000A
- for <iommu@lists.linux-foundation.org>; Thu, 15 Apr 2021 06:40:43 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id B422BC000C;
+	Thu, 15 Apr 2021 06:45:11 +0000 (UTC)
+Received: from smtp1.osuosl.org (smtp1.osuosl.org [IPv6:2605:bc80:3010::138])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 9F2DBC000A
+ for <iommu@lists.linux-foundation.org>; Thu, 15 Apr 2021 06:45:10 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by smtp2.osuosl.org (Postfix) with ESMTP id AC2B440204
- for <iommu@lists.linux-foundation.org>; Thu, 15 Apr 2021 06:40:43 +0000 (UTC)
+ by smtp1.osuosl.org (Postfix) with ESMTP id 75371846D2
+ for <iommu@lists.linux-foundation.org>; Thu, 15 Apr 2021 06:45:10 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from smtp2.osuosl.org ([127.0.0.1])
- by localhost (smtp2.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id dCTvo25wpydu for <iommu@lists.linux-foundation.org>;
- Thu, 15 Apr 2021 06:40:42 +0000 (UTC)
+Authentication-Results: smtp1.osuosl.org (amavisd-new);
+ dkim=pass (2048-bit key) header.d=infradead.org
+Received: from smtp1.osuosl.org ([127.0.0.1])
+ by localhost (smtp1.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+ with ESMTP id xxUzz70Ootnd for <iommu@lists.linux-foundation.org>;
+ Thu, 15 Apr 2021 06:45:10 +0000 (UTC)
 X-Greylist: from auto-whitelisted by SQLgrey-1.8.0
 Received: from casper.infradead.org (casper.infradead.org
  [IPv6:2001:8b0:10b:1236::1])
- by smtp2.osuosl.org (Postfix) with ESMTPS id 60909401E4
- for <iommu@lists.linux-foundation.org>; Thu, 15 Apr 2021 06:40:41 +0000 (UTC)
+ by smtp1.osuosl.org (Postfix) with ESMTPS id CF92C83DB8
+ for <iommu@lists.linux-foundation.org>; Thu, 15 Apr 2021 06:45:09 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
  d=infradead.org; s=casper.20170209; h=In-Reply-To:Content-Type:MIME-Version:
  References:Message-ID:Subject:Cc:To:From:Date:Sender:Reply-To:
  Content-Transfer-Encoding:Content-ID:Content-Description;
- bh=kdup9hnwbEiPmwTx9I9NnARK4LM7lXWcWIkr+6fiOPY=; b=QMvRnHEY6v+1+1x3P9v5O1tppt
- PhAkJUgWiFuni09IbxDa4Vfn6J/XKfcCCD1/a+AMGKH+4hu22+yK89okqW8E/5LCCEvtdOZ5yVdsZ
- i3+4WIvI4x3tg0GEQR+6zXdNXAdmPjMElpRDH5aaGTA/NwhPVGMo+1ZUl5Cu8PLb8LJ1VoPdQQ9zZ
- iLMktBmorhbqIwl211yXC1BJj0xuY5JmU4lpWh/mkQvpeqmSotkM8Jf6TbjMCTbKPYbyM2aJepYJJ
- 4ur57vX4Vy2k9wLGyjWWKxZbUAqULWbDQDH17DRHU0ifO4PNIC7ZLef1veT07UX4EEymYQT1g8imd
- sUW8idYA==;
+ bh=sLaSZVd4EBbrRjPoUQruAkWH+BL8bWgNXBPCwZ3fiOg=; b=uyED9tbYrz+aBtUW6B18Iw8opP
+ D0Wt982bXVbzBHSIbZU/Wg0JbrJiPc+os266qo2mrhEm8u5K+gh3ot8uHm9MG1Nm0nV/6ALtH0yz0
+ TI5Q5XLe7/NM0YACY1eRihJ8dXEAlyfE554IyG0NDtJOvPwxx//zZilRu2xCTG8xOPR9NgnOedHuF
+ n1O0FycpE7bVWtR/B9/e5tt9dDvBv8lxdy7aNsWPtYX0/XBg33IVRXlw1tLIJ0/pz/VYVVYijLB3k
+ VVwxP42xMt2coTBqPalf/P6Al+VLBBjuIDCdmmspoSeSiz+kbbtDE0zEVeEzw5h1U7kqxY5G3jWTq
+ b+ffu2Ig==;
 Received: from hch by casper.infradead.org with local (Exim 4.94 #2 (Red Hat
- Linux)) id 1lWvg1-0089BK-MR; Thu, 15 Apr 2021 06:40:34 +0000
-Date: Thu, 15 Apr 2021 07:40:33 +0100
+ Linux)) id 1lWvkJ-0089Pg-T4; Thu, 15 Apr 2021 06:45:01 +0000
+Date: Thu, 15 Apr 2021 07:44:59 +0100
 From: Christoph Hellwig <hch@infradead.org>
 To: Jacob Pan <jacob.jun.pan@linux.intel.com>
-Subject: Re: [PATCH v2 1/2] iommu/sva: Tighten SVA bind API with explicit flags
-Message-ID: <20210415064033.GA1938497@infradead.org>
+Subject: Re: [PATCH v2 2/2] iommu/sva: Remove mm parameter from SVA bind API
+Message-ID: <20210415064459.GB1938497@infradead.org>
 References: <1618414077-28808-1-git-send-email-jacob.jun.pan@linux.intel.com>
- <1618414077-28808-2-git-send-email-jacob.jun.pan@linux.intel.com>
+ <1618414077-28808-3-git-send-email-jacob.jun.pan@linux.intel.com>
 MIME-Version: 1.0
 Content-Disposition: inline
-In-Reply-To: <1618414077-28808-2-git-send-email-jacob.jun.pan@linux.intel.com>
+In-Reply-To: <1618414077-28808-3-git-send-email-jacob.jun.pan@linux.intel.com>
 X-SRS-Rewrite: SMTP reverse-path rewritten from <hch@infradead.org> by
  casper.infradead.org. See http://www.infradead.org/rpr.html
 Cc: vkoul@kernel.org, "Tian, Kevin" <kevin.tian@intel.com>,
@@ -91,37 +94,33 @@ Content-Transfer-Encoding: 7bit
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-On Wed, Apr 14, 2021 at 08:27:56AM -0700, Jacob Pan wrote:
->  static int idxd_enable_system_pasid(struct idxd_device *idxd)
->  {
-> -	int flags;
-> +	unsigned int flags;
->  	unsigned int pasid;
->  	struct iommu_sva *sva;
+>   *
+>   * Returns 0 on success and < 0 on error.
+> @@ -28,6 +28,9 @@ int iommu_sva_alloc_pasid(struct mm_struct *mm, ioasid_t min, ioasid_t max)
+>  	int ret = 0;
+>  	ioasid_t pasid;
 >  
-> -	flags = SVM_FLAG_SUPERVISOR_MODE;
-> +	flags = IOMMU_SVA_BIND_SUPERVISOR;
+> +	if (mm != current->mm)
+> +		return -EINVAL;
+> +
+
+Why not remove the parameter entirely?
+
+> @@ -2989,8 +2990,11 @@ iommu_sva_bind_device(struct device *dev, struct mm_struct *mm, unsigned int fla
+>  		return ERR_PTR(-ENODEV);
 >  
-> -	sva = iommu_sva_bind_device(&idxd->pdev->dev, NULL, &flags);
-> +	sva = iommu_sva_bind_device(&idxd->pdev->dev, NULL, flags);
+>  	/* Supervisor SVA does not need the current mm */
+> -	if ((flags & IOMMU_SVA_BIND_SUPERVISOR) && mm)
+> -		return ERR_PTR(-EINVAL);
+> +	if (!(flags & IOMMU_SVA_BIND_SUPERVISOR)) {
+> +		mm = get_task_mm(current);
+> +		if (!mm)
+> +			return ERR_PTR(-EINVAL);
+> +	}
 
-Please also remove the now pointless flags variable.
-
-> +iommu_sva_bind_device(struct device *dev, struct mm_struct *mm, unsigned int flags)
-
-Pleae avoid the pointless overly long line.
-
-> -#define SVM_FLAG_GUEST_PASID		(1<<3)
-> +#define SVM_FLAG_GUEST_PASID		(1<<2)
-
-This flag is entirely unused, please just remove it in a prep patch
-rather than renumbering it.
-
->  static inline struct iommu_sva *
-> -iommu_sva_bind_device(struct device *dev, struct mm_struct *mm, void *drvdata)
-> +iommu_sva_bind_device(struct device *dev, struct mm_struct *mm, unsigned int flags)
-
-Same overy long line here.
+I don't see why we need the reference.  I think we should just stop
+passing the mm to ->sva_bind and let the low-level driver deal with
+any reference to current->mm where needed.
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
