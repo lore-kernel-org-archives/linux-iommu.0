@@ -2,78 +2,197 @@ Return-Path: <SRS0=SOau=JM=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-5.2 required=3.0 tests=BAYES_00,
-	HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,
-	URIBL_BLOCKED,USER_AGENT_SANE_2 autolearn=no autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-13.5 required=3.0 tests=BAYES_00,DKIM_INVALID,
+	DKIM_SIGNED,HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_CR_TRAILER,INCLUDES_PATCH,
+	MAILING_LIST_MULTI,MSGID_FROM_MTA_HEADER,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED
+	autolearn=unavailable autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2A5A4C433B4
-	for <iommu@archiver.kernel.org>; Thu, 15 Apr 2021 18:51:16 +0000 (UTC)
-Received: from smtp2.osuosl.org (smtp2.osuosl.org [140.211.166.133])
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6C5BDC433ED
+	for <iommu@archiver.kernel.org>; Thu, 15 Apr 2021 18:54:00 +0000 (UTC)
+Received: from smtp1.osuosl.org (smtp1.osuosl.org [140.211.166.138])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 7B53A610CE
-	for <iommu@archiver.kernel.org>; Thu, 15 Apr 2021 18:51:15 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 7B53A610CE
-Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=linux.intel.com
+	by mail.kernel.org (Postfix) with ESMTPS id 0B417610FA
+	for <iommu@archiver.kernel.org>; Thu, 15 Apr 2021 18:53:59 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 0B417610FA
+Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=oracle.com
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by smtp2.osuosl.org (Postfix) with ESMTP id 3784640240;
-	Thu, 15 Apr 2021 18:51:15 +0000 (UTC)
+	by smtp1.osuosl.org (Postfix) with ESMTP id 7B85E846FE;
+	Thu, 15 Apr 2021 18:53:59 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from smtp2.osuosl.org ([127.0.0.1])
-	by localhost (smtp2.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id hzFTLLu2JJ5x; Thu, 15 Apr 2021 18:51:14 +0000 (UTC)
+Received: from smtp1.osuosl.org ([127.0.0.1])
+	by localhost (smtp1.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+	with ESMTP id Kdkf64HMHUi9; Thu, 15 Apr 2021 18:53:53 +0000 (UTC)
 Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by smtp2.osuosl.org (Postfix) with ESMTP id 189FF400C3;
-	Thu, 15 Apr 2021 18:51:14 +0000 (UTC)
+	by smtp1.osuosl.org (Postfix) with ESMTP id 8D4FF846E5;
+	Thu, 15 Apr 2021 18:53:53 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id D1E5EC000C;
-	Thu, 15 Apr 2021 18:51:13 +0000 (UTC)
-Received: from smtp2.osuosl.org (smtp2.osuosl.org [IPv6:2605:bc80:3010::133])
- by lists.linuxfoundation.org (Postfix) with ESMTP id A0909C000A
- for <iommu@lists.linux-foundation.org>; Thu, 15 Apr 2021 18:51:12 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 66983C000C;
+	Thu, 15 Apr 2021 18:53:53 +0000 (UTC)
+Received: from smtp4.osuosl.org (smtp4.osuosl.org [IPv6:2605:bc80:3010::137])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 33519C000A
+ for <iommu@lists.linux-foundation.org>; Thu, 15 Apr 2021 18:53:52 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by smtp2.osuosl.org (Postfix) with ESMTP id 87919400C3
- for <iommu@lists.linux-foundation.org>; Thu, 15 Apr 2021 18:51:12 +0000 (UTC)
+ by smtp4.osuosl.org (Postfix) with ESMTP id 24874402F0
+ for <iommu@lists.linux-foundation.org>; Thu, 15 Apr 2021 18:53:52 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from smtp2.osuosl.org ([127.0.0.1])
- by localhost (smtp2.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id 9pcWYz-JnFDN for <iommu@lists.linux-foundation.org>;
- Thu, 15 Apr 2021 18:51:11 +0000 (UTC)
+Authentication-Results: smtp4.osuosl.org (amavisd-new);
+ dkim=pass (2048-bit key) header.d=oracle.com header.b="zZG/b3oY";
+ dkim=pass (1024-bit key) header.d=oracle.onmicrosoft.com
+ header.b="H517ixnZ"
+Received: from smtp4.osuosl.org ([127.0.0.1])
+ by localhost (smtp4.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+ with ESMTP id h3NbceHd9d1P for <iommu@lists.linux-foundation.org>;
+ Thu, 15 Apr 2021 18:53:50 +0000 (UTC)
 X-Greylist: domain auto-whitelisted by SQLgrey-1.8.0
-Received: from mga17.intel.com (mga17.intel.com [192.55.52.151])
- by smtp2.osuosl.org (Postfix) with ESMTPS id EA72C401DD
- for <iommu@lists.linux-foundation.org>; Thu, 15 Apr 2021 18:51:10 +0000 (UTC)
-IronPort-SDR: Q8/qtCDWTWyS9XGGsgirf1m+kldvX52xGzl4FK3TIOuaPSxe1hCgoC5WJxIIySyzxJF6iKDoBp
- ylBLGFXhURog==
-X-IronPort-AV: E=McAfee;i="6200,9189,9955"; a="175026850"
-X-IronPort-AV: E=Sophos;i="5.82,225,1613462400"; d="scan'208";a="175026850"
-Received: from orsmga006.jf.intel.com ([10.7.209.51])
- by fmsmga107.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384;
- 15 Apr 2021 11:51:09 -0700
-IronPort-SDR: 7mVjtdxduOhFD/qaBlx9o4lynInMuvOEE55/fJFzvq8O3LoZz3ue7rXJ2xgmFz8gjZXlaOAAMM
- HquB5oNUgcIQ==
-X-IronPort-AV: E=Sophos;i="5.82,225,1613462400"; d="scan'208";a="384108451"
-Received: from jacob-builder.jf.intel.com (HELO jacob-builder) ([10.7.199.155])
- by orsmga006-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384;
- 15 Apr 2021 11:51:09 -0700
-Date: Thu, 15 Apr 2021 11:53:48 -0700
-From: Jacob Pan <jacob.jun.pan@linux.intel.com>
-To: Christoph Hellwig <hch@infradead.org>
-Subject: Re: [PATCH v2 1/2] iommu/sva: Tighten SVA bind API with explicit flags
-Message-ID: <20210415115348.107554aa@jacob-builder>
-In-Reply-To: <20210415064033.GA1938497@infradead.org>
-References: <1618414077-28808-1-git-send-email-jacob.jun.pan@linux.intel.com>
- <1618414077-28808-2-git-send-email-jacob.jun.pan@linux.intel.com>
- <20210415064033.GA1938497@infradead.org>
-Organization: OTC
-X-Mailer: Claws Mail 3.17.5 (GTK+ 2.24.32; x86_64-pc-linux-gnu)
+Received: from aserp2130.oracle.com (aserp2130.oracle.com [141.146.126.79])
+ by smtp4.osuosl.org (Postfix) with ESMTPS id 7B42F402AF
+ for <iommu@lists.linux-foundation.org>; Thu, 15 Apr 2021 18:53:50 +0000 (UTC)
+Received: from pps.filterd (aserp2130.oracle.com [127.0.0.1])
+ by aserp2130.oracle.com (8.16.0.42/8.16.0.42) with SMTP id 13FIZWhS100648;
+ Thu, 15 Apr 2021 18:53:13 GMT
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=oracle.com;
+ h=date : from : to : cc
+ : subject : message-id : references : content-type : in-reply-to :
+ mime-version; s=corp-2020-01-29;
+ bh=8Gqf0/evVWDhoGVwD8p8GrYtW57UPXn+DQqxzcdkQ6Y=;
+ b=zZG/b3oYRBj7NdXGSubwptjseTxFQ9n56JOKo36RIsWGLRs3Rm0qJBdW1z2WB1LUoLga
+ iGd9icHrEcOio4CBq0NU+k6oxZV3YHNYA0dWmtsbgU58282kn4PxNuJ8bMR8RsJvp7oe
+ oKk75Dghh17HTTLhm9LEehh+dNplc7FHEXZYdMMqiP5koYCBUunctdUZ9W9fSR4EJn8W
+ BgUZk+W4YOG8NugJp0QkafEW02JTJO4lrvx/6mRrF0lnoiRiRkjRmjw4EZVIypMbLRmx
+ 3ukmf6uG3DFFkzm5n5G2tsyHnEwNqIdozPL5ePu1aGvOYMoDHFMaLyIVVwarB9CtBXRR zQ== 
+Received: from aserp3030.oracle.com (aserp3030.oracle.com [141.146.126.71])
+ by aserp2130.oracle.com with ESMTP id 37u1hbq20b-1
+ (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+ Thu, 15 Apr 2021 18:53:13 +0000
+Received: from pps.filterd (aserp3030.oracle.com [127.0.0.1])
+ by aserp3030.oracle.com (8.16.0.42/8.16.0.42) with SMTP id 13FIac4F115252;
+ Thu, 15 Apr 2021 18:53:12 GMT
+Received: from nam11-bn8-obe.outbound.protection.outlook.com
+ (mail-bn8nam11lp2169.outbound.protection.outlook.com [104.47.58.169])
+ by aserp3030.oracle.com with ESMTP id 37unkt22ck-1
+ (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+ Thu, 15 Apr 2021 18:53:12 +0000
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=inWWlAKHUbgODtMwIZuYWV5xdeaexzFP8ZidZmrxR3OuTKw+FcWVWpnB/vikxOpBvWzd71FiHcSn5i6t7CC9Dy/AyO2l2P87gUD6gXK2v0df8rE+cyhkBr+EAqASE/AUBfcnc/kvcgbuhSq3gCiwOz0soZ9Gz6+0ko9+vpHc3NFig74JhJtuqJ8kZlByxlwhpYrcYo4H0GNhmoA1pjOtC/0y3YyVcLXcbG1/XH5iCHktZlqOfkvZGg5TpKWnUpQ6Bxkb4D3DFu1tDRU1N2moQ0U90xpeI6lBg1g1hByatAWuxmoRhVjf1Xt8s7xO5poPdjAAVyklLbQ41keKPXh6sQ==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com; 
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=8Gqf0/evVWDhoGVwD8p8GrYtW57UPXn+DQqxzcdkQ6Y=;
+ b=nxuXqB6V9Q0xCdxTysAqNdpOD0VqNtoktFWyv3ItD0yAm93OloLv6KUo50EEBlwzw88Pyu0UCb4/iIK7OksN+G6u6kJOKCSUK6ILn3J4MIusm2NMzko3mIs5AVZ2rjFakfOubl2upsoJ2KBXRyuuz2F+kBOeWjHwcs4Put0Nk46pCjNxX2trbu2MABGvfJwNadVvTuz47H1AqIq8cjkF1nO/KByDvWUqnWT3eIWMfiItf1xBvv2vhECRz5V5LrQCRNXTEiVh3liWUfWT1xqCpd/VlTKvOG8DvbVl5VqXE1IAviDVIX7h/zbZB9mQioWh87q8C4fyETskCY1IzUHcYw==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=oracle.com; dmarc=pass action=none header.from=oracle.com;
+ dkim=pass header.d=oracle.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+ d=oracle.onmicrosoft.com; s=selector2-oracle-onmicrosoft-com;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=8Gqf0/evVWDhoGVwD8p8GrYtW57UPXn+DQqxzcdkQ6Y=;
+ b=H517ixnZoLooQk1ky9WVsmyiH7Da+ppJ55aMeBKozjDLHKEXGaSMKhxF4dXmVQ+0ylWDH3YjBbGjDP8dwAdjfPYzsKdMFmlvzDSp+NHKjLPbsCT74dKQoQJ3ZxPT4s4CQuVQ+myv8hsc5FQDm8P0C2j9gO+4bK2XXvYVOWoGE/g=
+Authentication-Results: gmail.com; dkim=none (message not signed)
+ header.d=none;gmail.com; dmarc=none action=none header.from=oracle.com;
+Received: from BYAPR10MB2999.namprd10.prod.outlook.com (2603:10b6:a03:85::27)
+ by BYAPR10MB2998.namprd10.prod.outlook.com (2603:10b6:a03:84::32)
+ with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4020.17; Thu, 15 Apr
+ 2021 18:53:10 +0000
+Received: from BYAPR10MB2999.namprd10.prod.outlook.com
+ ([fe80::50f2:e203:1cc5:d4f7]) by BYAPR10MB2999.namprd10.prod.outlook.com
+ ([fe80::50f2:e203:1cc5:d4f7%7]) with mapi id 15.20.4020.022; Thu, 15 Apr 2021
+ 18:53:10 +0000
+Date: Thu, 15 Apr 2021 14:52:58 -0400
+From: Konrad Rzeszutek Wilk <konrad.wilk@oracle.com>
+To: Tianyu Lan <ltykernel@gmail.com>
+Subject: Re: [Resend RFC PATCH V2 06/12] HV/Vmbus: Add SNP support for VMbus
+ channel initiate message
+Message-ID: <YHiLiqpTEYbWjbSb@dhcp-10-154-102-149.vpn.oracle.com>
+References: <20210414144945.3460554-1-ltykernel@gmail.com>
+ <20210414144945.3460554-7-ltykernel@gmail.com>
+Content-Disposition: inline
+In-Reply-To: <20210414144945.3460554-7-ltykernel@gmail.com>
+X-Originating-IP: [138.3.200.21]
+X-ClientProxiedBy: SN2PR01CA0039.prod.exchangelabs.com (2603:10b6:804:2::49)
+ To BYAPR10MB2999.namprd10.prod.outlook.com (2603:10b6:a03:85::27)
 MIME-Version: 1.0
-Cc: vkoul@kernel.org, "Tian, Kevin" <kevin.tian@intel.com>,
- Dave Jiang <dave.jiang@intel.com>, Raj Ashok <ashok.raj@intel.com>,
- LKML <linux-kernel@vger.kernel.org>, iommu@lists.linux-foundation.org,
- Jason Gunthorpe <jgg@nvidia.com>, zhangfei.gao@linaro.org,
- Jean-Philippe Brucker <jean-philippe@linaro.com>
+X-MS-Exchange-MessageSentRepresentingType: 1
+Received: from dhcp-10-154-102-149.vpn.oracle.com (138.3.200.21) by
+ SN2PR01CA0039.prod.exchangelabs.com (2603:10b6:804:2::49) with Microsoft SMTP
+ Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.20.4042.16 via Frontend Transport; Thu, 15 Apr 2021 18:53:02 +0000
+X-MS-PublicTrafficType: Email
+X-MS-Office365-Filtering-Correlation-Id: 3ac03ad5-5f2d-4718-e756-08d9003fb68e
+X-MS-TrafficTypeDiagnostic: BYAPR10MB2998:
+X-MS-Exchange-Transport-Forked: True
+X-Microsoft-Antispam-PRVS: <BYAPR10MB29983A9C3F2EAE8A6F757A35894D9@BYAPR10MB2998.namprd10.prod.outlook.com>
+X-MS-Oob-TLC-OOBClassifiers: OLM:2399;
+X-MS-Exchange-SenderADCheck: 1
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: tJhKT3Gv9SbIGXihhMAbUFUNbalx3YVYZBgNsvu1g7tUy9ohIFnbXzskxw7mZYdoX/G5BtgVFY7hMMo6Q04tO6uKOLJqnt3rO+4ht29lobJMr4Eo5174JmCScCbKWomnQUUd7qs1ND1zLhpSvScuR//0HQvrW3mL27C3oBxyRjHappjXFPYjkD0eqcx7puYLO7+ghTa/5jo649Yu4gEcpRM/a43q+f8vKKJugyUP1qGWvESivCM2Iy0OTrUKEcsvL7HNwHE4PJDq1eQH/esf1ewum1Ks+DZx4YM5TICbx61V/qgOneiQkEzDoGHGJ8nBAh+yACYJXWW3Di0UHwhsHa6vUq2+lhKCD2FkBqj8FLCZY4KG0NMR5i7dEcNpc6W5Xhb4whTtORiWnUIDYsXhhS8sZ8hZkA5QzIEaDR2Z1XhBdUo+xp2nKL4eyMu0XLNLf9Pg0nk4uO0I1B3RuiNHXrSfH/Z2CcUtVDOXRNdEN/CTBsvB2lUvRM5hi+nCu7usE1YlXLHHveZzAQJiL5xl5u3vIO040B7NubVOCjI7JTf+WmiLwX30fU3dpf56MHEgoAh0TE6UFuT9uSgz1MRlOtqo1AIV3ZnT4F903xRDb8YCL3aLscyy8GnscfubVW+Z583pEZq5Jkk+cavcUBGOSdm4yVcQxfj0WIciDfLdfy8vYBFNibSI9aTCBwcZLahr
+X-Forefront-Antispam-Report: CIP:255.255.255.255; CTRY:; LANG:en; SCL:1; SRV:;
+ IPV:NLI; SFV:NSPM; H:BYAPR10MB2999.namprd10.prod.outlook.com; PTR:; CAT:NONE;
+ SFS:(346002)(39860400002)(396003)(376002)(366004)(136003)(186003)(16526019)(26005)(5660300002)(86362001)(6666004)(55016002)(4326008)(45080400002)(38350700002)(38100700002)(478600001)(8676002)(83380400001)(956004)(8936002)(316002)(6916009)(66556008)(15650500001)(2906002)(66476007)(7406005)(7416002)(7696005)(52116002)(66946007)(102196002);
+ DIR:OUT; SFP:1101; 
+X-MS-Exchange-AntiSpam-MessageData: =?us-ascii?Q?Bl6uEZEIHPgzXa1fFka4oJOCAjXHc1hBl/ic2GPosPol7D2mL4hDEmvTkJ1p?=
+ =?us-ascii?Q?w7TJ2eJKJmdrlDGpYRseZ5sM7M98LRaNxzsum0KJnnbBMyPwQzJQKkS88YDB?=
+ =?us-ascii?Q?ecZQFrsiegOYvEWEvpDS2ugViWk1MiQ+G8p1GOLoS9lOMSAsBPh1LWrnriNJ?=
+ =?us-ascii?Q?vSs5Xslne90dty2fMEiYpXE6t45TxeaPL6pDnHPAp5G19gVUPI4QfJYlB1BG?=
+ =?us-ascii?Q?R8I/LxTmg6dqF0RBoOWEA8+50MIF5txRfRgpdQ3vnpqTmfdO9a64JdUgBYfR?=
+ =?us-ascii?Q?oiTLPtK6eoU41PIzNMyNESimhs5g314itYrjduONHK90NeaJUsm6LJDA9oL6?=
+ =?us-ascii?Q?PFyBk//KOwdr6ZWWn3Fa4OHe2X9WBYmqTgQfmWThucIbv379efSf1pQL7i6e?=
+ =?us-ascii?Q?o5km5NyujT9qlT+6FmDfFIjBJ0SuvikAdsZ0Nakl2WMownI4C1d+Dl+qSK1G?=
+ =?us-ascii?Q?WZ3A0BIkJLQVUjK1d3oqXK4bAPT1lNOotYpTBNh7Keudd+prNaEOzsmQbyXe?=
+ =?us-ascii?Q?gz/C5giG5JwRMa/6DxkO9f6eoB8uisD4mfgvtAKQQwi/x926dp8Mi8XLIzJF?=
+ =?us-ascii?Q?IFz4OCY7pHg2/bPawj6xasjuj+crAE5fQLhjBe9WuiyHr/fgef2eEYzEVaGp?=
+ =?us-ascii?Q?ZzqEpxptMjnYY6vYEElC3fQYb2cx2OHvb4QnePoWuOD5KXFYVThsT1Yx6tOC?=
+ =?us-ascii?Q?X1iYNnlaZ5JeQEYIAjRiuamvrA7IsM18IeDEgItnzFrggFYXg0t4I7qxBDoL?=
+ =?us-ascii?Q?oCGJDGluBavfSljA2iR//jEs4njcla0HBMuQ4wE48OqTcnKx3rvQFMDUCf38?=
+ =?us-ascii?Q?p/Uhw7yyuuDPFzP9Pm+ZiahePj9Bw5f45Uv79p6rKUc+sjD/DWEB65gMoSOe?=
+ =?us-ascii?Q?uB6OQSivi4qDFxpRiICYvlO1gd0Z7o13JvzIwj/9GA8HemBvdaAFzNLKNQwh?=
+ =?us-ascii?Q?e01tLS1QzTmEMLC+a/yl6Q6FmhSw3VDJruXFKFO1x5N740A/bO1ZeooPyPbl?=
+ =?us-ascii?Q?k24fU4fZNTDxGzEFRC2aZ/z2oyqPgtNMWFuOQh70oF6qeqXlzty2vs02SomR?=
+ =?us-ascii?Q?MQ8++io2bgcc8Hwk8bNvaV94lYBZFTa27QPBWRNR9tMd7nWVbNChwpYn7K7L?=
+ =?us-ascii?Q?Y4BhOgp4rK7WwpH/VQ2+GpbJJ+RGCc4nTS2Y0CPfxf6snX9raJ7fvhr6pokt?=
+ =?us-ascii?Q?t6JEoiOAOiDbDT68RA5OjbMvf5dsIKXRlVkXEuCmwzJSkLxWoyDAbjos53ps?=
+ =?us-ascii?Q?U7STvylsdzJ4YzS+PwVxcWjz2WyFkoRaBzTVt7+R0Xc1PpXdl9He8KBf5sfG?=
+ =?us-ascii?Q?qNDqZwfABy2PWAqp5OQ29kmy?=
+X-OriginatorOrg: oracle.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 3ac03ad5-5f2d-4718-e756-08d9003fb68e
+X-MS-Exchange-CrossTenant-AuthSource: BYAPR10MB2999.namprd10.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 15 Apr 2021 18:53:09.9341 (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 4e2c6054-71cb-48f1-bd6c-3a9705aca71b
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: iHr5/W5UnjOVXfAWin+Hry1ldmgQRWgYv1rJ+zaLL6v/ed4jX2XIz/EjtBHf/+zezXFKJ34OCelWkjPUVVaFzQ==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: BYAPR10MB2998
+X-Proofpoint-Virus-Version: vendor=nai engine=6200 definitions=9955
+ signatures=668683
+X-Proofpoint-Spam-Details: rule=notspam policy=default score=0 spamscore=0
+ mlxlogscore=999
+ adultscore=0 phishscore=0 malwarescore=0 mlxscore=0 bulkscore=0
+ suspectscore=0 classifier=spam adjust=0 reason=mlx scancount=1
+ engine=8.12.0-2104060000 definitions=main-2104150115
+X-Proofpoint-GUID: OXRS-NEE6sUlbgy-yRHyCoVS_cUwPv-B
+X-Proofpoint-ORIG-GUID: OXRS-NEE6sUlbgy-yRHyCoVS_cUwPv-B
+X-Proofpoint-Virus-Version: vendor=nai engine=6200 definitions=9955
+ signatures=668683
+X-Proofpoint-Spam-Details: rule=notspam policy=default score=0 mlxscore=0
+ priorityscore=1501
+ clxscore=1015 adultscore=0 mlxlogscore=999 impostorscore=0 malwarescore=0
+ lowpriorityscore=0 spamscore=0 phishscore=0 bulkscore=0 suspectscore=0
+ classifier=spam adjust=0 reason=mlx scancount=1 engine=8.12.0-2104060000
+ definitions=main-2104150115
+Cc: linux-hyperv@vger.kernel.org, brijesh.singh@amd.com, linux-mm@kvack.org,
+ hpa@zytor.com, kys@microsoft.com, will@kernel.org, hch@lst.de,
+ linux-arch@vger.kernel.org, wei.liu@kernel.org, sthemmin@microsoft.com,
+ linux-scsi@vger.kernel.org, x86@kernel.org, mingo@redhat.com, kuba@kernel.org,
+ jejb@linux.ibm.com, thomas.lendacky@amd.com,
+ Tianyu Lan <Tianyu.Lan@microsoft.com>, arnd@arndb.de, haiyangz@microsoft.com,
+ bp@alien8.de, tglx@linutronix.de, vkuznets@redhat.com,
+ martin.petersen@oracle.com, gregkh@linuxfoundation.org, sunilmut@microsoft.com,
+ linux-kernel@vger.kernel.org, iommu@lists.linux-foundation.org,
+ netdev@vger.kernel.org, akpm@linux-foundation.org, robin.murphy@arm.com,
+ davem@davemloft.net
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -91,60 +210,155 @@ Content-Transfer-Encoding: 7bit
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-Hi Christoph,
-
-Thanks for the review.
-
-On Thu, 15 Apr 2021 07:40:33 +0100, Christoph Hellwig <hch@infradead.org>
-wrote:
-
-> On Wed, Apr 14, 2021 at 08:27:56AM -0700, Jacob Pan wrote:
-> >  static int idxd_enable_system_pasid(struct idxd_device *idxd)
-> >  {
-> > -	int flags;
-> > +	unsigned int flags;
-> >  	unsigned int pasid;
-> >  	struct iommu_sva *sva;
-> >  
-> > -	flags = SVM_FLAG_SUPERVISOR_MODE;
-> > +	flags = IOMMU_SVA_BIND_SUPERVISOR;
-> >  
-> > -	sva = iommu_sva_bind_device(&idxd->pdev->dev, NULL, &flags);
-> > +	sva = iommu_sva_bind_device(&idxd->pdev->dev, NULL, flags);  
+On Wed, Apr 14, 2021 at 10:49:39AM -0400, Tianyu Lan wrote:
+> From: Tianyu Lan <Tianyu.Lan@microsoft.com>
 > 
-> Please also remove the now pointless flags variable.
-> 
-Good catch.
+> The physical address of monitor pages in the CHANNELMSG_INITIATE_CONTACT
+> msg should be in the extra address space for SNP support and these
 
-> > +iommu_sva_bind_device(struct device *dev, struct mm_struct *mm,
-> > unsigned int flags)  
-> 
-> Pleae avoid the pointless overly long line.
-> 
-> > -#define SVM_FLAG_GUEST_PASID		(1<<3)
-> > +#define SVM_FLAG_GUEST_PASID		(1<<2)  
-> 
-> This flag is entirely unused, please just remove it in a prep patch
-> rather than renumbering it.
-> 
-You are right. The flag was set and intended to be used by the guest IO
-page request patches by Baolu.
+What is this 'extra address space'? Is that just normal virtual address
+space of the Linux kernel?
 
-As you might be aware, we are restructuring the guest SVA uAPI according to
-Jason's proposal, can we wait until we have a clear solution? We may
-refactor lots of code.
+> pages also should be accessed via the extra address space inside Linux
+> guest and remap the extra address by ioremap function.
 
-> >  static inline struct iommu_sva *
-> > -iommu_sva_bind_device(struct device *dev, struct mm_struct *mm, void
-> > *drvdata) +iommu_sva_bind_device(struct device *dev, struct mm_struct
-> > *mm, unsigned int flags)  
+OK, why do you need to use ioremap on them? Why not use vmap for
+example? What is it that makes ioremap the right candidate?
+
+
+
+
+
 > 
-> Same overy long line here.
-This is temporary as the mm parameter will be removed in the next patch.
-
-Thanks,
-
-Jacob
+> Signed-off-by: Tianyu Lan <Tianyu.Lan@microsoft.com>
+> ---
+>  drivers/hv/connection.c   | 62 +++++++++++++++++++++++++++++++++++++++
+>  drivers/hv/hyperv_vmbus.h |  1 +
+>  2 files changed, 63 insertions(+)
+> 
+> diff --git a/drivers/hv/connection.c b/drivers/hv/connection.c
+> index 79bca653dce9..a0be9c11d737 100644
+> --- a/drivers/hv/connection.c
+> +++ b/drivers/hv/connection.c
+> @@ -101,6 +101,12 @@ int vmbus_negotiate_version(struct vmbus_channel_msginfo *msginfo, u32 version)
+>  
+>  	msg->monitor_page1 = virt_to_phys(vmbus_connection.monitor_pages[0]);
+>  	msg->monitor_page2 = virt_to_phys(vmbus_connection.monitor_pages[1]);
+> +
+> +	if (hv_isolation_type_snp()) {
+> +		msg->monitor_page1 += ms_hyperv.shared_gpa_boundary;
+> +		msg->monitor_page2 += ms_hyperv.shared_gpa_boundary;
+> +	}
+> +
+>  	msg->target_vcpu = hv_cpu_number_to_vp_number(VMBUS_CONNECT_CPU);
+>  
+>  	/*
+> @@ -145,6 +151,29 @@ int vmbus_negotiate_version(struct vmbus_channel_msginfo *msginfo, u32 version)
+>  		return -ECONNREFUSED;
+>  	}
+>  
+> +	if (hv_isolation_type_snp()) {
+> +		vmbus_connection.monitor_pages_va[0]
+> +			= vmbus_connection.monitor_pages[0];
+> +		vmbus_connection.monitor_pages[0]
+> +			= ioremap_cache(msg->monitor_page1, HV_HYP_PAGE_SIZE);
+> +		if (!vmbus_connection.monitor_pages[0])
+> +			return -ENOMEM;
+> +
+> +		vmbus_connection.monitor_pages_va[1]
+> +			= vmbus_connection.monitor_pages[1];
+> +		vmbus_connection.monitor_pages[1]
+> +			= ioremap_cache(msg->monitor_page2, HV_HYP_PAGE_SIZE);
+> +		if (!vmbus_connection.monitor_pages[1]) {
+> +			vunmap(vmbus_connection.monitor_pages[0]);
+> +			return -ENOMEM;
+> +		}
+> +
+> +		memset(vmbus_connection.monitor_pages[0], 0x00,
+> +		       HV_HYP_PAGE_SIZE);
+> +		memset(vmbus_connection.monitor_pages[1], 0x00,
+> +		       HV_HYP_PAGE_SIZE);
+> +	}
+> +
+>  	return ret;
+>  }
+>  
+> @@ -156,6 +185,7 @@ int vmbus_connect(void)
+>  	struct vmbus_channel_msginfo *msginfo = NULL;
+>  	int i, ret = 0;
+>  	__u32 version;
+> +	u64 pfn[2];
+>  
+>  	/* Initialize the vmbus connection */
+>  	vmbus_connection.conn_state = CONNECTING;
+> @@ -213,6 +243,16 @@ int vmbus_connect(void)
+>  		goto cleanup;
+>  	}
+>  
+> +	if (hv_isolation_type_snp()) {
+> +		pfn[0] = virt_to_hvpfn(vmbus_connection.monitor_pages[0]);
+> +		pfn[1] = virt_to_hvpfn(vmbus_connection.monitor_pages[1]);
+> +		if (hv_mark_gpa_visibility(2, pfn,
+> +				VMBUS_PAGE_VISIBLE_READ_WRITE)) {
+> +			ret = -EFAULT;
+> +			goto cleanup;
+> +		}
+> +	}
+> +
+>  	msginfo = kzalloc(sizeof(*msginfo) +
+>  			  sizeof(struct vmbus_channel_initiate_contact),
+>  			  GFP_KERNEL);
+> @@ -279,6 +319,8 @@ int vmbus_connect(void)
+>  
+>  void vmbus_disconnect(void)
+>  {
+> +	u64 pfn[2];
+> +
+>  	/*
+>  	 * First send the unload request to the host.
+>  	 */
+> @@ -298,6 +340,26 @@ void vmbus_disconnect(void)
+>  		vmbus_connection.int_page = NULL;
+>  	}
+>  
+> +	if (hv_isolation_type_snp()) {
+> +		if (vmbus_connection.monitor_pages_va[0]) {
+> +			vunmap(vmbus_connection.monitor_pages[0]);
+> +			vmbus_connection.monitor_pages[0]
+> +				= vmbus_connection.monitor_pages_va[0];
+> +			vmbus_connection.monitor_pages_va[0] = NULL;
+> +		}
+> +
+> +		if (vmbus_connection.monitor_pages_va[1]) {
+> +			vunmap(vmbus_connection.monitor_pages[1]);
+> +			vmbus_connection.monitor_pages[1]
+> +				= vmbus_connection.monitor_pages_va[1];
+> +			vmbus_connection.monitor_pages_va[1] = NULL;
+> +		}
+> +
+> +		pfn[0] = virt_to_hvpfn(vmbus_connection.monitor_pages[0]);
+> +		pfn[1] = virt_to_hvpfn(vmbus_connection.monitor_pages[1]);
+> +		hv_mark_gpa_visibility(2, pfn, VMBUS_PAGE_NOT_VISIBLE);
+> +	}
+> +
+>  	hv_free_hyperv_page((unsigned long)vmbus_connection.monitor_pages[0]);
+>  	hv_free_hyperv_page((unsigned long)vmbus_connection.monitor_pages[1]);
+>  	vmbus_connection.monitor_pages[0] = NULL;
+> diff --git a/drivers/hv/hyperv_vmbus.h b/drivers/hv/hyperv_vmbus.h
+> index 9416e09ebd58..0778add21a9c 100644
+> --- a/drivers/hv/hyperv_vmbus.h
+> +++ b/drivers/hv/hyperv_vmbus.h
+> @@ -240,6 +240,7 @@ struct vmbus_connection {
+>  	 * is child->parent notification
+>  	 */
+>  	struct hv_monitor_page *monitor_pages[2];
+> +	void *monitor_pages_va[2];
+>  	struct list_head chn_msg_list;
+>  	spinlock_t channelmsg_lock;
+>  
+> -- 
+> 2.25.1
+> 
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
