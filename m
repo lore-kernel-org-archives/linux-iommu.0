@@ -2,97 +2,78 @@ Return-Path: <SRS0=SOau=JM=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-3.5 required=3.0 tests=BAYES_00,DKIM_INVALID,
-	DKIM_SIGNED,HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,SPF_HELO_NONE,
-	SPF_PASS,URIBL_BLOCKED autolearn=no autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-8.6 required=3.0 tests=BAYES_00,DKIM_INVALID,
+	DKIM_SIGNED,HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_CR_TRAILER,
+	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED autolearn=ham
+	autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D8F4FC433ED
-	for <iommu@archiver.kernel.org>; Thu, 15 Apr 2021 14:47:23 +0000 (UTC)
-Received: from smtp4.osuosl.org (smtp4.osuosl.org [140.211.166.137])
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1D789C433B4
+	for <iommu@archiver.kernel.org>; Thu, 15 Apr 2021 14:58:18 +0000 (UTC)
+Received: from smtp3.osuosl.org (smtp3.osuosl.org [140.211.166.136])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 7FEF161029
-	for <iommu@archiver.kernel.org>; Thu, 15 Apr 2021 14:47:23 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 7FEF161029
-Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=linaro.org
+	by mail.kernel.org (Postfix) with ESMTPS id B17F961429
+	for <iommu@archiver.kernel.org>; Thu, 15 Apr 2021 14:58:17 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org B17F961429
+Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=infradead.org
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by smtp4.osuosl.org (Postfix) with ESMTP id 48FD640FAF;
-	Thu, 15 Apr 2021 14:47:23 +0000 (UTC)
+	by smtp3.osuosl.org (Postfix) with ESMTP id 6C0A860D9D;
+	Thu, 15 Apr 2021 14:58:17 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from smtp4.osuosl.org ([127.0.0.1])
-	by localhost (smtp4.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id w2IlI2Wkqj-n; Thu, 15 Apr 2021 14:47:22 +0000 (UTC)
+Received: from smtp3.osuosl.org ([127.0.0.1])
+	by localhost (smtp3.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+	with ESMTP id YHo6kjGUWiww; Thu, 15 Apr 2021 14:58:16 +0000 (UTC)
 Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [IPv6:2605:bc80:3010:104::8cd3:938])
-	by smtp4.osuosl.org (Postfix) with ESMTP id 1C9C840665;
-	Thu, 15 Apr 2021 14:47:22 +0000 (UTC)
+	by smtp3.osuosl.org (Postfix) with ESMTP id 1A69A60D6C;
+	Thu, 15 Apr 2021 14:58:16 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 04CFDC000C;
-	Thu, 15 Apr 2021 14:47:22 +0000 (UTC)
-Received: from smtp4.osuosl.org (smtp4.osuosl.org [140.211.166.137])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 3753FC000A
- for <iommu@lists.linux-foundation.org>; Thu, 15 Apr 2021 14:47:21 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id E6BEEC000C;
+	Thu, 15 Apr 2021 14:58:15 +0000 (UTC)
+Received: from smtp2.osuosl.org (smtp2.osuosl.org [IPv6:2605:bc80:3010::133])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 51E10C000A
+ for <iommu@lists.linux-foundation.org>; Thu, 15 Apr 2021 14:58:15 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by smtp4.osuosl.org (Postfix) with ESMTP id 30F1840F56
- for <iommu@lists.linux-foundation.org>; Thu, 15 Apr 2021 14:47:21 +0000 (UTC)
+ by smtp2.osuosl.org (Postfix) with ESMTP id 2B33040220
+ for <iommu@lists.linux-foundation.org>; Thu, 15 Apr 2021 14:58:15 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from smtp4.osuosl.org ([127.0.0.1])
- by localhost (smtp4.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id PGTgX9xCmnGC for <iommu@lists.linux-foundation.org>;
- Thu, 15 Apr 2021 14:47:20 +0000 (UTC)
-X-Greylist: whitelisted by SQLgrey-1.8.0
-Received: from mail-ed1-x52a.google.com (mail-ed1-x52a.google.com
- [IPv6:2a00:1450:4864:20::52a])
- by smtp4.osuosl.org (Postfix) with ESMTPS id 0C3A640665
- for <iommu@lists.linux-foundation.org>; Thu, 15 Apr 2021 14:47:19 +0000 (UTC)
-Received: by mail-ed1-x52a.google.com with SMTP id f8so28388761edd.11
- for <iommu@lists.linux-foundation.org>; Thu, 15 Apr 2021 07:47:19 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linaro.org; s=google;
- h=date:from:to:cc:subject:message-id:references:mime-version
- :content-disposition:in-reply-to;
- bh=n4QXf+cOw2jRuJk6NYVPzxIPebbr2HANj3LDOYShp5I=;
- b=Jd109QuvoPbeOBhKixUtBt5/Xnwa4xQuAOpVjrA87QwRWKtQDFDLIibyYB0+5GQIEJ
- aHUKSd66q6DYdd5JpKX4S150mKovE2TxkNTVe3vl2MLvTAzMdKOrCTHKx25rOnCWhR/F
- OO4Cr2eqsGRjUtNMQeJd1kDyoNYi5qwmQzWyAgVUOQnLYaqJf3mXGFsDGn57h5DDvtGD
- KhoiVuXcprEmmgcifdilXVTen5ekgIhIs4/XfFslUGr+rZWJmekmcoEtSDRWtOdWei9G
- 1YVduS3e4+0pra7kKAPLQTYuiyZs1aOvYfMfhDDV7Bo6XiJq/rMj/UIUDB3UkQewSxvl
- gPTQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
- d=1e100.net; s=20161025;
- h=x-gm-message-state:date:from:to:cc:subject:message-id:references
- :mime-version:content-disposition:in-reply-to;
- bh=n4QXf+cOw2jRuJk6NYVPzxIPebbr2HANj3LDOYShp5I=;
- b=cGVC/CG9QdWIl0iZQsBs1XsOH9jw8fGR2da7Wf/7tJfSVjGGxPutSm4QEplVtmpO7O
- 74QNcMLZWsf9ZoyDmtZUnQyM2J0tsTBGHIufCGCZvKu/qrRizt3kAMmRvkY15Ws+wDEJ
- zi243gps57b9tfj9eMGCQR2BRjhR1AkYq+F64QLzYMSJEf93wUMZlYujWNkrXX6xuL/t
- 5PAYZVyFnFJLGZWPAGETCeuyDeSviF+J3N97VlNz1GwhwDrX3IXW5beTg7JN5FdSDQSC
- J+qwmuMjBzZhE2rtftTY3x5pjbwozL1+uvkPB2nEgMbWtwCSzt//bDn+vWHByedMKBaU
- dUhw==
-X-Gm-Message-State: AOAM533fiP4oZqkNl3iKpubthPp1tvm7sMArGfpXEqTmBzsVm1b0JrCg
- vhn3shNvBqE7hLK5W0+Ls/pJ0Q==
-X-Google-Smtp-Source: ABdhPJz2+0NTKepbuICEjxCSs4LahmAuUZrrzKCZRlpZy/ROS/vkdkyyfjikrFbRCEfvo5bTe/kvaA==
-X-Received: by 2002:a05:6402:614:: with SMTP id
- n20mr4606117edv.58.1618498038320; 
- Thu, 15 Apr 2021 07:47:18 -0700 (PDT)
-Received: from myrica ([2001:1715:4e26:a7e0:116c:c27a:3e7f:5eaf])
- by smtp.gmail.com with ESMTPSA id f10sm2627950edd.29.2021.04.15.07.47.17
- (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
- Thu, 15 Apr 2021 07:47:17 -0700 (PDT)
-Date: Thu, 15 Apr 2021 16:46:58 +0200
-From: Jean-Philippe Brucker <jean-philippe@linaro.org>
-To: Auger Eric <eric.auger@redhat.com>
-Subject: Re: [PATCH 2/3] ACPI: Add driver for the VIOT table
-Message-ID: <YHhR4nSKYogouGMJ@myrica>
-References: <20210316191652.3401335-1-jean-philippe@linaro.org>
- <20210316191652.3401335-3-jean-philippe@linaro.org>
- <cea43eef-35d2-b6c5-2bf0-ab7ba8473fb6@redhat.com>
+Authentication-Results: smtp2.osuosl.org (amavisd-new);
+ dkim=pass (2048-bit key) header.d=infradead.org
+Received: from smtp2.osuosl.org ([127.0.0.1])
+ by localhost (smtp2.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+ with ESMTP id 96Dx_ZGXPODO for <iommu@lists.linux-foundation.org>;
+ Thu, 15 Apr 2021 14:58:14 +0000 (UTC)
+X-Greylist: from auto-whitelisted by SQLgrey-1.8.0
+Received: from casper.infradead.org (casper.infradead.org
+ [IPv6:2001:8b0:10b:1236::1])
+ by smtp2.osuosl.org (Postfix) with ESMTPS id E454B4021B
+ for <iommu@lists.linux-foundation.org>; Thu, 15 Apr 2021 14:58:13 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+ d=infradead.org; s=casper.20170209; h=In-Reply-To:Content-Type:MIME-Version:
+ References:Message-ID:Subject:Cc:To:From:Date:Sender:Reply-To:
+ Content-Transfer-Encoding:Content-ID:Content-Description;
+ bh=5590gHpbK5FgZNV6w4mBWeptu22O3ONqcmsDN5oTQWM=; b=hwkUtgWDfy9MIDQrmjeIiVdmZB
+ Ns1dR9E5us/LETy9j3UJv40A6Ya7U3V+rd0cs2BWa/WL3oxxi8ntp1x2xkyrHBGO4oNuzCDpFy0hP
+ IdzmW09/Dc7K3keRdaxjs0RXjZOM5rOFazwBL/P15vzKTfOikcG6xe3R7YnYIpNIq08wyP+TBpjhA
+ GNdg+NP2E7AW6hVii+xSMaCd5S1UqTZ2pwnGQV+hRSVfXgxu//wLLXLGAv9wEiho1OSa2l/5BUre7
+ Khdujyc6QrBD4HcFEaF3EQcoSVZT5o0bUu0xNPNrhP6C5mm53pHX4dkrD6hVnEkJEix1Bv7C0v3O5
+ qlY3gUMw==;
+Received: from hch by casper.infradead.org with local (Exim 4.94 #2 (Red Hat
+ Linux)) id 1lX3R7-008hrh-2Z; Thu, 15 Apr 2021 14:57:46 +0000
+Date: Thu, 15 Apr 2021 15:57:41 +0100
+From: Christoph Hellwig <hch@infradead.org>
+To: Joerg Roedel <joro@8bytes.org>
+Subject: Re: [PATCH] iommu/fsl-pamu: Fix uninitialized variable warning
+Message-ID: <20210415145741.GA2074523@infradead.org>
+References: <20210415144442.25103-1-joro@8bytes.org>
 MIME-Version: 1.0
 Content-Disposition: inline
-In-Reply-To: <cea43eef-35d2-b6c5-2bf0-ab7ba8473fb6@redhat.com>
-Cc: kevin.tian@intel.com, mst@redhat.com, robin.murphy@arm.com,
- rjw@rjwysocki.net, virtualization@lists.linux-foundation.org,
- linux-acpi@vger.kernel.org, iommu@lists.linux-foundation.org,
- sebastien.boeuf@intel.com, will@kernel.org, lenb@kernel.org
+In-Reply-To: <20210415144442.25103-1-joro@8bytes.org>
+X-SRS-Rewrite: SMTP reverse-path rewritten from <hch@infradead.org> by
+ casper.infradead.org. See http://www.infradead.org/rpr.html
+Cc: iommu@lists.linux-foundation.org, Joerg Roedel <jroedel@suse.de>,
+ Will Deacon <will@kernel.org>, linux-kernel@vger.kernel.org,
+ kernel test robot <lkp@intel.com>
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -110,15 +91,19 @@ Content-Transfer-Encoding: 7bit
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-On Fri, Mar 19, 2021 at 11:44:26AM +0100, Auger Eric wrote:
-> add some kernel-doc comments matching the explanation in the commit message?
+On Thu, Apr 15, 2021 at 04:44:42PM +0200, Joerg Roedel wrote:
+> From: Joerg Roedel <jroedel@suse.de>
+> 
+> The variable 'i' in the function update_liodn_stash() is not
+> initialized and only used in a debug printk(). So it has no
+> meaning at all, remove it.
+> 
+> Reported-by: kernel test robot <lkp@intel.com>
+> Signed-off-by: Joerg Roedel <jroedel@suse.de>
 
-Yes, I'll add some comments. I got rid of the other issues you pointed out
-while reworking the driver, should be more straightforward now
+Sorry for introducing this.  The fix looks good:
 
-Thanks,
-Jean
-
+Reviewed-by: Christoph Hellwig <hch@lst.de>
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
