@@ -2,64 +2,77 @@ Return-Path: <SRS0=soV1=JQ=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-16.8 required=3.0 tests=BAYES_00,
-	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_CR_TRAILER,INCLUDES_PATCH,
-	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_GIT
+X-Spam-Status: No, score=-10.3 required=3.0 tests=BAYES_00,
+	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_CR_TRAILER,MAILING_LIST_MULTI,
+	NICE_REPLY_A,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_SANE_1
 	autolearn=ham autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 37ECDC433B4
-	for <iommu@archiver.kernel.org>; Mon, 19 Apr 2021 07:18:08 +0000 (UTC)
-Received: from smtp2.osuosl.org (smtp2.osuosl.org [140.211.166.133])
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E8E3DC43618
+	for <iommu@archiver.kernel.org>; Mon, 19 Apr 2021 07:38:09 +0000 (UTC)
+Received: from smtp1.osuosl.org (smtp1.osuosl.org [140.211.166.138])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id BCC856102A
-	for <iommu@archiver.kernel.org>; Mon, 19 Apr 2021 07:18:07 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org BCC856102A
-Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=hisilicon.com
+	by mail.kernel.org (Postfix) with ESMTPS id 612A2610CC
+	for <iommu@archiver.kernel.org>; Mon, 19 Apr 2021 07:38:09 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 612A2610CC
+Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=huawei.com
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by smtp2.osuosl.org (Postfix) with ESMTP id 795C340139;
-	Mon, 19 Apr 2021 07:18:07 +0000 (UTC)
+	by smtp1.osuosl.org (Postfix) with ESMTP id 2DAA983657;
+	Mon, 19 Apr 2021 07:38:09 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from smtp2.osuosl.org ([127.0.0.1])
-	by localhost (smtp2.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id DyKIU0QtkEQM; Mon, 19 Apr 2021 07:18:03 +0000 (UTC)
-Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by smtp2.osuosl.org (Postfix) with ESMTP id 98C4E400C0;
-	Mon, 19 Apr 2021 07:18:03 +0000 (UTC)
+Received: from smtp1.osuosl.org ([127.0.0.1])
+	by localhost (smtp1.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+	with ESMTP id grehQur-tzcZ; Mon, 19 Apr 2021 07:38:08 +0000 (UTC)
+Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [IPv6:2605:bc80:3010:104::8cd3:938])
+	by smtp1.osuosl.org (Postfix) with ESMTP id 2EBD983653;
+	Mon, 19 Apr 2021 07:38:08 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 740AEC000F;
-	Mon, 19 Apr 2021 07:18:03 +0000 (UTC)
-Received: from smtp4.osuosl.org (smtp4.osuosl.org [140.211.166.137])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 5BE33C000B
- for <iommu@lists.linux-foundation.org>; Mon, 19 Apr 2021 07:18:02 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 07EECC000F;
+	Mon, 19 Apr 2021 07:38:08 +0000 (UTC)
+Received: from smtp1.osuosl.org (smtp1.osuosl.org [IPv6:2605:bc80:3010::138])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 5FCE5C000B
+ for <iommu@lists.linux-foundation.org>; Mon, 19 Apr 2021 07:38:06 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by smtp4.osuosl.org (Postfix) with ESMTP id 427B140377
- for <iommu@lists.linux-foundation.org>; Mon, 19 Apr 2021 07:18:02 +0000 (UTC)
+ by smtp1.osuosl.org (Postfix) with ESMTP id 4EBE083657
+ for <iommu@lists.linux-foundation.org>; Mon, 19 Apr 2021 07:38:06 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from smtp4.osuosl.org ([127.0.0.1])
- by localhost (smtp4.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id 80noyFUecK9q for <iommu@lists.linux-foundation.org>;
- Mon, 19 Apr 2021 07:17:58 +0000 (UTC)
+Received: from smtp1.osuosl.org ([127.0.0.1])
+ by localhost (smtp1.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+ with ESMTP id b07IqCBqXGtJ for <iommu@lists.linux-foundation.org>;
+ Mon, 19 Apr 2021 07:38:03 +0000 (UTC)
 X-Greylist: domain auto-whitelisted by SQLgrey-1.8.0
-Received: from szxga04-in.huawei.com (szxga04-in.huawei.com [45.249.212.190])
- by smtp4.osuosl.org (Postfix) with ESMTPS id 2177E40360
- for <iommu@lists.linux-foundation.org>; Mon, 19 Apr 2021 07:17:57 +0000 (UTC)
-Received: from DGGEMS403-HUB.china.huawei.com (unknown [172.30.72.59])
- by szxga04-in.huawei.com (SkyGuard) with ESMTP id 4FNyl915z9z16LC6;
- Mon, 19 Apr 2021 15:15:33 +0800 (CST)
-Received: from localhost.localdomain (10.69.192.58) by
- DGGEMS403-HUB.china.huawei.com (10.3.19.203) with Microsoft SMTP Server id
- 14.3.498.0; Mon, 19 Apr 2021 15:17:48 +0800
-From: chenxiang <chenxiang66@hisilicon.com>
-To: <robin.murphy@arm.com>, <will@kernel.org>, <joro@8bytes.org>
-Subject: [PATCH v3] iommu/iova: put free_iova_mem() outside of spinlock
+Received: from frasgout.his.huawei.com (frasgout.his.huawei.com
+ [185.176.79.56])
+ by smtp1.osuosl.org (Postfix) with ESMTPS id 061F383653
+ for <iommu@lists.linux-foundation.org>; Mon, 19 Apr 2021 07:38:02 +0000 (UTC)
+Received: from fraeml701-chm.china.huawei.com (unknown [172.18.147.200])
+ by frasgout.his.huawei.com (SkyGuard) with ESMTP id 4FNz4T3mWNz68Bg0;
+ Mon, 19 Apr 2021 15:30:33 +0800 (CST)
+Received: from lhreml724-chm.china.huawei.com (10.201.108.75) by
+ fraeml701-chm.china.huawei.com (10.206.15.50) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id
+ 15.1.2176.2; Mon, 19 Apr 2021 09:37:59 +0200
+Received: from [10.47.84.228] (10.47.84.228) by lhreml724-chm.china.huawei.com
+ (10.201.108.75) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2176.2; Mon, 19 Apr
+ 2021 08:37:58 +0100
+Subject: Re: [PATCH v3] iommu/iova: put free_iova_mem() outside of spinlock
  iova_rbtree_lock
-Date: Mon, 19 Apr 2021 15:13:35 +0800
-Message-ID: <1618816415-95649-1-git-send-email-chenxiang66@hisilicon.com>
-X-Mailer: git-send-email 2.8.1
+To: chenxiang <chenxiang66@hisilicon.com>, <robin.murphy@arm.com>,
+ <will@kernel.org>, <joro@8bytes.org>
+References: <1618816415-95649-1-git-send-email-chenxiang66@hisilicon.com>
+From: John Garry <john.garry@huawei.com>
+Message-ID: <573daaa0-047a-d117-3a2e-46d6d776f175@huawei.com>
+Date: Mon, 19 Apr 2021 08:35:20 +0100
+User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; rv:68.0) Gecko/20100101
+ Thunderbird/68.1.2
 MIME-Version: 1.0
-X-Originating-IP: [10.69.192.58]
+In-Reply-To: <1618816415-95649-1-git-send-email-chenxiang66@hisilicon.com>
+Content-Language: en-US
+X-Originating-IP: [10.47.84.228]
+X-ClientProxiedBy: lhreml733-chm.china.huawei.com (10.201.108.84) To
+ lhreml724-chm.china.huawei.com (10.201.108.75)
 X-CFilter-Loop: Reflected
 Cc: iommu@lists.linux-foundation.org, linuxarm@openeuler.org,
  linuxarm@huawei.com
@@ -75,82 +88,30 @@ List-Post: <mailto:iommu@lists.linux-foundation.org>
 List-Help: <mailto:iommu-request@lists.linux-foundation.org?subject=help>
 List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
  <mailto:iommu-request@lists.linux-foundation.org?subject=subscribe>
-Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset="us-ascii"; Format="flowed"
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-From: Xiang Chen <chenxiang66@hisilicon.com>
+On 19/04/2021 08:13, chenxiang wrote:
+> From: Xiang Chen<chenxiang66@hisilicon.com>
+> 
+> It is not necessary to put free_iova_mem() inside of spinlock/unlock
+> iova_rbtree_lock which only leads to more completion for the spinlock.
+> It has a small promote on the performance after the change. And also
+> rename private_free_iova() as remove_iova() because the function will not
+> free iova after that change.
+> 
+> Signed-off-by: Xiang Chen<chenxiang66@hisilicon.com>
 
-It is not necessary to put free_iova_mem() inside of spinlock/unlock
-iova_rbtree_lock which only leads to more completion for the spinlock.
-It has a small promote on the performance after the change. And also
-rename private_free_iova() as remove_iova() because the function will not
-free iova after that change.
+I think that you will need to resend after v5.13-rc1 comes out, however:
 
-Signed-off-by: Xiang Chen <chenxiang66@hisilicon.com>
----
- drivers/iommu/iova.c | 18 +++++++++++-------
- 1 file changed, 11 insertions(+), 7 deletions(-)
+Reviewed-by: John Garry <john.garry@huawei.com>
 
-diff --git a/drivers/iommu/iova.c b/drivers/iommu/iova.c
-index b7ecd5b..b6cf5f1 100644
---- a/drivers/iommu/iova.c
-+++ b/drivers/iommu/iova.c
-@@ -412,12 +412,11 @@ private_find_iova(struct iova_domain *iovad, unsigned long pfn)
- 	return NULL;
- }
- 
--static void private_free_iova(struct iova_domain *iovad, struct iova *iova)
-+static void remove_iova(struct iova_domain *iovad, struct iova *iova)
- {
- 	assert_spin_locked(&iovad->iova_rbtree_lock);
- 	__cached_rbnode_delete_update(iovad, iova);
- 	rb_erase(&iova->node, &iovad->rbroot);
--	free_iova_mem(iova);
- }
- 
- /**
-@@ -452,8 +451,9 @@ __free_iova(struct iova_domain *iovad, struct iova *iova)
- 	unsigned long flags;
- 
- 	spin_lock_irqsave(&iovad->iova_rbtree_lock, flags);
--	private_free_iova(iovad, iova);
-+	remove_iova(iovad, iova);
- 	spin_unlock_irqrestore(&iovad->iova_rbtree_lock, flags);
-+	free_iova_mem(iova);
- }
- EXPORT_SYMBOL_GPL(__free_iova);
- 
-@@ -472,10 +472,13 @@ free_iova(struct iova_domain *iovad, unsigned long pfn)
- 
- 	spin_lock_irqsave(&iovad->iova_rbtree_lock, flags);
- 	iova = private_find_iova(iovad, pfn);
--	if (iova)
--		private_free_iova(iovad, iova);
-+	if (!iova) {
-+		spin_unlock_irqrestore(&iovad->iova_rbtree_lock, flags);
-+		return;
-+	}
-+	remove_iova(iovad, iova);
- 	spin_unlock_irqrestore(&iovad->iova_rbtree_lock, flags);
--
-+	free_iova_mem(iova);
- }
- EXPORT_SYMBOL_GPL(free_iova);
- 
-@@ -825,7 +828,8 @@ iova_magazine_free_pfns(struct iova_magazine *mag, struct iova_domain *iovad)
- 		if (WARN_ON(!iova))
- 			continue;
- 
--		private_free_iova(iovad, iova);
-+		remove_iova(iovad, iova);
-+		free_iova_mem(iova);
- 	}
- 
- 	spin_unlock_irqrestore(&iovad->iova_rbtree_lock, flags);
--- 
-2.8.1
+> ---
+>   drivers/iommu/
+
+
 
 _______________________________________________
 iommu mailing list
