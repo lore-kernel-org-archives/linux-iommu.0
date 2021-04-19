@@ -2,74 +2,118 @@ Return-Path: <SRS0=soV1=JQ=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-16.8 required=3.0 tests=BAYES_00,
+X-Spam-Status: No, score=-13.8 required=3.0 tests=BAYES_00,
 	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_CR_TRAILER,INCLUDES_PATCH,
-	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_GIT
-	autolearn=unavailable autolearn_force=no version=3.4.0
+	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED autolearn=unavailable
+	autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id BC622C43600
+	by smtp.lore.kernel.org (Postfix) with ESMTP id BC2E7C43461
 	for <iommu@archiver.kernel.org>; Mon, 19 Apr 2021 07:07:26 +0000 (UTC)
-Received: from smtp1.osuosl.org (smtp1.osuosl.org [140.211.166.138])
+Received: from smtp4.osuosl.org (smtp4.osuosl.org [140.211.166.137])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 5042361165
+	by mail.kernel.org (Postfix) with ESMTPS id 2183C6101D
 	for <iommu@archiver.kernel.org>; Mon, 19 Apr 2021 07:07:26 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 5042361165
-Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=intel.com
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 2183C6101D
+Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=atmark-techno.com
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by smtp1.osuosl.org (Postfix) with ESMTP id 12DAF83653;
+	by smtp4.osuosl.org (Postfix) with ESMTP id 568A4403CD;
 	Mon, 19 Apr 2021 07:07:25 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from smtp1.osuosl.org ([127.0.0.1])
-	by localhost (smtp1.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id dDgnDNvUsgZQ; Mon, 19 Apr 2021 07:07:24 +0000 (UTC)
+Received: from smtp4.osuosl.org ([127.0.0.1])
+	by localhost (smtp4.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+	with ESMTP id K692AAUvaHvU; Mon, 19 Apr 2021 07:07:24 +0000 (UTC)
 Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [IPv6:2605:bc80:3010:104::8cd3:938])
-	by smtp1.osuosl.org (Postfix) with ESMTP id C624C836C3;
+	by smtp4.osuosl.org (Postfix) with ESMTP id 8AE3B403A4;
 	Mon, 19 Apr 2021 07:07:23 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 6C543C0024;
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 19E24C0019;
 	Mon, 19 Apr 2021 07:07:23 +0000 (UTC)
-Received: from smtp1.osuosl.org (smtp1.osuosl.org [IPv6:2605:bc80:3010::138])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 31774C000B
- for <iommu@lists.linux-foundation.org>; Mon, 19 Apr 2021 05:04:14 +0000 (UTC)
+Received: from smtp3.osuosl.org (smtp3.osuosl.org [140.211.166.136])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 20163C000B
+ for <iommu@lists.linux-foundation.org>; Mon, 19 Apr 2021 05:03:15 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by smtp1.osuosl.org (Postfix) with ESMTP id 1341E82D49
- for <iommu@lists.linux-foundation.org>; Mon, 19 Apr 2021 05:04:14 +0000 (UTC)
+ by smtp3.osuosl.org (Postfix) with ESMTP id EFBA9607A4
+ for <iommu@lists.linux-foundation.org>; Mon, 19 Apr 2021 05:03:14 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from smtp1.osuosl.org ([127.0.0.1])
- by localhost (smtp1.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id cBXNlEOsUcI8 for <iommu@lists.linux-foundation.org>;
- Mon, 19 Apr 2021 05:04:10 +0000 (UTC)
-X-Greylist: domain auto-whitelisted by SQLgrey-1.8.0
-Received: from mga12.intel.com (mga12.intel.com [192.55.52.136])
- by smtp1.osuosl.org (Postfix) with ESMTPS id E6E6A8247F
- for <iommu@lists.linux-foundation.org>; Mon, 19 Apr 2021 05:04:09 +0000 (UTC)
-IronPort-SDR: Un3qZUhhAA1AE0wxO3RY1FH0sQvVzKZvJTVHXdS4vWg8vGRqsKZO0r+4HU3f75pfq+OnD4gnht
- hKwyWX5xLTWw==
-X-IronPort-AV: E=McAfee;i="6200,9189,9958"; a="174757667"
-X-IronPort-AV: E=Sophos;i="5.82,233,1613462400"; d="scan'208";a="174757667"
-Received: from orsmga008.jf.intel.com ([10.7.209.65])
- by fmsmga106.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384;
- 18 Apr 2021 22:04:09 -0700
-IronPort-SDR: rkZj+7hpAC8/mdIwqVQn6To9VCOggQ+nIpMBxtXDzNt0u6AIaYQ1nRC+efjUqWKyjFqLK045kP
- CZMBbEOccwNw==
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.82,233,1613462400"; d="scan'208";a="426366037"
-Received: from ipu5-build.bj.intel.com ([10.238.232.202])
- by orsmga008.jf.intel.com with ESMTP; 18 Apr 2021 22:04:04 -0700
-From: Bingbu Cao <bingbu.cao@intel.com>
-To: linux-kernel@vger.kernel.org, linux-pci@vger.kernel.org,
- iommu@lists.linux-foundation.org
-Subject: [PATCH] iommu: Use passthrough mode for the Intel IPUs
-Date: Mon, 19 Apr 2021 12:57:05 +0800
-Message-Id: <1618808225-10108-1-git-send-email-bingbu.cao@intel.com>
-X-Mailer: git-send-email 2.7.4
+Received: from smtp3.osuosl.org ([127.0.0.1])
+ by localhost (smtp3.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+ with ESMTP id 0qeFOTDDC2EN for <iommu@lists.linux-foundation.org>;
+ Mon, 19 Apr 2021 05:03:13 +0000 (UTC)
+X-Greylist: from auto-whitelisted by SQLgrey-1.8.0
+Received: from gw.atmark-techno.com (gw.atmark-techno.com [13.115.124.170])
+ by smtp3.osuosl.org (Postfix) with ESMTP id D4AB9607A2
+ for <iommu@lists.linux-foundation.org>; Mon, 19 Apr 2021 05:03:12 +0000 (UTC)
+Received: from mail-ua1-f72.google.com (mail-ua1-f72.google.com
+ [209.85.222.72])
+ by gw.atmark-techno.com (Postfix) with ESMTPS id DC9D6804C6
+ for <iommu@lists.linux-foundation.org>; Mon, 19 Apr 2021 14:03:11 +0900 (JST)
+Received: by mail-ua1-f72.google.com with SMTP id
+ o9-20020ab054490000b02901ec47f004b2so76382uaa.17
+ for <iommu@lists.linux-foundation.org>; Sun, 18 Apr 2021 22:03:11 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+ d=1e100.net; s=20161025;
+ h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+ :mime-version:content-disposition:in-reply-to;
+ bh=bLr973ENjFZQNNz5/z+BmoCFuTDVovYaAYguOO0YOc4=;
+ b=toOQ4ntlG0GbVZ7MTmv4ERbe2jTSpygWx24eEj/MBvhE4yIwhirA3PsVMNiZwSrUeO
+ uJPLYbCqciZ4YdL/2FdglqMtyLnpdeXiLg52BuC7SYjJAkX/3XabhBLT0Sxw4YTMRk/c
+ AJjCCYKRm+4mCKHNcJtqyVfMqxspaDKVsFFz4odaieKk2yZwEnhOjXKj0icGH1cPQEFm
+ OMibiunuHGYrpEApRQGe0sREH/cFuBpii/wDGYTwC0bFmRdqWKS4n3rEMr+Rm0tQn7CF
+ 6xUS19Jgs+lPxNgZE1mymiNkV8SdV9aYLgBms4jZiEwLh4NvP2qhoQP5fApInVjHr13s
+ bYEg==
+X-Gm-Message-State: AOAM531Od3lFnJXUb5UDuLq9NT08ZJNorYSCzYuLikCAUQ+cSn6rccEb
+ F+wglXfF8sSXkubnYrffwwl/X3jxiuXEJ45673UtIUIfui25LaAQ1FufTkmYwyJjz3+xgJtqbGh
+ pzPU8oZgJtl2bXpKX8410fd/+2Pds5GccHg==
+X-Received: by 2002:a17:902:d645:b029:e8:ec90:d097 with SMTP id
+ y5-20020a170902d645b02900e8ec90d097mr21074789plh.47.1618808579507; 
+ Sun, 18 Apr 2021 22:02:59 -0700 (PDT)
+X-Google-Smtp-Source: ABdhPJyI1MeNQhpXnytM5xmVsw3ZCkrTxMPyrxhKroAVtmGUaPe01xpWL31HOX4hl1pxmvtORo+KDQ==
+X-Received: by 2002:a17:902:d645:b029:e8:ec90:d097 with SMTP id
+ y5-20020a170902d645b02900e8ec90d097mr21074765plh.47.1618808579243; 
+ Sun, 18 Apr 2021 22:02:59 -0700 (PDT)
+Received: from pc-0115 (103.131.189.35.bc.googleusercontent.com.
+ [35.189.131.103])
+ by smtp.gmail.com with ESMTPSA id ga21sm2553351pjb.5.2021.04.18.22.02.58
+ (version=TLS1_2 cipher=ECDHE-ECDSA-AES128-GCM-SHA256 bits=128/128);
+ Sun, 18 Apr 2021 22:02:58 -0700 (PDT)
+Received: from martinet by pc-0115 with local (Exim 4.94)
+ (envelope-from <martinet@pc-0115>)
+ id 1lYM3l-0016Ra-6N; Mon, 19 Apr 2021 14:02:57 +0900
+Date: Mon, 19 Apr 2021 14:02:47 +0900
+From: Dominique MARTINET <dominique.martinet@atmark-techno.com>
+To: "Alice Guo (OSS)" <alice.guo@oss.nxp.com>
+Subject: Re: [RFC v1 PATCH 3/3] driver: update all the code that use
+ soc_device_match
+Message-ID: <YH0O907dfGY9jQRZ@atmark-techno.com>
+References: <20210419042722.27554-1-alice.guo@oss.nxp.com>
+ <20210419042722.27554-4-alice.guo@oss.nxp.com>
+MIME-Version: 1.0
+Content-Disposition: inline
+In-Reply-To: <20210419042722.27554-4-alice.guo@oss.nxp.com>
 X-Mailman-Approved-At: Mon, 19 Apr 2021 07:07:20 +0000
-Cc: andriy.shevchenko@linux.intel.com, grundler@chromium.org,
- dwmw2@infradead.org, senozhatsky@chromium.org, bhelgaas@google.com,
- bingbu.cao@intel.com, rajatja@google.com, will@kernel.org,
- bingbu.cao@linux.intel.com
+Cc: ulf.hansson@linaro.org, aymen.sghaier@nxp.com, geert+renesas@glider.be,
+ rafael@kernel.org, airlied@linux.ie, mturquette@baylibre.com,
+ dri-devel@lists.freedesktop.org, linux-kernel@vger.kernel.org,
+ a.hajda@samsung.com, netdev@vger.kernel.org, linux-phy@lists.infradead.org,
+ will@kernel.org, linux-clk@vger.kernel.org, linux-renesas-soc@vger.kernel.org,
+ wim@linux-watchdog.org, herbert@gondor.apana.org.au, horia.geanta@nxp.com,
+ khilman@baylibre.com, narmstrong@baylibre.com, linux-staging@lists.linux.dev,
+ iommu@lists.linux-foundation.org, peter.ujfalusi@gmail.com, kishon@ti.com,
+ tony@atomide.com, linux-omap@vger.kernel.org, stern@rowland.harvard.edu,
+ kuba@kernel.org, linus.walleij@linaro.org, linux@roeck-us.net,
+ linux-media@vger.kernel.org, linux-watchdog@vger.kernel.org,
+ Roy.Pledge@nxp.com, linux-pm@vger.kernel.org, linuxppc-dev@lists.ozlabs.org,
+ edubezval@gmail.com, linux-gpio@vger.kernel.org,
+ linux-mediatek@lists.infradead.org, ssantosh@kernel.org,
+ matthias.bgg@gmail.com, linux-amlogic@lists.infradead.org, mchehab@kernel.org,
+ linux-arm-kernel@lists.infradead.org, balbi@kernel.org, tomba@kernel.org,
+ sboyd@kernel.org, gregkh@linuxfoundation.org, linux-usb@vger.kernel.org,
+ linux-mmc@vger.kernel.org, adrian.hunter@intel.com, robert.foss@linaro.org,
+ leoyang.li@nxp.com, linux@prisktech.co.nz, vkoul@kernel.org,
+ linux-crypto@vger.kernel.org, daniel@ffwll.ch, j-keerthy@ti.com,
+ dmaengine@vger.kernel.org, jyri.sarha@iki.fi, davem@davemloft.net
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -82,165 +126,116 @@ List-Post: <mailto:iommu@lists.linux-foundation.org>
 List-Help: <mailto:iommu-request@lists.linux-foundation.org?subject=help>
 List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
  <mailto:iommu-request@lists.linux-foundation.org?subject=subscribe>
-MIME-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-Intel IPU(Image Processing Unit) has its own (IO)MMU hardware,
-The IPU driver allocates its own page table that is not mapped
-via the DMA, and thus the Intel IOMMU driver blocks access giving
-this error:
+Alice Guo (OSS) wrote on Mon, Apr 19, 2021 at 12:27:22PM +0800:
+> From: Alice Guo <alice.guo@nxp.com>
+> 
+> Update all the code that use soc_device_match
 
-DMAR: DRHD: handling fault status reg 3
-DMAR: [DMA Read] Request device [00:05.0] PASID ffffffff
-      fault addr 76406000 [fault reason 06] PTE Read access is not set
+A single patch might be difficult to accept for all components, a each
+maintainer will probably want to have a say on their subsystem?
 
-As IPU is not an external facing device which is not risky, so use
-IOMMU passthrough mode for Intel IPUs.
+I would suggest to split these for a non-RFC version; a this will really
+need to be case-by-case handling.
 
-Signed-off-by: Bingbu Cao <bingbu.cao@intel.com>
----
- drivers/iommu/intel/iommu.c       | 35 +++++++++++++++++++++++++++++++++++
- drivers/staging/media/ipu3/ipu3.c |  2 +-
- include/linux/pci_ids.h           |  5 +++++
- 3 files changed, 41 insertions(+), 1 deletion(-)
+> because add support for soc_device_match returning -EPROBE_DEFER.
 
-diff --git a/drivers/iommu/intel/iommu.c b/drivers/iommu/intel/iommu.c
-index ee0932307d64..59222d2fe73f 100644
---- a/drivers/iommu/intel/iommu.c
-+++ b/drivers/iommu/intel/iommu.c
-@@ -55,6 +55,12 @@
- #define IS_GFX_DEVICE(pdev) ((pdev->class >> 16) == PCI_BASE_CLASS_DISPLAY)
- #define IS_USB_DEVICE(pdev) ((pdev->class >> 8) == PCI_CLASS_SERIAL_USB)
- #define IS_ISA_DEVICE(pdev) ((pdev->class >> 8) == PCI_CLASS_BRIDGE_ISA)
-+#define IS_IPU_DEVICE(pdev) ((pdev)->vendor == PCI_VENDOR_ID_INTEL &&		\
-+			     ((pdev)->device == PCI_DEVICE_ID_INTEL_IPU3 ||	\
-+			     (pdev)->device == PCI_DEVICE_ID_INTEL_IPU6 ||	\
-+			     (pdev)->device == PCI_DEVICE_ID_INTEL_IPU6SE ||	\
-+			     (pdev)->device == PCI_DEVICE_ID_INTEL_IPU6SE_P ||	\
-+			     (pdev)->device == PCI_DEVICE_ID_INTEL_IPU6EP))
- #define IS_AZALIA(pdev) ((pdev)->vendor == 0x8086 && (pdev)->device == 0x3a3e)
- 
- #define IOAPIC_RANGE_START	(0xfee00000)
-@@ -360,6 +366,7 @@ int intel_iommu_enabled = 0;
- EXPORT_SYMBOL_GPL(intel_iommu_enabled);
- 
- static int dmar_map_gfx = 1;
-+static int dmar_map_ipu = 1;
- static int dmar_forcedac;
- static int intel_iommu_strict;
- static int intel_iommu_superpage = 1;
-@@ -368,6 +375,7 @@ static int iommu_skip_te_disable;
- 
- #define IDENTMAP_GFX		2
- #define IDENTMAP_AZALIA		4
-+#define IDENTMAP_IPU		8
- 
- int intel_iommu_gfx_mapped;
- EXPORT_SYMBOL_GPL(intel_iommu_gfx_mapped);
-@@ -2839,6 +2847,9 @@ static int device_def_domain_type(struct device *dev)
- 
- 		if ((iommu_identity_mapping & IDENTMAP_GFX) && IS_GFX_DEVICE(pdev))
- 			return IOMMU_DOMAIN_IDENTITY;
-+
-+		if ((iommu_identity_mapping & IDENTMAP_IPU) && IS_IPU_DEVICE(pdev))
-+			return IOMMU_DOMAIN_IDENTITY;
- 	}
- 
- 	return 0;
-@@ -3278,6 +3289,9 @@ static int __init init_dmars(void)
- 	if (!dmar_map_gfx)
- 		iommu_identity_mapping |= IDENTMAP_GFX;
- 
-+	if (!dmar_map_ipu)
-+		iommu_identity_mapping |= IDENTMAP_IPU;
-+
- 	check_tylersburg_isoch();
- 
- 	ret = si_domain_init(hw_pass_through);
-@@ -5622,6 +5636,15 @@ static void quirk_iommu_igfx(struct pci_dev *dev)
- 	dmar_map_gfx = 0;
- }
- 
-+static void quirk_iommu_ipu(struct pci_dev *dev)
-+{
-+	if (risky_device(dev))
-+		return;
-+
-+	pci_info(dev, "Passthrough IOMMU for integrated Intel IPU\n");
-+	dmar_map_ipu = 0;
-+}
-+
- /* G4x/GM45 integrated gfx dmar support is totally busted. */
- DECLARE_PCI_FIXUP_HEADER(PCI_VENDOR_ID_INTEL, 0x2a40, quirk_iommu_igfx);
- DECLARE_PCI_FIXUP_HEADER(PCI_VENDOR_ID_INTEL, 0x2e00, quirk_iommu_igfx);
-@@ -5657,6 +5680,18 @@ DECLARE_PCI_FIXUP_HEADER(PCI_VENDOR_ID_INTEL, 0x1632, quirk_iommu_igfx);
- DECLARE_PCI_FIXUP_HEADER(PCI_VENDOR_ID_INTEL, 0x163A, quirk_iommu_igfx);
- DECLARE_PCI_FIXUP_HEADER(PCI_VENDOR_ID_INTEL, 0x163D, quirk_iommu_igfx);
- 
-+/* disable IPU dmar support */
-+DECLARE_PCI_FIXUP_HEADER(PCI_VENDOR_ID_INTEL, PCI_DEVICE_ID_INTEL_IPU3,
-+			 quirk_iommu_ipu);
-+DECLARE_PCI_FIXUP_HEADER(PCI_VENDOR_ID_INTEL, PCI_DEVICE_ID_INTEL_IPU6EP,
-+			 quirk_iommu_ipu);
-+DECLARE_PCI_FIXUP_HEADER(PCI_VENDOR_ID_INTEL, PCI_DEVICE_ID_INTEL_IPU6SE_P,
-+			 quirk_iommu_ipu);
-+DECLARE_PCI_FIXUP_HEADER(PCI_VENDOR_ID_INTEL, PCI_DEVICE_ID_INTEL_IPU6,
-+			 quirk_iommu_ipu);
-+DECLARE_PCI_FIXUP_HEADER(PCI_VENDOR_ID_INTEL, PCI_DEVICE_ID_INTEL_IPU6SE,
-+			 quirk_iommu_ipu);
-+
- static void quirk_iommu_rwbf(struct pci_dev *dev)
- {
- 	if (risky_device(dev))
-diff --git a/drivers/staging/media/ipu3/ipu3.c b/drivers/staging/media/ipu3/ipu3.c
-index ee1bba6bdcac..aee1130ac042 100644
---- a/drivers/staging/media/ipu3/ipu3.c
-+++ b/drivers/staging/media/ipu3/ipu3.c
-@@ -16,7 +16,7 @@
- #include "ipu3-dmamap.h"
- #include "ipu3-mmu.h"
- 
--#define IMGU_PCI_ID			0x1919
-+#define IMGU_PCI_ID			PCI_DEVICE_ID_INTEL_IPU3
- #define IMGU_PCI_BAR			0
- #define IMGU_DMA_MASK			DMA_BIT_MASK(39)
- #define IMGU_MAX_QUEUE_DEPTH		(2 + 2)
-diff --git a/include/linux/pci_ids.h b/include/linux/pci_ids.h
-index a76ccb697bef..951315892608 100644
---- a/include/linux/pci_ids.h
-+++ b/include/linux/pci_ids.h
-@@ -2716,6 +2716,7 @@
- #define PCI_DEVICE_ID_INTEL_ALPINE_RIDGE_2C_BRIDGE  0x1576
- #define PCI_DEVICE_ID_INTEL_ALPINE_RIDGE_4C_NHI     0x1577
- #define PCI_DEVICE_ID_INTEL_ALPINE_RIDGE_4C_BRIDGE  0x1578
-+#define PCI_DEVICE_ID_INTEL_IPU3	0x1919
- #define PCI_DEVICE_ID_INTEL_80960_RP	0x1960
- #define PCI_DEVICE_ID_INTEL_QAT_C3XXX	0x19e2
- #define PCI_DEVICE_ID_INTEL_QAT_C3XXX_VF	0x19e3
-@@ -2982,6 +2983,8 @@
- #define PCI_DEVICE_ID_INTEL_SBRIDGE_BR		0x3cf5	/* 13.6 */
- #define PCI_DEVICE_ID_INTEL_SBRIDGE_SAD1	0x3cf6	/* 12.7 */
- #define PCI_DEVICE_ID_INTEL_IOAT_SNB	0x402f
-+#define PCI_DEVICE_ID_INTEL_IPU6EP	0x465d
-+#define PCI_DEVICE_ID_INTEL_IPU6SE_P	0x4e19
- #define PCI_DEVICE_ID_INTEL_5100_16	0x65f0
- #define PCI_DEVICE_ID_INTEL_5100_19	0x65f3
- #define PCI_DEVICE_ID_INTEL_5100_21	0x65f5
-@@ -3032,6 +3035,8 @@
- #define PCI_DEVICE_ID_INTEL_IXP4XX	0x8500
- #define PCI_DEVICE_ID_INTEL_IXP2800	0x9004
- #define PCI_DEVICE_ID_INTEL_VMD_9A0B	0x9a0b
-+#define PCI_DEVICE_ID_INTEL_IPU6	0x9a19
-+#define PCI_DEVICE_ID_INTEL_IPU6SE	0x9a39
- #define PCI_DEVICE_ID_INTEL_S21152BB	0xb152
- 
- #define PCI_VENDOR_ID_SCALEMP		0x8686
+(English does not parse here for me)
+
+I've only commented a couple of places in the code itself, but this
+doesn't seem to add much support for errors, just sweep the problem
+under the rug.
+
+> Signed-off-by: Alice Guo <alice.guo@nxp.com>
+> ---
+> 
+> diff --git a/drivers/bus/ti-sysc.c b/drivers/bus/ti-sysc.c
+> index 5fae60f8c135..00c59aa217c1 100644
+> --- a/drivers/bus/ti-sysc.c
+> +++ b/drivers/bus/ti-sysc.c
+> @@ -2909,7 +2909,7 @@ static int sysc_init_soc(struct sysc *ddata)
+>  	}
+>  
+>  	match = soc_device_match(sysc_soc_feat_match);
+> -	if (!match)
+> +	if (!match || IS_ERR(match))
+>  		return 0;
+
+This function handles errors, I would recommend returning the error as
+is if soc_device_match returned one so the probe can be retried later.
+
+>  
+>  	if (match->data)
+> diff --git a/drivers/clk/renesas/r8a7795-cpg-mssr.c b/drivers/clk/renesas/r8a7795-cpg-mssr.c
+> index c32d2c678046..90a18336a4c3 100644
+> --- a/drivers/clk/renesas/r8a7795-cpg-mssr.c
+> +++ b/drivers/clk/renesas/r8a7795-cpg-mssr.c
+> @@ -439,6 +439,7 @@ static const unsigned int r8a7795es2_mod_nullify[] __initconst = {
+>  
+>  static int __init r8a7795_cpg_mssr_init(struct device *dev)
+>  {
+> +	const struct soc_device_attribute *match;
+>  	const struct rcar_gen3_cpg_pll_config *cpg_pll_config;
+>  	u32 cpg_mode;
+>  	int error;
+> @@ -453,7 +454,8 @@ static int __init r8a7795_cpg_mssr_init(struct device *dev)
+>  		return -EINVAL;
+>  	}
+>  
+> -	if (soc_device_match(r8a7795es1)) {
+> +	match = soc_device_match(r8a7795es1);
+> +	if (!IS_ERR(match) && match) {
+
+Same, return the error.
+Assuming an error means no match will just lead to hard to debug
+problems because the driver potentially assumed the wrong device when
+it's just not ready yet.
+
+>  		cpg_core_nullify_range(r8a7795_core_clks,
+>  				       ARRAY_SIZE(r8a7795_core_clks),
+>  				       R8A7795_CLK_S0D2, R8A7795_CLK_S0D12);
+> [...]
+> diff --git a/drivers/iommu/ipmmu-vmsa.c b/drivers/iommu/ipmmu-vmsa.c
+> index eaaec0a55cc6..13a06b613379 100644
+> --- a/drivers/iommu/ipmmu-vmsa.c
+> +++ b/drivers/iommu/ipmmu-vmsa.c
+> @@ -757,17 +757,20 @@ static const char * const devices_allowlist[] = {
+>  
+>  static bool ipmmu_device_is_allowed(struct device *dev)
+>  {
+> +	const struct soc_device_attribute *match1, *match2;
+>  	unsigned int i;
+>  
+>  	/*
+>  	 * R-Car Gen3 and RZ/G2 use the allow list to opt-in devices.
+>  	 * For Other SoCs, this returns true anyway.
+>  	 */
+> -	if (!soc_device_match(soc_needs_opt_in))
+> +	match1 = soc_device_match(soc_needs_opt_in);
+> +	if (!IS_ERR(match1) && !match1)
+
+I'm not sure what you intended to do, but !match1 already means there is
+no error so the original code is identical.
+
+In this case ipmmu_device_is_allowed does not allow errors so this is
+one of the "difficult" drivers that require slightly more thinking.
+It is only called in ipmmu_of_xlate which does return errors properly,
+so in this case the most straightforward approach would be to make
+ipmmu_device_is_allowed return an int and forward errors as well.
+
+
+
+...
+This is going to need quite some more work to be acceptable, in my
+opinion, but I think it should be possible.
+
+Thanks,
 -- 
-2.7.4
-
+Dominique
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
