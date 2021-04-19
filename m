@@ -2,205 +2,169 @@ Return-Path: <SRS0=soV1=JQ=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-13.6 required=3.0 tests=BAYES_00,DKIM_INVALID,
+X-Spam-Status: No, score=-16.5 required=3.0 tests=BAYES_00,DKIM_INVALID,
 	DKIM_SIGNED,HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_CR_TRAILER,INCLUDES_PATCH,
-	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED autolearn=unavailable
-	autolearn_force=no version=3.4.0
+	MAILING_LIST_MULTI,MSGID_FROM_MTA_HEADER,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,
+	USER_AGENT_GIT autolearn=unavailable autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B4CAEC43462
-	for <iommu@archiver.kernel.org>; Mon, 19 Apr 2021 07:07:28 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id AE5B0C433B4
+	for <iommu@archiver.kernel.org>; Mon, 19 Apr 2021 07:07:27 +0000 (UTC)
 Received: from smtp1.osuosl.org (smtp1.osuosl.org [140.211.166.138])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 43EF261027
-	for <iommu@archiver.kernel.org>; Mon, 19 Apr 2021 07:07:28 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 43EF261027
+	by mail.kernel.org (Postfix) with ESMTPS id 4C3D061027
+	for <iommu@archiver.kernel.org>; Mon, 19 Apr 2021 07:07:27 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 4C3D061027
 Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=oss.nxp.com
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by smtp1.osuosl.org (Postfix) with ESMTP id 3E35F83696;
-	Mon, 19 Apr 2021 07:07:26 +0000 (UTC)
+	by smtp1.osuosl.org (Postfix) with ESMTP id A5A4C836AE;
+	Mon, 19 Apr 2021 07:07:25 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
 Received: from smtp1.osuosl.org ([127.0.0.1])
 	by localhost (smtp1.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id cc3-X7AN2ZsP; Mon, 19 Apr 2021 07:07:24 +0000 (UTC)
-Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [IPv6:2605:bc80:3010:104::8cd3:938])
-	by smtp1.osuosl.org (Postfix) with ESMTP id 5A63783657;
-	Mon, 19 Apr 2021 07:07:24 +0000 (UTC)
+	with ESMTP id EVkZbIOR2Vbp; Mon, 19 Apr 2021 07:07:23 +0000 (UTC)
+Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
+	by smtp1.osuosl.org (Postfix) with ESMTP id F3A0B83638;
+	Mon, 19 Apr 2021 07:07:22 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id E3AECC001F;
-	Mon, 19 Apr 2021 07:07:23 +0000 (UTC)
-Received: from smtp1.osuosl.org (smtp1.osuosl.org [IPv6:2605:bc80:3010::138])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 8BB44C000B
- for <iommu@lists.linux-foundation.org>; Mon, 19 Apr 2021 06:46:23 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 738D1C0026;
+	Mon, 19 Apr 2021 07:07:22 +0000 (UTC)
+Received: from smtp2.osuosl.org (smtp2.osuosl.org [IPv6:2605:bc80:3010::133])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 9C7F5C000B
+ for <iommu@lists.linux-foundation.org>; Mon, 19 Apr 2021 04:29:00 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by smtp1.osuosl.org (Postfix) with ESMTP id 7663B834F2
- for <iommu@lists.linux-foundation.org>; Mon, 19 Apr 2021 06:46:23 +0000 (UTC)
+ by smtp2.osuosl.org (Postfix) with ESMTP id 7C49140132
+ for <iommu@lists.linux-foundation.org>; Mon, 19 Apr 2021 04:29:00 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from smtp1.osuosl.org ([127.0.0.1])
- by localhost (smtp1.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id bt0SnTxbcbxm for <iommu@lists.linux-foundation.org>;
- Mon, 19 Apr 2021 06:46:20 +0000 (UTC)
+Authentication-Results: smtp2.osuosl.org (amavisd-new);
+ dkim=pass (1024-bit key) header.d=nxp1.onmicrosoft.com
+Received: from smtp2.osuosl.org ([127.0.0.1])
+ by localhost (smtp2.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+ with ESMTP id H0aKFXjreMPA for <iommu@lists.linux-foundation.org>;
+ Mon, 19 Apr 2021 04:28:57 +0000 (UTC)
 X-Greylist: whitelisted by SQLgrey-1.8.0
-Received: from EUR05-VI1-obe.outbound.protection.outlook.com
- (mail-vi1eur05on2058.outbound.protection.outlook.com [40.107.21.58])
- by smtp1.osuosl.org (Postfix) with ESMTPS id 766A6834E8
- for <iommu@lists.linux-foundation.org>; Mon, 19 Apr 2021 06:46:19 +0000 (UTC)
+Received: from EUR03-AM5-obe.outbound.protection.outlook.com
+ (mail-eopbgr30063.outbound.protection.outlook.com [40.107.3.63])
+ by smtp2.osuosl.org (Postfix) with ESMTPS id BA9FE400C0
+ for <iommu@lists.linux-foundation.org>; Mon, 19 Apr 2021 04:28:56 +0000 (UTC)
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=hbG+gJ+DPX1zzCg/C8qgg4ygTpzp5BGzQSoozOcogbY2gpzpbVLK6rTzl+IUMuVbHSYRCYV3feWrNE6t/dYb+OV7+S3y/nWqnZkz7uWEaM+X6pBe2JJV0GQ09QxSvuGChH9B8ROAu3/2aOtdvWIlIln90FRWZpgm2KmQ6O5U11IM24p5n2yhLm1WAr+UAVyqN4+Y4+EDSfkwGbbbfWxak1UBCOHvrE0QLU44j6i0uScL7M6xcMLa4/RkdoQBrYBhK8IcZKvPdWkf3yINUFKYgVh17wBOk2kFgtlmpya8jIUVJXMObmewpdLTcJGHMwtSILTUqZVyrtISn0NoSGdIQA==
+ b=VNVgjyChGsOi0W5fo8A1QLOjqeCdAjPprA9QE7ooO0n/UnMqdP4rFhLtByT/hss9EhWbzUhh7SdeE+4OgUyx+Xo+zyj15+W3xgeTH8pJAYkcjGQOy9Vi7osNaHAJRjuMvf3Vh9McyzvbNDWKt3BBpYWbSu655AuQUMRYPF+J/AnAJ6GO5CptDkJshDVe+nbOBbZDsDyzUxR/vSH7pS8SSDKc9Hgz/YTeKjJfi2QEOPnIYRcylHpxDvZ9+rTGeh71z9IgfbbjGgbOWcTARi1h1oIj42AKTNO399cNCEdf31Y6thwbMu3rJUMN3ui9RmPT1MnW2AxNoZ141PR+jVwlVg==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com; 
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=S/ekmCiuXpfdDZVhYbM3OJarFuVunEsDw+BeGEMho3k=;
- b=mtTNnVSGCwN+s2suWlHkfvgjXQ91e3RN2bziq819PR/rrvd0yX7KxMUK/+GteRZGVDuDNgMQYG+A0cAoEvP5LFrNB7kCxAoaE2Ee4NZa8KgG50fg3qYNoGxoAtZErAKgA7OBvgarzXCHonDI/HQvGZpDDPkpTb9Z73SBBgDxFV9CA6NC5sNkC/fjEHfHit0bQyXg1Sp4qkPZdDnQGSSG6vc10WXxew3A/J2ALsNXpcRqeZumDh6kkcj2tneQpKckny18ujkvXNA1bJoZbYQsxQoH2DD8GmbBKBWWNnBw6qVzedukAQlNt0J3XGr3j4NIA5PGYStM5p6sA/pstH/aVw==
+ bh=JR38Ef3yCrpsm0l/Vw1uaZhZY0dZ2rHaxqZe/N5wxKQ=;
+ b=WXqXQRnS6FU5g99Kwlg7Whdsc/B5gSSlhwX4kE5qRRzuXSimSFcaDD+Dl0dUj7Lgvrm96mAEgsvwcbZ4UAjaiZJqwks6Sd/wZRVa+3JS6GanRm5m2nhg7nuLAHz1qoigvlfyeOMlrWD2+yMkni7rsJ13B+4w3T2CbgZF4YNqK1cygaVd9GMODDRsKWQlq983cP2dmItqpeQUdTkJlgoEshqUau/W7FbPvQ42mErNIw0fwYv7HdiuCsgsoQxaToOQpH3tGf/2DXsyt5NmcttiWbsP7KQRl4yQ6ktgVkkulp+GSIljtjFCarkJlb3fvL4LBpp07/Rj85nhxjquGCOjhQ==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
  smtp.mailfrom=oss.nxp.com; dmarc=pass action=none header.from=oss.nxp.com;
  dkim=pass header.d=oss.nxp.com; arc=none
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=NXP1.onmicrosoft.com; 
  s=selector2-NXP1-onmicrosoft-com;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=S/ekmCiuXpfdDZVhYbM3OJarFuVunEsDw+BeGEMho3k=;
- b=e9tcikXjb1qR7+Vbi4r+Ffh4kAeDuAITIQNnWetBTWZmZPi+N4nnOExt8Bq61uY57U9IjMEpuy01bHvDt7Aaxhs8PSF2QrkCHitKLhK01N6zQrsn8I+J+yqpaPGSPZl/2THjfz9r84iOZBnUgYxeEmdvQoDw8x32rX4FwLl9ubc=
+ bh=JR38Ef3yCrpsm0l/Vw1uaZhZY0dZ2rHaxqZe/N5wxKQ=;
+ b=HUjA2Q+4hnjdPczd46vUHDJASI+LSQy9L55ez3DElLBRfi1Saax6iPCVy4mLg0hUQI6A7gSIZ9W8V8GrWGudeXnQ8hnjYTNJqaYWzdgqAwmbh8wqGYgDVv+UKToYyokRIBSpZbDzFqetbtcQZM3AhSjRLrJB9CcYfT6m1CK5DhI=
+Authentication-Results: linuxfoundation.org; dkim=none (message not signed)
+ header.d=none;linuxfoundation.org; dmarc=none action=none
+ header.from=oss.nxp.com;
 Received: from AM6PR04MB6053.eurprd04.prod.outlook.com (2603:10a6:20b:b9::10)
- by AM6PR04MB4087.eurprd04.prod.outlook.com (2603:10a6:209:4d::29)
+ by AM6PR04MB4406.eurprd04.prod.outlook.com (2603:10a6:20b:22::30)
  with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4042.16; Mon, 19 Apr
- 2021 06:46:14 +0000
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4020.22; Mon, 19 Apr
+ 2021 04:28:52 +0000
 Received: from AM6PR04MB6053.eurprd04.prod.outlook.com
  ([fe80::b034:690:56aa:7b18]) by AM6PR04MB6053.eurprd04.prod.outlook.com
  ([fe80::b034:690:56aa:7b18%4]) with mapi id 15.20.4042.024; Mon, 19 Apr 2021
- 06:46:14 +0000
+ 04:28:52 +0000
 From: "Alice Guo (OSS)" <alice.guo@oss.nxp.com>
-To: Leon Romanovsky <leon@kernel.org>, "Alice Guo (OSS)"
- <alice.guo@oss.nxp.com>
-Subject: RE: [RFC v1 PATCH 3/3] driver: update all the code that use
+To: gregkh@linuxfoundation.org, rafael@kernel.org, horia.geanta@nxp.com,
+ aymen.sghaier@nxp.com, herbert@gondor.apana.org.au, davem@davemloft.net,
+ tony@atomide.com, geert+renesas@glider.be, mturquette@baylibre.com,
+ sboyd@kernel.org, vkoul@kernel.org, peter.ujfalusi@gmail.com,
+ a.hajda@samsung.com, narmstrong@baylibre.com, robert.foss@linaro.org,
+ airlied@linux.ie, daniel@ffwll.ch, khilman@baylibre.com, tomba@kernel.org,
+ jyri.sarha@iki.fi, joro@8bytes.org, will@kernel.org, mchehab@kernel.org,
+ ulf.hansson@linaro.org, adrian.hunter@intel.com, kishon@ti.com,
+ kuba@kernel.org, linus.walleij@linaro.org, Roy.Pledge@nxp.com,
+ leoyang.li@nxp.com, ssantosh@kernel.org, matthias.bgg@gmail.com,
+ edubezval@gmail.com, j-keerthy@ti.com, balbi@kernel.org,
+ linux@prisktech.co.nz, stern@rowland.harvard.edu, wim@linux-watchdog.org,
+ linux@roeck-us.net
+Subject: [RFC v1 PATCH 3/3] driver: update all the code that use
  soc_device_match
-Thread-Topic: [RFC v1 PATCH 3/3] driver: update all the code that use
- soc_device_match
-Thread-Index: AQHXNNSAr/U3xBWFq0aUS8skt1OGlqq7SKuAgAAbzGA=
-Date: Mon, 19 Apr 2021 06:46:14 +0000
-Message-ID: <AM6PR04MB6053843FF75BCC8F4FB9A754E2499@AM6PR04MB6053.eurprd04.prod.outlook.com>
+Date: Mon, 19 Apr 2021 12:27:22 +0800
+Message-Id: <20210419042722.27554-4-alice.guo@oss.nxp.com>
+X-Mailer: git-send-email 2.17.1
+In-Reply-To: <20210419042722.27554-1-alice.guo@oss.nxp.com>
 References: <20210419042722.27554-1-alice.guo@oss.nxp.com>
- <20210419042722.27554-4-alice.guo@oss.nxp.com> <YH0O1104YEdjY9mb@unreal>
-In-Reply-To: <YH0O1104YEdjY9mb@unreal>
-Accept-Language: zh-CN, en-US
-Content-Language: en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-authentication-results: kernel.org; dkim=none (message not signed)
- header.d=none;kernel.org; dmarc=none action=none header.from=oss.nxp.com;
-x-ms-exchange-messagesentrepresentingtype: 1
-x-originating-ip: [119.31.174.71]
-x-ms-publictraffictype: Email
-x-ms-office365-filtering-correlation-id: 6906d7cf-de19-4933-5d92-08d902fed3b6
-x-ms-traffictypediagnostic: AM6PR04MB4087:
-x-ms-exchange-sharedmailbox-routingagent-processed: True
-x-ms-exchange-transport-forked: True
-x-microsoft-antispam-prvs: <AM6PR04MB40877FE5ABB3E8ABC2F55EC6A3499@AM6PR04MB4087.eurprd04.prod.outlook.com>
-x-ms-oob-tlc-oobclassifiers: OLM:4714;
-x-ms-exchange-senderadcheck: 1
-x-microsoft-antispam: BCL:0;
-x-microsoft-antispam-message-info: PxnJB4fOakDPC5VAW386/04kZOc479XgenjQD9GMKYnX7cqgyErPMtUT5qgzpqIloHfqrRfJEUzoYF5Qjhb0edBq8+bFWBOycr5zowtj5vsAtRfo+YYm3YER7MCJzS1WAXQdDb1JJi9ia7P7ebwTFRsLcLkfJjgsJsJDBJ5Y/Pq+Li02rPOOmzIfVuekfSyE5xBQhKuiUzRTfpYJ13anZaLL9iqd2U1V+DfoiHvViPB2y3fCsCSFyyFyyFmq9yXd4m7caSM6JhQHd+/Ltc7mbgWbNZ0hpQrMhq9UyxA7KDJ9WiVpWwgadsFlTDJ4NwX7BmcWolBeUARC4ZQ+Iu5jzzuwJ7BwRi6MlcUfgnOLuleViuL1WF/YCzeg1pwce1Gm0eHwQgBg+kC6PJ7gVnU42z7z4+cUWiJnO8KntysqdU2XwoP9kpbfpHtBNhxJtcsSRkFAPx5tnV56L7uWPe2Tim6s3xeGMTmcyS65U9Z/dTWWlFKOhKlyusMoHcJ/NWwh+gFISxra2z5SP0cQx+vJV0eVvXEDKahbZGCT0POb8e3fOazSlX+dtIra4XAJuNs5NxutpRtWiI5V6pLFszQY713T6Gv6uWI/Vo5QjJRrBbw=
-x-forefront-antispam-report: CIP:255.255.255.255; CTRY:; LANG:en; SCL:1; SRV:;
- IPV:NLI; SFV:NSPM; H:AM6PR04MB6053.eurprd04.prod.outlook.com; PTR:; CAT:NONE;
- SFS:(4636009)(346002)(366004)(136003)(376002)(39860400002)(396003)(478600001)(122000001)(52536014)(71200400001)(7366002)(66556008)(66476007)(66946007)(66446008)(76116006)(9686003)(64756008)(7696005)(38100700002)(83380400001)(316002)(7406005)(7416002)(8676002)(86362001)(26005)(4326008)(54906003)(5660300002)(110136005)(186003)(15650500001)(55016002)(6506007)(33656002)(53546011)(2906002)(8936002);
- DIR:OUT; SFP:1101; 
-x-ms-exchange-antispam-messagedata: =?gb2312?B?OFdLZXBSeHZndWg3b2w4bkRlOXA1TjQzRTVYUkhXT1l1eVJGenVYM0NDOXc1?=
- =?gb2312?B?bFZOV09UMjJXUTF4SUVDNStXVzJFWHA4ODFkRllTV0NJcXJFNkpoRDBSSG41?=
- =?gb2312?B?U3dFbVZhcTRnekdWS0RNRU44ejdjQTJ0VzkwVllhWEFnQWFKV1dCckFEQ01v?=
- =?gb2312?B?YlVzbmNXUjFRUEFweUZlSkNVT0MvL1hRSzBqQmpYTkxGN0JnUFhUMGx0TklL?=
- =?gb2312?B?SitsYUJySXlyUDFUY3J2ellLQ0NpSjdNaXpPblN4d1haSVpKMFFjTW5rU1Br?=
- =?gb2312?B?bjRaVkJVZXAzYlk2aFlBSjVRakpVaHZ4UFRnTytaTktDdk5lMzVxODdtTmtQ?=
- =?gb2312?B?amdJMlljNWNEUVlIdHBseld5UUtZZHlqdEJab1RHWXhOZzNWLzZsNDZ4Y2x6?=
- =?gb2312?B?ajcwNlBiMmRqazZ4Q3RZcHprOVB6ZVI4QUJVK25DR0p1bEpDODNXT1BXTUNK?=
- =?gb2312?B?em5BYXowb2FnaDd2NUhyZ0hnS2svRm5Fbm9HNjRKVndGQXpVWWRoZXg3K1o0?=
- =?gb2312?B?bURHY3JNYU94NlZOaE51L09NSm9vUS9RNUpXL2Q3aVIrUVNZZ2VCRTg3azBK?=
- =?gb2312?B?c2c2dmNhTGNKWXNEWU9CU0hiVjVEblNDcUFZRUYveWFHcC9mU3JEbklXWTdh?=
- =?gb2312?B?MEkrL1FUMUVwVG9sNG5MMHRXVzl3YU9DVExzVkwxVkxNaS96RGZObCtUaytX?=
- =?gb2312?B?R1FMTVhKMGgvMHI2RVJtUmpwYUpnRnl4UVVBbm1wVUYrRFRMWkg4OHFQcDB4?=
- =?gb2312?B?T2tUZlZlbDcxbU9SNmdGWFQwdk53L3pUTXF2MERaVlVLODRkcEZvY0NtS3Ny?=
- =?gb2312?B?VDluM0U3N0lpbkE4aUpKdFQ5VXQwRENEMmJMT25NSVc5ZDdoQXptOVB2cmQ4?=
- =?gb2312?B?LzVHSUNIUXhVUzc5NS9BNlp5VytjWjdHSkdPaXBibFBwc1NhS25JRFk1UThI?=
- =?gb2312?B?Y0dsSUoySStmT3RoRDBOeEtXRUdXR2IvSkpIWktoRjhsN1IyY2ZTbkZPTXQ4?=
- =?gb2312?B?TnV6MTd2YitqL0pvRUFWUWdublVXM3l3ZHJ0V2RuL0UyRmxwSHgxQmZvWVE3?=
- =?gb2312?B?bk1oYlFMTFM5MUlBY1V5UE13YlhRRjlJWnpRZ1A0WUNMTExRaVFMci9hNm9z?=
- =?gb2312?B?UUJ2T21uOENIRDFaTTM1eGEyNFZiM2VPRndaTTBxWWZ0bzRyNXh6TlZFYStW?=
- =?gb2312?B?Z1E4ZzM1dlU2cGZvZkZEZ29PSU1yUEdXN2JzVWVqNzNrbDFtSFhlSWZpODNT?=
- =?gb2312?B?b29Od1BOWGxxYVZ5NWVMRWxNS3BLVm1xU2ZHbVpoZXQrSGhwMkFBaVZydkY0?=
- =?gb2312?B?VTQwRXMzcUlWdElOYk14OGJhTm03MkExMExGWlJKcURLcTdaTzhRYkhNbmZu?=
- =?gb2312?B?bDBQZVR2aCtnaFlQcDcycFVTTkE5cmdqbjJHVy83Z1NTK1FmYWJsVms5eEZD?=
- =?gb2312?B?VXR5UEVzaWd5K25IWG01VjlXOG43RGVSdUtXVkQ4K1o1elQvK2F0TlpQUFlZ?=
- =?gb2312?B?VlJzbzk2RkhqWndqdDlKN0JzcWFMcjdsVGVLUGd3MFU0VndDYnRhSkJnTGVw?=
- =?gb2312?B?TGQyVGhxNHk3WWxpbjk2bDJwbVRWcmJhWHVFdFQxeU02Nms5aW1PSmRpNXJG?=
- =?gb2312?B?cUsxVk93dXZYWEVJbC9YU3hCejdJSFdrY3ZEa3c1RVd6cU93a1kvZzNIaXp3?=
- =?gb2312?B?STRpNTF2K2huM1hOZ0dsWGlvVnRXeTNLZEl2bjB1RnpZbjdjL0ZVZmRraU5w?=
- =?gb2312?Q?374GHsPavekmqMM+jj4SycNGizfBtXkoyW44V3B?=
+X-Originating-IP: [119.31.174.71]
+X-ClientProxiedBy: AM0PR02CA0207.eurprd02.prod.outlook.com
+ (2603:10a6:20b:28f::14) To AM6PR04MB6053.eurprd04.prod.outlook.com
+ (2603:10a6:20b:b9::10)
 MIME-Version: 1.0
+X-MS-Exchange-MessageSentRepresentingType: 1
+Received: from nxf55104-OptiPlex-7060.ap.freescale.net (119.31.174.71) by
+ AM0PR02CA0207.eurprd02.prod.outlook.com (2603:10a6:20b:28f::14) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4042.19 via Frontend
+ Transport; Mon, 19 Apr 2021 04:28:33 +0000
+X-MS-PublicTrafficType: Email
+X-MS-Office365-Filtering-Correlation-Id: ae8910fb-f1ac-4eb0-0e6b-08d902eba26c
+X-MS-TrafficTypeDiagnostic: AM6PR04MB4406:
+X-MS-Exchange-SharedMailbox-RoutingAgent-Processed: True
+X-MS-Exchange-Transport-Forked: True
+X-Microsoft-Antispam-PRVS: <AM6PR04MB4406747B2D44512854E0D701A3499@AM6PR04MB4406.eurprd04.prod.outlook.com>
+X-MS-Oob-TLC-OOBClassifiers: OLM:843;
+X-MS-Exchange-SenderADCheck: 1
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: AGl30tAMSycmpdC2zhkyWF0yx84gVfjrfaCd/gFzkRuZNGr9It51L9umhoOHl5jMDzQGaNRCGWIvT3/i5iulwERFHIOm9UmnIzfAKTyBoxPwf05uuwg99LIIycDwmSehQzjHpMeJJVbfnQoy6OaB6z8NdeMu2lT0vCz8TjaYm9vnxbzyLfRKz7WpwDkG5XhDLwREK+Dm2t/e7grP2LzFIWZYx0j1W/btHq8CPPzwMRl+EiZi7RZXAXTkU2vPbXs/A+vT2tOWFYRgZ4ZzN0UQgnBnUfy8C1C/uJilIWzAUEJSTXqnb1rv7U5vPBOdPxKqpYanCAv4GK/F6QbXeRowRzgNmIixG5XeELslfXD5A0qGIG+tCzEG9Eq6yKp+xIT/xZfRtb9+EzEUPJAbo0p4b2ksTB14W4N8KL82RDd3f55QZHT1xo0gvEhGrmwBbipMb97+oppmtuP7mcabPDolBym9E2hg6Fw0k1pZWJ84GalHNws8iCgn11J3cUXsd5BHxg/VobLxAu4xUfgyhqwZii3DLK4597O8P35J+kcvmL02tjZglYYEhmzJ8p/5MNRpdC8U+Z0cNmpVhXHOD5/Zlyvkz+Xg9sCL1NmOM6MmnmHwvaPpopJXVfv/1odoTx5TnKAOmwz/Kw3oEgtmp5X7roOKTmdZue66vJ4jHMINOMo=
+X-Forefront-Antispam-Report: CIP:255.255.255.255; CTRY:; LANG:en; SCL:1; SRV:;
+ IPV:NLI; SFV:NSPM; H:AM6PR04MB6053.eurprd04.prod.outlook.com; PTR:; CAT:NONE;
+ SFS:(4636009)(346002)(136003)(366004)(396003)(39860400002)(376002)(186003)(7366002)(7406005)(6666004)(2906002)(8936002)(2616005)(26005)(5660300002)(8676002)(83380400001)(86362001)(38350700002)(7416002)(38100700002)(16526019)(316002)(956004)(1076003)(66556008)(15650500001)(4326008)(6486002)(6512007)(478600001)(6506007)(921005)(66946007)(52116002)(30864003)(66476007);
+ DIR:OUT; SFP:1101; 
+X-MS-Exchange-AntiSpam-MessageData: =?us-ascii?Q?0JOB576zVAEKseU9JXkg+/LZ6QhEz/REwynOrYeiRL924v2v22TpX7Tm5sKT?=
+ =?us-ascii?Q?OnmluQCsytia7XdaTMgYWvKNAC60moSG/LqkCxXR8xpJYS2MwApD7BkDNq2X?=
+ =?us-ascii?Q?9c8/vtY0Rg+GU7mlLML4mHVmuE2poOzvlri2q5fzogoQQIkeZoE/uB2UWaCx?=
+ =?us-ascii?Q?F96yWe3Fq9d3uN9G5OCP0LZCbzLSBK9wecx1lSuF1Mf1ZQ+UhteSV9EKejSH?=
+ =?us-ascii?Q?AnDv9YtZ2OPJ9+Al83nsu9G6thVJwsCTk1uLCYh9lrL6hKSIO16P61MXXw/L?=
+ =?us-ascii?Q?KOBKvpru7l83rB1uA+vM5D+08wzucRmb06sDXc3BAmxuauxSFx0lFnmRx5/s?=
+ =?us-ascii?Q?V6GH10B2C9C2aWsYoQqS9gn02TpUiweknvAaN0GbcY+7oFaUfjJCexcQGu7y?=
+ =?us-ascii?Q?JDPS++bMZtIc5Vbic+UosJ7YJkyw96qpuEQKDGmOxjA263+sZn5mIGfCQEAg?=
+ =?us-ascii?Q?nGeJojCJMegvWPGbMkI/IKD7CSoDOMqPBQaQ/XHsS8OQG+Z9M3QkCU3+cmpY?=
+ =?us-ascii?Q?qS0g62oMpcnhIDK1svnqqrKAgiPyzds5ujjX+ko8VdSuWcoQLWrLitxxfVq2?=
+ =?us-ascii?Q?rcE75Ml/WQ+GodjGzjS7hd10N9UEZjfV099nbAxFRyOLhpZq+AbxnXZKmSb0?=
+ =?us-ascii?Q?F3brME4TcGfHSxBGrCkv5sV9rL56f6mx/a32BhlLf4QgsQ2QN2+fyYqNU+dq?=
+ =?us-ascii?Q?Xqtd/mB93r+0xXfI0jNLZTxOacCKXYEpFH7WoMS/k+CSgz5pNENOdMHsV9Lm?=
+ =?us-ascii?Q?OP/Bv9m5u/Eo0r9qkUEH0fzEMKCcXINn/ldTkPIORPJP4LrtBPSFCkf3lxof?=
+ =?us-ascii?Q?8xbJsZMANcgUe46TkEBSR3dt/8t41WEDMk+ImW/SSFW8QkEM9QZwhOj7w18d?=
+ =?us-ascii?Q?lKnSB7Lc8SlXX+9tAVI4CWdcXmRFXL8Hh9Kd2UaqPMOrrUaudHzWqB7+N8c3?=
+ =?us-ascii?Q?VbX8vT74HqDup3B32aDHon+VLa0luhq9suCO0EgX0BaiSjjYvQoGJJv5Bks7?=
+ =?us-ascii?Q?fyIvO1fhm7RlnY21fJbFdbr61rP/1TqUC56y0hcj7yOEsA4ZnpfW67W/Xw1t?=
+ =?us-ascii?Q?ogqDiJErQ7v+r4VuUzGkf4aWsGFaPlFlLGCwpCaXjjfBExCp8X8ccn6M200g?=
+ =?us-ascii?Q?k/M7VBVSqdFJqmAKnF8MVFIr5iQY9pLWrkSv04HYG84bN3gjFcEF/hnPTylU?=
+ =?us-ascii?Q?YiFxT+GvevhmVddspiISnqqt7N8oUX1+Ycxb2RffWcS2Bc4btZ8S/pRJ3pPd?=
+ =?us-ascii?Q?5Y/iW+LaK4vT7Q25KMlr9xoX2llT2kByxGyyIl3tiIRNNgtBMWK9fBmDBVCt?=
+ =?us-ascii?Q?cRdEKIWQPlHY037++4Ot1WTS?=
 X-OriginatorOrg: oss.nxp.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-Network-Message-Id: ae8910fb-f1ac-4eb0-0e6b-08d902eba26c
 X-MS-Exchange-CrossTenant-AuthSource: AM6PR04MB6053.eurprd04.prod.outlook.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 6906d7cf-de19-4933-5d92-08d902fed3b6
-X-MS-Exchange-CrossTenant-originalarrivaltime: 19 Apr 2021 06:46:14.4479 (UTC)
-X-MS-Exchange-CrossTenant-fromentityheader: Hosted
-X-MS-Exchange-CrossTenant-id: 686ea1d3-bc2b-4c6f-a92c-d99c5c301635
-X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: fJXmLnh6BhYa1IBaaU0/Dz2uvUMEy1NmNA7eA1tgndf2twe1GZlxzCh11ua30CInKMVToXVSV7FpkBHa5AgVUA==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: AM6PR04MB4087
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 19 Apr 2021 04:28:52.5770 (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 686ea1d3-bc2b-4c6f-a92c-d99c5c301635
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: 1/OaAWfsYzDRzxQN2ODMAnchQA7SZoZvNGCXLqH1Ru5qDeZko+G8kKBDSg9reNJ+PpkgAm3mR6WjZTZ8IpfUPA==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: AM6PR04MB4406
 X-Mailman-Approved-At: Mon, 19 Apr 2021 07:07:20 +0000
-Cc: "ulf.hansson@linaro.org" <ulf.hansson@linaro.org>,
- Aymen Sghaier <aymen.sghaier@nxp.com>,
- "geert+renesas@glider.be" <geert+renesas@glider.be>,
- "rafael@kernel.org" <rafael@kernel.org>, "airlied@linux.ie" <airlied@linux.ie>,
- "mturquette@baylibre.com" <mturquette@baylibre.com>,
- "dri-devel@lists.freedesktop.org" <dri-devel@lists.freedesktop.org>,
- "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
- "a.hajda@samsung.com" <a.hajda@samsung.com>,
- "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
- "linux-phy@lists.infradead.org" <linux-phy@lists.infradead.org>,
- "will@kernel.org" <will@kernel.org>,
- "linux-clk@vger.kernel.org" <linux-clk@vger.kernel.org>,
- "linux-renesas-soc@vger.kernel.org" <linux-renesas-soc@vger.kernel.org>,
- "wim@linux-watchdog.org" <wim@linux-watchdog.org>,
- "herbert@gondor.apana.org.au" <herbert@gondor.apana.org.au>,
- Horia Geanta <horia.geanta@nxp.com>,
- "khilman@baylibre.com" <khilman@baylibre.com>,
- "narmstrong@baylibre.com" <narmstrong@baylibre.com>,
- "linux-staging@lists.linux.dev" <linux-staging@lists.linux.dev>,
- "iommu@lists.linux-foundation.org" <iommu@lists.linux-foundation.org>,
- "peter.ujfalusi@gmail.com" <peter.ujfalusi@gmail.com>,
- "kishon@ti.com" <kishon@ti.com>, "tony@atomide.com" <tony@atomide.com>,
- "linux-omap@vger.kernel.org" <linux-omap@vger.kernel.org>,
- "stern@rowland.harvard.edu" <stern@rowland.harvard.edu>,
- dl-linux-imx <linux-imx@nxp.com>, "kuba@kernel.org" <kuba@kernel.org>,
- "linus.walleij@linaro.org" <linus.walleij@linaro.org>,
- "linux@roeck-us.net" <linux@roeck-us.net>,
- "linux-media@vger.kernel.org" <linux-media@vger.kernel.org>,
- Dominique MARTINET <dominique.martinet@atmark-techno.com>,
- "linux-watchdog@vger.kernel.org" <linux-watchdog@vger.kernel.org>,
- "linux-pm@vger.kernel.org" <linux-pm@vger.kernel.org>,
- "linuxppc-dev@lists.ozlabs.org" <linuxppc-dev@lists.ozlabs.org>,
- "edubezval@gmail.com" <edubezval@gmail.com>,
- "linux-gpio@vger.kernel.org" <linux-gpio@vger.kernel.org>,
- "linux-mediatek@lists.infradead.org" <linux-mediatek@lists.infradead.org>,
- "ssantosh@kernel.org" <ssantosh@kernel.org>,
- "matthias.bgg@gmail.com" <matthias.bgg@gmail.com>,
- "linux-amlogic@lists.infradead.org" <linux-amlogic@lists.infradead.org>,
- "mchehab@kernel.org" <mchehab@kernel.org>,
- "linux-arm-kernel@lists.infradead.org" <linux-arm-kernel@lists.infradead.org>,
- "balbi@kernel.org" <balbi@kernel.org>, "tomba@kernel.org" <tomba@kernel.org>,
- "sboyd@kernel.org" <sboyd@kernel.org>,
- "gregkh@linuxfoundation.org" <gregkh@linuxfoundation.org>,
- "linux-usb@vger.kernel.org" <linux-usb@vger.kernel.org>,
- "linux-mmc@vger.kernel.org" <linux-mmc@vger.kernel.org>,
- "adrian.hunter@intel.com" <adrian.hunter@intel.com>,
- "robert.foss@linaro.org" <robert.foss@linaro.org>, Leo Li <leoyang.li@nxp.com>,
- "linux@prisktech.co.nz" <linux@prisktech.co.nz>,
- "vkoul@kernel.org" <vkoul@kernel.org>,
- "linux-crypto@vger.kernel.org" <linux-crypto@vger.kernel.org>,
- "daniel@ffwll.ch" <daniel@ffwll.ch>, "j-keerthy@ti.com" <j-keerthy@ti.com>,
- "dmaengine@vger.kernel.org" <dmaengine@vger.kernel.org>,
- "jyri.sarha@iki.fi" <jyri.sarha@iki.fi>,
- "davem@davemloft.net" <davem@davemloft.net>
+Cc: linux-usb@vger.kernel.org, linux-watchdog@vger.kernel.org,
+ linux-gpio@vger.kernel.org, netdev@vger.kernel.org, linux-pm@vger.kernel.org,
+ linux-staging@lists.linux.dev, linux-mmc@vger.kernel.org,
+ linux-kernel@vger.kernel.org, dri-devel@lists.freedesktop.org,
+ linux-renesas-soc@vger.kernel.org, linux-phy@lists.infradead.org,
+ iommu@lists.linux-foundation.org, linux-mediatek@lists.infradead.org,
+ linux-crypto@vger.kernel.org, dmaengine@vger.kernel.org,
+ linux-amlogic@lists.infradead.org, linux-omap@vger.kernel.org,
+ linuxppc-dev@lists.ozlabs.org, linux-clk@vger.kernel.org,
+ linux-arm-kernel@lists.infradead.org, linux-media@vger.kernel.org
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -213,126 +177,923 @@ List-Post: <mailto:iommu@lists.linux-foundation.org>
 List-Help: <mailto:iommu-request@lists.linux-foundation.org?subject=help>
 List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
  <mailto:iommu-request@lists.linux-foundation.org?subject=subscribe>
-Content-Type: text/plain; charset="gb2312"
-Content-Transfer-Encoding: base64
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-DQoNCj4gLS0tLS1PcmlnaW5hbCBNZXNzYWdlLS0tLS0NCj4gRnJvbTogTGVvbiBSb21hbm92c2t5
-IDxsZW9uQGtlcm5lbC5vcmc+DQo+IFNlbnQ6IDIwMjHE6jTUwjE5yNUgMTM6MDINCj4gVG86IEFs
-aWNlIEd1byAoT1NTKSA8YWxpY2UuZ3VvQG9zcy5ueHAuY29tPg0KPiBDYzogZ3JlZ2toQGxpbnV4
-Zm91bmRhdGlvbi5vcmc7IHJhZmFlbEBrZXJuZWwub3JnOyBIb3JpYSBHZWFudGENCj4gPGhvcmlh
-LmdlYW50YUBueHAuY29tPjsgQXltZW4gU2doYWllciA8YXltZW4uc2doYWllckBueHAuY29tPjsN
-Cj4gaGVyYmVydEBnb25kb3IuYXBhbmEub3JnLmF1OyBkYXZlbUBkYXZlbWxvZnQubmV0OyB0b255
-QGF0b21pZGUuY29tOw0KPiBnZWVydCtyZW5lc2FzQGdsaWRlci5iZTsgbXR1cnF1ZXR0ZUBiYXls
-aWJyZS5jb207IHNib3lkQGtlcm5lbC5vcmc7DQo+IHZrb3VsQGtlcm5lbC5vcmc7IHBldGVyLnVq
-ZmFsdXNpQGdtYWlsLmNvbTsgYS5oYWpkYUBzYW1zdW5nLmNvbTsNCj4gbmFybXN0cm9uZ0BiYXls
-aWJyZS5jb207IHJvYmVydC5mb3NzQGxpbmFyby5vcmc7IGFpcmxpZWRAbGludXguaWU7DQo+IGRh
-bmllbEBmZndsbC5jaDsga2hpbG1hbkBiYXlsaWJyZS5jb207IHRvbWJhQGtlcm5lbC5vcmc7IGp5
-cmkuc2FyaGFAaWtpLmZpOw0KPiBqb3JvQDhieXRlcy5vcmc7IHdpbGxAa2VybmVsLm9yZzsgbWNo
-ZWhhYkBrZXJuZWwub3JnOw0KPiB1bGYuaGFuc3NvbkBsaW5hcm8ub3JnOyBhZHJpYW4uaHVudGVy
-QGludGVsLmNvbTsga2lzaG9uQHRpLmNvbTsNCj4ga3ViYUBrZXJuZWwub3JnOyBsaW51cy53YWxs
-ZWlqQGxpbmFyby5vcmc7IFJveSBQbGVkZ2UgPHJveS5wbGVkZ2VAbnhwLmNvbT47DQo+IExlbyBM
-aSA8bGVveWFuZy5saUBueHAuY29tPjsgc3NhbnRvc2hAa2VybmVsLm9yZzsgbWF0dGhpYXMuYmdn
-QGdtYWlsLmNvbTsNCj4gZWR1YmV6dmFsQGdtYWlsLmNvbTsgai1rZWVydGh5QHRpLmNvbTsgYmFs
-YmlAa2VybmVsLm9yZzsNCj4gbGludXhAcHJpc2t0ZWNoLmNvLm56OyBzdGVybkByb3dsYW5kLmhh
-cnZhcmQuZWR1OyB3aW1AbGludXgtd2F0Y2hkb2cub3JnOw0KPiBsaW51eEByb2Vjay11cy5uZXQ7
-IGxpbnV4LWtlcm5lbEB2Z2VyLmtlcm5lbC5vcmc7IGxpbnV4LWNyeXB0b0B2Z2VyLmtlcm5lbC5v
-cmc7DQo+IGxpbnV4LW9tYXBAdmdlci5rZXJuZWwub3JnOyBsaW51eC1yZW5lc2FzLXNvY0B2Z2Vy
-Lmtlcm5lbC5vcmc7DQo+IGxpbnV4LWNsa0B2Z2VyLmtlcm5lbC5vcmc7IGRtYWVuZ2luZUB2Z2Vy
-Lmtlcm5lbC5vcmc7DQo+IGRyaS1kZXZlbEBsaXN0cy5mcmVlZGVza3RvcC5vcmc7IGxpbnV4LWFt
-bG9naWNAbGlzdHMuaW5mcmFkZWFkLm9yZzsNCj4gbGludXgtYXJtLWtlcm5lbEBsaXN0cy5pbmZy
-YWRlYWQub3JnOyBpb21tdUBsaXN0cy5saW51eC1mb3VuZGF0aW9uLm9yZzsNCj4gbGludXgtbWVk
-aWFAdmdlci5rZXJuZWwub3JnOyBsaW51eC1tbWNAdmdlci5rZXJuZWwub3JnOw0KPiBuZXRkZXZA
-dmdlci5rZXJuZWwub3JnOyBsaW51eC1waHlAbGlzdHMuaW5mcmFkZWFkLm9yZzsNCj4gbGludXgt
-Z3Bpb0B2Z2VyLmtlcm5lbC5vcmc7IGxpbnV4cHBjLWRldkBsaXN0cy5vemxhYnMub3JnOw0KPiBs
-aW51eC1zdGFnaW5nQGxpc3RzLmxpbnV4LmRldjsgbGludXgtbWVkaWF0ZWtAbGlzdHMuaW5mcmFk
-ZWFkLm9yZzsNCj4gbGludXgtcG1Admdlci5rZXJuZWwub3JnOyBsaW51eC11c2JAdmdlci5rZXJu
-ZWwub3JnOw0KPiBsaW51eC13YXRjaGRvZ0B2Z2VyLmtlcm5lbC5vcmcNCj4gU3ViamVjdDogUmU6
-IFtSRkMgdjEgUEFUQ0ggMy8zXSBkcml2ZXI6IHVwZGF0ZSBhbGwgdGhlIGNvZGUgdGhhdCB1c2UN
-Cj4gc29jX2RldmljZV9tYXRjaA0KPiANCj4gT24gTW9uLCBBcHIgMTksIDIwMjEgYXQgMTI6Mjc6
-MjJQTSArMDgwMCwgQWxpY2UgR3VvIChPU1MpIHdyb3RlOg0KPiA+IEZyb206IEFsaWNlIEd1byA8
-YWxpY2UuZ3VvQG54cC5jb20+DQo+ID4NCj4gPiBVcGRhdGUgYWxsIHRoZSBjb2RlIHRoYXQgdXNl
-IHNvY19kZXZpY2VfbWF0Y2ggYmVjYXVzZSBhZGQgc3VwcG9ydCBmb3INCj4gPiBzb2NfZGV2aWNl
-X21hdGNoIHJldHVybmluZyAtRVBST0JFX0RFRkVSLg0KPiA+DQo+ID4gU2lnbmVkLW9mZi1ieTog
-QWxpY2UgR3VvIDxhbGljZS5ndW9AbnhwLmNvbT4NCj4gPiAtLS0NCj4gPiAgZHJpdmVycy9idXMv
-dGktc3lzYy5jICAgICAgICAgICAgICAgICAgICAgICAgIHwgIDIgKy0NCj4gPiAgZHJpdmVycy9j
-bGsvcmVuZXNhcy9yOGE3Nzk1LWNwZy1tc3NyLmMgICAgICAgIHwgIDQgKysrLQ0KPiA+ICBkcml2
-ZXJzL2Nsay9yZW5lc2FzL3JjYXItZ2VuMi1jcGcuYyAgICAgICAgICAgfCAgMiArLQ0KPiA+ICBk
-cml2ZXJzL2Nsay9yZW5lc2FzL3JjYXItZ2VuMy1jcGcuYyAgICAgICAgICAgfCAgMiArLQ0KPiA+
-ICBkcml2ZXJzL2RtYS9mc2wtZHBhYTItcWRtYS9kcGFhMi1xZG1hLmMgICAgICAgfCAgNyArKysr
-KystDQo+ID4gIGRyaXZlcnMvZG1hL3RpL2szLXBzaWwuYyAgICAgICAgICAgICAgICAgICAgICB8
-ICAzICsrKw0KPiA+ICBkcml2ZXJzL2RtYS90aS9rMy11ZG1hLmMgICAgICAgICAgICAgICAgICAg
-ICAgfCAgMiArLQ0KPiA+ICBkcml2ZXJzL2dwdS9kcm0vYnJpZGdlL253bC1kc2kuYyAgICAgICAg
-ICAgICAgfCAgMiArLQ0KPiA+ICBkcml2ZXJzL2dwdS9kcm0vbWVzb24vbWVzb25fZHJ2LmMgICAg
-ICAgICAgICAgfCAgNCArKystDQo+ID4gIGRyaXZlcnMvZ3B1L2RybS9vbWFwZHJtL2Rzcy9kaXNw
-Yy5jICAgICAgICAgICB8ICAyICstDQo+ID4gIGRyaXZlcnMvZ3B1L2RybS9vbWFwZHJtL2Rzcy9k
-cGkuYyAgICAgICAgICAgICB8ICA0ICsrKy0NCj4gPiAgZHJpdmVycy9ncHUvZHJtL29tYXBkcm0v
-ZHNzL2RzaS5jICAgICAgICAgICAgIHwgIDMgKysrDQo+ID4gIGRyaXZlcnMvZ3B1L2RybS9vbWFw
-ZHJtL2Rzcy9kc3MuYyAgICAgICAgICAgICB8ICAzICsrKw0KPiA+ICBkcml2ZXJzL2dwdS9kcm0v
-b21hcGRybS9kc3MvaGRtaTRfY29yZS5jICAgICAgfCAgMyArKysNCj4gPiAgZHJpdmVycy9ncHUv
-ZHJtL29tYXBkcm0vZHNzL3ZlbmMuYyAgICAgICAgICAgIHwgIDQgKysrLQ0KPiA+ICBkcml2ZXJz
-L2dwdS9kcm0vb21hcGRybS9vbWFwX2Rydi5jICAgICAgICAgICAgfCAgMyArKysNCj4gPiAgZHJp
-dmVycy9ncHUvZHJtL3JjYXItZHUvcmNhcl9kdV9jcnRjLmMgICAgICAgIHwgIDQgKysrLQ0KPiA+
-ICBkcml2ZXJzL2dwdS9kcm0vcmNhci1kdS9yY2FyX2x2ZHMuYyAgICAgICAgICAgfCAgMiArLQ0K
-PiA+ICBkcml2ZXJzL2dwdS9kcm0vdGlkc3MvdGlkc3NfZGlzcGMuYyAgICAgICAgICAgfCAgNCAr
-KystDQo+ID4gIGRyaXZlcnMvaW9tbXUvaXBtbXUtdm1zYS5jICAgICAgICAgICAgICAgICAgICB8
-ICA3ICsrKysrLS0NCj4gPiAgZHJpdmVycy9tZWRpYS9wbGF0Zm9ybS9yY2FyLXZpbi9yY2FyLWNv
-cmUuYyAgIHwgIDIgKy0NCj4gPiAgZHJpdmVycy9tZWRpYS9wbGF0Zm9ybS9yY2FyLXZpbi9yY2Fy
-LWNzaTIuYyAgIHwgIDIgKy0NCj4gPiAgZHJpdmVycy9tZWRpYS9wbGF0Zm9ybS92c3AxL3ZzcDFf
-dWlmLmMgICAgICAgIHwgIDQgKysrLQ0KPiA+ICBkcml2ZXJzL21tYy9ob3N0L3JlbmVzYXNfc2Ro
-aV9jb3JlLmMgICAgICAgICAgfCAgMiArLQ0KPiA+ICBkcml2ZXJzL21tYy9ob3N0L3JlbmVzYXNf
-c2RoaV9pbnRlcm5hbF9kbWFjLmMgfCAgMiArLQ0KPiA+ICBkcml2ZXJzL21tYy9ob3N0L3NkaGNp
-LW9mLWVzZGhjLmMgICAgICAgICAgICAgfCAyMQ0KPiArKysrKysrKysrKysrKy0tLS0tDQo+ID4g
-IGRyaXZlcnMvbW1jL2hvc3Qvc2RoY2ktb21hcC5jICAgICAgICAgICAgICAgICB8ICAyICstDQo+
-ID4gIGRyaXZlcnMvbW1jL2hvc3Qvc2RoY2lfYW02NTQuYyAgICAgICAgICAgICAgICB8ICAyICst
-DQo+ID4gIGRyaXZlcnMvbmV0L2V0aGVybmV0L3JlbmVzYXMvcmF2Yl9tYWluLmMgICAgICB8ICA0
-ICsrKy0NCj4gPiAgZHJpdmVycy9uZXQvZXRoZXJuZXQvdGkvYW02NS1jcHN3LW51c3MuYyAgICAg
-IHwgIDIgKy0NCj4gPiAgZHJpdmVycy9uZXQvZXRoZXJuZXQvdGkvY3Bzdy5jICAgICAgICAgICAg
-ICAgIHwgIDIgKy0NCj4gPiAgZHJpdmVycy9uZXQvZXRoZXJuZXQvdGkvY3Bzd19uZXcuYyAgICAg
-ICAgICAgIHwgIDIgKy0NCj4gPiAgZHJpdmVycy9waHkvdGkvcGh5LW9tYXAtdXNiMi5jICAgICAg
-ICAgICAgICAgIHwgIDQgKysrLQ0KPiA+ICBkcml2ZXJzL3BpbmN0cmwvcmVuZXNhcy9jb3JlLmMg
-ICAgICAgICAgICAgICAgfCAgMiArLQ0KPiA+ICBkcml2ZXJzL3BpbmN0cmwvcmVuZXNhcy9wZmMt
-cjhhNzc5MC5jICAgICAgICAgfCAgNSArKysrLQ0KPiA+ICBkcml2ZXJzL3BpbmN0cmwvcmVuZXNh
-cy9wZmMtcjhhNzc5NC5jICAgICAgICAgfCAgNSArKysrLQ0KPiA+ICBkcml2ZXJzL3NvYy9mc2wv
-ZHBpby9kcGlvLWRyaXZlci5jICAgICAgICAgICAgfCAxMyArKysrKysrKy0tLS0NCj4gPiAgZHJp
-dmVycy9zb2MvcmVuZXNhcy9yOGE3NzRjMC1zeXNjLmMgICAgICAgICAgIHwgIDUgKysrKy0NCj4g
-PiAgZHJpdmVycy9zb2MvcmVuZXNhcy9yOGE3Nzk1LXN5c2MuYyAgICAgICAgICAgIHwgIDIgKy0N
-Cj4gPiAgZHJpdmVycy9zb2MvcmVuZXNhcy9yOGE3Nzk5MC1zeXNjLmMgICAgICAgICAgIHwgIDUg
-KysrKy0NCj4gPiAgZHJpdmVycy9zb2MvdGkvazMtcmluZ2FjYy5jICAgICAgICAgICAgICAgICAg
-IHwgIDIgKy0NCj4gPiAgZHJpdmVycy9zdGFnaW5nL210NzYyMS1wY2kvcGNpLW10NzYyMS5jICAg
-ICAgIHwgIDIgKy0NCj4gPiAgZHJpdmVycy90aGVybWFsL3JjYXJfZ2VuM190aGVybWFsLmMgICAg
-ICAgICAgIHwgIDQgKysrLQ0KPiA+ICBkcml2ZXJzL3RoZXJtYWwvdGktc29jLXRoZXJtYWwvdGkt
-YmFuZGdhcC5jICAgfCAxMCArKysrKysrLS0NCj4gPiAgZHJpdmVycy91c2IvZ2FkZ2V0L3VkYy9y
-ZW5lc2FzX3VzYjMuYyAgICAgICAgIHwgIDIgKy0NCj4gPiAgZHJpdmVycy91c2IvaG9zdC9laGNp
-LXBsYXRmb3JtLmMgICAgICAgICAgICAgIHwgIDQgKysrLQ0KPiA+ICBkcml2ZXJzL3VzYi9ob3N0
-L3hoY2ktcmNhci5jICAgICAgICAgICAgICAgICAgfCAgMiArLQ0KPiA+ICBkcml2ZXJzL3dhdGNo
-ZG9nL3JlbmVzYXNfd2R0LmMgICAgICAgICAgICAgICAgfCAgMiArLQ0KPiA+ICA0OCBmaWxlcyBj
-aGFuZ2VkLCAxMzEgaW5zZXJ0aW9ucygrKSwgNTIgZGVsZXRpb25zKC0pDQo+ID4NCj4gPiBkaWZm
-IC0tZ2l0IGEvZHJpdmVycy9idXMvdGktc3lzYy5jIGIvZHJpdmVycy9idXMvdGktc3lzYy5jIGlu
-ZGV4DQo+ID4gNWZhZTYwZjhjMTM1Li4wMGM1OWFhMjE3YzEgMTAwNjQ0DQo+ID4gLS0tIGEvZHJp
-dmVycy9idXMvdGktc3lzYy5jDQo+ID4gKysrIGIvZHJpdmVycy9idXMvdGktc3lzYy5jDQo+ID4g
-QEAgLTI5MDksNyArMjkwOSw3IEBAIHN0YXRpYyBpbnQgc3lzY19pbml0X3NvYyhzdHJ1Y3Qgc3lz
-YyAqZGRhdGEpDQo+ID4gIAl9DQo+ID4NCj4gPiAgCW1hdGNoID0gc29jX2RldmljZV9tYXRjaChz
-eXNjX3NvY19mZWF0X21hdGNoKTsNCj4gPiAtCWlmICghbWF0Y2gpDQo+ID4gKwlpZiAoIW1hdGNo
-IHx8IElTX0VSUihtYXRjaCkpDQo+ID4gIAkJcmV0dXJuIDA7DQo+ID4NCj4gPiAgCWlmIChtYXRj
-aC0+ZGF0YSkNCj4gPiBkaWZmIC0tZ2l0IGEvZHJpdmVycy9jbGsvcmVuZXNhcy9yOGE3Nzk1LWNw
-Zy1tc3NyLmMNCj4gPiBiL2RyaXZlcnMvY2xrL3JlbmVzYXMvcjhhNzc5NS1jcGctbXNzci5jDQo+
-ID4gaW5kZXggYzMyZDJjNjc4MDQ2Li45MGExODMzNmE0YzMgMTAwNjQ0DQo+ID4gLS0tIGEvZHJp
-dmVycy9jbGsvcmVuZXNhcy9yOGE3Nzk1LWNwZy1tc3NyLmMNCj4gPiArKysgYi9kcml2ZXJzL2Ns
-ay9yZW5lc2FzL3I4YTc3OTUtY3BnLW1zc3IuYw0KPiA+IEBAIC00MzksNiArNDM5LDcgQEAgc3Rh
-dGljIGNvbnN0IHVuc2lnbmVkIGludCByOGE3Nzk1ZXMyX21vZF9udWxsaWZ5W10NCj4gPiBfX2lu
-aXRjb25zdCA9IHsNCj4gPg0KPiA+ICBzdGF0aWMgaW50IF9faW5pdCByOGE3Nzk1X2NwZ19tc3Ny
-X2luaXQoc3RydWN0IGRldmljZSAqZGV2KSAgew0KPiA+ICsJY29uc3Qgc3RydWN0IHNvY19kZXZp
-Y2VfYXR0cmlidXRlICptYXRjaDsNCj4gPiAgCWNvbnN0IHN0cnVjdCByY2FyX2dlbjNfY3BnX3Bs
-bF9jb25maWcgKmNwZ19wbGxfY29uZmlnOw0KPiA+ICAJdTMyIGNwZ19tb2RlOw0KPiA+ICAJaW50
-IGVycm9yOw0KPiA+IEBAIC00NTMsNyArNDU0LDggQEAgc3RhdGljIGludCBfX2luaXQgcjhhNzc5
-NV9jcGdfbXNzcl9pbml0KHN0cnVjdCBkZXZpY2UNCj4gKmRldikNCj4gPiAgCQlyZXR1cm4gLUVJ
-TlZBTDsNCj4gPiAgCX0NCj4gPg0KPiA+IC0JaWYgKHNvY19kZXZpY2VfbWF0Y2gocjhhNzc5NWVz
-MSkpIHsNCj4gPiArCW1hdGNoID0gc29jX2RldmljZV9tYXRjaChyOGE3Nzk1ZXMxKTsNCj4gPiAr
-CWlmICghSVNfRVJSKG1hdGNoKSAmJiBtYXRjaCkgew0KPiANCj4gImlmICghSVNfRVJSX09SX05V
-TEwobWF0Y2gpKSIgaW4gYWxsIHBsYWNlcy4NCg0KVGhhbmsgeW91IGZvciB5b3VyIHN1Z2dlc3Rp
-b24uIEkgd2lsbCBtb2RpZnkgdGhlbS4NCg0KQmVzdCBSZWdhcmRzLA0KQWxpY2UgR3VvDQoNCj4g
-VGhhbmtzDQpfX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fXwpp
-b21tdSBtYWlsaW5nIGxpc3QKaW9tbXVAbGlzdHMubGludXgtZm91bmRhdGlvbi5vcmcKaHR0cHM6
-Ly9saXN0cy5saW51eGZvdW5kYXRpb24ub3JnL21haWxtYW4vbGlzdGluZm8vaW9tbXU=
+From: Alice Guo <alice.guo@nxp.com>
+
+Update all the code that use soc_device_match because add support for
+soc_device_match returning -EPROBE_DEFER.
+
+Signed-off-by: Alice Guo <alice.guo@nxp.com>
+---
+ drivers/bus/ti-sysc.c                         |  2 +-
+ drivers/clk/renesas/r8a7795-cpg-mssr.c        |  4 +++-
+ drivers/clk/renesas/rcar-gen2-cpg.c           |  2 +-
+ drivers/clk/renesas/rcar-gen3-cpg.c           |  2 +-
+ drivers/dma/fsl-dpaa2-qdma/dpaa2-qdma.c       |  7 ++++++-
+ drivers/dma/ti/k3-psil.c                      |  3 +++
+ drivers/dma/ti/k3-udma.c                      |  2 +-
+ drivers/gpu/drm/bridge/nwl-dsi.c              |  2 +-
+ drivers/gpu/drm/meson/meson_drv.c             |  4 +++-
+ drivers/gpu/drm/omapdrm/dss/dispc.c           |  2 +-
+ drivers/gpu/drm/omapdrm/dss/dpi.c             |  4 +++-
+ drivers/gpu/drm/omapdrm/dss/dsi.c             |  3 +++
+ drivers/gpu/drm/omapdrm/dss/dss.c             |  3 +++
+ drivers/gpu/drm/omapdrm/dss/hdmi4_core.c      |  3 +++
+ drivers/gpu/drm/omapdrm/dss/venc.c            |  4 +++-
+ drivers/gpu/drm/omapdrm/omap_drv.c            |  3 +++
+ drivers/gpu/drm/rcar-du/rcar_du_crtc.c        |  4 +++-
+ drivers/gpu/drm/rcar-du/rcar_lvds.c           |  2 +-
+ drivers/gpu/drm/tidss/tidss_dispc.c           |  4 +++-
+ drivers/iommu/ipmmu-vmsa.c                    |  7 +++++--
+ drivers/media/platform/rcar-vin/rcar-core.c   |  2 +-
+ drivers/media/platform/rcar-vin/rcar-csi2.c   |  2 +-
+ drivers/media/platform/vsp1/vsp1_uif.c        |  4 +++-
+ drivers/mmc/host/renesas_sdhi_core.c          |  2 +-
+ drivers/mmc/host/renesas_sdhi_internal_dmac.c |  2 +-
+ drivers/mmc/host/sdhci-of-esdhc.c             | 21 ++++++++++++++-----
+ drivers/mmc/host/sdhci-omap.c                 |  2 +-
+ drivers/mmc/host/sdhci_am654.c                |  2 +-
+ drivers/net/ethernet/renesas/ravb_main.c      |  4 +++-
+ drivers/net/ethernet/ti/am65-cpsw-nuss.c      |  2 +-
+ drivers/net/ethernet/ti/cpsw.c                |  2 +-
+ drivers/net/ethernet/ti/cpsw_new.c            |  2 +-
+ drivers/phy/ti/phy-omap-usb2.c                |  4 +++-
+ drivers/pinctrl/renesas/core.c                |  2 +-
+ drivers/pinctrl/renesas/pfc-r8a7790.c         |  5 ++++-
+ drivers/pinctrl/renesas/pfc-r8a7794.c         |  5 ++++-
+ drivers/soc/fsl/dpio/dpio-driver.c            | 13 ++++++++----
+ drivers/soc/renesas/r8a774c0-sysc.c           |  5 ++++-
+ drivers/soc/renesas/r8a7795-sysc.c            |  2 +-
+ drivers/soc/renesas/r8a77990-sysc.c           |  5 ++++-
+ drivers/soc/ti/k3-ringacc.c                   |  2 +-
+ drivers/staging/mt7621-pci/pci-mt7621.c       |  2 +-
+ drivers/thermal/rcar_gen3_thermal.c           |  4 +++-
+ drivers/thermal/ti-soc-thermal/ti-bandgap.c   | 10 +++++++--
+ drivers/usb/gadget/udc/renesas_usb3.c         |  2 +-
+ drivers/usb/host/ehci-platform.c              |  4 +++-
+ drivers/usb/host/xhci-rcar.c                  |  2 +-
+ drivers/watchdog/renesas_wdt.c                |  2 +-
+ 48 files changed, 131 insertions(+), 52 deletions(-)
+
+diff --git a/drivers/bus/ti-sysc.c b/drivers/bus/ti-sysc.c
+index 5fae60f8c135..00c59aa217c1 100644
+--- a/drivers/bus/ti-sysc.c
++++ b/drivers/bus/ti-sysc.c
+@@ -2909,7 +2909,7 @@ static int sysc_init_soc(struct sysc *ddata)
+ 	}
+ 
+ 	match = soc_device_match(sysc_soc_feat_match);
+-	if (!match)
++	if (!match || IS_ERR(match))
+ 		return 0;
+ 
+ 	if (match->data)
+diff --git a/drivers/clk/renesas/r8a7795-cpg-mssr.c b/drivers/clk/renesas/r8a7795-cpg-mssr.c
+index c32d2c678046..90a18336a4c3 100644
+--- a/drivers/clk/renesas/r8a7795-cpg-mssr.c
++++ b/drivers/clk/renesas/r8a7795-cpg-mssr.c
+@@ -439,6 +439,7 @@ static const unsigned int r8a7795es2_mod_nullify[] __initconst = {
+ 
+ static int __init r8a7795_cpg_mssr_init(struct device *dev)
+ {
++	const struct soc_device_attribute *match;
+ 	const struct rcar_gen3_cpg_pll_config *cpg_pll_config;
+ 	u32 cpg_mode;
+ 	int error;
+@@ -453,7 +454,8 @@ static int __init r8a7795_cpg_mssr_init(struct device *dev)
+ 		return -EINVAL;
+ 	}
+ 
+-	if (soc_device_match(r8a7795es1)) {
++	match = soc_device_match(r8a7795es1);
++	if (!IS_ERR(match) && match) {
+ 		cpg_core_nullify_range(r8a7795_core_clks,
+ 				       ARRAY_SIZE(r8a7795_core_clks),
+ 				       R8A7795_CLK_S0D2, R8A7795_CLK_S0D12);
+diff --git a/drivers/clk/renesas/rcar-gen2-cpg.c b/drivers/clk/renesas/rcar-gen2-cpg.c
+index edae874fa2b6..946f82634d23 100644
+--- a/drivers/clk/renesas/rcar-gen2-cpg.c
++++ b/drivers/clk/renesas/rcar-gen2-cpg.c
+@@ -383,7 +383,7 @@ int __init rcar_gen2_cpg_init(const struct rcar_gen2_cpg_pll_config *config,
+ 	cpg_pll0_div = pll0_div;
+ 	cpg_mode = mode;
+ 	attr = soc_device_match(cpg_quirks_match);
+-	if (attr)
++	if (!IS_ERR(attr) && attr)
+ 		cpg_quirks = (uintptr_t)attr->data;
+ 	pr_debug("%s: mode = 0x%x quirks = 0x%x\n", __func__, mode, cpg_quirks);
+ 
+diff --git a/drivers/clk/renesas/rcar-gen3-cpg.c b/drivers/clk/renesas/rcar-gen3-cpg.c
+index caa0f9414e45..e5c7854188cd 100644
+--- a/drivers/clk/renesas/rcar-gen3-cpg.c
++++ b/drivers/clk/renesas/rcar-gen3-cpg.c
+@@ -499,7 +499,7 @@ int __init rcar_gen3_cpg_init(const struct rcar_gen3_cpg_pll_config *config,
+ 	cpg_clk_extalr = clk_extalr;
+ 	cpg_mode = mode;
+ 	attr = soc_device_match(cpg_quirks_match);
+-	if (attr)
++	if (!IS_ERR(attr) && attr)
+ 		cpg_quirks = (uintptr_t)attr->data;
+ 	pr_debug("%s: mode = 0x%x quirks = 0x%x\n", __func__, mode, cpg_quirks);
+ 
+diff --git a/drivers/dma/fsl-dpaa2-qdma/dpaa2-qdma.c b/drivers/dma/fsl-dpaa2-qdma/dpaa2-qdma.c
+index 4ec909e0b810..7c83ae86ced4 100644
+--- a/drivers/dma/fsl-dpaa2-qdma/dpaa2-qdma.c
++++ b/drivers/dma/fsl-dpaa2-qdma/dpaa2-qdma.c
+@@ -651,6 +651,7 @@ static int dpaa2_dpdmai_init_channels(struct dpaa2_qdma_engine *dpaa2_qdma)
+ 
+ static int dpaa2_qdma_probe(struct fsl_mc_device *dpdmai_dev)
+ {
++	const struct soc_device_attribute *match;
+ 	struct device *dev = &dpdmai_dev->dev;
+ 	struct dpaa2_qdma_engine *dpaa2_qdma;
+ 	struct dpaa2_qdma_priv *priv;
+@@ -718,7 +719,11 @@ static int dpaa2_qdma_probe(struct fsl_mc_device *dpdmai_dev)
+ 
+ 	dpaa2_dpdmai_init_channels(dpaa2_qdma);
+ 
+-	if (soc_device_match(soc_fixup_tuning))
++	match = soc_device_match(soc_fixup_tuning);
++	if (IS_ERR(match))
++		return PTR_ERR(match);
++
++	if (match)
+ 		dpaa2_qdma->qdma_wrtype_fixup = true;
+ 	else
+ 		dpaa2_qdma->qdma_wrtype_fixup = false;
+diff --git a/drivers/dma/ti/k3-psil.c b/drivers/dma/ti/k3-psil.c
+index 13ce7367d870..ae56441e5184 100644
+--- a/drivers/dma/ti/k3-psil.c
++++ b/drivers/dma/ti/k3-psil.c
+@@ -33,6 +33,9 @@ struct psil_endpoint_config *psil_get_ep_config(u32 thread_id)
+ 		const struct soc_device_attribute *soc;
+ 
+ 		soc = soc_device_match(k3_soc_devices);
++		if (IS_ERR(soc))
++			return PTR_ERR(soc);
++
+ 		if (soc) {
+ 			soc_ep_map = soc->data;
+ 		} else {
+diff --git a/drivers/dma/ti/k3-udma.c b/drivers/dma/ti/k3-udma.c
+index 96ad21869ba7..50a4c8f0993d 100644
+--- a/drivers/dma/ti/k3-udma.c
++++ b/drivers/dma/ti/k3-udma.c
+@@ -5188,7 +5188,7 @@ static int udma_probe(struct platform_device *pdev)
+ 	ud->match_data = match->data;
+ 
+ 	soc = soc_device_match(k3_soc_devices);
+-	if (!soc) {
++	if (!IS_ERR(soc) && !soc) {
+ 		dev_err(dev, "No compatible SoC found\n");
+ 		return -ENODEV;
+ 	}
+diff --git a/drivers/gpu/drm/bridge/nwl-dsi.c b/drivers/gpu/drm/bridge/nwl-dsi.c
+index 66b67402f1ac..80fe971e359d 100644
+--- a/drivers/gpu/drm/bridge/nwl-dsi.c
++++ b/drivers/gpu/drm/bridge/nwl-dsi.c
+@@ -1158,7 +1158,7 @@ static int nwl_dsi_probe(struct platform_device *pdev)
+ 	}
+ 
+ 	attr = soc_device_match(nwl_dsi_quirks_match);
+-	if (attr)
++	if (!IS_ERR(attr) && attr)
+ 		dsi->quirks = (uintptr_t)attr->data;
+ 
+ 	dsi->bridge.driver_private = dsi;
+diff --git a/drivers/gpu/drm/meson/meson_drv.c b/drivers/gpu/drm/meson/meson_drv.c
+index 453d8b4c5763..d409c9958f18 100644
+--- a/drivers/gpu/drm/meson/meson_drv.c
++++ b/drivers/gpu/drm/meson/meson_drv.c
+@@ -195,6 +195,7 @@ static int meson_drv_bind_master(struct device *dev, bool has_components)
+ {
+ 	struct platform_device *pdev = to_platform_device(dev);
+ 	const struct meson_drm_match_data *match;
++	const struct soc_device_attribute *attr;
+ 	struct meson_drm *priv;
+ 	struct drm_device *drm;
+ 	struct resource *res;
+@@ -291,7 +292,8 @@ static int meson_drv_bind_master(struct device *dev, bool has_components)
+ 
+ 	/* Assign limits per soc revision/package */
+ 	for (i = 0 ; i < ARRAY_SIZE(meson_drm_soc_attrs) ; ++i) {
+-		if (soc_device_match(meson_drm_soc_attrs[i].attrs)) {
++		attr = soc_device_match(meson_drm_soc_attrs[i].attrs);
++		if (!IS_ERR(attr) && attr) {
+ 			priv->limits = &meson_drm_soc_attrs[i].limits;
+ 			break;
+ 		}
+diff --git a/drivers/gpu/drm/omapdrm/dss/dispc.c b/drivers/gpu/drm/omapdrm/dss/dispc.c
+index 5619420cc2cc..53f402d72fc4 100644
+--- a/drivers/gpu/drm/omapdrm/dss/dispc.c
++++ b/drivers/gpu/drm/omapdrm/dss/dispc.c
+@@ -4741,7 +4741,7 @@ static int dispc_bind(struct device *dev, struct device *master, void *data)
+ 	 * string, use SoC device matching.
+ 	 */
+ 	soc = soc_device_match(dispc_soc_devices);
+-	if (soc)
++	if (!IS_ERR(soc) && soc)
+ 		dispc->feat = soc->data;
+ 	else
+ 		dispc->feat = of_match_device(dispc_of_match, &pdev->dev)->data;
+diff --git a/drivers/gpu/drm/omapdrm/dss/dpi.c b/drivers/gpu/drm/omapdrm/dss/dpi.c
+index 030f997eccd0..57b1c62dcdf2 100644
+--- a/drivers/gpu/drm/omapdrm/dss/dpi.c
++++ b/drivers/gpu/drm/omapdrm/dss/dpi.c
+@@ -677,12 +677,14 @@ static const struct soc_device_attribute dpi_soc_devices[] = {
+ static int dpi_init_regulator(struct dpi_data *dpi)
+ {
+ 	struct regulator *vdds_dsi;
++	struct soc_device_attribute *soc;
+ 
+ 	/*
+ 	 * The DPI uses the DSI VDDS on OMAP34xx, OMAP35xx, OMAP36xx, AM37xx and
+ 	 * DM37xx only.
+ 	 */
+-	if (!soc_device_match(dpi_soc_devices))
++	soc = soc_device_match(dpi_soc_devices);
++	if (!IS_ERR(soc) && !soc)
+ 		return 0;
+ 
+ 	vdds_dsi = devm_regulator_get(&dpi->pdev->dev, "vdds_dsi");
+diff --git a/drivers/gpu/drm/omapdrm/dss/dsi.c b/drivers/gpu/drm/omapdrm/dss/dsi.c
+index 5f1722b040f4..cbef6fb85d1d 100644
+--- a/drivers/gpu/drm/omapdrm/dss/dsi.c
++++ b/drivers/gpu/drm/omapdrm/dss/dsi.c
+@@ -4952,6 +4952,9 @@ static int dsi_probe(struct platform_device *pdev)
+ 	}
+ 
+ 	soc = soc_device_match(dsi_soc_devices);
++	if (IS_ERR(soc))
++		return PTR_ERR(soc);
++
+ 	if (soc)
+ 		dsi->data = soc->data;
+ 	else
+diff --git a/drivers/gpu/drm/omapdrm/dss/dss.c b/drivers/gpu/drm/omapdrm/dss/dss.c
+index d6a5862b4dbf..1f88d25d178b 100644
+--- a/drivers/gpu/drm/omapdrm/dss/dss.c
++++ b/drivers/gpu/drm/omapdrm/dss/dss.c
+@@ -1446,6 +1446,9 @@ static int dss_probe(struct platform_device *pdev)
+ 	 * string, use SoC device matching.
+ 	 */
+ 	soc = soc_device_match(dss_soc_devices);
++	if (IS_ERR(soc))
++		return PTR_ERR(soc);
++
+ 	if (soc)
+ 		dss->feat = soc->data;
+ 	else
+diff --git a/drivers/gpu/drm/omapdrm/dss/hdmi4_core.c b/drivers/gpu/drm/omapdrm/dss/hdmi4_core.c
+index 35faa7f028c4..53a09cfd4deb 100644
+--- a/drivers/gpu/drm/omapdrm/dss/hdmi4_core.c
++++ b/drivers/gpu/drm/omapdrm/dss/hdmi4_core.c
+@@ -874,6 +874,9 @@ int hdmi4_core_init(struct platform_device *pdev, struct hdmi_core_data *core)
+ 	const struct soc_device_attribute *soc;
+ 
+ 	soc = soc_device_match(hdmi4_soc_devices);
++	if (IS_ERR(soc))
++		return PTR_ERR(soc);
++
+ 	if (!soc)
+ 		return -ENODEV;
+ 
+diff --git a/drivers/gpu/drm/omapdrm/dss/venc.c b/drivers/gpu/drm/omapdrm/dss/venc.c
+index e522c17955d0..df6fa3977481 100644
+--- a/drivers/gpu/drm/omapdrm/dss/venc.c
++++ b/drivers/gpu/drm/omapdrm/dss/venc.c
+@@ -805,6 +805,7 @@ static const struct soc_device_attribute venc_soc_devices[] = {
+ 
+ static int venc_probe(struct platform_device *pdev)
+ {
++	const struct soc_device_attribute *match;
+ 	struct venc_device *venc;
+ 	struct resource *venc_mem;
+ 	int r;
+@@ -818,7 +819,8 @@ static int venc_probe(struct platform_device *pdev)
+ 	platform_set_drvdata(pdev, venc);
+ 
+ 	/* The OMAP34xx, OMAP35xx and AM35xx VENC require the TV DAC clock. */
+-	if (soc_device_match(venc_soc_devices))
++	match = soc_device_match(venc_soc_devices);
++	if (!IS_ERR(match) && match)
+ 		venc->requires_tv_dac_clk = true;
+ 
+ 	venc->config = &venc_config_pal_trm;
+diff --git a/drivers/gpu/drm/omapdrm/omap_drv.c b/drivers/gpu/drm/omapdrm/omap_drv.c
+index 8632139e0f01..8542998f5e9e 100644
+--- a/drivers/gpu/drm/omapdrm/omap_drv.c
++++ b/drivers/gpu/drm/omapdrm/omap_drv.c
+@@ -576,6 +576,9 @@ static int omapdrm_init(struct omap_drm_private *priv, struct device *dev)
+ 	priv->dss->mgr_ops_priv = priv;
+ 
+ 	soc = soc_device_match(omapdrm_soc_devices);
++	if (IS_ERR(soc))
++		return PTR_ERR(soc);
++
+ 	priv->omaprev = soc ? (unsigned int)soc->data : 0;
+ 	priv->wq = alloc_ordered_workqueue("omapdrm", 0);
+ 
+diff --git a/drivers/gpu/drm/rcar-du/rcar_du_crtc.c b/drivers/gpu/drm/rcar-du/rcar_du_crtc.c
+index ea7e39d03545..06f5fd518326 100644
+--- a/drivers/gpu/drm/rcar-du/rcar_du_crtc.c
++++ b/drivers/gpu/drm/rcar-du/rcar_du_crtc.c
+@@ -215,6 +215,7 @@ static void rcar_du_crtc_set_display_timing(struct rcar_du_crtc *rcrtc)
+ 	const struct drm_display_mode *mode = &rcrtc->crtc.state->adjusted_mode;
+ 	struct rcar_du_device *rcdu = rcrtc->dev;
+ 	unsigned long mode_clock = mode->clock * 1000;
++	const struct soc_device_attribute *match;
+ 	u32 dsmr;
+ 	u32 escr;
+ 
+@@ -238,7 +239,8 @@ static void rcar_du_crtc_set_display_timing(struct rcar_du_crtc *rcrtc)
+ 		 * no post-divider when a display PLL is present (as shown by
+ 		 * the workaround breaking HDMI output on M3-W during testing).
+ 		 */
+-		if (soc_device_match(rcar_du_r8a7795_es1)) {
++		match = soc_device_match(rcar_du_r8a7795_es1);
++		if (!IS_ERR(match) && match) {
+ 			target *= 2;
+ 			div = 1;
+ 		}
+diff --git a/drivers/gpu/drm/rcar-du/rcar_lvds.c b/drivers/gpu/drm/rcar-du/rcar_lvds.c
+index 70dbbe44bb23..273c812a04e0 100644
+--- a/drivers/gpu/drm/rcar-du/rcar_lvds.c
++++ b/drivers/gpu/drm/rcar-du/rcar_lvds.c
+@@ -912,7 +912,7 @@ static int rcar_lvds_probe(struct platform_device *pdev)
+ 	lvds->info = of_device_get_match_data(&pdev->dev);
+ 
+ 	attr = soc_device_match(lvds_quirk_matches);
+-	if (attr)
++	if (!IS_ERR(attr) && attr)
+ 		lvds->info = attr->data;
+ 
+ 	ret = rcar_lvds_parse_dt(lvds);
+diff --git a/drivers/gpu/drm/tidss/tidss_dispc.c b/drivers/gpu/drm/tidss/tidss_dispc.c
+index 60b92df615aa..8f083604e04f 100644
+--- a/drivers/gpu/drm/tidss/tidss_dispc.c
++++ b/drivers/gpu/drm/tidss/tidss_dispc.c
+@@ -2643,8 +2643,10 @@ static void dispc_init_errata(struct dispc_device *dispc)
+ 		{ .family = "AM65X", .revision = "SR1.0" },
+ 		{ /* sentinel */ }
+ 	};
++	const struct soc_device_attribute *match;
+ 
+-	if (soc_device_match(am65x_sr10_soc_devices)) {
++	match = soc_device_match(am65x_sr10_soc_devices);
++	if (!IS_ERR(match) && match) {
+ 		dispc->errata.i2000 = true;
+ 		dev_info(dispc->dev, "WA for erratum i2000: YUV formats disabled\n");
+ 	}
+diff --git a/drivers/iommu/ipmmu-vmsa.c b/drivers/iommu/ipmmu-vmsa.c
+index eaaec0a55cc6..13a06b613379 100644
+--- a/drivers/iommu/ipmmu-vmsa.c
++++ b/drivers/iommu/ipmmu-vmsa.c
+@@ -757,17 +757,20 @@ static const char * const devices_allowlist[] = {
+ 
+ static bool ipmmu_device_is_allowed(struct device *dev)
+ {
++	const struct soc_device_attribute *match1, *match2;
+ 	unsigned int i;
+ 
+ 	/*
+ 	 * R-Car Gen3 and RZ/G2 use the allow list to opt-in devices.
+ 	 * For Other SoCs, this returns true anyway.
+ 	 */
+-	if (!soc_device_match(soc_needs_opt_in))
++	match1 = soc_device_match(soc_needs_opt_in);
++	if (!IS_ERR(match1) && !match1)
+ 		return true;
+ 
+ 	/* Check whether this SoC can use the IPMMU correctly or not */
+-	if (soc_device_match(soc_denylist))
++	match2 = soc_device_match(soc_denylist);
++	if (!IS_ERR(match2) && !match2)
+ 		return false;
+ 
+ 	/* Check whether this device can work with the IPMMU */
+diff --git a/drivers/media/platform/rcar-vin/rcar-core.c b/drivers/media/platform/rcar-vin/rcar-core.c
+index cb3025992817..37afc4b169c1 100644
+--- a/drivers/media/platform/rcar-vin/rcar-core.c
++++ b/drivers/media/platform/rcar-vin/rcar-core.c
+@@ -1413,7 +1413,7 @@ static int rcar_vin_probe(struct platform_device *pdev)
+ 	 * uses different routing than r8a7795 ES2.0.
+ 	 */
+ 	attr = soc_device_match(r8a7795es1);
+-	if (attr)
++	if (!IS_ERR(attr) && attr)
+ 		vin->info = attr->data;
+ 
+ 	vin->base = devm_platform_ioremap_resource(pdev, 0);
+diff --git a/drivers/media/platform/rcar-vin/rcar-csi2.c b/drivers/media/platform/rcar-vin/rcar-csi2.c
+index e06cd512aba2..b83200e8e30d 100644
+--- a/drivers/media/platform/rcar-vin/rcar-csi2.c
++++ b/drivers/media/platform/rcar-vin/rcar-csi2.c
+@@ -1214,7 +1214,7 @@ static int rcsi2_probe(struct platform_device *pdev)
+ 	 * share the same compatible string.
+ 	 */
+ 	attr = soc_device_match(r8a7795);
+-	if (attr)
++	if (!IS_ERR(attr) && attr)
+ 		priv->info = attr->data;
+ 
+ 	priv->dev = &pdev->dev;
+diff --git a/drivers/media/platform/vsp1/vsp1_uif.c b/drivers/media/platform/vsp1/vsp1_uif.c
+index 467d1072577b..e5c5b4f50dea 100644
+--- a/drivers/media/platform/vsp1/vsp1_uif.c
++++ b/drivers/media/platform/vsp1/vsp1_uif.c
+@@ -240,6 +240,7 @@ static const struct soc_device_attribute vsp1_r8a7796[] = {
+ struct vsp1_uif *vsp1_uif_create(struct vsp1_device *vsp1, unsigned int index)
+ {
+ 	struct vsp1_uif *uif;
++	const struct soc_device_attribute *attr;
+ 	char name[6];
+ 	int ret;
+ 
+@@ -247,7 +248,8 @@ struct vsp1_uif *vsp1_uif_create(struct vsp1_device *vsp1, unsigned int index)
+ 	if (!uif)
+ 		return ERR_PTR(-ENOMEM);
+ 
+-	if (soc_device_match(vsp1_r8a7796))
++	attr = soc_device_match(vsp1_r8a7796);
++	if (!IS_ERR(attr) && attr)
+ 		uif->m3w_quirk = true;
+ 
+ 	uif->entity.ops = &uif_entity_ops;
+diff --git a/drivers/mmc/host/renesas_sdhi_core.c b/drivers/mmc/host/renesas_sdhi_core.c
+index 635bf31a6735..71986a8bf50e 100644
+--- a/drivers/mmc/host/renesas_sdhi_core.c
++++ b/drivers/mmc/host/renesas_sdhi_core.c
+@@ -964,7 +964,7 @@ int renesas_sdhi_probe(struct platform_device *pdev,
+ 	of_data = of_device_get_match_data(&pdev->dev);
+ 
+ 	attr = soc_device_match(sdhi_quirks_match);
+-	if (attr)
++	if (!IS_ERR(attr) && attr)
+ 		quirks = attr->data;
+ 
+ 	res = platform_get_resource(pdev, IORESOURCE_MEM, 0);
+diff --git a/drivers/mmc/host/renesas_sdhi_internal_dmac.c b/drivers/mmc/host/renesas_sdhi_internal_dmac.c
+index e8f4863d8f1a..946f57b3cc48 100644
+--- a/drivers/mmc/host/renesas_sdhi_internal_dmac.c
++++ b/drivers/mmc/host/renesas_sdhi_internal_dmac.c
+@@ -408,7 +408,7 @@ static int renesas_sdhi_internal_dmac_probe(struct platform_device *pdev)
+ 	const struct soc_device_attribute *soc = soc_device_match(soc_dma_quirks);
+ 	struct device *dev = &pdev->dev;
+ 
+-	if (soc)
++	if (!IS_ERR(soc) && soc)
+ 		global_flags |= (unsigned long)soc->data;
+ 
+ 	/* value is max of SD_SECCNT. Confirmed by HW engineers */
+diff --git a/drivers/mmc/host/sdhci-of-esdhc.c b/drivers/mmc/host/sdhci-of-esdhc.c
+index ab5ab969f711..4259553451da 100644
+--- a/drivers/mmc/host/sdhci-of-esdhc.c
++++ b/drivers/mmc/host/sdhci-of-esdhc.c
+@@ -1336,6 +1336,7 @@ static void esdhc_init(struct platform_device *pdev, struct sdhci_host *host)
+ 	struct sdhci_esdhc *esdhc;
+ 	struct device_node *np;
+ 	struct clk *clk;
++	const struct soc_device_attribute *match1, *match2, *match3;
+ 	u32 val;
+ 	u16 host_ver;
+ 
+@@ -1346,17 +1347,20 @@ static void esdhc_init(struct platform_device *pdev, struct sdhci_host *host)
+ 	esdhc->vendor_ver = (host_ver & SDHCI_VENDOR_VER_MASK) >>
+ 			     SDHCI_VENDOR_VER_SHIFT;
+ 	esdhc->spec_ver = host_ver & SDHCI_SPEC_VER_MASK;
+-	if (soc_device_match(soc_incorrect_hostver))
++	match1 = soc_device_match(soc_incorrect_hostver);
++	if (!IS_ERR(match1) && match1)
+ 		esdhc->quirk_incorrect_hostver = true;
+ 	else
+ 		esdhc->quirk_incorrect_hostver = false;
+ 
+-	if (soc_device_match(soc_fixup_sdhc_clkdivs))
++	match2 = soc_device_match(soc_fixup_sdhc_clkdivs);
++	if (!IS_ERR(match2) && match2)
+ 		esdhc->quirk_limited_clk_division = true;
+ 	else
+ 		esdhc->quirk_limited_clk_division = false;
+ 
+-	if (soc_device_match(soc_unreliable_pulse_detection))
++	match3 = soc_device_match(soc_unreliable_pulse_detection);
++	if (!IS_ERR(match3) && match3)
+ 		esdhc->quirk_unreliable_pulse_detection = true;
+ 	else
+ 		esdhc->quirk_unreliable_pulse_detection = false;
+@@ -1417,6 +1421,7 @@ static int sdhci_esdhc_probe(struct platform_device *pdev)
+ 	struct device_node *np;
+ 	struct sdhci_pltfm_host *pltfm_host;
+ 	struct sdhci_esdhc *esdhc;
++	const struct soc_device_attribute *match1, *match2;
+ 	int ret;
+ 
+ 	np = pdev->dev.of_node;
+@@ -1443,12 +1448,18 @@ static int sdhci_esdhc_probe(struct platform_device *pdev)
+ 
+ 	pltfm_host = sdhci_priv(host);
+ 	esdhc = sdhci_pltfm_priv(pltfm_host);
+-	if (soc_device_match(soc_tuning_erratum_type1))
++	match1 = soc_device_match(soc_tuning_erratum_type1);
++	if (IS_ERR(match1))
++		return PTR_ERR(match1);
++	if (match1)
+ 		esdhc->quirk_tuning_erratum_type1 = true;
+ 	else
+ 		esdhc->quirk_tuning_erratum_type1 = false;
+ 
+-	if (soc_device_match(soc_tuning_erratum_type2))
++	match2 = soc_device_match(soc_tuning_erratum_type2);
++	if (IS_ERR(match2))
++		return PTR_ERR(match2);
++	if (match2)
+ 		esdhc->quirk_tuning_erratum_type2 = true;
+ 	else
+ 		esdhc->quirk_tuning_erratum_type2 = false;
+diff --git a/drivers/mmc/host/sdhci-omap.c b/drivers/mmc/host/sdhci-omap.c
+index 7893fd3599b6..5a6f2b22eb42 100644
+--- a/drivers/mmc/host/sdhci-omap.c
++++ b/drivers/mmc/host/sdhci-omap.c
+@@ -1132,7 +1132,7 @@ static int sdhci_omap_probe(struct platform_device *pdev)
+ 		goto err_pltfm_free;
+ 
+ 	soc = soc_device_match(sdhci_omap_soc_devices);
+-	if (soc) {
++	if (!IS_ERR(soc) && soc) {
+ 		omap_host->version = "rev11";
+ 		if (!strcmp(dev_name(dev), "4809c000.mmc"))
+ 			mmc->f_max = 96000000;
+diff --git a/drivers/mmc/host/sdhci_am654.c b/drivers/mmc/host/sdhci_am654.c
+index 1fad6e442688..c0d1a0eab939 100644
+--- a/drivers/mmc/host/sdhci_am654.c
++++ b/drivers/mmc/host/sdhci_am654.c
+@@ -787,7 +787,7 @@ static int sdhci_am654_probe(struct platform_device *pdev)
+ 
+ 	/* Update drvdata based on SoC revision */
+ 	soc = soc_device_match(sdhci_am654_devices);
+-	if (soc && soc->data)
++	if (!IS_ERR(soc) && soc && soc->data)
+ 		drvdata = soc->data;
+ 
+ 	host = sdhci_pltfm_init(pdev, drvdata->pdata, sizeof(*sdhci_am654));
+diff --git a/drivers/net/ethernet/renesas/ravb_main.c b/drivers/net/ethernet/renesas/ravb_main.c
+index 8c84c40ab9a0..f9e1cafe9b1a 100644
+--- a/drivers/net/ethernet/renesas/ravb_main.c
++++ b/drivers/net/ethernet/renesas/ravb_main.c
+@@ -1016,6 +1016,7 @@ static int ravb_phy_init(struct net_device *ndev)
+ 	struct ravb_private *priv = netdev_priv(ndev);
+ 	struct phy_device *phydev;
+ 	struct device_node *pn;
++	const struct soc_device_attribute *soc;
+ 	phy_interface_t iface;
+ 	int err;
+ 
+@@ -1049,7 +1050,8 @@ static int ravb_phy_init(struct net_device *ndev)
+ 	/* This driver only support 10/100Mbit speeds on R-Car H3 ES1.0
+ 	 * at this time.
+ 	 */
+-	if (soc_device_match(r8a7795es10)) {
++	soc = soc_device_match(r8a7795es10);
++	if (!IS_ERR(soc) && soc) {
+ 		err = phy_set_max_speed(phydev, SPEED_100);
+ 		if (err) {
+ 			netdev_err(ndev, "failed to limit PHY to 100Mbit/s\n");
+diff --git a/drivers/net/ethernet/ti/am65-cpsw-nuss.c b/drivers/net/ethernet/ti/am65-cpsw-nuss.c
+index 6a67b026df0b..01c1e5b573fa 100644
+--- a/drivers/net/ethernet/ti/am65-cpsw-nuss.c
++++ b/drivers/net/ethernet/ti/am65-cpsw-nuss.c
+@@ -2596,7 +2596,7 @@ static void am65_cpsw_nuss_apply_socinfo(struct am65_cpsw_common *common)
+ 	const struct soc_device_attribute *soc;
+ 
+ 	soc = soc_device_match(am65_cpsw_socinfo);
+-	if (soc && soc->data) {
++	if (!IS_ERR(soc) && soc && soc->data) {
+ 		const struct am65_cpsw_soc_pdata *socdata = soc->data;
+ 
+ 		/* disable quirks */
+diff --git a/drivers/net/ethernet/ti/cpsw.c b/drivers/net/ethernet/ti/cpsw.c
+index c0cd7de88316..12bb62ed0fe9 100644
+--- a/drivers/net/ethernet/ti/cpsw.c
++++ b/drivers/net/ethernet/ti/cpsw.c
+@@ -1579,7 +1579,7 @@ static int cpsw_probe(struct platform_device *pdev)
+ 		goto clean_dt_ret;
+ 
+ 	soc = soc_device_match(cpsw_soc_devices);
+-	if (soc)
++	if (!IS_ERR(soc) && soc)
+ 		cpsw->quirk_irq = true;
+ 
+ 	data = &cpsw->data;
+diff --git a/drivers/net/ethernet/ti/cpsw_new.c b/drivers/net/ethernet/ti/cpsw_new.c
+index 69b7a4e0220a..2b82a3e4a3cc 100644
+--- a/drivers/net/ethernet/ti/cpsw_new.c
++++ b/drivers/net/ethernet/ti/cpsw_new.c
+@@ -1925,7 +1925,7 @@ static int cpsw_probe(struct platform_device *pdev)
+ 		goto clean_dt_ret;
+ 
+ 	soc = soc_device_match(cpsw_soc_devices);
+-	if (soc)
++	if (!IS_ERR(soc) && soc)
+ 		cpsw->quirk_irq = true;
+ 
+ 	cpsw->rx_packet_max = rx_packet_max;
+diff --git a/drivers/phy/ti/phy-omap-usb2.c b/drivers/phy/ti/phy-omap-usb2.c
+index ebceb1520ce8..d7346d0ea9ed 100644
+--- a/drivers/phy/ti/phy-omap-usb2.c
++++ b/drivers/phy/ti/phy-omap-usb2.c
+@@ -348,6 +348,7 @@ static void omap_usb2_init_errata(struct omap_usb *phy)
+ 		{ .family = "AM65X", .revision = "SR1.0" },
+ 		{ /* sentinel */ }
+ 	};
++	const struct soc_device_attribute *soc;
+ 
+ 	/*
+ 	 * Errata i2075: USB2PHY: USB2PHY Charger Detect is Enabled by
+@@ -358,7 +359,8 @@ static void omap_usb2_init_errata(struct omap_usb *phy)
+ 	 * Disabling the USB2_PHY Charger Detect function will put D+
+ 	 * into the normal state.
+ 	 */
+-	if (soc_device_match(am65x_sr10_soc_devices))
++	soc = soc_device_match(am65x_sr10_soc_devices);
++	if (!IS_ERR(soc) && soc)
+ 		phy->flags |= OMAP_USB2_DISABLE_CHRG_DET;
+ }
+ 
+diff --git a/drivers/pinctrl/renesas/core.c b/drivers/pinctrl/renesas/core.c
+index 5ccc49b387f1..758444e0a620 100644
+--- a/drivers/pinctrl/renesas/core.c
++++ b/drivers/pinctrl/renesas/core.c
+@@ -1102,7 +1102,7 @@ static const void *sh_pfc_quirk_match(void)
+ 	};
+ 
+ 	match = soc_device_match(quirks);
+-	if (match)
++	if (!IS_ERR(match) && match)
+ 		return match->data ?: ERR_PTR(-ENODEV);
+ #endif /* CONFIG_PINCTRL_PFC_R8A77950 || CONFIG_PINCTRL_PFC_R8A77951 */
+ 
+diff --git a/drivers/pinctrl/renesas/pfc-r8a7790.c b/drivers/pinctrl/renesas/pfc-r8a7790.c
+index e9a64e0e2734..57044d338fd5 100644
+--- a/drivers/pinctrl/renesas/pfc-r8a7790.c
++++ b/drivers/pinctrl/renesas/pfc-r8a7790.c
+@@ -5999,8 +5999,11 @@ static const struct soc_device_attribute r8a7790_tdsel[] = {
+ 
+ static int r8a7790_pinmux_soc_init(struct sh_pfc *pfc)
+ {
++	const struct soc_device_attribute *match;
++
+ 	/* Initialize TDSEL on old revisions */
+-	if (soc_device_match(r8a7790_tdsel))
++	match = soc_device_match(r8a7790_tdsel);
++	if (!IS_ERR(match) && match)
+ 		sh_pfc_write(pfc, 0xe6060088, 0x00155554);
+ 
+ 	return 0;
+diff --git a/drivers/pinctrl/renesas/pfc-r8a7794.c b/drivers/pinctrl/renesas/pfc-r8a7794.c
+index 34481b6c4328..fb9a714dec1d 100644
+--- a/drivers/pinctrl/renesas/pfc-r8a7794.c
++++ b/drivers/pinctrl/renesas/pfc-r8a7794.c
+@@ -5587,8 +5587,11 @@ static const struct soc_device_attribute r8a7794_tdsel[] = {
+ 
+ static int r8a7794_pinmux_soc_init(struct sh_pfc *pfc)
+ {
++	const struct soc_device_attribute *match;
++
+ 	/* Initialize TDSEL on old revisions */
+-	if (soc_device_match(r8a7794_tdsel))
++	match = soc_device_match(r8a7794_tdsel);
++	if (!IS_ERR(match) && match)
+ 		sh_pfc_write(pfc, 0xe6060068, 0x55555500);
+ 
+ 	return 0;
+diff --git a/drivers/soc/fsl/dpio/dpio-driver.c b/drivers/soc/fsl/dpio/dpio-driver.c
+index 7f397b4ad878..01e3d1ca54df 100644
+--- a/drivers/soc/fsl/dpio/dpio-driver.c
++++ b/drivers/soc/fsl/dpio/dpio-driver.c
+@@ -55,14 +55,19 @@ static const struct soc_device_attribute lx2160a_soc[] = {
+ 
+ static int dpaa2_dpio_get_cluster_sdest(struct fsl_mc_device *dpio_dev, int cpu)
+ {
++	const struct soc_device_attribute *match1, *match2, *match3, *match4;
+ 	int cluster_base, cluster_size;
+ 
+-	if (soc_device_match(ls1088a_soc)) {
++	match1 = soc_device_match(ls1088a_soc);
++	match2 = soc_device_match(ls2080a_soc);
++	match3 = soc_device_match(ls2088a_soc);
++	match4 = soc_device_match(lx2160a_soc);
++	if (!IS_ERR(match1) && match1) {
+ 		cluster_base = 2;
+ 		cluster_size = 4;
+-	} else if (soc_device_match(ls2080a_soc) ||
+-		   soc_device_match(ls2088a_soc) ||
+-		   soc_device_match(lx2160a_soc)) {
++	} else if ((!IS_ERR(match2) && match2) ||
++		   (!IS_ERR(match3) && match3) ||
++		   (!IS_ERR(match4) && match4)) {
+ 		cluster_base = 0;
+ 		cluster_size = 2;
+ 	} else {
+diff --git a/drivers/soc/renesas/r8a774c0-sysc.c b/drivers/soc/renesas/r8a774c0-sysc.c
+index c1c216f7d073..6b0b092c1b45 100644
+--- a/drivers/soc/renesas/r8a774c0-sysc.c
++++ b/drivers/soc/renesas/r8a774c0-sysc.c
+@@ -36,7 +36,10 @@ static const struct soc_device_attribute r8a774c0[] __initconst = {
+ 
+ static int __init r8a774c0_sysc_init(void)
+ {
+-	if (soc_device_match(r8a774c0)) {
++	const struct soc_device_attribute *match;
++
++	match = soc_device_match(r8a774c0);
++	if (!IS_ERR(match) && match) {
+ 		/* Fix incorrect 3DG hierarchy */
+ 		swap(r8a774c0_areas[6], r8a774c0_areas[7]);
+ 		r8a774c0_areas[6].parent = R8A774C0_PD_ALWAYS_ON;
+diff --git a/drivers/soc/renesas/r8a7795-sysc.c b/drivers/soc/renesas/r8a7795-sysc.c
+index 91074411b8cf..7d5dcfcb1d09 100644
+--- a/drivers/soc/renesas/r8a7795-sysc.c
++++ b/drivers/soc/renesas/r8a7795-sysc.c
+@@ -74,7 +74,7 @@ static int __init r8a7795_sysc_init(void)
+ 	u32 quirks = 0;
+ 
+ 	attr = soc_device_match(r8a7795_quirks_match);
+-	if (attr)
++	if (!IS_ERR(attr) && attr)
+ 		quirks = (uintptr_t)attr->data;
+ 
+ 	if (!(quirks & HAS_A2VC0))
+diff --git a/drivers/soc/renesas/r8a77990-sysc.c b/drivers/soc/renesas/r8a77990-sysc.c
+index 9f92737dc352..10353afe061d 100644
+--- a/drivers/soc/renesas/r8a77990-sysc.c
++++ b/drivers/soc/renesas/r8a77990-sysc.c
+@@ -36,7 +36,10 @@ static const struct soc_device_attribute r8a77990[] __initconst = {
+ 
+ static int __init r8a77990_sysc_init(void)
+ {
+-	if (soc_device_match(r8a77990)) {
++	const struct soc_device_attribute *match;
++
++	match = soc_device_match(r8a77990);
++	if (!IS_ERR(match) && match) {
+ 		/* Fix incorrect 3DG hierarchy */
+ 		swap(r8a77990_areas[7], r8a77990_areas[8]);
+ 		r8a77990_areas[7].parent = R8A77990_PD_ALWAYS_ON;
+diff --git a/drivers/soc/ti/k3-ringacc.c b/drivers/soc/ti/k3-ringacc.c
+index 312ba0f98ad7..f4a08992e827 100644
+--- a/drivers/soc/ti/k3-ringacc.c
++++ b/drivers/soc/ti/k3-ringacc.c
+@@ -1368,7 +1368,7 @@ static int k3_ringacc_init(struct platform_device *pdev,
+ 		return ret;
+ 
+ 	soc = soc_device_match(k3_ringacc_socinfo);
+-	if (soc && soc->data) {
++	if (!IS_ERR(soc) && soc && soc->data) {
+ 		const struct k3_ringacc_soc_data *soc_data = soc->data;
+ 
+ 		ringacc->dma_ring_reset_quirk = soc_data->dma_ring_reset_quirk;
+diff --git a/drivers/staging/mt7621-pci/pci-mt7621.c b/drivers/staging/mt7621-pci/pci-mt7621.c
+index 115250115f10..34ce3c8eb9fc 100644
+--- a/drivers/staging/mt7621-pci/pci-mt7621.c
++++ b/drivers/staging/mt7621-pci/pci-mt7621.c
+@@ -667,7 +667,7 @@ static int mt7621_pci_probe(struct platform_device *pdev)
+ 	INIT_LIST_HEAD(&pcie->ports);
+ 
+ 	attr = soc_device_match(mt7621_pci_quirks_match);
+-	if (attr)
++	if (!IS_ERR(attr) && attr)
+ 		pcie->resets_inverted = true;
+ 
+ 	err = mt7621_pcie_parse_dt(pcie);
+diff --git a/drivers/thermal/rcar_gen3_thermal.c b/drivers/thermal/rcar_gen3_thermal.c
+index e1e412348076..ada3cc5adc02 100644
+--- a/drivers/thermal/rcar_gen3_thermal.c
++++ b/drivers/thermal/rcar_gen3_thermal.c
+@@ -310,6 +310,7 @@ static int rcar_gen3_thermal_probe(struct platform_device *pdev)
+ 	const int *rcar_gen3_ths_tj_1 = of_device_get_match_data(dev);
+ 	struct resource *res;
+ 	struct thermal_zone_device *zone;
++	const struct soc_device_attribute *attr;
+ 	int ret, i;
+ 
+ 	/* default values if FUSEs are missing */
+@@ -321,7 +322,8 @@ static int rcar_gen3_thermal_probe(struct platform_device *pdev)
+ 		return -ENOMEM;
+ 
+ 	priv->thermal_init = rcar_gen3_thermal_init;
+-	if (soc_device_match(r8a7795es1))
++	attr = soc_device_match(r8a7795es1);
++	if (!IS_ERR(attr) && attr)
+ 		priv->thermal_init = rcar_gen3_thermal_init_r8a7795es1;
+ 
+ 	platform_set_drvdata(pdev, priv);
+diff --git a/drivers/thermal/ti-soc-thermal/ti-bandgap.c b/drivers/thermal/ti-soc-thermal/ti-bandgap.c
+index d81af89166d2..eb9b7bcbd934 100644
+--- a/drivers/thermal/ti-soc-thermal/ti-bandgap.c
++++ b/drivers/thermal/ti-soc-thermal/ti-bandgap.c
+@@ -886,6 +886,9 @@ static const struct soc_device_attribute soc_no_cpu_notifier[] = {
+ static
+ int ti_bandgap_probe(struct platform_device *pdev)
+ {
++#ifdef CONFIG_PM_SLEEP
++	const struct soc_device_attribute *match;
++#endif
+ 	struct ti_bandgap *bgp;
+ 	int clk_rate, ret, i;
+ 
+@@ -1037,7 +1040,8 @@ int ti_bandgap_probe(struct platform_device *pdev)
+ 
+ #ifdef CONFIG_PM_SLEEP
+ 	bgp->nb.notifier_call = bandgap_omap_cpu_notifier;
+-	if (!soc_device_match(soc_no_cpu_notifier))
++	match = soc_device_match(soc_no_cpu_notifier);
++	if (!IS_ERR(match) && !match)
+ 		cpu_pm_register_notifier(&bgp->nb);
+ #endif
+ 
+@@ -1072,9 +1076,11 @@ static
+ int ti_bandgap_remove(struct platform_device *pdev)
+ {
+ 	struct ti_bandgap *bgp = platform_get_drvdata(pdev);
++	const struct soc_device_attribute *attr;
+ 	int i;
+ 
+-	if (!soc_device_match(soc_no_cpu_notifier))
++	soc = soc_device_match(soc_no_cpu_notifier);
++	if (!IS_ERR(attr) && !attr)
+ 		cpu_pm_unregister_notifier(&bgp->nb);
+ 
+ 	/* Remove sensor interfaces */
+diff --git a/drivers/usb/gadget/udc/renesas_usb3.c b/drivers/usb/gadget/udc/renesas_usb3.c
+index 0c418ce50ba0..dfc73e0187bd 100644
+--- a/drivers/usb/gadget/udc/renesas_usb3.c
++++ b/drivers/usb/gadget/udc/renesas_usb3.c
+@@ -2753,7 +2753,7 @@ static int renesas_usb3_probe(struct platform_device *pdev)
+ 	const struct soc_device_attribute *attr;
+ 
+ 	attr = soc_device_match(renesas_usb3_quirks_match);
+-	if (attr)
++	if (!IS_ERR(attr) && attr)
+ 		priv = attr->data;
+ 	else
+ 		priv = of_device_get_match_data(&pdev->dev);
+diff --git a/drivers/usb/host/ehci-platform.c b/drivers/usb/host/ehci-platform.c
+index c70f2d0b4aaf..5d9cd7797ec1 100644
+--- a/drivers/usb/host/ehci-platform.c
++++ b/drivers/usb/host/ehci-platform.c
+@@ -243,6 +243,7 @@ static int ehci_platform_probe(struct platform_device *dev)
+ 	struct usb_ehci_pdata *pdata = dev_get_platdata(&dev->dev);
+ 	struct ehci_platform_priv *priv;
+ 	struct ehci_hcd *ehci;
++	const struct soc_device_attribute *match;
+ 	int err, irq, clk = 0;
+ 
+ 	if (usb_disabled())
+@@ -297,7 +298,8 @@ static int ehci_platform_probe(struct platform_device *dev)
+ 					  "has-transaction-translator"))
+ 			hcd->has_tt = 1;
+ 
+-		if (soc_device_match(quirk_poll_match))
++		match = soc_device_match(quirk_poll_match);
++		if (!IS_ERR(match) && match)
+ 			priv->quirk_poll = true;
+ 
+ 		for (clk = 0; clk < EHCI_MAX_CLKS; clk++) {
+diff --git a/drivers/usb/host/xhci-rcar.c b/drivers/usb/host/xhci-rcar.c
+index 1bc4fe7b8c75..41bb59d0e975 100644
+--- a/drivers/usb/host/xhci-rcar.c
++++ b/drivers/usb/host/xhci-rcar.c
+@@ -135,7 +135,7 @@ static int xhci_rcar_download_firmware(struct usb_hcd *hcd)
+ 	const char *firmware_name;
+ 
+ 	attr = soc_device_match(rcar_quirks_match);
+-	if (attr)
++	if (!IS_ERR(attr) && attr)
+ 		quirks = (uintptr_t)attr->data;
+ 
+ 	if (quirks & RCAR_XHCI_FIRMWARE_V2)
+diff --git a/drivers/watchdog/renesas_wdt.c b/drivers/watchdog/renesas_wdt.c
+index 5791198960e6..fdc534dc4024 100644
+--- a/drivers/watchdog/renesas_wdt.c
++++ b/drivers/watchdog/renesas_wdt.c
+@@ -197,7 +197,7 @@ static bool rwdt_blacklisted(struct device *dev)
+ 	const struct soc_device_attribute *attr;
+ 
+ 	attr = soc_device_match(rwdt_quirks_match);
+-	if (attr && setup_max_cpus > (uintptr_t)attr->data) {
++	if (!IS_ERR(attr) && attr && setup_max_cpus > (uintptr_t)attr->data) {
+ 		dev_info(dev, "Watchdog blacklisted on %s %s\n", attr->soc_id,
+ 			 attr->revision);
+ 		return true;
+-- 
+2.17.1
+
+_______________________________________________
+iommu mailing list
+iommu@lists.linux-foundation.org
+https://lists.linuxfoundation.org/mailman/listinfo/iommu
