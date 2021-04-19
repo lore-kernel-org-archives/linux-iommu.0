@@ -7,95 +7,97 @@ X-Spam-Status: No, score=-13.8 required=3.0 tests=BAYES_00,
 	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED autolearn=unavailable
 	autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id DB0ACC43460
-	for <iommu@archiver.kernel.org>; Mon, 19 Apr 2021 08:20:35 +0000 (UTC)
-Received: from smtp4.osuosl.org (smtp4.osuosl.org [140.211.166.137])
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4CF13C43611
+	for <iommu@archiver.kernel.org>; Mon, 19 Apr 2021 09:03:47 +0000 (UTC)
+Received: from smtp2.osuosl.org (smtp2.osuosl.org [140.211.166.133])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 7EA6261151
-	for <iommu@archiver.kernel.org>; Mon, 19 Apr 2021 08:20:35 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 7EA6261151
+	by mail.kernel.org (Postfix) with ESMTPS id ED86460FDA
+	for <iommu@archiver.kernel.org>; Mon, 19 Apr 2021 09:03:46 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org ED86460FDA
 Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=linux-m68k.org
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by smtp4.osuosl.org (Postfix) with ESMTP id 403B540298;
-	Mon, 19 Apr 2021 08:20:35 +0000 (UTC)
-X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from smtp4.osuosl.org ([127.0.0.1])
-	by localhost (smtp4.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id i7i9PhexvMjI; Mon, 19 Apr 2021 08:20:34 +0000 (UTC)
-Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by smtp4.osuosl.org (Postfix) with ESMTP id D1E2D40250;
-	Mon, 19 Apr 2021 08:20:31 +0000 (UTC)
-Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id A9087C000E;
-	Mon, 19 Apr 2021 08:20:31 +0000 (UTC)
-Received: from smtp2.osuosl.org (smtp2.osuosl.org [IPv6:2605:bc80:3010::133])
- by lists.linuxfoundation.org (Postfix) with ESMTP id F4105C000B
- for <iommu@lists.linux-foundation.org>; Mon, 19 Apr 2021 08:20:29 +0000 (UTC)
-Received: from localhost (localhost [127.0.0.1])
- by smtp2.osuosl.org (Postfix) with ESMTP id D45384014D
- for <iommu@lists.linux-foundation.org>; Mon, 19 Apr 2021 08:20:29 +0000 (UTC)
+	by smtp2.osuosl.org (Postfix) with ESMTP id B39F840153;
+	Mon, 19 Apr 2021 09:03:46 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
 Received: from smtp2.osuosl.org ([127.0.0.1])
- by localhost (smtp2.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id ApjQi0qGNU_T for <iommu@lists.linux-foundation.org>;
- Mon, 19 Apr 2021 08:20:26 +0000 (UTC)
+	by localhost (smtp2.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+	with ESMTP id SvM0g11iEVGK; Mon, 19 Apr 2021 09:03:45 +0000 (UTC)
+Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
+	by smtp2.osuosl.org (Postfix) with ESMTP id 519934013B;
+	Mon, 19 Apr 2021 09:03:43 +0000 (UTC)
+Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 1F87DC000E;
+	Mon, 19 Apr 2021 09:03:43 +0000 (UTC)
+Received: from smtp4.osuosl.org (smtp4.osuosl.org [140.211.166.137])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 98AAEC000B
+ for <iommu@lists.linux-foundation.org>; Mon, 19 Apr 2021 09:03:41 +0000 (UTC)
+Received: from localhost (localhost [127.0.0.1])
+ by smtp4.osuosl.org (Postfix) with ESMTP id 7005040306
+ for <iommu@lists.linux-foundation.org>; Mon, 19 Apr 2021 09:03:41 +0000 (UTC)
+X-Virus-Scanned: amavisd-new at osuosl.org
+Received: from smtp4.osuosl.org ([127.0.0.1])
+ by localhost (smtp4.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+ with ESMTP id EsX03mpfyobg for <iommu@lists.linux-foundation.org>;
+ Mon, 19 Apr 2021 09:03:37 +0000 (UTC)
 X-Greylist: whitelisted by SQLgrey-1.8.0
-Received: from mail-vs1-f51.google.com (mail-vs1-f51.google.com
- [209.85.217.51])
- by smtp2.osuosl.org (Postfix) with ESMTPS id 10CC94014C
- for <iommu@lists.linux-foundation.org>; Mon, 19 Apr 2021 08:20:25 +0000 (UTC)
-Received: by mail-vs1-f51.google.com with SMTP id d25so10531768vsp.1
- for <iommu@lists.linux-foundation.org>; Mon, 19 Apr 2021 01:20:25 -0700 (PDT)
+Received: from mail-vs1-f44.google.com (mail-vs1-f44.google.com
+ [209.85.217.44])
+ by smtp4.osuosl.org (Postfix) with ESMTPS id A379240348
+ for <iommu@lists.linux-foundation.org>; Mon, 19 Apr 2021 09:03:37 +0000 (UTC)
+Received: by mail-vs1-f44.google.com with SMTP id t23so861422vso.11
+ for <iommu@lists.linux-foundation.org>; Mon, 19 Apr 2021 02:03:37 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
  d=1e100.net; s=20161025;
  h=x-gm-message-state:mime-version:references:in-reply-to:from:date
  :message-id:subject:to:cc;
- bh=ltv54OOOgcKhPoH7oRaigoXMRi+Z2QqH7bQ4dTNkEvU=;
- b=jDw793P/J1BufwDIqmsB6HyWGUNv4uDc8c/aO5fFrqX0etEVYWsq2A6YFR0MEZ/A4D
- GuAQwJIcaE1PMa+vvf8Z1qzGageRsH2jpCzDFVfufFj9Mukft9tHShv4HsdkU4RQ7wyS
- bOHgQQcFSexRjq0O859lKHkw3cIll8B4vNezG8A+0GM0T0pclGKq+Ve77uqtLq/KR/WR
- +d7UbqSWTTxkmhYQDyXS0w7JAoR9ps+bGtmLs97jWNnCQ28TfkA1pLKcTNbttCyO5vFN
- cVPbtowi+ilsuTbKurdDthBypexXzawhY/rGYYR6ynBattNqaaAIpBqL6ZnC6bO1gPw5
- bHJw==
-X-Gm-Message-State: AOAM5308hqsSQ2zmI0vMYccwJAyGCCo/xoxXiI9YSVAelSJPat/STH+X
- uk6vnl3W6GEl/OGLS7OwEzLmMLbN0oUZcU1YuwU=
-X-Google-Smtp-Source: ABdhPJw0QI7XOFx1TPnFrXWAlR/QW1v6zaWS/KnYbAtB/CEX2DsVVO2yNBv9r1VAA3kWmuOXuQwF2fQGH/J1go6B4oc=
-X-Received: by 2002:a67:f503:: with SMTP id u3mr12373252vsn.3.1618820424835;
- Mon, 19 Apr 2021 01:20:24 -0700 (PDT)
+ bh=YToQwZXN38nw8LU8icFLB58IB4Z2bfPdJB1gmWWtNj8=;
+ b=TNN04BKWm5Gd3GlAJd6riQAK1MnqdVs4gdKA3mbTOslYShISI7dq8UN2iReT/zshfK
+ YZTmnzxd/7g/E5GgGl0sF8aqYKQne2Tfcy42MWWaS/cYXtVko6FVpjfrmOQ8PMFY8q5U
+ 004YhjUzZlr0h30sG5NYyE/jCh1ovAW+zGlTwAYshHIqt3pbNoGjQ7VV1cZ9ageIIbZK
+ BtFiAruewJq4ggVvi5F7c37bMaVE/UGoYAspyYCTOEh4qdDRZv6CUDl7R4e/rwqfJjg5
+ uYd7+iuoJLp+QYnRlCqks3BX7+0ZK7xsDJQUxGzlFCBI2IVk50E69l5Owhm45kFvtZh1
+ AmyQ==
+X-Gm-Message-State: AOAM532jZnu0LfNv/yWpet9ARo31wY/c5SHDZt7rvlQ/mt42rZrKUpYV
+ ygyit5MYYo71gLy8aN4MWQ+oJZfqRcv32TcqXCQ=
+X-Google-Smtp-Source: ABdhPJxHtnj/DXie9H0wxpzVZlSTyniokdUb/gsNNsMkANVtAtzr2mFBhczBYEoBurfSWsjRkBkPBhRAOOMrjVGBWsw=
+X-Received: by 2002:a67:7c8c:: with SMTP id x134mr13821818vsc.40.1618823016409; 
+ Mon, 19 Apr 2021 02:03:36 -0700 (PDT)
 MIME-Version: 1.0
 References: <20210419042722.27554-1-alice.guo@oss.nxp.com>
- <20210419042722.27554-2-alice.guo@oss.nxp.com>
-In-Reply-To: <20210419042722.27554-2-alice.guo@oss.nxp.com>
+ <20210419042722.27554-4-alice.guo@oss.nxp.com>
+ <YH0O907dfGY9jQRZ@atmark-techno.com>
+In-Reply-To: <YH0O907dfGY9jQRZ@atmark-techno.com>
 From: Geert Uytterhoeven <geert@linux-m68k.org>
-Date: Mon, 19 Apr 2021 10:20:13 +0200
-Message-ID: <CAMuHMdUbrPxtJ9DCP0_nFrReuuO4vFY2J79LrKY82D7bCOfzRw@mail.gmail.com>
-Subject: Re: [RFC v1 PATCH 1/3] drivers: soc: add support for soc_device_match
- returning -EPROBE_DEFER
-To: "Alice Guo (OSS)" <alice.guo@oss.nxp.com>
+Date: Mon, 19 Apr 2021 11:03:24 +0200
+Message-ID: <CAMuHMdVY1SLZ0K30T2pimyrR6Mm=VoSTO=L-xxCy2Bj7_kostw@mail.gmail.com>
+Subject: Re: [RFC v1 PATCH 3/3] driver: update all the code that use
+ soc_device_match
+To: Dominique MARTINET <dominique.martinet@atmark-techno.com>
 Cc: ulf.hansson@linaro.org, aymen.sghaier@nxp.com, geert+renesas@glider.be,
  rafael@kernel.org, airlied@linux.ie, mturquette@baylibre.com,
  dri-devel@lists.freedesktop.org, linux-kernel@vger.kernel.org,
  a.hajda@samsung.com, netdev@vger.kernel.org, linux-phy@lists.infradead.org,
- will@kernel.org, linux-clk@vger.kernel.org, linux-renesas-soc@vger.kernel.org,
- wim@linux-watchdog.org, herbert@gondor.apana.org.au, horia.geanta@nxp.com,
- khilman@baylibre.com, narmstrong@baylibre.com, linux-staging@lists.linux.dev,
- iommu@lists.linux-foundation.org, peter.ujfalusi@gmail.com, kishon@ti.com,
- tony@atomide.com, linux-omap@vger.kernel.org, stern@rowland.harvard.edu,
- kuba@kernel.org, linus.walleij@linaro.org, linux@roeck-us.net,
- linux-media@vger.kernel.org, linux-watchdog@vger.kernel.org,
- Roy.Pledge@nxp.com, linux-pm@vger.kernel.org, linuxppc-dev@lists.ozlabs.org,
- edubezval@gmail.com, linux-gpio@vger.kernel.org,
+ peter.ujfalusi@gmail.com, linux-clk@vger.kernel.org,
+ linux-renesas-soc@vger.kernel.org, wim@linux-watchdog.org,
+ herbert@gondor.apana.org.au, horia.geanta@nxp.com, khilman@baylibre.com,
+ narmstrong@baylibre.com, linux-staging@lists.linux.dev,
+ iommu@lists.linux-foundation.org, kishon@ti.com, tony@atomide.com,
+ linux-omap@vger.kernel.org, stern@rowland.harvard.edu, kuba@kernel.org,
+ linus.walleij@linaro.org, linux@roeck-us.net, linux-media@vger.kernel.org,
+ linux-watchdog@vger.kernel.org, will@kernel.org, linux-pm@vger.kernel.org,
+ linuxppc-dev@lists.ozlabs.org, edubezval@gmail.com, linux-gpio@vger.kernel.org,
  linux-mediatek@lists.infradead.org, ssantosh@kernel.org,
  matthias.bgg@gmail.com, linux-amlogic@lists.infradead.org, mchehab@kernel.org,
- linux-arm-kernel@lists.infradead.org, balbi@kernel.org, tomba@kernel.org,
- sboyd@kernel.org, gregkh@linuxfoundation.org, linux-usb@vger.kernel.org,
- linux-mmc@vger.kernel.org, adrian.hunter@intel.com, robert.foss@linaro.org,
- leoyang.li@nxp.com, linux@prisktech.co.nz, vkoul@kernel.org,
- Arnd Bergmann <arnd@arndb.de>, linux-crypto@vger.kernel.org, daniel@ffwll.ch,
- j-keerthy@ti.com, dmaengine@vger.kernel.org, jyri.sarha@iki.fi,
- davem@davemloft.net
+ linux-arm-kernel@lists.infradead.org,
+ "Alice Guo \(OSS\)" <alice.guo@oss.nxp.com>, balbi@kernel.org,
+ tomba@kernel.org, sboyd@kernel.org, gregkh@linuxfoundation.org,
+ linux-usb@vger.kernel.org, linux-mmc@vger.kernel.org, adrian.hunter@intel.com,
+ robert.foss@linaro.org, leoyang.li@nxp.com, linux@prisktech.co.nz,
+ vkoul@kernel.org, Arnd Bergmann <arnd@arndb.de>, linux-crypto@vger.kernel.org,
+ daniel@ffwll.ch, j-keerthy@ti.com, dmaengine@vger.kernel.org,
+ Roy.Pledge@nxp.com, jyri.sarha@iki.fi, davem@davemloft.net
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -113,61 +115,124 @@ Content-Transfer-Encoding: 7bit
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-Hi Alice,
+Hi Dominique,
 
 CC Arnd (soc_device_match() author)
 
-On Mon, Apr 19, 2021 at 6:28 AM Alice Guo (OSS) <alice.guo@oss.nxp.com> wrote:
-> From: Alice Guo <alice.guo@nxp.com>
+On Mon, Apr 19, 2021 at 7:03 AM Dominique MARTINET
+<dominique.martinet@atmark-techno.com> wrote:
+> Alice Guo (OSS) wrote on Mon, Apr 19, 2021 at 12:27:22PM +0800:
+> > From: Alice Guo <alice.guo@nxp.com>
+> > Update all the code that use soc_device_match
 >
-> In i.MX8M boards, the registration of SoC device is later than caam
-> driver which needs it. Caam driver needs soc_device_match to provide
-> -EPROBE_DEFER when no SoC device is registered and no
-> early_soc_dev_attr.
+> A single patch might be difficult to accept for all components, a each
+> maintainer will probably want to have a say on their subsystem?
+>
+> I would suggest to split these for a non-RFC version; a this will really
+> need to be case-by-case handling.
+>
+> > because add support for soc_device_match returning -EPROBE_DEFER.
+>
+> (English does not parse here for me)
+>
+> I've only commented a couple of places in the code itself, but this
+> doesn't seem to add much support for errors, just sweep the problem
+> under the rug.
+>
+> > Signed-off-by: Alice Guo <alice.guo@nxp.com>
+> > ---
+> >
+> > diff --git a/drivers/bus/ti-sysc.c b/drivers/bus/ti-sysc.c
+> > index 5fae60f8c135..00c59aa217c1 100644
+> > --- a/drivers/bus/ti-sysc.c
+> > +++ b/drivers/bus/ti-sysc.c
+> > @@ -2909,7 +2909,7 @@ static int sysc_init_soc(struct sysc *ddata)
+> >       }
+> >
+> >       match = soc_device_match(sysc_soc_feat_match);
+> > -     if (!match)
+> > +     if (!match || IS_ERR(match))
+> >               return 0;
+>
+> This function handles errors, I would recommend returning the error as
+> is if soc_device_match returned one so the probe can be retried later.
 
-I'm wondering if this is really a good idea: soc_device_match() is a
-last-resort low-level check, and IMHO should be made available early on,
-so there is no need for -EPROBE_DEFER.
+Depends...
+
+> > --- a/drivers/clk/renesas/r8a7795-cpg-mssr.c
+> > +++ b/drivers/clk/renesas/r8a7795-cpg-mssr.c
+> > @@ -439,6 +439,7 @@ static const unsigned int r8a7795es2_mod_nullify[] __initconst = {
+> >
+> >  static int __init r8a7795_cpg_mssr_init(struct device *dev)
+> >  {
+> > +     const struct soc_device_attribute *match;
+> >       const struct rcar_gen3_cpg_pll_config *cpg_pll_config;
+> >       u32 cpg_mode;
+> >       int error;
+> > @@ -453,7 +454,8 @@ static int __init r8a7795_cpg_mssr_init(struct device *dev)
+> >               return -EINVAL;
+> >       }
+> >
+> > -     if (soc_device_match(r8a7795es1)) {
+> > +     match = soc_device_match(r8a7795es1);
+> > +     if (!IS_ERR(match) && match) {
+>
+> Same, return the error.
+> Assuming an error means no match will just lead to hard to debug
+> problems because the driver potentially assumed the wrong device when
+> it's just not ready yet.
+
+When running on R-Car H3, there will always be a match device, as
+the SoC device is registered early.
 
 >
-> Signed-off-by: Alice Guo <alice.guo@nxp.com>
-
-Thanks for your patch!
-
-> --- a/drivers/base/soc.c
-> +++ b/drivers/base/soc.c
-> @@ -110,6 +110,7 @@ static void soc_release(struct device *dev)
->  }
+> >               cpg_core_nullify_range(r8a7795_core_clks,
+> >                                      ARRAY_SIZE(r8a7795_core_clks),
+> >                                      R8A7795_CLK_S0D2, R8A7795_CLK_S0D12);
+> > [...]
+> > diff --git a/drivers/iommu/ipmmu-vmsa.c b/drivers/iommu/ipmmu-vmsa.c
+> > index eaaec0a55cc6..13a06b613379 100644
+> > --- a/drivers/iommu/ipmmu-vmsa.c
+> > +++ b/drivers/iommu/ipmmu-vmsa.c
+> > @@ -757,17 +757,20 @@ static const char * const devices_allowlist[] = {
+> >
+> >  static bool ipmmu_device_is_allowed(struct device *dev)
+> >  {
+> > +     const struct soc_device_attribute *match1, *match2;
+> >       unsigned int i;
+> >
+> >       /*
+> >        * R-Car Gen3 and RZ/G2 use the allow list to opt-in devices.
+> >        * For Other SoCs, this returns true anyway.
+> >        */
+> > -     if (!soc_device_match(soc_needs_opt_in))
+> > +     match1 = soc_device_match(soc_needs_opt_in);
+> > +     if (!IS_ERR(match1) && !match1)
 >
->  static struct soc_device_attribute *early_soc_dev_attr;
-> +static bool soc_dev_attr_init_done = false;
-
-Do you need this variable?
-
+> I'm not sure what you intended to do, but !match1 already means there is
+> no error so the original code is identical.
 >
->  struct soc_device *soc_device_register(struct soc_device_attribute *soc_dev_attr)
->  {
-> @@ -157,6 +158,7 @@ struct soc_device *soc_device_register(struct soc_device_attribute *soc_dev_attr
->                 return ERR_PTR(ret);
->         }
+> In this case ipmmu_device_is_allowed does not allow errors so this is
+> one of the "difficult" drivers that require slightly more thinking.
+> It is only called in ipmmu_of_xlate which does return errors properly,
+> so in this case the most straightforward approach would be to make
+> ipmmu_device_is_allowed return an int and forward errors as well.
 >
-> +       soc_dev_attr_init_done = true;
->         return soc_dev;
->
->  out3:
-> @@ -246,6 +248,9 @@ const struct soc_device_attribute *soc_device_match(
->         if (!matches)
->                 return NULL;
->
-> +       if (!soc_dev_attr_init_done && !early_soc_dev_attr)
+> ...
+> This is going to need quite some more work to be acceptable, in my
+> opinion, but I think it should be possible.
 
-if (!soc_bus_type.p && !early_soc_dev_attr)
+In general, this is very hard to do, IMHO. Some drivers may be used on
+multiple platforms, some of them registering an SoC device, some of
+them not registering an SoC device.  So there is no way to know the
+difference between "SoC device not registered, intentionally", and
+"SoC device not yet registered".
 
-> +               return ERR_PTR(-EPROBE_DEFER);
-> +
->         while (!ret) {
->                 if (!(matches->machine || matches->family ||
->                       matches->revision || matches->soc_id))
+soc_device_match() should only be used as a last resort, to identify
+systems that cannot be identified otherwise.  Typically this is used for
+quirks, which should only be enabled on a very specific subset of
+systems.  IMHO such systems should make sure soc_device_match()
+is available early, by registering their SoC device early.
 
 Gr{oetje,eeting}s,
 
