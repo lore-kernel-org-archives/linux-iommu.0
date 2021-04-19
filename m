@@ -2,208 +2,74 @@ Return-Path: <SRS0=soV1=JQ=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-8.6 required=3.0 tests=BAYES_00,DKIM_INVALID,
-	DKIM_SIGNED,HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_CR_TRAILER,
-	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED autolearn=unavailable
-	autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-16.8 required=3.0 tests=BAYES_00,
+	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_CR_TRAILER,INCLUDES_PATCH,
+	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_GIT
+	autolearn=unavailable autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8D1F0C433ED
+	by smtp.lore.kernel.org (Postfix) with ESMTP id BC622C43600
 	for <iommu@archiver.kernel.org>; Mon, 19 Apr 2021 07:07:26 +0000 (UTC)
-Received: from smtp3.osuosl.org (smtp3.osuosl.org [140.211.166.136])
+Received: from smtp1.osuosl.org (smtp1.osuosl.org [140.211.166.138])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 20DDA610A1
+	by mail.kernel.org (Postfix) with ESMTPS id 5042361165
 	for <iommu@archiver.kernel.org>; Mon, 19 Apr 2021 07:07:26 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 20DDA610A1
-Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=oss.nxp.com
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 5042361165
+Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=intel.com
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by smtp3.osuosl.org (Postfix) with ESMTP id CFE5A607AB;
+	by smtp1.osuosl.org (Postfix) with ESMTP id 12DAF83653;
 	Mon, 19 Apr 2021 07:07:25 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from smtp3.osuosl.org ([127.0.0.1])
-	by localhost (smtp3.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id iwDnaX9lJySq; Mon, 19 Apr 2021 07:07:24 +0000 (UTC)
-Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by smtp3.osuosl.org (Postfix) with ESMTP id F27C1607B3;
+Received: from smtp1.osuosl.org ([127.0.0.1])
+	by localhost (smtp1.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+	with ESMTP id dDgnDNvUsgZQ; Mon, 19 Apr 2021 07:07:24 +0000 (UTC)
+Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [IPv6:2605:bc80:3010:104::8cd3:938])
+	by smtp1.osuosl.org (Postfix) with ESMTP id C624C836C3;
 	Mon, 19 Apr 2021 07:07:23 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id A6D9CC0028;
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 6C543C0024;
 	Mon, 19 Apr 2021 07:07:23 +0000 (UTC)
-Received: from smtp1.osuosl.org (smtp1.osuosl.org [140.211.166.138])
- by lists.linuxfoundation.org (Postfix) with ESMTP id B92F7C000B
- for <iommu@lists.linux-foundation.org>; Mon, 19 Apr 2021 06:40:55 +0000 (UTC)
+Received: from smtp1.osuosl.org (smtp1.osuosl.org [IPv6:2605:bc80:3010::138])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 31774C000B
+ for <iommu@lists.linux-foundation.org>; Mon, 19 Apr 2021 05:04:14 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by smtp1.osuosl.org (Postfix) with ESMTP id AC3F382F19
- for <iommu@lists.linux-foundation.org>; Mon, 19 Apr 2021 06:40:55 +0000 (UTC)
+ by smtp1.osuosl.org (Postfix) with ESMTP id 1341E82D49
+ for <iommu@lists.linux-foundation.org>; Mon, 19 Apr 2021 05:04:14 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Authentication-Results: smtp1.osuosl.org (amavisd-new);
- dkim=pass (1024-bit key) header.d=nxp1.onmicrosoft.com
 Received: from smtp1.osuosl.org ([127.0.0.1])
  by localhost (smtp1.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id ZGMJdj4_ZIyM for <iommu@lists.linux-foundation.org>;
- Mon, 19 Apr 2021 06:40:52 +0000 (UTC)
-X-Greylist: whitelisted by SQLgrey-1.8.0
-Received: from EUR04-DB3-obe.outbound.protection.outlook.com
- (mail-eopbgr60057.outbound.protection.outlook.com [40.107.6.57])
- by smtp1.osuosl.org (Postfix) with ESMTPS id B7F3E82F14
- for <iommu@lists.linux-foundation.org>; Mon, 19 Apr 2021 06:40:51 +0000 (UTC)
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=JqdQRR5y73p6cFWpxro4e8fna++pV6yKU3uQk5/B/5TrEB86ZVjwEqDc0lG2BiMABZ8BOb17k6QJL7rXud+J5ZjjKFs5sA3qU18wVDzUXF2Dwdvl268kwV+sWWotohn9s68Zkcu2uu5Gw5MUKsJC0bDFNL1YRDZksoa7n5nCDIEjd+dNQAHdcDiz2yC0upTfH83VGpnInOnVFLZTpvhzH37HwSpsIWJ/kQxZmCUz3TTPNFrhmvcIe83y8Fov9NS4X9kRwBdJuLpPX6EMEgv5nKH9MFHHmzDwtu9y/+aPIEAksGPRR/zQqmcctZHuHTMekR2X1oSe3ByDva6IzESuIA==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com; 
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=75P/XOwMxXI2EKI22dLs6gQrjwLnMmJTZxD/HHnkMgI=;
- b=Q37p2T808OFkCzhKn1tn3jODwrnCsxZdf+0uq74TjJ8YP/oATXp6DMp4Kauk1ja8E2T+1up/sReccLz2xVAaCG0qN9Q4swFTdBC9/OsyYO5sUeAJk4o00DpE72GY1fkFL1X6CbeXlD9BomKqSAS68oqSIh3k/08nRqHubWAsrF2fnUDKeuYJQHi1cHCTCTKGpuuqmBwVFl/dl1+8HQDfuTNOtLXbrV3JqOqtqf9UdXatdbr07uIJ3vzAltbJ7zTIA6vlxXj15wcRHgsxJqxboC+RtCFEdRoR3RoePD87lTWWGYteCPWuZZRffwmxFdOHJszQYL4AAEo30sPMdQalbg==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=oss.nxp.com; dmarc=pass action=none header.from=oss.nxp.com;
- dkim=pass header.d=oss.nxp.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=NXP1.onmicrosoft.com; 
- s=selector2-NXP1-onmicrosoft-com;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=75P/XOwMxXI2EKI22dLs6gQrjwLnMmJTZxD/HHnkMgI=;
- b=Sz1AtAvbqYbUaJ7Bht3xiDWJdulienqc34gSmeLzBkfWj5uxwuQyU1xx6CSJKc5aj2k3tfTDBARA8RoXEH/LCr5YW/+q+DguDj6dYr030sn+8ALo0GdQ2mCprF5VowIgL0klGXFm+oDagpmKEUkBcu00xZglaEJ7mf5UNXOx34Q=
-Received: from AM6PR04MB6053.eurprd04.prod.outlook.com (2603:10a6:20b:b9::10)
- by AM6PR04MB5349.eurprd04.prod.outlook.com (2603:10a6:20b:9b::14)
- with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4042.16; Mon, 19 Apr
- 2021 06:40:46 +0000
-Received: from AM6PR04MB6053.eurprd04.prod.outlook.com
- ([fe80::b034:690:56aa:7b18]) by AM6PR04MB6053.eurprd04.prod.outlook.com
- ([fe80::b034:690:56aa:7b18%4]) with mapi id 15.20.4042.024; Mon, 19 Apr 2021
- 06:40:46 +0000
-From: "Alice Guo (OSS)" <alice.guo@oss.nxp.com>
-To: Dominique MARTINET <dominique.martinet@atmark-techno.com>, "Alice Guo
- (OSS)" <alice.guo@oss.nxp.com>
-Subject: RE: [RFC v1 PATCH 1/3] drivers: soc: add support for soc_device_match
- returning -EPROBE_DEFER
-Thread-Topic: [RFC v1 PATCH 1/3] drivers: soc: add support for
- soc_device_match returning -EPROBE_DEFER
-Thread-Index: AQHXNNRlSdW4SGiQSE2hc8EPPTkiT6q7RQCAgAAIV3A=
-Date: Mon, 19 Apr 2021 06:40:46 +0000
-Message-ID: <AM6PR04MB60536416D5467486837FC673E2499@AM6PR04MB6053.eurprd04.prod.outlook.com>
-References: <20210419042722.27554-1-alice.guo@oss.nxp.com>
- <20210419042722.27554-2-alice.guo@oss.nxp.com>
- <YH0Lwy2AYpXaJIex@atmark-techno.com>
-In-Reply-To: <YH0Lwy2AYpXaJIex@atmark-techno.com>
-Accept-Language: zh-CN, en-US
-Content-Language: en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-authentication-results: atmark-techno.com; dkim=none (message not signed)
- header.d=none;atmark-techno.com; dmarc=none action=none
- header.from=oss.nxp.com;
-x-ms-exchange-messagesentrepresentingtype: 1
-x-originating-ip: [119.31.174.71]
-x-ms-publictraffictype: Email
-x-ms-office365-filtering-correlation-id: 0c961c51-56e0-48ab-bef6-08d902fe1019
-x-ms-traffictypediagnostic: AM6PR04MB5349:
-x-ms-exchange-sharedmailbox-routingagent-processed: True
-x-ms-exchange-transport-forked: True
-x-microsoft-antispam-prvs: <AM6PR04MB53490C503112EACA988772E3A3499@AM6PR04MB5349.eurprd04.prod.outlook.com>
-x-ms-oob-tlc-oobclassifiers: OLM:9508;
-x-ms-exchange-senderadcheck: 1
-x-microsoft-antispam: BCL:0;
-x-microsoft-antispam-message-info: 1MRwh754yLTjaEl3An+wiGUDUDEGzec+d++7YiKxIQjrXDNwN4n9g0o5axjCbNtY1Pgv4Enoq0l0D0FCsfFQkTydcOK025i+iFzsWsILcrPwJQlb6ohP6Po4Ca336kRa341teMIZZVOC+DrW2IxUapRfqLNDZi8F8UtIjOwg8f/Q174xPz03jWBj7lIjgc2pITLziWfVYAunzvqiX/k4F4yK7RcuwLpBd7fcof7Q+CvKg5rxOgvl4z5iFMCzJj7k+pyPg3vOXbvZk/k/i3aACP08/zdZRnwnEfvsRfuXm4AYZlRLt0aVwv+QY7wSG0kc8IKd0MDw1kMEEMmgpjSpmkmbbRj9ZwLStub4RG0xgwXe+l3EP6AsZEYSLVsVSdTZxr3E1PZ41Re364NCD3kzXT2gImHt/358Jy6SC9YqIO25n2ZZ3zJahA71SQLOG01rBrcAHwjwCGZB1XzGpxJWKHEe/muiAItWaTqIVWJIHU4kyuQ9foADjucmaPj+2G8UbfMfbaBgRpTAN6vjuydBRt3OGf4C3e0R6pbCHGw4LKqesdzSxcQhAOHzVQwmhhFfYA3HNmWCYal89v7nu+R3YfmNaOyG0of13LK2ZhJ+OgA1kTfXtnke1Zkg+AxbSttp8hh7ztDCVeR1BDB3wVDLyYtzkOA/QJQDYYe4Be2KCp4=
-x-forefront-antispam-report: CIP:255.255.255.255; CTRY:; LANG:en; SCL:1; SRV:;
- IPV:NLI; SFV:NSPM; H:AM6PR04MB6053.eurprd04.prod.outlook.com; PTR:; CAT:NONE;
- SFS:(4636009)(366004)(346002)(396003)(376002)(136003)(39860400002)(9686003)(8676002)(7696005)(66556008)(64756008)(66946007)(8936002)(66476007)(66446008)(2906002)(38100700002)(33656002)(316002)(4326008)(76116006)(122000001)(71200400001)(6506007)(5660300002)(7416002)(83380400001)(54906003)(26005)(7366002)(110136005)(7406005)(186003)(478600001)(52536014)(55016002)(53546011)(966005)(86362001);
- DIR:OUT; SFP:1101; 
-x-ms-exchange-antispam-messagedata: =?utf-8?B?VVZvOVdLSDdPRnNxbEdUS2dqL2dyOXFjY2FHdmtrSVNCZURscUluQ0ZTWXZO?=
- =?utf-8?B?NVhaN0hFYk9PVFI1MWdIT0NoeWdpSmNDV3N6YmZBU3JPK01vVlBaUnVyVEFy?=
- =?utf-8?B?ZFBIOHNvZjNkcnQ1Q2ZraDVwMHlwMUg4R0E2WDJRNTZCaG03R28wdlczaFVV?=
- =?utf-8?B?Z092d0NaaW0vemhnOGJCdmQ4Sm1sNVJLMitFanE3L3ZYeVlxRnNxOVdVdzAz?=
- =?utf-8?B?SitlaS9ZTzA4STV4R3VsOFFWNXA2MUplSlBVc05xb3BnQjYvS0trdjJRQnpE?=
- =?utf-8?B?bHZrOUFwSGplTEJOK1RRT1RRUUJmL3BaS0lhOEM4U09SQ0hOR3FnTjZiMlZq?=
- =?utf-8?B?MEY5NnVnNEE2ZWMxUGFIVHNpV2pWUVBSWUxReVdSZk54RU1KNmpOenhLeFpS?=
- =?utf-8?B?RFpKdithMG5mbmRvL0gvOU1IN0dlRTBaUE1ZR2Q5R0RTZzJvNU92am1sZSt2?=
- =?utf-8?B?OUoyV2JXaDdmTGduYjFLYUpoekNpaFQ0c1JNdUNoMWdHUzVRQnFLNE5FSHlo?=
- =?utf-8?B?V2hQTVFycUUvbGl3cTlOdXYxalA0aVlXNGFMZUpUQXBJb2dVSFZnR1Nhdjhk?=
- =?utf-8?B?Qk56MzhHQ2s5ZzZrNDNXSUhGRFZSU1Jkam4zSTkzMmJCeDlUM3YyTFU1ZlhX?=
- =?utf-8?B?dUZkSXlzWGFNaUhZcXdSNmdlSUJzOXlvTWNGQTA4S0EvWVgyOGg3Z0xlOHVv?=
- =?utf-8?B?RDJXSVVGTnlRbEZDU3hrTU5Gd0FMcWxnVjAxWDRiK3hZRUdwS2NFZlI4U1lC?=
- =?utf-8?B?b3pieDNNR1BKYlBuZjRBS0dnSlErd1RXYUJ4UzBaVVRTVi9VL1dsU0d5dXJo?=
- =?utf-8?B?Y3g2Y2NTZzMvbHlUa055Q24rZHRnQ0tGV2NiZDV5ekJ3SDFQZU14K0ZyM0lR?=
- =?utf-8?B?dWR0R1crdEFiWE9lblpDRUVhOFZsOENua3FjUE9sUUVaTTFxSGQxempIMFc3?=
- =?utf-8?B?UU5laGpYR3QxUFRQaUNTMW9GWE1jVW9zaE02NG9PNThHRmliVGUwdjlTM2d3?=
- =?utf-8?B?d0Mzb3g1WE5jcEsrcDQyYS9xSjZnRGNVMFp2ZFVBWkl6b1JMbjJWMlJINGQz?=
- =?utf-8?B?cnFZalVIcHVmdTFkZE9FQVIxMWMwUGh2SlJQM0lFSUNtZEIyT3pkKzVCelpo?=
- =?utf-8?B?MXlnbERRUm5ndkcrTVY4eGs1b0J5UHRHTEV0RHZ1NUhoY3JwTkV2V3dLT04r?=
- =?utf-8?B?TVF2V0hHTW1BWUFoZ2VtZGdQQ21hc04vQVpYNjk0U2l5eUxQOEpTNGJQRy9z?=
- =?utf-8?B?emJWNzVIMFdnTlJyWmxDNWRRZUVtZGhBNGV0eDdCWjRHQ3VLN3QwM0lhclZZ?=
- =?utf-8?B?emtxWXFid252VVA5SXRuOVZOTUJ3WWRyZlNNdkdpZm9qdDc2NFJJRjJhdjVt?=
- =?utf-8?B?YzJuaWs3K2hzS1UvdzBFK0JUNnZSYk5vby9EMTRQb1I5SW40N1lUeks0QjR0?=
- =?utf-8?B?SnUzdXdPd2dONUpLNWdnZVRvS1AraVJWcGtIanpEWUxlQjdkMDdYSHlMSm5W?=
- =?utf-8?B?WEJPanFPU3M4eU0rRVlqRS9qRVcyNVFVMDZtbGNTT2c2R0JFNFhBL3BlZjMx?=
- =?utf-8?B?VzE0Unk5N2tJZ21ha1U4ZHo4SVBSeWFCSmhVL3NpTlp2bjNGNmdGMEdUQmlN?=
- =?utf-8?B?VmRSVVpQTVc4cUVYMWplZS8vQkd4K3AxcnhiU0U5czQvT0g3UFJoVjg2ZDEv?=
- =?utf-8?B?MFJqTGxnV3VRc1R2Tk9YbE1TVGExZ3o3ZDA0ckVWeVVpLytCWGk2cmd3L0Jz?=
- =?utf-8?Q?dQ8CEy14TcGUih0CVE/d5MecxNThNg155nvoimc?=
-MIME-Version: 1.0
-X-OriginatorOrg: oss.nxp.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-AuthSource: AM6PR04MB6053.eurprd04.prod.outlook.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 0c961c51-56e0-48ab-bef6-08d902fe1019
-X-MS-Exchange-CrossTenant-originalarrivaltime: 19 Apr 2021 06:40:46.1958 (UTC)
-X-MS-Exchange-CrossTenant-fromentityheader: Hosted
-X-MS-Exchange-CrossTenant-id: 686ea1d3-bc2b-4c6f-a92c-d99c5c301635
-X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: M4ebjBKE0/buCBhvP3gdQnR4KLJ9KF+3Ig4gauTCjejsjifpkcYQRANBKZwPt0c5au3GIZ1fn+busG3J8g2LTQ==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: AM6PR04MB5349
+ with ESMTP id cBXNlEOsUcI8 for <iommu@lists.linux-foundation.org>;
+ Mon, 19 Apr 2021 05:04:10 +0000 (UTC)
+X-Greylist: domain auto-whitelisted by SQLgrey-1.8.0
+Received: from mga12.intel.com (mga12.intel.com [192.55.52.136])
+ by smtp1.osuosl.org (Postfix) with ESMTPS id E6E6A8247F
+ for <iommu@lists.linux-foundation.org>; Mon, 19 Apr 2021 05:04:09 +0000 (UTC)
+IronPort-SDR: Un3qZUhhAA1AE0wxO3RY1FH0sQvVzKZvJTVHXdS4vWg8vGRqsKZO0r+4HU3f75pfq+OnD4gnht
+ hKwyWX5xLTWw==
+X-IronPort-AV: E=McAfee;i="6200,9189,9958"; a="174757667"
+X-IronPort-AV: E=Sophos;i="5.82,233,1613462400"; d="scan'208";a="174757667"
+Received: from orsmga008.jf.intel.com ([10.7.209.65])
+ by fmsmga106.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384;
+ 18 Apr 2021 22:04:09 -0700
+IronPort-SDR: rkZj+7hpAC8/mdIwqVQn6To9VCOggQ+nIpMBxtXDzNt0u6AIaYQ1nRC+efjUqWKyjFqLK045kP
+ CZMBbEOccwNw==
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.82,233,1613462400"; d="scan'208";a="426366037"
+Received: from ipu5-build.bj.intel.com ([10.238.232.202])
+ by orsmga008.jf.intel.com with ESMTP; 18 Apr 2021 22:04:04 -0700
+From: Bingbu Cao <bingbu.cao@intel.com>
+To: linux-kernel@vger.kernel.org, linux-pci@vger.kernel.org,
+ iommu@lists.linux-foundation.org
+Subject: [PATCH] iommu: Use passthrough mode for the Intel IPUs
+Date: Mon, 19 Apr 2021 12:57:05 +0800
+Message-Id: <1618808225-10108-1-git-send-email-bingbu.cao@intel.com>
+X-Mailer: git-send-email 2.7.4
 X-Mailman-Approved-At: Mon, 19 Apr 2021 07:07:20 +0000
-Cc: "ulf.hansson@linaro.org" <ulf.hansson@linaro.org>,
- Aymen Sghaier <aymen.sghaier@nxp.com>,
- "geert+renesas@glider.be" <geert+renesas@glider.be>,
- "rafael@kernel.org" <rafael@kernel.org>, "airlied@linux.ie" <airlied@linux.ie>,
- "mturquette@baylibre.com" <mturquette@baylibre.com>,
- "dri-devel@lists.freedesktop.org" <dri-devel@lists.freedesktop.org>,
- "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
- "a.hajda@samsung.com" <a.hajda@samsung.com>,
- "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
- "linux-phy@lists.infradead.org" <linux-phy@lists.infradead.org>,
- "will@kernel.org" <will@kernel.org>,
- "linux-clk@vger.kernel.org" <linux-clk@vger.kernel.org>,
- "linux-renesas-soc@vger.kernel.org" <linux-renesas-soc@vger.kernel.org>,
- "wim@linux-watchdog.org" <wim@linux-watchdog.org>,
- "herbert@gondor.apana.org.au" <herbert@gondor.apana.org.au>,
- Horia Geanta <horia.geanta@nxp.com>,
- "khilman@baylibre.com" <khilman@baylibre.com>,
- "narmstrong@baylibre.com" <narmstrong@baylibre.com>,
- "linux-staging@lists.linux.dev" <linux-staging@lists.linux.dev>,
- "iommu@lists.linux-foundation.org" <iommu@lists.linux-foundation.org>,
- "peter.ujfalusi@gmail.com" <peter.ujfalusi@gmail.com>,
- "kishon@ti.com" <kishon@ti.com>, "tony@atomide.com" <tony@atomide.com>,
- "linux-omap@vger.kernel.org" <linux-omap@vger.kernel.org>,
- "stern@rowland.harvard.edu" <stern@rowland.harvard.edu>,
- dl-linux-imx <linux-imx@nxp.com>, "kuba@kernel.org" <kuba@kernel.org>,
- "linus.walleij@linaro.org" <linus.walleij@linaro.org>,
- "linux@roeck-us.net" <linux@roeck-us.net>,
- "linux-media@vger.kernel.org" <linux-media@vger.kernel.org>,
- "linux-watchdog@vger.kernel.org" <linux-watchdog@vger.kernel.org>,
- "linux-pm@vger.kernel.org" <linux-pm@vger.kernel.org>,
- "linuxppc-dev@lists.ozlabs.org" <linuxppc-dev@lists.ozlabs.org>,
- "edubezval@gmail.com" <edubezval@gmail.com>,
- "linux-gpio@vger.kernel.org" <linux-gpio@vger.kernel.org>,
- "linux-mediatek@lists.infradead.org" <linux-mediatek@lists.infradead.org>,
- "ssantosh@kernel.org" <ssantosh@kernel.org>,
- "matthias.bgg@gmail.com" <matthias.bgg@gmail.com>,
- "linux-amlogic@lists.infradead.org" <linux-amlogic@lists.infradead.org>,
- "mchehab@kernel.org" <mchehab@kernel.org>,
- "linux-arm-kernel@lists.infradead.org" <linux-arm-kernel@lists.infradead.org>,
- "balbi@kernel.org" <balbi@kernel.org>, "tomba@kernel.org" <tomba@kernel.org>,
- "sboyd@kernel.org" <sboyd@kernel.org>,
- "gregkh@linuxfoundation.org" <gregkh@linuxfoundation.org>,
- "linux-usb@vger.kernel.org" <linux-usb@vger.kernel.org>,
- "linux-mmc@vger.kernel.org" <linux-mmc@vger.kernel.org>,
- "adrian.hunter@intel.com" <adrian.hunter@intel.com>,
- "robert.foss@linaro.org" <robert.foss@linaro.org>, Leo Li <leoyang.li@nxp.com>,
- "linux@prisktech.co.nz" <linux@prisktech.co.nz>,
- "vkoul@kernel.org" <vkoul@kernel.org>,
- "linux-crypto@vger.kernel.org" <linux-crypto@vger.kernel.org>,
- "daniel@ffwll.ch" <daniel@ffwll.ch>, "j-keerthy@ti.com" <j-keerthy@ti.com>,
- "dmaengine@vger.kernel.org" <dmaengine@vger.kernel.org>,
- "jyri.sarha@iki.fi" <jyri.sarha@iki.fi>,
- "davem@davemloft.net" <davem@davemloft.net>
+Cc: andriy.shevchenko@linux.intel.com, grundler@chromium.org,
+ dwmw2@infradead.org, senozhatsky@chromium.org, bhelgaas@google.com,
+ bingbu.cao@intel.com, rajatja@google.com, will@kernel.org,
+ bingbu.cao@linux.intel.com
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -216,70 +82,166 @@ List-Post: <mailto:iommu@lists.linux-foundation.org>
 List-Help: <mailto:iommu-request@lists.linux-foundation.org?subject=help>
 List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
  <mailto:iommu-request@lists.linux-foundation.org?subject=subscribe>
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
+MIME-Version: 1.0
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-DQo+IC0tLS0tT3JpZ2luYWwgTWVzc2FnZS0tLS0tDQo+IEZyb206IERvbWluaXF1ZSBNQVJUSU5F
-VCA8ZG9taW5pcXVlLm1hcnRpbmV0QGF0bWFyay10ZWNobm8uY29tPg0KPiBTZW50OiAyMDIx5bm0
-NOaciDE55pelIDEyOjQ5DQo+IFRvOiBBbGljZSBHdW8gKE9TUykgPGFsaWNlLmd1b0Bvc3Mubnhw
-LmNvbT4NCj4gQ2M6IGdyZWdraEBsaW51eGZvdW5kYXRpb24ub3JnOyByYWZhZWxAa2VybmVsLm9y
-ZzsgSG9yaWEgR2VhbnRhDQo+IDxob3JpYS5nZWFudGFAbnhwLmNvbT47IEF5bWVuIFNnaGFpZXIg
-PGF5bWVuLnNnaGFpZXJAbnhwLmNvbT47DQo+IGhlcmJlcnRAZ29uZG9yLmFwYW5hLm9yZy5hdTsg
-ZGF2ZW1AZGF2ZW1sb2Z0Lm5ldDsgdG9ueUBhdG9taWRlLmNvbTsNCj4gZ2VlcnQrcmVuZXNhc0Bn
-bGlkZXIuYmU7IG10dXJxdWV0dGVAYmF5bGlicmUuY29tOyBzYm95ZEBrZXJuZWwub3JnOw0KPiB2
-a291bEBrZXJuZWwub3JnOyBwZXRlci51amZhbHVzaUBnbWFpbC5jb207IGEuaGFqZGFAc2Ftc3Vu
-Zy5jb207DQo+IG5hcm1zdHJvbmdAYmF5bGlicmUuY29tOyByb2JlcnQuZm9zc0BsaW5hcm8ub3Jn
-OyBhaXJsaWVkQGxpbnV4LmllOw0KPiBkYW5pZWxAZmZ3bGwuY2g7IGtoaWxtYW5AYmF5bGlicmUu
-Y29tOyB0b21iYUBrZXJuZWwub3JnOyBqeXJpLnNhcmhhQGlraS5maTsNCj4gam9yb0A4Ynl0ZXMu
-b3JnOyB3aWxsQGtlcm5lbC5vcmc7IG1jaGVoYWJAa2VybmVsLm9yZzsNCj4gdWxmLmhhbnNzb25A
-bGluYXJvLm9yZzsgYWRyaWFuLmh1bnRlckBpbnRlbC5jb207IGtpc2hvbkB0aS5jb207DQo+IGt1
-YmFAa2VybmVsLm9yZzsgbGludXMud2FsbGVpakBsaW5hcm8ub3JnOyBSb3kgUGxlZGdlIDxyb3ku
-cGxlZGdlQG54cC5jb20+Ow0KPiBMZW8gTGkgPGxlb3lhbmcubGlAbnhwLmNvbT47IHNzYW50b3No
-QGtlcm5lbC5vcmc7IG1hdHRoaWFzLmJnZ0BnbWFpbC5jb207DQo+IGVkdWJlenZhbEBnbWFpbC5j
-b207IGota2VlcnRoeUB0aS5jb207IGJhbGJpQGtlcm5lbC5vcmc7DQo+IGxpbnV4QHByaXNrdGVj
-aC5jby5uejsgc3Rlcm5Acm93bGFuZC5oYXJ2YXJkLmVkdTsgd2ltQGxpbnV4LXdhdGNoZG9nLm9y
-ZzsNCj4gbGludXhAcm9lY2stdXMubmV0OyBsaW51eC1rZXJuZWxAdmdlci5rZXJuZWwub3JnOyBs
-aW51eC1jcnlwdG9Admdlci5rZXJuZWwub3JnOw0KPiBsaW51eC1vbWFwQHZnZXIua2VybmVsLm9y
-ZzsgbGludXgtcmVuZXNhcy1zb2NAdmdlci5rZXJuZWwub3JnOw0KPiBsaW51eC1jbGtAdmdlci5r
-ZXJuZWwub3JnOyBkbWFlbmdpbmVAdmdlci5rZXJuZWwub3JnOw0KPiBkcmktZGV2ZWxAbGlzdHMu
-ZnJlZWRlc2t0b3Aub3JnOyBsaW51eC1hbWxvZ2ljQGxpc3RzLmluZnJhZGVhZC5vcmc7DQo+IGxp
-bnV4LWFybS1rZXJuZWxAbGlzdHMuaW5mcmFkZWFkLm9yZzsgaW9tbXVAbGlzdHMubGludXgtZm91
-bmRhdGlvbi5vcmc7DQo+IGxpbnV4LW1lZGlhQHZnZXIua2VybmVsLm9yZzsgbGludXgtbW1jQHZn
-ZXIua2VybmVsLm9yZzsNCj4gbmV0ZGV2QHZnZXIua2VybmVsLm9yZzsgbGludXgtcGh5QGxpc3Rz
-LmluZnJhZGVhZC5vcmc7DQo+IGxpbnV4LWdwaW9Admdlci5rZXJuZWwub3JnOyBsaW51eHBwYy1k
-ZXZAbGlzdHMub3psYWJzLm9yZzsNCj4gbGludXgtc3RhZ2luZ0BsaXN0cy5saW51eC5kZXY7IGxp
-bnV4LW1lZGlhdGVrQGxpc3RzLmluZnJhZGVhZC5vcmc7DQo+IGxpbnV4LXBtQHZnZXIua2VybmVs
-Lm9yZzsgbGludXgtdXNiQHZnZXIua2VybmVsLm9yZzsNCj4gbGludXgtd2F0Y2hkb2dAdmdlci5r
-ZXJuZWwub3JnDQo+IFN1YmplY3Q6IFJlOiBbUkZDIHYxIFBBVENIIDEvM10gZHJpdmVyczogc29j
-OiBhZGQgc3VwcG9ydCBmb3Igc29jX2RldmljZV9tYXRjaA0KPiByZXR1cm5pbmcgLUVQUk9CRV9E
-RUZFUg0KPiANCj4gRmlyc3QgY29tbWVudCBvdmVyYWxsIGZvciB0aGUgd2hvbGUgc2VyaWU6DQo+
-IFNpbmNlIGl0IGlzIHRoZSBzb2x1dGlvbiBJIGhhZCBzdWdnZXN0ZWQgd2hlbiBJIHJlcG9ydGVk
-IHRoZSBwcm9ibGVtWzFdIEkgaGF2ZSBubw0KPiBxdWFsbSBvbiB0aGUgYXBwcm9hY2gsIGNvbW1l
-bnRzIGZvciBpbmRpdmlkdWFsIHBhdGNoZXMgZm9sbG93Lg0KPiANCj4gWzFdIGh0dHA6Ly9sb3Jl
-Lmtlcm5lbC5vcmcvci9ZR0daSmpBeEExSU8rL1ZVQGF0bWFyay10ZWNobm8uY29tDQo+IA0KPiAN
-Cj4gQWxpY2UgR3VvIChPU1MpIHdyb3RlIG9uIE1vbiwgQXByIDE5LCAyMDIxIGF0IDEyOjI3OjIw
-UE0gKzA4MDA6DQo+ID4gRnJvbTogQWxpY2UgR3VvIDxhbGljZS5ndW9AbnhwLmNvbT4NCj4gPg0K
-PiA+IEluIGkuTVg4TSBib2FyZHMsIHRoZSByZWdpc3RyYXRpb24gb2YgU29DIGRldmljZSBpcyBs
-YXRlciB0aGFuIGNhYW0NCj4gPiBkcml2ZXIgd2hpY2ggbmVlZHMgaXQuIENhYW0gZHJpdmVyIG5l
-ZWRzIHNvY19kZXZpY2VfbWF0Y2ggdG8gcHJvdmlkZQ0KPiA+IC1FUFJPQkVfREVGRVIgd2hlbiBu
-byBTb0MgZGV2aWNlIGlzIHJlZ2lzdGVyZWQgYW5kIG5vDQo+ID4gZWFybHlfc29jX2Rldl9hdHRy
-Lg0KPiANCj4gVGhpcyBwYXRjaCBzaG91bGQgYmUgbGFzdCBpbiB0aGUgc2V0OiB5b3UgY2FuJ3Qg
-aGF2ZSBzb2NfZGV2aWNlX21hdGNoIHJldHVybiBhbg0KPiBlcnJvciBiZWZvcmUgaXRzIGNhbGxl
-cnMgaGFuZGxlIGl0Lg0KPiANCj4gPiBTaWduZWQtb2ZmLWJ5OiBBbGljZSBHdW8gPGFsaWNlLmd1
-b0BueHAuY29tPg0KPiANCj4gQXMgdGhlIG9uZSB3aG8gcmVwb3J0ZWQgdGhlIHByb2JsZW0gSSB3
-b3VsZCBoYXZlIGJlZW4gYXBwcmVjaWF0ZWQgYmVpbmcgYXQNCj4gbGVhc3QgYWRkZWQgdG8gQ2Nz
-Li4uIEkgb25seSBoYXBwZW5lZCB0byBub3RpY2UgeW91IHBvc3RlZCB0aGlzIGJ5IGNoYW5jZS4N
-Cg0KU29ycnkuIEkgd2lsbCBDYyB5b3UgbmV4dCB0aW1lLg0KDQo+IFRoZXJlIGlzIGFsc28gbm90
-IGEgc2luZ2xlIEZpeGVzIHRhZyAtLSBJIGJlbGlldmUgdGhpcyBjb21taXQgc2hvdWxkIGhhdmUg
-Rml4ZXM6DQo+IDdkOTgxNDA1ZDBmZCAoInNvYzogaW14OG06IGNoYW5nZSB0byB1c2UgcGxhdGZv
-cm0gZHJpdmVyIikgYnV0IEknbSBub3Qgc3VyZQ0KPiBob3cgc3VjaCB0YWdzIHNob3VsZCBiZSBo
-YW5kbGVkIGluIGNhc2Ugb2YgbXVsdGlwbGUgcGF0Y2hlcyBmaXhpbmcgc29tZXRoaW5nLg0KDQpJ
-IG9ubHkgbWVudGlvbmVkICJzb2M6IGlteDhtOiBjaGFuZ2UgdG8gdXNlIHBsYXRmb3JtIGRyaXZl
-ciIgaW4gY292ZXIgbGV0dGVyLg0KSWYgaXQgaXMgYWNjZXB0YWJsZSB0byBtYWtlIHN1Y2ggYSBt
-b2RpZmljYXRpb24sIEkgd2lsbCBzZW5kIG5vbi1SRkMgYW5kIGFkZCBGaXhlcyB0YWcuDQoNCkJl
-c3QgUmVnYXJkcywNCkFsaWNlDQoNCj4gLS0NCj4gRG9taW5pcXVlDQpfX19fX19fX19fX19fX19f
-X19fX19fX19fX19fX19fX19fX19fX19fX19fX19fXwppb21tdSBtYWlsaW5nIGxpc3QKaW9tbXVA
-bGlzdHMubGludXgtZm91bmRhdGlvbi5vcmcKaHR0cHM6Ly9saXN0cy5saW51eGZvdW5kYXRpb24u
-b3JnL21haWxtYW4vbGlzdGluZm8vaW9tbXU=
+Intel IPU(Image Processing Unit) has its own (IO)MMU hardware,
+The IPU driver allocates its own page table that is not mapped
+via the DMA, and thus the Intel IOMMU driver blocks access giving
+this error:
+
+DMAR: DRHD: handling fault status reg 3
+DMAR: [DMA Read] Request device [00:05.0] PASID ffffffff
+      fault addr 76406000 [fault reason 06] PTE Read access is not set
+
+As IPU is not an external facing device which is not risky, so use
+IOMMU passthrough mode for Intel IPUs.
+
+Signed-off-by: Bingbu Cao <bingbu.cao@intel.com>
+---
+ drivers/iommu/intel/iommu.c       | 35 +++++++++++++++++++++++++++++++++++
+ drivers/staging/media/ipu3/ipu3.c |  2 +-
+ include/linux/pci_ids.h           |  5 +++++
+ 3 files changed, 41 insertions(+), 1 deletion(-)
+
+diff --git a/drivers/iommu/intel/iommu.c b/drivers/iommu/intel/iommu.c
+index ee0932307d64..59222d2fe73f 100644
+--- a/drivers/iommu/intel/iommu.c
++++ b/drivers/iommu/intel/iommu.c
+@@ -55,6 +55,12 @@
+ #define IS_GFX_DEVICE(pdev) ((pdev->class >> 16) == PCI_BASE_CLASS_DISPLAY)
+ #define IS_USB_DEVICE(pdev) ((pdev->class >> 8) == PCI_CLASS_SERIAL_USB)
+ #define IS_ISA_DEVICE(pdev) ((pdev->class >> 8) == PCI_CLASS_BRIDGE_ISA)
++#define IS_IPU_DEVICE(pdev) ((pdev)->vendor == PCI_VENDOR_ID_INTEL &&		\
++			     ((pdev)->device == PCI_DEVICE_ID_INTEL_IPU3 ||	\
++			     (pdev)->device == PCI_DEVICE_ID_INTEL_IPU6 ||	\
++			     (pdev)->device == PCI_DEVICE_ID_INTEL_IPU6SE ||	\
++			     (pdev)->device == PCI_DEVICE_ID_INTEL_IPU6SE_P ||	\
++			     (pdev)->device == PCI_DEVICE_ID_INTEL_IPU6EP))
+ #define IS_AZALIA(pdev) ((pdev)->vendor == 0x8086 && (pdev)->device == 0x3a3e)
+ 
+ #define IOAPIC_RANGE_START	(0xfee00000)
+@@ -360,6 +366,7 @@ int intel_iommu_enabled = 0;
+ EXPORT_SYMBOL_GPL(intel_iommu_enabled);
+ 
+ static int dmar_map_gfx = 1;
++static int dmar_map_ipu = 1;
+ static int dmar_forcedac;
+ static int intel_iommu_strict;
+ static int intel_iommu_superpage = 1;
+@@ -368,6 +375,7 @@ static int iommu_skip_te_disable;
+ 
+ #define IDENTMAP_GFX		2
+ #define IDENTMAP_AZALIA		4
++#define IDENTMAP_IPU		8
+ 
+ int intel_iommu_gfx_mapped;
+ EXPORT_SYMBOL_GPL(intel_iommu_gfx_mapped);
+@@ -2839,6 +2847,9 @@ static int device_def_domain_type(struct device *dev)
+ 
+ 		if ((iommu_identity_mapping & IDENTMAP_GFX) && IS_GFX_DEVICE(pdev))
+ 			return IOMMU_DOMAIN_IDENTITY;
++
++		if ((iommu_identity_mapping & IDENTMAP_IPU) && IS_IPU_DEVICE(pdev))
++			return IOMMU_DOMAIN_IDENTITY;
+ 	}
+ 
+ 	return 0;
+@@ -3278,6 +3289,9 @@ static int __init init_dmars(void)
+ 	if (!dmar_map_gfx)
+ 		iommu_identity_mapping |= IDENTMAP_GFX;
+ 
++	if (!dmar_map_ipu)
++		iommu_identity_mapping |= IDENTMAP_IPU;
++
+ 	check_tylersburg_isoch();
+ 
+ 	ret = si_domain_init(hw_pass_through);
+@@ -5622,6 +5636,15 @@ static void quirk_iommu_igfx(struct pci_dev *dev)
+ 	dmar_map_gfx = 0;
+ }
+ 
++static void quirk_iommu_ipu(struct pci_dev *dev)
++{
++	if (risky_device(dev))
++		return;
++
++	pci_info(dev, "Passthrough IOMMU for integrated Intel IPU\n");
++	dmar_map_ipu = 0;
++}
++
+ /* G4x/GM45 integrated gfx dmar support is totally busted. */
+ DECLARE_PCI_FIXUP_HEADER(PCI_VENDOR_ID_INTEL, 0x2a40, quirk_iommu_igfx);
+ DECLARE_PCI_FIXUP_HEADER(PCI_VENDOR_ID_INTEL, 0x2e00, quirk_iommu_igfx);
+@@ -5657,6 +5680,18 @@ DECLARE_PCI_FIXUP_HEADER(PCI_VENDOR_ID_INTEL, 0x1632, quirk_iommu_igfx);
+ DECLARE_PCI_FIXUP_HEADER(PCI_VENDOR_ID_INTEL, 0x163A, quirk_iommu_igfx);
+ DECLARE_PCI_FIXUP_HEADER(PCI_VENDOR_ID_INTEL, 0x163D, quirk_iommu_igfx);
+ 
++/* disable IPU dmar support */
++DECLARE_PCI_FIXUP_HEADER(PCI_VENDOR_ID_INTEL, PCI_DEVICE_ID_INTEL_IPU3,
++			 quirk_iommu_ipu);
++DECLARE_PCI_FIXUP_HEADER(PCI_VENDOR_ID_INTEL, PCI_DEVICE_ID_INTEL_IPU6EP,
++			 quirk_iommu_ipu);
++DECLARE_PCI_FIXUP_HEADER(PCI_VENDOR_ID_INTEL, PCI_DEVICE_ID_INTEL_IPU6SE_P,
++			 quirk_iommu_ipu);
++DECLARE_PCI_FIXUP_HEADER(PCI_VENDOR_ID_INTEL, PCI_DEVICE_ID_INTEL_IPU6,
++			 quirk_iommu_ipu);
++DECLARE_PCI_FIXUP_HEADER(PCI_VENDOR_ID_INTEL, PCI_DEVICE_ID_INTEL_IPU6SE,
++			 quirk_iommu_ipu);
++
+ static void quirk_iommu_rwbf(struct pci_dev *dev)
+ {
+ 	if (risky_device(dev))
+diff --git a/drivers/staging/media/ipu3/ipu3.c b/drivers/staging/media/ipu3/ipu3.c
+index ee1bba6bdcac..aee1130ac042 100644
+--- a/drivers/staging/media/ipu3/ipu3.c
++++ b/drivers/staging/media/ipu3/ipu3.c
+@@ -16,7 +16,7 @@
+ #include "ipu3-dmamap.h"
+ #include "ipu3-mmu.h"
+ 
+-#define IMGU_PCI_ID			0x1919
++#define IMGU_PCI_ID			PCI_DEVICE_ID_INTEL_IPU3
+ #define IMGU_PCI_BAR			0
+ #define IMGU_DMA_MASK			DMA_BIT_MASK(39)
+ #define IMGU_MAX_QUEUE_DEPTH		(2 + 2)
+diff --git a/include/linux/pci_ids.h b/include/linux/pci_ids.h
+index a76ccb697bef..951315892608 100644
+--- a/include/linux/pci_ids.h
++++ b/include/linux/pci_ids.h
+@@ -2716,6 +2716,7 @@
+ #define PCI_DEVICE_ID_INTEL_ALPINE_RIDGE_2C_BRIDGE  0x1576
+ #define PCI_DEVICE_ID_INTEL_ALPINE_RIDGE_4C_NHI     0x1577
+ #define PCI_DEVICE_ID_INTEL_ALPINE_RIDGE_4C_BRIDGE  0x1578
++#define PCI_DEVICE_ID_INTEL_IPU3	0x1919
+ #define PCI_DEVICE_ID_INTEL_80960_RP	0x1960
+ #define PCI_DEVICE_ID_INTEL_QAT_C3XXX	0x19e2
+ #define PCI_DEVICE_ID_INTEL_QAT_C3XXX_VF	0x19e3
+@@ -2982,6 +2983,8 @@
+ #define PCI_DEVICE_ID_INTEL_SBRIDGE_BR		0x3cf5	/* 13.6 */
+ #define PCI_DEVICE_ID_INTEL_SBRIDGE_SAD1	0x3cf6	/* 12.7 */
+ #define PCI_DEVICE_ID_INTEL_IOAT_SNB	0x402f
++#define PCI_DEVICE_ID_INTEL_IPU6EP	0x465d
++#define PCI_DEVICE_ID_INTEL_IPU6SE_P	0x4e19
+ #define PCI_DEVICE_ID_INTEL_5100_16	0x65f0
+ #define PCI_DEVICE_ID_INTEL_5100_19	0x65f3
+ #define PCI_DEVICE_ID_INTEL_5100_21	0x65f5
+@@ -3032,6 +3035,8 @@
+ #define PCI_DEVICE_ID_INTEL_IXP4XX	0x8500
+ #define PCI_DEVICE_ID_INTEL_IXP2800	0x9004
+ #define PCI_DEVICE_ID_INTEL_VMD_9A0B	0x9a0b
++#define PCI_DEVICE_ID_INTEL_IPU6	0x9a19
++#define PCI_DEVICE_ID_INTEL_IPU6SE	0x9a39
+ #define PCI_DEVICE_ID_INTEL_S21152BB	0xb152
+ 
+ #define PCI_VENDOR_ID_SCALEMP		0x8686
+-- 
+2.7.4
+
+_______________________________________________
+iommu mailing list
+iommu@lists.linux-foundation.org
+https://lists.linuxfoundation.org/mailman/listinfo/iommu
