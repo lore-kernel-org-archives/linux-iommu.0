@@ -6,89 +6,89 @@ X-Spam-Status: No, score=-13.5 required=3.0 tests=BAYES_00,
 	DKIM_ADSP_CUSTOM_MED,DKIM_INVALID,DKIM_SIGNED,FREEMAIL_FORGED_FROMDOMAIN,
 	FREEMAIL_FROM,HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_CR_TRAILER,
 	INCLUDES_PATCH,MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,USER_AGENT_GIT
-	autolearn=ham autolearn_force=no version=3.4.0
+	autolearn=unavailable autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id DCE0CC433B4
-	for <iommu@archiver.kernel.org>; Tue, 20 Apr 2021 17:25:47 +0000 (UTC)
-Received: from smtp4.osuosl.org (smtp4.osuosl.org [140.211.166.137])
+	by smtp.lore.kernel.org (Postfix) with ESMTP id DC768C433ED
+	for <iommu@archiver.kernel.org>; Tue, 20 Apr 2021 17:25:49 +0000 (UTC)
+Received: from smtp2.osuosl.org (smtp2.osuosl.org [140.211.166.133])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 585D5613C2
-	for <iommu@archiver.kernel.org>; Tue, 20 Apr 2021 17:25:47 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 585D5613C2
+	by mail.kernel.org (Postfix) with ESMTPS id 73E42613C0
+	for <iommu@archiver.kernel.org>; Tue, 20 Apr 2021 17:25:49 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 73E42613C0
 Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=gmail.com
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by smtp4.osuosl.org (Postfix) with ESMTP id 36152405AF;
-	Tue, 20 Apr 2021 17:25:46 +0000 (UTC)
+	by smtp2.osuosl.org (Postfix) with ESMTP id 254384044F;
+	Tue, 20 Apr 2021 17:25:49 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from smtp4.osuosl.org ([127.0.0.1])
-	by localhost (smtp4.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id qoBY28X7E4hW; Tue, 20 Apr 2021 17:25:45 +0000 (UTC)
-Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by smtp4.osuosl.org (Postfix) with ESMTP id EC53E405CC;
-	Tue, 20 Apr 2021 17:25:44 +0000 (UTC)
+Received: from smtp2.osuosl.org ([127.0.0.1])
+	by localhost (smtp2.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+	with ESMTP id yvgPzBjuUCDY; Tue, 20 Apr 2021 17:25:48 +0000 (UTC)
+Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [IPv6:2605:bc80:3010:104::8cd3:938])
+	by smtp2.osuosl.org (Postfix) with ESMTP id 1DC3B4044E;
+	Tue, 20 Apr 2021 17:25:48 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id CFB65C000E;
-	Tue, 20 Apr 2021 17:25:44 +0000 (UTC)
-Received: from smtp1.osuosl.org (smtp1.osuosl.org [140.211.166.138])
- by lists.linuxfoundation.org (Postfix) with ESMTP id EA141C0021
- for <iommu@lists.linux-foundation.org>; Tue, 20 Apr 2021 17:25:43 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 0B2DAC000E;
+	Tue, 20 Apr 2021 17:25:48 +0000 (UTC)
+Received: from smtp3.osuosl.org (smtp3.osuosl.org [IPv6:2605:bc80:3010::136])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 67EC3C000B
+ for <iommu@lists.linux-foundation.org>; Tue, 20 Apr 2021 17:25:47 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by smtp1.osuosl.org (Postfix) with ESMTP id CC72683C27
- for <iommu@lists.linux-foundation.org>; Tue, 20 Apr 2021 17:25:43 +0000 (UTC)
+ by smtp3.osuosl.org (Postfix) with ESMTP id 5659460ABC
+ for <iommu@lists.linux-foundation.org>; Tue, 20 Apr 2021 17:25:47 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Authentication-Results: smtp1.osuosl.org (amavisd-new);
+Authentication-Results: smtp3.osuosl.org (amavisd-new);
  dkim=pass (2048-bit key) header.d=gmail.com
-Received: from smtp1.osuosl.org ([127.0.0.1])
- by localhost (smtp1.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id o0o_BKDnT9Rt for <iommu@lists.linux-foundation.org>;
- Tue, 20 Apr 2021 17:25:42 +0000 (UTC)
+Received: from smtp3.osuosl.org ([127.0.0.1])
+ by localhost (smtp3.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+ with ESMTP id t5S16nXCKH24 for <iommu@lists.linux-foundation.org>;
+ Tue, 20 Apr 2021 17:25:45 +0000 (UTC)
 X-Greylist: whitelisted by SQLgrey-1.8.0
-Received: from mail-ed1-x52d.google.com (mail-ed1-x52d.google.com
- [IPv6:2a00:1450:4864:20::52d])
- by smtp1.osuosl.org (Postfix) with ESMTPS id 8F3CF83C23
- for <iommu@lists.linux-foundation.org>; Tue, 20 Apr 2021 17:25:42 +0000 (UTC)
-Received: by mail-ed1-x52d.google.com with SMTP id z5so9545002edr.11
- for <iommu@lists.linux-foundation.org>; Tue, 20 Apr 2021 10:25:42 -0700 (PDT)
+Received: from mail-ej1-x636.google.com (mail-ej1-x636.google.com
+ [IPv6:2a00:1450:4864:20::636])
+ by smtp3.osuosl.org (Postfix) with ESMTPS id A1D4460AC4
+ for <iommu@lists.linux-foundation.org>; Tue, 20 Apr 2021 17:25:44 +0000 (UTC)
+Received: by mail-ej1-x636.google.com with SMTP id r12so59483484ejr.5
+ for <iommu@lists.linux-foundation.org>; Tue, 20 Apr 2021 10:25:44 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=gmail.com; s=20161025;
  h=from:to:cc:subject:date:message-id:in-reply-to:references
  :mime-version:content-transfer-encoding;
- bh=rplQXUmZ3dZaacFdD2/srDfpf5ly21wkPzV828fQxU0=;
- b=WGtiLxPL+ZMD/2cJcTdb6TNrVJ7kpsc/TKm+6Yn5hLZagZgNELwTGSFe2OB7JgOH2f
- lNFTEJF96qxnqFGwExDRuH2mi/nSk6rgnz34yO89rQixQ3DB95+l3FnxHk3Y2aqBiP1I
- yKo06USh0xCCuc6A4bqB/4uiJkqjVFzfUxmFW0+BqYgCqCpJrGsZR3vAhn0qGWuT6Kuu
- GrEFILmMbP8utFC6ypWzvQGNR+HYUYlNtEU99G839CR1KPROi7S/H47eyKoSdKIB1t/a
- ZEkUHGVMSYj21ReVIMjvZS9nCUqfb58gXoaVqwDudmAgBnUvAu7VjVhAjSzwSDVTj9QP
- wHzQ==
+ bh=vYLUVZhwumDd6iKqlvn3vWsQCDgb86syRKsPwDitvKM=;
+ b=MrQzk8xsX/zig2TNikMkG/b+PJY2QfTGcsvUoQ5y26uS9va8coblKQPbgaS8kOGMHb
+ xmCsGMllAzPwJhSr70PtB1ZDjsqrZHRksVsgu6KSLSe584UVW/eZrmiEaYcnLx76raP5
+ RDfGVyxn9MTVo+6eVUNerw/TguDRLoWjXElDLdADXjmHAtZ2w+iY5r/4N+nJzJhu6Jq4
+ 3u1/f73oz8G8r5wYgv5mKhVTtZuqUiDL/o4L705D+D3asKLlCMPQtytPBjrsTOohKfsT
+ x4UP8kJ6I1UjfZ+byHhGY1N/7y12q09oWHro0zoq6KPk5fb1xBZuqju7aZL2BZrO7KmF
+ co2Q==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
  d=1e100.net; s=20161025;
  h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
  :references:mime-version:content-transfer-encoding;
- bh=rplQXUmZ3dZaacFdD2/srDfpf5ly21wkPzV828fQxU0=;
- b=CF7XloecVidbP6L3CFvZeRNPtaQz8M5l/b0wtB4WILwN1TMXeH49bgR9k/kp18PNxD
- 9xohdHRzrhK857IZdc170ooXk3TW7VXisLSPsKyNurTJ4xcOa0NdtdqKaSIB32sgRd55
- Zh9xw1vuCTVysgIrU0at9XxmZk65V71kfF6xzX517HnT68TufFnwNLfdrmrsnJqgkI1Y
- Q33W19jgLF3/0uJBZ40uhYc5pfMZKJsEmtZ1vyIaKTexaRbMR7GLxC6v4yGFe0OiQKOy
- sVpqDzIdAjKLj6xq3ll4OE8dlZ+D6BlI67aVKOT1uQ7nHTDyFDJGsBuPaYw8qHv3RK10
- 1m1g==
-X-Gm-Message-State: AOAM533JjIaGJN1MKr5xndGDjaX9bKAAqycj3OMFCEul06jm9hfXdmcC
- 5vZ/5IP7kBacPvrUzJcCc90=
-X-Google-Smtp-Source: ABdhPJy2hEVDGdB7GOaFHXjCKKKVhYmH5kmX29KofoItNeRF5QX6huP1VBvPg6OO52HQJ3zXXgYoeA==
-X-Received: by 2002:a05:6402:27ce:: with SMTP id
- c14mr33381218ede.263.1618939540856; 
- Tue, 20 Apr 2021 10:25:40 -0700 (PDT)
+ bh=vYLUVZhwumDd6iKqlvn3vWsQCDgb86syRKsPwDitvKM=;
+ b=qiyJKPekJtNjlYlkeQ8nXeCjZwQw36waa87+GLN/5TyMaJbwcQD6pylkL70aFKXLWk
+ +eUNtDZnEAAdHRjuBf6IZMLU87H9J7zHjmYPg1HubegDNU8b3sO51g2Ysn0X8SYp8lMo
+ AjisQ+cuCjWnnhttDYgtuhTyMhXjJP/lmX0FWX8Bpf6fppbjj86XVPab6QhMcqjwfIAz
+ owxD0ZNCtSfzjBaMctABWvnoG1gGa8w+Py2ONcYVnNQxkMF89dLt4v7gYI7bY5fxr1Ay
+ LjFqSmk0XKPtMewxFASks6AJl0O2SI9S1FnmxUlu885UQz6L0jjPBvUziplSIiv2h68O
+ 5GIA==
+X-Gm-Message-State: AOAM532Ss6wONWS2cna4qL93hkz8JNZgq1uY0AMRoZ0DcJmC8Zq9Jeya
+ 1600HibROPbdKGRPfjQuFCc=
+X-Google-Smtp-Source: ABdhPJzTOoaDZ6q+yYNmSPXPlq9tSYmOoDWfckBljTEm8mgC71rzmaANjq8LT4+KoVyI4ceEso+rbA==
+X-Received: by 2002:a17:907:e8a:: with SMTP id
+ ho10mr28819689ejc.110.1618939542924; 
+ Tue, 20 Apr 2021 10:25:42 -0700 (PDT)
 Received: from localhost ([62.96.65.119])
- by smtp.gmail.com with ESMTPSA id m14sm7179088edr.45.2021.04.20.10.25.39
+ by smtp.gmail.com with ESMTPSA id n11sm16791090edo.15.2021.04.20.10.25.41
  (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
- Tue, 20 Apr 2021 10:25:39 -0700 (PDT)
+ Tue, 20 Apr 2021 10:25:41 -0700 (PDT)
 From: Thierry Reding <thierry.reding@gmail.com>
 To: Thierry Reding <thierry.reding@gmail.com>, Will Deacon <will@kernel.org>,
  Robin Murphy <robin.murphy@arm.com>, Joerg Roedel <joro@8bytes.org>,
  Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>
-Subject: [PATCH v2 02/10] dt-bindings: arm-smmu: Add Tegra186 compatible string
-Date: Tue, 20 Apr 2021 19:26:11 +0200
-Message-Id: <20210420172619.3782831-3-thierry.reding@gmail.com>
+Subject: [PATCH v2 03/10] iommu/arm-smmu: Implement ->probe_finalize()
+Date: Tue, 20 Apr 2021 19:26:12 +0200
+Message-Id: <20210420172619.3782831-4-thierry.reding@gmail.com>
 X-Mailer: git-send-email 2.30.2
 In-Reply-To: <20210420172619.3782831-1-thierry.reding@gmail.com>
 References: <20210420172619.3782831-1-thierry.reding@gmail.com>
@@ -115,56 +115,62 @@ Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
 From: Thierry Reding <treding@nvidia.com>
 
-The ARM SMMU instantiations found on Tegra186 and later need inter-
-operation with the memory controller in order to correctly program
-stream ID overrides.
-
-Furthermore, on Tegra194 multiple instances of the SMMU can gang up
-to achieve higher throughput. In order to do this, they have to be
-programmed identically so that the memory controller can interleave
-memory accesses between them.
-
-Add the Tegra186 compatible string to make sure the interoperation
-with the memory controller can be enabled on that SoC generation.
+Implement a ->probe_finalize() callback that can be used by vendor
+implementations to perform extra programming necessary after devices
+have been attached to the SMMU.
 
 Signed-off-by: Thierry Reding <treding@nvidia.com>
 ---
- Documentation/devicetree/bindings/iommu/arm,smmu.yaml | 11 +++++++++--
- 1 file changed, 9 insertions(+), 2 deletions(-)
+Changes in v2:
+-remove unnecessarily paranoid check
+---
+ drivers/iommu/arm/arm-smmu/arm-smmu.c | 13 +++++++++++++
+ drivers/iommu/arm/arm-smmu/arm-smmu.h |  1 +
+ 2 files changed, 14 insertions(+)
 
-diff --git a/Documentation/devicetree/bindings/iommu/arm,smmu.yaml b/Documentation/devicetree/bindings/iommu/arm,smmu.yaml
-index 9d27aa5111d4..1181b590db71 100644
---- a/Documentation/devicetree/bindings/iommu/arm,smmu.yaml
-+++ b/Documentation/devicetree/bindings/iommu/arm,smmu.yaml
-@@ -54,8 +54,14 @@ properties:
-           - const: arm,mmu-500
-       - description: NVIDIA SoCs that program two ARM MMU-500s identically
-         items:
-+      - description: NVIDIA SoCs that require memory controller interaction
-+          and may program multiple ARM MMU-500s identically with the memory
-+          controller interleaving translations between multiple instances
-+          for improved performance.
-+        items:
-           - enum:
--              - nvidia,tegra194-smmu
-+              - const: nvidia,tegra194-smmu
-+              - const: nvidia,tegra186-smmu
-           - const: nvidia,smmu-500
-       - items:
-           - const: arm,mmu-500
-@@ -165,10 +171,11 @@ allOf:
-           contains:
-             enum:
-               - nvidia,tegra194-smmu
-+              - nvidia,tegra186-smmu
-     then:
-       properties:
-         reg:
--          minItems: 2
-+          minItems: 1
-           maxItems: 2
-     else:
-       properties:
+diff --git a/drivers/iommu/arm/arm-smmu/arm-smmu.c b/drivers/iommu/arm/arm-smmu/arm-smmu.c
+index 6f72c4d208ca..d20ce4d57df2 100644
+--- a/drivers/iommu/arm/arm-smmu/arm-smmu.c
++++ b/drivers/iommu/arm/arm-smmu/arm-smmu.c
+@@ -1450,6 +1450,18 @@ static void arm_smmu_release_device(struct device *dev)
+ 	iommu_fwspec_free(dev);
+ }
+ 
++static void arm_smmu_probe_finalize(struct device *dev)
++{
++	struct arm_smmu_master_cfg *cfg;
++	struct arm_smmu_device *smmu;
++
++	cfg = dev_iommu_priv_get(dev);
++	smmu = cfg->smmu;
++
++	if (smmu->impl->probe_finalize)
++		smmu->impl->probe_finalize(smmu, dev);
++}
++
+ static struct iommu_group *arm_smmu_device_group(struct device *dev)
+ {
+ 	struct arm_smmu_master_cfg *cfg = dev_iommu_priv_get(dev);
+@@ -1569,6 +1581,7 @@ static struct iommu_ops arm_smmu_ops = {
+ 	.iova_to_phys		= arm_smmu_iova_to_phys,
+ 	.probe_device		= arm_smmu_probe_device,
+ 	.release_device		= arm_smmu_release_device,
++	.probe_finalize		= arm_smmu_probe_finalize,
+ 	.device_group		= arm_smmu_device_group,
+ 	.enable_nesting		= arm_smmu_enable_nesting,
+ 	.set_pgtable_quirks	= arm_smmu_set_pgtable_quirks,
+diff --git a/drivers/iommu/arm/arm-smmu/arm-smmu.h b/drivers/iommu/arm/arm-smmu/arm-smmu.h
+index c31a59d35c64..147c95e7c59c 100644
+--- a/drivers/iommu/arm/arm-smmu/arm-smmu.h
++++ b/drivers/iommu/arm/arm-smmu/arm-smmu.h
+@@ -439,6 +439,7 @@ struct arm_smmu_impl {
+ 				  struct device *dev, int start);
+ 	void (*write_s2cr)(struct arm_smmu_device *smmu, int idx);
+ 	void (*write_sctlr)(struct arm_smmu_device *smmu, int idx, u32 reg);
++	void (*probe_finalize)(struct arm_smmu_device *smmu, struct device *dev);
+ };
+ 
+ #define INVALID_SMENDX			-1
 -- 
 2.30.2
 
