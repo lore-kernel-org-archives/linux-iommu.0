@@ -2,73 +2,71 @@ Return-Path: <SRS0=gpU2=JR=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-16.8 required=3.0 tests=BAYES_00,
+X-Spam-Status: No, score=-15.3 required=3.0 tests=BAYES_00,
 	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_CR_TRAILER,INCLUDES_PATCH,
-	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,USER_AGENT_GIT
-	autolearn=unavailable autolearn_force=no version=3.4.0
+	MAILING_LIST_MULTI,NICE_REPLY_A,SPF_HELO_NONE,SPF_PASS,USER_AGENT_SANE_1
+	autolearn=ham autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9F769C433B4
-	for <iommu@archiver.kernel.org>; Tue, 20 Apr 2021 02:55:45 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 61FB0C433B4
+	for <iommu@archiver.kernel.org>; Tue, 20 Apr 2021 05:59:37 +0000 (UTC)
 Received: from smtp3.osuosl.org (smtp3.osuosl.org [140.211.166.136])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 2D1DC61177
-	for <iommu@archiver.kernel.org>; Tue, 20 Apr 2021 02:55:45 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 2D1DC61177
-Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=intel.com
+	by mail.kernel.org (Postfix) with ESMTPS id AAA33613AE
+	for <iommu@archiver.kernel.org>; Tue, 20 Apr 2021 05:59:36 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org AAA33613AE
+Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=hisilicon.com
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by smtp3.osuosl.org (Postfix) with ESMTP id E60626060D;
-	Tue, 20 Apr 2021 02:55:44 +0000 (UTC)
+	by smtp3.osuosl.org (Postfix) with ESMTP id 63BCF607C2;
+	Tue, 20 Apr 2021 05:59:36 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
 Received: from smtp3.osuosl.org ([127.0.0.1])
 	by localhost (smtp3.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id s2OQLFDQ5wbH; Tue, 20 Apr 2021 02:55:44 +0000 (UTC)
-Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by smtp3.osuosl.org (Postfix) with ESMTP id CF01E60608;
-	Tue, 20 Apr 2021 02:55:43 +0000 (UTC)
+	with ESMTP id UT16BWP2c7t2; Tue, 20 Apr 2021 05:59:32 +0000 (UTC)
+Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [IPv6:2605:bc80:3010:104::8cd3:938])
+	by smtp3.osuosl.org (Postfix) with ESMTP id 719266060D;
+	Tue, 20 Apr 2021 05:59:32 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id B400BC000E;
-	Tue, 20 Apr 2021 02:55:43 +0000 (UTC)
-Received: from smtp1.osuosl.org (smtp1.osuosl.org [140.211.166.138])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 5DF42C000B
- for <iommu@lists.linux-foundation.org>; Tue, 20 Apr 2021 02:55:42 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 5568EC000F;
+	Tue, 20 Apr 2021 05:59:32 +0000 (UTC)
+Received: from smtp4.osuosl.org (smtp4.osuosl.org [140.211.166.137])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id CAA1BC000B
+ for <iommu@lists.linux-foundation.org>; Tue, 20 Apr 2021 05:59:29 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by smtp1.osuosl.org (Postfix) with ESMTP id 3F310834B9
- for <iommu@lists.linux-foundation.org>; Tue, 20 Apr 2021 02:55:42 +0000 (UTC)
+ by smtp4.osuosl.org (Postfix) with ESMTP id A32DB40420
+ for <iommu@lists.linux-foundation.org>; Tue, 20 Apr 2021 05:59:29 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from smtp1.osuosl.org ([127.0.0.1])
- by localhost (smtp1.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id Ne7Si19vXU7p for <iommu@lists.linux-foundation.org>;
- Tue, 20 Apr 2021 02:55:38 +0000 (UTC)
+Received: from smtp4.osuosl.org ([127.0.0.1])
+ by localhost (smtp4.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+ with ESMTP id Ux2oPbWa0afm for <iommu@lists.linux-foundation.org>;
+ Tue, 20 Apr 2021 05:59:25 +0000 (UTC)
 X-Greylist: domain auto-whitelisted by SQLgrey-1.8.0
-Received: from mga14.intel.com (mga14.intel.com [192.55.52.115])
- by smtp1.osuosl.org (Postfix) with ESMTPS id CF9338348C
- for <iommu@lists.linux-foundation.org>; Tue, 20 Apr 2021 02:55:37 +0000 (UTC)
-IronPort-SDR: l5DdVLFZtjOleXyEKSLfgDW1bjkK9knwEajbAOLTneYY4is3x4W0AkpfuFmRe+LjyWM+usfN11
- sRB6JW9ca3eA==
-X-IronPort-AV: E=McAfee;i="6200,9189,9959"; a="194989662"
-X-IronPort-AV: E=Sophos;i="5.82,235,1613462400"; d="scan'208";a="194989662"
-Received: from orsmga002.jf.intel.com ([10.7.209.21])
- by fmsmga103.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384;
- 19 Apr 2021 19:55:37 -0700
-IronPort-SDR: CAJVH2FbCBXOeh6Kk14yftkJhGYblD+fDKdZFAavVfQs8qrSKUvF5hKBHiy3H9PwQ/ci15O3Iu
- SZ1MWQiQOfqQ==
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.82,235,1613462400"; d="scan'208";a="400848296"
-Received: from ipu5-build.bj.intel.com ([10.238.232.202])
- by orsmga002.jf.intel.com with ESMTP; 19 Apr 2021 19:55:32 -0700
-From: Bingbu Cao <bingbu.cao@intel.com>
-To: linux-kernel@vger.kernel.org, stable@vger.kernel.org,
- linux-pci@vger.kernel.org, iommu@lists.linux-foundation.org
-Subject: [RESEND v2] iommu/vt-d: Use passthrough mode for the Intel IPUs
-Date: Tue, 20 Apr 2021 10:48:33 +0800
-Message-Id: <1618886913-6594-1-git-send-email-bingbu.cao@intel.com>
-X-Mailer: git-send-email 2.7.4
-Cc: andriy.shevchenko@linux.intel.com, grundler@chromium.org,
- dwmw2@infradead.org, senozhatsky@chromium.org, bhelgaas@google.com,
- bingbu.cao@intel.com, rajatja@google.com, will@kernel.org,
- bingbu.cao@linux.intel.com
+Received: from szxga04-in.huawei.com (szxga04-in.huawei.com [45.249.212.190])
+ by smtp4.osuosl.org (Postfix) with ESMTPS id 4BAF24041A
+ for <iommu@lists.linux-foundation.org>; Tue, 20 Apr 2021 05:59:24 +0000 (UTC)
+Received: from DGGEMS404-HUB.china.huawei.com (unknown [172.30.72.59])
+ by szxga04-in.huawei.com (SkyGuard) with ESMTP id 4FPXy36y6Jz17QkQ;
+ Tue, 20 Apr 2021 13:56:59 +0800 (CST)
+Received: from [127.0.0.1] (10.40.193.166) by DGGEMS404-HUB.china.huawei.com
+ (10.3.19.204) with Microsoft SMTP Server id 14.3.498.0; Tue, 20 Apr 2021
+ 13:59:17 +0800
+Subject: Re: [RFC PATCH v5 11/15] iommu/io-pgtable-arm: Implement
+ arm_lpae_map_pages()
+To: "Isaac J. Manjarres" <isaacm@codeaurora.org>,
+ <iommu@lists.linux-foundation.org>, <linux-arm-kernel@lists.infradead.org>
+References: <20210408171402.12607-1-isaacm@codeaurora.org>
+ <20210408171402.12607-12-isaacm@codeaurora.org>
+From: "chenxiang (M)" <chenxiang66@hisilicon.com>
+Message-ID: <ab7e8274-b679-a8da-405d-ad880f189316@hisilicon.com>
+Date: Tue, 20 Apr 2021 13:59:17 +0800
+User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; rv:45.0) Gecko/20100101
+ Thunderbird/45.2.0
+MIME-Version: 1.0
+In-Reply-To: <20210408171402.12607-12-isaacm@codeaurora.org>
+X-Originating-IP: [10.40.193.166]
+X-CFilter-Loop: Reflected
+Cc: will@kernel.org, robin.murphy@arm.com, pratikp@codeaurora.org
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -81,116 +79,95 @@ List-Post: <mailto:iommu@lists.linux-foundation.org>
 List-Help: <mailto:iommu-request@lists.linux-foundation.org?subject=help>
 List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
  <mailto:iommu-request@lists.linux-foundation.org?subject=subscribe>
-MIME-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: base64
+Content-Type: text/plain; charset="utf-8"; Format="flowed"
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-Intel IPU(Image Processing Unit) has its own (IO)MMU hardware,
-The IPU driver allocates its own page table that is not mapped
-via the DMA, and thus the Intel IOMMU driver blocks access giving
-this error:
-
-DMAR: DRHD: handling fault status reg 3
-DMAR: [DMA Read] Request device [00:05.0] PASID ffffffff
-      fault addr 76406000 [fault reason 06] PTE Read access is not set
-
-As IPU is not an external facing device which is not risky, so use
-IOMMU passthrough mode for Intel IPUs.
-
-Fixes: 26f5689592e2 ("media: staging/intel-ipu3: mmu: Implement driver")
-Signed-off-by: Bingbu Cao <bingbu.cao@intel.com>
----
- drivers/iommu/intel/iommu.c | 29 +++++++++++++++++++++++++++++
- 1 file changed, 29 insertions(+)
-
-diff --git a/drivers/iommu/intel/iommu.c b/drivers/iommu/intel/iommu.c
-index ee0932307d64..7e2fbdae467e 100644
---- a/drivers/iommu/intel/iommu.c
-+++ b/drivers/iommu/intel/iommu.c
-@@ -55,6 +55,12 @@
- #define IS_GFX_DEVICE(pdev) ((pdev->class >> 16) == PCI_BASE_CLASS_DISPLAY)
- #define IS_USB_DEVICE(pdev) ((pdev->class >> 8) == PCI_CLASS_SERIAL_USB)
- #define IS_ISA_DEVICE(pdev) ((pdev->class >> 8) == PCI_CLASS_BRIDGE_ISA)
-+#define IS_INTEL_IPU(pdev) ((pdev)->vendor == PCI_VENDOR_ID_INTEL &&	\
-+			    ((pdev)->device == 0x9a19 ||		\
-+			     (pdev)->device == 0x9a39 ||		\
-+			     (pdev)->device == 0x4e19 ||		\
-+			     (pdev)->device == 0x465d ||		\
-+			     (pdev)->device == 0x1919))
- #define IS_AZALIA(pdev) ((pdev)->vendor == 0x8086 && (pdev)->device == 0x3a3e)
- 
- #define IOAPIC_RANGE_START	(0xfee00000)
-@@ -360,6 +366,7 @@ int intel_iommu_enabled = 0;
- EXPORT_SYMBOL_GPL(intel_iommu_enabled);
- 
- static int dmar_map_gfx = 1;
-+static int dmar_map_ipu = 1;
- static int dmar_forcedac;
- static int intel_iommu_strict;
- static int intel_iommu_superpage = 1;
-@@ -368,6 +375,7 @@ static int iommu_skip_te_disable;
- 
- #define IDENTMAP_GFX		2
- #define IDENTMAP_AZALIA		4
-+#define IDENTMAP_IPU		8
- 
- int intel_iommu_gfx_mapped;
- EXPORT_SYMBOL_GPL(intel_iommu_gfx_mapped);
-@@ -2839,6 +2847,9 @@ static int device_def_domain_type(struct device *dev)
- 
- 		if ((iommu_identity_mapping & IDENTMAP_GFX) && IS_GFX_DEVICE(pdev))
- 			return IOMMU_DOMAIN_IDENTITY;
-+
-+		if ((iommu_identity_mapping & IDENTMAP_IPU) && IS_INTEL_IPU(pdev))
-+			return IOMMU_DOMAIN_IDENTITY;
- 	}
- 
- 	return 0;
-@@ -3278,6 +3289,9 @@ static int __init init_dmars(void)
- 	if (!dmar_map_gfx)
- 		iommu_identity_mapping |= IDENTMAP_GFX;
- 
-+	if (!dmar_map_ipu)
-+		iommu_identity_mapping |= IDENTMAP_IPU;
-+
- 	check_tylersburg_isoch();
- 
- 	ret = si_domain_init(hw_pass_through);
-@@ -5622,6 +5636,18 @@ static void quirk_iommu_igfx(struct pci_dev *dev)
- 	dmar_map_gfx = 0;
- }
- 
-+static void quirk_iommu_ipu(struct pci_dev *dev)
-+{
-+	if (!IS_INTEL_IPU(dev))
-+		return;
-+
-+	if (risky_device(dev))
-+		return;
-+
-+	pci_info(dev, "Passthrough IOMMU for integrated Intel IPU\n");
-+	dmar_map_ipu = 0;
-+}
-+
- /* G4x/GM45 integrated gfx dmar support is totally busted. */
- DECLARE_PCI_FIXUP_HEADER(PCI_VENDOR_ID_INTEL, 0x2a40, quirk_iommu_igfx);
- DECLARE_PCI_FIXUP_HEADER(PCI_VENDOR_ID_INTEL, 0x2e00, quirk_iommu_igfx);
-@@ -5657,6 +5683,9 @@ DECLARE_PCI_FIXUP_HEADER(PCI_VENDOR_ID_INTEL, 0x1632, quirk_iommu_igfx);
- DECLARE_PCI_FIXUP_HEADER(PCI_VENDOR_ID_INTEL, 0x163A, quirk_iommu_igfx);
- DECLARE_PCI_FIXUP_HEADER(PCI_VENDOR_ID_INTEL, 0x163D, quirk_iommu_igfx);
- 
-+/* disable IPU dmar support */
-+DECLARE_PCI_FIXUP_HEADER(PCI_VENDOR_ID_INTEL, PCI_ANY_ID, quirk_iommu_ipu);
-+
- static void quirk_iommu_rwbf(struct pci_dev *dev)
- {
- 	if (risky_device(dev))
--- 
-2.7.4
-
-_______________________________________________
-iommu mailing list
-iommu@lists.linux-foundation.org
-https://lists.linuxfoundation.org/mailman/listinfo/iommu
+SGkgSXNhYWMsCgoK5ZyoIDIwMjEvNC85IDE6MTMsIElzYWFjIEouIE1hbmphcnJlcyDlhpnpgZM6
+Cj4gSW1wbGVtZW50IHRoZSBtYXBfcGFnZXMoKSBjYWxsYmFjayBmb3IgdGhlIEFSTSBMUEFFIGlv
+LXBndGFibGUKPiBmb3JtYXQuCj4KPiBTaWduZWQtb2ZmLWJ5OiBJc2FhYyBKLiBNYW5qYXJyZXMg
+PGlzYWFjbUBjb2RlYXVyb3JhLm9yZz4KPiAtLS0KPiAgIGRyaXZlcnMvaW9tbXUvaW8tcGd0YWJs
+ZS1hcm0uYyB8IDQyICsrKysrKysrKysrKysrKysrKysrKysrKysrLS0tLS0tLS0KPiAgIDEgZmls
+ZSBjaGFuZ2VkLCAzMiBpbnNlcnRpb25zKCspLCAxMCBkZWxldGlvbnMoLSkKPgo+IGRpZmYgLS1n
+aXQgYS9kcml2ZXJzL2lvbW11L2lvLXBndGFibGUtYXJtLmMgYi9kcml2ZXJzL2lvbW11L2lvLXBn
+dGFibGUtYXJtLmMKPiBpbmRleCAxYjY5MDkxMTk5NWEuLjkyOTc4ZGQ5Yzg4NSAxMDA2NDQKPiAt
+LS0gYS9kcml2ZXJzL2lvbW11L2lvLXBndGFibGUtYXJtLmMKPiArKysgYi9kcml2ZXJzL2lvbW11
+L2lvLXBndGFibGUtYXJtLmMKPiBAQCAtMzQ0LDIwICszNDQsMzAgQEAgc3RhdGljIGFybV9scGFl
+X2lvcHRlIGFybV9scGFlX2luc3RhbGxfdGFibGUoYXJtX2xwYWVfaW9wdGUgKnRhYmxlLAo+ICAg
+fQo+ICAgCj4gICBzdGF0aWMgaW50IF9fYXJtX2xwYWVfbWFwKHN0cnVjdCBhcm1fbHBhZV9pb19w
+Z3RhYmxlICpkYXRhLCB1bnNpZ25lZCBsb25nIGlvdmEsCj4gLQkJCSAgcGh5c19hZGRyX3QgcGFk
+ZHIsIHNpemVfdCBzaXplLCBhcm1fbHBhZV9pb3B0ZSBwcm90LAo+IC0JCQkgIGludCBsdmwsIGFy
+bV9scGFlX2lvcHRlICpwdGVwLCBnZnBfdCBnZnApCj4gKwkJCSAgcGh5c19hZGRyX3QgcGFkZHIs
+IHNpemVfdCBzaXplLCBzaXplX3QgcGdjb3VudCwKPiArCQkJICBhcm1fbHBhZV9pb3B0ZSBwcm90
+LCBpbnQgbHZsLCBhcm1fbHBhZV9pb3B0ZSAqcHRlcCwKPiArCQkJICBnZnBfdCBnZnAsIHNpemVf
+dCAqbWFwcGVkKQo+ICAgewo+ICAgCWFybV9scGFlX2lvcHRlICpjcHRlcCwgcHRlOwo+ICAgCXNp
+emVfdCBibG9ja19zaXplID0gQVJNX0xQQUVfQkxPQ0tfU0laRShsdmwsIGRhdGEpOwo+ICAgCXNp
+emVfdCB0YmxzeiA9IEFSTV9MUEFFX0dSQU5VTEUoZGF0YSk7Cj4gICAJc3RydWN0IGlvX3BndGFi
+bGVfY2ZnICpjZmcgPSAmZGF0YS0+aW9wLmNmZzsKPiArCWludCByZXQgPSAwLCBudW1fZW50cmll
+cywgbWF4X2VudHJpZXMsIG1hcF9pZHhfc3RhcnQ7Cj4gICAKPiAgIAkvKiBGaW5kIG91ciBlbnRy
+eSBhdCB0aGUgY3VycmVudCBsZXZlbCAqLwo+IC0JcHRlcCArPSBBUk1fTFBBRV9MVkxfSURYKGlv
+dmEsIGx2bCwgZGF0YSk7Cj4gKwltYXBfaWR4X3N0YXJ0ID0gQVJNX0xQQUVfTFZMX0lEWChpb3Zh
+LCBsdmwsIGRhdGEpOwo+ICsJcHRlcCArPSBtYXBfaWR4X3N0YXJ0Owo+ICAgCj4gICAJLyogSWYg
+d2UgY2FuIGluc3RhbGwgYSBsZWFmIGVudHJ5IGF0IHRoaXMgbGV2ZWwsIHRoZW4gZG8gc28gKi8K
+PiAtCWlmIChzaXplID09IGJsb2NrX3NpemUpCj4gLQkJcmV0dXJuIGFybV9scGFlX2luaXRfcHRl
+KGRhdGEsIGlvdmEsIHBhZGRyLCBwcm90LCBsdmwsIDEsIHB0ZXApOwo+ICsJaWYgKHNpemUgPT0g
+YmxvY2tfc2l6ZSkgewo+ICsJCW1heF9lbnRyaWVzID0gQVJNX0xQQUVfUFRFU19QRVJfVEFCTEUo
+ZGF0YSkgLSBtYXBfaWR4X3N0YXJ0Owo+ICsJCW51bV9lbnRyaWVzID0gbWluX3QoaW50LCBwZ2Nv
+dW50LCBtYXhfZW50cmllcyk7Cj4gKwkJcmV0ID0gYXJtX2xwYWVfaW5pdF9wdGUoZGF0YSwgaW92
+YSwgcGFkZHIsIHByb3QsIGx2bCwgbnVtX2VudHJpZXMsIHB0ZXApOwo+ICsJCWlmICghcmV0ICYm
+IG1hcHBlZCkKPiArCQkJKm1hcHBlZCArPSBudW1fZW50cmllcyAqIHNpemU7Cj4gKwo+ICsJCXJl
+dHVybiByZXQ7Cj4gKwl9Cj4gICAKPiAgIAkvKiBXZSBjYW4ndCBhbGxvY2F0ZSB0YWJsZXMgYXQg
+dGhlIGZpbmFsIGxldmVsICovCj4gICAJaWYgKFdBUk5fT04obHZsID49IEFSTV9MUEFFX01BWF9M
+RVZFTFMgLSAxKSkKPiBAQCAtMzg2LDcgKzM5Niw4IEBAIHN0YXRpYyBpbnQgX19hcm1fbHBhZV9t
+YXAoc3RydWN0IGFybV9scGFlX2lvX3BndGFibGUgKmRhdGEsIHVuc2lnbmVkIGxvbmcgaW92YSwK
+PiAgIAl9Cj4gICAKPiAgIAkvKiBSaW5zZSwgcmVwZWF0ICovCj4gLQlyZXR1cm4gX19hcm1fbHBh
+ZV9tYXAoZGF0YSwgaW92YSwgcGFkZHIsIHNpemUsIHByb3QsIGx2bCArIDEsIGNwdGVwLCBnZnAp
+Owo+ICsJcmV0dXJuIF9fYXJtX2xwYWVfbWFwKGRhdGEsIGlvdmEsIHBhZGRyLCBzaXplLCBwZ2Nv
+dW50LCBwcm90LCBsdmwgKyAxLAo+ICsJCQkgICAgICBjcHRlcCwgZ2ZwLCBtYXBwZWQpOwo+ICAg
+fQo+ICAgCj4gICBzdGF0aWMgYXJtX2xwYWVfaW9wdGUgYXJtX2xwYWVfcHJvdF90b19wdGUoc3Ry
+dWN0IGFybV9scGFlX2lvX3BndGFibGUgKmRhdGEsCj4gQEAgLTQ1Myw4ICs0NjQsOSBAQCBzdGF0
+aWMgYXJtX2xwYWVfaW9wdGUgYXJtX2xwYWVfcHJvdF90b19wdGUoc3RydWN0IGFybV9scGFlX2lv
+X3BndGFibGUgKmRhdGEsCj4gICAJcmV0dXJuIHB0ZTsKPiAgIH0KPiAgIAo+IC1zdGF0aWMgaW50
+IGFybV9scGFlX21hcChzdHJ1Y3QgaW9fcGd0YWJsZV9vcHMgKm9wcywgdW5zaWduZWQgbG9uZyBp
+b3ZhLAo+IC0JCQlwaHlzX2FkZHJfdCBwYWRkciwgc2l6ZV90IHNpemUsIGludCBpb21tdV9wcm90
+LCBnZnBfdCBnZnApCj4gK3N0YXRpYyBpbnQgYXJtX2xwYWVfbWFwX3BhZ2VzKHN0cnVjdCBpb19w
+Z3RhYmxlX29wcyAqb3BzLCB1bnNpZ25lZCBsb25nIGlvdmEsCj4gKwkJCSAgICAgIHBoeXNfYWRk
+cl90IHBhZGRyLCBzaXplX3QgcGdzaXplLCBzaXplX3QgcGdjb3VudCwKPiArCQkJICAgICAgaW50
+IGlvbW11X3Byb3QsIGdmcF90IGdmcCwgc2l6ZV90ICptYXBwZWQpCj4gICB7Cj4gICAJc3RydWN0
+IGFybV9scGFlX2lvX3BndGFibGUgKmRhdGEgPSBpb19wZ3RhYmxlX29wc190b19kYXRhKG9wcyk7
+Cj4gICAJc3RydWN0IGlvX3BndGFibGVfY2ZnICpjZmcgPSAmZGF0YS0+aW9wLmNmZzsKPiBAQCAt
+NDYzLDcgKzQ3NSw3IEBAIHN0YXRpYyBpbnQgYXJtX2xwYWVfbWFwKHN0cnVjdCBpb19wZ3RhYmxl
+X29wcyAqb3BzLCB1bnNpZ25lZCBsb25nIGlvdmEsCj4gICAJYXJtX2xwYWVfaW9wdGUgcHJvdDsK
+PiAgIAlsb25nIGlhZXh0ID0gKHM2NClpb3ZhID4+IGNmZy0+aWFzOwo+ICAgCj4gLQlpZiAoV0FS
+Tl9PTighc2l6ZSB8fCAoc2l6ZSAmIGNmZy0+cGdzaXplX2JpdG1hcCkgIT0gc2l6ZSkpCj4gKwlp
+ZiAoV0FSTl9PTighcGdzaXplIHx8IChwZ3NpemUgJiBjZmctPnBnc2l6ZV9iaXRtYXApICE9IHBn
+c2l6ZSkpCj4gICAJCXJldHVybiAtRUlOVkFMOwo+ICAgCj4gICAJaWYgKGNmZy0+cXVpcmtzICYg
+SU9fUEdUQUJMRV9RVUlSS19BUk1fVFRCUjEpCj4gQEAgLTQ3Niw3ICs0ODgsOCBAQCBzdGF0aWMg
+aW50IGFybV9scGFlX21hcChzdHJ1Y3QgaW9fcGd0YWJsZV9vcHMgKm9wcywgdW5zaWduZWQgbG9u
+ZyBpb3ZhLAo+ICAgCQlyZXR1cm4gMDsKPiAgIAo+ICAgCXByb3QgPSBhcm1fbHBhZV9wcm90X3Rv
+X3B0ZShkYXRhLCBpb21tdV9wcm90KTsKPiAtCXJldCA9IF9fYXJtX2xwYWVfbWFwKGRhdGEsIGlv
+dmEsIHBhZGRyLCBzaXplLCBwcm90LCBsdmwsIHB0ZXAsIGdmcCk7Cj4gKwlyZXQgPSBfX2FybV9s
+cGFlX21hcChkYXRhLCBpb3ZhLCBwYWRkciwgcGdzaXplLCBwZ2NvdW50LCBwcm90LCBsdmwsCj4g
+KwkJCSAgICAgcHRlcCwgZ2ZwLCBOVUxMKTsKClRoZSBsYXN0IGlucHV0IHBhcmFtZXRlciBzaG91
+bGQgYmUgbWFwcGVkIGluc3RlYWQgb2YgTlVMTC4KCj4gICAJLyoKPiAgIAkgKiBTeW5jaHJvbmlz
+ZSBhbGwgUFRFIHVwZGF0ZXMgZm9yIHRoZSBuZXcgbWFwcGluZyBiZWZvcmUgdGhlcmUncwo+ICAg
+CSAqIGEgY2hhbmNlIGZvciBhbnl0aGluZyB0byBraWNrIG9mZiBhIHRhYmxlIHdhbGsgZm9yIHRo
+ZSBuZXcgaW92YS4KPiBAQCAtNDg2LDYgKzQ5OSwxNCBAQCBzdGF0aWMgaW50IGFybV9scGFlX21h
+cChzdHJ1Y3QgaW9fcGd0YWJsZV9vcHMgKm9wcywgdW5zaWduZWQgbG9uZyBpb3ZhLAo+ICAgCXJl
+dHVybiByZXQ7Cj4gICB9Cj4gICAKPiArCj4gK3N0YXRpYyBpbnQgYXJtX2xwYWVfbWFwKHN0cnVj
+dCBpb19wZ3RhYmxlX29wcyAqb3BzLCB1bnNpZ25lZCBsb25nIGlvdmEsCj4gKwkJCXBoeXNfYWRk
+cl90IHBhZGRyLCBzaXplX3Qgc2l6ZSwgaW50IGlvbW11X3Byb3QsIGdmcF90IGdmcCkKPiArewo+
+ICsJcmV0dXJuIGFybV9scGFlX21hcF9wYWdlcyhvcHMsIGlvdmEsIHBhZGRyLCBzaXplLCAxLCBp
+b21tdV9wcm90LCBnZnAsCj4gKwkJCQkgIE5VTEwpOwo+ICt9Cj4gKwo+ICAgc3RhdGljIHZvaWQg
+X19hcm1fbHBhZV9mcmVlX3BndGFibGUoc3RydWN0IGFybV9scGFlX2lvX3BndGFibGUgKmRhdGEs
+IGludCBsdmwsCj4gICAJCQkJICAgIGFybV9scGFlX2lvcHRlICpwdGVwKQo+ICAgewo+IEBAIC03
+ODIsNiArODAzLDcgQEAgYXJtX2xwYWVfYWxsb2NfcGd0YWJsZShzdHJ1Y3QgaW9fcGd0YWJsZV9j
+ZmcgKmNmZykKPiAgIAo+ICAgCWRhdGEtPmlvcC5vcHMgPSAoc3RydWN0IGlvX3BndGFibGVfb3Bz
+KSB7Cj4gICAJCS5tYXAJCT0gYXJtX2xwYWVfbWFwLAo+ICsJCS5tYXBfcGFnZXMJPSBhcm1fbHBh
+ZV9tYXBfcGFnZXMsCj4gICAJCS51bm1hcAkJPSBhcm1fbHBhZV91bm1hcCwKPiAgIAkJLnVubWFw
+X3BhZ2VzCT0gYXJtX2xwYWVfdW5tYXBfcGFnZXMsCj4gICAJCS5pb3ZhX3RvX3BoeXMJPSBhcm1f
+bHBhZV9pb3ZhX3RvX3BoeXMsCgoKX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19f
+X19fX19fX19fX18KaW9tbXUgbWFpbGluZyBsaXN0CmlvbW11QGxpc3RzLmxpbnV4LWZvdW5kYXRp
+b24ub3JnCmh0dHBzOi8vbGlzdHMubGludXhmb3VuZGF0aW9uLm9yZy9tYWlsbWFuL2xpc3RpbmZv
+L2lvbW11
