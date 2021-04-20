@@ -7,57 +7,57 @@ X-Spam-Status: No, score=-16.8 required=3.0 tests=BAYES_00,
 	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,USER_AGENT_GIT
 	autolearn=unavailable autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D79FEC433B4
-	for <iommu@archiver.kernel.org>; Tue, 20 Apr 2021 09:28:31 +0000 (UTC)
-Received: from smtp1.osuosl.org (smtp1.osuosl.org [140.211.166.138])
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 943A9C43460
+	for <iommu@archiver.kernel.org>; Tue, 20 Apr 2021 09:28:41 +0000 (UTC)
+Received: from smtp4.osuosl.org (smtp4.osuosl.org [140.211.166.137])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 5D60861090
-	for <iommu@archiver.kernel.org>; Tue, 20 Apr 2021 09:28:31 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 5D60861090
+	by mail.kernel.org (Postfix) with ESMTPS id 11B1561090
+	for <iommu@archiver.kernel.org>; Tue, 20 Apr 2021 09:28:40 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 11B1561090
 Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=huawei.com
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by smtp1.osuosl.org (Postfix) with ESMTP id 0A53A83A6A;
-	Tue, 20 Apr 2021 09:28:31 +0000 (UTC)
+	by smtp4.osuosl.org (Postfix) with ESMTP id 9782E4051E;
+	Tue, 20 Apr 2021 09:28:39 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from smtp1.osuosl.org ([127.0.0.1])
-	by localhost (smtp1.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id 55T80-5h9-Oh; Tue, 20 Apr 2021 09:28:30 +0000 (UTC)
-Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [IPv6:2605:bc80:3010:104::8cd3:938])
-	by smtp1.osuosl.org (Postfix) with ESMTP id E611A83A77;
-	Tue, 20 Apr 2021 09:28:29 +0000 (UTC)
+Received: from smtp4.osuosl.org ([127.0.0.1])
+	by localhost (smtp4.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+	with ESMTP id OeY9OfW_Ud0h; Tue, 20 Apr 2021 09:28:38 +0000 (UTC)
+Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
+	by smtp4.osuosl.org (Postfix) with ESMTP id 1DA3840457;
+	Tue, 20 Apr 2021 09:28:38 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id C2F3EC000E;
-	Tue, 20 Apr 2021 09:28:29 +0000 (UTC)
-Received: from smtp2.osuosl.org (smtp2.osuosl.org [140.211.166.133])
- by lists.linuxfoundation.org (Postfix) with ESMTP id DEB92C000B
- for <iommu@lists.linux-foundation.org>; Tue, 20 Apr 2021 09:28:27 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 08B5BC000E;
+	Tue, 20 Apr 2021 09:28:38 +0000 (UTC)
+Received: from smtp4.osuosl.org (smtp4.osuosl.org [140.211.166.137])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 98A7BC000B
+ for <iommu@lists.linux-foundation.org>; Tue, 20 Apr 2021 09:28:36 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by smtp2.osuosl.org (Postfix) with ESMTP id CC98440204
- for <iommu@lists.linux-foundation.org>; Tue, 20 Apr 2021 09:28:27 +0000 (UTC)
+ by smtp4.osuosl.org (Postfix) with ESMTP id 8732A40457
+ for <iommu@lists.linux-foundation.org>; Tue, 20 Apr 2021 09:28:36 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from smtp2.osuosl.org ([127.0.0.1])
- by localhost (smtp2.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id UQUlZfTlhq2z for <iommu@lists.linux-foundation.org>;
- Tue, 20 Apr 2021 09:28:24 +0000 (UTC)
+Received: from smtp4.osuosl.org ([127.0.0.1])
+ by localhost (smtp4.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+ with ESMTP id WFhzHWGewvwe for <iommu@lists.linux-foundation.org>;
+ Tue, 20 Apr 2021 09:28:34 +0000 (UTC)
 X-Greylist: domain auto-whitelisted by SQLgrey-1.8.0
-Received: from szxga07-in.huawei.com (szxga07-in.huawei.com [45.249.212.35])
- by smtp2.osuosl.org (Postfix) with ESMTPS id B48504022C
- for <iommu@lists.linux-foundation.org>; Tue, 20 Apr 2021 09:28:23 +0000 (UTC)
+Received: from szxga04-in.huawei.com (szxga04-in.huawei.com [45.249.212.190])
+ by smtp4.osuosl.org (Postfix) with ESMTPS id E89D240515
+ for <iommu@lists.linux-foundation.org>; Tue, 20 Apr 2021 09:28:33 +0000 (UTC)
 Received: from DGGEMS406-HUB.china.huawei.com (unknown [172.30.72.60])
- by szxga07-in.huawei.com (SkyGuard) with ESMTP id 4FPdbC1Qwdz7wMj;
- Tue, 20 Apr 2021 17:25:59 +0800 (CST)
+ by szxga04-in.huawei.com (SkyGuard) with ESMTP id 4FPdbQ05w2z19M2h;
+ Tue, 20 Apr 2021 17:26:10 +0800 (CST)
 Received: from A2006125610.china.huawei.com (10.47.83.26) by
  DGGEMS406-HUB.china.huawei.com (10.3.19.206) with Microsoft SMTP Server id
- 14.3.498.0; Tue, 20 Apr 2021 17:28:14 +0800
+ 14.3.498.0; Tue, 20 Apr 2021 17:28:20 +0800
 From: Shameer Kolothum <shameerali.kolothum.thodi@huawei.com>
 To: <linux-arm-kernel@lists.infradead.org>, <linux-acpi@vger.kernel.org>,
  <iommu@lists.linux-foundation.org>
-Subject: [PATCH v3 02/10] iommu/dma: Introduce generic helper to retrieve RMR
- info
-Date: Tue, 20 Apr 2021 10:27:43 +0200
-Message-ID: <20210420082751.1829-3-shameerali.kolothum.thodi@huawei.com>
+Subject: [PATCH v3 03/10] ACPI/IORT: Add a helper to retrieve RMR memory
+ regions
+Date: Tue, 20 Apr 2021 10:27:44 +0200
+Message-ID: <20210420082751.1829-4-shameerali.kolothum.thodi@huawei.com>
 X-Mailer: git-send-email 2.12.0.windows.1
 In-Reply-To: <20210420082751.1829-1-shameerali.kolothum.thodi@huawei.com>
 References: <20210420082751.1829-1-shameerali.kolothum.thodi@huawei.com>
@@ -84,120 +84,124 @@ Content-Transfer-Encoding: 7bit
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-Reserved Memory Regions(RMR) associated with an IOMMU may be
-described either through ACPI tables or DT in systems with
-devices that require a unity mapping or bypass for those
-regions in IOMMU drivers.
+Add a helper function that retrieves RMR memory descriptors
+associated with a given IOMMU. This will be used by IOMMU
+drivers to setup necessary mappings.
 
-Introduce a generic interface so that IOMMU drivers can retrieve
-and set up necessary mappings.
+Now that we have this, invoke this from the generic helper
+interface.
 
 Signed-off-by: Shameer Kolothum <shameerali.kolothum.thodi@huawei.com>
 ---
- drivers/iommu/dma-iommu.c | 33 +++++++++++++++++++++++++++++++++
- include/linux/dma-iommu.h |  8 ++++++++
- include/linux/iommu.h     | 19 +++++++++++++++++++
- 3 files changed, 60 insertions(+)
+ drivers/acpi/arm64/iort.c | 40 +++++++++++++++++++++++++++++++++++++++
+ drivers/iommu/dma-iommu.c |  3 +++
+ include/linux/acpi_iort.h |  7 +++++++
+ 3 files changed, 50 insertions(+)
 
+diff --git a/drivers/acpi/arm64/iort.c b/drivers/acpi/arm64/iort.c
+index bd96c5e3b36e..66e314b15692 100644
+--- a/drivers/acpi/arm64/iort.c
++++ b/drivers/acpi/arm64/iort.c
+@@ -12,6 +12,7 @@
+ 
+ #include <linux/acpi_iort.h>
+ #include <linux/bitfield.h>
++#include <linux/dma-iommu.h>
+ #include <linux/iommu.h>
+ #include <linux/kernel.h>
+ #include <linux/list.h>
+@@ -837,6 +838,43 @@ static inline int iort_add_device_replay(struct device *dev)
+ 	return err;
+ }
+ 
++/**
++ * iort_iommu_get_rmrs - Helper to retrieve RMR info associated with IOMMU
++ * @iommu: fwnode for the IOMMU
++ * @head: RMR list head to be populated
++ *
++ * Returns: 0 on success, <0 failure
++ */
++int iort_iommu_get_rmrs(struct fwnode_handle *iommu_fwnode,
++			struct list_head *head)
++{
++	struct iort_rmr_entry *e;
++	struct acpi_iort_node *iommu;
++
++	iommu = iort_get_iort_node(iommu_fwnode);
++	if (!iommu)
++		return 0;
++
++	list_for_each_entry(e, &iort_rmr_list, list) {
++		struct acpi_iort_rmr_desc *rmr_desc;
++		struct iommu_rmr *rmr;
++
++		if (e->smmu != iommu)
++			continue;
++
++		rmr_desc = e->rmr_desc;
++		rmr = iommu_dma_alloc_rmr(rmr_desc->base_address,
++					  rmr_desc->length, e->sid,
++					  e->flags);
++		if (!rmr)
++			return -ENOMEM;
++
++		list_add_tail(&rmr->list, head);
++	}
++
++	return 0;
++}
++
+ /**
+  * iort_iommu_msi_get_resv_regions - Reserved region driver helper
+  * @dev: Device from iommu_get_resv_regions()
+@@ -1107,6 +1145,8 @@ int iort_iommu_msi_get_resv_regions(struct device *dev, struct list_head *head)
+ const struct iommu_ops *iort_iommu_configure_id(struct device *dev,
+ 						const u32 *input_id)
+ { return NULL; }
++int iort_iommu_get_rmrs(struct fwnode_handle *fwnode, struct list_head *head)
++{ return 0; }
+ #endif
+ 
+ static int nc_dma_get_range(struct device *dev, u64 *size)
 diff --git a/drivers/iommu/dma-iommu.c b/drivers/iommu/dma-iommu.c
-index af765c813cc8..86a1e48b1fe8 100644
+index 86a1e48b1fe8..a942cc04eee1 100644
 --- a/drivers/iommu/dma-iommu.c
 +++ b/drivers/iommu/dma-iommu.c
-@@ -191,6 +191,39 @@ void iommu_dma_get_resv_regions(struct device *dev, struct list_head *list)
- }
- EXPORT_SYMBOL(iommu_dma_get_resv_regions);
- 
-+/**
-+ * iommu_dma_get_rmrs - Retrieve Reserved Memory Regions(RMRs) associated
-+ *                      with a given IOMMU
-+ * @iommu_fwnode: fwnode associated with IOMMU
-+ * @list: RMR list to be populated
-+ *
-+ */
-+int iommu_dma_get_rmrs(struct fwnode_handle *iommu_fwnode,
-+		       struct list_head *list)
-+{
-+	return 0;
-+}
-+EXPORT_SYMBOL(iommu_dma_get_rmrs);
-+
-+struct iommu_rmr *iommu_dma_alloc_rmr(u64 base, u64 length, u32 sid,
-+				      u32 flags)
-+{
-+	struct iommu_rmr *rmr;
-+
-+	rmr = kzalloc(sizeof(*rmr), GFP_KERNEL);
-+	if (!rmr)
-+		return NULL;
-+
-+	INIT_LIST_HEAD(&rmr->list);
-+	rmr->base_address = base;
-+	rmr->length = length;
-+	rmr->sid = sid;
-+	rmr->flags = flags;
-+
-+	return rmr;
-+}
-+EXPORT_SYMBOL(iommu_dma_alloc_rmr);
-+
- static int cookie_init_hw_msi_region(struct iommu_dma_cookie *cookie,
- 		phys_addr_t start, phys_addr_t end)
+@@ -201,6 +201,9 @@ EXPORT_SYMBOL(iommu_dma_get_resv_regions);
+ int iommu_dma_get_rmrs(struct fwnode_handle *iommu_fwnode,
+ 		       struct list_head *list)
  {
-diff --git a/include/linux/dma-iommu.h b/include/linux/dma-iommu.h
-index 706b68d1359b..beb84c4fe5b1 100644
---- a/include/linux/dma-iommu.h
-+++ b/include/linux/dma-iommu.h
-@@ -40,6 +40,9 @@ void iommu_dma_get_resv_regions(struct device *dev, struct list_head *list);
- void iommu_dma_free_cpu_cached_iovas(unsigned int cpu,
- 		struct iommu_domain *domain);
- 
-+int iommu_dma_get_rmrs(struct fwnode_handle *iommu, struct list_head *list);
-+struct iommu_rmr *iommu_dma_alloc_rmr(u64 base, u64 length, u32 sid, u32 flags);
++	if (!is_of_node(iommu_fwnode))
++		return iort_iommu_get_rmrs(iommu_fwnode, list);
 +
- #else /* CONFIG_IOMMU_DMA */
- 
- struct iommu_domain;
-@@ -86,5 +89,10 @@ static inline void iommu_dma_free_cpu_cached_iovas(unsigned int cpu,
- {
+ 	return 0;
  }
+ EXPORT_SYMBOL(iommu_dma_get_rmrs);
+diff --git a/include/linux/acpi_iort.h b/include/linux/acpi_iort.h
+index 1a12baa58e40..e9f3bc2f4842 100644
+--- a/include/linux/acpi_iort.h
++++ b/include/linux/acpi_iort.h
+@@ -39,6 +39,8 @@ const struct iommu_ops *iort_iommu_configure_id(struct device *dev,
+ 						const u32 *id_in);
+ int iort_iommu_msi_get_resv_regions(struct device *dev, struct list_head *head);
+ phys_addr_t acpi_iort_dma_get_max_cpu_address(void);
++int iort_iommu_get_rmrs(struct fwnode_handle *iommu_fwnode,
++			struct list_head *list);
+ #else
+ static inline void acpi_iort_init(void) { }
+ static inline u32 iort_msi_map_id(struct device *dev, u32 id)
+@@ -59,6 +61,11 @@ int iort_iommu_msi_get_resv_regions(struct device *dev, struct list_head *head)
  
-+int iommu_dma_get_rmrs(struct fwnode_handle *iommu, struct list_head *list);
-+{
-+	return 0;
-+}
+ static inline phys_addr_t acpi_iort_dma_get_max_cpu_address(void)
+ { return PHYS_ADDR_MAX; }
 +
- #endif	/* CONFIG_IOMMU_DMA */
- #endif	/* __DMA_IOMMU_H */
-diff --git a/include/linux/iommu.h b/include/linux/iommu.h
-index 5e7fe519430a..fb8820c40144 100644
---- a/include/linux/iommu.h
-+++ b/include/linux/iommu.h
-@@ -595,6 +595,25 @@ struct iommu_sva {
- 	struct device			*dev;
- };
++static inline
++int iort_iommu_get_rmrs(struct fwnode_handle *iommu_fwnode,
++			struct list_head *list)
++{ return 0; }
+ #endif
  
-+/**
-+ * struct iommu_rmr - Reserved Memory Region details per IOMMU
-+ * @list: Linked list pointers to hold RMR region info
-+ * @base_address: base address of Reserved Memory Region
-+ * @length: length of memory region
-+ * @sid: associated stream id
-+ * @flags: flags that apply to the RMR node
-+ */
-+struct iommu_rmr {
-+	struct list_head	list;
-+	phys_addr_t		base_address;
-+	u64			length;
-+	u32			sid;
-+	u32			flags;
-+};
-+
-+/* RMR Remap permitted */
-+#define IOMMU_RMR_REMAP_PERMITTED	(1 << 0)
-+
- int iommu_fwspec_init(struct device *dev, struct fwnode_handle *iommu_fwnode,
- 		      const struct iommu_ops *ops);
- void iommu_fwspec_free(struct device *dev);
+ #endif /* __ACPI_IORT_H__ */
 -- 
 2.17.1
 
