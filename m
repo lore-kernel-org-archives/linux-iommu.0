@@ -2,89 +2,159 @@ Return-Path: <SRS0=gpU2=JR=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-5.3 required=3.0 tests=BAYES_00,
-	HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,NICE_REPLY_A,SPF_HELO_NONE,
-	SPF_PASS,USER_AGENT_SANE_1 autolearn=no autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-5.0 required=3.0 tests=BAYES_00,DKIM_INVALID,
+	DKIM_SIGNED,HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,
+	MSGID_FROM_MTA_HEADER,NICE_REPLY_A,SPF_HELO_NONE,SPF_PASS,USER_AGENT_SANE_1
+	autolearn=no autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8EFCBC43460
-	for <iommu@archiver.kernel.org>; Tue, 20 Apr 2021 08:03:40 +0000 (UTC)
-Received: from smtp4.osuosl.org (smtp4.osuosl.org [140.211.166.137])
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4FD0BC433B4
+	for <iommu@archiver.kernel.org>; Tue, 20 Apr 2021 08:39:19 +0000 (UTC)
+Received: from smtp3.osuosl.org (smtp3.osuosl.org [140.211.166.136])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id EF07A613C4
-	for <iommu@archiver.kernel.org>; Tue, 20 Apr 2021 08:03:39 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org EF07A613C4
-Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=linux.intel.com
+	by mail.kernel.org (Postfix) with ESMTPS id A584B61104
+	for <iommu@archiver.kernel.org>; Tue, 20 Apr 2021 08:39:18 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org A584B61104
+Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=amd.com
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by smtp4.osuosl.org (Postfix) with ESMTP id 4E0CF404C8;
-	Tue, 20 Apr 2021 08:03:39 +0000 (UTC)
+	by smtp3.osuosl.org (Postfix) with ESMTP id 47FFB6063F;
+	Tue, 20 Apr 2021 08:39:18 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from smtp4.osuosl.org ([127.0.0.1])
-	by localhost (smtp4.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id ye6GYPtWwtwJ; Tue, 20 Apr 2021 08:03:37 +0000 (UTC)
+Received: from smtp3.osuosl.org ([127.0.0.1])
+	by localhost (smtp3.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+	with ESMTP id ml7pPKYZYZzZ; Tue, 20 Apr 2021 08:39:15 +0000 (UTC)
 Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [IPv6:2605:bc80:3010:104::8cd3:938])
-	by smtp4.osuosl.org (Postfix) with ESMTP id 25AA840457;
-	Tue, 20 Apr 2021 08:03:37 +0000 (UTC)
+	by smtp3.osuosl.org (Postfix) with ESMTP id 92B85605A1;
+	Tue, 20 Apr 2021 08:39:15 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id E8886C000E;
-	Tue, 20 Apr 2021 08:03:36 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 710B3C000F;
+	Tue, 20 Apr 2021 08:39:15 +0000 (UTC)
 Received: from smtp1.osuosl.org (smtp1.osuosl.org [140.211.166.138])
- by lists.linuxfoundation.org (Postfix) with ESMTP id E0A5FC000B
- for <iommu@lists.linux-foundation.org>; Tue, 20 Apr 2021 08:03:35 +0000 (UTC)
+ by lists.linuxfoundation.org (Postfix) with ESMTP id BC34AC000B
+ for <iommu@lists.linux-foundation.org>; Tue, 20 Apr 2021 08:39:13 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by smtp1.osuosl.org (Postfix) with ESMTP id B657283455
- for <iommu@lists.linux-foundation.org>; Tue, 20 Apr 2021 08:03:35 +0000 (UTC)
+ by smtp1.osuosl.org (Postfix) with ESMTP id 9BFA1827B1
+ for <iommu@lists.linux-foundation.org>; Tue, 20 Apr 2021 08:39:13 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
+Authentication-Results: smtp1.osuosl.org (amavisd-new);
+ dkim=pass (1024-bit key) header.d=amd.com
 Received: from smtp1.osuosl.org ([127.0.0.1])
  by localhost (smtp1.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id q7SRE1QOON6Y for <iommu@lists.linux-foundation.org>;
- Tue, 20 Apr 2021 08:03:31 +0000 (UTC)
-X-Greylist: domain auto-whitelisted by SQLgrey-1.8.0
-Received: from mga09.intel.com (mga09.intel.com [134.134.136.24])
- by smtp1.osuosl.org (Postfix) with ESMTPS id D975283A56
- for <iommu@lists.linux-foundation.org>; Tue, 20 Apr 2021 08:03:30 +0000 (UTC)
-IronPort-SDR: +y4Fjkuv+00YIaCxKa+UGGGTI4NNG8BhyB66tyypII1uryz/DjNv1lFMgbDL2FaV1AUrvdlIzt
- xeOEm2nBv5Tg==
-X-IronPort-AV: E=McAfee;i="6200,9189,9959"; a="195579333"
-X-IronPort-AV: E=Sophos;i="5.82,236,1613462400"; d="scan'208";a="195579333"
-Received: from orsmga008.jf.intel.com ([10.7.209.65])
- by orsmga102.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384;
- 20 Apr 2021 01:03:28 -0700
-IronPort-SDR: Z/FXrr1+Q8RHYWYTPCkRgeeVNOB0M1lOdZtfcdF5lOyNzlNN1zJuhw7h+LSq846Ny0wAAABWVv
- KsyxWlidK47A==
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.82,236,1613462400"; d="scan'208";a="426828770"
-Received: from allen-box.sh.intel.com (HELO [10.239.159.128])
- ([10.239.159.128])
- by orsmga008.jf.intel.com with ESMTP; 20 Apr 2021 01:03:24 -0700
-Subject: Re: [PATCH v3 02/12] iommu: Add iommu_split_block interface
-To: Keqian Zhu <zhukeqian1@huawei.com>, linux-kernel@vger.kernel.org,
- linux-arm-kernel@lists.infradead.org, iommu@lists.linux-foundation.org,
- Robin Murphy <robin.murphy@arm.com>, Will Deacon <will@kernel.org>,
- Joerg Roedel <joro@8bytes.org>, Yi Sun <yi.y.sun@linux.intel.com>,
- Jean-Philippe Brucker <jean-philippe@linaro.org>,
- Jonathan Cameron <Jonathan.Cameron@huawei.com>,
- Tian Kevin <kevin.tian@intel.com>
-References: <20210413085457.25400-1-zhukeqian1@huawei.com>
- <20210413085457.25400-3-zhukeqian1@huawei.com>
- <fb350f27-be8b-80bf-1ce8-e7e8aba26f02@linux.intel.com>
- <491da550-dc54-42e6-ac91-13d411575fad@huawei.com>
- <bc2da48b-f4f7-5a46-2696-2c412a83d190@linux.intel.com>
- <ac966fbc-7bc6-9d88-e53e-bcd92d536fdb@huawei.com>
- <3c34baf1-6a57-5666-38a2-0c9d6188b8b8@linux.intel.com>
- <a09830f8-b08f-9b80-8f75-17f13088ff6d@huawei.com>
-From: Lu Baolu <baolu.lu@linux.intel.com>
-Message-ID: <8a25f78b-9153-d21b-013d-d7f64ab48c54@linux.intel.com>
-Date: Tue, 20 Apr 2021 15:53:42 +0800
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
- Thunderbird/78.7.1
-MIME-Version: 1.0
-In-Reply-To: <a09830f8-b08f-9b80-8f75-17f13088ff6d@huawei.com>
+ with ESMTP id d8PWelt_9tEi for <iommu@lists.linux-foundation.org>;
+ Tue, 20 Apr 2021 08:39:09 +0000 (UTC)
+X-Greylist: whitelisted by SQLgrey-1.8.0
+Received: from NAM02-CY1-obe.outbound.protection.outlook.com
+ (mail-cys01nam02on061a.outbound.protection.outlook.com
+ [IPv6:2a01:111:f400:fe45::61a])
+ by smtp1.osuosl.org (Postfix) with ESMTPS id 774518367B
+ for <iommu@lists.linux-foundation.org>; Tue, 20 Apr 2021 08:39:09 +0000 (UTC)
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=KOLaZ/pynw7Y5aCasGwQkaZzIMJH9DfzJm6krphpMKSki61Fx/uwZEC9bM4ErCupYtz6W0Tm4gFmo6MMy+soBpzfedgYy+K3Gbr3o2mBZerEbXi68hQ0iR8806NdAJ87jZunEdD3R5CoeDlkk2hAmdSUk1UyGF6CGM3/4AxvkSQssPTCnHnV/is4/3CHKoQ1UcV3fvTYmUiTdcPvffz+iTk0N5R4pldOjdsMgv+7toeRypwnyuhNyk/Z4Qop1njssaXkvcCZii4Fe03gfqpw14YG14ccQLv1WUnrCkLM39ft0eNjylYK9k2c8iBfqPM5JgZF6PqsUTcu8H4o/mMj2g==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com; 
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=IqLKDXwbbIK71cyAcY+6gcgEavl/QMix/ulMYFIZCeI=;
+ b=hrE939yjHFaKYk5rXOOKX/N4V+e8qAtTMkicfrzWdMkQqZmpNgxKeUefTZ3ZiWeT/U/PE6Ssa4KrPVtvffbe4igbJbm7t29Byw6jQjFHy4TTyv+0dkRSCTAWWFVLirqBNWrjYK3cRhDxQczJTpP83xxf2zR260tE834xkpAifXYtNgwqw46rAnOPQbZIb6RYY7UHrv9uXvt/gL9OAX7NXkzx7W4jfu0HrDfoyO4j2C/GYeCHjktOAVOyLoQRtv8qEWkcBpfMEopEDTOmU/QOu/8KP9oy3Jt0Bp2Slk6Lt2kaaUpq9XyCgbFFeZY6EwSfMYR2tXTEVMU+B07ZWwciSg==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=amd.com; dmarc=pass action=none header.from=amd.com; dkim=pass
+ header.d=amd.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=amd.com; s=selector1; 
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=IqLKDXwbbIK71cyAcY+6gcgEavl/QMix/ulMYFIZCeI=;
+ b=XYrGR8YGnz9sTSn5IWvLeqdoRAQrAAXnyjzcGyc8SrcSX1xsJkfnfecYynIlPJyDcqynwnqh1kJ9QD2TSiNIlG5i6MfP5XNL16n3yS34VgBLkjoWV/Qch9WaNbmEscMndgLcWMYiB3Wo2qvtUqrLSBM79hua5ZqNXkQ5LOZaX+c=
+Authentication-Results: bugs.launchpad.net; dkim=none (message not signed)
+ header.d=none; bugs.launchpad.net; dmarc=none action=none header.from=amd.com; 
+Received: from BYAPR12MB4597.namprd12.prod.outlook.com (2603:10b6:a03:10b::14)
+ by BYAPR12MB2981.namprd12.prod.outlook.com (2603:10b6:a03:de::26)
+ with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4042.19; Tue, 20 Apr
+ 2021 08:39:06 +0000
+Received: from BYAPR12MB4597.namprd12.prod.outlook.com
+ ([fe80::cc86:d78a:bb1d:5109]) by BYAPR12MB4597.namprd12.prod.outlook.com
+ ([fe80::cc86:d78a:bb1d:5109%5]) with mapi id 15.20.4042.024; Tue, 20 Apr 2021
+ 08:39:06 +0000
+Subject: Re: [PATCH 2/2] iommu/amd: Remove performance counter
+ pre-initialization test
+To: David Coe <david.coe@live.co.uk>, linux-kernel@vger.kernel.org,
+ iommu@lists.linux-foundation.org
+References: <20210409085848.3908-1-suravee.suthikulpanit@amd.com>
+ <20210409085848.3908-3-suravee.suthikulpanit@amd.com>
+ <VI1PR09MB26380EED406F2F08ACB6B5BBC7729@VI1PR09MB2638.eurprd09.prod.outlook.com>
+From: "Suthikulpanit, Suravee" <suravee.suthikulpanit@amd.com>
+Message-ID: <9d5fa4ff-9666-6475-7f61-2b45cbd83456@amd.com>
+Date: Tue, 20 Apr 2021 15:38:54 +0700
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:78.0) Gecko/20100101
+ Thunderbird/78.9.1
+In-Reply-To: <VI1PR09MB26380EED406F2F08ACB6B5BBC7729@VI1PR09MB2638.eurprd09.prod.outlook.com>
 Content-Language: en-US
-Cc: jiangkunkun@huawei.com, Cornelia Huck <cohuck@redhat.com>,
- Kirti Wankhede <kwankhede@nvidia.com>, lushenming@huawei.com,
- Alex Williamson <alex.williamson@redhat.com>, wanghaibin.wang@huawei.com
+X-Originating-IP: [165.204.140.250]
+X-ClientProxiedBy: SG2PR02CA0112.apcprd02.prod.outlook.com
+ (2603:1096:4:92::28) To BYAPR12MB4597.namprd12.prod.outlook.com
+ (2603:10b6:a03:10b::14)
+MIME-Version: 1.0
+X-MS-Exchange-MessageSentRepresentingType: 1
+Received: from [10.252.132.84] (165.204.140.250) by
+ SG2PR02CA0112.apcprd02.prod.outlook.com (2603:1096:4:92::28) with Microsoft
+ SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.20.4042.16 via Frontend Transport; Tue, 20 Apr 2021 08:39:03 +0000
+X-MS-PublicTrafficType: Email
+X-MS-Office365-Filtering-Correlation-Id: fdeb0d31-b267-4ddd-0bcf-08d903d7c262
+X-MS-TrafficTypeDiagnostic: BYAPR12MB2981:
+X-MS-Exchange-Transport-Forked: True
+X-Microsoft-Antispam-PRVS: <BYAPR12MB2981AB6B61034E4D4854629AF3489@BYAPR12MB2981.namprd12.prod.outlook.com>
+X-MS-Oob-TLC-OOBClassifiers: OLM:8273;
+X-MS-Exchange-SenderADCheck: 1
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: 1H0gBpQKj8H6wre1ee+RlgUK/1qO78xfJyA0mB2B/Gn4ZckCoK9sdF0mTkaJAvwLqi8rg2zhGQPyJhsAYpo+4Q2Y9piMglVNDup72DMDHQc5LkzVyeIJPkQl6+EYfKOowkYBATkRNx8TksrkKfCpZVB0xasawab0HsFn37s08BwrkuAe7WsOluy+Zt1CmPaLPVRYRkV5UzQLWXMA9LPgnzRJtgRwJfmEQNvQdCpsFudi24d72Q+M4IhdFjSD7NZuX39mqoQ2+KXJ5RZ9q/FEK7Z6yrl0DsaRypgEGRAI8uhCQE/LXx88RQpwTySy9NZnotaHCKO7eU17nbAdHcaIe/o0XoAqx1tm4jiLDqB0AVjXvMEV727LTMtBvL8TFuokRtCGALmaaScw+2IdyqahpzfOeTxkqvkBGFUKlqH6A7lGbGtsAB511KcP0uhwPVWF2/5UoooobBd73hkHmiYVxyXEetQQxYZlqSr0mXL127/wwynCSdI1ysQo7a+yRNIwd2lDutA06+0We9Dbbq3jfQcqRaL2Ec49i2FgIDxHdM54rMdYhrDUzXI/8X1F4c3dNSDqKtwvECP37kbhjqJhMWdHDfwwettWEP4lRSZdWiqv4rot/zUtirLSsfZmj2WTZ5VuziYNm13UcNu5+0Hprr0YHl4xH2jkSnAIWJ2UxeqQp7GUKgWouUvt3+lmftduwBAKp5IUa7TSlN+I+T5s+6OL4wmgscgVSgM/qiXuKdM+m8uc+lfOdkACdyPFgV9i
+X-Forefront-Antispam-Report: CIP:255.255.255.255; CTRY:; LANG:en; SCL:1; SRV:;
+ IPV:NLI; SFV:NSPM; H:BYAPR12MB4597.namprd12.prod.outlook.com; PTR:; CAT:NONE;
+ SFS:(4636009)(366004)(346002)(376002)(396003)(39860400002)(136003)(38100700002)(316002)(5660300002)(38350700002)(16526019)(186003)(34580700001)(2616005)(4326008)(66556008)(66946007)(52116002)(8936002)(31696002)(16576012)(54906003)(66476007)(7416002)(956004)(83380400001)(36756003)(86362001)(31686004)(53546011)(6666004)(478600001)(8676002)(2906002)(26005)(6486002)(43740500002)(45980500001);
+ DIR:OUT; SFP:1101; 
+X-MS-Exchange-AntiSpam-MessageData: =?utf-8?B?Y25IbzdpdENlQXhBZGN4UTBwYkU0QVV2Tms1d0d6WWF3R1BBZ2srWTlmSEI3?=
+ =?utf-8?B?R1ZSM0tGQlloTjdHV05vUUtkQm1ldDF6RWY0K1Z2TVJ0b1ZiT3ZuUS9KY1No?=
+ =?utf-8?B?ZElkOENvODQ3enZ4MW9XYXhiKzdWVlRTQnhIUXFLS0NQRC9tSFE0TnllVzVw?=
+ =?utf-8?B?RjhhUUc5OUVpbnBGN2xvTjNQMGVDb29sK1pNcXhNRXRHQ05WVDc0ckZlMjVs?=
+ =?utf-8?B?WEJ3cnZNTDJqaUsrMkp2MWJFcGdLTGt6OU8rM0ZWSjEzL2N2Q2RlZnpTQTl5?=
+ =?utf-8?B?bG1iWTNRK0s0T2NkTXBwYVpSSEd1VUU2OVhEYmVHK1R5V3dsQVdROFptUmxL?=
+ =?utf-8?B?cXhHdVo4UWVFcXBEYlBBdHFBc1VYbEJRS2ZUQlVDdkwxeTFhR2w3REgyeXM4?=
+ =?utf-8?B?bnZYRHBwRGN2Lzc3MWJGck9NcmVPSERHZzNMM0RXZklSOTNHWnUvaFhhaUpN?=
+ =?utf-8?B?UlV4b0F2VkV0TGhwZXNzckE0cTEzZkRaZysyOU1qN3o1cUZZcThwYjJEalM2?=
+ =?utf-8?B?NVVYNUdtdzBBVFB6R29DYVREbVdmSGd2U1dpL29NSWxtMUxQM0JtSER5Unk5?=
+ =?utf-8?B?bk4yY3NGVmN1NDNOT1k0S1YyU1FTM25YMUtQQzFscTFkanRtRWUrTVdKMnN5?=
+ =?utf-8?B?V29va09Nc3JBZTRkdnBMclJOMURtYWpad2VRN3VNWHY3UVNzK1BxdXBNeHVS?=
+ =?utf-8?B?L1I3VTlUamloWk5CMENwUVNIczlzbkU2ZFNIRUdlTldSMXZVazlWYVE2VkZZ?=
+ =?utf-8?B?SnJlQzJ3VGorL3FYTnRRUGFkSmlVaHdERGFBaEJQUElUaDByc2dsNTNLU1R0?=
+ =?utf-8?B?QlZXOTB0KzV2OVFRM1cwckNKQ3Q2TGJubWlCZjlBa3hmZmdqaVI2a3N0TW9P?=
+ =?utf-8?B?MUJCaUxMVU4zcFB4bnc0WmMzZ095M2t1eWFPeFdjWExFRGpFYVo1eUo2QTdx?=
+ =?utf-8?B?Sm5iRk5WWEZlTkI5YjlmL1p4YmxVK1VnYWFBbXNWSzZxNkt6bWlBZGJuSmVi?=
+ =?utf-8?B?TGtGbDVhWFJNOXVITi8rMUR4UlZNTW1HSndWR0hQT0dhSnNia3FGTUVYRlpT?=
+ =?utf-8?B?VTV5ZU42eDE4Nk91RGUyNFhqa2MzYTlINWdFV1dicUxTUXlSQkRoSGRTaUpl?=
+ =?utf-8?B?WFJtUnFZK0d0RjJFd1NqS3RIRkFETnZ2cElHdExvd3JYZmZQUzF6aGo4MXVN?=
+ =?utf-8?B?NnhsK3FyM0hST1AzMDdUYTU3a0Vic3ZVRDcwZEpBMjllUHRhNHhCUXpTWlo1?=
+ =?utf-8?B?L0owbE5XVU84R1ZadmtwM0ZYdXhwemZwSC8zbmJQbEpVck9oV3pzOW9KQ1ds?=
+ =?utf-8?B?dzJwd0RjRnI0ZWVNRkNoMVJIbmpQeXR2RUlmeUlGeFlKNVRQM0pJdnUyS1Iz?=
+ =?utf-8?B?c2tWM0FldjI1Z3MySU5yN1ZQZWZ5eWhBWTVMbkdUSVE2Qzd1dkYwMlJuM3RO?=
+ =?utf-8?B?NnEzZmtRUHBxb1VmOVcvRGk2K1ZRVjBha3hpVFkxN2RiekRUa0NjamExdnRT?=
+ =?utf-8?B?UDE5OGI1WjlsMGNTbkcyVWs0dGQxOUVrY2Noc2x0MVBIZTEvYmxIY3YxWnRL?=
+ =?utf-8?B?Z1dtQ2lJalpVd2JrbVA3TDJVUzJwY3E0QUlSZmZSNkhSM3B6cVk2KzVjVXp5?=
+ =?utf-8?B?MndSRGdNZk1CU0VHY2NwaEthNjI2M3lBa0JaRHViRFRtZlphME1SdlcvamdS?=
+ =?utf-8?B?QjFnYk9zWGsxdHpRQjdmY2daQUhMRHpDa2pUUjNhemZwZklYV25ORUlQK2VC?=
+ =?utf-8?Q?ViF20vIgy/mvbD1+2jSzXmv0pf58FqPe1udQvBa?=
+X-OriginatorOrg: amd.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: fdeb0d31-b267-4ddd-0bcf-08d903d7c262
+X-MS-Exchange-CrossTenant-AuthSource: BYAPR12MB4597.namprd12.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 20 Apr 2021 08:39:06.8100 (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 3dd8961f-e488-4e60-8e11-a82d994e183d
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: WHwGnQa/mNEdt0/R061Ul58Z3qETjCXbHQGfbthlEckQxZHSol6v/VftyWo03Jirkt3rLAS2xH3OdrSE5zVXNw==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: BYAPR12MB2981
+Cc: pmenzel@molgen.mpg.de, Alexander Monakov <amonakov@ispras.ru>,
+ Alex Hung <1917203@bugs.launchpad.net>, Jon.Grimm@amd.com,
+ Shuah Khan <skhan@linuxfoundation.org>, Tj <ml.linux@elloe.vision>,
+ will@kernel.org
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -97,101 +167,43 @@ List-Post: <mailto:iommu@lists.linux-foundation.org>
 List-Help: <mailto:iommu-request@lists.linux-foundation.org?subject=help>
 List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
  <mailto:iommu-request@lists.linux-foundation.org?subject=subscribe>
-Content-Transfer-Encoding: 7bit
-Content-Type: text/plain; charset="us-ascii"; Format="flowed"
+Content-Transfer-Encoding: base64
+Content-Type: text/plain; charset="utf-8"; Format="flowed"
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-On 4/20/21 3:32 PM, Keqian Zhu wrote:
-> Hi Baolu,
-> 
-> Cheers for the your quick reply.
-> 
-> On 2021/4/20 10:09, Lu Baolu wrote:
->> Hi Keqian,
->>
->> On 4/20/21 9:25 AM, Keqian Zhu wrote:
->>> Hi Baolu,
->>>
->>> On 2021/4/19 21:33, Lu Baolu wrote:
->>>> Hi Keqian,
->>>>
->>>> On 2021/4/19 17:32, Keqian Zhu wrote:
->>>>>>> +EXPORT_SYMBOL_GPL(iommu_split_block);
->>>>>> Do you really have any consumers of this interface other than the dirty
->>>>>> bit tracking? If not, I don't suggest to make this as a generic IOMMU
->>>>>> interface.
->>>>>>
->>>>>> There is an implicit requirement for such interfaces. The
->>>>>> iommu_map/unmap(iova, size) shouldn't be called at the same time.
->>>>>> Currently there's no such sanity check in the iommu core. A poorly
->>>>>> written driver could mess up the kernel by misusing this interface.
->>>>> Yes, I don't think up a scenario except dirty tracking.
->>>>>
->>>>> Indeed, we'd better not make them as a generic interface.
->>>>>
->>>>> Do you have any suggestion that underlying iommu drivers can share these code but
->>>>> not make it as a generic iommu interface?
->>>>>
->>>>> I have a not so good idea. Make the "split" interfaces as a static function, and
->>>>> transfer the function pointer to start_dirty_log. But it looks weird and inflexible.
->>>>
->>>> I understand splitting/merging super pages is an optimization, but not a
->>>> functional requirement. So is it possible to let the vendor iommu driver
->>>> decide whether splitting super pages when starting dirty bit tracking
->>>> and the opposite operation during when stopping it? The requirement for
->>> Right. If I understand you correct, actually that is what this series does.
->>
->> I mean to say no generic APIs, jut do it by the iommu subsystem itself.
->> It's totally transparent to the upper level, just like what map() does.
->> The upper layer doesn't care about either super page or small page is
->> in use when do a mapping, right?
->>
->> If you want to consolidate some code, how about putting them in
->> start/stop_tracking()?
-> 
-> Yep, this reminds me. What we want to reuse is the logic of "chunk by chunk" in split().
-> We can implement switch_dirty_log to be "chunk by chunk" too (just the same as sync/clear),
-> then the vendor iommu driver can invoke it's own private implementation of split().
-> So we can completely remove split() in the IOMMU core layer.
-> 
-> example code logic
-> 
-> iommu.c:
-> switch_dirty_log(big range) {
->      for_each_iommu_page(big range) {
->            ops->switch_dirty_log(iommu_pgsize)
->      }
-> }
-> 
-> vendor iommu driver:
-> switch_dirty_log(iommu_pgsize) {
-> 
->      if (enable) {
->          ops->split_block(iommu_pgsize)
->          /* And other actions, such as enable hardware capability */
->      } else {
->          for_each_continuous_physical_address(iommu_pgsize)
->              ops->merge_page()
->      }
-> }
-> 
-> Besides, vendor iommu driver can invoke split() in clear_dirty_log instead of in switch_dirty_log.
-> The benefit is that we usually clear dirty log gradually during dirty tracking, then we can split
-> large page mapping gradually, which speedup start_dirty_log and make less side effect on DMA performance.
-> 
-> Does it looks good for you?
-
-Yes. It's clearer now.
-
-> 
-> Thanks,
-> Keqian
-> 
-
-Best regards,
-baolu
-_______________________________________________
-iommu mailing list
-iommu@lists.linux-foundation.org
-https://lists.linuxfoundation.org/mailman/listinfo/iommu
+RGF2aWQgLyBKb2VyZywKCk9uIDQvMTAvMjAyMSA1OjAzIFBNLCBEYXZpZCBDb2Ugd3JvdGU6Cj4g
+Cj4gVGhlIGltbWVkaWF0ZWx5IG9idmlvdXMgZGlmZmVyZW5jZSBpcyB0aGUgd2l0aCB0aGUgZW5v
+cm1vdXMgY291bnQgc2VlbiBvbiBtZW1fZHRlX21pcyBvbiB0aGUgb2xkZXIgUnl6ZW4gMjQwMEcu
+IFdpbGwgZG8gc29tZSBSVEZNIGJ1dCBhbnlvbmUgd2l0aMKgY29tbWVudHPCoGFuZMKgaW5zaWdo
+dD8KPiAKPiA4NDEsNjg5LDE1MSwyMDIsOTM5wqDCoMKgwqDCoMKgwqBhbWRfaW9tbXVfMC9tZW1f
+ZHRlX21pcy/CoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgKDMzLjQ0JSkKPiAKPiBPdGhlcndp
+c2UsIGFsbCBzZWVtcyB0byBydW5uaW5nIHNtb290aGx5IChlc3BlY2lhbGx5IGZvciBhIGRpc3Ry
+aWJ1dGlvbiBzdGlsbMKgaW7CoM6yKS7CoEJyYXZvwqBhbmTCoG1hbnnCoHRoYW5rc8KgYWxsIQoK
+VGhlIGluaXRpYWwgaHlwb3RoZXNpcyBpcyB0aGF0IHRoZSBpc3N1ZSBoYXBwZW5zIG9ubHkgd2hl
+biB1c2VycyBzcGVjaWZ5IG1vcmUgbnVtYmVyIG9mIGV2ZW50cyB0aGFuCnRoZSBhdmFpbGFibGUg
+Y291bnRlcnMsIHdoaWNoIFBlcmYgd2lsbCB0aW1lLW11bHRpcGxleCB0aGUgZXZlbnRzIG9udG8g
+dGhlIGNvdW50ZXJzLgoKTG9va2luZyBhdCB0aGUgUGVyZiBhbmQgQU1EIElPTU1VIFBNVSBtdWx0
+aXBsZXhpbmcgbG9naWMsIGl0IHJlcXVpcmVzOgogIDEuIFN0b3AgdGhlIGNvdW50ZXIgKGkuZS4g
+c2V0IENTT1VSQ0UgdG8gemVybyB0byBzdG9wIGNvdW50aW5nKQogIDIuIFNhdmUgdGhlIGNvdW50
+ZXIgdmFsdWUgb2YgdGhlIGN1cnJlbnQgZXZlbnQKICAzLiBSZWxvYWQgdGhlIGNvdW50ZXIgdmFs
+dWUgb2YgdGhlIG5ldyBldmVudCAocHJldmlvdXNseSBzYXZlZCkKICA0LiBTdGFydCB0aGUgY291
+bnRlciAoaS5lLiBzZXQgQ1NPVVJDRSB0byBjb3VudCBuZXcgZXZlbnRzKQoKVGhlIHByb2JsZW0g
+aGVyZSBpcyB0aGF0IHdoZW4gdGhlIGRyaXZlciB3cml0ZXMgemVybyB0byBDU09VUkNFIHJlZ2lz
+dGVyIGluIHN0ZXAgMSwgdGhpcyB3b3VsZCBlbmFibGUgcG93ZXItZ2F0aW5nLAp3aGljaCBwcmV2
+ZW50cyBhY2Nlc3MgdG8gdGhlIGNvdW50ZXIgYW5kIHJlc3VsdCBpbiB3cml0aW5nL3JlYWRpbmcg
+dmFsdWUgaW4gc3RlcCAyIGFuZCAzLgoKSSBoYXZlIGZvdW5kIGEgc3lzdGVtIHRoYXQgcmVwcm9k
+dWNlZCB0aGlzIGNhc2UgKHcvIHVudXN1YWxseSBsYXJnZSBudW1iZXIgb2YgY291bnQpLCBhbmQg
+ZGVidWcgdGhlIGlzc3VlIGZ1cnRoZXIuCkFzIGEgaGFjaywgSSBoYXZlIHRyaWVkIHNraXBwaW5n
+IHN0ZXAgMSwgYW5kIGl0IHNlZW1zIHRvIGVsaW1pbmF0ZSB0aGlzIGlzc3VlLiBIb3dldmVyLCB0
+aGlzIGlzIGxvZ2ljYWxseSBpbmNvcnJlY3QsCmFuZCBtaWdodCByZXN1bHQgaW4gaW5hY2N1cmF0
+ZSBkYXRhIGRlcGVuZGluZyBvbiB0aGUgZXZlbnRzLgoKSGVyZSBhcmUgdGhlIG9wdGlvbnM6CjEu
+IENvbnRpbnVlIHRvIGxvb2sgZm9yIHdvcmthcm91bmQgZm9yIHRoaXMgaXNzdWUuCjIuIEZpbmQg
+YSB3YXkgdG8gZGlzYWJsZSBldmVudCB0aW1lLW11bHRpcGxleGluZyAoZS5nLiBvbmx5IGxpbWl0
+IHRoZSBudW1iZXIgb2YgY291bnRlcnMgdG8gOCkKICAgIGlmIHBvd2VyIGdhdGluZyBpcyBlbmFi
+bGVkIG9uIHRoZSBwbGF0Zm9ybS4KMy4gQmFjayB0byB0aGUgb3JpZ2luYWwgbG9naWMgd2hlcmUg
+d2UgaGFkIHRoZSBwcmUtaW5pdCBjaGVjayBvZiB0aGUgY291bnRlciB2bHVlcywgd2hpY2ggaXMg
+c3RpbGwgdGhlIHNhZmVzdCBjaG9pY2UKICAgIGF0IHRoZSBtb21lbnQgdW5sZXNzCgpSZWdhcmRz
+LApTdXJhdmVlCl9fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19f
+CmlvbW11IG1haWxpbmcgbGlzdAppb21tdUBsaXN0cy5saW51eC1mb3VuZGF0aW9uLm9yZwpodHRw
+czovL2xpc3RzLmxpbnV4Zm91bmRhdGlvbi5vcmcvbWFpbG1hbi9saXN0aW5mby9pb21tdQ==
