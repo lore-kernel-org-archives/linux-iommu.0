@@ -1,142 +1,92 @@
-Return-Path: <SRS0=soV1=JQ=lists.linux-foundation.org=iommu-bounces@kernel.org>
+Return-Path: <SRS0=gpU2=JR=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-3.8 required=3.0 tests=BAYES_00,
-	HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,
-	URIBL_BLOCKED autolearn=no autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-16.6 required=3.0 tests=BAYES_00,DKIM_INVALID,
+	DKIM_SIGNED,HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_CR_TRAILER,INCLUDES_PATCH,
+	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,USER_AGENT_GIT
+	autolearn=unavailable autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id DF618C433B4
-	for <iommu@archiver.kernel.org>; Mon, 19 Apr 2021 23:43:17 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7CF3CC433B4
+	for <iommu@archiver.kernel.org>; Tue, 20 Apr 2021 00:31:06 +0000 (UTC)
 Received: from smtp4.osuosl.org (smtp4.osuosl.org [140.211.166.137])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 4A1C561279
-	for <iommu@archiver.kernel.org>; Mon, 19 Apr 2021 23:43:17 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 4A1C561279
-Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=atmark-techno.com
+	by mail.kernel.org (Postfix) with ESMTPS id BF02D6113C
+	for <iommu@archiver.kernel.org>; Tue, 20 Apr 2021 00:31:05 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org BF02D6113C
+Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=lists.linux-foundation.org
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by smtp4.osuosl.org (Postfix) with ESMTP id DC7D14029E;
-	Mon, 19 Apr 2021 23:43:16 +0000 (UTC)
+	by smtp4.osuosl.org (Postfix) with ESMTP id 59483403EC;
+	Tue, 20 Apr 2021 00:31:05 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
 Received: from smtp4.osuosl.org ([127.0.0.1])
 	by localhost (smtp4.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id bFyeR5Q8a4Lw; Mon, 19 Apr 2021 23:43:15 +0000 (UTC)
+	with ESMTP id 6m4gHO3XBNTb; Tue, 20 Apr 2021 00:31:01 +0000 (UTC)
 Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by smtp4.osuosl.org (Postfix) with ESMTP id 9BB57402A3;
-	Mon, 19 Apr 2021 23:43:15 +0000 (UTC)
+	by smtp4.osuosl.org (Postfix) with ESMTP id 430AC403F8;
+	Tue, 20 Apr 2021 00:31:01 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 79DF2C000F;
-	Mon, 19 Apr 2021 23:43:15 +0000 (UTC)
-Received: from smtp2.osuosl.org (smtp2.osuosl.org [IPv6:2605:bc80:3010::133])
- by lists.linuxfoundation.org (Postfix) with ESMTP id E365FC000B
- for <iommu@lists.linux-foundation.org>; Mon, 19 Apr 2021 23:43:14 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 07D67C000E;
+	Tue, 20 Apr 2021 00:31:01 +0000 (UTC)
+Received: from smtp1.osuosl.org (smtp1.osuosl.org [IPv6:2605:bc80:3010::138])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 83BB9C000B
+ for <iommu@lists.linux-foundation.org>; Tue, 20 Apr 2021 00:30:59 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by smtp2.osuosl.org (Postfix) with ESMTP id D0EEB401C4
- for <iommu@lists.linux-foundation.org>; Mon, 19 Apr 2021 23:43:14 +0000 (UTC)
+ by smtp1.osuosl.org (Postfix) with ESMTP id 5D9DF82BE7
+ for <iommu@lists.linux-foundation.org>; Tue, 20 Apr 2021 00:30:59 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from smtp2.osuosl.org ([127.0.0.1])
- by localhost (smtp2.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id pmq9bLq6_4pp for <iommu@lists.linux-foundation.org>;
- Mon, 19 Apr 2021 23:43:10 +0000 (UTC)
-X-Greylist: from auto-whitelisted by SQLgrey-1.8.0
-Received: from gw.atmark-techno.com (gw.atmark-techno.com [13.115.124.170])
- by smtp2.osuosl.org (Postfix) with ESMTP id 4450140181
- for <iommu@lists.linux-foundation.org>; Mon, 19 Apr 2021 23:43:10 +0000 (UTC)
-Received: from mail-ot1-f71.google.com (mail-ot1-f71.google.com
- [209.85.210.71])
- by gw.atmark-techno.com (Postfix) with ESMTPS id 839BF8047F
- for <iommu@lists.linux-foundation.org>; Tue, 20 Apr 2021 08:43:08 +0900 (JST)
-Received: by mail-ot1-f71.google.com with SMTP id
- l10-20020a056830054ab0290241bf5f8c25so10704978otb.11
- for <iommu@lists.linux-foundation.org>; Mon, 19 Apr 2021 16:43:08 -0700 (PDT)
+Authentication-Results: smtp1.osuosl.org (amavisd-new);
+ dkim=pass (2048-bit key) header.d=google.com
+Received: from smtp1.osuosl.org ([127.0.0.1])
+ by localhost (smtp1.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+ with ESMTP id o8iQkcguIKTw for <iommu@lists.linux-foundation.org>;
+ Tue, 20 Apr 2021 00:30:54 +0000 (UTC)
+X-Greylist: whitelisted by SQLgrey-1.8.0
+Received: from mail-yb1-xb49.google.com (mail-yb1-xb49.google.com
+ [IPv6:2607:f8b0:4864:20::b49])
+ by smtp1.osuosl.org (Postfix) with ESMTPS id 8E31F82A26
+ for <iommu@lists.linux-foundation.org>; Tue, 20 Apr 2021 00:30:54 +0000 (UTC)
+Received: by mail-yb1-xb49.google.com with SMTP id
+ s8-20020a5b04480000b029049fb35700b9so9570876ybp.5
+ for <iommu@lists.linux-foundation.org>; Mon, 19 Apr 2021 17:30:54 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=google.com; s=20161025;
+ h=date:message-id:mime-version:subject:from:to:cc;
+ bh=bNgXJhmUMNU0+evBI0pwLRswhxIcDKwkEWyVTZBRyWM=;
+ b=YMyx6nlQLOvFFAbDgx6YNaCaDDXI4bKsmSCOuAGO0YsJJJ59yBJF2nf3HETWFTNjn5
+ BDX8iScXDXYTUnWky3x1kXAfYeMLKvBE0YioWYxQGrGa/5UaufNnBWvMq6fTt1h6CQgA
+ RhCk3N9uDqyNr/SP43GyVK1rhtZglXDeI8U5CKiZsQBZAh9QBf1SaS9xL4XOX5wV6ECc
+ 2lGmJLgypOjwWc5ARVrQQeVPGSo32TiWyu7nQKIQxU7IkHVGg7gFusZeYEVGMs+diHcj
+ xCd8VWtYTLr+2/fpdiwXbEMRE2Gj9Ax/NuxY6Hle6iO85ghyMZC7W7yUH7yZEdY0ZwPm
+ y1zQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
  d=1e100.net; s=20161025;
- h=x-gm-message-state:date:from:to:cc:subject:message-id:references
- :mime-version:content-disposition:in-reply-to;
- bh=YfTDNxUjME1kzwn4ONpBlmaWp5uEs0PGjlewRbiJ8O0=;
- b=CnVzoI1AZ1LSVEH4pO0S/AT+i9/uGe5+i3jbnpegv4KRXnZljA8bSTPBbpCCOFubOD
- vnIcGWSqxmg8kd+D8rhlfggzv4hhKQwKEd72weeujidubNx649MyvFQxOJ1q3MrcIsdF
- 5oT4hJYLb/hraOXTWiSEDWm2ruJdgVrLZmLaCiAknmnfqAxzXJzZ/YnC0iJA97MIcIWu
- tDbyqIlq5tOwxDrF6kgQs/BxPDmI+o/xO3qYV5dIvC70g9kB9bVjQMPedaVf63Fs1jMJ
- btHYQeryFU+PfRAD+Vp/alRUvlHg8oIDiJNcw9HndUSDTI9QX5FXMeSf6vaTwiV05cAC
- qY5w==
-X-Gm-Message-State: AOAM531q2BbznfGQat0uRNmw5HeAcK9a2yA42lu/ECIJXbrLUgmGWUT7
- RtquI+7Tj+G/3ODX9eWiV6pBY6nmhZAgu4xXZ4GIZNnB/YNnK2KizGjLhtckvtecibeTzE6wevW
- J3h9XcG5eYWPtGTof5TobuztM41q5LrG2Ow==
-X-Received: by 2002:a17:90a:1c1:: with SMTP id 1mr1708189pjd.190.1618875776933; 
- Mon, 19 Apr 2021 16:42:56 -0700 (PDT)
-X-Google-Smtp-Source: ABdhPJzRGNIqy2AO5m9iOwuC4N09BxordE8LmUXYTIIeyniOtbCQKfA0MKaQl391n1ZLV3YIJOra8w==
-X-Received: by 2002:a17:90a:1c1:: with SMTP id 1mr1708139pjd.190.1618875776711; 
- Mon, 19 Apr 2021 16:42:56 -0700 (PDT)
-Received: from pc-0115 (76.125.194.35.bc.googleusercontent.com.
- [35.194.125.76])
- by smtp.gmail.com with ESMTPSA id r3sm8384971pgn.82.2021.04.19.16.42.55
- (version=TLS1_2 cipher=ECDHE-ECDSA-AES128-GCM-SHA256 bits=128/128);
- Mon, 19 Apr 2021 16:42:55 -0700 (PDT)
-Received: from martinet by pc-0115 with local (Exim 4.94)
- (envelope-from <martinet@pc-0115>)
- id 1lYdXa-002mPj-58; Tue, 20 Apr 2021 08:42:54 +0900
-Date: Tue, 20 Apr 2021 08:42:44 +0900
-From: Dominique MARTINET <dominique.martinet@atmark-techno.com>
-To: Arnd Bergmann <arnd@arndb.de>
-Subject: Re: [RFC v1 PATCH 3/3] driver: update all the code that use
- soc_device_match
-Message-ID: <YH4VdPNO9cdzc5MD@atmark-techno.com>
-References: <20210419042722.27554-1-alice.guo@oss.nxp.com>
- <20210419042722.27554-4-alice.guo@oss.nxp.com>
- <YH0O907dfGY9jQRZ@atmark-techno.com>
- <CAMuHMdVY1SLZ0K30T2pimyrR6Mm=VoSTO=L-xxCy2Bj7_kostw@mail.gmail.com>
- <YH1OeFy+SepIYYG0@atmark-techno.com>
- <CAK8P3a1Mu2F0irDDCL-50HiHth29iYFL5b7WHZ=UX6W7zzoxAg@mail.gmail.com>
-MIME-Version: 1.0
-Content-Disposition: inline
-In-Reply-To: <CAK8P3a1Mu2F0irDDCL-50HiHth29iYFL5b7WHZ=UX6W7zzoxAg@mail.gmail.com>
-Cc: Ulf Hansson <ulf.hansson@linaro.org>, aymen.sghaier@nxp.com,
- Geert Uytterhoeven <geert+renesas@glider.be>,
- Rafael Wysocki <rafael@kernel.org>, David Airlie <airlied@linux.ie>,
- Michael Turquette <mturquette@baylibre.com>,
- dri-devel <dri-devel@lists.freedesktop.org>,
- Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
- Andrzej Hajda <a.hajda@samsung.com>, Networking <netdev@vger.kernel.org>,
- linux-phy@lists.infradead.org, peter.ujfalusi@gmail.com,
- linux-clk <linux-clk@vger.kernel.org>,
- Linux-Renesas <linux-renesas-soc@vger.kernel.org>,
- Wim Van Sebroeck <wim@linux-watchdog.org>,
- Herbert Xu <herbert@gondor.apana.org.au>,
- Horia =?utf-8?Q?Geant=C4=83?= <horia.geanta@nxp.com>,
- Kevin Hilman <khilman@baylibre.com>, Neil Armstrong <narmstrong@baylibre.com>,
- linux-staging@lists.linux.dev,
- "open list:IOMMU DRIVERS" <iommu@lists.linux-foundation.org>,
- Kishon <kishon@ti.com>, Tony Lindgren <tony@atomide.com>,
- linux-omap <linux-omap@vger.kernel.org>,
- Geert Uytterhoeven <geert@linux-m68k.org>, Jakub Kicinski <kuba@kernel.org>,
- Linus Walleij <linus.walleij@linaro.org>, Guenter Roeck <linux@roeck-us.net>,
- Linux Media Mailing List <linux-media@vger.kernel.org>,
- LINUXWATCHDOG <linux-watchdog@vger.kernel.org>, Will Deacon <will@kernel.org>,
- Linux PM list <linux-pm@vger.kernel.org>,
- linuxppc-dev <linuxppc-dev@lists.ozlabs.org>,
- Eduardo Valentin <edubezval@gmail.com>,
- "open list:GPIO SUBSYSTEM" <linux-gpio@vger.kernel.org>,
- "moderated list:ARM/Mediatek SoC..." <linux-mediatek@lists.infradead.org>,
- Santosh Shilimkar <ssantosh@kernel.org>,
- Matthias Brugger <matthias.bgg@gmail.com>,
- "open list:ARM/Amlogic Meson SoC support" <linux-amlogic@lists.infradead.org>,
- Mauro Carvalho Chehab <mchehab@kernel.org>,
- Linux ARM <linux-arm-kernel@lists.infradead.org>,
- "Alice Guo \(OSS\)" <alice.guo@oss.nxp.com>, Felipe Balbi <balbi@kernel.org>,
- tomba@kernel.org, Stephen Boyd <sboyd@kernel.org>,
- gregkh <gregkh@linuxfoundation.org>, Alan Stern <stern@rowland.harvard.edu>,
- USB list <linux-usb@vger.kernel.org>, linux-mmc <linux-mmc@vger.kernel.org>,
- Adrian Hunter <adrian.hunter@intel.com>, Robert Foss <robert.foss@linaro.org>,
- Leo Li <leoyang.li@nxp.com>, Tony Prisk <linux@prisktech.co.nz>,
- Vinod Koul <vkoul@kernel.org>,
- "open list:HARDWARE RANDOM NUMBER GENERATOR CORE"
- <linux-crypto@vger.kernel.org>, Daniel Vetter <daniel@ffwll.ch>,
- Keerthy <j-keerthy@ti.com>, dmaengine@vger.kernel.org,
- Roy Pledge <Roy.Pledge@nxp.com>, jyri.sarha@iki.fi,
- David Miller <davem@davemloft.net>
+ h=x-gm-message-state:date:message-id:mime-version:subject:from:to:cc;
+ bh=bNgXJhmUMNU0+evBI0pwLRswhxIcDKwkEWyVTZBRyWM=;
+ b=ZicI7+YT1EZMoeLcTdoaGdEIjAjObImrYPnLvfatvBQ3O9R9DUnydytFA1AVafrRUf
+ hkKbluhaXXA5aolf28uEoOD0h6+5zeJjc68QA8BGhdTWnpwFWSvIhFC9m3Hy31+5of52
+ MASikHuDsIteuSvSteHYs0N+bJMJp+W14XB1cU3iwg+LjSkn04WQCvADVIZyvoehPGfB
+ mx/OqQq9GrOkds9bBv7Y4iWgcfIVrZKhtsmC2Z/y/S2EEcKZqw0fubUpwULWbCSfLkmJ
+ BL7yvuuLZHrwKsvtHQeT+BjT8xF5Ca1EHZxcsZnqMRbyKKIslNVE8Ouwg9KWqJTa0+yu
+ s5fA==
+X-Gm-Message-State: AOAM532J763YTlxIPokSYGfBaiYJbU+fI1OkfUo0YfOW70YobKEPUCQK
+ jz6bvosRWLiv0J76/d17O5cfaM6ER40m
+X-Google-Smtp-Source: ABdhPJzYECDDmH5bXKjr9Mc2Uw3fMf3epk4bPJCmrRAN7UOb1sYVsXXlsZMAhBN08iQSSyEeHiOTuRJlOFYn
+X-Received: from rajat2.mtv.corp.google.com
+ ([2620:15c:202:201:6933:e454:f68:b2b4])
+ (user=rajatja job=sendgmr) by 2002:a25:bb41:: with SMTP id
+ b1mr20366575ybk.249.1618878653410; Mon, 19 Apr 2021 17:30:53 -0700 (PDT)
+Date: Mon, 19 Apr 2021 17:30:49 -0700
+Message-Id: <20210420003049.1635027-1-rajatja@google.com>
+Mime-Version: 1.0
+X-Mailer: git-send-email 2.31.1.368.gbe11c130af-goog
+Subject: [PATCH] pci: Rename pci_dev->untrusted to pci_dev->external
+To: Joerg Roedel <joro@8bytes.org>, Will Deacon <will@kernel.org>, 
+ David Woodhouse <dwmw2@infradead.org>, Lu Baolu <baolu.lu@linux.intel.com>, 
+ Bjorn Helgaas <bhelgaas@google.com>, iommu@lists.linux-foundation.org, 
+ linux-kernel@vger.kernel.org, linux-pci@vger.kernel.org, helgaas@kernel.org
+Cc: Rajat Jain <rajatja@google.com>, rajatxjain@gmail.com
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -149,54 +99,169 @@ List-Post: <mailto:iommu@lists.linux-foundation.org>
 List-Help: <mailto:iommu-request@lists.linux-foundation.org?subject=help>
 List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
  <mailto:iommu-request@lists.linux-foundation.org?subject=subscribe>
+From: Rajat Jain via iommu <iommu@lists.linux-foundation.org>
+Reply-To: Rajat Jain <rajatja@google.com>
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-Arnd Bergmann wrote on Mon, Apr 19, 2021 at 02:16:36PM +0200:
-> In some cases, you can use the device_link infrastructure to deal
-> with dependencies between devices. Not sure if this would help
-> in your case, but have a look at device_link_add() etc in drivers/base/core.c
+The current flag name "untrusted" is not correct as it is populated
+using the firmware property "external-facing" for the parent ports. In
+other words, the firmware only says which ports are external facing, so
+the field really identifies the devices as external (vs internal).
 
-I'll need to actually try to convince myself but if creating the link
-forces driver registration then it should be workable.
+Only field renaming. No functional change intended.
 
-> > In this particular case the problem is that since 7d981405d0fd ("soc:
-> > imx8m: change to use platform driver") the soc probe tries to use the
-> > nvmem driver for ocotp fuses for imx8m devices, which isn't ready yet.
-> > So soc loading gets pushed back to the end of the list because it gets
-> > defered and other drivers relying on soc_device_match get confused
-> > because they wrongly think a device doesn't match a quirk when it
-> > actually does.
-> >
-> > If there is a way to ensure the nvmem driver gets loaded before the soc,
-> > that would also solve the problem nicely, and avoid the need to mess
-> > with all the ~50 drivers which use it.
-> >
-> > Is there a way to control in what order drivers get loaded? Something in
-> > the dtb perhaps?
-> 
-> For built-in drivers, load order depends on the initcall level and
-> link order (how things are lined listed in the Makefile hierarchy).
-> 
-> For loadable modules, this is up to user space in the end.
-> 
-> Which of the drivers in this scenario are loadable modules?
+Signed-off-by: Rajat Jain <rajatja@google.com>
+---
+ drivers/iommu/dma-iommu.c   |  2 +-
+ drivers/iommu/intel/iommu.c |  2 +-
+ drivers/iommu/iommu.c       |  2 +-
+ drivers/pci/ats.c           |  2 +-
+ drivers/pci/pci.c           |  2 +-
+ drivers/pci/probe.c         | 12 ++++++------
+ drivers/pci/quirks.c        |  2 +-
+ include/linux/pci.h         |  9 +--------
+ 8 files changed, 13 insertions(+), 20 deletions(-)
 
-All the drivers involved in my case are built-in (nvmem, soc and final
-soc_device_match consumer e.g. caam_jr that crashes the kernel if soc is
-not identified properly).
-
-I frankly don't like the idea of moving nvmem/ above soc/ in
-drivers/Makefile as a "solution" to this (especially as there is one
-that seems to care about what soc they run on...), so I'll have a look
-at links first, hopefully that will work out.
-
-
-Thanks,
+diff --git a/drivers/iommu/dma-iommu.c b/drivers/iommu/dma-iommu.c
+index af765c813cc8..14769c213f30 100644
+--- a/drivers/iommu/dma-iommu.c
++++ b/drivers/iommu/dma-iommu.c
+@@ -313,7 +313,7 @@ static void iommu_dma_flush_iotlb_all(struct iova_domain *iovad)
+ 
+ static bool dev_is_untrusted(struct device *dev)
+ {
+-	return dev_is_pci(dev) && to_pci_dev(dev)->untrusted;
++	return dev_is_pci(dev) && to_pci_dev(dev)->external;
+ }
+ 
+ /**
+diff --git a/drivers/iommu/intel/iommu.c b/drivers/iommu/intel/iommu.c
+index ee0932307d64..965cc78e0dde 100644
+--- a/drivers/iommu/intel/iommu.c
++++ b/drivers/iommu/intel/iommu.c
+@@ -5511,7 +5511,7 @@ intel_iommu_domain_get_attr(struct iommu_domain *domain,
+  */
+ static bool risky_device(struct pci_dev *pdev)
+ {
+-	if (pdev->untrusted) {
++	if (pdev->external) {
+ 		pci_info(pdev,
+ 			 "Skipping IOMMU quirk for dev [%04X:%04X] on untrusted PCI link\n",
+ 			 pdev->vendor, pdev->device);
+diff --git a/drivers/iommu/iommu.c b/drivers/iommu/iommu.c
+index d0b0a15dba84..abdedc98f3c0 100644
+--- a/drivers/iommu/iommu.c
++++ b/drivers/iommu/iommu.c
+@@ -1482,7 +1482,7 @@ static int iommu_get_def_domain_type(struct device *dev)
+ {
+ 	const struct iommu_ops *ops = dev->bus->iommu_ops;
+ 
+-	if (dev_is_pci(dev) && to_pci_dev(dev)->untrusted)
++	if (dev_is_pci(dev) && to_pci_dev(dev)->external)
+ 		return IOMMU_DOMAIN_DMA;
+ 
+ 	if (ops->def_domain_type)
+diff --git a/drivers/pci/ats.c b/drivers/pci/ats.c
+index 0d3719407b8b..0d17fb4a15bf 100644
+--- a/drivers/pci/ats.c
++++ b/drivers/pci/ats.c
+@@ -42,7 +42,7 @@ bool pci_ats_supported(struct pci_dev *dev)
+ 	if (!dev->ats_cap)
+ 		return false;
+ 
+-	return (dev->untrusted == 0);
++	return (dev->external == 0);
+ }
+ EXPORT_SYMBOL_GPL(pci_ats_supported);
+ 
+diff --git a/drivers/pci/pci.c b/drivers/pci/pci.c
+index 16a17215f633..ec98892389d7 100644
+--- a/drivers/pci/pci.c
++++ b/drivers/pci/pci.c
+@@ -886,7 +886,7 @@ static void pci_std_enable_acs(struct pci_dev *dev)
+ 	ctrl |= (cap & PCI_ACS_UF);
+ 
+ 	/* Enable Translation Blocking for external devices */
+-	if (dev->external_facing || dev->untrusted)
++	if (dev->external_facing || dev->external)
+ 		ctrl |= (cap & PCI_ACS_TB);
+ 
+ 	pci_write_config_word(dev, pos + PCI_ACS_CTRL, ctrl);
+diff --git a/drivers/pci/probe.c b/drivers/pci/probe.c
+index 953f15abc850..ae4800e82914 100644
+--- a/drivers/pci/probe.c
++++ b/drivers/pci/probe.c
+@@ -1562,17 +1562,17 @@ static void set_pcie_thunderbolt(struct pci_dev *dev)
+ 	}
+ }
+ 
+-static void set_pcie_untrusted(struct pci_dev *dev)
++static void set_pcie_external(struct pci_dev *dev)
+ {
+ 	struct pci_dev *parent;
+ 
+ 	/*
+-	 * If the upstream bridge is untrusted we treat this device
+-	 * untrusted as well.
++	 * If the upstream bridge is external we mark this device
++	 * external as well.
+ 	 */
+ 	parent = pci_upstream_bridge(dev);
+-	if (parent && (parent->untrusted || parent->external_facing))
+-		dev->untrusted = true;
++	if (parent && (parent->external || parent->external_facing))
++		dev->external = true;
+ }
+ 
+ /**
+@@ -1814,7 +1814,7 @@ int pci_setup_device(struct pci_dev *dev)
+ 	/* Need to have dev->cfg_size ready */
+ 	set_pcie_thunderbolt(dev);
+ 
+-	set_pcie_untrusted(dev);
++	set_pcie_external(dev);
+ 
+ 	/* "Unknown power state" */
+ 	dev->current_state = PCI_UNKNOWN;
+diff --git a/drivers/pci/quirks.c b/drivers/pci/quirks.c
+index 653660e3ba9e..1054b7d9ee89 100644
+--- a/drivers/pci/quirks.c
++++ b/drivers/pci/quirks.c
+@@ -4942,7 +4942,7 @@ static int pci_quirk_enable_intel_spt_pch_acs(struct pci_dev *dev)
+ 	ctrl |= (cap & PCI_ACS_CR);
+ 	ctrl |= (cap & PCI_ACS_UF);
+ 
+-	if (dev->external_facing || dev->untrusted)
++	if (dev->external_facing || dev->external)
+ 		ctrl |= (cap & PCI_ACS_TB);
+ 
+ 	pci_write_config_dword(dev, pos + INTEL_SPT_ACS_CTRL, ctrl);
+diff --git a/include/linux/pci.h b/include/linux/pci.h
+index 86c799c97b77..a535e2c2b690 100644
+--- a/include/linux/pci.h
++++ b/include/linux/pci.h
+@@ -431,14 +431,7 @@ struct pci_dev {
+ 	unsigned int	is_hotplug_bridge:1;
+ 	unsigned int	shpc_managed:1;		/* SHPC owned by shpchp */
+ 	unsigned int	is_thunderbolt:1;	/* Thunderbolt controller */
+-	/*
+-	 * Devices marked being untrusted are the ones that can potentially
+-	 * execute DMA attacks and similar. They are typically connected
+-	 * through external ports such as Thunderbolt but not limited to
+-	 * that. When an IOMMU is enabled they should be getting full
+-	 * mappings to make sure they cannot access arbitrary memory.
+-	 */
+-	unsigned int	untrusted:1;
++	unsigned int	external:1;             /* Device sits on an external PCI bus */
+ 	/*
+ 	 * Info from the platform, e.g., ACPI or device tree, may mark a
+ 	 * device as "external-facing".  An external-facing device is
 -- 
-Dominique
+2.31.1.368.gbe11c130af-goog
+
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
