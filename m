@@ -8,87 +8,88 @@ X-Spam-Status: No, score=-13.5 required=3.0 tests=BAYES_00,
 	INCLUDES_PATCH,MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,USER_AGENT_GIT
 	autolearn=unavailable autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id DC768C433ED
-	for <iommu@archiver.kernel.org>; Tue, 20 Apr 2021 17:25:49 +0000 (UTC)
-Received: from smtp2.osuosl.org (smtp2.osuosl.org [140.211.166.133])
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4B3B2C433B4
+	for <iommu@archiver.kernel.org>; Tue, 20 Apr 2021 17:25:53 +0000 (UTC)
+Received: from smtp3.osuosl.org (smtp3.osuosl.org [140.211.166.136])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 73E42613C0
-	for <iommu@archiver.kernel.org>; Tue, 20 Apr 2021 17:25:49 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 73E42613C0
+	by mail.kernel.org (Postfix) with ESMTPS id D39D2613C0
+	for <iommu@archiver.kernel.org>; Tue, 20 Apr 2021 17:25:52 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org D39D2613C0
 Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=gmail.com
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by smtp2.osuosl.org (Postfix) with ESMTP id 254384044F;
-	Tue, 20 Apr 2021 17:25:49 +0000 (UTC)
+	by smtp3.osuosl.org (Postfix) with ESMTP id 7B45460AC4;
+	Tue, 20 Apr 2021 17:25:52 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from smtp2.osuosl.org ([127.0.0.1])
-	by localhost (smtp2.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id yvgPzBjuUCDY; Tue, 20 Apr 2021 17:25:48 +0000 (UTC)
-Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [IPv6:2605:bc80:3010:104::8cd3:938])
-	by smtp2.osuosl.org (Postfix) with ESMTP id 1DC3B4044E;
-	Tue, 20 Apr 2021 17:25:48 +0000 (UTC)
-Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 0B2DAC000E;
-	Tue, 20 Apr 2021 17:25:48 +0000 (UTC)
-Received: from smtp3.osuosl.org (smtp3.osuosl.org [IPv6:2605:bc80:3010::136])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 67EC3C000B
- for <iommu@lists.linux-foundation.org>; Tue, 20 Apr 2021 17:25:47 +0000 (UTC)
-Received: from localhost (localhost [127.0.0.1])
- by smtp3.osuosl.org (Postfix) with ESMTP id 5659460ABC
- for <iommu@lists.linux-foundation.org>; Tue, 20 Apr 2021 17:25:47 +0000 (UTC)
-X-Virus-Scanned: amavisd-new at osuosl.org
-Authentication-Results: smtp3.osuosl.org (amavisd-new);
- dkim=pass (2048-bit key) header.d=gmail.com
 Received: from smtp3.osuosl.org ([127.0.0.1])
- by localhost (smtp3.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id t5S16nXCKH24 for <iommu@lists.linux-foundation.org>;
- Tue, 20 Apr 2021 17:25:45 +0000 (UTC)
+	by localhost (smtp3.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+	with ESMTP id eJceqYb-zcTz; Tue, 20 Apr 2021 17:25:51 +0000 (UTC)
+Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
+	by smtp3.osuosl.org (Postfix) with ESMTP id 522C260ACA;
+	Tue, 20 Apr 2021 17:25:51 +0000 (UTC)
+Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 31789C000E;
+	Tue, 20 Apr 2021 17:25:51 +0000 (UTC)
+Received: from smtp4.osuosl.org (smtp4.osuosl.org [140.211.166.137])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 540F8C0020
+ for <iommu@lists.linux-foundation.org>; Tue, 20 Apr 2021 17:25:48 +0000 (UTC)
+Received: from localhost (localhost [127.0.0.1])
+ by smtp4.osuosl.org (Postfix) with ESMTP id 36720405CC
+ for <iommu@lists.linux-foundation.org>; Tue, 20 Apr 2021 17:25:48 +0000 (UTC)
+X-Virus-Scanned: amavisd-new at osuosl.org
+Authentication-Results: smtp4.osuosl.org (amavisd-new);
+ dkim=pass (2048-bit key) header.d=gmail.com
+Received: from smtp4.osuosl.org ([127.0.0.1])
+ by localhost (smtp4.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+ with ESMTP id U4xKBJ98QQQs for <iommu@lists.linux-foundation.org>;
+ Tue, 20 Apr 2021 17:25:46 +0000 (UTC)
 X-Greylist: whitelisted by SQLgrey-1.8.0
-Received: from mail-ej1-x636.google.com (mail-ej1-x636.google.com
- [IPv6:2a00:1450:4864:20::636])
- by smtp3.osuosl.org (Postfix) with ESMTPS id A1D4460AC4
- for <iommu@lists.linux-foundation.org>; Tue, 20 Apr 2021 17:25:44 +0000 (UTC)
-Received: by mail-ej1-x636.google.com with SMTP id r12so59483484ejr.5
- for <iommu@lists.linux-foundation.org>; Tue, 20 Apr 2021 10:25:44 -0700 (PDT)
+Received: from mail-ej1-x62e.google.com (mail-ej1-x62e.google.com
+ [IPv6:2a00:1450:4864:20::62e])
+ by smtp4.osuosl.org (Postfix) with ESMTPS id B8B6E405C8
+ for <iommu@lists.linux-foundation.org>; Tue, 20 Apr 2021 17:25:46 +0000 (UTC)
+Received: by mail-ej1-x62e.google.com with SMTP id mh2so37911333ejb.8
+ for <iommu@lists.linux-foundation.org>; Tue, 20 Apr 2021 10:25:46 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=gmail.com; s=20161025;
  h=from:to:cc:subject:date:message-id:in-reply-to:references
  :mime-version:content-transfer-encoding;
- bh=vYLUVZhwumDd6iKqlvn3vWsQCDgb86syRKsPwDitvKM=;
- b=MrQzk8xsX/zig2TNikMkG/b+PJY2QfTGcsvUoQ5y26uS9va8coblKQPbgaS8kOGMHb
- xmCsGMllAzPwJhSr70PtB1ZDjsqrZHRksVsgu6KSLSe584UVW/eZrmiEaYcnLx76raP5
- RDfGVyxn9MTVo+6eVUNerw/TguDRLoWjXElDLdADXjmHAtZ2w+iY5r/4N+nJzJhu6Jq4
- 3u1/f73oz8G8r5wYgv5mKhVTtZuqUiDL/o4L705D+D3asKLlCMPQtytPBjrsTOohKfsT
- x4UP8kJ6I1UjfZ+byHhGY1N/7y12q09oWHro0zoq6KPk5fb1xBZuqju7aZL2BZrO7KmF
- co2Q==
+ bh=fK4kfWRtqlQ6vIoyRrov57PspjW7vhkuyE8BA4mAeb8=;
+ b=WhL1BPNeZ5a2IX9j90mRpN+imU32bNQi4SzreJr9Wg5mQk8JTllq0LdVMUkoN6kS5A
+ vDJzGPvH/mFNaKSGROA9dGN2hAH5lgk9YCwUUWsD9FQh5b8iLR9XLSHdMrR+MgyQB9Jh
+ 8lHqtmk4UbzklAZ4VKghHdPCdBowFTXCA2E53dPsAE4EcetOI7AqZ2CEyimR7TNs4LZt
+ lTQfh9x86lLWAOmsf33Nt4biMSdvjL7R/yDBjbdnoSvqUORSbja521klVVFUV1lgXlCY
+ Cp5pB1ol77HfSVwr5wPt1EUfHrrV0yD/aq+vzAmE5S3nP8sestMEspJgAEBQBYMY/sq8
+ Ztbw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
  d=1e100.net; s=20161025;
  h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
  :references:mime-version:content-transfer-encoding;
- bh=vYLUVZhwumDd6iKqlvn3vWsQCDgb86syRKsPwDitvKM=;
- b=qiyJKPekJtNjlYlkeQ8nXeCjZwQw36waa87+GLN/5TyMaJbwcQD6pylkL70aFKXLWk
- +eUNtDZnEAAdHRjuBf6IZMLU87H9J7zHjmYPg1HubegDNU8b3sO51g2Ysn0X8SYp8lMo
- AjisQ+cuCjWnnhttDYgtuhTyMhXjJP/lmX0FWX8Bpf6fppbjj86XVPab6QhMcqjwfIAz
- owxD0ZNCtSfzjBaMctABWvnoG1gGa8w+Py2ONcYVnNQxkMF89dLt4v7gYI7bY5fxr1Ay
- LjFqSmk0XKPtMewxFASks6AJl0O2SI9S1FnmxUlu885UQz6L0jjPBvUziplSIiv2h68O
- 5GIA==
-X-Gm-Message-State: AOAM532Ss6wONWS2cna4qL93hkz8JNZgq1uY0AMRoZ0DcJmC8Zq9Jeya
- 1600HibROPbdKGRPfjQuFCc=
-X-Google-Smtp-Source: ABdhPJzTOoaDZ6q+yYNmSPXPlq9tSYmOoDWfckBljTEm8mgC71rzmaANjq8LT4+KoVyI4ceEso+rbA==
-X-Received: by 2002:a17:907:e8a:: with SMTP id
- ho10mr28819689ejc.110.1618939542924; 
- Tue, 20 Apr 2021 10:25:42 -0700 (PDT)
+ bh=fK4kfWRtqlQ6vIoyRrov57PspjW7vhkuyE8BA4mAeb8=;
+ b=ADn/yneFO+ENdE+b90DYZAYKlqlS2a05DJzV+ofC9ozXJsD4BXH46Y71aDNv9mSXTJ
+ z5qheLnyCHsa3XjUeH7J0ocRu+1fUa8utZ7F0j3egPx6hGTmuMvceAzJvIbVAAA/8EoK
+ oBdjEPGeY6jg7wVvdBNvXWnSB3Wq4wd4iFU8BFklUBHhczre8F4NRAD3P2TzU6OvMTn8
+ EGnH9ilgKOw+C5zbGqddHyP6J9rN5QnXv3sO2xFE0A0FsDgDHgwS9y1oZVb0VK2nYYLY
+ 2kCiG4vQ7TzKkI/vB9KEgvs708mpy0A+spemvfYizn8rPu1AXX/omspl1pDZux3CMcri
+ FmhQ==
+X-Gm-Message-State: AOAM533Qu8Sk98ww3FrQY81yOzxVWvQ6jztuBmg+PybkWx5ia+gb7bCs
+ ROBTAP0QFWV0kpAiVm+/+LU=
+X-Google-Smtp-Source: ABdhPJy0IRuIdzcHJGqqBHme2I09VtTa+12s85CdaDkVuGUyC0rSBvQ77xOu2JZezYZ6RqULbBxobQ==
+X-Received: by 2002:a17:906:a0d4:: with SMTP id
+ bh20mr28752997ejb.348.1618939545017; 
+ Tue, 20 Apr 2021 10:25:45 -0700 (PDT)
 Received: from localhost ([62.96.65.119])
- by smtp.gmail.com with ESMTPSA id n11sm16791090edo.15.2021.04.20.10.25.41
+ by smtp.gmail.com with ESMTPSA id b22sm16377719edv.96.2021.04.20.10.25.43
  (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
- Tue, 20 Apr 2021 10:25:41 -0700 (PDT)
+ Tue, 20 Apr 2021 10:25:44 -0700 (PDT)
 From: Thierry Reding <thierry.reding@gmail.com>
 To: Thierry Reding <thierry.reding@gmail.com>, Will Deacon <will@kernel.org>,
  Robin Murphy <robin.murphy@arm.com>, Joerg Roedel <joro@8bytes.org>,
  Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>
-Subject: [PATCH v2 03/10] iommu/arm-smmu: Implement ->probe_finalize()
-Date: Tue, 20 Apr 2021 19:26:12 +0200
-Message-Id: <20210420172619.3782831-4-thierry.reding@gmail.com>
+Subject: [PATCH v2 04/10] iommu/arm-smmu: tegra: Detect number of instances at
+ runtime
+Date: Tue, 20 Apr 2021 19:26:13 +0200
+Message-Id: <20210420172619.3782831-5-thierry.reding@gmail.com>
 X-Mailer: git-send-email 2.30.2
 In-Reply-To: <20210420172619.3782831-1-thierry.reding@gmail.com>
 References: <20210420172619.3782831-1-thierry.reding@gmail.com>
@@ -115,62 +116,176 @@ Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
 From: Thierry Reding <treding@nvidia.com>
 
-Implement a ->probe_finalize() callback that can be used by vendor
-implementations to perform extra programming necessary after devices
-have been attached to the SMMU.
+Parse the reg property in device tree and detect the number of instances
+represented by a device tree node. This is subsequently needed in order
+to support single-instance SMMUs with the Tegra implementation because
+additional programming is needed to properly configure the SID override
+registers in the memory controller.
 
 Signed-off-by: Thierry Reding <treding@nvidia.com>
 ---
 Changes in v2:
--remove unnecessarily paranoid check
+- provide a separate implementation to simplify single instances
 ---
- drivers/iommu/arm/arm-smmu/arm-smmu.c | 13 +++++++++++++
- drivers/iommu/arm/arm-smmu/arm-smmu.h |  1 +
- 2 files changed, 14 insertions(+)
+ drivers/iommu/arm/arm-smmu/arm-smmu-nvidia.c | 58 ++++++++++++++------
+ 1 file changed, 42 insertions(+), 16 deletions(-)
 
-diff --git a/drivers/iommu/arm/arm-smmu/arm-smmu.c b/drivers/iommu/arm/arm-smmu/arm-smmu.c
-index 6f72c4d208ca..d20ce4d57df2 100644
---- a/drivers/iommu/arm/arm-smmu/arm-smmu.c
-+++ b/drivers/iommu/arm/arm-smmu/arm-smmu.c
-@@ -1450,6 +1450,18 @@ static void arm_smmu_release_device(struct device *dev)
- 	iommu_fwspec_free(dev);
- }
+diff --git a/drivers/iommu/arm/arm-smmu/arm-smmu-nvidia.c b/drivers/iommu/arm/arm-smmu/arm-smmu-nvidia.c
+index 29117444e5a0..0e547b29143d 100644
+--- a/drivers/iommu/arm/arm-smmu/arm-smmu-nvidia.c
++++ b/drivers/iommu/arm/arm-smmu/arm-smmu-nvidia.c
+@@ -20,13 +20,19 @@
+  * The third instance usage is through standard arm-smmu driver itself and
+  * is out of scope of this implementation.
+  */
+-#define NUM_SMMU_INSTANCES 2
++#define MAX_SMMU_INSTANCES 2
  
-+static void arm_smmu_probe_finalize(struct device *dev)
-+{
-+	struct arm_smmu_master_cfg *cfg;
-+	struct arm_smmu_device *smmu;
-+
-+	cfg = dev_iommu_priv_get(dev);
-+	smmu = cfg->smmu;
-+
-+	if (smmu->impl->probe_finalize)
-+		smmu->impl->probe_finalize(smmu, dev);
-+}
-+
- static struct iommu_group *arm_smmu_device_group(struct device *dev)
- {
- 	struct arm_smmu_master_cfg *cfg = dev_iommu_priv_get(dev);
-@@ -1569,6 +1581,7 @@ static struct iommu_ops arm_smmu_ops = {
- 	.iova_to_phys		= arm_smmu_iova_to_phys,
- 	.probe_device		= arm_smmu_probe_device,
- 	.release_device		= arm_smmu_release_device,
-+	.probe_finalize		= arm_smmu_probe_finalize,
- 	.device_group		= arm_smmu_device_group,
- 	.enable_nesting		= arm_smmu_enable_nesting,
- 	.set_pgtable_quirks	= arm_smmu_set_pgtable_quirks,
-diff --git a/drivers/iommu/arm/arm-smmu/arm-smmu.h b/drivers/iommu/arm/arm-smmu/arm-smmu.h
-index c31a59d35c64..147c95e7c59c 100644
---- a/drivers/iommu/arm/arm-smmu/arm-smmu.h
-+++ b/drivers/iommu/arm/arm-smmu/arm-smmu.h
-@@ -439,6 +439,7 @@ struct arm_smmu_impl {
- 				  struct device *dev, int start);
- 	void (*write_s2cr)(struct arm_smmu_device *smmu, int idx);
- 	void (*write_sctlr)(struct arm_smmu_device *smmu, int idx, u32 reg);
-+	void (*probe_finalize)(struct arm_smmu_device *smmu, struct device *dev);
+ struct nvidia_smmu {
+-	struct arm_smmu_device	smmu;
+-	void __iomem		*bases[NUM_SMMU_INSTANCES];
++	struct arm_smmu_device smmu;
++	void __iomem *bases[MAX_SMMU_INSTANCES];
++	unsigned int num_instances;
  };
  
- #define INVALID_SMENDX			-1
++static inline struct nvidia_smmu *to_nvidia_smmu(struct arm_smmu_device *smmu)
++{
++	return container_of(smmu, struct nvidia_smmu, smmu);
++}
++
+ static inline void __iomem *nvidia_smmu_page(struct arm_smmu_device *smmu,
+ 					     unsigned int inst, int page)
+ {
+@@ -47,9 +53,10 @@ static u32 nvidia_smmu_read_reg(struct arm_smmu_device *smmu,
+ static void nvidia_smmu_write_reg(struct arm_smmu_device *smmu,
+ 				  int page, int offset, u32 val)
+ {
++	struct nvidia_smmu *nvidia = to_nvidia_smmu(smmu);
+ 	unsigned int i;
+ 
+-	for (i = 0; i < NUM_SMMU_INSTANCES; i++) {
++	for (i = 0; i < nvidia->num_instances; i++) {
+ 		void __iomem *reg = nvidia_smmu_page(smmu, i, page) + offset;
+ 
+ 		writel_relaxed(val, reg);
+@@ -67,9 +74,10 @@ static u64 nvidia_smmu_read_reg64(struct arm_smmu_device *smmu,
+ static void nvidia_smmu_write_reg64(struct arm_smmu_device *smmu,
+ 				    int page, int offset, u64 val)
+ {
++	struct nvidia_smmu *nvidia = to_nvidia_smmu(smmu);
+ 	unsigned int i;
+ 
+-	for (i = 0; i < NUM_SMMU_INSTANCES; i++) {
++	for (i = 0; i < nvidia->num_instances; i++) {
+ 		void __iomem *reg = nvidia_smmu_page(smmu, i, page) + offset;
+ 
+ 		writeq_relaxed(val, reg);
+@@ -79,6 +87,7 @@ static void nvidia_smmu_write_reg64(struct arm_smmu_device *smmu,
+ static void nvidia_smmu_tlb_sync(struct arm_smmu_device *smmu, int page,
+ 				 int sync, int status)
+ {
++	struct nvidia_smmu *nvidia = to_nvidia_smmu(smmu);
+ 	unsigned int delay;
+ 
+ 	arm_smmu_writel(smmu, page, sync, 0);
+@@ -90,7 +99,7 @@ static void nvidia_smmu_tlb_sync(struct arm_smmu_device *smmu, int page,
+ 			u32 val = 0;
+ 			unsigned int i;
+ 
+-			for (i = 0; i < NUM_SMMU_INSTANCES; i++) {
++			for (i = 0; i < nvidia->num_instances; i++) {
+ 				void __iomem *reg;
+ 
+ 				reg = nvidia_smmu_page(smmu, i, page) + status;
+@@ -112,9 +121,10 @@ static void nvidia_smmu_tlb_sync(struct arm_smmu_device *smmu, int page,
+ 
+ static int nvidia_smmu_reset(struct arm_smmu_device *smmu)
+ {
++	struct nvidia_smmu *nvidia = to_nvidia_smmu(smmu);
+ 	unsigned int i;
+ 
+-	for (i = 0; i < NUM_SMMU_INSTANCES; i++) {
++	for (i = 0; i < nvidia->num_instances; i++) {
+ 		u32 val;
+ 		void __iomem *reg = nvidia_smmu_page(smmu, i, ARM_SMMU_GR0) +
+ 				    ARM_SMMU_GR0_sGFSR;
+@@ -157,8 +167,9 @@ static irqreturn_t nvidia_smmu_global_fault(int irq, void *dev)
+ 	unsigned int inst;
+ 	irqreturn_t ret = IRQ_NONE;
+ 	struct arm_smmu_device *smmu = dev;
++	struct nvidia_smmu *nvidia = to_nvidia_smmu(smmu);
+ 
+-	for (inst = 0; inst < NUM_SMMU_INSTANCES; inst++) {
++	for (inst = 0; inst < nvidia->num_instances; inst++) {
+ 		irqreturn_t irq_ret;
+ 
+ 		irq_ret = nvidia_smmu_global_fault_inst(irq, smmu, inst);
+@@ -202,11 +213,13 @@ static irqreturn_t nvidia_smmu_context_fault(int irq, void *dev)
+ 	struct arm_smmu_device *smmu;
+ 	struct iommu_domain *domain = dev;
+ 	struct arm_smmu_domain *smmu_domain;
++	struct nvidia_smmu *nvidia;
+ 
+ 	smmu_domain = container_of(domain, struct arm_smmu_domain, domain);
+ 	smmu = smmu_domain->smmu;
++	nvidia = to_nvidia_smmu(smmu);
+ 
+-	for (inst = 0; inst < NUM_SMMU_INSTANCES; inst++) {
++	for (inst = 0; inst < nvidia->num_instances; inst++) {
+ 		irqreturn_t irq_ret;
+ 
+ 		/*
+@@ -235,12 +248,17 @@ static const struct arm_smmu_impl nvidia_smmu_impl = {
+ 	.context_fault = nvidia_smmu_context_fault,
+ };
+ 
++static const struct arm_smmu_impl nvidia_smmu_single_impl = {
++	.probe_finalize = nvidia_smmu_probe_finalize,
++};
++
+ struct arm_smmu_device *nvidia_smmu_impl_init(struct arm_smmu_device *smmu)
+ {
+ 	struct resource *res;
+ 	struct device *dev = smmu->dev;
+ 	struct nvidia_smmu *nvidia_smmu;
+ 	struct platform_device *pdev = to_platform_device(dev);
++	unsigned int i;
+ 
+ 	nvidia_smmu = devm_krealloc(dev, smmu, sizeof(*nvidia_smmu), GFP_KERNEL);
+ 	if (!nvidia_smmu)
+@@ -248,16 +266,24 @@ struct arm_smmu_device *nvidia_smmu_impl_init(struct arm_smmu_device *smmu)
+ 
+ 	/* Instance 0 is ioremapped by arm-smmu.c. */
+ 	nvidia_smmu->bases[0] = smmu->base;
++	nvidia_smmu->num_instances++;
+ 
+-	res = platform_get_resource(pdev, IORESOURCE_MEM, 1);
+-	if (!res)
+-		return ERR_PTR(-ENODEV);
++	for (i = 1; i < MAX_SMMU_INSTANCES; i++) {
++		res = platform_get_resource(pdev, IORESOURCE_MEM, i);
++		if (!res)
++			break;
+ 
+-	nvidia_smmu->bases[1] = devm_ioremap_resource(dev, res);
+-	if (IS_ERR(nvidia_smmu->bases[1]))
+-		return ERR_CAST(nvidia_smmu->bases[1]);
++		nvidia_smmu->bases[i] = devm_ioremap_resource(dev, res);
++		if (IS_ERR(nvidia_smmu->bases[i]))
++			return ERR_CAST(nvidia_smmu->bases[i]);
++
++		nvidia_smmu->num_instances++;
++	}
+ 
+-	nvidia_smmu->smmu.impl = &nvidia_smmu_impl;
++	if (nvidia_smmu->num_instances == 1)
++		nvidia_smmu->smmu.impl = &nvidia_smmu_single_impl;
++	else
++		nvidia_smmu->smmu.impl = &nvidia_smmu_impl;
+ 
+ 	return &nvidia_smmu->smmu;
+ }
 -- 
 2.30.2
 
