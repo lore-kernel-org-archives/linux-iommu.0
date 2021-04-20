@@ -2,69 +2,82 @@ Return-Path: <SRS0=gpU2=JR=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-5.2 required=3.0 tests=BAYES_00,
-	HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,
-	USER_AGENT_SANE_1 autolearn=no autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-15.2 required=3.0 tests=BAYES_00,
+	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_CR_TRAILER,INCLUDES_PATCH,
+	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,USER_AGENT_SANE_1 autolearn=ham
+	autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C555AC43461
-	for <iommu@archiver.kernel.org>; Tue, 20 Apr 2021 10:33:47 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A71A1C433B4
+	for <iommu@archiver.kernel.org>; Tue, 20 Apr 2021 11:02:16 +0000 (UTC)
 Received: from smtp1.osuosl.org (smtp1.osuosl.org [140.211.166.138])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id EA54061164
-	for <iommu@archiver.kernel.org>; Tue, 20 Apr 2021 10:33:46 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org EA54061164
-Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=ispras.ru
+	by mail.kernel.org (Postfix) with ESMTPS id 32F6761354
+	for <iommu@archiver.kernel.org>; Tue, 20 Apr 2021 11:02:16 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 32F6761354
+Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=linux.intel.com
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by smtp1.osuosl.org (Postfix) with ESMTP id 785F183ACC;
-	Tue, 20 Apr 2021 10:33:46 +0000 (UTC)
+	by smtp1.osuosl.org (Postfix) with ESMTP id C52A383AC7;
+	Tue, 20 Apr 2021 11:02:15 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
 Received: from smtp1.osuosl.org ([127.0.0.1])
 	by localhost (smtp1.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id OgNmISGju6-p; Tue, 20 Apr 2021 10:33:45 +0000 (UTC)
+	with ESMTP id urSY18Hp1lb7; Tue, 20 Apr 2021 11:02:15 +0000 (UTC)
 Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [IPv6:2605:bc80:3010:104::8cd3:938])
-	by smtp1.osuosl.org (Postfix) with ESMTP id 5D17A83AB7;
-	Tue, 20 Apr 2021 10:33:45 +0000 (UTC)
+	by smtp1.osuosl.org (Postfix) with ESMTP id C700B8387D;
+	Tue, 20 Apr 2021 11:02:14 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 42685C000F;
-	Tue, 20 Apr 2021 10:33:45 +0000 (UTC)
-Received: from smtp4.osuosl.org (smtp4.osuosl.org [IPv6:2605:bc80:3010::137])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 42909C000B
- for <iommu@lists.linux-foundation.org>; Tue, 20 Apr 2021 10:33:43 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id ADD8EC000F;
+	Tue, 20 Apr 2021 11:02:14 +0000 (UTC)
+Received: from smtp4.osuosl.org (smtp4.osuosl.org [140.211.166.137])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 1A320C000B
+ for <iommu@lists.linux-foundation.org>; Tue, 20 Apr 2021 11:02:14 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by smtp4.osuosl.org (Postfix) with ESMTP id 24138402F7
- for <iommu@lists.linux-foundation.org>; Tue, 20 Apr 2021 10:33:43 +0000 (UTC)
+ by smtp4.osuosl.org (Postfix) with ESMTP id E637D4051A
+ for <iommu@lists.linux-foundation.org>; Tue, 20 Apr 2021 11:02:13 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
 Received: from smtp4.osuosl.org ([127.0.0.1])
  by localhost (smtp4.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id LFF6eDqnlYg0 for <iommu@lists.linux-foundation.org>;
- Tue, 20 Apr 2021 10:33:42 +0000 (UTC)
+ with ESMTP id vjSTN90i_-4Z for <iommu@lists.linux-foundation.org>;
+ Tue, 20 Apr 2021 11:02:13 +0000 (UTC)
 X-Greylist: domain auto-whitelisted by SQLgrey-1.8.0
-Received: from mail.ispras.ru (mail.ispras.ru [83.149.199.84])
- by smtp4.osuosl.org (Postfix) with ESMTPS id C536C40310
- for <iommu@lists.linux-foundation.org>; Tue, 20 Apr 2021 10:33:41 +0000 (UTC)
-Received: from monopod.intra.ispras.ru (unknown [10.10.3.121])
- by mail.ispras.ru (Postfix) with ESMTPS id 20A4840D3BFF;
- Tue, 20 Apr 2021 10:33:35 +0000 (UTC)
-Date: Tue, 20 Apr 2021 13:33:35 +0300 (MSK)
-From: Alexander Monakov <amonakov@ispras.ru>
-To: "Suthikulpanit, Suravee" <suravee.suthikulpanit@amd.com>
-Subject: Re: [PATCH 2/2] iommu/amd: Remove performance counter
- pre-initialization test
-In-Reply-To: <9d5fa4ff-9666-6475-7f61-2b45cbd83456@amd.com>
-Message-ID: <alpine.LNX.2.20.13.2104201310520.19608@monopod.intra.ispras.ru>
-References: <20210409085848.3908-1-suravee.suthikulpanit@amd.com>
- <20210409085848.3908-3-suravee.suthikulpanit@amd.com>
- <VI1PR09MB26380EED406F2F08ACB6B5BBC7729@VI1PR09MB2638.eurprd09.prod.outlook.com>
- <9d5fa4ff-9666-6475-7f61-2b45cbd83456@amd.com>
-User-Agent: Alpine 2.20.13 (LNX 116 2015-12-14)
+Received: from mga06.intel.com (mga06.intel.com [134.134.136.31])
+ by smtp4.osuosl.org (Postfix) with ESMTPS id 22E5840518
+ for <iommu@lists.linux-foundation.org>; Tue, 20 Apr 2021 11:02:12 +0000 (UTC)
+IronPort-SDR: +GLblNlAeWMPOciKofTKriJoH9bJ0NZ5eeJI4LLz1O2p+R/nK6Z6AsCaFlT/zMFYSMNUQv5dFV
+ 8p4nG4H9gobw==
+X-IronPort-AV: E=McAfee;i="6200,9189,9959"; a="256799125"
+X-IronPort-AV: E=Sophos;i="5.82,236,1613462400"; d="scan'208";a="256799125"
+Received: from fmsmga007.fm.intel.com ([10.253.24.52])
+ by orsmga104.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384;
+ 20 Apr 2021 04:02:10 -0700
+IronPort-SDR: N9iqe5rW/vWlxZk0379oiq5CffC1Hbl+wY8nYTO3bqO3IjZx+G2xwnfFGXI0c4Jmv7UrdqGyQo
+ SpkKMgYJjIOw==
+X-IronPort-AV: E=Sophos;i="5.82,236,1613462400"; d="scan'208";a="390958865"
+Received: from paasikivi.fi.intel.com ([10.237.72.42])
+ by fmsmga007-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384;
+ 20 Apr 2021 04:02:06 -0700
+Received: from paasikivi.fi.intel.com (localhost [127.0.0.1])
+ by paasikivi.fi.intel.com (Postfix) with SMTP id B2A7922C62;
+ Tue, 20 Apr 2021 13:56:40 +0300 (EEST)
+Date: Tue, 20 Apr 2021 13:56:40 +0300
+From: Sakari Ailus <sakari.ailus@linux.intel.com>
+To: Bingbu Cao <bingbu.cao@linux.intel.com>
+Subject: Re: [RESEND v2] iommu/vt-d: Use passthrough mode for the Intel IPUs
+Message-ID: <20210420105640.GI3@paasikivi.fi.intel.com>
+References: <1618886913-6594-1-git-send-email-bingbu.cao@intel.com>
+ <YH6q+FCTQheO6FHi@smile.fi.intel.com>
+ <c9a0fc75-8b7b-e0ae-572e-8ca030a04537@linux.intel.com>
 MIME-Version: 1.0
-Content-Type: multipart/mixed; boundary="168458499-181975079-1618914815=:19608"
-Cc: David Coe <david.coe@live.co.uk>, pmenzel@molgen.mpg.de, Jon.Grimm@amd.com,
- linux-kernel@vger.kernel.org, iommu@lists.linux-foundation.org,
- Shuah Khan <skhan@linuxfoundation.org>, Tj <ml.linux@elloe.vision>,
- Alex Hung <1917203@bugs.launchpad.net>, will@kernel.org
+Content-Disposition: inline
+In-Reply-To: <c9a0fc75-8b7b-e0ae-572e-8ca030a04537@linux.intel.com>
+User-Agent: Mutt/1.10.1 (2018-07-13)
+Cc: rajatja@google.com, will@kernel.org, grundler@chromium.org,
+ linux-pci@vger.kernel.org, linux-kernel@vger.kernel.org,
+ senozhatsky@chromium.org, iommu@lists.linux-foundation.org,
+ bhelgaas@google.com, Bingbu Cao <bingbu.cao@intel.com>,
+ Andy Shevchenko <andriy.shevchenko@linux.intel.com>, dwmw2@infradead.org
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -77,90 +90,57 @@ List-Post: <mailto:iommu@lists.linux-foundation.org>
 List-Help: <mailto:iommu-request@lists.linux-foundation.org?subject=help>
 List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
  <mailto:iommu-request@lists.linux-foundation.org?subject=subscribe>
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-  This message is in MIME format.  The first part should be readable text,
-  while the remaining parts are likely unreadable without MIME-aware tools.
+Hi Bingbu,
 
---168458499-181975079-1618914815=:19608
-Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: 8BIT
-
-On Tue, 20 Apr 2021, Suthikulpanit, Suravee wrote:
-
-> David / Joerg,
+On Tue, Apr 20, 2021 at 06:34:26PM +0800, Bingbu Cao wrote:
+> Andy,
 > 
-> On 4/10/2021 5:03 PM, David Coe wrote:
+> On 4/20/21 6:20 PM, Andy Shevchenko wrote:
+> > On Tue, Apr 20, 2021 at 10:48:33AM +0800, Bingbu Cao wrote:
+> >> Intel IPU(Image Processing Unit) has its own (IO)MMU hardware,
+> >> The IPU driver allocates its own page table that is not mapped
+> >> via the DMA, and thus the Intel IOMMU driver blocks access giving
+> >> this error:
+> >>
+> >> DMAR: DRHD: handling fault status reg 3
+> >> DMAR: [DMA Read] Request device [00:05.0] PASID ffffffff
+> >>       fault addr 76406000 [fault reason 06] PTE Read access is not set
+> >>
+> >> As IPU is not an external facing device which is not risky, so use
+> >> IOMMU passthrough mode for Intel IPUs.
+> >>
+> >> Fixes: 26f5689592e2 ("media: staging/intel-ipu3: mmu: Implement driver")
+> >> Signed-off-by: Bingbu Cao <bingbu.cao@intel.com>
+> >> ---
+> >>  drivers/iommu/intel/iommu.c | 29 +++++++++++++++++++++++++++++
 > > 
-> > The immediately obvious difference is the with the enormous count seen on
-> > mem_dte_mis on the older Ryzen 2400G. Will do some RTFM but anyone
-> > with comments and insight?
+> > This misses the changelog from v1 followed by the explanation why resent.
 > > 
-> > 841,689,151,202,939       amd_iommu_0/mem_dte_mis/              (33.44%)
-> > 
-> > Otherwise, all seems to running smoothly (especially for a distribution
-> > still in β). Bravo and many thanks all!
+> I noticed there was a typo in the recipient list:
+> stable.vger.kernel.org -> stable@vger.kernel.org
 > 
-> The initial hypothesis is that the issue happens only when users specify more
-> number of events than
-> the available counters, which Perf will time-multiplex the events onto the
-> counters.
-> 
-> Looking at the Perf and AMD IOMMU PMU multiplexing logic, it requires:
->  1. Stop the counter (i.e. set CSOURCE to zero to stop counting)
->  2. Save the counter value of the current event
->  3. Reload the counter value of the new event (previously saved)
->  4. Start the counter (i.e. set CSOURCE to count new events)
-> 
-> The problem here is that when the driver writes zero to CSOURCE register in
-> step 1, this would enable power-gating,
-> which prevents access to the counter and result in writing/reading value in
-> step 2 and 3.
-> 
-> I have found a system that reproduced this case (w/ unusually large number of
-> count), and debug the issue further.
-> As a hack, I have tried skipping step 1, and it seems to eliminate this issue.
-> However, this is logically incorrect,
-> and might result in inaccurate data depending on the events.
-> 
-> Here are the options:
-> 1. Continue to look for workaround for this issue.
-> 2. Find a way to disable event time-multiplexing (e.g. only limit the number
-> of counters to 8)
->    if power gating is enabled on the platform.
-> 3. Back to the original logic where we had the pre-init check of the counter
-> vlues, which is still the safest choice
->    at the moment unless
+> no code change for resent.
 
-If the "power-gated" counter only ignores writes, but yields correct values on
-reads, you don't need to change its value.
+When you're submitting a patch and want it reach the stable kernels, you'll
+need to add a Cc tag:
 
-0. When initializing the counter, save its value as 'raw_counter_value'.
+	Cc: stable@vger.kernel.org
 
-When switching:
+But not actually add the address to cc. I dropped stable@vger address from
+distribution.
 
-1. Set CSOURCE to zero (pauses the counter).
-2. Read current counter value ('new_value').
-3. Add '(new_value - raw_counter_value) & mask' to the current event count;
-   where 'mask' is '(1ULL << 48) - 1' to account for overflow correctly.
-4. Assign 'raw_counter_value = new_value'.
-5. Set CSOURCE to new configuration value.
+Please change this for v3.
 
-Modifying the hardware counter value is only needed to get overflow interrupts,
-but there's no code to handle them on Linux (since the interrupts are
-asynchronous, and given the nature of the events, I don't see how it would be
-useful).
+-- 
+Kind regards,
 
-Alexander
---168458499-181975079-1618914815=:19608
-Content-Type: text/plain; charset="us-ascii"
-MIME-Version: 1.0
-Content-Transfer-Encoding: 7bit
-Content-Disposition: inline
-
+Sakari Ailus
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
 https://lists.linuxfoundation.org/mailman/listinfo/iommu
---168458499-181975079-1618914815=:19608--
