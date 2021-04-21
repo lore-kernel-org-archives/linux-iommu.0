@@ -3,81 +3,80 @@ X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
 X-Spam-Status: No, score=-3.5 required=3.0 tests=BAYES_00,DKIM_INVALID,
-	DKIM_SIGNED,HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,
-	MSGID_FROM_MTA_HEADER,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED autolearn=no
-	autolearn_force=no version=3.4.0
+	DKIM_SIGNED,HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,SPF_HELO_NONE,
+	SPF_PASS,URIBL_BLOCKED autolearn=no autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 72C54C433ED
-	for <iommu@archiver.kernel.org>; Wed, 21 Apr 2021 17:52:14 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E8F67C433B4
+	for <iommu@archiver.kernel.org>; Wed, 21 Apr 2021 19:33:29 +0000 (UTC)
 Received: from smtp4.osuosl.org (smtp4.osuosl.org [140.211.166.137])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id A209661427
-	for <iommu@archiver.kernel.org>; Wed, 21 Apr 2021 17:52:13 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org A209661427
-Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=nvidia.com
+	by mail.kernel.org (Postfix) with ESMTPS id 78BD661445
+	for <iommu@archiver.kernel.org>; Wed, 21 Apr 2021 19:33:29 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 78BD661445
+Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=redhat.com
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by smtp4.osuosl.org (Postfix) with ESMTP id 37E8C405D8;
-	Wed, 21 Apr 2021 17:52:13 +0000 (UTC)
+	by smtp4.osuosl.org (Postfix) with ESMTP id 3CDD040E58;
+	Wed, 21 Apr 2021 19:33:29 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
 Received: from smtp4.osuosl.org ([127.0.0.1])
 	by localhost (smtp4.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id 0yNgsxISgxNR; Wed, 21 Apr 2021 17:52:12 +0000 (UTC)
-Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by smtp4.osuosl.org (Postfix) with ESMTP id B0B3E40563;
-	Wed, 21 Apr 2021 17:52:11 +0000 (UTC)
+	with ESMTP id Zr7At4WyH3wA; Wed, 21 Apr 2021 19:33:28 +0000 (UTC)
+Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [IPv6:2605:bc80:3010:104::8cd3:938])
+	by smtp4.osuosl.org (Postfix) with ESMTP id 9EA9F40E4A;
+	Wed, 21 Apr 2021 19:33:27 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 6E8B2C000F;
-	Wed, 21 Apr 2021 17:52:11 +0000 (UTC)
-Received: from smtp4.osuosl.org (smtp4.osuosl.org [IPv6:2605:bc80:3010::137])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 5B544C000B
- for <iommu@lists.linux-foundation.org>; Wed, 21 Apr 2021 17:52:09 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 63010C000F;
+	Wed, 21 Apr 2021 19:33:27 +0000 (UTC)
+Received: from smtp1.osuosl.org (smtp1.osuosl.org [140.211.166.138])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 523A0C000B
+ for <iommu@lists.linux-foundation.org>; Wed, 21 Apr 2021 19:33:26 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by smtp4.osuosl.org (Postfix) with ESMTP id 40641405D7
- for <iommu@lists.linux-foundation.org>; Wed, 21 Apr 2021 17:52:09 +0000 (UTC)
+ by smtp1.osuosl.org (Postfix) with ESMTP id 2088C83CA5
+ for <iommu@lists.linux-foundation.org>; Wed, 21 Apr 2021 19:33:26 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from smtp4.osuosl.org ([127.0.0.1])
- by localhost (smtp4.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id UQn2K2GO3V9H for <iommu@lists.linux-foundation.org>;
- Wed, 21 Apr 2021 17:52:07 +0000 (UTC)
-X-Greylist: whitelisted by SQLgrey-1.8.0
-Received: from NAM12-BN8-obe.outbound.protection.outlook.com
- (mail-bn8nam12on2086.outbound.protection.outlook.com [40.107.237.86])
- by smtp4.osuosl.org (Postfix) with ESMTPS id 8A5A840563
- for <iommu@lists.linux-foundation.org>; Wed, 21 Apr 2021 17:52:07 +0000 (UTC)
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=PtikV1Rj5AeF1VX+dPPbqaFW0xU/kh4GN4Mjj5nq2RLUTo441iG3sIga6irmnGkDv6ilNwjQ+fP6tM0FIVDnYVUrgbKL8OWSC5v3lq1Wy3TkcNHWv191/ZTvFVWLbngt+xUeLM6f3i6RkNyV4cBQCpdcGgYEAPSg1Ht/B7bWCi7cq7k9r+58uUaEgQhRY9lz5gpEQtZc1uF5nrznHjo8bfrnDBlPWqA/W42sLEJAw+/ELTiG8vYXnSbsTOBF/GPM5/MK9ltuNzF2TQP2HOg7UyDc2VN9uSn5Q14rJ1PSPsttcdt/1z5NBC1WFURTfI8mJUttSQEspuDwyUgh41mj2Q==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com; 
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=XpSJ5skAT76bfSWLlCPUo8FROtI5wdyyLtOzDx3PG20=;
- b=E1mkxEPlJbgpGNyJAnvZ/xgb+8Vxrtbc5+YC7VZKmIDLf0Q/qv6rk0WwGA6tKQsztzOtO1cu9Eej5ckx5GbzdlhmQcQHKJ/ZAH6r1hEwGROii8O21CRbN2rVkl3ikn/WGeq26UTENWDFG2j46Of1ouIwwMx0SRVdEeSykBPgQ6jRDuJp9cQB66k7/orQ3NFLa656p8/N/Wh1dluDoj1LEYGeOerubwlooCvKNG3wWJWD1PVKlRCv930bWxbKBppGR6w8UESKal2biq2P7+PknTg97/jt09orvlooBs10ZJzrnzUhqxKkQ8ezI4erJZvH1Vg9eDUiqh9DyKsqYilgtg==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=nvidia.com; dmarc=pass action=none header.from=nvidia.com;
- dkim=pass header.d=nvidia.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
- s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=XpSJ5skAT76bfSWLlCPUo8FROtI5wdyyLtOzDx3PG20=;
- b=UGpu6HypLD1mw7A7rXMV7M6oEt+0YiEmgoR+4+NtDG9h8lcgV8yPlBmHQOerJRReiHjx+ui0MHJVR3u4AYFSMFbNZ4oN7cPmH3GIS4o2dTGJVj/keWP9b3zTm9zKVb8NIO9fUS3hPQLkK4/4GwUYVkuNX4Gm200rq0BaL7CkAWib06qhDWOSMou82mOm5wzcHbPkw/HQKZvT7jAaT26eRCNvpukviHXTW2sKcs/lqyiwHrgxjnTTEMuI+2XFGUhO/steh3WGhUuQLhiQp5F4kKaRuY4e3bmrL5WXaZTk7ILwoJg2QGxBYnES6s15zErlTyOXrLYTHZ2/d3iEv6kTtg==
-Authentication-Results: redhat.com; dkim=none (message not signed)
- header.d=none;redhat.com; dmarc=none action=none header.from=nvidia.com;
-Received: from DM6PR12MB3834.namprd12.prod.outlook.com (2603:10b6:5:14a::12)
- by DM6PR12MB2858.namprd12.prod.outlook.com (2603:10b6:5:182::21) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4065.21; Wed, 21 Apr
- 2021 17:52:05 +0000
-Received: from DM6PR12MB3834.namprd12.prod.outlook.com
- ([fe80::1c62:7fa3:617b:ab87]) by DM6PR12MB3834.namprd12.prod.outlook.com
- ([fe80::1c62:7fa3:617b:ab87%6]) with mapi id 15.20.4042.024; Wed, 21 Apr 2021
- 17:52:05 +0000
-Date: Wed, 21 Apr 2021 14:52:03 -0300
-From: Jason Gunthorpe <jgg@nvidia.com>
-To: Alex Williamson <alex.williamson@redhat.com>
+Authentication-Results: smtp1.osuosl.org (amavisd-new);
+ dkim=pass (1024-bit key) header.d=redhat.com
+Received: from smtp1.osuosl.org ([127.0.0.1])
+ by localhost (smtp1.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+ with ESMTP id aAGB40ljBSX4 for <iommu@lists.linux-foundation.org>;
+ Wed, 21 Apr 2021 19:33:24 +0000 (UTC)
+X-Greylist: domain auto-whitelisted by SQLgrey-1.8.0
+Received: from us-smtp-delivery-124.mimecast.com
+ (us-smtp-delivery-124.mimecast.com [170.10.133.124])
+ by smtp1.osuosl.org (Postfix) with ESMTPS id B616B83B8E
+ for <iommu@lists.linux-foundation.org>; Wed, 21 Apr 2021 19:33:24 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+ s=mimecast20190719; t=1619033603;
+ h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+ to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+ content-transfer-encoding:content-transfer-encoding:
+ in-reply-to:in-reply-to:references:references;
+ bh=OSjUA9x97DB8V/G4wtzBrBvcZftae66qVvF3IBCBz10=;
+ b=a/BwnT8gxonr4Hr2+hTilVChlClMDb3XTSkKbAkd4Rq1LLhrqj7cWAlOErVXcqteatRtSn
+ zXLFua0wWu77Zt9USuDh5nj6RbT8olThUFCPCTG3Jzo9xiXo+COvoLQmy4zj8uch+34MwY
+ nVwc4ETlQhH13ZOFpC3KqKsPf+8baAw=
+Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
+ [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-158-ELIYmNGbMHmkKloSLFszZA-1; Wed, 21 Apr 2021 15:33:19 -0400
+X-MC-Unique: ELIYmNGbMHmkKloSLFszZA-1
+Received: from smtp.corp.redhat.com (int-mx01.intmail.prod.int.phx2.redhat.com
+ [10.5.11.11])
+ (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+ (No client certificate requested)
+ by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 54079C7402;
+ Wed, 21 Apr 2021 19:33:17 +0000 (UTC)
+Received: from redhat.com (ovpn-114-21.phx2.redhat.com [10.3.114.21])
+ by smtp.corp.redhat.com (Postfix) with ESMTP id 75AF159442;
+ Wed, 21 Apr 2021 19:33:12 +0000 (UTC)
+Date: Wed, 21 Apr 2021 13:33:12 -0600
+From: Alex Williamson <alex.williamson@redhat.com>
+To: Jason Gunthorpe <jgg@nvidia.com>
 Subject: Re: [PATCH V4 05/18] iommu/ioasid: Redefine IOASID set and
  allocation APIs
-Message-ID: <20210421175203.GN1370958@nvidia.com>
+Message-ID: <20210421133312.15307c44@redhat.com>
+In-Reply-To: <20210421175203.GN1370958@nvidia.com>
 References: <20210401134236.GF1463678@nvidia.com>
  <BN6PR11MB4068C4DE7AF43D44DE70F4C1C37B9@BN6PR11MB4068.namprd11.prod.outlook.com>
  <20210401160337.GJ1463678@nvidia.com>
@@ -88,68 +87,11 @@ References: <20210401134236.GF1463678@nvidia.com>
  <BN6PR11MB406854F56D18E1187A2C98ACC3479@BN6PR11MB4068.namprd11.prod.outlook.com>
  <20210421162307.GM1370958@nvidia.com>
  <20210421105451.56d3670a@redhat.com>
-Content-Disposition: inline
-In-Reply-To: <20210421105451.56d3670a@redhat.com>
-X-Originating-IP: [142.162.115.133]
-X-ClientProxiedBy: MN2PR16CA0045.namprd16.prod.outlook.com
- (2603:10b6:208:234::14) To DM6PR12MB3834.namprd12.prod.outlook.com
- (2603:10b6:5:14a::12)
+ <20210421175203.GN1370958@nvidia.com>
 MIME-Version: 1.0
-X-MS-Exchange-MessageSentRepresentingType: 1
-Received: from mlx.ziepe.ca (142.162.115.133) by
- MN2PR16CA0045.namprd16.prod.outlook.com (2603:10b6:208:234::14) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4065.21 via Frontend
- Transport; Wed, 21 Apr 2021 17:52:04 +0000
-Received: from jgg by mlx with local (Exim 4.94)	(envelope-from
- <jgg@nvidia.com>)	id 1lZH19-009apO-GC; Wed, 21 Apr 2021 14:52:03 -0300
-X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: 3bf78f60-cd89-4fd0-d0b4-08d904ee2c8e
-X-MS-TrafficTypeDiagnostic: DM6PR12MB2858:
-X-Microsoft-Antispam-PRVS: <DM6PR12MB285861EBAAF81949B875A380C2479@DM6PR12MB2858.namprd12.prod.outlook.com>
-X-MS-Oob-TLC-OOBClassifiers: OLM:8882;
-X-MS-Exchange-SenderADCheck: 1
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: BFz8nq2O1WzkNQbEo81H5xgGV7lLIs1XJDpQq10NNgEB8ltt/seA07eCzb0A3L056ruoHJkEGqju+fF2CVJn8rT8vLvmksBiyjXPcetFoKFdIZKxNosDfs1TxtkKeXWiUtytBdpp+BJJixhkysJrY2B9TGzqXX+EfbbStxbZ3p8bNquQmCRoPxnz6tsHX3supEzShqko/+1On1SOmMPotLEpf2pNPB2ddT5m6TWoi9RD672I7M7cpY34AUe4FYLqBhgpvsc0yDFF9T7YZ+e4FaW1yCZd8SoBECoLXMs39J/+KFzh9qJPKamGftsjrblvRIXy6zEOGeSkdMasjnytptj730xzJR4676+LCxpw2iVT/VJIKNSXhAW7Rxl7JgmKlZQGxceX4WRehuPP3S46sjtF+eIMnlMdGZxWeUGrYbirRvYcLALv5spxD+bppo+Ild5S1kNFbf+6FmYlmIFCovovizWHv4+4WlddPHW60OwxubR8IhUba82FB6aYcRrcVf0BguhYlc2Pb7emSrQvMeKQCFnCrEOQnvu3kNqK5yflr5sbUrBdw+/rTLto6j7EsBL2Q1MObNBdt18sgJ0f4N6M318EBILwux7PmuGdHw0=
-X-Forefront-Antispam-Report: CIP:255.255.255.255; CTRY:; LANG:en; SCL:1; SRV:;
- IPV:NLI; SFV:NSPM; H:DM6PR12MB3834.namprd12.prod.outlook.com; PTR:; CAT:NONE;
- SFS:(4636009)(366004)(346002)(39860400002)(376002)(136003)(396003)(5660300002)(6916009)(33656002)(1076003)(7416002)(83380400001)(86362001)(316002)(66946007)(66476007)(66556008)(2616005)(426003)(186003)(36756003)(4326008)(8676002)(478600001)(38100700002)(9746002)(26005)(54906003)(2906002)(9786002)(8936002);
- DIR:OUT; SFP:1101; 
-X-MS-Exchange-AntiSpam-MessageData: =?us-ascii?Q?0AAjQ6EdHr/yq4PCUo6AKHQfXUEpS208nr9UUmEuwAxUsM23Psm9nIFCxcAJ?=
- =?us-ascii?Q?11wTAFGgKxNkZFCAY+2GoAsKXVg1gXVXw8ww+HDvKmgmB3Pzuu1D6p61iSqL?=
- =?us-ascii?Q?RLbfHCPSJbZuP3iRnOsnQp1zcJCb0WXLyBNTtw/0SqgCOdFAmLhJaft93CGN?=
- =?us-ascii?Q?5FOd5JFcogBmN8h79pvNbTsy8AS+hR+TFeEmfwSSDmqymWp52WTo3VsSIxv1?=
- =?us-ascii?Q?5dWQmCY7KSFYSExBQrANlaDlfpTCofl664fLQbR/WwyeLhAocZkQfXjfjtja?=
- =?us-ascii?Q?HVipBMOLaFcfFSXOrkqqmGdEDcF5gJvKvS+S3paoEucI7NP3/j28LuiNm/8u?=
- =?us-ascii?Q?4xj7veiMaUO6xsbRvwgMWKYP2pKwQgSItDVCv1RulVBtBF0oFPQ7eYIapNF4?=
- =?us-ascii?Q?z8GzvbjQN7/ytzxWTbrFK6cszIcqSKA5YunD5palSPutSIP9Jp5EfThocd0W?=
- =?us-ascii?Q?KtVvI8FyacU4qzMIlkEOpVhAWdo7zptD62YbaRyx/YZ0k9vVoLda0FYEabTZ?=
- =?us-ascii?Q?0AXgvnz85d279ZTxQsz1B+leRKgzE86F2WsIU+JuEIKj7aPLyrrRAeKSZaqz?=
- =?us-ascii?Q?phJktOJEIKFQhX6F1PUy87FBpoOMnJS81B/E9Ja3I9CbqjPQuBB0A156rQWs?=
- =?us-ascii?Q?XhSSbM/hi2L4M+4Oa/HWw0iHnQfeJIuspif0lAc31cw7HWEVzfetTtUZrD1E?=
- =?us-ascii?Q?K6647MNIyePiSPNQJFHSLjUY9JZb7FdRO8sacEAAHk0/EPX2r5J7RQUv6UUm?=
- =?us-ascii?Q?L6NYvVcUeFvmsCJXOzwfcuzvbjBf7KASf0UYubxJFzQ4jUb2uPIEr+ncHibH?=
- =?us-ascii?Q?XNtHVlFplPjXp8rXEWQgXePQTES+E31DaFwMqoSttwkN4fsSN3Da5C9t4AMh?=
- =?us-ascii?Q?oYBSHr23by7JLd7prFKJZfTBW1BRAR4xbVimBBR2pPxaf6zLSJZYSyqdMen0?=
- =?us-ascii?Q?IUDD0b7FvlupwrJen9K8SMRwFq01UJRM/61u0+5m2z1iHtVWYDhg//mIh2Dw?=
- =?us-ascii?Q?LCemJ9qV/BuMzDdb8BczCPBcE1GA7uFrb3mc8RAhHdLoA+yjQDVqkGoP+dR0?=
- =?us-ascii?Q?aQFqJw2/aLmo/0Gzo2P9hC08FMepnvVxEhupVq1uzhdHvgyfG4MRnMUJ3pgD?=
- =?us-ascii?Q?aupdj3MbubhQFEYoI855N/OXAwMzYxAC/0Xdf+xpiO/zcNAdV3A/ylB2xOOM?=
- =?us-ascii?Q?gFr0n7//fgZexfE/0dtW2fg1pZ2bwxF+N0jEHBkrYqt6ktpsLYbnrI9hRUtw?=
- =?us-ascii?Q?1ob6+uvGtnkmOlDJWFuPWnVl9Is16QF9VP1WpO+2XLX7+5ahEU4wNp9NSRJT?=
- =?us-ascii?Q?eA5U+/cjJumdOYc78sVHhNe6rcKih6UWrnFSnm0vlTvPtA=3D=3D?=
-X-OriginatorOrg: Nvidia.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 3bf78f60-cd89-4fd0-d0b4-08d904ee2c8e
-X-MS-Exchange-CrossTenant-AuthSource: DM6PR12MB3834.namprd12.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 21 Apr 2021 17:52:04.8379 (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: 7DaPg9k7TDPi4ATtuPZDMLRqZYfkJETbhg1J75pjloIH4NVUcuFigclVBC3fUnbV
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: DM6PR12MB2858
+X-Scanned-By: MIMEDefang 2.79 on 10.5.11.11
 Cc: Jean-Philippe Brucker <jean-philippe@linaro.org>, "Tian,
- Kevin" <kevin.tian@intel.com>, "Jiang, Dave" <dave.jiang@intel.com>, "Raj,
+ Kevin" <kevin.tian@intel.com>, "Jiang, Dave" <dave.jiang@intel.com>, "Raj, 
  Ashok" <ashok.raj@intel.com>, Jonathan Corbet <corbet@lwn.net>,
  Jean-Philippe Brucker <jean-philippe@linaro.com>,
  Li Zefan <lizefan@huawei.com>, LKML <linux-kernel@vger.kernel.org>,
@@ -174,102 +116,181 @@ Content-Transfer-Encoding: 7bit
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-On Wed, Apr 21, 2021 at 10:54:51AM -0600, Alex Williamson wrote:
+On Wed, 21 Apr 2021 14:52:03 -0300
+Jason Gunthorpe <jgg@nvidia.com> wrote:
 
-> That's essentially replacing vfio-core, where I think we're more
+> On Wed, Apr 21, 2021 at 10:54:51AM -0600, Alex Williamson wrote:
+> 
+> > That's essentially replacing vfio-core, where I think we're more  
+> 
+> I am only talking about /dev/vfio here which is basically the IOMMU
+> interface part.
+> 
+> I still expect that VFIO_GROUP_SET_CONTAINER will be used to connect
+> /dev/{ioasid,vfio} to the VFIO group and all the group and device
+> logic stays inside VFIO.
 
-I am only talking about /dev/vfio here which is basically the IOMMU
-interface part.
+But that group and device logic is also tied to the container, where
+the IOMMU backend is the interchangeable thing that provides the IOMMU
+manipulation for that container.  If you're using
+VFIO_GROUP_SET_CONTAINER to associate a group to a /dev/ioasid, then
+you're really either taking that group outside of vfio or you're
+re-implementing group management in /dev/ioasid.  I'd expect the
+transition point at VFIO_SET_IOMMU.
 
-I still expect that VFIO_GROUP_SET_CONTAINER will be used to connect
-/dev/{ioasid,vfio} to the VFIO group and all the group and device
-logic stays inside VFIO.
+> The appeal of unifying /dev/{ioasid,vfio} to a single fops is that it
+> cleans up vfio a lot - we don't have to have two different code paths
+> where one handles a vfio_container and the other a ioasid_container
+> and the all the related different iommu ops and so on.
 
-The appeal of unifying /dev/{ioasid,vfio} to a single fops is that it
-cleans up vfio a lot - we don't have to have two different code paths
-where one handles a vfio_container and the other a ioasid_container
-and the all the related different iommu ops and so on.
+Currently vfio IOMMU backends don't know about containers either.
+Setting the vfio IOMMU for a container creates an object within the
+IOMMU backend representing that IOMMU context.  IOMMU groups are then
+attached to that context, where the IOMMU backend can add to or create a
+new IOMMU domain to include that group, or if no compatible IOMMU
+context can be created, reject it.
 
-Everything can be switched to ioasid_container all down the line. If
-it wasn't for PPC this looks fairly simple.
+> Everything can be switched to ioasid_container all down the line. If
+> it wasn't for PPC this looks fairly simple.
 
-Since getting rid of PPC looks a bit hard, we'd be stuck with
-accepting a /dev/ioasid and then immediately wrappering it in a
-vfio_container an shimming it through a vfio_iommu_ops. It is not
-ideal at all, but in my look around I don't see a major problem if
-type1 implementation is moved to live under /dev/ioasid.
+At what point is it no longer vfio?  I'd venture to say that replacing
+the container rather than invoking a different IOMMU backend is that
+point.
 
-For concreteness if we look at the set container flow with ioasid I'd
-say something like:
+> Since getting rid of PPC looks a bit hard, we'd be stuck with
+> accepting a /dev/ioasid and then immediately wrappering it in a
+> vfio_container an shimming it through a vfio_iommu_ops. It is not
+> ideal at all, but in my look around I don't see a major problem if
+> type1 implementation is moved to live under /dev/ioasid.
 
-vfio_group_fops_unl_ioctl()
- VFIO_GROUP_SET_CONTAINER
-  vfio_group_set_container()
-     if (f.file->f_op == &vfio_fops) {
-          // Use a real vfio_container and vfio_iommu_driver
-          driver->ops->attach_group()
-             tce_iommu_attach_group()
-     }
+But type1 is \just\ an IOMMU backend, not "/dev/vfio".  Given that
+nobody flinched at removing NVLink support, maybe just deprecate SPAPR
+now and see if anyone objects ;)
 
-     if (ioasid_container = ioasid_get_from_fd(container_fd)) {
-         // create a dummy vfio_container and use the ioasid driver
-	 container = kzalloc()
-         container->iommu_driver = ioasid_shim
-         driver->ops->attach_group()
-             ioasid_shim_attach_group(ioasid_container, ...)
-                 ioasid_attach_group()
-                     // What used to be vfio_iommu_attach_group()
+> For concreteness if we look at the set container flow with ioasid I'd
+> say something like:
+> 
+> vfio_group_fops_unl_ioctl()
+>  VFIO_GROUP_SET_CONTAINER
+>   vfio_group_set_container()
+>      if (f.file->f_op == &vfio_fops) {
+>           // Use a real vfio_container and vfio_iommu_driver
+>           driver->ops->attach_group()
+>              tce_iommu_attach_group()
+>      }
+> 
+>      if (ioasid_container = ioasid_get_from_fd(container_fd)) {
+>          // create a dummy vfio_container and use the ioasid driver
+> 	 container = kzalloc()
+>          container->iommu_driver = ioasid_shim
+>          driver->ops->attach_group()
+>              ioasid_shim_attach_group(ioasid_container, ...)
+>                  ioasid_attach_group()
+>                      // What used to be vfio_iommu_attach_group()
 
-Broadly all the ops vfio need go through the ioasid_shim which relays
-them to the generic ioasid API.
+How do you handle multiple groups with the same container?  Again, I'd
+expect some augmentation of VFIO_SET_IOMMU so that /dev/vfio continues
+to exist and manage group to container mapping and /dev/ioasid manages
+the IOMMU context of that container.
+> 
+> Broadly all the ops vfio need go through the ioasid_shim which relays
+> them to the generic ioasid API.
 
-We end up with a ioasid.h that basically has the vfio_iommu_type1 code
-lightly recast into some 'struct iommu_container' and a set of
-ioasid_* function entry points that follow vfio_iommu_driver_ops_type1:
-  ioasid_attach_group
-  ioasid_detatch_group
-  ioasid_<something about user pages>
-  ioasid_read/ioasid_write
+/dev/vfio essentially already passes through all fops to the IOMMU
+backend once the VFIO_SET_IOMMU is established.
+ 
+> We end up with a ioasid.h that basically has the vfio_iommu_type1 code
+> lightly recast into some 'struct iommu_container' and a set of
+> ioasid_* function entry points that follow vfio_iommu_driver_ops_type1:
+>   ioasid_attach_group
+>   ioasid_detatch_group
+>   ioasid_<something about user pages>
+>   ioasid_read/ioasid_write
 
-If we have this, and /dev/ioasid implements the legacy IOCTLs, then
-/dev/vfio == /dev/ioasid and we can compile out vfio_fops and related
-from vfio.c and tell ioasid.c to create /dev/vfio instead using the
-ops it owns.
+Again, this looks like a vfio IOMMU backend.  What are we accomplishing
+by replacing /dev/vfio with /dev/ioasid versus some manipulation of
+VFIO_SET_IOMMU accepting a /dev/ioasid fd?
 
-This is a very long winded way of saying ideally we'd do
-approximately:
-  git mv drivers/vfio/vfio_iommu_type1.c drivers/ioasid/ioasid.c
+> If we have this, and /dev/ioasid implements the legacy IOCTLs, then
+> /dev/vfio == /dev/ioasid and we can compile out vfio_fops and related
+> from vfio.c and tell ioasid.c to create /dev/vfio instead using the
+> ops it owns.
 
-As the first step. Essentially we declare that what is type1 is really
-the user interface to the internal kernel IOMMU kAPI, which has been
-steadily evolving since type1 was created 10 years ago.
+Why would we want /dev/ioasid to implement legacy ioctls instead of
+simply implementing an interface to allow /dev/ioasid to be used as a
+vfio IOMMU backend?
+ 
+> This is a very long winded way of saying ideally we'd do
+> approximately:
+>   git mv drivers/vfio/vfio_iommu_type1.c drivers/ioasid/ioasid.c
+> 
+> As the first step. Essentially we declare that what is type1 is really
+> the user interface to the internal kernel IOMMU kAPI, which has been
+> steadily evolving since type1 was created 10 years ago.
 
-> The interface of making that selection might change to accept an
-> external /dev/ioasid file descriptor, of course.  Maybe you can
-> elaborate on how the vfio device and group uAPI live (or not) in
-> this new scheme were /dev/ioasid is the primary interface.  Thanks,
+The pseudo code above really suggests you do want to remove
+/dev/vfio/vfio, but this is only one of the IOMMU backends for vfio, so
+I can't quite figure out if we're talking past each other.
 
-They say in vfio. You'd still open a group and you'd still pass in
-either /dev/vfio or /dev/ioasid to define the container
+As I expressed in another thread, type1 has a lot of shortcomings.  The
+mapping interface leaves userspace trying desperately to use statically
+mapped buffers because the map/unmap latency is too high.  We have
+horrible issues with duplicate locked page accounting across
+containers.  It suffers pretty hard from feature creep in various
+areas.  A new IOMMU backend is an opportunity to redesign some of these
+things.
 
-Though, completely as an unrelated aside, I admit to not entirely
-understanding why the group is the central element of the uAPI.
+> > The interface of making that selection might change to accept an
+> > external /dev/ioasid file descriptor, of course.  Maybe you can
+> > elaborate on how the vfio device and group uAPI live (or not) in
+> > this new scheme were /dev/ioasid is the primary interface.  Thanks,  
+> 
+> They say in vfio. You'd still open a group and you'd still pass in
+> either /dev/vfio or /dev/ioasid to define the container
+> 
+> Though, completely as an unrelated aside, I admit to not entirely
+> understanding why the group is the central element of the uAPI.
+> 
+> It is weird that the vfio "drivers" all work on the struct vfio_device
+> (at least after my series), and it has a file_operations presence via
+> vfio_device_fops, but instead of struct vfio_device directly having a
+> 'struct device' and cdev to access the FD we get it through a group FD
+> and agroup chardev via VFIO_GROUP_GET_DEVICE_FD
+> 
+> If we were to revise this, and I don't see a huge reason to do so, I
+> would put a struct device and cdev in struct vfio_device, attach the
+> vfio_device directly to the ioasid and then forget about the group, at
+> least as uapi, completely.
+> 
+> Or at least I don't see where that gets into trouble, but I'm not too
+> familiar with the multi-vfio in a process scenario..
 
-It is weird that the vfio "drivers" all work on the struct vfio_device
-(at least after my series), and it has a file_operations presence via
-vfio_device_fops, but instead of struct vfio_device directly having a
-'struct device' and cdev to access the FD we get it through a group FD
-and agroup chardev via VFIO_GROUP_GET_DEVICE_FD
+The vfio_group is the unit of userspace ownership as it reflects the
+IOMMU group as the unit of isolation.  Ideally there's a 1:1 mapping
+between device and group, but that is of course not always the case.
 
-If we were to revise this, and I don't see a huge reason to do so, I
-would put a struct device and cdev in struct vfio_device, attach the
-vfio_device directly to the ioasid and then forget about the group, at
-least as uapi, completely.
+The IOMMU group also abstracts isolation and visibility relative to
+DMA.  For example, in a PCIe topology a multi-function device may not
+have isolation between functions, but each requester ID is visible to
+the IOMMU.  This lacks isolation but not IOMMU granularity, or
+visibility.  A conventional PCI topology however lacks both isolation
+and visibility, all devices downstream use either the PCIe-to-PCI
+bridge RID or a RID derived from the secondary bus.  We can also have
+mixed topologies, for example PCIe-to-PCI<->PCI-to-PCIe, where the
+grouping code needs to search upstream for the highest level where we
+achieve both isolation and visibility.
 
-Or at least I don't see where that gets into trouble, but I'm not too
-familiar with the multi-vfio in a process scenario..
+To simplify this, we use the group as the unit of IOMMU context, again
+favoring singleton group behavior.
 
-Jason
+An individual vfio_device doesn't know about these isolation
+dependencies, thus while a vfio bus/device driver like vfio-pci can
+expose a device, it's vfio-core than manages whether the isolated set
+of devices which includes that device, ie. the group, meets the
+requirements for userspace access.  Thanks,
+
+Alex
+
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
