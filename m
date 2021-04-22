@@ -2,80 +2,66 @@ Return-Path: <SRS0=TTgE=JT=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-16.6 required=3.0 tests=BAYES_00,DKIM_INVALID,
-	DKIM_SIGNED,HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_CR_TRAILER,INCLUDES_PATCH,
-	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,USER_AGENT_GIT autolearn=ham
-	autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-11.8 required=3.0 tests=BAYES_00,
+	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,SPF_HELO_NONE,
+	SPF_PASS,UNPARSEABLE_RELAY,USER_AGENT_GIT autolearn=ham autolearn_force=no
+	version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D2259C433ED
-	for <iommu@archiver.kernel.org>; Thu, 22 Apr 2021 07:20:02 +0000 (UTC)
-Received: from smtp4.osuosl.org (smtp4.osuosl.org [140.211.166.137])
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4AAB5C433B4
+	for <iommu@archiver.kernel.org>; Thu, 22 Apr 2021 07:30:48 +0000 (UTC)
+Received: from smtp2.osuosl.org (smtp2.osuosl.org [140.211.166.133])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 3445B61458
-	for <iommu@archiver.kernel.org>; Thu, 22 Apr 2021 07:20:02 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 3445B61458
-Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=lst.de
+	by mail.kernel.org (Postfix) with ESMTPS id AC3F161461
+	for <iommu@archiver.kernel.org>; Thu, 22 Apr 2021 07:30:47 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org AC3F161461
+Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=collabora.com
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by smtp4.osuosl.org (Postfix) with ESMTP id D98BC40E4A;
-	Thu, 22 Apr 2021 07:20:01 +0000 (UTC)
+	by smtp2.osuosl.org (Postfix) with ESMTP id 4381340517;
+	Thu, 22 Apr 2021 07:30:47 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from smtp4.osuosl.org ([127.0.0.1])
-	by localhost (smtp4.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id wqKdf_pnQIBC; Thu, 22 Apr 2021 07:20:00 +0000 (UTC)
+Received: from smtp2.osuosl.org ([127.0.0.1])
+	by localhost (smtp2.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+	with ESMTP id 8Efk8j7AeWE6; Thu, 22 Apr 2021 07:30:46 +0000 (UTC)
 Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [IPv6:2605:bc80:3010:104::8cd3:938])
-	by smtp4.osuosl.org (Postfix) with ESMTP id 88FE940E7C;
-	Thu, 22 Apr 2021 07:20:00 +0000 (UTC)
+	by smtp2.osuosl.org (Postfix) with ESMTP id 2CCAC40143;
+	Thu, 22 Apr 2021 07:30:46 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 675CBC000E;
-	Thu, 22 Apr 2021 07:20:00 +0000 (UTC)
-Received: from smtp4.osuosl.org (smtp4.osuosl.org [140.211.166.137])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 47F55C0024
- for <iommu@lists.linux-foundation.org>; Thu, 22 Apr 2021 07:19:55 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 02D64C000E;
+	Thu, 22 Apr 2021 07:30:46 +0000 (UTC)
+Received: from smtp1.osuosl.org (smtp1.osuosl.org [140.211.166.138])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 855E2C000B
+ for <iommu@lists.linux-foundation.org>; Thu, 22 Apr 2021 07:24:57 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by smtp4.osuosl.org (Postfix) with ESMTP id 258DC40E52
- for <iommu@lists.linux-foundation.org>; Thu, 22 Apr 2021 07:19:55 +0000 (UTC)
+ by smtp1.osuosl.org (Postfix) with ESMTP id 6C6B082E2A
+ for <iommu@lists.linux-foundation.org>; Thu, 22 Apr 2021 07:24:57 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from smtp4.osuosl.org ([127.0.0.1])
- by localhost (smtp4.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id pohOy4_dnV5K for <iommu@lists.linux-foundation.org>;
- Thu, 22 Apr 2021 07:19:54 +0000 (UTC)
-X-Greylist: from auto-whitelisted by SQLgrey-1.8.0
-Received: from bombadil.infradead.org (bombadil.infradead.org
- [IPv6:2607:7c80:54:e::133])
- by smtp4.osuosl.org (Postfix) with ESMTPS id 5033440E59
- for <iommu@lists.linux-foundation.org>; Thu, 22 Apr 2021 07:19:54 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
- d=infradead.org; s=bombadil.20210309; h=Content-Transfer-Encoding:
- MIME-Version:References:In-Reply-To:Message-Id:Date:Subject:Cc:To:From:Sender
- :Reply-To:Content-Type:Content-ID:Content-Description;
- bh=IEVkrkm3MuKaNKcyW8a+DG4O3GXVaGagie2/ONcqlhY=; b=anmjfDz2al0zGRuceriPKIfAtn
- 2r5xN/fPvoh9RqCq8f2NgLc28anKl85DQp79zJxmlgMjrkAnWT9K6kWFfWdFfa+/oaUraoNrx3EK7
- Cj1NfF+BsAFyNN5ph+FqgH3P21AXa37gyZz30XWgEDpt7OyTdni3oF/OXOL2GxIlSHK6QlH9F8lXj
- oV/bsNdU9LdBrsaiEIvtR7snQd2qNegyfbIbJA40BDORsEqgSmk4odm8REfk7daCNYinPEfg7qB2T
- I6PzWdLRK3qjS5KE+f7VAlXQTos9C/2Z9rykR9kzQr/7cas/V3Ex7wBiKH/DQZu8dTJdpPwX8l/Ki
- 812AaC/A==;
-Received: from [2001:4bb8:19b:f845:15fc:cef6:715a:fb03] (helo=localhost)
- by bombadil.infradead.org with esmtpsa (Exim 4.94 #2 (Red Hat Linux))
- id 1lZTci-00DRlk-9r; Thu, 22 Apr 2021 07:19:40 +0000
-From: Christoph Hellwig <hch@lst.de>
-To: Konrad Rzeszutek Wilk <konrad.wilk@oracle.com>
-Subject: [PATCH 6/7] swiotlb: replace default_nslabs with a byte value
-Date: Thu, 22 Apr 2021 09:19:20 +0200
-Message-Id: <20210422071921.1428607-7-hch@lst.de>
-X-Mailer: git-send-email 2.30.1
-In-Reply-To: <20210422071921.1428607-1-hch@lst.de>
-References: <20210422071921.1428607-1-hch@lst.de>
+Received: from smtp1.osuosl.org ([127.0.0.1])
+ by localhost (smtp1.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+ with ESMTP id jrvYCLHxOYQg for <iommu@lists.linux-foundation.org>;
+ Thu, 22 Apr 2021 07:24:56 +0000 (UTC)
+X-Greylist: domain auto-whitelisted by SQLgrey-1.8.0
+Received: from bhuna.collabora.co.uk (bhuna.collabora.co.uk [46.235.227.227])
+ by smtp1.osuosl.org (Postfix) with ESMTPS id B212581886
+ for <iommu@lists.linux-foundation.org>; Thu, 22 Apr 2021 07:24:56 +0000 (UTC)
+Received: from [127.0.0.1] (localhost [127.0.0.1])
+ (Authenticated sender: benjamin.gaignard)
+ with ESMTPSA id 6C3F51F430FA
+From: Benjamin Gaignard <benjamin.gaignard@collabora.com>
+To: joro@8bytes.org, will@kernel.org, robh+dt@kernel.org, heiko@sntech.de,
+ xxm@rock-chips.com
+Subject: [PATCH 0/3] IOMMU: Add driver for rk356x
+Date: Thu, 22 Apr 2021 09:24:39 +0200
+Message-Id: <20210422072442.111070-1-benjamin.gaignard@collabora.com>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
-X-SRS-Rewrite: SMTP reverse-path rewritten from <hch@infradead.org> by
- bombadil.infradead.org. See http://www.infradead.org/rpr.html
-Cc: Juergen Gross <jgross@suse.com>, Tom Lendacky <thomas.lendacky@amd.com>,
- Thomas Bogendoerfer <tsbogend@alpha.franken.de>,
- Michael Ellerman <mpe@ellerman.id.au>, linux-mips@vger.kernel.org,
- iommu@lists.linux-foundation.org, Stefano Stabellini <sstabellini@kernel.org>,
- xen-devel@lists.xenproject.org, Boris Ostrovsky <boris.ostrovsky@oracle.com>,
- linuxppc-dev@lists.ozlabs.org
+X-Mailman-Approved-At: Thu, 22 Apr 2021 07:30:44 +0000
+Cc: devicetree@vger.kernel.org,
+ Benjamin Gaignard <benjamin.gaignard@collabora.com>,
+ linux-kernel@vger.kernel.org, linux-rockchip@lists.infradead.org,
+ iommu@lists.linux-foundation.org, kernel@collabora.com,
+ linux-arm-kernel@lists.infradead.org
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -93,51 +79,29 @@ Content-Transfer-Encoding: 7bit
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-Replace the default_nslabs variable with one that stores the size in
-bytes as that is what all the users actually expect.
+This series adds the IOMMU driver for rk356x SoC.
+Since a new compatible is needed to distinguish this second version of 
+IOMMU hardware block from the first one, it is an opportunity to convert
+the binding to DT schema.
 
-Signed-off-by: Christoph Hellwig <hch@lst.de>
----
- kernel/dma/swiotlb.c | 10 +++++-----
- 1 file changed, 5 insertions(+), 5 deletions(-)
+Benjamin
 
-diff --git a/kernel/dma/swiotlb.c b/kernel/dma/swiotlb.c
-index 93737d0932fbf2..87d06ddf4753f3 100644
---- a/kernel/dma/swiotlb.c
-+++ b/kernel/dma/swiotlb.c
-@@ -71,7 +71,7 @@ struct io_tlb_mem *io_tlb_default_mem;
-  */
- static unsigned int max_segment;
- 
--static unsigned long default_nslabs = IO_TLB_DEFAULT_SIZE >> IO_TLB_SHIFT;
-+static unsigned long swiotlb_default_size = IO_TLB_DEFAULT_SIZE;
- 
- static int __init
- setup_io_tlb_npages(char *str)
-@@ -106,7 +106,7 @@ void swiotlb_set_max_segment(unsigned int val)
- 
- unsigned long swiotlb_size_or_default(void)
- {
--	return default_nslabs << IO_TLB_SHIFT;
-+	return swiotlb_default_size;
- }
- 
- void __init swiotlb_adjust_size(unsigned long size)
-@@ -116,9 +116,9 @@ void __init swiotlb_adjust_size(unsigned long size)
- 	 * architectures such as those supporting memory encryption to
- 	 * adjust/expand SWIOTLB size for their use.
- 	 */
--	size = ALIGN(size, IO_TLB_SIZE);
--	default_nslabs = ALIGN(size >> IO_TLB_SHIFT, IO_TLB_SEGSIZE);
--	pr_info("SWIOTLB bounce buffer size adjusted to %luMB", size >> 20);
-+	swiotlb_default_size = ALIGN(size, IO_TLB_SEGSIZE << IO_TLB_SHIFT);
-+	pr_info("SWIOTLB bounce buffer size adjusted to %luMB",
-+		swiotlb_default_size >> 20);
- }
- 
- void swiotlb_print_info(void)
+Benjamin Gaignard (2):
+  dt-bindings: iommu: rockchip: Convert IOMMU to DT schema
+  dt-bindings: iommu: rockchip: Add compatible for v2
+
+Simon Xue (1):
+  iommu: rockchip: Add support iommu v2
+
+ .../bindings/iommu/rockchip,iommu.txt         |  38 --
+ .../bindings/iommu/rockchip,iommu.yaml        |  78 ++++
+ drivers/iommu/rockchip-iommu.c                | 422 +++++++++++++++++-
+ 3 files changed, 484 insertions(+), 54 deletions(-)
+ delete mode 100644 Documentation/devicetree/bindings/iommu/rockchip,iommu.txt
+ create mode 100644 Documentation/devicetree/bindings/iommu/rockchip,iommu.yaml
+
 -- 
-2.30.1
+2.25.1
 
 _______________________________________________
 iommu mailing list
