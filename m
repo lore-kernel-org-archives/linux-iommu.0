@@ -2,102 +2,68 @@ Return-Path: <SRS0=TTgE=JT=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-3.6 required=3.0 tests=BAYES_00,DKIM_INVALID,
-	DKIM_SIGNED,HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,SPF_HELO_NONE,
-	SPF_PASS autolearn=no autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-13.8 required=3.0 tests=BAYES_00,
+	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_CR_TRAILER,INCLUDES_PATCH,
+	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,UNPARSEABLE_RELAY
+	autolearn=unavailable autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id BA165C433ED
-	for <iommu@archiver.kernel.org>; Thu, 22 Apr 2021 17:13:56 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0ECF8C433B4
+	for <iommu@archiver.kernel.org>; Thu, 22 Apr 2021 17:26:16 +0000 (UTC)
 Received: from smtp3.osuosl.org (smtp3.osuosl.org [140.211.166.136])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 2E091613E6
-	for <iommu@archiver.kernel.org>; Thu, 22 Apr 2021 17:13:56 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 2E091613E6
-Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=redhat.com
+	by mail.kernel.org (Postfix) with ESMTPS id 80A88613E1
+	for <iommu@archiver.kernel.org>; Thu, 22 Apr 2021 17:26:15 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 80A88613E1
+Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=collabora.com
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by smtp3.osuosl.org (Postfix) with ESMTP id C77C6608ED;
-	Thu, 22 Apr 2021 17:13:55 +0000 (UTC)
+	by smtp3.osuosl.org (Postfix) with ESMTP id 0EAF1608EF;
+	Thu, 22 Apr 2021 17:26:15 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
 Received: from smtp3.osuosl.org ([127.0.0.1])
 	by localhost (smtp3.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id 93WHgzef5zmU; Thu, 22 Apr 2021 17:13:54 +0000 (UTC)
-Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by smtp3.osuosl.org (Postfix) with ESMTP id 57543605D5;
-	Thu, 22 Apr 2021 17:13:54 +0000 (UTC)
+	with ESMTP id E31WtbmBwCDS; Thu, 22 Apr 2021 17:26:14 +0000 (UTC)
+Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [IPv6:2605:bc80:3010:104::8cd3:938])
+	by smtp3.osuosl.org (Postfix) with ESMTP id CA835605F9;
+	Thu, 22 Apr 2021 17:26:13 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 15CECC000E;
-	Thu, 22 Apr 2021 17:13:54 +0000 (UTC)
-Received: from smtp3.osuosl.org (smtp3.osuosl.org [140.211.166.136])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 10BE7C000B
- for <iommu@lists.linux-foundation.org>; Thu, 22 Apr 2021 17:13:52 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id A007DC000E;
+	Thu, 22 Apr 2021 17:26:13 +0000 (UTC)
+Received: from smtp1.osuosl.org (smtp1.osuosl.org [140.211.166.138])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 28CD9C000B
+ for <iommu@lists.linux-foundation.org>; Thu, 22 Apr 2021 17:26:12 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by smtp3.osuosl.org (Postfix) with ESMTP id EB05E605D5
- for <iommu@lists.linux-foundation.org>; Thu, 22 Apr 2021 17:13:51 +0000 (UTC)
+ by smtp1.osuosl.org (Postfix) with ESMTP id 02A3483EF9
+ for <iommu@lists.linux-foundation.org>; Thu, 22 Apr 2021 17:26:12 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from smtp3.osuosl.org ([127.0.0.1])
- by localhost (smtp3.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id FZ3D8U_UuwJD for <iommu@lists.linux-foundation.org>;
- Thu, 22 Apr 2021 17:13:50 +0000 (UTC)
+Received: from smtp1.osuosl.org ([127.0.0.1])
+ by localhost (smtp1.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+ with ESMTP id cIamdjH70suI for <iommu@lists.linux-foundation.org>;
+ Thu, 22 Apr 2021 17:26:11 +0000 (UTC)
 X-Greylist: domain auto-whitelisted by SQLgrey-1.8.0
-Received: from us-smtp-delivery-124.mimecast.com
- (us-smtp-delivery-124.mimecast.com [216.205.24.124])
- by smtp3.osuosl.org (Postfix) with ESMTPS id 85A0F60585
- for <iommu@lists.linux-foundation.org>; Thu, 22 Apr 2021 17:13:50 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
- s=mimecast20190719; t=1619111629;
- h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
- to:to:cc:cc:mime-version:mime-version:content-type:content-type:
- content-transfer-encoding:content-transfer-encoding:
- in-reply-to:in-reply-to:references:references;
- bh=AoLtOKIEaUoGP15b6SEJ+EZN+FEmTqg+4+tHGCyR90Q=;
- b=DCjmz1YO2gA5c/w+6sqzKHbfufMZ4naBOs265Yw/PKbxnMHg5Y8dPGhC/xam1JmrxFUDNS
- JzL0KS4GapFzKDSUQZxVKeTUd2SKEELDRK2ChIyldWvmShUH5ClcTdfS1FpA6bqVXwkwJl
- FVZW6/S6rDFDh7iJ53dc5DcqjP2/WU8=
-Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
- [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-389-yByfXrO5Mh6oFQHlAXuS5Q-1; Thu, 22 Apr 2021 13:13:45 -0400
-X-MC-Unique: yByfXrO5Mh6oFQHlAXuS5Q-1
-Received: from smtp.corp.redhat.com (int-mx03.intmail.prod.int.phx2.redhat.com
- [10.5.11.13])
- (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
- (No client certificate requested)
- by mimecast-mx01.redhat.com (Postfix) with ESMTPS id D6B551B2C993;
- Thu, 22 Apr 2021 17:13:40 +0000 (UTC)
-Received: from redhat.com (ovpn-114-21.phx2.redhat.com [10.3.114.21])
- by smtp.corp.redhat.com (Postfix) with ESMTP id EEC2A60938;
- Thu, 22 Apr 2021 17:13:37 +0000 (UTC)
-Date: Thu, 22 Apr 2021 11:13:37 -0600
-From: Alex Williamson <alex.williamson@redhat.com>
-To: Jason Gunthorpe <jgg@nvidia.com>
-Subject: Re: [PATCH V4 05/18] iommu/ioasid: Redefine IOASID set and
- allocation APIs
-Message-ID: <20210422111337.6ac3624d@redhat.com>
-In-Reply-To: <20210421230301.GP1370958@nvidia.com>
-References: <20210401160337.GJ1463678@nvidia.com>
- <4bea6eb9-08ad-4b6b-1e0f-c97ece58a078@redhat.com>
- <20210415230732.GG1370958@nvidia.com>
- <20210416061258.325e762e@jacob-builder>
- <20210416094547.1774e1a3@redhat.com>
- <BN6PR11MB406854F56D18E1187A2C98ACC3479@BN6PR11MB4068.namprd11.prod.outlook.com>
- <20210421162307.GM1370958@nvidia.com>
- <20210421105451.56d3670a@redhat.com>
- <20210421175203.GN1370958@nvidia.com>
- <20210421133312.15307c44@redhat.com>
- <20210421230301.GP1370958@nvidia.com>
+Received: from bhuna.collabora.co.uk (bhuna.collabora.co.uk [46.235.227.227])
+ by smtp1.osuosl.org (Postfix) with ESMTPS id A988C83E1E
+ for <iommu@lists.linux-foundation.org>; Thu, 22 Apr 2021 17:26:10 +0000 (UTC)
+Received: from [127.0.0.1] (localhost [127.0.0.1])
+ (Authenticated sender: ezequiel) with ESMTPSA id A3A6B1F4359E
+Message-ID: <7557bc8aaaa1924ad39676b32ba6a3f6474a3722.camel@collabora.com>
+Subject: Re: [PATCH v2 1/4] dt-bindings: iommu: rockchip: Convert IOMMU to
+ DT schema
+From: Ezequiel Garcia <ezequiel@collabora.com>
+To: Benjamin Gaignard <benjamin.gaignard@collabora.com>, joro@8bytes.org, 
+ will@kernel.org, robh+dt@kernel.org, heiko@sntech.de, xxm@rock-chips.com
+Date: Thu, 22 Apr 2021 14:16:53 -0300
+In-Reply-To: <20210422141602.350746-2-benjamin.gaignard@collabora.com>
+References: <20210422141602.350746-1-benjamin.gaignard@collabora.com>
+ <20210422141602.350746-2-benjamin.gaignard@collabora.com>
+Organization: Collabora
+User-Agent: Evolution 3.38.2-1 
 MIME-Version: 1.0
-X-Scanned-By: MIMEDefang 2.79 on 10.5.11.13
-Cc: Jean-Philippe Brucker <jean-philippe@linaro.org>, "Tian,
- Kevin" <kevin.tian@intel.com>, "Jiang, Dave" <dave.jiang@intel.com>, "Raj, 
- Ashok" <ashok.raj@intel.com>, Jonathan Corbet <corbet@lwn.net>,
- Jean-Philippe Brucker <jean-philippe@linaro.com>,
- Li Zefan <lizefan@huawei.com>, LKML <linux-kernel@vger.kernel.org>,
- "iommu@lists.linux-foundation.org" <iommu@lists.linux-foundation.org>,
- David Gibson <david@gibson.dropbear.id.au>,
- Johannes Weiner <hannes@cmpxchg.org>, Tejun Heo <tj@kernel.org>,
- "cgroups@vger.kernel.org" <cgroups@vger.kernel.org>, "Wu,
- Hao" <hao.wu@intel.com>, David Woodhouse <dwmw2@infradead.org>
+Cc: devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
+ Kever Yang <kever.yang@rock-chips.com>, linux-rockchip@lists.infradead.org,
+ iommu@lists.linux-foundation.org, kernel@collabora.com,
+ linux-arm-kernel@lists.infradead.org
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -110,270 +76,94 @@ List-Post: <mailto:iommu@lists.linux-foundation.org>
 List-Help: <mailto:iommu-request@lists.linux-foundation.org?subject=help>
 List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
  <mailto:iommu-request@lists.linux-foundation.org?subject=subscribe>
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-On Wed, 21 Apr 2021 20:03:01 -0300
-Jason Gunthorpe <jgg@nvidia.com> wrote:
-
-> On Wed, Apr 21, 2021 at 01:33:12PM -0600, Alex Williamson wrote:
-> 
-> > > I still expect that VFIO_GROUP_SET_CONTAINER will be used to connect
-> > > /dev/{ioasid,vfio} to the VFIO group and all the group and device
-> > > logic stays inside VFIO.  
-> > 
-> > But that group and device logic is also tied to the container, where
-> > the IOMMU backend is the interchangeable thing that provides the IOMMU
-> > manipulation for that container.  
-> 
-> I think that is an area where the discussion would need to be focused.
-> 
-> I don't feel very prepared to have it in details, as I haven't dug
-> into all the group and iommu micro-operation very much.
-> 
-> But, it does seem like the security concept that VFIO is creating with
-> the group also has to be present in the lower iommu layer too.
-> 
-> With different subsystems joining devices to the same ioasid's we
-> still have to enforce the security propery the vfio group is creating.
-> 
-> > If you're using VFIO_GROUP_SET_CONTAINER to associate a group to a
-> > /dev/ioasid, then you're really either taking that group outside of
-> > vfio or you're re-implementing group management in /dev/ioasid.   
-> 
-> This sounds right.
-> 
-> > > Everything can be switched to ioasid_container all down the line. If
-> > > it wasn't for PPC this looks fairly simple.  
-> > 
-> > At what point is it no longer vfio?  I'd venture to say that replacing
-> > the container rather than invoking a different IOMMU backend is that
-> > point.  
-> 
-> sorry, which is no longer vfio?
-
-I'm suggesting that if we're replacing the container/group model with
-an ioasid then we're effectively creating a new thing that really only
-retains the vfio device uapi.
-
-> > > Since getting rid of PPC looks a bit hard, we'd be stuck with
-> > > accepting a /dev/ioasid and then immediately wrappering it in a
-> > > vfio_container an shimming it through a vfio_iommu_ops. It is not
-> > > ideal at all, but in my look around I don't see a major problem if
-> > > type1 implementation is moved to live under /dev/ioasid.  
-> > 
-> > But type1 is \just\ an IOMMU backend, not "/dev/vfio".  Given that
-> > nobody flinched at removing NVLink support, maybe just deprecate SPAPR
-> > now and see if anyone objects ;)  
-> 
-> Would simplify this project, but I wonder :)
-> 
-> In any event, it does look like today we'd expect the SPAPR stuff
-> would be done through the normal iommu APIs, perhaps enhanced a bit,
-> which makes me suspect an enhanced type1 can implement SPAPR.
-
-David Gibson has argued for some time that SPAPR could be handled via a
-converged type1 model.  We has mapped that out at one point,
-essentially a "type2", but neither of us had any bandwidth to pursue it.
-
-> I say this because the SPAPR looks quite a lot like PASID when it has
-> APIs for allocating multiple tables and other things. I would be
-> interested to hear someone from IBM talk about what it is doing and
-> how it doesn't fit into today's IOMMU API.
-
-[Cc David, Alexey]
-
-> It is very old and the iommu world has advanced tremendously lately,
-> maybe I'm too optimisitic?
-> 
-> > > We end up with a ioasid.h that basically has the vfio_iommu_type1 code
-> > > lightly recast into some 'struct iommu_container' and a set of
-> > > ioasid_* function entry points that follow vfio_iommu_driver_ops_type1:
-> > >   ioasid_attach_group
-> > >   ioasid_detatch_group
-> > >   ioasid_<something about user pages>
-> > >   ioasid_read/ioasid_write  
-> > 
-> > Again, this looks like a vfio IOMMU backend.  What are we accomplishing
-> > by replacing /dev/vfio with /dev/ioasid versus some manipulation of
-> > VFIO_SET_IOMMU accepting a /dev/ioasid fd?  
-> 
-> The point of all of this is to make the user api for the IOMMU
-> cross-subsystem. It is not a vfio IOMMU backend, it is moving the
-> IOMMU abstraction from VFIO into the iommu framework and giving the
-> iommu framework a re-usable user API.
-
-Right, but I don't see that implies it cannot work within the vfio
-IOMMU model.  Currently when an IOMMU is set, the /dev/vfio/vfio
-container becomes a conduit for file ops from the container to be
-forwarded to the IOMMU.  But that's in part because the user doesn't
-have another object to interact with the IOMMU.  It's entirely possible
-that with an ioasid shim, the user would continue to interact directly
-with the /dev/ioasid fd for IOMMU manipulation and only use
-VFIO_SET_IOMMU to associate a vfio container to that ioasid.
-
-> My ideal outcome would be for VFIO to use only the new iommu/ioasid
-> API and have no iommu pluggability at all. The iommu subsystem
-> provides everything needed to VFIO, and provides it equally to VDPA
-> and everything else.
-
-As above, we don't necessarily need to have the vfio container be the
-access mechanism for the IOMMU, it can become just an means to
-association the container with an IOMMU.  This has quite a few
-transitional benefits.
-
-> drivers/vfio/ becomes primarily about 'struct vfio_device' and
-> everything related to its IOCTL interface.
-> 
-> drivers/iommu and ioasid.c become all about a pluggable IOMMU
-> interface, including a uAPI for it.
-> 
-> IMHO it makes a high level sense, though it may be a pipe dream.
-
-This is where we've dissolved all but the vfio device uapi, which
-suggests the group and container model were never necessary and I'm not
-sure exactly what that uapi looks like.  We currently make use of an
-IOMMU api that is group aware, but that awareness extends out to the
-vfio uapi.
-
-> > > If we have this, and /dev/ioasid implements the legacy IOCTLs, then
-> > > /dev/vfio == /dev/ioasid and we can compile out vfio_fops and related
-> > > from vfio.c and tell ioasid.c to create /dev/vfio instead using the
-> > > ops it owns.  
-> > 
-> > Why would we want /dev/ioasid to implement legacy ioctls instead of
-> > simply implementing an interface to allow /dev/ioasid to be used as a
-> > vfio IOMMU backend?  
-> 
-> Only to make our own migration easier. I'd imagine everyone would want
-> to sit down and design this new clear ioasid API that can co-exist on
-> /dev/ioasid with the legacy once.
-
-vfio really just wants to be able to attach groups to an address space
-to consider them isolated, everything else about the IOMMU API could
-happen via a new ioasid file descriptor representing that context, ie.
-vfio handles the group ownership and device access, ioasid handles the
-actual mappings.
-
-> > The pseudo code above really suggests you do want to remove
-> > /dev/vfio/vfio, but this is only one of the IOMMU backends for vfio, so
-> > I can't quite figure out if we're talking past each other.  
-> 
-> I'm not quite sure what you mean by "one of the IOMMU backends?" You
-> mean type1, right?
->  
-> > As I expressed in another thread, type1 has a lot of shortcomings.  The
-> > mapping interface leaves userspace trying desperately to use statically
-> > mapped buffers because the map/unmap latency is too high.  We have
-> > horrible issues with duplicate locked page accounting across
-> > containers.  It suffers pretty hard from feature creep in various
-> > areas.  A new IOMMU backend is an opportunity to redesign some of these
-> > things.  
-> 
-> Sure, but also those kinds of transformational things go alot better
-> if you can smoothly go from the old to the new and have technical
-> co-existance in side the kernel. Having a shim that maps the old APIs
-> to new APIs internally to Linux helps keep the implementation from
-> becoming too bogged down with compatibility.
-
-I'm afraid /dev/ioasid providing type1 compatibility would be just that.
-
-> > The IOMMU group also abstracts isolation and visibility relative to
-> > DMA.  For example, in a PCIe topology a multi-function device may not
-> > have isolation between functions, but each requester ID is visible to
-> > the IOMMU.    
-> 
-> Okay, I'm glad I have this all right in my head, as I was pretty sure
-> this was what the group was about.
-> 
-> My next question is why do we have three things as a FD: group, device
-> and container (aka IOMMU interface)?
-> 
-> Do we have container because the /dev/vfio/vfio can hold only a single
-> page table so we need to swap containers sometimes?
-
-The container represents an IOMMU address space, which can be shared by
-multiple groups, where each group may contain one or more devices.
-Swapping a container would require releasing all the devices (the user
-cannot have access to a non-isolated device), then a group could be
-moved from one container to another.
-
-> If we start from a clean sheet and make a sketch..
-> 
-> /dev/ioasid is the IOMMU control interface. It can create multiple
-> IOASIDs that have page tables and it can manipulate those page tables.
-> Each IOASID is identified by some number.
-> 
-> struct vfio_device/vdpa_device/etc are consumers of /dev/ioasid
-> 
-> When a device attaches to an ioasid userspace gives VFIO/VDPA the
-> ioasid FD and the ioasid # in the FD.
-> 
-> The security rule for isolation is that once a device is attached to a
-> /dev/ioasid fd then all other devices in that security group must be
-> attached to the same ioasid FD or left unused.
-
-Sounds like a group...  Note also that if those other devices are not
-isolated from the user's device, the user could manipulate "unused"
-devices via DMA.  So even unused devices should be within the same
-IOMMU context... thus attaching groups to IOMMU domains.
-
-> Thus /dev/ioasid also becomes the unit of security and the IOMMU
-> subsystem level becomes aware of and enforces the group security
-> rules. Userspace does not need to "see" the group
-
-What tools does userspace have to understand isolation of individual
-devices without groups?
- 
-> In sketch it would be like
->   ioasid_fd = open("/dev/ioasid");
->   vfio_device_fd = open("/dev/vfio/device0")
->   vdpa_device_fd = open("/dev/vdpa/device0")
->   ioctl(vifo_device_fd, JOIN_IOASID_FD, ioasifd)
->   ioctl(vdpa_device_fd, JOIN_IOASID_FD, ioasifd)
-> 
->   gpa_ioasid_id = ioctl(ioasid_fd, CREATE_IOASID, ..)
->   ioctl(ioasid_fd, SET_IOASID_PAGE_TABLES, ..)
-> 
->   ioctl(vfio_device, ATTACH_IOASID, gpa_ioasid_id)
->   ioctl(vpda_device, ATTACH_IOASID, gpa_ioasid_id)
-> 
->   .. both VDPA and VFIO see the guest physical map and the kernel has
->      enough info that both could use the same IOMMU page table
->      structure ..
-> 
->   // Guest viommu turns off bypass mode for the vfio device
->   ioctl(vfio_device, DETATCH_IOASID)
->  
->   // Guest viommu creates a new page table
->   rid_ioasid_id = ioctl(ioasid_fd, CREATE_IOASID, ..)
->   ioctl(ioasid_fd, SET_IOASID_PAGE_TABLES, ..)
-> 
->   // Guest viommu links the new page table to the RID
->   ioctl(vfio_device, ATTACH_IOASID, rid_ioasid_id)
-> 
-> The group security concept becomes implicit and hidden from the
-> uAPI. JOIN_IOASID_FD implicitly finds the device's group inside the
-> kernel and requires that all members of the group be joined only to
-> this ioasid_fd.
-> 
-> Essentially we discover the group from the device instead of the
-> device from the group.
-> 
-> Where does it fall down compared to the three FD version we have
-> today?
-
-The group concept is explicit today because how does userspace learn
-about implicit dependencies between devices?  For example, if the user
-has a conventional PCI bus with a couple devices on it, how do they
-understand that those devices cannot be assigned to separate userspace
-drivers?  The group fd fills that gap.  Thanks,
-
-Alex
-
-_______________________________________________
-iommu mailing list
-iommu@lists.linux-foundation.org
-https://lists.linuxfoundation.org/mailman/listinfo/iommu
+KEFkZGluZyBLZXZlcikKCkhpIEJlbmphbWluLAoKVGhhbmtzIGEgbG90IGZvciB3b3JraW5nIG9u
+IHRoaXMsIGl0IGxvb2tzIGFtYXppbmcuIFRvZ2V0aGVyIHdpdGggdGhlIGdyZWF0IHdvcmsKdGhh
+dCBSb2NrY2hpcCBpcyBkb2luZywgaXQgc2VlbXMgUkszNTY2L1JLMzU2OCB3aWxsIGhhdmUgZGVj
+ZW50IHN1cHBvcnQgdmVyeSBzb29uLgoKT25lIGNvbW1lbnQgaGVyZToKCk9uIFRodSwgMjAyMS0w
+NC0yMiBhdCAxNjoxNSArMDIwMCwgQmVuamFtaW4gR2FpZ25hcmQgd3JvdGU6Cj4gQ29udmVydCBS
+b2NrY2hpcCBJT01NVSB0byBEVCBzY2hlbWEKPiAKPiBTaWduZWQtb2ZmLWJ5OiBCZW5qYW1pbiBH
+YWlnbmFyZCA8YmVuamFtaW4uZ2FpZ25hcmRAY29sbGFib3JhLmNvbT4KPiAtLS0KPiB2ZXJzaW9u
+IDI6Cj4gwqAtIENoYW5nZSBtYWludGFpbmVyCj4gwqAtIENoYW5nZSByZWcgbWF4SXRlbXMKPiDC
+oC0gQ2hhbmdlIGludGVycnVwdCBtYXhJdGVtcwo+IAo+IMKgLi4uL2JpbmRpbmdzL2lvbW11L3Jv
+Y2tjaGlwLGlvbW11LnR4dMKgwqDCoMKgwqDCoMKgwqAgfCAzOCAtLS0tLS0tLS0KPiDCoC4uLi9i
+aW5kaW5ncy9pb21tdS9yb2NrY2hpcCxpb21tdS55YW1swqDCoMKgwqDCoMKgwqAgfCA3OSArKysr
+KysrKysrKysrKysrKysrCj4gwqAyIGZpbGVzIGNoYW5nZWQsIDc5IGluc2VydGlvbnMoKyksIDM4
+IGRlbGV0aW9ucygtKQo+IMKgZGVsZXRlIG1vZGUgMTAwNjQ0IERvY3VtZW50YXRpb24vZGV2aWNl
+dHJlZS9iaW5kaW5ncy9pb21tdS9yb2NrY2hpcCxpb21tdS50eHQKPiDCoGNyZWF0ZSBtb2RlIDEw
+MDY0NCBEb2N1bWVudGF0aW9uL2RldmljZXRyZWUvYmluZGluZ3MvaW9tbXUvcm9ja2NoaXAsaW9t
+bXUueWFtbAo+IAo+IGRpZmYgLS1naXQgYS9Eb2N1bWVudGF0aW9uL2RldmljZXRyZWUvYmluZGlu
+Z3MvaW9tbXUvcm9ja2NoaXAsaW9tbXUudHh0IGIvRG9jdW1lbnRhdGlvbi9kZXZpY2V0cmVlL2Jp
+bmRpbmdzL2lvbW11L3JvY2tjaGlwLGlvbW11LnR4dAo+IGRlbGV0ZWQgZmlsZSBtb2RlIDEwMDY0
+NAo+IGluZGV4IDZlY2VmZWExYzZmOS4uMDAwMDAwMDAwMDAwCj4gLS0tIGEvRG9jdW1lbnRhdGlv
+bi9kZXZpY2V0cmVlL2JpbmRpbmdzL2lvbW11L3JvY2tjaGlwLGlvbW11LnR4dAo+ICsrKyAvZGV2
+L251bGwKPiBAQCAtMSwzOCArMCwwIEBACj4gLVJvY2tjaGlwIElPTU1VCj4gLT09PT09PT09PT09
+PT09Cj4gLQo+IC1BIFJvY2tjaGlwIERSTSBpb21tdSB0cmFuc2xhdGVzIGlvIHZpcnR1YWwgYWRk
+cmVzc2VzIHRvIHBoeXNpY2FsIGFkZHJlc3NlcyBmb3IKPiAtaXRzIG1hc3RlciBkZXZpY2UuwqAg
+RWFjaCBzbGF2ZSBkZXZpY2UgaXMgYm91bmQgdG8gYSBzaW5nbGUgbWFzdGVyIGRldmljZSwgYW5k
+Cj4gLXNoYXJlcyBpdHMgY2xvY2tzLCBwb3dlciBkb21haW4gYW5kIGlycS4KPiAtCj4gLVJlcXVp
+cmVkIHByb3BlcnRpZXM6Cj4gLS0gY29tcGF0aWJsZcKgwqDCoMKgwqAgOiBTaG91bGQgYmUgInJv
+Y2tjaGlwLGlvbW11Igo+IC0tIHJlZ8KgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoCA6IEFkZHJlc3Mg
+c3BhY2UgZm9yIHRoZSBjb25maWd1cmF0aW9uIHJlZ2lzdGVycwo+IC0tIGludGVycnVwdHPCoMKg
+wqDCoMKgIDogSW50ZXJydXB0IHNwZWNpZmllciBmb3IgdGhlIElPTU1VIGluc3RhbmNlCj4gLS0g
+aW50ZXJydXB0LW5hbWVzIDogSW50ZXJydXB0IG5hbWUgZm9yIHRoZSBJT01NVSBpbnN0YW5jZQo+
+IC0tICNpb21tdS1jZWxsc8KgwqDCoCA6IFNob3VsZCBiZSA8MD4uwqAgVGhpcyBpbmRpY2F0ZXMg
+dGhlIGlvbW11IGlzIGEKPiAtwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqAg
+InNpbmdsZS1tYXN0ZXIiIGRldmljZSwgYW5kIG5lZWRzIG5vIGFkZGl0aW9uYWwgaW5mb3JtYXRp
+b24KPiAtwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqAgdG8gYXNzb2NpYXRl
+IHdpdGggaXRzIG1hc3RlciBkZXZpY2UuwqAgU2VlOgo+IC3CoMKgwqDCoMKgwqDCoMKgwqDCoMKg
+wqDCoMKgwqDCoMKgwqDCoCBEb2N1bWVudGF0aW9uL2RldmljZXRyZWUvYmluZGluZ3MvaW9tbXUv
+aW9tbXUudHh0Cj4gLS0gY2xvY2tzwqDCoMKgwqDCoMKgwqDCoMKgIDogQSBsaXN0IG9mIGNsb2Nr
+cyByZXF1aXJlZCBmb3IgdGhlIElPTU1VIHRvIGJlIGFjY2Vzc2libGUgYnkKPiAtwqDCoMKgwqDC
+oMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqAgdGhlIGhvc3QgQ1BVLgo+IC0tIGNsb2NrLW5h
+bWVzwqDCoMKgwqAgOiBTaG91bGQgY29udGFpbiB0aGUgZm9sbG93aW5nOgo+IC3CoMKgwqDCoMKg
+wqDCoCJpZmFjZSIgLSBNYWluIHBlcmlwaGVyYWwgYnVzIGNsb2NrIChQQ0xLL0hDTCkgKHJlcXVp
+cmVkKQo+IC3CoMKgwqDCoMKgwqDCoCJhY2xrIsKgIC0gQVhJIGJ1cyBjbG9jayAocmVxdWlyZWQp
+Cj4gLQo+IC1PcHRpb25hbCBwcm9wZXJ0aWVzOgo+IC0tIHJvY2tjaGlwLGRpc2FibGUtbW11LXJl
+c2V0IDogRG9uJ3QgdXNlIHRoZSBtbXUgcmVzZXQgb3BlcmF0aW9uLgo+IC3CoMKgwqDCoMKgwqDC
+oMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgIFNvbWUgbW11IGlu
+c3RhbmNlcyBtYXkgcHJvZHVjZSB1bmV4cGVjdGVkIHJlc3VsdHMKPiAtwqDCoMKgwqDCoMKgwqDC
+oMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoCB3aGVuIHRoZSByZXNl
+dCBvcGVyYXRpb24gaXMgdXNlZC4KPiAtCj4gLUV4YW1wbGU6Cj4gLQo+IC3CoMKgwqDCoMKgwqDC
+oHZvcGxfbW11OiBpb21tdUBmZjk0MDMwMCB7Cj4gLcKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKg
+wqDCoGNvbXBhdGlibGUgPSAicm9ja2NoaXAsaW9tbXUiOwo+IC3CoMKgwqDCoMKgwqDCoMKgwqDC
+oMKgwqDCoMKgwqByZWcgPSA8MHhmZjk0MDMwMCAweDEwMD47Cj4gLcKgwqDCoMKgwqDCoMKgwqDC
+oMKgwqDCoMKgwqDCoGludGVycnVwdHMgPSA8R0lDX1NQSSAxNiBJUlFfVFlQRV9MRVZFTF9ISUdI
+PjsKPiAtwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgaW50ZXJydXB0LW5hbWVzID0gInZv
+cGxfbW11IjsKPiAtwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgY2xvY2tzID0gPCZjcnUg
+QUNMS19WT1AxPiwgPCZjcnUgSENMS19WT1AxPjsKPiAtwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKg
+wqDCoMKgY2xvY2stbmFtZXMgPSAiYWNsayIsICJpZmFjZSI7Cj4gLcKgwqDCoMKgwqDCoMKgwqDC
+oMKgwqDCoMKgwqDCoCNpb21tdS1jZWxscyA9IDwwPjsKPiAtwqDCoMKgwqDCoMKgwqB9Owo+IGRp
+ZmYgLS1naXQgYS9Eb2N1bWVudGF0aW9uL2RldmljZXRyZWUvYmluZGluZ3MvaW9tbXUvcm9ja2No
+aXAsaW9tbXUueWFtbCBiL0RvY3VtZW50YXRpb24vZGV2aWNldHJlZS9iaW5kaW5ncy9pb21tdS9y
+b2NrY2hpcCxpb21tdS55YW1sCj4gbmV3IGZpbGUgbW9kZSAxMDA2NDQKPiBpbmRleCAwMDAwMDAw
+MDAwMDAuLjBkYjIwOGNmNzI0YQo+IC0tLSAvZGV2L251bGwKPiArKysgYi9Eb2N1bWVudGF0aW9u
+L2RldmljZXRyZWUvYmluZGluZ3MvaW9tbXUvcm9ja2NoaXAsaW9tbXUueWFtbAo+IEBAIC0wLDAg
+KzEsNzkgQEAKPiArIyBTUERYLUxpY2Vuc2UtSWRlbnRpZmllcjogR1BMLTIuMC1vbmx5Cj4gKyVZ
+QU1MIDEuMgo+ICstLS0KPiArJGlkOiBodHRwOi8vZGV2aWNldHJlZS5vcmcvc2NoZW1hcy9pb21t
+dS9yb2NrY2hpcCxpb21tdS55YW1sIwo+ICskc2NoZW1hOiBodHRwOi8vZGV2aWNldHJlZS5vcmcv
+bWV0YS1zY2hlbWFzL2NvcmUueWFtbCMKPiArCj4gK3RpdGxlOiBSb2NrY2hpcCBJT01NVQo+ICsK
+PiArbWFpbnRhaW5lcnM6Cj4gK8KgIC0gSGVpa28gU3R1ZWJuZXIgPGhlaWtvQHNudGVjaC5kZT4K
+PiArCj4gK2Rlc2NyaXB0aW9uOiB8Kwo+ICvCoCBBIFJvY2tjaGlwIERSTSBpb21tdSB0cmFuc2xh
+dGVzIGlvIHZpcnR1YWwgYWRkcmVzc2VzIHRvIHBoeXNpY2FsIGFkZHJlc3NlcyBmb3IKPiArwqAg
+aXRzIG1hc3RlciBkZXZpY2UuIEVhY2ggc2xhdmUgZGV2aWNlIGlzIGJvdW5kIHRvIGEgc2luZ2xl
+IG1hc3RlciBkZXZpY2UgYW5kCj4gK8KgIHNoYXJlcyBpdHMgY2xvY2tzLCBwb3dlciBkb21haW4g
+YW5kIGlycS4KPiArCj4gK8KgIEZvciBpbmZvcm1hdGlvbiBvbiBhc3NpZ25pbmcgSU9NTVUgY29u
+dHJvbGxlciB0byBpdHMgcGVyaXBoZXJhbCBkZXZpY2VzLAo+ICvCoCBzZWUgZ2VuZXJpYyBJT01N
+VSBiaW5kaW5ncy4KPiArCj4gK3Byb3BlcnRpZXM6Cj4gK8KgIGNvbXBhdGlibGU6Cj4gK8KgwqDC
+oCBjb25zdDogcm9ja2NoaXAsaW9tbXUKPiArCj4gK8KgIHJlZzoKPiArwqDCoMKgIG1pbkl0ZW1z
+OiAxCj4gK8KgwqDCoCBtYXhJdGVtczogMgo+ICsKPiArwqAgaW50ZXJydXB0czoKPiArwqDCoMKg
+IG1pbkl0ZW1zOiAxCj4gK8KgwqDCoCBtYXhJdGVtczogMgo+ICsKPiArwqAgaW50ZXJydXB0LW5h
+bWVzOgo+ICvCoMKgwqAgbWluSXRlbXM6IDEKPiArwqDCoMKgIG1heEl0ZW1zOiAyCj4gKwoKQUZB
+SUNTLCB0aGUgZHJpdmVyIHN1cHBvcnRzIGhhbmRsaW5nIG11bHRpcGxlIE1NVXMsIGFuZCB0aGVy
+ZSdzIG9uZSByZWcgYW5kCmludGVycnVwdCBjZWxsIGZvciBlYWNoIE1NVS4gSU9XLCB0aGVyZSdz
+IG5vIHJlcXVpcmVtZW50IHRoYXQgbWF4SXRlbXMgaXMgMi4KCklzIHRoZXJlIGFueSB3YXkgd2Ug
+Y2FuIGRlc2NyaWJlIHRoYXQ/IE9yIG1heWJlIGp1c3QgYWxsb3cgYSBiaWdnZXIgbWF4aW11bT8K
+ClRoYW5rcywKRXplcXVpZWwKCl9fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19f
+X19fX19fX19fCmlvbW11IG1haWxpbmcgbGlzdAppb21tdUBsaXN0cy5saW51eC1mb3VuZGF0aW9u
+Lm9yZwpodHRwczovL2xpc3RzLmxpbnV4Zm91bmRhdGlvbi5vcmcvbWFpbG1hbi9saXN0aW5mby9p
+b21tdQ==
