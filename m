@@ -2,108 +2,97 @@ Return-Path: <SRS0=1bbG=JU=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-2.0 required=3.0 tests=BAYES_00,DKIM_ADSP_CUSTOM_MED,
+X-Spam-Status: No, score=-8.5 required=3.0 tests=BAYES_00,DKIM_ADSP_CUSTOM_MED,
 	DKIM_INVALID,DKIM_SIGNED,FREEMAIL_FORGED_FROMDOMAIN,FREEMAIL_FROM,
-	HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,NICE_REPLY_A,SPF_HELO_NONE,
-	SPF_PASS,URIBL_BLOCKED,USER_AGENT_SANE_1 autolearn=no autolearn_force=no
-	version=3.4.0
+	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,SPF_HELO_NONE,
+	SPF_PASS,URIBL_BLOCKED,USER_AGENT_GIT autolearn=unavailable
+	autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 95640C433B4
-	for <iommu@archiver.kernel.org>; Fri, 23 Apr 2021 15:23:35 +0000 (UTC)
-Received: from smtp1.osuosl.org (smtp1.osuosl.org [140.211.166.138])
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E5C89C433B4
+	for <iommu@archiver.kernel.org>; Fri, 23 Apr 2021 16:31:55 +0000 (UTC)
+Received: from smtp3.osuosl.org (smtp3.osuosl.org [140.211.166.136])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 1E55E613D5
-	for <iommu@archiver.kernel.org>; Fri, 23 Apr 2021 15:23:33 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 1E55E613D5
+	by mail.kernel.org (Postfix) with ESMTPS id 720E1611C1
+	for <iommu@archiver.kernel.org>; Fri, 23 Apr 2021 16:31:55 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 720E1611C1
 Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=gmail.com
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by smtp1.osuosl.org (Postfix) with ESMTP id A46CD84388;
-	Fri, 23 Apr 2021 15:23:32 +0000 (UTC)
+	by smtp3.osuosl.org (Postfix) with ESMTP id 0ECAB6064D;
+	Fri, 23 Apr 2021 16:31:55 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from smtp1.osuosl.org ([127.0.0.1])
-	by localhost (smtp1.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id BKqAvOmS4KAN; Fri, 23 Apr 2021 15:23:31 +0000 (UTC)
+Received: from smtp3.osuosl.org ([127.0.0.1])
+	by localhost (smtp3.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+	with ESMTP id 8YTuP2XUOeSQ; Fri, 23 Apr 2021 16:31:54 +0000 (UTC)
 Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [IPv6:2605:bc80:3010:104::8cd3:938])
-	by smtp1.osuosl.org (Postfix) with ESMTP id 974D98437F;
-	Fri, 23 Apr 2021 15:23:31 +0000 (UTC)
+	by smtp3.osuosl.org (Postfix) with ESMTP id C22A6605EA;
+	Fri, 23 Apr 2021 16:31:53 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 6B96BC000F;
-	Fri, 23 Apr 2021 15:23:31 +0000 (UTC)
-Received: from smtp2.osuosl.org (smtp2.osuosl.org [140.211.166.133])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 8101FC000B
- for <iommu@lists.linux-foundation.org>; Fri, 23 Apr 2021 15:23:29 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id A0D9EC000E;
+	Fri, 23 Apr 2021 16:31:53 +0000 (UTC)
+Received: from smtp3.osuosl.org (smtp3.osuosl.org [140.211.166.136])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id B6709C000B
+ for <iommu@lists.linux-foundation.org>; Fri, 23 Apr 2021 16:31:52 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by smtp2.osuosl.org (Postfix) with ESMTP id 7C70940645
- for <iommu@lists.linux-foundation.org>; Fri, 23 Apr 2021 15:23:29 +0000 (UTC)
+ by smtp3.osuosl.org (Postfix) with ESMTP id 8E2D96064D
+ for <iommu@lists.linux-foundation.org>; Fri, 23 Apr 2021 16:31:52 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Authentication-Results: smtp2.osuosl.org (amavisd-new);
- dkim=pass (2048-bit key) header.d=gmail.com
-Received: from smtp2.osuosl.org ([127.0.0.1])
- by localhost (smtp2.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id Q1_B8Kk7BEaW for <iommu@lists.linux-foundation.org>;
- Fri, 23 Apr 2021 15:23:26 +0000 (UTC)
+Received: from smtp3.osuosl.org ([127.0.0.1])
+ by localhost (smtp3.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+ with ESMTP id oseKC11XKZzb for <iommu@lists.linux-foundation.org>;
+ Fri, 23 Apr 2021 16:31:51 +0000 (UTC)
 X-Greylist: whitelisted by SQLgrey-1.8.0
-Received: from mail-lf1-x130.google.com (mail-lf1-x130.google.com
- [IPv6:2a00:1450:4864:20::130])
- by smtp2.osuosl.org (Postfix) with ESMTPS id 85AB640640
- for <iommu@lists.linux-foundation.org>; Fri, 23 Apr 2021 15:23:26 +0000 (UTC)
-Received: by mail-lf1-x130.google.com with SMTP id g8so78140992lfv.12
- for <iommu@lists.linux-foundation.org>; Fri, 23 Apr 2021 08:23:26 -0700 (PDT)
+Received: from mail-ej1-x62f.google.com (mail-ej1-x62f.google.com
+ [IPv6:2a00:1450:4864:20::62f])
+ by smtp3.osuosl.org (Postfix) with ESMTPS id 8AD91605EA
+ for <iommu@lists.linux-foundation.org>; Fri, 23 Apr 2021 16:31:51 +0000 (UTC)
+Received: by mail-ej1-x62f.google.com with SMTP id sd23so66096496ejb.12
+ for <iommu@lists.linux-foundation.org>; Fri, 23 Apr 2021 09:31:51 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=gmail.com; s=20161025;
- h=subject:to:cc:references:from:message-id:date:user-agent
- :mime-version:in-reply-to:content-language:content-transfer-encoding;
- bh=n5/P3oLW/T875nhk38fWvvBcXE+/GVaIkWm4ulWT5wE=;
- b=W5cQCMg7NNkYQKAZqRvcb4c8g4HSECVX1Edc17mn3r0emGHFU3Z/4HKbnvPlLO5C07
- GkucuOR+TdOONwnH/ikfN+nQnJOvd1FqUu8by2KhZ/NjfEAtKOv9cIn6tfr7LS5qTMtB
- tCGaFtIMZC6hiTmkuOH42dUk3YOZzaxKsR1Hc0n2Wi7YK1WQegQNS6jcvKxOAfZvQ8AG
- RBeuBFoVvbOqnAG1+sERGib8EMpkNXAhCnhPlrsZEgKITr0S0LVoQ4xmbgNahqfQv4jT
- peix0RW3vtyN4lypDBjppnK7TFL6iRJPhlUm3dlHQP++mKkM2ANyxaUx8sFs9Nywh8hs
- vsbA==
+ h=from:to:cc:subject:date:message-id:mime-version
+ :content-transfer-encoding;
+ bh=tp/ISs72JT/Ug6i01LrpgSZ/9Ix7eHbExJ0CNZA+2z0=;
+ b=OrtIbblL6BhQgYGqijzbVDLblA7afi+WZyTC36UxzOPQwdeosxMnfh0rwI5vztTVp8
+ 7m0/UeOcCbW+wO3YoGXUtT9ciEjZPgx1l9NT+Sdge/wmG93WCKiZlJ4mLpbetpnosKQo
+ mAPUgsjCauUyqAbX5WX+7nChprJFX5Metsloj5SUJ036HUOMobjKetBT03Q22ZJAudZN
+ YxzAHeYK9LJUkC80XpuraEXeJldVoQuErgnMrTD8NTCcUlH8B/pS/XPo7aSVOx2ksP+D
+ u8UoY6oZqTl6TJise2PsP80Ex7fgoZvKIQ3H8Y4XMn7yP05LAvMdoUp6sZdnpDg02bQa
+ Uk9Q==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
  d=1e100.net; s=20161025;
- h=x-gm-message-state:subject:to:cc:references:from:message-id:date
- :user-agent:mime-version:in-reply-to:content-language
+ h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
  :content-transfer-encoding;
- bh=n5/P3oLW/T875nhk38fWvvBcXE+/GVaIkWm4ulWT5wE=;
- b=j3wWUMIDa/RjgMwCa27iFwI975TCAYOdrgV2TjyJhrJLiXjVgV5BcVgIrgWjOlTF+x
- S6d8zWC9ZBmXzOEPuo0F2JyNH5Kg62smNKd5XsXwlcnITWN71tLzgD0U9Dvx33Dp7bqD
- a7hjoTi/sj4a8jojUHpFVkLF2ddLmLEzUY3kIMyX+uY7WiudbmcDChIkv5YEFXt3gtEh
- I7jEVSxmWMenRFZI6GW/LkFUcLjf8pJ/5yT5fFMPi1gnGt93Ykv9bH52JOge18fA8wuH
- t39Dh9L8q0SVjVQP2o9gftY0kk6UaCFWEYyaL8ezmQKfclSsTiVrXR7g6RnVK5pIh+sV
- wYQg==
-X-Gm-Message-State: AOAM530m0HgYtq7TMutVmtH/BlJpiUn2yvSe1NP7QvYmYm71NvDkhC8c
- RSffpzLRo9zak4EvrLrm70U=
-X-Google-Smtp-Source: ABdhPJx7dckk2pxEp/9xgSTGhkwCinZbZk3SLiXmMuI4u5wtA2nNSFJjJcolacRxt2TyFsCkVflzfw==
-X-Received: by 2002:ac2:5299:: with SMTP id q25mr3354496lfm.594.1619191404448; 
- Fri, 23 Apr 2021 08:23:24 -0700 (PDT)
-Received: from [192.168.2.145] (109-252-193-103.dynamic.spd-mgts.ru.
- [109.252.193.103])
- by smtp.googlemail.com with ESMTPSA id c2sm581127lfi.143.2021.04.23.08.23.23
- (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
- Fri, 23 Apr 2021 08:23:24 -0700 (PDT)
-Subject: Re: [PATCH v1 2/2] iommu/tegra-smmu: Revert workaround that was
- needed for Nyan Big Chromebook
-To: Guillaume Tucker <guillaume.tucker@collabora.com>,
- Nicolin Chen <nicoleotsuka@gmail.com>
-References: <20210328233256.20494-1-digetx@gmail.com>
- <20210328233256.20494-2-digetx@gmail.com>
- <20210401085549.GA31146@Asurada-Nvidia>
- <50a7e4c7-0e72-534a-a317-366e455213c1@gmail.com>
- <d01ccde4-5fa9-2aa7-c28b-b3899cc54c54@collabora.com>
-From: Dmitry Osipenko <digetx@gmail.com>
-Message-ID: <724e683f-5317-cdf7-7351-fcfd42b7b607@gmail.com>
-Date: Fri, 23 Apr 2021 18:23:22 +0300
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
- Thunderbird/78.8.1
+ bh=tp/ISs72JT/Ug6i01LrpgSZ/9Ix7eHbExJ0CNZA+2z0=;
+ b=QIi18FEhq0CNmIv4D+w3IEYbBzTim4HRgXxp1LqJxq1cMK25zHEF4Vzwhdy8x10t8+
+ 7pSbRkLMFxzQrKvfDKv9wrufOPjp6Qn+0FsY/HtIbItOL+1FmhApjKD8d9wb1zMiRe2j
+ AzqOf1DSXI3k5leCHe77I/ryeSPF5EQQi/GyDfDp9QGLtp7XDyKEOWGmzaysdpEBKYD9
+ VjNRYhYFlf5/Glhl6uh4qSNbm8dzo8QlpyarOejpT28rXwS6I2yH/BF8BHoNHhwcxaF0
+ t2CPB4h2ra0mjF9nEP4azW5NR29U2q9TrtL8VRyVbE6I8HoHY7HgFX84vKfMrSLEeUgE
+ Bp9g==
+X-Gm-Message-State: AOAM530LqmwESfn27Wx0ItzrSAOOaV/IHq5lc9bJV6qhVAt+ZYZmlqt2
+ mOG3fALHAV2WgCuR6ucplos=
+X-Google-Smtp-Source: ABdhPJyC462EOqOYC8DCRERSbNz5xA8kwLRP40IbLc2RkpHJ1Ij3qeGHgnr4Sh+iiHPKI54r3HflXA==
+X-Received: by 2002:a17:906:1101:: with SMTP id
+ h1mr5291463eja.179.1619195509781; 
+ Fri, 23 Apr 2021 09:31:49 -0700 (PDT)
+Received: from localhost ([62.96.65.119])
+ by smtp.gmail.com with ESMTPSA id r17sm4979429edt.70.2021.04.23.09.31.48
+ (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+ Fri, 23 Apr 2021 09:31:49 -0700 (PDT)
+From: Thierry Reding <thierry.reding@gmail.com>
+To: Joerg Roedel <joro@8bytes.org>,
+	Rob Herring <robh+dt@kernel.org>
+Subject: [PATCH v2 0/5] iommu: Support identity mappings of reserved-memory
+ regions
+Date: Fri, 23 Apr 2021 18:32:29 +0200
+Message-Id: <20210423163234.3651547-1-thierry.reding@gmail.com>
+X-Mailer: git-send-email 2.30.2
 MIME-Version: 1.0
-In-Reply-To: <d01ccde4-5fa9-2aa7-c28b-b3899cc54c54@collabora.com>
-Content-Language: en-US
-Cc: linux-kernel@vger.kernel.org, iommu@lists.linux-foundation.org,
- Jonathan Hunter <jonathanh@nvidia.com>,
- Thierry Reding <thierry.reding@gmail.com>, linux-tegra@vger.kernel.org,
- Will Deacon <will@kernel.org>
+Cc: devicetree@vger.kernel.org, Will Deacon <will@kernel.org>,
+ iommu@lists.linux-foundation.org, Nicolin Chen <nicolinc@nvidia.com>,
+ linux-tegra@vger.kernel.org, Dmitry Osipenko <digetx@gmail.com>,
+ Robin Murphy <robin.murphy@arm.com>
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -116,47 +105,132 @@ List-Post: <mailto:iommu@lists.linux-foundation.org>
 List-Help: <mailto:iommu-request@lists.linux-foundation.org?subject=help>
 List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
  <mailto:iommu-request@lists.linux-foundation.org?subject=subscribe>
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-MjMuMDQuMjAyMSAxODowMSwgR3VpbGxhdW1lIFR1Y2tlciDQv9C40YjQtdGCOgo+IE9uIDAyLzA0
-LzIwMjEgMTU6NDAsIERtaXRyeSBPc2lwZW5rbyB3cm90ZToKPj4gMDEuMDQuMjAyMSAxMTo1NSwg
-Tmljb2xpbiBDaGVuINC/0LjRiNC10YI6Cj4+PiBPbiBNb24sIE1hciAyOSwgMjAyMSBhdCAwMjoz
-Mjo1NkFNICswMzAwLCBEbWl0cnkgT3NpcGVua28gd3JvdGU6Cj4+Pj4gVGhlIHByZXZpb3VzIGNv
-bW1pdCBmaXhlcyBwcm9ibGVtIHdoZXJlIGRpc3BsYXkgY2xpZW50IHdhcyBhdHRhY2hpbmcgdG9v
-Cj4+Pj4gZWFybHkgdG8gSU9NTVUgZHVyaW5nIGtlcm5lbCBib290IGluIGEgbXVsdGktcGxhdGZv
-cm0ga2VybmVsIGNvbmZpZ3VyYXRpb24KPj4+PiB3aGljaCBlbmFibGVzIENPTkZJR19BUk1fRE1B
-X1VTRV9JT01NVT15LiBUaGUgd29ya2Fyb3VuZCB0aGF0IGhlbHBlZCB0bwo+Pj4+IGRlZmVyIHRo
-ZSBJT01NVSBhdHRhY2htZW50IGZvciBOeWFuIEJpZyBDaHJvbWVib29rIGlzbid0IG5lZWRlZCBh
-bnltb3JlLAo+Pj4+IHJldmVydCBpdC4KPj4+Cj4+PiBTb3JyeSBmb3IgdGhlIGxhdGUgcmVwbHku
-IEkgaGF2ZSBiZWVuIGJ1c3kgd2l0aCBkb3duc3RyZWFtIHRhc2tzLgo+Pj4KPj4+IEkgd2lsbCBn
-aXZlIHRoZW0gYSB0cnkgYnkgdGhlIGVuZCBvZiB0aGUgd2Vlay4gWWV0LCBwcm9iYWJseSBpdCdk
-Cj4+PiBiZSBiZXR0ZXIgdG8gaW5jbHVkZSBHdWlsbGF1bWUgYWxzbyBhcyBoZSBoYXMgdGhlIE55
-YW4gcGxhdGZvcm0uCj4+Pgo+Pgo+PiBJbmRlZWQsIHRoYW5rcy4gQWx0aG91Z2gsIEknbSBwcmV0
-dHkgc3VyZSB0aGF0IGl0J3MgdGhlIHNhbWUgaXNzdWUgd2hpY2gKPj4gSSByZXByb2R1Y2VkIG9u
-IE5leHVzIDcuCj4+Cj4+IEd1aWxsYXVtZSwgY291bGQgeW91IHBsZWFzZSBnaXZlIGEgdGVzdCB0
-byB0aGVzZSBwYXRjaGVzIG9uIE55YW4gQmlnPwo+PiBUaGVyZSBzaG91bGQgYmUgbm8gRU1FTSBl
-cnJvcnMgaW4gdGhlIGtlcm5lbCBsb2cgd2l0aCB0aGlzIHBhdGNoZXMuCj4+Cj4+IGh0dHBzOi8v
-cGF0Y2h3b3JrLm96bGFicy5vcmcvcHJvamVjdC9saW51eC10ZWdyYS9saXN0Lz9zZXJpZXM9MjM2
-MjE1Cj4gCj4gU28gc29ycnkgZm9yIHRoZSB2ZXJ5IGxhdGUgcmVwbHkuICBJIGhhdmUgdHJpZWQg
-dGhlIHBhdGNoZXMgYnV0Cj4gaGl0IHNvbWUgaXNzdWVzIG9uIGxpbnV4LW5leHQsIGl0J3Mgbm90
-IHJlYWNoaW5nIGEgbG9naW4gcHJvbXB0Cj4gd2l0aCBuZXh0LTIwMjEwNDIyLiAgU28gSSB0aGVu
-IHRyaWVkIHdpdGggbmV4dC0yMDIxMDQxOSB3aGljaAo+IGRvZXMgYm9vdCBidXQgc2hvd3MgdGhl
-IElPTU1VIGVycm9yOgo+IAo+IDw2PlsgICAgMi45OTUzNDFdIHRlZ3JhLWRjIDU0MjAwMDAwLmRj
-OiBBZGRpbmcgdG8gaW9tbXUgZ3JvdXAgMQo+IDw0PlsgICAgMy4wMDEwNzBdIEZhaWxlZCB0byBh
-dHRhY2hlZCBkZXZpY2UgNTQyMDAwMDAuZGMgdG8gSU9NTVVfbWFwcGluZyAgCj4gCj4gICBodHRw
-czovL2xhdmEuY29sbGFib3JhLmNvLnVrL3NjaGVkdWxlci9qb2IvMzU3MDA1MiNMMTEyMAo+IAo+
-IFRoZSBicmFuY2ggSSdtIHVzaW5nIHdpdGggdGhlIHBhdGNoZXMgYXBwbGllZCBjYW4gYmUgZm91
-bmQgaGVyZToKPiAKPiAgIGh0dHBzOi8vZ2l0bGFiLmNvbGxhYm9yYS5jb20vZ3R1Y2tlci9saW51
-eC8tL2NvbW1pdHMvbmV4dC0yMDIxMDQxOS1ueWFuLWJpZy1kcm0tcmVhZC8KPiAKPiBIb3BlIHRo
-aXMgaGVscHMsIGxldCBtZSBrbm93IGlmIHlvdSBuZWVkIGFueXRoaW5nIGVsc2UgdG8gYmUKPiB0
-ZXN0ZWQuCgoKSGVsbG8gR3VpbGxhdW1lLAoKVGhlIGN1cnJlbnQgbGludXgtbmV4dCBkb2Vzbid0
-IGJvb3Qgb24gYWxsIEFSTSAoQUZBSUspLCB0aGUgb2xkZXIKbmV4dC0yMDIxMDQxMyB3b3Jrcy4g
-VGhlIGFib3ZlIG1lc3NhZ2Ugc2hvdWxkIGJlIHVucmVsYXRlZCB0byB0aGUgYm9vdApwcm9ibGVt
-LiBJdCBzaG91bGQgYmUgb2theSB0byBpZ25vcmUgdGhhdCBtZXNzYWdlIGFzIGl0IHNob3VsZCBi
-ZQpoYXJtbGVzcyBpbiB5b3VycyBjYXNlLgpfX19fX19fX19fX19fX19fX19fX19fX19fX19fX19f
-X19fX19fX19fX19fX19fXwppb21tdSBtYWlsaW5nIGxpc3QKaW9tbXVAbGlzdHMubGludXgtZm91
-bmRhdGlvbi5vcmcKaHR0cHM6Ly9saXN0cy5saW51eGZvdW5kYXRpb24ub3JnL21haWxtYW4vbGlz
-dGluZm8vaW9tbXU=
+From: Thierry Reding <treding@nvidia.com>
+
+Hi,
+
+this is an updated proposal to solve the problem of passing memory
+regions that are actively being accessed during boot. The particular
+use-case that I need this for is when the bootloader has set up the
+display controller to scan out a boot splash screen. During boot the
+DMA/IOMMU glue code will attach devices to an IOMMU domain and by
+doing so enable IOMMU translations. Typically this will be before a
+device driver has had a chance to either disable the display
+controller or set up a new framebuffer and map it to the IOMMU.
+
+In that case, the IOMMU will start to fault because the accesses of
+the display controller will be for memory addresses that are not mapped
+in the IOMMU. The solution is obviously to create identity mappings for
+such memory regions. From a device tree point of view, these memory
+regions can be described using the reserved-memory device tree bindings
+and hooked up to the consumer devices using the "memory-region"
+property. On the kernel side, the IOMMU framework already supports the
+concept of reserved regions, as well as a way of marking these regions
+as requiring identity (a.k.a. direct) mappings.
+
+Unfortunately, the current reserved-memory region bindings only allow
+properties of the regions themselves to be described (such as whether a
+kernel virtual mapping of the region is needed or not), but it doesn't
+provide a way of associating extra information with any particular
+reference to these regions. However, that's exactly what's needed for
+this case because a given region may need to be identity mapped for a
+specific device (such as the display controller scanning out from the
+region) but referenced by multiple devices (e.g. if the memory is some
+special carveout memory reserved for display purposes).
+
+This series of patches proposes a simple solution: extend memory-region
+properties to use an optional specifier, such as the ones already
+commonly used for things like GPIOs or interrupts. The specifier needs
+to be provided if the reserved-memory region has a non-zero
+#memory-region-cells property (if the property is not present, zero is
+the assumed default value). The specifier contains flags that specify
+how the reference is to be treated. This series of patches introduces
+the MEMORY_REGION_IDENTITY_MAPPING flag (value: 0x1) that marks the
+specific reference to the memory region to require an identity mapping.
+
+In practice, a device tree would look like this:
+
+	reserved-memory {
+		#address-cells = <2>;
+		#size-cells = <2>;
+
+		fb: framebuffer@92cb2000 {
+			reg = <0 0x92cb2000 0 0x00800000>;
+			#memory-region-cells = <1>;
+		};
+	};
+
+	...
+
+	display@52400000 {
+		...
+		memory-region = <&fb MEMORY_REGION_IDENTITY_MAPPING>;
+		...
+	};
+
+Note: While the above would be valid DTS content, it's more likely that
+in practice this content would be dynamically generated by the
+bootloader using runtime information (such as the framebuffer memory
+location).
+
+An operating system can derive from that <phandle, specifier> pair that
+the 8 MiB of memory at physical address 0x92cb2000 need to be identity
+mapped to the same IO virtual address if the device is attached to an
+IOMMU. If no IOMMU is enabled in the system, obviously no identity
+mapping needs to be created, but the operating system may still use the
+reference to transition to its own framebuffer using the existing memory
+region.
+
+Note that an earlier proposal was to use the existing simple-framebuffer
+device tree bindings to transport this information. Unfortunately there
+are cases where this is not enough. On Tegra SoCs, for example, the
+bootloader will also set up a color space correction lookup table in the
+system memory that the display controller will access during boot,
+alongside the framebuffer. The simple-framebuffer DT bindings have no
+way of describing this (and I guess one could argue that this particular
+setup no longer is a "simple" framebuffer), so the above, more flexible
+proposal was implemented.
+
+I've made corresponding changes in the proprietary bootloader, added a
+compatibility shim in U-Boot (which forwards information created by the
+proprietary bootloader to the kernel) and the attached patches to test
+this on Jetson TX1, Jetson TX2 and Jetson AGX Xavier.
+
+Note that there will be no new releases of the bootloader for earlier
+devices, so adding support for these new DT bindings will not be
+practical. The bootloaders on those devices do pass information about
+the active framebuffer via the kernel command-line, so we may want to
+add code to create reserved regions in the IOMMU based on that.
+
+Thierry
+
+Navneet Kumar (1):
+  iommu/tegra-smmu: Support managed domains
+
+Thierry Reding (4):
+  dt-bindings: reserved-memory: Document memory region specifier
+  iommu: Implement of_iommu_get_resv_regions()
+  iommu: dma: Use of_iommu_get_resv_regions()
+  iommu/tegra-smmu: Add support for reserved regions
+
+ .../reserved-memory/reserved-memory.txt       |  21 +++
+ drivers/iommu/dma-iommu.c                     |   3 +
+ drivers/iommu/of_iommu.c                      |  54 ++++++++
+ drivers/iommu/tegra-smmu.c                    | 121 +++++++++++++++---
+ include/dt-bindings/reserved-memory.h         |   8 ++
+ include/linux/of_iommu.h                      |   8 ++
+ 6 files changed, 199 insertions(+), 16 deletions(-)
+ create mode 100644 include/dt-bindings/reserved-memory.h
+
+-- 
+2.30.2
+
+_______________________________________________
+iommu mailing list
+iommu@lists.linux-foundation.org
+https://lists.linuxfoundation.org/mailman/listinfo/iommu
