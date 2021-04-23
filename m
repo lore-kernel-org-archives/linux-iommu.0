@@ -2,104 +2,135 @@ Return-Path: <SRS0=1bbG=JU=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-3.5 required=3.0 tests=BAYES_00,DKIM_INVALID,
-	DKIM_SIGNED,HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,SPF_HELO_NONE,
-	SPF_PASS,URIBL_BLOCKED autolearn=no autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-5.0 required=3.0 tests=BAYES_00,DKIM_INVALID,
+	DKIM_SIGNED,HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,NICE_REPLY_A,
+	SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_SANE_1 autolearn=no
+	autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D02C7C433B4
-	for <iommu@archiver.kernel.org>; Fri, 23 Apr 2021 16:39:11 +0000 (UTC)
-Received: from smtp3.osuosl.org (smtp3.osuosl.org [140.211.166.136])
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 92EB0C43460
+	for <iommu@archiver.kernel.org>; Fri, 23 Apr 2021 17:16:23 +0000 (UTC)
+Received: from smtp2.osuosl.org (smtp2.osuosl.org [140.211.166.133])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 5C2A8611BF
-	for <iommu@archiver.kernel.org>; Fri, 23 Apr 2021 16:39:11 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 5C2A8611BF
-Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=redhat.com
+	by mail.kernel.org (Postfix) with ESMTPS id 2189D613D5
+	for <iommu@archiver.kernel.org>; Fri, 23 Apr 2021 17:16:23 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 2189D613D5
+Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=nvidia.com
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by smtp3.osuosl.org (Postfix) with ESMTP id 2043F605E8;
-	Fri, 23 Apr 2021 16:39:11 +0000 (UTC)
+	by smtp2.osuosl.org (Postfix) with ESMTP id D515F400B5;
+	Fri, 23 Apr 2021 17:16:22 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from smtp3.osuosl.org ([127.0.0.1])
-	by localhost (smtp3.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id zYA_WHdEsonv; Fri, 23 Apr 2021 16:39:10 +0000 (UTC)
+Received: from smtp2.osuosl.org ([127.0.0.1])
+	by localhost (smtp2.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+	with ESMTP id KBmNdCXl1yGp; Fri, 23 Apr 2021 17:16:21 +0000 (UTC)
 Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by smtp3.osuosl.org (Postfix) with ESMTP id E1C3B6066E;
-	Fri, 23 Apr 2021 16:39:09 +0000 (UTC)
+	by smtp2.osuosl.org (Postfix) with ESMTP id 9EBB44065B;
+	Fri, 23 Apr 2021 17:16:21 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id B0EE6C000E;
-	Fri, 23 Apr 2021 16:39:09 +0000 (UTC)
-Received: from smtp1.osuosl.org (smtp1.osuosl.org [IPv6:2605:bc80:3010::138])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 0E453C000B
- for <iommu@lists.linux-foundation.org>; Fri, 23 Apr 2021 16:39:08 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 81FF5C000F;
+	Fri, 23 Apr 2021 17:16:21 +0000 (UTC)
+Received: from smtp2.osuosl.org (smtp2.osuosl.org [140.211.166.133])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 7EF98C000B
+ for <iommu@lists.linux-foundation.org>; Fri, 23 Apr 2021 17:16:20 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by smtp1.osuosl.org (Postfix) with ESMTP id DBD6984384
- for <iommu@lists.linux-foundation.org>; Fri, 23 Apr 2021 16:39:07 +0000 (UTC)
+ by smtp2.osuosl.org (Postfix) with ESMTP id 667F840662
+ for <iommu@lists.linux-foundation.org>; Fri, 23 Apr 2021 17:16:20 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Authentication-Results: smtp1.osuosl.org (amavisd-new);
- dkim=pass (1024-bit key) header.d=redhat.com
-Received: from smtp1.osuosl.org ([127.0.0.1])
- by localhost (smtp1.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id y6vVcvcOAOrh for <iommu@lists.linux-foundation.org>;
- Fri, 23 Apr 2021 16:39:06 +0000 (UTC)
-X-Greylist: domain auto-whitelisted by SQLgrey-1.8.0
-Received: from us-smtp-delivery-124.mimecast.com
- (us-smtp-delivery-124.mimecast.com [216.205.24.124])
- by smtp1.osuosl.org (Postfix) with ESMTPS id 7DE1B8437E
- for <iommu@lists.linux-foundation.org>; Fri, 23 Apr 2021 16:39:06 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
- s=mimecast20190719; t=1619195945;
- h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
- to:to:cc:cc:mime-version:mime-version:content-type:content-type:
- content-transfer-encoding:content-transfer-encoding:
- in-reply-to:in-reply-to:references:references;
- bh=1GQkBMDQ1KuOta/J/0gSTIN3uzemBUynRDLUIAu7wKk=;
- b=BL68RlStI9T2WRmztfEym7Vsp8BxpcmEbaeGO8IjGm81+KFlejIzd/Zdmdi9cVNuqUoLCQ
- M9Fv7WNdL1dGMWf2mY3VZ5tgxmVpDrc96nfGEuHPnZs+ntA0ogDNAUXv8zJhupJMdGomIj
- FsoeQF/nv8FiZPfwEJJwS7cJ+a4zU7o=
-Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
- [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-221-u8ZHLF9kONSSl2ho-aJrMw-1; Fri, 23 Apr 2021 12:39:01 -0400
-X-MC-Unique: u8ZHLF9kONSSl2ho-aJrMw-1
-Received: from smtp.corp.redhat.com (int-mx05.intmail.prod.int.phx2.redhat.com
- [10.5.11.15])
- (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
- (No client certificate requested)
- by mimecast-mx01.redhat.com (Postfix) with ESMTPS id EFBD584BA43;
- Fri, 23 Apr 2021 16:38:56 +0000 (UTC)
-Received: from redhat.com (ovpn-114-21.phx2.redhat.com [10.3.114.21])
- by smtp.corp.redhat.com (Postfix) with ESMTP id 7B0F95D720;
- Fri, 23 Apr 2021 16:38:51 +0000 (UTC)
-Date: Fri, 23 Apr 2021 10:38:51 -0600
-From: Alex Williamson <alex.williamson@redhat.com>
-To: Jason Gunthorpe <jgg@nvidia.com>
-Subject: Re: [PATCH V4 05/18] iommu/ioasid: Redefine IOASID set and
- allocation APIs
-Message-ID: <20210423103851.41138791@redhat.com>
-In-Reply-To: <20210422233950.GD1370958@nvidia.com>
-References: <20210421162307.GM1370958@nvidia.com>
- <20210421105451.56d3670a@redhat.com>
- <20210421175203.GN1370958@nvidia.com>
- <20210421133312.15307c44@redhat.com>
- <20210421230301.GP1370958@nvidia.com>
- <20210422111337.6ac3624d@redhat.com>
- <20210422175715.GA1370958@nvidia.com>
- <20210422133747.23322269@redhat.com>
- <20210422200024.GC1370958@nvidia.com>
- <20210422163808.2d173225@redhat.com>
- <20210422233950.GD1370958@nvidia.com>
+Received: from smtp2.osuosl.org ([127.0.0.1])
+ by localhost (smtp2.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+ with ESMTP id 8EOWf19BgtYY for <iommu@lists.linux-foundation.org>;
+ Fri, 23 Apr 2021 17:16:18 +0000 (UTC)
+X-Greylist: whitelisted by SQLgrey-1.8.0
+Received: from NAM11-CO1-obe.outbound.protection.outlook.com
+ (mail-co1nam11on2061.outbound.protection.outlook.com [40.107.220.61])
+ by smtp2.osuosl.org (Postfix) with ESMTPS id A0BE44065B
+ for <iommu@lists.linux-foundation.org>; Fri, 23 Apr 2021 17:16:18 +0000 (UTC)
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=QYRV3N2warzrnaaA7qPemCiZ76nKDsg20Sv84s/b8ysz22D7XaukMdX0hWE1vR6D55AjR+iy8WZKpMUmowijoJl8vMmWmzHgoZ6vgAigwxoGGT+B/DqXfBQeFj4nm+jenojlyDY85X4ei6wx/vpSwXZoeD2dOhfV7n+2+4njfhKe9G2N2dHc4XKBRi5DcnXzUzSJytQXuK6nz87LZb98CR2tvzSs8/b6DEqGA7+2HjmdKvctaPfEib7U0tRd0HrWA4xPoG5K/LKkA8xzWPkgIYC3ETfOEr15tTxWZBz2Tp8ZB2a6sXSHHK/F7O9RRVYAQUJ9LjA5alxRTOZ1UUZK0w==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com; 
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=JOiDgsmK9K+3d6PIMv4gcXiJUJYSqvoei8CaALsMauw=;
+ b=KpacMh18hfPQ5SZMGdrRwrS/wGDgxcYzUnyMspL+zKB83q4DGsgAbXbe0l7tbUXR1XXiRmHKw5GEyGogVXEi4aP1Y0tE9M+D8DnHX5eULGYAWUiJ+h2uYxuo8Z4gKmE5U8aJETPvBvPJqa7mMQLuWNipBKvGPg0zij4lK8huE8v5tdnfEPkEcyCFvR2IAhr00qaWLRVjOVICGeEsyTjcgvqrdAZKuStA8ZP1Nh9GI2n+Zf3Fz1Lo7b0E+veBhsUCWZVRCkHa093XwdQmr6aGuoEZh+i09LjQU5XAoMutE3rSmUMOH0vhFDvf4AeGDF0GWQsRYUikCX31mqd8H+vQrg==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
+ 216.228.112.34) smtp.rcpttodomain=8bytes.org smtp.mailfrom=nvidia.com;
+ dmarc=pass (p=none sp=none pct=100) action=none header.from=nvidia.com;
+ dkim=none (message not signed); arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
+ s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=JOiDgsmK9K+3d6PIMv4gcXiJUJYSqvoei8CaALsMauw=;
+ b=TzUdifKfmLkRJSX/Adr02c/7uz0o22+GCQaOO86WvZveja0ovQV+Bzg7NU+5drkgnED49jk9LxDr8l+iEuk9pXVrQ87IyH2yu384lVzyseNAdYzrkB8dZvGp2i4JmYTQxJhVCM6ushEqlky3EyX8Q/L43r4xQD2KxWy8SptgWUhrPgYDkIQR9QZk7VD/X7A6yg9Y5jxrdSX/akMscolUHpGC+4XF4TNKXBWWNA2fpzLRxPaq8kABsiYitAobnQTJcqjvemYyNrQqRbCou8n/sBQOU4EhsmdUbikBlWeVlAujTPnibrty5A00AdsyUB6x3f26pa8lPAd7cEu46B9HCQ==
+Received: from BN8PR04CA0049.namprd04.prod.outlook.com (2603:10b6:408:d4::23)
+ by BY5PR12MB4146.namprd12.prod.outlook.com (2603:10b6:a03:20d::24)
+ with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4065.23; Fri, 23 Apr
+ 2021 17:16:16 +0000
+Received: from BN8NAM11FT012.eop-nam11.prod.protection.outlook.com
+ (2603:10b6:408:d4:cafe::f8) by BN8PR04CA0049.outlook.office365.com
+ (2603:10b6:408:d4::23) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4065.21 via Frontend
+ Transport; Fri, 23 Apr 2021 17:16:16 +0000
+X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 216.228.112.34)
+ smtp.mailfrom=nvidia.com; 8bytes.org; dkim=none (message not signed)
+ header.d=none;8bytes.org; dmarc=pass action=none header.from=nvidia.com;
+Received-SPF: Pass (protection.outlook.com: domain of nvidia.com designates
+ 216.228.112.34 as permitted sender) receiver=protection.outlook.com;
+ client-ip=216.228.112.34; helo=mail.nvidia.com;
+Received: from mail.nvidia.com (216.228.112.34) by
+ BN8NAM11FT012.mail.protection.outlook.com (10.13.177.55) with Microsoft SMTP
+ Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id
+ 15.20.4065.21 via Frontend Transport; Fri, 23 Apr 2021 17:16:16 +0000
+Received: from [10.41.23.128] (172.20.145.6) by HQMAIL107.nvidia.com
+ (172.20.187.13) with Microsoft SMTP Server (TLS) id 15.0.1497.2; Fri, 23 Apr
+ 2021 17:16:09 +0000
+Subject: Re: [PATCH v14 00/13] SMMUv3 Nested Stage Setup (IOMMU part)
+To: Jean-Philippe Brucker <jean-philippe@linaro.org>
+References: <f99d8af1-425b-f1d5-83db-20e32b856143@redhat.com>
+ <1619103878-6664-1-git-send-email-sumitg@nvidia.com>
+ <YILFAJ50aqvkQaT/@myrica>
+From: Sumit Gupta <sumitg@nvidia.com>
+Message-ID: <5a8825bc-286e-b316-515f-3bd3c9c70a80@nvidia.com>
+Date: Fri, 23 Apr 2021 22:46:06 +0530
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
+ Thunderbird/60.9.0
 MIME-Version: 1.0
-X-Scanned-By: MIMEDefang 2.79 on 10.5.11.15
-Cc: Jean-Philippe Brucker <jean-philippe@linaro.org>, "Tian,
- Kevin" <kevin.tian@intel.com>, "Jiang, Dave" <dave.jiang@intel.com>, "Raj, 
- Ashok" <ashok.raj@intel.com>, Jonathan Corbet <corbet@lwn.net>,
- Jean-Philippe Brucker <jean-philippe@linaro.com>,
- Li Zefan <lizefan@huawei.com>, LKML <linux-kernel@vger.kernel.org>,
- "iommu@lists.linux-foundation.org" <iommu@lists.linux-foundation.org>,
- David Gibson <david@gibson.dropbear.id.au>,
- Johannes Weiner <hannes@cmpxchg.org>, Tejun Heo <tj@kernel.org>,
- "cgroups@vger.kernel.org" <cgroups@vger.kernel.org>, "Wu,
- Hao" <hao.wu@intel.com>, David Woodhouse <dwmw2@infradead.org>
+In-Reply-To: <YILFAJ50aqvkQaT/@myrica>
+Content-Language: en-US
+X-Originating-IP: [172.20.145.6]
+X-ClientProxiedBy: HQMAIL105.nvidia.com (172.20.187.12) To
+ HQMAIL107.nvidia.com (172.20.187.13)
+X-EOPAttributedMessage: 0
+X-MS-PublicTrafficType: Email
+X-MS-Office365-Filtering-Correlation-Id: 0d24cc0c-63f9-4106-fa42-08d9067b80f3
+X-MS-TrafficTypeDiagnostic: BY5PR12MB4146:
+X-Microsoft-Antispam-PRVS: <BY5PR12MB41466CF3E92A0B69821C6D88B9459@BY5PR12MB4146.namprd12.prod.outlook.com>
+X-MS-Oob-TLC-OOBClassifiers: OLM:8882;
+X-MS-Exchange-SenderADCheck: 1
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: owOfu1AxzfFkTy0Tcw5Mc3CI8eO29v6lFwSzeOY7AKQ7vnT+hFbA/DtDGRjMzz+fJzPOCjj4SNbB6NEz32y4Zo8Ze5Ke26c7W4U2It6ysDVIX9CHHZN+UE3EMtDdaISUUzGKUjwHqPdagqboHvS8SHAE3Fwazp7ufgsTTAfmAdtBzTuNSE7O5SiBWlr3HT64bjC0APaX+JltKdg8FWfUPVUuTxUN+WDxF3GyWblC0YfjZp0hpb7H1LjNBzY/2RiVexsYS/qGe8ppmCfqPW/6myjyuacVuGVPXXkppoVI9XhO9Zu2FvgqBiQbT//AHkuFPgV5hCoNGT5heJRX6Zua+jZzmNPgSey2iw8PTZROzYFM1toPEM92gyqsH/0NHHV4RiTE7LyHlvwDO0Q6r2I6wXkLN9qV+EG1Ctm2qEAA9CohPomXaSPy6xYD5j4yprbZRsqxc5icq38LnyHCpQTyWVxq+AOBfGQdyJwoGEhMMfgpi7KZTYnf4FwSkHWyY3/eG9CdkHhRLOVGUe4e9HxD0o2kHfvmNdUL2VNfCs83LL6ANd9mk9tJhG2JOYKZhHBs8+pfSVuuh7jZRgMLRxbRWLn0qmY0FGMiw/d4j40h+zeo+9TEeHv/I3oVVbkXYD1SOrzeDbbOfAIGDsQIlEV9U8bNrRBWZn0U6AEqdlKQWOR9VPiObKSyz4SqdJtpVG1i
+X-Forefront-Antispam-Report: CIP:216.228.112.34; CTRY:US; LANG:en; SCL:1; SRV:;
+ IPV:NLI; SFV:NSPM; H:mail.nvidia.com; PTR:schybrid03.nvidia.com; CAT:NONE;
+ SFS:(4636009)(396003)(136003)(39860400002)(376002)(346002)(46966006)(36840700001)(186003)(478600001)(8936002)(6666004)(16526019)(31696002)(86362001)(54906003)(8676002)(16576012)(6916009)(36906005)(45080400002)(316002)(7416002)(2616005)(426003)(70586007)(26005)(2906002)(70206006)(107886003)(336012)(31686004)(7636003)(83380400001)(82740400003)(47076005)(36860700001)(82310400003)(5660300002)(4326008)(356005)(36756003)(43740500002);
+ DIR:OUT; SFP:1101; 
+X-OriginatorOrg: Nvidia.com
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 23 Apr 2021 17:16:16.2063 (UTC)
+X-MS-Exchange-CrossTenant-Network-Message-Id: 0d24cc0c-63f9-4106-fa42-08d9067b80f3
+X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
+X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=43083d15-7273-40c1-b7db-39efd9ccc17a; Ip=[216.228.112.34];
+ Helo=[mail.nvidia.com]
+X-MS-Exchange-CrossTenant-AuthSource: BN8NAM11FT012.eop-nam11.prod.protection.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Anonymous
+X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: BY5PR12MB4146
+Cc: kvm@vger.kernel.org, vivek.gautam@arm.com, will@kernel.org,
+ eric.auger.pro@gmail.com, alex.williamson@redhat.com, wangxingang5@huawei.com,
+ maz@kernel.org, jiangkunkun@huawei.com, kvmarm@lists.cs.columbia.edu,
+ vsethi@nvidia.com, Bibek Basu <bbasu@nvidia.com>, zhangfei.gao@linaro.org,
+ Sumit Gupta <sumitg@nvidia.com>, Sachin Nikam <Snikam@nvidia.com>,
+ linux-kernel@vger.kernel.org, lushenming@huawei.com,
+ iommu@lists.linux-foundation.org, robin.murphy@arm.com
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -112,144 +143,103 @@ List-Post: <mailto:iommu@lists.linux-foundation.org>
 List-Help: <mailto:iommu-request@lists.linux-foundation.org?subject=help>
 List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
  <mailto:iommu-request@lists.linux-foundation.org?subject=subscribe>
-Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset="us-ascii"; Format="flowed"
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-On Thu, 22 Apr 2021 20:39:50 -0300
-Jason Gunthorpe <jgg@nvidia.com> wrote:
+Hi Jean,
 
-> On Thu, Apr 22, 2021 at 04:38:08PM -0600, Alex Williamson wrote:
-> 
-> > Because it's fundamental to the isolation of the device?  What you're
-> > proposing doesn't get around the group issue, it just makes it implicit
-> > rather than explicit in the uapi.  
-> 
-> I'm not even sure it makes it explicit or implicit, it just takes away
-> the FD.
-> 
-> There are four group IOCTLs, I see them mapping to /dev/ioasid follows:
->  VFIO_GROUP_GET_STATUS - 
->    + VFIO_GROUP_FLAGS_CONTAINER_SET is fairly redundant
->    + VFIO_GROUP_FLAGS_VIABLE could be in a new sysfs under
->      kernel/iomm_groups, or could be an IOCTL on /dev/ioasid
->        IOASID_ALL_DEVICES_VIABLE
-> 
->  VFIO_GROUP_SET_CONTAINER -
->    + This happens implicitly when the device joins the IOASID
->      so it gets moved to the vfio_device FD:
->       ioctl(vifo_device_fd, JOIN_IOASID_FD, ioasifd)
-> 
->  VFIO_GROUP_UNSET_CONTAINER -
->    + Also moved to the vfio_device FD, opposite of JOIN_IOASID_FD
-> 
->  VFIO_GROUP_GET_DEVICE_FD -
->    + Replaced by opening /dev/vfio/deviceX
->      Learn the deviceX which will be the cdev sysfs shows as:
->       /sys/devices/pci0000:00/0000:00:01.0/0000:01:00.0/vfio/deviceX/dev
->     Open /dev/vfio/deviceX
-> 
-> > > How do we model the VFIO group security concept to something like
-> > > VDPA?  
-> > 
-> > Is it really a "VFIO group security concept"?  We're reflecting the
-> > reality of the hardware, not all devices are fully isolated.    
-> 
-> Well, exactly.
-> 
-> /dev/ioasid should understand the group concept somehow, otherwise it
-> is incomplete and maybe even security broken.
-> 
-> So, how do I add groups to, say, VDPA in a way that makes sense? The
-> only answer I come to is broadly what I outlined here - make
-> /dev/ioasid do all the group operations, and do them when we enjoin
-> the VDPA device to the ioasid.
-> 
-> Once I have solved all the groups problems with the non-VFIO users,
-> then where does that leave VFIO? Why does VFIO need a group FD if
-> everyone else doesn't?
 
-This assumes there's a solution for vDPA that doesn't just ignore the
-problem and hope for the best.  I can't speak to a vDPA solution.
-
-> > IOMMU group.  This is the reality that any userspace driver needs to
-> > play in, it doesn't magically go away because we drop the group file
-> > descriptor.    
+> Hi Sumit,
 > 
-> I'm not saying it does, I'm saying it makes the uAPI more regular and
-> easier to fit into /dev/ioasid without the group FD.
+> On Thu, Apr 22, 2021 at 08:34:38PM +0530, Sumit Gupta wrote:
+>> Had to revert patch "mm: notify remote TLBs when dirtying a PTE".
 > 
-> > It only makes the uapi more difficult to use correctly because
-> > userspace drivers need to go outside of the uapi to have any idea
-> > that this restriction exists.    
-> 
-> I don't think it makes any substantive difference one way or the
-> other.
-> 
-> With the group FD: the userspace has to read sysfs, find the list of
-> devices in the group, open the group fd, create device FDs for each
-> device using the name from sysfs.
-> 
-> Starting from a BDF the general pseudo code is
->  group_path = readlink("/sys/bus/pci/devices/BDF/iommu_group")
->  group_name = basename(group_path)
->  group_fd = open("/dev/vfio/"+group_name)
->  device_fd = ioctl(VFIO_GROUP_GET_DEVICE_FD, BDF);
-> 
-> Without the group FD: the userspace has to read sysfs, find the list
-> of devices in the group and then open the device-specific cdev (found
-> via sysfs) and link them to a /dev/ioasid FD.
-> 
-> Starting from a BDF the general pseudo code is:
->  device_name = first_directory_of("/sys/bus/pci/devices/BDF/vfio/")
->  device_fd = open("/dev/vfio/"+device_name)
->  ioasidfd = open("/dev/ioasid")
->  ioctl(device_fd, JOIN_IOASID_FD, ioasidfd)
+> Did that patch cause any issue, or is it just not needed on your system?
+> It fixes an hypothetical problem with the way ATS is implemented. Maybe I
+> actually observed it on an old software model, I don't remember. Either
+> way it's unlikely to go upstream but I'd like to know if I should drop it
+> from my tree.
 
-This is exactly the implicit vs explicit semantics.  In the existing
-vfio case, the user needs to explicitly interact with the group.  In
-your proposal, the user interacts with the device, the group concept is
-an implicit restriction.  You've listed a step in the description about
-a "list of devices in the group", but nothing in the pseudo code
-reflects that step.  I expect it would be a subtly missed by any
-userspace driver developer unless they happen to work on a system where
-the grouping is not ideal.  I think that makes the interface hard to
-use correctly.
+I tried Nested SMMUv3 patches v15(Eric's branch: 
+v5.12-rc6-jean-iopf-14-2stage-v15) on top of your current sva patches 
+with Kernel-5.12.0-rc8.
+Had to revert same patch "mm: notify remote TLBs when dirtying a PTE" to 
+avoid below crash[1]. I am not sure about the cause yet.
+Didn't get crash after reverting patch and nested translations worked.
 
-> These two routes can have identical outcomes and identical security
-> checks.
-> 
-> In both cases if userspace wants a list of BDFs in the same group as
-> the BDF it is interested in:
->    readdir("/sys/bus/pci/devices/BDF/iommu_group/devices")
-> 
-> It seems like a very small difference to me.
-
-The difference is that the group becomes a nuance, that I expect would
-be ignored, rather than a first class concept in the API.
-
-> I still don't see how the group restriction gets surfaced to the
-> application through the group FD. The applications I looked through
-> just treat the group FD as a step on their way to get the device_fd.
-
-A step where the developer hopefully recognizes that there might be
-other devices in a group, a group can't be opened more than once, the
-group has a flag indicating viability, they can't actually get the
-device fd until the group is attached to an IOMMU context, all devices
-in the group therefore have the same IOMMU context, and device fd isn't
-actually available until they've gone through a proper setup, which is
-an additional layer of protection.  A userspace vfio developer may not
-understand why a group isn't viable, but they have that clue that it's
-something at the group level to investigate.
-
-Most of the userspace vfio drivers that I haven't contributed myself
-have come about with little or no interaction from me, so I'd like to
-think that the vfio uapi is actually somewhat intuitive in its concepts
-and difficult to use incorrectly.  Thanks,
-
-Alex
-
+[1]
+[   11.730943] arm-smmu-v3 9050000.smmuv3: ias 44-bit, oas 44-bit 
+(features 0x00008305)^M^M
+[   11.833791] arm-smmu-v3 9050000.smmuv3: allocated 524288 entries for 
+cmdq^M^M
+[   11.979456] arm-smmu-v3 9050000.smmuv3: allocated 524288 entries for 
+evtq^M^M
+[   12.048895] cacheinfo: Unable to detect cache hierarchy for CPU 0^M^M
+[   12.234175] loop: module loaded^M^M
+[   12.279552] megasas: 07.714.04.00-rc1^M^M
+[   12.408831] nvme 0000:00:02.0: Adding to iommu group 0^M^M
+[   12.488063] nvme nvme0: pci function 0000:00:02.0^M^M
+[   12.525887] nvme 0000:00:02.0: enabling device (0000 -> 0002)^M^M
+[   12.612159] physmap-flash 0.flash: physmap platform flash device: 
+[mem 0x00000000-0x03ffffff]^M^M
+[ 1721.586943] Unable to handle kernel paging request at virtual address 
+ffff617f80000000^M
+[ 1721.587263] Mem abort info:^M
+[ 1721.587776]   ESR = 0x96000145^M
+[ 1721.587968]   EC = 0x25: DABT (current EL), IL = 32 bits^M
+[ 1721.588416]   SET = 0, FnV = 0^M
+[ 1721.588672]   EA = 0, S1PTW = 0^M
+[ 1721.588863] Data abort info:^M
+[ 1721.589120]   ISV = 0, ISS = 0x00000145^M
+[ 1721.589311]   CM = 1, WnR = 1^M
+[ 1721.589568] swapper pgtable: 64k pages, 48-bit VAs, 
+pgdp=0000000111280000^M
+[ 1721.589951] [ffff617f80000000] pgd=0000000000000000, 
+p4d=0000000000000000, pud=0000000000000000^M
+[ 1721.590592] Internal error: Oops: 96000145 [#1] PREEMPT SMP^M
+[ 1721.590912] Modules linked in:^M
+[ 1721.591232] CPU: 0 PID: 664 Comm: qemu-system-aar Not tainted 
+5.12.0-rc8-tegra-229886-g4786d4a20d7 #22^M
+[ 1721.591680] pstate: a0400005 (NzCv daif +PAN -UAO -TCO BTYPE=--)
+[ 1721.592128] pc : __flush_dcache_area+0x20/0x38
+[ 1721.592511] lr : kvm_set_spte_hva+0x64/0xc8
+[ 1721.592832] sp : ffff8000145cfc30
+[ 1721.593087] x29: ffff8000145cfc30 x28: ffff000095221c80
+[ 1721.593599] x27: 0000000000000002 x26: ffff0000a3711c88
+[ 1721.594112] x25: ffff00009333a740 x24: 01e8618000000f53
+[ 1721.594624] x23: 0000ffffb8320000 x22: 0000000000000001
+[ 1721.595136] x21: 0000ffffb8320000 x20: ffff0000a1268000
+[ 1721.595647] x19: ffff800011c95000 x18: 0000000000000000
+[ 1721.596160] x17: 0000000000000000 x16: 0000000000000000
+[ 1721.596608] x15: 0000000000000000 x14: 0000000000000000
+[ 1721.597120] x13: 0000000000000000 x12: 0000000000000000
+[ 1721.597568] x11: 0000000000000000 x10: 0000000000000000
+[ 1721.598080] x9 : 0000000000000000 x8 : ffff00009333a740
+[ 1721.598592] x7 : 07fd000ffffb8320 x6 : ffff0000815bc190
+[ 1721.599104] x5 : 0000000000011b06 x4 : 0000000000000000
+[ 1721.599552] x3 : 000000000000003f x2 : 0000000000000040
+[ 1721.600064] x1 : ffff617f80010000 x0 : ffff617f80000000
+[ 1721.600576] Call trace:
+[ 1721.600768]  __flush_dcache_area+0x20/0x38
+[ 1721.601216]  kvm_mmu_notifier_change_pte+0x5c/0xa8
+[ 1721.601601]  __mmu_notifier_change_pte+0x60/0xa0
+[ 1721.601985]  __handle_mm_fault+0x740/0xde8
+[ 1721.602367]  handle_mm_fault+0xe8/0x238
+[ 1721.602751]  do_page_fault+0x160/0x3a8
+[ 1721.603200]  do_mem_abort+0x40/0xb0
+[ 1721.603520]  el0_da+0x20/0x30
+[ 1721.603967]  el0_sync_handler+0x68/0xd0
+[ 1721.604416]  el0_sync+0x154/0x180
+[ 1721.604864] Code: 9ac32042 8b010001 d1000443 8a230000 (d50b7e20)
+[ 1721.605184] ---[ end trace 7678eb97889b6fbd ]---
+[ 1721.605504] Kernel panic - not syncing: Oops: Fatal exception
+[ 1721.605824] Kernel Offset: disabled
+[ 1721.606016] CPU features: 0x00340216,6280a018
+[ 1721.606335] Memory Limit: 2909 MB
+[ 1721.606656] ---[ end Kernel panic - not syncing: Oops: Fatal 
+exception ]---
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
