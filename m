@@ -2,103 +2,163 @@ Return-Path: <SRS0=1bbG=JU=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-16.5 required=3.0 tests=BAYES_00,DKIM_INVALID,
-	DKIM_SIGNED,HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_CR_TRAILER,INCLUDES_PATCH,
-	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_GIT
-	autolearn=unavailable autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-3.5 required=3.0 tests=BAYES_00,DKIM_INVALID,
+	DKIM_SIGNED,HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,
+	MSGID_FROM_MTA_HEADER,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED autolearn=no
+	autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C586EC4360C
-	for <iommu@archiver.kernel.org>; Fri, 23 Apr 2021 11:57:10 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 20A3EC43460
+	for <iommu@archiver.kernel.org>; Fri, 23 Apr 2021 11:57:34 +0000 (UTC)
 Received: from smtp1.osuosl.org (smtp1.osuosl.org [140.211.166.138])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 5E8556144D
-	for <iommu@archiver.kernel.org>; Fri, 23 Apr 2021 11:57:10 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 5E8556144D
-Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=linaro.org
+	by mail.kernel.org (Postfix) with ESMTPS id B561E6141C
+	for <iommu@archiver.kernel.org>; Fri, 23 Apr 2021 11:57:33 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org B561E6141C
+Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=nvidia.com
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by smtp1.osuosl.org (Postfix) with ESMTP id 19CCC843FF;
-	Fri, 23 Apr 2021 11:57:08 +0000 (UTC)
+	by smtp1.osuosl.org (Postfix) with ESMTP id 6117C843F5;
+	Fri, 23 Apr 2021 11:57:33 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
 Received: from smtp1.osuosl.org ([127.0.0.1])
 	by localhost (smtp1.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id eSAZ87fmLDkD; Fri, 23 Apr 2021 11:57:06 +0000 (UTC)
+	with ESMTP id WQunQ0qhIGsX; Fri, 23 Apr 2021 11:57:32 +0000 (UTC)
 Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by smtp1.osuosl.org (Postfix) with ESMTP id CE6F484406;
-	Fri, 23 Apr 2021 11:57:05 +0000 (UTC)
+	by smtp1.osuosl.org (Postfix) with ESMTP id 3C06D843BC;
+	Fri, 23 Apr 2021 11:57:32 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id E5502C001B;
-	Fri, 23 Apr 2021 11:57:04 +0000 (UTC)
-Received: from smtp4.osuosl.org (smtp4.osuosl.org [140.211.166.137])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 6493DC001A
- for <iommu@lists.linux-foundation.org>; Fri, 23 Apr 2021 11:57:02 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 0A243C001A;
+	Fri, 23 Apr 2021 11:57:32 +0000 (UTC)
+Received: from smtp1.osuosl.org (smtp1.osuosl.org [IPv6:2605:bc80:3010::138])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id DBB96C000B
+ for <iommu@lists.linux-foundation.org>; Fri, 23 Apr 2021 11:57:29 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by smtp4.osuosl.org (Postfix) with ESMTP id 71EAE404FC
- for <iommu@lists.linux-foundation.org>; Fri, 23 Apr 2021 11:57:01 +0000 (UTC)
+ by smtp1.osuosl.org (Postfix) with ESMTP id CA3A2843FF
+ for <iommu@lists.linux-foundation.org>; Fri, 23 Apr 2021 11:57:29 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Authentication-Results: smtp4.osuosl.org (amavisd-new);
- dkim=pass (2048-bit key) header.d=linaro.org
-Received: from smtp4.osuosl.org ([127.0.0.1])
- by localhost (smtp4.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id x8eFePf1FliJ for <iommu@lists.linux-foundation.org>;
- Fri, 23 Apr 2021 11:56:58 +0000 (UTC)
+Received: from smtp1.osuosl.org ([127.0.0.1])
+ by localhost (smtp1.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+ with ESMTP id XHb0TFD-7Kzn for <iommu@lists.linux-foundation.org>;
+ Fri, 23 Apr 2021 11:57:28 +0000 (UTC)
 X-Greylist: whitelisted by SQLgrey-1.8.0
-Received: from mail-wr1-x436.google.com (mail-wr1-x436.google.com
- [IPv6:2a00:1450:4864:20::436])
- by smtp4.osuosl.org (Postfix) with ESMTPS id 9580540517
- for <iommu@lists.linux-foundation.org>; Fri, 23 Apr 2021 11:56:58 +0000 (UTC)
-Received: by mail-wr1-x436.google.com with SMTP id j5so47152724wrn.4
- for <iommu@lists.linux-foundation.org>; Fri, 23 Apr 2021 04:56:58 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linaro.org; s=google;
- h=from:to:cc:subject:date:message-id:in-reply-to:references
- :mime-version:content-transfer-encoding;
- bh=Gl+wT+HXO1EmX33ux5rHV8ewc8i/fb8Q84CtH/7aE+s=;
- b=u5H1CF5in2pW8E0mjMU7DWgoW2RuVlaM98/7Qrfv+WG9vinU51jIe6Fe6m7WGVM5em
- 9UEq4ESUZI5V5c+VI7vRC4Y27YrhLWItK4QNRCe5hOrzRLxbAh++t0lX3gwZQwW+VV2B
- 16a17hfs0QzC+aIqFRsi4uBf3Wvyvydnl+fMIaIfSMcFUSSjPX4+laIN/z3EAK3C2Cvo
- Ktj11/vWXlDSloSwOJABdD87VDpPVEu462ALHYz/epj4/S7oMqin8IQnKrd4Mb5TnZUd
- xI+ClGFXavzTmBsiY886MNraXqWrWn8ZXlud/t02OuOFydyDENidi1EVjrnq0iX/41Br
- 2S5A==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
- d=1e100.net; s=20161025;
- h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
- :references:mime-version:content-transfer-encoding;
- bh=Gl+wT+HXO1EmX33ux5rHV8ewc8i/fb8Q84CtH/7aE+s=;
- b=QcU4C3N/H1IliJ4vmw3uTNgxS+Yrp/OVm+C7GDgM3JwKl7vE4DLhy0uZ4z1QI4P2Dq
- gMJUra8xOpZlmS2aIpim6uw87uyumPvAeGOn2AJCXjESojQMgJ1jbaOVrhhFMffS2onD
- e2JEMOponvVmuoWMpeaFMs6zrMoMfV2jhOwgKskjI6a0c2lP/zg/TU8aDAXvgXfTTTRn
- /dVfgrpq0HV+ix2N9JG+BPVhwqQ7f3iDIoyDE1bKj9Jl2alMhfThhU5rPBxNBBMuYs8E
- ftx44tKH5jKLXakIOfvv4qGQ3lKoM2HK4KKWug1Pi+3/jcbZb3aJCHjwanMBBCxFC0sh
- ovSQ==
-X-Gm-Message-State: AOAM53186Ytd0NHfsvCs7RgTqHuGXULweVJPVTSO2Hv8t+Gue68MHRf8
- /ATx3X1nxgWB1khyyKmD4Gh8IQ==
-X-Google-Smtp-Source: ABdhPJxQ6WJ/X0Z99RttgqNXaiTlSXokX/3gGTygldN2OIGipkCY1zgOrvFvxDE0Y2iqQA/hkN7NeQ==
-X-Received: by 2002:a5d:4e4d:: with SMTP id r13mr4310705wrt.132.1619179016822; 
- Fri, 23 Apr 2021 04:56:56 -0700 (PDT)
-Received: from localhost.localdomain
- ([2001:1715:4e26:a7e0:116c:c27a:3e7f:5eaf])
- by smtp.gmail.com with ESMTPSA id g9sm7485195wmh.21.2021.04.23.04.56.55
- (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
- Fri, 23 Apr 2021 04:56:56 -0700 (PDT)
-From: Jean-Philippe Brucker <jean-philippe@linaro.org>
-To: rjw@rjwysocki.net,
-	lenb@kernel.org,
-	joro@8bytes.org,
-	mst@redhat.com
-Subject: [PATCH v2 3/6] ACPI: Add driver for the VIOT table
-Date: Fri, 23 Apr 2021 13:38:34 +0200
-Message-Id: <20210423113836.3974972-4-jean-philippe@linaro.org>
-X-Mailer: git-send-email 2.31.1
-In-Reply-To: <20210423113836.3974972-1-jean-philippe@linaro.org>
-References: <20210423113836.3974972-1-jean-philippe@linaro.org>
+Received: from NAM12-BN8-obe.outbound.protection.outlook.com
+ (mail-bn8nam12on2071.outbound.protection.outlook.com [40.107.237.71])
+ by smtp1.osuosl.org (Postfix) with ESMTPS id 8665A843BC
+ for <iommu@lists.linux-foundation.org>; Fri, 23 Apr 2021 11:57:28 +0000 (UTC)
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=Av6tCUi+Mox8ll1fWsQj/+DQojKZiOKgjvHuT0iNpMSb8ZTyPN87sODI6DjovPysPt0gFLmompLtSWj0rq9oSGDsMfr8Tr/yyVetIr457Afa81nbJl/23TmEZuoTUt7FyxkYihoq7q1xZJyQAtwr0s/V42Dd2P/Atm15lAfrdr4zLB3JzoriyjBAKoiShYrTjz2jK9/subT++T7Zy5L2TswYjXNP5e/TRyMOqJE90ruGSXTa68+zpjCkQ/WoWh6QvqvnyKTdY7ZyWd28QJiO3mdnoAsqrhzm/7w16RrAPRs2fSPwwFrZqtjLn5c4ArUj9EFj6yqi4SSGB+ScR/oy0A==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com; 
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=dlAnTfQCljtalKMXo9FjpVXRscswBe/yEvM3fPuOuPA=;
+ b=b/fSm8iKTGJ1EAalpJbrrAdHHeCowv1AzDo8A5tW+ku3rS0Rz7YDPFkfAcT8/nSUz/kBfynqxv8Q3afUaWKWUbSqwFMR8eyIdFVAqa4ZqZoiIwpve7vfPruJDnbSuYJh/gQ/PMpgjHlIfokQzbxx3efIgJDoV8H8MrlWH+6sIYPVFBjKZE5B15VeFUtXuP6TzC6obna2keAXBws3F31wI9TIipSD8BEcRYWvGIlX0VjpIJXKcMv1D8QUxZ/kK+hKxYHO+X2266kOQvlr4iceaD4Mld5w1lwXjlS0+LDbABvu5ulDt19FVvOrCSa+bslFrOJXQeh39LQNzz9jo3EvGw==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=nvidia.com; dmarc=pass action=none header.from=nvidia.com;
+ dkim=pass header.d=nvidia.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
+ s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=dlAnTfQCljtalKMXo9FjpVXRscswBe/yEvM3fPuOuPA=;
+ b=OeRdD4ypTMzeN32v9UadwOWOOk3SJUJJ6quXlbHx7Q6ORjcEE4Oq0E9TgwfAR+fsqqxQei6yjddwX91qJ+EXLuES/A3ySyWp/El6yOG77tQd6Mnqwg12hr1J3vJHCThayAFo62mEIc+H8ca3uZlik2ldN6Q83HlNiioXMkqK0nargvnnDR6GRMzjl//uXjSxCPz+aWndf3uMPvKEwiKUnQ1ISnd8xRQjaMRk0l3DO7xUXO3WEp8hWlNlmppeMoYKQ2ctKMY5U3iC7n5gNMrR+SwEPM7kLG23wPvnh0TQTNeg9K917dGL1kEvJHbtwcC1puFRn5Kzx5osAmm5pGQlPw==
+Authentication-Results: intel.com; dkim=none (message not signed)
+ header.d=none;intel.com; dmarc=none action=none header.from=nvidia.com;
+Received: from DM6PR12MB3834.namprd12.prod.outlook.com (2603:10b6:5:14a::12)
+ by DM6PR12MB3402.namprd12.prod.outlook.com (2603:10b6:5:3b::11) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4065.23; Fri, 23 Apr
+ 2021 11:57:25 +0000
+Received: from DM6PR12MB3834.namprd12.prod.outlook.com
+ ([fe80::1c62:7fa3:617b:ab87]) by DM6PR12MB3834.namprd12.prod.outlook.com
+ ([fe80::1c62:7fa3:617b:ab87%6]) with mapi id 15.20.4065.023; Fri, 23 Apr 2021
+ 11:57:25 +0000
+Date: Fri, 23 Apr 2021 08:57:23 -0300
+From: Jason Gunthorpe <jgg@nvidia.com>
+To: "Tian, Kevin" <kevin.tian@intel.com>
+Subject: Re: [PATCH V4 05/18] iommu/ioasid: Redefine IOASID set and
+ allocation APIs
+Message-ID: <20210423115723.GG1370958@nvidia.com>
+References: <20210421175203.GN1370958@nvidia.com>
+ <20210421133312.15307c44@redhat.com>
+ <20210421230301.GP1370958@nvidia.com>
+ <20210422111337.6ac3624d@redhat.com>
+ <20210422175715.GA1370958@nvidia.com>
+ <20210422133747.23322269@redhat.com>
+ <20210422200024.GC1370958@nvidia.com>
+ <20210422163808.2d173225@redhat.com>
+ <20210422233950.GD1370958@nvidia.com>
+ <MWHPR11MB1886A98D9176B5571530EF1D8C459@MWHPR11MB1886.namprd11.prod.outlook.com>
+Content-Disposition: inline
+In-Reply-To: <MWHPR11MB1886A98D9176B5571530EF1D8C459@MWHPR11MB1886.namprd11.prod.outlook.com>
+X-Originating-IP: [47.55.113.94]
+X-ClientProxiedBy: BL1PR13CA0448.namprd13.prod.outlook.com
+ (2603:10b6:208:2c3::33) To DM6PR12MB3834.namprd12.prod.outlook.com
+ (2603:10b6:5:14a::12)
 MIME-Version: 1.0
-Cc: jean-philippe@linaro.org, kevin.tian@intel.com, catalin.marinas@arm.com,
- sudeep.holla@arm.com, robin.murphy@arm.com,
- virtualization@lists.linux-foundation.org, linux-acpi@vger.kernel.org,
- iommu@lists.linux-foundation.org, sebastien.boeuf@intel.com,
- guohanjun@huawei.com, will@kernel.org, dwmw2@infradead.org,
- linux-arm-kernel@lists.infradead.org
+X-MS-Exchange-MessageSentRepresentingType: 1
+Received: from mlx.ziepe.ca (47.55.113.94) by
+ BL1PR13CA0448.namprd13.prod.outlook.com (2603:10b6:208:2c3::33) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4087.17 via Frontend
+ Transport; Fri, 23 Apr 2021 11:57:25 +0000
+Received: from jgg by mlx with local (Exim 4.94)	(envelope-from
+ <jgg@nvidia.com>)	id 1lZuR1-00AYJf-E3; Fri, 23 Apr 2021 08:57:23 -0300
+X-MS-PublicTrafficType: Email
+X-MS-Office365-Filtering-Correlation-Id: b02587c7-3e86-4561-4225-08d9064ef5dd
+X-MS-TrafficTypeDiagnostic: DM6PR12MB3402:
+X-Microsoft-Antispam-PRVS: <DM6PR12MB3402E3C6922E0BDCEAB69CB2C2459@DM6PR12MB3402.namprd12.prod.outlook.com>
+X-MS-Oob-TLC-OOBClassifiers: OLM:9508;
+X-MS-Exchange-SenderADCheck: 1
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: aWm1dOR3wabQRgd+J9raelXBsq+kHwTi95vNKVnPI7DtYIytKxnFPQ8gzvEgf8stOHy7eNiqNNenqHtO2OMhGn84f/70zyIdEC9ptE6SYSCV3sooV3eFr6yf39OwPIgd+tejSioK9/MqpVQJWAKtHSsaD7+6Chh6nVZiqsBZpztqScRsj+Ep/kxmuxOLVLKfamRN+9qruk/M5kFX4oL+bOUoyLjgIlE646tIFfs6cfLHKR6ArtaPh46T3zamrFYK7rufT8yT1f6a1v+a08xe9wyDLMI94eE1cxpoMTtkYabH6ag6/F2usLxPSjt0kPYa00G1E4RMm8L+5fA3y/DBZCJn8oDDdbpFvLf1P5uw2FIbHWJK7kFiYLdrgn3r714NL40qRWCausASX0Gm4zmtoHY1YNSv5bpzzNvakIRkKBQlyNFtst6zcvoKhi52r+KdbX1lolu3OOvrOZ0QH6gadIQH0xCU/WUi13ZGX8zfT2U7dIeZ5ITNqBPKxxnOafymsSUxfK7sEXwjYcHM4DX4uqA33h0OQzXkZRMNNWQPszffkjKeYEUjRWlLy914B74aEiAz4Ovv/OXm1bcY6SoiwbpNYm64DIUP91l2XK6JfxQ=
+X-Forefront-Antispam-Report: CIP:255.255.255.255; CTRY:; LANG:en; SCL:1; SRV:;
+ IPV:NLI; SFV:NSPM; H:DM6PR12MB3834.namprd12.prod.outlook.com; PTR:; CAT:NONE;
+ SFS:(4636009)(396003)(39860400002)(366004)(376002)(346002)(136003)(6916009)(9786002)(9746002)(4326008)(8936002)(316002)(54906003)(1076003)(36756003)(86362001)(2906002)(2616005)(5660300002)(66946007)(83380400001)(33656002)(186003)(26005)(66556008)(66476007)(478600001)(38100700002)(426003)(7416002)(8676002);
+ DIR:OUT; SFP:1101; 
+X-MS-Exchange-AntiSpam-MessageData: =?us-ascii?Q?mQ1Vr9GTBivx3SVI3Doqzs2Jw3t2D51Bi1SExC9tdTUv+2d6INMXV+RxJGG6?=
+ =?us-ascii?Q?GyQneMW1NSwwZUb5w+YD/AQGYQfEbFpAOyFdRluNPtmaW+WdzsfQrsdY9lKd?=
+ =?us-ascii?Q?Ex0hyPaSEzHxVgo3P7pBmq8FamXGv1WVPQ09HdEk8w28EnrSp4KqfaN8ktRR?=
+ =?us-ascii?Q?zwB9XBWOi/BXi4iH+jW6NU66lh71okT7P9gdO+Hhk3lI9CcruCV24aM5bEDB?=
+ =?us-ascii?Q?sqHpnOKnbrJn5cf2wNfHOO4tmMyfoVZXSmNd2bcyTU9jP5LRr+HQQlOHkLKy?=
+ =?us-ascii?Q?G+y6giGF2GEie4Exj39JhnjC6u1R9+VK47xVv6MC45APH/4bA+V70d1Cp8UW?=
+ =?us-ascii?Q?NY2M2vzbT++yPqmgFdvbex0v6ONGJ5BgoDCoF9KWpxPUFSL1FwBtKEDklISE?=
+ =?us-ascii?Q?L9yZOEJ/Hz22Hvp2XPpcUKpFlNXS03UFPYYtrMpIFocVGLY+/+wicJKjqaAw?=
+ =?us-ascii?Q?KoYunJ4lzwyfpCkIAkzHUeUEystyIi7XX/fmxi7rxanC0S1AqjF7ZrPUYaSk?=
+ =?us-ascii?Q?9yaqeEjH7Qi8R6CTsB+nsjATbUs5CL+yAqWv5zcE3+6V9tkO37fwL/2tfOUW?=
+ =?us-ascii?Q?q5o7H9mGDQHEv8l0HWEqjHHWLiwzGf8SALe61C55xsMBdkUw/VeoIXRPPEfu?=
+ =?us-ascii?Q?mN2/f7hqIbUmq07/oDSB2saga6N0ye9fhTvSJH6NWm2E0hOfgyR9fRp/VCND?=
+ =?us-ascii?Q?Pr0SL6V9EHKcYoXIjfowjr/K3YvIy6qp32arXq0oo7SLpsOvpz6BZRaoltuT?=
+ =?us-ascii?Q?jxr+o4Ps3GzosvHNhjVCmtp9E+BMbBVbi6pahIgQ7p4STKxpgH4dzW6GE5iE?=
+ =?us-ascii?Q?EC537bEtaGpzMVDPc54T1ASbFtyTikkLchAev1MT3Czwm72X/JS1SZIoe/Zf?=
+ =?us-ascii?Q?VI4UwuX4Wn2s7sCQH1y4gP16YDTaVZdWNrr8A8YqBT3GHh4me0IThfNMzjNo?=
+ =?us-ascii?Q?XmnjhM0vjmLZqqAhJcsS9RTgzTLHwoezW/cS4aJEVWC7JZCSypB0YFMbzZB1?=
+ =?us-ascii?Q?Avas4b8qNPYbdQ+XX1gSC4J5ciVHZbcC2USBhFYA6l9DhIkJysTvUvMvHd/f?=
+ =?us-ascii?Q?hkZ+tzQB+OHK3eUwTv06VGG7yw8pc2fE7VTzedMZDGqIe+gelBHfqSNVBh8C?=
+ =?us-ascii?Q?eVmi/cIaflPGcLBK0cZEEgpjj84kBRIc+xjHF57Kbe3VliQJlq1PWlIXdISM?=
+ =?us-ascii?Q?f4GFY/MdO9i6jx2JIHKkjCJVCoUZmav5qwIISywMhSdB7aIZIiHhEfenXEcQ?=
+ =?us-ascii?Q?1iUugiAUQOsEut24md2hDW+mbBjU2Zel0vsdECQNkS7HwOzcq52tFBGY/bDY?=
+ =?us-ascii?Q?zPMv6RcdtyWYHBVALWr7cQII?=
+X-OriginatorOrg: Nvidia.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: b02587c7-3e86-4561-4225-08d9064ef5dd
+X-MS-Exchange-CrossTenant-AuthSource: DM6PR12MB3834.namprd12.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 23 Apr 2021 11:57:25.3958 (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: lmRv5uUGWUf0FYUWH4u8fHPh+Fh+1DvBLhHsA1ZO/UBiupQOA6UbAJsXckHcWk2i
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: DM6PR12MB3402
+Cc: Jean-Philippe Brucker <jean-philippe@linaro.org>,
+ Li Zefan <lizefan@huawei.com>, "Jiang, Dave" <dave.jiang@intel.com>, "Raj,
+ Ashok" <ashok.raj@intel.com>, Jonathan Corbet <corbet@lwn.net>,
+ Jean-Philippe Brucker <jean-philippe@linaro.com>,
+ LKML <linux-kernel@vger.kernel.org>,
+ "iommu@lists.linux-foundation.org" <iommu@lists.linux-foundation.org>,
+ Alex Williamson <alex.williamson@redhat.com>,
+ David Gibson <david@gibson.dropbear.id.au>,
+ Johannes Weiner <hannes@cmpxchg.org>, Tejun Heo <tj@kernel.org>,
+ "cgroups@vger.kernel.org" <cgroups@vger.kernel.org>, "Wu,
+ Hao" <hao.wu@intel.com>, David Woodhouse <dwmw2@infradead.org>
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -116,521 +176,68 @@ Content-Transfer-Encoding: 7bit
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-The ACPI Virtual I/O Translation Table describes topology of
-para-virtual platforms, similarly to vendor tables DMAR, IVRS and IORT.
-For now it describes the relation between virtio-iommu and the endpoints
-it manages.
+On Fri, Apr 23, 2021 at 10:31:46AM +0000, Tian, Kevin wrote:
 
-Three steps are needed to configure DMA of endpoints:
+> So your proposal sort of moves the entire container/group/domain 
+> managment into /dev/ioasid and then leaves vfio only provide device
+> specific uAPI. An ioasid represents a page table (address space), thus 
+> is equivalent to the scope of VFIO container. Having the device join 
+> an ioasid is equivalent to attaching a device to VFIO container, and 
+> here the group integrity must be enforced. Then /dev/ioasid anyway 
+> needs to manage group objects and their association with ioasid and 
+> underlying iommu domain thus it's pointless to keep same logic within
+> VFIO. Is this understanding correct?
 
-(1) acpi_viot_init(): parse the VIOT table, find or create the fwnode
-    associated to each vIOMMU device.
+Yes, I haven't thought of a way to define /dev/ioasid in a way that is
+useful to VDPA/etc without all these parts.. If you come up with a
+better idea do share.
 
-(2) When probing the vIOMMU device, the driver registers its IOMMU ops
-    within the IOMMU subsystem. This step doesn't require any
-    intervention from the VIOT driver.
+> btw one remaining open is whether you expect /dev/ioasid to be 
+> associated with a single iommu domain, or multiple. If only a single
+> domain is allowed, the ioasid_fd is equivalent to the scope of VFIO
+> container. 
 
-(3) viot_iommu_configure(): before binding the endpoint to a driver,
-    find the associated IOMMU ops. Register them, along with the
-    endpoint ID, into the device's iommu_fwspec.
+See the prior email for a more complete set of thoughts on this.
 
-If step (3) happens before step (2), it is deferred until the IOMMU is
-initialized, then retried.
+> It is supposed to have only one gpa_ioasid_id since one iommu domain
+> can only have a single 2nd level pgtable. Then all other ioasids,
+> once allocated, must be nested on this gpa_ioasid_id to fit in the
+> same domain. if a legacy vIOMMU is exposed (which disallows
+> nesting), the userspace has to open an ioasid_fd for every group.
+> This is basically the VFIO way. On the other hand if multiple
+> domains is allowed, there could be multiple ioasid_ids each holding
+> a 2nd level pgtable and an iommu domain (or a list of pgtables and
+> domains due to incompatibility issue as discussed in another
+> thread), and can be nested by other ioasids respectively. The
+> application only needs to open /dev/ioasid once regardless of
+> whether vIOMMU allows nesting, and has a single interface for ioasid
+> allocation. Which way do you prefer to?
 
-Signed-off-by: Jean-Philippe Brucker <jean-philippe@linaro.org>
----
- drivers/acpi/Kconfig      |   3 +
- drivers/iommu/Kconfig     |   1 +
- drivers/acpi/Makefile     |   2 +
- include/linux/acpi_viot.h |  19 +++
- drivers/acpi/bus.c        |   2 +
- drivers/acpi/scan.c       |   3 +
- drivers/acpi/viot.c       | 350 ++++++++++++++++++++++++++++++++++++++
- MAINTAINERS               |   8 +
- 8 files changed, 388 insertions(+)
- create mode 100644 include/linux/acpi_viot.h
- create mode 100644 drivers/acpi/viot.c
+I have a feeling we want to have a single IOASID be usable in as many
+contexts as possible - as many domains, devices and groups as we can
+get away with.
 
-diff --git a/drivers/acpi/Kconfig b/drivers/acpi/Kconfig
-index eedec61e3476..3758c6940ed7 100644
---- a/drivers/acpi/Kconfig
-+++ b/drivers/acpi/Kconfig
-@@ -526,6 +526,9 @@ endif
- 
- source "drivers/acpi/pmic/Kconfig"
- 
-+config ACPI_VIOT
-+	bool
-+
- endif	# ACPI
- 
- config X86_PM_TIMER
-diff --git a/drivers/iommu/Kconfig b/drivers/iommu/Kconfig
-index 1f111b399bca..aff8a4830dd1 100644
---- a/drivers/iommu/Kconfig
-+++ b/drivers/iommu/Kconfig
-@@ -403,6 +403,7 @@ config VIRTIO_IOMMU
- 	depends on ARM64
- 	select IOMMU_API
- 	select INTERVAL_TREE
-+	select ACPI_VIOT if ACPI
- 	help
- 	  Para-virtualised IOMMU driver with virtio.
- 
-diff --git a/drivers/acpi/Makefile b/drivers/acpi/Makefile
-index 700b41adf2db..a6e644c48987 100644
---- a/drivers/acpi/Makefile
-+++ b/drivers/acpi/Makefile
-@@ -118,3 +118,5 @@ video-objs			+= acpi_video.o video_detect.o
- obj-y				+= dptf/
- 
- obj-$(CONFIG_ARM64)		+= arm64/
-+
-+obj-$(CONFIG_ACPI_VIOT)		+= viot.o
-diff --git a/include/linux/acpi_viot.h b/include/linux/acpi_viot.h
-new file mode 100644
-index 000000000000..1eb8ee5b0e5f
---- /dev/null
-+++ b/include/linux/acpi_viot.h
-@@ -0,0 +1,19 @@
-+/* SPDX-License-Identifier: GPL-2.0-only */
-+
-+#ifndef __ACPI_VIOT_H__
-+#define __ACPI_VIOT_H__
-+
-+#include <linux/acpi.h>
-+
-+#ifdef CONFIG_ACPI_VIOT
-+void __init acpi_viot_init(void);
-+int viot_iommu_configure(struct device *dev);
-+#else
-+static inline void acpi_viot_init(void) {}
-+static inline int viot_iommu_configure(struct device *dev)
-+{
-+	return -ENODEV;
-+}
-+#endif
-+
-+#endif /* __ACPI_VIOT_H__ */
-diff --git a/drivers/acpi/bus.c b/drivers/acpi/bus.c
-index be7da23fad76..b835ca702ff0 100644
---- a/drivers/acpi/bus.c
-+++ b/drivers/acpi/bus.c
-@@ -27,6 +27,7 @@
- #include <linux/dmi.h>
- #endif
- #include <linux/acpi_iort.h>
-+#include <linux/acpi_viot.h>
- #include <linux/pci.h>
- #include <acpi/apei.h>
- #include <linux/suspend.h>
-@@ -1339,6 +1340,7 @@ static int __init acpi_init(void)
- 	pci_mmcfg_late_init();
- 	acpi_iort_init();
- 	acpi_scan_init();
-+	acpi_viot_init();
- 	acpi_ec_init();
- 	acpi_debugfs_init();
- 	acpi_sleep_proc_init();
-diff --git a/drivers/acpi/scan.c b/drivers/acpi/scan.c
-index 5924421075f6..4db43c822ee7 100644
---- a/drivers/acpi/scan.c
-+++ b/drivers/acpi/scan.c
-@@ -9,6 +9,7 @@
- #include <linux/kernel.h>
- #include <linux/acpi.h>
- #include <linux/acpi_iort.h>
-+#include <linux/acpi_viot.h>
- #include <linux/iommu.h>
- #include <linux/signal.h>
- #include <linux/kthread.h>
-@@ -1554,6 +1555,8 @@ static const struct iommu_ops *acpi_iommu_configure_id(struct device *dev,
- 		return ops;
- 
- 	err = iort_iommu_configure_id(dev, id_in);
-+	if (err && err != -EPROBE_DEFER)
-+		err = viot_iommu_configure(dev);
- 
- 	/*
- 	 * If we have reason to believe the IOMMU driver missed the initial
-diff --git a/drivers/acpi/viot.c b/drivers/acpi/viot.c
-new file mode 100644
-index 000000000000..710e5a5eac70
---- /dev/null
-+++ b/drivers/acpi/viot.c
-@@ -0,0 +1,350 @@
-+// SPDX-License-Identifier: GPL-2.0
-+/*
-+ * Virtual I/O topology
-+ */
-+#define pr_fmt(fmt) "ACPI: VIOT: " fmt
-+
-+#include <linux/acpi_viot.h>
-+#include <linux/dma-iommu.h>
-+#include <linux/fwnode.h>
-+#include <linux/iommu.h>
-+#include <linux/list.h>
-+#include <linux/pci.h>
-+#include <linux/platform_device.h>
-+
-+struct viot_iommu {
-+	/* Node offset within the table */
-+	unsigned int			offset;
-+	struct fwnode_handle		*fwnode;
-+	struct list_head		list;
-+};
-+
-+struct viot_endpoint {
-+	union {
-+		/* PCI range */
-+		struct {
-+			u16		segment_start;
-+			u16		segment_end;
-+			u16		bdf_start;
-+			u16		bdf_end;
-+		};
-+		/* MMIO */
-+		u64			address;
-+	};
-+	u32				endpoint_id;
-+	struct viot_iommu		*viommu;
-+	struct list_head		list;
-+};
-+
-+static struct acpi_table_viot *viot;
-+static LIST_HEAD(viot_iommus);
-+static LIST_HEAD(viot_pci_ranges);
-+static LIST_HEAD(viot_mmio_endpoints);
-+
-+static int __init viot_check_bounds(const struct acpi_viot_header *hdr)
-+{
-+	struct acpi_viot_header *start, *end, *hdr_end;
-+
-+	start = ACPI_ADD_PTR(struct acpi_viot_header, viot,
-+			     max_t(size_t, sizeof(*viot), viot->node_offset));
-+	end = ACPI_ADD_PTR(struct acpi_viot_header, viot, viot->header.length);
-+	hdr_end = ACPI_ADD_PTR(struct acpi_viot_header, hdr, sizeof(*hdr));
-+
-+	if (hdr < start || hdr_end > end) {
-+		pr_err(FW_BUG "Node pointer overflows\n");
-+		return -EOVERFLOW;
-+	}
-+	if (hdr->length < sizeof(*hdr)) {
-+		pr_err(FW_BUG "Empty node\n");
-+		return -EINVAL;
-+	}
-+	return 0;
-+}
-+
-+static int __init viot_get_pci_iommu_fwnode(struct viot_iommu *viommu,
-+					    u16 segment, u16 bdf)
-+{
-+	struct pci_dev *pdev;
-+	struct fwnode_handle *fwnode;
-+
-+	pdev = pci_get_domain_bus_and_slot(segment, PCI_BUS_NUM(bdf),
-+					   bdf & 0xff);
-+	if (!pdev) {
-+		pr_err("Could not find PCI IOMMU\n");
-+		return -ENODEV;
-+	}
-+
-+	fwnode = pdev->dev.fwnode;
-+	if (!fwnode) {
-+		/*
-+		 * PCI devices aren't necessarily described by ACPI. Create a
-+		 * fwnode so the IOMMU subsystem can identify this device.
-+		 */
-+		fwnode = acpi_alloc_fwnode_static();
-+		if (!fwnode) {
-+			pci_dev_put(pdev);
-+			return -ENOMEM;
-+		}
-+		set_primary_fwnode(&pdev->dev, fwnode);
-+	}
-+	viommu->fwnode = pdev->dev.fwnode;
-+	pci_dev_put(pdev);
-+	return 0;
-+}
-+
-+static int __init viot_get_mmio_iommu_fwnode(struct viot_iommu *viommu,
-+					     u64 address)
-+{
-+	struct acpi_device *adev;
-+	struct resource res = {
-+		.start	= address,
-+		.end	= address,
-+		.flags	= IORESOURCE_MEM,
-+	};
-+
-+	adev = acpi_resource_consumer(&res);
-+	if (!adev) {
-+		pr_err("Could not find MMIO IOMMU\n");
-+		return -EINVAL;
-+	}
-+	viommu->fwnode = &adev->fwnode;
-+	return 0;
-+}
-+
-+static struct viot_iommu * __init viot_get_iommu(unsigned int offset)
-+{
-+	int ret;
-+	struct viot_iommu *viommu;
-+	struct acpi_viot_header *hdr = ACPI_ADD_PTR(struct acpi_viot_header,
-+						    viot, offset);
-+	union {
-+		struct acpi_viot_virtio_iommu_pci pci;
-+		struct acpi_viot_virtio_iommu_mmio mmio;
-+	} *node = (void *)hdr;
-+
-+	list_for_each_entry(viommu, &viot_iommus, list)
-+		if (viommu->offset == offset)
-+			return viommu;
-+
-+	if (viot_check_bounds(hdr))
-+		return NULL;
-+
-+	viommu = kzalloc(sizeof(*viommu), GFP_KERNEL);
-+	if (!viommu)
-+		return NULL;
-+
-+	viommu->offset = offset;
-+	switch (hdr->type) {
-+	case ACPI_VIOT_NODE_VIRTIO_IOMMU_PCI:
-+		if (hdr->length < sizeof(node->pci))
-+			goto err_free;
-+
-+		ret = viot_get_pci_iommu_fwnode(viommu, node->pci.segment,
-+						node->pci.bdf);
-+		break;
-+	case ACPI_VIOT_NODE_VIRTIO_IOMMU_MMIO:
-+		if (hdr->length < sizeof(node->mmio))
-+			goto err_free;
-+
-+		ret = viot_get_mmio_iommu_fwnode(viommu,
-+						 node->mmio.base_address);
-+		break;
-+	default:
-+		ret = -EINVAL;
-+	}
-+	if (ret)
-+		goto err_free;
-+
-+	list_add(&viommu->list, &viot_iommus);
-+	return viommu;
-+
-+err_free:
-+	kfree(viommu);
-+	return NULL;
-+}
-+
-+static int __init viot_parse_node(const struct acpi_viot_header *hdr)
-+{
-+	int ret = -EINVAL;
-+	struct list_head *list;
-+	struct viot_endpoint *ep;
-+	union {
-+		struct acpi_viot_mmio mmio;
-+		struct acpi_viot_pci_range pci;
-+	} *node = (void *)hdr;
-+
-+	if (viot_check_bounds(hdr))
-+		return -EINVAL;
-+
-+	if (hdr->type == ACPI_VIOT_NODE_VIRTIO_IOMMU_PCI ||
-+	    hdr->type == ACPI_VIOT_NODE_VIRTIO_IOMMU_MMIO)
-+		return 0;
-+
-+	ep = kzalloc(sizeof(*ep), GFP_KERNEL);
-+	if (!ep)
-+		return -ENOMEM;
-+
-+	switch (hdr->type) {
-+	case ACPI_VIOT_NODE_PCI_RANGE:
-+		if (hdr->length < sizeof(node->pci)) {
-+			pr_err(FW_BUG "Invalid PCI node size\n");
-+			goto err_free;
-+		}
-+
-+		ep->segment_start = node->pci.segment_start;
-+		ep->segment_end = node->pci.segment_end;
-+		ep->bdf_start = node->pci.bdf_start;
-+		ep->bdf_end = node->pci.bdf_end;
-+		ep->endpoint_id = node->pci.endpoint_start;
-+		ep->viommu = viot_get_iommu(node->pci.output_node);
-+		list = &viot_pci_ranges;
-+		break;
-+	case ACPI_VIOT_NODE_MMIO:
-+		if (hdr->length < sizeof(node->mmio)) {
-+			pr_err(FW_BUG "Invalid MMIO node size\n");
-+			goto err_free;
-+		}
-+
-+		ep->address = node->mmio.base_address;
-+		ep->endpoint_id = node->mmio.endpoint;
-+		ep->viommu = viot_get_iommu(node->mmio.output_node);
-+		list = &viot_mmio_endpoints;
-+		break;
-+	default:
-+		pr_warn("Unsupported node %x\n", hdr->type);
-+		ret = 0;
-+		goto err_free;
-+	}
-+
-+	/*
-+	 * To be compatible with future versions of the table which may include
-+	 * other node types, keep parsing.
-+	 */
-+	if (!ep->viommu) {
-+		pr_warn("No IOMMU node found\n");
-+		ret = 0;
-+		goto err_free;
-+	}
-+
-+	list_add(&ep->list, list);
-+	return 0;
-+
-+err_free:
-+	kfree(ep);
-+	return ret;
-+}
-+
-+/**
-+ * acpi_viot_init - Parse the VIOT table
-+ *
-+ * Parse the VIOT table, prepare the list of endpoints to be used during DMA
-+ * setup of devices.
-+ */
-+void __init acpi_viot_init(void)
-+{
-+	int i;
-+	acpi_status status;
-+	struct acpi_table_header *hdr;
-+	struct acpi_viot_header *node;
-+
-+	status = acpi_get_table(ACPI_SIG_VIOT, 0, &hdr);
-+	if (ACPI_FAILURE(status)) {
-+		if (status != AE_NOT_FOUND) {
-+			const char *msg = acpi_format_exception(status);
-+
-+			pr_err("Failed to get table, %s\n", msg);
-+		}
-+		return;
-+	}
-+
-+	viot = (void *)hdr;
-+
-+	node = ACPI_ADD_PTR(struct acpi_viot_header, viot, viot->node_offset);
-+	for (i = 0; i < viot->node_count; i++) {
-+		if (viot_parse_node(node))
-+			return;
-+
-+		node = ACPI_ADD_PTR(struct acpi_viot_header, node,
-+				    node->length);
-+	}
-+}
-+
-+static int viot_dev_iommu_init(struct device *dev, struct viot_iommu *viommu,
-+			       u32 epid)
-+{
-+	const struct iommu_ops *ops;
-+
-+	if (!viommu)
-+		return -ENODEV;
-+
-+	/* We're not translating ourself */
-+	if (viommu->fwnode == dev->fwnode)
-+		return -EINVAL;
-+
-+	ops = iommu_ops_from_fwnode(viommu->fwnode);
-+	if (!ops)
-+		return IS_ENABLED(CONFIG_VIRTIO_IOMMU) ?
-+			-EPROBE_DEFER : -ENODEV;
-+
-+	return acpi_iommu_fwspec_init(dev, epid, viommu->fwnode, ops);
-+}
-+
-+static int viot_pci_dev_iommu_init(struct pci_dev *pdev, u16 dev_id, void *data)
-+{
-+	u32 epid;
-+	struct viot_endpoint *ep;
-+	u32 domain_nr = pci_domain_nr(pdev->bus);
-+
-+	list_for_each_entry(ep, &viot_pci_ranges, list) {
-+		if (domain_nr >= ep->segment_start &&
-+		    domain_nr <= ep->segment_end &&
-+		    dev_id >= ep->bdf_start &&
-+		    dev_id <= ep->bdf_end) {
-+			epid = ((domain_nr - ep->segment_start) << 16) +
-+				dev_id - ep->bdf_start + ep->endpoint_id;
-+
-+			/*
-+			 * If we found a PCI range managed by the viommu, we're
-+			 * the one that has to request ACS.
-+			 */
-+			pci_request_acs();
-+
-+			return viot_dev_iommu_init(&pdev->dev, ep->viommu,
-+						   epid);
-+		}
-+	}
-+	return -ENODEV;
-+}
-+
-+static int viot_mmio_dev_iommu_init(struct platform_device *pdev)
-+{
-+	struct resource *mem;
-+	struct viot_endpoint *ep;
-+
-+	mem = platform_get_resource(pdev, IORESOURCE_MEM, 0);
-+	if (!mem)
-+		return -ENODEV;
-+
-+	list_for_each_entry(ep, &viot_mmio_endpoints, list) {
-+		if (ep->address == mem->start)
-+			return viot_dev_iommu_init(&pdev->dev, ep->viommu,
-+						   ep->endpoint_id);
-+	}
-+	return -ENODEV;
-+}
-+
-+/**
-+ * viot_iommu_configure - Setup IOMMU ops for an endpoint described by VIOT
-+ * @dev: the endpoint
-+ *
-+ * Return: 0 on success, <0 on failure
-+ */
-+int viot_iommu_configure(struct device *dev)
-+{
-+	if (dev_is_pci(dev))
-+		return pci_for_each_dma_alias(to_pci_dev(dev),
-+					      viot_pci_dev_iommu_init, NULL);
-+	else if (dev_is_platform(dev))
-+		return viot_mmio_dev_iommu_init(to_platform_device(dev));
-+	return -ENODEV;
-+}
-diff --git a/MAINTAINERS b/MAINTAINERS
-index 6b1560c45e2a..1a018afff162 100644
---- a/MAINTAINERS
-+++ b/MAINTAINERS
-@@ -431,6 +431,14 @@ W:	https://01.org/linux-acpi
- B:	https://bugzilla.kernel.org
- F:	drivers/acpi/acpi_video.c
- 
-+ACPI VIOT DRIVER
-+M:	Jean-Philippe Brucker <jean-philippe@linaro.org>
-+L:	linux-acpi@vger.kernel.org
-+L:	iommu@lists.linux-foundation.org
-+S:	Maintained
-+F:	drivers/acpi/viot.c
-+F:	include/linux/acpi_viot.h
-+
- ACPI WMI DRIVER
- L:	platform-driver-x86@vger.kernel.org
- S:	Orphan
--- 
-2.31.1
+The IOASID is the expensive object, it is the pagetable, it is
+potentially a lot of memory. The API should be designed so we don't
+have to have multiple copies of the same pagetable.
 
+For this reason I think having multiple IOASID's in a single
+/dev/ioasid container is the way to go.
+
+To my mind the /dev/ioasid should be linked to a HW page table format
+and any device/domain/group that uses that same HW page table format
+can be joined to it. This implies we can have multiple domains under
+/dev/ioasid, but there is a limitation on what domains can be grouped
+together.
+
+This probably does not match the exact IOMMU capability/domain model
+we have today, so I present it as an inspirational goal. The other
+tricky thing here will be to define small steps.. 
+
+eg V1 may only allow one domain, but the uAPI will not reflect this as
+we expect V2 will allow multiple domains..
+
+Jason
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
