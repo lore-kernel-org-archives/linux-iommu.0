@@ -5,65 +5,64 @@ X-Spam-Level:
 X-Spam-Status: No, score=-16.7 required=3.0 tests=BAYES_00,
 	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_CR_TRAILER,INCLUDES_PATCH,
 	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_GIT
-	autolearn=ham autolearn_force=no version=3.4.0
+	autolearn=unavailable autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 68A41C433B4
-	for <iommu@archiver.kernel.org>; Fri, 23 Apr 2021 09:52:10 +0000 (UTC)
-Received: from smtp4.osuosl.org (smtp4.osuosl.org [140.211.166.137])
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3FC0AC43461
+	for <iommu@archiver.kernel.org>; Fri, 23 Apr 2021 09:52:12 +0000 (UTC)
+Received: from smtp2.osuosl.org (smtp2.osuosl.org [140.211.166.133])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id D5A6D6144D
-	for <iommu@archiver.kernel.org>; Fri, 23 Apr 2021 09:52:09 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org D5A6D6144D
+	by mail.kernel.org (Postfix) with ESMTPS id B4AD6613C3
+	for <iommu@archiver.kernel.org>; Fri, 23 Apr 2021 09:52:11 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org B4AD6613C3
 Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=arm.com
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by smtp4.osuosl.org (Postfix) with ESMTP id 7156E414FA;
-	Fri, 23 Apr 2021 09:52:09 +0000 (UTC)
+	by smtp2.osuosl.org (Postfix) with ESMTP id 50A5A4060B;
+	Fri, 23 Apr 2021 09:52:11 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from smtp4.osuosl.org ([127.0.0.1])
-	by localhost (smtp4.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id 3GDEnCMqj0e7; Fri, 23 Apr 2021 09:52:08 +0000 (UTC)
+Received: from smtp2.osuosl.org ([127.0.0.1])
+	by localhost (smtp2.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+	with ESMTP id jXsX5kclU418; Fri, 23 Apr 2021 09:52:10 +0000 (UTC)
 Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by smtp4.osuosl.org (Postfix) with ESMTP id 19A91414F9;
-	Fri, 23 Apr 2021 09:52:08 +0000 (UTC)
+	by smtp2.osuosl.org (Postfix) with ESMTP id 4BA8740610;
+	Fri, 23 Apr 2021 09:52:10 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id EA83EC001A;
-	Fri, 23 Apr 2021 09:52:07 +0000 (UTC)
-Received: from smtp2.osuosl.org (smtp2.osuosl.org [140.211.166.133])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 18000C000F;
- Fri, 23 Apr 2021 09:52:07 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 36719C001A;
+	Fri, 23 Apr 2021 09:52:10 +0000 (UTC)
+Received: from smtp2.osuosl.org (smtp2.osuosl.org [IPv6:2605:bc80:3010::133])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id B3C9AC000B;
+ Fri, 23 Apr 2021 09:52:09 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by smtp2.osuosl.org (Postfix) with ESMTP id 0E2DC40610;
- Fri, 23 Apr 2021 09:52:07 +0000 (UTC)
+ by smtp2.osuosl.org (Postfix) with ESMTP id 9089140618;
+ Fri, 23 Apr 2021 09:52:09 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
 Received: from smtp2.osuosl.org ([127.0.0.1])
  by localhost (smtp2.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id TMmg2Tc5suH6; Fri, 23 Apr 2021 09:52:04 +0000 (UTC)
+ with ESMTP id DjWjZ5pE3Vm3; Fri, 23 Apr 2021 09:52:08 +0000 (UTC)
 X-Greylist: domain auto-whitelisted by SQLgrey-1.8.0
 X-Greylist: domain auto-whitelisted by SQLgrey-1.8.0
 Received: from foss.arm.com (foss.arm.com [217.140.110.172])
- by smtp2.osuosl.org (Postfix) with ESMTP id 39242400D9;
- Fri, 23 Apr 2021 09:52:04 +0000 (UTC)
+ by smtp2.osuosl.org (Postfix) with ESMTP id D98EE40602;
+ Fri, 23 Apr 2021 09:52:08 +0000 (UTC)
 Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
- by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 7F48513A1;
- Fri, 23 Apr 2021 02:52:03 -0700 (PDT)
+ by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 1FAEE1474;
+ Fri, 23 Apr 2021 02:52:08 -0700 (PDT)
 Received: from usa.arm.com (a074945.blr.arm.com [10.162.16.71])
- by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPA id DB7363F774;
- Fri, 23 Apr 2021 02:51:58 -0700 (PDT)
+ by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPA id EBF283F774;
+ Fri, 23 Apr 2021 02:52:03 -0700 (PDT)
 From: Vivek Gautam <vivek.gautam@arm.com>
 To: linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
  iommu@lists.linux-foundation.org, virtualization@lists.linux-foundation.org
-Subject: [PATCH RFC v1 01/11] uapi/virtio-iommu: Add page request grp-id and
- flags information
-Date: Fri, 23 Apr 2021 15:21:37 +0530
-Message-Id: <20210423095147.27922-2-vivek.gautam@arm.com>
+Subject: [PATCH RFC v1 02/11] iommu/virtio: Maintain a list of endpoints
+ served by viommu_dev
+Date: Fri, 23 Apr 2021 15:21:38 +0530
+Message-Id: <20210423095147.27922-3-vivek.gautam@arm.com>
 X-Mailer: git-send-email 2.17.1
 In-Reply-To: <20210423095147.27922-1-vivek.gautam@arm.com>
 References: <20210423095147.27922-1-vivek.gautam@arm.com>
 Cc: jean-philippe@linaro.org, kevin.tian@intel.com, mst@redhat.com,
- will.deacon@arm.com, Alex Williamson <alex.williamson@redhat.com>,
- Vivek Gautam <vivek.gautam@arm.com>, robin.murphy@arm.com
+ will.deacon@arm.com, Vivek Gautam <vivek.gautam@arm.com>, robin.murphy@arm.com
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -82,58 +81,75 @@ Content-Transfer-Encoding: 7bit
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-Add fault information for group-id and necessary flags for page
-request faults that can be handled by page fault handler in
-virtio-iommu driver.
+Keeping a record of list of endpoints that are served by the virtio-iommu
+device would help in redirecting the requests of page faults to the
+correct endpoint device to handle such requests.
 
 Signed-off-by: Vivek Gautam <vivek.gautam@arm.com>
-Cc: Joerg Roedel <joro@8bytes.org>
-Cc: Will Deacon <will.deacon@arm.com>
-Cc: Robin Murphy <robin.murphy@arm.com>
-Cc: Jean-Philippe Brucker <jean-philippe@linaro.org>
-Cc: Eric Auger <eric.auger@redhat.com>
-Cc: Alex Williamson <alex.williamson@redhat.com>
-Cc: Kevin Tian <kevin.tian@intel.com>
-Cc: Jacob Pan <jacob.jun.pan@linux.intel.com>
-Cc: Liu Yi L <yi.l.liu@intel.com>
-Cc: Lorenzo Pieralisi <lorenzo.pieralisi@arm.com>
-Cc: Shameerali Kolothum Thodi <shameerali.kolothum.thodi@huawei.com>
 ---
- include/uapi/linux/virtio_iommu.h | 13 +++++++++++++
- 1 file changed, 13 insertions(+)
+ drivers/iommu/virtio-iommu.c | 21 +++++++++++++++++++++
+ 1 file changed, 21 insertions(+)
 
-diff --git a/include/uapi/linux/virtio_iommu.h b/include/uapi/linux/virtio_iommu.h
-index f8bf927a0689..accc3318ce46 100644
---- a/include/uapi/linux/virtio_iommu.h
-+++ b/include/uapi/linux/virtio_iommu.h
-@@ -307,14 +307,27 @@ struct virtio_iommu_req_invalidate {
- #define VIRTIO_IOMMU_FAULT_F_DMA_UNRECOV	1
- #define VIRTIO_IOMMU_FAULT_F_PAGE_REQ		2
+diff --git a/drivers/iommu/virtio-iommu.c b/drivers/iommu/virtio-iommu.c
+index 50039070e2aa..c970f386f031 100644
+--- a/drivers/iommu/virtio-iommu.c
++++ b/drivers/iommu/virtio-iommu.c
+@@ -48,6 +48,7 @@ struct viommu_dev {
+ 	spinlock_t			request_lock;
+ 	struct list_head		requests;
+ 	void				*evts;
++	struct list_head		endpoints;
  
-+#define VIRTIO_IOMMU_FAULT_PRQ_F_PASID_VALID		(1 << 0)
-+#define VIRTIO_IOMMU_FAULT_PRQ_F_LAST_PAGE		(1 << 1)
-+#define VIRTIO_IOMMU_FAULT_PRQ_F_PRIV_DATA		(1 << 2)
-+#define VIRTIO_IOMMU_FAULT_PRQ_F_NEEDS_PASID		(1 << 3)
+ 	/* Device configuration */
+ 	struct iommu_domain_geometry	geometry;
+@@ -115,6 +116,12 @@ struct viommu_endpoint {
+ 	void				*pgtf;
+ };
+ 
++struct viommu_ep_entry {
++	u32				eid;
++	struct viommu_endpoint		*vdev;
++	struct list_head		list;
++};
 +
-+#define VIRTIO_IOMMU_FAULT_UNREC_F_PASID_VALID		(1 << 0)
-+#define VIRTIO_IOMMU_FAULT_UNREC_F_ADDR_VALID		(1 << 1)
-+#define VIRTIO_IOMMU_FAULT_UNREC_F_FETCH_ADDR_VALID	(1 << 2)
+ struct viommu_request {
+ 	struct list_head		list;
+ 	void				*writeback;
+@@ -573,6 +580,7 @@ static int viommu_probe_endpoint(struct viommu_dev *viommu, struct device *dev)
+ 	size_t probe_len;
+ 	struct virtio_iommu_req_probe *probe;
+ 	struct virtio_iommu_probe_property *prop;
++	struct viommu_ep_entry *ep;
+ 	struct iommu_fwspec *fwspec = dev_iommu_fwspec_get(dev);
+ 	struct viommu_endpoint *vdev = dev_iommu_priv_get(dev);
+ 
+@@ -640,6 +648,18 @@ static int viommu_probe_endpoint(struct viommu_dev *viommu, struct device *dev)
+ 		prop = (void *)probe->properties + cur;
+ 		type = le16_to_cpu(prop->type) & VIRTIO_IOMMU_PROBE_T_MASK;
+ 	}
++	if (ret)
++		goto out_free;
 +
- struct virtio_iommu_fault {
- 	__u8					reason;
- 	__u8					reserved[3];
- 	__le16					flt_type;
- 	__u8					reserved2[2];
-+	/* flags is actually permission flags */
- 	__le32					flags;
-+	/* flags for PASID and Page request handling info */
-+	__le32					pr_evt_flags;
- 	__le32					endpoint;
- 	__le32					pasid;
-+	__le32					grpid;
- 	__u8					reserved3[4];
- 	__le64					address;
- 	__u8					reserved4[8];
++	ep = kzalloc(sizeof(*ep), GFP_KERNEL);
++	if (!ep) {
++		ret = -ENOMEM;
++		goto out_free;
++	}
++	ep->eid = probe->endpoint;
++	ep->vdev = vdev;
++
++	list_add(&ep->list, &viommu->endpoints);
+ 
+ out_free:
+ 	kfree(probe);
+@@ -1649,6 +1669,7 @@ static int viommu_probe(struct virtio_device *vdev)
+ 	viommu->dev = dev;
+ 	viommu->vdev = vdev;
+ 	INIT_LIST_HEAD(&viommu->requests);
++	INIT_LIST_HEAD(&viommu->endpoints);
+ 
+ 	ret = viommu_init_vqs(viommu);
+ 	if (ret)
 -- 
 2.17.1
 
