@@ -2,100 +2,104 @@ Return-Path: <SRS0=1UcA=JV=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-2.0 required=3.0 tests=BAYES_00,DKIM_ADSP_CUSTOM_MED,
-	DKIM_INVALID,DKIM_SIGNED,FREEMAIL_FORGED_FROMDOMAIN,FREEMAIL_FROM,
-	HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,NICE_REPLY_A,SPF_HELO_NONE,
-	SPF_PASS,USER_AGENT_SANE_1 autolearn=no autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-9.0 required=3.0 tests=BAYES_00,INCLUDES_PATCH,
+	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no
+	version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id ED06DC433B4
-	for <iommu@archiver.kernel.org>; Sat, 24 Apr 2021 07:26:28 +0000 (UTC)
-Received: from smtp3.osuosl.org (smtp3.osuosl.org [140.211.166.136])
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 58BBAC433B4
+	for <iommu@archiver.kernel.org>; Sat, 24 Apr 2021 09:06:48 +0000 (UTC)
+Received: from smtp2.osuosl.org (smtp2.osuosl.org [140.211.166.133])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 70C9461474
-	for <iommu@archiver.kernel.org>; Sat, 24 Apr 2021 07:26:28 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 70C9461474
-Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=gmail.com
+	by mail.kernel.org (Postfix) with ESMTPS id D993E61467
+	for <iommu@archiver.kernel.org>; Sat, 24 Apr 2021 09:06:47 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org D993E61467
+Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=kernel.org
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by smtp3.osuosl.org (Postfix) with ESMTP id 388D7607A8;
-	Sat, 24 Apr 2021 07:26:28 +0000 (UTC)
+	by smtp2.osuosl.org (Postfix) with ESMTP id A633B4010A;
+	Sat, 24 Apr 2021 09:06:47 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from smtp3.osuosl.org ([127.0.0.1])
-	by localhost (smtp3.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id 5CX8hGtgbEvB; Sat, 24 Apr 2021 07:26:27 +0000 (UTC)
+Received: from smtp2.osuosl.org ([127.0.0.1])
+	by localhost (smtp2.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+	with ESMTP id aHaWA7bFZj4T; Sat, 24 Apr 2021 09:06:46 +0000 (UTC)
 Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [IPv6:2605:bc80:3010:104::8cd3:938])
-	by smtp3.osuosl.org (Postfix) with ESMTP id 358BF607A3;
-	Sat, 24 Apr 2021 07:26:27 +0000 (UTC)
+	by smtp2.osuosl.org (Postfix) with ESMTP id 852C0400C0;
+	Sat, 24 Apr 2021 09:06:46 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 0BC80C000F;
-	Sat, 24 Apr 2021 07:26:27 +0000 (UTC)
-Received: from smtp3.osuosl.org (smtp3.osuosl.org [140.211.166.136])
- by lists.linuxfoundation.org (Postfix) with ESMTP id C6E7FC000B
- for <iommu@lists.linux-foundation.org>; Sat, 24 Apr 2021 07:26:25 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 65E71C000E;
+	Sat, 24 Apr 2021 09:06:46 +0000 (UTC)
+Received: from smtp3.osuosl.org (smtp3.osuosl.org [IPv6:2605:bc80:3010::136])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id AE752C000B
+ for <iommu@lists.linux-foundation.org>; Sat, 24 Apr 2021 09:06:45 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by smtp3.osuosl.org (Postfix) with ESMTP id BA55D607A7
- for <iommu@lists.linux-foundation.org>; Sat, 24 Apr 2021 07:26:25 +0000 (UTC)
+ by smtp3.osuosl.org (Postfix) with ESMTP id 94DCC607A7
+ for <iommu@lists.linux-foundation.org>; Sat, 24 Apr 2021 09:06:45 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
 Received: from smtp3.osuosl.org ([127.0.0.1])
  by localhost (smtp3.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id PLQI-_pFjdpS for <iommu@lists.linux-foundation.org>;
- Sat, 24 Apr 2021 07:26:23 +0000 (UTC)
-X-Greylist: whitelisted by SQLgrey-1.8.0
-Received: from mail-lj1-x22f.google.com (mail-lj1-x22f.google.com
- [IPv6:2a00:1450:4864:20::22f])
- by smtp3.osuosl.org (Postfix) with ESMTPS id B5C00607A3
- for <iommu@lists.linux-foundation.org>; Sat, 24 Apr 2021 07:26:23 +0000 (UTC)
-Received: by mail-lj1-x22f.google.com with SMTP id a5so21142213ljk.0
- for <iommu@lists.linux-foundation.org>; Sat, 24 Apr 2021 00:26:23 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=gmail.com; s=20161025;
- h=subject:to:cc:references:from:message-id:date:user-agent
- :mime-version:in-reply-to:content-language:content-transfer-encoding;
- bh=/pJRpObwgC760iXpBExu4yIVJmUUKVTuscTwMhK6LQU=;
- b=ufNx7c9rAdtARmP9/JGD2i8irzKzBRSUyNH+9fvRN92zRA0OBFhfjptFeAgu+DuB3q
- yfX+4Igr2ZTDK9BRrc56DlEvUt+BBNnplt01tCzit9YLV863swcxCrDFmUCr2AxIGVcC
- CA1deu2tXBGXlYmES7M4hHClqef3U0Z9Cc/5ESgmSCPAuPP+bV0Ejsxuz3yVgliRBNhq
- l5BHr8X0Lv0ae2Tcj/rgHxe19zUdxI6ucYdDvEo2Cgcmnq1RoX2WrGx7Zp+88tFQ+DRS
- iiC+cWOgjjaQN4BtP4v067DB6fjKQN6kZkQzdUOd2FMGfmB9Pv2H9LF2GfnYd4Oe/pkg
- jxIA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
- d=1e100.net; s=20161025;
- h=x-gm-message-state:subject:to:cc:references:from:message-id:date
- :user-agent:mime-version:in-reply-to:content-language
- :content-transfer-encoding;
- bh=/pJRpObwgC760iXpBExu4yIVJmUUKVTuscTwMhK6LQU=;
- b=JLq87V3Xc4o/XEeXQh0sIVJ5FXzXwNTqiiQUXqum9w+W+fj0yZH5Zk4mu8Ngdylx1x
- xFsYbsYJgJxZEk/EJWXnB18q/E79iv+PiTpG5NlFfod2L2/Z6/gydmMclqLOtIGtIzn5
- MpMpjRSmxF+Imtmukc+dDnymVD5NKndkAm4xJ6OhCY4BEGWqTrj8FRpLqQwLO33qjZK6
- QZJplD6z+voYcwTRD32QkSTiDZqkjXCqTE90DUgIcQek6asblKBwDoXo6PRCj42GO/tX
- /xDXtxg/+NVkUNtoKL1SCnU++a1uM7eLvwZjpIUjA3DYdfEgGdfWjQNaAFcwpA68fxww
- VF1g==
-X-Gm-Message-State: AOAM530ObOa6gdXUOyt4wiUnDG9sm0kr5ASEg+wqCVjuVmxx6yFnKjkQ
- 6C24sgXxrOXhTP525P7BraU=
-X-Google-Smtp-Source: ABdhPJx3Cw5Vif+11oahK6V5zTzAwV00Iy/2ZrdiZkutRiszn4jYJ2cW57uWFklKK5dsA9oi5EN2hA==
-X-Received: by 2002:a2e:8054:: with SMTP id p20mr5032381ljg.439.1619249181690; 
- Sat, 24 Apr 2021 00:26:21 -0700 (PDT)
-Received: from [192.168.2.145] (109-252-193-103.dynamic.spd-mgts.ru.
- [109.252.193.103])
- by smtp.googlemail.com with ESMTPSA id t17sm749859ljd.35.2021.04.24.00.26.20
- (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
- Sat, 24 Apr 2021 00:26:21 -0700 (PDT)
-Subject: Re: [PATCH v2 0/5] iommu: Support identity mappings of
- reserved-memory regions
-To: Thierry Reding <thierry.reding@gmail.com>, Joerg Roedel
- <joro@8bytes.org>, Rob Herring <robh+dt@kernel.org>
-References: <20210423163234.3651547-1-thierry.reding@gmail.com>
-From: Dmitry Osipenko <digetx@gmail.com>
-Message-ID: <869ec3a2-26df-2ce8-bd21-b681d6ef3985@gmail.com>
-Date: Sat, 24 Apr 2021 10:26:20 +0300
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
- Thunderbird/78.8.1
-MIME-Version: 1.0
-In-Reply-To: <20210423163234.3651547-1-thierry.reding@gmail.com>
-Content-Language: en-US
-Cc: devicetree@vger.kernel.org, Will Deacon <will@kernel.org>,
- iommu@lists.linux-foundation.org, Nicolin Chen <nicolinc@nvidia.com>,
- linux-tegra@vger.kernel.org, Robin Murphy <robin.murphy@arm.com>
+ with ESMTP id 2VKUAFk9CEkk for <iommu@lists.linux-foundation.org>;
+ Sat, 24 Apr 2021 09:06:44 +0000 (UTC)
+X-Greylist: domain auto-whitelisted by SQLgrey-1.8.0
+Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
+ by smtp3.osuosl.org (Postfix) with ESMTPS id EA884607A2
+ for <iommu@lists.linux-foundation.org>; Sat, 24 Apr 2021 09:06:44 +0000 (UTC)
+Received: from disco-boy.misterjones.org (disco-boy.misterjones.org
+ [51.254.78.96])
+ (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+ (No client certificate requested)
+ by mail.kernel.org (Postfix) with ESMTPSA id 0349B61131;
+ Sat, 24 Apr 2021 09:06:43 +0000 (UTC)
+Received: from 78.163-31-62.static.virginmediabusiness.co.uk ([62.31.163.78]
+ helo=wait-a-minute.misterjones.org)
+ by disco-boy.misterjones.org with esmtpsa (TLS1.3) tls
+ TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384 (Exim 4.94)
+ (envelope-from <maz@kernel.org>)
+ id 1laEFM-009DDW-Pi; Sat, 24 Apr 2021 10:06:41 +0100
+Date: Sat, 24 Apr 2021 10:06:39 +0100
+Message-ID: <87r1j0rqzk.wl-maz@kernel.org>
+From: Marc Zyngier <maz@kernel.org>
+To: Krishna Reddy <vdumpa@nvidia.com>
+Subject: Re: [PATCH v14 00/13] SMMUv3 Nested Stage Setup (IOMMU part)
+In-Reply-To: <BY5PR12MB37642B9AC7E5D907F5A664F6B3459@BY5PR12MB3764.namprd12.prod.outlook.com>
+References: <f99d8af1-425b-f1d5-83db-20e32b856143@redhat.com>
+ <1619103878-6664-1-git-send-email-sumitg@nvidia.com>
+ <YILFAJ50aqvkQaT/@myrica>
+ <5a8825bc-286e-b316-515f-3bd3c9c70a80@nvidia.com>
+ <BY5PR12MB37642B9AC7E5D907F5A664F6B3459@BY5PR12MB3764.namprd12.prod.outlook.com>
+User-Agent: Wanderlust/2.15.9 (Almost Unreal) SEMI-EPG/1.14.7 (Harue)
+ FLIM-LB/1.14.9 (=?UTF-8?B?R29qxY0=?=) APEL-LB/10.8 EasyPG/1.0.0 Emacs/27.1
+ (x86_64-pc-linux-gnu) MULE/6.0 (HANACHIRUSATO)
+MIME-Version: 1.0 (generated by SEMI-EPG 1.14.7 - "Harue")
+X-SA-Exim-Connect-IP: 62.31.163.78
+X-SA-Exim-Rcpt-To: vdumpa@nvidia.com, sumitg@nvidia.com,
+ jean-philippe@linaro.org, eric.auger@redhat.com, alex.williamson@redhat.com,
+ eric.auger.pro@gmail.com, iommu@lists.linux-foundation.org,
+ jiangkunkun@huawei.com, joro@8bytes.org, kvm@vger.kernel.org,
+ kvmarm@lists.cs.columbia.edu, linux-kernel@vger.kernel.org,
+ lushenming@huawei.com, robin.murphy@arm.com, tn@semihalf.com,
+ vivek.gautam@arm.com, vsethi@nvidia.com, wangxingang5@huawei.com,
+ will@kernel.org, zhangfei.gao@linaro.org, zhukeqian1@huawei.com,
+ Snikam@nvidia.com, bbasu@nvidia.com, sdonthineni@nvidia.com
+X-SA-Exim-Mail-From: maz@kernel.org
+X-SA-Exim-Scanned: No (on disco-boy.misterjones.org);
+ SAEximRunCond expanded to false
+Cc: "kvm@vger.kernel.org" <kvm@vger.kernel.org>,
+ "vivek.gautam@arm.com" <vivek.gautam@arm.com>,
+ "will@kernel.org" <will@kernel.org>,
+ "eric.auger.pro@gmail.com" <eric.auger.pro@gmail.com>,
+ Jean-Philippe Brucker <jean-philippe@linaro.org>,
+ "alex.williamson@redhat.com" <alex.williamson@redhat.com>,
+ "wangxingang5@huawei.com" <wangxingang5@huawei.com>,
+ "jiangkunkun@huawei.com" <jiangkunkun@huawei.com>,
+ "kvmarm@lists.cs.columbia.edu" <kvmarm@lists.cs.columbia.edu>,
+ Vikram Sethi <vsethi@nvidia.com>, Bibek Basu <bbasu@nvidia.com>,
+ "zhangfei.gao@linaro.org" <zhangfei.gao@linaro.org>,
+ Shanker Donthineni <sdonthineni@nvidia.com>, Sachin Nikam <Snikam@nvidia.com>,
+ "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+ "lushenming@huawei.com" <lushenming@huawei.com>,
+ "iommu@lists.linux-foundation.org" <iommu@lists.linux-foundation.org>,
+ "robin.murphy@arm.com" <robin.murphy@arm.com>
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -108,27 +112,69 @@ List-Post: <mailto:iommu@lists.linux-foundation.org>
 List-Help: <mailto:iommu-request@lists.linux-foundation.org?subject=help>
 List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
  <mailto:iommu-request@lists.linux-foundation.org?subject=subscribe>
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-MjMuMDQuMjAyMSAxOTozMiwgVGhpZXJyeSBSZWRpbmcg0L/QuNGI0LXRgjoKPiBIaSwKPiAKPiB0
-aGlzIGlzIGFuIHVwZGF0ZWQgcHJvcG9zYWwgdG8gc29sdmUgdGhlIHByb2JsZW0gb2YgcGFzc2lu
-ZyBtZW1vcnkKPiByZWdpb25zIHRoYXQgYXJlIGFjdGl2ZWx5IGJlaW5nIGFjY2Vzc2VkIGR1cmlu
-ZyBib290LiBUaGUgcGFydGljdWxhcgo+IHVzZS1jYXNlIHRoYXQgSSBuZWVkIHRoaXMgZm9yIGlz
-IHdoZW4gdGhlIGJvb3Rsb2FkZXIgaGFzIHNldCB1cCB0aGUKPiBkaXNwbGF5IGNvbnRyb2xsZXIg
-dG8gc2NhbiBvdXQgYSBib290IHNwbGFzaCBzY3JlZW4uIER1cmluZyBib290IHRoZQo+IERNQS9J
-T01NVSBnbHVlIGNvZGUgd2lsbCBhdHRhY2ggZGV2aWNlcyB0byBhbiBJT01NVSBkb21haW4gYW5k
-IGJ5Cj4gZG9pbmcgc28gZW5hYmxlIElPTU1VIHRyYW5zbGF0aW9ucy4gVHlwaWNhbGx5IHRoaXMg
-d2lsbCBiZSBiZWZvcmUgYQo+IGRldmljZSBkcml2ZXIgaGFzIGhhZCBhIGNoYW5jZSB0byBlaXRo
-ZXIgZGlzYWJsZSB0aGUgZGlzcGxheQo+IGNvbnRyb2xsZXIgb3Igc2V0IHVwIGEgbmV3IGZyYW1l
-YnVmZmVyIGFuZCBtYXAgaXQgdG8gdGhlIElPTU1VLgoKSGVsbG8gVGhpZXJyeSwKCklzIGl0IGFs
-d2F5cyBzYWZlIHRvIGVuYWJsZSBTTU1VIEFTSUQgaW4gYSBtaWRkbGUgb2YgYSBETUEgcmVxdWVz
-dCBtYWRlCmJ5IGEgbWVtb3J5IGNsaWVudD8KClRoZSBtZW1vcnkgY29udHJvbGxlciBzdXBwb3J0
-cyBibG9ja2luZyBETUEgcmVxdWVzdHMsIHdoaWNoIHdlIGFyZQphbHJlYWR5IHVzaW5nIGZvciB0
-aGUgbWVtb3J5IGhvdC1yZXNldHRpbmcuIEEgYmxvY2sgY291bGQgYmUgbmVlZGVkCmJlZm9yZSBB
-U0lEIGlzIHRvZ2dsZWQuIFRoaXMgbmVlZHMgdG8gYmUgY2xhcmlmaWVkLgpfX19fX19fX19fX19f
-X19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fXwppb21tdSBtYWlsaW5nIGxpc3QKaW9t
-bXVAbGlzdHMubGludXgtZm91bmRhdGlvbi5vcmcKaHR0cHM6Ly9saXN0cy5saW51eGZvdW5kYXRp
-b24ub3JnL21haWxtYW4vbGlzdGluZm8vaW9tbXU=
+On Fri, 23 Apr 2021 18:58:23 +0100,
+Krishna Reddy <vdumpa@nvidia.com> wrote:
+> 
+> >> Did that patch cause any issue, or is it just not needed on your system?
+> >> It fixes an hypothetical problem with the way ATS is implemented. 
+> >> Maybe I actually observed it on an old software model, I don't 
+> >> remember. Either way it's unlikely to go upstream but I'd like to know 
+> >> if I should drop it from my tree.
+> 
+> > Had to revert same patch "mm: notify remote TLBs when dirtying a PTE" to
+> > avoid below crash[1]. I am not sure about the cause yet.
+> 
+> I have noticed this issue earlier with patch pointed here and root
+> caused the issue as below.  It happens after vfio_mmap request from
+> QEMU for the PCIe device and during the access of VA when PTE access
+> flags are updated.
+> 
+> kvm_mmu_notifier_change_pte() --> kvm_set_spte_hve() -->
+> kvm_set_spte_hva() --> clean_dcache_guest_page()
+> 
+> The validation model doesn't have FWB capability supported.
+> __clean_dcache_guest_page() attempts to perform dcache flush on pcie
+> bar address(not a valid_pfn()) through page_address(), which doesn't
+> have page table mapping and leads to exception.
+> 
+> I have worked around the issue by filtering out the request if the
+> pfn is not valid in __clean_dcache_guest_page().  As the patch
+> wasn't posted in the community, reverted it as well.
+
+That's papering over the real issue, and this mapping path needs
+fixing as it was only ever expected to be called for CoW.
+
+Can you please try the following patch and let me know if that fixes
+the issue for good?
+
+Thanks,
+
+	M.
+
+diff --git a/arch/arm64/kvm/mmu.c b/arch/arm64/kvm/mmu.c
+index 77cb2d28f2a4..b62dd40a4083 100644
+--- a/arch/arm64/kvm/mmu.c
++++ b/arch/arm64/kvm/mmu.c
+@@ -1147,7 +1147,8 @@ int kvm_set_spte_hva(struct kvm *kvm, unsigned long hva, pte_t pte)
+ 	 * We've moved a page around, probably through CoW, so let's treat it
+ 	 * just like a translation fault and clean the cache to the PoC.
+ 	 */
+-	clean_dcache_guest_page(pfn, PAGE_SIZE);
++	if (!kvm_is_device_pfn(pfn))
++		clean_dcache_guest_page(pfn, PAGE_SIZE);
+ 	handle_hva_to_gpa(kvm, hva, end, &kvm_set_spte_handler, &pfn);
+ 	return 0;
+ }
+
+
+-- 
+Without deviation from the norm, progress is not possible.
+_______________________________________________
+iommu mailing list
+iommu@lists.linux-foundation.org
+https://lists.linuxfoundation.org/mailman/listinfo/iommu
