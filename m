@@ -7,70 +7,68 @@ X-Spam-Status: No, score=-5.1 required=3.0 tests=BAYES_00,DKIM_INVALID,
 	SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_SANE_1 autolearn=no
 	autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0D8B3C433B4
-	for <iommu@archiver.kernel.org>; Tue, 27 Apr 2021 22:50:29 +0000 (UTC)
-Received: from smtp1.osuosl.org (smtp1.osuosl.org [140.211.166.138])
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 74FE0C433B4
+	for <iommu@archiver.kernel.org>; Tue, 27 Apr 2021 22:56:10 +0000 (UTC)
+Received: from smtp2.osuosl.org (smtp2.osuosl.org [140.211.166.133])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 9203760FF1
-	for <iommu@archiver.kernel.org>; Tue, 27 Apr 2021 22:50:28 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 9203760FF1
+	by mail.kernel.org (Postfix) with ESMTPS id E4EFB613D9
+	for <iommu@archiver.kernel.org>; Tue, 27 Apr 2021 22:56:09 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org E4EFB613D9
 Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=deltatee.com
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by smtp1.osuosl.org (Postfix) with ESMTP id 4956F83BCE;
-	Tue, 27 Apr 2021 22:50:28 +0000 (UTC)
+	by smtp2.osuosl.org (Postfix) with ESMTP id A458F404DB;
+	Tue, 27 Apr 2021 22:56:09 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from smtp1.osuosl.org ([127.0.0.1])
-	by localhost (smtp1.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id HteydWduR_GI; Tue, 27 Apr 2021 22:50:27 +0000 (UTC)
-Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by smtp1.osuosl.org (Postfix) with ESMTP id E893983BD2;
-	Tue, 27 Apr 2021 22:50:26 +0000 (UTC)
+Received: from smtp2.osuosl.org ([127.0.0.1])
+	by localhost (smtp2.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+	with ESMTP id DgmAFm-O7d7T; Tue, 27 Apr 2021 22:56:08 +0000 (UTC)
+Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [IPv6:2605:bc80:3010:104::8cd3:938])
+	by smtp2.osuosl.org (Postfix) with ESMTP id 8C16E403EA;
+	Tue, 27 Apr 2021 22:56:08 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id C23BAC001C;
-	Tue, 27 Apr 2021 22:50:26 +0000 (UTC)
-Received: from smtp2.osuosl.org (smtp2.osuosl.org [IPv6:2605:bc80:3010::133])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 89D46C0001
- for <iommu@lists.linux-foundation.org>; Tue, 27 Apr 2021 22:50:25 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 57E98C001C;
+	Tue, 27 Apr 2021 22:56:08 +0000 (UTC)
+Received: from smtp2.osuosl.org (smtp2.osuosl.org [140.211.166.133])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 0CC93C0001
+ for <iommu@lists.linux-foundation.org>; Tue, 27 Apr 2021 22:56:07 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by smtp2.osuosl.org (Postfix) with ESMTP id 850C0403FB
- for <iommu@lists.linux-foundation.org>; Tue, 27 Apr 2021 22:50:25 +0000 (UTC)
+ by smtp2.osuosl.org (Postfix) with ESMTP id EE872403FB
+ for <iommu@lists.linux-foundation.org>; Tue, 27 Apr 2021 22:56:06 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Authentication-Results: smtp2.osuosl.org (amavisd-new);
- dkim=pass (2048-bit key) header.d=deltatee.com
 Received: from smtp2.osuosl.org ([127.0.0.1])
  by localhost (smtp2.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id q9-VVp9y5AaL for <iommu@lists.linux-foundation.org>;
- Tue, 27 Apr 2021 22:50:23 +0000 (UTC)
+ with ESMTP id r4p1iVIdyiwM for <iommu@lists.linux-foundation.org>;
+ Tue, 27 Apr 2021 22:56:06 +0000 (UTC)
 X-Greylist: domain auto-whitelisted by SQLgrey-1.8.0
 Received: from ale.deltatee.com (ale.deltatee.com [204.191.154.188])
- by smtp2.osuosl.org (Postfix) with ESMTPS id 949934002B
- for <iommu@lists.linux-foundation.org>; Tue, 27 Apr 2021 22:50:23 +0000 (UTC)
+ by smtp2.osuosl.org (Postfix) with ESMTPS id 75686403EA
+ for <iommu@lists.linux-foundation.org>; Tue, 27 Apr 2021 22:56:06 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
  d=deltatee.com; s=20200525; h=Subject:In-Reply-To:MIME-Version:Date:
  Message-ID:From:References:Cc:To:content-disposition;
- bh=PBZp6uxAp8nlNU5Rm16hkR47Rwe8xrGWtpeD+dKWkk4=; b=c2SnI7NAl3/gr4SFEOqWfEjO9J
- 1JGnC7Zf5KDX7iHl6Y4Xf/2xqN/Sf5EK4N3LedlbB9Fd00L3W9uy4hRpaf9AzRR6bhJRwlUH+3jQV
- JGHEoIAnzvnTbXFFloa9dmt/bebMlHu8p0eMd7ujtwQMFSXPtCaCZfLSEapIfvrwoLvjkcmHaak0S
- os4Ry++J+BA4Zjy4rlpJGfScH23wq+QuJ1EnvUrl/i2hoEb1GA+PElTtZrctT7avrcp051HeAQJHt
- MommdMIRXxQ8f7+NTw6YINNchc1V2k8mSpMibhQPjTbiWcdM3d674C2MzQOyDshqLUX3ERNg5eNxi
- Yzo0Jtug==;
+ bh=9cMqKeVqpV09cXzdKEdeF1wGWj3NSvz6cLLXzNXUCD8=; b=bZ0qGVskfkWJrx7xQzfuMkoJWn
+ uXsbXCfWUy5H+XPJj218MIPSekFTaV56i4dZC9FFheUYyXLbwiAPhK3Bq+k3tBDvz0B7hbOVfR/Pw
+ rU0TsIsdHTeMVZuRSJHe4unPK2tJx/470PpEKYmwqqNM5SMKswk4DlpwIILF3MrN0C47OMfdXi5S2
+ BmumlWMKxYppg3kVyzDdH2wUlAdUddF9ynHCOu6+qhXaeoKWzLwiJNa8Oc5YWsvB9LSQXNNpokW3c
+ /UfXKIphBb3KBrtAfzVBu1rR4lQSws2cuqBfu3uWRWvY4NniZl2lxAPi8Nr5LTxNRFv7wpixJqrf/
+ 2mQpmzmw==;
 Received: from guinness.priv.deltatee.com ([172.16.1.162])
  by ale.deltatee.com with esmtp (Exim 4.92)
  (envelope-from <logang@deltatee.com>)
- id 1lbWWo-0002hR-Kh; Tue, 27 Apr 2021 16:50:04 -0600
+ id 1lbWcM-0002ln-Cs; Tue, 27 Apr 2021 16:55:47 -0600
 To: Jason Gunthorpe <jgg@ziepe.ca>
 References: <20210408170123.8788-1-logang@deltatee.com>
  <20210408170123.8788-6-logang@deltatee.com>
- <20210427192232.GO2047089@ziepe.ca>
+ <20210427193157.GQ2047089@ziepe.ca>
 From: Logan Gunthorpe <logang@deltatee.com>
-Message-ID: <74473159-b4d7-89c8-9dae-7e983b22ef2b@deltatee.com>
-Date: Tue, 27 Apr 2021 16:49:58 -0600
+Message-ID: <3c9ba6df-750a-3847-f1fc-8e41f533d1a2@deltatee.com>
+Date: Tue, 27 Apr 2021 16:55:45 -0600
 User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
  Thunderbird/78.9.0
 MIME-Version: 1.0
-In-Reply-To: <20210427192232.GO2047089@ziepe.ca>
+In-Reply-To: <20210427193157.GQ2047089@ziepe.ca>
 Content-Language: en-CA
 X-SA-Exim-Connect-IP: 172.16.1.162
 X-SA-Exim-Rcpt-To: robin.murphy@arm.com, ira.weiny@intel.com,
@@ -116,48 +114,47 @@ Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
 
 
-On 2021-04-27 1:22 p.m., Jason Gunthorpe wrote:
+On 2021-04-27 1:31 p.m., Jason Gunthorpe wrote:
 > On Thu, Apr 08, 2021 at 11:01:12AM -0600, Logan Gunthorpe wrote:
->> dma_map_sg() either returns a positive number indicating the number
->> of entries mapped or zero indicating that resources were not available
->> to create the mapping. When zero is returned, it is always safe to retry
->> the mapping later once resources have been freed.
->>
->> Once P2PDMA pages are mixed into the SGL there may be pages that may
->> never be successfully mapped with a given device because that device may
->> not actually be able to access those pages. Thus, multiple error
->> conditions will need to be distinguished to determine weather a retry
->> is safe.
->>
->> Introduce dma_map_sg_p2pdma[_attrs]() with a different calling
->> convention from dma_map_sg(). The function will return a positive
->> integer on success or a negative errno on failure.
->>
->> ENOMEM will be used to indicate a resource failure and EREMOTEIO to
->> indicate that a P2PDMA page is not mappable.
->>
->> The __DMA_ATTR_PCI_P2PDMA attribute is introduced to inform the lower
->> level implementations that P2PDMA pages are allowed and to warn if a
->> caller introduces them into the regular dma_map_sg() interface.
+>> +/*
+>> + * dma_maps_sg_attrs returns 0 on error and > 0 on success.
+>> + * It should never return a value < 0.
+>> + */
 > 
-> So this new API is all about being able to return an error code
-> because auditing the old API is basically terrifying?
-> 
-> OK, but why name everything new P2PDMA? It seems nicer to give this
-> some generic name and have some general program to gradually deprecate
-> normal non-error-capable dma_map_sg() ?
-> 
-> I think that will raise less questions when subsystem people see the
-> changes, as I was wondering why RW was being moved to use what looked
-> like a p2pdma only API.
-> 
-> dma_map_sg_or_err() would have been clearer
-> 
-> The flag is also clearer as to the purpose if it is named
-> __DMA_ATTR_ERROR_ALLOWED
+> Also it is weird a function that can't return 0 is returning an int type
 
-I'm not opposed to these names. I can use them for v2 if there are no
-other opinions.
+Yes, Christoph mentioned in the last series that this should probably
+change to an unsigned but I wasn't really sure if that change should be
+a part of the P2PDMA series.
+
+>> +int dma_map_sg_attrs(struct device *dev, struct scatterlist *sg, int nents,
+>> +		enum dma_data_direction dir, unsigned long attrs)
+>> +{
+>> +	int ents;
+>> +
+>> +	ents = __dma_map_sg_attrs(dev, sg, nents, dir, attrs);
+>>  	BUG_ON(ents < 0);
+> 
+> if (WARN_ON(ents < 0))
+>      return 0;
+> 
+> instead of bug on?
+
+It was BUG_ON in the original code. So I felt I should leave it.
+
+> Also, I see only 8 users of this function. How about just fix them all
+> to support negative returns and use this as the p2p API instead of
+> adding new API?
+
+Well there might be 8 users of dma_map_sg_attrs() but there are a very
+large number of dma_map_sg(). Seems odd to me to single out the first as
+requiring these changes, but leave the latter.
+
+> Add the opposite logic flag, 'DMA_ATTRS_NO_ERROR' and pass it through
+> the other api entry callers that can't handle it?
+
+I'm not that opposed to this. But it will make this series a fair bit
+longer to change the 8 map_sg_attrs() usages.
 
 Logan
 _______________________________________________
