@@ -2,60 +2,94 @@ Return-Path: <SRS0=uVFq=J3=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-18.7 required=3.0 tests=BAYES_00,
-	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,INCLUDES_PULL_REQUEST,
-	MAILING_LIST_MULTI,MENTIONS_GIT_HOSTING,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED
+X-Spam-Status: No, score=-14.0 required=3.0 tests=BAYES_00,INCLUDES_CR_TRAILER,
+	INCLUDES_PATCH,MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED
 	autolearn=ham autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 72550C433B4
-	for <iommu@archiver.kernel.org>; Fri, 30 Apr 2021 14:17:30 +0000 (UTC)
-Received: from smtp3.osuosl.org (smtp3.osuosl.org [140.211.166.136])
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 25E91C433B4
+	for <iommu@archiver.kernel.org>; Fri, 30 Apr 2021 22:14:51 +0000 (UTC)
+Received: from smtp1.osuosl.org (smtp1.osuosl.org [140.211.166.138])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id DE50C613EA
-	for <iommu@archiver.kernel.org>; Fri, 30 Apr 2021 14:17:29 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org DE50C613EA
-Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=8bytes.org
+	by mail.kernel.org (Postfix) with ESMTPS id BD57E613FA
+	for <iommu@archiver.kernel.org>; Fri, 30 Apr 2021 22:14:50 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org BD57E613FA
+Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=kernel.org
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by smtp3.osuosl.org (Postfix) with ESMTP id 812876F91F;
-	Fri, 30 Apr 2021 14:17:29 +0000 (UTC)
+	by smtp1.osuosl.org (Postfix) with ESMTP id 8982B849F0;
+	Fri, 30 Apr 2021 22:14:50 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from smtp3.osuosl.org ([127.0.0.1])
-	by localhost (smtp3.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id 62xRxRh0Mggj; Fri, 30 Apr 2021 14:17:28 +0000 (UTC)
+Received: from smtp1.osuosl.org ([127.0.0.1])
+	by localhost (smtp1.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+	with ESMTP id vlQ2ip2-hPph; Fri, 30 Apr 2021 22:14:48 +0000 (UTC)
 Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by smtp3.osuosl.org (Postfix) with ESMTP id 1BB376F920;
-	Fri, 30 Apr 2021 14:17:28 +0000 (UTC)
+	by smtp1.osuosl.org (Postfix) with ESMTP id 422A384AAD;
+	Fri, 30 Apr 2021 22:14:48 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id E7203C000E;
-	Fri, 30 Apr 2021 14:17:27 +0000 (UTC)
-Received: from smtp1.osuosl.org (smtp1.osuosl.org [IPv6:2605:bc80:3010::138])
- by lists.linuxfoundation.org (Postfix) with ESMTP id D5DEFC0001
- for <iommu@lists.linux-foundation.org>; Fri, 30 Apr 2021 14:17:26 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 13E31C000E;
+	Fri, 30 Apr 2021 22:14:48 +0000 (UTC)
+Received: from smtp1.osuosl.org (smtp1.osuosl.org [140.211.166.138])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 764E1C0001
+ for <iommu@lists.linux-foundation.org>; Fri, 30 Apr 2021 22:14:47 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by smtp1.osuosl.org (Postfix) with ESMTP id ADE6C85021
- for <iommu@lists.linux-foundation.org>; Fri, 30 Apr 2021 14:17:26 +0000 (UTC)
+ by smtp1.osuosl.org (Postfix) with ESMTP id 5D12E84AAD
+ for <iommu@lists.linux-foundation.org>; Fri, 30 Apr 2021 22:14:47 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
 Received: from smtp1.osuosl.org ([127.0.0.1])
  by localhost (smtp1.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id fRUX9CB5QLcl for <iommu@lists.linux-foundation.org>;
- Fri, 30 Apr 2021 14:17:24 +0000 (UTC)
-X-Greylist: from auto-whitelisted by SQLgrey-1.8.0
-Received: from theia.8bytes.org (8bytes.org
- [IPv6:2a01:238:4383:600:38bc:a715:4b6d:a889])
- by smtp1.osuosl.org (Postfix) with ESMTPS id 097B585020
- for <iommu@lists.linux-foundation.org>; Fri, 30 Apr 2021 14:17:23 +0000 (UTC)
-Received: by theia.8bytes.org (Postfix, from userid 1000)
- id CF41990B; Fri, 30 Apr 2021 16:17:19 +0200 (CEST)
-Date: Fri, 30 Apr 2021 16:17:18 +0200
-From: Joerg Roedel <joro@8bytes.org>
-To: Linus Torvalds <torvalds@linux-foundation.org>
-Subject: [git pull] IOMMU Updates for Linux v5.13
-Message-ID: <YIwRbkQcElemYSjz@8bytes.org>
+ with ESMTP id DpDKyM05TPL3 for <iommu@lists.linux-foundation.org>;
+ Fri, 30 Apr 2021 22:14:45 +0000 (UTC)
+X-Greylist: whitelisted by SQLgrey-1.8.0
+Received: from mail-ot1-f50.google.com (mail-ot1-f50.google.com
+ [209.85.210.50])
+ by smtp1.osuosl.org (Postfix) with ESMTPS id 59C43849F0
+ for <iommu@lists.linux-foundation.org>; Fri, 30 Apr 2021 22:14:45 +0000 (UTC)
+Received: by mail-ot1-f50.google.com with SMTP id
+ b5-20020a9d5d050000b02902a5883b0f4bso2470224oti.2
+ for <iommu@lists.linux-foundation.org>; Fri, 30 Apr 2021 15:14:45 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+ d=1e100.net; s=20161025;
+ h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+ :mime-version:content-disposition:content-transfer-encoding
+ :in-reply-to;
+ bh=7SSvv02TsbkrWOwWlBM9seTIZP42kaPiNEe9dizb4ew=;
+ b=PoKLnhWcO0Ir9CTlI9Tt5VCMEOTMrT7Pw196PUkXrlmuM50tD4JTRQFZW9fOMZJIDI
+ tVwwLsjLmAYxqHi/cAibIwqh+ti8fmAZo2VpS5Xj7RL6YdY11JbNBUFcIvh6XPDedXSK
+ bYlaDA+qloOnY2vV5mMRTq+l2XSxlty2xD5/YSoKC97M627INSB/C8Ysx5yXYHJ3JimZ
+ u/X1yqWMd2c+aKzptPmV8iadERdD5cX9n9FhWuDP41EaHGCy4HafHkxxhokcFOaipxbW
+ MMPuhzFLsw2++g96JCRAPCddSgmr5kMOnSk2/XH1ykRZxpnTFLjEubDQKsuDS7KLc2Al
+ tkxQ==
+X-Gm-Message-State: AOAM5313jAjc9WhHQ4BeGDu//kHX7Jbg/yvxPOzMVTT3w/eN0RLoaoaP
+ ic+r82grVyMSd+ID3p0hEA==
+X-Google-Smtp-Source: ABdhPJybcXW/btKHlVv6/oMKk9lt8LC61n8INzSUoyfrM2mjKCMtaL7sricjsJZqmqqq5BQ8Q/rsZA==
+X-Received: by 2002:a05:6830:1103:: with SMTP id
+ w3mr5343380otq.304.1619820884331; 
+ Fri, 30 Apr 2021 15:14:44 -0700 (PDT)
+Received: from robh.at.kernel.org (24-155-109-49.dyn.grandenetworks.net.
+ [24.155.109.49])
+ by smtp.gmail.com with ESMTPSA id b64sm215922oii.12.2021.04.30.15.14.42
+ (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+ Fri, 30 Apr 2021 15:14:43 -0700 (PDT)
+Received: (nullmailer pid 4001411 invoked by uid 1000);
+ Fri, 30 Apr 2021 22:14:42 -0000
+Date: Fri, 30 Apr 2021 17:14:42 -0500
+From: Rob Herring <robh@kernel.org>
+To: Ezequiel Garcia <ezequiel@collabora.com>
+Subject: Re: [PATCH v2 1/4] dt-bindings: iommu: rockchip: Convert IOMMU to DT
+ schema
+Message-ID: <20210430221442.GA3970483@robh.at.kernel.org>
+References: <20210422141602.350746-1-benjamin.gaignard@collabora.com>
+ <20210422141602.350746-2-benjamin.gaignard@collabora.com>
+ <7557bc8aaaa1924ad39676b32ba6a3f6474a3722.camel@collabora.com>
 MIME-Version: 1.0
-Cc: iommu@lists.linux-foundation.org, Will Deacon <will@kernel.org>,
- linux-kernel@vger.kernel.org
+Content-Disposition: inline
+In-Reply-To: <7557bc8aaaa1924ad39676b32ba6a3f6474a3722.camel@collabora.com>
+Cc: devicetree@vger.kernel.org,
+ Benjamin Gaignard <benjamin.gaignard@collabora.com>, heiko@sntech.de,
+ linux-kernel@vger.kernel.org, Kever Yang <kever.yang@rock-chips.com>,
+ linux-rockchip@lists.infradead.org, iommu@lists.linux-foundation.org,
+ kernel@collabora.com, will@kernel.org, linux-arm-kernel@lists.infradead.org
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -68,320 +102,181 @@ List-Post: <mailto:iommu@lists.linux-foundation.org>
 List-Help: <mailto:iommu-request@lists.linux-foundation.org?subject=help>
 List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
  <mailto:iommu-request@lists.linux-foundation.org?subject=subscribe>
-Content-Type: multipart/mixed; boundary="===============7054371739157862513=="
+Content-Type: text/plain; charset="iso-8859-1"
+Content-Transfer-Encoding: quoted-printable
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
+On Thu, Apr 22, 2021 at 02:16:53PM -0300, Ezequiel Garcia wrote:
+> (Adding Kever)
+> =
 
---===============7054371739157862513==
-Content-Type: multipart/signed; micalg=pgp-sha256;
-	protocol="application/pgp-signature"; boundary="MZwZ1CIB3DPVYbmT"
-Content-Disposition: inline
+> Hi Benjamin,
+> =
 
+> Thanks a lot for working on this, it looks amazing. Together with the gre=
+at work
+> that Rockchip is doing, it seems RK3566/RK3568 will have decent support v=
+ery soon.
+> =
 
---MZwZ1CIB3DPVYbmT
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
+> One comment here:
+> =
 
-Hi Linus,
+> On Thu, 2021-04-22 at 16:15 +0200, Benjamin Gaignard wrote:
+> > Convert Rockchip IOMMU to DT schema
+> > =
 
-The following changes since commit d434405aaab7d0ebc516b68a8fc4100922d7f5ef:
+> > Signed-off-by: Benjamin Gaignard <benjamin.gaignard@collabora.com>
+> > ---
+> > version 2:
+> > =A0- Change maintainer
+> > =A0- Change reg maxItems
+> > =A0- Change interrupt maxItems
+> > =
 
-  Linux 5.12-rc7 (2021-04-11 15:16:13 -0700)
+> > =A0.../bindings/iommu/rockchip,iommu.txt=A0=A0=A0=A0=A0=A0=A0=A0 | 38 -=
+--------
+> > =A0.../bindings/iommu/rockchip,iommu.yaml=A0=A0=A0=A0=A0=A0=A0 | 79 +++=
+++++++++++++++++
+> > =A02 files changed, 79 insertions(+), 38 deletions(-)
+> > =A0delete mode 100644 Documentation/devicetree/bindings/iommu/rockchip,=
+iommu.txt
+> > =A0create mode 100644 Documentation/devicetree/bindings/iommu/rockchip,=
+iommu.yaml
+> > =
 
-are available in the Git repository at:
+> > diff --git a/Documentation/devicetree/bindings/iommu/rockchip,iommu.txt=
+ b/Documentation/devicetree/bindings/iommu/rockchip,iommu.txt
+> > deleted file mode 100644
+> > index 6ecefea1c6f9..000000000000
+> > --- a/Documentation/devicetree/bindings/iommu/rockchip,iommu.txt
+> > +++ /dev/null
+> > @@ -1,38 +0,0 @@
+> > -Rockchip IOMMU
+> > -=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D
+> > -
+> > -A Rockchip DRM iommu translates io virtual addresses to physical addre=
+sses for
+> > -its master device.=A0 Each slave device is bound to a single master de=
+vice, and
+> > -shares its clocks, power domain and irq.
+> > -
+> > -Required properties:
+> > -- compatible=A0=A0=A0=A0=A0 : Should be "rockchip,iommu"
+> > -- reg=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0 : Address space for the conf=
+iguration registers
+> > -- interrupts=A0=A0=A0=A0=A0 : Interrupt specifier for the IOMMU instan=
+ce
+> > -- interrupt-names : Interrupt name for the IOMMU instance
+> > -- #iommu-cells=A0=A0=A0 : Should be <0>.=A0 This indicates the iommu i=
+s a
+> > -=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0 "single-mast=
+er" device, and needs no additional information
+> > -=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0 to associate=
+ with its master device.=A0 See:
+> > -=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0 Documentatio=
+n/devicetree/bindings/iommu/iommu.txt
+> > -- clocks=A0=A0=A0=A0=A0=A0=A0=A0=A0 : A list of clocks required for th=
+e IOMMU to be accessible by
+> > -=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0 the host CPU.
+> > -- clock-names=A0=A0=A0=A0 : Should contain the following:
+> > -=A0=A0=A0=A0=A0=A0=A0"iface" - Main peripheral bus clock (PCLK/HCL) (r=
+equired)
+> > -=A0=A0=A0=A0=A0=A0=A0"aclk"=A0 - AXI bus clock (required)
+> > -
+> > -Optional properties:
+> > -- rockchip,disable-mmu-reset : Don't use the mmu reset operation.
+> > -=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=
+=A0=A0=A0=A0=A0=A0 Some mmu instances may produce unexpected results
+> > -=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=
+=A0=A0=A0=A0=A0=A0 when the reset operation is used.
+> > -
+> > -Example:
+> > -
+> > -=A0=A0=A0=A0=A0=A0=A0vopl_mmu: iommu@ff940300 {
+> > -=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0compatible =3D "rockchip,=
+iommu";
+> > -=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0reg =3D <0xff940300 0x100=
+>;
+> > -=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0interrupts =3D <GIC_SPI 1=
+6 IRQ_TYPE_LEVEL_HIGH>;
+> > -=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0interrupt-names =3D "vopl=
+_mmu";
+> > -=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0clocks =3D <&cru ACLK_VOP=
+1>, <&cru HCLK_VOP1>;
+> > -=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0clock-names =3D "aclk", "=
+iface";
+> > -=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0#iommu-cells =3D <0>;
+> > -=A0=A0=A0=A0=A0=A0=A0};
+> > diff --git a/Documentation/devicetree/bindings/iommu/rockchip,iommu.yam=
+l b/Documentation/devicetree/bindings/iommu/rockchip,iommu.yaml
+> > new file mode 100644
+> > index 000000000000..0db208cf724a
+> > --- /dev/null
+> > +++ b/Documentation/devicetree/bindings/iommu/rockchip,iommu.yaml
+> > @@ -0,0 +1,79 @@
+> > +# SPDX-License-Identifier: GPL-2.0-only
+> > +%YAML 1.2
+> > +---
+> > +$id: http://devicetree.org/schemas/iommu/rockchip,iommu.yaml#
+> > +$schema: http://devicetree.org/meta-schemas/core.yaml#
+> > +
+> > +title: Rockchip IOMMU
+> > +
+> > +maintainers:
+> > +=A0 - Heiko Stuebner <heiko@sntech.de>
+> > +
+> > +description: |+
+> > +=A0 A Rockchip DRM iommu translates io virtual addresses to physical a=
+ddresses for
+> > +=A0 its master device. Each slave device is bound to a single master d=
+evice and
+> > +=A0 shares its clocks, power domain and irq.
+> > +
+> > +=A0 For information on assigning IOMMU controller to its peripheral de=
+vices,
+> > +=A0 see generic IOMMU bindings.
+> > +
+> > +properties:
+> > +=A0 compatible:
+> > +=A0=A0=A0 const: rockchip,iommu
+> > +
+> > +=A0 reg:
+> > +=A0=A0=A0 minItems: 1
+> > +=A0=A0=A0 maxItems: 2
+> > +
+> > +=A0 interrupts:
+> > +=A0=A0=A0 minItems: 1
+> > +=A0=A0=A0 maxItems: 2
+> > +
+> > +=A0 interrupt-names:
+> > +=A0=A0=A0 minItems: 1
+> > +=A0=A0=A0 maxItems: 2
+> > +
+> =
 
-  git://git.kernel.org/pub/scm/linux/kernel/git/joro/iommu.git tags/iommu-updates-v5.13
+> AFAICS, the driver supports handling multiple MMUs, and there's one reg a=
+nd
+> interrupt cell for each MMU. IOW, there's no requirement that maxItems is=
+ 2.
+> =
 
-for you to fetch changes up to 2d471b20c55e13c98d1dba413bf2de618e89cdac:
+> Is there any way we can describe that? Or maybe just allow a bigger maxim=
+um?
 
-  iommu: Streamline registration interface (2021-04-16 17:20:45 +0200)
+With #iommu-cells =3D=3D 0, how would one distinguish which IOMMU is =
 
-----------------------------------------------------------------
-IOMMU Updates for Linux v5.13
+associated with a device? IOW, is more that 1 really usable?
 
-Including:
+If you need more just pick a maxItems value that's either the most seen =
 
-	- Big cleanup of almost unsused parts of the IOMMU API by
-	  Christoph Hellwig. This mostly affects the Freescale PAMU
-	  driver.
+or 'should be enough'TM. If the entries are just multiple instances of =
 
-	- New IOMMU driver for Unisoc SOCs
+the same thing, please note that here.
 
-	- ARM SMMU Updates from Will:
-
-	  - SMMUv3: Drop vestigial PREFETCH_ADDR support
-	  - SMMUv3: Elide TLB sync logic for empty gather
-	  - SMMUv3: Fix "Service Failure Mode" handling
-    	  - SMMUv2: New Qualcomm compatible string
-
-	- Removal of the AMD IOMMU performance counter writeable check
-	  on AMD. It caused long boot delays on some machines and is
-	  only needed to work around an errata on some older (possibly
-	  pre-production) chips. If someone is still hit by this
-	  hardware issue anyway the performance counters will just
-	  return 0.
-
-	- Support for targeted invalidations in the AMD IOMMU driver.
-	  Before that the driver only invalidated a single 4k page or the
-	  whole IO/TLB for an address space. This has been extended now
-	  and is mostly useful for emulated AMD IOMMUs.
-
-	- Several fixes for the Shared Virtual Memory support in the
-	  Intel VT-d driver
-
-	- Mediatek drivers can now be built as modules
-
-	- Re-introduction of the forcedac boot option which got lost
-	  when converting the Intel VT-d driver to the common dma-iommu
-	  implementation.
-
-	- Extension of the IOMMU device registration interface and
-	  support iommu_ops to be const again when drivers are built as
-	  modules.
-
-----------------------------------------------------------------
-Christoph Hellwig (23):
-      iommu: remove the unused domain_window_disable method
-      iommu/fsl_pamu: remove fsl_pamu_get_domain_attr
-      iommu/fsl_pamu: remove support for setting DOMAIN_ATTR_GEOMETRY
-      iommu/fsl_pamu: merge iommu_alloc_dma_domain into fsl_pamu_domain_alloc
-      iommu/fsl_pamu: remove support for multiple windows
-      iommu/fsl_pamu: remove ->domain_window_enable
-      iommu/fsl_pamu: replace DOMAIN_ATTR_FSL_PAMU_STASH with a direct call
-      iommu/fsl_pamu: merge pamu_set_liodn and map_liodn
-      iommu/fsl_pamu: merge handle_attach_device into fsl_pamu_attach_device
-      iommu/fsl_pamu: enable the liodn when attaching a device
-      iommu/fsl_pamu: remove the snoop_id field
-      iommu/fsl_pamu: remove the rpn and snoop_id arguments to pamu_config_ppaac
-      iommu/fsl_pamu: hardcode the window address and size in pamu_config_ppaace
-      iommu: remove DOMAIN_ATTR_PAGING
-      iommu: remove DOMAIN_ATTR_GEOMETRY
-      iommu: remove DOMAIN_ATTR_NESTING
-      iommu: remove iommu_set_cmd_line_dma_api and iommu_cmd_line_dma_api
-      iommu: remove DOMAIN_ATTR_IO_PGTABLE_CFG
-      iommu: remove iommu_domain_{get,set}_attr
-      iommu/amd: Remove the unused device errata code
-      iommu/amd: Remove the unused amd_iommu_get_v2_domain function
-      iommu/amd: Remove a few unused exports
-      iommu/amd: Move a few prototypes to include/linux/amd-iommu.h
-
-Christophe JAILLET (1):
-      iommu/vt-d: Fix an error handling path in 'intel_prepare_irq_remapping()'
-
-Chunyan Zhang (3):
-      dt-bindings: iommu: add bindings for sprd IOMMU
-      iommu: add Unisoc IOMMU basic driver
-      iommu/sprd: Fix parameter type warning
-
-Colin Ian King (1):
-      iommu/unisoc: Fix spelling mistake "sixe" -> "size"
-
-Dafna Hirschfeld (1):
-      iommu/mediatek: Always enable the clk on resume
-
-Jacob Pan (4):
-      iommu/vt-d: Enable write protect for supervisor SVM
-      iommu/vt-d: Enable write protect propagation from guest
-      iommu/vt-d: Reject unsupported page request modes
-      iommu/vt-d: Calculate and set flags for handle_mm_fault
-
-Jean-Philippe Brucker (7):
-      iommu: Fix comment for struct iommu_fwspec
-      iommu/arm-smmu-v3: Use device properties for pasid-num-bits
-      iommu: Separate IOMMU_DEV_FEAT_IOPF from IOMMU_DEV_FEAT_SVA
-      iommu/vt-d: Support IOMMU_DEV_FEAT_IOPF
-      uacce: Enable IOMMU_DEV_FEAT_IOPF
-      iommu: Add a page fault handler
-      iommu/arm-smmu-v3: Maintain a SID->device structure
-
-Joerg Roedel (3):
-      Merge tag 'arm-smmu-updates' of git://git.kernel.org/pub/scm/linux/kernel/git/will/linux into arm/smmu
-      iommu/fsl-pamu: Fix uninitialized variable warning
-      Merge branches 'iommu/fixes', 'arm/mediatek', 'arm/smmu', 'arm/exynos', 'unisoc', 'x86/vt-d', 'x86/amd' and 'core' into next
-
-John Garry (4):
-      iova: Add CPU hotplug handler to flush rcaches
-      iommu/vt-d: Remove IOVA domain rcache flushing for CPU offlining
-      iommu: Delete iommu_dma_free_cpu_cached_iovas()
-      iommu: Stop exporting free_iova_fast()
-
-Krzysztof Kozlowski (1):
-      iommu/exynos: Remove unneeded local variable initialization
-
-Kyung Min Park (1):
-      iommu/vt-d: Disable SVM when ATS/PRI/PASID are not enabled in the device
-
-Longpeng(Mike) (1):
-      iommu/vt-d: Force to flush iotlb before creating superpage
-
-Lu Baolu (14):
-      iommu/vt-d: Report more information about invalidation errors
-      iommu/vt-d: Fix lockdep splat in intel_pasid_get_entry()
-      iommu/vt-d: Don't set then clear private data in prq_event_thread()
-      iommu/vt-d: Remove unused dma map/unmap trace events
-      iommu/vt-d: Remove svm_dev_ops
-      iommu/vt-d: Remove SVM_FLAG_PRIVATE_PASID
-      iommu/vt-d: Remove unused function declarations
-      iommu/vt-d: Make unnecessarily global functions static
-      iommu/vt-d: Report right snoop capability when using FL for IOVA
-      iommu/vt-d: Report the right page fault address
-      iommu/vt-d: Remove WO permissions on second-level paging entries
-      iommu/vt-d: Invalidate PASID cache when root/context entry changed
-      iommu/vt-d: Avoid unnecessary cache flush in pasid entry teardown
-      iommu/vt-d: Fix build error of pasid_enable_wpe() with !X86
-
-Nadav Amit (1):
-      iommu/amd: Page-specific invalidations for more than one page
-
-Paul Menzel (2):
-      Revert "iommu/amd: Fix performance counter initialization"
-      iommu/amd: Put newline after closing bracket in warning
-
-Qi Liu (1):
-      iommu/amd: Remove duplicate check of pasids
-
-Robin Murphy (6):
-      iommu/dma: Resurrect the "forcedac" option
-      iommu/iova: Add rbtree entry helper
-      iommu/iova: Improve restart logic
-      iommu: remove DOMAIN_ATTR_DMA_USE_FLUSH_QUEUE
-      iommu: Statically set module owner
-      iommu: Streamline registration interface
-
-Sai Prakash Ranjan (1):
-      dt-bindings: arm-smmu: Add compatible for SC7280 SoC
-
-Shameer Kolothum (1):
-      iommu: Check dev->iommu in iommu_dev_xxx functions
-
-Shaokun Zhang (1):
-      iommu/amd: Remove duplicate check of devid
-
-Suravee Suthikulpanit (1):
-      iommu/amd: Remove performance counter pre-initialization test
-
-Xiang Chen (2):
-      iommu/arm-smmu-v3: Add a check to avoid invalid iotlb sync
-      iommu: Fix a boundary issue to avoid performance drop
-
-Yong Wu (4):
-      iommu/mediatek-v1: Allow building as module
-      iommu/mediatek: Allow building as module
-      iommu/mediatek-v1: Avoid build fail when build as module
-      iommu/mediatek-v1: Add error handle for mtk_iommu_probe
-
-Zenghui Yu (1):
-      iommu/arm-smmu-v3: Remove the unused fields for PREFETCH_CONFIG command
-
-Zhen Lei (1):
-      iommu/arm-smmu-v3: add bit field SFM into GERROR_ERR_MASK
-
- Documentation/admin-guide/kernel-parameters.txt    |  15 +-
- .../devicetree/bindings/iommu/arm,smmu.yaml        |   1 +
- .../devicetree/bindings/iommu/sprd,iommu.yaml      |  57 ++
- arch/powerpc/include/asm/fsl_pamu_stash.h          |  12 +-
- arch/x86/events/amd/iommu.c                        |   1 +
- arch/x86/events/amd/iommu.h                        |  19 -
- drivers/acpi/arm64/iort.c                          |  13 +-
- drivers/gpu/drm/amd/amdkfd/kfd_iommu.c             |   4 -
- drivers/gpu/drm/msm/adreno/adreno_gpu.c            |   5 +-
- drivers/iommu/Kconfig                              |  16 +-
- drivers/iommu/Makefile                             |   3 +-
- drivers/iommu/amd/amd_iommu.h                      |   2 -
- drivers/iommu/amd/amd_iommu_types.h                |   1 -
- drivers/iommu/amd/init.c                           |  59 +-
- drivers/iommu/amd/iommu.c                          | 201 ++----
- drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c        | 247 +++++---
- drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.h        |  18 +-
- drivers/iommu/arm/arm-smmu/arm-smmu.c              | 117 +---
- drivers/iommu/arm/arm-smmu/arm-smmu.h              |   2 +-
- drivers/iommu/arm/arm-smmu/qcom_iommu.c            |   5 +-
- drivers/iommu/dma-iommu.c                          |  23 +-
- drivers/iommu/exynos-iommu.c                       |   7 +-
- drivers/iommu/fsl_pamu.c                           | 293 +--------
- drivers/iommu/fsl_pamu.h                           |  12 +-
- drivers/iommu/fsl_pamu_domain.c                    | 693 ++-------------------
- drivers/iommu/fsl_pamu_domain.h                    |  46 --
- drivers/iommu/intel/dmar.c                         |  72 ++-
- drivers/iommu/intel/iommu.c                        | 233 +++----
- drivers/iommu/intel/irq_remapping.c                |   2 +-
- drivers/iommu/intel/pasid.c                        |  75 ++-
- drivers/iommu/intel/pasid.h                        |   6 +-
- drivers/iommu/intel/svm.c                          |  82 ++-
- drivers/iommu/io-pgfault.c                         | 461 ++++++++++++++
- drivers/iommu/iommu-sva-lib.h                      |  53 ++
- drivers/iommu/iommu.c                              | 161 +++--
- drivers/iommu/iova.c                               |  96 ++-
- drivers/iommu/ipmmu-vmsa.c                         |   6 +-
- drivers/iommu/msm_iommu.c                          |   5 +-
- drivers/iommu/mtk_iommu.c                          |  41 +-
- drivers/iommu/mtk_iommu_v1.c                       |  98 +--
- drivers/iommu/of_iommu.c                           |   5 -
- drivers/iommu/omap-iommu.c                         |   5 +-
- drivers/iommu/rockchip-iommu.c                     |   5 +-
- drivers/iommu/s390-iommu.c                         |   4 +-
- drivers/iommu/sprd-iommu.c                         | 575 +++++++++++++++++
- drivers/iommu/sun50i-iommu.c                       |   5 +-
- drivers/iommu/tegra-gart.c                         |   5 +-
- drivers/iommu/tegra-smmu.c                         |   5 +-
- drivers/iommu/virtio-iommu.c                       |   6 +-
- drivers/misc/uacce/uacce.c                         |  39 +-
- drivers/soc/fsl/qbman/qman_portal.c                |  55 +-
- drivers/vfio/vfio_iommu_type1.c                    |  31 +-
- drivers/vhost/vdpa.c                               |  10 +-
- include/linux/amd-iommu.h                          |  30 +-
- include/linux/cpuhotplug.h                         |   2 +-
- include/linux/dma-iommu.h                          |   7 +-
- include/linux/intel-iommu.h                        |  10 +-
- include/linux/intel-svm.h                          |  23 +-
- include/linux/io-pgtable.h                         |   4 -
- include/linux/iommu.h                              | 141 ++---
- include/linux/iova.h                               |   6 +-
- include/trace/events/intel_iommu.h                 | 120 ----
- include/uapi/linux/iommu.h                         |   3 +-
- 63 files changed, 2117 insertions(+), 2242 deletions(-)
- create mode 100644 Documentation/devicetree/bindings/iommu/sprd,iommu.yaml
- create mode 100644 drivers/iommu/io-pgfault.c
- create mode 100644 drivers/iommu/sprd-iommu.c
-
-Please pull.
-
-Thanks,
-
-	Joerg
-
---MZwZ1CIB3DPVYbmT
-Content-Type: application/pgp-signature; name="signature.asc"
-Content-Description: Digital signature
-
------BEGIN PGP SIGNATURE-----
-
-iQIzBAEBCAAdFiEEr9jSbILcajRFYWYyK/BELZcBGuMFAmCMEW4ACgkQK/BELZcB
-GuNDJBAAiphQKo4kPCNNlk79pEd73Py6QbRR2AvfkISzcf93OBq012MoZVQGCMQt
-o8mhNHePqi5CJe1lym1NMeKqXvUI8ck2Xr3XEqArS/Exkn4y6mi+dkx2+mm1Ifrj
-VSfzAyIp7tPtcWwFOaw42rbXAfBouyIrTn2GmvweUkNb7+aKYTWV/suwuHwoSva3
-e2XVQOGFMSsbVd49BBrCytYSOFaivCablviwH7CfqRwI8o36HNqS6L9doU0fXerQ
-cETuTdQXnDBzN3URf4O+hehqiaTy8v06RTzV98vG6Ksv2ZSDNJAD6aMTijLDjKC/
-HTIpW/PMTkgV+cp34Pb/nNXiMMpQBT25AtTskaDZuzKybUTY4p5QEKSAXpf/2UjW
-azTAMkRclhT6AnPJNprUJgbSqyuUEG9tElnVfD3wg2r5PRFW3BCu3i14SIL+RjPo
-GKFk+lfwekQq//58aybTJCCJyqmLA8jxAXPyX8F3Mmwi55bA88jhCCQ8ftYQxgJz
-NbKnTJlSO/0fUjBDT/3bMEocnHSKm51LozIdI3uW1wT4RQ8c1inzfY+x++3XXB4U
-d7z2KjHWaCE1NeLe4G/e2uxAW9qAWIh0s01TAtG6rJnwsxHLDtIckY6PVCb0kX9Z
-LBHfGUncwsMSIGZHEWBTEDfI6/aPUgKJuPcGlSiCfPXwDV5xKKQ=
-=LtQk
------END PGP SIGNATURE-----
-
---MZwZ1CIB3DPVYbmT--
-
---===============7054371739157862513==
-Content-Type: text/plain; charset="us-ascii"
-MIME-Version: 1.0
-Content-Transfer-Encoding: 7bit
-Content-Disposition: inline
-
+Rob
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
 https://lists.linuxfoundation.org/mailman/listinfo/iommu
---===============7054371739157862513==--
