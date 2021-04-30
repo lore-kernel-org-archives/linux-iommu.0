@@ -2,94 +2,102 @@ Return-Path: <SRS0=uVFq=J3=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-14.0 required=3.0 tests=BAYES_00,INCLUDES_CR_TRAILER,
-	INCLUDES_PATCH,MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED
-	autolearn=ham autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-10.5 required=3.0 tests=BAYES_00,
+	DKIM_ADSP_CUSTOM_MED,DKIM_INVALID,DKIM_SIGNED,FREEMAIL_FORGED_FROMDOMAIN,
+	FREEMAIL_FROM,HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_CR_TRAILER,
+	INCLUDES_PATCH,MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS autolearn=ham
+	autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 25E91C433B4
-	for <iommu@archiver.kernel.org>; Fri, 30 Apr 2021 22:14:51 +0000 (UTC)
-Received: from smtp1.osuosl.org (smtp1.osuosl.org [140.211.166.138])
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E0311C43460
+	for <iommu@archiver.kernel.org>; Fri, 30 Apr 2021 22:50:22 +0000 (UTC)
+Received: from smtp3.osuosl.org (smtp3.osuosl.org [140.211.166.136])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id BD57E613FA
-	for <iommu@archiver.kernel.org>; Fri, 30 Apr 2021 22:14:50 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org BD57E613FA
-Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=kernel.org
+	by mail.kernel.org (Postfix) with ESMTPS id 85E946128C
+	for <iommu@archiver.kernel.org>; Fri, 30 Apr 2021 22:50:22 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 85E946128C
+Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=gmail.com
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by smtp1.osuosl.org (Postfix) with ESMTP id 8982B849F0;
-	Fri, 30 Apr 2021 22:14:50 +0000 (UTC)
+	by smtp3.osuosl.org (Postfix) with ESMTP id 378566FA20;
+	Fri, 30 Apr 2021 22:50:22 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from smtp1.osuosl.org ([127.0.0.1])
-	by localhost (smtp1.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id vlQ2ip2-hPph; Fri, 30 Apr 2021 22:14:48 +0000 (UTC)
-Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by smtp1.osuosl.org (Postfix) with ESMTP id 422A384AAD;
-	Fri, 30 Apr 2021 22:14:48 +0000 (UTC)
+Received: from smtp3.osuosl.org ([127.0.0.1])
+	by localhost (smtp3.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+	with ESMTP id f4MXLhiraEUv; Fri, 30 Apr 2021 22:50:21 +0000 (UTC)
+Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [IPv6:2605:bc80:3010:104::8cd3:938])
+	by smtp3.osuosl.org (Postfix) with ESMTP id 25F256F986;
+	Fri, 30 Apr 2021 22:50:21 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 13E31C000E;
-	Fri, 30 Apr 2021 22:14:48 +0000 (UTC)
-Received: from smtp1.osuosl.org (smtp1.osuosl.org [140.211.166.138])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 764E1C0001
- for <iommu@lists.linux-foundation.org>; Fri, 30 Apr 2021 22:14:47 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id EFB39C000E;
+	Fri, 30 Apr 2021 22:50:20 +0000 (UTC)
+Received: from smtp3.osuosl.org (smtp3.osuosl.org [IPv6:2605:bc80:3010::136])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 443F4C0001
+ for <iommu@lists.linux-foundation.org>; Fri, 30 Apr 2021 22:50:20 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by smtp1.osuosl.org (Postfix) with ESMTP id 5D12E84AAD
- for <iommu@lists.linux-foundation.org>; Fri, 30 Apr 2021 22:14:47 +0000 (UTC)
+ by smtp3.osuosl.org (Postfix) with ESMTP id 329DF6FA20
+ for <iommu@lists.linux-foundation.org>; Fri, 30 Apr 2021 22:50:20 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from smtp1.osuosl.org ([127.0.0.1])
- by localhost (smtp1.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id DpDKyM05TPL3 for <iommu@lists.linux-foundation.org>;
- Fri, 30 Apr 2021 22:14:45 +0000 (UTC)
+Received: from smtp3.osuosl.org ([127.0.0.1])
+ by localhost (smtp3.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+ with ESMTP id frz1Wfqe3KOt for <iommu@lists.linux-foundation.org>;
+ Fri, 30 Apr 2021 22:50:19 +0000 (UTC)
 X-Greylist: whitelisted by SQLgrey-1.8.0
-Received: from mail-ot1-f50.google.com (mail-ot1-f50.google.com
- [209.85.210.50])
- by smtp1.osuosl.org (Postfix) with ESMTPS id 59C43849F0
- for <iommu@lists.linux-foundation.org>; Fri, 30 Apr 2021 22:14:45 +0000 (UTC)
-Received: by mail-ot1-f50.google.com with SMTP id
- b5-20020a9d5d050000b02902a5883b0f4bso2470224oti.2
- for <iommu@lists.linux-foundation.org>; Fri, 30 Apr 2021 15:14:45 -0700 (PDT)
+Received: from mail-pj1-x1033.google.com (mail-pj1-x1033.google.com
+ [IPv6:2607:f8b0:4864:20::1033])
+ by smtp3.osuosl.org (Postfix) with ESMTPS id 1CC0B6F986
+ for <iommu@lists.linux-foundation.org>; Fri, 30 Apr 2021 22:50:19 +0000 (UTC)
+Received: by mail-pj1-x1033.google.com with SMTP id
+ h14-20020a17090aea8eb02901553e1cc649so2544525pjz.0
+ for <iommu@lists.linux-foundation.org>; Fri, 30 Apr 2021 15:50:19 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=gmail.com; s=20161025;
+ h=from:message-id:mime-version:subject:date:in-reply-to:cc:to
+ :references; bh=16/dtgglXPhTLhotwiWNpu5uwDUYzC2lKFh3DLa1Hx4=;
+ b=PQh2dt8gfZQLbTOx+5X49nw58W9XQe0SF5XUL0UdMy2a2yUgrs3eR3D59/5TixELZ9
+ 3ynAu1Iu99ssHH6ryOu+RXkgNjaTuf9FEwmMU7XmylKrjtQYeRRO3aNW6gLKGNDeW6Oc
+ XfZ0EScSEqfscXh7odVRPWJZ4XOVMSYdSpBU/135Y5g0CVP3+7V/dzmQZnMTb18w9ZCL
+ E1v0Q1tqonZ0nmAVlhdx1l/CZXFLEYxfK5s3mw3Dwva+nlvydY4ygXq38rybbM0bPwVz
+ Q+iJUyepcWX/ApREea50n06UwT8RTbDzkxAph162hhaLiM5Ct47fHpYa1xIVE1HF4v6X
+ w+8g==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
  d=1e100.net; s=20161025;
- h=x-gm-message-state:date:from:to:cc:subject:message-id:references
- :mime-version:content-disposition:content-transfer-encoding
- :in-reply-to;
- bh=7SSvv02TsbkrWOwWlBM9seTIZP42kaPiNEe9dizb4ew=;
- b=PoKLnhWcO0Ir9CTlI9Tt5VCMEOTMrT7Pw196PUkXrlmuM50tD4JTRQFZW9fOMZJIDI
- tVwwLsjLmAYxqHi/cAibIwqh+ti8fmAZo2VpS5Xj7RL6YdY11JbNBUFcIvh6XPDedXSK
- bYlaDA+qloOnY2vV5mMRTq+l2XSxlty2xD5/YSoKC97M627INSB/C8Ysx5yXYHJ3JimZ
- u/X1yqWMd2c+aKzptPmV8iadERdD5cX9n9FhWuDP41EaHGCy4HafHkxxhokcFOaipxbW
- MMPuhzFLsw2++g96JCRAPCddSgmr5kMOnSk2/XH1ykRZxpnTFLjEubDQKsuDS7KLc2Al
- tkxQ==
-X-Gm-Message-State: AOAM5313jAjc9WhHQ4BeGDu//kHX7Jbg/yvxPOzMVTT3w/eN0RLoaoaP
- ic+r82grVyMSd+ID3p0hEA==
-X-Google-Smtp-Source: ABdhPJybcXW/btKHlVv6/oMKk9lt8LC61n8INzSUoyfrM2mjKCMtaL7sricjsJZqmqqq5BQ8Q/rsZA==
-X-Received: by 2002:a05:6830:1103:: with SMTP id
- w3mr5343380otq.304.1619820884331; 
- Fri, 30 Apr 2021 15:14:44 -0700 (PDT)
-Received: from robh.at.kernel.org (24-155-109-49.dyn.grandenetworks.net.
- [24.155.109.49])
- by smtp.gmail.com with ESMTPSA id b64sm215922oii.12.2021.04.30.15.14.42
- (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
- Fri, 30 Apr 2021 15:14:43 -0700 (PDT)
-Received: (nullmailer pid 4001411 invoked by uid 1000);
- Fri, 30 Apr 2021 22:14:42 -0000
-Date: Fri, 30 Apr 2021 17:14:42 -0500
-From: Rob Herring <robh@kernel.org>
-To: Ezequiel Garcia <ezequiel@collabora.com>
-Subject: Re: [PATCH v2 1/4] dt-bindings: iommu: rockchip: Convert IOMMU to DT
- schema
-Message-ID: <20210430221442.GA3970483@robh.at.kernel.org>
-References: <20210422141602.350746-1-benjamin.gaignard@collabora.com>
- <20210422141602.350746-2-benjamin.gaignard@collabora.com>
- <7557bc8aaaa1924ad39676b32ba6a3f6474a3722.camel@collabora.com>
-MIME-Version: 1.0
-Content-Disposition: inline
-In-Reply-To: <7557bc8aaaa1924ad39676b32ba6a3f6474a3722.camel@collabora.com>
-Cc: devicetree@vger.kernel.org,
- Benjamin Gaignard <benjamin.gaignard@collabora.com>, heiko@sntech.de,
- linux-kernel@vger.kernel.org, Kever Yang <kever.yang@rock-chips.com>,
- linux-rockchip@lists.infradead.org, iommu@lists.linux-foundation.org,
- kernel@collabora.com, will@kernel.org, linux-arm-kernel@lists.infradead.org
+ h=x-gm-message-state:from:message-id:mime-version:subject:date
+ :in-reply-to:cc:to:references;
+ bh=16/dtgglXPhTLhotwiWNpu5uwDUYzC2lKFh3DLa1Hx4=;
+ b=CbyuOxsLkS9WIUd2xEXQZg01lUOiBNoTZzqzEvOe5hFiB7PMIiqIrIL6drMv9UhGU4
+ fR0Jh1kLnvmImwFfZjJmnsi0g6KwvdDbWOnGGzIwLV8IYwA//Vyn9X926t+Xorimb0sY
+ fap/fWu4ndPN6MTRvY0QFLnJq70fxxOl8zVsTibkrLq/CziMCFMPDkE5pw1QMdtAxwP6
+ oVPDx5p9hPys2Zd8kOYxJH1auKfgErJBI7Fc7HX4+BXIFvuvQ2GpEPmdsEVk/5VkMr8v
+ GdX7tmmxhEEXOoKm/GxdraaHN2euTmAO1BBsiNsS6kIL2wXA2QGssCxkh++W5HL6xXfe
+ 2Pkg==
+X-Gm-Message-State: AOAM533Em2f8dUwMQ6YS+ybKCj7/kag2Dt3+oXdPki3cPQ1gefh0h7Te
+ 3RrkpYtALDBLcv4u3AWsk3A=
+X-Google-Smtp-Source: ABdhPJwu8fcqqjV2X7H3OGTmr1JB4BCD/RIOt6MROYUT4+1TMGnf5Fmu6bskgXZtpR8x6aVq0f++RQ==
+X-Received: by 2002:a17:902:b18f:b029:ec:7ac0:fd1a with SMTP id
+ s15-20020a170902b18fb02900ec7ac0fd1amr7627001plr.84.1619823018324; 
+ Fri, 30 Apr 2021 15:50:18 -0700 (PDT)
+Received: from smtpclient.apple (c-24-6-216-183.hsd1.ca.comcast.net.
+ [24.6.216.183])
+ by smtp.gmail.com with ESMTPSA id a13sm3884882pgm.43.2021.04.30.15.50.16
+ (version=TLS1_2 cipher=ECDHE-ECDSA-AES128-GCM-SHA256 bits=128/128);
+ Fri, 30 Apr 2021 15:50:17 -0700 (PDT)
+From: Nadav Amit <nadav.amit@gmail.com>
+Message-Id: <3D6CEB0B-101D-4C40-9BFB-68ABC85B084D@gmail.com>
+Mime-Version: 1.0 (Mac OS X Mail 14.0 \(3654.80.0.2.43\))
+Subject: Re: [PATCH v2] iommu/vt-d: Force to flush iotlb before creating
+ superpage
+Date: Fri, 30 Apr 2021 15:50:14 -0700
+In-Reply-To: <YHhJ/0b5i55zGib7@8bytes.org>
+To: Joerg Roedel <joro@8bytes.org>
+References: <20210415004628.1779-1-longpeng2@huawei.com>
+ <YHhJ/0b5i55zGib7@8bytes.org>
+X-Mailer: Apple Mail (2.3654.80.0.2.43)
+Cc: Kevin Tian <kevin.tian@intel.com>, iommu@lists.linux-foundation.org,
+ stable@vger.kernel.org,
+ Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+ Alex Williamson <alex.williamson@redhat.com>,
+ Gonglei <arei.gonglei@huawei.com>, "Longpeng\(Mike\)" <longpeng2@huawei.com>,
+ David Woodhouse <dwmw2@infradead.org>
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -102,181 +110,87 @@ List-Post: <mailto:iommu@lists.linux-foundation.org>
 List-Help: <mailto:iommu-request@lists.linux-foundation.org?subject=help>
 List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
  <mailto:iommu-request@lists.linux-foundation.org?subject=subscribe>
-Content-Type: text/plain; charset="iso-8859-1"
-Content-Transfer-Encoding: quoted-printable
+Content-Type: multipart/mixed; boundary="===============0356615058345226777=="
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-On Thu, Apr 22, 2021 at 02:16:53PM -0300, Ezequiel Garcia wrote:
-> (Adding Kever)
-> =
 
-> Hi Benjamin,
-> =
+--===============0356615058345226777==
+Content-Type: multipart/signed;
+	boundary="Apple-Mail=_5772B81F-3D79-4A46-BB6E-A83FEA1C4D1A";
+	protocol="application/pgp-signature";
+	micalg=pgp-sha256
 
-> Thanks a lot for working on this, it looks amazing. Together with the gre=
-at work
-> that Rockchip is doing, it seems RK3566/RK3568 will have decent support v=
-ery soon.
-> =
 
-> One comment here:
-> =
+--Apple-Mail=_5772B81F-3D79-4A46-BB6E-A83FEA1C4D1A
+Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain;
+	charset=us-ascii
 
-> On Thu, 2021-04-22 at 16:15 +0200, Benjamin Gaignard wrote:
-> > Convert Rockchip IOMMU to DT schema
-> > =
 
-> > Signed-off-by: Benjamin Gaignard <benjamin.gaignard@collabora.com>
-> > ---
-> > version 2:
-> > =A0- Change maintainer
-> > =A0- Change reg maxItems
-> > =A0- Change interrupt maxItems
-> > =
 
-> > =A0.../bindings/iommu/rockchip,iommu.txt=A0=A0=A0=A0=A0=A0=A0=A0 | 38 -=
---------
-> > =A0.../bindings/iommu/rockchip,iommu.yaml=A0=A0=A0=A0=A0=A0=A0 | 79 +++=
-++++++++++++++++
-> > =A02 files changed, 79 insertions(+), 38 deletions(-)
-> > =A0delete mode 100644 Documentation/devicetree/bindings/iommu/rockchip,=
-iommu.txt
-> > =A0create mode 100644 Documentation/devicetree/bindings/iommu/rockchip,=
-iommu.yaml
-> > =
+> On Apr 15, 2021, at 7:13 AM, Joerg Roedel <joro@8bytes.org> wrote:
+>=20
+> On Thu, Apr 15, 2021 at 08:46:28AM +0800, Longpeng(Mike) wrote:
+>> Fixes: 6491d4d02893 ("intel-iommu: Free old page tables before =
+creating superpage")
+>> Cc: <stable@vger.kernel.org> # v3.0+
+>> Link: =
+https://lore.kernel.org/linux-iommu/670baaf8-4ff8-4e84-4be3-030b95ab5a5e@h=
+uawei.com/
+>> Suggested-by: Lu Baolu <baolu.lu@linux.intel.com>
+>> Signed-off-by: Longpeng(Mike) <longpeng2@huawei.com>
+>> ---
+>> v1 -> v2:
+>>  - add Joerg
+>>  - reconstruct the solution base on the Baolu's suggestion
+>> ---
+>> drivers/iommu/intel/iommu.c | 52 =
++++++++++++++++++++++++++++++++++------------
+>> 1 file changed, 38 insertions(+), 14 deletions(-)
+>=20
+> Applied, thanks.
+>=20
 
-> > diff --git a/Documentation/devicetree/bindings/iommu/rockchip,iommu.txt=
- b/Documentation/devicetree/bindings/iommu/rockchip,iommu.txt
-> > deleted file mode 100644
-> > index 6ecefea1c6f9..000000000000
-> > --- a/Documentation/devicetree/bindings/iommu/rockchip,iommu.txt
-> > +++ /dev/null
-> > @@ -1,38 +0,0 @@
-> > -Rockchip IOMMU
-> > -=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D
-> > -
-> > -A Rockchip DRM iommu translates io virtual addresses to physical addre=
-sses for
-> > -its master device.=A0 Each slave device is bound to a single master de=
-vice, and
-> > -shares its clocks, power domain and irq.
-> > -
-> > -Required properties:
-> > -- compatible=A0=A0=A0=A0=A0 : Should be "rockchip,iommu"
-> > -- reg=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0 : Address space for the conf=
-iguration registers
-> > -- interrupts=A0=A0=A0=A0=A0 : Interrupt specifier for the IOMMU instan=
-ce
-> > -- interrupt-names : Interrupt name for the IOMMU instance
-> > -- #iommu-cells=A0=A0=A0 : Should be <0>.=A0 This indicates the iommu i=
-s a
-> > -=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0 "single-mast=
-er" device, and needs no additional information
-> > -=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0 to associate=
- with its master device.=A0 See:
-> > -=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0 Documentatio=
-n/devicetree/bindings/iommu/iommu.txt
-> > -- clocks=A0=A0=A0=A0=A0=A0=A0=A0=A0 : A list of clocks required for th=
-e IOMMU to be accessible by
-> > -=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0 the host CPU.
-> > -- clock-names=A0=A0=A0=A0 : Should contain the following:
-> > -=A0=A0=A0=A0=A0=A0=A0"iface" - Main peripheral bus clock (PCLK/HCL) (r=
-equired)
-> > -=A0=A0=A0=A0=A0=A0=A0"aclk"=A0 - AXI bus clock (required)
-> > -
-> > -Optional properties:
-> > -- rockchip,disable-mmu-reset : Don't use the mmu reset operation.
-> > -=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=
-=A0=A0=A0=A0=A0=A0 Some mmu instances may produce unexpected results
-> > -=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=
-=A0=A0=A0=A0=A0=A0 when the reset operation is used.
-> > -
-> > -Example:
-> > -
-> > -=A0=A0=A0=A0=A0=A0=A0vopl_mmu: iommu@ff940300 {
-> > -=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0compatible =3D "rockchip,=
-iommu";
-> > -=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0reg =3D <0xff940300 0x100=
->;
-> > -=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0interrupts =3D <GIC_SPI 1=
-6 IRQ_TYPE_LEVEL_HIGH>;
-> > -=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0interrupt-names =3D "vopl=
-_mmu";
-> > -=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0clocks =3D <&cru ACLK_VOP=
-1>, <&cru HCLK_VOP1>;
-> > -=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0clock-names =3D "aclk", "=
-iface";
-> > -=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0#iommu-cells =3D <0>;
-> > -=A0=A0=A0=A0=A0=A0=A0};
-> > diff --git a/Documentation/devicetree/bindings/iommu/rockchip,iommu.yam=
-l b/Documentation/devicetree/bindings/iommu/rockchip,iommu.yaml
-> > new file mode 100644
-> > index 000000000000..0db208cf724a
-> > --- /dev/null
-> > +++ b/Documentation/devicetree/bindings/iommu/rockchip,iommu.yaml
-> > @@ -0,0 +1,79 @@
-> > +# SPDX-License-Identifier: GPL-2.0-only
-> > +%YAML 1.2
-> > +---
-> > +$id: http://devicetree.org/schemas/iommu/rockchip,iommu.yaml#
-> > +$schema: http://devicetree.org/meta-schemas/core.yaml#
-> > +
-> > +title: Rockchip IOMMU
-> > +
-> > +maintainers:
-> > +=A0 - Heiko Stuebner <heiko@sntech.de>
-> > +
-> > +description: |+
-> > +=A0 A Rockchip DRM iommu translates io virtual addresses to physical a=
-ddresses for
-> > +=A0 its master device. Each slave device is bound to a single master d=
-evice and
-> > +=A0 shares its clocks, power domain and irq.
-> > +
-> > +=A0 For information on assigning IOMMU controller to its peripheral de=
-vices,
-> > +=A0 see generic IOMMU bindings.
-> > +
-> > +properties:
-> > +=A0 compatible:
-> > +=A0=A0=A0 const: rockchip,iommu
-> > +
-> > +=A0 reg:
-> > +=A0=A0=A0 minItems: 1
-> > +=A0=A0=A0 maxItems: 2
-> > +
-> > +=A0 interrupts:
-> > +=A0=A0=A0 minItems: 1
-> > +=A0=A0=A0 maxItems: 2
-> > +
-> > +=A0 interrupt-names:
-> > +=A0=A0=A0 minItems: 1
-> > +=A0=A0=A0 maxItems: 2
-> > +
-> =
+Err.. There is a bug in my patch, and some other problem. I will
+investigate and get back to you.
 
-> AFAICS, the driver supports handling multiple MMUs, and there's one reg a=
-nd
-> interrupt cell for each MMU. IOW, there's no requirement that maxItems is=
- 2.
-> =
 
-> Is there any way we can describe that? Or maybe just allow a bigger maxim=
-um?
+--Apple-Mail=_5772B81F-3D79-4A46-BB6E-A83FEA1C4D1A
+Content-Transfer-Encoding: 7bit
+Content-Disposition: attachment;
+	filename=signature.asc
+Content-Type: application/pgp-signature;
+	name=signature.asc
+Content-Description: Message signed with OpenPGP
 
-With #iommu-cells =3D=3D 0, how would one distinguish which IOMMU is =
+-----BEGIN PGP SIGNATURE-----
 
-associated with a device? IOW, is more that 1 really usable?
+iQIzBAEBCAAdFiEESJL3osl5Ymx/w9I1HaAqSabaD1oFAmCMiaYACgkQHaAqSaba
+D1oZ4Q/+Jj4yXux596UIVxLwjOM4+uRS3ogEzW8mp/ULCCWdPlcpGflYqzuNIQdl
+txomPflOeOJdCfNR07pjaWktYzMSJo5AqcljhiBXRn3As8Folmq5OaAzvN1OOfnh
+RIuUMnUUWok+3gzKM3c8KanBdIaoIryLcBW1uZn7f74JytPjIO7y/sOf9f1LGzkT
+cw/VAHuF8pMYtW1flj+N15aqMhI0BRrvEZgarT3qU/eTZd/1W1I1WrAxPeNFPTkz
+7Svx8uvznKmzqNaG/z9ujYELhtHutNzA2R1ky3eAQ7JdVn0HwPF0jqlgkeKe6LF4
+uFR2OCqLu52RgOCME/w6jqTYnbJti9u7npbCbWxZremUj/ghf9QUoe8VNFlkmgI4
+Het2C5n53PrzqYKahXIMpsdlYxzmNqfTmve9BPhWVR2s0/4UqKIwLaBB6RmUqMYV
+MpM1Eh1RoBMRuTroQJ6Wztg7er9pHkb/SUB25WdK+Zxpkd1fd4p+zs86OM/6YRY2
+KBlqLFfco3OzGlxvvKOFJC4idYaFN3YsyIs8DMhpqmDKTHLlEocgRrFMoPCXl4XS
+R7LWf0rEfvYeoOTm1+uM+F5uj8oI7ZR61mNibegQE4IyxtTMxavp4lI/5+yYfU0Y
+WhjOyMmqQ+TqOWHNV70cdUOb/s0wjKXw4mCk+axasUCY0iy69xc=
+=lcNo
+-----END PGP SIGNATURE-----
 
-If you need more just pick a maxItems value that's either the most seen =
+--Apple-Mail=_5772B81F-3D79-4A46-BB6E-A83FEA1C4D1A--
 
-or 'should be enough'TM. If the entries are just multiple instances of =
+--===============0356615058345226777==
+Content-Type: text/plain; charset="us-ascii"
+MIME-Version: 1.0
+Content-Transfer-Encoding: 7bit
+Content-Disposition: inline
 
-the same thing, please note that here.
-
-Rob
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
 https://lists.linuxfoundation.org/mailman/listinfo/iommu
+--===============0356615058345226777==--
