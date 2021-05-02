@@ -5,54 +5,56 @@ X-Spam-Level:
 X-Spam-Status: No, score=-15.1 required=3.0 tests=BAYES_00,DKIM_INVALID,
 	DKIM_SIGNED,HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_CR_TRAILER,INCLUDES_PATCH,
 	MAILING_LIST_MULTI,NICE_REPLY_A,SPF_HELO_NONE,SPF_PASS,USER_AGENT_SANE_1
-	autolearn=unavailable autolearn_force=no version=3.4.0
+	autolearn=ham autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A35E8C433ED
-	for <iommu@archiver.kernel.org>; Sun,  2 May 2021 21:23:40 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A22D2C433B4
+	for <iommu@archiver.kernel.org>; Sun,  2 May 2021 22:34:27 +0000 (UTC)
 Received: from smtp1.osuosl.org (smtp1.osuosl.org [140.211.166.138])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 4538B61353
-	for <iommu@archiver.kernel.org>; Sun,  2 May 2021 21:23:40 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 4538B61353
+	by mail.kernel.org (Postfix) with ESMTPS id 3F8DB61245
+	for <iommu@archiver.kernel.org>; Sun,  2 May 2021 22:34:27 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 3F8DB61245
 Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=nvidia.com
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by smtp1.osuosl.org (Postfix) with ESMTP id 0A8CF84561;
-	Sun,  2 May 2021 21:23:40 +0000 (UTC)
+	by smtp1.osuosl.org (Postfix) with ESMTP id 002ED8444E;
+	Sun,  2 May 2021 22:34:26 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
 Received: from smtp1.osuosl.org ([127.0.0.1])
 	by localhost (smtp1.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id yjryLEtKF0SB; Sun,  2 May 2021 21:23:38 +0000 (UTC)
+	with ESMTP id vEHEHT78O3cy; Sun,  2 May 2021 22:34:26 +0000 (UTC)
 Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by smtp1.osuosl.org (Postfix) with ESMTP id 9A67A84563;
-	Sun,  2 May 2021 21:23:38 +0000 (UTC)
+	by smtp1.osuosl.org (Postfix) with ESMTP id 9E9028444B;
+	Sun,  2 May 2021 22:34:25 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 7FF5EC000D;
-	Sun,  2 May 2021 21:23:38 +0000 (UTC)
-Received: from smtp1.osuosl.org (smtp1.osuosl.org [IPv6:2605:bc80:3010::138])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 4E08AC0001
- for <iommu@lists.linux-foundation.org>; Sun,  2 May 2021 21:23:37 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 79B86C000E;
+	Sun,  2 May 2021 22:34:25 +0000 (UTC)
+Received: from smtp2.osuosl.org (smtp2.osuosl.org [140.211.166.133])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 7E187C0001
+ for <iommu@lists.linux-foundation.org>; Sun,  2 May 2021 22:34:23 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by smtp1.osuosl.org (Postfix) with ESMTP id 2849984563
- for <iommu@lists.linux-foundation.org>; Sun,  2 May 2021 21:23:37 +0000 (UTC)
+ by smtp2.osuosl.org (Postfix) with ESMTP id 624C040265
+ for <iommu@lists.linux-foundation.org>; Sun,  2 May 2021 22:34:23 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from smtp1.osuosl.org ([127.0.0.1])
- by localhost (smtp1.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id bA9dzkRD7UMj for <iommu@lists.linux-foundation.org>;
- Sun,  2 May 2021 21:23:35 +0000 (UTC)
+Authentication-Results: smtp2.osuosl.org (amavisd-new);
+ dkim=pass (2048-bit key) header.d=nvidia.com
+Received: from smtp2.osuosl.org ([127.0.0.1])
+ by localhost (smtp2.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+ with ESMTP id WaMFx_AYJieJ for <iommu@lists.linux-foundation.org>;
+ Sun,  2 May 2021 22:34:22 +0000 (UTC)
 X-Greylist: whitelisted by SQLgrey-1.8.0
-Received: from NAM11-BN8-obe.outbound.protection.outlook.com
- (mail-bn8nam11on2075.outbound.protection.outlook.com [40.107.236.75])
- by smtp1.osuosl.org (Postfix) with ESMTPS id 4E15084561
- for <iommu@lists.linux-foundation.org>; Sun,  2 May 2021 21:23:35 +0000 (UTC)
+Received: from NAM10-MW2-obe.outbound.protection.outlook.com
+ (mail-mw2nam10on2067.outbound.protection.outlook.com [40.107.94.67])
+ by smtp2.osuosl.org (Postfix) with ESMTPS id DA87F400A6
+ for <iommu@lists.linux-foundation.org>; Sun,  2 May 2021 22:34:21 +0000 (UTC)
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=JRfjfGYcZSbYa0GEy7I7S4qwh+24xr5mN7n/BgrwadocLDMwXur54abiaPtlGIHLxtSuRC/3uYePaE/3jQGZCAuADn9mqE7VOvzSOvgvtNGm6vtQsC5oV2DbyKU6dB57nA1M6JRB078UXKwQB2WvnCDpiAdgNE2EdfRXAwRJuFGUQJV9/kYz5sDD/IHRxn5rYRSYnpxHcHYeP0OXyoPDQYm1KspftG3WYWQLPMUiSC5PvBweX+XwIaE/aDvfCsZQE4Sm5AHV96oOr47fD8g/Z7bem9R5dFqykiGHUv/C89WlMBOnwPwdVvcDiKZ8l10GeeXS3bvtjKvbIOxir4tRnA==
+ b=Bwx2JECd34Rm6FLQEtzbggXzH78hUgyrEwarbqt4287MUNbpeO34n0U8dJtqiveZA7dD7qGxfHBQ+iPvqv99SRy90ftWHM2850eoOXnQs3tWx7/ic6pYkiuvx37Khvkj1xM4X/JR82wSYbjWN+w7RPfQ34/CwcXlZ0yUgRw+fXgE66tWcTqFz0/J7Z8tvGzOH5Li5FQhcVBLjjhQLbG3X0Gb23OtBRO78Vl0+Kqowd6t5eQpJMok/Mqtu4LeT6+Wt4y4QiySWNSZNk/YondZL4KKxkZqcxpPliK++8fiFGn9iXjvK1dZE6BQQEcnHct5ui7ujy7fG1puem1rct90hQ==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com; 
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=FqWc/Fmqc3x2DHIOX4HmWT614fBv4WGNqMlsP+t+3jw=;
- b=LXF6ckKHWhD9UgFB09MboXVzHF0mLz/+S24fQGvPvmSeaem8rIt5ewohA7YO5nimDLnuQhZYea3/tUb5C9Bqyb3CA/olKYI3D2o+pwKAViT2UcGnT1G7sga85Do2yJnfRoYZ3oXPPGy20hUiI7sWIOpyeeBpLWU1U5oXixbYFMjlc5bXD0Ys//JidzZjlV0/ABI1fqH42xBvMDZhJVExuqrlrBB7boyNkN3hFX3VCQdOyoG11Uno2gDFmL5Tjqev2S+Y8wP9pOgsf/+U4VZO+/wLZ/R1Wbghp1h/iT7YKd2ludC3HNdm4vC2QWHdKATqM6YMH8eY2V1NC/reVpDkdA==
+ bh=lUS8/hzdI2bLakxsX4eraydP/gCVYGt1jijU0nshQWk=;
+ b=C9acdelkoWWzqI+HA8BoVsoWUb1lPTW97G6WReZp/zXkw69Sffre4eBbgOUDaxn8orh6glFc03TFXdSHDYf30ikz5iIDhxuFTlPBLS/6zF1qv8PpNOdZrj5qAl/Ke6LY9AmDSPPq3PxV2lNOSwFmywMC6WurBAf276pd22x2Yz5VRAxXzXCpFqfbrT1cuW+kOTYLRv3pR6Sv1wuQ/nvH0Y7/M2t2NCGKt77vLDm6wrAbfCvyzrEtArUY/XJxsx6Jaz2KbHy/UWUHxdt64Rk8CgcSxC1ywdsS2OzR+1u7PsSNWY6Y+NBOSN3w+DV8aEJ25c9RsiGXYWtPA+GQYGzT9w==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
  216.228.112.34) smtp.rcpttodomain=raithlin.com smtp.mailfrom=nvidia.com;
  dmarc=pass (p=none sp=none pct=100) action=none header.from=nvidia.com;
@@ -60,18 +62,18 @@ ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
  s=selector2;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=FqWc/Fmqc3x2DHIOX4HmWT614fBv4WGNqMlsP+t+3jw=;
- b=mCROHdTzy91pY/E9y+ql7glf2EnJVgz2HGEF2tjUM45VdWKOHu/Nq+E0+IsXo/Fyl9JUa0w2OmO6vlW66xyY055E9gkcAFmi78tyam7kHdigF+ExSSHUeAIaot/igcXJV1lhO3RCt/3VT9A9VuFZQZm6XF+Lv5Y/iuuGN6SWUxtxBQtg+rm4upfBZ3SPbfpFT/+NBI18qI9RzjqjogYg/WlHH6MxJ1opY0FhQuZHYO9kkfp6ErYUtCwmTvqKb586cLSqkU6glroY7B9wExoZK+4K36aBSIBX5OSKuMO6Ry+4OBMtBNVAS7nCRNJ3LQRFXBa5Uo/5gAiVCu1SmseSeg==
-Received: from MWHPR2001CA0018.namprd20.prod.outlook.com
- (2603:10b6:301:15::28) by BN9PR12MB5132.namprd12.prod.outlook.com
- (2603:10b6:408:119::7) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4087.40; Sun, 2 May
- 2021 21:23:33 +0000
-Received: from CO1NAM11FT042.eop-nam11.prod.protection.outlook.com
- (2603:10b6:301:15:cafe::93) by MWHPR2001CA0018.outlook.office365.com
- (2603:10b6:301:15::28) with Microsoft SMTP Server (version=TLS1_2,
+ bh=lUS8/hzdI2bLakxsX4eraydP/gCVYGt1jijU0nshQWk=;
+ b=Vfe31iAYGh3R5qzX3EJs3Es0yGgin/zujM97KIyfIG4lUpSzRtIT3Rn3MIyOvBZrc2AYw+L1RilPYVrUJhPLuiy01v9oKGFQKdrhWL5CFu30oXFiGK9tV2QvmkGPN8RfPO4f+d4VaDhwDvSmBcyGdd92qghLIkOCrzJkOVQObLlviz1KEodGVPGTMNnT2U7SWGRxxUNamdjF1t4iaJ6RHHMnmLotUXP5ITsi0acARifuyWCMn/zzzhRH3Tk2+niZG9QrCIhLvTApHXxB49HaM4SuoitS/2STdf0maT4FJvU1PceMLPIfOpVyW+saMU+Erwy3/FxwS1fteMofxV3EQw==
+Received: from BN8PR04CA0025.namprd04.prod.outlook.com (2603:10b6:408:70::38)
+ by CY4PR12MB1750.namprd12.prod.outlook.com (2603:10b6:903:11c::21)
+ with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4087.26; Sun, 2 May
+ 2021 22:34:19 +0000
+Received: from BN8NAM11FT054.eop-nam11.prod.protection.outlook.com
+ (2603:10b6:408:70:cafe::c1) by BN8PR04CA0025.outlook.office365.com
+ (2603:10b6:408:70::38) with Microsoft SMTP Server (version=TLS1_2,
  cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4087.27 via Frontend
- Transport; Sun, 2 May 2021 21:23:33 +0000
+ Transport; Sun, 2 May 2021 22:34:19 +0000
 X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 216.228.112.34)
  smtp.mailfrom=nvidia.com; raithlin.com; dkim=none (message not signed)
  header.d=none;raithlin.com; dmarc=pass action=none header.from=nvidia.com;
@@ -79,53 +81,54 @@ Received-SPF: Pass (protection.outlook.com: domain of nvidia.com designates
  216.228.112.34 as permitted sender) receiver=protection.outlook.com;
  client-ip=216.228.112.34; helo=mail.nvidia.com;
 Received: from mail.nvidia.com (216.228.112.34) by
- CO1NAM11FT042.mail.protection.outlook.com (10.13.174.250) with Microsoft SMTP
+ BN8NAM11FT054.mail.protection.outlook.com (10.13.177.102) with Microsoft SMTP
  Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id
- 15.20.4087.27 via Frontend Transport; Sun, 2 May 2021 21:23:32 +0000
+ 15.20.4087.27 via Frontend Transport; Sun, 2 May 2021 22:34:18 +0000
 Received: from [10.2.50.162] (172.20.145.6) by HQMAIL107.nvidia.com
  (172.20.187.13) with Microsoft SMTP Server (TLS) id 15.0.1497.2; Sun, 2 May
- 2021 21:23:32 +0000
-Subject: Re: [PATCH 05/16] dma-mapping: Introduce dma_map_sg_p2pdma()
+ 2021 22:34:18 +0000
+Subject: Re: [PATCH 06/16] lib/scatterlist: Add flag for indicating P2PDMA
+ segments in an SGL
 To: Logan Gunthorpe <logang@deltatee.com>, <linux-kernel@vger.kernel.org>,
  <linux-nvme@lists.infradead.org>, <linux-block@vger.kernel.org>,
  <linux-pci@vger.kernel.org>, <linux-mm@kvack.org>,
  <iommu@lists.linux-foundation.org>
 References: <20210408170123.8788-1-logang@deltatee.com>
- <20210408170123.8788-6-logang@deltatee.com>
+ <20210408170123.8788-7-logang@deltatee.com>
 From: John Hubbard <jhubbard@nvidia.com>
-Message-ID: <c050bcae-e223-bb41-021f-b1fda572647b@nvidia.com>
-Date: Sun, 2 May 2021 14:23:31 -0700
+Message-ID: <4a1f06c2-a120-56f5-37a7-e4625a5f275c@nvidia.com>
+Date: Sun, 2 May 2021 15:34:17 -0700
 User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
  Thunderbird/78.10.0
 MIME-Version: 1.0
-In-Reply-To: <20210408170123.8788-6-logang@deltatee.com>
+In-Reply-To: <20210408170123.8788-7-logang@deltatee.com>
 Content-Language: en-US
 X-Originating-IP: [172.20.145.6]
-X-ClientProxiedBy: HQMAIL111.nvidia.com (172.20.187.18) To
+X-ClientProxiedBy: HQMAIL105.nvidia.com (172.20.187.12) To
  HQMAIL107.nvidia.com (172.20.187.13)
 X-EOPAttributedMessage: 0
 X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: d18f1d0a-90ab-4e66-ff3f-08d90db089ec
-X-MS-TrafficTypeDiagnostic: BN9PR12MB5132:
-X-Microsoft-Antispam-PRVS: <BN9PR12MB513257D878BB2B784D36A1CFA85C9@BN9PR12MB5132.namprd12.prod.outlook.com>
-X-MS-Oob-TLC-OOBClassifiers: OLM:3513;
+X-MS-Office365-Filtering-Correlation-Id: 7eee2504-ae3b-44d4-3dc8-08d90dba6cce
+X-MS-TrafficTypeDiagnostic: CY4PR12MB1750:
+X-Microsoft-Antispam-PRVS: <CY4PR12MB17505301FADB6367B8B6F6F4A85C9@CY4PR12MB1750.namprd12.prod.outlook.com>
+X-MS-Oob-TLC-OOBClassifiers: OLM:6430;
 X-MS-Exchange-SenderADCheck: 1
 X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: hpoK98tsJ+Bisp80khBTiZMoA3850+t8Z1L3UQl5d0mtze9Vd7leYkiuhbt/Xo4QXA7RDp3kD1/CubzarFmsFmBI7sHWSobvDw6Wny3QGFfF3oDKmhVOkTnSQAQDU3BaO9mjtUQjHjHk86yA9OVF/FDcxPl+GvkJkkPhEcdArtbh9uG/PyYhe0yPvH4KnmYFl8WmJLn1mXxfDxfcf2eOdgR+ES3f+WH6g4rWFve64D1e1T/iW4oY0Di5y3XIV9DufXOD4AB6Iz+aH7XhTJLrdaKfYsYV1LonpHZAvn8C0p/wB8srCtPgJQE1z76pZJFlV7psGI5WvqReIrexDSWIGJNGqEV0BXF4OhEt0lKny/SdA7T+YdkTXbU5iPvXYkK2QN6rmNekiTRTJU0EUA0bJ1g+INFW9VSLD4MudzpvXOQGTIgby8RKNwyaPnBKU/HoiuU7Qh0VkMZFFucSwM9Lpp3r2vmeMqwR5ALBHe70etbfSsqsp4D58LDhS/iIaVOqMoMbU09yKApRy1fDk7EpKPg9+Su+/UhwjjIyIqIEgYqu61KXzBiIDydBQTzCakCgaQbTMTIhWVEhb/AOElvnAZbUXvw1Bs8l19B3KquTXURwAcI3UQ+v4VF2PeojKyGR+gEAJDHXFLQMlMiM4g5QQ0eo8Wu6paEiPGAoFnixEDclNnSDtYy98QpcvcLlhSjdmh5lctEGYre1Gvw1MTNLzQ==
+X-Microsoft-Antispam-Message-Info: dE4ZRi7+LyKRpCJxgyNwRThjOb79h03jQuxx/SBux5QEa3QdE8X6JsMJeE5GED/svyNNKvSssukE6HibHTxAngZh/jO0K9MmPLyIjMqYpGcG9cWAMuwg/UDUKrIypeIDCzyAY/JfKbRYdvdvFCwzkX5Mmujgc1e4Y5/1Zx3hiph1qCSXRnfeoneWOAkRQRZP+l6X4i56cZqI2KkclBGybOafPGhZri0YeIfFYAgKXfco2O6WmktW2VDCV2nCMbjAL9zKuiFNY52NUBgKJCBcYj7xm9gShNpdk+3i5WU7uHEF4OFoGFlYSFx1BDwlz6rEX2nQECHy/CMxdJDmlz2/mqiAwp+14D3dSb4mMFNksgKB8oxer21ZthGM1iOS9DiDvqm2268PTfi88t2lk43JWj7aLss5ndzMd0pP566FJ+A76voYkFrhspE8tIgt419jdFiqtxO5j4rnMn8/FpfuR9JIdOqNiphyCwAO35wtcZiF9kk5kh3Sk6BTYOAxuYsXw6F3eYkS+FmA+cV2GKO6fjB+avU+KkcmZH3tuPl34QXGjEhwzcVklMZeD84pWY1Gof3mgC1szIa7UNAYCfF506EskXeXUDISIkL+KwYLt/Sk36+oV98xa1WpA15sLx4aGVchZt8WlCAf3no0OpGJ4yZSWfnFrpFkN+bQkiEppxwUquGsOjY67NOcQ6ZylymLEAYCSEwFsoengXDXH+bU1g==
 X-Forefront-Antispam-Report: CIP:216.228.112.34; CTRY:US; LANG:en; SCL:1; SRV:;
  IPV:NLI; SFV:NSPM; H:mail.nvidia.com; PTR:schybrid03.nvidia.com; CAT:NONE;
- SFS:(4636009)(346002)(39860400002)(376002)(136003)(396003)(46966006)(36840700001)(70586007)(53546011)(31686004)(356005)(70206006)(7636003)(2906002)(82740400003)(5660300002)(4326008)(8936002)(83380400001)(82310400003)(478600001)(8676002)(54906003)(16526019)(36860700001)(186003)(36756003)(47076005)(7416002)(316002)(26005)(36906005)(31696002)(426003)(86362001)(16576012)(110136005)(336012)(2616005)(43740500002)(2101003);
+ SFS:(4636009)(376002)(396003)(39860400002)(346002)(136003)(36840700001)(46966006)(4326008)(31686004)(8676002)(16576012)(5660300002)(110136005)(86362001)(83380400001)(26005)(36906005)(316002)(16526019)(47076005)(8936002)(7636003)(82740400003)(2906002)(36756003)(54906003)(70586007)(53546011)(70206006)(2616005)(356005)(336012)(82310400003)(7416002)(478600001)(31696002)(36860700001)(186003)(426003)(43740500002)(2101003);
  DIR:OUT; SFP:1101; 
 X-OriginatorOrg: Nvidia.com
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 02 May 2021 21:23:32.8082 (UTC)
-X-MS-Exchange-CrossTenant-Network-Message-Id: d18f1d0a-90ab-4e66-ff3f-08d90db089ec
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 02 May 2021 22:34:18.8330 (UTC)
+X-MS-Exchange-CrossTenant-Network-Message-Id: 7eee2504-ae3b-44d4-3dc8-08d90dba6cce
 X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
 X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=43083d15-7273-40c1-b7db-39efd9ccc17a; Ip=[216.228.112.34];
  Helo=[mail.nvidia.com]
-X-MS-Exchange-CrossTenant-AuthSource: CO1NAM11FT042.eop-nam11.prod.protection.outlook.com
+X-MS-Exchange-CrossTenant-AuthSource: BN8NAM11FT054.eop-nam11.prod.protection.outlook.com
 X-MS-Exchange-CrossTenant-AuthAs: Anonymous
 X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: BN9PR12MB5132
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: CY4PR12MB1750
 Cc: Minturn Dave B <dave.b.minturn@intel.com>, Ira Weiny <ira.weiny@intel.com>,
  Daniel Vetter <daniel.vetter@ffwll.ch>,
  Dave Hansen <dave.hansen@linux.intel.com>, Robin Murphy <robin.murphy@arm.com>,
@@ -148,218 +151,93 @@ List-Post: <mailto:iommu@lists.linux-foundation.org>
 List-Help: <mailto:iommu-request@lists.linux-foundation.org?subject=help>
 List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
  <mailto:iommu-request@lists.linux-foundation.org?subject=subscribe>
-Content-Transfer-Encoding: 7bit
-Content-Type: text/plain; charset="us-ascii"; Format="flowed"
+Content-Transfer-Encoding: base64
+Content-Type: text/plain; charset="utf-8"; Format="flowed"
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-On 4/8/21 10:01 AM, Logan Gunthorpe wrote:
-> dma_map_sg() either returns a positive number indicating the number
-> of entries mapped or zero indicating that resources were not available
-> to create the mapping. When zero is returned, it is always safe to retry
-> the mapping later once resources have been freed.
-> 
-> Once P2PDMA pages are mixed into the SGL there may be pages that may
-> never be successfully mapped with a given device because that device may
-> not actually be able to access those pages. Thus, multiple error
-> conditions will need to be distinguished to determine weather a retry
-> is safe.
-> 
-> Introduce dma_map_sg_p2pdma[_attrs]() with a different calling
-> convention from dma_map_sg(). The function will return a positive
-> integer on success or a negative errno on failure.
-> 
-> ENOMEM will be used to indicate a resource failure and EREMOTEIO to
-> indicate that a P2PDMA page is not mappable.
-> 
-> The __DMA_ATTR_PCI_P2PDMA attribute is introduced to inform the lower
-> level implementations that P2PDMA pages are allowed and to warn if a
-> caller introduces them into the regular dma_map_sg() interface.
-> 
-> Signed-off-by: Logan Gunthorpe <logang@deltatee.com>
-> ---
->   include/linux/dma-mapping.h | 15 +++++++++++
->   kernel/dma/mapping.c        | 52 ++++++++++++++++++++++++++++++++-----
->   2 files changed, 61 insertions(+), 6 deletions(-)
-> 
-> diff --git a/include/linux/dma-mapping.h b/include/linux/dma-mapping.h
-> index 2a984cb4d1e0..50b8f586cf59 100644
-> --- a/include/linux/dma-mapping.h
-> +++ b/include/linux/dma-mapping.h
-> @@ -60,6 +60,12 @@
->    * at least read-only at lesser-privileged levels).
->    */
->   #define DMA_ATTR_PRIVILEGED		(1UL << 9)
-> +/*
-> + * __DMA_ATTR_PCI_P2PDMA: This should not be used directly, use
-> + * dma_map_sg_p2pdma() instead. Used internally to indicate that the
-> + * caller is using the dma_map_sg_p2pdma() interface.
-> + */
-> +#define __DMA_ATTR_PCI_P2PDMA		(1UL << 10)
->
-
-As mentioned near the top of this file,
-Documentation/core-api/dma-attributes.rst also needs to be updated, for
-this new item.
-
-
->   /*
->    * A dma_addr_t can hold any valid DMA or bus address for the platform.  It can
-> @@ -107,6 +113,8 @@ void dma_unmap_page_attrs(struct device *dev, dma_addr_t addr, size_t size,
->   		enum dma_data_direction dir, unsigned long attrs);
->   int dma_map_sg_attrs(struct device *dev, struct scatterlist *sg, int nents,
->   		enum dma_data_direction dir, unsigned long attrs);
-> +int dma_map_sg_p2pdma_attrs(struct device *dev, struct scatterlist *sg,
-> +		int nents, enum dma_data_direction dir, unsigned long attrs);
->   void dma_unmap_sg_attrs(struct device *dev, struct scatterlist *sg,
->   				      int nents, enum dma_data_direction dir,
->   				      unsigned long attrs);
-> @@ -160,6 +168,12 @@ static inline int dma_map_sg_attrs(struct device *dev, struct scatterlist *sg,
->   {
->   	return 0;
->   }
-> +static inline int dma_map_sg_p2pdma_attrs(struct device *dev,
-> +		struct scatterlist *sg, int nents, enum dma_data_direction dir,
-> +		unsigned long attrs)
-> +{
-> +	return 0;
-> +}
->   static inline void dma_unmap_sg_attrs(struct device *dev,
->   		struct scatterlist *sg, int nents, enum dma_data_direction dir,
->   		unsigned long attrs)
-> @@ -392,6 +406,7 @@ static inline void dma_sync_sgtable_for_device(struct device *dev,
->   #define dma_map_single(d, a, s, r) dma_map_single_attrs(d, a, s, r, 0)
->   #define dma_unmap_single(d, a, s, r) dma_unmap_single_attrs(d, a, s, r, 0)
->   #define dma_map_sg(d, s, n, r) dma_map_sg_attrs(d, s, n, r, 0)
-> +#define dma_map_sg_p2pdma(d, s, n, r) dma_map_sg_p2pdma_attrs(d, s, n, r, 0)
-
-This hunk is fine, of course.
-
-But, about pre-existing issues: note to self, or to anyone: send a patch to turn
-these into inline functions. The macro redirection here is not adding value, but
-it does make things just a little bit worse.
-
-
->   #define dma_unmap_sg(d, s, n, r) dma_unmap_sg_attrs(d, s, n, r, 0)
->   #define dma_map_page(d, p, o, s, r) dma_map_page_attrs(d, p, o, s, r, 0)
->   #define dma_unmap_page(d, a, s, r) dma_unmap_page_attrs(d, a, s, r, 0)
-> diff --git a/kernel/dma/mapping.c b/kernel/dma/mapping.c
-> index b6a633679933..923089c4267b 100644
-> --- a/kernel/dma/mapping.c
-> +++ b/kernel/dma/mapping.c
-> @@ -177,12 +177,8 @@ void dma_unmap_page_attrs(struct device *dev, dma_addr_t addr, size_t size,
->   }
->   EXPORT_SYMBOL(dma_unmap_page_attrs);
->   
-> -/*
-> - * dma_maps_sg_attrs returns 0 on error and > 0 on success.
-> - * It should never return a value < 0.
-> - */
-
-It would be better to leave the comment in place, given the non-standard
-return values. However, looking around here, it would be better if we go
-with the standard -ERRNO for error, and >0 for sucess.
-
-There are pre-existing BUG_ON() and WARN_ON_ONCE() items that are partly
-an attempt to compensate for not being able to return proper -ERRNO
-codes. For example, this:
-
-	    BUG_ON(!valid_dma_direction(dir));
-
-...arguably should be more like this:
-
-         if(WARN_ON_ONCE(!valid_dma_direction(dir)))
-                 return -EINVAL;
-
-
-> -int dma_map_sg_attrs(struct device *dev, struct scatterlist *sg, int nents,
-> -		enum dma_data_direction dir, unsigned long attrs)
-> +static int __dma_map_sg_attrs(struct device *dev, struct scatterlist *sg,
-> +		int nents, enum dma_data_direction dir, unsigned long attrs)
->   {
->   	const struct dma_map_ops *ops = get_dma_ops(dev);
->   	int ents;
-> @@ -197,6 +193,20 @@ int dma_map_sg_attrs(struct device *dev, struct scatterlist *sg, int nents,
->   		ents = dma_direct_map_sg(dev, sg, nents, dir, attrs);
->   	else
->   		ents = ops->map_sg(dev, sg, nents, dir, attrs);
-> +
-> +	return ents;
-> +}
-> +
-> +/*
-> + * dma_maps_sg_attrs returns 0 on error and > 0 on success.
-> + * It should never return a value < 0.
-> + */
-> +int dma_map_sg_attrs(struct device *dev, struct scatterlist *sg, int nents,
-> +		enum dma_data_direction dir, unsigned long attrs)
-> +{
-> +	int ents;
-
-Pre-existing note, feel free to ignore: the ents and nents in the same
-routines together, are way too close to the each other in naming. Maybe
-using "requested_nents", or "nents_arg", for the incoming value, would
-help.
-
-> +
-> +	ents = __dma_map_sg_attrs(dev, sg, nents, dir, attrs);
->   	BUG_ON(ents < 0);
->   	debug_dma_map_sg(dev, sg, nents, ents, dir);
->   
-> @@ -204,6 +214,36 @@ int dma_map_sg_attrs(struct device *dev, struct scatterlist *sg, int nents,
->   }
->   EXPORT_SYMBOL(dma_map_sg_attrs);
->   
-> +/*
-> + * like dma_map_sg_attrs, but returns a negative errno on error (and > 0
-> + * on success). This function must be used if PCI P2PDMA pages might
-> + * be in the scatterlist.
-
-Let's turn this into a kernel doc comment block, seeing as how it clearly
-wants to be--you're almost there already. You've even reinvented @Return,
-below. :)
-
-> + *
-> + * On error this function may return:
-> + *    -ENOMEM indicating that there was not enough resources available and
-> + *      the transfer may be retried later
-> + *    -EREMOTEIO indicating that P2PDMA pages were included but cannot
-> + *      be mapped by the specified device, retries will always fail
-> + *
-> + * The scatterlist should be unmapped with the regular dma_unmap_sg[_attrs]().
-
-How about:
-
-"The scatterlist should be unmapped via dma_unmap_sg[_attrs]()."
-
-> + */
-> +int dma_map_sg_p2pdma_attrs(struct device *dev, struct scatterlist *sg,
-> +		int nents, enum dma_data_direction dir, unsigned long attrs)
-> +{
-> +	int ents;
-> +
-> +	ents = __dma_map_sg_attrs(dev, sg, nents, dir,
-> +				  attrs | __DMA_ATTR_PCI_P2PDMA);
-> +	if (!ents)
-> +		ents = -ENOMEM;
-> +
-> +	if (ents > 0)
-> +		debug_dma_map_sg(dev, sg, nents, ents, dir);
-> +
-> +	return ents;
-> +}
-> +EXPORT_SYMBOL_GPL(dma_map_sg_p2pdma_attrs);
-> +
->   void dma_unmap_sg_attrs(struct device *dev, struct scatterlist *sg,
->   				      int nents, enum dma_data_direction dir,
->   				      unsigned long attrs)
-> 
-
-thanks,
--- 
-John Hubbard
-NVIDIA
-_______________________________________________
-iommu mailing list
-iommu@lists.linux-foundation.org
-https://lists.linuxfoundation.org/mailman/listinfo/iommu
+T24gNC84LzIxIDEwOjAxIEFNLCBMb2dhbiBHdW50aG9ycGUgd3JvdGU6Cj4gTWFrZSB1c2Ugb2Yg
+dGhlIHRoaXJkIGZyZWUgTFNCIGluIHNjYXR0ZXJsaXN0J3MgcGFnZV9saW5rIG9uIDY0Yml0IHN5
+c3RlbXMuCj4gCj4gVGhlIGV4dHJhIGJpdCB3aWxsIGJlIHVzZWQgYnkgZG1hX1t1bl1tYXBfc2df
+cDJwZG1hKCkgdG8gZGV0ZXJtaW5lIHdoZW4gYQo+IGdpdmVuIFNHTCBzZWdtZW50cyBkbWFfYWRk
+cmVzcyBwb2ludHMgdG8gYSBQQ0kgYnVzIGFkZHJlc3MuCj4gZG1hX3VubWFwX3NnX3AycGRtYSgp
+IHdpbGwgbmVlZCB0byBwZXJmb3JtIGRpZmZlcmVudCBjbGVhbnVwIHdoZW4gYQo+IHNlZ21lbnQg
+aXMgbWFya2VkIGFzIFAyUERNQS4KPiAKPiBVc2luZyB0aGlzIGJpdCByZXF1aXJlcyBhZGRpbmcg
+YW4gYWRkaXRpb25hbCBkZXBlbmRlbmN5IG9uIENPTkZJR182NEJJVCB0bwo+IENPTkZJR19QQ0lf
+UDJQRE1BLiBUaGlzIHNob3VsZCBiZSBhY2NlcHRhYmxlIGFzIHRoZSBtYWpvcml0eSBvZiBQMlBE
+TUEKPiB1c2UgY2FzZXMgYXJlIHJlc3RyaWN0ZWQgdG8gbmV3ZXIgcm9vdCBjb21wbGV4ZXMgYW5k
+IHJvdWdobHkgcmVxdWlyZSB0aGUKPiBleHRyYSBhZGRyZXNzIHNwYWNlIGZvciBtZW1vcnkgQkFS
+cyB1c2VkIGluIHRoZSB0cmFuc2FjdGlvbnMuCgpUb3RhbGx5IGFncmVlIHdpdGggdGhlIENPTkZJ
+R182NEJJVCBjYWxsLgoKQWxzbywgSSBoYXZlIGZhaWxlZCB0byBmaW5kIGFueXRoaW5nIHdyb25n
+IHdpdGggdGhpcyBwYXRjaC4gOikKClJldmlld2VkLWJ5OiBKb2huIEh1YmJhcmQgPGpodWJiYXJk
+QG52aWRpYS5jb20+Cgp0aGFua3MsCi0tIApKb2huIEh1YmJhcmQKTlZJRElBCgo+IAo+IFNpZ25l
+ZC1vZmYtYnk6IExvZ2FuIEd1bnRob3JwZSA8bG9nYW5nQGRlbHRhdGVlLmNvbT4KPiAtLS0KPiAg
+IGRyaXZlcnMvcGNpL0tjb25maWcgICAgICAgICB8ICAyICstCj4gICBpbmNsdWRlL2xpbnV4L3Nj
+YXR0ZXJsaXN0LmggfCA0OSArKysrKysrKysrKysrKysrKysrKysrKysrKysrKysrKysrLS0tCj4g
+ICAyIGZpbGVzIGNoYW5nZWQsIDQ2IGluc2VydGlvbnMoKyksIDUgZGVsZXRpb25zKC0pCj4gCj4g
+ZGlmZiAtLWdpdCBhL2RyaXZlcnMvcGNpL0tjb25maWcgYi9kcml2ZXJzL3BjaS9LY29uZmlnCj4g
+aW5kZXggMGM0NzNkNzVlNjI1Li45MGI0YmRkYjMzMDAgMTAwNjQ0Cj4gLS0tIGEvZHJpdmVycy9w
+Y2kvS2NvbmZpZwo+ICsrKyBiL2RyaXZlcnMvcGNpL0tjb25maWcKPiBAQCAtMTYzLDcgKzE2Myw3
+IEBAIGNvbmZpZyBQQ0lfUEFTSUQKPiAgIAo+ICAgY29uZmlnIFBDSV9QMlBETUEKPiAgIAlib29s
+ICJQQ0kgcGVlci10by1wZWVyIHRyYW5zZmVyIHN1cHBvcnQiCj4gLQlkZXBlbmRzIG9uIFpPTkVf
+REVWSUNFCj4gKwlkZXBlbmRzIG9uIFpPTkVfREVWSUNFICYmIDY0QklUCj4gICAJc2VsZWN0IEdF
+TkVSSUNfQUxMT0NBVE9SCj4gICAJaGVscAo+ICAgCSAgRW5hYmxl0ZUgZHJpdmVycyB0byBkbyBQ
+Q0kgcGVlci10by1wZWVyIHRyYW5zYWN0aW9ucyB0byBhbmQgZnJvbQo+IGRpZmYgLS1naXQgYS9p
+bmNsdWRlL2xpbnV4L3NjYXR0ZXJsaXN0LmggYi9pbmNsdWRlL2xpbnV4L3NjYXR0ZXJsaXN0LmgK
+PiBpbmRleCA2ZjcwNTcyYjI5MzguLjU1MjVkM2ViZjM2ZiAxMDA2NDQKPiAtLS0gYS9pbmNsdWRl
+L2xpbnV4L3NjYXR0ZXJsaXN0LmgKPiArKysgYi9pbmNsdWRlL2xpbnV4L3NjYXR0ZXJsaXN0LmgK
+PiBAQCAtNTgsNiArNTgsMjEgQEAgc3RydWN0IHNnX3RhYmxlIHsKPiAgICNkZWZpbmUgU0dfQ0hB
+SU4JMHgwMVVMCj4gICAjZGVmaW5lIFNHX0VORAkJMHgwMlVMCj4gICAKPiArLyoKPiArICogYml0
+IDIgaXMgdGhlIHRoaXJkIGZyZWUgYml0IGluIHRoZSBwYWdlX2xpbmsgb24gNjRiaXQgc3lzdGVt
+cyB3aGljaAo+ICsgKiBpcyB1c2VkIGJ5IGRtYV91bm1hcF9zZygpIHRvIGRldGVybWluZSBpZiB0
+aGUgZG1hX2FkZHJlc3MgaXMgYSBQQ0kKPiArICogYnVzIGFkZHJlc3Mgd2hlbiBkb2luZyBQMlBE
+TUEuCj4gKyAqIE5vdGU6IENPTkZJR19QQ0lfUDJQRE1BIGRlcGVuZHMgb24gQ09ORklHXzY0QklU
+IGJlY2F1c2Ugb2YgdGhpcy4KPiArICovCj4gKwo+ICsjaWZkZWYgQ09ORklHX1BDSV9QMlBETUEK
+PiArI2RlZmluZSBTR19QQ0lfUDJQRE1BCTB4MDRVTAo+ICsjZWxzZQo+ICsjZGVmaW5lIFNHX1BD
+SV9QMlBETUEJMHgwMFVMCj4gKyNlbmRpZgo+ICsKPiArI2RlZmluZSBTR19QQUdFX0xJTktfTUFT
+SyAoU0dfQ0hBSU4gfCBTR19FTkQgfCBTR19QQ0lfUDJQRE1BKQo+ICsKPiAgIC8qCj4gICAgKiBX
+ZSBvdmVybG9hZCB0aGUgTFNCIG9mIHRoZSBwYWdlIHBvaW50ZXIgdG8gaW5kaWNhdGUgd2hldGhl
+ciBpdCdzCj4gICAgKiBhIHZhbGlkIHNnIGVudHJ5LCBvciB3aGV0aGVyIGl0IHBvaW50cyB0byB0
+aGUgc3RhcnQgb2YgYSBuZXcgc2NhdHRlcmxpc3QuCj4gQEAgLTY1LDggKzgwLDkgQEAgc3RydWN0
+IHNnX3RhYmxlIHsKPiAgICAqLwo+ICAgI2RlZmluZSBzZ19pc19jaGFpbihzZykJCSgoc2cpLT5w
+YWdlX2xpbmsgJiBTR19DSEFJTikKPiAgICNkZWZpbmUgc2dfaXNfbGFzdChzZykJCSgoc2cpLT5w
+YWdlX2xpbmsgJiBTR19FTkQpCj4gKyNkZWZpbmUgc2dfaXNfcGNpX3AycGRtYShzZykJKChzZykt
+PnBhZ2VfbGluayAmIFNHX1BDSV9QMlBETUEpCj4gICAjZGVmaW5lIHNnX2NoYWluX3B0cihzZykJ
+XAo+IC0JKChzdHJ1Y3Qgc2NhdHRlcmxpc3QgKikgKChzZyktPnBhZ2VfbGluayAmIH4oU0dfQ0hB
+SU4gfCBTR19FTkQpKSkKPiArCSgoc3RydWN0IHNjYXR0ZXJsaXN0ICopICgoc2cpLT5wYWdlX2xp
+bmsgJiB+U0dfUEFHRV9MSU5LX01BU0spKQo+ICAgCj4gICAvKioKPiAgICAqIHNnX2Fzc2lnbl9w
+YWdlIC0gQXNzaWduIGEgZ2l2ZW4gcGFnZSB0byBhbiBTRyBlbnRyeQo+IEBAIC04MCwxMyArOTYs
+MTMgQEAgc3RydWN0IHNnX3RhYmxlIHsKPiAgICAqKi8KPiAgIHN0YXRpYyBpbmxpbmUgdm9pZCBz
+Z19hc3NpZ25fcGFnZShzdHJ1Y3Qgc2NhdHRlcmxpc3QgKnNnLCBzdHJ1Y3QgcGFnZSAqcGFnZSkK
+PiAgIHsKPiAtCXVuc2lnbmVkIGxvbmcgcGFnZV9saW5rID0gc2ctPnBhZ2VfbGluayAmIChTR19D
+SEFJTiB8IFNHX0VORCk7Cj4gKwl1bnNpZ25lZCBsb25nIHBhZ2VfbGluayA9IHNnLT5wYWdlX2xp
+bmsgJiBTR19QQUdFX0xJTktfTUFTSzsKPiAgIAo+ICAgCS8qCj4gICAJICogSW4gb3JkZXIgZm9y
+IHRoZSBsb3cgYml0IHN0ZWFsaW5nIGFwcHJvYWNoIHRvIHdvcmssIHBhZ2VzCj4gICAJICogbXVz
+dCBiZSBhbGlnbmVkIGF0IGEgMzItYml0IGJvdW5kYXJ5IGFzIGEgbWluaW11bS4KPiAgIAkgKi8K
+PiAtCUJVR19PTigodW5zaWduZWQgbG9uZykgcGFnZSAmIChTR19DSEFJTiB8IFNHX0VORCkpOwo+
+ICsJQlVHX09OKCh1bnNpZ25lZCBsb25nKSBwYWdlICYgU0dfUEFHRV9MSU5LX01BU0spOwo+ICAg
+I2lmZGVmIENPTkZJR19ERUJVR19TRwo+ICAgCUJVR19PTihzZ19pc19jaGFpbihzZykpOwo+ICAg
+I2VuZGlmCj4gQEAgLTEyMCw3ICsxMzYsNyBAQCBzdGF0aWMgaW5saW5lIHN0cnVjdCBwYWdlICpz
+Z19wYWdlKHN0cnVjdCBzY2F0dGVybGlzdCAqc2cpCj4gICAjaWZkZWYgQ09ORklHX0RFQlVHX1NH
+Cj4gICAJQlVHX09OKHNnX2lzX2NoYWluKHNnKSk7Cj4gICAjZW5kaWYKPiAtCXJldHVybiAoc3Ry
+dWN0IHBhZ2UgKikoKHNnKS0+cGFnZV9saW5rICYgfihTR19DSEFJTiB8IFNHX0VORCkpOwo+ICsJ
+cmV0dXJuIChzdHJ1Y3QgcGFnZSAqKSgoc2cpLT5wYWdlX2xpbmsgJiB+U0dfUEFHRV9MSU5LX01B
+U0spOwo+ICAgfQo+ICAgCj4gICAvKioKPiBAQCAtMjIyLDYgKzIzOCwzMSBAQCBzdGF0aWMgaW5s
+aW5lIHZvaWQgc2dfdW5tYXJrX2VuZChzdHJ1Y3Qgc2NhdHRlcmxpc3QgKnNnKQo+ICAgCXNnLT5w
+YWdlX2xpbmsgJj0gflNHX0VORDsKPiAgIH0KPiAgIAo+ICsvKioKPiArICogc2dfbWFya19wY2lf
+cDJwZG1hIC0gTWFyayB0aGUgc2NhdHRlcmxpc3QgZW50cnkgZm9yIFBDSSBwMnBkbWEKPiArICog
+QHNnOgkJIFNHIGVudHJ5U2NhdHRlcmxpc3QKPiArICoKPiArICogRGVzY3JpcHRpb246Cj4gKyAq
+ICAgTWFya3MgdGhlIHBhc3NlZCBpbiBzZyBlbnRyeSB0byBpbmRpY2F0ZSB0aGF0IHRoZSBkbWFf
+YWRkcmVzcyBpcwo+ICsgKiAgIGEgUENJIGJ1cyBhZGRyZXNzLgo+ICsgKiovCj4gK3N0YXRpYyBp
+bmxpbmUgdm9pZCBzZ19tYXJrX3BjaV9wMnBkbWEoc3RydWN0IHNjYXR0ZXJsaXN0ICpzZykKPiAr
+ewo+ICsJc2ctPnBhZ2VfbGluayB8PSBTR19QQ0lfUDJQRE1BOwo+ICt9Cj4gKwo+ICsvKioKPiAr
+ICogc2dfdW5tYXJrX3BjaV9wMnBkbWEgLSBVbm1hcmsgdGhlIHNjYXR0ZXJsaXN0IGVudHJ5IGZv
+ciBQQ0kgcDJwZG1hCj4gKyAqIEBzZzoJCSBTRyBlbnRyeVNjYXR0ZXJsaXN0Cj4gKyAqCj4gKyAq
+IERlc2NyaXB0aW9uOgo+ICsgKiAgIENsZWFycyB0aGUgUENJIFAyUERNQSBtYXJrCj4gKyAqKi8K
+PiArc3RhdGljIGlubGluZSB2b2lkIHNnX3VubWFya19wY2lfcDJwZG1hKHN0cnVjdCBzY2F0dGVy
+bGlzdCAqc2cpCj4gK3sKPiArCXNnLT5wYWdlX2xpbmsgJj0gflNHX1BDSV9QMlBETUE7Cj4gK30K
+PiArCj4gICAvKioKPiAgICAqIHNnX3BoeXMgLSBSZXR1cm4gcGh5c2ljYWwgYWRkcmVzcyBvZiBh
+biBzZyBlbnRyeQo+ICAgICogQHNnOgkgICAgIFNHIGVudHJ5Cj4gCl9fX19fX19fX19fX19fX19f
+X19fX19fX19fX19fX19fX19fX19fX19fX19fX19fCmlvbW11IG1haWxpbmcgbGlzdAppb21tdUBs
+aXN0cy5saW51eC1mb3VuZGF0aW9uLm9yZwpodHRwczovL2xpc3RzLmxpbnV4Zm91bmRhdGlvbi5v
+cmcvbWFpbG1hbi9saXN0aW5mby9pb21tdQ==
