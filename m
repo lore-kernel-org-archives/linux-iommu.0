@@ -5,75 +5,75 @@ X-Spam-Level:
 X-Spam-Status: No, score=-15.1 required=3.0 tests=BAYES_00,DKIM_INVALID,
 	DKIM_SIGNED,HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_CR_TRAILER,INCLUDES_PATCH,
 	MAILING_LIST_MULTI,NICE_REPLY_A,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,
-	USER_AGENT_SANE_1 autolearn=unavailable autolearn_force=no version=3.4.0
+	USER_AGENT_SANE_1 autolearn=ham autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6305EC43460
-	for <iommu@archiver.kernel.org>; Mon,  3 May 2021 17:15:29 +0000 (UTC)
-Received: from smtp1.osuosl.org (smtp1.osuosl.org [140.211.166.138])
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 76E1BC433B4
+	for <iommu@archiver.kernel.org>; Mon,  3 May 2021 17:18:05 +0000 (UTC)
+Received: from smtp3.osuosl.org (smtp3.osuosl.org [140.211.166.136])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id D075961075
-	for <iommu@archiver.kernel.org>; Mon,  3 May 2021 17:15:28 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org D075961075
+	by mail.kernel.org (Postfix) with ESMTPS id E8C6061155
+	for <iommu@archiver.kernel.org>; Mon,  3 May 2021 17:18:04 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org E8C6061155
 Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=deltatee.com
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by smtp1.osuosl.org (Postfix) with ESMTP id 6AF3084ABE;
-	Mon,  3 May 2021 17:15:28 +0000 (UTC)
+	by smtp3.osuosl.org (Postfix) with ESMTP id 7AFDA60692;
+	Mon,  3 May 2021 17:18:04 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from smtp1.osuosl.org ([127.0.0.1])
-	by localhost (smtp1.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id i2T1HkX5-I5E; Mon,  3 May 2021 17:15:27 +0000 (UTC)
-Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by smtp1.osuosl.org (Postfix) with ESMTP id 2A1F084A85;
-	Mon,  3 May 2021 17:15:27 +0000 (UTC)
+Received: from smtp3.osuosl.org ([127.0.0.1])
+	by localhost (smtp3.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+	with ESMTP id AZUghvZD8SqM; Mon,  3 May 2021 17:18:03 +0000 (UTC)
+Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [IPv6:2605:bc80:3010:104::8cd3:938])
+	by smtp3.osuosl.org (Postfix) with ESMTP id A992F60693;
+	Mon,  3 May 2021 17:18:02 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 0E6EDC000E;
-	Mon,  3 May 2021 17:15:27 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 7E3FFC000E;
+	Mon,  3 May 2021 17:18:02 +0000 (UTC)
 Received: from smtp4.osuosl.org (smtp4.osuosl.org [140.211.166.137])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 6049AC0001
- for <iommu@lists.linux-foundation.org>; Mon,  3 May 2021 17:15:26 +0000 (UTC)
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 6DBB4C0001
+ for <iommu@lists.linux-foundation.org>; Mon,  3 May 2021 17:18:01 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by smtp4.osuosl.org (Postfix) with ESMTP id 514AB40EBB
- for <iommu@lists.linux-foundation.org>; Mon,  3 May 2021 17:15:26 +0000 (UTC)
+ by smtp4.osuosl.org (Postfix) with ESMTP id 4695C40EB0
+ for <iommu@lists.linux-foundation.org>; Mon,  3 May 2021 17:18:01 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
 Authentication-Results: smtp4.osuosl.org (amavisd-new);
  dkim=pass (2048-bit key) header.d=deltatee.com
 Received: from smtp4.osuosl.org ([127.0.0.1])
  by localhost (smtp4.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id R3Xx66cejCeU for <iommu@lists.linux-foundation.org>;
- Mon,  3 May 2021 17:15:25 +0000 (UTC)
+ with ESMTP id BS6pLOs8emst for <iommu@lists.linux-foundation.org>;
+ Mon,  3 May 2021 17:18:00 +0000 (UTC)
 X-Greylist: domain auto-whitelisted by SQLgrey-1.8.0
 Received: from ale.deltatee.com (ale.deltatee.com [204.191.154.188])
- by smtp4.osuosl.org (Postfix) with ESMTPS id EDB1340EB0
- for <iommu@lists.linux-foundation.org>; Mon,  3 May 2021 17:15:24 +0000 (UTC)
+ by smtp4.osuosl.org (Postfix) with ESMTPS id 0230E40EA4
+ for <iommu@lists.linux-foundation.org>; Mon,  3 May 2021 17:17:59 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
  d=deltatee.com; s=20200525; h=Subject:In-Reply-To:MIME-Version:Date:
  Message-ID:From:References:Cc:To:content-disposition;
- bh=/Q5g8C9jkIWWM3OWLSzMquUiscL+RFj92ybUcevP8nc=; b=BgMW37LpVUA/Vb1Ae2ZH6DSYZA
- RZN3oDLotj/Ofj6VlRt6iImh3Q8FFxK+Qz2P6Cz+eplJrws8aa7BtbTce8Axj7WFg+ZPShNb6e7fG
- bQFW8at/t5Aq2KPt6hT0kl8aBtkKUBNm3bZHtqXZP3iMkgMApZwVI/d7kBNL0yAXAuW+8ASnyw4ZB
- kMW9jSvrz8lE1XTCe6dramBWTLYY4MUbmKwFI2FuLAypD1uMxhiTmKUYEGwPRtWOY1+xqdgCn3Sux
- RKlFyaZm+IWzzyVyjy0lA1KvG50ZnVfJg4I4/aI0gYm3e2MM/+dJ7avE0O1mB/alREvUpN2a/g0lo
- vz3npu1g==;
+ bh=SAQ4S+jSIpU03o924OYwfD9SEbxJ72ZyqTFfTksfdhA=; b=aHvkXNhJC0Th2xBJKUmBj+YFHL
+ UzUUk1ISTbtYsp83553YSXXGRA++kbSiJtSN05jEXVqt9VEX+wniOJS1RplCEqtuDD5dEX6odZ4Kq
+ cu222eZYaQudBjSH8A2rSJDXWW+51r3qeRWafwKoGAm6AVx0/RQ21Pp4Domc5hgQYrYZGJC3acctI
+ oDyhQ6cbTWTz+4TBfHuPIS5Ncok4vJKWmc5qIIjxy5BONLC07sANEe9vDy3pqahAl0m4DRp8PkoaL
+ 1+iVIZ7RcwI7jzxYjW8Dkp9JZw0qq1u+WTSwK8ErzNEhrqQw5/H+bDo+O6nCitRx5LdA8d9D7PVCk
+ nOiYSZ1A==;
 Received: from guinness.priv.deltatee.com ([172.16.1.162])
  by ale.deltatee.com with esmtp (Exim 4.92)
  (envelope-from <logang@deltatee.com>)
- id 1ldcA2-00053o-JL; Mon, 03 May 2021 11:15:11 -0600
+ id 1ldcCd-0005A2-F7; Mon, 03 May 2021 11:17:52 -0600
 To: John Hubbard <jhubbard@nvidia.com>, linux-kernel@vger.kernel.org,
  linux-nvme@lists.infradead.org, linux-block@vger.kernel.org,
  linux-pci@vger.kernel.org, linux-mm@kvack.org,
  iommu@lists.linux-foundation.org
 References: <20210408170123.8788-1-logang@deltatee.com>
- <20210408170123.8788-9-logang@deltatee.com>
- <e27d35f8-5c3a-39e3-9845-6d2bf15cc8b3@nvidia.com>
+ <20210408170123.8788-13-logang@deltatee.com>
+ <f8bdf85c-2302-890e-7f77-e11fe6f29d6e@nvidia.com>
 From: Logan Gunthorpe <logang@deltatee.com>
-Message-ID: <07f4c059-f4d6-0657-c31f-bb9187381889@deltatee.com>
-Date: Mon, 3 May 2021 11:15:07 -0600
+Message-ID: <f33a9cff-82d0-7a05-070a-8c6018fbaba9@deltatee.com>
+Date: Mon, 3 May 2021 11:17:50 -0600
 User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
  Thunderbird/78.9.0
 MIME-Version: 1.0
-In-Reply-To: <e27d35f8-5c3a-39e3-9845-6d2bf15cc8b3@nvidia.com>
+In-Reply-To: <f8bdf85c-2302-890e-7f77-e11fe6f29d6e@nvidia.com>
 Content-Language: en-CA
 X-SA-Exim-Connect-IP: 172.16.1.162
 X-SA-Exim-Rcpt-To: robin.murphy@arm.com, ira.weiny@intel.com,
@@ -86,8 +86,8 @@ X-SA-Exim-Rcpt-To: robin.murphy@arm.com, ira.weiny@intel.com,
  linux-nvme@lists.infradead.org, linux-kernel@vger.kernel.org,
  jhubbard@nvidia.com
 X-SA-Exim-Mail-From: logang@deltatee.com
-Subject: Re: [PATCH 08/16] PCI/P2PDMA: Introduce helpers for dma_map_sg
- implementations
+Subject: Re: [PATCH 12/16] nvme-pci: Check DMA ops when indicating support for
+ PCI P2PDMA
 X-SA-Exim-Version: 4.2.1 (built Wed, 08 May 2019 21:11:16 +0000)
 X-SA-Exim-Scanned: Yes (on ale.deltatee.com)
 Cc: Minturn Dave B <dave.b.minturn@intel.com>, Ira Weiny <ira.weiny@intel.com>,
@@ -119,142 +119,48 @@ Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
 
 
-On 2021-05-02 6:50 p.m., John Hubbard wrote:
+On 2021-05-02 7:29 p.m., John Hubbard wrote:
 > On 4/8/21 10:01 AM, Logan Gunthorpe wrote:
->> Add pci_p2pdma_map_segment() as a helper for simple dma_map_sg()
->> implementations. It takes an scatterlist segment that must point to a
->> pci_p2pdma struct page and will map it if the mapping requires a bus
->> address.
->>
->> The return value indicates whether the mapping required a bus address
->> or whether the caller still needs to map the segment normally. If the
->> segment should not be mapped, -EREMOTEIO is returned.
->>
->> This helper uses a state structure to track the changes to the
->> pgmap across calls and avoid needing to lookup into the xarray for
->> every page.
->>
-> 
-> OK, coming back to this patch, after seeing how it is used later in
-> the series...
-> 
->> Also add pci_p2pdma_map_bus_segment() which is useful for IOMMU
->> dma_map_sg() implementations where the sg segment containing the page
->> differs from the sg segment containing the DMA address.
+>> Introduce a supports_pci_p2pdma() operation in nvme_ctrl_ops to
+>> replace the fixed NVME_F_PCI_P2PDMA flag such that the dma_map_ops
+>> flags can be checked for PCI P2PDMA support.
 >>
 >> Signed-off-by: Logan Gunthorpe <logang@deltatee.com>
 >> ---
->>   drivers/pci/p2pdma.c       | 65 ++++++++++++++++++++++++++++++++++++++
->>   include/linux/pci-p2pdma.h | 21 ++++++++++++
->>   2 files changed, 86 insertions(+)
+>>   drivers/nvme/host/core.c |  3 ++-
+>>   drivers/nvme/host/nvme.h |  2 +-
+>>   drivers/nvme/host/pci.c  | 11 +++++++++--
+>>   3 files changed, 12 insertions(+), 4 deletions(-)
 >>
->> diff --git a/drivers/pci/p2pdma.c b/drivers/pci/p2pdma.c
->> index 38c93f57a941..44ad7664e875 100644
->> --- a/drivers/pci/p2pdma.c
->> +++ b/drivers/pci/p2pdma.c
->> @@ -923,6 +923,71 @@ void pci_p2pdma_unmap_sg_attrs(struct device *dev, struct scatterlist *sg,
->>   }
->>   EXPORT_SYMBOL_GPL(pci_p2pdma_unmap_sg_attrs);
+>> diff --git a/drivers/nvme/host/core.c b/drivers/nvme/host/core.c
+>> index 0896e21642be..223419454516 100644
+>> --- a/drivers/nvme/host/core.c
+>> +++ b/drivers/nvme/host/core.c
+>> @@ -3907,7 +3907,8 @@ static void nvme_alloc_ns(struct nvme_ctrl *ctrl, unsigned nsid,
+>>   		blk_queue_flag_set(QUEUE_FLAG_STABLE_WRITES, ns->queue);
 >>   
->> +/**
->> + * pci_p2pdma_map_segment - map an sg segment determining the mapping type
->> + * @state: State structure that should be declared on the stack outside of
->> + *	the for_each_sg() loop and initialized to zero.
+>>   	blk_queue_flag_set(QUEUE_FLAG_NONROT, ns->queue);
+>> -	if (ctrl->ops->flags & NVME_F_PCI_P2PDMA)
+>> +	if (ctrl->ops->supports_pci_p2pdma &&
+>> +	    ctrl->ops->supports_pci_p2pdma(ctrl))
 > 
-> Silly fine point for the docs here: it doesn't actually have to be on
-> the stack, so I don't think you need to write that constraint in the
-> documentation. It just has be be somehow allocated and zeroed.
+> This is a little excessive, as I suspected. How about providing a
+> default .supports_pci_p2pdma routine that returns false, so that
+> the op is always available (non-null)? By "default", maybe that
+> means either requiring an init_the_ops_struct() routine to be
+> used, and/or checking all the users of struct nvme_ctrl_ops.
 
-Yeah, that's true, but there's really no reason it would ever not be
-allocated on the stack.
+Honestly that sounds much more messy to me than simply checking if it's
+NULL before using it (which is a common, accepted pattern for ops).
 
-> 
->> + * @dev: DMA device that's doing the mapping operation
->> + * @sg: scatterlist segment to map
->> + * @attrs: dma mapping attributes
->> + *
->> + * This is a helper to be used by non-iommu dma_map_sg() implementations where
->> + * the sg segment is the same for the page_link and the dma_address.
->> + *
->> + * Attempt to map a single segment in an SGL with the PCI bus address.
->> + * The segment must point to a PCI P2PDMA page and thus must be
->> + * wrapped in a is_pci_p2pdma_page(sg_page(sg)) check.
-> 
-> Should this be backed up with actual checks in the function, that
-> the prerequisites are met?
+> Another idea: maybe you don't really need a bool .supports_pci_p2pdma()
+> routine at all, because the existing .flags really is about right.
+> You just need the flags to be filled in dynamically. So, do that
+> during nvme_pci setup/init time: that's when this module would call
+> dma_pci_p2pdma_supported().
 
-I think that would be unnecessary. All callers are going to call this
-inside an is_pci_p2pdma_page() check, otherwise it would slow down the
-fast path.
-
->> + *
->> + * Returns 1 if the segment was mapped, 0 if the segment should be mapped
->> + * directly (or through the IOMMU) and -EREMOTEIO if the segment should not
->> + * be mapped at all.
->> + */
->> +int pci_p2pdma_map_segment(struct pci_p2pdma_map_state *state,
->> +			   struct device *dev, struct scatterlist *sg,
->> +			   unsigned long dma_attrs)
->> +{
->> +	if (state->pgmap != sg_page(sg)->pgmap) {
->> +		state->pgmap = sg_page(sg)->pgmap;
->> +		state->map = pci_p2pdma_map_type(state->pgmap, dev, dma_attrs);
->> +		state->bus_off = to_p2p_pgmap(state->pgmap)->bus_offset;
->> +	}
-> 
-> I'll quote myself from patch 9, because I had a comment there that actually
-> was meant for this patch:
-> 
-> Is it worth putting this stuff on the caller's stack? I mean, is there a
-> noticeable performance improvement from caching the state? Because if
-> it's invisible, then simplicity is better. I suspect you're right, and
-> that it *is* worth it, but it's good to know for real.
-
-Yeah, I responded to this in another email.
-
-> 
->> +
->> +	switch (state->map) {
->> +	case PCI_P2PDMA_MAP_BUS_ADDR:
->> +		sg->dma_address = sg_phys(sg) + state->bus_off;
->> +		sg_dma_len(sg) = sg->length;
->> +		sg_mark_pci_p2pdma(sg);
->> +		return 1;
->> +	case PCI_P2PDMA_MAP_THRU_HOST_BRIDGE:
->> +		return 0;
->> +	default:
->> +		return -EREMOTEIO;
->> +	}
->> +}
->> +
->> +/**
->> + * pci_p2pdma_map_bus_segment - map an sg segment pre determined to
->> + *	be mapped with PCI_P2PDMA_MAP_BUS_ADDR
-> 
-> Or:
-> 
->   * pci_p2pdma_map_bus_segment - map an SG segment that is already known
->   * to be mapped with PCI_P2PDMA_MAP_BUS_ADDR
-> 
-> Also, should that prerequisite be backed up with checks in the function?
-
-No, this function only really exists for the needs of iommu_dma_map_sg().
-
->> + * @pg_sg: scatterlist segment with the page to map
->> + * @dma_sg: scatterlist segment to assign a dma address to
->> + *
->> + * This is a helper for iommu dma_map_sg() implementations when the
->> + * segment for the dma address differs from the segment containing the
->> + * source page.
->> + *
->> + * pci_p2pdma_map_type() must have already been called on the pg_sg and
->> + * returned PCI_P2PDMA_MAP_BUS_ADDR.
-> 
-> Another prerequisite, so same question: do you think that the code should
-> also check that this prerequisite is met?
-
-Again, no, simply because it's this way because of what's required by
-iommu_dma.
+If the flag is filled in dynamically, then the ops struct would have to
+be non-constant. Ops structs should be constant for security reasons.
 
 Logan
 _______________________________________________
