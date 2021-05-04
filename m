@@ -2,61 +2,87 @@ Return-Path: <SRS0=4008=J7=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-16.8 required=3.0 tests=BAYES_00,
-	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_CR_TRAILER,INCLUDES_PATCH,
-	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,USER_AGENT_GIT
-	autolearn=unavailable autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-3.6 required=3.0 tests=BAYES_00,DKIM_INVALID,
+	DKIM_SIGNED,HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,SPF_HELO_NONE,
+	SPF_PASS autolearn=no autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D2E81C433ED
-	for <iommu@archiver.kernel.org>; Tue,  4 May 2021 10:22:50 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id AD2D8C433B4
+	for <iommu@archiver.kernel.org>; Tue,  4 May 2021 10:34:11 +0000 (UTC)
 Received: from smtp2.osuosl.org (smtp2.osuosl.org [140.211.166.133])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 3056B61176
-	for <iommu@archiver.kernel.org>; Tue,  4 May 2021 10:22:50 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 3056B61176
-Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=ispras.ru
+	by mail.kernel.org (Postfix) with ESMTPS id 1F0E1613BE
+	for <iommu@archiver.kernel.org>; Tue,  4 May 2021 10:34:09 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 1F0E1613BE
+Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=infradead.org
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by smtp2.osuosl.org (Postfix) with ESMTP id E088B400F8;
-	Tue,  4 May 2021 10:22:49 +0000 (UTC)
+	by smtp2.osuosl.org (Postfix) with ESMTP id CC05840563;
+	Tue,  4 May 2021 10:34:08 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
 Received: from smtp2.osuosl.org ([127.0.0.1])
 	by localhost (smtp2.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id FvV81a0JUi1B; Tue,  4 May 2021 10:22:49 +0000 (UTC)
-Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [IPv6:2605:bc80:3010:104::8cd3:938])
-	by smtp2.osuosl.org (Postfix) with ESMTP id C5E2140136;
-	Tue,  4 May 2021 10:22:48 +0000 (UTC)
+	with ESMTP id OjW8TF96DQYx; Tue,  4 May 2021 10:34:08 +0000 (UTC)
+Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
+	by smtp2.osuosl.org (Postfix) with ESMTP id C07B84056A;
+	Tue,  4 May 2021 10:34:07 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 9F1BAC000E;
-	Tue,  4 May 2021 10:22:48 +0000 (UTC)
-Received: from smtp2.osuosl.org (smtp2.osuosl.org [IPv6:2605:bc80:3010::133])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 1B964C0001
- for <iommu@lists.linux-foundation.org>; Tue,  4 May 2021 10:22:47 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 9A315C000E;
+	Tue,  4 May 2021 10:34:07 +0000 (UTC)
+Received: from smtp1.osuosl.org (smtp1.osuosl.org [140.211.166.138])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id B66EDC0001
+ for <iommu@lists.linux-foundation.org>; Tue,  4 May 2021 10:34:06 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by smtp2.osuosl.org (Postfix) with ESMTP id 072DA400F8
- for <iommu@lists.linux-foundation.org>; Tue,  4 May 2021 10:22:47 +0000 (UTC)
+ by smtp1.osuosl.org (Postfix) with ESMTP id 9D6A5843B1
+ for <iommu@lists.linux-foundation.org>; Tue,  4 May 2021 10:34:06 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from smtp2.osuosl.org ([127.0.0.1])
- by localhost (smtp2.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id p298LFz4ytBy for <iommu@lists.linux-foundation.org>;
- Tue,  4 May 2021 10:22:45 +0000 (UTC)
-X-Greylist: domain auto-whitelisted by SQLgrey-1.8.0
-Received: from mail.ispras.ru (mail.ispras.ru [83.149.199.84])
- by smtp2.osuosl.org (Postfix) with ESMTPS id 7DD7B40568
- for <iommu@lists.linux-foundation.org>; Tue,  4 May 2021 10:22:45 +0000 (UTC)
-Received: from localhost.localdomain (unknown [46.188.10.168])
- by mail.ispras.ru (Postfix) with ESMTPSA id E84804076B3A;
- Tue,  4 May 2021 10:22:38 +0000 (UTC)
-From: Alexander Monakov <amonakov@ispras.ru>
-To: linux-kernel@vger.kernel.org
-Subject: [RESEND PATCH v2] iommu/amd: Fix extended features logging
-Date: Tue,  4 May 2021 13:22:20 +0300
-Message-Id: <20210504102220.1793-1-amonakov@ispras.ru>
-X-Mailer: git-send-email 2.30.0
+Authentication-Results: smtp1.osuosl.org (amavisd-new);
+ dkim=pass (2048-bit key) header.d=infradead.org
+Received: from smtp1.osuosl.org ([127.0.0.1])
+ by localhost (smtp1.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+ with ESMTP id 0Ft1LejKmIHh for <iommu@lists.linux-foundation.org>;
+ Tue,  4 May 2021 10:34:05 +0000 (UTC)
+X-Greylist: delayed 00:54:20 by SQLgrey-1.8.0
+Received: from desiato.infradead.org (desiato.infradead.org
+ [IPv6:2001:8b0:10b:1:d65d:64ff:fe57:4e05])
+ by smtp1.osuosl.org (Postfix) with ESMTPS id 7B69B84399
+ for <iommu@lists.linux-foundation.org>; Tue,  4 May 2021 10:34:05 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+ d=infradead.org; s=desiato.20200630; h=In-Reply-To:Content-Type:MIME-Version:
+ References:Message-ID:Subject:Cc:To:From:Date:Sender:Reply-To:
+ Content-Transfer-Encoding:Content-ID:Content-Description;
+ bh=cbJaT3WauSqqefXiQhipxL5QKWvgRRw7UQHpsath+Uk=; b=Fh34MW0SJTuy07liXxCF50N1v5
+ UsnNeTvC+HKGbxyV5M1xr2rQelNWMXX9IWoY6Tbzyx0oYm7eXDki2pHgQEx4um74tCoQ7/J2c/3O2
+ IT0vqGHPLWuxKpHv5s4Ro9DMP2G1JaIjotX5SMqxYOvvUXIaboSoepUfRxlxPVTvS30lxOIAY9wWj
+ 2VZnjiI7aDjJSf4xdI5yFB+pZC2YtdmyWdpUX/yrqvXNiJ2W4fhmnDPqQ432A5Q24tqH03jnfBBd/
+ GR1C3IcSA9c5RkJGXVfvXIzs14PCtbByXnfcDNOAVmRa6kzy6l75DJnJXHN5WsRK0IIMqmiK7n4+o
+ jJrpY65g==;
+Received: from j217100.upc-j.chello.nl ([24.132.217.100]
+ helo=noisy.programming.kicks-ass.net)
+ by desiato.infradead.org with esmtpsa (Exim 4.94 #2 (Red Hat Linux))
+ id 1ldrWl-00Ftkl-44; Tue, 04 May 2021 09:39:39 +0000
+Received: from hirez.programming.kicks-ass.net
+ (hirez.programming.kicks-ass.net [192.168.1.225])
+ (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+ key-exchange X25519 server-signature RSA-PSS (2048 bits))
+ (Client did not present a certificate)
+ by noisy.programming.kicks-ass.net (Postfix) with ESMTPS id 017023001D0;
+ Tue,  4 May 2021 11:39:37 +0200 (CEST)
+Received: by hirez.programming.kicks-ass.net (Postfix, from userid 1000)
+ id AAB992026F4BB; Tue,  4 May 2021 11:39:37 +0200 (CEST)
+Date: Tue, 4 May 2021 11:39:37 +0200
+From: Peter Zijlstra <peterz@infradead.org>
+To: Suravee Suthikulpanit <suravee.suthikulpanit@amd.com>
+Subject: Re: [PATCH] x86/events/amd/iommu: Fix invalid Perf result due to
+ IOMMU PMC power-gating
+Message-ID: <YJEWWbEeDm0rUyC+@hirez.programming.kicks-ass.net>
+References: <20210504065236.4415-1-suravee.suthikulpanit@amd.com>
 MIME-Version: 1.0
-Cc: Paul Menzel <pmenzel@molgen.mpg.de>, iommu@lists.linux-foundation.org,
- Alexander Monakov <amonakov@ispras.ru>, Joerg Roedel <jroedel@suse.de>
+Content-Disposition: inline
+In-Reply-To: <20210504065236.4415-1-suravee.suthikulpanit@amd.com>
+Cc: David Coe <david.coe@live.co.uk>, amonakov@ispras.ru, Jon.Grimm@amd.com,
+ linux-kernel@vger.kernel.org, linux-perf-users@vger.kernel.org,
+ iommu@lists.linux-foundation.org, mingo@redhat.com
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -74,58 +100,15 @@ Content-Transfer-Encoding: 7bit
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-print_iommu_info prints the EFR register and then the decoded list of
-features on a separate line:
+On Tue, May 04, 2021 at 01:52:36AM -0500, Suravee Suthikulpanit wrote:
 
-pci 0000:00:00.2: AMD-Vi: Extended features (0x206d73ef22254ade):
- PPR X2APIC NX GT IA GA PC GA_vAPIC
+> 2. Since AMD IOMMU PMU does not support interrupt mode, the logic
+>    can be simplified to always start counting with value zero,
+>    and accumulate the counter value when stopping without the need
+>    to keep track and reprogram the counter with the previously read
+>    counter value.
 
-The second line is emitted via 'pr_cont', which causes it to have a
-different ('warn') loglevel compared to the previous line ('info').
-
-Commit 9a295ff0ffc9 attempted to rectify this by removing the newline
-from the pci_info format string, but this doesn't work, as pci_info
-calls implicitly append a newline anyway.
-
-Printing the decoded features on the same line would make it quite long.
-Instead, change pci_info() to pr_info() to omit PCI bus location info,
-which is also shown in the preceding message. This results in:
-
-pci 0000:00:00.2: AMD-Vi: Found IOMMU cap 0x40
-AMD-Vi: Extended features (0x206d73ef22254ade): PPR X2APIC NX GT IA GA PC GA_vAPIC
-AMD-Vi: Interrupt remapping enabled
-
-Fixes: 9a295ff0ffc9 ("iommu/amd: Print extended features in one line to fix divergent log levels")
-Link: https://lore.kernel.org/lkml/alpine.LNX.2.20.13.2104112326460.11104@monopod.intra.ispras.ru
-Signed-off-by: Alexander Monakov <amonakov@ispras.ru>
-Cc: Paul Menzel <pmenzel@molgen.mpg.de>
-Cc: Joerg Roedel <jroedel@suse.de>
-Cc: Suravee Suthikulpanit <suravee.suthikulpanit@amd.com>
-Cc: iommu@lists.linux-foundation.org
----
- drivers/iommu/amd/init.c | 4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
-
-diff --git a/drivers/iommu/amd/init.c b/drivers/iommu/amd/init.c
-index 429a4baa3aee..8f0eb865119a 100644
---- a/drivers/iommu/amd/init.c
-+++ b/drivers/iommu/amd/init.c
-@@ -1954,8 +1954,8 @@ static void print_iommu_info(void)
- 		pci_info(pdev, "Found IOMMU cap 0x%x\n", iommu->cap_ptr);
- 
- 		if (iommu->cap & (1 << IOMMU_CAP_EFR)) {
--			pci_info(pdev, "Extended features (%#llx):",
--				 iommu->features);
-+			pr_info("Extended features (%#llx):", iommu->features);
-+
- 			for (i = 0; i < ARRAY_SIZE(feat_str); ++i) {
- 				if (iommu_feature(iommu, (1ULL << i)))
- 					pr_cont(" %s", feat_str[i]);
-
-base-commit: 9f4ad9e425a1d3b6a34617b8ea226d56a119a717
--- 
-2.30.0
-
+This relies on the hardware counter being the full 64bit wide, is it?
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
