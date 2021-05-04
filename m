@@ -2,75 +2,78 @@ Return-Path: <SRS0=4008=J7=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-11.8 required=3.0 tests=BAYES_00,
-	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,SPF_HELO_NONE,
-	SPF_PASS,USER_AGENT_GIT autolearn=unavailable autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-16.8 required=3.0 tests=BAYES_00,
+	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_CR_TRAILER,INCLUDES_PATCH,
+	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,USER_AGENT_GIT autolearn=ham
+	autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7C117C433ED
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A5C12C43460
 	for <iommu@archiver.kernel.org>; Tue,  4 May 2021 19:11:45 +0000 (UTC)
-Received: from smtp4.osuosl.org (smtp4.osuosl.org [140.211.166.137])
+Received: from smtp1.osuosl.org (smtp1.osuosl.org [140.211.166.138])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 1A452613D8
+	by mail.kernel.org (Postfix) with ESMTPS id 5442F613ED
 	for <iommu@archiver.kernel.org>; Tue,  4 May 2021 19:11:45 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 1A452613D8
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 5442F613ED
 Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=linux.intel.com
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by smtp4.osuosl.org (Postfix) with ESMTP id D542541825;
-	Tue,  4 May 2021 19:11:44 +0000 (UTC)
+	by smtp1.osuosl.org (Postfix) with ESMTP id 0A801846CF;
+	Tue,  4 May 2021 19:11:45 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from smtp4.osuosl.org ([127.0.0.1])
-	by localhost (smtp4.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id qo01isdGFdrT; Tue,  4 May 2021 19:11:43 +0000 (UTC)
-Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by smtp4.osuosl.org (Postfix) with ESMTP id 6D4D8414FD;
+Received: from smtp1.osuosl.org ([127.0.0.1])
+	by localhost (smtp1.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+	with ESMTP id uf6s_VnF7JWR; Tue,  4 May 2021 19:11:44 +0000 (UTC)
+Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [IPv6:2605:bc80:3010:104::8cd3:938])
+	by smtp1.osuosl.org (Postfix) with ESMTP id F18DA846EB;
 	Tue,  4 May 2021 19:11:43 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 3F89BC000D;
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 9695BC0023;
 	Tue,  4 May 2021 19:11:43 +0000 (UTC)
-Received: from smtp4.osuosl.org (smtp4.osuosl.org [IPv6:2605:bc80:3010::137])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 869FCC0001
+Received: from smtp1.osuosl.org (smtp1.osuosl.org [IPv6:2605:bc80:3010::138])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id D0D18C0001
  for <iommu@lists.linux-foundation.org>; Tue,  4 May 2021 19:11:42 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by smtp4.osuosl.org (Postfix) with ESMTP id 697A7414FF
+ by smtp1.osuosl.org (Postfix) with ESMTP id B1FE4846E7
  for <iommu@lists.linux-foundation.org>; Tue,  4 May 2021 19:11:42 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from smtp4.osuosl.org ([127.0.0.1])
- by localhost (smtp4.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id CFgb4JHakxKe for <iommu@lists.linux-foundation.org>;
- Tue,  4 May 2021 19:11:41 +0000 (UTC)
+Received: from smtp1.osuosl.org ([127.0.0.1])
+ by localhost (smtp1.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+ with ESMTP id gUej1fmn4ZKA for <iommu@lists.linux-foundation.org>;
+ Tue,  4 May 2021 19:11:42 +0000 (UTC)
 X-Greylist: domain auto-whitelisted by SQLgrey-1.8.0
 Received: from mga14.intel.com (mga14.intel.com [192.55.52.115])
- by smtp4.osuosl.org (Postfix) with ESMTPS id 4A08F414EB
+ by smtp1.osuosl.org (Postfix) with ESMTPS id 1427A846CF
  for <iommu@lists.linux-foundation.org>; Tue,  4 May 2021 19:11:41 +0000 (UTC)
-IronPort-SDR: qjVqfI78U2Gg6s4Up31hjl2FVH8sjTHq6Do1+osz8JybcZEwLKVjJcH6TiNBzdyL9qJesctIvI
- 4/1mFR0hXySQ==
-X-IronPort-AV: E=McAfee;i="6200,9189,9974"; a="197675479"
-X-IronPort-AV: E=Sophos;i="5.82,272,1613462400"; d="scan'208";a="197675479"
+IronPort-SDR: YXd0YASZjszPEZmRHD/1xk9gW+rE8jlGJCs6BBic6hHni7s8YiH/AfdE0qRgd8BtNdS7DUX44F
+ JqrkCNnYfceQ==
+X-IronPort-AV: E=McAfee;i="6200,9189,9974"; a="197675488"
+X-IronPort-AV: E=Sophos;i="5.82,272,1613462400"; d="scan'208";a="197675488"
 Received: from fmsmga007.fm.intel.com ([10.253.24.52])
  by fmsmga103.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384;
- 04 May 2021 12:11:40 -0700
-IronPort-SDR: pqfyhjcoUwP+RhjIgOOdDX0iTRL7b0YM4al68SNO5jQQDwvzBL3zQ/QbxYutFTINWforPd5KBO
- T/vWTRF7dwUg==
+ 04 May 2021 12:11:41 -0700
+IronPort-SDR: fhkrUiuFVLDq9e4Qc69OzHKPlDkUNy8UnX6A/43uKWqfc4UO1ncrzGpZMAz8AnTgJiek3Tf9Ca
+ JzXWUNiJIHgQ==
 X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.82,272,1613462400"; d="scan'208";a="396245275"
+X-IronPort-AV: E=Sophos;i="5.82,272,1613462400"; d="scan'208";a="396245291"
 Received: from ranerica-svr.sc.intel.com ([172.25.110.23])
  by fmsmga007.fm.intel.com with ESMTP; 04 May 2021 12:11:40 -0700
 From: Ricardo Neri <ricardo.neri-calderon@linux.intel.com>
 To: Joerg Roedel <joro@8bytes.org>,
 	Will Deacon <will@kernel.org>
-Subject: [RFC PATCH v5 0/7] x86: watchdog/hardlockup/hpet: Add support for
- interrupt remapping
-Date: Tue,  4 May 2021 12:10:42 -0700
-Message-Id: <20210504191049.22661-1-ricardo.neri-calderon@linux.intel.com>
+Subject: [RFC PATCH v5 4/7] iommu/amd: Set the IRTE delivery mode from irq_cfg
+Date: Tue,  4 May 2021 12:10:46 -0700
+Message-Id: <20210504191049.22661-5-ricardo.neri-calderon@linux.intel.com>
 X-Mailer: git-send-email 2.17.1
+In-Reply-To: <20210504191049.22661-1-ricardo.neri-calderon@linux.intel.com>
+References: <20210504191049.22661-1-ricardo.neri-calderon@linux.intel.com>
 Cc: "Ravi V. Shankar" <ravi.v.shankar@intel.com>,
  Ricardo Neri <ricardo.neri-calderon@linux.intel.com>, x86@kernel.org,
  woodhouse@osuosl.org, linux-kernel@vger.kernel.org,
  Stephane Eranian <eranian@google.com>, Ricardo Neri <ricardo.neri@intel.com>,
  iommu@lists.linux-foundation.org, Jacob Pan <jacob.jun.pan@intel.com>,
- Thomas Gleixner <tglx@linutronix.de>, Borislav Petkov <bp@suse.de>,
+ Andi Kleen <andi.kleen@intel.com>, Thomas Gleixner <tglx@linutronix.de>,
+ Borislav Petkov <bp@suse.de>, David Woodhouse <dwmw2@infradead.org>,
  Ingo Molnar <mingo@kernel.org>
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
@@ -90,88 +93,59 @@ Content-Transfer-Encoding: 7bit
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-Hi IOMMU experts,
+There is not hardware requirement to have a different delivery mode for
+each interrupt. Instead of using the delivery mode of the APIC driver, use
+the delivery mode of each specific interrupt configuration.
 
-I proposed a hardlockup detector driven by the HPET timer [1]. Such
-detector is driven by a single timer. The hardlockup detector brings the
-extra complexity of having to update the affinity of the interrupt
-periodically and initiated from NMI context. The proposed design only
-requires updating the affinity every watchdog_thresh (the interval is
-between [1, 60] seconds). Also, the affinity update is offloaded to
-an irq_work. Handling the HPET interrupt affinity is trivial with
-!intremap since the detector composes the MSI message and writes it
-directly to the HPET registers.
+This allows to accommodate interrupts which require a specific delivery
+mode, such as the HPET hardlockup detector.
 
-However, for intremap we must use the existing IOMMU drivers as well as
-the kernel's irq plumbing. Thomas Gleixner has imposed two restrictions:
-  1) Do not implement an IRQF_NMI flag for x86 as it is not possible to
-     determine the source of an NMI [2].
-  2) Use the irq subsystem to update the affinity of the HPET
-     interrupt [3].
+Outside of such case, there are not functional changes since the delivery
+mode of an interrupt is initialized with the delivery mode of the APIC
+driver.
 
-1) implies that the interrupt remapping drivers need to implement a quirk
-to identify the HPET interrupt and update its delivery mode to NMI. 2)
-means that the hardlockup detector must use request_irq() to allocate the
-HPET interrupt.
-
-This patch series attempts to meet the requirements above by
-  a) Decoupling the delivery mode of an APIC interrupt from the delivery
-     mode of the APIC driver (patch 1)
-  b) Implement quirks in the Intel and AMD IOMMU drivers to identify the
-     HPET timer and update the delivery mode accordingly (patches 2-5).
-  c) Add support for interrupt remapping in the HPET hardlockup detector
-     in [1]. This includes the unavoidable eyesore of using request_irq()
-     and having a useless regular interrupt handler (patch 6).
-
-I would like to get your feedback on whether the HPET NMI quirk looks
-sane to you and whether offloading the affinity setup to an irq_work
-could pose issues.
-
-Thanks and BR,
-Ricardo
-
-[1]. https://lore.kernel.org/lkml/20210504190526.22347-1-ricardo.neri-calderon@linux.intel.com/T/#mf77988cc98f9ca6988831e17f68394577388959d
-[2]. https://lore.kernel.org/lkml/alpine.DEB.2.21.1808021137400.2037@nanos.tec.linutronix.de/
-[3]. https://lore.kernel.org/lkml/alpine.DEB.2.21.1906161042080.1760@nanos.tec.linutronix.de/
-
+Cc: Andi Kleen <andi.kleen@intel.com>
+Cc: Borislav Petkov <bp@suse.de>
+Cc: David Woodhouse <dwmw2@infradead.org> (supporter:INTEL IOMMU (VT-d))
+Cc: "Ravi V. Shankar" <ravi.v.shankar@intel.com>
+Cc: Ingo Molnar <mingo@kernel.org>
+Cc: Jacob Pan <jacob.jun.pan@intel.com>
+Cc: Lu Baolu <baolu.lu@linux.intel.com> (supporter:INTEL IOMMU (VT-d))
+Cc: Stephane Eranian <eranian@google.com>
+Cc: Thomas Gleixner <tglx@linutronix.de>
+Cc: iommu@lists.linux-foundation.org (open list:INTEL IOMMU (VT-d))
+Cc: x86@kernel.org
+Reviewed-by: Ashok Raj <ashok.raj@intel.com>
+Signed-off-by: Ricardo Neri <ricardo.neri-calderon@linux.intel.com>
+---
 Changes since v4:
- * With !CONFIG_IRQ_REMAP [1] now disables the HPET channel before changing
-   the MSI Destination ID field. This should avoid races between a pending
-   interrupt and updating the detector's interrupt affinity. (Ashok)
- * Rebased to use new enumeration apic_delivery_modes.
- * Removed custom functions to allocate an interrupt for the detector
-   and instead added support to identify the detector's interrupt and
-   change the delivery mode.
- * With interrupt remapping enabled, use request_irq().
- * Added support for AMD IOMMU.
+ * Introduced this patch.
 
 Changes since v3:
- * None
+ * N/A
 
 Changes since v2:
- * None
+ * N/A
 
 Changes since v1:
- * Introduced support for interrupt remapping
+ * N/A
+---
+ drivers/iommu/amd/iommu.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-Ricardo Neri (7):
-  x86/apic: Add irq_cfg::delivery_mode
-  x86/hpet: Introduce function to identify HPET hardlockup detector irq
-  iommu/vt-d: Rework prepare_irte() to support per-irq delivery mode
-  iommu/amd: Set the IRTE delivery mode from irq_cfg
-  iommu/vt-d: Fixup delivery mode of the HPET hardlockup interrupt
-  iommu/amd: Fixup delivery mode of the HPET hardlockup interrupt
-  x86/watchdog/hardlockup/hpet: Support interrupt remapping
-
- arch/x86/include/asm/hpet.h         |  5 +++
- arch/x86/include/asm/hw_irq.h       |  1 +
- arch/x86/kernel/apic/vector.c       | 10 ++++++
- arch/x86/kernel/hpet.c              | 36 ++++++++++++++++++++++
- arch/x86/kernel/watchdog_hld_hpet.c | 48 +++++++++++++++++++++++++----
- drivers/iommu/amd/iommu.c           | 11 ++++++-
- drivers/iommu/intel/irq_remapping.c | 20 ++++++++----
- 7 files changed, 118 insertions(+), 13 deletions(-)
-
+diff --git a/drivers/iommu/amd/iommu.c b/drivers/iommu/amd/iommu.c
+index a69a8b573e40..e8d9fae0c766 100644
+--- a/drivers/iommu/amd/iommu.c
++++ b/drivers/iommu/amd/iommu.c
+@@ -3122,7 +3122,7 @@ static void irq_remapping_prepare_irte(struct amd_ir_data *data,
+ 
+ 	data->irq_2_irte.devid = devid;
+ 	data->irq_2_irte.index = index + sub_handle;
+-	iommu->irte_ops->prepare(data->entry, apic->delivery_mode,
++	iommu->irte_ops->prepare(data->entry, irq_cfg->delivery_mode,
+ 				 apic->dest_mode_logical, irq_cfg->vector,
+ 				 irq_cfg->dest_apicid, devid);
+ 
 -- 
 2.17.1
 
