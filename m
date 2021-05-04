@@ -2,70 +2,93 @@ Return-Path: <SRS0=4008=J7=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-13.8 required=3.0 tests=BAYES_00,
-	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_CR_TRAILER,INCLUDES_PATCH,
-	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no
-	version=3.4.0
+X-Spam-Status: No, score=-5.3 required=3.0 tests=BAYES_00,
+	HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,
+	USER_AGENT_SANE_2 autolearn=no autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7B9F1C433ED
-	for <iommu@archiver.kernel.org>; Tue,  4 May 2021 14:06:03 +0000 (UTC)
-Received: from smtp2.osuosl.org (smtp2.osuosl.org [140.211.166.133])
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0ADD8C433B4
+	for <iommu@archiver.kernel.org>; Tue,  4 May 2021 15:39:05 +0000 (UTC)
+Received: from smtp1.osuosl.org (smtp1.osuosl.org [140.211.166.138])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 184CC6115C
-	for <iommu@archiver.kernel.org>; Tue,  4 May 2021 14:06:03 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 184CC6115C
-Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=collabora.com
+	by mail.kernel.org (Postfix) with ESMTPS id 88513611C0
+	for <iommu@archiver.kernel.org>; Tue,  4 May 2021 15:39:04 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 88513611C0
+Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=linux.intel.com
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by smtp2.osuosl.org (Postfix) with ESMTP id D342E40136;
-	Tue,  4 May 2021 14:06:02 +0000 (UTC)
+	by smtp1.osuosl.org (Postfix) with ESMTP id 2D956843BF;
+	Tue,  4 May 2021 15:39:04 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from smtp2.osuosl.org ([127.0.0.1])
-	by localhost (smtp2.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id xPJ10ueB4U0M; Tue,  4 May 2021 14:05:59 +0000 (UTC)
+Received: from smtp1.osuosl.org ([127.0.0.1])
+	by localhost (smtp1.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+	with ESMTP id kH8ZkMnwVGAl; Tue,  4 May 2021 15:39:03 +0000 (UTC)
 Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [IPv6:2605:bc80:3010:104::8cd3:938])
-	by smtp2.osuosl.org (Postfix) with ESMTP id F2A684010A;
-	Tue,  4 May 2021 14:05:58 +0000 (UTC)
+	by smtp1.osuosl.org (Postfix) with ESMTP id 30CF68434A;
+	Tue,  4 May 2021 15:39:03 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id D5F20C000D;
-	Tue,  4 May 2021 14:05:58 +0000 (UTC)
-Received: from smtp2.osuosl.org (smtp2.osuosl.org [IPv6:2605:bc80:3010::133])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 85343C0001
- for <iommu@lists.linux-foundation.org>; Tue,  4 May 2021 10:15:59 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 0ABA0C000D;
+	Tue,  4 May 2021 15:39:03 +0000 (UTC)
+Received: from smtp1.osuosl.org (smtp1.osuosl.org [140.211.166.138])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id D9B18C0001
+ for <iommu@lists.linux-foundation.org>; Tue,  4 May 2021 15:39:00 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by smtp2.osuosl.org (Postfix) with ESMTP id 5FE5140134
- for <iommu@lists.linux-foundation.org>; Tue,  4 May 2021 10:15:59 +0000 (UTC)
+ by smtp1.osuosl.org (Postfix) with ESMTP id C826D843AB
+ for <iommu@lists.linux-foundation.org>; Tue,  4 May 2021 15:39:00 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from smtp2.osuosl.org ([127.0.0.1])
- by localhost (smtp2.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id lTmEJwxSz5hD for <iommu@lists.linux-foundation.org>;
- Tue,  4 May 2021 10:15:58 +0000 (UTC)
+Received: from smtp1.osuosl.org ([127.0.0.1])
+ by localhost (smtp1.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+ with ESMTP id T4wrrrgeDEIa for <iommu@lists.linux-foundation.org>;
+ Tue,  4 May 2021 15:39:00 +0000 (UTC)
 X-Greylist: domain auto-whitelisted by SQLgrey-1.8.0
-Received: from bhuna.collabora.co.uk (bhuna.collabora.co.uk
- [IPv6:2a00:1098:0:82:1000:25:2eeb:e3e3])
- by smtp2.osuosl.org (Postfix) with ESMTPS id 20B54400F8
- for <iommu@lists.linux-foundation.org>; Tue,  4 May 2021 10:15:57 +0000 (UTC)
-Received: from chickenburger.collabora.co.uk (chickenburger.collabora.co.uk
- [46.235.227.242])
- by bhuna.collabora.co.uk (Postfix) with ESMTP id ED5DA1F42458;
- Tue,  4 May 2021 11:15:54 +0100 (BST)
-From: "Ezequiel Garcia" <ezequiel.garcia@collabora.com>
-In-Reply-To: <20210501013448.GA4001859@robh.at.kernel.org>
-X-Forward: 190.2.109.197
-Date: Tue, 04 May 2021 11:15:54 +0100
-To: "Rob Herring" <robh@kernel.org>
+Received: from mga14.intel.com (mga14.intel.com [192.55.52.115])
+ by smtp1.osuosl.org (Postfix) with ESMTPS id 395798434A
+ for <iommu@lists.linux-foundation.org>; Tue,  4 May 2021 15:38:59 +0000 (UTC)
+IronPort-SDR: pKXC8a2w60W/YxtjoSt6gZhCrBSwJ0Zj49LWzs7Z2wX1l33faqbUqbFwbub54JlB91FLOY3PQd
+ icP3W6G6FUnA==
+X-IronPort-AV: E=McAfee;i="6200,9189,9974"; a="197624567"
+X-IronPort-AV: E=Sophos;i="5.82,272,1613462400"; d="scan'208";a="197624567"
+Received: from orsmga007.jf.intel.com ([10.7.209.58])
+ by fmsmga103.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384;
+ 04 May 2021 08:38:59 -0700
+IronPort-SDR: eVcqlKDXCpii3jZkhwnN7a0J/3G3igfAg57JBIW0V3O+usbdg9PgdLmu68B05/OGA2lKj1bKla
+ JssfZGxXOk+Q==
+X-IronPort-AV: E=Sophos;i="5.82,272,1613462400"; d="scan'208";a="427815781"
+Received: from jacob-builder.jf.intel.com (HELO jacob-builder) ([10.7.199.155])
+ by orsmga007-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384;
+ 04 May 2021 08:38:59 -0700
+Date: Tue, 4 May 2021 08:41:48 -0700
+From: Jacob Pan <jacob.jun.pan@linux.intel.com>
+To: "Tian, Kevin" <kevin.tian@intel.com>
+Subject: Re: [PATCH V4 05/18] iommu/ioasid: Redefine IOASID set and
+ allocation APIs
+Message-ID: <20210504084148.4f61d0b5@jacob-builder>
+In-Reply-To: <MWHPR11MB188625137D5B7423822396C88C409@MWHPR11MB1886.namprd11.prod.outlook.com>
+References: <20210421162307.GM1370958@nvidia.com>
+ <20210421105451.56d3670a@redhat.com>
+ <20210421175203.GN1370958@nvidia.com>
+ <20210421133312.15307c44@redhat.com>
+ <20210421230301.GP1370958@nvidia.com>
+ <MWHPR11MB1886188698A6E20338196F788C469@MWHPR11MB1886.namprd11.prod.outlook.com>
+ <20210422121020.GT1370958@nvidia.com>
+ <MWHPR11MB1886E688D2128C98A1F240B18C459@MWHPR11MB1886.namprd11.prod.outlook.com>
+ <20210423114944.GF1370958@nvidia.com>
+ <MWHPR11MB18861FE6982D73AFBF173E048C439@MWHPR11MB1886.namprd11.prod.outlook.com>
+ <20210426123817.GQ1370958@nvidia.com>
+ <MWHPR11MB188625137D5B7423822396C88C409@MWHPR11MB1886.namprd11.prod.outlook.com>
+Organization: OTC
+X-Mailer: Claws Mail 3.17.5 (GTK+ 2.24.32; x86_64-pc-linux-gnu)
 MIME-Version: 1.0
-Message-ID: <4bee-60911f00-11-7473f580@227440849>
-Subject: =?utf-8?q?Re=3A?= [PATCH v2 2/4] =?utf-8?q?dt-bindings=3A?=
- =?utf-8?q?_iommu=3A?==?utf-8?q?_rockchip=3A?= Add compatible for v2
-User-Agent: SOGoMail 5.0.1
-X-Mailman-Approved-At: Tue, 04 May 2021 14:05:58 +0000
-Cc: devicetree@vger.kernel.org,
- Benjamin Gaignard <benjamin.gaignard@collabora.com>, heiko@sntech.de,
- linux-kernel@vger.kernel.org, linux-rockchip@lists.infradead.org,
- iommu@lists.linux-foundation.org, kernel@collabora.com, will@kernel.org,
- linux-arm-kernel@lists.infradead.org
+Cc: Jean-Philippe Brucker <jean-philippe@linaro.org>, "Jiang,
+ Dave" <dave.jiang@intel.com>, "Raj, Ashok" <ashok.raj@intel.com>,
+ Jonathan Corbet <corbet@lwn.net>,
+ Jean-Philippe Brucker <jean-philippe@linaro.com>,
+ LKML <linux-kernel@vger.kernel.org>,
+ "iommu@lists.linux-foundation.org" <iommu@lists.linux-foundation.org>,
+ Alex Williamson <alex.williamson@redhat.com>, Li Zefan <lizefan@huawei.com>,
+ Jason Gunthorpe <jgg@nvidia.com>, Johannes Weiner <hannes@cmpxchg.org>,
+ Tejun Heo <tj@kernel.org>, "cgroups@vger.kernel.org" <cgroups@vger.kernel.org>,
+ "Wu, Hao" <hao.wu@intel.com>, David Woodhouse <dwmw2@infradead.org>
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -83,50 +106,38 @@ Content-Transfer-Encoding: 7bit
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-Hi Rob,
- 
-On Friday, April 30, 2021 22:34 -03, Rob Herring <robh@kernel.org> wrote: 
- 
-> On Thu, Apr 22, 2021 at 04:16:00PM +0200, Benjamin Gaignard wrote:
-> > Add compatible for the second version of IOMMU hardware block.
-> > RK356x IOMMU can also be link to a power domain.
+Hi Kevin,
+
+On Wed, 28 Apr 2021 06:34:11 +0000, "Tian, Kevin" <kevin.tian@intel.com>
+wrote:
+
 > > 
-> > Signed-off-by: Benjamin Gaignard <benjamin.gaignard@collabora.com>
-> > ---
-> > version 2:
-> >  - Add power-domains property
-> > 
-> >  .../devicetree/bindings/iommu/rockchip,iommu.yaml          | 7 ++++++-
-> >  1 file changed, 6 insertions(+), 1 deletion(-)
-> > 
-> > diff --git a/Documentation/devicetree/bindings/iommu/rockchip,iommu.yaml b/Documentation/devicetree/bindings/iommu/rockchip,iommu.yaml
-> > index 0db208cf724a..e54353ccd1ec 100644
-> > --- a/Documentation/devicetree/bindings/iommu/rockchip,iommu.yaml
-> > +++ b/Documentation/devicetree/bindings/iommu/rockchip,iommu.yaml
-> > @@ -19,7 +19,9 @@ description: |+
-> >  
-> >  properties:
-> >    compatible:
-> > -    const: rockchip,iommu
-> > +    enum:
-> > +      - rockchip,iommu
-> > +      - rockchip,iommu-v2
+> > (also looking at ioasid.c, why do we need such a thin and odd wrapper
+> > around xarray?)
+> >   
 > 
-> This should be SoC specific.
-> 
+> I'll leave it to Jean and Jacob.
+I am not sure whether you are referring to the current ioasid.c or the
+changes proposed in this patchset. I added a per VM/ioasid_set
+(also per /dev/ioasid fd) xarray to store guest-host PASID mapping.
 
-It seems iommu-v2 is really the name Rockchip gives to this IOMMU IP core.
-Can we keep the "rockchip,iommu-v2" compatible, and add SoC-specific ones, as we normally do:
+The current code has a xarray for the allocators.
 
-compatible = "rockchip,rk3568-iommu", "rockchip,iommu-v2";
+struct ioasid_allocator_data {
+	struct ioasid_allocator_ops *ops;
+	struct list_head list;
+	struct list_head slist;
+#define IOASID_ALLOCATOR_CUSTOM BIT(0) /* Needs framework to track results */
+	unsigned long flags;
+	struct xarray xa;
+	struct rcu_head rcu;
+};
 
-Just like we'd do with any peripheral:
+Could you elaborate?
 
-compatible = "st,stm32-dwmac", "snps,dwmac-3.50a";
+Thanks,
 
-Thanks!
-Ezequiel
-
+Jacob
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
