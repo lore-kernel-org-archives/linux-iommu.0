@@ -2,104 +2,121 @@ Return-Path: <SRS0=LdVQ=KA=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-5.1 required=3.0 tests=BAYES_00,DKIM_INVALID,
-	DKIM_SIGNED,HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,NICE_REPLY_A,
-	SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_SANE_1 autolearn=no
-	autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-2.9 required=3.0 tests=BAYES_00,FORGED_MUA_MOZILLA,
+	HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,MSGID_FROM_MTA_HEADER,
+	NICE_REPLY_A,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_SANE_1
+	autolearn=no autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C00CDC43460
-	for <iommu@archiver.kernel.org>; Wed,  5 May 2021 09:10:59 +0000 (UTC)
-Received: from smtp4.osuosl.org (smtp4.osuosl.org [140.211.166.137])
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0DBF4C433ED
+	for <iommu@archiver.kernel.org>; Wed,  5 May 2021 10:24:46 +0000 (UTC)
+Received: from smtp2.osuosl.org (smtp2.osuosl.org [140.211.166.133])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 1E421613BE
-	for <iommu@archiver.kernel.org>; Wed,  5 May 2021 09:10:59 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 1E421613BE
-Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=redhat.com
+	by mail.kernel.org (Postfix) with ESMTPS id 718F861222
+	for <iommu@archiver.kernel.org>; Wed,  5 May 2021 10:24:45 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 718F861222
+Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=live.co.uk
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by smtp4.osuosl.org (Postfix) with ESMTP id 9D70A40E83;
-	Wed,  5 May 2021 09:10:58 +0000 (UTC)
+	by smtp2.osuosl.org (Postfix) with ESMTP id 0A590402AD;
+	Wed,  5 May 2021 10:24:45 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from smtp4.osuosl.org ([127.0.0.1])
-	by localhost (smtp4.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id t0_mj2Qgd-A9; Wed,  5 May 2021 09:10:57 +0000 (UTC)
+Received: from smtp2.osuosl.org ([127.0.0.1])
+	by localhost (smtp2.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+	with ESMTP id 3CGQ-bQ-dylq; Wed,  5 May 2021 10:24:44 +0000 (UTC)
 Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by smtp4.osuosl.org (Postfix) with ESMTP id 5BD9F405E0;
-	Wed,  5 May 2021 09:10:57 +0000 (UTC)
+	by smtp2.osuosl.org (Postfix) with ESMTP id 078E7401CC;
+	Wed,  5 May 2021 10:24:43 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 23D9AC000E;
-	Wed,  5 May 2021 09:10:57 +0000 (UTC)
-Received: from smtp4.osuosl.org (smtp4.osuosl.org [140.211.166.137])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 9BF4DC0001
- for <iommu@lists.linux-foundation.org>; Wed,  5 May 2021 09:10:56 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id E2851C000D;
+	Wed,  5 May 2021 10:24:43 +0000 (UTC)
+Received: from smtp2.osuosl.org (smtp2.osuosl.org [140.211.166.133])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 9B668C0001
+ for <iommu@lists.linux-foundation.org>; Wed,  5 May 2021 10:24:42 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by smtp4.osuosl.org (Postfix) with ESMTP id 84CA2405EB
- for <iommu@lists.linux-foundation.org>; Wed,  5 May 2021 09:10:56 +0000 (UTC)
+ by smtp2.osuosl.org (Postfix) with ESMTP id 7C81C40299
+ for <iommu@lists.linux-foundation.org>; Wed,  5 May 2021 10:24:42 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from smtp4.osuosl.org ([127.0.0.1])
- by localhost (smtp4.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id ymEP6KAkax0Y for <iommu@lists.linux-foundation.org>;
- Wed,  5 May 2021 09:10:55 +0000 (UTC)
-X-Greylist: domain auto-whitelisted by SQLgrey-1.8.0
-Received: from us-smtp-delivery-124.mimecast.com
- (us-smtp-delivery-124.mimecast.com [170.10.133.124])
- by smtp4.osuosl.org (Postfix) with ESMTPS id 43F84405E0
- for <iommu@lists.linux-foundation.org>; Wed,  5 May 2021 09:10:55 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
- s=mimecast20190719; t=1620205854;
- h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
- to:to:cc:cc:mime-version:mime-version:content-type:content-type:
- content-transfer-encoding:content-transfer-encoding:
- in-reply-to:in-reply-to:references:references;
- bh=d0SQnCbBnNBGtZsOp6MO/Q/qxE8V3SBQW2J1qFEwtZU=;
- b=IVZWMQ2sLTFH8maZ/DesjqIIGo1J91YbOsIPsh5dZ9lFfrUCpPBmAUO5RMdHGkqDqQWkKk
- GHu+sVIdewlbR56LhNnamjl+Fb/VL0a8Svts+pC5YmoGYxPZm1H3Mt1F4MSVrXcNSUTyNz
- iWIdRQ/kSPaa57NlpBSRyY3ManpSSiA=
-Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
- [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-108-MlKJvMw1OS2yDEXnT8O6kw-1; Wed, 05 May 2021 05:10:50 -0400
-X-MC-Unique: MlKJvMw1OS2yDEXnT8O6kw-1
-Received: from smtp.corp.redhat.com (int-mx02.intmail.prod.int.phx2.redhat.com
- [10.5.11.12])
- (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
- (No client certificate requested)
- by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 9C59C107ACCA;
- Wed,  5 May 2021 09:10:47 +0000 (UTC)
-Received: from [10.36.113.191] (ovpn-113-191.ams2.redhat.com [10.36.113.191])
- by smtp.corp.redhat.com (Postfix) with ESMTPS id 7CA7A60CC6;
- Wed,  5 May 2021 09:10:31 +0000 (UTC)
-Subject: Re: [PATCH V4 05/18] iommu/ioasid: Redefine IOASID set and allocation
- APIs
-To: Jason Gunthorpe <jgg@nvidia.com>
-References: <20210416094547.1774e1a3@redhat.com>
- <BN6PR11MB406854F56D18E1187A2C98ACC3479@BN6PR11MB4068.namprd11.prod.outlook.com>
- <20210421162307.GM1370958@nvidia.com> <20210421105451.56d3670a@redhat.com>
- <20210421175203.GN1370958@nvidia.com> <20210421133312.15307c44@redhat.com>
- <20210421230301.GP1370958@nvidia.com>
- <MWHPR11MB1886188698A6E20338196F788C469@MWHPR11MB1886.namprd11.prod.outlook.com>
- <20210422121020.GT1370958@nvidia.com>
- <6e36797c-799e-074d-f66f-5686a4b37f38@redhat.com>
- <20210429200431.GA1370958@nvidia.com>
-From: Auger Eric <eric.auger@redhat.com>
-Message-ID: <17ab53a6-c2d7-c085-6469-ae487b138526@redhat.com>
-Date: Wed, 5 May 2021 11:10:29 +0200
+Received: from smtp2.osuosl.org ([127.0.0.1])
+ by localhost (smtp2.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+ with ESMTP id CclUpNX7QSTD for <iommu@lists.linux-foundation.org>;
+ Wed,  5 May 2021 10:24:41 +0000 (UTC)
+X-Greylist: whitelisted by SQLgrey-1.8.0
+Received: from EUR05-DB8-obe.outbound.protection.outlook.com
+ (mail-db8eur05olkn2061.outbound.protection.outlook.com [40.92.89.61])
+ by smtp2.osuosl.org (Postfix) with ESMTPS id 8478B401CC
+ for <iommu@lists.linux-foundation.org>; Wed,  5 May 2021 10:24:41 +0000 (UTC)
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=dRrnTleIikd159Vps3ignAGDoxvyb/KhJm/DE4FnQBNwfkkjh13tgZFAHHAHWlZhKZA8C3+x9/802Rlb8KCL0SlTCaYtk37aTm/Zll4MvYh6odfhu3WICTqjsSLDYLcnB/unA1jSZ8SGrZK+jXHyAtkHfUUt8aH2VM6VSmKK7hjGRTUh+KGXLBxmjuXMSkhACTE3Xm6THVr+Nswv0DGsORYrjLQ+mx9PS4hYf5DCdiLbe2DAuthbRX9Rd9SZVTMPKktU9KI3/doN8O2LIe0zBI6hKGomLurejaMANx+1D9/UbsCup5eEhXyXuA7Dtl+2t8I9v7aQzP5x3MLsBeYkAw==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com; 
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=AJxal/I82YEHUsPiZ4N/zcBXcIDnH8o7zxeY+I4EIv8=;
+ b=XqZ6p3yJAxw9/5GA239oX5xdk/08RVWDqCIORb9yRBkCKXkJaD9XUBGpdrTYTcpPe43rcWZ3S8ggds38Iw2+khUWGG5em/yy1RKfKfp3OO1qUmr16W2FjyEmIPN0mmId4rpa41gWNljnOJJYBnxgtAmCMrds3yfG5NFFymAdA6gtzMXhtd6/FCPgdOQA+2cOMJ+tanc73zN3XnJlYM/YVBikuHQM4ef/RjKD1DyshH0KF7LyavU/IGkH0QZeoieAn1xlIQFYTRHiMHOcPEugUR4xKH9mw1vLOjSYQARHnIPNfn1mCCz3tbUsNJwUJRf/lvW95kvwQ/2Xqs5ppadRMg==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=none; dmarc=none;
+ dkim=none; arc=none
+Received: from VI1EUR05FT026.eop-eur05.prod.protection.outlook.com
+ (2a01:111:e400:fc12::51) by
+ VI1EUR05HT102.eop-eur05.prod.protection.outlook.com (2a01:111:e400:fc12::100)
+ with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4087.27; Wed, 5 May
+ 2021 10:24:38 +0000
+Received: from VI1PR09MB2638.eurprd09.prod.outlook.com
+ (2a01:111:e400:fc12::43) by VI1EUR05FT026.mail.protection.outlook.com
+ (2a01:111:e400:fc12::175) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4108.25 via Frontend
+ Transport; Wed, 5 May 2021 10:24:38 +0000
+X-IncomingTopHeaderMarker: OriginalChecksum:BAB6BFFCAAE460C1EE0FD966D77287A495829F440E411E8C645E032C861A5CB4;
+ UpperCasedChecksum:94CC6709E6C45DA1520E427D8938459DA01BEC556173663949FE737565F3EAB4;
+ SizeAsReceived:8933; Count:48
+Received: from VI1PR09MB2638.eurprd09.prod.outlook.com
+ ([fe80::948b:987c:566b:198e]) by VI1PR09MB2638.eurprd09.prod.outlook.com
+ ([fe80::948b:987c:566b:198e%5]) with mapi id 15.20.4087.044; Wed, 5 May 2021
+ 10:24:38 +0000
+Subject: Re: [PATCH] x86/events/amd/iommu: Fix invalid Perf result due to
+ IOMMU PMC power-gating
+To: Suravee Suthikulpanit <suravee.suthikulpanit@amd.com>,
+ linux-kernel@vger.kernel.org, linux-perf-users@vger.kernel.org,
+ iommu@lists.linux-foundation.org
+References: <20210504065236.4415-1-suravee.suthikulpanit@amd.com>
+From: David Coe <david.coe@live.co.uk>
+Message-ID: <VI1PR09MB2638BB0FCE2E312B3471BC7FC7599@VI1PR09MB2638.eurprd09.prod.outlook.com>
+Date: Wed, 5 May 2021 11:24:36 +0100
 User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
- Thunderbird/78.8.0
+ Thunderbird/78.9.0
+In-Reply-To: <20210504065236.4415-1-suravee.suthikulpanit@amd.com>
+Content-Language: en-GB
+X-TMN: [1iV9f5vNuyVtcVzve2HaL8LVwxHRlOOc]
+X-ClientProxiedBy: LO4P123CA0072.GBRP123.PROD.OUTLOOK.COM
+ (2603:10a6:600:153::23) To VI1PR09MB2638.eurprd09.prod.outlook.com
+ (2603:10a6:803:7b::27)
+X-Microsoft-Original-Message-ID: <ed3237f2-e682-5f08-8c94-3c14a462c42e@live.co.uk>
 MIME-Version: 1.0
-In-Reply-To: <20210429200431.GA1370958@nvidia.com>
-Content-Language: en-US
-X-Scanned-By: MIMEDefang 2.79 on 10.5.11.12
-Cc: Jean-Philippe Brucker <jean-philippe@linaro.org>, "Tian,
- Kevin" <kevin.tian@intel.com>, "Jiang, Dave" <dave.jiang@intel.com>, "Raj,
- Ashok" <ashok.raj@intel.com>, Jonathan Corbet <corbet@lwn.net>,
- Jean-Philippe Brucker <jean-philippe@linaro.com>,
- Li Zefan <lizefan@huawei.com>, LKML <linux-kernel@vger.kernel.org>,
- "iommu@lists.linux-foundation.org" <iommu@lists.linux-foundation.org>,
- Alex Williamson <alex.williamson@redhat.com>,
- Johannes Weiner <hannes@cmpxchg.org>, Tejun Heo <tj@kernel.org>,
- "cgroups@vger.kernel.org" <cgroups@vger.kernel.org>, "Wu,
- Hao" <hao.wu@intel.com>, David Woodhouse <dwmw2@infradead.org>
+X-MS-Exchange-MessageSentRepresentingType: 1
+Received: from [192.168.0.6] (90.246.218.100) by
+ LO4P123CA0072.GBRP123.PROD.OUTLOOK.COM (2603:10a6:600:153::23) with Microsoft
+ SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.20.4108.24 via Frontend Transport; Wed, 5 May 2021 10:24:37 +0000
+X-MS-PublicTrafficType: Email
+X-IncomingHeaderCount: 48
+X-EOPAttributedMessage: 0
+X-MS-Office365-Filtering-Correlation-Id: e2625db7-4d68-41ba-9abc-08d90faffc74
+X-MS-TrafficTypeDiagnostic: VI1EUR05HT102:
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: CAaOuzW05Ck8IUJoBfmldTL3PFAOiwEt8MO1Bm+vMTmanCuvde7hRabnCmH8qF/l1t1641OnU3rfhReckwsftQgJgU+fCogiTzyTqI8xPHSxQ1OMIAmOZzHUwErxgfaHDdrgkUJ1hAa9alHmp7xVJszKRZXHBiQxXmizk4aB+9/Xsjp0e05BDB+uanrBP+IyRbDWIDuPTEiITvKgcfptxfRo7zWe8XZ+S0ZdlmSnIXkg9pmzwaaPFhLhPE4pWucmAz8MKJrD9XEH2Jve28A4kp+ingxkBqo6HMDgJq3NrE00TZA8kTYr/gCfeOV2t4E+W3tCQah9gT208p7XTQBd1OIYO4W1Q4N9u1/A0Kt51ZjReQt5IUK3iwgkJn/dFpBEOHWO1fnBK2YHnDUa4csgcQ==
+X-MS-Exchange-AntiSpam-MessageData: h3ASWrdWl/LKUIJAHEj1d+v2LH+1iICfyXK8a/ZcdGeTDmFSAgK4XsEucNZtKZ9zbx7Cs9cfWYmihPMBE+5BbzMtXF1WcJlktDqkh4zumqtqK5VCDc45G6MKTTH5Qb5ORfoaz1iSWFaHQOHRhneraQ==
+X-OriginatorOrg: outlook.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: e2625db7-4d68-41ba-9abc-08d90faffc74
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 05 May 2021 10:24:38.1358 (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 84df9e7f-e9f6-40af-b435-aaaaaaaaaaaa
+X-MS-Exchange-CrossTenant-AuthSource: VI1EUR05FT026.eop-eur05.prod.protection.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Anonymous
+X-MS-Exchange-CrossTenant-FromEntityHeader: Internet
+X-MS-Exchange-CrossTenant-RMS-PersistedConsumerOrg: 00000000-0000-0000-0000-000000000000
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: VI1EUR05HT102
+Cc: peterz@infradead.org, mingo@redhat.com, amonakov@ispras.ru,
+ Jon.Grimm@amd.com
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -112,71 +129,48 @@ List-Post: <mailto:iommu@lists.linux-foundation.org>
 List-Help: <mailto:iommu-request@lists.linux-foundation.org?subject=help>
 List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
  <mailto:iommu-request@lists.linux-foundation.org?subject=subscribe>
-Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset="us-ascii"; Format="flowed"
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-Hi Jason,
+Hi, once more!
 
-On 4/29/21 10:04 PM, Jason Gunthorpe wrote:
-> On Thu, Apr 29, 2021 at 03:26:55PM +0200, Auger Eric wrote:
->> From the pseudo code,
->>
->>   gpa_ioasid_id = ioctl(ioasid_fd, CREATE_IOASID, ..)
->>   ioctl(ioasid_fd, SET_IOASID_PAGE_TABLES, ..)
->>
->> I fail to understand whether the SET_IOASID_PAGE_TABLES would apply to
->> the whole IOASIDs within /dev/ioasid or to a specific one.
+On 04/05/2021 07:52, Suravee Suthikulpanit wrote:
+> On certain AMD platforms, when the IOMMU performance counter source
+> (csource) field is zero, power-gating for the counter is enabled, which
+> prevents write access and returns zero for read access.
 > 
-> Sorry, nearly every IOCTL would be scoped to a specific IOASID as one
-> of the arguments.
-
-OK thank you for the clarification.
+> This can cause invalid perf result especially when event multiplexing
+> is needed (i.e. more number of events than available counters) since
+> the current logic keeps track of the previously read counter value,
+> and subsequently re-program the counter to continue counting the event.
+> With power-gating enabled, we cannot gurantee successful re-programming
+> of the counter.
 > 
->> Also in subsequent emails when you talk about IOASID, is it the
->> ioasid_id, just to double check the terminology.
+> Workaround this issue by :
 > 
-> I am refering to IOASID as 'handle of the page table object inside the
-> /dev/ioasid fd'. If that is equal to some HW value or not I think
-> remains as decision point.
-OK
+> 1. Modifying the ordering of setting/reading counters and enabing/
+>     disabling csources to only access the counter when the csource
+>     is set to non-zero.
 > 
-> Basically the fd has an xarray of 'struct [something] *' and the
-> IOASID is index to that FD's private xarray. This is necessary to
-> create proper security as even if we have global PASID numbers or
-> something they still need to be isolated to only the FD that has
-> been authorized access.
+> 2. Since AMD IOMMU PMU does not support interrupt mode, the logic
+>     can be simplified to always start counting with value zero,
+>     and accumulate the counter value when stopping without the need
+>     to keep track and reprogram the counter with the previously read
+>     counter value.
 > 
->>>   nested_ioasid = ioctl(ioasid_fd, CREATE_NESTED_IOASID,  gpa_ioasid_id);
->>>   ioctl(ioasid_fd, SET_NESTED_IOASID_PAGE_TABLES, nested_ioasid, ..)
->> is the nested_ioasid the allocated PASID id or is it a complete
->> different object id.
-> 
-> It is the IOASID handle above.
-ok as per the following emails and below comment IOASID and PASID are
-different.The first would be a logic ID wgile the second the HW ID.
-
-Thanks
-
-Eric
-> 
->>>
->>>    // IOMMU will match on the device RID, no PASID:
->>>   ioctl(vfio_device, ATTACH_IOASID, nested_ioasid);
->>>
->>>    // IOMMU will match on the device RID and PASID:
->>>   ioctl(vfio_device, ATTACH_IOASID_PASID, pasid, nested_ioasid);
->> here I see you pass a different pasid, so I guess they are different, in
->> which case you would need to have an allocator function for this pasid,
->> right?
-> 
-> Yes, the underlying HW ID (PASID or substream id or whatver) is
-> something slightly different
-> 
-> Jason
+> This has been tested on systems with and without power-gating.
 > 
 
+Just as a final, sanity check I've loaded the same patched kernel 
+5.11.0-16 on to an old AMD Athlon FX8350. So far, all seems in order: it 
+loads IOMMUv1 and runs Ubuntu 21.04 without incident!
+
+Much appreciate all your efforts, Suravee, Alex et al. Best regards.
+
+-- 
+David
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
