@@ -7,50 +7,50 @@ X-Spam-Status: No, score=-16.8 required=3.0 tests=BAYES_00,
 	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_GIT
 	autolearn=ham autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 77A27C43460
-	for <iommu@archiver.kernel.org>; Fri,  7 May 2021 10:22:56 +0000 (UTC)
-Received: from smtp1.osuosl.org (smtp1.osuosl.org [140.211.166.138])
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2B769C433ED
+	for <iommu@archiver.kernel.org>; Fri,  7 May 2021 10:22:57 +0000 (UTC)
+Received: from smtp3.osuosl.org (smtp3.osuosl.org [140.211.166.136])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 2569F61456
+	by mail.kernel.org (Postfix) with ESMTPS id C382A6145D
 	for <iommu@archiver.kernel.org>; Fri,  7 May 2021 10:22:56 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 2569F61456
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org C382A6145D
 Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=huawei.com
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by smtp1.osuosl.org (Postfix) with ESMTP id E4120843EF;
+	by smtp3.osuosl.org (Postfix) with ESMTP id 89B5D60E2D;
+	Fri,  7 May 2021 10:22:56 +0000 (UTC)
+X-Virus-Scanned: amavisd-new at osuosl.org
+Received: from smtp3.osuosl.org ([127.0.0.1])
+	by localhost (smtp3.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+	with ESMTP id ejKhQc2Wi5hg; Fri,  7 May 2021 10:22:55 +0000 (UTC)
+Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [IPv6:2605:bc80:3010:104::8cd3:938])
+	by smtp3.osuosl.org (Postfix) with ESMTP id 6B66560E39;
 	Fri,  7 May 2021 10:22:55 +0000 (UTC)
-X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from smtp1.osuosl.org ([127.0.0.1])
-	by localhost (smtp1.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id nofebj-jktjq; Fri,  7 May 2021 10:22:55 +0000 (UTC)
-Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by smtp1.osuosl.org (Postfix) with ESMTP id CB4D884408;
-	Fri,  7 May 2021 10:22:54 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 91614C0022;
+	by lists.linuxfoundation.org (Postfix) with ESMTP id B9170C0029;
 	Fri,  7 May 2021 10:22:54 +0000 (UTC)
-Received: from smtp4.osuosl.org (smtp4.osuosl.org [140.211.166.137])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 68C56C0028
- for <iommu@lists.linux-foundation.org>; Fri,  7 May 2021 10:22:52 +0000 (UTC)
+Received: from smtp3.osuosl.org (smtp3.osuosl.org [IPv6:2605:bc80:3010::136])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 2DB09C0001
+ for <iommu@lists.linux-foundation.org>; Fri,  7 May 2021 10:22:53 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by smtp4.osuosl.org (Postfix) with ESMTP id 405A840FB3
+ by smtp3.osuosl.org (Postfix) with ESMTP id 5694160E2C
  for <iommu@lists.linux-foundation.org>; Fri,  7 May 2021 10:22:52 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from smtp4.osuosl.org ([127.0.0.1])
- by localhost (smtp4.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id 1guG8OTyenTR for <iommu@lists.linux-foundation.org>;
+Received: from smtp3.osuosl.org ([127.0.0.1])
+ by localhost (smtp3.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+ with ESMTP id W88Qyt_LcvXz for <iommu@lists.linux-foundation.org>;
  Fri,  7 May 2021 10:22:51 +0000 (UTC)
 X-Greylist: domain auto-whitelisted by SQLgrey-1.8.0
 Received: from szxga07-in.huawei.com (szxga07-in.huawei.com [45.249.212.35])
- by smtp4.osuosl.org (Postfix) with ESMTPS id 64EE740FAD
+ by smtp3.osuosl.org (Postfix) with ESMTPS id 6FF3A60E50
  for <iommu@lists.linux-foundation.org>; Fri,  7 May 2021 10:22:51 +0000 (UTC)
 Received: from DGGEMS408-HUB.china.huawei.com (unknown [172.30.72.58])
- by szxga07-in.huawei.com (SkyGuard) with ESMTP id 4Fc5zw3scPzCr6L;
+ by szxga07-in.huawei.com (SkyGuard) with ESMTP id 4Fc5zw4crwzCr7C;
  Fri,  7 May 2021 18:20:12 +0800 (CST)
 Received: from DESKTOP-5IS4806.china.huawei.com (10.174.187.224) by
  DGGEMS408-HUB.china.huawei.com (10.3.19.208) with Microsoft SMTP Server id
- 14.3.498.0; Fri, 7 May 2021 18:22:40 +0800
+ 14.3.498.0; Fri, 7 May 2021 18:22:38 +0800
 From: Keqian Zhu <zhukeqian1@huawei.com>
 To: <linux-kernel@vger.kernel.org>, <linux-arm-kernel@lists.infradead.org>,
  <iommu@lists.linux-foundation.org>, Robin Murphy <robin.murphy@arm.com>,
@@ -58,10 +58,9 @@ To: <linux-kernel@vger.kernel.org>, <linux-arm-kernel@lists.infradead.org>,
  "Jean-Philippe Brucker" <jean-philippe@linaro.org>, Lu Baolu
  <baolu.lu@linux.intel.com>, "Yi Sun" <yi.y.sun@linux.intel.com>, Tian Kevin
  <kevin.tian@intel.com>
-Subject: [RFC PATCH v4 11/13] iommu/arm-smmu-v3: Realize sync_dirty_log iommu
- ops
-Date: Fri, 7 May 2021 18:22:09 +0800
-Message-ID: <20210507102211.8836-12-zhukeqian1@huawei.com>
+Subject: [RFC PATCH v4 09/13] iommu/arm-smmu-v3: Add feature detection for BBML
+Date: Fri, 7 May 2021 18:22:07 +0800
+Message-ID: <20210507102211.8836-10-zhukeqian1@huawei.com>
 X-Mailer: git-send-email 2.8.4.windows.1
 In-Reply-To: <20210507102211.8836-1-zhukeqian1@huawei.com>
 References: <20210507102211.8836-1-zhukeqian1@huawei.com>
@@ -90,63 +89,77 @@ Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
 From: Kunkun Jiang <jiangkunkun@huawei.com>
 
-This realizes sync_dirty_log iommu ops based on sync_dirty_log
-io-pgtable ops.
+This detects BBML feature and if SMMU supports it, transfer BBMLx
+quirk to io-pgtable.
 
 Co-developed-by: Keqian Zhu <zhukeqian1@huawei.com>
 Signed-off-by: Kunkun Jiang <jiangkunkun@huawei.com>
 ---
- drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c | 30 +++++++++++++++++++++
- 1 file changed, 30 insertions(+)
+ drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c | 19 +++++++++++++++++++
+ drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.h |  6 ++++++
+ 2 files changed, 25 insertions(+)
 
 diff --git a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
-index 6de81d6ab652..3d3c0f8e2446 100644
+index c42e59655fd0..3a2dc3177180 100644
 --- a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
 +++ b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
-@@ -2721,6 +2721,35 @@ static int arm_smmu_switch_dirty_log(struct iommu_domain *domain, bool enable,
- 	return 0;
- }
+@@ -2051,6 +2051,11 @@ static int arm_smmu_domain_finalise(struct iommu_domain *domain,
+ 	if (smmu->features & ARM_SMMU_FEAT_HD)
+ 		pgtbl_cfg.quirks |= IO_PGTABLE_QUIRK_ARM_HD;
  
-+static int arm_smmu_sync_dirty_log(struct iommu_domain *domain,
-+				   unsigned long iova, size_t size,
-+				   unsigned long *bitmap,
-+				   unsigned long base_iova,
-+				   unsigned long bitmap_pgshift)
-+{
-+	struct arm_smmu_domain *smmu_domain = to_smmu_domain(domain);
-+	struct io_pgtable_ops *ops = smmu_domain->pgtbl_ops;
-+	struct arm_smmu_device *smmu = smmu_domain->smmu;
++	if (smmu->features & ARM_SMMU_FEAT_BBML1)
++		pgtbl_cfg.quirks |= IO_PGTABLE_QUIRK_ARM_BBML1;
++	else if (smmu->features & ARM_SMMU_FEAT_BBML2)
++		pgtbl_cfg.quirks |= IO_PGTABLE_QUIRK_ARM_BBML2;
 +
-+	if (!(smmu->features & ARM_SMMU_FEAT_HD))
-+		return -ENODEV;
-+	if (smmu_domain->stage != ARM_SMMU_DOMAIN_S1)
-+		return -EINVAL;
-+
-+	if (!ops || !ops->sync_dirty_log) {
-+		pr_err("io-pgtable don't realize sync dirty log\n");
-+		return -ENODEV;
+ 	pgtbl_ops = alloc_io_pgtable_ops(fmt, &pgtbl_cfg, smmu_domain);
+ 	if (!pgtbl_ops)
+ 		return -ENOMEM;
+@@ -3419,6 +3424,20 @@ static int arm_smmu_device_hw_probe(struct arm_smmu_device *smmu)
+ 
+ 	/* IDR3 */
+ 	reg = readl_relaxed(smmu->base + ARM_SMMU_IDR3);
++	switch (FIELD_GET(IDR3_BBML, reg)) {
++	case IDR3_BBML0:
++		break;
++	case IDR3_BBML1:
++		smmu->features |= ARM_SMMU_FEAT_BBML1;
++		break;
++	case IDR3_BBML2:
++		smmu->features |= ARM_SMMU_FEAT_BBML2;
++		break;
++	default:
++		dev_err(smmu->dev, "unknown/unsupported BBM behavior level\n");
++		return -ENXIO;
 +	}
 +
-+	/*
-+	 * Flush iotlb to ensure all inflight transactions are completed.
-+	 * See doc IHI0070Da 3.13.4 "HTTU behavior summary".
-+	 */
-+	arm_smmu_flush_iotlb_all(domain);
-+	return ops->sync_dirty_log(ops, iova, size, bitmap, base_iova,
-+				   bitmap_pgshift);
-+}
-+
- static int arm_smmu_of_xlate(struct device *dev, struct of_phandle_args *args)
- {
- 	return iommu_fwspec_add_ids(dev, args->args, 1);
-@@ -2820,6 +2849,7 @@ static struct iommu_ops arm_smmu_ops = {
- 	.device_group		= arm_smmu_device_group,
- 	.enable_nesting		= arm_smmu_enable_nesting,
- 	.switch_dirty_log	= arm_smmu_switch_dirty_log,
-+	.sync_dirty_log		= arm_smmu_sync_dirty_log,
- 	.of_xlate		= arm_smmu_of_xlate,
- 	.get_resv_regions	= arm_smmu_get_resv_regions,
- 	.put_resv_regions	= generic_iommu_put_resv_regions,
+ 	if (FIELD_GET(IDR3_RIL, reg))
+ 		smmu->features |= ARM_SMMU_FEAT_RANGE_INV;
+ 
+diff --git a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.h b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.h
+index 3edcd31b046e..e3b6bdd292c9 100644
+--- a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.h
++++ b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.h
+@@ -54,6 +54,10 @@
+ #define IDR1_SIDSIZE			GENMASK(5, 0)
+ 
+ #define ARM_SMMU_IDR3			0xc
++#define IDR3_BBML			GENMASK(12, 11)
++#define IDR3_BBML0			0
++#define IDR3_BBML1			1
++#define IDR3_BBML2			2
+ #define IDR3_RIL			(1 << 10)
+ 
+ #define ARM_SMMU_IDR5			0x14
+@@ -613,6 +617,8 @@ struct arm_smmu_device {
+ #define ARM_SMMU_FEAT_E2H		(1 << 18)
+ #define ARM_SMMU_FEAT_HA		(1 << 19)
+ #define ARM_SMMU_FEAT_HD		(1 << 20)
++#define ARM_SMMU_FEAT_BBML1		(1 << 21)
++#define ARM_SMMU_FEAT_BBML2		(1 << 22)
+ 	u32				features;
+ 
+ #define ARM_SMMU_OPT_SKIP_PREFETCH	(1 << 0)
 -- 
 2.19.1
 
