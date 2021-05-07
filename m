@@ -7,55 +7,54 @@ X-Spam-Status: No, score=-16.7 required=3.0 tests=BAYES_00,
 	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,UNPARSEABLE_RELAY,URIBL_BLOCKED,
 	USER_AGENT_GIT autolearn=ham autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2FBABC43460
-	for <iommu@archiver.kernel.org>; Fri,  7 May 2021 09:02:53 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A71E2C43461
+	for <iommu@archiver.kernel.org>; Fri,  7 May 2021 09:02:54 +0000 (UTC)
 Received: from smtp2.osuosl.org (smtp2.osuosl.org [140.211.166.133])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id BFB6661483
-	for <iommu@archiver.kernel.org>; Fri,  7 May 2021 09:02:52 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org BFB6661483
+	by mail.kernel.org (Postfix) with ESMTPS id 4054B6144F
+	for <iommu@archiver.kernel.org>; Fri,  7 May 2021 09:02:54 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 4054B6144F
 Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=collabora.com
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by smtp2.osuosl.org (Postfix) with ESMTP id 53F7940696;
+	by smtp2.osuosl.org (Postfix) with ESMTP id A58574069C;
 	Fri,  7 May 2021 09:02:52 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
 Received: from smtp2.osuosl.org ([127.0.0.1])
 	by localhost (smtp2.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id 3oh521w_3CED; Fri,  7 May 2021 09:02:51 +0000 (UTC)
-Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by smtp2.osuosl.org (Postfix) with ESMTP id 2E4444038D;
+	with ESMTP id dAxNuLABYT4F; Fri,  7 May 2021 09:02:51 +0000 (UTC)
+Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [IPv6:2605:bc80:3010:104::8cd3:938])
+	by smtp2.osuosl.org (Postfix) with ESMTP id 94D7C40676;
 	Fri,  7 May 2021 09:02:51 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 08EB7C0011;
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 526F4C0023;
 	Fri,  7 May 2021 09:02:51 +0000 (UTC)
-Received: from smtp4.osuosl.org (smtp4.osuosl.org [IPv6:2605:bc80:3010::137])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 0DE57C000D
- for <iommu@lists.linux-foundation.org>; Fri,  7 May 2021 09:02:48 +0000 (UTC)
+Received: from smtp4.osuosl.org (smtp4.osuosl.org [140.211.166.137])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 20A35C0001
+ for <iommu@lists.linux-foundation.org>; Fri,  7 May 2021 09:02:49 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by smtp4.osuosl.org (Postfix) with ESMTP id D734F4066B
- for <iommu@lists.linux-foundation.org>; Fri,  7 May 2021 09:02:47 +0000 (UTC)
+ by smtp4.osuosl.org (Postfix) with ESMTP id 7AEDE40E4E
+ for <iommu@lists.linux-foundation.org>; Fri,  7 May 2021 09:02:48 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
 Received: from smtp4.osuosl.org ([127.0.0.1])
  by localhost (smtp4.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id rGoHuMdxj7XT for <iommu@lists.linux-foundation.org>;
+ with ESMTP id fazpATSgwTFb for <iommu@lists.linux-foundation.org>;
  Fri,  7 May 2021 09:02:47 +0000 (UTC)
 X-Greylist: domain auto-whitelisted by SQLgrey-1.8.0
-Received: from bhuna.collabora.co.uk (bhuna.collabora.co.uk
- [IPv6:2a00:1098:0:82:1000:25:2eeb:e3e3])
- by smtp4.osuosl.org (Postfix) with ESMTPS id 25DD7405C6
- for <iommu@lists.linux-foundation.org>; Fri,  7 May 2021 09:02:46 +0000 (UTC)
+Received: from bhuna.collabora.co.uk (bhuna.collabora.co.uk [46.235.227.227])
+ by smtp4.osuosl.org (Postfix) with ESMTPS id C2728405D4
+ for <iommu@lists.linux-foundation.org>; Fri,  7 May 2021 09:02:47 +0000 (UTC)
 Received: from [127.0.0.1] (localhost [127.0.0.1])
  (Authenticated sender: benjamin.gaignard)
- with ESMTPSA id F21E21F43DC6
+ with ESMTPSA id AA6481F43DCB
 From: Benjamin Gaignard <benjamin.gaignard@collabora.com>
 To: joro@8bytes.org, will@kernel.org, robh+dt@kernel.org, heiko@sntech.de,
  xxm@rock-chips.com
-Subject: [PATCH v4 4/6] ARM: dts: rockchip: rk3036: Remove useless
- interrupt-names on IOMMU node
-Date: Fri,  7 May 2021 11:02:30 +0200
-Message-Id: <20210507090232.233049-5-benjamin.gaignard@collabora.com>
+Subject: [PATCH v4 5/6] ARM64: dts: rockchip: rk3036: Remove useless
+ interrupt-names properties
+Date: Fri,  7 May 2021 11:02:31 +0200
+Message-Id: <20210507090232.233049-6-benjamin.gaignard@collabora.com>
 X-Mailer: git-send-email 2.25.1
 In-Reply-To: <20210507090232.233049-1-benjamin.gaignard@collabora.com>
 References: <20210507090232.233049-1-benjamin.gaignard@collabora.com>
@@ -82,25 +81,33 @@ Content-Transfer-Encoding: 7bit
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-Remove useless interrupt-names property for IOMMU node
+Remove useless interrupt-names properties for IOMMU nodes
 
 Signed-off-by: Benjamin Gaignard <benjamin.gaignard@collabora.com>
 ---
- arch/arm/boot/dts/rk3036.dtsi | 1 -
- 1 file changed, 1 deletion(-)
+ arch/arm64/boot/dts/rockchip/px30.dtsi | 2 --
+ 1 file changed, 2 deletions(-)
 
-diff --git a/arch/arm/boot/dts/rk3036.dtsi b/arch/arm/boot/dts/rk3036.dtsi
-index 47a787a12e55..16753dc50bf3 100644
---- a/arch/arm/boot/dts/rk3036.dtsi
-+++ b/arch/arm/boot/dts/rk3036.dtsi
-@@ -140,7 +140,6 @@ vop_mmu: iommu@10118300 {
+diff --git a/arch/arm64/boot/dts/rockchip/px30.dtsi b/arch/arm64/boot/dts/rockchip/px30.dtsi
+index c45b0cfcae09..47d0c29fd8d0 100644
+--- a/arch/arm64/boot/dts/rockchip/px30.dtsi
++++ b/arch/arm64/boot/dts/rockchip/px30.dtsi
+@@ -1068,7 +1068,6 @@ vopb_mmu: iommu@ff460f00 {
  		compatible = "rockchip,iommu";
- 		reg = <0x10118300 0x100>;
- 		interrupts = <GIC_SPI 43 IRQ_TYPE_LEVEL_HIGH>;
--		interrupt-names = "vop_mmu";
- 		clocks = <&cru ACLK_LCDC>, <&cru HCLK_LCDC>;
+ 		reg = <0x0 0xff460f00 0x0 0x100>;
+ 		interrupts = <GIC_SPI 77 IRQ_TYPE_LEVEL_HIGH>;
+-		interrupt-names = "vopb_mmu";
+ 		clocks = <&cru ACLK_VOPB>, <&cru HCLK_VOPB>;
  		clock-names = "aclk", "iface";
- 		#iommu-cells = <0>;
+ 		power-domains = <&power PX30_PD_VO>;
+@@ -1109,7 +1108,6 @@ vopl_mmu: iommu@ff470f00 {
+ 		compatible = "rockchip,iommu";
+ 		reg = <0x0 0xff470f00 0x0 0x100>;
+ 		interrupts = <GIC_SPI 78 IRQ_TYPE_LEVEL_HIGH>;
+-		interrupt-names = "vopl_mmu";
+ 		clocks = <&cru ACLK_VOPL>, <&cru HCLK_VOPL>;
+ 		clock-names = "aclk", "iface";
+ 		power-domains = <&power PX30_PD_VO>;
 -- 
 2.25.1
 
