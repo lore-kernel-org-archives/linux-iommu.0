@@ -7,50 +7,50 @@ X-Spam-Status: No, score=-16.8 required=3.0 tests=BAYES_00,
 	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_GIT
 	autolearn=ham autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id DBB5FC43462
-	for <iommu@archiver.kernel.org>; Fri,  7 May 2021 10:22:50 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 98E9AC43460
+	for <iommu@archiver.kernel.org>; Fri,  7 May 2021 10:22:52 +0000 (UTC)
 Received: from smtp1.osuosl.org (smtp1.osuosl.org [140.211.166.138])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 3A8106145D
-	for <iommu@archiver.kernel.org>; Fri,  7 May 2021 10:22:50 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 3A8106145D
+	by mail.kernel.org (Postfix) with ESMTPS id 49BB661461
+	for <iommu@archiver.kernel.org>; Fri,  7 May 2021 10:22:52 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 49BB661461
 Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=huawei.com
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by smtp1.osuosl.org (Postfix) with ESMTP id 6467684423;
-	Fri,  7 May 2021 10:22:49 +0000 (UTC)
+	by smtp1.osuosl.org (Postfix) with ESMTP id 478B9843B9;
+	Fri,  7 May 2021 10:22:51 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
 Received: from smtp1.osuosl.org ([127.0.0.1])
 	by localhost (smtp1.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id y8UK0jalYqd0; Fri,  7 May 2021 10:22:48 +0000 (UTC)
+	with ESMTP id 27_QFsOZ4wSA; Fri,  7 May 2021 10:22:50 +0000 (UTC)
 Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [IPv6:2605:bc80:3010:104::8cd3:938])
-	by smtp1.osuosl.org (Postfix) with ESMTP id C02A1843F7;
-	Fri,  7 May 2021 10:22:47 +0000 (UTC)
+	by smtp1.osuosl.org (Postfix) with ESMTP id 0F78C84428;
+	Fri,  7 May 2021 10:22:50 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id A3926C0029;
-	Fri,  7 May 2021 10:22:47 +0000 (UTC)
-Received: from smtp1.osuosl.org (smtp1.osuosl.org [IPv6:2605:bc80:3010::138])
- by lists.linuxfoundation.org (Postfix) with ESMTP id DF383C0001
- for <iommu@lists.linux-foundation.org>; Fri,  7 May 2021 10:22:45 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id D6832C0001;
+	Fri,  7 May 2021 10:22:49 +0000 (UTC)
+Received: from smtp3.osuosl.org (smtp3.osuosl.org [IPv6:2605:bc80:3010::136])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 4D3F2C000D
+ for <iommu@lists.linux-foundation.org>; Fri,  7 May 2021 10:22:48 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by smtp1.osuosl.org (Postfix) with ESMTP id B8247843A4
- for <iommu@lists.linux-foundation.org>; Fri,  7 May 2021 10:22:44 +0000 (UTC)
+ by smtp3.osuosl.org (Postfix) with ESMTP id 275A160AE6
+ for <iommu@lists.linux-foundation.org>; Fri,  7 May 2021 10:22:48 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from smtp1.osuosl.org ([127.0.0.1])
- by localhost (smtp1.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id z2hiV6wB0ZYM for <iommu@lists.linux-foundation.org>;
- Fri,  7 May 2021 10:22:43 +0000 (UTC)
+Received: from smtp3.osuosl.org ([127.0.0.1])
+ by localhost (smtp3.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+ with ESMTP id G8I98nlEkkij for <iommu@lists.linux-foundation.org>;
+ Fri,  7 May 2021 10:22:46 +0000 (UTC)
 X-Greylist: domain auto-whitelisted by SQLgrey-1.8.0
-Received: from szxga07-in.huawei.com (szxga07-in.huawei.com [45.249.212.35])
- by smtp1.osuosl.org (Postfix) with ESMTPS id E3A7A843A0
- for <iommu@lists.linux-foundation.org>; Fri,  7 May 2021 10:22:42 +0000 (UTC)
-Received: from DGGEMS408-HUB.china.huawei.com (unknown [172.30.72.58])
- by szxga07-in.huawei.com (SkyGuard) with ESMTP id 4Fc5zk2zMMzCqxX;
- Fri,  7 May 2021 18:20:02 +0800 (CST)
+Received: from szxga04-in.huawei.com (szxga04-in.huawei.com [45.249.212.190])
+ by smtp3.osuosl.org (Postfix) with ESMTPS id 7339260AE8
+ for <iommu@lists.linux-foundation.org>; Fri,  7 May 2021 10:22:46 +0000 (UTC)
+Received: from DGGEMS408-HUB.china.huawei.com (unknown [172.30.72.59])
+ by szxga04-in.huawei.com (SkyGuard) with ESMTP id 4Fc5z30FQ5zqTB9;
+ Fri,  7 May 2021 18:19:27 +0800 (CST)
 Received: from DESKTOP-5IS4806.china.huawei.com (10.174.187.224) by
  DGGEMS408-HUB.china.huawei.com (10.3.19.208) with Microsoft SMTP Server id
- 14.3.498.0; Fri, 7 May 2021 18:22:31 +0800
+ 14.3.498.0; Fri, 7 May 2021 18:22:34 +0800
 From: Keqian Zhu <zhukeqian1@huawei.com>
 To: <linux-kernel@vger.kernel.org>, <linux-arm-kernel@lists.infradead.org>,
  <iommu@lists.linux-foundation.org>, Robin Murphy <robin.murphy@arm.com>,
@@ -58,9 +58,10 @@ To: <linux-kernel@vger.kernel.org>, <linux-arm-kernel@lists.infradead.org>,
  "Jean-Philippe Brucker" <jean-philippe@linaro.org>, Lu Baolu
  <baolu.lu@linux.intel.com>, "Yi Sun" <yi.y.sun@linux.intel.com>, Tian Kevin
  <kevin.tian@intel.com>
-Subject: [RFC PATCH v4 01/13] iommu: Introduce dirty log tracking framework
-Date: Fri, 7 May 2021 18:21:59 +0800
-Message-ID: <20210507102211.8836-2-zhukeqian1@huawei.com>
+Subject: [RFC PATCH v4 04/13] iommu/io-pgtable-arm: Add and realize merge_page
+ ops
+Date: Fri, 7 May 2021 18:22:02 +0800
+Message-ID: <20210507102211.8836-5-zhukeqian1@huawei.com>
 X-Mailer: git-send-email 2.8.4.windows.1
 In-Reply-To: <20210507102211.8836-1-zhukeqian1@huawei.com>
 References: <20210507102211.8836-1-zhukeqian1@huawei.com>
@@ -87,423 +88,134 @@ Content-Transfer-Encoding: 7bit
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-Some types of IOMMU are capable of tracking DMA dirty log, such as
-ARM SMMU with HTTU or Intel IOMMU with SLADE. This introduces the
-dirty log tracking framework in the IOMMU base layer.
+From: Kunkun Jiang <jiangkunkun@huawei.com>
 
-Four new essential interfaces are added, and we maintaince the status
-of dirty log tracking in iommu_domain.
-1. iommu_support_dirty_log: Check whether domain supports dirty log tracking
-2. iommu_switch_dirty_log: Perform actions to start|stop dirty log tracking
-3. iommu_sync_dirty_log: Sync dirty log from IOMMU into a dirty bitmap
-4. iommu_clear_dirty_log: Clear dirty log of IOMMU by a mask bitmap
+If block(largepage) mappings are split during start dirty log, then
+when stop dirty log, we need to recover them for better DMA performance.
 
-Note: Don't concurrently call these interfaces with other ops that
-access underlying page table.
+This recovers block mappings and unmap the span of page mappings. BBML1
+or BBML2 feature is required.
 
-Signed-off-by: Keqian Zhu <zhukeqian1@huawei.com>
+Merging page is designed to be only used by dirty log tracking, which
+does not concurrently work with other pgtable ops that access underlying
+page table, so race condition does not exist.
+
+Co-developed-by: Keqian Zhu <zhukeqian1@huawei.com>
 Signed-off-by: Kunkun Jiang <jiangkunkun@huawei.com>
 ---
- drivers/iommu/iommu.c        | 201 +++++++++++++++++++++++++++++++++++
- include/linux/iommu.h        |  63 +++++++++++
- include/trace/events/iommu.h |  63 +++++++++++
- 3 files changed, 327 insertions(+)
+ drivers/iommu/io-pgtable-arm.c | 78 ++++++++++++++++++++++++++++++++++
+ include/linux/io-pgtable.h     |  2 +
+ 2 files changed, 80 insertions(+)
 
-diff --git a/drivers/iommu/iommu.c b/drivers/iommu/iommu.c
-index 808ab70d5df5..0d15620d1e90 100644
---- a/drivers/iommu/iommu.c
-+++ b/drivers/iommu/iommu.c
-@@ -1940,6 +1940,7 @@ static struct iommu_domain *__iommu_domain_alloc(struct bus_type *bus,
- 	domain->type = type;
- 	/* Assume all sizes by default; the driver may override this later */
- 	domain->pgsize_bitmap  = bus->iommu_ops->pgsize_bitmap;
-+	mutex_init(&domain->switch_log_lock);
- 
- 	return domain;
+diff --git a/drivers/iommu/io-pgtable-arm.c b/drivers/iommu/io-pgtable-arm.c
+index 664a9548b199..b9f6e3370032 100644
+--- a/drivers/iommu/io-pgtable-arm.c
++++ b/drivers/iommu/io-pgtable-arm.c
+@@ -800,6 +800,83 @@ static size_t arm_lpae_split_block(struct io_pgtable_ops *ops,
+ 	return __arm_lpae_split_block(data, iova, size, lvl, ptep);
  }
-@@ -2703,6 +2704,206 @@ int iommu_set_pgtable_quirks(struct iommu_domain *domain,
- }
- EXPORT_SYMBOL_GPL(iommu_set_pgtable_quirks);
  
-+bool iommu_support_dirty_log(struct iommu_domain *domain)
++static size_t __arm_lpae_merge_page(struct arm_lpae_io_pgtable *data,
++				    unsigned long iova, phys_addr_t paddr,
++				    size_t size, int lvl, arm_lpae_iopte *ptep,
++				    arm_lpae_iopte prot)
 +{
-+	const struct iommu_ops *ops = domain->ops;
++	arm_lpae_iopte pte, *tablep;
++	struct io_pgtable *iop = &data->iop;
++	struct io_pgtable_cfg *cfg = &data->iop.cfg;
 +
-+	return ops->support_dirty_log && ops->support_dirty_log(domain);
-+}
-+EXPORT_SYMBOL_GPL(iommu_support_dirty_log);
++	if (WARN_ON(lvl == ARM_LPAE_MAX_LEVELS))
++		return 0;
 +
-+int iommu_switch_dirty_log(struct iommu_domain *domain, bool enable,
-+			   unsigned long iova, size_t size, int prot)
-+{
-+	const struct iommu_ops *ops = domain->ops;
-+	unsigned long orig_iova = iova;
-+	unsigned int min_pagesz;
-+	size_t orig_size = size;
-+	bool flush = false;
-+	int ret = 0;
++	ptep += ARM_LPAE_LVL_IDX(iova, lvl, data);
++	pte = READ_ONCE(*ptep);
++	if (WARN_ON(!pte))
++		return 0;
 +
-+	if (unlikely(!ops->switch_dirty_log))
-+		return -ENODEV;
++	if (size == ARM_LPAE_BLOCK_SIZE(lvl, data)) {
++		if (iopte_leaf(pte, lvl, iop->fmt))
++			return size;
 +
-+	min_pagesz = 1 << __ffs(domain->pgsize_bitmap);
-+	if (!IS_ALIGNED(iova | size, min_pagesz)) {
-+		pr_err("unaligned: iova 0x%lx size 0x%zx min_pagesz 0x%x\n",
-+		       iova, size, min_pagesz);
-+		return -EINVAL;
++		/* Race does not exist */
++		if (cfg->quirks & IO_PGTABLE_QUIRK_ARM_BBML1) {
++			prot |= ARM_LPAE_PTE_NT;
++			__arm_lpae_init_pte(data, paddr, prot, lvl, ptep);
++			io_pgtable_tlb_flush_walk(iop, iova, size,
++						  ARM_LPAE_GRANULE(data));
++
++			prot &= ~(ARM_LPAE_PTE_NT);
++			__arm_lpae_init_pte(data, paddr, prot, lvl, ptep);
++		} else {
++			__arm_lpae_init_pte(data, paddr, prot, lvl, ptep);
++		}
++
++		tablep = iopte_deref(pte, data);
++		__arm_lpae_free_pgtable(data, lvl + 1, tablep);
++		return size;
++	} else if (iopte_leaf(pte, lvl, iop->fmt)) {
++		/* The size is too small, already merged */
++		return size;
 +	}
 +
-+	mutex_lock(&domain->switch_log_lock);
-+	if (enable && domain->dirty_log_tracking) {
-+		ret = -EBUSY;
-+		goto out;
-+	} else if (!enable && !domain->dirty_log_tracking) {
-+		ret = -EINVAL;
-+		goto out;
-+	}
-+
-+	pr_debug("switch_dirty_log %s for: iova 0x%lx size 0x%zx\n",
-+		 enable ? "enable" : "disable", iova, size);
-+
-+	while (size) {
-+		size_t pgsize = iommu_pgsize(domain, iova, size);
-+
-+		flush = true;
-+		ret = ops->switch_dirty_log(domain, enable, iova, pgsize, prot);
-+		if (ret)
-+			break;
-+
-+		pr_debug("switch_dirty_log handled: iova 0x%lx size 0x%zx\n",
-+			 iova, pgsize);
-+
-+		iova += pgsize;
-+		size -= pgsize;
-+	}
-+
-+	if (flush)
-+		iommu_flush_iotlb_all(domain);
-+
-+	if (!ret) {
-+		domain->dirty_log_tracking = enable;
-+		trace_switch_dirty_log(orig_iova, orig_size, enable);
-+	}
-+out:
-+	mutex_unlock(&domain->switch_log_lock);
-+	return ret;
-+}
-+EXPORT_SYMBOL_GPL(iommu_switch_dirty_log);
-+
-+int iommu_sync_dirty_log(struct iommu_domain *domain, unsigned long iova,
-+			 size_t size, unsigned long *bitmap,
-+			 unsigned long base_iova, unsigned long bitmap_pgshift)
-+{
-+	const struct iommu_ops *ops = domain->ops;
-+	unsigned long orig_iova = iova;
-+	unsigned int min_pagesz;
-+	size_t orig_size = size;
-+	int ret = 0;
-+
-+	if (unlikely(!ops->sync_dirty_log))
-+		return -ENODEV;
-+
-+	min_pagesz = 1 << __ffs(domain->pgsize_bitmap);
-+	if (!IS_ALIGNED(iova | size, min_pagesz)) {
-+		pr_err("unaligned: iova 0x%lx size 0x%zx min_pagesz 0x%x\n",
-+		       iova, size, min_pagesz);
-+		return -EINVAL;
-+	}
-+
-+	mutex_lock(&domain->switch_log_lock);
-+	if (!domain->dirty_log_tracking) {
-+		ret = -EINVAL;
-+		goto out;
-+	}
-+
-+	pr_debug("sync_dirty_log for: iova 0x%lx size 0x%zx\n", iova, size);
-+
-+	while (size) {
-+		size_t pgsize = iommu_pgsize(domain, iova, size);
-+
-+		ret = ops->sync_dirty_log(domain, iova, pgsize,
-+					  bitmap, base_iova, bitmap_pgshift);
-+		if (ret)
-+			break;
-+
-+		pr_debug("sync_dirty_log handled: iova 0x%lx size 0x%zx\n",
-+			 iova, pgsize);
-+
-+		iova += pgsize;
-+		size -= pgsize;
-+	}
-+
-+	if (!ret)
-+		trace_sync_dirty_log(orig_iova, orig_size);
-+out:
-+	mutex_unlock(&domain->switch_log_lock);
-+	return ret;
-+}
-+EXPORT_SYMBOL_GPL(iommu_sync_dirty_log);
-+
-+static int __iommu_clear_dirty_log(struct iommu_domain *domain,
-+				   unsigned long iova, size_t size,
-+				   unsigned long *bitmap,
-+				   unsigned long base_iova,
-+				   unsigned long bitmap_pgshift)
-+{
-+	const struct iommu_ops *ops = domain->ops;
-+	unsigned long orig_iova = iova;
-+	size_t orig_size = size;
-+	int ret = 0;
-+
-+	if (unlikely(!ops->clear_dirty_log))
-+		return -ENODEV;
-+
-+	pr_debug("clear_dirty_log for: iova 0x%lx size 0x%zx\n", iova, size);
-+
-+	while (size) {
-+		size_t pgsize = iommu_pgsize(domain, iova, size);
-+
-+		ret = ops->clear_dirty_log(domain, iova, pgsize, bitmap,
-+					   base_iova, bitmap_pgshift);
-+		if (ret)
-+			break;
-+
-+		pr_debug("clear_dirty_log handled: iova 0x%lx size 0x%zx\n",
-+			 iova, pgsize);
-+
-+		iova += pgsize;
-+		size -= pgsize;
-+	}
-+
-+	if (!ret)
-+		trace_clear_dirty_log(orig_iova, orig_size);
-+
-+	return ret;
++	/* Keep on walkin */
++	ptep = iopte_deref(pte, data);
++	return __arm_lpae_merge_page(data, iova, paddr, size, lvl + 1, ptep, prot);
 +}
 +
-+int iommu_clear_dirty_log(struct iommu_domain *domain,
-+			  unsigned long iova, size_t size,
-+			  unsigned long *bitmap, unsigned long base_iova,
-+			  unsigned long bitmap_pgshift)
++static size_t arm_lpae_merge_page(struct io_pgtable_ops *ops, unsigned long iova,
++				  phys_addr_t paddr, size_t size, int iommu_prot)
 +{
-+	unsigned long riova, rsize;
-+	unsigned int min_pagesz;
-+	bool flush = false;
-+	int rs, re, start, end;
-+	int ret = 0;
++	struct arm_lpae_io_pgtable *data = io_pgtable_ops_to_data(ops);
++	struct io_pgtable_cfg *cfg = &data->iop.cfg;
++	arm_lpae_iopte *ptep = data->pgd;
++	int lvl = data->start_level;
++	arm_lpae_iopte prot;
++	long iaext = (s64)iova >> cfg->ias;
 +
-+	min_pagesz = 1 << __ffs(domain->pgsize_bitmap);
-+	if (!IS_ALIGNED(iova | size, min_pagesz)) {
-+		pr_err("unaligned: iova 0x%lx min_pagesz 0x%x\n",
-+		       iova, min_pagesz);
-+		return -EINVAL;
-+	}
++	if (WARN_ON(!size || (size & cfg->pgsize_bitmap) != size))
++		return 0;
 +
-+	mutex_lock(&domain->switch_log_lock);
-+	if (!domain->dirty_log_tracking) {
-+		ret = -EINVAL;
-+		goto out;
-+	}
++	if (cfg->quirks & IO_PGTABLE_QUIRK_ARM_TTBR1)
++		iaext = ~iaext;
++	if (WARN_ON(iaext || paddr >> cfg->oas))
++		return 0;
 +
-+	start = (iova - base_iova) >> bitmap_pgshift;
-+	end = start + (size >> bitmap_pgshift);
-+	bitmap_for_each_set_region(bitmap, rs, re, start, end) {
-+		flush = true;
-+		riova = base_iova + (rs << bitmap_pgshift);
-+		rsize = (re - rs) << bitmap_pgshift;
-+		ret = __iommu_clear_dirty_log(domain, riova, rsize, bitmap,
-+					      base_iova, bitmap_pgshift);
-+		if (ret)
-+			break;
-+	}
++	/* If no access, then nothing to do */
++	if (!(iommu_prot & (IOMMU_READ | IOMMU_WRITE)))
++		return size;
 +
-+	if (flush)
-+		iommu_flush_iotlb_all(domain);
-+out:
-+	mutex_unlock(&domain->switch_log_lock);
-+	return ret;
++	/* If it is smallest granule, then nothing to do */
++	if (size == ARM_LPAE_BLOCK_SIZE(ARM_LPAE_MAX_LEVELS - 1, data))
++		return size;
++
++	prot = arm_lpae_prot_to_pte(data, iommu_prot);
++	return __arm_lpae_merge_page(data, iova, paddr, size, lvl, ptep, prot);
 +}
-+EXPORT_SYMBOL_GPL(iommu_clear_dirty_log);
 +
- void iommu_get_resv_regions(struct device *dev, struct list_head *list)
+ static void arm_lpae_restrict_pgsizes(struct io_pgtable_cfg *cfg)
  {
- 	const struct iommu_ops *ops = dev->bus->iommu_ops;
-diff --git a/include/linux/iommu.h b/include/linux/iommu.h
-index 32d448050bf7..e0e40dda974d 100644
---- a/include/linux/iommu.h
-+++ b/include/linux/iommu.h
-@@ -87,6 +87,8 @@ struct iommu_domain {
- 	void *handler_token;
- 	struct iommu_domain_geometry geometry;
- 	void *iova_cookie;
-+	bool dirty_log_tracking;
-+	struct mutex switch_log_lock;
+ 	unsigned long granule, page_sizes;
+@@ -879,6 +956,7 @@ arm_lpae_alloc_pgtable(struct io_pgtable_cfg *cfg)
+ 		.unmap		= arm_lpae_unmap,
+ 		.iova_to_phys	= arm_lpae_iova_to_phys,
+ 		.split_block	= arm_lpae_split_block,
++		.merge_page	= arm_lpae_merge_page,
+ 	};
+ 
+ 	return data;
+diff --git a/include/linux/io-pgtable.h b/include/linux/io-pgtable.h
+index eba6c6ccbe49..e77576d946a2 100644
+--- a/include/linux/io-pgtable.h
++++ b/include/linux/io-pgtable.h
+@@ -169,6 +169,8 @@ struct io_pgtable_ops {
+ 				    unsigned long iova);
+ 	size_t (*split_block)(struct io_pgtable_ops *ops, unsigned long iova,
+ 			      size_t size);
++	size_t (*merge_page)(struct io_pgtable_ops *ops, unsigned long iova,
++			     phys_addr_t phys, size_t size, int prot);
  };
  
- enum iommu_cap {
-@@ -193,6 +195,10 @@ struct iommu_iotlb_gather {
-  * @device_group: find iommu group for a particular device
-  * @enable_nesting: Enable nesting
-  * @set_pgtable_quirks: Set io page table quirks (IO_PGTABLE_QUIRK_*)
-+ * @support_dirty_log: Check whether domain supports dirty log tracking
-+ * @switch_dirty_log: Perform actions to start|stop dirty log tracking
-+ * @sync_dirty_log: Sync dirty log from IOMMU into a dirty bitmap
-+ * @clear_dirty_log: Clear dirty log of IOMMU by a mask bitmap
-  * @get_resv_regions: Request list of reserved regions for a device
-  * @put_resv_regions: Free list of reserved regions for a device
-  * @apply_resv_region: Temporary helper call-back for iova reserved ranges
-@@ -245,6 +251,22 @@ struct iommu_ops {
- 	int (*set_pgtable_quirks)(struct iommu_domain *domain,
- 				  unsigned long quirks);
- 
-+	/*
-+	 * Track dirty log. Note: Don't concurrently call these interfaces with
-+	 * other ops that access underlying page table.
-+	 */
-+	bool (*support_dirty_log)(struct iommu_domain *domain);
-+	int (*switch_dirty_log)(struct iommu_domain *domain, bool enable,
-+				unsigned long iova, size_t size, int prot);
-+	int (*sync_dirty_log)(struct iommu_domain *domain,
-+			      unsigned long iova, size_t size,
-+			      unsigned long *bitmap, unsigned long base_iova,
-+			      unsigned long bitmap_pgshift);
-+	int (*clear_dirty_log)(struct iommu_domain *domain,
-+			       unsigned long iova, size_t size,
-+			       unsigned long *bitmap, unsigned long base_iova,
-+			       unsigned long bitmap_pgshift);
-+
- 	/* Request/Free a list of reserved regions for a device */
- 	void (*get_resv_regions)(struct device *dev, struct list_head *list);
- 	void (*put_resv_regions)(struct device *dev, struct list_head *list);
-@@ -475,6 +497,17 @@ extern struct iommu_domain *iommu_group_default_domain(struct iommu_group *);
- int iommu_enable_nesting(struct iommu_domain *domain);
- int iommu_set_pgtable_quirks(struct iommu_domain *domain,
- 		unsigned long quirks);
-+extern bool iommu_support_dirty_log(struct iommu_domain *domain);
-+extern int iommu_switch_dirty_log(struct iommu_domain *domain, bool enable,
-+				  unsigned long iova, size_t size, int prot);
-+extern int iommu_sync_dirty_log(struct iommu_domain *domain, unsigned long iova,
-+				size_t size, unsigned long *bitmap,
-+				unsigned long base_iova,
-+				unsigned long bitmap_pgshift);
-+extern int iommu_clear_dirty_log(struct iommu_domain *domain, unsigned long iova,
-+				 size_t dma_size, unsigned long *bitmap,
-+				 unsigned long base_iova,
-+				 unsigned long bitmap_pgshift);
- 
- void iommu_set_dma_strict(bool val);
- bool iommu_get_dma_strict(struct iommu_domain *domain);
-@@ -848,6 +881,36 @@ static inline int iommu_set_pgtable_quirks(struct iommu_domain *domain,
- 	return 0;
- }
- 
-+static inline bool iommu_support_dirty_log(struct iommu_domain *domain)
-+{
-+	return false;
-+}
-+
-+static inline int iommu_switch_dirty_log(struct iommu_domain *domain,
-+					 bool enable, unsigned long iova,
-+					 size_t size, int prot)
-+{
-+	return -EINVAL;
-+}
-+
-+static inline int iommu_sync_dirty_log(struct iommu_domain *domain,
-+				       unsigned long iova, size_t size,
-+				       unsigned long *bitmap,
-+				       unsigned long base_iova,
-+				       unsigned long pgshift)
-+{
-+	return -EINVAL;
-+}
-+
-+static inline int iommu_clear_dirty_log(struct iommu_domain *domain,
-+					unsigned long iova, size_t size,
-+					unsigned long *bitmap,
-+					unsigned long base_iova,
-+					unsigned long pgshift)
-+{
-+	return -EINVAL;
-+}
-+
- static inline int iommu_device_register(struct iommu_device *iommu,
- 					const struct iommu_ops *ops,
- 					struct device *hwdev)
-diff --git a/include/trace/events/iommu.h b/include/trace/events/iommu.h
-index 72b4582322ff..6436d693d357 100644
---- a/include/trace/events/iommu.h
-+++ b/include/trace/events/iommu.h
-@@ -129,6 +129,69 @@ TRACE_EVENT(unmap,
- 	)
- );
- 
-+TRACE_EVENT(switch_dirty_log,
-+
-+	TP_PROTO(unsigned long iova, size_t size, bool enable),
-+
-+	TP_ARGS(iova, size, enable),
-+
-+	TP_STRUCT__entry(
-+		__field(u64, iova)
-+		__field(size_t, size)
-+		__field(bool, enable)
-+	),
-+
-+	TP_fast_assign(
-+		__entry->iova = iova;
-+		__entry->size = size;
-+		__entry->enable = enable;
-+	),
-+
-+	TP_printk("IOMMU: iova=0x%016llx size=%zu enable=%u",
-+			__entry->iova, __entry->size, __entry->enable
-+	)
-+);
-+
-+TRACE_EVENT(sync_dirty_log,
-+
-+	TP_PROTO(unsigned long iova, size_t size),
-+
-+	TP_ARGS(iova, size),
-+
-+	TP_STRUCT__entry(
-+		__field(u64, iova)
-+		__field(size_t, size)
-+	),
-+
-+	TP_fast_assign(
-+		__entry->iova = iova;
-+		__entry->size = size;
-+	),
-+
-+	TP_printk("IOMMU: iova=0x%016llx size=%zu", __entry->iova,
-+			__entry->size)
-+);
-+
-+TRACE_EVENT(clear_dirty_log,
-+
-+	TP_PROTO(unsigned long iova, size_t size),
-+
-+	TP_ARGS(iova, size),
-+
-+	TP_STRUCT__entry(
-+		__field(u64, iova)
-+		__field(size_t, size)
-+	),
-+
-+	TP_fast_assign(
-+		__entry->iova = iova;
-+		__entry->size = size;
-+	),
-+
-+	TP_printk("IOMMU: iova=0x%016llx size=%zu", __entry->iova,
-+			__entry->size)
-+);
-+
- DECLARE_EVENT_CLASS(iommu_error,
- 
- 	TP_PROTO(struct device *dev, unsigned long iova, int flags),
+ /**
 -- 
 2.19.1
 
