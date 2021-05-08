@@ -2,83 +2,192 @@ Return-Path: <SRS0=sTZ6=KD=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-15.3 required=3.0 tests=BAYES_00,
-	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_CR_TRAILER,INCLUDES_PATCH,
-	MAILING_LIST_MULTI,NICE_REPLY_A,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,
-	USER_AGENT_SANE_1 autolearn=unavailable autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-3.6 required=3.0 tests=BAYES_00,DKIM_INVALID,
+	DKIM_SIGNED,HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,SPF_HELO_NONE,
+	SPF_PASS autolearn=no autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0FBF0C433ED
-	for <iommu@archiver.kernel.org>; Sat,  8 May 2021 03:47:56 +0000 (UTC)
-Received: from smtp4.osuosl.org (smtp4.osuosl.org [140.211.166.137])
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3AB74C433B4
+	for <iommu@archiver.kernel.org>; Sat,  8 May 2021 05:46:23 +0000 (UTC)
+Received: from smtp2.osuosl.org (smtp2.osuosl.org [140.211.166.133])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 68B9D61106
-	for <iommu@archiver.kernel.org>; Sat,  8 May 2021 03:47:55 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 68B9D61106
-Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=linux.intel.com
+	by mail.kernel.org (Postfix) with ESMTPS id C06B861456
+	for <iommu@archiver.kernel.org>; Sat,  8 May 2021 05:46:22 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org C06B861456
+Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=intel.com
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by smtp4.osuosl.org (Postfix) with ESMTP id 17DC840490;
-	Sat,  8 May 2021 03:47:55 +0000 (UTC)
+	by smtp2.osuosl.org (Postfix) with ESMTP id 77B87403F2;
+	Sat,  8 May 2021 05:46:22 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from smtp4.osuosl.org ([127.0.0.1])
-	by localhost (smtp4.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id SlspWlwWj3po; Sat,  8 May 2021 03:47:51 +0000 (UTC)
+Received: from smtp2.osuosl.org ([127.0.0.1])
+	by localhost (smtp2.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+	with ESMTP id hLOFeH7PYmfC; Sat,  8 May 2021 05:46:21 +0000 (UTC)
 Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by smtp4.osuosl.org (Postfix) with ESMTP id 6ABD740523;
-	Sat,  8 May 2021 03:47:51 +0000 (UTC)
+	by smtp2.osuosl.org (Postfix) with ESMTP id 5A4AF400D1;
+	Sat,  8 May 2021 05:46:21 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 4D6E5C000D;
-	Sat,  8 May 2021 03:47:51 +0000 (UTC)
-Received: from smtp4.osuosl.org (smtp4.osuosl.org [140.211.166.137])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 573C9C0001
- for <iommu@lists.linux-foundation.org>; Sat,  8 May 2021 03:47:49 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 35688C000D;
+	Sat,  8 May 2021 05:46:21 +0000 (UTC)
+Received: from smtp2.osuosl.org (smtp2.osuosl.org [140.211.166.133])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 48EDBC0001
+ for <iommu@lists.linux-foundation.org>; Sat,  8 May 2021 05:46:20 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by smtp4.osuosl.org (Postfix) with ESMTP id 2EE7C40490
- for <iommu@lists.linux-foundation.org>; Sat,  8 May 2021 03:47:49 +0000 (UTC)
+ by smtp2.osuosl.org (Postfix) with ESMTP id 37D20403F1
+ for <iommu@lists.linux-foundation.org>; Sat,  8 May 2021 05:46:20 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from smtp4.osuosl.org ([127.0.0.1])
- by localhost (smtp4.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id OlOzxcYgAazC for <iommu@lists.linux-foundation.org>;
- Sat,  8 May 2021 03:47:42 +0000 (UTC)
+Received: from smtp2.osuosl.org ([127.0.0.1])
+ by localhost (smtp2.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+ with ESMTP id EJKuRLK0XeC0 for <iommu@lists.linux-foundation.org>;
+ Sat,  8 May 2021 05:46:18 +0000 (UTC)
 X-Greylist: domain auto-whitelisted by SQLgrey-1.8.0
-Received: from mga14.intel.com (mga14.intel.com [192.55.52.115])
- by smtp4.osuosl.org (Postfix) with ESMTPS id A16E74052A
- for <iommu@lists.linux-foundation.org>; Sat,  8 May 2021 03:47:41 +0000 (UTC)
-IronPort-SDR: /aDOfchytiKVhWGX/njZnF3Y1ZqwxwwrInBZ9vCdFgj+MJd5RA4EFT5OPbgmDwekAA+uo+gSbU
- fG0uo6f1a/HQ==
-X-IronPort-AV: E=McAfee;i="6200,9189,9977"; a="198516801"
-X-IronPort-AV: E=Sophos;i="5.82,282,1613462400"; d="scan'208";a="198516801"
-Received: from fmsmga006.fm.intel.com ([10.253.24.20])
- by fmsmga103.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384;
- 07 May 2021 20:47:38 -0700
-IronPort-SDR: BAUQpAKx+ToeZn5dRxJS1VxNcza0WkWrPnhbHwjgf8BMtxog3GGfZ8CfX8If4GIgnFS9neQIBG
- KzHBAxG7Hdbg==
+Received: from mga11.intel.com (mga11.intel.com [192.55.52.93])
+ by smtp2.osuosl.org (Postfix) with ESMTPS id 9DE2E400D1
+ for <iommu@lists.linux-foundation.org>; Sat,  8 May 2021 05:46:17 +0000 (UTC)
+IronPort-SDR: rU6Yi+fModCRn8Um4ZCB65MfCl6GPLOEMPDghSWmUiLFYoWgxT8oSaeRDEHoKrH53BL4ZSLcwQ
+ W/sG2eoggdPw==
+X-IronPort-AV: E=McAfee;i="6200,9189,9977"; a="195764633"
+X-IronPort-AV: E=Sophos;i="5.82,282,1613462400"; d="scan'208";a="195764633"
+Received: from orsmga003.jf.intel.com ([10.7.209.27])
+ by fmsmga102.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384;
+ 07 May 2021 22:46:14 -0700
+IronPort-SDR: gSxN5uXElMsj2qT+yR8CJ4BcwHoUOxd83fYjg+j23bIb2uqUXHiws+hkDqagEo06tt+SJUNHZs
+ QWhqiXmqxGPw==
 X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.82,282,1613462400"; d="scan'208";a="620437358"
-Received: from allen-box.sh.intel.com (HELO [10.239.159.128])
- ([10.239.159.128])
- by fmsmga006.fm.intel.com with ESMTP; 07 May 2021 20:47:34 -0700
-Subject: Re: [RFC PATCH v4 01/13] iommu: Introduce dirty log tracking framework
-To: Keqian Zhu <zhukeqian1@huawei.com>, linux-kernel@vger.kernel.org,
- linux-arm-kernel@lists.infradead.org, iommu@lists.linux-foundation.org,
- Robin Murphy <robin.murphy@arm.com>, Will Deacon <will@kernel.org>,
- Joerg Roedel <joro@8bytes.org>,
- Jean-Philippe Brucker <jean-philippe@linaro.org>,
- Yi Sun <yi.y.sun@linux.intel.com>, Tian Kevin <kevin.tian@intel.com>
-References: <20210507102211.8836-1-zhukeqian1@huawei.com>
- <20210507102211.8836-2-zhukeqian1@huawei.com>
-From: Lu Baolu <baolu.lu@linux.intel.com>
-Message-ID: <efc2d868-28ba-8ed9-1d6b-610b67d671b5@linux.intel.com>
-Date: Sat, 8 May 2021 11:46:52 +0800
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
- Thunderbird/78.7.1
-MIME-Version: 1.0
-In-Reply-To: <20210507102211.8836-2-zhukeqian1@huawei.com>
+X-IronPort-AV: E=Sophos;i="5.82,282,1613462400"; d="scan'208";a="390289653"
+Received: from orsmsx604.amr.corp.intel.com ([10.22.229.17])
+ by orsmga003.jf.intel.com with ESMTP; 07 May 2021 22:46:14 -0700
+Received: from orsmsx601.amr.corp.intel.com (10.22.229.14) by
+ ORSMSX604.amr.corp.intel.com (10.22.229.17) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2106.2; Fri, 7 May 2021 22:46:14 -0700
+Received: from orsedg603.ED.cps.intel.com (10.7.248.4) by
+ orsmsx601.amr.corp.intel.com (10.22.229.14) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2106.2
+ via Frontend Transport; Fri, 7 May 2021 22:46:14 -0700
+Received: from NAM10-MW2-obe.outbound.protection.outlook.com (104.47.55.106)
+ by edgegateway.intel.com (134.134.137.100) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.1.2106.2; Fri, 7 May 2021 22:46:13 -0700
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=U9lKDO2O9Ot1iksWU6k9V8RP5bpY7YX4Zml6h+btvax0tTfJRxi53Msht38aCjJDwhbevL1iL6t+W8fKn63LzDUJLZ5SVYvzTJvzg/S5FkEQCI1wf59MtljpKZoYjnxLpGrzZ2peADiNdPdm6rD8LukdP7q7wntYRPRLfROdSd3URjZ2JuwBR/H2wzHNDJhIyMezY6HOFJweM8t6Gp5IWhWoIC/voIt8hxsjnFKrPM+VV6UuRdtEpKlFYuOIEeUf5/MFbcRUmajUHMXo9McI2m8JvRmPHmEGc2CBKVIMIEQUCFGKPJtecMNW6upEGXeSLag5a6NDWw9miwST/WCBBQ==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com; 
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=QifxiqKM68aD+Y4zhQAHqfPHngOrU7xs8nSqzNmvdjk=;
+ b=BIbrcw+4F1bvOUfuXmfCIvn92IBiLa6TeBngjx5SsvKqQ7u64xT4Ck6CJ8K61nxD8jYdwGmmKak0p46HdNnKdjIhethPg2ySCRirK5UzV3CV/lypwqnMCxlO3+UAF/84XVipEntHaAVFTItzu/9jPIbIRQWP9TTVRyiLB98UuBWLrdLirV7QjWHaqHnWDjz4nI5bZJuBi+CzrcV5iDHB36SHTHpeB7GP04uxT0g82PFz+l2De0K2j6gZFPaIf9OtfHKhpknKnJPljpPV+L7Gq6PBXAAp74gLAMt6QHscvS+BmeWhXdJXNnjRxBXBpmoqhXtTMBmk6bnaJQkqnUDfyw==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=intel.com; dmarc=pass action=none header.from=intel.com;
+ dkim=pass header.d=intel.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=intel.onmicrosoft.com; 
+ s=selector2-intel-onmicrosoft-com;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=QifxiqKM68aD+Y4zhQAHqfPHngOrU7xs8nSqzNmvdjk=;
+ b=zMlZqR5yg1Z2aN2Va6OSrmGUVJggjdgzdD8HCMMSwO7CFO0XHtqq109N5y2rgOc0/XIzvnbe4Mr+PRqCxVXwab6AHnuIdIhjbEMNAaUshDkKjBEaL3J1U+ZZU5tpOyRQk6pL8uqVbxVURgGRbdalQbQWCNqOBRUSyyM5DCEniwU=
+Received: from MWHPR11MB1886.namprd11.prod.outlook.com (2603:10b6:300:110::9)
+ by MWHPR11MB1935.namprd11.prod.outlook.com (2603:10b6:300:10c::20)
+ with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4108.25; Sat, 8 May
+ 2021 05:46:09 +0000
+Received: from MWHPR11MB1886.namprd11.prod.outlook.com
+ ([fe80::75b0:a8e9:60cb:7a29]) by MWHPR11MB1886.namprd11.prod.outlook.com
+ ([fe80::75b0:a8e9:60cb:7a29%9]) with mapi id 15.20.4108.030; Sat, 8 May 2021
+ 05:46:09 +0000
+From: "Tian, Kevin" <kevin.tian@intel.com>
+To: Jason Gunthorpe <jgg@nvidia.com>
+Subject: RE: [PATCH V4 05/18] iommu/ioasid: Redefine IOASID set and allocation
+ APIs
+Thread-Topic: [PATCH V4 05/18] iommu/ioasid: Redefine IOASID set and
+ allocation APIs
+Thread-Index: AQHXDZub0CDG82VGXUmLEYgvMuPs4KqKkLIAgACg94CAAC72gIAAD04AgAADogCAAErUgIAETQEAgAOaswCAB7C3gIAAhxQwgADYDACAATCSAIAAVGMAgAELsQCAACiXgIAAVBgAgAAaMwCAAAESAIAABy2AgAAgOYCAFdCAgIAAppUAgADsNgCAACqygIAHsmaAgAAzsYCAAAjdgIAAD/yAgAAcQgCAADqggIAAk6nQgABIUACAASsnkIAAYWwAgALs9qCAAdeZgIACip7wgAEiVwCADrrawA==
+Date: Sat, 8 May 2021 05:46:09 +0000
+Message-ID: <MWHPR11MB18861BF1CEA9AEA0B8CB2B0C8C569@MWHPR11MB1886.namprd11.prod.outlook.com>
+References: <20210421175203.GN1370958@nvidia.com>
+ <20210421133312.15307c44@redhat.com> <20210421230301.GP1370958@nvidia.com>
+ <MWHPR11MB1886188698A6E20338196F788C469@MWHPR11MB1886.namprd11.prod.outlook.com>
+ <20210422121020.GT1370958@nvidia.com>
+ <MWHPR11MB1886E688D2128C98A1F240B18C459@MWHPR11MB1886.namprd11.prod.outlook.com>
+ <20210423114944.GF1370958@nvidia.com>
+ <MWHPR11MB18861FE6982D73AFBF173E048C439@MWHPR11MB1886.namprd11.prod.outlook.com>
+ <20210426123817.GQ1370958@nvidia.com>
+ <MWHPR11MB188625137D5B7423822396C88C409@MWHPR11MB1886.namprd11.prod.outlook.com>
+ <20210428204606.GX1370958@nvidia.com>
+In-Reply-To: <20210428204606.GX1370958@nvidia.com>
+Accept-Language: en-US
 Content-Language: en-US
-Cc: jiangkunkun@huawei.com, Cornelia Huck <cohuck@redhat.com>,
- Kirti Wankhede <kwankhede@nvidia.com>, lushenming@huawei.com,
- Alex Williamson <alex.williamson@redhat.com>, wanghaibin.wang@huawei.com
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+dlp-version: 11.5.1.3
+dlp-product: dlpe-windows
+dlp-reaction: no-action
+authentication-results: nvidia.com; dkim=none (message not signed)
+ header.d=none;nvidia.com; dmarc=none action=none header.from=intel.com;
+x-originating-ip: [101.80.65.46]
+x-ms-publictraffictype: Email
+x-ms-office365-filtering-correlation-id: 04fb36bc-af60-4673-e5cd-08d911e494e7
+x-ms-traffictypediagnostic: MWHPR11MB1935:
+x-ld-processed: 46c98d88-e344-4ed4-8496-4ed7712e255d,ExtAddr
+x-ms-exchange-transport-forked: True
+x-microsoft-antispam-prvs: <MWHPR11MB19352275E4B23ADD601143BF8C569@MWHPR11MB1935.namprd11.prod.outlook.com>
+x-ms-oob-tlc-oobclassifiers: OLM:7219;
+x-ms-exchange-senderadcheck: 1
+x-microsoft-antispam: BCL:0;
+x-microsoft-antispam-message-info: oqac7lqgG0g0apDgAsNyM5IkIAoLB/fhAPSsHHSk/MSXSDE2OTVLg8ogpGdytWVEKZs0Zqgyu/bU08lEnKU4NTjKiyn6JbJLWpdqFFtrIwfT1ZowNIi0nCnWWMJP5o/7YwGclnMgEufWvcbBxDGtsGPsi67/D5L6zGggx9oP3x3Pn+alrSuilB+plWXIJhPSUEagZ0epwPbaDWJWIdya7yONgSVnYWTKqz7HCzVpTcKI7pFYXFfeL1mP0tZxOqtjolbakCZzW+s0ygxCK+xGI+rOLiv5oX4MgbPWMfk0bPh78/vRmbhvpm8aORr0jvDWaCXao1azuVsFR6uq+u6jMLRWp+6SndUYw2hpsIimlDFmNlS+FtmTv/XNQpRB9AyYPoZjCinZhmLYaixmoOoxZDtFbmkeokv9XNAfS6Mzk3JU8vmrbFAY3KL4IT17lDWMZrr7ankQGcdKOeAiCCJP4uxR2KXMKMVtNSz9FgQ/3vSOyG04VsaHvoce6yMxuBHRd02y7HX5Ysjte3rvtlrQeyY1jijT3nCOSmb8asWYpgewkhl2ijQTXBqcIRF6z1XMXLyYwIIESdGpZRPralSDeCfIvQLE3aCj4C3vmoogSM0=
+x-forefront-antispam-report: CIP:255.255.255.255; CTRY:; LANG:en; SCL:1; SRV:;
+ IPV:NLI; SFV:NSPM; H:MWHPR11MB1886.namprd11.prod.outlook.com; PTR:; CAT:NONE;
+ SFS:(396003)(39860400002)(376002)(136003)(346002)(366004)(8676002)(7696005)(6916009)(6506007)(9686003)(66476007)(64756008)(71200400001)(66946007)(76116006)(66556008)(5660300002)(55016002)(4326008)(2906002)(8936002)(86362001)(7416002)(186003)(478600001)(33656002)(38100700002)(26005)(122000001)(54906003)(66446008)(316002)(52536014);
+ DIR:OUT; SFP:1102; 
+x-ms-exchange-antispam-messagedata: =?utf-8?B?NUpYbnc0UHkyMlhNbmxmVkpwVURpL0VoN3pMN0FjejhjYnFCTEJ0cEd5ejVR?=
+ =?utf-8?B?TndsbnFlN1MzdlJ0UUlpUll4cGQxcXhIbzFmMjZuRm5aWDA0UnNSZWxkSUdR?=
+ =?utf-8?B?cWkrVFgyKzF0SzNVcGNmT0NvWHl2bTN0K3VLdVRidTRxVGRsV1puK2ZKeTYy?=
+ =?utf-8?B?MWVkVE55VTIrZ01KV1NZdSt1RzZFVU1oZjdxcnkwOVh1ZGVxOERDVmkvOHhW?=
+ =?utf-8?B?Y3VqYWE1YzBkd3F4WFRpak1MOHkxL0pHUlFGSDFZTHV0blpLZUhKUjBTOVQv?=
+ =?utf-8?B?TFNGa3h6eHc2aW9Tb3g1MTVFMkQwU2djNGY4eHlMeXJreWRTc0EycXN3MWdF?=
+ =?utf-8?B?WWtRaFc3VzUyVHIrWkpRdU9weXF5aEZ3eldBQUF0WFBmSTI3aWlDS0htOThR?=
+ =?utf-8?B?SFhyOWRwMkFobDQrSTkzYkQxaXlyMWZIRW1DbEJOcHYwYmdIUGhadzd1d0Fo?=
+ =?utf-8?B?aTZZaUw4S0tvdm1mNGtWR3lIY2hZUCttREZ2RTd5enpoRU1WMGo3MGk0ak1Q?=
+ =?utf-8?B?cE0rZVk1S1V4QWpCcXYxSHFJNVBITlVGcVB2L3hqNEk2L2d3aWtkWTZLYlNK?=
+ =?utf-8?B?enBXSnJwdUxRQ1Fta1Y1VllLaEdRaUdjeXRsZmxnaXJQVlFwdzRza044anlv?=
+ =?utf-8?B?dGtFTEtoZGRLVnYyOVVaZEJ2cXJxSE9tL0Uva2xUSkRlZDFuRzkyK1ZvNzVL?=
+ =?utf-8?B?MDVBSndFcmlvU0krMDMzY1hWM2xNT2Y5K1ZvVy9YbEdnZlFEWXIvK1Y4Zzhn?=
+ =?utf-8?B?TGFmUGlreWQyZGlTempScVI4U2ZNSnRqTUlTZHduMm5wQTNNSUZSMGhjMWhu?=
+ =?utf-8?B?a0IraUV5a2ZTN3JadG5OTUgvakVRNEQ5bnRZck9vY2RKa0JqNzFGRW1lcGpQ?=
+ =?utf-8?B?NERUdGx3bXE0VnRBbzh6cTFyM3o4N2hEVUx1OVVkdWtMNEhwQmNVckhiV0Nr?=
+ =?utf-8?B?N0ducFhzb3pnaDY2RVdXWDFFWklER0lvQThxV085N3hJS2RiZDV0bFAzWU10?=
+ =?utf-8?B?ZWQxL0xlV3B2R0hyTE95NnViZWRNcG9tRzl1TVBCbUNVT0FwdjU2Y3orWmxw?=
+ =?utf-8?B?aU15bis0Vk5Sb2VGZXhjVC9xT0lNNFBtL2w0ZEY5Y1RCL05HcTFHOFljeEdV?=
+ =?utf-8?B?TjVQMDVIQ3gvSFZ5ekU2eStITDM0aDNWZXFkNC9oZGtBT0JoTlovNnFWcEla?=
+ =?utf-8?B?TlpIc3BuM0E3L3BJRVNQd1NVNjdNVkFmN3ZZN0tYdDBOZ0Q4a2ZNNUFlUFhr?=
+ =?utf-8?B?VTlNby9nbnVSeDExYXhNOHd2cU92M1VzUnpDalNNeWgwdk1KSU5HTnBuSGk1?=
+ =?utf-8?B?aWxiTFRKYUMreTd6SnJicytHdVlwY05CYlNEVWhnVGRMV0dSNDk0eFlINDNh?=
+ =?utf-8?B?S0pwNnFjZWw3YWMyVVlzR2czRDBxRjJBNHJqUkw0dHlsSDJybjE5am5mWWtQ?=
+ =?utf-8?B?dXNPL1JoN3pVMlRFYWp5V3htajUzd2pZRkc5czBteUZ6NUpzNk9MWTF0dEZG?=
+ =?utf-8?B?Y3lqQjVoUmdsaUM4ZTNNRzVCdzNhMVlmUHFjSHRQbnBJMHZBdHlkckc4dm14?=
+ =?utf-8?B?T1dBWnE3T2xBdHV4eDFEc0xBR0lTamdxTmlONlZ5QjMrQnFFSjRIYms3T0pt?=
+ =?utf-8?B?OXZ5NktRR3Q1d1ppbnJ6T2xoOGluQ2gyTHdycmsveUpnWC81WTA5OUl4aTRK?=
+ =?utf-8?B?ektLcmRnVWR1UjcvSXB2Q2tlbGhDN1ZySlkvcW1HYnRlb1IxL2ZDYkpMa2dw?=
+ =?utf-8?Q?xTVa/PX/sy/l9peDFE=3D?=
+MIME-Version: 1.0
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-AuthSource: MWHPR11MB1886.namprd11.prod.outlook.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 04fb36bc-af60-4673-e5cd-08d911e494e7
+X-MS-Exchange-CrossTenant-originalarrivaltime: 08 May 2021 05:46:09.6837 (UTC)
+X-MS-Exchange-CrossTenant-fromentityheader: Hosted
+X-MS-Exchange-CrossTenant-id: 46c98d88-e344-4ed4-8496-4ed7712e255d
+X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
+X-MS-Exchange-CrossTenant-userprincipalname: xEEsZJIo0fI5e2LwB26M/BIcV8Ty9zxvVQTNqiC2o20JmqJMtMDMbQxPjAeDYoMycv4RjVlDAPdgub3h/crbFQ==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: MWHPR11MB1935
+X-OriginatorOrg: intel.com
+Cc: Jean-Philippe Brucker <jean-philippe@linaro.org>,
+ Li Zefan <lizefan@huawei.com>, "Jiang, Dave" <dave.jiang@intel.com>, "Raj,
+ Ashok" <ashok.raj@intel.com>, Jonathan Corbet <corbet@lwn.net>,
+ Jean-Philippe Brucker <jean-philippe@linaro.com>,
+ LKML <linux-kernel@vger.kernel.org>,
+ "iommu@lists.linux-foundation.org" <iommu@lists.linux-foundation.org>,
+ Alex Williamson <alex.williamson@redhat.com>,
+ Johannes Weiner <hannes@cmpxchg.org>, Tejun Heo <tj@kernel.org>,
+ "cgroups@vger.kernel.org" <cgroups@vger.kernel.org>, "Wu, 
+ Hao" <hao.wu@intel.com>, David Woodhouse <dwmw2@infradead.org>
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -91,454 +200,40 @@ List-Post: <mailto:iommu@lists.linux-foundation.org>
 List-Help: <mailto:iommu-request@lists.linux-foundation.org?subject=help>
 List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
  <mailto:iommu-request@lists.linux-foundation.org?subject=subscribe>
+Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
-Content-Type: text/plain; charset="us-ascii"; Format="flowed"
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-Hi Keqian,
-
-On 5/7/21 6:21 PM, Keqian Zhu wrote:
-> Some types of IOMMU are capable of tracking DMA dirty log, such as
-> ARM SMMU with HTTU or Intel IOMMU with SLADE. This introduces the
-> dirty log tracking framework in the IOMMU base layer.
+> From: Jason Gunthorpe <jgg@nvidia.com>
+> Sent: Thursday, April 29, 2021 4:46 AM
 > 
-> Four new essential interfaces are added, and we maintaince the status
-> of dirty log tracking in iommu_domain.
-> 1. iommu_support_dirty_log: Check whether domain supports dirty log tracking
-> 2. iommu_switch_dirty_log: Perform actions to start|stop dirty log tracking
-> 3. iommu_sync_dirty_log: Sync dirty log from IOMMU into a dirty bitmap
-> 4. iommu_clear_dirty_log: Clear dirty log of IOMMU by a mask bitmap
+> > > I think the name IOASID is fine for the uAPI, the kernel version can
+> > > be called ioasid_id or something.
+> >
+> > ioasid is already an id and then ioasid_id just adds confusion. Another
+> > point is that ioasid is currently used to represent both PCI PASID and
+> > ARM substream ID in the kernel. It implies that if we want to separate
+> > ioasid and pasid in the uAPI the 'pasid' also needs to be replaced with
+> > another general term usable for substream ID. Are we making the
+> > terms too confusing here?
 > 
-> Note: Don't concurrently call these interfaces with other ops that
-> access underlying page table.
+> This is why I also am not so sure about exposing the PASID in the API
+> because it is ultimately a HW specific item.
 > 
-> Signed-off-by: Keqian Zhu <zhukeqian1@huawei.com>
-> Signed-off-by: Kunkun Jiang <jiangkunkun@huawei.com>
-> ---
->   drivers/iommu/iommu.c        | 201 +++++++++++++++++++++++++++++++++++
->   include/linux/iommu.h        |  63 +++++++++++
->   include/trace/events/iommu.h |  63 +++++++++++
->   3 files changed, 327 insertions(+)
+> As I said to David, one avenue is to have some generic uAPI that is
+> very general and keep all this deeply detailed stuff, that really only
+> matters for qemu, as part of a more HW specific vIOMMU driver
+> interface.
 > 
-> diff --git a/drivers/iommu/iommu.c b/drivers/iommu/iommu.c
-> index 808ab70d5df5..0d15620d1e90 100644
-> --- a/drivers/iommu/iommu.c
-> +++ b/drivers/iommu/iommu.c
-> @@ -1940,6 +1940,7 @@ static struct iommu_domain *__iommu_domain_alloc(struct bus_type *bus,
->   	domain->type = type;
->   	/* Assume all sizes by default; the driver may override this later */
->   	domain->pgsize_bitmap  = bus->iommu_ops->pgsize_bitmap;
-> +	mutex_init(&domain->switch_log_lock);
->   
->   	return domain;
->   }
-> @@ -2703,6 +2704,206 @@ int iommu_set_pgtable_quirks(struct iommu_domain *domain,
->   }
->   EXPORT_SYMBOL_GPL(iommu_set_pgtable_quirks);
->   
-> +bool iommu_support_dirty_log(struct iommu_domain *domain)
-> +{
-> +	const struct iommu_ops *ops = domain->ops;
-> +
-> +	return ops->support_dirty_log && ops->support_dirty_log(domain);
-> +}
-> +EXPORT_SYMBOL_GPL(iommu_support_dirty_log);
 
-I suppose this interface is to ask the vendor IOMMU driver to check
-whether each device/iommu in the domain supports dirty bit tracking.
-But what will happen if new devices with different tracking capability
-are added afterward?
+OK, so the general uAPI will not expose hw_id and just provide everything
+generic for managing I/O page table (map/unmap, nesting, etc.) through 
+IOASID and then specific uAPI is provided to handle platform specific
+requirements (hw_id, iova windows, etc.)
 
-To make things simple, is it possible to support this tracking only when
-all underlying IOMMUs support dirty bit tracking?
-
-Or, the more crazy idea is that we don't need to check this capability
-at all. If dirty bit tracking is not supported by hardware, just mark
-all pages dirty?
-
-> +
-> +int iommu_switch_dirty_log(struct iommu_domain *domain, bool enable,
-> +			   unsigned long iova, size_t size, int prot)
-> +{
-> +	const struct iommu_ops *ops = domain->ops;
-> +	unsigned long orig_iova = iova;
-> +	unsigned int min_pagesz;
-> +	size_t orig_size = size;
-> +	bool flush = false;
-> +	int ret = 0;
-> +
-> +	if (unlikely(!ops->switch_dirty_log))
-> +		return -ENODEV;
-> +
-> +	min_pagesz = 1 << __ffs(domain->pgsize_bitmap);
-> +	if (!IS_ALIGNED(iova | size, min_pagesz)) {
-> +		pr_err("unaligned: iova 0x%lx size 0x%zx min_pagesz 0x%x\n",
-> +		       iova, size, min_pagesz);
-> +		return -EINVAL;
-> +	}
-> +
-> +	mutex_lock(&domain->switch_log_lock);
-> +	if (enable && domain->dirty_log_tracking) {
-> +		ret = -EBUSY;
-> +		goto out;
-> +	} else if (!enable && !domain->dirty_log_tracking) {
-> +		ret = -EINVAL;
-> +		goto out;
-> +	}
-> +
-> +	pr_debug("switch_dirty_log %s for: iova 0x%lx size 0x%zx\n",
-> +		 enable ? "enable" : "disable", iova, size);
-> +
-> +	while (size) {
-> +		size_t pgsize = iommu_pgsize(domain, iova, size);
-> +
-> +		flush = true;
-> +		ret = ops->switch_dirty_log(domain, enable, iova, pgsize, prot);
-
-Per minimal page callback is much expensive. How about using (pagesize,
-count), so that all pages with the same page size could be handled in a
-single indirect call? I remember I commented this during last review,
-but I don't mind doing it again.
-
-Best regards,
-baolu
-
-> +		if (ret)
-> +			break;
-> +
-> +		pr_debug("switch_dirty_log handled: iova 0x%lx size 0x%zx\n",
-> +			 iova, pgsize);
-> +
-> +		iova += pgsize;
-> +		size -= pgsize;
-> +	}
-> +
-> +	if (flush)
-> +		iommu_flush_iotlb_all(domain);
-> +
-> +	if (!ret) {
-> +		domain->dirty_log_tracking = enable;
-> +		trace_switch_dirty_log(orig_iova, orig_size, enable);
-> +	}
-> +out:
-> +	mutex_unlock(&domain->switch_log_lock);
-> +	return ret;
-> +}
-> +EXPORT_SYMBOL_GPL(iommu_switch_dirty_log);
-> +
-> +int iommu_sync_dirty_log(struct iommu_domain *domain, unsigned long iova,
-> +			 size_t size, unsigned long *bitmap,
-> +			 unsigned long base_iova, unsigned long bitmap_pgshift)
-> +{
-> +	const struct iommu_ops *ops = domain->ops;
-> +	unsigned long orig_iova = iova;
-> +	unsigned int min_pagesz;
-> +	size_t orig_size = size;
-> +	int ret = 0;
-> +
-> +	if (unlikely(!ops->sync_dirty_log))
-> +		return -ENODEV;
-> +
-> +	min_pagesz = 1 << __ffs(domain->pgsize_bitmap);
-> +	if (!IS_ALIGNED(iova | size, min_pagesz)) {
-> +		pr_err("unaligned: iova 0x%lx size 0x%zx min_pagesz 0x%x\n",
-> +		       iova, size, min_pagesz);
-> +		return -EINVAL;
-> +	}
-> +
-> +	mutex_lock(&domain->switch_log_lock);
-> +	if (!domain->dirty_log_tracking) {
-> +		ret = -EINVAL;
-> +		goto out;
-> +	}
-> +
-> +	pr_debug("sync_dirty_log for: iova 0x%lx size 0x%zx\n", iova, size);
-> +
-> +	while (size) {
-> +		size_t pgsize = iommu_pgsize(domain, iova, size);
-> +
-> +		ret = ops->sync_dirty_log(domain, iova, pgsize,
-> +					  bitmap, base_iova, bitmap_pgshift);
-> +		if (ret)
-> +			break;
-> +
-> +		pr_debug("sync_dirty_log handled: iova 0x%lx size 0x%zx\n",
-> +			 iova, pgsize);
-> +
-> +		iova += pgsize;
-> +		size -= pgsize;
-> +	}
-> +
-> +	if (!ret)
-> +		trace_sync_dirty_log(orig_iova, orig_size);
-> +out:
-> +	mutex_unlock(&domain->switch_log_lock);
-> +	return ret;
-> +}
-> +EXPORT_SYMBOL_GPL(iommu_sync_dirty_log);
-> +
-> +static int __iommu_clear_dirty_log(struct iommu_domain *domain,
-> +				   unsigned long iova, size_t size,
-> +				   unsigned long *bitmap,
-> +				   unsigned long base_iova,
-> +				   unsigned long bitmap_pgshift)
-> +{
-> +	const struct iommu_ops *ops = domain->ops;
-> +	unsigned long orig_iova = iova;
-> +	size_t orig_size = size;
-> +	int ret = 0;
-> +
-> +	if (unlikely(!ops->clear_dirty_log))
-> +		return -ENODEV;
-> +
-> +	pr_debug("clear_dirty_log for: iova 0x%lx size 0x%zx\n", iova, size);
-> +
-> +	while (size) {
-> +		size_t pgsize = iommu_pgsize(domain, iova, size);
-> +
-> +		ret = ops->clear_dirty_log(domain, iova, pgsize, bitmap,
-> +					   base_iova, bitmap_pgshift);
-> +		if (ret)
-> +			break;
-> +
-> +		pr_debug("clear_dirty_log handled: iova 0x%lx size 0x%zx\n",
-> +			 iova, pgsize);
-> +
-> +		iova += pgsize;
-> +		size -= pgsize;
-> +	}
-> +
-> +	if (!ret)
-> +		trace_clear_dirty_log(orig_iova, orig_size);
-> +
-> +	return ret;
-> +}
-> +
-> +int iommu_clear_dirty_log(struct iommu_domain *domain,
-> +			  unsigned long iova, size_t size,
-> +			  unsigned long *bitmap, unsigned long base_iova,
-> +			  unsigned long bitmap_pgshift)
-> +{
-> +	unsigned long riova, rsize;
-> +	unsigned int min_pagesz;
-> +	bool flush = false;
-> +	int rs, re, start, end;
-> +	int ret = 0;
-> +
-> +	min_pagesz = 1 << __ffs(domain->pgsize_bitmap);
-> +	if (!IS_ALIGNED(iova | size, min_pagesz)) {
-> +		pr_err("unaligned: iova 0x%lx min_pagesz 0x%x\n",
-> +		       iova, min_pagesz);
-> +		return -EINVAL;
-> +	}
-> +
-> +	mutex_lock(&domain->switch_log_lock);
-> +	if (!domain->dirty_log_tracking) {
-> +		ret = -EINVAL;
-> +		goto out;
-> +	}
-> +
-> +	start = (iova - base_iova) >> bitmap_pgshift;
-> +	end = start + (size >> bitmap_pgshift);
-> +	bitmap_for_each_set_region(bitmap, rs, re, start, end) {
-> +		flush = true;
-> +		riova = base_iova + (rs << bitmap_pgshift);
-> +		rsize = (re - rs) << bitmap_pgshift;
-> +		ret = __iommu_clear_dirty_log(domain, riova, rsize, bitmap,
-> +					      base_iova, bitmap_pgshift);
-> +		if (ret)
-> +			break;
-> +	}
-> +
-> +	if (flush)
-> +		iommu_flush_iotlb_all(domain);
-> +out:
-> +	mutex_unlock(&domain->switch_log_lock);
-> +	return ret;
-> +}
-> +EXPORT_SYMBOL_GPL(iommu_clear_dirty_log);
-> +
->   void iommu_get_resv_regions(struct device *dev, struct list_head *list)
->   {
->   	const struct iommu_ops *ops = dev->bus->iommu_ops;
-> diff --git a/include/linux/iommu.h b/include/linux/iommu.h
-> index 32d448050bf7..e0e40dda974d 100644
-> --- a/include/linux/iommu.h
-> +++ b/include/linux/iommu.h
-> @@ -87,6 +87,8 @@ struct iommu_domain {
->   	void *handler_token;
->   	struct iommu_domain_geometry geometry;
->   	void *iova_cookie;
-> +	bool dirty_log_tracking;
-> +	struct mutex switch_log_lock;
->   };
->   
->   enum iommu_cap {
-> @@ -193,6 +195,10 @@ struct iommu_iotlb_gather {
->    * @device_group: find iommu group for a particular device
->    * @enable_nesting: Enable nesting
->    * @set_pgtable_quirks: Set io page table quirks (IO_PGTABLE_QUIRK_*)
-> + * @support_dirty_log: Check whether domain supports dirty log tracking
-> + * @switch_dirty_log: Perform actions to start|stop dirty log tracking
-> + * @sync_dirty_log: Sync dirty log from IOMMU into a dirty bitmap
-> + * @clear_dirty_log: Clear dirty log of IOMMU by a mask bitmap
->    * @get_resv_regions: Request list of reserved regions for a device
->    * @put_resv_regions: Free list of reserved regions for a device
->    * @apply_resv_region: Temporary helper call-back for iova reserved ranges
-> @@ -245,6 +251,22 @@ struct iommu_ops {
->   	int (*set_pgtable_quirks)(struct iommu_domain *domain,
->   				  unsigned long quirks);
->   
-> +	/*
-> +	 * Track dirty log. Note: Don't concurrently call these interfaces with
-> +	 * other ops that access underlying page table.
-> +	 */
-> +	bool (*support_dirty_log)(struct iommu_domain *domain);
-> +	int (*switch_dirty_log)(struct iommu_domain *domain, bool enable,
-> +				unsigned long iova, size_t size, int prot);
-> +	int (*sync_dirty_log)(struct iommu_domain *domain,
-> +			      unsigned long iova, size_t size,
-> +			      unsigned long *bitmap, unsigned long base_iova,
-> +			      unsigned long bitmap_pgshift);
-> +	int (*clear_dirty_log)(struct iommu_domain *domain,
-> +			       unsigned long iova, size_t size,
-> +			       unsigned long *bitmap, unsigned long base_iova,
-> +			       unsigned long bitmap_pgshift);
-> +
->   	/* Request/Free a list of reserved regions for a device */
->   	void (*get_resv_regions)(struct device *dev, struct list_head *list);
->   	void (*put_resv_regions)(struct device *dev, struct list_head *list);
-> @@ -475,6 +497,17 @@ extern struct iommu_domain *iommu_group_default_domain(struct iommu_group *);
->   int iommu_enable_nesting(struct iommu_domain *domain);
->   int iommu_set_pgtable_quirks(struct iommu_domain *domain,
->   		unsigned long quirks);
-> +extern bool iommu_support_dirty_log(struct iommu_domain *domain);
-> +extern int iommu_switch_dirty_log(struct iommu_domain *domain, bool enable,
-> +				  unsigned long iova, size_t size, int prot);
-> +extern int iommu_sync_dirty_log(struct iommu_domain *domain, unsigned long iova,
-> +				size_t size, unsigned long *bitmap,
-> +				unsigned long base_iova,
-> +				unsigned long bitmap_pgshift);
-> +extern int iommu_clear_dirty_log(struct iommu_domain *domain, unsigned long iova,
-> +				 size_t dma_size, unsigned long *bitmap,
-> +				 unsigned long base_iova,
-> +				 unsigned long bitmap_pgshift);
->   
->   void iommu_set_dma_strict(bool val);
->   bool iommu_get_dma_strict(struct iommu_domain *domain);
-> @@ -848,6 +881,36 @@ static inline int iommu_set_pgtable_quirks(struct iommu_domain *domain,
->   	return 0;
->   }
->   
-> +static inline bool iommu_support_dirty_log(struct iommu_domain *domain)
-> +{
-> +	return false;
-> +}
-> +
-> +static inline int iommu_switch_dirty_log(struct iommu_domain *domain,
-> +					 bool enable, unsigned long iova,
-> +					 size_t size, int prot)
-> +{
-> +	return -EINVAL;
-> +}
-> +
-> +static inline int iommu_sync_dirty_log(struct iommu_domain *domain,
-> +				       unsigned long iova, size_t size,
-> +				       unsigned long *bitmap,
-> +				       unsigned long base_iova,
-> +				       unsigned long pgshift)
-> +{
-> +	return -EINVAL;
-> +}
-> +
-> +static inline int iommu_clear_dirty_log(struct iommu_domain *domain,
-> +					unsigned long iova, size_t size,
-> +					unsigned long *bitmap,
-> +					unsigned long base_iova,
-> +					unsigned long pgshift)
-> +{
-> +	return -EINVAL;
-> +}
-> +
->   static inline int iommu_device_register(struct iommu_device *iommu,
->   					const struct iommu_ops *ops,
->   					struct device *hwdev)
-> diff --git a/include/trace/events/iommu.h b/include/trace/events/iommu.h
-> index 72b4582322ff..6436d693d357 100644
-> --- a/include/trace/events/iommu.h
-> +++ b/include/trace/events/iommu.h
-> @@ -129,6 +129,69 @@ TRACE_EVENT(unmap,
->   	)
->   );
->   
-> +TRACE_EVENT(switch_dirty_log,
-> +
-> +	TP_PROTO(unsigned long iova, size_t size, bool enable),
-> +
-> +	TP_ARGS(iova, size, enable),
-> +
-> +	TP_STRUCT__entry(
-> +		__field(u64, iova)
-> +		__field(size_t, size)
-> +		__field(bool, enable)
-> +	),
-> +
-> +	TP_fast_assign(
-> +		__entry->iova = iova;
-> +		__entry->size = size;
-> +		__entry->enable = enable;
-> +	),
-> +
-> +	TP_printk("IOMMU: iova=0x%016llx size=%zu enable=%u",
-> +			__entry->iova, __entry->size, __entry->enable
-> +	)
-> +);
-> +
-> +TRACE_EVENT(sync_dirty_log,
-> +
-> +	TP_PROTO(unsigned long iova, size_t size),
-> +
-> +	TP_ARGS(iova, size),
-> +
-> +	TP_STRUCT__entry(
-> +		__field(u64, iova)
-> +		__field(size_t, size)
-> +	),
-> +
-> +	TP_fast_assign(
-> +		__entry->iova = iova;
-> +		__entry->size = size;
-> +	),
-> +
-> +	TP_printk("IOMMU: iova=0x%016llx size=%zu", __entry->iova,
-> +			__entry->size)
-> +);
-> +
-> +TRACE_EVENT(clear_dirty_log,
-> +
-> +	TP_PROTO(unsigned long iova, size_t size),
-> +
-> +	TP_ARGS(iova, size),
-> +
-> +	TP_STRUCT__entry(
-> +		__field(u64, iova)
-> +		__field(size_t, size)
-> +	),
-> +
-> +	TP_fast_assign(
-> +		__entry->iova = iova;
-> +		__entry->size = size;
-> +	),
-> +
-> +	TP_printk("IOMMU: iova=0x%016llx size=%zu", __entry->iova,
-> +			__entry->size)
-> +);
-> +
->   DECLARE_EVENT_CLASS(iommu_error,
->   
->   	TP_PROTO(struct device *dev, unsigned long iova, int flags),
-> 
+Thanks
+Kevin
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
