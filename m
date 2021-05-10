@@ -7,56 +7,56 @@ X-Spam-Status: No, score=-16.8 required=3.0 tests=BAYES_00,
 	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,URIBL_RED,USER_AGENT_GIT
 	autolearn=ham autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 71B28C4360C
-	for <iommu@archiver.kernel.org>; Mon, 10 May 2021 14:22:46 +0000 (UTC)
-Received: from smtp3.osuosl.org (smtp3.osuosl.org [140.211.166.136])
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 978E8C43460
+	for <iommu@archiver.kernel.org>; Mon, 10 May 2021 14:22:49 +0000 (UTC)
+Received: from smtp2.osuosl.org (smtp2.osuosl.org [140.211.166.133])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 2A0A261483
-	for <iommu@archiver.kernel.org>; Mon, 10 May 2021 14:22:46 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 2A0A261483
+	by mail.kernel.org (Postfix) with ESMTPS id 4901F611BF
+	for <iommu@archiver.kernel.org>; Mon, 10 May 2021 14:22:49 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 4901F611BF
 Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=huawei.com
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by smtp3.osuosl.org (Postfix) with ESMTP id DD48060BFC;
-	Mon, 10 May 2021 14:22:44 +0000 (UTC)
+	by smtp2.osuosl.org (Postfix) with ESMTP id 9F6A040532;
+	Mon, 10 May 2021 14:22:46 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from smtp3.osuosl.org ([127.0.0.1])
-	by localhost (smtp3.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id NmiO0AG27mtm; Mon, 10 May 2021 14:22:43 +0000 (UTC)
+Received: from smtp2.osuosl.org ([127.0.0.1])
+	by localhost (smtp2.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+	with ESMTP id cQuRQSBufecj; Mon, 10 May 2021 14:22:45 +0000 (UTC)
 Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by smtp3.osuosl.org (Postfix) with ESMTP id 2E42B60BEE;
-	Mon, 10 May 2021 14:22:43 +0000 (UTC)
+	by smtp2.osuosl.org (Postfix) with ESMTP id 86E2440558;
+	Mon, 10 May 2021 14:22:45 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 19137C0029;
-	Mon, 10 May 2021 14:22:43 +0000 (UTC)
-Received: from smtp4.osuosl.org (smtp4.osuosl.org [IPv6:2605:bc80:3010::137])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 338C6C000F
- for <iommu@lists.linux-foundation.org>; Mon, 10 May 2021 14:22:40 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id A6D5CC0027;
+	Mon, 10 May 2021 14:22:44 +0000 (UTC)
+Received: from smtp4.osuosl.org (smtp4.osuosl.org [140.211.166.137])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 17CE2C0028
+ for <iommu@lists.linux-foundation.org>; Mon, 10 May 2021 14:22:43 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by smtp4.osuosl.org (Postfix) with ESMTP id 0AE5440649
- for <iommu@lists.linux-foundation.org>; Mon, 10 May 2021 14:22:40 +0000 (UTC)
+ by smtp4.osuosl.org (Postfix) with ESMTP id CA91340E63
+ for <iommu@lists.linux-foundation.org>; Mon, 10 May 2021 14:22:41 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
 Received: from smtp4.osuosl.org ([127.0.0.1])
  by localhost (smtp4.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id wtZIcFv8bFcC for <iommu@lists.linux-foundation.org>;
- Mon, 10 May 2021 14:22:39 +0000 (UTC)
+ with ESMTP id LBuEPcBFf4_u for <iommu@lists.linux-foundation.org>;
+ Mon, 10 May 2021 14:22:41 +0000 (UTC)
 X-Greylist: domain auto-whitelisted by SQLgrey-1.8.0
 Received: from szxga04-in.huawei.com (szxga04-in.huawei.com [45.249.212.190])
- by smtp4.osuosl.org (Postfix) with ESMTPS id 2690440634
- for <iommu@lists.linux-foundation.org>; Mon, 10 May 2021 14:22:39 +0000 (UTC)
+ by smtp4.osuosl.org (Postfix) with ESMTPS id E8DC240E64
+ for <iommu@lists.linux-foundation.org>; Mon, 10 May 2021 14:22:40 +0000 (UTC)
 Received: from DGGEMS413-HUB.china.huawei.com (unknown [172.30.72.58])
- by szxga04-in.huawei.com (SkyGuard) with ESMTP id 4Ff38H3LXdzqTrV;
- Mon, 10 May 2021 22:19:11 +0800 (CST)
+ by szxga04-in.huawei.com (SkyGuard) with ESMTP id 4Ff39B5yJgz1BKwN;
+ Mon, 10 May 2021 22:19:58 +0800 (CST)
 Received: from localhost.localdomain (10.69.192.58) by
  DGGEMS413-HUB.china.huawei.com (10.3.19.213) with Microsoft SMTP Server id
- 14.3.498.0; Mon, 10 May 2021 22:22:26 +0800
+ 14.3.498.0; Mon, 10 May 2021 22:22:28 +0800
 From: John Garry <john.garry@huawei.com>
 To: <joro@8bytes.org>, <will@kernel.org>, <robin.murphy@arm.com>,
  <hch@lst.de>, <m.szyprowski@samsung.com>
-Subject: [PATCH v2 05/15] iova: Add iova_domain_len_is_cached()
-Date: Mon, 10 May 2021 22:17:19 +0800
-Message-ID: <1620656249-68890-6-git-send-email-john.garry@huawei.com>
+Subject: [PATCH v2 14/15] dma-iommu: Add iommu_dma_set_opt_size()
+Date: Mon, 10 May 2021 22:17:28 +0800
+Message-ID: <1620656249-68890-15-git-send-email-john.garry@huawei.com>
 X-Mailer: git-send-email 2.8.1
 In-Reply-To: <1620656249-68890-1-git-send-email-john.garry@huawei.com>
 References: <1620656249-68890-1-git-send-email-john.garry@huawei.com>
@@ -83,63 +83,38 @@ Content-Transfer-Encoding: 7bit
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-Add a function to check whether an IOVA domain currently caches a given
-upper IOVA len exactly.
+Add iommu_dma_set_opt_size(), which is a frontend for
+iommu_set_dev_dma_opt_size().
 
 Signed-off-by: John Garry <john.garry@huawei.com>
 ---
- drivers/iommu/iova.c | 11 +++++++++++
- include/linux/iova.h |  8 +++++++-
- 2 files changed, 18 insertions(+), 1 deletion(-)
+ drivers/iommu/dma-iommu.c | 6 ++++++
+ 1 file changed, 6 insertions(+)
 
-diff --git a/drivers/iommu/iova.c b/drivers/iommu/iova.c
-index 0e4c0e55178a..95892a0433cc 100644
---- a/drivers/iommu/iova.c
-+++ b/drivers/iommu/iova.c
-@@ -872,6 +872,17 @@ static void iova_magazine_push(struct iova_magazine *mag, unsigned long pfn)
- 	mag->pfns[mag->size++] = pfn;
+diff --git a/drivers/iommu/dma-iommu.c b/drivers/iommu/dma-iommu.c
+index 1d58c7a2d85d..fd62afe7c7d0 100644
+--- a/drivers/iommu/dma-iommu.c
++++ b/drivers/iommu/dma-iommu.c
+@@ -490,6 +490,11 @@ static dma_addr_t iommu_dma_alloc_iova(struct iommu_domain *domain,
+ 	return (dma_addr_t)iova << shift;
  }
  
-+static unsigned long iova_len_to_rcache_max(unsigned long iova_len)
++static int iommu_dma_set_opt_size(struct device *dev, size_t size)
 +{
-+	return order_base_2(iova_len) + 1;
++	return iommu_set_dev_dma_opt_size(dev, size);
 +}
 +
-+/* Test if iova_len range cached upper limit matches that of IOVA domain */
-+bool iova_domain_len_is_cached(struct iova_domain *iovad, unsigned long iova_len)
-+{
-+	return iova_len_to_rcache_max(iova_len) == iovad->rcache_max_size;
-+}
-+
- static void init_iova_rcaches(struct iova_domain *iovad)
+ static void iommu_dma_free_iova(struct iommu_dma_cookie *cookie,
+ 		dma_addr_t iova, size_t size, struct page *freelist)
  {
- 	struct iova_cpu_rcache *cpu_rcache;
-diff --git a/include/linux/iova.h b/include/linux/iova.h
-index 9974e1d3e2bc..04cc8eb6de38 100644
---- a/include/linux/iova.h
-+++ b/include/linux/iova.h
-@@ -136,7 +136,8 @@ static inline unsigned long iova_pfn(struct iova_domain *iovad, dma_addr_t iova)
- #if IS_ENABLED(CONFIG_IOMMU_IOVA)
- int iova_cache_get(void);
- void iova_cache_put(void);
--
-+bool iova_domain_len_is_cached(struct iova_domain *iovad,
-+			       unsigned long iova_len);
- void free_iova(struct iova_domain *iovad, unsigned long pfn);
- void __free_iova(struct iova_domain *iovad, struct iova *iova);
- struct iova *alloc_iova(struct iova_domain *iovad, unsigned long size,
-@@ -158,6 +159,11 @@ int init_iova_flush_queue(struct iova_domain *iovad,
- struct iova *find_iova(struct iova_domain *iovad, unsigned long pfn);
- void put_iova_domain(struct iova_domain *iovad);
- #else
-+static inline bool iova_domain_len_is_cached(struct iova_domain *iovad,
-+					     unsigned long iova_len)
-+{
-+	return false;
-+}
- static inline int iova_cache_get(void)
- {
- 	return -ENOTSUPP;
+@@ -1340,6 +1345,7 @@ static const struct dma_map_ops iommu_dma_ops = {
+ 	.map_resource		= iommu_dma_map_resource,
+ 	.unmap_resource		= iommu_dma_unmap_resource,
+ 	.get_merge_boundary	= iommu_dma_get_merge_boundary,
++	.set_max_opt_size	= iommu_dma_set_opt_size,
+ };
+ 
+ /*
 -- 
 2.26.2
 
