@@ -6,83 +6,86 @@ X-Spam-Status: No, score=-5.3 required=3.0 tests=BAYES_00,
 	HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,
 	URIBL_RED,USER_AGENT_SANE_1 autolearn=no autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C6246C433B4
-	for <iommu@archiver.kernel.org>; Mon, 10 May 2021 15:05:23 +0000 (UTC)
-Received: from smtp4.osuosl.org (smtp4.osuosl.org [140.211.166.137])
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 732DEC433B4
+	for <iommu@archiver.kernel.org>; Mon, 10 May 2021 15:25:09 +0000 (UTC)
+Received: from smtp3.osuosl.org (smtp3.osuosl.org [140.211.166.136])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 6262161481
-	for <iommu@archiver.kernel.org>; Mon, 10 May 2021 15:05:23 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 6262161481
-Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=lst.de
+	by mail.kernel.org (Postfix) with ESMTPS id 05B9F61107
+	for <iommu@archiver.kernel.org>; Mon, 10 May 2021 15:25:08 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 05B9F61107
+Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=intel.com
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by smtp4.osuosl.org (Postfix) with ESMTP id 1ABCA40646;
-	Mon, 10 May 2021 15:05:23 +0000 (UTC)
+	by smtp3.osuosl.org (Postfix) with ESMTP id 9CA1C605D0;
+	Mon, 10 May 2021 15:25:08 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from smtp4.osuosl.org ([127.0.0.1])
-	by localhost (smtp4.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id oYs7y3_422Ay; Mon, 10 May 2021 15:05:22 +0000 (UTC)
-Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [IPv6:2605:bc80:3010:104::8cd3:938])
-	by smtp4.osuosl.org (Postfix) with ESMTP id F00C940642;
-	Mon, 10 May 2021 15:05:21 +0000 (UTC)
+Received: from smtp3.osuosl.org ([127.0.0.1])
+	by localhost (smtp3.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+	with ESMTP id Zh2OfWbiC19c; Mon, 10 May 2021 15:25:07 +0000 (UTC)
+Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
+	by smtp3.osuosl.org (Postfix) with ESMTP id 82A3760BE5;
+	Mon, 10 May 2021 15:25:07 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id D748CC000D;
-	Mon, 10 May 2021 15:05:21 +0000 (UTC)
-Received: from smtp1.osuosl.org (smtp1.osuosl.org [IPv6:2605:bc80:3010::138])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 8D50EC0001
- for <iommu@lists.linux-foundation.org>; Mon, 10 May 2021 15:05:20 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 62D2DC000E;
+	Mon, 10 May 2021 15:25:07 +0000 (UTC)
+Received: from smtp2.osuosl.org (smtp2.osuosl.org [140.211.166.133])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 0841FC0001
+ for <iommu@lists.linux-foundation.org>; Mon, 10 May 2021 15:25:06 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by smtp1.osuosl.org (Postfix) with ESMTP id 889FD83A63
- for <iommu@lists.linux-foundation.org>; Mon, 10 May 2021 15:05:20 +0000 (UTC)
+ by smtp2.osuosl.org (Postfix) with ESMTP id 03C4340544
+ for <iommu@lists.linux-foundation.org>; Mon, 10 May 2021 15:25:06 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from smtp1.osuosl.org ([127.0.0.1])
- by localhost (smtp1.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id STfR7BSYo2Mp for <iommu@lists.linux-foundation.org>;
- Mon, 10 May 2021 15:05:20 +0000 (UTC)
-X-Greylist: from auto-whitelisted by SQLgrey-1.8.0
-Received: from verein.lst.de (verein.lst.de [213.95.11.211])
- by smtp1.osuosl.org (Postfix) with ESMTPS id E8E9D83A60
- for <iommu@lists.linux-foundation.org>; Mon, 10 May 2021 15:05:19 +0000 (UTC)
-Received: by verein.lst.de (Postfix, from userid 2407)
- id 2DAB567373; Mon, 10 May 2021 17:05:17 +0200 (CEST)
-Date: Mon, 10 May 2021 17:05:16 +0200
-From: Christoph Hellwig <hch@lst.de>
-To: Claire Chang <tientzu@chromium.org>
-Subject: Re: [PATCH v6 08/15] swiotlb: Bounce data from/to restricted DMA
- pool if available
-Message-ID: <20210510150516.GE28066@lst.de>
-References: <20210510095026.3477496-1-tientzu@chromium.org>
- <20210510095026.3477496-9-tientzu@chromium.org>
+Received: from smtp2.osuosl.org ([127.0.0.1])
+ by localhost (smtp2.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+ with ESMTP id BYOwA_-D8Lls for <iommu@lists.linux-foundation.org>;
+ Mon, 10 May 2021 15:25:04 +0000 (UTC)
+X-Greylist: domain auto-whitelisted by SQLgrey-1.8.0
+Received: from mga14.intel.com (mga14.intel.com [192.55.52.115])
+ by smtp2.osuosl.org (Postfix) with ESMTPS id C7B2A401CC
+ for <iommu@lists.linux-foundation.org>; Mon, 10 May 2021 15:25:04 +0000 (UTC)
+IronPort-SDR: 6RdhWN5hyFjH4oUfbYNjOFzrfnoBxe34FAw9Rtm+qIUHOBAvgfoFSz04apMz0XMLGjtrQ+h8ah
+ MPufvctrzVHA==
+X-IronPort-AV: E=McAfee;i="6200,9189,9980"; a="198895635"
+X-IronPort-AV: E=Sophos;i="5.82,287,1613462400"; d="scan'208";a="198895635"
+Received: from fmsmga001.fm.intel.com ([10.253.24.23])
+ by fmsmga103.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384;
+ 10 May 2021 08:25:04 -0700
+IronPort-SDR: GjXRpWxI0GTq9EfqsAr0hz2jjpbs5onS2DLUgUp5jeCZ4ykKcxn/jUUXM/nI3Zw1v9kib0m8MB
+ voaWFDGgutcg==
+X-IronPort-AV: E=Sophos;i="5.82,287,1613462400"; d="scan'208";a="536454725"
+Received: from otc-nc-03.jf.intel.com (HELO otc-nc-03) ([10.54.39.36])
+ by fmsmga001-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384;
+ 10 May 2021 08:25:03 -0700
+Date: Mon, 10 May 2021 08:25:02 -0700
+From: "Raj, Ashok" <ashok.raj@intel.com>
+To: Jason Gunthorpe <jgg@nvidia.com>
+Subject: Re: [PATCH V4 05/18] iommu/ioasid: Redefine IOASID set and
+ allocation APIs
+Message-ID: <20210510152502.GA90095@otc-nc-03>
+References: <20210504151154.02908c63@jacob-builder>
+ <20210504231530.GE1370958@nvidia.com>
+ <20210505102259.044cafdf@jacob-builder>
+ <20210505180023.GJ1370958@nvidia.com>
+ <20210505130446.3ee2fccd@jacob-builder> <YJOZhPGheTSlHtQc@myrica>
+ <20210506122730.GQ1370958@nvidia.com>
+ <20210506163240.GA9058@otc-nc-03>
+ <MWHPR11MB188698FBEE62AF1313E0F7AC8C569@MWHPR11MB1886.namprd11.prod.outlook.com>
+ <20210510123729.GA1002214@nvidia.com>
 MIME-Version: 1.0
 Content-Disposition: inline
-In-Reply-To: <20210510095026.3477496-9-tientzu@chromium.org>
-User-Agent: Mutt/1.5.17 (2007-11-01)
-Cc: heikki.krogerus@linux.intel.com, thomas.hellstrom@linux.intel.com,
- peterz@infradead.org, benh@kernel.crashing.org,
- joonas.lahtinen@linux.intel.com, dri-devel@lists.freedesktop.org,
- chris@chris-wilson.co.uk, grant.likely@arm.com, paulus@samba.org,
- Frank Rowand <frowand.list@gmail.com>, mingo@kernel.org,
- sstabellini@kernel.org, Saravana Kannan <saravanak@google.com>,
- mpe@ellerman.id.au, "Rafael J . Wysocki" <rafael.j.wysocki@intel.com>,
- Christoph Hellwig <hch@lst.de>,
- Bartosz Golaszewski <bgolaszewski@baylibre.com>, bskeggs@redhat.com,
- linux-pci@vger.kernel.org, xen-devel@lists.xenproject.org,
- Thierry Reding <treding@nvidia.com>, intel-gfx@lists.freedesktop.org,
- matthew.auld@intel.com, linux-devicetree <devicetree@vger.kernel.org>,
- jxgao@google.com, daniel@ffwll.ch, Will Deacon <will@kernel.org>,
- Konrad Rzeszutek Wilk <konrad.wilk@oracle.com>,
- maarten.lankhorst@linux.intel.com, airlied@linux.ie,
- Dan Williams <dan.j.williams@intel.com>, linuxppc-dev@lists.ozlabs.org,
- jani.nikula@linux.intel.com, Rob Herring <robh+dt@kernel.org>,
- rodrigo.vivi@intel.com, bhelgaas@google.com, boris.ostrovsky@oracle.com,
- Andy Shevchenko <andriy.shevchenko@linux.intel.com>, jgross@suse.com,
- Nicolas Boichat <drinkcat@chromium.org>, nouveau@lists.freedesktop.org,
- Greg KH <gregkh@linuxfoundation.org>, Randy Dunlap <rdunlap@infradead.org>,
- lkml <linux-kernel@vger.kernel.org>,
- "list@263.net:IOMMU DRIVERS" <iommu@lists.linux-foundation.org>,
- Jim Quinlan <james.quinlan@broadcom.com>, xypron.glpk@gmx.de,
- Robin Murphy <robin.murphy@arm.com>, bauerman@linux.ibm.com
+In-Reply-To: <20210510123729.GA1002214@nvidia.com>
+User-Agent: Mutt/1.5.24 (2015-08-30)
+Cc: Jean-Philippe Brucker <jean-philippe@linaro.org>, "Tian,
+ Kevin" <kevin.tian@intel.com>, "Jiang, Dave" <dave.jiang@intel.com>,
+ Ashok Raj <ashok.raj@intel.com>, Jonathan Corbet <corbet@lwn.net>,
+ Jean-Philippe Brucker <jean-philippe@linaro.com>,
+ Li Zefan <lizefan@huawei.com>, LKML <linux-kernel@vger.kernel.org>,
+ "iommu@lists.linux-foundation.org" <iommu@lists.linux-foundation.org>,
+ Alex Williamson <alex.williamson@redhat.com>,
+ Johannes Weiner <hannes@cmpxchg.org>, Tejun Heo <tj@kernel.org>,
+ "cgroups@vger.kernel.org" <cgroups@vger.kernel.org>, "Wu,
+ Hao" <hao.wu@intel.com>, David Woodhouse <dwmw2@infradead.org>
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -100,27 +103,82 @@ Content-Transfer-Encoding: 7bit
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-> +static inline bool is_dev_swiotlb_force(struct device *dev)
-> +{
-> +#ifdef CONFIG_DMA_RESTRICTED_POOL
-> +	if (dev->dma_io_tlb_mem)
-> +		return true;
-> +#endif /* CONFIG_DMA_RESTRICTED_POOL */
-> +	return false;
-> +}
-> +
+On Mon, May 10, 2021 at 09:37:29AM -0300, Jason Gunthorpe wrote:
+> On Sat, May 08, 2021 at 09:56:59AM +0000, Tian, Kevin wrote:
+> > > From: Raj, Ashok <ashok.raj@intel.com>
+> > > Sent: Friday, May 7, 2021 12:33 AM
+> > > 
+> > > > Basically it means when the guest's top level IOASID is created for
+> > > > nesting that IOASID claims all PASID's on the RID and excludes any
+> > > > PASID IOASIDs from existing on the RID now or in future.
+> > > 
+> > > The way to look at it this is as follows:
+> > > 
+> > > For platforms that do not have a need to support shared work queue model
+> > > support for ENQCMD or similar, PASID space is naturally per RID. There is no
+> > > complication with this. Every RID has the full range of PASID's and no need
+> > > for host to track which PASIDs are allocated now or in future in the guest.
+> > > 
+> > > For platforms that support ENQCMD, it is required to mandate PASIDs are
+> > > global across the entire system. Maybe its better to call them gPASID for
+> > > guest and hPASID for host. Short reason being gPASID->hPASID is a guest
+> > > wide mapping for ENQCMD and not a per-RID based mapping. (We covered
+> > > that
+> > > in earlier responses)
+> > > 
+> > > In our current implementation we actually don't separate this space, and
+> > > gPASID == hPASID. The iommu driver enforces that by using the custom
+> > > allocator and the architected interface that allows all guest vIOMMU
+> > > allocations to be proxied to host. Nothing but a glorified hypercall like
+> > > interface. In fact some OS's do use hypercall to get a hPASID vs using
+> > > the vCMD style interface.
+> > > 
+> > 
+> > After more thinking about the new interface, I feel gPASID==hPASID 
+> > actually causes some confusion in uAPI design. In concept an ioasid
+> > is not active until it's attached to a device, because it's just an ID
+> > if w/o a device. So supposedly an ioasid should reject all user commands
+> > before attach. However an guest likely asks for a new gPASID before
+> > attaching it to devices and vIOMMU. if gPASID==hPASID then Qemu 
+> > must request /dev/ioasid to allocate a hw_id for an ioasid which hasn't 
+> > been attached to any device, with the assumption on kernel knowledge 
+> > that this hw_id is from an global allocator w/o dependency on any 
+> > device. This doesn't sound a clean design, not to say it also conflicts 
+> > with live migration.
+> 
+> Everything must be explicit. The situation David pointed to of
+> qemu emulating a vIOMMU while running on a host with a different
+> platform/physical IOMMU must be considered.
+> 
+> If the vIOMMU needs specific behavior it must use /dev/iommu to ask
+> for it specifically and not just make wild assumptions about how the
+> platform works.
 
->  	/* If SWIOTLB is active, use its maximum mapping size */
->  	if (is_swiotlb_active(dev) &&
-> -	    (dma_addressing_limited(dev) || swiotlb_force == SWIOTLB_FORCE))
-> +	    (dma_addressing_limited(dev) || swiotlb_force == SWIOTLB_FORCE ||
-> +	     is_dev_swiotlb_force(dev)))
+I think the right way is for pIOMMU to enforce the right behavior. vIOMMU
+can ask for a PASID and physical IOMMU driver would give what is optimal
+for the platform. if vIOMMU says give me per-device PASID, but that can
+lead to conflicts in PASID name space, its best to avoid it. 
 
-This is a mess.  I think the right way is to have an always_bounce flag
-in the io_tlb_mem structure instead.  Then the global swiotlb_force can
-go away and be replace with this and the fact that having no
-io_tlb_mem structure at all means forced no buffering (after a little
-refactoring).
+Global PASID doesn't break anything, but giving that control to vIOMMU
+doesn't seem right. When we have mixed uses cases like hardware that
+supports shared wq and SRIOV devices that need PASIDs we need to 
+comprehend how they will work without having a backend to migrate PASIDs 
+to new destination.
+
+for ENQCMD we have the gPASID->hPASID translation in the VMCS control.
+For devices that support SIOV, programming a PASID to  a device is also
+mediated, so its possible for something like the mediated interface to
+assist with that migration for the dedicated WQ.
+
+
+When we have both SRIOV and shared WQ exposed to the same guest, we 
+do have an issue. The simplest way that I thought was to have a guest 
+and host PASID separation.  Where the guest has its own PASID  space 
+and host has its own carved out.  Guest can do what ever it wants within 
+that allocated space without fear of any collition with any other device. 
+
+Cheers,
+Ashok
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
