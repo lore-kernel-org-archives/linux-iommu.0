@@ -3,140 +3,116 @@ X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
 X-Spam-Status: No, score=-16.6 required=3.0 tests=BAYES_00,DKIM_INVALID,
-	DKIM_SIGNED,HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_CR_TRAILER,INCLUDES_PATCH,
-	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,URIBL_RED,USER_AGENT_GIT
+	DKIM_SIGNED,HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,
+	MENTIONS_GIT_HOSTING,SPF_HELO_NONE,SPF_PASS,URIBL_RED,USER_AGENT_GIT
 	autolearn=unavailable autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id AB855C43460
-	for <iommu@archiver.kernel.org>; Mon, 10 May 2021 09:41:53 +0000 (UTC)
-Received: from smtp2.osuosl.org (smtp2.osuosl.org [140.211.166.133])
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 19FCAC43460
+	for <iommu@archiver.kernel.org>; Mon, 10 May 2021 09:50:45 +0000 (UTC)
+Received: from smtp1.osuosl.org (smtp1.osuosl.org [140.211.166.138])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 3BEC4613CA
-	for <iommu@archiver.kernel.org>; Mon, 10 May 2021 09:41:53 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 3BEC4613CA
-Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=samsung.com
+	by mail.kernel.org (Postfix) with ESMTPS id AF0A061449
+	for <iommu@archiver.kernel.org>; Mon, 10 May 2021 09:50:44 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org AF0A061449
+Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=chromium.org
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by smtp2.osuosl.org (Postfix) with ESMTP id 70E78401B8;
-	Mon, 10 May 2021 09:41:51 +0000 (UTC)
+	by smtp1.osuosl.org (Postfix) with ESMTP id 717AA836C3;
+	Mon, 10 May 2021 09:50:44 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from smtp2.osuosl.org ([127.0.0.1])
-	by localhost (smtp2.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id 78Z02Ms-ANVs; Mon, 10 May 2021 09:41:50 +0000 (UTC)
-Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by smtp2.osuosl.org (Postfix) with ESMTP id CEF75401D1;
-	Mon, 10 May 2021 09:41:48 +0000 (UTC)
-Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 00422C002B;
-	Mon, 10 May 2021 09:41:48 +0000 (UTC)
-Received: from smtp1.osuosl.org (smtp1.osuosl.org [140.211.166.138])
- by lists.linuxfoundation.org (Postfix) with ESMTP id ED9F7C0001
- for <iommu@lists.linux-foundation.org>; Mon, 10 May 2021 09:10:59 +0000 (UTC)
-Received: from localhost (localhost [127.0.0.1])
- by smtp1.osuosl.org (Postfix) with ESMTP id CB19383D37
- for <iommu@lists.linux-foundation.org>; Mon, 10 May 2021 09:10:59 +0000 (UTC)
-X-Virus-Scanned: amavisd-new at osuosl.org
-Authentication-Results: smtp1.osuosl.org (amavisd-new);
- dkim=pass (1024-bit key) header.d=samsung.com
 Received: from smtp1.osuosl.org ([127.0.0.1])
- by localhost (smtp1.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id 875hbqdahZTE for <iommu@lists.linux-foundation.org>;
- Mon, 10 May 2021 09:10:54 +0000 (UTC)
-X-Greylist: domain auto-whitelisted by SQLgrey-1.8.0
-Received: from mailout4.samsung.com (mailout4.samsung.com [203.254.224.34])
- by smtp1.osuosl.org (Postfix) with ESMTPS id 24D5283D21
- for <iommu@lists.linux-foundation.org>; Mon, 10 May 2021 09:10:54 +0000 (UTC)
-Received: from epcas2p4.samsung.com (unknown [182.195.41.56])
- by mailout4.samsung.com (KnoxPortal) with ESMTP id
- 20210510091049epoutp04c9b091a2704b6018c21656cadd8f4508~9qYm6p8P32431324313epoutp04M
- for <iommu@lists.linux-foundation.org>; Mon, 10 May 2021 09:10:49 +0000 (GMT)
-DKIM-Filter: OpenDKIM Filter v2.11.0 mailout4.samsung.com
- 20210510091049epoutp04c9b091a2704b6018c21656cadd8f4508~9qYm6p8P32431324313epoutp04M
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=samsung.com;
- s=mail20170921; t=1620637849;
- bh=GMn3aZrI8h3341gCjcxN3nNrBS7ob/Hc4IFsTK7DRzw=;
- h=From:To:Cc:Subject:Date:References:From;
- b=RchK4is9+bhXMw8KSq37MwHDH8ZE2Xz5QsNuuO0pUzDUUHNVGxn/nuToczij/Kteu
- Pd78xKJ2fo8Bi7F63WLpfyl0xf6pGyxFAzGZd4v5ZbcyioWftIDl+1/MxIuB/LMI9u
- a/neUwmuZKgU8B3RLUxb6wlaVEc553uNEBCpz90k=
-Received: from epsnrtp2.localdomain (unknown [182.195.42.163]) by
- epcas2p3.samsung.com (KnoxPortal) with ESMTP id
- 20210510091049epcas2p377dcf7f7e037ae16cbf79b3b37746bf1~9qYmbAFl71160311603epcas2p3N;
- Mon, 10 May 2021 09:10:49 +0000 (GMT)
-Received: from epsmges2p4.samsung.com (unknown [182.195.40.185]) by
- epsnrtp2.localdomain (Postfix) with ESMTP id 4FdwJS1HZ1z4x9Q7; Mon, 10 May
- 2021 09:10:48 +0000 (GMT)
-Received: from epcas2p4.samsung.com ( [182.195.41.56]) by
- epsmges2p4.samsung.com (Symantec Messaging Gateway) with SMTP id
- 6A.2A.09717.798F8906; Mon, 10 May 2021 18:10:47 +0900 (KST)
-Received: from epsmtrp2.samsung.com (unknown [182.195.40.14]) by
- epcas2p4.samsung.com (KnoxPortal) with ESMTPA id
- 20210510091047epcas2p46daccaa59f30e7444be0ff2b5955228c~9qYkpUZmX1940819408epcas2p4a;
- Mon, 10 May 2021 09:10:47 +0000 (GMT)
-Received: from epsmgms1p1new.samsung.com (unknown [182.195.42.41]) by
- epsmtrp2.samsung.com (KnoxPortal) with ESMTP id
- 20210510091047epsmtrp25a37150d26ccb5006a8414add6fb0328~9qYkoNBmQ2932429324epsmtrp2g;
- Mon, 10 May 2021 09:10:47 +0000 (GMT)
-X-AuditID: b6c32a48-4fbff700000025f5-56-6098f897919a
-Received: from epsmtip2.samsung.com ( [182.195.34.31]) by
- epsmgms1p1new.samsung.com (Symantec Messaging Gateway) with SMTP id
- C4.4D.08637.798F8906; Mon, 10 May 2021 18:10:47 +0900 (KST)
-Received: from localhost.localdomain (unknown [10.229.9.51]) by
- epsmtip2.samsung.com (KnoxPortal) with ESMTPA id
- 20210510091047epsmtip2a8d66ac12d0f5850603cffebf8fb3f91~9qYkc1rYg2463124631epsmtip2G;
- Mon, 10 May 2021 09:10:47 +0000 (GMT)
-From: Chanho Park <chanho61.park@samsung.com>
-To: Konrad Rzeszutek Wilk <konrad.wilk@oracle.com>, Christoph Hellwig
- <hch@lst.de>
-Subject: [PATCH v2] swiotlb: manipulate orig_addr when tlb_addr has offset
-Date: Mon, 10 May 2021 18:10:04 +0900
-Message-Id: <20210510091004.111006-1-chanho61.park@samsung.com>
-X-Mailer: git-send-email 2.31.1
+	by localhost (smtp1.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+	with ESMTP id 5M3EM5_oHrF2; Mon, 10 May 2021 09:50:43 +0000 (UTC)
+Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [IPv6:2605:bc80:3010:104::8cd3:938])
+	by smtp1.osuosl.org (Postfix) with ESMTP id 441A7835D9;
+	Mon, 10 May 2021 09:50:43 +0000 (UTC)
+Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 1DE4CC000E;
+	Mon, 10 May 2021 09:50:43 +0000 (UTC)
+Received: from smtp4.osuosl.org (smtp4.osuosl.org [IPv6:2605:bc80:3010::137])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id CBBA6C0001
+ for <iommu@lists.linux-foundation.org>; Mon, 10 May 2021 09:50:41 +0000 (UTC)
+Received: from localhost (localhost [127.0.0.1])
+ by smtp4.osuosl.org (Postfix) with ESMTP id B2E1D403DF
+ for <iommu@lists.linux-foundation.org>; Mon, 10 May 2021 09:50:41 +0000 (UTC)
+X-Virus-Scanned: amavisd-new at osuosl.org
+Authentication-Results: smtp4.osuosl.org (amavisd-new);
+ dkim=pass (1024-bit key) header.d=chromium.org
+Received: from smtp4.osuosl.org ([127.0.0.1])
+ by localhost (smtp4.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+ with ESMTP id uWdykzKRZdJJ for <iommu@lists.linux-foundation.org>;
+ Mon, 10 May 2021 09:50:40 +0000 (UTC)
+X-Greylist: whitelisted by SQLgrey-1.8.0
+Received: from mail-pg1-x529.google.com (mail-pg1-x529.google.com
+ [IPv6:2607:f8b0:4864:20::529])
+ by smtp4.osuosl.org (Postfix) with ESMTPS id 3B32B403DC
+ for <iommu@lists.linux-foundation.org>; Mon, 10 May 2021 09:50:40 +0000 (UTC)
+Received: by mail-pg1-x529.google.com with SMTP id y32so12885424pga.11
+ for <iommu@lists.linux-foundation.org>; Mon, 10 May 2021 02:50:40 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=chromium.org; s=google;
+ h=from:to:cc:subject:date:message-id:mime-version
+ :content-transfer-encoding;
+ bh=suql6mxhF7VWacBQX+vVI90y4jo7pK7o7lRK42P1ziE=;
+ b=lOHb/wGLPI35HYDpC1OybPS0wSHtEceWE9NWy4yGK8ilXXldfGkKtOa8K66bNr4LEO
+ Pr9azSla0OuJEaDOigJpQisql/QT6Rzgq/OL94Z5dEW4Jo9qDvVnUfwuUeDl/NGvpzhn
+ KxdIcdeNTo8YF1ZknPwF9akS+XlqzfXmq6cBU=
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+ d=1e100.net; s=20161025;
+ h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+ :content-transfer-encoding;
+ bh=suql6mxhF7VWacBQX+vVI90y4jo7pK7o7lRK42P1ziE=;
+ b=RIf2adbPICwzGoWwfpKiYKqXDExG/+Xur7OQ93HtOL6dRSn7Go20m7X4qEFAjZ85cP
+ mE+VrVo3+E995UEymPWOWWT6POwjnlphRaoLwTTmT5JAri3fH0EjpJw2HAhRqR+LQiNX
+ 3Z9qs6qalCsodZVl0d1AP8v/ihS8uBApSA++OM6edN6VT+orxUMG/VXuGf6gAz8ypTnB
+ iekJICkdlrojcCbzvmt/W+7vsJUWEiwZKjOXizeppDEu3jgrIWoAL/sD8EtfRH+f8njW
+ YZiRVIV0zwFguVcUrDNYnmw/DKTk7i+n1HVTfNBQnfc7DwwMVLlvPzBMYTNCtZr5GiL4
+ x0Dw==
+X-Gm-Message-State: AOAM530bI3jZWa8czQfSLrAw20m5JAybsxbSS8XutlZ1l8eDx5tm0j9n
+ cfOpP1R/0QenWrb5shj/r443Dg==
+X-Google-Smtp-Source: ABdhPJxaRNqwofbH1Q1gT6hjDo7UCjX7KCvjB0rJLaDOY22mJQZwGH/owOzO7oGoIZrGlaECEV1xwQ==
+X-Received: by 2002:a62:2a14:0:b029:263:20c5:6d8c with SMTP id
+ q20-20020a622a140000b029026320c56d8cmr24491637pfq.23.1620640239613; 
+ Mon, 10 May 2021 02:50:39 -0700 (PDT)
+Received: from localhost ([2401:fa00:95:205:a524:abe8:94e3:5601])
+ by smtp.gmail.com with UTF8SMTPSA id 3sm10134744pff.132.2021.05.10.02.50.32
+ (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+ Mon, 10 May 2021 02:50:39 -0700 (PDT)
+From: Claire Chang <tientzu@chromium.org>
+To: Rob Herring <robh+dt@kernel.org>, mpe@ellerman.id.au,
+ Joerg Roedel <joro@8bytes.org>, Will Deacon <will@kernel.org>,
+ Frank Rowand <frowand.list@gmail.com>,
+ Konrad Rzeszutek Wilk <konrad.wilk@oracle.com>, boris.ostrovsky@oracle.com,
+ jgross@suse.com, Christoph Hellwig <hch@lst.de>,
+ Marek Szyprowski <m.szyprowski@samsung.com>
+Subject: [PATCH v6 00/15] Restricted DMA
+Date: Mon, 10 May 2021 17:50:11 +0800
+Message-Id: <20210510095026.3477496-1-tientzu@chromium.org>
+X-Mailer: git-send-email 2.31.1.607.g51e8a6a459-goog
 MIME-Version: 1.0
-X-Brightmail-Tracker: H4sIAAAAAAAAA+NgFmphk+LIzCtJLcpLzFFi42LZdljTQnf6jxkJBh+2W1nsPW1hcXm/tsXK
- 1UeZLBbst7ZYtvgpo8XlXXPYLNYeuctucfDDE1YHDo8189Yweky+sZzRY/fNBjaPj09vsXj0
- bVnF6PF5k1wAW1SOTUZqYkpqkUJqXnJ+SmZeuq2Sd3C8c7ypmYGhrqGlhbmSQl5ibqqtkotP
- gK5bZg7QNUoKZYk5pUChgMTiYiV9O5ui/NKSVIWM/OISW6XUgpScAkPDAr3ixNzi0rx0veT8
- XCtDAwMjU6DKhJyMxrkP2As2Klc8fvuAqYFxonQXIyeHhICJxIWzC1lAbCGBHYwSn17YdTFy
- AdmfGCXutO1ih3C+MUrs/dzADtMx6fgjqMReRolZZ15CtX9klJh5iRvEZhPQldjy/BUjiC0i
- ECIxo/kRWDOzwCtGiW8rDLsYOTiEBbwkNl8sAwmzCKhKXL1/FKycV8Be4veDDWwQu+QlTp+4
- BhUXlDg58wkLxBh5ieats5kham6xS0x8AnWbi8SKjgNQvcISr45vgYpLSXx+t5cN5GYJgW5G
- idZH/6ESqxklOht9IGx7iV/Tt7CC3MYsoCmxfpc+iCkhoCxx5BbUWj6JjsN/2SHCvBIdbUIQ
- jeoSB7ZPZ4GwZSW653xmhbA9JA4+38kICZxYiWUXlzBPYJSfheSZWUiemYWwdwEj8ypGsdSC
- 4tz01GKjAhPkGN3ECE6OWh47GGe//aB3iJGJg/EQowQHs5IIr2jHtAQh3pTEyqrUovz4otKc
- 1OJDjKbA4J3ILCWanA9Mz3kl8YamRmZmBpamFqZmRhZK4rw/U+sShATSE0tSs1NTC1KLYPqY
- ODilGpiMtb/qlFw5/vbFaUbjvkBFbg+zi1ksi3NeLHKUXx7cviFag6cqlCE54beIvXy/U/t/
- SfX8VTFct5vrn2SuTmWwnpApvCsh2fDsMtXLbZKGlpv+H83/s3Om/T9t6RWizXNXnaiML3Py
- ZTkQ4f184cGsG5t+7dqjrucuuFgtz3Cm1N9Oy8yUWIdFr3gXcYryuV+3UdsfbyYk4t1/3LzN
- Zvb1lWVMAocsXFS3/5/L2C2d+atStitZqjXqiPC/ycbP5X9yMVda351bpr2g9lNrg1109Lwl
- 4qtOzPh/dY7orPNTzxy61LSH5UFimU7omY/1Uquk8ydEdbhtFzXodv9m2aF7X/jk5t6Mj418
- YstVlViKMxINtZiLihMB162d1BcEAAA=
-X-Brightmail-Tracker: H4sIAAAAAAAAA+NgFtrCLMWRmVeSWpSXmKPExsWy7bCSvO70HzMSDL4eEbfYe9rC4vJ+bYuV
- q48yWSzYb22xbPFTRovLu+awWaw9cpfd4uCHJ6wOHB5r5q1h9Jh8Yzmjx+6bDWweH5/eYvHo
- 27KK0ePzJrkAtigum5TUnMyy1CJ9uwSujMa5D9gLNipXPH77gKmBcaJ0FyMnh4SAicSk44/Y
- QWwhgd2MEvenWELEZSWevdvBDmELS9xvOcLaxcgFVPOeUWLL4X5mkASbgK7EluevGLsYOThE
- BEIkfm4UBalhFnjHKHF90xlmkLiwgJfE5otlIOUsAqoSV+8fZQSxeQXsJX4/2MAGMV9e4vSJ
- a1BxQYmTM5+wgNjMQPHmrbOZJzDyzUKSmoUktYCRaRWjZGpBcW56brFhgWFearlecWJucWle
- ul5yfu4mRnDAamnuYNy+6oPeIUYmDsZDjBIczEoivKId0xKEeFMSK6tSi/Lji0pzUosPMUpz
- sCiJ817oOhkvJJCeWJKanZpakFoEk2Xi4JRqYHJyUOx6LMuUMz//xYqjfbrH/Kzv5xX3F+8p
- Tjv0UGGb730xtrfzdhhzV+3/POPvet3vG3guHTZa+8HIeEK17KPWtE5Z/jrXpx4plofPcmgt
- +fG7cf+1I8I35y/eW6YrIVi9ZOmR/UVTJrX2f3V5fyrPO1hwtkz/E/Zpqza3r60IYvLLOKlc
- 9krM+fPGdu8MbdsK99/t5XYSj14tqzNze61373G3YvAkzl2fp9jOecjrrtBXKH0ss39W6+56
- 6WsqhZduc1qo5V01KmufcNKiyvLJbiGGym15R6UikkyZZKfEJMq9Pcd8NC1FVFCzODtjq+HK
- Vf5HFZ/XtP9asTVEUCw4rV62OPmJ026zvtc2SizFGYmGWsxFxYkA5MY7EccCAAA=
-X-CMS-MailID: 20210510091047epcas2p46daccaa59f30e7444be0ff2b5955228c
-X-Msg-Generator: CA
-X-Sendblock-Type: AUTO_CONFIDENTIAL
-CMS-TYPE: 102P
-DLP-Filter: Pass
-X-CFilter-Loop: Reflected
-X-CMS-RootMailID: 20210510091047epcas2p46daccaa59f30e7444be0ff2b5955228c
-References: <CGME20210510091047epcas2p46daccaa59f30e7444be0ff2b5955228c@epcas2p4.samsung.com>
-X-Mailman-Approved-At: Mon, 10 May 2021 09:41:45 +0000
-Cc: linux-kernel@vger.kernel.org, Bumyong Lee <bumyong.lee@samsung.com>,
- iommu@lists.linux-foundation.org, Chanho Park <chanho61.park@samsung.com>,
- Robin Murphy <robin.murphy@arm.com>
+Cc: heikki.krogerus@linux.intel.com, thomas.hellstrom@linux.intel.com,
+ peterz@infradead.org, benh@kernel.crashing.org,
+ joonas.lahtinen@linux.intel.com, dri-devel@lists.freedesktop.org,
+ chris@chris-wilson.co.uk, grant.likely@arm.com, paulus@samba.org,
+ mingo@kernel.org, jxgao@google.com, sstabellini@kernel.org,
+ Saravana Kannan <saravanak@google.com>, xypron.glpk@gmx.de,
+ "Rafael J . Wysocki" <rafael.j.wysocki@intel.com>,
+ Bartosz Golaszewski <bgolaszewski@baylibre.com>, bskeggs@redhat.com,
+ linux-pci@vger.kernel.org, xen-devel@lists.xenproject.org,
+ Thierry Reding <treding@nvidia.com>, intel-gfx@lists.freedesktop.org,
+ matthew.auld@intel.com, linux-devicetree <devicetree@vger.kernel.org>,
+ daniel@ffwll.ch, airlied@linux.ie, maarten.lankhorst@linux.intel.com,
+ linuxppc-dev@lists.ozlabs.org, jani.nikula@linux.intel.com,
+ Nicolas Boichat <drinkcat@chromium.org>, rodrigo.vivi@intel.com,
+ bhelgaas@google.com, tientzu@chromium.org,
+ Dan Williams <dan.j.williams@intel.com>,
+ Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
+ Claire Chang <tientzu@google.com>, nouveau@lists.freedesktop.org,
+ Greg KH <gregkh@linuxfoundation.org>, Randy Dunlap <rdunlap@infradead.org>,
+ lkml <linux-kernel@vger.kernel.org>,
+ "list@263.net:IOMMU DRIVERS" <iommu@lists.linux-foundation.org>,
+ Jim Quinlan <james.quinlan@broadcom.com>, Robin Murphy <robin.murphy@arm.com>,
+ bauerman@linux.ibm.com
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -154,140 +130,97 @@ Content-Transfer-Encoding: 7bit
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-From: Bumyong Lee <bumyong.lee@samsung.com>
+From: Claire Chang <tientzu@google.com>
 
-in case of driver wants to sync part of ranges with offset,
-swiotlb_tbl_sync_single() copies from orig_addr base to tlb_addr with
-offset it makes data mismatch
+This series implements mitigations for lack of DMA access control on
+systems without an IOMMU, which could result in the DMA accessing the
+system memory at unexpected times and/or unexpected addresses, possibly
+leading to data leakage or corruption.
 
-it removed from
-- "swiotlb: don't modify orig_addr in swiotlb_tbl_sync_single",
-but it have to be recovered due to below case.
+For example, we plan to use the PCI-e bus for Wi-Fi and that PCI-e bus is
+not behind an IOMMU. As PCI-e, by design, gives the device full access to
+system memory, a vulnerability in the Wi-Fi firmware could easily escalate
+to a full system exploit (remote wifi exploits: [1a], [1b] that shows a
+full chain of exploits; [2], [3]).
 
-1. Get dma_addr_t from dma_map_single()
-dma_addr_t tlb_addr = dma_map_single(dev, vaddr, vsize, DMA_TO_DEVICE);
+To mitigate the security concerns, we introduce restricted DMA. Restricted
+DMA utilizes the existing swiotlb to bounce streaming DMA in and out of a
+specially allocated region and does memory allocation from the same region.
+The feature on its own provides a basic level of protection against the DMA
+overwriting buffer contents at unexpected times. However, to protect
+against general data leakage and system memory corruption, the system needs
+to provide a way to restrict the DMA to a predefined memory region (this is
+usually done at firmware level, e.g. MPU in ATF on some ARM platforms [4]).
 
-    |<---------------vsize------------->|
-    +-----------------------------------+
-    |                                   | original buffer
-    +-----------------------------------+
-  vaddr
+[1a] https://googleprojectzero.blogspot.com/2017/04/over-air-exploiting-broadcoms-wi-fi_4.html
+[1b] https://googleprojectzero.blogspot.com/2017/04/over-air-exploiting-broadcoms-wi-fi_11.html
+[2] https://blade.tencent.com/en/advisories/qualpwn/
+[3] https://www.bleepingcomputer.com/news/security/vulnerabilities-found-in-highly-popular-firmware-for-wifi-chips/
+[4] https://github.com/ARM-software/arm-trusted-firmware/blob/master/plat/mediatek/mt8183/drivers/emi_mpu/emi_mpu.c#L132
 
- swiotlb_align_offset
-     |<----->|<---------------vsize------------->|
-     +-------+-----------------------------------+
-     |       |                                   | swiotlb buffer
-     +-------+-----------------------------------+
-          tlb_addr
+v6:
+Address the comments in v5
 
-2. Do something
-3. Sync dma_addr_t through dma_sync_single_for_device(..)
-dma_sync_single_for_device(dev, tlb_addr + offset, size, DMA_TO_DEVICE);
+v5:
+Rebase on latest linux-next
+https://lore.kernel.org/patchwork/cover/1416899/
 
-  Error case.
-    copy data to original buffer.
-    but it is from base addr in original buffer
+v4:
+- Fix spinlock bad magic
+- Use rmem->name for debugfs entry
+- Address the comments in v3
+https://lore.kernel.org/patchwork/cover/1378113/
 
-     |<----->|<- offset ->|<- size ->|
-     +-------+-----------------------------------+
-     |       |            |##########|           | swiotlb buffer
-     +-------+-----------------------------------+
-          tlb_addr
+v3:
+Using only one reserved memory region for both streaming DMA and memory
+allocation.
+https://lore.kernel.org/patchwork/cover/1360992/
 
- swiotlb_align_offset
-     |<----->|<- offset ->|<- size ->|
-     +-------+-----------------------------------+
-     |       |            |##########|           | swiotlb buffer
-     +-------+-----------------------------------+
-          tlb_addr
+v2:
+Building on top of swiotlb.
+https://lore.kernel.org/patchwork/cover/1280705/
 
-    |<- size ->|
-    +-----------------------------------+
-    |##########|                        | original buffer
-    +-----------------------------------+
-  vaddr
+v1:
+Using dma_map_ops.
+https://lore.kernel.org/patchwork/cover/1271660/
+*** BLURB HERE ***
 
-  FIX. copy data to original buffer.
-  but it is from base addr in original buffer
+Claire Chang (15):
+  swiotlb: Refactor swiotlb init functions
+  swiotlb: Refactor swiotlb_create_debugfs
+  swiotlb: Add DMA_RESTRICTED_POOL
+  swiotlb: Add restricted DMA pool initialization
+  swiotlb: Add a new get_io_tlb_mem getter
+  swiotlb: Update is_swiotlb_buffer to add a struct device argument
+  swiotlb: Update is_swiotlb_active to add a struct device argument
+  swiotlb: Bounce data from/to restricted DMA pool if available
+  swiotlb: Move alloc_size to find_slots
+  swiotlb: Refactor swiotlb_tbl_unmap_single
+  dma-direct: Add a new wrapper __dma_direct_free_pages()
+  swiotlb: Add restricted DMA alloc/free support.
+  dma-direct: Allocate memory from restricted DMA pool if available
+  dt-bindings: of: Add restricted DMA pool
+  of: Add plumbing for restricted DMA pool
 
- swiotlb_align_offset
-     |<----->|<- offset ->|<- size ->|
-     +-------+-----------------------------------+
-     |       |            |##########|           | swiotlb buffer
-     +-------+-----------------------------------+
-          tlb_addr
+ .../reserved-memory/reserved-memory.txt       |  27 ++
+ drivers/gpu/drm/i915/gem/i915_gem_internal.c  |   2 +-
+ drivers/gpu/drm/nouveau/nouveau_ttm.c         |   2 +-
+ drivers/iommu/dma-iommu.c                     |  12 +-
+ drivers/of/address.c                          |  25 ++
+ drivers/of/device.c                           |   3 +
+ drivers/of/of_private.h                       |   5 +
+ drivers/pci/xen-pcifront.c                    |   2 +-
+ drivers/xen/swiotlb-xen.c                     |   2 +-
+ include/linux/device.h                        |   4 +
+ include/linux/swiotlb.h                       |  41 ++-
+ kernel/dma/Kconfig                            |  14 +
+ kernel/dma/direct.c                           |  63 +++--
+ kernel/dma/direct.h                           |   9 +-
+ kernel/dma/swiotlb.c                          | 242 +++++++++++++-----
+ 15 files changed, 356 insertions(+), 97 deletions(-)
 
-    |<- offset ->|<- size ->|
-    +-----------------------------------+
-    |            |##########|           | original buffer
-    +-----------------------------------+
-  vaddr
-
-Fixes: 16fc3cef33a0 ("swiotlb: don't modify orig_addr in swiotlb_tbl_sync_single")
-Signed-off-by: Bumyong Lee <bumyong.lee@samsung.com>
-Signed-off-by: Chanho Park <chanho61.park@samsung.com>
----
-Changes since v1:
-- Move swiotlb_align_offset to avoid forward declaration
-- Make tlb_offset calculation as single assignment
-
- kernel/dma/swiotlb.c | 23 +++++++++++++++--------
- 1 file changed, 15 insertions(+), 8 deletions(-)
-
-diff --git a/kernel/dma/swiotlb.c b/kernel/dma/swiotlb.c
-index 8ca7d505d61c..e50df8d8f87e 100644
---- a/kernel/dma/swiotlb.c
-+++ b/kernel/dma/swiotlb.c
-@@ -334,6 +334,14 @@ void __init swiotlb_exit(void)
- 	io_tlb_default_mem = NULL;
- }
- 
-+/*
-+ * Return the offset into a iotlb slot required to keep the device happy.
-+ */
-+static unsigned int swiotlb_align_offset(struct device *dev, u64 addr)
-+{
-+	return addr & dma_get_min_align_mask(dev) & (IO_TLB_SIZE - 1);
-+}
-+
- /*
-  * Bounce: copy the swiotlb buffer from or back to the original dma location
-  */
-@@ -346,10 +354,17 @@ static void swiotlb_bounce(struct device *dev, phys_addr_t tlb_addr, size_t size
- 	size_t alloc_size = mem->slots[index].alloc_size;
- 	unsigned long pfn = PFN_DOWN(orig_addr);
- 	unsigned char *vaddr = phys_to_virt(tlb_addr);
-+	unsigned int tlb_offset;
- 
- 	if (orig_addr == INVALID_PHYS_ADDR)
- 		return;
- 
-+	tlb_offset = (tlb_addr & (IO_TLB_SIZE - 1)) -
-+		     swiotlb_align_offset(dev, orig_addr);
-+
-+	orig_addr += tlb_offset;
-+	alloc_size -= tlb_offset;
-+
- 	if (size > alloc_size) {
- 		dev_WARN_ONCE(dev, 1,
- 			"Buffer overflow detected. Allocation size: %zu. Mapping size: %zu.\n",
-@@ -390,14 +405,6 @@ static void swiotlb_bounce(struct device *dev, phys_addr_t tlb_addr, size_t size
- 
- #define slot_addr(start, idx)	((start) + ((idx) << IO_TLB_SHIFT))
- 
--/*
-- * Return the offset into a iotlb slot required to keep the device happy.
-- */
--static unsigned int swiotlb_align_offset(struct device *dev, u64 addr)
--{
--	return addr & dma_get_min_align_mask(dev) & (IO_TLB_SIZE - 1);
--}
--
- /*
-  * Carefully handle integer overflow which can occur when boundary_mask == ~0UL.
-  */
 -- 
-2.31.1
+2.31.1.607.g51e8a6a459-goog
 
 _______________________________________________
 iommu mailing list
