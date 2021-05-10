@@ -7,56 +7,56 @@ X-Spam-Status: No, score=-16.8 required=3.0 tests=BAYES_00,
 	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,URIBL_RED,USER_AGENT_GIT
 	autolearn=ham autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 71052C43600
-	for <iommu@archiver.kernel.org>; Mon, 10 May 2021 14:22:46 +0000 (UTC)
-Received: from smtp2.osuosl.org (smtp2.osuosl.org [140.211.166.133])
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 848BEC43462
+	for <iommu@archiver.kernel.org>; Mon, 10 May 2021 14:22:45 +0000 (UTC)
+Received: from smtp4.osuosl.org (smtp4.osuosl.org [140.211.166.137])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 23C036145F
-	for <iommu@archiver.kernel.org>; Mon, 10 May 2021 14:22:46 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 23C036145F
+	by mail.kernel.org (Postfix) with ESMTPS id 33CD2611BD
+	for <iommu@archiver.kernel.org>; Mon, 10 May 2021 14:22:45 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 33CD2611BD
 Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=huawei.com
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by smtp2.osuosl.org (Postfix) with ESMTP id 79B5E4054E;
-	Mon, 10 May 2021 14:22:44 +0000 (UTC)
+	by smtp4.osuosl.org (Postfix) with ESMTP id 80E5C40649;
+	Mon, 10 May 2021 14:22:43 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from smtp2.osuosl.org ([127.0.0.1])
-	by localhost (smtp2.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id QBn53UZA8ndv; Mon, 10 May 2021 14:22:43 +0000 (UTC)
+Received: from smtp4.osuosl.org ([127.0.0.1])
+	by localhost (smtp4.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+	with ESMTP id NzZ_yRXWIM-j; Mon, 10 May 2021 14:22:42 +0000 (UTC)
 Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by smtp2.osuosl.org (Postfix) with ESMTP id 69E3640545;
-	Mon, 10 May 2021 14:22:43 +0000 (UTC)
+	by smtp4.osuosl.org (Postfix) with ESMTP id 2B27C40E6F;
+	Mon, 10 May 2021 14:22:42 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 61CA9C0027;
-	Mon, 10 May 2021 14:22:43 +0000 (UTC)
-Received: from smtp1.osuosl.org (smtp1.osuosl.org [IPv6:2605:bc80:3010::138])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 1ADCDC002B
- for <iommu@lists.linux-foundation.org>; Mon, 10 May 2021 14:22:41 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 60130C002D;
+	Mon, 10 May 2021 14:22:41 +0000 (UTC)
+Received: from smtp2.osuosl.org (smtp2.osuosl.org [140.211.166.133])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id A7DF5C0001
+ for <iommu@lists.linux-foundation.org>; Mon, 10 May 2021 14:22:39 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by smtp1.osuosl.org (Postfix) with ESMTP id 500B6842CA
+ by smtp2.osuosl.org (Postfix) with ESMTP id 8FBB140538
  for <iommu@lists.linux-foundation.org>; Mon, 10 May 2021 14:22:39 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from smtp1.osuosl.org ([127.0.0.1])
- by localhost (smtp1.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id IqBVgWKmJa9n for <iommu@lists.linux-foundation.org>;
- Mon, 10 May 2021 14:22:38 +0000 (UTC)
+Received: from smtp2.osuosl.org ([127.0.0.1])
+ by localhost (smtp2.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+ with ESMTP id q1htSItGJEYz for <iommu@lists.linux-foundation.org>;
+ Mon, 10 May 2021 14:22:39 +0000 (UTC)
 X-Greylist: domain auto-whitelisted by SQLgrey-1.8.0
 Received: from szxga04-in.huawei.com (szxga04-in.huawei.com [45.249.212.190])
- by smtp1.osuosl.org (Postfix) with ESMTPS id A40338408F
+ by smtp2.osuosl.org (Postfix) with ESMTPS id E9213404F7
  for <iommu@lists.linux-foundation.org>; Mon, 10 May 2021 14:22:38 +0000 (UTC)
 Received: from DGGEMS413-HUB.china.huawei.com (unknown [172.30.72.58])
- by szxga04-in.huawei.com (SkyGuard) with ESMTP id 4Ff39B2V5Hz1BKmS;
+ by szxga04-in.huawei.com (SkyGuard) with ESMTP id 4Ff39B4WTgz1BKvs;
  Mon, 10 May 2021 22:19:58 +0800 (CST)
 Received: from localhost.localdomain (10.69.192.58) by
  DGGEMS413-HUB.china.huawei.com (10.3.19.213) with Microsoft SMTP Server id
- 14.3.498.0; Mon, 10 May 2021 22:22:29 +0800
+ 14.3.498.0; Mon, 10 May 2021 22:22:26 +0800
 From: John Garry <john.garry@huawei.com>
 To: <joro@8bytes.org>, <will@kernel.org>, <robin.murphy@arm.com>,
  <hch@lst.de>, <m.szyprowski@samsung.com>
-Subject: [PATCH v2 15/15] scsi: hisi_sas: Set max optimal DMA size for v3 hw
-Date: Mon, 10 May 2021 22:17:29 +0800
-Message-ID: <1620656249-68890-16-git-send-email-john.garry@huawei.com>
+Subject: [PATCH v2 07/15] iommu: Add iommu_realloc_dev_group()
+Date: Mon, 10 May 2021 22:17:21 +0800
+Message-ID: <1620656249-68890-8-git-send-email-john.garry@huawei.com>
 X-Mailer: git-send-email 2.8.1
 In-Reply-To: <1620656249-68890-1-git-send-email-john.garry@huawei.com>
 References: <1620656249-68890-1-git-send-email-john.garry@huawei.com>
@@ -83,29 +83,61 @@ Content-Transfer-Encoding: 7bit
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-For IOMMU strict mode, gives a big performance boost in some scenarios.
+Add a function to re-alloc IOMMU group default domain.
 
 Signed-off-by: John Garry <john.garry@huawei.com>
 ---
- drivers/scsi/hisi_sas/hisi_sas_v3_hw.c | 5 +++++
- 1 file changed, 5 insertions(+)
+ drivers/iommu/iommu.c | 12 ++++++++++++
+ include/linux/iommu.h |  6 ++++++
+ 2 files changed, 18 insertions(+)
 
-diff --git a/drivers/scsi/hisi_sas/hisi_sas_v3_hw.c b/drivers/scsi/hisi_sas/hisi_sas_v3_hw.c
-index 499c770d405c..365fc9de4be2 100644
---- a/drivers/scsi/hisi_sas/hisi_sas_v3_hw.c
-+++ b/drivers/scsi/hisi_sas/hisi_sas_v3_hw.c
-@@ -4675,6 +4675,11 @@ hisi_sas_v3_probe(struct pci_dev *pdev, const struct pci_device_id *id)
- 	struct sas_ha_struct *sha;
- 	int rc, phy_nr, port_nr, i;
+diff --git a/drivers/iommu/iommu.c b/drivers/iommu/iommu.c
+index f7253a973ab9..bdb9aa47dfca 100644
+--- a/drivers/iommu/iommu.c
++++ b/drivers/iommu/iommu.c
+@@ -3191,6 +3191,18 @@ static int iommu_change_dev_def_domain(struct iommu_group *group,
+ 	return ret;
+ }
  
-+	rc = dma_set_max_opt_size(dev, PAGE_SIZE * HISI_SAS_SGE_PAGE_CNT);
-+	/* We can live with other errors */
-+	if (rc == -EPROBE_DEFER)
-+		return rc;
++int iommu_realloc_dev_group(struct device *dev)
++{
++	struct iommu_group *group;
++	int ret;
 +
- 	rc = pci_enable_device(pdev);
- 	if (rc)
- 		goto err_out;
++	group = iommu_group_get(dev);
++	ret = iommu_change_dev_def_domain(group, dev, 0, true);
++	iommu_group_put(group);
++
++	return ret;
++}
++
+ /*
+  * Changing the default domain or any other IOMMU group attribute through sysfs
+  * requires the users to unbind the drivers from the devices in the IOMMU group.
+diff --git a/include/linux/iommu.h b/include/linux/iommu.h
+index e26abda94792..6e187746af0f 100644
+--- a/include/linux/iommu.h
++++ b/include/linux/iommu.h
+@@ -482,6 +482,7 @@ bool iommu_get_dma_strict(struct iommu_domain *domain);
+ 
+ extern int report_iommu_fault(struct iommu_domain *domain, struct device *dev,
+ 			      unsigned long iova, int flags);
++extern int iommu_realloc_dev_group(struct device *dev);
+ 
+ static inline void iommu_flush_iotlb_all(struct iommu_domain *domain)
+ {
+@@ -699,6 +700,11 @@ static inline size_t iommu_map_sg_atomic(struct iommu_domain *domain,
+ 	return 0;
+ }
+ 
++static inline int iommu_realloc_dev_group(struct device *dev)
++{
++	return -ENODEV;
++}
++
+ static inline void iommu_flush_iotlb_all(struct iommu_domain *domain)
+ {
+ }
 -- 
 2.26.2
 
