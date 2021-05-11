@@ -5,73 +5,75 @@ X-Spam-Level:
 X-Spam-Status: No, score=-15.1 required=3.0 tests=BAYES_00,DKIM_INVALID,
 	DKIM_SIGNED,HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_CR_TRAILER,INCLUDES_PATCH,
 	MAILING_LIST_MULTI,NICE_REPLY_A,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,
-	USER_AGENT_SANE_1 autolearn=unavailable autolearn_force=no version=3.4.0
+	USER_AGENT_SANE_1 autolearn=ham autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C39F1C43461
-	for <iommu@archiver.kernel.org>; Tue, 11 May 2021 16:17:26 +0000 (UTC)
-Received: from smtp4.osuosl.org (smtp4.osuosl.org [140.211.166.137])
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 27CF2C433B4
+	for <iommu@archiver.kernel.org>; Tue, 11 May 2021 16:19:14 +0000 (UTC)
+Received: from smtp3.osuosl.org (smtp3.osuosl.org [140.211.166.136])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 29AAD6186A
-	for <iommu@archiver.kernel.org>; Tue, 11 May 2021 16:17:26 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 29AAD6186A
+	by mail.kernel.org (Postfix) with ESMTPS id 9836A6187E
+	for <iommu@archiver.kernel.org>; Tue, 11 May 2021 16:19:13 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 9836A6187E
 Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=deltatee.com
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by smtp4.osuosl.org (Postfix) with ESMTP id B877A40574;
-	Tue, 11 May 2021 16:17:25 +0000 (UTC)
+	by smtp3.osuosl.org (Postfix) with ESMTP id 328C46062C;
+	Tue, 11 May 2021 16:19:13 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from smtp4.osuosl.org ([127.0.0.1])
-	by localhost (smtp4.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id WDM7vk4zfHUZ; Tue, 11 May 2021 16:17:24 +0000 (UTC)
-Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [IPv6:2605:bc80:3010:104::8cd3:938])
-	by smtp4.osuosl.org (Postfix) with ESMTP id 9498B40577;
-	Tue, 11 May 2021 16:17:24 +0000 (UTC)
+Received: from smtp3.osuosl.org ([127.0.0.1])
+	by localhost (smtp3.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+	with ESMTP id 52_9TY4GNAHp; Tue, 11 May 2021 16:19:12 +0000 (UTC)
+Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
+	by smtp3.osuosl.org (Postfix) with ESMTP id 1C002605A4;
+	Tue, 11 May 2021 16:19:12 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 6E7F8C000E;
-	Tue, 11 May 2021 16:17:24 +0000 (UTC)
-Received: from smtp4.osuosl.org (smtp4.osuosl.org [140.211.166.137])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 20536C0001
- for <iommu@lists.linux-foundation.org>; Tue, 11 May 2021 16:17:23 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id EC579C000E;
+	Tue, 11 May 2021 16:19:11 +0000 (UTC)
+Received: from smtp1.osuosl.org (smtp1.osuosl.org [140.211.166.138])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 9CFDDC0001
+ for <iommu@lists.linux-foundation.org>; Tue, 11 May 2021 16:19:10 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by smtp4.osuosl.org (Postfix) with ESMTP id F414840577
- for <iommu@lists.linux-foundation.org>; Tue, 11 May 2021 16:17:22 +0000 (UTC)
+ by smtp1.osuosl.org (Postfix) with ESMTP id 8BBE884326
+ for <iommu@lists.linux-foundation.org>; Tue, 11 May 2021 16:19:10 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from smtp4.osuosl.org ([127.0.0.1])
- by localhost (smtp4.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id NiMpLTgQSupA for <iommu@lists.linux-foundation.org>;
- Tue, 11 May 2021 16:17:22 +0000 (UTC)
+Authentication-Results: smtp1.osuosl.org (amavisd-new);
+ dkim=pass (2048-bit key) header.d=deltatee.com
+Received: from smtp1.osuosl.org ([127.0.0.1])
+ by localhost (smtp1.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+ with ESMTP id JQAo1iEPl-JZ for <iommu@lists.linux-foundation.org>;
+ Tue, 11 May 2021 16:19:10 +0000 (UTC)
 X-Greylist: domain auto-whitelisted by SQLgrey-1.8.0
 Received: from ale.deltatee.com (ale.deltatee.com [204.191.154.188])
- by smtp4.osuosl.org (Postfix) with ESMTPS id 39DAE40574
- for <iommu@lists.linux-foundation.org>; Tue, 11 May 2021 16:17:22 +0000 (UTC)
+ by smtp1.osuosl.org (Postfix) with ESMTPS id 11E1F84319
+ for <iommu@lists.linux-foundation.org>; Tue, 11 May 2021 16:19:10 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
  d=deltatee.com; s=20200525; h=Subject:In-Reply-To:MIME-Version:Date:
  Message-ID:From:References:Cc:To:content-disposition;
- bh=+qL+bCKGfStmpkzBXZL07cewsYGgdGWBxgnS26p7gJ4=; b=OjW/leyhr6eiCrabsG0jwX48QG
- qf9FfnRMB8lOpcLl7xkYVCN+H9DG/ow0oFBY5DkbsdrKG4BeIL/95qHzr5Q34oml6P0Ia+gj006QY
- T7tfNb/72phF7xxLw2cHcasrwLMhlmUq8D4r4ua8yXgfhO46WSwr8NalxGd8AKW8D7Uph/BeD0c6v
- EXvXF+qClEvUf1Cs6Tw4byRJhAqcs+WTb4+Ii6rhyanbNHBLODUr7O8ZW25N6FFgMl243kSFQXexr
- 6BMwajaa6dpHKjgCljgKN/d8mwu2rcxO8/ASPfckMdnWBkJYMQw+zF2Aa4G7MR3LtsG2RGxXG35o2
- 4DdZW0ng==;
+ bh=KRREYiID4nTLAcd30iCtMu5qS4tYGdizddy6etGFynA=; b=QX2vn+ZSnkNIea3oIqxWCrg9tp
+ n1sCb9KHpJoIaRXdY0nYk+A55R5+bJzf7lAUrmRIP+9tYXPMAY9zVdmvTrY8Zi4CN+nP4mJCwlXNi
+ 9EpP4/ubF7Zt56WkMmsltDxbS59EjBO3rKE9BgbNkI4JufYuR4lLRmoNsuerG4uBi5CFZyekeuaGh
+ adS2eOEVb6LeYpnv785vjeHILX6oPibI9iYigpRsbyKCGjWpq95W7BYMUn3Ez26qYJDbXa8bQ4t+g
+ 9GEhUUbscgDYfAy9KDF7uFUAETOgR5Z55BuzayN3e/GMBH3ziI+KwOOahICDS35fDS9iJbAZ4bRN1
+ OGZR8Z+g==;
 Received: from guinness.priv.deltatee.com ([172.16.1.162])
  by ale.deltatee.com with esmtp (Exim 4.92)
  (envelope-from <logang@deltatee.com>)
- id 1lgV4L-0006fB-19; Tue, 11 May 2021 10:17:14 -0600
+ id 1lgV65-0006go-Tm; Tue, 11 May 2021 10:19:02 -0600
 To: Don Dutile <ddutile@redhat.com>, linux-kernel@vger.kernel.org,
  linux-nvme@lists.infradead.org, linux-block@vger.kernel.org,
  linux-pci@vger.kernel.org, linux-mm@kvack.org,
  iommu@lists.linux-foundation.org
 References: <20210408170123.8788-1-logang@deltatee.com>
- <20210408170123.8788-8-logang@deltatee.com>
- <a2da7566-7e0d-6a3a-055d-4d324deba4af@redhat.com>
+ <20210408170123.8788-11-logang@deltatee.com>
+ <92704199-4cee-3811-3902-08ccf6cc1f5f@redhat.com>
 From: Logan Gunthorpe <logang@deltatee.com>
-Message-ID: <a90197a9-460f-c709-d852-725352a0ef20@deltatee.com>
-Date: Tue, 11 May 2021 10:17:12 -0600
+Message-ID: <185f39c0-d71c-5d24-9d87-951a72c3532d@deltatee.com>
+Date: Tue, 11 May 2021 10:19:01 -0600
 User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
  Thunderbird/78.10.0
 MIME-Version: 1.0
-In-Reply-To: <a2da7566-7e0d-6a3a-055d-4d324deba4af@redhat.com>
+In-Reply-To: <92704199-4cee-3811-3902-08ccf6cc1f5f@redhat.com>
 Content-Language: en-CA
 X-SA-Exim-Connect-IP: 172.16.1.162
 X-SA-Exim-Rcpt-To: robin.murphy@arm.com, ira.weiny@intel.com,
@@ -84,7 +86,8 @@ X-SA-Exim-Rcpt-To: robin.murphy@arm.com, ira.weiny@intel.com,
  linux-nvme@lists.infradead.org, linux-kernel@vger.kernel.org,
  ddutile@redhat.com
 X-SA-Exim-Mail-From: logang@deltatee.com
-Subject: Re: [PATCH 07/16] PCI/P2PDMA: Make pci_p2pdma_map_type() non-static
+Subject: Re: [PATCH 10/16] dma-mapping: Add flags to dma_map_ops to indicate
+ PCI P2PDMA support
 X-SA-Exim-Version: 4.2.1 (built Wed, 08 May 2019 21:11:16 +0000)
 X-SA-Exim-Scanned: Yes (on ale.deltatee.com)
 Cc: Minturn Dave B <dave.b.minturn@intel.com>, Ira Weiny <ira.weiny@intel.com>,
@@ -117,58 +120,43 @@ Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
 On 2021-05-11 10:06 a.m., Don Dutile wrote:
 > On 4/8/21 1:01 PM, Logan Gunthorpe wrote:
->> pci_p2pdma_map_type() will be needed by the dma-iommu map_sg
->> implementation because it will need to determine the mapping type
->> ahead of actually doing the mapping to create the actual iommu mapping.
+>> Add a flags member to the dma_map_ops structure with one flag to
+>> indicate support for PCI P2PDMA.
+>>
+>> Also, add a helper to check if a device supports PCI P2PDMA.
 >>
 >> Signed-off-by: Logan Gunthorpe <logang@deltatee.com>
 >> ---
->>   drivers/pci/p2pdma.c       | 34 +++++++++++++++++++++++-----------
->>   include/linux/pci-p2pdma.h | 15 +++++++++++++++
->>   2 files changed, 38 insertions(+), 11 deletions(-)
+>>   include/linux/dma-map-ops.h |  3 +++
+>>   include/linux/dma-mapping.h |  5 +++++
+>>   kernel/dma/mapping.c        | 18 ++++++++++++++++++
+>>   3 files changed, 26 insertions(+)
 >>
->> diff --git a/drivers/pci/p2pdma.c b/drivers/pci/p2pdma.c
->> index bcb1a6d6119d..38c93f57a941 100644
->> --- a/drivers/pci/p2pdma.c
->> +++ b/drivers/pci/p2pdma.c
->> @@ -20,13 +20,6 @@
->>   #include <linux/seq_buf.h>
->>   #include <linux/xarray.h>
+>> diff --git a/include/linux/dma-map-ops.h b/include/linux/dma-map-ops.h
+>> index 51872e736e7b..481892822104 100644
+>> --- a/include/linux/dma-map-ops.h
+>> +++ b/include/linux/dma-map-ops.h
+>> @@ -12,6 +12,9 @@
+>>   struct cma;
 >>   
->> -enum pci_p2pdma_map_type {
->> -	PCI_P2PDMA_MAP_UNKNOWN = 0,
->> -	PCI_P2PDMA_MAP_NOT_SUPPORTED,
->> -	PCI_P2PDMA_MAP_BUS_ADDR,
->> -	PCI_P2PDMA_MAP_THRU_HOST_BRIDGE,
->> -};
->> -
->>   struct pci_p2pdma {
->>   	struct gen_pool *pool;
->>   	bool p2pmem_published;
->> @@ -822,13 +815,30 @@ void pci_p2pmem_publish(struct pci_dev *pdev, bool publish)
->>   }
->>   EXPORT_SYMBOL_GPL(pci_p2pmem_publish);
->>   
->> -static enum pci_p2pdma_map_type pci_p2pdma_map_type(struct dev_pagemap *pgmap,
->> -						    struct device *dev)
->> +/**
->> + * pci_p2pdma_map_type - return the type of mapping that should be used for
->> + *	a given device and pgmap
->> + * @pgmap: the pagemap of a page to determine the mapping type for
->> + * @dev: device that is mapping the page
->> + * @dma_attrs: the attributes passed to the dma_map operation --
->> + *	this is so they can be checked to ensure P2PDMA pages were not
->> + *	introduced into an incorrect interface (like dma_map_sg). *
->> + *
->> + * Returns one of:
->> + *	PCI_P2PDMA_MAP_NOT_SUPPORTED - The mapping should not be done
->> + *	PCI_P2PDMA_MAP_BUS_ADDR - The mapping should use the PCI bus address
->> + *	PCI_P2PDMA_MAP_THRU_HOST_BRIDGE - The mapping should be done directly
->> + */
-> I'd recommend putting these descriptions in the enum's in pci-p2pdma.h .
-> Also, can you use a better description for THRU_HOST_BRIDGE -- it leaves the reader wondering what 'done directly' means.
+>>   struct dma_map_ops {
+>> +	unsigned int flags;
+>> +#define DMA_F_PCI_P2PDMA_SUPPORTED     (1 << 0)
+>> +
+> I'm not a fan of in-line define's; if we're going to add a flags field to the dma-ops
+> -- and logically it'd be good to have p2pdma go through the dma-ops struct --
+> then let's move this up in front of the dma-ops description.
 
-Will do.
+Already changed for v2.
+
+> And now that the dma-ops struct is being 'opened' for p2pdma, should p2pdma ops be added
+> to this struct, so all this work can be mimic'd/reflected/leveraged/refactored for CXL, GenZ, etc. p2pdma in (the near?) future?
+
+v2 no longer has a specific op for p2pdma. We are now using
+dma_map_sgtable() which already has the error return we need.
+
+I think any work to support CXL, GenZ, etc will need to be done when
+they add their own support. I can't and shouldn't guess at their needs now.
 
 Logan
 _______________________________________________
