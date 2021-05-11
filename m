@@ -2,71 +2,85 @@ Return-Path: <SRS0=AxcK=KG=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-5.3 required=3.0 tests=BAYES_00,
-	HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,
-	URIBL_BLOCKED,USER_AGENT_SANE_2 autolearn=no autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-3.5 required=3.0 tests=BAYES_00,DKIM_INVALID,
+	DKIM_SIGNED,HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,
+	MSGID_FROM_MTA_HEADER,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED autolearn=no
+	autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 74BDBC433ED
-	for <iommu@archiver.kernel.org>; Tue, 11 May 2021 13:26:11 +0000 (UTC)
-Received: from smtp2.osuosl.org (smtp2.osuosl.org [140.211.166.133])
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 11F26C43461
+	for <iommu@archiver.kernel.org>; Tue, 11 May 2021 14:38:50 +0000 (UTC)
+Received: from smtp1.osuosl.org (smtp1.osuosl.org [140.211.166.138])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id E67A66191E
-	for <iommu@archiver.kernel.org>; Tue, 11 May 2021 13:26:10 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org E67A66191E
-Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=linux.intel.com
+	by mail.kernel.org (Postfix) with ESMTPS id 87E1961396
+	for <iommu@archiver.kernel.org>; Tue, 11 May 2021 14:38:49 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 87E1961396
+Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=nvidia.com
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by smtp2.osuosl.org (Postfix) with ESMTP id 79EB1402DB;
-	Tue, 11 May 2021 13:26:10 +0000 (UTC)
+	by smtp1.osuosl.org (Postfix) with ESMTP id 1724683DD1;
+	Tue, 11 May 2021 14:38:49 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from smtp2.osuosl.org ([127.0.0.1])
-	by localhost (smtp2.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id NTwzJiCnN4JF; Tue, 11 May 2021 13:26:09 +0000 (UTC)
-Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [IPv6:2605:bc80:3010:104::8cd3:938])
-	by smtp2.osuosl.org (Postfix) with ESMTP id 352ED402A0;
-	Tue, 11 May 2021 13:26:09 +0000 (UTC)
+Received: from smtp1.osuosl.org ([127.0.0.1])
+	by localhost (smtp1.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+	with ESMTP id 5ZuqGu6XkChw; Tue, 11 May 2021 14:38:48 +0000 (UTC)
+Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
+	by smtp1.osuosl.org (Postfix) with ESMTP id CFA3783D9C;
+	Tue, 11 May 2021 14:38:47 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 13A72C000D;
-	Tue, 11 May 2021 13:26:09 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id A34FDC000E;
+	Tue, 11 May 2021 14:38:47 +0000 (UTC)
 Received: from smtp3.osuosl.org (smtp3.osuosl.org [IPv6:2605:bc80:3010::136])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 6E476C000D
- for <iommu@lists.linux-foundation.org>; Tue, 11 May 2021 13:26:08 +0000 (UTC)
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 575A4C000E
+ for <iommu@lists.linux-foundation.org>; Tue, 11 May 2021 14:38:46 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by smtp3.osuosl.org (Postfix) with ESMTP id 8743A60AC2
- for <iommu@lists.linux-foundation.org>; Tue, 11 May 2021 13:26:05 +0000 (UTC)
+ by smtp3.osuosl.org (Postfix) with ESMTP id 53112607C8
+ for <iommu@lists.linux-foundation.org>; Tue, 11 May 2021 14:38:46 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
+Authentication-Results: smtp3.osuosl.org (amavisd-new);
+ dkim=pass (2048-bit key) header.d=nvidia.com
 Received: from smtp3.osuosl.org ([127.0.0.1])
  by localhost (smtp3.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id oGUvoRdiCl9k for <iommu@lists.linux-foundation.org>;
- Tue, 11 May 2021 13:26:04 +0000 (UTC)
-X-Greylist: domain auto-whitelisted by SQLgrey-1.8.0
-Received: from mga05.intel.com (mga05.intel.com [192.55.52.43])
- by smtp3.osuosl.org (Postfix) with ESMTPS id 8DBD060AF9
- for <iommu@lists.linux-foundation.org>; Tue, 11 May 2021 13:26:04 +0000 (UTC)
-IronPort-SDR: c27ZQwU2xBgQmX+vuer85q6APRiaIEDvg4lXIi0TOcTP74qY4dMx+K5LdZgzU4X6al5ijLeRFM
- Px7AWxFy1DFw==
-X-IronPort-AV: E=McAfee;i="6200,9189,9980"; a="284930810"
-X-IronPort-AV: E=Sophos;i="5.82,290,1613462400"; d="scan'208";a="284930810"
-Received: from fmsmga003.fm.intel.com ([10.253.24.29])
- by fmsmga105.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384;
- 11 May 2021 06:26:04 -0700
-IronPort-SDR: Ja5IgSNuhJWXorN0fMwyeZIDsLuWpaHj++dzLuyI5kMh9FIT+At9MSFJy6bzSXJLsQTZl7+EM/
- Rujt7J5XToOQ==
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.82,290,1613462400"; d="scan'208";a="461916699"
-Received: from yiliu-dev.bj.intel.com (HELO yiliu-dev) ([10.238.156.135])
- by FMSMGA003.fm.intel.com with ESMTP; 11 May 2021 06:25:58 -0700
-Date: Tue, 11 May 2021 21:24:44 +0800
-From: Liu Yi L <yi.l.liu@linux.intel.com>
+ with ESMTP id Ot-6Jh71s8gW for <iommu@lists.linux-foundation.org>;
+ Tue, 11 May 2021 14:38:45 +0000 (UTC)
+X-Greylist: whitelisted by SQLgrey-1.8.0
+Received: from NAM12-DM6-obe.outbound.protection.outlook.com
+ (mail-dm6nam12on2082.outbound.protection.outlook.com [40.107.243.82])
+ by smtp3.osuosl.org (Postfix) with ESMTPS id E351B60755
+ for <iommu@lists.linux-foundation.org>; Tue, 11 May 2021 14:38:44 +0000 (UTC)
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=G2Bbb6pJqzIjWO/9zvdiEB85cxP9qVBTkgowCwDLdeTg5VDXCYjT9RE2mk9XYPim1HvI5avGgozC9JDGAISk5T9gUMb8Bs11p+0PdFi3saHIXDP0z00n4JMzzvu+42FZPuVFWfqUFhelA4FJ2OC6635msSuaGHy6ugQU06ZfoP23brTpbIPtuYUsIoxsHOqjfcPO9MFjqJMcsGa8kgW50Fa68V4Lkuqps/FhlAUTvNcDt6O5M/zMWEKPOEnSTnpz76RPlnnQD40tKQUuTnL2J3/3zQnRK1ODp2QrCQARGdINOr902wd3nwiaQvm7R2baXi5LWkZYq4mS9C3nxKmhzg==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com; 
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=9OMfWZvNL8XVN0Eq8qQEaCJm25NFuVDltqXLJAjUpac=;
+ b=KePGNgFM/t6sYoiyG2z2ElZuy/GJfLCU473FClh/nQa02B9JnnHY7SIJXJbuXTIWP/UYt8KDnGw2uuxDJpP9nc5YMgIfnuDd0uwwZJM8fxDMIwV73G/jbDURLEME6K3UZNeDhN93kXb8M7V8HhnySYQ2KWmyEGvz5uFmXotqGq5dr0LCEXwYGX490DEZjmNCEmVwSr/8/6Tk45aJOIdZdecDcALHs5ZoO72NBXii+VMsRsTcmGc592xzCtUnd6hxh7qaChCLIY0ooYbQFvWZ4HnXS7KrqORvYhi/YbhfBfCy3wytiKmgi1VQtCwq18LMbMMV4G0v4wGD08Kgy7oDbQ==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=nvidia.com; dmarc=pass action=none header.from=nvidia.com;
+ dkim=pass header.d=nvidia.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
+ s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=9OMfWZvNL8XVN0Eq8qQEaCJm25NFuVDltqXLJAjUpac=;
+ b=dqzdeesY1x+1S0AGDzq8F043OdtnVXKnYP13vLzlFfeRlbi2131bKz8yz43m3we4AIcXowxauy9JFy8NVJOdNTBo8fUkzZcwnn8K++uew6S+FBtcqwAPzObxUB2ZYj8ptlu0zztzH6NQYPYUTleh2YJW7zMWwylLAh2mFaGHIcDmnQkQkqsXuo8LS9thNUOWcIPNiHZIaHsJe5IkQq1ZArTBUqguhhvsI3ayPG7fk3f+tRt014luP7dCcczAc1jXCKRK1hWMopXSPyOl5pgP8i0f1gms3d0fkCTng0KKLIcCSaByh0UEHdYJWywgiOxZraEYdFIBjSg4dkms8rZeBw==
+Authentication-Results: intel.com; dkim=none (message not signed)
+ header.d=none;intel.com; dmarc=none action=none header.from=nvidia.com;
+Received: from DM6PR12MB3834.namprd12.prod.outlook.com (2603:10b6:5:14a::12)
+ by DM6PR12MB3739.namprd12.prod.outlook.com (2603:10b6:5:1c4::21) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4108.26; Tue, 11 May
+ 2021 14:38:42 +0000
+Received: from DM6PR12MB3834.namprd12.prod.outlook.com
+ ([fe80::ddb4:2cbb:4589:f039]) by DM6PR12MB3834.namprd12.prod.outlook.com
+ ([fe80::ddb4:2cbb:4589:f039%4]) with mapi id 15.20.4108.031; Tue, 11 May 2021
+ 14:38:42 +0000
+Date: Tue, 11 May 2021 11:38:40 -0300
+From: Jason Gunthorpe <jgg@nvidia.com>
 To: "Tian, Kevin" <kevin.tian@intel.com>
 Subject: Re: [PATCH V4 05/18] iommu/ioasid: Redefine IOASID set and
  allocation APIs
-Message-ID: <20210511212444.15b47c05@yiliu-dev>
-In-Reply-To: <MWHPR11MB1886E22D03B14EE0D5725CE08C539@MWHPR11MB1886.namprd11.prod.outlook.com>
-References: <20210504180050.GB1370958@nvidia.com>
- <20210504151154.02908c63@jacob-builder>
- <20210504231530.GE1370958@nvidia.com>
+Message-ID: <20210511143840.GL1002214@nvidia.com>
+References: <20210504231530.GE1370958@nvidia.com>
  <20210505102259.044cafdf@jacob-builder>
  <20210505180023.GJ1370958@nvidia.com>
  <20210505130446.3ee2fccd@jacob-builder> <YJOZhPGheTSlHtQc@myrica>
@@ -75,19 +89,75 @@ References: <20210504180050.GB1370958@nvidia.com>
  <MWHPR11MB188698FBEE62AF1313E0F7AC8C569@MWHPR11MB1886.namprd11.prod.outlook.com>
  <20210510123729.GA1002214@nvidia.com>
  <MWHPR11MB1886E22D03B14EE0D5725CE08C539@MWHPR11MB1886.namprd11.prod.outlook.com>
-Organization: IAGS/SSE(OTC)
-X-Mailer: Claws Mail 3.17.5 (GTK+ 2.24.32; x86_64-pc-linux-gnu)
+Content-Disposition: inline
+In-Reply-To: <MWHPR11MB1886E22D03B14EE0D5725CE08C539@MWHPR11MB1886.namprd11.prod.outlook.com>
+X-Originating-IP: [47.55.113.94]
+X-ClientProxiedBy: BL1PR13CA0128.namprd13.prod.outlook.com
+ (2603:10b6:208:2bb::13) To DM6PR12MB3834.namprd12.prod.outlook.com
+ (2603:10b6:5:14a::12)
 MIME-Version: 1.0
+X-MS-Exchange-MessageSentRepresentingType: 1
+Received: from mlx.ziepe.ca (47.55.113.94) by
+ BL1PR13CA0128.namprd13.prod.outlook.com (2603:10b6:208:2bb::13) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4129.11 via Frontend
+ Transport; Tue, 11 May 2021 14:38:42 +0000
+Received: from jgg by mlx with local (Exim 4.94)	(envelope-from
+ <jgg@nvidia.com>)	id 1lgTWy-005JN9-PB; Tue, 11 May 2021 11:38:40 -0300
+X-MS-PublicTrafficType: Email
+X-MS-Office365-Filtering-Correlation-Id: cb71bcb3-b358-407a-d372-08d9148a7956
+X-MS-TrafficTypeDiagnostic: DM6PR12MB3739:
+X-Microsoft-Antispam-PRVS: <DM6PR12MB3739D43F378152B9BCF65278C2539@DM6PR12MB3739.namprd12.prod.outlook.com>
+X-MS-Oob-TLC-OOBClassifiers: OLM:8882;
+X-MS-Exchange-SenderADCheck: 1
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: KvL7JkTEMko8SNNuTblXwhaIRiR8T+dF5pl09mzAtaVO0uzC9dVkWdf7yWJHw26cvCjkVnG3BbcjstmSleh657JlGdxDNnFCt9nAVULQWvVCVPv1vezySCwmES5EQIgO4E51VSXhZt297H3AcgmwKmyPqD23quhpvnarvnrDnRsSKAtEfs9cnkHiRU+v/HAhyFGzp0ZBtrkhPmOaynDUoLU9AVFNe4zMs7fhzkI+ZIDGf+CF69RK29IX+Q5OZMgOnV/GTpMg1kcH4rtTIvFAbMZ4DOO9Mevbt/YC8TweETm0rbCV4hGa5NzP4MS4H3Jwoy9q+Haw3pmJIDmIXxLAzPKGVVyNkMgh0GZ49sBYPa4Govf7e49MGCA8gZ4JvH9ptJfJR+QShKZEPIB/rXuKRJQKjADbsvfDEkCQfNqTE3fDiuZiXRfaR05/vfRPYY+ONW30T+79i7+msAL1Yn6AEMjSC34CsPAtVZyG0m/tt1tfy0pVuxsniRJIdd3YFVz3XfJ/rYfrhtcWHVqkqstHJWuOgZ6AYM26hczUvQ8b9p3FOHCt4550nssU60CDI0xOKYUMLUthErMpHQ3GoEiJmuQG6opjCSbImy2Kn5Ws6gs=
+X-Forefront-Antispam-Report: CIP:255.255.255.255; CTRY:; LANG:en; SCL:1; SRV:;
+ IPV:NLI; SFV:NSPM; H:DM6PR12MB3834.namprd12.prod.outlook.com; PTR:; CAT:NONE;
+ SFS:(4636009)(366004)(346002)(376002)(396003)(136003)(39860400002)(6916009)(86362001)(66556008)(66476007)(7416002)(66946007)(2906002)(4326008)(1076003)(5660300002)(9746002)(54906003)(478600001)(33656002)(36756003)(9786002)(186003)(26005)(426003)(316002)(8676002)(8936002)(2616005)(38100700002);
+ DIR:OUT; SFP:1101; 
+X-MS-Exchange-AntiSpam-MessageData: =?us-ascii?Q?ItoyRa2M5frlc+uXbOmG6SXgpRkHEAR8tes7LDoa0eRAHbBOmVd8zL/h4U6j?=
+ =?us-ascii?Q?hT9CiyipVwa21qrGC/29TTqdKFoxYNuXEFC5dHrggMlyXDR6gRlPPXq0Fpyi?=
+ =?us-ascii?Q?PymTM00YPze1kJaLlOs/SkZbYVRqeUnNs0appn7kPTWV8cTuMf7AGmmHwxAl?=
+ =?us-ascii?Q?XUEtF8Rq2/SLwhOo95hH1hr79nzUr5uPfz4Kawgm6szC3RBCVLSpxXM0wDRr?=
+ =?us-ascii?Q?8zNmnAd4jZtL9crw+BMySNBy2+jI3Ehr06F5GUd3jhDq9qe64/xPHIS6WYxZ?=
+ =?us-ascii?Q?56QC3dA/ky6xxotwR/B8qMy+RETtsbdIE1+jprCcBUJ1u2BP/+Y3Tzi+JtEW?=
+ =?us-ascii?Q?YvM+AMMCbeJfb5cpeAegPagWkIKOdVlpZtnCSUK7DWL5mstZS+uhJfzJlB2T?=
+ =?us-ascii?Q?/97bo0l6M2DOJ1yYQl+kWK6LGfxGZ7LIuRospiGAhylihas0EtttuASudu8J?=
+ =?us-ascii?Q?1/rkYRMJ5IxgK/wesdnZk9B+s6gajxVoRPf1Ghq5L+LGlPtnU6Qmoyg3TnQk?=
+ =?us-ascii?Q?6x/qxFWz5H6+4U8F81l1ws2rYucFd8rLKQ0gdDBTrhFXVc/ASMUTP8EsunpW?=
+ =?us-ascii?Q?WJMJd7vQFd0g1q9YlN2jOKtX00744s0Rohzcu2h3IJtsmOd8l5LNPUCdukk+?=
+ =?us-ascii?Q?MSmlls3neB0IJBMjClobAT1+fhT9HT6MYnipcVdr3xJrW3Pe1bdwOXFRa2gf?=
+ =?us-ascii?Q?FbQBvPoeBfF/NgP7MqIxYYonwTGnMmvIdatJTVrhgYCgtKdh/oUAiGBbI/bf?=
+ =?us-ascii?Q?EnTJOrbnoPyneiE4El11OXE41H1k5A7iDKdK1xq8dFbXXNsUahCfK51LxLdW?=
+ =?us-ascii?Q?NrP4cNkKpB7259r8eEeAmuUnF7ehPRpx0iRWXqjGDvgiCJvM4wSils/W69um?=
+ =?us-ascii?Q?1AfhXUKHFB4aFHaUq1xYeHobnMozmKlTjjAn+Hz8jzEEOjoRCXBU/DufYoA+?=
+ =?us-ascii?Q?yHCdA0A7K3wP4pEjI24Gs9O/iVOcij5l8FjnDBijgGh10pFCiAHn2kFY1sQ9?=
+ =?us-ascii?Q?becS3ub5d/fHAJxbA6Qx2zTfu7VJBoTN+mcVbF/sdXgeF9Eb3+wxWmQ4jX50?=
+ =?us-ascii?Q?AQOaI6ZMopCFV/90eh5RpvuJNdabNHepDFxNan0gZxU+c9myxSa1zrAoqgIo?=
+ =?us-ascii?Q?zLtxcdteCgpGbEda1sTL//QzSuAMPCLcXurSe/2xzHcIeXv0wMqe4zA4p2YV?=
+ =?us-ascii?Q?2TDKssoHXVGcNUVqb9RCL9RqycKiolFL1d69l4HsT6teyaX9+8dLK7D69h3b?=
+ =?us-ascii?Q?eY7PayykJ5CijhJBdlTJe3nRXk/vc79Mq3DczTC1IRp7NWpudBY3jRRIZUQU?=
+ =?us-ascii?Q?IuStR6pSNgF8EDx62yxJWMKR?=
+X-OriginatorOrg: Nvidia.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: cb71bcb3-b358-407a-d372-08d9148a7956
+X-MS-Exchange-CrossTenant-AuthSource: DM6PR12MB3834.namprd12.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 11 May 2021 14:38:42.5460 (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: eA5AijSzVOgFIPKsxWiEkQIPJ5HN1ee1yqjvCWlmAe8Mpo3BD6aqs1VKk5lUCWQv
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: DM6PR12MB3739
 Cc: Jean-Philippe Brucker <jean-philippe@linaro.org>, "Jiang,
  Dave" <dave.jiang@intel.com>, "Raj, Ashok" <ashok.raj@intel.com>,
- Jonathan Corbet <corbet@lwn.net>,
- Jean-Philippe Brucker <jean-philippe@linaro.com>,
+ Jonathan Corbet <corbet@lwn.net>, David Woodhouse <dwmw2@infradead.org>,
  LKML <linux-kernel@vger.kernel.org>,
  "iommu@lists.linux-foundation.org" <iommu@lists.linux-foundation.org>,
  Li Zefan <lizefan@huawei.com>, Alex Williamson <alex.williamson@redhat.com>,
- Jason Gunthorpe <jgg@nvidia.com>, Johannes Weiner <hannes@cmpxchg.org>,
- Tejun Heo <tj@kernel.org>, "cgroups@vger.kernel.org" <cgroups@vger.kernel.org>,
- David Woodhouse <dwmw2@infradead.org>, "Wu, Hao" <hao.wu@intel.com>
+ Johannes Weiner <hannes@cmpxchg.org>, Tejun Heo <tj@kernel.org>,
+ "cgroups@vger.kernel.org" <cgroups@vger.kernel.org>,
+ Jean-Philippe Brucker <jean-philippe@linaro.com>, "Wu, Hao" <hao.wu@intel.com>
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -105,101 +175,8 @@ Content-Transfer-Encoding: 7bit
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-On Tue, 11 May 2021 09:10:03 +0000, Tian, Kevin wrote:
+On Tue, May 11, 2021 at 09:10:03AM +0000, Tian, Kevin wrote:
 
-> > From: Jason Gunthorpe
-> > Sent: Monday, May 10, 2021 8:37 PM
-> >   
-> [...] 
-> > > gPASID!=hPASID has a problem when assigning a physical device which
-> > > supports both shared work queue (ENQCMD with PASID in MSR)
-> > > and dedicated work queue (PASID in device register) to a guest
-> > > process which is associated to a gPASID. Say the host kernel has setup
-> > > the hPASID entry with nested translation though /dev/ioasid. For
-> > > shared work queue the CPU is configured to translate gPASID in MSR
-> > > into **hPASID** before the payload goes out to the wire. However
-> > > for dedicated work queue the device MMIO register is directly mapped
-> > > to and programmed by the guest, thus containing a **gPASID** value
-> > > implying DMA requests through this interface will hit IOMMU faults
-> > > due to invalid gPASID entry. Having gPASID==hPASID is a simple
-> > > workaround here. mdev doesn't have this problem because the
-> > > PASID register is in emulated control-path thus can be translated
-> > > to hPASID manually by mdev driver.  
-> > 
-> > This all must be explicit too.
-> > 
-> > If a PASID is allocated and it is going to be used with ENQCMD then
-> > everything needs to know it is actually quite different than a PASID
-> > that was allocated to be used with a normal SRIOV device, for
-> > instance.
-> > 
-> > The former case can accept that the guest PASID is virtualized, while
-> > the lattter can not.
-> > 
-> > This is also why PASID per RID has to be an option. When I assign a
-> > full SRIOV function to the guest then that entire RID space needs to
-> > also be assigned to the guest. Upon migration I need to take all the
-> > physical PASIDs and rebuild them in another hypervisor exactly as is.
-> > 
-> > If you force all RIDs into a global PASID pool then normal SRIOV
-> > migration w/PASID becomes impossible. ie ENQCMD breaks everything else
-> > that should work.
-> > 
-> > This is why you need to sort all this out and why it feels like some
-> > of the specs here have been mis-designed.
-> > 
-> > I'm not sure carving out ranges is really workable for migration.
-> > 
-> > I think the real answer is to carve out entire RIDs as being in the
-> > global pool or not. Then the ENQCMD HW can be bundled together and
-> > everything else can live in the natural PASID per RID world.
-> >   
-> 
-> OK. Here is the revised scheme by making it explicitly.
-> 
-> There are three scenarios to be considered:
-> 
-> 1) SR-IOV (AMD/ARM):
-> 	- "PASID per RID" with guest-allocated PASIDs;
-> 	- PASID table managed by guest (in GPA space);
-> 	- the entire PASID space delegated to guest;
-> 	- no need to explicitly register guest-allocated PASIDs to host;
-> 	- uAPI for attaching PASID table:
-> 
->     // set to "PASID per RID"
->     ioctl(ioasid_fd, IOASID_SET_HWID_MODE, IOASID_HWID_LOCAL);
-> 
->     // When Qemu captures a new PASID table through vIOMMU;
->     pasidtbl_ioasid = ioctl(ioasid_fd, IOASID_ALLOC);
->     ioctl(device_fd, VFIO_ATTACH_IOASID, pasidtbl_ioasid);
-> 
->     // Set the PASID table to the RID associated with pasidtbl_ioasid;
->     ioctl(ioasid_fd, IOASID_SET_PASID_TABLE, pasidtbl_ioasid, gpa_addr);
-> 
-> 2) SR-IOV, no ENQCMD (Intel):
-> 	- "PASID per RID" with guest-allocated PASIDs;
-> 	- PASID table managed by host (in HPA space);
-> 	- the entire PASID space delegated to guest too;
-> 	- host must be explicitly notified for guest-allocated PASIDs;
-> 	- uAPI for binding user-allocated PASIDs:
-> 
->     // set to "PASID per RID"
->     ioctl(ioasid_fd, IOASID_SET_HWID_MODE, IOASID_HWID_LOCAL);
-> 
->     // When Qemu captures a new PASID allocated through vIOMMU;
-
-Is this achieved by VCMD or by capturing guest's PASID cache invalidation?
-
->     pgtbl_ioasid = ioctl(ioasid_fd, IOASID_ALLOC);
->     ioctl(device_fd, VFIO_ATTACH_IOASID, pgtbl_ioasid);
-> 
->     // Tell the kernel to associate pasid to pgtbl_ioasid in internal structure;
->     // &pasid being a pointer due to a requirement in scenario-3
->     ioctl(ioasid_fd, IOASID_SET_HWID, pgtbl_ioasid, &pasid);
-> 
->     // Set guest page table to the RID+pasid associated to pgtbl_ioasid
->     ioctl(ioasid_fd, IOASID_BIND_PGTABLE, pgtbl_ioasid, gpa_addr);
-> 
 > 3) SRIOV, ENQCMD (Intel):
 > 	- "PASID global" with host-allocated PASIDs;
 > 	- PASID table managed by host (in HPA space);
@@ -219,43 +196,16 @@ Is this achieved by VCMD or by capturing guest's PASID cache invalidation?
 >     // local PASID range is managed by guest and migrated as VM state
 >     // global PASIDs are re-allocated and mapped to local PASIDs post migration
 >     ioctl(ioasid_fd, IOASID_HWID_SET_GLOBAL_MIN, 1024);
-> 
->     // When Qemu captures a new local_pasid allocated through vIOMMU;
->     pgtbl_ioasid = ioctl(ioasid_fd, IOASID_ALLOC);
->     ioctl(device_fd, VFIO_ATTACH_IOASID, pgtbl_ioasid);
-> 
->     // Tell the kernel to associate local_pasid to pgtbl_ioasid in internal structure;
->     // Due to HWID_GLOBAL, the kernel also allocates a global_pasid from the
->     // global pool. From now on, every hwid related operations must be applied
->     // to both PASIDs for this page table;
->     // global_pasid is returned to userspace in the same field as local_pasid;
->     ioctl(ioasid_fd, IOASID_SET_HWID, pgtbl_ioasid, &local_pasid);
-> 
->     // Qemu then registers local_pasid/global_pasid pair to KVM for setting up
->     // CPU PASID translation table;
->     ioctl(kvm_fd, KVM_SET_PASID_MAPPING, local_pasid, global_pasid);
-> 
->     // Set guest page table to the RID+{local_pasid, global_pasid} associated 
->     // to pgtbl_ioasid;
->     ioctl(ioasid_fd, IOASID_BIND_PGTABLE, pgtbl_ioasid, gpa_addr);
-> 
-> -----
-> Notes:
-> 
-> I tried to keep common commands in generic format for all scenarios, while
-> introducing new commands for usage-specific requirement. Everything is
-> made explicit now. 
-> 
-> The userspace has sufficient information to choose its desired scheme based 
-> on vIOMMU types and platform information (e.g. whether ENQCMD is exposed 
-> in virtual CPUID, whether assigned devices support DMWr, etc.). 
-> 
-> Above example assumes one RID per bound page table, because vIOMMU
-> identifies new guest page tables per-RID. If there are other usages requiring
-> multiple RIDs per page table, SET_HWID/BIND_PGTABLE could accept
-> another device_handle parameter to specify which RID is targeted for this
-> operation.
-> 
+
+I'm still not sold that ranges are the best idea here, it just adds
+more state that has to match during migration. Keeping the
+global/local split per RID seems much cleaner to me
+
+This is also why I don't really like having the global/local be global
+to the ioasid either. It would be better to specify global/local as
+part of each VFIO_ATTACH_IOASID so each device is moved to the correct
+allocator.
+
 > When considering SIOV/mdev there is no change to above uAPI sequence. 
 > It's n/a for 1) as SIOV requires PASID table in HPA space, nor does it
 > cause any change to 3) regarding to the split range scheme. The only
@@ -266,20 +216,17 @@ Is this achieved by VCMD or by capturing guest's PASID cache invalidation?
 > and then allocate a 'real' PASID at IOASID_SET_HWID. Later always use the 
 > real one when programming PASID entry (IOASID_BIND_PGTABLE) or device 
 > PASID register (converted in the mediation path).
-> 
-> If all above can work reasonably, we even don't need the special VCMD 
-> interface in VT-d for guest to allocate PASIDs from host. Just always let
-> the guest to manage its PASIDs (with restriction of available local PASIDs),
-> being a global allocator or per-RID allocator. the vIOMMU side just stick
-> to the per-RID emulation according to the spec. 
 
-yeah, if this scheme for scenario 3) is good. We may limit the range of
-local PASIDs by limiting the PASID bit width of vIOMMU. QEMU can get the
-local PASID allocated by guest IOMMU when guest does PASID cache invalidation.
+It does need some user visible difference because SIOV/mdev is not
+migratable. Only the kernel can select a PASID, userspace (and hence
+the guest) shouldn't have the option to force a specific PASID as the
+PASID space is shared across the entire RID to all VMs using the mdev.
 
--- 
-Regards,
-Yi Liu
+I don't see any alternative to telling every part if the PASID is
+going to be used by ENQCMD or not, too many important decisions rest
+on this detail.
+
+Jason
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
