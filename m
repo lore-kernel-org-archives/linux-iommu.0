@@ -3,86 +3,77 @@ X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
 X-Spam-Status: No, score=-5.3 required=3.0 tests=BAYES_00,
-	HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,NICE_REPLY_A,SPF_HELO_NONE,
-	SPF_PASS,URIBL_BLOCKED,USER_AGENT_SANE_1 autolearn=no autolearn_force=no
-	version=3.4.0
+	HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,
+	URIBL_BLOCKED,USER_AGENT_SANE_2 autolearn=no autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8827FC433ED
-	for <iommu@archiver.kernel.org>; Tue, 11 May 2021 03:13:03 +0000 (UTC)
-Received: from smtp2.osuosl.org (smtp2.osuosl.org [140.211.166.133])
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 73EB5C433B4
+	for <iommu@archiver.kernel.org>; Tue, 11 May 2021 03:29:27 +0000 (UTC)
+Received: from smtp3.osuosl.org (smtp3.osuosl.org [140.211.166.136])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id C320D61584
-	for <iommu@archiver.kernel.org>; Tue, 11 May 2021 03:13:02 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org C320D61584
+	by mail.kernel.org (Postfix) with ESMTPS id B62CA61585
+	for <iommu@archiver.kernel.org>; Tue, 11 May 2021 03:29:26 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org B62CA61585
 Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=linux.intel.com
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by smtp2.osuosl.org (Postfix) with ESMTP id 6E5D240242;
-	Tue, 11 May 2021 03:13:02 +0000 (UTC)
-X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from smtp2.osuosl.org ([127.0.0.1])
-	by localhost (smtp2.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id LnKwPAfo4o7v; Tue, 11 May 2021 03:13:01 +0000 (UTC)
-Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [IPv6:2605:bc80:3010:104::8cd3:938])
-	by smtp2.osuosl.org (Postfix) with ESMTP id 63B3640247;
-	Tue, 11 May 2021 03:13:01 +0000 (UTC)
-Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 26C71C000E;
-	Tue, 11 May 2021 03:13:01 +0000 (UTC)
-Received: from smtp3.osuosl.org (smtp3.osuosl.org [140.211.166.136])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 7F10AC0001
- for <iommu@lists.linux-foundation.org>; Tue, 11 May 2021 03:12:59 +0000 (UTC)
-Received: from localhost (localhost [127.0.0.1])
- by smtp3.osuosl.org (Postfix) with ESMTP id 5893A60C26
- for <iommu@lists.linux-foundation.org>; Tue, 11 May 2021 03:12:59 +0000 (UTC)
+	by smtp3.osuosl.org (Postfix) with ESMTP id 6BBA6606B0;
+	Tue, 11 May 2021 03:29:26 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
 Received: from smtp3.osuosl.org ([127.0.0.1])
- by localhost (smtp3.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id gfjEproOV-uW for <iommu@lists.linux-foundation.org>;
- Tue, 11 May 2021 03:12:58 +0000 (UTC)
+	by localhost (smtp3.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+	with ESMTP id s5-SHjYJcnx6; Tue, 11 May 2021 03:29:25 +0000 (UTC)
+Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [IPv6:2605:bc80:3010:104::8cd3:938])
+	by smtp3.osuosl.org (Postfix) with ESMTP id 515A260C26;
+	Tue, 11 May 2021 03:29:25 +0000 (UTC)
+Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 28238C000E;
+	Tue, 11 May 2021 03:29:25 +0000 (UTC)
+Received: from smtp1.osuosl.org (smtp1.osuosl.org [IPv6:2605:bc80:3010::138])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 89C80C0001
+ for <iommu@lists.linux-foundation.org>; Tue, 11 May 2021 03:29:23 +0000 (UTC)
+Received: from localhost (localhost [127.0.0.1])
+ by smtp1.osuosl.org (Postfix) with ESMTP id 6F46A838F0
+ for <iommu@lists.linux-foundation.org>; Tue, 11 May 2021 03:29:23 +0000 (UTC)
+X-Virus-Scanned: amavisd-new at osuosl.org
+Received: from smtp1.osuosl.org ([127.0.0.1])
+ by localhost (smtp1.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+ with ESMTP id cGwKQTP7-zQw for <iommu@lists.linux-foundation.org>;
+ Tue, 11 May 2021 03:29:22 +0000 (UTC)
 X-Greylist: domain auto-whitelisted by SQLgrey-1.8.0
-Received: from mga01.intel.com (mga01.intel.com [192.55.52.88])
- by smtp3.osuosl.org (Postfix) with ESMTPS id A7E47607CD
- for <iommu@lists.linux-foundation.org>; Tue, 11 May 2021 03:12:58 +0000 (UTC)
-IronPort-SDR: 3cyOWrTT0HCcwm+642iRtCpXrz8g6vMGHfg5UYT0AKWNaq2Wx3C1f9Mm1DqRScfdiaDNWTkveq
- Xw89WeDpbYBA==
-X-IronPort-AV: E=McAfee;i="6200,9189,9980"; a="220296997"
-X-IronPort-AV: E=Sophos;i="5.82,290,1613462400"; d="scan'208";a="220296997"
-Received: from fmsmga006.fm.intel.com ([10.253.24.20])
- by fmsmga101.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384;
- 10 May 2021 20:12:57 -0700
-IronPort-SDR: stKccw6CyTiwgY6Z4oynDLYVZ9iolDqy5GJI2whakNs9xp75faAiZ3QlNCdDdLhdiWlAPMdVj9
- pZkA/PEv8pfQ==
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.82,290,1613462400"; d="scan'208";a="621641217"
-Received: from allen-box.sh.intel.com (HELO [10.239.159.128])
- ([10.239.159.128])
- by fmsmga006.fm.intel.com with ESMTP; 10 May 2021 20:12:52 -0700
-Subject: Re: [RFC PATCH v4 01/13] iommu: Introduce dirty log tracking framework
-To: Keqian Zhu <zhukeqian1@huawei.com>, linux-kernel@vger.kernel.org,
- linux-arm-kernel@lists.infradead.org, iommu@lists.linux-foundation.org,
- Robin Murphy <robin.murphy@arm.com>, Will Deacon <will@kernel.org>,
- Joerg Roedel <joro@8bytes.org>,
- Jean-Philippe Brucker <jean-philippe@linaro.org>,
- Yi Sun <yi.y.sun@linux.intel.com>, Tian Kevin <kevin.tian@intel.com>
-References: <20210507102211.8836-1-zhukeqian1@huawei.com>
- <20210507102211.8836-2-zhukeqian1@huawei.com>
- <efc2d868-28ba-8ed9-1d6b-610b67d671b5@linux.intel.com>
- <18ac787a-179e-71f7-728b-c43feda80a16@huawei.com>
- <55fda826-9ab6-a3a0-b17e-a4d4879f00bc@linux.intel.com>
- <a8df289a-47c2-c193-cd6f-8415f68b900f@huawei.com>
-From: Lu Baolu <baolu.lu@linux.intel.com>
-Message-ID: <f47e90c6-f3c4-b28f-a810-e03afe79e62d@linux.intel.com>
-Date: Tue, 11 May 2021 11:12:07 +0800
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
- Thunderbird/78.7.1
+Received: from mga17.intel.com (mga17.intel.com [192.55.52.151])
+ by smtp1.osuosl.org (Postfix) with ESMTPS id 56261838ED
+ for <iommu@lists.linux-foundation.org>; Tue, 11 May 2021 03:29:22 +0000 (UTC)
+IronPort-SDR: O2i9fuOsuaio3dUA9xSNVyO/5XS1lPWlZC+zDtKZ/Vqq872ggTmxgtyuM7staGCsWVL0UD0OfS
+ PEWH+Uo26PvQ==
+X-IronPort-AV: E=McAfee;i="6200,9189,9980"; a="179607813"
+X-IronPort-AV: E=Sophos;i="5.82,290,1613462400"; d="scan'208";a="179607813"
+Received: from orsmga008.jf.intel.com ([10.7.209.65])
+ by fmsmga107.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384;
+ 10 May 2021 20:29:21 -0700
+IronPort-SDR: Uhpb1DvDD4VWPvQUKBbuZtT0+KRdRivARUbZUC56WRz1l0s45RJxsvGjfZ0Rq+c/5mOehZQAfH
+ TrML/fzG6MxA==
+X-IronPort-AV: E=Sophos;i="5.82,290,1613462400"; d="scan'208";a="436443967"
+Received: from jacob-builder.jf.intel.com (HELO jacob-builder) ([10.7.199.155])
+ by orsmga008-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384;
+ 10 May 2021 20:29:21 -0700
+Date: Mon, 10 May 2021 20:31:45 -0700
+From: Jacob Pan <jacob.jun.pan@linux.intel.com>
+To: Jason Gunthorpe <jgg@nvidia.com>
+Subject: Re: [PATCH v4 1/2] iommu/sva: Tighten SVA bind API with explicit flags
+Message-ID: <20210510203145.086835cc@jacob-builder>
+In-Reply-To: <20210510233749.GG1002214@nvidia.com>
+References: <1620653108-44901-1-git-send-email-jacob.jun.pan@linux.intel.com>
+ <1620653108-44901-2-git-send-email-jacob.jun.pan@linux.intel.com>
+ <20210510233749.GG1002214@nvidia.com>
+Organization: OTC
+X-Mailer: Claws Mail 3.17.5 (GTK+ 2.24.32; x86_64-pc-linux-gnu)
 MIME-Version: 1.0
-In-Reply-To: <a8df289a-47c2-c193-cd6f-8415f68b900f@huawei.com>
-Content-Language: en-US
-Cc: jiangkunkun@huawei.com, Cornelia Huck <cohuck@redhat.com>,
- Kirti Wankhede <kwankhede@nvidia.com>, lushenming@huawei.com,
- Alex Williamson <alex.williamson@redhat.com>, wanghaibin.wang@huawei.com
+Cc: vkoul@kernel.org, "Tian, Kevin" <kevin.tian@intel.com>,
+ Dave Jiang <dave.jiang@intel.com>, Raj Ashok <ashok.raj@intel.com>,
+ LKML <linux-kernel@vger.kernel.org>, Christoph Hellwig <hch@infradead.org>,
+ iommu@lists.linux-foundation.org, zhangfei.gao@linaro.org,
+ Jean-Philippe Brucker <jean-philippe@linaro.com>
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -95,59 +86,40 @@ List-Post: <mailto:iommu@lists.linux-foundation.org>
 List-Help: <mailto:iommu-request@lists.linux-foundation.org?subject=help>
 List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
  <mailto:iommu-request@lists.linux-foundation.org?subject=subscribe>
-Content-Transfer-Encoding: 7bit
-Content-Type: text/plain; charset="us-ascii"; Format="flowed"
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-Hi Keqian,
-
-On 5/10/21 7:07 PM, Keqian Zhu wrote:
->>>> I suppose this interface is to ask the vendor IOMMU driver to check
->>>> whether each device/iommu in the domain supports dirty bit tracking.
->>>> But what will happen if new devices with different tracking capability
->>>> are added afterward?
->>> Yep, this is considered in the vfio part. We will query again after attaching or
->>> detaching devices from the domain.  When the domain becomes capable, we enable
->>> dirty log for it. When it becomes not capable, we disable dirty log for it.
->> If that's the case, why not putting this logic in the iommu subsystem so
->> that it doesn't need to be duplicate in different upper layers?
->>
->> For example, add something like dirty_page_trackable in the struct of
->> iommu_domain and ask the vendor iommu driver to update it once any
->> device is added/removed to/from the domain. It's also better to disallow
-> If we do it, the upper layer still needs to query the capability from domain and switch
-> dirty log tracking for it. Or do you mean the domain can switch dirty log tracking automatically
-> when its capability change? If so, I think we're lack of some flexibility. The upper layer
-> may have it's own policy, such as only enable dirty log tracking when all domains are capable,
-> and disable dirty log tracking when just one domain is not capable.
-
-I may not get you.
-
-Assume that dirty_page_trackable is an attribution of an iommu_domain.
-This attribution might be changed once a new device (with different
-capability) added or removed. So it should be updated every time a new
-device is attached or detached. This work could be done by the vendor
-iommu driver on the path of dev_attach/dev_detach callback.
-
-For upper layers, before starting page tracking, they check the
-dirty_page_trackable attribution of the domain and start it only it's
-capable. Once the page tracking is switched on the vendor iommu driver
-(or iommu core) should block further device attach/detach operations
-until page tracking is stopped.
-
-> 
->> any domain attach/detach once the dirty page tracking is on.
-> Yep, this can greatly simplify our code logic, but I don't know whether our maintainers
-> agree that, as they may think that IOMMU dirty logging should not change original domain
-> behaviors.
-
-The maintainer owns the last word, but we need to work out a generic and
-self-contained API set.
-
-Best regards,
-baolu
-_______________________________________________
-iommu mailing list
-iommu@lists.linux-foundation.org
-https://lists.linuxfoundation.org/mailman/listinfo/iommu
+SGkgSmFzb24sCgpPbiBNb24sIDEwIE1heSAyMDIxIDIwOjM3OjQ5IC0wMzAwLCBKYXNvbiBHdW50
+aG9ycGUgPGpnZ0BudmlkaWEuY29tPiB3cm90ZToKCj4gT24gTW9uLCBNYXkgMTAsIDIwMjEgYXQg
+MDY6MjU6MDdBTSAtMDcwMCwgSmFjb2IgUGFuIHdyb3RlOgo+IAo+ID4gKy8qCj4gPiArICogVGhl
+IElPTU1VX1NWQV9CSU5EX1NVUEVSVklTT1IgZmxhZyByZXF1ZXN0cyBhIFBBU0lEIHdoaWNoIGNh
+biBiZQo+ID4gdXNlZCBvbmx5Cj4gPiArICogZm9yIGFjY2VzcyB0byBrZXJuZWwgYWRkcmVzc2Vz
+LiBObyBJT1RMQiBmbHVzaGVzIGFyZSBhdXRvbWF0aWNhbGx5Cj4gPiBkb25lCj4gPiArICogZm9y
+IGtlcm5lbCBtYXBwaW5nczsgaXQgaXMgdmFsaWQgb25seSBmb3IgYWNjZXNzIHRvIHRoZSBrZXJu
+ZWwncwo+ID4gc3RhdGljCj4gPiArICogMToxIG1hcHBpbmcgb2YgcGh5c2ljYWwgbWVtb3J5IOKA
+lCBub3QgdG8gdm1hbGxvYyBvciBldmVuIG1vZHVsZQo+ID4gbWFwcGluZ3MuCj4gPiArICogQSBm
+dXR1cmUgQVBJIGFkZGl0aW9uIG1heSBwZXJtaXQgdGhlIHVzZSBvZiBzdWNoIHJhbmdlcywgYnkg
+bWVhbnMKPiA+IG9mIGFuCj4gPiArICogZXhwbGljaXQgSU9UTEIgZmx1c2ggY2FsbCAoYWtpbiB0
+byB0aGUgRE1BIEFQSSdzIHVubWFwIG1ldGhvZCkuCj4gPiArICoKPiA+ICsgKiBJdCBpcyB1bmxp
+a2VseSB0aGF0IHdlIHdpbGwgZXZlciBob29rIGludG8gZmx1c2hfdGxiX2tlcm5lbF9yYW5nZSgp
+Cj4gPiB0bwo+ID4gKyAqIGRvIHN1Y2ggSU9UTEIgZmx1c2hlcyBhdXRvbWF0aWNhbGx5Lgo+ID4g
+KyAqLwo+ID4gKyNkZWZpbmUgSU9NTVVfU1ZBX0JJTkRfU1VQRVJWSVNPUiAgICAgICBCSVQoMCkg
+IAo+IAo+IEh1aD8gVGhhdCBpc24ndCByZWFsbHkgU1ZBLCBjYW4geW91IGNhbGwgaXQgc29tZXRo
+aW5nIHNhbmVyIHBsZWFzZT8KPiAKVGhpcyBpcyBzaGFyZWQga2VybmVsIHZpcnR1YWwgYWRkcmVz
+cywgSSBhbSBmb2xsb3dpbmcgdGhlIFNWQSBsaWIgbmFtaW5nCnNpbmNlIHRoaXMgaXMgd2hlcmUg
+dGhlIGZsYWcgd2lsbCBiZSB1c2VkLiBXaHkgdGhpcyBpcyBub3QgU1ZBPyBLZXJuZWwKdmlydHVh
+bCBhZGRyZXNzIGlzIHN0aWxsIHZpcnR1YWwgYWRkcmVzcy4gSXMgaXQgZHVlIHRvIGRpcmVjdCBt
+YXA/Cgo+IElzIGl0IHJlYWxseSBhIFBBU0lEIHRoYXQgYWx3YXlzIGhhcyBhbGwgb2YgcGh5c2lj
+YWwgbWVtb3J5IG1hcHBlZAo+IGludG8gaXQ/IFNvdW5kcyBkYW5nZXJvdXMuIFdoYXQgaXMgaXQg
+Zm9yPwo+IAoKWWVzLiBJdCBpcyB0byBiaW5kIERNQSByZXF1ZXN0IHcvIFBBU0lEIHdpdGggaW5p
+dF9tbS9pbml0X3RvcF9wZ3QuIFBlciBQQ0llCnNwZWMgUEFTSUQgVExQIHByZWZpeCBoYXMgIlBy
+aXZpbGVnZWQgTW9kZSBSZXF1ZXN0ZWQiIGJpdC4gVlQtZCBzdXBwb3J0cwp0aGlzIHdpdGggIlBy
+aXZpbGVnZWQtbW9kZS1SZXF1ZXN0ZWQgKFBSKSBmbGFnICh0byBkaXN0aW5ndWlzaCB1c2VyIHZl
+cnN1cwpzdXBlcnZpc29yIGFjY2VzcykiLiBFYWNoIFBBU0lEIGVudHJ5IGhhcyBhIFNSRSAoU3Vw
+ZXJ2aXNvciBSZXF1ZXN0IEVuYWJsZSkKYml0LgoKUGVyaGFwcyB3ZSBzaG91bGQgbGltaXQgdGhh
+dCB0byB0cnVzdGVkIGRldmljZSwgZS5nLiBSQ0lFUCBkZXZpY2U/Cgo+IEphc29uCgoKVGhhbmtz
+LAoKSmFjb2IKX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX18K
+aW9tbXUgbWFpbGluZyBsaXN0CmlvbW11QGxpc3RzLmxpbnV4LWZvdW5kYXRpb24ub3JnCmh0dHBz
+Oi8vbGlzdHMubGludXhmb3VuZGF0aW9uLm9yZy9tYWlsbWFuL2xpc3RpbmZvL2lvbW11
