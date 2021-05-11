@@ -6,92 +6,92 @@ X-Spam-Status: No, score=-3.6 required=3.0 tests=BAYES_00,DKIM_INVALID,
 	DKIM_SIGNED,HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,SPF_HELO_NONE,
 	SPF_PASS,URIBL_BLOCKED autolearn=no autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9A8CFC433B4
-	for <iommu@archiver.kernel.org>; Tue, 11 May 2021 16:49:48 +0000 (UTC)
-Received: from smtp1.osuosl.org (smtp1.osuosl.org [140.211.166.138])
+	by smtp.lore.kernel.org (Postfix) with ESMTP id AE10DC433B4
+	for <iommu@archiver.kernel.org>; Tue, 11 May 2021 16:49:56 +0000 (UTC)
+Received: from smtp3.osuosl.org (smtp3.osuosl.org [140.211.166.136])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 28AC961421
-	for <iommu@archiver.kernel.org>; Tue, 11 May 2021 16:49:48 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 28AC961421
+	by mail.kernel.org (Postfix) with ESMTPS id 4772561432
+	for <iommu@archiver.kernel.org>; Tue, 11 May 2021 16:49:56 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 4772561432
 Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=chromium.org
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by smtp1.osuosl.org (Postfix) with ESMTP id D5BF783C01;
-	Tue, 11 May 2021 16:49:47 +0000 (UTC)
+	by smtp3.osuosl.org (Postfix) with ESMTP id EDEBF6068A;
+	Tue, 11 May 2021 16:49:55 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from smtp1.osuosl.org ([127.0.0.1])
-	by localhost (smtp1.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id sqb7RuEe8KZ6; Tue, 11 May 2021 16:49:47 +0000 (UTC)
+Received: from smtp3.osuosl.org ([127.0.0.1])
+	by localhost (smtp3.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+	with ESMTP id kSdvnV_gQ3p2; Tue, 11 May 2021 16:49:55 +0000 (UTC)
 Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by smtp1.osuosl.org (Postfix) with ESMTP id C404983B9E;
-	Tue, 11 May 2021 16:49:46 +0000 (UTC)
+	by smtp3.osuosl.org (Postfix) with ESMTP id F04EF605CF;
+	Tue, 11 May 2021 16:49:54 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id A1A0CC000E;
-	Tue, 11 May 2021 16:49:46 +0000 (UTC)
-Received: from smtp1.osuosl.org (smtp1.osuosl.org [140.211.166.138])
- by lists.linuxfoundation.org (Postfix) with ESMTP id CD32AC0001
- for <iommu@lists.linux-foundation.org>; Tue, 11 May 2021 16:49:45 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id DB7E6C000E;
+	Tue, 11 May 2021 16:49:54 +0000 (UTC)
+Received: from smtp4.osuosl.org (smtp4.osuosl.org [IPv6:2605:bc80:3010::137])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 7CB77C0001
+ for <iommu@lists.linux-foundation.org>; Tue, 11 May 2021 16:49:53 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by smtp1.osuosl.org (Postfix) with ESMTP id BB9DF83661
- for <iommu@lists.linux-foundation.org>; Tue, 11 May 2021 16:49:45 +0000 (UTC)
+ by smtp4.osuosl.org (Postfix) with ESMTP id 66D0840417
+ for <iommu@lists.linux-foundation.org>; Tue, 11 May 2021 16:49:53 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from smtp1.osuosl.org ([127.0.0.1])
- by localhost (smtp1.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id KWzFW1OhrpkA for <iommu@lists.linux-foundation.org>;
- Tue, 11 May 2021 16:49:45 +0000 (UTC)
+Authentication-Results: smtp4.osuosl.org (amavisd-new);
+ dkim=pass (1024-bit key) header.d=chromium.org
+Received: from smtp4.osuosl.org ([127.0.0.1])
+ by localhost (smtp4.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+ with ESMTP id Jwcj3V8T4sdI for <iommu@lists.linux-foundation.org>;
+ Tue, 11 May 2021 16:49:51 +0000 (UTC)
 X-Greylist: whitelisted by SQLgrey-1.8.0
-Received: from mail-pj1-x1031.google.com (mail-pj1-x1031.google.com
- [IPv6:2607:f8b0:4864:20::1031])
- by smtp1.osuosl.org (Postfix) with ESMTPS id 2D3C982560
- for <iommu@lists.linux-foundation.org>; Tue, 11 May 2021 16:49:45 +0000 (UTC)
-Received: by mail-pj1-x1031.google.com with SMTP id
- z6-20020a17090a1706b0290155e8a752d8so688357pjd.4
- for <iommu@lists.linux-foundation.org>; Tue, 11 May 2021 09:49:45 -0700 (PDT)
+Received: from mail-io1-xd33.google.com (mail-io1-xd33.google.com
+ [IPv6:2607:f8b0:4864:20::d33])
+ by smtp4.osuosl.org (Postfix) with ESMTPS id 42C56402FE
+ for <iommu@lists.linux-foundation.org>; Tue, 11 May 2021 16:49:51 +0000 (UTC)
+Received: by mail-io1-xd33.google.com with SMTP id z24so18827955ioj.7
+ for <iommu@lists.linux-foundation.org>; Tue, 11 May 2021 09:49:51 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=chromium.org; s=google;
  h=mime-version:references:in-reply-to:from:date:message-id:subject:to
- :cc; bh=I574vs+oxpmw2RaQkdeqT3TmVa8C0vE6HCQzgLmVaEk=;
- b=EO4zcKQD13cnMpJi5k5sqZg36m/uhjFrv+x7tUEK/JnHkDgZTOULzljGCah93D1FN5
- SwmaT+lt9As201TL9V65C0BiJShCnGyDe8UgjgY5Jm1YBpkuQxrN8+e9OJjS8RpeP4ih
- 4tasAkIoShr42ndvrMVih2QtviIwqYbb0WQHQ=
+ :cc; bh=k6jrKLJf+SUK032/zz9tWYcN5Rhay3mFZvhqIWgxNBs=;
+ b=L/Y31OZjVAvXas4gAOFGDpY1O+WckxTleHtLR2a6rScOLannRZ4axVg75JGljNN3EA
+ 40xB287W01zuvyDHYZFS2WLSs1CG9A82KNV8OVT7o92X2FrRRw8J292qbL27/DexCkE7
+ qg4XvM9gaQyzYYNGyObKTqbnr0WqygwnwiYxc=
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
  d=1e100.net; s=20161025;
  h=x-gm-message-state:mime-version:references:in-reply-to:from:date
  :message-id:subject:to:cc;
- bh=I574vs+oxpmw2RaQkdeqT3TmVa8C0vE6HCQzgLmVaEk=;
- b=lF2o27zClqA7DTE3KoGuIysNtMFh4EYp3p89/ftAWMZ24qY1Ns/OgUc0PocWvE0FYb
- +gbUTjemfj1+TblbmmhykBdkxANq/7hrnkevkdVVuV6821ik3+EeBfcopX2OjMERfUkt
- rf9lzPCwIrFqpTStk6GxU0gAsiowFd6UkwcHHbGxiBsawjQssHQ/uoj1s+Hk37cYy1Ru
- 0Dea1NH/TLNebQVstweffobjTsCxQy6R4nYXzoMqHCmWknAOHjNWtIWOBU5gMWkdiC0B
- 5+jfU8gMQ4N+oQx4v6UZCSXegCag1zKYa0TmO71FLN3qblwsLMVt+TmWuCb2zhHEcKXr
- lBhA==
-X-Gm-Message-State: AOAM532dulDdFFEPNU04MKcmw0uH1T351rkgzuKzMPKW/9ePPRF1wpq3
- 7zU+HI6I0D6eR+maJ85OjAt8ajEy4x0eVQ==
-X-Google-Smtp-Source: ABdhPJyM+o9JBdTAQbsYBwujgIxGafDzR1TzRC+lLTJvBg2TcALpvWMY0/o1bFzhG/N+DHkeYuyEkQ==
-X-Received: by 2002:a17:902:264:b029:eb:3d3a:a09c with SMTP id
- 91-20020a1709020264b02900eb3d3aa09cmr30380004plc.0.1620751784370; 
- Tue, 11 May 2021 09:49:44 -0700 (PDT)
-Received: from mail-pf1-f175.google.com (mail-pf1-f175.google.com.
- [209.85.210.175])
- by smtp.gmail.com with ESMTPSA id 23sm4319485pgv.90.2021.05.11.09.49.43
+ bh=k6jrKLJf+SUK032/zz9tWYcN5Rhay3mFZvhqIWgxNBs=;
+ b=E+zmoNQpfD7eGY9Z86Vd7LZBitbT4w0mUl0UAdizFWgEqmn9UrBU/I2IAKj4EdYM5I
+ Wtr1vX83HOwMqFD5lJwawZEbOQB+c8oXyLCTlDUSfQBp3pkEPxgIxiLEuZZVAhgY/1Ah
+ INoiHZgaDkAf6MRWIXK3HZdRwaKZDJr/FZJ1Io5HqPJBeJGAioKuM6ceMXa7b0W0NLtH
+ LWZCmrxczGlm5iPBEbW+itXrY8sn6i/QLAF016jl5839hrY6Vvn/32RiubeHua3x+mqy
+ 6OAKZRnnk6lmlsqSQ+uzeR5UhxZUpYlq3e6blo9bw/zky0YzoYe72SB2ZbqUV1inYDBQ
+ 3iSw==
+X-Gm-Message-State: AOAM530KsJREYJERAXBhWNxuG3BCvCOLNNHyQGQNbPYzdkk4vMtx9185
+ aeN82WCpWlxYOcBwIPE6er/q/6TY1UFDpQ==
+X-Google-Smtp-Source: ABdhPJzmQtleiFCcaKJCmb9TOq/LvN8ekcqvIjYldpl1yO4DMr8ikdHHVKKMK9osHzvK84RipWxvLQ==
+X-Received: by 2002:a05:6602:14c4:: with SMTP id
+ b4mr1690022iow.82.1620751790115; 
+ Tue, 11 May 2021 09:49:50 -0700 (PDT)
+Received: from mail-il1-f175.google.com (mail-il1-f175.google.com.
+ [209.85.166.175])
+ by smtp.gmail.com with ESMTPSA id n4sm9756940ilm.39.2021.05.11.09.49.49
  for <iommu@lists.linux-foundation.org>
  (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
- Tue, 11 May 2021 09:49:44 -0700 (PDT)
-Received: by mail-pf1-f175.google.com with SMTP id k19so16514255pfu.5
- for <iommu@lists.linux-foundation.org>; Tue, 11 May 2021 09:49:43 -0700 (PDT)
-X-Received: by 2002:a92:6804:: with SMTP id d4mr27241366ilc.5.1620751346868;
- Tue, 11 May 2021 09:42:26 -0700 (PDT)
+ Tue, 11 May 2021 09:49:49 -0700 (PDT)
+Received: by mail-il1-f175.google.com with SMTP id r5so17741286ilb.2
+ for <iommu@lists.linux-foundation.org>; Tue, 11 May 2021 09:49:49 -0700 (PDT)
+X-Received: by 2002:a6b:7b08:: with SMTP id l8mr22174004iop.50.1620751352978; 
+ Tue, 11 May 2021 09:42:32 -0700 (PDT)
 MIME-Version: 1.0
 References: <20210510095026.3477496-1-tientzu@chromium.org>
- <20210510095026.3477496-9-tientzu@chromium.org>
- <20210510150516.GE28066@lst.de>
-In-Reply-To: <20210510150516.GE28066@lst.de>
+ <20210510095026.3477496-6-tientzu@chromium.org>
+ <20210510150342.GD28066@lst.de>
+In-Reply-To: <20210510150342.GD28066@lst.de>
 From: Claire Chang <tientzu@chromium.org>
-Date: Wed, 12 May 2021 00:42:15 +0800
-X-Gmail-Original-Message-ID: <CALiNf2-x8Gw0TPLdeRnfPmUTeuK9dsLbDXN4hPnc08y21uuUXQ@mail.gmail.com>
-Message-ID: <CALiNf2-x8Gw0TPLdeRnfPmUTeuK9dsLbDXN4hPnc08y21uuUXQ@mail.gmail.com>
-Subject: Re: [PATCH v6 08/15] swiotlb: Bounce data from/to restricted DMA pool
- if available
+Date: Wed, 12 May 2021 00:42:22 +0800
+X-Gmail-Original-Message-ID: <CALiNf2_7mHuMG5DTQD0GsriN=vuX0ytyUn4rxEmsK2iP3PKV+w@mail.gmail.com>
+Message-ID: <CALiNf2_7mHuMG5DTQD0GsriN=vuX0ytyUn4rxEmsK2iP3PKV+w@mail.gmail.com>
+Subject: Re: [PATCH v6 05/15] swiotlb: Add a new get_io_tlb_mem getter
 To: Christoph Hellwig <hch@lst.de>
 Cc: heikki.krogerus@linux.intel.com, thomas.hellstrom@linux.intel.com,
  peterz@infradead.org, benh@kernel.crashing.org,
@@ -135,31 +135,23 @@ Content-Transfer-Encoding: 7bit
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-On Mon, May 10, 2021 at 11:05 PM Christoph Hellwig <hch@lst.de> wrote:
+On Mon, May 10, 2021 at 11:03 PM Christoph Hellwig <hch@lst.de> wrote:
 >
-> > +static inline bool is_dev_swiotlb_force(struct device *dev)
+> > +static inline struct io_tlb_mem *get_io_tlb_mem(struct device *dev)
 > > +{
 > > +#ifdef CONFIG_DMA_RESTRICTED_POOL
-> > +     if (dev->dma_io_tlb_mem)
-> > +             return true;
+> > +     if (dev && dev->dma_io_tlb_mem)
+> > +             return dev->dma_io_tlb_mem;
 > > +#endif /* CONFIG_DMA_RESTRICTED_POOL */
-> > +     return false;
-> > +}
 > > +
+> > +     return io_tlb_default_mem;
 >
-> >       /* If SWIOTLB is active, use its maximum mapping size */
-> >       if (is_swiotlb_active(dev) &&
-> > -         (dma_addressing_limited(dev) || swiotlb_force == SWIOTLB_FORCE))
-> > +         (dma_addressing_limited(dev) || swiotlb_force == SWIOTLB_FORCE ||
-> > +          is_dev_swiotlb_force(dev)))
->
-> This is a mess.  I think the right way is to have an always_bounce flag
-> in the io_tlb_mem structure instead.  Then the global swiotlb_force can
-> go away and be replace with this and the fact that having no
-> io_tlb_mem structure at all means forced no buffering (after a little
-> refactoring).
+> Given that we're also looking into a not addressing restricted pool
+> I'd rather always assign the active pool to dev->dma_io_tlb_mem and
+> do away with this helper.
 
-Will do in the next version.
+Where do you think is the proper place to do the assignment? First
+time calling swiotlb_map? or in of_dma_configure_id?
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
