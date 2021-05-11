@@ -1,163 +1,83 @@
-Return-Path: <SRS0=b4g5=KF=lists.linux-foundation.org=iommu-bounces@kernel.org>
+Return-Path: <SRS0=AxcK=KG=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-3.6 required=3.0 tests=BAYES_00,DKIM_INVALID,
-	DKIM_SIGNED,HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,
-	MSGID_FROM_MTA_HEADER,SPF_HELO_NONE,SPF_PASS autolearn=no autolearn_force=no
+X-Spam-Status: No, score=-10.3 required=3.0 tests=BAYES_00,DKIM_INVALID,
+	DKIM_SIGNED,INCLUDES_PATCH,MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,
+	URIBL_BLOCKED,USER_AGENT_SANE_1 autolearn=unavailable autolearn_force=no
 	version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id BE021C433ED
-	for <iommu@archiver.kernel.org>; Mon, 10 May 2021 23:45:08 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A750FC433ED
+	for <iommu@archiver.kernel.org>; Tue, 11 May 2021 01:46:40 +0000 (UTC)
 Received: from smtp1.osuosl.org (smtp1.osuosl.org [140.211.166.138])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 65DB46161C
-	for <iommu@archiver.kernel.org>; Mon, 10 May 2021 23:45:08 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 65DB46161C
-Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=nvidia.com
+	by mail.kernel.org (Postfix) with ESMTPS id 4A5B36162D
+	for <iommu@archiver.kernel.org>; Tue, 11 May 2021 01:46:40 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 4A5B36162D
+Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=kernel.org
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by smtp1.osuosl.org (Postfix) with ESMTP id 2471384158;
-	Mon, 10 May 2021 23:45:08 +0000 (UTC)
+	by smtp1.osuosl.org (Postfix) with ESMTP id 0B36184439;
+	Tue, 11 May 2021 01:46:40 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
 Received: from smtp1.osuosl.org ([127.0.0.1])
 	by localhost (smtp1.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id duIKOFWAvhXy; Mon, 10 May 2021 23:45:07 +0000 (UTC)
-Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [IPv6:2605:bc80:3010:104::8cd3:938])
-	by smtp1.osuosl.org (Postfix) with ESMTP id 180E383F92;
-	Mon, 10 May 2021 23:45:07 +0000 (UTC)
+	with ESMTP id Tuzr3BcbNxiI; Tue, 11 May 2021 01:46:39 +0000 (UTC)
+Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
+	by smtp1.osuosl.org (Postfix) with ESMTP id CF09984436;
+	Tue, 11 May 2021 01:46:38 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id E2A6FC0011;
-	Mon, 10 May 2021 23:45:06 +0000 (UTC)
-Received: from smtp1.osuosl.org (smtp1.osuosl.org [IPv6:2605:bc80:3010::138])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 35BCEC0001
- for <iommu@lists.linux-foundation.org>; Mon, 10 May 2021 23:45:05 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id B6591C000E;
+	Tue, 11 May 2021 01:46:38 +0000 (UTC)
+Received: from smtp2.osuosl.org (smtp2.osuosl.org [140.211.166.133])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 1ABB4C0001
+ for <iommu@lists.linux-foundation.org>; Tue, 11 May 2021 01:46:37 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by smtp1.osuosl.org (Postfix) with ESMTP id 2484683F92
- for <iommu@lists.linux-foundation.org>; Mon, 10 May 2021 23:45:05 +0000 (UTC)
+ by smtp2.osuosl.org (Postfix) with ESMTP id ED71540593
+ for <iommu@lists.linux-foundation.org>; Tue, 11 May 2021 01:46:36 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from smtp1.osuosl.org ([127.0.0.1])
- by localhost (smtp1.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id 4U3k5vjmsyEk for <iommu@lists.linux-foundation.org>;
- Mon, 10 May 2021 23:45:04 +0000 (UTC)
-X-Greylist: whitelisted by SQLgrey-1.8.0
-Received: from NAM12-BN8-obe.outbound.protection.outlook.com
- (mail-bn8nam12on2061e.outbound.protection.outlook.com
- [IPv6:2a01:111:f400:fe5b::61e])
- by smtp1.osuosl.org (Postfix) with ESMTPS id 270E883EEB
- for <iommu@lists.linux-foundation.org>; Mon, 10 May 2021 23:45:04 +0000 (UTC)
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=fChj2XsbUI5A53OiEq0v1UCsCOCICwB5OUpQvJhrz09zABzCnI0/0AcUfAQTJ2ZCJPzxk/n5cQSppVS0XoAfFDoEb7vxCg+Lpjwlnp0AbKrOPsYcCEIHse+UWN2yzN+bIWUd8YlAb7w9Bj9cV0M1uWoRGPSv+TH3o4CfSMIToGqs2O1Ilgjk9nq9y7l6NnsojSVPmtLQAsqYU6m85W4n7Rn7fQ20M4+gRQok/rTuc+EyqGbPzWoXx1hc/TyH0B0vARmX2sXBhc+RXHXqTFX+knlUpuk6kubaBpb70RJ8DSz0cPCvzLELK1o2jUZ1xchrx2dDdeluTOjy/5Rbv2rH2w==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com; 
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=x7YvY3ghFZVy/MxSq55DpMslbyjZ5dtdU4r62kwxoiA=;
- b=DiksCGr+vh+f8hJg8SdxNvN2Mt2Uu+WT0JdGV4o3gNMvRcPw+v+eH64RwEcx8Jd5WTlkWgcS+uQZQRs6MvdVqHp1a2ZFEIPCsYgdM//6LStWQeE4hGTn5iJOb2pUnrb8DObUn9th2tIMTFRtlQU5VzlYp3qtqkbme5fZ5nHK3ZgatdWGK31DEgF9SGaD6oy3YMyDUMmgGVU9o0ygMIDP0h1Sx6EqnDja7ev08XwzeKDm1cAuClvGu8j76K1A62x/UIhoxYXlK+Ig5ORPH1iWPiCgrRLY9lqPLUvz3527w9AzBwBaa1ewQkpT17dXX6GS7po7peD36B+BFumoLbL/1Q==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=nvidia.com; dmarc=pass action=none header.from=nvidia.com;
- dkim=pass header.d=nvidia.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
- s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=x7YvY3ghFZVy/MxSq55DpMslbyjZ5dtdU4r62kwxoiA=;
- b=Yq7gr1UXvocILLOd/cAZX/SeIuPRzT2nlY8iA2gHlK+T+O8REUIqM67sUydNMVMQ1W2hCWb6JmMxghjM0z54FI4m7H1TN+MmpPrZuvc91T3D7OUUM/YSBkQK3Y3wc0NYxo371BOxHUkl1GX4ETN277n93RAqLwYT8EPrjuu4MdizO7soom8G1mFQbnWh7tHbmCMR6ekWFwFKOS+Rtgsi49w+nbw8SjtLnbrFzd4uil/1SJn8Ccig0q76mz9Fdqk8oi2s+WZg1RqRmFMUIBZAAt/J3diEuPzIQ0enSyKYgVSDuwjQLLg5zOgSPRN28KS+C8q54Zc2sR06Dc5XL5kWYg==
-Authentication-Results: linux.intel.com; dkim=none (message not signed)
- header.d=none; linux.intel.com; dmarc=none action=none header.from=nvidia.com; 
-Received: from DM6PR12MB3834.namprd12.prod.outlook.com (2603:10b6:5:14a::12)
- by DM6PR12MB2810.namprd12.prod.outlook.com (2603:10b6:5:41::21) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4108.26; Mon, 10 May
- 2021 23:45:02 +0000
-Received: from DM6PR12MB3834.namprd12.prod.outlook.com
- ([fe80::ddb4:2cbb:4589:f039]) by DM6PR12MB3834.namprd12.prod.outlook.com
- ([fe80::ddb4:2cbb:4589:f039%4]) with mapi id 15.20.4108.031; Mon, 10 May 2021
- 23:45:01 +0000
-Date: Mon, 10 May 2021 20:45:00 -0300
-From: Jason Gunthorpe <jgg@nvidia.com>
-To: Jacob Pan <jacob.jun.pan@linux.intel.com>
-Subject: Re: [PATCH V4 05/18] iommu/ioasid: Redefine IOASID set and
- allocation APIs
-Message-ID: <20210510234500.GI1002214@nvidia.com>
-References: <YJOZhPGheTSlHtQc@myrica> <20210506122730.GQ1370958@nvidia.com>
- <20210506163240.GA9058@otc-nc-03>
- <MWHPR11MB188698FBEE62AF1313E0F7AC8C569@MWHPR11MB1886.namprd11.prod.outlook.com>
- <20210510123729.GA1002214@nvidia.com>
- <20210510152502.GA90095@otc-nc-03>
- <20210510153111.GB1002214@nvidia.com>
- <20210510162212.GB90095@otc-nc-03>
- <20210510163956.GD1002214@nvidia.com>
- <20210510152854.793ee594@jacob-builder>
-Content-Disposition: inline
-In-Reply-To: <20210510152854.793ee594@jacob-builder>
-X-Originating-IP: [47.55.113.94]
-X-ClientProxiedBy: MN2PR13CA0027.namprd13.prod.outlook.com
- (2603:10b6:208:160::40) To DM6PR12MB3834.namprd12.prod.outlook.com
- (2603:10b6:5:14a::12)
+Authentication-Results: smtp2.osuosl.org (amavisd-new);
+ dkim=pass (2048-bit key) header.d=kernel.org
+Received: from smtp2.osuosl.org ([127.0.0.1])
+ by localhost (smtp2.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+ with ESMTP id i8FsHoYf8PtI for <iommu@lists.linux-foundation.org>;
+ Tue, 11 May 2021 01:46:36 +0000 (UTC)
+X-Greylist: domain auto-whitelisted by SQLgrey-1.8.0
+Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
+ by smtp2.osuosl.org (Postfix) with ESMTPS id 403E040585
+ for <iommu@lists.linux-foundation.org>; Tue, 11 May 2021 01:46:36 +0000 (UTC)
+Received: by mail.kernel.org (Postfix) with ESMTPSA id 416A161629;
+ Tue, 11 May 2021 01:46:35 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+ s=k20201202; t=1620697595;
+ bh=zRFH7hcgqBzuVJGwApqdrtTvpvj+GmXyjHWNsw6DGg8=;
+ h=Date:From:To:cc:Subject:In-Reply-To:References:From;
+ b=SrbUmQ3XfUDBVScU7RGYGh+COsif34UcsKqoTgGV9vf8XRs8R1lfXDv2Rg8m5+EF9
+ CJPluc1/MQWvbLjpb0BVOfrQVGN/CpceyyrZMmsRnCPL3kqtV6OlO3OEzsslK/qv7R
+ zfl2Tf8Vw+0CIzNstymmxgXrqQa0cXQFMxMCpH3x+EScqVCBhtS+W0OWy9oXkU1Diw
+ G6RzBgQ9DfY0kzP1vEIMFq5Dn15X6EwBB3uZAB8JhvRKGL4JvgSEGm4RjP4loHchpQ
+ dnVwpyniLe2sjqdRGm4CgKX7WruGCQeIvlzp1r0kmQMvORLOQOTUtZolCtGmlfMEQH
+ t7e1j5rQsPpEw==
+Date: Mon, 10 May 2021 18:46:34 -0700 (PDT)
+From: Stefano Stabellini <sstabellini@kernel.org>
+X-X-Sender: sstabellini@sstabellini-ThinkPad-T480s
+To: Christoph Hellwig <hch@lst.de>
+Subject: Re: Regression when booting 5.15 as dom0 on arm64 (WAS: Re:
+ [linux-linus test] 161829: regressions - FAIL)
+In-Reply-To: <20210510084057.GA933@lst.de>
+Message-ID: <alpine.DEB.2.21.2105101818260.5018@sstabellini-ThinkPad-T480s>
+References: <osstest-161829-mainreport@xen.org>
+ <4ea1e89f-a7a0-7664-470c-b3cf773a1031@xen.org> <20210510084057.GA933@lst.de>
+User-Agent: Alpine 2.21 (DEB 202 2017-01-01)
 MIME-Version: 1.0
-X-MS-Exchange-MessageSentRepresentingType: 1
-Received: from mlx.ziepe.ca (47.55.113.94) by
- MN2PR13CA0027.namprd13.prod.outlook.com (2603:10b6:208:160::40) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4129.11 via Frontend
- Transport; Mon, 10 May 2021 23:45:01 +0000
-Received: from jgg by mlx with local (Exim 4.94)	(envelope-from
- <jgg@nvidia.com>)	id 1lgFa8-004ynM-DO; Mon, 10 May 2021 20:45:00 -0300
-X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: 447649ce-59bf-4c95-5af4-08d9140da0e5
-X-MS-TrafficTypeDiagnostic: DM6PR12MB2810:
-X-Microsoft-Antispam-PRVS: <DM6PR12MB2810B2115250C3B78CBC0E6AC2549@DM6PR12MB2810.namprd12.prod.outlook.com>
-X-MS-Oob-TLC-OOBClassifiers: OLM:5236;
-X-MS-Exchange-SenderADCheck: 1
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: 5iEiZ520upX09gKKQjoChrV3BJ0BV0SaVBKVXQzB4BSHTf/W4jOg1Kk+O9OMMzP1gvYkM7NaTFfADZNE6zIGQNlVbm3newncEQItNmTdQstATKavVGI5iaDuXrR7eG1Y4cxd1LEv+KNI8btagNyrzqL1gECfnev4IVT6kaSae/K/hpNXs5I61gFxjJX7cBsO0s+DnuIV2B3FXzcufDQLeTBX4HcBrJpPa6/s5gZWrr7xg/8T9Ys0I2yjJ7uXAbNtslwTSSUMWstzWo8E669yeQa+CFqIP3gIpCKyiJFdFHD0stZPNcNhaWf26DJ/BHtnUXx4gWEPnlqeUBsxZooKZQ+cTGPhKGDgKtCE6/8PqDdjDmANR+9lXQaBvy0nCfCUJeAcYoyW/fvFvt3T0byaB09azj5Rc3BQT18YprgvajouzKZTjwghfj1+YEm2mN/chGHJdfsmWB0uw2RAsl4m94Y/C217k2dEUE3+PgOXhySO56WlZyjs5w9MqTdWBIb8Bos6OHQzIbtwsga4YSC7lnm230cIhZoP1JeTSaBJH+kLEz47g+uM+7BkVeZwkUzve+7LSKoFFE1v9yV1PUosXXkPsE4iwxQHBmBOyUjRMWI=
-X-Forefront-Antispam-Report: CIP:255.255.255.255; CTRY:; LANG:en; SCL:1; SRV:;
- IPV:NLI; SFV:NSPM; H:DM6PR12MB3834.namprd12.prod.outlook.com; PTR:; CAT:NONE;
- SFS:(4636009)(376002)(396003)(346002)(136003)(39860400002)(366004)(426003)(9746002)(9786002)(26005)(66556008)(186003)(2906002)(7416002)(66476007)(8936002)(38100700002)(66946007)(6916009)(5660300002)(1076003)(478600001)(33656002)(4326008)(54906003)(36756003)(86362001)(8676002)(4744005)(2616005)(316002);
- DIR:OUT; SFP:1101; 
-X-MS-Exchange-AntiSpam-MessageData: =?us-ascii?Q?BUp0s5BeV2Fu7aan6cme8pJEjLjmizN1izrXIo0wVMfIZNaAh6CIxsStMMhF?=
- =?us-ascii?Q?OwKSZz4yMD5VkbrIdogs9sq07BYP70zCsACd3eDWF0n1u9Puzrh8MsbGXoVQ?=
- =?us-ascii?Q?hUYhHwkYRrVwBE88kxwbechK6OqhwJiLQSbbpSyHv3gliLG4wxtDx8QpOaE1?=
- =?us-ascii?Q?xC9MY2L2oNTmOyVIKyZyl+vys29cPGM/2fWdNuoAt8bRe2oaeOLV8esH/1Xm?=
- =?us-ascii?Q?4Z2A0rUmjYVm8UQU6M14qL1xR6JEbl6+pK17gDP1+ASebzGvXqyGTlV7oZ10?=
- =?us-ascii?Q?1FxwqYb9qqbYBb8yUShrNoDRPI+UfIs6n+CP+gpXW140EbGfDYMX5H/Sfkzy?=
- =?us-ascii?Q?N8jBCLUn/Ckw9SZ+jq5LDSQBU+nxnmmYZVnWcV4wTv0QZMSU0l8kZz2TJQSz?=
- =?us-ascii?Q?NlGsRX9RIEYRVtTsdyFKq7EqLkYBYKGV6BPf88hcJwCNpALd8OPUObxzRzQ2?=
- =?us-ascii?Q?2iqNrgJnjo0HVLFjeV2alAHrAAA4qapfnLDfHg0wxdhlGWMsYh0mR46Dgfko?=
- =?us-ascii?Q?WIqTEeLKwEb/6Ot62yGw4PJ0jVCO5EpALz/IDTT9uX/O05v9sWfQO3JNnEW7?=
- =?us-ascii?Q?PjsuKvIAJpVX/raU8C31WSCmUkeP6tEP0E15XbRH6YLRJxVYL4qCm5VA1Z8S?=
- =?us-ascii?Q?e74x4tfMo3yBQ9isVplszufYeewnpwsKsdtTNuy2syuoeoraDiWS1+cNywEU?=
- =?us-ascii?Q?zAuvaIprnDke74EZdhyf0mlPJibMBGugysf5HJ96Ij5Dw243i6Il7FXfJMzV?=
- =?us-ascii?Q?1g4U09U2qV6FDBxSiHZd8rkzrwVvTaS6uWha1QqUn53UPbMoGMuWyHlKKQ35?=
- =?us-ascii?Q?9nSbtEx5vMrU5EtsufkXGg1jNx6n4xqDWGvp1TtHcAbuoXAYoXIHiDbNZhut?=
- =?us-ascii?Q?9nNj3+FK4DVkVk8bKXbDKgyJ+/CC6jjqGatHKPMqCgsOKnuWfKfR9BO2gA7h?=
- =?us-ascii?Q?6cmIDfkgtnyLO8+ayO6JUu+FvNVmkNHjk3UAWyrRuqgFSLtqByKFNIEU+gRw?=
- =?us-ascii?Q?EdMoYG/JLmRWxuA+LEZBMfltTEPB0jQEzh2psPDJWSLV8FJ9LYBkmZuunbDn?=
- =?us-ascii?Q?SH1jrS1POGSOklUtq/cJiy6KP62pJXkaSYkjqq5pI1Vp3//iZBCJiIOkZJRg?=
- =?us-ascii?Q?OryD0Gbe2DTIR6SqDxi5BqAH6wM6yItOR/Cdj5MBhHAkn3zCDAPw1o4PGTik?=
- =?us-ascii?Q?mtUg71gCLltiXWtWYEMXAfHNeF16WiBk9WPV/XfaI9euOIdjljGT8Ib9sVkX?=
- =?us-ascii?Q?TZ9SHcBPesUJV2Fptxl1DudkeR1FzuDHOM5bvmpkjO9o3za0kGJVmVO2ZyXr?=
- =?us-ascii?Q?7egJhqdz70+joWcrFrvhBy2x?=
-X-OriginatorOrg: Nvidia.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 447649ce-59bf-4c95-5af4-08d9140da0e5
-X-MS-Exchange-CrossTenant-AuthSource: DM6PR12MB3834.namprd12.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 10 May 2021 23:45:01.8080 (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: 3XhNRUt8mzrbVQl0PbldETwrxrvBuAkqSYmK5e2keHnU+/EHyXuCVzu3MbABNGhO
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: DM6PR12MB2810
-Cc: Jean-Philippe Brucker <jean-philippe@linaro.org>, "Tian,
- Kevin" <kevin.tian@intel.com>, "Jiang, Dave" <dave.jiang@intel.com>, "Raj,
- Ashok" <ashok.raj@intel.com>, Jonathan Corbet <corbet@lwn.net>,
- Jean-Philippe Brucker <jean-philippe@linaro.com>,
- LKML <linux-kernel@vger.kernel.org>,
- "iommu@lists.linux-foundation.org" <iommu@lists.linux-foundation.org>,
- Alex Williamson <alex.williamson@redhat.com>,
- Johannes Weiner <hannes@cmpxchg.org>, Tejun Heo <tj@kernel.org>,
- "cgroups@vger.kernel.org" <cgroups@vger.kernel.org>, "Wu,
- Hao" <hao.wu@intel.com>, David Woodhouse <dwmw2@infradead.org>
+Cc: f.fainelli@gmail.com, Julien Grall <julien@xen.org>,
+ Konrad Rzeszutek Wilk <konrad.wilk@oracle.com>,
+ osstest service owner <osstest-admin@xenproject.org>,
+ linux-kernel@vger.kernel.org, iommu@lists.linux-foundation.org,
+ Stefano Stabellini <sstabellini@kernel.org>,
+ "xen-devel@lists.xenproject.org" <xen-devel@lists.xenproject.org>,
+ Boris Ostrovsky <boris.ostrovsky@oracle.com>
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -175,25 +95,109 @@ Content-Transfer-Encoding: 7bit
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-On Mon, May 10, 2021 at 03:28:54PM -0700, Jacob Pan wrote:
+On Mon, 10 May 2021, Christoph Hellwig wrote:
+> On Sat, May 08, 2021 at 12:32:37AM +0100, Julien Grall wrote:
+> > The pointer dereferenced seems to suggest that the swiotlb hasn't been 
+> > allocated. From what I can tell, this may be because swiotlb_force is set 
+> > to SWIOTLB_NO_FORCE, we will still enable the swiotlb when running on top 
+> > of Xen.
+> >
+> > I am not entirely sure what would be the correct fix. Any opinions?
+> 
+> Can you try something like the patch below (not even compile tested, but
+> the intent should be obvious?
+> 
+> 
+> diff --git a/arch/arm64/mm/init.c b/arch/arm64/mm/init.c
+> index 16a2b2b1c54d..7671bc153fb1 100644
+> --- a/arch/arm64/mm/init.c
+> +++ b/arch/arm64/mm/init.c
+> @@ -44,6 +44,8 @@
+>  #include <asm/tlb.h>
+>  #include <asm/alternative.h>
+>  
+> +#include <xen/arm/swiotlb-xen.h>
+> +
+>  /*
+>   * We need to be able to catch inadvertent references to memstart_addr
+>   * that occur (potentially in generic code) before arm64_memblock_init()
+> @@ -482,7 +484,7 @@ void __init mem_init(void)
+>  	if (swiotlb_force == SWIOTLB_FORCE ||
+>  	    max_pfn > PFN_DOWN(arm64_dma_phys_limit))
+>  		swiotlb_init(1);
+> -	else
+> +	else if (!IS_ENABLED(CONFIG_XEN) || !xen_swiotlb_detect())
+>  		swiotlb_force = SWIOTLB_NO_FORCE;
+>  
+>  	set_max_mapnr(max_pfn - PHYS_PFN_OFFSET);
 
-> To satisfy your "give me a PASID for this RID" proposal, can we just use
-> the RID's struct device as the token? Also add a type field to explicitly
-> indicate global vs per-set(per-RID). i.e.
+The "IS_ENABLED(CONFIG_XEN)" is not needed as the check is already part
+of xen_swiotlb_detect().
 
-You've got it backwards, the main behavior should be to allocate PASID
-per RID.
 
-The special behavior is to bundle a bunch of PASIDs into a grouping
-and then say the PASID number space is shared between all the group
-members. 
+But let me ask another question first. Do you think it makes sense to have:
 
-/dev/ioasid should create and own this grouping either implicitly or
-explicitly. Jumping ahead to in-kernel APIs has missed the critical
-step of defining the uAPI and all the behaviors together in a
-completed RFC proposal.
+	if (swiotlb_force == SWIOTLB_NO_FORCE)
+		return 0;
 
-Jason
+at the beginning of swiotlb_late_init_with_tbl? I am asking because
+swiotlb_late_init_with_tbl is meant for special late initializations,
+right? It shouldn't really matter the presence or absence of
+SWIOTLB_NO_FORCE in regards to swiotlb_late_init_with_tbl. Also the
+commit message for "swiotlb: Make SWIOTLB_NO_FORCE perform no
+allocation" says that "If a platform was somehow setting
+swiotlb_no_force and a later call to swiotlb_init() was to be made we
+would still be proceeding with allocating the default SWIOTLB size
+(64MB)." Our case here is very similar, right? So the allocation should
+proceed?
+
+
+Which brings me to a separate unrelated issue, still affecting the path
+xen_swiotlb_init -> swiotlb_late_init_with_tbl. If swiotlb_init(1) is
+called by mem_init then swiotlb_late_init_with_tbl will fail due to the
+check:
+
+    /* protect against double initialization */
+    if (WARN_ON_ONCE(io_tlb_default_mem))
+        return -ENOMEM;
+
+xen_swiotlb_init is meant to ask Xen to make a bunch of pages physically
+contiguous. Then, it initializes the swiotlb buffer based on those
+pages. So it is a problem that swiotlb_late_init_with_tbl refuses to
+continue. However, in practice it is not a problem today because on ARM
+we don't actually make any special requests to Xen to make the pages
+physically contiguous (yet). See the empty implementation of
+arch/arm/xen/mm.c:xen_create_contiguous_region. I don't know about x86.
+
+So maybe we should instead do something like the appended?
+
+
+diff --git a/arch/arm/xen/mm.c b/arch/arm/xen/mm.c
+index f8f07469d259..f5a3638d1dee 100644
+--- a/arch/arm/xen/mm.c
++++ b/arch/arm/xen/mm.c
+@@ -152,6 +152,7 @@ static int __init xen_mm_init(void)
+ 	struct gnttab_cache_flush cflush;
+ 	if (!xen_swiotlb_detect())
+ 		return 0;
++	swiotlb_exit();
+ 	xen_swiotlb_init();
+ 
+ 	cflush.op = 0;
+diff --git a/kernel/dma/swiotlb.c b/kernel/dma/swiotlb.c
+index 8ca7d505d61c..f17be37298a7 100644
+--- a/kernel/dma/swiotlb.c
++++ b/kernel/dma/swiotlb.c
+@@ -285,9 +285,6 @@ swiotlb_late_init_with_tbl(char *tlb, unsigned long nslabs)
+ 	unsigned long bytes = nslabs << IO_TLB_SHIFT, i;
+ 	struct io_tlb_mem *mem;
+ 
+-	if (swiotlb_force == SWIOTLB_NO_FORCE)
+-		return 0;
+-
+ 	/* protect against double initialization */
+ 	if (WARN_ON_ONCE(io_tlb_default_mem))
+ 		return -ENOMEM;
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
