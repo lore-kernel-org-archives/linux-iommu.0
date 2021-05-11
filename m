@@ -2,103 +2,84 @@ Return-Path: <SRS0=AxcK=KG=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-15.1 required=3.0 tests=BAYES_00,DKIM_INVALID,
-	DKIM_SIGNED,HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_CR_TRAILER,INCLUDES_PATCH,
-	MAILING_LIST_MULTI,NICE_REPLY_A,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,
-	USER_AGENT_SANE_1 autolearn=ham autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-10.3 required=3.0 tests=BAYES_00,DKIM_INVALID,
+	DKIM_SIGNED,INCLUDES_PATCH,MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,
+	URIBL_BLOCKED,USER_AGENT_SANE_1 autolearn=unavailable autolearn_force=no
+	version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id CD37FC43470
-	for <iommu@archiver.kernel.org>; Tue, 11 May 2021 16:35:52 +0000 (UTC)
-Received: from smtp4.osuosl.org (smtp4.osuosl.org [140.211.166.137])
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 51B98C433B4
+	for <iommu@archiver.kernel.org>; Tue, 11 May 2021 16:47:39 +0000 (UTC)
+Received: from smtp2.osuosl.org (smtp2.osuosl.org [140.211.166.133])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 5926D6192A
-	for <iommu@archiver.kernel.org>; Tue, 11 May 2021 16:35:52 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 5926D6192A
-Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=deltatee.com
+	by mail.kernel.org (Postfix) with ESMTPS id ABE23613CF
+	for <iommu@archiver.kernel.org>; Tue, 11 May 2021 16:47:38 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org ABE23613CF
+Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=kernel.org
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by smtp4.osuosl.org (Postfix) with ESMTP id 211FE405C2;
-	Tue, 11 May 2021 16:35:52 +0000 (UTC)
+	by smtp2.osuosl.org (Postfix) with ESMTP id 4BEF4402BD;
+	Tue, 11 May 2021 16:47:38 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from smtp4.osuosl.org ([127.0.0.1])
-	by localhost (smtp4.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id XL5ZhiezEzf7; Tue, 11 May 2021 16:35:50 +0000 (UTC)
-Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [IPv6:2605:bc80:3010:104::8cd3:938])
-	by smtp4.osuosl.org (Postfix) with ESMTP id 909AC40349;
-	Tue, 11 May 2021 16:35:50 +0000 (UTC)
+Received: from smtp2.osuosl.org ([127.0.0.1])
+	by localhost (smtp2.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+	with ESMTP id 0fy8qWoQw3zt; Tue, 11 May 2021 16:47:37 +0000 (UTC)
+Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
+	by smtp2.osuosl.org (Postfix) with ESMTP id 13DBA4011A;
+	Tue, 11 May 2021 16:47:37 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 75FA9C000E;
-	Tue, 11 May 2021 16:35:50 +0000 (UTC)
-Received: from smtp1.osuosl.org (smtp1.osuosl.org [IPv6:2605:bc80:3010::138])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 06BF4C0001
- for <iommu@lists.linux-foundation.org>; Tue, 11 May 2021 16:35:49 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id F01B7C000E;
+	Tue, 11 May 2021 16:47:36 +0000 (UTC)
+Received: from smtp3.osuosl.org (smtp3.osuosl.org [IPv6:2605:bc80:3010::136])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 63D78C0001
+ for <iommu@lists.linux-foundation.org>; Tue, 11 May 2021 16:47:36 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by smtp1.osuosl.org (Postfix) with ESMTP id E99ED83CA2
- for <iommu@lists.linux-foundation.org>; Tue, 11 May 2021 16:35:48 +0000 (UTC)
+ by smtp3.osuosl.org (Postfix) with ESMTP id 3CEE76068A
+ for <iommu@lists.linux-foundation.org>; Tue, 11 May 2021 16:47:36 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Authentication-Results: smtp1.osuosl.org (amavisd-new);
- dkim=pass (2048-bit key) header.d=deltatee.com
-Received: from smtp1.osuosl.org ([127.0.0.1])
- by localhost (smtp1.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id t96xIe33Aq9Z for <iommu@lists.linux-foundation.org>;
- Tue, 11 May 2021 16:35:48 +0000 (UTC)
+Authentication-Results: smtp3.osuosl.org (amavisd-new);
+ dkim=pass (2048-bit key) header.d=kernel.org
+Received: from smtp3.osuosl.org ([127.0.0.1])
+ by localhost (smtp3.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+ with ESMTP id zoaCJi_9OgvB for <iommu@lists.linux-foundation.org>;
+ Tue, 11 May 2021 16:47:35 +0000 (UTC)
 X-Greylist: domain auto-whitelisted by SQLgrey-1.8.0
-Received: from ale.deltatee.com (ale.deltatee.com [204.191.154.188])
- by smtp1.osuosl.org (Postfix) with ESMTPS id 13E1483BAA
- for <iommu@lists.linux-foundation.org>; Tue, 11 May 2021 16:35:48 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
- d=deltatee.com; s=20200525; h=Subject:In-Reply-To:MIME-Version:Date:
- Message-ID:From:References:Cc:To:content-disposition;
- bh=069DpYy4tqGAUWXxeulYoTNkovf/OMYcYeYg3ZMGXCs=; b=fqIGHAu2ydIVFuAMCV/+TIPbr3
- GDcSxLN3CTaD2jVFik2/89QVm6vrlQPFkQBcyFrq7IoPsou7gFYK6YhKVKc357IMSk7Z/UgqrKU/5
- yfqjxHkpm5j2ugNHp6v8blzG9SUzsYA4jFnTbzpvWVr8tU/p58UdEfAVVCbALieeoLmyf9t1z1jIj
- cFfcErE9gm+f8/IHn3DnyO31qAcnU5u8RebXKF0WzUXBViYSzhq77g2Pot/qGbcUnoA31Q2CxmJpy
- x5S7LiQUO7YR5JYPWhkPnrHy3kSZqCTGziqhXHss2s2uaUl3zPWRhHT1WHlq0S0bZGpLLh4SgWmKo
- qG6idSaA==;
-Received: from guinness.priv.deltatee.com ([172.16.1.162])
- by ale.deltatee.com with esmtp (Exim 4.92)
- (envelope-from <logang@deltatee.com>)
- id 1lgVMA-0006xp-A6; Tue, 11 May 2021 10:35:39 -0600
-To: Don Dutile <ddutile@redhat.com>, linux-kernel@vger.kernel.org,
- linux-nvme@lists.infradead.org, linux-block@vger.kernel.org,
- linux-pci@vger.kernel.org, linux-mm@kvack.org,
- iommu@lists.linux-foundation.org
-References: <20210408170123.8788-1-logang@deltatee.com>
- <20210408170123.8788-12-logang@deltatee.com>
- <6003ed3d-5969-4201-3cbb-3bcf84385541@redhat.com>
-From: Logan Gunthorpe <logang@deltatee.com>
-Message-ID: <a8cad1ee-57c6-44ef-2539-499c13c66b5f@deltatee.com>
-Date: Tue, 11 May 2021 10:35:36 -0600
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
- Thunderbird/78.10.0
+Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
+ by smtp3.osuosl.org (Postfix) with ESMTPS id 70B09605CF
+ for <iommu@lists.linux-foundation.org>; Tue, 11 May 2021 16:47:35 +0000 (UTC)
+Received: by mail.kernel.org (Postfix) with ESMTPSA id 2D8BB613CF;
+ Tue, 11 May 2021 16:47:34 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+ s=k20201202; t=1620751654;
+ bh=hU+yLFeBxlaW2RjWGMkuL1C1oCUtCvrztFZPdNLLPBs=;
+ h=Date:From:To:cc:Subject:In-Reply-To:References:From;
+ b=dQ7Nr6QvpTPOXyPELC3zxv3QGr57GJrhhYd3bGSTX0Iei81QLLsBw4ch3MIBZsVMj
+ 5dhtEb+zrDfe8NTwEI0pwv6ZPuUNSRued0gn56rDquIg1cLKdu+jfBwsBL1m3PKI9j
+ vD28w5PlnJi1O7OV7Tnu+QUBbbV3bVW5u8CTn2jFK8rNp8Yfpb6m5H8S//XvS9hM9Z
+ wmUYWjtqadwsU6qbSoUcenWgfVa5CQncuRi5yNGPkOVpnwGDweg5OoEwI6DPhdI/QD
+ VLF64GgmnZfE/ldwBKK4pEPd+pf2uH2oaott7rrYZ2/WxAxxhp7MThGl3/yOAfvqXu
+ liiCAYj1dXyvA==
+Date: Tue, 11 May 2021 09:47:33 -0700 (PDT)
+From: Stefano Stabellini <sstabellini@kernel.org>
+X-X-Sender: sstabellini@sstabellini-ThinkPad-T480s
+To: Christoph Hellwig <hch@lst.de>
+Subject: Re: Regression when booting 5.15 as dom0 on arm64 (WAS: Re:
+ [linux-linus test] 161829: regressions - FAIL)]
+In-Reply-To: <20210511063558.GA7605@lst.de>
+Message-ID: <alpine.DEB.2.21.2105110925430.5018@sstabellini-ThinkPad-T480s>
+References: <osstest-161829-mainreport@xen.org>
+ <4ea1e89f-a7a0-7664-470c-b3cf773a1031@xen.org> <20210510084057.GA933@lst.de>
+ <alpine.DEB.2.21.2105101818260.5018@sstabellini-ThinkPad-T480s>
+ <20210511063558.GA7605@lst.de>
+User-Agent: Alpine 2.21 (DEB 202 2017-01-01)
 MIME-Version: 1.0
-In-Reply-To: <6003ed3d-5969-4201-3cbb-3bcf84385541@redhat.com>
-Content-Language: en-CA
-X-SA-Exim-Connect-IP: 172.16.1.162
-X-SA-Exim-Rcpt-To: robin.murphy@arm.com, ira.weiny@intel.com,
- helgaas@kernel.org, jianxin.xiong@intel.com, dave.hansen@linux.intel.com,
- jason@jlekstrand.net, dave.b.minturn@intel.com, andrzej.jakowski@intel.com,
- daniel.vetter@ffwll.ch, willy@infradead.org, jhubbard@nvidia.com,
- christian.koenig@amd.com, jgg@ziepe.ca, dan.j.williams@intel.com, hch@lst.de,
- sbates@raithlin.com, iommu@lists.linux-foundation.org, linux-mm@kvack.org,
- linux-pci@vger.kernel.org, linux-block@vger.kernel.org,
- linux-nvme@lists.infradead.org, linux-kernel@vger.kernel.org,
- ddutile@redhat.com
-X-SA-Exim-Mail-From: logang@deltatee.com
-Subject: Re: [PATCH 11/16] iommu/dma: Support PCI P2PDMA pages in dma-iommu
- map_sg
-X-SA-Exim-Version: 4.2.1 (built Wed, 08 May 2019 21:11:16 +0000)
-X-SA-Exim-Scanned: Yes (on ale.deltatee.com)
-Cc: Minturn Dave B <dave.b.minturn@intel.com>, Ira Weiny <ira.weiny@intel.com>,
- John Hubbard <jhubbard@nvidia.com>, Dave Hansen <dave.hansen@linux.intel.com>,
- Robin Murphy <robin.murphy@arm.com>, Matthew Wilcox <willy@infradead.org>,
- =?UTF-8?Q?Christian_K=c3=b6nig?= <christian.koenig@amd.com>,
- Jason Gunthorpe <jgg@ziepe.ca>, Bjorn Helgaas <helgaas@kernel.org>,
- Jason Ekstrand <jason@jlekstrand.net>, Daniel Vetter <daniel.vetter@ffwll.ch>,
- Dan Williams <dan.j.williams@intel.com>, Stephen Bates <sbates@raithlin.com>,
- Jakowski Andrzej <andrzej.jakowski@intel.com>, Christoph Hellwig <hch@lst.de>,
- Xiong Jianxin <jianxin.xiong@intel.com>
+Cc: f.fainelli@gmail.com, Julien Grall <julien@xen.org>,
+ Konrad Rzeszutek Wilk <konrad.wilk@oracle.com>,
+ osstest service owner <osstest-admin@xenproject.org>,
+ linux-kernel@vger.kernel.org, iommu@lists.linux-foundation.org,
+ Stefano Stabellini <sstabellini@kernel.org>,
+ "xen-devel@lists.xenproject.org" <xen-devel@lists.xenproject.org>,
+ Boris Ostrovsky <boris.ostrovsky@oracle.com>
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -111,159 +92,194 @@ List-Post: <mailto:iommu@lists.linux-foundation.org>
 List-Help: <mailto:iommu-request@lists.linux-foundation.org?subject=help>
 List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
  <mailto:iommu-request@lists.linux-foundation.org?subject=subscribe>
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-CgpPbiAyMDIxLTA1LTExIDEwOjA2IGEubS4sIERvbiBEdXRpbGUgd3JvdGU6Cj4gT24gNC84LzIx
-IDE6MDEgUE0sIExvZ2FuIEd1bnRob3JwZSB3cm90ZToKPj4gV2hlbiBhIFBDSSBQMlBETUEgcGFn
-ZSBpcyBzZWVuLCBzZXQgdGhlIElPVkEgbGVuZ3RoIG9mIHRoZSBzZWdtZW50Cj4+IHRvIHplcm8g
-c28gdGhhdCBpdCBpcyBub3QgbWFwcGVkIGludG8gdGhlIElPVkEuIFRoZW4sIGluIGZpbmFsaXNl
-X3NnKCksCj4+IGFwcGx5IHRoZSBhcHByb3ByaWF0ZSBidXMgYWRkcmVzcyB0byB0aGUgc2VnbWVu
-dC4gVGhlIElPVkEgaXMgbm90Cj4+IGNyZWF0ZWQgaWYgdGhlIHNjYXR0ZXJsaXN0IG9ubHkgY29u
-c2lzdHMgb2YgUDJQRE1BIHBhZ2VzLgo+Pgo+PiBTaW1pbGFyIHRvIGRtYS1kaXJlY3QsIHRoZSBz
-Z19tYXJrX3BjaV9wMnBkbWEoKSBmbGFnIGlzIHVzZWQgdG8KPj4gaW5kaWNhdGUgYnVzIGFkZHJl
-c3Mgc2VnbWVudHMuIE9uIHVubWFwLCBQMlBETUEgc2VnbWVudHMgYXJlIHNraXBwZWQKPj4gb3Zl
-ciB3aGVuIGRldGVybWluaW5nIHRoZSBzdGFydCBhbmQgZW5kIElPVkEgYWRkcmVzc2VzLgo+Pgo+
-PiBXaXRoIHRoaXMgY2hhbmdlLCB0aGUgZmxhZ3MgdmFyaWFibGUgaW4gdGhlIGRtYV9tYXBfb3Bz
-IGlzCj4+IHNldCB0byBETUFfRl9QQ0lfUDJQRE1BX1NVUFBPUlRFRCB0byBpbmRpY2F0ZSBzdXBw
-b3J0IGZvcgo+PiBQMlBETUEgcGFnZXMuCj4+Cj4+IFNpZ25lZC1vZmYtYnk6IExvZ2FuIEd1bnRo
-b3JwZSA8bG9nYW5nQGRlbHRhdGVlLmNvbT4KPiBTbywgdGhpcyBjb2RlIHByZXZlbnRzIHVzZSBv
-ZiBwMnBkbWEgdXNpbmcgYW4gSU9NTVUsIHdoaWNoIHdhc24ndCBjaGVja2VkIGFuZAo+IHNob3J0
-LWNpcmN1aXRlZCBieSBvdGhlciBjaGVja3MgdG8gdXNlIGRtYS1kaXJlY3Q/CgpObywgbm90IGF0
-IGFsbC4gVGhpcyBwYXRjaCBpcyBhZGRpbmcgc3VwcG9ydCBmb3IgcDJwZG1hIHBhZ2VzIGZvciBJ
-T01NVXMKdGhhdCB1c2UgdGhlIGRtYS1pb21tdSBhYnN0cmFjdGlvbi4gT3RoZXIgYXJjaCBzcGVj
-aWZpYyBJT01NVXMgdGhhdApkb24ndCB1c2UgdGhlIGRtYS1pb21tdSBhYnN0cmFjdGlvbiBhcmUg
-bGVmdCB1bnN1cHBvcnRlZC4gU3VwcG9ydCB3b3VsZApuZWVkIHRvIGJlIGFkZGVkIHRvIHRoZW0s
-IG9yIGJldHRlciB5ZXQ7IHRoZXkgc2hvdWxkIGJlIHBvcnRlZCB0byBkbWEtaW9tbXUuCgo+IAo+
-IFNvIG15IG92ZXJhbGwgY29tbWVudCB0byB0aGlzIGNvZGUgJiByZWxhdGVkIGNvbW1lbnRzIGlz
-IHRoYXQgaXQgc2hvdWxkIGJlIHNwcmlua2xlZAo+IHdpdGggbm90ZXMgbGlrZSAiZG9lc24ndCBz
-dXBwb3J0IElPTU1VIiBhbmQgLyBvciAiVE9ETyIgd2hlbi9pZiBJT01NVSBpcyB0byBiZSBzdXBw
-b3J0ZWQuCj4gT3IsIGlmIElPTU1VLWJhc2VkIHAycGRtYSBpc24ndCBzdXBwb3J0ZWQgaW4gdGhl
-c2Ugcm91dGluZXMgZGlyZWN0bHksIHdoZXJlL2hvdyB0aGV5IHdpbGwgYmUgc3VwcG9ydGVkPwo+
-IAo+PiAtLS0KPj4gICBkcml2ZXJzL2lvbW11L2RtYS1pb21tdS5jIHwgNjYgKysrKysrKysrKysr
-KysrKysrKysrKysrKysrKysrKysrKy0tLS0tCj4+ICAgMSBmaWxlIGNoYW5nZWQsIDU4IGluc2Vy
-dGlvbnMoKyksIDggZGVsZXRpb25zKC0pCj4+Cj4+IGRpZmYgLS1naXQgYS9kcml2ZXJzL2lvbW11
-L2RtYS1pb21tdS5jIGIvZHJpdmVycy9pb21tdS9kbWEtaW9tbXUuYwo+PiBpbmRleCBhZjc2NWM4
-MTNjYzguLmVmNDk2MzVmOTgxOSAxMDA2NDQKPj4gLS0tIGEvZHJpdmVycy9pb21tdS9kbWEtaW9t
-bXUuYwo+PiArKysgYi9kcml2ZXJzL2lvbW11L2RtYS1pb21tdS5jCj4+IEBAIC0yMCw2ICsyMCw3
-IEBACj4+ICAgI2luY2x1ZGUgPGxpbnV4L21tLmg+Cj4+ICAgI2luY2x1ZGUgPGxpbnV4L211dGV4
-Lmg+Cj4+ICAgI2luY2x1ZGUgPGxpbnV4L3BjaS5oPgo+PiArI2luY2x1ZGUgPGxpbnV4L3BjaS1w
-MnBkbWEuaD4KPj4gICAjaW5jbHVkZSA8bGludXgvc3dpb3RsYi5oPgo+PiAgICNpbmNsdWRlIDxs
-aW51eC9zY2F0dGVybGlzdC5oPgo+PiAgICNpbmNsdWRlIDxsaW51eC92bWFsbG9jLmg+Cj4+IEBA
-IC04NjQsNiArODY1LDE2IEBAIHN0YXRpYyBpbnQgX19maW5hbGlzZV9zZyhzdHJ1Y3QgZGV2aWNl
-ICpkZXYsIHN0cnVjdCBzY2F0dGVybGlzdCAqc2csIGludCBuZW50cywKPj4gICAJCXNnX2RtYV9h
-ZGRyZXNzKHMpID0gRE1BX01BUFBJTkdfRVJST1I7Cj4+ICAgCQlzZ19kbWFfbGVuKHMpID0gMDsK
-Pj4gICAKPj4gKwkJaWYgKGlzX3BjaV9wMnBkbWFfcGFnZShzZ19wYWdlKHMpKSAmJiAhc19pb3Zh
-X2xlbikgewo+PiArCQkJaWYgKGkgPiAwKQo+PiArCQkJCWN1ciA9IHNnX25leHQoY3VyKTsKPj4g
-Kwo+PiArCQkJcGNpX3AycGRtYV9tYXBfYnVzX3NlZ21lbnQocywgY3VyKTsKPj4gKwkJCWNvdW50
-Kys7Cj4+ICsJCQljdXJfbGVuID0gMDsKPj4gKwkJCWNvbnRpbnVlOwo+PiArCQl9Cj4+ICsKPj4g
-ICAJCS8qCj4+ICAgCQkgKiBOb3cgZmlsbCBpbiB0aGUgcmVhbCBETUEgZGF0YS4gSWYuLi4KPj4g
-ICAJCSAqIC0gdGhlcmUgaXMgYSB2YWxpZCBvdXRwdXQgc2VnbWVudCB0byBhcHBlbmQgdG8KPj4g
-QEAgLTk2MSwxMCArOTcyLDEyIEBAIHN0YXRpYyBpbnQgaW9tbXVfZG1hX21hcF9zZyhzdHJ1Y3Qg
-ZGV2aWNlICpkZXYsIHN0cnVjdCBzY2F0dGVybGlzdCAqc2csCj4+ICAgCXN0cnVjdCBpb3ZhX2Rv
-bWFpbiAqaW92YWQgPSAmY29va2llLT5pb3ZhZDsKPj4gICAJc3RydWN0IHNjYXR0ZXJsaXN0ICpz
-LCAqcHJldiA9IE5VTEw7Cj4+ICAgCWludCBwcm90ID0gZG1hX2luZm9fdG9fcHJvdChkaXIsIGRl
-dl9pc19kbWFfY29oZXJlbnQoZGV2KSwgYXR0cnMpOwo+PiArCXN0cnVjdCBkZXZfcGFnZW1hcCAq
-cGdtYXAgPSBOVUxMOwo+PiArCWVudW0gcGNpX3AycGRtYV9tYXBfdHlwZSBtYXBfdHlwZTsKPj4g
-ICAJZG1hX2FkZHJfdCBpb3ZhOwo+PiAgIAlzaXplX3QgaW92YV9sZW4gPSAwOwo+PiAgIAl1bnNp
-Z25lZCBsb25nIG1hc2sgPSBkbWFfZ2V0X3NlZ19ib3VuZGFyeShkZXYpOwo+PiAtCWludCBpOwo+
-PiArCWludCBpLCByZXQgPSAwOwo+PiAgIAo+PiAgIAlpZiAoc3RhdGljX2JyYW5jaF91bmxpa2Vs
-eSgmaW9tbXVfZGVmZXJyZWRfYXR0YWNoX2VuYWJsZWQpICYmCj4+ICAgCSAgICBpb21tdV9kZWZl
-cnJlZF9hdHRhY2goZGV2LCBkb21haW4pKQo+PiBAQCAtOTkzLDYgKzEwMDYsMzEgQEAgc3RhdGlj
-IGludCBpb21tdV9kbWFfbWFwX3NnKHN0cnVjdCBkZXZpY2UgKmRldiwgc3RydWN0IHNjYXR0ZXJs
-aXN0ICpzZywKPj4gICAJCXNfbGVuZ3RoID0gaW92YV9hbGlnbihpb3ZhZCwgc19sZW5ndGggKyBz
-X2lvdmFfb2ZmKTsKPj4gICAJCXMtPmxlbmd0aCA9IHNfbGVuZ3RoOwo+PiAgIAo+PiArCQlpZiAo
-aXNfcGNpX3AycGRtYV9wYWdlKHNnX3BhZ2UocykpKSB7Cj4+ICsJCQlpZiAoc2dfcGFnZShzKS0+
-cGdtYXAgIT0gcGdtYXApIHsKPj4gKwkJCQlwZ21hcCA9IHNnX3BhZ2UocyktPnBnbWFwOwo+PiAr
-CQkJCW1hcF90eXBlID0gcGNpX3AycGRtYV9tYXBfdHlwZShwZ21hcCwgZGV2LAo+PiArCQkJCQkJ
-CSAgICAgICBhdHRycyk7Cj4+ICsJCQl9Cj4+ICsKPj4gKwkJCXN3aXRjaCAobWFwX3R5cGUpIHsK
-Pj4gKwkJCWNhc2UgUENJX1AyUERNQV9NQVBfQlVTX0FERFI6Cj4+ICsJCQkJLyoKPj4gKwkJCQkg
-KiBBIHplcm8gbGVuZ3RoIHdpbGwgYmUgaWdub3JlZCBieQo+PiArCQkJCSAqIGlvbW11X21hcF9z
-ZygpIGFuZCB0aGVuIGNhbiBiZSBkZXRlY3RlZAo+PiArCQkJCSAqIGluIF9fZmluYWxpc2Vfc2co
-KSB0byBhY3R1YWxseSBtYXAgdGhlCj4+ICsJCQkJICogYnVzIGFkZHJlc3MuCj4+ICsJCQkJICov
-Cj4+ICsJCQkJcy0+bGVuZ3RoID0gMDsKPj4gKwkJCQljb250aW51ZTsKPiAKPj4gKwkJCWNhc2Ug
-UENJX1AyUERNQV9NQVBfVEhSVV9IT1NUX0JSSURHRToKPj4gKwkJCQlicmVhazsKPiBTbywgdGhp
-cyAnc2hvcnQtY2lyY3VpdHMnIHRoZSB1c2Ugb2YgdGhlIElPTU1VLCBzaWxlbnRseT8KPiBUaGlz
-IHNlZW1zIHJpcGUgZm9yIHVzZXJzIHRvIGVuYWJsZSBJT01NVSBmb3Igc2VjdXJlIGNvbXB1dGlu
-ZyByZWFzb25zLCBhbmQgdXNpbmcvZW5hYmxpbmcgcDJwZG1hLAo+IGFuZCBub3QgcmVhbGl6aW5n
-IHRoYXQgaXQgaXNuJ3QgYXMgc2VjdXJlIGFzIDErMT0ywqAgYXBwZWFycyB0byBiZS4KPiBJZiBt
-eSB1bmRlcnN0YW5kaW5nIGlzIHdyb25nLCBwbGVhc2UgcG9pbnQgbWUgdG8gdGhlIERvY3VtZW50
-YXRpb24gb3IgY29kZSB0aGF0IGNvcnJlY3RzIHRoaXMgbWlzLXVuZGVyc3RhbmRpbmcuwqAgSSBj
-b3VsZCBoYXZlIG1pc3NlZCBhIHdhcm5pbmcgd2hlbiBib3RoIGFyZSBlbmFibGVkIGluIGEgcGFz
-dCBwYXRjaCBzZXQuCgoKWWVzLCB5b3UndmUgbWlzdW5kZXJzdG9vZCB0aGlzLiBQYXJ0IG9mIHRo
-aXMgZG92ZXRhaWxzIHdpdGggeW91ciBjb21tZW50CmFib3V0IHRoZSBkb2N1bWVudGF0aW9uIGZv
-ciBQQ0lfUDJQRE1BX01BUF9USFJVX0hPU1RfQlJJREdFLgoKVGhpcyBkb2VzIG5vdCBzaG9ydCBj
-aXJjdWl0IHRoZSBJT01NVSBpbiBhbnkgd2F5LiBUSFJVX0hPU1RfQlJJREdFIG1vZGUKbWVhbnMg
-dGhlIFRMUHMgZm9yIHRoaXMgdHJhbnNhY3Rpb24gd2lsbCBoaXQgdGhlIENQVS9IT1NUIEJSSURH
-RSBhbmQKdGh1cyB0aGUgSU9NTVUgaGFzIHRvIGJlIGludm9sdmVkLiBJbiB0aGlzIGNhc2UgdGhl
-IElPTU1VIGlzIHByb2dyYW1tZWQKd2l0aCB0aGUgcGh5c2ljYWwgYWRkcmVzcyBvZiB0aGUgbWVt
-b3J5ICh3aGljaCBpcyBub3JtYWwpIGFuZCBldmVyeXRoaW5nCndvcmtzLgoKT25lIGNvdWxkIGFy
-Z3VlIHRoZSBQQ0lfUDJQRE1BX01BUF9CVVNfQUREUiBpcyBzaG9ydCBjaXJjdWl0aW5nIHRoZQpJ
-T01NVSBieSB1c2luZyBQQ0kgYnVzIGFkZHJlc3MgaW4gdGhlIERNQSB0cmFuc2FjdGlvbi4gQnV0
-IHRoaXMgcmVxdWlyZXMKdGhlIHVzZXIgdG8gZG8gc3BlY2lhbCBzZXR1cCB3aXRoIHRoZSBBQ1Mg
-Yml0cyBhaGVhZCBvZiB0aW1lIChub3QgcGFydApvZiB0aGlzIHNlcmllcykuCgpGb3IgdGhlIHVz
-ZXIgdG8gdXNlIHRoZSBCVVNfQUREUiB3aXRoIGFuIElPTU1VLCB0aGV5IG5lZWQgdG8Kc3BlY2lm
-aWNhbGx5IGRpc2FibGUgdGhlIEFDUyByZWRpcmVjdCBiaXRzIG9uIHNwZWNpZmljIFBDSSBzd2l0
-Y2ggYnJpZGdlCnBvcnRzIHVzaW5nIGEga2VybmVsIGNvbW1hbmQgbGluZSBvcHRpb24uIFdoZW4g
-dGhleSBkbyB0aGlzLCB0aGUgSU9NTVUKY29kZSB3aWxsIHB1dCB0aG9zZSBkZXZpY2VzIGluIHRo
-ZSBzYW1lIElPTU1VIGdyb3VwIHRodXMgbWFraW5nIGl0CmltcG9zc2libGUgZm9yIHRoZSB1c2Vy
-IHRvIHVzZSBkZXZpY2VzIHRoYXQgY2FuIGRvIFAyUERNQSB0cmFuc2FjdGlvbnMKdG9nZXRoZXIg
-aW4gZGlmZmVyZW50IHNlY3VyaXR5IGRvbWFpbnMuCgpUaGlzIHdhcyBhbGwgaGFzaGVkIG91dCBp
-biB0aGUgb3JpZ2luYWwgUDJQRE1BIHBhdGNoc2V0IGFuZCBkb2VzIG1ha2Ugc2Vuc2UuCgo+PiAr
-CQkJZGVmYXVsdDoKPj4gKwkJCQlyZXQgPSAtRVJFTU9URUlPOwo+PiArCQkJCWdvdG8gb3V0X3Jl
-c3RvcmVfc2c7Cj4+ICsJCQl9Cj4+ICsJCX0KPj4gKwo+PiAgIAkJLyoKPj4gICAJCSAqIER1ZSB0
-byB0aGUgYWxpZ25tZW50IG9mIG91ciBzaW5nbGUgSU9WQSBhbGxvY2F0aW9uLCB3ZSBjYW4KPj4g
-ICAJCSAqIGRlcGVuZCBvbiB0aGVzZSBhc3N1bXB0aW9ucyBhYm91dCB0aGUgc2VnbWVudCBib3Vu
-ZGFyeSBtYXNrOgo+PiBAQCAtMTAxNSw2ICsxMDUzLDkgQEAgc3RhdGljIGludCBpb21tdV9kbWFf
-bWFwX3NnKHN0cnVjdCBkZXZpY2UgKmRldiwgc3RydWN0IHNjYXR0ZXJsaXN0ICpzZywKPj4gICAJ
-CXByZXYgPSBzOwo+PiAgIAl9Cj4+ICAgCj4+ICsJaWYgKCFpb3ZhX2xlbikKPj4gKwkJcmV0dXJu
-IF9fZmluYWxpc2Vfc2coZGV2LCBzZywgbmVudHMsIDApOwo+PiArCj4+ICAgCWlvdmEgPSBpb21t
-dV9kbWFfYWxsb2NfaW92YShkb21haW4sIGlvdmFfbGVuLCBkbWFfZ2V0X21hc2soZGV2KSwgZGV2
-KTsKPj4gICAJaWYgKCFpb3ZhKQo+PiAgIAkJZ290byBvdXRfcmVzdG9yZV9zZzsKPj4gQEAgLTEw
-MzIsMTMgKzEwNzMsMTMgQEAgc3RhdGljIGludCBpb21tdV9kbWFfbWFwX3NnKHN0cnVjdCBkZXZp
-Y2UgKmRldiwgc3RydWN0IHNjYXR0ZXJsaXN0ICpzZywKPj4gICAJaW9tbXVfZG1hX2ZyZWVfaW92
-YShjb29raWUsIGlvdmEsIGlvdmFfbGVuLCBOVUxMKTsKPj4gICBvdXRfcmVzdG9yZV9zZzoKPj4g
-ICAJX19pbnZhbGlkYXRlX3NnKHNnLCBuZW50cyk7Cj4+IC0JcmV0dXJuIDA7Cj4+ICsJcmV0dXJu
-IHJldDsKPj4gICB9Cj4+ICAgCj4+ICAgc3RhdGljIHZvaWQgaW9tbXVfZG1hX3VubWFwX3NnKHN0
-cnVjdCBkZXZpY2UgKmRldiwgc3RydWN0IHNjYXR0ZXJsaXN0ICpzZywKPj4gICAJCWludCBuZW50
-cywgZW51bSBkbWFfZGF0YV9kaXJlY3Rpb24gZGlyLCB1bnNpZ25lZCBsb25nIGF0dHJzKQo+PiAg
-IHsKPj4gLQlkbWFfYWRkcl90IHN0YXJ0LCBlbmQ7Cj4+ICsJZG1hX2FkZHJfdCBlbmQsIHN0YXJ0
-ID0gRE1BX01BUFBJTkdfRVJST1I7Cj4+ICAgCXN0cnVjdCBzY2F0dGVybGlzdCAqdG1wOwo+PiAg
-IAlpbnQgaTsKPj4gICAKPj4gQEAgLTEwNTQsMTQgKzEwOTUsMjIgQEAgc3RhdGljIHZvaWQgaW9t
-bXVfZG1hX3VubWFwX3NnKHN0cnVjdCBkZXZpY2UgKmRldiwgc3RydWN0IHNjYXR0ZXJsaXN0ICpz
-ZywKPj4gICAJICogVGhlIHNjYXR0ZXJsaXN0IHNlZ21lbnRzIGFyZSBtYXBwZWQgaW50byBhIHNp
-bmdsZQo+PiAgIAkgKiBjb250aWd1b3VzIElPVkEgYWxsb2NhdGlvbiwgc28gdGhpcyBpcyBpbmNy
-ZWRpYmx5IGVhc3kuCj4+ICAgCSAqLwo+PiAtCXN0YXJ0ID0gc2dfZG1hX2FkZHJlc3Moc2cpOwo+
-PiAtCWZvcl9lYWNoX3NnKHNnX25leHQoc2cpLCB0bXAsIG5lbnRzIC0gMSwgaSkgewo+PiArCWZv
-cl9lYWNoX3NnKHNnLCB0bXAsIG5lbnRzLCBpKSB7Cj4+ICsJCWlmIChzZ19pc19wY2lfcDJwZG1h
-KHRtcCkpIHsKPj4gKwkJCXNnX3VubWFya19wY2lfcDJwZG1hKHRtcCk7Cj4+ICsJCQljb250aW51
-ZTsKPj4gKwkJfQo+PiAgIAkJaWYgKHNnX2RtYV9sZW4odG1wKSA9PSAwKQo+PiAgIAkJCWJyZWFr
-Owo+PiAtCQlzZyA9IHRtcDsKPj4gKwo+PiArCQlpZiAoc3RhcnQgPT0gRE1BX01BUFBJTkdfRVJS
-T1IpCj4+ICsJCQlzdGFydCA9IHNnX2RtYV9hZGRyZXNzKHRtcCk7Cj4+ICsKPj4gKwkJZW5kID0g
-c2dfZG1hX2FkZHJlc3ModG1wKSArIHNnX2RtYV9sZW4odG1wKTsKPj4gICAJfQo+PiAtCWVuZCA9
-IHNnX2RtYV9hZGRyZXNzKHNnKSArIHNnX2RtYV9sZW4oc2cpOwo+PiAtCV9faW9tbXVfZG1hX3Vu
-bWFwKGRldiwgc3RhcnQsIGVuZCAtIHN0YXJ0KTsKPj4gKwo+PiArCWlmIChzdGFydCAhPSBETUFf
-TUFQUElOR19FUlJPUikKPj4gKwkJX19pb21tdV9kbWFfdW5tYXAoZGV2LCBzdGFydCwgZW5kIC0g
-c3RhcnQpOwo+PiAgIH0KPj4gICAKPiBvdmVyYWxsLCBmaWRkbGluZyB3aXRoIHRoZSBnZW5lcmlj
-IGRtYS1pb21tdSBjb2RlIGluc3RlYWQgb2YgdXNpbmcgYSBkbWEtb3BzLWJhc2VkLCBwMnBkbWEg
-ZnVuY3Rpb24gdGhhdCBoYXMgaXQgY2FydmVkIG91dCBhbmQgc2VwYXJhdGVkL3JlZmFjdG9yZWQg
-b3V0IHRvIGJlIGNsZWFuZXIgc2VlbXMgbGVzcyBjb21wbGljYXRlZCwgYnV0IEknbSBndWVzc2lu
-ZyB5b3UgdHJpZWQgdGhhdCBhbmQgaXQgd2FzIHRvbyBjb21wbGljYXRlZCB0byBkbz8KCkkgZG9u
-J3QgdGhpbmsgeW91J3ZlIHVuZGVyc3Rvb2QgdGhpcyBjb2RlIGNvcnJlY3RseS4gV2hhdCBpdCBk
-b2VzIGNhbid0CmJlIGRvbmUgaW4gdGhlIGRtYS1vcHMuCgo+PiAgIHN0YXRpYyBjb25zdCBzdHJ1
-Y3QgZG1hX21hcF9vcHMgaW9tbXVfZG1hX29wcyA9IHsKPj4gKwkuZmxhZ3MJCQk9IERNQV9GX1BD
-SV9QMlBETUFfU1VQUE9SVEVELAo+IHdhaXQsIGl0J3MgYSBjb25zdCB0aGF0J3MgYWx3YXlzIHR1
-cm5lZCBvbj8KPiBzaG91bGRuJ3QgdGhlIGRlZmluZSBmb3IgdGhpcyBmbGFnIGJlIDAgZm9yIG5v
-bi1wMnBkbWEgY29uZmlncz8KCkFsbCB0aGlzIGZsYWcgaXMgc2F5aW5nIGlzIHRoYXQgaW9tbXVf
-ZG1hX21hcF9zZygpIGhhcyBzdXBwb3J0IGZvcgpoYW5kbGluZyBQMlBETUEgcGFnZXMuIFllcyB0
-aGlzIGlzIGEgY29uc3QuIFRoZSBwb2ludCBpcyB0byByZWplY3QgaXQKZm9yIG1hcF9zZyBpbXBs
-ZW1lbnRhdGlvbnMgdGhhdCBoYXZlIG5vdCBkb25lIHRoZSBhYm92ZSB3b3JrIChpZS4KYXJtX2lv
-bW11X21hcF9zZykuCgpIb3BlZnVsbHksIG1vcmUgb2YgdGhlIGFyY2gtc3BlY2lmaWMgaW1wbGVt
-ZW50YXRpb25zIHdpbGwgY29udmVydCB0byB0aGUKZ2VuZXJpYyBkbWEtaW9tbXUgY29kZSBpbiB0
-aW1lIGJ1dCB0aG9zZSB0aGF0IGRvbid0IHNpbXBseSB3b24ndCBzdXBwb3J0ClAyUERNQSB1bnRp
-bCB0aGV5IGRvIChvciBhZGQgdGhlaXIgb3duIHN1cHBvcnQpLgoKTG9nYW4KX19fX19fX19fX19f
-X19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX18KaW9tbXUgbWFpbGluZyBsaXN0Cmlv
-bW11QGxpc3RzLmxpbnV4LWZvdW5kYXRpb24ub3JnCmh0dHBzOi8vbGlzdHMubGludXhmb3VuZGF0
-aW9uLm9yZy9tYWlsbWFuL2xpc3RpbmZvL2lvbW11
+On Tue, 11 May 2021, Christoph Hellwig wrote:
+> On Mon, May 10, 2021 at 06:46:34PM -0700, Stefano Stabellini wrote:
+> > On Mon, 10 May 2021, Christoph Hellwig wrote:
+> > > On Sat, May 08, 2021 at 12:32:37AM +0100, Julien Grall wrote:
+> > > > The pointer dereferenced seems to suggest that the swiotlb hasn't been 
+> > > > allocated. From what I can tell, this may be because swiotlb_force is set 
+> > > > to SWIOTLB_NO_FORCE, we will still enable the swiotlb when running on top 
+> > > > of Xen.
+> > > >
+> > > > I am not entirely sure what would be the correct fix. Any opinions?
+> > > 
+> > > Can you try something like the patch below (not even compile tested, but
+> > > the intent should be obvious?
+> > > 
+> > > 
+> > > diff --git a/arch/arm64/mm/init.c b/arch/arm64/mm/init.c
+> > > index 16a2b2b1c54d..7671bc153fb1 100644
+> > > --- a/arch/arm64/mm/init.c
+> > > +++ b/arch/arm64/mm/init.c
+> > > @@ -44,6 +44,8 @@
+> > >  #include <asm/tlb.h>
+> > >  #include <asm/alternative.h>
+> > >  
+> > > +#include <xen/arm/swiotlb-xen.h>
+> > > +
+> > >  /*
+> > >   * We need to be able to catch inadvertent references to memstart_addr
+> > >   * that occur (potentially in generic code) before arm64_memblock_init()
+> > > @@ -482,7 +484,7 @@ void __init mem_init(void)
+> > >  	if (swiotlb_force == SWIOTLB_FORCE ||
+> > >  	    max_pfn > PFN_DOWN(arm64_dma_phys_limit))
+> > >  		swiotlb_init(1);
+> > > -	else
+> > > +	else if (!IS_ENABLED(CONFIG_XEN) || !xen_swiotlb_detect())
+> > >  		swiotlb_force = SWIOTLB_NO_FORCE;
+> > >  
+> > >  	set_max_mapnr(max_pfn - PHYS_PFN_OFFSET);
+> > 
+> > The "IS_ENABLED(CONFIG_XEN)" is not needed as the check is already part
+> > of xen_swiotlb_detect().
+> 
+> As far as I can tell the x86 version of xen_swiotlb_detect has a
+> !CONFIG_XEN stub.  The arm/arm64 version in uncoditionally declared, but
+> the implementation only compiled when Xen support is enabled.
+
+The implementation of xen_swiotlb_detect should work fine if
+!CONFIG_XEN, but the issue is that it is implemented in
+arch/arm/xen/mm.c, so it is not going to be available.
+
+I think it would be good to turn it into a static inline so that we can
+call it from arch/arm64/mm/init.c and other similar places with or
+without CONFIG_XEN, see appended patch below. It compiles without
+CONFIG_XEN.
+
+
+> > But let me ask another question first. Do you think it makes sense to have:
+> > 
+> > 	if (swiotlb_force == SWIOTLB_NO_FORCE)
+> > 		return 0;
+> > 
+> > at the beginning of swiotlb_late_init_with_tbl? I am asking because
+> > swiotlb_late_init_with_tbl is meant for special late initializations,
+> > right? It shouldn't really matter the presence or absence of
+> > SWIOTLB_NO_FORCE in regards to swiotlb_late_init_with_tbl. Also the
+> > commit message for "swiotlb: Make SWIOTLB_NO_FORCE perform no
+> > allocation" says that "If a platform was somehow setting
+> > swiotlb_no_force and a later call to swiotlb_init() was to be made we
+> > would still be proceeding with allocating the default SWIOTLB size
+> > (64MB)." Our case here is very similar, right? So the allocation should
+> > proceed?
+> 
+> Well, right now SWIOTLB_NO_FORCE is checked in dma_direct_map_page.
+> We need to clean all this up a bit, especially with the work to support
+> multiple swiotlb buffers, but I think for now this is the best we can
+> do.
+
+OK
+
+
+> > Which brings me to a separate unrelated issue, still affecting the path
+> > xen_swiotlb_init -> swiotlb_late_init_with_tbl. If swiotlb_init(1) is
+> > called by mem_init then swiotlb_late_init_with_tbl will fail due to the
+> > check:
+> > 
+> >     /* protect against double initialization */
+> >     if (WARN_ON_ONCE(io_tlb_default_mem))
+> >         return -ENOMEM;
+> > 
+> > xen_swiotlb_init is meant to ask Xen to make a bunch of pages physically
+> > contiguous. Then, it initializes the swiotlb buffer based on those
+> > pages. So it is a problem that swiotlb_late_init_with_tbl refuses to
+> > continue. However, in practice it is not a problem today because on ARM
+> > we don't actually make any special requests to Xen to make the pages
+> > physically contiguous (yet). See the empty implementation of
+> > arch/arm/xen/mm.c:xen_create_contiguous_region. I don't know about x86.
+> > 
+> > So maybe we should instead do something like the appended?
+> 
+> So I'd like to change the core swiotlb initialization to just use
+> a callback into the arch/xen code to make the pages contigous and
+> kill all that code duplication.  Together with the multiple swiotlb
+> buffer work I'd rather avoid churn that goes into a different direction
+> if possible.
+
+That's a much better plan. It is also not super urgent, so maybe for now
+we could add an explicit check for io_tlb_default_mem != NULL at the
+beginning of xen_swiotlb_init? So that at least we can fail explicitly
+or ignore it explicitly rather than by accident.
+
+
+---
+
+
+diff --git a/arch/arm/xen/mm.c b/arch/arm/xen/mm.c
+index f8f07469d259..223b1151fd7d 100644
+--- a/arch/arm/xen/mm.c
++++ b/arch/arm/xen/mm.c
+@@ -135,18 +135,6 @@ void xen_destroy_contiguous_region(phys_addr_t pstart, unsigned int order)
+ 	return;
+ }
+ 
+-int xen_swiotlb_detect(void)
+-{
+-	if (!xen_domain())
+-		return 0;
+-	if (xen_feature(XENFEAT_direct_mapped))
+-		return 1;
+-	/* legacy case */
+-	if (!xen_feature(XENFEAT_not_direct_mapped) && xen_initial_domain())
+-		return 1;
+-	return 0;
+-}
+-
+ static int __init xen_mm_init(void)
+ {
+ 	struct gnttab_cache_flush cflush;
+diff --git a/arch/arm64/mm/init.c b/arch/arm64/mm/init.c
+index 16a2b2b1c54d..e55409caaee3 100644
+--- a/arch/arm64/mm/init.c
++++ b/arch/arm64/mm/init.c
+@@ -43,6 +43,7 @@
+ #include <linux/sizes.h>
+ #include <asm/tlb.h>
+ #include <asm/alternative.h>
++#include <asm/xen/swiotlb-xen.h>
+ 
+ /*
+  * We need to be able to catch inadvertent references to memstart_addr
+@@ -482,7 +483,7 @@ void __init mem_init(void)
+ 	if (swiotlb_force == SWIOTLB_FORCE ||
+ 	    max_pfn > PFN_DOWN(arm64_dma_phys_limit))
+ 		swiotlb_init(1);
+-	else
++	else if (!xen_swiotlb_detect())
+ 		swiotlb_force = SWIOTLB_NO_FORCE;
+ 
+ 	set_max_mapnr(max_pfn - PHYS_PFN_OFFSET);
+diff --git a/include/xen/arm/swiotlb-xen.h b/include/xen/arm/swiotlb-xen.h
+index 2994fe6031a0..33336ab58afc 100644
+--- a/include/xen/arm/swiotlb-xen.h
++++ b/include/xen/arm/swiotlb-xen.h
+@@ -2,6 +2,19 @@
+ #ifndef _ASM_ARM_SWIOTLB_XEN_H
+ #define _ASM_ARM_SWIOTLB_XEN_H
+ 
+-extern int xen_swiotlb_detect(void);
++#include <xen/features.h>
++#include <xen/xen.h>
++
++static inline int xen_swiotlb_detect(void)
++{
++	if (!xen_domain())
++		return 0;
++	if (xen_feature(XENFEAT_direct_mapped))
++		return 1;
++	/* legacy case */
++	if (!xen_feature(XENFEAT_not_direct_mapped) && xen_initial_domain())
++		return 1;
++	return 0;
++}
+ 
+ #endif /* _ASM_ARM_SWIOTLB_XEN_H */
+_______________________________________________
+iommu mailing list
+iommu@lists.linux-foundation.org
+https://lists.linuxfoundation.org/mailman/listinfo/iommu
