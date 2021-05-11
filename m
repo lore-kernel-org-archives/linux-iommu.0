@@ -6,74 +6,87 @@ X-Spam-Status: No, score=-5.3 required=3.0 tests=BAYES_00,
 	HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,
 	URIBL_BLOCKED,USER_AGENT_SANE_2 autolearn=no autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 73EB5C433B4
-	for <iommu@archiver.kernel.org>; Tue, 11 May 2021 03:29:27 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D418DC433B4
+	for <iommu@archiver.kernel.org>; Tue, 11 May 2021 03:54:17 +0000 (UTC)
 Received: from smtp3.osuosl.org (smtp3.osuosl.org [140.211.166.136])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id B62CA61585
-	for <iommu@archiver.kernel.org>; Tue, 11 May 2021 03:29:26 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org B62CA61585
+	by mail.kernel.org (Postfix) with ESMTPS id 3F8146191D
+	for <iommu@archiver.kernel.org>; Tue, 11 May 2021 03:54:17 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 3F8146191D
 Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=linux.intel.com
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by smtp3.osuosl.org (Postfix) with ESMTP id 6BBA6606B0;
-	Tue, 11 May 2021 03:29:26 +0000 (UTC)
+	by smtp3.osuosl.org (Postfix) with ESMTP id 0B1ED60698;
+	Tue, 11 May 2021 03:54:17 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
 Received: from smtp3.osuosl.org ([127.0.0.1])
 	by localhost (smtp3.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id s5-SHjYJcnx6; Tue, 11 May 2021 03:29:25 +0000 (UTC)
+	with ESMTP id qN87V00jtTWH; Tue, 11 May 2021 03:54:16 +0000 (UTC)
 Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [IPv6:2605:bc80:3010:104::8cd3:938])
-	by smtp3.osuosl.org (Postfix) with ESMTP id 515A260C26;
-	Tue, 11 May 2021 03:29:25 +0000 (UTC)
+	by smtp3.osuosl.org (Postfix) with ESMTP id 10C47606A0;
+	Tue, 11 May 2021 03:54:16 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 28238C000E;
-	Tue, 11 May 2021 03:29:25 +0000 (UTC)
-Received: from smtp1.osuosl.org (smtp1.osuosl.org [IPv6:2605:bc80:3010::138])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 89C80C0001
- for <iommu@lists.linux-foundation.org>; Tue, 11 May 2021 03:29:23 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id E1B5AC000E;
+	Tue, 11 May 2021 03:54:15 +0000 (UTC)
+Received: from smtp2.osuosl.org (smtp2.osuosl.org [IPv6:2605:bc80:3010::133])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id CEEB9C0001
+ for <iommu@lists.linux-foundation.org>; Tue, 11 May 2021 03:54:14 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by smtp1.osuosl.org (Postfix) with ESMTP id 6F46A838F0
- for <iommu@lists.linux-foundation.org>; Tue, 11 May 2021 03:29:23 +0000 (UTC)
+ by smtp2.osuosl.org (Postfix) with ESMTP id AD31C40186
+ for <iommu@lists.linux-foundation.org>; Tue, 11 May 2021 03:54:14 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from smtp1.osuosl.org ([127.0.0.1])
- by localhost (smtp1.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id cGwKQTP7-zQw for <iommu@lists.linux-foundation.org>;
- Tue, 11 May 2021 03:29:22 +0000 (UTC)
+Received: from smtp2.osuosl.org ([127.0.0.1])
+ by localhost (smtp2.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+ with ESMTP id 3J6PAvsrN6bY for <iommu@lists.linux-foundation.org>;
+ Tue, 11 May 2021 03:54:13 +0000 (UTC)
 X-Greylist: domain auto-whitelisted by SQLgrey-1.8.0
-Received: from mga17.intel.com (mga17.intel.com [192.55.52.151])
- by smtp1.osuosl.org (Postfix) with ESMTPS id 56261838ED
- for <iommu@lists.linux-foundation.org>; Tue, 11 May 2021 03:29:22 +0000 (UTC)
-IronPort-SDR: O2i9fuOsuaio3dUA9xSNVyO/5XS1lPWlZC+zDtKZ/Vqq872ggTmxgtyuM7staGCsWVL0UD0OfS
- PEWH+Uo26PvQ==
-X-IronPort-AV: E=McAfee;i="6200,9189,9980"; a="179607813"
-X-IronPort-AV: E=Sophos;i="5.82,290,1613462400"; d="scan'208";a="179607813"
-Received: from orsmga008.jf.intel.com ([10.7.209.65])
- by fmsmga107.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384;
- 10 May 2021 20:29:21 -0700
-IronPort-SDR: Uhpb1DvDD4VWPvQUKBbuZtT0+KRdRivARUbZUC56WRz1l0s45RJxsvGjfZ0Rq+c/5mOehZQAfH
- TrML/fzG6MxA==
-X-IronPort-AV: E=Sophos;i="5.82,290,1613462400"; d="scan'208";a="436443967"
+Received: from mga14.intel.com (mga14.intel.com [192.55.52.115])
+ by smtp2.osuosl.org (Postfix) with ESMTPS id 12F05400C3
+ for <iommu@lists.linux-foundation.org>; Tue, 11 May 2021 03:54:12 +0000 (UTC)
+IronPort-SDR: 0mNkaxn/44Avsi386CcAwHtlPaNIcj9nMNN58kXTcpmj9dVBPbI1GWMFqjyh6V2asWvnkEAUcN
+ LWIgLdyFnmzg==
+X-IronPort-AV: E=McAfee;i="6200,9189,9980"; a="199024670"
+X-IronPort-AV: E=Sophos;i="5.82,290,1613462400"; d="scan'208";a="199024670"
+Received: from orsmga002.jf.intel.com ([10.7.209.21])
+ by fmsmga103.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384;
+ 10 May 2021 20:54:08 -0700
+IronPort-SDR: BGkUROo0isoG62lW2JllWLXLCmesj1plEIE8OeOyfJmGo/B2YJ6alU7HCdoy+34HdAxDy4SOl8
+ qxbcEgvx9lNw==
+X-IronPort-AV: E=Sophos;i="5.82,290,1613462400"; d="scan'208";a="408616471"
 Received: from jacob-builder.jf.intel.com (HELO jacob-builder) ([10.7.199.155])
- by orsmga008-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384;
- 10 May 2021 20:29:21 -0700
-Date: Mon, 10 May 2021 20:31:45 -0700
+ by orsmga002-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384;
+ 10 May 2021 20:54:08 -0700
+Date: Mon, 10 May 2021 20:56:32 -0700
 From: Jacob Pan <jacob.jun.pan@linux.intel.com>
 To: Jason Gunthorpe <jgg@nvidia.com>
-Subject: Re: [PATCH v4 1/2] iommu/sva: Tighten SVA bind API with explicit flags
-Message-ID: <20210510203145.086835cc@jacob-builder>
-In-Reply-To: <20210510233749.GG1002214@nvidia.com>
-References: <1620653108-44901-1-git-send-email-jacob.jun.pan@linux.intel.com>
- <1620653108-44901-2-git-send-email-jacob.jun.pan@linux.intel.com>
- <20210510233749.GG1002214@nvidia.com>
+Subject: Re: [PATCH V4 05/18] iommu/ioasid: Redefine IOASID set and
+ allocation APIs
+Message-ID: <20210510205632.13ff7308@jacob-builder>
+In-Reply-To: <20210510234500.GI1002214@nvidia.com>
+References: <YJOZhPGheTSlHtQc@myrica> <20210506122730.GQ1370958@nvidia.com>
+ <20210506163240.GA9058@otc-nc-03>
+ <MWHPR11MB188698FBEE62AF1313E0F7AC8C569@MWHPR11MB1886.namprd11.prod.outlook.com>
+ <20210510123729.GA1002214@nvidia.com>
+ <20210510152502.GA90095@otc-nc-03>
+ <20210510153111.GB1002214@nvidia.com>
+ <20210510162212.GB90095@otc-nc-03>
+ <20210510163956.GD1002214@nvidia.com>
+ <20210510152854.793ee594@jacob-builder>
+ <20210510234500.GI1002214@nvidia.com>
 Organization: OTC
 X-Mailer: Claws Mail 3.17.5 (GTK+ 2.24.32; x86_64-pc-linux-gnu)
 MIME-Version: 1.0
-Cc: vkoul@kernel.org, "Tian, Kevin" <kevin.tian@intel.com>,
- Dave Jiang <dave.jiang@intel.com>, Raj Ashok <ashok.raj@intel.com>,
- LKML <linux-kernel@vger.kernel.org>, Christoph Hellwig <hch@infradead.org>,
- iommu@lists.linux-foundation.org, zhangfei.gao@linaro.org,
- Jean-Philippe Brucker <jean-philippe@linaro.com>
+Cc: Jean-Philippe Brucker <jean-philippe@linaro.org>, "Tian,
+ Kevin" <kevin.tian@intel.com>, "Jiang, Dave" <dave.jiang@intel.com>, "Raj,
+ Ashok" <ashok.raj@intel.com>, Jonathan Corbet <corbet@lwn.net>,
+ Jean-Philippe Brucker <jean-philippe@linaro.com>,
+ LKML <linux-kernel@vger.kernel.org>,
+ "iommu@lists.linux-foundation.org" <iommu@lists.linux-foundation.org>,
+ Alex Williamson <alex.williamson@redhat.com>,
+ Johannes Weiner <hannes@cmpxchg.org>, Tejun Heo <tj@kernel.org>,
+ "cgroups@vger.kernel.org" <cgroups@vger.kernel.org>, "Wu, 
+ Hao" <hao.wu@intel.com>, David Woodhouse <dwmw2@infradead.org>
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -86,40 +99,46 @@ List-Post: <mailto:iommu@lists.linux-foundation.org>
 List-Help: <mailto:iommu-request@lists.linux-foundation.org?subject=help>
 List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
  <mailto:iommu-request@lists.linux-foundation.org?subject=subscribe>
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-SGkgSmFzb24sCgpPbiBNb24sIDEwIE1heSAyMDIxIDIwOjM3OjQ5IC0wMzAwLCBKYXNvbiBHdW50
-aG9ycGUgPGpnZ0BudmlkaWEuY29tPiB3cm90ZToKCj4gT24gTW9uLCBNYXkgMTAsIDIwMjEgYXQg
-MDY6MjU6MDdBTSAtMDcwMCwgSmFjb2IgUGFuIHdyb3RlOgo+IAo+ID4gKy8qCj4gPiArICogVGhl
-IElPTU1VX1NWQV9CSU5EX1NVUEVSVklTT1IgZmxhZyByZXF1ZXN0cyBhIFBBU0lEIHdoaWNoIGNh
-biBiZQo+ID4gdXNlZCBvbmx5Cj4gPiArICogZm9yIGFjY2VzcyB0byBrZXJuZWwgYWRkcmVzc2Vz
-LiBObyBJT1RMQiBmbHVzaGVzIGFyZSBhdXRvbWF0aWNhbGx5Cj4gPiBkb25lCj4gPiArICogZm9y
-IGtlcm5lbCBtYXBwaW5nczsgaXQgaXMgdmFsaWQgb25seSBmb3IgYWNjZXNzIHRvIHRoZSBrZXJu
-ZWwncwo+ID4gc3RhdGljCj4gPiArICogMToxIG1hcHBpbmcgb2YgcGh5c2ljYWwgbWVtb3J5IOKA
-lCBub3QgdG8gdm1hbGxvYyBvciBldmVuIG1vZHVsZQo+ID4gbWFwcGluZ3MuCj4gPiArICogQSBm
-dXR1cmUgQVBJIGFkZGl0aW9uIG1heSBwZXJtaXQgdGhlIHVzZSBvZiBzdWNoIHJhbmdlcywgYnkg
-bWVhbnMKPiA+IG9mIGFuCj4gPiArICogZXhwbGljaXQgSU9UTEIgZmx1c2ggY2FsbCAoYWtpbiB0
-byB0aGUgRE1BIEFQSSdzIHVubWFwIG1ldGhvZCkuCj4gPiArICoKPiA+ICsgKiBJdCBpcyB1bmxp
-a2VseSB0aGF0IHdlIHdpbGwgZXZlciBob29rIGludG8gZmx1c2hfdGxiX2tlcm5lbF9yYW5nZSgp
-Cj4gPiB0bwo+ID4gKyAqIGRvIHN1Y2ggSU9UTEIgZmx1c2hlcyBhdXRvbWF0aWNhbGx5Lgo+ID4g
-KyAqLwo+ID4gKyNkZWZpbmUgSU9NTVVfU1ZBX0JJTkRfU1VQRVJWSVNPUiAgICAgICBCSVQoMCkg
-IAo+IAo+IEh1aD8gVGhhdCBpc24ndCByZWFsbHkgU1ZBLCBjYW4geW91IGNhbGwgaXQgc29tZXRo
-aW5nIHNhbmVyIHBsZWFzZT8KPiAKVGhpcyBpcyBzaGFyZWQga2VybmVsIHZpcnR1YWwgYWRkcmVz
-cywgSSBhbSBmb2xsb3dpbmcgdGhlIFNWQSBsaWIgbmFtaW5nCnNpbmNlIHRoaXMgaXMgd2hlcmUg
-dGhlIGZsYWcgd2lsbCBiZSB1c2VkLiBXaHkgdGhpcyBpcyBub3QgU1ZBPyBLZXJuZWwKdmlydHVh
-bCBhZGRyZXNzIGlzIHN0aWxsIHZpcnR1YWwgYWRkcmVzcy4gSXMgaXQgZHVlIHRvIGRpcmVjdCBt
-YXA/Cgo+IElzIGl0IHJlYWxseSBhIFBBU0lEIHRoYXQgYWx3YXlzIGhhcyBhbGwgb2YgcGh5c2lj
-YWwgbWVtb3J5IG1hcHBlZAo+IGludG8gaXQ/IFNvdW5kcyBkYW5nZXJvdXMuIFdoYXQgaXMgaXQg
-Zm9yPwo+IAoKWWVzLiBJdCBpcyB0byBiaW5kIERNQSByZXF1ZXN0IHcvIFBBU0lEIHdpdGggaW5p
-dF9tbS9pbml0X3RvcF9wZ3QuIFBlciBQQ0llCnNwZWMgUEFTSUQgVExQIHByZWZpeCBoYXMgIlBy
-aXZpbGVnZWQgTW9kZSBSZXF1ZXN0ZWQiIGJpdC4gVlQtZCBzdXBwb3J0cwp0aGlzIHdpdGggIlBy
-aXZpbGVnZWQtbW9kZS1SZXF1ZXN0ZWQgKFBSKSBmbGFnICh0byBkaXN0aW5ndWlzaCB1c2VyIHZl
-cnN1cwpzdXBlcnZpc29yIGFjY2VzcykiLiBFYWNoIFBBU0lEIGVudHJ5IGhhcyBhIFNSRSAoU3Vw
-ZXJ2aXNvciBSZXF1ZXN0IEVuYWJsZSkKYml0LgoKUGVyaGFwcyB3ZSBzaG91bGQgbGltaXQgdGhh
-dCB0byB0cnVzdGVkIGRldmljZSwgZS5nLiBSQ0lFUCBkZXZpY2U/Cgo+IEphc29uCgoKVGhhbmtz
-LAoKSmFjb2IKX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX18K
-aW9tbXUgbWFpbGluZyBsaXN0CmlvbW11QGxpc3RzLmxpbnV4LWZvdW5kYXRpb24ub3JnCmh0dHBz
-Oi8vbGlzdHMubGludXhmb3VuZGF0aW9uLm9yZy9tYWlsbWFuL2xpc3RpbmZvL2lvbW11
+Hi Jason,
+
+On Mon, 10 May 2021 20:45:00 -0300, Jason Gunthorpe <jgg@nvidia.com> wrote:
+
+> On Mon, May 10, 2021 at 03:28:54PM -0700, Jacob Pan wrote:
+> 
+> > To satisfy your "give me a PASID for this RID" proposal, can we just use
+> > the RID's struct device as the token? Also add a type field to
+> > explicitly indicate global vs per-set(per-RID). i.e.  
+> 
+> You've got it backwards, the main behavior should be to allocate PASID
+> per RID.
+> 
+Sure, we can make the local PASID as default. My point was that the
+ioasid_set infrastructure's opaque token can support RID-local allocation
+scheme. Anyway, this is a small detail as compared to uAPI.
+
+> The special behavior is to bundle a bunch of PASIDs into a grouping
+> and then say the PASID number space is shared between all the group
+> members. 
+> 
+> /dev/ioasid should create and own this grouping either implicitly or
+> explicitly. Jumping ahead to in-kernel APIs has missed the critical
+> step of defining the uAPI and all the behaviors together in a
+> completed RFC proposal.
+> 
+Agreed, the requirements for kernel API should come from uAPI.
+
+> Jason
+
+
+Thanks,
+
+Jacob
+_______________________________________________
+iommu mailing list
+iommu@lists.linux-foundation.org
+https://lists.linuxfoundation.org/mailman/listinfo/iommu
