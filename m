@@ -2,70 +2,82 @@ Return-Path: <SRS0=AxcK=KG=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-10.3 required=3.0 tests=BAYES_00,
-	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,SPF_HELO_NONE,
-	SPF_PASS,URIBL_BLOCKED,USER_AGENT_SANE_1 autolearn=unavailable
-	autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-15.3 required=3.0 tests=BAYES_00,
+	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_CR_TRAILER,INCLUDES_PATCH,
+	MAILING_LIST_MULTI,NICE_REPLY_A,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,
+	USER_AGENT_SANE_1 autolearn=unavailable autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9A9FAC433ED
-	for <iommu@archiver.kernel.org>; Tue, 11 May 2021 06:36:07 +0000 (UTC)
-Received: from smtp3.osuosl.org (smtp3.osuosl.org [140.211.166.136])
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0F866C43461
+	for <iommu@archiver.kernel.org>; Tue, 11 May 2021 06:57:05 +0000 (UTC)
+Received: from smtp4.osuosl.org (smtp4.osuosl.org [140.211.166.137])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id DD40761364
-	for <iommu@archiver.kernel.org>; Tue, 11 May 2021 06:36:06 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org DD40761364
-Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=lst.de
+	by mail.kernel.org (Postfix) with ESMTPS id A15F56144F
+	for <iommu@archiver.kernel.org>; Tue, 11 May 2021 06:57:04 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org A15F56144F
+Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=linux.intel.com
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by smtp3.osuosl.org (Postfix) with ESMTP id 9566C6071E;
-	Tue, 11 May 2021 06:36:06 +0000 (UTC)
+	by smtp4.osuosl.org (Postfix) with ESMTP id 2FBE1405C4;
+	Tue, 11 May 2021 06:57:04 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from smtp3.osuosl.org ([127.0.0.1])
-	by localhost (smtp3.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id BmxFtgYbqvXS; Tue, 11 May 2021 06:36:05 +0000 (UTC)
-Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [IPv6:2605:bc80:3010:104::8cd3:938])
-	by smtp3.osuosl.org (Postfix) with ESMTP id 3E7F06071C;
-	Tue, 11 May 2021 06:36:05 +0000 (UTC)
+Received: from smtp4.osuosl.org ([127.0.0.1])
+	by localhost (smtp4.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+	with ESMTP id hEM8VOu1ZhEt; Tue, 11 May 2021 06:57:03 +0000 (UTC)
+Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
+	by smtp4.osuosl.org (Postfix) with ESMTP id A3A81404B8;
+	Tue, 11 May 2021 06:57:02 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 17819C000D;
-	Tue, 11 May 2021 06:36:05 +0000 (UTC)
-Received: from smtp2.osuosl.org (smtp2.osuosl.org [140.211.166.133])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 2C70AC0001
- for <iommu@lists.linux-foundation.org>; Tue, 11 May 2021 06:36:04 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 5DBCAC000D;
+	Tue, 11 May 2021 06:57:02 +0000 (UTC)
+Received: from smtp4.osuosl.org (smtp4.osuosl.org [IPv6:2605:bc80:3010::137])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 33616C0001
+ for <iommu@lists.linux-foundation.org>; Tue, 11 May 2021 06:57:01 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by smtp2.osuosl.org (Postfix) with ESMTP id 1C15F401EE
- for <iommu@lists.linux-foundation.org>; Tue, 11 May 2021 06:36:04 +0000 (UTC)
+ by smtp4.osuosl.org (Postfix) with ESMTP id 181FB4057F
+ for <iommu@lists.linux-foundation.org>; Tue, 11 May 2021 06:57:01 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from smtp2.osuosl.org ([127.0.0.1])
- by localhost (smtp2.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id bHdDXjjb4kEa for <iommu@lists.linux-foundation.org>;
- Tue, 11 May 2021 06:36:03 +0000 (UTC)
-X-Greylist: from auto-whitelisted by SQLgrey-1.8.0
-Received: from verein.lst.de (verein.lst.de [213.95.11.211])
- by smtp2.osuosl.org (Postfix) with ESMTPS id B2FF640173
- for <iommu@lists.linux-foundation.org>; Tue, 11 May 2021 06:36:02 +0000 (UTC)
-Received: by verein.lst.de (Postfix, from userid 2407)
- id 8C47567373; Tue, 11 May 2021 08:35:58 +0200 (CEST)
-Date: Tue, 11 May 2021 08:35:58 +0200
-From: Christoph Hellwig <hch@lst.de>
-To: Stefano Stabellini <sstabellini@kernel.org>
-Subject: Re: Regression when booting 5.15 as dom0 on arm64 (WAS: Re:
- [linux-linus test] 161829: regressions - FAIL)
-Message-ID: <20210511063558.GA7605@lst.de>
-References: <osstest-161829-mainreport@xen.org>
- <4ea1e89f-a7a0-7664-470c-b3cf773a1031@xen.org> <20210510084057.GA933@lst.de>
- <alpine.DEB.2.21.2105101818260.5018@sstabellini-ThinkPad-T480s>
+Received: from smtp4.osuosl.org ([127.0.0.1])
+ by localhost (smtp4.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+ with ESMTP id X7iuUHYLUPOx for <iommu@lists.linux-foundation.org>;
+ Tue, 11 May 2021 06:57:00 +0000 (UTC)
+X-Greylist: domain auto-whitelisted by SQLgrey-1.8.0
+Received: from mga06.intel.com (mga06.intel.com [134.134.136.31])
+ by smtp4.osuosl.org (Postfix) with ESMTPS id 067A1404B8
+ for <iommu@lists.linux-foundation.org>; Tue, 11 May 2021 06:56:59 +0000 (UTC)
+IronPort-SDR: oKkgMKYlYXNZq1R5r00Dye7DSAzXrYiNEDFsslan4XOXCmF7PxBgFTahzODG4w7eCV42hmbsPT
+ RVUg2wghF6ng==
+X-IronPort-AV: E=McAfee;i="6200,9189,9980"; a="260635845"
+X-IronPort-AV: E=Sophos;i="5.82,290,1613462400"; d="scan'208";a="260635845"
+Received: from fmsmga006.fm.intel.com ([10.253.24.20])
+ by orsmga104.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384;
+ 10 May 2021 23:56:59 -0700
+IronPort-SDR: lTiGtF4iiKlRU9B4tNsIxfnwP9/wWixp0OEe0XI9nF45kfoQX5O7UYY48OUurHC2Odg60+HZiW
+ /wNbRYg/nytg==
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.82,290,1613462400"; d="scan'208";a="621699609"
+Received: from allen-box.sh.intel.com (HELO [10.239.159.128])
+ ([10.239.159.128])
+ by fmsmga006.fm.intel.com with ESMTP; 10 May 2021 23:56:50 -0700
+Subject: Re: [PATCH v8 7/9] vfio/mdev: Add iommu related member in mdev_device
+To: Jason Gunthorpe <jgg@nvidia.com>, Christoph Hellwig <hch@lst.de>
+References: <20190325013036.18400-1-baolu.lu@linux.intel.com>
+ <20190325013036.18400-8-baolu.lu@linux.intel.com>
+ <20210406200030.GA425310@nvidia.com>
+From: Lu Baolu <baolu.lu@linux.intel.com>
+Message-ID: <2d6d3c70-0c6f-2430-3982-2705bfe9f5a6@linux.intel.com>
+Date: Tue, 11 May 2021 14:56:05 +0800
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
+ Thunderbird/78.7.1
 MIME-Version: 1.0
-Content-Disposition: inline
-In-Reply-To: <alpine.DEB.2.21.2105101818260.5018@sstabellini-ThinkPad-T480s>
-User-Agent: Mutt/1.5.17 (2007-11-01)
-Cc: f.fainelli@gmail.com, Julien Grall <julien@xen.org>,
- Konrad Rzeszutek Wilk <konrad.wilk@oracle.com>,
- osstest service owner <osstest-admin@xenproject.org>,
- linux-kernel@vger.kernel.org, iommu@lists.linux-foundation.org,
- "xen-devel@lists.xenproject.org" <xen-devel@lists.xenproject.org>,
- Boris Ostrovsky <boris.ostrovsky@oracle.com>, Christoph Hellwig <hch@lst.de>
+In-Reply-To: <20210406200030.GA425310@nvidia.com>
+Content-Language: en-US
+Cc: kevin.tian@intel.com, ashok.raj@intel.com, tiwei.bie@intel.com,
+ Jean-Philippe Brucker <jean-philippe.brucker@arm.com>,
+ sanjay.k.kumar@intel.com, Kirti Wankhede <kwankhede@nvidia.com>,
+ linux-kernel@vger.kernel.org, Alex Williamson <alex.williamson@redhat.com>,
+ iommu@lists.linux-foundation.org, jacob.jun.pan@intel.com, kvm@vger.kernel.org,
+ David Woodhouse <dwmw2@infradead.org>, yi.y.sun@intel.com
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -78,102 +90,121 @@ List-Post: <mailto:iommu@lists.linux-foundation.org>
 List-Help: <mailto:iommu-request@lists.linux-foundation.org?subject=help>
 List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
  <mailto:iommu-request@lists.linux-foundation.org?subject=subscribe>
-Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset="us-ascii"; Format="flowed"
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-On Mon, May 10, 2021 at 06:46:34PM -0700, Stefano Stabellini wrote:
-> On Mon, 10 May 2021, Christoph Hellwig wrote:
-> > On Sat, May 08, 2021 at 12:32:37AM +0100, Julien Grall wrote:
-> > > The pointer dereferenced seems to suggest that the swiotlb hasn't been 
-> > > allocated. From what I can tell, this may be because swiotlb_force is set 
-> > > to SWIOTLB_NO_FORCE, we will still enable the swiotlb when running on top 
-> > > of Xen.
-> > >
-> > > I am not entirely sure what would be the correct fix. Any opinions?
-> > 
-> > Can you try something like the patch below (not even compile tested, but
-> > the intent should be obvious?
-> > 
-> > 
-> > diff --git a/arch/arm64/mm/init.c b/arch/arm64/mm/init.c
-> > index 16a2b2b1c54d..7671bc153fb1 100644
-> > --- a/arch/arm64/mm/init.c
-> > +++ b/arch/arm64/mm/init.c
-> > @@ -44,6 +44,8 @@
-> >  #include <asm/tlb.h>
-> >  #include <asm/alternative.h>
-> >  
-> > +#include <xen/arm/swiotlb-xen.h>
-> > +
-> >  /*
-> >   * We need to be able to catch inadvertent references to memstart_addr
-> >   * that occur (potentially in generic code) before arm64_memblock_init()
-> > @@ -482,7 +484,7 @@ void __init mem_init(void)
-> >  	if (swiotlb_force == SWIOTLB_FORCE ||
-> >  	    max_pfn > PFN_DOWN(arm64_dma_phys_limit))
-> >  		swiotlb_init(1);
-> > -	else
-> > +	else if (!IS_ENABLED(CONFIG_XEN) || !xen_swiotlb_detect())
-> >  		swiotlb_force = SWIOTLB_NO_FORCE;
-> >  
-> >  	set_max_mapnr(max_pfn - PHYS_PFN_OFFSET);
-> 
-> The "IS_ENABLED(CONFIG_XEN)" is not needed as the check is already part
-> of xen_swiotlb_detect().
+Hi Jason,
 
-As far as I can tell the x86 version of xen_swiotlb_detect has a
-!CONFIG_XEN stub.  The arm/arm64 version in uncoditionally declared, but
-the implementation only compiled when Xen support is enabled.
+On 4/7/21 4:00 AM, Jason Gunthorpe wrote:
+> On Mon, Mar 25, 2019 at 09:30:34AM +0800, Lu Baolu wrote:
+>> A parent device might create different types of mediated
+>> devices. For example, a mediated device could be created
+>> by the parent device with full isolation and protection
+>> provided by the IOMMU. One usage case could be found on
+>> Intel platforms where a mediated device is an assignable
+>> subset of a PCI, the DMA requests on behalf of it are all
+>> tagged with a PASID. Since IOMMU supports PASID-granular
+>> translations (scalable mode in VT-d 3.0), this mediated
+>> device could be individually protected and isolated by an
+>> IOMMU.
+>>
+>> This patch adds a new member in the struct mdev_device to
+>> indicate that the mediated device represented by mdev could
+>> be isolated and protected by attaching a domain to a device
+>> represented by mdev->iommu_device. It also adds a helper to
+>> add or set the iommu device.
+>>
+>> * mdev_device->iommu_device
+>>    - This, if set, indicates that the mediated device could
+>>      be fully isolated and protected by IOMMU via attaching
+>>      an iommu domain to this device. If empty, it indicates
+>>      using vendor defined isolation, hence bypass IOMMU.
+>>
+>> * mdev_set/get_iommu_device(dev, iommu_device)
+>>    - Set or get the iommu device which represents this mdev
+>>      in IOMMU's device scope. Drivers don't need to set the
+>>      iommu device if it uses vendor defined isolation.
+>>
+>> Cc: Ashok Raj <ashok.raj@intel.com>
+>> Cc: Jacob Pan <jacob.jun.pan@linux.intel.com>
+>> Cc: Kevin Tian <kevin.tian@intel.com>
+>> Cc: Liu Yi L <yi.l.liu@intel.com>
+>> Suggested-by: Kevin Tian <kevin.tian@intel.com>
+>> Suggested-by: Alex Williamson <alex.williamson@redhat.com>
+>> Signed-off-by: Lu Baolu <baolu.lu@linux.intel.com>
+>> Reviewed-by: Jean-Philippe Brucker <jean-philippe.brucker@arm.com>
+>> ---
+>>   drivers/vfio/mdev/mdev_core.c    | 18 ++++++++++++++++++
+>>   drivers/vfio/mdev/mdev_private.h |  1 +
+>>   include/linux/mdev.h             | 14 ++++++++++++++
+>>   3 files changed, 33 insertions(+)
+>>
+>> diff --git a/drivers/vfio/mdev/mdev_core.c b/drivers/vfio/mdev/mdev_core.c
+>> index b96fedc77ee5..1b6435529166 100644
+>> +++ b/drivers/vfio/mdev/mdev_core.c
+>> @@ -390,6 +390,24 @@ int mdev_device_remove(struct device *dev, bool force_remove)
+>>   	return 0;
+>>   }
+>>   
+>> +int mdev_set_iommu_device(struct device *dev, struct device *iommu_device)
+>> +{
+>> +	struct mdev_device *mdev = to_mdev_device(dev);
+>> +
+>> +	mdev->iommu_device = iommu_device;
+>> +
+>> +	return 0;
+>> +}
+>> +EXPORT_SYMBOL(mdev_set_iommu_device);
+> 
+> I was looking at these functions when touching the mdev stuff and I
+> have some concerns.
+> 
+> 1) Please don't merge dead code. It is a year later and there is still
+>     no in-tree user for any of this. This is not our process. Even
+>     worse it was exported so it looks like this dead code is supporting
+>     out of tree modules.
+> 
+> 2) Why is this like this? Every struct device already has a connection
+>     to the iommu layer and every mdev has a struct device all its own.
+> 
+>     Why did we need to add special 'if (mdev)' stuff all over the
+>     place? This smells like the same abuse Thomas
+>     and I pointed out for the interrupt domains.
+> 
+>     After my next series the mdev drivers will have direct access to
+>     the vfio_device. So an alternative to using the struct device, or
+>     adding 'if mdev' is to add an API to the vfio_device world to
+>     inject what iommu configuration is needed from that direction
+>     instead of trying to discover it from a struct device.
+
+Just want to make sure that I understand you correctly.
+
+We should use the existing IOMMU in-kernel APIs to connect mdev with the
+iommu subsystem, so that the upper lays don't need to use something
+like (if dev_is_mdev) to handle mdev differently. Do I get you
+correctly?
 
 > 
-> 
-> But let me ask another question first. Do you think it makes sense to have:
-> 
-> 	if (swiotlb_force == SWIOTLB_NO_FORCE)
-> 		return 0;
-> 
-> at the beginning of swiotlb_late_init_with_tbl? I am asking because
-> swiotlb_late_init_with_tbl is meant for special late initializations,
-> right? It shouldn't really matter the presence or absence of
-> SWIOTLB_NO_FORCE in regards to swiotlb_late_init_with_tbl. Also the
-> commit message for "swiotlb: Make SWIOTLB_NO_FORCE perform no
-> allocation" says that "If a platform was somehow setting
-> swiotlb_no_force and a later call to swiotlb_init() was to be made we
-> would still be proceeding with allocating the default SWIOTLB size
-> (64MB)." Our case here is very similar, right? So the allocation should
-> proceed?
+> 3) The vfio_bus_is_mdev() and related symbol_get() nonsense in
+>     drivers/vfio/vfio_iommu_type1.c has to go, for the same reasons
+>     it was not acceptable to do this for the interrupt side either.
 
-Well, right now SWIOTLB_NO_FORCE is checked in dma_direct_map_page.
-We need to clean all this up a bit, especially with the work to support
-multiple swiotlb buffers, but I think for now this is the best we can
-do.
+Yes. Agreed. I will look into it.
 
-> Which brings me to a separate unrelated issue, still affecting the path
-> xen_swiotlb_init -> swiotlb_late_init_with_tbl. If swiotlb_init(1) is
-> called by mem_init then swiotlb_late_init_with_tbl will fail due to the
-> check:
 > 
->     /* protect against double initialization */
->     if (WARN_ON_ONCE(io_tlb_default_mem))
->         return -ENOMEM;
+> 4) It seems pretty clear to me this will be heavily impacted by the
+>     /dev/ioasid discussion. Please consider removing the dead code now.
 > 
-> xen_swiotlb_init is meant to ask Xen to make a bunch of pages physically
-> contiguous. Then, it initializes the swiotlb buffer based on those
-> pages. So it is a problem that swiotlb_late_init_with_tbl refuses to
-> continue. However, in practice it is not a problem today because on ARM
-> we don't actually make any special requests to Xen to make the pages
-> physically contiguous (yet). See the empty implementation of
-> arch/arm/xen/mm.c:xen_create_contiguous_region. I don't know about x86.
+> Basically, please fix this before trying to get idxd mdev merged as
+> the first user.
 > 
-> So maybe we should instead do something like the appended?
+> Jason
+> 
 
-So I'd like to change the core swiotlb initialization to just use
-a callback into the arch/xen code to make the pages contigous and
-kill all that code duplication.  Together with the multiple swiotlb
-buffer work I'd rather avoid churn that goes into a different direction
-if possible.
+Best regards,
+baolu
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
