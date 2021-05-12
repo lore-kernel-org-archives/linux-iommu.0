@@ -2,73 +2,182 @@ Return-Path: <SRS0=CJHf=KH=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-16.8 required=3.0 tests=BAYES_00,
-	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_CR_TRAILER,INCLUDES_PATCH,
-	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,USER_AGENT_GIT autolearn=ham
-	autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-3.5 required=3.0 tests=BAYES_00,DKIM_INVALID,
+	DKIM_SIGNED,HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,SPF_HELO_NONE,
+	SPF_PASS autolearn=no autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7629EC43460
-	for <iommu@archiver.kernel.org>; Wed, 12 May 2021 07:05:22 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3F5FAC433ED
+	for <iommu@archiver.kernel.org>; Wed, 12 May 2021 07:46:42 +0000 (UTC)
 Received: from smtp4.osuosl.org (smtp4.osuosl.org [140.211.166.137])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 189FF61289
-	for <iommu@archiver.kernel.org>; Wed, 12 May 2021 07:05:22 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 189FF61289
-Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=linux.intel.com
+	by mail.kernel.org (Postfix) with ESMTPS id 9E9D560FDC
+	for <iommu@archiver.kernel.org>; Wed, 12 May 2021 07:46:41 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 9E9D560FDC
+Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=intel.com
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by smtp4.osuosl.org (Postfix) with ESMTP id C1B41404E2;
-	Wed, 12 May 2021 07:05:21 +0000 (UTC)
+	by smtp4.osuosl.org (Postfix) with ESMTP id 29A39404E7;
+	Wed, 12 May 2021 07:46:41 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
 Received: from smtp4.osuosl.org ([127.0.0.1])
 	by localhost (smtp4.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id uc-wV3j43K4g; Wed, 12 May 2021 07:05:20 +0000 (UTC)
-Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [IPv6:2605:bc80:3010:104::8cd3:938])
-	by smtp4.osuosl.org (Postfix) with ESMTP id 7A3D5404DE;
-	Wed, 12 May 2021 07:05:20 +0000 (UTC)
+	with ESMTP id U2HH2_9cqFz3; Wed, 12 May 2021 07:46:39 +0000 (UTC)
+Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
+	by smtp4.osuosl.org (Postfix) with ESMTP id 7A36E404D2;
+	Wed, 12 May 2021 07:46:39 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 5511AC000D;
-	Wed, 12 May 2021 07:05:20 +0000 (UTC)
-Received: from smtp1.osuosl.org (smtp1.osuosl.org [IPv6:2605:bc80:3010::138])
- by lists.linuxfoundation.org (Postfix) with ESMTP id EBF7CC0001
- for <iommu@lists.linux-foundation.org>; Wed, 12 May 2021 07:05:18 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 53666C000D;
+	Wed, 12 May 2021 07:46:39 +0000 (UTC)
+Received: from smtp4.osuosl.org (smtp4.osuosl.org [140.211.166.137])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 754A4C0001
+ for <iommu@lists.linux-foundation.org>; Wed, 12 May 2021 07:46:38 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by smtp1.osuosl.org (Postfix) with ESMTP id CDCCC83B47
- for <iommu@lists.linux-foundation.org>; Wed, 12 May 2021 07:05:18 +0000 (UTC)
+ by smtp4.osuosl.org (Postfix) with ESMTP id 5AF53404D9
+ for <iommu@lists.linux-foundation.org>; Wed, 12 May 2021 07:46:38 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from smtp1.osuosl.org ([127.0.0.1])
- by localhost (smtp1.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id LYgImdLwNpu2 for <iommu@lists.linux-foundation.org>;
- Wed, 12 May 2021 07:05:17 +0000 (UTC)
+Received: from smtp4.osuosl.org ([127.0.0.1])
+ by localhost (smtp4.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+ with ESMTP id rPbJNTsuQ44J for <iommu@lists.linux-foundation.org>;
+ Wed, 12 May 2021 07:46:37 +0000 (UTC)
 X-Greylist: domain auto-whitelisted by SQLgrey-1.8.0
-Received: from mga03.intel.com (mga03.intel.com [134.134.136.65])
- by smtp1.osuosl.org (Postfix) with ESMTPS id B0E5B83B07
- for <iommu@lists.linux-foundation.org>; Wed, 12 May 2021 07:05:17 +0000 (UTC)
-IronPort-SDR: LVMsGmxjJEN0K7SgaGlY+og92XCuxEytSktNceRteVzdUWW4T1MJr/x2IIJQfZx6EfKEiGTz/1
- suRG5Udv3AVQ==
-X-IronPort-AV: E=McAfee;i="6200,9189,9981"; a="199685230"
-X-IronPort-AV: E=Sophos;i="5.82,293,1613462400"; d="scan'208";a="199685230"
-Received: from fmsmga004.fm.intel.com ([10.253.24.48])
- by orsmga103.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384;
- 12 May 2021 00:05:16 -0700
-IronPort-SDR: xNTaDUQC4qr8uwbmMVTq+jb6mwNY80ju4g1kFNfVCI+VvbMlpGq8fSsxYfdjzXmv0lAeRt2xT7
- DRfkbUk2DBCA==
+Received: from mga05.intel.com (mga05.intel.com [192.55.52.43])
+ by smtp4.osuosl.org (Postfix) with ESMTPS id 0AFF7404D2
+ for <iommu@lists.linux-foundation.org>; Wed, 12 May 2021 07:46:36 +0000 (UTC)
+IronPort-SDR: o8YFqHbqK04mdByQ9jEVivDrN8GaYT2R7PCCCAr0AGkbEsJlz76L3AhY5tYHiaLjggt9l4ExQN
+ mgk3BRmMT4xw==
+X-IronPort-AV: E=McAfee;i="6200,9189,9981"; a="285147604"
+X-IronPort-AV: E=Sophos;i="5.82,293,1613462400"; d="scan'208";a="285147604"
+Received: from orsmga005.jf.intel.com ([10.7.209.41])
+ by fmsmga105.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384;
+ 12 May 2021 00:46:22 -0700
+IronPort-SDR: EUSc8OFbHcR7H9eqzZG4seteHK/SB2/lTP+jbwfnNgg9d5Otvvq4Yyltk1za7TpruXaa/5lHyP
+ TyUeTXA9X1Ng==
 X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.82,293,1613462400"; d="scan'208";a="455448336"
-Received: from allen-box.sh.intel.com ([10.239.159.128])
- by fmsmga004.fm.intel.com with ESMTP; 12 May 2021 00:05:12 -0700
-From: Lu Baolu <baolu.lu@linux.intel.com>
-To: Joerg Roedel <joro@8bytes.org>,
-	Will Deacon <will@kernel.org>
-Subject: [PATCH 1/1] iommu/vt-d: Support asynchronous IOMMU nested capabilities
-Date: Wed, 12 May 2021 15:04:21 +0800
-Message-Id: <20210512070421.3472857-1-baolu.lu@linux.intel.com>
-X-Mailer: git-send-email 2.25.1
+X-IronPort-AV: E=Sophos;i="5.82,293,1613462400"; d="scan'208";a="609808062"
+Received: from fmsmsx602.amr.corp.intel.com ([10.18.126.82])
+ by orsmga005.jf.intel.com with ESMTP; 12 May 2021 00:46:16 -0700
+Received: from fmsmsx611.amr.corp.intel.com (10.18.126.91) by
+ fmsmsx602.amr.corp.intel.com (10.18.126.82) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2106.2; Wed, 12 May 2021 00:46:16 -0700
+Received: from fmsmsx610.amr.corp.intel.com (10.18.126.90) by
+ fmsmsx611.amr.corp.intel.com (10.18.126.91) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2106.2; Wed, 12 May 2021 00:46:15 -0700
+Received: from fmsedg601.ED.cps.intel.com (10.1.192.135) by
+ fmsmsx610.amr.corp.intel.com (10.18.126.90) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2106.2
+ via Frontend Transport; Wed, 12 May 2021 00:46:15 -0700
+Received: from NAM04-DM6-obe.outbound.protection.outlook.com (104.47.73.46) by
+ edgegateway.intel.com (192.55.55.70) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.1.2106.2; Wed, 12 May 2021 00:46:13 -0700
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=SO3qUVvNTcEfdC1gFKJWFLOb5vM4O9c5P41r6gYVIGW9JtmSWiJ6qMxmYHpEEj/HDJumgTgEcxRYTwFc4Teulk0pQjCoiQgM7ojBRzXF0BgOo7zHwfvDzu6/6OAX+5RGVIZZGDcML46swALXEnRdSRzVhSBZK8OtuPYz2D7vOiuvPiISUlBa5o4jzpFOqgATZir6z5DrwILisRc0bpn4rBt081NkSU6O5vDja9RizYPUgAhs/JdbcuhNkcdQeDHs9Wj2OzppHRHZwNt5o7hTJw46CHIGcGaKQtghCjOsI8M0yY48rwhScd+q2J5hAMgjdPgiuKZCCbHd334Gvg96sw==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com; 
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=65glzLarSfir5JzpRI+US+4zyPYTot968aAGKPjOyS4=;
+ b=JqT82FHfpLPtl8wHlfZvu7fFUorWiwkbW+jciz/R75sT/JCm5X96XrQHMOkrMLqy83OHDXpMd23hwD8TxM2vytQynavr8m+9Y4ujU3hxiOsd2a76YqVFfY+9UBYqT/9eCE/xIvsFq2LD8WDVwGTAwbp/vcL9XAhoEM2BM6QnYKOXPu7sT7LNbwRt0SrY9W2nYkVG680MPmAruy0DCvExFMN5+LsEFjJYsVeIRUUUdcQ1qkdt7jH0EuTOHlZxQitTR8Bhcwx2xzfRUOinO4n907kgYU9v66+jrmcfbciUWxxMEILS44PhkuSTpBJi79ENxNVFDozcv3oCPyZbw0OsUA==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=intel.com; dmarc=pass action=none header.from=intel.com;
+ dkim=pass header.d=intel.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=intel.onmicrosoft.com; 
+ s=selector2-intel-onmicrosoft-com;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=65glzLarSfir5JzpRI+US+4zyPYTot968aAGKPjOyS4=;
+ b=cevVk9pgElfnwJQlTHuhz8rl6t3LfzN1JaffmWdKt4hjSWbVIhaS3xZTfZ2opwYUYhU/PWHla753m/5D+x+8qgdPP0mA5ykEXA2Vd46mU8P/xXaE9IG5R+RwPCzmx8jouNFnL+IISRu1kwYY+dQvPTaA7/jF0pofGP0hFoMPAbA=
+Received: from MWHPR11MB1886.namprd11.prod.outlook.com (2603:10b6:300:110::9)
+ by MWHPR11MB1823.namprd11.prod.outlook.com (2603:10b6:300:10e::18)
+ with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4129.25; Wed, 12 May
+ 2021 07:46:05 +0000
+Received: from MWHPR11MB1886.namprd11.prod.outlook.com
+ ([fe80::75b0:a8e9:60cb:7a29]) by MWHPR11MB1886.namprd11.prod.outlook.com
+ ([fe80::75b0:a8e9:60cb:7a29%9]) with mapi id 15.20.4108.032; Wed, 12 May 2021
+ 07:46:05 +0000
+From: "Tian, Kevin" <kevin.tian@intel.com>
+To: Jason Gunthorpe <jgg@nvidia.com>, Lu Baolu <baolu.lu@linux.intel.com>
+Subject: RE: [PATCH v8 7/9] vfio/mdev: Add iommu related member in mdev_device
+Thread-Topic: [PATCH v8 7/9] vfio/mdev: Add iommu related member in mdev_device
+Thread-Index: AQHXKx+RnarxvSHJQ0qqACGXvCESaareDy2AgACzFYCAANYSMA==
+Date: Wed, 12 May 2021 07:46:05 +0000
+Message-ID: <MWHPR11MB18866988310787FE573763878C529@MWHPR11MB1886.namprd11.prod.outlook.com>
+References: <20190325013036.18400-1-baolu.lu@linux.intel.com>
+ <20190325013036.18400-8-baolu.lu@linux.intel.com>
+ <20210406200030.GA425310@nvidia.com>
+ <2d6d3c70-0c6f-2430-3982-2705bfe9f5a6@linux.intel.com>
+ <20210511173703.GO1002214@nvidia.com>
+In-Reply-To: <20210511173703.GO1002214@nvidia.com>
+Accept-Language: en-US
+Content-Language: en-US
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+dlp-version: 11.5.1.3
+dlp-product: dlpe-windows
+dlp-reaction: no-action
+authentication-results: nvidia.com; dkim=none (message not signed)
+ header.d=none;nvidia.com; dmarc=none action=none header.from=intel.com;
+x-originating-ip: [192.198.147.218]
+x-ms-publictraffictype: Email
+x-ms-office365-filtering-correlation-id: bd6f46dd-067a-4e8c-eb20-08d91519ffb8
+x-ms-traffictypediagnostic: MWHPR11MB1823:
+x-ld-processed: 46c98d88-e344-4ed4-8496-4ed7712e255d,ExtAddr
+x-ms-exchange-transport-forked: True
+x-microsoft-antispam-prvs: <MWHPR11MB18238C7FAFE4369257BF24AA8C529@MWHPR11MB1823.namprd11.prod.outlook.com>
+x-ms-oob-tlc-oobclassifiers: OLM:7691;
+x-ms-exchange-senderadcheck: 1
+x-microsoft-antispam: BCL:0;
+x-microsoft-antispam-message-info: XGBYdKYyd+znCqf2fGCuS+Wkyn5IbQg+z/WoxsBdNp61ZqlNWczcCcf4qViM3b/1lxLAJVB4O1w3wJQP/4z9Qarjf1kAB/YHcqVym32/ZzXfqXUT6rLv68Ac79XRfol5hQYqiATq1ASPv2BpleLvSDpyWtQt/RoJGYPVivejtaj11Qqm9MambpV0EVVQ6Q1AVfMROSz3gtCjAudCbB4xhdDNWHnYsjFYJiG9trYeIsYMrQYz138YcmNlNconyvtnM2A+b5nmK05YXA6DMlAOvhrpwsXsdVTiZLxGUYB6HJkso5FxRyUajHFujL4Ol46tqKAQKEXdmzLaAitEFdcnHnkeCGbaOc/QT4qf0UqiClqL2sTm/6ps7r0AT6ISAztqCZ6QJHOqTSVUmewh5UpFhlEVgjbv1cHf6oDE/C+drWHkAsispDOziLNsjD3ynH/vMp5pph5oXo3sRlWHav4OemgO2D9HVzxtKgJQrIvIH5X5xDprCiWVxIoO+0zXIoEhiQ3BbUcHYdle9AZqNrf4/a4KQAQOo9oHiVydsk1iXhQVWCf6UECtvsLbW9yKqJSQ+Vq/G+ortgZHoBPTp6zqaaRq+bYl1d+WY0BNL4ZVY8k=
+x-forefront-antispam-report: CIP:255.255.255.255; CTRY:; LANG:en; SCL:1; SRV:;
+ IPV:NLI; SFV:NSPM; H:MWHPR11MB1886.namprd11.prod.outlook.com; PTR:; CAT:NONE;
+ SFS:(136003)(39860400002)(396003)(346002)(366004)(376002)(6506007)(316002)(83380400001)(110136005)(52536014)(54906003)(71200400001)(7416002)(66446008)(86362001)(33656002)(64756008)(26005)(4326008)(9686003)(478600001)(2906002)(186003)(5660300002)(8676002)(7696005)(8936002)(38100700002)(122000001)(76116006)(66476007)(66556008)(66946007)(55016002);
+ DIR:OUT; SFP:1102; 
+x-ms-exchange-antispam-messagedata: =?us-ascii?Q?WamgWwbom3w8HbybIv2KqoqyO6NUA9DLsM12AI+oZsdgxFU6g6q60giP5N5a?=
+ =?us-ascii?Q?vyv4CyzcS7nWzHgYvryWRvhcg4Kasu5O+V0KBP85uXJuZO4w6nrPF6HFg98P?=
+ =?us-ascii?Q?feCMUit4USvxzv7Dynq45n2xtqIQ3le7wtGxJHpYCcYli0VMlhPmKon0Rhq3?=
+ =?us-ascii?Q?+flgehHGQACk0KeQOhGZ3BgGNWSjHMpXgIuHRmJLVRTXOJSD9OLq8h88LnyA?=
+ =?us-ascii?Q?5I6Ik+pzoF8D08CVMZSrXJIjHjD3ah9P1U4CjkmT662h4pb8UEE1X4DFAsKF?=
+ =?us-ascii?Q?ly8dlGuvsL0lXF+YPFBk+YLlr2Z41/3Sj1qP6gb1fbp2yaJ90pJa2oagHOl3?=
+ =?us-ascii?Q?3k3dFdKxTtxjlZ/r5PnnwHJYt1cKi/t2xQxJ7AG6v3SZftHPdTRAQSt/QxE/?=
+ =?us-ascii?Q?S9hf43Gz79gzqJZTohohZStU2KmwkycqfZHRj3ZnpeDzbZ/XFHt9ekH/8KHy?=
+ =?us-ascii?Q?/d+33WBeh7BzWoMk/z3p/mU0XnbnEK+QJ2ujwEilfwYIFuyoTpdznLYBt2g5?=
+ =?us-ascii?Q?dkYjJMWd7LkBRU/4OeXci++RdNiLeqVBSXxGWKJehoAGcL5y7OMTJI4mwUGS?=
+ =?us-ascii?Q?S4ZuXcUuKYoGsGmQRQ0wN84N6AbzMY3hzItRLFS0lcEWhhnT9S+UtDHHX91Q?=
+ =?us-ascii?Q?13q7WSugVF9dvts3kg8kl/SW88qVpnacoTvfxOF0PM53CREyL7reIdlVoPai?=
+ =?us-ascii?Q?Da0NTh3WHb9ziSw6jBVNeMBs7XYEmbuFaQojZQJd1EsGIF08N3MdXOqJYzNO?=
+ =?us-ascii?Q?hVFQYstPmWueoE9zxMXAAOR5oC62OyGKMeHSLUWvS9501NJa8eLxXoLg51dt?=
+ =?us-ascii?Q?1lWmMW4iIYNv9O38dytgES0ww6svXjIDIDWZGOWmx3jMOYRReB4TwHXMPtkF?=
+ =?us-ascii?Q?bh4jN3AQrCLPKOls6O/y7c8q5tPLP8/ydF6YcteMAuDzfmXCxTr9nyEHZnFQ?=
+ =?us-ascii?Q?/DYqC2NOnr7dkIpj1fpJ7W5hiWldL/NOavmiWGloS+XAct5ra+ntxipJIHJm?=
+ =?us-ascii?Q?PkpDPZsz1AxYbGY+DuK06cuJ0QBwmFGHcpApN9X/uaHxqdjmVZvyGxib+j1C?=
+ =?us-ascii?Q?4Pv/1L9MkeR3Q5aJNAKxyHz6ezWBf5AjxL2ZFqY5f2RQlrM5UcdABeOS0V2H?=
+ =?us-ascii?Q?qGGZpftfjklQGN7PvT+0+tD+X7U2KMlxo7EoeoWtVxURVh1ef0ETnllgc5k7?=
+ =?us-ascii?Q?nyCFztdY1cLVO4hcGwe1svubvfQrNNVlM/y5G45lymk4iRwvO99c+V/NB7+R?=
+ =?us-ascii?Q?rCCycPwacuCMR8p6/pDrZPoqMDjdiSeGzByLljoz0pOR99DMoUTGue5xs5t1?=
+ =?us-ascii?Q?DFgT36p+ofJ/W0/StbkprO7P?=
 MIME-Version: 1.0
-Cc: kevin.tian@intel.com, ashok.raj@intel.com, sanjay.k.kumar@intel.com,
- linux-kernel@vger.kernel.org, iommu@lists.linux-foundation.org,
- jacob.jun.pan@intel.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-AuthSource: MWHPR11MB1886.namprd11.prod.outlook.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: bd6f46dd-067a-4e8c-eb20-08d91519ffb8
+X-MS-Exchange-CrossTenant-originalarrivaltime: 12 May 2021 07:46:05.3652 (UTC)
+X-MS-Exchange-CrossTenant-fromentityheader: Hosted
+X-MS-Exchange-CrossTenant-id: 46c98d88-e344-4ed4-8496-4ed7712e255d
+X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
+X-MS-Exchange-CrossTenant-userprincipalname: OnbAgVzO5TlpBcoGtIf6rQ7mwbEzC/UTR+cQJpetyuC9WuVUi/4z0GmE9Put+mrBt3fHtevkXhSACxzdqa8Q9Q==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: MWHPR11MB1823
+X-OriginatorOrg: intel.com
+Cc: "Sun, Yi Y" <yi.y.sun@intel.com>, "Raj,
+ Ashok" <ashok.raj@intel.com>, "tiwei.bie@intel.com" <tiwei.bie@intel.com>,
+ Jean-Philippe Brucker <jean-philippe.brucker@arm.com>, "Kumar,
+ Sanjay K" <sanjay.k.kumar@intel.com>, Kirti Wankhede <kwankhede@nvidia.com>,
+ "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+ Alex Williamson <alex.williamson@redhat.com>,
+ "iommu@lists.linux-foundation.org" <iommu@lists.linux-foundation.org>, "Pan,
+ Jacob jun" <jacob.jun.pan@intel.com>,
+ "kvm@vger.kernel.org" <kvm@vger.kernel.org>, David
+ Woodhouse <dwmw2@infradead.org>, Christoph Hellwig <hch@lst.de>
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -86,63 +195,119 @@ Content-Transfer-Encoding: 7bit
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-Current VT-d implementation supports nested translation only if all
-underlying IOMMUs support the nested capability. This is unnecessary
-as the upper layer is allowed to create different containers and set
-them with different type of iommu backend. The IOMMU driver needs to
-guarantee that devices attached to a nested mode iommu_domain should
-support nested capabilility.
+> From: Jason Gunthorpe <jgg@nvidia.com>
+> Sent: Wednesday, May 12, 2021 1:37 AM
+> 
+> On Tue, May 11, 2021 at 02:56:05PM +0800, Lu Baolu wrote:
+> 
+> > >     After my next series the mdev drivers will have direct access to
+> > >     the vfio_device. So an alternative to using the struct device, or
+> > >     adding 'if mdev' is to add an API to the vfio_device world to
+> > >     inject what iommu configuration is needed from that direction
+> > >     instead of trying to discover it from a struct device.
+> >
+> > Just want to make sure that I understand you correctly.
+> >
+> > We should use the existing IOMMU in-kernel APIs to connect mdev with the
+> > iommu subsystem, so that the upper lays don't need to use something
+> > like (if dev_is_mdev) to handle mdev differently. Do I get you
+> > correctly?
+> 
+> After going through all the /dev/ioasid stuff I'm pretty convinced
+> that none of the PASID use cases for mdev should need any iommu
+> connection from the mdev_device - this is an artifact of trying to
+> cram the vfio container and group model into the mdev world and is not
+> good design.
+> 
+> The PASID interfaces for /dev/ioasid should use the 'struct
+> pci_device' for everything and never pass in a mdev_device to the
+> iommu layer.
 
-Signed-off-by: Lu Baolu <baolu.lu@linux.intel.com>
----
- drivers/iommu/intel/iommu.c | 21 +++++++++++++++++++--
- 1 file changed, 19 insertions(+), 2 deletions(-)
+'struct pci_device' -> 'struct device' since /dev/ioasid also needs to support
+non-pci devices?
 
-diff --git a/drivers/iommu/intel/iommu.c b/drivers/iommu/intel/iommu.c
-index f1742da42478..1cd4840e6f9f 100644
---- a/drivers/iommu/intel/iommu.c
-+++ b/drivers/iommu/intel/iommu.c
-@@ -4755,6 +4755,13 @@ static int prepare_domain_attach_device(struct iommu_domain *domain,
- 	if (!iommu)
- 		return -ENODEV;
- 
-+	if ((dmar_domain->flags & DOMAIN_FLAG_NESTING_MODE) &&
-+	    !ecap_nest(iommu->ecap)) {
-+		dev_err(dev, "%s: iommu not support nested translation\n",
-+			iommu->name);
-+		return -EINVAL;
-+	}
-+
- 	/* check if this iommu agaw is sufficient for max mapped address */
- 	addr_width = agaw_to_width(iommu->agaw);
- 	if (addr_width > cap_mgaw(iommu->cap))
-@@ -5451,11 +5458,21 @@ static int
- intel_iommu_enable_nesting(struct iommu_domain *domain)
- {
- 	struct dmar_domain *dmar_domain = to_dmar_domain(domain);
-+	struct dmar_drhd_unit *drhd;
-+	struct intel_iommu *iommu;
-+	bool has_nesting = false;
- 	unsigned long flags;
--	int ret = -ENODEV;
-+	int ret = -EINVAL;
-+
-+	for_each_active_iommu(iommu, drhd)
-+		if (ecap_nest(iommu->ecap))
-+			has_nesting = true;
-+
-+	if (!has_nesting)
-+		return -ENODEV;
- 
- 	spin_lock_irqsave(&device_domain_lock, flags);
--	if (nested_mode_support() && list_empty(&dmar_domain->devices)) {
-+	if (list_empty(&dmar_domain->devices)) {
- 		dmar_domain->flags |= DOMAIN_FLAG_NESTING_MODE;
- 		dmar_domain->flags &= ~DOMAIN_FLAG_USE_FIRST_LEVEL;
- 		ret = 0;
--- 
-2.25.1
+> 
+> /dev/ioasid should be designed to support this operation and is why I
+> strongly want to see the actual vfio_device implementation handle the
+> connection to the iommu layer and not keep trying to hack through
+> building what is actually a vfio_device specific connection through
+> the type1 container code.
+> 
 
+I assume the so-called connection here implies using iommu_attach_device 
+to attach a device to an iommu domain. Did you suggest this connection 
+must be done by the mdev driver which implements vfio_device and then
+passing iommu domain to /dev/ioasid when attaching the device to an
+IOASID? sort of like:
+	ioctl(device_fd, VFIO_ATTACH_IOASID, ioasid, domain);
+
+If yes, this conflicts with one design in /dev/ioasid proposal that we're
+working on. In earlier discussion we agreed that each ioasid is associated
+to a singleton iommu domain and all devices that are attached to this 
+ioasid with compatible iommu capabilities just share this domain. It
+implies that iommu domain is allocated at ATTACH_IOASID phase (e.g.
+when the 1st device is attached to an ioasid). Pre-allocating domain by
+vfio_device driver means that every device (SR-IOV or mdev) has its own
+domain thus cannot share ioasid then.
+
+Did I misunderstand your intention?
+
+Baolu and I discussed below draft proposal to avoid passing mdev_device
+to the iommu layer. Please check whether it makes sense:
+
+// for every device attached to an ioasid
+// mdev is represented by pasid (allocated by mdev driver)
+// pf/vf has INVALID_IOASID in pasid
+struct dev_info {
+	struct list_head		next;
+	struct device		*device;
+	u32			pasid;
+}
+
+// for every allocated ioasid
+struct ioasid_info {
+	// the handle to convey iommu operations
+	struct iommu_domain	*domain;
+	// metadata for map/unmap
+	struct rb_node		dma_list;
+	// the list of attached device
+	struct dev_info		*dev_list;
+	...
+}
+
+// called by VFIO/VDPA
+int ioasid_attach_device(struct *device, u32 ioasid, u32 pasid)
+{
+	// allocate a new dev_info, filled with device/pasid
+	// allocate iommu domain if it's the 1st attached device
+	// check iommu compatibility if an domain already exists
+
+	// attach the device to the iommu domain
+	if (pasid == INVALID_IOASID)
+		iommu_attach_device(domain, device);
+	else
+		iommu_aux_attach_device(domain, device, pasid);
+
+	// add dev_info to the dev_list of ioasid_info
+}
+
+// when attaching PF/VF to an ioasid
+ioctl(device_fd, VFIO_ATTACH_IOASID, ioasid);
+-> get vfio_device of device_fd
+-> ioasid_attach_device(vfio_device->dev, ioasid, INVALID_IOASID);
+
+// when attaching a mdev to an ioasid
+ioctl(device_fd, VFIO_ATTACH_IOASID, ioasid);
+-> get vfio_device of device_fd
+-> find mdev_parent of vfio_device
+-> find pasid allocated to this mdev
+-> ioasid_attach_device(parent->dev, ioasid, pasid);
+
+starting from this point the vfio device has been connected to the iommu layer.
+/dev/ioasid can accept pgtable cmd on this ioasid and associated domain.
+
+Thanks
+Kevin
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
