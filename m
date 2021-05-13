@@ -6,72 +6,71 @@ X-Spam-Status: No, score=-3.6 required=3.0 tests=BAYES_00,DKIM_INVALID,
 	DKIM_SIGNED,HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,SPF_HELO_NONE,
 	SPF_PASS,URIBL_BLOCKED autolearn=no autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9B339C433ED
+	by smtp.lore.kernel.org (Postfix) with ESMTP id BD173C43461
 	for <iommu@archiver.kernel.org>; Thu, 13 May 2021 06:07:22 +0000 (UTC)
-Received: from smtp4.osuosl.org (smtp4.osuosl.org [140.211.166.137])
+Received: from smtp3.osuosl.org (smtp3.osuosl.org [140.211.166.136])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id DF84161434
-	for <iommu@archiver.kernel.org>; Thu, 13 May 2021 06:07:21 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org DF84161434
+	by mail.kernel.org (Postfix) with ESMTPS id 5D9DF6142E
+	for <iommu@archiver.kernel.org>; Thu, 13 May 2021 06:07:22 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 5D9DF6142E
 Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=gibson.dropbear.id.au
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by smtp4.osuosl.org (Postfix) with ESMTP id 8610C40675;
+	by smtp3.osuosl.org (Postfix) with ESMTP id DC05F60819;
 	Thu, 13 May 2021 06:07:21 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from smtp4.osuosl.org ([127.0.0.1])
-	by localhost (smtp4.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id it43D0_0fomN; Thu, 13 May 2021 06:07:20 +0000 (UTC)
-Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by smtp4.osuosl.org (Postfix) with ESMTP id 1DEC840EEC;
+Received: from smtp3.osuosl.org ([127.0.0.1])
+	by localhost (smtp3.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+	with ESMTP id OsShWu6Sbl_9; Thu, 13 May 2021 06:07:21 +0000 (UTC)
+Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [IPv6:2605:bc80:3010:104::8cd3:938])
+	by smtp3.osuosl.org (Postfix) with ESMTP id 9E5276070D;
 	Thu, 13 May 2021 06:07:20 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id C1E55C0022;
-	Thu, 13 May 2021 06:07:19 +0000 (UTC)
-Received: from smtp1.osuosl.org (smtp1.osuosl.org [IPv6:2605:bc80:3010::138])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 719E3C0001
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 0ED12C0028;
+	Thu, 13 May 2021 06:07:20 +0000 (UTC)
+Received: from smtp4.osuosl.org (smtp4.osuosl.org [140.211.166.137])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 8562CC000E
  for <iommu@lists.linux-foundation.org>; Thu, 13 May 2021 06:07:18 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by smtp1.osuosl.org (Postfix) with ESMTP id 5F8FD844E6
+ by smtp4.osuosl.org (Postfix) with ESMTP id 6DE8A40EEC
  for <iommu@lists.linux-foundation.org>; Thu, 13 May 2021 06:07:18 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Authentication-Results: smtp1.osuosl.org (amavisd-new);
+Authentication-Results: smtp4.osuosl.org (amavisd-new);
  dkim=pass (1024-bit key) header.d=gibson.dropbear.id.au
-Received: from smtp1.osuosl.org ([127.0.0.1])
- by localhost (smtp1.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id VzmqDk87zJYc for <iommu@lists.linux-foundation.org>;
+Received: from smtp4.osuosl.org ([127.0.0.1])
+ by localhost (smtp4.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+ with ESMTP id oLOOn1a_V6ee for <iommu@lists.linux-foundation.org>;
  Thu, 13 May 2021 06:07:17 +0000 (UTC)
 X-Greylist: domain auto-whitelisted by SQLgrey-1.8.0
 Received: from ozlabs.org (bilbo.ozlabs.org [IPv6:2401:3900:2:1::2])
- by smtp1.osuosl.org (Postfix) with ESMTPS id 504EF844E5
- for <iommu@lists.linux-foundation.org>; Thu, 13 May 2021 06:07:17 +0000 (UTC)
+ by smtp4.osuosl.org (Postfix) with ESMTPS id 3586340675
+ for <iommu@lists.linux-foundation.org>; Thu, 13 May 2021 06:07:16 +0000 (UTC)
 Received: by ozlabs.org (Postfix, from userid 1007)
- id 4Fgh5D5rYVz9sWc; Thu, 13 May 2021 16:07:12 +1000 (AEST)
+ id 4Fgh5D6YwQz9sWl; Thu, 13 May 2021 16:07:12 +1000 (AEST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
  d=gibson.dropbear.id.au; s=201602; t=1620886032;
- bh=Mzje6I+4XJ3y6Iby/DAYOwVFavVRAAtc7j9XmkVCAVU=;
+ bh=EDbwQxFNCJJrrEgHzT5gGi+1oWXpdmyJr1eJ+NUQ4bM=;
  h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
- b=fP8u4nZiemlt/gTVvVqI6DnRAk7mDCvbaRIlDJrKeD5SvLwwmy+GW6TfJFQ2/gSHB
- EqigWrZpgStjiMYr1jY37zqkpZhEn9oghhaM+wAfRTSiOW9d+b6/s2r17OOjmh2koT
- YjPtcV1K73vL8uyeJRjiE+vbeFX1lv+Y/RkyWHWk=
-Date: Thu, 13 May 2021 15:48:19 +1000
+ b=kWqsHMbOiAyxwLod+Rqt4KhSwB2oo0bV5TchI5WxvF3IL2lqztrJrQv615kgKUDnS
+ rvOjRZCfVWenSYZrOWPrRga+vGFG2OWEIfQgUnlH6IFYpycIGoxJyhVRhtXU4RZ9Gc
+ 02pKAkrH9LTvDiy9LdpyASoaGfwW0N2RNDDTSEfE=
+Date: Thu, 13 May 2021 16:07:07 +1000
 From: David Gibson <david@gibson.dropbear.id.au>
 To: Jason Gunthorpe <jgg@nvidia.com>
 Subject: Re: [PATCH V4 05/18] iommu/ioasid: Redefine IOASID set and
  allocation APIs
-Message-ID: <YJy9o8uEZs42/qDM@yekko>
-References: <20210422133747.23322269@redhat.com>
- <20210422200024.GC1370958@nvidia.com>
- <20210422163808.2d173225@redhat.com>
- <20210422233950.GD1370958@nvidia.com>
- <YIecXkaEGNgICePO@yekko.fritz.box>
- <20210427171212.GD1370958@nvidia.com>
- <YIizNdbA0+LYwQbI@yekko.fritz.box>
- <20210428145622.GU1370958@nvidia.com> <YIoiJRY3FM7xH2bH@yekko>
- <20210503161518.GM1370958@nvidia.com>
+Message-ID: <YJzCC18cQDdKMR6p@yekko>
+References: <YIeYJZOdgMN/orl0@yekko.fritz.box>
+ <20210427172432.GE1370958@nvidia.com>
+ <YIi5G4Wg/hpFqNdX@yekko.fritz.box>
+ <20210429002149.GZ1370958@nvidia.com> <YIol9p3z8BTWFRh8@yekko>
+ <20210503160530.GL1370958@nvidia.com> <YJDFj+sAv41JRIo4@yekko>
+ <20210504181537.GC1370958@nvidia.com>
+ <7e5c2276-ca1c-a8af-c15f-72a7c83c8bfa@ozlabs.ru>
+ <20210505163902.GG1370958@nvidia.com>
 MIME-Version: 1.0
-In-Reply-To: <20210503161518.GM1370958@nvidia.com>
+In-Reply-To: <20210505163902.GG1370958@nvidia.com>
 Cc: Jean-Philippe Brucker <jean-philippe@linaro.org>, "Tian,
  Kevin" <kevin.tian@intel.com>, "Jiang, Dave" <dave.jiang@intel.com>, "Raj,
  Ashok" <ashok.raj@intel.com>, Jonathan Corbet <corbet@lwn.net>,
@@ -94,109 +93,42 @@ List-Post: <mailto:iommu@lists.linux-foundation.org>
 List-Help: <mailto:iommu-request@lists.linux-foundation.org?subject=help>
 List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
  <mailto:iommu-request@lists.linux-foundation.org?subject=subscribe>
-Content-Type: multipart/mixed; boundary="===============3396105149134385232=="
+Content-Type: multipart/mixed; boundary="===============1876923243086576895=="
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
 
---===============3396105149134385232==
+--===============1876923243086576895==
 Content-Type: multipart/signed; micalg=pgp-sha256;
-	protocol="application/pgp-signature"; boundary="ArI7kS42Lc+0E4RS"
+	protocol="application/pgp-signature"; boundary="/Mf++rjztzZShRAS"
 Content-Disposition: inline
 
 
---ArI7kS42Lc+0E4RS
+--/Mf++rjztzZShRAS
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
 Content-Transfer-Encoding: quoted-printable
 
-On Mon, May 03, 2021 at 01:15:18PM -0300, Jason Gunthorpe wrote:
-> On Thu, Apr 29, 2021 at 01:04:05PM +1000, David Gibson wrote:
-> > Again, I don't know enough about VDPA to make sense of that.  Are we
-> > essentially talking non-PCI virtual devices here?  In which case you
-> > could define the VDPA "bus" to always have one-device groups.
+On Wed, May 05, 2021 at 01:39:02PM -0300, Jason Gunthorpe wrote:
+> On Wed, May 05, 2021 at 02:28:53PM +1000, Alexey Kardashevskiy wrote:
 >=20
-> It is much worse than that.
+> > This is a good feature in general when let's say there is a linux suppo=
+rted
+> > device which has a proprietary device firmware update tool which only e=
+xists
+> > as an x86 binary and your hardware is not x86 - running qemu + vfio in =
+full
+> > emulation would provide a way to run the tool to update a physical devi=
+ce.
 >=20
-> What these non-PCI devices need is for the kernel driver to be part of
-> the IOMMU group of the underlying PCI device but tell VFIO land that
-> "groups don't matter"
+> That specific use case doesn't really need a vIOMMU though, does it?
 
-I don't really see a semantic distinction between "always one-device
-groups" and "groups don't matter".  Really the only way you can afford
-to not care about groups is if they're singletons.
-
-> Today mdev tries to fake this by using singleton iommu groups, but it
-> is really horrible and direcly hacks up the VFIO IOMMU code to
-> understand these special cases. Intel was proposing more special
-> hacking in the VFIO IOMMU code to extend this to PASID.
-
-At this stage I don't really understand why that would end up so
-horrible.
-
-> When we get to a /dev/ioasid this is all nonsense. The kernel device
-> driver is going to have to tell drivers/iommu exactly what kind of
-> ioasid it can accept, be it a PASID inside a kernel owned group, a SW
-> emulated 'mdev' ioasid, or whatever.
->=20
-> In these cases the "group" idea has become a fiction that just creates
-> a pain.
-
-I don't see how the group is a fiction in this instance.  You can
-still have devices that can't be isolated, therefore you can have
-non-singleton groups.
-
-> "Just reorganize VDPA to do something insane with the driver
-> core so we can create a dummy group to satisfy an unnecessary uAPI
-> restriction" is not a very compelling argument.
->=20
-> So if the nonsensical groups goes away for PASID/mdev, where does it
-> leave the uAPI in other cases?
->=20
-> > I don't think simplified-but-wrong is a good goal.  The thing about
-> > groups is that if they're there, you can't just "not care" about them,
-> > they affect you whether you like it or not.
->=20
-> You really can. If one thing claims the group then all the other group
-> devices become locked out.
-
-Aside: I'm primarily using "group" to mean the underlying hardware
-unit, not the vfio construct on top of it, I'm not sure that's been
-clear throughout.
-
-So.. your model assumes that every device has a safe quiescent state
-where it won't do any harm until poked, whether its group is
-currently kernel owned, or owned by a userspace that doesn't know
-anything about it.
-
-At minimum this does mean that in order to use one device in the group
-you must have permission to use *all* the devices in the group -
-otherwise you may be able to operate a device you don't have
-permission to by DMAing to its registers from a device you do have
-permission to.
-
-Whatever scripts are managing ownership of devices also need to know
-about groups, because they need to put all the devices into that
-quiescent state before the group can change ownership.
-
-> The main point to understand is that groups are NOT an application
-> restriction! It is a whole system restriction that the operator needs
-> to understand and deal with. This is why things like dpdk don't care
-> about the group at all - there is nothing they can do with the
-> information.
->=20
-> If the operator says to run dpdk on a specific device then the
-> operator is the one that has to deal with all the other devices in the
-> group getting locked out.
-
-Ok, I think I see your point there.
-
-> At best the application can make it more obvious that the operator is
-> doing something dangerous, but the current kernel API doesn't seem to
-> really support that either.
->=20
-> Jason
->=20
+Possibly not, but the mechanics needed to do vIOMMU on different host
+IOMMU aren't really different from what you need for a no-vIOMMU
+guest.  With a vIOMMU you need to map guest IOVA space into the host
+IOVA space.  With no no-vIOMMU you need to map guest physical
+addresses into the host IOVA space.  In either case the GPA/gIOVA to
+userspace and userspace to HPA mappings are basically arbitrary.
 
 --=20
 David Gibson			| I'll have my music baroque, and my code
@@ -204,29 +136,29 @@ david AT gibson.dropbear.id.au	| minimalist, thank you.  NOT _the_ _other_
 				| _way_ _around_!
 http://www.ozlabs.org/~dgibson
 
---ArI7kS42Lc+0E4RS
+--/Mf++rjztzZShRAS
 Content-Type: application/pgp-signature; name="signature.asc"
 
 -----BEGIN PGP SIGNATURE-----
 
-iQIzBAEBCAAdFiEEdfRlhq5hpmzETofcbDjKyiDZs5IFAmCcvaAACgkQbDjKyiDZ
-s5L5IRAAg97CW+pGNxknG14IgrfUjPSBK7pDccMXtD7eVUa3BEynUYKrHHTYj7q/
-EzRpFRjsIwkC8NT7lBlsCrZIL/sS1LD+zveqDYNaBIs46681UKlg5enXxZoEcTGi
-WRUmWMgXhOnhrVQMB/G1TZLanViDvzHpBau0ALyX0buvg1bpkvToX7AiKvqNzv07
-IKaeG23DeXI9o2M0Jh6v5UFDLA90LktEqtxsvfbqQPYY+JJWtdV3WBcYOKsHe3j4
-ZFfIqOlBOsGA27BWZQucmyxtFjQfNbCB9QQO28MAcOs+A1fIwtRi4ZVNuBEQos38
-3cN5riTTE4+p63WU4kEWiP3nTX3irEKQD3W5aMy1Yk8STxgBwuL5FerquBssnV4i
-h362Q9JPTadeDOX1sVmDFM2Ms/WLh1fG2zGvRtOwsTwCYhWoDAziz8BYLWoHFCYY
-y3DctIOZxQaK5NZjiABNbxW9y14zFWzq9aqAfyb06Cz/rDgkSBMAclfD4/DOF7ic
-s0gPcVm/xFk7d4KvOD8u3tf9Q4Uk2s3jcJmXmblPF88nAjSknZj3o4/H7o1feD9x
-ym2WSkkHYfC2Yq+FFCNyeXNDUQVH7PUA5DfcAaV8jygtdNo/edcZNI2pKwuRxVyU
-KL0RtZY77wWQF88q+iSxIjeVgRbBxSslOVSXH40O0aJsO8+cNAQ=
-=S7A7
+iQIzBAEBCAAdFiEEdfRlhq5hpmzETofcbDjKyiDZs5IFAmCcwgsACgkQbDjKyiDZ
+s5JqLg/+Px9hBLz/IZ8N6Bl1BLwug0BbIEk1xxrBhtyubIdEbf6AuAkqa0HnxcSm
+EgS1KJ0eOe3yLUKaLskepCJDojbuqFYnLf1VTv3Uu0zp5AP8ggKQgfokxUVJdhpR
+aWMVjwOFAoUatYTP2umFN2ZfUsSxe/FsTkdTiAVApqn4AdTSlbGBvK+C4D7WPzZy
+5rjVhgLfaQWJDGrTnhqCr4PJoz0z1FpOhzYXtpHR+u+d9BgDe2yj1gEFzICDk+UV
+67QOqTNxWi1gSQ6uVa+xmB+xY0RZ7+x+fwObNBHrGWuFKJzwbf6aCQIprqEY5mro
+9KAR0kP3LkywUN+rZjWQun9pXQdu/JWjZPtmdbm4rw+kIJEDdMk9TrOohOpjxUot
+7vSoLVklFyMbnL84I3i7CELRxpkvtXaBd5VdGkEObg5nCcY8Fci8yLmhjOLXviGU
+iNmRCaiZikT+JKvnwiG7qIILT3DCA92Y+AiQYayPkmujhlmzxpFkyAM1Igh7EIfe
+a4O/U8qm61xxoTZhe+cbM11cIfiux8FwcxUrq54D1DCZstQ60IP/FaA4CQGSiBwm
+55RNfJf+KFN9HG9hxH8BZYEGRtCYMuDfTjFdM0DaYHI8Rjv3X9MO4vuSI1tkoiQd
+kW7n1QyP2QKMzSHCJlE56aSa9T6HTtUetOuO3vAxirN9Z5/042I=
+=S/vm
 -----END PGP SIGNATURE-----
 
---ArI7kS42Lc+0E4RS--
+--/Mf++rjztzZShRAS--
 
---===============3396105149134385232==
+--===============1876923243086576895==
 Content-Type: text/plain; charset="us-ascii"
 MIME-Version: 1.0
 Content-Transfer-Encoding: 7bit
@@ -236,4 +168,4 @@ _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
 https://lists.linuxfoundation.org/mailman/listinfo/iommu
---===============3396105149134385232==--
+--===============1876923243086576895==--
