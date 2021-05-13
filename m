@@ -3,92 +3,85 @@ X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
 X-Spam-Status: No, score=-5.3 required=3.0 tests=BAYES_00,
-	HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,NICE_REPLY_A,SPF_HELO_NONE,
-	SPF_PASS,URIBL_BLOCKED,USER_AGENT_SANE_1 autolearn=no autolearn_force=no
-	version=3.4.0
+	HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,
+	URIBL_BLOCKED,USER_AGENT_SANE_2 autolearn=no autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 336EFC43460
-	for <iommu@archiver.kernel.org>; Thu, 13 May 2021 12:03:51 +0000 (UTC)
-Received: from smtp4.osuosl.org (smtp4.osuosl.org [140.211.166.137])
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 29EF6C433B4
+	for <iommu@archiver.kernel.org>; Thu, 13 May 2021 12:57:54 +0000 (UTC)
+Received: from smtp2.osuosl.org (smtp2.osuosl.org [140.211.166.133])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id BACE06142C
-	for <iommu@archiver.kernel.org>; Thu, 13 May 2021 12:03:50 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org BACE06142C
+	by mail.kernel.org (Postfix) with ESMTPS id 8897061421
+	for <iommu@archiver.kernel.org>; Thu, 13 May 2021 12:57:53 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 8897061421
 Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=linux.intel.com
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by smtp4.osuosl.org (Postfix) with ESMTP id 6AC1F40297;
-	Thu, 13 May 2021 12:03:50 +0000 (UTC)
+	by smtp2.osuosl.org (Postfix) with ESMTP id 26ED840267;
+	Thu, 13 May 2021 12:57:53 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from smtp4.osuosl.org ([127.0.0.1])
-	by localhost (smtp4.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id tQiPAT9qAzDr; Thu, 13 May 2021 12:03:49 +0000 (UTC)
-Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [IPv6:2605:bc80:3010:104::8cd3:938])
-	by smtp4.osuosl.org (Postfix) with ESMTP id 21609402EF;
-	Thu, 13 May 2021 12:03:49 +0000 (UTC)
+Received: from smtp2.osuosl.org ([127.0.0.1])
+	by localhost (smtp2.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+	with ESMTP id NQ3L5pFa1bAW; Thu, 13 May 2021 12:57:52 +0000 (UTC)
+Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
+	by smtp2.osuosl.org (Postfix) with ESMTP id 14487400D0;
+	Thu, 13 May 2021 12:57:51 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id C870FC000E;
-	Thu, 13 May 2021 12:03:48 +0000 (UTC)
-Received: from smtp3.osuosl.org (smtp3.osuosl.org [IPv6:2605:bc80:3010::136])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 22B0FC0001
- for <iommu@lists.linux-foundation.org>; Thu, 13 May 2021 12:03:48 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id D88CAC000D;
+	Thu, 13 May 2021 12:57:51 +0000 (UTC)
+Received: from smtp3.osuosl.org (smtp3.osuosl.org [140.211.166.136])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 69C9CC0001
+ for <iommu@lists.linux-foundation.org>; Thu, 13 May 2021 12:57:50 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by smtp3.osuosl.org (Postfix) with ESMTP id 9FA19608EE
- for <iommu@lists.linux-foundation.org>; Thu, 13 May 2021 12:03:46 +0000 (UTC)
+ by smtp3.osuosl.org (Postfix) with ESMTP id 5783F608A2
+ for <iommu@lists.linux-foundation.org>; Thu, 13 May 2021 12:57:50 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
 Received: from smtp3.osuosl.org ([127.0.0.1])
  by localhost (smtp3.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id Hu4xARJRWpRu for <iommu@lists.linux-foundation.org>;
- Thu, 13 May 2021 12:03:42 +0000 (UTC)
+ with ESMTP id t0f1kXwXiqhY for <iommu@lists.linux-foundation.org>;
+ Thu, 13 May 2021 12:57:49 +0000 (UTC)
 X-Greylist: domain auto-whitelisted by SQLgrey-1.8.0
-Received: from mga14.intel.com (mga14.intel.com [192.55.52.115])
- by smtp3.osuosl.org (Postfix) with ESMTPS id 2BB40608B2
- for <iommu@lists.linux-foundation.org>; Thu, 13 May 2021 12:03:40 +0000 (UTC)
-IronPort-SDR: 9vxoA4L3lQDoal3SES4u81vHa7DNpSptap+xSgdOiY9m1vpN32EoIHi2V0EeBtPAD4bP9S+J4t
- eXyDnH8O3kOA==
-X-IronPort-AV: E=McAfee;i="6200,9189,9982"; a="199613287"
-X-IronPort-AV: E=Sophos;i="5.82,296,1613462400"; d="scan'208";a="199613287"
-Received: from fmsmga006.fm.intel.com ([10.253.24.20])
- by fmsmga103.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384;
- 13 May 2021 05:03:39 -0700
-IronPort-SDR: kfUiTvJZ1XRAiMzDD85xQ4AZvc2CoPqWLiApWLsfmMyUNBoR8072rQ7CR5yJeVvPvATmhq6UKP
- U7hk43vai35A==
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.82,296,1613462400"; d="scan'208";a="623600415"
-Received: from allen-box.sh.intel.com (HELO [10.239.159.128])
- ([10.239.159.128])
- by fmsmga006.fm.intel.com with ESMTP; 13 May 2021 05:03:35 -0700
-Subject: Re: [RFC PATCH v4 01/13] iommu: Introduce dirty log tracking framework
-To: Keqian Zhu <zhukeqian1@huawei.com>, linux-kernel@vger.kernel.org,
- linux-arm-kernel@lists.infradead.org, iommu@lists.linux-foundation.org,
- Robin Murphy <robin.murphy@arm.com>, Will Deacon <will@kernel.org>,
- Joerg Roedel <joro@8bytes.org>,
- Jean-Philippe Brucker <jean-philippe@linaro.org>,
- Yi Sun <yi.y.sun@linux.intel.com>, Tian Kevin <kevin.tian@intel.com>
-References: <20210507102211.8836-1-zhukeqian1@huawei.com>
- <20210507102211.8836-2-zhukeqian1@huawei.com>
- <efc2d868-28ba-8ed9-1d6b-610b67d671b5@linux.intel.com>
- <18ac787a-179e-71f7-728b-c43feda80a16@huawei.com>
- <55fda826-9ab6-a3a0-b17e-a4d4879f00bc@linux.intel.com>
- <a8df289a-47c2-c193-cd6f-8415f68b900f@huawei.com>
- <f47e90c6-f3c4-b28f-a810-e03afe79e62d@linux.intel.com>
- <60182a35-e151-7150-3708-4e58dd8e78da@huawei.com>
- <36cc7267-6aa3-db54-b08c-c2dfc0bbacb6@linux.intel.com>
- <e38f1837-b814-3717-2faf-4df8349cb57c@huawei.com>
- <7fb678c7-509b-dbb5-d533-32c5ce2a0476@linux.intel.com>
- <bbc1960c-24f3-680a-b6ff-c81f70fa9c04@huawei.com>
-From: Lu Baolu <baolu.lu@linux.intel.com>
-Message-ID: <ce19e7a0-e7b7-aa09-b074-ad555d42bab2@linux.intel.com>
-Date: Thu, 13 May 2021 20:02:47 +0800
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
- Thunderbird/78.7.1
+Received: from mga06.intel.com (mga06.intel.com [134.134.136.31])
+ by smtp3.osuosl.org (Postfix) with ESMTPS id 3F022608A0
+ for <iommu@lists.linux-foundation.org>; Thu, 13 May 2021 12:57:49 +0000 (UTC)
+IronPort-SDR: v1cP6dhd9Ped8TJOF7tNOOlWeSyNLlJ6gSaWZEiNM59kZl/+Tj7+HUBAA8Aa/GaUtzKguBFHUI
+ swT/fhdTERSA==
+X-IronPort-AV: E=McAfee;i="6200,9189,9982"; a="261182170"
+X-IronPort-AV: E=Sophos;i="5.82,296,1613462400"; d="scan'208";a="261182170"
+Received: from orsmga003.jf.intel.com ([10.7.209.27])
+ by orsmga104.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384;
+ 13 May 2021 05:57:46 -0700
+IronPort-SDR: +Ka8K3jSvMdk9JcfAqQ9xlSFFWZUb8o2IAO9JmMQkfdxsdh1yWj+ZikhEso8Y9ZUOqF/o6pWfw
+ a9IAufpbsw6Q==
+X-IronPort-AV: E=Sophos;i="5.82,296,1613462400"; d="scan'208";a="392272892"
+Received: from jacob-builder.jf.intel.com (HELO jacob-builder) ([10.7.199.155])
+ by orsmga003-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384;
+ 13 May 2021 05:57:46 -0700
+Date: Thu, 13 May 2021 06:00:12 -0700
+From: Jacob Pan <jacob.jun.pan@linux.intel.com>
+To: Christoph Hellwig <hch@infradead.org>
+Subject: Re: [PATCH v4 1/2] iommu/sva: Tighten SVA bind API with explicit flags
+Message-ID: <20210513060012.0fcc7653@jacob-builder>
+In-Reply-To: <YJt3tGlzFK3b4E82@infradead.org>
+References: <1620653108-44901-1-git-send-email-jacob.jun.pan@linux.intel.com>
+ <1620653108-44901-2-git-send-email-jacob.jun.pan@linux.intel.com>
+ <20210510233749.GG1002214@nvidia.com>
+ <20210510203145.086835cc@jacob-builder>
+ <20210511114848.GK1002214@nvidia.com>
+ <20210511091452.721e9a03@jacob-builder>
+ <20210511163521.GN1002214@nvidia.com>
+ <20210511110550.477a434f@jacob-builder>
+ <20210511194726.GP1002214@nvidia.com>
+ <YJt3tGlzFK3b4E82@infradead.org>
+Organization: OTC
+X-Mailer: Claws Mail 3.17.5 (GTK+ 2.24.32; x86_64-pc-linux-gnu)
 MIME-Version: 1.0
-In-Reply-To: <bbc1960c-24f3-680a-b6ff-c81f70fa9c04@huawei.com>
-Content-Language: en-US
-Cc: jiangkunkun@huawei.com, Cornelia Huck <cohuck@redhat.com>,
- Kirti Wankhede <kwankhede@nvidia.com>, lushenming@huawei.com,
- Alex Williamson <alex.williamson@redhat.com>, wanghaibin.wang@huawei.com
+Cc: vkoul@kernel.org, "Tian, Kevin" <kevin.tian@intel.com>,
+ Dave Jiang <dave.jiang@intel.com>, Raj Ashok <ashok.raj@intel.com>, "Luck,
+ Tony" <tony.luck@intel.com>, David Woodhouse <dwmw2@infradead.org>,
+ LKML <linux-kernel@vger.kernel.org>, iommu@lists.linux-foundation.org,
+ Jason Gunthorpe <jgg@nvidia.com>, zhangfei.gao@linaro.org,
+ Jean-Philippe Brucker <jean-philippe@linaro.com>
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -101,70 +94,53 @@ List-Post: <mailto:iommu@lists.linux-foundation.org>
 List-Help: <mailto:iommu-request@lists.linux-foundation.org?subject=help>
 List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
  <mailto:iommu-request@lists.linux-foundation.org?subject=subscribe>
+Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
-Content-Type: text/plain; charset="us-ascii"; Format="flowed"
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-On 5/13/21 6:58 PM, Keqian Zhu wrote:
+Hi Christoph,
+
+On Wed, 12 May 2021 07:37:40 +0100, Christoph Hellwig <hch@infradead.org>
+wrote:
+
+> On Tue, May 11, 2021 at 04:47:26PM -0300, Jason Gunthorpe wrote:
+> > > Let me try to break down your concerns:
+> > > 1. portability - driver uses DMA APIs can function w/ and w/o IOMMU.
+> > > is that your concern? But PASID is intrinsically tied with IOMMU and
+> > > if the drivers are using a generic sva-lib API, why they are not
+> > > portable? SVA by its definition is to avoid map/unmap every time.  
+> > 
+> > Kernel explicitly does not support this programming model. All DMA is
+> > explicit and the DMA API hides platform details like IOMMU and CPU
+> > cache coherences. Just because x86 doesn't care about this doesn't
+> > make any of it optional.  
 > 
+> Exactly.
+Perhaps we can view these SVA capable devices as FPU or a device that can
+be fused onto the CPU by PASID binding. We don't require DMA map/unmap for
+FPU to use kernel virtual address, right?
+
 > 
-> On 2021/5/12 19:36, Lu Baolu wrote:
->> Hi keqian,
->>
->> On 5/12/21 4:44 PM, Keqian Zhu wrote:
->>>
->>>
->>> On 2021/5/12 11:20, Lu Baolu wrote:
->>>> On 5/11/21 3:40 PM, Keqian Zhu wrote:
->>>>>> For upper layers, before starting page tracking, they check the
->>>>>> dirty_page_trackable attribution of the domain and start it only it's
->>>>>> capable. Once the page tracking is switched on the vendor iommu driver
->>>>>> (or iommu core) should block further device attach/detach operations
->>>>>> until page tracking is stopped.
->>>>> But when a domain becomes capable after detaching a device, the upper layer
->>>>> still needs to query it and enable dirty log for it...
->>>>>
->>>>> To make things coordinated, maybe the upper layer can register a notifier,
->>>>> when the domain's capability change, the upper layer do not need to query, instead
->>>>> they just need to realize a callback, and do their specific policy in the callback.
->>>>> What do you think?
->>>>>
->>>>
->>>> That might be an option. But why not checking domain's attribution every
->>>> time a new tracking period is about to start?
->>> Hi Baolu,
->>>
->>> I'll add an attribution in iommu_domain, and the vendor iommu driver will update
->>> the attribution when attach/detach devices.
->>>
->>> The attribute should be protected by a lock, so the upper layer shouldn't access
->>> the attribute directly. Then the iommu_domain_support_dirty_log() still should be
->>> retained. Does this design looks good to you?
->>
->> Yes, that's what I was thinking of. But I am not sure whether it worth
->> of a lock here. It seems not to be a valid behavior for upper layer to
->> attach or detach any device while doing the dirty page tracking.
-> Hi Baolu,
+> > If you want to do SVA PASID then it also must come with DMA APIs to
+> > manage the CPU cache coherence that are all NOP's on x86.  
 > 
-> Right, if the "detach|attach" interfaces and "dirty tracking" interfaces can be called concurrently,
-> a lock in iommu_domain_support_dirty_log() is still not enough. I will add another note for the dirty
-> tracking interfaces.
-> 
-> Do you have other suggestions? I will accelerate the progress, so I plan to send out v5 next week.
+> Yes.  And we have plenty of precende where an IOMMU is in "bypass" mode
+> to allow access to all memory and then uses the simple dma-direct case.
+I agree it is better not to expose the entire direct map. But the missing
+piece of using DMA APIs is the PASID. The caller needs the PASID value to
+do work submission once buffer is mapped.
 
-No further comments expect below nit:
+Perhaps we can add a parameter to the DMA API to specify the address space?
+As Jason suggested the definition of IOASID, which represents a page table.
+Just my quick thought, can you help us with a viable solution?
 
-"iommu_switch_dirty_log: Perform actions to start|stop dirty log tracking"
+I know we are supposed to hide IOMMU by using DMA APIs which makes drivers
+portable w/ and w/o IOMMU. This IOASID can be optional.
 
-How about splitting it into
-  - iommu_start_dirty_log()
-  - iommu_stop_dirty_log()
+Thanks,
 
-Not a strong opinion anyway.
-
-Best regards,
-baolu
+Jacob
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
