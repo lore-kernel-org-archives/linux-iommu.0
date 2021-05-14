@@ -2,72 +2,74 @@ Return-Path: <SRS0=wlUX=KJ=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-10.1 required=3.0 tests=BAYES_00,DKIM_INVALID,
-	DKIM_SIGNED,HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,
-	NICE_REPLY_A,SPF_HELO_NONE,SPF_PASS,USER_AGENT_SANE_1 autolearn=ham
-	autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-5.1 required=3.0 tests=BAYES_00,DKIM_INVALID,
+	DKIM_SIGNED,HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,NICE_REPLY_A,
+	SPF_HELO_NONE,SPF_PASS,USER_AGENT_SANE_1 autolearn=no autolearn_force=no
+	version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 565C4C43461
-	for <iommu@archiver.kernel.org>; Fri, 14 May 2021 16:18:00 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id EC6A6C43460
+	for <iommu@archiver.kernel.org>; Fri, 14 May 2021 16:30:38 +0000 (UTC)
 Received: from smtp3.osuosl.org (smtp3.osuosl.org [140.211.166.136])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id E395361476
-	for <iommu@archiver.kernel.org>; Fri, 14 May 2021 16:17:59 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org E395361476
+	by mail.kernel.org (Postfix) with ESMTPS id 9148A6145E
+	for <iommu@archiver.kernel.org>; Fri, 14 May 2021 16:30:38 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 9148A6145E
 Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=deltatee.com
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by smtp3.osuosl.org (Postfix) with ESMTP id 9F30660612;
-	Fri, 14 May 2021 16:17:59 +0000 (UTC)
+	by smtp3.osuosl.org (Postfix) with ESMTP id 4F407605E0;
+	Fri, 14 May 2021 16:30:38 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
 Received: from smtp3.osuosl.org ([127.0.0.1])
 	by localhost (smtp3.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id bw3W_ch9YBcM; Fri, 14 May 2021 16:17:58 +0000 (UTC)
-Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [IPv6:2605:bc80:3010:104::8cd3:938])
-	by smtp3.osuosl.org (Postfix) with ESMTP id 7D8F5605E4;
-	Fri, 14 May 2021 16:17:58 +0000 (UTC)
+	with ESMTP id aWQ6g3_NJ7NS; Fri, 14 May 2021 16:30:37 +0000 (UTC)
+Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
+	by smtp3.osuosl.org (Postfix) with ESMTP id 334E560762;
+	Fri, 14 May 2021 16:30:37 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 5BF91C000E;
-	Fri, 14 May 2021 16:17:58 +0000 (UTC)
-Received: from smtp3.osuosl.org (smtp3.osuosl.org [140.211.166.136])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 7204BC0001
- for <iommu@lists.linux-foundation.org>; Fri, 14 May 2021 16:17:57 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 112DEC000E;
+	Fri, 14 May 2021 16:30:37 +0000 (UTC)
+Received: from smtp2.osuosl.org (smtp2.osuosl.org [IPv6:2605:bc80:3010::133])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 024D8C0001
+ for <iommu@lists.linux-foundation.org>; Fri, 14 May 2021 16:30:36 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by smtp3.osuosl.org (Postfix) with ESMTP id 52FB260600
- for <iommu@lists.linux-foundation.org>; Fri, 14 May 2021 16:17:57 +0000 (UTC)
+ by smtp2.osuosl.org (Postfix) with ESMTP id E589440136
+ for <iommu@lists.linux-foundation.org>; Fri, 14 May 2021 16:30:35 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from smtp3.osuosl.org ([127.0.0.1])
- by localhost (smtp3.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id cfWuAmrjIvYv for <iommu@lists.linux-foundation.org>;
- Fri, 14 May 2021 16:17:56 +0000 (UTC)
+Authentication-Results: smtp2.osuosl.org (amavisd-new);
+ dkim=pass (2048-bit key) header.d=deltatee.com
+Received: from smtp2.osuosl.org ([127.0.0.1])
+ by localhost (smtp2.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+ with ESMTP id G21oqDTmFuPL for <iommu@lists.linux-foundation.org>;
+ Fri, 14 May 2021 16:30:35 +0000 (UTC)
 X-Greylist: domain auto-whitelisted by SQLgrey-1.8.0
 Received: from ale.deltatee.com (ale.deltatee.com [204.191.154.188])
- by smtp3.osuosl.org (Postfix) with ESMTPS id C863B605E4
- for <iommu@lists.linux-foundation.org>; Fri, 14 May 2021 16:17:56 +0000 (UTC)
+ by smtp2.osuosl.org (Postfix) with ESMTPS id 5EC8A40111
+ for <iommu@lists.linux-foundation.org>; Fri, 14 May 2021 16:30:35 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
  d=deltatee.com; s=20200525; h=Subject:In-Reply-To:MIME-Version:Date:
  Message-ID:From:References:Cc:To:content-disposition;
- bh=UIw7EfWmD3A5GJzYN/3QOUOCIyHuFu16FWOPf7ANc9Y=; b=ifFUHGd+/63UwWC7Lc9/oor7EB
- 2xjO0Kj1AlFEpeDAwbOKeW8D81UORdDKkPxs7CF9lZHYha50YtQkAW8SwcBLPjO/SrcXyl30YTRho
- MbfBoG89yDCZm/Gp8aa++DAJcvdvSRYMC7EbFLh8FinG05Ku9EKpgWTM/v4BVl4jTXyWC3/LqjVgu
- bdtOV6sJX1hy0+oEpb6EvH7KJiIfkE8Gl1VaVjCNeplN1uBeqW+034RUscz+xQLCn+ISPdE0nf+rC
- ggxbKXYoIRATTWu1GzOpzi2ZHRBR0QVMYKgJfXEoeRUmTpW6t1lgOr2s3tTG29i7Rquf1zkW1OwXB
- T6ym8TIw==;
+ bh=xV6ltS4lNS3Jm/f8TEnktWg1U1xW+UrFzR8b6RAQyww=; b=s//zBlCpwgQ1lLSn3XKJEQOaWd
+ rI8rRBGrF3aoC3g+QuDXDug4GzbnkaS6nBtWhDM3pUOjQYKZYx/6iqfRigkJyI290iga8e7o+co0E
+ QbXpFJsOWAQw7fOVJWNVDxDk/PaOaE0YGfRnol4IiEjPWjENwy9CRw8DjR6tZ+WmbEC0OTj1tjMV/
+ /DRMXbA8j4LTuFwWSHMlTxZaa7XowzY/YiYS5R+3nywlL9wmmsoR+uFEzvV5+oIlKCVP0Tyx8aJlM
+ CWWYGc4JPwElN6+U10s+whCtXjoZyIVemlp2K/nOQSPMyhE1NnQR98UkoaVAkuMTzmLnP7RlAicuB
+ 8O/5DBLg==;
 Received: from guinness.priv.deltatee.com ([172.16.1.162])
  by ale.deltatee.com with esmtp (Exim 4.92)
  (envelope-from <logang@deltatee.com>)
- id 1lhaVY-000693-Pi; Fri, 14 May 2021 10:17:49 -0600
+ id 1lhahm-0006Ih-Qz; Fri, 14 May 2021 10:30:27 -0600
 To: Christoph Hellwig <hch@lst.de>
 References: <20210513223203.5542-1-logang@deltatee.com>
- <20210513223203.5542-16-logang@deltatee.com> <20210514135712.GD4715@lst.de>
+ <20210514140007.GE4715@lst.de>
 From: Logan Gunthorpe <logang@deltatee.com>
-Message-ID: <6615c351-9c28-3a74-8c43-4aeb7993fb98@deltatee.com>
-Date: Fri, 14 May 2021 10:17:48 -0600
+Message-ID: <91ce86db-e2f9-85ac-12db-91df72ac4648@deltatee.com>
+Date: Fri, 14 May 2021 10:30:25 -0600
 User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
  Thunderbird/78.10.0
 MIME-Version: 1.0
-In-Reply-To: <20210514135712.GD4715@lst.de>
+In-Reply-To: <20210514140007.GE4715@lst.de>
 Content-Language: en-CA
 X-SA-Exim-Connect-IP: 172.16.1.162
 X-SA-Exim-Rcpt-To: robin.murphy@arm.com, ira.weiny@intel.com,
@@ -80,8 +82,7 @@ X-SA-Exim-Rcpt-To: robin.murphy@arm.com, ira.weiny@intel.com,
  linux-pci@vger.kernel.org, linux-block@vger.kernel.org,
  linux-nvme@lists.infradead.org, linux-kernel@vger.kernel.org, hch@lst.de
 X-SA-Exim-Mail-From: logang@deltatee.com
-Subject: Re: [PATCH v2 15/22] dma-direct: Support PCI P2PDMA pages in
- dma-direct map_sg
+Subject: Re: [PATCH v2 00/22] Add new DMA mapping operation for P2PDMA
 X-SA-Exim-Version: 4.2.1 (built Wed, 08 May 2019 21:11:16 +0000)
 X-SA-Exim-Scanned: Yes (on ale.deltatee.com)
 Cc: linux-pci@vger.kernel.org, Dave Hansen <dave.hansen@linux.intel.com>,
@@ -115,63 +116,22 @@ Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
 
 
-On 2021-05-14 7:57 a.m., Christoph Hellwig wrote:
->> +	for_each_sg(sgl, sg, nents, i) {
->> +		if (sg_is_dma_pci_p2pdma(sg)) {
->> +			sg_dma_unmark_pci_p2pdma(sg);
->> +		} else  {
+On 2021-05-14 8:00 a.m., Christoph Hellwig wrote:
+> On Thu, May 13, 2021 at 04:31:41PM -0600, Logan Gunthorpe wrote:
+>>  17 files changed, 570 insertions(+), 290 deletions(-)
 > 
-> Double space here.  We also don't really need the curly braces to start
-> with.
-> 
->> +	struct pci_p2pdma_map_state p2pdma_state = {};
->> +	enum pci_p2pdma_map_type map;
->>  	struct scatterlist *sg;
->> +	int i, ret;
->>  
->>  	for_each_sg(sgl, sg, nents, i) {
->> +		if (is_pci_p2pdma_page(sg_page(sg))) {
->> +			map = pci_p2pdma_map_segment(&p2pdma_state, dev, sg);
->> +			switch (map) {
-> 
-> Why not just:
-> 
-> 			switch (pci_p2pdma_map_segment(&p2pdma_state, dev,
-> 					sg)) {
-> 
-> (even better with a shorter name for p2pdma_state so that it all fits on
-> a single line)?
-> 
->> +			case PCI_P2PDMA_MAP_BUS_ADDR:
->> +				continue;
->> +			case PCI_P2PDMA_MAP_THRU_HOST_BRIDGE:
->> +				/*
->> +				 * Mapping through host bridge should be
->> +				 * mapped normally, thus we do nothing
->> +				 * and continue below.
->> +				 */
-> 
-> I have a bit of a hard time parsing this comment.
-> 
->> +		if (sg->dma_address == DMA_MAPPING_ERROR) {
->> +			ret = -EINVAL;
->>  			goto out_unmap;
->> +		}
->>  		sg_dma_len(sg) = sg->length;
->>  	}
->>  
->> @@ -411,7 +443,7 @@ int dma_direct_map_sg(struct device *dev, struct scatterlist *sgl, int nents,
->>  
->>  out_unmap:
->>  	dma_direct_unmap_sg(dev, sgl, i, dir, attrs | DMA_ATTR_SKIP_CPU_SYNC);
->> -	return -EINVAL;
->> +	return ret;
-> 
-> Maybe just initialize ret to -EINVAL at declaration time to simplify this
-> a bit?
->
+> I'm a little worried about all this extra code for no new functionality
+> at all.
 
-All fair points, will fix in v3.
+Yes, this series is really just prep work for allowing new
+functionality. And a bunch of cleanup has been tacked onto it. It should
+make adding P2PDMA in userspace a lot easier and I expect other P2PDMA
+use cases will be better enabled by it.
+
+A lot of people don't like the pci_p2pdma_map_sg() special case and
+can't use it in their use case because it only accepts homogenous SGLs.
+This series gets rid of the special case and allows it to be used more
+generally.
 
 Logan
 _______________________________________________
