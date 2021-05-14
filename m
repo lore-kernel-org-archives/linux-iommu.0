@@ -2,85 +2,83 @@ Return-Path: <SRS0=wlUX=KJ=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-5.3 required=3.0 tests=BAYES_00,
-	HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,NICE_REPLY_A,SPF_HELO_NONE,
-	SPF_PASS,USER_AGENT_SANE_1 autolearn=no autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-15.3 required=3.0 tests=BAYES_00,
+	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_CR_TRAILER,INCLUDES_PATCH,
+	MAILING_LIST_MULTI,NICE_REPLY_A,SPF_HELO_NONE,SPF_PASS,USER_AGENT_SANE_1
+	autolearn=unavailable autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B72DDC433B4
-	for <iommu@archiver.kernel.org>; Fri, 14 May 2021 02:30:34 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id CAC8BC433B4
+	for <iommu@archiver.kernel.org>; Fri, 14 May 2021 03:09:58 +0000 (UTC)
 Received: from smtp4.osuosl.org (smtp4.osuosl.org [140.211.166.137])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 322506143C
-	for <iommu@archiver.kernel.org>; Fri, 14 May 2021 02:30:34 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 322506143C
+	by mail.kernel.org (Postfix) with ESMTPS id 1E2746143F
+	for <iommu@archiver.kernel.org>; Fri, 14 May 2021 03:09:58 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 1E2746143F
 Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=huawei.com
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by smtp4.osuosl.org (Postfix) with ESMTP id EA6244037D;
-	Fri, 14 May 2021 02:30:33 +0000 (UTC)
+	by smtp4.osuosl.org (Postfix) with ESMTP id CC80F406B9;
+	Fri, 14 May 2021 03:09:57 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
 Received: from smtp4.osuosl.org ([127.0.0.1])
 	by localhost (smtp4.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id u7XFK6u5WFQj; Fri, 14 May 2021 02:30:33 +0000 (UTC)
-Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by smtp4.osuosl.org (Postfix) with ESMTP id 9DE094036C;
-	Fri, 14 May 2021 02:30:32 +0000 (UTC)
+	with ESMTP id FsesSDR7-2NJ; Fri, 14 May 2021 03:09:56 +0000 (UTC)
+Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [IPv6:2605:bc80:3010:104::8cd3:938])
+	by smtp4.osuosl.org (Postfix) with ESMTP id 6A8B340477;
+	Fri, 14 May 2021 03:09:56 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 7C9AFC000D;
-	Fri, 14 May 2021 02:30:32 +0000 (UTC)
-Received: from smtp4.osuosl.org (smtp4.osuosl.org [IPv6:2605:bc80:3010::137])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 43112C0001
- for <iommu@lists.linux-foundation.org>; Fri, 14 May 2021 02:30:30 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 3CB35C000D;
+	Fri, 14 May 2021 03:09:56 +0000 (UTC)
+Received: from smtp3.osuosl.org (smtp3.osuosl.org [IPv6:2605:bc80:3010::136])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 4E1B4C0001
+ for <iommu@lists.linux-foundation.org>; Fri, 14 May 2021 03:09:55 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by smtp4.osuosl.org (Postfix) with ESMTP id 1EA8240379
- for <iommu@lists.linux-foundation.org>; Fri, 14 May 2021 02:30:30 +0000 (UTC)
+ by smtp3.osuosl.org (Postfix) with ESMTP id 305F260613
+ for <iommu@lists.linux-foundation.org>; Fri, 14 May 2021 03:09:55 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from smtp4.osuosl.org ([127.0.0.1])
- by localhost (smtp4.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id xg1KjDhQrkxK for <iommu@lists.linux-foundation.org>;
- Fri, 14 May 2021 02:30:28 +0000 (UTC)
+Received: from smtp3.osuosl.org ([127.0.0.1])
+ by localhost (smtp3.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+ with ESMTP id xnlH1u6kOoeg for <iommu@lists.linux-foundation.org>;
+ Fri, 14 May 2021 03:09:53 +0000 (UTC)
 X-Greylist: domain auto-whitelisted by SQLgrey-1.8.0
 Received: from szxga04-in.huawei.com (szxga04-in.huawei.com [45.249.212.190])
- by smtp4.osuosl.org (Postfix) with ESMTPS id CBD8B4036C
- for <iommu@lists.linux-foundation.org>; Fri, 14 May 2021 02:30:27 +0000 (UTC)
-Received: from DGGEMS404-HUB.china.huawei.com (unknown [172.30.72.59])
- by szxga04-in.huawei.com (SkyGuard) with ESMTP id 4FhC8g5hHQzqTlk;
- Fri, 14 May 2021 10:26:59 +0800 (CST)
-Received: from [10.174.187.224] (10.174.187.224) by
- DGGEMS404-HUB.china.huawei.com (10.3.19.204) with Microsoft SMTP Server id
- 14.3.498.0; Fri, 14 May 2021 10:30:17 +0800
-Subject: Re: [RFC PATCH v4 01/13] iommu: Introduce dirty log tracking framework
-To: Lu Baolu <baolu.lu@linux.intel.com>, <linux-kernel@vger.kernel.org>,
- <linux-arm-kernel@lists.infradead.org>, <iommu@lists.linux-foundation.org>,
- Robin Murphy <robin.murphy@arm.com>, Will Deacon <will@kernel.org>, "Joerg
- Roedel" <joro@8bytes.org>, Jean-Philippe Brucker <jean-philippe@linaro.org>,
- Yi Sun <yi.y.sun@linux.intel.com>, Tian Kevin <kevin.tian@intel.com>
-References: <20210507102211.8836-1-zhukeqian1@huawei.com>
- <20210507102211.8836-2-zhukeqian1@huawei.com>
- <efc2d868-28ba-8ed9-1d6b-610b67d671b5@linux.intel.com>
- <18ac787a-179e-71f7-728b-c43feda80a16@huawei.com>
- <55fda826-9ab6-a3a0-b17e-a4d4879f00bc@linux.intel.com>
- <a8df289a-47c2-c193-cd6f-8415f68b900f@huawei.com>
- <f47e90c6-f3c4-b28f-a810-e03afe79e62d@linux.intel.com>
- <60182a35-e151-7150-3708-4e58dd8e78da@huawei.com>
- <36cc7267-6aa3-db54-b08c-c2dfc0bbacb6@linux.intel.com>
- <e38f1837-b814-3717-2faf-4df8349cb57c@huawei.com>
- <7fb678c7-509b-dbb5-d533-32c5ce2a0476@linux.intel.com>
- <bbc1960c-24f3-680a-b6ff-c81f70fa9c04@huawei.com>
- <ce19e7a0-e7b7-aa09-b074-ad555d42bab2@linux.intel.com>
-From: Keqian Zhu <zhukeqian1@huawei.com>
-Message-ID: <81d0731d-3331-a5f4-1867-5cc1f3f97a29@huawei.com>
-Date: Fri, 14 May 2021 10:30:17 +0800
-User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; rv:45.0) Gecko/20100101
- Thunderbird/45.7.1
+ by smtp3.osuosl.org (Postfix) with ESMTPS id 0FE596060C
+ for <iommu@lists.linux-foundation.org>; Fri, 14 May 2021 03:09:52 +0000 (UTC)
+Received: from dggems705-chm.china.huawei.com (unknown [172.30.72.60])
+ by szxga04-in.huawei.com (SkyGuard) with ESMTP id 4FhD2z1kWvz1BMP2;
+ Fri, 14 May 2021 11:07:07 +0800 (CST)
+Received: from dggema765-chm.china.huawei.com (10.1.198.207) by
+ dggems705-chm.china.huawei.com (10.3.19.182) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256) id
+ 15.1.2176.2; Fri, 14 May 2021 11:09:48 +0800
+Received: from [10.174.185.210] (10.174.185.210) by
+ dggema765-chm.china.huawei.com (10.1.198.207) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id
+ 15.1.2176.2; Fri, 14 May 2021 11:09:47 +0800
+Subject: Re: [PATCH v15 07/12] iommu/smmuv3: Implement cache_invalidate
+To: Eric Auger <eric.auger@redhat.com>, <eric.auger.pro@gmail.com>,
+ <iommu@lists.linux-foundation.org>, <linux-kernel@vger.kernel.org>,
+ <kvm@vger.kernel.org>, <kvmarm@lists.cs.columbia.edu>, <will@kernel.org>,
+ <maz@kernel.org>, <robin.murphy@arm.com>, <joro@8bytes.org>,
+ <alex.williamson@redhat.com>, <tn@semihalf.com>, <zhukeqian1@huawei.com>
+References: <20210411111228.14386-1-eric.auger@redhat.com>
+ <20210411111228.14386-8-eric.auger@redhat.com>
+From: Kunkun Jiang <jiangkunkun@huawei.com>
+Message-ID: <e6483bc3-192b-9b68-b3e1-641b1bed4bf6@huawei.com>
+Date: Fri, 14 May 2021 11:09:47 +0800
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:78.0) Gecko/20100101
+ Thunderbird/78.8.1
 MIME-Version: 1.0
-In-Reply-To: <ce19e7a0-e7b7-aa09-b074-ad555d42bab2@linux.intel.com>
-X-Originating-IP: [10.174.187.224]
+In-Reply-To: <20210411111228.14386-8-eric.auger@redhat.com>
+Content-Language: en-US
+X-Originating-IP: [10.174.185.210]
+X-ClientProxiedBy: dggeme706-chm.china.huawei.com (10.1.199.102) To
+ dggema765-chm.china.huawei.com (10.1.198.207)
 X-CFilter-Loop: Reflected
-Cc: jiangkunkun@huawei.com, Cornelia Huck <cohuck@redhat.com>,
- Kirti Wankhede <kwankhede@nvidia.com>, lushenming@huawei.com,
- Alex Williamson <alex.williamson@redhat.com>, wanghaibin.wang@huawei.com
+Cc: jean-philippe@linaro.org, wangxingang5@huawei.com, lushenming@huawei.com,
+ wanghaibin.wang@huawei.com, vivek.gautam@arm.com, vsethi@nvidia.com,
+ zhangfei.gao@linaro.org
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -93,81 +91,172 @@ List-Post: <mailto:iommu@lists.linux-foundation.org>
 List-Help: <mailto:iommu-request@lists.linux-foundation.org?subject=help>
 List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
  <mailto:iommu-request@lists.linux-foundation.org?subject=subscribe>
-Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset="us-ascii"; Format="flowed"
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
 
 
-On 2021/5/13 20:02, Lu Baolu wrote:
-> On 5/13/21 6:58 PM, Keqian Zhu wrote:
->>
->>
->> On 2021/5/12 19:36, Lu Baolu wrote:
->>> Hi keqian,
->>>
->>> On 5/12/21 4:44 PM, Keqian Zhu wrote:
->>>>
->>>>
->>>> On 2021/5/12 11:20, Lu Baolu wrote:
->>>>> On 5/11/21 3:40 PM, Keqian Zhu wrote:
->>>>>>> For upper layers, before starting page tracking, they check the
->>>>>>> dirty_page_trackable attribution of the domain and start it only it's
->>>>>>> capable. Once the page tracking is switched on the vendor iommu driver
->>>>>>> (or iommu core) should block further device attach/detach operations
->>>>>>> until page tracking is stopped.
->>>>>> But when a domain becomes capable after detaching a device, the upper layer
->>>>>> still needs to query it and enable dirty log for it...
->>>>>>
->>>>>> To make things coordinated, maybe the upper layer can register a notifier,
->>>>>> when the domain's capability change, the upper layer do not need to query, instead
->>>>>> they just need to realize a callback, and do their specific policy in the callback.
->>>>>> What do you think?
->>>>>>
->>>>>
->>>>> That might be an option. But why not checking domain's attribution every
->>>>> time a new tracking period is about to start?
->>>> Hi Baolu,
->>>>
->>>> I'll add an attribution in iommu_domain, and the vendor iommu driver will update
->>>> the attribution when attach/detach devices.
->>>>
->>>> The attribute should be protected by a lock, so the upper layer shouldn't access
->>>> the attribute directly. Then the iommu_domain_support_dirty_log() still should be
->>>> retained. Does this design looks good to you?
->>>
->>> Yes, that's what I was thinking of. But I am not sure whether it worth
->>> of a lock here. It seems not to be a valid behavior for upper layer to
->>> attach or detach any device while doing the dirty page tracking.
->> Hi Baolu,
->>
->> Right, if the "detach|attach" interfaces and "dirty tracking" interfaces can be called concurrently,
->> a lock in iommu_domain_support_dirty_log() is still not enough. I will add another note for the dirty
->> tracking interfaces.
->>
->> Do you have other suggestions? I will accelerate the progress, so I plan to send out v5 next week.
-> 
-> No further comments expect below nit:
-> 
-> "iommu_switch_dirty_log: Perform actions to start|stop dirty log tracking"
-> 
-> How about splitting it into
->  - iommu_start_dirty_log()
->  - iommu_stop_dirty_log()
-Yeah, actually this is my original version, and the "switch" style is suggested by Yi Sun.
-Anyway, I think both is OK, and the "switch" style can reduce some code.
+On 2021/4/11 19:12, Eric Auger wrote:
+> Implement domain-selective, pasid selective and page-selective
+> IOTLB invalidations.
+>
+> Signed-off-by: Eric Auger <eric.auger@redhat.com>
+>
+> ---
+> v4 -> v15:
+> - remove the redundant arm_smmu_cmdq_issue_sync(smmu)
+>    in IOMMU_INV_GRANU_ADDR case (Zenghui)
+> - if RIL is not supported by the host, make sure the granule_size
+>    that is passed by the userspace is supported or fix it
+>    (Chenxiang)
+>
+> v13 -> v14:
+> - Add domain invalidation
+> - do global inval when asid is not provided with addr
+>    granularity
+>
+> v7 -> v8:
+> - ASID based invalidation using iommu_inv_pasid_info
+> - check ARCHID/PASID flags in addr based invalidation
+> - use __arm_smmu_tlb_inv_context and __arm_smmu_tlb_inv_range_nosync
+>
+> v6 -> v7
+> - check the uapi version
+>
+> v3 -> v4:
+> - adapt to changes in the uapi
+> - add support for leaf parameter
+> - do not use arm_smmu_tlb_inv_range_nosync or arm_smmu_tlb_inv_context
+>    anymore
+>
+> v2 -> v3:
+> - replace __arm_smmu_tlb_sync by arm_smmu_cmdq_issue_sync
+>
+> v1 -> v2:
+> - properly pass the asid
+> ---
+>   drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c | 89 +++++++++++++++++++++
+>   1 file changed, 89 insertions(+)
+>
+> diff --git a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
+> index 56a301fbe75a..bfc112cc0d38 100644
+> --- a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
+> +++ b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
+> @@ -2961,6 +2961,94 @@ static void arm_smmu_detach_pasid_table(struct iommu_domain *domain)
+>   	mutex_unlock(&smmu_domain->init_mutex);
+>   }
+>   
+> +static int
+> +arm_smmu_cache_invalidate(struct iommu_domain *domain, struct device *dev,
+> +			  struct iommu_cache_invalidate_info *inv_info)
+> +{
+> +	struct arm_smmu_cmdq_ent cmd = {.opcode = CMDQ_OP_TLBI_NSNH_ALL};
+> +	struct arm_smmu_domain *smmu_domain = to_smmu_domain(domain);
+> +	struct arm_smmu_device *smmu = smmu_domain->smmu;
+> +
+> +	if (smmu_domain->stage != ARM_SMMU_DOMAIN_NESTED)
+> +		return -EINVAL;
+> +
+> +	if (!smmu)
+> +		return -EINVAL;
+> +
+> +	if (inv_info->version != IOMMU_CACHE_INVALIDATE_INFO_VERSION_1)
+> +		return -EINVAL;
+> +
+> +	if (inv_info->cache & IOMMU_CACHE_INV_TYPE_PASID ||
+> +	    inv_info->cache & IOMMU_CACHE_INV_TYPE_DEV_IOTLB) {
+> +		return -ENOENT;
+> +	}
+> +
+> +	if (!(inv_info->cache & IOMMU_CACHE_INV_TYPE_IOTLB))
+> +		return -EINVAL;
+> +
+> +	/* IOTLB invalidation */
+> +
+> +	switch (inv_info->granularity) {
+> +	case IOMMU_INV_GRANU_PASID:
+> +	{
+> +		struct iommu_inv_pasid_info *info =
+> +			&inv_info->granu.pasid_info;
+> +
+> +		if (info->flags & IOMMU_INV_ADDR_FLAGS_PASID)
+> +			return -ENOENT;
+> +		if (!(info->flags & IOMMU_INV_PASID_FLAGS_ARCHID))
+> +			return -EINVAL;
+> +
+> +		__arm_smmu_tlb_inv_context(smmu_domain, info->archid);
+> +		return 0;
+> +	}
+> +	case IOMMU_INV_GRANU_ADDR:
+> +	{
+> +		struct iommu_inv_addr_info *info = &inv_info->granu.addr_info;
+> +		size_t granule_size  = info->granule_size;
+> +		size_t size = info->nb_granules * info->granule_size;
+> +		bool leaf = info->flags & IOMMU_INV_ADDR_FLAGS_LEAF;
+> +		int tg;
+> +
+> +		if (info->flags & IOMMU_INV_ADDR_FLAGS_PASID)
+> +			return -ENOENT;
+> +
+> +		if (!(info->flags & IOMMU_INV_ADDR_FLAGS_ARCHID))
+> +			break;
+> +
+> +		tg = __ffs(granule_size);
+> +		if (granule_size & ~(1 << tg))
+> +			return -EINVAL;
+This check looks like to confirm the granule_size is a power of 2.
+Does the granule_size have to be a power of 2?
+I think it should also be handled correctly, even if the granule_size is 
+not a power of 2.
+> +		/*
+> +		 * When RIL is not supported, make sure the granule size that is
+> +		 * passed is supported. In RIL mode, this is enforced in
+> +		 * __arm_smmu_tlb_inv_range()
+> +		 */
+> +		if (!(smmu->features & ARM_SMMU_FEAT_RANGE_INV) &&
+> +		    !(granule_size & smmu_domain->domain.pgsize_bitmap)) {
+> +			tg = __ffs(smmu_domain->domain.pgsize_bitmap);
+> +			granule_size = 1 << tg;
+> +			size = size >> tg;
+Why does size need to be shifted tg bits to the right?
 
 Thanks,
-Keqian
+Kunkun Jiang
+> +		}
+> +
+> +		arm_smmu_tlb_inv_range_domain(info->addr, size,
+> +					      granule_size, leaf,
+> +					      info->archid, smmu_domain);
+> +		return 0;
+> +	}
+> +	case IOMMU_INV_GRANU_DOMAIN:
+> +		break;
+> +	default:
+> +		return -EINVAL;
+> +	}
+> +
+> +	/* Global S1 invalidation */
+> +	cmd.tlbi.vmid   = smmu_domain->s2_cfg.vmid;
+> +	arm_smmu_cmdq_issue_cmd(smmu, &cmd);
+> +	arm_smmu_cmdq_issue_sync(smmu);
+> +	return 0;
+> +}
+> +
+>   static bool arm_smmu_dev_has_feature(struct device *dev,
+>   				     enum iommu_dev_features feat)
+>   {
+> @@ -3060,6 +3148,7 @@ static struct iommu_ops arm_smmu_ops = {
+>   	.put_resv_regions	= generic_iommu_put_resv_regions,
+>   	.attach_pasid_table	= arm_smmu_attach_pasid_table,
+>   	.detach_pasid_table	= arm_smmu_detach_pasid_table,
+> +	.cache_invalidate	= arm_smmu_cache_invalidate,
+>   	.dev_has_feat		= arm_smmu_dev_has_feature,
+>   	.dev_feat_enabled	= arm_smmu_dev_feature_enabled,
+>   	.dev_enable_feat	= arm_smmu_dev_enable_feature,
 
-> 
-> Not a strong opinion anyway.
-> 
-> Best regards,
-> baolu
-> .
-> 
+
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
