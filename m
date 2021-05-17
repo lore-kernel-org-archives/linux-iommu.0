@@ -2,90 +2,75 @@ Return-Path: <SRS0=Mf8z=KM=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-0.5 required=3.0 tests=BAYES_00,DKIM_ADSP_CUSTOM_MED,
-	DKIM_INVALID,DKIM_SIGNED,FREEMAIL_FORGED_FROMDOMAIN,FREEMAIL_FROM,
+X-Spam-Status: No, score=-3.8 required=3.0 tests=BAYES_00,
 	HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,
 	URIBL_BLOCKED autolearn=no autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 48A04C433B4
-	for <iommu@archiver.kernel.org>; Mon, 17 May 2021 12:18:02 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7DB8CC433B4
+	for <iommu@archiver.kernel.org>; Mon, 17 May 2021 12:22:19 +0000 (UTC)
 Received: from smtp4.osuosl.org (smtp4.osuosl.org [140.211.166.137])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id D726261241
-	for <iommu@archiver.kernel.org>; Mon, 17 May 2021 12:18:01 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org D726261241
-Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=gmail.com
+	by mail.kernel.org (Postfix) with ESMTPS id 10A4361244
+	for <iommu@archiver.kernel.org>; Mon, 17 May 2021 12:22:19 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 10A4361244
+Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=8bytes.org
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by smtp4.osuosl.org (Postfix) with ESMTP id 99CB8404CB;
-	Mon, 17 May 2021 12:18:01 +0000 (UTC)
+	by smtp4.osuosl.org (Postfix) with ESMTP id C6E12404CF;
+	Mon, 17 May 2021 12:22:18 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
 Received: from smtp4.osuosl.org ([127.0.0.1])
 	by localhost (smtp4.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id v60C45gMRC2C; Mon, 17 May 2021 12:17:58 +0000 (UTC)
-Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by smtp4.osuosl.org (Postfix) with ESMTP id 9F5A8402D3;
-	Mon, 17 May 2021 12:17:57 +0000 (UTC)
+	with ESMTP id fufh8I9q3auY; Mon, 17 May 2021 12:22:15 +0000 (UTC)
+Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [IPv6:2605:bc80:3010:104::8cd3:938])
+	by smtp4.osuosl.org (Postfix) with ESMTP id A2150404B8;
+	Mon, 17 May 2021 12:22:14 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 7E95CC000D;
-	Mon, 17 May 2021 12:17:57 +0000 (UTC)
-Received: from smtp4.osuosl.org (smtp4.osuosl.org [140.211.166.137])
- by lists.linuxfoundation.org (Postfix) with ESMTP id C5007C0001
- for <iommu@lists.linux-foundation.org>; Mon, 17 May 2021 12:17:55 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 7C84BC000D;
+	Mon, 17 May 2021 12:22:14 +0000 (UTC)
+Received: from smtp1.osuosl.org (smtp1.osuosl.org [140.211.166.138])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id C3E42C0001
+ for <iommu@lists.linux-foundation.org>; Mon, 17 May 2021 12:22:12 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by smtp4.osuosl.org (Postfix) with ESMTP id A60AD404B8
- for <iommu@lists.linux-foundation.org>; Mon, 17 May 2021 12:17:55 +0000 (UTC)
+ by smtp1.osuosl.org (Postfix) with ESMTP id A9C5783C88
+ for <iommu@lists.linux-foundation.org>; Mon, 17 May 2021 12:22:12 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from smtp4.osuosl.org ([127.0.0.1])
- by localhost (smtp4.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id jIuJcFhMBTDk for <iommu@lists.linux-foundation.org>;
- Mon, 17 May 2021 12:17:51 +0000 (UTC)
-X-Greylist: whitelisted by SQLgrey-1.8.0
-Received: from mail-ot1-x32b.google.com (mail-ot1-x32b.google.com
- [IPv6:2607:f8b0:4864:20::32b])
- by smtp4.osuosl.org (Postfix) with ESMTPS id A1F6B402D3
- for <iommu@lists.linux-foundation.org>; Mon, 17 May 2021 12:17:51 +0000 (UTC)
-Received: by mail-ot1-x32b.google.com with SMTP id
- t10-20020a05683022eab0290304ed8bc759so5312470otc.12
- for <iommu@lists.linux-foundation.org>; Mon, 17 May 2021 05:17:51 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=gmail.com; s=20161025;
- h=mime-version:references:in-reply-to:from:date:message-id:subject:to
- :cc:content-transfer-encoding;
- bh=zEU6CzFgEsXFctNNyZP0I8tPhrQAXlBinqVRaGycqaw=;
- b=nQh/rgWDfcKxibJ1P5lnanSBbO/cAyfCxVquNA3WeP7GaaOAcSoYbw88Y0Kab281IH
- VNRvUXiWxUwVBM+JyU3M/5pUaW233FtE/mUDw3goDeePBFZ4Rwi/yq8jlSMXCMlkQZTL
- TN11iGLhiydgCxmE9Q1TS7STAeCrfyQK/9olpD4BotQCgN/Z9JYjW2/mIvqsPkHHOO9S
- WnseZxDOda5cHggwVaQFMZnQZ9ckc9tG+mJBPwVbgqZhz/biAdZq71qefsAAKOS+PgVc
- 1IfxUeFA3CwccAa6NX3Av2i1B4nXlXtvbBCh5v77MyMZKMKwCq4P8vBjxl89Ma9uPpJ2
- 3J7w==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
- d=1e100.net; s=20161025;
- h=x-gm-message-state:mime-version:references:in-reply-to:from:date
- :message-id:subject:to:cc:content-transfer-encoding;
- bh=zEU6CzFgEsXFctNNyZP0I8tPhrQAXlBinqVRaGycqaw=;
- b=L0jYRVua3+V+hZj4bH2swOSsuPbAzqsxIqDU69r0NJ9WaZJLctrHwqfL+B+0+6GNFk
- UCe1pbXV0QmGCOEYAgq92czvVLEpg5a+tftE26NdBrN3WNsvKDLiNnyvJE0CGvvGgYEx
- xMHMCgG1KZRfLowtnPz7mgNv7rdytng3ot/8zm2Gxi+zsYaB+xyN/Ujos4uLhQYqMsSP
- EIKR76ihkOrrYEg9u2kty7TvmsbUU5aSv62jzE4B77GegdQAJWpoklJQOqXp5346A+XM
- RBN0tnIT4CkUYMSp6/cIPKyRUk5vvnqjaYeMHXuBSuuGYlI6J3E9eAqKSfzKR7NUHC/X
- iRMA==
-X-Gm-Message-State: AOAM5319slnSDu+OEsYcZ4+hXpLdV20mJaqGkDOexTd5EpqmmGV8U6ON
- OoRvxOp6lwBDzn7hXHuj3hC4ZjKlFoRei+GBmlA=
-X-Google-Smtp-Source: ABdhPJwLn1YFkqRfXLgmIKLo5xNZffSk6I/sK/iwtQhUKND0ZTqHq9MTOqVk0U69ENPn8I9ygRoZSzHbWRW9F5WqebQ=
-X-Received: by 2002:a9d:4e96:: with SMTP id v22mr31832024otk.134.1621253870688; 
- Mon, 17 May 2021 05:17:50 -0700 (PDT)
+Received: from smtp1.osuosl.org ([127.0.0.1])
+ by localhost (smtp1.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+ with ESMTP id mrlDdpM_pDy0 for <iommu@lists.linux-foundation.org>;
+ Mon, 17 May 2021 12:22:10 +0000 (UTC)
+X-Greylist: from auto-whitelisted by SQLgrey-1.8.0
+Received: from theia.8bytes.org (8bytes.org
+ [IPv6:2a01:238:4383:600:38bc:a715:4b6d:a889])
+ by smtp1.osuosl.org (Postfix) with ESMTPS id DC02F83C89
+ for <iommu@lists.linux-foundation.org>; Mon, 17 May 2021 12:22:09 +0000 (UTC)
+Received: by theia.8bytes.org (Postfix, from userid 1000)
+ id C5EF52E7; Mon, 17 May 2021 14:22:07 +0200 (CEST)
+Date: Mon, 17 May 2021 14:22:06 +0200
+From: Joerg Roedel <joro@8bytes.org>
+To: Jason Gunthorpe <jgg@ziepe.ca>
+Subject: Re: [PATCH 3/6] vfio: remove the unused mdev iommu hook
+Message-ID: <YKJf7mphTHZoi7Qr@8bytes.org>
+References: <20210510065405.2334771-1-hch@lst.de>
+ <20210510065405.2334771-4-hch@lst.de>
+ <20210510155454.GA1096940@ziepe.ca>
+ <MWHPR11MB1886E02BF7DE371E9665AA328C519@MWHPR11MB1886.namprd11.prod.outlook.com>
+ <20210513120058.GG1096940@ziepe.ca>
+ <MWHPR11MB1886B92507ED9015831A0CEA8C509@MWHPR11MB1886.namprd11.prod.outlook.com>
+ <20210514121925.GI1096940@ziepe.ca>
+ <MWHPR11MB18866205125E566FE05867A78C509@MWHPR11MB1886.namprd11.prod.outlook.com>
+ <20210514133143.GK1096940@ziepe.ca>
 MIME-Version: 1.0
-References: <e0e9ecf4-cfd7-b31a-29b0-ead4a6c0ee40@charleswright.co>
- <1621180418@msgid.manchmal.in-ulm.de> <YKI/D64ODBUEHO9M@kroah.com>
- <1621251453@msgid.manchmal.in-ulm.de> <1621251685@msgid.manchmal.in-ulm.de>
-In-Reply-To: <1621251685@msgid.manchmal.in-ulm.de>
-From: Jack Wang <jack.wang.usish@gmail.com>
-Date: Mon, 17 May 2021 14:17:39 +0200
-Message-ID: <CA+res+RHyF22T-sGwCG5zA6EBrk_gWbnZETX_iAgdRdWaPLbfw@mail.gmail.com>
-Subject: Re: 5.10.37 won't boot on my system, but 5.10.36 with same config does
-To: Christoph Biedl <linux-kernel.bfrz@manchmal.in-ulm.de>
-Cc: iommu@lists.linux-foundation.org, stable <stable@vger.kernel.org>
+Content-Disposition: inline
+In-Reply-To: <20210514133143.GK1096940@ziepe.ca>
+Cc: "Tian, Kevin" <kevin.tian@intel.com>,
+ "kvm@vger.kernel.org" <kvm@vger.kernel.org>, Will Deacon <will@kernel.org>,
+ Kirti Wankhede <kwankhede@nvidia.com>,
+ "iommu@lists.linux-foundation.org" <iommu@lists.linux-foundation.org>,
+ Alex Williamson <alex.williamson@redhat.com>,
+ David Woodhouse <dwmw2@infradead.org>, Christoph Hellwig <hch@lst.de>,
+ "linux-arm-kernel@lists.infradead.org" <linux-arm-kernel@lists.infradead.org>
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -98,25 +83,58 @@ List-Post: <mailto:iommu@lists.linux-foundation.org>
 List-Help: <mailto:iommu-request@lists.linux-foundation.org?subject=help>
 List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
  <mailto:iommu-request@lists.linux-foundation.org?subject=subscribe>
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-K2NjIGlvbW11IGxpc3QuCgpDaHJpc3RvcGggQmllZGwgPGxpbnV4LWtlcm5lbC5iZnJ6QG1hbmNo
-bWFsLmluLXVsbS5kZT4g5LqOMjAyMeW5tDXmnIgxN+aXpeWRqOS4gCDkuIvljYgxOjUy5YaZ6YGT
-77yaCj4KPiBDaHJpc3RvcGggQmllZGwgd3JvdGUuLi4KPgo+ID4gVGhhbmtzIGZvciB0YWtpbmcg
-Y2FyZSwgdW5mb3J0dW5hdGVseSBubyBpbXByb3ZlbWVudCB3aXRoIDUuMTAuMzgtcmMxIGhlcmUu
-Cj4KPiBTbyBpbiBjYXNlIHRoaXMgaXMgcmVsYXRlZCB0byB0aGUgLmNvbmZpZywgSSdtIGF0dGFj
-aGluZyBpdC4gSGFyZHdhcmUgaXMsCj4gYXMgc2FpZCBiZWZvcmUsIGFuIG9sZCBUaGlua3BhZCB4
-MjAwLCB2ZW5kb3IgQklPUyBhbmQgbm8gcGFydGljdWxhciBtb2RpZmljYXRpb25zLgo+IEFmdGVy
-IGRpc2FibGluZyBhbGwgdmdhL3ZpZGVvL2ZiY29uIHBhcmFtZXRlcnMgSSBzZWUgdGhlIHN5c3Rl
-bSBzdWZmZXJzCj4gYSBrZXJuZWwgcGFuaWMgYnV0IHVuZm9ydHVuYXRlbHkgb25seSB0aGUgbGFz
-dCAyNSBsaW5lcyBhcmUgdmlzaWJsZS4KPiBQb3NzaWJseSAodHlwb3MgYXJlIG1pbmUpCj4KPiAg
-ICAgUklQOiAwMDEwOl9fZG9tYWluX21hcHBpbmcrMHhhNy8weDNhMAo+Cj4gaXMgYSBoaW50IGlu
-dG8gdGhlIHJpZ2h0IGRpcmVjdGlvbj8KVGhpcyBsb29rcyBpbnRlbF9pb21tdSByZWxhdGVkLCBj
-YW4geW91IHRyeSBib290IHdpdGgKImludGVsX2lvbW11PW9mZiIgaW4ga2VybmVsIHBhcmFtZXRl
-cj8KPgo+ICAgICBDaGlzdG9waAoKUmVnYXJkcywKSmFjayBXYW5nCl9fX19fX19fX19fX19fX19f
-X19fX19fX19fX19fX19fX19fX19fX19fX19fX19fCmlvbW11IG1haWxpbmcgbGlzdAppb21tdUBs
-aXN0cy5saW51eC1mb3VuZGF0aW9uLm9yZwpodHRwczovL2xpc3RzLmxpbnV4Zm91bmRhdGlvbi5v
-cmcvbWFpbG1hbi9saXN0aW5mby9pb21tdQ==
+On Fri, May 14, 2021 at 10:31:43AM -0300, Jason Gunthorpe wrote:
+> There is no place for "domain as a carrier of PASID"
+> there. mdev_device should NOT participate in the IOMMU layer because
+> it is NOT a HW device. Trying to warp mdev_device into an IOMMU
+> presence is already the source of a lot of this hacky code.
+
+Having the mdev abstraction is way better than making the IOMMU code
+IOASID aware. The later requires either new parameters to existing
+functions or new functions. With the mdev abstraction no new functions
+are needed in the core API.
+
+Yes, I know, We have the AUX-domain specific functions now, but I
+suggested a while back to turn the mdev code into its own bus
+implementation and let the IOMMU driver deal with whether it has an mdev
+or a pdev. When that is done the aux-specific functions can go away.
+
+We are not there yet, but I think this is a cleaner abstraction than
+making the IOMMU-API ioasid-aware. Also because it separates the details
+of device-partitioning nicely from the IOMMU core code.
+
+> To juggle multiple IOASID per HW device the IOMMU API obviously has to
+> be made IOASID aware. It can't just blindly assume that a struct
+> device implies the single IOASID to use and hope for the best.
+
+The one-device<->one address-space idea is blindly assumed. Simply
+because the vast amount of devices out there work that way. When ioasids
+come into the game this changes of course, but we can work that out
+based on how the ioasids are used.
+
+For device partitioning the mdev abstraction work well if it is
+correctly implemented. The other use-case is device-access to user-space
+memory, and that is a completely different story.
+
+> IOASID represents the IOVA address space.
+
+No, when it comes to the IOMMU-API, a domain represents an address
+space.
+
+> Two concepts that represent the same thing is not great :)
+
+Agreed, so an IOASID should be an IOMMU-domain, if its not used for
+passing an mm_struct to a device.
+
+Regards,
+
+	Joerg
+_______________________________________________
+iommu mailing list
+iommu@lists.linux-foundation.org
+https://lists.linuxfoundation.org/mailman/listinfo/iommu
