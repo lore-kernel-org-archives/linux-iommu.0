@@ -2,92 +2,104 @@ Return-Path: <SRS0=LVl/=KN=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-13.6 required=3.0 tests=BAYES_00,DKIM_INVALID,
+X-Spam-Status: No, score=-16.6 required=3.0 tests=BAYES_00,DKIM_INVALID,
 	DKIM_SIGNED,HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_CR_TRAILER,INCLUDES_PATCH,
-	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,URIBL_RED autolearn=ham
-	autolearn_force=no version=3.4.0
+	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,URIBL_RED,USER_AGENT_GIT
+	autolearn=unavailable autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 60427C43461
-	for <iommu@archiver.kernel.org>; Tue, 18 May 2021 18:59:19 +0000 (UTC)
-Received: from smtp3.osuosl.org (smtp3.osuosl.org [140.211.166.136])
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2A7EAC43461
+	for <iommu@archiver.kernel.org>; Tue, 18 May 2021 21:19:33 +0000 (UTC)
+Received: from smtp2.osuosl.org (smtp2.osuosl.org [140.211.166.133])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 25513610A2
-	for <iommu@archiver.kernel.org>; Tue, 18 May 2021 18:59:19 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 25513610A2
-Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=redhat.com
+	by mail.kernel.org (Postfix) with ESMTPS id E0197611BD
+	for <iommu@archiver.kernel.org>; Tue, 18 May 2021 21:19:32 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org E0197611BD
+Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=linaro.org
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by smtp3.osuosl.org (Postfix) with ESMTP id C322660B99;
-	Tue, 18 May 2021 18:59:17 +0000 (UTC)
+	by smtp2.osuosl.org (Postfix) with ESMTP id A633440296;
+	Tue, 18 May 2021 21:19:32 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from smtp3.osuosl.org ([127.0.0.1])
-	by localhost (smtp3.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id 1-L7P2uCv4_5; Tue, 18 May 2021 18:59:16 +0000 (UTC)
-Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by smtp3.osuosl.org (Postfix) with ESMTP id 4DF1760659;
-	Tue, 18 May 2021 18:59:16 +0000 (UTC)
+Received: from smtp2.osuosl.org ([127.0.0.1])
+	by localhost (smtp2.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+	with ESMTP id FgBPMDASlxfc; Tue, 18 May 2021 21:19:31 +0000 (UTC)
+Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [IPv6:2605:bc80:3010:104::8cd3:938])
+	by smtp2.osuosl.org (Postfix) with ESMTP id 6C6CC403BE;
+	Tue, 18 May 2021 21:19:31 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 9F614C0029;
-	Tue, 18 May 2021 18:59:15 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 58E71C000D;
+	Tue, 18 May 2021 21:19:31 +0000 (UTC)
 Received: from smtp2.osuosl.org (smtp2.osuosl.org [140.211.166.133])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 12F76C001C
- for <iommu@lists.linux-foundation.org>; Tue, 18 May 2021 18:59:13 +0000 (UTC)
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 48E9AC001C
+ for <iommu@lists.linux-foundation.org>; Tue, 18 May 2021 21:19:30 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by smtp2.osuosl.org (Postfix) with ESMTP id 6FE4540544
- for <iommu@lists.linux-foundation.org>; Tue, 18 May 2021 18:59:12 +0000 (UTC)
+ by smtp2.osuosl.org (Postfix) with ESMTP id 3A90E400F0
+ for <iommu@lists.linux-foundation.org>; Tue, 18 May 2021 21:19:30 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Authentication-Results: smtp2.osuosl.org (amavisd-new);
- dkim=pass (1024-bit key) header.d=redhat.com
 Received: from smtp2.osuosl.org ([127.0.0.1])
  by localhost (smtp2.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id G1vfuD2MGZ0D for <iommu@lists.linux-foundation.org>;
- Tue, 18 May 2021 18:59:11 +0000 (UTC)
-X-Greylist: domain auto-whitelisted by SQLgrey-1.8.0
-Received: from us-smtp-delivery-124.mimecast.com
- (us-smtp-delivery-124.mimecast.com [216.205.24.124])
- by smtp2.osuosl.org (Postfix) with ESMTPS id 66F7F40534
- for <iommu@lists.linux-foundation.org>; Tue, 18 May 2021 18:59:11 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
- s=mimecast20190719; t=1621364350;
- h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
- to:to:cc:cc:mime-version:mime-version:content-type:content-type:
- content-transfer-encoding:content-transfer-encoding:
- in-reply-to:in-reply-to:references:references;
- bh=mTCHCZK2BTJZE01MOecBBpn9HulqRaUlYFYAZXBRETI=;
- b=PqYbclT5SGN3+TkBQXog9vmG6DI4pwx0Gf4U7Aux2twu4FZVAn+ZtVqOJIBEd535zO42R2
- 99ayPqlQ6mthasQD2u7EXgJ7+BJv6MnboCXBuljRtU8EFLSkvWdGXw6jCuXtYH2ahVvNMe
- b1lKFbvBErcYSAIHW1tJ6p2+1bQzusI=
-Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
- [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-51-WZvnCsz9PxKyXmK3klEP2Q-1; Tue, 18 May 2021 14:59:05 -0400
-X-MC-Unique: WZvnCsz9PxKyXmK3klEP2Q-1
-Received: from smtp.corp.redhat.com (int-mx07.intmail.prod.int.phx2.redhat.com
- [10.5.11.22])
- (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
- (No client certificate requested)
- by mimecast-mx01.redhat.com (Postfix) with ESMTPS id C74A9804745;
- Tue, 18 May 2021 18:59:02 +0000 (UTC)
-Received: from redhat.com (ovpn-113-225.phx2.redhat.com [10.3.113.225])
- by smtp.corp.redhat.com (Postfix) with ESMTP id 0DFD7100F49F;
- Tue, 18 May 2021 18:59:02 +0000 (UTC)
-Date: Tue, 18 May 2021 12:58:21 -0600
-From: Alex Williamson <alex.williamson@redhat.com>
-To: Shenming Lu <lushenming@huawei.com>
-Subject: Re: [RFC PATCH v3 5/8] vfio/type1: VFIO_IOMMU_ENABLE_IOPF
-Message-ID: <20210518125821.590a23aa.alex.williamson@redhat.com>
-In-Reply-To: <20210409034420.1799-6-lushenming@huawei.com>
-References: <20210409034420.1799-1-lushenming@huawei.com>
- <20210409034420.1799-6-lushenming@huawei.com>
+ with ESMTP id 4K9DU4CNDFps for <iommu@lists.linux-foundation.org>;
+ Tue, 18 May 2021 21:19:29 +0000 (UTC)
+X-Greylist: whitelisted by SQLgrey-1.8.0
+Received: from mail-pl1-x62d.google.com (mail-pl1-x62d.google.com
+ [IPv6:2607:f8b0:4864:20::62d])
+ by smtp2.osuosl.org (Postfix) with ESMTPS id 673C6400C1
+ for <iommu@lists.linux-foundation.org>; Tue, 18 May 2021 21:19:29 +0000 (UTC)
+Received: by mail-pl1-x62d.google.com with SMTP id t21so5845714plo.2
+ for <iommu@lists.linux-foundation.org>; Tue, 18 May 2021 14:19:29 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linaro.org; s=google;
+ h=from:to:cc:subject:date:message-id:in-reply-to:references
+ :mime-version:content-transfer-encoding;
+ bh=bLWRn4YrBPmazJ8WI5kmmonzugp1WS3cDhiksn1lYpA=;
+ b=RiAZucGr2tMDReAvGRghbavv+OqeexmPwk9L0Sa1G0N1lVW4bugRRy6QeOZ0uEmjfH
+ 5PaxShh07y+EeD5JiNr/T9HbgsyTau/uKGP9aptCxiQILfafQr/8l9GWKns49cxBaEJs
+ tDub1Bn5LtCmIs9AVjtA7+iL+ny+34QzNTu2v+CMpuxoQGtbXFpBJM7I+Q17PlLFX1Tj
+ 0uQQFPGe4uEEBw81peImZaTgd+CimyIb68zX6CN1Sfb1GsfeEYnIYmF+ObhCJ46I3RVA
+ Dj+DiBd7ShzKixZqcFIrenx8csAgHAkprcQIzr2pMrdgnmi3E9V2fdsXPqhLNVCGznQL
+ GSiA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+ d=1e100.net; s=20161025;
+ h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
+ :references:mime-version:content-transfer-encoding;
+ bh=bLWRn4YrBPmazJ8WI5kmmonzugp1WS3cDhiksn1lYpA=;
+ b=GU+AJudJCIFDhVi3rianqemsoSZbnrpjt1Ej3G8woK5YeVpNJM5sI63hLmIM0uzBU4
+ NxgyotQHY1YbcUcjmKJo5qLrmvoD3Cau1K3oOqdUcDBIlLytGjwIdtDg8NoC2GG8OpuD
+ BAu+3C8+nCaoyViJOXLYbeVK2UnARsWbMICXIGIzFoK+szqdCPGkadbRkmZVk8qrSVNp
+ G7ZTzrGG7fJDLsnT6I+C93Fo/yk5p+Csr7JxiKOfutgwD77/Yske4X/IV2CZwY5KrhHt
+ tH9UfMHfsI0Wj6EhZ+f4scLhUMhzs2ikYXa9ptTKZcGaLJGWF+KZHPZjcPK23tIvI7M8
+ 3SKw==
+X-Gm-Message-State: AOAM533d/TeGNa9SUVUB1eG5c71XJBPYA/TNheGpQAmboUJxToMlqGm8
+ 6EOffwdYYfzdBrKzTODc3xa8QA==
+X-Google-Smtp-Source: ABdhPJxHjKGb/4+/e9ItkwLk86iv5/VqrabAvfiV4n0yDMTb9BhGqOB4FZ7RycC3MZjGKKimegcReg==
+X-Received: by 2002:a17:902:7c0f:b029:ec:f5e2:4442 with SMTP id
+ x15-20020a1709027c0fb02900ecf5e24442mr6753915pll.81.1621372768894; 
+ Tue, 18 May 2021 14:19:28 -0700 (PDT)
+Received: from localhost.localdomain ([2601:1c2:680:1319:692:26ff:feda:3a81])
+ by smtp.gmail.com with ESMTPSA id
+ g89sm2587199pjg.30.2021.05.18.14.19.27
+ (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+ Tue, 18 May 2021 14:19:28 -0700 (PDT)
+From: John Stultz <john.stultz@linaro.org>
+To: lkml <linux-kernel@vger.kernel.org>
+Subject: [PATCH 2/2] firmware: QCOM_SCM: Allow qcom_scm driver to be loadable
+ as a permenent module
+Date: Tue, 18 May 2021 21:19:22 +0000
+Message-Id: <20210518211922.3474368-2-john.stultz@linaro.org>
+X-Mailer: git-send-email 2.25.1
+In-Reply-To: <20210518211922.3474368-1-john.stultz@linaro.org>
+References: <20210518211922.3474368-1-john.stultz@linaro.org>
 MIME-Version: 1.0
-X-Scanned-By: MIMEDefang 2.84 on 10.5.11.22
-Cc: Jean-Philippe Brucker <jean-philippe@linaro.org>,
- Kevin Tian <kevin.tian@intel.com>, kvm@vger.kernel.org,
- Will Deacon <will@kernel.org>, Cornelia Huck <cohuck@redhat.com>,
- linux-kernel@vger.kernel.org, Christoph Hellwig <hch@infradead.org>,
- iommu@lists.linux-foundation.org, linux-api@vger.kernel.org,
- wanghaibin.wang@huawei.com, Robin Murphy <robin.murphy@arm.com>,
- linux-arm-kernel@lists.infradead.org
+Cc: Maulik Shah <mkshah@codeaurora.org>, Jason Cooper <jason@lakedaemon.net>,
+ Saravana Kannan <saravanak@google.com>,
+ Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+ Catalin Marinas <catalin.marinas@arm.com>, iommu@lists.linux-foundation.org,
+ Lina Iyer <ilina@codeaurora.org>, linux-gpio@vger.kernel.org,
+ Vinod Koul <vkoul@kernel.org>, Andy Gross <agross@kernel.org>,
+ John Stultz <john.stultz@linaro.org>, Marc Zyngier <maz@kernel.org>,
+ linux-arm-msm@vger.kernel.org, Thomas Gleixner <tglx@linutronix.de>,
+ Will Deacon <will@kernel.org>, Linus Walleij <linus.walleij@linaro.org>,
+ Kalle Valo <kvalo@codeaurora.org>, Todd Kjos <tkjos@google.com>
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -105,422 +117,138 @@ Content-Transfer-Encoding: 7bit
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-On Fri, 9 Apr 2021 11:44:17 +0800
-Shenming Lu <lushenming@huawei.com> wrote:
+Allow the qcom_scm driver to be loadable as a permenent module.
 
-> Since enabling IOPF for devices may lead to a slow ramp up of performance,
-> we add an ioctl VFIO_IOMMU_ENABLE_IOPF to make it configurable. And the
-> IOPF enabling of a VFIO device includes setting IOMMU_DEV_FEAT_IOPF and
-> registering the VFIO IOPF handler.
-> 
-> Note that VFIO_IOMMU_DISABLE_IOPF is not supported since there may be
-> inflight page faults when disabling.
-> 
-> Signed-off-by: Shenming Lu <lushenming@huawei.com>
-> ---
->  drivers/vfio/vfio_iommu_type1.c | 223 +++++++++++++++++++++++++++++++-
->  include/uapi/linux/vfio.h       |   6 +
->  2 files changed, 226 insertions(+), 3 deletions(-)
-> 
-> diff --git a/drivers/vfio/vfio_iommu_type1.c b/drivers/vfio/vfio_iommu_type1.c
-> index 01e296c6dc9e..7df5711e743a 100644
-> --- a/drivers/vfio/vfio_iommu_type1.c
-> +++ b/drivers/vfio/vfio_iommu_type1.c
-> @@ -71,6 +71,7 @@ struct vfio_iommu {
->  	struct rb_root		dma_list;
->  	struct blocking_notifier_head notifier;
->  	struct mmu_notifier	mn;
-> +	struct mm_struct	*mm;
+This still uses the "depends on QCOM_SCM || !QCOM_SCM" bit to
+ensure that drivers that call into the qcom_scm driver are
+also built as modules. While not ideal in some cases its the
+only safe way I can find to avoid build errors without having
+those drivers select QCOM_SCM and have to force it on (as
+QCOM_SCM=n can be valid for those drivers).
 
-We currently have no requirement that a single mm is used for all
-container mappings.  Does enabling IOPF impose such a requirement?
-Shouldn't MAP/UNMAP enforce that?
+Reviving this now that Saravana's fw_devlink defaults to on,
+which should avoid loading troubles seen before.
 
->  	unsigned int		dma_avail;
->  	unsigned int		vaddr_invalid_count;
->  	uint64_t		pgsize_bitmap;
-> @@ -81,6 +82,7 @@ struct vfio_iommu {
->  	bool			dirty_page_tracking;
->  	bool			pinned_page_dirty_scope;
->  	bool			container_open;
-> +	bool			iopf_enabled;
->  };
->  
->  struct vfio_domain {
-> @@ -461,6 +463,38 @@ vfio_find_iopf_group(struct iommu_group *iommu_group)
->  	return node ? iopf_group : NULL;
->  }
->  
-> +static void vfio_link_iopf_group(struct vfio_iopf_group *new)
-> +{
-> +	struct rb_node **link, *parent = NULL;
-> +	struct vfio_iopf_group *iopf_group;
-> +
-> +	mutex_lock(&iopf_group_list_lock);
-> +
-> +	link = &iopf_group_list.rb_node;
-> +
-> +	while (*link) {
-> +		parent = *link;
-> +		iopf_group = rb_entry(parent, struct vfio_iopf_group, node);
-> +
-> +		if (new->iommu_group < iopf_group->iommu_group)
-> +			link = &(*link)->rb_left;
-> +		else
-> +			link = &(*link)->rb_right;
-> +	}
-> +
-> +	rb_link_node(&new->node, parent, link);
-> +	rb_insert_color(&new->node, &iopf_group_list);
-> +
-> +	mutex_unlock(&iopf_group_list_lock);
-> +}
-> +
-> +static void vfio_unlink_iopf_group(struct vfio_iopf_group *old)
-> +{
-> +	mutex_lock(&iopf_group_list_lock);
-> +	rb_erase(&old->node, &iopf_group_list);
-> +	mutex_unlock(&iopf_group_list_lock);
-> +}
-> +
->  static int vfio_lock_acct(struct vfio_dma *dma, long npage, bool async)
->  {
->  	struct mm_struct *mm;
-> @@ -2363,6 +2397,68 @@ static void vfio_iommu_iova_insert_copy(struct vfio_iommu *iommu,
->  	list_splice_tail(iova_copy, iova);
->  }
->  
-> +static int vfio_dev_domian_nested(struct device *dev, int *nested)
+Cc: Catalin Marinas <catalin.marinas@arm.com>
+Cc: Will Deacon <will@kernel.org>
+Cc: Andy Gross <agross@kernel.org>
+Cc: Bjorn Andersson <bjorn.andersson@linaro.org>
+Cc: Joerg Roedel <joro@8bytes.org>
+Cc: Thomas Gleixner <tglx@linutronix.de>
+Cc: Jason Cooper <jason@lakedaemon.net>
+Cc: Marc Zyngier <maz@kernel.org>
+Cc: Linus Walleij <linus.walleij@linaro.org>
+Cc: Vinod Koul <vkoul@kernel.org>
+Cc: Kalle Valo <kvalo@codeaurora.org>
+Cc: Maulik Shah <mkshah@codeaurora.org>
+Cc: Lina Iyer <ilina@codeaurora.org>
+Cc: Saravana Kannan <saravanak@google.com>
+Cc: Todd Kjos <tkjos@google.com>
+Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Cc: linux-arm-msm@vger.kernel.org
+Cc: iommu@lists.linux-foundation.org
+Cc: linux-gpio@vger.kernel.org
+Acked-by: Kalle Valo <kvalo@codeaurora.org>
+Acked-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Reviewed-by: Bjorn Andersson <bjorn.andersson@linaro.org>
+Signed-off-by: John Stultz <john.stultz@linaro.org>
+---
+v3:
+* Fix __arm_smccc_smc build issue reported by
+  kernel test robot <lkp@intel.com>
+v4:
+* Add "depends on QCOM_SCM || !QCOM_SCM" bit to ath10k
+  config that requires it.
+v5:
+* Fix QCOM_QCM typo in Kconfig, it should be QCOM_SCM
+---
+ drivers/firmware/Kconfig                | 2 +-
+ drivers/firmware/Makefile               | 3 ++-
+ drivers/firmware/qcom_scm.c             | 4 ++++
+ drivers/iommu/Kconfig                   | 2 ++
+ drivers/net/wireless/ath/ath10k/Kconfig | 1 +
+ 5 files changed, 10 insertions(+), 2 deletions(-)
 
-
-s/domian/domain/
-
-
-> +{
-> +	struct iommu_domain *domain;
-> +
-> +	domain = iommu_get_domain_for_dev(dev);
-> +	if (!domain)
-> +		return -ENODEV;
-> +
-> +	return iommu_domain_get_attr(domain, DOMAIN_ATTR_NESTING, nested);
-
-
-Wouldn't this be easier to use if it returned bool, false on -errno?
-
-
-> +}
-> +
-> +static int vfio_iommu_type1_dma_map_iopf(struct iommu_fault *fault, void *data);
-> +
-> +static int dev_enable_iopf(struct device *dev, void *data)
-> +{
-> +	int *enabled_dev_cnt = data;
-> +	int nested;
-> +	u32 flags;
-> +	int ret;
-> +
-> +	ret = iommu_dev_enable_feature(dev, IOMMU_DEV_FEAT_IOPF);
-> +	if (ret)
-> +		return ret;
-> +
-> +	ret = vfio_dev_domian_nested(dev, &nested);
-> +	if (ret)
-> +		goto out_disable;
-> +
-> +	if (nested)
-> +		flags = FAULT_REPORT_NESTED_L2;
-> +	else
-> +		flags = FAULT_REPORT_FLAT;
-> +
-> +	ret = iommu_register_device_fault_handler(dev,
-> +				vfio_iommu_type1_dma_map_iopf, flags, dev);
-> +	if (ret)
-> +		goto out_disable;
-> +
-> +	(*enabled_dev_cnt)++;
-> +	return 0;
-> +
-> +out_disable:
-> +	iommu_dev_disable_feature(dev, IOMMU_DEV_FEAT_IOPF);
-> +	return ret;
-> +}
-> +
-> +static int dev_disable_iopf(struct device *dev, void *data)
-> +{
-> +	int *enabled_dev_cnt = data;
-> +
-> +	if (enabled_dev_cnt && *enabled_dev_cnt <= 0)
-> +		return -1;
-
-
-Use an errno.
-
-
-> +
-> +	WARN_ON(iommu_unregister_device_fault_handler(dev));
-> +	WARN_ON(iommu_dev_disable_feature(dev, IOMMU_DEV_FEAT_IOPF));
-> +
-> +	if (enabled_dev_cnt)
-> +		(*enabled_dev_cnt)--;
-
-
-Why do we need these counters?
-
-> +
-> +	return 0;
-> +}
-> +
->  static int vfio_iommu_type1_attach_group(void *iommu_data,
->  					 struct iommu_group *iommu_group)
->  {
-> @@ -2376,6 +2472,8 @@ static int vfio_iommu_type1_attach_group(void *iommu_data,
->  	struct iommu_domain_geometry geo;
->  	LIST_HEAD(iova_copy);
->  	LIST_HEAD(group_resv_regions);
-> +	int iopf_enabled_dev_cnt = 0;
-> +	struct vfio_iopf_group *iopf_group = NULL;
->  
->  	mutex_lock(&iommu->lock);
->  
-> @@ -2453,6 +2551,24 @@ static int vfio_iommu_type1_attach_group(void *iommu_data,
->  	if (ret)
->  		goto out_domain;
->  
-> +	if (iommu->iopf_enabled) {
-> +		ret = iommu_group_for_each_dev(iommu_group, &iopf_enabled_dev_cnt,
-> +					       dev_enable_iopf);
-> +		if (ret)
-> +			goto out_detach;
-> +
-> +		iopf_group = kzalloc(sizeof(*iopf_group), GFP_KERNEL);
-> +		if (!iopf_group) {
-> +			ret = -ENOMEM;
-> +			goto out_detach;
-> +		}
-> +
-> +		iopf_group->iommu_group = iommu_group;
-> +		iopf_group->iommu = iommu;
-> +
-> +		vfio_link_iopf_group(iopf_group);
-
-This seems backwards, once we enable iopf we can take a fault, so the
-structure to lookup the data for the device should be setup first.  I'm
-still not convinced this iopf_group rb tree is a good solution to get
-from the device to the iommu either.  vfio-core could traverse dev ->
-iommu_group -> vfio_group -> container -> iommu_data.
-
-
-> +	}
-> +
->  	/* Get aperture info */
->  	iommu_domain_get_attr(domain->domain, DOMAIN_ATTR_GEOMETRY, &geo);
->  
-> @@ -2534,9 +2650,11 @@ static int vfio_iommu_type1_attach_group(void *iommu_data,
->  	vfio_test_domain_fgsp(domain);
->  
->  	/* replay mappings on new domains */
-> -	ret = vfio_iommu_replay(iommu, domain);
-> -	if (ret)
-> -		goto out_detach;
-> +	if (!iommu->iopf_enabled) {
-> +		ret = vfio_iommu_replay(iommu, domain);
-> +		if (ret)
-> +			goto out_detach;
-> +	}
-
-Test in vfio_iommu_replay()?
-
->  
->  	if (resv_msi) {
->  		ret = iommu_get_msi_cookie(domain->domain, resv_msi_base);
-> @@ -2567,6 +2685,15 @@ static int vfio_iommu_type1_attach_group(void *iommu_data,
->  	iommu_domain_free(domain->domain);
->  	vfio_iommu_iova_free(&iova_copy);
->  	vfio_iommu_resv_free(&group_resv_regions);
-> +	if (iommu->iopf_enabled) {
-> +		if (iopf_group) {
-> +			vfio_unlink_iopf_group(iopf_group);
-> +			kfree(iopf_group);
-> +		}
-> +
-> +		iommu_group_for_each_dev(iommu_group, &iopf_enabled_dev_cnt,
-> +					 dev_disable_iopf);
-
-Backwards, disable fault reporting before unlinking lookup.
-
-> +	}
->  out_free:
->  	kfree(domain);
->  	kfree(group);
-> @@ -2728,6 +2855,19 @@ static void vfio_iommu_type1_detach_group(void *iommu_data,
->  		if (!group)
->  			continue;
->  
-> +		if (iommu->iopf_enabled) {
-> +			struct vfio_iopf_group *iopf_group;
-> +
-> +			iopf_group = vfio_find_iopf_group(iommu_group);
-> +			if (!WARN_ON(!iopf_group)) {
-> +				vfio_unlink_iopf_group(iopf_group);
-> +				kfree(iopf_group);
-> +			}
-> +
-> +			iommu_group_for_each_dev(iommu_group, NULL,
-> +						 dev_disable_iopf);
-
-
-Backwards.  Also unregistering the fault handler can fail if there are
-pending faults.  It appears the fault handler and iopf lookup could also
-race with this function, ex. fault handler gets an iopf object before
-it's removed from the rb-tree, blocks trying to acquire iommu->lock,
-disable_iopf fails, detach proceeds, fault handler has use after free
-error.
-
-
-> +		}
-> +
->  		vfio_iommu_detach_group(domain, group);
->  		update_dirty_scope = !group->pinned_page_dirty_scope;
->  		list_del(&group->next);
-> @@ -2846,6 +2986,11 @@ static void vfio_iommu_type1_release(void *iommu_data)
->  
->  	vfio_iommu_iova_free(&iommu->iova_list);
->  
-> +	if (iommu->iopf_enabled) {
-> +		mmu_notifier_unregister(&iommu->mn, iommu->mm);
-> +		mmdrop(iommu->mm);
-> +	}
-> +
->  	kfree(iommu);
->  }
->  
-> @@ -3441,6 +3586,76 @@ static const struct mmu_notifier_ops vfio_iommu_type1_mn_ops = {
->  	.invalidate_range	= mn_invalidate_range,
->  };
->  
-> +static int vfio_iommu_type1_enable_iopf(struct vfio_iommu *iommu)
-> +{
-> +	struct vfio_domain *d;
-> +	struct vfio_group *g;
-> +	struct vfio_iopf_group *iopf_group;
-> +	int enabled_dev_cnt = 0;
-> +	int ret;
-> +
-> +	if (!current->mm)
-> +		return -ENODEV;
-> +
-> +	mutex_lock(&iommu->lock);
-> +
-> +	mmgrab(current->mm);
-
-
-As above, this is a new and undocumented requirement.
-
-
-> +	iommu->mm = current->mm;
-> +	iommu->mn.ops = &vfio_iommu_type1_mn_ops;
-> +	ret = mmu_notifier_register(&iommu->mn, current->mm);
-> +	if (ret)
-> +		goto out_drop;
-> +
-> +	list_for_each_entry(d, &iommu->domain_list, next) {
-> +		list_for_each_entry(g, &d->group_list, next) {
-> +			ret = iommu_group_for_each_dev(g->iommu_group,
-> +					&enabled_dev_cnt, dev_enable_iopf);
-> +			if (ret)
-> +				goto out_unwind;
-> +
-> +			iopf_group = kzalloc(sizeof(*iopf_group), GFP_KERNEL);
-> +			if (!iopf_group) {
-> +				ret = -ENOMEM;
-> +				goto out_unwind;
-> +			}
-> +
-> +			iopf_group->iommu_group = g->iommu_group;
-> +			iopf_group->iommu = iommu;
-> +
-> +			vfio_link_iopf_group(iopf_group);
-> +		}
-> +	}
-> +
-> +	iommu->iopf_enabled = true;
-> +	goto out_unlock;
-> +
-> +out_unwind:
-> +	list_for_each_entry(d, &iommu->domain_list, next) {
-> +		list_for_each_entry(g, &d->group_list, next) {
-> +			iopf_group = vfio_find_iopf_group(g->iommu_group);
-> +			if (iopf_group) {
-> +				vfio_unlink_iopf_group(iopf_group);
-> +				kfree(iopf_group);
-> +			}
-> +
-> +			if (iommu_group_for_each_dev(g->iommu_group,
-> +					&enabled_dev_cnt, dev_disable_iopf))
-> +				goto out_unregister;
-
-
-This seems broken, we break out of the unwind if any group_for_each
-fails??
-
-> +		}
-> +	}
-> +
-> +out_unregister:
-> +	mmu_notifier_unregister(&iommu->mn, current->mm);
-> +
-> +out_drop:
-> +	iommu->mm = NULL;
-> +	mmdrop(current->mm);
-> +
-> +out_unlock:
-> +	mutex_unlock(&iommu->lock);
-> +	return ret;
-> +}
-
-
-Is there an assumption that the user does this before performing any
-mapping?  I don't see where current mappings would be converted which
-means we'll have pinned pages leaked and vfio_dma objects without a
-pinned page bitmap.
-
-> +
->  static long vfio_iommu_type1_ioctl(void *iommu_data,
->  				   unsigned int cmd, unsigned long arg)
->  {
-> @@ -3457,6 +3672,8 @@ static long vfio_iommu_type1_ioctl(void *iommu_data,
->  		return vfio_iommu_type1_unmap_dma(iommu, arg);
->  	case VFIO_IOMMU_DIRTY_PAGES:
->  		return vfio_iommu_type1_dirty_pages(iommu, arg);
-> +	case VFIO_IOMMU_ENABLE_IOPF:
-> +		return vfio_iommu_type1_enable_iopf(iommu);
->  	default:
->  		return -ENOTTY;
->  	}
-> diff --git a/include/uapi/linux/vfio.h b/include/uapi/linux/vfio.h
-> index 8ce36c1d53ca..5497036bebdc 100644
-> --- a/include/uapi/linux/vfio.h
-> +++ b/include/uapi/linux/vfio.h
-> @@ -1208,6 +1208,12 @@ struct vfio_iommu_type1_dirty_bitmap_get {
->  
->  #define VFIO_IOMMU_DIRTY_PAGES             _IO(VFIO_TYPE, VFIO_BASE + 17)
->  
-> +/*
-> + * IOCTL to enable IOPF for the container.
-> + * Called right after VFIO_SET_IOMMU.
-> + */
-> +#define VFIO_IOMMU_ENABLE_IOPF             _IO(VFIO_TYPE, VFIO_BASE + 18)
-
-
-We have extensions and flags and capabilities, and nothing tells the
-user whether this feature is available to them without trying it?
-
-
-> +
->  /* -------- Additional API for SPAPR TCE (Server POWERPC) IOMMU -------- */
->  
->  /*
+diff --git a/drivers/firmware/Kconfig b/drivers/firmware/Kconfig
+index db0ea2d2d75a2..af53778edc7e2 100644
+--- a/drivers/firmware/Kconfig
++++ b/drivers/firmware/Kconfig
+@@ -235,7 +235,7 @@ config INTEL_STRATIX10_RSU
+ 	  Say Y here if you want Intel RSU support.
+ 
+ config QCOM_SCM
+-	bool
++	tristate "Qcom SCM driver"
+ 	depends on ARM || ARM64
+ 	depends on HAVE_ARM_SMCCC
+ 	select RESET_CONTROLLER
+diff --git a/drivers/firmware/Makefile b/drivers/firmware/Makefile
+index 5e013b6a3692e..523173cbff335 100644
+--- a/drivers/firmware/Makefile
++++ b/drivers/firmware/Makefile
+@@ -17,7 +17,8 @@ obj-$(CONFIG_ISCSI_IBFT)	+= iscsi_ibft.o
+ obj-$(CONFIG_FIRMWARE_MEMMAP)	+= memmap.o
+ obj-$(CONFIG_RASPBERRYPI_FIRMWARE) += raspberrypi.o
+ obj-$(CONFIG_FW_CFG_SYSFS)	+= qemu_fw_cfg.o
+-obj-$(CONFIG_QCOM_SCM)		+= qcom_scm.o qcom_scm-smc.o qcom_scm-legacy.o
++obj-$(CONFIG_QCOM_SCM)		+= qcom-scm.o
++qcom-scm-objs += qcom_scm.o qcom_scm-smc.o qcom_scm-legacy.o
+ obj-$(CONFIG_TI_SCI_PROTOCOL)	+= ti_sci.o
+ obj-$(CONFIG_TRUSTED_FOUNDATIONS) += trusted_foundations.o
+ obj-$(CONFIG_TURRIS_MOX_RWTM)	+= turris-mox-rwtm.o
+diff --git a/drivers/firmware/qcom_scm.c b/drivers/firmware/qcom_scm.c
+index ee9cb545e73b9..bb9ce3f92931a 100644
+--- a/drivers/firmware/qcom_scm.c
++++ b/drivers/firmware/qcom_scm.c
+@@ -1296,6 +1296,7 @@ static const struct of_device_id qcom_scm_dt_match[] = {
+ 	{ .compatible = "qcom,scm" },
+ 	{}
+ };
++MODULE_DEVICE_TABLE(of, qcom_scm_dt_match);
+ 
+ static struct platform_driver qcom_scm_driver = {
+ 	.driver = {
+@@ -1312,3 +1313,6 @@ static int __init qcom_scm_init(void)
+ 	return platform_driver_register(&qcom_scm_driver);
+ }
+ subsys_initcall(qcom_scm_init);
++
++MODULE_DESCRIPTION("Qualcomm Technologies, Inc. SCM driver");
++MODULE_LICENSE("GPL v2");
+diff --git a/drivers/iommu/Kconfig b/drivers/iommu/Kconfig
+index 1f111b399bcab..38f7b7a8e2843 100644
+--- a/drivers/iommu/Kconfig
++++ b/drivers/iommu/Kconfig
+@@ -253,6 +253,7 @@ config SPAPR_TCE_IOMMU
+ config ARM_SMMU
+ 	tristate "ARM Ltd. System MMU (SMMU) Support"
+ 	depends on ARM64 || ARM || (COMPILE_TEST && !GENERIC_ATOMIC64)
++	depends on QCOM_SCM || !QCOM_SCM #if QCOM_SCM=m this can't be =y
+ 	select IOMMU_API
+ 	select IOMMU_IO_PGTABLE_LPAE
+ 	select ARM_DMA_USE_IOMMU if ARM
+@@ -382,6 +383,7 @@ config QCOM_IOMMU
+ 	# Note: iommu drivers cannot (yet?) be built as modules
+ 	bool "Qualcomm IOMMU Support"
+ 	depends on ARCH_QCOM || (COMPILE_TEST && !GENERIC_ATOMIC64)
++	depends on QCOM_SCM=y
+ 	select IOMMU_API
+ 	select IOMMU_IO_PGTABLE_LPAE
+ 	select ARM_DMA_USE_IOMMU
+diff --git a/drivers/net/wireless/ath/ath10k/Kconfig b/drivers/net/wireless/ath/ath10k/Kconfig
+index 40f91bc8514d8..741289e385d59 100644
+--- a/drivers/net/wireless/ath/ath10k/Kconfig
++++ b/drivers/net/wireless/ath/ath10k/Kconfig
+@@ -44,6 +44,7 @@ config ATH10K_SNOC
+ 	tristate "Qualcomm ath10k SNOC support"
+ 	depends on ATH10K
+ 	depends on ARCH_QCOM || COMPILE_TEST
++	depends on QCOM_SCM || !QCOM_SCM #if QCOM_SCM=m this can't be =y
+ 	select QCOM_QMI_HELPERS
+ 	help
+ 	  This module adds support for integrated WCN3990 chip connected
+-- 
+2.25.1
 
 _______________________________________________
 iommu mailing list
