@@ -4,47 +4,49 @@ X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 X-Spam-Level: 
 X-Spam-Status: No, score=-13.6 required=3.0 tests=BAYES_00,DKIM_INVALID,
 	DKIM_SIGNED,HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_CR_TRAILER,INCLUDES_PATCH,
-	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,URIBL_RED autolearn=unavailable
+	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,URIBL_RED autolearn=ham
 	autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 73D3FC433B4
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A2533C43462
 	for <iommu@archiver.kernel.org>; Tue, 18 May 2021 18:59:17 +0000 (UTC)
-Received: from smtp2.osuosl.org (smtp2.osuosl.org [140.211.166.133])
+Received: from smtp4.osuosl.org (smtp4.osuosl.org [140.211.166.137])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 26FD361261
+	by mail.kernel.org (Postfix) with ESMTPS id 66C7661355
 	for <iommu@archiver.kernel.org>; Tue, 18 May 2021 18:59:17 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 26FD361261
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 66C7661355
 Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=redhat.com
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by smtp2.osuosl.org (Postfix) with ESMTP id EC7594055A;
-	Tue, 18 May 2021 18:59:16 +0000 (UTC)
+	by smtp4.osuosl.org (Postfix) with ESMTP id 0F2C640282;
+	Tue, 18 May 2021 18:59:17 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from smtp2.osuosl.org ([127.0.0.1])
-	by localhost (smtp2.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id 4BfsPOxFXukx; Tue, 18 May 2021 18:59:16 +0000 (UTC)
-Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by smtp2.osuosl.org (Postfix) with ESMTP id B3D3A4054F;
+Received: from smtp4.osuosl.org ([127.0.0.1])
+	by localhost (smtp4.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+	with ESMTP id XjWRk8hwRaIO; Tue, 18 May 2021 18:59:15 +0000 (UTC)
+Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [IPv6:2605:bc80:3010:104::8cd3:938])
+	by smtp4.osuosl.org (Postfix) with ESMTP id 771CA40356;
 	Tue, 18 May 2021 18:59:15 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 7AF74C0022;
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 55E1AC000E;
 	Tue, 18 May 2021 18:59:15 +0000 (UTC)
-Received: from smtp2.osuosl.org (smtp2.osuosl.org [IPv6:2605:bc80:3010::133])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 78A6FC0023
+Received: from smtp1.osuosl.org (smtp1.osuosl.org [IPv6:2605:bc80:3010::138])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 36025C0001
  for <iommu@lists.linux-foundation.org>; Tue, 18 May 2021 18:59:12 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by smtp2.osuosl.org (Postfix) with ESMTP id 537D54054A
+ by smtp1.osuosl.org (Postfix) with ESMTP id 2011C837AC
  for <iommu@lists.linux-foundation.org>; Tue, 18 May 2021 18:59:12 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from smtp2.osuosl.org ([127.0.0.1])
- by localhost (smtp2.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id neXumNnZDess for <iommu@lists.linux-foundation.org>;
+Authentication-Results: smtp1.osuosl.org (amavisd-new);
+ dkim=pass (1024-bit key) header.d=redhat.com
+Received: from smtp1.osuosl.org ([127.0.0.1])
+ by localhost (smtp1.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+ with ESMTP id DHNlpXjd4zYU for <iommu@lists.linux-foundation.org>;
  Tue, 18 May 2021 18:59:08 +0000 (UTC)
 X-Greylist: domain auto-whitelisted by SQLgrey-1.8.0
 Received: from us-smtp-delivery-124.mimecast.com
- (us-smtp-delivery-124.mimecast.com [216.205.24.124])
- by smtp2.osuosl.org (Postfix) with ESMTPS id A7B4F40544
+ (us-smtp-delivery-124.mimecast.com [170.10.133.124])
+ by smtp1.osuosl.org (Postfix) with ESMTPS id 8D5F6843F5
  for <iommu@lists.linux-foundation.org>; Tue, 18 May 2021 18:59:08 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
  s=mimecast20190719; t=1621364347;
@@ -52,32 +54,32 @@ DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
  to:to:cc:cc:mime-version:mime-version:content-type:content-type:
  content-transfer-encoding:content-transfer-encoding:
  in-reply-to:in-reply-to:references:references;
- bh=Ax4CDb+Sd6mNQ6JnBMbZp3JYaJV2pPRPTkaJj0ycGsA=;
- b=AfPrrVBfhFRf/KZTncGlGkLomscCYegUiuzPt6ILj+7Fphv4gs+5tkE8uCyOpAXkjWCNY4
- eyV4L3QLSficxwGVDRnQzmvB+llgWquz1G0sspLwBFIB+NdkcKw+5fZC8VfGdEvDVJXqS+
- rk3b+zZY8E9iLuC5bluV5NqEFrwr4cM=
+ bh=Tfjlufh0xC6ZP3c7VljIYlskYT5mjHLtMK/8FSz46Jg=;
+ b=Derp9YoXlHjKR/sq6CfSLGt7Dfmq4iyh0ap1SR93W9JaxBGQGF3TrPYmFgty/9Xxb25VcP
+ PTsP6PI5EmzQmo5gdGMXSVhTpFv3VPo0Euei1oa2lgD9GxkxweQnj1wAaJCyjPQUGvQOR9
+ nK78k+RLwNOhMiyN4Zxe5Riyhfwut7g=
 Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
  [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-399-LSvapAV8PQWv0YsaYRwixg-1; Tue, 18 May 2021 14:59:03 -0400
-X-MC-Unique: LSvapAV8PQWv0YsaYRwixg-1
+ us-mta-556-urbit0cmMIiAzdAOFUsM4A-1; Tue, 18 May 2021 14:59:05 -0400
+X-MC-Unique: urbit0cmMIiAzdAOFUsM4A-1
 Received: from smtp.corp.redhat.com (int-mx07.intmail.prod.int.phx2.redhat.com
  [10.5.11.22])
  (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
  (No client certificate requested)
- by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 00050100C61D;
- Tue, 18 May 2021 18:59:00 +0000 (UTC)
+ by mimecast-mx01.redhat.com (Postfix) with ESMTPS id BEEFF6D4E6;
+ Tue, 18 May 2021 18:59:03 +0000 (UTC)
 Received: from redhat.com (ovpn-113-225.phx2.redhat.com [10.3.113.225])
- by smtp.corp.redhat.com (Postfix) with ESMTP id 3A0F6100F49F;
- Tue, 18 May 2021 18:59:00 +0000 (UTC)
-Date: Tue, 18 May 2021 12:58:31 -0600
+ by smtp.corp.redhat.com (Postfix) with ESMTP id ED03B100F49F;
+ Tue, 18 May 2021 18:59:02 +0000 (UTC)
+Date: Tue, 18 May 2021 12:58:18 -0600
 From: Alex Williamson <alex.williamson@redhat.com>
 To: Shenming Lu <lushenming@huawei.com>
-Subject: Re: [RFC PATCH v3 3/8] vfio/type1: Add an MMU notifier to avoid
- pinning
-Message-ID: <20210518125831.153e039c.alex.williamson@redhat.com>
-In-Reply-To: <20210409034420.1799-4-lushenming@huawei.com>
+Subject: Re: [RFC PATCH v3 6/8] vfio/type1: No need to statically pin and
+ map if IOPF enabled
+Message-ID: <20210518125818.2282941f.alex.williamson@redhat.com>
+In-Reply-To: <20210409034420.1799-7-lushenming@huawei.com>
 References: <20210409034420.1799-1-lushenming@huawei.com>
- <20210409034420.1799-4-lushenming@huawei.com>
+ <20210409034420.1799-7-lushenming@huawei.com>
 MIME-Version: 1.0
 X-Scanned-By: MIMEDefang 2.84 on 10.5.11.22
 Cc: Jean-Philippe Brucker <jean-philippe@linaro.org>,
@@ -104,208 +106,142 @@ Content-Transfer-Encoding: 7bit
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-On Fri, 9 Apr 2021 11:44:15 +0800
+On Fri, 9 Apr 2021 11:44:18 +0800
 Shenming Lu <lushenming@huawei.com> wrote:
 
-> To avoid pinning pages when they are mapped in IOMMU page tables, we
-> add an MMU notifier to tell the addresses which are no longer valid
-> and try to unmap them.
+> If IOPF enabled for the VFIO container, there is no need to statically
+> pin and map the entire DMA range, we can do it on demand. And unmap
+> according to the IOPF mapped bitmap when removing vfio_dma.
+> 
+> Note that we still mark all pages dirty even if IOPF enabled, we may
+> add IOPF-based fine grained dirty tracking support in the future.
 > 
 > Signed-off-by: Shenming Lu <lushenming@huawei.com>
 > ---
->  drivers/vfio/vfio_iommu_type1.c | 112 +++++++++++++++++++++++++++++++-
->  1 file changed, 109 insertions(+), 3 deletions(-)
+>  drivers/vfio/vfio_iommu_type1.c | 38 +++++++++++++++++++++++++++------
+>  1 file changed, 32 insertions(+), 6 deletions(-)
 > 
 > diff --git a/drivers/vfio/vfio_iommu_type1.c b/drivers/vfio/vfio_iommu_type1.c
-> index ab0ff60ee207..1cb9d1f2717b 100644
+> index 7df5711e743a..dcc93c3b258c 100644
 > --- a/drivers/vfio/vfio_iommu_type1.c
 > +++ b/drivers/vfio/vfio_iommu_type1.c
-> @@ -40,6 +40,7 @@
->  #include <linux/notifier.h>
->  #include <linux/dma-iommu.h>
->  #include <linux/irqdomain.h>
-> +#include <linux/mmu_notifier.h>
+> @@ -175,6 +175,7 @@ struct vfio_iopf_group {
+>  #define IOPF_MAPPED_BITMAP_GET(dma, i)	\
+>  			      ((dma->iopf_mapped_bitmap[(i) / BITS_PER_LONG]	\
+>  			       >> ((i) % BITS_PER_LONG)) & 0x1)  
+> +#define IOPF_MAPPED_BITMAP_BYTES(n)	DIRTY_BITMAP_BYTES(n)
 >  
->  #define DRIVER_VERSION  "0.2"
->  #define DRIVER_AUTHOR   "Alex Williamson <alex.williamson@redhat.com>"
-> @@ -69,6 +70,7 @@ struct vfio_iommu {
->  	struct mutex		lock;
->  	struct rb_root		dma_list;
->  	struct blocking_notifier_head notifier;
-> +	struct mmu_notifier	mn;
->  	unsigned int		dma_avail;
->  	unsigned int		vaddr_invalid_count;
->  	uint64_t		pgsize_bitmap;
-> @@ -1204,6 +1206,72 @@ static long vfio_unmap_unpin(struct vfio_iommu *iommu, struct vfio_dma *dma,
->  	return unlocked;
+>  #define WAITED 1
+>  
+> @@ -959,7 +960,8 @@ static int vfio_iommu_type1_pin_pages(void *iommu_data,
+>  	 * already pinned and accounted. Accouting should be done if there is no
+>  	 * iommu capable domain in the container.
+>  	 */
+> -	do_accounting = !IS_IOMMU_CAP_DOMAIN_IN_CONTAINER(iommu);
+> +	do_accounting = !IS_IOMMU_CAP_DOMAIN_IN_CONTAINER(iommu) ||
+> +			iommu->iopf_enabled;
+>  
+>  	for (i = 0; i < npage; i++) {
+>  		struct vfio_pfn *vpfn;
+> @@ -1048,7 +1050,8 @@ static int vfio_iommu_type1_unpin_pages(void *iommu_data,
+>  
+>  	mutex_lock(&iommu->lock);
+>  
+> -	do_accounting = !IS_IOMMU_CAP_DOMAIN_IN_CONTAINER(iommu);
+> +	do_accounting = !IS_IOMMU_CAP_DOMAIN_IN_CONTAINER(iommu) ||
+> +			iommu->iopf_enabled;
+
+pin/unpin are actually still pinning pages, why does iopf exempt them
+from accounting?
+
+
+>  	for (i = 0; i < npage; i++) {
+>  		struct vfio_dma *dma;
+>  		dma_addr_t iova;
+> @@ -1169,7 +1172,7 @@ static long vfio_unmap_unpin(struct vfio_iommu *iommu, struct vfio_dma *dma,
+>  	if (!dma->size)
+>  		return 0;
+>  
+> -	if (!IS_IOMMU_CAP_DOMAIN_IN_CONTAINER(iommu))
+> +	if (!IS_IOMMU_CAP_DOMAIN_IN_CONTAINER(iommu) || iommu->iopf_enabled)
+>  		return 0;
+>  
+>  	/*
+> @@ -1306,11 +1309,20 @@ static void vfio_unmap_partial_iopf(struct vfio_iommu *iommu,
+>  	}
 >  }
 >  
-> +/* Unmap the IOPF mapped pages in the specified range. */
-> +static void vfio_unmap_partial_iopf(struct vfio_iommu *iommu,
-> +				    struct vfio_dma *dma,
-> +				    dma_addr_t start, dma_addr_t end)
+> +static void vfio_dma_clean_iopf(struct vfio_iommu *iommu, struct vfio_dma *dma)
 > +{
-> +	struct iommu_iotlb_gather *gathers;
-> +	struct vfio_domain *d;
-> +	int i, num_domains = 0;
+> +	vfio_unmap_partial_iopf(iommu, dma, dma->iova, dma->iova + dma->size);
 > +
-> +	list_for_each_entry(d, &iommu->domain_list, next)
-> +		num_domains++;
-> +
-> +	gathers = kzalloc(sizeof(*gathers) * num_domains, GFP_KERNEL);
-> +	if (gathers) {
-> +		for (i = 0; i < num_domains; i++)
-> +			iommu_iotlb_gather_init(&gathers[i]);
-> +	}
-
-
-If we're always serialized on iommu->lock, would it make sense to have
-gathers pre-allocated on the vfio_iommu object?
-
-> +
-> +	while (start < end) {
-> +		unsigned long bit_offset;
-> +		size_t len;
-> +
-> +		bit_offset = (start - dma->iova) >> PAGE_SHIFT;
-> +
-> +		for (len = 0; start + len < end; len += PAGE_SIZE) {
-> +			if (!IOPF_MAPPED_BITMAP_GET(dma,
-> +					bit_offset + (len >> PAGE_SHIFT)))
-> +				break;
-
-
-There are bitmap helpers for this, find_first_bit(),
-find_next_zero_bit().
-
-
-> +		}
-> +
-> +		if (len) {
-> +			i = 0;
-> +			list_for_each_entry(d, &iommu->domain_list, next) {
-> +				size_t unmapped;
-> +
-> +				if (gathers)
-> +					unmapped = iommu_unmap_fast(d->domain,
-> +								    start, len,
-> +								    &gathers[i++]);
-> +				else
-> +					unmapped = iommu_unmap(d->domain,
-> +							       start, len);
-> +
-> +				if (WARN_ON(unmapped != len))
-
-The IOMMU API does not guarantee arbitrary unmap sizes, this will
-trigger and this exit path is wrong.  If we've already unmapped the
-IOMMU, shouldn't we proceed with @unmapped rather than @len so the
-device can re-fault the extra mappings?  Otherwise the IOMMU state
-doesn't match the iopf bitmap state.
-
-> +					goto out;
-> +			}
-> +
-> +			bitmap_clear(dma->iopf_mapped_bitmap,
-> +				     bit_offset, len >> PAGE_SHIFT);
-> +
-> +			cond_resched();
-> +		}
-> +
-> +		start += (len + PAGE_SIZE);
-> +	}
-> +
-> +out:
-> +	if (gathers) {
-> +		i = 0;
-> +		list_for_each_entry(d, &iommu->domain_list, next)
-> +			iommu_iotlb_sync(d->domain, &gathers[i++]);
-> +
-> +		kfree(gathers);
-> +	}
+> +	kfree(dma->iopf_mapped_bitmap);
 > +}
 > +
 >  static void vfio_remove_dma(struct vfio_iommu *iommu, struct vfio_dma *dma)
 >  {
 >  	WARN_ON(!RB_EMPTY_ROOT(&dma->pfn_list));
-> @@ -3197,17 +3265,18 @@ static int vfio_iommu_type1_dma_map_iopf(struct iommu_fault *fault, void *data)
+>  	vfio_unmap_unpin(iommu, dma, true);
+>  	vfio_unlink_dma(iommu, dma);
+> +	if (iommu->iopf_enabled)
+> +		vfio_dma_clean_iopf(iommu, dma);
+>  	put_task_struct(dma->task);
+>  	vfio_dma_bitmap_free(dma);
+>  	if (dma->vaddr_invalid) {
+> @@ -1359,7 +1371,8 @@ static int update_user_bitmap(u64 __user *bitmap, struct vfio_iommu *iommu,
+>  	 * mark all pages dirty if any IOMMU capable device is not able
+>  	 * to report dirty pages and all pages are pinned and mapped.
+>  	 */
+> -	if (iommu->num_non_pinned_groups && dma->iommu_mapped)
+> +	if (iommu->num_non_pinned_groups &&
+> +	    (dma->iommu_mapped || iommu->iopf_enabled))
+>  		bitmap_set(dma->bitmap, 0, nbits);
+
+This seems like really poor integration of iopf into dirty page
+tracking.  I'd expect dirty logging to flush the mapped pages and
+write faults to mark pages dirty.  Shouldn't the fault handler also
+provide only the access faulted, so for example a read fault wouldn't
+mark the page dirty?
+
 >  
->  	vaddr = iova - dma->iova + dma->vaddr;
->  
-> -	if (vfio_pin_page_external(dma, vaddr, &pfn, true))
-> +	if (vfio_pin_page_external(dma, vaddr, &pfn, false))
->  		goto out_invalid;
->  
->  	if (vfio_iommu_map(iommu, iova, pfn, 1, dma->prot)) {
-> -		if (put_pfn(pfn, dma->prot))
-> -			vfio_lock_acct(dma, -1, true);
-> +		put_pfn(pfn, dma->prot);
->  		goto out_invalid;
+>  	if (shift) {
+> @@ -1772,6 +1785,16 @@ static int vfio_dma_do_map(struct vfio_iommu *iommu,
+>  		goto out_unlock;
 >  	}
 >  
->  	bitmap_set(dma->iopf_mapped_bitmap, bit_offset, 1);
->  
-> +	put_pfn(pfn, dma->prot);
-> +
->  out_success:
->  	status = IOMMU_PAGE_RESP_SUCCESS;
->  
-> @@ -3220,6 +3289,43 @@ static int vfio_iommu_type1_dma_map_iopf(struct iommu_fault *fault, void *data)
->  	return 0;
->  }
->  
-> +static void mn_invalidate_range(struct mmu_notifier *mn, struct mm_struct *mm,
-> +				unsigned long start, unsigned long end)
-> +{
-> +	struct vfio_iommu *iommu = container_of(mn, struct vfio_iommu, mn);
-> +	struct rb_node *n;
-> +	int ret;
-> +
-> +	mutex_lock(&iommu->lock);
-> +
-> +	ret = vfio_wait_all_valid(iommu);
-> +	if (WARN_ON(ret < 0))
-> +		return;
+> +	if (iommu->iopf_enabled) {
+> +		dma->iopf_mapped_bitmap = kvzalloc(IOPF_MAPPED_BITMAP_BYTES(
+> +						size >> PAGE_SHIFT), GFP_KERNEL);
+> +		if (!dma->iopf_mapped_bitmap) {
+> +			ret = -ENOMEM;
+> +			kfree(dma);
+> +			goto out_unlock;
+> +		}
 
-Is WARN_ON sufficient for this error condition?  We've been told to
-evacuate a range of mm, the device still has DMA access, we've removed
-page pinning.  This seems like a BUG_ON condition to me, we can't allow
-the system to continue in any way with pages getting unmapped from
-under the device.
 
-> +
-> +	for (n = rb_first(&iommu->dma_list); n; n = rb_next(n)) {
-> +		struct vfio_dma *dma = rb_entry(n, struct vfio_dma, node);
-> +		unsigned long start_n, end_n;
-> +
-> +		if (end <= dma->vaddr || start >= dma->vaddr + dma->size)
-> +			continue;
-> +
-> +		start_n = ALIGN_DOWN(max_t(unsigned long, start, dma->vaddr),
-> +				     PAGE_SIZE);
-> +		end_n = ALIGN(min_t(unsigned long, end, dma->vaddr + dma->size),
-> +			      PAGE_SIZE);
-> +
-> +		vfio_unmap_partial_iopf(iommu, dma,
-> +					start_n - dma->vaddr + dma->iova,
-> +					end_n - dma->vaddr + dma->iova);
+So we're assuming nothing can fault and therefore nothing can reference
+the iopf_mapped_bitmap until this point in the series?
+
+
 > +	}
 > +
-> +	mutex_unlock(&iommu->lock);
-> +}
-> +
-> +static const struct mmu_notifier_ops vfio_iommu_type1_mn_ops = {
-> +	.invalidate_range	= mn_invalidate_range,
-> +};
-> +
->  static long vfio_iommu_type1_ioctl(void *iommu_data,
->  				   unsigned int cmd, unsigned long arg)
->  {
-
-Again, this patch series is difficult to follow because we're
-introducing dead code until the mmu notifier actually has a path to be
-registered.  We shouldn't be taking any faults until iopf is enabled,
-so it seems like we can add more of the core support alongside this
-code.
+>  	iommu->dma_avail--;
+>  	dma->iova = iova;
+>  	dma->vaddr = vaddr;
+> @@ -1811,8 +1834,11 @@ static int vfio_dma_do_map(struct vfio_iommu *iommu,
+>  	/* Insert zero-sized and grow as we map chunks of it */
+>  	vfio_link_dma(iommu, dma);
+>  
+> -	/* Don't pin and map if container doesn't contain IOMMU capable domain*/
+> -	if (!IS_IOMMU_CAP_DOMAIN_IN_CONTAINER(iommu))
+> +	/*
+> +	 * Don't pin and map if container doesn't contain IOMMU capable domain,
+> +	 * or IOPF enabled for the container.
+> +	 */
+> +	if (!IS_IOMMU_CAP_DOMAIN_IN_CONTAINER(iommu) || iommu->iopf_enabled)
+>  		dma->size = size;
+>  	else
+>  		ret = vfio_pin_map_dma(iommu, dma, size);
 
 _______________________________________________
 iommu mailing list
