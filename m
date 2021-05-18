@@ -2,67 +2,63 @@ Return-Path: <SRS0=LVl/=KN=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-3.8 required=3.0 tests=BAYES_00,
-	HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,
-	URIBL_RED autolearn=no autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-13.8 required=3.0 tests=BAYES_00,
+	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_CR_TRAILER,INCLUDES_PATCH,
+	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,URIBL_RED autolearn=ham
+	autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id F2610C433ED
-	for <iommu@archiver.kernel.org>; Tue, 18 May 2021 08:49:50 +0000 (UTC)
-Received: from smtp2.osuosl.org (smtp2.osuosl.org [140.211.166.133])
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8C59CC433ED
+	for <iommu@archiver.kernel.org>; Tue, 18 May 2021 09:08:55 +0000 (UTC)
+Received: from smtp1.osuosl.org (smtp1.osuosl.org [140.211.166.138])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 8D19E6124C
-	for <iommu@archiver.kernel.org>; Tue, 18 May 2021 08:49:50 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 8D19E6124C
+	by mail.kernel.org (Postfix) with ESMTPS id 27DF36108D
+	for <iommu@archiver.kernel.org>; Tue, 18 May 2021 09:08:55 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 27DF36108D
 Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=8bytes.org
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by smtp2.osuosl.org (Postfix) with ESMTP id 4993E401F1;
-	Tue, 18 May 2021 08:49:50 +0000 (UTC)
-X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from smtp2.osuosl.org ([127.0.0.1])
-	by localhost (smtp2.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id heqlkg-LAooq; Tue, 18 May 2021 08:49:48 +0000 (UTC)
-Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by smtp2.osuosl.org (Postfix) with ESMTP id 21C77400D1;
-	Tue, 18 May 2021 08:49:48 +0000 (UTC)
-Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id EBF4FC000E;
-	Tue, 18 May 2021 08:49:47 +0000 (UTC)
-Received: from smtp1.osuosl.org (smtp1.osuosl.org [IPv6:2605:bc80:3010::138])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 87C6EC0001
- for <iommu@lists.linux-foundation.org>; Tue, 18 May 2021 08:49:46 +0000 (UTC)
-Received: from localhost (localhost [127.0.0.1])
- by smtp1.osuosl.org (Postfix) with ESMTP id 61C5382FA5
- for <iommu@lists.linux-foundation.org>; Tue, 18 May 2021 08:49:46 +0000 (UTC)
+	by smtp1.osuosl.org (Postfix) with ESMTP id D1C6E83DD6;
+	Tue, 18 May 2021 09:08:54 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
 Received: from smtp1.osuosl.org ([127.0.0.1])
- by localhost (smtp1.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id b5TMZLsQ_TFy for <iommu@lists.linux-foundation.org>;
- Tue, 18 May 2021 08:49:41 +0000 (UTC)
+	by localhost (smtp1.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+	with ESMTP id XAvSpyUbHYco; Tue, 18 May 2021 09:08:54 +0000 (UTC)
+Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [IPv6:2605:bc80:3010:104::8cd3:938])
+	by smtp1.osuosl.org (Postfix) with ESMTP id CF61483DA1;
+	Tue, 18 May 2021 09:08:53 +0000 (UTC)
+Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
+	by lists.linuxfoundation.org (Postfix) with ESMTP id A3E34C000D;
+	Tue, 18 May 2021 09:08:53 +0000 (UTC)
+Received: from smtp4.osuosl.org (smtp4.osuosl.org [140.211.166.137])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id C919CC0001
+ for <iommu@lists.linux-foundation.org>; Tue, 18 May 2021 09:08:52 +0000 (UTC)
+Received: from localhost (localhost [127.0.0.1])
+ by smtp4.osuosl.org (Postfix) with ESMTP id ABAEE40282
+ for <iommu@lists.linux-foundation.org>; Tue, 18 May 2021 09:08:52 +0000 (UTC)
+X-Virus-Scanned: amavisd-new at osuosl.org
+Received: from smtp4.osuosl.org ([127.0.0.1])
+ by localhost (smtp4.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+ with ESMTP id NVyKYi3ldhiM for <iommu@lists.linux-foundation.org>;
+ Tue, 18 May 2021 09:08:51 +0000 (UTC)
 X-Greylist: from auto-whitelisted by SQLgrey-1.8.0
-Received: from theia.8bytes.org (8bytes.org
- [IPv6:2a01:238:4383:600:38bc:a715:4b6d:a889])
- by smtp1.osuosl.org (Postfix) with ESMTPS id 8567D82E3B
- for <iommu@lists.linux-foundation.org>; Tue, 18 May 2021 08:49:41 +0000 (UTC)
+Received: from theia.8bytes.org (8bytes.org [81.169.241.247])
+ by smtp4.osuosl.org (Postfix) with ESMTPS id 8638740283
+ for <iommu@lists.linux-foundation.org>; Tue, 18 May 2021 09:08:51 +0000 (UTC)
 Received: by theia.8bytes.org (Postfix, from userid 1000)
- id 76BDB2FA; Tue, 18 May 2021 10:49:38 +0200 (CEST)
-Date: Tue, 18 May 2021 10:49:37 +0200
+ id A60682FA; Tue, 18 May 2021 11:08:47 +0200 (CEST)
+Date: Tue, 18 May 2021 11:08:46 +0200
 From: Joerg Roedel <joro@8bytes.org>
-To: Shameer Kolothum <shameerali.kolothum.thodi@huawei.com>
-Subject: Re: [PATCH v4 2/8] iommu/dma: Introduce generic helper to retrieve
- RMR info
-Message-ID: <YKN/ocoHvOdbH43j@8bytes.org>
-References: <20210513134550.2117-1-shameerali.kolothum.thodi@huawei.com>
- <20210513134550.2117-3-shameerali.kolothum.thodi@huawei.com>
+To: chenxiang <chenxiang66@hisilicon.com>
+Subject: Re: [PATCH v3] iommu/iova: put free_iova_mem() outside of spinlock
+ iova_rbtree_lock
+Message-ID: <YKOEHh5CECej06ah@8bytes.org>
+References: <1618816415-95649-1-git-send-email-chenxiang66@hisilicon.com>
 MIME-Version: 1.0
 Content-Disposition: inline
-In-Reply-To: <20210513134550.2117-3-shameerali.kolothum.thodi@huawei.com>
-Cc: jon@solid-run.com, linuxarm@huawei.com, steven.price@arm.com,
- linux-acpi@vger.kernel.org, iommu@lists.linux-foundation.org,
- wanghuiqiang@huawei.com, guohanjun@huawei.com, yangyicong@huawei.com,
- Sami.Mujawar@arm.com, robin.murphy@arm.com,
- linux-arm-kernel@lists.infradead.org
+In-Reply-To: <1618816415-95649-1-git-send-email-chenxiang66@hisilicon.com>
+Cc: will@kernel.org, iommu@lists.linux-foundation.org, robin.murphy@arm.com,
+ linuxarm@openeuler.org, linuxarm@huawei.com
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -80,33 +76,21 @@ Content-Transfer-Encoding: 7bit
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-On Thu, May 13, 2021 at 02:45:44PM +0100, Shameer Kolothum wrote:
-> +/**
-> + * struct iommu_rmr - Reserved Memory Region details per IOMMU
-> + * @list: Linked list pointers to hold RMR region info
-> + * @base_address: base address of Reserved Memory Region
-> + * @length: length of memory region
-> + * @sid: associated stream id
-> + * @flags: flags that apply to the RMR node
-> + */
-> +struct iommu_rmr {
-> +	struct list_head	list;
-> +	phys_addr_t		base_address;
-> +	u64			length;
-> +	u32			sid;
-> +	u32			flags;
-> +};
-> +
-> +/* RMR Remap permitted */
-> +#define IOMMU_RMR_REMAP_PERMITTED	(1 << 0)
-> +
+On Mon, Apr 19, 2021 at 03:13:35PM +0800, chenxiang wrote:
+> From: Xiang Chen <chenxiang66@hisilicon.com>
+> 
+> It is not necessary to put free_iova_mem() inside of spinlock/unlock
+> iova_rbtree_lock which only leads to more completion for the spinlock.
+> It has a small promote on the performance after the change. And also
+> rename private_free_iova() as remove_iova() because the function will not
+> free iova after that change.
+> 
+> Signed-off-by: Xiang Chen <chenxiang66@hisilicon.com>
+> ---
+>  drivers/iommu/iova.c | 18 +++++++++++-------
+>  1 file changed, 11 insertions(+), 7 deletions(-)
 
-This struct has lots of overlap with 'struct iommu_resv_region'. Any
-reason the existing struct can't be used here?
-
-Regards,
-
-	Joerg
+Looks good to me, but I'll wait for Robins opinion before applying.
 
 _______________________________________________
 iommu mailing list
