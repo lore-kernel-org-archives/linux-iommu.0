@@ -7,78 +7,75 @@ X-Spam-Status: No, score=-16.6 required=3.0 tests=BAYES_00,DKIM_INVALID,
 	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,URIBL_RED,USER_AGENT_GIT
 	autolearn=unavailable autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9BDC7C43460
-	for <iommu@archiver.kernel.org>; Tue, 18 May 2021 06:44:11 +0000 (UTC)
-Received: from smtp2.osuosl.org (smtp2.osuosl.org [140.211.166.133])
+	by smtp.lore.kernel.org (Postfix) with ESMTP id ED62DC433B4
+	for <iommu@archiver.kernel.org>; Tue, 18 May 2021 06:44:20 +0000 (UTC)
+Received: from smtp3.osuosl.org (smtp3.osuosl.org [140.211.166.136])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 5C16961263
-	for <iommu@archiver.kernel.org>; Tue, 18 May 2021 06:44:11 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 5C16961263
+	by mail.kernel.org (Postfix) with ESMTPS id ADD6F61263
+	for <iommu@archiver.kernel.org>; Tue, 18 May 2021 06:44:20 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org ADD6F61263
 Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=chromium.org
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by smtp2.osuosl.org (Postfix) with ESMTP id 377D5403AB;
-	Tue, 18 May 2021 06:44:11 +0000 (UTC)
+	by smtp3.osuosl.org (Postfix) with ESMTP id 7D9D1606E1;
+	Tue, 18 May 2021 06:44:20 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from smtp2.osuosl.org ([127.0.0.1])
-	by localhost (smtp2.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id Znelw-vI1Cgs; Tue, 18 May 2021 06:44:10 +0000 (UTC)
-Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by smtp2.osuosl.org (Postfix) with ESMTP id 3ADE840246;
-	Tue, 18 May 2021 06:44:10 +0000 (UTC)
+Received: from smtp3.osuosl.org ([127.0.0.1])
+	by localhost (smtp3.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+	with ESMTP id p3fLs5gDmUA3; Tue, 18 May 2021 06:44:19 +0000 (UTC)
+Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [IPv6:2605:bc80:3010:104::8cd3:938])
+	by smtp3.osuosl.org (Postfix) with ESMTP id 6B18E606D6;
+	Tue, 18 May 2021 06:44:19 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 16BEBC000E;
-	Tue, 18 May 2021 06:44:10 +0000 (UTC)
-Received: from smtp4.osuosl.org (smtp4.osuosl.org [IPv6:2605:bc80:3010::137])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 2208AC0001
- for <iommu@lists.linux-foundation.org>; Tue, 18 May 2021 06:44:09 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 5564CC000E;
+	Tue, 18 May 2021 06:44:19 +0000 (UTC)
+Received: from smtp3.osuosl.org (smtp3.osuosl.org [IPv6:2605:bc80:3010::136])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id BFC5CC0001
+ for <iommu@lists.linux-foundation.org>; Tue, 18 May 2021 06:44:17 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by smtp4.osuosl.org (Postfix) with ESMTP id 0F6E6403E3
- for <iommu@lists.linux-foundation.org>; Tue, 18 May 2021 06:44:09 +0000 (UTC)
+ by smtp3.osuosl.org (Postfix) with ESMTP id BB86E606E1
+ for <iommu@lists.linux-foundation.org>; Tue, 18 May 2021 06:44:17 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Authentication-Results: smtp4.osuosl.org (amavisd-new);
- dkim=pass (1024-bit key) header.d=chromium.org
-Received: from smtp4.osuosl.org ([127.0.0.1])
- by localhost (smtp4.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id Hf_wjRy1rXOM for <iommu@lists.linux-foundation.org>;
- Tue, 18 May 2021 06:44:08 +0000 (UTC)
+Received: from smtp3.osuosl.org ([127.0.0.1])
+ by localhost (smtp3.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+ with ESMTP id XO5LFNeP-aSu for <iommu@lists.linux-foundation.org>;
+ Tue, 18 May 2021 06:44:17 +0000 (UTC)
 X-Greylist: whitelisted by SQLgrey-1.8.0
-Received: from mail-pj1-x1032.google.com (mail-pj1-x1032.google.com
- [IPv6:2607:f8b0:4864:20::1032])
- by smtp4.osuosl.org (Postfix) with ESMTPS id 42D1840548
- for <iommu@lists.linux-foundation.org>; Tue, 18 May 2021 06:44:08 +0000 (UTC)
-Received: by mail-pj1-x1032.google.com with SMTP id
- b13-20020a17090a8c8db029015cd97baea9so1233590pjo.0
- for <iommu@lists.linux-foundation.org>; Mon, 17 May 2021 23:44:08 -0700 (PDT)
+Received: from mail-pf1-x431.google.com (mail-pf1-x431.google.com
+ [IPv6:2607:f8b0:4864:20::431])
+ by smtp3.osuosl.org (Postfix) with ESMTPS id 19B81606D6
+ for <iommu@lists.linux-foundation.org>; Tue, 18 May 2021 06:44:17 +0000 (UTC)
+Received: by mail-pf1-x431.google.com with SMTP id g18so5026195pfr.2
+ for <iommu@lists.linux-foundation.org>; Mon, 17 May 2021 23:44:17 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=chromium.org; s=google;
  h=from:to:cc:subject:date:message-id:in-reply-to:references
  :mime-version:content-transfer-encoding;
- bh=H/0xCRd+ir9ugEan1LBVBlJiEk+45QLwGnb5fc8838I=;
- b=KR7bAMKVXiuef9Enfc3qqOsvPP2FyKN9RXcHtF7tuhacS+g7AW6vqxy6Oxigwcnj/w
- NML1jjMlV0WumJ3qj48zCzjjpMb4o5kwSR3uUi5FPDJ3Io5wXWz3iufc8OItPyWghGm7
- nUiT16XOLQ2azpPF67BtZlco+kTeYLED2mK30=
+ bh=XERRPmZD9LZ8NlvTKf69Ki0Z3JOqJsfzsMjeGM/hmyc=;
+ b=oT5AI3WxhLeqEGvrMWNth5ilokIoDf3aUpAY7upThFXBQOnHIqoXsdqVxmKsJ2ibAV
+ p2tS4tJqThBqZvPuEA86u4i7tHwUvgMMmS6jwMmWzqazAKGD8hQRrm4uJZAQme8fQgO7
+ xMpoBHann0anuHkotadEJq5SA2Uh6yM8s5FoE=
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
  d=1e100.net; s=20161025;
  h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
  :references:mime-version:content-transfer-encoding;
- bh=H/0xCRd+ir9ugEan1LBVBlJiEk+45QLwGnb5fc8838I=;
- b=GSO2uadOztVrf9e14M3BWU61Xb6n9/5QIAmb6gfbaZBUnHEwfOtpKT2a5gVFvoaIK0
- K5shK9PMypw1eB5SnzJivROv3cQKi1VZ4rT30ZXzd3mt9duUgv71rMEMTlK3YcBq4SHG
- rIa7+gIvpLk59+li5XSczV8RZ4nf/PDYoFr7S7PJidIqSaNljiI7rsGWvspm6LUDLljX
- eVFJ4uss9xssVZ2z+AX2zlsuh9GC3P1rQgaGK1NwgOhKX9VyTTdXUaaTsmS1rK12fDMd
- EsDCCHfSLdlXGkl1XWdccyja5P6Ww+Sgual39dwVo73FXuiNsVLoEH8Nkn3isjqKCzmY
- viIA==
-X-Gm-Message-State: AOAM533XGcaXT5m1EUHQ27Oa4NFDSwLRvTvKD+xn5KOmZqkm3CxbkrLs
- V+ww38ErirYtWjy4dqa0ta8v6A==
-X-Google-Smtp-Source: ABdhPJyHq2ByMSFXLwa1tqvbpQpdfl+6mE0dgptE4Iebu3B0u/RV1TTeI+xPp14xDPDAQBFpeOD6KQ==
-X-Received: by 2002:a17:90b:188f:: with SMTP id
- mn15mr3720648pjb.219.1621320247763; 
- Mon, 17 May 2021 23:44:07 -0700 (PDT)
+ bh=XERRPmZD9LZ8NlvTKf69Ki0Z3JOqJsfzsMjeGM/hmyc=;
+ b=gmySH9p3Lu2YbFJ4TrAve1XNZcAs407BuKU23wthyVRdXW11iW88bwmlolAJWPhcF0
+ hstWCe26aPu3CuA5VT7ieThQiGmM2NKpueB/tONTWpaNVuFDVe0MSDGqfy1CJUTsx7p8
+ ip0njNslCMuKE7rBFc3cBxhAVj6zT3pO838AL3jNXOMEUmYBGPUsEnGvYcA67CW8hmh8
+ wPjkXuH2sywzBGxnUNY8eIXM/YSN49lNjZ/FeS4db6F1mCxP+A/UQFNTuqi4OtQn+RTe
+ wHR0TNFzI9F8nwOD3O1ZYgetIgACQVLmFb8yYS3j6CJuC5p7O18jV0tx32339N5rPl+B
+ srgg==
+X-Gm-Message-State: AOAM531I3VPjMTVc2TEMnT3WAXZV/qJIz5LVe8HQLzUQlEUuH6O5yUQl
+ F2zDsYj4DHft5HxueV2PWRRhvQ==
+X-Google-Smtp-Source: ABdhPJyi8T1bUdRh2weFxzn5qV51jHdwUH18sdVlzVJRpz5+Czvdmvjaq4flIajQeG3jnSiA7cCp7w==
+X-Received: by 2002:a05:6a00:15d4:b029:2de:a538:c857 with SMTP id
+ o20-20020a056a0015d4b02902dea538c857mr438129pfu.51.1621320256584; 
+ Mon, 17 May 2021 23:44:16 -0700 (PDT)
 Received: from localhost ([2401:fa00:95:205:f284:b819:54ca:c198])
- by smtp.gmail.com with UTF8SMTPSA id v15sm12381541pgc.57.2021.05.17.23.44.00
+ by smtp.gmail.com with UTF8SMTPSA id a7sm11612338pfg.76.2021.05.17.23.44.09
  (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
- Mon, 17 May 2021 23:44:07 -0700 (PDT)
+ Mon, 17 May 2021 23:44:16 -0700 (PDT)
 From: Claire Chang <tientzu@chromium.org>
 To: Rob Herring <robh+dt@kernel.org>, mpe@ellerman.id.au,
  Joerg Roedel <joro@8bytes.org>, Will Deacon <will@kernel.org>,
@@ -86,10 +83,9 @@ To: Rob Herring <robh+dt@kernel.org>, mpe@ellerman.id.au,
  Konrad Rzeszutek Wilk <konrad.wilk@oracle.com>, boris.ostrovsky@oracle.com,
  jgross@suse.com, Christoph Hellwig <hch@lst.de>,
  Marek Szyprowski <m.szyprowski@samsung.com>
-Subject: [PATCH v7 11/15] dma-direct: Add a new wrapper
- __dma_direct_free_pages()
-Date: Tue, 18 May 2021 14:42:11 +0800
-Message-Id: <20210518064215.2856977-12-tientzu@chromium.org>
+Subject: [PATCH v7 12/15] swiotlb: Add restricted DMA alloc/free support.
+Date: Tue, 18 May 2021 14:42:12 +0800
+Message-Id: <20210518064215.2856977-13-tientzu@chromium.org>
 X-Mailer: git-send-email 2.31.1.751.gd2f1c929bd-goog
 In-Reply-To: <20210518064215.2856977-1-tientzu@chromium.org>
 References: <20210518064215.2856977-1-tientzu@chromium.org>
@@ -133,67 +129,83 @@ Content-Transfer-Encoding: 7bit
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-Add a new wrapper __dma_direct_free_pages() that will be useful later
-for swiotlb_free().
+Add the functions, swiotlb_{alloc,free} to support the memory allocation
+from restricted DMA pool.
 
 Signed-off-by: Claire Chang <tientzu@chromium.org>
 ---
- kernel/dma/direct.c | 14 ++++++++++----
- 1 file changed, 10 insertions(+), 4 deletions(-)
+ include/linux/swiotlb.h |  4 ++++
+ kernel/dma/swiotlb.c    | 35 +++++++++++++++++++++++++++++++++--
+ 2 files changed, 37 insertions(+), 2 deletions(-)
 
-diff --git a/kernel/dma/direct.c b/kernel/dma/direct.c
-index 078f7087e466..eb4098323bbc 100644
---- a/kernel/dma/direct.c
-+++ b/kernel/dma/direct.c
-@@ -75,6 +75,12 @@ static bool dma_coherent_ok(struct device *dev, phys_addr_t phys, size_t size)
- 		min_not_zero(dev->coherent_dma_mask, dev->bus_dma_limit);
- }
+diff --git a/include/linux/swiotlb.h b/include/linux/swiotlb.h
+index 0c5a18d9cf89..e8cf49bd90c5 100644
+--- a/include/linux/swiotlb.h
++++ b/include/linux/swiotlb.h
+@@ -134,6 +134,10 @@ unsigned int swiotlb_max_segment(void);
+ size_t swiotlb_max_mapping_size(struct device *dev);
+ bool is_swiotlb_active(struct device *dev);
+ void __init swiotlb_adjust_size(unsigned long size);
++#ifdef CONFIG_DMA_RESTRICTED_POOL
++struct page *swiotlb_alloc(struct device *dev, size_t size);
++bool swiotlb_free(struct device *dev, struct page *page, size_t size);
++#endif /* CONFIG_DMA_RESTRICTED_POOL */
+ #else
+ #define swiotlb_force SWIOTLB_NO_FORCE
+ static inline bool is_swiotlb_buffer(struct device *dev, phys_addr_t paddr)
+diff --git a/kernel/dma/swiotlb.c b/kernel/dma/swiotlb.c
+index cef856d23194..d3fa4669229b 100644
+--- a/kernel/dma/swiotlb.c
++++ b/kernel/dma/swiotlb.c
+@@ -457,8 +457,9 @@ static int find_slots(struct device *dev, phys_addr_t orig_addr,
  
-+static void __dma_direct_free_pages(struct device *dev, struct page *page,
-+				    size_t size)
+ 	index = wrap = wrap_index(mem, ALIGN(mem->index, stride));
+ 	do {
+-		if ((slot_addr(tbl_dma_addr, index) & iotlb_align_mask) !=
+-		    (orig_addr & iotlb_align_mask)) {
++		if (orig_addr &&
++		    (slot_addr(tbl_dma_addr, index) & iotlb_align_mask) !=
++			    (orig_addr & iotlb_align_mask)) {
+ 			index = wrap_index(mem, index + 1);
+ 			continue;
+ 		}
+@@ -704,6 +705,36 @@ late_initcall(swiotlb_create_default_debugfs);
+ #endif
+ 
+ #ifdef CONFIG_DMA_RESTRICTED_POOL
++struct page *swiotlb_alloc(struct device *dev, size_t size)
 +{
-+	dma_free_contiguous(dev, page, size);
++	struct io_tlb_mem *mem = dev->dma_io_tlb_mem;
++	phys_addr_t tlb_addr;
++	int index;
++
++	if (!mem)
++		return NULL;
++
++	index = find_slots(dev, 0, size);
++	if (index == -1)
++		return NULL;
++
++	tlb_addr = slot_addr(mem->start, index);
++
++	return pfn_to_page(PFN_DOWN(tlb_addr));
 +}
 +
- static struct page *__dma_direct_alloc_pages(struct device *dev, size_t size,
- 		gfp_t gfp)
++bool swiotlb_free(struct device *dev, struct page *page, size_t size)
++{
++	phys_addr_t tlb_addr = page_to_phys(page);
++
++	if (!is_swiotlb_buffer(dev, tlb_addr))
++		return false;
++
++	release_slots(dev, tlb_addr);
++
++	return true;
++}
++
+ static int rmem_swiotlb_device_init(struct reserved_mem *rmem,
+ 				    struct device *dev)
  {
-@@ -237,7 +243,7 @@ void *dma_direct_alloc(struct device *dev, size_t size,
- 			return NULL;
- 	}
- out_free_pages:
--	dma_free_contiguous(dev, page, size);
-+	__dma_direct_free_pages(dev, page, size);
- 	return NULL;
- }
- 
-@@ -273,7 +279,7 @@ void dma_direct_free(struct device *dev, size_t size,
- 	else if (IS_ENABLED(CONFIG_ARCH_HAS_DMA_CLEAR_UNCACHED))
- 		arch_dma_clear_uncached(cpu_addr, size);
- 
--	dma_free_contiguous(dev, dma_direct_to_page(dev, dma_addr), size);
-+	__dma_direct_free_pages(dev, dma_direct_to_page(dev, dma_addr), size);
- }
- 
- struct page *dma_direct_alloc_pages(struct device *dev, size_t size,
-@@ -310,7 +316,7 @@ struct page *dma_direct_alloc_pages(struct device *dev, size_t size,
- 	*dma_handle = phys_to_dma_direct(dev, page_to_phys(page));
- 	return page;
- out_free_pages:
--	dma_free_contiguous(dev, page, size);
-+	__dma_direct_free_pages(dev, page, size);
- 	return NULL;
- }
- 
-@@ -329,7 +335,7 @@ void dma_direct_free_pages(struct device *dev, size_t size,
- 	if (force_dma_unencrypted(dev))
- 		set_memory_encrypted((unsigned long)vaddr, 1 << page_order);
- 
--	dma_free_contiguous(dev, page, size);
-+	__dma_direct_free_pages(dev, page, size);
- }
- 
- #if defined(CONFIG_ARCH_HAS_SYNC_DMA_FOR_DEVICE) || \
 -- 
 2.31.1.751.gd2f1c929bd-goog
 
