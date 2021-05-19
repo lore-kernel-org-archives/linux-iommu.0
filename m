@@ -2,126 +2,89 @@ Return-Path: <SRS0=NBt+=KO=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-7.0 required=3.0 tests=BAYES_00,DKIM_ADSP_CUSTOM_MED,
-	DKIM_INVALID,DKIM_SIGNED,FREEMAIL_FORGED_FROMDOMAIN,FREEMAIL_FROM,
-	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_CR_TRAILER,MAILING_LIST_MULTI,
-	NICE_REPLY_A,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_SANE_1
-	autolearn=no autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-14.0 required=3.0 tests=BAYES_00,INCLUDES_CR_TRAILER,
+	INCLUDES_PATCH,MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED
+	autolearn=unavailable autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A464BC43460
-	for <iommu@archiver.kernel.org>; Wed, 19 May 2021 19:00:14 +0000 (UTC)
-Received: from smtp3.osuosl.org (smtp3.osuosl.org [140.211.166.136])
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 59571C433ED
+	for <iommu@archiver.kernel.org>; Wed, 19 May 2021 19:14:59 +0000 (UTC)
+Received: from smtp4.osuosl.org (smtp4.osuosl.org [140.211.166.137])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 4EDFB61355
-	for <iommu@archiver.kernel.org>; Wed, 19 May 2021 19:00:14 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 4EDFB61355
-Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=gmail.com
+	by mail.kernel.org (Postfix) with ESMTPS id F1CA46135A
+	for <iommu@archiver.kernel.org>; Wed, 19 May 2021 19:14:58 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org F1CA46135A
+Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=kernel.org
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by smtp3.osuosl.org (Postfix) with ESMTP id 1F11D60A50;
-	Wed, 19 May 2021 19:00:14 +0000 (UTC)
+	by smtp4.osuosl.org (Postfix) with ESMTP id B9D4D40664;
+	Wed, 19 May 2021 19:14:58 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from smtp3.osuosl.org ([127.0.0.1])
-	by localhost (smtp3.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id LugeKeUufBKs; Wed, 19 May 2021 19:00:13 +0000 (UTC)
-Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [IPv6:2605:bc80:3010:104::8cd3:938])
-	by smtp3.osuosl.org (Postfix) with ESMTP id 17D2F60A81;
-	Wed, 19 May 2021 19:00:13 +0000 (UTC)
+Received: from smtp4.osuosl.org ([127.0.0.1])
+	by localhost (smtp4.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+	with ESMTP id XCbrMlMAAh5F; Wed, 19 May 2021 19:14:57 +0000 (UTC)
+Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
+	by smtp4.osuosl.org (Postfix) with ESMTP id 715A340659;
+	Wed, 19 May 2021 19:14:57 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id ECAB3C000D;
-	Wed, 19 May 2021 19:00:12 +0000 (UTC)
-Received: from smtp2.osuosl.org (smtp2.osuosl.org [IPv6:2605:bc80:3010::133])
- by lists.linuxfoundation.org (Postfix) with ESMTP id CC29AC0001
- for <iommu@lists.linux-foundation.org>; Wed, 19 May 2021 19:00:11 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 32BA5C000E;
+	Wed, 19 May 2021 19:14:57 +0000 (UTC)
+Received: from smtp4.osuosl.org (smtp4.osuosl.org [IPv6:2605:bc80:3010::137])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 02A36C0001
+ for <iommu@lists.linux-foundation.org>; Wed, 19 May 2021 19:14:56 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by smtp2.osuosl.org (Postfix) with ESMTP id AB49140153
- for <iommu@lists.linux-foundation.org>; Wed, 19 May 2021 19:00:11 +0000 (UTC)
+ by smtp4.osuosl.org (Postfix) with ESMTP id D7E2E40664
+ for <iommu@lists.linux-foundation.org>; Wed, 19 May 2021 19:14:55 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Authentication-Results: smtp2.osuosl.org (amavisd-new);
- dkim=pass (2048-bit key) header.d=gmail.com
-Received: from smtp2.osuosl.org ([127.0.0.1])
- by localhost (smtp2.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id tr5ZNmqrcW-1 for <iommu@lists.linux-foundation.org>;
- Wed, 19 May 2021 19:00:11 +0000 (UTC)
+Received: from smtp4.osuosl.org ([127.0.0.1])
+ by localhost (smtp4.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+ with ESMTP id aeVRa-zaoUk0 for <iommu@lists.linux-foundation.org>;
+ Wed, 19 May 2021 19:14:54 +0000 (UTC)
 X-Greylist: whitelisted by SQLgrey-1.8.0
-Received: from mail-pj1-x102e.google.com (mail-pj1-x102e.google.com
- [IPv6:2607:f8b0:4864:20::102e])
- by smtp2.osuosl.org (Postfix) with ESMTPS id 2313C4013D
- for <iommu@lists.linux-foundation.org>; Wed, 19 May 2021 19:00:11 +0000 (UTC)
-Received: by mail-pj1-x102e.google.com with SMTP id
- pi6-20020a17090b1e46b029015cec51d7cdso3918841pjb.5
- for <iommu@lists.linux-foundation.org>; Wed, 19 May 2021 12:00:10 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=gmail.com; s=20161025;
- h=subject:to:cc:references:from:message-id:date:user-agent
- :mime-version:in-reply-to:content-language:content-transfer-encoding;
- bh=bliAyPcCTKuHaZYRIw5XXZxaaB4NHvg1JF88TNVLe3Q=;
- b=TKwRdnu4+Sp1YkQdeC//ZaZe5gFK1OBbc6fiWqiSSxtaemxo8tsS6cyyKonvkggi45
- AkmXBkDwPjivTxMkW/6u87n74jtYP0vz5yoiKDWAMEYfh+QJdqbXNMoLboJ95qsaB+Sz
- evhXDQC1zkb888kY45tuzx3cOkf8aRLE0tysepxM3+bqwCkk54R2Q027+/7CcS0ORj65
- 6mx2ltgEPNZ+I2TPARzQB2NU/eRypDG4kJedWyyBabBiqBkk+XEYxHjO+wV8NZqkj5Xb
- Wiz3FWUYSWAt8nsw3SelNmNlkX4sXNF7RuifyB1BY+CyHdw4EnNC9bgPveVhRQQuluiO
- dhqg==
+Received: from mail-ot1-f41.google.com (mail-ot1-f41.google.com
+ [209.85.210.41])
+ by smtp4.osuosl.org (Postfix) with ESMTPS id DC1B540659
+ for <iommu@lists.linux-foundation.org>; Wed, 19 May 2021 19:14:53 +0000 (UTC)
+Received: by mail-ot1-f41.google.com with SMTP id
+ 80-20020a9d08560000b0290333e9d2b247so2182720oty.7
+ for <iommu@lists.linux-foundation.org>; Wed, 19 May 2021 12:14:53 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
  d=1e100.net; s=20161025;
- h=x-gm-message-state:subject:to:cc:references:from:message-id:date
- :user-agent:mime-version:in-reply-to:content-language
- :content-transfer-encoding;
- bh=bliAyPcCTKuHaZYRIw5XXZxaaB4NHvg1JF88TNVLe3Q=;
- b=LDgkERnTfn88gKr2TGLt9wMYmyWaujVe1ziS+HwwSwMGFRKMjs39CJDnX36qwJBDE9
- /R98qdZSjsgiRWSmANk5O9wBvAmKbRDodYzF4XEGguHL7d00koHVUIAgauL15P8/VdAE
- tJIIPJjZ9zU7yD7uSx/qXAK+tOqUOe+kKZAgNMS+Nakoh6BOabgQxGSgukrGiPJGLr1x
- +BVYagoa298ESjoT3IM6aRgc5T//FJaj+FT4rlfF0JcBFf24gqkwE4+MQHHo+KOv8b9y
- lUNHl0XydMr4eVW7juqtdTFIGBgIjqmoQiXtn32+rlhEmNyWDOoBWLa70ApH8JAyvMHe
- Iglg==
-X-Gm-Message-State: AOAM5328La75iaZmGdAkkCxEWy5nX0kxtmEf8BWgs8SF3Orf359xMzeT
- XYUzwUwXdir4iR8bgljnnUA=
-X-Google-Smtp-Source: ABdhPJzSFi5vywroBZ7tSNHRQs1V9GPTz+dOSZzWMkXvwkz7CoWyRh73gQHWXYp/m+DT8rff9721jw==
-X-Received: by 2002:a17:903:10a:b029:f4:109c:dc08 with SMTP id
- y10-20020a170903010ab02900f4109cdc08mr1027246plc.10.1621450810600; 
- Wed, 19 May 2021 12:00:10 -0700 (PDT)
-Received: from [10.230.29.202] ([192.19.223.252])
- by smtp.gmail.com with ESMTPSA id y26sm89076pge.94.2021.05.19.12.00.04
- (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
- Wed, 19 May 2021 12:00:09 -0700 (PDT)
-Subject: Re: [PATCH v7 03/15] swiotlb: Add DMA_RESTRICTED_POOL
-To: Claire Chang <tientzu@chromium.org>, Rob Herring <robh+dt@kernel.org>,
- mpe@ellerman.id.au, Joerg Roedel <joro@8bytes.org>,
- Will Deacon <will@kernel.org>, Frank Rowand <frowand.list@gmail.com>,
- Konrad Rzeszutek Wilk <konrad.wilk@oracle.com>, boris.ostrovsky@oracle.com,
- jgross@suse.com, Christoph Hellwig <hch@lst.de>,
- Marek Szyprowski <m.szyprowski@samsung.com>
-References: <20210518064215.2856977-1-tientzu@chromium.org>
- <20210518064215.2856977-4-tientzu@chromium.org>
-From: Florian Fainelli <f.fainelli@gmail.com>
-Message-ID: <d9975ce8-7ae9-2ece-a1c5-a16d0aed8143@gmail.com>
-Date: Wed, 19 May 2021 12:00:03 -0700
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:78.0) Gecko/20100101
- Firefox/78.0 Thunderbird/78.10.2
+ h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+ :mime-version:content-disposition:in-reply-to;
+ bh=izYVo1pODY59TvGRJ6tr5HWEWAw6nNqCoxBw5MFLCwg=;
+ b=iXQ4YFiAEgBej6x+VTOdgPhpZ+2mtQNjSTzZ6bBHsc17dNZuhlBwK/8Q7MEzrbBrh1
+ ot6KS3WvWyioD738PlSeaff0sk1fr+uNJq7vy6wEMYMWUmfhT6WFWMbHgMaXKaLWUeP6
+ h3nxHywd8OD9yR2YFn0PzGbdPxlvpfnAyaJLWQhqiHK6uyEjGJN+xtfpHByB9bY+1mgK
+ TyZAd3+mEk+xXSuc1aXxYlhpFWWHNvqwnVEibrkf03tMViK2RGq0r5beHwUIcpk+nAbv
+ vGRU7LaVzMLd6TPLFHF6RWfSj75awNnHgZhPFFLTCvNjmx31J8Uy7hUc2zjzuGfTvbaO
+ LqHA==
+X-Gm-Message-State: AOAM533ZMcwEnVUncixv2pyAKVdTWbTbvFksMf1aOD5wz1Qk0koAzkXw
+ nHgQff6SjA6m6sRx4HHZeg==
+X-Google-Smtp-Source: ABdhPJzJMP2S9PPrAcuHOCF1RfGVRc+VX3tuXr42FGFEFyyuPTnPSurDFrey1rgenAPAQXKp9XlYaw==
+X-Received: by 2002:a9d:7f1a:: with SMTP id j26mr810672otq.244.1621451692875; 
+ Wed, 19 May 2021 12:14:52 -0700 (PDT)
+Received: from robh.at.kernel.org (24-155-109-49.dyn.grandenetworks.net.
+ [24.155.109.49])
+ by smtp.gmail.com with ESMTPSA id h9sm53703oor.16.2021.05.19.12.14.50
+ (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+ Wed, 19 May 2021 12:14:51 -0700 (PDT)
+Received: (nullmailer pid 3479665 invoked by uid 1000);
+ Wed, 19 May 2021 19:14:50 -0000
+Date: Wed, 19 May 2021 14:14:50 -0500
+From: Rob Herring <robh@kernel.org>
+To: Wang Xingang <wangxingang5@huawei.com>
+Subject: Re: [PATCH v2] iommu/of: Fix pci_request_acs() before enumerating
+ PCI devices
+Message-ID: <20210519191450.GA3469078@robh.at.kernel.org>
+References: <1621257425-37856-1-git-send-email-wangxingang5@huawei.com>
 MIME-Version: 1.0
-In-Reply-To: <20210518064215.2856977-4-tientzu@chromium.org>
-Content-Language: en-US
-Cc: heikki.krogerus@linux.intel.com, thomas.hellstrom@linux.intel.com,
- peterz@infradead.org, benh@kernel.crashing.org,
- joonas.lahtinen@linux.intel.com, dri-devel@lists.freedesktop.org,
- chris@chris-wilson.co.uk, grant.likely@arm.com, paulus@samba.org,
- mingo@kernel.org, jxgao@google.com, sstabellini@kernel.org,
- Saravana Kannan <saravanak@google.com>, xypron.glpk@gmx.de,
- "Rafael J . Wysocki" <rafael.j.wysocki@intel.com>,
- Bartosz Golaszewski <bgolaszewski@baylibre.com>, bskeggs@redhat.com,
- linux-pci@vger.kernel.org, xen-devel@lists.xenproject.org,
- Thierry Reding <treding@nvidia.com>, intel-gfx@lists.freedesktop.org,
- matthew.auld@intel.com, linux-devicetree <devicetree@vger.kernel.org>,
- daniel@ffwll.ch, airlied@linux.ie, maarten.lankhorst@linux.intel.com,
- linuxppc-dev@lists.ozlabs.org, jani.nikula@linux.intel.com,
- Nicolas Boichat <drinkcat@chromium.org>, rodrigo.vivi@intel.com,
- bhelgaas@google.com, Dan Williams <dan.j.williams@intel.com>,
- Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
- Greg KH <gregkh@linuxfoundation.org>, Randy Dunlap <rdunlap@infradead.org>,
- lkml <linux-kernel@vger.kernel.org>,
- "list@263.net:IOMMU DRIVERS" <iommu@lists.linux-foundation.org>,
- Jim Quinlan <james.quinlan@broadcom.com>, Robin Murphy <robin.murphy@arm.com>,
- bauerman@linux.ibm.com
+Content-Disposition: inline
+In-Reply-To: <1621257425-37856-1-git-send-email-wangxingang5@huawei.com>
+Cc: xieyingtai@huawei.com, devicetree@vger.kernel.org, will@kernel.org,
+ linux-pci@vger.kernel.org, linux-kernel@vger.kernel.org,
+ iommu@lists.linux-foundation.org, helgaas@kernel.org,
+ gregkh@linuxfoundation.org, frowand.list@gmail.com
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -139,16 +102,87 @@ Content-Transfer-Encoding: 7bit
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-
-
-On 5/17/2021 11:42 PM, Claire Chang wrote:
-> Add a new kconfig symbol, DMA_RESTRICTED_POOL, for restricted DMA pool.
+On Mon, May 17, 2021 at 01:17:05PM +0000, Wang Xingang wrote:
+> From: Xingang Wang <wangxingang5@huawei.com>
 > 
-> Signed-off-by: Claire Chang <tientzu@chromium.org>
+> When booting with devicetree, the pci_request_acs() is called after the
+> enumeration and initialization of PCI devices, thus the ACS is not
+> enabled. This patch add check for IOMMU in of_core_init(), and call
+> pci_request_acs() when iommu is detected, making sure that the ACS will
+> be enabled.
+> 
+> Fixes: 6bf6c24720d33 ("iommu/of: Request ACS from the PCI core when
+> configuring IOMMU linkage")
+> Signed-off-by: Xingang Wang <wangxingang5@huawei.com>
+> ---
+>  drivers/iommu/of_iommu.c | 1 -
+>  drivers/of/base.c        | 9 ++++++++-
+>  2 files changed, 8 insertions(+), 2 deletions(-)
+> 
+> Change log:
+> v1->v2:
+>  - remove pci_request_acs() in of_iommu_configure
+>  - check and call pci_request_acs() in of_core_init()
+> 
+> diff --git a/drivers/iommu/of_iommu.c b/drivers/iommu/of_iommu.c
+> index a9d2df001149..54a14da242cc 100644
+> --- a/drivers/iommu/of_iommu.c
+> +++ b/drivers/iommu/of_iommu.c
+> @@ -205,7 +205,6 @@ const struct iommu_ops *of_iommu_configure(struct device *dev,
+>  			.np = master_np,
+>  		};
+>  
+> -		pci_request_acs();
+>  		err = pci_for_each_dma_alias(to_pci_dev(dev),
+>  					     of_pci_iommu_init, &info);
+>  	} else {
+> diff --git a/drivers/of/base.c b/drivers/of/base.c
+> index 48e941f99558..95cd8f0e5435 100644
+> --- a/drivers/of/base.c
+> +++ b/drivers/of/base.c
+> @@ -24,6 +24,7 @@
+>  #include <linux/of.h>
+>  #include <linux/of_device.h>
+>  #include <linux/of_graph.h>
+> +#include <linux/pci.h>
+>  #include <linux/spinlock.h>
+>  #include <linux/slab.h>
+>  #include <linux/string.h>
+> @@ -166,7 +167,7 @@ void __of_phandle_cache_inv_entry(phandle handle)
+>  void __init of_core_init(void)
+>  {
+>  	struct device_node *np;
+> -
+> +	bool of_iommu_detect = false;
+>  
+>  	/* Create the kset, and register existing nodes */
+>  	mutex_lock(&of_mutex);
+> @@ -180,6 +181,12 @@ void __init of_core_init(void)
+>  		__of_attach_node_sysfs(np);
+>  		if (np->phandle && !phandle_cache[of_phandle_cache_hash(np->phandle)])
+>  			phandle_cache[of_phandle_cache_hash(np->phandle)] = np;
+> +
+> +		/* Detect IOMMU and make sure ACS will be enabled */
+> +		if (!of_iommu_detect && of_get_property(np, "iommu-map", NULL)) {
+> +			of_iommu_detect = true;
+> +			pci_request_acs();
+> +		}
 
-Reviewed-by: Florian Fainelli <f.fainelli@gmail.com>
--- 
-Florian
+Private DT internal init code doesn't seem like the right place for 
+this. If this needs to be ordered WRT PCI device enumeration, then 
+somewhere in the PCI host bridge or bus init code seems like the right 
+place to me.
+
+Also, shouldn't this be conditional on 'iommu-map' being in the host 
+bridge or a parent or ??? rather than just any iommu-map anywhere in the 
+DT.
+
+>  	}
+>  	mutex_unlock(&of_mutex);
+>  
+> -- 
+> 2.19.1
+> 
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
