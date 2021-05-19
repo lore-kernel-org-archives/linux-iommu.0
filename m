@@ -2,72 +2,79 @@ Return-Path: <SRS0=NBt+=KO=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-10.2 required=3.0 tests=BAYES_00,
-	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,NICE_REPLY_A,
-	SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_SANE_1 autolearn=ham
-	autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-5.2 required=3.0 tests=BAYES_00,
+	HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,NICE_REPLY_A,SPF_HELO_NONE,
+	SPF_PASS,URIBL_BLOCKED,USER_AGENT_SANE_1 autolearn=no autolearn_force=no
+	version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 247A0C433B4
-	for <iommu@archiver.kernel.org>; Wed, 19 May 2021 10:01:45 +0000 (UTC)
-Received: from smtp4.osuosl.org (smtp4.osuosl.org [140.211.166.137])
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 114F1C433B4
+	for <iommu@archiver.kernel.org>; Wed, 19 May 2021 11:48:25 +0000 (UTC)
+Received: from smtp2.osuosl.org (smtp2.osuosl.org [140.211.166.133])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id A8AB060698
-	for <iommu@archiver.kernel.org>; Wed, 19 May 2021 10:01:44 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org A8AB060698
+	by mail.kernel.org (Postfix) with ESMTPS id 7EE5661004
+	for <iommu@archiver.kernel.org>; Wed, 19 May 2021 11:48:24 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 7EE5661004
 Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=arm.com
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by smtp4.osuosl.org (Postfix) with ESMTP id 5EF0F40652;
-	Wed, 19 May 2021 10:01:44 +0000 (UTC)
+	by smtp2.osuosl.org (Postfix) with ESMTP id 4277340154;
+	Wed, 19 May 2021 11:48:24 +0000 (UTC)
+X-Virus-Scanned: amavisd-new at osuosl.org
+Received: from smtp2.osuosl.org ([127.0.0.1])
+	by localhost (smtp2.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+	with ESMTP id mflcNSwEdeKl; Wed, 19 May 2021 11:48:22 +0000 (UTC)
+Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [IPv6:2605:bc80:3010:104::8cd3:938])
+	by smtp2.osuosl.org (Postfix) with ESMTP id 0EDF34011B;
+	Wed, 19 May 2021 11:48:22 +0000 (UTC)
+Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
+	by lists.linuxfoundation.org (Postfix) with ESMTP id E754EC0011;
+	Wed, 19 May 2021 11:48:21 +0000 (UTC)
+Received: from smtp4.osuosl.org (smtp4.osuosl.org [140.211.166.137])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 4F78FC0001
+ for <iommu@lists.linux-foundation.org>; Wed, 19 May 2021 11:48:21 +0000 (UTC)
+Received: from localhost (localhost [127.0.0.1])
+ by smtp4.osuosl.org (Postfix) with ESMTP id 2A87540633
+ for <iommu@lists.linux-foundation.org>; Wed, 19 May 2021 11:48:21 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
 Received: from smtp4.osuosl.org ([127.0.0.1])
-	by localhost (smtp4.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id OHFH3Jm9QYAi; Wed, 19 May 2021 10:01:43 +0000 (UTC)
-Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [IPv6:2605:bc80:3010:104::8cd3:938])
-	by smtp4.osuosl.org (Postfix) with ESMTP id E8AC34064F;
-	Wed, 19 May 2021 10:01:42 +0000 (UTC)
-Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id C26EEC000E;
-	Wed, 19 May 2021 10:01:42 +0000 (UTC)
-Received: from smtp1.osuosl.org (smtp1.osuosl.org [140.211.166.138])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 52B18C0001
- for <iommu@lists.linux-foundation.org>; Wed, 19 May 2021 10:01:41 +0000 (UTC)
-Received: from localhost (localhost [127.0.0.1])
- by smtp1.osuosl.org (Postfix) with ESMTP id 4191083F7B
- for <iommu@lists.linux-foundation.org>; Wed, 19 May 2021 10:01:41 +0000 (UTC)
-X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from smtp1.osuosl.org ([127.0.0.1])
- by localhost (smtp1.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id JxFsH1OCBGb3 for <iommu@lists.linux-foundation.org>;
- Wed, 19 May 2021 10:01:40 +0000 (UTC)
+ by localhost (smtp4.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+ with ESMTP id 5OxQYilQtrUc for <iommu@lists.linux-foundation.org>;
+ Wed, 19 May 2021 11:48:19 +0000 (UTC)
 X-Greylist: domain auto-whitelisted by SQLgrey-1.8.0
 Received: from foss.arm.com (foss.arm.com [217.140.110.172])
- by smtp1.osuosl.org (Postfix) with ESMTP id 8200383D59
- for <iommu@lists.linux-foundation.org>; Wed, 19 May 2021 10:01:40 +0000 (UTC)
+ by smtp4.osuosl.org (Postfix) with ESMTP id C9FE740620
+ for <iommu@lists.linux-foundation.org>; Wed, 19 May 2021 11:48:19 +0000 (UTC)
 Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
- by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id B74F3101E;
- Wed, 19 May 2021 03:01:39 -0700 (PDT)
+ by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 09267101E;
+ Wed, 19 May 2021 04:48:19 -0700 (PDT)
 Received: from [10.57.66.179] (unknown [10.57.66.179])
- by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id 8E03A3F719;
- Wed, 19 May 2021 03:01:38 -0700 (PDT)
-Subject: Re: [RFC PATCH v1 0/2] iommu/arm-smmu-v3: Add some parameter check in
- __arm_smmu_tlb_inv_range()
-To: Kunkun Jiang <jiangkunkun@huawei.com>, Will Deacon <will@kernel.org>,
- Eric Auger <eric.auger@redhat.com>,
- "moderated list:ARM SMMU DRIVERS" <linux-arm-kernel@lists.infradead.org>,
- "open list:IOMMU DRIVERS" <iommu@lists.linux-foundation.org>,
- open list <linux-kernel@vger.kernel.org>
-References: <20210519094307.3275-1-jiangkunkun@huawei.com>
+ by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id 077393F719;
+ Wed, 19 May 2021 04:48:16 -0700 (PDT)
+Subject: Re: [PATCH v4 2/8] iommu/dma: Introduce generic helper to retrieve
+ RMR info
+To: Shameerali Kolothum Thodi <shameerali.kolothum.thodi@huawei.com>,
+ Joerg Roedel <joro@8bytes.org>
+References: <20210513134550.2117-1-shameerali.kolothum.thodi@huawei.com>
+ <20210513134550.2117-3-shameerali.kolothum.thodi@huawei.com>
+ <YKN/ocoHvOdbH43j@8bytes.org> <503068eb5f184639a75d7d1ef929b4c6@huawei.com>
 From: Robin Murphy <robin.murphy@arm.com>
-Message-ID: <c577a7cc-8db3-5802-53cb-985f0c7216b3@arm.com>
-Date: Wed, 19 May 2021 11:01:33 +0100
+Message-ID: <4047b1ef-5f6e-c3b8-e701-1cfa68acfd69@arm.com>
+Date: Wed, 19 May 2021 12:48:11 +0100
 User-Agent: Mozilla/5.0 (Windows NT 10.0; rv:78.0) Gecko/20100101
  Thunderbird/78.10.1
 MIME-Version: 1.0
-In-Reply-To: <20210519094307.3275-1-jiangkunkun@huawei.com>
+In-Reply-To: <503068eb5f184639a75d7d1ef929b4c6@huawei.com>
 Content-Language: en-GB
-Cc: wanghaibin.wang@huawei.com
+Cc: "jon@solid-run.com" <jon@solid-run.com>, Linuxarm <linuxarm@huawei.com>,
+ "steven.price@arm.com" <steven.price@arm.com>,
+ "linux-acpi@vger.kernel.org" <linux-acpi@vger.kernel.org>,
+ "iommu@lists.linux-foundation.org" <iommu@lists.linux-foundation.org>,
+ "linux-arm-kernel@lists.infradead.org" <linux-arm-kernel@lists.infradead.org>,
+ "Guohanjun \(Hanjun Guo\)" <guohanjun@huawei.com>,
+ yangyicong <yangyicong@huawei.com>,
+ "Sami.Mujawar@arm.com" <Sami.Mujawar@arm.com>,
+ wanghuiqiang <wanghuiqiang@huawei.com>
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -85,51 +92,69 @@ Content-Type: text/plain; charset="us-ascii"; Format="flowed"
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-On 2021-05-19 10:43, Kunkun Jiang wrote:
-> Hi all,
+On 2021-05-19 10:30, Shameerali Kolothum Thodi wrote:
 > 
-> This set of patches solves some errors when I tested the SMMU nested mode.
 > 
-> Test scenario description:
-> guest kernel: 4KB translation granule
-> host kernel: 16KB translation granule
+>> -----Original Message-----
+>> From: Joerg Roedel [mailto:joro@8bytes.org]
+>> Sent: 18 May 2021 09:50
+>> To: Shameerali Kolothum Thodi <shameerali.kolothum.thodi@huawei.com>
+>> Cc: linux-arm-kernel@lists.infradead.org; linux-acpi@vger.kernel.org;
+>> iommu@lists.linux-foundation.org; Linuxarm <linuxarm@huawei.com>;
+>> lorenzo.pieralisi@arm.com; robin.murphy@arm.com; wanghuiqiang
+>> <wanghuiqiang@huawei.com>; Guohanjun (Hanjun Guo)
+>> <guohanjun@huawei.com>; steven.price@arm.com; Sami.Mujawar@arm.com;
+>> jon@solid-run.com; eric.auger@redhat.com; yangyicong
+>> <yangyicong@huawei.com>
+>> Subject: Re: [PATCH v4 2/8] iommu/dma: Introduce generic helper to retrieve
+>> RMR info
+>>
+>> On Thu, May 13, 2021 at 02:45:44PM +0100, Shameer Kolothum wrote:
+>>> +/**
+>>> + * struct iommu_rmr - Reserved Memory Region details per IOMMU
+>>> + * @list: Linked list pointers to hold RMR region info
+>>> + * @base_address: base address of Reserved Memory Region
+>>> + * @length: length of memory region
+>>> + * @sid: associated stream id
+>>> + * @flags: flags that apply to the RMR node
+>>> + */
+>>> +struct iommu_rmr {
+>>> +	struct list_head	list;
+>>> +	phys_addr_t		base_address;
+>>> +	u64			length;
+>>> +	u32			sid;
+>>> +	u32			flags;
+>>> +};
+>>> +
+>>> +/* RMR Remap permitted */
+>>> +#define IOMMU_RMR_REMAP_PERMITTED	(1 << 0)
+>>> +
+>>
+>> This struct has lots of overlap with 'struct iommu_resv_region'. Any
+>> reason the existing struct can't be used here?
+>>
 > 
-> errors:
-> 1. encountered an endless loop in __arm_smmu_tlb_inv_range because
-> num_pages is 0
-> 2. encountered CERROR_ILL because the fields of TLB invalidation
-> command are as follow: TG = 2, NUM = 0, SCALE = 0, TTL = 0. The
-> combination is exactly the kind of reserved combination pointed
-> out in the SMMUv3 spec(page 143-144, version D.a)
+> Hmm..main reason is "sid". RMRs are associated with stream ids and
+> that is used to install bypass STEs/SMRs in SMMU drivers and also to check
+> whether a dev has any RMR regions associated with it.
 > 
-> In my opinion, it is more appropriate to add parameter check in
-> __arm_smmu_tlb_inv_range(), although these problems only appeared
-> when I tested the SMMU nested mode. What do you think?
+> I think we could add sid/dev_id to 'struct iommu_resv_region', and modify
+> iommu_alloc_resv_region() accordingly. That can get rid of the above struct
+> and iommu_dma_alloc_rmr() fn. Not sure this will complicate things as
+> the dev_id is only valid for RMR reservation region cases.
+> 
+> Please let me know your thoughts.
 
-FWIW I think it would be better to fix the caller to not issue broken 
-commands in the first place. The kernel shouldn't do so for itself (and 
-definitely needs fixing if it ever does), so it sounds like the nesting 
-implementation needs to do a bit more validation of what it's passing 
-through.
+Maybe add a union for FW-specific data to struct resv_region, so that it 
+could eventually subsume AMD's struct unity_map_entry and Intel's struct 
+dmar_rmrr_unit as well? They're essentially doing the same dance.
+
+We might still have to create copies of the firmware-allocated entries 
+to actually assign to domains (certainly where one entry covers multiple 
+devices), but kmemdup() is still a lot neater than various translations 
+from private formats.
 
 Robin.
-
-> This series include patches as below:
-> Patch 1:
-> - align the invalid range with leaf page size upwards when smmu
-> supports RIL
-> 
-> Patch 2:
-> - add a check to standardize granule size when smmu supports RIL
-> 
-> Kunkun Jiang (2):
->    iommu/arm-smmu-v3: Align invalid range with leaf page size upwards
->      when support RIL
->    iommu/arm-smmu-v3: Standardize granule size when support RIL
-> 
->   drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c | 9 +++++++++
->   1 file changed, 9 insertions(+)
-> 
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
