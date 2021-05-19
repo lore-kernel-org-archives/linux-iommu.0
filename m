@@ -2,78 +2,72 @@ Return-Path: <SRS0=NBt+=KO=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-16.7 required=3.0 tests=BAYES_00,
-	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_CR_TRAILER,INCLUDES_PATCH,
-	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_GIT
-	autolearn=ham autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-10.2 required=3.0 tests=BAYES_00,
+	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,NICE_REPLY_A,
+	SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_SANE_1 autolearn=ham
+	autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1F22FC433ED
-	for <iommu@archiver.kernel.org>; Wed, 19 May 2021 09:44:34 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 247A0C433B4
+	for <iommu@archiver.kernel.org>; Wed, 19 May 2021 10:01:45 +0000 (UTC)
 Received: from smtp4.osuosl.org (smtp4.osuosl.org [140.211.166.137])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id B22C560FE8
-	for <iommu@archiver.kernel.org>; Wed, 19 May 2021 09:44:33 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org B22C560FE8
-Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=huawei.com
+	by mail.kernel.org (Postfix) with ESMTPS id A8AB060698
+	for <iommu@archiver.kernel.org>; Wed, 19 May 2021 10:01:44 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org A8AB060698
+Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=arm.com
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by smtp4.osuosl.org (Postfix) with ESMTP id CF8DC402A5;
-	Wed, 19 May 2021 09:44:31 +0000 (UTC)
+	by smtp4.osuosl.org (Postfix) with ESMTP id 5EF0F40652;
+	Wed, 19 May 2021 10:01:44 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
 Received: from smtp4.osuosl.org ([127.0.0.1])
 	by localhost (smtp4.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id nrJPd3rBP9IM; Wed, 19 May 2021 09:44:30 +0000 (UTC)
-Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by smtp4.osuosl.org (Postfix) with ESMTP id E4F9240E6E;
-	Wed, 19 May 2021 09:44:29 +0000 (UTC)
+	with ESMTP id OHFH3Jm9QYAi; Wed, 19 May 2021 10:01:43 +0000 (UTC)
+Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [IPv6:2605:bc80:3010:104::8cd3:938])
+	by smtp4.osuosl.org (Postfix) with ESMTP id E8AC34064F;
+	Wed, 19 May 2021 10:01:42 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id BF146C000E;
-	Wed, 19 May 2021 09:44:29 +0000 (UTC)
-Received: from smtp2.osuosl.org (smtp2.osuosl.org [140.211.166.133])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 9392DC001C
- for <iommu@lists.linux-foundation.org>; Wed, 19 May 2021 09:44:28 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id C26EEC000E;
+	Wed, 19 May 2021 10:01:42 +0000 (UTC)
+Received: from smtp1.osuosl.org (smtp1.osuosl.org [140.211.166.138])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 52B18C0001
+ for <iommu@lists.linux-foundation.org>; Wed, 19 May 2021 10:01:41 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by smtp2.osuosl.org (Postfix) with ESMTP id 767B740154
- for <iommu@lists.linux-foundation.org>; Wed, 19 May 2021 09:44:28 +0000 (UTC)
+ by smtp1.osuosl.org (Postfix) with ESMTP id 4191083F7B
+ for <iommu@lists.linux-foundation.org>; Wed, 19 May 2021 10:01:41 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from smtp2.osuosl.org ([127.0.0.1])
- by localhost (smtp2.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id 3vAd__ihineT for <iommu@lists.linux-foundation.org>;
- Wed, 19 May 2021 09:44:28 +0000 (UTC)
+Received: from smtp1.osuosl.org ([127.0.0.1])
+ by localhost (smtp1.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+ with ESMTP id JxFsH1OCBGb3 for <iommu@lists.linux-foundation.org>;
+ Wed, 19 May 2021 10:01:40 +0000 (UTC)
 X-Greylist: domain auto-whitelisted by SQLgrey-1.8.0
-Received: from szxga04-in.huawei.com (szxga04-in.huawei.com [45.249.212.190])
- by smtp2.osuosl.org (Postfix) with ESMTPS id C956F4011B
- for <iommu@lists.linux-foundation.org>; Wed, 19 May 2021 09:44:27 +0000 (UTC)
-Received: from dggems703-chm.china.huawei.com (unknown [172.30.72.59])
- by szxga04-in.huawei.com (SkyGuard) with ESMTP id 4FlSY42yz2zpfb5;
- Wed, 19 May 2021 17:40:56 +0800 (CST)
-Received: from dggema765-chm.china.huawei.com (10.1.198.207) by
- dggems703-chm.china.huawei.com (10.3.19.180) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256) id
- 15.1.2176.2; Wed, 19 May 2021 17:44:17 +0800
-Received: from DESKTOP-6NKE0BC.china.huawei.com (10.174.185.210) by
- dggema765-chm.china.huawei.com (10.1.198.207) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id
- 15.1.2176.2; Wed, 19 May 2021 17:44:17 +0800
-From: Kunkun Jiang <jiangkunkun@huawei.com>
-To: Will Deacon <will@kernel.org>, Robin Murphy <robin.murphy@arm.com>, "Eric
- Auger" <eric.auger@redhat.com>, "moderated list:ARM SMMU DRIVERS"
- <linux-arm-kernel@lists.infradead.org>, "open list:IOMMU DRIVERS"
- <iommu@lists.linux-foundation.org>, open list <linux-kernel@vger.kernel.org>
-Subject: [RFC PATCH v1 1/2] iommu/arm-smmu-v3: Align invalid range with leaf
- page size upwards when support RIL
-Date: Wed, 19 May 2021 17:43:06 +0800
-Message-ID: <20210519094307.3275-2-jiangkunkun@huawei.com>
-X-Mailer: git-send-email 2.26.2.windows.1
-In-Reply-To: <20210519094307.3275-1-jiangkunkun@huawei.com>
+Received: from foss.arm.com (foss.arm.com [217.140.110.172])
+ by smtp1.osuosl.org (Postfix) with ESMTP id 8200383D59
+ for <iommu@lists.linux-foundation.org>; Wed, 19 May 2021 10:01:40 +0000 (UTC)
+Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
+ by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id B74F3101E;
+ Wed, 19 May 2021 03:01:39 -0700 (PDT)
+Received: from [10.57.66.179] (unknown [10.57.66.179])
+ by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id 8E03A3F719;
+ Wed, 19 May 2021 03:01:38 -0700 (PDT)
+Subject: Re: [RFC PATCH v1 0/2] iommu/arm-smmu-v3: Add some parameter check in
+ __arm_smmu_tlb_inv_range()
+To: Kunkun Jiang <jiangkunkun@huawei.com>, Will Deacon <will@kernel.org>,
+ Eric Auger <eric.auger@redhat.com>,
+ "moderated list:ARM SMMU DRIVERS" <linux-arm-kernel@lists.infradead.org>,
+ "open list:IOMMU DRIVERS" <iommu@lists.linux-foundation.org>,
+ open list <linux-kernel@vger.kernel.org>
 References: <20210519094307.3275-1-jiangkunkun@huawei.com>
+From: Robin Murphy <robin.murphy@arm.com>
+Message-ID: <c577a7cc-8db3-5802-53cb-985f0c7216b3@arm.com>
+Date: Wed, 19 May 2021 11:01:33 +0100
+User-Agent: Mozilla/5.0 (Windows NT 10.0; rv:78.0) Gecko/20100101
+ Thunderbird/78.10.1
 MIME-Version: 1.0
-X-Originating-IP: [10.174.185.210]
-X-ClientProxiedBy: dggems706-chm.china.huawei.com (10.3.19.183) To
- dggema765-chm.china.huawei.com (10.1.198.207)
-X-CFilter-Loop: Reflected
-Cc: wanghaibin.wang@huawei.com, Kunkun Jiang <jiangkunkun@huawei.com>
+In-Reply-To: <20210519094307.3275-1-jiangkunkun@huawei.com>
+Content-Language: en-GB
+Cc: wanghaibin.wang@huawei.com
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -86,58 +80,56 @@ List-Post: <mailto:iommu@lists.linux-foundation.org>
 List-Help: <mailto:iommu-request@lists.linux-foundation.org?subject=help>
 List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
  <mailto:iommu-request@lists.linux-foundation.org?subject=subscribe>
-Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset="us-ascii"; Format="flowed"
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-In the __arm_smmu_tlb_inv_range(), the fileds of TLBI CMD is
-calculated based on the invalid range and the leaf page size,
-when SMMU supports RIL. It will cause some errors when the
-invalid range isn't aligned with the leaf page size.
+On 2021-05-19 10:43, Kunkun Jiang wrote:
+> Hi all,
+> 
+> This set of patches solves some errors when I tested the SMMU nested mode.
+> 
+> Test scenario description:
+> guest kernel: 4KB translation granule
+> host kernel: 16KB translation granule
+> 
+> errors:
+> 1. encountered an endless loop in __arm_smmu_tlb_inv_range because
+> num_pages is 0
+> 2. encountered CERROR_ILL because the fields of TLB invalidation
+> command are as follow: TG = 2, NUM = 0, SCALE = 0, TTL = 0. The
+> combination is exactly the kind of reserved combination pointed
+> out in the SMMUv3 spec(page 143-144, version D.a)
+> 
+> In my opinion, it is more appropriate to add parameter check in
+> __arm_smmu_tlb_inv_range(), although these problems only appeared
+> when I tested the SMMU nested mode. What do you think?
 
-1. The num_pages will be zero, if the invalid range is less
-than b. Then it will enter an endless loop in
-__arm_smmu_tlb_inv_range().
-2. The actual invalid range will only be part of the invalid
-range. If the invalid range is not an integral multiple of
-the leaf page size.
+FWIW I think it would be better to fix the caller to not issue broken 
+commands in the first place. The kernel shouldn't do so for itself (and 
+definitely needs fixing if it ever does), so it sounds like the nesting 
+implementation needs to do a bit more validation of what it's passing 
+through.
 
-To align invalid range with leaf page size upwards will solve
-the two issues.
+Robin.
 
-Reported-by: Nianyao Tang <tangnianyao@huawei.com>
-Signed-off-by: Kunkun Jiang <jiangkunkun@huawei.com>
----
- drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c | 4 ++++
- 1 file changed, 4 insertions(+)
-
-diff --git a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
-index 54b2f27b81d4..8a2cacbb1ef8 100644
---- a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
-+++ b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
-@@ -1703,7 +1703,9 @@ static void __arm_smmu_tlb_inv_range(struct arm_smmu_cmdq_ent *cmd,
- 
- 	if (smmu->features & ARM_SMMU_FEAT_RANGE_INV) {
- 		/* Get the leaf page size */
-+		size_t leaf_pgsize;
- 		tg = __ffs(smmu_domain->domain.pgsize_bitmap);
-+		leaf_pgsize = 1 << tg;
- 
- 		/* Convert page size of 12,14,16 (log2) to 1,2,3 */
- 		cmd->tlbi.tg = (tg - 10) / 2;
-@@ -1711,6 +1713,8 @@ static void __arm_smmu_tlb_inv_range(struct arm_smmu_cmdq_ent *cmd,
- 		/* Determine what level the granule is at */
- 		cmd->tlbi.ttl = 4 - ((ilog2(granule) - 3) / (tg - 3));
- 
-+		/* Align size with the leaf page size upwards */
-+		size = ALIGN(size, leaf_pgsize);
- 		num_pages = size >> tg;
- 	}
- 
--- 
-2.23.0
-
+> This series include patches as below:
+> Patch 1:
+> - align the invalid range with leaf page size upwards when smmu
+> supports RIL
+> 
+> Patch 2:
+> - add a check to standardize granule size when smmu supports RIL
+> 
+> Kunkun Jiang (2):
+>    iommu/arm-smmu-v3: Align invalid range with leaf page size upwards
+>      when support RIL
+>    iommu/arm-smmu-v3: Standardize granule size when support RIL
+> 
+>   drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c | 9 +++++++++
+>   1 file changed, 9 insertions(+)
+> 
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
