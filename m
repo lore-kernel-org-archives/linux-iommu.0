@@ -2,88 +2,109 @@ Return-Path: <SRS0=NBt+=KO=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-5.2 required=3.0 tests=BAYES_00,
-	HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,
-	URIBL_BLOCKED,USER_AGENT_SANE_2 autolearn=no autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-3.5 required=3.0 tests=BAYES_00,DKIM_INVALID,
+	DKIM_SIGNED,HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,SPF_HELO_NONE,
+	SPF_PASS,URIBL_BLOCKED autolearn=no autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 344CDC433ED
-	for <iommu@archiver.kernel.org>; Wed, 19 May 2021 15:43:46 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4E76FC433B4
+	for <iommu@archiver.kernel.org>; Wed, 19 May 2021 18:06:44 +0000 (UTC)
 Received: from smtp4.osuosl.org (smtp4.osuosl.org [140.211.166.137])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id C67B7613B4
-	for <iommu@archiver.kernel.org>; Wed, 19 May 2021 15:43:45 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org C67B7613B4
-Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=linux.intel.com
+	by mail.kernel.org (Postfix) with ESMTPS id A0D58610E9
+	for <iommu@archiver.kernel.org>; Wed, 19 May 2021 18:06:43 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org A0D58610E9
+Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=ziepe.ca
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by smtp4.osuosl.org (Postfix) with ESMTP id 888354061A;
-	Wed, 19 May 2021 15:43:45 +0000 (UTC)
+	by smtp4.osuosl.org (Postfix) with ESMTP id 517BF40EC7;
+	Wed, 19 May 2021 18:06:43 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
 Received: from smtp4.osuosl.org ([127.0.0.1])
 	by localhost (smtp4.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id fe8I4ZHfYRCX; Wed, 19 May 2021 15:43:44 +0000 (UTC)
-Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [IPv6:2605:bc80:3010:104::8cd3:938])
-	by smtp4.osuosl.org (Postfix) with ESMTP id 393EA40501;
-	Wed, 19 May 2021 15:43:44 +0000 (UTC)
+	with ESMTP id ppBqBt9GDudC; Wed, 19 May 2021 18:06:42 +0000 (UTC)
+Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
+	by smtp4.osuosl.org (Postfix) with ESMTP id C4C4B40EC0;
+	Wed, 19 May 2021 18:06:41 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id E28E0C000E;
-	Wed, 19 May 2021 15:43:43 +0000 (UTC)
-Received: from smtp3.osuosl.org (smtp3.osuosl.org [140.211.166.136])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 267DCC0001
- for <iommu@lists.linux-foundation.org>; Wed, 19 May 2021 15:43:42 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 9221AC000E;
+	Wed, 19 May 2021 18:06:41 +0000 (UTC)
+Received: from smtp1.osuosl.org (smtp1.osuosl.org [140.211.166.138])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id B15B0C0001
+ for <iommu@lists.linux-foundation.org>; Wed, 19 May 2021 18:06:40 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by smtp3.osuosl.org (Postfix) with ESMTP id 12A4A60719
- for <iommu@lists.linux-foundation.org>; Wed, 19 May 2021 15:43:42 +0000 (UTC)
+ by smtp1.osuosl.org (Postfix) with ESMTP id 98DA18435A
+ for <iommu@lists.linux-foundation.org>; Wed, 19 May 2021 18:06:40 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from smtp3.osuosl.org ([127.0.0.1])
- by localhost (smtp3.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id Ty7NWo3ouUZQ for <iommu@lists.linux-foundation.org>;
- Wed, 19 May 2021 15:43:40 +0000 (UTC)
-X-Greylist: domain auto-whitelisted by SQLgrey-1.8.0
-Received: from mga04.intel.com (mga04.intel.com [192.55.52.120])
- by smtp3.osuosl.org (Postfix) with ESMTPS id CDA7C60710
- for <iommu@lists.linux-foundation.org>; Wed, 19 May 2021 15:43:40 +0000 (UTC)
-IronPort-SDR: A+ExD6m3xMvp510VZ8ZHXBGIbR+8QMUIyECbuc5sXXFEWTELjWBiHGpi7MDYP9KZBLrt/ATtlD
- ZglRKxefNxyQ==
-X-IronPort-AV: E=McAfee;i="6200,9189,9989"; a="199053417"
-X-IronPort-AV: E=Sophos;i="5.82,313,1613462400"; d="scan'208";a="199053417"
-Received: from orsmga006.jf.intel.com ([10.7.209.51])
- by fmsmga104.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384;
- 19 May 2021 08:43:39 -0700
-IronPort-SDR: Rq6mGhGWq0ocMcxjGSwqTjh0L6uzNef5+zlx/xUruW8mle889BFq5V15MgpXgpVzGdaiT+Qbx5
- b8/+T5xnypYQ==
-X-IronPort-AV: E=Sophos;i="5.82,313,1613462400"; d="scan'208";a="395307475"
-Received: from jacob-builder.jf.intel.com (HELO jacob-builder) ([10.7.199.155])
- by orsmga006-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384;
- 19 May 2021 08:43:39 -0700
-Date: Wed, 19 May 2021 08:46:08 -0700
-From: Jacob Pan <jacob.jun.pan@linux.intel.com>
-To: Jason Gunthorpe <jgg@nvidia.com>
-Subject: Re: [PATCH v4 1/2] iommu/sva: Tighten SVA bind API with explicit flags
-Message-ID: <20210519084608.3d498169@jacob-builder>
-In-Reply-To: <20210517143758.GP1002214@nvidia.com>
-References: <20210513173303.GL1002214@nvidia.com>
- <20210513185349.GA801495@agluck-desk2.amr.corp.intel.com>
- <20210513190040.GR1002214@nvidia.com>
- <e9dd39aa8a144c23beffa5ca58936385@intel.com>
- <20210513192014.GU1002214@nvidia.com>
- <20210513124621.01421173@jacob-builder>
- <20210513195749.GA801830@agluck-desk2.amr.corp.intel.com>
- <20210513132251.0ff89b90@jacob-builder>
- <20210513223122.GV1002214@nvidia.com>
- <20210513164028.6e2d6e59@jacob-builder>
- <20210517143758.GP1002214@nvidia.com>
-Organization: OTC
-X-Mailer: Claws Mail 3.17.5 (GTK+ 2.24.32; x86_64-pc-linux-gnu)
+Authentication-Results: smtp1.osuosl.org (amavisd-new);
+ dkim=pass (2048-bit key) header.d=ziepe.ca
+Received: from smtp1.osuosl.org ([127.0.0.1])
+ by localhost (smtp1.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+ with ESMTP id sc7SU2CKsL2X for <iommu@lists.linux-foundation.org>;
+ Wed, 19 May 2021 18:06:38 +0000 (UTC)
+X-Greylist: whitelisted by SQLgrey-1.8.0
+Received: from mail-qv1-xf2b.google.com (mail-qv1-xf2b.google.com
+ [IPv6:2607:f8b0:4864:20::f2b])
+ by smtp1.osuosl.org (Postfix) with ESMTPS id 79F9084355
+ for <iommu@lists.linux-foundation.org>; Wed, 19 May 2021 18:06:38 +0000 (UTC)
+Received: by mail-qv1-xf2b.google.com with SMTP id w9so7234003qvi.13
+ for <iommu@lists.linux-foundation.org>; Wed, 19 May 2021 11:06:38 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ziepe.ca; s=google;
+ h=date:from:to:cc:subject:message-id:references:mime-version
+ :content-disposition:in-reply-to;
+ bh=tImv3Ted6BARmz7M+tuEIdrP9JRn+bjF1ToIbRbbDJ8=;
+ b=Bbfl7flyMPWNyDLufCNwLW0WE4SyDnLCleDYtN7/u2gC0bb9iO/Hkj1b1N8LaK9jVj
+ fFv21pHhR5afJPiTABu+Ns9UNr+b/IYRlZTXuZKrDtFJJ4kpcYylkACvXknYC/tu6iwZ
+ aHZcmydArLtG5/HbT3w8d1hPAEd3OXLH52ztw2rDziHqk6aPSr7SCDOHthEKfk90OyfU
+ AwNjxGHXHO6Kcj6FHUcEI5ANW2fXnbX8TXUtHFrHnkiCemekTOsHtUHxJHpMPhlG6HEU
+ k175NImjnc4rhOfcgzYSFll8wC69/QQbK3OpIkUQKd4DZhvtTDNmCmYiosX/qIG+M9ig
+ aA7w==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+ d=1e100.net; s=20161025;
+ h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+ :mime-version:content-disposition:in-reply-to;
+ bh=tImv3Ted6BARmz7M+tuEIdrP9JRn+bjF1ToIbRbbDJ8=;
+ b=TyEcLA+hPm82Zuz+oZ4BPVwyX/O4OQwyqNDvUqL0uBQj+DcwNlHQl1DaNA9MmsoPFZ
+ k3CacKJZw52k72rCCfZC0quk7xaGoPOKC1xNdvvkewOOK4cstmGPwmFkRafHplIczDlx
+ VJbUP/i86TGVDm4LJyQflnMvTQvP/6MmyFnieBYpsgbg2TvH6LimR1FOI9+KUltoumCa
+ /WlIJUhl6UCjVwZ4TIZJXPWmQiAXkohGphUwZoy5K7r3pwmCvCCDSfFNeN4r9Nw9rcHH
+ U9s5CYRwDrUULDbzbf7U/XWEpHf64L6C1W5SlmyuvED3IprzrlZAzDkYeebuecg9kccJ
+ HSTQ==
+X-Gm-Message-State: AOAM533zN+kbhagRPefUxj7Kzbwb/uzK4IH4SYVEuqB+Iy6GmLfE5klG
+ X8pIyuxh4Vs8f0gjMShiTdisFw==
+X-Google-Smtp-Source: ABdhPJxfdVisFtDoBA6vNWNzXoLMLU8eFLwTJh2Zrfswd3jA5ooaEQhDs9SHMkNr9LB1GfQ5Oi4EbQ==
+X-Received: by 2002:a0c:ee62:: with SMTP id n2mr906256qvs.20.1621447597322;
+ Wed, 19 May 2021 11:06:37 -0700 (PDT)
+Received: from ziepe.ca
+ (hlfxns017vw-47-55-113-94.dhcp-dynamic.fibreop.ns.bellaliant.net.
+ [47.55.113.94])
+ by smtp.gmail.com with ESMTPSA id w5sm321655qkf.14.2021.05.19.11.06.36
+ (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+ Wed, 19 May 2021 11:06:36 -0700 (PDT)
+Received: from jgg by mlx with local (Exim 4.94) (envelope-from <jgg@ziepe.ca>)
+ id 1ljQaZ-00AnII-Nw; Wed, 19 May 2021 15:06:35 -0300
+Date: Wed, 19 May 2021 15:06:35 -0300
+From: Jason Gunthorpe <jgg@ziepe.ca>
+To: Robin Murphy <robin.murphy@arm.com>
+Subject: Re: [PATCH 3/6] vfio: remove the unused mdev iommu hook
+Message-ID: <20210519180635.GT1096940@ziepe.ca>
+References: <MWHPR11MB1886B92507ED9015831A0CEA8C509@MWHPR11MB1886.namprd11.prod.outlook.com>
+ <20210514121925.GI1096940@ziepe.ca>
+ <MWHPR11MB18866205125E566FE05867A78C509@MWHPR11MB1886.namprd11.prod.outlook.com>
+ <20210514133143.GK1096940@ziepe.ca> <YKJf7mphTHZoi7Qr@8bytes.org>
+ <20210517123010.GO1096940@ziepe.ca> <YKJnPGonR+d8rbu/@8bytes.org>
+ <20210517133500.GP1096940@ziepe.ca> <YKKNLrdQ4QjhLrKX@8bytes.org>
+ <131327e3-5066-7a88-5b3c-07013585eb01@arm.com>
 MIME-Version: 1.0
-Cc: "vkoul@kernel.org" <vkoul@kernel.org>, "Tian, Kevin" <kevin.tian@intel.com>,
- "Luck, Tony" <tony.luck@intel.com>, "Jiang, Dave" <dave.jiang@intel.com>, "Raj,
- Ashok" <ashok.raj@intel.com>, David Woodhouse <dwmw2@infradead.org>,
- LKML <linux-kernel@vger.kernel.org>, Christoph Hellwig <hch@infradead.org>,
+Content-Disposition: inline
+In-Reply-To: <131327e3-5066-7a88-5b3c-07013585eb01@arm.com>
+Cc: "Tian, Kevin" <kevin.tian@intel.com>,
+ Alex Williamson <alex.williamson@redhat.com>,
+ "kvm@vger.kernel.org" <kvm@vger.kernel.org>,
+ David Woodhouse <dwmw2@infradead.org>, Kirti Wankhede <kwankhede@nvidia.com>,
  "iommu@lists.linux-foundation.org" <iommu@lists.linux-foundation.org>,
- "zhangfei.gao@linaro.org" <zhangfei.gao@linaro.org>,
- Jean-Philippe Brucker <jean-philippe@linaro.com>
+ Will Deacon <will@kernel.org>, Christoph Hellwig <hch@lst.de>,
+ "linux-arm-kernel@lists.infradead.org" <linux-arm-kernel@lists.infradead.org>
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -101,60 +122,48 @@ Content-Transfer-Encoding: 7bit
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-Hi Jason,
-
-On Mon, 17 May 2021 11:37:58 -0300, Jason Gunthorpe <jgg@nvidia.com> wrote:
-
-> On Thu, May 13, 2021 at 04:40:28PM -0700, Jacob Pan wrote:
-> 
-> > Looks like we are converging. Let me summarize the takeaways:
-> > 1. Remove IOMMU_SVA_BIND_SUPERVISOR flag from this patch, in fact there
-> > will be no flags at all for iommu_sva_bind_device()
-> > 2. Remove all supervisor SVA related vt-d, idxd code.
-> > 3. Create API iommu_setup_system_pasid_direct_map(option_flag)
-> > 	if (option_flag == 1)
-> > 		iommu_domain_alloc(IOMMU_DOMAIN_DMA);
-> > 	if (option_flag == 2)
-> > 		iommu_domain_alloc(IOMMU_DOMAIN_DIRECT); //new domain
-> > type? setup IOMMU page tables mirroring the direct map
-> > 4. Create API iommu_enable_dev_direct_map(struct dev, &pasid, &option)
-> > 	- Drivers call this API to get the system PASID and which
-> > option is available on the system PASID
-> > 	- mark device as PASID only, perhaps a new flag in struct
-> > 	device->dev_iommu->pasid_only = 1
-> > 5. DMA API IOMMU vendor ops will take action based on the pasid_only
-> > flag to decide if the mapping is for system PASID page tables.
+On Wed, May 19, 2021 at 04:23:21PM +0100, Robin Murphy wrote:
+> On 2021-05-17 16:35, Joerg Roedel wrote:
+> > On Mon, May 17, 2021 at 10:35:00AM -0300, Jason Gunthorpe wrote:
+> > > Well, I'm sorry, but there is a huge other thread talking about the
+> > > IOASID design in great detail and why this is all needed. Jumping into
+> > > this thread without context and basically rejecting all the
+> > > conclusions that were reached over the last several weeks is really
+> > > not helpful - especially since your objection is not technical.
+> > > 
+> > > I think you should wait for Intel to put together the /dev/ioasid uAPI
+> > > proposal and the example use cases it should address then you can give
+> > > feedback there, with proper context.
 > > 
-> > Does it make sense?  
+> > Yes, I think the next step is that someone who read the whole thread
+> > writes up the conclusions and a rough /dev/ioasid API proposal, also
+> > mentioning the use-cases it addresses. Based on that we can discuss the
+> > implications this needs to have for IOMMU-API and code.
+> > 
+> >  From the use-cases I know the mdev concept is just fine. But if there is
+> > a more generic one we can talk about it.
 > 
-> I think you will run into trouble with that approach when you get to
-> patches..
-> 
-> For 'option 1' what you want is an API that is 'give me a PASID that
-> is equivalent to the RID'.
-> 
-> Then all the DMA API operations map IO page tables to both RID and
-> PASID access. For the direct mode the PASID and RID will both point at
-> the shared all physical memory IO page table.
-> 
-> Otherwise the DMA API won't care if the device is using RID or PASID,
-> if it needs to map a range it does it to the shared IO page table and
-> flushes both the RID and PASID based caches.
-> 
-> Then the driver will use the normal DMA API with its normal struct
-> pci_device and simply tell the HW to do DMA TLP's with the returned
-> PASID.
-> 
-> For 'option 2' it should be a completely different API family.
-> 
-Make sense, thanks for the suggestions.
+> Just to add another voice here, I have some colleagues working on drivers
+> where they want to use SMMU Substream IDs for a single hardware block to
+> operate on multiple iommu_domains managed entirely within the
+> kernel.
 
-> Jason
+If it is entirely within the kernel I'm confused how mdev gets
+involved? mdev is only for vfio which is userspace.
 
+In any event, if you are kernel only it is not quite as big a deal to
+create what you need. A 'substream domain' disconnected from the
+struct device is not unreasonable.
 
-Thanks,
+> an mdev-like approach with aux domains is pretty much the ideal fit for this
+> use-case, while all the IOASID discussion appears centred on SVA and
+> userspace interfaces, and as such barely relevant if at all.
 
-Jacob
+/dev/ioasid is centered on userspace, but usually the way this works
+is a user API like that will be close to a mirror kernel
+implementation if someone needs such a thing.
+
+Jason
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
