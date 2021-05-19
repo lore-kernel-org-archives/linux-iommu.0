@@ -2,79 +2,105 @@ Return-Path: <SRS0=NBt+=KO=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-5.2 required=3.0 tests=BAYES_00,
-	HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,NICE_REPLY_A,SPF_HELO_NONE,
-	SPF_PASS,URIBL_BLOCKED,USER_AGENT_SANE_1 autolearn=no autolearn_force=no
-	version=3.4.0
+X-Spam-Status: No, score=-13.5 required=3.0 tests=BAYES_00,DKIM_INVALID,
+	DKIM_SIGNED,HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_CR_TRAILER,INCLUDES_PATCH,
+	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED autolearn=ham
+	autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 114F1C433B4
-	for <iommu@archiver.kernel.org>; Wed, 19 May 2021 11:48:25 +0000 (UTC)
-Received: from smtp2.osuosl.org (smtp2.osuosl.org [140.211.166.133])
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 15EE6C433B4
+	for <iommu@archiver.kernel.org>; Wed, 19 May 2021 13:39:37 +0000 (UTC)
+Received: from smtp3.osuosl.org (smtp3.osuosl.org [140.211.166.136])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 7EE5661004
-	for <iommu@archiver.kernel.org>; Wed, 19 May 2021 11:48:24 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 7EE5661004
-Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=arm.com
+	by mail.kernel.org (Postfix) with ESMTPS id A615A610A8
+	for <iommu@archiver.kernel.org>; Wed, 19 May 2021 13:39:36 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org A615A610A8
+Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=bytedance.com
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by smtp2.osuosl.org (Postfix) with ESMTP id 4277340154;
-	Wed, 19 May 2021 11:48:24 +0000 (UTC)
+	by smtp3.osuosl.org (Postfix) with ESMTP id 5A12B6078D;
+	Wed, 19 May 2021 13:39:36 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from smtp2.osuosl.org ([127.0.0.1])
-	by localhost (smtp2.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id mflcNSwEdeKl; Wed, 19 May 2021 11:48:22 +0000 (UTC)
-Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [IPv6:2605:bc80:3010:104::8cd3:938])
-	by smtp2.osuosl.org (Postfix) with ESMTP id 0EDF34011B;
-	Wed, 19 May 2021 11:48:22 +0000 (UTC)
+Received: from smtp3.osuosl.org ([127.0.0.1])
+	by localhost (smtp3.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+	with ESMTP id v6CvBj1UtLCV; Wed, 19 May 2021 13:39:35 +0000 (UTC)
+Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
+	by smtp3.osuosl.org (Postfix) with ESMTP id 4D3B76062B;
+	Wed, 19 May 2021 13:39:35 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id E754EC0011;
-	Wed, 19 May 2021 11:48:21 +0000 (UTC)
-Received: from smtp4.osuosl.org (smtp4.osuosl.org [140.211.166.137])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 4F78FC0001
- for <iommu@lists.linux-foundation.org>; Wed, 19 May 2021 11:48:21 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 21C7FC000E;
+	Wed, 19 May 2021 13:39:35 +0000 (UTC)
+Received: from smtp1.osuosl.org (smtp1.osuosl.org [IPv6:2605:bc80:3010::138])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 514CCC0001
+ for <iommu@lists.linux-foundation.org>; Wed, 19 May 2021 13:39:34 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by smtp4.osuosl.org (Postfix) with ESMTP id 2A87540633
- for <iommu@lists.linux-foundation.org>; Wed, 19 May 2021 11:48:21 +0000 (UTC)
+ by smtp1.osuosl.org (Postfix) with ESMTP id 31E6482C1C
+ for <iommu@lists.linux-foundation.org>; Wed, 19 May 2021 13:39:34 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from smtp4.osuosl.org ([127.0.0.1])
- by localhost (smtp4.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id 5OxQYilQtrUc for <iommu@lists.linux-foundation.org>;
- Wed, 19 May 2021 11:48:19 +0000 (UTC)
-X-Greylist: domain auto-whitelisted by SQLgrey-1.8.0
-Received: from foss.arm.com (foss.arm.com [217.140.110.172])
- by smtp4.osuosl.org (Postfix) with ESMTP id C9FE740620
- for <iommu@lists.linux-foundation.org>; Wed, 19 May 2021 11:48:19 +0000 (UTC)
-Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
- by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 09267101E;
- Wed, 19 May 2021 04:48:19 -0700 (PDT)
-Received: from [10.57.66.179] (unknown [10.57.66.179])
- by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id 077393F719;
- Wed, 19 May 2021 04:48:16 -0700 (PDT)
-Subject: Re: [PATCH v4 2/8] iommu/dma: Introduce generic helper to retrieve
- RMR info
-To: Shameerali Kolothum Thodi <shameerali.kolothum.thodi@huawei.com>,
- Joerg Roedel <joro@8bytes.org>
-References: <20210513134550.2117-1-shameerali.kolothum.thodi@huawei.com>
- <20210513134550.2117-3-shameerali.kolothum.thodi@huawei.com>
- <YKN/ocoHvOdbH43j@8bytes.org> <503068eb5f184639a75d7d1ef929b4c6@huawei.com>
-From: Robin Murphy <robin.murphy@arm.com>
-Message-ID: <4047b1ef-5f6e-c3b8-e701-1cfa68acfd69@arm.com>
-Date: Wed, 19 May 2021 12:48:11 +0100
-User-Agent: Mozilla/5.0 (Windows NT 10.0; rv:78.0) Gecko/20100101
- Thunderbird/78.10.1
+Authentication-Results: smtp1.osuosl.org (amavisd-new);
+ dkim=pass (2048-bit key) header.d=bytedance-com.20150623.gappssmtp.com
+Received: from smtp1.osuosl.org ([127.0.0.1])
+ by localhost (smtp1.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+ with ESMTP id R_vsI4Az8OUY for <iommu@lists.linux-foundation.org>;
+ Wed, 19 May 2021 13:39:33 +0000 (UTC)
+X-Greylist: whitelisted by SQLgrey-1.8.0
+Received: from mail-ed1-x52a.google.com (mail-ed1-x52a.google.com
+ [IPv6:2a00:1450:4864:20::52a])
+ by smtp1.osuosl.org (Postfix) with ESMTPS id 55AE982E54
+ for <iommu@lists.linux-foundation.org>; Wed, 19 May 2021 13:39:33 +0000 (UTC)
+Received: by mail-ed1-x52a.google.com with SMTP id o5so6422824edc.5
+ for <iommu@lists.linux-foundation.org>; Wed, 19 May 2021 06:39:33 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+ d=bytedance-com.20150623.gappssmtp.com; s=20150623;
+ h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+ :cc; bh=ZyIq8u+kwqwBpbcwfduylW+9xPyGO1H5rtatjl1f/C8=;
+ b=xs/S/LlOVbGml0EAnOsGRxZ5oyqDBbSJlCsgVvbQ04i5427YcKz67n0cj1OtSeZJzl
+ 3OctonqM0oElTfaoTOk7R2GorMPYS4s6Btg8XNc/c8YJCgYkjK+9gWKXqHAD42DxLpI8
+ u88O6hu8P5tyhEqbon4FApOFc19n66atecuVED7etO6q1DkSFutUnSZJ47B113wTUxY4
+ BDyFvGJ7MTYq9/FGHolluJ7KGdFbHah2Ii04NPVk3Do6Edo/rTmDaygSrsV/k7OCxbIf
+ 5fhm7wm6SKx4287C/a43687P2ouGxwFMVU1e5nxsCdXnJ4V1slDmpOxWqN3L8omzqx2q
+ Gnng==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+ d=1e100.net; s=20161025;
+ h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+ :message-id:subject:to:cc;
+ bh=ZyIq8u+kwqwBpbcwfduylW+9xPyGO1H5rtatjl1f/C8=;
+ b=blpLXcwkmh+LacgNGAnKKqH/Znr5AD1wwcKwoJy5AlMeIo3Gw1/uz5l99BKTyhHi+t
+ rGr+kzhddY0qSwDQdI0RJ2vOlEEjIi14CLs8wBBvFeczFiqmZp38n/GeErJffsiZxsdI
+ XHqW0BGmonn+ljgnXaUWOVYZCLscfe9m/weMeGT8vkzmOdT5XT4gNmJ//2L7SEgDqQMP
+ LSAXXAsu0Xc1G32s7q1hUuX2CNQV2aKapmVJuwHhoUEkq+Jhu4J0ODpijiHMXXxzmkzu
+ 42X3LtvSAjQG4kVZ7OseJEtMC490C8oIEFuweTdfrn5qDGOhmfncpo4lNmW/h+cP99ve
+ SCCQ==
+X-Gm-Message-State: AOAM5306qtroqUUXJWx0MT8HK2vz26nmGgWFiFjnncePs1huufc8pY1k
+ k+OJRZnc9Fsy+SAXUGnJR+6aIMBbKIj4YI2LkBNK
+X-Google-Smtp-Source: ABdhPJyUaoeoU6jHmwL2wRih6mMfwzvW50aSrjBZb35A6Wf6KcfF+IKFvuHwvdNQjGh/v4RZkom8EsJySMDZrk7j/3M=
+X-Received: by 2002:a05:6402:4252:: with SMTP id
+ g18mr14312783edb.195.1621431571306; 
+ Wed, 19 May 2021 06:39:31 -0700 (PDT)
 MIME-Version: 1.0
-In-Reply-To: <503068eb5f184639a75d7d1ef929b4c6@huawei.com>
-Content-Language: en-GB
-Cc: "jon@solid-run.com" <jon@solid-run.com>, Linuxarm <linuxarm@huawei.com>,
- "steven.price@arm.com" <steven.price@arm.com>,
- "linux-acpi@vger.kernel.org" <linux-acpi@vger.kernel.org>,
- "iommu@lists.linux-foundation.org" <iommu@lists.linux-foundation.org>,
- "linux-arm-kernel@lists.infradead.org" <linux-arm-kernel@lists.infradead.org>,
- "Guohanjun \(Hanjun Guo\)" <guohanjun@huawei.com>,
- yangyicong <yangyicong@huawei.com>,
- "Sami.Mujawar@arm.com" <Sami.Mujawar@arm.com>,
- wanghuiqiang <wanghuiqiang@huawei.com>
+References: <20210517095513.850-1-xieyongji@bytedance.com>
+ <20210517095513.850-5-xieyongji@bytedance.com>
+In-Reply-To: <20210517095513.850-5-xieyongji@bytedance.com>
+From: Yongji Xie <xieyongji@bytedance.com>
+Date: Wed, 19 May 2021 21:39:20 +0800
+Message-ID: <CACycT3s1rEvNnNkJKQsHGRsyLPADieFdVkb1Sp3GObR0Vox5Fg@mail.gmail.com>
+Subject: Re: [PATCH v7 04/12] virtio-blk: Add validation for block size in
+ config space
+To: "Michael S. Tsirkin" <mst@redhat.com>, Jason Wang <jasowang@redhat.com>, 
+ Stefan Hajnoczi <stefanha@redhat.com>,
+ Stefano Garzarella <sgarzare@redhat.com>, 
+ Parav Pandit <parav@nvidia.com>, Christoph Hellwig <hch@infradead.org>, 
+ Christian Brauner <christian.brauner@canonical.com>,
+ Randy Dunlap <rdunlap@infradead.org>, 
+ Matthew Wilcox <willy@infradead.org>, viro@zeniv.linux.org.uk,
+ Jens Axboe <axboe@kernel.dk>, 
+ bcrl@kvack.org, Jonathan Corbet <corbet@lwn.net>, 
+ =?UTF-8?Q?Mika_Penttil=C3=A4?= <mika.penttila@nextfour.com>, 
+ Dan Carpenter <dan.carpenter@oracle.com>, joro@8bytes.org
+Cc: kvm <kvm@vger.kernel.org>, netdev@vger.kernel.org,
+ linux-kernel <linux-kernel@vger.kernel.org>,
+ virtualization <virtualization@lists.linux-foundation.org>,
+ iommu@lists.linux-foundation.org, linux-fsdevel@vger.kernel.org
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -87,74 +113,37 @@ List-Post: <mailto:iommu@lists.linux-foundation.org>
 List-Help: <mailto:iommu-request@lists.linux-foundation.org?subject=help>
 List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
  <mailto:iommu-request@lists.linux-foundation.org?subject=subscribe>
+Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
-Content-Type: text/plain; charset="us-ascii"; Format="flowed"
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-On 2021-05-19 10:30, Shameerali Kolothum Thodi wrote:
-> 
-> 
->> -----Original Message-----
->> From: Joerg Roedel [mailto:joro@8bytes.org]
->> Sent: 18 May 2021 09:50
->> To: Shameerali Kolothum Thodi <shameerali.kolothum.thodi@huawei.com>
->> Cc: linux-arm-kernel@lists.infradead.org; linux-acpi@vger.kernel.org;
->> iommu@lists.linux-foundation.org; Linuxarm <linuxarm@huawei.com>;
->> lorenzo.pieralisi@arm.com; robin.murphy@arm.com; wanghuiqiang
->> <wanghuiqiang@huawei.com>; Guohanjun (Hanjun Guo)
->> <guohanjun@huawei.com>; steven.price@arm.com; Sami.Mujawar@arm.com;
->> jon@solid-run.com; eric.auger@redhat.com; yangyicong
->> <yangyicong@huawei.com>
->> Subject: Re: [PATCH v4 2/8] iommu/dma: Introduce generic helper to retrieve
->> RMR info
->>
->> On Thu, May 13, 2021 at 02:45:44PM +0100, Shameer Kolothum wrote:
->>> +/**
->>> + * struct iommu_rmr - Reserved Memory Region details per IOMMU
->>> + * @list: Linked list pointers to hold RMR region info
->>> + * @base_address: base address of Reserved Memory Region
->>> + * @length: length of memory region
->>> + * @sid: associated stream id
->>> + * @flags: flags that apply to the RMR node
->>> + */
->>> +struct iommu_rmr {
->>> +	struct list_head	list;
->>> +	phys_addr_t		base_address;
->>> +	u64			length;
->>> +	u32			sid;
->>> +	u32			flags;
->>> +};
->>> +
->>> +/* RMR Remap permitted */
->>> +#define IOMMU_RMR_REMAP_PERMITTED	(1 << 0)
->>> +
->>
->> This struct has lots of overlap with 'struct iommu_resv_region'. Any
->> reason the existing struct can't be used here?
->>
-> 
-> Hmm..main reason is "sid". RMRs are associated with stream ids and
-> that is used to install bypass STEs/SMRs in SMMU drivers and also to check
-> whether a dev has any RMR regions associated with it.
-> 
-> I think we could add sid/dev_id to 'struct iommu_resv_region', and modify
-> iommu_alloc_resv_region() accordingly. That can get rid of the above struct
-> and iommu_dma_alloc_rmr() fn. Not sure this will complicate things as
-> the dev_id is only valid for RMR reservation region cases.
-> 
-> Please let me know your thoughts.
+On Mon, May 17, 2021 at 5:56 PM Xie Yongji <xieyongji@bytedance.com> wrote:
+>
+> This ensures that we will not use an invalid block size
+> in config space (might come from an untrusted device).
+>
+> Signed-off-by: Xie Yongji <xieyongji@bytedance.com>
+> ---
+>  drivers/block/virtio_blk.c | 2 +-
+>  1 file changed, 1 insertion(+), 1 deletion(-)
+>
+> diff --git a/drivers/block/virtio_blk.c b/drivers/block/virtio_blk.c
+> index ebb4d3fe803f..c848aa36d49b 100644
+> --- a/drivers/block/virtio_blk.c
+> +++ b/drivers/block/virtio_blk.c
+> @@ -826,7 +826,7 @@ static int virtblk_probe(struct virtio_device *vdev)
+>         err = virtio_cread_feature(vdev, VIRTIO_BLK_F_BLK_SIZE,
+>                                    struct virtio_blk_config, blk_size,
+>                                    &blk_size);
+> -       if (!err)
+> +       if (!err && blk_size > 0 && blk_size <= max_size)
 
-Maybe add a union for FW-specific data to struct resv_region, so that it 
-could eventually subsume AMD's struct unity_map_entry and Intel's struct 
-dmar_rmrr_unit as well? They're essentially doing the same dance.
+The check here is incorrect. I will use PAGE_SIZE as the maximum
+boundary in the new version.
 
-We might still have to create copies of the firmware-allocated entries 
-to actually assign to domains (certainly where one entry covers multiple 
-devices), but kmemdup() is still a lot neater than various translations 
-from private formats.
-
-Robin.
+Thanks,
+Yongji
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
