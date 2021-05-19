@@ -2,94 +2,92 @@ Return-Path: <SRS0=NBt+=KO=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-10.5 required=3.0 tests=BAYES_00,
-	DKIM_ADSP_CUSTOM_MED,DKIM_INVALID,DKIM_SIGNED,FREEMAIL_FORGED_FROMDOMAIN,
-	FREEMAIL_FROM,HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_CR_TRAILER,
-	INCLUDES_PATCH,MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED
-	autolearn=unavailable autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-3.7 required=3.0 tests=BAYES_00,
+	HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,
+	URIBL_BLOCKED autolearn=no autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 68CC7C433ED
-	for <iommu@archiver.kernel.org>; Wed, 19 May 2021 06:58:25 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 59D83C43460
+	for <iommu@archiver.kernel.org>; Wed, 19 May 2021 09:30:30 +0000 (UTC)
 Received: from smtp3.osuosl.org (smtp3.osuosl.org [140.211.166.136])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 0D4EE61364
-	for <iommu@archiver.kernel.org>; Wed, 19 May 2021 06:58:25 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 0D4EE61364
-Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=gmail.com
+	by mail.kernel.org (Postfix) with ESMTPS id DB107611B0
+	for <iommu@archiver.kernel.org>; Wed, 19 May 2021 09:30:29 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org DB107611B0
+Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=huawei.com
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by smtp3.osuosl.org (Postfix) with ESMTP id CEBB66066E;
-	Wed, 19 May 2021 06:58:24 +0000 (UTC)
+	by smtp3.osuosl.org (Postfix) with ESMTP id A8ADB6066E;
+	Wed, 19 May 2021 09:30:29 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
 Received: from smtp3.osuosl.org ([127.0.0.1])
 	by localhost (smtp3.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id hAHlHJmbz_u3; Wed, 19 May 2021 06:58:23 +0000 (UTC)
+	with ESMTP id nwLL6zx0HtTN; Wed, 19 May 2021 09:30:28 +0000 (UTC)
 Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [IPv6:2605:bc80:3010:104::8cd3:938])
-	by smtp3.osuosl.org (Postfix) with ESMTP id 7D71960650;
-	Wed, 19 May 2021 06:58:23 +0000 (UTC)
+	by smtp3.osuosl.org (Postfix) with ESMTP id 8238660657;
+	Wed, 19 May 2021 09:30:28 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 552DFC000D;
-	Wed, 19 May 2021 06:58:23 +0000 (UTC)
-Received: from smtp4.osuosl.org (smtp4.osuosl.org [140.211.166.137])
- by lists.linuxfoundation.org (Postfix) with ESMTP id D1457C0001
- for <iommu@lists.linux-foundation.org>; Wed, 19 May 2021 03:56:01 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 52A00C000E;
+	Wed, 19 May 2021 09:30:28 +0000 (UTC)
+Received: from smtp1.osuosl.org (smtp1.osuosl.org [IPv6:2605:bc80:3010::138])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 770A5C0001
+ for <iommu@lists.linux-foundation.org>; Wed, 19 May 2021 09:30:26 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by smtp4.osuosl.org (Postfix) with ESMTP id C5AE140E6C
- for <iommu@lists.linux-foundation.org>; Wed, 19 May 2021 03:56:01 +0000 (UTC)
+ by smtp1.osuosl.org (Postfix) with ESMTP id 7206384225
+ for <iommu@lists.linux-foundation.org>; Wed, 19 May 2021 09:30:26 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Authentication-Results: smtp4.osuosl.org (amavisd-new);
- dkim=pass (2048-bit key) header.d=gmail.com
-Received: from smtp4.osuosl.org ([127.0.0.1])
- by localhost (smtp4.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id EdUxIIp8SJ11 for <iommu@lists.linux-foundation.org>;
- Wed, 19 May 2021 03:56:00 +0000 (UTC)
-X-Greylist: whitelisted by SQLgrey-1.8.0
-Received: from mail-ot1-x32d.google.com (mail-ot1-x32d.google.com
- [IPv6:2607:f8b0:4864:20::32d])
- by smtp4.osuosl.org (Postfix) with ESMTPS id BB7D240E6D
- for <iommu@lists.linux-foundation.org>; Wed, 19 May 2021 03:56:00 +0000 (UTC)
-Received: by mail-ot1-x32d.google.com with SMTP id
- u25-20020a0568302319b02902ac3d54c25eso10643269ote.1
- for <iommu@lists.linux-foundation.org>; Tue, 18 May 2021 20:56:00 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=gmail.com; s=20161025;
- h=mime-version:references:in-reply-to:from:date:message-id:subject:to
- :cc; bh=HhI/6V9NfoJZk78Xj3HSIgGBenrGacrIrQhkazt2/Pg=;
- b=BDabwLgl6MZS4U8XrrFfu4+rhJeSJnpXyXKVfXeCBYYzg6RwPFuTQUgwemNDEpr1u5
- 0MOMW4AxeFPbDMVv7pPJL90+WLZm0edmQl2boNfWalW9tn1lcBGFQxOGwJfRHSo2XFW5
- BrWESt0MqZgnRAE9FJShc8MbG9Qt8GnzeAaUQFGE7Qs+19jLWg2Wp9EC4VFfeE7ezmdG
- GV/fR0iVhT8T7+hT8+6DvdP7JkKyWmfHRQR50XuE0RHlnvbR0/s6fxeF5IXXGlfPN4vc
- fAr0KmaSIZCfhtexblbMFReAvS1w7z2uv5rwGnkHMZ7Kp25fYRuJvIZrsUaitszkaL8I
- wmZQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
- d=1e100.net; s=20161025;
- h=x-gm-message-state:mime-version:references:in-reply-to:from:date
- :message-id:subject:to:cc;
- bh=HhI/6V9NfoJZk78Xj3HSIgGBenrGacrIrQhkazt2/Pg=;
- b=mDn2sYTO6HqkziVIqGJXhc788Uq/dUCPLivFqz7Ijqo6fcMIA/yQCmC+gM8nPKWU3V
- HyM+HvJ31rzUmfYRQODvX/s2238HWj47BfstzI+uDb7xJLZpQAslstxthPzgjriIo+iU
- akXJtcrxZDp0q5i1COJxM9t6QVZs3btQ+JzGlOci2Eld2da6IpHVELy7PGMXi8o8Wgzb
- +1hbFO1K/3In/wLe/5GlXigauP00lkaD+g6BloPj7/1/fTjrPMfG6sTOCJw6gGlDLg2L
- Y1CbB0Zx+ownKcwU8z/gBRb/nymngfW5JHGY0yJTcwmwGPt5l3rPaESVSHrxrv9KetGd
- xYQw==
-X-Gm-Message-State: AOAM530mMqV82RaUv3ln/e6VQwg4rXQ7H+H1xicAu5VwKWSFe+g3scQk
- tA1pHvuE9cK3M+iV37Bw8Qt98mc40I8Kj4KemkU=
-X-Google-Smtp-Source: ABdhPJynQ7/RGStOwc2agXrmWgyvoU6JpN55uvWTWxM567AKkz/5AStqjojczNtSZroC42xTdrkDxgQwaLArKPkNTco=
-X-Received: by 2002:a9d:4115:: with SMTP id o21mr7143864ote.52.1621396559845; 
- Tue, 18 May 2021 20:55:59 -0700 (PDT)
+Received: from smtp1.osuosl.org ([127.0.0.1])
+ by localhost (smtp1.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+ with ESMTP id y2b-uvYAmW27 for <iommu@lists.linux-foundation.org>;
+ Wed, 19 May 2021 09:30:24 +0000 (UTC)
+X-Greylist: domain auto-whitelisted by SQLgrey-1.8.0
+Received: from szxga05-in.huawei.com (szxga05-in.huawei.com [45.249.212.191])
+ by smtp1.osuosl.org (Postfix) with ESMTPS id 6DA9E83C63
+ for <iommu@lists.linux-foundation.org>; Wed, 19 May 2021 09:30:24 +0000 (UTC)
+Received: from dggems701-chm.china.huawei.com (unknown [172.30.72.58])
+ by szxga05-in.huawei.com (SkyGuard) with ESMTP id 4FlSDn5vZMzQpk8;
+ Wed, 19 May 2021 17:26:49 +0800 (CST)
+Received: from dggpemm100001.china.huawei.com (7.185.36.93) by
+ dggems701-chm.china.huawei.com (10.3.19.178) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2176.2; Wed, 19 May 2021 17:30:18 +0800
+Received: from lhreml710-chm.china.huawei.com (10.201.108.61) by
+ dggpemm100001.china.huawei.com (7.185.36.93) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2176.2; Wed, 19 May 2021 17:30:17 +0800
+Received: from lhreml710-chm.china.huawei.com ([169.254.81.184]) by
+ lhreml710-chm.china.huawei.com ([169.254.81.184]) with mapi id
+ 15.01.2176.012; Wed, 19 May 2021 10:30:15 +0100
+From: Shameerali Kolothum Thodi <shameerali.kolothum.thodi@huawei.com>
+To: Joerg Roedel <joro@8bytes.org>
+Subject: RE: [PATCH v4 2/8] iommu/dma: Introduce generic helper to retrieve
+ RMR info
+Thread-Topic: [PATCH v4 2/8] iommu/dma: Introduce generic helper to retrieve
+ RMR info
+Thread-Index: AQHXR/5vIFqlrwXwY0CsHMfFqGdLc6ro5LaAgACKY2A=
+Date: Wed, 19 May 2021 09:30:14 +0000
+Message-ID: <503068eb5f184639a75d7d1ef929b4c6@huawei.com>
+References: <20210513134550.2117-1-shameerali.kolothum.thodi@huawei.com>
+ <20210513134550.2117-3-shameerali.kolothum.thodi@huawei.com>
+ <YKN/ocoHvOdbH43j@8bytes.org>
+In-Reply-To: <YKN/ocoHvOdbH43j@8bytes.org>
+Accept-Language: en-GB, en-US
+Content-Language: en-US
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+x-originating-ip: [10.47.88.84]
 MIME-Version: 1.0
-References: <20210518112857.1198415-1-aisheng.dong@nxp.com>
- <fe37a3d0-1360-77e8-f594-c9f32cc39cf2@arm.com>
-In-Reply-To: <fe37a3d0-1360-77e8-f594-c9f32cc39cf2@arm.com>
-From: Dong Aisheng <dongas86@gmail.com>
-Date: Wed, 19 May 2021 11:54:56 +0800
-Message-ID: <CAA+hA=RnEh8QG1vHSFBwMF2pwxv-J14m3za3yaqcNgqb=+xezA@mail.gmail.com>
-Subject: Re: [PATCH 1/1] dma-contiguous: return early for dt case in
- dma_contiguous_reserve
-To: Robin Murphy <robin.murphy@arm.com>
-X-Mailman-Approved-At: Wed, 19 May 2021 06:58:22 +0000
-Cc: Dong Aisheng <aisheng.dong@nxp.com>, iommu@lists.linux-foundation.org,
- open list <linux-kernel@vger.kernel.org>, Christoph Hellwig <hch@lst.de>
+X-CFilter-Loop: Reflected
+Cc: "jon@solid-run.com" <jon@solid-run.com>, Linuxarm <linuxarm@huawei.com>,
+ "steven.price@arm.com" <steven.price@arm.com>,
+ "linux-acpi@vger.kernel.org" <linux-acpi@vger.kernel.org>,
+ "iommu@lists.linux-foundation.org" <iommu@lists.linux-foundation.org>,
+ wanghuiqiang <wanghuiqiang@huawei.com>,
+ "Guohanjun \(Hanjun Guo\)" <guohanjun@huawei.com>,
+ yangyicong <yangyicong@huawei.com>,
+ "Sami.Mujawar@arm.com" <Sami.Mujawar@arm.com>,
+ "robin.murphy@arm.com" <robin.murphy@arm.com>,
+ "linux-arm-kernel@lists.infradead.org" <linux-arm-kernel@lists.infradead.org>
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -107,71 +105,63 @@ Content-Transfer-Encoding: 7bit
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-On Wed, May 19, 2021 at 2:51 AM Robin Murphy <robin.murphy@arm.com> wrote:
->
-> On 2021-05-18 12:28, Dong Aisheng wrote:
-> > dma_contiguous_reserve() aims to support cmdline case for CMA memory
-> > reserve. But if users define reserved memory in DT,
-> > 'dma_contiguous_default_area' will not be 0, then it's meaningless
-> > to continue to run dma_contiguous_reserve(). So we return early
-> > if detect 'dma_contiguous_default_area' is unzero.
->
-> But dma_contiguous_default_area *shouldn't* be set if the command-line
-> argument is present - see the "if (size_cmdline != -1 && default_cma)"
-> part of rmem_cma_setup(). Are you seeing something different in practice?
->
 
-yes, you're right.
 
-> > Cc: Christoph Hellwig <hch@lst.de>
-> > Cc: Marek Szyprowski <m.szyprowski@samsung.com>
-> > Cc: Robin Murphy <robin.murphy@arm.com>
-> > Signed-off-by: Dong Aisheng <aisheng.dong@nxp.com>
-> > ---
-> >   kernel/dma/contiguous.c | 5 ++++-
-> >   1 file changed, 4 insertions(+), 1 deletion(-)
-> >
-> > diff --git a/kernel/dma/contiguous.c b/kernel/dma/contiguous.c
-> > index 3d63d91cba5c..ebade9f43eff 100644
-> > --- a/kernel/dma/contiguous.c
-> > +++ b/kernel/dma/contiguous.c
-> > @@ -171,6 +171,9 @@ void __init dma_contiguous_reserve(phys_addr_t limit)
-> >       phys_addr_t selected_limit = limit;
-> >       bool fixed = false;
-> >
-> > +     if (dma_contiguous_default_area)
-> > +             return;
+> -----Original Message-----
+> From: Joerg Roedel [mailto:joro@8bytes.org]
+> Sent: 18 May 2021 09:50
+> To: Shameerali Kolothum Thodi <shameerali.kolothum.thodi@huawei.com>
+> Cc: linux-arm-kernel@lists.infradead.org; linux-acpi@vger.kernel.org;
+> iommu@lists.linux-foundation.org; Linuxarm <linuxarm@huawei.com>;
+> lorenzo.pieralisi@arm.com; robin.murphy@arm.com; wanghuiqiang
+> <wanghuiqiang@huawei.com>; Guohanjun (Hanjun Guo)
+> <guohanjun@huawei.com>; steven.price@arm.com; Sami.Mujawar@arm.com;
+> jon@solid-run.com; eric.auger@redhat.com; yangyicong
+> <yangyicong@huawei.com>
+> Subject: Re: [PATCH v4 2/8] iommu/dma: Introduce generic helper to retrieve
+> RMR info
+> 
+> On Thu, May 13, 2021 at 02:45:44PM +0100, Shameer Kolothum wrote:
+> > +/**
+> > + * struct iommu_rmr - Reserved Memory Region details per IOMMU
+> > + * @list: Linked list pointers to hold RMR region info
+> > + * @base_address: base address of Reserved Memory Region
+> > + * @length: length of memory region
+> > + * @sid: associated stream id
+> > + * @flags: flags that apply to the RMR node
+> > + */
+> > +struct iommu_rmr {
+> > +	struct list_head	list;
+> > +	phys_addr_t		base_address;
+> > +	u64			length;
+> > +	u32			sid;
+> > +	u32			flags;
+> > +};
 > > +
-> >       pr_debug("%s(limit %08lx)\n", __func__, (unsigned long)limit);
-> >
-> >       if (size_cmdline != -1) {
-> > @@ -191,7 +194,7 @@ void __init dma_contiguous_reserve(phys_addr_t limit)
-> >   #endif
-> >       }
-> >
-> > -     if (selected_size && !dma_contiguous_default_area) {
-> > +     if (selected_size) {
->
-> Either way, does skipping a handful of trivial calculations and a
-> debugging message really matter even when it is redundant? I can't
-> imagine it has any measurable effect on boot times...
->
+> > +/* RMR Remap permitted */
+> > +#define IOMMU_RMR_REMAP_PERMITTED	(1 << 0)
+> > +
+> 
+> This struct has lots of overlap with 'struct iommu_resv_region'. Any
+> reason the existing struct can't be used here?
+> 
 
-I think it's not about performance.
-It aims to improve the code readability as it's meaningless to continue to
-execute cmdline CMA reserve logic once DT is used successfully which is
-a bit confusing when people first read this part of code.
-Does it make sense to you?
+Hmm..main reason is "sid". RMRs are associated with stream ids and
+that is used to install bypass STEs/SMRs in SMMU drivers and also to check
+whether a dev has any RMR regions associated with it.
 
-Regards
-Aisheng
+I think we could add sid/dev_id to 'struct iommu_resv_region', and modify
+iommu_alloc_resv_region() accordingly. That can get rid of the above struct
+and iommu_dma_alloc_rmr() fn. Not sure this will complicate things as 
+the dev_id is only valid for RMR reservation region cases. 
 
-> Robin.
->
-> >               pr_debug("%s: reserving %ld MiB for global area\n", __func__,
-> >                        (unsigned long)selected_size / SZ_1M);
-> >
-> >
+Please let me know your thoughts.
+
+Thanks,
+Shameer
+
+
+
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
