@@ -3,109 +3,189 @@ X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
 X-Spam-Status: No, score=-3.5 required=3.0 tests=BAYES_00,DKIM_INVALID,
-	DKIM_SIGNED,HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,SPF_HELO_NONE,
-	SPF_PASS,URIBL_RED autolearn=no autolearn_force=no version=3.4.0
+	DKIM_SIGNED,HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,
+	MSGID_FROM_MTA_HEADER,SPF_HELO_NONE,SPF_PASS,URIBL_RED autolearn=no
+	autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4B17AC433B4
-	for <iommu@archiver.kernel.org>; Thu, 20 May 2021 14:34:27 +0000 (UTC)
-Received: from smtp4.osuosl.org (smtp4.osuosl.org [140.211.166.137])
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 644C4C433B4
+	for <iommu@archiver.kernel.org>; Thu, 20 May 2021 15:13:20 +0000 (UTC)
+Received: from smtp3.osuosl.org (smtp3.osuosl.org [140.211.166.136])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id C49BF61246
-	for <iommu@archiver.kernel.org>; Thu, 20 May 2021 14:34:26 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org C49BF61246
-Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=ziepe.ca
+	by mail.kernel.org (Postfix) with ESMTPS id 05277611AB
+	for <iommu@archiver.kernel.org>; Thu, 20 May 2021 15:13:19 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 05277611AB
+Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=oracle.com
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by smtp4.osuosl.org (Postfix) with ESMTP id 8D7554048B;
-	Thu, 20 May 2021 14:34:26 +0000 (UTC)
+	by smtp3.osuosl.org (Postfix) with ESMTP id BD2E460BA4;
+	Thu, 20 May 2021 15:13:19 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from smtp4.osuosl.org ([127.0.0.1])
-	by localhost (smtp4.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id B_RZhbbmfkGq; Thu, 20 May 2021 14:34:25 +0000 (UTC)
-Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by smtp4.osuosl.org (Postfix) with ESMTP id 23576403C7;
-	Thu, 20 May 2021 14:34:25 +0000 (UTC)
+Received: from smtp3.osuosl.org ([127.0.0.1])
+	by localhost (smtp3.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+	with ESMTP id QXWC7OMA0Eo2; Thu, 20 May 2021 15:13:19 +0000 (UTC)
+Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [IPv6:2605:bc80:3010:104::8cd3:938])
+	by smtp3.osuosl.org (Postfix) with ESMTP id 9A97560AC9;
+	Thu, 20 May 2021 15:13:18 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id EC27CC000E;
-	Thu, 20 May 2021 14:34:24 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 763F3C000D;
+	Thu, 20 May 2021 15:13:18 +0000 (UTC)
 Received: from smtp1.osuosl.org (smtp1.osuosl.org [IPv6:2605:bc80:3010::138])
- by lists.linuxfoundation.org (Postfix) with ESMTP id EBDA9C0001
- for <iommu@lists.linux-foundation.org>; Thu, 20 May 2021 14:34:23 +0000 (UTC)
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 8DC45C0001
+ for <iommu@lists.linux-foundation.org>; Thu, 20 May 2021 15:13:17 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by smtp1.osuosl.org (Postfix) with ESMTP id CD3B183046
- for <iommu@lists.linux-foundation.org>; Thu, 20 May 2021 14:34:23 +0000 (UTC)
+ by smtp1.osuosl.org (Postfix) with ESMTP id 8980084225
+ for <iommu@lists.linux-foundation.org>; Thu, 20 May 2021 15:13:17 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
 Authentication-Results: smtp1.osuosl.org (amavisd-new);
- dkim=pass (2048-bit key) header.d=ziepe.ca
+ dkim=pass (2048-bit key) header.d=oracle.com header.b="OiG/tAlG";
+ dkim=pass (1024-bit key) header.d=oracle.onmicrosoft.com
+ header.b="bbEMMJaN"
 Received: from smtp1.osuosl.org ([127.0.0.1])
  by localhost (smtp1.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id Iiwl_2xQYJyw for <iommu@lists.linux-foundation.org>;
- Thu, 20 May 2021 14:34:22 +0000 (UTC)
-X-Greylist: whitelisted by SQLgrey-1.8.0
-Received: from mail-qt1-x82d.google.com (mail-qt1-x82d.google.com
- [IPv6:2607:f8b0:4864:20::82d])
- by smtp1.osuosl.org (Postfix) with ESMTPS id C7CED82DA3
- for <iommu@lists.linux-foundation.org>; Thu, 20 May 2021 14:34:22 +0000 (UTC)
-Received: by mail-qt1-x82d.google.com with SMTP id h24so1486385qtm.12
- for <iommu@lists.linux-foundation.org>; Thu, 20 May 2021 07:34:22 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ziepe.ca; s=google;
- h=date:from:to:cc:subject:message-id:references:mime-version
- :content-disposition:in-reply-to;
- bh=OpoqGZ3A/8qRiAsl8YBeGFq3Y08k8ObE2zfSbQGbkDw=;
- b=gUM1zdl9Abha3cPJv5gRQZgKr1Ffmsd5MwHf2fIfUdraIoaE0cGoqbofW/xNNGw4Ad
- tIdaNqYlPU8oicIi5AtHsN4SylYLZCRQvidxSN2we34qHMt1NYx6OOPm5zmJ8PqWWlw4
- wiZdB1fwuwlsPBIRY3MTgmnnYj/Jbk476crStUxbBoOiMD7efzWEIV8xc3vuzoVPUfO1
- QY1YLNM5nKeEhWEMzwgpwyiVXMrnYgKqI1xockOg/9/BxckQFzBYOxyJ5ccmlzsO3dKo
- lYO87FEbmQIqC2CgYVbww7aOZd9Q0KPVIgPN1rLHv1JVoE8htlZTnFN+vjaIV8AvV7gb
- Ib9A==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
- d=1e100.net; s=20161025;
- h=x-gm-message-state:date:from:to:cc:subject:message-id:references
- :mime-version:content-disposition:in-reply-to;
- bh=OpoqGZ3A/8qRiAsl8YBeGFq3Y08k8ObE2zfSbQGbkDw=;
- b=s/HJVfRvAhIWtlAFUcBm4l22Wlw66fKJj6g4FMFWbHiCAAf8sRuUWYviKsf7DIVRPl
- hcsA/osekgTRVihbOe91SC4FY2yqdCdX4KHwXUgfv5jVydXoMxCeHQzxrM/EMcFGdCdC
- hJA6YApnADi2WqXnRRLlfcdhSYemecPUKkgZJWnyfDGjH2UKUEo1oFR6H3uUOLejhVPw
- 0qtQU/P3ytQJbFfnKxzi/s3UYg1/U/zdifmjPJng4lC3zrQ+fC9A8R9cI3k7BamGoD9g
- 8X0zjMsMMRvprgI4T1unTyTd3y14+nYqDcIxD3nnBiGEfTdp7lHZhnpGxR+CpZlLyM2E
- WeCA==
-X-Gm-Message-State: AOAM530OLbmmFPK3emjEewSl/ytpXcI4/9Mc8lbau+9usH2Fxe1eywHJ
- 7+yGbAvQcA5ewyt1JTgaFaiozg==
-X-Google-Smtp-Source: ABdhPJwHOT/1k3DuCHDAx3Xvnqq9GL3kCgR+0mUPss3IDQnLOCtNIHl2f9EI7XlwZ2X6CoeaPh0j3g==
-X-Received: by 2002:ac8:5419:: with SMTP id b25mr5300042qtq.328.1621521261577; 
- Thu, 20 May 2021 07:34:21 -0700 (PDT)
-Received: from ziepe.ca
- (hlfxns017vw-47-55-113-94.dhcp-dynamic.fibreop.ns.bellaliant.net.
- [47.55.113.94])
- by smtp.gmail.com with ESMTPSA id e19sm2035011qtr.45.2021.05.20.07.34.20
- (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
- Thu, 20 May 2021 07:34:21 -0700 (PDT)
-Received: from jgg by mlx with local (Exim 4.94) (envelope-from <jgg@ziepe.ca>)
- id 1ljjki-00BOJ9-6V; Thu, 20 May 2021 11:34:20 -0300
-Date: Thu, 20 May 2021 11:34:20 -0300
-From: Jason Gunthorpe <jgg@ziepe.ca>
-To: Robin Murphy <robin.murphy@arm.com>
-Subject: Re: [PATCH 3/6] vfio: remove the unused mdev iommu hook
-Message-ID: <20210520143420.GW1096940@ziepe.ca>
-References: <YKJf7mphTHZoi7Qr@8bytes.org> <20210517123010.GO1096940@ziepe.ca>
- <YKJnPGonR+d8rbu/@8bytes.org> <20210517133500.GP1096940@ziepe.ca>
- <YKKNLrdQ4QjhLrKX@8bytes.org>
- <131327e3-5066-7a88-5b3c-07013585eb01@arm.com>
- <20210519180635.GT1096940@ziepe.ca>
- <MWHPR11MB1886C64EAEB752DE9E1633358C2B9@MWHPR11MB1886.namprd11.prod.outlook.com>
- <20210519232459.GV1096940@ziepe.ca>
- <1d154445-f762-1147-0b8c-6e244e7c66dc@arm.com>
-MIME-Version: 1.0
+ with ESMTP id dEPv97Nr0Ura for <iommu@lists.linux-foundation.org>;
+ Thu, 20 May 2021 15:13:16 +0000 (UTC)
+X-Greylist: domain auto-whitelisted by SQLgrey-1.8.0
+Received: from aserp2130.oracle.com (aserp2130.oracle.com [141.146.126.79])
+ by smtp1.osuosl.org (Postfix) with ESMTPS id 9F160841CE
+ for <iommu@lists.linux-foundation.org>; Thu, 20 May 2021 15:13:16 +0000 (UTC)
+Received: from pps.filterd (aserp2130.oracle.com [127.0.0.1])
+ by aserp2130.oracle.com (8.16.0.42/8.16.0.42) with SMTP id 14KF4LkH007728;
+ Thu, 20 May 2021 15:13:05 GMT
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=oracle.com;
+ h=date : from : to : cc
+ : subject : message-id : references : content-type : in-reply-to :
+ mime-version; s=corp-2020-01-29;
+ bh=0xYnAIkgh1BwKAYG8Oc0wkWW+OYh3L3q+iC5Y2chTMc=;
+ b=OiG/tAlG3jMxr8AB1GMIGTYu2VsY8WzSp//lL8uB20Ui5braFpsgAV+1juYb4qzr2vq+
+ YMF5DCyu1LvBZnQwPgvKJ2QS5/uPQAlmxfo3jDa2tumKNnXoFv//UoNWjEeFmv6W6fvw
+ rew3ylRyOLMriHIu89o508KE6Js8u6Y05mG6y92StocLJGQBceiI0XUmXO7Fixtyo/KA
+ Uf2ziRMpc2oetbppt3nvpwT/fpH/Zaq6V7Y/HPTuIqCZBVHQWb3/dLRqj+kKwIVcvi8l
+ +oo25//UA+XS9K8XaoytO9VuIs7H1Sn6xOADiHMRzddO3hfJuLWt1t6yh8oSTwyafEOh 1Q== 
+Received: from userp3030.oracle.com (userp3030.oracle.com [156.151.31.80])
+ by aserp2130.oracle.com with ESMTP id 38j3tbn4ma-1
+ (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+ Thu, 20 May 2021 15:13:05 +0000
+Received: from pps.filterd (userp3030.oracle.com [127.0.0.1])
+ by userp3030.oracle.com (8.16.0.42/8.16.0.42) with SMTP id 14KF6ZUB045317;
+ Thu, 20 May 2021 15:13:04 GMT
+Received: from nam04-bn8-obe.outbound.protection.outlook.com
+ (mail-bn8nam08lp2048.outbound.protection.outlook.com [104.47.74.48])
+ by userp3030.oracle.com with ESMTP id 38megmm6fc-1
+ (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+ Thu, 20 May 2021 15:13:04 +0000
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=ER6wx1EeSXza1MTKq+gHljXzOKA0t6vmol1oMx85Ri311tR9TVsxnFW/dFHE8KG7CN7FskKRSLy1jV694Wc6M64XUnlZqOLnaWYHWv4l6pp3tZ9IRFtODd2/armmvNNxgBifHr4PJoh1//XKrbN5O9ZWK1TgrQEKjD/NmYDrcN9rhJQ6cTjFPIkst6vLmuuedgpB4RRFQFmK/L1CNJj6xC/eOL+ui3L2Tv39eQKEsuI6uK2g+K2UCkg8n3e4Cti9n6737kTQoALyPLgDrWbuJ3COpHYMX+i/SHFWWEcFLNGrW2WOVJOSFYhXitDH6ZfME+XEKiSVFZ6bYMnhXUS39Q==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com; 
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=0xYnAIkgh1BwKAYG8Oc0wkWW+OYh3L3q+iC5Y2chTMc=;
+ b=Mpfb+V13PKF+QW4J7wZwbFy3MXbQlj7uPBd+ju9jEC7xOIXl+NanrtI+VLFGhdQQzOzHmC07gRoBcOmtdWE8d32/OzvLi+2MNkG1LYWDsejA6NgBFODsr6nHzff0fMJFqi3aMj10A0YUFC7/qoyhIAsQC3jFrIi+rINoerM0d9IdgTC+eAV6pM/Q/EJI8apJnyQyU+HrbGHYBkUK1zP5PgAnyKrBUieS81xzXBc3oLJ2Jb0Nbp4eX+mxA7h9X0vkoWwm3aKB23J0VnTNMaHRJeG6E7fkJSATdjLW3WnCXDZT1YnNONpROreqDjAlFl/8UfYzWV4A4riChBbWTwQQgA==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=oracle.com; dmarc=pass action=none header.from=oracle.com;
+ dkim=pass header.d=oracle.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+ d=oracle.onmicrosoft.com; s=selector2-oracle-onmicrosoft-com;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=0xYnAIkgh1BwKAYG8Oc0wkWW+OYh3L3q+iC5Y2chTMc=;
+ b=bbEMMJaN9irCu239mSdxcPv5ysHGWwA29reFg0gmjRQvOEOWABhssd3c046l+lOXnSzAW3ZqV6wtJZlYYMTW3ri5Bpd4kh33A2hOIUcS0vNAe3ydUpAHoIUZUzimAZJb72vhWnRoHIcFgPUaU0KqqiH9A33wBYa0dqiWnmjvA2E=
+Authentication-Results: lst.de; dkim=none (message not signed)
+ header.d=none;lst.de; dmarc=none action=none header.from=oracle.com;
+Received: from BYAPR10MB2999.namprd10.prod.outlook.com (2603:10b6:a03:85::27)
+ by BYAPR10MB2854.namprd10.prod.outlook.com (2603:10b6:a03:82::25)
+ with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4129.28; Thu, 20 May
+ 2021 15:13:01 +0000
+Received: from BYAPR10MB2999.namprd10.prod.outlook.com
+ ([fe80::8111:d8f1:c262:808d]) by BYAPR10MB2999.namprd10.prod.outlook.com
+ ([fe80::8111:d8f1:c262:808d%6]) with mapi id 15.20.4129.033; Thu, 20 May 2021
+ 15:13:01 +0000
+Date: Thu, 20 May 2021 11:12:58 -0400
+From: Konrad Rzeszutek Wilk <konrad.wilk@oracle.com>
+To: Christoph Hellwig <hch@lst.de>
+Subject: Re: i915 and swiotlb_max_segment
+Message-ID: <YKZ8eqnSnaso3aoe@0xbeefdead.lan>
+References: <20210510152525.GA30093@lst.de>
 Content-Disposition: inline
-In-Reply-To: <1d154445-f762-1147-0b8c-6e244e7c66dc@arm.com>
-Cc: "Tian, Kevin" <kevin.tian@intel.com>,
- Alex Williamson <alex.williamson@redhat.com>,
- "kvm@vger.kernel.org" <kvm@vger.kernel.org>,
- David Woodhouse <dwmw2@infradead.org>, Kirti Wankhede <kwankhede@nvidia.com>,
- "iommu@lists.linux-foundation.org" <iommu@lists.linux-foundation.org>,
- Will Deacon <will@kernel.org>, Christoph Hellwig <hch@lst.de>,
- "linux-arm-kernel@lists.infradead.org" <linux-arm-kernel@lists.infradead.org>
+In-Reply-To: <20210510152525.GA30093@lst.de>
+X-Originating-IP: [130.44.160.152]
+X-ClientProxiedBy: BL1PR13CA0083.namprd13.prod.outlook.com
+ (2603:10b6:208:2b8::28) To BYAPR10MB2999.namprd10.prod.outlook.com
+ (2603:10b6:a03:85::27)
+MIME-Version: 1.0
+X-MS-Exchange-MessageSentRepresentingType: 1
+Received: from 0xbeefdead.lan (130.44.160.152) by
+ BL1PR13CA0083.namprd13.prod.outlook.com (2603:10b6:208:2b8::28) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4173.14 via Frontend
+ Transport; Thu, 20 May 2021 15:13:00 +0000
+X-MS-PublicTrafficType: Email
+X-MS-Office365-Filtering-Correlation-Id: 2bec2e65-0c50-42fe-f105-08d91ba1c279
+X-MS-TrafficTypeDiagnostic: BYAPR10MB2854:
+X-Microsoft-Antispam-PRVS: <BYAPR10MB28549774B0967373476D1BF3892A9@BYAPR10MB2854.namprd10.prod.outlook.com>
+X-MS-Oob-TLC-OOBClassifiers: OLM:9508;
+X-MS-Exchange-SenderADCheck: 1
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: MZ7qyA9WNa07lZ/k4PiGEstI83cNnt/fXrp68X85bEw8atA3mnaFUuPlj641O03PQXJVaMMCmUjuwd8vz9PMvw0BBTHeQmy6reOHiAFRi3GxjwOU0E2vxBY/0L7ju+BAGGi+iXUldUMzdSmOzPzpPeim0GlHf7rr3Yb4+S7xH/aAcakbJIBfaiplrSZIocar+6Q8YBVdWNkxLx6cPpZBG5N/BN4vt3adCaI9sbXGUlLjhG51XxBrxLLL8M5Gjz3hYRJWlD2AKSn0gv8Id7oYpk83/mBKYrItBEmbS1CCrAFiSl01NUDTlw4x1gFrlFnLByU1tIsMgFJdZdQf2h8JXIBTbiklYi3WoadGYfveyrZFA0C5ZlJSk2cRcUQMXKgM7jEhXMYU3hbxjWml3hAKwg20qEEXAXOPMHcAOsspcSlybFVJrivHNcwfq+qztr4ptOLA8Qez1l6G84mulIrhAVbgGDYClVJ9W6Prj/h4cu8G+Lnhkgsg597Y2Us81olrULvxLAUuoKm02iFDZEaL2xfTMVjoxDlGo5baWCQGEkfomJ0aIA8XjSwA3BFfnYmWY+PPEgoenFdFd9zACVWgvX9iBBEsSPMxmytp9NSnD2o5A/NoYLDnKXOezGHATqo0l3e82dbXhicKkLuZ7Lp9XQ==
+X-Forefront-Antispam-Report: CIP:255.255.255.255; CTRY:; LANG:en; SCL:1; SRV:;
+ IPV:NLI; SFV:NSPM; H:BYAPR10MB2999.namprd10.prod.outlook.com; PTR:; CAT:NONE;
+ SFS:(396003)(136003)(366004)(346002)(39860400002)(376002)(66946007)(66476007)(66556008)(7116003)(52116002)(38350700002)(8676002)(6506007)(36756003)(6916009)(478600001)(7696005)(38100700002)(86362001)(2906002)(55016002)(26005)(9686003)(8886007)(4326008)(54906003)(5660300002)(956004)(8936002)(83380400001)(16526019)(186003)(316002);
+ DIR:OUT; SFP:1101; 
+X-MS-Exchange-AntiSpam-MessageData: =?us-ascii?Q?PWwOblGWJzn/N0HB7aeOhosDlb9WUZH6L6VVwFh6rMnvDwXBHwtlmcCKiUOn?=
+ =?us-ascii?Q?7N51wqbBfmONiZf3Yr6OxVR9PBTfeGVsBJIlhhVkfVefBha4vpEMk9DYHzrr?=
+ =?us-ascii?Q?qfcaSUkGVtEFZ5aJ647F4MU0UzLSQsk7Y8H9tUFbgfsEol2TXlRhrQKesuwA?=
+ =?us-ascii?Q?o3umwuoPVFkylf8x/sUggRlvU9qzqTwibwzaXKZ9YuU8WM6qLss55d4KGdwb?=
+ =?us-ascii?Q?jyOUr+o1BoaDbXTOQiIRQx0kMWFQUAwOZzW3Y86rXl5VoM7UZB/zGCk7jBVK?=
+ =?us-ascii?Q?QqF8IcsmySuSHNGD5ElS7dy1tPCCwFqr9uZd2GLCSaVapwlL02bv2BG7ua3S?=
+ =?us-ascii?Q?PvSaJAw0XWantQnURdLux9+YqOgIdVTEwwBLxBT+HUHSdp47EZEm0GuXUkth?=
+ =?us-ascii?Q?O4vFe9tfIphHsc6BOulN5Kip9ywyjWDrDEtKZIUCizhjXLt4UEwGJ3zBqo9S?=
+ =?us-ascii?Q?eZkzq5eqtu06gw9J5KBvvZ0TxfPMvSycN35DJv1KvLjsfN9/mhsN7BvyyRFN?=
+ =?us-ascii?Q?3L2L1GZKFGf0aos/WVqas0+sodiDTReTiZzrQR/64jesh/Yv0BpIWTvQ7nH4?=
+ =?us-ascii?Q?+f9L3S4yhLenp8KOD4DVAU5W4qfm6grdn4XPnaQuaPBvBXInY+dSQ/o1LBxk?=
+ =?us-ascii?Q?7QB5ocxOJpG4kRanmWlilcD7f/f5QfOBAM9p0Ar2uVIx73U9Vffkg2tZYaJV?=
+ =?us-ascii?Q?+WZyojftE13r9C5OHmPOBEU5KZGQUY4euzm9P5PNnXm9odM6IRhU4+a0Ujjo?=
+ =?us-ascii?Q?aqqdkxNNXa5za8SkZZiOJLMsZqZJPPq7hyjzy1h11MEGcvR28M2bBQ/rE/J3?=
+ =?us-ascii?Q?N5roQx1aGRG4p9RosUsGTeFKrWg/i8PnxsOakDVIqIeplx7EEFXGAFQLRwZ2?=
+ =?us-ascii?Q?ZAa4yn0VheSLAYw8kiP6d3m0cgsbyI4jJY0hzJV0GS9SwG4CbB/rOOcAD20J?=
+ =?us-ascii?Q?1vcoh6kx2wH2G5afGxSyDbfcg33xq7WKV16/p3WRHhmlotbzPDVUOW4530aT?=
+ =?us-ascii?Q?621xCLz8pDs3n7XBa3B7J7dzWPGmUC/94Ctc9ZzVlwB2ecZgwFJYtsfMJc6N?=
+ =?us-ascii?Q?WxyBnGV4ugXiMwyd9bnLQlkSt1fjLGqibyB3iyXA3AA3v6vfvAw5Qn2Mk1t1?=
+ =?us-ascii?Q?1+tBKknbAaV6jLeqV4dCCTSJpEYg5EFMD4vGijeNxKigWo3sqHQtoywlx70+?=
+ =?us-ascii?Q?QbKBGuC9vJ+fU/hpdBCdcayH9LbYpvBmg3j73/+/lD/mf3KfXv1F3YVQDW6S?=
+ =?us-ascii?Q?IVr/9cpiMi7DmHyQEfTl7u9fSktY0Bvfbnrz8IPESBpCQRqV/MlGT+wj1Xt1?=
+ =?us-ascii?Q?8T69yxuWv696VTCpzSm7eYAg?=
+X-OriginatorOrg: oracle.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 2bec2e65-0c50-42fe-f105-08d91ba1c279
+X-MS-Exchange-CrossTenant-AuthSource: BYAPR10MB2999.namprd10.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 20 May 2021 15:13:01.8560 (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 4e2c6054-71cb-48f1-bd6c-3a9705aca71b
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: KHFzwvEHBiZFymr+F+jt0Zk2jdRVjXxu3AQepinPQTXI6HGe7wYEv/ztIoAiS1a+MohB7D1DJSuBkIPYMm/yVA==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: BYAPR10MB2854
+X-Proofpoint-Virus-Version: vendor=nai engine=6200 definitions=9989
+ signatures=668683
+X-Proofpoint-Spam-Details: rule=notspam policy=default score=0 mlxlogscore=949
+ phishscore=0
+ adultscore=0 malwarescore=0 bulkscore=0 mlxscore=0 spamscore=0
+ suspectscore=0 classifier=spam adjust=0 reason=mlx scancount=1
+ engine=8.12.0-2104190000 definitions=main-2105200103
+X-Proofpoint-ORIG-GUID: 20DwqjZ89jcJ-n0SnR2-YZPFd6wo8Yaa
+X-Proofpoint-GUID: 20DwqjZ89jcJ-n0SnR2-YZPFd6wo8Yaa
+X-Proofpoint-Virus-Version: vendor=nai engine=6200 definitions=9989
+ signatures=668683
+X-Proofpoint-Spam-Details: rule=notspam policy=default score=0
+ lowpriorityscore=0 malwarescore=0
+ spamscore=0 priorityscore=1501 suspectscore=0 mlxlogscore=999 mlxscore=0
+ impostorscore=0 adultscore=0 clxscore=1011 phishscore=0 bulkscore=0
+ classifier=spam adjust=0 reason=mlx scancount=1 engine=8.12.0-2104190000
+ definitions=main-2105200103
+Cc: intel-gfx@lists.freedesktop.org,
+ Joonas Lahtinen <joonas.lahtinen@linux.intel.com>,
+ dri-devel@lists.freedesktop.org, iommu@lists.linux-foundation.org,
+ Jani Nikula <jani.nikula@linux.intel.com>, Daniel Vetter <daniel@ffwll.ch>,
+ Rodrigo Vivi <rodrigo.vivi@intel.com>
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -123,73 +203,40 @@ Content-Transfer-Encoding: 7bit
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-On Thu, May 20, 2021 at 03:13:55PM +0100, Robin Murphy wrote:
-
-> By "mdev-like" I mean it's very similar in shape to the general SIOV-style
-> mediated device concept - i.e. a physical device with an awareness of
-> operating on multiple contexts at once, using a Substream ID/PASID for each
-> one - but instead of exposing control of the contexts to anyone else, they
-> remain hidden behind the kernel driver which already has its own abstracted
-> uAPI, so overall it ends up as more just internal housekeeping than any
-> actual mediation. We were looking at the mdev code for inspiration, but
-> directly using it was never the plan.
-
-Well:
- - Who maps memory into the IOASID (ie the specific sub stream id)?
- - What memory must be mapped?
- - Who triggers DMA to this memory?
- 
-> The driver simply needs to keep track of the domains and PASIDs -
-> when a process submits some work, it can look up the relevant
-> domain, iommu_map() the user pages to the right addresses, dma_map()
-> them for coherency, then poke in the PASID as part of scheduling the
-> work on the physical device.
-
-If you are doing stuff like this then the /dev/ioasid is what you
-actually want. The userprocess can create its own IOASID, program the
-io page tables for that IOASID to point to pages as it wants and then
-just hand over a fully instantiated io page table to the device
-driver.
-
-What you are describing is the literal use case of /dev/ioasid - a
-clean seperation of managing the IOMMU related parts through
-/dev/ioasid and the device driver itself is only concerned with
-generating device DMA that has the proper PASID/substream tag.
-
-The entire point is to not duplicate all the iommu code you are
-describing having written into every driver that just wants an IOASID.
-
-In particular, you are talking about having a substream capable device
-and driver but your driver's uAPI is so limited it can't address the
-full range of substream configurations:
-
- - A substream pointing at a SVA
- - A substream pointing a IO page table nested under another
- - A substream pointing at an IOMMU page table shared by many users
-
-And more. Which is bad.
-
-> > We already talked about this on the "how to use PASID from the kernel"
-> > thread.
+On Mon, May 10, 2021 at 05:25:25PM +0200, Christoph Hellwig wrote:
+> Hi all,
 > 
-> Do you have a pointer to the right thread so I can catch up? It's not the
-> easiest thing to search for on lore amongst all the other PASID-related
-> business :(
+> swiotlb_max_segment is a rather strange "API" export by swiotlb.c,
+> and i915 is the only (remaining) user.
+> 
+> swiotlb_max_segment returns 0 if swiotlb is not in use, 1 if
+> SWIOTLB_FORCE is set or swiotlb-zen is set, and the swiotlb segment
+> size when swiotlb is otherwise enabled.
+> 
+> i915 then uses it to:
+> 
+>  a) decided on the max order in i915_gem_object_get_pages_internal
+>  b) decide on a max segment size in i915_sg_segment_size
+> 
+> for a) it really seems i915 should switch to dma_alloc_noncoherent
+> or dma_alloc_noncontigous ASAP instead of using alloc_page and
+> streaming DMA mappings.  Any chance I could trick one of the i915
+> maintaines into doing just that given that the callchain is not
+> exactly trivial?
+> 
+> For b) I'm not sure swiotlb and i915 really agree on the meaning
+> of the value.  swiotlb_set_max_segment basically returns the entire
+> size of the swiotlb buffer, while i915 seems to use it to limit
+> the size each scatterlist entry.  It seems like dma_max_mapping_size
+> might be the best value to use here.
 
-Somewhere in here:
+Yes. The background behind that was SWIOTLB would fail because well, the
+size of the sg was too large. And some way to limit it to max size
+was needed - the dma_max_mapping_size "should" be just fine.
 
-http://lore.kernel.org/r/20210517143758.GP1002214@nvidia.com
-
-> FWIW my non-SVA view is that a PASID is merely an index into a set of
-> iommu_domains, and in that context it doesn't even really matter *who*
-> allocates them, only that the device driver and IOMMU driver are in sync :)
-
-Right, this is where /dev/ioasid is going.
-
-However it gets worked out at the kAPI level in the iommu layer the
-things you asked for are intended to be solved, and lots more.
-
-Jason
+> 
+> Once that is fixed I'd like to kill off swiotlb_max_segment as it is
+> a horribly confusing API.
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
