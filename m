@@ -2,66 +2,78 @@ Return-Path: <SRS0=NT7l=KQ=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-8.7 required=3.0 tests=BAYES_00,
+X-Spam-Status: No, score=-10.2 required=3.0 tests=BAYES_00,
 	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_CR_TRAILER,MAILING_LIST_MULTI,
-	SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED autolearn=ham autolearn_force=no
-	version=3.4.0
+	NICE_REPLY_A,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_SANE_1
+	autolearn=ham autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 296E6C433B4
-	for <iommu@archiver.kernel.org>; Fri, 21 May 2021 06:53:33 +0000 (UTC)
-Received: from smtp4.osuosl.org (smtp4.osuosl.org [140.211.166.137])
+	by smtp.lore.kernel.org (Postfix) with ESMTP id CAA63C43461
+	for <iommu@archiver.kernel.org>; Fri, 21 May 2021 07:03:22 +0000 (UTC)
+Received: from smtp1.osuosl.org (smtp1.osuosl.org [140.211.166.138])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id A9239613BE
-	for <iommu@archiver.kernel.org>; Fri, 21 May 2021 06:53:32 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org A9239613BE
-Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=emlix.com
+	by mail.kernel.org (Postfix) with ESMTPS id 7F13361006
+	for <iommu@archiver.kernel.org>; Fri, 21 May 2021 07:03:22 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 7F13361006
+Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=linux.intel.com
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by smtp4.osuosl.org (Postfix) with ESMTP id 71C3B4185D;
-	Fri, 21 May 2021 06:53:32 +0000 (UTC)
+	by smtp1.osuosl.org (Postfix) with ESMTP id 48C5284549;
+	Fri, 21 May 2021 07:03:22 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from smtp4.osuosl.org ([127.0.0.1])
-	by localhost (smtp4.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id cm2EY6Yk3jq4; Fri, 21 May 2021 06:53:31 +0000 (UTC)
-Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [IPv6:2605:bc80:3010:104::8cd3:938])
-	by smtp4.osuosl.org (Postfix) with ESMTP id EC6454185B;
-	Fri, 21 May 2021 06:53:30 +0000 (UTC)
+Received: from smtp1.osuosl.org ([127.0.0.1])
+	by localhost (smtp1.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+	with ESMTP id VOkcxFRe_Y2u; Fri, 21 May 2021 07:03:21 +0000 (UTC)
+Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
+	by smtp1.osuosl.org (Postfix) with ESMTP id 40D718450D;
+	Fri, 21 May 2021 07:03:21 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id C7FF9C000D;
-	Fri, 21 May 2021 06:53:30 +0000 (UTC)
-Received: from smtp4.osuosl.org (smtp4.osuosl.org [IPv6:2605:bc80:3010::137])
- by lists.linuxfoundation.org (Postfix) with ESMTP id C54C2C0001
- for <iommu@lists.linux-foundation.org>; Fri, 21 May 2021 06:53:29 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 1306BC000D;
+	Fri, 21 May 2021 07:03:21 +0000 (UTC)
+Received: from smtp2.osuosl.org (smtp2.osuosl.org [IPv6:2605:bc80:3010::133])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id D2ADBC0001
+ for <iommu@lists.linux-foundation.org>; Fri, 21 May 2021 07:03:19 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by smtp4.osuosl.org (Postfix) with ESMTP id B45DC4185C
- for <iommu@lists.linux-foundation.org>; Fri, 21 May 2021 06:53:29 +0000 (UTC)
+ by smtp2.osuosl.org (Postfix) with ESMTP id B851840207
+ for <iommu@lists.linux-foundation.org>; Fri, 21 May 2021 07:03:19 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from smtp4.osuosl.org ([127.0.0.1])
- by localhost (smtp4.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id wDeMfpxkhu5P for <iommu@lists.linux-foundation.org>;
- Fri, 21 May 2021 06:53:28 +0000 (UTC)
-X-Greylist: from auto-whitelisted by SQLgrey-1.8.0
-Received: from mx1.emlix.com (mx1.emlix.com [136.243.223.33])
- by smtp4.osuosl.org (Postfix) with ESMTPS id EFC544185B
- for <iommu@lists.linux-foundation.org>; Fri, 21 May 2021 06:53:27 +0000 (UTC)
-Received: from mailer.emlix.com (p5098be52.dip0.t-ipconnect.de [80.152.190.82])
- (using TLSv1.2 with cipher ADH-AES256-GCM-SHA384 (256/256 bits))
- (No client certificate requested)
- by mx1.emlix.com (Postfix) with ESMTPS id 6BAB06051C;
- Fri, 21 May 2021 08:53:25 +0200 (CEST)
-From: Rolf Eike Beer <eb@emlix.com>
-To: Joerg Roedel <joro@8bytes.org>, Will Deacon <will@kernel.org>,
- Lu Baolu <baolu.lu@linux.intel.com>
+Received: from smtp2.osuosl.org ([127.0.0.1])
+ by localhost (smtp2.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+ with ESMTP id rAZMVSPonY61 for <iommu@lists.linux-foundation.org>;
+ Fri, 21 May 2021 07:03:19 +0000 (UTC)
+X-Greylist: domain auto-whitelisted by SQLgrey-1.8.0
+Received: from mga09.intel.com (mga09.intel.com [134.134.136.24])
+ by smtp2.osuosl.org (Postfix) with ESMTPS id 19376400CA
+ for <iommu@lists.linux-foundation.org>; Fri, 21 May 2021 07:03:18 +0000 (UTC)
+IronPort-SDR: kFe4qlZAq8TgnCK2Vx5o17OCbbkk3F8r83stJ9hhTvMF07Qovvju0PC7guRjPHzm51B5gaWebo
+ TUkFgtpqFYLQ==
+X-IronPort-AV: E=McAfee;i="6200,9189,9990"; a="201458761"
+X-IronPort-AV: E=Sophos;i="5.82,313,1613462400"; d="scan'208";a="201458761"
+Received: from fmsmga004.fm.intel.com ([10.253.24.48])
+ by orsmga102.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384;
+ 21 May 2021 00:03:17 -0700
+IronPort-SDR: 5UNqd8GbHaSlRSFz7jFi0GD2g7d7HT+PElXXnbCro3PtL6H1P0R5p8l+ung57gYdebTdzQIZfj
+ jwKH9GDiBUoQ==
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.82,313,1613462400"; d="scan'208";a="462371543"
+Received: from allen-box.sh.intel.com (HELO [10.239.159.128])
+ ([10.239.159.128])
+ by fmsmga004.fm.intel.com with ESMTP; 21 May 2021 00:03:15 -0700
 Subject: Re: [PATCH] iommu/vt-d: Fix sysfs leak in alloc_domain()
-Date: Fri, 21 May 2021 08:53:22 +0200
-Message-ID: <1889881.5hqWi3GpDC@devpool47>
-Organization: emlix GmbH
-In-Reply-To: <b13c4073-5976-b4e0-4dc7-4e07e68cbb5f@linux.intel.com>
+To: Rolf Eike Beer <eb@emlix.com>, Joerg Roedel <joro@8bytes.org>,
+ Will Deacon <will@kernel.org>
 References: <1716403.SmlLz2RZUD@devpool47>
  <17411490.HIIP88n32C@mobilepool36.emlix.com>
  <b13c4073-5976-b4e0-4dc7-4e07e68cbb5f@linux.intel.com>
+ <1889881.5hqWi3GpDC@devpool47>
+From: Lu Baolu <baolu.lu@linux.intel.com>
+Message-ID: <29767d37-f8ea-b201-bef8-3bb2f6933bc2@linux.intel.com>
+Date: Fri, 21 May 2021 15:02:19 +0800
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
+ Thunderbird/78.8.1
 MIME-Version: 1.0
+In-Reply-To: <1889881.5hqWi3GpDC@devpool47>
+Content-Language: en-US
 Cc: iommu@lists.linux-foundation.org, David Woodhouse <dwmw2@infradead.org>,
  linux-kernel@vger.kernel.org
 X-BeenThere: iommu@lists.linux-foundation.org
@@ -76,83 +88,35 @@ List-Post: <mailto:iommu@lists.linux-foundation.org>
 List-Help: <mailto:iommu-request@lists.linux-foundation.org?subject=help>
 List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
  <mailto:iommu-request@lists.linux-foundation.org?subject=subscribe>
-Content-Type: multipart/mixed; boundary="===============6652993772268634502=="
+Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset="us-ascii"; Format="flowed"
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
---===============6652993772268634502==
-Content-Type: multipart/signed; boundary="nextPart3163522.BJEOxDOq7s"; micalg="pgp-sha256"; protocol="application/pgp-signature"
+Hi Joerg,
 
---nextPart3163522.BJEOxDOq7s
-Content-Transfer-Encoding: quoted-printable
-Content-Type: text/plain; charset="UTF-8"; protected-headers="v1"
-From: Rolf Eike Beer <eb@emlix.com>
-To: Joerg Roedel <joro@8bytes.org>, Will Deacon <will@kernel.org>, Lu Baolu <baolu.lu@linux.intel.com>
-Cc: baolu.lu@linux.intel.com, David Woodhouse <dwmw2@infradead.org>, iommu@lists.linux-foundation.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH] iommu/vt-d: Fix sysfs leak in alloc_domain()
-Date: Fri, 21 May 2021 08:53:22 +0200
-Message-ID: <1889881.5hqWi3GpDC@devpool47>
-Organization: emlix GmbH
-In-Reply-To: <b13c4073-5976-b4e0-4dc7-4e07e68cbb5f@linux.intel.com>
-References: <1716403.SmlLz2RZUD@devpool47> <17411490.HIIP88n32C@mobilepool36.emlix.com> <b13c4073-5976-b4e0-4dc7-4e07e68cbb5f@linux.intel.com>
+On 5/21/21 2:53 PM, Rolf Eike Beer wrote:
+> Am Donnerstag, 22. April 2021, 07:34:17 CEST schrieb Lu Baolu:
+>> Hi Rolf,
+>>
+>> On 4/22/21 1:39 PM, Rolf Eike Beer wrote:
+>>> iommu_device_sysfs_add() is called before, so is has to be cleaned on
+>>> subsequent errors.
+>>>
+>>> Fixes: 39ab9555c2411 ("iommu: Add sysfs bindings for struct iommu_device")
+>>> Cc: stable@vger.kernel.org # 4.11.x
+>>> Signed-off-by: Rolf Eike Beer <eb@emlix.com>
+>>
+>> Acked-by: Lu Baolu <baolu.lu@linux.intel.com>
+> 
+> Ping. Who is going to pick this up, please?
 
-Am Donnerstag, 22. April 2021, 07:34:17 CEST schrieb Lu Baolu:
-> Hi Rolf,
->=20
-> On 4/22/21 1:39 PM, Rolf Eike Beer wrote:
-> > iommu_device_sysfs_add() is called before, so is has to be cleaned on
-> > subsequent errors.
-> >=20
-> > Fixes: 39ab9555c2411 ("iommu: Add sysfs bindings for struct iommu_devic=
-e")
-> > Cc: stable@vger.kernel.org # 4.11.x
-> > Signed-off-by: Rolf Eike Beer <eb@emlix.com>
->=20
-> Acked-by: Lu Baolu <baolu.lu@linux.intel.com>
+I forgot to put this fix in my last pull request. Could you please pick
+it up? Or, I can send another pull request the next week.
 
-Ping. Who is going to pick this up, please?
-
-Eike
-=2D-=20
-Rolf Eike Beer, emlix GmbH, http://www.emlix.com
-=46on +49 551 30664-0, Fax +49 551 30664-11
-Gothaer Platz 3, 37083 G=C3=B6ttingen, Germany
-Sitz der Gesellschaft: G=C3=B6ttingen, Amtsgericht G=C3=B6ttingen HR B 3160
-Gesch=C3=A4ftsf=C3=BChrung: Heike Jordan, Dr. Uwe Kracke =E2=80=93 Ust-IdNr=
-=2E: DE 205 198 055
-
-emlix - smart embedded open source
-
---nextPart3163522.BJEOxDOq7s
-Content-Type: application/pgp-signature; name="signature.asc"
-Content-Description: This is a digitally signed message part.
-Content-Transfer-Encoding: 7Bit
-
------BEGIN PGP SIGNATURE-----
-
-iLMEAAEIAB0WIQQ/Uctzh31xzAxFCLur5FH7Xu2t/AUCYKdY4gAKCRCr5FH7Xu2t
-/ACxBADM0v8DMoBMsSIwqGZQTN5UG8+C8zbDs8rpd6pngku/cGNYaHVKaiq9oG41
-hXUJEJJVYru+33WKfYb6yLgDogvf7qclfBwqK3Wz180G2nxCqfZ9yAxz4VCexuvY
-bYUpOruM3oSwnt+j5WDIBANdct//q1fNc9BDPJgROZ7fws16Dg==
-=OzhT
------END PGP SIGNATURE-----
-
---nextPart3163522.BJEOxDOq7s--
-
-
-
-
---===============6652993772268634502==
-Content-Type: text/plain; charset="us-ascii"
-MIME-Version: 1.0
-Content-Transfer-Encoding: 7bit
-Content-Disposition: inline
-
+Best regards,
+baolu
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
 https://lists.linuxfoundation.org/mailman/listinfo/iommu
---===============6652993772268634502==--
-
-
-
