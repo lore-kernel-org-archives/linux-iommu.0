@@ -7,67 +7,74 @@ X-Spam-Status: No, score=-15.2 required=3.0 tests=BAYES_00,
 	MAILING_LIST_MULTI,NICE_REPLY_A,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,
 	USER_AGENT_SANE_1 autolearn=ham autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id CF6D1C433B4
-	for <iommu@archiver.kernel.org>; Fri, 21 May 2021 11:52:21 +0000 (UTC)
-Received: from smtp3.osuosl.org (smtp3.osuosl.org [140.211.166.136])
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2AE4CC433B4
+	for <iommu@archiver.kernel.org>; Fri, 21 May 2021 12:34:44 +0000 (UTC)
+Received: from smtp2.osuosl.org (smtp2.osuosl.org [140.211.166.133])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 6DD3A613D1
-	for <iommu@archiver.kernel.org>; Fri, 21 May 2021 11:52:21 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 6DD3A613D1
-Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=arm.com
+	by mail.kernel.org (Postfix) with ESMTPS id 9E9A7613BF
+	for <iommu@archiver.kernel.org>; Fri, 21 May 2021 12:34:43 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 9E9A7613BF
+Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=hisilicon.com
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by smtp3.osuosl.org (Postfix) with ESMTP id 37C1E606A9;
-	Fri, 21 May 2021 11:52:21 +0000 (UTC)
-X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from smtp3.osuosl.org ([127.0.0.1])
-	by localhost (smtp3.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id 496X3YhXUpSX; Fri, 21 May 2021 11:52:19 +0000 (UTC)
-Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [IPv6:2605:bc80:3010:104::8cd3:938])
-	by smtp3.osuosl.org (Postfix) with ESMTP id AB2CD6074D;
-	Fri, 21 May 2021 11:52:18 +0000 (UTC)
-Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 77214C000E;
-	Fri, 21 May 2021 11:52:18 +0000 (UTC)
-Received: from smtp2.osuosl.org (smtp2.osuosl.org [140.211.166.133])
- by lists.linuxfoundation.org (Postfix) with ESMTP id EF898C0001
- for <iommu@lists.linux-foundation.org>; Fri, 21 May 2021 11:52:16 +0000 (UTC)
-Received: from localhost (localhost [127.0.0.1])
- by smtp2.osuosl.org (Postfix) with ESMTP id C8693405EA
- for <iommu@lists.linux-foundation.org>; Fri, 21 May 2021 11:52:16 +0000 (UTC)
+	by smtp2.osuosl.org (Postfix) with ESMTP id 601A140133;
+	Fri, 21 May 2021 12:34:43 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
 Received: from smtp2.osuosl.org ([127.0.0.1])
- by localhost (smtp2.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id 2fSPz1jWFlla for <iommu@lists.linux-foundation.org>;
- Fri, 21 May 2021 11:52:15 +0000 (UTC)
+	by localhost (smtp2.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+	with ESMTP id tY2lxmqQoQxB; Fri, 21 May 2021 12:34:42 +0000 (UTC)
+Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
+	by smtp2.osuosl.org (Postfix) with ESMTP id 502DE400CC;
+	Fri, 21 May 2021 12:34:42 +0000 (UTC)
+Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 2A141C000D;
+	Fri, 21 May 2021 12:34:42 +0000 (UTC)
+Received: from smtp1.osuosl.org (smtp1.osuosl.org [IPv6:2605:bc80:3010::138])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 91855C0001
+ for <iommu@lists.linux-foundation.org>; Fri, 21 May 2021 12:34:40 +0000 (UTC)
+Received: from localhost (localhost [127.0.0.1])
+ by smtp1.osuosl.org (Postfix) with ESMTP id 731FD83B9C
+ for <iommu@lists.linux-foundation.org>; Fri, 21 May 2021 12:34:40 +0000 (UTC)
+X-Virus-Scanned: amavisd-new at osuosl.org
+Received: from smtp1.osuosl.org ([127.0.0.1])
+ by localhost (smtp1.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+ with ESMTP id YMIcOdcWpYCG for <iommu@lists.linux-foundation.org>;
+ Fri, 21 May 2021 12:34:39 +0000 (UTC)
 X-Greylist: domain auto-whitelisted by SQLgrey-1.8.0
-Received: from foss.arm.com (foss.arm.com [217.140.110.172])
- by smtp2.osuosl.org (Postfix) with ESMTP id 9A0B4401FA
- for <iommu@lists.linux-foundation.org>; Fri, 21 May 2021 11:52:15 +0000 (UTC)
-Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
- by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 599081424;
- Fri, 21 May 2021 04:52:14 -0700 (PDT)
-Received: from [10.57.73.64] (unknown [10.57.73.64])
- by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id 7176F3F719;
- Fri, 21 May 2021 04:52:12 -0700 (PDT)
-Subject: Re: [PATCH v5 2/4] dt-bindings: iommu: rockchip: Add compatible for v2
-To: Benjamin Gaignard <benjamin.gaignard@collabora.com>, joro@8bytes.org,
- will@kernel.org, robh+dt@kernel.org, heiko@sntech.de, xxm@rock-chips.com
-References: <20210521083637.3221304-1-benjamin.gaignard@collabora.com>
- <20210521083637.3221304-3-benjamin.gaignard@collabora.com>
-From: Robin Murphy <robin.murphy@arm.com>
-Message-ID: <40954168-ba5a-d152-2a24-441d5331f4ec@arm.com>
-Date: Fri, 21 May 2021 12:52:07 +0100
-User-Agent: Mozilla/5.0 (Windows NT 10.0; rv:78.0) Gecko/20100101
- Thunderbird/78.10.1
+Received: from szxga06-in.huawei.com (szxga06-in.huawei.com [45.249.212.32])
+ by smtp1.osuosl.org (Postfix) with ESMTPS id 375FC83B7F
+ for <iommu@lists.linux-foundation.org>; Fri, 21 May 2021 12:34:38 +0000 (UTC)
+Received: from dggems704-chm.china.huawei.com (unknown [172.30.72.58])
+ by szxga06-in.huawei.com (SkyGuard) with ESMTP id 4FmmFs12M7zlfbp;
+ Fri, 21 May 2021 20:32:17 +0800 (CST)
+Received: from dggeme756-chm.china.huawei.com (10.3.19.102) by
+ dggems704-chm.china.huawei.com (10.3.19.181) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256) id
+ 15.1.2176.2; Fri, 21 May 2021 20:34:34 +0800
+Received: from [127.0.0.1] (10.40.193.166) by dggeme756-chm.china.huawei.com
+ (10.3.19.102) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.2176.2; Fri, 21
+ May 2021 20:34:34 +0800
+Subject: Re: [PATCH] dma-iommu: Add a check to avoid dereference null pointer
+ in function iommu_dma_map_sg()
+To: Robin Murphy <robin.murphy@arm.com>, <will@kernel.org>, <joro@8bytes.org>, 
+ <hch@lst.de>
+References: <1621566334-93468-1-git-send-email-chenxiang66@hisilicon.com>
+ <56f7f4fa-8d62-cc6e-cb1c-adbf82e34d31@arm.com>
+From: "chenxiang (M)" <chenxiang66@hisilicon.com>
+Message-ID: <8a323d71-006f-fe3c-4ecc-a69d85a6409a@hisilicon.com>
+Date: Fri, 21 May 2021 20:34:33 +0800
+User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; rv:45.0) Gecko/20100101
+ Thunderbird/45.2.0
 MIME-Version: 1.0
-In-Reply-To: <20210521083637.3221304-3-benjamin.gaignard@collabora.com>
-Content-Language: en-GB
-Cc: devicetree@vger.kernel.org, Rob Herring <robh@kernel.org>,
- linux-kernel@vger.kernel.org, linux-rockchip@lists.infradead.org,
- iommu@lists.linux-foundation.org, kernel@collabora.com,
- linux-arm-kernel@lists.infradead.org
+In-Reply-To: <56f7f4fa-8d62-cc6e-cb1c-adbf82e34d31@arm.com>
+X-Originating-IP: [10.40.193.166]
+X-ClientProxiedBy: dggems704-chm.china.huawei.com (10.3.19.181) To
+ dggeme756-chm.china.huawei.com (10.3.19.102)
+X-CFilter-Loop: Reflected
+Cc: iommu@lists.linux-foundation.org, linuxarm@openeuler.org,
+ linuxarm@huawei.com
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -80,57 +87,33 @@ List-Post: <mailto:iommu@lists.linux-foundation.org>
 List-Help: <mailto:iommu-request@lists.linux-foundation.org?subject=help>
 List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
  <mailto:iommu-request@lists.linux-foundation.org?subject=subscribe>
-Content-Transfer-Encoding: 7bit
-Content-Type: text/plain; charset="us-ascii"; Format="flowed"
+Content-Transfer-Encoding: base64
+Content-Type: text/plain; charset="utf-8"; Format="flowed"
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-On 2021-05-21 09:36, Benjamin Gaignard wrote:
-> Add compatible for the second version of IOMMU hardware block.
-> RK356x IOMMU can also be link to a power domain.
-> 
-> Signed-off-by: Benjamin Gaignard <benjamin.gaignard@collabora.com>
-> Reviewed-by: Rob Herring <robh@kernel.org>
-> ---
->   .../devicetree/bindings/iommu/rockchip,iommu.yaml          | 7 ++++++-
->   1 file changed, 6 insertions(+), 1 deletion(-)
-> 
-> diff --git a/Documentation/devicetree/bindings/iommu/rockchip,iommu.yaml b/Documentation/devicetree/bindings/iommu/rockchip,iommu.yaml
-> index 099fc2578b54..d2e28a9e3545 100644
-> --- a/Documentation/devicetree/bindings/iommu/rockchip,iommu.yaml
-> +++ b/Documentation/devicetree/bindings/iommu/rockchip,iommu.yaml
-> @@ -19,7 +19,9 @@ description: |+
->   
->   properties:
->     compatible:
-> -    const: rockchip,iommu
-> +    enum:
-> +      - rockchip,iommu
-> +      - rockchip,rk3568-iommu
->   
->     reg:
->       items:
-> @@ -48,6 +50,9 @@ properties:
->     "#iommu-cells":
->       const: 0
->   
-> +  power-domains:
-> +    maxItems: 1
-> +
-
-Nit: power domains are already present on various IOMMU nodes since 
-RK3288 - it feels like strictly this should be in patch #1 to fix the 
-existing binding as part of the conversion, but on the other hand I 
-can't really imagine anyone caring *that* much about dtscheck bisecting 
-cleanly :)
-
-Robin.
-
->     rockchip,disable-mmu-reset:
->       $ref: /schemas/types.yaml#/definitions/flag
->       description: |
-> 
-_______________________________________________
-iommu mailing list
-iommu@lists.linux-foundation.org
-https://lists.linuxfoundation.org/mailman/listinfo/iommu
+CgrlnKggMjAyMS81LzIxIDE4OjM2LCBSb2JpbiBNdXJwaHkg5YaZ6YGTOgo+IE9uIDIwMjEtMDUt
+MjEgMDQ6MDUsIGNoZW54aWFuZyB3cm90ZToKPj4gRnJvbTogWGlhbmcgQ2hlbiA8Y2hlbnhpYW5n
+NjZAaGlzaWxpY29uLmNvbT4KPj4KPj4gVGhlIGlzc3VlIGlzIHJlcG9ydGVkIGJ5IHRvb2wgVHNj
+YW5Db2RlLCBhbmQgaXQgaXMgcG9zc2libGUgdG8gZGVmZXJlbmNlCj4+IG51bGwgcG9pbnRlciB3
+aGVuIHByZXYgaXMgTlVMTCB3aGljaCBpcyB0aGUgaW5pdGlhbCB2YWx1ZS4KPgo+IE5vIGl0IGlz
+bid0LiBUaGlzIGlzIGxpdGVyYWxseSBleHBsYWluZWQgaW4gdGhlIGNvbW1lbnQgdmlzaWJsZSBp
+biB0aGUgCj4gZGlmZiBjb250ZXh0IGJlbG93Li4uCj4KPiBSb2Jpbi4KCm9rLCB0aGFua3MKCj4K
+Pj4gU2lnbmVkLW9mZi1ieTogWGlhbmcgQ2hlbiA8Y2hlbnhpYW5nNjZAaGlzaWxpY29uLmNvbT4K
+Pj4gLS0tCj4+ICAgZHJpdmVycy9pb21tdS9kbWEtaW9tbXUuYyB8IDIgKy0KPj4gICAxIGZpbGUg
+Y2hhbmdlZCwgMSBpbnNlcnRpb24oKyksIDEgZGVsZXRpb24oLSkKPj4KPj4gZGlmZiAtLWdpdCBh
+L2RyaXZlcnMvaW9tbXUvZG1hLWlvbW11LmMgYi9kcml2ZXJzL2lvbW11L2RtYS1pb21tdS5jCj4+
+IGluZGV4IDRjYjYzYjIuLjg4YTRmMzQgMTAwNjQ0Cj4+IC0tLSBhL2RyaXZlcnMvaW9tbXUvZG1h
+LWlvbW11LmMKPj4gKysrIGIvZHJpdmVycy9pb21tdS9kbWEtaW9tbXUuYwo+PiBAQCAtMTA0Miw3
+ICsxMDQyLDcgQEAgc3RhdGljIGludCBpb21tdV9kbWFfbWFwX3NnKHN0cnVjdCBkZXZpY2UgKmRl
+diwgCj4+IHN0cnVjdCBzY2F0dGVybGlzdCAqc2csCj4+ICAgICAgICAgICAgKiAgIGlvdmFfbGVu
+ID09IDAsIHRodXMgd2UgY2Fubm90IGRlcmVmZXJlbmNlIHByZXYgdGhlIGZpcnN0Cj4+ICAgICAg
+ICAgICAgKiAgIHRpbWUgdGhyb3VnaCBoZXJlIChpLmUuIGJlZm9yZSBpdCBoYXMgYSBtZWFuaW5n
+ZnVsIAo+PiB2YWx1ZSkuCj4+ICAgICAgICAgICAgKi8KPj4gLSAgICAgICAgaWYgKHBhZF9sZW4g
+JiYgcGFkX2xlbiA8IHNfbGVuZ3RoIC0gMSkgewo+PiArICAgICAgICBpZiAocHJldiAmJiBwYWRf
+bGVuICYmIHBhZF9sZW4gPCBzX2xlbmd0aCAtIDEpIHsKPj4gICAgICAgICAgICAgICBwcmV2LT5s
+ZW5ndGggKz0gcGFkX2xlbjsKPj4gICAgICAgICAgICAgICBpb3ZhX2xlbiArPSBwYWRfbGVuOwo+
+PiAgICAgICAgICAgfQo+Pgo+Cj4gLgo+CgoKX19fX19fX19fX19fX19fX19fX19fX19fX19fX19f
+X19fX19fX19fX19fX19fX18KaW9tbXUgbWFpbGluZyBsaXN0CmlvbW11QGxpc3RzLmxpbnV4LWZv
+dW5kYXRpb24ub3JnCmh0dHBzOi8vbGlzdHMubGludXhmb3VuZGF0aW9uLm9yZy9tYWlsbWFuL2xp
+c3RpbmZvL2lvbW11
