@@ -2,71 +2,72 @@ Return-Path: <SRS0=NT7l=KQ=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-20.2 required=3.0 tests=BAYES_00,
+X-Spam-Status: No, score=-15.2 required=3.0 tests=BAYES_00,
 	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_CR_TRAILER,INCLUDES_PATCH,
-	MAILING_LIST_MULTI,MENTIONS_GIT_HOSTING,NICE_REPLY_A,SPF_HELO_NONE,SPF_PASS,
-	URIBL_BLOCKED,USER_AGENT_SANE_1 autolearn=ham autolearn_force=no version=3.4.0
+	MAILING_LIST_MULTI,NICE_REPLY_A,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,
+	USER_AGENT_SANE_1 autolearn=unavailable autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6E8F2C433ED
-	for <iommu@archiver.kernel.org>; Fri, 21 May 2021 12:55:33 +0000 (UTC)
-Received: from smtp4.osuosl.org (smtp4.osuosl.org [140.211.166.137])
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A6B83C433ED
+	for <iommu@archiver.kernel.org>; Fri, 21 May 2021 12:59:12 +0000 (UTC)
+Received: from smtp3.osuosl.org (smtp3.osuosl.org [140.211.166.136])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id E428A613D8
-	for <iommu@archiver.kernel.org>; Fri, 21 May 2021 12:55:32 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org E428A613D8
+	by mail.kernel.org (Postfix) with ESMTPS id 3A88B613D9
+	for <iommu@archiver.kernel.org>; Fri, 21 May 2021 12:59:12 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 3A88B613D9
 Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=arm.com
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by smtp4.osuosl.org (Postfix) with ESMTP id 9C5B540F13;
-	Fri, 21 May 2021 12:55:32 +0000 (UTC)
+	by smtp3.osuosl.org (Postfix) with ESMTP id EFEBC60618;
+	Fri, 21 May 2021 12:59:11 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from smtp4.osuosl.org ([127.0.0.1])
-	by localhost (smtp4.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id VdVKtkM8QX49; Fri, 21 May 2021 12:55:31 +0000 (UTC)
-Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [IPv6:2605:bc80:3010:104::8cd3:938])
-	by smtp4.osuosl.org (Postfix) with ESMTP id E183B4054A;
-	Fri, 21 May 2021 12:55:30 +0000 (UTC)
+Received: from smtp3.osuosl.org ([127.0.0.1])
+	by localhost (smtp3.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+	with ESMTP id vdWi1iDj_vkC; Fri, 21 May 2021 12:59:10 +0000 (UTC)
+Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
+	by smtp3.osuosl.org (Postfix) with ESMTP id 84A0560649;
+	Fri, 21 May 2021 12:59:10 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id BCDA2C000D;
-	Fri, 21 May 2021 12:55:30 +0000 (UTC)
-Received: from smtp4.osuosl.org (smtp4.osuosl.org [IPv6:2605:bc80:3010::137])
- by lists.linuxfoundation.org (Postfix) with ESMTP id A1DA6C0001
- for <iommu@lists.linux-foundation.org>; Fri, 21 May 2021 12:55:29 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 5FF46C000D;
+	Fri, 21 May 2021 12:59:10 +0000 (UTC)
+Received: from smtp3.osuosl.org (smtp3.osuosl.org [140.211.166.136])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id BBEB5C0001
+ for <iommu@lists.linux-foundation.org>; Fri, 21 May 2021 12:59:08 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by smtp4.osuosl.org (Postfix) with ESMTP id 819F040F08
- for <iommu@lists.linux-foundation.org>; Fri, 21 May 2021 12:55:29 +0000 (UTC)
+ by smtp3.osuosl.org (Postfix) with ESMTP id 94AD560649
+ for <iommu@lists.linux-foundation.org>; Fri, 21 May 2021 12:59:08 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from smtp4.osuosl.org ([127.0.0.1])
- by localhost (smtp4.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id 2hYS9W1NydlZ for <iommu@lists.linux-foundation.org>;
- Fri, 21 May 2021 12:55:27 +0000 (UTC)
+Received: from smtp3.osuosl.org ([127.0.0.1])
+ by localhost (smtp3.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+ with ESMTP id 2WpKdzXO_yDc for <iommu@lists.linux-foundation.org>;
+ Fri, 21 May 2021 12:59:07 +0000 (UTC)
 X-Greylist: domain auto-whitelisted by SQLgrey-1.8.0
 Received: from foss.arm.com (foss.arm.com [217.140.110.172])
- by smtp4.osuosl.org (Postfix) with ESMTP id B62094054A
- for <iommu@lists.linux-foundation.org>; Fri, 21 May 2021 12:55:27 +0000 (UTC)
+ by smtp3.osuosl.org (Postfix) with ESMTP id 6472F60618
+ for <iommu@lists.linux-foundation.org>; Fri, 21 May 2021 12:59:07 +0000 (UTC)
 Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
- by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 9C73411B3;
- Fri, 21 May 2021 05:55:26 -0700 (PDT)
-Received: from [192.168.1.179] (unknown [172.31.20.19])
- by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id 4729E3F719;
- Fri, 21 May 2021 05:55:24 -0700 (PDT)
-Subject: Re: [PATCH v4 0/8] ACPI/IORT: Support for IORT RMR node
-To: Shameer Kolothum <shameerali.kolothum.thodi@huawei.com>,
- linux-arm-kernel@lists.infradead.org, linux-acpi@vger.kernel.org,
- iommu@lists.linux-foundation.org
-References: <20210513134550.2117-1-shameerali.kolothum.thodi@huawei.com>
-From: Steven Price <steven.price@arm.com>
-Message-ID: <fcb7bec5-f9ea-1785-64fa-af673ce64053@arm.com>
-Date: Fri, 21 May 2021 13:55:23 +0100
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
- Thunderbird/78.8.1
+ by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id C2CD311B3;
+ Fri, 21 May 2021 05:59:06 -0700 (PDT)
+Received: from [10.57.73.64] (unknown [10.57.73.64])
+ by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id EA5FF3F719;
+ Fri, 21 May 2021 05:59:04 -0700 (PDT)
+Subject: Re: [PATCH v5 3/4] iommu: rockchip: Add internal ops to handle
+ variants
+To: Benjamin Gaignard <benjamin.gaignard@collabora.com>, joro@8bytes.org,
+ will@kernel.org, robh+dt@kernel.org, heiko@sntech.de, xxm@rock-chips.com
+References: <20210521083637.3221304-1-benjamin.gaignard@collabora.com>
+ <20210521083637.3221304-4-benjamin.gaignard@collabora.com>
+From: Robin Murphy <robin.murphy@arm.com>
+Message-ID: <e709c99c-02c4-69e1-0ae1-f12da9b2f915@arm.com>
+Date: Fri, 21 May 2021 13:58:59 +0100
+User-Agent: Mozilla/5.0 (Windows NT 10.0; rv:78.0) Gecko/20100101
+ Thunderbird/78.10.1
 MIME-Version: 1.0
-In-Reply-To: <20210513134550.2117-1-shameerali.kolothum.thodi@huawei.com>
+In-Reply-To: <20210521083637.3221304-4-benjamin.gaignard@collabora.com>
 Content-Language: en-GB
-Cc: jon@solid-run.com, linuxarm@huawei.com, guohanjun@huawei.com,
- yangyicong@huawei.com, Sami.Mujawar@arm.com, robin.murphy@arm.com,
- wanghuiqiang@huawei.com
+Cc: devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
+ linux-rockchip@lists.infradead.org, iommu@lists.linux-foundation.org,
+ kernel@collabora.com, linux-arm-kernel@lists.infradead.org
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -79,161 +80,298 @@ List-Post: <mailto:iommu@lists.linux-foundation.org>
 List-Help: <mailto:iommu-request@lists.linux-foundation.org?subject=help>
 List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
  <mailto:iommu-request@lists.linux-foundation.org?subject=subscribe>
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
+Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset="us-ascii"; Format="flowed"
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-T24gMTMvMDUvMjAyMSAxNDo0NSwgU2hhbWVlciBLb2xvdGh1bSB3cm90ZToKPiBIaSwKPiAKPiB2
-MyAtLT52NAo+IC1JbmNsdWRlZCB0aGUgU01NVXYyIFNNUiBieXBhc3MgaW5zdGFsbCBjaGFuZ2Vz
-IHN1Z2dlc3RlZCBieQo+ICBTdGV2ZShwYXRjaCAjNykKPiAtQXMgcGVyIFJvYmluJ3MgY29tbWVu
-dHMsIFJNUiByZXNlcnZlIGltcGxlbWVudGF0aW9uwqBpcyBub3cKPiAgbW9yZSBnZW5lcmljICAo
-cGF0Y2ggIzgpIGFuZCBkcm9wcGVkIHYzIHBhdGNoZXMgOCBhbmQgMTAuCj4gLVJlYmFzZSB0byA1
-LjEzLXJjMcKgCj4gCj4gVGhlIHdob2xlIHNlcmllcyBpcyBhdmFpbGFibGUgaGVyZSwKPiBodHRw
-czovL2dpdGh1Yi5jb20vaGlzaWxpY29uL2tlcm5lbC1kZXYvdHJlZS9wcml2YXRlLXY1LjEzLXJj
-MS1ybXItdjQtZXh0Cj4gCj4gUkZDIHYyIC0tPiB2Mwo+ICAtRHJvcHBlZCBSRkMgdGFnIGFzIHRo
-ZSBBQ1BJQ0EgaGVhZGVyIGNoYW5nZXMgYXJlIG5vdyByZWFkeSB0byBiZQo+ICAgcGFydCBvZiA1
-LjEzWzBdLiBCdXQgdGhpcyBzZXJpZXMgc3RpbGwgaGFzIGEgZGVwZW5kZW5jeSBvbiB0aGF0IHBh
-dGNoLgo+ICAtQWRkZWQgSU9SVCBFLmIgcmVsYXRlZCBjaGFuZ2VzKG5vZGUgZmxhZ3MsIF9EU00g
-ZnVuY3Rpb24gNSBjaGVja3MgZm9yCj4gICBQQ0llKS4KPiAgLUNoYW5nZWQgUk1SIHRvIHN0cmVh
-bSBpZCBtYXBwaW5nIGZyb20gTTpOIHRvIE06MSBhcyBwZXIgdGhlIHNwZWMgYW5kCj4gICBkaXNj
-dXNzaW9uIGhlcmVbMV0uCj4gIC1MYXN0IHR3byBwYXRjaGVzIGFkZCBzdXBwb3J0IGZvciBTTU1V
-djIoVGhhbmtzIHRvIEpvbiBOZXR0bGV0b24hKSAKPiAKPiBTYW5pdHkgdGVzdGVkIG9uIGEgSGlT
-aWxpY29uIEQwNi4gRnVydGhlciB0ZXN0aW5nIGFuZCBmZWVkYmFjayBpcyBncmVhdGx5Cj4gYXBw
-cmVjaWF0ZWQuCgpXaXRoIHRoZSB1cGRhdGVkIFNNTVV2MiBzdXBwb3J0IHRoaXMgd29ya3MgZmlu
-ZSBvbiBteSBKdW5vIHdpdGggRUZJRkIKKGFuZCBjb3JyZXNwb25kaW5nIHBhdGNoZXMgdG8gdGhl
-IGZpcm13YXJlIHRvIGV4cG9zZSB0aGUgQUNQSSB0YWJsZXMpLgpGZWVsIGZyZWUgdG8gYWRkCgpU
-ZXN0ZWQtYnk6IFN0ZXZlbiBQcmljZSA8c3RldmVuLnByaWNlQGFybS5jb20+CgpUaGFua3MsCgpT
-dGV2ZQoKPiBodHRwczovL2dpdGh1Yi5jb20vaGlzaWxpY29uL2tlcm5lbC1kZXYvdHJlZS9wcml2
-YXRlLXY1LjEyLXJjOC1ybXItdjMKPiAKPiBUaGFua3MsCj4gU2hhbWVlcgo+IAo+IFswXSBodHRw
-czovL2xvcmUua2VybmVsLm9yZy9saW51eC1hY3BpLzIwMjEwNDA2MjEzMDI4LjcxODc5Ni0yMi1l
-cmlrLmthbmVkYUBpbnRlbC5jb20vCj4gWzFdIGh0dHBzOi8vb3AtbGlzdHMubGluYXJvLm9yZy9w
-aXBlcm1haWwvbGluYXJvLW9wZW4tZGlzY3Vzc2lvbnMvMjAyMS1BcHJpbC8wMDAxNTAuaHRtbAo+
-IAo+IFJGQyB2MSAtLT4gdjI6Cj4gwqAtIEFkZGVkIGEgZ2VuZXJpYyBpbnRlcmZhY2UgZm9yIElP
-TU1VIGRyaXZlcnMgdG8gcmV0cmlldmUgYWxsIHRoZSAKPiDCoCDCoFJNUiBpbmZvIGFzc29jaWF0
-ZWQgd2l0aCBhIGdpdmVuIElPTU1VLgo+IMKgLSBTTU1VdjMgZHJpdmVyIGdldHMgdGhlIFJNUiBs
-aXN0IGR1cmluZyBwcm9iZSgpIGFuZCBpbnN0YWxscwo+IMKgwqAgYnlwYXNzIFNURXMgZm9yIGFs
-bCB0aGUgU0lEcyBpbiB0aGUgUk1SIGxpc3QuIFRoaXMgaXMgdG8ga2VlcAo+ICDCoCB0aGUgb25n
-b2luZyB0cmFmZmljIGFsaXZlKGlmIGFueSkgZHVyaW5nIFNNTVV2MyByZXNldC4gVGhpcyBpcwo+
-ICAgIGJhc2VkIG9uIHRoZSBzdWdnZXN0aW9ucyByZWNlaXZlZCBmb3IgdjEgdG8gdGFrZSBjYXJl
-IG9mIHRoZQo+ICAgIEVGSSBmcmFtZWJ1ZmZlciB1c2UgY2FzZS4gT25seSBzYW5pdHkgdGVzdGVk
-IGZvciBub3cuCj4gwqAtIER1cmluZyB0aGUgcHJvYmUvYXR0YWNoIGRldmljZSwgU01NVXYzIGRy
-aXZlciByZXNlcnZlcyBhbnkKPiDCoCDCoFJNUiByZWdpb24gYXNzb2NpYXRlZCB3aXRoIHRoZSBk
-ZXZpY2Ugc3VjaCB0aGF0IHRoZXJlIGlzIGEgdW5pdHkKPiDCoCDCoG1hcHBpbmcgZm9yIHRoZW0g
-aW4gU01NVS4KPiAtLS3CoCDCoMKgCj4gCj4gRnJvbSBSRkMgdjE6Cj4gLS0tLS0tLS0tLS0tLQo+
-IFRoZSBzZXJpZXMgYWRkcyBzdXBwb3J0IHRvIElPUlQgUk1SIG5vZGVzIHNwZWNpZmllZCBpbiBJ
-T1JUCj4gUmV2aXNpb24gRSAtQVJNIERFTiAwMDQ5RVswXS4gUk1SIG5vZGVzIGFyZSB1c2VkIHRv
-IGRlc2NyaWJlIG1lbW9yeQo+IHJhbmdlcyB0aGF0IGFyZSB1c2VkIGJ5IGVuZHBvaW50cyBhbmQg
-cmVxdWlyZSBhIHVuaXR5IG1hcHBpbmcKPiBpbiBTTU1VLgo+IAo+IFdlIGhhdmUgZmFjZWQgaXNz
-dWVzIHdpdGggMzQwOGlNUiBSQUlEIGNvbnRyb2xsZXIgY2FyZHMgd2hpY2gKPiBmYWlsIHRvIGJv
-b3Qgd2hlbiBTTU1VIGlzIGVuYWJsZWQuIFRoaXMgaXMgYmVjYXVzZSB0aGVzZSBjb250cm9sbGVy
-cwo+IG1ha2UgdXNlIG9mIGhvc3QgbWVtb3J5IGZvciB2YXJpb3VzIGNhY2hpbmcgcmVsYXRlZCBw
-dXJwb3NlcyBhbmQgd2hlbgo+IFNNTVUgaXMgZW5hYmxlZCB0aGUgaU1SIGZpcm13YXJlIGZhaWxz
-IHRvIGFjY2VzcyB0aGVzZSBtZW1vcnkgcmVnaW9ucwo+IGFzIHRoZXJlIGlzIG5vIG1hcHBpbmcg
-Zm9yIHRoZW0uIElPUlQgUk1SIHByb3ZpZGVzIGEgd2F5IGZvciBVRUZJIHRvCj4gZGVzY3JpYmUg
-YW5kIHJlcG9ydCB0aGVzZSBtZW1vcnkgcmVnaW9ucyBzbyB0aGF0IHRoZSBrZXJuZWwgY2FuIG1h
-a2UKPiBhIHVuaXR5IG1hcHBpbmcgZm9yIHRoZXNlIGluIFNNTVUuCj4gCj4gVGVzdHM6Cj4gCj4g
-V2l0aCBhIFVFRkksIHRoYXQgcmVwb3J0cyB0aGUgUk1SIGZvciB0aGUgZGV2LAo+IC4uLi4KPiBb
-MTZGMGggNTg3MiAgIDFdICAgICAgICAgICAgICAgICAgICAgICAgIFR5cGUgOiAwNgo+IFsxNkYx
-aCA1ODczICAgMl0gICAgICAgICAgICAgICAgICAgICAgIExlbmd0aCA6IDAwN0MKPiBbMTZGM2gg
-NTg3NSAgIDFdICAgICAgICAgICAgICAgICAgICAgUmV2aXNpb24gOiAwMAo+IFsxMDM4aCAwMDU2
-ICAgMl0gICAgICAgICAgICAgICAgICAgICBSZXNlcnZlZCA6IDAwMDAwMDAwCj4gWzEwMzhoIDAw
-NTYgICAyXSAgICAgICAgICAgICAgICAgICBJZGVudGlmaWVyIDogMDAwMDAwMDAKPiBbMTZGOGgg
-NTg4MCAgIDRdICAgICAgICAgICAgICAgIE1hcHBpbmcgQ291bnQgOiAwMDAwMDAwMQo+IFsxNkZD
-aCA1ODg0ICAgNF0gICAgICAgICAgICAgICBNYXBwaW5nIE9mZnNldCA6IDAwMDAwMDQwCj4gCj4g
-WzE3MDBoIDU4ODggICA0XSAgICBOdW1iZXIgb2YgUk1SIERlc2NyaXB0b3JzIDogMDAwMDAwMDIK
-PiBbMTcwNGggNTg5MiAgIDRdICAgICAgICBSTVIgRGVzY3JpcHRvciBPZmZzZXQgOiAwMDAwMDAx
-OAo+IAo+IFsxNzA4aCA1ODk2ICAgOF0gICAgICAgICAgQmFzZSBBZGRyZXNzIG9mIFJNUiA6IDAw
-MDBFNjQwMDAwMAo+IFsxNzEwaCA1OTA0ICAgOF0gICAgICAgICAgICAgICAgTGVuZ3RoIG9mIFJN
-UiA6IDAwMDAwMDEwMDAwMAo+IFsxNzE4aCA1OTEyICAgNF0gICAgICAgICAgICAgICAgICAgICBS
-ZXNlcnZlZCA6IDAwMDAwMDAwCj4gCj4gWzE3MUNoIDU5MTYgICA4XSAgICAgICAgICBCYXNlIEFk
-ZHJlc3Mgb2YgUk1SIDogMDAwMDAwMDAyN0IwMDAwMAo+IFsxNzI0aCA1OTI0ICAgOF0gICAgICAg
-ICAgICAgICAgTGVuZ3RoIG9mIFJNUiA6IDAwMDAwMDAwMDBDMDAwMDAKPiBbMTcyQ2ggNTkzMiAg
-IDRdICAgICAgICAgICAgICAgICAgICAgUmVzZXJ2ZWQgOiAwMDAwMDAwMAo+IAo+IFsxNzMwaCA1
-OTM2ICAgNF0gICAgICAgICAgICAgICAgICAgSW5wdXQgYmFzZSA6IDAwMDAwMDAwCj4gWzE3MzRo
-IDU5NDAgICA0XSAgICAgICAgICAgICAgICAgICAgIElEIENvdW50IDogMDAwMDAwMDEKPiBbMTcz
-OGggNTk0NCAgIDRdICAgICAgICAgICAgICAgICAgT3V0cHV0IEJhc2UgOiAwMDAwMDAwMwo+IFsx
-NzNDaCA1OTQ4ICAgNF0gICAgICAgICAgICAgT3V0cHV0IFJlZmVyZW5jZSA6IDAwMDAwMDY0Cj4g
-WzE3NDBoIDU5NTIgICA0XSAgICAgICAgRmxhZ3MgKGRlY29kZWQgYmVsb3cpIDogMDAwMDAwMDEK
-PiAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgU2luZ2xlIE1hcHBpbmcgOiAxCj4gLi4u
-Cj4gCj4gV2l0aG91dCB0aGUgc2VyaWVzIHRoZSBSQUlEIGNvbnRyb2xsZXIgaW5pdGlhbGl6YXRp
-b24gZmFpbHMgYXMKPiBiZWxvdywKPiAKPiAuLi4KPiBbICAgMTIuNjMxMTE3XSBtZWdhcmFpZF9z
-YXMgMDAwMDowMzowMC4wOiBGVyBzdXBwb3J0cyBzeW5jIGNhY2hlICAgICAgICA6IFllcyAgIAo+
-IFsgICAxMi42MzczNjBdIG1lZ2FyYWlkX3NhcyAwMDAwOjAzOjAwLjA6IG1lZ2FzYXNfZGlzYWJs
-ZV9pbnRyX2Z1c2lvbiBpcyBjYWxsZWQgb3V0Ym91bmRfaW50cl9tYXNrOjB4NDAwMDAwMDkgICAg
-ICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAKPiBbICAgMTgu
-Nzc2Mzc3XSBtZWdhcmFpZF9zYXMgMDAwMDowMzowMC4wOiBJbml0IGNtZCByZXR1cm4gc3RhdHVz
-IEZBSUxFRCBmb3IgU0NTSSBob3N0IDAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAg
-ICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgCj4gWyAgIDIzLjAxOTM4M10g
-bWVnYXJhaWRfc2FzIDAwMDA6MDM6MDAuMDogV2FpdGluZyBmb3IgRlcgdG8gY29tZSB0byByZWFk
-eSBzdGF0ZSAKPiBbICAxMDYuNjg0MjgxXSBtZWdhcmFpZF9zYXMgMDAwMDowMzowMC4wOiBGVyBp
-biBGQVVMVCBzdGF0ZSwgRmF1bHQgY29kZToweDEwMDAwIHN1YmNvZGU6MHgwIGZ1bmM6bWVnYXNh
-c190cmFuc2l0aW9uX3RvX3JlYWR5ICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAg
-Cj4gWyAgMTA2LjY5NTE4Nl0gbWVnYXJhaWRfc2FzIDAwMDA6MDM6MDAuMDogU3lzdGVtIFJlZ2lz
-dGVyIHNldDogICAgICAgICAgICAgICAgICAKPiBbICAxMDYuODg5Nzg3XSBtZWdhcmFpZF9zYXMg
-MDAwMDowMzowMC4wOiBGYWlsZWQgdG8gdHJhbnNpdGlvbiBjb250cm9sbGVyIHRvIHJlYWR5IGZv
-ciBzY3NpMC4gICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAg
-ICAgICAgICAgICAgICAgICAgCj4gWyAgMTA2LjkxMDQ3NV0gbWVnYXJhaWRfc2FzIDAwMDA6MDM6
-MDAuMDogRmFpbGVkIGZyb20gbWVnYXNhc19pbml0X2Z3IDY0MDcgICAgICAKPiBlc3R1YXJ5Oi8k
-Cj4gCj4gV2l0aCB0aGUgc2VyaWVzLCBub3cgdGhlIGtlcm5lbCBoYXMgZGlyZWN0IG1hcHBpbmcg
-Zm9yIHRoZSBkZXYgYXMKPiBiZWxvdywKPiAKPiBlc3R1YXJ5Oi8kIGNhdCAvc3lzL2tlcm5lbC9p
-b21tdV9ncm91cHMvMC9yZXNlcnZlZF9yZWdpb25zICAgICAgICAgICAgICAgICAgICAgIAo+IDB4
-MDAwMDAwMDAwODAwMDAwMCAweDAwMDAwMDAwMDgwZmZmZmYgbXNpICAgICAgICAgICAgICAgICAg
-ICAgICAgICAgICAgICAgICAgICAgCj4gMHgwMDAwMDAwMDI3YjAwMDAwIDB4MDAwMDAwMDAyODZm
-ZmZmZiBkaXJlY3QgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAKPiAweDAwMDAw
-MDAwZTY0MDAwMDAgMHgwMDAwMDAwMGU2NGZmZmZmIGRpcmVjdCAgICAgICAgICAgICAgICAgICAg
-ICAgICAgICAgICAgICAgIAo+IGVzdHVhcnk6LyQKPiAKPiAuLi4uCj4gWyAgIDEyLjI1NDMxOF0g
-bWVnYXJhaWRfc2FzIDAwMDA6MDM6MDAuMDogbWVnYXNhc19kaXNhYmxlX2ludHJfZnVzaW9uIGlz
-IGNhbGxlZCBvdXRib3VuZF9pbnRyX21hc2s6MHg0MDAwMDAwOSAgICAgICAgICAgICAgICAgICAg
-ICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgIAo+IFsgICAxMi43MzkwODldIG1lZ2FyYWlk
-X3NhcyAwMDAwOjAzOjAwLjA6IEZXIHByb3ZpZGVkIHN1cHBvcnRNYXhFeHRMRHM6IDAgICAgICBt
-YXhfbGRzOiAzMiAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAg
-ICAgICAgICAgICAgICAgICAgICAgICAKPiBbICAgMTIuNzQ2NjI4XSBtZWdhcmFpZF9zYXMgMDAw
-MDowMzowMC4wOiBjb250cm9sbGVyIHR5cGUgICAgICAgOiBpTVIoME1CKSAgICAgIAo+IFsgICAx
-Mi43NTI2OTRdIG1lZ2FyYWlkX3NhcyAwMDAwOjAzOjAwLjA6IE9ubGluZSBDb250cm9sbGVyIFJl
-c2V0KE9DUikgIDogRW5hYmxlZCAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAg
-ICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAKPiBbICAgMTIuNzU5Nzk4
-XSBtZWdhcmFpZF9zYXMgMDAwMDowMzowMC4wOiBTZWN1cmUgSkJPRCBzdXBwb3J0ICAgOiBZZXMg
-ICAgICAgICAgIAo+IFsgICAxMi43NjU3NzhdIG1lZ2FyYWlkX3NhcyAwMDAwOjAzOjAwLjA6IE5W
-TWUgcGFzc3RocnUgc3VwcG9ydCA6IFllcyAgICAgICAgICAgCj4gWyAgIDEyLjc3MTkzMV0gbWVn
-YXJhaWRfc2FzIDAwMDA6MDM6MDAuMDogRlcgcHJvdmlkZWQgVE0gVGFza0Fib3J0L1Jlc2V0IHRp
-bWVvdTogNiBzZWNzLzYwIHNlY3MgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAg
-ICAgICAgICAgICAgICAgICAgICAgICAgICAgIAo+IFsgICAxMi43ODA1MDNdIG1lZ2FyYWlkX3Nh
-cyAwMDAwOjAzOjAwLjA6IEpCT0Qgc2VxdWVuY2UgbWFwIHN1cHBvcnQgICAgIDogWWVzICAgCj4g
-WyAgIDEyLjc4NzAwMF0gbWVnYXJhaWRfc2FzIDAwMDA6MDM6MDAuMDogUENJIExhbmUgTWFyZ2lu
-aW5nIHN1cHBvcnQgICAgOiBObyAgICAKPiBbICAgMTIuODE5MTc5XSBtZWdhcmFpZF9zYXMgMDAw
-MDowMzowMC4wOiBOVk1FIHBhZ2Ugc2l6ZSAgICAgICAgOiAoNDA5NikgICAgICAgIAo+IFsgICAx
-Mi44MjU2NzJdIG1lZ2FyYWlkX3NhcyAwMDAwOjAzOjAwLjA6IG1lZ2FzYXNfZW5hYmxlX2ludHJf
-ZnVzaW9uIGlzIGNhbGxlZCBvdXRib3VuZF9pbnRyX21hc2s6MHg0MDAwMDAwMCAgICAgICAgICAg
-ICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAKPiBbICAgMTIuODM1MTk5
-XSBtZWdhcmFpZF9zYXMgMDAwMDowMzowMC4wOiBJTklUIGFkYXB0ZXIgZG9uZSAgICAgICAgICAg
-ICAgICAgICAgIAo+IFsgICAxMi44NzM5MzJdIG1lZ2FyYWlkX3NhcyAwMDAwOjAzOjAwLjA6IHBj
-aSBpZCAgICAgICAgICAgICAgICA6ICgweDEwMDApLygweDAwMTcpLygweDE5ZTUpLygweGQyMTMp
-ICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAg
-ICAKPiBbICAgMTIuODgxNjQ0XSBtZWdhcmFpZF9zYXMgMDAwMDowMzowMC4wOiB1bmV2ZW5zcGFu
-IHN1cHBvcnQgICAgOiBubyAgICAgICAgICAgIAo+IFsgICAxMi44ODc0NTFdIG1lZ2FyYWlkX3Nh
-cyAwMDAwOjAzOjAwLjA6IGZpcm13YXJlIGNyYXNoIGR1bXAgICA6IG5vICAgICAgICAgICAgCj4g
-WyAgIDEyLjg5MzM0NF0gbWVnYXJhaWRfc2FzIDAwMDA6MDM6MDAuMDogSkJPRCBzZXF1ZW5jZSBt
-YXAgICAgIDogZW5hYmxlZCAgICAgICAKPiAKPiBSQUlEIGNvbnRyb2xsZXIgaW5pdCBpcyBub3cg
-c3VjY2VzcyBhbmQgY2FuIGRldGVjdCB0aGUgZHJpdmVzCj4gYXR0YWNoZWQgYXMgd2VsbC4KPiAK
-PiBKb24gTmV0dGxldG9uICgxKToKPiAgIGlvbW11L2FybS1zbW11OiBHZXQgYXNzb2NpYXRlZCBS
-TVIgaW5mbyBhbmQgaW5zdGFsbCBieXBhc3MgU01SCj4gCj4gU2hhbWVlciBLb2xvdGh1bSAoNyk6
-Cj4gICBBQ1BJL0lPUlQ6IEFkZCBzdXBwb3J0IGZvciBSTVIgbm9kZSBwYXJzaW5nCj4gICBpb21t
-dS9kbWE6IEludHJvZHVjZSBnZW5lcmljIGhlbHBlciB0byByZXRyaWV2ZSBSTVIgaW5mbwo+ICAg
-QUNQSS9JT1JUOiBBZGQgYSBoZWxwZXIgdG8gcmV0cmlldmUgUk1SIG1lbW9yeSByZWdpb25zCj4g
-ICBpb21tdS9hcm0tc21tdS12MzogSW50cm9kdWNlIHN0cnRhYiBpbml0IGhlbHBlcgo+ICAgaW9t
-bXUvYXJtLXNtbXUtdjM6IEFkZCBieXBhc3MgZmxhZyB0b8KgYXJtX3NtbXVfd3JpdGVfc3RydGFi
-X2VudCgpCj4gICBpb21tdS9hcm0tc21tdS12MzogR2V0IGFzc29jaWF0ZWQgUk1SIGluZm8gYW5k
-IGluc3RhbGwgYnlwYXNzIFNURQo+ICAgaW9tbXUvZG1hOiBSZXNlcnZlIGFueSBSTVIgcmVnaW9u
-cyBhc3NvY2lhdGVkIHdpdGggYSBkZXYKPiAKPiAgZHJpdmVycy9hY3BpL2FybTY0L2lvcnQuYyAg
-ICAgICAgICAgICAgICAgICB8IDE0NCArKysrKysrKysrKysrKysrKysrLQo+ICBkcml2ZXJzL2lv
-bW11L2FybS9hcm0tc21tdS12My9hcm0tc21tdS12My5jIHwgIDY5ICsrKysrKystLS0KPiAgZHJp
-dmVycy9pb21tdS9hcm0vYXJtLXNtbXUvYXJtLXNtbXUuYyAgICAgICB8ICA2NCArKysrKysrKysK
-PiAgZHJpdmVycy9pb21tdS9kbWEtaW9tbXUuYyAgICAgICAgICAgICAgICAgICB8IDEwMiArKysr
-KysrKysrKysrLQo+ICBpbmNsdWRlL2xpbnV4L2FjcGlfaW9ydC5oICAgICAgICAgICAgICAgICAg
-IHwgICA3ICsKPiAgaW5jbHVkZS9saW51eC9kbWEtaW9tbXUuaCAgICAgICAgICAgICAgICAgICB8
-ICAxMCArKwo+ICBpbmNsdWRlL2xpbnV4L2lvbW11LmggICAgICAgICAgICAgICAgICAgICAgIHwg
-IDE5ICsrKwo+ICA3IGZpbGVzIGNoYW5nZWQsIDM5MiBpbnNlcnRpb25zKCspLCAyMyBkZWxldGlv
-bnMoLSkKPiAKCl9fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19f
-CmlvbW11IG1haWxpbmcgbGlzdAppb21tdUBsaXN0cy5saW51eC1mb3VuZGF0aW9uLm9yZwpodHRw
-czovL2xpc3RzLmxpbnV4Zm91bmRhdGlvbi5vcmcvbWFpbG1hbi9saXN0aW5mby9pb21tdQ==
+On 2021-05-21 09:36, Benjamin Gaignard wrote:
+> Add internal ops to be able to handle incoming variant v2.
+> The goal is to keep the overall structure of the framework but
+> to allow to add the evolution of this hardware block.
+> 
+> The ops are global for a SoC because iommu domains are not
+> attached to a specific devices if they are for a virtuel device like
+> drm. Use a global variable shouldn't be since SoC usually doesn't
+> embedded different versions of the iommu hardware block.
+> If that happen one day a WARN_ON will be displayed at probe time.
+
+IMO it would be a grievous error if such a "virtual device" ever gets 
+near the IOMMU API, so personally I wouldn't use that as a justification 
+for anything :)
+
+FWIW you should be OK to handle things on a per-instance basis, it just 
+means you have to defer some of the domain setup to .attach_dev time, 
+like various other drivers do. That said, there's nothing wrong with the 
+global if we do expect instances to be consistent across any given 
+Rockchip SoC (and my gut feeling is that we probably should).
+
+> Signed-off-by: Benjamin Gaignard <benjamin.gaignard@collabora.com>
+> ---
+> version 5:
+>   - Use of_device_get_match_data()
+>   - Add internal ops inside the driver
+> 
+>   drivers/iommu/rockchip-iommu.c | 69 ++++++++++++++++++++++++----------
+>   1 file changed, 50 insertions(+), 19 deletions(-)
+> 
+> diff --git a/drivers/iommu/rockchip-iommu.c b/drivers/iommu/rockchip-iommu.c
+> index 7a2932772fdf..e7b9bcf174b1 100644
+> --- a/drivers/iommu/rockchip-iommu.c
+> +++ b/drivers/iommu/rockchip-iommu.c
+> @@ -19,6 +19,7 @@
+>   #include <linux/iopoll.h>
+>   #include <linux/list.h>
+>   #include <linux/mm.h>
+> +#include <linux/module.h>
+
+This seems to be an unrelated and unnecessary change.
+
+>   #include <linux/init.h>
+>   #include <linux/of.h>
+>   #include <linux/of_iommu.h>
+> @@ -96,6 +97,14 @@ static const char * const rk_iommu_clocks[] = {
+>   	"aclk", "iface",
+>   };
+>   
+> +struct rk_iommu_ops {
+> +	phys_addr_t (*pt_address)(u32 dte);
+> +	u32 (*mk_dtentries)(dma_addr_t pt_dma);
+> +	u32 (*mk_ptentries)(phys_addr_t page, int prot);
+> +	phys_addr_t (*dte_addr_phys)(phys_addr_t addr);
+> +	u32 pt_address_mask;
+> +};
+> +
+>   struct rk_iommu {
+>   	struct device *dev;
+>   	void __iomem **bases;
+> @@ -116,6 +125,7 @@ struct rk_iommudata {
+>   };
+>   
+>   static struct device *dma_dev;
+> +static const struct rk_iommu_ops *rk_ops;
+>   
+>   static inline void rk_table_flush(struct rk_iommu_domain *dom, dma_addr_t dma,
+>   				  unsigned int count)
+> @@ -215,11 +225,6 @@ static inline u32 rk_mk_dte(dma_addr_t pt_dma)
+>   #define RK_PTE_PAGE_READABLE      BIT(1)
+>   #define RK_PTE_PAGE_VALID         BIT(0)
+>   
+> -static inline phys_addr_t rk_pte_page_address(u32 pte)
+> -{
+> -	return (phys_addr_t)pte & RK_PTE_PAGE_ADDRESS_MASK;
+> -}
+> -
+>   static inline bool rk_pte_is_page_valid(u32 pte)
+>   {
+>   	return pte & RK_PTE_PAGE_VALID;
+> @@ -451,7 +456,7 @@ static int rk_iommu_force_reset(struct rk_iommu *iommu)
+>   		rk_iommu_write(iommu->bases[i], RK_MMU_DTE_ADDR, DTE_ADDR_DUMMY);
+>   
+>   		dte_addr = rk_iommu_read(iommu->bases[i], RK_MMU_DTE_ADDR);
+> -		if (dte_addr != (DTE_ADDR_DUMMY & RK_DTE_PT_ADDRESS_MASK)) {
+> +		if (dte_addr != (DTE_ADDR_DUMMY & rk_ops->pt_address_mask)) {
+
+Nit: might it make more sense to do something like:
+
+		dte_addr = rk_ops->pt_address(... DTE_ADDR_DUMMY);
+		rk_iommu_write(... dte_addr)
+		if (rk_iommu_read(...) != dte_addr)
+
+so that you don't need to bother defining ->pt_address_mask for just 
+this one sanity-check?
+
+>   			dev_err(iommu->dev, "Error during raw reset. MMU_DTE_ADDR is not functioning\n");
+>   			return -EFAULT;
+>   		}
+> @@ -470,6 +475,11 @@ static int rk_iommu_force_reset(struct rk_iommu *iommu)
+>   	return 0;
+>   }
+>   
+> +static inline phys_addr_t rk_dte_addr_phys(phys_addr_t addr)
+
+The argument type here should be u32, since it's a DTE, not a physical 
+address...
+
+> +{
+> +	return addr;
+> +}
+> +
+>   static void log_iova(struct rk_iommu *iommu, int index, dma_addr_t iova)
+>   {
+>   	void __iomem *base = iommu->bases[index];
+> @@ -489,7 +499,7 @@ static void log_iova(struct rk_iommu *iommu, int index, dma_addr_t iova)
+>   	page_offset = rk_iova_page_offset(iova);
+>   
+>   	mmu_dte_addr = rk_iommu_read(base, RK_MMU_DTE_ADDR);
+> -	mmu_dte_addr_phys = (phys_addr_t)mmu_dte_addr;
+> +	mmu_dte_addr_phys = rk_ops->dte_addr_phys((phys_addr_t)mmu_dte_addr);
+
+...and the cast here should not be here, since it *is* the conversion 
+that the called function is supposed to be performing.
+
+>   	dte_addr_phys = mmu_dte_addr_phys + (4 * dte_index);
+>   	dte_addr = phys_to_virt(dte_addr_phys);
+> @@ -498,14 +508,14 @@ static void log_iova(struct rk_iommu *iommu, int index, dma_addr_t iova)
+>   	if (!rk_dte_is_pt_valid(dte))
+>   		goto print_it;
+>   
+> -	pte_addr_phys = rk_dte_pt_address(dte) + (pte_index * 4);
+> +	pte_addr_phys = rk_ops->pt_address(dte) + (pte_index * 4);
+>   	pte_addr = phys_to_virt(pte_addr_phys);
+>   	pte = *pte_addr;
+>   
+>   	if (!rk_pte_is_page_valid(pte))
+>   		goto print_it;
+>   
+> -	page_addr_phys = rk_pte_page_address(pte) + page_offset;
+> +	page_addr_phys = rk_ops->pt_address(pte) + page_offset;
+>   	page_flags = pte & RK_PTE_PAGE_FLAGS_MASK;
+>   
+>   print_it:
+> @@ -601,13 +611,13 @@ static phys_addr_t rk_iommu_iova_to_phys(struct iommu_domain *domain,
+>   	if (!rk_dte_is_pt_valid(dte))
+>   		goto out;
+>   
+> -	pt_phys = rk_dte_pt_address(dte);
+> +	pt_phys = rk_ops->pt_address(dte);
+>   	page_table = (u32 *)phys_to_virt(pt_phys);
+>   	pte = page_table[rk_iova_pte_index(iova)];
+>   	if (!rk_pte_is_page_valid(pte))
+>   		goto out;
+>   
+> -	phys = rk_pte_page_address(pte) + rk_iova_page_offset(iova);
+> +	phys = rk_ops->pt_address(pte) + rk_iova_page_offset(iova);
+>   out:
+>   	spin_unlock_irqrestore(&rk_domain->dt_lock, flags);
+>   
+> @@ -679,14 +689,14 @@ static u32 *rk_dte_get_page_table(struct rk_iommu_domain *rk_domain,
+>   		return ERR_PTR(-ENOMEM);
+>   	}
+>   
+> -	dte = rk_mk_dte(pt_dma);
+> +	dte = rk_ops->mk_dtentries(pt_dma);
+>   	*dte_addr = dte;
+>   
+>   	rk_table_flush(rk_domain, pt_dma, NUM_PT_ENTRIES);
+>   	rk_table_flush(rk_domain,
+>   		       rk_domain->dt_dma + dte_index * sizeof(u32), 1);
+>   done:
+> -	pt_phys = rk_dte_pt_address(dte);
+> +	pt_phys = rk_ops->pt_address(dte);
+>   	return (u32 *)phys_to_virt(pt_phys);
+>   }
+>   
+> @@ -728,7 +738,7 @@ static int rk_iommu_map_iova(struct rk_iommu_domain *rk_domain, u32 *pte_addr,
+>   		if (rk_pte_is_page_valid(pte))
+>   			goto unwind;
+>   
+> -		pte_addr[pte_count] = rk_mk_pte(paddr, prot);
+> +		pte_addr[pte_count] = rk_ops->mk_ptentries(paddr, prot);
+>   
+>   		paddr += SPAGE_SIZE;
+>   	}
+> @@ -750,7 +760,7 @@ static int rk_iommu_map_iova(struct rk_iommu_domain *rk_domain, u32 *pte_addr,
+>   			    pte_count * SPAGE_SIZE);
+>   
+>   	iova += pte_count * SPAGE_SIZE;
+> -	page_phys = rk_pte_page_address(pte_addr[pte_count]);
+> +	page_phys = rk_ops->pt_address(pte_addr[pte_count]);
+>   	pr_err("iova: %pad already mapped to %pa cannot remap to phys: %pa prot: %#x\n",
+>   	       &iova, &page_phys, &paddr, prot);
+>   
+> @@ -785,7 +795,8 @@ static int rk_iommu_map(struct iommu_domain *domain, unsigned long _iova,
+>   	dte_index = rk_domain->dt[rk_iova_dte_index(iova)];
+>   	pte_index = rk_iova_pte_index(iova);
+>   	pte_addr = &page_table[pte_index];
+> -	pte_dma = rk_dte_pt_address(dte_index) + pte_index * sizeof(u32);
+> +
+> +	pte_dma = rk_ops->pt_address(dte_index) + pte_index * sizeof(u32);
+>   	ret = rk_iommu_map_iova(rk_domain, pte_addr, pte_dma, iova,
+>   				paddr, size, prot);
+>   
+> @@ -821,7 +832,7 @@ static size_t rk_iommu_unmap(struct iommu_domain *domain, unsigned long _iova,
+>   		return 0;
+>   	}
+>   
+> -	pt_phys = rk_dte_pt_address(dte);
+> +	pt_phys = rk_ops->pt_address(dte);
+>   	pte_addr = (u32 *)phys_to_virt(pt_phys) + rk_iova_pte_index(iova);
+>   	pte_dma = pt_phys + rk_iova_pte_index(iova) * sizeof(u32);
+>   	unmap_size = rk_iommu_unmap_iova(rk_domain, pte_addr, pte_dma, size);
+> @@ -1037,7 +1048,7 @@ static void rk_iommu_domain_free(struct iommu_domain *domain)
+>   	for (i = 0; i < NUM_DT_ENTRIES; i++) {
+>   		u32 dte = rk_domain->dt[i];
+>   		if (rk_dte_is_pt_valid(dte)) {
+> -			phys_addr_t pt_phys = rk_dte_pt_address(dte);
+> +			phys_addr_t pt_phys = rk_ops->pt_address(dte);
+>   			u32 *page_table = phys_to_virt(pt_phys);
+>   			dma_unmap_single(dma_dev, pt_phys,
+>   					 SPAGE_SIZE, DMA_TO_DEVICE);
+> @@ -1138,6 +1149,15 @@ static int rk_iommu_probe(struct platform_device *pdev)
+>   	iommu->dev = dev;
+>   	iommu->num_mmu = 0;
+>   
+> +	if (!rk_ops)
+> +		rk_ops = of_device_get_match_data(dev);
+> +
+> +	/*
+> +	 * That should not happen unless different versions of the
+> +	 * hardware block are embedded the same SoC
+> +	 */
+> +	WARN_ON(rk_ops != of_device_get_match_data(dev));
+
+Nit: calling of_device_get_match_data() twice seems rather untidy - how 
+about something like:
+
+	ops = of_device_get_match_data(dev);
+	if (!rk_ops)
+		rk_ops = ops;
+	else if (WARN_ON(rk_ops != ops))
+		return -EINVAL;
+
+Either way I think it would be good to treat unexpected inconsistentcy 
+as an actual error, rather than second-guessing the DT and carrying on 
+under the assumption the device is something other than it claimed to be.
+
+> +
+>   	iommu->bases = devm_kcalloc(dev, num_res, sizeof(*iommu->bases),
+>   				    GFP_KERNEL);
+>   	if (!iommu->bases)
+> @@ -1277,10 +1297,21 @@ static const struct dev_pm_ops rk_iommu_pm_ops = {
+>   				pm_runtime_force_resume)
+>   };
+>   
+> +static struct rk_iommu_ops iommu_data_ops_v1 = {
+> +	.pt_address = &rk_dte_pt_address,
+> +	.mk_dtentries = &rk_mk_dte,
+> +	.mk_ptentries = &rk_mk_pte,
+> +	.dte_addr_phys = &rk_dte_addr_phys,
+> +	.pt_address_mask = RK_DTE_PT_ADDRESS_MASK,
+> +};
+> +
+>   static const struct of_device_id rk_iommu_dt_ids[] = {
+> -	{ .compatible = "rockchip,iommu" },
+> +	{	.compatible = "rockchip,iommu",
+> +		.data = &iommu_data_ops_v1,
+> +	},
+>   	{ /* sentinel */ }
+>   };
+> +MODULE_DEVICE_TABLE(of, rk_iommu_dt_ids);
+
+As before, unrelated and unnecessary since this driver is still bool in 
+the Kconfig. If you do want to support modular builds you'll also need 
+to ensure rk_iommu_ops.owner is set, but do it all as a separate patch 
+please.
+
+Thanks,
+Robin.
+
+>   
+>   static struct platform_driver rk_iommu_driver = {
+>   	.probe = rk_iommu_probe,
+> 
+_______________________________________________
+iommu mailing list
+iommu@lists.linux-foundation.org
+https://lists.linuxfoundation.org/mailman/listinfo/iommu
