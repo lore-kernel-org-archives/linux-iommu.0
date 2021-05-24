@@ -7,62 +7,62 @@ X-Spam-Status: No, score=-16.8 required=3.0 tests=BAYES_00,
 	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,USER_AGENT_GIT
 	autolearn=unavailable autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 69D77C04FF3
-	for <iommu@archiver.kernel.org>; Mon, 24 May 2021 11:04:27 +0000 (UTC)
-Received: from smtp2.osuosl.org (smtp2.osuosl.org [140.211.166.133])
+	by smtp.lore.kernel.org (Postfix) with ESMTP id DFD4EC04FF3
+	for <iommu@archiver.kernel.org>; Mon, 24 May 2021 11:04:39 +0000 (UTC)
+Received: from smtp3.osuosl.org (smtp3.osuosl.org [140.211.166.136])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 231406113B
-	for <iommu@archiver.kernel.org>; Mon, 24 May 2021 11:04:27 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 231406113B
+	by mail.kernel.org (Postfix) with ESMTPS id 9C0646113B
+	for <iommu@archiver.kernel.org>; Mon, 24 May 2021 11:04:39 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 9C0646113B
 Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=huawei.com
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by smtp2.osuosl.org (Postfix) with ESMTP id E390740296;
-	Mon, 24 May 2021 11:04:26 +0000 (UTC)
-X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from smtp2.osuosl.org ([127.0.0.1])
-	by localhost (smtp2.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id RkXD93EeRIUY; Mon, 24 May 2021 11:04:25 +0000 (UTC)
-Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by smtp2.osuosl.org (Postfix) with ESMTP id 62A48401EC;
-	Mon, 24 May 2021 11:04:25 +0000 (UTC)
-Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 48BF6C000E;
-	Mon, 24 May 2021 11:04:25 +0000 (UTC)
-Received: from smtp3.osuosl.org (smtp3.osuosl.org [140.211.166.136])
- by lists.linuxfoundation.org (Postfix) with ESMTP id B7B20C0001
- for <iommu@lists.linux-foundation.org>; Mon, 24 May 2021 11:04:23 +0000 (UTC)
-Received: from localhost (localhost [127.0.0.1])
- by smtp3.osuosl.org (Postfix) with ESMTP id 9936360626
- for <iommu@lists.linux-foundation.org>; Mon, 24 May 2021 11:04:23 +0000 (UTC)
+	by smtp3.osuosl.org (Postfix) with ESMTP id 6D8DD6070A;
+	Mon, 24 May 2021 11:04:39 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
 Received: from smtp3.osuosl.org ([127.0.0.1])
- by localhost (smtp3.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id 4Ox3FTCLH6FP for <iommu@lists.linux-foundation.org>;
- Mon, 24 May 2021 11:04:21 +0000 (UTC)
+	by localhost (smtp3.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+	with ESMTP id pnz16EQG7qsl; Mon, 24 May 2021 11:04:34 +0000 (UTC)
+Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
+	by smtp3.osuosl.org (Postfix) with ESMTP id A2B5B60626;
+	Mon, 24 May 2021 11:04:33 +0000 (UTC)
+Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 84481C000E;
+	Mon, 24 May 2021 11:04:33 +0000 (UTC)
+Received: from smtp4.osuosl.org (smtp4.osuosl.org [140.211.166.137])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id CEF63C0001
+ for <iommu@lists.linux-foundation.org>; Mon, 24 May 2021 11:04:31 +0000 (UTC)
+Received: from localhost (localhost [127.0.0.1])
+ by smtp4.osuosl.org (Postfix) with ESMTP id BE5F44027B
+ for <iommu@lists.linux-foundation.org>; Mon, 24 May 2021 11:04:31 +0000 (UTC)
+X-Virus-Scanned: amavisd-new at osuosl.org
+Received: from smtp4.osuosl.org ([127.0.0.1])
+ by localhost (smtp4.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+ with ESMTP id q_x2K8WWVN_n for <iommu@lists.linux-foundation.org>;
+ Mon, 24 May 2021 11:04:31 +0000 (UTC)
 X-Greylist: domain auto-whitelisted by SQLgrey-1.8.0
-Received: from szxga06-in.huawei.com (szxga06-in.huawei.com [45.249.212.32])
- by smtp3.osuosl.org (Postfix) with ESMTPS id 4BF636070A
- for <iommu@lists.linux-foundation.org>; Mon, 24 May 2021 11:04:21 +0000 (UTC)
-Received: from dggems705-chm.china.huawei.com (unknown [172.30.72.58])
- by szxga06-in.huawei.com (SkyGuard) with ESMTP id 4FpZ6H2Ft2zmZw3;
- Mon, 24 May 2021 19:01:59 +0800 (CST)
+Received: from szxga05-in.huawei.com (szxga05-in.huawei.com [45.249.212.191])
+ by smtp4.osuosl.org (Postfix) with ESMTPS id B265040249
+ for <iommu@lists.linux-foundation.org>; Mon, 24 May 2021 11:04:30 +0000 (UTC)
+Received: from dggems706-chm.china.huawei.com (unknown [172.30.72.60])
+ by szxga05-in.huawei.com (SkyGuard) with ESMTP id 4FpZ514N5BzNyyy;
+ Mon, 24 May 2021 19:00:53 +0800 (CST)
 Received: from lhreml710-chm.china.huawei.com (10.201.108.61) by
- dggems705-chm.china.huawei.com (10.3.19.182) with Microsoft SMTP Server
+ dggems706-chm.china.huawei.com (10.3.19.183) with Microsoft SMTP Server
  (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2176.2; Mon, 24 May 2021 19:04:18 +0800
+ 15.1.2176.2; Mon, 24 May 2021 19:04:28 +0800
 Received: from A2006125610.china.huawei.com (10.47.80.77) by
  lhreml710-chm.china.huawei.com (10.201.108.61) with Microsoft SMTP Server
  (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2176.2; Mon, 24 May 2021 12:04:08 +0100
+ 15.1.2176.2; Mon, 24 May 2021 12:04:18 +0100
 From: Shameer Kolothum <shameerali.kolothum.thodi@huawei.com>
 To: <linux-arm-kernel@lists.infradead.org>, <linux-acpi@vger.kernel.org>,
  <iommu@lists.linux-foundation.org>
-Subject: [PATCH v5 7/8] iommu/arm-smmu: Get associated RMR info and install
- bypass SMR
-Date: Mon, 24 May 2021 12:02:21 +0100
-Message-ID: <20210524110222.2212-8-shameerali.kolothum.thodi@huawei.com>
+Subject: [PATCH v5 8/8] iommu/dma: Reserve any RMR regions associated with a
+ dev
+Date: Mon, 24 May 2021 12:02:22 +0100
+Message-ID: <20210524110222.2212-9-shameerali.kolothum.thodi@huawei.com>
 X-Mailer: git-send-email 2.12.0.windows.1
 In-Reply-To: <20210524110222.2212-1-shameerali.kolothum.thodi@huawei.com>
 References: <20210524110222.2212-1-shameerali.kolothum.thodi@huawei.com>
@@ -91,102 +91,91 @@ Content-Transfer-Encoding: 7bit
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-From: Jon Nettleton <jon@solid-run.com>
+Get ACPI IORT RMR regions associated with a dev reserved
+so that there is a unity mapping for them in SMMU.
 
-Check if there is any RMR info associated with the devices behind
-the SMMU and if any, install bypass SMRs for them. This is to
-keep any ongoing traffic associated with these devices alive
-when we enable/reset SMMU during probe().
-
-Signed-off-by: Jon Nettleton <jon@solid-run.com>
-Signed-off-by: Steven Price <steven.price@arm.com>
 Signed-off-by: Shameer Kolothum <shameerali.kolothum.thodi@huawei.com>
 ---
- drivers/iommu/arm/arm-smmu/arm-smmu.c | 65 +++++++++++++++++++++++++++
- 1 file changed, 65 insertions(+)
+ drivers/iommu/dma-iommu.c | 56 +++++++++++++++++++++++++++++++++++----
+ 1 file changed, 51 insertions(+), 5 deletions(-)
 
-diff --git a/drivers/iommu/arm/arm-smmu/arm-smmu.c b/drivers/iommu/arm/arm-smmu/arm-smmu.c
-index 6f72c4d208ca..56db3d3238fc 100644
---- a/drivers/iommu/arm/arm-smmu/arm-smmu.c
-+++ b/drivers/iommu/arm/arm-smmu/arm-smmu.c
-@@ -2042,6 +2042,67 @@ err_reset_platform_ops: __maybe_unused;
- 	return err;
+diff --git a/drivers/iommu/dma-iommu.c b/drivers/iommu/dma-iommu.c
+index f893d460cfa4..c68093f48816 100644
+--- a/drivers/iommu/dma-iommu.c
++++ b/drivers/iommu/dma-iommu.c
+@@ -207,22 +207,68 @@ void iommu_dma_put_rmrs(struct fwnode_handle *iommu_fwnode,
  }
+ EXPORT_SYMBOL(iommu_dma_put_rmrs);
  
-+static void arm_smmu_rmr_install_bypass_smr(struct arm_smmu_device *smmu)
++static bool iommu_dma_dev_has_rmr(struct iommu_fwspec *fwspec,
++				  struct iommu_resv_region *e)
 +{
-+	struct list_head rmr_list;
-+	struct iommu_resv_region *e;
-+	int i, cnt = 0;
-+	u32 smr;
-+	u32 reg;
++	int i;
 +
-+	INIT_LIST_HEAD(&rmr_list);
-+	if (iommu_dma_get_rmrs(dev_fwnode(smmu->dev), &rmr_list))
-+		return;
-+
-+	reg = arm_smmu_gr0_read(smmu, ARM_SMMU_GR0_sCR0);
-+
-+	if ((reg & ARM_SMMU_sCR0_USFCFG) && !(reg & ARM_SMMU_sCR0_CLIENTPD)) {
-+		/*
-+		 * SMMU is already enabled and disallowing bypass, so preserve
-+		 * the existing SMRs
-+		 */
-+		for (i = 0; i < smmu->num_mapping_groups; i++) {
-+			smr = arm_smmu_gr0_read(smmu, ARM_SMMU_GR0_SMR(i));
-+			if (!FIELD_GET(ARM_SMMU_SMR_VALID, smr))
-+				continue;
-+			smmu->smrs[i].id = FIELD_GET(ARM_SMMU_SMR_ID, smr);
-+			smmu->smrs[i].mask = FIELD_GET(ARM_SMMU_SMR_MASK, smr);
-+			smmu->smrs[i].valid = true;
-+		}
++	for (i = 0; i < fwspec->num_ids; i++) {
++		if (e->fw_data.rmr.sid == fwspec->ids[i])
++			return true;
 +	}
 +
-+	list_for_each_entry(e, &rmr_list, list) {
-+		u32 sid = e->fw_data.rmr.sid;
-+
-+		i = arm_smmu_find_sme(smmu, sid, ~0);
-+		if (i < 0)
-+			continue;
-+		if (smmu->s2crs[i].count == 0) {
-+			smmu->smrs[i].id = sid;
-+			smmu->smrs[i].mask = ~0;
-+			smmu->smrs[i].valid = true;
-+		}
-+		smmu->s2crs[i].count++;
-+		smmu->s2crs[i].type = S2CR_TYPE_BYPASS;
-+		smmu->s2crs[i].privcfg = S2CR_PRIVCFG_DEFAULT;
-+		smmu->s2crs[i].cbndx = 0xff;
-+
-+		cnt++;
-+	}
-+
-+	if ((reg & ARM_SMMU_sCR0_USFCFG) && !(reg & ARM_SMMU_sCR0_CLIENTPD)) {
-+		/* Remove the valid bit for unused SMRs */
-+		for (i = 0; i < smmu->num_mapping_groups; i++) {
-+			if (smmu->s2crs[i].count == 0)
-+				smmu->smrs[i].valid = false;
-+		}
-+	}
-+
-+	dev_notice(smmu->dev, "\tpreserved %d boot mapping%s\n", cnt,
-+		   cnt == 1 ? "" : "s");
-+	iommu_dma_put_rmrs(dev_fwnode(smmu->dev), &rmr_list);
++	return false;
 +}
 +
- static int arm_smmu_device_probe(struct platform_device *pdev)
++static void iommu_dma_get_rmr_resv_regions(struct device *dev,
++					   struct list_head *list)
++{
++	struct iommu_fwspec *fwspec = dev_iommu_fwspec_get(dev);
++	struct list_head rmr_list;
++	struct iommu_resv_region *rmr, *tmp;
++
++	INIT_LIST_HEAD(&rmr_list);
++	if (iommu_dma_get_rmrs(fwspec->iommu_fwnode, &rmr_list))
++		return;
++
++	if (dev_is_pci(dev)) {
++		struct pci_dev *pdev = to_pci_dev(dev);
++		struct pci_host_bridge *host = pci_find_host_bridge(pdev->bus);
++
++		if (!host->preserve_config)
++			return;
++	}
++
++	list_for_each_entry_safe(rmr, tmp, &rmr_list, list) {
++		if (!iommu_dma_dev_has_rmr(fwspec, rmr))
++			continue;
++
++		/* Remove from iommu RMR list and add to dev resv_regions */
++		list_del_init(&rmr->list);
++		list_add_tail(&rmr->list, list);
++	}
++
++	iommu_dma_put_rmrs(fwspec->iommu_fwnode, &rmr_list);
++}
++
+ /**
+  * iommu_dma_get_resv_regions - Reserved region driver helper
+  * @dev: Device from iommu_get_resv_regions()
+  * @list: Reserved region list from iommu_get_resv_regions()
+  *
+  * IOMMU drivers can use this to implement their .get_resv_regions callback
+- * for general non-IOMMU-specific reservations. Currently, this covers GICv3
+- * ITS region reservation on ACPI based ARM platforms that may require HW MSI
+- * reservation.
++ * for general non-IOMMU-specific reservations. Currently this covers,
++ *  -GICv3 ITS region reservation on ACPI based ARM platforms that may
++ *   require HW MSI reservation.
++ *  -Any ACPI IORT RMR memory range reservations (IORT spec rev E.b)
+  */
+ void iommu_dma_get_resv_regions(struct device *dev, struct list_head *list)
  {
- 	struct resource *res;
-@@ -2168,6 +2229,10 @@ static int arm_smmu_device_probe(struct platform_device *pdev)
- 	}
  
- 	platform_set_drvdata(pdev, smmu);
-+
-+	/* Check for RMRs and install bypass SMRs if any */
-+	arm_smmu_rmr_install_bypass_smr(smmu);
-+
- 	arm_smmu_device_reset(smmu);
- 	arm_smmu_test_smr_masks(smmu);
+-	if (!is_of_node(dev_iommu_fwspec_get(dev)->iommu_fwnode))
++	if (!is_of_node(dev_iommu_fwspec_get(dev)->iommu_fwnode)) {
+ 		iort_iommu_msi_get_resv_regions(dev, list);
+-
++		iommu_dma_get_rmr_resv_regions(dev, list);
++	}
+ }
+ EXPORT_SYMBOL(iommu_dma_get_resv_regions);
  
 -- 
 2.17.1
