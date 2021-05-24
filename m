@@ -8,86 +8,85 @@ X-Spam-Status: No, score=-12.0 required=3.0 tests=BAYES_00,DATE_IN_PAST_06_12,
 	INCLUDES_PATCH,MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,
 	USER_AGENT_GIT autolearn=ham autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 91756C47086
-	for <iommu@archiver.kernel.org>; Tue, 25 May 2021 06:11:19 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C20B0C2B9F8
+	for <iommu@archiver.kernel.org>; Tue, 25 May 2021 06:11:20 +0000 (UTC)
 Received: from smtp1.osuosl.org (smtp1.osuosl.org [140.211.166.138])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 4711261419
-	for <iommu@archiver.kernel.org>; Tue, 25 May 2021 06:11:19 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 4711261419
+	by mail.kernel.org (Postfix) with ESMTPS id 860FA61417
+	for <iommu@archiver.kernel.org>; Tue, 25 May 2021 06:11:20 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 860FA61417
 Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=gmail.com
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by smtp1.osuosl.org (Postfix) with ESMTP id 2499B82CF9;
-	Tue, 25 May 2021 06:11:19 +0000 (UTC)
+	by smtp1.osuosl.org (Postfix) with ESMTP id 66B2C83BF5;
+	Tue, 25 May 2021 06:11:20 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
 Received: from smtp1.osuosl.org ([127.0.0.1])
 	by localhost (smtp1.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id 5_e7dFyrHyQ4; Tue, 25 May 2021 06:11:18 +0000 (UTC)
+	with ESMTP id V3VNalmZTPvK; Tue, 25 May 2021 06:11:19 +0000 (UTC)
 Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by smtp1.osuosl.org (Postfix) with ESMTP id 22F6F83BF4;
-	Tue, 25 May 2021 06:11:18 +0000 (UTC)
+	by smtp1.osuosl.org (Postfix) with ESMTP id 5D2B183C27;
+	Tue, 25 May 2021 06:11:19 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id EBEBFC000D;
-	Tue, 25 May 2021 06:11:17 +0000 (UTC)
-Received: from smtp4.osuosl.org (smtp4.osuosl.org [IPv6:2605:bc80:3010::137])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 7A95AC0001
- for <iommu@lists.linux-foundation.org>; Tue, 25 May 2021 06:11:16 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 3D615C000D;
+	Tue, 25 May 2021 06:11:19 +0000 (UTC)
+Received: from smtp1.osuosl.org (smtp1.osuosl.org [IPv6:2605:bc80:3010::138])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 31073C0001
+ for <iommu@lists.linux-foundation.org>; Tue, 25 May 2021 06:11:18 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by smtp4.osuosl.org (Postfix) with ESMTP id 584DA403BF
- for <iommu@lists.linux-foundation.org>; Tue, 25 May 2021 06:11:16 +0000 (UTC)
+ by smtp1.osuosl.org (Postfix) with ESMTP id E5F2483BF5
+ for <iommu@lists.linux-foundation.org>; Tue, 25 May 2021 06:11:17 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Authentication-Results: smtp4.osuosl.org (amavisd-new);
- dkim=pass (2048-bit key) header.d=gmail.com
-Received: from smtp4.osuosl.org ([127.0.0.1])
- by localhost (smtp4.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id K_FgeYJLVJOl for <iommu@lists.linux-foundation.org>;
- Tue, 25 May 2021 06:11:15 +0000 (UTC)
+Received: from smtp1.osuosl.org ([127.0.0.1])
+ by localhost (smtp1.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+ with ESMTP id 4o2qKAH53aH3 for <iommu@lists.linux-foundation.org>;
+ Tue, 25 May 2021 06:11:17 +0000 (UTC)
 X-Greylist: whitelisted by SQLgrey-1.8.0
-Received: from mail-pf1-x42d.google.com (mail-pf1-x42d.google.com
- [IPv6:2607:f8b0:4864:20::42d])
- by smtp4.osuosl.org (Postfix) with ESMTPS id 9F393403A9
- for <iommu@lists.linux-foundation.org>; Tue, 25 May 2021 06:11:15 +0000 (UTC)
-Received: by mail-pf1-x42d.google.com with SMTP id p39so6426488pfw.8
- for <iommu@lists.linux-foundation.org>; Mon, 24 May 2021 23:11:15 -0700 (PDT)
+Received: from mail-pj1-x102d.google.com (mail-pj1-x102d.google.com
+ [IPv6:2607:f8b0:4864:20::102d])
+ by smtp1.osuosl.org (Postfix) with ESMTPS id 5676683BF4
+ for <iommu@lists.linux-foundation.org>; Tue, 25 May 2021 06:11:17 +0000 (UTC)
+Received: by mail-pj1-x102d.google.com with SMTP id
+ ep16-20020a17090ae650b029015d00f578a8so12542450pjb.2
+ for <iommu@lists.linux-foundation.org>; Mon, 24 May 2021 23:11:17 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=gmail.com; s=20161025;
  h=from:to:cc:subject:date:message-id:in-reply-to:references
  :mime-version:content-transfer-encoding;
- bh=ps8y9GbhEBsLGzJr1aFWBUm18dOXtTvNE0fP/wilCNA=;
- b=J6FREe56XLQaskKPKpIZY8o/6rKQlqbWXWrWOfgs/0PcIBeJl/RrtbGyhl1knOo5j7
- 3pPDCa6SHqmCtTegO+vl6A8NaRyI74dSAM3qNVn06MPqtP9o6UEW4Bov7ttLqs3w5NwT
- zbgKCQQwE5vZaQBL73afqhlGWftYxCEuscg0htIrTCAP8lXFtpzvaOww/VBzCAu6b5ko
- eIo5mL0oVXbIh0F7+tdmiWPXP7iLseDh73Q7/5GCoIjwzjiL8dEMyzY2Mm/zYgpg5qTw
- iI3GWdrGSYT5FgXgBZk5sKxcGoAc8EGQOWzc0ZDM7DFTg6TS6naiBR/7AFNat6MrOKla
- SQ6g==
+ bh=sNLrC3xn/EJ4tCCyd6W1ssXumNURL3TkwWzu/8GDQlU=;
+ b=npyEvkdaNArfqRQuIDC+XsB2irFyKhScKGWZpjaW6UXNLHFKvndA7eFiCOzKu5bg7a
+ ZRhvV0LfrvhXZacK71iG8ZxAei8Ncl6LxL8mMRHdTJIe4hVrOM/Ncef6x50hio/BI+jJ
+ cI3sHoIc6vcpe7d/pS6zgr9npJq5zGqPtzUPr4jJRmAdsLddu74Plp8h2jrBx1cNDhaT
+ hQIl5B1iGk5xwkETPqJHmcPsuJBTpbp3S+KN6zEnBC+Pf0omM3/mfV2NiUCQd2wQKwQQ
+ twNcJWyLbivQLkHeWB5DXf1T54xm0qK7GiRh8EkIO7eN6ozNIf3hTwlVjYbdcnvyBWiM
+ hkaQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
  d=1e100.net; s=20161025;
  h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
  :references:mime-version:content-transfer-encoding;
- bh=ps8y9GbhEBsLGzJr1aFWBUm18dOXtTvNE0fP/wilCNA=;
- b=kSh04TnmzFsm7vO6M4laM1aKpvRRpNxY1ZTCBKcMnqk4ts6npLmtV9IBj2kmw/H9Cl
- U/xAFyjrLGeXSqHtmqPhkj//d+GdUW0koxKcwjYPo33fa9SFwXTvog0Bpc1+bHF36Fbz
- lPwLRSwC4sOuahfvvWtpGGSDrPBk5NBAd18nreCyAoMu1yfiOO7gAQ/kXVzCaRjCyjDg
- 40psyWsPvzTTnASo8OsfNqm81BwNeBo1PkGTU3ONMy/z5KxIpXD3F4ld7RXxohyVrxcN
- 6CpQbjgJhGmSe/8EsInAEfhbpKS5jTEdATionUX5XVObmBukIZXIb8I/icxQy7voP8Rz
- dTCg==
-X-Gm-Message-State: AOAM533MYS46MYmMezBanTGm6ROwl9o1zTIyCYFbyTSXCD7hzjOB/bv0
- PIMrciN1wBcnP50cPs5924Q=
-X-Google-Smtp-Source: ABdhPJwmcRO1j0zX20F/VDoYPpFBrwgF6Aj3KuLNE0KTzIMXQkWwqWMAnAiOKWrCXg/i7eEibVFYhw==
-X-Received: by 2002:a63:9316:: with SMTP id b22mr17750398pge.70.1621923075049; 
- Mon, 24 May 2021 23:11:15 -0700 (PDT)
+ bh=sNLrC3xn/EJ4tCCyd6W1ssXumNURL3TkwWzu/8GDQlU=;
+ b=YVExWWm0Fd2WImBQLxJ1c2WxCyWPMylVD5QwXDt62EcLiuJk0TvH9Fp1SOEhPDgvnE
+ EK8d1Akjqcp9wI1C4ugp1b2a5UOa+UabT99n1C4Xlqtu3U5q0yPSKUy7O76lW5Ns5qE7
+ 3txaUvE57ZfvHoBLTiEroi4UDVYQzMipH/MnSVjIn8a9S6/pA30HDd9WUadj1DdTHIVh
+ INtr1cIbJ8vqOVDDpVUkbD8gDpW0JrcwzMtFpQnyZTiqi4zUtB5w8O2p91RjbQaR6Psa
+ MY5dwuYcD/bjeQCN/BzrGOoGNbq57bjdjkcWJKZyrdH1FjVm9s4ekaGRmfs4jrdgiApK
+ +kDw==
+X-Gm-Message-State: AOAM530yjJU98ptDCn1r9u8pVuLdCEfMtINRQ5m07EpzVvgT1jtrIt7p
+ /3TGT8iP+HHHZ4q5k6pb/9o=
+X-Google-Smtp-Source: ABdhPJwMDM79giShnau33iKxsbIRK6Oy7cikXwREviGHIrkL1IHtzOyMc/Ndw2F+Nc0tijdPTEowMg==
+X-Received: by 2002:a17:90a:ac04:: with SMTP id
+ o4mr28262632pjq.114.1621923076653; 
+ Mon, 24 May 2021 23:11:16 -0700 (PDT)
 Received: from sc2-haas01-esx0118.eng.vmware.com ([66.170.99.1])
- by smtp.gmail.com with ESMTPSA id h3sm12452301pgp.10.2021.05.24.23.11.13
+ by smtp.gmail.com with ESMTPSA id h3sm12452301pgp.10.2021.05.24.23.11.15
  (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
- Mon, 24 May 2021 23:11:14 -0700 (PDT)
+ Mon, 24 May 2021 23:11:16 -0700 (PDT)
 From: Nadav Amit <nadav.amit@gmail.com>
 X-Google-Original-From: Nadav Amit
 To: Joerg Roedel <joro@8bytes.org>
-Subject: [PATCH v2 1/4] iommu/amd: Fix wrong parentheses on page-specific
- invalidations
-Date: Mon, 24 May 2021 15:41:56 -0700
-Message-Id: <20210524224159.32807-2-namit@vmware.com>
+Subject: [PATCH v2 2/4] iommu/amd: Selective flush on unmap
+Date: Mon, 24 May 2021 15:41:57 -0700
+Message-Id: <20210524224159.32807-3-namit@vmware.com>
 X-Mailer: git-send-email 2.25.1
 In-Reply-To: <20210524224159.32807-1-namit@vmware.com>
 References: <20210524224159.32807-1-namit@vmware.com>
@@ -114,37 +113,63 @@ Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
 From: Nadav Amit <namit@vmware.com>
 
-The logic to determine the mask of page-specific invalidations was
-tested in userspace. As the code was copied into the kernel, the
-parentheses were mistakenly set in the wrong place, resulting in the
-wrong mask.
+Recent patch attempted to enable selective page flushes on AMD IOMMU but
+neglected to adapt amd_iommu_iotlb_sync() to use the selective flushes.
 
-Fix it.
+Adapt amd_iommu_iotlb_sync() to use selective flushes and change
+amd_iommu_unmap() to collect the flushes. As a defensive measure, to
+avoid potential issues as those that the Intel IOMMU driver encountered
+recently, flush the page-walk caches by always setting the "pde"
+parameter. This can be removed later.
 
 Cc: Joerg Roedel <joro@8bytes.org>
 Cc: Will Deacon <will@kernel.org>
 Cc: Jiajun Cao <caojiajun@vmware.com>
 Cc: iommu@lists.linux-foundation.org
 Cc: linux-kernel@vger.kernel.org
-Fixes: 268aa4548277 ("iommu/amd: Page-specific invalidations for more than one page")
 Signed-off-by: Nadav Amit <namit@vmware.com>
 ---
- drivers/iommu/amd/iommu.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ drivers/iommu/amd/iommu.c | 15 +++++++++++++--
+ 1 file changed, 13 insertions(+), 2 deletions(-)
 
 diff --git a/drivers/iommu/amd/iommu.c b/drivers/iommu/amd/iommu.c
-index 80e8e1916dd1..6723cbcf4030 100644
+index 6723cbcf4030..b8cabbbeed71 100644
 --- a/drivers/iommu/amd/iommu.c
 +++ b/drivers/iommu/amd/iommu.c
-@@ -884,7 +884,7 @@ static inline u64 build_inv_address(u64 address, size_t size)
- 		 * The msb-bit must be clear on the address. Just set all the
- 		 * lower bits.
- 		 */
--		address |= 1ull << (msb_diff - 1);
-+		address |= (1ull << msb_diff) - 1;
- 	}
+@@ -2057,12 +2057,17 @@ static size_t amd_iommu_unmap(struct iommu_domain *dom, unsigned long iova,
+ {
+ 	struct protection_domain *domain = to_pdomain(dom);
+ 	struct io_pgtable_ops *ops = &domain->iop.iop.ops;
++	size_t r;
  
- 	/* Clear bits 11:0 */
+ 	if ((amd_iommu_pgtable == AMD_IOMMU_V1) &&
+ 	    (domain->iop.mode == PAGE_MODE_NONE))
+ 		return 0;
+ 
+-	return (ops->unmap) ? ops->unmap(ops, iova, page_size, gather) : 0;
++	r = (ops->unmap) ? ops->unmap(ops, iova, page_size, gather) : 0;
++
++	iommu_iotlb_gather_add_page(dom, gather, iova, page_size);
++
++	return r;
+ }
+ 
+ static phys_addr_t amd_iommu_iova_to_phys(struct iommu_domain *dom,
+@@ -2165,7 +2170,13 @@ static void amd_iommu_flush_iotlb_all(struct iommu_domain *domain)
+ static void amd_iommu_iotlb_sync(struct iommu_domain *domain,
+ 				 struct iommu_iotlb_gather *gather)
+ {
+-	amd_iommu_flush_iotlb_all(domain);
++	struct protection_domain *dom = to_pdomain(domain);
++	unsigned long flags;
++
++	spin_lock_irqsave(&dom->lock, flags);
++	__domain_flush_pages(dom, gather->start, gather->end - gather->start, 1);
++	amd_iommu_domain_flush_complete(dom);
++	spin_unlock_irqrestore(&dom->lock, flags);
+ }
+ 
+ static int amd_iommu_def_domain_type(struct device *dev)
 -- 
 2.25.1
 
