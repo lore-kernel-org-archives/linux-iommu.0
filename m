@@ -2,78 +2,87 @@ Return-Path: <SRS0=7UOM=KT=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-5.3 required=3.0 tests=BAYES_00,
-	HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,NICE_REPLY_A,SPF_HELO_NONE,
-	SPF_PASS,USER_AGENT_SANE_1 autolearn=no autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-8.6 required=3.0 tests=BAYES_00,DKIM_INVALID,
+	DKIM_SIGNED,HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,
+	SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id F1597C47082
-	for <iommu@archiver.kernel.org>; Mon, 24 May 2021 02:17:24 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id EDAF8C47082
+	for <iommu@archiver.kernel.org>; Mon, 24 May 2021 02:43:40 +0000 (UTC)
 Received: from smtp4.osuosl.org (smtp4.osuosl.org [140.211.166.137])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 71B3A61155
-	for <iommu@archiver.kernel.org>; Mon, 24 May 2021 02:17:24 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 71B3A61155
-Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=linux.intel.com
+	by mail.kernel.org (Postfix) with ESMTPS id 7126061026
+	for <iommu@archiver.kernel.org>; Mon, 24 May 2021 02:43:40 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 7126061026
+Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=codeaurora.org
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by smtp4.osuosl.org (Postfix) with ESMTP id 28B7440345;
-	Mon, 24 May 2021 02:17:24 +0000 (UTC)
+	by smtp4.osuosl.org (Postfix) with ESMTP id 2CAA740340;
+	Mon, 24 May 2021 02:43:40 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
 Received: from smtp4.osuosl.org ([127.0.0.1])
 	by localhost (smtp4.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id 1a8RrOinII4S; Mon, 24 May 2021 02:17:23 +0000 (UTC)
-Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [IPv6:2605:bc80:3010:104::8cd3:938])
-	by smtp4.osuosl.org (Postfix) with ESMTP id BED504031B;
-	Mon, 24 May 2021 02:17:22 +0000 (UTC)
+	with ESMTP id PYxL4543ezWN; Mon, 24 May 2021 02:43:39 +0000 (UTC)
+Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
+	by smtp4.osuosl.org (Postfix) with ESMTP id EE56B40336;
+	Mon, 24 May 2021 02:43:38 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 97C11C000E;
-	Mon, 24 May 2021 02:17:22 +0000 (UTC)
-Received: from smtp3.osuosl.org (smtp3.osuosl.org [IPv6:2605:bc80:3010::136])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 21C4EC0001
- for <iommu@lists.linux-foundation.org>; Mon, 24 May 2021 02:17:22 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id BB6A0C000E;
+	Mon, 24 May 2021 02:43:38 +0000 (UTC)
+Received: from smtp4.osuosl.org (smtp4.osuosl.org [140.211.166.137])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id AE024C0001
+ for <iommu@lists.linux-foundation.org>; Mon, 24 May 2021 02:43:37 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by smtp3.osuosl.org (Postfix) with ESMTP id 086A760679
- for <iommu@lists.linux-foundation.org>; Mon, 24 May 2021 02:17:22 +0000 (UTC)
+ by smtp4.osuosl.org (Postfix) with UTF8SMTP id 93ECB40333
+ for <iommu@lists.linux-foundation.org>; Mon, 24 May 2021 02:43:37 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from smtp3.osuosl.org ([127.0.0.1])
- by localhost (smtp3.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id wkQzFCmveO-9 for <iommu@lists.linux-foundation.org>;
- Mon, 24 May 2021 02:17:20 +0000 (UTC)
-X-Greylist: domain auto-whitelisted by SQLgrey-1.8.0
-Received: from mga04.intel.com (mga04.intel.com [192.55.52.120])
- by smtp3.osuosl.org (Postfix) with ESMTPS id 2009A60659
- for <iommu@lists.linux-foundation.org>; Mon, 24 May 2021 02:17:19 +0000 (UTC)
-IronPort-SDR: NcYu5iJHlic8FBbiIhCpLPWTV159x+8Rsikl694PSvHkZWKdPlE9Ym7sGA88HwKDvJZSlhUcZ6
- wN2Qm7ZvI9Gw==
-X-IronPort-AV: E=McAfee;i="6200,9189,9993"; a="199930970"
-X-IronPort-AV: E=Sophos;i="5.82,319,1613462400"; d="scan'208";a="199930970"
-Received: from fmsmga006.fm.intel.com ([10.253.24.20])
- by fmsmga104.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384;
- 23 May 2021 19:17:19 -0700
-IronPort-SDR: 7SMFPUlYsxODckSA8W+JRGKXO9N/ABdGUtRQD3O0Wc4Oxhqc7lfJOmlKS6L5fv/AwCN6tL7RvK
- GmrFqoa2dpwA==
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.82,319,1613462400"; d="scan'208";a="629456472"
-Received: from allen-box.sh.intel.com (HELO [10.239.159.105])
- ([10.239.159.105])
- by fmsmga006.fm.intel.com with ESMTP; 23 May 2021 19:17:16 -0700
-Subject: Re: [PATCH 01/11] iommu/vt-d: Add pasid private data helpers
-To: Jacob Pan <jacob.jun.pan@intel.com>
-References: <20210520031531.712333-1-baolu.lu@linux.intel.com>
- <20210520031531.712333-2-baolu.lu@linux.intel.com>
- <20210521142518.25087d34@jacob-builder>
-From: Lu Baolu <baolu.lu@linux.intel.com>
-Message-ID: <15bdf989-40c9-2b45-0fb6-273a43479789@linux.intel.com>
-Date: Mon, 24 May 2021 10:16:18 +0800
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
- Thunderbird/78.8.1
+Received: from smtp4.osuosl.org ([127.0.0.1])
+ by localhost (smtp4.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+ with UTF8SMTP id qUOloRE1UBen for <iommu@lists.linux-foundation.org>;
+ Mon, 24 May 2021 02:43:36 +0000 (UTC)
+X-Greylist: from auto-whitelisted by SQLgrey-1.8.0
+Received: from so254-9.mailgun.net (so254-9.mailgun.net [198.61.254.9])
+ by smtp4.osuosl.org (Postfix) with UTF8SMTPS id CB6E64034C
+ for <iommu@lists.linux-foundation.org>; Mon, 24 May 2021 02:43:34 +0000 (UTC)
+DKIM-Signature: a=rsa-sha256; v=1; c=relaxed/relaxed; d=mg.codeaurora.org;
+ q=dns/txt; 
+ s=smtp; t=1621824216; h=Message-ID: References: In-Reply-To: Subject:
+ Cc: To: From: Date: Content-Transfer-Encoding: Content-Type:
+ MIME-Version: Sender; bh=3HgzMQsvg1nEqkCRO70Zl63RQaxdpKr9j62Ak5Bqp0Y=;
+ b=q6eaQplIbWfhkWBfIl0xkpgHK9eqQS+s7JuzZ9oqnZ3BlSyXh9fEbrg23UXm6CMXO2Yis4iW
+ VaDV653CTbkLqw6k3npZuB8FPW7e1rgcsm6eSq9jNQPNOmxuAHDRqHFU5//K7f3IlD9WR1wl
+ YJ0aQbyMArVXSGaKzu5yVH0VcCQ=
+X-Mailgun-Sending-Ip: 198.61.254.9
+X-Mailgun-Sid: WyI3NDkwMCIsICJpb21tdUBsaXN0cy5saW51eC1mb3VuZGF0aW9uLm9yZyIsICJiZTllNGEiXQ==
+Received: from smtp.codeaurora.org
+ (ec2-35-166-182-171.us-west-2.compute.amazonaws.com [35.166.182.171]) by
+ smtp-out-n06.prod.us-east-1.postgun.com with SMTP id
+ 60ab12d360c53c8c9d34857f (version=TLS1.2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256); Mon, 24 May 2021 02:43:31
+ GMT
+Received: by smtp.codeaurora.org (Postfix, from userid 1001)
+ id 3D0CAC43146; Mon, 24 May 2021 02:43:30 +0000 (UTC)
+Received: from mail.codeaurora.org (localhost.localdomain [127.0.0.1])
+ (using TLSv1 with cipher ECDHE-RSA-AES256-SHA (256/256 bits))
+ (No client certificate requested)
+ (Authenticated sender: saiprakash.ranjan)
+ by smtp.codeaurora.org (Postfix) with ESMTPSA id 70F1DC433F1;
+ Mon, 24 May 2021 02:43:29 +0000 (UTC)
 MIME-Version: 1.0
-In-Reply-To: <20210521142518.25087d34@jacob-builder>
-Content-Language: en-US
-Cc: Jean-Philippe Brucker <jean-philippe@linaro.org>, kevin.tian@intel.com,
- ashok.raj@intel.com, linux-kernel@vger.kernel.org,
- iommu@lists.linux-foundation.org
+Date: Mon, 24 May 2021 08:13:29 +0530
+From: Sai Prakash Ranjan <saiprakash.ranjan@codeaurora.org>
+To: Will Deacon <will@kernel.org>, Robin Murphy <robin.murphy@arm.com>,
+ Joerg Roedel <joro@8bytes.org>
+Subject: Re: [PATCHv3 0/2] iommu/arm-smmu-qcom: Add SC7280 support
+In-Reply-To: <cover.1618898456.git.saiprakash.ranjan@codeaurora.org>
+References: <cover.1618898456.git.saiprakash.ranjan@codeaurora.org>
+Message-ID: <664abf04654d78b08b118d11c7c03d99@codeaurora.org>
+X-Sender: saiprakash.ranjan@codeaurora.org
+User-Agent: Roundcube Webmail/1.3.9
+Cc: linux-arm-msm@vger.kernel.org, linux-kernel@vger.kernel.org,
+ iommu@lists.linux-foundation.org, Akhil P Oommen <akhilpo@codeaurora.org>,
+ saiprakash.ranjan=codeaurora.org@codeaurora.org,
+ linux-arm-kernel@lists.infradead.org
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -91,56 +100,38 @@ Content-Type: text/plain; charset="us-ascii"; Format="flowed"
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-Hi Jacob,
+Hi Will,
 
-Thanks for reviewing my patch.
-
-On 5/22/21 5:25 AM, Jacob Pan wrote:
-> Hi BaoLu,
+On 2021-04-20 11:34, Sai Prakash Ranjan wrote:
+> Patch 1 adds the sc7280 smmu compatible.
+> Patch 2 moves the adreno smmu check before apss smmu to enable
+> adreno smmu specific implementation.
 > 
-> On Thu, 20 May 2021 11:15:21 +0800, Lu Baolu <baolu.lu@linux.intel.com>
-> wrote:
+> Note that dt-binding for sc7280 is already merged.
 > 
->> We are about to use iommu_sva_alloc/free_pasid() helpers in iommu core.
->> That means the pasid life cycle will be managed by iommu core. Use a
->> local array to save the per pasid private data instead of attaching it
->> the real pasid.
->>
-> I feel a little awkward to have a separate xarray for storing per IOASID
-> data. Seems duplicated.
-> Jason suggested in another thread that we can make ioasid_data public
-> and embeded in struct intel_svm, then we can get rid of the private data
-> pointer. ioasid_find will return the ioasid_data, then we can retrieve the
-> private data with container_of.
-
-The problem that this patch wants to solve is that the
-iommu_sva_alloc_pasid() will attach the mm pointer to the sva pasid.
-
-         pasid = ioasid_alloc(&iommu_sva_pasid, min, max, mm);
-
-Assuming that each sva pasid can have only a single private data
-pointer, the vendor iommu driver shouldn't set the private data again.
-
+> Changes in v3:
+>  * Collect acks and reviews
+>  * Rebase on top of for-joerg/arm-smmu/updates
 > 
-> roughly,
+> Changes in v2:
+>  * Add a comment to make sure this order is not changed in future 
+> (Jordan)
 > 
-> struct intel_svm {
-> 	...
-> 	struct ioasid_data;
-> };
+> Sai Prakash Ranjan (2):
+>   iommu/arm-smmu-qcom: Add SC7280 SMMU compatible
+>   iommu/arm-smmu-qcom: Move the adreno smmu specific impl earlier
 > 
-> struct ioasid_data {
-> 	ioasid_t id;
-> 	refcount_t refs;
-> 	struct mm_struct *mm;
-> };
-> 
-> This can be a separate patch/effort if it make sense to you.
+>  drivers/iommu/arm/arm-smmu/arm-smmu-qcom.c | 14 +++++++++++---
+>  1 file changed, 11 insertions(+), 3 deletions(-)
 
-Yes if we have a better solution.
+Gentle Ping!
 
-Best regards,
-baolu
+Thanks,
+Sai
+-- 
+QUALCOMM INDIA, on behalf of Qualcomm Innovation Center, Inc. is a 
+member
+of Code Aurora Forum, hosted by The Linux Foundation
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
