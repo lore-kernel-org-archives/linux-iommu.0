@@ -7,56 +7,54 @@ X-Spam-Status: No, score=-16.7 required=3.0 tests=BAYES_00,
 	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,UNPARSEABLE_RELAY,URIBL_BLOCKED,
 	USER_AGENT_GIT autolearn=unavailable autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 55ED9C2B9F8
-	for <iommu@archiver.kernel.org>; Tue, 25 May 2021 12:16:12 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B5E18C2B9F8
+	for <iommu@archiver.kernel.org>; Tue, 25 May 2021 12:39:07 +0000 (UTC)
 Received: from smtp2.osuosl.org (smtp2.osuosl.org [140.211.166.133])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 1C90C61420
-	for <iommu@archiver.kernel.org>; Tue, 25 May 2021 12:16:12 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 1C90C61420
+	by mail.kernel.org (Postfix) with ESMTPS id 627D36141B
+	for <iommu@archiver.kernel.org>; Tue, 25 May 2021 12:39:07 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 627D36141B
 Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=collabora.com
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by smtp2.osuosl.org (Postfix) with ESMTP id E50EF40139;
-	Tue, 25 May 2021 12:16:11 +0000 (UTC)
+	by smtp2.osuosl.org (Postfix) with ESMTP id 337B140226;
+	Tue, 25 May 2021 12:39:07 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
 Received: from smtp2.osuosl.org ([127.0.0.1])
 	by localhost (smtp2.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id T8jIbFngclKr; Tue, 25 May 2021 12:16:11 +0000 (UTC)
+	with ESMTP id 7_YXf1FZGFpu; Tue, 25 May 2021 12:39:06 +0000 (UTC)
 Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [IPv6:2605:bc80:3010:104::8cd3:938])
-	by smtp2.osuosl.org (Postfix) with ESMTP id C7FFA401D6;
-	Tue, 25 May 2021 12:16:10 +0000 (UTC)
+	by smtp2.osuosl.org (Postfix) with ESMTP id 22E74400C6;
+	Tue, 25 May 2021 12:39:06 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id DEAC2C0024;
-	Tue, 25 May 2021 12:16:09 +0000 (UTC)
-Received: from smtp3.osuosl.org (smtp3.osuosl.org [140.211.166.136])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 40169C0001
- for <iommu@lists.linux-foundation.org>; Tue, 25 May 2021 12:16:08 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id F19BDC000D;
+	Tue, 25 May 2021 12:39:05 +0000 (UTC)
+Received: from smtp4.osuosl.org (smtp4.osuosl.org [140.211.166.137])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 5632CC0001
+ for <iommu@lists.linux-foundation.org>; Tue, 25 May 2021 12:39:04 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by smtp3.osuosl.org (Postfix) with ESMTP id 8D6C96062E
- for <iommu@lists.linux-foundation.org>; Tue, 25 May 2021 12:16:07 +0000 (UTC)
+ by smtp4.osuosl.org (Postfix) with ESMTP id 4496B40264
+ for <iommu@lists.linux-foundation.org>; Tue, 25 May 2021 12:39:04 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from smtp3.osuosl.org ([127.0.0.1])
- by localhost (smtp3.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id vlIcqUbf7OkU for <iommu@lists.linux-foundation.org>;
- Tue, 25 May 2021 12:16:05 +0000 (UTC)
+Received: from smtp4.osuosl.org ([127.0.0.1])
+ by localhost (smtp4.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+ with ESMTP id LH0PgWvLUOPl for <iommu@lists.linux-foundation.org>;
+ Tue, 25 May 2021 12:39:03 +0000 (UTC)
 X-Greylist: domain auto-whitelisted by SQLgrey-1.8.0
 Received: from bhuna.collabora.co.uk (bhuna.collabora.co.uk [46.235.227.227])
- by smtp3.osuosl.org (Postfix) with ESMTPS id 0C339607F3
- for <iommu@lists.linux-foundation.org>; Tue, 25 May 2021 12:16:04 +0000 (UTC)
+ by smtp4.osuosl.org (Postfix) with ESMTPS id 4A44A4025E
+ for <iommu@lists.linux-foundation.org>; Tue, 25 May 2021 12:39:03 +0000 (UTC)
 Received: from [127.0.0.1] (localhost [127.0.0.1])
  (Authenticated sender: benjamin.gaignard)
- with ESMTPSA id 8632F1F422EA
+ with ESMTPSA id ED3081F4241D
 From: Benjamin Gaignard <benjamin.gaignard@collabora.com>
 To: joro@8bytes.org, will@kernel.org, robh+dt@kernel.org, heiko@sntech.de,
  xxm@rock-chips.com, robin.murphy@arm.com
 Subject: [PATCH v7 4/4] iommu: rockchip: Add support for iommu v2
-Date: Tue, 25 May 2021 14:15:51 +0200
-Message-Id: <20210525121551.606240-5-benjamin.gaignard@collabora.com>
+Date: Tue, 25 May 2021 14:38:52 +0200
+Message-Id: <20210525123853.658267-1-benjamin.gaignard@collabora.com>
 X-Mailer: git-send-email 2.25.1
-In-Reply-To: <20210525121551.606240-1-benjamin.gaignard@collabora.com>
-References: <20210525121551.606240-1-benjamin.gaignard@collabora.com>
 MIME-Version: 1.0
 Cc: devicetree@vger.kernel.org,
  Benjamin Gaignard <benjamin.gaignard@collabora.com>,
@@ -91,6 +89,7 @@ Reviewed-by: Heiko Stuebner <heiko@sntech.de>
 version 7:
  - Set dma_bit_mask field.
  - Add rk_dma_addr_dte_v2 function
+ - Rebased on v5.13-rc3
 
 version 5:
  - Use internal ops to support v2 hardware block
@@ -99,11 +98,11 @@ version 5:
    because I believe that is more readable like this.
  - Do not duplicate code.
 
- drivers/iommu/rockchip-iommu.c | 84 +++++++++++++++++++++++++++++++++-
- 1 file changed, 82 insertions(+), 2 deletions(-)
+ drivers/iommu/rockchip-iommu.c | 85 ++++++++++++++++++++++++++++++++++
+ 1 file changed, 85 insertions(+)
 
 diff --git a/drivers/iommu/rockchip-iommu.c b/drivers/iommu/rockchip-iommu.c
-index bd2cf7f08c71..edd05e488aa7 100644
+index bd2cf7f08c71..16dd2bf4a859 100644
 --- a/drivers/iommu/rockchip-iommu.c
 +++ b/drivers/iommu/rockchip-iommu.c
 @@ -189,6 +189,33 @@ static inline phys_addr_t rk_dte_pt_address(u32 dte)
@@ -186,11 +185,10 @@ index bd2cf7f08c71..edd05e488aa7 100644
  static u32 rk_mk_pte_invalid(u32 pte)
  {
  	return pte & ~RK_PTE_PAGE_VALID;
-@@ -480,9 +539,19 @@ static inline phys_addr_t rk_dte_addr_phys(u32 addr)
- 	return (phys_addr_t)addr;
+@@ -485,6 +544,21 @@ static inline u32 rk_dma_addr_dte(dma_addr_t dt_dma)
+ 	return dt_dma;
  }
  
--static inline u32 rk_dma_addr_dte(dma_addr_t dt_dma)
 +#define DT_HI_MASK GENMASK_ULL(39, 32)
 +#define DT_SHIFT   28
 +
@@ -201,14 +199,15 @@ index bd2cf7f08c71..edd05e488aa7 100644
 +}
 +
 +static inline u32 rk_dma_addr_dte_v2(dma_addr_t dt_dma)
- {
--	return dt_dma;
++{
 +	return (dt_dma & RK_DTE_PT_ADDRESS_MASK) |
 +	       ((dt_dma & DT_HI_MASK) >> DT_SHIFT);
- }
- 
++}
++
  static void log_iova(struct rk_iommu *iommu, int index, dma_addr_t iova)
-@@ -1316,11 +1385,22 @@ static struct rk_iommu_ops iommu_data_ops_v1 = {
+ {
+ 	void __iomem *base = iommu->bases[index];
+@@ -1316,11 +1390,22 @@ static struct rk_iommu_ops iommu_data_ops_v1 = {
  	.dma_bit_mask = DMA_BIT_MASK(32),
  };
  
