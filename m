@@ -2,177 +2,60 @@ Return-Path: <SRS0=nChL=KW=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-5.0 required=3.0 tests=BAYES_00,DKIM_INVALID,
-	DKIM_SIGNED,HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,
-	MSGID_FROM_MTA_HEADER,NICE_REPLY_A,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,
-	USER_AGENT_SANE_1 autolearn=no autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-18.7 required=3.0 tests=BAYES_00,
+	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,INCLUDES_PULL_REQUEST,
+	MAILING_LIST_MULTI,MENTIONS_GIT_HOSTING,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED
+	autolearn=ham autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8EC39C4707F
-	for <iommu@archiver.kernel.org>; Thu, 27 May 2021 16:32:16 +0000 (UTC)
-Received: from smtp4.osuosl.org (smtp4.osuosl.org [140.211.166.137])
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A4F8EC4707F
+	for <iommu@archiver.kernel.org>; Thu, 27 May 2021 17:57:35 +0000 (UTC)
+Received: from smtp1.osuosl.org (smtp1.osuosl.org [140.211.166.138])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 1A5CB613CA
-	for <iommu@archiver.kernel.org>; Thu, 27 May 2021 16:32:16 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 1A5CB613CA
-Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=amd.com
+	by mail.kernel.org (Postfix) with ESMTPS id C73B7613C9
+	for <iommu@archiver.kernel.org>; Thu, 27 May 2021 17:57:34 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org C73B7613C9
+Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=8bytes.org
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by smtp4.osuosl.org (Postfix) with ESMTP id C5F7E406A5;
-	Thu, 27 May 2021 16:32:15 +0000 (UTC)
+	by smtp1.osuosl.org (Postfix) with ESMTP id 934F783E1C;
+	Thu, 27 May 2021 17:57:34 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from smtp4.osuosl.org ([127.0.0.1])
-	by localhost (smtp4.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id 7t_oHD3nXgyF; Thu, 27 May 2021 16:32:14 +0000 (UTC)
-Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [IPv6:2605:bc80:3010:104::8cd3:938])
-	by smtp4.osuosl.org (Postfix) with ESMTP id 44F624021D;
-	Thu, 27 May 2021 16:32:14 +0000 (UTC)
+Received: from smtp1.osuosl.org ([127.0.0.1])
+	by localhost (smtp1.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+	with ESMTP id f1eOWWGVjjup; Thu, 27 May 2021 17:57:33 +0000 (UTC)
+Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
+	by smtp1.osuosl.org (Postfix) with ESMTP id 2705683A95;
+	Thu, 27 May 2021 17:57:33 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id C3EB1C000E;
-	Thu, 27 May 2021 16:32:13 +0000 (UTC)
-Received: from smtp3.osuosl.org (smtp3.osuosl.org [IPv6:2605:bc80:3010::136])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 2EC4EC0001
- for <iommu@lists.linux-foundation.org>; Thu, 27 May 2021 16:32:13 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id E112AC000D;
+	Thu, 27 May 2021 17:57:32 +0000 (UTC)
+Received: from smtp1.osuosl.org (smtp1.osuosl.org [IPv6:2605:bc80:3010::138])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 74B90C0001
+ for <iommu@lists.linux-foundation.org>; Thu, 27 May 2021 17:57:31 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by smtp3.osuosl.org (Postfix) with ESMTP id 0D6F460641
- for <iommu@lists.linux-foundation.org>; Thu, 27 May 2021 16:32:13 +0000 (UTC)
+ by smtp1.osuosl.org (Postfix) with ESMTP id 5B82183DAC
+ for <iommu@lists.linux-foundation.org>; Thu, 27 May 2021 17:57:31 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Authentication-Results: smtp3.osuosl.org (amavisd-new);
- dkim=pass (1024-bit key) header.d=amd.com
-Received: from smtp3.osuosl.org ([127.0.0.1])
- by localhost (smtp3.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id Z7Nq1_O9fF2j for <iommu@lists.linux-foundation.org>;
- Thu, 27 May 2021 16:32:11 +0000 (UTC)
-X-Greylist: whitelisted by SQLgrey-1.8.0
-Received: from NAM10-MW2-obe.outbound.protection.outlook.com
- (mail-mw2nam10on2044.outbound.protection.outlook.com [40.107.94.44])
- by smtp3.osuosl.org (Postfix) with ESMTPS id 465FB605DE
- for <iommu@lists.linux-foundation.org>; Thu, 27 May 2021 16:32:11 +0000 (UTC)
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=L0EXOuzHfeW8Iat9tH7IYa4viwaQRqAxRiTx6Pf5tPuTZBl6QWNpdRazjP/9ydPI0Pkw9hrvK6cBbTZPDjFFIU6g63P9eOsI3BPOcE90GkpneynOBtwqw+F2Jk7Q62LYhTq144ENp0lk7Nfd81gQXjEsdadtR6Qv+9/NTVS25yRC2vqPAXpIFP9aTIjJdfyPYz3f3PvBqQ4BWkAm93eSGIcLepZlkKpLA6BlTj7TYzuRd3cOrNcrG6cIWyZpv69hLR2TnEnD085EORKuHcd7EZSJwsFAXipoqnqxM/kdaN2An+I9U+LLyJO7a9nsXqLJqdziAHgbZ12kRdC+a+byLA==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com; 
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=Q45R70SZ4GNbGD0yl6IMD+eivKNAhgiOmhZWzOMDiKM=;
- b=b71QOtg/qgOOp3s4MYD1PZ4Q0gYjwloXnONbLFzLs5XFy+vmICGhm9dXZNEDKsRfSL8jjYPveExNaOfi92dXuYHAsmMAeWb83ShugjLHX//H7MZvdOr4MJFQ633VQbgEudYI8PElYsJpOjg9UI92SSx1W+08eEQN1ZDfuZihLzVgIfz/Vg/uX/Hyk8HIhZnXQ+v3u79eEw3k06YJ9mhXy/PuzX58pHMC8iUy6ppAPE9PCitxQiW3HHIPhIBgl6PlWEd3xmmiq1rdDs+3qfeFJpGdb2mC0g25lSdv1uWH0fIoJoiYzkuCaST0YWRJoOGk0fKhDurej+TrTjcUy66lhA==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=amd.com; dmarc=pass action=none header.from=amd.com; dkim=pass
- header.d=amd.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=amd.com; s=selector1; 
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=Q45R70SZ4GNbGD0yl6IMD+eivKNAhgiOmhZWzOMDiKM=;
- b=g/d9DN9EYyUlZgOsqqs0xcYYISoNY4012McHrOuqNSyIGphFMQCt3rbkv8VwaK5XWjqOd72J5TnTn2HRYIGCZfYh4XjjY4WheSNsveTzV+TfOSIMjL/E7UD9YRAqprBxnIBkGso/CDuxyF0/kXvuN5Ivac6y6J2FCUDG0kbHgZI=
-Authentication-Results: linux.intel.com; dkim=none (message not signed)
- header.d=none;linux.intel.com; dmarc=none action=none header.from=amd.com;
-Received: from DM5PR12MB1355.namprd12.prod.outlook.com (2603:10b6:3:6e::7) by
- DM5PR12MB2504.namprd12.prod.outlook.com (2603:10b6:4:b5::19) with
- Microsoft
- SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.20.4150.23; Thu, 27 May 2021 16:32:07 +0000
-Received: from DM5PR12MB1355.namprd12.prod.outlook.com
- ([fe80::b914:4704:ad6f:aba9]) by DM5PR12MB1355.namprd12.prod.outlook.com
- ([fe80::b914:4704:ad6f:aba9%12]) with mapi id 15.20.4173.022; Thu, 27 May
- 2021 16:32:07 +0000
-Subject: Re: [PATCH v7 01/15] swiotlb: Refactor swiotlb init functions
-From: Tom Lendacky <thomas.lendacky@amd.com>
-To: Christoph Hellwig <hch@lst.de>, Florian Fainelli <f.fainelli@gmail.com>
-References: <20210518064215.2856977-1-tientzu@chromium.org>
- <20210518064215.2856977-2-tientzu@chromium.org>
- <170a54f2-be20-ec29-1d7f-3388e5f928c6@gmail.com>
- <20210527130211.GA24344@lst.de>
- <bab261b4-f801-05af-8fd9-c440ed219591@amd.com>
-Message-ID: <e59d4799-a6ff-6d13-0fed-087fc3482587@amd.com>
-Date: Thu, 27 May 2021 11:32:01 -0500
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
- Thunderbird/78.8.1
-In-Reply-To: <bab261b4-f801-05af-8fd9-c440ed219591@amd.com>
-Content-Language: en-US
-X-Originating-IP: [67.79.209.213]
-X-ClientProxiedBy: SN7P220CA0025.NAMP220.PROD.OUTLOOK.COM
- (2603:10b6:806:123::30) To DM5PR12MB1355.namprd12.prod.outlook.com
- (2603:10b6:3:6e::7)
+Received: from smtp1.osuosl.org ([127.0.0.1])
+ by localhost (smtp1.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+ with ESMTP id 2q7fz87ydImG for <iommu@lists.linux-foundation.org>;
+ Thu, 27 May 2021 17:57:30 +0000 (UTC)
+X-Greylist: from auto-whitelisted by SQLgrey-1.8.0
+Received: from theia.8bytes.org (8bytes.org
+ [IPv6:2a01:238:4383:600:38bc:a715:4b6d:a889])
+ by smtp1.osuosl.org (Postfix) with ESMTPS id 44CF183A95
+ for <iommu@lists.linux-foundation.org>; Thu, 27 May 2021 17:57:30 +0000 (UTC)
+Received: by theia.8bytes.org (Postfix, from userid 1000)
+ id CE612247; Thu, 27 May 2021 19:57:26 +0200 (CEST)
+Date: Thu, 27 May 2021 19:57:25 +0200
+From: Joerg Roedel <joro@8bytes.org>
+To: Linus Torvalds <torvalds@linux-foundation.org>
+Subject: [git pull] IOMMU Fixes for Linux v5.13-rc3
+Message-ID: <YK/dheM2NZz6KOkb@8bytes.org>
 MIME-Version: 1.0
-X-MS-Exchange-MessageSentRepresentingType: 1
-Received: from office-linux.texastahm.com (67.79.209.213) by
- SN7P220CA0025.NAMP220.PROD.OUTLOOK.COM (2603:10b6:806:123::30) with Microsoft
- SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.20.4173.20 via Frontend Transport; Thu, 27 May 2021 16:32:03 +0000
-X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: ff9c356c-975c-4f82-7c16-08d9212cf790
-X-MS-TrafficTypeDiagnostic: DM5PR12MB2504:
-X-Microsoft-Antispam-PRVS: <DM5PR12MB250437DEE02CE4B6ED65D870EC239@DM5PR12MB2504.namprd12.prod.outlook.com>
-X-MS-Oob-TLC-OOBClassifiers: OLM:8882;
-X-MS-Exchange-SenderADCheck: 1
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: FcGVaNUqWOacS4qyh3m/JN7k7/837FC8duYo0XVAJJd5k+WqoYLcoTR+CTvv8QEbyCZD/Z99yKW0kAO/XRRI76AF8ViBY7bKdBH3JWMeXgSYWuMNv8muI7pDCgCBAxpmWG89Hq/oD84DLTSFpgo7HqLuM/2mDEQUfE6/aGa1Q/mXdIALomEgUe0Xgf0ngsouf2bB533WVY1G2z89gYG2RtOfOu1QxzLU49yHRZJDEtwlCcLbmgYoLQdbPBISX+FoYH6zpn/l20UKvHeIxwim2wqN8iWydRQNAyFZc4jSwJGbg0cwBZY1maWQN0Po81sVGfMdNxrGtRXK+T/DGKXUvvZ0Gv3fRxThTXv3I5LeRx5wIIQ2/w/WfQwsIViUT3x/+A3k9ookLYdS8i+qbGEMpvTmHRo9Xa3cjHUXCjY4lS8YypbGSN2F5vKIo8MiexdPG1Q7ppDLRW1WZeGiRYY1EN1iE6lmwlICHca8PKDTmzcSc5LOpVaJx4MZ+EJdDGNLqsp6Kl/qrCErsXsy3WgG8QiaDkspb8J1sguRu/u/MAqKN1VLkgztc/Ar3wDwSPKMuImq3UJILi3oL2YUKwaoi4e+DvhFDTXmBtInykztacIVUheNAJl44l/pXBLmcpbwcCiQU9wj6iOMaWKkenoslOi4QhEkeWzwPrSiIB3ABRovYX+gkMWut/H8L4c2FRYl
-X-Forefront-Antispam-Report: CIP:255.255.255.255; CTRY:; LANG:en; SCL:1; SRV:;
- IPV:NLI; SFV:NSPM; H:DM5PR12MB1355.namprd12.prod.outlook.com; PTR:; CAT:NONE;
- SFS:(4636009)(396003)(366004)(136003)(346002)(376002)(39860400002)(86362001)(54906003)(31696002)(110136005)(66946007)(4326008)(5660300002)(7416002)(6512007)(45080400002)(478600001)(31686004)(66556008)(2906002)(7366002)(316002)(956004)(2616005)(66476007)(8936002)(7406005)(36756003)(8676002)(6486002)(83380400001)(186003)(6506007)(38100700002)(26005)(53546011)(16526019)(43740500002)(45980500001);
- DIR:OUT; SFP:1101; 
-X-MS-Exchange-AntiSpam-MessageData: =?utf-8?B?TUpkeGdMc1lLRmhsNm55LzRZYkp1WlhZQjluUXU0SENsK21aRHg1Y3NaQm1q?=
- =?utf-8?B?ZXRkb0NrUXNRM2FWL3l3UFFwNno2TXJRcFZ2M2ZGazNnS0RjaEpvS29ycnZQ?=
- =?utf-8?B?cUFtMUQvQ3RZbnJQdEtmdXg5SkZpL2hJdmloV3V0UXNrdFJUQ3F4dTh4KzQ0?=
- =?utf-8?B?QnU0LzVzL1NiSzcxZjNWbHllM2hNdHlMblRkMUUwdkxOT01JS2ZiZWMwMXZ6?=
- =?utf-8?B?OEwwWmNtd01EYjQ4SnZNKzNtcWZnTDFiRTYzam5yYS9Jei9FcGl0WkdCZzQ4?=
- =?utf-8?B?Ulg3QjNnb2V3V2JBNzVya2tVWDg1NFEvZ0JEdC8vajVvQ0wxZ2hrb2V5MHRF?=
- =?utf-8?B?K3RWVi9PUXE4UkxlSGhLOFAwRFdoa3lCbEhzbXBKR2wrT1kvQ1I5TUNQdUJi?=
- =?utf-8?B?TWRhUEkwNHJSVXh5bU1DQk1aRGdrSllDUnJDOVpjZkdRUGY2NDNOQVNBa0E3?=
- =?utf-8?B?RVdNM1QvWmVMWDdtak43bytsQ1BDL2J6UWQrRTdtVmdFS2oyMUdPWVFLa2VH?=
- =?utf-8?B?THMxV3ZzR1BNbTNSOVdwTkhKeWxja0lFMnQwMWZoK1pGVmZNV0tNdm82YUZX?=
- =?utf-8?B?MFJZalRUNXc2aDNKSzNQK0wxR1UrS2ZlaTYrMFFDSmhNTlFPaDF5VmdGZU9y?=
- =?utf-8?B?TzAyS1IzT1RYRklRQmVHbnArdGRScEt3UCs5OVAxanlDMHhDTTVQUUlTZXZD?=
- =?utf-8?B?T2FkM0NHcmIrVUdkY0tJR25ONjl0QmhlUjR4ME5XY1hPaUo0b1hZd20rb2RB?=
- =?utf-8?B?OHFGRkpBanlNZ2RWaHI2a1lIcm11Wks2S0V4a2pHaHlYMjR2bWdVakR2ajdK?=
- =?utf-8?B?ajFjL05jQTdzdHkzTkNEOVpYbXltcFM3ZlN3WDRrYVdNTHhtVWtqY2I4dzd6?=
- =?utf-8?B?dGowa1k3b3RLZjFwNkkrd3JZWjh0c2ZpUEpiQzZKQXdWL1REUURQL3l6ckxj?=
- =?utf-8?B?TGVtNURpb0JNS0NmM2NPRW5DS1FNMG1PY0NSUVdaWHV0ek5aenRrSHNNSVhC?=
- =?utf-8?B?YnlxUituYmtEbjBUcHhtSGJhTXduS2x6RFgvcTlZNmZKdDZqcnROQmFLZWk5?=
- =?utf-8?B?ZG5GRGhWdG94dSsvaE9uOFBUa0ZWWUU3YXJGWW8yaFo1RHNlOW5uU0N4MUxR?=
- =?utf-8?B?VkFGMFkwdzRKTFZPZmkydVI5b1hIZnR1Q2ZvUlB6V2xCQWNxLy84alFwQk93?=
- =?utf-8?B?Zm93Rk5FcWlvekJyeWpxYWFZVU1GRnJQUnViOTNaN2FtZzhBaXVXcU9wRzk4?=
- =?utf-8?B?Mmd4TXZhUTREYUdZN1NDVjl2QUIzeEM4dlVVSlhicVZ5SDJuTFkwZkVYTEVq?=
- =?utf-8?B?L25KZ1dSbllXUEk5WXltY0lPcGw2eW4vYkJocm1VaWh1RENkUEhrVU5YUUhM?=
- =?utf-8?B?Smx5NmY1NHZTWC9BTkdTNmlHWDM5QzVZL1lYOEZidU1Zak8zMVZUSC90amJl?=
- =?utf-8?B?Tk94T2QzOHM4L1BCalMyVStGSy9XaVdiWkc4NXlCLzlpT0ZXOHRzT0F6V2VT?=
- =?utf-8?B?bWNyNE00c0V1RStvK053clZFSmYyZ1JzMjhwSE8yR3BYMm5tNWRzYWVtSTd2?=
- =?utf-8?B?aDZVcUlGbHdoYld1VTk3ZEFtTWJzVE9FNkc3Rjd6MWIzMVFPekFQUXdiSm5K?=
- =?utf-8?B?eTZrU3hzbXFDWGJzckZrNGhqV2RFRTZQVWJQeVcxaWZGNGI5TUZWRUlBREtt?=
- =?utf-8?B?ZzU0RGN0Skprd3ExU1NTMjZDaGtzMUdEeHphR054NWpFVlozK0FsOGxiRCtR?=
- =?utf-8?Q?qfedf2phVVGR5NGp69NYP3DhJAKJa9XLDzqnT+9?=
-X-OriginatorOrg: amd.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: ff9c356c-975c-4f82-7c16-08d9212cf790
-X-MS-Exchange-CrossTenant-AuthSource: DM5PR12MB1355.namprd12.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 27 May 2021 16:32:06.8243 (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 3dd8961f-e488-4e60-8e11-a82d994e183d
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: QJS6bIZ0vjGRb0nzhcqirX3WEUS9JFIjV74y0C7suMUncSWyTzMsKQx1kkXffQS7NpGhfRw3Qzl5gmec0Rv+Pg==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: DM5PR12MB2504
-Cc: heikki.krogerus@linux.intel.com, thomas.hellstrom@linux.intel.com,
- peterz@infradead.org, benh@kernel.crashing.org,
- joonas.lahtinen@linux.intel.com, dri-devel@lists.freedesktop.org,
- chris@chris-wilson.co.uk, grant.likely@arm.com, paulus@samba.org,
- Frank Rowand <frowand.list@gmail.com>, mingo@kernel.org,
- sstabellini@kernel.org, Saravana Kannan <saravanak@google.com>,
- xypron.glpk@gmx.de, "Rafael J . Wysocki" <rafael.j.wysocki@intel.com>,
- Bartosz Golaszewski <bgolaszewski@baylibre.com>, bskeggs@redhat.com,
- linux-pci@vger.kernel.org, xen-devel@lists.xenproject.org,
- Thierry Reding <treding@nvidia.com>, intel-gfx@lists.freedesktop.org,
- matthew.auld@intel.com, linux-devicetree <devicetree@vger.kernel.org>,
- jxgao@google.com, daniel@ffwll.ch, Will Deacon <will@kernel.org>,
- Konrad Rzeszutek Wilk <konrad.wilk@oracle.com>,
- maarten.lankhorst@linux.intel.com, airlied@linux.ie,
- Dan Williams <dan.j.williams@intel.com>, linuxppc-dev@lists.ozlabs.org,
- jani.nikula@linux.intel.com, Rob Herring <robh+dt@kernel.org>,
- rodrigo.vivi@intel.com, bhelgaas@google.com,
- Claire Chang <tientzu@chromium.org>, boris.ostrovsky@oracle.com,
- Andy Shevchenko <andriy.shevchenko@linux.intel.com>, jgross@suse.com,
- Nicolas Boichat <drinkcat@chromium.org>, Greg KH <gregkh@linuxfoundation.org>,
- Randy Dunlap <rdunlap@infradead.org>, lkml <linux-kernel@vger.kernel.org>,
- "list@263.net:IOMMU DRIVERS" <iommu@lists.linux-foundation.org>,
- Jim Quinlan <james.quinlan@broadcom.com>, mpe@ellerman.id.au,
- Robin Murphy <robin.murphy@arm.com>, bauerman@linux.ibm.com
+Cc: iommu@lists.linux-foundation.org, Will Deacon <will@kernel.org>,
+ linux-kernel@vger.kernel.org
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -185,70 +68,118 @@ List-Post: <mailto:iommu@lists.linux-foundation.org>
 List-Help: <mailto:iommu-request@lists.linux-foundation.org?subject=help>
 List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
  <mailto:iommu-request@lists.linux-foundation.org?subject=subscribe>
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
+Content-Type: multipart/mixed; boundary="===============8733715593883309170=="
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-On 5/27/21 9:41 AM, Tom Lendacky wrote:
-> On 5/27/21 8:02 AM, Christoph Hellwig wrote:
->> On Wed, May 19, 2021 at 11:50:07AM -0700, Florian Fainelli wrote:
->>> You convert this call site with swiotlb_init_io_tlb_mem() which did not
->>> do the set_memory_decrypted()+memset(). Is this okay or should
->>> swiotlb_init_io_tlb_mem() add an additional argument to do this
->>> conditionally?
->>
->> The zeroing is useful and was missing before.  I think having a clean
->> state here is the right thing.
->>
->> Not sure about the set_memory_decrypted, swiotlb_update_mem_attributes
->> kinda suggests it is too early to set the memory decrupted.
->>
->> Adding Tom who should now about all this.
-> 
-> The reason for adding swiotlb_update_mem_attributes() was because having
-> the call to set_memory_decrypted() in swiotlb_init_with_tbl() triggered a
-> BUG_ON() related to interrupts not being enabled yet during boot. So that
-> call had to be delayed until interrupts were enabled.
 
-I pulled down and tested the patch set and booted with SME enabled. The
-following was seen during the boot:
+--===============8733715593883309170==
+Content-Type: multipart/signed; micalg=pgp-sha256;
+	protocol="application/pgp-signature"; boundary="r7JlHYcG2r1PRoWj"
+Content-Disposition: inline
 
-[    0.134184] BUG: Bad page state in process swapper  pfn:108002
-[    0.134196] page:(____ptrval____) refcount:0 mapcount:-128 mapping:0000000000000000 index:0x0 pfn:0x108002
-[    0.134201] flags: 0x17ffffc0000000(node=0|zone=2|lastcpupid=0x1fffff)
-[    0.134208] raw: 0017ffffc0000000 ffff88847f355e28 ffff88847f355e28 0000000000000000
-[    0.134210] raw: 0000000000000000 0000000000000001 00000000ffffff7f 0000000000000000
-[    0.134212] page dumped because: nonzero mapcount
-[    0.134213] Modules linked in:
-[    0.134218] CPU: 0 PID: 0 Comm: swapper Not tainted 5.13.0-rc2-sos-custom #3
-[    0.134221] Hardware name: ...
-[    0.134224] Call Trace:
-[    0.134233]  dump_stack+0x76/0x94
-[    0.134244]  bad_page+0xa6/0xf0
-[    0.134252]  __free_pages_ok+0x331/0x360
-[    0.134256]  memblock_free_all+0x158/0x1c1
-[    0.134267]  mem_init+0x1f/0x14c
-[    0.134273]  start_kernel+0x290/0x574
-[    0.134279]  secondary_startup_64_no_verify+0xb0/0xbb
 
-I see this about 40 times during the boot, each with a different PFN. The
-system boots (which seemed odd), but I don't know if there will be side
-effects to this (I didn't stress the system).
+--r7JlHYcG2r1PRoWj
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
 
-I modified the code to add a flag to not do the set_memory_decrypted(), as
-suggested by Florian, when invoked from swiotlb_init_with_tbl(), and that
-eliminated the bad page state BUG.
+Hi Linus,
+
+The following changes since commit d07f6ca923ea0927a1024dfccafc5b53b61cfecc:
+
+  Linux 5.13-rc2 (2021-05-16 15:27:44 -0700)
+
+are available in the Git repository at:
+
+  git://git.kernel.org/pub/scm/linux/kernel/git/joro/iommu.git tags/iommu-fixes-v5.13-rc3
+
+for you to fetch changes up to 0ee74d5a48635c848c20f152d0d488bf84641304:
+
+  iommu/vt-d: Fix sysfs leak in alloc_iommu() (2021-05-27 16:07:08 +0200)
+
+----------------------------------------------------------------
+IOMMU Fixes for Linux v5.13-rc3
+
+Including:
+
+	- Important fix for the AMD IOMMU driver in the recently added
+	  page-specific invalidation code to fix a calculation.
+
+	- Fix a NULL-ptr dereference in the AMD IOMMU driver when a
+	  device switches domain types.
+
+	- Fixes for the Intel VT-d driver to check for allocation
+	  failure and do correct cleanup.
+
+	- Another fix for Intel VT-d to not allow supervisor page
+	  requests from devices when using second level page
+	  translation.
+
+	- Add a MODULE_DEVICE_TABLE to the VIRTIO IOMMU driver
+
+----------------------------------------------------------------
+Bixuan Cui (1):
+      iommu/virtio: Add missing MODULE_DEVICE_TABLE
+
+Dan Carpenter (1):
+      iommu/vt-d: Check for allocation failure in aux_detach_device()
+
+Jean-Philippe Brucker (1):
+      iommu/amd: Clear DMA ops when switching domain
+
+Lu Baolu (1):
+      iommu/vt-d: Use user privilege for RID2PASID translation
+
+Nadav Amit (1):
+      iommu/amd: Fix wrong parentheses on page-specific invalidations
+
+Rolf Eike Beer (1):
+      iommu/vt-d: Fix sysfs leak in alloc_iommu()
+
+ drivers/iommu/amd/iommu.c    | 4 +++-
+ drivers/iommu/intel/dmar.c   | 4 +++-
+ drivers/iommu/intel/iommu.c  | 9 +++++++--
+ drivers/iommu/intel/pasid.c  | 3 ++-
+ drivers/iommu/virtio-iommu.c | 1 +
+ 5 files changed, 16 insertions(+), 5 deletions(-)
+
+Please pull.
 
 Thanks,
-Tom
 
-> 
-> Thanks,
-> Tom
-> 
->>
+	Joerg
+
+--r7JlHYcG2r1PRoWj
+Content-Type: application/pgp-signature; name="signature.asc"
+Content-Description: Digital signature
+
+-----BEGIN PGP SIGNATURE-----
+
+iQIzBAEBCAAdFiEEr9jSbILcajRFYWYyK/BELZcBGuMFAmCv3YIACgkQK/BELZcB
+GuOAWw//WQuACOwVW8z+7/0rzSoYcfITOJ21HhiHYCHpr7G6+3w5gUJfia/vWeB1
+QkfS7IFtcnkjGCoI5ZLQN2c6NIHfXrv7hjk73A95XKAhy/t208u749EYvj0vJsFm
+LNevjwcpQuRFJZMFO+1oCVt+lCGTdneY+BXme2GV6D5tu/U8MNGlzrnoMk5+rcPr
+5jq60d9ELFxpLRVHc3/pd7uSn+LqzF2hPjxxifFgoZyVW9zC1Qp2pEOXhosb+HXv
+rBjDaXlo7k9osgRWLErGjkr3xSIfDaLFWfJmOAwCem7OvZn9NIdIsikiQdSgQMJ2
+fkwQcY8lwe6ZWvW5mCqy7gqIQVkYU2D3hoUdWUxpatrXoDLQyLpPJYEzNq6a4yMv
+QeMQ5gEWGiYKar0PQoG257TjMieT4FWsFUBZxWl3tSsg3Vf0pmDa3NJ7493u06D6
+d8nUFqjqDs4eFcivXop/sbGYyD9kpoEkzxKiciEsKw/5UvZb+zZ8aASl8JvY3nYC
+qeRNtcThiK5HJF78UrSfFxmke1v8pp+5wphBi5Z4yBimliwo4hGVleQLrR4wOfDr
+6EXDE+GA1mtzn0SvzMqhRy4C+VRUkz6f6gNTQFxhjLEa3j5MXjhHczZvSQeXFddX
+UmilTYT2f4QNVdX5oR4rSzMLa5j5fYQXCEeDUW1LtZAXDUxs6yg=
+=hxvZ
+-----END PGP SIGNATURE-----
+
+--r7JlHYcG2r1PRoWj--
+
+--===============8733715593883309170==
+Content-Type: text/plain; charset="us-ascii"
+MIME-Version: 1.0
+Content-Transfer-Encoding: 7bit
+Content-Disposition: inline
+
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
 https://lists.linuxfoundation.org/mailman/listinfo/iommu
+--===============8733715593883309170==--
