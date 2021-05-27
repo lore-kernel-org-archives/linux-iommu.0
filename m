@@ -2,61 +2,61 @@ Return-Path: <SRS0=nChL=KW=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-10.2 required=3.0 tests=BAYES_00,
-	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,SPF_HELO_NONE,
-	SPF_PASS,URIBL_BLOCKED,USER_AGENT_SANE_1 autolearn=unavailable
-	autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-5.2 required=3.0 tests=BAYES_00,
+	HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,
+	URIBL_BLOCKED,USER_AGENT_SANE_1 autolearn=no autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 74EABC4707F
-	for <iommu@archiver.kernel.org>; Thu, 27 May 2021 13:27:31 +0000 (UTC)
-Received: from smtp2.osuosl.org (smtp2.osuosl.org [140.211.166.133])
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A6351C4708B
+	for <iommu@archiver.kernel.org>; Thu, 27 May 2021 13:28:29 +0000 (UTC)
+Received: from smtp1.osuosl.org (smtp1.osuosl.org [140.211.166.138])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 2604461059
-	for <iommu@archiver.kernel.org>; Thu, 27 May 2021 13:27:31 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 2604461059
+	by mail.kernel.org (Postfix) with ESMTPS id 6C9D2613E9
+	for <iommu@archiver.kernel.org>; Thu, 27 May 2021 13:28:29 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 6C9D2613E9
 Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=lst.de
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by smtp2.osuosl.org (Postfix) with ESMTP id E718E402B4;
-	Thu, 27 May 2021 13:27:30 +0000 (UTC)
+	by smtp1.osuosl.org (Postfix) with ESMTP id 3B57983DAC;
+	Thu, 27 May 2021 13:28:29 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from smtp2.osuosl.org ([127.0.0.1])
-	by localhost (smtp2.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id xD63-Ykqiqgq; Thu, 27 May 2021 13:27:30 +0000 (UTC)
+Received: from smtp1.osuosl.org ([127.0.0.1])
+	by localhost (smtp1.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+	with ESMTP id wBfmaoxjoLTD; Thu, 27 May 2021 13:28:28 +0000 (UTC)
 Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [IPv6:2605:bc80:3010:104::8cd3:938])
-	by smtp2.osuosl.org (Postfix) with ESMTP id CB5F5402A0;
-	Thu, 27 May 2021 13:27:29 +0000 (UTC)
+	by smtp1.osuosl.org (Postfix) with ESMTP id 4F6D383DC5;
+	Thu, 27 May 2021 13:28:28 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id ADDFFC000D;
-	Thu, 27 May 2021 13:27:29 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 1E94DC000D;
+	Thu, 27 May 2021 13:28:28 +0000 (UTC)
 Received: from smtp2.osuosl.org (smtp2.osuosl.org [IPv6:2605:bc80:3010::133])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 1758DC0001
- for <iommu@lists.linux-foundation.org>; Thu, 27 May 2021 13:27:28 +0000 (UTC)
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 5D4A4C0001
+ for <iommu@lists.linux-foundation.org>; Thu, 27 May 2021 13:28:26 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by smtp2.osuosl.org (Postfix) with ESMTP id EB992402A1
- for <iommu@lists.linux-foundation.org>; Thu, 27 May 2021 13:27:27 +0000 (UTC)
+ by smtp2.osuosl.org (Postfix) with ESMTP id 57F0A4028F
+ for <iommu@lists.linux-foundation.org>; Thu, 27 May 2021 13:28:26 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
 Received: from smtp2.osuosl.org ([127.0.0.1])
  by localhost (smtp2.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id 4BFk1WmrZcMc for <iommu@lists.linux-foundation.org>;
- Thu, 27 May 2021 13:27:27 +0000 (UTC)
+ with ESMTP id cSGVGkO1iHmO for <iommu@lists.linux-foundation.org>;
+ Thu, 27 May 2021 13:28:25 +0000 (UTC)
 X-Greylist: from auto-whitelisted by SQLgrey-1.8.0
 Received: from verein.lst.de (verein.lst.de [213.95.11.211])
- by smtp2.osuosl.org (Postfix) with ESMTPS id 03D74402A0
- for <iommu@lists.linux-foundation.org>; Thu, 27 May 2021 13:27:26 +0000 (UTC)
+ by smtp2.osuosl.org (Postfix) with ESMTPS id BE6504028B
+ for <iommu@lists.linux-foundation.org>; Thu, 27 May 2021 13:28:25 +0000 (UTC)
 Received: by verein.lst.de (Postfix, from userid 2407)
- id BAAFB68AFE; Thu, 27 May 2021 15:27:23 +0200 (CEST)
-Date: Thu, 27 May 2021 15:27:23 +0200
+ id 290AE68AFE; Thu, 27 May 2021 15:28:23 +0200 (CEST)
+Date: Thu, 27 May 2021 15:28:22 +0200
 From: Christoph Hellwig <hch@lst.de>
 To: Claire Chang <tientzu@chromium.org>
-Subject: Re: [PATCH v7 04/15] swiotlb: Add restricted DMA pool initialization
-Message-ID: <20210527132723.GD26160@lst.de>
+Subject: Re: [PATCH v7 07/15] swiotlb: Update is_swiotlb_active to add a
+ struct device argument
+Message-ID: <20210527132822.GE26160@lst.de>
 References: <20210518064215.2856977-1-tientzu@chromium.org>
- <20210518064215.2856977-5-tientzu@chromium.org>
+ <20210518064215.2856977-8-tientzu@chromium.org>
 MIME-Version: 1.0
 Content-Disposition: inline
-In-Reply-To: <20210518064215.2856977-5-tientzu@chromium.org>
+In-Reply-To: <20210518064215.2856977-8-tientzu@chromium.org>
 User-Agent: Mutt/1.5.17 (2007-11-01)
 Cc: heikki.krogerus@linux.intel.com, thomas.hellstrom@linux.intel.com,
  peterz@infradead.org, benh@kernel.crashing.org,
@@ -99,194 +99,13 @@ Content-Transfer-Encoding: 7bit
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-I'd still much prefer to always have the pointer in struct device.
-Especially as we're also looking into things like a global 64-bit bounce
-buffer.  Something like this untested patch ontop of your series:
+> +	if (is_swiotlb_active(NULL)) {
 
+Passing a NULL argument to this doesn't make sense.  They all should have
+a struct device at hand, you'll just need to dig for it.
 
-diff --git a/drivers/base/core.c b/drivers/base/core.c
-index 628e33939aca..3cb95fa29f70 100644
---- a/drivers/base/core.c
-+++ b/drivers/base/core.c
-@@ -29,6 +29,7 @@
- #include <linux/sched/mm.h>
- #include <linux/sysfs.h>
- #include <linux/dma-map-ops.h> /* for dma_default_coherent */
-+#include <linux/swiotlb.h>
- 
- #include "base.h"
- #include "power/power.h"
-@@ -2814,6 +2815,9 @@ void device_initialize(struct device *dev)
-     defined(CONFIG_ARCH_HAS_SYNC_DMA_FOR_CPU_ALL)
- 	dev->dma_coherent = dma_default_coherent;
- #endif
-+#ifdef CONFIG_SWIOTLB
-+	dev->dma_io_tlb_mem = &io_tlb_default_mem;
-+#endif
- }
- EXPORT_SYMBOL_GPL(device_initialize);
- 
-diff --git a/include/linux/device.h b/include/linux/device.h
-index 4987608ea4ff..6aca6fa0facc 100644
---- a/include/linux/device.h
-+++ b/include/linux/device.h
-@@ -416,7 +416,7 @@ struct dev_links_info {
-  * @dma_pools:	Dma pools (if dma'ble device).
-  * @dma_mem:	Internal for coherent mem override.
-  * @cma_area:	Contiguous memory area for dma allocations
-- * @dma_io_tlb_mem: Internal for swiotlb io_tlb_mem override.
-+ * @dma_io_tlb_mem: Pointer to the swiotlb pool used.  Not for driver use.
-  * @archdata:	For arch-specific additions.
-  * @of_node:	Associated device tree node.
-  * @fwnode:	Associated device node supplied by platform firmware.
-@@ -523,7 +523,7 @@ struct device {
- 	struct cma *cma_area;		/* contiguous memory area for dma
- 					   allocations */
- #endif
--#ifdef CONFIG_DMA_RESTRICTED_POOL
-+#ifdef CONFIG_SWIOTLB
- 	struct io_tlb_mem *dma_io_tlb_mem;
- #endif
- 	/* arch specific additions */
-diff --git a/include/linux/swiotlb.h b/include/linux/swiotlb.h
-index e8cf49bd90c5..c153cd0c469c 100644
---- a/include/linux/swiotlb.h
-+++ b/include/linux/swiotlb.h
-@@ -95,6 +95,7 @@ struct io_tlb_mem {
- 	spinlock_t lock;
- 	struct dentry *debugfs;
- 	bool late_alloc;
-+	bool force_swiotlb;
- 	struct io_tlb_slot {
- 		phys_addr_t orig_addr;
- 		size_t alloc_size;
-@@ -103,30 +104,16 @@ struct io_tlb_mem {
- };
- extern struct io_tlb_mem *io_tlb_default_mem;
- 
--static inline struct io_tlb_mem *get_io_tlb_mem(struct device *dev)
--{
--#ifdef CONFIG_DMA_RESTRICTED_POOL
--	if (dev && dev->dma_io_tlb_mem)
--		return dev->dma_io_tlb_mem;
--#endif /* CONFIG_DMA_RESTRICTED_POOL */
--
--	return io_tlb_default_mem;
--}
--
- static inline bool is_swiotlb_buffer(struct device *dev, phys_addr_t paddr)
- {
--	struct io_tlb_mem *mem = get_io_tlb_mem(dev);
-+	struct io_tlb_mem *mem = dev->dma_io_tlb_mem;
- 
- 	return mem && paddr >= mem->start && paddr < mem->end;
- }
- 
- static inline bool is_dev_swiotlb_force(struct device *dev)
- {
--#ifdef CONFIG_DMA_RESTRICTED_POOL
--	if (dev->dma_io_tlb_mem)
--		return true;
--#endif /* CONFIG_DMA_RESTRICTED_POOL */
--	return false;
-+	return dev->dma_io_tlb_mem->force_swiotlb;
- }
- 
- void __init swiotlb_exit(void);
-@@ -134,10 +121,8 @@ unsigned int swiotlb_max_segment(void);
- size_t swiotlb_max_mapping_size(struct device *dev);
- bool is_swiotlb_active(struct device *dev);
- void __init swiotlb_adjust_size(unsigned long size);
--#ifdef CONFIG_DMA_RESTRICTED_POOL
- struct page *swiotlb_alloc(struct device *dev, size_t size);
- bool swiotlb_free(struct device *dev, struct page *page, size_t size);
--#endif /* CONFIG_DMA_RESTRICTED_POOL */
- #else
- #define swiotlb_force SWIOTLB_NO_FORCE
- static inline bool is_swiotlb_buffer(struct device *dev, phys_addr_t paddr)
-diff --git a/kernel/dma/swiotlb.c b/kernel/dma/swiotlb.c
-index d3fa4669229b..69d62e18f493 100644
---- a/kernel/dma/swiotlb.c
-+++ b/kernel/dma/swiotlb.c
-@@ -347,7 +347,7 @@ void __init swiotlb_exit(void)
- static void swiotlb_bounce(struct device *dev, phys_addr_t tlb_addr, size_t size,
- 			   enum dma_data_direction dir)
- {
--	struct io_tlb_mem *mem = get_io_tlb_mem(dev);
-+	struct io_tlb_mem *mem = dev->dma_io_tlb_mem;
- 	int index = (tlb_addr - mem->start) >> IO_TLB_SHIFT;
- 	phys_addr_t orig_addr = mem->slots[index].orig_addr;
- 	size_t alloc_size = mem->slots[index].alloc_size;
-@@ -429,7 +429,7 @@ static unsigned int wrap_index(struct io_tlb_mem *mem, unsigned int index)
- static int find_slots(struct device *dev, phys_addr_t orig_addr,
- 		size_t alloc_size)
- {
--	struct io_tlb_mem *mem = get_io_tlb_mem(dev);
-+	struct io_tlb_mem *mem = dev->dma_io_tlb_mem;
- 	unsigned long boundary_mask = dma_get_seg_boundary(dev);
- 	dma_addr_t tbl_dma_addr =
- 		phys_to_dma_unencrypted(dev, mem->start) & boundary_mask;
-@@ -510,7 +510,7 @@ phys_addr_t swiotlb_tbl_map_single(struct device *dev, phys_addr_t orig_addr,
- 		size_t mapping_size, size_t alloc_size,
- 		enum dma_data_direction dir, unsigned long attrs)
- {
--	struct io_tlb_mem *mem = get_io_tlb_mem(dev);
-+	struct io_tlb_mem *mem = dev->dma_io_tlb_mem;
- 	unsigned int offset = swiotlb_align_offset(dev, orig_addr);
- 	unsigned int i;
- 	int index;
-@@ -553,7 +553,7 @@ phys_addr_t swiotlb_tbl_map_single(struct device *dev, phys_addr_t orig_addr,
- 
- static void release_slots(struct device *dev, phys_addr_t tlb_addr)
- {
--	struct io_tlb_mem *mem = get_io_tlb_mem(dev);
-+	struct io_tlb_mem *mem = dev->dma_io_tlb_mem;
- 	unsigned long flags;
- 	unsigned int offset = swiotlb_align_offset(dev, tlb_addr);
- 	int index = (tlb_addr - offset - mem->start) >> IO_TLB_SHIFT;
-@@ -670,7 +670,7 @@ size_t swiotlb_max_mapping_size(struct device *dev)
- 
- bool is_swiotlb_active(struct device *dev)
- {
--	return get_io_tlb_mem(dev) != NULL;
-+	return dev->dma_io_tlb_mem;
- }
- EXPORT_SYMBOL_GPL(is_swiotlb_active);
- 
-@@ -741,7 +741,7 @@ static int rmem_swiotlb_device_init(struct reserved_mem *rmem,
- 	struct io_tlb_mem *mem = rmem->priv;
- 	unsigned long nslabs = rmem->size >> IO_TLB_SHIFT;
- 
--	if (dev->dma_io_tlb_mem)
-+	if (dev->dma_io_tlb_mem != io_tlb_default_mem)
- 		return 0;
- 
- 	/*
-@@ -760,6 +760,7 @@ static int rmem_swiotlb_device_init(struct reserved_mem *rmem,
- 		}
- 
- 		swiotlb_init_io_tlb_mem(mem, rmem->base, nslabs, false);
-+		mem->force_swiotlb = true;
- 
- 		rmem->priv = mem;
- 
-@@ -768,15 +769,13 @@ static int rmem_swiotlb_device_init(struct reserved_mem *rmem,
- 	}
- 
- 	dev->dma_io_tlb_mem = mem;
--
- 	return 0;
- }
- 
- static void rmem_swiotlb_device_release(struct reserved_mem *rmem,
- 					struct device *dev)
- {
--	if (dev)
--		dev->dma_io_tlb_mem = NULL;
-+	dev->dma_io_tlb_mem = io_tlb_default_mem;
- }
- 
- static const struct reserved_mem_ops rmem_swiotlb_ops = {
+And this function should be about to go away anyway, but until then we
+need to do this properly.
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
