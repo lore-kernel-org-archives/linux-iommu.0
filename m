@@ -6,80 +6,80 @@ X-Spam-Status: No, score=-3.5 required=3.0 tests=BAYES_00,DKIM_INVALID,
 	DKIM_SIGNED,HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,SPF_HELO_NONE,
 	SPF_PASS,URIBL_BLOCKED autolearn=no autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id BBE61C4708A
+	by smtp.lore.kernel.org (Postfix) with ESMTP id BFA12C4708B
 	for <iommu@archiver.kernel.org>; Thu, 27 May 2021 07:12:31 +0000 (UTC)
-Received: from smtp2.osuosl.org (smtp2.osuosl.org [140.211.166.133])
+Received: from smtp1.osuosl.org (smtp1.osuosl.org [140.211.166.138])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 4785961132
-	for <iommu@archiver.kernel.org>; Thu, 27 May 2021 07:12:31 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 4785961132
+	by mail.kernel.org (Postfix) with ESMTPS id D8618613DC
+	for <iommu@archiver.kernel.org>; Thu, 27 May 2021 07:12:30 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org D8618613DC
 Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=gibson.dropbear.id.au
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by smtp2.osuosl.org (Postfix) with ESMTP id 1946F4026E;
-	Thu, 27 May 2021 07:12:31 +0000 (UTC)
+	by smtp1.osuosl.org (Postfix) with ESMTP id A515783CE7;
+	Thu, 27 May 2021 07:12:30 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from smtp2.osuosl.org ([127.0.0.1])
-	by localhost (smtp2.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id cP4StWluKvgf; Thu, 27 May 2021 07:12:30 +0000 (UTC)
+Received: from smtp1.osuosl.org ([127.0.0.1])
+	by localhost (smtp1.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+	with ESMTP id LwNxI1f7RswD; Thu, 27 May 2021 07:12:29 +0000 (UTC)
 Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [IPv6:2605:bc80:3010:104::8cd3:938])
-	by smtp2.osuosl.org (Postfix) with ESMTP id E686E40269;
+	by smtp1.osuosl.org (Postfix) with ESMTP id 875DE83CC4;
 	Thu, 27 May 2021 07:12:29 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 4522BC0029;
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 0C7B5C0025;
 	Thu, 27 May 2021 07:12:29 +0000 (UTC)
-Received: from smtp1.osuosl.org (smtp1.osuosl.org [140.211.166.138])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 35A11C0001
+Received: from smtp3.osuosl.org (smtp3.osuosl.org [IPv6:2605:bc80:3010::136])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 1EA38C000E
  for <iommu@lists.linux-foundation.org>; Thu, 27 May 2021 07:12:28 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by smtp1.osuosl.org (Postfix) with ESMTP id 1682783A4C
- for <iommu@lists.linux-foundation.org>; Thu, 27 May 2021 07:12:28 +0000 (UTC)
+ by smtp3.osuosl.org (Postfix) with ESMTP id EFFA9607DE
+ for <iommu@lists.linux-foundation.org>; Thu, 27 May 2021 07:12:27 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Authentication-Results: smtp1.osuosl.org (amavisd-new);
+Authentication-Results: smtp3.osuosl.org (amavisd-new);
  dkim=pass (1024-bit key) header.d=gibson.dropbear.id.au
-Received: from smtp1.osuosl.org ([127.0.0.1])
- by localhost (smtp1.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id 3ScWQ7ywO3Re for <iommu@lists.linux-foundation.org>;
+Received: from smtp3.osuosl.org ([127.0.0.1])
+ by localhost (smtp3.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+ with ESMTP id g0FPMU9uY1Dt for <iommu@lists.linux-foundation.org>;
  Thu, 27 May 2021 07:12:26 +0000 (UTC)
 X-Greylist: domain auto-whitelisted by SQLgrey-1.8.0
-Received: from ozlabs.org (ozlabs.org [203.11.71.1])
- by smtp1.osuosl.org (Postfix) with ESMTPS id 2C3F483B5C
- for <iommu@lists.linux-foundation.org>; Thu, 27 May 2021 07:12:25 +0000 (UTC)
+Received: from ozlabs.org (bilbo.ozlabs.org [IPv6:2401:3900:2:1::2])
+ by smtp3.osuosl.org (Postfix) with ESMTPS id 59E4160733
+ for <iommu@lists.linux-foundation.org>; Thu, 27 May 2021 07:12:26 +0000 (UTC)
 Received: by ozlabs.org (Postfix, from userid 1007)
- id 4FrJsx3L8Cz9sXG; Thu, 27 May 2021 17:12:21 +1000 (AEST)
+ id 4FrJsx2tB6z9sWp; Thu, 27 May 2021 17:12:21 +1000 (AEST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
  d=gibson.dropbear.id.au; s=201602; t=1622099541;
- bh=q2H5aSayYZmCdH2b9xpnmQ/7FqSCaVqs53HOObLxnRA=;
+ bh=/Vk6QIsfClarCnHuWF3h00g/TTHnE4TtoS0mH61nSvk=;
  h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
- b=jEwVCcUONIAnyb/P2jI7GBeihwirasiXWjARYzW4I85zhlWvC2TGRqELP3uDTLsTa
- Us+5eJYQI/MotzMh8d+E8kxLFNd6GereguIYwXvx1PLJtJ3jdDlEmFGPpLOWAvoczA
- 14jsdic9Q6A0H19LoO46U6myhUnjqs34kFS5Jnew=
-Date: Thu, 27 May 2021 14:53:42 +1000
+ b=PBJfr7UYZPAGjibTLx3tnWLHnRpaUShxpkGQgtqAMqSU1cRDoZa5GzhsXCRFM76n6
+ /2dBtWmxbyYYr4V+CxP4PSVzAwF4AD4T2TGF1pIXK0c44UNAZyDsnE8zGdVBo4KZpb
+ 3ivmm4aCrXG/e3Jm6+/nRQqIJ3rfH7ZWRNAOeov4=
+Date: Thu, 27 May 2021 14:58:30 +1000
 From: David Gibson <david@gibson.dropbear.id.au>
 To: Jason Gunthorpe <jgg@nvidia.com>
 Subject: Re: [PATCH V4 05/18] iommu/ioasid: Redefine IOASID set and
  allocation APIs
-Message-ID: <YK8l1mZ0NVggAVUO@yekko>
-References: <YIecXkaEGNgICePO@yekko.fritz.box>
- <20210427171212.GD1370958@nvidia.com>
- <YIizNdbA0+LYwQbI@yekko.fritz.box>
+Message-ID: <YK8m9jNuvEzlXWlu@yekko>
+References: <YIizNdbA0+LYwQbI@yekko.fritz.box>
  <20210428145622.GU1370958@nvidia.com> <YIoiJRY3FM7xH2bH@yekko>
  <20210503161518.GM1370958@nvidia.com> <YJy9o8uEZs42/qDM@yekko>
  <20210513135938.GG1002214@nvidia.com> <YKtbWo7PwIlXjFIV@yekko>
  <20210524233744.GT1002214@nvidia.com>
+ <ce2fcf21-1803-047b-03f0-7a4108dea7af@nvidia.com>
+ <20210525195257.GG1002214@nvidia.com>
 MIME-Version: 1.0
-In-Reply-To: <20210524233744.GT1002214@nvidia.com>
-Cc: Jean-Philippe Brucker <jean-philippe@linaro.org>, "Tian,
- Kevin" <kevin.tian@intel.com>, "Jiang, Dave" <dave.jiang@intel.com>, "Raj,
- Ashok" <ashok.raj@intel.com>, Jonathan Corbet <corbet@lwn.net>,
- Jean-Philippe Brucker <jean-philippe@linaro.com>,
- Li Zefan <lizefan@huawei.com>, LKML <linux-kernel@vger.kernel.org>,
+In-Reply-To: <20210525195257.GG1002214@nvidia.com>
+Cc: Kirti Wankhede <kwankhede@nvidia.com>,
+ Jean-Philippe Brucker <jean-philippe@linaro.org>, "Jiang,
+ Dave" <dave.jiang@intel.com>, "Raj, Ashok" <ashok.raj@intel.com>,
+ Jonathan Corbet <corbet@lwn.net>, "Wu, Hao" <hao.wu@intel.com>, "Tian,
+ Kevin" <kevin.tian@intel.com>, Alex Williamson <alex.williamson@redhat.com>,
+ "cgroups@vger.kernel.org" <cgroups@vger.kernel.org>,
+ David Woodhouse <dwmw2@infradead.org>, LKML <linux-kernel@vger.kernel.org>,
  "iommu@lists.linux-foundation.org" <iommu@lists.linux-foundation.org>,
- Alex Williamson <alex.williamson@redhat.com>,
- Johannes Weiner <hannes@cmpxchg.org>, Tejun Heo <tj@kernel.org>,
- "cgroups@vger.kernel.org" <cgroups@vger.kernel.org>, "Wu,
- Hao" <hao.wu@intel.com>, David Woodhouse <dwmw2@infradead.org>
+ Li Zefan <lizefan@huawei.com>, Johannes Weiner <hannes@cmpxchg.org>,
+ Tejun Heo <tj@kernel.org>, Jean-Philippe Brucker <jean-philippe@linaro.com>
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -92,134 +92,57 @@ List-Post: <mailto:iommu@lists.linux-foundation.org>
 List-Help: <mailto:iommu-request@lists.linux-foundation.org?subject=help>
 List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
  <mailto:iommu-request@lists.linux-foundation.org?subject=subscribe>
-Content-Type: multipart/mixed; boundary="===============0203101481916435960=="
+Content-Type: multipart/mixed; boundary="===============4372381017305676234=="
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
 
---===============0203101481916435960==
+--===============4372381017305676234==
 Content-Type: multipart/signed; micalg=pgp-sha256;
-	protocol="application/pgp-signature"; boundary="jHax4+77yf7k37tQ"
+	protocol="application/pgp-signature"; boundary="rKeY89V0ifZRRhP6"
 Content-Disposition: inline
 
 
---jHax4+77yf7k37tQ
+--rKeY89V0ifZRRhP6
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
 Content-Transfer-Encoding: quoted-printable
 
-On Mon, May 24, 2021 at 08:37:44PM -0300, Jason Gunthorpe wrote:
-> On Mon, May 24, 2021 at 05:52:58PM +1000, David Gibson wrote:
+On Tue, May 25, 2021 at 04:52:57PM -0300, Jason Gunthorpe wrote:
+> On Wed, May 26, 2021 at 12:56:30AM +0530, Kirti Wankhede wrote:
 >=20
-> > > > I don't really see a semantic distinction between "always one-device
-> > > > groups" and "groups don't matter".  Really the only way you can aff=
-ord
-> > > > to not care about groups is if they're singletons.
-> > >=20
-> > > The kernel driver under the mdev may not be in an "always one-device"
-> > > group.
-> >=20
-> > I don't really understand what you mean by that.
+> > 2. iommu backed mdev devices for SRIOV where mdev device is created per
+> > VF (mdev device =3D=3D VF device) then that mdev device has same iommu
+> > protection scope as VF associated to it.=20
 >=20
-> I mean the group of the mdev's actual DMA device may have multiple
-> things in it.
-> =20
-> > > It is a kernel driver so the only thing we know and care about is that
-> > > all devices in the HW group are bound to kernel drivers.
-> > >=20
-> > > The vfio device that spawns from this kernel driver is really a
-> > > "groups don't matter" vfio device because at the IOMMU layer it should
-> > > be riding on the physical group of the kernel driver.  At the VFIO
-> > > layer we no longer care about the group abstraction because the system
-> > > guarentees isolation in some other way.
-> >=20
-> > Uh.. I don't really know how mdevs are isolated from each other.  I
-> > thought it was because the physical device providing the mdevs
-> > effectively had an internal IOMMU (or at least DMA permissioning) to
-> > isolate the mdevs, even though the physical device may not be fully
-> > isolated.
-> >=20
-> > In that case the virtual mdev is effectively in a singleton group,
-> > which is different from the group of its parent device.
+> This doesn't require, and certainly shouldn't create, a fake group.
+
+It's only fake if you start with a narrow view of what a group is.  A
+group is a set of devices (in the kernel sense of "device", not
+necessarily the hardware sense) which can't be isolated from each
+other.  The mdev device is a kernel device, and if working as intended
+it can be isolated from everything else, and is therefore in an
+absolute bona fide group of its own.
+
+> Only the VF's real IOMMU group should be used to model an iommu domain
+> linked to a VF. Injecting fake groups that are proxies for real groups
+> only opens the possibility of security problems like David is
+> concerned with.
+
+It's not a proxy for a real group, it's a group of its own.  If you
+discover that (due to a hardware bug, for example) the mdev is *not*
+properly isolated from its parent PCI device, then both the mdev
+virtual device *and* the physical PCI device are in the same group.
+Groups including devices of different types and on different buses
+were considered from the start, and are precedented, if rare.
+
+> Max's series approaches this properly by fully linking the struct
+> pci_device of the VF throughout the entire VFIO scheme, including the
+> group and container, while still allowing override of various VFIO
+> operations.
 >=20
-> That is one way to view it, but it means creating a whole group
-> infrastructure and abusing the IOMMU stack just to create this
-> nonsense fiction.
-
-It's a nonsense fiction until it's not, at which point it will bite
-you in the arse.
-
-> We also abuse the VFIO container stuff to hackily
-> create several different types pf IOMMU uAPIs for the mdev - all of
-> which are unrelated to drivers/iommu.
+> Jason
 >=20
-> Basically, there is no drivers/iommu thing involved, thus is no really
-> iommu group, for mdev it is all a big hacky lie.
-
-Well, "iommu" group might not be the best name, but hardware isolation
-is still a real concern here, even if it's not entirely related to the
-IOMMU.
-
-> > If the physical device had a bug which meant the mdevs *weren't*
-> > properly isolated from each other, then those mdevs would share a
-> > group, and you *would* care about it.  Depending on how the isolation
-> > failed the mdevs might or might not also share a group with the parent
-> > physical device.
->=20
-> That isn't a real scenario.. mdevs that can't be isolated just
-> wouldn't be useful to exist
-
-Really?  So what do you do when you discover some mdevs you thought
-were isolated actually aren't due to a hardware bug?  Drop support
-=66rom the driver entirely?  In which case what do you say to the people
-who understandably complain "but... we had all the mdevs in one guest
-anyway, we don't care if they're not isolated"?
-
-> > > This is today's model, yes. When you run dpdk on a multi-group device
-> > > vfio already ensures that all the device groups remained parked and
-> > > inaccessible.
-> >=20
-> > I'm not really following what you're saying there.
-> >=20
-> > If you have a multi-device group, and dpdk is using one device in it,
-> > VFIO *does not* (and cannot) ensure that other devices in the group
-> > are parked and inaccessible. =20
->=20
-> I mean in the sense that no other user space can open those devices
-> and no kernel driver can later be attached to them.
-
-Ok.
-
-> > It ensures that they're parked at the moment the group moves from
-> > kernel to userspace ownership, but it can't prevent dpdk from
-> > accessing and unparking those devices via peer to peer DMA.
->=20
-> Right, and adding all this group stuff did nothing to alert the poor
-> admin that is running DPDK to this risk.
-
-Didn't it?  Seems to me the admin that in order to give the group to
-DPDK, the admin had to find and unbind all the things in it... so is
-therefore aware that they're giving everything in it to DPDK.
-
-> > > If the administator configures the system with different security
-> > > labels for different VFIO devices then yes removing groups makes this
-> > > more tricky as all devices in the group should have the same label.
-> >=20
-> > That seems a bigger problem than "more tricky".  How would you propose
-> > addressing this with your device-first model?
->=20
-> You put the same security labels you'd put on the group to the devices
-> that consitute the group. It is only more tricky in the sense that the
-> script that would have to do this will need to do more than ID the
-> group to label but also ID the device members of the group and label
-> their char nodes.
-
-Well, I guess, if you take the view that root is allowed to break the
-kernel.  I tend to prefer that although root can obviously break the
-kernel if they intend do, we should make it hard to do by accident -
-which in this case would mean the kernel *enforcing* that the devices
-in the group have the same security labels, which I can't really see
-how to do without an exposed group.
 
 --=20
 David Gibson			| I'll have my music baroque, and my code
@@ -227,29 +150,29 @@ david AT gibson.dropbear.id.au	| minimalist, thank you.  NOT _the_ _other_
 				| _way_ _around_!
 http://www.ozlabs.org/~dgibson
 
---jHax4+77yf7k37tQ
+--rKeY89V0ifZRRhP6
 Content-Type: application/pgp-signature; name="signature.asc"
 
 -----BEGIN PGP SIGNATURE-----
 
-iQIzBAEBCAAdFiEEdfRlhq5hpmzETofcbDjKyiDZs5IFAmCvJdQACgkQbDjKyiDZ
-s5LX5g//Tg6h2fX9WzW87g+SOHMeJIsvjlnyefT9P0m1W0y4+uqrIluiR7HIjtPt
-xWcBK1QgEyq5HZFQaGF790FhMoZxATnu3357ej2Ib7PPyxTYSvzZrHnTsReFoJrz
-ePbXbiROS/BgQF81CZ/lo39pOvBBBVTgC5VJSoUPm0MZTAGIyQfdbbLk9a4h2Pau
-TwrhMLEBi3npUTNA8GoCdFOrQzQHQ2DybL3/WKMGzUGVE/z+4kCOFsumwNx31C8C
-L2wODxykBEKwWNUz4Sky4TNQtkeKXmnujRhgSFo03BqnbigFgSmTUu7Zvv8LYlxB
-qW6V8ZRLdakvN+n5HFoHTsKC68jcx5lv6kHlcwYu3vbeTjapxpYLfUFMWh5tRLzT
-TN6KnEgls6dkjcd0LHNf3xz4HZKuUgr5gBDJRyaG12SBxGNnvnhJ7FXouOLotN/W
-AAmcBogVG21wiqZvRX1BJSaQGlmF0gFNbJIiNzUgX0Yp0ybrnX1nDjtod+2sVtIF
-t71/dV84+idXo/bP0oix0NVj5yzU7SgnxngoDeVNDZ9bgyCfvUwnpDI1YJ1HgkEx
-Gmi1E8OI9JoNp7AGVde6S/EGojYApBBkNHOQqjG2mU+k1g428wrVz1iGrytk3aoG
-IiU4/pNk1+BEgmyQ5jKlmOsIQTIp1Zh8f+ZS9dvXJZj1cGHEF1k=
-=pDjM
+iQIzBAEBCAAdFiEEdfRlhq5hpmzETofcbDjKyiDZs5IFAmCvJvYACgkQbDjKyiDZ
+s5IEqBAAp3p5NH8nnJVVcGSVZxbNrLeTTJqPwhNtEEsveVKJd5BmHf3EvT4BqqnK
+rXisyd2ygrY8fO1DiLJOa/WM6FDA05WD0XkqyDJ2XUFAOEHpyY0EesSw7CqSl1zz
+V2dbprWQAD9nJoPG/fidBsmuYEwpxjvptttrf1yEgFe+isfJLdalJbA+k/kfZOdd
+F4BL6+mtySC2DoKnQqoDQYCsXrSNzsYgv6SDbj4W7izUuOqYFADN7qawINcxAEBa
+I43JXW3Dhx3aLzL0JeEjFf2j/f1YMQo/RfkfLg9OWuHdsF+SF8+5lcikGWtjBZKT
+pC443P1CHOmJkW0TMr9Pz2lHJfjlcTaIq35qpaEP23tKmS60FDoLIvWPlFJYidaz
+tWDNMtMmS8UbcyzF868ZJiRc94+A8RTFFW7hSmHQoqLnxMqNnUoyOKrZ2ehaqg+j
+JjbsxFq37+jun2Fb2BxwPg+F2jFQmaw7l6FCdhePKc/h/HeCRPpZ+jTqF6AEqdU1
+KrET9bw9TE3euBNQK62gJNfdIdrkBelfcUjKluxCWamoHFeJBEnBKbqGR4wn0Jqg
+QucFQtoKZyEIXVKFtK0Pedz46dzxc5iH1hj+eIAGLw92/SIjWzVYEp6vCZYHxNSk
+VQFvdHTLJJ8vRVhLGJlo5Ji4EX+jgb9i7eIufxgqD+SxhzOoRvo=
+=ygK9
 -----END PGP SIGNATURE-----
 
---jHax4+77yf7k37tQ--
+--rKeY89V0ifZRRhP6--
 
---===============0203101481916435960==
+--===============4372381017305676234==
 Content-Type: text/plain; charset="us-ascii"
 MIME-Version: 1.0
 Content-Transfer-Encoding: 7bit
@@ -259,4 +182,4 @@ _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
 https://lists.linuxfoundation.org/mailman/listinfo/iommu
---===============0203101481916435960==--
+--===============4372381017305676234==--
