@@ -2,100 +2,155 @@ Return-Path: <SRS0=hOEw=KX=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-7.0 required=3.0 tests=BAYES_00,DKIM_ADSP_CUSTOM_MED,
-	DKIM_INVALID,DKIM_SIGNED,FREEMAIL_FORGED_FROMDOMAIN,FREEMAIL_FROM,
-	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,SPF_HELO_NONE,
-	SPF_PASS,URIBL_RED,USER_AGENT_SANE_1 autolearn=no autolearn_force=no
-	version=3.4.0
+X-Spam-Status: No, score=-3.5 required=3.0 tests=BAYES_00,DKIM_INVALID,
+	DKIM_SIGNED,HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,
+	MSGID_FROM_MTA_HEADER,SPF_HELO_NONE,SPF_PASS,URIBL_RED autolearn=no
+	autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 52D11C47087
-	for <iommu@archiver.kernel.org>; Fri, 28 May 2021 17:04:04 +0000 (UTC)
-Received: from smtp2.osuosl.org (smtp2.osuosl.org [140.211.166.133])
+	by smtp.lore.kernel.org (Postfix) with ESMTP id F1F75C2B9F7
+	for <iommu@archiver.kernel.org>; Fri, 28 May 2021 17:35:48 +0000 (UTC)
+Received: from smtp4.osuosl.org (smtp4.osuosl.org [140.211.166.137])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id EBE516117A
-	for <iommu@archiver.kernel.org>; Fri, 28 May 2021 17:04:03 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org EBE516117A
-Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=gmail.com
+	by mail.kernel.org (Postfix) with ESMTPS id 7F5A4613DA
+	for <iommu@archiver.kernel.org>; Fri, 28 May 2021 17:35:48 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 7F5A4613DA
+Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=nvidia.com
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by smtp2.osuosl.org (Postfix) with ESMTP id A6DC340265;
-	Fri, 28 May 2021 17:04:03 +0000 (UTC)
+	by smtp4.osuosl.org (Postfix) with ESMTP id 3641640ECB;
+	Fri, 28 May 2021 17:35:48 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from smtp2.osuosl.org ([127.0.0.1])
-	by localhost (smtp2.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id JweBhHhszAyv; Fri, 28 May 2021 17:04:02 +0000 (UTC)
-Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by smtp2.osuosl.org (Postfix) with ESMTP id 61938400AE;
-	Fri, 28 May 2021 17:04:02 +0000 (UTC)
+Received: from smtp4.osuosl.org ([127.0.0.1])
+	by localhost (smtp4.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+	with ESMTP id qDZpYZMWLiUe; Fri, 28 May 2021 17:35:47 +0000 (UTC)
+Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [IPv6:2605:bc80:3010:104::8cd3:938])
+	by smtp4.osuosl.org (Postfix) with ESMTP id B165640ECE;
+	Fri, 28 May 2021 17:35:46 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 3B129C000D;
-	Fri, 28 May 2021 17:04:02 +0000 (UTC)
-Received: from smtp1.osuosl.org (smtp1.osuosl.org [140.211.166.138])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 557D7C0001
- for <iommu@lists.linux-foundation.org>; Fri, 28 May 2021 17:04:01 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 93E2DC000D;
+	Fri, 28 May 2021 17:35:46 +0000 (UTC)
+Received: from smtp3.osuosl.org (smtp3.osuosl.org [140.211.166.136])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 4E350C0001
+ for <iommu@lists.linux-foundation.org>; Fri, 28 May 2021 17:35:45 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by smtp1.osuosl.org (Postfix) with ESMTP id 2F6DF83FE8
- for <iommu@lists.linux-foundation.org>; Fri, 28 May 2021 17:04:01 +0000 (UTC)
+ by smtp3.osuosl.org (Postfix) with ESMTP id 2EC1A60DE1
+ for <iommu@lists.linux-foundation.org>; Fri, 28 May 2021 17:35:45 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Authentication-Results: smtp1.osuosl.org (amavisd-new);
- dkim=pass (2048-bit key) header.d=gmail.com
-Received: from smtp1.osuosl.org ([127.0.0.1])
- by localhost (smtp1.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id DLnPy_zLFoCH for <iommu@lists.linux-foundation.org>;
- Fri, 28 May 2021 17:04:00 +0000 (UTC)
+Authentication-Results: smtp3.osuosl.org (amavisd-new);
+ dkim=pass (2048-bit key) header.d=nvidia.com
+Received: from smtp3.osuosl.org ([127.0.0.1])
+ by localhost (smtp3.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+ with ESMTP id W8wSHQ_TzOIR for <iommu@lists.linux-foundation.org>;
+ Fri, 28 May 2021 17:35:44 +0000 (UTC)
 X-Greylist: whitelisted by SQLgrey-1.8.0
-Received: from mail-ed1-x52f.google.com (mail-ed1-x52f.google.com
- [IPv6:2a00:1450:4864:20::52f])
- by smtp1.osuosl.org (Postfix) with ESMTPS id 9DF9C8421E
- for <iommu@lists.linux-foundation.org>; Fri, 28 May 2021 17:03:59 +0000 (UTC)
-Received: by mail-ed1-x52f.google.com with SMTP id j9so5613935edt.6
- for <iommu@lists.linux-foundation.org>; Fri, 28 May 2021 10:03:59 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=gmail.com; s=20161025;
- h=date:from:to:cc:subject:message-id:references:mime-version
- :content-disposition:in-reply-to:user-agent;
- bh=vQATZo+AZo4YlZU2F1YsWzh6lrZA5xtN0yUkcxgQjB0=;
- b=BYr+K+Nr36WmmfDScZnUlfK7sTAJZtKemw1pJ/mtrtl2v5/tAfPjczuIoU0iraIwWA
- t2A2/7pNO92Fik4NAZDBo4xu8R0AMrkCqypSw7uoWgehNvCcdYxpXBYZKHjgFG/PhBYO
- /fNWHcozCdeVVnly3t7XODxA7RLCfdPPnGV+KpN1hCM9/fXI24BwQ+vMb1owRVmNJDjq
- +K7sLll2egnECQFloecqqKplJa3uscANWEVV6+LUhMdv9jLHAjfwR8rzKCDZvtHk7tyG
- o0Vd9pu4fjXSVLntOmm2ayPnD0uY2+lkKuBiu3PfVUjDJCB0LsgnDpWDIWR1nCk6QWXI
- oUlg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
- d=1e100.net; s=20161025;
- h=x-gm-message-state:date:from:to:cc:subject:message-id:references
- :mime-version:content-disposition:in-reply-to:user-agent;
- bh=vQATZo+AZo4YlZU2F1YsWzh6lrZA5xtN0yUkcxgQjB0=;
- b=hgTVJKSYCv7rRYFTL/iWFULFms9rcSpJDfJ4MdKlrlNa5KTMd/PTj/FVtZAsZJFUnk
- 1ZdufD+vGFZnpUEgxwtfYDupEjWp0WV9ak4k844x5NnyLtuwLXZxUocT+YM0GDc/ndMs
- uBsdecAtdKKKRwnWy9ifQYE6Gl5/rzJ0d0nYiIWB16xYP9usLxqrGi/4V2OsTKAFlYkw
- WBG0hYQ89zgnlzcRA43I7fif8UMmAqceoLenOzn7zmzc4E4E6LMv2Wms8vUnbhjrLrBQ
- UPwrseqfQEh2DOF2lSHynHI4uBKVuzat9BvM0BRLxlv7m9nkosXoCQQ4oXADTLRr8Klp
- u2WQ==
-X-Gm-Message-State: AOAM530NBaSmniyTDRMIjhu9SvhjyLDPD4pBwsUnQN8OhQopuELfIYju
- DUDnulhVGb51SuOkKbXwmLA=
-X-Google-Smtp-Source: ABdhPJycpvmB9hvj5UhOb2wxYw+dia0+6YsgtT4XQ9JGvgKIKbT94ArxpuxjPIbVv1cFQLHbODVwWg==
-X-Received: by 2002:a05:6402:40c:: with SMTP id
- q12mr10793692edv.0.1622221437848; 
- Fri, 28 May 2021 10:03:57 -0700 (PDT)
-Received: from localhost ([62.96.65.119])
- by smtp.gmail.com with ESMTPSA id e25sm600142eja.15.2021.05.28.10.03.56
- (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
- Fri, 28 May 2021 10:03:56 -0700 (PDT)
-Date: Fri, 28 May 2021 19:05:28 +0200
-From: Thierry Reding <thierry.reding@gmail.com>
-To: Will Deacon <will@kernel.org>, Robin Murphy <robin.murphy@arm.com>,
- Joerg Roedel <joro@8bytes.org>,
- Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>
-Subject: Re: [PATCH v2 00/10] arm64: tegra: Prevent early SMMU faults
-Message-ID: <YLEi2FonP568wYrE@orome.fritz.box>
-References: <20210420172619.3782831-1-thierry.reding@gmail.com>
+Received: from NAM02-SN1-obe.outbound.protection.outlook.com
+ (mail-sn1anam02on2061e.outbound.protection.outlook.com
+ [IPv6:2a01:111:f400:7ea9::61e])
+ by smtp3.osuosl.org (Postfix) with ESMTPS id C1D55608B2
+ for <iommu@lists.linux-foundation.org>; Fri, 28 May 2021 17:35:43 +0000 (UTC)
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=fBOS0AwABgiI7Jo4g7MyKSn8ThbH0aEVoGpFFCWvLi6N+dh1ImRvAqor1i+W4akExIWiggsPHGpL7YFjr7BHAuZn7NR6fTn4SfPCRt4iO9uadW8+kesX+s9umgBXA7yBUgToZxtcZGcLMWp7YDYnGdI6hRXjE8iUCflmLbP+epc1GcvE6BoWeb637VfEjL4d29DHZTZRtA+vHi6z6aFaSEfKQ3fE6LSJDI+jaWYk5vggwtIaX5jZ44cYCa5y4FAX1G6/WDBD5EYKh0U5H254kHt5VHOeKn3+ZnAxt8AjW8bG3Dg8KPLRBQ9hT4mOiWA9O/KQCI27QZ904290zDO6bA==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com; 
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=g1GxCsOlmDcybySU1GhVwM/cUZwthjtqnrELfctAmjY=;
+ b=OwYLBEd2uubQKvPA4pqY+0a0LbAZpgweLdDTB/q1QDoHZz5Fu6zNxGRnRU0xC01zYR0yvx9eUdPrQcqHjOF7yhZZ1qrfRZ16mnu8Itbn6g2YRd9LwEXWPk2EWIUQZkxfWrBJiDIEz2aHVmxNu+g3uKgL9XDJ+Wrzu/qw5YNM43MI5BMfxBSkGiv1INtuR47mHw/i15pfI33wh8J+IjC5jluLWTPavnEz9RiXqg+rTMuCjasI9PBMxlC/Q7nQ+AcoqjDySQocmm+fbO/YrHN8fLOOt9WbNncs49Tgxh12MBu3bUatN6LG/3v4h7DMVBXRnQctxePEXBCBQFbawZ/l6g==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=nvidia.com; dmarc=pass action=none header.from=nvidia.com;
+ dkim=pass header.d=nvidia.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
+ s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=g1GxCsOlmDcybySU1GhVwM/cUZwthjtqnrELfctAmjY=;
+ b=Zqa22SW+WFc9dgGn2YAqHOJ2vPrfB4h372gexaZqxZ96qeGpDry82Wzn8hJVBhot///fMfdu4zYtBtk3R5jw/R1cNyHVv7gbdrdr5KgDYh2EcUAHBI9VPJvtoYDjVLnJcPmNTy6rweKs5ojOkqdvpaXA5zL/doneDmIwUzsFAM7rRsvBcRO0j15RljqIdq7W8bv+bWeUGpKzUCa88mnxznLmg92eiy+pRDzL4VVuQWLkCilPKOKTfzS89vqAKUc48M/KZm5wqgc/SSsfEcMmmJnnLWnP6YWxtfswH+eZnJQgjixh2Lhp7To0GuVxtJb5Gp057HHKP2Zi6104GjdvJg==
+Authentication-Results: intel.com; dkim=none (message not signed)
+ header.d=none;intel.com; dmarc=none action=none header.from=nvidia.com;
+Received: from BL0PR12MB5506.namprd12.prod.outlook.com (2603:10b6:208:1cb::22)
+ by BL1PR12MB5318.namprd12.prod.outlook.com (2603:10b6:208:31d::20)
+ with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4173.21; Fri, 28 May
+ 2021 17:35:40 +0000
+Received: from BL0PR12MB5506.namprd12.prod.outlook.com
+ ([fe80::3d51:a3b9:8611:684e]) by BL0PR12MB5506.namprd12.prod.outlook.com
+ ([fe80::3d51:a3b9:8611:684e%7]) with mapi id 15.20.4173.023; Fri, 28 May 2021
+ 17:35:40 +0000
+Date: Fri, 28 May 2021 14:35:38 -0300
+From: Jason Gunthorpe <jgg@nvidia.com>
+To: "Tian, Kevin" <kevin.tian@intel.com>
+Subject: Re: [RFC] /dev/ioasid uAPI proposal
+Message-ID: <20210528173538.GA3816344@nvidia.com>
+References: <MWHPR11MB1886422D4839B372C6AB245F8C239@MWHPR11MB1886.namprd11.prod.outlook.com>
+Content-Disposition: inline
+In-Reply-To: <MWHPR11MB1886422D4839B372C6AB245F8C239@MWHPR11MB1886.namprd11.prod.outlook.com>
+X-Originating-IP: [47.55.113.94]
+X-ClientProxiedBy: MN2PR02CA0014.namprd02.prod.outlook.com
+ (2603:10b6:208:fc::27) To BL0PR12MB5506.namprd12.prod.outlook.com
+ (2603:10b6:208:1cb::22)
 MIME-Version: 1.0
-In-Reply-To: <20210420172619.3782831-1-thierry.reding@gmail.com>
-User-Agent: Mutt/2.0.6 (98f8cb83) (2021-03-06)
-Cc: iommu@lists.linux-foundation.org, Jon Hunter <jonathanh@nvidia.com>,
- Nicolin Chen <nicolinc@nvidia.com>, linux-tegra@vger.kernel.org,
- linux-arm-kernel@lists.infradead.org
+X-MS-Exchange-MessageSentRepresentingType: 1
+Received: from mlx.ziepe.ca (47.55.113.94) by
+ MN2PR02CA0014.namprd02.prod.outlook.com (2603:10b6:208:fc::27) with Microsoft
+ SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.20.4173.20 via Frontend Transport; Fri, 28 May 2021 17:35:39 +0000
+Received: from jgg by mlx with local (Exim 4.94)	(envelope-from
+ <jgg@nvidia.com>)	id 1lmgOY-00G1IX-R9; Fri, 28 May 2021 14:35:38 -0300
+X-MS-PublicTrafficType: Email
+X-MS-Office365-Filtering-Correlation-Id: 883a4c7f-c8a9-4bd3-7803-08d921ff02e0
+X-MS-TrafficTypeDiagnostic: BL1PR12MB5318:
+X-MS-Exchange-Transport-Forked: True
+X-Microsoft-Antispam-PRVS: <BL1PR12MB5318B54767BA64A18AA50BF6C2229@BL1PR12MB5318.namprd12.prod.outlook.com>
+X-MS-Oob-TLC-OOBClassifiers: OLM:9508;
+X-MS-Exchange-SenderADCheck: 1
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: pDjvlvOUjU4pdkgXqCpvtCHKu08KQw0DUZICRVgDTRNfLeOX0YWpFNEzK7T63MomxL6/ab+tAfExxgjpBqcYP44AzoE1wTp96f4kc6dPzVaFn1DbM1tk98qpFoLhDoEzJ3+dJcz/QGdrX79Wu5rXeqW0odlvHSPZA9Ds6HdYBBdaO5NtCwaBGsow0fQBZXfVzHBNE8jpBv9RwKwdJ5XdzK+Ykcdh7JMuZbjN9m2ldAKHLpxVDFeRPUjPof0oaUkux7Nthn4czYBMXgXyv8Rxnh/KpudFWXMBolUgTL3IS9RZf0EP60hD82/TA3fqUTgafEA7exCL/RjVZPyrXUzpAuFPsTBIyz/x9p9BadR050GHJpUouNm+gsjbNg2SvAsSyVM7EfwAvs73ObFszeRxvJTWqxAI6QKIrDteoLmxYqRIeEmzpkIuDD54b4MTpmMa7jONzAsDv6AtTaRjOIfoORBTgGb9m+UzW0Ix+HNbAeJv/DCo8x1vk7itStyz0BUC3Utgdeu3v0z+qdzBTAQoLQv8zYUi2923VEmMBFIozirAC2jbWNhoRLslbII6M2bF0tfxpmqCtxyVEcyotIuKD4Ivd/2zUry3WWowERJe7TI=
+X-Forefront-Antispam-Report: CIP:255.255.255.255; CTRY:; LANG:en; SCL:1; SRV:;
+ IPV:NLI; SFV:NSPM; H:BL0PR12MB5506.namprd12.prod.outlook.com; PTR:; CAT:NONE;
+ SFS:(4636009)(396003)(376002)(136003)(346002)(366004)(39860400002)(83380400001)(66946007)(26005)(66556008)(33656002)(66476007)(7416002)(9746002)(86362001)(9786002)(54906003)(316002)(8676002)(186003)(478600001)(2906002)(4326008)(6916009)(426003)(1076003)(36756003)(38100700002)(8936002)(2616005)(5660300002);
+ DIR:OUT; SFP:1101; 
+X-MS-Exchange-AntiSpam-MessageData: =?us-ascii?Q?NSok02vfYdtES0ORAUi829zGMeo2bqE4R0BK1nhoiN8wcJghadaH+cIIWSjk?=
+ =?us-ascii?Q?s0aE2tDU8RBrmdADXA8IFPhJHvjmC22Cxo2olqKW4U6f96CH1L6ENPEgRroR?=
+ =?us-ascii?Q?LReUznggT2VdDXB8NQKsEVWAPrJp2m4okOFAM/X5yr3CbqeaXglzG6ZvnivP?=
+ =?us-ascii?Q?lAn/mmOfLOE9pIpsNhj2z+CFpTSx74WQfbXAMES1mECJY6FIAlU5/3CEQYc2?=
+ =?us-ascii?Q?frQATSmZdjXa3Rca+AdLvvNT1Z+AkV0N9cXajhcBiXrN3f2+l6JRPJ1P9d0B?=
+ =?us-ascii?Q?ZXlRk8iVeMdz2Jy5DGT1yvTcIAsASGKcI5F4h7KF+8/0FLwJK9UA2lmT8jDc?=
+ =?us-ascii?Q?IRlD6vY54v5uSXQWP5qQwsadt0Lc0t5MAZzb6Xj0PAPfylkn+RLDMX0kaR4r?=
+ =?us-ascii?Q?tuh+3AtaUS+JTlqBD2RU+nGXL51cFjqQehig6w6iTYQTKK+qjelnUZb2lOX3?=
+ =?us-ascii?Q?RScyXhsSteaiWBr/I3iPsH80sHuepO3V41CtpgSApAaUFaek78VHo0UTpKD7?=
+ =?us-ascii?Q?8yWNTU71ZQw1UeiQGWqL46AkhcOvh1OLes2IhBJgNmXCp2nNytS4/aBiqIMz?=
+ =?us-ascii?Q?pVQcEM6BHa2PPinsXnEUuYwY/8fjIhatw+o8hXZfI9kgm/na2uWHwcDIMZ/Z?=
+ =?us-ascii?Q?WZAdCkRSEQnv6p1HW1NVcR/ig47R7Zn+tGNPAOMV9o+NOunbiqYzS1kpJfke?=
+ =?us-ascii?Q?9zFYIaJB/2/IUaM1Naoh1In7Fd7w5oqFpB8ykDI8W5KQwKgUPhN2UIZ4CS1c?=
+ =?us-ascii?Q?tSuBSoQv6ZWMlzOqsbT8RzBGvqWLqzHGdEuLaJWue5xfdkogluDarJ8HdwWq?=
+ =?us-ascii?Q?iJpLYfKZTo/G8u9AfhNP0qHwU6teC8EG96SnEwpnu0cqZLW4yrac95xSakAj?=
+ =?us-ascii?Q?Q3g3HNVFU3UJlm1cYfkIlDe7SyMJqbg69AhiDcv9Vbd9rI2ZsW/OpmWMAyTW?=
+ =?us-ascii?Q?m2GIuVjcyLASxl581nuvaDVWyw60kXFJGLz3Xp9J1YH3QrbbSTiOSdF7q6oa?=
+ =?us-ascii?Q?ZngJXvYE19eogStg6gamfrsqMr51D3wg4PV4UCkjPtoPPqf+H6+sy6GEJ3wE?=
+ =?us-ascii?Q?/lQq9RsOtIFxdkk7Jy0QAyZcaZapRq9t46iJsdYyH4Ihs69o4miDB86pwDMF?=
+ =?us-ascii?Q?0jM+FFT3wh6GVQJeqZAd6DyVFCFS0+ec7KWN31IhbClS5K3X+lpjZt94uym0?=
+ =?us-ascii?Q?iFFHO6sdDt0waxLZpq/qTiOjPQfebGfXLHIvv+3118ocO/skUtjIS13Y6fDr?=
+ =?us-ascii?Q?Np8J8MB/p+GyNrdJePoDspx/son8iL0gwjZriiZudij+KyJRTLrsiFnEaJjX?=
+ =?us-ascii?Q?KhquS6/35wmMj2HHdHyyPwIN?=
+X-OriginatorOrg: Nvidia.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 883a4c7f-c8a9-4bd3-7803-08d921ff02e0
+X-MS-Exchange-CrossTenant-AuthSource: BL0PR12MB5506.namprd12.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 28 May 2021 17:35:39.9751 (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: U1Hq5IdhFP8eIKUBnmWdE3xO+iloM+CNqyg1i8NxjuRvTLTpHlUltr5WSCQzsSKQ
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: BL1PR12MB5318
+Cc: Jean-Philippe Brucker <jean-philippe@linaro.org>,
+ "Alex Williamson \(alex.williamson@redhat.com\)"
+ <alex.williamson@redhat.com>, "Raj, Ashok" <ashok.raj@intel.com>,
+ "kvm@vger.kernel.org" <kvm@vger.kernel.org>, Jonathan Corbet <corbet@lwn.net>,
+ Robin Murphy <robin.murphy@arm.com>, LKML <linux-kernel@vger.kernel.org>,
+ Kirti Wankhede <kwankhede@nvidia.com>,
+ "iommu@lists.linux-foundation.org" <iommu@lists.linux-foundation.org>,
+ David Gibson <david@gibson.dropbear.id.au>, "Jiang,
+ Dave" <dave.jiang@intel.com>, "Wu, Hao" <hao.wu@intel.com>,
+ David Woodhouse <dwmw2@infradead.org>, Jason Wang <jasowang@redhat.com>
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -108,144 +163,163 @@ List-Post: <mailto:iommu@lists.linux-foundation.org>
 List-Help: <mailto:iommu-request@lists.linux-foundation.org?subject=help>
 List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
  <mailto:iommu-request@lists.linux-foundation.org?subject=subscribe>
-Content-Type: multipart/mixed; boundary="===============7685166724509397763=="
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
+On Thu, May 27, 2021 at 07:58:12AM +0000, Tian, Kevin wrote:
 
---===============7685166724509397763==
-Content-Type: multipart/signed; micalg=pgp-sha256;
-	protocol="application/pgp-signature"; boundary="dbXO9L0VPFIC9kST"
-Content-Disposition: inline
+> IOASID nesting can be implemented in two ways: hardware nesting and 
+> software nesting. With hardware support the child and parent I/O page 
+> tables are walked consecutively by the IOMMU to form a nested translation. 
+> When it's implemented in software, the ioasid driver is responsible for 
+> merging the two-level mappings into a single-level shadow I/O page table. 
+> Software nesting requires both child/parent page tables operated through 
+> the dma mapping protocol, so any change in either level can be captured 
+> by the kernel to update the corresponding shadow mapping.
 
+Why? A SW emulation could do this synchronization during invalidation
+processing if invalidation contained an IOVA range.
 
---dbXO9L0VPFIC9kST
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
+I think this document would be stronger to include some "Rational"
+statements in key places
 
-On Tue, Apr 20, 2021 at 07:26:09PM +0200, Thierry Reding wrote:
-> From: Thierry Reding <treding@nvidia.com>
->=20
-> Hi,
->=20
-> this is a set of patches that is the result of earlier discussions
-> regarding early identity mappings that are needed to avoid SMMU faults
-> during early boot.
->=20
-> The goal here is to avoid early identity mappings altogether and instead
-> postpone the need for the identity mappings to when devices are attached
-> to the SMMU. This works by making the SMMU driver coordinate with the
-> memory controller driver on when to start enforcing SMMU translations.
-> This makes Tegra behave in a more standard way and pushes the code to
-> deal with the Tegra-specific programming into the NVIDIA SMMU
-> implementation.
->=20
-> Compared to the original version of these patches, I've split the
-> preparatory work into a separate patch series because it became very
-> large and will be mostly uninteresting for this audience.
->=20
-> Patch 1 provides a mechanism to program SID overrides at runtime. Patch
-> 2 updates the ARM SMMU device tree bindings to include the Tegra186
-> compatible string as suggested by Robin during review.
->=20
-> Patches 3 and 4 create the fundamentals in the SMMU driver to support
-> this and also make this functionality available on Tegra186. Patch 5
-> hooks the ARM SMMU up to the memory controller so that the memory client
-> stream ID overrides can be programmed at the right time.
->=20
-> Patch 6 extends this mechanism to Tegra186 and patches 7-9 enable all of
-> this through device tree updates. Patch 10 is included here to show how
-> SMMU will be enabled for display controllers. However, it cannot be
-> applied yet because the code to create identity mappings for potentially
-> live framebuffers hasn't been merged yet.
->=20
-> The end result is that various peripherals will have SMMU enabled, while
-> the display controllers will keep using passthrough, as initially set up
-> by firmware. Once the device tree bindings have been accepted and the
-> SMMU driver has been updated to create identity mappings for the display
-> controllers, they can be hooked up to the SMMU and the code in this
-> series will automatically program the SID overrides to enable SMMU
-> translations at the right time.
->=20
-> Note that the series creates a compile time dependency between the
-> memory controller and IOMMU trees. If it helps I can provide a branch
-> for each tree, modelling the dependency, once the series has been
-> reviewed.
->=20
-> Changes in v2:
-> - split off the preparatory work into a separate series (that needs to
->   be applied first)
-> - address review comments by Robin
->=20
-> Thierry
->=20
-> Thierry Reding (10):
->   memory: tegra: Implement SID override programming
->   dt-bindings: arm-smmu: Add Tegra186 compatible string
->   iommu/arm-smmu: Implement ->probe_finalize()
->   iommu/arm-smmu: tegra: Detect number of instances at runtime
->   iommu/arm-smmu: tegra: Implement SID override programming
->   iommu/arm-smmu: Use Tegra implementation on Tegra186
->   arm64: tegra: Use correct compatible string for Tegra186 SMMU
->   arm64: tegra: Hook up memory controller to SMMU on Tegra186
->   arm64: tegra: Enable SMMU support on Tegra194
->   arm64: tegra: Enable SMMU support for display on Tegra194
->=20
->  .../devicetree/bindings/iommu/arm,smmu.yaml   |  11 +-
->  arch/arm64/boot/dts/nvidia/tegra186.dtsi      |   4 +-
->  arch/arm64/boot/dts/nvidia/tegra194.dtsi      | 166 ++++++++++++++++++
->  drivers/iommu/arm/arm-smmu/arm-smmu-impl.c    |   3 +-
->  drivers/iommu/arm/arm-smmu/arm-smmu-nvidia.c  |  90 ++++++++--
->  drivers/iommu/arm/arm-smmu/arm-smmu.c         |  13 ++
->  drivers/iommu/arm/arm-smmu/arm-smmu.h         |   1 +
->  drivers/memory/tegra/mc.c                     |   9 +
->  drivers/memory/tegra/tegra186.c               |  72 ++++++++
->  include/soc/tegra/mc.h                        |   3 +
->  10 files changed, 349 insertions(+), 23 deletions(-)
+> Based on the underlying IOMMU capability one device might be allowed 
+> to attach to multiple I/O address spaces, with DMAs accessing them by 
+> carrying different routing information. One of them is the default I/O 
+> address space routed by PCI Requestor ID (RID) or ARM Stream ID. The 
+> remaining are routed by RID + Process Address Space ID (PASID) or 
+> Stream+Substream ID. For simplicity the following context uses RID and
+> PASID when talking about the routing information for I/O address spaces.
 
-Will, Robin,
+I wonder if we should just adopt the ARM naming as the API
+standard. It is general and doesn't have the SVA connotation that
+"Process Address Space ID" carries.
+ 
+> Device must be bound to an IOASID FD before attach operation can be
+> conducted. This is also through VFIO uAPI. In this proposal one device 
+> should not be bound to multiple FD's. Not sure about the gain of 
+> allowing it except adding unnecessary complexity. But if others have 
+> different view we can further discuss.
 
-do you have any more comments on the ARM SMMU bits of this series? If
-not, can you guys provide an Acked-by so that Krzysztof can pick this
-(modulo the DT patches) up into the memory-controller tree for v5.14?
+Unless there is some internal kernel design reason to block it, I
+wouldn't go out of my way to prevent it.
 
-I'll send out a v3 with the bisectibilitiy fix that Krishna pointed
-out.
+> VFIO must ensure its device composes DMAs with the routing information
+> attached to the IOASID. For pdev it naturally happens since vPASID is 
+> directly programmed to the device by guest software. For mdev this 
+> implies any guest operation carrying a vPASID on this device must be 
+> trapped into VFIO and then converted to pPASID before sent to the 
+> device. A detail explanation about PASID virtualization policies can be 
+> found in section 4. 
 
-Thanks,
-Thierry
+vPASID and related seems like it needs other IOMMU vendors to take a
+very careful look. I'm really glad to see this starting to be spelled
+out in such a clear way, as it was hard to see from the patches there
+is vendor variation.
 
---dbXO9L0VPFIC9kST
-Content-Type: application/pgp-signature; name="signature.asc"
+> With above design /dev/ioasid uAPI is all about I/O address spaces. 
+> It doesn't include any device routing information, which is only 
+> indirectly registered to the ioasid driver through VFIO uAPI. For
+> example, I/O page fault is always reported to userspace per IOASID,
+> although it's physically reported per device (RID+PASID). 
 
------BEGIN PGP SIGNATURE-----
+I agree with Jean-Philippe - at the very least erasing this
+information needs a major rational - but I don't really see why it
+must be erased? The HW reports the originating device, is it just a
+matter of labeling the devices attached to the /dev/ioasid FD so it
+can be reported to userspace?
 
-iQIzBAABCAAdFiEEiOrDCAFJzPfAjcif3SOs138+s6EFAmCxItYACgkQ3SOs138+
-s6EDOBAAwOiGOvTRsOL0/TG+ekj2Qy8EtKdkYVeeHYkYzILZEbzntRj67AJ3MyWc
-Qz+08dicUEwFlehcUGCX1iltXX61eTLLxWATt14ogx2QWJMQ8MLAqbEifYpm1Q3g
-YqO7p/7l6y0F7Ah//pbROLvhHdQfIjbzypfpyzVRV4eyo8MVjttvOVymxYyekIHS
-5WT0lHXOxmOZBemH6bK66tdIceIZ/TEGSy6sI9a7fo1KSJRC8UyAvlUb2eG2WIgI
-KbsIunQUbT7jZx0bLTGVD5xJpcuZURgm+KkN0Y1cfRPP3XVlHWsotPH8O2G1Vqbb
-Ul5aQYHunYKOXRq4YxhtpTWCmg38ZsNjT941VvVqpZlUHHnHdPAIoV+e6B5Z/ZMk
-tVmWhG91uoGOiCp/KJZ+kc8E7TxkpYtw+HzdW1nQEVhlCJ6Lcjjp7vQdmuWb54/l
-5/ql3ep8u2Ycj0SBcuUMsfCZPoJwvysnlY5DswqHI1i5UslQ8FPBxH3pkNyERKZp
-b/pmkMN+RjKezyD6Y6LULATQG6Dif5Hrb7uIXOcMnhcDuFhb11Vf7MuXQwe4K+Ok
-MTqVgNWNo0kIMDNMZXraN3+k24R0MFBBOoLAY/bMeNDxXknCpqxWky6ouQbRalf+
-nc3IEDIy7U/mgb4HvI+25P1WIArtLpA9ZKbhUYmahdMlbkn77ww=
-=bqed
------END PGP SIGNATURE-----
+> multiple attached devices) and then generates a per-device virtual I/O 
+> page fault into guest. Similarly the iotlb invalidation uAPI describes the 
+> granularity in the I/O address space (all, or a range), different from the 
+> underlying IOMMU semantics (domain-wide, PASID-wide, range-based).
 
---dbXO9L0VPFIC9kST--
+This seems OK though, I can't think of a reason to allow an IOASID to
+be left partially invalidated???
+ 
+> I/O page tables routed through PASID are installed in a per-RID PASID 
+> table structure. Some platforms implement the PASID table in the guest 
+> physical space (GPA), expecting it managed by the guest. The guest
+> PASID table is bound to the IOMMU also by attaching to an IOASID, 
+> representing the per-RID vPASID space. 
+> 
+> We propose the host kernel needs to explicitly track  guest I/O page 
+> tables even on these platforms, i.e. the same pgtable binding protocol 
+> should be used universally on all platforms (with only difference on who
+> actually writes the PASID table). One opinion from previous discussion 
+> was treating this special IOASID as a container for all guest I/O page 
+> tables i.e. hiding them from the host. 
 
---===============7685166724509397763==
-Content-Type: text/plain; charset="us-ascii"
-MIME-Version: 1.0
-Content-Transfer-Encoding: 7bit
-Content-Disposition: inline
+> However this way significantly 
+> violates the philosophy in this /dev/ioasid proposal. It is not one IOASID 
+> one address space any more. Device routing information (indirectly 
+> marking hidden I/O spaces) has to be carried in iotlb invalidation and 
+> page faulting uAPI to help connect vIOMMU with the underlying 
+> pIOMMU. This is one design choice to be confirmed with ARM guys.
 
+I'm confused by this rational.
+
+For a vIOMMU that has IO page tables in the guest the basic
+choices are:
+ - Do we have a hypervisor trap to bind the page table or not? (RID
+   and PASID may differ here)
+ - Do we have a hypervisor trap to invaliate the page tables or not?
+
+If the first is a hypervisor trap then I agree it makes sense to create a
+child IOASID that points to each guest page table and manage it
+directly. This should not require walking guest page tables as it is
+really just informing the HW where the page table lives. HW will walk
+them.
+
+If there are no hypervisor traps (does this exist?) then there is no
+way to involve the hypervisor here and the child IOASID should simply
+be a pointer to the guest's data structure that describes binding. In
+this case that IOASID should claim all PASIDs when bound to a
+RID. 
+
+Invalidation should be passed up the to the IOMMU driver in terms of
+the guest tables information and either the HW or software has to walk
+to guest tables to make sense of it.
+
+Events from the IOMMU to userspace should be tagged with the attached
+device label and the PASID/substream ID. This means there is no issue
+to have a a 'all PASID' IOASID.
+
+> Notes:
+> -   It might be confusing as IOASID is also used in the kernel (drivers/
+>     iommu/ioasid.c) to represent PCI PASID or ARM substream ID. We need
+>     find a better name later to differentiate.
+
++1 on Jean-Philippe's remarks
+
+> -   PPC has not be considered yet as we haven't got time to fully understand
+>     its semantics. According to previous discussion there is some generality 
+>     between PPC window-based scheme and VFIO type1 semantics. Let's 
+>     first make consensus on this proposal and then further discuss how to 
+>     extend it to cover PPC's requirement.
+
+From what I understood PPC is not so bad, Nesting IOASID's did its
+preload feature and it needed a way to specify/query the IOVA range a
+IOASID will cover.
+
+> -   There is a protocol between vfio group and kvm. Needs to think about
+>     how it will be affected following this proposal.
+
+Ugh, I always stop looking when I reach that boundary. Can anyone
+summarize what is going on there?
+
+Most likely passing the /dev/ioasid into KVM's FD (or vicevera) is the
+right answer. Eg if ARM needs to get the VMID from KVM and set it to
+ioasid then a KVM "ioctl set_arm_vmid(/dev/ioasid)" call is
+reasonable. Certainly better than the symbol get sutff we have right
+now.
+
+I will read through the detail below in another email
+
+Jason
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
 https://lists.linuxfoundation.org/mailman/listinfo/iommu
---===============7685166724509397763==--
