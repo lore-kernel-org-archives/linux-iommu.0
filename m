@@ -2,101 +2,102 @@ Return-Path: <SRS0=hOEw=KX=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-13.5 required=3.0 tests=BAYES_00,DKIM_INVALID,
-	DKIM_SIGNED,HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_CR_TRAILER,INCLUDES_PATCH,
-	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,URIBL_RED autolearn=unavailable
-	autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-12.0 required=3.0 tests=BAYES_00,
+	DKIM_ADSP_CUSTOM_MED,DKIM_INVALID,DKIM_SIGNED,FREEMAIL_FORGED_FROMDOMAIN,
+	FREEMAIL_FROM,HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_CR_TRAILER,
+	INCLUDES_PATCH,MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,URIBL_RED,
+	USER_AGENT_SANE_1 autolearn=ham autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 65AF7C2B9F7
-	for <iommu@archiver.kernel.org>; Fri, 28 May 2021 16:26:18 +0000 (UTC)
-Received: from smtp2.osuosl.org (smtp2.osuosl.org [140.211.166.133])
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3205BC2B9F7
+	for <iommu@archiver.kernel.org>; Fri, 28 May 2021 16:53:32 +0000 (UTC)
+Received: from smtp4.osuosl.org (smtp4.osuosl.org [140.211.166.137])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 05580613E3
-	for <iommu@archiver.kernel.org>; Fri, 28 May 2021 16:26:17 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 05580613E3
-Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=linaro.org
+	by mail.kernel.org (Postfix) with ESMTPS id C0B2A613E5
+	for <iommu@archiver.kernel.org>; Fri, 28 May 2021 16:53:31 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org C0B2A613E5
+Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=gmail.com
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by smtp2.osuosl.org (Postfix) with ESMTP id BE0EC40578;
-	Fri, 28 May 2021 16:26:17 +0000 (UTC)
+	by smtp4.osuosl.org (Postfix) with ESMTP id 8259A4045F;
+	Fri, 28 May 2021 16:53:31 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from smtp2.osuosl.org ([127.0.0.1])
-	by localhost (smtp2.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id ofBS0XDFOFRH; Fri, 28 May 2021 16:26:16 +0000 (UTC)
+Received: from smtp4.osuosl.org ([127.0.0.1])
+	by localhost (smtp4.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+	with ESMTP id bXpR2ACgqGIl; Fri, 28 May 2021 16:53:30 +0000 (UTC)
 Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [IPv6:2605:bc80:3010:104::8cd3:938])
-	by smtp2.osuosl.org (Postfix) with ESMTP id F24E9400AE;
-	Fri, 28 May 2021 16:26:15 +0000 (UTC)
+	by smtp4.osuosl.org (Postfix) with ESMTP id 13A4340ED5;
+	Fri, 28 May 2021 16:53:30 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id CAA48C000E;
-	Fri, 28 May 2021 16:26:15 +0000 (UTC)
-Received: from smtp3.osuosl.org (smtp3.osuosl.org [140.211.166.136])
- by lists.linuxfoundation.org (Postfix) with ESMTP id A7BDBC0001
- for <iommu@lists.linux-foundation.org>; Fri, 28 May 2021 16:26:14 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id D4CD7C000E;
+	Fri, 28 May 2021 16:53:29 +0000 (UTC)
+Received: from smtp2.osuosl.org (smtp2.osuosl.org [IPv6:2605:bc80:3010::133])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 1D556C0001
+ for <iommu@lists.linux-foundation.org>; Fri, 28 May 2021 16:53:28 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by smtp3.osuosl.org (Postfix) with ESMTP id 884FE608BB
- for <iommu@lists.linux-foundation.org>; Fri, 28 May 2021 16:26:14 +0000 (UTC)
+ by smtp2.osuosl.org (Postfix) with ESMTP id 19349400AE
+ for <iommu@lists.linux-foundation.org>; Fri, 28 May 2021 16:53:28 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Authentication-Results: smtp3.osuosl.org (amavisd-new);
- dkim=pass (2048-bit key) header.d=linaro.org
-Received: from smtp3.osuosl.org ([127.0.0.1])
- by localhost (smtp3.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id UT1KdU9pFfeC for <iommu@lists.linux-foundation.org>;
- Fri, 28 May 2021 16:26:13 +0000 (UTC)
+Authentication-Results: smtp2.osuosl.org (amavisd-new);
+ dkim=pass (2048-bit key) header.d=gmail.com
+Received: from smtp2.osuosl.org ([127.0.0.1])
+ by localhost (smtp2.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+ with ESMTP id NzDwcqCeI6ba for <iommu@lists.linux-foundation.org>;
+ Fri, 28 May 2021 16:53:26 +0000 (UTC)
 X-Greylist: whitelisted by SQLgrey-1.8.0
-Received: from mail-wm1-x32d.google.com (mail-wm1-x32d.google.com
- [IPv6:2a00:1450:4864:20::32d])
- by smtp3.osuosl.org (Postfix) with ESMTPS id 83B52605C4
- for <iommu@lists.linux-foundation.org>; Fri, 28 May 2021 16:26:13 +0000 (UTC)
-Received: by mail-wm1-x32d.google.com with SMTP id o127so2436722wmo.4
- for <iommu@lists.linux-foundation.org>; Fri, 28 May 2021 09:26:13 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linaro.org; s=google;
+Received: from mail-ej1-x62c.google.com (mail-ej1-x62c.google.com
+ [IPv6:2a00:1450:4864:20::62c])
+ by smtp2.osuosl.org (Postfix) with ESMTPS id AF98B40579
+ for <iommu@lists.linux-foundation.org>; Fri, 28 May 2021 16:53:26 +0000 (UTC)
+Received: by mail-ej1-x62c.google.com with SMTP id s22so6291584ejv.12
+ for <iommu@lists.linux-foundation.org>; Fri, 28 May 2021 09:53:26 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=gmail.com; s=20161025;
  h=date:from:to:cc:subject:message-id:references:mime-version
- :content-disposition:in-reply-to;
- bh=TKWYuy5e1a7MVcCONh10ek8WRVjfZhF24M6h3yAlFXg=;
- b=uAqk1rGnr4Zx8fqad9xCVt+J0mKPcTq7ssobuwqr0/V87yyJQtgkrWC0PF+2ZNSBCb
- XhlqvW8R38UvTKfuOKYM4U8FjttA+LC319F73dSL2q1oaYiHyl7IFHQNfRzJB6DEvkCr
- WBw9ERFllz9dAcVcDTtX6ixI8TGNFWs238R37lTFFMtTOgTsQKuif183pW6vIxDO6VrH
- IRc4pSRlEhHlW2GtyTtJFQZfwKxMIXcFohGmeP3RYGw9cswseI0c/VNWQS84ydjxRq7P
- KYaUwyTPqXmkvbyZ5Yb7FITQtQ1OKuIY1PlKlZY0Rf2OgiVaMGN8ylcKefQSE0fsHzW/
- Dw8Q==
+ :content-disposition:in-reply-to:user-agent;
+ bh=8/Q1T7/H3Ga42CpeeXwBtnXyWFCr/Nsv9NyGJyZCOVw=;
+ b=EMVcyf6Vgozn5JaYJzcv45C5rVttjwZhqro7BUHd7I3jakgKq8Pbk7u9QzQGlo5MAD
+ Dk2qFwXmHzAWKZpmpX8mTMlTgCUh5e8M0Nk7GJL8ar5Ok2CraN8y81cNbPrE2vGRTbrH
+ KGHuKPgYre/zEvkyFVKxIXf5edK1SPiaq04y/2nS3EQKznllAGzpPmcaJaxJJTYueipU
+ s7oNVNfnGFb2EZQOoWBsiAbTLe+413OVfW/uCjolzRCxjaXXncFbnhT6agwrdh/HKtWJ
+ qicDai95PQu5/TK8Fx3dccPsg+kEPUX4nY2Ipb+N8VYr0SkT92c0IlyFSA0E9A8g6kRB
+ fcLw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
  d=1e100.net; s=20161025;
  h=x-gm-message-state:date:from:to:cc:subject:message-id:references
- :mime-version:content-disposition:in-reply-to;
- bh=TKWYuy5e1a7MVcCONh10ek8WRVjfZhF24M6h3yAlFXg=;
- b=av395XBrKZkC9Mec79jKh47FJqW4NhfxgNek0dDVgd+cGfb5BScVN3+UT6nNfirtGm
- PceQ9tIPByHtGw1+uWjaoxCRkYBHtwHtA6j6KSyd3fp3VYDYjEwTQ7q1TifZza0OzxSr
- xVMk2O6Eylg1cgL/Jd3yw+d3HKHJO4bA71DBiWuVjcBM4bkPK/EZ8uTs6pzMp8MP2/sH
- teORBzlIm8nC/D/H3fNBV15mnOPMDkOkX5L14lYdqagEkd/ZIwerdS5gjqA/IpSE1vJL
- 6JoOzMWvK/50Y8EgIw9+fjZSXthyyUdRx98g3sLTS6JRInQjwUpxlo6FfepI7TcEIXBA
- qTig==
-X-Gm-Message-State: AOAM533xs9Sz2ji+QA83XRL54zVX6Iml4YgZWn1Wyt6v3PQxp++JNwrg
- gQ8CEBipXESda/ytTp9Bb0NgGQ==
-X-Google-Smtp-Source: ABdhPJyD6eRonZHgh1jOYg+fLrjyl1AjpTN9fePZXHfySYYUG9aFbvN7EU/RT7evtxyZw9yAjqjYDw==
-X-Received: by 2002:a05:600c:1909:: with SMTP id
- j9mr9652038wmq.100.1622219171653; 
- Fri, 28 May 2021 09:26:11 -0700 (PDT)
-Received: from myrica (adsl-84-226-106-126.adslplus.ch. [84.226.106.126])
- by smtp.gmail.com with ESMTPSA id b15sm7953338wru.64.2021.05.28.09.26.10
+ :mime-version:content-disposition:in-reply-to:user-agent;
+ bh=8/Q1T7/H3Ga42CpeeXwBtnXyWFCr/Nsv9NyGJyZCOVw=;
+ b=ErHeIv+PQkJ7audnwCIZNRCzDTvuaGvR8B1H5hCK/hmk3NGUuKJ3eQc9gDGxKBLLOz
+ 9WudxTZvBY0TH9K/qCKsYq7VfnWETtT0nJIf1zj6HCBKWR7gtVpjaUCakPi0Dqa/0QDd
+ U63sFtMexaSdCXW5UkjehruD1t1Rhbvxl+OZfAVsfi5XBzqNjmfDDXjYpNLcf2nszORU
+ YUnZheD55u2wi89xh05u8PODgdkP1znRu9Wq7L5hzpVs1e3uVI0C0GdT3UVD0PzvaDpr
+ TFfY5WcD/+pNoSAbnBqIVhQ9ALHy+inkooVDflRHFaBmer9sRt82zmbsx53tDvMcmIhW
+ uoXw==
+X-Gm-Message-State: AOAM533KFIREkXgzhfrieRGobDIC8uKkNiipM7RNX6H1nPkqsUvJNU5y
+ vZx5tJJrX5+kF3fj5vSG2jk=
+X-Google-Smtp-Source: ABdhPJw+KFj6oh+Lnn+VyF4bZ3YYAp39NuBtIqWCrkvnE4kOjTZxgBquKlUXFUfzQ3Ajk/jPxTuIHQ==
+X-Received: by 2002:a17:906:6dd0:: with SMTP id
+ j16mr10062452ejt.208.1622220804798; 
+ Fri, 28 May 2021 09:53:24 -0700 (PDT)
+Received: from localhost ([62.96.65.119])
+ by smtp.gmail.com with ESMTPSA id l11sm2600520ejd.103.2021.05.28.09.53.23
  (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
- Fri, 28 May 2021 09:26:11 -0700 (PDT)
-Date: Fri, 28 May 2021 18:25:52 +0200
-From: Jean-Philippe Brucker <jean-philippe@linaro.org>
-To: Aaro Koskinen <aaro.koskinen@iki.fi>
-Subject: Re: [PATCH v4 21/26] iommu/arm-smmu-v3: Ratelimit event dump
-Message-ID: <YLEZkGjtkSQu/NP+@myrica>
-References: <20200224182401.353359-1-jean-philippe@linaro.org>
- <20200224182401.353359-22-jean-philippe@linaro.org>
- <20210528080958.GA60351@darkstar.musicnaut.iki.fi>
+ Fri, 28 May 2021 09:53:23 -0700 (PDT)
+Date: Fri, 28 May 2021 18:54:55 +0200
+From: Thierry Reding <thierry.reding@gmail.com>
+To: Rob Herring <robh@kernel.org>
+Subject: Re: [PATCH v2 1/5] dt-bindings: reserved-memory: Document memory
+ region specifier
+Message-ID: <YLEgXyLBF8PEFNw2@orome.fritz.box>
+References: <20210423163234.3651547-1-thierry.reding@gmail.com>
+ <20210423163234.3651547-2-thierry.reding@gmail.com>
+ <20210520220306.GA1976116@robh.at.kernel.org>
 MIME-Version: 1.0
-Content-Disposition: inline
-In-Reply-To: <20210528080958.GA60351@darkstar.musicnaut.iki.fi>
-Cc: mark.rutland@arm.com, devicetree@vger.kernel.org, kevin.tian@intel.com,
- will@kernel.org, linux-pci@vger.kernel.org, linux-mm@kvack.org,
- iommu@lists.linux-foundation.org, robh+dt@kernel.org, catalin.marinas@arm.com,
- zhangfei.gao@linaro.org, robin.murphy@arm.com, christian.koenig@amd.com,
- linux-arm-kernel@lists.infradead.org
+In-Reply-To: <20210520220306.GA1976116@robh.at.kernel.org>
+User-Agent: Mutt/2.0.6 (98f8cb83) (2021-03-06)
+Cc: devicetree@vger.kernel.org, Will Deacon <will@kernel.org>,
+ iommu@lists.linux-foundation.org, Nicolin Chen <nicolinc@nvidia.com>,
+ linux-tegra@vger.kernel.org, Dmitry Osipenko <digetx@gmail.com>,
+ Robin Murphy <robin.murphy@arm.com>
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -109,79 +110,144 @@ List-Post: <mailto:iommu@lists.linux-foundation.org>
 List-Help: <mailto:iommu-request@lists.linux-foundation.org?subject=help>
 List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
  <mailto:iommu-request@lists.linux-foundation.org?subject=subscribe>
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
+Content-Type: multipart/mixed; boundary="===============9185352624474858027=="
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-Hi Aaro,
 
-On Fri, May 28, 2021 at 11:09:58AM +0300, Aaro Koskinen wrote:
-> Hi,
-> 
-> On Mon, Feb 24, 2020 at 07:23:56PM +0100, Jean-Philippe Brucker wrote:
-> > When a device or driver misbehaves, it is possible to receive events
-> > much faster than we can print them out. Ratelimit the printing of
-> > events.
-> > 
-> > Signed-off-by: Jean-Philippe Brucker <jean-philippe@linaro.org>
-> 
-> Tested-by: Aaro Koskinen <aaro.koskinen@nokia.com>
-> 
-> > During the SVA tests when the device driver didn't properly stop DMA
-> > before unbinding, the event queue thread would almost lock-up the server
-> > with a flood of event 0xa. This patch helped recover from the error.
-> 
-> I was just debugging a similar case, and this patch was required to
-> prevent system from locking up.
-> 
-> Could you please resend this patch independently from the other patches
-> in the series, as it seems it's a worthwhile fix and still relevent for
-> current kernels. Thanks,
+--===============9185352624474858027==
+Content-Type: multipart/signed; micalg=pgp-sha256;
+	protocol="application/pgp-signature"; boundary="Q8VGTr6iP6guEeJM"
+Content-Disposition: inline
 
-Ok, I'll resend it
 
-Thanks,
-Jean
+--Q8VGTr6iP6guEeJM
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
 
-> 
-> A.
-> 
+On Thu, May 20, 2021 at 05:03:06PM -0500, Rob Herring wrote:
+> On Fri, Apr 23, 2021 at 06:32:30PM +0200, Thierry Reding wrote:
+> > From: Thierry Reding <treding@nvidia.com>
+> >=20
+> > Reserved memory region phandle references can be accompanied by a
+> > specifier that provides additional information about how that specific
+> > reference should be treated.
+> >=20
+> > One use-case is to mark a memory region as needing an identity mapping
+> > in the system's IOMMU for the device that references the region. This is
+> > needed for example when the bootloader has set up hardware (such as a
+> > display controller) to actively access a memory region (e.g. a boot
+> > splash screen framebuffer) during boot. The operating system can use the
+> > identity mapping flag from the specifier to make sure an IOMMU identity
+> > mapping is set up for the framebuffer before IOMMU translations are
+> > enabled for the display controller.
+> >=20
+> > Signed-off-by: Thierry Reding <treding@nvidia.com>
 > > ---
-> >  drivers/iommu/arm-smmu-v3.c | 13 ++++++++-----
-> >  1 file changed, 8 insertions(+), 5 deletions(-)
-> > 
-> > diff --git a/drivers/iommu/arm-smmu-v3.c b/drivers/iommu/arm-smmu-v3.c
-> > index 28f8583cd47b..6a5987cce03f 100644
-> > --- a/drivers/iommu/arm-smmu-v3.c
-> > +++ b/drivers/iommu/arm-smmu-v3.c
-> > @@ -2243,17 +2243,20 @@ static irqreturn_t arm_smmu_evtq_thread(int irq, void *dev)
-> >  	struct arm_smmu_device *smmu = dev;
-> >  	struct arm_smmu_queue *q = &smmu->evtq.q;
-> >  	struct arm_smmu_ll_queue *llq = &q->llq;
-> > +	static DEFINE_RATELIMIT_STATE(rs, DEFAULT_RATELIMIT_INTERVAL,
-> > +				      DEFAULT_RATELIMIT_BURST);
-> >  	u64 evt[EVTQ_ENT_DWORDS];
-> >  
-> >  	do {
-> >  		while (!queue_remove_raw(q, evt)) {
-> >  			u8 id = FIELD_GET(EVTQ_0_ID, evt[0]);
-> >  
-> > -			dev_info(smmu->dev, "event 0x%02x received:\n", id);
-> > -			for (i = 0; i < ARRAY_SIZE(evt); ++i)
-> > -				dev_info(smmu->dev, "\t0x%016llx\n",
-> > -					 (unsigned long long)evt[i]);
-> > -
-> > +			if (__ratelimit(&rs)) {
-> > +				dev_info(smmu->dev, "event 0x%02x received:\n", id);
-> > +				for (i = 0; i < ARRAY_SIZE(evt); ++i)
-> > +					dev_info(smmu->dev, "\t0x%016llx\n",
-> > +						 (unsigned long long)evt[i]);
-> > +			}
-> >  		}
-> >  
-> >  		/*
+> >  .../reserved-memory/reserved-memory.txt       | 21 +++++++++++++++++++
+> >  include/dt-bindings/reserved-memory.h         |  8 +++++++
+> >  2 files changed, 29 insertions(+)
+> >  create mode 100644 include/dt-bindings/reserved-memory.h
+>=20
+> Sorry for being slow on this. I have 2 concerns.
+>=20
+> First, this creates an ABI issue. A DT with cells in 'memory-region'=20
+> will not be understood by an existing OS. I'm less concerned about this=
+=20
+> if we address that with a stable fix. (Though I'm pretty sure we've=20
+> naively added #?-cells in the past ignoring this issue.)
+
+A while ago I had proposed adding memory-region*s* as an alternative
+name for memory-region to make the naming more consistent with other
+types of properties (think clocks, resets, gpios, ...). If we added
+that, we could easily differentiate between the "legacy" cases where
+no #memory-region-cells was allowed and the new cases where it was.
+
+> Second, it could be the bootloader setting up the reserved region. If a=
+=20
+> node already has 'memory-region', then adding more regions is more=20
+> complicated compared to adding new properties. And defining what each=20
+> memory-region entry is or how many in schemas is impossible.
+
+It's true that updating the property gets a bit complicated, but it's
+not exactly rocket science. We really just need to splice the array. I
+have a working implemention for this in U-Boot.
+
+For what it's worth, we could run into the same issue with any new
+property that we add. Even if we renamed this to iommu-memory-region,
+it's still possible that a bootloader may have to update this property
+if it already exists (it could be hard-coded in DT, or it could have
+been added by some earlier bootloader or firmware).
+
+> Both could be addressed with a new property. Perhaps something like=20
+> 'iommu-memory-region =3D <&phandle>;'. I think the 'iommu' prefix is=20
+> appropriate given this is entirely because of the IOMMU being in the=20
+> mix. I might feel differently if we had other uses for cells, but I=20
+> don't really see it in this case.=20
+
+I'm afraid that down the road we'll end up with other cases and then we
+might proliferate a number of *-memory-region properties with varying
+prefixes.
+
+I am aware of one other case where we might need something like this: on
+some Tegra SoCs we have audio processors that will access memory buffers
+using a DMA engine. These processors are booted from early firmware
+using firmware from system memory. In order to avoid trashing the
+firmware, we need to reserve memory. We can do this using reserved
+memory nodes. However, the audio DMA engine also uses the SMMU, so we
+need to make sure that the firmware memory is marked as reserved within
+the SMMU. This is similar to the identity mapping case, but not exactly
+the same. Instead of creating a 1:1 mapping, we just want that IOVA
+region to be reserved (i.e. IOMMU_RESV_RESERVED instead of
+IOMMU_RESV_DIRECT{,_RELAXABLE}).
+
+That would also fall into the IOMMU domain, but we can't reuse the
+iommu-memory-region property for that because then we don't have enough
+information to decide which type of reservation we need.
+
+We could obviously make iommu-memory-region take a specifier, but we
+could just as well use memory-regions in that case since we have
+something more generic anyway.
+
+With the #memory-region-cells proposal, we can easily extend the cell in
+the specifier with an additional MEMORY_REGION_IOMMU_RESERVE flag to
+take that other use case into account. If we than also change to the new
+memory-regions property name, we avoid the ABI issue (and we gain a bit
+of consistency while at it).
+
+Thierry
+
+--Q8VGTr6iP6guEeJM
+Content-Type: application/pgp-signature; name="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+
+iQIzBAABCAAdFiEEiOrDCAFJzPfAjcif3SOs138+s6EFAmCxIF0ACgkQ3SOs138+
+s6GgVBAAvM4rKjwwQlq4GSoJz946gpHZ/v8WPH/wvUQcsnFUrNIGJsLNItv+oeNC
+WSP4nCxc4cEhpi0Jl9MUM24e0I9BM1eL5x9t86XdssjF8ElmHeO6uUPL3zKUmhrv
+C94rix/U5H4oDUANv22Fi2GCVAMLjnCRAgz0jOzAmpRnR8CfpGhC8HD9+vsIOuyl
+jr0zb5JdJQntp9KfagD2sxrrMp3bkb3AURhgxvMzu+jMgsjAsg65LxZkrmwfLUOg
+Dt8LDNcbx42zE3ioF+F+fT7mHRfMPsxyAM9dYtFbjeGr4/+vdwEIuySRXW4lY9+U
+j1Lc/M5Fperag6as/U7dGSNutUBzWRJTKe9AmCgJ4+O0Z3GZJCl1ziuUjI7WmMxv
+6E2s5Mg0CImYe4rMFVy065os+saYdiLy4xJy2sjnt71qsa0GMzJ0k8H07E9RYQ9g
+l4RRkfj21qt/PuMAh9TuFewQIJxgVHUmOWFQ/qATYqTGKAmXriVBolY7wO/KuwTe
+zgo8dShCCO92KASb9NFZEqCg9Igi5c+5hzU5oi3tXKG54uCfWnhNn/HVN1viCbzi
+jr1cm5Bn/kj1id1xeHdPKPCIONcDEQYv/slUpRsMo3hTQzgpkxKP5OH7CbAxLo3Y
+/RPDyN8wSreHg3SM97nqYGade6GOZVug0oFC5RoL4oQaU02immw=
+=1rTq
+-----END PGP SIGNATURE-----
+
+--Q8VGTr6iP6guEeJM--
+
+--===============9185352624474858027==
+Content-Type: text/plain; charset="us-ascii"
+MIME-Version: 1.0
+Content-Transfer-Encoding: 7bit
+Content-Disposition: inline
+
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
 https://lists.linuxfoundation.org/mailman/listinfo/iommu
+--===============9185352624474858027==--
