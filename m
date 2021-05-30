@@ -8,79 +8,80 @@ X-Spam-Status: No, score=-13.5 required=3.0 tests=BAYES_00,
 	INCLUDES_PATCH,MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,USER_AGENT_GIT
 	autolearn=ham autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id AFDE4C47097
-	for <iommu@archiver.kernel.org>; Sun, 30 May 2021 15:06:53 +0000 (UTC)
-Received: from smtp1.osuosl.org (smtp1.osuosl.org [140.211.166.138])
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7DDCCC4709B
+	for <iommu@archiver.kernel.org>; Sun, 30 May 2021 15:06:56 +0000 (UTC)
+Received: from smtp4.osuosl.org (smtp4.osuosl.org [140.211.166.137])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 3DBF9611AC
-	for <iommu@archiver.kernel.org>; Sun, 30 May 2021 15:06:53 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 3DBF9611AC
+	by mail.kernel.org (Postfix) with ESMTPS id 3594D60FDA
+	for <iommu@archiver.kernel.org>; Sun, 30 May 2021 15:06:56 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 3594D60FDA
 Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=gmail.com
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by smtp1.osuosl.org (Postfix) with ESMTP id 0404983AD2;
-	Sun, 30 May 2021 15:06:53 +0000 (UTC)
+	by smtp4.osuosl.org (Postfix) with ESMTP id B5078403B7;
+	Sun, 30 May 2021 15:06:55 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from smtp1.osuosl.org ([127.0.0.1])
-	by localhost (smtp1.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id yYaHnhkmE-sg; Sun, 30 May 2021 15:06:52 +0000 (UTC)
-Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by smtp1.osuosl.org (Postfix) with ESMTP id D9CAF83A95;
-	Sun, 30 May 2021 15:06:51 +0000 (UTC)
+Received: from smtp4.osuosl.org ([127.0.0.1])
+	by localhost (smtp4.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+	with ESMTP id jWwspBiCI8kQ; Sun, 30 May 2021 15:06:54 +0000 (UTC)
+Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [IPv6:2605:bc80:3010:104::8cd3:938])
+	by smtp4.osuosl.org (Postfix) with ESMTP id 4E4A7403B2;
+	Sun, 30 May 2021 15:06:54 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id B28DAC000D;
-	Sun, 30 May 2021 15:06:51 +0000 (UTC)
-Received: from smtp1.osuosl.org (smtp1.osuosl.org [140.211.166.138])
- by lists.linuxfoundation.org (Postfix) with ESMTP id ABF96C0027
- for <iommu@lists.linux-foundation.org>; Sun, 30 May 2021 15:06:48 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 2CA86C000D;
+	Sun, 30 May 2021 15:06:54 +0000 (UTC)
+Received: from smtp4.osuosl.org (smtp4.osuosl.org [IPv6:2605:bc80:3010::137])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 1A378C0001
+ for <iommu@lists.linux-foundation.org>; Sun, 30 May 2021 15:06:51 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by smtp1.osuosl.org (Postfix) with ESMTP id 7B3A183A95
- for <iommu@lists.linux-foundation.org>; Sun, 30 May 2021 15:06:48 +0000 (UTC)
+ by smtp4.osuosl.org (Postfix) with ESMTP id EEB9A403A4
+ for <iommu@lists.linux-foundation.org>; Sun, 30 May 2021 15:06:50 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from smtp1.osuosl.org ([127.0.0.1])
- by localhost (smtp1.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id ToxMGH-2H6-i for <iommu@lists.linux-foundation.org>;
- Sun, 30 May 2021 15:06:47 +0000 (UTC)
+Received: from smtp4.osuosl.org ([127.0.0.1])
+ by localhost (smtp4.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+ with ESMTP id xV1dq6wJvJRc for <iommu@lists.linux-foundation.org>;
+ Sun, 30 May 2021 15:06:50 +0000 (UTC)
 X-Greylist: whitelisted by SQLgrey-1.8.0
-Received: from mail-pf1-x431.google.com (mail-pf1-x431.google.com
- [IPv6:2607:f8b0:4864:20::431])
- by smtp1.osuosl.org (Postfix) with ESMTPS id BFD2683A96
- for <iommu@lists.linux-foundation.org>; Sun, 30 May 2021 15:06:47 +0000 (UTC)
-Received: by mail-pf1-x431.google.com with SMTP id 22so7064773pfv.11
- for <iommu@lists.linux-foundation.org>; Sun, 30 May 2021 08:06:47 -0700 (PDT)
+Received: from mail-pj1-x1036.google.com (mail-pj1-x1036.google.com
+ [IPv6:2607:f8b0:4864:20::1036])
+ by smtp4.osuosl.org (Postfix) with ESMTPS id 2E307403A0
+ for <iommu@lists.linux-foundation.org>; Sun, 30 May 2021 15:06:50 +0000 (UTC)
+Received: by mail-pj1-x1036.google.com with SMTP id
+ l10-20020a17090a150ab0290162974722f2so1709666pja.2
+ for <iommu@lists.linux-foundation.org>; Sun, 30 May 2021 08:06:50 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=gmail.com; s=20161025;
  h=from:to:cc:subject:date:message-id:in-reply-to:references
  :mime-version:content-transfer-encoding;
- bh=QKK0SjDRQsBHXdgV5ktTvZVGUyDxuCI7H9YXqu8ylp4=;
- b=c4gjM4Jy3YZ+/DG7gJXR32TyHNrd2AT2w1NRjMRL/cVwnE9Khie59tuur1IINr0LLL
- 6PZbttSNvgl9BLFIsGHuSc+FJJmIp6Abf0SCFmm2OMKXGKumPVltWHy67nL9KV9jEyvK
- PEkAMyNbfg9acDIg1EYYlwzHuyceS5JTu6FgLVMgyuSfaM2bY1ImRe4AQpVCfcxArLyf
- 2orge+sbm53BUlc2H/Pqht+gxOC5rv9V1Jvz+CQB0vMOQlMPoDaTCkjFsnL76KSZ3ys3
- 7eaQ9eSv/+WkbiIZxtGq9L5QDqfVWwVAegCdGoAEYHKpEA2U7AjeuHqOCq8YttRFBnB5
- XuRQ==
+ bh=8QttpWnu2vUzDHi+PZwCcYLiEemtutjgmMI/iodwPTk=;
+ b=W8ClChNy/zGX4qaFJXG3v36CEkmNBgz6cFpUbxLY1MtMXiB3DOS0OEuklRIaJsUjfV
+ CqNiLrgh8G3MDnqTm2tqCifdbbiQ71hz1sqU7R2dyMZh7qX5GiL+3tYuOVCF6CIkTiBu
+ 3WfmClEYRfWncVxeql61AC3bv02+aSKH2VTtSAeNX9rR2YLgnBdcXZAj+2VP8OnvpswI
+ 6IrYrAMKWnDk1x5midWNyrQPk4MmHUTraFR4iwofk71RKNS/2odDBr6VNdmfIBv6hgpz
+ ljYhxqjLMoxzQDxzPB8RVmA3zmgl1Y0LYpfklpdG8vApkDP75Koqa6Bu6f2ftX6QddwC
+ sV/g==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
  d=1e100.net; s=20161025;
  h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
  :references:mime-version:content-transfer-encoding;
- bh=QKK0SjDRQsBHXdgV5ktTvZVGUyDxuCI7H9YXqu8ylp4=;
- b=aZBdZv3ovsQVyO03YtK8N7vKYexW9gjGbIhSy+rM2OAZIQg4bxzFrcuCJvbY4PwWcw
- 1c0w3dX3kWSqjkbOjD6J9HNAWAOoLfsFsMgqnZNPE61nZZ2zZyYeKZnlYXjkWf3BntlP
- 09kpOn5jgzlzIJN+cB7RuFxtJtL3GkkBohGoARfGBr1IiJHEDep7j6XtKYxe3Zd4DptM
- MHQqDxQ8BLJp0RS2iccdePKc8ZbMP8Q917GSq+YHBNvaDKRM5jGEEQRrUPg1gdyxYOv0
- YGTaNrD3VUS0D3iJGPNW1mejFDJEoRoxFn1+efMeB5ovDN9d/zU2JNRGgdAnElogikBm
- FKCw==
-X-Gm-Message-State: AOAM5321zb8y8znimBUy4U9EtJmbfHE+WKYbRVrDmcLSasaGiFilSt5M
- +VBRtaj8KjXQawOpS3ng6rM=
-X-Google-Smtp-Source: ABdhPJw+q9VKcKHyDWVpvxugITxjif6TDbX7YEFx343/WR9bqFMb8Oo7wu2PPv+4Bif5UQ80/Bo2xg==
-X-Received: by 2002:a62:ae14:0:b029:2e9:c6ef:9856 with SMTP id
- q20-20020a62ae140000b02902e9c6ef9856mr2736868pff.77.1622387206687; 
- Sun, 30 May 2021 08:06:46 -0700 (PDT)
+ bh=8QttpWnu2vUzDHi+PZwCcYLiEemtutjgmMI/iodwPTk=;
+ b=J0xCJEY9MZYrKEnicRR+P3Isre1VeGv2dH6C8urPmO3hZ9fK+SZGjY8vcztJosDiv+
+ z+rBp7KM0KFZpRwt4O2PRJCsYFo57M32nLF0KGpc+sZyaaO8HTaRAm6yqXkEeadfi98H
+ hZDzSjiyqb1uIanEXcKbZ267elZzSwyWlZ++JYh2k8XLwCSgxcN8Gg6pcMO1iztV+1t0
+ gCAt7/X0i8XwP1BEoT9fSn7XGtqcy3Ci+Gggbb9ipPE7RkKdvv9tOjfemza0/1Scp4bc
+ QuMxtARwy9DJSt99Mcma9QXiMwHBrxwWg9/35yAxHOwqBFZT6UXm2wediwJ7PWloJQae
+ AUXw==
+X-Gm-Message-State: AOAM533r/3A/Hw04w29dHezj2xe30Ak+HO2Q6lBphmGyk8CQPy2ninu9
+ uu/eCnO1CdaR3pN5JyvG150=
+X-Google-Smtp-Source: ABdhPJwOFhoVhELuBsoR0x6Bkk9R5eQShuRJkYgZiLaNrPrGgc4hr2L1c/qfttmLx9Y24CFWGvaVqQ==
+X-Received: by 2002:a17:902:d2d1:b029:ef:8d29:3a64 with SMTP id
+ n17-20020a170902d2d1b02900ef8d293a64mr16523183plc.38.1622387209666; 
+ Sun, 30 May 2021 08:06:49 -0700 (PDT)
 Received: from ubuntu-Virtual-Machine.corp.microsoft.com
  ([2001:4898:80e8:9:dc2d:80ab:c3f3:1524])
- by smtp.gmail.com with ESMTPSA id b15sm8679688pfi.100.2021.05.30.08.06.45
+ by smtp.gmail.com with ESMTPSA id b15sm8679688pfi.100.2021.05.30.08.06.48
  (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
- Sun, 30 May 2021 08:06:46 -0700 (PDT)
+ Sun, 30 May 2021 08:06:49 -0700 (PDT)
 From: Tianyu Lan <ltykernel@gmail.com>
 To: kys@microsoft.com, haiyangz@microsoft.com, sthemmin@microsoft.com,
  wei.liu@kernel.org, decui@microsoft.com, tglx@linutronix.de,
@@ -94,10 +95,10 @@ To: kys@microsoft.com, haiyangz@microsoft.com, sthemmin@microsoft.com,
  jgross@suse.com, sstabellini@kernel.org, joro@8bytes.org, will@kernel.org,
  xen-devel@lists.xenproject.org, davem@davemloft.net, kuba@kernel.org,
  jejb@linux.ibm.com, martin.petersen@oracle.com
-Subject: [RFC PATCH V3 06/11] HV/Vmbus: Add SNP support for VMbus channel
- initiate message
-Date: Sun, 30 May 2021 11:06:23 -0400
-Message-Id: <20210530150628.2063957-7-ltykernel@gmail.com>
+Subject: [RFC PATCH V3 08/11] swiotlb: Add bounce buffer remap address setting
+ function
+Date: Sun, 30 May 2021 11:06:25 -0400
+Message-Id: <20210530150628.2063957-9-ltykernel@gmail.com>
 X-Mailer: git-send-email 2.25.1
 In-Reply-To: <20210530150628.2063957-1-ltykernel@gmail.com>
 References: <20210530150628.2063957-1-ltykernel@gmail.com>
@@ -126,138 +127,75 @@ Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
 From: Tianyu Lan <Tianyu.Lan@microsoft.com>
 
-The monitor pages in the CHANNELMSG_INITIATE_CONTACT are shared
-with host and so it's necessary to use hvcall to set them visible
-to host. In Isolation VM with AMD SEV SNP, the access address
-should be in the extra space which is above shared gpa boundary.
-So remap these pages into the extra address(pa + shared_gpa_boundary).
+For Hyper-V isolation VM with AMD SEV SNP, the bounce buffer(shared memory)
+needs to be accessed via extra address space(e.g address above bit39).
+Hyper-V code may remap extra address space outside of swiotlb. swiotlb_
+bounce() needs to use remap virtual address to copy data from/to bounce
+buffer. Add new interface swiotlb_set_bounce_remap() to do that.
 
 Signed-off-by: Tianyu Lan <Tianyu.Lan@microsoft.com>
 ---
- drivers/hv/connection.c   | 62 +++++++++++++++++++++++++++++++++++++++
- drivers/hv/hyperv_vmbus.h |  1 +
- 2 files changed, 63 insertions(+)
+ include/linux/swiotlb.h |  5 +++++
+ kernel/dma/swiotlb.c    | 14 +++++++++++++-
+ 2 files changed, 18 insertions(+), 1 deletion(-)
 
-diff --git a/drivers/hv/connection.c b/drivers/hv/connection.c
-index 186fd4c8acd4..389adc92f958 100644
---- a/drivers/hv/connection.c
-+++ b/drivers/hv/connection.c
-@@ -104,6 +104,12 @@ int vmbus_negotiate_version(struct vmbus_channel_msginfo *msginfo, u32 version)
+diff --git a/include/linux/swiotlb.h b/include/linux/swiotlb.h
+index 216854a5e513..43f53cf52f48 100644
+--- a/include/linux/swiotlb.h
++++ b/include/linux/swiotlb.h
+@@ -113,8 +113,13 @@ unsigned int swiotlb_max_segment(void);
+ size_t swiotlb_max_mapping_size(struct device *dev);
+ bool is_swiotlb_active(void);
+ void __init swiotlb_adjust_size(unsigned long size);
++void swiotlb_set_bounce_remap(unsigned char *vaddr);
+ #else
+ #define swiotlb_force SWIOTLB_NO_FORCE
++static inline void swiotlb_set_bounce_remap(unsigned char *vaddr)
++{
++}
++
+ static inline bool is_swiotlb_buffer(phys_addr_t paddr)
+ {
+ 	return false;
+diff --git a/kernel/dma/swiotlb.c b/kernel/dma/swiotlb.c
+index 8ca7d505d61c..fbc827ab5fb4 100644
+--- a/kernel/dma/swiotlb.c
++++ b/kernel/dma/swiotlb.c
+@@ -70,6 +70,7 @@ struct io_tlb_mem *io_tlb_default_mem;
+  * not be bounced (unless SWIOTLB_FORCE is set).
+  */
+ static unsigned int max_segment;
++static unsigned char *swiotlb_bounce_remap_addr;
  
- 	msg->monitor_page1 = virt_to_phys(vmbus_connection.monitor_pages[0]);
- 	msg->monitor_page2 = virt_to_phys(vmbus_connection.monitor_pages[1]);
-+
-+	if (hv_is_isolation_supported()) {
-+		msg->monitor_page1 += ms_hyperv.shared_gpa_boundary;
-+		msg->monitor_page2 += ms_hyperv.shared_gpa_boundary;
-+	}
-+
- 	msg->target_vcpu = hv_cpu_number_to_vp_number(VMBUS_CONNECT_CPU);
+ static unsigned long default_nslabs = IO_TLB_DEFAULT_SIZE >> IO_TLB_SHIFT;
  
- 	/*
-@@ -148,6 +154,29 @@ int vmbus_negotiate_version(struct vmbus_channel_msginfo *msginfo, u32 version)
- 		return -ECONNREFUSED;
- 	}
- 
-+	if (hv_is_isolation_supported()) {
-+		vmbus_connection.monitor_pages_va[0]
-+			= vmbus_connection.monitor_pages[0];
-+		vmbus_connection.monitor_pages[0]
-+			= ioremap_cache(msg->monitor_page1, HV_HYP_PAGE_SIZE);
-+		if (!vmbus_connection.monitor_pages[0])
-+			return -ENOMEM;
-+
-+		vmbus_connection.monitor_pages_va[1]
-+			= vmbus_connection.monitor_pages[1];
-+		vmbus_connection.monitor_pages[1]
-+			= ioremap_cache(msg->monitor_page2, HV_HYP_PAGE_SIZE);
-+		if (!vmbus_connection.monitor_pages[1]) {
-+			vunmap(vmbus_connection.monitor_pages[0]);
-+			return -ENOMEM;
-+		}
-+
-+		memset(vmbus_connection.monitor_pages[0], 0x00,
-+		       HV_HYP_PAGE_SIZE);
-+		memset(vmbus_connection.monitor_pages[1], 0x00,
-+		       HV_HYP_PAGE_SIZE);
-+	}
-+
- 	return ret;
+@@ -334,6 +335,11 @@ void __init swiotlb_exit(void)
+ 	io_tlb_default_mem = NULL;
  }
  
-@@ -159,6 +188,7 @@ int vmbus_connect(void)
- 	struct vmbus_channel_msginfo *msginfo = NULL;
- 	int i, ret = 0;
- 	__u32 version;
-+	u64 pfn[2];
- 
- 	/* Initialize the vmbus connection */
- 	vmbus_connection.conn_state = CONNECTING;
-@@ -216,6 +246,16 @@ int vmbus_connect(void)
- 		goto cleanup;
- 	}
- 
-+	if (hv_is_isolation_supported()) {
-+		pfn[0] = virt_to_hvpfn(vmbus_connection.monitor_pages[0]);
-+		pfn[1] = virt_to_hvpfn(vmbus_connection.monitor_pages[1]);
-+		if (hv_mark_gpa_visibility(2, pfn,
-+				VMBUS_PAGE_VISIBLE_READ_WRITE)) {
-+			ret = -EFAULT;
-+			goto cleanup;
-+		}
-+	}
++void swiotlb_set_bounce_remap(unsigned char *vaddr)
++{
++	swiotlb_bounce_remap_addr = vaddr;
++}
 +
- 	msginfo = kzalloc(sizeof(*msginfo) +
- 			  sizeof(struct vmbus_channel_initiate_contact),
- 			  GFP_KERNEL);
-@@ -282,6 +322,8 @@ int vmbus_connect(void)
+ /*
+  * Bounce: copy the swiotlb buffer from or back to the original dma location
+  */
+@@ -345,7 +351,13 @@ static void swiotlb_bounce(struct device *dev, phys_addr_t tlb_addr, size_t size
+ 	phys_addr_t orig_addr = mem->slots[index].orig_addr;
+ 	size_t alloc_size = mem->slots[index].alloc_size;
+ 	unsigned long pfn = PFN_DOWN(orig_addr);
+-	unsigned char *vaddr = phys_to_virt(tlb_addr);
++	unsigned char *vaddr;
++
++	if (swiotlb_bounce_remap_addr)
++		vaddr = swiotlb_bounce_remap_addr + tlb_addr -
++			io_tlb_default_mem->start;
++	else
++		vaddr = phys_to_virt(tlb_addr);
  
- void vmbus_disconnect(void)
- {
-+	u64 pfn[2];
-+
- 	/*
- 	 * First send the unload request to the host.
- 	 */
-@@ -301,6 +343,26 @@ void vmbus_disconnect(void)
- 		vmbus_connection.int_page = NULL;
- 	}
- 
-+	if (hv_is_isolation_supported()) {
-+		if (vmbus_connection.monitor_pages_va[0]) {
-+			vunmap(vmbus_connection.monitor_pages[0]);
-+			vmbus_connection.monitor_pages[0]
-+				= vmbus_connection.monitor_pages_va[0];
-+			vmbus_connection.monitor_pages_va[0] = NULL;
-+		}
-+
-+		if (vmbus_connection.monitor_pages_va[1]) {
-+			vunmap(vmbus_connection.monitor_pages[1]);
-+			vmbus_connection.monitor_pages[1]
-+				= vmbus_connection.monitor_pages_va[1];
-+			vmbus_connection.monitor_pages_va[1] = NULL;
-+		}
-+
-+		pfn[0] = virt_to_hvpfn(vmbus_connection.monitor_pages[0]);
-+		pfn[1] = virt_to_hvpfn(vmbus_connection.monitor_pages[1]);
-+		hv_mark_gpa_visibility(2, pfn, VMBUS_PAGE_NOT_VISIBLE);
-+	}
-+
- 	hv_free_hyperv_page((unsigned long)vmbus_connection.monitor_pages[0]);
- 	hv_free_hyperv_page((unsigned long)vmbus_connection.monitor_pages[1]);
- 	vmbus_connection.monitor_pages[0] = NULL;
-diff --git a/drivers/hv/hyperv_vmbus.h b/drivers/hv/hyperv_vmbus.h
-index 42f3d9d123a1..40bc0eff6665 100644
---- a/drivers/hv/hyperv_vmbus.h
-+++ b/drivers/hv/hyperv_vmbus.h
-@@ -240,6 +240,7 @@ struct vmbus_connection {
- 	 * is child->parent notification
- 	 */
- 	struct hv_monitor_page *monitor_pages[2];
-+	void *monitor_pages_va[2];
- 	struct list_head chn_msg_list;
- 	spinlock_t channelmsg_lock;
- 
+ 	if (orig_addr == INVALID_PHYS_ADDR)
+ 		return;
 -- 
 2.25.1
 
