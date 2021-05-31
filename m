@@ -7,153 +7,152 @@ X-Spam-Status: No, score=-3.5 required=3.0 tests=BAYES_00,DKIM_INVALID,
 	MSGID_FROM_MTA_HEADER,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED autolearn=no
 	autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A7066C47082
-	for <iommu@archiver.kernel.org>; Mon, 31 May 2021 18:09:20 +0000 (UTC)
-Received: from smtp3.osuosl.org (smtp3.osuosl.org [140.211.166.136])
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8583EC47083
+	for <iommu@archiver.kernel.org>; Mon, 31 May 2021 18:12:52 +0000 (UTC)
+Received: from smtp4.osuosl.org (smtp4.osuosl.org [140.211.166.137])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 361EA6124B
-	for <iommu@archiver.kernel.org>; Mon, 31 May 2021 18:09:20 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 361EA6124B
+	by mail.kernel.org (Postfix) with ESMTPS id E77BB610FC
+	for <iommu@archiver.kernel.org>; Mon, 31 May 2021 18:12:51 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org E77BB610FC
 Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=nvidia.com
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by smtp3.osuosl.org (Postfix) with ESMTP id F132860731;
-	Mon, 31 May 2021 18:09:19 +0000 (UTC)
+	by smtp4.osuosl.org (Postfix) with ESMTP id 9E32F402EF;
+	Mon, 31 May 2021 18:12:51 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from smtp3.osuosl.org ([127.0.0.1])
-	by localhost (smtp3.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id NIDsTKeyeOa8; Mon, 31 May 2021 18:09:18 +0000 (UTC)
-Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [IPv6:2605:bc80:3010:104::8cd3:938])
-	by smtp3.osuosl.org (Postfix) with ESMTP id 8DCEC605FC;
-	Mon, 31 May 2021 18:09:18 +0000 (UTC)
-Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 5CC80C000E;
-	Mon, 31 May 2021 18:09:18 +0000 (UTC)
-Received: from smtp4.osuosl.org (smtp4.osuosl.org [140.211.166.137])
- by lists.linuxfoundation.org (Postfix) with ESMTP id CE70DC0001
- for <iommu@lists.linux-foundation.org>; Mon, 31 May 2021 18:09:16 +0000 (UTC)
-Received: from localhost (localhost [127.0.0.1])
- by smtp4.osuosl.org (Postfix) with ESMTP id A779540263
- for <iommu@lists.linux-foundation.org>; Mon, 31 May 2021 18:09:16 +0000 (UTC)
-X-Virus-Scanned: amavisd-new at osuosl.org
-Authentication-Results: smtp4.osuosl.org (amavisd-new);
- dkim=pass (2048-bit key) header.d=nvidia.com
 Received: from smtp4.osuosl.org ([127.0.0.1])
- by localhost (smtp4.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id mOZ47ZLHiyyL for <iommu@lists.linux-foundation.org>;
- Mon, 31 May 2021 18:09:15 +0000 (UTC)
+	by localhost (smtp4.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+	with ESMTP id KneGDdUTmg_8; Mon, 31 May 2021 18:12:50 +0000 (UTC)
+Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [IPv6:2605:bc80:3010:104::8cd3:938])
+	by smtp4.osuosl.org (Postfix) with ESMTP id 4FDD5402ED;
+	Mon, 31 May 2021 18:12:50 +0000 (UTC)
+Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 290C2C000E;
+	Mon, 31 May 2021 18:12:50 +0000 (UTC)
+Received: from smtp1.osuosl.org (smtp1.osuosl.org [140.211.166.138])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id ED770C0001
+ for <iommu@lists.linux-foundation.org>; Mon, 31 May 2021 18:12:48 +0000 (UTC)
+Received: from localhost (localhost [127.0.0.1])
+ by smtp1.osuosl.org (Postfix) with ESMTP id DBA9283B47
+ for <iommu@lists.linux-foundation.org>; Mon, 31 May 2021 18:12:48 +0000 (UTC)
+X-Virus-Scanned: amavisd-new at osuosl.org
+Authentication-Results: smtp1.osuosl.org (amavisd-new);
+ dkim=pass (2048-bit key) header.d=nvidia.com
+Received: from smtp1.osuosl.org ([127.0.0.1])
+ by localhost (smtp1.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+ with ESMTP id gDl1TFLhSD4z for <iommu@lists.linux-foundation.org>;
+ Mon, 31 May 2021 18:12:47 +0000 (UTC)
 X-Greylist: whitelisted by SQLgrey-1.8.0
 Received: from NAM11-BN8-obe.outbound.protection.outlook.com
- (mail-bn8nam11on2060a.outbound.protection.outlook.com
- [IPv6:2a01:111:f400:7eae::60a])
- by smtp4.osuosl.org (Postfix) with ESMTPS id CF4364025E
- for <iommu@lists.linux-foundation.org>; Mon, 31 May 2021 18:09:14 +0000 (UTC)
+ (mail-bn8nam11on2045.outbound.protection.outlook.com [40.107.236.45])
+ by smtp1.osuosl.org (Postfix) with ESMTPS id AC93C83A6A
+ for <iommu@lists.linux-foundation.org>; Mon, 31 May 2021 18:12:47 +0000 (UTC)
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=P+cD8K8ey2D2adIEWPY1SA+SyIgh3WlErskV+2knTcwTwt2vTN73c1/FBB1i31w/1QVIEczeQtRBGajBfL2JHNsgfh8Ax6NEV/XY93yRbE9awpy3oMtXUMgqVBSv+xF0tQzQVqVnNFndrl4BXW8jQPc9Ps3/PhQ3riGLLy/3xGYTKFmmRx1fQPBl9j2AXti3qaHM6hJn2VfhdMky1hvnSGhOzyx8zCW4hQOOuwhNnltWAjm08VIbJ79coAQNDruYEBpEddRxT5Vwm/ACWZXFDkg3wcGUM7ggfAuIczgVVmDhR5V+6cnldsGArCEoH3w2cISl50rFaH0bQN6F8cm3fQ==
+ b=PMrRBq7kQaCSTPBhWQ3iMBc+5jiJTXaNKdDCxTPmeRPgL3qoJa9h1GsDimhpJyDHb+BIqi7OaQ9vsw2eszCeEwfOiQbdqPKR3zJ8zuVB4vRY+QnwHMDHtArxzZ+u9gKIJDNxBjcQ92c6ZpCfvEtC/KpoYsSsu9HEQmJZ29Bx13rhWVrtcphm0JReNZZlUxxkrJdDBqr/G0AKE021i54Vs3u80KNlf0x9Yk5r5TYwRNgp59MHpbhHm5U3h7/gxIDjDXSAdAbiL7GeMyc637egl5r+E7F3+cHNqFmq6x7gxSgJgdVUrdK/qhYPZht3UjgtEN4RvsUMOEuIw3v3Ldfvug==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com; 
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=NdRQbeK3JZGKBqmPI+0ciKIAVpaPAYYFIpEt9SlB9vE=;
- b=X2b2/sS5sKpZsw9poKHRTw9VMxS59JlSXzX7bcbRdArzrZWaMr2j3WFkwj6J0w0lcCRSMWYekYiJAl+bJ5vva18fFoQdZ3JpueAPzGsI6Xgq9VYfz/nf6Xkzqvww/KLbCzbHAVcpc22F3UWacT3UErJg/T7+3KE08BmYxQl462HKZakPafhDmFvE+Drrvh3dcst7dV+OeZHxk2ItljRg2BAMZJMJqJ2/9cUP59bEOgztpzF8T1vCaDPfK4mUdD6xnNI3uhSwMgp7mvPdy3kWCEkjwO6pvEaiCSXhjojWeIQObNvJglJN90/n61GDsTcJMrNaxkQtcFNZ9pfC35lz/w==
+ bh=GF1QE1MToHriJPAqkPIyvgYFZfgekNjoqRsg0DNFx8g=;
+ b=V42aSnyOIYMuy/DERgdde3DceafvUqogyoFZIObOvHpxuG1mSaXcK9q4zntDrLAtU6eQMBiX2iYuUQ7WxFxdm0eGLSdAK900iJvYywkY1pXaatQj6k/fblkLcCppBzilWHQICK1FlENkDnPAX1DN5IaRnjkHuQsoiDNFG4qPbnHNCDjZfPcJuiev/P5jhvM8vC1gqNB05khkoHd1vq/DgFsftl4qL5n+lPMWpxTkGu9wMAglr6p+1/sB+xb+iYYYon1NeC7fczDQu4T8rUGboow/DQUVw9SYOzA2cod7zdYQDimcgtNrsBU/qOquQQHVwSIDnIeJVpaDJMXlBTgxKg==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
  smtp.mailfrom=nvidia.com; dmarc=pass action=none header.from=nvidia.com;
  dkim=pass header.d=nvidia.com; arc=none
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
  s=selector2;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=NdRQbeK3JZGKBqmPI+0ciKIAVpaPAYYFIpEt9SlB9vE=;
- b=b2AIiji/2zeC+pKv6BKHI72ADHiXqUjSQhDF4B/hAsg4Q3jcCnBLkEorGwA9gZMPaGfKoWx/YM6ozCMUXybDrcxUHheNKJ96n3SDFE4FzAPYVHlG7x9Plt9WGMLMU5jMlWs1VAO1bwkpFzsQUk2Q0LKRpwTaOqefFjKo1412OfSSxmUqNeFtrSPgen8EVaX2UV8rPVhTJecCymtFmWRowvjxdg+55ULHjuvELPKVdsIJShEnM7oD8ZLoDtAQFNxrUPiiAr5V/1rt0V2IegsWQsXmk277kqdDD2mOtBQPOSiNmrFxwyaBTY5mGOj1lynHbZwKXvls+zdWjPiJzSoiyg==
-Authentication-Results: linux.intel.com; dkim=none (message not signed)
- header.d=none; linux.intel.com; dmarc=none action=none header.from=nvidia.com; 
+ bh=GF1QE1MToHriJPAqkPIyvgYFZfgekNjoqRsg0DNFx8g=;
+ b=LESRi6aq/vWsF8pMzT8MjG++ecLVLJwAen/RK7nt1gOqEralUMq0szYvirpoL1wHSG52To1rapB4i+ncFwWS+SBcex/MK4LmQ+0aqvoqwLfC/CbYmzYgrgifvet54U1ht+HEG8okAOrZ11pNL9GQy5vGAu8y2zCQU9XBfptk6d9WakSV4CE1CYj6DD1XXSFVt+8JitCTlD7rjBwczzfaKdcebpCCxhF0gG1q5BMVlrhWaw3IxKSJtOFdx32fnXKeX1mu1U9HEz8DM7wtNElgHAgiPynuUErQrF6vdkyJ5b0lZSsnGNhb/QU1x3u1aMLTQsKk+wnd7CyeH7yg4btonQ==
+Authentication-Results: nvidia.com; dkim=none (message not signed)
+ header.d=none;nvidia.com; dmarc=none action=none header.from=nvidia.com;
 Received: from BL0PR12MB5506.namprd12.prod.outlook.com (2603:10b6:208:1cb::22)
- by BL0PR12MB5506.namprd12.prod.outlook.com (2603:10b6:208:1cb::22)
+ by BL1PR12MB5190.namprd12.prod.outlook.com (2603:10b6:208:31c::23)
  with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4173.20; Mon, 31 May
- 2021 18:09:12 +0000
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4173.21; Mon, 31 May
+ 2021 18:12:45 +0000
 Received: from BL0PR12MB5506.namprd12.prod.outlook.com
  ([fe80::3d51:a3b9:8611:684e]) by BL0PR12MB5506.namprd12.prod.outlook.com
  ([fe80::3d51:a3b9:8611:684e%7]) with mapi id 15.20.4173.030; Mon, 31 May 2021
- 18:09:12 +0000
-Date: Mon, 31 May 2021 15:09:11 -0300
+ 18:12:45 +0000
+Date: Mon, 31 May 2021 15:12:43 -0300
 From: Jason Gunthorpe <jgg@nvidia.com>
-To: Liu Yi L <yi.l.liu@linux.intel.com>
+To: Parav Pandit <parav@nvidia.com>
 Subject: Re: [RFC] /dev/ioasid uAPI proposal
-Message-ID: <20210531180911.GX1002214@nvidia.com>
+Message-ID: <20210531181243.GY1002214@nvidia.com>
 References: <MWHPR11MB1886422D4839B372C6AB245F8C239@MWHPR11MB1886.namprd11.prod.outlook.com>
- <20210528233649.GB3816344@nvidia.com>
- <20210531193157.5494e6c6@yiliu-dev>
+ <PH0PR12MB5481C1B2249615257A461EEDDC3F9@PH0PR12MB5481.namprd12.prod.outlook.com>
 Content-Disposition: inline
-In-Reply-To: <20210531193157.5494e6c6@yiliu-dev>
+In-Reply-To: <PH0PR12MB5481C1B2249615257A461EEDDC3F9@PH0PR12MB5481.namprd12.prod.outlook.com>
 X-Originating-IP: [47.55.113.94]
-X-ClientProxiedBy: BL1PR13CA0232.namprd13.prod.outlook.com
- (2603:10b6:208:2bf::27) To BL0PR12MB5506.namprd12.prod.outlook.com
+X-ClientProxiedBy: BL1PR13CA0229.namprd13.prod.outlook.com
+ (2603:10b6:208:2bf::24) To BL0PR12MB5506.namprd12.prod.outlook.com
  (2603:10b6:208:1cb::22)
 MIME-Version: 1.0
 X-MS-Exchange-MessageSentRepresentingType: 1
 Received: from mlx.ziepe.ca (47.55.113.94) by
- BL1PR13CA0232.namprd13.prod.outlook.com (2603:10b6:208:2bf::27) with
+ BL1PR13CA0229.namprd13.prod.outlook.com (2603:10b6:208:2bf::24) with
  Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4195.9 via Frontend
- Transport; Mon, 31 May 2021 18:09:12 +0000
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4195.10 via Frontend
+ Transport; Mon, 31 May 2021 18:12:44 +0000
 Received: from jgg by mlx with local (Exim 4.94)	(envelope-from
- <jgg@nvidia.com>)	id 1lnmLf-00HD1I-GL; Mon, 31 May 2021 15:09:11 -0300
+ <jgg@nvidia.com>)	id 1lnmP5-00HD5i-V6; Mon, 31 May 2021 15:12:43 -0300
 X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: a0cabc7f-f046-4694-79bf-08d9245f3198
-X-MS-TrafficTypeDiagnostic: BL0PR12MB5506:
+X-MS-Office365-Filtering-Correlation-Id: efde8504-a71a-47d4-5295-08d9245fb04e
+X-MS-TrafficTypeDiagnostic: BL1PR12MB5190:
 X-MS-Exchange-Transport-Forked: True
-X-Microsoft-Antispam-PRVS: <BL0PR12MB5506FA6717CB775B609E9D88C23F9@BL0PR12MB5506.namprd12.prod.outlook.com>
-X-MS-Oob-TLC-OOBClassifiers: OLM:9508;
+X-Microsoft-Antispam-PRVS: <BL1PR12MB5190DCD9BA74A88EE3BE2CE0C23F9@BL1PR12MB5190.namprd12.prod.outlook.com>
+X-MS-Oob-TLC-OOBClassifiers: OLM:8882;
 X-MS-Exchange-SenderADCheck: 1
 X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: g7DnMjaVkkHIIGoty9PosiFDXi8s02q5RQP41MRFOO5v6yUGViinl7JAlSxeNzByxFCx1GVeIUqZSa4qF6QVGNxmW09qSbraf1iRf4RVYwoQ9i4iwQ4YYleClaKgTBqFG9ChYul7APQMTXXHb0ceaHlWhnVy/7cJJ7WquYG13rXfnCT3Y2vFHNqFGomeeBSbihdWgenT+OCnFn75vVSmDapEy1HiLRK99FC0RGBxQc+q1SdqDj6WQO5apOiL1IdAeIoGLQs6nZhjhj1GYiqlWuGah0yNrNYMxMEypubo7MUhHX94OKU0ejmgaipttO/AGJmx4U7+NPqsG903kmkTwpwvAcrlOY5TOMg7NLYlqfbZiqcQZXVFWY8vXbSCyecTqBSTka0FuhkoC8/2HbvTPiP23sRZ0RrQLq4xcdn+ABzzcozsG282HPAh3AhQ/ISTE2N9sabuDnZwUt0UC9bGTVc8jLML6qxC5z/VCDNZdZ4btipbgoEp72pae40dPOFXbWAyRoOkWfFK5CslnafKuejdbnGMBh9oPOU4dH/A9hAR/R7WlHAzip4Xf+ldFW1MkheZsPk9KWB4gr2XRgGRl5qPPWoQPbhYbpDOnqA8ATc=
+X-Microsoft-Antispam-Message-Info: RZoFOPzX0QcdMK6GCEFI5me7Vz+mdaNR2Q17eGouVCkzPVRtYDR/wqMgZ95pa3wSQt0LRYofpeC1ZmuGrAGFz+bcTmZDnJ4KUH5wQhhlmz8gKKm+JWvHgV0rAbdjEEZcUfJIiC8J7wFm/WFmp0MyXKcWsRcvna3oXLCqxS5BEQYjB9Knd0gD6bb4aCZE7sz+TViAkVnbBNTgNT6Mfsxpq5OKIU0ahUSb+YS0yph8bsZ7rx5+W1FyjCqbraUyn0PbREGuA4NliNNFZM2hJvJAY/uU7nxWrJ3BdNow+pdqu+cqpQyYYrZRKewUJpKlpW9WLRrw5q+yHv48rxJOPZ/3OXsI7Lc4AQ0h+g5q59yVUL7PAdYNtBOcIed20ECxyf4CNGUvQNL5lHsydQjluyepLR//srhMvxwOV+jSTsWXQBErgXfn4+EIrtlrjqKKIxSAuKe3ssJ9/fMtk1mZRoCWVRqmzAiyKhBQfIzy+AqsSwQQhYyUV+nj8T33p7jL/fz8VBbPy9KLjpUXL9KDhsUqlmdLTsnxv47VNWQdrYso0QVl7HCixupYIIzChU+aNu2WOZG38ZtpQskjXDINiLCDoIIUzxvILWVr5VOokJZJMVM=
 X-Forefront-Antispam-Report: CIP:255.255.255.255; CTRY:; LANG:en; SCL:1; SRV:;
  IPV:NLI; SFV:NSPM; H:BL0PR12MB5506.namprd12.prod.outlook.com; PTR:; CAT:NONE;
- SFS:(4636009)(396003)(39860400002)(366004)(136003)(376002)(346002)(66476007)(54906003)(26005)(2616005)(38100700002)(8676002)(83380400001)(1076003)(6916009)(9786002)(86362001)(186003)(9746002)(316002)(66556008)(426003)(66946007)(4326008)(36756003)(478600001)(5660300002)(2906002)(8936002)(33656002)(7416002);
+ SFS:(4636009)(396003)(366004)(39860400002)(136003)(376002)(346002)(26005)(54906003)(8936002)(86362001)(9786002)(316002)(9746002)(5660300002)(37006003)(6636002)(33656002)(1076003)(7416002)(66476007)(4744005)(66556008)(478600001)(38100700002)(186003)(4326008)(426003)(2906002)(6862004)(66946007)(36756003)(8676002)(2616005);
  DIR:OUT; SFP:1101; 
-X-MS-Exchange-AntiSpam-MessageData: =?us-ascii?Q?IAnH8y6ghx1HA+e50OzD1mc3sMpMk+BSDrgl927fjCHLMBVqCo512iasHSWg?=
- =?us-ascii?Q?iGc2ogZ6DB7XSqOI+h57Hyhq13VaOJaIyet0j0Y7GOim/wGpqttrztcmGhLR?=
- =?us-ascii?Q?CvSwaDEDd4UNdAz6Tl2CwITTFL5N/fKXffFhfUVEIJarn0j2uS2muWT+iit9?=
- =?us-ascii?Q?n6ngXHu/4dWbS9A0YQHiXMFR/3IswF4648uUgl8NVV8/1vOAv2KxVE63ariU?=
- =?us-ascii?Q?DqTLxhr8HC2pQhQ4CwUfrP6kpHECzSNCyI2cMrpfl66SxG59ZAwhB9pgeaC/?=
- =?us-ascii?Q?6N2L/wHWQVr1k64Drc56bTbrI7oIb2KEZJA8W6gpO/GUhiPPRRjkKoazyYl6?=
- =?us-ascii?Q?CzVb7R/pPVgrei9hYWY75/ghVozIH5e5ldgu/Dy33nkM7HZmd6jQQ9rUsiDJ?=
- =?us-ascii?Q?DFOmm7rlX+1uvqCRfBQI3tk6/t/JKst28Dj8yQtw64615DoenWyqn4uZfB55?=
- =?us-ascii?Q?BoxDyucZBkbhNEEvd/bVKMGmWT318VV5Lg2tOB33wuZNtCjDbWZOykVxDiMj?=
- =?us-ascii?Q?s/wwMTjogxwRRQKs7w3skZqoOf6N2NbzjI0ARKbdx0wdDAbXps6NDArr0Ewv?=
- =?us-ascii?Q?QBYGQY2sINBVpqQjd4/rMIct97pTAg1mzpC0N+eaiJ92s4g7TYhg22xs00S1?=
- =?us-ascii?Q?Bxv2cowlOXKn+vP9wsfU5D46nZ+pP6InN1ZH3OKYR96f2liyrDp8Ec4hQpAP?=
- =?us-ascii?Q?8GQPQZqzD8ZCGnZOa77t7lbZCHMpiLm1y4iHtDaVfn1sXwW0rEaVWiMCFLeB?=
- =?us-ascii?Q?4kP2hT66YyaP63TENOlIekHvVI696NTWPCRiafbDbGROqfUTrMESKRK+7i+g?=
- =?us-ascii?Q?pICur3p3S955xzaH58BBjBU06SHPdiyIr3K0bgOg7Vx8AiQwulQ1HZKyIOjN?=
- =?us-ascii?Q?JtDKH+0cQ0vZfhDR1p/NVnZQRLw5qLvChQYXAbMjh6H5t58zTOjlede7ZOzd?=
- =?us-ascii?Q?/gHNQHL4bWnLYL6IVEIEBq9166DMh//XMoWXl5CjAw5ZX1zS1878yD0Y7YYc?=
- =?us-ascii?Q?IlE6snizGvKjHf9C4dI/+pwQm2lSIrxjRSf+fafZaPg7rYI+6R0dgDOSTPvf?=
- =?us-ascii?Q?DlMgjnQtw9mBx4Vaac5mdig1wlvZN80nzhlMnT/dqpowTs7jV9yHmVnvDBwT?=
- =?us-ascii?Q?4WMsq5P/DVOi2rPYJL6/oYSRUioyZhvNY2t44P5Wg9k0bP3UsquwYUis5crK?=
- =?us-ascii?Q?4XxcKh9CEHf5t4AFt4xSv22nF+teaVOOKkLe5DlpD+tZ5JRcox93ctCI+7Iv?=
- =?us-ascii?Q?qP4h3QN05ZqSVthVUhXCf8DKRBX3j4yJAgTNBL0fCyvfb0/canVFS3TFaw7g?=
- =?us-ascii?Q?W5ZS3pLMRu2o/DD5n8zE2dvy?=
+X-MS-Exchange-AntiSpam-MessageData: =?us-ascii?Q?b7Yd3SBS0mk0L+qTeZnTXkaG3CqhvuyWHE0veBcpoWIaRA5SflhYzZ8JMJsA?=
+ =?us-ascii?Q?9eI9MDL91a61cPtWiG3wyRpCBs1le1lLgf+wVNl8L3xFpQaNsy/ixZyWE4Z4?=
+ =?us-ascii?Q?i0npSYTPj9Br3R+qrisd2rFxvO/zF7qXFR5bD8Nt9vXGO6Hl5pjbmLwx0HkV?=
+ =?us-ascii?Q?w1Lz/alxGQ5Cxd2PV6fmDqXi7wqEMh9/945i0x8JFdg6fgDJT5Q9lo+JjAZH?=
+ =?us-ascii?Q?Cs45jarsml8FkDJZbgHklnDKw5fkLELw0LMaMFFBb6l8yXQN1CXvia2Fvp9G?=
+ =?us-ascii?Q?Pnm5EZ0oapHb/wPgcX9puCq2jICYjGxJrFD0owzioWW367PzE4lToXAB6J5R?=
+ =?us-ascii?Q?pIJGz7pJVSfsjL3Pjibx5+g2IPWfD+XVscqb5GiElYoaJ+kDmpWEHTQ93wVW?=
+ =?us-ascii?Q?L2Hsv72tx/j3ve9hNQ6izHe0biHlKssXE8DpsBDucWBqwAqd+3Ymbvf4Cngc?=
+ =?us-ascii?Q?7O0B85uO2NePnBXVXtKWFRBU91A45E7941+MbgGkqnUWfugKkldB+MKAi4Y/?=
+ =?us-ascii?Q?ko70PTkCihnjJV/gGGM6Yvov8VkDJDmshCNu9cksU8I9Kr6pdbAyL6fcqLaI?=
+ =?us-ascii?Q?nlIpkoWCce46ck0T+HIUuhaEX6YqcvIEgZ80fRbk8vFcVAVvk/oeUs1CrnRl?=
+ =?us-ascii?Q?XXZfWTxbrKgGFWs9lNaQOK961lSlMlxOsl1hNvPDSahf5GafenP5B9Xy+GXA?=
+ =?us-ascii?Q?f4+lhMv5B5KNyDDdX778ddD4vABaiRqFIZ32lm29cGkSe//alxyeI8kwS6xn?=
+ =?us-ascii?Q?3ArHpXHANL4VHNOCaZ6CyI17at3nlQkedSjAzBYaIeBHUqWa568VpOYAKrzs?=
+ =?us-ascii?Q?FLlN6/4KBO5yYUkzSy87wQmxVXj7cTA5ldSoenAG/RcWV6BK07mHuKRQ2c65?=
+ =?us-ascii?Q?x9pM8YqHLM4FKOlvYpQRj83VgHjTRF1c3z9un0z5PZQx5j8YmVbSovJ75535?=
+ =?us-ascii?Q?AWxbE8mhilO2jLdYpXdL2Uwutxzk+hnBZRiT6vG+wG8RtiLYq6sqTT7pfXnQ?=
+ =?us-ascii?Q?5xCnNPiOzzWmqdpnJDwXdea9ktAKxDQI2hx5hlQBfPE8b1IHfFe2ZnLnRJ89?=
+ =?us-ascii?Q?Ivvv0Djb3SStWfaAindL7dGHq02vGoqbilITDAWJEmi65aQsDkbankCm+rwq?=
+ =?us-ascii?Q?tsg6LreQldjkHB4hvbSHpbYGWRbGC/3IQ6QxluhaNjyXGwOPQFEJYZmbC/wa?=
+ =?us-ascii?Q?d36sZtmnLxuWN1Jlay2+zW/gK0ZKKBRxU1hL/9vFQ20YXOCM0v9kNrva15DY?=
+ =?us-ascii?Q?wMWujSF9WTtgA+CrHWuurbNmT+uhu6Po/MJPaN398qyml9tM3jRsbt4IyVWI?=
+ =?us-ascii?Q?qaosSZ6ChgS1Ksb+Q8nNZCRq?=
 X-OriginatorOrg: Nvidia.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: a0cabc7f-f046-4694-79bf-08d9245f3198
+X-MS-Exchange-CrossTenant-Network-Message-Id: efde8504-a71a-47d4-5295-08d9245fb04e
 X-MS-Exchange-CrossTenant-AuthSource: BL0PR12MB5506.namprd12.prod.outlook.com
 X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 31 May 2021 18:09:12.4206 (UTC)
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 31 May 2021 18:12:45.0998 (UTC)
 X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
 X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
 X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: s9PUO/8UDASyIo929hB4RTpLCb0X7TjfPVTpVjyvNwki5Zct1CUEEOk1LLW9+PJt
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: BL0PR12MB5506
+X-MS-Exchange-CrossTenant-UserPrincipalName: vihKYf1dLWLw0b1ZqaPQCq8XHW8THdKJttYm1D5dLGfB6WkHThWiqxG/G3NJNfjP
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: BL1PR12MB5190
 Cc: Jean-Philippe Brucker <jean-philippe@linaro.org>, "Tian,
- Kevin" <kevin.tian@intel.com>, "Jiang, Dave" <dave.jiang@intel.com>, "Raj,
- Ashok" <ashok.raj@intel.com>, "kvm@vger.kernel.org" <kvm@vger.kernel.org>,
- Jonathan Corbet <corbet@lwn.net>, David Woodhouse <dwmw2@infradead.org>,
- Jason Wang <jasowang@redhat.com>, LKML <linux-kernel@vger.kernel.org>,
- Kirti Wankhede <kwankhede@nvidia.com>,
+ Kevin" <kevin.tian@intel.com>,
  "Alex Williamson \(alex.williamson@redhat.com\)" <alex.williamson@redhat.com>,
+ "Raj, Ashok" <ashok.raj@intel.com>,
+ "kvm@vger.kernel.org" <kvm@vger.kernel.org>, Jonathan Corbet <corbet@lwn.net>,
+ Robin Murphy <robin.murphy@arm.com>, LKML <linux-kernel@vger.kernel.org>,
+ Kirti Wankhede <kwankhede@nvidia.com>,
  "iommu@lists.linux-foundation.org" <iommu@lists.linux-foundation.org>,
- Robin Murphy <robin.murphy@arm.com>,
- David Gibson <david@gibson.dropbear.id.au>
+ David Gibson <david@gibson.dropbear.id.au>, "Jiang,
+ Dave" <dave.jiang@intel.com>, David Woodhouse <dwmw2@infradead.org>,
+ Jason Wang <jasowang@redhat.com>
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -171,181 +170,33 @@ Content-Transfer-Encoding: 7bit
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-On Mon, May 31, 2021 at 07:31:57PM +0800, Liu Yi L wrote:
-> > > /*
-> > >   * Get information about an I/O address space
-> > >   *
-> > >   * Supported capabilities:
-> > >   *	- VFIO type1 map/unmap;
-> > >   *	- pgtable/pasid_table binding
-> > >   *	- hardware nesting vs. software nesting;
-> > >   *	- ...
-> > >   *
-> > >   * Related attributes:
-> > >   * 	- supported page sizes, reserved IOVA ranges (DMA mapping);
-> > >   *	- vendor pgtable formats (pgtable binding);
-> > >   *	- number of child IOASIDs (nesting);
-> > >   *	- ...
-> > >   *
-> > >   * Above information is available only after one or more devices are
-> > >   * attached to the specified IOASID. Otherwise the IOASID is just a
-> > >   * number w/o any capability or attribute.  
-> > 
-> > This feels wrong to learn most of these attributes of the IOASID after
-> > attaching to a device.
-> 
-> but an IOASID is just a software handle before attached to a specific
-> device. e.g. before attaching to a device, we have no idea about the
-> supported page size in underlying iommu, coherent etc.
+On Mon, May 31, 2021 at 05:37:35PM +0000, Parav Pandit wrote:
 
-The idea is you attach the device to the /dev/ioasid FD and this
-action is what crystalizes the iommu driver that is being used:
+> In that case, can it be a new system call? Why does it have to be under /dev/ioasid?
+> For example few years back such system call mpin() thought was proposed in [1].
 
-        device_fd = open("/dev/vfio/devices/dev1", mode);
-        ioasid_fd = open("/dev/ioasid", mode);
-        ioctl(device_fd, VFIO_BIND_IOASID_FD, ioasid_fd);
+Reference counting of the overall pins are required
 
-After this sequence we should have most of the information about the
-IOMMU.
+So when a pinned pages is incorporated into an IOASID page table in a
+later IOCTL it means it cannot be unpinned while the IOASID page table
+is using it.
 
-One /dev/ioasid FD has one iommu driver. Design what an "iommu driver"
-means so that the system should only have one. Eg the coherent/not
-coherent distinction should not be a different "iommu driver".
+This is some trick to organize the pinning into groups and then
+refcount each group, thus avoiding needing per-page refcounts.
 
-Device attach to the _IOASID_ is a different thing, and I think it
-puts the whole sequence out of order because we loose the option to
-customize the IOASID before it has to be realized into HW format.
+The data structure would be an interval tree of pins in general
 
-> > The user should have some idea how it intends to use the IOASID when
-> > it creates it and the rest of the system should match the intention.
-> > 
-> > For instance if the user is creating a IOASID to cover the guest GPA
-> > with the intention of making children it should indicate this during
-> > alloc.
-> > 
-> > If the user is intending to point a child IOASID to a guest page table
-> > in a certain descriptor format then it should indicate it during
-> > alloc.
-> 
-> Actually, we have only two kinds of IOASIDs so far. 
+The ioasid itself would have an interval tree of its own mappings,
+each entry in this tree would reference count against an element in
+the above tree
 
-Maybe at a very very high level, but it looks like there is alot of
-IOMMU specific configuration that goes into an IOASD.
+Then the ioasid's interval tree would be mapped into a page table tree
+in HW format.
 
-
-> > device bind should fail if the device somehow isn't compatible with
-> > the scheme the user is tring to use.
-> 
-> yeah, I guess you mean to fail the device attach when the IOASID is a
-> nesting IOASID but the device is behind an iommu without nesting support.
-> right?
-
-Right..
- 
-> > 
-> > > /*
-> > >   * Map/unmap process virtual addresses to I/O virtual addresses.
-> > >   *
-> > >   * Provide VFIO type1 equivalent semantics. Start with the same 
-> > >   * restriction e.g. the unmap size should match those used in the 
-> > >   * original mapping call. 
-> > >   *
-> > >   * If IOASID_REGISTER_MEMORY has been called, the mapped vaddr
-> > >   * must be already in the preregistered list.
-> > >   *
-> > >   * Input parameters:
-> > >   *	- u32 ioasid;
-> > >   *	- refer to vfio_iommu_type1_dma_{un}map
-> > >   *
-> > >   * Return: 0 on success, -errno on failure.
-> > >   */
-> > > #define IOASID_MAP_DMA	_IO(IOASID_TYPE, IOASID_BASE + 6)
-> > > #define IOASID_UNMAP_DMA	_IO(IOASID_TYPE, IOASID_BASE + 7)  
-> > 
-> > What about nested IOASIDs?
-> 
-> at first glance, it looks like we should prevent the MAP/UNMAP usage on
-> nested IOASIDs. At least hardware nested translation only allows MAP/UNMAP
-> on the parent IOASIDs and page table bind on nested IOASIDs. But considering
-> about software nesting, it seems still useful to allow MAP/UNMAP usage
-> on nested IOASIDs. This is how I understand it, how about your opinion
-> on it? do you think it's better to allow MAP/UNMAP usage only on parent
-> IOASIDs as a start?
-
-If the only form of nested IOASID is the "read the page table from
-my process memory" then MAP/UNMAP won't make sense on that..
-
-MAP/UNMAP is only useful if the page table is stored in kernel memory.
-
-> > > #define IOASID_CREATE_NESTING	_IO(IOASID_TYPE, IOASID_BASE + 8)  
-> > 
-> > Do you think another ioctl is best? Should this just be another
-> > parameter to alloc?
-> 
-> either is fine. This ioctl is following one of your previous comment.
-
-Sometimes I say things in a way that is ment to be easier to
-understand conecpts not necessarily good API design :)
-
-> > > #define IOASID_BIND_PGTABLE		_IO(IOASID_TYPE, IOASID_BASE + 9)
-> > > #define IOASID_UNBIND_PGTABLE	_IO(IOASID_TYPE, IOASID_BASE + 10)  
-> > 
-> > Also feels backwards, why wouldn't we specify this, and the required
-> > page table format, during alloc time?
-> 
-> here the model is user-space gets the page table format from kernel and
-> decide if it can proceed. So what you are suggesting is user-space should
-> tell kernel the page table format it has in ALLOC and kenrel should fail
-> the ALLOC if the user-space page table format is not compatible with underlying
-> iommu?
-
-Yes, the action should be
-   Alloc an IOASID that points at a page table in this user memory,
-   that is stored in this specific format.
-
-The supported formats should be discoverable after VFIO_BIND_IOASID_FD
-
-> > > /*
-> > >   * Page fault report and response
-> > >   *
-> > >   * This is TBD. Can be added after other parts are cleared up. Likely it 
-> > >   * will be a ring buffer shared between user/kernel, an eventfd to notify 
-> > >   * the user and an ioctl to complete the fault.
-> > >   *
-> > >   * The fault data is per I/O address space, i.e.: IOASID + faulting_addr
-> > >   */  
-> > 
-> > Any reason not to just use read()?
-> 
-> a ring buffer may be mmap to user-space, thus reading fault data from kernel
-> would be faster. This is also how Eric's fault reporting is doing today.
-
-Okay, if it is performance sensitive.. mmap rings are just tricky beasts
-
-> > >    * Bind a vfio_device to the specified IOASID fd
-> > >    *
-> > >    * Multiple vfio devices can be bound to a single ioasid_fd, but a single
-> > >    * vfio device should not be bound to multiple ioasid_fd's.
-> > >    *
-> > >    * Input parameters:
-> > >    *  - ioasid_fd;
-> > >    *
-> > >    * Return: 0 on success, -errno on failure.
-> > >    */
-> > > #define VFIO_BIND_IOASID_FD           _IO(VFIO_TYPE, VFIO_BASE + 22)
-> > > #define VFIO_UNBIND_IOASID_FD _IO(VFIO_TYPE, VFIO_BASE + 23)  
-> > 
-> > This is where it would make sense to have an output "device id" that
-> > allows /dev/ioasid to refer to this "device" by number in events and
-> > other related things.
-> 
-> perhaps this is the device info Jean Philippe wants in page fault reporting
-> path?
-
-Yes, it is
+The redundant storages are needed to keep track of the refencing and
+the CPU page table values for later unpinning.
 
 Jason
- 
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
