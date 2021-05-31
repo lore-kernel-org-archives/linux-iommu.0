@@ -1,75 +1,101 @@
-Return-Path: <SRS0=A9HU=KZ=lists.linux-foundation.org=iommu-bounces@kernel.org>
+Return-Path: <SRS0=AF0h=K2=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-8.6 required=3.0 tests=BAYES_00,DKIM_INVALID,
-	DKIM_SIGNED,HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,
-	SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-7.7 required=3.0 tests=BAYES_00,DKIM_ADSP_CUSTOM_MED,
+	DKIM_INVALID,DKIM_SIGNED,FREEMAIL_FORGED_FROMDOMAIN,FREEMAIL_FROM,
+	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,NICE_REPLY_A,
+	SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_SANE_1 autolearn=no
+	autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D4F2BC47092
-	for <iommu@archiver.kernel.org>; Sun, 30 May 2021 18:34:45 +0000 (UTC)
-Received: from smtp1.osuosl.org (smtp1.osuosl.org [140.211.166.138])
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3545AC47082
+	for <iommu@archiver.kernel.org>; Mon, 31 May 2021 04:08:40 +0000 (UTC)
+Received: from smtp2.osuosl.org (smtp2.osuosl.org [140.211.166.133])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 6709261019
-	for <iommu@archiver.kernel.org>; Sun, 30 May 2021 18:34:45 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 6709261019
-Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=alien8.de
+	by mail.kernel.org (Postfix) with ESMTPS id C2756611EE
+	for <iommu@archiver.kernel.org>; Mon, 31 May 2021 04:08:39 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org C2756611EE
+Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=gmail.com
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by smtp1.osuosl.org (Postfix) with ESMTP id 1D46E8348C;
-	Sun, 30 May 2021 18:34:45 +0000 (UTC)
+	by smtp2.osuosl.org (Postfix) with ESMTP id 87C78401C0;
+	Mon, 31 May 2021 04:08:39 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from smtp1.osuosl.org ([127.0.0.1])
-	by localhost (smtp1.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id qcYq_EUd2_Iv; Sun, 30 May 2021 18:34:42 +0000 (UTC)
-Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by smtp1.osuosl.org (Postfix) with ESMTP id 77D87833CB;
-	Sun, 30 May 2021 18:34:42 +0000 (UTC)
+Received: from smtp2.osuosl.org ([127.0.0.1])
+	by localhost (smtp2.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+	with ESMTP id 2k9X9f0bFeNU; Mon, 31 May 2021 04:08:38 +0000 (UTC)
+Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [IPv6:2605:bc80:3010:104::8cd3:938])
+	by smtp2.osuosl.org (Postfix) with ESMTP id 77F0E40185;
+	Mon, 31 May 2021 04:08:38 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 492EFC000D;
-	Sun, 30 May 2021 18:34:42 +0000 (UTC)
-Received: from smtp1.osuosl.org (smtp1.osuosl.org [IPv6:2605:bc80:3010::138])
- by lists.linuxfoundation.org (Postfix) with ESMTP id D21C3C0001
- for <iommu@lists.linux-foundation.org>; Sun, 30 May 2021 18:34:40 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 4259AC000D;
+	Mon, 31 May 2021 04:08:38 +0000 (UTC)
+Received: from smtp3.osuosl.org (smtp3.osuosl.org [140.211.166.136])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id BE46FC0001
+ for <iommu@lists.linux-foundation.org>; Mon, 31 May 2021 04:08:36 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by smtp1.osuosl.org (Postfix) with ESMTP id B07F983440
- for <iommu@lists.linux-foundation.org>; Sun, 30 May 2021 18:34:40 +0000 (UTC)
+ by smtp3.osuosl.org (Postfix) with ESMTP id 9EEB16090C
+ for <iommu@lists.linux-foundation.org>; Mon, 31 May 2021 04:08:36 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from smtp1.osuosl.org ([127.0.0.1])
- by localhost (smtp1.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id jPjyNNnIBV_d for <iommu@lists.linux-foundation.org>;
- Sun, 30 May 2021 18:34:38 +0000 (UTC)
-X-Greylist: delayed 00:08:41 by SQLgrey-1.8.0
-Received: from mail.skyhub.de (mail.skyhub.de [IPv6:2a01:4f8:190:11c2::b:1457])
- by smtp1.osuosl.org (Postfix) with ESMTPS id 43C94833CB
- for <iommu@lists.linux-foundation.org>; Sun, 30 May 2021 18:34:37 +0000 (UTC)
-Received: from zn.tnic (p200300ec2f2460006cdc9875a311c8ed.dip0.t-ipconnect.de
- [IPv6:2003:ec:2f24:6000:6cdc:9875:a311:c8ed])
- (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
- (No client certificate requested)
- by mail.skyhub.de (SuperMail on ZX Spectrum 128k) with ESMTPSA id 297BA1EC04DA;
- Sun, 30 May 2021 20:25:54 +0200 (CEST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=alien8.de; s=dkim;
- t=1622399154;
- h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
- to:to:cc:cc:mime-version:mime-version:content-type:content-type:
- content-transfer-encoding:in-reply-to:in-reply-to:  references:references;
- bh=ZTX0veBS1A2m8n8rpJ5g64mOUcWUApPggEQNAUBCm9A=;
- b=IAw0F2TyYVY+rP1eI5AmqzSeMaa7HppyT4ap29b/IT/iNKMfdosPs+xMPG3f3mF2O4Wki1
- qhqGsUCN8l5tGn5bKA48frRbVNMVM2kOQP558FnSnfXnQJ2b7GfkbAAMJMi5biEwUyaXxK
- zI/Js2FGqWivkGhb4JVQazJsFli3sWY=
-Date: Sun, 30 May 2021 20:25:47 +0200
-From: Borislav Petkov <bp@alien8.de>
-To: Tianyu Lan <ltykernel@gmail.com>
+Authentication-Results: smtp3.osuosl.org (amavisd-new);
+ dkim=pass (2048-bit key) header.d=gmail.com
+Received: from smtp3.osuosl.org ([127.0.0.1])
+ by localhost (smtp3.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+ with ESMTP id G4oF_r4ryEgW for <iommu@lists.linux-foundation.org>;
+ Mon, 31 May 2021 04:08:36 +0000 (UTC)
+X-Greylist: whitelisted by SQLgrey-1.8.0
+Received: from mail-pf1-x42c.google.com (mail-pf1-x42c.google.com
+ [IPv6:2607:f8b0:4864:20::42c])
+ by smtp3.osuosl.org (Postfix) with ESMTPS id 02048608FA
+ for <iommu@lists.linux-foundation.org>; Mon, 31 May 2021 04:08:35 +0000 (UTC)
+Received: by mail-pf1-x42c.google.com with SMTP id 22so8030369pfv.11
+ for <iommu@lists.linux-foundation.org>; Sun, 30 May 2021 21:08:35 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=gmail.com; s=20161025;
+ h=subject:to:cc:references:from:message-id:date:user-agent
+ :mime-version:in-reply-to:content-language:content-transfer-encoding;
+ bh=B5E+Z+YC3ztWK1Gz5JJ/ZjFYfV7x7WXsq6pvj4QOEV8=;
+ b=qpIh0hZZdMUbO/xaXOluESyDyKh1wuXDzVMU8DbvilQdbzUAKKvtHMi2tZHdZZl6FD
+ pzHWR1qJ9SA0OUooLhgYA/FHAGzMTwF85gH2zMJXOjHY8akNBlPm2ZAFPL/BsX6AECn0
+ g+snaripSV02Ww2TMRpmrTPml1udHoN6L4hr2lbSznbW+9RR1UtQlYNf3WxE5hsOWUtQ
+ ktECgJ1y4SLarJMnSz0M8Q7rpMoLOq1xtTjLcSnDW6jj68DsuSfsO/MEvpsp4a3+Pm5b
+ T6ij0KxeYE/ElhOhht4tRwlDS7A1Bc2B1m97gM084MLnflqwYjE/MK2P0UCAVk17tm4z
+ 0i8w==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+ d=1e100.net; s=20161025;
+ h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+ :user-agent:mime-version:in-reply-to:content-language
+ :content-transfer-encoding;
+ bh=B5E+Z+YC3ztWK1Gz5JJ/ZjFYfV7x7WXsq6pvj4QOEV8=;
+ b=cjJxPNg2UrT8WCUfjmVHOvjDRMaguktiqfzYzoql69MJS3YaLKJizxdKRGkIU+8I4H
+ egffRYm2KSt+O8zlOuz4dpaP8l5mzCbZzt9qDh1uvoeziRVW7JjnVr4rOSND/qQyymyY
+ UMCaxFMBcbgEZiUan4iOCUI9MdmG6/9hGxtBEAHLpClkyqlHYrZkydbp4tlmzp2viKgP
+ 8jRlMZXlEvbzn2sfuxIztNm4Dg4rPo4uhoZ4bRbc/TTUcnX6Gf3Ely+k/DkKBI4ftkw+
+ B8Kb9q8plU3ZU3cGJyFHNsm1FsbsclK7nuqsiWx92iPS9jeRmt2AVTS66sCvTGsgDYxd
+ WEKg==
+X-Gm-Message-State: AOAM530Adn8aILYrEDuoPVy5o+9kbJlu3biPne/I4JrqeHmV9VNDoGlB
+ twMBX1s/AmRJQhcyWuMRaHs=
+X-Google-Smtp-Source: ABdhPJx+HANXtJX9yvLkBX/HVsORb2hbS4daFpETnK5c9NyvtRnVmWON27YgYVQ2Kp8imni+2oGhjA==
+X-Received: by 2002:a63:5a43:: with SMTP id k3mr21331103pgm.308.1622434115432; 
+ Sun, 30 May 2021 21:08:35 -0700 (PDT)
+Received: from ?IPv6:2404:f801:0:5:8000::4b1? ([2404:f801:9000:1a:efea::4b1])
+ by smtp.gmail.com with ESMTPSA id
+ v4sm4275222pfn.41.2021.05.30.21.08.23
+ (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+ Sun, 30 May 2021 21:08:35 -0700 (PDT)
 Subject: Re: [RFC PATCH V3 03/11] x86/Hyper-V: Add new hvcall guest address
  host visibility support
-Message-ID: <YLPYqxF7urDIAd9z@zn.tnic>
+To: Borislav Petkov <bp@alien8.de>
 References: <20210530150628.2063957-1-ltykernel@gmail.com>
- <20210530150628.2063957-4-ltykernel@gmail.com>
+ <20210530150628.2063957-4-ltykernel@gmail.com> <YLPYqxF7urDIAd9z@zn.tnic>
+From: Tianyu Lan <ltykernel@gmail.com>
+Message-ID: <3716c9e0-2508-3553-5a70-e4b3f5f4c82e@gmail.com>
+Date: Mon, 31 May 2021 12:08:21 +0800
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:78.0) Gecko/20100101
+ Thunderbird/78.10.2
 MIME-Version: 1.0
-Content-Disposition: inline
-In-Reply-To: <20210530150628.2063957-4-ltykernel@gmail.com>
+In-Reply-To: <YLPYqxF7urDIAd9z@zn.tnic>
+Content-Language: en-US
 Cc: linux-hyperv@vger.kernel.org, brijesh.singh@amd.com,
  thomas.lendacky@amd.com, peterz@infradead.org, dave.hansen@linux.intel.com,
  hpa@zytor.com, kys@microsoft.com, will@kernel.org, hch@lst.de,
@@ -96,47 +122,48 @@ List-Post: <mailto:iommu@lists.linux-foundation.org>
 List-Help: <mailto:iommu-request@lists.linux-foundation.org?subject=help>
 List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
  <mailto:iommu-request@lists.linux-foundation.org?subject=subscribe>
-Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset="us-ascii"; Format="flowed"
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-On Sun, May 30, 2021 at 11:06:20AM -0400, Tianyu Lan wrote:
-> diff --git a/arch/x86/mm/pat/set_memory.c b/arch/x86/mm/pat/set_memory.c
-> index 156cd235659f..a82975600107 100644
-> --- a/arch/x86/mm/pat/set_memory.c
-> +++ b/arch/x86/mm/pat/set_memory.c
-> @@ -29,6 +29,8 @@
->  #include <asm/proto.h>
->  #include <asm/memtype.h>
->  #include <asm/set_memory.h>
-> +#include <asm/hyperv-tlfs.h>
-> +#include <asm/mshyperv.h>
->  
->  #include "../mm_internal.h"
->  
-> @@ -1986,8 +1988,14 @@ static int __set_memory_enc_dec(unsigned long addr, int numpages, bool enc)
->  	int ret;
->  
->  	/* Nothing to do if memory encryption is not active */
-> -	if (!mem_encrypt_active())
-> +	if (hv_is_isolation_supported()) {
-> +		return hv_set_mem_host_visibility((void *)addr,
-> +				numpages * HV_HYP_PAGE_SIZE,
-> +				enc ? VMBUS_PAGE_NOT_VISIBLE
-> +				: VMBUS_PAGE_VISIBLE_READ_WRITE);
+Hi Borislav:
+	Thanks for your review.
 
-Put all this gunk in a hv-specific function somewhere in hv-land which
-you only call from here. This way you probably won't even need to export
-hv_set_mem_host_visibility() and so on...
+On 5/31/2021 2:25 AM, Borislav Petkov wrote:
+> On Sun, May 30, 2021 at 11:06:20AM -0400, Tianyu Lan wrote:
+>> diff --git a/arch/x86/mm/pat/set_memory.c b/arch/x86/mm/pat/set_memory.c
+>> index 156cd235659f..a82975600107 100644
+>> --- a/arch/x86/mm/pat/set_memory.c
+>> +++ b/arch/x86/mm/pat/set_memory.c
+>> @@ -29,6 +29,8 @@
+>>   #include <asm/proto.h>
+>>   #include <asm/memtype.h>
+>>   #include <asm/set_memory.h>
+>> +#include <asm/hyperv-tlfs.h>
+>> +#include <asm/mshyperv.h>
+>>   
+>>   #include "../mm_internal.h"
+>>   
+>> @@ -1986,8 +1988,14 @@ static int __set_memory_enc_dec(unsigned long addr, int numpages, bool enc)
+>>   	int ret;
+>>   
+>>   	/* Nothing to do if memory encryption is not active */
+>> -	if (!mem_encrypt_active())
+>> +	if (hv_is_isolation_supported()) {
+>> +		return hv_set_mem_host_visibility((void *)addr,
+>> +				numpages * HV_HYP_PAGE_SIZE,
+>> +				enc ? VMBUS_PAGE_NOT_VISIBLE
+>> +				: VMBUS_PAGE_VISIBLE_READ_WRITE);
+> 
+> Put all this gunk in a hv-specific function somewhere in hv-land which
+> you only call from here. This way you probably won't even need to export
+> hv_set_mem_host_visibility() and so on...
+> 
 
-Thx.
+Good idea. Will update. Thanks.
 
--- 
-Regards/Gruss,
-    Boris.
 
-https://people.kernel.org/tglx/notes-about-netiquette
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
