@@ -2,77 +2,89 @@ Return-Path: <SRS0=UGJ5=K3=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-10.3 required=3.0 tests=BAYES_00,DKIM_INVALID,
-	DKIM_SIGNED,INCLUDES_PATCH,MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,
-	USER_AGENT_SANE_1 autolearn=unavailable autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-5.9 required=3.0 tests=BAYES_00,
+	HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,NICE_REPLY_A,SPF_HELO_NONE,
+	SPF_PASS,USER_AGENT_SANE_1 autolearn=no autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3C004C47080
-	for <iommu@archiver.kernel.org>; Tue,  1 Jun 2021 12:26:56 +0000 (UTC)
-Received: from smtp4.osuosl.org (smtp4.osuosl.org [140.211.166.137])
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 83E5AC47080
+	for <iommu@archiver.kernel.org>; Tue,  1 Jun 2021 12:30:48 +0000 (UTC)
+Received: from smtp2.osuosl.org (smtp2.osuosl.org [140.211.166.133])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id DCA136101C
-	for <iommu@archiver.kernel.org>; Tue,  1 Jun 2021 12:26:55 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org DCA136101C
-Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=kernel.org
+	by mail.kernel.org (Postfix) with ESMTPS id 13922613B1
+	for <iommu@archiver.kernel.org>; Tue,  1 Jun 2021 12:30:48 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 13922613B1
+Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=linux.intel.com
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by smtp4.osuosl.org (Postfix) with ESMTP id A5BC140440;
-	Tue,  1 Jun 2021 12:26:55 +0000 (UTC)
+	by smtp2.osuosl.org (Postfix) with ESMTP id CF08840266;
+	Tue,  1 Jun 2021 12:30:47 +0000 (UTC)
+X-Virus-Scanned: amavisd-new at osuosl.org
+Received: from smtp2.osuosl.org ([127.0.0.1])
+	by localhost (smtp2.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+	with ESMTP id jorUu_TBBebw; Tue,  1 Jun 2021 12:30:47 +0000 (UTC)
+Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
+	by smtp2.osuosl.org (Postfix) with ESMTP id AC50D40004;
+	Tue,  1 Jun 2021 12:30:46 +0000 (UTC)
+Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 8F3ECC000D;
+	Tue,  1 Jun 2021 12:30:46 +0000 (UTC)
+Received: from smtp4.osuosl.org (smtp4.osuosl.org [140.211.166.137])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 8D5D7C0001
+ for <iommu@lists.linux-foundation.org>; Tue,  1 Jun 2021 12:30:45 +0000 (UTC)
+Received: from localhost (localhost [127.0.0.1])
+ by smtp4.osuosl.org (Postfix) with ESMTP id 647844047A
+ for <iommu@lists.linux-foundation.org>; Tue,  1 Jun 2021 12:30:45 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
 Received: from smtp4.osuosl.org ([127.0.0.1])
-	by localhost (smtp4.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id ynwHZ59H29Sw; Tue,  1 Jun 2021 12:26:54 +0000 (UTC)
-Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by smtp4.osuosl.org (Postfix) with ESMTP id 37CB140449;
-	Tue,  1 Jun 2021 12:26:54 +0000 (UTC)
-Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id F0FDFC000D;
-	Tue,  1 Jun 2021 12:26:53 +0000 (UTC)
-Received: from smtp2.osuosl.org (smtp2.osuosl.org [IPv6:2605:bc80:3010::133])
- by lists.linuxfoundation.org (Postfix) with ESMTP id DCE52C0001
- for <iommu@lists.linux-foundation.org>; Tue,  1 Jun 2021 12:26:52 +0000 (UTC)
-Received: from localhost (localhost [127.0.0.1])
- by smtp2.osuosl.org (Postfix) with ESMTP id B6408400C4
- for <iommu@lists.linux-foundation.org>; Tue,  1 Jun 2021 12:26:52 +0000 (UTC)
-X-Virus-Scanned: amavisd-new at osuosl.org
-Authentication-Results: smtp2.osuosl.org (amavisd-new);
- dkim=pass (2048-bit key) header.d=kernel.org
-Received: from smtp2.osuosl.org ([127.0.0.1])
- by localhost (smtp2.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id 6iGnCpTsQBg5 for <iommu@lists.linux-foundation.org>;
- Tue,  1 Jun 2021 12:26:52 +0000 (UTC)
+ by localhost (smtp4.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+ with ESMTP id SI4BskfDFT5G for <iommu@lists.linux-foundation.org>;
+ Tue,  1 Jun 2021 12:30:44 +0000 (UTC)
 X-Greylist: domain auto-whitelisted by SQLgrey-1.8.0
-Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
- by smtp2.osuosl.org (Postfix) with ESMTPS id 0F4C040004
- for <iommu@lists.linux-foundation.org>; Tue,  1 Jun 2021 12:26:51 +0000 (UTC)
-Received: by mail.kernel.org (Postfix) with ESMTPSA id D66B060FF0;
- Tue,  1 Jun 2021 12:26:49 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
- s=k20201202; t=1622550411;
- bh=eXqJC3GRoWPNutXm6EevRjIRj1wQ3hmw12wr3ZM5m7U=;
- h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
- b=rN+o2G4MHs1yeYvPmTOT8oqOzaqINuKaNHKggKT77EUnHxTV67rhmn3KfH6IAxtlL
- m3vCUBcCZ5+DouvljOQC1q4oELw6hDAZ6N3IMWVzvr0OOhDt2YzUyk1GxbmSKyv+y2
- Ld1+GprZJWsbWVt3rnlSqeCUPysA8HBELfRYmBzakT51wYAgBMzLYgxmDwyzkY22VV
- Keivj4UvIYKb4UKDCa9mmJIrs4XxR7sMBc4xeO3alvw30Xu0uGyKYhlW/DUei7tBY9
- y+kL4Bc+ylMniYyeteVF5h9KfvjBxV9VlB17TZbmvKp4p2g77My4xf463aUNLsxbUd
- YVoiotYyNBDRQ==
-Date: Tue, 1 Jun 2021 13:26:46 +0100
-From: Will Deacon <will@kernel.org>
-To: Thierry Reding <thierry.reding@gmail.com>
-Subject: Re: [PATCH v2 00/10] arm64: tegra: Prevent early SMMU faults
-Message-ID: <20210601122646.GB27832@willie-the-truck>
-References: <20210420172619.3782831-1-thierry.reding@gmail.com>
- <YLEi2FonP568wYrE@orome.fritz.box>
+Received: from mga09.intel.com (mga09.intel.com [134.134.136.24])
+ by smtp4.osuosl.org (Postfix) with ESMTPS id 331634045D
+ for <iommu@lists.linux-foundation.org>; Tue,  1 Jun 2021 12:30:44 +0000 (UTC)
+IronPort-SDR: 6I1t2ld5Lz8g+S3ogo+NeC/SUGVkARjzbOAf41HVXiUG6S1zr+7LEuU2KeiuIpr4ptq53tQEoj
+ kZDmaBrFDVZA==
+X-IronPort-AV: E=McAfee;i="6200,9189,10001"; a="203533455"
+X-IronPort-AV: E=Sophos;i="5.83,239,1616482800"; d="scan'208";a="203533455"
+Received: from orsmga001.jf.intel.com ([10.7.209.18])
+ by orsmga102.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384;
+ 01 Jun 2021 05:30:43 -0700
+IronPort-SDR: pmRj6eQl7X0Fy7iIH1MbbbVkU0DGVu7qw6nbeDY/T4pbyT5C2VCpozjuvAh/HOtbhAPZWRXLJ7
+ 5LEqbVipItug==
+X-IronPort-AV: E=Sophos;i="5.83,239,1616482800"; d="scan'208";a="479260607"
+Received: from blu2-mobl3.ccr.corp.intel.com (HELO [10.254.213.9])
+ ([10.254.213.9])
+ by orsmga001-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384;
+ 01 Jun 2021 05:30:37 -0700
+Subject: Re: [RFC] /dev/ioasid uAPI proposal
+To: Shenming Lu <lushenming@huawei.com>, "Tian, Kevin"
+ <kevin.tian@intel.com>, LKML <linux-kernel@vger.kernel.org>,
+ Joerg Roedel <joro@8bytes.org>, Jason Gunthorpe <jgg@nvidia.com>,
+ David Woodhouse <dwmw2@infradead.org>,
+ "iommu@lists.linux-foundation.org" <iommu@lists.linux-foundation.org>,
+ "kvm@vger.kernel.org" <kvm@vger.kernel.org>,
+ "Alex Williamson (alex.williamson@redhat.com)" <alex.williamson@redhat.com>,
+ Jason Wang <jasowang@redhat.com>
+References: <MWHPR11MB1886422D4839B372C6AB245F8C239@MWHPR11MB1886.namprd11.prod.outlook.com>
+ <c9c066ae-2a25-0799-51a7-0ca47fff41a1@huawei.com>
+ <aa1624bf-e472-2b66-1d20-54ca23c19fd2@linux.intel.com>
+ <ed4f6e57-4847-3ed2-75de-cea80b2fbdb8@huawei.com>
+From: Lu Baolu <baolu.lu@linux.intel.com>
+Message-ID: <01fe5034-42c8-6923-32f1-e287cc36bccc@linux.intel.com>
+Date: Tue, 1 Jun 2021 20:30:35 +0800
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:78.0) Gecko/20100101
+ Thunderbird/78.10.2
 MIME-Version: 1.0
-Content-Disposition: inline
-In-Reply-To: <YLEi2FonP568wYrE@orome.fritz.box>
-User-Agent: Mutt/1.10.1 (2018-07-13)
-Cc: Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>,
- iommu@lists.linux-foundation.org, Jon Hunter <jonathanh@nvidia.com>,
- Nicolin Chen <nicolinc@nvidia.com>, linux-tegra@vger.kernel.org,
- Robin Murphy <robin.murphy@arm.com>, linux-arm-kernel@lists.infradead.org
+In-Reply-To: <ed4f6e57-4847-3ed2-75de-cea80b2fbdb8@huawei.com>
+Content-Language: en-US
+Cc: Jean-Philippe Brucker <jean-philippe@linaro.org>, "Jiang,
+ Dave" <dave.jiang@intel.com>, "Raj, Ashok" <ashok.raj@intel.com>,
+ Jonathan Corbet <corbet@lwn.net>, Kirti Wankhede <kwankhede@nvidia.com>,
+ David Gibson <david@gibson.dropbear.id.au>,
+ "wanghaibin.wang@huawei.com" <wanghaibin.wang@huawei.com>,
+ Robin Murphy <robin.murphy@arm.com>
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -85,106 +97,65 @@ List-Post: <mailto:iommu@lists.linux-foundation.org>
 List-Help: <mailto:iommu-request@lists.linux-foundation.org?subject=help>
 List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
  <mailto:iommu-request@lists.linux-foundation.org?subject=subscribe>
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: base64
+Content-Type: text/plain; charset="utf-8"; Format="flowed"
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-On Fri, May 28, 2021 at 07:05:28PM +0200, Thierry Reding wrote:
-> On Tue, Apr 20, 2021 at 07:26:09PM +0200, Thierry Reding wrote:
-> > From: Thierry Reding <treding@nvidia.com>
-> > 
-> > Hi,
-> > 
-> > this is a set of patches that is the result of earlier discussions
-> > regarding early identity mappings that are needed to avoid SMMU faults
-> > during early boot.
-> > 
-> > The goal here is to avoid early identity mappings altogether and instead
-> > postpone the need for the identity mappings to when devices are attached
-> > to the SMMU. This works by making the SMMU driver coordinate with the
-> > memory controller driver on when to start enforcing SMMU translations.
-> > This makes Tegra behave in a more standard way and pushes the code to
-> > deal with the Tegra-specific programming into the NVIDIA SMMU
-> > implementation.
-> > 
-> > Compared to the original version of these patches, I've split the
-> > preparatory work into a separate patch series because it became very
-> > large and will be mostly uninteresting for this audience.
-> > 
-> > Patch 1 provides a mechanism to program SID overrides at runtime. Patch
-> > 2 updates the ARM SMMU device tree bindings to include the Tegra186
-> > compatible string as suggested by Robin during review.
-> > 
-> > Patches 3 and 4 create the fundamentals in the SMMU driver to support
-> > this and also make this functionality available on Tegra186. Patch 5
-> > hooks the ARM SMMU up to the memory controller so that the memory client
-> > stream ID overrides can be programmed at the right time.
-> > 
-> > Patch 6 extends this mechanism to Tegra186 and patches 7-9 enable all of
-> > this through device tree updates. Patch 10 is included here to show how
-> > SMMU will be enabled for display controllers. However, it cannot be
-> > applied yet because the code to create identity mappings for potentially
-> > live framebuffers hasn't been merged yet.
-> > 
-> > The end result is that various peripherals will have SMMU enabled, while
-> > the display controllers will keep using passthrough, as initially set up
-> > by firmware. Once the device tree bindings have been accepted and the
-> > SMMU driver has been updated to create identity mappings for the display
-> > controllers, they can be hooked up to the SMMU and the code in this
-> > series will automatically program the SID overrides to enable SMMU
-> > translations at the right time.
-> > 
-> > Note that the series creates a compile time dependency between the
-> > memory controller and IOMMU trees. If it helps I can provide a branch
-> > for each tree, modelling the dependency, once the series has been
-> > reviewed.
-> > 
-> > Changes in v2:
-> > - split off the preparatory work into a separate series (that needs to
-> >   be applied first)
-> > - address review comments by Robin
-> > 
-> > Thierry
-> > 
-> > Thierry Reding (10):
-> >   memory: tegra: Implement SID override programming
-> >   dt-bindings: arm-smmu: Add Tegra186 compatible string
-> >   iommu/arm-smmu: Implement ->probe_finalize()
-> >   iommu/arm-smmu: tegra: Detect number of instances at runtime
-> >   iommu/arm-smmu: tegra: Implement SID override programming
-> >   iommu/arm-smmu: Use Tegra implementation on Tegra186
-> >   arm64: tegra: Use correct compatible string for Tegra186 SMMU
-> >   arm64: tegra: Hook up memory controller to SMMU on Tegra186
-> >   arm64: tegra: Enable SMMU support on Tegra194
-> >   arm64: tegra: Enable SMMU support for display on Tegra194
-> > 
-> >  .../devicetree/bindings/iommu/arm,smmu.yaml   |  11 +-
-> >  arch/arm64/boot/dts/nvidia/tegra186.dtsi      |   4 +-
-> >  arch/arm64/boot/dts/nvidia/tegra194.dtsi      | 166 ++++++++++++++++++
-> >  drivers/iommu/arm/arm-smmu/arm-smmu-impl.c    |   3 +-
-> >  drivers/iommu/arm/arm-smmu/arm-smmu-nvidia.c  |  90 ++++++++--
-> >  drivers/iommu/arm/arm-smmu/arm-smmu.c         |  13 ++
-> >  drivers/iommu/arm/arm-smmu/arm-smmu.h         |   1 +
-> >  drivers/memory/tegra/mc.c                     |   9 +
-> >  drivers/memory/tegra/tegra186.c               |  72 ++++++++
-> >  include/soc/tegra/mc.h                        |   3 +
-> >  10 files changed, 349 insertions(+), 23 deletions(-)
-> 
-> Will, Robin,
-> 
-> do you have any more comments on the ARM SMMU bits of this series? If
-> not, can you guys provide an Acked-by so that Krzysztof can pick this
-> (modulo the DT patches) up into the memory-controller tree for v5.14?
-> 
-> I'll send out a v3 with the bisectibilitiy fix that Krishna pointed
-> out.
-
-Probably best if I queue 3-6 on a separate branch once you send a v3,
-then Krzysztof can pull that in if he needs it.
-
-Will
-_______________________________________________
-iommu mailing list
-iommu@lists.linux-foundation.org
-https://lists.linuxfoundation.org/mailman/listinfo/iommu
+T24gMjAyMS82LzEgMTU6MTUsIFNoZW5taW5nIEx1IHdyb3RlOgo+IE9uIDIwMjEvNi8xIDEzOjEw
+LCBMdSBCYW9sdSB3cm90ZToKPj4gSGkgU2hlbm1pbmcsCj4+Cj4+IE9uIDYvMS8yMSAxMjozMSBQ
+TSwgU2hlbm1pbmcgTHUgd3JvdGU6Cj4+PiBPbiAyMDIxLzUvMjcgMTU6NTgsIFRpYW4sIEtldmlu
+IHdyb3RlOgo+Pj4+IC9kZXYvaW9hc2lkIHByb3ZpZGVzIGFuIHVuaWZpZWQgaW50ZXJmYWNlIGZv
+ciBtYW5hZ2luZyBJL08gcGFnZSB0YWJsZXMgZm9yCj4+Pj4gZGV2aWNlcyBhc3NpZ25lZCB0byB1
+c2Vyc3BhY2UuIERldmljZSBwYXNzdGhyb3VnaCBmcmFtZXdvcmtzIChWRklPLCB2RFBBLAo+Pj4+
+IGV0Yy4pIGFyZSBleHBlY3RlZCB0byB1c2UgdGhpcyBpbnRlcmZhY2UgaW5zdGVhZCBvZiBjcmVh
+dGluZyB0aGVpciBvd24gbG9naWMgdG8KPj4+PiBpc29sYXRlIHVudHJ1c3RlZCBkZXZpY2UgRE1B
+cyBpbml0aWF0ZWQgYnkgdXNlcnNwYWNlLgo+Pj4+Cj4+Pj4gVGhpcyBwcm9wb3NhbCBkZXNjcmli
+ZXMgdGhlIHVBUEkgb2YgL2Rldi9pb2FzaWQgYW5kIGFsc28gc2FtcGxlIHNlcXVlbmNlcwo+Pj4+
+IHdpdGggVkZJTyBhcyBleGFtcGxlIGluIHR5cGljYWwgdXNhZ2VzLiBUaGUgZHJpdmVyLWZhY2lu
+ZyBrZXJuZWwgQVBJIHByb3ZpZGVkCj4+Pj4gYnkgdGhlIGlvbW11IGxheWVyIGlzIHN0aWxsIFRC
+RCwgd2hpY2ggY2FuIGJlIGRpc2N1c3NlZCBhZnRlciBjb25zZW5zdXMgaXMKPj4+PiBtYWRlIG9u
+IHRoaXMgdUFQSS4KPj4+Pgo+Pj4+IEl0J3MgYmFzZWQgb24gYSBsZW5ndGh5IGRpc2N1c3Npb24g
+c3RhcnRpbmcgZnJvbSBoZXJlOgo+Pj4+ICAgICAgaHR0cHM6Ly9sb3JlLmtlcm5lbC5vcmcvbGlu
+dXgtaW9tbXUvMjAyMTAzMzAxMzI4MzAuR08yMzU2MjgxQG52aWRpYS5jb20vCj4+Pj4KPj4+PiBJ
+dCBlbmRzIHVwIHRvIGJlIGEgbG9uZyB3cml0aW5nIGR1ZSB0byBtYW55IHRoaW5ncyB0byBiZSBz
+dW1tYXJpemVkIGFuZAo+Pj4+IG5vbi10cml2aWFsIGVmZm9ydCByZXF1aXJlZCB0byBjb25uZWN0
+IHRoZW0gaW50byBhIGNvbXBsZXRlIHByb3Bvc2FsLgo+Pj4+IEhvcGUgaXQgcHJvdmlkZXMgYSBj
+bGVhbiBiYXNlIHRvIGNvbnZlcmdlLgo+Pj4+Cj4+PiBbLi5dCj4+Pgo+Pj4+IC8qCj4+Pj4gIMKg
+wqAgKiBQYWdlIGZhdWx0IHJlcG9ydCBhbmQgcmVzcG9uc2UKPj4+PiAgwqDCoCAqCj4+Pj4gIMKg
+wqAgKiBUaGlzIGlzIFRCRC4gQ2FuIGJlIGFkZGVkIGFmdGVyIG90aGVyIHBhcnRzIGFyZSBjbGVh
+cmVkIHVwLiBMaWtlbHkgaXQKPj4+PiAgwqDCoCAqIHdpbGwgYmUgYSByaW5nIGJ1ZmZlciBzaGFy
+ZWQgYmV0d2VlbiB1c2VyL2tlcm5lbCwgYW4gZXZlbnRmZCB0byBub3RpZnkKPj4+PiAgwqDCoCAq
+IHRoZSB1c2VyIGFuZCBhbiBpb2N0bCB0byBjb21wbGV0ZSB0aGUgZmF1bHQuCj4+Pj4gIMKgwqAg
+Kgo+Pj4+ICDCoMKgICogVGhlIGZhdWx0IGRhdGEgaXMgcGVyIEkvTyBhZGRyZXNzIHNwYWNlLCBp
+LmUuOiBJT0FTSUQgKyBmYXVsdGluZ19hZGRyCj4+Pj4gIMKgwqAgKi8KPj4+IEhpLAo+Pj4KPj4+
+IEl0IHNlZW1zIHRoYXQgdGhlIGlvYXNpZCBoYXMgZGlmZmVyZW50IHVzYWdlIGluIGRpZmZlcmVu
+dCBzaXR1YXRpb24sIGl0IGNvdWxkCj4+PiBiZSBkaXJlY3RseSB1c2VkIGluIHRoZSBwaHlzaWNh
+bCByb3V0aW5nLCBvciBqdXN0IGEgdmlydHVhbCBoYW5kbGUgdGhhdCBpbmRpY2F0ZXMKPj4+IGEg
+cGFnZSB0YWJsZSBvciBhIHZQQVNJRCB0YWJsZSAoc3VjaCBhcyB0aGUgR1BBIGFkZHJlc3Mgc3Bh
+Y2UsIGluIHRoZSBzaW1wbGUKPj4+IHBhc3N0aHJvdWdoIGNhc2UsIHRoZSBETUEgaW5wdXQgdG8g
+SU9NTVUgd2lsbCBqdXN0IGNvbnRhaW4gYSBTdHJlYW0gSUQsIG5vCj4+PiBTdWJzdHJlYW0gSUQp
+LCByaWdodD8KPj4+Cj4+PiBBbmQgQmFvbHUgc3VnZ2VzdGVkIHRoYXQgc2luY2Ugb25lIGRldmlj
+ZSBtaWdodCBjb25zdW1lIG11bHRpcGxlIHBhZ2UgdGFibGVzLAo+Pj4gaXQncyBtb3JlIHJlYXNv
+bmFibGUgdG8gaGF2ZSBvbmUgZmF1bHQgaGFuZGxlciBwZXIgcGFnZSB0YWJsZS4gQnkgdGhpcywg
+ZG8gd2UKPj4+IGhhdmUgdG8gbWFpbnRhaW4gc3VjaCBhbiBpb2FzaWQgaW5mbyBsaXN0IGluIHRo
+ZSBJT01NVSBsYXllcj8KPj4gQXMgZGlzY3Vzc2VkIGVhcmxpZXIsIHRoZSBJL08gcGFnZSBmYXVs
+dCBhbmQgY2FjaGUgaW52YWxpZGF0aW9uIHBhdGhzCj4+IHdpbGwgaGF2ZSAiZGV2aWNlIGxhYmVs
+cyIgc28gdGhhdCB0aGUgaW5mb3JtYXRpb24gY291bGQgYmUgZWFzaWx5Cj4+IHRyYW5zbGF0ZWQg
+YW5kIHJvdXRlZC4KPj4KPj4gU28gaXQncyBsaWtlbHkgdGhlIHBlci1kZXZpY2UgZmF1bHQgaGFu
+ZGxlciByZWdpc3RlcmluZyBBUEkgaW4gaW9tbXUKPj4gY29yZSBjYW4gYmUga2VwdCwgYnV0IC9k
+ZXYvaW9hc2lkIHdpbGwgYmUgZ3Jvd24gd2l0aCBhIGxheWVyIHRvCj4+IHRyYW5zbGF0ZSBhbmQg
+cHJvcGFnYXRlIEkvTyBwYWdlIGZhdWx0IGluZm9ybWF0aW9uIHRvIHRoZSByaWdodAo+PiBjb25z
+dW1lcnMuCj4gWWVhaCwgaGF2aW5nIGEgZ2VuZXJhbCBwcmVwcm9jZXNzaW5nIG9mIHRoZSBmYXVs
+dHMgaW4gSU9BU0lEIHNlZW1zIHRvIGJlCj4gYSBkb2FibGUgZGlyZWN0aW9uLiBCdXQgc2luY2Ug
+dGhlcmUgbWF5IGJlIG1vcmUgdGhhbiBvbmUgY29uc3VtZXIgYXQgdGhlCj4gc2FtZSB0aW1lLCB3
+aG8gaXMgcmVzcG9uc2libGUgZm9yIHJlZ2lzdGVyaW5nIHRoZSBwZXItZGV2aWNlIGZhdWx0IGhh
+bmRsZXI/CgpUaGUgZHJpdmVycyByZWdpc3RlciBwZXIgcGFnZSB0YWJsZSBmYXVsdCBoYW5kbGVy
+cyB0byAvZGV2L2lvYXNpZCB3aGljaAp3aWxsIHRoZW4gcmVnaXN0ZXIgaXRzZWxmIHRvIGlvbW11
+IGNvcmUgdG8gbGlzdGVuIGFuZCByb3V0ZSB0aGUgcGVyLQpkZXZpY2UgSS9PIHBhZ2UgZmF1bHRz
+LiBUaGlzIGlzIGp1c3QgYSB0b3AgbGV2ZWwgdGhvdWdodC4gSGF2ZW4ndCBnb25lCnRocm91Z2gg
+dGhlIGRldGFpbHMgeWV0LiBOZWVkIHRvIHdhaXQgYW5kIHNlZSB3aGF0IC9kZXYvaW9hc2lkIGZp
+bmFsbHkKbG9va3MgbGlrZS4KCkJlc3QgcmVnYXJkcywKYmFvbHUKX19fX19fX19fX19fX19fX19f
+X19fX19fX19fX19fX19fX19fX19fX19fX19fX18KaW9tbXUgbWFpbGluZyBsaXN0CmlvbW11QGxp
+c3RzLmxpbnV4LWZvdW5kYXRpb24ub3JnCmh0dHBzOi8vbGlzdHMubGludXhmb3VuZGF0aW9uLm9y
+Zy9tYWlsbWFuL2xpc3RpbmZvL2lvbW11
