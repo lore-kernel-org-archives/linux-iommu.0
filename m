@@ -4,64 +4,64 @@ X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 X-Spam-Level: 
 X-Spam-Status: No, score=-16.8 required=3.0 tests=BAYES_00,
 	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_CR_TRAILER,INCLUDES_PATCH,
-	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,USER_AGENT_GIT
-	autolearn=unavailable autolearn_force=no version=3.4.0
+	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,USER_AGENT_GIT autolearn=ham
+	autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A4AEEC47093
-	for <iommu@archiver.kernel.org>; Tue,  1 Jun 2021 14:34:19 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 88C4EC4708F
+	for <iommu@archiver.kernel.org>; Tue,  1 Jun 2021 14:34:20 +0000 (UTC)
 Received: from smtp2.osuosl.org (smtp2.osuosl.org [140.211.166.133])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 4E749613AE
-	for <iommu@archiver.kernel.org>; Tue,  1 Jun 2021 14:34:19 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 4E749613AE
+	by mail.kernel.org (Postfix) with ESMTPS id 3E7F66124B
+	for <iommu@archiver.kernel.org>; Tue,  1 Jun 2021 14:34:20 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 3E7F66124B
 Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=huawei.com
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by smtp2.osuosl.org (Postfix) with ESMTP id 12431402CB;
-	Tue,  1 Jun 2021 14:34:19 +0000 (UTC)
+	by smtp2.osuosl.org (Postfix) with ESMTP id 173964028C;
+	Tue,  1 Jun 2021 14:34:20 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
 Received: from smtp2.osuosl.org ([127.0.0.1])
 	by localhost (smtp2.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id 7inLX8oSuQ5u; Tue,  1 Jun 2021 14:34:18 +0000 (UTC)
-Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by smtp2.osuosl.org (Postfix) with ESMTP id BEC72402AE;
-	Tue,  1 Jun 2021 14:34:17 +0000 (UTC)
+	with ESMTP id EepBaB52TSH0; Tue,  1 Jun 2021 14:34:19 +0000 (UTC)
+Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [IPv6:2605:bc80:3010:104::8cd3:938])
+	by smtp2.osuosl.org (Postfix) with ESMTP id C49474028D;
+	Tue,  1 Jun 2021 14:34:18 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 919E3C000F;
-	Tue,  1 Jun 2021 14:34:17 +0000 (UTC)
-Received: from smtp3.osuosl.org (smtp3.osuosl.org [IPv6:2605:bc80:3010::136])
- by lists.linuxfoundation.org (Postfix) with ESMTP id B7594C0024
- for <iommu@lists.linux-foundation.org>; Tue,  1 Jun 2021 14:34:15 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id BE1AEC000D;
+	Tue,  1 Jun 2021 14:34:18 +0000 (UTC)
+Received: from smtp4.osuosl.org (smtp4.osuosl.org [140.211.166.137])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 8AF2CC0001
+ for <iommu@lists.linux-foundation.org>; Tue,  1 Jun 2021 14:34:17 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by smtp3.osuosl.org (Postfix) with ESMTP id 99A7860704
- for <iommu@lists.linux-foundation.org>; Tue,  1 Jun 2021 14:34:15 +0000 (UTC)
+ by smtp4.osuosl.org (Postfix) with ESMTP id 6102040281
+ for <iommu@lists.linux-foundation.org>; Tue,  1 Jun 2021 14:34:17 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from smtp3.osuosl.org ([127.0.0.1])
- by localhost (smtp3.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id vTg4GtUvHkQ7 for <iommu@lists.linux-foundation.org>;
- Tue,  1 Jun 2021 14:34:14 +0000 (UTC)
+Received: from smtp4.osuosl.org ([127.0.0.1])
+ by localhost (smtp4.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+ with ESMTP id X8S3QSTWt7xh for <iommu@lists.linux-foundation.org>;
+ Tue,  1 Jun 2021 14:34:16 +0000 (UTC)
 X-Greylist: domain auto-whitelisted by SQLgrey-1.8.0
 Received: from frasgout.his.huawei.com (frasgout.his.huawei.com
  [185.176.79.56])
- by smtp3.osuosl.org (Postfix) with ESMTPS id 99F6060758
- for <iommu@lists.linux-foundation.org>; Tue,  1 Jun 2021 14:34:14 +0000 (UTC)
-Received: from fraeml744-chm.china.huawei.com (unknown [172.18.147.226])
- by frasgout.his.huawei.com (SkyGuard) with ESMTP id 4FvZF1602Bz6T0qy;
- Tue,  1 Jun 2021 22:25:09 +0800 (CST)
+ by smtp4.osuosl.org (Postfix) with ESMTPS id E31EC402B9
+ for <iommu@lists.linux-foundation.org>; Tue,  1 Jun 2021 14:34:15 +0000 (UTC)
+Received: from fraeml743-chm.china.huawei.com (unknown [172.18.147.200])
+ by frasgout.his.huawei.com (SkyGuard) with ESMTP id 4FvZ9D3HfQz6M4Jc;
+ Tue,  1 Jun 2021 22:21:52 +0800 (CST)
 Received: from lhreml724-chm.china.huawei.com (10.201.108.75) by
- fraeml744-chm.china.huawei.com (10.206.15.225) with Microsoft SMTP Server
+ fraeml743-chm.china.huawei.com (10.206.15.224) with Microsoft SMTP Server
  (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2176.2; Tue, 1 Jun 2021 16:34:11 +0200
+ 15.1.2176.2; Tue, 1 Jun 2021 16:34:14 +0200
 Received: from localhost.localdomain (10.69.192.58) by
  lhreml724-chm.china.huawei.com (10.201.108.75) with Microsoft SMTP Server
  (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2176.2; Tue, 1 Jun 2021 15:34:09 +0100
+ 15.1.2176.2; Tue, 1 Jun 2021 15:34:11 +0100
 From: John Garry <john.garry@huawei.com>
 To: <joro@8bytes.org>, <will@kernel.org>, <robin.murphy@arm.com>
-Subject: [PATCH v3 1/7] iommu: Reactor iommu_group_store_type()
-Date: Tue, 1 Jun 2021 22:29:35 +0800
-Message-ID: <1622557781-211697-2-git-send-email-john.garry@huawei.com>
+Subject: [PATCH v3 2/7] iova: Allow rcache range upper limit to be flexible
+Date: Tue, 1 Jun 2021 22:29:36 +0800
+Message-ID: <1622557781-211697-3-git-send-email-john.garry@huawei.com>
 X-Mailer: git-send-email 2.8.1
 In-Reply-To: <1622557781-211697-1-git-send-email-john.garry@huawei.com>
 References: <1622557781-211697-1-git-send-email-john.garry@huawei.com>
@@ -89,159 +89,160 @@ Content-Transfer-Encoding: 7bit
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-Function iommu_group_store_type() supports changing the default domain
-of an IOMMU group.
+Some LLDs may request DMA mappings whose IOVA length exceeds that of the
+current rcache upper limit.
 
-Many conditions need to be satisfied and steps taken for this action to be
-successful.
+This means that allocations for those IOVAs will never be cached, and
+always must be allocated and freed from the RB tree per DMA mapping cycle.
+This has a significant affect on performance, more so since commit
+4e89dce72521 ("iommu/iova: Retry from last rb tree node if iova search
+fails"), as discussed at [0].
 
-Satisfying these conditions and steps will be required for setting other
-IOMMU group attributes, so factor into a common part and a part specific
-to update the IOMMU group attribute.
+As a first step towards allowing the rcache range upper limit be
+configured, hold this value in the IOVA rcache structure, and allocate
+the rcaches separately.
 
-No functional change intended.
-
-Some code comments are tidied up also.
+[0] https://lore.kernel.org/linux-iommu/20210129092120.1482-1-thunder.leizhen@huawei.com/
 
 Signed-off-by: John Garry <john.garry@huawei.com>
 ---
- drivers/iommu/iommu.c | 73 +++++++++++++++++++++++++++----------------
- 1 file changed, 46 insertions(+), 27 deletions(-)
+ drivers/iommu/dma-iommu.c |  2 +-
+ drivers/iommu/iova.c      | 23 +++++++++++++++++------
+ include/linux/iova.h      |  4 ++--
+ 3 files changed, 20 insertions(+), 9 deletions(-)
 
-diff --git a/drivers/iommu/iommu.c b/drivers/iommu/iommu.c
-index 808ab70d5df5..4d12b607918c 100644
---- a/drivers/iommu/iommu.c
-+++ b/drivers/iommu/iommu.c
-@@ -3169,20 +3169,23 @@ static int iommu_change_dev_def_domain(struct iommu_group *group,
+diff --git a/drivers/iommu/dma-iommu.c b/drivers/iommu/dma-iommu.c
+index 7bcdd1205535..f6d3302bb829 100644
+--- a/drivers/iommu/dma-iommu.c
++++ b/drivers/iommu/dma-iommu.c
+@@ -432,7 +432,7 @@ static dma_addr_t iommu_dma_alloc_iova(struct iommu_domain *domain,
+ 	 * rounding up anything cacheable to make sure that can't happen. The
+ 	 * order of the unadjusted size will still match upon freeing.
+ 	 */
+-	if (iova_len < (1 << (IOVA_RANGE_CACHE_MAX_SIZE - 1)))
++	if (iova_len < (1 << (iovad->rcache_max_size - 1)))
+ 		iova_len = roundup_pow_of_two(iova_len);
+ 
+ 	dma_limit = min_not_zero(dma_limit, dev->bus_dma_limit);
+diff --git a/drivers/iommu/iova.c b/drivers/iommu/iova.c
+index b7ecd5b08039..0e4c0e55178a 100644
+--- a/drivers/iommu/iova.c
++++ b/drivers/iommu/iova.c
+@@ -15,6 +15,8 @@
+ /* The anchor node sits above the top of the usable address space */
+ #define IOVA_ANCHOR	~0UL
+ 
++#define IOVA_RANGE_CACHE_MAX_SIZE 6    /* log of max cached IOVA range size (in pages) */
++
+ static bool iova_rcache_insert(struct iova_domain *iovad,
+ 			       unsigned long pfn,
+ 			       unsigned long size);
+@@ -877,7 +879,14 @@ static void init_iova_rcaches(struct iova_domain *iovad)
+ 	unsigned int cpu;
+ 	int i;
+ 
+-	for (i = 0; i < IOVA_RANGE_CACHE_MAX_SIZE; ++i) {
++	iovad->rcache_max_size = IOVA_RANGE_CACHE_MAX_SIZE;
++
++	iovad->rcaches = kcalloc(iovad->rcache_max_size,
++				 sizeof(*iovad->rcaches), GFP_KERNEL);
++	if (!iovad->rcaches)
++		return;
++
++	for (i = 0; i < iovad->rcache_max_size; ++i) {
+ 		rcache = &iovad->rcaches[i];
+ 		spin_lock_init(&rcache->lock);
+ 		rcache->depot_size = 0;
+@@ -952,7 +961,7 @@ static bool iova_rcache_insert(struct iova_domain *iovad, unsigned long pfn,
+ {
+ 	unsigned int log_size = order_base_2(size);
+ 
+-	if (log_size >= IOVA_RANGE_CACHE_MAX_SIZE)
++	if (log_size >= iovad->rcache_max_size)
+ 		return false;
+ 
+ 	return __iova_rcache_insert(iovad, &iovad->rcaches[log_size], pfn);
+@@ -1008,7 +1017,7 @@ static unsigned long iova_rcache_get(struct iova_domain *iovad,
+ {
+ 	unsigned int log_size = order_base_2(size);
+ 
+-	if (log_size >= IOVA_RANGE_CACHE_MAX_SIZE)
++	if (log_size >= iovad->rcache_max_size)
+ 		return 0;
+ 
+ 	return __iova_rcache_get(&iovad->rcaches[log_size], limit_pfn - size);
+@@ -1024,7 +1033,7 @@ static void free_iova_rcaches(struct iova_domain *iovad)
+ 	unsigned int cpu;
+ 	int i, j;
+ 
+-	for (i = 0; i < IOVA_RANGE_CACHE_MAX_SIZE; ++i) {
++	for (i = 0; i < iovad->rcache_max_size; ++i) {
+ 		rcache = &iovad->rcaches[i];
+ 		for_each_possible_cpu(cpu) {
+ 			cpu_rcache = per_cpu_ptr(rcache->cpu_rcaches, cpu);
+@@ -1035,6 +1044,8 @@ static void free_iova_rcaches(struct iova_domain *iovad)
+ 		for (j = 0; j < rcache->depot_size; ++j)
+ 			iova_magazine_free(rcache->depot[j]);
+ 	}
++
++	kfree(iovad->rcaches);
  }
  
  /*
-- * Changing the default domain through sysfs requires the users to ubind the
-- * drivers from the devices in the iommu group. Return failure if this doesn't
-- * meet.
-+ * Changing the default domain or any other IOMMU group attribute through sysfs
-+ * requires the users to unbind the drivers from the devices in the IOMMU group.
-+ * Return failure if this precondition is not met.
-  *
-  * We need to consider the race between this and the device release path.
-  * device_lock(dev) is used here to guarantee that the device release path
-  * will not be entered at the same time.
-  */
--static ssize_t iommu_group_store_type(struct iommu_group *group,
--				      const char *buf, size_t count)
-+static ssize_t iommu_group_store_common(struct iommu_group *group,
-+					const char *buf, size_t count,
-+					int (*cb)(const char *buf,
-+						  struct iommu_group *group,
-+						  struct device *dev))
- {
- 	struct group_device *grp_dev;
- 	struct device *dev;
--	int ret, req_type;
-+	int ret;
+@@ -1047,7 +1058,7 @@ static void free_cpu_cached_iovas(unsigned int cpu, struct iova_domain *iovad)
+ 	unsigned long flags;
+ 	int i;
  
- 	if (!capable(CAP_SYS_ADMIN) || !capable(CAP_SYS_RAWIO))
- 		return -EACCES;
-@@ -3190,25 +3193,16 @@ static ssize_t iommu_group_store_type(struct iommu_group *group,
- 	if (WARN_ON(!group))
- 		return -EINVAL;
+-	for (i = 0; i < IOVA_RANGE_CACHE_MAX_SIZE; ++i) {
++	for (i = 0; i < iovad->rcache_max_size; ++i) {
+ 		rcache = &iovad->rcaches[i];
+ 		cpu_rcache = per_cpu_ptr(rcache->cpu_rcaches, cpu);
+ 		spin_lock_irqsave(&cpu_rcache->lock, flags);
+@@ -1066,7 +1077,7 @@ static void free_global_cached_iovas(struct iova_domain *iovad)
+ 	unsigned long flags;
+ 	int i, j;
  
--	if (sysfs_streq(buf, "identity"))
--		req_type = IOMMU_DOMAIN_IDENTITY;
--	else if (sysfs_streq(buf, "DMA"))
--		req_type = IOMMU_DOMAIN_DMA;
--	else if (sysfs_streq(buf, "auto"))
--		req_type = 0;
--	else
--		return -EINVAL;
--
- 	/*
- 	 * Lock/Unlock the group mutex here before device lock to
--	 * 1. Make sure that the iommu group has only one device (this is a
-+	 * 1. Make sure that the IOMMU group has only one device (this is a
- 	 *    prerequisite for step 2)
- 	 * 2. Get struct *dev which is needed to lock device
- 	 */
- 	mutex_lock(&group->mutex);
- 	if (iommu_group_device_count(group) != 1) {
- 		mutex_unlock(&group->mutex);
--		pr_err_ratelimited("Cannot change default domain: Group has more than one device\n");
-+		pr_err_ratelimited("Cannot change IOMMU group default domain attribute: Group has more than one device\n");
- 		return -EINVAL;
- 	}
+-	for (i = 0; i < IOVA_RANGE_CACHE_MAX_SIZE; ++i) {
++	for (i = 0; i < iovad->rcache_max_size; ++i) {
+ 		rcache = &iovad->rcaches[i];
+ 		spin_lock_irqsave(&rcache->lock, flags);
+ 		for (j = 0; j < rcache->depot_size; ++j) {
+diff --git a/include/linux/iova.h b/include/linux/iova.h
+index 71d8a2de6635..9974e1d3e2bc 100644
+--- a/include/linux/iova.h
++++ b/include/linux/iova.h
+@@ -25,7 +25,6 @@ struct iova {
+ struct iova_magazine;
+ struct iova_cpu_rcache;
  
-@@ -3220,16 +3214,16 @@ static ssize_t iommu_group_store_type(struct iommu_group *group,
- 	/*
- 	 * Don't hold the group mutex because taking group mutex first and then
- 	 * the device lock could potentially cause a deadlock as below. Assume
--	 * two threads T1 and T2. T1 is trying to change default domain of an
--	 * iommu group and T2 is trying to hot unplug a device or release [1] VF
--	 * of a PCIe device which is in the same iommu group. T1 takes group
--	 * mutex and before it could take device lock assume T2 has taken device
--	 * lock and is yet to take group mutex. Now, both the threads will be
--	 * waiting for the other thread to release lock. Below, lock order was
--	 * suggested.
-+	 * two threads, T1 and T2. T1 is trying to change default domain
-+	 * attribute of an IOMMU group and T2 is trying to hot unplug a device
-+	 * or release [1] VF of a PCIe device which is in the same IOMMU group.
-+	 * T1 takes the group mutex and before it could take device lock T2 may
-+	 * have taken device lock and is yet to take group mutex. Now, both the
-+	 * threads will be waiting for the other thread to release lock. Below,
-+	 * lock order was suggested.
- 	 * device_lock(dev);
- 	 *	mutex_lock(&group->mutex);
--	 *		iommu_change_dev_def_domain();
-+	 *		cb->iommu_change_dev_def_domain(); [example cb]
- 	 *	mutex_unlock(&group->mutex);
- 	 * device_unlock(dev);
- 	 *
-@@ -3243,7 +3237,7 @@ static ssize_t iommu_group_store_type(struct iommu_group *group,
- 	 */
- 	mutex_unlock(&group->mutex);
+-#define IOVA_RANGE_CACHE_MAX_SIZE 6	/* log of max cached IOVA range size (in pages) */
+ #define MAX_GLOBAL_MAGS 32	/* magazines per bin */
  
--	/* Check if the device in the group still has a driver bound to it */
-+	/* Check if the only device in the group still has a driver bound */
- 	device_lock(dev);
- 	if (device_is_bound(dev)) {
- 		pr_err_ratelimited("Device is still bound to driver\n");
-@@ -3251,7 +3245,7 @@ static ssize_t iommu_group_store_type(struct iommu_group *group,
- 		goto out;
- 	}
+ struct iova_rcache {
+@@ -74,6 +73,7 @@ struct iova_domain {
+ 	unsigned long	start_pfn;	/* Lower limit for this domain */
+ 	unsigned long	dma_32bit_pfn;
+ 	unsigned long	max32_alloc_size; /* Size of last failed allocation */
++	unsigned long	rcache_max_size; /* Upper limit of cached IOVA RANGE */
+ 	struct iova_fq __percpu *fq;	/* Flush Queue */
  
--	ret = iommu_change_dev_def_domain(group, dev, req_type);
-+	ret = (cb)(buf, group, dev);
- 	ret = ret ?: count;
+ 	atomic64_t	fq_flush_start_cnt;	/* Number of TLB flushes that
+@@ -83,7 +83,6 @@ struct iova_domain {
+ 						   have been finished */
  
- out:
-@@ -3260,3 +3254,28 @@ static ssize_t iommu_group_store_type(struct iommu_group *group,
+ 	struct iova	anchor;		/* rbtree lookup anchor */
+-	struct iova_rcache rcaches[IOVA_RANGE_CACHE_MAX_SIZE];	/* IOVA range caches */
  
- 	return ret;
- }
-+
-+static int iommu_group_store_type_cb(const char *buf,
-+				     struct iommu_group *group,
-+				     struct device *dev)
-+{
-+	int type;
-+
-+	if (sysfs_streq(buf, "identity"))
-+		type = IOMMU_DOMAIN_IDENTITY;
-+	else if (sysfs_streq(buf, "DMA"))
-+		type = IOMMU_DOMAIN_DMA;
-+	else if (sysfs_streq(buf, "auto"))
-+		type = 0;
-+	else
-+		return -EINVAL;
-+
-+	return iommu_change_dev_def_domain(group, dev, type);
-+}
-+
-+static ssize_t iommu_group_store_type(struct iommu_group *group,
-+				      const char *buf, size_t count)
-+{
-+	return iommu_group_store_common(group, buf, count,
-+					iommu_group_store_type_cb);
-+}
+ 	iova_flush_cb	flush_cb;	/* Call-Back function to flush IOMMU
+ 					   TLBs */
+@@ -96,6 +95,7 @@ struct iova_domain {
+ 	atomic_t fq_timer_on;			/* 1 when timer is active, 0
+ 						   when not */
+ 	struct hlist_node	cpuhp_dead;
++	struct iova_rcache *rcaches;	/* IOVA range caches */
+ };
+ 
+ static inline unsigned long iova_size(struct iova *iova)
 -- 
 2.26.2
 
