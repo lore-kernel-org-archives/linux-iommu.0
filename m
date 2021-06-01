@@ -2,155 +2,97 @@ Return-Path: <SRS0=UGJ5=K3=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-3.5 required=3.0 tests=BAYES_00,DKIM_INVALID,
-	DKIM_SIGNED,HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,
-	MSGID_FROM_MTA_HEADER,SPF_HELO_NONE,SPF_PASS autolearn=no autolearn_force=no
-	version=3.4.0
+X-Spam-Status: No, score=-7.0 required=3.0 tests=BAYES_00,DKIM_ADSP_CUSTOM_MED,
+	DKIM_INVALID,DKIM_SIGNED,FREEMAIL_FORGED_FROMDOMAIN,FREEMAIL_FROM,
+	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,SPF_HELO_NONE,
+	SPF_PASS,USER_AGENT_SANE_1 autolearn=no autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 88FDAC47080
-	for <iommu@archiver.kernel.org>; Tue,  1 Jun 2021 17:56:53 +0000 (UTC)
-Received: from smtp4.osuosl.org (smtp4.osuosl.org [140.211.166.137])
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0F742C4708F
+	for <iommu@archiver.kernel.org>; Tue,  1 Jun 2021 18:07:13 +0000 (UTC)
+Received: from smtp3.osuosl.org (smtp3.osuosl.org [140.211.166.136])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 28A1661287
-	for <iommu@archiver.kernel.org>; Tue,  1 Jun 2021 17:56:53 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 28A1661287
-Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=nvidia.com
+	by mail.kernel.org (Postfix) with ESMTPS id A67C4613AD
+	for <iommu@archiver.kernel.org>; Tue,  1 Jun 2021 18:07:12 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org A67C4613AD
+Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=gmail.com
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by smtp4.osuosl.org (Postfix) with ESMTP id D9A81402EF;
-	Tue,  1 Jun 2021 17:56:52 +0000 (UTC)
+	by smtp3.osuosl.org (Postfix) with ESMTP id 72E61607F0;
+	Tue,  1 Jun 2021 18:07:12 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from smtp4.osuosl.org ([127.0.0.1])
-	by localhost (smtp4.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id QEUYCuRmf5AO; Tue,  1 Jun 2021 17:56:51 +0000 (UTC)
+Received: from smtp3.osuosl.org ([127.0.0.1])
+	by localhost (smtp3.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+	with ESMTP id 1KPNoznc8U8n; Tue,  1 Jun 2021 18:07:11 +0000 (UTC)
 Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [IPv6:2605:bc80:3010:104::8cd3:938])
-	by smtp4.osuosl.org (Postfix) with ESMTP id 7150D40438;
-	Tue,  1 Jun 2021 17:56:51 +0000 (UTC)
+	by smtp3.osuosl.org (Postfix) with ESMTP id 316D560798;
+	Tue,  1 Jun 2021 18:07:11 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id EA527C000E;
-	Tue,  1 Jun 2021 17:56:50 +0000 (UTC)
-Received: from smtp4.osuosl.org (smtp4.osuosl.org [IPv6:2605:bc80:3010::137])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 54688C0001
- for <iommu@lists.linux-foundation.org>; Tue,  1 Jun 2021 17:56:49 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id F2B55C000E;
+	Tue,  1 Jun 2021 18:07:10 +0000 (UTC)
+Received: from smtp3.osuosl.org (smtp3.osuosl.org [IPv6:2605:bc80:3010::136])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 41838C0001
+ for <iommu@lists.linux-foundation.org>; Tue,  1 Jun 2021 18:07:09 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by smtp4.osuosl.org (Postfix) with ESMTP id 38E1940435
- for <iommu@lists.linux-foundation.org>; Tue,  1 Jun 2021 17:56:49 +0000 (UTC)
+ by smtp3.osuosl.org (Postfix) with ESMTP id 22C3260798
+ for <iommu@lists.linux-foundation.org>; Tue,  1 Jun 2021 18:07:09 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from smtp4.osuosl.org ([127.0.0.1])
- by localhost (smtp4.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id bxESme3gE6Rt for <iommu@lists.linux-foundation.org>;
- Tue,  1 Jun 2021 17:56:47 +0000 (UTC)
+Received: from smtp3.osuosl.org ([127.0.0.1])
+ by localhost (smtp3.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+ with ESMTP id IqExoxzFRzSb for <iommu@lists.linux-foundation.org>;
+ Tue,  1 Jun 2021 18:07:08 +0000 (UTC)
 X-Greylist: whitelisted by SQLgrey-1.8.0
-Received: from NAM11-DM6-obe.outbound.protection.outlook.com
- (mail-dm6nam11on20612.outbound.protection.outlook.com
- [IPv6:2a01:111:f400:7eaa::612])
- by smtp4.osuosl.org (Postfix) with ESMTPS id C0619402EF
- for <iommu@lists.linux-foundation.org>; Tue,  1 Jun 2021 17:56:47 +0000 (UTC)
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=VCs1lP5D1Z/aiSQl8pKyB9fyy6wKE8w5a2XXYnHnuTk+VHtvVqQHJYAbAvFb+RaLWBK+7bE+HUiKg1KJ+OZ/hdxMdvvEnXbE3y6SuJ2+aELIdKLl7T1JVvVNptoCOFV+s1P3TtkjlyYfSul47ykB8VFQhuUoxF4rdJ3JS0o8dmJn+MK0xHPm4kpflqd5HLLapiOnJ9rPVOhOg7YIGjF5j+OBYDvaaxBhNCvJdLImwMcOUiFKlYlK4yuMRn5u88fqUuPoOYtXD11paS3GuDTYYkpv5BKYxgkT5D1G74VYjWQ/iNiRGt9t2FiuT6sBbxyKKSTqOibgf7pBuqV/dzNzNQ==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com; 
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=Dqn1oB1oJ0AIQdc6LdudrbdLjcWNvzx4saNKRvdE/kY=;
- b=UwsmGKPDKq8wwPr7D9Skf1ANEu4jLoIGAJnJyyu+fMQBUrQlf5CughDLzmjBfJ4zUd8sAcO7msCpyTOIefJWOErMbApmePF5o7MD6oalCtxVoG6bws10ZaCIQ68fADBxm+QM6glY7kGTV05x2mA4wX0LX9t8Bf3Tvemky21+lBIj/ytJbrfwkidy4gUvoYG2L+gQj+JEFPgB9dKN5SBL+xPReACcHJYniZJVJOKUVMCZq5MjjlmqByd57LqK3dreNkCbn/+SjlXJXHEWfQcACYWSSdwYXXqmvhMQIEBZM7zQZNQ+c02066Q1luLzGzx8BQ37yUxwzV5HlId86Yvg+Q==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=nvidia.com; dmarc=pass action=none header.from=nvidia.com;
- dkim=pass header.d=nvidia.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
- s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=Dqn1oB1oJ0AIQdc6LdudrbdLjcWNvzx4saNKRvdE/kY=;
- b=gVvlLva+JzclUI5bHLzSICL7wo5lq4q7xE+U/rghmOIb2u3MpFCiX9lGMFCM7t8UDZr13V/ujAQpxjSWugFkturiJ42c/Z1yFIHIfWWfEoM6sU3oWB1f8r4oHFHUX3whuwUPsidfChuQXJuuX05aqEIVxJccMsGU7qvFfU0cIObtIjgXVqCzKuSn3xo4waoYePOHdZuU9yxoS7C8R1nII12bmKQt9LT+GCEfG9ud7UeYrG697FYr0sHWGmBBIfWsy4ajMdeMQ2GhsAGAvJS9oh2bb/jj/ATruVDNY951/BK9Ho82dpDmxNA0P1Z5xHNNJwKTXx0mUFSPlS9i2nuBaw==
-Authentication-Results: intel.com; dkim=none (message not signed)
- header.d=none;intel.com; dmarc=none action=none header.from=nvidia.com;
-Received: from BL0PR12MB5506.namprd12.prod.outlook.com (2603:10b6:208:1cb::22)
- by BL1PR12MB5238.namprd12.prod.outlook.com (2603:10b6:208:31e::12)
- with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4173.20; Tue, 1 Jun
- 2021 17:56:45 +0000
-Received: from BL0PR12MB5506.namprd12.prod.outlook.com
- ([fe80::3d51:a3b9:8611:684e]) by BL0PR12MB5506.namprd12.prod.outlook.com
- ([fe80::3d51:a3b9:8611:684e%7]) with mapi id 15.20.4173.030; Tue, 1 Jun 2021
- 17:56:45 +0000
-Date: Tue, 1 Jun 2021 14:56:43 -0300
-From: Jason Gunthorpe <jgg@nvidia.com>
-To: "Tian, Kevin" <kevin.tian@intel.com>
-Subject: Re: [RFC] /dev/ioasid uAPI proposal
-Message-ID: <20210601175643.GQ1002214@nvidia.com>
-References: <MWHPR11MB1886422D4839B372C6AB245F8C239@MWHPR11MB1886.namprd11.prod.outlook.com>
- <20210528195839.GO1002214@nvidia.com>
- <MWHPR11MB1886A17F36CF744857C531148C3E9@MWHPR11MB1886.namprd11.prod.outlook.com>
-Content-Disposition: inline
-In-Reply-To: <MWHPR11MB1886A17F36CF744857C531148C3E9@MWHPR11MB1886.namprd11.prod.outlook.com>
-X-Originating-IP: [47.55.113.94]
-X-ClientProxiedBy: MN2PR04CA0020.namprd04.prod.outlook.com
- (2603:10b6:208:d4::33) To BL0PR12MB5506.namprd12.prod.outlook.com
- (2603:10b6:208:1cb::22)
+Received: from mail-ed1-x52b.google.com (mail-ed1-x52b.google.com
+ [IPv6:2a00:1450:4864:20::52b])
+ by smtp3.osuosl.org (Postfix) with ESMTPS id 1EB3060794
+ for <iommu@lists.linux-foundation.org>; Tue,  1 Jun 2021 18:07:07 +0000 (UTC)
+Received: by mail-ed1-x52b.google.com with SMTP id b11so11717444edy.4
+ for <iommu@lists.linux-foundation.org>; Tue, 01 Jun 2021 11:07:07 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=gmail.com; s=20161025;
+ h=date:from:to:cc:subject:message-id:references:mime-version
+ :content-disposition:in-reply-to:user-agent;
+ bh=Esv6sX04kKkiDuWbC2+d4pQCUltl4LpO+bkOs8CbqkQ=;
+ b=hgbApr657+Etn04lQeL3PNx7z27hnAxYFfysC2JIcHd96N8DCGSMtdC15JVH+B0EOm
+ AAWw2SYhANXTkueFfQvhwhUrE2QfVnN2EZ90Ve5FixmcIxO5zSbgr0tDXyW/WIR2x4ak
+ uBZ0clOaUIwi4fozG+tz9/pVITBkaNEZJmtDyr9hSoMCd9B81ikIfw7E2BYCB8zDj+V4
+ 1kL6+ZImodbC1yXUIIEI2b+h20uoZI4Vo3VqRgaJ1e3M1217xKKeg5a3AMj5yaFHGk11
+ kF9W8ndt53yww8CuPBu8pPDcwum92ZxNsn+cgLwjf0Zcd5768hP9c0gHCzOvsg2nuQvh
+ YPRQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+ d=1e100.net; s=20161025;
+ h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+ :mime-version:content-disposition:in-reply-to:user-agent;
+ bh=Esv6sX04kKkiDuWbC2+d4pQCUltl4LpO+bkOs8CbqkQ=;
+ b=snfZ2hKsPQswEOYqw4IDZlEf5/x/SBdVLTtzWSxbPwKberueKnZHDOYcl4fUHsLAm8
+ M80MdHEGqd8H3cTprevuALXbxi9W2uQXZNvY6MO3i9HndeR5T9+RRS7JYrhUz7GoHaHw
+ /CdqbTPHPsqnxkEuJImGZrlwIOe9CADtv3Pg7go4y4beuS4Gpsxum2bWPeZQL518VcoP
+ wHNtcf+FKFzKql8Zq9Qq3BNTQIr9psBisgUD6WAjqBrLN4d8qQGcSsihJSXhYX5N5C16
+ pPQ+gL7IcpJzBMeRWht2e2pPX3SWfNflhSwxNP5XtSRmrCYZZbzO2lj09qn3siKBEA+f
+ R5ig==
+X-Gm-Message-State: AOAM531V2y/TBvhTiaVwFOySxEKlmIGF8zOhXSSZjk3TSQTrr9r+lwqp
+ SXx65gqzFQuyJcCXHHwoK0JLVMQMxow=
+X-Google-Smtp-Source: ABdhPJzCVy7fQlPo5/PSmFNwwyl6CDprhSMUmZ6ZjTAZw7Z9VW6cdy5KZEidZf3eNxY8Kg9tm78RUw==
+X-Received: by 2002:a50:a446:: with SMTP id v6mr34495436edb.254.1622570826320; 
+ Tue, 01 Jun 2021 11:07:06 -0700 (PDT)
+Received: from localhost (pd9e51d70.dip0.t-ipconnect.de. [217.229.29.112])
+ by smtp.gmail.com with ESMTPSA id u12sm4546514ejz.1.2021.06.01.11.07.04
+ (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+ Tue, 01 Jun 2021 11:07:04 -0700 (PDT)
+Date: Tue, 1 Jun 2021 20:08:40 +0200
+From: Thierry Reding <thierry.reding@gmail.com>
+To: Will Deacon <will@kernel.org>
+Subject: Re: [PATCH v2 00/10] arm64: tegra: Prevent early SMMU faults
+Message-ID: <YLZ3qPC8ofjsGkPi@orome.fritz.box>
+References: <20210420172619.3782831-1-thierry.reding@gmail.com>
+ <YLEi2FonP568wYrE@orome.fritz.box>
+ <20210601122646.GB27832@willie-the-truck>
 MIME-Version: 1.0
-X-MS-Exchange-MessageSentRepresentingType: 1
-Received: from mlx.ziepe.ca (47.55.113.94) by
- MN2PR04CA0020.namprd04.prod.outlook.com (2603:10b6:208:d4::33) with Microsoft
- SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.20.4173.20 via Frontend Transport; Tue, 1 Jun 2021 17:56:44 +0000
-Received: from jgg by mlx with local (Exim 4.94)	(envelope-from
- <jgg@nvidia.com>)	id 1lo8d9-00HY2N-Ik; Tue, 01 Jun 2021 14:56:43 -0300
-X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: cd27302a-6924-4c0c-5239-08d925269e9d
-X-MS-TrafficTypeDiagnostic: BL1PR12MB5238:
-X-MS-Exchange-Transport-Forked: True
-X-Microsoft-Antispam-PRVS: <BL1PR12MB5238BC5111DCC3713034682EC23E9@BL1PR12MB5238.namprd12.prod.outlook.com>
-X-MS-Oob-TLC-OOBClassifiers: OLM:9508;
-X-MS-Exchange-SenderADCheck: 1
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: h/zdm+xEqN95KJIhqS5Ul4b5v+2ykee1obtXzhO7xuAx1qaPL/sVpuNV2Vr0OTaPKIInNVjzwIq63KKfFci8ZJR0vMSbXopnfAc5DuYOa5UJjHAq5EXbpMzJQb0gF2HPYDqyTAqoyXeupjXf1edPGMdrOKhTmBxPB+b/6q9DqzEDivXLOHqaZhiqZU16UE0sTTGFT5gXk9ZX6jOtgkXLpCsfrmiMMfSnRUP0iTKjJibuUseXIcdfGPceFyUcmwJhpofDMpUgqUI8xsp/xBnS69zqxnQq1uZVRYz/AocTo5LW3JgmQD275xvbWjl/uYpb1zZY4WSZ0yL4MYCNavFSHE+pEQkle8CcPflHm/wetmG3D8YH5P9x5+sNXASwZe3VHctFlbw2m9R+85sQnOYBhOu/fYL4lvaPgwmgPonNbx02aWr/CCxI8ZOgwa0I/AVQzSbC+8o1Ql9Tbeq0/ejhA3OYcKAywL+7HQwN0wADyAW/84ZVjy/5ONTBCGR1UZ8xdPnx9fVip6h+356AWDJJGbx/6wzzqYcTq0SWpT+DzzODivJqt32mo2fdJAN/iQftvIkeOuPT/+SResoEaYPPx6++CWoJCOAlmlrTNwvDSRA=
-X-Forefront-Antispam-Report: CIP:255.255.255.255; CTRY:; LANG:en; SCL:1; SRV:;
- IPV:NLI; SFV:NSPM; H:BL0PR12MB5506.namprd12.prod.outlook.com; PTR:; CAT:NONE;
- SFS:(4636009)(346002)(376002)(396003)(39860400002)(366004)(136003)(7416002)(2616005)(478600001)(83380400001)(86362001)(38100700002)(8676002)(9786002)(1076003)(316002)(9746002)(6916009)(4326008)(33656002)(5660300002)(2906002)(8936002)(186003)(26005)(36756003)(66476007)(66556008)(66946007)(426003)(54906003);
- DIR:OUT; SFP:1101; 
-X-MS-Exchange-AntiSpam-MessageData: =?us-ascii?Q?D0WMg6lLmpCg7hzNSIBDhY5UqKcWRX7OdeUebSZuc7YzJaipP9ZaSNnA6pN0?=
- =?us-ascii?Q?q6dIzW3k/x68PVZjK2zIPBXGCRqBiULQNaBZHoL5KAlndtGrmMoCRg6hkamm?=
- =?us-ascii?Q?p5wjUZ1h02O+DgHvS4zrUoa0iN7rtlZU0o2+Vmcc+wNNJtmdripTn6TU00+k?=
- =?us-ascii?Q?Xkv/1X/nA58vTlzYMV1HXs/H2/IdPbNmr9MrtqF3RD+goCVcyB+n/q2cal61?=
- =?us-ascii?Q?ZUbQaa7BP+rU6ju92r2Emyj4tlc00CivNgBKZkVQQ5ySQsEsPKoxfEfLvXUN?=
- =?us-ascii?Q?hWdb58IAz7PUopy4SzM+yM4caxz6SvCFVtCCwpVAKQU4YJx9m2OqyrNG7PY/?=
- =?us-ascii?Q?7jsetOMiH26hp9VyWWLpXJoGM89O5vNVK9KNdnjNaPFOfWEsSEvIUxLzrnHG?=
- =?us-ascii?Q?ZNy2+lEg8BXzkr76fhb4K9C+QkZePSkteKeyes78DjGYW+BfcUSmEdjhPjV3?=
- =?us-ascii?Q?0PXxkbcfSYl4kP1Vwcd3xpcdntPnXfw2fB+pL4Vq//xZo+vGsb1BJz8jkUcQ?=
- =?us-ascii?Q?+C4A+uA9UpfSNFyo+OItDrGo2ke0W+nBiVQznBvoYPVoBri0a/f7AygDwNTc?=
- =?us-ascii?Q?FiJsnObo+mzy41G4oDeM9GZIUCt5ywBdRUKRTwzMMjIlPhe0BQv7ZMlMnUrz?=
- =?us-ascii?Q?PMwcfVAd5TUM6Q9dq+Rc5M2Hkvc23PlxbtV8xaQPTPoycWu5emEjrPqQ82nx?=
- =?us-ascii?Q?BPC8seOFN1gwk9YDniX7VRUXOdGtN+0wsSDUOUMPmlEyoLVxgNWG5NfatzAR?=
- =?us-ascii?Q?1pbUW9b5uIwaccCKh3XQHMN65KKCUzFdOBb10mIEmaGqJqxsdt41oAgvcL0B?=
- =?us-ascii?Q?YUbX3c7dt34bijrdX0bBkAy/Ke4qvSt9iW7w5xYu0HQR+QVclN8JPseCOPVV?=
- =?us-ascii?Q?hqJNn4IuXAF5f8n8/FzlVoLiaGhAAbeoP1GHgb4Ds1AIG1mUrdH9+72NUl0O?=
- =?us-ascii?Q?rZjSDU3Xr1eGOYlugXjGDlqeieLxNFCuU+n94G3BC7RULmr2lxTS2o11gb7t?=
- =?us-ascii?Q?b2NfrjrMQi6uVSCFhndbkVPZ4V+tf/1+N07xdByc9AIBkm5Tn13n5tBoGYTJ?=
- =?us-ascii?Q?bEGn0YB38RUv4Ba55X/JC1/VlvEfWVsV2OqU9fJFqoyKKnh9FLV8deX3pwqI?=
- =?us-ascii?Q?Mck7dD9yemSFBSDn2/pgbkdIxJWHTkySJj1UC0ZbgCQ7ztH91TRPFEAE6uBI?=
- =?us-ascii?Q?jFYp3hsrF3NIet0PSs1Zaa2lJXOCKMxj/8P3q9CqgEFQRBQoztlE2lb6gBUZ?=
- =?us-ascii?Q?1RM3CKxUXghRsx6kCJUkIdz9hcgH48yHp3il/tCLaezwhLAAMs6MNczu0Uae?=
- =?us-ascii?Q?/MvByootrZS02AT/8+7/SD7+?=
-X-OriginatorOrg: Nvidia.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: cd27302a-6924-4c0c-5239-08d925269e9d
-X-MS-Exchange-CrossTenant-AuthSource: BL0PR12MB5506.namprd12.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 01 Jun 2021 17:56:45.1792 (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: ADhebesglV10d8DtpVNtPIAgJxtJi1F2m3bet+7Uc7qD5Vl19ZzzTemlZqrnP8AE
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: BL1PR12MB5238
-Cc: Jean-Philippe Brucker <jean-philippe@linaro.org>,
- "Alex Williamson \(alex.williamson@redhat.com\)"
- <alex.williamson@redhat.com>, "Raj, Ashok" <ashok.raj@intel.com>,
- "kvm@vger.kernel.org" <kvm@vger.kernel.org>, Jonathan Corbet <corbet@lwn.net>,
- Robin Murphy <robin.murphy@arm.com>, LKML <linux-kernel@vger.kernel.org>,
- Kirti Wankhede <kwankhede@nvidia.com>,
- "iommu@lists.linux-foundation.org" <iommu@lists.linux-foundation.org>,
- David Gibson <david@gibson.dropbear.id.au>, "Jiang,
- Dave" <dave.jiang@intel.com>, David Woodhouse <dwmw2@infradead.org>,
- Jason Wang <jasowang@redhat.com>
+In-Reply-To: <20210601122646.GB27832@willie-the-truck>
+User-Agent: Mutt/2.0.6 (98f8cb83) (2021-03-06)
+Cc: Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>,
+ iommu@lists.linux-foundation.org, Jon Hunter <jonathanh@nvidia.com>,
+ Nicolin Chen <nicolinc@nvidia.com>, linux-tegra@vger.kernel.org,
+ Robin Murphy <robin.murphy@arm.com>, linux-arm-kernel@lists.infradead.org
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -163,87 +105,170 @@ List-Post: <mailto:iommu@lists.linux-foundation.org>
 List-Help: <mailto:iommu-request@lists.linux-foundation.org?subject=help>
 List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
  <mailto:iommu-request@lists.linux-foundation.org?subject=subscribe>
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
+Content-Type: multipart/mixed; boundary="===============4370867798779650091=="
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-On Tue, Jun 01, 2021 at 08:38:00AM +0000, Tian, Kevin wrote:
-> > From: Jason Gunthorpe <jgg@nvidia.com>
-> > Sent: Saturday, May 29, 2021 3:59 AM
-> > 
-> > On Thu, May 27, 2021 at 07:58:12AM +0000, Tian, Kevin wrote:
-> > >
-> > > 5. Use Cases and Flows
-> > >
-> > > Here assume VFIO will support a new model where every bound device
-> > > is explicitly listed under /dev/vfio thus a device fd can be acquired w/o
-> > > going through legacy container/group interface. For illustration purpose
-> > > those devices are just called dev[1...N]:
-> > >
-> > > 	device_fd[1...N] = open("/dev/vfio/devices/dev[1...N]", mode);
-> > >
-> > > As explained earlier, one IOASID fd is sufficient for all intended use cases:
-> > >
-> > > 	ioasid_fd = open("/dev/ioasid", mode);
-> > >
-> > > For simplicity below examples are all made for the virtualization story.
-> > > They are representative and could be easily adapted to a non-virtualization
-> > > scenario.
-> > 
-> > For others, I don't think this is *strictly* necessary, we can
-> > probably still get to the device_fd using the group_fd and fit in
-> > /dev/ioasid. It does make the rest of this more readable though.
-> 
-> Jason, want to confirm here. Per earlier discussion we remain an
-> impression that you want VFIO to be a pure device driver thus
-> container/group are used only for legacy application.
 
-Let me call this a "nice wish".
+--===============4370867798779650091==
+Content-Type: multipart/signed; micalg=pgp-sha256;
+	protocol="application/pgp-signature"; boundary="MH/G2v7nzEjSLE2F"
+Content-Disposition: inline
 
-If you get to a point where you hard need this, then identify the hard
-requirement and let's do it, but I wouldn't bloat this already large
-project unnecessarily.
 
-Similarly I wouldn't depend on the group fd existing in this design
-so it could be changed later.
+--MH/G2v7nzEjSLE2F
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
 
-> From this comment are you suggesting that VFIO can still keep
-> container/ group concepts and user just deprecates the use of vfio
-> iommu uAPI (e.g. VFIO_SET_IOMMU) by using /dev/ioasid (which has a
-> simple policy that an IOASID will reject cmd if partially-attached
-> group exists)?
+On Tue, Jun 01, 2021 at 01:26:46PM +0100, Will Deacon wrote:
+> On Fri, May 28, 2021 at 07:05:28PM +0200, Thierry Reding wrote:
+> > On Tue, Apr 20, 2021 at 07:26:09PM +0200, Thierry Reding wrote:
+> > > From: Thierry Reding <treding@nvidia.com>
+> > >=20
+> > > Hi,
+> > >=20
+> > > this is a set of patches that is the result of earlier discussions
+> > > regarding early identity mappings that are needed to avoid SMMU faults
+> > > during early boot.
+> > >=20
+> > > The goal here is to avoid early identity mappings altogether and inst=
+ead
+> > > postpone the need for the identity mappings to when devices are attac=
+hed
+> > > to the SMMU. This works by making the SMMU driver coordinate with the
+> > > memory controller driver on when to start enforcing SMMU translations.
+> > > This makes Tegra behave in a more standard way and pushes the code to
+> > > deal with the Tegra-specific programming into the NVIDIA SMMU
+> > > implementation.
+> > >=20
+> > > Compared to the original version of these patches, I've split the
+> > > preparatory work into a separate patch series because it became very
+> > > large and will be mostly uninteresting for this audience.
+> > >=20
+> > > Patch 1 provides a mechanism to program SID overrides at runtime. Pat=
+ch
+> > > 2 updates the ARM SMMU device tree bindings to include the Tegra186
+> > > compatible string as suggested by Robin during review.
+> > >=20
+> > > Patches 3 and 4 create the fundamentals in the SMMU driver to support
+> > > this and also make this functionality available on Tegra186. Patch 5
+> > > hooks the ARM SMMU up to the memory controller so that the memory cli=
+ent
+> > > stream ID overrides can be programmed at the right time.
+> > >=20
+> > > Patch 6 extends this mechanism to Tegra186 and patches 7-9 enable all=
+ of
+> > > this through device tree updates. Patch 10 is included here to show h=
+ow
+> > > SMMU will be enabled for display controllers. However, it cannot be
+> > > applied yet because the code to create identity mappings for potentia=
+lly
+> > > live framebuffers hasn't been merged yet.
+> > >=20
+> > > The end result is that various peripherals will have SMMU enabled, wh=
+ile
+> > > the display controllers will keep using passthrough, as initially set=
+ up
+> > > by firmware. Once the device tree bindings have been accepted and the
+> > > SMMU driver has been updated to create identity mappings for the disp=
+lay
+> > > controllers, they can be hooked up to the SMMU and the code in this
+> > > series will automatically program the SID overrides to enable SMMU
+> > > translations at the right time.
+> > >=20
+> > > Note that the series creates a compile time dependency between the
+> > > memory controller and IOMMU trees. If it helps I can provide a branch
+> > > for each tree, modelling the dependency, once the series has been
+> > > reviewed.
+> > >=20
+> > > Changes in v2:
+> > > - split off the preparatory work into a separate series (that needs to
+> > >   be applied first)
+> > > - address review comments by Robin
+> > >=20
+> > > Thierry
+> > >=20
+> > > Thierry Reding (10):
+> > >   memory: tegra: Implement SID override programming
+> > >   dt-bindings: arm-smmu: Add Tegra186 compatible string
+> > >   iommu/arm-smmu: Implement ->probe_finalize()
+> > >   iommu/arm-smmu: tegra: Detect number of instances at runtime
+> > >   iommu/arm-smmu: tegra: Implement SID override programming
+> > >   iommu/arm-smmu: Use Tegra implementation on Tegra186
+> > >   arm64: tegra: Use correct compatible string for Tegra186 SMMU
+> > >   arm64: tegra: Hook up memory controller to SMMU on Tegra186
+> > >   arm64: tegra: Enable SMMU support on Tegra194
+> > >   arm64: tegra: Enable SMMU support for display on Tegra194
+> > >=20
+> > >  .../devicetree/bindings/iommu/arm,smmu.yaml   |  11 +-
+> > >  arch/arm64/boot/dts/nvidia/tegra186.dtsi      |   4 +-
+> > >  arch/arm64/boot/dts/nvidia/tegra194.dtsi      | 166 ++++++++++++++++=
+++
+> > >  drivers/iommu/arm/arm-smmu/arm-smmu-impl.c    |   3 +-
+> > >  drivers/iommu/arm/arm-smmu/arm-smmu-nvidia.c  |  90 ++++++++--
+> > >  drivers/iommu/arm/arm-smmu/arm-smmu.c         |  13 ++
+> > >  drivers/iommu/arm/arm-smmu/arm-smmu.h         |   1 +
+> > >  drivers/memory/tegra/mc.c                     |   9 +
+> > >  drivers/memory/tegra/tegra186.c               |  72 ++++++++
+> > >  include/soc/tegra/mc.h                        |   3 +
+> > >  10 files changed, 349 insertions(+), 23 deletions(-)
+> >=20
+> > Will, Robin,
+> >=20
+> > do you have any more comments on the ARM SMMU bits of this series? If
+> > not, can you guys provide an Acked-by so that Krzysztof can pick this
+> > (modulo the DT patches) up into the memory-controller tree for v5.14?
+> >=20
+> > I'll send out a v3 with the bisectibilitiy fix that Krishna pointed
+> > out.
+>=20
+> Probably best if I queue 3-6 on a separate branch once you send a v3,
+> then Krzysztof can pull that in if he needs it.
 
-I would say no on the container. /dev/ioasid == the container, having
-two competing objects at once in a single process is just a mess.
+Patch 5 has a build-time dependency on patch 1, so they need to go in
+together. The reason why I suggested Krzysztof pick these up is because
+there is a restructuring series that this depends on, which will go into
+Krzysztof's tree. So in order to pull in 3-6, you'd get a bunch of other
+and mostly unrelated stuff as well.
 
-If the group fd can be kept requires charting a path through the
-ioctls where the container is not used and /dev/ioasid is sub'd in
-using the same device FD specific IOCTLs you show here.
+Alternatively I can set this all up on stable branches and send out pull
+requests for both you and Krzysztof to merge. Or if this is all too
+complicated and you'd just prefer to ack the patches I could also take
+this through ARM SoC via the Tegra tree.
 
-I didn't try to chart this out carefully.
+Thierry
 
-Also, ultimately, something need to be done about compatability with
-the vfio container fd. It looks clear enough to me that the the VFIO
-container FD is just a single IOASID using a special ioctl interface
-so it would be quite rasonable to harmonize these somehow.
+--MH/G2v7nzEjSLE2F
+Content-Type: application/pgp-signature; name="signature.asc"
 
-But that is too complicated and far out for me at least to guess on at
-this point..
+-----BEGIN PGP SIGNATURE-----
 
-> > Still a little unsure why the vPASID is here not on the gva_ioasid. Is
-> > there any scenario where we want different vpasid's for the same
-> > IOASID? I guess it is OK like this. Hum.
-> 
-> Yes, it's completely sane that the guest links a I/O page table to 
-> different vpasids on dev1 and dev2. The IOMMU doesn't mandate
-> that when multiple devices share an I/O page table they must use
-> the same PASID#. 
+iQIzBAABCAAdFiEEiOrDCAFJzPfAjcif3SOs138+s6EFAmC2d6gACgkQ3SOs138+
+s6HdFg//RxQga1zW8VQK5x6lzg4jAMYo+qgonVGZsS8QQSzQZLpuYufhLDfg7XFX
+Gi4SlRKn6VNFps03lr299e1HCSb5+48cp54lViMaqCj1dJlK4g6KDbLLE5dGRHrE
+PepcIZw1xZwMpSueqm422ZVBVD+FOqUOHZoNkAZ7rPeHYnvClP2HfmfgAj5mzdCg
+1LNKKOYl/nM2B6zRjtfTSJZC+5tGBumA+F0+1b9R7iee0ya+8QUmFQIrgP25Lywt
+bX/+DI62oxsu6TXfnZags0sBK5LTb6ZmRiWz+5wHDebQGqXR17919OO/i0xZxrQU
+hyVqOUrzbCVG+BmTNJAN9RlP6H/06BSL81N0LQ5veM6FgCULRRYLxOqbpBkmLotc
+LFAQ03ziXKxqhN3E4uL5M1qNWz9PWBS4p4gH35xExbmvSb1wdKI87gJNEnShXTyM
+qRtE2J8DpbjDYrqaJza/bVVouXc3zkc4UdctHj6vtFOqH49WKd9LfB87XJS0jZ4/
+QJabr5f0DRnJlHNkawBnl34DvhRIRGxRl98YbhYbGBYbPUK3niL/5+Rp48KW9UxI
+Gpd/SLBKqUlBmKBtRNKhTWRhLq3yM/GJsjCfLU/nIMyJkhcYM4x9i3lL5dU+loao
+mhXpt0qdbbScggGqmFD3I3Tl6uulZdr9dOXSpNEkKMPvFk2y9Is=
+=UPdE
+-----END PGP SIGNATURE-----
 
-Ok..
+--MH/G2v7nzEjSLE2F--
 
-Jason
+--===============4370867798779650091==
+Content-Type: text/plain; charset="us-ascii"
+MIME-Version: 1.0
+Content-Transfer-Encoding: 7bit
+Content-Disposition: inline
+
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
 https://lists.linuxfoundation.org/mailman/listinfo/iommu
+--===============4370867798779650091==--
