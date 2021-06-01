@@ -2,160 +2,89 @@ Return-Path: <SRS0=UGJ5=K3=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-3.5 required=3.0 tests=BAYES_00,DKIM_INVALID,
-	DKIM_SIGNED,HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,
-	MSGID_FROM_MTA_HEADER,SPF_HELO_NONE,SPF_PASS autolearn=no autolearn_force=no
-	version=3.4.0
+X-Spam-Status: No, score=-5.9 required=3.0 tests=BAYES_00,
+	HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,NICE_REPLY_A,SPF_HELO_NONE,
+	SPF_PASS,USER_AGENT_SANE_1 autolearn=no autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E76E1C4708F
-	for <iommu@archiver.kernel.org>; Tue,  1 Jun 2021 12:57:20 +0000 (UTC)
-Received: from smtp4.osuosl.org (smtp4.osuosl.org [140.211.166.137])
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 987D6C47080
+	for <iommu@archiver.kernel.org>; Tue,  1 Jun 2021 13:11:07 +0000 (UTC)
+Received: from smtp1.osuosl.org (smtp1.osuosl.org [140.211.166.138])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 8025A613BD
-	for <iommu@archiver.kernel.org>; Tue,  1 Jun 2021 12:57:20 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 8025A613BD
-Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=nvidia.com
+	by mail.kernel.org (Postfix) with ESMTPS id 43D6A613C5
+	for <iommu@archiver.kernel.org>; Tue,  1 Jun 2021 13:11:07 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 43D6A613C5
+Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=huawei.com
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by smtp4.osuosl.org (Postfix) with ESMTP id 4458A404AE;
-	Tue,  1 Jun 2021 12:57:20 +0000 (UTC)
+	by smtp1.osuosl.org (Postfix) with ESMTP id 06D0283C87;
+	Tue,  1 Jun 2021 13:11:07 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from smtp4.osuosl.org ([127.0.0.1])
-	by localhost (smtp4.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id zOaoCmvjbsgY; Tue,  1 Jun 2021 12:57:19 +0000 (UTC)
+Received: from smtp1.osuosl.org ([127.0.0.1])
+	by localhost (smtp1.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+	with ESMTP id EhzAnhzBpMje; Tue,  1 Jun 2021 13:11:02 +0000 (UTC)
 Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [IPv6:2605:bc80:3010:104::8cd3:938])
-	by smtp4.osuosl.org (Postfix) with ESMTP id D28B94049A;
-	Tue,  1 Jun 2021 12:57:18 +0000 (UTC)
+	by smtp1.osuosl.org (Postfix) with ESMTP id 6811B82CDD;
+	Tue,  1 Jun 2021 13:11:02 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id ACC8FC000D;
-	Tue,  1 Jun 2021 12:57:18 +0000 (UTC)
-Received: from smtp4.osuosl.org (smtp4.osuosl.org [140.211.166.137])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 9FE2DC0001
- for <iommu@lists.linux-foundation.org>; Tue,  1 Jun 2021 12:57:17 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 2C14CC000E;
+	Tue,  1 Jun 2021 13:11:02 +0000 (UTC)
+Received: from smtp1.osuosl.org (smtp1.osuosl.org [140.211.166.138])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 29D11C0001
+ for <iommu@lists.linux-foundation.org>; Tue,  1 Jun 2021 13:11:01 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by smtp4.osuosl.org (Postfix) with ESMTP id 8A1BC404AD
- for <iommu@lists.linux-foundation.org>; Tue,  1 Jun 2021 12:57:17 +0000 (UTC)
+ by smtp1.osuosl.org (Postfix) with ESMTP id 0A69883C87
+ for <iommu@lists.linux-foundation.org>; Tue,  1 Jun 2021 13:11:01 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from smtp4.osuosl.org ([127.0.0.1])
- by localhost (smtp4.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id RwolCOHPJKI1 for <iommu@lists.linux-foundation.org>;
- Tue,  1 Jun 2021 12:57:16 +0000 (UTC)
-X-Greylist: whitelisted by SQLgrey-1.8.0
-Received: from NAM10-DM6-obe.outbound.protection.outlook.com
- (mail-dm6nam10on20600.outbound.protection.outlook.com
- [IPv6:2a01:111:f400:7e88::600])
- by smtp4.osuosl.org (Postfix) with ESMTPS id 0B5944049A
- for <iommu@lists.linux-foundation.org>; Tue,  1 Jun 2021 12:57:15 +0000 (UTC)
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=e4gVOC4bVFt3QZdDDPPRxH0yLs4fJnMcbaqdBVu5S5iTkSekh1du0NsB6xBI8Jlq16ryxUnIA8ib4YEwsJYKy4Eo9j+1p4aYRqakUDDv/6OTMnM20CWOavexGOjrRq0GIVf9s4cu2F9X0MSBEpa7W0mpPZieqh/FZsrcT7cJMIolC31uWRygv4/0/W/2dUeOWEQ558soW9weGj6sXShG03Vsls6hv1jJlT9AQhoG1iyj8ebnlwQvWUwpxfnDy3nHSWG/wFdaEMNAURDarciAVlJ//Cz1+sgRCF/r/m1mkzCUorJxlagcaGfSuA7E9fmpykBLsSzgDi4sK36/GppP6Q==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com; 
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=7gyZlwmlHYU/ZmUOvs3ehKHXbCDvmkOMT92IXgOjuI0=;
- b=JSzDU8etqvrtlXAFOCYjC7lel0VCKjapa6gM7WIUmOXZV1SAaKKvp5TkddFNnuitEO7XcUnAm/p6GyEITZoXMzQVRl+Bf3HwsRuA3CcdeB9cHFN+pEBO0p1TlWBNss8mPL1k3ILVaYJOcCxgtXfPd58TMyReWEu1yYJ6nqp6Xi/aiu90kScF+1YxGUY1l3KYYb1/D3KVwai+MwVz6mUd3AnPnm1S/fDYSGQD67LLqLXz5uDko0mREcDzLw0xbG5LJCVbyzurqa4PE99gPpLrPCZz+LYLGt9+YW+pTXOUPSNtHDcYSo/5fRhlgAg/mvjAZOzStZ4Lzw2F70e5zKlixw==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=nvidia.com; dmarc=pass action=none header.from=nvidia.com;
- dkim=pass header.d=nvidia.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
- s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=7gyZlwmlHYU/ZmUOvs3ehKHXbCDvmkOMT92IXgOjuI0=;
- b=EsSoLP4vmT+VbVjBbyAbsIPlGxQoQjktFVEadP3SD9bFG6jR/sdNZfPNmdr9bssK6kW1FYOfFBhDeQ+9ECvCjiNL5vNcM7aA0oelso6zG0Hkr2rkDYvn8vI0cpPjzTG4BGsZfbVqq+ijn4rZuzG6pLtldPzDvF0Jzb/P0XmKltmUqmZM1xNP+/lNseY+M9WIWDKdFuLBDdN5jul+hDbysqGEoH2lpgcr+HCwKViigqaF7nyaupKTIBIj1GUlrOFIWwAnIDgmDdvnGPt9wnOXVyoyh7pwKtaXQTTcTlU8x4J0JBgeY/w+WAvOKxRTdL7U9c0uwCtQg2YiZjwiqmryLA==
-Authentication-Results: gibson.dropbear.id.au; dkim=none (message not signed)
- header.d=none; gibson.dropbear.id.au;
- dmarc=none action=none header.from=nvidia.com;
-Received: from BL0PR12MB5506.namprd12.prod.outlook.com (2603:10b6:208:1cb::22)
- by BL1PR12MB5253.namprd12.prod.outlook.com (2603:10b6:208:30b::22)
- with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4173.21; Tue, 1 Jun
- 2021 12:57:13 +0000
-Received: from BL0PR12MB5506.namprd12.prod.outlook.com
- ([fe80::3d51:a3b9:8611:684e]) by BL0PR12MB5506.namprd12.prod.outlook.com
- ([fe80::3d51:a3b9:8611:684e%7]) with mapi id 15.20.4173.030; Tue, 1 Jun 2021
- 12:57:13 +0000
-Date: Tue, 1 Jun 2021 09:57:12 -0300
-From: Jason Gunthorpe <jgg@nvidia.com>
-To: David Gibson <david@gibson.dropbear.id.au>
-Subject: Re: [PATCH V4 05/18] iommu/ioasid: Redefine IOASID set and
- allocation APIs
-Message-ID: <20210601125712.GA4157739@nvidia.com>
-References: <20210503161518.GM1370958@nvidia.com> <YJy9o8uEZs42/qDM@yekko>
- <20210513135938.GG1002214@nvidia.com> <YKtbWo7PwIlXjFIV@yekko>
- <20210524233744.GT1002214@nvidia.com>
- <ce2fcf21-1803-047b-03f0-7a4108dea7af@nvidia.com>
- <20210525195257.GG1002214@nvidia.com> <YK8m9jNuvEzlXWlu@yekko>
- <20210527184847.GI1002214@nvidia.com> <YLWxlZC4AXJPOngB@yekko>
-Content-Disposition: inline
-In-Reply-To: <YLWxlZC4AXJPOngB@yekko>
-X-Originating-IP: [47.55.113.94]
-X-ClientProxiedBy: MN2PR01CA0013.prod.exchangelabs.com (2603:10b6:208:10c::26)
- To BL0PR12MB5506.namprd12.prod.outlook.com
- (2603:10b6:208:1cb::22)
-MIME-Version: 1.0
-X-MS-Exchange-MessageSentRepresentingType: 1
-Received: from mlx.ziepe.ca (47.55.113.94) by
- MN2PR01CA0013.prod.exchangelabs.com (2603:10b6:208:10c::26) with Microsoft
- SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.20.4173.21 via Frontend Transport; Tue, 1 Jun 2021 12:57:13 +0000
-Received: from jgg by mlx with local (Exim 4.94)	(envelope-from
- <jgg@nvidia.com>)	id 1lo3xI-00HS9p-3m; Tue, 01 Jun 2021 09:57:12 -0300
-X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: d9db6468-e9f6-4ad5-04b7-08d924fcc6a1
-X-MS-TrafficTypeDiagnostic: BL1PR12MB5253:
-X-MS-Exchange-Transport-Forked: True
-X-Microsoft-Antispam-PRVS: <BL1PR12MB5253CF2F7BA7531DB647A341C23E9@BL1PR12MB5253.namprd12.prod.outlook.com>
-X-MS-Oob-TLC-OOBClassifiers: OLM:4714;
-X-MS-Exchange-SenderADCheck: 1
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: dyTd9IF7sCTPcGng9yvoSm4sxvbz3irRaF7bKcgAFFsqXLRX2p+Ad+YGm9VTEbpTIedr3k3SUGRWOQXGF+MH1bVmcW1dDNlc3n2h7HrnZhr9l0VKDjSGBNBpafL5Ga/pg4mtFn5rWp9yQUylccGGWUT2QUsSFFCneXQHQJN1LOglrc9tLgFtlQe1RDhyaJW2WWRixcN8vyD3BuwdEyOGmoPIsgoI2brlYvPgAuBYM8N6NZ7qPfHb927iQNueVrJrJhnC4QMwZYUEsF97AtSrPzxm8oT3dMlUOfVZbaSWe5LTUboV5YOJ1PhR9lgQlvpbPKU1G75nAFyoRzH86JSzuQuEf+ybMl/OYsDuLMazAaMl6tfkBri77Ye9AQ5lIB523llKCtkcPmrBfZp25eM8+dbRVrhQK0+OkxIUvk4cSSdGG3TZ3ThLOZlETFH1MmzoRo0FosiBFI/BOOAllW8ZVWjKu87JsdQMWKM0RPqlMgX0CwFMdwZiC78LgA1epsUxw+khph8jvkPdRT/pvu8zYtoSo0AI/+EUA0PKNNqGSU2h+8tK/lHzgoU2tVB3Z/EZM4NK6I1K1gLYexDnUMO2fogbScIdU1adEMuckz4E6yG4aUYLj76PQDzv/7XrArKSqANfFMzhFwGQmo7E7YlK1tM1GKV2MgEGj1xAa8AJLnhGccONBIIMMpLGhTXxInDDtEUPx+PQDtGWkqT8L2J3Rh4UPJJ09cnWTE6yhzSWlpA=
-X-Forefront-Antispam-Report: CIP:255.255.255.255; CTRY:; LANG:en; SCL:1; SRV:;
- IPV:NLI; SFV:NSPM; H:BL0PR12MB5506.namprd12.prod.outlook.com; PTR:; CAT:NONE;
- SFS:(4636009)(366004)(346002)(136003)(376002)(39860400002)(396003)(83380400001)(6916009)(966005)(26005)(4326008)(8676002)(2616005)(36756003)(186003)(9746002)(2906002)(478600001)(54906003)(7416002)(8936002)(38100700002)(426003)(66476007)(316002)(5660300002)(45080400002)(66946007)(66556008)(33656002)(86362001)(1076003)(9786002);
- DIR:OUT; SFP:1101; 
-X-MS-Exchange-AntiSpam-MessageData: =?us-ascii?Q?zwUlqhOsSyXd5CkgHA86Hn7oVn7eFae8H0YqvN1QoFwvpsKrS6lGyJjzCt9p?=
- =?us-ascii?Q?s8wSZBH/i2fkPxYQ2RpM7Nsu/Ag49GBjC9UU5LL+x7m7rkoz9MP93E0zdkNj?=
- =?us-ascii?Q?g6QbJWMBzDouXaidz0J/nSqUSWu8XbM7vyF0Lvg5e2cIdoXFm1/iuPE5t6r+?=
- =?us-ascii?Q?w9o483dPJkINLrbbELuzzHol9NFIyvad8v7NBtjvhIGgzMrLg21iE2mI/tlO?=
- =?us-ascii?Q?J1tXkDm7bY2y+B7Mjs51kYMKBikoKDOpDcrbjKhkRLsyGFtE8S0GYwUqy1cr?=
- =?us-ascii?Q?G6P12IvC5uU3bf+/SM1znztTuF/OdwujDILpKMW1XuBp1BMaYCb/OtAtTbg1?=
- =?us-ascii?Q?JuP0FEp0hMKSI5hhLi/nJo6QkNCCcp98mRhz16AzNa2YDtgZuOdKy5OV5FZ+?=
- =?us-ascii?Q?+ocnRrOwgDal1FAWV1VWtnVQBna9v3N9dQs1dSmE7BmhM5ct7+MJdpzxGkW8?=
- =?us-ascii?Q?1Pbxit9CBlImHucpF9lvnZLHUVTXjDAfKtJGmmyIwvvaaoZXUU82Q8/uD+h2?=
- =?us-ascii?Q?4lBz+G/wDUqWT3sJul9l2BtWoW/o3HnkptPtG8Zx0Rgy+d5vMlzmRykcSDR3?=
- =?us-ascii?Q?exX9K4sH0xOXOZnxtpYDcT6IBw8eBYIYyCt92HpCqymjNlkky6AUbRmxQcFn?=
- =?us-ascii?Q?YrrMW7yalEBAGnjsCPBoxlFoKtpNtXwJkSCH2+h/Ehc3yppZR0+tP9dU+8FL?=
- =?us-ascii?Q?8clR1K+sK5BhRtAtpjWjbg3M5LWe3UAPanjU4hdzQTcgxp0onc18FGi3evP1?=
- =?us-ascii?Q?+QKHPDRyYSekYUn7Btm23GIZvvFSe/QKb95FydI3AWL4aUAk4WY36FLRw6je?=
- =?us-ascii?Q?HyDmjUS+Xeza7aEyGmLEuMZfu6MSlSGtuotWxxErHXxjA9IHkE6Lh3u0dQ2k?=
- =?us-ascii?Q?lyNlL7nAEHkS5VEeYOmVdq7ZHO1NtxliLZkxZY4yubMMTxTxyOyqK7J0rS3x?=
- =?us-ascii?Q?OsbEkddGaYEaZrwdMd6uMeCZTzSb4f9/VojfqCb0IdCDyx4k7q82phOZ8R4z?=
- =?us-ascii?Q?QSo+piHNEVPdOLmi0Il9ZBvopBU2b7N6+OHY9iJVMn3FZ1uN/sPfwGzziz98?=
- =?us-ascii?Q?WFCaWzsw0mirc+sSQ99d/hT8LDZrPQgmAPVjNFFOAud5/knACVjTc3OqtnXY?=
- =?us-ascii?Q?e0kcmZ8u0E/R9dxErThlkvlW3G7sg3wuDIohruhIWqGFR8XmFaLw1EVQy+Vp?=
- =?us-ascii?Q?CC2wBOjVOT0xjYVoBrqRb+HmYP8bxB6m2TszM0TPZsB6e6poLgf9U4VrpU2Z?=
- =?us-ascii?Q?6HkvfS+0PgxI/PPjJB3tcsc/HM8yNPu5BR4xmMTtVM5rw9Ng3m9JdhZQHttr?=
- =?us-ascii?Q?583NYcktpGNb+Ku8nbyu+nkR?=
-X-OriginatorOrg: Nvidia.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: d9db6468-e9f6-4ad5-04b7-08d924fcc6a1
-X-MS-Exchange-CrossTenant-AuthSource: BL0PR12MB5506.namprd12.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 01 Jun 2021 12:57:13.5780 (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: EQLiNuU6v+wRKllp52/T9oCFQ/nMABooxoinU15V4UtOMrPTlkc4rZfZIpwiMio0
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: BL1PR12MB5253
-Cc: Kirti Wankhede <kwankhede@nvidia.com>,
- Jean-Philippe Brucker <jean-philippe@linaro.org>, "Jiang,
- Dave" <dave.jiang@intel.com>, "Raj, Ashok" <ashok.raj@intel.com>,
- Jonathan Corbet <corbet@lwn.net>, "Tian, Kevin" <kevin.tian@intel.com>,
- Alex Williamson <alex.williamson@redhat.com>,
- "cgroups@vger.kernel.org" <cgroups@vger.kernel.org>,
- David Woodhouse <dwmw2@infradead.org>, LKML <linux-kernel@vger.kernel.org>,
+Received: from smtp1.osuosl.org ([127.0.0.1])
+ by localhost (smtp1.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+ with ESMTP id SURQbhF0j9yJ for <iommu@lists.linux-foundation.org>;
+ Tue,  1 Jun 2021 13:10:59 +0000 (UTC)
+X-Greylist: domain auto-whitelisted by SQLgrey-1.8.0
+Received: from szxga03-in.huawei.com (szxga03-in.huawei.com [45.249.212.189])
+ by smtp1.osuosl.org (Postfix) with ESMTPS id 6541282CDD
+ for <iommu@lists.linux-foundation.org>; Tue,  1 Jun 2021 13:10:59 +0000 (UTC)
+Received: from dggemv704-chm.china.huawei.com (unknown [172.30.72.53])
+ by szxga03-in.huawei.com (SkyGuard) with ESMTP id 4FvXW34ZMTz67Pr;
+ Tue,  1 Jun 2021 21:07:11 +0800 (CST)
+Received: from dggpemm500022.china.huawei.com (7.185.36.162) by
+ dggemv704-chm.china.huawei.com (10.3.19.47) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2176.2; Tue, 1 Jun 2021 21:10:55 +0800
+Received: from [10.174.185.220] (10.174.185.220) by
+ dggpemm500022.china.huawei.com (7.185.36.162) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2176.2; Tue, 1 Jun 2021 21:10:54 +0800
+Subject: Re: [RFC] /dev/ioasid uAPI proposal
+To: Lu Baolu <baolu.lu@linux.intel.com>, "Tian, Kevin" <kevin.tian@intel.com>, 
+ LKML <linux-kernel@vger.kernel.org>, Joerg Roedel <joro@8bytes.org>, "Jason
+ Gunthorpe" <jgg@nvidia.com>, David Woodhouse <dwmw2@infradead.org>,
  "iommu@lists.linux-foundation.org" <iommu@lists.linux-foundation.org>,
- Li Zefan <lizefan@huawei.com>, Johannes Weiner <hannes@cmpxchg.org>,
- Tejun Heo <tj@kernel.org>, Jean-Philippe Brucker <jean-philippe@linaro.com>
+ "kvm@vger.kernel.org" <kvm@vger.kernel.org>, "Alex Williamson
+ (alex.williamson@redhat.com)" <alex.williamson@redhat.com>, Jason Wang
+ <jasowang@redhat.com>, Jean-Philippe Brucker <jean-philippe@linaro.org>
+References: <MWHPR11MB1886422D4839B372C6AB245F8C239@MWHPR11MB1886.namprd11.prod.outlook.com>
+ <c9c066ae-2a25-0799-51a7-0ca47fff41a1@huawei.com>
+ <aa1624bf-e472-2b66-1d20-54ca23c19fd2@linux.intel.com>
+ <ed4f6e57-4847-3ed2-75de-cea80b2fbdb8@huawei.com>
+ <01fe5034-42c8-6923-32f1-e287cc36bccc@linux.intel.com>
+From: Shenming Lu <lushenming@huawei.com>
+Message-ID: <b343c294-e097-0c94-e480-4dde80c308d1@huawei.com>
+Date: Tue, 1 Jun 2021 21:10:42 +0800
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:78.0) Gecko/20100101
+ Thunderbird/78.2.2
+MIME-Version: 1.0
+In-Reply-To: <01fe5034-42c8-6923-32f1-e287cc36bccc@linux.intel.com>
+Content-Language: en-US
+X-Originating-IP: [10.174.185.220]
+X-ClientProxiedBy: dggems702-chm.china.huawei.com (10.3.19.179) To
+ dggpemm500022.china.huawei.com (7.185.36.162)
+X-CFilter-Loop: Reflected
+Cc: "Jiang, Dave" <dave.jiang@intel.com>, "Raj, Ashok" <ashok.raj@intel.com>,
+ Jonathan Corbet <corbet@lwn.net>, Kirti Wankhede <kwankhede@nvidia.com>,
+ "wanghaibin.wang@huawei.com" <wanghaibin.wang@huawei.com>,
+ David Gibson <david@gibson.dropbear.id.au>,
+ Robin Murphy <robin.murphy@arm.com>
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -168,78 +97,70 @@ List-Post: <mailto:iommu@lists.linux-foundation.org>
 List-Help: <mailto:iommu-request@lists.linux-foundation.org?subject=help>
 List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
  <mailto:iommu-request@lists.linux-foundation.org?subject=subscribe>
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-On Tue, Jun 01, 2021 at 02:03:33PM +1000, David Gibson wrote:
-> On Thu, May 27, 2021 at 03:48:47PM -0300, Jason Gunthorpe wrote:
-> > On Thu, May 27, 2021 at 02:58:30PM +1000, David Gibson wrote:
-> > > On Tue, May 25, 2021 at 04:52:57PM -0300, Jason Gunthorpe wrote:
-> > > > On Wed, May 26, 2021 at 12:56:30AM +0530, Kirti Wankhede wrote:
-> > > > 
-> > > > > 2. iommu backed mdev devices for SRIOV where mdev device is created per
-> > > > > VF (mdev device == VF device) then that mdev device has same iommu
-> > > > > protection scope as VF associated to it. 
-> > > > 
-> > > > This doesn't require, and certainly shouldn't create, a fake group.
-> > > 
-> > > It's only fake if you start with a narrow view of what a group is. 
-> > 
-> > A group is connected to drivers/iommu. A group object without *any*
-> > relation to drivers/iommu is just a complete fiction, IMHO.
-> 
-> That might be where we differ.  As I've said, my group I'm primarily
-> meaning the fundamental hardware unit of isolation.  *Usually* that's
-> determined by the capabilities of an IOMMU, but in some cases it might
-> not be.  In either case, the boundaries still matter.
-
-As in my other email we absolutely need a group concept, it is just a
-question of how the user API is designed around it.
-
-> > The group mdev implicitly creates is just a fake proxy that comes
-> > along with mdev API. It doesn't do anything and it doesn't mean
-> > anything.
-> 
-> But.. the case of multiple mdevs managed by a single PCI device with
-> an internal IOMMU also exists, and then the mdev groups are *not*
-> proxies but true groups independent of the parent device.  Which means
-> that the group structure of mdevs can vary, which is an argument *for*
-> keeping it, not against.
-
-If VFIO becomes more "vfio_device" centric then the vfio_device itself
-has some properties. One of those can be "is it inside a drivers/iommu
-group, or not?".
-
-If the vfio_device is not using a drivers/iommu IOMMU interface then
-it can just have no group at all - no reason to lie. This would mean
-that the device has perfect isolation.
-
-What I don't like is forcing certain things depending on how the
-vfio_device was created - for instance forcing a IOMMU group as part
-and forcing an ugly "SW IOMMU" mode in the container only as part of
-mdev_device.
-
-These should all be properties of the vfio_device itself.
-
-Again this is all about the group fd - and how to fit in with the
-/dev/ioasid proposal from Kevin:
-
-https://lore.kernel.org/kvm/MWHPR11MB1886422D4839B372C6AB245F8C239@MWHPR11MB1886.namprd11.prod.outlook.com/
-
-Focusing on vfio_device and skipping the group fd smooths out some
-rough edges.
-
-Code wise we are not quite there, but I have mapped out eliminating
-the group from the vfio_device centric API and a few other places it
-has crept in.
-
-The group can exist in the background to enforce security without
-being a cornerstone of the API design.
-
-Jason
-_______________________________________________
-iommu mailing list
-iommu@lists.linux-foundation.org
-https://lists.linuxfoundation.org/mailman/listinfo/iommu
+T24gMjAyMS82LzEgMjA6MzAsIEx1IEJhb2x1IHdyb3RlOgo+IE9uIDIwMjEvNi8xIDE1OjE1LCBT
+aGVubWluZyBMdSB3cm90ZToKPj4gT24gMjAyMS82LzEgMTM6MTAsIEx1IEJhb2x1IHdyb3RlOgo+
+Pj4gSGkgU2hlbm1pbmcsCj4+Pgo+Pj4gT24gNi8xLzIxIDEyOjMxIFBNLCBTaGVubWluZyBMdSB3
+cm90ZToKPj4+PiBPbiAyMDIxLzUvMjcgMTU6NTgsIFRpYW4sIEtldmluIHdyb3RlOgo+Pj4+PiAv
+ZGV2L2lvYXNpZCBwcm92aWRlcyBhbiB1bmlmaWVkIGludGVyZmFjZSBmb3IgbWFuYWdpbmcgSS9P
+IHBhZ2UgdGFibGVzIGZvcgo+Pj4+PiBkZXZpY2VzIGFzc2lnbmVkIHRvIHVzZXJzcGFjZS4gRGV2
+aWNlIHBhc3N0aHJvdWdoIGZyYW1ld29ya3MgKFZGSU8sIHZEUEEsCj4+Pj4+IGV0Yy4pIGFyZSBl
+eHBlY3RlZCB0byB1c2UgdGhpcyBpbnRlcmZhY2UgaW5zdGVhZCBvZiBjcmVhdGluZyB0aGVpciBv
+d24gbG9naWMgdG8KPj4+Pj4gaXNvbGF0ZSB1bnRydXN0ZWQgZGV2aWNlIERNQXMgaW5pdGlhdGVk
+IGJ5IHVzZXJzcGFjZS4KPj4+Pj4KPj4+Pj4gVGhpcyBwcm9wb3NhbCBkZXNjcmliZXMgdGhlIHVB
+UEkgb2YgL2Rldi9pb2FzaWQgYW5kIGFsc28gc2FtcGxlIHNlcXVlbmNlcwo+Pj4+PiB3aXRoIFZG
+SU8gYXMgZXhhbXBsZSBpbiB0eXBpY2FsIHVzYWdlcy4gVGhlIGRyaXZlci1mYWNpbmcga2VybmVs
+IEFQSSBwcm92aWRlZAo+Pj4+PiBieSB0aGUgaW9tbXUgbGF5ZXIgaXMgc3RpbGwgVEJELCB3aGlj
+aCBjYW4gYmUgZGlzY3Vzc2VkIGFmdGVyIGNvbnNlbnN1cyBpcwo+Pj4+PiBtYWRlIG9uIHRoaXMg
+dUFQSS4KPj4+Pj4KPj4+Pj4gSXQncyBiYXNlZCBvbiBhIGxlbmd0aHkgZGlzY3Vzc2lvbiBzdGFy
+dGluZyBmcm9tIGhlcmU6Cj4+Pj4+IMKgwqDCoMKgIGh0dHBzOi8vbG9yZS5rZXJuZWwub3JnL2xp
+bnV4LWlvbW11LzIwMjEwMzMwMTMyODMwLkdPMjM1NjI4MUBudmlkaWEuY29tLwo+Pj4+Pgo+Pj4+
+PiBJdCBlbmRzIHVwIHRvIGJlIGEgbG9uZyB3cml0aW5nIGR1ZSB0byBtYW55IHRoaW5ncyB0byBi
+ZSBzdW1tYXJpemVkIGFuZAo+Pj4+PiBub24tdHJpdmlhbCBlZmZvcnQgcmVxdWlyZWQgdG8gY29u
+bmVjdCB0aGVtIGludG8gYSBjb21wbGV0ZSBwcm9wb3NhbC4KPj4+Pj4gSG9wZSBpdCBwcm92aWRl
+cyBhIGNsZWFuIGJhc2UgdG8gY29udmVyZ2UuCj4+Pj4+Cj4+Pj4gWy4uXQo+Pj4+Cj4+Pj4+IC8q
+Cj4+Pj4+IMKgwqDCoCAqIFBhZ2UgZmF1bHQgcmVwb3J0IGFuZCByZXNwb25zZQo+Pj4+PiDCoMKg
+wqAgKgo+Pj4+PiDCoMKgwqAgKiBUaGlzIGlzIFRCRC4gQ2FuIGJlIGFkZGVkIGFmdGVyIG90aGVy
+IHBhcnRzIGFyZSBjbGVhcmVkIHVwLiBMaWtlbHkgaXQKPj4+Pj4gwqDCoMKgICogd2lsbCBiZSBh
+IHJpbmcgYnVmZmVyIHNoYXJlZCBiZXR3ZWVuIHVzZXIva2VybmVsLCBhbiBldmVudGZkIHRvIG5v
+dGlmeQo+Pj4+PiDCoMKgwqAgKiB0aGUgdXNlciBhbmQgYW4gaW9jdGwgdG8gY29tcGxldGUgdGhl
+IGZhdWx0Lgo+Pj4+PiDCoMKgwqAgKgo+Pj4+PiDCoMKgwqAgKiBUaGUgZmF1bHQgZGF0YSBpcyBw
+ZXIgSS9PIGFkZHJlc3Mgc3BhY2UsIGkuZS46IElPQVNJRCArIGZhdWx0aW5nX2FkZHIKPj4+Pj4g
+wqDCoMKgICovCj4+Pj4gSGksCj4+Pj4KPj4+PiBJdCBzZWVtcyB0aGF0IHRoZSBpb2FzaWQgaGFz
+IGRpZmZlcmVudCB1c2FnZSBpbiBkaWZmZXJlbnQgc2l0dWF0aW9uLCBpdCBjb3VsZAo+Pj4+IGJl
+IGRpcmVjdGx5IHVzZWQgaW4gdGhlIHBoeXNpY2FsIHJvdXRpbmcsIG9yIGp1c3QgYSB2aXJ0dWFs
+IGhhbmRsZSB0aGF0IGluZGljYXRlcwo+Pj4+IGEgcGFnZSB0YWJsZSBvciBhIHZQQVNJRCB0YWJs
+ZSAoc3VjaCBhcyB0aGUgR1BBIGFkZHJlc3Mgc3BhY2UsIGluIHRoZSBzaW1wbGUKPj4+PiBwYXNz
+dGhyb3VnaCBjYXNlLCB0aGUgRE1BIGlucHV0IHRvIElPTU1VIHdpbGwganVzdCBjb250YWluIGEg
+U3RyZWFtIElELCBubwo+Pj4+IFN1YnN0cmVhbSBJRCksIHJpZ2h0Pwo+Pj4+Cj4+Pj4gQW5kIEJh
+b2x1IHN1Z2dlc3RlZCB0aGF0IHNpbmNlIG9uZSBkZXZpY2UgbWlnaHQgY29uc3VtZSBtdWx0aXBs
+ZSBwYWdlIHRhYmxlcywKPj4+PiBpdCdzIG1vcmUgcmVhc29uYWJsZSB0byBoYXZlIG9uZSBmYXVs
+dCBoYW5kbGVyIHBlciBwYWdlIHRhYmxlLiBCeSB0aGlzLCBkbyB3ZQo+Pj4+IGhhdmUgdG8gbWFp
+bnRhaW4gc3VjaCBhbiBpb2FzaWQgaW5mbyBsaXN0IGluIHRoZSBJT01NVSBsYXllcj8KPj4+IEFz
+IGRpc2N1c3NlZCBlYXJsaWVyLCB0aGUgSS9PIHBhZ2UgZmF1bHQgYW5kIGNhY2hlIGludmFsaWRh
+dGlvbiBwYXRocwo+Pj4gd2lsbCBoYXZlICJkZXZpY2UgbGFiZWxzIiBzbyB0aGF0IHRoZSBpbmZv
+cm1hdGlvbiBjb3VsZCBiZSBlYXNpbHkKPj4+IHRyYW5zbGF0ZWQgYW5kIHJvdXRlZC4KPj4+Cj4+
+PiBTbyBpdCdzIGxpa2VseSB0aGUgcGVyLWRldmljZSBmYXVsdCBoYW5kbGVyIHJlZ2lzdGVyaW5n
+IEFQSSBpbiBpb21tdQo+Pj4gY29yZSBjYW4gYmUga2VwdCwgYnV0IC9kZXYvaW9hc2lkIHdpbGwg
+YmUgZ3Jvd24gd2l0aCBhIGxheWVyIHRvCj4+PiB0cmFuc2xhdGUgYW5kIHByb3BhZ2F0ZSBJL08g
+cGFnZSBmYXVsdCBpbmZvcm1hdGlvbiB0byB0aGUgcmlnaHQKPj4+IGNvbnN1bWVycy4KPj4gWWVh
+aCwgaGF2aW5nIGEgZ2VuZXJhbCBwcmVwcm9jZXNzaW5nIG9mIHRoZSBmYXVsdHMgaW4gSU9BU0lE
+IHNlZW1zIHRvIGJlCj4+IGEgZG9hYmxlIGRpcmVjdGlvbi4gQnV0IHNpbmNlIHRoZXJlIG1heSBi
+ZSBtb3JlIHRoYW4gb25lIGNvbnN1bWVyIGF0IHRoZQo+PiBzYW1lIHRpbWUsIHdobyBpcyByZXNw
+b25zaWJsZSBmb3IgcmVnaXN0ZXJpbmcgdGhlIHBlci1kZXZpY2UgZmF1bHQgaGFuZGxlcj8KPiAK
+PiBUaGUgZHJpdmVycyByZWdpc3RlciBwZXIgcGFnZSB0YWJsZSBmYXVsdCBoYW5kbGVycyB0byAv
+ZGV2L2lvYXNpZCB3aGljaAo+IHdpbGwgdGhlbiByZWdpc3RlciBpdHNlbGYgdG8gaW9tbXUgY29y
+ZSB0byBsaXN0ZW4gYW5kIHJvdXRlIHRoZSBwZXItCj4gZGV2aWNlIEkvTyBwYWdlIGZhdWx0cy4g
+VGhpcyBpcyBqdXN0IGEgdG9wIGxldmVsIHRob3VnaHQuIEhhdmVuJ3QgZ29uZQo+IHRocm91Z2gg
+dGhlIGRldGFpbHMgeWV0LiBOZWVkIHRvIHdhaXQgYW5kIHNlZSB3aGF0IC9kZXYvaW9hc2lkIGZp
+bmFsbHkKPiBsb29rcyBsaWtlLgoKT0suIEFuZCBpdCBuZWVkcyB0byBiZSBjb25maXJtZWQgYnkg
+SmVhbiBzaW5jZSB3ZSBtaWdodCBtaWdyYXRlIHRoZSBjb2RlIGZyb20KaW8tcGdmYXVsdC5jIHRv
+IElPQVNJRC4uLiBBbnl3YXksIGZpbmFsaXplIC9kZXYvaW9hc2lkIGZpcnN0LiAgVGhhbmtzLAoK
+U2hlbm1pbmcKCj4gCj4gQmVzdCByZWdhcmRzLAo+IGJhb2x1Cj4gLgpfX19fX19fX19fX19fX19f
+X19fX19fX19fX19fX19fX19fX19fX19fX19fX19fXwppb21tdSBtYWlsaW5nIGxpc3QKaW9tbXVA
+bGlzdHMubGludXgtZm91bmRhdGlvbi5vcmcKaHR0cHM6Ly9saXN0cy5saW51eGZvdW5kYXRpb24u
+b3JnL21haWxtYW4vbGlzdGluZm8vaW9tbXU=
