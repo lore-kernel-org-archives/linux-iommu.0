@@ -2,102 +2,157 @@ Return-Path: <SRS0=kThj=K4=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-13.5 required=3.0 tests=BAYES_00,
-	DKIM_ADSP_CUSTOM_MED,DKIM_INVALID,DKIM_SIGNED,FREEMAIL_FORGED_FROMDOMAIN,
-	FREEMAIL_FROM,HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_CR_TRAILER,
-	INCLUDES_PATCH,MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,
-	USER_AGENT_GIT autolearn=ham autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-3.5 required=3.0 tests=BAYES_00,DKIM_INVALID,
+	DKIM_SIGNED,HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,
+	MSGID_FROM_MTA_HEADER,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED autolearn=no
+	autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 71A29C47097
-	for <iommu@archiver.kernel.org>; Wed,  2 Jun 2021 16:49:53 +0000 (UTC)
-Received: from smtp4.osuosl.org (smtp4.osuosl.org [140.211.166.137])
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E4D48C4708F
+	for <iommu@archiver.kernel.org>; Wed,  2 Jun 2021 16:58:48 +0000 (UTC)
+Received: from smtp2.osuosl.org (smtp2.osuosl.org [140.211.166.133])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 3F70A61C46
-	for <iommu@archiver.kernel.org>; Wed,  2 Jun 2021 16:49:53 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 3F70A61C46
-Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=gmail.com
+	by mail.kernel.org (Postfix) with ESMTPS id 9752E61C8E
+	for <iommu@archiver.kernel.org>; Wed,  2 Jun 2021 16:58:48 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 9752E61C8E
+Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=nvidia.com
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by smtp4.osuosl.org (Postfix) with ESMTP id 133F4404F8;
-	Wed,  2 Jun 2021 16:49:53 +0000 (UTC)
+	by smtp2.osuosl.org (Postfix) with ESMTP id 5FD8C4043E;
+	Wed,  2 Jun 2021 16:58:48 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from smtp4.osuosl.org ([127.0.0.1])
-	by localhost (smtp4.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id cprXlpUnjAzm; Wed,  2 Jun 2021 16:49:51 +0000 (UTC)
+Received: from smtp2.osuosl.org ([127.0.0.1])
+	by localhost (smtp2.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+	with ESMTP id IGGsPfxUjTZK; Wed,  2 Jun 2021 16:58:47 +0000 (UTC)
 Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by smtp4.osuosl.org (Postfix) with ESMTP id A9641404B0;
-	Wed,  2 Jun 2021 16:49:51 +0000 (UTC)
+	by smtp2.osuosl.org (Postfix) with ESMTP id 35C14400BE;
+	Wed,  2 Jun 2021 16:58:47 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 962F1C000E;
-	Wed,  2 Jun 2021 16:49:51 +0000 (UTC)
-Received: from smtp1.osuosl.org (smtp1.osuosl.org [IPv6:2605:bc80:3010::138])
- by lists.linuxfoundation.org (Postfix) with ESMTP id CBFB5C0001
- for <iommu@lists.linux-foundation.org>; Wed,  2 Jun 2021 16:49:50 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 1378CC000E;
+	Wed,  2 Jun 2021 16:58:47 +0000 (UTC)
+Received: from smtp1.osuosl.org (smtp1.osuosl.org [140.211.166.138])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 12667C0001
+ for <iommu@lists.linux-foundation.org>; Wed,  2 Jun 2021 16:58:46 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by smtp1.osuosl.org (Postfix) with ESMTP id C3C3482F4A
- for <iommu@lists.linux-foundation.org>; Wed,  2 Jun 2021 16:49:50 +0000 (UTC)
+ by smtp1.osuosl.org (Postfix) with ESMTP id F3FB583004
+ for <iommu@lists.linux-foundation.org>; Wed,  2 Jun 2021 16:58:45 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
 Authentication-Results: smtp1.osuosl.org (amavisd-new);
- dkim=pass (2048-bit key) header.d=gmail.com
+ dkim=pass (2048-bit key) header.d=nvidia.com
 Received: from smtp1.osuosl.org ([127.0.0.1])
  by localhost (smtp1.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id 5KTL-SA4wJRP for <iommu@lists.linux-foundation.org>;
- Wed,  2 Jun 2021 16:49:46 +0000 (UTC)
+ with ESMTP id 9Rpd-nio7xeZ for <iommu@lists.linux-foundation.org>;
+ Wed,  2 Jun 2021 16:58:42 +0000 (UTC)
 X-Greylist: whitelisted by SQLgrey-1.8.0
-Received: from mail-pg1-x536.google.com (mail-pg1-x536.google.com
- [IPv6:2607:f8b0:4864:20::536])
- by smtp1.osuosl.org (Postfix) with ESMTPS id D15D982EAD
- for <iommu@lists.linux-foundation.org>; Wed,  2 Jun 2021 16:49:46 +0000 (UTC)
-Received: by mail-pg1-x536.google.com with SMTP id i5so2775929pgm.0
- for <iommu@lists.linux-foundation.org>; Wed, 02 Jun 2021 09:49:46 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=gmail.com; s=20161025;
- h=from:to:cc:subject:date:message-id:in-reply-to:references
- :mime-version:content-transfer-encoding;
- bh=HJLWu1zM3KEPxqyiMkUoKzy2S77vpcKMGJiuiZ9HewA=;
- b=by1ZflZbnh4CH2xpD3JNiXCoJYGIv8yKGm2fTIflNkLYEjcoJ7/ZVtj3c851MGW1ZB
- WIXDyaDd2cb45WhVKYQ7Z+lT/bGBfa00uXpQrUpgm5yXJsIbbPkRTW78w8p8D2XRumMk
- MkcbcPb2lTdCpsZWx1paYwuOilW6IbGWYLKVU0TlSqZXb0/tAelVcQpbJKUYuyaGACUu
- OmGxvPycGd2nofn73dYxG+THGn4rBtGl8gIeg29i5o7ZLivcrYU3YNGqzfefaPejpZg5
- XdN71n/1WblpQRJY3NmMB56jVw8Gq6WqpmXh7aWlSjNvu0UBKqM/G09UfDReWjgmIpUb
- gENg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
- d=1e100.net; s=20161025;
- h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
- :references:mime-version:content-transfer-encoding;
- bh=HJLWu1zM3KEPxqyiMkUoKzy2S77vpcKMGJiuiZ9HewA=;
- b=HLvkCEcNV+hqmrNKCQnvd7zUFeTy1xY8/2IBQ+8Nc5fg041i+V7BOgqIKoPzF/gxui
- tIZzBYgTVnLyoZMfVuMQK7qctxMk51M8OIcrqhxv9zQQci3ZQdO6aT0fMe6hWMpxtOOX
- MA7keYo+IO2gmWBRRWCbJ6KXPHqv4gzD/6mlwhnwJ6VaVk1MtBCGIBh8LUqyoIxvKTWS
- MWAfr9bi1jTnAfzydcXMgMAsGT5RPZVgwTdgFDgKFS9pKZn/rj/fycjrE6l4jyIj7esi
- mPDU3MNWWSgs58Vu5OfeM0B61J+nceMO3bknijp8Lcyk44J/CVVrNJXrdDyXy0tR8Qc4
- hKSg==
-X-Gm-Message-State: AOAM530gunGLALcGQ+T1l8mmXC8j3VCsz9ita/70qE8IrC+cYlz2k6+P
- z1rPhKiC9m7RdurbznnKoAM=
-X-Google-Smtp-Source: ABdhPJx2jYZ4gw4zkgo10aKSFeUHDkdmxgHdyOEoyPAVT53mZVtusybZ5lKVB8P7rIbNejV3KGC6hQ==
-X-Received: by 2002:a65:4289:: with SMTP id j9mr34713823pgp.165.1622652586302; 
- Wed, 02 Jun 2021 09:49:46 -0700 (PDT)
-Received: from localhost (c-73-25-156-94.hsd1.or.comcast.net. [73.25.156.94])
- by smtp.gmail.com with ESMTPSA id
- h76sm176121pfe.161.2021.06.02.09.49.44
- (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
- Wed, 02 Jun 2021 09:49:45 -0700 (PDT)
-From: Rob Clark <robdclark@gmail.com>
-To: dri-devel@lists.freedesktop.org
-Subject: [RESEND PATCH v4 4/6] iommu/arm-smmu-qcom: Add stall support
-Date: Wed,  2 Jun 2021 09:52:47 -0700
-Message-Id: <20210602165313.553291-5-robdclark@gmail.com>
-X-Mailer: git-send-email 2.31.1
-In-Reply-To: <20210602165313.553291-1-robdclark@gmail.com>
-References: <20210602165313.553291-1-robdclark@gmail.com>
+Received: from NAM10-DM6-obe.outbound.protection.outlook.com
+ (mail-dm6nam10on2079.outbound.protection.outlook.com [40.107.93.79])
+ by smtp1.osuosl.org (Postfix) with ESMTPS id 3D86A826E5
+ for <iommu@lists.linux-foundation.org>; Wed,  2 Jun 2021 16:58:42 +0000 (UTC)
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=ON0eOvk02TtiRS5s//jvDhhB7OBHX0ZVDmjjY++Ej7kZEkD04c3Q0A/aq2LDQfhWmkEOvQB+bmRRQjShEX0O08b+xj5UAEx9ynREFQ9vnuQk9QNJWljcw7AaTXlExM+mWpfyaBBzRxWhKpvl3uqQIt7W5/rxhEuvX656x10zuthhHBVuQs61cup7vZ9EF7ClcCf/fr2sjXGJ3omPSsqi9pkmL/MI1n1B+3XW+vCVa8N0MORa7DlnYuR6eJvLN3mZz+J625Q6M+m2zZWlBEOskBf+xSElqyVxu6+b9ymtM0+PhuCIH0NNuGNvhOam6I4KkvuR/+kDKRDtwce3cpU84g==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com; 
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=ITGWZotb6mHzQ3KEMl8jVQ165cDtXqCfKh97T161YQ4=;
+ b=bk4V2HjfJQChQ9sE/67DiyddRdOHyHUr9Hlsv4ZfYlTerFNCaAIRPF5k2nNWIVfnpqVlDoUxyN1Fgtx7AoqIl483NVuqPdUFIAHjjYTID16t1ZXNLw1CdhyQ2apUXGGLtqo0fxVnXQMsRNG0zBxHbAygHf+82uEVizi82EIQpYGAWprGJ1vaFFHQLhQz92M6hv77Vc9tuVsaSrRzNgC30TEMRzqdVhcpQTmZqbvTllj0kVB4CYmIUvwvHm5VN8P/mc/U1dgup09S09IydzLJ8UJ6e/q45lQWqy9koSgkLSiy4EScM2VjIQ1tXAHtlOppwv4JU7bK1jE1EfMq3sCCJg==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=nvidia.com; dmarc=pass action=none header.from=nvidia.com;
+ dkim=pass header.d=nvidia.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
+ s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=ITGWZotb6mHzQ3KEMl8jVQ165cDtXqCfKh97T161YQ4=;
+ b=ZnfejACDeCe26UEAyved5/5yP1ilXLIjNFd/OVoHsCKY7cufopYepaflVGEKqNXGZkQR0bzwIQYBn/aKPM3KoSzIrNBkpMCuZ6VW9RGr7KRHzUOG8XWcMwxEHAAvVZ4miHFHkMiYS/iyFnd3vowg+n2Jn7BbYpnQH7wBl17BbjqI750O6pdw04hhPHo2dxn6jVLOtiE5hjk8Uniht0GBiWWGUrULi6XtAizWSzazrKUrapNIJFohQkYZ2K+eZ6Qo1bHyC9wl8wUp1Ie+kH0HXh9kzE5GZgekXFQ4u5j87MRuC4Wmyb2Xe5yV//NA8SNPFyWXPysbSygpHBpbmpmnvA==
+Authentication-Results: gibson.dropbear.id.au; dkim=none (message not signed)
+ header.d=none; gibson.dropbear.id.au;
+ dmarc=none action=none header.from=nvidia.com;
+Received: from BL0PR12MB5506.namprd12.prod.outlook.com (2603:10b6:208:1cb::22)
+ by BL1PR12MB5047.namprd12.prod.outlook.com (2603:10b6:208:31a::6)
+ with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4173.22; Wed, 2 Jun
+ 2021 16:58:40 +0000
+Received: from BL0PR12MB5506.namprd12.prod.outlook.com
+ ([fe80::3d51:a3b9:8611:684e]) by BL0PR12MB5506.namprd12.prod.outlook.com
+ ([fe80::3d51:a3b9:8611:684e%6]) with mapi id 15.20.4195.020; Wed, 2 Jun 2021
+ 16:58:40 +0000
+Date: Wed, 2 Jun 2021 13:58:38 -0300
+From: Jason Gunthorpe <jgg@nvidia.com>
+To: David Gibson <david@gibson.dropbear.id.au>
+Subject: Re: [RFC] /dev/ioasid uAPI proposal
+Message-ID: <20210602165838.GA1002214@nvidia.com>
+References: <MWHPR11MB1886422D4839B372C6AB245F8C239@MWHPR11MB1886.namprd11.prod.outlook.com>
+ <20210528195839.GO1002214@nvidia.com> <YLcpw5Kx61L7TVmR@yekko>
+Content-Disposition: inline
+In-Reply-To: <YLcpw5Kx61L7TVmR@yekko>
+X-Originating-IP: [47.55.113.94]
+X-ClientProxiedBy: MN2PR19CA0051.namprd19.prod.outlook.com
+ (2603:10b6:208:19b::28) To BL0PR12MB5506.namprd12.prod.outlook.com
+ (2603:10b6:208:1cb::22)
 MIME-Version: 1.0
-Cc: Rob Clark <robdclark@chromium.org>,
- "Isaac J. Manjarres" <isaacm@codeaurora.org>,
- open list <linux-kernel@vger.kernel.org>, Will Deacon <will@kernel.org>,
- linux-arm-msm@vger.kernel.org, Robin Murphy <robin.murphy@arm.com>,
- "open list:IOMMU DRIVERS" <iommu@lists.linux-foundation.org>,
- freedreno@lists.freedesktop.org,
- "moderated list:ARM SMMU DRIVERS" <linux-arm-kernel@lists.infradead.org>
+X-MS-Exchange-MessageSentRepresentingType: 1
+Received: from mlx.ziepe.ca (47.55.113.94) by
+ MN2PR19CA0051.namprd19.prod.outlook.com (2603:10b6:208:19b::28) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4195.20 via Frontend
+ Transport; Wed, 2 Jun 2021 16:58:39 +0000
+Received: from jgg by mlx with local (Exim 4.94)	(envelope-from
+ <jgg@nvidia.com>)	id 1loUCU-000I5P-M0; Wed, 02 Jun 2021 13:58:38 -0300
+X-MS-PublicTrafficType: Email
+X-MS-Office365-Filtering-Correlation-Id: f3199601-1f04-4dd6-f716-08d925e7ab9f
+X-MS-TrafficTypeDiagnostic: BL1PR12MB5047:
+X-MS-Exchange-Transport-Forked: True
+X-Microsoft-Antispam-PRVS: <BL1PR12MB50475EAC30CE519BA79C2866C23D9@BL1PR12MB5047.namprd12.prod.outlook.com>
+X-MS-Oob-TLC-OOBClassifiers: OLM:10000;
+X-MS-Exchange-SenderADCheck: 1
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: YLK+1PYH0srXpBS7g8AwgzH0NgbFzQDrWaLhYdNvrZc1rj0ys4sgYXX/C3yi6JD1buuZ3dntHjQjFM8Uym/pmhfjSbxRWQG2Jf4F3RICZtORcGLC7kDhw8kRhxi9A8BBMR74EyiZ67eQcfrDpdFnIhdkDWhWD9Nyh4jS2Q55lVyNtcOQsR/Ptyq/da43rUdLOp6iCMjZKsNm9DPeypQ7nJGSBGqrzGidD6kbacfzJa5ZT52xTNCb6cTboi7sueGUtIqS4+LclUzO/FueUoJrwGA3BAMNu4ZsBSM04QVYZpdq4Af3RLLlKhIxoM6LO3MbMNDfxMTb+5Y2P2GMCaFoAx2ljPweqYl3haV3/5UHmvapVft3lG3cxT5W4UiKsPD4BtdWXzsjLGX8XDJ1CziPE0hi5ilH8zcP0R/fsFuM1yg2eEE0TSOoXHjExJKk4I+1QeCDaOU6wjaJBo8fYtGnH+zRw0ZAVsPHvwBYD6us4dfv1UbXRD5N0FH3f16paRIMd9WD3+tdFHXr2hvnscKNPcp10FZG9pghuWxAfX1ilDvnpc4ITaoesGOKYF1F7rcRNglODAVff49sK1kVD0nen69KKx6vcEukbcwz+96eHY0=
+X-Forefront-Antispam-Report: CIP:255.255.255.255; CTRY:; LANG:en; SCL:1; SRV:;
+ IPV:NLI; SFV:NSPM; H:BL0PR12MB5506.namprd12.prod.outlook.com; PTR:; CAT:NONE;
+ SFS:(4636009)(376002)(366004)(39860400002)(396003)(136003)(346002)(478600001)(426003)(8936002)(5660300002)(186003)(66476007)(4326008)(86362001)(66556008)(1076003)(33656002)(2906002)(316002)(7416002)(38100700002)(54906003)(66946007)(8676002)(9746002)(83380400001)(9786002)(2616005)(26005)(6916009)(36756003);
+ DIR:OUT; SFP:1101; 
+X-MS-Exchange-AntiSpam-MessageData: =?us-ascii?Q?tF3mKp4hV97hgCod4BFcgQJhR+N1dIG9VED1cEEiGcLB4SVNc29amUNH51zO?=
+ =?us-ascii?Q?uS5V5zkD9YDxBBkLw1lCcjGEmAwUNflkZxONryOI8WWp53IX283ep88iZWOC?=
+ =?us-ascii?Q?50SocG2DJADjoOIiNFGoFk1ZPz7zdm4DUCq2EkmuqmnFgh3c0mD3SblfC0Wo?=
+ =?us-ascii?Q?NQO7hRxtmFyuxrQ1ZAFr2mXLldC5dEc7GVkF8vhZ7jUYKiD9f0nzoQ/UDIBy?=
+ =?us-ascii?Q?iOlmNcZohdG8SkXY6QPeb3lhBdgYET3yyqJ1l0E8fHQcGXZtuI5MOJeq0VZ4?=
+ =?us-ascii?Q?EqmNAT/glX2uMk2/FJ66KnbUYmX9L9wQFOw6Um1T3aXxe/7WmK/jd2kf3FQL?=
+ =?us-ascii?Q?MaLJSkHo3kWFdwP9E22swNPzehxuD5qZ7vN344zRZBi6kTkmBLndPmJvJJNY?=
+ =?us-ascii?Q?17r8p1p+yOpjNyUGPFNLl87U05axJgePV94V8QcxUiEmlzbeUWr4br6rWK7y?=
+ =?us-ascii?Q?IUbevqa60sO1KBuPoHevlzL5hMRVRSqScdzqrnBwnWfPafmnb8vKaFIXwIJx?=
+ =?us-ascii?Q?8IA2N24Jxk8ec7PgjZn9wKm/VfIiTik5JBgSC0AGQVsivDFwfXReGWxHsUe/?=
+ =?us-ascii?Q?HIzZBcwy6fG5pNKaIHqh+B+d4FDNLzKkuk1GbzCqLLZlyjWdFqfyVMZws/RN?=
+ =?us-ascii?Q?HFz99GzmSybLpDiG51Ws8pSt1J7GwGQyIeMVV1v0ula28ezUj9kSjnVp3NaE?=
+ =?us-ascii?Q?COxXY5C42p8hSrHibaUCjX/jkvuPrwBWACkem4v6I8SOZl9G9dYDZUYePD+8?=
+ =?us-ascii?Q?JY6fBtMYRLkguCq7aQksu0C2Q6JtOF7i3IaHDo3mDf7+9xtXyI1MJ6lG+TYM?=
+ =?us-ascii?Q?PV01TnUPgY0S5MiAgzeyl4SbTE0QLcfK3uGq0HD1pZr2iM5Cc8QfPY/5TLxl?=
+ =?us-ascii?Q?lliap3k5DQj+Of1HR1EZuC/cUkQbMNJzrLgnSCoQIYygyIbDV2CrA6924EFP?=
+ =?us-ascii?Q?qhuRwKLL6Vs/Zg/uguPnIZpvYsyyHMcEKa0rdfvZGtlGT8uS/ULOs8fQnlTC?=
+ =?us-ascii?Q?QciPxhe0MvNBQdu2iRUh45ps1F5dph2Lb3+XVq9+QWoxW15w35LbAxAURzwt?=
+ =?us-ascii?Q?bRPE7QAywaUyABuRjaHDEyv/6x2rQUb1eOwVtNMaIkvCk6l18FWb5vJUshDL?=
+ =?us-ascii?Q?BdzT7dqNxrvl+XFHT5xM9UqIzu33QTkQem0+WJMwp6ZWLKolqc/Ng5hvPIHZ?=
+ =?us-ascii?Q?2zKf0dTnxEOVSTDvdn8VDIzp+suyE38ofM9lh0a+j5/+LfqnYsSXmlNLjPSm?=
+ =?us-ascii?Q?kpgqt6T0gus75ZKxQ2KwUymqoPXyjiOJM+EbsBvJWeufQ5ebsTm4YqKj86dY?=
+ =?us-ascii?Q?W8ZuzHmnNSnXa//jjoqvt1th?=
+X-OriginatorOrg: Nvidia.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: f3199601-1f04-4dd6-f716-08d925e7ab9f
+X-MS-Exchange-CrossTenant-AuthSource: BL0PR12MB5506.namprd12.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 02 Jun 2021 16:58:40.1316 (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: JR9NPvSJ5rGtFNdWHoxWP3uKMQM5tmZclKYk3OVrCewzRGwKitiGlHHkLlDovq/S
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: BL1PR12MB5047
+Cc: Jean-Philippe Brucker <jean-philippe@linaro.org>, "Tian,
+ Kevin" <kevin.tian@intel.com>,
+ "Alex Williamson \(alex.williamson@redhat.com\)" <alex.williamson@redhat.com>,
+ "Raj, Ashok" <ashok.raj@intel.com>,
+ "kvm@vger.kernel.org" <kvm@vger.kernel.org>, Jonathan Corbet <corbet@lwn.net>,
+ Robin Murphy <robin.murphy@arm.com>, LKML <linux-kernel@vger.kernel.org>,
+ Kirti Wankhede <kwankhede@nvidia.com>,
+ "iommu@lists.linux-foundation.org" <iommu@lists.linux-foundation.org>, "Jiang,
+ Dave" <dave.jiang@intel.com>, David Woodhouse <dwmw2@infradead.org>,
+ Jason Wang <jasowang@redhat.com>
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -115,120 +170,85 @@ Content-Transfer-Encoding: 7bit
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-From: Rob Clark <robdclark@chromium.org>
+On Wed, Jun 02, 2021 at 04:48:35PM +1000, David Gibson wrote:
+> > > 	/* Bind guest I/O page table  */
+> > > 	bind_data = {
+> > > 		.ioasid	= gva_ioasid;
+> > > 		.addr	= gva_pgtable1;
+> > > 		// and format information
+> > > 	};
+> > > 	ioctl(ioasid_fd, IOASID_BIND_PGTABLE, &bind_data);
+> > 
+> > Again I do wonder if this should just be part of alloc_ioasid. Is
+> > there any reason to split these things? The only advantage to the
+> > split is the device is known, but the device shouldn't impact
+> > anything..
+> 
+> I'm pretty sure the device(s) could matter, although they probably
+> won't usually. 
 
-Add, via the adreno-smmu-priv interface, a way for the GPU to request
-the SMMU to stall translation on faults, and then later resume the
-translation, either retrying or terminating the current translation.
+It is a bit subtle, but the /dev/iommu fd itself is connected to the
+devices first. This prevents wildly incompatible devices from being
+joined together, and allows some "get info" to report the capability
+union of all devices if we want to do that.
 
-This will be used on the GPU side to "freeze" the GPU while we snapshot
-useful state for devcoredump.
+The original concept was that devices joined would all have to support
+the same IOASID format, at least for the kernel owned map/unmap IOASID
+type. Supporting different page table formats maybe is reason to
+revisit that concept.
 
-Signed-off-by: Rob Clark <robdclark@chromium.org>
----
- drivers/iommu/arm/arm-smmu/arm-smmu-qcom.c | 33 ++++++++++++++++++++++
- include/linux/adreno-smmu-priv.h           |  7 +++++
- 2 files changed, 40 insertions(+)
+There is a small advantage to re-using the IOASID container because of
+the get_user_pages caching and pinned accounting management at the FD
+level.
 
-diff --git a/drivers/iommu/arm/arm-smmu/arm-smmu-qcom.c b/drivers/iommu/arm/arm-smmu/arm-smmu-qcom.c
-index b2e31ea84128..61fc645c1325 100644
---- a/drivers/iommu/arm/arm-smmu/arm-smmu-qcom.c
-+++ b/drivers/iommu/arm/arm-smmu/arm-smmu-qcom.c
-@@ -13,6 +13,7 @@ struct qcom_smmu {
- 	struct arm_smmu_device smmu;
- 	bool bypass_quirk;
- 	u8 bypass_cbndx;
-+	u32 stall_enabled;
- };
- 
- static struct qcom_smmu *to_qcom_smmu(struct arm_smmu_device *smmu)
-@@ -23,12 +24,17 @@ static struct qcom_smmu *to_qcom_smmu(struct arm_smmu_device *smmu)
- static void qcom_adreno_smmu_write_sctlr(struct arm_smmu_device *smmu, int idx,
- 		u32 reg)
- {
-+	struct qcom_smmu *qsmmu = to_qcom_smmu(smmu);
-+
- 	/*
- 	 * On the GPU device we want to process subsequent transactions after a
- 	 * fault to keep the GPU from hanging
- 	 */
- 	reg |= ARM_SMMU_SCTLR_HUPCF;
- 
-+	if (qsmmu->stall_enabled & BIT(idx))
-+		reg |= ARM_SMMU_SCTLR_CFCFG;
-+
- 	arm_smmu_cb_write(smmu, idx, ARM_SMMU_CB_SCTLR, reg);
- }
- 
-@@ -48,6 +54,31 @@ static void qcom_adreno_smmu_get_fault_info(const void *cookie,
- 	info->contextidr = arm_smmu_cb_read(smmu, cfg->cbndx, ARM_SMMU_CB_CONTEXTIDR);
- }
- 
-+static void qcom_adreno_smmu_set_stall(const void *cookie, bool enabled)
-+{
-+	struct arm_smmu_domain *smmu_domain = (void *)cookie;
-+	struct arm_smmu_cfg *cfg = &smmu_domain->cfg;
-+	struct qcom_smmu *qsmmu = to_qcom_smmu(smmu_domain->smmu);
-+
-+	if (enabled)
-+		qsmmu->stall_enabled |= BIT(cfg->cbndx);
-+	else
-+		qsmmu->stall_enabled &= ~BIT(cfg->cbndx);
-+}
-+
-+static void qcom_adreno_smmu_resume_translation(const void *cookie, bool terminate)
-+{
-+	struct arm_smmu_domain *smmu_domain = (void *)cookie;
-+	struct arm_smmu_cfg *cfg = &smmu_domain->cfg;
-+	struct arm_smmu_device *smmu = smmu_domain->smmu;
-+	u32 reg = 0;
-+
-+	if (terminate)
-+		reg |= ARM_SMMU_RESUME_TERMINATE;
-+
-+	arm_smmu_cb_write(smmu, cfg->cbndx, ARM_SMMU_CB_RESUME, reg);
-+}
-+
- #define QCOM_ADRENO_SMMU_GPU_SID 0
- 
- static bool qcom_adreno_smmu_is_gpu_device(struct device *dev)
-@@ -173,6 +204,8 @@ static int qcom_adreno_smmu_init_context(struct arm_smmu_domain *smmu_domain,
- 	priv->get_ttbr1_cfg = qcom_adreno_smmu_get_ttbr1_cfg;
- 	priv->set_ttbr0_cfg = qcom_adreno_smmu_set_ttbr0_cfg;
- 	priv->get_fault_info = qcom_adreno_smmu_get_fault_info;
-+	priv->set_stall = qcom_adreno_smmu_set_stall;
-+	priv->resume_translation = qcom_adreno_smmu_resume_translation;
- 
- 	return 0;
- }
-diff --git a/include/linux/adreno-smmu-priv.h b/include/linux/adreno-smmu-priv.h
-index 53fe32fb9214..c637e0997f6d 100644
---- a/include/linux/adreno-smmu-priv.h
-+++ b/include/linux/adreno-smmu-priv.h
-@@ -45,6 +45,11 @@ struct adreno_smmu_fault_info {
-  *                 TTBR0 translation is enabled with the specified cfg
-  * @get_fault_info: Called by the GPU fault handler to get information about
-  *                  the fault
-+ * @set_stall:     Configure whether stall on fault (CFCFG) is enabled.  Call
-+ *                 before set_ttbr0_cfg().  If stalling on fault is enabled,
-+ *                 the GPU driver must call resume_translation()
-+ * @resume_translation: Resume translation after a fault
-+ *
-  *
-  * The GPU driver (drm/msm) and adreno-smmu work together for controlling
-  * the GPU's SMMU instance.  This is by necessity, as the GPU is directly
-@@ -60,6 +65,8 @@ struct adreno_smmu_priv {
-     const struct io_pgtable_cfg *(*get_ttbr1_cfg)(const void *cookie);
-     int (*set_ttbr0_cfg)(const void *cookie, const struct io_pgtable_cfg *cfg);
-     void (*get_fault_info)(const void *cookie, struct adreno_smmu_fault_info *info);
-+    void (*set_stall)(const void *cookie, bool enabled);
-+    void (*resume_translation)(const void *cookie, bool terminate);
- };
- 
- #endif /* __ADRENO_SMMU_PRIV_H */
--- 
-2.31.1
+I don't know if that small advantage is worth the extra complexity
+though.
 
+> But it would certainly be possible for a system to have two
+> different host bridges with two different IOMMUs with different
+> pagetable formats.  Until you know which devices (and therefore
+> which host bridge) you're talking about, you don't know what formats
+> of pagetable to accept.  And if you have devices from *both* bridges
+> you can't bind a page table at all - you could theoretically support
+> a kernel managed pagetable by mirroring each MAP and UNMAP to tables
+> in both formats, but it would be pretty reasonable not to support
+> that.
+
+The basic process for a user space owned pgtable mode would be:
+
+ 1) qemu has to figure out what format of pgtable to use
+
+    Presumably it uses query functions using the device label. The
+    kernel code should look at the entire device path through all the
+    IOMMU HW to determine what is possible.
+
+    Or it already knows because the VM's vIOMMU is running in some
+    fixed page table format, or the VM's vIOMMU already told it, or
+    something.
+
+ 2) qemu creates an IOASID and based on #1 and says 'I want this format'
+
+ 3) qemu binds the IOASID to the device. 
+
+    If qmeu gets it wrong then it just fails.
+
+ 4) For the next device qemu would have to figure out if it can re-use
+    an existing IOASID based on the required proeprties.
+
+You pointed to the case of mixing vIOMMU's of different platforms. So
+it is completely reasonable for qemu to ask for a "ARM 64 bit IOMMU
+page table mode v2" while running on an x86 because that is what the
+vIOMMU is wired to work with.
+
+Presumably qemu will fall back to software emulation if this is not
+possible.
+
+One interesting option for software emulation is to just transform the
+ARM page table format to a x86 page table format in userspace and use
+nested bind/invalidate to synchronize with the kernel. With SW nesting
+I suspect this would be much faster
+
+Jason
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
