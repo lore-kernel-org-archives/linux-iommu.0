@@ -7,75 +7,72 @@ X-Spam-Status: No, score=-5.9 required=3.0 tests=BAYES_00,
 	SPF_PASS,URIBL_BLOCKED,USER_AGENT_SANE_1 autolearn=no autolearn_force=no
 	version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E2161C4708F
-	for <iommu@archiver.kernel.org>; Wed,  2 Jun 2021 07:48:47 +0000 (UTC)
-Received: from smtp3.osuosl.org (smtp3.osuosl.org [140.211.166.136])
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2508DC47092
+	for <iommu@archiver.kernel.org>; Wed,  2 Jun 2021 08:09:56 +0000 (UTC)
+Received: from smtp2.osuosl.org (smtp2.osuosl.org [140.211.166.133])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 93B086138C
-	for <iommu@archiver.kernel.org>; Wed,  2 Jun 2021 07:48:47 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 93B086138C
-Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=huawei.com
+	by mail.kernel.org (Postfix) with ESMTPS id 14113613EA
+	for <iommu@archiver.kernel.org>; Wed,  2 Jun 2021 08:09:55 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 14113613EA
+Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=iogearbox.net
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by smtp3.osuosl.org (Postfix) with ESMTP id 61FBE60705;
-	Wed,  2 Jun 2021 07:48:47 +0000 (UTC)
-X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from smtp3.osuosl.org ([127.0.0.1])
-	by localhost (smtp3.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id xuL2ODxxTBeh; Wed,  2 Jun 2021 07:48:46 +0000 (UTC)
-Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by smtp3.osuosl.org (Postfix) with ESMTP id 2A5AE60687;
-	Wed,  2 Jun 2021 07:48:46 +0000 (UTC)
-Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 0D488C000D;
-	Wed,  2 Jun 2021 07:48:46 +0000 (UTC)
-Received: from smtp2.osuosl.org (smtp2.osuosl.org [140.211.166.133])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 68B12C0001
- for <iommu@lists.linux-foundation.org>; Wed,  2 Jun 2021 07:48:43 +0000 (UTC)
-Received: from localhost (localhost [127.0.0.1])
- by smtp2.osuosl.org (Postfix) with ESMTP id 49B43401FB
- for <iommu@lists.linux-foundation.org>; Wed,  2 Jun 2021 07:48:43 +0000 (UTC)
+	by smtp2.osuosl.org (Postfix) with ESMTP id D3C5A400AF;
+	Wed,  2 Jun 2021 08:09:54 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
 Received: from smtp2.osuosl.org ([127.0.0.1])
- by localhost (smtp2.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id k9yBKR4UvToh for <iommu@lists.linux-foundation.org>;
- Wed,  2 Jun 2021 07:48:41 +0000 (UTC)
-X-Greylist: domain auto-whitelisted by SQLgrey-1.8.0
-Received: from frasgout.his.huawei.com (frasgout.his.huawei.com
- [185.176.79.56])
- by smtp2.osuosl.org (Postfix) with ESMTPS id 478E0400BA
- for <iommu@lists.linux-foundation.org>; Wed,  2 Jun 2021 07:48:40 +0000 (UTC)
-Received: from fraeml712-chm.china.huawei.com (unknown [172.18.147.226])
- by frasgout.his.huawei.com (SkyGuard) with ESMTP id 4Fw16j2N0Cz6Q2kg;
- Wed,  2 Jun 2021 15:36:13 +0800 (CST)
-Received: from lhreml724-chm.china.huawei.com (10.201.108.75) by
- fraeml712-chm.china.huawei.com (10.206.15.61) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2176.2; Wed, 2 Jun 2021 09:48:37 +0200
-Received: from [10.47.91.52] (10.47.91.52) by lhreml724-chm.china.huawei.com
- (10.201.108.75) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2176.2; Wed, 2 Jun 2021
- 08:48:36 +0100
-Subject: Re: [PATCH v3 0/7] iommu: Allow IOVA rcache range be configured
-To: Lu Baolu <baolu.lu@linux.intel.com>, <joro@8bytes.org>, <will@kernel.org>, 
- <robin.murphy@arm.com>
-References: <1622557781-211697-1-git-send-email-john.garry@huawei.com>
- <834ad35a-7310-1738-7d17-7c061ca73e4c@linux.intel.com>
-From: John Garry <john.garry@huawei.com>
-Message-ID: <1cbf8cc2-8cee-0579-2514-56f664baa9cd@huawei.com>
-Date: Wed, 2 Jun 2021 08:48:35 +0100
-User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; rv:68.0) Gecko/20100101
- Thunderbird/68.1.2
+	by localhost (smtp2.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+	with ESMTP id CW1jZ3V0TBRy; Wed,  2 Jun 2021 08:09:50 +0000 (UTC)
+Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [IPv6:2605:bc80:3010:104::8cd3:938])
+	by smtp2.osuosl.org (Postfix) with ESMTP id 912BD400BA;
+	Wed,  2 Jun 2021 08:09:50 +0000 (UTC)
+Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 5903BC000E;
+	Wed,  2 Jun 2021 08:09:50 +0000 (UTC)
+Received: from smtp1.osuosl.org (smtp1.osuosl.org [140.211.166.138])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 10587C0001
+ for <iommu@lists.linux-foundation.org>; Wed,  2 Jun 2021 08:09:49 +0000 (UTC)
+Received: from localhost (localhost [127.0.0.1])
+ by smtp1.osuosl.org (Postfix) with ESMTP id F04338293D
+ for <iommu@lists.linux-foundation.org>; Wed,  2 Jun 2021 08:09:48 +0000 (UTC)
+X-Virus-Scanned: amavisd-new at osuosl.org
+Received: from smtp1.osuosl.org ([127.0.0.1])
+ by localhost (smtp1.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+ with ESMTP id xPv8oIHfCUZp for <iommu@lists.linux-foundation.org>;
+ Wed,  2 Jun 2021 08:09:45 +0000 (UTC)
+X-Greylist: from auto-whitelisted by SQLgrey-1.8.0
+Received: from www62.your-server.de (www62.your-server.de [213.133.104.62])
+ by smtp1.osuosl.org (Postfix) with ESMTPS id E6CC3828FB
+ for <iommu@lists.linux-foundation.org>; Wed,  2 Jun 2021 08:09:44 +0000 (UTC)
+Received: from sslproxy01.your-server.de ([78.46.139.224])
+ by www62.your-server.de with esmtpsa (TLSv1.3:TLS_AES_256_GCM_SHA384:256)
+ (Exim 4.92.3) (envelope-from <daniel@iogearbox.net>)
+ id 1loLwV-0002ok-8U; Wed, 02 Jun 2021 10:09:35 +0200
+Received: from [85.7.101.30] (helo=linux-2.home)
+ by sslproxy01.your-server.de with esmtpsa (TLSv1.3:TLS_AES_256_GCM_SHA384:256)
+ (Exim 4.92) (envelope-from <daniel@iogearbox.net>)
+ id 1loLwU-000CT0-Vm; Wed, 02 Jun 2021 10:09:35 +0200
+Subject: Re: Regression 5.12.0-rc4 net: ice: significant throughput drop
+To: Jussi Maki <joamaki@gmail.com>, Robin Murphy <robin.murphy@arm.com>
+References: <CAHn8xckNXci+X_Eb2WMv4uVYjO2331UWB2JLtXr_58z0Av8+8A@mail.gmail.com>
+ <cc58c09e-bbb5-354a-2030-bf8ebb2adc86@iogearbox.net>
+ <7f048c57-423b-68ba-eede-7e194c1fea4e@arm.com>
+ <CAHn8xckNt3smeQPi3dgq5i_3vP7KwU45pnP5OCF8nOV_QEdyMA@mail.gmail.com>
+From: Daniel Borkmann <daniel@iogearbox.net>
+Message-ID: <7c04eeea-22d3-c265-8e1e-b3f173f2179f@iogearbox.net>
+Date: Wed, 2 Jun 2021 10:09:28 +0200
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
+ Thunderbird/60.7.2
 MIME-Version: 1.0
-In-Reply-To: <834ad35a-7310-1738-7d17-7c061ca73e4c@linux.intel.com>
+In-Reply-To: <CAHn8xckNt3smeQPi3dgq5i_3vP7KwU45pnP5OCF8nOV_QEdyMA@mail.gmail.com>
 Content-Language: en-US
-X-Originating-IP: [10.47.91.52]
-X-ClientProxiedBy: lhreml729-chm.china.huawei.com (10.201.108.80) To
- lhreml724-chm.china.huawei.com (10.201.108.75)
-X-CFilter-Loop: Reflected
-Cc: iommu@lists.linux-foundation.org, linuxarm@huawei.com,
- linux-kernel@vger.kernel.org
+X-Authenticated-Sender: daniel@iogearbox.net
+X-Virus-Scanned: Clear (ClamAV 0.103.2/26188/Tue Jun  1 13:07:16 2021)
+Cc: jroedel@suse.de, netdev@vger.kernel.org, jesse.brandeburg@intel.com,
+ hch@lst.de, iommu@lists.linux-foundation.org, anthony.l.nguyen@intel.com,
+ gregkh@linuxfoundation.org, intel-wired-lan@lists.osuosl.org,
+ bpf <bpf@vger.kernel.org>, davem@davemloft.net
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -93,48 +90,47 @@ Content-Type: text/plain; charset="us-ascii"; Format="flowed"
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-On 02/06/2021 05:37, Lu Baolu wrote:
-> On 6/1/21 10:29 PM, John Garry wrote:
->> For streaming DMA mappings involving an IOMMU and whose IOVA len 
->> regularly
->> exceeds the IOVA rcache upper limit (meaning that they are not cached),
->> performance can be reduced.
->>
->> This is much more pronounced from commit 4e89dce72521 ("iommu/iova: Retry
->> from last rb tree node if iova search fails"), as discussed at [0].
->>
->> IOVAs which cannot be cached are highly involved in the IOVA ageing 
->> issue,
->> as discussed at [1].
->>
->> This series allows the IOVA rcache range be configured, so that we may
->> cache all IOVAs per domain, thus improving performance.
->>
->> A new IOMMU group sysfs file is added - max_opt_dma_size - which is used
->> indirectly to configure the IOVA rcache range:
->> /sys/kernel/iommu_groups/X/max_opt_dma_size
->>
->> This file is updated same as how the IOMMU group default domain type is
->> updated, i.e. must unbind the only device in the group first.
+On 6/1/21 7:42 PM, Jussi Maki wrote:
+> Hi Robin,
 > 
-> Could you explain why it requires singleton group and driver unbinding
-> if the user only wants to increase the upper limit? I haven't dived into
-> the details yet, sorry if this is a silly question.
+> On Tue, Jun 1, 2021 at 2:39 PM Robin Murphy <robin.murphy@arm.com> wrote:
+>>>> The regression shows as a significant drop in throughput as measured
+>>>> with "super_netperf" [0],
+>>>> with measured bandwidth of ~95Gbps before and ~35Gbps after:
+>>
+>> I guess that must be the difference between using the flush queue
+>> vs. strict invalidation. On closer inspection, it seems to me that
+>> there's a subtle pre-existing bug in the AMD IOMMU driver, in that
+>> amd_iommu_init_dma_ops() actually runs *after* amd_iommu_init_api()
+>> has called bus_set_iommu(). Does the patch below work?
+> 
+> Thanks for the quick response & patch. I tried it out and indeed it
+> does solve the issue:
+> 
+> # uname -a
+> Linux zh-lab-node-3 5.13.0-rc3-amd-iommu+ #31 SMP Tue Jun 1 17:12:57
+> UTC 2021 x86_64 x86_64 x86_64 GNU/Linux
+> root@zh-lab-node-3:~# ./super_netperf 32 -H 172.18.0.2
+> 95341.2
+> 
+> root@zh-lab-node-3:~# uname -a
+> Linux zh-lab-node-3 5.13.0-rc3-amd-iommu-unpatched #32 SMP Tue Jun 1
+> 17:29:34 UTC 2021 x86_64 x86_64 x86_64 GNU/Linux
+> root@zh-lab-node-3:~# ./super_netperf 32 -H 172.18.0.2
+> 33989.5
 
-Hi Baolu,
+Robin, probably goes without saying, but please make sure to include ...
 
-I did actually try increasing the range for a 'live' domain in the v1 
-series, but it turned out too messy. First problem is reallocating the 
-memory to hold the rcaches. Second problem is that we need to deal with 
-the issue that all IOVAs in the rcache need to be a pow-of-2, which is 
-difficult to enforce for IOVAs which weren't being cached before, but 
-now would be.
+Fixes: a250c23f15c2 ("iommu: remove DOMAIN_ATTR_DMA_USE_FLUSH_QUEUE")
 
-So now I changed to work similar to how we change the default domain 
-type, i.e. don't operate on a 'live' domain.
+... to your fix in [0], maybe along with another Fixes tag pointing to the original
+commit adding this issue. But certainly a250c23f15c2 would be good given the regression
+was uncovered on that one first, so that Greg et al have a chance to pick this fix up
+for stable kernels.
 
-Thanks,
-John
+Thanks everyone!
+
+   [0] https://lore.kernel.org/bpf/7f048c57-423b-68ba-eede-7e194c1fea4e@arm.com/
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
