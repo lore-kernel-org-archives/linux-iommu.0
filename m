@@ -7,154 +7,152 @@ X-Spam-Status: No, score=-3.5 required=3.0 tests=BAYES_00,DKIM_INVALID,
 	MSGID_FROM_MTA_HEADER,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED autolearn=no
 	autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8BAECC4708F
-	for <iommu@archiver.kernel.org>; Wed,  2 Jun 2021 23:24:02 +0000 (UTC)
-Received: from smtp3.osuosl.org (smtp3.osuosl.org [140.211.166.136])
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 94556C47093
+	for <iommu@archiver.kernel.org>; Wed,  2 Jun 2021 23:27:08 +0000 (UTC)
+Received: from smtp1.osuosl.org (smtp1.osuosl.org [140.211.166.138])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 2733F613E3
-	for <iommu@archiver.kernel.org>; Wed,  2 Jun 2021 23:24:02 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 2733F613E3
+	by mail.kernel.org (Postfix) with ESMTPS id 4EB6D60FD8
+	for <iommu@archiver.kernel.org>; Wed,  2 Jun 2021 23:27:08 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 4EB6D60FD8
 Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=nvidia.com
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by smtp3.osuosl.org (Postfix) with ESMTP id C86F260071;
-	Wed,  2 Jun 2021 23:24:01 +0000 (UTC)
+	by smtp1.osuosl.org (Postfix) with ESMTP id 109C083506;
+	Wed,  2 Jun 2021 23:27:08 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from smtp3.osuosl.org ([127.0.0.1])
-	by localhost (smtp3.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id P0LdsUWjGvrr; Wed,  2 Jun 2021 23:24:01 +0000 (UTC)
-Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by smtp3.osuosl.org (Postfix) with ESMTP id 9A7B860798;
-	Wed,  2 Jun 2021 23:24:00 +0000 (UTC)
+Received: from smtp1.osuosl.org ([127.0.0.1])
+	by localhost (smtp1.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+	with ESMTP id knAkdWI5dkau; Wed,  2 Jun 2021 23:27:07 +0000 (UTC)
+Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [IPv6:2605:bc80:3010:104::8cd3:938])
+	by smtp1.osuosl.org (Postfix) with ESMTP id 176E983218;
+	Wed,  2 Jun 2021 23:27:07 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 70957C000D;
-	Wed,  2 Jun 2021 23:24:00 +0000 (UTC)
-Received: from smtp1.osuosl.org (smtp1.osuosl.org [IPv6:2605:bc80:3010::138])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 36FF8C0001
- for <iommu@lists.linux-foundation.org>; Wed,  2 Jun 2021 23:23:59 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id EFCC4C000D;
+	Wed,  2 Jun 2021 23:27:06 +0000 (UTC)
+Received: from smtp1.osuosl.org (smtp1.osuosl.org [140.211.166.138])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 80756C0001
+ for <iommu@lists.linux-foundation.org>; Wed,  2 Jun 2021 23:27:05 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by smtp1.osuosl.org (Postfix) with ESMTP id 1D49C83D6F
- for <iommu@lists.linux-foundation.org>; Wed,  2 Jun 2021 23:23:59 +0000 (UTC)
+ by smtp1.osuosl.org (Postfix) with ESMTP id 5814483252
+ for <iommu@lists.linux-foundation.org>; Wed,  2 Jun 2021 23:27:05 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Authentication-Results: smtp1.osuosl.org (amavisd-new);
- dkim=pass (2048-bit key) header.d=nvidia.com
 Received: from smtp1.osuosl.org ([127.0.0.1])
  by localhost (smtp1.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id atGUb_AzSpKZ for <iommu@lists.linux-foundation.org>;
- Wed,  2 Jun 2021 23:23:58 +0000 (UTC)
+ with ESMTP id k019hIMDsit3 for <iommu@lists.linux-foundation.org>;
+ Wed,  2 Jun 2021 23:27:04 +0000 (UTC)
 X-Greylist: whitelisted by SQLgrey-1.8.0
-Received: from NAM10-DM6-obe.outbound.protection.outlook.com
- (mail-dm6nam10on2074.outbound.protection.outlook.com [40.107.93.74])
- by smtp1.osuosl.org (Postfix) with ESMTPS id 0156E83D5D
- for <iommu@lists.linux-foundation.org>; Wed,  2 Jun 2021 23:23:57 +0000 (UTC)
+Received: from NAM04-DM6-obe.outbound.protection.outlook.com
+ (mail-dm6nam08on20610.outbound.protection.outlook.com
+ [IPv6:2a01:111:f400:7e8b::610])
+ by smtp1.osuosl.org (Postfix) with ESMTPS id 67BFD83218
+ for <iommu@lists.linux-foundation.org>; Wed,  2 Jun 2021 23:27:04 +0000 (UTC)
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=efAh6Czpc1hFV+/Ej1WqkM8bm9NRmrQ8+mjtLrrpr5QPFylPLn4hvtI9WddsEhwC9ETCTFCZlK5JTr6FDJvZK9aA0+5+h6bOtbNTuW+FDhvDS4UMJWcRo4Jm5b4+6mGT1xH+sj5ZyrMogSlQMh6MUhfPkJhBwZY04F3pPyF5y25I03soo+QLwDjHdfgtMbAPQDHBJceiQVgbkVYku8kszOkR/60v3BFbyuVlCeVJ+u5qUFEZXJ7wj5o3NpyW/Jl3WwS7vSMEw/kuLdh00hCimZTX3FBzSo+5ceV0qjUDHzP61LJtnuF+RSORV1fexbRqvgToGh6NG05D2AmNQRpcYw==
+ b=QKEgSYvXpOi61AsBJqkLSKaaFOLSdkvv01HfrR2b4N4t4H0bSuaoJn47pU5BZCezYoxoqMH5VydY9hFwhZNJeZBWhAEMboBoKtCvF1JFjsmMpg4u3Uyt0X2RstS7MibJjQJNsKgTosK5mpPFLYUyzaPXR4pknZuZYQmbbOp3jm6doyKPf2vVFhxMBVlpVCjy7hpF756wZqArQv8qe3KNbmg+N7FM5DPgzwy91sccsukiHpIUMbi1IrQSbhcqmOm2POM1kkUOUjobNONWH5QtuQyhxabKmW8VELLme+HqohHdC1Ec1KE5czHlin46BM7VYiGRjKJWzujRK/KpNqscog==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com; 
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=vZaDDAdTIzcqX3vYzk3vYCL48Z52p8sQ7SSTU8OvbW4=;
- b=WyPWvJrDavH7vWpEV1XnHrcAXNM4n0yb/CfmHiyenk4gCZxYsDFKkG6OpZlLzQMGi5aKD9ah7EOneaY2u28vs7b03YYwI7Ttu5EDoCcCv+HfuTVNMK++xElgSSluqrOnSHDBr4L7QbFx4U+ubjCYBWqreqHPoZfnICPVsaw9YQ54gOd8X83b7m1iEIiUFu9kTHheYI0zAAbN/w/KHfo8bp7WbblUbHCCXJ5RbHfWP7CmDnjNH/yv6eiwwg0+CiOjee0vgtlRlJFsvdTuDl5U8r8LYULniU+6bwtmu1bz5xOFmnmXR/QlCB3fVxufgwA72DP9YsNAptQr3y6SiS10kw==
+ bh=gZrdkgWbonFUe8/oj+jZZUaM12ytKCO0DBycev9Q0gc=;
+ b=OE1fInDttkV6bOZ3tjbN+FFyCp22BPI6F0SKUhCIPAU18A2dBTzCAz6nD8nRghPRyp/KmgEUnQN3rfzO/ruLTWFBOkPl2MMNzuj95KIJB+TFJRZ/FG7Zy2VbBXZe6v3V3zU2IsFHvMqxbc4Bs9JBFwgf3yNr2CcFyJ3o8AL34y7lQMneMB422OcwQRedAUzWHBx1Dq4Mq1A4vZ6wRXqJoigvQjc330ahhjl+x1GlwyesB0QBe9rU9hz3km0yMyfRCXLhoHoYuVsYT4yHXW1BVbQKHcrx04920fezN4xCudgR3qsTce6bCd8a7KONwtzNWtQKFzkMAgUR9VAi6G/T6w==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
  smtp.mailfrom=nvidia.com; dmarc=pass action=none header.from=nvidia.com;
  dkim=pass header.d=nvidia.com; arc=none
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
  s=selector2;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=vZaDDAdTIzcqX3vYzk3vYCL48Z52p8sQ7SSTU8OvbW4=;
- b=kPmG4fyoTebeLJquVQp1QxPyet5IXHExGqTpaQIWCUzrLAWed3xy0WdOtGdZiT9NYoSC6144Jr/mAoWl5hW1bjaGq1xECYZlTt9w0FCeEEO0AY98iRE6+56FA+11fvI7+O1YRr3k4K6NReViP11TBzEiFqxad5XDZUfXwyAeksvplBROT/ymi+/t/50ELh+KOzS4OqNl+byREENBHuH5ruKMAPOdSS5BMhydrsIQo70rVR6tEzF1hv5l8OFmvUfx6V8t8jQO5cYlHNE5jgjeHgiri+EJs0RHWvq8KfA82XShYIsLKYkqwKEisXKgrISln/7Vpu5eoviryjDnvxUp6Q==
-Authentication-Results: linux.intel.com; dkim=none (message not signed)
- header.d=none; linux.intel.com; dmarc=none action=none header.from=nvidia.com; 
+ bh=gZrdkgWbonFUe8/oj+jZZUaM12ytKCO0DBycev9Q0gc=;
+ b=CR37NUVp0gaqpNCLOWYUZaUfW/9AojzRairE2G0Zh6oLCtn74+WOdn36C9tcpTc3Q9floWLsrQzJAkAoY4MoN2WmV9CkmkSEuiqeWJMtsmWLCDfyDnjCI6NJbX1DmUdn4PH0KeVibV2rUkvXApsXoUmmtdWJcWuH/hYmEp54dk3OmENVcgNqhr7hO6ir5fHPXJfN5Uacu8Mx5ChEfLejEZ2w9AT4TI2T+1kAMw1bOHbXEc8iJiARYtufUGCH8Wk4oTTAY8RVgHSFVU9mfXwbAo1xfneoCpwceNa8M72yEpCfImIsKUgfU/XuLTrV5r2quNvftoagkUipvr3gbhdY9g==
+Authentication-Results: intel.com; dkim=none (message not signed)
+ header.d=none;intel.com; dmarc=none action=none header.from=nvidia.com;
 Received: from BL0PR12MB5506.namprd12.prod.outlook.com (2603:10b6:208:1cb::22)
- by BL0PR12MB5523.namprd12.prod.outlook.com (2603:10b6:208:1ce::18)
+ by BL1PR12MB5304.namprd12.prod.outlook.com (2603:10b6:208:314::13)
  with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4173.21; Wed, 2 Jun
- 2021 23:23:54 +0000
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4173.22; Wed, 2 Jun
+ 2021 23:27:01 +0000
 Received: from BL0PR12MB5506.namprd12.prod.outlook.com
  ([fe80::3d51:a3b9:8611:684e]) by BL0PR12MB5506.namprd12.prod.outlook.com
  ([fe80::3d51:a3b9:8611:684e%6]) with mapi id 15.20.4195.020; Wed, 2 Jun 2021
- 23:23:54 +0000
-Date: Wed, 2 Jun 2021 20:23:52 -0300
+ 23:27:01 +0000
+Date: Wed, 2 Jun 2021 20:27:00 -0300
 From: Jason Gunthorpe <jgg@nvidia.com>
-To: Lu Baolu <baolu.lu@linux.intel.com>
+To: "Tian, Kevin" <kevin.tian@intel.com>
 Subject: Re: [RFC] /dev/ioasid uAPI proposal
-Message-ID: <20210602232352.GL1002214@nvidia.com>
+Message-ID: <20210602232700.GM1002214@nvidia.com>
 References: <MWHPR11MB1886422D4839B372C6AB245F8C239@MWHPR11MB1886.namprd11.prod.outlook.com>
- <20210528233649.GB3816344@nvidia.com>
- <786295f7-b154-cf28-3f4c-434426e897d3@linux.intel.com>
- <20210601172652.GK1002214@nvidia.com>
- <99c765d2-5fd3-002c-7c7a-408a17433068@linux.intel.com>
+ <20210528200311.GP1002214@nvidia.com>
+ <MWHPR11MB188685D57653827B566BF9B38C3E9@MWHPR11MB1886.namprd11.prod.outlook.com>
+ <20210601202834.GR1002214@nvidia.com>
+ <MWHPR11MB1886172080807517E92A8EF68C3D9@MWHPR11MB1886.namprd11.prod.outlook.com>
 Content-Disposition: inline
-In-Reply-To: <99c765d2-5fd3-002c-7c7a-408a17433068@linux.intel.com>
+In-Reply-To: <MWHPR11MB1886172080807517E92A8EF68C3D9@MWHPR11MB1886.namprd11.prod.outlook.com>
 X-Originating-IP: [47.55.113.94]
-X-ClientProxiedBy: MN2PR05CA0044.namprd05.prod.outlook.com
- (2603:10b6:208:236::13) To BL0PR12MB5506.namprd12.prod.outlook.com
+X-ClientProxiedBy: BL0PR02CA0095.namprd02.prod.outlook.com
+ (2603:10b6:208:51::36) To BL0PR12MB5506.namprd12.prod.outlook.com
  (2603:10b6:208:1cb::22)
 MIME-Version: 1.0
 X-MS-Exchange-MessageSentRepresentingType: 1
 Received: from mlx.ziepe.ca (47.55.113.94) by
- MN2PR05CA0044.namprd05.prod.outlook.com (2603:10b6:208:236::13) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4195.9 via Frontend
- Transport; Wed, 2 Jun 2021 23:23:53 +0000
+ BL0PR02CA0095.namprd02.prod.outlook.com (2603:10b6:208:51::36) with Microsoft
+ SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.20.4173.21 via Frontend Transport; Wed, 2 Jun 2021 23:27:01 +0000
 Received: from jgg by mlx with local (Exim 4.94)	(envelope-from
- <jgg@nvidia.com>)	id 1loaDI-000nMR-H0; Wed, 02 Jun 2021 20:23:52 -0300
+ <jgg@nvidia.com>)	id 1loaGK-000nU2-Hc; Wed, 02 Jun 2021 20:27:00 -0300
 X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: 285d7757-0392-4b8b-f760-08d9261d7cc5
-X-MS-TrafficTypeDiagnostic: BL0PR12MB5523:
+X-MS-Office365-Filtering-Correlation-Id: 8b5c0518-58d7-453e-5a8d-08d9261dec7e
+X-MS-TrafficTypeDiagnostic: BL1PR12MB5304:
 X-MS-Exchange-Transport-Forked: True
-X-Microsoft-Antispam-PRVS: <BL0PR12MB5523F974DD0D635F8AEF7192C23D9@BL0PR12MB5523.namprd12.prod.outlook.com>
-X-MS-Oob-TLC-OOBClassifiers: OLM:7219;
+X-Microsoft-Antispam-PRVS: <BL1PR12MB53044CAB1A098B718433038BC23D9@BL1PR12MB5304.namprd12.prod.outlook.com>
+X-MS-Oob-TLC-OOBClassifiers: OLM:3968;
 X-MS-Exchange-SenderADCheck: 1
 X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: irhB/EuFR5yeFeQTPTNUP7HapM+SdLs0QHDqJVpKQPdhbg8mRMxq5ZV6Nps0RtZYNnunJT07W0zzL2MKALqI3YuIszW8m5pPQ5D6B2/HO6dIixx5brqG7r/3iEVYKPaK2O3Ya4pidYcP6DNFwmB0FiJ+mbEdBiuO29/d6krHUXtDjziII3C9Z4H2NRdyjho5ylZMKpy3cKqPva6bvzPIhl/DaJnqkrUjI3mBaMbmR9o2QrzLuTYwK3heYW84qkAv0PolLYmI2NjjNHNcrv3l3wmZJm16fwfMd5VS+QcUnqyaJ8OuKHD4glZ/6A5jCgR/XWWYRVzAc9gd/m0lKhPQjOEOkY5HaryUiRu0Y9eU1w3TNFAPFh7gExEbszW1aa5I4iEQ0p3sFN9YPgHVfcK+R6k/tdtu/2o5Am5C/Zr/vpbf8LntGApfY+m8fj/5aylE45aZ/da6t0QSdTSGrU64T/a5wGZ6b6CI3BE2gkLXy8m06/3UGojuTw7nSwFv9wa7rAItkUPOBjK2UBmhnrDd617+cq2tuwSCzepkGpshDvfR5qejBi2MBg0tlE/IVFRRIBhjylOjHWQoeid/xpRhWp/16H2o2Hk0va91jwloIPOVDa4qG/JHm7xRtzt/pdlflKhbPQAZcFbWsAA6+xFmyw==
+X-Microsoft-Antispam-Message-Info: BU+zRYD9FkNGtHPmrbSKimdwhgH/MiQCyly4PIiEn3M6REBqA4Fw4lkl2k9R8Y+N/DPZuM29GtsdmXvFMWvJgjukFA1aG1i1g/IV2GnzMb/tj5OaJnrzp+EYtpEOO6AHhMJBmR8WQXoxxun1IomkwIDTvGADI7gtSfp4jI1T6kmvZCiFntHhd21I7A367dyrjUIjKi4QdDxbAOfXX6s7YxXJ8TNQE3PXQ5CeWsZcywCtWZKrd/zOkheM+nXTN202T7outfx/jHK4TgPVyMySAr8uT2oFvUIUycmhg5niwlL7oIs2Sett64+TNLgmlW6YB4xeCVqAYj6jpvdvLjjTNFNLgO5jHAygSJJklDJGqvMnLL4JEiuV10iXXI40mHYqTGtZrCd3ziXSR4p5BVIbBSXXo5t3nliEbcgSSU9MwfXSJ4/QF7N5k/8xc9WyjX30EjQgox30fsx/DI0olbVRrFLpB7w3LSn02rctTb6IhNhF8oyjue2nwUJIIWXN7/q1OJRtRIayFayHWpNWoinGNU9iz7epZoJJq5j5iO9t/G2fkR2TzvbUwxNRLpA05PBV5S0AIY1aDAYLRiCM8e0SEEYiihuMwBD4jqp1JQnLoB0=
 X-Forefront-Antispam-Report: CIP:255.255.255.255; CTRY:; LANG:en; SCL:1; SRV:;
  IPV:NLI; SFV:NSPM; H:BL0PR12MB5506.namprd12.prod.outlook.com; PTR:; CAT:NONE;
- SFS:(4636009)(366004)(136003)(346002)(39860400002)(376002)(396003)(2906002)(53546011)(186003)(316002)(426003)(26005)(5660300002)(38100700002)(66556008)(2616005)(6916009)(66476007)(33656002)(66946007)(54906003)(8676002)(8936002)(86362001)(478600001)(83380400001)(36756003)(7416002)(9746002)(4326008)(9786002)(1076003)(21314003);
+ SFS:(4636009)(366004)(136003)(39860400002)(376002)(346002)(396003)(6916009)(9786002)(9746002)(8936002)(186003)(4326008)(1076003)(478600001)(2906002)(54906003)(66476007)(7416002)(66556008)(316002)(86362001)(66946007)(426003)(4744005)(26005)(5660300002)(36756003)(2616005)(8676002)(38100700002)(33656002);
  DIR:OUT; SFP:1101; 
-X-MS-Exchange-AntiSpam-MessageData: =?us-ascii?Q?/WlIVQkj8fVHwy3VWIW2Kw4Zo33nylroz6g5TiaWctLVLek0YeM2SGeSaoc0?=
- =?us-ascii?Q?pAONsZFTQp83aEPMKxab0St2/eIuXL2keqH0crr4fG+NVCXw+XEPlzrswB6H?=
- =?us-ascii?Q?tf610Hua73ysbGcQGxH3cuo4HTzyfsp1p2fime5lY+O+K7EKt3lJqwUDjruA?=
- =?us-ascii?Q?ArZglkKT3RI3HUUwQcvI0+/qcvl6NT+s2ly3R6U6PKfTSESH2aS4AAlMBxVj?=
- =?us-ascii?Q?KsBS0wTWltV9iHx5iBKJuPy+x3XuCAeZ4/V32bazQ6MI3d3yvollwXiYSekQ?=
- =?us-ascii?Q?WYB4vaqqyjxe2aTbV9BrM+U0OF1aqetoyK/cVT7qvTNqOCrRXqV6NmKQae0Z?=
- =?us-ascii?Q?A65itbLsGLYoiDZc1zO/o75APNEM6cKOSFLJY4W9KA2pHCwlRSum7KiJIWSO?=
- =?us-ascii?Q?WT3H3fVNAgM4p7HiQYwmao3Zx9Nq9z/u5qscfEq2entfuPfkFZMc228gOlra?=
- =?us-ascii?Q?7YewaGJN1QPbFwlrg/62Wf6Jemlr2GzOxQOgF+k+0apJr7L3uDDnWc0xrlZf?=
- =?us-ascii?Q?7PjrzwqlG1lK/zk9Tyz29mThLIXyoFGDQy8NxtNN/E6aa18vjNdYVRJuPMzg?=
- =?us-ascii?Q?SBkbaF57gXymT2aSa9YH6VlyuHfcn6ByD8zaU2Ss/lJb4IR/S0B/EkGGMSVB?=
- =?us-ascii?Q?X/v7JzZt2pgp3K9wtkk5cF/va+FuJuLDPGSFMZz5PqFucFHM8p94H5KkKScc?=
- =?us-ascii?Q?hfxJLOfxG1JXn0nqVMRvA+9FAV6BzMshKlONqXeistT+7JnbmQV821pjZKJ/?=
- =?us-ascii?Q?kkRcOw06nYOuZKrhDjVeo36MLPTszZxhuerOUVBMvApRSfqntnWmuteKzttn?=
- =?us-ascii?Q?0bJBBECYvzDAvEsQuxyM5gw+PSIMIStd5AeKuwONAl0h/HqDbMXp7tiW7aPI?=
- =?us-ascii?Q?epNBxGDKaqFx+aemifBiJifF2kwvuCSck9sTr1hFmjTaXGPomZS8QXLyhl0n?=
- =?us-ascii?Q?l7RjVEUmpohzxnmPGYcJ2hix+WnV8ziHE9m2o5CqI99BddrN24OXN0BpnDV2?=
- =?us-ascii?Q?7FrHcxljWgDZc9ubd3mZYSA5MKp3SEjx6xIi3vx1nOwgR6Hefuz2ETlGc+Mm?=
- =?us-ascii?Q?jCHcfBmAr4LW5BRLnKQxfRV8Fd9//vPVo5Rapthxfru0IUtLhoZ+dDDXd9QD?=
- =?us-ascii?Q?cdmq6w2ykSlUh0TQJdFCYmgUKHuWuzIOS+FkwDi2Yzd2tN0wkpDNu/+OtVqx?=
- =?us-ascii?Q?bTcyc8i7Q7oxpF0HUpSTGxIkUPXmjqZaCNBHwmeBNUwksFl4B21HQmq79435?=
- =?us-ascii?Q?mIhaSCrdX8pA0Zg67xiUCwOyCa/ax+1TiocvBKzmXstkCUFAFY0W6uQ80pHs?=
- =?us-ascii?Q?lIlg/4JQ9eFJ1WwubXmCjfGc?=
+X-MS-Exchange-AntiSpam-MessageData: =?us-ascii?Q?/vtsiPMw8z7P9wAKGhALEjONbN/3Xl2uwCbIojOkXzpmml5sKGAxF2jonxmo?=
+ =?us-ascii?Q?V8Cvk7ZhnWbuU3ehnSxFJ19xkTLqZsiIvG7VgMevrqct8v1/hItQKBsbjDfe?=
+ =?us-ascii?Q?G5zCqZ3HOJ64CyIwZyjt8GB9qWhIXNjzpPkgAQNPVKk92bBEn9NiEWeJVjeF?=
+ =?us-ascii?Q?uDqYVNxNg0cYTWjdVIdg3B/fLPyyvsBZXdZU+UdzrNr4ZnGWr+Bj2/rRb3Ko?=
+ =?us-ascii?Q?gVZpdTI+U6/OutpbzK+uMBTCUNLwsbJRmIkqbP6i09uYxRPMik+P7GNcpOGi?=
+ =?us-ascii?Q?Xb3h4qLYyY7Z2lWIzfd1GQBCq04WVQ1mR8Ds9xAZLieW00QkU0qo0cC3Oo61?=
+ =?us-ascii?Q?pAjsofYylzM36kbtRekS582j+dGFIFEzGEAkQgIiD3nb4bRDcm3KHRNFQpi/?=
+ =?us-ascii?Q?ept2HwN6jcwnXtdNJEDRN6+V4KYQt0+EyNcShdEKIhLrnOCKOuAHz8cVWOMr?=
+ =?us-ascii?Q?lwvUwWpqwULDwT3V55/oO/D54u8uHKgW0dQ/hG7dbIiU6TeYFadx+hb/k61e?=
+ =?us-ascii?Q?WSa/mpl0rD7RmJoan2WU4WyoqjGflvZzXU351NHxKd2qLH2Hwk5/pf/0KyQN?=
+ =?us-ascii?Q?6ZwW4CzQF34H7rXFomLMhwELmzZbhsm8onn/2AzixCAtTo1JiiiBYrcRnrXI?=
+ =?us-ascii?Q?ZV0OSJmY1EhLNugoZcHWuXi1LW2MJ5rcSlp8sfHK4tncDVXcDZL37l7FU9qb?=
+ =?us-ascii?Q?xwgiylVybznwAUa8Re9gnO5TVvY4tqsTN6zEM72pkFeVFzq6x2nOjJ5XTaCP?=
+ =?us-ascii?Q?aflboy2lpMNBZSutk7TW0loHG4eoi/WNVwK0i7FUWoKOxG3uGRIPjq+V8bSK?=
+ =?us-ascii?Q?foDMy1W4fk7MYpsfk5H/Ij/L6lNzYfwDPhMw9u+fboRyt6mb53tYLS4jrYoI?=
+ =?us-ascii?Q?aMkPZ8YGsSfb8kF3+lG+wF6MC+bldMhq1GthJF8wu7jWuvKv0Q815KzNzeh0?=
+ =?us-ascii?Q?9dbDMHipQgE0HW5D3dSB5nQw5eClxl0Z5fr+XHxqGaQVbO8ylrg+IW99ZWak?=
+ =?us-ascii?Q?p8WGeCB2ci7lxW8/N2gY2NbS24wj688MjGoXIloYHO6LOrS4hkS6G/hIX6WB?=
+ =?us-ascii?Q?sDK5k05EZcsosxsIOoqn17P81ekoKLUhPVq5j7A0PgqpSFhkPcrrX0C+RzNT?=
+ =?us-ascii?Q?62tBW2ShRM7v29warqWOAIFAk76pzOXFaGN6ZlijCpbuF8PeDKOw/4GrT+V0?=
+ =?us-ascii?Q?v3/m3DGzj1nD2zlc+4WGy6e5gIeWQyYq/Y5jhRP6A4Max9RH1+0Jn3NuQt5+?=
+ =?us-ascii?Q?1+/n619HuKFMhBz84xSUKdZv2bEOWB9xErllXB7fN+Y+hqIiZABz68wuDlwW?=
+ =?us-ascii?Q?x2DAokWsgf3qttqNjK3BIc9E?=
 X-OriginatorOrg: Nvidia.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 285d7757-0392-4b8b-f760-08d9261d7cc5
+X-MS-Exchange-CrossTenant-Network-Message-Id: 8b5c0518-58d7-453e-5a8d-08d9261dec7e
 X-MS-Exchange-CrossTenant-AuthSource: BL0PR12MB5506.namprd12.prod.outlook.com
 X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 02 Jun 2021 23:23:54.0952 (UTC)
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 02 Jun 2021 23:27:01.5138 (UTC)
 X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
 X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
 X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: dDt/LmJf8p5SUBDqsu6j+oodrYpsD/LSd2jhvxVPYstiX86d9Ya0yepSR8cjpOD6
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: BL0PR12MB5523
-Cc: Jean-Philippe Brucker <jean-philippe@linaro.org>, "Tian,
- Kevin" <kevin.tian@intel.com>,
- "Alex Williamson \(alex.williamson@redhat.com\)" <alex.williamson@redhat.com>,
- "Raj, Ashok" <ashok.raj@intel.com>,
+X-MS-Exchange-CrossTenant-UserPrincipalName: P60kZnQMNKds2LGRYCQmsz8iS26mIQ+fZAPmGRDf12JIFxjNPTUBIhRDkJsojO6m
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: BL1PR12MB5304
+Cc: Jean-Philippe Brucker <jean-philippe@linaro.org>,
+ "Alex Williamson \(alex.williamson@redhat.com\)"
+ <alex.williamson@redhat.com>, "Raj, Ashok" <ashok.raj@intel.com>,
  "kvm@vger.kernel.org" <kvm@vger.kernel.org>, Jonathan Corbet <corbet@lwn.net>,
  Robin Murphy <robin.murphy@arm.com>, LKML <linux-kernel@vger.kernel.org>,
  Kirti Wankhede <kwankhede@nvidia.com>,
- "iommu@lists.linux-foundation.org" <iommu@lists.linux-foundation.org>, "Jiang,
- Dave" <dave.jiang@intel.com>, David Gibson <david@gibson.dropbear.id.au>,
- David Woodhouse <dwmw2@infradead.org>, Jason Wang <jasowang@redhat.com>
+ "iommu@lists.linux-foundation.org" <iommu@lists.linux-foundation.org>,
+ David Gibson <david@gibson.dropbear.id.au>, "Jiang,
+ Dave" <dave.jiang@intel.com>, David Woodhouse <dwmw2@infradead.org>,
+ Jason Wang <jasowang@redhat.com>
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -172,66 +170,16 @@ Content-Transfer-Encoding: 7bit
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-On Wed, Jun 02, 2021 at 12:01:57PM +0800, Lu Baolu wrote:
-> On 6/2/21 1:26 AM, Jason Gunthorpe wrote:
-> > On Tue, Jun 01, 2021 at 07:09:21PM +0800, Lu Baolu wrote:
-> > 
-> > > This version only covers 1) and 4). Do you think we need to support 2),
-> > > 3) and beyond?
-> > 
-> > Yes aboslutely. The API should be flexable enough to specify the
-> > creation of all future page table formats we'd want to have and all HW
-> > specific details on those formats.
-> 
-> OK, stay in the same line.
-> 
-> > > If so, it seems that we need some in-kernel helpers and uAPIs to
-> > > support pre-installing a page table to IOASID.
-> > 
-> > Not sure what this means..
-> 
-> Sorry that I didn't make this clear.
-> 
-> Let me bring back the page table types in my eyes.
-> 
->  1) IOMMU format page table (a.k.a. iommu_domain)
->  2) user application CPU page table (SVA for example)
->  3) KVM EPT (future option)
->  4) VM guest managed page table (nesting mode)
-> 
-> Each type of page table should be able to be associated with its IOASID.
-> We have BIND protocol for 4); We explicitly allocate an iommu_domain for
-> 1). But we don't have a clear definition for 2) 3) and others. I think
-> it's necessary to clearly define a time point and kAPI name between
-> IOASID_ALLOC and IOASID_ATTACH, so that other modules have the
-> opportunity to associate their page table with the allocated IOASID
-> before attaching the page table to the real IOMMU hardware.
+On Wed, Jun 02, 2021 at 01:25:00AM +0000, Tian, Kevin wrote:
 
-In my mind these are all actions of creation..
+> OK, this implies that if one user inadvertently creates intended parent/
+> child via different fd's then the operation will simply fail.
 
-#1 is ALLOC_IOASID 'to be compatible with thes devices attached to
-   this FD'
-#2 is ALLOC_IOASID_SVA
-#3 is some ALLOC_IOASID_KVM (and maybe the kvm fd has to issue this ioctl)
-#4 is ALLOC_IOASID_USER_PAGE_TABLE w/ user VA address or
-      ALLOC_IOASID_NESTED_PAGE_TABLE w/ IOVA address
+Remember the number space to refer to the ioasid's inside the FD is
+local to that instance of the FD. Each FD should have its own xarray
 
-Each allocation should have a set of operations that are allows
-map/unmap is only legal on #1. invalidate is only legal on #4, etc.
-
-How you want to split this up in the ioctl interface is a more
-interesting question. I generally like more calls than giant unwieldly
-multiplexer structs, but some things are naturally flags and optional
-modifications of a single ioctl.
-
-In any event they should have a similar naming 'ALLOC_IOASID_XXX' and
-then a single 'DESTROY_IOASID' that works on all of them.
-
-> I/O page fault handling is similar. The provider of the page table
-> should take the responsibility to handle the possible page faults.
-
-For the faultable types, yes #3 and #4 should hook in the fault
-handler and deal with it.
+You can't actually accidently refer to an IOASID in FD A from FD B
+because the xarray lookup in FD B will not return 'IOASID A'.
 
 Jason
 _______________________________________________
