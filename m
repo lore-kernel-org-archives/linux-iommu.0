@@ -6,66 +6,64 @@ X-Spam-Status: No, score=-3.5 required=3.0 tests=BAYES_00,DKIM_INVALID,
 	DKIM_SIGNED,HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,SPF_HELO_NONE,
 	SPF_PASS,URIBL_BLOCKED autolearn=no autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6A14DC47083
-	for <iommu@archiver.kernel.org>; Wed,  2 Jun 2021 07:29:29 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 99C8CC47093
+	for <iommu@archiver.kernel.org>; Wed,  2 Jun 2021 07:29:30 +0000 (UTC)
 Received: from smtp3.osuosl.org (smtp3.osuosl.org [140.211.166.136])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 18E0E6138C
-	for <iommu@archiver.kernel.org>; Wed,  2 Jun 2021 07:29:29 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 18E0E6138C
+	by mail.kernel.org (Postfix) with ESMTPS id 57E7A611CA
+	for <iommu@archiver.kernel.org>; Wed,  2 Jun 2021 07:29:30 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 57E7A611CA
 Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=gibson.dropbear.id.au
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by smtp3.osuosl.org (Postfix) with ESMTP id D689160A9A;
-	Wed,  2 Jun 2021 07:29:28 +0000 (UTC)
+	by smtp3.osuosl.org (Postfix) with ESMTP id 4D51060891;
+	Wed,  2 Jun 2021 07:29:29 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
 Received: from smtp3.osuosl.org ([127.0.0.1])
 	by localhost (smtp3.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id 5UPawj2vJoW4; Wed,  2 Jun 2021 07:29:25 +0000 (UTC)
+	with ESMTP id ZlFWvy0I8OJu; Wed,  2 Jun 2021 07:29:25 +0000 (UTC)
 Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [IPv6:2605:bc80:3010:104::8cd3:938])
-	by smtp3.osuosl.org (Postfix) with ESMTP id A11E8606AF;
-	Wed,  2 Jun 2021 07:29:24 +0000 (UTC)
+	by smtp3.osuosl.org (Postfix) with ESMTP id 315F4608A6;
+	Wed,  2 Jun 2021 07:29:25 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 7B1EFC000D;
+	by lists.linuxfoundation.org (Postfix) with ESMTP id ACDA2C0025;
 	Wed,  2 Jun 2021 07:29:24 +0000 (UTC)
-Received: from smtp2.osuosl.org (smtp2.osuosl.org [IPv6:2605:bc80:3010::133])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 24160C0001
+Received: from smtp1.osuosl.org (smtp1.osuosl.org [IPv6:2605:bc80:3010::138])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id D81B1C0001
  for <iommu@lists.linux-foundation.org>; Wed,  2 Jun 2021 07:29:23 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by smtp2.osuosl.org (Postfix) with ESMTP id 204BC40249
+ by smtp1.osuosl.org (Postfix) with ESMTP id C76D682532
  for <iommu@lists.linux-foundation.org>; Wed,  2 Jun 2021 07:29:23 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Authentication-Results: smtp2.osuosl.org (amavisd-new);
+Authentication-Results: smtp1.osuosl.org (amavisd-new);
  dkim=pass (1024-bit key) header.d=gibson.dropbear.id.au
-Received: from smtp2.osuosl.org ([127.0.0.1])
- by localhost (smtp2.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id qOlHe2j1AOq0 for <iommu@lists.linux-foundation.org>;
+Received: from smtp1.osuosl.org ([127.0.0.1])
+ by localhost (smtp1.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+ with ESMTP id O60nK_4ylHpt for <iommu@lists.linux-foundation.org>;
  Wed,  2 Jun 2021 07:29:19 +0000 (UTC)
 X-Greylist: domain auto-whitelisted by SQLgrey-1.8.0
 Received: from ozlabs.org (ozlabs.org [203.11.71.1])
- by smtp2.osuosl.org (Postfix) with ESMTPS id D0BFB400BA
+ by smtp1.osuosl.org (Postfix) with ESMTPS id F0D74836E1
  for <iommu@lists.linux-foundation.org>; Wed,  2 Jun 2021 07:29:18 +0000 (UTC)
 Received: by ozlabs.org (Postfix, from userid 1007)
- id 4Fw0yh3X6mz9sVb; Wed,  2 Jun 2021 17:29:16 +1000 (AEST)
+ id 4Fw0yh4N0nz9sW4; Wed,  2 Jun 2021 17:29:16 +1000 (AEST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
  d=gibson.dropbear.id.au; s=201602; t=1622618956;
- bh=fjBj8PRTLF5KDwaLcn9aAOU++MBjXNfeiCyAkMaW3Ag=;
+ bh=uGza2ambRaw52uUD6+0AHLe+nMsKVTQGJ2WrG5YyBgM=;
  h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
- b=Z6CS9wi3Osfai3DhrzeU4984e1Da0ZUcR5rLzfNFxtCeqynzeaTIhFbh/7QEZGAS8
- t3kHkF+5OYj581MKnYDWSbt+aqlk7j1IOHj/33PliumMl3R0PZ86z+woiS98olm5W/
- mMZL0mIj0lBLdHgsWroftN+GVi0Pf6DrOd4A2iJE=
-Date: Wed, 2 Jun 2021 16:57:52 +1000
+ b=Tjx74IuRulizpaNftVChf7BNNeGl+1EoQNhIlUofWpJQxeibH3wdkpHdG2F9SnY3M
+ /+XTbp+kE+ukN9tHYbjk6ddIPAas4n4QjEsZOYxVxc7/4EeaRuhvn2Mb03GDarZYdi
+ vRQ/ZSkrrqyNesAQVv650ekDxOUzfDCcA7V0Fxwg=
+Date: Wed, 2 Jun 2021 17:22:13 +1000
 From: David Gibson <david@gibson.dropbear.id.au>
 To: Jason Gunthorpe <jgg@nvidia.com>
 Subject: Re: [RFC] /dev/ioasid uAPI proposal
-Message-ID: <YLcr8B7EPDCejlWZ@yekko>
+Message-ID: <YLcxpYDkT1h7hIbQ@yekko>
 References: <MWHPR11MB1886422D4839B372C6AB245F8C239@MWHPR11MB1886.namprd11.prod.outlook.com>
- <20210528195839.GO1002214@nvidia.com>
- <MWHPR11MB1886A17F36CF744857C531148C3E9@MWHPR11MB1886.namprd11.prod.outlook.com>
- <20210601175643.GQ1002214@nvidia.com>
+ <20210528233649.GB3816344@nvidia.com>
 MIME-Version: 1.0
-In-Reply-To: <20210601175643.GQ1002214@nvidia.com>
+In-Reply-To: <20210528233649.GB3816344@nvidia.com>
 Cc: Jean-Philippe Brucker <jean-philippe@linaro.org>, "Tian,
  Kevin" <kevin.tian@intel.com>,
  "Alex Williamson \(alex.williamson@redhat.com\)" <alex.williamson@redhat.com>,
@@ -88,118 +86,190 @@ List-Post: <mailto:iommu@lists.linux-foundation.org>
 List-Help: <mailto:iommu-request@lists.linux-foundation.org?subject=help>
 List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
  <mailto:iommu-request@lists.linux-foundation.org?subject=subscribe>
-Content-Type: multipart/mixed; boundary="===============5995879399166846936=="
+Content-Type: multipart/mixed; boundary="===============7325152437516531267=="
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
 
---===============5995879399166846936==
+--===============7325152437516531267==
 Content-Type: multipart/signed; micalg=pgp-sha256;
-	protocol="application/pgp-signature"; boundary="fYHZ/urV5RbW7aYp"
+	protocol="application/pgp-signature"; boundary="j/FYRtVn/XN5nkYp"
 Content-Disposition: inline
 
 
---fYHZ/urV5RbW7aYp
+--j/FYRtVn/XN5nkYp
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
 Content-Transfer-Encoding: quoted-printable
 
-On Tue, Jun 01, 2021 at 02:56:43PM -0300, Jason Gunthorpe wrote:
-> On Tue, Jun 01, 2021 at 08:38:00AM +0000, Tian, Kevin wrote:
-> > > From: Jason Gunthorpe <jgg@nvidia.com>
-> > > Sent: Saturday, May 29, 2021 3:59 AM
-> > >=20
-> > > On Thu, May 27, 2021 at 07:58:12AM +0000, Tian, Kevin wrote:
-> > > >
-> > > > 5. Use Cases and Flows
-> > > >
-> > > > Here assume VFIO will support a new model where every bound device
-> > > > is explicitly listed under /dev/vfio thus a device fd can be acquir=
-ed w/o
-> > > > going through legacy container/group interface. For illustration pu=
-rpose
-> > > > those devices are just called dev[1...N]:
-> > > >
-> > > > 	device_fd[1...N] =3D open("/dev/vfio/devices/dev[1...N]", mode);
-> > > >
-> > > > As explained earlier, one IOASID fd is sufficient for all intended =
-use cases:
-> > > >
-> > > > 	ioasid_fd =3D open("/dev/ioasid", mode);
-> > > >
-> > > > For simplicity below examples are all made for the virtualization s=
-tory.
-> > > > They are representative and could be easily adapted to a non-virtua=
-lization
-> > > > scenario.
-> > >=20
-> > > For others, I don't think this is *strictly* necessary, we can
-> > > probably still get to the device_fd using the group_fd and fit in
-> > > /dev/ioasid. It does make the rest of this more readable though.
+On Fri, May 28, 2021 at 08:36:49PM -0300, Jason Gunthorpe wrote:
+> On Thu, May 27, 2021 at 07:58:12AM +0000, Tian, Kevin wrote:
+>=20
+> > 2.1. /dev/ioasid uAPI
+> > +++++++++++++++++
 > >=20
-> > Jason, want to confirm here. Per earlier discussion we remain an
-> > impression that you want VFIO to be a pure device driver thus
-> > container/group are used only for legacy application.
+> > /*
+> >   * Check whether an uAPI extension is supported.=20
+> >   *
+> >   * This is for FD-level capabilities, such as locked page pre-registra=
+tion.=20
+> >   * IOASID-level capabilities are reported through IOASID_GET_INFO.
+> >   *
+> >   * Return: 0 if not supported, 1 if supported.
+> >   */
+> > #define IOASID_CHECK_EXTENSION	_IO(IOASID_TYPE, IOASID_BASE + 0)
 >=20
-> Let me call this a "nice wish".
+> =20
+> > /*
+> >   * Register user space memory where DMA is allowed.
+> >   *
+> >   * It pins user pages and does the locked memory accounting so sub-
+> >   * sequent IOASID_MAP/UNMAP_DMA calls get faster.
+> >   *
+> >   * When this ioctl is not used, one user page might be accounted
+> >   * multiple times when it is mapped by multiple IOASIDs which are
+> >   * not nested together.
+> >   *
+> >   * Input parameters:
+> >   *	- vaddr;
+> >   *	- size;
+> >   *
+> >   * Return: 0 on success, -errno on failure.
+> >   */
+> > #define IOASID_REGISTER_MEMORY	_IO(IOASID_TYPE, IOASID_BASE + 1)
+> > #define IOASID_UNREGISTER_MEMORY	_IO(IOASID_TYPE, IOASID_BASE + 2)
 >=20
-> If you get to a point where you hard need this, then identify the hard
-> requirement and let's do it, but I wouldn't bloat this already large
-> project unnecessarily.
+> So VA ranges are pinned and stored in a tree and later references to
+> those VA ranges by any other IOASID use the pin cached in the tree?
 >=20
-> Similarly I wouldn't depend on the group fd existing in this design
-> so it could be changed later.
+> It seems reasonable and is similar to the ioasid parent/child I
+> suggested for PPC.
+>=20
+> IMHO this should be merged with the all SW IOASID that is required for
+> today's mdev drivers. If this can be done while keeping this uAPI then
+> great, otherwise I don't think it is so bad to weakly nest a physical
+> IOASID under a SW one just to optimize page pinning.
 
-I don't think presence or absence of a group fd makes a lot of
-difference to this design.  Having a group fd just means we attach
-groups to the ioasid instead of individual devices, and we no longer
-need the bookkeeping of "partial" devices.
+Right, I think we can simplify the interface by modelling the
+preregistration as a nesting layer.  Well, mostly.. the wrinkle is
+that generally you can't do anything with an ioasid until you've
+attached devices to it, but that doesn't really make sense for the
+prereg layer.  I expect we can find some way to deal with that,
+though.
 
-> > From this comment are you suggesting that VFIO can still keep
-> > container/ group concepts and user just deprecates the use of vfio
-> > iommu uAPI (e.g. VFIO_SET_IOMMU) by using /dev/ioasid (which has a
-> > simple policy that an IOASID will reject cmd if partially-attached
-> > group exists)?
->=20
-> I would say no on the container. /dev/ioasid =3D=3D the container, having
-> two competing objects at once in a single process is just a mess.
+Actually... to simplify that "weak nesting" concept I wonder if we
+want to expand to 3 ways of specifying the pagetables for the ioasid:
+  1) kernel managed (MAP/UNMAP)
+  2) user managed (BIND/INVALIDATE)
+  3) pass-though (IOVA=3D=3Dparent address)
 
-Right.  I'd assume that for compatibility, creating a container would
-create a single IOASID under the hood with a compatiblity layer
-translating the container operations to iosaid operations.
+Obviously pass-through wouldn't be allowed in all circumstances.
 
-> If the group fd can be kept requires charting a path through the
-> ioctls where the container is not used and /dev/ioasid is sub'd in
-> using the same device FD specific IOCTLs you show here.
+> Either way this seems like a smart direction
+>=20
+> > /*
+> >   * Allocate an IOASID.=20
+> >   *
+> >   * IOASID is the FD-local software handle representing an I/O address=
+=20
+> >   * space. Each IOASID is associated with a single I/O page table. User=
+=20
+> >   * must call this ioctl to get an IOASID for every I/O address space t=
+hat is
+> >   * intended to be enabled in the IOMMU.
+> >   *
+> >   * A newly-created IOASID doesn't accept any command before it is=20
+> >   * attached to a device. Once attached, an empty I/O page table is=20
+> >   * bound with the IOMMU then the user could use either DMA mapping=20
+> >   * or pgtable binding commands to manage this I/O page table.
+>=20
+> Can the IOASID can be populated before being attached?
 
-Again, I don't think it makes much difference.  The model doesn't
-really change even if you allow both ATTACH_GROUP and ATTACH_DEVICE on
-the IOASID.  Basically ATTACH_GROUP would just be equivalent to
-attaching all the constituent devices.
+I don't think it reasonably can.  Until attached, you don't actually
+know what hardware IOMMU will be backing it, and therefore you don't
+know it's capabilities.  You can't really allow mappings if you don't
+even know allowed IOVA ranges and page size.
 
-> I didn't try to chart this out carefully.
+> >   * Device attachment is initiated through device driver uAPI (e.g. VFI=
+O)
+> >   *
+> >   * Return: allocated ioasid on success, -errno on failure.
+> >   */
+> > #define IOASID_ALLOC	_IO(IOASID_TYPE, IOASID_BASE + 3)
+> > #define IOASID_FREE	_IO(IOASID_TYPE, IOASID_BASE + 4)
 >=20
-> Also, ultimately, something need to be done about compatability with
-> the vfio container fd. It looks clear enough to me that the the VFIO
-> container FD is just a single IOASID using a special ioctl interface
-> so it would be quite rasonable to harmonize these somehow.
+> I assume alloc will include quite a big structure to satisfy the
+> various vendor needs?
 >=20
-> But that is too complicated and far out for me at least to guess on at
-> this point..
+> > /*
+> >   * Get information about an I/O address space
+> >   *
+> >   * Supported capabilities:
+> >   *	- VFIO type1 map/unmap;
+> >   *	- pgtable/pasid_table binding
+> >   *	- hardware nesting vs. software nesting;
+> >   *	- ...
+> >   *
+> >   * Related attributes:
+> >   * 	- supported page sizes, reserved IOVA ranges (DMA mapping);
+> >   *	- vendor pgtable formats (pgtable binding);
+> >   *	- number of child IOASIDs (nesting);
+> >   *	- ...
+> >   *
+> >   * Above information is available only after one or more devices are
+> >   * attached to the specified IOASID. Otherwise the IOASID is just a
+> >   * number w/o any capability or attribute.
 >=20
-> > > Still a little unsure why the vPASID is here not on the gva_ioasid. Is
-> > > there any scenario where we want different vpasid's for the same
-> > > IOASID? I guess it is OK like this. Hum.
-> >=20
-> > Yes, it's completely sane that the guest links a I/O page table to=20
-> > different vpasids on dev1 and dev2. The IOMMU doesn't mandate
-> > that when multiple devices share an I/O page table they must use
-> > the same PASID#.=20
+> This feels wrong to learn most of these attributes of the IOASID after
+> attaching to a device.
+
+Yes... but as above, we have no idea what the IOMMU's capabilities are
+until devices are attached.
+
+> The user should have some idea how it intends to use the IOASID when
+> it creates it and the rest of the system should match the intention.
 >=20
-> Ok..
+> For instance if the user is creating a IOASID to cover the guest GPA
+> with the intention of making children it should indicate this during
+> alloc.
 >=20
-> Jason
+> If the user is intending to point a child IOASID to a guest page table
+> in a certain descriptor format then it should indicate it during
+> alloc.
 >=20
+> device bind should fail if the device somehow isn't compatible with
+> the scheme the user is tring to use.
+
+[snip]
+> > 2.2. /dev/vfio uAPI
+> > ++++++++++++++++
+>=20
+> To be clear you mean the 'struct vfio_device' API, these are not
+> IOCTLs on the container or group?
+>=20
+> > /*
+> >    * Bind a vfio_device to the specified IOASID fd
+> >    *
+> >    * Multiple vfio devices can be bound to a single ioasid_fd, but a si=
+ngle
+> >    * vfio device should not be bound to multiple ioasid_fd's.
+> >    *
+> >    * Input parameters:
+> >    *  - ioasid_fd;
+> >    *
+> >    * Return: 0 on success, -errno on failure.
+> >    */
+> > #define VFIO_BIND_IOASID_FD           _IO(VFIO_TYPE, VFIO_BASE + 22)
+> > #define VFIO_UNBIND_IOASID_FD _IO(VFIO_TYPE, VFIO_BASE + 23)
+>=20
+> This is where it would make sense to have an output "device id" that
+> allows /dev/ioasid to refer to this "device" by number in events and
+> other related things.
+
+The group number could be used for that, even if there are no group
+fds.  You generally can't identify things more narrowly than group
+anyway.
+
 
 --=20
 David Gibson			| I'll have my music baroque, and my code
@@ -207,29 +277,29 @@ david AT gibson.dropbear.id.au	| minimalist, thank you.  NOT _the_ _other_
 				| _way_ _around_!
 http://www.ozlabs.org/~dgibson
 
---fYHZ/urV5RbW7aYp
+--j/FYRtVn/XN5nkYp
 Content-Type: application/pgp-signature; name="signature.asc"
 
 -----BEGIN PGP SIGNATURE-----
 
-iQIzBAEBCAAdFiEEdfRlhq5hpmzETofcbDjKyiDZs5IFAmC3K/AACgkQbDjKyiDZ
-s5L/aRAAl5MdgT6Qfp8L0FSuJM4hyAWp5EatxJgBSzaVAbqXESHHMUXl8AN/nsDW
-KsgexDRZXSFelArNl5MN0dbxk1gjFZUQHea+cVb89ym9hEF+WKW+COb1wOBCl3A1
-aHM3sXc3A9TCbfFLUysEJ+yHyDisNhvt7qwxw3qLnrqgHTZvTFIpQVCzD+XoB0mp
-e6aQC9uN99cCf1+ZGCHaVHbx1Ym4NtJEPxetSWe/k5dVKi89lmtujlW1pWt58AL/
-sN8pzcMMlaXIw5ImB23JB9ohNCm5F0lfyuXgxeK5/Cc88D/2d+E1Q7r68lj2aVIr
-+bInhy44ZzB+fBK/dDzpD0WdoxXHsZXhAch2bWwK61ovSfoWBqzTAHOJZOFb+rRn
-Yt69xgJNUVNe1ll4ksrlmQdUNB7CsZJIr+csmGRhByrW+84JMlBvTlZNDXzfB3z4
-S2mtVZU7QwVX3zNzyfvLaZKl5vRlWvf7YiuUaN0c9WtnZgKOhLrLpiM0rI6LJNEn
-V2gkaEOQJhpEVXLym4EX3vRgU08bF2gsvSSAL4gDqwrDtv/MUGCWLokbeiOZ0kte
-Ewi4+bNTmi9JwGUhhMriTbkFOccil5OTDQwRCx6YR1++2Rtf0G+R90pzQXNudled
-S89lwkKtFtdxQ+jhTbbAOvMfyrHi8Fp2FXQs5yubhwFYHIXVuHU=
-=hCaa
+iQIzBAEBCAAdFiEEdfRlhq5hpmzETofcbDjKyiDZs5IFAmC3MZ8ACgkQbDjKyiDZ
+s5Lp5hAAruXb3NLVtuLjvyAaqaKjXI0hJf+T5aYV2GsPEuBFfL3eejzD0+HE4dI8
+Ww0npi2zKzGpAmFoPvMvfpYsANsnmLH5MdHs2DJ9WxFPGvSF67gZLc44rx1XBc2T
+7IboRgMjF5kcKo0HFI+M7pkuvkwMEkkzZzMj7LQtSGOdyFewTJO24aSQZPwTv+JR
+/+MXWXQqI1zkfOIVm8kCHqtAcz5Z6IlXJ1JYeRxLBZou8j1JJqkq1Xt/pEXhI1oZ
+uIuoQxBwBOEoqBtnlmvUWPYfZ8MI0LnJdMWvBAkqFwzMMgkzfqxM4+hV8OfVBRyh
+R6ZIVtEyNT5EuoTVLz8HEPUMgdMNgu9xObrZBRXJpzv/+lV010P44354bz3VxEvi
+sgwjcCNYH8ZXNq3LuJOs1ApKoSwrE+FDNxJe5RmHVNp0ORzRqVeZ33JZS+sSk/CI
+aem0ComVy47umR3JTjjiq+mBhQDISCIh7efu4tYLZsLbE3zKeHEfq7s87v8yYVcG
+tcUzKYNMUONch/X+ChfbmubBr4aVxpgZ1BU3UzfTmQUWybljRVTdMA5qOsBewNIY
+g9AMwr4/JWlA74pERIu+EDqPLAXt4DRHf7kmiG/uKTlZenCopwn3QGs40W+dAF7Y
+82Etp785d9v9Yg8v5JMKc4nNcY4MK2ilEd0QVB+sK3kX3Zea6CM=
+=TTLB
 -----END PGP SIGNATURE-----
 
---fYHZ/urV5RbW7aYp--
+--j/FYRtVn/XN5nkYp--
 
---===============5995879399166846936==
+--===============7325152437516531267==
 Content-Type: text/plain; charset="us-ascii"
 MIME-Version: 1.0
 Content-Transfer-Encoding: 7bit
@@ -239,4 +309,4 @@ _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
 https://lists.linuxfoundation.org/mailman/listinfo/iommu
---===============5995879399166846936==--
+--===============7325152437516531267==--
