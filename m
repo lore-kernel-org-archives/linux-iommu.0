@@ -6,111 +6,107 @@ X-Spam-Status: No, score=-3.5 required=3.0 tests=BAYES_00,DKIM_INVALID,
 	DKIM_SIGNED,HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,SPF_HELO_NONE,
 	SPF_PASS,URIBL_BLOCKED autolearn=no autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1F091C4708F
-	for <iommu@archiver.kernel.org>; Wed,  2 Jun 2021 01:25:17 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3360DC47093
+	for <iommu@archiver.kernel.org>; Wed,  2 Jun 2021 01:33:32 +0000 (UTC)
 Received: from smtp4.osuosl.org (smtp4.osuosl.org [140.211.166.137])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id A2278613D0
-	for <iommu@archiver.kernel.org>; Wed,  2 Jun 2021 01:25:16 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org A2278613D0
+	by mail.kernel.org (Postfix) with ESMTPS id BF01B613CD
+	for <iommu@archiver.kernel.org>; Wed,  2 Jun 2021 01:33:31 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org BF01B613CD
 Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=intel.com
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by smtp4.osuosl.org (Postfix) with ESMTP id 6191640324;
-	Wed,  2 Jun 2021 01:25:16 +0000 (UTC)
+	by smtp4.osuosl.org (Postfix) with ESMTP id 831704030B;
+	Wed,  2 Jun 2021 01:33:31 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
 Received: from smtp4.osuosl.org ([127.0.0.1])
 	by localhost (smtp4.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id N-EALahoY7BK; Wed,  2 Jun 2021 01:25:15 +0000 (UTC)
-Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [IPv6:2605:bc80:3010:104::8cd3:938])
-	by smtp4.osuosl.org (Postfix) with ESMTP id BB5E6402FE;
-	Wed,  2 Jun 2021 01:25:14 +0000 (UTC)
+	with ESMTP id KvjNQp8GIJk7; Wed,  2 Jun 2021 01:33:30 +0000 (UTC)
+Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
+	by smtp4.osuosl.org (Postfix) with ESMTP id 24FE340338;
+	Wed,  2 Jun 2021 01:33:29 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 95EBEC000E;
-	Wed,  2 Jun 2021 01:25:14 +0000 (UTC)
-Received: from smtp2.osuosl.org (smtp2.osuosl.org [IPv6:2605:bc80:3010::133])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 24432C0001
- for <iommu@lists.linux-foundation.org>; Wed,  2 Jun 2021 01:25:14 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id A2BFBC000E;
+	Wed,  2 Jun 2021 01:33:29 +0000 (UTC)
+Received: from smtp1.osuosl.org (smtp1.osuosl.org [140.211.166.138])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id DE494C0001
+ for <iommu@lists.linux-foundation.org>; Wed,  2 Jun 2021 01:33:28 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by smtp2.osuosl.org (Postfix) with ESMTP id 1803840209
- for <iommu@lists.linux-foundation.org>; Wed,  2 Jun 2021 01:25:14 +0000 (UTC)
+ by smtp1.osuosl.org (Postfix) with ESMTP id C39F183A54
+ for <iommu@lists.linux-foundation.org>; Wed,  2 Jun 2021 01:33:28 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Authentication-Results: smtp2.osuosl.org (amavisd-new);
+Authentication-Results: smtp1.osuosl.org (amavisd-new);
  dkim=pass (1024-bit key) header.d=intel.onmicrosoft.com
-Received: from smtp2.osuosl.org ([127.0.0.1])
- by localhost (smtp2.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id Tt4BRaasUSKW for <iommu@lists.linux-foundation.org>;
- Wed,  2 Jun 2021 01:25:12 +0000 (UTC)
+Received: from smtp1.osuosl.org ([127.0.0.1])
+ by localhost (smtp1.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+ with ESMTP id RJ-e3Labe0E4 for <iommu@lists.linux-foundation.org>;
+ Wed,  2 Jun 2021 01:33:28 +0000 (UTC)
 X-Greylist: domain auto-whitelisted by SQLgrey-1.8.0
-Received: from mga18.intel.com (mga18.intel.com [134.134.136.126])
- by smtp2.osuosl.org (Postfix) with ESMTPS id 890954016A
- for <iommu@lists.linux-foundation.org>; Wed,  2 Jun 2021 01:25:12 +0000 (UTC)
-IronPort-SDR: Q7h013sK/ivwxCh4gkky1LtWILc/94flNhOyuHdpJpB5LnCmDsJfnJ5b2uefOZrkr4xNlerWSD
- FSDriJtxOgYw==
-X-IronPort-AV: E=McAfee;i="6200,9189,10002"; a="191030129"
-X-IronPort-AV: E=Sophos;i="5.83,241,1616482800"; d="scan'208";a="191030129"
-Received: from fmsmga001.fm.intel.com ([10.253.24.23])
- by orsmga106.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384;
- 01 Jun 2021 18:25:11 -0700
-IronPort-SDR: pplV3t5wL9jwG0yezF/vcL//JCkT2VzUHbQp4GOU+5+vcT6ISxfpIvC706P7wkS+MhMeFQGHtH
- RrPojtCK0EkA==
+Received: from mga14.intel.com (mga14.intel.com [192.55.52.115])
+ by smtp1.osuosl.org (Postfix) with ESMTPS id 0126883A3A
+ for <iommu@lists.linux-foundation.org>; Wed,  2 Jun 2021 01:33:27 +0000 (UTC)
+IronPort-SDR: fhD6csrgjmOreugmxT5ByTuYVpzAKq6uTcUUfI2SK1Uc5KN/I+uOLFHQD2m01HpiWsHL8oNSrY
+ h9Ja5MlyUQuQ==
+X-IronPort-AV: E=McAfee;i="6200,9189,10002"; a="203492578"
+X-IronPort-AV: E=Sophos;i="5.83,241,1616482800"; d="scan'208";a="203492578"
+Received: from fmsmga003.fm.intel.com ([10.253.24.29])
+ by fmsmga103.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384;
+ 01 Jun 2021 18:33:26 -0700
+IronPort-SDR: 7Vp8Y8wg9o9VI9oZ9X+TY4euu2d/Oe38rzn1R8Wok/Lte58oWklmxpuH9ZmRnwINmSfxyWdIlo
+ 285XqGvX3JJA==
 X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.83,241,1616482800"; d="scan'208";a="549947510"
-Received: from orsmsx601.amr.corp.intel.com ([10.22.229.14])
- by fmsmga001.fm.intel.com with ESMTP; 01 Jun 2021 18:25:09 -0700
+X-IronPort-AV: E=Sophos;i="5.83,241,1616482800"; d="scan'208";a="474453776"
+Received: from orsmsx604.amr.corp.intel.com ([10.22.229.17])
+ by FMSMGA003.fm.intel.com with ESMTP; 01 Jun 2021 18:33:25 -0700
 Received: from orsmsx611.amr.corp.intel.com (10.22.229.24) by
- ORSMSX601.amr.corp.intel.com (10.22.229.14) with Microsoft SMTP Server
+ ORSMSX604.amr.corp.intel.com (10.22.229.17) with Microsoft SMTP Server
  (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2242.4; Tue, 1 Jun 2021 18:25:04 -0700
-Received: from orsmsx609.amr.corp.intel.com (10.22.229.22) by
- ORSMSX611.amr.corp.intel.com (10.22.229.24) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2242.4; Tue, 1 Jun 2021 18:25:04 -0700
-Received: from ORSEDG601.ED.cps.intel.com (10.7.248.6) by
- orsmsx609.amr.corp.intel.com (10.22.229.22) with Microsoft SMTP Server
+ 15.1.2242.4; Tue, 1 Jun 2021 18:33:24 -0700
+Received: from ORSEDG602.ED.cps.intel.com (10.7.248.7) by
+ orsmsx611.amr.corp.intel.com (10.22.229.24) with Microsoft SMTP Server
  (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2242.4
- via Frontend Transport; Tue, 1 Jun 2021 18:25:04 -0700
-Received: from NAM12-DM6-obe.outbound.protection.outlook.com (104.47.59.173)
- by edgegateway.intel.com (134.134.137.102) with Microsoft SMTP Server
+ via Frontend Transport; Tue, 1 Jun 2021 18:33:24 -0700
+Received: from NAM02-SN1-obe.outbound.protection.outlook.com (104.47.57.43) by
+ edgegateway.intel.com (134.134.137.103) with Microsoft SMTP Server
  (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.1.2242.4; Tue, 1 Jun 2021 18:25:03 -0700
+ 15.1.2242.4; Tue, 1 Jun 2021 18:33:24 -0700
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=YLQzgiXXnnHbDnQcwMg0VN7gXkpFTWaUUBEU5V84n9CDPOEPUHvP2YZV759U/LptzX90gdAJZRdusjPF0pfK3o6ul/X3/UX+ELru9MlnELm151k0V9RvnZC+Ro3OtSIWE+0SklUcmbfB1NEUNthzFodVY+B/NLmI8V/9q5aqaxFTovT69aBXUIRy/DCdc9slchgJDgrvbwH8oUmzzprvm33fhZJWrEtmkZVobQHWh0Kr/NG8Abr+wVCrulEK0VU692EQoUB5W6t40YPwv0f3uRcOPYlfuxRyVxivx4QR+yN7MgK4CsM5cTJyh5AzWItfd8NUp0+eBD2X8AT5EROZng==
+ b=l3yFYrGxFgwT/lOWouyxzSVmBiBZqefk+HhJQQIswi0Tou4g3yubK2pKefAfjPi+/OkA685RIcBBzhVWuLGlI6aWW/jOLaSrjBjHnRSrrPdJSULhe7+m2Z63dBU9IDhzNVpo/PanCFzZUNBSLn+jwb1H4iPbvoTScXQb5T205hWoEvZH4eTOYtYyBAsvihFJe5SI1v86lt6WdvPSrAQD5o/IyTid2npMizU8inF4dnn/LETDt0FXT17dP/ASGtiaZV/YxQJ4eJpTkA1vnobu4ULTyZP5EiTgWlFsvrWhf1De3laEmhudx8C/OnA5SCsBfep6vLK6w1OaiskRQ0z5/g==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com; 
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=mHUD+r2zSTqScvGQTNZZZ1N+azdwv1XgrW05HcJji5U=;
- b=WQwZQ6CyomAaijTMspV+Lu+st/tOuEEy5Lchb23xjUUL21bJw5meKWlo9FGjsriDFj462pxIC/wZ9q/OJfyhWv2SN0B21jimoKo7W/fBzx6zbcIbUYzRC8kH13WCYPoBbbenQqT8PsjVIVkOrtTDvIZtbBYa73mviyi3VrgS9aG/qhJs3HHeS1LjS7F4aBrXlHkGEryF5InnPzl4TVC9vhMr6hODIWc5XDfH5np8j8kxpEQWQ/98GyHgttNKk9cDC9FeGENM5LtrEjosu2OYWVTF/LGLQiP4Y27kbt6qbF/c9lId/QfEMD0MIDrzG//PspsQs5tnk06S8i9qWHc2lw==
+ bh=mH82U3yDPlUoLZqBE3Z1PKaRCqkYpgTLUOWPqGtlhnI=;
+ b=llvGTQa2ftYV1ADcK9J8nkL3NVmoOGUs4ZkG4ARoSyXDxObCnW5T6GLb6rY56sHnkxVrYN5aIa5FdjeEGSXsIf+Z/LPHS70StjaCsXpXII+zzFw5TL6nTDdIvLOH7OVhlGbnQYveuGL9gEHm8rc+mUtBYTgQuVNXShEAZ7wLdkJHn9xtDVxRytzafj5wXjaD6gqKqlTi4WZTxswk+RoebGAjZY4ZvwvjgjJ3GH3zbJ5IO7z6jmS0N6qfmvstCVmogcfFQ5Q2kAdaIO9MT55oFW2ju0mOeXOvLpHFMa2vyxUV22pX0IvjKEfpySik8G+rQvCOrX9aOLaYISO/oVqSCw==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
  smtp.mailfrom=intel.com; dmarc=pass action=none header.from=intel.com;
  dkim=pass header.d=intel.com; arc=none
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=intel.onmicrosoft.com; 
  s=selector2-intel-onmicrosoft-com;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=mHUD+r2zSTqScvGQTNZZZ1N+azdwv1XgrW05HcJji5U=;
- b=AJSPYqjU8UkXSLU6Cm/sClUbZBkPGZyjlFuZEYoDXukO5i3rlFQ2Ofq9Cp7TkvgzQ9FsOlNPgH9WGT+0xHWItGAUVnEpa8CvR+SRNbUL1S0JStgezy1aGoe3HZExKlfTSxQcamBW4xTzMnGdWJtvDJFvfHDlqknbnraf+SLFopM=
+ bh=mH82U3yDPlUoLZqBE3Z1PKaRCqkYpgTLUOWPqGtlhnI=;
+ b=ZoCi2ZaCDdf3lHw5TBfF/UH6HilE47TWvUvR8+h1FFrdM6TadBI4fBPHxqhtQi6B9TyUvXRWSokdWs09MnDkN9gHj1JRG2/4LNnbJbyH9dRRutw2bv2pmBokLIRHWvyG4MccoILbzCbVTRoBIMyHXCiBtchoV5LPPjrba4IB+mY=
 Received: from MWHPR11MB1886.namprd11.prod.outlook.com (2603:10b6:300:110::9)
- by MW3PR11MB4634.namprd11.prod.outlook.com (2603:10b6:303:54::16)
+ by MWHPR1101MB2301.namprd11.prod.outlook.com (2603:10b6:301:53::12)
  with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4173.24; Wed, 2 Jun
- 2021 01:25:01 +0000
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4173.20; Wed, 2 Jun
+ 2021 01:33:22 +0000
 Received: from MWHPR11MB1886.namprd11.prod.outlook.com
  ([fe80::6597:eb05:c507:c6c1]) by MWHPR11MB1886.namprd11.prod.outlook.com
  ([fe80::6597:eb05:c507:c6c1%12]) with mapi id 15.20.4173.030; Wed, 2 Jun 2021
- 01:25:00 +0000
+ 01:33:22 +0000
 From: "Tian, Kevin" <kevin.tian@intel.com>
 To: Jason Gunthorpe <jgg@nvidia.com>
 Subject: RE: [RFC] /dev/ioasid uAPI proposal
 Thread-Topic: [RFC] /dev/ioasid uAPI proposal
-Thread-Index: AddSzQ970oLnVHLeQca/ysPD8zMJZwBL2ymAAKTbxpAAJTGVAAAJnz8Q
-Date: Wed, 2 Jun 2021 01:25:00 +0000
-Message-ID: <MWHPR11MB1886172080807517E92A8EF68C3D9@MWHPR11MB1886.namprd11.prod.outlook.com>
+Thread-Index: AddSzQ970oLnVHLeQca/ysPD8zMJZwBGs/UAALTRUxAAFJZWgAAQLFRg
+Date: Wed, 2 Jun 2021 01:33:22 +0000
+Message-ID: <MWHPR11MB1886283575628D7A2F4BFFAB8C3D9@MWHPR11MB1886.namprd11.prod.outlook.com>
 References: <MWHPR11MB1886422D4839B372C6AB245F8C239@MWHPR11MB1886.namprd11.prod.outlook.com>
- <20210528200311.GP1002214@nvidia.com>
- <MWHPR11MB188685D57653827B566BF9B38C3E9@MWHPR11MB1886.namprd11.prod.outlook.com>
- <20210601202834.GR1002214@nvidia.com>
-In-Reply-To: <20210601202834.GR1002214@nvidia.com>
+ <20210528173538.GA3816344@nvidia.com>
+ <MWHPR11MB18866C362840EA2D45A402188C3E9@MWHPR11MB1886.namprd11.prod.outlook.com>
+ <20210601174229.GP1002214@nvidia.com>
+In-Reply-To: <20210601174229.GP1002214@nvidia.com>
 Accept-Language: en-US
 Content-Language: en-US
 X-MS-Has-Attach: 
@@ -122,52 +118,52 @@ authentication-results: nvidia.com; dkim=none (message not signed)
  header.d=none;nvidia.com; dmarc=none action=none header.from=intel.com;
 x-originating-ip: [192.198.143.24]
 x-ms-publictraffictype: Email
-x-ms-office365-filtering-correlation-id: d4b83098-0fdf-4386-b44a-08d925653dce
-x-ms-traffictypediagnostic: MW3PR11MB4634:
+x-ms-office365-filtering-correlation-id: 18c7cf2c-67ab-4adc-c693-08d925666911
+x-ms-traffictypediagnostic: MWHPR1101MB2301:
 x-ld-processed: 46c98d88-e344-4ed4-8496-4ed7712e255d,ExtAddr
 x-ms-exchange-transport-forked: True
-x-microsoft-antispam-prvs: <MW3PR11MB46348FFFC3230B992988B7C78C3D9@MW3PR11MB4634.namprd11.prod.outlook.com>
-x-ms-oob-tlc-oobclassifiers: OLM:10000;
+x-microsoft-antispam-prvs: <MWHPR1101MB2301B88DA09678E70DD755428C3D9@MWHPR1101MB2301.namprd11.prod.outlook.com>
+x-ms-oob-tlc-oobclassifiers: OLM:9508;
 x-ms-exchange-senderadcheck: 1
 x-microsoft-antispam: BCL:0;
-x-microsoft-antispam-message-info: O7+Nec1xtVTG/9jK+UNN3L1LrBVA600g6iJcKo4bAhGycZyhx6VtR65TJWJAQQuloNRI9eZNjlTsFKpsKHW0F4WOS7VFUw15lG+wjoZM7ZXPPzdo6NosDpffPcvHhihOsnFT7ACEowe1IgDy47iMhNhT8s6InrPnRaf1L9J0XuH6b1LW/iO19vwOwbfGE8S+HzJtFezkCBKgUmU/uqbwZiUZHkOtdtpEYTTmuZY+0fv5xB2USNZl2zdyFNq/g9jY9emCanwMxX5fIoyAHBoGIJSzYo8wxstcD9kfLgu8MlK/P5eho0Lm5MTkU7LgN5lLppoBGdTpnwAv0xxSW1oDrjyfSgxLCFyLAhTI8MCQ0V2ylu/CJSi6jsi+OQgPXh1mDMmgsSdqIdEfwTitWHHSwVo/TsXVS6ISfjtDh/QFzwTtR0SmoLefQx7IwAzvcq2c9r+XEpbi9odgc6y3dgFPS9YJzHFE4aJ5aznkrXL5ygsm4yKRa07tPkJMreTTFMIg4sQP4GOxww0jYbxw5pRmWqCURJfSYj189D4AukDVuY7gyW1x1wO9xWvyy1KXn9d3p1wZ5V0vp5eR3pl9Bg2IKMmVV0cl5vlrHMCHcC5xaF4=
+x-microsoft-antispam-message-info: WgsCWzilX66sI2TCn/Lid3c/Ear0BhUYPciMzC9jvNI850WIpuFHZQWslYXibtD14VEDwlnPNVpVvFhN4yadgQgx37hl2jAfYJ2DI71Aq5MnDFd3giNxqVn0D/j5fQw2bYxEMmrUS0YHVFIe+c9G1CImDdUQsbGt0xQS2MIviDf6sk3luoHYfFVdZ9OaMGI3dtmUkZnKURpNp6XPCpsETz6LwQAGPkfJpV1TYwdY1NYiTTF2/oDmLdqTC0pKXp4Gpn9PPpT+xjAqYh3SytdfNQQOPacZdGIRbeYUtR6Y7zsQKQHPNClZi+t81a4l9Mfa7OvxmjZD9qWmIFEAqoC09aSxMijPSAXbz868dUgEh3Sqclh+WWv6A8iVKK15SemJwSFTnIlTZcucUiZ6c4yWtx59YjYCVoKRwbi+G4nvBAtriYm3pq5LBkUIIYX16DPAGKXr9X4sWMxpOWAJAnBkdGc291d3hFwElw0pD4RrW0BpWA/G60vCSCJ7DirJeP55eRh2oONHq/BOORt3baoG1RmlYswE1rzLxka86Q03gKHA7T6JsE32HPG4Dnz4w62gRbji/U4tWqTBTkvbCJPDk92sOVrdpTJOyxbXdhfLkb8=
 x-forefront-antispam-report: CIP:255.255.255.255; CTRY:; LANG:en; SCL:1; SRV:;
  IPV:NLI; SFV:NSPM; H:MWHPR11MB1886.namprd11.prod.outlook.com; PTR:; CAT:NONE;
- SFS:(39860400002)(396003)(136003)(346002)(376002)(366004)(5660300002)(76116006)(83380400001)(4326008)(66556008)(38100700002)(66476007)(33656002)(66946007)(64756008)(86362001)(7696005)(66446008)(186003)(8936002)(26005)(478600001)(8676002)(9686003)(316002)(71200400001)(54906003)(52536014)(6506007)(122000001)(7416002)(6916009)(2906002)(55016002);
+ SFS:(39860400002)(366004)(136003)(376002)(346002)(396003)(6506007)(7696005)(316002)(54906003)(71200400001)(33656002)(2906002)(26005)(76116006)(122000001)(4326008)(55016002)(8676002)(7416002)(8936002)(9686003)(6916009)(38100700002)(86362001)(66946007)(186003)(83380400001)(52536014)(5660300002)(478600001)(66476007)(66556008)(66446008)(64756008);
  DIR:OUT; SFP:1102; 
-x-ms-exchange-antispam-messagedata: =?us-ascii?Q?JwZnXO0ntmWvLICSZE42jypmtFy9GxHzZzegOfutWS+28EzcruxD6OwN22bl?=
- =?us-ascii?Q?/l2hk1Q9i25b6JXpDMcYmSjroylOR1p8Octfa5JELAWmUQ/NtqKYXC13HvrT?=
- =?us-ascii?Q?AkAw3a/Wpcro1+hNEiWaTcR9vp5JnPYNjvyILI16Cjuxi1Z8ZM8lcPj4RQ+2?=
- =?us-ascii?Q?lwmVxIujROcwpJGDFZGYtmofohUQ7+383B3ahqOKNDBuTC97ggd4Xs2LdWN0?=
- =?us-ascii?Q?y2paeT/Z9jtnD8OOMs5lRpm46EtZ4SUQSiBFfQYKZKoVVZjgiMf9BfiTStMh?=
- =?us-ascii?Q?0uIbiercfDq793DgHW1q8zZBTW5FIV4CT5jpuZNrkd3aLw+/PAfJVdWI6d6U?=
- =?us-ascii?Q?T+0tqM99esyeX0E6dayZ5qdryLAHl4zzN3GP03RHz7eQMfsZysTmheaTaX/C?=
- =?us-ascii?Q?xzI1mLaJp+OlfqOlgB+YAlNTJ3FWrLkP2QIeaYK0U6hC+RbnRGFYRdK9Dtev?=
- =?us-ascii?Q?EKLNXC7U48L7zCGR3KJwzX/Rs3y0YJ7tJNWiPvMga218okVasAb+OyQ1i/U+?=
- =?us-ascii?Q?stH6PMEv8/eV1KWaMmVi7sLR+z5QOJaCyjyhCNaaKFt2wTpbTcXn4yqU7ES7?=
- =?us-ascii?Q?g+v6/u2eO6Xgsj4rRCrTufte3m/fxbwsD2T9GdB7MEXadG74X9YQDuAjT6W1?=
- =?us-ascii?Q?SJ5lgJ8zq9OFGOWSsmrza2PFIusQkFXJCVSmb97bjpQw4qUkwVHSjEwCr7LR?=
- =?us-ascii?Q?s3tfjmMMSCB5i2n/XPLwSZxSuo9UzEoAnqdylNKQ1jNRoFqJ8cVupGVPD6Gf?=
- =?us-ascii?Q?aWxIVNXGmqR7+EOCBDsCL9elGw8ES0hQfzMkQ0fVGtE1yTayJ5ODCu0/H+0q?=
- =?us-ascii?Q?33ZvHRjE0EtAVQcEP2GJ29rbHKvIFAhn8/NsaFbO84bFHximnru7E24A3umG?=
- =?us-ascii?Q?773lNLE41ZnfRexijqbSW+jEeKqIO7i33mcCwhcJu8UQjVjCjmelZOwMbUSm?=
- =?us-ascii?Q?pNDkADPUA0Jz2F64uaEOON0Wq5/dj+y0bOyz7WRphOUL2XRUZSU5iys5kPmN?=
- =?us-ascii?Q?9BNaOR1/L/8Zui8L3VnwSUdtbCKikco4n7boPnYbATMUzTJZsKoo42dmpNWu?=
- =?us-ascii?Q?Rm/Pp4W9HfZwK6SYjC9Mzxi08Vz8FcdvV+2UrNNMX2HGLKgMB93pDrlnjJ+u?=
- =?us-ascii?Q?kD4Jfs3K7F5glu/mfe7zCRgw5NnJum8BQVOgOzOofX3PsJTPp8Uf854hOFv1?=
- =?us-ascii?Q?+f9jnRzwJZiPEP8SRRe5dIEw6GZMZdj2YCP8iHrT3NxsGebARE/mtJQBzQD1?=
- =?us-ascii?Q?XJHVKpVtFeSsMK5d3SV1juTfhcEtCg1HSdVVkZQxic4R/6Eafr7qqH3HQKi1?=
- =?us-ascii?Q?pb0bZBlEVywikY2MVO0EWJ2R?=
+x-ms-exchange-antispam-messagedata: =?us-ascii?Q?hXbnnLs7mxGvMtrGNwRpCJ7CZehZgUqG3xNfCMl5G/B25A789bZmBHiSwkuM?=
+ =?us-ascii?Q?koiB3X15HebKdNLXhMYgK+LHDSp7zqSPLOmSuBQrwnMhXQfw0q9NtgRf0vAM?=
+ =?us-ascii?Q?63x9pkroK1zponuvfBkMhx/8VxawYarCBdiqJM1kkY9kj8QaevtHV+fIVZ9Y?=
+ =?us-ascii?Q?VvsMJ9E+y/q4TG4NmsN+w5EeUZ2Cwjs9i13vkByncZXtgB5tQk2qBiJelV8o?=
+ =?us-ascii?Q?4GSKw+7fjeNmBXiOUjsfdKF0gEX7OAYE5gTBbksR4Y+m8Z2GbjPNkAhwBbHj?=
+ =?us-ascii?Q?q4UHxhSUCgJFaas5K4Ur9+Rck8tk/RXOV3/C5TwcYn9OJYwTAfrxaPW1URI2?=
+ =?us-ascii?Q?1nNfrwIj/27Jwr9qRRq/3glH7spGlAT4BOMxa8X5qodld09gUFb/5HHsoo1s?=
+ =?us-ascii?Q?8S1WCSboBnz/RTpTbwN66z5DHSj8UC5658mo3QXybAf43gun7Z+6i0+/O2xa?=
+ =?us-ascii?Q?4fsBiKFV5uKbej7V+XdxGUuSrQcZfUbI674S9Bd9uzjMoNek1hMp5R630YBQ?=
+ =?us-ascii?Q?dREzc7NimetYkCIcHxHqE6BgKGXj8dqjUzvjpGPAhe0Q63qKx6QeFnXYzOOD?=
+ =?us-ascii?Q?ykeUx8rcXebl11KMjk3QwyNYwEKH7lVd7gZrlpFLKmgJlexPKqHppoz2uZM1?=
+ =?us-ascii?Q?kyuHXwcHc18mNATlxX7DAmhmZbKwMp7sX09ug9VgtKavHWo3QUFFXpRwc+Op?=
+ =?us-ascii?Q?RK2T4YEaoiSQ4dltMcnI2k8EJX1VZXutGskjlsqd9e2M/zkvejcCkPdOen8Z?=
+ =?us-ascii?Q?ENOLI4yu3CGz3+ttqg0zOL7Uwodnvk/6w57+Mja9sDBEvlp6C32QwfE9T+wA?=
+ =?us-ascii?Q?QSVPW7na77b24ogPL0IOy2B81IizPZLAWmQxz0kpfxzZyBjkOaP1kk5VxNXX?=
+ =?us-ascii?Q?kFWhnDYU0kDIxL4obd4gH5pClaSxGmAMZ1hMrc6IonrsVB+U5gi70Bm/daol?=
+ =?us-ascii?Q?tK3zyQsYqZUZ3oFah5qA5Ud2bzTWNhTB5WRePLUjvVPqyUxTonzEh44nZIQU?=
+ =?us-ascii?Q?iphl6o/OEKa/rGZhtfmqiPdBpPpC3ResiugM5TsuxZIMdZXu6b6sGurjVQlT?=
+ =?us-ascii?Q?oylFPmn3GZ2JtO+oMwClC8f5juglQP+c+YsfqGMlTGobEMkQdVrs2s/6/9aL?=
+ =?us-ascii?Q?G7GFTmj6CXuxKX1BxHsYtS5laqUmn25y6adbf4zBB24FJI/pDE1GftX8SXE+?=
+ =?us-ascii?Q?Y7XzwZ9KJX1KMEf9KMXYOH4+zH2OC5bs+iCVieowguxGurB2WNkOUwhVZik3?=
+ =?us-ascii?Q?fZFFNRRdUFjLqxX0jrLs2INvUN1114/4g/q+/ar1b4R4an/9jrYmcL1Nn/Vy?=
+ =?us-ascii?Q?YumXXoaUQoVwaD3q0TWWoJc9?=
 MIME-Version: 1.0
 X-MS-Exchange-CrossTenant-AuthAs: Internal
 X-MS-Exchange-CrossTenant-AuthSource: MWHPR11MB1886.namprd11.prod.outlook.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: d4b83098-0fdf-4386-b44a-08d925653dce
-X-MS-Exchange-CrossTenant-originalarrivaltime: 02 Jun 2021 01:25:00.3209 (UTC)
+X-MS-Exchange-CrossTenant-Network-Message-Id: 18c7cf2c-67ab-4adc-c693-08d925666911
+X-MS-Exchange-CrossTenant-originalarrivaltime: 02 Jun 2021 01:33:22.7651 (UTC)
 X-MS-Exchange-CrossTenant-fromentityheader: Hosted
 X-MS-Exchange-CrossTenant-id: 46c98d88-e344-4ed4-8496-4ed7712e255d
 X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: KLAsY1BXlQXuJpSrT0T2GxOMt+NPp2IJZzVoVUjC3u01nX81tv+dDszPKVFPp/VT7AEg2whOBG+OKe4jwLwgtQ==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: MW3PR11MB4634
+X-MS-Exchange-CrossTenant-userprincipalname: BKD0UrNKYW7S7pmZ1FLRau/9FqMC+Ad7lCSk+c9LpejUIQmi6InTEIozDjB9kTcRnUpYIOOhJHLTcJCC7bNwwQ==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: MWHPR1101MB2301
 X-OriginatorOrg: intel.com
 Cc: Jean-Philippe Brucker <jean-philippe@linaro.org>, "Alex Williamson
  \(alex.williamson@redhat.com\)" <alex.williamson@redhat.com>, "Raj,
@@ -197,136 +193,76 @@ Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
 > From: Jason Gunthorpe <jgg@nvidia.com>
-> Sent: Wednesday, June 2, 2021 4:29 AM
+> Sent: Wednesday, June 2, 2021 1:42 AM
 > 
-> On Tue, Jun 01, 2021 at 07:01:57AM +0000, Tian, Kevin wrote:
+> On Tue, Jun 01, 2021 at 08:10:14AM +0000, Tian, Kevin wrote:
 > > > From: Jason Gunthorpe <jgg@nvidia.com>
-> > > Sent: Saturday, May 29, 2021 4:03 AM
+> > > Sent: Saturday, May 29, 2021 1:36 AM
 > > >
 > > > On Thu, May 27, 2021 at 07:58:12AM +0000, Tian, Kevin wrote:
-> > > > /dev/ioasid provides an unified interface for managing I/O page tables
-> for
-> > > > devices assigned to userspace. Device passthrough frameworks (VFIO,
-> > > vDPA,
-> > > > etc.) are expected to use this interface instead of creating their own
-> logic to
-> > > > isolate untrusted device DMAs initiated by userspace.
 > > >
-> > > It is very long, but I think this has turned out quite well. It
-> > > certainly matches the basic sketch I had in my head when we were
-> > > talking about how to create vDPA devices a few years ago.
+> > > > IOASID nesting can be implemented in two ways: hardware nesting and
+> > > > software nesting. With hardware support the child and parent I/O page
+> > > > tables are walked consecutively by the IOMMU to form a nested
+> translation.
+> > > > When it's implemented in software, the ioasid driver is responsible for
+> > > > merging the two-level mappings into a single-level shadow I/O page
+> table.
+> > > > Software nesting requires both child/parent page tables operated
+> through
+> > > > the dma mapping protocol, so any change in either level can be
+> captured
+> > > > by the kernel to update the corresponding shadow mapping.
 > > >
-> > > When you get down to the operations they all seem pretty common
-> sense
-> > > and straightfoward. Create an IOASID. Connect to a device. Fill the
-> > > IOASID with pages somehow. Worry about PASID labeling.
-> > >
-> > > It really is critical to get all the vendor IOMMU people to go over it
-> > > and see how their HW features map into this.
-> > >
+> > > Why? A SW emulation could do this synchronization during invalidation
+> > > processing if invalidation contained an IOVA range.
 > >
-> > Agree. btw I feel it might be good to have several design opens
-> > centrally discussed after going through all the comments. Otherwise
-> > they may be buried in different sub-threads and potentially with
-> > insufficient care (especially for people who haven't completed the
-> > reading).
+> > In this proposal we differentiate between host-managed and user-
+> > managed I/O page tables. If host-managed, the user is expected to use
+> > map/unmap cmd explicitly upon any change required on the page table.
+> > If user-managed, the user first binds its page table to the IOMMU and
+> > then use invalidation cmd to flush iotlb when necessary (e.g. typically
+> > not required when changing a PTE from non-present to present).
 > >
-> > I summarized five opens here, about:
-> >
-> > 1)  Finalizing the name to replace /dev/ioasid;
-> > 2)  Whether one device is allowed to bind to multiple IOASID fd's;
-> > 3)  Carry device information in invalidation/fault reporting uAPI;
-> > 4)  What should/could be specified when allocating an IOASID;
-> > 5)  The protocol between vfio group and kvm;
-> >
-> > For 1), two alternative names are mentioned: /dev/iommu and
-> > /dev/ioas. I don't have a strong preference and would like to hear
-> > votes from all stakeholders. /dev/iommu is slightly better imho for
-> > two reasons. First, per AMD's presentation in last KVM forum they
-> > implement vIOMMU in hardware thus need to support user-managed
-> > domains. An iommu uAPI notation might make more sense moving
-> > forward. Second, it makes later uAPI naming easier as 'IOASID' can
-> > be always put as an object, e.g. IOMMU_ALLOC_IOASID instead of
-> > IOASID_ALLOC_IOASID. :)
+> > We expect user to use map+unmap and bind+invalidate respectively
+> > instead of mixing them together. Following this policy, map+unmap
+> > must be used in both levels for software nesting, so changes in either
+> > level are captured timely to synchronize the shadow mapping.
 > 
-> I think two years ago I suggested /dev/iommu and it didn't go very far
-> at the time. We've also talked about this as /dev/sva for a while and
-> now /dev/ioasid
+> map+unmap or bind+invalidate is a policy of the IOASID itself set when
+> it is created. If you put two different types in a tree then each IOASID
+> must continue to use its own operation mode.
 > 
-> I think /dev/iommu is fine, and call the things inside them IOAS
-> objects.
-> 
-> Then we don't have naming aliasing with kernel constructs.
-> 
-> > For 2), Jason prefers to not blocking it if no kernel design reason. If
-> > one device is allowed to bind multiple IOASID fd's, the main problem
-> > is about cross-fd IOASID nesting, e.g. having gpa_ioasid created in fd1
-> > and giova_ioasid created in fd2 and then nesting them together (and
-> 
-> Huh? This can't happen
-> 
-> Creating an IOASID is an operation on on the /dev/ioasid FD. We won't
-> provide APIs to create a tree of IOASID's outside a single FD container.
-> 
-> If a device can consume multiple IOASID's it doesn't care how many or
-> what /dev/ioasid FDs they come from.
+> I don't see a reason to force all IOASIDs in a tree to be consistent??
 
-OK, this implies that if one user inadvertently creates intended parent/
-child via different fd's then the operation will simply fail. More specifically
-taking ARM's case for example. There is only a single 2nd-level I/O page
-table per device (nested by multiple 1st-level tables). Say the user already 
-creates a gpa_ioasid for a device via fd1. Now he binds the device to fd2, 
-intending to enable vSVA which requires nested translation thus needs 
-create a parent via fd2. This parent creation will simply fail by the IOMMU 
-layer because the 2nd-level (via fd1) is already installed for this device.
+only for software nesting. With hardware support the parent uses map
+while the child uses bind.
+
+Yes, the policy is specified per IOASID. But if the policy violates the
+requirement in a specific nesting mode, then nesting should fail.
 
 > 
-> > To the other end there was also thought whether we should make
-> > a single I/O address space per IOASID fd. This was discussed in previous
-> > thread that #fd's are insufficient to afford theoretical 1M's address
-> > spaces per device. But let's have another revisit and draw a clear
-> > conclusion whether this option is viable.
-> 
-> I had remarks on this, I think per-fd doesn't work
-> 
-> > This implies that VFIO_BOUND_IOASID will be extended to allow user
-> > specify a device label. This label will be recorded in /dev/iommu to
-> > serve per-device invalidation request from and report per-device
-> > fault data to the user.
-> 
-> I wonder which of the user providing a 64 bit cookie or the kernel
-> returning a small IDA is the best choice here? Both have merits
-> depending on what qemu needs..
+> A software emulated two level page table where the leaf level is a
+> bound page table in guest memory should continue to use
+> bind/invalidate to maintain the guest page table IOASID even though it
+> is a SW construct.
 
-Yes, either way can work. I don't have a strong preference. Jean?
+with software nesting the leaf should be a host-managed page table
+(or metadata). A bind/invalidate protocol doesn't require the user
+to notify the kernel of every page table change. But for software nesting
+the kernel must know every change to timely update the shadow/merged 
+mapping, otherwise DMA may hit stale mapping.
 
 > 
-> > In addition, vPASID (if provided by user) will
-> > be also recorded in /dev/iommu so vPASID<->pPASID conversion
-> > is conducted properly. e.g. invalidation request from user carries
-> > a vPASID which must be converted into pPASID before calling iommu
-> > driver. Vice versa for raw fault data which carries pPASID while the
-> > user expects a vPASID.
-> 
-> I don't think the PASID should be returned at all. It should return
-> the IOASID number in the FD and/or a u64 cookie associated with that
-> IOASID. Userspace should figure out what the IOASID & device
-> combination means.
+> The GPA level should use map/unmap because it is a kernel owned page
+> table
 
-This is true for Intel. But what about ARM which has only one IOASID
-(pasid table) per device to represent all guest I/O page tables?
+yes, this is always true.
 
 > 
-> > Seems to close this design open we have to touch the kAPI design. and
-> > Joerg's input is highly appreciated here.
+> Though how to efficiently mix map/unmap on the GPA when there are SW
+> nested levels below it looks to be quite challenging.
 > 
-> uAPI is forever, the kAPI is constantly changing. I always dislike
-> warping the uAPI based on the current kAPI situation.
-> 
-
-I got this point. My point was that I didn't see significant gain from either 
-option thus to better compare the two uAPI options we might want to 
-further consider the involved kAPI effort as another factor.
 
 Thanks
 Kevin
