@@ -2,83 +2,100 @@ Return-Path: <SRS0=kThj=K4=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-3.5 required=3.0 tests=BAYES_00,DKIM_INVALID,
-	DKIM_SIGNED,HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,
-	MSGID_FROM_MTA_HEADER,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED autolearn=no
-	autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-5.0 required=3.0 tests=BAYES_00,DKIM_INVALID,
+	DKIM_SIGNED,HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,SPF_HELO_NONE,
+	SPF_PASS,URIBL_BLOCKED,USER_AGENT_SANE_2 autolearn=no autolearn_force=no
+	version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id EFAC9C47093
-	for <iommu@archiver.kernel.org>; Wed,  2 Jun 2021 18:09:31 +0000 (UTC)
-Received: from smtp2.osuosl.org (smtp2.osuosl.org [140.211.166.133])
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3928AC47083
+	for <iommu@archiver.kernel.org>; Wed,  2 Jun 2021 19:01:03 +0000 (UTC)
+Received: from smtp1.osuosl.org (smtp1.osuosl.org [140.211.166.138])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id A345761090
-	for <iommu@archiver.kernel.org>; Wed,  2 Jun 2021 18:09:31 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org A345761090
-Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=nvidia.com
+	by mail.kernel.org (Postfix) with ESMTPS id E03BB613DE
+	for <iommu@archiver.kernel.org>; Wed,  2 Jun 2021 19:01:02 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org E03BB613DE
+Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=redhat.com
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by smtp2.osuosl.org (Postfix) with ESMTP id 765794045A;
-	Wed,  2 Jun 2021 18:09:31 +0000 (UTC)
+	by smtp1.osuosl.org (Postfix) with ESMTP id A917282B9F;
+	Wed,  2 Jun 2021 19:01:02 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from smtp2.osuosl.org ([127.0.0.1])
-	by localhost (smtp2.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id zAfPt0Rv97oW; Wed,  2 Jun 2021 18:09:30 +0000 (UTC)
-Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [IPv6:2605:bc80:3010:104::8cd3:938])
-	by smtp2.osuosl.org (Postfix) with ESMTP id 5F94540460;
-	Wed,  2 Jun 2021 18:09:30 +0000 (UTC)
-Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 3CE2BC000E;
-	Wed,  2 Jun 2021 18:09:30 +0000 (UTC)
-Received: from smtp1.osuosl.org (smtp1.osuosl.org [IPv6:2605:bc80:3010::138])
- by lists.linuxfoundation.org (Postfix) with ESMTP id BD66BC0001
- for <iommu@lists.linux-foundation.org>; Wed,  2 Jun 2021 18:09:28 +0000 (UTC)
-Received: from localhost (localhost [127.0.0.1])
- by smtp1.osuosl.org (Postfix) with ESMTP id AC15182A72
- for <iommu@lists.linux-foundation.org>; Wed,  2 Jun 2021 18:09:28 +0000 (UTC)
-X-Virus-Scanned: amavisd-new at osuosl.org
-Authentication-Results: smtp1.osuosl.org (amavisd-new);
- dkim=pass (2048-bit key) header.d=nvidia.com
 Received: from smtp1.osuosl.org ([127.0.0.1])
- by localhost (smtp1.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id CV0bxR5sa7GW for <iommu@lists.linux-foundation.org>;
- Wed,  2 Jun 2021 18:09:27 +0000 (UTC)
-X-Greylist: whitelisted by SQLgrey-1.8.0
-Received: from NAM12-MW2-obe.outbound.protection.outlook.com
- (mail-mw2nam12on2051.outbound.protection.outlook.com [40.107.244.51])
- by smtp1.osuosl.org (Postfix) with ESMTPS id 9584182A56
- for <iommu@lists.linux-foundation.org>; Wed,  2 Jun 2021 18:09:27 +0000 (UTC)
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=kYJCdRvXAuZDa6maxerhTN1u3WBy3RqRLx8ZUqhrerA4wzBwAsDpDiQ1sNo0ce2+YAydlU1qAisYrJnAbKw1Yny7IMm7kKj+BT7oftspXCTPo5602GEwVV2nI8719ty5vJojI1zARGZlfUkO360C+LYxANu3zEtFoJ3ueL57qLHZ9ry7bS/RDfIMoBnMmNXbwDOsIGkPznduNe6Cq12yD53KyXFdAuCPfIpx9uQ20tGYuoX9jn8o6IWraaUKHrsAeK+97OxljOq4Rxh0K7dCWLoNr0nShnEIx+PUGm8R9Fgib1DzhTANiDohsPPsEvaL2TDMgNAmozOpRGVO5B2vlw==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com; 
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=q3dalfO5Zk0gfjeCpPpFzHRmwm68ntATfY7FMG/c54o=;
- b=Tl4dL8ToW/GyHCPe5dyroYBS2IqtTuos4ZEZGN7Srry7aKdeRXYKjD/UIcLsJd45CSlEYmDJ6E2x9t8CeQlnoaYeM6vKQg5Ml0xyQ3dsdEglj3GMXAKsZEAzJ6kIqSCleIhpk44VNBKRYyxA9fgN4j1iPqPkPjyJ8XCLmd+hFL5j28r9aTmZVg8Ui0yBU5dhQS5y9WyShVgZAtjPUiK+DXcvk7/adaaPtvxt6YdZgGVxpvxEgX1A0fGYaEMAidujrJckWL0lrhLyXXcYAgcJjjQ6gUahIaogSZhDZpYNE0FDzmJjjQg3pIPPEsxboUJFYSKpYteIaEVyXmwjjv/taw==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=nvidia.com; dmarc=pass action=none header.from=nvidia.com;
- dkim=pass header.d=nvidia.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
- s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=q3dalfO5Zk0gfjeCpPpFzHRmwm68ntATfY7FMG/c54o=;
- b=LleGHzulBlXG5HbJFzikxqAxzIvLAJz2PDWl5/ChHzU7bFORH0dmMmeXyeZfWkI+ej8J9ilZEGUBOiPF4XTnfa/FN+1dTHtLIbOnvTI0mvjaVHI4l7jPWBBCwb98oYdRQN6NKaCRiZO3WGroj+kOFBlFS4Hay07/Gn40uIX3sdCJ7JjQ8XatP06GsUaVAs8orYMqtHPXrFKt4RO3/Ikljw3JeUoL9DncW0aI32GWPSBUK/BORqJ6951pk9ef7XN7FHP78QesvbdSuejUpvX12JsFU2WeBVUFVYE9wxvYDBY7or+L3jW4f5fcy5obZjtve+bOT4jH+Sbmrz5uvg9dpQ==
-Authentication-Results: redhat.com; dkim=none (message not signed)
- header.d=none;redhat.com; dmarc=none action=none header.from=nvidia.com;
-Received: from BL0PR12MB5506.namprd12.prod.outlook.com (2603:10b6:208:1cb::22)
- by BL1PR12MB5272.namprd12.prod.outlook.com (2603:10b6:208:319::18)
- with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4195.20; Wed, 2 Jun
- 2021 18:09:26 +0000
-Received: from BL0PR12MB5506.namprd12.prod.outlook.com
- ([fe80::3d51:a3b9:8611:684e]) by BL0PR12MB5506.namprd12.prod.outlook.com
- ([fe80::3d51:a3b9:8611:684e%6]) with mapi id 15.20.4195.020; Wed, 2 Jun 2021
- 18:09:26 +0000
-Date: Wed, 2 Jun 2021 15:09:25 -0300
-From: Jason Gunthorpe <jgg@nvidia.com>
-To: Alex Williamson <alex.williamson@redhat.com>
+	by localhost (smtp1.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+	with ESMTP id E0LwoQ8p6p6A; Wed,  2 Jun 2021 19:01:01 +0000 (UTC)
+Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
+	by smtp1.osuosl.org (Postfix) with ESMTP id 8A5BE82A6C;
+	Wed,  2 Jun 2021 19:01:01 +0000 (UTC)
+Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 5EDB5C000E;
+	Wed,  2 Jun 2021 19:01:01 +0000 (UTC)
+Received: from smtp2.osuosl.org (smtp2.osuosl.org [IPv6:2605:bc80:3010::133])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 32819C0001
+ for <iommu@lists.linux-foundation.org>; Wed,  2 Jun 2021 19:01:00 +0000 (UTC)
+Received: from localhost (localhost [127.0.0.1])
+ by smtp2.osuosl.org (Postfix) with ESMTP id 1D043401EC
+ for <iommu@lists.linux-foundation.org>; Wed,  2 Jun 2021 19:01:00 +0000 (UTC)
+X-Virus-Scanned: amavisd-new at osuosl.org
+Authentication-Results: smtp2.osuosl.org (amavisd-new);
+ dkim=pass (1024-bit key) header.d=redhat.com
+Received: from smtp2.osuosl.org ([127.0.0.1])
+ by localhost (smtp2.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+ with ESMTP id K3y3YCu_3Nbw for <iommu@lists.linux-foundation.org>;
+ Wed,  2 Jun 2021 19:00:59 +0000 (UTC)
+X-Greylist: domain auto-whitelisted by SQLgrey-1.8.0
+Received: from us-smtp-delivery-124.mimecast.com
+ (us-smtp-delivery-124.mimecast.com [216.205.24.124])
+ by smtp2.osuosl.org (Postfix) with ESMTPS id 5339C400DC
+ for <iommu@lists.linux-foundation.org>; Wed,  2 Jun 2021 19:00:59 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+ s=mimecast20190719; t=1622660458;
+ h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+ to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+ content-transfer-encoding:content-transfer-encoding:
+ in-reply-to:in-reply-to:references:references;
+ bh=MXz63wHFCtBChG1iHvZvXLJp7K/v2y7oMTVIZRydq2I=;
+ b=LuxVBJcy6m4hMqmTohuhwgy5dCwRtGE37+AC5VwiaPEDUZVyBhA6SOv+BzNY9BFS7AZCUR
+ P0buUxbJNgRDyfPOtQLTSVoZZV5hYLPn9VZY7jfb3DdCs7a74OMgmCAfc0mfXNmDPxcEdF
+ tRH4a56EHLzLFClYCRQ1XVKJYRVpmMU=
+Received: from mail-oo1-f70.google.com (mail-oo1-f70.google.com
+ [209.85.161.70]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-361-TbRn2J0DPIqznk8IPD1xJQ-1; Wed, 02 Jun 2021 15:00:56 -0400
+X-MC-Unique: TbRn2J0DPIqznk8IPD1xJQ-1
+Received: by mail-oo1-f70.google.com with SMTP id
+ e10-20020a4ab14a0000b029020e1573bdb7so2016032ooo.9
+ for <iommu@lists.linux-foundation.org>; Wed, 02 Jun 2021 12:00:56 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+ d=1e100.net; s=20161025;
+ h=x-gm-message-state:date:from:to:cc:subject:message-id:in-reply-to
+ :references:mime-version:content-transfer-encoding;
+ bh=MXz63wHFCtBChG1iHvZvXLJp7K/v2y7oMTVIZRydq2I=;
+ b=NrxXACcKsUBaTyjJXcFjHCJou8+avwiM//scnLdIo3MdSztaIzJ2htbxALxzWPmqMx
+ 0TEHK2O1nFDwHTaTzITQgFCadOJL12UrF5ZjSw5ri9l7HRxxF74COx0DnAizG13XZVCP
+ eIsGCq1IX+S0jIu8y2b2s1PTLpECh0zGGJMTb50rKmVUcQjoTmZHLNEd4KU0xY65a1sS
+ sXUZVF1qRAfC9zMe3zqDxsAABrp9TqvzVA+QwkqBDmCdEIH2OWNfKX3y3SL80ga7EKPG
+ gTmcWuC1neIHE010/L4AdWy6Gj0TnN5MBQm+55SWE6LWXS3bZVEozqz5riX0cgME8lGb
+ 0AxA==
+X-Gm-Message-State: AOAM530wCh7Xo3MYZ7Vava7EwAuq5V62M97ImP5Hu+JJFN9h4aonZsGa
+ ncDmUHJ5YzszNjD2AhrHmezZDOKHwC0eO75PvOSm/eBF2mgtv5kkDClqH1AuLZdNQAwMjQSSFjY
+ CNPNkYyiiZzNA4fnykCuX5UhA7FHSuw==
+X-Received: by 2002:a05:6830:15c2:: with SMTP id
+ j2mr26008327otr.367.1622660455933; 
+ Wed, 02 Jun 2021 12:00:55 -0700 (PDT)
+X-Google-Smtp-Source: ABdhPJx/5Q90CWT9NIdQ1XwO+Gtz3HwUCNmtONxlvq8I6Bn9cXQgzMIAVDQ/kll8JXgHVYLqh2a7KA==
+X-Received: by 2002:a05:6830:15c2:: with SMTP id
+ j2mr26008303otr.367.1622660455621; 
+ Wed, 02 Jun 2021 12:00:55 -0700 (PDT)
+Received: from redhat.com ([198.99.80.109])
+ by smtp.gmail.com with ESMTPSA id q5sm163159oia.31.2021.06.02.12.00.54
+ (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+ Wed, 02 Jun 2021 12:00:54 -0700 (PDT)
+Date: Wed, 2 Jun 2021 13:00:53 -0600
+From: Alex Williamson <alex.williamson@redhat.com>
+To: Jason Gunthorpe <jgg@nvidia.com>
 Subject: Re: [RFC] /dev/ioasid uAPI proposal
-Message-ID: <20210602180925.GH1002214@nvidia.com>
+Message-ID: <20210602130053.615db578.alex.williamson@redhat.com>
+In-Reply-To: <20210602180925.GH1002214@nvidia.com>
 References: <MWHPR11MB1886422D4839B372C6AB245F8C239@MWHPR11MB1886.namprd11.prod.outlook.com>
  <20210528200311.GP1002214@nvidia.com>
  <MWHPR11MB188685D57653827B566BF9B38C3E9@MWHPR11MB1886.namprd11.prod.outlook.com>
@@ -88,69 +105,15 @@ References: <MWHPR11MB1886422D4839B372C6AB245F8C239@MWHPR11MB1886.namprd11.prod.
  <20210602111117.026d4a26.alex.williamson@redhat.com>
  <20210602173510.GE1002214@nvidia.com>
  <20210602120111.5e5bcf93.alex.williamson@redhat.com>
-Content-Disposition: inline
-In-Reply-To: <20210602120111.5e5bcf93.alex.williamson@redhat.com>
-X-Originating-IP: [47.55.113.94]
-X-ClientProxiedBy: BL1PR13CA0222.namprd13.prod.outlook.com
- (2603:10b6:208:2bf::17) To BL0PR12MB5506.namprd12.prod.outlook.com
- (2603:10b6:208:1cb::22)
+ <20210602180925.GH1002214@nvidia.com>
+X-Mailer: Claws Mail 3.17.8 (GTK+ 2.24.33; x86_64-redhat-linux-gnu)
 MIME-Version: 1.0
-X-MS-Exchange-MessageSentRepresentingType: 1
-Received: from mlx.ziepe.ca (47.55.113.94) by
- BL1PR13CA0222.namprd13.prod.outlook.com (2603:10b6:208:2bf::17) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4219.9 via Frontend
- Transport; Wed, 2 Jun 2021 18:09:25 +0000
-Received: from jgg by mlx with local (Exim 4.94)	(envelope-from
- <jgg@nvidia.com>)	id 1loVIz-000JWP-3L; Wed, 02 Jun 2021 15:09:25 -0300
-X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: d8666174-6536-4539-9033-08d925f18e97
-X-MS-TrafficTypeDiagnostic: BL1PR12MB5272:
-X-MS-Exchange-Transport-Forked: True
-X-Microsoft-Antispam-PRVS: <BL1PR12MB527293FB5CE58FC7A1A403F3C23D9@BL1PR12MB5272.namprd12.prod.outlook.com>
-X-MS-Oob-TLC-OOBClassifiers: OLM:397;
-X-MS-Exchange-SenderADCheck: 1
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: HdBQzsj5KxHF81CJeKOHfi8H8hd/C9JDMUmxf0d1EpUolH5dukBXh0WcbZJwYi9KgBXAOTnlTloXjHz6rxAW0iHl1aw2Fa80MX/XRdPYF9mbU2bVOr7aVH5uqQEAl+sXKeCTwaGaqCQ+VFYi9Mry4FackXUwuOFowsRnhFpfeFhiGuk0kN2lA/JCStNNxt7hCJntYGrQyrVq/DNcI1QjQOMflhhTbgcbv9oSiugRrT7CN/x1wbLbS4JsHhJEZfJm2TgQuN1f32F9uf0Egw3w9TKD8oVEZR+kGDrq9nGaBKivcZrjsCGGdSvD6i/U+xrtey8tbn5HqMFfhdx3mySUDZXsmRnLEYsVqEbtnsWYi02Hiik/ipzzflpAaufRSfOzfml0g32sl8AJz7tYR2PFZqfdO75ZefZ2jSGP8p4p+vk+hNkm3Xa8SOi4YTgdOrc5TJM/AjinrOK5XNceAXmEtY/ss7Rc10yucIylRDl2JXxh2Lss2OU6ptSPyHHNUEiJd6Ef33NLDfL3rXT4noHyh6Z0fyXxr5nrYaXamjh92OJM3+kVaslew5qFXkj0DQYEqnylFJsW6AwIa2tGUuddkFTeMm7H3BKf/sZhmjk3wMo=
-X-Forefront-Antispam-Report: CIP:255.255.255.255; CTRY:; LANG:en; SCL:1; SRV:;
- IPV:NLI; SFV:NSPM; H:BL0PR12MB5506.namprd12.prod.outlook.com; PTR:; CAT:NONE;
- SFS:(4636009)(346002)(136003)(39860400002)(366004)(376002)(396003)(1076003)(9786002)(5660300002)(9746002)(4326008)(6916009)(38100700002)(33656002)(8676002)(8936002)(36756003)(86362001)(7416002)(478600001)(66476007)(66556008)(186003)(2906002)(26005)(2616005)(426003)(54906003)(316002)(83380400001)(66946007);
- DIR:OUT; SFP:1101; 
-X-MS-Exchange-AntiSpam-MessageData: =?us-ascii?Q?g6+IxBia++5CpL/tSFEKYzPQuaBBv9cw9JfWdVZzKwBomqHmthKy4TGQTsmz?=
- =?us-ascii?Q?hKNvxaoYHEUmFTccE9ZXcNNXEw+GSw3QFUfLCPzsni9rQGwmCX285CewG7IZ?=
- =?us-ascii?Q?Jmzq1PFZ1nZl9wwv9Kopr1LE8CPs2LmV6RLdfbSQhwmstJuhL6vDIu4DLHjL?=
- =?us-ascii?Q?5PsAe49+8CDpd/Rt3hNWdrSlKqEW/lELbNijZ/3y754sROQ3EOg4UYp2Ll1r?=
- =?us-ascii?Q?R8og2+fykLjLptbmFG71jttRXJ4Yc73FfsfVC3OnbRYTxyDkgClYLgE6BfwC?=
- =?us-ascii?Q?al35DvIXJuLyCH4ZCJu+MRz4zJVtD4iCU2h1F8d42tnGMQCCel6TghlLMs89?=
- =?us-ascii?Q?h9An5JQr6dKDe+CJycSi+tC8TwrtPjsNqMpmBdhvbY4FvEDUwkA+3Mr5vcv1?=
- =?us-ascii?Q?M+CUurM69v1SNSfWEt1VpaqCuQpmtE15K79xwTWZEILQZrbl/Gp9mER639au?=
- =?us-ascii?Q?MhdhFUca1TpVYlJqZCSLSwcLsuBuw8wjdkbnCiZLsZPQnDNU+ClQQkSDfkD6?=
- =?us-ascii?Q?znC7Cweas6FjXury9DaOZHDL+m91F/QFNzJoOuXh+CSLdJePyHqUqRdVNtUX?=
- =?us-ascii?Q?9PwCaMeVVLz48xnQF2qeTix2HlKWRcVEsncLcdrvTEitOD0kZWtJrI1R5XAS?=
- =?us-ascii?Q?br9EX7QXegJDDMuWDC88wAimPhZgldJT6WLurEYE31KoXrzknTEsjtzF/Npq?=
- =?us-ascii?Q?t+uujKyckfUk4AbJhmSSIJdYfpctnMWMYEi/SlXlPgFVolgdkmAFzuhTRaIB?=
- =?us-ascii?Q?lbSLcpFCTeP1t6ubefjjibhK9nUHIJcK2GVLGCqOgTwxnhgRzXBcdJxOaGPx?=
- =?us-ascii?Q?5nBHFmRXmmxsyujyhb0RbCyCvvbKQ0RAKp/ieFLLaNDUyb7+6HfYxHslZo5V?=
- =?us-ascii?Q?mk4yka6ocfYSgGL7UQBna8LkjFe6hx8CH2C7DpF6xwLdS8illbl0x58dueHI?=
- =?us-ascii?Q?IYPGkgVeXzx+DnIdx8M3svpEp3BYHOC6g4VTj2CZFVkrFgt5TfYjxJDH6onn?=
- =?us-ascii?Q?2s/bKEBRcYx+K9RXyvQogqSmrObAqw9jrIaD3339C/2t6JLB4e7o8g0dd6A4?=
- =?us-ascii?Q?c8wptS0FqxObUD8JKCdsNP3JrhTmGPfax9wVp7ByB4TMpGscPqWI8+KoWwg6?=
- =?us-ascii?Q?shGCaqEfom+7WQU4Ym4olybKTe2Fdde6A40KWuK3zTJSFOLZttzVm/Vy16Xw?=
- =?us-ascii?Q?wAGtugqm2gmmX6u1R5iS2viDwklHOui7rhLuhlYna8AtIrg+03uBmnnoLA1Q?=
- =?us-ascii?Q?RZA7mkYt05d/dV2OFcWa7Tgk9Le2dxITvfoIgFeWXdExBpYzz155e44s+KfJ?=
- =?us-ascii?Q?WOGVaFu3dHAtDTaXLrTcKGJ2?=
-X-OriginatorOrg: Nvidia.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: d8666174-6536-4539-9033-08d925f18e97
-X-MS-Exchange-CrossTenant-AuthSource: BL0PR12MB5506.namprd12.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 02 Jun 2021 18:09:26.0314 (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: KFZpXywWizMlXmPCZgwMcfwiqtBjyd0lO4XTOxDVp2Xrt7ZdmIxGP3XtWpq2o6PR
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: BL1PR12MB5272
+Authentication-Results: relay.mimecast.com;
+ auth=pass smtp.auth=CUSA124A263 smtp.mailfrom=alex.williamson@redhat.com
+X-Mimecast-Spam-Score: 0
+X-Mimecast-Originator: redhat.com
 Cc: Jean-Philippe Brucker <jean-philippe@linaro.org>, "Tian,
- Kevin" <kevin.tian@intel.com>, "Jiang, Dave" <dave.jiang@intel.com>, "Raj,
+ Kevin" <kevin.tian@intel.com>, "Jiang, Dave" <dave.jiang@intel.com>, "Raj, 
  Ashok" <ashok.raj@intel.com>, "kvm@vger.kernel.org" <kvm@vger.kernel.org>,
  Jonathan Corbet <corbet@lwn.net>, David Woodhouse <dwmw2@infradead.org>,
  Jason Wang <jasowang@redhat.com>, LKML <linux-kernel@vger.kernel.org>,
@@ -175,49 +138,70 @@ Content-Transfer-Encoding: 7bit
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-On Wed, Jun 02, 2021 at 12:01:11PM -0600, Alex Williamson wrote:
-> On Wed, 2 Jun 2021 14:35:10 -0300
-> Jason Gunthorpe <jgg@nvidia.com> wrote:
-> 
-> > On Wed, Jun 02, 2021 at 11:11:17AM -0600, Alex Williamson wrote:
-> > 
-> > > > > > present and be able to test if DMA for that device is cache
-> > > > > > coherent.    
+On Wed, 2 Jun 2021 15:09:25 -0300
+Jason Gunthorpe <jgg@nvidia.com> wrote:
+
+> On Wed, Jun 02, 2021 at 12:01:11PM -0600, Alex Williamson wrote:
+> > On Wed, 2 Jun 2021 14:35:10 -0300
+> > Jason Gunthorpe <jgg@nvidia.com> wrote:
+> >   
+> > > On Wed, Jun 02, 2021 at 11:11:17AM -0600, Alex Williamson wrote:
+> > >   
+> > > > > > > present and be able to test if DMA for that device is cache
+> > > > > > > coherent.      
+> > > > > 
+> > > > > Why is this such a strong linkage to VFIO and not just a 'hey kvm
+> > > > > emulate wbinvd' flag from qemu?    
 > > > > 
-> > > > Why is this such a strong linkage to VFIO and not just a 'hey kvm
-> > > > emulate wbinvd' flag from qemu?  
+> > > > IIRC, wbinvd has host implications, a malicious user could tell KVM to
+> > > > emulate wbinvd then run the op in a loop and induce a disproportionate
+> > > > load on the system.  We therefore wanted a way that it would only be
+> > > > enabled when required.    
 > > > 
-> > > IIRC, wbinvd has host implications, a malicious user could tell KVM to
-> > > emulate wbinvd then run the op in a loop and induce a disproportionate
-> > > load on the system.  We therefore wanted a way that it would only be
-> > > enabled when required.  
+> > > I think the non-coherentness is vfio_device specific? eg a specific
+> > > device will decide if it is coherent or not?  
 > > 
-> > I think the non-coherentness is vfio_device specific? eg a specific
-> > device will decide if it is coherent or not?
+> > No, this is specifically whether DMA is cache coherent to the
+> > processor, ie. in the case of wbinvd whether the processor needs to
+> > invalidate its cache in order to see data from DMA.  
 > 
-> No, this is specifically whether DMA is cache coherent to the
-> processor, ie. in the case of wbinvd whether the processor needs to
-> invalidate its cache in order to see data from DMA.
-
-I'm confused. This is x86, all DMA is cache coherent unless the device
-is doing something special.
-
-> > If yes I'd recast this to call kvm_arch_register_noncoherent_dma()
-> > from the VFIO_GROUP_NOTIFY_SET_KVM in the struct vfio_device
-> > implementation and not link it through the IOMMU.
+> I'm confused. This is x86, all DMA is cache coherent unless the device
+> is doing something special.
 > 
-> The IOMMU tells us if DMA is cache coherent, VFIO_DMA_CC_IOMMU maps to
-> IOMMU_CAP_CACHE_COHERENCY for all domains within a container.
+> > > If yes I'd recast this to call kvm_arch_register_noncoherent_dma()
+> > > from the VFIO_GROUP_NOTIFY_SET_KVM in the struct vfio_device
+> > > implementation and not link it through the IOMMU.  
+> > 
+> > The IOMMU tells us if DMA is cache coherent, VFIO_DMA_CC_IOMMU maps to
+> > IOMMU_CAP_CACHE_COHERENCY for all domains within a container.  
+> 
+> And this special IOMMU mode is basically requested by the device
+> driver, right? Because if you use this mode you have to also use
+> special programming techniques.
+> 
+> This smells like all the "snoop bypass" stuff from PCIE (for GPUs
+> even) in a different guise - it is device triggered, not platform
+> triggered behavior.
 
-And this special IOMMU mode is basically requested by the device
-driver, right? Because if you use this mode you have to also use
-special programming techniques.
+Right, the device can generate the no-snoop transactions, but it's the
+IOMMU that essentially determines whether those transactions are
+actually still cache coherent, AIUI.
 
-This smells like all the "snoop bypass" stuff from PCIE (for GPUs
-even) in a different guise - it is device triggered, not platform
-triggered behavior.
+I did experiment with virtually hardwiring the Enable No-Snoop bit in
+the Device Control Register to zero, which would be generically allowed
+by the PCIe spec, but then we get into subtle dependencies in the device
+drivers and clearing the bit again after any sort of reset and the
+backdoor accesses to config space which exist mostly in the class of
+devices that might use no-snoop transactions (yes, GPUs suck).
 
-Jason
+It was much easier and more robust to ignore the device setting and rely
+on the IOMMU behavior.  Yes, maybe we sometimes emulate wbinvd for VMs
+where the device doesn't support no-snoop, but it seemed like platforms
+were headed in this direction where no-snoop was ignored anyway.
+Thanks,
+
+Alex
+
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
