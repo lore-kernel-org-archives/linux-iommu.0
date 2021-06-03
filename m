@@ -2,103 +2,96 @@ Return-Path: <SRS0=MHXQ=K5=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-3.8 required=3.0 tests=BAYES_00,DKIM_INVALID,
-	DKIM_SIGNED,MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS autolearn=no
-	autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-6.8 required=3.0 tests=BAYES_00,
+	HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,
+	USER_AGENT_GIT autolearn=no autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2685EC47082
-	for <iommu@archiver.kernel.org>; Thu,  3 Jun 2021 19:32:38 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2B29AC47082
+	for <iommu@archiver.kernel.org>; Thu,  3 Jun 2021 19:51:33 +0000 (UTC)
 Received: from smtp2.osuosl.org (smtp2.osuosl.org [140.211.166.133])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id CE989613F4
-	for <iommu@archiver.kernel.org>; Thu,  3 Jun 2021 19:32:37 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org CE989613F4
-Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=kernel.org
+	by mail.kernel.org (Postfix) with ESMTPS id CC7EE613F9
+	for <iommu@archiver.kernel.org>; Thu,  3 Jun 2021 19:51:32 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org CC7EE613F9
+Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=canonical.com
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by smtp2.osuosl.org (Postfix) with ESMTP id 925F140136;
-	Thu,  3 Jun 2021 19:32:37 +0000 (UTC)
+	by smtp2.osuosl.org (Postfix) with ESMTP id 9B273401C7;
+	Thu,  3 Jun 2021 19:51:32 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
 Received: from smtp2.osuosl.org ([127.0.0.1])
 	by localhost (smtp2.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id DTS30jsy84tv; Thu,  3 Jun 2021 19:32:36 +0000 (UTC)
+	with ESMTP id HaO0i0dwbhD0; Thu,  3 Jun 2021 19:51:31 +0000 (UTC)
 Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by smtp2.osuosl.org (Postfix) with ESMTP id 6B80640111;
-	Thu,  3 Jun 2021 19:32:36 +0000 (UTC)
+	by smtp2.osuosl.org (Postfix) with ESMTP id 8D0A940001;
+	Thu,  3 Jun 2021 19:51:31 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 04E0EC000E;
-	Thu,  3 Jun 2021 19:32:36 +0000 (UTC)
-Received: from smtp3.osuosl.org (smtp3.osuosl.org [140.211.166.136])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 9005DC0001;
- Thu,  3 Jun 2021 19:32:35 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 72CABC000E;
+	Thu,  3 Jun 2021 19:51:31 +0000 (UTC)
+Received: from smtp2.osuosl.org (smtp2.osuosl.org [IPv6:2605:bc80:3010::133])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id DD24FC0001
+ for <iommu@lists.linux-foundation.org>; Thu,  3 Jun 2021 19:51:29 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by smtp3.osuosl.org (Postfix) with ESMTP id 7BE1660B6F;
- Thu,  3 Jun 2021 19:32:35 +0000 (UTC)
+ by smtp2.osuosl.org (Postfix) with ESMTP id B94434010C
+ for <iommu@lists.linux-foundation.org>; Thu,  3 Jun 2021 19:51:29 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Authentication-Results: smtp3.osuosl.org (amavisd-new);
- dkim=pass (2048-bit key) header.d=kernel.org
-Received: from smtp3.osuosl.org ([127.0.0.1])
- by localhost (smtp3.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id u3XTlXSxIrCF; Thu,  3 Jun 2021 19:32:34 +0000 (UTC)
+Received: from smtp2.osuosl.org ([127.0.0.1])
+ by localhost (smtp2.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+ with ESMTP id No3_4qgOkQsc for <iommu@lists.linux-foundation.org>;
+ Thu,  3 Jun 2021 19:51:29 +0000 (UTC)
 X-Greylist: domain auto-whitelisted by SQLgrey-1.8.0
-X-Greylist: domain auto-whitelisted by SQLgrey-1.8.0
-Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
- by smtp3.osuosl.org (Postfix) with ESMTPS id DEB02606C6;
- Thu,  3 Jun 2021 19:32:34 +0000 (UTC)
-Received: by mail.kernel.org (Postfix) with ESMTPSA id 6C0FD611CC;
- Thu,  3 Jun 2021 19:32:33 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
- s=k20201202; t=1622748754;
- bh=rvC32MA8E3QrSBWjTg6LF33SlYkWLco0I2yCu23n7Ok=;
- h=In-Reply-To:References:Date:From:To:Cc:Subject:From;
- b=jhQeYpzgE6vlWf6TMVMtA+XVEhF3g/+sc+mtqLnWt9Jxq6VW05vCdwGdpHLzufuYS
- UwGtMjrFLjvxTtrXwJuljVurczSzpAyvwhISyhtF9mlHrjE5HfQoaQl5Edk52qoEvO
- fIAR9d5gHQbaop5gruCM9Lb2jdZgO0Vki7OQd9lPddn94/3XqQQhfbFgTNLMzDuhWZ
- qfQDXIjh/bpK09jMqCFV81DG209YazmpQjI81ykvp5KDwDs8VWUNxwQkPY0OgkctQR
- pcqnAZK3Wrh9q7duTaMgSjY9Ojm0reQwUN8R3uZYRnguJ2XWcuU7B5qmCg7FnR504O
- BMQUYhKYK2fxg==
-Received: from compute2.internal (compute2.nyi.internal [10.202.2.42])
- by mailauth.nyi.internal (Postfix) with ESMTP id 6FF6127C005B;
- Thu,  3 Jun 2021 15:32:32 -0400 (EDT)
-Received: from imap21 ([10.202.2.71])
- by compute2.internal (MEProxy); Thu, 03 Jun 2021 15:32:32 -0400
-X-ME-Sender: <xms:Ti65YARuXTjJ3BHnKxxPhwSkEN4alc6eBsVdVZX7VFM1tHzIOxyOgw>
- <xme:Ti65YNyLRRxKCVBDmIPZpIaCS6oWxEjczPCeT15pkFl57T-PKotNNxIK4jcFo19NO
- s3Vs4kuPInKe7TqDrI>
-X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgeduledrvdelledgudefiecutefuodetggdotefrod
- ftvfcurfhrohhfihhlvgemucfhrghsthforghilhdpqfgfvfdpuffrtefokffrpgfnqfgh
- necuuegrihhlohhuthemuceftddtnecusecvtfgvtghiphhivghnthhsucdlqddutddtmd
- enucfjughrpefofgggkfgjfhffhffvufgtgfesthhqredtreerjeenucfhrhhomhepfdet
- nhguhicunfhuthhomhhirhhskhhifdcuoehluhhtoheskhgvrhhnvghlrdhorhhgqeenuc
- ggtffrrghtthgvrhhnpedvleehjeejvefhuddtgeegffdtjedtffegveethedvgfejieev
- ieeufeevuedvteenucevlhhushhtvghrufhiiigvpedtnecurfgrrhgrmhepmhgrihhlfh
- hrohhmpegrnhguhidomhgvshhmthhprghuthhhphgvrhhsohhnrghlihhthidqudduiedu
- keehieefvddqvdeifeduieeitdekqdhluhhtoheppehkvghrnhgvlhdrohhrgheslhhinh
- hugidrlhhuthhordhush
-X-ME-Proxy: <xmx:Ti65YN2MdDOPGi9cterhA_MhwaeugS0qPfadYs_WiFpFbzqTVeVAiQ>
- <xmx:Ti65YED0zWXWevXVsCLnReGi2B61zP8LIx-LINBak-ESTbCZ0sdehQ>
- <xmx:Ti65YJhDZklB1wypCK3j_CL1JFPBrH3kprv63MgfcNLqQZuCN3eyiA>
- <xmx:UC65YAOlSD8pvDt4Vuj2PT11Fvc3F8j5ymkDv3XWdRtZblxt_ngBaZaSAMHEjR9C>
-Received: by mailuser.nyi.internal (Postfix, from userid 501)
- id 66F9C51C0060; Thu,  3 Jun 2021 15:32:30 -0400 (EDT)
-X-Mailer: MessagingEngine.com Webmail Interface
-User-Agent: Cyrus-JMAP/3.5.0-alpha0-519-g27a961944e-fm-20210531.001-g27a96194
-Mime-Version: 1.0
-Message-Id: <2b2dec75-a0c1-4013-ac49-a49f30d5ac3c@www.fastmail.com>
-In-Reply-To: <a0e66b4c-cec5-2a26-9431-d5a21e22c8f2@linux.intel.com>
-References: <20210603004133.4079390-1-ak@linux.intel.com>
- <20210603004133.4079390-2-ak@linux.intel.com>
- <cc5c8265-83f7-aeb1-bc30-3367fe68bc97@kernel.org>
- <a0e66b4c-cec5-2a26-9431-d5a21e22c8f2@linux.intel.com>
-Date: Thu, 03 Jun 2021 12:31:59 -0700
-From: "Andy Lutomirski" <luto@kernel.org>
-To: "Andi Kleen" <ak@linux.intel.com>, mst@redhat.com
-Subject: Re: [PATCH v1 1/8] virtio: Force only split mode with protected guest
-Cc: jasowang@redhat.com, the arch/x86 maintainers <x86@kernel.org>,
- Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
- virtualization@lists.linux-foundation.org, iommu@lists.linux-foundation.org,
- Josh Poimboeuf <jpoimboe@redhat.com>, robin.murphy@arm.com, hch@lst.de
+Received: from youngberry.canonical.com (youngberry.canonical.com
+ [91.189.89.112])
+ by smtp2.osuosl.org (Postfix) with ESMTPS id EB71B40001
+ for <iommu@lists.linux-foundation.org>; Thu,  3 Jun 2021 19:51:28 +0000 (UTC)
+Received: from mail-ej1-f71.google.com ([209.85.218.71])
+ by youngberry.canonical.com with esmtps (TLS1.2) tls
+ TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256 (Exim 4.93)
+ (envelope-from <krzysztof.kozlowski@canonical.com>)
+ id 1lotNH-0007IR-25
+ for iommu@lists.linux-foundation.org; Thu, 03 Jun 2021 19:51:27 +0000
+Received: by mail-ej1-f71.google.com with SMTP id
+ eb10-20020a170907280ab02903d65bd14481so2333773ejc.21
+ for <iommu@lists.linux-foundation.org>; Thu, 03 Jun 2021 12:51:27 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+ d=1e100.net; s=20161025;
+ h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
+ :references:mime-version:content-transfer-encoding;
+ bh=vJZ+G8sCfXxUci2WJeauNczN90DwVJP1oUWm75cpx6c=;
+ b=B7iD1N11ObBkuQuGIdtOvpxTo2Mnu1DN+I3oFSBNASQF4YiNUBfWMxF0nyMogpyGfr
+ 1QhQ91rvYxmEOW/0IklPCKkj0F8Pss3dGtSrQkormtC+hls+nu54Seq+FSn8gVEJC7mN
+ zXPAN1h3ERO4D+/nX9CKmSmsEHC4CrwAWZNSJ95JqUzvJuHEsYezXA9lJe0BWDbpvpiY
+ GADWZiSKhm39UYgrEUopB3RYMt6U81SnnAvYNwZI/7dxX2KxelpAjNBRHZxUWmuqFUyg
+ Ws12oxJro/rhNhjw7m5VxV70ytndpopBlwhIkChqtjegl8ZRo5h/nDlBmYR5VDPv4Xo1
+ /u+A==
+X-Gm-Message-State: AOAM5300uzd61fBGZ/OvuLVRDMjUtARSJ6cc/EUyz42l1yQZY2l9RXun
+ hrdXPCzcabSGM+yUyRrE2q6nX+i9dT587khNlyrRFUmC6xwQiphgeVGIQ197vNt0ZW+cdeg2KBB
+ ZfbT32mEJGskbNh0UI0JMY8f4zDpFoYcQSA1YN0Ezt2b0Wz8=
+X-Received: by 2002:aa7:c450:: with SMTP id n16mr1062127edr.386.1622749886848; 
+ Thu, 03 Jun 2021 12:51:26 -0700 (PDT)
+X-Google-Smtp-Source: ABdhPJz5tmDUGs4U6g+UPVgs3XLfovlFqRM0G4ESDQqLS/sOG1jvSmsdXwNULc9nDt6jQqOsdsnYUA==
+X-Received: by 2002:aa7:c450:: with SMTP id n16mr1062113edr.386.1622749886743; 
+ Thu, 03 Jun 2021 12:51:26 -0700 (PDT)
+Received: from localhost.localdomain (xdsl-188-155-185-9.adslplus.ch.
+ [188.155.185.9])
+ by smtp.gmail.com with ESMTPSA id n15sm2185505eds.28.2021.06.03.12.51.25
+ (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+ Thu, 03 Jun 2021 12:51:26 -0700 (PDT)
+From: Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>
+To: Thierry Reding <thierry.reding@gmail.com>,
+	Will Deacon <will@kernel.org>
+Subject: Re: (subset) [PATCH v3 0/9] arm64: tegra: Prevent early SMMU faults
+Date: Thu,  3 Jun 2021 21:51:22 +0200
+Message-Id: <162274987317.22918.7304733660172079088.b4-ty@canonical.com>
+X-Mailer: git-send-email 2.27.0
+In-Reply-To: <20210603164632.1000458-1-thierry.reding@gmail.com>
+References: <20210603164632.1000458-1-thierry.reding@gmail.com>
+MIME-Version: 1.0
+Cc: Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>,
+ Jon Hunter <jonathanh@nvidia.com>, iommu@lists.linux-foundation.org,
+ Nicolin Chen <nicolinc@nvidia.com>, linux-tegra@vger.kernel.org,
+ Robin Murphy <robin.murphy@arm.com>, linux-arm-kernel@lists.infradead.org
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -111,39 +104,35 @@ List-Post: <mailto:iommu@lists.linux-foundation.org>
 List-Help: <mailto:iommu-request@lists.linux-foundation.org?subject=help>
 List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
  <mailto:iommu-request@lists.linux-foundation.org?subject=subscribe>
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-CgpPbiBUaHUsIEp1biAzLCAyMDIxLCBhdCAxMTowMCBBTSwgQW5kaSBLbGVlbiB3cm90ZToKPiAK
-PiBPbiA2LzMvMjAyMSAxMDozMyBBTSwgQW5keSBMdXRvbWlyc2tpIHdyb3RlOgo+ID4gT24gNi8y
-LzIxIDU6NDEgUE0sIEFuZGkgS2xlZW4gd3JvdGU6Cj4gPj4gT25seSBhbGxvdyBzcGxpdCBtb2Rl
-IHdoZW4gaW4gYSBwcm90ZWN0ZWQgZ3Vlc3QuIEZvbGxvd29uCj4gPj4gcGF0Y2hlcyBoYXJkZW4g
-dGhlIHNwbGl0IG1vZGUgY29kZSBwYXRocywgYW5kIHdlIGRvbid0IHdhbnQKPiA+PiBhbiBtYWxp
-Y2lvdXMgaG9zdCB0byBmb3JjZSBhbnl0aGluZyBlbHNlLiBBbHNvIGRpc2FsbG93Cj4gPj4gaW5k
-aXJlY3QgbW9kZSBmb3Igc2ltaWxhciByZWFzb25zLgo+ID4gSSByZWFkIHRoaXMgYXMgInRoZSB2
-aXJ0aW8gZHJpdmVyIGlzIGJ1Z2d5LiAgTGV0J3MgZGlzYWJsZSBtb3N0IG9mIHRoZQo+ID4gYnVn
-Z3kgY29kZSBpbiBvbmUgc3BlY2lhbCBjYXNlIGluIHdoaWNoIHdlIG5lZWQgYSBkcml2ZXIgd2l0
-aG91dCBidWdzLgo+ID4gSW4gYWxsIHRoZSBvdGhlciBjYXNlcyAoZS5nLiBoYXJkd2FyZSB2aXJ0
-aW8gZGV2aWNlIGNvbm5lY3RlZCBvdmVyCj4gPiBVU0ItQyksIGRyaXZlciBidWdzIGFyZSBzdGls
-bCBhbGxvd2VkLiIKPiAKPiBNeSB1bmRlcnN0YW5kaW5nIGlzIG1vc3Qgb2YgdGhlIG90aGVyIG1v
-ZGVzIChleGNlcHQgZm9yIHNwbGl0IHdpdGggCj4gc2VwYXJhdGUgZGVzY3JpcHRvcnMpIGFyZSBv
-YnNvbGV0ZSBhbmQganVzdCB0aGVyZSBmb3IgY29tcGF0aWJpbGl0eS4gQXMgCj4gbG9uZyBhcyB0
-aGV5J3JlIGRlcHJlY2F0ZWQgdGhleSB3b24ndCBoYXJtIGFueW9uZS4KPiAKPgoKVGVsbCB0aGF0
-IHRvIGV2ZXJ5IGNyeXB0byBkb3duZ3JhZGUgYXR0YWNrIGV2ZXIuCgpJIHNlZSB0d28gY3JlZGli
-bGUgc29sdXRpb25zOgoKMS4gQWN0dWFsbHkgaGFyZGVuIHRoZSB2aXJ0aW8gZHJpdmVyLgoKMi4g
-SGF2ZSBhIG5ldyB2aXJ0aW8tbW9kZXJuIGRyaXZlciBhbmQgdXNlIGl0IGZvciBtb2Rlcm4gdXNl
-IGNhc2VzLiBNYXliZSByZW5hbWUgdGhlIG9sZCBkcml2ZXIgdmlydGlvLWxlZ2FjeSBvciB2aXJ0
-aW8taW5zZWN1cmUuICBUaGV5IGNhbiBzaGFyZSBjb2RlLgoKQW5vdGhlciBzbmFnIHlvdSBtYXkg
-aGl0OiB2aXJ0aW/igJlzIGhldXJpc3RpYyBmb3Igd2hldGhlciB0byB1c2UgcHJvcGVyIERNQSBv
-cHMgb3IgdG8gYnlwYXNzIHRoZW0gaXMgYSBnaWFudCBrbHVkZ2UuIEnigJltIHZlcnkgc2xpZ2h0
-bHkgb3B0aW1pc3RpYyB0aGF0IGdldHRpbmcgdGhlIGhldXJpc3RpYyB3cm9uZyB3aWxsIG1ha2Ug
-dGhlIGRyaXZlciBmYWlsIHRvIG9wZXJhdGUgYnV0IHdvbuKAmXQgYWxsb3cgdGhlIGhvc3QgdG8g
-dGFrZSBvdmVyIHRoZSBndWVzdCwgYnV0IEnigJltIG5vdCByZWFsbHkgY29udmluY2VkLiBBbmQg
-SSB3cm90ZSB0aGF0IGNvZGUhICBBIHZpcnRpby1tb2Rlcm4gbW9kZSBwcm9iYWJseSBzaG91bGQg
-bm90IGhhdmUgYSBoZXVyaXN0aWMsIGFuZCB0aGUgdmFyaW91cyBpb21tdS1ieXBhc3NpbmcgbW9k
-ZXMgc2hvdWxkIGJlIGZpeGVkIHRvIHdvcmsgYXQgdGhlIGJ1cyBsZXZlbCwgbm90IHRoZSBkZXZp
-Y2UgbGV2ZWwuCl9fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19f
-CmlvbW11IG1haWxpbmcgbGlzdAppb21tdUBsaXN0cy5saW51eC1mb3VuZGF0aW9uLm9yZwpodHRw
-czovL2xpc3RzLmxpbnV4Zm91bmRhdGlvbi5vcmcvbWFpbG1hbi9saXN0aW5mby9pb21tdQ==
+On Thu, 3 Jun 2021 18:46:23 +0200, Thierry Reding wrote:
+> this is a set of patches that is the result of earlier discussions
+> regarding early identity mappings that are needed to avoid SMMU faults
+> during early boot.
+> 
+> The goal here is to avoid early identity mappings altogether and instead
+> postpone the need for the identity mappings to when devices are attached
+> to the SMMU. This works by making the SMMU driver coordinate with the
+> memory controller driver on when to start enforcing SMMU translations.
+> This makes Tegra behave in a more standard way and pushes the code to
+> deal with the Tegra-specific programming into the NVIDIA SMMU
+> implementation.
+> 
+> [...]
+
+Applied, thanks!
+
+[1/9] memory: tegra: Implement SID override programming
+      commit: 393d66fd2cacba3e6aa95d7bb38790bfb7b1cc3a
+
+Best regards,
+-- 
+Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>
+_______________________________________________
+iommu mailing list
+iommu@lists.linux-foundation.org
+https://lists.linuxfoundation.org/mailman/listinfo/iommu
