@@ -2,80 +2,176 @@ Return-Path: <SRS0=MHXQ=K5=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-5.9 required=3.0 tests=BAYES_00,
-	HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,NICE_REPLY_A,SPF_HELO_NONE,
-	SPF_PASS,USER_AGENT_SANE_1 autolearn=no autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-3.6 required=3.0 tests=BAYES_00,DKIM_INVALID,
+	DKIM_SIGNED,HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,SPF_HELO_NONE,
+	SPF_PASS autolearn=no autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id BCF74C47083
-	for <iommu@archiver.kernel.org>; Thu,  3 Jun 2021 02:56:52 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id BF9F9C47083
+	for <iommu@archiver.kernel.org>; Thu,  3 Jun 2021 03:02:16 +0000 (UTC)
 Received: from smtp1.osuosl.org (smtp1.osuosl.org [140.211.166.138])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 608B9613EE
-	for <iommu@archiver.kernel.org>; Thu,  3 Jun 2021 02:56:52 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 608B9613EE
-Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=linux.intel.com
+	by mail.kernel.org (Postfix) with ESMTPS id 5EF4C61396
+	for <iommu@archiver.kernel.org>; Thu,  3 Jun 2021 03:02:16 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 5EF4C61396
+Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=intel.com
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by smtp1.osuosl.org (Postfix) with ESMTP id 288DA83E0F;
-	Thu,  3 Jun 2021 02:56:52 +0000 (UTC)
+	by smtp1.osuosl.org (Postfix) with ESMTP id 2C65683E0A;
+	Thu,  3 Jun 2021 03:02:16 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
 Received: from smtp1.osuosl.org ([127.0.0.1])
 	by localhost (smtp1.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id VunwIb7dJauw; Thu,  3 Jun 2021 02:56:51 +0000 (UTC)
-Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [IPv6:2605:bc80:3010:104::8cd3:938])
-	by smtp1.osuosl.org (Postfix) with ESMTP id 0BC7F83E0B;
-	Thu,  3 Jun 2021 02:56:51 +0000 (UTC)
+	with ESMTP id c9YSNrfA5W9u; Thu,  3 Jun 2021 03:02:15 +0000 (UTC)
+Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
+	by smtp1.osuosl.org (Postfix) with ESMTP id E3EC883E09;
+	Thu,  3 Jun 2021 03:02:14 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id D2C72C000E;
-	Thu,  3 Jun 2021 02:56:50 +0000 (UTC)
-Received: from smtp2.osuosl.org (smtp2.osuosl.org [IPv6:2605:bc80:3010::133])
- by lists.linuxfoundation.org (Postfix) with ESMTP id E001DC0001;
- Thu,  3 Jun 2021 02:56:49 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id C997FC000E;
+	Thu,  3 Jun 2021 03:02:14 +0000 (UTC)
+Received: from smtp4.osuosl.org (smtp4.osuosl.org [140.211.166.137])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 03B52C0001
+ for <iommu@lists.linux-foundation.org>; Thu,  3 Jun 2021 03:02:13 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by smtp2.osuosl.org (Postfix) with ESMTP id C16CD400D8;
- Thu,  3 Jun 2021 02:56:49 +0000 (UTC)
+ by smtp4.osuosl.org (Postfix) with ESMTP id CFAB44058A
+ for <iommu@lists.linux-foundation.org>; Thu,  3 Jun 2021 03:02:13 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from smtp2.osuosl.org ([127.0.0.1])
- by localhost (smtp2.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id z7tDOqJw_ECv; Thu,  3 Jun 2021 02:56:49 +0000 (UTC)
+Authentication-Results: smtp4.osuosl.org (amavisd-new);
+ dkim=pass (1024-bit key) header.d=intel.onmicrosoft.com
+Received: from smtp4.osuosl.org ([127.0.0.1])
+ by localhost (smtp4.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+ with ESMTP id b5FwXy5vNxmM for <iommu@lists.linux-foundation.org>;
+ Thu,  3 Jun 2021 03:02:12 +0000 (UTC)
 X-Greylist: domain auto-whitelisted by SQLgrey-1.8.0
-X-Greylist: domain auto-whitelisted by SQLgrey-1.8.0
-Received: from mga02.intel.com (mga02.intel.com [134.134.136.20])
- by smtp2.osuosl.org (Postfix) with ESMTPS id 3365B400B8;
- Thu,  3 Jun 2021 02:56:48 +0000 (UTC)
-IronPort-SDR: ayEEZz93ETXZVs+ZtSqH+Qcu0b8ofCoX7r7nNzV+0cHRPbBuuxjEPTT5e03I+HfUS6FpLx8sLS
- EdwU8IWGHryw==
-X-IronPort-AV: E=McAfee;i="6200,9189,10003"; a="191061483"
-X-IronPort-AV: E=Sophos;i="5.83,244,1616482800"; d="scan'208";a="191061483"
-Received: from fmsmga001.fm.intel.com ([10.253.24.23])
- by orsmga101.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384;
- 02 Jun 2021 19:56:48 -0700
-IronPort-SDR: KhRXtgngnmgKjM5HGekGuKCGTxqbA99N9UtERxN/h391vZaKc5WUL0tyOCjFA2/qjOiV0+JkOX
- pLjDWqoLDQ8g==
-X-IronPort-AV: E=Sophos;i="5.83,244,1616482800"; d="scan'208";a="550535335"
-Received: from akleen-mobl1.amr.corp.intel.com (HELO [10.209.87.193])
- ([10.209.87.193])
- by fmsmga001-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384;
- 02 Jun 2021 19:56:47 -0700
-Subject: Re: [PATCH v1 1/8] virtio: Force only split mode with protected guest
-To: Jason Wang <jasowang@redhat.com>, mst@redhat.com
-References: <20210603004133.4079390-1-ak@linux.intel.com>
- <20210603004133.4079390-2-ak@linux.intel.com>
- <28c8302b-6833-10b4-c0eb-67456e7c4069@redhat.com>
- <09e17c7f-ce51-1a46-72c4-12223bee4e3a@linux.intel.com>
- <1c08bc42-7448-351e-78bf-fcf68d2b2561@redhat.com>
-From: Andi Kleen <ak@linux.intel.com>
-Message-ID: <5a2d0d70-fa6b-f08d-f222-5c00cf5f9d44@linux.intel.com>
-Date: Wed, 2 Jun 2021 19:56:46 -0700
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:78.0) Gecko/20100101
- Thunderbird/78.10.2
-MIME-Version: 1.0
-In-Reply-To: <1c08bc42-7448-351e-78bf-fcf68d2b2561@redhat.com>
+Received: from mga11.intel.com (mga11.intel.com [192.55.52.93])
+ by smtp4.osuosl.org (Postfix) with ESMTPS id B60FD40589
+ for <iommu@lists.linux-foundation.org>; Thu,  3 Jun 2021 03:02:12 +0000 (UTC)
+IronPort-SDR: /43s+1flBmSI78xcuzuUp65BXfy8JOFj18RhVlY+w2JJd8JhTVCCAaVmm+I4Mo+1aVqLv0Y3ye
+ oxzmuxEAcTTg==
+X-IronPort-AV: E=McAfee;i="6200,9189,10003"; a="200938837"
+X-IronPort-AV: E=Sophos;i="5.83,244,1616482800"; d="scan'208";a="200938837"
+Received: from orsmga001.jf.intel.com ([10.7.209.18])
+ by fmsmga102.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384;
+ 02 Jun 2021 20:02:11 -0700
+IronPort-SDR: gZpWgS8cqtHosbdq12Ii7OTYCoqlbOW+nkfBuL8BX8bQ2eWfhYmEo1VF0A9bSczsv96ulbu1DZ
+ VlhDULPEui3Q==
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.83,244,1616482800"; d="scan'208";a="479989623"
+Received: from orsmsx606.amr.corp.intel.com ([10.22.229.19])
+ by orsmga001.jf.intel.com with ESMTP; 02 Jun 2021 20:02:11 -0700
+Received: from orsmsx610.amr.corp.intel.com (10.22.229.23) by
+ ORSMSX606.amr.corp.intel.com (10.22.229.19) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2242.4; Wed, 2 Jun 2021 20:02:11 -0700
+Received: from ORSEDG601.ED.cps.intel.com (10.7.248.6) by
+ orsmsx610.amr.corp.intel.com (10.22.229.23) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2242.4
+ via Frontend Transport; Wed, 2 Jun 2021 20:02:10 -0700
+Received: from NAM11-DM6-obe.outbound.protection.outlook.com (104.47.57.172)
+ by edgegateway.intel.com (134.134.137.102) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.1.2242.4; Wed, 2 Jun 2021 20:02:10 -0700
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=GQOJYQYroEvLMt9cRw4rzaLMH0kRraA+p9BkgAxFEOIicLp8Lg/+qPXuwxrXwFByHulO4AIb20RfC6vnmqIsOkp6VgAGvq4djFhmUyscnzdsKLVE+E0K1pwPe/8eIT4FdI4/D9xhfPIC1xqFHyNyh8hRdsaNtlLdQBzbg5logeNvv0Iy6bcwTOtXjiplEGO1bCgJT8zIF4pxolEV2yxljopRCSm+iw5/Luq7PzJFbdmc9At2t5XaeZZS24H8DVimajGth275IkAp1/5EhKyPcMCck0gs3XqPkX1X3EOnZ/HlIBr2u4GWykizY4KPY4cfS5z48C4hcYnWPJOX2gec8w==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com; 
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=moxj2sRdG7GOoYHIThIOGijquZOQbadeY2DJ5JjmmRI=;
+ b=btEbyaVgR1PxCCScML1osY6cZXiuve9OzJ8lC3yziOMS9bjz8XY18OXXMZ9qGgbT+d1TJRF95/D2wMjTCCu1jAasYlNtuDJJvj3AI8IBLivX5fwxz4mXII18cI2fSvwqyn25N7esY6H83UsjZBdJf6HFmr7y2XfKaPcrst4Piq4WUmLgVgrmCur/H+RIOqkMmvRLs7XDf5w2nZLhHEKG2tKvIWiumEs/eZe7w8iUq0IAyWLGcnRtRqeLa4dXjUAg3MSYrcvyMcsH+dkx9EXQsuk5YGJdQ6oVnk93X5DiRNUK9EVFj+bM8/Gx6izv88cuDIMGGIUFTYYEXdgWGQC8JA==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=intel.com; dmarc=pass action=none header.from=intel.com;
+ dkim=pass header.d=intel.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=intel.onmicrosoft.com; 
+ s=selector2-intel-onmicrosoft-com;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=moxj2sRdG7GOoYHIThIOGijquZOQbadeY2DJ5JjmmRI=;
+ b=J8oenfg3ewU5A18QrZnqKfwEQvjbI5/ytMx02iVUA82q0CVwL83ceQzyWuKpr0Dpg9WNtz8b3/LQk8uUrUWQgAuOrgUdQenrvLO2Lhz6JzTANxD8qM024iSp+N3z7nZdu1WHrHIz9XY7ikNI6QXcEYthhgacX5wBlRxWc5vpM0E=
+Received: from MWHPR11MB1886.namprd11.prod.outlook.com (2603:10b6:300:110::9)
+ by MW3PR11MB4521.namprd11.prod.outlook.com (2603:10b6:303:55::13)
+ with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4173.21; Thu, 3 Jun
+ 2021 03:02:06 +0000
+Received: from MWHPR11MB1886.namprd11.prod.outlook.com
+ ([fe80::6597:eb05:c507:c6c1]) by MWHPR11MB1886.namprd11.prod.outlook.com
+ ([fe80::6597:eb05:c507:c6c1%12]) with mapi id 15.20.4173.030; Thu, 3 Jun 2021
+ 03:02:06 +0000
+From: "Tian, Kevin" <kevin.tian@intel.com>
+To: Jason Gunthorpe <jgg@nvidia.com>, David Gibson
+ <david@gibson.dropbear.id.au>
+Subject: RE: [RFC] /dev/ioasid uAPI proposal
+Thread-Topic: [RFC] /dev/ioasid uAPI proposal
+Thread-Index: AddSzQ970oLnVHLeQca/ysPD8zMJZwEqZK+AABc0DAAAFBnbgA==
+Date: Thu, 3 Jun 2021 03:02:05 +0000
+Message-ID: <MWHPR11MB18862A625FD6BED5ABE2D21E8C3C9@MWHPR11MB1886.namprd11.prod.outlook.com>
+References: <MWHPR11MB1886422D4839B372C6AB245F8C239@MWHPR11MB1886.namprd11.prod.outlook.com>
+ <YLch6zbbYqV4PyVf@yekko> <20210602171930.GB1002214@nvidia.com>
+In-Reply-To: <20210602171930.GB1002214@nvidia.com>
+Accept-Language: en-US
 Content-Language: en-US
-Cc: x86@kernel.org, linux-kernel@vger.kernel.org,
- virtualization@lists.linux-foundation.org, iommu@lists.linux-foundation.org,
- jpoimboe@redhat.com, robin.murphy@arm.com, hch@lst.de
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+dlp-version: 11.5.1.3
+dlp-product: dlpe-windows
+dlp-reaction: no-action
+authentication-results: nvidia.com; dkim=none (message not signed)
+ header.d=none;nvidia.com; dmarc=none action=none header.from=intel.com;
+x-originating-ip: [192.198.142.24]
+x-ms-publictraffictype: Email
+x-ms-office365-filtering-correlation-id: 42661e75-c7d3-4c1d-e8e6-08d9263bf85b
+x-ms-traffictypediagnostic: MW3PR11MB4521:
+x-ld-processed: 46c98d88-e344-4ed4-8496-4ed7712e255d,ExtAddr
+x-ms-exchange-transport-forked: True
+x-microsoft-antispam-prvs: <MW3PR11MB45211B29BD623AEBA660061D8C3C9@MW3PR11MB4521.namprd11.prod.outlook.com>
+x-ms-oob-tlc-oobclassifiers: OLM:6430;
+x-ms-exchange-senderadcheck: 1
+x-microsoft-antispam: BCL:0;
+x-microsoft-antispam-message-info: WTr4mIzYHyHVjLkPUpo1AeiiC+zLqBF8lYBmrd+3LxDDWCDOJFf84f74ytMCJXDJvo4XUKjXLiulnpkAvCx4avTTDacyD3r4stfZIvRBjLUtmUGNwHvE0/a4+xq8W2Jy8cZ+obZsoVRxyuEqbuwc1I1XB25+EAdnYJ0oAJncC57AUVTQWWF/jJeth8GW8sTxVX0egd4WPjCJu12xVf7o+8CpwsjHFTM0Y4IUxbpolhUSvm5S1x53ITiutiaz7cMi8jcoHtfRjam2cFk0AXNYOtMqBw2M5AkfCMicsxHCS74mDyMpqb0Zie4WxGLHAI9gGMhFGJyg7FTHHf/BNiQBSfq2kUx0Qxfawpoxxpjjt5fzssOmj4HEIo5wbSi4UjEcbntHjxZnxC7zKRj8/McoWeVgFTGgamEOFJH0g+ZqDmqNm3yRiWZC1Y7HlrFUc10IJJH1nkTLkdYJNET92nonXzce+0Pz+OKSf3MKuwkDNvQ/0iBdJK+nRsN4WASBpF1qhSIsbjXzuZTRMTDG5IXq0zkrekBNJ2/4aY2wcYB6LhZp1vzdOg0mYJo0XKj/R/WeeabdtHGdj/WJxdgVP7RQEr6wWcKZvElRG/TUNOK2aic=
+x-forefront-antispam-report: CIP:255.255.255.255; CTRY:; LANG:en; SCL:1; SRV:;
+ IPV:NLI; SFV:NSPM; H:MWHPR11MB1886.namprd11.prod.outlook.com; PTR:; CAT:NONE;
+ SFS:(376002)(396003)(136003)(39860400002)(346002)(366004)(4326008)(54906003)(9686003)(83380400001)(2906002)(71200400001)(8676002)(55016002)(38100700002)(110136005)(26005)(7416002)(122000001)(33656002)(5660300002)(76116006)(66946007)(86362001)(186003)(66556008)(66476007)(316002)(66446008)(64756008)(7696005)(6506007)(52536014)(8936002)(478600001);
+ DIR:OUT; SFP:1102; 
+x-ms-exchange-antispam-messagedata: =?us-ascii?Q?/mS0boCdgUOmVzF1W3DSNlfdlyoDNM9GcT7kh/qCCzlNKMSNhBX0AHowcFa+?=
+ =?us-ascii?Q?foxDY7yC7q3ZdHF7D2kIU2Bdbppm7fjkvENGgdnsZd+feeWLXqZ/N4tdXgg8?=
+ =?us-ascii?Q?Ml/WjvR7Cld7sBbFsG8LZ9H+ugoF2WsV1Dhwl/lP5afC9chR3GUYmFIOY2s/?=
+ =?us-ascii?Q?cAj2lYZeBN3GFHhk+ArLsZ+oWkmtuYm9Y+9/EoZBjY941aXGEU8lMr8LnwrH?=
+ =?us-ascii?Q?Z6DSywlYmwbWOkf/N3Imuzb8U7byNWsiRn6aDPN5AqGJFk1OoqXg/aV9Kn5W?=
+ =?us-ascii?Q?HJw1YmVHxb+u8BPwEQffVizfpWuF0iffxbNd4MwmgmnKEcKD8eVwrpog6Yy2?=
+ =?us-ascii?Q?5hG9q+I6kfwTtA5pxooF8Oyl+9rCJxjIsfNNv+bjdn6g6/1aIuFSMZEJNV24?=
+ =?us-ascii?Q?BvMtgEbTh7Ah9LNUEIXTSW2KLuEOMvdYghiMXGsohzGEJOiVnTOAesbPtnTC?=
+ =?us-ascii?Q?seog+TI9NugCXwpBfvGe28E2gGZyQWRIlC8QNbitFWXHStZ71hGRYjeKpIjl?=
+ =?us-ascii?Q?Pv1PhQBzLY+GSjdvwjEHaVS/F3FvrwmZPOEwA5QhP9vsb+r/rqaORr3Z31C1?=
+ =?us-ascii?Q?02c7NBxocGnJ0KMvBryh4fdaIwdKGG/Cwyidge2YT949yz/G/C21wMp6m/F+?=
+ =?us-ascii?Q?3XF0n9/JOJu4BJnyV8KNEPir/VS9Cy6BbdzlHxawwgNZUnEnM7D6WcYZwaox?=
+ =?us-ascii?Q?ZJLBUAXdbWMVxgLq6v6hBNv24ZopsRVoL8QCC/p4q0J92wy7l12Lq9OTC9Hb?=
+ =?us-ascii?Q?CIkqQQjmx1KDwZePqdgEEi2kE38rwSvh5qVerU6JOpEbYL2nwNuAWvWbmWuP?=
+ =?us-ascii?Q?tjoay9DKhG6nf19Ib/BMeJkWf1DZO52GK5Qpbe9N1V9SwJHl3QvnserIPi6e?=
+ =?us-ascii?Q?0AFGh7WZx46jNXWrDbXQXmqGcEVZ5/boEvEKW09rBIfot25IA+03G3Na4gI7?=
+ =?us-ascii?Q?z9MIcWzRGrArV9a+spB2M+qggf3Syi+Cy93aoRTX+4C4r8NxvmsKk0mmWPPU?=
+ =?us-ascii?Q?X1MWkSKRX83xsnwWMOoxH4jMa7Btd/tF+y4PK5ginaSkDStqyeAqpbIKO9sy?=
+ =?us-ascii?Q?FwipO/ofRoqbgCZFTqvjdicMTCJqlwf/R+bmS93S1Om0ICqjezu23UGGRm0A?=
+ =?us-ascii?Q?EnSBkvq1XTNXA+3eELLywl4ti9AC/MT3yUCIOKMsOJNBUGLxBPhtXiovUdjS?=
+ =?us-ascii?Q?3UjN2yUtzshTvZd6Jj0pfrVLnx/wmdXPuyiGNDkobBIk6NFXcguwtZbYWU7N?=
+ =?us-ascii?Q?oEQdS9YIeUkP13ZexjkBL62dIBHv/5HXqavjwJXG3bOTAowbIKXdmpoL/PuH?=
+ =?us-ascii?Q?oO8NEXqz7oMPdIzotcsbE5XF?=
+MIME-Version: 1.0
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-AuthSource: MWHPR11MB1886.namprd11.prod.outlook.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 42661e75-c7d3-4c1d-e8e6-08d9263bf85b
+X-MS-Exchange-CrossTenant-originalarrivaltime: 03 Jun 2021 03:02:05.9595 (UTC)
+X-MS-Exchange-CrossTenant-fromentityheader: Hosted
+X-MS-Exchange-CrossTenant-id: 46c98d88-e344-4ed4-8496-4ed7712e255d
+X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
+X-MS-Exchange-CrossTenant-userprincipalname: 6YwYGhevC/J09TtnLrZvZRTqTZBDm1DclkMxCeo2IC3tXP9bmdGNFrRerfEiFaFYiqZ98/AydflFUsVgfqBamg==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: MW3PR11MB4521
+X-OriginatorOrg: intel.com
+Cc: Jean-Philippe Brucker <jean-philippe@linaro.org>, "Alex Williamson
+ \(alex.williamson@redhat.com\)" <alex.williamson@redhat.com>, "Raj,
+ Ashok" <ashok.raj@intel.com>, "kvm@vger.kernel.org" <kvm@vger.kernel.org>,
+ Jonathan Corbet <corbet@lwn.net>, Robin Murphy <robin.murphy@arm.com>,
+ LKML <linux-kernel@vger.kernel.org>, Kirti Wankhede <kwankhede@nvidia.com>,
+ "iommu@lists.linux-foundation.org" <iommu@lists.linux-foundation.org>, "Jiang,
+ Dave" <dave.jiang@intel.com>, David Woodhouse <dwmw2@infradead.org>,
+ Jason Wang <jasowang@redhat.com>
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -88,24 +184,115 @@ List-Post: <mailto:iommu@lists.linux-foundation.org>
 List-Help: <mailto:iommu-request@lists.linux-foundation.org?subject=help>
 List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
  <mailto:iommu-request@lists.linux-foundation.org?subject=subscribe>
+Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
-Content-Type: text/plain; charset="us-ascii"; Format="flowed"
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
+> From: Jason Gunthorpe <jgg@nvidia.com>
+> Sent: Thursday, June 3, 2021 1:20 AM
+> 
+[...]
+> > I wonder if there's a way to model this using a nested AS rather than
+> > requiring special operations.  e.g.
+> >
+> > 	'prereg' IOAS
+> > 	|
+> > 	\- 'rid' IOAS
+> > 	   |
+> > 	   \- 'pasid' IOAS (maybe)
+> >
+> > 'prereg' would have a kernel managed pagetable into which (for
+> > example) qemu platform code would map all guest memory (using
+> > IOASID_MAP_DMA).  qemu's vIOMMU driver would then mirror the guest's
+> > IO mappings into the 'rid' IOAS in terms of GPA.
+> >
+> > This wouldn't quite work as is, because the 'prereg' IOAS would have
+> > no devices.  But we could potentially have another call to mark an
+> > IOAS as a purely "preregistration" or pure virtual IOAS.  Using that
+> > would be an alternative to attaching devices.
+> 
+> It is one option for sure, this is where I was thinking when we were
+> talking in the other thread. I think the decision is best
+> implementation driven as the datastructure to store the
+> preregsitration data should be rather purpose built.
 
->
-> I agree, but I want to know why indirect descriptor needs to be 
-> disabled. The table can't be wrote by the device since it's not 
-> coherent swiotlb mapping.
+Yes. For now I prefer to managing prereg through a separate cmd
+instead of special-casing it in the IOASID graph. Anyway this is sort
+of a per-fd thing.
 
-I had all kinds of problems with uninitialized entries in the indirect 
-table. So I gave up on it and concluded it would be too difficult to secure.
+> 
+> > > /*
+> > >   * Map/unmap process virtual addresses to I/O virtual addresses.
+> > >   *
+> > >   * Provide VFIO type1 equivalent semantics. Start with the same
+> > >   * restriction e.g. the unmap size should match those used in the
+> > >   * original mapping call.
+> > >   *
+> > >   * If IOASID_REGISTER_MEMORY has been called, the mapped vaddr
+> > >   * must be already in the preregistered list.
+> > >   *
+> > >   * Input parameters:
+> > >   *	- u32 ioasid;
+> > >   *	- refer to vfio_iommu_type1_dma_{un}map
+> > >   *
+> > >   * Return: 0 on success, -errno on failure.
+> > >   */
+> > > #define IOASID_MAP_DMA	_IO(IOASID_TYPE, IOASID_BASE + 6)
+> > > #define IOASID_UNMAP_DMA	_IO(IOASID_TYPE, IOASID_BASE + 7)
+> >
+> > I'm assuming these would be expected to fail if a user managed
+> > pagetable has been bound?
+> 
+> Me too, or a SVA page table.
+> 
+> This document would do well to have a list of imagined page table
+> types and the set of operations that act on them. I think they are all
+> pretty disjoint..
+> 
+> Your presentation of 'kernel owns the table' vs 'userspace owns the
+> table' is a useful clarification to call out too
 
+sure, I incorporated this comment in last reply.
 
--Andi
+> 
+> > > 5. Use Cases and Flows
+> > >
+> > > Here assume VFIO will support a new model where every bound device
+> > > is explicitly listed under /dev/vfio thus a device fd can be acquired w/o
+> > > going through legacy container/group interface. For illustration purpose
+> > > those devices are just called dev[1...N]:
+> > >
+> > > 	device_fd[1...N] = open("/dev/vfio/devices/dev[1...N]", mode);
+> >
+> > Minor detail, but I'd suggest /dev/vfio/pci/DDDD:BB:SS.F for the
+> > filenames for actual PCI functions.  Maybe /dev/vfio/mdev/something
+> > for mdevs.  That leaves other subdirs of /dev/vfio free for future
+> > non-PCI device types, and /dev/vfio itself for the legacy group
+> > devices.
+> 
+> There are a bunch of nice options here if we go this path
 
+Yes, this part is only roughly visited to focus on /dev/iommu first. In later
+versions it will be considered more seriously.
 
+> 
+> > > 5.2. Multiple IOASIDs (no nesting)
+> > > ++++++++++++++++++++++++++++
+> > >
+> > > Dev1 and dev2 are assigned to the guest. vIOMMU is enabled. Initially
+> > > both devices are attached to gpa_ioasid.
+> >
+> > Doesn't really affect your example, but note that the PAPR IOMMU does
+> > not have a passthrough mode, so devices will not initially be attached
+> > to gpa_ioasid - they will be unusable for DMA until attached to a
+> > gIOVA ioasid.
+
+'initially' here is still user-requested action. For PAPR you should do
+attach only when it's necessary.
+
+Thanks
+Kevin
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
