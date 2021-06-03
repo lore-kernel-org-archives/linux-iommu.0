@@ -6,83 +6,71 @@ X-Spam-Status: No, score=-5.9 required=3.0 tests=BAYES_00,DKIM_INVALID,
 	DKIM_SIGNED,MAILING_LIST_MULTI,NICE_REPLY_A,SPF_HELO_NONE,SPF_PASS,
 	USER_AGENT_SANE_1 autolearn=no autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 38EADC47082
-	for <iommu@archiver.kernel.org>; Thu,  3 Jun 2021 17:31:42 +0000 (UTC)
-Received: from smtp4.osuosl.org (smtp4.osuosl.org [140.211.166.137])
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 581CFC47097
+	for <iommu@archiver.kernel.org>; Thu,  3 Jun 2021 17:33:45 +0000 (UTC)
+Received: from smtp1.osuosl.org (smtp1.osuosl.org [140.211.166.138])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id C02A6613AD
-	for <iommu@archiver.kernel.org>; Thu,  3 Jun 2021 17:31:41 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org C02A6613AD
+	by mail.kernel.org (Postfix) with ESMTPS id 0F5D1613F1
+	for <iommu@archiver.kernel.org>; Thu,  3 Jun 2021 17:33:45 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 0F5D1613F1
 Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=kernel.org
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by smtp4.osuosl.org (Postfix) with ESMTP id 8A585405A7;
-	Thu,  3 Jun 2021 17:31:41 +0000 (UTC)
+	by smtp1.osuosl.org (Postfix) with ESMTP id C3F5483F0D;
+	Thu,  3 Jun 2021 17:33:44 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from smtp4.osuosl.org ([127.0.0.1])
-	by localhost (smtp4.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id y0P3HpiPfEmU; Thu,  3 Jun 2021 17:31:40 +0000 (UTC)
-Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by smtp4.osuosl.org (Postfix) with ESMTP id 4AB71404FE;
-	Thu,  3 Jun 2021 17:31:40 +0000 (UTC)
+Received: from smtp1.osuosl.org ([127.0.0.1])
+	by localhost (smtp1.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+	with ESMTP id vnNKxMvSyLkX; Thu,  3 Jun 2021 17:33:44 +0000 (UTC)
+Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [IPv6:2605:bc80:3010:104::8cd3:938])
+	by smtp1.osuosl.org (Postfix) with ESMTP id A3E7383EF0;
+	Thu,  3 Jun 2021 17:33:43 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 0D36EC000E;
-	Thu,  3 Jun 2021 17:31:40 +0000 (UTC)
-Received: from smtp4.osuosl.org (smtp4.osuosl.org [IPv6:2605:bc80:3010::137])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 18BB9C0001
- for <iommu@lists.linux-foundation.org>; Thu,  3 Jun 2021 17:31:39 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 84E8CC000E;
+	Thu,  3 Jun 2021 17:33:43 +0000 (UTC)
+Received: from smtp1.osuosl.org (smtp1.osuosl.org [IPv6:2605:bc80:3010::138])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id E568BC0001;
+ Thu,  3 Jun 2021 17:33:41 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by smtp4.osuosl.org (Postfix) with ESMTP id E4CC3405A7
- for <iommu@lists.linux-foundation.org>; Thu,  3 Jun 2021 17:31:38 +0000 (UTC)
+ by smtp1.osuosl.org (Postfix) with ESMTP id D1CDB83EF6;
+ Thu,  3 Jun 2021 17:33:41 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from smtp4.osuosl.org ([127.0.0.1])
- by localhost (smtp4.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id oT0UCx3_mj5D for <iommu@lists.linux-foundation.org>;
- Thu,  3 Jun 2021 17:31:38 +0000 (UTC)
+Received: from smtp1.osuosl.org ([127.0.0.1])
+ by localhost (smtp1.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+ with ESMTP id 4EqNSspSO_Ka; Thu,  3 Jun 2021 17:33:41 +0000 (UTC)
+X-Greylist: domain auto-whitelisted by SQLgrey-1.8.0
 X-Greylist: domain auto-whitelisted by SQLgrey-1.8.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
- by smtp4.osuosl.org (Postfix) with ESMTPS id 380C4404FE
- for <iommu@lists.linux-foundation.org>; Thu,  3 Jun 2021 17:31:38 +0000 (UTC)
-Received: by mail.kernel.org (Postfix) with ESMTPSA id 14028600EF;
- Thu,  3 Jun 2021 17:31:37 +0000 (UTC)
+ by smtp1.osuosl.org (Postfix) with ESMTPS id 5826683EF0;
+ Thu,  3 Jun 2021 17:33:41 +0000 (UTC)
+Received: by mail.kernel.org (Postfix) with ESMTPSA id 8D919600EF;
+ Thu,  3 Jun 2021 17:33:40 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
- s=k20201202; t=1622741497;
- bh=CYn3EZTKJSh4MDX20btEjoQc2gajFSLKSEiCLpjOtyY=;
+ s=k20201202; t=1622741621;
+ bh=/UCRcRzeBqTtEan+hKQQytxiVuqK6B0k/wsPUAzHz04=;
  h=Subject:To:Cc:References:From:Date:In-Reply-To:From;
- b=UAfQrL/7OJGOkvO3MmOhUAvtCeD/mHVyyYbGmRCp6YswxdYsZq38j7rp2gh0G4bhW
- L98RJBLj9EVzi9azrc/Av2CuAvjOzYOtDhxzLz819aT/E3Wm/eBofItZHJb+he3jFe
- gMhfZD35ABXCWbxTpPJMR4U3aAkVMD3MMzM9724UXggGSCuSLk95MHApGY0Vrnq435
- /Ql2LfZn30+bGoyfvo7j9QMIrgh83CLd7NlfSlJQORtxTenr6qxgIoe3eK8FcA/f0f
- WvyPBLVV1JHqbQ0MGwJOd3CStKpYjqJOFOiOhGphNIJ8I8AErF1fedToDDc5a7AOi3
- wPMrxiTypLfQQ==
-Subject: Re: [PATCH] x86/cpufeatures: Force disable X86_FEATURE_ENQCMD and
- remove update_pasid()
-To: "Luck, Tony" <tony.luck@intel.com>, Thomas Gleixner <tglx@linutronix.de>, 
- Borislav Petkov <bp@alien8.de>
-References: <1600187413-163670-1-git-send-email-fenghua.yu@intel.com>
- <1600187413-163670-10-git-send-email-fenghua.yu@intel.com>
- <87mtsd6gr9.ffs@nanos.tec.linutronix.de> <YLShmFEzddfm7WQs@zn.tnic>
- <87y2bv438p.ffs@nanos.tec.linutronix.de>
- <36866b38ec92425b879881a88acf547b@intel.com>
+ b=MFTkiPeD9pCOCOqPoN5+CzEhXI99TCb/39pyxVHmsIu2k1fk8H/SddDyBYcnAZjdS
+ xdHSwL+7enafUpzCDPPWhuip9DqrJ3fgknH6swTLZGTiCVZtJ3H91+7Jf4luWtvAsM
+ t4nClvFCW1FHgSSW6qB2ZrbsTKofuoGjV47JEPaSNXeuxOGPapBCUc9lFVQruBLTTW
+ 2Ws3Gqt1g/sEt2+i9gvAEBowH0WoN7WHRtG++WdSXO3iwwOv55pJU+p4KiINspejbD
+ vefQqFY64InbySwuXs6s50UHsk9hQWmicWTdvP4UZup7oMXGa2YBPm9L/nb8oaeS9g
+ ITvifMb0XbFfw==
+Subject: Re: [PATCH v1 1/8] virtio: Force only split mode with protected guest
+To: Andi Kleen <ak@linux.intel.com>, mst@redhat.com
+References: <20210603004133.4079390-1-ak@linux.intel.com>
+ <20210603004133.4079390-2-ak@linux.intel.com>
 From: Andy Lutomirski <luto@kernel.org>
-Message-ID: <db552f51-76ee-b7f5-20f1-14f1c703d423@kernel.org>
-Date: Thu, 3 Jun 2021 10:31:36 -0700
+Message-ID: <cc5c8265-83f7-aeb1-bc30-3367fe68bc97@kernel.org>
+Date: Thu, 3 Jun 2021 10:33:39 -0700
 User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
  Thunderbird/78.10.1
 MIME-Version: 1.0
-In-Reply-To: <36866b38ec92425b879881a88acf547b@intel.com>
+In-Reply-To: <20210603004133.4079390-2-ak@linux.intel.com>
 Content-Language: en-US
-Cc: "Yu, Fenghua" <fenghua.yu@intel.com>, Randy Dunlap <rdunlap@infradead.org>,
- "Jiang, Dave" <dave.jiang@intel.com>, "Raj, Ashok" <ashok.raj@intel.com>,
- "Shankar, Ravi V" <ravi.v.shankar@intel.com>,
- Jean-Philippe Brucker <jean-philippe@linaro.org>,
- Peter Zijlstra <peterz@infradead.org>, x86 <x86@kernel.org>,
- linux-kernel <linux-kernel@vger.kernel.org>,
- Christoph Hellwig <hch@infradead.org>, "Hansen, Dave" <dave.hansen@intel.com>,
- "iommu@lists.linux-foundation.org" <iommu@lists.linux-foundation.org>,
- Ingo Molnar <mingo@redhat.com>, "Pan, Jacob jun" <jacob.jun.pan@intel.com>,
- H Peter Anvin <hpa@zytor.com>, David Woodhouse <dwmw2@infradead.org>
+Cc: jasowang@redhat.com, x86@kernel.org, linux-kernel@vger.kernel.org,
+ virtualization@lists.linux-foundation.org, iommu@lists.linux-foundation.org,
+ jpoimboe@redhat.com, robin.murphy@arm.com, hch@lst.de
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -100,33 +88,20 @@ Content-Transfer-Encoding: 7bit
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-On 6/2/21 1:37 PM, Luck, Tony wrote:
->>> ... so on a PASID system, your trivial reproducer would theoretically
->>> fire the same way and corrupt FPU state just as well.
->>
->> This is worse and you can't selftest it because the IPI can just hit in
->> the middle of _any_ FPU state operation and corrupt state.
-> 
-> That sounds like we should abandon the "IPI all the other threads
-> to force enable the PASID for them" approach. It would just be a
-> nightmare of papering over cracks when the IPI was delivered at
-> some inconvenient moment when the recipient was in the middle
-> of touching xsave state.
-> 
-> I've told Fenghua to dig out the previous iteration of this patch where
-> the plan was to lazily fix the PASID_MSR in other threads in the #GP
-> handler.
+On 6/2/21 5:41 PM, Andi Kleen wrote:
+> Only allow split mode when in a protected guest. Followon
+> patches harden the split mode code paths, and we don't want
+> an malicious host to force anything else. Also disallow
+> indirect mode for similar reasons.
 
-Blech.  Also this won't work for other PASID-like features.
+I read this as "the virtio driver is buggy.  Let's disable most of the
+buggy code in one special case in which we need a driver without bugs.
+In all the other cases (e.g. hardware virtio device connected over
+USB-C), driver bugs are still allowed."
 
-I have a half-written patch to fix this up for real.  Stay tuned.
+Can we just fix the driver without special cases?
 
-> Seems like a better direction than trying to fix the IPI method. The virtualization
-> folks will like this way more because IPI in guest causes a couple of VMEXIT
-> so is somewhat expensive.
-
-It happens at most once per PASID-using process.
-
+--Andy
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
