@@ -2,102 +2,106 @@ Return-Path: <SRS0=MHXQ=K5=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-11.6 required=3.0 tests=BAYES_00,DKIM_INVALID,
-	DKIM_SIGNED,HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,
-	SPF_HELO_NONE,SPF_PASS,USER_AGENT_GIT autolearn=unavailable
-	autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-16.6 required=3.0 tests=BAYES_00,DKIM_INVALID,
+	DKIM_SIGNED,HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_CR_TRAILER,INCLUDES_PATCH,
+	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,USER_AGENT_GIT
+	autolearn=unavailable autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E45F8C47097
-	for <iommu@archiver.kernel.org>; Thu,  3 Jun 2021 08:50:37 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 57730C47096
+	for <iommu@archiver.kernel.org>; Thu,  3 Jun 2021 08:50:41 +0000 (UTC)
 Received: from smtp2.osuosl.org (smtp2.osuosl.org [140.211.166.133])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 9AB51613F2
-	for <iommu@archiver.kernel.org>; Thu,  3 Jun 2021 08:50:37 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 9AB51613F2
+	by mail.kernel.org (Postfix) with ESMTPS id 1AD83613E6
+	for <iommu@archiver.kernel.org>; Thu,  3 Jun 2021 08:50:41 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 1AD83613E6
 Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=lists.linux-foundation.org
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by smtp2.osuosl.org (Postfix) with ESMTP id 711D540525;
-	Thu,  3 Jun 2021 08:50:37 +0000 (UTC)
+	by smtp2.osuosl.org (Postfix) with ESMTP id BA4AA40535;
+	Thu,  3 Jun 2021 08:50:40 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
 Received: from smtp2.osuosl.org ([127.0.0.1])
 	by localhost (smtp2.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id Frc62JOIgEWK; Thu,  3 Jun 2021 08:50:34 +0000 (UTC)
-Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [IPv6:2605:bc80:3010:104::8cd3:938])
-	by smtp2.osuosl.org (Postfix) with ESMTP id 5C48B40510;
-	Thu,  3 Jun 2021 08:50:34 +0000 (UTC)
+	with ESMTP id 4MhnlV5wS259; Thu,  3 Jun 2021 08:50:38 +0000 (UTC)
+Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
+	by smtp2.osuosl.org (Postfix) with ESMTP id C07664053A;
+	Thu,  3 Jun 2021 08:50:37 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 359CDC000D;
-	Thu,  3 Jun 2021 08:50:34 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id A2BEBC000D;
+	Thu,  3 Jun 2021 08:50:37 +0000 (UTC)
 Received: from smtp3.osuosl.org (smtp3.osuosl.org [140.211.166.136])
- by lists.linuxfoundation.org (Postfix) with ESMTP id D8D0BC0001
- for <iommu@lists.linux-foundation.org>; Thu,  3 Jun 2021 08:50:32 +0000 (UTC)
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 5B7A6C0001
+ for <iommu@lists.linux-foundation.org>; Thu,  3 Jun 2021 08:50:36 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by smtp3.osuosl.org (Postfix) with ESMTP id C6EA760B33
- for <iommu@lists.linux-foundation.org>; Thu,  3 Jun 2021 08:50:32 +0000 (UTC)
+ by smtp3.osuosl.org (Postfix) with ESMTP id 3AE6E608C4
+ for <iommu@lists.linux-foundation.org>; Thu,  3 Jun 2021 08:50:36 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
 Authentication-Results: smtp3.osuosl.org (amavisd-new);
- dkim=pass (2048-bit key) header.d=svenpeter.dev header.b="mJIhPobR";
+ dkim=pass (2048-bit key) header.d=svenpeter.dev header.b="GQyTi/dH";
  dkim=pass (2048-bit key) header.d=messagingengine.com
- header.b="JtyiJHH5"
+ header.b="qpHKcacl"
 Received: from smtp3.osuosl.org ([127.0.0.1])
  by localhost (smtp3.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id QMeTl0Xxwkoh for <iommu@lists.linux-foundation.org>;
- Thu,  3 Jun 2021 08:50:28 +0000 (UTC)
+ with ESMTP id xbJE2zBelq9Y for <iommu@lists.linux-foundation.org>;
+ Thu,  3 Jun 2021 08:50:35 +0000 (UTC)
 X-Greylist: from auto-whitelisted by SQLgrey-1.8.0
 Received: from new2-smtp.messagingengine.com (new2-smtp.messagingengine.com
  [66.111.4.224])
- by smtp3.osuosl.org (Postfix) with ESMTPS id C0A5D60B2E
- for <iommu@lists.linux-foundation.org>; Thu,  3 Jun 2021 08:50:28 +0000 (UTC)
-Received: from compute5.internal (compute5.nyi.internal [10.202.2.45])
- by mailnew.nyi.internal (Postfix) with ESMTP id 7583E580F07;
- Thu,  3 Jun 2021 04:50:27 -0400 (EDT)
+ by smtp3.osuosl.org (Postfix) with ESMTPS id 175F460B33
+ for <iommu@lists.linux-foundation.org>; Thu,  3 Jun 2021 08:50:34 +0000 (UTC)
+Received: from compute3.internal (compute3.nyi.internal [10.202.2.43])
+ by mailnew.nyi.internal (Postfix) with ESMTP id 1700A580F08;
+ Thu,  3 Jun 2021 04:50:32 -0400 (EDT)
 Received: from mailfrontend1 ([10.202.2.162])
- by compute5.internal (MEProxy); Thu, 03 Jun 2021 04:50:27 -0400
+ by compute3.internal (MEProxy); Thu, 03 Jun 2021 04:50:32 -0400
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=svenpeter.dev;
- h=from:to:cc:subject:date:message-id:mime-version
- :content-transfer-encoding; s=fm1; bh=SeU5hLmakRpJp0wYHm9YpfQgd+
- +fWAu9b5BVuriF3f4=; b=mJIhPobRGuJNTiSMlnBfbnv2uDMGCqnD7gmJHZQMNK
- 7Z2AjI2AVt6uHOqCkE3j2XIC9i7qeUJiS3MjEnQfDygKdBRz5TPDccNA7GmnuFV/
- /HEqH8B8JAfFB7VYfqUflkIauwTmTJCKeJ/hNrgBTVWiNxi+SuzFgOQ4ppnKtMWR
- bQmVZpWS+pyw3m/PUddbEfEJ7loVibUL4Si5W5dNV2Wi8nTEbC5OedahkQWxQQ3B
- 4KOdd+Nd+FnKosQ9UG3Edae6vTMn2A1hF4zBPemAsX8LXuzaLuH7aXL1Zt8CQXmj
- s/aZWqgPK6xEucyZeEGF9veFagkH49OTuD0ovhUKhjmw==
+ h=from:to:cc:subject:date:message-id:in-reply-to:references
+ :mime-version:content-transfer-encoding; s=fm1; bh=gGQl9SRxrhirr
+ YTrU4b/HJo5lcf3YI1dsRlqz4epgR8=; b=GQyTi/dHgPLwCAtvecYogDZ3jMN+u
+ 3P5m5hN5SMDYk76wbSeqZfdCwWX+aSKWc/aiaq1sT6ad0Y9ueNznZl8UAhtEfzJF
+ 1K09MoJsF+ByCTav2nVB40yaoW1siaGgl081YcColXrZzwW3LY/YUDpN1PZfFVFp
+ ke/ky84YeiL3guBP5m4kcLCSw+FCyZx1DkhoqUPTmCHcVSBAaE2U5J9yDgWhE9ek
+ Ig4gJHRNjyarwZjTFmDI1Eymdqc1oWPWVHYzUdJV0tA77RC3w+b3jMC+7Nkn5F4C
+ lCxTHVTlZJUj7qiGpMwWJlf4EW+LSX2Px53jwOQpBp4WU+LIlZYQAALDw==
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
  messagingengine.com; h=cc:content-transfer-encoding:date:from
- :message-id:mime-version:subject:to:x-me-proxy:x-me-proxy
- :x-me-sender:x-me-sender:x-sasl-enc; s=fm3; bh=SeU5hLmakRpJp0wYH
- m9YpfQgd++fWAu9b5BVuriF3f4=; b=JtyiJHH5XvQhUlW67thTo5Q2G6H5TMbZ8
- O5xzZF9Y6BW5OW/h0CNR0akpLpzDG7WZZRkqHER812z9MXDGX/X38iTtJ5g4HcCf
- Hxrlq596I1EiTDVZUMkPjcGE8nNET4fYjvNQFkFEosuxlZGwLJvGrMTJBxpg/SIn
- 4OS+LgGT9CmExRszynNz2ul/MrCIk9zCWdeMhWAYVaETafPw/9Pl2NN5SU+B4pNY
- k8zmc55XsJlAFMFzLZcdRX7F34ozb/qX87I0dyTTi5ItIZFqYw+dkCgsWhwJLVeY
- L2nVIiq9AzZEJ7xR6FNtAziKf+vccAAOrMzsWTWU9OMOGHfSArGvQ==
-X-ME-Sender: <xms:0Ze4YJVn5WnUmLt7L0eK2iP4fKxQBSFpGHH7xqkVxu7gSB7MudGvkA>
- <xme:0Ze4YJkUDy2bU3lvMTyiELr-dZEF7VSWHZMsF0Krg4SQPhYrvBu6eIxYfbrdWyitf
- qjT5A8VgIanP3HdlM4>
-X-ME-Received: <xmr:0Ze4YFaTWV6mPmidfwnt9X1UA0zgxwWbpSo_F8eBZqRSbdAFWpSRPFEGiHX7E65EFORX5K88H6uqnrMT4UnN6svbAJ0zKnIynIhUFLfIqV2QTduOxVCehK1naGd7QA>
-X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgeduledrvdelledgtdeiucetufdoteggodetrfdotf
+ :in-reply-to:message-id:mime-version:references:subject:to
+ :x-me-proxy:x-me-proxy:x-me-sender:x-me-sender:x-sasl-enc; s=
+ fm3; bh=gGQl9SRxrhirrYTrU4b/HJo5lcf3YI1dsRlqz4epgR8=; b=qpHKcacl
+ OC+UXWdxt2zLAB+FZjA60l5fIOqL7BpEqnVSdeUWTvIGkz+jz9yS97w6JEaJgTCO
+ hrPffxQSIRafemdLJUuVauhqXws1NqbU00le9or//JLXo2aPNhdsRSftRY7mjpom
+ Hd1aTqsEyIE6JBHMh2T4P1Xgyrwg1QowVi0fzdMNLfBVCe3+BAz85EzNXlYZbGnq
+ LRjBCbuPqPW3s2hjQ5XPpNZNhadDe/Qt5pG/7w8U8ODmCNp+t06D4hW8EI5CdiqD
+ Z4cYMdpnNTRE+1nr/EmaUdaDDXYWyFfk0iKn9HpWwD1IMdThQGVe0ADKg30HWbZS
+ /HTXhXN0OyUHxQ==
+X-ME-Sender: <xms:15e4YJpnwlWI4OmQGbvaUdGcEl4H14K5NwCURwitNCa0pSUHyX_kZg>
+ <xme:15e4YLqUyIK3jtJDwOuOJiHpkaVvXHzn6AE41VUM-w2o_BZ6hFFh2oA41jjy3HcrH
+ G6ZwX3vOasJOFqfnBg>
+X-ME-Received: <xmr:15e4YGPH3kNqD54i5KxTMpH2b5JejcmEBVYeWf6bmMb5jukcM9VMJTOAZVMUPTI_IQqm_9W2Yn5rU7W8qZbrqPl4WUdGUVzGj2AGya_m6Ar2SX5y5JGr6wHIX8TLcA>
+X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgeduledrvdelledgtdejucetufdoteggodetrfdotf
  fvucfrrhhofhhilhgvmecuhfgrshhtofgrihhlpdfqfgfvpdfurfetoffkrfgpnffqhgen
  uceurghilhhouhhtmecufedttdenucesvcftvggtihhpihgvnhhtshculddquddttddmne
- cujfgurhephffvufffkffoggfgsedtkeertdertddtnecuhfhrohhmpefuvhgvnhcurfgv
- thgvrhcuoehsvhgvnhesshhvvghnphgvthgvrhdruggvvheqnecuggftrfgrthhtvghrnh
- epfeehudeftddvhfehvdduhedtjeejheeuudfftdfgvdekvdelleeuveelgfeflefgnecu
- ffhomhgrihhnpehkvghrnhgvlhdrohhrghenucevlhhushhtvghrufhiiigvpedtnecurf
- grrhgrmhepmhgrihhlfhhrohhmpehsvhgvnhesshhvvghnphgvthgvrhdruggvvh
-X-ME-Proxy: <xmx:0pe4YMVrrlKzFcjpGFnwiK_eDkACWOyaBrMt7xBpT1wMrabLosSh2A>
- <xmx:0pe4YDml9lRR0EPI7nsGMBrjoILHriFn5ipRhfjZVyn1XXKEFsh5Ew>
- <xmx:0pe4YJcr6AS6ZnLQEMMLw8IPO1D0cx696rucurlLt0_sgUu7gsCeRA>
- <xmx:05e4YI_wzdlwUomPoNf52rdYFuTvRdfDtxaeZkNMOp4wlk4gcxTMtQ>
+ cujfgurhephffvufffkffojghfggfgsedtkeertdertddtnecuhfhrohhmpefuvhgvnhcu
+ rfgvthgvrhcuoehsvhgvnhesshhvvghnphgvthgvrhdruggvvheqnecuggftrfgrthhtvg
+ hrnhephfefffejvdekleeitdffiefhhfffveffieejteefhedutdfgffeftdejhedtteeh
+ necuffhomhgrihhnpeguvghvihgtvghtrhgvvgdrohhrghenucevlhhushhtvghrufhiii
+ gvpedtnecurfgrrhgrmhepmhgrihhlfhhrohhmpehsvhgvnhesshhvvghnphgvthgvrhdr
+ uggvvh
+X-ME-Proxy: <xmx:15e4YE5DJfuI36o2bYlbfNI2ouCnFRsLkegV7-tGdmJgC5fYxHu5Bg>
+ <xmx:15e4YI6AgVW8YeGRbInecRk27BPe7vNYoLoXQF5_8n7k81kEv_PqFw>
+ <xmx:15e4YMjscenrqRb2mFG2vQ7KOzr7lr4fJ9OPGABzI2KaXzb0uTjxGQ>
+ <xmx:2Je4YHQ_SQdIpGZ3fO71-TvGndwZCtZMjBofZDa39khkcDO7jyP7UQ>
 Received: by mail.messagingengine.com (Postfix) with ESMTPA; Thu,
- 3 Jun 2021 04:50:23 -0400 (EDT)
+ 3 Jun 2021 04:50:29 -0400 (EDT)
 To: Will Deacon <will@kernel.org>, Robin Murphy <robin.murphy@arm.com>,
  Joerg Roedel <joro@8bytes.org>, Rob Herring <robh+dt@kernel.org>
-Subject: [PATCH v3 0/3] Apple M1 DART IOMMU driver
-Date: Thu,  3 Jun 2021 10:50:00 +0200
-Message-Id: <20210603085003.50465-1-sven@svenpeter.dev>
+Subject: [PATCH v3 2/3] dt-bindings: iommu: add DART iommu bindings
+Date: Thu,  3 Jun 2021 10:50:02 +0200
+Message-Id: <20210603085003.50465-3-sven@svenpeter.dev>
 X-Mailer: git-send-email 2.30.1 (Apple Git-130)
+In-Reply-To: <20210603085003.50465-1-sven@svenpeter.dev>
+References: <20210603085003.50465-1-sven@svenpeter.dev>
 MIME-Version: 1.0
 Cc: Arnd Bergmann <arnd@kernel.org>, devicetree@vger.kernel.org,
  Marc Zyngier <maz@kernel.org>, Hector Martin <marcan@marcan.st>,
@@ -125,90 +129,120 @@ Content-Transfer-Encoding: 7bit
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-Hi,
+DART (Device Address Resolution Table) is the iommu found on Apple
+ARM SoCs such as the M1.
 
-This is v3 of my Apple M1 DART IOMMU driver series as a follow up to the original
-two versions [1][2].
-
-Short summary: this series adds support for the iommu found in Apple's new M1
-SoC which is required to use DMA on most peripherals. So far this code has been
-tested with dwc3 in host and device mode and PCIe on a M1 Mac Mini.
-
-This IOMMU comes with a hard-wired pagesize of 16K. This makes booting a
-kernel with 4K page challenging.
-
-For dwc3 this is no issue: As long as the iommu is set to bypass mode
-dwc3 works just fine. Translated mode isn't supported right now.
-
-The most controversial part on which I'd like to get feedback are the
-PCIe DARTs. These DARTs do not support hardware bypass mode and also limit
-the iova space to 32 bit. To still allow booting on kernels with a 4K
-pagesize I have introduced the following hack:
-
-I program a static pagetable that maps the entire 32bit iova space to the
-first 4GB of RAM starting at 0x8_0000_0000. Combined with an appropriate
-dma-ranges property in the pcie node this allows to create a fake
-bypass mode and successfully enables PCIe.
-Right now the RAM offset is hardcoded in the DART driver and this will
-likely have to change if this workaround is acceptable for now. I could
-either introduce a separate property for the iommu node or try to grab
-the offset from the dma-ranges once the first device is attached.
-
-
-Changes for v3:
- - fixed name of the iommu node in the device tree binding example
-   pointed out by Arnd Bergmann
- - remove hardware specific checks from io-pgtable.c  as pointed out by
-   Will Deacon
- - introduced a fake bypass mode by programming static linear pagetables
-   if the DART does not support regular bypass mode as proposed by Alex
-   Graf
- - added checks to enforce bypass mode if there is a pagesize mismatch
-   between the DART HW and the CPU.
- - fixed usage of GFP_KERNEL during a held spinlock found by Julia Lawall
- - rebased on v5.13-rc3
-
-Changes for v2:
- - fixed devicetree binding linting issues pointed out by Rob Herring and
-   reworked that file.
- - made DART-specific code in io-pgtable.c unconditional and removed flag from
-   Kconfig as proposed by Robin Murphy.
- - allowed multiple DART nodes in the "iommus" property as proposed by
-   Rob Herring and Robin Murphy. this resulted in significant changes
-   to apple-iommu-dart.c.
- - the domain aperture is now forced to 32bit if translation is enabled after
-   the original suggestion to limit the aperture by Mark Kettenis and the
-   follow-up discussion and investigation with Mark Kettenis, Arnd Bergmann,
-   Robin Murphy and Rob Herring. This change also simplified the code
-   in io-pgtable.c and made some of the improvements suggested during review
-   not apply anymore.
- - added support for bypassed and isolated domain modes.
- - reject IOMMU_MMIO and IOMMU_NOEXEC since it's unknown how to set these up
-   for now or if the hardware even supports these flags.
- - renamed some registers to be less confusing (mainly s/DOMAIN/STREAM/ to
-   prevent confusion with linux's iommu domain concept).
-
-
-[1] v1: https://lore.kernel.org/linux-iommu/20210320151903.60759-1-sven@svenpeter.dev/
-[2] v2: https://lore.kernel.org/linux-iommu/20210328074009.95932-1-sven@svenpeter.dev/
-
-Sven Peter (3):
-  iommu: io-pgtable: add DART pagetable format
-  dt-bindings: iommu: add DART iommu bindings
-  iommu: dart: Add DART iommu driver
-
- .../devicetree/bindings/iommu/apple,dart.yaml |  81 ++
- MAINTAINERS                                   |   7 +
- drivers/iommu/Kconfig                         |  15 +
- drivers/iommu/Makefile                        |   1 +
- drivers/iommu/apple-dart-iommu.c              | 966 ++++++++++++++++++
- drivers/iommu/io-pgtable-arm.c                |  62 ++
- drivers/iommu/io-pgtable.c                    |   1 +
- include/linux/io-pgtable.h                    |   7 +
- 8 files changed, 1140 insertions(+)
+Signed-off-by: Sven Peter <sven@svenpeter.dev>
+---
+ .../devicetree/bindings/iommu/apple,dart.yaml | 81 +++++++++++++++++++
+ MAINTAINERS                                   |  6 ++
+ 2 files changed, 87 insertions(+)
  create mode 100644 Documentation/devicetree/bindings/iommu/apple,dart.yaml
- create mode 100644 drivers/iommu/apple-dart-iommu.c
 
+diff --git a/Documentation/devicetree/bindings/iommu/apple,dart.yaml b/Documentation/devicetree/bindings/iommu/apple,dart.yaml
+new file mode 100644
+index 000000000000..db21ca07d121
+--- /dev/null
++++ b/Documentation/devicetree/bindings/iommu/apple,dart.yaml
+@@ -0,0 +1,81 @@
++# SPDX-License-Identifier: (GPL-2.0 OR BSD-2-Clause)
++%YAML 1.2
++---
++$id: http://devicetree.org/schemas/iommu/apple,dart.yaml#
++$schema: http://devicetree.org/meta-schemas/core.yaml#
++
++title: Apple DART IOMMU
++
++maintainers:
++  - Sven Peter <sven@svenpeter.dev>
++
++description: |+
++  Apple SoCs may contain an implementation of their Device Address
++  Resolution Table which provides a mandatory layer of address
++  translations for various masters.
++
++  Each DART instance is capable of handling up to 16 different streams
++  with individual pagetables and page-level read/write protection flags.
++
++  This DART IOMMU also raises interrupts in response to various
++  fault conditions.
++
++properties:
++  compatible:
++    const: apple,t8103-dart
++
++  reg:
++    maxItems: 1
++
++  interrupts:
++    maxItems: 1
++
++  clocks:
++    description:
++      Reference to the gate clock phandle if required for this IOMMU.
++      Optional since not all IOMMUs are attached to a clock gate.
++
++  '#iommu-cells':
++    const: 1
++    description:
++      Has to be one. The single cell describes the stream id emitted by
++      a master to the IOMMU.
++
++required:
++  - compatible
++  - reg
++  - '#iommu-cells'
++  - interrupts
++
++additionalProperties: false
++
++examples:
++  - |+
++    dart1: iommu@82f80000 {
++      compatible = "apple,t8103-dart";
++      reg = <0x82f80000 0x4000>;
++      interrupts = <1 781 4>;
++      #iommu-cells = <1>;
++    };
++
++    master1 {
++      iommus = <&{/dart1} 0>;
++    };
++
++  - |+
++    dart2a: iommu@82f00000 {
++      compatible = "apple,t8103-dart";
++      reg = <0x82f00000 0x4000>;
++      interrupts = <1 781 4>;
++      #iommu-cells = <1>;
++    };
++    dart2b: iommu@82f80000 {
++      compatible = "apple,t8103-dart";
++      reg = <0x82f80000 0x4000>;
++      interrupts = <1 781 4>;
++      #iommu-cells = <1>;
++    };
++
++    master2 {
++      iommus = <&{/dart2a} 0>, <&{/dart2b} 1>;
++    };
+diff --git a/MAINTAINERS b/MAINTAINERS
+index 673cadd5107a..4373d63f9ccf 100644
+--- a/MAINTAINERS
++++ b/MAINTAINERS
+@@ -1240,6 +1240,12 @@ L:	linux-input@vger.kernel.org
+ S:	Odd fixes
+ F:	drivers/input/mouse/bcm5974.c
+ 
++APPLE DART IOMMU DRIVER
++M:	Sven Peter <sven@svenpeter.dev>
++L:	iommu@lists.linux-foundation.org
++S:	Maintained
++F:	Documentation/devicetree/bindings/iommu/apple,dart.yaml
++
+ APPLE SMC DRIVER
+ M:	Henrik Rydberg <rydberg@bitmath.org>
+ L:	linux-hwmon@vger.kernel.org
 -- 
 2.25.1
 
