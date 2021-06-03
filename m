@@ -2,73 +2,77 @@ Return-Path: <SRS0=MHXQ=K5=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-16.8 required=3.0 tests=BAYES_00,
-	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_CR_TRAILER,INCLUDES_PATCH,
-	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,USER_AGENT_GIT
-	autolearn=unavailable autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-5.9 required=3.0 tests=BAYES_00,
+	HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,NICE_REPLY_A,SPF_HELO_NONE,
+	SPF_PASS,USER_AGENT_SANE_1 autolearn=no autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 82E21C4709A
-	for <iommu@archiver.kernel.org>; Thu,  3 Jun 2021 02:10:54 +0000 (UTC)
-Received: from smtp1.osuosl.org (smtp1.osuosl.org [140.211.166.138])
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 64CDAC4709C
+	for <iommu@archiver.kernel.org>; Thu,  3 Jun 2021 02:10:55 +0000 (UTC)
+Received: from smtp3.osuosl.org (smtp3.osuosl.org [140.211.166.136])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 4901D613EB
-	for <iommu@archiver.kernel.org>; Thu,  3 Jun 2021 02:10:54 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 4901D613EB
+	by mail.kernel.org (Postfix) with ESMTPS id 2842B613DC
+	for <iommu@archiver.kernel.org>; Thu,  3 Jun 2021 02:10:55 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 2842B613DC
 Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=linux.intel.com
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by smtp1.osuosl.org (Postfix) with ESMTP id F182583E0A;
-	Thu,  3 Jun 2021 02:10:52 +0000 (UTC)
+	by smtp3.osuosl.org (Postfix) with ESMTP id 820F760B14;
+	Thu,  3 Jun 2021 02:10:54 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from smtp1.osuosl.org ([127.0.0.1])
-	by localhost (smtp1.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id 9eWlDdYrSYqd; Thu,  3 Jun 2021 02:10:52 +0000 (UTC)
-Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by smtp1.osuosl.org (Postfix) with ESMTP id 95AB683DFE;
-	Thu,  3 Jun 2021 02:10:51 +0000 (UTC)
+Received: from smtp3.osuosl.org ([127.0.0.1])
+	by localhost (smtp3.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+	with ESMTP id YJjtOz2hSqDp; Thu,  3 Jun 2021 02:10:53 +0000 (UTC)
+Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [IPv6:2605:bc80:3010:104::8cd3:938])
+	by smtp3.osuosl.org (Postfix) with ESMTP id 2F91B60B2C;
+	Thu,  3 Jun 2021 02:10:53 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id A9F21C0035;
-	Thu,  3 Jun 2021 02:10:50 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 38C97C002B;
+	Thu,  3 Jun 2021 02:10:52 +0000 (UTC)
 Received: from smtp1.osuosl.org (smtp1.osuosl.org [140.211.166.138])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 3029AC002D;
- Thu,  3 Jun 2021 00:41:49 +0000 (UTC)
+ by lists.linuxfoundation.org (Postfix) with ESMTP id F2077C0001;
+ Thu,  3 Jun 2021 02:03:51 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by smtp1.osuosl.org (Postfix) with ESMTP id BDFA583D3E;
- Thu,  3 Jun 2021 00:41:47 +0000 (UTC)
+ by smtp1.osuosl.org (Postfix) with ESMTP id CA21483D2A;
+ Thu,  3 Jun 2021 02:03:51 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
 Received: from smtp1.osuosl.org ([127.0.0.1])
  by localhost (smtp1.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id b3P6Cr5oM7ij; Thu,  3 Jun 2021 00:41:47 +0000 (UTC)
+ with ESMTP id i8F61nXwAxQq; Thu,  3 Jun 2021 02:03:51 +0000 (UTC)
 X-Greylist: domain auto-whitelisted by SQLgrey-1.8.0
 X-Greylist: domain auto-whitelisted by SQLgrey-1.8.0
 Received: from mga18.intel.com (mga18.intel.com [134.134.136.126])
- by smtp1.osuosl.org (Postfix) with ESMTPS id 1E3D583D4A;
- Thu,  3 Jun 2021 00:41:47 +0000 (UTC)
-IronPort-SDR: 1ba48w/HGThOaZWmvPgbg3vFM0auzFspQ4Pdsew0tnIawxeIo6nZAmniY9M54xZkST8DY5L6/D
- 2F5g43wXo/JQ==
-X-IronPort-AV: E=McAfee;i="6200,9189,10003"; a="191281566"
-X-IronPort-AV: E=Sophos;i="5.83,244,1616482800"; d="scan'208";a="191281566"
-Received: from orsmga004.jf.intel.com ([10.7.209.38])
+ by smtp1.osuosl.org (Postfix) with ESMTPS id E234083D24;
+ Thu,  3 Jun 2021 02:03:50 +0000 (UTC)
+IronPort-SDR: Wm5gJDMsWCw50md3kDIKO7vJAylZTTvwBp6e8Lz26pfz5YeQxiYd9RcbOPEryJaxNOvlwcK15o
+ l23h1JeBoKGw==
+X-IronPort-AV: E=McAfee;i="6200,9189,10003"; a="191292477"
+X-IronPort-AV: E=Sophos;i="5.83,244,1616482800"; d="scan'208";a="191292477"
+Received: from fmsmga001.fm.intel.com ([10.253.24.23])
  by orsmga106.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384;
- 02 Jun 2021 17:41:44 -0700
-IronPort-SDR: RcO/ziDZiA0zs9KDBzMVcDfkcrCyK0CG+VkWlPWMtZabfLPdUI3KlbztMzBnu5W2HGau7uO170
- UmLD4vf1CVKw==
-X-IronPort-AV: E=Sophos;i="5.83,244,1616482800"; d="scan'208";a="549686675"
-Received: from tassilo.jf.intel.com ([10.54.74.11])
- by orsmga004-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384;
- 02 Jun 2021 17:41:44 -0700
-From: Andi Kleen <ak@linux.intel.com>
-To: mst@redhat.com
-Subject: [PATCH v1 1/8] virtio: Force only split mode with protected guest
-Date: Wed,  2 Jun 2021 17:41:26 -0700
-Message-Id: <20210603004133.4079390-2-ak@linux.intel.com>
-X-Mailer: git-send-email 2.25.4
-In-Reply-To: <20210603004133.4079390-1-ak@linux.intel.com>
+ 02 Jun 2021 19:03:49 -0700
+IronPort-SDR: 3l4OYGXTPqbxSxOvUGo09jcOcihVNH59aPcFpeSbajzoXQVVvKgjW1rvBE9b2XrPPmhaLf+Wnv
+ PHYqc7c/f80A==
+X-IronPort-AV: E=Sophos;i="5.83,244,1616482800"; d="scan'208";a="550521295"
+Received: from akleen-mobl1.amr.corp.intel.com (HELO [10.209.87.193])
+ ([10.209.87.193])
+ by fmsmga001-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384;
+ 02 Jun 2021 19:03:48 -0700
+Subject: Re: [PATCH v1 5/8] dma: Use size for swiotlb boundary checks
+To: Konrad Rzeszutek Wilk <konrad@darnok.org>
 References: <20210603004133.4079390-1-ak@linux.intel.com>
+ <20210603004133.4079390-6-ak@linux.intel.com>
+ <YLg096ycQ60lcuHe@localhost.localdomain>
+From: Andi Kleen <ak@linux.intel.com>
+Message-ID: <665925d2-d6d5-218f-15f8-c6c5abaaba40@linux.intel.com>
+Date: Wed, 2 Jun 2021 19:03:47 -0700
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:78.0) Gecko/20100101
+ Thunderbird/78.10.2
 MIME-Version: 1.0
+In-Reply-To: <YLg096ycQ60lcuHe@localhost.localdomain>
+Content-Language: en-US
 X-Mailman-Approved-At: Thu, 03 Jun 2021 02:10:48 +0000
-Cc: Andi Kleen <ak@linux.intel.com>, jasowang@redhat.com, x86@kernel.org,
+Cc: mst@redhat.com, jasowang@redhat.com, x86@kernel.org,
  linux-kernel@vger.kernel.org, virtualization@lists.linux-foundation.org,
  iommu@lists.linux-foundation.org, jpoimboe@redhat.com, robin.murphy@arm.com,
  hch@lst.de
@@ -84,82 +88,50 @@ List-Post: <mailto:iommu@lists.linux-foundation.org>
 List-Help: <mailto:iommu-request@lists.linux-foundation.org?subject=help>
 List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
  <mailto:iommu-request@lists.linux-foundation.org?subject=subscribe>
-Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset="us-ascii"; Format="flowed"
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-When running under TDX the virtio host is untrusted. The bulk
-of the kernel memory is encrypted and protected, but the virtio
-ring is in special shared memory that is shared with the
-untrusted host.
 
-This means virtio needs to be hardened against any attacks from
-the host through the ring. Of course it's impossible to prevent DOS
-(the host can chose at any time to stop doing IO), but there
-should be no buffer overruns or similar that might give access to
-any private memory in the guest.
+On 6/2/2021 6:48 PM, Konrad Rzeszutek Wilk wrote:
+> On Wed, Jun 02, 2021 at 05:41:30PM -0700, Andi Kleen wrote:
+>> swiotlb currently only uses the start address of a DMA to check if something
+>> is in the swiotlb or not. But with virtio and untrusted hosts the host
+>> could give some DMA mapping that crosses the swiotlb boundaries,
+>> potentially leaking or corrupting data. Add size checks to all the swiotlb
+>> checks and reject any DMAs that cross the swiotlb buffer boundaries.
+> I seem to be only CC-ed on this and #7, so please bear with me.
+You weren't cc'ed originally so if you get partial emails it must be 
+through some list.
+>
+> But could you explain to me why please:
+>
+> commit daf9514fd5eb098d7d6f3a1247cb8cc48fc94155 (swiotlb/stable/for-linus-5.12)
+> Author: Martin Radev <martin.b.radev@gmail.com>
+> Date:   Tue Jan 12 16:07:29 2021 +0100
+>
+>      swiotlb: Validate bounce size in the sync/unmap path
+>
+> does not solve the problem as well?
 
-virtio has a lot of modes, most are difficult to harden.
+Thanks. I missed that patch, race condition.
 
-The best for hardening seems to be split mode without indirect
-descriptors. This also simplifies the hardening job because
-it's only a single code path.
+One major difference of my patch is that it supports an error return, 
+which allows virtio to error out. This is important in virtio because 
+otherwise you'll end up with uninitialized memory on the target without 
+any indication. This uninitialized memory could be an potential attack 
+vector on the guest memory, e.g. if the attacker finds some way to echo 
+it out again.
 
-Only allow split mode when in a protected guest. Followon
-patches harden the split mode code paths, and we don't want
-an malicious host to force anything else. Also disallow
-indirect mode for similar reasons.
+But the error return could be added to your infrastructure too and what 
+would make this patch much shorter. I'll take a look at that.
 
-Signed-off-by: Andi Kleen <ak@linux.intel.com>
----
- drivers/virtio/virtio_ring.c | 12 ++++++++++++
- 1 file changed, 12 insertions(+)
+-Andi
 
-diff --git a/drivers/virtio/virtio_ring.c b/drivers/virtio/virtio_ring.c
-index 71e16b53e9c1..f35629fa47b1 100644
---- a/drivers/virtio/virtio_ring.c
-+++ b/drivers/virtio/virtio_ring.c
-@@ -11,6 +11,7 @@
- #include <linux/module.h>
- #include <linux/hrtimer.h>
- #include <linux/dma-mapping.h>
-+#include <linux/protected_guest.h>
- #include <xen/xen.h>
- 
- #ifdef DEBUG
-@@ -2221,8 +2222,16 @@ void vring_transport_features(struct virtio_device *vdev)
- 	unsigned int i;
- 
- 	for (i = VIRTIO_TRANSPORT_F_START; i < VIRTIO_TRANSPORT_F_END; i++) {
-+
-+		/*
-+		 * In protected guest mode disallow packed or indirect
-+		 * because they ain't hardened.
-+		 */
-+
- 		switch (i) {
- 		case VIRTIO_RING_F_INDIRECT_DESC:
-+			if (protected_guest_has(VM_MEM_ENCRYPT))
-+				goto clear;
- 			break;
- 		case VIRTIO_RING_F_EVENT_IDX:
- 			break;
-@@ -2231,9 +2240,12 @@ void vring_transport_features(struct virtio_device *vdev)
- 		case VIRTIO_F_ACCESS_PLATFORM:
- 			break;
- 		case VIRTIO_F_RING_PACKED:
-+			if (protected_guest_has(VM_MEM_ENCRYPT))
-+				goto clear;
- 			break;
- 		case VIRTIO_F_ORDER_PLATFORM:
- 			break;
-+		clear:
- 		default:
- 			/* We don't understand this bit. */
- 			__virtio_clear_bit(vdev, i);
--- 
-2.25.4
+
+
+
 
 _______________________________________________
 iommu mailing list
