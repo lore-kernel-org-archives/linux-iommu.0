@@ -2,76 +2,78 @@ Return-Path: <SRS0=MHXQ=K5=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-16.8 required=3.0 tests=BAYES_00,
-	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_CR_TRAILER,INCLUDES_PATCH,
-	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,USER_AGENT_GIT autolearn=ham
-	autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-5.9 required=3.0 tests=BAYES_00,
+	HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,NICE_REPLY_A,SPF_HELO_NONE,
+	SPF_PASS,USER_AGENT_SANE_1 autolearn=no autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8ACC0C47083
-	for <iommu@archiver.kernel.org>; Thu,  3 Jun 2021 02:10:53 +0000 (UTC)
-Received: from smtp1.osuosl.org (smtp1.osuosl.org [140.211.166.138])
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 67F74C4708F
+	for <iommu@archiver.kernel.org>; Thu,  3 Jun 2021 02:10:54 +0000 (UTC)
+Received: from smtp4.osuosl.org (smtp4.osuosl.org [140.211.166.137])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 3E2AA613E9
-	for <iommu@archiver.kernel.org>; Thu,  3 Jun 2021 02:10:53 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 3E2AA613E9
+	by mail.kernel.org (Postfix) with ESMTPS id 2303F613BA
+	for <iommu@archiver.kernel.org>; Thu,  3 Jun 2021 02:10:54 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 2303F613BA
 Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=linux.intel.com
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by smtp1.osuosl.org (Postfix) with ESMTP id 6F35C83DF2;
-	Thu,  3 Jun 2021 02:10:52 +0000 (UTC)
+	by smtp4.osuosl.org (Postfix) with ESMTP id E36CA40595;
+	Thu,  3 Jun 2021 02:10:53 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from smtp1.osuosl.org ([127.0.0.1])
-	by localhost (smtp1.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id fQOjnuFjOUBi; Thu,  3 Jun 2021 02:10:51 +0000 (UTC)
-Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [IPv6:2605:bc80:3010:104::8cd3:938])
-	by smtp1.osuosl.org (Postfix) with ESMTP id 5782083DFC;
-	Thu,  3 Jun 2021 02:10:51 +0000 (UTC)
+Received: from smtp4.osuosl.org ([127.0.0.1])
+	by localhost (smtp4.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+	with ESMTP id mlbSkvlcSL7V; Thu,  3 Jun 2021 02:10:53 +0000 (UTC)
+Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
+	by smtp4.osuosl.org (Postfix) with ESMTP id B66774058A;
+	Thu,  3 Jun 2021 02:10:52 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 5A52FC0032;
-	Thu,  3 Jun 2021 02:10:50 +0000 (UTC)
-Received: from smtp3.osuosl.org (smtp3.osuosl.org [IPv6:2605:bc80:3010::136])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 3FB49C002F;
- Thu,  3 Jun 2021 00:41:49 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id E8884C002A;
+	Thu,  3 Jun 2021 02:10:51 +0000 (UTC)
+Received: from smtp3.osuosl.org (smtp3.osuosl.org [140.211.166.136])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 7D41FC0001;
+ Thu,  3 Jun 2021 01:56:35 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by smtp3.osuosl.org (Postfix) with ESMTP id 42B6160692;
- Thu,  3 Jun 2021 00:41:48 +0000 (UTC)
+ by smtp3.osuosl.org (Postfix) with ESMTP id 57F29608A1;
+ Thu,  3 Jun 2021 01:56:35 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
 Received: from smtp3.osuosl.org ([127.0.0.1])
  by localhost (smtp3.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id t-IOlqWXKrfz; Thu,  3 Jun 2021 00:41:47 +0000 (UTC)
+ with ESMTP id nGtd2ky1FTCa; Thu,  3 Jun 2021 01:56:34 +0000 (UTC)
 X-Greylist: domain auto-whitelisted by SQLgrey-1.8.0
 X-Greylist: domain auto-whitelisted by SQLgrey-1.8.0
-Received: from mga18.intel.com (mga18.intel.com [134.134.136.126])
- by smtp3.osuosl.org (Postfix) with ESMTPS id 98C0F608A3;
- Thu,  3 Jun 2021 00:41:47 +0000 (UTC)
-IronPort-SDR: A9qbVTtF0XgQXj54JSLGGcWZOxeogjGd3UCmDAZxj+hi1cniB9P1ANyuNibu3blcfk7I7yrWgH
- 81wJh+HmgTDA==
-X-IronPort-AV: E=McAfee;i="6200,9189,10003"; a="191281575"
-X-IronPort-AV: E=Sophos;i="5.83,244,1616482800"; d="scan'208";a="191281575"
-Received: from orsmga004.jf.intel.com ([10.7.209.38])
- by orsmga106.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384;
- 02 Jun 2021 17:41:45 -0700
-IronPort-SDR: 2pFejv7yOdCVkt/FpXsrK39AE0n8XlGFbMG7ggDFwWorVajHKUYwALrKujQ9Giok8owwu3kAMW
- bk1Ny78Bc9jg==
-X-IronPort-AV: E=Sophos;i="5.83,244,1616482800"; d="scan'208";a="549686683"
-Received: from tassilo.jf.intel.com ([10.54.74.11])
- by orsmga004-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384;
- 02 Jun 2021 17:41:44 -0700
-From: Andi Kleen <ak@linux.intel.com>
-To: mst@redhat.com
-Subject: [PATCH v1 8/8] virtio: Error out on endless free lists
-Date: Wed,  2 Jun 2021 17:41:33 -0700
-Message-Id: <20210603004133.4079390-9-ak@linux.intel.com>
-X-Mailer: git-send-email 2.25.4
-In-Reply-To: <20210603004133.4079390-1-ak@linux.intel.com>
+Received: from mga12.intel.com (mga12.intel.com [192.55.52.136])
+ by smtp3.osuosl.org (Postfix) with ESMTPS id AE34260692;
+ Thu,  3 Jun 2021 01:56:34 +0000 (UTC)
+IronPort-SDR: UdFsKqfpgZfim5oXUtmO+BE+bC9mrAyHOkdhXV0OKpOBJNaqhJ0ZzwTBzNiF6EPh+e8yHDLaac
+ k4fhB8yNZBMA==
+X-IronPort-AV: E=McAfee;i="6200,9189,10003"; a="183622526"
+X-IronPort-AV: E=Sophos;i="5.83,244,1616482800"; d="scan'208";a="183622526"
+Received: from fmsmga001.fm.intel.com ([10.253.24.23])
+ by fmsmga106.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384;
+ 02 Jun 2021 18:56:33 -0700
+IronPort-SDR: C5MKCIFgSivqj4s0xMPWU5bJ61YOvmOkiOYqHbOXSTq5KqhrzVWVu5om4euFeO0TYD42KUMP+C
+ 3oyspki/GTFg==
+X-IronPort-AV: E=Sophos;i="5.83,244,1616482800"; d="scan'208";a="550518879"
+Received: from akleen-mobl1.amr.corp.intel.com (HELO [10.209.87.193])
+ ([10.209.87.193])
+ by fmsmga001-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384;
+ 02 Jun 2021 18:56:28 -0700
+Subject: Re: Virtio hardening for TDX
+To: Jason Wang <jasowang@redhat.com>, mst@redhat.com
 References: <20210603004133.4079390-1-ak@linux.intel.com>
+ <63d01084-68d2-a8d5-931d-541a22b5f231@redhat.com>
+From: Andi Kleen <ak@linux.intel.com>
+Message-ID: <33504152-624a-45cc-51b3-10ce7aa2428f@linux.intel.com>
+Date: Wed, 2 Jun 2021 18:56:27 -0700
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:78.0) Gecko/20100101
+ Thunderbird/78.10.2
 MIME-Version: 1.0
+In-Reply-To: <63d01084-68d2-a8d5-931d-541a22b5f231@redhat.com>
+Content-Language: en-US
 X-Mailman-Approved-At: Thu, 03 Jun 2021 02:10:48 +0000
-Cc: Andi Kleen <ak@linux.intel.com>, jasowang@redhat.com, x86@kernel.org,
- linux-kernel@vger.kernel.org, virtualization@lists.linux-foundation.org,
- iommu@lists.linux-foundation.org, jpoimboe@redhat.com, robin.murphy@arm.com,
- hch@lst.de
+Cc: x86@kernel.org, linux-kernel@vger.kernel.org,
+ virtualization@lists.linux-foundation.org, iommu@lists.linux-foundation.org,
+ jpoimboe@redhat.com, robin.murphy@arm.com, hch@lst.de
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -84,43 +86,31 @@ List-Post: <mailto:iommu@lists.linux-foundation.org>
 List-Help: <mailto:iommu-request@lists.linux-foundation.org?subject=help>
 List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
  <mailto:iommu-request@lists.linux-foundation.org?subject=subscribe>
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: base64
+Content-Type: text/plain; charset="utf-8"; Format="flowed"
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-Error out with a warning when the free list loops longer
-than the maximum size while freeing descriptors. While technically
-we don't care about DOS it is still better to abort it early.
-
-We ran into this problem while fuzzing the virtio interactions
-where the fuzzed code would get stuck for a long time.
-
-Signed-off-by: Andi Kleen <ak@linux.intel.com>
----
- drivers/virtio/virtio_ring.c | 5 +++++
- 1 file changed, 5 insertions(+)
-
-diff --git a/drivers/virtio/virtio_ring.c b/drivers/virtio/virtio_ring.c
-index 244a5b62d85c..96adaa4c5404 100644
---- a/drivers/virtio/virtio_ring.c
-+++ b/drivers/virtio/virtio_ring.c
-@@ -685,6 +685,11 @@ static int detach_buf_split(struct vring_virtqueue *vq, unsigned int head,
- 		if (!inside_split_ring(vq, i))
- 			return -EIO;
- 		vq->vq.num_free++;
-+		if (WARN_ONCE(vq->vq.num_free >
-+				vq->split.queue_size_in_bytes /
-+					sizeof(struct vring_desc),
-+				"Virtio freelist corrupted"))
-+			return -EIO;
- 	}
- 
- 	vring_unmap_one_split(vq, &vq->split.vring.desc[i]);
--- 
-2.25.4
-
-_______________________________________________
-iommu mailing list
-iommu@lists.linux-foundation.org
-https://lists.linuxfoundation.org/mailman/listinfo/iommu
+Cj4gTm90ZSB0aGF0IGl0J3MgcHJvYmFibHkgbmVlZGVkIGJ5IG90aGVyIGNhc2VzIGFzIHdlbGw6
+Cj4KPiAxKSBPdGhlciBlbmNyeXB0ZWQgVk0gdGVjaG5vbG9neQo+IDIpIFZEVVNFWzFdCj4gMykg
+U21hcnQgTklDcwoKUmlnaHQuIEkgZG9uJ3Qgc2VlIGFueSByZWFzb24gd2h5IHRoZXNlIHNob3Vs
+ZG4ndCB3b3JrLiBZb3UgbWF5IGp1c3QgCm5lZWQgdG8gYWRkIHRoZSBlbmFibGUgZm9yIHRoZSBs
+b2NrZG93biwgYnV0IHlvdSBjYW4gcmV1c2UgdGhlIGJhc2ljIAppbmZyYXN0cnVjdHVyZS4KCj4K
+PiBXZSBoYXZlIGFscmVhZHkgaGFkIGRpc2N1c3Npb25zIGFuZCBzb21lIHBhdGNoZXMgaGF2ZSBi
+ZWVuIAo+IHBvc3RlZFsyXVszXVs0XS4KClRoYW5rcy4KClllcyBbMl0gaXMgaW5kZWVkIGFuIGFs
+dGVybmF0aXZlLiBXZSBjb25zaWRlcmVkIHRoaXMgYXQgc29tZSBwb2ludCwgYnV0IApzaW5jZSB3
+ZSBkb24ndCBjYXJlIGFib3V0IERPUyBpbiBvdXIgY2FzZSBpdCBzZWVtZWQgc2ltcGxlciB0byBq
+dXN0IApoYXJkZW4gdGhlIGV4aXN0aW5nIGNvZGUuwqAgQnV0IHllcyBpZiBpdCdzIHRoZXJlIGl0
+J3MgdXNlZnVsIGZvciBURFggdG9vLgoKRldJVyBJIHdvdWxkIGFyZ3VlIHRoYXQgdGhlIGRlc2Ny
+aXB0b3IgYm91bmRhcnkgY2hlY2tpbmcgc2hvdWxkIGJlIGFkZGVkIAppbiBhbnkgY2FzZSwgc2Vj
+dXJpdHkgY2FzZSBvciBzZXBhcmF0ZWQgbWV0YWRhdGEgb3Igbm90LCBiZWNhdXNlIGl0IGNhbiAK
+Y2F0Y2ggYnVncyBhbmQgaXMgdmVyeSBjaGVhcC4gQ2hlY2tpbmcgYm91bmRhcmllcyBpcyBnb29k
+IHByYWN0aWNlLgoKWzRdIHdvdWxkIGJlIGFuIGluZGVwZW5kZW50IGlzc3VlLCB0aGF0J3Mgc29t
+ZXRoaW5nIHdlIGRpZG4ndCBjYXRjaC4KCkFsc28gdGhlIHN3aW90bGIgaGFyZGVuaW5nIGltcGxl
+bWVudGVkIGluIHRoaXMgcGF0Y2hraXQgZG9lc24ndCBzZWVtIHRvIApiZSBpbiBhbnkgb2YgdGhl
+IG90aGVyIHBhdGNoZXMuCgpTbyBJIHdvdWxkIHNheSBteSBwYXRjaGVzIGFyZSBtb3N0bHkgb3J0
+aG9nb25hbCB0byB0aGVzZSBwYXRjaGVzIGJlbG93IAphbmQgbm90IGNvbmZsaWN0aW5nLCBldmVu
+IHRob3VnaCB0aGV5IGFkZHJlc3MgYSBzaW1pbGFyIHByb2JsZW0gc3BhY2UuCgotQW5kaQoKCl9f
+X19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fCmlvbW11IG1haWxp
+bmcgbGlzdAppb21tdUBsaXN0cy5saW51eC1mb3VuZGF0aW9uLm9yZwpodHRwczovL2xpc3RzLmxp
+bnV4Zm91bmRhdGlvbi5vcmcvbWFpbG1hbi9saXN0aW5mby9pb21tdQ==
