@@ -2,76 +2,65 @@ Return-Path: <SRS0=MHXQ=K5=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-5.9 required=3.0 tests=BAYES_00,
-	HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,NICE_REPLY_A,SPF_HELO_NONE,
-	SPF_PASS,USER_AGENT_SANE_1 autolearn=no autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-16.8 required=3.0 tests=BAYES_00,
+	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_CR_TRAILER,INCLUDES_PATCH,
+	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,USER_AGENT_GIT
+	autolearn=unavailable autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 358A9C47082
-	for <iommu@archiver.kernel.org>; Thu,  3 Jun 2021 13:10:06 +0000 (UTC)
-Received: from smtp2.osuosl.org (smtp2.osuosl.org [140.211.166.133])
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 69441C47082
+	for <iommu@archiver.kernel.org>; Thu,  3 Jun 2021 13:48:52 +0000 (UTC)
+Received: from smtp1.osuosl.org (smtp1.osuosl.org [140.211.166.138])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id E5D46613DE
-	for <iommu@archiver.kernel.org>; Thu,  3 Jun 2021 13:10:05 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org E5D46613DE
+	by mail.kernel.org (Postfix) with ESMTPS id 11BB0613E9
+	for <iommu@archiver.kernel.org>; Thu,  3 Jun 2021 13:48:52 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 11BB0613E9
 Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=arm.com
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by smtp2.osuosl.org (Postfix) with ESMTP id C122C400F1;
-	Thu,  3 Jun 2021 13:10:05 +0000 (UTC)
+	by smtp1.osuosl.org (Postfix) with ESMTP id D3A0683E88;
+	Thu,  3 Jun 2021 13:48:51 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from smtp2.osuosl.org ([127.0.0.1])
-	by localhost (smtp2.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id yX-lvJXMaqQ6; Thu,  3 Jun 2021 13:10:01 +0000 (UTC)
-Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by smtp2.osuosl.org (Postfix) with ESMTP id 3BBF0400CA;
-	Thu,  3 Jun 2021 13:10:01 +0000 (UTC)
+Received: from smtp1.osuosl.org ([127.0.0.1])
+	by localhost (smtp1.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+	with ESMTP id hxs6qYDzefvP; Thu,  3 Jun 2021 13:48:47 +0000 (UTC)
+Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [IPv6:2605:bc80:3010:104::8cd3:938])
+	by smtp1.osuosl.org (Postfix) with ESMTP id 70A0183419;
+	Thu,  3 Jun 2021 13:48:47 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 18962C000E;
-	Thu,  3 Jun 2021 13:10:01 +0000 (UTC)
-Received: from smtp3.osuosl.org (smtp3.osuosl.org [140.211.166.136])
- by lists.linuxfoundation.org (Postfix) with ESMTP id E615CC0001
- for <iommu@lists.linux-foundation.org>; Thu,  3 Jun 2021 13:09:59 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 47DC9C000E;
+	Thu,  3 Jun 2021 13:48:47 +0000 (UTC)
+Received: from smtp4.osuosl.org (smtp4.osuosl.org [IPv6:2605:bc80:3010::137])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id A1174C0001
+ for <iommu@lists.linux-foundation.org>; Thu,  3 Jun 2021 13:48:45 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by smtp3.osuosl.org (Postfix) with ESMTP id C651D608F6
- for <iommu@lists.linux-foundation.org>; Thu,  3 Jun 2021 13:09:59 +0000 (UTC)
+ by smtp4.osuosl.org (Postfix) with ESMTP id 8EE334059B
+ for <iommu@lists.linux-foundation.org>; Thu,  3 Jun 2021 13:48:45 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from smtp3.osuosl.org ([127.0.0.1])
- by localhost (smtp3.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id p1RLqbDvtbxh for <iommu@lists.linux-foundation.org>;
- Thu,  3 Jun 2021 13:09:55 +0000 (UTC)
+Received: from smtp4.osuosl.org ([127.0.0.1])
+ by localhost (smtp4.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+ with ESMTP id wekM4ghz0b8Z for <iommu@lists.linux-foundation.org>;
+ Thu,  3 Jun 2021 13:48:41 +0000 (UTC)
 X-Greylist: domain auto-whitelisted by SQLgrey-1.8.0
 Received: from foss.arm.com (foss.arm.com [217.140.110.172])
- by smtp3.osuosl.org (Postfix) with ESMTP id 90C756001B
- for <iommu@lists.linux-foundation.org>; Thu,  3 Jun 2021 13:09:55 +0000 (UTC)
+ by smtp4.osuosl.org (Postfix) with ESMTP id 3B09B40596
+ for <iommu@lists.linux-foundation.org>; Thu,  3 Jun 2021 13:48:41 +0000 (UTC)
 Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
- by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id C91721063;
- Thu,  3 Jun 2021 06:09:54 -0700 (PDT)
-Received: from [10.57.73.64] (unknown [10.57.73.64])
- by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id 14F733F774;
- Thu,  3 Jun 2021 06:09:52 -0700 (PDT)
-Subject: Re: Regression 5.12.0-rc4 net: ice: significant throughput drop
-To: Jussi Maki <joamaki@gmail.com>
-References: <CAHn8xckNXci+X_Eb2WMv4uVYjO2331UWB2JLtXr_58z0Av8+8A@mail.gmail.com>
- <cc58c09e-bbb5-354a-2030-bf8ebb2adc86@iogearbox.net>
- <7f048c57-423b-68ba-eede-7e194c1fea4e@arm.com>
- <CAHn8xckNt3smeQPi3dgq5i_3vP7KwU45pnP5OCF8nOV_QEdyMA@mail.gmail.com>
- <7c04eeea-22d3-c265-8e1e-b3f173f2179f@iogearbox.net>
- <705f90c3-b933-8863-2124-3fea7fdbd81a@arm.com>
- <CAHn8xc=1g8bzV-uxaJAYpJ114rR7MLzth=4jyDG329ZwEG+kpg@mail.gmail.com>
+ by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 571F912FC;
+ Thu,  3 Jun 2021 06:48:40 -0700 (PDT)
+Received: from e110467-lin.cambridge.arm.com (e110467-lin.cambridge.arm.com
+ [10.1.196.41])
+ by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPA id A2FC03F73D;
+ Thu,  3 Jun 2021 06:48:39 -0700 (PDT)
 From: Robin Murphy <robin.murphy@arm.com>
-Message-ID: <c434b9b4-5a8c-a7a9-4e01-b6d8bd40b918@arm.com>
-Date: Thu, 3 Jun 2021 14:09:46 +0100
-User-Agent: Mozilla/5.0 (Windows NT 10.0; rv:78.0) Gecko/20100101
- Thunderbird/78.10.1
+To: joro@8bytes.org
+Subject: [PATCH] iommu/amd: Tidy up DMA ops init
+Date: Thu,  3 Jun 2021 14:48:21 +0100
+Message-Id: <665db61e23ff8d54ac5eb391bef520b3a803fcb9.1622727974.git.robin.murphy@arm.com>
+X-Mailer: git-send-email 2.21.0.dirty
 MIME-Version: 1.0
-In-Reply-To: <CAHn8xc=1g8bzV-uxaJAYpJ114rR7MLzth=4jyDG329ZwEG+kpg@mail.gmail.com>
-Content-Language: en-GB
-Cc: jroedel@suse.de, Daniel Borkmann <daniel@iogearbox.net>,
- netdev@vger.kernel.org, jesse.brandeburg@intel.com, davem@davemloft.net,
- iommu@lists.linux-foundation.org, intel-wired-lan@lists.osuosl.org,
- gregkh@linuxfoundation.org, anthony.l.nguyen@intel.com,
- bpf <bpf@vger.kernel.org>, hch@lst.de
+Cc: iommu@lists.linux-foundation.org, linux-kernel@vger.kernel.org,
+ Jussi Maki <joamaki@gmail.com>
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -84,56 +73,133 @@ List-Post: <mailto:iommu@lists.linux-foundation.org>
 List-Help: <mailto:iommu-request@lists.linux-foundation.org?subject=help>
 List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
  <mailto:iommu-request@lists.linux-foundation.org?subject=subscribe>
+Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
-Content-Type: text/plain; charset="us-ascii"; Format="flowed"
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-On 2021-06-03 13:32, Jussi Maki wrote:
-> On Wed, Jun 2, 2021 at 2:49 PM Robin Murphy <robin.murphy@arm.com> wrote:
->>>> Thanks for the quick response & patch. I tried it out and indeed it
->>>> does solve the issue:
->>
->> Cool, thanks Jussi. May I infer a Tested-by tag from that?
-> 
-> Of course!
-> 
->> Given that the race looks to have been pretty theoretical until now, I'm
->> not convinced it's worth the bother of digging through the long history
->> of default domain and DMA ops movement to figure where it started, much
->> less attempt invasive backports. The flush queue change which made it
->> apparent only landed in 5.13-rc1, so as long as we can get this in as a
->> fix in the current cycle we should be golden - in the meantime, note
->> that booting with "iommu.strict=0" should also restore the expected
->> behaviour.
->>
->> FWIW I do still plan to resend the patch "properly" soon (in all honesty
->> it wasn't even compile-tested!)
-> 
-> BTW, even with the patch there's quite a bit of spin lock contention
-> coming from ice_xmit_xdp_ring->dma_map_page_attrs->...->alloc_iova.
-> CPU load drops from 85% to 20% (~80Mpps, 64b UDP) when iommu is
-> disabled. Is this type of overhead to be expected?
+Now that DMA ops are part of the core API via iommu-dma, fold the
+vestigial remains of the IOMMU_DMA_OPS init state into the IOMMU API
+phase, and clean up a few other leftovers. This should also close the
+race window wherein bus_set_iommu() effectively makes the DMA ops state
+visible before its nominal initialisation - it seems this was previously
+fairly benign, but since commit a250c23f15c2 ("iommu: remove
+DOMAIN_ATTR_DMA_USE_FLUSH_QUEUE") it can now lead to the strict flush
+queue policy inadvertently being picked for default domains allocated
+during that window, with a corresponding unexpected perfomance impact.
 
-Yes, IOVA allocation can still be a bottleneck - the percpu caching 
-system mostly alleviates it, but certain workloads can still defeat 
-that, and if you're spending significant time in alloc_iova() rather 
-than alloc_iova_fast() then it sounds like yours is one of them.
+Reported-by: Jussi Maki <joamaki@gmail.com>
+Tested-by: Jussi Maki <joamaki@gmail.com>
+Signed-off-by: Robin Murphy <robin.murphy@arm.com>
 
-If you're using small IOVA sizes which *should* be cached, then you 
-might be running into a pathological case of thrashing the global depot. 
-I've ranted before about the fixed MAX_GLOBAL_MAGS probably being too 
-small for systems with more than 16 CPUs, which on a modern AMD system I 
-imagine you may well have.
+---
 
-If on the other hand your workload is making larger mappings above the 
-IOVA caching threshold, then please take a look at John's series for 
-making that tuneable:
+As discussed on the report thread, I think it makes most sense to merge
+this as a fix for 5.13 and not worry about any backporting.
 
-https://lore.kernel.org/linux-iommu/1622557781-211697-1-git-send-email-john.garry@huawei.com/
+ drivers/iommu/amd/amd_iommu.h |  2 --
+ drivers/iommu/amd/init.c      |  5 -----
+ drivers/iommu/amd/iommu.c     | 31 +++++++++++++------------------
+ 3 files changed, 13 insertions(+), 25 deletions(-)
 
-Cheers,
-Robin.
+diff --git a/drivers/iommu/amd/amd_iommu.h b/drivers/iommu/amd/amd_iommu.h
+index 55dd38d814d9..416815a525d6 100644
+--- a/drivers/iommu/amd/amd_iommu.h
++++ b/drivers/iommu/amd/amd_iommu.h
+@@ -11,8 +11,6 @@
+ 
+ #include "amd_iommu_types.h"
+ 
+-extern int amd_iommu_init_dma_ops(void);
+-extern int amd_iommu_init_passthrough(void);
+ extern irqreturn_t amd_iommu_int_thread(int irq, void *data);
+ extern irqreturn_t amd_iommu_int_handler(int irq, void *data);
+ extern void amd_iommu_apply_erratum_63(u16 devid);
+diff --git a/drivers/iommu/amd/init.c b/drivers/iommu/amd/init.c
+index d006724f4dc2..a418bf560a4b 100644
+--- a/drivers/iommu/amd/init.c
++++ b/drivers/iommu/amd/init.c
+@@ -231,7 +231,6 @@ enum iommu_init_state {
+ 	IOMMU_ENABLED,
+ 	IOMMU_PCI_INIT,
+ 	IOMMU_INTERRUPTS_EN,
+-	IOMMU_DMA_OPS,
+ 	IOMMU_INITIALIZED,
+ 	IOMMU_NOT_FOUND,
+ 	IOMMU_INIT_ERROR,
+@@ -2895,10 +2894,6 @@ static int __init state_next(void)
+ 		init_state = ret ? IOMMU_INIT_ERROR : IOMMU_INTERRUPTS_EN;
+ 		break;
+ 	case IOMMU_INTERRUPTS_EN:
+-		ret = amd_iommu_init_dma_ops();
+-		init_state = ret ? IOMMU_INIT_ERROR : IOMMU_DMA_OPS;
+-		break;
+-	case IOMMU_DMA_OPS:
+ 		init_state = IOMMU_INITIALIZED;
+ 		break;
+ 	case IOMMU_INITIALIZED:
+diff --git a/drivers/iommu/amd/iommu.c b/drivers/iommu/amd/iommu.c
+index 80e8e1916dd1..2efe6d17783c 100644
+--- a/drivers/iommu/amd/iommu.c
++++ b/drivers/iommu/amd/iommu.c
+@@ -30,7 +30,6 @@
+ #include <linux/msi.h>
+ #include <linux/irqdomain.h>
+ #include <linux/percpu.h>
+-#include <linux/iova.h>
+ #include <linux/io-pgtable.h>
+ #include <asm/irq_remapping.h>
+ #include <asm/io_apic.h>
+@@ -1771,13 +1770,22 @@ void amd_iommu_domain_update(struct protection_domain *domain)
+ 	amd_iommu_domain_flush_complete(domain);
+ }
+ 
++static void __init amd_iommu_init_dma_ops(void)
++{
++	swiotlb = (iommu_default_passthrough() || sme_me_mask) ? 1 : 0;
++
++	if (amd_iommu_unmap_flush)
++		pr_info("IO/TLB flush on unmap enabled\n");
++	else
++		pr_info("Lazy IO/TLB flushing enabled\n");
++	iommu_set_dma_strict(amd_iommu_unmap_flush);
++}
++
+ int __init amd_iommu_init_api(void)
+ {
+-	int ret, err = 0;
++	int err = 0;
+ 
+-	ret = iova_cache_get();
+-	if (ret)
+-		return ret;
++	amd_iommu_init_dma_ops();
+ 
+ 	err = bus_set_iommu(&pci_bus_type, &amd_iommu_ops);
+ 	if (err)
+@@ -1794,19 +1802,6 @@ int __init amd_iommu_init_api(void)
+ 	return 0;
+ }
+ 
+-int __init amd_iommu_init_dma_ops(void)
+-{
+-	swiotlb        = (iommu_default_passthrough() || sme_me_mask) ? 1 : 0;
+-
+-	if (amd_iommu_unmap_flush)
+-		pr_info("IO/TLB flush on unmap enabled\n");
+-	else
+-		pr_info("Lazy IO/TLB flushing enabled\n");
+-	iommu_set_dma_strict(amd_iommu_unmap_flush);
+-	return 0;
+-
+-}
+-
+ /*****************************************************************************
+  *
+  * The following functions belong to the exported interface of AMD IOMMU
+-- 
+2.21.0.dirty
+
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
