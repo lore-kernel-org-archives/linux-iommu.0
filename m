@@ -2,90 +2,95 @@ Return-Path: <SRS0=MHXQ=K5=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-8.5 required=3.0 tests=BAYES_00,DKIM_ADSP_CUSTOM_MED,
-	DKIM_INVALID,DKIM_SIGNED,FREEMAIL_FORGED_FROMDOMAIN,FREEMAIL_FROM,
-	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,SPF_HELO_NONE,
-	SPF_PASS,USER_AGENT_GIT autolearn=unavailable autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-13.5 required=3.0 tests=BAYES_00,
+	DKIM_ADSP_CUSTOM_MED,DKIM_INVALID,DKIM_SIGNED,FREEMAIL_FORGED_FROMDOMAIN,
+	FREEMAIL_FROM,HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_CR_TRAILER,
+	INCLUDES_PATCH,MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,USER_AGENT_GIT
+	autolearn=ham autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 07B9EC47096
-	for <iommu@archiver.kernel.org>; Thu,  3 Jun 2021 16:45:11 +0000 (UTC)
-Received: from smtp2.osuosl.org (smtp2.osuosl.org [140.211.166.133])
+	by smtp.lore.kernel.org (Postfix) with ESMTP id BF2B2C47082
+	for <iommu@archiver.kernel.org>; Thu,  3 Jun 2021 16:45:13 +0000 (UTC)
+Received: from smtp1.osuosl.org (smtp1.osuosl.org [140.211.166.138])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 9FE0F613B1
-	for <iommu@archiver.kernel.org>; Thu,  3 Jun 2021 16:45:10 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 9FE0F613B1
+	by mail.kernel.org (Postfix) with ESMTPS id 77A5F613B1
+	for <iommu@archiver.kernel.org>; Thu,  3 Jun 2021 16:45:13 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 77A5F613B1
 Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=gmail.com
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by smtp2.osuosl.org (Postfix) with ESMTP id 66660401E6;
-	Thu,  3 Jun 2021 16:45:10 +0000 (UTC)
+	by smtp1.osuosl.org (Postfix) with ESMTP id 44BAD83F0D;
+	Thu,  3 Jun 2021 16:45:13 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from smtp2.osuosl.org ([127.0.0.1])
-	by localhost (smtp2.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id W_Qn2sF-AR9f; Thu,  3 Jun 2021 16:45:06 +0000 (UTC)
+Received: from smtp1.osuosl.org ([127.0.0.1])
+	by localhost (smtp1.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+	with ESMTP id lSYdEy_mVQ1t; Thu,  3 Jun 2021 16:45:09 +0000 (UTC)
 Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [IPv6:2605:bc80:3010:104::8cd3:938])
-	by smtp2.osuosl.org (Postfix) with ESMTP id 3A9AB4054D;
-	Thu,  3 Jun 2021 16:45:06 +0000 (UTC)
+	by smtp1.osuosl.org (Postfix) with ESMTP id 7779984242;
+	Thu,  3 Jun 2021 16:45:09 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 070CEC000D;
-	Thu,  3 Jun 2021 16:45:06 +0000 (UTC)
-Received: from smtp2.osuosl.org (smtp2.osuosl.org [IPv6:2605:bc80:3010::133])
- by lists.linuxfoundation.org (Postfix) with ESMTP id B71BAC0001
- for <iommu@lists.linux-foundation.org>; Thu,  3 Jun 2021 16:45:04 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 4DD9BC000D;
+	Thu,  3 Jun 2021 16:45:09 +0000 (UTC)
+Received: from smtp3.osuosl.org (smtp3.osuosl.org [140.211.166.136])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id A22A7C0001
+ for <iommu@lists.linux-foundation.org>; Thu,  3 Jun 2021 16:45:07 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by smtp2.osuosl.org (Postfix) with ESMTP id A59B54054F
- for <iommu@lists.linux-foundation.org>; Thu,  3 Jun 2021 16:45:04 +0000 (UTC)
+ by smtp3.osuosl.org (Postfix) with ESMTP id 8003860B58
+ for <iommu@lists.linux-foundation.org>; Thu,  3 Jun 2021 16:45:07 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from smtp2.osuosl.org ([127.0.0.1])
- by localhost (smtp2.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id g6akQdpGmmGp for <iommu@lists.linux-foundation.org>;
- Thu,  3 Jun 2021 16:45:00 +0000 (UTC)
+Authentication-Results: smtp3.osuosl.org (amavisd-new);
+ dkim=pass (2048-bit key) header.d=gmail.com
+Received: from smtp3.osuosl.org ([127.0.0.1])
+ by localhost (smtp3.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+ with ESMTP id w2ooT7QvGQIs for <iommu@lists.linux-foundation.org>;
+ Thu,  3 Jun 2021 16:45:03 +0000 (UTC)
 X-Greylist: whitelisted by SQLgrey-1.8.0
 Received: from mail-ej1-x62c.google.com (mail-ej1-x62c.google.com
  [IPv6:2a00:1450:4864:20::62c])
- by smtp2.osuosl.org (Postfix) with ESMTPS id AC07B401E6
- for <iommu@lists.linux-foundation.org>; Thu,  3 Jun 2021 16:45:00 +0000 (UTC)
-Received: by mail-ej1-x62c.google.com with SMTP id l1so10218728ejb.6
- for <iommu@lists.linux-foundation.org>; Thu, 03 Jun 2021 09:45:00 -0700 (PDT)
+ by smtp3.osuosl.org (Postfix) with ESMTPS id DBC50606C6
+ for <iommu@lists.linux-foundation.org>; Thu,  3 Jun 2021 16:45:02 +0000 (UTC)
+Received: by mail-ej1-x62c.google.com with SMTP id k7so10163610ejv.12
+ for <iommu@lists.linux-foundation.org>; Thu, 03 Jun 2021 09:45:02 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=gmail.com; s=20161025;
- h=from:to:cc:subject:date:message-id:mime-version
- :content-transfer-encoding;
- bh=rVr43q21YvffQjChkPWUcI2ScgfaIcHVrqYlABk7dec=;
- b=WQhBmtRwXgI6m5iQhMkj9hoEJVfreNZxFRV+7f9uqHbaNxKpFwYxHOuzlGhSFxSqDQ
- Z+caS2pe7ZUIRkggw/8uDPEpbgvxlD7MszlPTx3ChXn4j3L0I/iid8BExBNj1ntFffsP
- P8Wkzt/MXT5Dco56uZB3WD/1SrQ/CnTbBOp0ZFPkerWD0Ip7sEGvSHkKpYUGUcpw/Khu
- HDNssduz88YziRNdRKa0/hLBeyjEhowAVj3AMm7tWcACp6D0VXBlkiJ69FQVWOGKimJI
- h11S7zwozVjyAGp2OxoCqhu3+sfQ+EX7lZnR5Z6BUn4m9xl6wK5W6gibH9JTWS1u6yxH
- J04g==
+ h=from:to:cc:subject:date:message-id:in-reply-to:references
+ :mime-version:content-transfer-encoding;
+ bh=Xzw2TUXY9p93oZxbwZKb0YQTzrG6r+scUnZo7x9ZCuU=;
+ b=BLkLvFdApNPPc1q9dm6SyDGGREAVsuQgmtHybL+4Ju9BI2Ouw4EuFvuzh5TFfljaou
+ rSdJmPTj7DJQs6BwlK35x8RuCodKVxouDgYyVI9FYSHyorPWgQAgDQ5F7HW4EzrXLvu+
+ Ly6zoAVjCiGWNEMseWyo5jTpij6fj2skQMnRL69EqYkc/X/JLUeJkRkI7el1HsVFoMjd
+ cs4MLhUVZrLxR1+BVMQvpMxPU8EZ4DP0ilgpqyQbZohdATLha6u0uQAOzKhnu4JSSKXv
+ 1mX+ILdrIkOayYuTPRONvrYaX/zjOaMqqkTo38mjcT3xFuhqtN5YshKcq0viUUS8CG4D
+ bOrg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
  d=1e100.net; s=20161025;
- h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
- :content-transfer-encoding;
- bh=rVr43q21YvffQjChkPWUcI2ScgfaIcHVrqYlABk7dec=;
- b=RdxxhlCzulvF0cKfjJjBWRAyRf7zTVWaEiXMoJtyA2SwHST37sxNO4zufc7/g4LJEP
- 0Td5Yiw/RI/UJdFztx8JkK5LZ8MOE0wVUfP3yQO8/4jJZjy7zJv5/467x99fkvdIxSwE
- yadAWtn8X+smq3TudVl97nAlTE/Y4PAJe3XA+tjX6zygN6W+4dYCIBs8DDcUxQ7hZPBv
- aDGNIDb4+EUYAgagvLg193OqNzb4W0akhKapyAU4jBt2paFsgH0sgadLKNuwUp7hwGED
- yhHLkWuoxnpMujHACTqngILvuU/wJ+f0R2BkJGKpYj1867vUPkjIBkfMNpXPbBkX+WE6
- Mwhg==
-X-Gm-Message-State: AOAM532Nb0rMfrPf4zeoBuyfXCp5ik8yF2Rga5zQueEvJphqfec/jaQx
- 0vNSc3pKgEu/Ure0VHIdTi0=
-X-Google-Smtp-Source: ABdhPJyxuKFzTXzdUUuuRg5+fasUmQpB/t2zP4zUfnwWo9ap4jiRhmDgHF8d2hjtKx2m6KQTLYRBhw==
-X-Received: by 2002:a17:906:17d8:: with SMTP id
- u24mr308766eje.106.1622738698879; 
- Thu, 03 Jun 2021 09:44:58 -0700 (PDT)
+ h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
+ :references:mime-version:content-transfer-encoding;
+ bh=Xzw2TUXY9p93oZxbwZKb0YQTzrG6r+scUnZo7x9ZCuU=;
+ b=rs0rP3ihF7aptzK+zqpDJLFXoPRZXdfQgMGH2UDDBp0QlRrPJF7JRxO3S9FjR1hVoB
+ Apr43bpyQBFrjNISoK+nc17U+szxQU7Ld6DB27p9p/wj6bqrTGCmtgtFgwcnG2q0ntDd
+ t+2TcdlyX2PrF1O/CMxmhnU6z66nq06WhS7/m+Sz/QbOo6dAm5+mn/sE1zp2wdwKQtwD
+ m884Z1zFHhvxPhbS9Wbm2dLbPjRvgY9L7dXDnpPF1mYffbaWcF8376UBH0/hrWz2ei8L
+ mGGR4ZZ28gQ4sSX75r6L724MVvYmMsY1X0sLDDxL3+GU/DDPGo7aAxg6//h/wau4AnNi
+ DC4w==
+X-Gm-Message-State: AOAM533GrAw1rLUVQGrQJay9PFM3vk8M1H1/pAv17len9iW56jdwNdoM
+ pZ0sj/D/z6NPBUORDQhhe0U=
+X-Google-Smtp-Source: ABdhPJxskXVbfgGBiwrxr5agPcu7F5QArOGLc64A8ytnD19xBd4ogTRNhjMOLdBL+Va4ArqBKjwpGw==
+X-Received: by 2002:a17:906:5407:: with SMTP id
+ q7mr302416ejo.158.1622738701180; 
+ Thu, 03 Jun 2021 09:45:01 -0700 (PDT)
 Received: from localhost ([62.96.65.119])
- by smtp.gmail.com with ESMTPSA id m4sm1694353eje.8.2021.06.03.09.44.57
+ by smtp.gmail.com with ESMTPSA id c19sm2079710edv.36.2021.06.03.09.44.59
  (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
- Thu, 03 Jun 2021 09:44:57 -0700 (PDT)
+ Thu, 03 Jun 2021 09:45:00 -0700 (PDT)
 From: Thierry Reding <thierry.reding@gmail.com>
 To: Thierry Reding <thierry.reding@gmail.com>, Will Deacon <will@kernel.org>,
  Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>
-Subject: [PATCH v3 0/9] arm64: tegra: Prevent early SMMU faults
-Date: Thu,  3 Jun 2021 18:46:23 +0200
-Message-Id: <20210603164632.1000458-1-thierry.reding@gmail.com>
+Subject: [PATCH v3 1/9] memory: tegra: Implement SID override programming
+Date: Thu,  3 Jun 2021 18:46:24 +0200
+Message-Id: <20210603164632.1000458-2-thierry.reding@gmail.com>
 X-Mailer: git-send-email 2.31.1
+In-Reply-To: <20210603164632.1000458-1-thierry.reding@gmail.com>
+References: <20210603164632.1000458-1-thierry.reding@gmail.com>
 MIME-Version: 1.0
 Cc: iommu@lists.linux-foundation.org, Jon Hunter <jonathanh@nvidia.com>,
  Nicolin Chen <nicolinc@nvidia.com>, linux-tegra@vger.kernel.org,
@@ -109,86 +114,159 @@ Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
 From: Thierry Reding <treding@nvidia.com>
 
-Hi,
+Instead of programming all SID overrides during early boot, perform the
+operation on-demand after the SMMU translations have been set up for a
+device. This reuses data from device tree to match memory clients for a
+device and programs the SID specified in device tree, which corresponds
+to the SID used for the SMMU context banks for the device.
 
-this is a set of patches that is the result of earlier discussions
-regarding early identity mappings that are needed to avoid SMMU faults
-during early boot.
+Signed-off-by: Thierry Reding <treding@nvidia.com>
+---
+ drivers/memory/tegra/mc.c       |  9 +++++
+ drivers/memory/tegra/tegra186.c | 72 +++++++++++++++++++++++++++++++++
+ include/soc/tegra/mc.h          |  3 ++
+ 3 files changed, 84 insertions(+)
 
-The goal here is to avoid early identity mappings altogether and instead
-postpone the need for the identity mappings to when devices are attached
-to the SMMU. This works by making the SMMU driver coordinate with the
-memory controller driver on when to start enforcing SMMU translations.
-This makes Tegra behave in a more standard way and pushes the code to
-deal with the Tegra-specific programming into the NVIDIA SMMU
-implementation.
-
-Compared to the original version of these patches, I've split the
-preparatory work into a separate patch series because it became very
-large and will be mostly uninteresting for this audience.
-
-Patch 1 provides a mechanism to program SID overrides at runtime. Patch
-2 updates the ARM SMMU device tree bindings to include the Tegra186
-compatible string as suggested by Robin during review.
-
-Patches 3 and 4 create the fundamentals in the SMMU driver to support
-this and also make this functionality available on Tegra186. Patch 5
-hooks the ARM SMMU up to the memory controller so that the memory client
-stream ID overrides can be programmed at the right time.
-
-Patch 6 extends this mechanism to Tegra186 and patches 7-9 enable all of
-this through device tree updates. Patch 10 (that was included in earlier
-version to show how SMMU will be enabled for display controllers) has
-been dropped for now while waiting for the identity mappings support to
-land.
-
-The end result is that various peripherals will have SMMU enabled, while
-the display controllers will keep using passthrough, as initially set up
-by firmware. Once the device tree bindings have been accepted and the
-SMMU driver has been updated to create identity mappings for the display
-controllers, they can be hooked up to the SMMU and the code in this
-series will automatically program the SID overrides to enable SMMU
-translations at the right time.
-
-Will, Krzysztof: as discussed, it'd be best if Krzysztof picked up patch
-1 into the memory controller tree on top of v3 of the driver unification
-series I sent out earlier today and then sent out a PR for Will to merge
-and apply patches 2-6. I can then take patches 7-9 in via the Tegra tree
-since there are no hard dependencies.
-
-Changes in v3:
-- move hunk from patch 4 to patch 5 to preserve bisectibility
-
-Changes in v2:
-- split off the preparatory work into a separate series (that needs to
-  be applied first)
-- address review comments by Robin
-
-Thierry
-
-Thierry Reding (9):
-  memory: tegra: Implement SID override programming
-  dt-bindings: arm-smmu: Add Tegra186 compatible string
-  iommu/arm-smmu: Implement ->probe_finalize()
-  iommu/arm-smmu: tegra: Detect number of instances at runtime
-  iommu/arm-smmu: tegra: Implement SID override programming
-  iommu/arm-smmu: Use Tegra implementation on Tegra186
-  arm64: tegra: Use correct compatible string for Tegra186 SMMU
-  arm64: tegra: Hook up memory controller to SMMU on Tegra186
-  arm64: tegra: Enable SMMU support on Tegra194
-
- .../devicetree/bindings/iommu/arm,smmu.yaml   | 11 ++-
- arch/arm64/boot/dts/nvidia/tegra186.dtsi      |  4 +-
- arch/arm64/boot/dts/nvidia/tegra194.dtsi      | 86 ++++++++++++++++++
- drivers/iommu/arm/arm-smmu/arm-smmu-impl.c    |  3 +-
- drivers/iommu/arm/arm-smmu/arm-smmu-nvidia.c  | 90 +++++++++++++++----
- drivers/iommu/arm/arm-smmu/arm-smmu.c         | 13 +++
- drivers/iommu/arm/arm-smmu/arm-smmu.h         |  1 +
- drivers/memory/tegra/mc.c                     |  9 ++
- drivers/memory/tegra/tegra186.c               | 72 +++++++++++++++
- include/soc/tegra/mc.h                        |  3 +
- 10 files changed, 269 insertions(+), 23 deletions(-)
-
+diff --git a/drivers/memory/tegra/mc.c b/drivers/memory/tegra/mc.c
+index 11b83de9361c..3c5aae7abf35 100644
+--- a/drivers/memory/tegra/mc.c
++++ b/drivers/memory/tegra/mc.c
+@@ -97,6 +97,15 @@ struct tegra_mc *devm_tegra_memory_controller_get(struct device *dev)
+ }
+ EXPORT_SYMBOL_GPL(devm_tegra_memory_controller_get);
+ 
++int tegra_mc_probe_device(struct tegra_mc *mc, struct device *dev)
++{
++	if (mc->soc->ops && mc->soc->ops->probe_device)
++		return mc->soc->ops->probe_device(mc, dev);
++
++	return 0;
++}
++EXPORT_SYMBOL_GPL(tegra_mc_probe_device);
++
+ static int tegra_mc_block_dma_common(struct tegra_mc *mc,
+ 				     const struct tegra_mc_reset *rst)
+ {
+diff --git a/drivers/memory/tegra/tegra186.c b/drivers/memory/tegra/tegra186.c
+index 1f87915ccd62..e65eac5764d4 100644
+--- a/drivers/memory/tegra/tegra186.c
++++ b/drivers/memory/tegra/tegra186.c
+@@ -4,6 +4,7 @@
+  */
+ 
+ #include <linux/io.h>
++#include <linux/iommu.h>
+ #include <linux/module.h>
+ #include <linux/mod_devicetable.h>
+ #include <linux/of_device.h>
+@@ -15,6 +16,10 @@
+ #include <dt-bindings/memory/tegra186-mc.h>
+ #endif
+ 
++#define MC_SID_STREAMID_OVERRIDE_MASK GENMASK(7, 0)
++#define MC_SID_STREAMID_SECURITY_WRITE_ACCESS_DISABLED BIT(16)
++#define MC_SID_STREAMID_SECURITY_OVERRIDE BIT(8)
++
+ static void tegra186_mc_program_sid(struct tegra_mc *mc)
+ {
+ 	unsigned int i;
+@@ -66,10 +71,77 @@ static int tegra186_mc_resume(struct tegra_mc *mc)
+ 	return 0;
+ }
+ 
++static void tegra186_mc_client_sid_override(struct tegra_mc *mc,
++					    const struct tegra_mc_client *client,
++					    unsigned int sid)
++{
++	u32 value, old;
++
++	value = readl(mc->regs + client->regs.sid.security);
++	if ((value & MC_SID_STREAMID_SECURITY_OVERRIDE) == 0) {
++		/*
++		 * If the secure firmware has locked this down the override
++		 * for this memory client, there's nothing we can do here.
++		 */
++		if (value & MC_SID_STREAMID_SECURITY_WRITE_ACCESS_DISABLED)
++			return;
++
++		/*
++		 * Otherwise, try to set the override itself. Typically the
++		 * secure firmware will never have set this configuration.
++		 * Instead, it will either have disabled write access to
++		 * this field, or it will already have set an explicit
++		 * override itself.
++		 */
++		WARN_ON((value & MC_SID_STREAMID_SECURITY_OVERRIDE) == 0);
++
++		value |= MC_SID_STREAMID_SECURITY_OVERRIDE;
++		writel(value, mc->regs + client->regs.sid.security);
++	}
++
++	value = readl(mc->regs + client->regs.sid.override);
++	old = value & MC_SID_STREAMID_OVERRIDE_MASK;
++
++	if (old != sid) {
++		dev_dbg(mc->dev, "overriding SID %x for %s with %x\n", old,
++			client->name, sid);
++		writel(sid, mc->regs + client->regs.sid.override);
++	}
++}
++
++static int tegra186_mc_probe_device(struct tegra_mc *mc, struct device *dev)
++{
++#if IS_ENABLED(CONFIG_IOMMU_API)
++	struct iommu_fwspec *fwspec = dev_iommu_fwspec_get(dev);
++	struct of_phandle_args args;
++	unsigned int i, index = 0;
++
++	while (!of_parse_phandle_with_args(dev->of_node, "interconnects", "#interconnect-cells",
++					   index, &args)) {
++		if (args.np == mc->dev->of_node && args.args_count != 0) {
++			for (i = 0; i < mc->soc->num_clients; i++) {
++				const struct tegra_mc_client *client = &mc->soc->clients[i];
++
++				if (client->id == args.args[0]) {
++					u32 sid = fwspec->ids[0] & MC_SID_STREAMID_OVERRIDE_MASK;
++
++					tegra186_mc_client_sid_override(mc, client, sid);
++				}
++			}
++		}
++
++		index++;
++	}
++#endif
++
++	return 0;
++}
++
+ const struct tegra_mc_ops tegra186_mc_ops = {
+ 	.probe = tegra186_mc_probe,
+ 	.remove = tegra186_mc_remove,
+ 	.resume = tegra186_mc_resume,
++	.probe_device = tegra186_mc_probe_device,
+ };
+ 
+ #if defined(CONFIG_ARCH_TEGRA_186_SOC)
+diff --git a/include/soc/tegra/mc.h b/include/soc/tegra/mc.h
+index 1bd5aed81868..e19c2504a14b 100644
+--- a/include/soc/tegra/mc.h
++++ b/include/soc/tegra/mc.h
+@@ -180,6 +180,7 @@ struct tegra_mc_ops {
+ 	int (*suspend)(struct tegra_mc *mc);
+ 	int (*resume)(struct tegra_mc *mc);
+ 	irqreturn_t (*handle_irq)(int irq, void *data);
++	int (*probe_device)(struct tegra_mc *mc, struct device *dev);
+ };
+ 
+ struct tegra_mc_soc {
+@@ -244,4 +245,6 @@ devm_tegra_memory_controller_get(struct device *dev)
+ }
+ #endif
+ 
++int tegra_mc_probe_device(struct tegra_mc *mc, struct device *dev);
++
+ #endif /* __SOC_TEGRA_MC_H__ */
 -- 
 2.31.1
 
