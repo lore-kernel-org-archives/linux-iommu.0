@@ -2,99 +2,123 @@ Return-Path: <SRS0=eMD9=K6=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-0.5 required=3.0 tests=BAYES_00,DKIM_ADSP_CUSTOM_MED,
-	DKIM_INVALID,DKIM_SIGNED,FREEMAIL_FORGED_FROMDOMAIN,FREEMAIL_FROM,
-	HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,
-	URIBL_BLOCKED autolearn=no autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-5.0 required=3.0 tests=BAYES_00,DKIM_INVALID,
+	DKIM_SIGNED,HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,SPF_HELO_NONE,
+	SPF_PASS,URIBL_BLOCKED,USER_AGENT_SANE_2 autolearn=no autolearn_force=no
+	version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 90966C4743E
-	for <iommu@archiver.kernel.org>; Fri,  4 Jun 2021 19:57:49 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8C67AC4743D
+	for <iommu@archiver.kernel.org>; Fri,  4 Jun 2021 21:29:36 +0000 (UTC)
 Received: from smtp2.osuosl.org (smtp2.osuosl.org [140.211.166.133])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 2F1EE613F8
-	for <iommu@archiver.kernel.org>; Fri,  4 Jun 2021 19:57:49 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 2F1EE613F8
-Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=gmail.com
+	by mail.kernel.org (Postfix) with ESMTPS id 35F1D613F8
+	for <iommu@archiver.kernel.org>; Fri,  4 Jun 2021 21:29:36 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 35F1D613F8
+Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=redhat.com
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by smtp2.osuosl.org (Postfix) with ESMTP id EA5DA401E8;
-	Fri,  4 Jun 2021 19:57:48 +0000 (UTC)
+	by smtp2.osuosl.org (Postfix) with ESMTP id 089A0401B4;
+	Fri,  4 Jun 2021 21:29:36 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
 Received: from smtp2.osuosl.org ([127.0.0.1])
 	by localhost (smtp2.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id lOIwVhMuExz1; Fri,  4 Jun 2021 19:57:44 +0000 (UTC)
+	with ESMTP id CSojscjvVQ4p; Fri,  4 Jun 2021 21:29:31 +0000 (UTC)
 Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by smtp2.osuosl.org (Postfix) with ESMTP id 2D2F2401CC;
-	Fri,  4 Jun 2021 19:57:44 +0000 (UTC)
+	by smtp2.osuosl.org (Postfix) with ESMTP id 757EC40106;
+	Fri,  4 Jun 2021 21:29:31 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 088B1C000D;
-	Fri,  4 Jun 2021 19:57:44 +0000 (UTC)
-Received: from smtp1.osuosl.org (smtp1.osuosl.org [140.211.166.138])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 459E1C0001
- for <iommu@lists.linux-foundation.org>; Fri,  4 Jun 2021 19:57:43 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 589A3C000D;
+	Fri,  4 Jun 2021 21:29:31 +0000 (UTC)
+Received: from smtp2.osuosl.org (smtp2.osuosl.org [IPv6:2605:bc80:3010::133])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id B7C0EC0001
+ for <iommu@lists.linux-foundation.org>; Fri,  4 Jun 2021 21:29:30 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by smtp1.osuosl.org (Postfix) with ESMTP id 38FDE83D96
- for <iommu@lists.linux-foundation.org>; Fri,  4 Jun 2021 19:57:43 +0000 (UTC)
+ by smtp2.osuosl.org (Postfix) with ESMTP id 90EE340106
+ for <iommu@lists.linux-foundation.org>; Fri,  4 Jun 2021 21:29:30 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Authentication-Results: smtp1.osuosl.org (amavisd-new);
- dkim=pass (2048-bit key) header.d=gmail.com
-Received: from smtp1.osuosl.org ([127.0.0.1])
- by localhost (smtp1.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id LF8aOZCcePEu for <iommu@lists.linux-foundation.org>;
- Fri,  4 Jun 2021 19:57:38 +0000 (UTC)
-X-Greylist: whitelisted by SQLgrey-1.8.0
-Received: from mail-pg1-x52c.google.com (mail-pg1-x52c.google.com
- [IPv6:2607:f8b0:4864:20::52c])
- by smtp1.osuosl.org (Postfix) with ESMTPS id B900F83AFE
- for <iommu@lists.linux-foundation.org>; Fri,  4 Jun 2021 19:57:38 +0000 (UTC)
-Received: by mail-pg1-x52c.google.com with SMTP id i5so8746633pgm.0
- for <iommu@lists.linux-foundation.org>; Fri, 04 Jun 2021 12:57:38 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=gmail.com; s=20161025;
- h=from:message-id:mime-version:subject:date:in-reply-to:cc:to
- :references; bh=XcPLPL/fr76RmVJu1kdzwNFB7f+nFqpQT28G0wE3jrA=;
- b=Z03eeqXllCov4ZbKKSvZJwzywxOvBtX0KkmeJm/UnFw4w9M/faXHfJnRt/hQCu/Vtz
- uG10D8Lh2CqaoSknLHkqyHHZ3iR8ldMRf9MUbgEnEXgsPDoXpyY+hNzgL1zpstNi3uqN
- HxPIva+GVP5z17q6yGB8qmBFSqIu9HvT5J3kKkYcnU8XPhkodQuv190nZfxBPXg6UT3w
- iOIhHuJIfW4Njs0jAtMG9mlyiC380SpiITeHQVhLH+MuFV91eDHeJ7Y3oKul+SlBcqZX
- azZsS+6PRXbMVitb5GO8NUGa9RgaZXNA4IBAaxFLEyEVlP+lTrbTfOKWHKqtMrR1RsG7
- RTcA==
+Received: from smtp2.osuosl.org ([127.0.0.1])
+ by localhost (smtp2.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+ with ESMTP id 8Yqo-SPCyXEW for <iommu@lists.linux-foundation.org>;
+ Fri,  4 Jun 2021 21:29:26 +0000 (UTC)
+X-Greylist: domain auto-whitelisted by SQLgrey-1.8.0
+Received: from us-smtp-delivery-124.mimecast.com
+ (us-smtp-delivery-124.mimecast.com [216.205.24.124])
+ by smtp2.osuosl.org (Postfix) with ESMTPS id 96C9E40142
+ for <iommu@lists.linux-foundation.org>; Fri,  4 Jun 2021 21:29:26 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+ s=mimecast20190719; t=1622842165;
+ h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+ to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+ content-transfer-encoding:content-transfer-encoding:
+ in-reply-to:in-reply-to:references:references;
+ bh=xEuogiJFrluRPqjpF+9tD/0FxZaF2LJJRCJA/TNp9Oc=;
+ b=eog7hjJX4Gjmu7Uc5pyHV+tvOlHVv8MP0Nb2iu5JLX2ngvHQBzOAW7OvhlggMmKWVHtG4w
+ NfPkK0EZBq6PMggsGh57GZEHm5GXO+BIT03JMrGV5BMELYNeOWCZ/cBDUCxjPd6x0YXTmh
+ 1Tq9GEFZ8tbmdsEVG1LkF5J3jACUcMY=
+Received: from mail-ot1-f69.google.com (mail-ot1-f69.google.com
+ [209.85.210.69]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-497-QS-vUKBWOuGmpnmIV1Hm4Q-1; Fri, 04 Jun 2021 17:29:21 -0400
+X-MC-Unique: QS-vUKBWOuGmpnmIV1Hm4Q-1
+Received: by mail-ot1-f69.google.com with SMTP id
+ z18-20020a0568301292b02902dc88381e4dso6073180otp.1
+ for <iommu@lists.linux-foundation.org>; Fri, 04 Jun 2021 14:29:21 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
  d=1e100.net; s=20161025;
- h=x-gm-message-state:from:message-id:mime-version:subject:date
- :in-reply-to:cc:to:references;
- bh=XcPLPL/fr76RmVJu1kdzwNFB7f+nFqpQT28G0wE3jrA=;
- b=j9+ssXAn606EIxB9JHiFYagQ712NUx2rplDIFHHWFdBMOuvQzR6HCafhpYKdW8Y6Wz
- ifybroCvWevPHzv5ou/CeJKkLjzpmsHMkUyPQZKNgD2w36eCAtBdDar+VlfAMh2/1PU/
- 27mQLErL22/dOgQpUDTAMCwaOHADD3PscLlPDYDybpV2tP/f4nlLlFj5jNz8Tv4TWEcJ
- RFkTneFk60KixxUWiyKz9ONRmJ5L5OByKD+GO5IMaW473IjZRMGB7X5Ck7pLNNEuQtDx
- YSwXwS3aonRGLyLQ/5HOevaxgyiXLLTvVUf9PTRKOhYDwbTPyYT8gX3lHUiIFUKh8w4J
- nTPw==
-X-Gm-Message-State: AOAM532VaFJehc6QrONB892UvsGQ1FcI0JtIuhzgI+6ULzj29/s6p5zo
- jc/Ot2TkrcuOgHM/2WyJ5c0=
-X-Google-Smtp-Source: ABdhPJzu5pmokS497sg/y+deevWmNaTczaDzxfy/K5+lu6yComISI7hRajEbrBsj6OLcZ4/xqm76QQ==
-X-Received: by 2002:a05:6a00:be6:b029:2ec:967c:137b with SMTP id
- x38-20020a056a000be6b02902ec967c137bmr3634678pfu.44.1622836657812; 
- Fri, 04 Jun 2021 12:57:37 -0700 (PDT)
-Received: from smtpclient.apple (c-24-6-216-183.hsd1.ca.comcast.net.
- [24.6.216.183])
- by smtp.gmail.com with ESMTPSA id 30sm2609478pgo.7.2021.06.04.12.57.36
- (version=TLS1_2 cipher=ECDHE-ECDSA-AES128-GCM-SHA256 bits=128/128);
- Fri, 04 Jun 2021 12:57:37 -0700 (PDT)
-From: Nadav Amit <nadav.amit@gmail.com>
-Message-Id: <45D949A1-F5F5-4230-A6BC-066CA3030579@gmail.com>
-Mime-Version: 1.0 (Mac OS X Mail 14.0 \(3654.100.0.2.22\))
-Subject: Re: [PATCH v2 0/4] iommu/amd: Enable page-selective flushes
-Date: Fri, 4 Jun 2021 12:57:35 -0700
-In-Reply-To: <2ea809ef-beb5-a2c9-0739-cb236cab196b@arm.com>
-To: Robin Murphy <robin.murphy@arm.com>
-References: <20210524224159.32807-1-namit@vmware.com>
- <YLpI7tKtsf4l5MlN@8bytes.org>
- <05098022-1ED6-44BE-931D-D16C2D0B2D09@gmail.com>
- <2ea809ef-beb5-a2c9-0739-cb236cab196b@arm.com>
-X-Mailer: Apple Mail (2.3654.100.0.2.22)
-Cc: Will Deacon <will@kernel.org>, Jiajun Cao <caojiajun@vmware.com>,
- iommu@lists.linux-foundation.org, linux-kernel@vger.kernel.org
+ h=x-gm-message-state:date:from:to:cc:subject:message-id:in-reply-to
+ :references:organization:mime-version:content-transfer-encoding;
+ bh=xEuogiJFrluRPqjpF+9tD/0FxZaF2LJJRCJA/TNp9Oc=;
+ b=nfpQQpOtxWwii+a9UomjBF92G6dTfK8UVHLrHzHrxQHTBQnT3Igb2Rz2sFmUFjEXoT
+ CNeYT24LNnvAfEYKfKJNp+mARWuOuni1Gm4TnLPp1ToN6b3xhoQqF3/dxWRURTcjZF3G
+ mG9TcCKp5leSi2646aj0t/VcD/iE1Vwcqk1nehuOi0OPE/RmErh28MzX7ksUyGef55c6
+ KkDMv0A6dUvE+jFvB2zkdOnscNHEGWghDBcm3R0TNH0ElaDE6vZJQxjU7fCQ2N24kGg1
+ U+VBinBdMsBKlDX8oTND5RmjWXLXUlNGjSx42uYtXYr5H5v6PGEYi/WvOi+jAfA0rNS9
+ n0hQ==
+X-Gm-Message-State: AOAM531m3ZfmpRY9d2zdC7CQKKCFV1ojaSTQXCosDAvLmxMUloAFSmgg
+ rVKgXG9kbp+Dg/nq0AbZZ8rJjPWnyW49uqjXdmDg4WSUbz9sv7m1XTDp69qKBYJECf3klcxGuvk
+ wZ0N2fwhkH+6D0I4WhvBPmn0ZEdbsqA==
+X-Received: by 2002:aca:d18:: with SMTP id 24mr11829312oin.56.1622842161093;
+ Fri, 04 Jun 2021 14:29:21 -0700 (PDT)
+X-Google-Smtp-Source: ABdhPJwD3fykksZ3P7cEsyJ8xzxTeqnpMVAfeCDorrF3MYeu8L7chpRaGp1o7UgXlt9aMuAsw4nMkQ==
+X-Received: by 2002:aca:d18:: with SMTP id 24mr11829303oin.56.1622842160801;
+ Fri, 04 Jun 2021 14:29:20 -0700 (PDT)
+Received: from redhat.com ([198.99.80.109])
+ by smtp.gmail.com with ESMTPSA id w6sm726669otj.5.2021.06.04.14.29.19
+ (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+ Fri, 04 Jun 2021 14:29:20 -0700 (PDT)
+Date: Fri, 4 Jun 2021 15:29:18 -0600
+From: Alex Williamson <alex.williamson@redhat.com>
+To: Jason Gunthorpe <jgg@nvidia.com>
+Subject: Re: [RFC] /dev/ioasid uAPI proposal
+Message-ID: <20210604152918.57d0d369.alex.williamson@redhat.com>
+In-Reply-To: <20210604172207.GT1002214@nvidia.com>
+References: <20210603201018.GF1002214@nvidia.com>
+ <20210603154407.6fe33880.alex.williamson@redhat.com>
+ <MWHPR11MB1886469C0136C6523AB158B68C3B9@MWHPR11MB1886.namprd11.prod.outlook.com>
+ <20210604122830.GK1002214@nvidia.com>
+ <20210604092620.16aaf5db.alex.williamson@redhat.com>
+ <815fd392-0870-f410-cbac-859070df1b83@redhat.com>
+ <20210604155016.GR1002214@nvidia.com>
+ <30e5c597-b31c-56de-c75e-950c91947d8f@redhat.com>
+ <20210604160336.GA414156@nvidia.com>
+ <2c62b5c7-582a-c710-0436-4ac5e8fd8b39@redhat.com>
+ <20210604172207.GT1002214@nvidia.com>
+Organization: Red Hat
+X-Mailer: Claws Mail 3.17.8 (GTK+ 2.24.32; x86_64-redhat-linux-gnu)
+MIME-Version: 1.0
+Authentication-Results: relay.mimecast.com;
+ auth=pass smtp.auth=CUSA124A263 smtp.mailfrom=alex.williamson@redhat.com
+X-Mimecast-Spam-Score: 0
+X-Mimecast-Originator: redhat.com
+Cc: Jean-Philippe Brucker <jean-philippe@linaro.org>, "Tian,
+ Kevin" <kevin.tian@intel.com>, "Jiang, Dave" <dave.jiang@intel.com>, "Raj,
+ Ashok" <ashok.raj@intel.com>, "kvm@vger.kernel.org" <kvm@vger.kernel.org>,
+ Jonathan Corbet <corbet@lwn.net>, David Woodhouse <dwmw2@infradead.org>,
+ Jason Wang <jasowang@redhat.com>, LKML <linux-kernel@vger.kernel.org>,
+ Kirti Wankhede <kwankhede@nvidia.com>,
+ "iommu@lists.linux-foundation.org" <iommu@lists.linux-foundation.org>,
+ Paolo Bonzini <pbonzini@redhat.com>, Robin Murphy <robin.murphy@arm.com>,
+ David Gibson <david@gibson.dropbear.id.au>
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -107,129 +131,137 @@ List-Post: <mailto:iommu@lists.linux-foundation.org>
 List-Help: <mailto:iommu-request@lists.linux-foundation.org?subject=help>
 List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
  <mailto:iommu-request@lists.linux-foundation.org?subject=subscribe>
-Content-Type: multipart/mixed; boundary="===============6250702496549014802=="
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
+On Fri, 4 Jun 2021 14:22:07 -0300
+Jason Gunthorpe <jgg@nvidia.com> wrote:
 
---===============6250702496549014802==
-Content-Type: multipart/signed;
-	boundary="Apple-Mail=_AD487E4E-BF48-4051-85A3-FCCEB3DC3ED4";
-	protocol="application/pgp-signature";
-	micalg=pgp-sha256
+> On Fri, Jun 04, 2021 at 06:10:51PM +0200, Paolo Bonzini wrote:
+> > On 04/06/21 18:03, Jason Gunthorpe wrote:  
+> > > On Fri, Jun 04, 2021 at 05:57:19PM +0200, Paolo Bonzini wrote:  
+> > > > I don't want a security proof myself; I want to trust VFIO to make the right
+> > > > judgment and I'm happy to defer to it (via the KVM-VFIO device).
+> > > > 
+> > > > Given how KVM is just a device driver inside Linux, VMs should be a slightly
+> > > > more roundabout way to do stuff that is accessible to bare metal; not a way
+> > > > to gain extra privilege.  
+> > > 
+> > > Okay, fine, lets turn the question on its head then.
+> > > 
+> > > VFIO should provide a IOCTL VFIO_EXECUTE_WBINVD so that userspace VFIO
+> > > application can make use of no-snoop optimizations. The ability of KVM
+> > > to execute wbinvd should be tied to the ability of that IOCTL to run
+> > > in a normal process context.
+> > > 
+> > > So, under what conditions do we want to allow VFIO to giave a process
+> > > elevated access to the CPU:  
+> > 
+> > Ok, I would definitely not want to tie it *only* to CAP_SYS_RAWIO (i.e.
+> > #2+#3 would be worse than what we have today), but IIUC the proposal (was it
+> > yours or Kevin's?) was to keep #2 and add #1 with an enable/disable ioctl,
+> > which then would be on VFIO and not on KVM.    
+> 
+> At the end of the day we need an ioctl with two arguments:
+>  - The 'security proof' FD (ie /dev/vfio/XX, or /dev/ioasid, or whatever)
+>  - The KVM FD to control wbinvd support on
+> 
+> Philosophically it doesn't matter too much which subsystem that ioctl
+> lives, but we have these obnoxious cross module dependencies to
+> consider.. 
+> 
+> Framing the question, as you have, to be about the process, I think
+> explains why KVM doesn't really care what is decided, so long as the
+> process and the VM have equivalent rights.
+> 
+> Alex, how about a more fleshed out suggestion:
+> 
+>  1) When the device is attached to the IOASID via VFIO_ATTACH_IOASID
+>     it communicates its no-snoop configuration:
 
+Communicates to whom?
 
---Apple-Mail=_AD487E4E-BF48-4051-85A3-FCCEB3DC3ED4
-Content-Transfer-Encoding: quoted-printable
-Content-Type: text/plain;
-	charset=utf-8
+>      - 0 enable, allow WBINVD
+>      - 1 automatic disable, block WBINVD if the platform
+>        IOMMU can police it (what we do today)
+>      - 2 force disable, do not allow BINVD ever
 
+The only thing we know about the device is whether or not Enable
+No-snoop is hard wired to zero, ie. it either can't generate no-snoop
+TLPs ("coherent-only") or it might ("assumed non-coherent").  If
+we're putting the policy decision in the hands of userspace they should
+have access to wbinvd if they own a device that is assumed
+non-coherent AND it's attached to an IOMMU (page table) that is not
+blocking no-snoop (a "non-coherent IOASID").
 
+I think that means that the IOASID needs to be created (IOASID_ALLOC)
+with a flag that specifies whether this address space is coherent
+(IOASID_GET_INFO probably needs a flag/cap to expose if the system
+supports this).  All mappings in this IOASID would use IOMMU_CACHE and
+and devices attached to it would be required to be backed by an IOMMU
+capable of IOMMU_CAP_CACHE_COHERENCY (attach fails otherwise).  If only
+these IOASIDs exist, access to wbinvd would not be provided.  (How does
+a user provided page table work? - reserved bit set, user error?)
 
-> On Jun 4, 2021, at 11:53 AM, Robin Murphy <robin.murphy@arm.com> =
-wrote:
->=20
-> On 2021-06-04 18:10, Nadav Amit wrote:
->>> On Jun 4, 2021, at 8:38 AM, Joerg Roedel <joro@8bytes.org> wrote:
->>>=20
->>> Hi Nadav,
->>>=20
->>> [Adding Robin]
->>>=20
->>> On Mon, May 24, 2021 at 03:41:55PM -0700, Nadav Amit wrote:
->>>> Nadav Amit (4):
->>>>  iommu/amd: Fix wrong parentheses on page-specific invalidations
->>>=20
->>> This patch is already upstream in v5.13-rc4. Please rebase to that
->>> version.
->> I guess it would be rc5 by the time I send it.
->>>=20
->>>>  iommu/amd: Selective flush on unmap
->>>>  iommu/amd: Do not sync on page size changes
->>>>  iommu/amd: Do not use flush-queue when NpCache is on
->>>=20
->>> And I think there have been objections from Robin Murphy on Patch 3,
->>> have those been worked out?
->> I am still waiting for Robin=E2=80=99s feedback on my proposed =
-changes. If he does not respond soon, I will drop this patch for now.
->=20
-> Apologies, it feels like I've spent most of this week fighting fires,
-> and a great deal of email got skimmed and mentally filed under =
-"nothing
-> so wrong that I need to respond immediately"...
->=20
-> FWIW I would have written the simpler patch below, but beyond that I
-> think it might start descending into bikeshedding - if you still =
-prefer
-> your more comprehensive refactoring, or something in between, then =
-don't
-> let my personal preference in style/complexity trade-offs stand in the
-> way of getting a useful functional change into the AMD driver. =
-Whichever
-> way, though, I *am* now sold on the idea of having some kerneldoc to
-> clarify these things.
+Conversely, a user could create a non-coherent IOASID and attach any
+device to it, regardless of IOMMU backing capabilities.  Only if an
+assumed non-coherent device is attached would the wbinvd be allowed.
 
-Thanks, I appreciate your feedback.
+I think that means that an EXECUTE_WBINVD ioctl lives on the IOASIDFD
+and the IOASID world needs to understand the device's ability to
+generate non-coherent DMA.  This wbinvd ioctl would be a no-op (or
+some known errno) unless a non-coherent IOASID exists with a potentially
+non-coherent device attached.
+ 
+>     vfio_pci may want to take this from an admin configuration knob
+>     someplace. It allows the admin to customize if they want.
+> 
+>     If we can figure out a way to autodetect 2 from vfio_pci, all the
+>     better
+> 
+>  2) There is some IOMMU_EXECUTE_WBINVD IOCTL that allows userspace
+>     to access wbinvd so it can make use of the no snoop optimization.
+> 
+>     wbinvd is allowed when:
+>       - A device is joined with mode #0
+>       - A device is joined with mode #1 and the IOMMU cannot block
+>         no-snoop (today)
+> 
+>  3) The IOASID's don't care about this at all. If IOMMU_EXECUTE_WBINVD
+>     is blocked and userspace doesn't request to block no-snoop in the
+>     IOASID then it is a userspace error.
 
-I will add kerneldoc as you indicated.
+In my model above, the IOASID is central to this.
+ 
+>  4) The KVM interface is the very simple enable/disable WBINVD.
+>     Possessing a FD that can do IOMMU_EXECUTE_WBINVD is required
+>     to enable WBINVD at KVM.
 
-I see you took some parts of the patch I did for MediaTek, but I think =
-this is not good enough for AMD, since AMD behavior should be different =
-than MediaTek - they have different needs:
+Right, and in the new world order, vfio is only a device driver, the
+IOASID manages the device's DMA.  wbinvd is only necessary relative to
+non-coherent DMA, which seems like QEMU needs to bump KVM with an
+ioasidfd.
+ 
+> It is pretty simple from a /dev/ioasid perpsective, covers todays
+> compat requirement, gives some future option to allow the no-snoop
+> optimization, and gives a new option for qemu to totally block wbinvd
+> no matter what.
 
-MediaTek wants as few IOTLB flushes as possible, even if it results in =
-flushing of many irrelevant (unmodified) entries between start and end. =
-That=E2=80=99s the reason it can just use =
-iommu_iotlb_gather_update_range().
+What do you imagine is the use case for totally blocking wbinvd?  In
+the model I describe, wbinvd would always be a no-op/known-errno when
+the IOASIDs are all allocated as coherent or a non-coherent IOASID has
+only coherent-only devices attached.  Does userspace need a way to
+prevent itself from scenarios where wbvind is not a no-op?
 
-In contrast, for AMD we do not want to flush too many irrelevant =
-entries, specifically if the the IOMMU is virtualized. When an IOTLB =
-flush is initiated by the VM, the hypervisor needs to scan the IOMMU =
-page-tables for changes and synchronize it with the physical IOMMU. You =
-don=E2=80=99t want this range to be too big, and that is the reason I =
-needed iommu_iotlb_gather_is_disjoint().
+In general I'm having trouble wrapping my brain around the semantics of
+the enable/automatic/force-disable wbinvd specific proposal, sorry.
+Thanks,
 
-I will add documentation, since clearly this information was not =
-conveyed well enough.
-
-Thanks again,
-Nadav
-
---Apple-Mail=_AD487E4E-BF48-4051-85A3-FCCEB3DC3ED4
-Content-Transfer-Encoding: 7bit
-Content-Disposition: attachment;
-	filename=signature.asc
-Content-Type: application/pgp-signature;
-	name=signature.asc
-Content-Description: Message signed with OpenPGP
-
------BEGIN PGP SIGNATURE-----
-
-iQIzBAEBCAAdFiEESJL3osl5Ymx/w9I1HaAqSabaD1oFAmC6ha8ACgkQHaAqSaba
-D1oUdw//Zw9j2taQ/67+TP9CPtxNUz9ALG90MIoxNVs1xI2G/va/uaEHnIjN6C7v
-aWhIDNKU8+MKizMwe7T0rfU82MOaPNgrVQwt22tbb+uyQlM59lVRoEvfnRaqz9YU
-E12mPrtN8eB/wTvCIL33dIDptdebpExzYD5I7WI3XSH1KsoCVF73MjLqfe+gHRnq
-hSr3Jpjpmg1/4W0f16bQkUgybuchtylSPZwloF3QCeRiLG2bRJb7VVgceESFrqmH
-PZH3gubZx97PCUOSxFg6halUnEtMiWBKm7sJUhUikqUU1oOYrfxOjAxLF+fJ+2a+
-sVB4qNs0KWyGjuT2C4nvbPGB6Ne4Axq96bVbV9PALJbmECEryAQoqwUANOxouvEk
-liwIBe14BmDlw0zin19ueG4EO6/B/ehX5acLvBy19c4k74h03w1hk+RXyHcw5Qz9
-R/c5Q5o1dLjUQstNvRcSs2Tx98SBaFwz9NoZI/UwIA/meEjK3xiotrKAwoWJnrLb
-BoC0YN1jBJAmejVXhSJPcR/ZSlOmpAiFpOy6ADH0Q+DUmsLmnUDmtffl8eNi7X+Z
-gsWSUyF+btaP7rRKrZyuLAlXLA+xTddE57rMyPP6DLc4kvBaRsHawTOauCJbOKGH
-HEH11jorUMe+TUSjW0YVcpqKL1kubTaImjLf0s53gb0RtVvCZtQ=
-=48Cc
------END PGP SIGNATURE-----
-
---Apple-Mail=_AD487E4E-BF48-4051-85A3-FCCEB3DC3ED4--
-
---===============6250702496549014802==
-Content-Type: text/plain; charset="us-ascii"
-MIME-Version: 1.0
-Content-Transfer-Encoding: 7bit
-Content-Disposition: inline
+Alex
 
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
 https://lists.linuxfoundation.org/mailman/listinfo/iommu
---===============6250702496549014802==--
