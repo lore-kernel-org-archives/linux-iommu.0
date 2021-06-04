@@ -2,128 +2,92 @@ Return-Path: <SRS0=eMD9=K6=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-5.6 required=3.0 tests=BAYES_00,DKIM_INVALID,
-	DKIM_SIGNED,HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,NICE_REPLY_A,
-	SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_SANE_1 autolearn=no
-	autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-5.2 required=3.0 tests=BAYES_00,
+	HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,
+	URIBL_BLOCKED,USER_AGENT_SANE_2 autolearn=no autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A89CFC4708F
-	for <iommu@archiver.kernel.org>; Fri,  4 Jun 2021 16:11:07 +0000 (UTC)
-Received: from smtp3.osuosl.org (smtp3.osuosl.org [140.211.166.136])
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2686EC47425
+	for <iommu@archiver.kernel.org>; Fri,  4 Jun 2021 16:20:19 +0000 (UTC)
+Received: from smtp1.osuosl.org (smtp1.osuosl.org [140.211.166.138])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 58A7C613F4
-	for <iommu@archiver.kernel.org>; Fri,  4 Jun 2021 16:11:07 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 58A7C613F4
-Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=redhat.com
+	by mail.kernel.org (Postfix) with ESMTPS id CBA066140F
+	for <iommu@archiver.kernel.org>; Fri,  4 Jun 2021 16:20:18 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org CBA066140F
+Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=linux.intel.com
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by smtp3.osuosl.org (Postfix) with ESMTP id 1D68160799;
-	Fri,  4 Jun 2021 16:11:07 +0000 (UTC)
+	by smtp1.osuosl.org (Postfix) with ESMTP id 9C9C4843C1;
+	Fri,  4 Jun 2021 16:20:18 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from smtp3.osuosl.org ([127.0.0.1])
-	by localhost (smtp3.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id WSpSW8kFnrwY; Fri,  4 Jun 2021 16:11:02 +0000 (UTC)
+Received: from smtp1.osuosl.org ([127.0.0.1])
+	by localhost (smtp1.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+	with ESMTP id OnBIL6nEM7_d; Fri,  4 Jun 2021 16:20:14 +0000 (UTC)
 Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by smtp3.osuosl.org (Postfix) with ESMTP id 0920B606F5;
-	Fri,  4 Jun 2021 16:11:02 +0000 (UTC)
+	by smtp1.osuosl.org (Postfix) with ESMTP id 46A78843B1;
+	Fri,  4 Jun 2021 16:20:14 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id DD777C000E;
-	Fri,  4 Jun 2021 16:11:01 +0000 (UTC)
-Received: from smtp3.osuosl.org (smtp3.osuosl.org [140.211.166.136])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 4F824C0001
- for <iommu@lists.linux-foundation.org>; Fri,  4 Jun 2021 16:11:01 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 0CC3EC000E;
+	Fri,  4 Jun 2021 16:20:14 +0000 (UTC)
+Received: from smtp1.osuosl.org (smtp1.osuosl.org [IPv6:2605:bc80:3010::138])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 27990C0001
+ for <iommu@lists.linux-foundation.org>; Fri,  4 Jun 2021 16:20:13 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by smtp3.osuosl.org (Postfix) with ESMTP id 3CEA660795
- for <iommu@lists.linux-foundation.org>; Fri,  4 Jun 2021 16:11:01 +0000 (UTC)
+ by smtp1.osuosl.org (Postfix) with ESMTP id 091D1843B1
+ for <iommu@lists.linux-foundation.org>; Fri,  4 Jun 2021 16:20:13 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from smtp3.osuosl.org ([127.0.0.1])
- by localhost (smtp3.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id 7MQoW_XBpSwN for <iommu@lists.linux-foundation.org>;
- Fri,  4 Jun 2021 16:10:58 +0000 (UTC)
+Received: from smtp1.osuosl.org ([127.0.0.1])
+ by localhost (smtp1.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+ with ESMTP id oMBySvtIZ3ep for <iommu@lists.linux-foundation.org>;
+ Fri,  4 Jun 2021 16:20:08 +0000 (UTC)
 X-Greylist: domain auto-whitelisted by SQLgrey-1.8.0
-Received: from us-smtp-delivery-124.mimecast.com
- (us-smtp-delivery-124.mimecast.com [216.205.24.124])
- by smtp3.osuosl.org (Postfix) with ESMTPS id 69B0C606F5
- for <iommu@lists.linux-foundation.org>; Fri,  4 Jun 2021 16:10:58 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
- s=mimecast20190719; t=1622823057;
- h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
- to:to:cc:cc:mime-version:mime-version:content-type:content-type:
- content-transfer-encoding:content-transfer-encoding:
- in-reply-to:in-reply-to:references:references;
- bh=RTnd3yVJTH9740JT32WVCu1PAebhuUq28dsvMUvas14=;
- b=VdWuZWdOacPiVTeS3sclnw7wH3U7ujutYCBGUnyP/EYYnJc7wcwvy0ZjRIODov9pbQcW0v
- yxkqLBkSTQoPPR43I8b1LSfkd090gjlwUIAu9+eUtMie1DDr3xHg9bfwNQLo/Vq8R3NHq7
- j0snjd8uaVvGf3xtiSo0cPJRBxs3I+0=
-Received: from mail-ej1-f70.google.com (mail-ej1-f70.google.com
- [209.85.218.70]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-431-zHMdWogNOVWLx8-QHy-_aQ-1; Fri, 04 Jun 2021 12:10:55 -0400
-X-MC-Unique: zHMdWogNOVWLx8-QHy-_aQ-1
-Received: by mail-ej1-f70.google.com with SMTP id
- q7-20020a1709063607b02903f57f85ac45so3608951ejb.15
- for <iommu@lists.linux-foundation.org>; Fri, 04 Jun 2021 09:10:55 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
- d=1e100.net; s=20161025;
- h=x-gm-message-state:to:cc:references:from:subject:message-id:date
- :user-agent:mime-version:in-reply-to:content-language
- :content-transfer-encoding;
- bh=RTnd3yVJTH9740JT32WVCu1PAebhuUq28dsvMUvas14=;
- b=aJwrU1grvALQtGJWDWou2/U4lrC5ObbWvOh5Tm7Bb4DguZ9nrnAoyIxEev1/09nT1A
- nnZMyQxXmqhUQusdsMiNR3304xepT1RoFeDaQhrcSPiti91VePSZAjxfS5wYjTeTJfgz
- nygU77sy+eju1CCcda8B8GUmOHGVdsqgIVBKi+EX4VdflZVQ54eH1tRFe9CjDGi0xqJC
- qhTcGc/4Jzu0lhpC2D5LSKyVPjK6iCArLgTTPRNz7xYm9IAAYAf52J4JKrOQWN582XL3
- tue34NcbY+Yatcf9Qlc6EllUmdz3eHr+FU8kSlsXcKm4g51zCLGKmjEnSapd6F7SXJ3y
- SJJQ==
-X-Gm-Message-State: AOAM532WhR9iGt2u4cr1TGUrotpyJrB9kPHfaBzFhYCgCNmWEmgHK/fr
- j2F+RRISjftECj8eAco8l9hcEwhPrhS5aPamxAUxPH4n/TbD4zN/q0NFCN2umleroWXgCBB+ykd
- m14Ad08w4Sx+mTaHJOOfUR3vJbp/i0Q==
-X-Received: by 2002:a05:6402:342:: with SMTP id
- r2mr5564713edw.69.1622823054172; 
- Fri, 04 Jun 2021 09:10:54 -0700 (PDT)
-X-Google-Smtp-Source: ABdhPJxl+Ws1Chi8vFl+XGY47+7Vk/he3YcPPXFlfuf7NcSLW1TqV0Dzd1EqxORRIL3XKm5Xuw9+Ww==
-X-Received: by 2002:a05:6402:342:: with SMTP id
- r2mr5564684edw.69.1622823053958; 
- Fri, 04 Jun 2021 09:10:53 -0700 (PDT)
-Received: from ?IPv6:2001:b07:6468:f312:c8dd:75d4:99ab:290a?
- ([2001:b07:6468:f312:c8dd:75d4:99ab:290a])
- by smtp.gmail.com with ESMTPSA id m4sm2915547eje.8.2021.06.04.09.10.52
- (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
- Fri, 04 Jun 2021 09:10:53 -0700 (PDT)
-To: Jason Gunthorpe <jgg@nvidia.com>
-References: <20210603123401.GT1002214@nvidia.com>
- <20210603140146.5ce4f08a.alex.williamson@redhat.com>
- <20210603201018.GF1002214@nvidia.com>
- <20210603154407.6fe33880.alex.williamson@redhat.com>
- <MWHPR11MB1886469C0136C6523AB158B68C3B9@MWHPR11MB1886.namprd11.prod.outlook.com>
- <20210604122830.GK1002214@nvidia.com>
- <20210604092620.16aaf5db.alex.williamson@redhat.com>
- <815fd392-0870-f410-cbac-859070df1b83@redhat.com>
- <20210604155016.GR1002214@nvidia.com>
- <30e5c597-b31c-56de-c75e-950c91947d8f@redhat.com>
- <20210604160336.GA414156@nvidia.com>
-From: Paolo Bonzini <pbonzini@redhat.com>
+Received: from mga04.intel.com (mga04.intel.com [192.55.52.120])
+ by smtp1.osuosl.org (Postfix) with ESMTPS id 42A66843C1
+ for <iommu@lists.linux-foundation.org>; Fri,  4 Jun 2021 16:20:08 +0000 (UTC)
+IronPort-SDR: iO4FRmVNqcbrh1QnAOK92ctEIEfccAFkFpMovgLaUzF7YPweKApRrTwsZmDqCwIvJ99X94dSnI
+ wqUFg+2FlZfA==
+X-IronPort-AV: E=McAfee;i="6200,9189,10005"; a="202463055"
+X-IronPort-AV: E=Sophos;i="5.83,248,1616482800"; d="scan'208";a="202463055"
+Received: from orsmga008.jf.intel.com ([10.7.209.65])
+ by fmsmga104.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384;
+ 04 Jun 2021 09:20:05 -0700
+IronPort-SDR: CTvtJdPKdL7KqXyLzIbdMrFdnFKp+Ju+OSzf2PnUoTrmxEGmg1uGDqEgovEeQOFzdWMSQpKoeJ
+ wr0Z0gzGuBXA==
+X-IronPort-AV: E=Sophos;i="5.83,248,1616482800"; d="scan'208";a="446738781"
+Received: from jacob-builder.jf.intel.com (HELO jacob-builder) ([10.7.199.155])
+ by orsmga008-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384;
+ 04 Jun 2021 09:20:05 -0700
+Date: Fri, 4 Jun 2021 09:22:43 -0700
+From: Jacob Pan <jacob.jun.pan@linux.intel.com>
+To: Jason Wang <jasowang@redhat.com>
 Subject: Re: [RFC] /dev/ioasid uAPI proposal
-Message-ID: <2c62b5c7-582a-c710-0436-4ac5e8fd8b39@redhat.com>
-Date: Fri, 4 Jun 2021 18:10:51 +0200
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
- Thunderbird/78.10.1
+Message-ID: <20210604092243.245bd0f4@jacob-builder>
+In-Reply-To: <1175ebd5-9d8e-2000-6d05-baa93e960915@redhat.com>
+References: <MWHPR11MB1886422D4839B372C6AB245F8C239@MWHPR11MB1886.namprd11.prod.outlook.com>
+ <c9c066ae-2a25-0799-51a7-0ca47fff41a1@huawei.com>
+ <aa1624bf-e472-2b66-1d20-54ca23c19fd2@linux.intel.com>
+ <ed4f6e57-4847-3ed2-75de-cea80b2fbdb8@huawei.com>
+ <01fe5034-42c8-6923-32f1-e287cc36bccc@linux.intel.com>
+ <20210601173323.GN1002214@nvidia.com>
+ <23a482f9-b88a-da98-3800-f3fd9ea85fbd@huawei.com>
+ <20210603111914.653c4f61@jacob-builder>
+ <1175ebd5-9d8e-2000-6d05-baa93e960915@redhat.com>
+Organization: OTC
+X-Mailer: Claws Mail 3.17.5 (GTK+ 2.24.32; x86_64-pc-linux-gnu)
 MIME-Version: 1.0
-In-Reply-To: <20210604160336.GA414156@nvidia.com>
-Authentication-Results: relay.mimecast.com;
- auth=pass smtp.auth=CUSA124A263 smtp.mailfrom=pbonzini@redhat.com
-X-Mimecast-Spam-Score: 0
-X-Mimecast-Originator: redhat.com
-Content-Language: en-US
-Cc: Jean-Philippe Brucker <jean-philippe@linaro.org>, "Tian,
- Kevin" <kevin.tian@intel.com>, "Jiang, Dave" <dave.jiang@intel.com>, "Raj,
- Ashok" <ashok.raj@intel.com>, "kvm@vger.kernel.org" <kvm@vger.kernel.org>,
- Jonathan Corbet <corbet@lwn.net>, David Woodhouse <dwmw2@infradead.org>,
- Jason Wang <jasowang@redhat.com>, LKML <linux-kernel@vger.kernel.org>,
+Cc: "kvm@vger.kernel.org" <kvm@vger.kernel.org>,
+ Kirti Wankhede <kwankhede@nvidia.com>,
+ Jean-Philippe Brucker <jean-philippe@linaro.org>, "Jiang,
+ Dave" <dave.jiang@intel.com>, "Raj, Ashok" <ashok.raj@intel.com>,
+ Jonathan Corbet <corbet@lwn.net>, Jason Gunthorpe <jgg@nvidia.com>,
+ "wanghaibin.wang@huawei.com" <wanghaibin.wang@huawei.com>, "Tian,
+ Kevin" <kevin.tian@intel.com>,
+ "Alex Williamson \(alex.williamson@redhat.com\)" <alex.williamson@redhat.com>,
+ David Gibson <david@gibson.dropbear.id.au>,
+ David Woodhouse <dwmw2@infradead.org>, LKML <linux-kernel@vger.kernel.org>,
+ Shenming Lu <lushenming@huawei.com>,
  "iommu@lists.linux-foundation.org" <iommu@lists.linux-foundation.org>,
- Alex Williamson <alex.williamson@redhat.com>,
- Kirti Wankhede <kwankhede@nvidia.com>, Robin Murphy <robin.murphy@arm.com>,
- David Gibson <david@gibson.dropbear.id.au>
+ Robin Murphy <robin.murphy@arm.com>
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -136,51 +100,41 @@ List-Post: <mailto:iommu@lists.linux-foundation.org>
 List-Help: <mailto:iommu-request@lists.linux-foundation.org?subject=help>
 List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
  <mailto:iommu-request@lists.linux-foundation.org?subject=subscribe>
-Content-Transfer-Encoding: 7bit
-Content-Type: text/plain; charset="us-ascii"; Format="flowed"
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-On 04/06/21 18:03, Jason Gunthorpe wrote:
-> On Fri, Jun 04, 2021 at 05:57:19PM +0200, Paolo Bonzini wrote:
->> I don't want a security proof myself; I want to trust VFIO to make the right
->> judgment and I'm happy to defer to it (via the KVM-VFIO device).
->>
->> Given how KVM is just a device driver inside Linux, VMs should be a slightly
->> more roundabout way to do stuff that is accessible to bare metal; not a way
->> to gain extra privilege.
-> 
-> Okay, fine, lets turn the question on its head then.
-> 
-> VFIO should provide a IOCTL VFIO_EXECUTE_WBINVD so that userspace VFIO
-> application can make use of no-snoop optimizations. The ability of KVM
-> to execute wbinvd should be tied to the ability of that IOCTL to run
-> in a normal process context.
-> 
-> So, under what conditions do we want to allow VFIO to giave a process
-> elevated access to the CPU:
-
-Ok, I would definitely not want to tie it *only* to CAP_SYS_RAWIO (i.e. 
-#2+#3 would be worse than what we have today), but IIUC the proposal 
-(was it yours or Kevin's?) was to keep #2 and add #1 with an 
-enable/disable ioctl, which then would be on VFIO and not on KVM.  I 
-assumed Alex was more or less okay with it, given he included me in the 
-discussion.
-
-If later y'all switch to "it's always okay to issue the enable/disable 
-ioctl", I guess the rationale would be documented in the commit message.
-
-Paolo
-
->>>    1) User has access to a device that can issue no-snoop TLPS
->>>    2) User has access to an IOMMU that can not block no-snoop (today)
->>>    3) Require CAP_SYS_RAW_IO
->>>    4) Anyone
-> 
-> Jason
-> 
-
-_______________________________________________
-iommu mailing list
-iommu@lists.linux-foundation.org
-https://lists.linuxfoundation.org/mailman/listinfo/iommu
+SGkgSmFzb24sCgpPbiBGcmksIDQgSnVuIDIwMjEgMDk6MzA6MzcgKzA4MDAsIEphc29uIFdhbmcg
+PGphc293YW5nQHJlZGhhdC5jb20+IHdyb3RlOgoKPiDlnKggMjAyMS82LzQg5LiK5Y2IMjoxOSwg
+SmFjb2IgUGFuIOWGmemBkzoKPiA+IEhpIFNoZW5taW5nLAo+ID4KPiA+IE9uIFdlZCwgMiBKdW4g
+MjAyMSAxMjo1MDoyNiArMDgwMCwgU2hlbm1pbmcgTHUgPGx1c2hlbm1pbmdAaHVhd2VpLmNvbT4K
+PiA+IHdyb3RlOgo+ID4gIAo+ID4+IE9uIDIwMjEvNi8yIDE6MzMsIEphc29uIEd1bnRob3JwZSB3
+cm90ZTogIAo+ID4+PiBPbiBUdWUsIEp1biAwMSwgMjAyMSBhdCAwODozMDozNVBNICswODAwLCBM
+dSBCYW9sdSB3cm90ZToKPiA+Pj4gICAgICAKPiA+Pj4+IFRoZSBkcml2ZXJzIHJlZ2lzdGVyIHBl
+ciBwYWdlIHRhYmxlIGZhdWx0IGhhbmRsZXJzIHRvIC9kZXYvaW9hc2lkCj4gPj4+PiB3aGljaCB3
+aWxsIHRoZW4gcmVnaXN0ZXIgaXRzZWxmIHRvIGlvbW11IGNvcmUgdG8gbGlzdGVuIGFuZCByb3V0
+ZQo+ID4+Pj4gdGhlIHBlci0gZGV2aWNlIEkvTyBwYWdlIGZhdWx0cy4gIAo+ID4+PiBJJ20gc3Rp
+bGwgY29uZnVzZWQgd2h5IGRyaXZlcnMgbmVlZCBmYXVsdCBoYW5kbGVycyBhdCBhbGw/ICAKPiA+
+PiBFc3NlbnRpYWxseSBpdCBpcyB0aGUgdXNlcnNwYWNlIHRoYXQgbmVlZHMgdGhlIGZhdWx0IGhh
+bmRsZXJzLAo+ID4+IG9uZSBjYXNlIGlzIHRvIGRlbGl2ZXIgdGhlIGZhdWx0cyB0byB0aGUgdklP
+TU1VLCBhbmQgYW5vdGhlcgo+ID4+IGNhc2UgaXMgdG8gZW5hYmxlIElPUEYgb24gdGhlIEdQQSBh
+ZGRyZXNzIHNwYWNlIGZvciBvbi1kZW1hbmQKPiA+PiBwYWdpbmcsIGl0IHNlZW1zIHRoYXQgYm90
+aCBjb3VsZCBiZSBzcGVjaWZpZWQgaW4vdGhyb3VnaCB0aGUKPiA+PiBJT0FTSURfQUxMT0MgaW9j
+dGw/Cj4gPj4gIAo+ID4gSSB3b3VsZCB0aGluayBJT0FTSURfQklORF9QR1RBQkxFIGlzIHdoZXJl
+IGZhdWx0IGhhbmRsZXIgc2hvdWxkIGJlCj4gPiByZWdpc3RlcmVkLiBUaGVyZSB3b3VsZG4ndCBi
+ZSBhbnkgSU8gcGFnZSBmYXVsdCB3aXRob3V0IHRoZSBiaW5kaW5nCj4gPiBhbnl3YXkuCj4gPgo+
+ID4gSSBhbHNvIGRvbid0IHVuZGVyc3RhbmQgd2h5IGRldmljZSBkcml2ZXJzIHNob3VsZCByZWdp
+c3RlciB0aGUgZmF1bHQKPiA+IGhhbmRsZXIsIHRoZSBmYXVsdCBpcyBkZXRlY3RlZCBieSB0aGUg
+cElPTU1VIGFuZCBpbmplY3RlZCB0byB0aGUKPiA+IHZJT01NVS4gU28gSSB0aGluayBpdCBzaG91
+bGQgYmUgdGhlIElPQVNJRCBpdHNlbGYgcmVnaXN0ZXIgdGhlIGhhbmRsZXIuCj4gPiAgCj4gCj4g
+Cj4gQXMgZGlzY3Vzc2VkIGluIGFub3RoZXIgdGhyZWFkLgo+IAo+IEkgdGhpbmsgdGhlIHJlYXNv
+biBpcyB0aGF0IEFUUyBkb2Vzbid0IGZvcmJpZCB0aGUgI1BGIHRvIGJlIHJlcG9ydGVkIHZpYSAK
+PiBhIGRldmljZSBzcGVjaWZpYyB3YXkuCj4gClllcywgaW4gdGhhdCBjYXNlIHdlIHNob3VsZCBz
+dXBwb3J0IGJvdGguIEdpdmUgdGhlIGRldmljZSBkcml2ZXIgYSBjaGFuY2UKdG8gaGFuZGxlIHRo
+ZSBJT1BGIGlmIGl0IGNhbi4KCj4gVGhhbmtzCj4gCj4gCj4gPiAgCj4gPj4gVGhhbmtzLAo+ID4+
+IFNoZW5taW5nCj4gPj4gIAo+ID4KPiA+IFRoYW5rcywKPiA+Cj4gPiBKYWNvYgo+ID4gIAo+IAoK
+ClRoYW5rcywKCkphY29iCl9fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19f
+X19fX19fCmlvbW11IG1haWxpbmcgbGlzdAppb21tdUBsaXN0cy5saW51eC1mb3VuZGF0aW9uLm9y
+ZwpodHRwczovL2xpc3RzLmxpbnV4Zm91bmRhdGlvbi5vcmcvbWFpbG1hbi9saXN0aW5mby9pb21t
+dQ==
