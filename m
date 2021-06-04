@@ -6,162 +6,100 @@ X-Spam-Status: No, score=-3.5 required=3.0 tests=BAYES_00,DKIM_INVALID,
 	DKIM_SIGNED,HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,SPF_HELO_NONE,
 	SPF_PASS,URIBL_BLOCKED autolearn=no autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 87104C07E94
-	for <iommu@archiver.kernel.org>; Fri,  4 Jun 2021 09:20:21 +0000 (UTC)
-Received: from smtp4.osuosl.org (smtp4.osuosl.org [140.211.166.137])
+	by smtp.lore.kernel.org (Postfix) with ESMTP id CD14AC07E94
+	for <iommu@archiver.kernel.org>; Fri,  4 Jun 2021 10:24:41 +0000 (UTC)
+Received: from smtp2.osuosl.org (smtp2.osuosl.org [140.211.166.133])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 30A756140B
-	for <iommu@archiver.kernel.org>; Fri,  4 Jun 2021 09:20:21 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 30A756140B
-Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=intel.com
+	by mail.kernel.org (Postfix) with ESMTPS id 7C49961404
+	for <iommu@archiver.kernel.org>; Fri,  4 Jun 2021 10:24:41 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 7C49961404
+Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=linaro.org
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by smtp4.osuosl.org (Postfix) with ESMTP id E4F7541585;
-	Fri,  4 Jun 2021 09:20:20 +0000 (UTC)
+	by smtp2.osuosl.org (Postfix) with ESMTP id 3F12440104;
+	Fri,  4 Jun 2021 10:24:41 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from smtp4.osuosl.org ([127.0.0.1])
-	by localhost (smtp4.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id CHZnQNVp9fWx; Fri,  4 Jun 2021 09:20:16 +0000 (UTC)
-Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by smtp4.osuosl.org (Postfix) with ESMTP id 39B9841589;
-	Fri,  4 Jun 2021 09:20:16 +0000 (UTC)
+Received: from smtp2.osuosl.org ([127.0.0.1])
+	by localhost (smtp2.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+	with ESMTP id 3SEYXpbgpAa6; Fri,  4 Jun 2021 10:24:37 +0000 (UTC)
+Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [IPv6:2605:bc80:3010:104::8cd3:938])
+	by smtp2.osuosl.org (Postfix) with ESMTP id 0FA344016D;
+	Fri,  4 Jun 2021 10:24:37 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id F25E8C000E;
-	Fri,  4 Jun 2021 09:20:15 +0000 (UTC)
-Received: from smtp4.osuosl.org (smtp4.osuosl.org [IPv6:2605:bc80:3010::137])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 4B19DC0001
- for <iommu@lists.linux-foundation.org>; Fri,  4 Jun 2021 09:20:15 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id CEE35C000E;
+	Fri,  4 Jun 2021 10:24:36 +0000 (UTC)
+Received: from smtp3.osuosl.org (smtp3.osuosl.org [140.211.166.136])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id D43A7C0001
+ for <iommu@lists.linux-foundation.org>; Fri,  4 Jun 2021 10:24:34 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by smtp4.osuosl.org (Postfix) with ESMTP id 3670041589
- for <iommu@lists.linux-foundation.org>; Fri,  4 Jun 2021 09:20:15 +0000 (UTC)
+ by smtp3.osuosl.org (Postfix) with ESMTP id BB27B606F3
+ for <iommu@lists.linux-foundation.org>; Fri,  4 Jun 2021 10:24:34 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from smtp4.osuosl.org ([127.0.0.1])
- by localhost (smtp4.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id AIUoLfIRkUoG for <iommu@lists.linux-foundation.org>;
- Fri,  4 Jun 2021 09:20:11 +0000 (UTC)
-X-Greylist: domain auto-whitelisted by SQLgrey-1.8.0
-Received: from mga14.intel.com (mga14.intel.com [192.55.52.115])
- by smtp4.osuosl.org (Postfix) with ESMTPS id 344CE41585
- for <iommu@lists.linux-foundation.org>; Fri,  4 Jun 2021 09:20:11 +0000 (UTC)
-IronPort-SDR: 2NyO4erD6RcHX8fDovSfbApL54lYIyT2s/Dd8g3SGNf6CWDOI5R3r2iTvv7NsyC5UtGm1nCbPZ
- Vl6se0Eq9yKg==
-X-IronPort-AV: E=McAfee;i="6200,9189,10004"; a="204069303"
-X-IronPort-AV: E=Sophos;i="5.83,248,1616482800"; d="scan'208";a="204069303"
-Received: from orsmga004.jf.intel.com ([10.7.209.38])
- by fmsmga103.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384;
- 04 Jun 2021 02:19:58 -0700
-IronPort-SDR: 49HB0+x6dFzrh4+whbIqw4FcM8DoXlK7+jumT4LcoFOeh7Jb0RTOVUA6sf2e1nAk1m4yhEr9HZ
- 9WIKZBd+Z8bw==
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.83,248,1616482800"; d="scan'208";a="550472884"
-Received: from fmsmsx606.amr.corp.intel.com ([10.18.126.86])
- by orsmga004.jf.intel.com with ESMTP; 04 Jun 2021 02:19:53 -0700
-Received: from fmsmsx608.amr.corp.intel.com (10.18.126.88) by
- fmsmsx606.amr.corp.intel.com (10.18.126.86) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2242.4; Fri, 4 Jun 2021 02:19:52 -0700
-Received: from fmsmsx612.amr.corp.intel.com (10.18.126.92) by
- fmsmsx608.amr.corp.intel.com (10.18.126.88) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2242.4; Fri, 4 Jun 2021 02:19:52 -0700
-Received: from FMSEDG603.ED.cps.intel.com (10.1.192.133) by
- fmsmsx612.amr.corp.intel.com (10.18.126.92) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2242.4
- via Frontend Transport; Fri, 4 Jun 2021 02:19:52 -0700
-Received: from NAM04-DM6-obe.outbound.protection.outlook.com (104.47.73.43) by
- edgegateway.intel.com (192.55.55.68) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.1.2242.4; Fri, 4 Jun 2021 02:19:52 -0700
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=b5jqBhgK2SlSsQREA5LEGVIahd2LuNRJ8pBIXbj2xFBXAA2RxC0XtKwxPaK3lAMCNxq2te9Ot/0MBT5fYi6/ytcVf2q5xDS2CnhzhGtFancfsFqGazB2D7EX6yCxB6sfc6ooEpXzhamVSFaimqu5H77AfzyFIq/cjalVozsMjHRpQCMZEfT7X3Ccyd2l9Ea1UtLDyCDK7RMRPatMfYvZzWftFclCO4yepm0qZkR1QzfgA8huAo7b/02eN7YeOdzDCOsQbK7gNXQySt14jNYFmqSlYciY05NkPaRXZ+r03sJKftAnW1phF5vp7giPGTHgDkjoXRzrM+9Coyqgx4rFTQ==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com; 
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=O89T1pKTp24E/jkK4JezTlaOGvtQj85ATEtshEeM484=;
- b=gkkAyCv1fbcx14Kq9pX7CMkVAH/9DXqKjby8kT4RTGc1EmAEBQRz7eyOd+Nx/D551HleRccrKzNzedoDG74ZFo0UVl11ULV9E4Dzo0GyyJCk7wkIeyx5CRbAjHU3VHwwjnqTtNX2XSJZfiSX6j6M5mgG/vSyK9nQUzTdeNE4S1SpAZM0Z6VW8AQLzHJtM+Xu4M2wHS2UMX4sZpdJB1GBanvDDBUuLXvb0zi/BumhE9NG9bCUjaA2IQDPzzE4sE4PfcSeR2v944L/C7a3BZLiESEkyykA7PoEi3RK423ru2FXHPFPuzaJ5EnJYDM4z/3Ivq7owrt5jnvJhHZNLFR1CQ==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=intel.com; dmarc=pass action=none header.from=intel.com;
- dkim=pass header.d=intel.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=intel.onmicrosoft.com; 
- s=selector2-intel-onmicrosoft-com;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=O89T1pKTp24E/jkK4JezTlaOGvtQj85ATEtshEeM484=;
- b=Alm7yTWxJOxDpxpNv51juUBg4HukwXz5lmtplyPqX3snPMxq3ZCw8LOs9d6vaE/cUYB+0MJ+PgHL2TZp0hZQs3O3a8KTO4fEKMrJWS6C2aLNDd6KhzxqLQ2GDJVlWeVNWm1nGOmlBGMNe6aZnUKbHw5xppaKwmJ8aLEgw0XjykM=
-Received: from MWHPR11MB1886.namprd11.prod.outlook.com (2603:10b6:300:110::9)
- by MWHPR1101MB2302.namprd11.prod.outlook.com (2603:10b6:301:5a::11)
- with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4195.23; Fri, 4 Jun
- 2021 09:19:50 +0000
-Received: from MWHPR11MB1886.namprd11.prod.outlook.com
- ([fe80::6597:eb05:c507:c6c1]) by MWHPR11MB1886.namprd11.prod.outlook.com
- ([fe80::6597:eb05:c507:c6c1%12]) with mapi id 15.20.4195.023; Fri, 4 Jun 2021
- 09:19:50 +0000
-From: "Tian, Kevin" <kevin.tian@intel.com>
-To: Alex Williamson <alex.williamson@redhat.com>, Jason Gunthorpe
- <jgg@nvidia.com>
-Subject: RE: [RFC] /dev/ioasid uAPI proposal
-Thread-Topic: [RFC] /dev/ioasid uAPI proposal
-Thread-Index: AddSzQ970oLnVHLeQca/ysPD8zMJZwBL2ymAAKTbxpAAKSt7gAAHpf9wAB1YcAAAAm5sgAAA1YgAAADonIAAAEmcgAABzCaAAAHbfwAAAYTsAAAEeLUAAAiRJwAAAHcmwAAUIS4AABDMegAAGmQXIA==
-Date: Fri, 4 Jun 2021 09:19:50 +0000
-Message-ID: <MWHPR11MB1886C4BC352DDE03B44070C08C3B9@MWHPR11MB1886.namprd11.prod.outlook.com>
-References: <20210602111117.026d4a26.alex.williamson@redhat.com>
- <20210602173510.GE1002214@nvidia.com>
- <20210602120111.5e5bcf93.alex.williamson@redhat.com>
- <20210602180925.GH1002214@nvidia.com>
- <20210602130053.615db578.alex.williamson@redhat.com>
- <20210602195404.GI1002214@nvidia.com>
- <20210602143734.72fb4fa4.alex.williamson@redhat.com>
- <20210602224536.GJ1002214@nvidia.com>
- <20210602205054.3505c9c3.alex.williamson@redhat.com>
- <MWHPR11MB1886DC8ECF5D56FE485D13D58C3C9@MWHPR11MB1886.namprd11.prod.outlook.com>
- <20210603124036.GU1002214@nvidia.com>
- <20210603144136.2b68c5c5.alex.williamson@redhat.com>
-In-Reply-To: <20210603144136.2b68c5c5.alex.williamson@redhat.com>
-Accept-Language: en-US
-Content-Language: en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-dlp-version: 11.5.1.3
-dlp-product: dlpe-windows
-dlp-reaction: no-action
-authentication-results: redhat.com; dkim=none (message not signed)
- header.d=none;redhat.com; dmarc=none action=none header.from=intel.com;
-x-originating-ip: [192.198.142.24]
-x-ms-publictraffictype: Email
-x-ms-office365-filtering-correlation-id: 3aa965f3-2773-4ccf-775a-08d92739e7c3
-x-ms-traffictypediagnostic: MWHPR1101MB2302:
-x-ld-processed: 46c98d88-e344-4ed4-8496-4ed7712e255d,ExtAddr
-x-ms-exchange-transport-forked: True
-x-microsoft-antispam-prvs: <MWHPR1101MB23023BC6D29A6C17C96B3F898C3B9@MWHPR1101MB2302.namprd11.prod.outlook.com>
-x-ms-oob-tlc-oobclassifiers: OLM:4941;
-x-ms-exchange-senderadcheck: 1
-x-microsoft-antispam: BCL:0;
-x-microsoft-antispam-message-info: WJNzGvPSKXafVVd0O3UAESpyiLW1MWY2Q5HCd1449W5RKvKjrPVhL4ae9Byw73SGYjJltBqPsifRPbauL9petaQapquM5SyOOrrzzxkwpoy1ZL8iChCn4oXFSh9UfS5KCaiCznTfpFrobZnRFhbRIvzfLuq9qN6NyzJM0Z2E+H86xpyCsY2hBi0k7s5NiHXEiuE32TP/R88S81fkzvcb4sw8CjSwJy/aaXdUoZMSUulRHNMPBiEwe6CbgL3F34GHnHEhiTeTlFmgKGK805jRjuSFOC6Zg9m4IYAprOX+flbxvbXRk1kIXwWMhzoOx9iqth2AM0iGw3hYn0eU08TNGcSfouR8x3RytPblcXbtCQFJp/M66vuGtKt7hlsjzQG7YRuu9ma9tG0zqFCd/0SKf9hUd+MTjHlQuUqkyzttjXgTOpKwvBTi0o2gZhGjHuOaIxtgdwrch7rSMVmLRLH5317XpgaELQhjTpfgKiNOuu3+mcbR5V9F+TU3eNRnkUr44lHV72wnaOXlVMLjmTYtHR+6PWKuy0fZEoJnl+9SfPbP39liEKKmnKS3uwCGz4/L+Axh6QIUYdFYVu6kA6SoTh615V6jtOsU6T/6ZUnGs38=
-x-forefront-antispam-report: CIP:255.255.255.255; CTRY:; LANG:en; SCL:1; SRV:;
- IPV:NLI; SFV:NSPM; H:MWHPR11MB1886.namprd11.prod.outlook.com; PTR:; CAT:NONE;
- SFS:(396003)(39860400002)(366004)(376002)(346002)(136003)(8676002)(186003)(5660300002)(478600001)(26005)(9686003)(4744005)(66446008)(8936002)(66556008)(64756008)(2906002)(52536014)(55016002)(66476007)(38100700002)(122000001)(86362001)(7416002)(4326008)(66946007)(6506007)(316002)(76116006)(7696005)(110136005)(54906003)(83380400001)(71200400001)(33656002);
- DIR:OUT; SFP:1102; 
-x-ms-exchange-antispam-messagedata: PFoTJ+jPdA3+P/y7UZ55ijedkqaberwGiH7vvWYKfI/5utVu6W3SeQ6bBW01S/OJ0q2yjfF6C3WwOFgHn2G9w7pk8hvHDnK1kBH2UbOTDGbLxZFuCtrogQftgvJXXFqrb+B7qgkxk2HyApWLMF4XA/Pcs8TH3uXXKQpX8Q4cvNSaxwitKwScGDT5X4IlXIOwgnJHkoVLeTSvLurKImsTxkGa2hQN6S2QhEiW5yTG8xK79dzaR1af+Hu2vdo4srBCnFlqaSrrgqh/MAC2y1oVusr6TiOrOLBS6ho5Piywl3eyDhvtNRRzS4D7nW0haQ0UA2yQgwCdNlL/7CdN/UqdeTqh1hsTqYsj9qoOPUz7remWjIvscu+mJ4QTXQI9hvpIa6AE5aiDOKSPsXeLggqczvmcsICt2+LKYSkeA0SPmNdNypdEklaugxBZ2GJxsoxpLEQeb8yjR1EFrPTFlTSKdZD1rWaTAk7tfWC3uWloBUFiExDtC9iPHDagGbOaCMgPBtpGuSSuWY8XmqsGldDg9ntlNJat9t4DgR/BLKEk8EHdwF3uSX3vCP4tjnN9PxlWiHCK5gFzmIJOBwmXzmuTCIidqtP5sgxLFa/gtII6eYZ9k6N+ENZHAcRP9tYMJ3UoxubDZIgJEf3pw4upurWjfLIfUuYxvqIH/7wE7caizFleKp35R9UI1r8bZTKBCgUa9CN9GcussLBmdJNeH109xyvvhamBaCA/hTqH+w9765klkg8ibV2PyoqYC+9TH0W5
+Authentication-Results: smtp3.osuosl.org (amavisd-new);
+ dkim=pass (2048-bit key) header.d=linaro.org
+Received: from smtp3.osuosl.org ([127.0.0.1])
+ by localhost (smtp3.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+ with ESMTP id sOeUH1x6qZoo for <iommu@lists.linux-foundation.org>;
+ Fri,  4 Jun 2021 10:24:30 +0000 (UTC)
+X-Greylist: whitelisted by SQLgrey-1.8.0
+Received: from mail-ej1-x636.google.com (mail-ej1-x636.google.com
+ [IPv6:2a00:1450:4864:20::636])
+ by smtp3.osuosl.org (Postfix) with ESMTPS id A7AA7606E9
+ for <iommu@lists.linux-foundation.org>; Fri,  4 Jun 2021 10:24:30 +0000 (UTC)
+Received: by mail-ej1-x636.google.com with SMTP id g8so13756421ejx.1
+ for <iommu@lists.linux-foundation.org>; Fri, 04 Jun 2021 03:24:30 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linaro.org; s=google;
+ h=date:from:to:cc:subject:message-id:references:mime-version
+ :content-disposition:in-reply-to;
+ bh=Vp5nodV8czU8XoGNBzmhcKT/5Cx+STD3G/uISCrpGY4=;
+ b=Qy8oqCe9C3GIl3agw3bRS8rRWoOouva9dfQcVbDisTWeICLzPGNplyubb2CL7VqHSz
+ orrVtrrbGENaTdVW1MigH2RXegdWfTY2nVGgSzKlZNPLj9HMmF+yMuOr8cjwDcDrgsHV
+ n9JZnrXxv4zuJiNwb19p/di+oEb26GirvxUlLG9QExhKhz31Am5W/vNWLKNnN4KhjXaI
+ HERJ2vRCBpAAFKDiFexTZLPh1iFOdMHNMJIT0IOLQkh/rQzHq3Z1BwZNLvh0RmLF484Z
+ MQ0F1vbL/gc6DbMU664oR5/V/vcn77rw8gZSK3D9CkAccd92hj4183FzXwaOzw43K2/b
+ R1QQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+ d=1e100.net; s=20161025;
+ h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+ :mime-version:content-disposition:in-reply-to;
+ bh=Vp5nodV8czU8XoGNBzmhcKT/5Cx+STD3G/uISCrpGY4=;
+ b=rgw1rGR9Ry/fQ7y4XWyRH+1gzfAe7aLQZ6LdxwgByROH53RH/15mUhmRVdv8QlH1uB
+ llvj4RM1WWBHFDT2A1XjHSv2PFSCaYxmQ1+RjpNqorETfXdZBvC0ViLWssmwL/6KYAH+
+ vsmGldGB09LogOflcVKS9W3Aogdz9FFPoA0oyXYqzj0An43QlsTvwHTFzuGqgv/IIzLI
+ cBuWmcONqGB8yglySlRZXRxpblB20mac+NVJopVxrKHy10zl5ZD8w3PRmmemkh/nOT3V
+ KedulNzTAfo05PE3OLLi7gUipuSgtS7/D2qDwu5vwoPQbbvvOh+B0gq0jV6ApiajUUXl
+ YWNA==
+X-Gm-Message-State: AOAM532XemlmyjUWXw8elI8jC1SJvUSGhp73i63oFxdf75r4SERb06tS
+ tRizxcA9sDyeGHMApmJxV8eqnA==
+X-Google-Smtp-Source: ABdhPJyHncQfqj5pHRaAtZdltZJ3jUVuJI0Mj2xvK2vlD6pzD7aL91GaglI4VA6WW/8WtGakQzwRBA==
+X-Received: by 2002:a17:906:fa13:: with SMTP id
+ lo19mr3560274ejb.468.1622802268470; 
+ Fri, 04 Jun 2021 03:24:28 -0700 (PDT)
+Received: from myrica (adsl-84-226-111-173.adslplus.ch. [84.226.111.173])
+ by smtp.gmail.com with ESMTPSA id f6sm2586850eja.108.2021.06.04.03.24.26
+ (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+ Fri, 04 Jun 2021 03:24:27 -0700 (PDT)
+Date: Fri, 4 Jun 2021 12:24:08 +0200
+From: Jean-Philippe Brucker <jean-philippe@linaro.org>
+To: David Gibson <david@gibson.dropbear.id.au>
+Subject: Re: [RFC] /dev/ioasid uAPI proposal
+Message-ID: <YLn/SJtzuJopSO2x@myrica>
+References: <MWHPR11MB1886422D4839B372C6AB245F8C239@MWHPR11MB1886.namprd11.prod.outlook.com>
+ <20210528195839.GO1002214@nvidia.com> <YLcpw5Kx61L7TVmR@yekko>
+ <20210602165838.GA1002214@nvidia.com> <YLhsZRc72aIMZajz@yekko>
 MIME-Version: 1.0
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-AuthSource: MWHPR11MB1886.namprd11.prod.outlook.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 3aa965f3-2773-4ccf-775a-08d92739e7c3
-X-MS-Exchange-CrossTenant-originalarrivaltime: 04 Jun 2021 09:19:50.3162 (UTC)
-X-MS-Exchange-CrossTenant-fromentityheader: Hosted
-X-MS-Exchange-CrossTenant-id: 46c98d88-e344-4ed4-8496-4ed7712e255d
-X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: kyyHHQAkzqYb3owKVYo+g9U0tfnj98JYRLYXQTw71jDXPffr1kFKwYH34juuESLU+0BfxSixlq9MBPBKS6VK4g==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: MWHPR1101MB2302
-X-OriginatorOrg: intel.com
-Cc: Jean-Philippe Brucker <jean-philippe@linaro.org>, "Jiang,
- Dave" <dave.jiang@intel.com>, "Raj, Ashok" <ashok.raj@intel.com>,
+Content-Disposition: inline
+In-Reply-To: <YLhsZRc72aIMZajz@yekko>
+Cc: "Tian, Kevin" <kevin.tian@intel.com>,
+ "Alex Williamson \(alex.williamson@redhat.com\)"
+ <alex.williamson@redhat.com>, "Raj, Ashok" <ashok.raj@intel.com>,
  "kvm@vger.kernel.org" <kvm@vger.kernel.org>, Jonathan Corbet <corbet@lwn.net>,
- David Woodhouse <dwmw2@infradead.org>, Jason Wang <jasowang@redhat.com>,
- LKML <linux-kernel@vger.kernel.org>, Kirti Wankhede <kwankhede@nvidia.com>,
+ Robin Murphy <robin.murphy@arm.com>, LKML <linux-kernel@vger.kernel.org>,
+ Kirti Wankhede <kwankhede@nvidia.com>,
  "iommu@lists.linux-foundation.org" <iommu@lists.linux-foundation.org>,
- Robin Murphy <robin.murphy@arm.com>,
- David Gibson <david@gibson.dropbear.id.au>
+ Jason Gunthorpe <jgg@nvidia.com>, "Jiang, Dave" <dave.jiang@intel.com>,
+ David Woodhouse <dwmw2@infradead.org>, Jason Wang <jasowang@redhat.com>
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -179,27 +117,100 @@ Content-Transfer-Encoding: 7bit
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-> From: Alex Williamson <alex.williamson@redhat.com>
-> Sent: Friday, June 4, 2021 4:42 AM
+On Thu, Jun 03, 2021 at 03:45:09PM +1000, David Gibson wrote:
+> > > But it would certainly be possible for a system to have two
+> > > different host bridges with two different IOMMUs with different
+> > > pagetable formats.  Until you know which devices (and therefore
+> > > which host bridge) you're talking about, you don't know what formats
+> > > of pagetable to accept.  And if you have devices from *both* bridges
+> > > you can't bind a page table at all - you could theoretically support
+> > > a kernel managed pagetable by mirroring each MAP and UNMAP to tables
+> > > in both formats, but it would be pretty reasonable not to support
+> > > that.
+> > 
+> > The basic process for a user space owned pgtable mode would be:
+> > 
+> >  1) qemu has to figure out what format of pgtable to use
+> > 
+> >     Presumably it uses query functions using the device label.
 > 
-> > 'qemu --allow-no-snoop' makes more sense to me
+> No... in the qemu case it would always select the page table format
+> that it needs to present to the guest.  That's part of the
+> guest-visible platform that's selected by qemu's configuration.
 > 
-> I'd be tempted to attach it to the -device vfio-pci option, it's
-> specific drivers for specific devices that are going to want this and
-> those devices may not be permanently attached to the VM.  But I see in
-> the other thread you're trying to optimize IOMMU page table sharing.
+> There's no negotiation here: either the kernel can supply what qemu
+> needs to pass to the guest, or it can't.  If it can't qemu, will have
+> to either emulate in SW (if possible, probably using a kernel-managed
+> IOASID to back it) or fail outright.
 > 
-> There's a usability question in either case though and I'm not sure how
-> to get around it other than QEMU or the kernel knowing a list of
-> devices (explicit IDs or vendor+class) to select per device defaults.
+> >     The
+> >     kernel code should look at the entire device path through all the
+> >     IOMMU HW to determine what is possible.
+> > 
+> >     Or it already knows because the VM's vIOMMU is running in some
+> >     fixed page table format, or the VM's vIOMMU already told it, or
+> >     something.
 > 
+> Again, I think you have the order a bit backwards.  The user selects
+> the capabilities that the vIOMMU will present to the guest as part of
+> the qemu configuration.  Qemu then requests that of the host kernel,
+> and either the host kernel supplies it, qemu emulates it in SW, or
+> qemu fails to start.
 
-"-device vfio-pci" is a per-device option, which implies that the
-no-snoop choice is given to the admin then no need to maintain 
-a fixed device list in Qemu?
+Hm, how fine a capability are we talking about?  If it's just "give me
+VT-d capabilities" or "give me Arm capabilities" that would work, but
+probably isn't useful. Anything finer will be awkward because userspace
+will have to try combinations of capabilities to see what sticks, and
+supporting new hardware will drop compatibility for older one.
 
-Thanks
-Kevin
+For example depending whether the hardware IOMMU is SMMUv2 or SMMUv3, that
+completely changes the capabilities offered to the guest (some v2
+implementations support nesting page tables, but never PASID nor PRI
+unlike v3.) The same vIOMMU could support either, presenting different
+capabilities to the guest, even multiple page table formats if we wanted
+to be exhaustive (SMMUv2 supports the older 32-bit descriptor), but it
+needs to know early on what the hardware is precisely. Then some new page
+table format shows up and, although the vIOMMU can support that in
+addition to older ones, QEMU will have to pick a single one, that it
+assumes the guest knows how to drive?
+
+I think once it binds a device to an IOASID fd, QEMU will want to probe
+what hardware features are available before going further with the vIOMMU
+setup (is there PASID, PRI, which page table formats are supported,
+address size, page granule, etc). Obtaining precise information about the
+hardware would be less awkward than trying different configurations until
+one succeeds. Binding an additional device would then fail if its pIOMMU
+doesn't support exactly the features supported for the first device,
+because we don't know which ones the guest will choose. QEMU will have to
+open a new IOASID fd for that device.
+
+Thanks,
+Jean
+
+> 
+> Guest visible properties of the platform never (or *should* never)
+> depend implicitly on host capabilities - it's impossible to sanely
+> support migration in such an environment.
+> 
+> >  2) qemu creates an IOASID and based on #1 and says 'I want this format'
+> 
+> Right.
+> 
+> >  3) qemu binds the IOASID to the device. 
+> > 
+> >     If qmeu gets it wrong then it just fails.
+> 
+> Right, though it may be fall back to (partial) software emulation.  In
+> practice that would mean using a kernel-managed IOASID and walking the
+> guest IO pagetables itself to mirror them into the host kernel.
+> 
+> >  4) For the next device qemu would have to figure out if it can re-use
+> >     an existing IOASID based on the required proeprties.
+> 
+> Nope.  Again, what devices share an IO address space is a guest
+> visible part of the platform.  If the host kernel can't supply that,
+> then qemu must not start (or fail the hotplug if the new device is
+> being hotplugged).
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
