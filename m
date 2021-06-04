@@ -2,80 +2,176 @@ Return-Path: <SRS0=eMD9=K6=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-15.9 required=3.0 tests=BAYES_00,
-	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_CR_TRAILER,INCLUDES_PATCH,
-	MAILING_LIST_MULTI,NICE_REPLY_A,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,
-	USER_AGENT_SANE_1 autolearn=unavailable autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-3.5 required=3.0 tests=BAYES_00,DKIM_INVALID,
+	DKIM_SIGNED,HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,SPF_HELO_NONE,
+	SPF_PASS,URIBL_BLOCKED autolearn=no autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id AEF6CC47096
-	for <iommu@archiver.kernel.org>; Fri,  4 Jun 2021 02:54:50 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id DB9B5C47083
+	for <iommu@archiver.kernel.org>; Fri,  4 Jun 2021 06:08:38 +0000 (UTC)
 Received: from smtp3.osuosl.org (smtp3.osuosl.org [140.211.166.136])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 5A1296140B
-	for <iommu@archiver.kernel.org>; Fri,  4 Jun 2021 02:54:50 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 5A1296140B
-Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=huawei.com
+	by mail.kernel.org (Postfix) with ESMTPS id 88B0A613E3
+	for <iommu@archiver.kernel.org>; Fri,  4 Jun 2021 06:08:38 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 88B0A613E3
+Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=intel.com
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by smtp3.osuosl.org (Postfix) with ESMTP id 265E16F948;
-	Fri,  4 Jun 2021 02:54:50 +0000 (UTC)
+	by smtp3.osuosl.org (Postfix) with ESMTP id 3E16960664;
+	Fri,  4 Jun 2021 06:08:38 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
 Received: from smtp3.osuosl.org ([127.0.0.1])
 	by localhost (smtp3.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id PqfVt7TL1GpW; Fri,  4 Jun 2021 02:54:49 +0000 (UTC)
-Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [IPv6:2605:bc80:3010:104::8cd3:938])
-	by smtp3.osuosl.org (Postfix) with ESMTP id DC0F76F944;
-	Fri,  4 Jun 2021 02:54:48 +0000 (UTC)
+	with ESMTP id pxnCj5hQawy5; Fri,  4 Jun 2021 06:08:37 +0000 (UTC)
+Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
+	by smtp3.osuosl.org (Postfix) with ESMTP id DBEEB6F935;
+	Fri,  4 Jun 2021 06:08:36 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id B7E6BC000D;
-	Fri,  4 Jun 2021 02:54:48 +0000 (UTC)
-Received: from smtp4.osuosl.org (smtp4.osuosl.org [IPv6:2605:bc80:3010::137])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 1FBEAC0001
- for <iommu@lists.linux-foundation.org>; Fri,  4 Jun 2021 02:54:47 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id BE2BAC000E;
+	Fri,  4 Jun 2021 06:08:36 +0000 (UTC)
+Received: from smtp3.osuosl.org (smtp3.osuosl.org [140.211.166.136])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 8AF20C0001
+ for <iommu@lists.linux-foundation.org>; Fri,  4 Jun 2021 06:08:35 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by smtp4.osuosl.org (Postfix) with ESMTP id 12B2640694
- for <iommu@lists.linux-foundation.org>; Fri,  4 Jun 2021 02:54:47 +0000 (UTC)
+ by smtp3.osuosl.org (Postfix) with ESMTP id 63B6C6F935
+ for <iommu@lists.linux-foundation.org>; Fri,  4 Jun 2021 06:08:35 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from smtp4.osuosl.org ([127.0.0.1])
- by localhost (smtp4.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id 4NjGvYJpptu9 for <iommu@lists.linux-foundation.org>;
- Fri,  4 Jun 2021 02:54:45 +0000 (UTC)
+Received: from smtp3.osuosl.org ([127.0.0.1])
+ by localhost (smtp3.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+ with ESMTP id V7wL8Zj9mapu for <iommu@lists.linux-foundation.org>;
+ Fri,  4 Jun 2021 06:08:34 +0000 (UTC)
 X-Greylist: domain auto-whitelisted by SQLgrey-1.8.0
-Received: from szxga03-in.huawei.com (szxga03-in.huawei.com [45.249.212.189])
- by smtp4.osuosl.org (Postfix) with ESMTPS id 03F034068F
- for <iommu@lists.linux-foundation.org>; Fri,  4 Jun 2021 02:54:44 +0000 (UTC)
-Received: from dggemv711-chm.china.huawei.com (unknown [172.30.72.53])
- by szxga03-in.huawei.com (SkyGuard) with ESMTP id 4Fx6hY2SGcz68Tn;
- Fri,  4 Jun 2021 10:50:53 +0800 (CST)
-Received: from dggpemm500006.china.huawei.com (7.185.36.236) by
- dggemv711-chm.china.huawei.com (10.1.198.66) with Microsoft SMTP Server
+Received: from mga14.intel.com (mga14.intel.com [192.55.52.115])
+ by smtp3.osuosl.org (Postfix) with ESMTPS id 6FC1960664
+ for <iommu@lists.linux-foundation.org>; Fri,  4 Jun 2021 06:08:34 +0000 (UTC)
+IronPort-SDR: s87izCcNuzE4UDVbaOMI+ZtXZH5e/i6SIKPJDhSXDQVhrhQ7a5PX3HOWThC5PLbnCsJXvnlgUt
+ bOqANXWOOw8A==
+X-IronPort-AV: E=McAfee;i="6200,9189,10004"; a="204043036"
+X-IronPort-AV: E=Sophos;i="5.83,247,1616482800"; d="scan'208";a="204043036"
+Received: from fmsmga008.fm.intel.com ([10.253.24.58])
+ by fmsmga103.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384;
+ 03 Jun 2021 23:08:33 -0700
+IronPort-SDR: B1sfWR+8awBOguLyofc+qd0bIdlJClReBSm0EkfXoRbjRwaQ9/W2lryMtIVUdjuAg/emWEg7Xo
+ MNxIiKewvAOQ==
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.83,247,1616482800"; d="scan'208";a="448147637"
+Received: from fmsmsx603.amr.corp.intel.com ([10.18.126.83])
+ by fmsmga008.fm.intel.com with ESMTP; 03 Jun 2021 23:08:33 -0700
+Received: from fmsmsx604.amr.corp.intel.com (10.18.126.84) by
+ fmsmsx603.amr.corp.intel.com (10.18.126.83) with Microsoft SMTP Server
  (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2176.2; Fri, 4 Jun 2021 10:54:32 +0800
-Received: from [127.0.0.1] (10.174.177.72) by dggpemm500006.china.huawei.com
- (7.185.36.236) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2176.2; Fri, 4 Jun 2021
- 10:54:32 +0800
-Subject: Re: [PATCH v10 1/3] iommu: Enhance IOMMU default DMA mode build
- options
-To: John Garry <john.garry@huawei.com>, <joro@8bytes.org>, <will@kernel.org>, 
- <dwmw2@infradead.org>, <baolu.lu@linux.intel.com>, <robin.murphy@arm.com>
-References: <1622728715-209296-1-git-send-email-john.garry@huawei.com>
- <1622728715-209296-2-git-send-email-john.garry@huawei.com>
-From: "Leizhen (ThunderTown)" <thunder.leizhen@huawei.com>
-Message-ID: <0e54ff0f-c668-354e-1ec8-7536c701d3a8@huawei.com>
-Date: Fri, 4 Jun 2021 10:54:30 +0800
-User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; rv:60.0) Gecko/20100101
- Thunderbird/60.7.0
-MIME-Version: 1.0
-In-Reply-To: <1622728715-209296-2-git-send-email-john.garry@huawei.com>
+ 15.1.2242.4; Thu, 3 Jun 2021 23:08:32 -0700
+Received: from fmsedg602.ED.cps.intel.com (10.1.192.136) by
+ fmsmsx604.amr.corp.intel.com (10.18.126.84) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2242.4
+ via Frontend Transport; Thu, 3 Jun 2021 23:08:32 -0700
+Received: from NAM10-DM6-obe.outbound.protection.outlook.com (104.47.58.109)
+ by edgegateway.intel.com (192.55.55.71) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.1.2242.4; Thu, 3 Jun 2021 23:08:32 -0700
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=dB9ak3mhMLWk08xQ/A+dZk5Wo5SXSvYReD5YdWYoET+E2YB+6LFvmfrkS3VgY02+krUC8phyN5C4UX2m8WzTzJlNR2/xA8piSOZvhn1MoeCxkLmPZ7DM/L+sGPeNh14zULP7S1hOUxYSKznCanRdo97kuBuhOwLJj1MyW3F4ON/D9aqfkYdxWmMa7ia2jryVgdGLckZs9cBWF2UUtq9QNRhNm1ErNm1P26nZ6unSxE5JtAgxB+hyWERh+PN5CYgUw5Vp3UqJ4+c9I2dYbFL6j51Gu3r36b/+llmjTB6xHw/9wD/d1ZsS9Ic1A+4NTBi7MHK2EffmK7EK+FOkS72E8A==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com; 
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=Go8zzEDmm/LaFFSo0eReOvhHh+T9Ks8CnYPRzM51/lk=;
+ b=GxyWRLg7XQTEhMmpJGZpRF4877jmo0E/498Ew+Vmt89E/MkGiYb6+iCrHStXnFoI1hcOFzqu1fUMrWsj0KaWaPenSd/ofzQ6QfEpr1lHuzaEt/zXIFxbuZNu0ZNp3sz3p8qmdrPvjeVWGl/4fyL5U6hs/MyA/uJB3aai/LqOInXNxXLjBCDFpg5y8q7dNuPJPlfSSe4GR5ufetY0qduAW7zJ6ykvvk/MeTUyjEYvEjIQxNeM2DwmYmiI7YinHVYAWr5yKVYpk9olXDzSlUo6IHL/0NDdFjd0iYp1aqY6pVqUYW2RjguCdBSS61FZeQQzd2BWCjEsZ3HOo9oxuQQOQw==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=intel.com; dmarc=pass action=none header.from=intel.com;
+ dkim=pass header.d=intel.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=intel.onmicrosoft.com; 
+ s=selector2-intel-onmicrosoft-com;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=Go8zzEDmm/LaFFSo0eReOvhHh+T9Ks8CnYPRzM51/lk=;
+ b=fnjtMUCfdhnEeQSbVOsz8zrQ59i3C6NZSFEAzB7jXCtVznjhl5p6M7Y/tlWCtmpNcJ66Di1O1uyY8RWc/wojCOEcYp90mYN4mTzzY9cNSb1SkaOpEQVGhkm7ZBMXSKNqztmUIdDWlcrIM1pC+7oCHE/21XAz9AuqIpv9VyhYHQw=
+Received: from MWHPR11MB1886.namprd11.prod.outlook.com (2603:10b6:300:110::9)
+ by MWHPR11MB1549.namprd11.prod.outlook.com (2603:10b6:301:c::17) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4195.20; Fri, 4 Jun
+ 2021 06:08:28 +0000
+Received: from MWHPR11MB1886.namprd11.prod.outlook.com
+ ([fe80::6597:eb05:c507:c6c1]) by MWHPR11MB1886.namprd11.prod.outlook.com
+ ([fe80::6597:eb05:c507:c6c1%12]) with mapi id 15.20.4195.023; Fri, 4 Jun 2021
+ 06:08:28 +0000
+From: "Tian, Kevin" <kevin.tian@intel.com>
+To: Jason Gunthorpe <jgg@nvidia.com>, David Gibson
+ <david@gibson.dropbear.id.au>
+Subject: RE: [RFC] /dev/ioasid uAPI proposal
+Thread-Topic: [RFC] /dev/ioasid uAPI proposal
+Thread-Index: AddSzQ970oLnVHLeQca/ysPD8zMJZwBLsqGAAN/dRYAAFU5FAAAaxTKAAA16g4AAJNcEoA==
+Date: Fri, 4 Jun 2021 06:08:28 +0000
+Message-ID: <MWHPR11MB18860FD2BA740E11B3A6B2B58C3B9@MWHPR11MB1886.namprd11.prod.outlook.com>
+References: <MWHPR11MB1886422D4839B372C6AB245F8C239@MWHPR11MB1886.namprd11.prod.outlook.com>
+ <20210528195839.GO1002214@nvidia.com> <YLcpw5Kx61L7TVmR@yekko>
+ <20210602165838.GA1002214@nvidia.com> <YLhsZRc72aIMZajz@yekko>
+ <20210603121105.GR1002214@nvidia.com>
+In-Reply-To: <20210603121105.GR1002214@nvidia.com>
+Accept-Language: en-US
 Content-Language: en-US
-X-Originating-IP: [10.174.177.72]
-X-ClientProxiedBy: dggems705-chm.china.huawei.com (10.3.19.182) To
- dggpemm500006.china.huawei.com (7.185.36.236)
-X-CFilter-Loop: Reflected
-Cc: iommu@lists.linux-foundation.org, linux-kernel@vger.kernel.org,
- linuxarm@huawei.com
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+dlp-version: 11.5.1.3
+dlp-product: dlpe-windows
+dlp-reaction: no-action
+authentication-results: nvidia.com; dkim=none (message not signed)
+ header.d=none;nvidia.com; dmarc=none action=none header.from=intel.com;
+x-originating-ip: [192.198.142.24]
+x-ms-publictraffictype: Email
+x-ms-office365-filtering-correlation-id: bc5e9fbb-2dd5-432d-2e3b-08d9271f2bf9
+x-ms-traffictypediagnostic: MWHPR11MB1549:
+x-ld-processed: 46c98d88-e344-4ed4-8496-4ed7712e255d,ExtAddr
+x-ms-exchange-transport-forked: True
+x-microsoft-antispam-prvs: <MWHPR11MB1549EDFE0406C0800BCE26BA8C3B9@MWHPR11MB1549.namprd11.prod.outlook.com>
+x-ms-oob-tlc-oobclassifiers: OLM:9508;
+x-ms-exchange-senderadcheck: 1
+x-microsoft-antispam: BCL:0;
+x-microsoft-antispam-message-info: k2ICEGW6KawqlMGV4k+IhJDfw7VwnTtktTJqVv9tEjJrCRL9+nsLnnxz8Hl3pjKmg3sJ4gJ7cGuOi4/FHnbXGIHKJnzLwmgocI6MpKAQkF15Ju9jhWvAOpBme+7yItLQz9WmsV5+bVzJzEQDojrc3ds/B4W2j7Am2Ed3OzPN567YhNuufAHjpLrRjIOgp0KLnG1uQbHpOB0Faet6Z/xdO71sNDrsuIk8nMD3crif9g33sRr+2yZQsDBNoOs6KKbo/+iVYBvWlI0igO69+xkY4YW0fZW37J8qwdpz/LtX9qe9c6i0rxMOuk1PQxHXZBBj2zx/LUeavHnW01/wsZwuJBXa98FfX2YHDAhUNmZ69NEU5eHQ3XZAWP2imZWML/+BxFhRXJu6QvPG2GFVaQWWdO7DVMfBIMKXOQIWlEuVFc4wznydOFt4LyYh1Ty0Z0DVInnVe63w6OLcGnlJ2XXmuD5WMxdf0y2tLQ5w4k6ANnHwk5+pLpEFOec+dmtc0gZk2kLm3YIa3TLSnp3P5sOHOCI0x7pZzpibFcaUErfjNVDkjKdGJIXM81bNyOenQvyivP0XCqBACTYY59feYd5mbNkFUxz1OC4KCn92F+MIm6E=
+x-forefront-antispam-report: CIP:255.255.255.255; CTRY:; LANG:en; SCL:1; SRV:;
+ IPV:NLI; SFV:NSPM; H:MWHPR11MB1886.namprd11.prod.outlook.com; PTR:; CAT:NONE;
+ SFS:(136003)(376002)(366004)(396003)(39860400002)(346002)(5660300002)(7416002)(76116006)(52536014)(4326008)(66476007)(86362001)(66556008)(38100700002)(66946007)(66446008)(110136005)(122000001)(54906003)(8936002)(64756008)(33656002)(83380400001)(9686003)(55016002)(478600001)(8676002)(26005)(186003)(6506007)(2906002)(7696005)(71200400001)(316002);
+ DIR:OUT; SFP:1102; 
+x-ms-exchange-antispam-messagedata: =?us-ascii?Q?KWhsMgsWdFywHeabn5ji/CI0Zy3aelMAvC3ChOQrvOHL1r+oU9qkeWYCTPAS?=
+ =?us-ascii?Q?rwBpeJQnFJGO2ZoI31jdkKYeuKxF3iqJ3wW9OjaCz3D85dW9r7J/mVqTxSsV?=
+ =?us-ascii?Q?gioREmixgPwzhxqcJg85Ee0ykvJVdaLHEQGXXmtsCWd3MIn8hdlr2XZNNpXQ?=
+ =?us-ascii?Q?gFDonujUP9a5/rBJfQM/OTjKne7CZ2L6cEco4OMAx2rG8tSTXTdmCiuHp2hi?=
+ =?us-ascii?Q?orLwkUR+Ht4yT/NlMlEWOJkIQTBGB7kXV/48OIjt4z06q+mI+PEMPJptlyiz?=
+ =?us-ascii?Q?ghKwTVlmhVaT5AGUXVNo6uyWHtxvee5S4yNxuayVNR6V8L1A+rjbDihMe2gW?=
+ =?us-ascii?Q?RuSeQoLxKW9LV3HTApD0eOJtA8ekhg9+/QCf1HIqIuCSBj0iG7tp2e8SRPzh?=
+ =?us-ascii?Q?S9I9aIp2gBxyx6l7hymUYf9w4fcyOhjd+WNkTxZy4tBGOd36gsT/KjsIPvgS?=
+ =?us-ascii?Q?OFu9DPjuk8pB7tguX4fEyBEW2ncXaUFmkwtT38Z7Q22UPZUz+5TcxzkDHUwM?=
+ =?us-ascii?Q?OhfRIj9bKXP82sNPXhGgDwexjfi/51ZHtVTHtJe71uIOJx9FMMupgIlMviIU?=
+ =?us-ascii?Q?jx1flyIXV4VAc9q6ar0r2qT62SuumWTzx2DZMyqS2bx32F4tIiNc0UCHy/Ze?=
+ =?us-ascii?Q?IsgO17BoIYUrBu8YBnr4uy3RFOQPQS7VkmQxQLHp7F//BYO61q8TP3nCmfoE?=
+ =?us-ascii?Q?0+VRwPps/yeyRGcEVMsBOnA4wCdvno/ZPW/Nx21Ja4wKw2Bg20IMYzkzuQ2K?=
+ =?us-ascii?Q?/zBiscdlmgy1kkxcZ5zpeZrQdCrDLnmTBjzS8q8+bPEsNrtQuUACwOZClXmf?=
+ =?us-ascii?Q?QXwVkC313vUeFdmcmgQlPIJudcBZl81QyGuLYUZJtSQ0TgS8PB4Woe/TX67z?=
+ =?us-ascii?Q?bg3B5297BGRswzep0VaSSxJEgRmda5ptGkGO7EVA1x0H0N9FZjhW4qdZIaET?=
+ =?us-ascii?Q?ah0+r8r3ftIfxgNCbXqfr8groAxQWA/t5ubxT01IxsOxKfENAQMm8uJ8mgOz?=
+ =?us-ascii?Q?s27tnZLCl8d6+RoWNI6nGDvNUDRA/MzsAdtjDKwrFHy7iRXZECbfp8IO4DS7?=
+ =?us-ascii?Q?6d6BXO8yknw3aysRgkjkmYEyPom2fTyEfQolb0rKwBRWar6zuaWdCaJARjX/?=
+ =?us-ascii?Q?83W1fTysAXEmYAYBZYc9x9E0OkZv5jWHs0qDR1d2KwDto1s3NUoB9J94iDaw?=
+ =?us-ascii?Q?Yf/PZSsNKS17lWZkRdMExwJJxXj2PM3lrfSjCFLnJKWAqH0acOGzGm+L+PGb?=
+ =?us-ascii?Q?0pfpeqI3zsrPHHmaEN0nyOPomk2UzHmCVygskkuF4FEA61CmNL4xku8EEOSc?=
+ =?us-ascii?Q?Hy2X3KYcTlagkWwUsof4jpJ/?=
+MIME-Version: 1.0
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-AuthSource: MWHPR11MB1886.namprd11.prod.outlook.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: bc5e9fbb-2dd5-432d-2e3b-08d9271f2bf9
+X-MS-Exchange-CrossTenant-originalarrivaltime: 04 Jun 2021 06:08:28.1947 (UTC)
+X-MS-Exchange-CrossTenant-fromentityheader: Hosted
+X-MS-Exchange-CrossTenant-id: 46c98d88-e344-4ed4-8496-4ed7712e255d
+X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
+X-MS-Exchange-CrossTenant-userprincipalname: wh+64C1aZ4yjGQKE5n8AWAzCk/MbW+uTnP5ewwAjrXK3oqGiwFQE6Xm7Egf6Eo9hLpeliQx6sm2pRgbpsN1rrA==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: MWHPR11MB1549
+X-OriginatorOrg: intel.com
+Cc: Jean-Philippe Brucker <jean-philippe@linaro.org>, "Alex Williamson
+ \(alex.williamson@redhat.com\)" <alex.williamson@redhat.com>, "Raj,
+ Ashok" <ashok.raj@intel.com>, "kvm@vger.kernel.org" <kvm@vger.kernel.org>,
+ Jonathan Corbet <corbet@lwn.net>, Robin Murphy <robin.murphy@arm.com>,
+ LKML <linux-kernel@vger.kernel.org>, Kirti Wankhede <kwankhede@nvidia.com>,
+ "iommu@lists.linux-foundation.org" <iommu@lists.linux-foundation.org>, "Jiang,
+ Dave" <dave.jiang@intel.com>, David Woodhouse <dwmw2@infradead.org>,
+ Jason Wang <jasowang@redhat.com>
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -93,101 +189,85 @@ Content-Transfer-Encoding: 7bit
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-
-
-On 2021/6/3 21:58, John Garry wrote:
-> From: Zhen Lei <thunder.leizhen@huawei.com>
+> From: Jason Gunthorpe <jgg@nvidia.com>
+> Sent: Thursday, June 3, 2021 8:11 PM
 > 
-> First, add build options IOMMU_DEFAULT_{LAZY|STRICT}, so that we have the
-> opportunity to set {lazy|strict} mode as default at build time. Then put
-> the two config options in an choice, as they are mutually-exclusive.
+> On Thu, Jun 03, 2021 at 03:45:09PM +1000, David Gibson wrote:
+> > On Wed, Jun 02, 2021 at 01:58:38PM -0300, Jason Gunthorpe wrote:
+> > > On Wed, Jun 02, 2021 at 04:48:35PM +1000, David Gibson wrote:
+> > > > > > 	/* Bind guest I/O page table  */
+> > > > > > 	bind_data = {
+> > > > > > 		.ioasid	= gva_ioasid;
+> > > > > > 		.addr	= gva_pgtable1;
+> > > > > > 		// and format information
+> > > > > > 	};
+> > > > > > 	ioctl(ioasid_fd, IOASID_BIND_PGTABLE, &bind_data);
+> > > > >
+> > > > > Again I do wonder if this should just be part of alloc_ioasid. Is
+> > > > > there any reason to split these things? The only advantage to the
+> > > > > split is the device is known, but the device shouldn't impact
+> > > > > anything..
+> > > >
+> > > > I'm pretty sure the device(s) could matter, although they probably
+> > > > won't usually.
+> > >
+> > > It is a bit subtle, but the /dev/iommu fd itself is connected to the
+> > > devices first. This prevents wildly incompatible devices from being
+> > > joined together, and allows some "get info" to report the capability
+> > > union of all devices if we want to do that.
+> >
+> > Right.. but I've not been convinced that having a /dev/iommu fd
+> > instance be the boundary for these types of things actually makes
+> > sense.  For example if we were doing the preregistration thing
+> > (whether by child ASes or otherwise) then that still makes sense
+> > across wildly different devices, but we couldn't share that layer if
+> > we have to open different instances for each of them.
 > 
-> [jpg: Make choice between strict and lazy only (and not passthrough)]
-> Signed-off-by: Zhen Lei <thunder.leizhen@huawei.com>
-> Signed-off-by: John Garry <john.garry@huawei.com>
-> ---
->  drivers/iommu/Kconfig | 34 ++++++++++++++++++++++++++++++++++
->  drivers/iommu/iommu.c |  3 ++-
->  2 files changed, 36 insertions(+), 1 deletion(-)
+> It is something that still seems up in the air.. What seems clear for
+> /dev/iommu is that it
+>  - holds a bunch of IOASID's organized into a tree
+>  - holds a bunch of connected devices
+>  - holds a pinned memory cache
 > 
-> diff --git a/drivers/iommu/Kconfig b/drivers/iommu/Kconfig
-> index 1f111b399bca..12ef90256df8 100644
-> --- a/drivers/iommu/Kconfig
-> +++ b/drivers/iommu/Kconfig
-> @@ -90,6 +90,40 @@ config IOMMU_DEFAULT_PASSTHROUGH
->  
->  	  If unsure, say N here.
->  
-> +choice
-> +	prompt "IOMMU default DMA mode"
-> +	depends on IOMMU_API
-
-config INTEL_IOMMU
-        depends on PCI_MSI && ACPI && (X86 || IA64)
-
-config AMD_IOMMU
-        depends on X86_64 && PCI && ACPI && HAVE_CMPXCHG_DOUBLE
-
-config ARM_SMMU_V3
-        depends on ARM64
-
-"depends on ARM_SMMU_V3 || INTEL_IOMMU || AMD_IOMMU" may need to be added, because it doesn't work on other platforms.
-
-or "depends on X86 || IA64 || X86_64 || ARM64"
-
-> +
-> +	default IOMMU_DEFAULT_STRICT
-> +	help
-> +	  This option allows an IOMMU DMA mode to be chosen at build time, to
-> +	  override the default DMA mode of each ARCH, removing the need to
-> +	  pass in kernel parameters through command line. It is still possible
-> +	  to provide ARCH-specific or common boot options to override this
-> +	  option.
-> +
-> +	  If unsure, keep the default.
-> +
-> +config IOMMU_DEFAULT_LAZY
-> +	bool "lazy"
-> +	help
-> +	  Support lazy mode, where for every IOMMU DMA unmap operation, the
-> +	  flush operation of IOTLB and the free operation of IOVA are deferred.
-> +	  They are only guaranteed to be done before the related IOVA will be
-> +	  reused.
-> +
-> +config IOMMU_DEFAULT_STRICT
-> +	bool "strict"
-> +	help
-> +	  For every IOMMU DMA unmap operation, the flush operation of IOTLB and
-> +	  the free operation of IOVA are guaranteed to be done in the unmap
-> +	  function.
-> +
-> +	  This mode is safer than the two above, but it maybe slower in some
-> +	  high performace scenarios.
-> +
-> +endchoice
-> +
->  config OF_IOMMU
->  	def_bool y
->  	depends on OF && IOMMU_API
-> diff --git a/drivers/iommu/iommu.c b/drivers/iommu/iommu.c
-> index 966426a96520..177b0dafc535 100644
-> --- a/drivers/iommu/iommu.c
-> +++ b/drivers/iommu/iommu.c
-> @@ -29,7 +29,8 @@ static struct kset *iommu_group_kset;
->  static DEFINE_IDA(iommu_group_ida);
->  
->  static unsigned int iommu_def_domain_type __read_mostly;
-> -static bool iommu_dma_strict __read_mostly = true;
-> +static bool iommu_dma_strict __read_mostly =
-> +			IS_ENABLED(CONFIG_IOMMU_DEFAULT_STRICT);
-
-Currently, a maximum of 100 columns are allowed in a row.
-
->  static u32 iommu_cmd_line __read_mostly;
->  
->  struct iommu_group {
+> One thing it must do is enforce IOMMU group security. A device cannot
+> be attached to an IOASID unless all devices in its IOMMU group are
+> part of the same /dev/iommu FD.
 > 
+> The big open question is what parameters govern allowing devices to
+> connect to the /dev/iommu:
+>  - all devices can connect and we model the differences inside the API
+>    somehow.
 
+I prefer to this option if no significant block ahead. 
+
+>  - Only sufficiently "similar" devices can be connected
+>  - The FD's capability is the minimum of all the connected devices
+> 
+> There are some practical problems here, when an IOASID is created the
+> kernel does need to allocate a page table for it, and that has to be
+> in some definite format.
+> 
+> It may be that we had a false start thinking the FD container should
+> be limited. Perhaps creating an IOASID should pass in a list
+> of the "device labels" that the IOASID will be used with and that can
+> guide the kernel what to do?
+
+In Qemu case the problem is that it doesn't know the list of devices
+that will be attached to an IOASID when it's created. This is a guest-
+side knowledge which is conveyed one device at a time to Qemu 
+though vIOMMU.
+
+I feel it's fair to say that before user wants to create an IOASID he
+should already check the format information about the device which
+is intended to be attached right after then when creating the IOASID
+the user should specify a format compatible to the device. There is 
+format check when IOASID is created, since its I/O page table is not
+installed to the IOMMU yet. Later when the intended device is attached
+to this IOASID, then verify the format and fail the attach request if
+incompatible.
+
+Thanks
+Kevin
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
