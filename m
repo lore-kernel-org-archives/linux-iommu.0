@@ -7,152 +7,157 @@ X-Spam-Status: No, score=-3.5 required=3.0 tests=BAYES_00,DKIM_INVALID,
 	MSGID_FROM_MTA_HEADER,SPF_HELO_NONE,SPF_PASS,URIBL_RED autolearn=no
 	autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 09756C47095
-	for <iommu@archiver.kernel.org>; Mon,  7 Jun 2021 18:01:57 +0000 (UTC)
-Received: from smtp1.osuosl.org (smtp1.osuosl.org [140.211.166.138])
+	by smtp.lore.kernel.org (Postfix) with ESMTP id BB1F6C47095
+	for <iommu@archiver.kernel.org>; Mon,  7 Jun 2021 18:19:06 +0000 (UTC)
+Received: from smtp3.osuosl.org (smtp3.osuosl.org [140.211.166.136])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id BA96D60FEA
-	for <iommu@archiver.kernel.org>; Mon,  7 Jun 2021 18:01:56 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org BA96D60FEA
+	by mail.kernel.org (Postfix) with ESMTPS id 5DBDC61105
+	for <iommu@archiver.kernel.org>; Mon,  7 Jun 2021 18:19:06 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 5DBDC61105
 Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=nvidia.com
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by smtp1.osuosl.org (Postfix) with ESMTP id 9320383668;
-	Mon,  7 Jun 2021 18:01:56 +0000 (UTC)
+	by smtp3.osuosl.org (Postfix) with ESMTP id 2ECC2605AA;
+	Mon,  7 Jun 2021 18:19:06 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from smtp1.osuosl.org ([127.0.0.1])
-	by localhost (smtp1.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id 9PsIg0u1OIPp; Mon,  7 Jun 2021 18:01:53 +0000 (UTC)
-Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [IPv6:2605:bc80:3010:104::8cd3:938])
-	by smtp1.osuosl.org (Postfix) with ESMTP id 22C2883653;
-	Mon,  7 Jun 2021 18:01:53 +0000 (UTC)
+Received: from smtp3.osuosl.org ([127.0.0.1])
+	by localhost (smtp3.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+	with ESMTP id reyG8XlV4EbN; Mon,  7 Jun 2021 18:19:04 +0000 (UTC)
+Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
+	by smtp3.osuosl.org (Postfix) with ESMTP id 4E3DC605A5;
+	Mon,  7 Jun 2021 18:19:04 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 062CCC000E;
-	Mon,  7 Jun 2021 18:01:53 +0000 (UTC)
-Received: from smtp1.osuosl.org (smtp1.osuosl.org [140.211.166.138])
- by lists.linuxfoundation.org (Postfix) with ESMTP id EC6E2C0001
- for <iommu@lists.linux-foundation.org>; Mon,  7 Jun 2021 18:01:51 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 30EEBC000D;
+	Mon,  7 Jun 2021 18:19:04 +0000 (UTC)
+Received: from smtp3.osuosl.org (smtp3.osuosl.org [IPv6:2605:bc80:3010::136])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 5C9BDC0001
+ for <iommu@lists.linux-foundation.org>; Mon,  7 Jun 2021 18:19:03 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by smtp1.osuosl.org (Postfix) with ESMTP id D743683668
- for <iommu@lists.linux-foundation.org>; Mon,  7 Jun 2021 18:01:51 +0000 (UTC)
+ by smtp3.osuosl.org (Postfix) with ESMTP id 34DBC605AA
+ for <iommu@lists.linux-foundation.org>; Mon,  7 Jun 2021 18:19:03 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from smtp1.osuosl.org ([127.0.0.1])
- by localhost (smtp1.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id tt_THyyOVKTD for <iommu@lists.linux-foundation.org>;
- Mon,  7 Jun 2021 18:01:48 +0000 (UTC)
+Received: from smtp3.osuosl.org ([127.0.0.1])
+ by localhost (smtp3.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+ with ESMTP id 34K1jYCSXgxs for <iommu@lists.linux-foundation.org>;
+ Mon,  7 Jun 2021 18:19:02 +0000 (UTC)
 X-Greylist: whitelisted by SQLgrey-1.8.0
-Received: from NAM12-DM6-obe.outbound.protection.outlook.com
- (mail-dm6nam12on2087.outbound.protection.outlook.com [40.107.243.87])
- by smtp1.osuosl.org (Postfix) with ESMTPS id DBDAD83653
- for <iommu@lists.linux-foundation.org>; Mon,  7 Jun 2021 18:01:47 +0000 (UTC)
+Received: from NAM10-BN7-obe.outbound.protection.outlook.com
+ (mail-bn7nam10on20626.outbound.protection.outlook.com
+ [IPv6:2a01:111:f400:7e8a::626])
+ by smtp3.osuosl.org (Postfix) with ESMTPS id E2760605A5
+ for <iommu@lists.linux-foundation.org>; Mon,  7 Jun 2021 18:19:01 +0000 (UTC)
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=n8qqHl56PYawTG9wPr7a99cT5vYsiuD+7FAIOpPucJ25OtPQaFdSRTbasZSVwHjBDZODnsomhgOZn8KXX7P1gkEiSM3dUwRP74gvB63/cU4MPG9f9rt9kRrHiWOd6aqstg+rkK04ylfTUHGggWGsfIM23Fg/JNAPdOe12MJqLUefwqPSwf7YOsgPkJN7k214iZynDAYCWpmosvGPs1fmr66PqXssOV0hyXDblNVMm5bIowegCnXziTs0nUTx6DUSI8uKVrKsiUIYL3hxQw16u+pA9/muIIp9FRdL4E4U9WznLUxp5jU/qW6k8ilYnSpFjmK0TyEDNPo/NyMfszyS6g==
+ b=SWv/O9YcqvNDC3pxa/ql8q4+H1lJGy3Gd1/Scb5e8fc5PIYAK6GwRl/b/+8sLUFRwyCq5Synhu+rgxqXwc6wp9CvQGdPNfk820OhGZRYBQAGwPTbsnRP2zki5tlfhgnPlZ5w9zz/zwhqikDHvld+p8q1IvzUJ96EAELRn2+OTXDfr2PiBDoY2iJPr/jorbk845wBuBFb1tv9ClYkeZiePIUNoDs9rEdp0qPwdc6BulLpuLvA/YzyCzEWoy/SNfOFUC8NIsVWXFRRTjG/G2CT5+oqzXmatuv6rm++a9eBI0uZocpjyXn55hkdFg+oVEipfplGKT5M76QO/c1WHLLYpA==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com; 
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=YOzSkOnmNP9b5V0zth7QPbJ0wNH2CUEEDGufWNDHUm0=;
- b=ayX0Bx+lsOiBILvVQtLXWWW73L373yCdpY1HZrxT5ptnP4EK/6DK9Opeq3PAg1KdokXfHma+n496zG1jPwTYoSR9JJeLfQA9VTFv/lYFmOFVvC4nQomf3kNkxRBsNJXss7F+2V/mslSE9LWw+xa8PSFJhP9wLaKYAAQYdTXBcGQOFBMvQkKlXOHhpzZFSqFLZ7JBulpdCSpvV54fNxA3svAlZZAS6Sfew6/LwoNMIRzMCuiUhy5B/V6RH3pzT4lOKgfz66ogPhQyhZa9O/xdACGc2BHUINk53NNL37c9M4EtjwgKlir8CSwuA3l2nQTb8CoPfF3TA8vyPj/IeJ7b9A==
+ bh=LbTWaJFdCdrDzSdSi5XGrgtZ9SdqmktpsJXAXF0LPzk=;
+ b=VQZ9VZYttomKSD4iJr93895vZrUCfTet1jo1Xd5Xu+NOz9mDX7gGI5LVi+7TJv/vaVbEZdOqsfRp1pRdL9nqVtlu/YMNfrkQkOtMWEGhg6/QsJjDgiTtDmo6xt4uR59pK6wN1QYuPoVA1EYXULBzSf+XHpxh2VvgL00NnGdBal9dMyb48w/Hox+njscrZUh+hbA78ES5A28GMpnpGAZvJHGxRqJdMLINhnbCD3tprWrGIENqeAHkcBDav74CFXzzjHTBguQE8o0nTyqxFskXmbjuBrjNlYHoiZ+mwb5D8/sBJlLgZXas0TWRD21bmmmo6G2bMGWHX/W5cTThOvXbJQ==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
  smtp.mailfrom=nvidia.com; dmarc=pass action=none header.from=nvidia.com;
  dkim=pass header.d=nvidia.com; arc=none
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
  s=selector2;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=YOzSkOnmNP9b5V0zth7QPbJ0wNH2CUEEDGufWNDHUm0=;
- b=WuwjxjRLg+6hwA1MIIxVL/pjdMYMHJFQw2+LWu50sdcF4/cDpfiIStcISOu/NVLrTEeLwKJAyE+gHY/ZkFJo4R+BWuxdIfr0KXDeyTtsJajx+sR77IOypD9EU02wvB+ElL0kJpwcx4A28fkR0TXnZY2eZl9foDx5Qby6/xCY2dD1aHClP2R5VHxtmcafwL9YMw9XeGeQEFMWkcywKf5cWVlvwcvGvpu+Zpq3JTmjEqoSb0y++dUJYy37ob76jjQmsnkUX+A1R8fh7ms6JRpeUajQBQCHaECdcALnK8+PMfyFIAhB8VGKaVknmh0KiLeeD0ETrKubmW1m86NzHy4UNQ==
-Authentication-Results: metux.net; dkim=none (message not signed)
- header.d=none;metux.net; dmarc=none action=none header.from=nvidia.com;
+ bh=LbTWaJFdCdrDzSdSi5XGrgtZ9SdqmktpsJXAXF0LPzk=;
+ b=B5zxUSQ7eOdY0hXjuJ1AsLSFUthPqYrnzHqAMR7tvxv6lrWLh97b7w6qBRie+rwRmtwGvL5qObr+SAV8aM5vr+LfMiipLUdzTAlTAsA1RU53DA3fhokcf5QX2yv/JK80OJW9QojGazMTQgSmmOd3IKnkD0PsXEgp+0T+erZa3HnEWmmN0otUMKE4VcXzFya2VByYBjUvJf7Uy4nI8Rsjmi5yIaRMsIFNoseJKCCXsz0gAEd1H5PDeH5a6jAI488FD7jMGNdmnuOoTqhEUrq4xS4LHYDCxNX2tBjuN3Cy39gEX9rDo3Hn6Tnxxhsp9CMLcOSzWI5kYzWzNszJqfDdDA==
+Authentication-Results: redhat.com; dkim=none (message not signed)
+ header.d=none;redhat.com; dmarc=none action=none header.from=nvidia.com;
 Received: from BL0PR12MB5506.namprd12.prod.outlook.com (2603:10b6:208:1cb::22)
- by BL1PR12MB5223.namprd12.prod.outlook.com (2603:10b6:208:315::21)
+ by BL1PR12MB5349.namprd12.prod.outlook.com (2603:10b6:208:31f::7)
  with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4195.22; Mon, 7 Jun
- 2021 18:01:45 +0000
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4195.23; Mon, 7 Jun
+ 2021 18:19:00 +0000
 Received: from BL0PR12MB5506.namprd12.prod.outlook.com
  ([fe80::3d51:a3b9:8611:684e]) by BL0PR12MB5506.namprd12.prod.outlook.com
  ([fe80::3d51:a3b9:8611:684e%6]) with mapi id 15.20.4195.030; Mon, 7 Jun 2021
- 18:01:45 +0000
-Date: Mon, 7 Jun 2021 15:01:44 -0300
+ 18:19:00 +0000
+Date: Mon, 7 Jun 2021 15:18:58 -0300
 From: Jason Gunthorpe <jgg@nvidia.com>
-To: "Enrico Weigelt, metux IT consult" <lkml@metux.net>
+To: Alex Williamson <alex.williamson@redhat.com>
 Subject: Re: [RFC] /dev/ioasid uAPI proposal
-Message-ID: <20210607180144.GL1002214@nvidia.com>
-References: <64898584-a482-e6ac-fd71-23549368c508@linux.intel.com>
- <429d9c2f-3597-eb29-7764-fad3ec9a934f@redhat.com>
- <MWHPR11MB1886FC7A46837588254794048C3E9@MWHPR11MB1886.namprd11.prod.outlook.com>
- <05d7f790-870d-5551-1ced-86926a0aa1a6@redhat.com>
- <MWHPR11MB1886269E2B3DE471F1A9A7618C3E9@MWHPR11MB1886.namprd11.prod.outlook.com>
- <42a71462-1abc-0404-156c-60a7ee1ad333@redhat.com>
- <20210601173138.GM1002214@nvidia.com>
- <f69137e3-0f60-4f73-a0ff-8e57c79675d5@redhat.com>
- <20210602172154.GC1002214@nvidia.com>
- <51e060a3-fc59-0a13-5955-71692b14eed8@metux.net>
+Message-ID: <20210607181858.GM1002214@nvidia.com>
+References: <20210604092620.16aaf5db.alex.williamson@redhat.com>
+ <815fd392-0870-f410-cbac-859070df1b83@redhat.com>
+ <20210604155016.GR1002214@nvidia.com>
+ <30e5c597-b31c-56de-c75e-950c91947d8f@redhat.com>
+ <20210604160336.GA414156@nvidia.com>
+ <2c62b5c7-582a-c710-0436-4ac5e8fd8b39@redhat.com>
+ <20210604172207.GT1002214@nvidia.com>
+ <20210604152918.57d0d369.alex.williamson@redhat.com>
+ <20210604230108.GB1002214@nvidia.com>
+ <20210607094148.7e2341fc.alex.williamson@redhat.com>
 Content-Disposition: inline
-In-Reply-To: <51e060a3-fc59-0a13-5955-71692b14eed8@metux.net>
+In-Reply-To: <20210607094148.7e2341fc.alex.williamson@redhat.com>
 X-Originating-IP: [47.55.113.94]
-X-ClientProxiedBy: BLAP220CA0024.NAMP220.PROD.OUTLOOK.COM
- (2603:10b6:208:32c::29) To BL0PR12MB5506.namprd12.prod.outlook.com
+X-ClientProxiedBy: BL1PR13CA0161.namprd13.prod.outlook.com
+ (2603:10b6:208:2bd::16) To BL0PR12MB5506.namprd12.prod.outlook.com
  (2603:10b6:208:1cb::22)
 MIME-Version: 1.0
 X-MS-Exchange-MessageSentRepresentingType: 1
 Received: from mlx.ziepe.ca (47.55.113.94) by
- BLAP220CA0024.NAMP220.PROD.OUTLOOK.COM (2603:10b6:208:32c::29) with Microsoft
- SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.20.4195.23 via Frontend Transport; Mon, 7 Jun 2021 18:01:45 +0000
+ BL1PR13CA0161.namprd13.prod.outlook.com (2603:10b6:208:2bd::16) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4219.9 via Frontend
+ Transport; Mon, 7 Jun 2021 18:18:59 +0000
 Received: from jgg by mlx with local (Exim 4.94)	(envelope-from
- <jgg@nvidia.com>)	id 1lqJZI-003Ont-IT; Mon, 07 Jun 2021 15:01:44 -0300
+ <jgg@nvidia.com>)	id 1lqJpy-003P4L-UY; Mon, 07 Jun 2021 15:18:58 -0300
 X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: ef577933-3e5b-4635-eefa-08d929de5025
-X-MS-TrafficTypeDiagnostic: BL1PR12MB5223:
-X-Microsoft-Antispam-PRVS: <BL1PR12MB5223DD286B412BCE557B727FC2389@BL1PR12MB5223.namprd12.prod.outlook.com>
+X-MS-Office365-Filtering-Correlation-Id: e23fd459-eb3f-4af1-7632-08d929e0b8ab
+X-MS-TrafficTypeDiagnostic: BL1PR12MB5349:
+X-MS-Exchange-Transport-Forked: True
+X-Microsoft-Antispam-PRVS: <BL1PR12MB53493D1524D5257E1114ED96C2389@BL1PR12MB5349.namprd12.prod.outlook.com>
 X-MS-Oob-TLC-OOBClassifiers: OLM:8882;
 X-MS-Exchange-SenderADCheck: 1
 X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: /6wAb/H45IJwg/56AQ+u6U2XxVu0iMFlMv8aI8cgoCqnjiCTJb/197O2DG+mQC9BfCrIBmosJpZMyqj+SFJMdX6ZBfQCaPygpwM2e7XKow3cD6jF81p/uCGBBSr1eku8lGao/AOnW+Jj3dpQeywSMKu6chrZrZuZD3XERb6SpD831xg/IywV2xxXZnuNgpkFaxqZwQm4UQJNJ3UhM4I0GhHlzfFDayDmLZ1CkQyeOB545dSw1bzaWcAFXbn4WDxAV6cfbCQH6z9g8T1ER5Cd/9x2/l4Cc3obW1AITYHEqoEoSID637EwyMCUzAFsFao0hZ9/hsfkE7YqiJFSL8KVc4Gb21BV3FL1yCoCpotoM68ErA0RM/b/OPjUsf/HYo75hgHRMXBbhsmzL2Tr9y+YokGr/BSpEULkEg+GujrO00DJPkPAGc/5VYtDOV+klScw9ntMtUXND6B1uA5FHDf7SBS3w6S2yq+/IGsEz7qHe1oqVjmFm0c/L0pI3Nk++131rkuwi51WBRRJLHlM6WuuPXLAK1EmReNpVctR7z2dQoWd8UgooHIzNGoBmfI1aoavsXGnjKNR9HvoYPlIEDMUZZ9tf7R/rHYmzndfNQICaDk=
+X-Microsoft-Antispam-Message-Info: 7hXVdHRIbLFC8ofd8TSAcUkJNuLtZpAD+3U9nAPDw/jw6W25/ohvNTE8hezodYY7wa0F/cc1sP1ftzQKICL3GmlEV5foDC7yvSdB1ZMHNxFYn8AYt9IzJdGiTMklCw9jAiX4S2EXGSyqVZRsxWjK0+SkIlc6BlnCa9MZM03Un7aWqHiCiIswjKi8KxIRM09BAOkSJ6rpayHiwmnlc7Zuakt+AYy/+qxUCOEFqA0vh9XRWdjTQfMb+vzHiEOYDIilqKwBulfxP4Mf4Im+Pq/S+r1CHjoD1ziu39hHES09cRIDtMfQt7p3uoJ2fhcev9QQ2L/Sf/24bUxb6s5w25xPdfDfe9Dj77UNd01qZ/jm3AW1iRyncrYzSVOnvxHZtb0HTuHFSB1yPH31TzqhSh50oKMPVKTdAmaZzp2AzhMSvOUvMEiRYYd3XaV3EycZX/hdrzkQ/+7owmcsdgVsy0tQ0mHyuVe3M2JgM7O6d1uuJq3Dt+yYSxySRNoEuVVM35P2tJNRZK2XdxcYy7NMV0kLXdcAHPntJn6B5YTCODyCP/Exo0lbrYT/In8WwG+UC8PhDA+08+tO+GL5Pea3t+UXi/n/NL14bLg4Nr5EHt0hquY=
 X-Forefront-Antispam-Report: CIP:255.255.255.255; CTRY:; LANG:en; SCL:1; SRV:;
  IPV:NLI; SFV:NSPM; H:BL0PR12MB5506.namprd12.prod.outlook.com; PTR:; CAT:NONE;
- SFS:(4636009)(366004)(39860400002)(396003)(136003)(376002)(346002)(86362001)(54906003)(316002)(5660300002)(53546011)(33656002)(4744005)(8676002)(6916009)(38100700002)(186003)(1076003)(2906002)(66946007)(66476007)(66556008)(8936002)(26005)(426003)(2616005)(478600001)(36756003)(9746002)(4326008)(9786002)(7416002);
+ SFS:(4636009)(136003)(346002)(396003)(366004)(376002)(39860400002)(5660300002)(54906003)(66946007)(426003)(38100700002)(186003)(4326008)(83380400001)(7416002)(9746002)(9786002)(6916009)(478600001)(1076003)(66476007)(8676002)(33656002)(66556008)(2616005)(36756003)(2906002)(316002)(26005)(8936002)(86362001);
  DIR:OUT; SFP:1101; 
-X-MS-Exchange-AntiSpam-MessageData: =?us-ascii?Q?oNji+EW8S2QSwMIfY+YHJeoWt2cL/Y6eIJr/3jqQE61aDvR1XGg9SwFpWC/w?=
- =?us-ascii?Q?o15M0UTWqsX2/HkNhy1RtniPi2IqhoMuCyPYpex06mpnLsLo3QK/8ynOsG+e?=
- =?us-ascii?Q?X6KnSjiaN3XbCFEtd7UYJGN2kNF2e/IHV6iqCKwxDw+cmPihqkF6ageCxxp3?=
- =?us-ascii?Q?ku+DJbUTxdUUPrhGasArrvR0okLhODdHIPLfLSXYG6mMWAcVcv8RDe6sMA7L?=
- =?us-ascii?Q?vTJBzudG1wiYfgFFe3IPOJ8Bchb+9Ryj9nRn6tPqDNKAo2GqJkcA+NEUsfqc?=
- =?us-ascii?Q?XJj/QrZhQSs/FxjoNLwgDCgJdgKTTWCml5in0fqianfez3FQAvXKd2KL3rnU?=
- =?us-ascii?Q?OuP3VjiwkQvbNR9JzsS5DA8qDfk1ncq5YNU9u3QndptBL4eAK/t8/x6paLFf?=
- =?us-ascii?Q?32sNGIhDQfv4xEfhtja08Pa8OyGLykkEuTh+aZL4zbkUn/UbsHD0MvCUvZqF?=
- =?us-ascii?Q?BPxDlkUMZpzmX2LTAIEks2FGBp1UkpJ/BBj2cv+FGs/c8O0hN3lIDtSEHoJH?=
- =?us-ascii?Q?uVj+n5T58XE8ht1begA9ed0HTLOKOUl5minj5KX9n2F6FV7XQyLA22mcobN5?=
- =?us-ascii?Q?2ruedtw2g8no94sT4sGn9lY3cLk89EDlQzWhOvJ1wAJAg6egTYy/TD6OFavu?=
- =?us-ascii?Q?uqn0ecpyofF+OOyczJzcV/kH/2zbUDgSCNFFU5qlclKOFQOFD2wluEUvRS+4?=
- =?us-ascii?Q?CqdE+PO1z9Z3svhMdgVorn72FhFYgrGR1HCPtb89KlhRo5dfVcplU5N1wk1V?=
- =?us-ascii?Q?iajxAZ1Ism0M6NxZ5NtPPuMrRQ6q/6Wd8QIW1XcGvYt35MdRNuI7bwx1XCb/?=
- =?us-ascii?Q?+oy5O6e3EZg6R2A/n2/Dtt/H8r4CjQ+Ule3lTByW558JxnyB4gnvGt8St5Xg?=
- =?us-ascii?Q?AUMPnROp5xM5ieNT/l+p5ElN66SdgTt6EzrzE/qa/NRaTG14syS+H/9Vv4rq?=
- =?us-ascii?Q?LHfzjl+z1Xu1Y9RBnNyyESRHeWjsm/nv3aMGClflWbZYNRpXxNG9PpPCWPMz?=
- =?us-ascii?Q?/+Ozap5CDQiOxpv8bVV/WgnnjxdrPui8U+eZ26GbtL9ExUn3OQxtxLrSPbUo?=
- =?us-ascii?Q?ZRalA1jlITIamCm6QwrCJbVyAsbPg8JOxJ/zXSzsqBpXaf03NF/AgPV6vxaL?=
- =?us-ascii?Q?8nyDCRrXtyJRtQdr+cD81qJl+HIHPDhbmNzCarmdwoxW2zm8vIbz6lupfrC1?=
- =?us-ascii?Q?Eq5o776knwdsRVe2/nuq0Of3RC5Cw2xDCxYiNkqyB5UenTq0QpUZYSWTCuqJ?=
- =?us-ascii?Q?VDW5MXjkeB6iPENPA3Ddlez29eOfxQPRQeb+JXQO+Y0bYm0y67Y6FjzlnDYS?=
- =?us-ascii?Q?13UQXxqtJWJZbPGVpoti8Crk?=
+X-MS-Exchange-AntiSpam-MessageData: =?us-ascii?Q?1ZOEP7ZGeYL7hEkU747jLciE16cntiUFGSMi2bgnFiTyFrc3gkHzx7CBQLrf?=
+ =?us-ascii?Q?dziRipP1ugIIAa42uXYQ1GrSLd909Mzu6w3Cvb4ycOo67No5484UMVNudawZ?=
+ =?us-ascii?Q?Bu/Y9e6dXdWdD8ODgORsSn3iErCQoSLqAZuKCrv/d4gpIDz3C7s0nwIjrFpj?=
+ =?us-ascii?Q?cjJuEkSqYiQw5oIjqMl7ljcNV2RiKBlUXJkypd8//5OpdcaLMbclrI8nOJz/?=
+ =?us-ascii?Q?OqKiax/5xqwgSy4+3EZsMYPMChw9DQiqqqGgilHUVl7qDF0Utf7Vj25BEiTu?=
+ =?us-ascii?Q?G9UjCdYNPaFd2DbBAi2SIaRITLoNxLHxhHWcalEHr7ecYF2YXugv56YcObpd?=
+ =?us-ascii?Q?L9RHiyPfDj9UqCqhltiDoZwzIwPjzkCHOfo27qyjuDq9vookBj7ogdoQvtd5?=
+ =?us-ascii?Q?imovBVQZ/5FlHCBOL4Ozw32S+1gyTJ0bs5jTtRC6wBAXTnVBL3BFjNjVNAzt?=
+ =?us-ascii?Q?sKwxRvKN3r3pxrqWWnBUQNxp5929UVGaO1iJbPHh8ACkfKuklNa7vPquP5VD?=
+ =?us-ascii?Q?Cgjqctg+5j44Iq7UzNfPH5kCyU18RZpPAdhBJtjbm6ma5GDBzMyBdY/9q+JA?=
+ =?us-ascii?Q?DoPMbmtmxrNUNm7/7Mz3YOq/Ew7mkbGFEJYUWiNE0Yi+YFv11zo99BpMrLIU?=
+ =?us-ascii?Q?Spt/Lsp96n1X/TpPnFI4/YDhbCVZKhHJn0HOE9M1eMef/U3t6VZ9c0mbw9PB?=
+ =?us-ascii?Q?IH8RFGcRu/JpuXr/NtwgS34aLngoqZyddisWsMfN6rwmEZfIbJ9y5IOCgQS9?=
+ =?us-ascii?Q?BBLuWlfmKdvOj8U/PRzs51V9GS9XWt79phJupT/qstAmHMWQcA+MsOnorkup?=
+ =?us-ascii?Q?5qpoDsrdQGz6IkdaU5UIzzX6zOawxco70X9G3Ant+gl8PvZveaXUpVah+/hy?=
+ =?us-ascii?Q?6JfORbsgm1oPeuJ9O3zbH6mYwTRKYnUG3EVde8i2NLkRK6I6GmIJ7Ac4eOo/?=
+ =?us-ascii?Q?ii4x8ryMeAHe0Xu+kim02iBOHST2FFkCW5M0xVvMMjAZ8rXsrlCcn9L3+kyx?=
+ =?us-ascii?Q?NrWVi45C1DBeR9A3tba6Z+5/ywNzdCPmFJZlSYPPFetSs2CMgu7U5pS/qIrK?=
+ =?us-ascii?Q?KdlL2CTu6tr9sJsBbPXUZWBF0kYkKZvRV7l1KBs5acZOZ11zseisUrfgesVk?=
+ =?us-ascii?Q?aDMN7Ye2XVPIs2zVjl07Wj2YSout4ykykSFcxI2naNOOmAZrNe/1WtAJLgB/?=
+ =?us-ascii?Q?Pk0faHGJ7veKvjiXP1tKZJiHlnda2aW7fsvgymg8BSCIGkAa5LjbEOQaFjlT?=
+ =?us-ascii?Q?Ni7p8KOBhUdDNyH9I2TXBr4K2p0XtzsU+HvqzTuV0g4TbQquTLSTZvCVgJlr?=
+ =?us-ascii?Q?YDKmg521lNQHuOmIHutTBCuR?=
 X-OriginatorOrg: Nvidia.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: ef577933-3e5b-4635-eefa-08d929de5025
+X-MS-Exchange-CrossTenant-Network-Message-Id: e23fd459-eb3f-4af1-7632-08d929e0b8ab
 X-MS-Exchange-CrossTenant-AuthSource: BL0PR12MB5506.namprd12.prod.outlook.com
 X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 07 Jun 2021 18:01:45.5211 (UTC)
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 07 Jun 2021 18:18:59.8587 (UTC)
 X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
 X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
 X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: Ugy34ynFZLBswzcfS4jQwDDrfJXZ1ipiimC7Jc3LP8DMEDr9P6Sc3oXh+BqSb4K6
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: BL1PR12MB5223
-Cc: "Tian, Kevin" <kevin.tian@intel.com>,
- "Alex Williamson \(alex.williamson@redhat.com\)\"\""
- <alex.williamson@redhat.com>, "kvm@vger.kernel.org" <kvm@vger.kernel.org>,
- Jonathan Corbet <corbet@lwn.net>, Jason Wang <jasowang@redhat.com>,
- LKML <linux-kernel@vger.kernel.org>,
+X-MS-Exchange-CrossTenant-UserPrincipalName: u3FpG7oByYXjbNpc3ApYjDC6ke8XeXMHgBL2Gc9ZeKpm1J4vSIm0bcKwDOpiN5gW
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: BL1PR12MB5349
+Cc: Jean-Philippe Brucker <jean-philippe@linaro.org>, "Tian,
+ Kevin" <kevin.tian@intel.com>, "Jiang, Dave" <dave.jiang@intel.com>, "Raj,
+ Ashok" <ashok.raj@intel.com>, "kvm@vger.kernel.org" <kvm@vger.kernel.org>,
+ Jonathan Corbet <corbet@lwn.net>, David Woodhouse <dwmw2@infradead.org>,
+ Jason Wang <jasowang@redhat.com>, LKML <linux-kernel@vger.kernel.org>,
+ Kirti Wankhede <kwankhede@nvidia.com>,
  "iommu@lists.linux-foundation.org" <iommu@lists.linux-foundation.org>,
- David Woodhouse <dwmw2@infradead.org>
+ Paolo Bonzini <pbonzini@redhat.com>, Robin Murphy <robin.murphy@arm.com>,
+ David Gibson <david@gibson.dropbear.id.au>
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -170,20 +175,78 @@ Content-Transfer-Encoding: 7bit
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-On Mon, Jun 07, 2021 at 03:30:21PM +0200, Enrico Weigelt, metux IT consult wrote:
-> On 02.06.21 19:21, Jason Gunthorpe wrote:
-> 
-> Hi,
-> 
-> > Not really, once one thing in an applicate uses a large number FDs the
-> > entire application is effected. If any open() can return 'very big
-> > number' then nothing in the process is allowed to ever use select.
-> 
-> isn't that a bug in select() ?
+On Mon, Jun 07, 2021 at 09:41:48AM -0600, Alex Williamson wrote:
+> You're calling this an admin knob, which to me suggests a global module
+> option, so are you trying to implement both an administrator and a user
+> policy?  ie. the user can create scenarios where access to wbinvd might
+> be justified by hardware/IOMMU configuration, but can be limited by the
+> admin?
 
-<shrug> it is what it is, select has a fixed size bitmap of FD #s and
-a hard upper bound on that size as part of the glibc ABI - can't be
-fixed.
+Could be a per-device sysfs too. I'm not really sure what is useful
+here.
+
+> For example I proposed that the ioasidfd would bear the responsibility
+> of a wbinvd ioctl and therefore validate the user's access to enable
+> wbinvd emulation w/ KVM, so I'm assuming this module option lives
+> there.  
+
+Right, this is what I was thinking
+
+> What then is "automatic" mode?  The user cannot create a non-coherent
+> IOASID with a non-coherent device if the IOMMU supports no-snoop
+> blocking?  Do they get a failure?  Does it get silently promoted to
+> coherent?
+
+"automatic" was just a way to keep the API the same as today. Today if
+the IOMMU can block no-snoop then vfio disables wbinvd. To get the
+same level of security automatic mode would detect that vfio would
+have blocked wbinvd because the IOMMU can do it, and then always block
+it.
+
+It makes sense if there is an admin knob, as the admin could then move
+to an explict enable/disable to get functionality they can't get
+today.
+
+> In "disable" mode, I think we're just narrowing the restriction
+> further, a non-coherent capable device cannot be used except in a
+> forced coherent IOASID.
+
+I wouldn't say "cannot be used" - just you can't get access to
+wbinvd. 
+
+It is up to qemu if it wants to proceed or not. There is no issue with
+allowing the use of no-snoop and blocking wbinvd, other than some
+drivers may malfunction. If the user is certain they don't have
+malfunctioning drivers then no issue to go ahead.
+
+The current vfio arrangement (automatic) maximized compatability. The
+enable/disable options provide for max performance and max security as
+alternative targets.
+
+> > It is the strenth of Paolo's model that KVM should not be able to do
+> > optionally less, not more than the process itself can do.
+> 
+> I think my previous reply was working towards those guidelines.  I feel
+> like we're mostly in agreement, but perhaps reading past each other.
+
+Yes, I think I said we were agreeing :)
+
+> Nothing here convinced me against my previous proposal that the
+> ioasidfd bears responsibility for managing access to a wbinvd ioctl,
+> and therefore the equivalent KVM access.  Whether wbinvd is allowed or
+> no-op'd when the use has access to a non-coherent device in a
+> configuration where the IOMMU prevents non-coherent DMA is maybe still
+> a matter of personal preference.
+
+I think it makes the software design much simpler if the security
+check is very simple. Possessing a suitable device in an ioasid fd
+container is enough to flip on the feature and we don't need to track
+changes from that point on. We don't need to revoke wbinvd if the
+ioasid fd changes, for instance. Better to keep the kernel very simple
+in this regard.
+
+Seems agreeable enough that there is something here to explore in
+patches when the time comes
 
 Jason
 _______________________________________________
