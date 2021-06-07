@@ -1,101 +1,73 @@
-Return-Path: <SRS0=feI3=LA=lists.linux-foundation.org=iommu-bounces@kernel.org>
+Return-Path: <SRS0=ynGH=LB=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-18.6 required=3.0 tests=BAYES_00,DKIM_INVALID,
-	DKIM_SIGNED,HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_CR_TRAILER,INCLUDES_PATCH,
-	MAILING_LIST_MULTI,MENTIONS_GIT_HOSTING,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED
-	autolearn=unavailable autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-11.8 required=3.0 tests=BAYES_00,
+	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,SPF_HELO_NONE,
+	SPF_PASS,USER_AGENT_GIT autolearn=ham autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4991FC4743E
-	for <iommu@archiver.kernel.org>; Sun,  6 Jun 2021 16:50:33 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7BB0CC4743D
+	for <iommu@archiver.kernel.org>; Mon,  7 Jun 2021 02:47:45 +0000 (UTC)
 Received: from smtp4.osuosl.org (smtp4.osuosl.org [140.211.166.137])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id D6FEC613C8
-	for <iommu@archiver.kernel.org>; Sun,  6 Jun 2021 16:50:32 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org D6FEC613C8
-Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=linutronix.de
+	by mail.kernel.org (Postfix) with ESMTPS id 08FCC61209
+	for <iommu@archiver.kernel.org>; Mon,  7 Jun 2021 02:47:44 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 08FCC61209
+Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=hisilicon.com
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by smtp4.osuosl.org (Postfix) with ESMTP id 994FC4038B;
-	Sun,  6 Jun 2021 16:50:32 +0000 (UTC)
+	by smtp4.osuosl.org (Postfix) with ESMTP id CC37140359;
+	Mon,  7 Jun 2021 02:47:44 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
 Received: from smtp4.osuosl.org ([127.0.0.1])
 	by localhost (smtp4.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id lb7FgK4YYw0s; Sun,  6 Jun 2021 16:50:29 +0000 (UTC)
-Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by smtp4.osuosl.org (Postfix) with ESMTP id DACC240389;
-	Sun,  6 Jun 2021 16:50:28 +0000 (UTC)
+	with ESMTP id uBFt334uQ5YB; Mon,  7 Jun 2021 02:47:40 +0000 (UTC)
+Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [IPv6:2605:bc80:3010:104::8cd3:938])
+	by smtp4.osuosl.org (Postfix) with ESMTP id 1E91A4033E;
+	Mon,  7 Jun 2021 02:47:40 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 7D16FC0025;
-	Sun,  6 Jun 2021 16:50:28 +0000 (UTC)
-Received: from smtp2.osuosl.org (smtp2.osuosl.org [IPv6:2605:bc80:3010::133])
- by lists.linuxfoundation.org (Postfix) with ESMTP id AC6A9C0001
- for <iommu@lists.linux-foundation.org>; Sun,  6 Jun 2021 13:07:39 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id F08C9C000E;
+	Mon,  7 Jun 2021 02:47:39 +0000 (UTC)
+Received: from smtp1.osuosl.org (smtp1.osuosl.org [140.211.166.138])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id D7F90C0001
+ for <iommu@lists.linux-foundation.org>; Mon,  7 Jun 2021 02:47:37 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by smtp2.osuosl.org (Postfix) with ESMTP id 84E5840153
- for <iommu@lists.linux-foundation.org>; Sun,  6 Jun 2021 13:07:39 +0000 (UTC)
+ by smtp1.osuosl.org (Postfix) with ESMTP id B9B9E8367C
+ for <iommu@lists.linux-foundation.org>; Mon,  7 Jun 2021 02:47:37 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Authentication-Results: smtp2.osuosl.org (amavisd-new);
- dkim=pass (2048-bit key) header.d=linutronix.de header.b="ltstbgsa";
- dkim=neutral reason="invalid (unsupported algorithm ed25519-sha256)"
- header.d=linutronix.de header.b="4lzV7xja"
-Received: from smtp2.osuosl.org ([127.0.0.1])
- by localhost (smtp2.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id q1nTjiHZ-j-C for <iommu@lists.linux-foundation.org>;
- Sun,  6 Jun 2021 13:07:35 +0000 (UTC)
+Received: from smtp1.osuosl.org ([127.0.0.1])
+ by localhost (smtp1.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+ with ESMTP id wE7zVMNYLNl5 for <iommu@lists.linux-foundation.org>;
+ Mon,  7 Jun 2021 02:47:37 +0000 (UTC)
 X-Greylist: domain auto-whitelisted by SQLgrey-1.8.0
-Received: from galois.linutronix.de (Galois.linutronix.de [193.142.43.55])
- by smtp2.osuosl.org (Postfix) with ESMTPS id AFCD7400C7
- for <iommu@lists.linux-foundation.org>; Sun,  6 Jun 2021 13:07:34 +0000 (UTC)
-Date: Sun, 06 Jun 2021 13:07:30 -0000
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linutronix.de;
- s=2020; t=1622984850;
- h=from:from:sender:sender:reply-to:reply-to:subject:subject:date:date:
- message-id:message-id:to:to:cc:cc:mime-version:mime-version:
- content-type:content-type:
- content-transfer-encoding:content-transfer-encoding:
- in-reply-to:in-reply-to:references:references;
- bh=iIRFb1jKnTo5dWo4vdft2FiOkoJM8ahbNvFiqMbznyk=;
- b=ltstbgsahkZUdbqLiyLQq5sQTlO5N41+hC9GhiDBQkPCCs/IFALZjg0pGMH6Uwo7JYURUB
- KMsAtQS2lFbW0geZ1P+v3p7wL6Ai4mi/8YpytJX/1xu84aZGw/6yTdhDgNxjZdEQVPZN7f
- LPx5HidkeQ+/CbxiWtppSvIC2+vrxJfsIBldLFxwTB+rHox4yP8fcdhCfCogDjKswNAT8U
- pYzU/d/mE+hZO4uHvOc78sulXGJi0Hs/S58RRja0a6ol/wFA9tsukebZIT78QfEreqWNxR
- 2WMGZcjU5ORwt+axgoTcX8LagP0aJTCdHGs9aPqyNM27yorJ3Y/BBLuJg2Ca9g==
-DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=linutronix.de;
- s=2020e; t=1622984850;
- h=from:from:sender:sender:reply-to:reply-to:subject:subject:date:date:
- message-id:message-id:to:to:cc:cc:mime-version:mime-version:
- content-type:content-type:
- content-transfer-encoding:content-transfer-encoding:
- in-reply-to:in-reply-to:references:references;
- bh=iIRFb1jKnTo5dWo4vdft2FiOkoJM8ahbNvFiqMbznyk=;
- b=4lzV7xjaPAgFsIcDl+zLI85Jv5+nn9pDqmPtDep36NRE1BISmpNMGlMVs65Rl/jw4PEYRJ
- jUy1tGr6Aq/CETAw==
-From: "irqchip-bot for Saravana Kannan" <tip-bot2@linutronix.de>
-To: linux-kernel@vger.kernel.org
-Subject: [irqchip: irq/irqchip-next] irqchip/qcom-pdc: Switch to
- IRQCHIP_PLATFORM_DRIVER and allow as a module
-In-Reply-To: <20210518211922.3474368-1-john.stultz@linaro.org>
-References: <20210518211922.3474368-1-john.stultz@linaro.org>
+Received: from szxga08-in.huawei.com (szxga08-in.huawei.com [45.249.212.255])
+ by smtp1.osuosl.org (Postfix) with ESMTPS id 005198348C
+ for <iommu@lists.linux-foundation.org>; Mon,  7 Jun 2021 02:47:36 +0000 (UTC)
+Received: from dggeme756-chm.china.huawei.com (unknown [172.30.72.57])
+ by szxga08-in.huawei.com (SkyGuard) with ESMTP id 4FyyMm3dzzz1BJky;
+ Mon,  7 Jun 2021 10:42:44 +0800 (CST)
+Received: from localhost.localdomain (10.69.192.58) by
+ dggeme756-chm.china.huawei.com (10.3.19.102) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id
+ 15.1.2176.2; Mon, 7 Jun 2021 10:47:33 +0800
+From: chenxiang <chenxiang66@hisilicon.com>
+To: <robin.murphy@arm.com>, <will@kernel.org>, <joro@8bytes.org>
+Subject: [PATCH 0/4] Free cached iovas when rmmod the driver of the last
+ device in group
+Date: Mon, 7 Jun 2021 10:42:58 +0800
+Message-ID: <1623033782-57907-1-git-send-email-chenxiang66@hisilicon.com>
+X-Mailer: git-send-email 2.8.1
 MIME-Version: 1.0
-Message-ID: <162298485012.29796.14375276303480597518.tip-bot2@tip-bot2>
-Robot-ID: <tip-bot2@linutronix.de>
-Robot-Unsubscribe: Contact <mailto:tglx@linutronix.de> to get blacklisted from
- these emails
-Precedence: bulk
-X-Mailman-Approved-At: Sun, 06 Jun 2021 16:50:27 +0000
-Cc: Maulik Shah <mkshah@codeaurora.org>, Jason Cooper <jason@lakedaemon.net>,
- Saravana Kannan <saravanak@google.com>, Marc Zyngier <maz@kernel.org>,
- Lina Iyer <ilina@codeaurora.org>, linux-gpio@vger.kernel.org,
- iommu@lists.linux-foundation.org, Andy Gross <agross@kernel.org>,
- John Stultz <john.stultz@linaro.org>,
- Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
- Thomas Gleixner <tglx@linutronix.de>, Linus Walleij <linus.walleij@linaro.org>,
- linux-arm-msm@vger.kernel.org, Todd Kjos <tkjos@google.com>
+X-Originating-IP: [10.69.192.58]
+X-ClientProxiedBy: dggems706-chm.china.huawei.com (10.3.19.183) To
+ dggeme756-chm.china.huawei.com (10.3.19.102)
+X-CFilter-Loop: Reflected
+Cc: iommu@lists.linux-foundation.org, linuxarm@openeuler.org,
+ linuxarm@huawei.com
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
+Precedence: list
 List-Id: Development issues for Linux IOMMU support
  <iommu.lists.linux-foundation.org>
 List-Unsubscribe: <https://lists.linuxfoundation.org/mailman/options/iommu>,
@@ -105,98 +77,35 @@ List-Post: <mailto:iommu@lists.linux-foundation.org>
 List-Help: <mailto:iommu-request@lists.linux-foundation.org?subject=help>
 List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
  <mailto:iommu-request@lists.linux-foundation.org?subject=subscribe>
-Reply-To: linux-kernel@vger.kernel.org
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-The following commit has been merged into the irq/irqchip-next branch of irqchip:
+From: Xiang Chen <chenxiang66@hisilicon.com>
 
-Commit-ID:     4acd8a4be614a6c191273f2247aff7374a92f318
-Gitweb:        https://git.kernel.org/pub/scm/linux/kernel/git/maz/arm-platforms/4acd8a4be614a6c191273f2247aff7374a92f318
-Author:        Saravana Kannan <saravanak@google.com>
-AuthorDate:    Tue, 18 May 2021 21:19:21 
-Committer:     Marc Zyngier <maz@kernel.org>
-CommitterDate: Sun, 06 Jun 2021 13:57:41 +01:00
+When rmmod the driver of the last device in the group, cached iovas are not
+used, and it is better to free them to save memories. And also export
+function free_rcache_cached_iovas() and iommu_domain_to_iova().
 
-irqchip/qcom-pdc: Switch to IRQCHIP_PLATFORM_DRIVER and allow as a module
+Xiang Chen (4):
+  iommu/iova: add a function to free all rcached iovas and export it
+  iommu/iova: use function free_rcache_cached_iovas() to free all
+    rcached iovas
+  dma-iommu: add a interface to get iova_domain from iommu domain
+  iommu: free cached iovas when rmmod the driver of the last device in
+    the group
 
-This patch revives changes from Saravana Kannan to switch the
-qcom-pdc driver to use IRQCHIP_PLATFORM_DRIVER helper macros,
-and allows qcom-pdc driver to be loaded as a permanent module.
+ drivers/iommu/dma-iommu.c |  7 +++++++
+ drivers/iommu/iommu.c     |  7 +++++++
+ drivers/iommu/iova.c      | 17 ++++++++++++-----
+ include/linux/dma-iommu.h |  6 ++++++
+ include/linux/iova.h      |  5 +++++
+ 5 files changed, 37 insertions(+), 5 deletions(-)
 
-Earlier attempts at this ran into trouble with loading
-dependencies, but with Saravana's fw_devlink=on set by default
-now we should avoid those.
+-- 
+2.8.1
 
-[jstultz: Folded in with my changes to allow the driver to be
- loadable as a permenent module]
-
-Cc: Andy Gross <agross@kernel.org>
-Cc: Bjorn Andersson <bjorn.andersson@linaro.org>
-Cc: Joerg Roedel <joro@8bytes.org>
-Cc: Thomas Gleixner <tglx@linutronix.de>
-Cc: Jason Cooper <jason@lakedaemon.net>
-Cc: Marc Zyngier <maz@kernel.org>
-Cc: Linus Walleij <linus.walleij@linaro.org>
-Cc: Maulik Shah <mkshah@codeaurora.org>
-Cc: Lina Iyer <ilina@codeaurora.org>
-Cc: Saravana Kannan <saravanak@google.com>
-Cc: Todd Kjos <tkjos@google.com>
-Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Cc: linux-arm-msm@vger.kernel.org
-Cc: iommu@lists.linux-foundation.org
-Cc: linux-gpio@vger.kernel.org
-Signed-off-by: Saravana Kannan <saravanak@google.com>
-Signed-off-by: John Stultz <john.stultz@linaro.org>
-Acked-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Signed-off-by: Marc Zyngier <maz@kernel.org>
-Link: https://lore.kernel.org/r/20210518211922.3474368-1-john.stultz@linaro.org
----
- drivers/irqchip/Kconfig    | 2 +-
- drivers/irqchip/qcom-pdc.c | 8 +++++++-
- 2 files changed, 8 insertions(+), 2 deletions(-)
-
-diff --git a/drivers/irqchip/Kconfig b/drivers/irqchip/Kconfig
-index 62543a4..4d5924e 100644
---- a/drivers/irqchip/Kconfig
-+++ b/drivers/irqchip/Kconfig
-@@ -415,7 +415,7 @@ config GOLDFISH_PIC
-          for Goldfish based virtual platforms.
- 
- config QCOM_PDC
--	bool "QCOM PDC"
-+	tristate "QCOM PDC"
- 	depends on ARCH_QCOM
- 	select IRQ_DOMAIN_HIERARCHY
- 	help
-diff --git a/drivers/irqchip/qcom-pdc.c b/drivers/irqchip/qcom-pdc.c
-index 5dc63c2..32d5920 100644
---- a/drivers/irqchip/qcom-pdc.c
-+++ b/drivers/irqchip/qcom-pdc.c
-@@ -11,9 +11,11 @@
- #include <linux/irqdomain.h>
- #include <linux/io.h>
- #include <linux/kernel.h>
-+#include <linux/module.h>
- #include <linux/of.h>
- #include <linux/of_address.h>
- #include <linux/of_device.h>
-+#include <linux/of_irq.h>
- #include <linux/soc/qcom/irq.h>
- #include <linux/spinlock.h>
- #include <linux/slab.h>
-@@ -459,4 +461,8 @@ fail:
- 	return ret;
- }
- 
--IRQCHIP_DECLARE(qcom_pdc, "qcom,pdc", qcom_pdc_init);
-+IRQCHIP_PLATFORM_DRIVER_BEGIN(qcom_pdc)
-+IRQCHIP_MATCH("qcom,pdc", qcom_pdc_init)
-+IRQCHIP_PLATFORM_DRIVER_END(qcom_pdc)
-+MODULE_DESCRIPTION("Qualcomm Technologies, Inc. Power Domain Controller");
-+MODULE_LICENSE("GPL v2");
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
