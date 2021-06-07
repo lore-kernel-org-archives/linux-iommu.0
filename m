@@ -8,86 +8,86 @@ X-Spam-Status: No, score=-12.0 required=3.0 tests=BAYES_00,DATE_IN_PAST_06_12,
 	INCLUDES_PATCH,MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,
 	USER_AGENT_GIT autolearn=ham autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 92C40C48BCD
-	for <iommu@archiver.kernel.org>; Tue,  8 Jun 2021 01:55:30 +0000 (UTC)
-Received: from smtp4.osuosl.org (smtp4.osuosl.org [140.211.166.137])
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4629BC47095
+	for <iommu@archiver.kernel.org>; Tue,  8 Jun 2021 01:55:32 +0000 (UTC)
+Received: from smtp3.osuosl.org (smtp3.osuosl.org [140.211.166.136])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 3BE7361375
-	for <iommu@archiver.kernel.org>; Tue,  8 Jun 2021 01:55:30 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 3BE7361375
+	by mail.kernel.org (Postfix) with ESMTPS id 09EF261168
+	for <iommu@archiver.kernel.org>; Tue,  8 Jun 2021 01:55:31 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 09EF261168
 Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=gmail.com
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by smtp4.osuosl.org (Postfix) with ESMTP id 0D9244041C;
-	Tue,  8 Jun 2021 01:55:30 +0000 (UTC)
+	by smtp3.osuosl.org (Postfix) with ESMTP id CBEB26089A;
+	Tue,  8 Jun 2021 01:55:31 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from smtp4.osuosl.org ([127.0.0.1])
-	by localhost (smtp4.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id 6z3puF1LdJ0L; Tue,  8 Jun 2021 01:55:25 +0000 (UTC)
-Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by smtp4.osuosl.org (Postfix) with ESMTP id 404F6403DF;
-	Tue,  8 Jun 2021 01:55:25 +0000 (UTC)
-Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 1DA23C000E;
-	Tue,  8 Jun 2021 01:55:25 +0000 (UTC)
-Received: from smtp3.osuosl.org (smtp3.osuosl.org [140.211.166.136])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 4F4B1C001C
- for <iommu@lists.linux-foundation.org>; Tue,  8 Jun 2021 01:55:23 +0000 (UTC)
-Received: from localhost (localhost [127.0.0.1])
- by smtp3.osuosl.org (Postfix) with ESMTP id 490896089A
- for <iommu@lists.linux-foundation.org>; Tue,  8 Jun 2021 01:55:23 +0000 (UTC)
-X-Virus-Scanned: amavisd-new at osuosl.org
-Authentication-Results: smtp3.osuosl.org (amavisd-new);
- dkim=pass (2048-bit key) header.d=gmail.com
 Received: from smtp3.osuosl.org ([127.0.0.1])
- by localhost (smtp3.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id RUEMTyVPLZOE for <iommu@lists.linux-foundation.org>;
- Tue,  8 Jun 2021 01:55:22 +0000 (UTC)
+	by localhost (smtp3.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+	with ESMTP id AmVpFBFJHHSU; Tue,  8 Jun 2021 01:55:28 +0000 (UTC)
+Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
+	by smtp3.osuosl.org (Postfix) with ESMTP id 6FFAD608A6;
+	Tue,  8 Jun 2021 01:55:27 +0000 (UTC)
+Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 49FAFC000E;
+	Tue,  8 Jun 2021 01:55:27 +0000 (UTC)
+Received: from smtp1.osuosl.org (smtp1.osuosl.org [140.211.166.138])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id A71E6C0001
+ for <iommu@lists.linux-foundation.org>; Tue,  8 Jun 2021 01:55:24 +0000 (UTC)
+Received: from localhost (localhost [127.0.0.1])
+ by smtp1.osuosl.org (Postfix) with ESMTP id 87BFA83A8F
+ for <iommu@lists.linux-foundation.org>; Tue,  8 Jun 2021 01:55:24 +0000 (UTC)
+X-Virus-Scanned: amavisd-new at osuosl.org
+Authentication-Results: smtp1.osuosl.org (amavisd-new);
+ dkim=pass (2048-bit key) header.d=gmail.com
+Received: from smtp1.osuosl.org ([127.0.0.1])
+ by localhost (smtp1.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+ with ESMTP id ghQB8hn6ztzV for <iommu@lists.linux-foundation.org>;
+ Tue,  8 Jun 2021 01:55:24 +0000 (UTC)
 X-Greylist: whitelisted by SQLgrey-1.8.0
-Received: from mail-pf1-x42a.google.com (mail-pf1-x42a.google.com
- [IPv6:2607:f8b0:4864:20::42a])
- by smtp3.osuosl.org (Postfix) with ESMTPS id B3B2E6088B
- for <iommu@lists.linux-foundation.org>; Tue,  8 Jun 2021 01:55:22 +0000 (UTC)
-Received: by mail-pf1-x42a.google.com with SMTP id u18so14478513pfk.11
- for <iommu@lists.linux-foundation.org>; Mon, 07 Jun 2021 18:55:22 -0700 (PDT)
+Received: from mail-pf1-x42c.google.com (mail-pf1-x42c.google.com
+ [IPv6:2607:f8b0:4864:20::42c])
+ by smtp1.osuosl.org (Postfix) with ESMTPS id 109CC83A8B
+ for <iommu@lists.linux-foundation.org>; Tue,  8 Jun 2021 01:55:23 +0000 (UTC)
+Received: by mail-pf1-x42c.google.com with SMTP id s14so13607965pfd.9
+ for <iommu@lists.linux-foundation.org>; Mon, 07 Jun 2021 18:55:23 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=gmail.com; s=20161025;
  h=from:to:cc:subject:date:message-id:in-reply-to:references
  :mime-version:content-transfer-encoding;
- bh=jWMknRbD8X1K6AG9lburjdKW9p491bZf6T9lQOWSxxM=;
- b=UfAkBGhzytTvY7tWO2nFI9gbpg7gzUZFQmZlmkhoLHVzezMdznstTDtKM8jB4JgeNL
- gWZEJMhiozQYik5Z26mB7KxyS5p5LTpD/ZiP/Uxyiu5gtnqDBo1pBUrXn45YPt0+ZVcG
- aCE3+b9R4o+HrmBCTknwtG9XAX+87es7bRRsFvIKABtU0AXVZK6Ye5Ms4ovvcPMIbsMD
- I0NrtcQI8XM4OyfgSjRLkon9m5+I2FU6a/xo/Im5VjjxAS9/OrbYri0V0jkeZY4SrTDw
- kTC8NgXhZ3J4W94L0S5tIwwc4nfyvzbfU24hiTGMEW4wY9pmnbzNMEA8T/lcW4KXMlzw
- kOFA==
+ bh=gA93gcDJeBg/RhtboQ/3cmND2A1WryjuLSn85WsFu6g=;
+ b=smr3+6OdXCX0hxcoS3KifFK/dV+LXqWV0dvi3Zm9J0DyNPNH7h2U08dl5QLHIjkWXM
+ UKozM1JMhBxDdFhL1Ce2WCfg9Ig4REet6bVp8J9Bm/pglDJfb5H+m2hSp+fcPB4Ocjfi
+ RTrsMc+gLmd5Pjb36a6ezbUGGDre5VVLY2jR2BRU89KOAUSUPoJUoKkScAJjA3tnwMyw
+ WKTSumESx4sH8LDWKWCY1BXJPkDubzipufR8I3eHaomR3DfugGYS3kuhDsNOM+o/lCme
+ mOPEPV89hmsgtakWyeP+Knl1ZS4/mrrMx3er/HSZWkteycTJrddPXtMmxDWyRKvR3RAT
+ XqFg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
  d=1e100.net; s=20161025;
  h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
  :references:mime-version:content-transfer-encoding;
- bh=jWMknRbD8X1K6AG9lburjdKW9p491bZf6T9lQOWSxxM=;
- b=rvnoucLR9kGhpJwgAkL83DEdPX39Rh2AIG+ZBWOODZD5f44+mVKgyvEyQuvupxy6TS
- 3KDe9rCRSIzRY3ODU/i/+IcXPk0xa61DtRaqCLe/AYVKcfi5Xg35KkiPmlHMxMsGBrCL
- alV0XCyJD2XiC3OOPUe44f687xTle1V8G/9FLD/IQ0SPywVsvwHyV/RpVngAX1W2FWdT
- v3zTXFFrafm44YeZ5SMAetkrTmlVct9thH2ejVpOy4ZimQ57Nyxuvzw66g86RIAJLEOl
- PxRr0nlOIiO3wknKIAEVOjGyKzM6DQ9QthFo/KerZaQRdwxIkhl9VPL9bpCoHRnXHeZg
- jB+A==
-X-Gm-Message-State: AOAM531GSZe3cad62+NOhdStmMyHEy6VzwygGl6PcNVPaFxg6/1n6e5D
- ejfagGExpz6hiDID7M1xpOM=
-X-Google-Smtp-Source: ABdhPJwGEQVYFg2a77oHAedrv7L7WnwzgJdO94nMtzoSPhpt1EFs6Z4XMU6b3oNq6dW9pWRYQBShgA==
-X-Received: by 2002:a62:6491:0:b029:28e:8c90:6b16 with SMTP id
- y139-20020a6264910000b029028e8c906b16mr19157988pfb.24.1623117322049; 
- Mon, 07 Jun 2021 18:55:22 -0700 (PDT)
+ bh=gA93gcDJeBg/RhtboQ/3cmND2A1WryjuLSn85WsFu6g=;
+ b=owVZsjqnRw39oEUFpCqrJRxj6a6IJpTgbRNZwzQ2rZs+YvyY6ixcktiANNJdsqOPDu
+ 3VDD0BnWqE1wdaKk2RMwbIJ6kZng9648XhNBvqBDD/bfPZ6ThGW7fMHV0Pm8np4oQG++
+ SnAzuZ3zdOCdbf+DDKnHIuh6rmxZRjBBb2uoK5JDPQFuy6LVIuzdCt/t/nUFxP+sq+Eb
+ BLBgSekvqH3D27E+HzWcQwrvp73jcAS/rvPDfD5ZaiJABoCH9l2MA9QYPpG/u/DjcYFR
+ iAoM/UHZV7tPGhROZHY2SwBT5k/BQZKXMTy+XSbccKNztYNF5ujl+IQ0ATxmsb1c2goH
+ /tsw==
+X-Gm-Message-State: AOAM533K3RgoyWmu/RpQ9hIr4jM9X6F21HbHl/HnWmgQkYPOxwzchTF9
+ x4qeBNR5RJJUyQ1AKB6aWZw=
+X-Google-Smtp-Source: ABdhPJxEWq3ejES1pz5zIYlzqOcXjYDrBEEmksqiBOvaj5ucy7+uYMegKQfJMj4S4H4yXtBkArI+ew==
+X-Received: by 2002:a62:b604:0:b029:2d5:d7b8:b531 with SMTP id
+ j4-20020a62b6040000b02902d5d7b8b531mr19567614pff.31.1623117323356; 
+ Mon, 07 Jun 2021 18:55:23 -0700 (PDT)
 Received: from sc2-haas01-esx0118.eng.vmware.com ([66.170.99.1])
- by smtp.gmail.com with ESMTPSA id s24sm9284767pfh.104.2021.06.07.18.55.20
+ by smtp.gmail.com with ESMTPSA id s24sm9284767pfh.104.2021.06.07.18.55.22
  (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
- Mon, 07 Jun 2021 18:55:21 -0700 (PDT)
+ Mon, 07 Jun 2021 18:55:22 -0700 (PDT)
 From: Nadav Amit <nadav.amit@gmail.com>
 X-Google-Original-From: Nadav Amit
 To: Joerg Roedel <joro@8bytes.org>
-Subject: [PATCH v3 1/6] iommu/amd: Selective flush on unmap
-Date: Mon,  7 Jun 2021 11:25:36 -0700
-Message-Id: <20210607182541.119756-2-namit@vmware.com>
+Subject: [PATCH v3 2/6] iommu/amd: Do not use flush-queue when NpCache is on
+Date: Mon,  7 Jun 2021 11:25:37 -0700
+Message-Id: <20210607182541.119756-3-namit@vmware.com>
 X-Mailer: git-send-email 2.25.1
 In-Reply-To: <20210607182541.119756-1-namit@vmware.com>
 References: <20210607182541.119756-1-namit@vmware.com>
@@ -114,14 +114,13 @@ Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
 From: Nadav Amit <namit@vmware.com>
 
-Recent patch attempted to enable selective page flushes on AMD IOMMU but
-neglected to adapt amd_iommu_iotlb_sync() to use the selective flushes.
+Do not use flush-queue on virtualized environments, where the NpCache
+capability of the IOMMU is set. This is required to reduce
+virtualization overheads.
 
-Adapt amd_iommu_iotlb_sync() to use selective flushes and change
-amd_iommu_unmap() to collect the flushes. As a defensive measure, to
-avoid potential issues as those that the Intel IOMMU driver encountered
-recently, flush the page-walk caches by always setting the "pde"
-parameter. This can be removed later.
+This change follows a similar change to Intel's VT-d and a detailed
+explanation as for the rationale is described in commit 29b32839725f
+("iommu/vt-d: Do not use flush-queue when caching-mode is on").
 
 Cc: Joerg Roedel <joro@8bytes.org>
 Cc: Will Deacon <will@kernel.org>
@@ -132,47 +131,28 @@ Cc: iommu@lists.linux-foundation.org
 Cc: linux-kernel@vger.kernel.org
 Signed-off-by: Nadav Amit <namit@vmware.com>
 ---
- drivers/iommu/amd/iommu.c | 15 +++++++++++++--
- 1 file changed, 13 insertions(+), 2 deletions(-)
+ drivers/iommu/amd/init.c | 7 ++++++-
+ 1 file changed, 6 insertions(+), 1 deletion(-)
 
-diff --git a/drivers/iommu/amd/iommu.c b/drivers/iommu/amd/iommu.c
-index 3ac42bbdefc6..3e40f6610b6a 100644
---- a/drivers/iommu/amd/iommu.c
-+++ b/drivers/iommu/amd/iommu.c
-@@ -2059,12 +2059,17 @@ static size_t amd_iommu_unmap(struct iommu_domain *dom, unsigned long iova,
- {
- 	struct protection_domain *domain = to_pdomain(dom);
- 	struct io_pgtable_ops *ops = &domain->iop.iop.ops;
-+	size_t r;
+diff --git a/drivers/iommu/amd/init.c b/drivers/iommu/amd/init.c
+index d006724f4dc2..ba3b76ed776d 100644
+--- a/drivers/iommu/amd/init.c
++++ b/drivers/iommu/amd/init.c
+@@ -1850,8 +1850,13 @@ static int __init iommu_init_pci(struct amd_iommu *iommu)
+ 	if (ret)
+ 		return ret;
  
- 	if ((amd_iommu_pgtable == AMD_IOMMU_V1) &&
- 	    (domain->iop.mode == PAGE_MODE_NONE))
- 		return 0;
- 
--	return (ops->unmap) ? ops->unmap(ops, iova, page_size, gather) : 0;
-+	r = (ops->unmap) ? ops->unmap(ops, iova, page_size, gather) : 0;
+-	if (iommu->cap & (1UL << IOMMU_CAP_NPCACHE))
++	if (iommu->cap & (1UL << IOMMU_CAP_NPCACHE)) {
++		if (!amd_iommu_unmap_flush)
++			pr_warn_once("IOMMU batching is disabled due to virtualization");
 +
-+	iommu_iotlb_gather_add_page(dom, gather, iova, page_size);
-+
-+	return r;
- }
+ 		amd_iommu_np_cache = true;
++		amd_iommu_unmap_flush = true;
++	}
  
- static phys_addr_t amd_iommu_iova_to_phys(struct iommu_domain *dom,
-@@ -2167,7 +2172,13 @@ static void amd_iommu_flush_iotlb_all(struct iommu_domain *domain)
- static void amd_iommu_iotlb_sync(struct iommu_domain *domain,
- 				 struct iommu_iotlb_gather *gather)
- {
--	amd_iommu_flush_iotlb_all(domain);
-+	struct protection_domain *dom = to_pdomain(domain);
-+	unsigned long flags;
-+
-+	spin_lock_irqsave(&dom->lock, flags);
-+	__domain_flush_pages(dom, gather->start, gather->end - gather->start, 1);
-+	amd_iommu_domain_flush_complete(dom);
-+	spin_unlock_irqrestore(&dom->lock, flags);
- }
+ 	init_iommu_perf_ctr(iommu);
  
- static int amd_iommu_def_domain_type(struct device *dev)
 -- 
 2.25.1
 
