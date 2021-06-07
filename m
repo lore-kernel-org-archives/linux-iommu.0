@@ -2,81 +2,98 @@ Return-Path: <SRS0=ynGH=LB=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-3.5 required=3.0 tests=BAYES_00,DKIM_INVALID,
-	DKIM_SIGNED,HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,
-	MSGID_FROM_MTA_HEADER,SPF_HELO_NONE,SPF_PASS,URIBL_RED autolearn=no
-	autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-5.0 required=3.0 tests=BAYES_00,DKIM_INVALID,
+	DKIM_SIGNED,HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,SPF_HELO_NONE,
+	SPF_PASS,URIBL_RED,USER_AGENT_SANE_2 autolearn=no autolearn_force=no
+	version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E7F5DC47082
-	for <iommu@archiver.kernel.org>; Mon,  7 Jun 2021 19:08:12 +0000 (UTC)
-Received: from smtp1.osuosl.org (smtp1.osuosl.org [140.211.166.138])
+	by smtp.lore.kernel.org (Postfix) with ESMTP id DBB76C47094
+	for <iommu@archiver.kernel.org>; Mon,  7 Jun 2021 19:41:37 +0000 (UTC)
+Received: from smtp4.osuosl.org (smtp4.osuosl.org [140.211.166.137])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 9CFBE61130
-	for <iommu@archiver.kernel.org>; Mon,  7 Jun 2021 19:08:12 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 9CFBE61130
-Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=nvidia.com
+	by mail.kernel.org (Postfix) with ESMTPS id 7542861008
+	for <iommu@archiver.kernel.org>; Mon,  7 Jun 2021 19:41:37 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 7542861008
+Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=redhat.com
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by smtp1.osuosl.org (Postfix) with ESMTP id 5781283A70;
-	Mon,  7 Jun 2021 19:08:12 +0000 (UTC)
+	by smtp4.osuosl.org (Postfix) with ESMTP id 2F30E402E9;
+	Mon,  7 Jun 2021 19:41:37 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from smtp1.osuosl.org ([127.0.0.1])
-	by localhost (smtp1.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id IEa-ZZ9kYi0D; Mon,  7 Jun 2021 19:08:11 +0000 (UTC)
-Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [IPv6:2605:bc80:3010:104::8cd3:938])
-	by smtp1.osuosl.org (Postfix) with ESMTP id 3030C83A67;
-	Mon,  7 Jun 2021 19:08:11 +0000 (UTC)
+Received: from smtp4.osuosl.org ([127.0.0.1])
+	by localhost (smtp4.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+	with ESMTP id 7lEK3flr183z; Mon,  7 Jun 2021 19:41:36 +0000 (UTC)
+Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
+	by smtp4.osuosl.org (Postfix) with ESMTP id C7B2F402EA;
+	Mon,  7 Jun 2021 19:41:35 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 06408C000E;
-	Mon,  7 Jun 2021 19:08:11 +0000 (UTC)
-Received: from smtp1.osuosl.org (smtp1.osuosl.org [IPv6:2605:bc80:3010::138])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 5A378C0001
- for <iommu@lists.linux-foundation.org>; Mon,  7 Jun 2021 19:08:09 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 9F535C000E;
+	Mon,  7 Jun 2021 19:41:35 +0000 (UTC)
+Received: from smtp1.osuosl.org (smtp1.osuosl.org [140.211.166.138])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 2BC2AC0001
+ for <iommu@lists.linux-foundation.org>; Mon,  7 Jun 2021 19:41:34 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by smtp1.osuosl.org (Postfix) with ESMTP id 3AB3D83A68
- for <iommu@lists.linux-foundation.org>; Mon,  7 Jun 2021 19:08:09 +0000 (UTC)
+ by smtp1.osuosl.org (Postfix) with ESMTP id 0D94783083
+ for <iommu@lists.linux-foundation.org>; Mon,  7 Jun 2021 19:41:34 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
+Authentication-Results: smtp1.osuosl.org (amavisd-new);
+ dkim=pass (1024-bit key) header.d=redhat.com
 Received: from smtp1.osuosl.org ([127.0.0.1])
  by localhost (smtp1.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id Kf45thhnhk5x for <iommu@lists.linux-foundation.org>;
- Mon,  7 Jun 2021 19:08:07 +0000 (UTC)
-X-Greylist: whitelisted by SQLgrey-1.8.0
-Received: from NAM11-BN8-obe.outbound.protection.outlook.com
- (mail-bn8nam11on2060.outbound.protection.outlook.com [40.107.236.60])
- by smtp1.osuosl.org (Postfix) with ESMTPS id EDE2083A70
- for <iommu@lists.linux-foundation.org>; Mon,  7 Jun 2021 19:08:06 +0000 (UTC)
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=H8xBY6+S6/Xejnp2TFKSTEj+nLVOExso5dhDEriXILk9aidTRm2DcLYnTzEtcKG06B4RGV6KC24/kw6pMaY/KcLb0PJH6SrKoY4nRHXUBWdWP0hnRHL6sQNuhk+k7CvEIBXAWjykiiP8vk8WWEpQ7EHovMRmgN+YTqi142eOAW6QhAdJEiWZ8YmKExd5Fqg/nA2ALkWhC8Kome+QmXdDy9vocDiABkQCZBDwuBMbPwAxkODCe6IIplt5E0wc2XAv496BRW8ToYK7ES03oobJIsVaFi+QL9fzJlItxW1GTV7t5+Q/+EI2AF3jA5lqogX+yez4hEKvSa+gc1cWqMXJ+w==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com; 
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=fuaHi4Hpy5FeWArPvXOevTmSZrN90JFd6S3gW+vJ4Us=;
- b=oC2L0AvLc1Zvs6+uFCVLemhF/8sPPrqXx4SReJQC02zti/c1Iap7GdnFnZKSJE/b1GqnhaLXbwu8GVdG8CrUpkCjYWl0qSOXimJ045CKurV90s9jbk7csI/GdVzzE4248uj4k44hPjyru4IOgb5DwlW9Cap18zwIVu09kUrvIbCsySI/JVfAE+LlwBDP5/XGFTBGQFsKoHZQaWK9RtgvKNqx65qNJxM780rxgG26PZPaYAFuU43k3eUxGU+ztZmsS3Zko/Zp8osVy4t3tWKdyTnczPFpzLs5YAi1ZHcqHh4yrmfbAdfZo+1BevDNuXTFYz7vkhpwK3OLGeWx2yY0QA==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=nvidia.com; dmarc=pass action=none header.from=nvidia.com;
- dkim=pass header.d=nvidia.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
- s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=fuaHi4Hpy5FeWArPvXOevTmSZrN90JFd6S3gW+vJ4Us=;
- b=SxvdYw9rlJH9qruFMhkP72mLGP7r7a7dDc03cU+neZjk6KIA6M6XbxaEf04KodFayeFeHvBYaxfgXhTQXbu1P/xReRjj3IuzvRDIEkJyGf21VI6VXtEfsEsZ+sj/GoQJX046VNskeFsKUEB5DPkkzfOOKR73m8ReRQd3Yx4y0MDWYnYB4KfGOlIwTX/FQd6mDuIvMDKpdFVj2lsf8aYY/RUR3CnjktoSkNgPrwMWWcTzBMWCaVt0ZqZmCuwTQT+7KumaMv7lhnUKbniTWe+soTe9zkfXxKn2PJj/NX4S3ccOOV3ohfsvhMELar8Dmb8WY7DtT8j2V8vxiULzsrVRNg==
-Authentication-Results: redhat.com; dkim=none (message not signed)
- header.d=none;redhat.com; dmarc=none action=none header.from=nvidia.com;
-Received: from BL0PR12MB5506.namprd12.prod.outlook.com (2603:10b6:208:1cb::22)
- by BL1PR12MB5125.namprd12.prod.outlook.com (2603:10b6:208:309::15)
- with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4195.23; Mon, 7 Jun
- 2021 19:08:04 +0000
-Received: from BL0PR12MB5506.namprd12.prod.outlook.com
- ([fe80::3d51:a3b9:8611:684e]) by BL0PR12MB5506.namprd12.prod.outlook.com
- ([fe80::3d51:a3b9:8611:684e%6]) with mapi id 15.20.4195.030; Mon, 7 Jun 2021
- 19:08:03 +0000
-Date: Mon, 7 Jun 2021 16:08:02 -0300
-From: Jason Gunthorpe <jgg@nvidia.com>
-To: Alex Williamson <alex.williamson@redhat.com>
+ with ESMTP id ol6bM3xQ2m8p for <iommu@lists.linux-foundation.org>;
+ Mon,  7 Jun 2021 19:41:33 +0000 (UTC)
+X-Greylist: domain auto-whitelisted by SQLgrey-1.8.0
+Received: from us-smtp-delivery-124.mimecast.com
+ (us-smtp-delivery-124.mimecast.com [170.10.133.124])
+ by smtp1.osuosl.org (Postfix) with ESMTPS id 2A8B283077
+ for <iommu@lists.linux-foundation.org>; Mon,  7 Jun 2021 19:41:32 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+ s=mimecast20190719; t=1623094892;
+ h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+ to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+ content-transfer-encoding:content-transfer-encoding:
+ in-reply-to:in-reply-to:references:references;
+ bh=ktL5nWqTPLu4372fp6dA+Wp9VnIRyo2M4rsP7gUhK4E=;
+ b=Lh2IycNwMqSAgwbuTF16WDt0FOMEsvcjDCslH07JHCbTYzYTpY+qs/g9bMTLNLuv+w2e0x
+ Ssgi+Ty1r+FaQ9sPuXqQFCgbycF4h1cimNkTKDo8784pwIUwryKV4S4AiP4j2Th39V12ja
+ EN/t0ZvmrGmKbh5Lu+B8QoidQwdit38=
+Received: from mail-oi1-f199.google.com (mail-oi1-f199.google.com
+ [209.85.167.199]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-308-6-fCEebUN7ST6FiRoFpxQw-1; Mon, 07 Jun 2021 15:41:30 -0400
+X-MC-Unique: 6-fCEebUN7ST6FiRoFpxQw-1
+Received: by mail-oi1-f199.google.com with SMTP id
+ a29-20020a544e1d0000b02901eef9e4a58cso7582158oiy.3
+ for <iommu@lists.linux-foundation.org>; Mon, 07 Jun 2021 12:41:30 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+ d=1e100.net; s=20161025;
+ h=x-gm-message-state:date:from:to:cc:subject:message-id:in-reply-to
+ :references:mime-version:content-transfer-encoding;
+ bh=ktL5nWqTPLu4372fp6dA+Wp9VnIRyo2M4rsP7gUhK4E=;
+ b=LsUWFpuez5TWb8ymb7BY1Q1qGGwnOb9UkeNEp1A6BxIHhmq+yyjDxbKGdg8Nlnv58Y
+ Q4Et1H5Vxd/EbEfi++rKkDmXqnKAOusXhuqEkayDH+oJFRUQsDCkArcpND9JDVxzQOJl
+ bY/OL6fI2I2xi6kubV+FQymffPh8KBt0dz+a36r/DzredNVz3QUwZNAjandVZIBKm7ei
+ 4e8stMxhdpwtdqsWYhKga9aJNQ9i8CCtxJq+GAG3j+iGoVwusgPcb0x4MvLJYU5vT1R7
+ D3LPJHR1aYtQNMLhwpd5ct6qwx8Z6LRl9QiqnejXP5FAeAfwauhkPzfipsSsqP9UnNZ6
+ 5oVQ==
+X-Gm-Message-State: AOAM531HeZzFEg+RwKV/gBMhabEB+W6/YC3rycEBQPV35MSUUsrYTQb0
+ e4U+qiH3fnZT0tlHirMvm0xLMZ4/hWZvf0IZKEmacBIRp2YpLQT5OA91bzvkc/oT2Jv8FQjxC8N
+ meZ3O6j+a/Om0+uWKWveJbY5QC4869Q==
+X-Received: by 2002:aca:3102:: with SMTP id x2mr537464oix.1.1623094890137;
+ Mon, 07 Jun 2021 12:41:30 -0700 (PDT)
+X-Google-Smtp-Source: ABdhPJwFosBz4IUOZGFguQH5//THCuRP/IrBVZiu1yVwVFAaZQAbRyF2bu+8LlE0J5GnSsN+9iyoow==
+X-Received: by 2002:aca:3102:: with SMTP id x2mr537457oix.1.1623094889890;
+ Mon, 07 Jun 2021 12:41:29 -0700 (PDT)
+Received: from redhat.com ([198.99.80.109])
+ by smtp.gmail.com with ESMTPSA id r83sm2421065oih.48.2021.06.07.12.41.28
+ (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+ Mon, 07 Jun 2021 12:41:29 -0700 (PDT)
+Date: Mon, 7 Jun 2021 13:41:28 -0600
+From: Alex Williamson <alex.williamson@redhat.com>
+To: Jason Gunthorpe <jgg@nvidia.com>
 Subject: Re: [RFC] /dev/ioasid uAPI proposal
-Message-ID: <20210607190802.GO1002214@nvidia.com>
+Message-ID: <20210607134128.58c2ea31.alex.williamson@redhat.com>
+In-Reply-To: <20210607190802.GO1002214@nvidia.com>
 References: <20210604155016.GR1002214@nvidia.com>
  <30e5c597-b31c-56de-c75e-950c91947d8f@redhat.com>
  <20210604160336.GA414156@nvidia.com>
@@ -87,66 +104,13 @@ References: <20210604155016.GR1002214@nvidia.com>
  <20210607094148.7e2341fc.alex.williamson@redhat.com>
  <20210607181858.GM1002214@nvidia.com>
  <20210607125946.056aafa2.alex.williamson@redhat.com>
-Content-Disposition: inline
-In-Reply-To: <20210607125946.056aafa2.alex.williamson@redhat.com>
-X-Originating-IP: [47.55.113.94]
-X-ClientProxiedBy: BL1P223CA0004.NAMP223.PROD.OUTLOOK.COM
- (2603:10b6:208:2c4::9) To BL0PR12MB5506.namprd12.prod.outlook.com
- (2603:10b6:208:1cb::22)
+ <20210607190802.GO1002214@nvidia.com>
+X-Mailer: Claws Mail 3.17.8 (GTK+ 2.24.33; x86_64-redhat-linux-gnu)
 MIME-Version: 1.0
-X-MS-Exchange-MessageSentRepresentingType: 1
-Received: from mlx.ziepe.ca (47.55.113.94) by
- BL1P223CA0004.NAMP223.PROD.OUTLOOK.COM (2603:10b6:208:2c4::9) with Microsoft
- SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.20.4195.15 via Frontend Transport; Mon, 7 Jun 2021 19:08:03 +0000
-Received: from jgg by mlx with local (Exim 4.94)	(envelope-from
- <jgg@nvidia.com>)	id 1lqKbS-003Q1K-PO; Mon, 07 Jun 2021 16:08:02 -0300
-X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: 21ea0d23-1f83-4f46-b0db-08d929e79360
-X-MS-TrafficTypeDiagnostic: BL1PR12MB5125:
-X-MS-Exchange-Transport-Forked: True
-X-Microsoft-Antispam-PRVS: <BL1PR12MB51257261D46FA69851D01B37C2389@BL1PR12MB5125.namprd12.prod.outlook.com>
-X-MS-Oob-TLC-OOBClassifiers: OLM:9508;
-X-MS-Exchange-SenderADCheck: 1
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: XbxrB5H2J9DrAZ28X/908WtZ3+WFCWi55CnyGXoqiXug1B8yv8uvK8kg9gzDZ+Hq9klzVdeoVBjxlUMLDc1dYZbLmKgbOwXi/r166cBvPEIxVTVes6Ha/ayd6JeXlz/c3b1oYpXY54cCfsZO2BGTMyZFMzsaCkcwyjvQcvH0PMUHTFu33zU7k4Hhd2e1CpA+70CsL4dimzKj89/xyfBL9B85gfr3n6xKliIEh9iarfBQlY8Yr+wikO9g/jwP4foJG6ymwLJA5Wt7DFn/82xnd8xT5DpCYWy60v+waFPTr+npnLCwJgll7nd4ycXDETedMLyoTiqH+1l5Sok87fhOYTCADTZ5DAiJP5K4CIcWzHjurUQ2vU/1KMMQMIHPTZiEhyzAXqM+ey0mQOAfMspM1m0XFaI2rb/fN+8bamU4+rRMLDoVsW7Zx+AL4qwn6TPSkGSwUFXEMhHGE6L7aECgIzfuytP5aA8rJc0XsnfKCCDDVIMGhByMojKNsr8mwOERUr043NDRGl3Z9wPTs0V30BjAFXG7QT/yJI/xH1povk1gY18QRipryFdS/wple5pAiP6H8WI4a0QMahvjLL9eD7Tc6hwdIBSb8VkjOac5COg=
-X-Forefront-Antispam-Report: CIP:255.255.255.255; CTRY:; LANG:en; SCL:1; SRV:;
- IPV:NLI; SFV:NSPM; H:BL0PR12MB5506.namprd12.prod.outlook.com; PTR:; CAT:NONE;
- SFS:(4636009)(396003)(376002)(366004)(346002)(136003)(39860400002)(4326008)(54906003)(1076003)(316002)(5660300002)(38100700002)(426003)(2616005)(66476007)(36756003)(83380400001)(26005)(186003)(8676002)(7416002)(66556008)(8936002)(6916009)(9786002)(86362001)(66946007)(33656002)(9746002)(478600001)(2906002);
- DIR:OUT; SFP:1101; 
-X-MS-Exchange-AntiSpam-MessageData: =?us-ascii?Q?S7xRadJwX757Ze7fh0C51RL+b+/tt60MDTXiKcInkqzOhuu93GsfUjC4Z5i2?=
- =?us-ascii?Q?JtW4WzZd3D3GXZrNwq/ieQSnaIOTI9E8xLQfZpLOu5z4Hpm1a83LVtNvwWBt?=
- =?us-ascii?Q?7fFzENSlj42fE48vsko/2Nr9DGdpS25xWzMwWG+hCbyFRYL32dOZ/n2QjYnI?=
- =?us-ascii?Q?5cDWek/ojX4HKXAkg4kBTEspiZ5oZoA6/jWKEy4VIqmdtgyKUFXnVqU0KaXK?=
- =?us-ascii?Q?A6wJTWSU138GXOxfkt8A9SRe8HpFVJetnss0m0Ix+N7CTHQAoPdi9KC+n9r2?=
- =?us-ascii?Q?P5IrjQRlbGaTpFuLUu1jjJo0P0buA7ruxumYuiUEWxs1fOiUsOYl7j5kdY72?=
- =?us-ascii?Q?Z2iBF2UbuVzYBnUllgDc5Ob9WT9Z1oSLbDIs1YprLffTcJLSvgPQhfnSiQ+V?=
- =?us-ascii?Q?ngP16WPWxvTAR7ksCs38waxyvJjb+3Py6leIFW+HcxDYrEP6dy8bWC+uxMiT?=
- =?us-ascii?Q?THTM+5XCZgKzKhMYu409YUUgJ3KC1PsX9zZrqjfj3g0a3yLxHNYRAyPWlVlO?=
- =?us-ascii?Q?kiFgFfLQZnqUHGdrWRzlLNn1NkVUL1hvvmOaY9B0tDgAFgjYoK329AdFkBpF?=
- =?us-ascii?Q?7k6Q2Gn+Hlwhr37Qe98WQlfEkmTHOBPZ39TvJ9CQUUKRvDiAyjxoM8BNqJHQ?=
- =?us-ascii?Q?WXmXKCb6LVlLiZDwg9JWIufgqpO/dgCdcdVkZPuZYEYy82nFp00QagcCBgF2?=
- =?us-ascii?Q?JCDcxMDogieBwY1pdQGgWPcXnYmRGENZzeafrpIcpo8ClkZclvQXqL4cgB+C?=
- =?us-ascii?Q?qhKRjAWoCcKrjo30fail0piV3g5txUs4exZH2k2qR3F63IqQYOsT04cCjcKj?=
- =?us-ascii?Q?pzf1GBxADjtEJCyxtYU1OZufhHaxaI9xsZWBAMQxyhhsLoZJNLFpn9O3rL/C?=
- =?us-ascii?Q?O3QIgWk5vN8n0wVjSAYbL/GF/25o3wF+QHnraqi76jlcRrfVqldoaCyW1Ca5?=
- =?us-ascii?Q?MlnYJxRPLplmSX76bmYdt4G5mwgJnFMWXZzGOmi3cgV4M1p6iCYaUGkUGkjy?=
- =?us-ascii?Q?PRmWlLSkQltOw+M2e1C4IklrRhfB5z3ejRs0pgHXkq8m/cwT6eBVVU6GvfPM?=
- =?us-ascii?Q?nzNt8vOI+yID7+I6WZqQ72ExPsrhe1Rp8ne0SBVQpgr5kLF4teviDRT/eq3n?=
- =?us-ascii?Q?zWwQXUGiw+9chSE6dcaX1f5IQXJ5XRJno4s4ZcBOYaUzSKHecKFT7S2mqVsa?=
- =?us-ascii?Q?ev3g6VUegFqUyOQ9ZAphlQjAHjVFT3sp167IJAFpynbIrXY69BKfDxuJZ62d?=
- =?us-ascii?Q?oANWfMcQNL1R3w6BdwnZok2mAB9N7s/EoHu2jeG7u2cBoHUNhXHapJzEEmMS?=
- =?us-ascii?Q?rIMnHEzJFKmaA85YxVsJyDnP?=
-X-OriginatorOrg: Nvidia.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 21ea0d23-1f83-4f46-b0db-08d929e79360
-X-MS-Exchange-CrossTenant-AuthSource: BL0PR12MB5506.namprd12.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 07 Jun 2021 19:08:03.8349 (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: LXVm9rNdKrqr1JhYHV8u0ECc7sFD5a3F/LOaD9kfiRWYvFrU94d+bSqq81izCqMr
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: BL1PR12MB5125
+Authentication-Results: relay.mimecast.com;
+ auth=pass smtp.auth=CUSA124A263 smtp.mailfrom=alex.williamson@redhat.com
+X-Mimecast-Spam-Score: 0
+X-Mimecast-Originator: redhat.com
 Cc: Jean-Philippe Brucker <jean-philippe@linaro.org>, "Tian,
  Kevin" <kevin.tian@intel.com>, "Jiang, Dave" <dave.jiang@intel.com>, "Raj,
  Ashok" <ashok.raj@intel.com>, "kvm@vger.kernel.org" <kvm@vger.kernel.org>,
@@ -173,56 +137,75 @@ Content-Transfer-Encoding: 7bit
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-On Mon, Jun 07, 2021 at 12:59:46PM -0600, Alex Williamson wrote:
+On Mon, 7 Jun 2021 16:08:02 -0300
+Jason Gunthorpe <jgg@nvidia.com> wrote:
 
-> > It is up to qemu if it wants to proceed or not. There is no issue with
-> > allowing the use of no-snoop and blocking wbinvd, other than some
-> > drivers may malfunction. If the user is certain they don't have
-> > malfunctioning drivers then no issue to go ahead.
+> On Mon, Jun 07, 2021 at 12:59:46PM -0600, Alex Williamson wrote:
 > 
-> A driver that knows how to use the device in a coherent way can
-> certainly proceed, but I suspect that's not something we can ask of
-> QEMU.  QEMU has no visibility to the in-use driver and sketchy ability
-> to virtualize the no-snoop enable bit to prevent non-coherent DMA from
-> the device.  There might be an experimental ("x-" prefixed) QEMU device
-> option to allow user override, but QEMU should disallow the possibility
-> of malfunctioning drivers by default.  If we have devices that probe as
-> supporting no-snoop, but actually can't generate such traffic, we might
-> need a quirk list somewhere.
-
-Compatibility is important, but when I look in the kernel code I see
-very few places that call wbinvd(). Basically all DRM for something
-relavent to qemu.
-
-That tells me that the vast majority of PCI devices do not generate
-no-snoop traffic.
-
-> > I think it makes the software design much simpler if the security
-> > check is very simple. Possessing a suitable device in an ioasid fd
-> > container is enough to flip on the feature and we don't need to track
-> > changes from that point on. We don't need to revoke wbinvd if the
-> > ioasid fd changes, for instance. Better to keep the kernel very simple
-> > in this regard.
+> > > It is up to qemu if it wants to proceed or not. There is no issue with
+> > > allowing the use of no-snoop and blocking wbinvd, other than some
+> > > drivers may malfunction. If the user is certain they don't have
+> > > malfunctioning drivers then no issue to go ahead.  
+> > 
+> > A driver that knows how to use the device in a coherent way can
+> > certainly proceed, but I suspect that's not something we can ask of
+> > QEMU.  QEMU has no visibility to the in-use driver and sketchy ability
+> > to virtualize the no-snoop enable bit to prevent non-coherent DMA from
+> > the device.  There might be an experimental ("x-" prefixed) QEMU device
+> > option to allow user override, but QEMU should disallow the possibility
+> > of malfunctioning drivers by default.  If we have devices that probe as
+> > supporting no-snoop, but actually can't generate such traffic, we might
+> > need a quirk list somewhere.  
 > 
-> You're suggesting that a user isn't forced to give up wbinvd emulation
-> if they lose access to their device?  
+> Compatibility is important, but when I look in the kernel code I see
+> very few places that call wbinvd(). Basically all DRM for something
+> relavent to qemu.
+> 
+> That tells me that the vast majority of PCI devices do not generate
+> no-snoop traffic.
 
-Sure, why do we need to be stricter? It is the same logic I gave
-earlier, once an attacker process has access to wbinvd an attacker can
-just keep its access indefinitely.
+Unfortunately, even just looking at devices across a couple laptops
+most devices do support and have NoSnoop+ set by default.  I don't
+notice anything in the kernel that actually tries to set this enable (a
+handful that actively disable), so I assume it's done by the firmware.
+It's not safe for QEMU to make an assumption that only GPUs will
+actually make use of it.
 
-The main use case for revokation assumes that qemu would be
-compromised after a device is hot-unplugged and you want to block off
-wbinvd. But I have a hard time seeing that as useful enough to justify
-all the complicated code to do it...
+> > > I think it makes the software design much simpler if the security
+> > > check is very simple. Possessing a suitable device in an ioasid fd
+> > > container is enough to flip on the feature and we don't need to track
+> > > changes from that point on. We don't need to revoke wbinvd if the
+> > > ioasid fd changes, for instance. Better to keep the kernel very simple
+> > > in this regard.  
+> > 
+> > You're suggesting that a user isn't forced to give up wbinvd emulation
+> > if they lose access to their device?    
+> 
+> Sure, why do we need to be stricter? It is the same logic I gave
+> earlier, once an attacker process has access to wbinvd an attacker can
+> just keep its access indefinitely.
+> 
+> The main use case for revokation assumes that qemu would be
+> compromised after a device is hot-unplugged and you want to block off
+> wbinvd. But I have a hard time seeing that as useful enough to justify
+> all the complicated code to do it...
 
-For KVM qemu can turn on/off on hot plug events as it requires to give
-VM security. It doesn't need to rely on the kernel to control this.
+It's currently just a matter of the kvm-vfio device holding a reference
+to the group so that it cannot be used elsewhere so long as it's being
+used to elevate privileges on a given KVM instance.  If we conclude that
+access to a device with the right capability is required to gain a
+privilege, I don't really see how we can wave aside that the privilege
+isn't lost with the device.
 
-But I think it is all fine tuning, the basic idea seems like it could
-work, so we are not blocked here on kvm interactions.
+> For KVM qemu can turn on/off on hot plug events as it requires to give
+> VM security. It doesn't need to rely on the kernel to control this.
 
-Jason
+Yes, QEMU can reject a hot-unplug event, but then QEMU retains the
+privilege that the device grants it.  Releasing the device and
+retaining the privileged gained by it seems wrong.  Thanks,
+
+Alex
+
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
