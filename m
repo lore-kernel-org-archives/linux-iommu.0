@@ -7,57 +7,57 @@ X-Spam-Status: No, score=-16.8 required=3.0 tests=BAYES_00,
 	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,USER_AGENT_GIT autolearn=ham
 	autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id AD8C9C4743E
-	for <iommu@archiver.kernel.org>; Mon,  7 Jun 2021 02:47:50 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 95AA8C4743D
+	for <iommu@archiver.kernel.org>; Mon,  7 Jun 2021 02:47:49 +0000 (UTC)
 Received: from smtp4.osuosl.org (smtp4.osuosl.org [140.211.166.137])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 3D33960FDB
-	for <iommu@archiver.kernel.org>; Mon,  7 Jun 2021 02:47:50 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 3D33960FDB
+	by mail.kernel.org (Postfix) with ESMTPS id 5D02C611C2
+	for <iommu@archiver.kernel.org>; Mon,  7 Jun 2021 02:47:49 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 5D02C611C2
 Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=hisilicon.com
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by smtp4.osuosl.org (Postfix) with ESMTP id 1866C4034C;
-	Mon,  7 Jun 2021 02:47:50 +0000 (UTC)
+	by smtp4.osuosl.org (Postfix) with ESMTP id 073A040345;
+	Mon,  7 Jun 2021 02:47:49 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
 Received: from smtp4.osuosl.org ([127.0.0.1])
 	by localhost (smtp4.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id XsTtV89WYsRd; Mon,  7 Jun 2021 02:47:45 +0000 (UTC)
+	with ESMTP id AiDEVkEr2sRE; Mon,  7 Jun 2021 02:47:44 +0000 (UTC)
 Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by smtp4.osuosl.org (Postfix) with ESMTP id CC97A4034D;
-	Mon,  7 Jun 2021 02:47:43 +0000 (UTC)
+	by smtp4.osuosl.org (Postfix) with ESMTP id 7D9D84034A;
+	Mon,  7 Jun 2021 02:47:41 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id AB245C000E;
-	Mon,  7 Jun 2021 02:47:43 +0000 (UTC)
-Received: from smtp2.osuosl.org (smtp2.osuosl.org [140.211.166.133])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 2B097C0022
- for <iommu@lists.linux-foundation.org>; Mon,  7 Jun 2021 02:47:41 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 7CDD6C000E;
+	Mon,  7 Jun 2021 02:47:40 +0000 (UTC)
+Received: from smtp1.osuosl.org (smtp1.osuosl.org [IPv6:2605:bc80:3010::138])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 337C6C0001
+ for <iommu@lists.linux-foundation.org>; Mon,  7 Jun 2021 02:47:39 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by smtp2.osuosl.org (Postfix) with ESMTP id 0C19B401D8
- for <iommu@lists.linux-foundation.org>; Mon,  7 Jun 2021 02:47:41 +0000 (UTC)
+ by smtp1.osuosl.org (Postfix) with ESMTP id 021A9834BA
+ for <iommu@lists.linux-foundation.org>; Mon,  7 Jun 2021 02:47:38 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from smtp2.osuosl.org ([127.0.0.1])
- by localhost (smtp2.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id UwweKN8mqUfQ for <iommu@lists.linux-foundation.org>;
+Received: from smtp1.osuosl.org ([127.0.0.1])
+ by localhost (smtp1.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+ with ESMTP id 65nTlIHD2rvN for <iommu@lists.linux-foundation.org>;
  Mon,  7 Jun 2021 02:47:37 +0000 (UTC)
 X-Greylist: domain auto-whitelisted by SQLgrey-1.8.0
-Received: from szxga08-in.huawei.com (szxga08-in.huawei.com [45.249.212.255])
- by smtp2.osuosl.org (Postfix) with ESMTPS id EDC6F40015
+Received: from szxga01-in.huawei.com (szxga01-in.huawei.com [45.249.212.187])
+ by smtp1.osuosl.org (Postfix) with ESMTPS id EDACF83474
  for <iommu@lists.linux-foundation.org>; Mon,  7 Jun 2021 02:47:36 +0000 (UTC)
-Received: from dggeme756-chm.china.huawei.com (unknown [172.30.72.57])
- by szxga08-in.huawei.com (SkyGuard) with ESMTP id 4FyyMn1VkKz1BJl4;
- Mon,  7 Jun 2021 10:42:45 +0800 (CST)
+Received: from dggeme756-chm.china.huawei.com (unknown [172.30.72.55])
+ by szxga01-in.huawei.com (SkyGuard) with ESMTP id 4FyyQ53jNSzYrZQ;
+ Mon,  7 Jun 2021 10:44:45 +0800 (CST)
 Received: from localhost.localdomain (10.69.192.58) by
  dggeme756-chm.china.huawei.com (10.3.19.102) with Microsoft SMTP Server
  (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id
  15.1.2176.2; Mon, 7 Jun 2021 10:47:33 +0800
 From: chenxiang <chenxiang66@hisilicon.com>
 To: <robin.murphy@arm.com>, <will@kernel.org>, <joro@8bytes.org>
-Subject: [PATCH 4/4] iommu: free cached iovas when rmmod the driver of the
- last device in the group
-Date: Mon, 7 Jun 2021 10:43:02 +0800
-Message-ID: <1623033782-57907-5-git-send-email-chenxiang66@hisilicon.com>
+Subject: [PATCH 1/4] iommu/iova: add a function to free all rcached iovas and
+ export it
+Date: Mon, 7 Jun 2021 10:42:59 +0800
+Message-ID: <1623033782-57907-2-git-send-email-chenxiang66@hisilicon.com>
 X-Mailer: git-send-email 2.8.1
 In-Reply-To: <1623033782-57907-1-git-send-email-chenxiang66@hisilicon.com>
 References: <1623033782-57907-1-git-send-email-chenxiang66@hisilicon.com>
@@ -87,46 +87,59 @@ Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
 From: Xiang Chen <chenxiang66@hisilicon.com>
 
-When rmmod the driver of the last device in the domain, cached iovas are
-not used and it is better to free them to save memories.
+Add a function to free all rcached iovas including cpu rcache iovas and
+global rcache iovas, and export it.
 
 Signed-off-by: Xiang Chen <chenxiang66@hisilicon.com>
 ---
- drivers/iommu/iommu.c | 7 +++++++
- 1 file changed, 7 insertions(+)
+ drivers/iommu/iova.c | 11 +++++++++++
+ include/linux/iova.h |  5 +++++
+ 2 files changed, 16 insertions(+)
 
-diff --git a/drivers/iommu/iommu.c b/drivers/iommu/iommu.c
-index 808ab70..d318d80 100644
---- a/drivers/iommu/iommu.c
-+++ b/drivers/iommu/iommu.c
-@@ -9,6 +9,7 @@
- #include <linux/device.h>
- #include <linux/kernel.h>
- #include <linux/bug.h>
-+#include <linux/dma-iommu.h>
- #include <linux/types.h>
- #include <linux/init.h>
- #include <linux/export.h>
-@@ -16,6 +17,7 @@
- #include <linux/errno.h>
- #include <linux/iommu.h>
- #include <linux/idr.h>
-+#include <linux/iova.h>
- #include <linux/notifier.h>
- #include <linux/err.h>
- #include <linux/pci.h>
-@@ -1667,6 +1669,11 @@ static int iommu_bus_notifier(struct notifier_block *nb,
- 		group_action = IOMMU_GROUP_NOTIFY_UNBIND_DRIVER;
- 		break;
- 	case BUS_NOTIFY_UNBOUND_DRIVER:
-+		if (iommu_group_device_count(group) == 1) {
-+			struct iommu_domain *domain = group->domain;
-+
-+			free_rcache_cached_iovas(iommu_domain_to_iova(domain));
-+		}
- 		group_action = IOMMU_GROUP_NOTIFY_UNBOUND_DRIVER;
- 		break;
+diff --git a/drivers/iommu/iova.c b/drivers/iommu/iova.c
+index b7ecd5b..f595867 100644
+--- a/drivers/iommu/iova.c
++++ b/drivers/iommu/iova.c
+@@ -1077,5 +1077,16 @@ static void free_global_cached_iovas(struct iova_domain *iovad)
+ 		spin_unlock_irqrestore(&rcache->lock, flags);
  	}
+ }
++
++void free_rcache_cached_iovas(struct iova_domain *iovad)
++{
++	unsigned int cpu;
++
++	for_each_online_cpu(cpu)
++		free_cpu_cached_iovas(cpu, iovad);
++	free_global_cached_iovas(iovad);
++}
++EXPORT_SYMBOL_GPL(free_rcache_cached_iovas);
++
+ MODULE_AUTHOR("Anil S Keshavamurthy <anil.s.keshavamurthy@intel.com>");
+ MODULE_LICENSE("GPL");
+diff --git a/include/linux/iova.h b/include/linux/iova.h
+index 71d8a2d..7006d9f 100644
+--- a/include/linux/iova.h
++++ b/include/linux/iova.h
+@@ -157,6 +157,7 @@ int init_iova_flush_queue(struct iova_domain *iovad,
+ 			  iova_flush_cb flush_cb, iova_entry_dtor entry_dtor);
+ struct iova *find_iova(struct iova_domain *iovad, unsigned long pfn);
+ void put_iova_domain(struct iova_domain *iovad);
++void free_rcache_cached_iovas(struct iova_domain *iovad);
+ #else
+ static inline int iova_cache_get(void)
+ {
+@@ -233,6 +234,10 @@ static inline void put_iova_domain(struct iova_domain *iovad)
+ {
+ }
+ 
++static inline void free_rcache_cached_iovas(struct iova_domain *iovad)
++{
++}
++
+ #endif
+ 
+ #endif
 -- 
 2.8.1
 
