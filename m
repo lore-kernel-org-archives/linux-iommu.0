@@ -2,69 +2,195 @@ Return-Path: <SRS0=ynGH=LB=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-10.3 required=3.0 tests=BAYES_00,
-	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,NICE_REPLY_A,
-	SPF_HELO_NONE,SPF_PASS,URIBL_RED,USER_AGENT_SANE_1 autolearn=ham
-	autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-3.5 required=3.0 tests=BAYES_00,DKIM_INVALID,
+	DKIM_SIGNED,HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,SPF_HELO_NONE,
+	SPF_PASS,URIBL_RED autolearn=no autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 19969C47082
-	for <iommu@archiver.kernel.org>; Mon,  7 Jun 2021 11:23:52 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8D1CFC47082
+	for <iommu@archiver.kernel.org>; Mon,  7 Jun 2021 12:20:16 +0000 (UTC)
 Received: from smtp2.osuosl.org (smtp2.osuosl.org [140.211.166.133])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id B43D861078
-	for <iommu@archiver.kernel.org>; Mon,  7 Jun 2021 11:23:51 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org B43D861078
-Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=arm.com
+	by mail.kernel.org (Postfix) with ESMTPS id 2A5F161249
+	for <iommu@archiver.kernel.org>; Mon,  7 Jun 2021 12:20:16 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 2A5F161249
+Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=intel.com
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by smtp2.osuosl.org (Postfix) with ESMTP id 6D72E40245;
-	Mon,  7 Jun 2021 11:23:51 +0000 (UTC)
+	by smtp2.osuosl.org (Postfix) with ESMTP id E265D40232;
+	Mon,  7 Jun 2021 12:20:15 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
 Received: from smtp2.osuosl.org ([127.0.0.1])
 	by localhost (smtp2.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id bA74ylPt12oU; Mon,  7 Jun 2021 11:23:47 +0000 (UTC)
-Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [IPv6:2605:bc80:3010:104::8cd3:938])
-	by smtp2.osuosl.org (Postfix) with ESMTP id CBDE14020E;
-	Mon,  7 Jun 2021 11:23:46 +0000 (UTC)
+	with ESMTP id DLDA8rWe0nas; Mon,  7 Jun 2021 12:20:11 +0000 (UTC)
+Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
+	by smtp2.osuosl.org (Postfix) with ESMTP id 956B1401F0;
+	Mon,  7 Jun 2021 12:20:11 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id A60A8C000E;
-	Mon,  7 Jun 2021 11:23:46 +0000 (UTC)
-Received: from smtp4.osuosl.org (smtp4.osuosl.org [140.211.166.137])
- by lists.linuxfoundation.org (Postfix) with ESMTP id C66F8C0001
- for <iommu@lists.linux-foundation.org>; Mon,  7 Jun 2021 11:23:45 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 69EFDC000D;
+	Mon,  7 Jun 2021 12:20:11 +0000 (UTC)
+Received: from smtp4.osuosl.org (smtp4.osuosl.org [IPv6:2605:bc80:3010::137])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 21D3DC0001
+ for <iommu@lists.linux-foundation.org>; Mon,  7 Jun 2021 12:20:10 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by smtp4.osuosl.org (Postfix) with ESMTP id A6E394028B
- for <iommu@lists.linux-foundation.org>; Mon,  7 Jun 2021 11:23:45 +0000 (UTC)
+ by smtp4.osuosl.org (Postfix) with ESMTP id F2243402CD
+ for <iommu@lists.linux-foundation.org>; Mon,  7 Jun 2021 12:20:09 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
+Authentication-Results: smtp4.osuosl.org (amavisd-new);
+ dkim=pass (1024-bit key) header.d=intel.onmicrosoft.com
 Received: from smtp4.osuosl.org ([127.0.0.1])
  by localhost (smtp4.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id FWDNS5hUPp2W for <iommu@lists.linux-foundation.org>;
- Mon,  7 Jun 2021 11:23:41 +0000 (UTC)
+ with ESMTP id Qv9zIhZK604o for <iommu@lists.linux-foundation.org>;
+ Mon,  7 Jun 2021 12:20:05 +0000 (UTC)
 X-Greylist: domain auto-whitelisted by SQLgrey-1.8.0
-Received: from foss.arm.com (foss.arm.com [217.140.110.172])
- by smtp4.osuosl.org (Postfix) with ESMTP id 9BB41401F7
- for <iommu@lists.linux-foundation.org>; Mon,  7 Jun 2021 11:23:40 +0000 (UTC)
-Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
- by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id CA7751063;
- Mon,  7 Jun 2021 04:23:39 -0700 (PDT)
-Received: from [10.57.6.115] (unknown [10.57.6.115])
- by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id D25FC3F73D;
- Mon,  7 Jun 2021 04:23:38 -0700 (PDT)
-Subject: Re: [PATCH 0/4] Free cached iovas when rmmod the driver of the last
- device in group
-To: chenxiang <chenxiang66@hisilicon.com>, will@kernel.org, joro@8bytes.org
-References: <1623033782-57907-1-git-send-email-chenxiang66@hisilicon.com>
-From: Robin Murphy <robin.murphy@arm.com>
-Message-ID: <75178f05-7831-f6c1-ad2d-5671a65a69bb@arm.com>
-Date: Mon, 7 Jun 2021 12:23:34 +0100
-User-Agent: Mozilla/5.0 (Windows NT 10.0; rv:78.0) Gecko/20100101
- Thunderbird/78.10.1
+Received: from mga12.intel.com (mga12.intel.com [192.55.52.136])
+ by smtp4.osuosl.org (Postfix) with ESMTPS id 65CBC40312
+ for <iommu@lists.linux-foundation.org>; Mon,  7 Jun 2021 12:19:52 +0000 (UTC)
+IronPort-SDR: toLOtg0Uvb+imq7VmEUJ8MFjlWk/zuJdLkmrjnJh/AG11lltGcHvNTyoNTfDTr9KFOmkevkfSQ
+ W3WjqXiTErHg==
+X-IronPort-AV: E=McAfee;i="6200,9189,10007"; a="184292642"
+X-IronPort-AV: E=Sophos;i="5.83,255,1616482800"; d="scan'208";a="184292642"
+Received: from fmsmga005.fm.intel.com ([10.253.24.32])
+ by fmsmga106.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384;
+ 07 Jun 2021 05:19:51 -0700
+IronPort-SDR: eOCnaVVGR7FeUiN2W6fojq+naEYCY/vVONh+mCzaxEh9J2a6G3EGO30/Q6sRukqMABeaplo8DQ
+ OEx1k+2vdEnA==
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.83,255,1616482800"; d="scan'208";a="637253581"
+Received: from orsmsx606.amr.corp.intel.com ([10.22.229.19])
+ by fmsmga005.fm.intel.com with ESMTP; 07 Jun 2021 05:19:51 -0700
+Received: from orsmsx607.amr.corp.intel.com (10.22.229.20) by
+ ORSMSX606.amr.corp.intel.com (10.22.229.19) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2242.4; Mon, 7 Jun 2021 05:19:50 -0700
+Received: from ORSEDG602.ED.cps.intel.com (10.7.248.7) by
+ orsmsx607.amr.corp.intel.com (10.22.229.20) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2242.4
+ via Frontend Transport; Mon, 7 Jun 2021 05:19:50 -0700
+Received: from NAM12-DM6-obe.outbound.protection.outlook.com (104.47.59.175)
+ by edgegateway.intel.com (134.134.137.103) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.1.2242.4; Mon, 7 Jun 2021 05:19:50 -0700
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=DAplvsHUjE7tlznTMWUjcHvLj2o791DM+S/MvdiOY8Ixi6w+5XYfVr+BBwZEpvIoNE0H/5sp7M1etjVjzdTfMYplFU96KJ1xlEU3R+25xjeKBCXtJeI/+wb5ivQrlDEV+tT7n2tozssBgsnSpOYHNJIM+/EQgJnWOYhQ2LXFPBSpUNqPhA8F9mDUMk0ee/QVzL9UBZjWMZZit9H1wrP4+QvxciKjbdgWUlso1mkQxUqGwLl6qK6tdfq7BnR6SmxiolKZaqsGQLnd/6tzBx5JZxSGs7gQULKq3OugyvMcG/4pJEkv5DxiZV+C5CwkzX7R5KaujIpiz7Pu6LfzxNA3yA==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com; 
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=C6ZfuZ2lZD6oCE/bbZYulNuFiPMiQn3C4d/7p5RtIMs=;
+ b=WywOnlyL8HTZRt3SI5N/A8OOlJ5icIxVd9t57+ESG9Aq0JHJsIZBHLEj2eG491hGb0EaqfniHpoJbY9Uml+tUrGxkd6ErROFgzT8vdTW+dz4eusobZGNRQKw+5NGHcGGPO1MJzkkeAi166XW/nQRHg0AgX6rH6Yv/zJjh9OCd6nwYINx54te88M7CBZLQ0RLM843EGNBILBGS9A73hVayHbufLvU8XdWy69Oh0/9RbnvaeOh0zQ3S7lSUW6CkyrE+oJwyP7EEccpVO8QpmiB2Fj0FqpFik0HXxBDCO9sIDHWXZbvRPhxHnoEdNDFVoenQe37jJgVOz1QbAlkH6KwGA==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=intel.com; dmarc=pass action=none header.from=intel.com;
+ dkim=pass header.d=intel.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=intel.onmicrosoft.com; 
+ s=selector2-intel-onmicrosoft-com;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=C6ZfuZ2lZD6oCE/bbZYulNuFiPMiQn3C4d/7p5RtIMs=;
+ b=eqEn2odtLMI/WuRS2qqnH0sONOtZPXJy3QX+LW2bjGDxECwC2gMntvuszTA2DZRLB4lGQNjpzlt/ua91EtC2s8l7zM3r79AnmMndYStYquWQqIKYYYNsfSF0sOc35XD0wJvylQYwDZAwKBPQcEs+wi6aBo4Udgy8a2naQY132z4=
+Received: from BN6PR11MB4068.namprd11.prod.outlook.com (2603:10b6:405:7c::31)
+ by BN8PR11MB3762.namprd11.prod.outlook.com (2603:10b6:408:8d::19)
+ with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4195.27; Mon, 7 Jun
+ 2021 12:19:48 +0000
+Received: from BN6PR11MB4068.namprd11.prod.outlook.com
+ ([fe80::c464:6273:645c:4547]) by BN6PR11MB4068.namprd11.prod.outlook.com
+ ([fe80::c464:6273:645c:4547%5]) with mapi id 15.20.4195.030; Mon, 7 Jun 2021
+ 12:19:47 +0000
+From: "Liu, Yi L" <yi.l.liu@intel.com>
+To: Shenming Lu <lushenming@huawei.com>, Jacob Pan
+ <jacob.jun.pan@linux.intel.com>
+Subject: RE: [RFC] /dev/ioasid uAPI proposal
+Thread-Topic: [RFC] /dev/ioasid uAPI proposal
+Thread-Index: AddSzQ970oLnVHLeQca/ysPD8zMJZwD0femAAAFbDAAABGFQgAAK/L6AAAqTPoAAF6VNAABOidYAABAzlwAArEzDMA==
+Date: Mon, 7 Jun 2021 12:19:46 +0000
+Message-ID: <BN6PR11MB4068FDFFF36C1F15046E0A0EC3389@BN6PR11MB4068.namprd11.prod.outlook.com>
+References: <MWHPR11MB1886422D4839B372C6AB245F8C239@MWHPR11MB1886.namprd11.prod.outlook.com>
+ <c9c066ae-2a25-0799-51a7-0ca47fff41a1@huawei.com>
+ <aa1624bf-e472-2b66-1d20-54ca23c19fd2@linux.intel.com>
+ <ed4f6e57-4847-3ed2-75de-cea80b2fbdb8@huawei.com>
+ <01fe5034-42c8-6923-32f1-e287cc36bccc@linux.intel.com>
+ <20210601173323.GN1002214@nvidia.com>
+ <23a482f9-b88a-da98-3800-f3fd9ea85fbd@huawei.com>
+ <20210603111914.653c4f61@jacob-builder>
+ <eebe5926-efa0-8bab-e8d4-bd327669637f@huawei.com>
+In-Reply-To: <eebe5926-efa0-8bab-e8d4-bd327669637f@huawei.com>
+Accept-Language: en-US
+Content-Language: en-US
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+dlp-reaction: no-action
+dlp-version: 11.5.1.3
+dlp-product: dlpe-windows
+authentication-results: huawei.com; dkim=none (message not signed)
+ header.d=none;huawei.com; dmarc=none action=none header.from=intel.com;
+x-originating-ip: [192.102.204.51]
+x-ms-publictraffictype: Email
+x-ms-office365-filtering-correlation-id: 95ce0223-0074-42e6-79bd-08d929ae8a8f
+x-ms-traffictypediagnostic: BN8PR11MB3762:
+x-ld-processed: 46c98d88-e344-4ed4-8496-4ed7712e255d,ExtAddr
+x-ms-exchange-transport-forked: True
+x-microsoft-antispam-prvs: <BN8PR11MB376222B766AEC6C62A42B8A3C3389@BN8PR11MB3762.namprd11.prod.outlook.com>
+x-ms-oob-tlc-oobclassifiers: OLM:8882;
+x-ms-exchange-senderadcheck: 1
+x-microsoft-antispam: BCL:0;
+x-microsoft-antispam-message-info: 2Kz3c7b10aM7jAZsO7opm4YNmazmC1jtmqDLQU1sAM3NtZBaXuZROrwgdD1g3Qn5AkAmX3wGxIjYtPFgvLE6+nsMM6V59stbv8zD2KvbWzxau0bnU4D/ChIHHe60z/dFL9RwdFk2WHi3mYC9E9xfdoe5F76VlDKwdedn92hjmNF+/6CHBNB7z8ARRRZVK4ImGFUV/js+qRuALswo7VdbcKuzP316P8sqc8SsBeR//dwS89P1H2RLVzvFJdrSyTrhHTGhXyPl3Dm9tcfxXDGoiSd+EFX23OOZuSycRUEjDmWqYXJrtoqMuH04+eU7cENPx4r3zdCqW6gtXEkIpWOIwR5pu8TKRExsKYT/Bz7QTufDmBIlAYGp4m4wdQ4sg2cNB7xn1/fEekAC0c0DYszVBTk0DbDZJScWYJ41vuyzYyaO6BUxLJlT73jHgrkGPYcOUrDmYMzuNYxBUG8B1DH7vjQNBIRbOeHgc4Res9V/7WR5VFA2rEDD7EOVHS2AL3+61vxL8WDz1hdb/+x8LexzsKcqxgfL78NYyewilbQ23WW6Y6chRjPr6a3hdbDySdzKj96nUM4pMxhYqJv7H1DOqz59jw+M/uw/BIDsSR9TUfE=
+x-forefront-antispam-report: CIP:255.255.255.255; CTRY:; LANG:en; SCL:1; SRV:;
+ IPV:NLI; SFV:NSPM; H:BN6PR11MB4068.namprd11.prod.outlook.com; PTR:; CAT:NONE;
+ SFS:(366004)(39860400002)(136003)(346002)(396003)(376002)(2906002)(7696005)(55016002)(5660300002)(66446008)(76116006)(66556008)(66946007)(478600001)(66476007)(54906003)(110136005)(122000001)(52536014)(64756008)(9686003)(26005)(53546011)(6506007)(7416002)(4326008)(186003)(71200400001)(86362001)(8676002)(8936002)(38100700002)(33656002)(316002);
+ DIR:OUT; SFP:1102; 
+x-ms-exchange-antispam-messagedata: =?utf-8?B?aFloYjhScEt0QnhmY1gwdW45Rk93UytCdCs0WmVRNkRrRS9SL3ExdlJNS2Jx?=
+ =?utf-8?B?NGZiMmNpVlk3aWxYUXRsZUdqWmRaM3VKMCt4MWJPdzdES2dDNGNwZHBzbVJz?=
+ =?utf-8?B?TW9rVFozTEwyN2lETURhcTQrRTZqenNzVkJxRTBwOTB1QTBkeXJuaG44MDhI?=
+ =?utf-8?B?WDVNWjNBZzZjRzc5Y0hJRUs3cEgyeUJGQjhoYmVmZ1BxNDFZZnRRRDNTL2Vt?=
+ =?utf-8?B?WFVQbkNjQ0JkVHl6ZUpKTWhFdEZ5Rmowdk9oLzAvUlZpYWlmdDl5aUZSVktq?=
+ =?utf-8?B?cFVRdUxlcko5NGh0cWRDaXZ3M05EQXdaSnNsNjZRL09tQlBXME5mWG84dk5y?=
+ =?utf-8?B?VGRZTjJnN2gvalBrRmkvbERsTWxCREVIK0FpUUxzVnhlSmdBUDAwc3hPYmxX?=
+ =?utf-8?B?eGFSWFlIcGpNWThiR2pVRHp6ck5Iekp3MDdXTkZLcXJHVEl4NGZQK01ySGIw?=
+ =?utf-8?B?bFhtd2xCNm1TeUM2aWpteWFRSmdibVA2TlVVZVdEOTNhZ0J3WDZURGRBVWxO?=
+ =?utf-8?B?QTBwdXA5R1RBcjUxd00vWk0zSnBjNlRPQ1hjNjlrQ2lFYUVnUm9BbGRHNFdy?=
+ =?utf-8?B?VU1RbFRSQkZmQ3ZVNlAyM0l1a2hMWlJ0MjhmU3JOSGtqMjJlYVVtWlhSdFhi?=
+ =?utf-8?B?TTBWRVIxc3o2a245TEU2ZmM2Y0g1S2pITDBSYmZhd0x5TnpHQnA4WU8vL3dv?=
+ =?utf-8?B?NTVKS0tIdnBhK1B0VkFoTlZsWG9lRUhpNVZuOU5FZkhUVnVoUEwvQlo2VThV?=
+ =?utf-8?B?RkFwMFRMd2NuWUN0NjhsclNRaDdKMGR5SjVjMGEyS01YZ1ZGWVdGL2ZsVWlm?=
+ =?utf-8?B?Y1NHR2pmRzRLRjhzcGZjbEtjYytYRlFTMERGZ3FsUHFZMnllcXVmUXpMYlZp?=
+ =?utf-8?B?Q04zMnZ2OHUyVTZRUVZuUG5ZQnRldUV6VURpS1ZIdkRGVm1kRjRkZ3hSeStx?=
+ =?utf-8?B?QWt2Nmc5c1BtTmRVS0FsR0liZHFRdnAzVWUyekp5MWNGNkpTMDZuWEpFcktK?=
+ =?utf-8?B?Z1V5cmsvTFo0cHNPMHl1cDc1Nmw3Rm04VDZXTlhOZEsvZ1M0ckhya2Z3MlNO?=
+ =?utf-8?B?cVlRK0tZbkJOeUdWNUY3dXN6ZTJ3a0FmOHI2OUdyVlR6YSttQTl0a2wvbkhS?=
+ =?utf-8?B?ZGMrVkhFVUN1cFhJb3ZoajNpQ1RQMTR0TVgzKy9xRzVGT0hOOUdtQnZMaXRn?=
+ =?utf-8?B?VkVud3ZRT3J5bHFneDZTenZVdG1hUDM3RzllNEtWTGJ1M3g0bXFzQ24vVzBR?=
+ =?utf-8?B?d0dsZDJjeEFpTDVsaUxBYVlGbmhOQnFhYXBUbS9aOXpRbHlnbkkzTjNvRmdG?=
+ =?utf-8?B?YTVidHZxa01NdkJMSGR2b2FHNDhEaEMzSDZHR3doam5RNnBudEVkcGpZcjVJ?=
+ =?utf-8?B?elVSVEZrVTBDbURNVkpDS1dPSGErZ3VNZFhRMFQvMjZmcWhPNCtYYVdaRDJy?=
+ =?utf-8?B?OEJKN28zRkdReDV2bHhWZ3l1dzhXSVNDb2xmNy9xYXVTWUtBT252Tkwxam90?=
+ =?utf-8?B?Tm1Ebmp3UHZ2ODdxNEN2SDhSU281aTlYNlE2OXVpQ3NWOXg1bkk4M1IxblZT?=
+ =?utf-8?B?d082RUhnOVNnZzNBME5ET25ybUp6M2p6cnhvS1luTHF4YlpwWGsxdStZd0Nr?=
+ =?utf-8?B?dm5pL0xnUEIvb0VQcDBnWWZ6TlFtU3dMb0F2SVZUVkJSa295V0ZHYXZjQTAv?=
+ =?utf-8?B?VVFnam9nTlRDOU0xWTRiNkZ2SE5VelNTNjRSVVJ4SzQwMklUOGpXVFUrTVVa?=
+ =?utf-8?Q?reL4klbbP2M+V/O7b3rU0TFB5Fkn9lmvYfaLpNa?=
 MIME-Version: 1.0
-In-Reply-To: <1623033782-57907-1-git-send-email-chenxiang66@hisilicon.com>
-Content-Language: en-GB
-Cc: iommu@lists.linux-foundation.org, linuxarm@openeuler.org,
- linuxarm@huawei.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-AuthSource: BN6PR11MB4068.namprd11.prod.outlook.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 95ce0223-0074-42e6-79bd-08d929ae8a8f
+X-MS-Exchange-CrossTenant-originalarrivaltime: 07 Jun 2021 12:19:46.7197 (UTC)
+X-MS-Exchange-CrossTenant-fromentityheader: Hosted
+X-MS-Exchange-CrossTenant-id: 46c98d88-e344-4ed4-8496-4ed7712e255d
+X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
+X-MS-Exchange-CrossTenant-userprincipalname: ek8g3IonZl1JOr7qpPJxom3SOppnFJKWdnu4QTU5HMXynF8c2M2SOJbJSi8ZKIGrRMtkkVJfdzVdmun6aWl1fA==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: BN8PR11MB3762
+X-OriginatorOrg: intel.com
+Cc: Jean-Philippe
+ Brucker <jean-philippe@linaro.org>, "Tian, Kevin" <kevin.tian@intel.com>,
+ "Alex Williamson
+ \(alex.williamson@redhat.com\)" <alex.williamson@redhat.com>, "Raj,
+ Ashok" <ashok.raj@intel.com>, "kvm@vger.kernel.org" <kvm@vger.kernel.org>,
+ Jonathan Corbet <corbet@lwn.net>, Robin
+ Murphy <robin.murphy@arm.com>, LKML <linux-kernel@vger.kernel.org>,
+ Kirti Wankhede <kwankhede@nvidia.com>,
+ "iommu@lists.linux-foundation.org" <iommu@lists.linux-foundation.org>,
+ David Gibson <david@gibson.dropbear.id.au>, Jason Gunthorpe <jgg@nvidia.com>,
+ "wanghaibin.wang@huawei.com" <wanghaibin.wang@huawei.com>, "Jiang,
+ Dave" <dave.jiang@intel.com>, David Woodhouse <dwmw2@infradead.org>,
+ Jason Wang <jasowang@redhat.com>
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -77,63 +203,55 @@ List-Post: <mailto:iommu@lists.linux-foundation.org>
 List-Help: <mailto:iommu-request@lists.linux-foundation.org?subject=help>
 List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
  <mailto:iommu-request@lists.linux-foundation.org?subject=subscribe>
+Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
-Content-Type: text/plain; charset="us-ascii"; Format="flowed"
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-On 2021-06-07 03:42, chenxiang wrote:
-> From: Xiang Chen <chenxiang66@hisilicon.com>
+> From: Shenming Lu <lushenming@huawei.com>
+> Sent: Friday, June 4, 2021 10:03 AM
 > 
-> When rmmod the driver of the last device in the group, cached iovas are not
-> used, and it is better to free them to save memories. And also export
-> function free_rcache_cached_iovas() and iommu_domain_to_iova().
-
-How common is it to use a device a significant amount, then unbind its 
-driver and not use it for long enough to care about? Off-hand I can't 
-think of a particularly realistic use-case which looks like that - the 
-closest I can imagine is unbinding a default kernel driver to replace it 
-with VFIO, but I would expect the set of devices intended for assignment 
-to be distinct from the set of devices used by the host itself, and thus 
-the host driver wouldn't have actually done much to generate a lot of 
-DMA mappings in that initial period. Is my expectation there wrong?
-
-If there is such a case, how much memory does this actually save in 
-practice? The theoretical worst-case should be roughly 4 * 128 * 6 * 
-sizeof(struct iova) bytes per CPU, which is around 192KB assuming 
-64-byte kmem cache alignment. However it seems rather unlikely in 
-practice to have every possible cache entry of every size used, so if 
-saving smaller amounts of memory is a concern wouldn't you also want to 
-explicitly drain the flush queues (16KB per CPU) and maybe look at 
-trying to reclaim the unused pagetable pages from the domain itself - 
-that ~192KB worth of cached IOVAs represents ~32K pages worth of IOVA 
-space, which for an implementation like io-pgtable-arm with the 4KB 
-granule means ~256KB worth of non-leaf pagetables left behind.
-
-I'm not against the idea of having a mechanism to "compact" an idle DMA 
-domain if there are convincing numbers to back it up, but the actual 
-implementation would need to be better than this as well - having the 
-IOMMU core code poking directly into the internals of the iommu-dma 
-abstraction is not the way to go, and exporting anything to modules, 
-which the IOMU core is not, smells suspicious.
-
-Robin.
-
-> Xiang Chen (4):
->    iommu/iova: add a function to free all rcached iovas and export it
->    iommu/iova: use function free_rcache_cached_iovas() to free all
->      rcached iovas
->    dma-iommu: add a interface to get iova_domain from iommu domain
->    iommu: free cached iovas when rmmod the driver of the last device in
->      the group
+> On 2021/6/4 2:19, Jacob Pan wrote:
+> > Hi Shenming,
+> >
+> > On Wed, 2 Jun 2021 12:50:26 +0800, Shenming Lu
+> <lushenming@huawei.com>
+> > wrote:
+> >
+> >> On 2021/6/2 1:33, Jason Gunthorpe wrote:
+> >>> On Tue, Jun 01, 2021 at 08:30:35PM +0800, Lu Baolu wrote:
+> >>>
+> >>>> The drivers register per page table fault handlers to /dev/ioasid which
+> >>>> will then register itself to iommu core to listen and route the per-
+> >>>> device I/O page faults.
+> >>>
+> >>> I'm still confused why drivers need fault handlers at all?
+> >>
+> >> Essentially it is the userspace that needs the fault handlers,
+> >> one case is to deliver the faults to the vIOMMU, and another
+> >> case is to enable IOPF on the GPA address space for on-demand
+> >> paging, it seems that both could be specified in/through the
+> >> IOASID_ALLOC ioctl?
+> >>
+> > I would think IOASID_BIND_PGTABLE is where fault handler should be
+> > registered. There wouldn't be any IO page fault without the binding
+> anyway.
 > 
->   drivers/iommu/dma-iommu.c |  7 +++++++
->   drivers/iommu/iommu.c     |  7 +++++++
->   drivers/iommu/iova.c      | 17 ++++++++++++-----
->   include/linux/dma-iommu.h |  6 ++++++
->   include/linux/iova.h      |  5 +++++
->   5 files changed, 37 insertions(+), 5 deletions(-)
+> Yeah, I also proposed this before, registering the handler in the
+> BIND_PGTABLE
+> ioctl does make sense for the guest page faults. :-)
 > 
+> But how about the page faults from the GPA address space (it's page table is
+> mapped through the MAP_DMA ioctl)? From your point of view, it seems
+> that we should register the handler for the GPA address space in the (first)
+> MAP_DMA ioctl.
+
+under new proposal, I think the page fault handler is also registered
+per ioasid object. The difference compared with guest page table case
+is there is no need to inject the fault to VM.
+ 
+Regards,
+Yi Liu
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
