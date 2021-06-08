@@ -6,75 +6,74 @@ X-Spam-Status: No, score=-3.6 required=3.0 tests=BAYES_00,DKIM_INVALID,
 	DKIM_SIGNED,HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,SPF_HELO_NONE,
 	SPF_PASS,URIBL_BLOCKED autolearn=no autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5B7F6C4743E
-	for <iommu@archiver.kernel.org>; Tue,  8 Jun 2021 06:54:42 +0000 (UTC)
-Received: from smtp3.osuosl.org (smtp3.osuosl.org [140.211.166.136])
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E95D3C48BCD
+	for <iommu@archiver.kernel.org>; Tue,  8 Jun 2021 06:54:43 +0000 (UTC)
+Received: from smtp1.osuosl.org (smtp1.osuosl.org [140.211.166.138])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 0966C61287
-	for <iommu@archiver.kernel.org>; Tue,  8 Jun 2021 06:54:41 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 0966C61287
+	by mail.kernel.org (Postfix) with ESMTPS id 7D66C61263
+	for <iommu@archiver.kernel.org>; Tue,  8 Jun 2021 06:54:43 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 7D66C61263
 Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=gibson.dropbear.id.au
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by smtp3.osuosl.org (Postfix) with ESMTP id D667060793;
-	Tue,  8 Jun 2021 06:54:41 +0000 (UTC)
+	by smtp1.osuosl.org (Postfix) with ESMTP id 520C3831A0;
+	Tue,  8 Jun 2021 06:54:43 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from smtp3.osuosl.org ([127.0.0.1])
-	by localhost (smtp3.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id YXmf-bQg247y; Tue,  8 Jun 2021 06:54:41 +0000 (UTC)
-Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by smtp3.osuosl.org (Postfix) with ESMTP id 9FAF8606B1;
-	Tue,  8 Jun 2021 06:54:40 +0000 (UTC)
+Received: from smtp1.osuosl.org ([127.0.0.1])
+	by localhost (smtp1.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+	with ESMTP id or21LguEkhIn; Tue,  8 Jun 2021 06:54:42 +0000 (UTC)
+Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [IPv6:2605:bc80:3010:104::8cd3:938])
+	by smtp1.osuosl.org (Postfix) with ESMTP id 323DD8322E;
+	Tue,  8 Jun 2021 06:54:42 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 69D3BC000D;
-	Tue,  8 Jun 2021 06:54:40 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 0445BC0024;
+	Tue,  8 Jun 2021 06:54:42 +0000 (UTC)
 Received: from smtp1.osuosl.org (smtp1.osuosl.org [140.211.166.138])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 4ED19C0001
- for <iommu@lists.linux-foundation.org>; Tue,  8 Jun 2021 06:54:38 +0000 (UTC)
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 6F340C000F
+ for <iommu@lists.linux-foundation.org>; Tue,  8 Jun 2021 06:54:40 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by smtp1.osuosl.org (Postfix) with ESMTP id 0FFB083279
- for <iommu@lists.linux-foundation.org>; Tue,  8 Jun 2021 06:54:37 +0000 (UTC)
+ by smtp1.osuosl.org (Postfix) with ESMTP id 1B0E183168
+ for <iommu@lists.linux-foundation.org>; Tue,  8 Jun 2021 06:54:38 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Authentication-Results: smtp1.osuosl.org (amavisd-new);
- dkim=pass (1024-bit key) header.d=gibson.dropbear.id.au
 Received: from smtp1.osuosl.org ([127.0.0.1])
  by localhost (smtp1.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id DxPhOomBYjBj for <iommu@lists.linux-foundation.org>;
- Tue,  8 Jun 2021 06:54:35 +0000 (UTC)
+ with ESMTP id WAfEDSL0KtQp for <iommu@lists.linux-foundation.org>;
+ Tue,  8 Jun 2021 06:54:37 +0000 (UTC)
 X-Greylist: domain auto-whitelisted by SQLgrey-1.8.0
-Received: from ozlabs.org (ozlabs.org [203.11.71.1])
- by smtp1.osuosl.org (Postfix) with ESMTPS id BA2C98318C
- for <iommu@lists.linux-foundation.org>; Tue,  8 Jun 2021 06:54:35 +0000 (UTC)
+Received: from ozlabs.org (bilbo.ozlabs.org [IPv6:2401:3900:2:1::2])
+ by smtp1.osuosl.org (Postfix) with ESMTPS id F37AD8322A
+ for <iommu@lists.linux-foundation.org>; Tue,  8 Jun 2021 06:54:36 +0000 (UTC)
 Received: by ozlabs.org (Postfix, from userid 1007)
- id 4Fzgvs2glGz9sWF; Tue,  8 Jun 2021 16:54:33 +1000 (AEST)
+ id 4Fzgvs2C2lz9sWD; Tue,  8 Jun 2021 16:54:33 +1000 (AEST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
  d=gibson.dropbear.id.au; s=201602; t=1623135273;
- bh=9NveCRioFHeEPrm1ZC24JtZPBHGFHQFr+VmZjDZpTsU=;
+ bh=OamA9aFyY4QDHhsQAn6QhZV/ZpUjpyrDqT3NoIMfoxQ=;
  h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
- b=W+ROdnGgmA5lXcwqruJxvUC86sE2uuS2o1rQWZfYHpLBqmQt+lwLs1czgOD+LVwu2
- b7z4eNa4FG7Du86oOFQzkP3bgFmnoIcEPXhY3Fe7TzH/SIMJeZdfViCAON5yDQVraQ
- xmr/z5AICfFHDJ120xhcz9CbxvwomhI69SnHUZjs=
-Date: Tue, 8 Jun 2021 16:31:50 +1000
+ b=nAf7BCvi6S19YIwMN4pKDgg8oR+2LFlo6kmh/3Z1V4bzqCDgXBUYDU5/yLTjexgDw
+ ccB8KOs21+4grjXuS93i+rQsPRDUleJeOshDJKELE5YtfU3ZKalEppWcDUeqXncrUR
+ P3pzuNTOnDKMXyOwTW52a02VG9aX0Rr8cSkwwFCk=
+Date: Tue, 8 Jun 2021 16:13:16 +1000
 From: David Gibson <david@gibson.dropbear.id.au>
-To: Jean-Philippe Brucker <jean-philippe@linaro.org>
+To: Jason Gunthorpe <jgg@nvidia.com>
 Subject: Re: [RFC] /dev/ioasid uAPI proposal
-Message-ID: <YL8O1pAlg1jtHudn@yekko>
+Message-ID: <YL8KfCo8H5aK9Xj+@yekko>
 References: <MWHPR11MB1886422D4839B372C6AB245F8C239@MWHPR11MB1886.namprd11.prod.outlook.com>
  <20210528195839.GO1002214@nvidia.com> <YLcpw5Kx61L7TVmR@yekko>
  <20210602165838.GA1002214@nvidia.com> <YLhsZRc72aIMZajz@yekko>
- <YLn/SJtzuJopSO2x@myrica>
+ <20210603121105.GR1002214@nvidia.com>
 MIME-Version: 1.0
-In-Reply-To: <YLn/SJtzuJopSO2x@myrica>
-Cc: "Tian, Kevin" <kevin.tian@intel.com>,
- "Alex Williamson \(alex.williamson@redhat.com\)"
- <alex.williamson@redhat.com>, "Raj, Ashok" <ashok.raj@intel.com>,
+In-Reply-To: <20210603121105.GR1002214@nvidia.com>
+Cc: Jean-Philippe Brucker <jean-philippe@linaro.org>, "Tian,
+ Kevin" <kevin.tian@intel.com>,
+ "Alex Williamson \(alex.williamson@redhat.com\)" <alex.williamson@redhat.com>,
+ "Raj, Ashok" <ashok.raj@intel.com>,
  "kvm@vger.kernel.org" <kvm@vger.kernel.org>, Jonathan Corbet <corbet@lwn.net>,
  Robin Murphy <robin.murphy@arm.com>, LKML <linux-kernel@vger.kernel.org>,
  Kirti Wankhede <kwankhede@nvidia.com>,
- "iommu@lists.linux-foundation.org" <iommu@lists.linux-foundation.org>,
- Jason Gunthorpe <jgg@nvidia.com>, "Jiang, Dave" <dave.jiang@intel.com>,
- David Woodhouse <dwmw2@infradead.org>, Jason Wang <jasowang@redhat.com>
+ "iommu@lists.linux-foundation.org" <iommu@lists.linux-foundation.org>, "Jiang,
+ Dave" <dave.jiang@intel.com>, David Woodhouse <dwmw2@infradead.org>,
+ Jason Wang <jasowang@redhat.com>
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -87,24 +86,105 @@ List-Post: <mailto:iommu@lists.linux-foundation.org>
 List-Help: <mailto:iommu-request@lists.linux-foundation.org?subject=help>
 List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
  <mailto:iommu-request@lists.linux-foundation.org?subject=subscribe>
-Content-Type: multipart/mixed; boundary="===============5279121583608117625=="
+Content-Type: multipart/mixed; boundary="===============0194838050932416428=="
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
 
---===============5279121583608117625==
+--===============0194838050932416428==
 Content-Type: multipart/signed; micalg=pgp-sha256;
-	protocol="application/pgp-signature"; boundary="G6gzn+uk31nVASOH"
+	protocol="application/pgp-signature"; boundary="ZnWbrY5rMXMZUAOB"
 Content-Disposition: inline
 
 
---G6gzn+uk31nVASOH
+--ZnWbrY5rMXMZUAOB
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
 Content-Transfer-Encoding: quoted-printable
 
-On Fri, Jun 04, 2021 at 12:24:08PM +0200, Jean-Philippe Brucker wrote:
+On Thu, Jun 03, 2021 at 09:11:05AM -0300, Jason Gunthorpe wrote:
 > On Thu, Jun 03, 2021 at 03:45:09PM +1000, David Gibson wrote:
+> > On Wed, Jun 02, 2021 at 01:58:38PM -0300, Jason Gunthorpe wrote:
+> > > On Wed, Jun 02, 2021 at 04:48:35PM +1000, David Gibson wrote:
+> > > > > > 	/* Bind guest I/O page table  */
+> > > > > > 	bind_data =3D {
+> > > > > > 		.ioasid	=3D gva_ioasid;
+> > > > > > 		.addr	=3D gva_pgtable1;
+> > > > > > 		// and format information
+> > > > > > 	};
+> > > > > > 	ioctl(ioasid_fd, IOASID_BIND_PGTABLE, &bind_data);
+> > > > >=20
+> > > > > Again I do wonder if this should just be part of alloc_ioasid. Is
+> > > > > there any reason to split these things? The only advantage to the
+> > > > > split is the device is known, but the device shouldn't impact
+> > > > > anything..
+> > > >=20
+> > > > I'm pretty sure the device(s) could matter, although they probably
+> > > > won't usually.=20
+> > >=20
+> > > It is a bit subtle, but the /dev/iommu fd itself is connected to the
+> > > devices first. This prevents wildly incompatible devices from being
+> > > joined together, and allows some "get info" to report the capability
+> > > union of all devices if we want to do that.
+> >=20
+> > Right.. but I've not been convinced that having a /dev/iommu fd
+> > instance be the boundary for these types of things actually makes
+> > sense.  For example if we were doing the preregistration thing
+> > (whether by child ASes or otherwise) then that still makes sense
+> > across wildly different devices, but we couldn't share that layer if
+> > we have to open different instances for each of them.
+>=20
+> It is something that still seems up in the air.. What seems clear for
+> /dev/iommu is that it
+>  - holds a bunch of IOASID's organized into a tree
+>  - holds a bunch of connected devices
+
+Right, and it's still not really clear to me what devices connected to
+the same /dev/iommu instance really need to have in common, as
+distinct from what devices connected to the same specific ioasid need
+to have in common.
+
+>  - holds a pinned memory cache
+>=20
+> One thing it must do is enforce IOMMU group security. A device cannot
+> be attached to an IOASID unless all devices in its IOMMU group are
+> part of the same /dev/iommu FD.
+
+Well, you can't attach a device to an individual IOASID unless all
+devices in its group are attached to the same individual IOASID
+either, so I'm not clear what benefit there is to enforcing it at the
+/dev/iommu instance as well as at the individual ioasid level.
+
+> The big open question is what parameters govern allowing devices to
+> connect to the /dev/iommu:
+>  - all devices can connect and we model the differences inside the API
+>    somehow.
+>  - Only sufficiently "similar" devices can be connected
+>  - The FD's capability is the minimum of all the connected devices
+>=20
+> There are some practical problems here, when an IOASID is created the
+> kernel does need to allocate a page table for it, and that has to be
+> in some definite format.
+>=20
+> It may be that we had a false start thinking the FD container should
+> be limited. Perhaps creating an IOASID should pass in a list
+> of the "device labels" that the IOASID will be used with and that can
+> guide the kernel what to do?
+>=20
+> > Right, but at this stage I'm just not seeing a really clear (across
+> > platforms and device typpes) boundary for what things have to be per
+> > IOASID container and what have to be per IOASID, so I'm just not sure
+> > the /dev/iommu instance grouping makes any sense.
+>=20
+> I would push as much stuff as possible to be per-IOASID..
+
+I agree.  But the question is what's *not* possible to be per-IOASID,
+so what's the semantic boundary that defines when things have to be in
+the same /dev/iommu instance, but not the same IOASID.
+
+> > > I don't know if that small advantage is worth the extra complexity
+> > > though.
+> > >=20
 > > > > But it would certainly be possible for a system to have two
 > > > > different host bridges with two different IOMMUs with different
 > > > > pagetable formats.  Until you know which devices (and therefore
@@ -124,88 +204,40 @@ On Fri, Jun 04, 2021 at 12:24:08PM +0200, Jean-Philippe Brucker wrote:
 > > No... in the qemu case it would always select the page table format
 > > that it needs to present to the guest.  That's part of the
 > > guest-visible platform that's selected by qemu's configuration.
-> >=20
-> > There's no negotiation here: either the kernel can supply what qemu
-> > needs to pass to the guest, or it can't.  If it can't qemu, will have
-> > to either emulate in SW (if possible, probably using a kernel-managed
-> > IOASID to back it) or fail outright.
-> >=20
-> > >     The
-> > >     kernel code should look at the entire device path through all the
-> > >     IOMMU HW to determine what is possible.
-> > >=20
-> > >     Or it already knows because the VM's vIOMMU is running in some
-> > >     fixed page table format, or the VM's vIOMMU already told it, or
-> > >     something.
-> >=20
-> > Again, I think you have the order a bit backwards.  The user selects
-> > the capabilities that the vIOMMU will present to the guest as part of
-> > the qemu configuration.  Qemu then requests that of the host kernel,
-> > and either the host kernel supplies it, qemu emulates it in SW, or
-> > qemu fails to start.
 >=20
-> Hm, how fine a capability are we talking about?  If it's just "give me
-> VT-d capabilities" or "give me Arm capabilities" that would work, but
-> probably isn't useful. Anything finer will be awkward because userspace
-> will have to try combinations of capabilities to see what sticks, and
-> supporting new hardware will drop compatibility for older one.
+> I should have said "vfio user" here because apps like DPDK might use
+> this path
 
-For the qemu case, I would imagine a two stage fallback:
+Ok.
 
-    1) Ask for the exact IOMMU capabilities (including pagetable
-       format) that the vIOMMU has.  If the host can supply, you're
-       good
-
-    2) If not, ask for a kernel managed IOAS.  Verify that it can map
-       all the IOVA ranges the guest vIOMMU needs, and has an equal or
-       smaller pagesize than the guest vIOMMU presents.  If so,
-       software emulate the vIOMMU by shadowing guest io pagetable
-       updates into the kernel managed IOAS.
-
-    3) You're out of luck, don't start.
-   =20
-For both (1) and (2) I'd expect it to be asking this question *after*
-saying what devices are attached to the IOAS, based on the virtual
-hardware configuration.  That doesn't cover hotplug, of course, for
-that you have to just fail the hotplug if the new device isn't
-supportable with the IOAS you already have.
-
-One can imagine optimizations where for certain intermediate cases you
-could do a lighter SW emu if the host supports a model that's close to
-the vIOMMU one, and you're able to trap and emulate the differences.
-In practice I doubt anyone's going to have time to look for such cases
-and implement the logic for it.
-
-> For example depending whether the hardware IOMMU is SMMUv2 or SMMUv3, that
-> completely changes the capabilities offered to the guest (some v2
-> implementations support nesting page tables, but never PASID nor PRI
-> unlike v3.) The same vIOMMU could support either, presenting different
-> capabilities to the guest, even multiple page table formats if we wanted
-> to be exhaustive (SMMUv2 supports the older 32-bit descriptor), but it
-> needs to know early on what the hardware is precisely. Then some new page
-> table format shows up and, although the vIOMMU can support that in
-> addition to older ones, QEMU will have to pick a single one, that it
-> assumes the guest knows how to drive?
+> > >  4) For the next device qemu would have to figure out if it can re-use
+> > >     an existing IOASID based on the required proeprties.
+> >=20
+> > Nope.  Again, what devices share an IO address space is a guest
+> > visible part of the platform.  If the host kernel can't supply that,
+> > then qemu must not start (or fail the hotplug if the new device is
+> > being hotplugged).
 >=20
-> I think once it binds a device to an IOASID fd, QEMU will want to probe
-> what hardware features are available before going further with the vIOMMU
-> setup (is there PASID, PRI, which page table formats are supported,
-> address size, page granule, etc). Obtaining precise information about the
-> hardware would be less awkward than trying different configurations until
-> one succeeds. Binding an additional device would then fail if its pIOMMU
-> doesn't support exactly the features supported for the first device,
-> because we don't know which ones the guest will choose. QEMU will have to
-> open a new IOASID fd for that device.
+> qemu can always emulate.
 
-No, this fundamentally misunderstands the qemu model.  The user
-*chooses* the guest visible platform, and qemu supplies it or fails.
-There is no negotiation with the guest, because this makes managing
-migration impossibly difficult.
+No, not always, only sometimes.  The host side IOVA has to be able to
+process all the IOVAs that the guest might generate, and it needs to
+have an equal or smaller pagesize than the guest expects.
 
--cpu host is an exception, which is used because it is so useful, but
-it's kind of a pain on the qemu side.  Virt management systems like
-oVirt/RHV almost universally *do not use* -cpu host, precisely because
-it cannot support predictable migration.
+> If the config requires to devices that cannot
+> share an IOASID because the local platform is wonky then qemu needs to
+> shadow and duplicate the IO page table from the guest into two IOASID
+> objects to make it work. This is a SW emulation option.
+>=20
+> > For this reason, amongst some others, I think when selecting a kernel
+> > managed pagetable we need to also have userspace explicitly request
+> > which IOVA ranges are mappable, and what (minimum) page size it
+> > needs.
+>=20
+> It does make sense
+>=20
+> Jason
+>=20
 
 --=20
 David Gibson			| I'll have my music baroque, and my code
@@ -213,29 +245,29 @@ david AT gibson.dropbear.id.au	| minimalist, thank you.  NOT _the_ _other_
 				| _way_ _around_!
 http://www.ozlabs.org/~dgibson
 
---G6gzn+uk31nVASOH
+--ZnWbrY5rMXMZUAOB
 Content-Type: application/pgp-signature; name="signature.asc"
 
 -----BEGIN PGP SIGNATURE-----
 
-iQIzBAEBCAAdFiEEdfRlhq5hpmzETofcbDjKyiDZs5IFAmC/DtQACgkQbDjKyiDZ
-s5KJBQ/+L7W1Y9Y46BN23tHtdVkd5CoHSGXWktgg7elcMvGxgFt0BEM7+chyKrU6
-H+NUhjBvDJpE+VlzuwgfcSroHXcPQ8PZN3PkQj9UXkDkyFjcgFW6gTSXiRxXz8PG
-T/9U09w1f0Q7qzA7wNZ+m30ir+Y0YeTBxW05rT6cxi9702D26fJ0sZX08n4udAj8
-OY/b5sR5eZ6gdByW2DN8HJImD90Yd2oPVVJhNbbADeSXDKmTxLoE0edccyfMQusK
-pRpKfNeqTOqjBJ3IminSOrlPA2aF7GkHZtV1EKGNSTZw9qv5IgsF/AfJNqWkd3h3
-/lm5PLyGtE3DqBrcj80CJxq+gUz9yQvs8DMi9uU6RTiwoNo2kf7ntmONy7K3kc4o
-VRO+IZ6V4kCbIZLxDHzDJfM+zPfadyR2v7ckGiMzDeXRQiyqDoI1+x36lTwGC+Zv
-IDPHawZ0vRbXffLwPl8hcIciZZgXeC1zsk3qPgF302TgrBwf4zKFuDXlD7YX8GyM
-zh4eY73c7S2Hnj+c9vjfnGjeLO8Ptp5Pq2NwbU9NORFrEWLkPKtJFTBsca2C//6P
-60KLN0QM2ZbI3CJhErOm7NoeUOALgfEZppa1h6Q8NfbQYfRRunvVovJ6507KmJq4
-yGJUK9KFa4ZBKCk8h+c/dvylcKzJ8ePt9Iaj5JImNq7c62ZBIqk=
-=OnJz
+iQIzBAEBCAAdFiEEdfRlhq5hpmzETofcbDjKyiDZs5IFAmC/CnsACgkQbDjKyiDZ
+s5I04A/9GiD0mWZD0hcg3FJQ1EJF8YAtKTovMnsTqnTBXEbggWeJt/F/K8oYSB1A
+bjZ8iT9srlxb2RudsBL9TV2vIPB4wXPq7oincGx903VngPDLl0D2LsFuKlGB61pg
+UFt7cVzTptTR7qQIPR5zQdn6/RpVotJEMNjzg996apMusfPq+Ql5kkLnSh9MAVSw
+2K1KISP7IREoY5VfaO4OTix8xoL47+w/QjiPjJdLWcUaNaZp+IIM3210SJa0tqN4
+oyHol4yIPSL7BQpXr0yug8OprHFD/pUtXrP+UL4pSn42cKoL6gG4dhK0wm/sOBkN
+oTEFCOAhXfrfzoBr0TzCrKKlgvGuyc4ibgdJjSFLe+hQ5iioojIVND+fpxAJJ7Tq
+2sT2gtweRR1Jp46vxbzUmkKCkMCHK7HV14Li5RjfB7jyYITf2962huFZEBvgOucI
+NLzpJ0dBGw5fwL96C2n/LlSIPrMLed42FYfT+kdI6pAwOvhq1b32OAG7RwHxn2Kr
+jml6jkyfGa7fQ0/Jm15ku1PS9TKJFvz9dPELwvCC5EtlftwqcSDy0abdAOKz8zBY
++aL0TTv1LPQ/fLNChZpijWbYItAbM8IaQGk+ASukWwMnfP5WTZtl8Lueio5GdK3u
+o3r1uRcV8efyHAZkke/yeUm8iuOcYRZuVTRoBZGqGQRXRvHzMNU=
+=gbUa
 -----END PGP SIGNATURE-----
 
---G6gzn+uk31nVASOH--
+--ZnWbrY5rMXMZUAOB--
 
---===============5279121583608117625==
+--===============0194838050932416428==
 Content-Type: text/plain; charset="us-ascii"
 MIME-Version: 1.0
 Content-Transfer-Encoding: 7bit
@@ -245,4 +277,4 @@ _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
 https://lists.linuxfoundation.org/mailman/listinfo/iommu
---===============5279121583608117625==--
+--===============0194838050932416428==--
