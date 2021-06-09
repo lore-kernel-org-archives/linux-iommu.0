@@ -2,70 +2,162 @@ Return-Path: <SRS0=g+Up=LD=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-15.3 required=3.0 tests=BAYES_00,
-	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_CR_TRAILER,INCLUDES_PATCH,
-	MAILING_LIST_MULTI,NICE_REPLY_A,SPF_HELO_NONE,SPF_PASS,URIBL_RED,
-	USER_AGENT_SANE_1 autolearn=unavailable autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-3.5 required=3.0 tests=BAYES_00,DKIM_INVALID,
+	DKIM_SIGNED,HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,
+	MSGID_FROM_MTA_HEADER,SPF_HELO_NONE,SPF_PASS,URIBL_RED autolearn=no
+	autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id EA6A7C48BCD
-	for <iommu@archiver.kernel.org>; Wed,  9 Jun 2021 18:44:36 +0000 (UTC)
-Received: from smtp3.osuosl.org (smtp3.osuosl.org [140.211.166.136])
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 69CC1C48BCF
+	for <iommu@archiver.kernel.org>; Wed,  9 Jun 2021 18:49:55 +0000 (UTC)
+Received: from smtp2.osuosl.org (smtp2.osuosl.org [140.211.166.133])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 9C7B4613AC
-	for <iommu@archiver.kernel.org>; Wed,  9 Jun 2021 18:44:36 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 9C7B4613AC
-Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=arm.com
+	by mail.kernel.org (Postfix) with ESMTPS id 1F8A3613E3
+	for <iommu@archiver.kernel.org>; Wed,  9 Jun 2021 18:49:55 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 1F8A3613E3
+Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=nvidia.com
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by smtp3.osuosl.org (Postfix) with ESMTP id 3A03A6085B;
-	Wed,  9 Jun 2021 18:44:36 +0000 (UTC)
+	by smtp2.osuosl.org (Postfix) with ESMTP id CD01F4018B;
+	Wed,  9 Jun 2021 18:49:54 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from smtp3.osuosl.org ([127.0.0.1])
-	by localhost (smtp3.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id G4SmbgyjIKxe; Wed,  9 Jun 2021 18:44:35 +0000 (UTC)
+Received: from smtp2.osuosl.org ([127.0.0.1])
+	by localhost (smtp2.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+	with ESMTP id R2YKuIMMLkfU; Wed,  9 Jun 2021 18:49:51 +0000 (UTC)
 Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by smtp3.osuosl.org (Postfix) with ESMTPS id 168DD60712;
-	Wed,  9 Jun 2021 18:44:35 +0000 (UTC)
+	by smtp2.osuosl.org (Postfix) with ESMTPS id 0A5FD400AB;
+	Wed,  9 Jun 2021 18:49:51 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id E313DC000D;
-	Wed,  9 Jun 2021 18:44:34 +0000 (UTC)
-Received: from smtp3.osuosl.org (smtp3.osuosl.org [140.211.166.136])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 35FD2C000B
- for <iommu@lists.linux-foundation.org>; Wed,  9 Jun 2021 18:44:33 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id BC3B5C000D;
+	Wed,  9 Jun 2021 18:49:50 +0000 (UTC)
+Received: from smtp1.osuosl.org (smtp1.osuosl.org [IPv6:2605:bc80:3010::138])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id D438CC000B
+ for <iommu@lists.linux-foundation.org>; Wed,  9 Jun 2021 18:49:48 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by smtp3.osuosl.org (Postfix) with ESMTP id 0FB3960844
- for <iommu@lists.linux-foundation.org>; Wed,  9 Jun 2021 18:44:33 +0000 (UTC)
+ by smtp1.osuosl.org (Postfix) with ESMTP id B562283D1A
+ for <iommu@lists.linux-foundation.org>; Wed,  9 Jun 2021 18:49:48 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from smtp3.osuosl.org ([127.0.0.1])
- by localhost (smtp3.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id pRl5jloN5rCk for <iommu@lists.linux-foundation.org>;
- Wed,  9 Jun 2021 18:44:32 +0000 (UTC)
-X-Greylist: domain auto-whitelisted by SQLgrey-1.8.0
-Received: from foss.arm.com (foss.arm.com [217.140.110.172])
- by smtp3.osuosl.org (Postfix) with ESMTP id 1BA3E60712
- for <iommu@lists.linux-foundation.org>; Wed,  9 Jun 2021 18:44:31 +0000 (UTC)
-Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
- by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id EF378D6E;
- Wed,  9 Jun 2021 11:44:30 -0700 (PDT)
-Received: from [10.57.6.115] (unknown [10.57.6.115])
- by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id D466C3F719;
- Wed,  9 Jun 2021 11:44:29 -0700 (PDT)
-Subject: Re: [PATCH] iommu/io-pgtable-arm: Optimize partial walk flush for
- large scatter-gather list
-To: Sai Prakash Ranjan <saiprakash.ranjan@codeaurora.org>,
- Will Deacon <will@kernel.org>, Joerg Roedel <joro@8bytes.org>
-References: <20210609145315.25750-1-saiprakash.ranjan@codeaurora.org>
-From: Robin Murphy <robin.murphy@arm.com>
-Message-ID: <dbcd394a-4d85-316c-5dd0-033546a66132@arm.com>
-Date: Wed, 9 Jun 2021 19:44:24 +0100
-User-Agent: Mozilla/5.0 (Windows NT 10.0; rv:78.0) Gecko/20100101
- Thunderbird/78.10.1
+Authentication-Results: smtp1.osuosl.org (amavisd-new);
+ dkim=pass (2048-bit key) header.d=nvidia.com
+Received: from smtp1.osuosl.org ([127.0.0.1])
+ by localhost (smtp1.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+ with ESMTP id 32xRCOfprZFz for <iommu@lists.linux-foundation.org>;
+ Wed,  9 Jun 2021 18:49:44 +0000 (UTC)
+X-Greylist: whitelisted by SQLgrey-1.8.0
+Received: from NAM12-MW2-obe.outbound.protection.outlook.com
+ (mail-mw2nam12on2082.outbound.protection.outlook.com [40.107.244.82])
+ by smtp1.osuosl.org (Postfix) with ESMTPS id AB4A983D18
+ for <iommu@lists.linux-foundation.org>; Wed,  9 Jun 2021 18:49:43 +0000 (UTC)
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=odBMacuqoAA6Po/33bzZ1rLcaroWxWI6mOnKR/uQ0wrVPTi1nnDSjRNEdyxWxoiOu/L/sWHy/RL4amKK1iwq+UV5kf3kOmJmsE6xpkNNCRJC/HakR9gIHtPaKMcV+TBfUd/x+hBUEZZZWxCHfgJe1WDvfA3eH/XaBDNMaPJPOWKjcMiqedMnNRd/9aNTtusFpBiLFWNKXY6EY7LJ/PfspBvavvMkIuWrh5wBHc/AsRVzTjnjLnzohbiwsDRtz3rWsrWnixganB/V4L4zREVrUVjTjrtqSeZwBIkIua87CD3/iMS0kKKSDHJ6vu1B2CVf0laKT8G5fzG/9wRDvggGVA==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com; 
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=lDh0DBZneE5IR+M1bq8uPrLMkDN7zzcEJI+WaBwOGxU=;
+ b=YSwhv07HBkVBXAKXCl8UqaIxY/h/2TT9CoV/FPM4FMaDekVICvj23wvzX+AUHV6+vAkNp5kkrvZ++q26vMIW4893M8cNdyWPsBAnw7AiJxVZtx6umUEzGsiQuc/7ClEI40HwdvCyzzqdIX1GX3LrsPmHLoFbcjO2kQG8la+ReU0PtlQos92IfJv/DTLwK7a8oqWRwhdaic2bpdknyOpy97yBLmWnxUrG3zJA1gQA+JBaWt/is5TV8B2yizlEOZvka1t4yQdXTS3IQFxSK8aSAH7MMclabMpGwL9KXHjct6R0BnLHemTnECbuyjCs94FpXZSkyxqBIrRHE/Ee4VLysg==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=nvidia.com; dmarc=pass action=none header.from=nvidia.com;
+ dkim=pass header.d=nvidia.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
+ s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=lDh0DBZneE5IR+M1bq8uPrLMkDN7zzcEJI+WaBwOGxU=;
+ b=AqcGheMc6akFNCYX6Kuwqp5u8kiOKPybjMwTI6zvvolfNrqYYAR3v2ALFDLr7aXS6HW0imYJURSQjwRLruUQwfbXbcrC/uwkiqvr7MQtK3Idbbl8OtNFVwb6hQeMNmTlWfJ/Cz/14RmjblcEunlj3Yib1dc2EZWNLQTg5s/CfcB2D8V2Q6OwIWcUe/p7heQVOTQD0+ZyVv3TRI5TCc4UPtPi01nWljhnxuD37hujH9nYH1un0DKaSMuxbf1VUIFd8xnnHpZ10zA6bQAIN7/jJxUK6heJ1ncH0I1v577HMMGqs+zFSkQ9dgZLw4e8v3/bK72ZACr1aQcMbxv+ZM5pXg==
+Authentication-Results: redhat.com; dkim=none (message not signed)
+ header.d=none;redhat.com; dmarc=none action=none header.from=nvidia.com;
+Received: from BL0PR12MB5506.namprd12.prod.outlook.com (2603:10b6:208:1cb::22)
+ by BL1PR12MB5175.namprd12.prod.outlook.com (2603:10b6:208:318::8)
+ with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4195.22; Wed, 9 Jun
+ 2021 18:49:41 +0000
+Received: from BL0PR12MB5506.namprd12.prod.outlook.com
+ ([fe80::3d51:a3b9:8611:684e]) by BL0PR12MB5506.namprd12.prod.outlook.com
+ ([fe80::3d51:a3b9:8611:684e%7]) with mapi id 15.20.4219.021; Wed, 9 Jun 2021
+ 18:49:41 +0000
+Date: Wed, 9 Jun 2021 15:49:40 -0300
+From: Jason Gunthorpe <jgg@nvidia.com>
+To: Alex Williamson <alex.williamson@redhat.com>
+Subject: Re: Plan for /dev/ioasid RFC v2
+Message-ID: <20210609184940.GH1002214@nvidia.com>
+References: <MWHPR11MB188699D0B9C10EB51686C4138C389@MWHPR11MB1886.namprd11.prod.outlook.com>
+ <YMCy48Xnt/aphfh3@8bytes.org> <20210609123919.GA1002214@nvidia.com>
+ <YMDC8tOMvw4FtSek@8bytes.org> <20210609150009.GE1002214@nvidia.com>
+ <YMDjfmJKUDSrbZbo@8bytes.org>
+ <20210609101532.452851eb.alex.williamson@redhat.com>
+ <20210609102722.5abf62e1.alex.williamson@redhat.com>
+Content-Disposition: inline
+In-Reply-To: <20210609102722.5abf62e1.alex.williamson@redhat.com>
+X-Originating-IP: [47.55.113.94]
+X-ClientProxiedBy: MN2PR17CA0019.namprd17.prod.outlook.com
+ (2603:10b6:208:15e::32) To BL0PR12MB5506.namprd12.prod.outlook.com
+ (2603:10b6:208:1cb::22)
 MIME-Version: 1.0
-In-Reply-To: <20210609145315.25750-1-saiprakash.ranjan@codeaurora.org>
-Content-Language: en-GB
-Cc: linux-arm-msm@vger.kernel.org, iommu@lists.linux-foundation.org,
- linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org
+X-MS-Exchange-MessageSentRepresentingType: 1
+Received: from mlx.ziepe.ca (47.55.113.94) by
+ MN2PR17CA0019.namprd17.prod.outlook.com (2603:10b6:208:15e::32) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4219.21 via Frontend
+ Transport; Wed, 9 Jun 2021 18:49:41 +0000
+Received: from jgg by mlx with local (Exim 4.94)	(envelope-from
+ <jgg@nvidia.com>)	id 1lr3Gm-004hkV-5V; Wed, 09 Jun 2021 15:49:40 -0300
+X-MS-PublicTrafficType: Email
+X-MS-Office365-Filtering-Correlation-Id: d2ef4d03-4c2a-4d75-4fa1-08d92b775725
+X-MS-TrafficTypeDiagnostic: BL1PR12MB5175:
+X-MS-Exchange-Transport-Forked: True
+X-Microsoft-Antispam-PRVS: <BL1PR12MB51753F984746BE06B940A3D4C2369@BL1PR12MB5175.namprd12.prod.outlook.com>
+X-MS-Oob-TLC-OOBClassifiers: OLM:9508;
+X-MS-Exchange-SenderADCheck: 1
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: +LYnDHMrgBds2oUVF18dF2JZ7mPTkjVhqqp2ng77pA4U+vaME/Ep32PX5Z4+5l/6k2fkZp1O03TKGmj++mnotuJbL+B6RfB4f/wLmE1tTYiZxoEmuId7WZ7IKWKxvzNcv0eHybaf2VaTQL8sb/GLCHaB+KiNFGdMVKJpTZivWnt/Iq2J3R/11sUUBwt8UB7mMiTIP2jtnUttOR8ygbkC464VilGC3GGxDDabE6RjPWc4SJk4E4mngGm1x8YZK69ytyitfvT2eINMrrQNSM/mH+cJk21KMNg+Wy4D0XvyxWiElfJxydRvSSZoz0TSeyK52OeI/kNSKDxO+CYKA/dykHpMmNg/n2ghGfBLwH51tgadjeMzLE8LaNrhV6vWD8GV0xxil5czSq9kCQEQKR4Bnq6IdCiygZ8PT5kknSSsR6cOdCZZhUch1XdugC1t6GhvxJxQnVUbU4L3gJc+MyvVajZvAPkhQ1n5e/stlQRzIkDrA4GeMn6nNetlVRv+x5J5zHC+N2M4YNe/nAhV9noMyABcmDDNRVQGdYgbG1X1sR66oRpPPk46HmwCxTvWA601NAZ+Ue/gecwo8Ccpi7ZsV8EKPWLjuSlKU1TtGfAaWtA=
+X-Forefront-Antispam-Report: CIP:255.255.255.255; CTRY:; LANG:en; SCL:1; SRV:;
+ IPV:NLI; SFV:NSPM; H:BL0PR12MB5506.namprd12.prod.outlook.com; PTR:; CAT:NONE;
+ SFS:(4636009)(136003)(346002)(39860400002)(366004)(396003)(376002)(2616005)(478600001)(426003)(6916009)(36756003)(186003)(1076003)(38100700002)(26005)(66556008)(9746002)(7416002)(9786002)(4326008)(33656002)(54906003)(86362001)(316002)(66476007)(66946007)(8936002)(83380400001)(5660300002)(2906002)(8676002);
+ DIR:OUT; SFP:1101; 
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?KIiCvvUIZGR4nhEb5urv9K440KUjJFpSULFzoNBHrmH6vkKGWgv9NLtxpXGE?=
+ =?us-ascii?Q?r2XCwnSaP1WmI+pPR0WMPZ6s0+WsB3MkEcjqodI3WsGQW4NrjQC4D7z2pR2r?=
+ =?us-ascii?Q?xd82cdkUAPXnAT1wlU7tuqGE0f1O1noufgLh3MieHaVaW3q/H/+NtkkAy31t?=
+ =?us-ascii?Q?DR/3HBt7gTU7AiNEZCSVLikfs+lRvKdpv6mLoM0Bw5GrQpl3RNa631U8kJd+?=
+ =?us-ascii?Q?jKLSa3hBlgqNVZyP/vKNm97ezmmPNmbmPyeL1whF6rfjhk9dYF3BE5SaKA1D?=
+ =?us-ascii?Q?/+BsJZwDmsUlGx9o/X75Xq40NG2/6Uv1XX2woukO5xufh+Mg0ZGZFv+Gp+Yx?=
+ =?us-ascii?Q?9IySwNwiFsmDN5fCMpVZMYSxAunx/U5OQ+E9IgUePVYv2vECavcPrBd5Ik/H?=
+ =?us-ascii?Q?tkXnZT9a9LUBKdorAVPI5AHYjsjjzsBHx3mb40lrKu10AQqGVXHZ50pGohJk?=
+ =?us-ascii?Q?uPqGHlwePtSf6qytrQrZztB3jzGO7Kva0ysAiKFYkYB5H8cTraPvs0yKuKV2?=
+ =?us-ascii?Q?PRdgMoaAEX/JnDl8HFGDoFj6LkR28qrzlxTEbij3/fvyVlJJlY4vvV6vxMQg?=
+ =?us-ascii?Q?nl1TylpGaQo45ozsPElDKwahZYE3PYm6C65DkcfqOX9EpGdjsmvml9XSGsbR?=
+ =?us-ascii?Q?kkEqr63acoZ7jDVcP1utI2Q6nbYYlcbQppn5EPNx+moiQjZDDKwi6VhUfdBd?=
+ =?us-ascii?Q?rxH+y99VCp9suexV+t4oy8LoweoytIcJvbWM9+eCoWXWT+W5DCaNupi2qBwv?=
+ =?us-ascii?Q?ToEHbAXLitfXYI1dA1a7evpba6DerdsE62i4hbwjxIbARUfU2q4IHl40IJ5C?=
+ =?us-ascii?Q?d0/rgnhHwVU++QxWNhNrgUldPQUu1+slDkon3WzRDB9OOITHXc5yoOW7rmPN?=
+ =?us-ascii?Q?Ug3Llo7fo0oab+RJk/lN3fN3UeD2ber5Gcd5GWPzNC943fx7lEaaUEsdPF+L?=
+ =?us-ascii?Q?qBlKNcxkNeMKplAu4YadZe5GORxm5Kp7pyjtQXbA2Dm4+jecNJ4JNxuKuSrX?=
+ =?us-ascii?Q?fcheAc0Ls8r1GMfuvDmXjAhO/wz7GhVjXxPLuHHEzqdGFM3QhkPEHYHs1/h7?=
+ =?us-ascii?Q?zmf2gffDZLjP5+6ZJDj8FReiFd0InePMWThBpIW2rGoXxKGL3uMzi79LxnCz?=
+ =?us-ascii?Q?f8RztfbxnhXRTJtF3IqvnUK1sJLA4b7tEFl97J0SL4Bpza5qcyWUJY/6lGZQ?=
+ =?us-ascii?Q?GZlQyQ9Cs++jCNKrDV4/LbNZc2WuVW84MI6kveQ7n8jbk7r5u163b/Q409Ab?=
+ =?us-ascii?Q?bsTeUDGwmGqdSWW7CxqfcUlJ22zluq9PXzsVHTO2u9lQAQY6PlbGeZVm8SAl?=
+ =?us-ascii?Q?kstDl8+W3Q1rgvTXA2Jq31Xa?=
+X-OriginatorOrg: Nvidia.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: d2ef4d03-4c2a-4d75-4fa1-08d92b775725
+X-MS-Exchange-CrossTenant-AuthSource: BL0PR12MB5506.namprd12.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 09 Jun 2021 18:49:41.6614 (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: VxyjXhLUMGycJrmtDXQrhukAl45AqewrPeNs3xsZjbo+a3spWLz0AHXOfJWHxBGd
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: BL1PR12MB5175
+Cc: "kvm@vger.kernel.org" <kvm@vger.kernel.org>,
+ Jason Wang <jasowang@redhat.com>, Kirti Wankhede <kwankhede@nvidia.com>,
+ Jean-Philippe Brucker <jean-philippe@linaro.org>, "Jiang,
+ Dave" <dave.jiang@intel.com>, "Raj, Ashok" <ashok.raj@intel.com>,
+ Jonathan Corbet <corbet@lwn.net>, "Tian, Kevin" <kevin.tian@intel.com>,
+ "parav@mellanox.com" <parav@mellanox.com>, "Enrico Weigelt,
+ metux IT consult" <lkml@metux.net>, David Gibson <david@gibson.dropbear.id.au>,
+ Robin Murphy <robin.murphy@arm.com>, LKML <linux-kernel@vger.kernel.org>,
+ Shenming Lu <lushenming@huawei.com>,
+ "iommu@lists.linux-foundation.org" <iommu@lists.linux-foundation.org>,
+ Paolo Bonzini <pbonzini@redhat.com>, David Woodhouse <dwmw2@infradead.org>
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -78,100 +170,101 @@ List-Post: <mailto:iommu@lists.linux-foundation.org>
 List-Help: <mailto:iommu-request@lists.linux-foundation.org?subject=help>
 List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
  <mailto:iommu-request@lists.linux-foundation.org?subject=subscribe>
+Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
-Content-Type: text/plain; charset="us-ascii"; Format="flowed"
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-On 2021-06-09 15:53, Sai Prakash Ranjan wrote:
-> Currently for iommu_unmap() of large scatter-gather list with page size
-> elements, the majority of time is spent in flushing of partial walks in
-> __arm_lpae_unmap() which is a VA based TLB invalidation (TLBIVA for
-> arm-smmu).
-> 
-> For example: to unmap a 32MB scatter-gather list with page size elements
-> (8192 entries), there are 16->2MB buffer unmaps based on the pgsize (2MB
-> for 4K granule) and each of 2MB will further result in 512 TLBIVAs (2MB/4K)
-> resulting in a total of 8192 TLBIVAs (512*16) for 16->2MB causing a huge
-> overhead.
-> 
-> So instead use io_pgtable_tlb_flush_all() to invalidate the entire context
-> if size (pgsize) is greater than the granule size (4K, 16K, 64K). For this
-> example of 32MB scatter-gather list unmap, this results in just 16 ASID
-> based TLB invalidations or tlb_flush_all() callback (TLBIASID in case of
-> arm-smmu) as opposed to 8192 TLBIVAs thereby increasing the performance of
-> unmaps drastically.
-> 
-> Condition (size > granule size) is chosen for io_pgtable_tlb_flush_all()
-> because for any granule with supported pgsizes, we will have at least 512
-> TLB invalidations for which tlb_flush_all() is already recommended. For
-> example, take 4K granule with 2MB pgsize, this will result in 512 TLBIVA
-> in partial walk flush.
-> 
-> Test on QTI SM8150 SoC for 10 iterations of iommu_{map_sg}/unmap:
-> (average over 10 iterations)
-> 
-> Before this optimization:
-> 
->      size        iommu_map_sg      iommu_unmap
->        4K            2.067 us         1.854 us
->       64K            9.598 us         8.802 us
->        1M          148.890 us       130.718 us
->        2M          305.864 us        67.291 us
->       12M         1793.604 us       390.838 us
->       16M         2386.848 us       518.187 us
->       24M         3563.296 us       775.989 us
->       32M         4747.171 us      1033.364 us
-> 
-> After this optimization:
-> 
->      size        iommu_map_sg      iommu_unmap
->        4K            1.723 us         1.765 us
->       64K            9.880 us         8.869 us
->        1M          155.364 us       135.223 us
->        2M          303.906 us         5.385 us
->       12M         1786.557 us        21.250 us
->       16M         2391.890 us        27.437 us
->       24M         3570.895 us        39.937 us
->       32M         4755.234 us        51.797 us
-> 
-> This is further reduced once the map/unmap_pages() support gets in which
-> will result in just 1 tlb_flush_all() as opposed to 16 tlb_flush_all().
-> 
-> Signed-off-by: Sai Prakash Ranjan <saiprakash.ranjan@codeaurora.org>
-> ---
->   drivers/iommu/io-pgtable-arm.c | 7 +++++--
->   1 file changed, 5 insertions(+), 2 deletions(-)
-> 
-> diff --git a/drivers/iommu/io-pgtable-arm.c b/drivers/iommu/io-pgtable-arm.c
-> index 87def58e79b5..c3cb9add3179 100644
-> --- a/drivers/iommu/io-pgtable-arm.c
-> +++ b/drivers/iommu/io-pgtable-arm.c
-> @@ -589,8 +589,11 @@ static size_t __arm_lpae_unmap(struct arm_lpae_io_pgtable *data,
->   
->   		if (!iopte_leaf(pte, lvl, iop->fmt)) {
->   			/* Also flush any partial walks */
-> -			io_pgtable_tlb_flush_walk(iop, iova, size,
-> -						  ARM_LPAE_GRANULE(data));
-> +			if (size > ARM_LPAE_GRANULE(data))
-> +				io_pgtable_tlb_flush_all(iop);
-> +			else
+On Wed, Jun 09, 2021 at 10:27:22AM -0600, Alex Williamson wrote:
 
-Erm, when will the above condition ever not be true? ;)
+> > > It is a kernel decision, because a fundamental task of the kernel is to
+> > > ensure isolation between user-space tasks as good as it can. And if a
+> > > device assigned to one task can interfer with a device of another task
+> > > (e.g. by sending P2P messages), then the promise of isolation is broken.  
+> > 
+> > AIUI, the IOASID model will still enforce IOMMU groups, but it's not an
+> > explicit part of the interface like it is for vfio.  For example the
+> > IOASID model allows attaching individual devices such that we have
+> > granularity to create per device IOASIDs, but all devices within an
+> > IOMMU group are required to be attached to an IOASID before they can be
+> > used.  
 
-Taking a step back, though, what about the impact to drivers other than 
-SMMUv2? In particular I'm thinking of SMMUv3.2 where the whole range can 
-be invalidated by VA in a single command anyway, so the additional 
-penalties of TLBIALL are undesirable.
+Yes, thanks Alex
 
-Robin.
+> > It's not entirely clear to me yet how that last bit gets
+> > implemented though, ie. what barrier is in place to prevent device
+> > usage prior to reaching this viable state.
 
-> +				io_pgtable_tlb_flush_walk(iop, iova, size,
-> +							  ARM_LPAE_GRANULE(data));
->   			ptep = iopte_deref(pte, data);
->   			__arm_lpae_free_pgtable(data, lvl + 1, ptep);
->   		} else if (iop->cfg.quirks & IO_PGTABLE_QUIRK_NON_STRICT) {
+The major security checkpoint for the group is on the VFIO side.  We
+must require the group before userspace can be allowed access to any
+device registers. Obtaining the device_fd from the group_fd does this
+today as the group_fd is the security proof.
+
+Actually, thinking about this some more.. If the only way to get a
+working device_fd in the first place is to get it from the group_fd
+and thus pass a group-based security check, why do we need to do
+anything at the ioasid level?
+
+The security concept of isolation was satisfied as soon as userspace
+opened the group_fd. What do more checks in the kernel accomplish?
+
+Yes, we have the issue where some groups require all devices to use
+the same IOASID, but once someone has the group_fd that is no longer a
+security issue. We can fail VFIO_DEVICE_ATTACH_IOASID callss that
+don't make sense.
+
+> > > > Groups should be primarily about isolation security, not about IOASID
+> > > > matching.    
+> > > 
+> > > That doesn't make any sense, what do you mean by 'IOASID matching'?  
+> > 
+> > One of the problems with the vfio interface use of groups is that we
+> > conflate the IOMMU group for both isolation and granularity.  I think
+> > what Jason is referring to here is that we still want groups to be the
+> > basis of isolation, but we don't want a uAPI that presumes all devices
+> > within the group must use the same IOASID.  
+
+Yes, thanks again Alex
+
+> > For example, if a user owns an IOMMU group consisting of
+> > non-isolated functions of a multi-function device, they should be
+> > able to create a vIOMMU VM where each of those functions has its
+> > own address space.  That can't be done today, the entire group
+> > would need to be attached to the VM under a PCIe-to-PCI bridge to
+> > reflect the address space limitation imposed by the vfio group
+> > uAPI model.  Thanks,
 > 
+> Hmm, likely discussed previously in these threads, but I can't come up
+> with the argument that prevents us from making the BIND interface
+> at the group level but the ATTACH interface at the device level?  For
+> example:
+> 
+>  - VFIO_GROUP_BIND_IOASID_FD
+>  - VFIO_DEVICE_ATTACH_IOASID
+> 
+> AFAICT that makes the group ownership more explicit but still allows
+> the device level IOASID granularity.  Logically this is just an
+> internal iommu_group_for_each_dev() in the BIND ioctl.  Thanks,
+
+At a high level it sounds OK.
+
+However I think your above question needs to be answered - what do we
+want to enforce on the iommu_fd and why?
+
+Also, this creates a problem with the device label idea, we still
+need to associate each device_fd with a label, so your above sequence
+is probably:
+
+  VFIO_GROUP_BIND_IOASID_FD(group fd)
+  VFIO_BIND_IOASID_FD(device fd 1, device_label)
+  VFIO_BIND_IOASID_FD(device fd 2, device_label)
+  VFIO_DEVICE_ATTACH_IOASID(..)
+
+And then I think we are back to where I had started, we can trigger
+whatever VFIO_GROUP_BIND_IOASID_FD does automatically as soon as all
+of the devices in the group have been bound.
+
+Jason
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
