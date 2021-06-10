@@ -7,62 +7,62 @@ X-Spam-Status: No, score=-16.8 required=3.0 tests=BAYES_00,
 	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_GIT
 	autolearn=ham autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 98169C48BD1
-	for <iommu@archiver.kernel.org>; Thu, 10 Jun 2021 02:04:25 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 50B3AC48BCD
+	for <iommu@archiver.kernel.org>; Thu, 10 Jun 2021 02:04:26 +0000 (UTC)
 Received: from smtp4.osuosl.org (smtp4.osuosl.org [140.211.166.137])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 62FBF61407
-	for <iommu@archiver.kernel.org>; Thu, 10 Jun 2021 02:04:25 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 62FBF61407
+	by mail.kernel.org (Postfix) with ESMTPS id 1F1CC613BC
+	for <iommu@archiver.kernel.org>; Thu, 10 Jun 2021 02:04:26 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 1F1CC613BC
 Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=linux.intel.com
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by smtp4.osuosl.org (Postfix) with ESMTP id 36AB140248;
+	by smtp4.osuosl.org (Postfix) with ESMTP id 9645F4054B;
 	Thu, 10 Jun 2021 02:04:25 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
 Received: from smtp4.osuosl.org ([127.0.0.1])
 	by localhost (smtp4.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id IQTT4mO3cZWh; Thu, 10 Jun 2021 02:04:24 +0000 (UTC)
+	with ESMTP id Re-oZcLmvKXg; Thu, 10 Jun 2021 02:04:24 +0000 (UTC)
 Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [IPv6:2605:bc80:3010:104::8cd3:938])
-	by smtp4.osuosl.org (Postfix) with ESMTPS id F01D140540;
-	Thu, 10 Jun 2021 02:04:23 +0000 (UTC)
+	by smtp4.osuosl.org (Postfix) with ESMTPS id 75E04405A2;
+	Thu, 10 Jun 2021 02:04:24 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id DAF08C000E;
-	Thu, 10 Jun 2021 02:04:23 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 124B3C0027;
+	Thu, 10 Jun 2021 02:04:24 +0000 (UTC)
 Received: from smtp4.osuosl.org (smtp4.osuosl.org [140.211.166.137])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 42FE8C0022
- for <iommu@lists.linux-foundation.org>; Thu, 10 Jun 2021 02:04:21 +0000 (UTC)
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 11347C000B
+ for <iommu@lists.linux-foundation.org>; Thu, 10 Jun 2021 02:04:23 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by smtp4.osuosl.org (Postfix) with ESMTP id 4F141405A2
- for <iommu@lists.linux-foundation.org>; Thu, 10 Jun 2021 02:04:19 +0000 (UTC)
+ by smtp4.osuosl.org (Postfix) with ESMTP id CF44240540
+ for <iommu@lists.linux-foundation.org>; Thu, 10 Jun 2021 02:04:20 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
 Received: from smtp4.osuosl.org ([127.0.0.1])
  by localhost (smtp4.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id umCzxvRrXrI6 for <iommu@lists.linux-foundation.org>;
- Thu, 10 Jun 2021 02:04:18 +0000 (UTC)
+ with ESMTP id lvmFkWOPL4P8 for <iommu@lists.linux-foundation.org>;
+ Thu, 10 Jun 2021 02:04:19 +0000 (UTC)
 X-Greylist: domain auto-whitelisted by SQLgrey-1.8.0
 Received: from mga11.intel.com (mga11.intel.com [192.55.52.93])
- by smtp4.osuosl.org (Postfix) with ESMTPS id 5AEB940594
- for <iommu@lists.linux-foundation.org>; Thu, 10 Jun 2021 02:04:18 +0000 (UTC)
-IronPort-SDR: yZDcIeUSy7zO2WCVesLWKpfy31Mqz5S561iLnPJJCUuR0EAm3OaPVzklAhVjY8TNqFFs2bK/n9
- oyjiFY2cJaJA==
-X-IronPort-AV: E=McAfee;i="6200,9189,10010"; a="202184380"
-X-IronPort-AV: E=Sophos;i="5.83,262,1616482800"; d="scan'208";a="202184380"
+ by smtp4.osuosl.org (Postfix) with ESMTPS id 9F9EE405A1
+ for <iommu@lists.linux-foundation.org>; Thu, 10 Jun 2021 02:04:19 +0000 (UTC)
+IronPort-SDR: jYML6s/K9kAb1POJMz4qxOrw0Wk0yaEKOg10lDJmHl+zUna8YQPCV1ZYJ1WRk9fRCpfbmvgbPL
+ P13jw6tsWglg==
+X-IronPort-AV: E=McAfee;i="6200,9189,10010"; a="202184393"
+X-IronPort-AV: E=Sophos;i="5.83,262,1616482800"; d="scan'208";a="202184393"
 Received: from orsmga006.jf.intel.com ([10.7.209.51])
  by fmsmga102.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384;
- 09 Jun 2021 19:04:06 -0700
-IronPort-SDR: clboMwH5uqlzExgTyJ36FhjcdBeY1U+ymWnjZjdhgmVwP/tDswhbI3lbz0OJZXAxwoSVxFJSqH
- H3xJc0xGOA+g==
+ 09 Jun 2021 19:04:09 -0700
+IronPort-SDR: +Z+QrKX8KnYYugTxGGcER11EvuQjPqC95N6G/MGzYV6oFW3sh7o0nw8memUvBMF0rXjWT5Ky5C
+ m7UnaF9G/Ngg==
 X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.83,262,1616482800"; d="scan'208";a="402500583"
+X-IronPort-AV: E=Sophos;i="5.83,262,1616482800"; d="scan'208";a="402500602"
 Received: from allen-box.sh.intel.com ([10.239.159.105])
- by orsmga006.jf.intel.com with ESMTP; 09 Jun 2021 19:04:03 -0700
+ by orsmga006.jf.intel.com with ESMTP; 09 Jun 2021 19:04:06 -0700
 From: Lu Baolu <baolu.lu@linux.intel.com>
 To: Joerg Roedel <joro@8bytes.org>
-Subject: [PATCH 22/23] iommu/vt-d: Define counter explicitly as unsigned int
-Date: Thu, 10 Jun 2021 10:01:14 +0800
-Message-Id: <20210610020115.1637656-23-baolu.lu@linux.intel.com>
+Subject: [PATCH 23/23] iommu/vt-d: No need to typecast
+Date: Thu, 10 Jun 2021 10:01:15 +0800
+Message-Id: <20210610020115.1637656-24-baolu.lu@linux.intel.com>
 X-Mailer: git-send-email 2.25.1
 In-Reply-To: <20210610020115.1637656-1-baolu.lu@linux.intel.com>
 References: <20210610020115.1637656-1-baolu.lu@linux.intel.com>
@@ -92,32 +92,40 @@ Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
 From: Parav Pandit <parav@nvidia.com>
 
-Avoid below checkpatch warning.
+Page directory assignment by alloc_pgtable_page() or phys_to_virt()
+doesn't need typecasting as both routines return void*. Hence, remove
+typecasting from both the calls.
 
-WARNING: Prefer 'unsigned int' to bare use of 'unsigned'
-+       unsigned        iommu_refcnt[DMAR_UNITS_SUPPORTED];
-
-Fixes: 29a27719abaa ("iommu/vt-d: Replace iommu_bmp with a refcount")
 Signed-off-by: Parav Pandit <parav@nvidia.com>
 Signed-off-by: Lu Baolu <baolu.lu@linux.intel.com>
 Link: https://lore.kernel.org/r/20210530075053.264218-1-parav@nvidia.com
 ---
- include/linux/intel-iommu.h | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ drivers/iommu/intel/iommu.c | 5 ++---
+ 1 file changed, 2 insertions(+), 3 deletions(-)
 
-diff --git a/include/linux/intel-iommu.h b/include/linux/intel-iommu.h
-index 574b932dfe86..d0fa0b31994d 100644
---- a/include/linux/intel-iommu.h
-+++ b/include/linux/intel-iommu.h
-@@ -537,7 +537,7 @@ struct context_entry {
- struct dmar_domain {
- 	int	nid;			/* node id */
+diff --git a/drivers/iommu/intel/iommu.c b/drivers/iommu/intel/iommu.c
+index d9a248ee5779..bd93c7ec879e 100644
+--- a/drivers/iommu/intel/iommu.c
++++ b/drivers/iommu/intel/iommu.c
+@@ -4506,7 +4506,7 @@ static int md_domain_init(struct dmar_domain *domain, int guest_width)
+ 	domain->max_addr = 0;
  
--	unsigned	iommu_refcnt[DMAR_UNITS_SUPPORTED];
-+	unsigned int iommu_refcnt[DMAR_UNITS_SUPPORTED];
- 					/* Refcount of devices per iommu */
+ 	/* always allocate the top pgd */
+-	domain->pgd = (struct dma_pte *)alloc_pgtable_page(domain->nid);
++	domain->pgd = alloc_pgtable_page(domain->nid);
+ 	if (!domain->pgd)
+ 		return -ENOMEM;
+ 	domain_flush_cache(domain, domain->pgd, PAGE_SIZE);
+@@ -4774,8 +4774,7 @@ static int prepare_domain_attach_device(struct iommu_domain *domain,
  
- 
+ 		pte = dmar_domain->pgd;
+ 		if (dma_pte_present(pte)) {
+-			dmar_domain->pgd = (struct dma_pte *)
+-				phys_to_virt(dma_pte_addr(pte));
++			dmar_domain->pgd = phys_to_virt(dma_pte_addr(pte));
+ 			free_pgtable_page(pte);
+ 		}
+ 		dmar_domain->agaw--;
 -- 
 2.25.1
 
