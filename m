@@ -2,67 +2,67 @@ Return-Path: <SRS0=Vfdp=LE=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-16.8 required=3.0 tests=BAYES_00,
+X-Spam-Status: No, score=-14.0 required=3.0 tests=BAYES_00,
 	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_CR_TRAILER,INCLUDES_PATCH,
-	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_GIT
-	autolearn=ham autolearn_force=no version=3.4.0
+	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,UNWANTED_LANGUAGE_BODY,
+	URIBL_BLOCKED,USER_AGENT_GIT autolearn=ham autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id EC01FC48BCD
-	for <iommu@archiver.kernel.org>; Thu, 10 Jun 2021 02:04:22 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 948C6C48BD1
+	for <iommu@archiver.kernel.org>; Thu, 10 Jun 2021 02:04:23 +0000 (UTC)
 Received: from smtp3.osuosl.org (smtp3.osuosl.org [140.211.166.136])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id B934A613BC
-	for <iommu@archiver.kernel.org>; Thu, 10 Jun 2021 02:04:22 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org B934A613BC
+	by mail.kernel.org (Postfix) with ESMTPS id 3FFB261418
+	for <iommu@archiver.kernel.org>; Thu, 10 Jun 2021 02:04:23 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 3FFB261418
 Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=linux.intel.com
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by smtp3.osuosl.org (Postfix) with ESMTP id 8368960886;
+	by smtp3.osuosl.org (Postfix) with ESMTP id B4F626062B;
 	Thu, 10 Jun 2021 02:04:22 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
 Received: from smtp3.osuosl.org ([127.0.0.1])
 	by localhost (smtp3.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id LwQMF1HjQEed; Thu, 10 Jun 2021 02:04:21 +0000 (UTC)
+	with ESMTP id m0qLdieUOsbu; Thu, 10 Jun 2021 02:04:22 +0000 (UTC)
 Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by smtp3.osuosl.org (Postfix) with ESMTPS id 4C87C6062B;
+	by smtp3.osuosl.org (Postfix) with ESMTPS id AF8E160856;
 	Thu, 10 Jun 2021 02:04:21 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 29339C000E;
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 6AFD3C0023;
 	Thu, 10 Jun 2021 02:04:21 +0000 (UTC)
 Received: from smtp4.osuosl.org (smtp4.osuosl.org [140.211.166.137])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 4CAA9C000E
- for <iommu@lists.linux-foundation.org>; Thu, 10 Jun 2021 02:04:17 +0000 (UTC)
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 60C42C000B
+ for <iommu@lists.linux-foundation.org>; Thu, 10 Jun 2021 02:04:19 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by smtp4.osuosl.org (Postfix) with ESMTP id 2E53840599
+ by smtp4.osuosl.org (Postfix) with ESMTP id 755E0405A1
  for <iommu@lists.linux-foundation.org>; Thu, 10 Jun 2021 02:04:17 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
 Received: from smtp4.osuosl.org ([127.0.0.1])
  by localhost (smtp4.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id c2FZVCRS-339 for <iommu@lists.linux-foundation.org>;
+ with ESMTP id AT9N5Mkwe0NO for <iommu@lists.linux-foundation.org>;
  Thu, 10 Jun 2021 02:04:16 +0000 (UTC)
 X-Greylist: domain auto-whitelisted by SQLgrey-1.8.0
 Received: from mga11.intel.com (mga11.intel.com [192.55.52.93])
- by smtp4.osuosl.org (Postfix) with ESMTPS id DED6840542
- for <iommu@lists.linux-foundation.org>; Thu, 10 Jun 2021 02:04:15 +0000 (UTC)
-IronPort-SDR: jA1Rq8TMjjHc6yoyJpCWTu836rMwRoOFMa3FueFdBwS5FzQAmPygQ8EXqRKeT6wqmhfGN9JwvO
- iup4yqZ2YB+g==
-X-IronPort-AV: E=McAfee;i="6200,9189,10010"; a="202184327"
-X-IronPort-AV: E=Sophos;i="5.83,262,1616482800"; d="scan'208";a="202184327"
+ by smtp4.osuosl.org (Postfix) with ESMTPS id 5A76B40594
+ for <iommu@lists.linux-foundation.org>; Thu, 10 Jun 2021 02:04:16 +0000 (UTC)
+IronPort-SDR: AdFGZh1piEL8hbnv2AiqSL2OexQbWg7GykdHeDc7KYWi9e+HOHJ/fKP9dQ5zeLDJgtVbYIxIur
+ fR8GIYpsLwXQ==
+X-IronPort-AV: E=McAfee;i="6200,9189,10010"; a="202184346"
+X-IronPort-AV: E=Sophos;i="5.83,262,1616482800"; d="scan'208";a="202184346"
 Received: from orsmga006.jf.intel.com ([10.7.209.51])
  by fmsmga102.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384;
- 09 Jun 2021 19:03:57 -0700
-IronPort-SDR: YnzVUK56a625pV2xGaQ38fF4MG6XSPriJApDJVzgEu7wB+1eF0XetUOq5ieqoTzdcnv5HlVz4j
- YjuQXDZ2WeQw==
+ 09 Jun 2021 19:04:00 -0700
+IronPort-SDR: 7L6VU5ZxcsbjBfzz758ToX/XR/trKaffbmed+2hysVboOwZKv/acYIU4ayWZdkr+T1FXpS/TZ7
+ 149GtV3Aik3w==
 X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.83,262,1616482800"; d="scan'208";a="402500545"
+X-IronPort-AV: E=Sophos;i="5.83,262,1616482800"; d="scan'208";a="402500552"
 Received: from allen-box.sh.intel.com ([10.239.159.105])
- by orsmga006.jf.intel.com with ESMTP; 09 Jun 2021 19:03:53 -0700
+ by orsmga006.jf.intel.com with ESMTP; 09 Jun 2021 19:03:57 -0700
 From: Lu Baolu <baolu.lu@linux.intel.com>
 To: Joerg Roedel <joro@8bytes.org>
-Subject: [PATCH 19/23] iommu/vt-d: Use bitfields for DMAR capabilities
-Date: Thu, 10 Jun 2021 10:01:11 +0800
-Message-Id: <20210610020115.1637656-20-baolu.lu@linux.intel.com>
+Subject: [PATCH 20/23] iommu/vt-d: Removed unused iommu_count in dmar domain
+Date: Thu, 10 Jun 2021 10:01:12 +0800
+Message-Id: <20210610020115.1637656-21-baolu.lu@linux.intel.com>
 X-Mailer: git-send-email 2.25.1
 In-Reply-To: <20210610020115.1637656-1-baolu.lu@linux.intel.com>
 References: <20210610020115.1637656-1-baolu.lu@linux.intel.com>
@@ -92,200 +92,82 @@ Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
 From: Parav Pandit <parav@nvidia.com>
 
-IOTLB device presence, iommu coherency and snooping are boolean
-capabilities. Use them as bits and keep them adjacent.
+DMAR domain uses per DMAR refcount. It is indexed by iommu seq_id.
+Older iommu_count is only incremented and decremented but no decisions
+are taken based on this refcount. This is not of much use.
 
-Structure layout before the reorg.
-$ pahole -C dmar_domain drivers/iommu/intel/dmar.o
-struct dmar_domain {
-        int                        nid;                  /*     0     4 */
-        unsigned int               iommu_refcnt[128];    /*     4   512 */
-        /* --- cacheline 8 boundary (512 bytes) was 4 bytes ago --- */
-        u16                        iommu_did[128];       /*   516   256 */
-        /* --- cacheline 12 boundary (768 bytes) was 4 bytes ago --- */
-        bool                       has_iotlb_device;     /*   772     1 */
-
-        /* XXX 3 bytes hole, try to pack */
-
-        struct list_head           devices;              /*   776    16 */
-        struct list_head           subdevices;           /*   792    16 */
-        struct iova_domain         iovad __attribute__((__aligned__(8)));
-							 /*   808  2320 */
-        /* --- cacheline 48 boundary (3072 bytes) was 56 bytes ago --- */
-        struct dma_pte *           pgd;                  /*  3128     8 */
-        /* --- cacheline 49 boundary (3136 bytes) --- */
-        int                        gaw;                  /*  3136     4 */
-        int                        agaw;                 /*  3140     4 */
-        int                        flags;                /*  3144     4 */
-        int                        iommu_coherency;      /*  3148     4 */
-        int                        iommu_snooping;       /*  3152     4 */
-        int                        iommu_count;          /*  3156     4 */
-        int                        iommu_superpage;      /*  3160     4 */
-
-        /* XXX 4 bytes hole, try to pack */
-
-        u64                        max_addr;             /*  3168     8 */
-        u32                        default_pasid;        /*  3176     4 */
-
-        /* XXX 4 bytes hole, try to pack */
-
-        struct iommu_domain        domain;               /*  3184    72 */
-
-        /* size: 3256, cachelines: 51, members: 18 */
-        /* sum members: 3245, holes: 3, sum holes: 11 */
-        /* forced alignments: 1 */
-        /* last cacheline: 56 bytes */
-} __attribute__((__aligned__(8)));
-
-After arranging it for natural padding and to make flags as u8 bits, it
-saves 8 bytes for the struct.
-
-struct dmar_domain {
-        int                        nid;                  /*     0     4 */
-        unsigned int               iommu_refcnt[128];    /*     4   512 */
-        /* --- cacheline 8 boundary (512 bytes) was 4 bytes ago --- */
-        u16                        iommu_did[128];       /*   516   256 */
-        /* --- cacheline 12 boundary (768 bytes) was 4 bytes ago --- */
-        u8                         has_iotlb_device:1;   /*   772: 0  1 */
-        u8                         iommu_coherency:1;    /*   772: 1  1 */
-        u8                         iommu_snooping:1;     /*   772: 2  1 */
-
-        /* XXX 5 bits hole, try to pack */
-        /* XXX 3 bytes hole, try to pack */
-
-        struct list_head           devices;              /*   776    16 */
-        struct list_head           subdevices;           /*   792    16 */
-        struct iova_domain         iovad __attribute__((__aligned__(8)));
-							 /*   808  2320 */
-        /* --- cacheline 48 boundary (3072 bytes) was 56 bytes ago --- */
-        struct dma_pte *           pgd;                  /*  3128     8 */
-        /* --- cacheline 49 boundary (3136 bytes) --- */
-        int                        gaw;                  /*  3136     4 */
-        int                        agaw;                 /*  3140     4 */
-        int                        flags;                /*  3144     4 */
-        int                        iommu_count;          /*  3148     4 */
-        int                        iommu_superpage;      /*  3152     4 */
-
-        /* XXX 4 bytes hole, try to pack */
-
-        u64                        max_addr;             /*  3160     8 */
-        u32                        default_pasid;        /*  3168     4 */
-
-        /* XXX 4 bytes hole, try to pack */
-
-        struct iommu_domain        domain;               /*  3176    72 */
-
-        /* size: 3248, cachelines: 51, members: 18 */
-        /* sum members: 3236, holes: 3, sum holes: 11 */
-        /* sum bitfield members: 3 bits, bit holes: 1, sum bit holes: 5 bits */
-        /* forced alignments: 1 */
-        /* last cacheline: 48 bytes */
-} __attribute__((__aligned__(8)));
+Hence, remove iommu_count and further simplify domain_detach_iommu()
+by returning void.
 
 Signed-off-by: Parav Pandit <parav@nvidia.com>
 Signed-off-by: Lu Baolu <baolu.lu@linux.intel.com>
 Link: https://lore.kernel.org/r/20210530075053.264218-1-parav@nvidia.com
 ---
- include/linux/intel-iommu.h |  8 ++++----
- drivers/iommu/intel/iommu.c | 18 +++++++++---------
- 2 files changed, 13 insertions(+), 13 deletions(-)
+ include/linux/intel-iommu.h |  1 -
+ drivers/iommu/intel/iommu.c | 11 +++--------
+ 2 files changed, 3 insertions(+), 9 deletions(-)
 
 diff --git a/include/linux/intel-iommu.h b/include/linux/intel-iommu.h
-index f5cf31dd7280..2621eff04c82 100644
+index 2621eff04c82..574b932dfe86 100644
 --- a/include/linux/intel-iommu.h
 +++ b/include/linux/intel-iommu.h
-@@ -546,7 +546,10 @@ struct dmar_domain {
- 					 * domain ids are 16 bit wide according
- 					 * to VT-d spec, section 9.3 */
- 
--	bool has_iotlb_device;
-+	u8 has_iotlb_device: 1;
-+	u8 iommu_coherency: 1;		/* indicate coherency of iommu access */
-+	u8 iommu_snooping: 1;		/* indicate snooping control feature */
-+
- 	struct list_head devices;	/* all devices' list */
- 	struct list_head subdevices;	/* all subdevices' list */
- 	struct iova_domain iovad;	/* iova's that belong to this domain */
-@@ -558,9 +561,6 @@ struct dmar_domain {
+@@ -561,7 +561,6 @@ struct dmar_domain {
  	int		agaw;
  
  	int		flags;		/* flags to find out type of domain */
--
--	int		iommu_coherency;/* indicate coherency of iommu access */
--	int		iommu_snooping; /* indicate snooping control feature*/
- 	int		iommu_count;	/* reference count of iommu */
+-	int		iommu_count;	/* reference count of iommu */
  	int		iommu_superpage;/* Level of superpages supported:
  					   0 == 4KiB (no superpages), 1 == 2MiB,
+ 					   2 == 1GiB, 3 == 512GiB, 4 == 1TiB */
 diff --git a/drivers/iommu/intel/iommu.c b/drivers/iommu/intel/iommu.c
-index 65458aee0d95..430ef2232d47 100644
+index 430ef2232d47..dd8ecfbfdb23 100644
 --- a/drivers/iommu/intel/iommu.c
 +++ b/drivers/iommu/intel/iommu.c
-@@ -626,12 +626,12 @@ static void domain_update_iommu_coherency(struct dmar_domain *domain)
- 	bool found = false;
- 	int i;
+@@ -1920,7 +1920,6 @@ static int domain_attach_iommu(struct dmar_domain *domain,
+ 	assert_spin_locked(&iommu->lock);
  
--	domain->iommu_coherency = 1;
-+	domain->iommu_coherency = true;
+ 	domain->iommu_refcnt[iommu->seq_id] += 1;
+-	domain->iommu_count += 1;
+ 	if (domain->iommu_refcnt[iommu->seq_id] == 1) {
+ 		ndomains = cap_ndoms(iommu->cap);
+ 		num      = find_first_zero_bit(iommu->domain_ids, ndomains);
+@@ -1928,7 +1927,6 @@ static int domain_attach_iommu(struct dmar_domain *domain,
+ 		if (num >= ndomains) {
+ 			pr_err("%s: No free domain ids\n", iommu->name);
+ 			domain->iommu_refcnt[iommu->seq_id] -= 1;
+-			domain->iommu_count -= 1;
+ 			return -ENOSPC;
+ 		}
  
- 	for_each_domain_iommu(i, domain) {
- 		found = true;
- 		if (!iommu_paging_structure_coherency(g_iommus[i])) {
--			domain->iommu_coherency = 0;
-+			domain->iommu_coherency = false;
- 			break;
- 		}
- 	}
-@@ -642,18 +642,18 @@ static void domain_update_iommu_coherency(struct dmar_domain *domain)
- 	rcu_read_lock();
- 	for_each_active_iommu(iommu, drhd) {
- 		if (!iommu_paging_structure_coherency(iommu)) {
--			domain->iommu_coherency = 0;
-+			domain->iommu_coherency = false;
- 			break;
- 		}
- 	}
- 	rcu_read_unlock();
+@@ -1944,16 +1942,15 @@ static int domain_attach_iommu(struct dmar_domain *domain,
+ 	return 0;
  }
  
--static int domain_update_iommu_snooping(struct intel_iommu *skip)
-+static bool domain_update_iommu_snooping(struct intel_iommu *skip)
+-static int domain_detach_iommu(struct dmar_domain *domain,
+-			       struct intel_iommu *iommu)
++static void domain_detach_iommu(struct dmar_domain *domain,
++				struct intel_iommu *iommu)
  {
- 	struct dmar_drhd_unit *drhd;
- 	struct intel_iommu *iommu;
--	int ret = 1;
-+	bool ret = true;
+-	int num, count;
++	int num;
  
- 	rcu_read_lock();
- 	for_each_active_iommu(iommu, drhd) {
-@@ -666,7 +666,7 @@ static int domain_update_iommu_snooping(struct intel_iommu *skip)
- 			 */
- 			if (!sm_supported(iommu) &&
- 			    !ecap_sc_support(iommu->ecap)) {
--				ret = 0;
-+				ret = false;
- 				break;
- 			}
- 		}
-@@ -4506,8 +4506,8 @@ static int md_domain_init(struct dmar_domain *domain, int guest_width)
- 	adjust_width = guestwidth_to_adjustwidth(guest_width);
- 	domain->agaw = width_to_agaw(adjust_width);
+ 	assert_spin_locked(&device_domain_lock);
+ 	assert_spin_locked(&iommu->lock);
  
--	domain->iommu_coherency = 0;
--	domain->iommu_snooping = 0;
-+	domain->iommu_coherency = false;
-+	domain->iommu_snooping = false;
- 	domain->iommu_superpage = 0;
- 	domain->max_addr = 0;
+ 	domain->iommu_refcnt[iommu->seq_id] -= 1;
+-	count = --domain->iommu_count;
+ 	if (domain->iommu_refcnt[iommu->seq_id] == 0) {
+ 		num = domain->iommu_did[iommu->seq_id];
+ 		clear_bit(num, iommu->domain_ids);
+@@ -1962,8 +1959,6 @@ static int domain_detach_iommu(struct dmar_domain *domain,
+ 		domain_update_iommu_cap(domain);
+ 		domain->iommu_did[iommu->seq_id] = 0;
+ 	}
+-
+-	return count;
+ }
  
-@@ -5131,7 +5131,7 @@ static phys_addr_t intel_iommu_iova_to_phys(struct iommu_domain *domain,
- static bool intel_iommu_capable(enum iommu_cap cap)
- {
- 	if (cap == IOMMU_CAP_CACHE_COHERENCY)
--		return domain_update_iommu_snooping(NULL) == 1;
-+		return domain_update_iommu_snooping(NULL);
- 	if (cap == IOMMU_CAP_INTR_REMAP)
- 		return irq_remapping_enabled == 1;
- 
+ static inline int guestwidth_to_adjustwidth(int gaw)
 -- 
 2.25.1
 
