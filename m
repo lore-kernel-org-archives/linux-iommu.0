@@ -7,62 +7,62 @@ X-Spam-Status: No, score=-16.8 required=3.0 tests=BAYES_00,
 	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_GIT
 	autolearn=ham autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 026FBC48BCD
-	for <iommu@archiver.kernel.org>; Thu, 10 Jun 2021 02:03:31 +0000 (UTC)
-Received: from smtp1.osuosl.org (smtp1.osuosl.org [140.211.166.138])
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 68CAFC48BCD
+	for <iommu@archiver.kernel.org>; Thu, 10 Jun 2021 02:03:35 +0000 (UTC)
+Received: from smtp4.osuosl.org (smtp4.osuosl.org [140.211.166.137])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id B8704613BC
-	for <iommu@archiver.kernel.org>; Thu, 10 Jun 2021 02:03:30 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org B8704613BC
+	by mail.kernel.org (Postfix) with ESMTPS id 361E961407
+	for <iommu@archiver.kernel.org>; Thu, 10 Jun 2021 02:03:35 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 361E961407
 Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=linux.intel.com
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by smtp1.osuosl.org (Postfix) with ESMTP id 8CBF183267;
-	Thu, 10 Jun 2021 02:03:30 +0000 (UTC)
+	by smtp4.osuosl.org (Postfix) with ESMTP id 0CA96405A0;
+	Thu, 10 Jun 2021 02:03:35 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from smtp1.osuosl.org ([127.0.0.1])
-	by localhost (smtp1.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id tSqNY6eUMo_x; Thu, 10 Jun 2021 02:03:29 +0000 (UTC)
-Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by smtp1.osuosl.org (Postfix) with ESMTPS id 66216831A5;
-	Thu, 10 Jun 2021 02:03:29 +0000 (UTC)
+Received: from smtp4.osuosl.org ([127.0.0.1])
+	by localhost (smtp4.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+	with ESMTP id ACnOUBvn0UgA; Thu, 10 Jun 2021 02:03:34 +0000 (UTC)
+Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [IPv6:2605:bc80:3010:104::8cd3:938])
+	by smtp4.osuosl.org (Postfix) with ESMTPS id A92E440540;
+	Thu, 10 Jun 2021 02:03:33 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 43A41C000E;
-	Thu, 10 Jun 2021 02:03:29 +0000 (UTC)
-Received: from smtp1.osuosl.org (smtp1.osuosl.org [IPv6:2605:bc80:3010::138])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 628BCC000B
- for <iommu@lists.linux-foundation.org>; Thu, 10 Jun 2021 02:03:28 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 78B33C000E;
+	Thu, 10 Jun 2021 02:03:33 +0000 (UTC)
+Received: from smtp1.osuosl.org (smtp1.osuosl.org [140.211.166.138])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id E598DC000B
+ for <iommu@lists.linux-foundation.org>; Thu, 10 Jun 2021 02:03:31 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by smtp1.osuosl.org (Postfix) with ESMTP id 418F7831AC
- for <iommu@lists.linux-foundation.org>; Thu, 10 Jun 2021 02:03:28 +0000 (UTC)
+ by smtp1.osuosl.org (Postfix) with ESMTP id D3280831AC
+ for <iommu@lists.linux-foundation.org>; Thu, 10 Jun 2021 02:03:31 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
 Received: from smtp1.osuosl.org ([127.0.0.1])
  by localhost (smtp1.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id SqaCRSPWQXjO for <iommu@lists.linux-foundation.org>;
- Thu, 10 Jun 2021 02:03:27 +0000 (UTC)
+ with ESMTP id anUodkZBf3y8 for <iommu@lists.linux-foundation.org>;
+ Thu, 10 Jun 2021 02:03:31 +0000 (UTC)
 X-Greylist: domain auto-whitelisted by SQLgrey-1.8.0
 Received: from mga11.intel.com (mga11.intel.com [192.55.52.93])
- by smtp1.osuosl.org (Postfix) with ESMTPS id 497328318C
- for <iommu@lists.linux-foundation.org>; Thu, 10 Jun 2021 02:03:27 +0000 (UTC)
-IronPort-SDR: PwgzhdhiDKO53UBhinyv5ZnnUSjDUz+3LKPIx+MtFyWH0hhGCyY+iUI8DdE8dA0wBDtYAsSziC
- 3UHiiWcoBLRQ==
-X-IronPort-AV: E=McAfee;i="6200,9189,10010"; a="202184230"
-X-IronPort-AV: E=Sophos;i="5.83,262,1616482800"; d="scan'208";a="202184230"
+ by smtp1.osuosl.org (Postfix) with ESMTPS id E4D18831A5
+ for <iommu@lists.linux-foundation.org>; Thu, 10 Jun 2021 02:03:30 +0000 (UTC)
+IronPort-SDR: o7nLXjwFLtH0k5/KW5GVXOAvxGe11DhYv1FOLCFdrpshC0cK6ZN0O6iYRlcWOZw/o1mGdhJLTr
+ oLiBfSBRN8lw==
+X-IronPort-AV: E=McAfee;i="6200,9189,10010"; a="202184240"
+X-IronPort-AV: E=Sophos;i="5.83,262,1616482800"; d="scan'208";a="202184240"
 Received: from orsmga006.jf.intel.com ([10.7.209.51])
  by fmsmga102.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384;
- 09 Jun 2021 19:03:27 -0700
-IronPort-SDR: 7/6DYhadQdmA2gf0LsaLCOursYN7prleSk+fBl9MDIyao6jpjcjhH1cCUk1IWB4naOZgezVwU1
- 8sssO5SINiUQ==
+ 09 Jun 2021 19:03:30 -0700
+IronPort-SDR: Ag/uFiR5AwOu1VGpSDUU4KISQMyaz2kpfDCUSex3Lp8EFuSuGlOKF5n5VIcMVOM+GQnY6fFKGs
+ gNqrK+Rt4JUQ==
 X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.83,262,1616482800"; d="scan'208";a="402500392"
+X-IronPort-AV: E=Sophos;i="5.83,262,1616482800"; d="scan'208";a="402500406"
 Received: from allen-box.sh.intel.com ([10.239.159.105])
- by orsmga006.jf.intel.com with ESMTP; 09 Jun 2021 19:03:24 -0700
+ by orsmga006.jf.intel.com with ESMTP; 09 Jun 2021 19:03:27 -0700
 From: Lu Baolu <baolu.lu@linux.intel.com>
 To: Joerg Roedel <joro@8bytes.org>
-Subject: [PATCH 10/23] iommu/vt-d: Allocate/register iopf queue for sva devices
-Date: Thu, 10 Jun 2021 10:01:02 +0800
-Message-Id: <20210610020115.1637656-11-baolu.lu@linux.intel.com>
+Subject: [PATCH 11/23] iommu/vt-d: Report prq to io-pgfault framework
+Date: Thu, 10 Jun 2021 10:01:03 +0800
+Message-Id: <20210610020115.1637656-12-baolu.lu@linux.intel.com>
 X-Mailer: git-send-email 2.25.1
 In-Reply-To: <20210610020115.1637656-1-baolu.lu@linux.intel.com>
 References: <20210610020115.1637656-1-baolu.lu@linux.intel.com>
@@ -90,213 +90,178 @@ Content-Transfer-Encoding: 7bit
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-This allocates and registers the iopf queue infrastructure for devices
-which want to support IO page fault for SVA.
+Let the IO page fault requests get handled through the io-pgfault
+framework.
 
 Signed-off-by: Lu Baolu <baolu.lu@linux.intel.com>
 Link: https://lore.kernel.org/r/20210520031531.712333-1-baolu.lu@linux.intel.com
 ---
- include/linux/intel-iommu.h |  2 ++
- drivers/iommu/intel/iommu.c | 66 ++++++++++++++++++++++++++-----------
- drivers/iommu/intel/svm.c   | 37 +++++++++++++++++----
- 3 files changed, 79 insertions(+), 26 deletions(-)
+ drivers/iommu/intel/iommu.c | 14 ++++++-
+ drivers/iommu/intel/svm.c   | 84 +++----------------------------------
+ 2 files changed, 17 insertions(+), 81 deletions(-)
 
-diff --git a/include/linux/intel-iommu.h b/include/linux/intel-iommu.h
-index 4e8bb186daa7..222520d149c1 100644
---- a/include/linux/intel-iommu.h
-+++ b/include/linux/intel-iommu.h
-@@ -606,6 +606,8 @@ struct intel_iommu {
- 	struct completion prq_complete;
- 	struct ioasid_allocator_ops pasid_allocator; /* Custom allocator for PASIDs */
- #endif
-+	struct iopf_queue *iopf_queue;
-+	unsigned char iopfq_name[16];
- 	struct q_inval  *qi;            /* Queued invalidation info */
- 	u32 *iommu_state; /* Store iommu states between suspend and resume.*/
- 
 diff --git a/drivers/iommu/intel/iommu.c b/drivers/iommu/intel/iommu.c
-index 0ca7f8a2f38e..e78773d46d7d 100644
+index e78773d46d7d..c45d4946f92d 100644
 --- a/drivers/iommu/intel/iommu.c
 +++ b/drivers/iommu/intel/iommu.c
-@@ -46,6 +46,7 @@
- #include <asm/iommu.h>
- 
- #include "../irq_remapping.h"
-+#include "../iommu-sva-lib.h"
- #include "pasid.h"
- #include "cap_audit.h"
- 
-@@ -5338,6 +5339,34 @@ static int intel_iommu_disable_auxd(struct device *dev)
- 	return 0;
- }
- 
-+static int intel_iommu_enable_sva(struct device *dev)
-+{
-+	struct device_domain_info *info = get_domain_info(dev);
-+	struct intel_iommu *iommu = info->iommu;
-+
-+	if (!info || !iommu || dmar_disabled)
-+		return -EINVAL;
-+
-+	if (!(iommu->flags & VTD_FLAG_SVM_CAPABLE))
-+		return -ENODEV;
-+
-+	if (intel_iommu_enable_pasid(iommu, dev))
-+		return -ENODEV;
-+
-+	if (!info->pasid_enabled || !info->pri_enabled || !info->ats_enabled)
-+		return -EINVAL;
-+
-+	return iopf_queue_add_device(iommu->iopf_queue, dev);
-+}
-+
-+static int intel_iommu_disable_sva(struct device *dev)
-+{
-+	struct device_domain_info *info = get_domain_info(dev);
-+	struct intel_iommu *iommu = info->iommu;
-+
-+	return iopf_queue_remove_device(iommu->iopf_queue, dev);
-+}
-+
- /*
-  * A PCI express designated vendor specific extended capability is defined
-  * in the section 3.7 of Intel scalable I/O virtualization technical spec
-@@ -5399,38 +5428,37 @@ intel_iommu_dev_has_feat(struct device *dev, enum iommu_dev_features feat)
- static int
- intel_iommu_dev_enable_feat(struct device *dev, enum iommu_dev_features feat)
+@@ -5343,6 +5343,7 @@ static int intel_iommu_enable_sva(struct device *dev)
  {
--	if (feat == IOMMU_DEV_FEAT_AUX)
-+	switch (feat) {
-+	case IOMMU_DEV_FEAT_AUX:
- 		return intel_iommu_enable_auxd(dev);
+ 	struct device_domain_info *info = get_domain_info(dev);
+ 	struct intel_iommu *iommu = info->iommu;
++	int ret;
  
--	if (feat == IOMMU_DEV_FEAT_IOPF)
-+	case IOMMU_DEV_FEAT_IOPF:
- 		return intel_iommu_dev_has_feat(dev, feat) ? 0 : -ENODEV;
+ 	if (!info || !iommu || dmar_disabled)
+ 		return -EINVAL;
+@@ -5356,15 +5357,24 @@ static int intel_iommu_enable_sva(struct device *dev)
+ 	if (!info->pasid_enabled || !info->pri_enabled || !info->ats_enabled)
+ 		return -EINVAL;
  
--	if (feat == IOMMU_DEV_FEAT_SVA) {
--		struct device_domain_info *info = get_domain_info(dev);
--
--		if (!info)
--			return -EINVAL;
--
--		if (intel_iommu_enable_pasid(info->iommu, dev))
--			return -ENODEV;
-+	case IOMMU_DEV_FEAT_SVA:
-+		return intel_iommu_enable_sva(dev);
- 
--		if (!info->pasid_enabled || !info->pri_enabled || !info->ats_enabled)
--			return -EINVAL;
--
--		if (info->iommu->flags & VTD_FLAG_SVM_CAPABLE)
--			return 0;
-+	default:
-+		return -ENODEV;
- 	}
--
--	return -ENODEV;
- }
- 
- static int
- intel_iommu_dev_disable_feat(struct device *dev, enum iommu_dev_features feat)
- {
--	if (feat == IOMMU_DEV_FEAT_AUX)
-+	switch (feat) {
-+	case IOMMU_DEV_FEAT_AUX:
- 		return intel_iommu_disable_auxd(dev);
- 
--	return -ENODEV;
-+	case IOMMU_DEV_FEAT_IOPF:
-+		return 0;
-+
-+	case IOMMU_DEV_FEAT_SVA:
-+		return intel_iommu_disable_sva(dev);
-+
-+	default:
-+		return -ENODEV;
-+	}
- }
- 
- static bool
-diff --git a/drivers/iommu/intel/svm.c b/drivers/iommu/intel/svm.c
-index d51ddece4259..4dc3ab36e9ae 100644
---- a/drivers/iommu/intel/svm.c
-+++ b/drivers/iommu/intel/svm.c
-@@ -84,6 +84,7 @@ svm_lookup_device_by_dev(struct intel_svm *svm, struct device *dev)
- 
- int intel_svm_enable_prq(struct intel_iommu *iommu)
- {
-+	struct iopf_queue *iopfq;
- 	struct page *pages;
- 	int irq, ret;
- 
-@@ -100,13 +101,20 @@ int intel_svm_enable_prq(struct intel_iommu *iommu)
- 		pr_err("IOMMU: %s: Failed to create IRQ vector for page request queue\n",
- 		       iommu->name);
- 		ret = -EINVAL;
--	err:
--		free_pages((unsigned long)iommu->prq, PRQ_ORDER);
--		iommu->prq = NULL;
--		return ret;
-+		goto free_prq;
- 	}
- 	iommu->pr_irq = irq;
- 
-+	snprintf(iommu->iopfq_name, sizeof(iommu->iopfq_name),
-+		 "dmar%d-iopfq", iommu->seq_id);
-+	iopfq = iopf_queue_alloc(iommu->iopfq_name);
-+	if (!iopfq) {
-+		pr_err("IOMMU: %s: Failed to allocate iopf queue\n", iommu->name);
-+		ret = -ENOMEM;
-+		goto free_hwirq;
-+	}
-+	iommu->iopf_queue = iopfq;
-+
- 	snprintf(iommu->prq_name, sizeof(iommu->prq_name), "dmar%d-prq", iommu->seq_id);
- 
- 	ret = request_threaded_irq(irq, NULL, prq_event_thread, IRQF_ONESHOT,
-@@ -114,9 +122,7 @@ int intel_svm_enable_prq(struct intel_iommu *iommu)
- 	if (ret) {
- 		pr_err("IOMMU: %s: Failed to request IRQ for page request queue\n",
- 		       iommu->name);
--		dmar_free_hwirq(irq);
--		iommu->pr_irq = 0;
--		goto err;
-+		goto free_iopfq;
- 	}
- 	dmar_writeq(iommu->reg + DMAR_PQH_REG, 0ULL);
- 	dmar_writeq(iommu->reg + DMAR_PQT_REG, 0ULL);
-@@ -125,6 +131,18 @@ int intel_svm_enable_prq(struct intel_iommu *iommu)
- 	init_completion(&iommu->prq_complete);
- 
- 	return 0;
-+
-+free_iopfq:
-+	iopf_queue_free(iommu->iopf_queue);
-+	iommu->iopf_queue = NULL;
-+free_hwirq:
-+	dmar_free_hwirq(irq);
-+	iommu->pr_irq = 0;
-+free_prq:
-+	free_pages((unsigned long)iommu->prq, PRQ_ORDER);
-+	iommu->prq = NULL;
+-	return iopf_queue_add_device(iommu->iopf_queue, dev);
++	ret = iopf_queue_add_device(iommu->iopf_queue, dev);
++	if (!ret)
++		ret = iommu_register_device_fault_handler(dev, iommu_queue_iopf, dev);
 +
 +	return ret;
  }
  
- int intel_svm_finish_prq(struct intel_iommu *iommu)
-@@ -139,6 +157,11 @@ int intel_svm_finish_prq(struct intel_iommu *iommu)
- 		iommu->pr_irq = 0;
+ static int intel_iommu_disable_sva(struct device *dev)
+ {
+ 	struct device_domain_info *info = get_domain_info(dev);
+ 	struct intel_iommu *iommu = info->iommu;
++	int ret;
++
++	ret = iommu_unregister_device_fault_handler(dev);
++	if (!ret)
++		ret = iopf_queue_remove_device(iommu->iopf_queue, dev);
+ 
+-	return iopf_queue_remove_device(iommu->iopf_queue, dev);
++	return ret;
+ }
+ 
+ /*
+diff --git a/drivers/iommu/intel/svm.c b/drivers/iommu/intel/svm.c
+index 4dc3ab36e9ae..ade157b64ce7 100644
+--- a/drivers/iommu/intel/svm.c
++++ b/drivers/iommu/intel/svm.c
+@@ -724,22 +724,6 @@ struct page_req_dsc {
+ 
+ #define PRQ_RING_MASK	((0x1000 << PRQ_ORDER) - 0x20)
+ 
+-static bool access_error(struct vm_area_struct *vma, struct page_req_dsc *req)
+-{
+-	unsigned long requested = 0;
+-
+-	if (req->exe_req)
+-		requested |= VM_EXEC;
+-
+-	if (req->rd_req)
+-		requested |= VM_READ;
+-
+-	if (req->wr_req)
+-		requested |= VM_WRITE;
+-
+-	return (requested & ~vma->vm_flags) != 0;
+-}
+-
+ static bool is_canonical_address(u64 addr)
+ {
+ 	int shift = 64 - (__VIRTUAL_MASK_SHIFT + 1);
+@@ -809,6 +793,8 @@ static void intel_svm_drain_prq(struct device *dev, u32 pasid)
+ 		goto prq_retry;
  	}
  
-+	if (iommu->iopf_queue) {
-+		iopf_queue_free(iommu->iopf_queue);
-+		iommu->iopf_queue = NULL;
-+	}
++	iopf_queue_flush_dev(dev);
 +
- 	free_pages((unsigned long)iommu->prq, PRQ_ORDER);
- 	iommu->prq = NULL;
+ 	/*
+ 	 * Perform steps described in VT-d spec CH7.10 to drain page
+ 	 * requests and responses in hardware.
+@@ -924,61 +910,6 @@ static void handle_bad_prq_event(struct intel_iommu *iommu,
+ 	qi_submit_sync(iommu, &desc, 1, 0);
+ }
  
+-static void handle_single_prq_event(struct intel_iommu *iommu,
+-				    struct mm_struct *mm,
+-				    struct page_req_dsc *req)
+-{
+-	u64 address = (u64)req->addr << VTD_PAGE_SHIFT;
+-	int result = QI_RESP_INVALID;
+-	struct vm_area_struct *vma;
+-	struct qi_desc desc;
+-	unsigned int flags;
+-	vm_fault_t ret;
+-
+-	/* If the mm is already defunct, don't handle faults. */
+-	if (!mmget_not_zero(mm))
+-		goto response;
+-
+-	mmap_read_lock(mm);
+-	vma = find_extend_vma(mm, address);
+-	if (!vma || address < vma->vm_start)
+-		goto invalid;
+-
+-	if (access_error(vma, req))
+-		goto invalid;
+-
+-	flags = FAULT_FLAG_USER | FAULT_FLAG_REMOTE;
+-	if (req->wr_req)
+-		flags |= FAULT_FLAG_WRITE;
+-
+-	ret = handle_mm_fault(vma, address, flags, NULL);
+-	if (!(ret & VM_FAULT_ERROR))
+-		result = QI_RESP_SUCCESS;
+-invalid:
+-	mmap_read_unlock(mm);
+-	mmput(mm);
+-
+-response:
+-	if (!(req->lpig || req->priv_data_present))
+-		return;
+-
+-	desc.qw0 = QI_PGRP_PASID(req->pasid) |
+-			QI_PGRP_DID(req->rid) |
+-			QI_PGRP_PASID_P(req->pasid_present) |
+-			QI_PGRP_PDP(req->priv_data_present) |
+-			QI_PGRP_RESP_CODE(result) |
+-			QI_PGRP_RESP_TYPE;
+-	desc.qw1 = QI_PGRP_IDX(req->prg_index) |
+-			QI_PGRP_LPIG(req->lpig);
+-	desc.qw2 = 0;
+-	desc.qw3 = 0;
+-
+-	if (req->priv_data_present)
+-		memcpy(&desc.qw2, req->priv_data, sizeof(req->priv_data));
+-
+-	qi_submit_sync(iommu, &desc, 1, 0);
+-}
+-
+ static irqreturn_t prq_event_thread(int irq, void *d)
+ {
+ 	struct intel_svm_dev *sdev = NULL;
+@@ -1049,14 +980,8 @@ static irqreturn_t prq_event_thread(int irq, void *d)
+ 		 * If prq is to be handled outside iommu driver via receiver of
+ 		 * the fault notifiers, we skip the page response here.
+ 		 */
+-		if (svm->flags & SVM_FLAG_GUEST_MODE) {
+-			if (!intel_svm_prq_report(sdev->dev, req))
+-				goto prq_advance;
+-			else
+-				goto bad_req;
+-		}
+-
+-		handle_single_prq_event(iommu, svm->mm, req);
++		if (intel_svm_prq_report(sdev->dev, req))
++			handle_bad_prq_event(iommu, req, QI_RESP_INVALID);
+ prq_advance:
+ 		head = (head + sizeof(*req)) & PRQ_RING_MASK;
+ 	}
+@@ -1073,6 +998,7 @@ static irqreturn_t prq_event_thread(int irq, void *d)
+ 		head = dmar_readq(iommu->reg + DMAR_PQH_REG) & PRQ_RING_MASK;
+ 		tail = dmar_readq(iommu->reg + DMAR_PQT_REG) & PRQ_RING_MASK;
+ 		if (head == tail) {
++			iopf_queue_discard_partial(iommu->iopf_queue);
+ 			writel(DMA_PRS_PRO, iommu->reg + DMAR_PRS_REG);
+ 			pr_info_ratelimited("IOMMU: %s: PRQ overflow cleared",
+ 					    iommu->name);
 -- 
 2.25.1
 
