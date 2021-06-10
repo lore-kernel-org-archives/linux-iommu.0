@@ -2,163 +2,106 @@ Return-Path: <SRS0=Vfdp=LE=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-5.0 required=3.0 tests=BAYES_00,DKIM_INVALID,
-	DKIM_SIGNED,HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,
-	MSGID_FROM_MTA_HEADER,NICE_REPLY_A,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,
-	USER_AGENT_SANE_1 autolearn=no autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-2.0 required=3.0 tests=BAYES_00,DKIM_ADSP_CUSTOM_MED,
+	DKIM_INVALID,DKIM_SIGNED,FREEMAIL_FORGED_FROMDOMAIN,FREEMAIL_FROM,
+	HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,
+	URIBL_BLOCKED,USER_AGENT_SANE_1 autolearn=no autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7977DC48BDF
-	for <iommu@archiver.kernel.org>; Thu, 10 Jun 2021 14:52:18 +0000 (UTC)
-Received: from smtp4.osuosl.org (smtp4.osuosl.org [140.211.166.137])
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C0A02C48BD1
+	for <iommu@archiver.kernel.org>; Thu, 10 Jun 2021 15:03:51 +0000 (UTC)
+Received: from smtp2.osuosl.org (smtp2.osuosl.org [140.211.166.133])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 243C9610E6
-	for <iommu@archiver.kernel.org>; Thu, 10 Jun 2021 14:52:18 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 243C9610E6
-Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=nxp.com
+	by mail.kernel.org (Postfix) with ESMTPS id 5EA41613DD
+	for <iommu@archiver.kernel.org>; Thu, 10 Jun 2021 15:03:51 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 5EA41613DD
+Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=gmail.com
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by smtp4.osuosl.org (Postfix) with ESMTP id DA69C40125;
-	Thu, 10 Jun 2021 14:52:17 +0000 (UTC)
+	by smtp2.osuosl.org (Postfix) with ESMTP id 28D0F40543;
+	Thu, 10 Jun 2021 15:03:51 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from smtp4.osuosl.org ([127.0.0.1])
-	by localhost (smtp4.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id QP42mFQA6S7A; Thu, 10 Jun 2021 14:52:16 +0000 (UTC)
-Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by smtp4.osuosl.org (Postfix) with ESMTPS id 4917D405F0;
-	Thu, 10 Jun 2021 14:52:16 +0000 (UTC)
+Received: from smtp2.osuosl.org ([127.0.0.1])
+	by localhost (smtp2.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+	with ESMTP id xEb4U94cxEBg; Thu, 10 Jun 2021 15:03:50 +0000 (UTC)
+Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [IPv6:2605:bc80:3010:104::8cd3:938])
+	by smtp2.osuosl.org (Postfix) with ESMTPS id E660F403CE;
+	Thu, 10 Jun 2021 15:03:49 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 09F03C000E;
-	Thu, 10 Jun 2021 14:52:16 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id B9E4AC000E;
+	Thu, 10 Jun 2021 15:03:49 +0000 (UTC)
 Received: from smtp1.osuosl.org (smtp1.osuosl.org [IPv6:2605:bc80:3010::138])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 5492BC000B
- for <iommu@lists.linux-foundation.org>; Thu, 10 Jun 2021 14:52:14 +0000 (UTC)
+ by lists.linuxfoundation.org (Postfix) with ESMTP id D1542C000B
+ for <iommu@lists.linux-foundation.org>; Thu, 10 Jun 2021 15:03:48 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by smtp1.osuosl.org (Postfix) with ESMTP id 43A3282EF0
- for <iommu@lists.linux-foundation.org>; Thu, 10 Jun 2021 14:52:14 +0000 (UTC)
+ by smtp1.osuosl.org (Postfix) with ESMTP id BF93D83C20
+ for <iommu@lists.linux-foundation.org>; Thu, 10 Jun 2021 15:03:48 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
 Authentication-Results: smtp1.osuosl.org (amavisd-new);
- dkim=pass (1024-bit key) header.d=nxp.com
+ dkim=pass (2048-bit key) header.d=gmail.com
 Received: from smtp1.osuosl.org ([127.0.0.1])
  by localhost (smtp1.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id QTEeOxQcvJIR for <iommu@lists.linux-foundation.org>;
- Thu, 10 Jun 2021 14:52:13 +0000 (UTC)
+ with ESMTP id oqEx4nChtIBL for <iommu@lists.linux-foundation.org>;
+ Thu, 10 Jun 2021 15:03:46 +0000 (UTC)
 X-Greylist: whitelisted by SQLgrey-1.8.0
-Received: from EUR01-DB5-obe.outbound.protection.outlook.com
- (mail-eopbgr150053.outbound.protection.outlook.com [40.107.15.53])
- by smtp1.osuosl.org (Postfix) with ESMTPS id E7F3282CAC
- for <iommu@lists.linux-foundation.org>; Thu, 10 Jun 2021 14:52:12 +0000 (UTC)
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=DKVA7SY7UFH+W1Z5F+bNWw5CBNEXt5mTrO4S6QN+xS4+wPMJ6Pl2WGUthlJ678MrDZ7GAyHwb1v/eR26tPfME0xq4s83LkFCKmz3+hsMy3SKDhdvXVWPGzFz7Qjl5kBmIekyMhcjMsgHigS8DX3pWrEN+idRie8K9H6krD3PEstdGFtMNn0/m9gy1bDOfN/5s0iqVdCtqYuHU15z2hlWjexVh3r4XHiFvq3GC4tdJLIPGE0afmsQtnteLk6jEmj8Lsw1O5J9ULI4IsOPJtUB2m8NAq5C0SkeOJaTejYeoS5+VLb+zcPhsXVCtnusJBH35EZE2p8d3FpMad016uI6pg==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com; 
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=+putAtfRiM2iBKqceOyA10Rf3OE07Fy+GsVAKbVMFzI=;
- b=b2fcmiKgjr1kIHNO5QtLkvmmu2TkNowxX7agOjlBvkNh195Bqel56ABaKG6jS6byMAkSovTEresPA/IfnfpP7JKND6VPpS/gzUIA8jR6KK8Pk+X5a7yqRaCWEMVUDoQijkYCGl0BtcA8ImXu5XFHwATDrZtaOJYksGOlbIzYOpiqWhYzxYSeJ3ibBNDnkTYjYv0H+Q3k56svJP8OJOorT3+DYbHJb2pofexpCYU/Lcfeic2iIdmD9IAuqd+zyn0TKuWPvyePkxtcWO8Zj4eGj2Oi35FntBaM6wetL8cjjwKBEfPQzpjMkL22UV/CAvSwEY/ChNKD/CjiCM97DfuxRw==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=nxp.com; dmarc=pass action=none header.from=nxp.com; dkim=pass
- header.d=nxp.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nxp.com; s=selector2; 
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=+putAtfRiM2iBKqceOyA10Rf3OE07Fy+GsVAKbVMFzI=;
- b=k/v/aCrJmcYiY+o2yYu5/Pt2qYZwPgjfy9pykOCWs5OAGqGp7/DooazFTaMgGYUwGmG4JQaPYyNm0gnG7trWxyIld0iayQWpfaeCV6HrnZvgYCOTSuszWlyGlUl80Yo2NTquLrXOS7WXYb2oQmOCfwW5On/tjtfDDDBONCew+aM=
-Authentication-Results: lists.linux-foundation.org; dkim=none (message not
- signed) header.d=none;lists.linux-foundation.org; dmarc=none action=none
- header.from=nxp.com;
-Received: from VI1PR04MB4046.eurprd04.prod.outlook.com (2603:10a6:803:4d::29)
- by VI1PR04MB4048.eurprd04.prod.outlook.com (2603:10a6:803:44::19)
- with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4219.21; Thu, 10 Jun
- 2021 14:52:10 +0000
-Received: from VI1PR04MB4046.eurprd04.prod.outlook.com
- ([fe80::e8df:8117:d230:f321]) by VI1PR04MB4046.eurprd04.prod.outlook.com
- ([fe80::e8df:8117:d230:f321%5]) with mapi id 15.20.4219.022; Thu, 10 Jun 2021
- 14:52:10 +0000
-Subject: Re: swiotlb/caamjr regression (Was: [GIT PULL] (swiotlb)
- stable/for-linus-5.12)
-To: Dominique MARTINET <dominique.martinet@atmark-techno.com>,
- Konrad Rzeszutek Wilk <konrad.wilk@oracle.com>,
- Christoph Hellwig <hch@lst.de>, Jianxiong Gao <jxgao@google.com>
-References: <YDkbCHHBUOmfI59K@Konrads-MacBook-Pro.local>
- <YL7XXNOnbaDgmTB9@atmark-techno.com>
-From: =?UTF-8?Q?Horia_Geant=c4=83?= <horia.geanta@nxp.com>
-Message-ID: <2e899de2-4b69-c4b6-33a6-09fb8949d2fd@nxp.com>
-Date: Thu, 10 Jun 2021 17:52:07 +0300
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:78.0) Gecko/20100101
- Thunderbird/78.11.0
-In-Reply-To: <YL7XXNOnbaDgmTB9@atmark-techno.com>
-Content-Language: en-US
-X-Originating-IP: [78.97.206.147]
-X-ClientProxiedBy: AM0PR04CA0131.eurprd04.prod.outlook.com
- (2603:10a6:208:55::36) To VI1PR04MB4046.eurprd04.prod.outlook.com
- (2603:10a6:803:4d::29)
+Received: from mail-wr1-x432.google.com (mail-wr1-x432.google.com
+ [IPv6:2a00:1450:4864:20::432])
+ by smtp1.osuosl.org (Postfix) with ESMTPS id 8258683C12
+ for <iommu@lists.linux-foundation.org>; Thu, 10 Jun 2021 15:03:46 +0000 (UTC)
+Received: by mail-wr1-x432.google.com with SMTP id f2so2686194wri.11
+ for <iommu@lists.linux-foundation.org>; Thu, 10 Jun 2021 08:03:46 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=gmail.com; s=20161025;
+ h=date:from:to:cc:subject:message-id:references:mime-version
+ :content-disposition:in-reply-to:user-agent;
+ bh=maDX1SqEQGmbJlvnWGoFUMoFJ5cg99gOE1aPzue8sQc=;
+ b=CM3OxKfIneIAUiLf5Zk7CX1dZ+8sSdQ76IbHP2tuZgRjPcYy/z1Yv6PUlaqE9NYSBo
+ QWw2VAs6hA/Rt5fp6On+lvmLyJXpiGVnNihRdFlPAjoGXJ361gMv8lMt4qkdtZAHUnlK
+ +WB8MpPrfSQJoARGfQzv3XE4xtLN2foAvm4fcVvJdrgxn1B++udXsElXnAMJpTewDg2w
+ ubV1bzDUShW6GGqKdbh+b5iiVANMa9DBWeBV3ce6k1PXFUK3ich76bw4yYXaTlTf/yY/
+ idZsW7AX4esUjWByduaTJLezo70qlY0CUWWXtc/drySh17MBJAT8e/vM4/bav/3ulLIi
+ 09DQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+ d=1e100.net; s=20161025;
+ h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+ :mime-version:content-disposition:in-reply-to:user-agent;
+ bh=maDX1SqEQGmbJlvnWGoFUMoFJ5cg99gOE1aPzue8sQc=;
+ b=Z+giyKYWjFXOQF7FMPPX2i/mMbD86RMYew6BksbFXkrY4UDpRKi8Uyl9OmbV4xthlr
+ T9hvfd+JSnVeBxyubuTba0wO2Ukh0tLethG5MrazQMnYt08sJn0AXSukMIzPINhANbtr
+ frygO5pYvWQfXuCRtrQbWLTZXvL2FSf7FsjTRW7YnEmCI+kDMrPeOeKM5+4lH7uWsz6k
+ ESpzaJL40hCPJfU/MvWUTySKaFi8rKHKNVbedeW12e2xwZUE1haa91mhKgNAHEpQbOO5
+ dcz3BENuiIkVjlelAtDcex+T/FIJcSAGlr09kPLAYZMWzYnkuTdVqictpjZAAoWaxR+M
+ T6xQ==
+X-Gm-Message-State: AOAM533AoD09LHnsZDuxvHQvDCebqxJVCJhw7CRCuVGSdajpmzEK8nzh
+ U2DJZqsvoJeZBIzy/dVgUiE=
+X-Google-Smtp-Source: ABdhPJwI0pDe52r2vhAsfmYMLDJnqn5RBM1d0jDdXYIV9WJl4CSRRI62IkWpVAjPBPaE3eD5NbX/ng==
+X-Received: by 2002:adf:f7d1:: with SMTP id a17mr6103816wrq.84.1623337424570; 
+ Thu, 10 Jun 2021 08:03:44 -0700 (PDT)
+Received: from localhost ([62.96.65.119])
+ by smtp.gmail.com with ESMTPSA id m132sm3222349wmf.10.2021.06.10.08.03.43
+ (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+ Thu, 10 Jun 2021 08:03:43 -0700 (PDT)
+Date: Thu, 10 Jun 2021 17:05:27 +0200
+From: Thierry Reding <thierry.reding@gmail.com>
+To: Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>,
+ Will Deacon <will@kernel.org>
+Subject: Re: [GIT PULL] memory: Tegra memory controller for v5.14
+Message-ID: <YMIqNynz29Z9fYi3@orome.fritz.box>
+References: <20210607084910.21024-1-krzysztof.kozlowski@canonical.com>
+ <20210608120128.GB10174@willie-the-truck>
+ <YL+A+MPjjaa3nSwq@orome.fritz.box>
+ <20210608164851.GB10994@willie-the-truck>
+ <YMHZCaRiQNQCSsVr@orome.fritz.box>
+ <8c18edeb-2e3e-9072-6bb4-11637d0ca3e5@canonical.com>
 MIME-Version: 1.0
-X-MS-Exchange-MessageSentRepresentingType: 1
-Received: from [192.168.0.213] (78.97.206.147) by
- AM0PR04CA0131.eurprd04.prod.outlook.com (2603:10a6:208:55::36) with Microsoft
- SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.20.4219.21 via Frontend Transport; Thu, 10 Jun 2021 14:52:08 +0000
-X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: 4a1fd4c5-35aa-41ba-b4e9-08d92c1f531b
-X-MS-TrafficTypeDiagnostic: VI1PR04MB4048:
-X-LD-Processed: 686ea1d3-bc2b-4c6f-a92c-d99c5c301635,ExtAddr
-X-MS-Exchange-Transport-Forked: True
-X-Microsoft-Antispam-PRVS: <VI1PR04MB404803EE388E9643F578659898359@VI1PR04MB4048.eurprd04.prod.outlook.com>
-X-MS-Oob-TLC-OOBClassifiers: OLM:10000;
-X-MS-Exchange-SenderADCheck: 1
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: Xh5AAVHc/0r+Q/6paQlib+U4Wq5v41XOQbxdzL9cVfnn3PYWghw/8GpQgpn602X1SrtspvWXF1C492V4jW9vPohGQQMsPMdHvDRBqAJ4HakaCLMaN0iyjxYU09bRKVJTtAuD32slCUVZTmNwlCmE3QjIvnH4TrwUs8mIImQD7ENwtpHbonNJFDByP/jvOdvqXs6vFqI2bj8ZcXYSjFg3gBVoxUOY1XRMLplljgMqs3LWoRWrRyCBh2gK9KLC+CcTNKIzBpzDZ5wdUQ+pKe+Km8vAU2Z4CpkilVIsgv1ctrT7ImTHinGgEE4WsfeMInVZHhHsgPWDi5n/7J1st/7vLtrtOckky5RhVTC0dKechu/fQm8jYbHQiRe0s/qi5WPQiRR72dwsQOaGUaP4t03Jv5+bMfp4WOzR8kSZyv3VuwZL/D6XTSbF4q5YlQIStYWhyoAs+MinU1TfppxAmf9pNRcWMd6lRV3JoCkrCMCuD546TzY7EJ4I+zsr4Pai3LSrq9rmDTQkf64MSoG3JO+eP7L+ajepnDsrAY/MvTBpqGDjyYv9+ojNeZR8CNzgKL8IJpYvEsRyOyg/ms8Pi909BlsQd9MfCZYbHpyvUZp2GvqkXBTsEfO6QMn6HjU0HZSm1uTaCX6LABvD/UwDxwzFXBoNQmZuHcDh1Yf8zAo7cMaMZdbdBopkOLhgWu6ETzhDyVzzMXyD+iSggNs8BpSEcbC2xdA3kb5vw6MS/f4yTky3wFsFXY97OmOnx66EWisXYJFGiOdQN6CU20pn7UYW0W97oA8sMMQPcWeYM+GQ8xevF3xB8Wx6FeMgGKuwUZABrHuwH2lQ4kaD02ecI3sBkw==
-X-Forefront-Antispam-Report: CIP:255.255.255.255; CTRY:; LANG:en; SCL:1; SRV:;
- IPV:NLI; SFV:NSPM; H:VI1PR04MB4046.eurprd04.prod.outlook.com; PTR:; CAT:NONE;
- SFS:(4636009)(376002)(366004)(136003)(396003)(39860400002)(346002)(38350700002)(16576012)(38100700002)(45080400002)(478600001)(8936002)(110136005)(54906003)(2616005)(966005)(83380400001)(5660300002)(31686004)(36756003)(26005)(4326008)(53546011)(66556008)(316002)(66476007)(31696002)(52116002)(86362001)(2906002)(66946007)(956004)(6486002)(186003)(7416002)(16526019)(8676002)(45980500001)(43740500002);
- DIR:OUT; SFP:1101; 
-X-MS-Exchange-AntiSpam-MessageData: =?utf-8?B?UTVQaXN1bWpjUmJkUFdheXhxd1lkZHdNdlFBOG9PZTl6TGVtbVMxQ2hpY25n?=
- =?utf-8?B?dXdCRjNnekhRUjR4ZUViMGRsYit1UGM4MFdMSzN5cFNIWmRHUTJWaXV2ckda?=
- =?utf-8?B?djVTUFNHQmM1cXN6SlBTSEo5N2JjYXVoMWNNR2VCcEltcFhPcVJkOU5sVk5J?=
- =?utf-8?B?TTZoa1hoeEw1c2hNK0pNb3FZamxlV1JUWTUzQU1xUnRYZEpicE84Nld5WnUv?=
- =?utf-8?B?Mi9uNUcyUDNaM3cyL0RvaEtIS2JsK2dwSjZqZFZ0M1gvV050Z1p2R0VjZk44?=
- =?utf-8?B?bmlRYmhvME9tQzlkTFM2SlIyeW92RnFkU1BaZEZGYzVzZWpQNlJhK3Zzcndo?=
- =?utf-8?B?Rk84YSt5ZFF1Snl5ZlV4U1lTVjJBV0pkS2paSDB2d0IwSWxsRUxXQ0hCSGxv?=
- =?utf-8?B?U0VQUDVjWUFoKzJLdm9Jc3BWK01QSGwwMGZIaW5YK2thUXhmME5idTh4S09J?=
- =?utf-8?B?aFd6cHhtSnFETDc2ZHRjeFFRZk5mLzNVTkZvTzVSN3JZQ2RRVVJqOGY2SlY3?=
- =?utf-8?B?eVVFQ2JmVC9wQzdoWVAwTEk2MStTMjl1dTJteTJYRHpTYis5L0ZsbFYwTytX?=
- =?utf-8?B?UlFIdHRVbW1uaUNQTGVQK0Z5VCtHNHdVK0JWR0dWRUJ4b1R6RVM5b2h3eklE?=
- =?utf-8?B?SWx4MnJ2NjZ4a1VRZWEvOUI3aEc0ZnlRa0UxOHpTS09ZR3Zlb21HV0JiNEdn?=
- =?utf-8?B?bHFZaS9OQmMzQnp2R0trMm9CazJQZm0xOFRyRHRKSDNtK0NNekZBMWdhSlll?=
- =?utf-8?B?ZFc2OXZ6bkpmRFZWL3pIRTc0cWhlZWRZazF6U1Rnd21paGFKbVlxemh6SnhR?=
- =?utf-8?B?MGRmZnM5QzIvSmtwY3lzR1hMRnhNOStiWjhacC8wN005UTRsOWVpcW9RRmVy?=
- =?utf-8?B?OGc1VE92aXpNaE8rMlRYYktHS3pnUjI2UTk4Z3lZVlArRUZsaEpQOXllN091?=
- =?utf-8?B?M1l3Q1lNSFZZWFFzR2I0cmgwbGlNbDZ4eE1UT2NtMmVzZjZxajVobUc3K3Yx?=
- =?utf-8?B?eGI3Nk9VYlNGbE5ma09IajRhd2NwQnp1NDZnd2luYzFaT0VGZjB2SWNwN1ox?=
- =?utf-8?B?M3paTitBS1JnL2Z1U21ydDZNNkx1M0hVTy95dGp4S0ZpZDhIcGJ3emdPYzNo?=
- =?utf-8?B?VEFtc09RdEdiOCtGVldxdlZpUXVZZ2R6eS8xdk1pVU1RaWt1M1dGOEFsY2U5?=
- =?utf-8?B?VmNFdk8xRTFqMmRGTXVyb1dRaDBTTlYySjZpZzFyZG50Q0pSczloMjVuY0px?=
- =?utf-8?B?aUN1czUvVVJicjRzelArbVhIa0pHRURQRjBYbzNLWEIvMjlXQ0Z5OVhBK0or?=
- =?utf-8?B?aWdzN3ZUM3c4L0p6Y3RJMm9hcnhZS3Y3VzM5Z0ZNUkpmTDVpL3JXZG9wZ2lw?=
- =?utf-8?B?NUkzaHhFNkhQdFZWUjQxWFVQalRCQTFDQ2JONGRrWG96bjBTanQ5NUlqWkFH?=
- =?utf-8?B?aXB2NTNqVGIrQ0ljUm4xZXpud2diWk0vdXNCNkgxZ3EvQ0pVaGkwVkRUUmhD?=
- =?utf-8?B?bDA0TGdYeVdmT0VoTFhPK1BrTElFTHFtV3Z2L0VRWXIvRGdpZTlDaGdPUlhT?=
- =?utf-8?B?eTJlV1lvMFhwYmZCeEdtdG5LTExLYTFVMXYyaWZpOG00R29kcEtUMkxFL2FC?=
- =?utf-8?B?MG12RHJrNjFHZElLY3NGQmgyVVFoTjNzUFRGN21CZ2N3YnhEKzYxVExDMzRk?=
- =?utf-8?B?UXNtTTd2NDYwVW1KRHNSeXdDalJJaGhZa2JXT2g0MW91SUU5YnljbVhLcExt?=
- =?utf-8?Q?TvPFlu98O3oRyZkbwywfyYoiyfn//xBYkyGlQwt?=
-X-OriginatorOrg: nxp.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 4a1fd4c5-35aa-41ba-b4e9-08d92c1f531b
-X-MS-Exchange-CrossTenant-AuthSource: VI1PR04MB4046.eurprd04.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 10 Jun 2021 14:52:10.2087 (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 686ea1d3-bc2b-4c6f-a92c-d99c5c301635
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: yxiJUdWkNjXNfAahzWa6om8Rg1S9NANYUtAumj/+/ktAQAZF2DTTil/hp2jEIL7Qtu6qTjyrqMJXSUwpH53H3g==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: VI1PR04MB4048
-Cc: Aymen Sghaier <aymen.sghaier@nxp.com>,
- Herbert Xu <herbert@gondor.apana.org.au>, Lukas Hartmann <lukas@mntmn.com>,
- "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
- "iommu@lists.linux-foundation.org" <iommu@lists.linux-foundation.org>,
- "linux-crypto@vger.kernel.org" <linux-crypto@vger.kernel.org>,
- Linus Torvalds <torvalds@linux-foundation.org>,
- "David S. Miller" <davem@davemloft.net>
+In-Reply-To: <8c18edeb-2e3e-9072-6bb4-11637d0ca3e5@canonical.com>
+User-Agent: Mutt/2.0.6 (98f8cb83) (2021-03-06)
+List-Id: <soc.lore.kernel.org>
+Cc: Arnd Bergmann <arnd@arndb.de>, iommu@lists.linux-foundation.org,
+ linux-kernel@vger.kernel.org, Krzysztof Kozlowski <krzk@kernel.org>,
+ Jon Hunter <jonathanh@nvidia.com>, linux-tegra@vger.kernel.org, soc@kernel.org,
+ arm@kernel.org, Nicolin Chen <nicolinc@nvidia.com>,
+ Dmitry Osipenko <digetx@gmail.com>, Robin Murphy <robin.murphy@arm.com>,
+ linux-arm-kernel@lists.infradead.org
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -171,143 +114,139 @@ List-Post: <mailto:iommu@lists.linux-foundation.org>
 List-Help: <mailto:iommu-request@lists.linux-foundation.org?subject=help>
 List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
  <mailto:iommu-request@lists.linux-foundation.org?subject=subscribe>
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
+Content-Type: multipart/mixed; boundary="===============0671210389416832140=="
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-On 6/8/2021 5:35 AM, Dominique MARTINET wrote:
-> I'm not able to find any individual mails for Christoph's patches so
-> replying to the PR.
-> 
-The patch set is here:
-https://lore.kernel.org/linux-iommu/20210207160327.2955490-1-hch@lst.de
 
-> In particular, this commit:
-> Konrad Rzeszutek Wilk wrote on Fri, Feb 26, 2021 at 11:00:08AM -0500:
->> Christoph Hellwig (8):
->>       swiotlb: don't modify orig_addr in swiotlb_tbl_sync_single
-> 
-> merged as 16fc3cef33a0, breaks caam as used today (thanks Lukas for
-> bisecting it!)
-> 
-Thanks.
+--===============0671210389416832140==
+Content-Type: multipart/signed; micalg=pgp-sha256;
+	protocol="application/pgp-signature"; boundary="7mpR+8HugVK1gP7Y"
+Content-Disposition: inline
 
-I've noticed the failure also in v5.10 and v5.11 stable kernels,
-since the patch set has been backported.
 
-> 
-> More precisely, drivers/crypto/caam/caamalg.c does a lot of mappings
-> that aren't aligned:
-> 
-> dma_sync_single_for_device(jrdev, ctx->sh_desc_enc_dma,
->                            desc_bytes(desc), ctx->dir);
-> dma_sync_single_for_device(jrdev, ctx->sh_desc_dec_dma,
->                            desc_bytes(desc), ctx->dir);
-> 
-Right. These dma sync ops are in caaamalg.c and should be fixed.
+--7mpR+8HugVK1gP7Y
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
 
-OTOH there are other dma sync ops in caam driver - e.g. caamhash.c:
-	dma_sync_single_for_device(jrdev, ctx->sh_desc_update_dma,
-				   desc_bytes(desc), ctx->dir);
-where the mappings are aligned (see struct caam_hash_ctx),
-but even in this case the crypto algorithms are failing.
+On Thu, Jun 10, 2021 at 04:23:56PM +0200, Krzysztof Kozlowski wrote:
+> On 10/06/2021 11:19, Thierry Reding wrote:
+> > On Tue, Jun 08, 2021 at 05:48:51PM +0100, Will Deacon wrote:
+> >> On Tue, Jun 08, 2021 at 04:38:48PM +0200, Thierry Reding wrote:
+> >>> On Tue, Jun 08, 2021 at 01:01:29PM +0100, Will Deacon wrote:
+> >>>> On Mon, Jun 07, 2021 at 10:49:10AM +0200, Krzysztof Kozlowski wrote:
+> >>>>> This is the pull for you to base further SMMU aptches (prevent earl=
+y SMMU
+> >>>>> faults).
+> >>>>
+> >>>> This is a tonne of code for me to pull into the SMMU tree given that=
+ I only
+> >>>> want one patch!
+> >>>>
+> >>>> Thierry, if I just stick:
+> >>>>
+> >>>> https://lore.kernel.org/r/20210603164632.1000458-4-thierry.reding@gm=
+ail.com
+> >>>>
+> >>>> on its own branch, can you stitch together whatever you need?
+> >>>
+> >>> I'm not sure I understand what you're proposing. For reference, here's
+> >>> the set of patches that I sent out:
+> >>>
+> >>>   1. memory: tegra: Implement SID override programming
+> >>>   2. dt-bindings: arm-smmu: Add Tegra186 compatible string
+> >>>   3. iommu/arm-smmu: Implement ->probe_finalize()
+> >>>   4. iommu/arm-smmu: tegra: Detect number of instances at runtime
+> >>>   5. iommu/arm-smmu: tegra: Implement SID override programming
+> >>>   6. iommu/arm-smmu: Use Tegra implementation on Tegra186
+> >>>   7. arm64: tegra: Use correct compatible string for Tegra186 SMMU
+> >>>   8. arm64: tegra: Hook up memory controller to SMMU on Tegra186
+> >>>   9. arm64: tegra: Enable SMMU support on Tegra194
+> >>>
+> >>> Krzysztof already picked up patch 1 and I was assuming that you'd pick
+> >>> up 2-6 because they are to the ARM SMMU driver. However, if you're
+> >>> primarily interested in just patch 3, which is more "core" ARM SMMU t=
+han
+> >>> the rest, which are Tegra-specific, then I suppose what we could do is
+> >>> for you to give an Acked-by on the rest (2, 4-6) and then Krzysztof o=
+r I
+> >>> can pick them up and take them via ARM SoC, based on the stable branch
+> >>> from your tree that only has patch 3.
+> >>
+> >> I think you previously said that patch 5 depends on patch 1, so I can't
+> >> take 2-6 without also pulling in the memory controller queue.
+> >>
+> >>> Patch 6 touches arm-smmu-impl.c, though it's a two-line change that
+> >>> touches only the Tegra-specific matching bit in arm_smmu_impl_init(),=
+ so
+> >>> the likelihood of that conflicting with anything else is fairly small.
+> >>>
+> >>> Is that what you were proposing?
+> >>
+> >> I can queue as much or as little of 2-6 as you like, but I would like =
+to
+> >> avoid pulling in the memory controller queue into the arm smmu tree. B=
+ut
+> >> yes, whichever of those I take, I can put them on a separate branch so
+> >> that you're not blocked for the later patches.
+> >>
+> >> You have a better handle on the dependencies, so please tell me what w=
+orks
+> >> for you. I just want to make sure that at least patch 3 lands in my tr=
+ee,
+> >> so we don't get late conflicts with other driver changes.
+> >=20
+> > Yes, if you could pick up patch 3 and send out a link with the stable
+> > branch, I think Krzysztof or I could pull in that branch and pick up the
+> > remaining patches. It'd be good if you could also ack the remaining SMMU
+> > patches so that ARM SoC knows that they've been sanctioned.
+> >=20
+> > Krzysztof: would you be okay with picking up patches 2 and 4-6 on top of
+> > your memory branch for v5.14?
+>=20
+> You mean the iommu patches? Yes, I can take them and later explain to
+> Arnd/Olof why they come through me.
 
-> 
-> which can be caught by crypto tests with this caam enabled, for example
-> adding a warning when an unaligned mapping happens I get this trace:
-> --------
-> [ 1628.670226]  swiotlb_tbl_sync_single+0x74/0xa0
-> [ 1628.674677]  dma_sync_single_for_device+0xe4/0x110
-> [ 1628.679472]  skcipher_setkey+0xd0/0xf0
-> [ 1628.683224]  des3_skcipher_setkey+0x74/0xac
-> [ 1628.687416]  crypto_skcipher_setkey+0x54/0x110
-> [ 1628.691866]  crypto_authenc_setkey+0x94/0xd0
-> [ 1628.696138]  crypto_aead_setkey+0x34/0x10c
-> [ 1628.700236]  test_aead_vec_cfg+0x3a0/0x770
-> [ 1628.704338]  test_aead+0xac/0x130
-> [ 1628.707656]  alg_test_aead+0xa8/0x190
-> [ 1628.711324]  alg_test.part.0+0xf4/0x41c
-> [ 1628.715161]  alg_test+0x1c/0x60
-> [ 1628.718307]  do_test+0x37ec/0x4c50
-> [ 1628.721709]  do_test+0x4bec/0x4c50
-> [ 1628.725114]  tcrypt_mod_init+0x54/0xac
-> [ 1628.728864]  do_one_initcall+0x4c/0x1b0
-> [ 1628.732701]  kernel_init_freeable+0x1d0/0x234
-> [ 1628.737060]  kernel_init+0x10/0x114
-> [ 1628.740550]  ret_from_fork+0x10/0x24
-> -----
-> 
-> and the tests themselves also fail (all or at least most of them) with
-> e.g.
-> ------
-> [    8.454233] caam_jr 30901000.jr: 40001713: DECO: desc idx 23: Header Error. Invalid length or parity, or certain other problems.
-> [    8.465820] alg: ahash: hmac-sha256-caam final() failed with err -22 on test vector 0, cfg="init+update+final aligned buffer"
-> [    8.477149] ------------[ cut here ]------------
-> [    8.481781] alg: self-tests for hmac-sha256-caam (hmac(sha256)) failed (rc=-22)
-> [    8.481818] WARNING: CPU: 2 PID: 295 at crypto/testmgr.c:5645 alg_test.part.0+0x128/0x41c
-> [    8.497307] Modules linked in:
-> [    8.500365] CPU: 2 PID: 295 Comm: cryptomgr_test Tainted: G        W         5.13.0-rc5-00002-gc98cdee6172e #23
-> [    8.510455] Hardware name: NXP i.MX8MPlus EVK board (DT)
-> [    8.515767] pstate: 60000005 (nZCv daif -PAN -UAO -TCO BTYPE=--)
-> [    8.521778] pc : alg_test.part.0+0x128/0x41c
-> [    8.526050] lr : alg_test.part.0+0x128/0x41c
-> [    8.530324] sp : ffff80001371bd10
-> [    8.533637] x29: ffff80001371bd10 x28: 000000000000008f x27: 000000000000008f
-> [    8.540785] x26: 000000000000008f x25: 0000000000000400 x24: ffff8000111658c8
-> [    8.547930] x23: ffff0000c02aaa80 x22: 000000000001008f x21: ffff0000c02aaa00
-> [    8.555075] x20: 0000000000000085 x19: 00000000ffffffea x18: 00000000fffffffc
-> [    8.562221] x17: 0000000000000001 x16: 0000000000000003 x15: 0000000000000020
-> [    8.569365] x14: ffffffffffffffff x13: 00000000000003e7 x12: ffff80001371b9e0
-> [    8.576511] x11: ffff80001188c940 x10: ffff800011844300 x9 : ffff800011886b98
-> [    8.583658] x8 : ffff80001182eb98 x7 : ffff800011886b98 x6 : ffffffffffff0888
-> [    8.590801] x5 : 0000000000000000 x4 : 0000000000000000 x3 : 00000000ffffffff
-> [    8.597945] x2 : 0000000000000000 x1 : 0000000000000000 x0 : ffff0000c1684e00
-> [    8.605093] Call trace:
-> [    8.607540]  alg_test.part.0+0x128/0x41c
-> [    8.611467]  alg_test+0x1c/0x60
-> [    8.614608]  cryptomgr_test+0x28/0x50
-> [    8.618275]  kthread+0x154/0x160
-> [    8.621511]  ret_from_fork+0x10/0x24
-> [    8.625088] ---[ end trace 2d195377ee3c219e ]---
-> ------
-> 
-> 
-> 
-> Looking at it a bit further it seems to me that swiotlb_bounce() should
-> either keep the offset (re-adding the line that was removed except it
-> would go back in swiotlb_bounce, diff at end of mail), or the size
-> should be adjusted to cover from the start of the page up until the
-> original offset + size which would also probably work (not tested)
-> 
-> That, or make unaligned mappings forbidden and warn when we see one, but
-> I have no idea what other component could be doing some -- I'm not sure
-> if what the caam code does it legitimate (e.g. would it be possible to
-> do the mappings once at init and use them?), but the swiotlb code
-> doesn't look quite right.
-> 
-Well, it's not only about unaligned accesses.
+Okay, great.
 
-It's also about partial syncs, e.g.
-	dma_handle = dma_map_single(dev, cpu_addr, size, DMA_BIDIRECTIONAL);
-	[...]
-	dma_sync_single_for_device(dev, dma_handle + offset, size - offset,
-				   DMA_BIDIRECTIONAL);
-(where dma_handle + offset should be cacheline-aligned).
+Will, can you provide that stable branch? Or would you prefer if I
+prepared it and sent you a pull request? We're kind of running out of
+time, since for ARM SoC the cut-off point for new material is usually
+-rc6 and that's coming up pretty fast.
 
-Documentation/core-api/dma-api.rst explicitly allows for partial syncs:
-Synchronise a single contiguous or scatter/gather mapping for the CPU
-and device. With the sync_sg API, all the parameters must be the same
-as those passed into the single mapping API. With the sync_single API,
-you can use dma_handle and size parameters that aren't identical to
-those passed into the single mapping API to do a partial sync.
+Thierry
 
-AFAICS commit 16fc3cef33a0 ("swiotlb: don't modify orig_addr in swiotlb_tbl_sync_single")
-is breaking this functionality.
+--7mpR+8HugVK1gP7Y
+Content-Type: application/pgp-signature; name="signature.asc"
 
-Thanks,
-Horia
+-----BEGIN PGP SIGNATURE-----
+
+iQIzBAABCAAdFiEEiOrDCAFJzPfAjcif3SOs138+s6EFAmDCKjQACgkQ3SOs138+
+s6G9mxAAvng5nEyjLg9tvjEBYmqVzd3B9QUm5jd6sZZq6YdD6wjrUpmwWSTcP7XI
+dJ9T722dGWz3HENw9AIgv4zMj2/ws8g84+1dvjL/eo56PaWLoNdCpm2IokdKjl2G
+3sjYPEBPyEr+nqvsu+wIMbYeiXGfK2nndGg+Mw5wBnt/dQ5fYPLtKc/o5XSo5M5R
+7qmp3ekHSU5fD/X8F5+bCZajyaVyLFNU58FdsCf0yRTcqED5uWPO0TPp/VwPnlIw
+Q19s+JQD+V4XbFMgSadlPF8VP/Dht7W8tiUBl5WpoPMqFpBa8AtkZ6VrAjaM92tf
+fTyVdA/fZg04rh3M1yH8QpOOYA2z3YmGj3U2ShYAAQSnoiqLwW2fE+pEqQfmRDPI
+2rJdP8aTuXzxdMVFpklP7iTPjOd2aNSZc3gQ9U9xNF9tDd74DDYVJqCt3D3C0bhP
+Mk8hioQpf3HtY53fnBcF8g3zGgYrd2ZEQuAp5McB/mbhpmj+kiJs/iUZVVoYfu4H
+GWAERzA11dmouEHyWWjtmVGPujs/Jxt6eSJiNvn4WvuS6ezYP55NQ0Z7U+17/QqI
+1Xo+q01r+6JON6Rx730qOjuWJqqx8Oo1db+BBN/Tp/g1xlC0YmobTwchCC0RSgho
+YOaTy2yuc++OIrpXDJT80MHodI4MBVDJHKqqsOpeH1szjvdGpqc=
+=iL3y
+-----END PGP SIGNATURE-----
+
+--7mpR+8HugVK1gP7Y--
+
+--===============0671210389416832140==
+Content-Type: text/plain; charset="us-ascii"
+MIME-Version: 1.0
+Content-Transfer-Encoding: 7bit
+Content-Disposition: inline
+
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
 https://lists.linuxfoundation.org/mailman/listinfo/iommu
+--===============0671210389416832140==--
