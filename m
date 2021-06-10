@@ -7,63 +7,62 @@ X-Spam-Status: No, score=-16.8 required=3.0 tests=BAYES_00,
 	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_GIT
 	autolearn=ham autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 23A4EC48BCF
-	for <iommu@archiver.kernel.org>; Thu, 10 Jun 2021 02:03:14 +0000 (UTC)
-Received: from smtp4.osuosl.org (smtp4.osuosl.org [140.211.166.137])
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C4CC2C48BCD
+	for <iommu@archiver.kernel.org>; Thu, 10 Jun 2021 02:03:18 +0000 (UTC)
+Received: from smtp3.osuosl.org (smtp3.osuosl.org [140.211.166.136])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id DFAE161417
-	for <iommu@archiver.kernel.org>; Thu, 10 Jun 2021 02:03:13 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org DFAE161417
+	by mail.kernel.org (Postfix) with ESMTPS id 8F5216140F
+	for <iommu@archiver.kernel.org>; Thu, 10 Jun 2021 02:03:18 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 8F5216140F
 Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=linux.intel.com
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by smtp4.osuosl.org (Postfix) with ESMTP id 9F08740537;
-	Thu, 10 Jun 2021 02:03:13 +0000 (UTC)
+	by smtp3.osuosl.org (Postfix) with ESMTP id 6C7A26FB5C;
+	Thu, 10 Jun 2021 02:03:18 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from smtp4.osuosl.org ([127.0.0.1])
-	by localhost (smtp4.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id Vhq_xx3B8TKZ; Thu, 10 Jun 2021 02:03:12 +0000 (UTC)
-Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by smtp4.osuosl.org (Postfix) with ESMTPS id 152EC40523;
-	Thu, 10 Jun 2021 02:03:12 +0000 (UTC)
+Received: from smtp3.osuosl.org ([127.0.0.1])
+	by localhost (smtp3.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+	with ESMTP id ha3lCP9sewKu; Thu, 10 Jun 2021 02:03:17 +0000 (UTC)
+Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [IPv6:2605:bc80:3010:104::8cd3:938])
+	by smtp3.osuosl.org (Postfix) with ESMTPS id 44A3C600C6;
+	Thu, 10 Jun 2021 02:03:17 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id C29B4C000E;
-	Thu, 10 Jun 2021 02:03:11 +0000 (UTC)
-Received: from smtp1.osuosl.org (smtp1.osuosl.org [IPv6:2605:bc80:3010::138])
- by lists.linuxfoundation.org (Postfix) with ESMTP id B0E9DC000B
- for <iommu@lists.linux-foundation.org>; Thu, 10 Jun 2021 02:03:10 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 1893AC000E;
+	Thu, 10 Jun 2021 02:03:17 +0000 (UTC)
+Received: from smtp1.osuosl.org (smtp1.osuosl.org [140.211.166.138])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 9B23DC000B
+ for <iommu@lists.linux-foundation.org>; Thu, 10 Jun 2021 02:03:15 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by smtp1.osuosl.org (Postfix) with ESMTP id 9C1DF8318C
- for <iommu@lists.linux-foundation.org>; Thu, 10 Jun 2021 02:03:10 +0000 (UTC)
+ by smtp1.osuosl.org (Postfix) with ESMTP id 8AF6A83224
+ for <iommu@lists.linux-foundation.org>; Thu, 10 Jun 2021 02:03:15 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
 Received: from smtp1.osuosl.org ([127.0.0.1])
  by localhost (smtp1.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id YjN5DUu_-40x for <iommu@lists.linux-foundation.org>;
- Thu, 10 Jun 2021 02:03:09 +0000 (UTC)
+ with ESMTP id JbE3SCpV7WB3 for <iommu@lists.linux-foundation.org>;
+ Thu, 10 Jun 2021 02:03:14 +0000 (UTC)
 X-Greylist: domain auto-whitelisted by SQLgrey-1.8.0
 Received: from mga11.intel.com (mga11.intel.com [192.55.52.93])
- by smtp1.osuosl.org (Postfix) with ESMTPS id D252383211
- for <iommu@lists.linux-foundation.org>; Thu, 10 Jun 2021 02:03:09 +0000 (UTC)
-IronPort-SDR: 9cddRB5UJCmyn9cSi5yB7gOXEv/OEtaRYKAbjds+B8z+5WSB+4Z3P5RH8KDFwLVP+pmRQoLB64
- jU2l1g4wRO3g==
-X-IronPort-AV: E=McAfee;i="6200,9189,10010"; a="202184180"
-X-IronPort-AV: E=Sophos;i="5.83,262,1616482800"; d="scan'208";a="202184180"
+ by smtp1.osuosl.org (Postfix) with ESMTPS id 98BEC83211
+ for <iommu@lists.linux-foundation.org>; Thu, 10 Jun 2021 02:03:14 +0000 (UTC)
+IronPort-SDR: WLjH4jI+Bm8/AnRzjQcoQOxMExtJwSavouZ9ep3gupVgULublttrkkVM6mW8i+qexiT/9EWNkD
+ UsgF2H9g50Zg==
+X-IronPort-AV: E=McAfee;i="6200,9189,10010"; a="202184198"
+X-IronPort-AV: E=Sophos;i="5.83,262,1616482800"; d="scan'208";a="202184198"
 Received: from orsmga006.jf.intel.com ([10.7.209.51])
  by fmsmga102.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384;
- 09 Jun 2021 19:03:09 -0700
-IronPort-SDR: 3wo3Dbg/a+L8thJpHfGSJQQJlBxgr80qsFXBbCD5DNchP4vhfe2+IlLwkYTfiM6rfLwsJ5kM3q
- Q2VXjl2AeAag==
+ 09 Jun 2021 19:03:14 -0700
+IronPort-SDR: 9V7ELwvaGUAJHBedrI9xyaDnzz/T+8S2HhSotOxCMAzIH49+wXlk2tBWvVdPMKxyLYHbz4c3QS
+ VDuRknSBPo3g==
 X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.83,262,1616482800"; d="scan'208";a="402500299"
+X-IronPort-AV: E=Sophos;i="5.83,262,1616482800"; d="scan'208";a="402500365"
 Received: from allen-box.sh.intel.com ([10.239.159.105])
- by orsmga006.jf.intel.com with ESMTP; 09 Jun 2021 19:03:06 -0700
+ by orsmga006.jf.intel.com with ESMTP; 09 Jun 2021 19:03:09 -0700
 From: Lu Baolu <baolu.lu@linux.intel.com>
 To: Joerg Roedel <joro@8bytes.org>
-Subject: [PATCH 05/23] iommu/vt-d: Support asynchronous IOMMU nested
- capabilities
-Date: Thu, 10 Jun 2021 10:00:57 +0800
-Message-Id: <20210610020115.1637656-6-baolu.lu@linux.intel.com>
+Subject: [PATCH 06/23] iommu/vt-d: Add pasid private data helpers
+Date: Thu, 10 Jun 2021 10:00:58 +0800
+Message-Id: <20210610020115.1637656-7-baolu.lu@linux.intel.com>
 X-Mailer: git-send-email 2.25.1
 In-Reply-To: <20210610020115.1637656-1-baolu.lu@linux.intel.com>
 References: <20210610020115.1637656-1-baolu.lu@linux.intel.com>
@@ -91,46 +90,179 @@ Content-Transfer-Encoding: 7bit
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-Current VT-d implementation supports nested translation only if all
-underlying IOMMUs support the nested capability. This is unnecessary
-as the upper layer is allowed to create different containers and set
-them with different type of iommu backend. The IOMMU driver needs to
-guarantee that devices attached to a nested mode iommu_domain should
-support nested capabilility.
+We are about to use iommu_sva_alloc/free_pasid() helpers in iommu core.
+That means the pasid life cycle will be managed by iommu core. Use a
+local array to save the per pasid private data instead of attaching it
+the real pasid.
 
 Signed-off-by: Lu Baolu <baolu.lu@linux.intel.com>
-Link: https://lore.kernel.org/r/20210517065701.5078-1-baolu.lu@linux.intel.com
+Link: https://lore.kernel.org/r/20210520031531.712333-1-baolu.lu@linux.intel.com
 ---
- drivers/iommu/intel/iommu.c | 9 ++++++++-
- 1 file changed, 8 insertions(+), 1 deletion(-)
+ drivers/iommu/intel/svm.c | 62 ++++++++++++++++++++++++++-------------
+ 1 file changed, 41 insertions(+), 21 deletions(-)
 
-diff --git a/drivers/iommu/intel/iommu.c b/drivers/iommu/intel/iommu.c
-index 65c2ed760060..b0ba187cb7f8 100644
---- a/drivers/iommu/intel/iommu.c
-+++ b/drivers/iommu/intel/iommu.c
-@@ -4757,6 +4757,13 @@ static int prepare_domain_attach_device(struct iommu_domain *domain,
- 	if (!iommu)
- 		return -ENODEV;
+diff --git a/drivers/iommu/intel/svm.c b/drivers/iommu/intel/svm.c
+index 5165cea90421..82b0627ad7e7 100644
+--- a/drivers/iommu/intel/svm.c
++++ b/drivers/iommu/intel/svm.c
+@@ -17,6 +17,7 @@
+ #include <linux/dmar.h>
+ #include <linux/interrupt.h>
+ #include <linux/mm_types.h>
++#include <linux/xarray.h>
+ #include <linux/ioasid.h>
+ #include <asm/page.h>
+ #include <asm/fpu/api.h>
+@@ -28,6 +29,23 @@ static void intel_svm_drain_prq(struct device *dev, u32 pasid);
  
-+	if ((dmar_domain->flags & DOMAIN_FLAG_NESTING_MODE) &&
-+	    !ecap_nest(iommu->ecap)) {
-+		dev_err(dev, "%s: iommu not support nested translation\n",
-+			iommu->name);
-+		return -EINVAL;
-+	}
+ #define PRQ_ORDER 0
+ 
++static DEFINE_XARRAY_ALLOC(pasid_private_array);
++static int pasid_private_add(ioasid_t pasid, void *priv)
++{
++	return xa_alloc(&pasid_private_array, &pasid, priv,
++			XA_LIMIT(pasid, pasid), GFP_ATOMIC);
++}
 +
- 	/* check if this iommu agaw is sufficient for max mapped address */
- 	addr_width = agaw_to_width(iommu->agaw);
- 	if (addr_width > cap_mgaw(iommu->cap))
-@@ -5457,7 +5464,7 @@ intel_iommu_enable_nesting(struct iommu_domain *domain)
- 	int ret = -ENODEV;
++static void pasid_private_remove(ioasid_t pasid)
++{
++	xa_erase(&pasid_private_array, pasid);
++}
++
++static void *pasid_private_find(ioasid_t pasid)
++{
++	return xa_load(&pasid_private_array, pasid);
++}
++
+ int intel_svm_enable_prq(struct intel_iommu *iommu)
+ {
+ 	struct page *pages;
+@@ -224,7 +242,7 @@ static int pasid_to_svm_sdev(struct device *dev, unsigned int pasid,
+ 	if (pasid == INVALID_IOASID || pasid >= PASID_MAX)
+ 		return -EINVAL;
  
- 	spin_lock_irqsave(&device_domain_lock, flags);
--	if (nested_mode_support() && list_empty(&dmar_domain->devices)) {
-+	if (list_empty(&dmar_domain->devices)) {
- 		dmar_domain->flags |= DOMAIN_FLAG_NESTING_MODE;
- 		dmar_domain->flags &= ~DOMAIN_FLAG_USE_FIRST_LEVEL;
- 		ret = 0;
+-	svm = ioasid_find(NULL, pasid, NULL);
++	svm = pasid_private_find(pasid);
+ 	if (IS_ERR(svm))
+ 		return PTR_ERR(svm);
+ 
+@@ -334,7 +352,7 @@ int intel_svm_bind_gpasid(struct iommu_domain *domain, struct device *dev,
+ 			svm->gpasid = data->gpasid;
+ 			svm->flags |= SVM_FLAG_GUEST_PASID;
+ 		}
+-		ioasid_set_data(data->hpasid, svm);
++		pasid_private_add(data->hpasid, svm);
+ 		INIT_LIST_HEAD_RCU(&svm->devs);
+ 		mmput(svm->mm);
+ 	}
+@@ -388,7 +406,7 @@ int intel_svm_bind_gpasid(struct iommu_domain *domain, struct device *dev,
+ 	list_add_rcu(&sdev->list, &svm->devs);
+  out:
+ 	if (!IS_ERR_OR_NULL(svm) && list_empty(&svm->devs)) {
+-		ioasid_set_data(data->hpasid, NULL);
++		pasid_private_remove(data->hpasid);
+ 		kfree(svm);
+ 	}
+ 
+@@ -431,7 +449,7 @@ int intel_svm_unbind_gpasid(struct device *dev, u32 pasid)
+ 				 * the unbind, IOMMU driver will get notified
+ 				 * and perform cleanup.
+ 				 */
+-				ioasid_set_data(pasid, NULL);
++				pasid_private_remove(pasid);
+ 				kfree(svm);
+ 			}
+ 		}
+@@ -547,8 +565,7 @@ intel_svm_bind_mm(struct device *dev, unsigned int flags,
+ 		svm = kzalloc(sizeof(*svm), GFP_KERNEL);
+ 		if (!svm) {
+ 			ret = -ENOMEM;
+-			kfree(sdev);
+-			goto out;
++			goto sdev_err;
+ 		}
+ 
+ 		if (pasid_max > intel_pasid_max_id)
+@@ -556,13 +573,16 @@ intel_svm_bind_mm(struct device *dev, unsigned int flags,
+ 
+ 		/* Do not use PASID 0, reserved for RID to PASID */
+ 		svm->pasid = ioasid_alloc(NULL, PASID_MIN,
+-					  pasid_max - 1, svm);
++					  pasid_max - 1, NULL);
+ 		if (svm->pasid == INVALID_IOASID) {
+-			kfree(svm);
+-			kfree(sdev);
+ 			ret = -ENOSPC;
+-			goto out;
++			goto svm_err;
+ 		}
++
++		ret = pasid_private_add(svm->pasid, svm);
++		if (ret)
++			goto pasid_err;
++
+ 		svm->notifier.ops = &intel_mmuops;
+ 		svm->mm = mm;
+ 		svm->flags = flags;
+@@ -571,12 +591,8 @@ intel_svm_bind_mm(struct device *dev, unsigned int flags,
+ 		ret = -ENOMEM;
+ 		if (mm) {
+ 			ret = mmu_notifier_register(&svm->notifier, mm);
+-			if (ret) {
+-				ioasid_put(svm->pasid);
+-				kfree(svm);
+-				kfree(sdev);
+-				goto out;
+-			}
++			if (ret)
++				goto priv_err;
+ 		}
+ 
+ 		spin_lock_irqsave(&iommu->lock, iflags);
+@@ -590,8 +606,13 @@ intel_svm_bind_mm(struct device *dev, unsigned int flags,
+ 		if (ret) {
+ 			if (mm)
+ 				mmu_notifier_unregister(&svm->notifier, mm);
++priv_err:
++			pasid_private_remove(svm->pasid);
++pasid_err:
+ 			ioasid_put(svm->pasid);
++svm_err:
+ 			kfree(svm);
++sdev_err:
+ 			kfree(sdev);
+ 			goto out;
+ 		}
+@@ -614,10 +635,8 @@ intel_svm_bind_mm(struct device *dev, unsigned int flags,
+ 						(cpu_feature_enabled(X86_FEATURE_LA57) ?
+ 						PASID_FLAG_FL5LP : 0));
+ 		spin_unlock_irqrestore(&iommu->lock, iflags);
+-		if (ret) {
+-			kfree(sdev);
+-			goto out;
+-		}
++		if (ret)
++			goto sdev_err;
+ 	}
+ 	list_add_rcu(&sdev->list, &svm->devs);
+ success:
+@@ -670,6 +689,7 @@ static int intel_svm_unbind_mm(struct device *dev, u32 pasid)
+ 					load_pasid(svm->mm, PASID_DISABLED);
+ 				}
+ 				list_del(&svm->list);
++				pasid_private_remove(svm->pasid);
+ 				/* We mandate that no page faults may be outstanding
+ 				 * for the PASID when intel_svm_unbind_mm() is called.
+ 				 * If that is not obeyed, subtle errors will happen.
+@@ -924,7 +944,7 @@ static irqreturn_t prq_event_thread(int irq, void *d)
+ 		}
+ 		if (!svm || svm->pasid != req->pasid) {
+ 			rcu_read_lock();
+-			svm = ioasid_find(NULL, req->pasid, NULL);
++			svm = pasid_private_find(req->pasid);
+ 			/* It *can't* go away, because the driver is not permitted
+ 			 * to unbind the mm while any page faults are outstanding.
+ 			 * So we only need RCU to protect the internal idr code. */
 -- 
 2.25.1
 
