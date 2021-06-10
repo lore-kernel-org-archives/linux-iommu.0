@@ -2,114 +2,101 @@ Return-Path: <SRS0=Vfdp=LE=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-12.0 required=3.0 tests=BAYES_00,
-	DKIM_ADSP_CUSTOM_MED,DKIM_INVALID,DKIM_SIGNED,FREEMAIL_FORGED_FROMDOMAIN,
-	FREEMAIL_FROM,HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_CR_TRAILER,
-	INCLUDES_PATCH,MAILING_LIST_MULTI,NICE_REPLY_A,SPF_HELO_NONE,SPF_PASS,
-	URIBL_BLOCKED,USER_AGENT_SANE_1 autolearn=ham autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-16.6 required=3.0 tests=BAYES_00,DKIM_INVALID,
+	DKIM_SIGNED,HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_CR_TRAILER,INCLUDES_PATCH,
+	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_GIT
+	autolearn=unavailable autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4F47EC47094
-	for <iommu@archiver.kernel.org>; Thu, 10 Jun 2021 07:53:44 +0000 (UTC)
-Received: from smtp4.osuosl.org (smtp4.osuosl.org [140.211.166.137])
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2616BC48BDF
+	for <iommu@archiver.kernel.org>; Thu, 10 Jun 2021 08:02:57 +0000 (UTC)
+Received: from smtp2.osuosl.org (smtp2.osuosl.org [140.211.166.133])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id DE3166109E
-	for <iommu@archiver.kernel.org>; Thu, 10 Jun 2021 07:53:43 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org DE3166109E
-Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=gmail.com
+	by mail.kernel.org (Postfix) with ESMTPS id D43C4613CA
+	for <iommu@archiver.kernel.org>; Thu, 10 Jun 2021 08:02:56 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org D43C4613CA
+Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=linaro.org
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by smtp4.osuosl.org (Postfix) with ESMTP id AA683405AD;
-	Thu, 10 Jun 2021 07:53:43 +0000 (UTC)
+	by smtp2.osuosl.org (Postfix) with ESMTP id 327744014B;
+	Thu, 10 Jun 2021 08:02:56 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from smtp4.osuosl.org ([127.0.0.1])
-	by localhost (smtp4.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id VAzUIgxg4Fm0; Thu, 10 Jun 2021 07:53:42 +0000 (UTC)
+Received: from smtp2.osuosl.org ([127.0.0.1])
+	by localhost (smtp2.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+	with ESMTP id 2xvumh1-kXIQ; Thu, 10 Jun 2021 08:02:54 +0000 (UTC)
 Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by smtp4.osuosl.org (Postfix) with ESMTPS id 4B56F404CD;
-	Thu, 10 Jun 2021 07:53:42 +0000 (UTC)
+	by smtp2.osuosl.org (Postfix) with ESMTPS id A2135403F9;
+	Thu, 10 Jun 2021 08:02:53 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 26131C000E;
-	Thu, 10 Jun 2021 07:53:42 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id DAAF5C0023;
+	Thu, 10 Jun 2021 08:02:52 +0000 (UTC)
 Received: from smtp2.osuosl.org (smtp2.osuosl.org [140.211.166.133])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 8753CC000B
- for <iommu@lists.linux-foundation.org>; Thu, 10 Jun 2021 07:53:41 +0000 (UTC)
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 20FA9C000E
+ for <iommu@lists.linux-foundation.org>; Thu, 10 Jun 2021 08:02:51 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by smtp2.osuosl.org (Postfix) with ESMTP id 7A5A3400C9
- for <iommu@lists.linux-foundation.org>; Thu, 10 Jun 2021 07:53:41 +0000 (UTC)
+ by smtp2.osuosl.org (Postfix) with ESMTP id 00FC1400C9
+ for <iommu@lists.linux-foundation.org>; Thu, 10 Jun 2021 08:02:51 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Authentication-Results: smtp2.osuosl.org (amavisd-new);
- dkim=pass (2048-bit key) header.d=gmail.com
 Received: from smtp2.osuosl.org ([127.0.0.1])
  by localhost (smtp2.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id EjbpOzYOBjz1 for <iommu@lists.linux-foundation.org>;
- Thu, 10 Jun 2021 07:53:37 +0000 (UTC)
+ with ESMTP id 2ezLx7ZxrKCr for <iommu@lists.linux-foundation.org>;
+ Thu, 10 Jun 2021 08:02:49 +0000 (UTC)
 X-Greylist: whitelisted by SQLgrey-1.8.0
-Received: from mail-wr1-x429.google.com (mail-wr1-x429.google.com
- [IPv6:2a00:1450:4864:20::429])
- by smtp2.osuosl.org (Postfix) with ESMTPS id 8170440025
- for <iommu@lists.linux-foundation.org>; Thu, 10 Jun 2021 07:53:37 +0000 (UTC)
-Received: by mail-wr1-x429.google.com with SMTP id e11so1119408wrg.3
- for <iommu@lists.linux-foundation.org>; Thu, 10 Jun 2021 00:53:37 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=gmail.com; s=20161025;
- h=to:cc:references:from:subject:message-id:date:user-agent
- :mime-version:in-reply-to:content-language:content-transfer-encoding;
- bh=xJS0U9ByX0NxIuJpqaNPHe7gI5LppZzf1YoFLwdpgpQ=;
- b=AtutUx5F3FjGQHEtvWof9HOeTHWeBqvhVw+QiN+Sh6cWWewDfrjuaZjOgIU8GrvZla
- 6PSpE270aJ7Btt2qATsv9ZhQy58/0GoWWD5CnAISW5h2u03IY721oe03cmG/VhveVGw/
- fIvFr3ZW60yd5JvkbVc401CsPLw/sMlHMPcEsS7+8fpbgaPGboXiVI4p2aQC0iupWWUA
- yvllp02g0KpE38Gh0/adERukIXbEQPWpkg5Hwp0/YamaLVTu8RR0KbFJ4rBVKtlUE2CD
- YXQcYwiWadJ1e0HyfnyVp6gQIJJRAngE/XVLL6ga9zNZL97Pp6Vg5oRaiPOGaMV825g7
- /9Xw==
+Received: from mail-wr1-x42f.google.com (mail-wr1-x42f.google.com
+ [IPv6:2a00:1450:4864:20::42f])
+ by smtp2.osuosl.org (Postfix) with ESMTPS id 8026040025
+ for <iommu@lists.linux-foundation.org>; Thu, 10 Jun 2021 08:02:49 +0000 (UTC)
+Received: by mail-wr1-x42f.google.com with SMTP id a20so1172316wrc.0
+ for <iommu@lists.linux-foundation.org>; Thu, 10 Jun 2021 01:02:49 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linaro.org; s=google;
+ h=from:to:cc:subject:date:message-id:in-reply-to:references
+ :mime-version:content-transfer-encoding;
+ bh=6RXB71SyVnDwe+W+/t1+8vy/yq7qLr5G0jh20DC/Bss=;
+ b=QucyImHywcYL/y83cvRmsRiKD++iTo3zd6mTlxBezBdFPtZasQVuYqtGGv0do+QWRV
+ /HIzIZ/5Lg9nVXPJpvMYhS72HgEllbpptY3JiXTEVrkTf0YrVmcFp0TpPlKBleE2/2EC
+ PQDULvv5kQkyHbCNEoI2gObWsbf3PT0SpnM6H+drvJqyVfL5GX6tRrD5m2ApWny++8pG
+ qTs9z2RjLUzDgqeSdjtOvV25FNHahnS7jZge8fFQejUSG8Wd/FyscwbTgbgvumxIzo+I
+ btijhQHxSqjMa4wIufmzjU8ioxh/6boPoUAUACGRyi1FVD6M8Jguh4wCOjW6ZIBwRv9i
+ pNeg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
  d=1e100.net; s=20161025;
- h=x-gm-message-state:to:cc:references:from:subject:message-id:date
- :user-agent:mime-version:in-reply-to:content-language
- :content-transfer-encoding;
- bh=xJS0U9ByX0NxIuJpqaNPHe7gI5LppZzf1YoFLwdpgpQ=;
- b=Q8ReF1kNV1ncXI0xe8yWLbvMcSNgrUjzFqa+F1etxqUAi2mGOWcxiuBVNVLUQcIJ+J
- QhEW26yQqK9uPP3wMkQSxn/Wb7jkWby9AylbeKjole9qHww+4i1Ns1grXowm/ALvUacw
- GwdGv+shhh+vLLvmuSwEESqKtZwC5pN8BqHgu7KWzlVbA4Pc9YJMRGFLDvZj7OgINQbc
- 1bXEGeg3F7eRoKqjJsVW2hV2Ry4PqLY4oh5YIVvgMu3CAWTZDbEfvVj9MXY3Gsf8Y750
- 2DOEM8yx0CLoPLbmcjbAUJTO+SwEOnYXI6sju88qzCz83Q15KjRk3R47DWf5VI69F0uQ
- 9U6Q==
-X-Gm-Message-State: AOAM533YhanNtIfmZDH9iMGwLCFO3wyB381ifba/WaCAikpC4MBzwxSR
- yyc5vRN7uSGIl2pF794ndfs=
-X-Google-Smtp-Source: ABdhPJyWIa0BThW8wleRBOOtD6X+dU2YcMMb96LCJzvn3Y7r3nvLUwAHQC9a6Zki2vUnentp0rRZoQ==
-X-Received: by 2002:a5d:6082:: with SMTP id w2mr3851640wrt.209.1623311615564; 
- Thu, 10 Jun 2021 00:53:35 -0700 (PDT)
-Received: from ziggy.stardust ([213.195.126.134])
- by smtp.gmail.com with ESMTPSA id o6sm2696870wre.73.2021.06.10.00.53.33
- (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
- Thu, 10 Jun 2021 00:53:34 -0700 (PDT)
-To: Yong Wu <yong.wu@mediatek.com>, Hsin-Yi Wang <hsinyi@chromium.org>
-References: <20210410091128.31823-1-yong.wu@mediatek.com>
- <20210410091128.31823-14-yong.wu@mediatek.com>
- <CAJMQK-iTrQRDDm_=LNqSpvXFd431LYRxXMasJHUpN+K8rJ=Qpg@mail.gmail.com>
- <1620822547.2983.8.camel@mhfsdcap03>
-From: Matthias Brugger <matthias.bgg@gmail.com>
-Subject: Re: [PATCH v5 13/16] media: mtk-vcodec: Get rid of
- mtk_smi_larb_get/put
-Message-ID: <c1422242-8d8c-9592-c22d-288c503cd8b1@gmail.com>
-Date: Thu, 10 Jun 2021 09:53:33 +0200
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
- Thunderbird/78.10.2
+ h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
+ :references:mime-version:content-transfer-encoding;
+ bh=6RXB71SyVnDwe+W+/t1+8vy/yq7qLr5G0jh20DC/Bss=;
+ b=T3z/kXIvR54x2fn5GXJwtPQtvPx6cv9sRgGbIg6bNvLnWZW7e5II/KH49pmUJNJ6Is
+ 1nBkgHb2SD/pSuC4N51tXkn4YcyLagxokiPm4l4JUZCHQXwhcFn4KOWY5Ub7qFHFxFXZ
+ ZK+4no06PqndJUBiHMIma/9Hr88hKcPYwFgHlKj34zOlbeS0grqiYQR7pfCWW2lLEikb
+ 4Qy26zv4U2DLdKbGMg+c1nbjFAlcxTx0xeBRTKBV8gK0VZEAa4goBTn0zJbUhEBDo5Ya
+ d80fA5saRNxIPMAjUIaC44mMABCIEF5Zbt16MrF4IcW8i3MVxxO8maewjdqrvIb0hjmA
+ bOUg==
+X-Gm-Message-State: AOAM531/Yo79PWFn1U3RnyTD1tgnOPq1I6s4s5i1Om19uEbeva3zys+D
+ Yv4Lj+2bXQqJfInTuFL2lkzTxA==
+X-Google-Smtp-Source: ABdhPJwFgYjc7wkhqZoUYI1n6kA+z3B9xL0cuNBUbITlwvuieCO4FBI9I+AYPK1gK7RtlGKgbHUIwQ==
+X-Received: by 2002:adf:9031:: with SMTP id h46mr3948196wrh.125.1623312167592; 
+ Thu, 10 Jun 2021 01:02:47 -0700 (PDT)
+Received: from localhost.localdomain (adsl-84-226-111-173.adslplus.ch.
+ [84.226.111.173])
+ by smtp.gmail.com with ESMTPSA id o3sm2715059wrm.78.2021.06.10.01.02.46
+ (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+ Thu, 10 Jun 2021 01:02:47 -0700 (PDT)
+From: Jean-Philippe Brucker <jean-philippe@linaro.org>
+To: rjw@rjwysocki.net,
+	lenb@kernel.org,
+	joro@8bytes.org,
+	mst@redhat.com
+Subject: [PATCH v4 1/6] ACPI: arm64: Move DMA setup operations out of IORT
+Date: Thu, 10 Jun 2021 09:51:28 +0200
+Message-Id: <20210610075130.67517-2-jean-philippe@linaro.org>
+X-Mailer: git-send-email 2.31.1
+In-Reply-To: <20210610075130.67517-1-jean-philippe@linaro.org>
+References: <20210610075130.67517-1-jean-philippe@linaro.org>
 MIME-Version: 1.0
-In-Reply-To: <1620822547.2983.8.camel@mhfsdcap03>
-Content-Language: en-US
-Cc: Will Deacon <will.deacon@arm.com>, Krzysztof Kozlowski <krzk@kernel.org>,
- youlin.pei@mediatek.com, Irui Wang <irui.wang@mediatek.com>,
- Nicolas Boichat <drinkcat@chromium.org>, Evan Green <evgreen@chromium.org>,
- eizan@chromium.org, Matthias Kaehlcke <mka@chromium.org>,
- Devicetree List <devicetree@vger.kernel.org>, yi.kuo@mediatek.com,
- Rob Herring <robh+dt@kernel.org>,
- "moderated list:ARM/Mediatek SoC support" <linux-mediatek@lists.infradead.org>,
- ming-fan.chen@mediatek.com, Tiffany Lin <tiffany.lin@mediatek.com>,
- "moderated list:ARM/FREESCALE IMX / MXC ARM ARCHITECTURE"
- <linux-arm-kernel@lists.infradead.org>, anan.sun@mediatek.com,
- srv_heupstream@mediatek.com, Alexandre Courbot <acourbot@chromium.org>,
- lkml <linux-kernel@vger.kernel.org>, chao.hao@mediatek.com,
- iommu@lists.linux-foundation.org, Robin Murphy <robin.murphy@arm.com>
+Cc: jean-philippe@linaro.org, kevin.tian@intel.com, catalin.marinas@arm.com,
+ sudeep.holla@arm.com, robin.murphy@arm.com,
+ virtualization@lists.linux-foundation.org, linux-acpi@vger.kernel.org,
+ iommu@lists.linux-foundation.org, sebastien.boeuf@intel.com,
+ guohanjun@huawei.com, will@kernel.org, dwmw2@infradead.org,
+ linux-arm-kernel@lists.infradead.org
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -127,77 +114,213 @@ Content-Transfer-Encoding: 7bit
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-Hi Yong,
+Extract generic DMA setup code out of IORT, so it can be reused by VIOT.
+Keep it in drivers/acpi/arm64 for now, since it could break x86
+platforms that haven't run this code so far, if they have invalid
+tables.
 
-On 12/05/2021 14:29, Yong Wu wrote:
-> On Wed, 2021-05-12 at 17:20 +0800, Hsin-Yi Wang wrote:
->> On Sat, Apr 10, 2021 at 5:14 PM Yong Wu <yong.wu@mediatek.com> wrote:
->>>
->>> MediaTek IOMMU has already added the device_link between the consumer
->>> and smi-larb device. If the vcodec device call the pm_runtime_get_sync,
->>> the smi-larb's pm_runtime_get_sync also be called automatically.
->>>
->>> CC: Tiffany Lin <tiffany.lin@mediatek.com>
->>> CC: Irui Wang <irui.wang@mediatek.com>
->>> Signed-off-by: Yong Wu <yong.wu@mediatek.com>
->>> Reviewed-by: Evan Green <evgreen@chromium.org>
->>> Acked-by: Tiffany Lin <tiffany.lin@mediatek.com>
->>> ---
->>>  .../platform/mtk-vcodec/mtk_vcodec_dec_pm.c   | 37 ++-------------
->>>  .../platform/mtk-vcodec/mtk_vcodec_drv.h      |  3 --
->>>  .../platform/mtk-vcodec/mtk_vcodec_enc.c      |  1 -
->>>  .../platform/mtk-vcodec/mtk_vcodec_enc_pm.c   | 46 ++-----------------
->>>  4 files changed, 10 insertions(+), 77 deletions(-)
-> 
-> [...]
-> 
->>> @@ -108,13 +80,6 @@ void mtk_vcodec_enc_clock_on(struct mtk_vcodec_pm *pm)
->>>                 }
->>>         }
->>>
->>> -       ret = mtk_smi_larb_get(pm->larbvenc);
->>> -       if (ret) {
->>> -               mtk_v4l2_err("mtk_smi_larb_get larb3 fail %d", ret);
->>> -               goto clkerr;
->>> -       }
->>> -       return;
->>
->> You can't delete the return; here, otherwise vcodec_clk will be turned
->> off immediately after they are turned on.
-> 
-> Thanks very much for your review.
-> 
-> Sorry for this. You are quite right.
-> 
-> I checked this, it was introduced in v4 when I rebase the code. I will
-> fix it in next time.
-> 
+Signed-off-by: Jean-Philippe Brucker <jean-philippe@linaro.org>
+---
+ drivers/acpi/arm64/Makefile |  1 +
+ include/linux/acpi.h        |  3 +++
+ include/linux/acpi_iort.h   |  6 ++---
+ drivers/acpi/arm64/dma.c    | 50 ++++++++++++++++++++++++++++++++++
+ drivers/acpi/arm64/iort.c   | 54 ++++++-------------------------------
+ drivers/acpi/scan.c         |  2 +-
+ 6 files changed, 66 insertions(+), 50 deletions(-)
+ create mode 100644 drivers/acpi/arm64/dma.c
 
-Please also make sure that you add all maintainers. I realized that at least for
-the media/platform drivers we miss the maintainer and the corresponding mailing
-list.
-This is especially important in this series, as it spans several subsystems.
+diff --git a/drivers/acpi/arm64/Makefile b/drivers/acpi/arm64/Makefile
+index 6ff50f4ed947..66acbe77f46e 100644
+--- a/drivers/acpi/arm64/Makefile
++++ b/drivers/acpi/arm64/Makefile
+@@ -1,3 +1,4 @@
+ # SPDX-License-Identifier: GPL-2.0-only
+ obj-$(CONFIG_ACPI_IORT) 	+= iort.o
+ obj-$(CONFIG_ACPI_GTDT) 	+= gtdt.o
++obj-y				+= dma.o
+diff --git a/include/linux/acpi.h b/include/linux/acpi.h
+index c60745f657e9..7aaa9559cc19 100644
+--- a/include/linux/acpi.h
++++ b/include/linux/acpi.h
+@@ -259,9 +259,12 @@ void acpi_numa_x2apic_affinity_init(struct acpi_srat_x2apic_cpu_affinity *pa);
+ 
+ #ifdef CONFIG_ARM64
+ void acpi_numa_gicc_affinity_init(struct acpi_srat_gicc_affinity *pa);
++void acpi_arch_dma_setup(struct device *dev, u64 *dma_addr, u64 *dma_size);
+ #else
+ static inline void
+ acpi_numa_gicc_affinity_init(struct acpi_srat_gicc_affinity *pa) { }
++static inline void
++acpi_arch_dma_setup(struct device *dev, u64 *dma_addr, u64 *dma_size) { }
+ #endif
+ 
+ int acpi_numa_memory_affinity_init (struct acpi_srat_mem_affinity *ma);
+diff --git a/include/linux/acpi_iort.h b/include/linux/acpi_iort.h
+index 1a12baa58e40..f7f054833afd 100644
+--- a/include/linux/acpi_iort.h
++++ b/include/linux/acpi_iort.h
+@@ -34,7 +34,7 @@ struct irq_domain *iort_get_device_domain(struct device *dev, u32 id,
+ void acpi_configure_pmsi_domain(struct device *dev);
+ int iort_pmsi_get_dev_id(struct device *dev, u32 *dev_id);
+ /* IOMMU interface */
+-void iort_dma_setup(struct device *dev, u64 *dma_addr, u64 *size);
++int iort_dma_get_ranges(struct device *dev, u64 *size);
+ const struct iommu_ops *iort_iommu_configure_id(struct device *dev,
+ 						const u32 *id_in);
+ int iort_iommu_msi_get_resv_regions(struct device *dev, struct list_head *head);
+@@ -48,8 +48,8 @@ static inline struct irq_domain *iort_get_device_domain(
+ { return NULL; }
+ static inline void acpi_configure_pmsi_domain(struct device *dev) { }
+ /* IOMMU interface */
+-static inline void iort_dma_setup(struct device *dev, u64 *dma_addr,
+-				  u64 *size) { }
++static inline int iort_dma_get_ranges(struct device *dev, u64 *size)
++{ return -ENODEV; }
+ static inline const struct iommu_ops *iort_iommu_configure_id(
+ 				      struct device *dev, const u32 *id_in)
+ { return NULL; }
+diff --git a/drivers/acpi/arm64/dma.c b/drivers/acpi/arm64/dma.c
+new file mode 100644
+index 000000000000..f16739ad3cc0
+--- /dev/null
++++ b/drivers/acpi/arm64/dma.c
+@@ -0,0 +1,50 @@
++// SPDX-License-Identifier: GPL-2.0-only
++#include <linux/acpi.h>
++#include <linux/acpi_iort.h>
++#include <linux/device.h>
++#include <linux/dma-direct.h>
++
++void acpi_arch_dma_setup(struct device *dev, u64 *dma_addr, u64 *dma_size)
++{
++	int ret;
++	u64 end, mask;
++	u64 dmaaddr = 0, size = 0, offset = 0;
++
++	/*
++	 * If @dev is expected to be DMA-capable then the bus code that created
++	 * it should have initialised its dma_mask pointer by this point. For
++	 * now, we'll continue the legacy behaviour of coercing it to the
++	 * coherent mask if not, but we'll no longer do so quietly.
++	 */
++	if (!dev->dma_mask) {
++		dev_warn(dev, "DMA mask not set\n");
++		dev->dma_mask = &dev->coherent_dma_mask;
++	}
++
++	if (dev->coherent_dma_mask)
++		size = max(dev->coherent_dma_mask, dev->coherent_dma_mask + 1);
++	else
++		size = 1ULL << 32;
++
++	ret = acpi_dma_get_range(dev, &dmaaddr, &offset, &size);
++	if (ret == -ENODEV)
++		ret = iort_dma_get_ranges(dev, &size);
++	if (!ret) {
++		/*
++		 * Limit coherent and dma mask based on size retrieved from
++		 * firmware.
++		 */
++		end = dmaaddr + size - 1;
++		mask = DMA_BIT_MASK(ilog2(end) + 1);
++		dev->bus_dma_limit = end;
++		dev->coherent_dma_mask = min(dev->coherent_dma_mask, mask);
++		*dev->dma_mask = min(*dev->dma_mask, mask);
++	}
++
++	*dma_addr = dmaaddr;
++	*dma_size = size;
++
++	ret = dma_direct_set_offset(dev, dmaaddr + offset, dmaaddr, size);
++
++	dev_dbg(dev, "dma_offset(%#08llx)%s\n", offset, ret ? " failed!" : "");
++}
+diff --git a/drivers/acpi/arm64/iort.c b/drivers/acpi/arm64/iort.c
+index 3912a1f6058e..a940be1cf2af 100644
+--- a/drivers/acpi/arm64/iort.c
++++ b/drivers/acpi/arm64/iort.c
+@@ -1144,56 +1144,18 @@ static int rc_dma_get_range(struct device *dev, u64 *size)
+ }
+ 
+ /**
+- * iort_dma_setup() - Set-up device DMA parameters.
++ * iort_dma_get_ranges() - Look up DMA addressing limit for the device
++ * @dev: device to lookup
++ * @size: DMA range size result pointer
+  *
+- * @dev: device to configure
+- * @dma_addr: device DMA address result pointer
+- * @dma_size: DMA range size result pointer
++ * Return: 0 on success, an error otherwise.
+  */
+-void iort_dma_setup(struct device *dev, u64 *dma_addr, u64 *dma_size)
++int iort_dma_get_ranges(struct device *dev, u64 *size)
+ {
+-	u64 end, mask, dmaaddr = 0, size = 0, offset = 0;
+-	int ret;
+-
+-	/*
+-	 * If @dev is expected to be DMA-capable then the bus code that created
+-	 * it should have initialised its dma_mask pointer by this point. For
+-	 * now, we'll continue the legacy behaviour of coercing it to the
+-	 * coherent mask if not, but we'll no longer do so quietly.
+-	 */
+-	if (!dev->dma_mask) {
+-		dev_warn(dev, "DMA mask not set\n");
+-		dev->dma_mask = &dev->coherent_dma_mask;
+-	}
+-
+-	if (dev->coherent_dma_mask)
+-		size = max(dev->coherent_dma_mask, dev->coherent_dma_mask + 1);
++	if (dev_is_pci(dev))
++		return rc_dma_get_range(dev, size);
+ 	else
+-		size = 1ULL << 32;
+-
+-	ret = acpi_dma_get_range(dev, &dmaaddr, &offset, &size);
+-	if (ret == -ENODEV)
+-		ret = dev_is_pci(dev) ? rc_dma_get_range(dev, &size)
+-				      : nc_dma_get_range(dev, &size);
+-
+-	if (!ret) {
+-		/*
+-		 * Limit coherent and dma mask based on size retrieved from
+-		 * firmware.
+-		 */
+-		end = dmaaddr + size - 1;
+-		mask = DMA_BIT_MASK(ilog2(end) + 1);
+-		dev->bus_dma_limit = end;
+-		dev->coherent_dma_mask = min(dev->coherent_dma_mask, mask);
+-		*dev->dma_mask = min(*dev->dma_mask, mask);
+-	}
+-
+-	*dma_addr = dmaaddr;
+-	*dma_size = size;
+-
+-	ret = dma_direct_set_offset(dev, dmaaddr + offset, dmaaddr, size);
+-
+-	dev_dbg(dev, "dma_offset(%#08llx)%s\n", offset, ret ? " failed!" : "");
++		return nc_dma_get_range(dev, size);
+ }
+ 
+ static void __init acpi_iort_register_irq(int hwirq, const char *name,
+diff --git a/drivers/acpi/scan.c b/drivers/acpi/scan.c
+index e10d38ac7cf2..ea613df8f913 100644
+--- a/drivers/acpi/scan.c
++++ b/drivers/acpi/scan.c
+@@ -1537,7 +1537,7 @@ int acpi_dma_configure_id(struct device *dev, enum dev_dma_attr attr,
+ 		return 0;
+ 	}
+ 
+-	iort_dma_setup(dev, &dma_addr, &size);
++	acpi_arch_dma_setup(dev, &dma_addr, &size);
+ 
+ 	iommu = iort_iommu_configure_id(dev, input_id);
+ 	if (PTR_ERR(iommu) == -EPROBE_DEFER)
+-- 
+2.31.1
 
-Thanks a lot,
-Matthias
-
->>
->>> -
->>>  clkerr:
->>>         for (i -= 1; i >= 0; i--)
->>>                 clk_disable_unprepare(enc_clk->clk_info[i].vcodec_clk);
->>> @@ -125,7 +90,6 @@ void mtk_vcodec_enc_clock_off(struct mtk_vcodec_pm *pm)
->>>         struct mtk_vcodec_clk *enc_clk = &pm->venc_clk;
->>>         int i = 0;
->>>
->>> -       mtk_smi_larb_put(pm->larbvenc);
->>>         for (i = enc_clk->clk_num - 1; i >= 0; i--)
->>>                 clk_disable_unprepare(enc_clk->clk_info[i].vcodec_clk);
->>>  }
->>> --
->>> 2.18.0
->>>
-> 
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
