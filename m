@@ -2,97 +2,114 @@ Return-Path: <SRS0=Vfdp=LE=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-3.5 required=3.0 tests=BAYES_00,DKIM_INVALID,
-	DKIM_SIGNED,HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,SPF_HELO_NONE,
-	SPF_PASS,URIBL_BLOCKED autolearn=no autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-12.0 required=3.0 tests=BAYES_00,
+	DKIM_ADSP_CUSTOM_MED,DKIM_INVALID,DKIM_SIGNED,FREEMAIL_FORGED_FROMDOMAIN,
+	FREEMAIL_FROM,HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_CR_TRAILER,
+	INCLUDES_PATCH,MAILING_LIST_MULTI,NICE_REPLY_A,SPF_HELO_NONE,SPF_PASS,
+	URIBL_BLOCKED,USER_AGENT_SANE_1 autolearn=ham autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id CD79AC47094
-	for <iommu@archiver.kernel.org>; Thu, 10 Jun 2021 07:27:05 +0000 (UTC)
-Received: from smtp3.osuosl.org (smtp3.osuosl.org [140.211.166.136])
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4F47EC47094
+	for <iommu@archiver.kernel.org>; Thu, 10 Jun 2021 07:53:44 +0000 (UTC)
+Received: from smtp4.osuosl.org (smtp4.osuosl.org [140.211.166.137])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 7C0DE613F1
-	for <iommu@archiver.kernel.org>; Thu, 10 Jun 2021 07:27:05 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 7C0DE613F1
-Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=linaro.org
+	by mail.kernel.org (Postfix) with ESMTPS id DE3166109E
+	for <iommu@archiver.kernel.org>; Thu, 10 Jun 2021 07:53:43 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org DE3166109E
+Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=gmail.com
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by smtp3.osuosl.org (Postfix) with ESMTP id 2A4FF60844;
-	Thu, 10 Jun 2021 07:27:05 +0000 (UTC)
+	by smtp4.osuosl.org (Postfix) with ESMTP id AA683405AD;
+	Thu, 10 Jun 2021 07:53:43 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from smtp3.osuosl.org ([127.0.0.1])
-	by localhost (smtp3.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id iVNbK4soDfOL; Thu, 10 Jun 2021 07:27:04 +0000 (UTC)
+Received: from smtp4.osuosl.org ([127.0.0.1])
+	by localhost (smtp4.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+	with ESMTP id VAzUIgxg4Fm0; Thu, 10 Jun 2021 07:53:42 +0000 (UTC)
 Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by smtp3.osuosl.org (Postfix) with ESMTPS id 17BC6607D6;
-	Thu, 10 Jun 2021 07:27:04 +0000 (UTC)
+	by smtp4.osuosl.org (Postfix) with ESMTPS id 4B56F404CD;
+	Thu, 10 Jun 2021 07:53:42 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id DF85DC000E;
-	Thu, 10 Jun 2021 07:27:03 +0000 (UTC)
-Received: from smtp3.osuosl.org (smtp3.osuosl.org [140.211.166.136])
- by lists.linuxfoundation.org (Postfix) with ESMTP id BA631C000B
- for <iommu@lists.linux-foundation.org>; Thu, 10 Jun 2021 07:27:02 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 26131C000E;
+	Thu, 10 Jun 2021 07:53:42 +0000 (UTC)
+Received: from smtp2.osuosl.org (smtp2.osuosl.org [140.211.166.133])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 8753CC000B
+ for <iommu@lists.linux-foundation.org>; Thu, 10 Jun 2021 07:53:41 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by smtp3.osuosl.org (Postfix) with ESMTP id 9AE586082A
- for <iommu@lists.linux-foundation.org>; Thu, 10 Jun 2021 07:27:02 +0000 (UTC)
+ by smtp2.osuosl.org (Postfix) with ESMTP id 7A5A3400C9
+ for <iommu@lists.linux-foundation.org>; Thu, 10 Jun 2021 07:53:41 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from smtp3.osuosl.org ([127.0.0.1])
- by localhost (smtp3.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id cFa8fVE15MCv for <iommu@lists.linux-foundation.org>;
- Thu, 10 Jun 2021 07:27:02 +0000 (UTC)
+Authentication-Results: smtp2.osuosl.org (amavisd-new);
+ dkim=pass (2048-bit key) header.d=gmail.com
+Received: from smtp2.osuosl.org ([127.0.0.1])
+ by localhost (smtp2.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+ with ESMTP id EjbpOzYOBjz1 for <iommu@lists.linux-foundation.org>;
+ Thu, 10 Jun 2021 07:53:37 +0000 (UTC)
 X-Greylist: whitelisted by SQLgrey-1.8.0
-Received: from mail-wm1-x32f.google.com (mail-wm1-x32f.google.com
- [IPv6:2a00:1450:4864:20::32f])
- by smtp3.osuosl.org (Postfix) with ESMTPS id CB226607D6
- for <iommu@lists.linux-foundation.org>; Thu, 10 Jun 2021 07:27:01 +0000 (UTC)
-Received: by mail-wm1-x32f.google.com with SMTP id g204so5515283wmf.5
- for <iommu@lists.linux-foundation.org>; Thu, 10 Jun 2021 00:27:01 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linaro.org; s=google;
- h=date:from:to:cc:subject:message-id:references:mime-version
- :content-disposition:in-reply-to;
- bh=avXVNANZtbNtwGIzbu5/mOfsXzmuN+oN/aMUmryqr0Q=;
- b=VRc2QaSAIMV+KGi0BcOqJRfSdMyNdLNEnXzUhLI7MlCE0fkDGka7VzIygBBqC2saf9
- MPf2W6216h7Xg6oe2W1TW2qNY8OMi4TArPB3UivfENQTdjQJWZDSbeW7OPBTjSDOd3Kt
- gpkC7T9gXVRYLEWez/PECMfvnheDLFss2Sljc7DXK5q6EQ9XViOXVnnqszp7h61tIz/t
- A6T7EPBDCVW3HxlxhDfZrgtX71Q4H8Iq2BQRIlmxZNbmGfKP+bPpb2prIJk0UUGjSLk1
- AiGQEGOI0F87ozUc9J0SJbp8AxJ7Ss5VjUhtdIdM9kQSi81BL/1617BSJlYRD8gKInXi
- JnUA==
+Received: from mail-wr1-x429.google.com (mail-wr1-x429.google.com
+ [IPv6:2a00:1450:4864:20::429])
+ by smtp2.osuosl.org (Postfix) with ESMTPS id 8170440025
+ for <iommu@lists.linux-foundation.org>; Thu, 10 Jun 2021 07:53:37 +0000 (UTC)
+Received: by mail-wr1-x429.google.com with SMTP id e11so1119408wrg.3
+ for <iommu@lists.linux-foundation.org>; Thu, 10 Jun 2021 00:53:37 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=gmail.com; s=20161025;
+ h=to:cc:references:from:subject:message-id:date:user-agent
+ :mime-version:in-reply-to:content-language:content-transfer-encoding;
+ bh=xJS0U9ByX0NxIuJpqaNPHe7gI5LppZzf1YoFLwdpgpQ=;
+ b=AtutUx5F3FjGQHEtvWof9HOeTHWeBqvhVw+QiN+Sh6cWWewDfrjuaZjOgIU8GrvZla
+ 6PSpE270aJ7Btt2qATsv9ZhQy58/0GoWWD5CnAISW5h2u03IY721oe03cmG/VhveVGw/
+ fIvFr3ZW60yd5JvkbVc401CsPLw/sMlHMPcEsS7+8fpbgaPGboXiVI4p2aQC0iupWWUA
+ yvllp02g0KpE38Gh0/adERukIXbEQPWpkg5Hwp0/YamaLVTu8RR0KbFJ4rBVKtlUE2CD
+ YXQcYwiWadJ1e0HyfnyVp6gQIJJRAngE/XVLL6ga9zNZL97Pp6Vg5oRaiPOGaMV825g7
+ /9Xw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
  d=1e100.net; s=20161025;
- h=x-gm-message-state:date:from:to:cc:subject:message-id:references
- :mime-version:content-disposition:in-reply-to;
- bh=avXVNANZtbNtwGIzbu5/mOfsXzmuN+oN/aMUmryqr0Q=;
- b=TDjVhGw/H9me64MPkEdZvIQOMDe/M5GmPoB/COkQtBq088sf9kXr43ZO/CM+HpXuL4
- DMf2mdndYCdmLPa8FAmleLSs0zuZXJIYM/SNn137oYuVZdsipZdR+SlSUiW2uHWzCOrd
- qNSv8jk9AjOMfIhxHIEr1p1NO+LDX5/NR0Y1e8tT2XWnkRv25bUrdA5J9cO5RKwigBAY
- 2l7Bi83EvK5xjx4x28Y9lg6UH+e0rBGXmJHrwoe7kSHq42iA6CEeEwdF7Zpf7fWfuURo
- vP9WSPbDpbM9Mh99uXGDvoMkglWVsn/ENtDR1WK3iMe/qAwNrcUCjE3Z/GWtpLA3W6OW
- ruAw==
-X-Gm-Message-State: AOAM531YL72bvfwrg1Tz2yyNLG/amY66gFEwV/wJagYg6SiLuml0BUCp
- 2cm5oEmBrye2HMHQ2OWulUguzw==
-X-Google-Smtp-Source: ABdhPJwbq9CPx2IleqzQLDh7nuPcvAdqoVFXQyJlT7lKUCc0c5RG1MjzcAoY254nLwYIvQPK18ygFg==
-X-Received: by 2002:a05:600c:410c:: with SMTP id
- j12mr3466501wmi.117.1623310020028; 
- Thu, 10 Jun 2021 00:27:00 -0700 (PDT)
-Received: from myrica (adsl-84-226-111-173.adslplus.ch. [84.226.111.173])
- by smtp.gmail.com with ESMTPSA id l16sm8809890wmj.47.2021.06.10.00.26.58
- (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
- Thu, 10 Jun 2021 00:26:58 -0700 (PDT)
-Date: Thu, 10 Jun 2021 09:26:41 +0200
-From: Jean-Philippe Brucker <jean-philippe@linaro.org>
-To: Joerg Roedel <joro@8bytes.org>
-Subject: Re: [PATCH v3 2/6] ACPI: Move IOMMU setup code out of IORT
-Message-ID: <YMG+sdvQ9/BkeBCe@myrica>
-References: <20210602154444.1077006-3-jean-philippe@linaro.org>
- <202106030417.97asL7dA-lkp@intel.com> <YLiELyo+KLuYqA24@myrica>
- <YLpFHwGPuWsB3AgV@8bytes.org>
+ h=x-gm-message-state:to:cc:references:from:subject:message-id:date
+ :user-agent:mime-version:in-reply-to:content-language
+ :content-transfer-encoding;
+ bh=xJS0U9ByX0NxIuJpqaNPHe7gI5LppZzf1YoFLwdpgpQ=;
+ b=Q8ReF1kNV1ncXI0xe8yWLbvMcSNgrUjzFqa+F1etxqUAi2mGOWcxiuBVNVLUQcIJ+J
+ QhEW26yQqK9uPP3wMkQSxn/Wb7jkWby9AylbeKjole9qHww+4i1Ns1grXowm/ALvUacw
+ GwdGv+shhh+vLLvmuSwEESqKtZwC5pN8BqHgu7KWzlVbA4Pc9YJMRGFLDvZj7OgINQbc
+ 1bXEGeg3F7eRoKqjJsVW2hV2Ry4PqLY4oh5YIVvgMu3CAWTZDbEfvVj9MXY3Gsf8Y750
+ 2DOEM8yx0CLoPLbmcjbAUJTO+SwEOnYXI6sju88qzCz83Q15KjRk3R47DWf5VI69F0uQ
+ 9U6Q==
+X-Gm-Message-State: AOAM533YhanNtIfmZDH9iMGwLCFO3wyB381ifba/WaCAikpC4MBzwxSR
+ yyc5vRN7uSGIl2pF794ndfs=
+X-Google-Smtp-Source: ABdhPJyWIa0BThW8wleRBOOtD6X+dU2YcMMb96LCJzvn3Y7r3nvLUwAHQC9a6Zki2vUnentp0rRZoQ==
+X-Received: by 2002:a5d:6082:: with SMTP id w2mr3851640wrt.209.1623311615564; 
+ Thu, 10 Jun 2021 00:53:35 -0700 (PDT)
+Received: from ziggy.stardust ([213.195.126.134])
+ by smtp.gmail.com with ESMTPSA id o6sm2696870wre.73.2021.06.10.00.53.33
+ (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+ Thu, 10 Jun 2021 00:53:34 -0700 (PDT)
+To: Yong Wu <yong.wu@mediatek.com>, Hsin-Yi Wang <hsinyi@chromium.org>
+References: <20210410091128.31823-1-yong.wu@mediatek.com>
+ <20210410091128.31823-14-yong.wu@mediatek.com>
+ <CAJMQK-iTrQRDDm_=LNqSpvXFd431LYRxXMasJHUpN+K8rJ=Qpg@mail.gmail.com>
+ <1620822547.2983.8.camel@mhfsdcap03>
+From: Matthias Brugger <matthias.bgg@gmail.com>
+Subject: Re: [PATCH v5 13/16] media: mtk-vcodec: Get rid of
+ mtk_smi_larb_get/put
+Message-ID: <c1422242-8d8c-9592-c22d-288c503cd8b1@gmail.com>
+Date: Thu, 10 Jun 2021 09:53:33 +0200
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
+ Thunderbird/78.10.2
 MIME-Version: 1.0
-Content-Disposition: inline
-In-Reply-To: <YLpFHwGPuWsB3AgV@8bytes.org>
-Cc: kbuild-all@lists.01.org, kernel test robot <lkp@intel.com>, mst@redhat.com,
- catalin.marinas@arm.com, rjw@rjwysocki.net, linux-acpi@vger.kernel.org,
- clang-built-linux@googlegroups.com, iommu@lists.linux-foundation.org,
- will@kernel.org, dwmw2@infradead.org, lenb@kernel.org
+In-Reply-To: <1620822547.2983.8.camel@mhfsdcap03>
+Content-Language: en-US
+Cc: Will Deacon <will.deacon@arm.com>, Krzysztof Kozlowski <krzk@kernel.org>,
+ youlin.pei@mediatek.com, Irui Wang <irui.wang@mediatek.com>,
+ Nicolas Boichat <drinkcat@chromium.org>, Evan Green <evgreen@chromium.org>,
+ eizan@chromium.org, Matthias Kaehlcke <mka@chromium.org>,
+ Devicetree List <devicetree@vger.kernel.org>, yi.kuo@mediatek.com,
+ Rob Herring <robh+dt@kernel.org>,
+ "moderated list:ARM/Mediatek SoC support" <linux-mediatek@lists.infradead.org>,
+ ming-fan.chen@mediatek.com, Tiffany Lin <tiffany.lin@mediatek.com>,
+ "moderated list:ARM/FREESCALE IMX / MXC ARM ARCHITECTURE"
+ <linux-arm-kernel@lists.infradead.org>, anan.sun@mediatek.com,
+ srv_heupstream@mediatek.com, Alexandre Courbot <acourbot@chromium.org>,
+ lkml <linux-kernel@vger.kernel.org>, chao.hao@mediatek.com,
+ iommu@lists.linux-foundation.org, Robin Murphy <robin.murphy@arm.com>
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -110,21 +127,77 @@ Content-Transfer-Encoding: 7bit
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-On Fri, Jun 04, 2021 at 05:22:07PM +0200, Joerg Roedel wrote:
-> On Thu, Jun 03, 2021 at 09:26:39AM +0200, Jean-Philippe Brucker wrote:
-> > These are only defined when CONFIG_IOMMU_API is set. IORT uses them inside
-> > an #ifdef, I can do the same. Maybe moving these two functions to a new
-> > drivers/acpi/iommu.c would be nicer, though.
+Hi Yong,
+
+On 12/05/2021 14:29, Yong Wu wrote:
+> On Wed, 2021-05-12 at 17:20 +0800, Hsin-Yi Wang wrote:
+>> On Sat, Apr 10, 2021 at 5:14 PM Yong Wu <yong.wu@mediatek.com> wrote:
+>>>
+>>> MediaTek IOMMU has already added the device_link between the consumer
+>>> and smi-larb device. If the vcodec device call the pm_runtime_get_sync,
+>>> the smi-larb's pm_runtime_get_sync also be called automatically.
+>>>
+>>> CC: Tiffany Lin <tiffany.lin@mediatek.com>
+>>> CC: Irui Wang <irui.wang@mediatek.com>
+>>> Signed-off-by: Yong Wu <yong.wu@mediatek.com>
+>>> Reviewed-by: Evan Green <evgreen@chromium.org>
+>>> Acked-by: Tiffany Lin <tiffany.lin@mediatek.com>
+>>> ---
+>>>  .../platform/mtk-vcodec/mtk_vcodec_dec_pm.c   | 37 ++-------------
+>>>  .../platform/mtk-vcodec/mtk_vcodec_drv.h      |  3 --
+>>>  .../platform/mtk-vcodec/mtk_vcodec_enc.c      |  1 -
+>>>  .../platform/mtk-vcodec/mtk_vcodec_enc_pm.c   | 46 ++-----------------
+>>>  4 files changed, 10 insertions(+), 77 deletions(-)
 > 
-> Not sure what the ACPI maintainers and reviewers prefer, but I would
-> just #ifdef the functions and provide stubs in the #else path if
-> necessary.
+> [...]
+> 
+>>> @@ -108,13 +80,6 @@ void mtk_vcodec_enc_clock_on(struct mtk_vcodec_pm *pm)
+>>>                 }
+>>>         }
+>>>
+>>> -       ret = mtk_smi_larb_get(pm->larbvenc);
+>>> -       if (ret) {
+>>> -               mtk_v4l2_err("mtk_smi_larb_get larb3 fail %d", ret);
+>>> -               goto clkerr;
+>>> -       }
+>>> -       return;
+>>
+>> You can't delete the return; here, otherwise vcodec_clk will be turned
+>> off immediately after they are turned on.
+> 
+> Thanks very much for your review.
+> 
+> Sorry for this. You are quite right.
+> 
+> I checked this, it was introduced in v4 when I rebase the code. I will
+> fix it in next time.
+> 
 
-Yes, I'll resend with that
+Please also make sure that you add all maintainers. I realized that at least for
+the media/platform drivers we miss the maintainer and the corresponding mailing
+list.
+This is especially important in this series, as it spans several subsystems.
 
-Thanks,
-Jean
+Thanks a lot,
+Matthias
 
+>>
+>>> -
+>>>  clkerr:
+>>>         for (i -= 1; i >= 0; i--)
+>>>                 clk_disable_unprepare(enc_clk->clk_info[i].vcodec_clk);
+>>> @@ -125,7 +90,6 @@ void mtk_vcodec_enc_clock_off(struct mtk_vcodec_pm *pm)
+>>>         struct mtk_vcodec_clk *enc_clk = &pm->venc_clk;
+>>>         int i = 0;
+>>>
+>>> -       mtk_smi_larb_put(pm->larbvenc);
+>>>         for (i = enc_clk->clk_num - 1; i >= 0; i--)
+>>>                 clk_disable_unprepare(enc_clk->clk_info[i].vcodec_clk);
+>>>  }
+>>> --
+>>> 2.18.0
+>>>
+> 
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
