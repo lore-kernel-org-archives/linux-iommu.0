@@ -7,87 +7,117 @@ X-Spam-Status: No, score=-13.6 required=3.0 tests=BAYES_00,DKIM_INVALID,
 	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED autolearn=ham
 	autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E5107C48BCD
-	for <iommu@archiver.kernel.org>; Thu, 10 Jun 2021 09:36:51 +0000 (UTC)
-Received: from smtp1.osuosl.org (smtp1.osuosl.org [140.211.166.138])
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9B241C47094
+	for <iommu@archiver.kernel.org>; Thu, 10 Jun 2021 09:47:35 +0000 (UTC)
+Received: from smtp3.osuosl.org (smtp3.osuosl.org [140.211.166.136])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 9241161426
-	for <iommu@archiver.kernel.org>; Thu, 10 Jun 2021 09:36:51 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 9241161426
-Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=codeaurora.org
+	by mail.kernel.org (Postfix) with ESMTPS id 34723613FE
+	for <iommu@archiver.kernel.org>; Thu, 10 Jun 2021 09:47:35 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 34723613FE
+Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=redhat.com
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by smtp1.osuosl.org (Postfix) with ESMTP id 51D1F83D10;
-	Thu, 10 Jun 2021 09:36:51 +0000 (UTC)
+	by smtp3.osuosl.org (Postfix) with ESMTP id F3CDF60862;
+	Thu, 10 Jun 2021 09:47:34 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from smtp1.osuosl.org ([127.0.0.1])
-	by localhost (smtp1.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id NeSTmCPkmiEz; Thu, 10 Jun 2021 09:36:50 +0000 (UTC)
-Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by smtp1.osuosl.org (Postfix) with ESMTPS id E476883CF2;
-	Thu, 10 Jun 2021 09:36:49 +0000 (UTC)
+Received: from smtp3.osuosl.org ([127.0.0.1])
+	by localhost (smtp3.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+	with ESMTP id Pnu7oMtnTLXo; Thu, 10 Jun 2021 09:47:33 +0000 (UTC)
+Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [IPv6:2605:bc80:3010:104::8cd3:938])
+	by smtp3.osuosl.org (Postfix) with ESMTPS id 7B91760905;
+	Thu, 10 Jun 2021 09:47:33 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id C45EDC000D;
-	Thu, 10 Jun 2021 09:36:49 +0000 (UTC)
-Received: from smtp2.osuosl.org (smtp2.osuosl.org [140.211.166.133])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 41824C000B
- for <iommu@lists.linux-foundation.org>; Thu, 10 Jun 2021 09:36:48 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 4E76DC000D;
+	Thu, 10 Jun 2021 09:47:33 +0000 (UTC)
+Received: from smtp4.osuosl.org (smtp4.osuosl.org [IPv6:2605:bc80:3010::137])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 01F30C000B
+ for <iommu@lists.linux-foundation.org>; Thu, 10 Jun 2021 09:47:31 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by smtp2.osuosl.org (Postfix) with UTF8SMTP id 283E540214
- for <iommu@lists.linux-foundation.org>; Thu, 10 Jun 2021 09:36:48 +0000 (UTC)
+ by smtp4.osuosl.org (Postfix) with ESMTP id CDC8A405D9
+ for <iommu@lists.linux-foundation.org>; Thu, 10 Jun 2021 09:47:31 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Authentication-Results: smtp2.osuosl.org (amavisd-new);
- dkim=pass (1024-bit key) header.d=mg.codeaurora.org
-Received: from smtp2.osuosl.org ([127.0.0.1])
- by localhost (smtp2.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with UTF8SMTP id bjjZO1l524n3 for <iommu@lists.linux-foundation.org>;
- Thu, 10 Jun 2021 09:36:47 +0000 (UTC)
-X-Greylist: from auto-whitelisted by SQLgrey-1.8.0
-Received: from m43-7.mailgun.net (m43-7.mailgun.net [69.72.43.7])
- by smtp2.osuosl.org (Postfix) with UTF8SMTPS id 1B08E401DF
- for <iommu@lists.linux-foundation.org>; Thu, 10 Jun 2021 09:36:44 +0000 (UTC)
-DKIM-Signature: a=rsa-sha256; v=1; c=relaxed/relaxed; d=mg.codeaurora.org;
- q=dns/txt; 
- s=smtp; t=1623317807; h=Message-ID: References: In-Reply-To: Subject:
- Cc: To: From: Date: Content-Transfer-Encoding: Content-Type:
- MIME-Version: Sender; bh=3Nr5XeD9lkZbSovGodMNy9bg536mnJtqaK+uPHyUp30=;
- b=tBYmu4LSRH6PicFLhT75KRQvo4ruf9F4UkQmeNw1rnaDjoGe2IkROO2I+wC5TPpIdC9mM8IE
- o2bE3RLneD86FMkGYYXjcFPbc312B/A7rrHXfZxYki4GhhsDs1V/KNsE2x2S/pxIZk6fSOGN
- Y1NUb5/fkqhurd7qGiylOjXbOng=
-X-Mailgun-Sending-Ip: 69.72.43.7
-X-Mailgun-Sid: WyI3NDkwMCIsICJpb21tdUBsaXN0cy5saW51eC1mb3VuZGF0aW9uLm9yZyIsICJiZTllNGEiXQ==
-Received: from smtp.codeaurora.org
- (ec2-35-166-182-171.us-west-2.compute.amazonaws.com [35.166.182.171]) by
- smtp-out-n07.prod.us-west-2.postgun.com with SMTP id
- 60c1dd19b6ccaab7530e5689 (version=TLS1.2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256); Thu, 10 Jun 2021 09:36:25
- GMT
-Received: by smtp.codeaurora.org (Postfix, from userid 1001)
- id 2D0BEC43460; Thu, 10 Jun 2021 09:36:25 +0000 (UTC)
-Received: from mail.codeaurora.org (localhost.localdomain [127.0.0.1])
- (using TLSv1 with cipher ECDHE-RSA-AES256-SHA (256/256 bits))
- (No client certificate requested)
- (Authenticated sender: saiprakash.ranjan)
- by smtp.codeaurora.org (Postfix) with ESMTPSA id E64D4C433F1;
- Thu, 10 Jun 2021 09:36:23 +0000 (UTC)
+Authentication-Results: smtp4.osuosl.org (amavisd-new);
+ dkim=pass (1024-bit key) header.d=redhat.com
+Received: from smtp4.osuosl.org ([127.0.0.1])
+ by localhost (smtp4.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+ with ESMTP id on-jC7JrNKZb for <iommu@lists.linux-foundation.org>;
+ Thu, 10 Jun 2021 09:47:30 +0000 (UTC)
+X-Greylist: domain auto-whitelisted by SQLgrey-1.8.0
+Received: from us-smtp-delivery-124.mimecast.com
+ (us-smtp-delivery-124.mimecast.com [170.10.133.124])
+ by smtp4.osuosl.org (Postfix) with ESMTPS id 47631405BD
+ for <iommu@lists.linux-foundation.org>; Thu, 10 Jun 2021 09:47:30 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+ s=mimecast20190719; t=1623318449;
+ h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+ to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+ in-reply-to:in-reply-to:references:references;
+ bh=6SOXwaEoB1r4wx6rBI6iO/FkwbNbkxuPQhDm99+pms4=;
+ b=DxUbaHr+IR2BJrfcV3lRRTsDMkQD3Eq+/l/GWK74HGbPDkk0sCtsNtCYoH994aTx6IsdIn
+ dl0ESmKY1Is3DZIZJ5YIBKh/oxvDt2K6h3vrSCllkGU9/54XcYuaiBHHu3PSh+UhfMVTOE
+ PegkkPomB14HicD7aUhJrSSyiUbDWRU=
+Received: from mail-wm1-f69.google.com (mail-wm1-f69.google.com
+ [209.85.128.69]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-36-saPuSh_NMJC_OAmEH8dNmw-1; Thu, 10 Jun 2021 05:47:27 -0400
+X-MC-Unique: saPuSh_NMJC_OAmEH8dNmw-1
+Received: by mail-wm1-f69.google.com with SMTP id
+ v25-20020a1cf7190000b0290197a4be97b7so2840666wmh.9
+ for <iommu@lists.linux-foundation.org>; Thu, 10 Jun 2021 02:47:27 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+ d=1e100.net; s=20161025;
+ h=x-gm-message-state:from:to:cc:subject:in-reply-to:references:date
+ :message-id:mime-version;
+ bh=6SOXwaEoB1r4wx6rBI6iO/FkwbNbkxuPQhDm99+pms4=;
+ b=jZMWnYu7bGhdEbO54H1Xq4GwYjsAAmnCjUEEBLBicBvHO00wrK0VHC8pxox+qE2t6T
+ 82YyUkzPCeFqxySEl+p29+iqATI+vMHdcxZNNxis0Dkd059TTU6jOqxhYm+1xYswB+3A
+ NHbxBiOykfNBI2B2Jyr1l3haZRNlnvR1a0XWje1qqzZLYIdtpVGXo5Q5GPHCe4/LCQKC
+ eb2QLK7T00lPWRETNbjPk9FWYX4T1e/2sdDTjiu+iRen/sgmEyefV/GYyLyY5xD9QGlZ
+ QdNhN0DHdxL8ZGlFncyJvapJL3lm1vercFyPVdsnOYFzgUfYJgS3XwiKFlSoPACVZQKn
+ KbIw==
+X-Gm-Message-State: AOAM531rA4RfRSv7AYFxRgQaQDSKhW+IfjC7OvU7T/rx0+t91x7dpi2o
+ xu/9uZq94Fh0ucomoxrA7Neo+RM+6NNldGAk9bECHtPbgf4Z2SucNIa2z+o7fSXVxpj06hODDWl
+ vpNmjACvOQcO7xNol3iuElZrnN+Zssg==
+X-Received: by 2002:a5d:6a02:: with SMTP id m2mr4390682wru.77.1623318446697;
+ Thu, 10 Jun 2021 02:47:26 -0700 (PDT)
+X-Google-Smtp-Source: ABdhPJx2dUezxzGYnsl/xPnZ5DutUwwD8Qpsl170CTiWMTdnHNIbMR6YpxqB5Zb+USUdHAJsBsFR8g==
+X-Received: by 2002:a5d:6a02:: with SMTP id m2mr4390649wru.77.1623318446473;
+ Thu, 10 Jun 2021 02:47:26 -0700 (PDT)
+Received: from vitty.brq.redhat.com (g-server-2.ign.cz. [91.219.240.2])
+ by smtp.gmail.com with ESMTPSA id x125sm2708442wmg.37.2021.06.10.02.47.24
+ (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+ Thu, 10 Jun 2021 02:47:25 -0700 (PDT)
+From: Vitaly Kuznetsov <vkuznets@redhat.com>
+To: Tianyu Lan <ltykernel@gmail.com>, kys@microsoft.com,
+ haiyangz@microsoft.com, sthemmin@microsoft.com, wei.liu@kernel.org,
+ decui@microsoft.com, tglx@linutronix.de, mingo@redhat.com, bp@alien8.de,
+ x86@kernel.org, hpa@zytor.com, arnd@arndb.de, dave.hansen@linux.intel.com,
+ luto@kernel.org, peterz@infradead.org, akpm@linux-foundation.org,
+ kirill.shutemov@linux.intel.com, rppt@kernel.org, hannes@cmpxchg.org,
+ cai@lca.pw, krish.sadhukhan@oracle.com, saravanand@fb.com,
+ Tianyu.Lan@microsoft.com, konrad.wilk@oracle.com, hch@lst.de,
+ m.szyprowski@samsung.com, robin.murphy@arm.com,
+ boris.ostrovsky@oracle.com, jgross@suse.com, sstabellini@kernel.org,
+ joro@8bytes.org, will@kernel.org, xen-devel@lists.xenproject.org,
+ davem@davemloft.net, kuba@kernel.org, jejb@linux.ibm.com,
+ martin.petersen@oracle.com
+Subject: Re: [RFC PATCH V3 03/11] x86/Hyper-V: Add new hvcall guest address
+ host visibility support
+In-Reply-To: <20210530150628.2063957-4-ltykernel@gmail.com>
+References: <20210530150628.2063957-1-ltykernel@gmail.com>
+ <20210530150628.2063957-4-ltykernel@gmail.com>
+Date: Thu, 10 Jun 2021 11:47:23 +0200
+Message-ID: <878s3iyrtg.fsf@vitty.brq.redhat.com>
 MIME-Version: 1.0
-Date: Thu, 10 Jun 2021 15:06:23 +0530
-From: Sai Prakash Ranjan <saiprakash.ranjan@codeaurora.org>
-To: Robin Murphy <robin.murphy@arm.com>
-Subject: Re: [PATCH] iommu/io-pgtable-arm: Optimize partial walk flush for
- large scatter-gather list
-In-Reply-To: <35bfd245-45e2-8083-b620-330d6dbd7bd7@arm.com>
-References: <20210609145315.25750-1-saiprakash.ranjan@codeaurora.org>
- <dbcd394a-4d85-316c-5dd0-033546a66132@arm.com>
- <c600e9b2534d54082a5272b508a7985f@codeaurora.org>
- <35bfd245-45e2-8083-b620-330d6dbd7bd7@arm.com>
-Message-ID: <12067ffb8243b220cf03e83aaac3e823@codeaurora.org>
-X-Sender: saiprakash.ranjan@codeaurora.org
-User-Agent: Roundcube Webmail/1.3.9
-Cc: linux-arm-msm@vger.kernel.org, iommu@lists.linux-foundation.org,
- Will Deacon <will@kernel.org>, linux-kernel@vger.kernel.org,
- linux-arm-kernel@lists.infradead.org
+Authentication-Results: relay.mimecast.com;
+ auth=pass smtp.auth=CUSA124A263 smtp.mailfrom=vkuznets@redhat.com
+X-Mimecast-Spam-Score: 0
+X-Mimecast-Originator: redhat.com
+Cc: linux-arch@vger.kernel.org, thomas.lendacky@amd.com,
+ linux-hyperv@vger.kernel.org, brijesh.singh@amd.com,
+ linux-scsi@vger.kernel.org, netdev@vger.kernel.org,
+ linux-kernel@vger.kernel.org, iommu@lists.linux-foundation.org,
+ sunilmut@microsoft.com
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -100,139 +130,384 @@ List-Post: <mailto:iommu@lists.linux-foundation.org>
 List-Help: <mailto:iommu-request@lists.linux-foundation.org?subject=help>
 List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
  <mailto:iommu-request@lists.linux-foundation.org?subject=subscribe>
-Content-Transfer-Encoding: base64
-Content-Type: text/plain; charset="utf-8"; Format="flowed"
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-SGkgUm9iaW4sCgpPbiAyMDIxLTA2LTEwIDE0OjM4LCBSb2JpbiBNdXJwaHkgd3JvdGU6Cj4gT24g
-MjAyMS0wNi0xMCAwNjoyNCwgU2FpIFByYWthc2ggUmFuamFuIHdyb3RlOgo+PiBIaSBSb2JpbiwK
-Pj4gCj4+IE9uIDIwMjEtMDYtMTAgMDA6MTQsIFJvYmluIE11cnBoeSB3cm90ZToKPj4+IE9uIDIw
-MjEtMDYtMDkgMTU6NTMsIFNhaSBQcmFrYXNoIFJhbmphbiB3cm90ZToKPj4+PiBDdXJyZW50bHkg
-Zm9yIGlvbW11X3VubWFwKCkgb2YgbGFyZ2Ugc2NhdHRlci1nYXRoZXIgbGlzdCB3aXRoIHBhZ2Ug
-Cj4+Pj4gc2l6ZQo+Pj4+IGVsZW1lbnRzLCB0aGUgbWFqb3JpdHkgb2YgdGltZSBpcyBzcGVudCBp
-biBmbHVzaGluZyBvZiBwYXJ0aWFsIHdhbGtzIAo+Pj4+IGluCj4+Pj4gX19hcm1fbHBhZV91bm1h
-cCgpIHdoaWNoIGlzIGEgVkEgYmFzZWQgVExCIGludmFsaWRhdGlvbiAoVExCSVZBIGZvcgo+Pj4+
-IGFybS1zbW11KS4KPj4+PiAKPj4+PiBGb3IgZXhhbXBsZTogdG8gdW5tYXAgYSAzMk1CIHNjYXR0
-ZXItZ2F0aGVyIGxpc3Qgd2l0aCBwYWdlIHNpemUgCj4+Pj4gZWxlbWVudHMKPj4+PiAoODE5MiBl
-bnRyaWVzKSwgdGhlcmUgYXJlIDE2LT4yTUIgYnVmZmVyIHVubWFwcyBiYXNlZCBvbiB0aGUgcGdz
-aXplIAo+Pj4+ICgyTUIKPj4+PiBmb3IgNEsgZ3JhbnVsZSkgYW5kIGVhY2ggb2YgMk1CIHdpbGwg
-ZnVydGhlciByZXN1bHQgaW4gNTEyIFRMQklWQXMgCj4+Pj4gKDJNQi80SykKPj4+PiByZXN1bHRp
-bmcgaW4gYSB0b3RhbCBvZiA4MTkyIFRMQklWQXMgKDUxMioxNikgZm9yIDE2LT4yTUIgY2F1c2lu
-ZyBhIAo+Pj4+IGh1Z2UKPj4+PiBvdmVyaGVhZC4KPj4+PiAKPj4+PiBTbyBpbnN0ZWFkIHVzZSBp
-b19wZ3RhYmxlX3RsYl9mbHVzaF9hbGwoKSB0byBpbnZhbGlkYXRlIHRoZSBlbnRpcmUgCj4+Pj4g
-Y29udGV4dAo+Pj4+IGlmIHNpemUgKHBnc2l6ZSkgaXMgZ3JlYXRlciB0aGFuIHRoZSBncmFudWxl
-IHNpemUgKDRLLCAxNkssIDY0SykuIAo+Pj4+IEZvciB0aGlzCj4+Pj4gZXhhbXBsZSBvZiAzMk1C
-IHNjYXR0ZXItZ2F0aGVyIGxpc3QgdW5tYXAsIHRoaXMgcmVzdWx0cyBpbiBqdXN0IDE2IAo+Pj4+
-IEFTSUQKPj4+PiBiYXNlZCBUTEIgaW52YWxpZGF0aW9ucyBvciB0bGJfZmx1c2hfYWxsKCkgY2Fs
-bGJhY2sgKFRMQklBU0lEIGluIAo+Pj4+IGNhc2Ugb2YKPj4+PiBhcm0tc21tdSkgYXMgb3Bwb3Nl
-ZCB0byA4MTkyIFRMQklWQXMgdGhlcmVieSBpbmNyZWFzaW5nIHRoZSAKPj4+PiBwZXJmb3JtYW5j
-ZSBvZgo+Pj4+IHVubWFwcyBkcmFzdGljYWxseS4KPj4+PiAKPj4+PiBDb25kaXRpb24gKHNpemUg
-PiBncmFudWxlIHNpemUpIGlzIGNob3NlbiBmb3IgCj4+Pj4gaW9fcGd0YWJsZV90bGJfZmx1c2hf
-YWxsKCkKPj4+PiBiZWNhdXNlIGZvciBhbnkgZ3JhbnVsZSB3aXRoIHN1cHBvcnRlZCBwZ3NpemVz
-LCB3ZSB3aWxsIGhhdmUgYXQgCj4+Pj4gbGVhc3QgNTEyCj4+Pj4gVExCIGludmFsaWRhdGlvbnMg
-Zm9yIHdoaWNoIHRsYl9mbHVzaF9hbGwoKSBpcyBhbHJlYWR5IHJlY29tbWVuZGVkLiAKPj4+PiBG
-b3IKPj4+PiBleGFtcGxlLCB0YWtlIDRLIGdyYW51bGUgd2l0aCAyTUIgcGdzaXplLCB0aGlzIHdp
-bGwgcmVzdWx0IGluIDUxMiAKPj4+PiBUTEJJVkEKPj4+PiBpbiBwYXJ0aWFsIHdhbGsgZmx1c2gu
-Cj4+Pj4gCj4+Pj4gVGVzdCBvbiBRVEkgU004MTUwIFNvQyBmb3IgMTAgaXRlcmF0aW9ucyBvZiBp
-b21tdV97bWFwX3NnfS91bm1hcDoKPj4+PiAoYXZlcmFnZSBvdmVyIDEwIGl0ZXJhdGlvbnMpCj4+
-Pj4gCj4+Pj4gQmVmb3JlIHRoaXMgb3B0aW1pemF0aW9uOgo+Pj4+IAo+Pj4+IMKgwqDCoMKgIHNp
-emXCoMKgwqDCoMKgwqDCoCBpb21tdV9tYXBfc2fCoMKgwqDCoMKgIGlvbW11X3VubWFwCj4+Pj4g
-wqDCoMKgwqDCoMKgIDRLwqDCoMKgwqDCoMKgwqDCoMKgwqDCoCAyLjA2NyB1c8KgwqDCoMKgwqDC
-oMKgwqAgMS44NTQgdXMKPj4+PiDCoMKgwqDCoMKgIDY0S8KgwqDCoMKgwqDCoMKgwqDCoMKgwqAg
-OS41OTggdXPCoMKgwqDCoMKgwqDCoMKgIDguODAyIHVzCj4+Pj4gwqDCoMKgwqDCoMKgIDFNwqDC
-oMKgwqDCoMKgwqDCoMKgIDE0OC44OTAgdXPCoMKgwqDCoMKgwqAgMTMwLjcxOCB1cwo+Pj4+IMKg
-wqDCoMKgwqDCoCAyTcKgwqDCoMKgwqDCoMKgwqDCoCAzMDUuODY0IHVzwqDCoMKgwqDCoMKgwqAg
-NjcuMjkxIHVzCj4+Pj4gwqDCoMKgwqDCoCAxMk3CoMKgwqDCoMKgwqDCoMKgIDE3OTMuNjA0IHVz
-wqDCoMKgwqDCoMKgIDM5MC44MzggdXMKPj4+PiDCoMKgwqDCoMKgIDE2TcKgwqDCoMKgwqDCoMKg
-wqAgMjM4Ni44NDggdXPCoMKgwqDCoMKgwqAgNTE4LjE4NyB1cwo+Pj4+IMKgwqDCoMKgwqAgMjRN
-wqDCoMKgwqDCoMKgwqDCoCAzNTYzLjI5NiB1c8KgwqDCoMKgwqDCoCA3NzUuOTg5IHVzCj4+Pj4g
-wqDCoMKgwqDCoCAzMk3CoMKgwqDCoMKgwqDCoMKgIDQ3NDcuMTcxIHVzwqDCoMKgwqDCoCAxMDMz
-LjM2NCB1cwo+Pj4+IAo+Pj4+IEFmdGVyIHRoaXMgb3B0aW1pemF0aW9uOgo+Pj4+IAo+Pj4+IMKg
-wqDCoMKgIHNpemXCoMKgwqDCoMKgwqDCoCBpb21tdV9tYXBfc2fCoMKgwqDCoMKgIGlvbW11X3Vu
-bWFwCj4+Pj4gwqDCoMKgwqDCoMKgIDRLwqDCoMKgwqDCoMKgwqDCoMKgwqDCoCAxLjcyMyB1c8Kg
-wqDCoMKgwqDCoMKgwqAgMS43NjUgdXMKPj4+PiDCoMKgwqDCoMKgIDY0S8KgwqDCoMKgwqDCoMKg
-wqDCoMKgwqAgOS44ODAgdXPCoMKgwqDCoMKgwqDCoMKgIDguODY5IHVzCj4+Pj4gwqDCoMKgwqDC
-oMKgIDFNwqDCoMKgwqDCoMKgwqDCoMKgIDE1NS4zNjQgdXPCoMKgwqDCoMKgwqAgMTM1LjIyMyB1
-cwo+Pj4+IMKgwqDCoMKgwqDCoCAyTcKgwqDCoMKgwqDCoMKgwqDCoCAzMDMuOTA2IHVzwqDCoMKg
-wqDCoMKgwqDCoCA1LjM4NSB1cwo+Pj4+IMKgwqDCoMKgwqAgMTJNwqDCoMKgwqDCoMKgwqDCoCAx
-Nzg2LjU1NyB1c8KgwqDCoMKgwqDCoMKgIDIxLjI1MCB1cwo+Pj4+IMKgwqDCoMKgwqAgMTZNwqDC
-oMKgwqDCoMKgwqDCoCAyMzkxLjg5MCB1c8KgwqDCoMKgwqDCoMKgIDI3LjQzNyB1cwo+Pj4+IMKg
-wqDCoMKgwqAgMjRNwqDCoMKgwqDCoMKgwqDCoCAzNTcwLjg5NSB1c8KgwqDCoMKgwqDCoMKgIDM5
-LjkzNyB1cwo+Pj4+IMKgwqDCoMKgwqAgMzJNwqDCoMKgwqDCoMKgwqDCoCA0NzU1LjIzNCB1c8Kg
-wqDCoMKgwqDCoMKgIDUxLjc5NyB1cwo+Pj4+IAo+Pj4+IFRoaXMgaXMgZnVydGhlciByZWR1Y2Vk
-IG9uY2UgdGhlIG1hcC91bm1hcF9wYWdlcygpIHN1cHBvcnQgZ2V0cyBpbiAKPj4+PiB3aGljaAo+
-Pj4+IHdpbGwgcmVzdWx0IGluIGp1c3QgMSB0bGJfZmx1c2hfYWxsKCkgYXMgb3Bwb3NlZCB0byAx
-NiAKPj4+PiB0bGJfZmx1c2hfYWxsKCkuCj4+Pj4gCj4+Pj4gU2lnbmVkLW9mZi1ieTogU2FpIFBy
-YWthc2ggUmFuamFuIDxzYWlwcmFrYXNoLnJhbmphbkBjb2RlYXVyb3JhLm9yZz4KPj4+PiAtLS0K
-Pj4+PiDCoCBkcml2ZXJzL2lvbW11L2lvLXBndGFibGUtYXJtLmMgfCA3ICsrKysrLS0KPj4+PiDC
-oCAxIGZpbGUgY2hhbmdlZCwgNSBpbnNlcnRpb25zKCspLCAyIGRlbGV0aW9ucygtKQo+Pj4+IAo+
-Pj4+IGRpZmYgLS1naXQgYS9kcml2ZXJzL2lvbW11L2lvLXBndGFibGUtYXJtLmMgCj4+Pj4gYi9k
-cml2ZXJzL2lvbW11L2lvLXBndGFibGUtYXJtLmMKPj4+PiBpbmRleCA4N2RlZjU4ZTc5YjUuLmMz
-Y2I5YWRkMzE3OSAxMDA2NDQKPj4+PiAtLS0gYS9kcml2ZXJzL2lvbW11L2lvLXBndGFibGUtYXJt
-LmMKPj4+PiArKysgYi9kcml2ZXJzL2lvbW11L2lvLXBndGFibGUtYXJtLmMKPj4+PiBAQCAtNTg5
-LDggKzU4OSwxMSBAQCBzdGF0aWMgc2l6ZV90IF9fYXJtX2xwYWVfdW5tYXAoc3RydWN0IAo+Pj4+
-IGFybV9scGFlX2lvX3BndGFibGUgKmRhdGEsCj4+Pj4gwqDCoMKgwqDCoMKgwqDCoMKgwqDCoCBp
-ZiAoIWlvcHRlX2xlYWYocHRlLCBsdmwsIGlvcC0+Zm10KSkgewo+Pj4+IMKgwqDCoMKgwqDCoMKg
-wqDCoMKgwqDCoMKgIC8qIEFsc28gZmx1c2ggYW55IHBhcnRpYWwgd2Fsa3MgKi8KPj4+PiAtwqDC
-oMKgwqDCoMKgwqDCoMKgwqDCoCBpb19wZ3RhYmxlX3RsYl9mbHVzaF93YWxrKGlvcCwgaW92YSwg
-c2l6ZSwKPj4+PiAtwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDC
-oMKgwqAgQVJNX0xQQUVfR1JBTlVMRShkYXRhKSk7Cj4+Pj4gK8KgwqDCoMKgwqDCoMKgwqDCoMKg
-wqAgaWYgKHNpemUgPiBBUk1fTFBBRV9HUkFOVUxFKGRhdGEpKQo+Pj4+ICvCoMKgwqDCoMKgwqDC
-oMKgwqDCoMKgwqDCoMKgwqAgaW9fcGd0YWJsZV90bGJfZmx1c2hfYWxsKGlvcCk7Cj4+Pj4gK8Kg
-wqDCoMKgwqDCoMKgwqDCoMKgwqAgZWxzZQo+Pj4gCj4+PiBFcm0sIHdoZW4gd2lsbCB0aGUgYWJv
-dmUgY29uZGl0aW9uIGV2ZXIgbm90IGJlIHRydWU/IDspCj4+PiAKPj4gCj4+IEFoIHJpZ2h0LCBz
-aWxseSBtZSA6KQo+PiAKPj4+IFRha2luZyBhIHN0ZXAgYmFjaywgdGhvdWdoLCB3aGF0IGFib3V0
-IHRoZSBpbXBhY3QgdG8gZHJpdmVycyBvdGhlcgo+Pj4gdGhhbiBTTU1VdjI/Cj4+IAo+PiBPdGhl
-ciBkcml2ZXJzIHdvdWxkIGJlIG1zbV9pb21tdS5jLCBxY29tX2lvbW11LmMgd2hpY2ggZG9lcyB0
-aGUgc2FtZQo+PiB0aGluZyBhcyBhcm0tc21tdS12MiAocGFnZSBiYXNlZCBpbnZhbGlkYXRpb25z
-KSwgdGhlbiB0aGVyZSBpcyAKPj4gaXBtbXUtdm1zYS5jCj4+IHdoaWNoIGRvZXMgdGxiX2ZsdXNo
-X2FsbCgpIGZvciBmbHVzaCB3YWxrLgo+PiAKPj4+IEluIHBhcnRpY3VsYXIgSSdtIHRoaW5raW5n
-IG9mIFNNTVV2My4yIHdoZXJlIHRoZSB3aG9sZQo+Pj4gcmFuZ2UgY2FuIGJlIGludmFsaWRhdGVk
-IGJ5IFZBIGluIGEgc2luZ2xlIGNvbW1hbmQgYW55d2F5LCBzbyB0aGUKPj4+IGFkZGl0aW9uYWwg
-cGVuYWx0aWVzIG9mIFRMQklBTEwgYXJlIHVuZGVzaXJhYmxlLgo+Pj4gCj4+IAo+PiBSaWdodCwg
-c28gSSBhbSB0aGlua2luZyB3ZSBjYW4gaGF2ZSBhIG5ldyBnZW5lcmljIHF1aXJrIAo+PiBJT19Q
-R1RBQkxFX1FVSVJLX1JBTkdFX0lOVgo+PiB0byBjaG9vc2UgYmV0d2VlbiByYW5nZSBiYXNlZCBp
-bnZhbGlkYXRpb25zKHRsYl9mbHVzaF93YWxrKSBhbmQgCj4+IHRsYl9mbHVzaF9hbGwoKS4KPj4g
-SW4gdGhpcyBjYXNlIG9mIGFybS1zbW11LXYzLjIsIHdlIGNhbiB0aWUgdXAgQVJNX1NNTVVfRkVB
-VF9SQU5HRV9JTlYgCj4+IHdpdGggdGhpcyBxdWlyawo+PiBhbmQgaGF2ZSBzb21ldGhpbmcgbGlr
-ZSBiZWxvdywgdGhvdWdodHM/Cj4+IAo+PiBpZiAoaW9wLT5jZmcucXVpcmtzICYgSU9fUEdUQUJM
-RV9RVUlSS19SQU5HRV9JTlYpCj4+ICDCoMKgwqDCoMKgwqDCoCBpb19wZ3RhYmxlX3RsYl9mbHVz
-aF93YWxrKGlvcCwgaW92YSwgc2l6ZSwKPj4gIMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDC
-oMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoCBBUk1fTFBBRV9HUkFOVUxFKGRh
-dGEpKTsKPj4gZWxzZQo+PiAgwqDCoMKgwqDCoMKgwqAgaW9fcGd0YWJsZV90bGJfZmx1c2hfYWxs
-KGlvcCk7Cj4gCj4gVGhlIGRlc2lnbiBoZXJlIGhhcyBhbHdheXMgYmVlbiB0aGF0IGlvLXBndGFi
-bGUgc2F5cyAqd2hhdCogbmVlZHMKPiBpbnZhbGlkYXRpbmcsIGFuZCB3ZSBsZWZ0IGl0IHVwIHRv
-IHRoZSBkcml2ZXJzIHRvIGRlY2lkZSBleGFjdGx5Cj4gKmhvdyouIEV2ZW4gdGhvdWdoIHRoaW5n
-cyBoYXZlIGV2b2x2ZWQgYSBiaXQgSSBkb24ndCB0aGluayB0aGF0IGhhcwo+IGZ1bmRhbWVudGFs
-bHkgY2hhbmdlZCAtIHRsYl9mbHVzaF93YWxrIGlzIG5vdyBvbmx5IHVzZWQgaW4gdGhpcyBvbmUK
-PiBwbGFjZSAodGVjaG5pY2FsbHkgSSBzdXBwb3NlIGl0IGNvdWxkIGJlIHJlbmFtZWQgdGxiX2Zs
-dXNoX3RhYmxlIGJ1dAo+IGl0J3Mgbm90IHdvcnRoIHRoZSBjaHVybiksIHNvIGRyaXZlcnMgY2Fu
-IGltcGxlbWVudCB0aGVpciBvd24KPiBwcmVmZXJyZWQgdGFibGUtaW52YWxpZGF0aW5nIGJlaGF2
-aW91ciBldmVuIG1vcmUgZWFzaWx5IHRoYW4gY2hvb3NpbmcKPiB3aGV0aGVyIHRvIGJvdW5jZSBh
-IHF1aXJrIHRocm91Z2ggdGhlIGNvbW1vbiBjb2RlIG9yIG5vdC4gQ29uc2lkZXIKPiB3aGF0IHlv
-dSd2ZSBhbHJlYWR5IHNlZW4gZm9yIHRoZSBSZW5lc2FzIElQTU1VLCBvciBTTU1VdjEgc3RhZ2Ug
-Mi4uLgo+IAoKVGhhbmtzIGZvciB0aGUgZXhwbGFuYXRpb24sIG1ha2VzIHNlbnNlLiBJZiBJIGFt
-IG5vdCBtaXN0YWtlbiwgSSBzZWUgCnRoYXQKeW91IGFyZSBzdWdnZXN0aW5nIHRvIG1vdmUgdGhp
-cyBsb2dpYyBiYXNlZCBvbiBzaXplIGFuZCBncmFudWxlLXNpemUgdG8KYXJtLXNtbXUtdjIgZHJp
-dmVyIGFuZCBvbmUgbW9yZSB0aGluZyBiZWxvdy4uCgoKPiBJJ20gaW5zdGluY3RpdmVseSBhIGxp
-dHRsZSB0d2l0Y2h5IGFib3V0IG1ha2luZyB0aGlzIGEgYmxhbmtldAo+IG9wdGltaXNhdGlvbiBm
-b3IgU01NVXYyIHNpbmNlIEkgc3RpbGwgcmVtZW1iZXIgdGhlIHBhbGF2ZXIgd2l0aCBvdXIKPiBk
-aXNwbGF5IGFuZCBNTVUtNTAwIGludGVncmF0aW9ucywgd2hlcmUgaXQgaGFkIHRvIGltcGxlbWVu
-dCB0aGUgZG9kZ3kKPiAicHJlZmV0Y2giIHJlZ2lzdGVyIHRvIHRyaWdnZXIgdHJhbnNsYXRpb25z
-IGJlZm9yZSBzY2FubmluZyBvdXQgYQo+IGZyYW1lIHNpbmNlIGl0IGNvdWxkbid0IGV2ZXIgYWZm
-b3JkIGEgVExCIG1pc3MsIHRodXMgVExCSUFMTCB3aGVuCj4gZnJlZWluZyBhbiBvbGQgYnVmZmVy
-IHdvdWxkIGJlIGEgZGFuZ2Vyb3VzIGhhbW1lciB0byBzd2luZy4gSG93ZXZlcgo+IElJUkMgaXQg
-YWxzbyBoYWQgdG8gZW5zdXJlIGV2ZXJ5dGhpbmcgd2FzIG1hcHBlZCBhcyAyTUIgYmxvY2tzIHRv
-Cj4gZ3VhcmFudGVlIGZpdHRpbmcgZXZlcnl0aGluZyBpbiB0aGUgVExCcyBpbiB0aGUgZmlyc3Qg
-cGxhY2UsIHNvIEkKPiBndWVzcyBpdCB3b3VsZCBzdGlsbCB3b3JrIG91dCBPSyBkdWUgdG8gbmV2
-ZXIgcmVhbGlzdGljYWxseSB1bm1hcHBpbmcKPiBhIHdob2xlIHRhYmxlIGF0IG9uY2UgYW55d2F5
-Lgo+IAoKWW91IGFyZSBhbHNvIGhpbnRpbmcgdG8gbm90IGRvIHRoaXMgZm9yIGFsbCBTTU1VdjIg
-aW1wbGVtZW50YXRpb25zIGFuZCAKbWFrZQppdCBRQ09NIHNwZWNpZmljPwoKSWYgSSBhbSB3cm9u
-ZyBpbiBteSBhc3N1bXB0aW9ucyBoZXJlLCBwbGVhc2UgbGV0IG1lIGtub3cgb3RoZXJ3aXNlIEkg
-CndpbGwKcHJlcGFyZSB0aGUgcGF0Y2ggOikKClRoYW5rcywKU2FpCgotLSAKUVVBTENPTU0gSU5E
-SUEsIG9uIGJlaGFsZiBvZiBRdWFsY29tbSBJbm5vdmF0aW9uIENlbnRlciwgSW5jLiBpcyBhIApt
-ZW1iZXIKb2YgQ29kZSBBdXJvcmEgRm9ydW0sIGhvc3RlZCBieSBUaGUgTGludXggRm91bmRhdGlv
-bgpfX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fXwppb21tdSBt
-YWlsaW5nIGxpc3QKaW9tbXVAbGlzdHMubGludXgtZm91bmRhdGlvbi5vcmcKaHR0cHM6Ly9saXN0
-cy5saW51eGZvdW5kYXRpb24ub3JnL21haWxtYW4vbGlzdGluZm8vaW9tbXU=
+Tianyu Lan <ltykernel@gmail.com> writes:
+
+> From: Tianyu Lan <Tianyu.Lan@microsoft.com>
+>
+> Add new hvcall guest address host visibility support. Mark vmbus
+> ring buffer visible to host when create gpadl buffer and mark back
+> to not visible when tear down gpadl buffer.
+>
+> Co-developed-by: Sunil Muthuswamy <sunilmut@microsoft.com>
+> Signed-off-by: Tianyu Lan <Tianyu.Lan@microsoft.com>
+> ---
+>  arch/x86/hyperv/Makefile           |   2 +-
+>  arch/x86/hyperv/ivm.c              | 106 +++++++++++++++++++++++++++++
+>  arch/x86/include/asm/hyperv-tlfs.h |  24 +++++++
+>  arch/x86/include/asm/mshyperv.h    |   4 +-
+>  arch/x86/mm/pat/set_memory.c       |  10 ++-
+>  drivers/hv/channel.c               |  38 ++++++++++-
+>  include/asm-generic/hyperv-tlfs.h  |   1 +
+>  include/linux/hyperv.h             |  10 +++
+>  8 files changed, 190 insertions(+), 5 deletions(-)
+>  create mode 100644 arch/x86/hyperv/ivm.c
+>
+> diff --git a/arch/x86/hyperv/Makefile b/arch/x86/hyperv/Makefile
+> index 48e2c51464e8..5d2de10809ae 100644
+> --- a/arch/x86/hyperv/Makefile
+> +++ b/arch/x86/hyperv/Makefile
+> @@ -1,5 +1,5 @@
+>  # SPDX-License-Identifier: GPL-2.0-only
+> -obj-y			:= hv_init.o mmu.o nested.o irqdomain.o
+> +obj-y			:= hv_init.o mmu.o nested.o irqdomain.o ivm.o
+>  obj-$(CONFIG_X86_64)	+= hv_apic.o hv_proc.o
+>  
+>  ifdef CONFIG_X86_64
+> diff --git a/arch/x86/hyperv/ivm.c b/arch/x86/hyperv/ivm.c
+> new file mode 100644
+> index 000000000000..fad1d3024056
+> --- /dev/null
+> +++ b/arch/x86/hyperv/ivm.c
+> @@ -0,0 +1,106 @@
+> +// SPDX-License-Identifier: GPL-2.0
+> +/*
+> + * Hyper-V Isolation VM interface with paravisor and hypervisor
+> + *
+> + * Author:
+> + *  Tianyu Lan <Tianyu.Lan@microsoft.com>
+> + */
+> +
+> +#include <linux/hyperv.h>
+> +#include <linux/types.h>
+> +#include <linux/bitfield.h>
+> +#include <asm/io.h>
+> +#include <asm/mshyperv.h>
+> +
+> +/*
+> + * hv_mark_gpa_visibility - Set pages visible to host via hvcall.
+> + *
+> + * In Isolation VM, all guest memory is encripted from host and guest
+> + * needs to set memory visible to host via hvcall before sharing memory
+> + * with host.
+> + */
+> +int hv_mark_gpa_visibility(u16 count, const u64 pfn[], u32 visibility)
+> +{
+> +	struct hv_gpa_range_for_visibility **input_pcpu, *input;
+> +	u16 pages_processed;
+> +	u64 hv_status;
+> +	unsigned long flags;
+> +
+> +	/* no-op if partition isolation is not enabled */
+> +	if (!hv_is_isolation_supported())
+> +		return 0;
+> +
+> +	if (count > HV_MAX_MODIFY_GPA_REP_COUNT) {
+> +		pr_err("Hyper-V: GPA count:%d exceeds supported:%lu\n", count,
+> +			HV_MAX_MODIFY_GPA_REP_COUNT);
+> +		return -EINVAL;
+> +	}
+> +
+> +	local_irq_save(flags);
+> +	input_pcpu = (struct hv_gpa_range_for_visibility **)
+> +			this_cpu_ptr(hyperv_pcpu_input_arg);
+> +	input = *input_pcpu;
+> +	if (unlikely(!input)) {
+> +		local_irq_restore(flags);
+> +		return -EINVAL;
+> +	}
+> +
+> +	input->partition_id = HV_PARTITION_ID_SELF;
+> +	input->host_visibility = visibility;
+> +	input->reserved0 = 0;
+> +	input->reserved1 = 0;
+> +	memcpy((void *)input->gpa_page_list, pfn, count * sizeof(*pfn));
+> +	hv_status = hv_do_rep_hypercall(
+> +			HVCALL_MODIFY_SPARSE_GPA_PAGE_HOST_VISIBILITY, count,
+> +			0, input, &pages_processed);
+> +	local_irq_restore(flags);
+> +
+> +	if (!(hv_status & HV_HYPERCALL_RESULT_MASK))
+> +		return 0;
+> +
+> +	return hv_status & HV_HYPERCALL_RESULT_MASK;
+> +}
+> +EXPORT_SYMBOL(hv_mark_gpa_visibility);
+> +
+> +/*
+> + * hv_set_mem_host_visibility - Set specified memory visible to host.
+> + *
+> + * In Isolation VM, all guest memory is encrypted from host and guest
+> + * needs to set memory visible to host via hvcall before sharing memory
+> + * with host. This function works as wrap of hv_mark_gpa_visibility()
+> + * with memory base and size.
+> + */
+> +int hv_set_mem_host_visibility(void *kbuffer, size_t size,
+> +			       enum vmbus_page_visibility visibility)
+> +{
+> +	int pagecount = size >> HV_HYP_PAGE_SHIFT;
+> +	u64 *pfn_array;
+> +	int ret = 0;
+> +	int i, pfn;
+> +
+> +	if (!hv_is_isolation_supported())
+> +		return 0;
+> +
+> +	pfn_array = vzalloc(HV_HYP_PAGE_SIZE);
+> +	if (!pfn_array)
+> +		return -ENOMEM;
+> +
+> +	for (i = 0, pfn = 0; i < pagecount; i++) {
+> +		pfn_array[pfn] = virt_to_hvpfn(kbuffer + i * HV_HYP_PAGE_SIZE);
+> +		pfn++;
+> +
+> +		if (pfn == HV_MAX_MODIFY_GPA_REP_COUNT || i == pagecount - 1) {
+> +			ret |= hv_mark_gpa_visibility(pfn, pfn_array, visibility);
+> +			pfn = 0;
+> +
+> +			if (ret)
+> +				goto err_free_pfn_array;
+> +		}
+> +	}
+> +
+> + err_free_pfn_array:
+> +	vfree(pfn_array);
+> +	return ret;
+> +}
+> +EXPORT_SYMBOL_GPL(hv_set_mem_host_visibility);
+> +
+> diff --git a/arch/x86/include/asm/hyperv-tlfs.h b/arch/x86/include/asm/hyperv-tlfs.h
+> index 606f5cc579b2..632281b91b44 100644
+> --- a/arch/x86/include/asm/hyperv-tlfs.h
+> +++ b/arch/x86/include/asm/hyperv-tlfs.h
+> @@ -262,6 +262,17 @@ enum hv_isolation_type {
+>  #define HV_X64_MSR_TIME_REF_COUNT	HV_REGISTER_TIME_REF_COUNT
+>  #define HV_X64_MSR_REFERENCE_TSC	HV_REGISTER_REFERENCE_TSC
+>  
+> +/* Hyper-V GPA map flags */
+> +#define HV_MAP_GPA_PERMISSIONS_NONE            0x0
+> +#define HV_MAP_GPA_READABLE                    0x1
+> +#define HV_MAP_GPA_WRITABLE                    0x2
+> +
+> +enum vmbus_page_visibility {
+> +	VMBUS_PAGE_NOT_VISIBLE = 0,
+> +	VMBUS_PAGE_VISIBLE_READ_ONLY = 1,
+> +	VMBUS_PAGE_VISIBLE_READ_WRITE = 3
+> +};
+> +
+
+Why do we need both flags and the enum? I don't see HV_MAP_GPA_* being
+used anywhere and VMBUS_PAGE_VISIBLE_READ_WRITE looks like
+HV_MAP_GPA_READABLE | HV_MAP_GPA_WRITABLE.
+
+As this is used to communicate with the host, I'd suggest to avoid using
+enum and just use flags everywhere.
+
+>  /*
+>   * Declare the MSR used to setup pages used to communicate with the hypervisor.
+>   */
+> @@ -561,4 +572,17 @@ enum hv_interrupt_type {
+>  
+>  #include <asm-generic/hyperv-tlfs.h>
+>  
+> +/* All input parameters should be in single page. */
+> +#define HV_MAX_MODIFY_GPA_REP_COUNT		\
+> +	((PAGE_SIZE / sizeof(u64)) - 2)
+> +
+> +/* HvCallModifySparseGpaPageHostVisibility hypercall */
+> +struct hv_gpa_range_for_visibility {
+> +	u64 partition_id;
+> +	u32 host_visibility:2;
+> +	u32 reserved0:30;
+> +	u32 reserved1;
+> +	u64 gpa_page_list[HV_MAX_MODIFY_GPA_REP_COUNT];
+> +} __packed;
+> +
+>  #endif
+> diff --git a/arch/x86/include/asm/mshyperv.h b/arch/x86/include/asm/mshyperv.h
+> index aeacca7c4da8..6af9d55ffe3b 100644
+> --- a/arch/x86/include/asm/mshyperv.h
+> +++ b/arch/x86/include/asm/mshyperv.h
+> @@ -194,7 +194,9 @@ struct irq_domain *hv_create_pci_msi_domain(void);
+>  int hv_map_ioapic_interrupt(int ioapic_id, bool level, int vcpu, int vector,
+>  		struct hv_interrupt_entry *entry);
+>  int hv_unmap_ioapic_interrupt(int ioapic_id, struct hv_interrupt_entry *entry);
+> -
+> +int hv_mark_gpa_visibility(u16 count, const u64 pfn[], u32 visibility);
+> +int hv_set_mem_host_visibility(void *kbuffer, size_t size,
+> +			       enum vmbus_page_visibility visibility);
+>  #else /* CONFIG_HYPERV */
+>  static inline void hyperv_init(void) {}
+>  static inline void hyperv_setup_mmu_ops(void) {}
+> diff --git a/arch/x86/mm/pat/set_memory.c b/arch/x86/mm/pat/set_memory.c
+> index 156cd235659f..a82975600107 100644
+> --- a/arch/x86/mm/pat/set_memory.c
+> +++ b/arch/x86/mm/pat/set_memory.c
+> @@ -29,6 +29,8 @@
+>  #include <asm/proto.h>
+>  #include <asm/memtype.h>
+>  #include <asm/set_memory.h>
+> +#include <asm/hyperv-tlfs.h>
+> +#include <asm/mshyperv.h>
+>  
+>  #include "../mm_internal.h"
+>  
+> @@ -1986,8 +1988,14 @@ static int __set_memory_enc_dec(unsigned long addr, int numpages, bool enc)
+>  	int ret;
+>  
+>  	/* Nothing to do if memory encryption is not active */
+> -	if (!mem_encrypt_active())
+> +	if (hv_is_isolation_supported()) {
+> +		return hv_set_mem_host_visibility((void *)addr,
+> +				numpages * HV_HYP_PAGE_SIZE,
+> +				enc ? VMBUS_PAGE_NOT_VISIBLE
+> +				: VMBUS_PAGE_VISIBLE_READ_WRITE);
+> +	} else if (!mem_encrypt_active()) {
+>  		return 0;
+> +	}
+>  
+>  	/* Should not be working on unaligned addresses */
+>  	if (WARN_ONCE(addr & ~PAGE_MASK, "misaligned address: %#lx\n", addr))
+> diff --git a/drivers/hv/channel.c b/drivers/hv/channel.c
+> index f3761c73b074..01048bb07082 100644
+> --- a/drivers/hv/channel.c
+> +++ b/drivers/hv/channel.c
+> @@ -17,6 +17,7 @@
+>  #include <linux/hyperv.h>
+>  #include <linux/uio.h>
+>  #include <linux/interrupt.h>
+> +#include <linux/set_memory.h>
+>  #include <asm/page.h>
+>  #include <asm/mshyperv.h>
+>  
+> @@ -465,7 +466,7 @@ static int __vmbus_establish_gpadl(struct vmbus_channel *channel,
+>  	struct list_head *curr;
+>  	u32 next_gpadl_handle;
+>  	unsigned long flags;
+> -	int ret = 0;
+> +	int ret = 0, index;
+>  
+>  	next_gpadl_handle =
+>  		(atomic_inc_return(&vmbus_connection.next_gpadl_handle) - 1);
+> @@ -474,6 +475,13 @@ static int __vmbus_establish_gpadl(struct vmbus_channel *channel,
+>  	if (ret)
+>  		return ret;
+>  
+> +	ret = set_memory_decrypted((unsigned long)kbuffer,
+> +				   HVPFN_UP(size));
+> +	if (ret) {
+> +		pr_warn("Failed to set host visibility.\n");
+> +		return ret;
+> +	}
+> +
+>  	init_completion(&msginfo->waitevent);
+>  	msginfo->waiting_channel = channel;
+>  
+> @@ -539,6 +547,15 @@ static int __vmbus_establish_gpadl(struct vmbus_channel *channel,
+>  	/* At this point, we received the gpadl created msg */
+>  	*gpadl_handle = gpadlmsg->gpadl;
+>  
+> +	if (type == HV_GPADL_BUFFER)
+> +		index = 0;
+> +	else
+> +		index = channel->gpadl_range[1].gpadlhandle ? 2 : 1;
+> +
+> +	channel->gpadl_range[index].size = size;
+> +	channel->gpadl_range[index].buffer = kbuffer;
+> +	channel->gpadl_range[index].gpadlhandle = *gpadl_handle;
+> +
+>  cleanup:
+>  	spin_lock_irqsave(&vmbus_connection.channelmsg_lock, flags);
+>  	list_del(&msginfo->msglistentry);
+> @@ -549,6 +566,11 @@ static int __vmbus_establish_gpadl(struct vmbus_channel *channel,
+>  	}
+>  
+>  	kfree(msginfo);
+> +
+> +	if (ret)
+> +		set_memory_encrypted((unsigned long)kbuffer,
+> +				     HVPFN_UP(size));
+> +
+>  	return ret;
+>  }
+>  
+> @@ -811,7 +833,7 @@ int vmbus_teardown_gpadl(struct vmbus_channel *channel, u32 gpadl_handle)
+>  	struct vmbus_channel_gpadl_teardown *msg;
+>  	struct vmbus_channel_msginfo *info;
+>  	unsigned long flags;
+> -	int ret;
+> +	int ret, i;
+>  
+>  	info = kzalloc(sizeof(*info) +
+>  		       sizeof(struct vmbus_channel_gpadl_teardown), GFP_KERNEL);
+> @@ -859,6 +881,18 @@ int vmbus_teardown_gpadl(struct vmbus_channel *channel, u32 gpadl_handle)
+>  	spin_unlock_irqrestore(&vmbus_connection.channelmsg_lock, flags);
+>  
+>  	kfree(info);
+> +
+> +	/* Find gpadl buffer virtual address and size. */
+> +	for (i = 0; i < VMBUS_GPADL_RANGE_COUNT; i++)
+> +		if (channel->gpadl_range[i].gpadlhandle == gpadl_handle)
+> +			break;
+> +
+> +	if (set_memory_encrypted((unsigned long)channel->gpadl_range[i].buffer,
+> +			HVPFN_UP(channel->gpadl_range[i].size)))
+> +		pr_warn("Fail to set mem host visibility.\n");
+> +
+> +	channel->gpadl_range[i].gpadlhandle = 0;
+> +
+>  	return ret;
+>  }
+>  EXPORT_SYMBOL_GPL(vmbus_teardown_gpadl);
+> diff --git a/include/asm-generic/hyperv-tlfs.h b/include/asm-generic/hyperv-tlfs.h
+> index 515c3fb06ab3..8a0219255545 100644
+> --- a/include/asm-generic/hyperv-tlfs.h
+> +++ b/include/asm-generic/hyperv-tlfs.h
+> @@ -158,6 +158,7 @@ struct ms_hyperv_tsc_page {
+>  #define HVCALL_RETARGET_INTERRUPT		0x007e
+>  #define HVCALL_FLUSH_GUEST_PHYSICAL_ADDRESS_SPACE 0x00af
+>  #define HVCALL_FLUSH_GUEST_PHYSICAL_ADDRESS_LIST 0x00b0
+> +#define HVCALL_MODIFY_SPARSE_GPA_PAGE_HOST_VISIBILITY 0x00db
+>  
+>  /* Extended hypercalls */
+>  #define HV_EXT_CALL_QUERY_CAPABILITIES		0x8001
+> diff --git a/include/linux/hyperv.h b/include/linux/hyperv.h
+> index 2e859d2f9609..06eccaba10c5 100644
+> --- a/include/linux/hyperv.h
+> +++ b/include/linux/hyperv.h
+> @@ -809,6 +809,14 @@ struct vmbus_device {
+>  
+>  #define VMBUS_DEFAULT_MAX_PKT_SIZE 4096
+>  
+> +struct vmbus_gpadl_range {
+> +	u32 gpadlhandle;
+> +	u32 size;
+> +	void *buffer;
+> +};
+> +
+> +#define VMBUS_GPADL_RANGE_COUNT		3
+> +
+>  struct vmbus_channel {
+>  	struct list_head listentry;
+>  
+> @@ -829,6 +837,8 @@ struct vmbus_channel {
+>  	struct completion rescind_event;
+>  
+>  	u32 ringbuffer_gpadlhandle;
+> +	/* GPADL_RING and Send/Receive GPADL_BUFFER. */
+> +	struct vmbus_gpadl_range gpadl_range[VMBUS_GPADL_RANGE_COUNT];
+>  
+>  	/* Allocated memory for ring buffer */
+>  	struct page *ringbuffer_page;
+
+-- 
+Vitaly
+
+_______________________________________________
+iommu mailing list
+iommu@lists.linux-foundation.org
+https://lists.linuxfoundation.org/mailman/listinfo/iommu
