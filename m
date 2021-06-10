@@ -2,105 +2,66 @@ Return-Path: <SRS0=Vfdp=LE=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-16.6 required=3.0 tests=BAYES_00,DKIM_INVALID,
-	DKIM_SIGNED,HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_CR_TRAILER,INCLUDES_PATCH,
+X-Spam-Status: No, score=-16.8 required=3.0 tests=BAYES_00,
+	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_CR_TRAILER,INCLUDES_PATCH,
 	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_GIT
-	autolearn=unavailable autolearn_force=no version=3.4.0
+	autolearn=ham autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7A414C48BE8
-	for <iommu@archiver.kernel.org>; Thu, 10 Jun 2021 08:03:05 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B814BC47094
+	for <iommu@archiver.kernel.org>; Thu, 10 Jun 2021 08:31:35 +0000 (UTC)
 Received: from smtp4.osuosl.org (smtp4.osuosl.org [140.211.166.137])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 478F5613DF
-	for <iommu@archiver.kernel.org>; Thu, 10 Jun 2021 08:03:05 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 478F5613DF
-Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=linaro.org
+	by mail.kernel.org (Postfix) with ESMTPS id 3A0EA613B3
+	for <iommu@archiver.kernel.org>; Thu, 10 Jun 2021 08:31:35 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 3A0EA613B3
+Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=8bytes.org
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by smtp4.osuosl.org (Postfix) with ESMTP id D6B59405CB;
-	Thu, 10 Jun 2021 08:03:03 +0000 (UTC)
+	by smtp4.osuosl.org (Postfix) with ESMTP id 01EC2405D5;
+	Thu, 10 Jun 2021 08:31:35 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
 Received: from smtp4.osuosl.org ([127.0.0.1])
 	by localhost (smtp4.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id Rw2n61Do7pJG; Thu, 10 Jun 2021 08:03:02 +0000 (UTC)
+	with ESMTP id JldKDL5sfuyG; Thu, 10 Jun 2021 08:31:34 +0000 (UTC)
 Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by smtp4.osuosl.org (Postfix) with ESMTPS id 7958B405CE;
-	Thu, 10 Jun 2021 08:03:02 +0000 (UTC)
+	by smtp4.osuosl.org (Postfix) with ESMTPS id B5929405C6;
+	Thu, 10 Jun 2021 08:31:33 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 52736C002C;
-	Thu, 10 Jun 2021 08:03:02 +0000 (UTC)
-Received: from smtp3.osuosl.org (smtp3.osuosl.org [IPv6:2605:bc80:3010::136])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 2106CC002B
- for <iommu@lists.linux-foundation.org>; Thu, 10 Jun 2021 08:03:00 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 87C57C000D;
+	Thu, 10 Jun 2021 08:31:33 +0000 (UTC)
+Received: from smtp1.osuosl.org (smtp1.osuosl.org [140.211.166.138])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 0105FC000B
+ for <iommu@lists.linux-foundation.org>; Thu, 10 Jun 2021 08:31:31 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by smtp3.osuosl.org (Postfix) with ESMTP id 574C760A45
- for <iommu@lists.linux-foundation.org>; Thu, 10 Jun 2021 08:02:57 +0000 (UTC)
+ by smtp1.osuosl.org (Postfix) with ESMTP id E96FB83B66
+ for <iommu@lists.linux-foundation.org>; Thu, 10 Jun 2021 08:31:31 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Authentication-Results: smtp3.osuosl.org (amavisd-new);
- dkim=pass (2048-bit key) header.d=linaro.org
-Received: from smtp3.osuosl.org ([127.0.0.1])
- by localhost (smtp3.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id vqxAQwzYlBCV for <iommu@lists.linux-foundation.org>;
- Thu, 10 Jun 2021 08:02:56 +0000 (UTC)
-X-Greylist: whitelisted by SQLgrey-1.8.0
-Received: from mail-wm1-x336.google.com (mail-wm1-x336.google.com
- [IPv6:2a00:1450:4864:20::336])
- by smtp3.osuosl.org (Postfix) with ESMTPS id CA74C6076C
- for <iommu@lists.linux-foundation.org>; Thu, 10 Jun 2021 08:02:55 +0000 (UTC)
-Received: by mail-wm1-x336.google.com with SMTP id
- l18-20020a1ced120000b029014c1adff1edso5914151wmh.4
- for <iommu@lists.linux-foundation.org>; Thu, 10 Jun 2021 01:02:55 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linaro.org; s=google;
- h=from:to:cc:subject:date:message-id:in-reply-to:references
- :mime-version:content-transfer-encoding;
- bh=o4eUQK2AFEVDf4pa1XuHff+3rIiA7+oIVY3xnoGa6wY=;
- b=XTDav+B8gT/1ifsCDS1Li2uacTSbnexp8r5J77P2gZpxWe7w8Ei6kIXPG7R8nvM+1S
- FuJ/ArwesV+mdX7IpHAratIh5TtjH1HcJPDnOzi14+7a1Krcc9R6t2hcpTOTM6M6ePRN
- xdrMr4Gqee3y9QyRiImYc7hTw03FrGXOz+8WpuUX/801y4iyuOk9wNyb6066qpPe3NVx
- MH/A8Kv/qBFaAm7chmPfrTohNNkMF4attVGnn72WPRHXJVHe2WlzBIi9keOFH/VvSyh2
- 4Z/PTWZVP/LEHned/8zaNrORkp4OLYt1wXV7wV0fWBM3mHIPZPNd1pW3ipYsrQ3Wt6fa
- yrOA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
- d=1e100.net; s=20161025;
- h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
- :references:mime-version:content-transfer-encoding;
- bh=o4eUQK2AFEVDf4pa1XuHff+3rIiA7+oIVY3xnoGa6wY=;
- b=ODjM3Vrq8q8k4cXOHYPUgjncalA6DfWUHnY4GKioLvsOA3mDJAXo7WyiV87qYpQ47H
- JwnQj7BhMW5SL5LtdeAfkAZFdb6ReKptt+Bfyw1eUFyDOOykncD1JHVp8ZG859YjMuR+
- HXSA3Ibnqa4jnN/2Kfwu5MtD1UyLumxbQjKbXX2hWHGnZrbhgOTvs9IL2xeCL5V4C6Nv
- 3Che0byHjqgNMKs7rMvrwgQzu2cBX90YHsPX0DQeB2V5UVKkoKDhpRV9ZSsfgU0+Layq
- i9eceyzVnprp6Ly9kb5JAz5cHsoJI4m5TjaVVk7Qr5WVmHGcKWwnTdxJ8EaLCL7CFCLV
- aJEQ==
-X-Gm-Message-State: AOAM531DmCLsJ+hhQqHCvziXskXw9wdjfymEA/TAxqrscm0h7I3rmzWq
- K1j0G1lFNso7h8SPU1MPhL8QYA==
-X-Google-Smtp-Source: ABdhPJx2koDYeA+siqnGagD7qMuftNsXW3jO8Xh3lYQXDR5aJEtWgMgDDbbclFK3Zh/WfkpajxAnjA==
-X-Received: by 2002:a05:600c:3647:: with SMTP id
- y7mr13935102wmq.149.1623312173963; 
- Thu, 10 Jun 2021 01:02:53 -0700 (PDT)
-Received: from localhost.localdomain (adsl-84-226-111-173.adslplus.ch.
- [84.226.111.173])
- by smtp.gmail.com with ESMTPSA id o3sm2715059wrm.78.2021.06.10.01.02.52
- (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
- Thu, 10 Jun 2021 01:02:53 -0700 (PDT)
-From: Jean-Philippe Brucker <jean-philippe@linaro.org>
-To: rjw@rjwysocki.net,
-	lenb@kernel.org,
-	joro@8bytes.org,
-	mst@redhat.com
-Subject: [PATCH v4 6/6] iommu/virtio: Enable x86 support
-Date: Thu, 10 Jun 2021 09:51:33 +0200
-Message-Id: <20210610075130.67517-7-jean-philippe@linaro.org>
+Received: from smtp1.osuosl.org ([127.0.0.1])
+ by localhost (smtp1.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+ with ESMTP id svcTmFyDFshM for <iommu@lists.linux-foundation.org>;
+ Thu, 10 Jun 2021 08:31:31 +0000 (UTC)
+X-Greylist: from auto-whitelisted by SQLgrey-1.8.0
+Received: from theia.8bytes.org (8bytes.org
+ [IPv6:2a01:238:4383:600:38bc:a715:4b6d:a889])
+ by smtp1.osuosl.org (Postfix) with ESMTPS id 590EE83B62
+ for <iommu@lists.linux-foundation.org>; Thu, 10 Jun 2021 08:31:31 +0000 (UTC)
+Received: from cap.home.8bytes.org (p4ff2ba7c.dip0.t-ipconnect.de
+ [79.242.186.124])
+ (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits))
+ (No client certificate requested)
+ by theia.8bytes.org (Postfix) with ESMTPSA id 3501317C;
+ Thu, 10 Jun 2021 10:31:27 +0200 (CEST)
+From: Joerg Roedel <joro@8bytes.org>
+To: Joerg Roedel <joro@8bytes.org>, Lu Baolu <baolu.lu@linux.intel.com>,
+ Will Deacon <will@kernel.org>
+Subject: [PATCH] iommu/vt-d: Fix linker error on 32-bit
+Date: Thu, 10 Jun 2021 10:31:20 +0200
+Message-Id: <20210610083120.29224-1-joro@8bytes.org>
 X-Mailer: git-send-email 2.31.1
-In-Reply-To: <20210610075130.67517-1-jean-philippe@linaro.org>
-References: <20210610075130.67517-1-jean-philippe@linaro.org>
 MIME-Version: 1.0
-Cc: jean-philippe@linaro.org, kevin.tian@intel.com, catalin.marinas@arm.com,
- sudeep.holla@arm.com, robin.murphy@arm.com,
- virtualization@lists.linux-foundation.org, linux-acpi@vger.kernel.org,
- iommu@lists.linux-foundation.org, sebastien.boeuf@intel.com,
- guohanjun@huawei.com, will@kernel.org, dwmw2@infradead.org,
- linux-arm-kernel@lists.infradead.org
+Cc: iommu@lists.linux-foundation.org, Joerg Roedel <jroedel@suse.de>,
+ David Woodhouse <dwmw2@infradead.org>, linux-kernel@vger.kernel.org
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -118,76 +79,46 @@ Content-Transfer-Encoding: 7bit
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-With the VIOT support in place, x86 platforms can now use the
-virtio-iommu.
+From: Joerg Roedel <jroedel@suse.de>
 
-Because the other x86 IOMMU drivers aren't yet ready to use the
-acpi_dma_setup() path, x86 doesn't implement arch_setup_dma_ops() at the
-moment. Similarly to Vt-d and AMD IOMMU, call iommu_setup_dma_ops() from
-probe_finalize().
+A recent commit broke the build on 32-bit x86. The linker throws these
+messages:
 
-Acked-by: Joerg Roedel <jroedel@suse.de>
-Acked-by: Michael S. Tsirkin <mst@redhat.com>
-Signed-off-by: Jean-Philippe Brucker <jean-philippe@linaro.org>
+	ld: drivers/iommu/intel/perf.o: in function `dmar_latency_snapshot':
+	perf.c:(.text+0x40c): undefined reference to `__udivdi3'
+	ld: perf.c:(.text+0x458): undefined reference to `__udivdi3'
+
+The reason are the 64-bit divides in dmar_latency_snapshot(). Use the
+div_u64() helper function for those.
+
+Fixes: 55ee5e67a59a ("iommu/vt-d: Add common code for dmar latency performance monitors")
+Signed-off-by: Joerg Roedel <jroedel@suse.de>
 ---
- drivers/iommu/Kconfig        | 3 ++-
- drivers/iommu/dma-iommu.c    | 1 +
- drivers/iommu/virtio-iommu.c | 8 ++++++++
- 3 files changed, 11 insertions(+), 1 deletion(-)
+ drivers/iommu/intel/perf.c | 6 +++---
+ 1 file changed, 3 insertions(+), 3 deletions(-)
 
-diff --git a/drivers/iommu/Kconfig b/drivers/iommu/Kconfig
-index aff8a4830dd1..07b7c25cbed8 100644
---- a/drivers/iommu/Kconfig
-+++ b/drivers/iommu/Kconfig
-@@ -400,8 +400,9 @@ config HYPERV_IOMMU
- config VIRTIO_IOMMU
- 	tristate "Virtio IOMMU driver"
- 	depends on VIRTIO
--	depends on ARM64
-+	depends on (ARM64 || X86)
- 	select IOMMU_API
-+	select IOMMU_DMA
- 	select INTERVAL_TREE
- 	select ACPI_VIOT if ACPI
- 	help
-diff --git a/drivers/iommu/dma-iommu.c b/drivers/iommu/dma-iommu.c
-index 175f8eaeb5b3..46ed43c400cf 100644
---- a/drivers/iommu/dma-iommu.c
-+++ b/drivers/iommu/dma-iommu.c
-@@ -1332,6 +1332,7 @@ void iommu_setup_dma_ops(struct device *dev, u64 dma_base, u64 dma_limit)
- 	 pr_warn("Failed to set up IOMMU for device %s; retaining platform DMA ops\n",
- 		 dev_name(dev));
- }
-+EXPORT_SYMBOL_GPL(iommu_setup_dma_ops);
- 
- static struct iommu_dma_msi_page *iommu_dma_get_msi_page(struct device *dev,
- 		phys_addr_t msi_addr, struct iommu_domain *domain)
-diff --git a/drivers/iommu/virtio-iommu.c b/drivers/iommu/virtio-iommu.c
-index 218fe8560e8d..77aee1207ced 100644
---- a/drivers/iommu/virtio-iommu.c
-+++ b/drivers/iommu/virtio-iommu.c
-@@ -1026,6 +1026,13 @@ static struct iommu_device *viommu_probe_device(struct device *dev)
- 	return ERR_PTR(ret);
- }
- 
-+static void viommu_probe_finalize(struct device *dev)
-+{
-+#ifndef CONFIG_ARCH_HAS_SETUP_DMA_OPS
-+	iommu_setup_dma_ops(dev, 0, U64_MAX);
-+#endif
-+}
-+
- static void viommu_release_device(struct device *dev)
- {
- 	struct iommu_fwspec *fwspec = dev_iommu_fwspec_get(dev);
-@@ -1062,6 +1069,7 @@ static struct iommu_ops viommu_ops = {
- 	.iova_to_phys		= viommu_iova_to_phys,
- 	.iotlb_sync		= viommu_iotlb_sync,
- 	.probe_device		= viommu_probe_device,
-+	.probe_finalize		= viommu_probe_finalize,
- 	.release_device		= viommu_release_device,
- 	.device_group		= viommu_device_group,
- 	.get_resv_regions	= viommu_get_resv_regions,
+diff --git a/drivers/iommu/intel/perf.c b/drivers/iommu/intel/perf.c
+index faaa96dda437..73b7ec705552 100644
+--- a/drivers/iommu/intel/perf.c
++++ b/drivers/iommu/intel/perf.c
+@@ -141,14 +141,14 @@ int dmar_latency_snapshot(struct intel_iommu *iommu, char *str, size_t size)
+ 				if (val == UINT_MAX)
+ 					val = 0;
+ 				else
+-					val /= 1000;
++					val = div_u64(val, 1000);
+ 				break;
+ 			case COUNTS_MAX:
+-				val /= 1000;
++				val = div_u64(val, 1000);
+ 				break;
+ 			case COUNTS_SUM:
+ 				if (lstat[i].samples)
+-					val /= (lstat[i].samples * 1000);
++					val = div_u64(val, (lstat[i].samples * 1000));
+ 				else
+ 					val = 0;
+ 				break;
 -- 
 2.31.1
 
