@@ -2,82 +2,82 @@ Return-Path: <SRS0=1MD/=LF=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-16.5 required=3.0 tests=BAYES_00,DKIM_INVALID,
+X-Spam-Status: No, score=-16.6 required=3.0 tests=BAYES_00,DKIM_INVALID,
 	DKIM_SIGNED,HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_CR_TRAILER,INCLUDES_PATCH,
-	MAILING_LIST_MULTI,SPF_HELO_NONE,URIBL_RED,USER_AGENT_GIT
+	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,URIBL_RED,USER_AGENT_GIT
 	autolearn=unavailable autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 015DDC48BE8
-	for <iommu@archiver.kernel.org>; Fri, 11 Jun 2021 15:27:44 +0000 (UTC)
-Received: from smtp4.osuosl.org (smtp4.osuosl.org [140.211.166.137])
+	by smtp.lore.kernel.org (Postfix) with ESMTP id DE8EFC48BD1
+	for <iommu@archiver.kernel.org>; Fri, 11 Jun 2021 15:27:52 +0000 (UTC)
+Received: from smtp2.osuosl.org (smtp2.osuosl.org [140.211.166.133])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id BFD6B61404
-	for <iommu@archiver.kernel.org>; Fri, 11 Jun 2021 15:27:43 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org BFD6B61404
+	by mail.kernel.org (Postfix) with ESMTPS id A50B561400
+	for <iommu@archiver.kernel.org>; Fri, 11 Jun 2021 15:27:52 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org A50B561400
 Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=chromium.org
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by smtp4.osuosl.org (Postfix) with ESMTP id 99EFA415D4;
-	Fri, 11 Jun 2021 15:27:43 +0000 (UTC)
+	by smtp2.osuosl.org (Postfix) with ESMTP id 79FAC404F0;
+	Fri, 11 Jun 2021 15:27:52 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from smtp4.osuosl.org ([127.0.0.1])
-	by localhost (smtp4.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id jSQ6T-QTL5aa; Fri, 11 Jun 2021 15:27:42 +0000 (UTC)
-Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [IPv6:2605:bc80:3010:104::8cd3:938])
-	by smtp4.osuosl.org (Postfix) with ESMTPS id 21BE7415CA;
-	Fri, 11 Jun 2021 15:27:42 +0000 (UTC)
-Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id DC191C000E;
-	Fri, 11 Jun 2021 15:27:41 +0000 (UTC)
-Received: from smtp2.osuosl.org (smtp2.osuosl.org [IPv6:2605:bc80:3010::133])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 456D1C000B
- for <iommu@lists.linux-foundation.org>; Fri, 11 Jun 2021 15:27:41 +0000 (UTC)
-Received: from localhost (localhost [127.0.0.1])
- by smtp2.osuosl.org (Postfix) with ESMTP id 26361404E8
- for <iommu@lists.linux-foundation.org>; Fri, 11 Jun 2021 15:27:41 +0000 (UTC)
-X-Virus-Scanned: amavisd-new at osuosl.org
-Authentication-Results: smtp2.osuosl.org (amavisd-new);
- dkim=pass (1024-bit key) header.d=chromium.org
 Received: from smtp2.osuosl.org ([127.0.0.1])
- by localhost (smtp2.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id KDrxC_4NuhxY for <iommu@lists.linux-foundation.org>;
- Fri, 11 Jun 2021 15:27:40 +0000 (UTC)
+	by localhost (smtp2.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+	with ESMTP id 3oWtU3uIyT0f; Fri, 11 Jun 2021 15:27:51 +0000 (UTC)
+Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
+	by smtp2.osuosl.org (Postfix) with ESMTPS id 47234404E8;
+	Fri, 11 Jun 2021 15:27:51 +0000 (UTC)
+Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 230BDC000E;
+	Fri, 11 Jun 2021 15:27:51 +0000 (UTC)
+Received: from smtp4.osuosl.org (smtp4.osuosl.org [IPv6:2605:bc80:3010::137])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 38BDDC000B
+ for <iommu@lists.linux-foundation.org>; Fri, 11 Jun 2021 15:27:50 +0000 (UTC)
+Received: from localhost (localhost [127.0.0.1])
+ by smtp4.osuosl.org (Postfix) with ESMTP id 17ED1415D1
+ for <iommu@lists.linux-foundation.org>; Fri, 11 Jun 2021 15:27:50 +0000 (UTC)
+X-Virus-Scanned: amavisd-new at osuosl.org
+Authentication-Results: smtp4.osuosl.org (amavisd-new);
+ dkim=pass (1024-bit key) header.d=chromium.org
+Received: from smtp4.osuosl.org ([127.0.0.1])
+ by localhost (smtp4.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+ with ESMTP id rgMiOfHWFqbf for <iommu@lists.linux-foundation.org>;
+ Fri, 11 Jun 2021 15:27:49 +0000 (UTC)
 X-Greylist: whitelisted by SQLgrey-1.8.0
-Received: from mail-pl1-x62c.google.com (mail-pl1-x62c.google.com
- [IPv6:2607:f8b0:4864:20::62c])
- by smtp2.osuosl.org (Postfix) with ESMTPS id 797DC4024F
- for <iommu@lists.linux-foundation.org>; Fri, 11 Jun 2021 15:27:40 +0000 (UTC)
-Received: by mail-pl1-x62c.google.com with SMTP id e1so2998563pld.13
- for <iommu@lists.linux-foundation.org>; Fri, 11 Jun 2021 08:27:40 -0700 (PDT)
+Received: from mail-pg1-x535.google.com (mail-pg1-x535.google.com
+ [IPv6:2607:f8b0:4864:20::535])
+ by smtp4.osuosl.org (Postfix) with ESMTPS id 24A44415CE
+ for <iommu@lists.linux-foundation.org>; Fri, 11 Jun 2021 15:27:49 +0000 (UTC)
+Received: by mail-pg1-x535.google.com with SMTP id i34so2741661pgl.9
+ for <iommu@lists.linux-foundation.org>; Fri, 11 Jun 2021 08:27:49 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=chromium.org; s=google;
  h=from:to:cc:subject:date:message-id:in-reply-to:references
  :mime-version:content-transfer-encoding;
- bh=N9TVmO9aGqoduxqk5pFie0IHXd8vLspLVt82aTdw2co=;
- b=fiJV4qFUiRXaxOp4vBkL4JToBkgYVY+AaQy2O2SrrY5MvO7od5oJ3tYXCIi5YBEuJh
- DGJzgMCIu0uMgBXkHJ7/7dTWoJ1FXDPZDsfDXnlYmJUO5c8ZukGBzjI7CYg/CWlag+/P
- qBP0ch5ltrmS/XxZKNv+okJuDN4vM3IFZNebE=
+ bh=z3csfjTdnaGEbW5Yiu81rOYxUROdkDuu0pkC+1dIGAc=;
+ b=IkC7yFFhO8hIfNYdMdJ54k4hExWD/qoffPbEBXy7aMHVEBwdwVaaywxk2mt0G3QZuk
+ kHNUXds8Y0K0b8H58qwuxnw/8yQrewipm9rVIDVGn4pqLKNyquN2PKy3qJ+VVeLcukCR
+ pIHcSWbnGwWNwrAuGd/5jq088bjDa5bnVis6E=
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
  d=1e100.net; s=20161025;
  h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
  :references:mime-version:content-transfer-encoding;
- bh=N9TVmO9aGqoduxqk5pFie0IHXd8vLspLVt82aTdw2co=;
- b=e10YEhTmhYl6nEleEkfQ5GdFABZgwXmYWgKhVMt9z5bfxr9qwEm+Vw6YMxbm4si1Uj
- ObzuwaDjq3A1B9av7X16MzEPvmokghWi8C72zevfnHP/sP5ev24LZFV+Bx1FRL2k74xk
- zQgXLTw3sHhscoJJvqeovNQfxue38HJ8e4mGd+GE9EwhvGHv53GxY6bOb4aZ+0iTHSao
- UgoZ96V+1ITJcz3htJUCS/5qnK8wkV58UntI+ZV6TdqppqkE2JIB8Tgd2q9eDEnd0C8x
- qPaVXyYMn8tZDwKOD2TGSNQ8FAHmW4dg5QAc6Mn9OEsD7FeS9zDfT8Vg2v7VlIKNzSAl
- G92w==
-X-Gm-Message-State: AOAM533l99y19xKAWJE6GcopCA4T37F7QexlZ8aGNy1VFu2m2er26HS8
- rrG/hSs1+yiNNMQqolBHRMBNxQ==
-X-Google-Smtp-Source: ABdhPJx0OE49qJUIllsnRRF41WCicXTNT2KzJUs20xdPS7xiVUkY/qS3IozDVpjfuVo5+5ukcDBuNQ==
-X-Received: by 2002:a17:90a:5309:: with SMTP id
- x9mr9513136pjh.111.1623425259905; 
- Fri, 11 Jun 2021 08:27:39 -0700 (PDT)
+ bh=z3csfjTdnaGEbW5Yiu81rOYxUROdkDuu0pkC+1dIGAc=;
+ b=bYozIFxfF4SAVsdWimjHDPegP/f85PQx6CIM+8UQ7++WQxqUniQkf0o/bLC7iOCyUj
+ s/GSYtFskfzK6r6uZRMgB9IbiwrMzGx0zCnQW444IgdBds5IMza8BbgNFFFxbfMd/X57
+ wtfXp3uu20vl/H96gTvCnKY8FiGsZx/tG8WUg+YYtFNEtDxBHt1tTpGDIbEEsj0AWiJP
+ acS6vk9JFn4Pg44P5XuvssdBsffDGO3QP3pzlG0EHfuJB8u9PJt1t3d4CSYcIRJQb8r1
+ BBEQPJWCzP39B2Srgj1sGnwvfVprWjS9w0e5HbDOazB8vV1/yrPWMqrDXSc+1oRtPDXP
+ FcOg==
+X-Gm-Message-State: AOAM531iTnZ7D9XLgKN4bq4X1Ad2JX0GSJ6Oms9AaOVp3sck0mgOEc1M
+ zz/C3h77LQYxBacSWkNACm/5tg==
+X-Google-Smtp-Source: ABdhPJyj9WektlHINHWsfATaExSaFcZYhgD+NDtqPb5EwrK4uHwBuEuhV53c0IRLlzaKiXoj5cmzYw==
+X-Received: by 2002:aa7:84c7:0:b029:2e9:2d18:54a5 with SMTP id
+ x7-20020aa784c70000b02902e92d1854a5mr8750291pfn.44.1623425268566; 
+ Fri, 11 Jun 2021 08:27:48 -0700 (PDT)
 Received: from localhost ([2401:fa00:95:205:33c8:8e01:1161:6797])
- by smtp.gmail.com with UTF8SMTPSA id t143sm6505494pgb.93.2021.06.11.08.27.32
+ by smtp.gmail.com with UTF8SMTPSA id m2sm5324723pjf.24.2021.06.11.08.27.41
  (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
- Fri, 11 Jun 2021 08:27:39 -0700 (PDT)
+ Fri, 11 Jun 2021 08:27:48 -0700 (PDT)
 From: Claire Chang <tientzu@chromium.org>
 To: Rob Herring <robh+dt@kernel.org>, mpe@ellerman.id.au,
  Joerg Roedel <joro@8bytes.org>, Will Deacon <will@kernel.org>,
@@ -85,10 +85,9 @@ To: Rob Herring <robh+dt@kernel.org>, mpe@ellerman.id.au,
  Konrad Rzeszutek Wilk <konrad.wilk@oracle.com>, boris.ostrovsky@oracle.com,
  jgross@suse.com, Christoph Hellwig <hch@lst.de>,
  Marek Szyprowski <m.szyprowski@samsung.com>
-Subject: [PATCH v9 03/14] swiotlb: Set dev->dma_io_tlb_mem to the swiotlb pool
- used
-Date: Fri, 11 Jun 2021 23:26:48 +0800
-Message-Id: <20210611152659.2142983-4-tientzu@chromium.org>
+Subject: [PATCH v9 04/14] swiotlb: Add restricted DMA pool initialization
+Date: Fri, 11 Jun 2021 23:26:49 +0800
+Message-Id: <20210611152659.2142983-5-tientzu@chromium.org>
 X-Mailer: git-send-email 2.32.0.272.g935e593368-goog
 In-Reply-To: <20210611152659.2142983-1-tientzu@chromium.org>
 References: <20210611152659.2142983-1-tientzu@chromium.org>
@@ -132,119 +131,145 @@ Content-Transfer-Encoding: 7bit
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-Always have the pointer to the swiotlb pool used in struct device. This
-could help simplify the code for other pools.
+Add the initialization function to create restricted DMA pools from
+matching reserved-memory nodes.
 
 Signed-off-by: Claire Chang <tientzu@chromium.org>
 ---
- drivers/of/device.c     | 3 +++
- include/linux/device.h  | 4 ++++
- include/linux/swiotlb.h | 8 ++++++++
- kernel/dma/swiotlb.c    | 8 ++++----
- 4 files changed, 19 insertions(+), 4 deletions(-)
+ include/linux/swiotlb.h |  3 +-
+ kernel/dma/Kconfig      | 14 ++++++++
+ kernel/dma/swiotlb.c    | 75 +++++++++++++++++++++++++++++++++++++++++
+ 3 files changed, 91 insertions(+), 1 deletion(-)
 
-diff --git a/drivers/of/device.c b/drivers/of/device.c
-index c5a9473a5fb1..1defdf15ba95 100644
---- a/drivers/of/device.c
-+++ b/drivers/of/device.c
-@@ -165,6 +165,9 @@ int of_dma_configure_id(struct device *dev, struct device_node *np,
- 
- 	arch_setup_dma_ops(dev, dma_start, size, iommu, coherent);
- 
-+	if (IS_ENABLED(CONFIG_SWIOTLB))
-+		swiotlb_set_io_tlb_default_mem(dev);
-+
- 	return 0;
- }
- EXPORT_SYMBOL_GPL(of_dma_configure_id);
-diff --git a/include/linux/device.h b/include/linux/device.h
-index 4443e12238a0..2e9a378c9100 100644
---- a/include/linux/device.h
-+++ b/include/linux/device.h
-@@ -432,6 +432,7 @@ struct dev_links_info {
-  * @dma_pools:	Dma pools (if dma'ble device).
-  * @dma_mem:	Internal for coherent mem override.
-  * @cma_area:	Contiguous memory area for dma allocations
-+ * @dma_io_tlb_mem: Pointer to the swiotlb pool used.  Not for driver use.
-  * @archdata:	For arch-specific additions.
-  * @of_node:	Associated device tree node.
-  * @fwnode:	Associated device node supplied by platform firmware.
-@@ -540,6 +541,9 @@ struct device {
- #ifdef CONFIG_DMA_CMA
- 	struct cma *cma_area;		/* contiguous memory area for dma
- 					   allocations */
-+#endif
-+#ifdef CONFIG_SWIOTLB
-+	struct io_tlb_mem *dma_io_tlb_mem;
- #endif
- 	/* arch specific additions */
- 	struct dev_archdata	archdata;
 diff --git a/include/linux/swiotlb.h b/include/linux/swiotlb.h
-index 216854a5e513..008125ccd509 100644
+index 008125ccd509..ec0c01796c8a 100644
 --- a/include/linux/swiotlb.h
 +++ b/include/linux/swiotlb.h
-@@ -108,6 +108,11 @@ static inline bool is_swiotlb_buffer(phys_addr_t paddr)
- 	return mem && paddr >= mem->start && paddr < mem->end;
- }
+@@ -72,7 +72,8 @@ extern enum swiotlb_force swiotlb_force;
+  *		range check to see if the memory was in fact allocated by this
+  *		API.
+  * @nslabs:	The number of IO TLB blocks (in groups of 64) between @start and
+- *		@end. This is command line adjustable via setup_io_tlb_npages.
++ *		@end. For default swiotlb, this is command line adjustable via
++ *		setup_io_tlb_npages.
+  * @used:	The number of used IO TLB block.
+  * @list:	The free list describing the number of free entries available
+  *		from each index.
+diff --git a/kernel/dma/Kconfig b/kernel/dma/Kconfig
+index 77b405508743..3e961dc39634 100644
+--- a/kernel/dma/Kconfig
++++ b/kernel/dma/Kconfig
+@@ -80,6 +80,20 @@ config SWIOTLB
+ 	bool
+ 	select NEED_DMA_MAP_STATE
  
-+static inline void swiotlb_set_io_tlb_default_mem(struct device *dev)
++config DMA_RESTRICTED_POOL
++	bool "DMA Restricted Pool"
++	depends on OF && OF_RESERVED_MEM
++	select SWIOTLB
++	help
++	  This enables support for restricted DMA pools which provide a level of
++	  DMA memory protection on systems with limited hardware protection
++	  capabilities, such as those lacking an IOMMU.
++
++	  For more information see
++	  <Documentation/devicetree/bindings/reserved-memory/reserved-memory.txt>
++	  and <kernel/dma/swiotlb.c>.
++	  If unsure, say "n".
++
+ #
+ # Should be selected if we can mmap non-coherent mappings to userspace.
+ # The only thing that is really required is a way to set an uncached bit
+diff --git a/kernel/dma/swiotlb.c b/kernel/dma/swiotlb.c
+index 29b950ab1351..c4a071d6a63f 100644
+--- a/kernel/dma/swiotlb.c
++++ b/kernel/dma/swiotlb.c
+@@ -39,6 +39,13 @@
+ #ifdef CONFIG_DEBUG_FS
+ #include <linux/debugfs.h>
+ #endif
++#ifdef CONFIG_DMA_RESTRICTED_POOL
++#include <linux/io.h>
++#include <linux/of.h>
++#include <linux/of_fdt.h>
++#include <linux/of_reserved_mem.h>
++#include <linux/slab.h>
++#endif
+ 
+ #include <asm/io.h>
+ #include <asm/dma.h>
+@@ -688,3 +695,71 @@ static int __init swiotlb_create_default_debugfs(void)
+ late_initcall(swiotlb_create_default_debugfs);
+ 
+ #endif
++
++#ifdef CONFIG_DMA_RESTRICTED_POOL
++static int rmem_swiotlb_device_init(struct reserved_mem *rmem,
++				    struct device *dev)
++{
++	struct io_tlb_mem *mem = rmem->priv;
++	unsigned long nslabs = rmem->size >> IO_TLB_SHIFT;
++
++	/*
++	 * Since multiple devices can share the same pool, the private data,
++	 * io_tlb_mem struct, will be initialized by the first device attached
++	 * to it.
++	 */
++	if (!mem) {
++		mem = kzalloc(struct_size(mem, slots, nslabs), GFP_KERNEL);
++		if (!mem)
++			return -ENOMEM;
++
++		swiotlb_init_io_tlb_mem(mem, rmem->base, nslabs, false, true);
++
++		rmem->priv = mem;
++
++		if (IS_ENABLED(CONFIG_DEBUG_FS)) {
++			mem->debugfs =
++				debugfs_create_dir(rmem->name, debugfs_dir);
++			swiotlb_create_debugfs_files(mem);
++		}
++	}
++
++	dev->dma_io_tlb_mem = mem;
++
++	return 0;
++}
++
++static void rmem_swiotlb_device_release(struct reserved_mem *rmem,
++					struct device *dev)
 +{
 +	dev->dma_io_tlb_mem = io_tlb_default_mem;
 +}
 +
- void __init swiotlb_exit(void);
- unsigned int swiotlb_max_segment(void);
- size_t swiotlb_max_mapping_size(struct device *dev);
-@@ -119,6 +124,9 @@ static inline bool is_swiotlb_buffer(phys_addr_t paddr)
- {
- 	return false;
- }
-+static inline void swiotlb_set_io_tlb_default_mem(struct device *dev)
++static const struct reserved_mem_ops rmem_swiotlb_ops = {
++	.device_init = rmem_swiotlb_device_init,
++	.device_release = rmem_swiotlb_device_release,
++};
++
++static int __init rmem_swiotlb_setup(struct reserved_mem *rmem)
 +{
++	unsigned long node = rmem->fdt_node;
++
++	if (of_get_flat_dt_prop(node, "reusable", NULL) ||
++	    of_get_flat_dt_prop(node, "linux,cma-default", NULL) ||
++	    of_get_flat_dt_prop(node, "linux,dma-default", NULL) ||
++	    of_get_flat_dt_prop(node, "no-map", NULL))
++		return -EINVAL;
++
++	if (PageHighMem(pfn_to_page(PHYS_PFN(rmem->base)))) {
++		pr_err("Restricted DMA pool must be accessible within the linear mapping.");
++		return -EINVAL;
++	}
++
++	rmem->ops = &rmem_swiotlb_ops;
++	pr_info("Reserved memory: created restricted DMA pool at %pa, size %ld MiB\n",
++		&rmem->base, (unsigned long)rmem->size / SZ_1M);
++	return 0;
 +}
- static inline void swiotlb_exit(void)
- {
- }
-diff --git a/kernel/dma/swiotlb.c b/kernel/dma/swiotlb.c
-index 8a3e2b3b246d..29b950ab1351 100644
---- a/kernel/dma/swiotlb.c
-+++ b/kernel/dma/swiotlb.c
-@@ -344,7 +344,7 @@ void __init swiotlb_exit(void)
- static void swiotlb_bounce(struct device *dev, phys_addr_t tlb_addr, size_t size,
- 			   enum dma_data_direction dir)
- {
--	struct io_tlb_mem *mem = io_tlb_default_mem;
-+	struct io_tlb_mem *mem = dev->dma_io_tlb_mem;
- 	int index = (tlb_addr - mem->start) >> IO_TLB_SHIFT;
- 	phys_addr_t orig_addr = mem->slots[index].orig_addr;
- 	size_t alloc_size = mem->slots[index].alloc_size;
-@@ -426,7 +426,7 @@ static unsigned int wrap_index(struct io_tlb_mem *mem, unsigned int index)
- static int find_slots(struct device *dev, phys_addr_t orig_addr,
- 		size_t alloc_size)
- {
--	struct io_tlb_mem *mem = io_tlb_default_mem;
-+	struct io_tlb_mem *mem = dev->dma_io_tlb_mem;
- 	unsigned long boundary_mask = dma_get_seg_boundary(dev);
- 	dma_addr_t tbl_dma_addr =
- 		phys_to_dma_unencrypted(dev, mem->start) & boundary_mask;
-@@ -503,7 +503,7 @@ phys_addr_t swiotlb_tbl_map_single(struct device *dev, phys_addr_t orig_addr,
- 		size_t mapping_size, size_t alloc_size,
- 		enum dma_data_direction dir, unsigned long attrs)
- {
--	struct io_tlb_mem *mem = io_tlb_default_mem;
-+	struct io_tlb_mem *mem = dev->dma_io_tlb_mem;
- 	unsigned int offset = swiotlb_align_offset(dev, orig_addr);
- 	unsigned int i;
- 	int index;
-@@ -554,7 +554,7 @@ void swiotlb_tbl_unmap_single(struct device *hwdev, phys_addr_t tlb_addr,
- 			      size_t mapping_size, enum dma_data_direction dir,
- 			      unsigned long attrs)
- {
--	struct io_tlb_mem *mem = io_tlb_default_mem;
-+	struct io_tlb_mem *mem = hwdev->dma_io_tlb_mem;
- 	unsigned long flags;
- 	unsigned int offset = swiotlb_align_offset(hwdev, tlb_addr);
- 	int index = (tlb_addr - offset - mem->start) >> IO_TLB_SHIFT;
++
++RESERVEDMEM_OF_DECLARE(dma, "restricted-dma-pool", rmem_swiotlb_setup);
++#endif /* CONFIG_DMA_RESTRICTED_POOL */
 -- 
 2.32.0.272.g935e593368-goog
 
