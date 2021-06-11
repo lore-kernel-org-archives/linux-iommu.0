@@ -2,190 +2,76 @@ Return-Path: <SRS0=1MD/=LF=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-3.5 required=3.0 tests=BAYES_00,DKIM_INVALID,
-	DKIM_SIGNED,HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,SPF_HELO_NONE,
-	SPF_PASS,URIBL_RED autolearn=no autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-10.3 required=3.0 tests=BAYES_00,
+	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,NICE_REPLY_A,
+	SPF_HELO_NONE,SPF_PASS,URIBL_RED,USER_AGENT_SANE_1 autolearn=ham
+	autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 03DFAC48BDF
-	for <iommu@archiver.kernel.org>; Fri, 11 Jun 2021 00:58:49 +0000 (UTC)
-Received: from smtp1.osuosl.org (smtp1.osuosl.org [140.211.166.138])
+	by smtp.lore.kernel.org (Postfix) with ESMTP id F00C5C48BD1
+	for <iommu@archiver.kernel.org>; Fri, 11 Jun 2021 03:11:47 +0000 (UTC)
+Received: from smtp3.osuosl.org (smtp3.osuosl.org [140.211.166.136])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 8C0AD613B3
-	for <iommu@archiver.kernel.org>; Fri, 11 Jun 2021 00:58:48 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 8C0AD613B3
-Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=intel.com
+	by mail.kernel.org (Postfix) with ESMTPS id 6DA5761359
+	for <iommu@archiver.kernel.org>; Fri, 11 Jun 2021 03:11:47 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 6DA5761359
+Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=linux.intel.com
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by smtp1.osuosl.org (Postfix) with ESMTP id 502F583B1B;
-	Fri, 11 Jun 2021 00:58:48 +0000 (UTC)
+	by smtp3.osuosl.org (Postfix) with ESMTP id 3DD1D606F5;
+	Fri, 11 Jun 2021 03:11:47 +0000 (UTC)
+X-Virus-Scanned: amavisd-new at osuosl.org
+Received: from smtp3.osuosl.org ([127.0.0.1])
+	by localhost (smtp3.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+	with ESMTP id baUEuBy3lDiu; Fri, 11 Jun 2021 03:11:46 +0000 (UTC)
+Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
+	by smtp3.osuosl.org (Postfix) with ESMTPS id 0B7DC606EE;
+	Fri, 11 Jun 2021 03:11:46 +0000 (UTC)
+Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
+	by lists.linuxfoundation.org (Postfix) with ESMTP id CC0A8C000D;
+	Fri, 11 Jun 2021 03:11:45 +0000 (UTC)
+Received: from smtp1.osuosl.org (smtp1.osuosl.org [140.211.166.138])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 7426CC000B
+ for <iommu@lists.linux-foundation.org>; Fri, 11 Jun 2021 03:11:44 +0000 (UTC)
+Received: from localhost (localhost [127.0.0.1])
+ by smtp1.osuosl.org (Postfix) with ESMTP id 567E983B5F
+ for <iommu@lists.linux-foundation.org>; Fri, 11 Jun 2021 03:11:44 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
 Received: from smtp1.osuosl.org ([127.0.0.1])
-	by localhost (smtp1.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id ZYHlLfdORdLH; Fri, 11 Jun 2021 00:58:47 +0000 (UTC)
-Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [IPv6:2605:bc80:3010:104::8cd3:938])
-	by smtp1.osuosl.org (Postfix) with ESMTPS id DD22083B16;
-	Fri, 11 Jun 2021 00:58:46 +0000 (UTC)
-Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 97200C000E;
-	Fri, 11 Jun 2021 00:58:46 +0000 (UTC)
-Received: from smtp3.osuosl.org (smtp3.osuosl.org [IPv6:2605:bc80:3010::136])
- by lists.linuxfoundation.org (Postfix) with ESMTP id C16F0C000B
- for <iommu@lists.linux-foundation.org>; Fri, 11 Jun 2021 00:58:44 +0000 (UTC)
-Received: from localhost (localhost [127.0.0.1])
- by smtp3.osuosl.org (Postfix) with ESMTP id B370660AAA
- for <iommu@lists.linux-foundation.org>; Fri, 11 Jun 2021 00:58:44 +0000 (UTC)
-X-Virus-Scanned: amavisd-new at osuosl.org
-Authentication-Results: smtp3.osuosl.org (amavisd-new);
- dkim=pass (1024-bit key) header.d=intel.onmicrosoft.com
-Received: from smtp3.osuosl.org ([127.0.0.1])
- by localhost (smtp3.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id ozCI8KEyP1ds for <iommu@lists.linux-foundation.org>;
- Fri, 11 Jun 2021 00:58:43 +0000 (UTC)
+ by localhost (smtp1.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+ with ESMTP id yCPSL6O8evgy for <iommu@lists.linux-foundation.org>;
+ Fri, 11 Jun 2021 03:11:40 +0000 (UTC)
 X-Greylist: domain auto-whitelisted by SQLgrey-1.8.0
-Received: from mga05.intel.com (mga05.intel.com [192.55.52.43])
- by smtp3.osuosl.org (Postfix) with ESMTPS id EE38C60AA7
- for <iommu@lists.linux-foundation.org>; Fri, 11 Jun 2021 00:58:42 +0000 (UTC)
-IronPort-SDR: dX0X8ICK0+ZJTPuOBHGAYS2bXVbGhgXuSVtXf6qykEIyvJYoAFmOWYQOh4Xiqoda8UW3tw7h7P
- txkFwFQAViOQ==
-X-IronPort-AV: E=McAfee;i="6200,9189,10011"; a="291068333"
-X-IronPort-AV: E=Sophos;i="5.83,264,1616482800"; d="scan'208";a="291068333"
+Received: from mga17.intel.com (mga17.intel.com [192.55.52.151])
+ by smtp1.osuosl.org (Postfix) with ESMTPS id 0B1D683B5E
+ for <iommu@lists.linux-foundation.org>; Fri, 11 Jun 2021 03:11:38 +0000 (UTC)
+IronPort-SDR: QBKtr6ikPpdX9rv3223c7q06HtoNzZN4H+qqZHgfjyewBqHyN39kSDP11D2s6oh/oOAz8+DpQe
+ 6ShUB7vJ3Cow==
+X-IronPort-AV: E=McAfee;i="6200,9189,10011"; a="185825668"
+X-IronPort-AV: E=Sophos;i="5.83,265,1616482800"; d="scan'208";a="185825668"
 Received: from fmsmga001.fm.intel.com ([10.253.24.23])
- by fmsmga105.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384;
- 10 Jun 2021 17:58:40 -0700
-IronPort-SDR: HVCjpdxTTLWdtJSB70sl23rqY2eCdqiWtFI6dqFjAldb3ikk6x0fPlq8/H326/XNla+GoeZxIT
- qRnxkm/9wG+A==
+ by fmsmga107.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384;
+ 10 Jun 2021 20:11:36 -0700
+IronPort-SDR: NrlyWs9r8kQf8R98k7/rsDSXLJggMO9rtZcVpA5z+deX5aK3ORb8MLRNBpl1nVCSEeR1jSa4Y6
+ n5VKlMC1MxxQ==
 X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.83,264,1616482800"; d="scan'208";a="553255268"
-Received: from fmsmsx606.amr.corp.intel.com ([10.18.126.86])
- by fmsmga001.fm.intel.com with ESMTP; 10 Jun 2021 17:58:40 -0700
-Received: from fmsmsx609.amr.corp.intel.com (10.18.126.89) by
- fmsmsx606.amr.corp.intel.com (10.18.126.86) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2242.4; Thu, 10 Jun 2021 17:58:39 -0700
-Received: from fmsmsx608.amr.corp.intel.com (10.18.126.88) by
- fmsmsx609.amr.corp.intel.com (10.18.126.89) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2242.4; Thu, 10 Jun 2021 17:58:38 -0700
-Received: from fmsedg601.ED.cps.intel.com (10.1.192.135) by
- fmsmsx608.amr.corp.intel.com (10.18.126.88) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2242.4
- via Frontend Transport; Thu, 10 Jun 2021 17:58:38 -0700
-Received: from NAM12-MW2-obe.outbound.protection.outlook.com (104.47.66.42) by
- edgegateway.intel.com (192.55.55.70) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.1.2242.4; Thu, 10 Jun 2021 17:58:38 -0700
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=PpBuw6bu3jm+6i2+MPL1+pFLZY9Px43+1YrFGZNlZKGPlOi+hkxi4cPAQ/raKHBuwot+gOXXtDdzNoJnnbk7T2rujEo47o7HzFh8KyJ5RVtY8urDldCTuHzPrOpVYme18CdXe9otjBXgXyucfDYp1Wv+80d6lcJ5bA9CXvxvGYnRf+xN8iHKlaejgcwHMQHxRiCo+guATtNNEKhBbDbqlrKieMgRo9JXQO5ti+QvpA3OYyHz2cA8bYU+q/Wxn6q8NPV7wpPe/qsYV0qmqd/+PVlfgnlWM/dJbDRZodWtvnrr/FIT0J1GY/KLa7nqAGAUORquHx3bsw7Ypz4uU8M0sQ==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com; 
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=3wMgVyCpcZbGWIaTpmW5YY7Wtp3y7X+Lf9QvJniLyZM=;
- b=Or1ZvpgX2HAwnO0H5xQFpHF60PA/WyFAjVo/85314Rs8iGf+GPuGgI2Hvfj1LVCjHoZSzRsQQpG7hOSWIhamU/4Kgyhw5jFhZ99JOAMloTNhS8V4AX4LO06/Rb9YA6GdrrWdSg/D6LqXGnPH5rYyirjsj2JKxhHcWBlscsE5vMMdcveFd4oyVijzsQ9959/JMqRFWBrE0aTCKZVrZP1+rPpWV54eMOXGbL4cdlKzO885qMVyRWQkLXpnSpTge1CgYSBFgUr6mrmHylmlxV3+zRQOXcvHiNvUhqAbE6jy7m5CRGkKFkk0tudno15QR6pEAbEmxj9gPhLntlwakF4jPQ==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=intel.com; dmarc=pass action=none header.from=intel.com;
- dkim=pass header.d=intel.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=intel.onmicrosoft.com; 
- s=selector2-intel-onmicrosoft-com;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=3wMgVyCpcZbGWIaTpmW5YY7Wtp3y7X+Lf9QvJniLyZM=;
- b=RKpdHGD6zUPFt/oiB6fqvrlcmQsr7qePhvbPIQ4YrOIsEJWv9MR/R07kh5g+VHxkd6QT+y4o3yO6mB+mglkHiOOk8MoiVKvQG3fAR5ohpr4spDcQ76moyQcwhG3/H91vu+9k1PlDHvP+qwmidHFFhnHyT8QdTmw37QqKC67XKoA=
-Received: from BN6PR11MB1875.namprd11.prod.outlook.com (2603:10b6:404:104::11)
- by BN6PR1101MB2209.namprd11.prod.outlook.com (2603:10b6:405:50::8)
- with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4219.22; Fri, 11 Jun
- 2021 00:58:36 +0000
-Received: from BN6PR11MB1875.namprd11.prod.outlook.com
- ([fe80::391a:c95b:69f0:ded7]) by BN6PR11MB1875.namprd11.prod.outlook.com
- ([fe80::391a:c95b:69f0:ded7%12]) with mapi id 15.20.4219.023; Fri, 11 Jun
- 2021 00:58:36 +0000
-From: "Tian, Kevin" <kevin.tian@intel.com>
-To: Alex Williamson <alex.williamson@redhat.com>, Jason Gunthorpe
- <jgg@nvidia.com>
-Subject: RE: Plan for /dev/ioasid RFC v2
-Thread-Topic: Plan for /dev/ioasid RFC v2
-Thread-Index: AddbO/WEUAFl3MPnRsG8exiH8bwEagB7l+uAAACIfoAAAdwYAAADDw6AAAHKgwAAANd4AAAAacwAAAT4QwAAK587AAAR+AnQ
-Date: Fri, 11 Jun 2021 00:58:35 +0000
-Message-ID: <BN6PR11MB187579A2F88C77ED2131CEF08C349@BN6PR11MB1875.namprd11.prod.outlook.com>
-References: <MWHPR11MB188699D0B9C10EB51686C4138C389@MWHPR11MB1886.namprd11.prod.outlook.com>
- <YMCy48Xnt/aphfh3@8bytes.org>	<20210609123919.GA1002214@nvidia.com>
- <YMDC8tOMvw4FtSek@8bytes.org>	<20210609150009.GE1002214@nvidia.com>
- <YMDjfmJKUDSrbZbo@8bytes.org>
- <20210609101532.452851eb.alex.williamson@redhat.com>
- <20210609102722.5abf62e1.alex.williamson@redhat.com>
- <20210609184940.GH1002214@nvidia.com>
- <20210610093842.6b9a4e5b.alex.williamson@redhat.com>
-In-Reply-To: <20210610093842.6b9a4e5b.alex.williamson@redhat.com>
-Accept-Language: en-US
-Content-Language: en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-dlp-version: 11.5.1.3
-dlp-product: dlpe-windows
-dlp-reaction: no-action
-authentication-results: redhat.com; dkim=none (message not signed)
- header.d=none;redhat.com; dmarc=none action=none header.from=intel.com;
-x-originating-ip: [192.198.143.24]
-x-ms-publictraffictype: Email
-x-ms-office365-filtering-correlation-id: 04a42b2e-7e22-4cdf-31f0-08d92c740b1f
-x-ms-traffictypediagnostic: BN6PR1101MB2209:
-x-ld-processed: 46c98d88-e344-4ed4-8496-4ed7712e255d,ExtAddr
-x-ms-exchange-transport-forked: True
-x-microsoft-antispam-prvs: <BN6PR1101MB220912110111D92387A0731F8C349@BN6PR1101MB2209.namprd11.prod.outlook.com>
-x-ms-oob-tlc-oobclassifiers: OLM:10000;
-x-ms-exchange-senderadcheck: 1
-x-microsoft-antispam: BCL:0;
-x-microsoft-antispam-message-info: M5la4aT2l+aHgatqEZHPMESxmQ6cDxR9sxWz4Ejz4+vz4wstGcL/SLeDVPzfnzOiEzNKePHePGl3ORNXiz7Q6YjLnfTrqhO6bXFPXL1L4TauuKTSOCqd8Yh8CuFIFCCuWAot2kmPE4BlkgwA5hWyNplNtXFfE2ZAB5lACBKU2QZBBwwl67Im6HCUV2OpVorLd1GZitVVPgBJhwXQOmtJY4T+sO26zEZU406r0W9MpC2ZGZcCD+7nQBmcPlJNpko5RfWImoAorCmJoP/wlFqrMiuhP7bm7deqhPeV1qvewEgKZeXQcsWj6l62ZFgNnFKATviEc9ccDeCoJLyAgci33CgJlQOCGHrFDdEMVjTxD06kj6wUCOMjcCm/aLQw/BAK8PPUy3QYWexZdyoaQCKiJCsRJDSJBrVfCXRRznqkUlFg9nONe9RTiPLc2EAi3ASF8hFjkQJdTGN9GpM6trLXnkAW3VS6Y3uey0eVBKilHbHoBYnRIq6YuOc5PCuzf7sCI8Gj1N/bm7KCSCzi7xXmJ8DAhkK515OVFiZyD34jqY8FvkjXD3ffHZ1wTZBo4a53nAGDBPCM9GLl2bhvq4gxHHkw52PZEeVXkt8sWI/kcCI=
-x-forefront-antispam-report: CIP:255.255.255.255; CTRY:; LANG:en; SCL:1; SRV:;
- IPV:NLI; SFV:NSPM; H:BN6PR11MB1875.namprd11.prod.outlook.com; PTR:; CAT:NONE;
- SFS:(396003)(39860400002)(376002)(366004)(136003)(346002)(8936002)(478600001)(2906002)(33656002)(86362001)(5660300002)(76116006)(38100700002)(122000001)(64756008)(66446008)(66556008)(52536014)(4326008)(66946007)(71200400001)(66476007)(8676002)(83380400001)(186003)(54906003)(110136005)(7696005)(316002)(26005)(55016002)(9686003)(6506007)(7416002);
- DIR:OUT; SFP:1102; 
-x-ms-exchange-antispam-messagedata-chunkcount: 1
-x-ms-exchange-antispam-messagedata-0: =?us-ascii?Q?l7SY/G1LcTn16vDXNjc2DXBFiRA99C6cZzZCCJFq44Fu2whOwPkAcW2VRCop?=
- =?us-ascii?Q?xVP0n//evjMoVCqfjf5uJHiq3tel9S+gsdnWO6ZsomOnbVS+ogvKD24OSfxX?=
- =?us-ascii?Q?d0kOGf66RIjhRqJC2KA/92teHu306prH7w8qYnrUfJSqe5OK5fJuqcPtL/r6?=
- =?us-ascii?Q?l6qVz/KVEn0rPiS+K82AbQYmIhsXF3sDsOF2s+BOkrLHFIY9kaNxBKm4zrfa?=
- =?us-ascii?Q?+px3D7LHUxnvLBcSC24ChCcnQeEP4UXKB/DtLROwcEv8ONwZs89xV7p9f2Gl?=
- =?us-ascii?Q?rJqJs2dHPtGis1h1aycGhe4d3lex9wYSxSj2mFS/J6PJR2Kz27kez2Bh/q7l?=
- =?us-ascii?Q?CH+DSFrrXJRDh1GFntd685BiA9YqZ2h4JueitjXwYeUS/lcYfYrtny3sE7VN?=
- =?us-ascii?Q?jktPVTQCTCYuI9WS4albsoRmM7aXzLCMZW9ekZuL7LiAN46TUy4mjafEfwMo?=
- =?us-ascii?Q?MqA8DloXl5fjeacBkhWixwH7lCF0uYn4LiLvfxRP8PxHRZldBOPqZBqAvN+6?=
- =?us-ascii?Q?seRuAIAVx7Ua1gwt2FBBtOoF3SNr1Xu7Xb4JXL516bS/GtXCXjgZlnDQek4P?=
- =?us-ascii?Q?uACS8K4MmY8074CkJ915rGNTdLywBPxfKtDrNGM0rrpOI11DtgRUj+mp8inV?=
- =?us-ascii?Q?GIzC5zZUBxYNEkEfXOQBgxS50VBEATODaIJ4ZcBKhtt1BlSGMDH2c2yXQBVR?=
- =?us-ascii?Q?dwInPqh3r1qlgOc9poC6RoDzCxn7Z0JL/Udx4Ani/97HdCRTQ13d5hMxjGm1?=
- =?us-ascii?Q?njzO32jSsCY5BKnhRo7xfj6Kr69JGsu9r/bgXKajpuoaw42Ti2i64jW3Rmr8?=
- =?us-ascii?Q?+Bq3JGPU5ctLQuXu+R9xjRUwTY/nj6BoQDpiz2SKEclqFGGEpr/o+gZAb/ap?=
- =?us-ascii?Q?GFXkmQVOn9yybzrNp+4jEw2u/TniOvbl/v91z3zBcUWtDaZNdjUO6bf7NruQ?=
- =?us-ascii?Q?F9nH2xun/8zWRZGqOdfKxPRd4fXC3A+CHNYB051f3QsZ4HgVBOS/cVc0lAvE?=
- =?us-ascii?Q?oNHbfH72HsiFYhISKsAXlBig45HUzEVgBCebJ6GRKJec7DYxWkg+2VPLqHNO?=
- =?us-ascii?Q?S7a8ar3Bj5HTTFqmoT0Xs2atliwzQw/sWWcSQfhssyrDO/KsrYXg0oeD3VSt?=
- =?us-ascii?Q?4FsN33g9xkoUUTTfW22ABDzcJAK7Opgke6iNmQZCxTXpw5/eldkI08ekQasv?=
- =?us-ascii?Q?g0sCqZ7auCHxHANCVUmv+/01PJvASzAEgGmzNzLe7tykBpQ/iRirOf/i7ZwX?=
- =?us-ascii?Q?w78Els88zh5mbC9ahUMWDfkxcXD9YpWpVk+Wdv7ou7iXRcWpNNXP/dyRLusm?=
- =?us-ascii?Q?uGscxbbzMnhPe5cWmgYUvw0Y?=
+X-IronPort-AV: E=Sophos;i="5.83,265,1616482800"; d="scan'208";a="553280078"
+Received: from allen-box.sh.intel.com (HELO [10.239.159.105])
+ ([10.239.159.105])
+ by fmsmga001.fm.intel.com with ESMTP; 10 Jun 2021 20:11:34 -0700
+Subject: Re: [RFC PATCH v5 00/15] Optimizing iommu_[map/unmap] performance
+To: "Isaac J. Manjarres" <isaacm@codeaurora.org>,
+ iommu@lists.linux-foundation.org, linux-arm-kernel@lists.infradead.org
+References: <20210408171402.12607-1-isaacm@codeaurora.org>
+From: Lu Baolu <baolu.lu@linux.intel.com>
+Message-ID: <405c06b2-0f5e-0d9e-5a11-1523522f9d55@linux.intel.com>
+Date: Fri, 11 Jun 2021 11:10:14 +0800
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
+ Thunderbird/78.8.1
 MIME-Version: 1.0
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-AuthSource: BN6PR11MB1875.namprd11.prod.outlook.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 04a42b2e-7e22-4cdf-31f0-08d92c740b1f
-X-MS-Exchange-CrossTenant-originalarrivaltime: 11 Jun 2021 00:58:35.7131 (UTC)
-X-MS-Exchange-CrossTenant-fromentityheader: Hosted
-X-MS-Exchange-CrossTenant-id: 46c98d88-e344-4ed4-8496-4ed7712e255d
-X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: hi8zIacWJPSkzKmJOGzWf9XDfiZyzk3nkSfVfW0zOezz++OpluEuff4BOGsqjm+zdjg0fqEYmmPLNDpr50VGhA==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: BN6PR1101MB2209
-X-OriginatorOrg: intel.com
-Cc: "kvm@vger.kernel.org" <kvm@vger.kernel.org>,
- Jason Wang <jasowang@redhat.com>, Kirti Wankhede <kwankhede@nvidia.com>,
- Jean-Philippe Brucker <jean-philippe@linaro.org>, "Jiang,
- Dave" <dave.jiang@intel.com>, "Raj, 
- Ashok" <ashok.raj@intel.com>, Jonathan Corbet <corbet@lwn.net>,
- "parav@mellanox.com" <parav@mellanox.com>, "Enrico Weigelt,
- metux IT consult" <lkml@metux.net>, David Gibson <david@gibson.dropbear.id.au>,
- Robin Murphy <robin.murphy@arm.com>, LKML <linux-kernel@vger.kernel.org>,
- Shenming Lu <lushenming@huawei.com>,
- "iommu@lists.linux-foundation.org" <iommu@lists.linux-foundation.org>,
- Paolo Bonzini <pbonzini@redhat.com>, David Woodhouse <dwmw2@infradead.org>
+In-Reply-To: <20210408171402.12607-1-isaacm@codeaurora.org>
+Content-Language: en-US
+Cc: robin.murphy@arm.com, will@kernel.org, pratikp@codeaurora.org
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -198,192 +84,116 @@ List-Post: <mailto:iommu@lists.linux-foundation.org>
 List-Help: <mailto:iommu-request@lists.linux-foundation.org?subject=help>
 List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
  <mailto:iommu-request@lists.linux-foundation.org?subject=subscribe>
-Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset="us-ascii"; Format="flowed"
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-Hi, Alex,
+Hi Isaac,
 
-> From: Alex Williamson <alex.williamson@redhat.com>
-> Sent: Thursday, June 10, 2021 11:39 PM
+Any update for this series? The iommu core part looks good to me and I
+also have some patches for Intel IOMMU implementation of [un]map_pages.
+Just wonder when could iommu core have this optimization.
+
+Best regards,
+baolu
+
+On 4/9/21 1:13 AM, Isaac J. Manjarres wrote:
+> When unmapping a buffer from an IOMMU domain, the IOMMU framework unmaps
+> the buffer at a granule of the largest page size that is supported by
+> the IOMMU hardware and fits within the buffer. For every block that
+> is unmapped, the IOMMU framework will call into the IOMMU driver, and
+> then the io-pgtable framework to walk the page tables to find the entry
+> that corresponds to the IOVA, and then unmaps the entry.
 > 
-> On Wed, 9 Jun 2021 15:49:40 -0300
-> Jason Gunthorpe <jgg@nvidia.com> wrote:
+> This can be suboptimal in scenarios where a buffer or a piece of a
+> buffer can be split into several contiguous page blocks of the same size.
+> For example, consider an IOMMU that supports 4 KB page blocks, 2 MB page
+> blocks, and 1 GB page blocks, and a buffer that is 4 MB in size is being
+> unmapped at IOVA 0. The current call-flow will result in 4 indirect calls,
+> and 2 page table walks, to unmap 2 entries that are next to each other in
+> the page-tables, when both entries could have been unmapped in one shot
+> by clearing both page table entries in the same call.
 > 
-> > On Wed, Jun 09, 2021 at 10:27:22AM -0600, Alex Williamson wrote:
-> >
-> > > > > It is a kernel decision, because a fundamental task of the kernel is to
-> > > > > ensure isolation between user-space tasks as good as it can. And if a
-> > > > > device assigned to one task can interfer with a device of another task
-> > > > > (e.g. by sending P2P messages), then the promise of isolation is
-> broken.
-> > > >
-> > > > AIUI, the IOASID model will still enforce IOMMU groups, but it's not an
-> > > > explicit part of the interface like it is for vfio.  For example the
-> > > > IOASID model allows attaching individual devices such that we have
-> > > > granularity to create per device IOASIDs, but all devices within an
-> > > > IOMMU group are required to be attached to an IOASID before they can
-> be
-> > > > used.
-> >
-> > Yes, thanks Alex
-> >
-> > > > It's not entirely clear to me yet how that last bit gets
-> > > > implemented though, ie. what barrier is in place to prevent device
-> > > > usage prior to reaching this viable state.
-> >
-> > The major security checkpoint for the group is on the VFIO side.  We
-> > must require the group before userspace can be allowed access to any
-> > device registers. Obtaining the device_fd from the group_fd does this
-> > today as the group_fd is the security proof.
-> >
-> > Actually, thinking about this some more.. If the only way to get a
-> > working device_fd in the first place is to get it from the group_fd
-> > and thus pass a group-based security check, why do we need to do
-> > anything at the ioasid level?
-> >
-> > The security concept of isolation was satisfied as soon as userspace
-> > opened the group_fd. What do more checks in the kernel accomplish?
+> The same optimization is applicable to mapping buffers as well, so
+> these patches implement a set of callbacks called unmap_pages and
+> map_pages to the io-pgtable code and IOMMU drivers which unmaps or maps
+> an IOVA range that consists of a number of pages of the same
+> page size that is supported by the IOMMU hardware, and allows for
+> manipulating multiple page table entries in the same set of indirect
+> calls. The reason for introducing these callbacks is to give other IOMMU
+> drivers/io-pgtable formats time to change to using the new callbacks, so
+> that the transition to using this approach can be done piecemeal.
 > 
-> Opening the group is not the extent of the security check currently
-> required, the group must be added to a container and an IOMMU model
-> configured for the container *before* the user can get a devicefd.
-> Each devicefd creates a reference to this security context, therefore
-> access to a device does not exist without such a context.
-
-IIUC each device has a default domain when it's probed by iommu driver
-at boot time. This domain includes an empty page table, implying that
-device is already in a security context before it's probed by device driver.
-
-Now when this device is added to vfio, vfio creates another security 
-context through above sequence. This sequence requires the device to
-switch from default security context to this new one, before it can be
-accessed by user.
-
-Then I wonder whether it's really necessary. As long as a device is in
-a security context at any time, access to a device can be allowed. The
-user itself should ensure that the access happens only after the device
-creates a reference to the new security context that is desired by this
-user.
-
-Then what does group really bring to us?
-
-With this new proposal we just need to make sure that a device cannot
-be attached to any IOASID before all devices in its group are bound to
-the IOASIDfd. If we want to start with a vfio-like policy, then all devices
-in the group must be attached to the same IOASID. Or as Jason suggests,
-they can attach to different IOASIDs (if in the group due to !ACS) if the
-user wants, or have some devices attached while others detached since
-both are in a security context anyway.
-
+> Changes since V4:
 > 
-> This proposal has of course put the device before the group, which then
-> makes it more difficult for vfio to retroactively enforce security.
+> * Fixed type for addr_merge from phys_addr_t to unsigned long so
+>    that GENMASK() can be used.
+> * Hooked up arm_v7s_[unmap/map]_pages to the io-pgtable ops.
+> * Introduced a macro for calculating the number of page table entries
+>    for the ARM LPAE io-pgtable format.
 > 
-> > Yes, we have the issue where some groups require all devices to use
-> > the same IOASID, but once someone has the group_fd that is no longer a
-> > security issue. We can fail VFIO_DEVICE_ATTACH_IOASID callss that
-> > don't make sense.
+> Changes since V3:
 > 
-> The groupfd only proves the user has an ownership claim to the devices,
-> it does not itself prove that the devices are in an isolated context.
-> Device access is not granted until that isolated context is configured.
+> * Removed usage of ULL variants of bitops from Will's patches, as
+>    they were not needed.
+> * Instead of unmapping/mapping pgcount pages, unmap_pages() and
+>    map_pages() will at most unmap and map pgcount pages, allowing
+>    for part of the pages in pgcount to be mapped and unmapped. This
+>    was done to simplify the handling in the io-pgtable layer.
+> * Extended the existing PTE manipulation methods in io-pgtable-arm
+>    to handle multiple entries, per Robin's suggestion, eliminating
+>    the need to add functions to clear multiple PTEs.
+> * Implemented a naive form of [map/unmap]_pages() for ARM v7s io-pgtable
+>    format.
+> * arm_[v7s/lpae]_[map/unmap] will call
+>    arm_[v7s/lpae]_[map_pages/unmap_pages] with an argument of 1 page.
+> * The arm_smmu_[map/unmap] functions have been removed, since they
+>    have been replaced by arm_smmu_[map/unmap]_pages.
 > 
-> vfio owns the device, so it would make sense for vfio to enforce the
-> security of device access only in a secure context, but how do we know
-> a device is in a secure context?
+> Changes since V2:
 > 
-> Is it sufficient to track the vfio device ioctls for attach/detach for
-> an IOASID or will the user be able to manipulate IOASID configuration
-> for a device directly via the IOASIDfd?
+> * Added a check in __iommu_map() to check for the existence
+>    of either the map or map_pages callback as per Lu's suggestion.
 > 
-> What happens on detach?  As we've discussed elsewhere in this thread,
-> revoking access is more difficult than holding a reference to the
-> secure context, but I'm under the impression that moving a device
-> between IOASIDs could be standard practice in this new model.  A device
-> that's detached from a secure context, even temporarily, is a problem.
-> Access to other devices in the same group as a device detached from a
-> secure context is a problem.
-
-as long as the device is switched back to the default security context
-after detach then it should be fine.
-
+> Changes since V1:
 > 
-> > > > > > Groups should be primarily about isolation security, not about
-> IOASID
-> > > > > > matching.
-> > > > >
-> > > > > That doesn't make any sense, what do you mean by 'IOASID matching'?
-> > > >
-> > > > One of the problems with the vfio interface use of groups is that we
-> > > > conflate the IOMMU group for both isolation and granularity.  I think
-> > > > what Jason is referring to here is that we still want groups to be the
-> > > > basis of isolation, but we don't want a uAPI that presumes all devices
-> > > > within the group must use the same IOASID.
-> >
-> > Yes, thanks again Alex
-> >
-> > > > For example, if a user owns an IOMMU group consisting of
-> > > > non-isolated functions of a multi-function device, they should be
-> > > > able to create a vIOMMU VM where each of those functions has its
-> > > > own address space.  That can't be done today, the entire group
-> > > > would need to be attached to the VM under a PCIe-to-PCI bridge to
-> > > > reflect the address space limitation imposed by the vfio group
-> > > > uAPI model.  Thanks,
-> > >
-> > > Hmm, likely discussed previously in these threads, but I can't come up
-> > > with the argument that prevents us from making the BIND interface
-> > > at the group level but the ATTACH interface at the device level?  For
-> > > example:
-> > >
-> > >  - VFIO_GROUP_BIND_IOASID_FD
-> > >  - VFIO_DEVICE_ATTACH_IOASID
-> > >
-> > > AFAICT that makes the group ownership more explicit but still allows
-> > > the device level IOASID granularity.  Logically this is just an
-> > > internal iommu_group_for_each_dev() in the BIND ioctl.  Thanks,
-> >
-> > At a high level it sounds OK.
-> >
-> > However I think your above question needs to be answered - what do we
-> > want to enforce on the iommu_fd and why?
-> >
-> > Also, this creates a problem with the device label idea, we still
-> > need to associate each device_fd with a label, so your above sequence
-> > is probably:
-> >
-> >   VFIO_GROUP_BIND_IOASID_FD(group fd)
-> >   VFIO_BIND_IOASID_FD(device fd 1, device_label)
-> >   VFIO_BIND_IOASID_FD(device fd 2, device_label)
-> >   VFIO_DEVICE_ATTACH_IOASID(..)
-> >
-> > And then I think we are back to where I had started, we can trigger
-> > whatever VFIO_GROUP_BIND_IOASID_FD does automatically as soon as all
-> > of the devices in the group have been bound.
+> * Implemented the map_pages() callbacks
+> * Integrated Will's patches into this series which
+>    address several concerns about how iommu_pgsize() partitioned a
+>    buffer (I made a minor change to the patch which changes
+>    iommu_pgsize() to use bitmaps by using the ULL variants of
+>    the bitops)
 > 
-> How to label a device seems like a relatively mundane issue relative to
-> ownership and isolated contexts of groups and devices.  The label is
-> essentially just creating an identifier to device mapping, where the
-> identifier (label) will be used in the IOASID interface, right?  As I
-
-Three usages in v2:
-
-1) when reporting per-device capability/format info to user;
-2) when handling device-wide iotlb invalidation from user;
-3) when reporting device-specific fault data to user;
-
-> note above, that makes it difficult for vfio to maintain that a user
-> only accesses a device in a secure context.  This is exactly why vfio
-> has the model of getting a devicefd from a groupfd only when that group
-> is in a secure context and maintaining references to that secure
-> context for each device.  Split ownership of the secure context in
-> IOASID vs device access in vfio and exposing devicefds outside the group
-> is still a big question mark for me.  Thanks,
+> Isaac J. Manjarres (12):
+>    iommu/io-pgtable: Introduce unmap_pages() as a page table op
+>    iommu: Add an unmap_pages() op for IOMMU drivers
+>    iommu/io-pgtable: Introduce map_pages() as a page table op
+>    iommu: Add a map_pages() op for IOMMU drivers
+>    iommu: Add support for the map_pages() callback
+>    iommu/io-pgtable-arm: Prepare PTE methods for handling multiple
+>      entries
+>    iommu/io-pgtable-arm: Implement arm_lpae_unmap_pages()
+>    iommu/io-pgtable-arm: Implement arm_lpae_map_pages()
+>    iommu/io-pgtable-arm-v7s: Implement arm_v7s_unmap_pages()
+>    iommu/io-pgtable-arm-v7s: Implement arm_v7s_map_pages()
+>    iommu/arm-smmu: Implement the unmap_pages() IOMMU driver callback
+>    iommu/arm-smmu: Implement the map_pages() IOMMU driver callback
 > 
-
-Thanks
-Kevin
+> Will Deacon (3):
+>    iommu: Use bitmap to calculate page size in iommu_pgsize()
+>    iommu: Split 'addr_merge' argument to iommu_pgsize() into separate
+>      parts
+>    iommu: Hook up '->unmap_pages' driver callback
+> 
+>   drivers/iommu/arm/arm-smmu/arm-smmu.c |  18 +--
+>   drivers/iommu/io-pgtable-arm-v7s.c    |  50 ++++++-
+>   drivers/iommu/io-pgtable-arm.c        | 189 +++++++++++++++++---------
+>   drivers/iommu/iommu.c                 | 130 +++++++++++++-----
+>   include/linux/io-pgtable.h            |   8 ++
+>   include/linux/iommu.h                 |   9 ++
+>   6 files changed, 289 insertions(+), 115 deletions(-)
+> 
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
