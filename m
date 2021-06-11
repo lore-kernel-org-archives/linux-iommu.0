@@ -2,102 +2,147 @@ Return-Path: <SRS0=1MD/=LF=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-13.5 required=3.0 tests=BAYES_00,
-	DKIM_ADSP_CUSTOM_MED,DKIM_INVALID,DKIM_SIGNED,FREEMAIL_FORGED_FROMDOMAIN,
-	FREEMAIL_FROM,HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_CR_TRAILER,
-	INCLUDES_PATCH,MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,URIBL_RED,
-	USER_AGENT_GIT autolearn=unavailable autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-3.5 required=3.0 tests=BAYES_00,DKIM_INVALID,
+	DKIM_SIGNED,HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,SPF_HELO_NONE,
+	SPF_PASS,URIBL_RED autolearn=no autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6A437C48BE0
-	for <iommu@archiver.kernel.org>; Fri, 11 Jun 2021 17:35:15 +0000 (UTC)
-Received: from smtp4.osuosl.org (smtp4.osuosl.org [140.211.166.137])
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A1149C48BE5
+	for <iommu@archiver.kernel.org>; Fri, 11 Jun 2021 18:30:33 +0000 (UTC)
+Received: from smtp2.osuosl.org (smtp2.osuosl.org [140.211.166.133])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id F280D613D0
-	for <iommu@archiver.kernel.org>; Fri, 11 Jun 2021 17:35:14 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org F280D613D0
-Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=gmail.com
+	by mail.kernel.org (Postfix) with ESMTPS id 48E50613C6
+	for <iommu@archiver.kernel.org>; Fri, 11 Jun 2021 18:30:33 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 48E50613C6
+Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=nvidia.com
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by smtp4.osuosl.org (Postfix) with ESMTP id AD7FC415B8;
-	Fri, 11 Jun 2021 17:35:14 +0000 (UTC)
+	by smtp2.osuosl.org (Postfix) with ESMTP id 02B5C40286;
+	Fri, 11 Jun 2021 18:30:33 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from smtp4.osuosl.org ([127.0.0.1])
-	by localhost (smtp4.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id SC5liAnVI07d; Fri, 11 Jun 2021 17:35:12 +0000 (UTC)
+Received: from smtp2.osuosl.org ([127.0.0.1])
+	by localhost (smtp2.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+	with ESMTP id FQ3FjVd_5obX; Fri, 11 Jun 2021 18:30:32 +0000 (UTC)
 Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by smtp4.osuosl.org (Postfix) with ESMTPS id 7A7B9415C6;
-	Fri, 11 Jun 2021 17:35:12 +0000 (UTC)
+	by smtp2.osuosl.org (Postfix) with ESMTPS id D6FA5401FF;
+	Fri, 11 Jun 2021 18:30:31 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 510ACC000E;
-	Fri, 11 Jun 2021 17:35:12 +0000 (UTC)
-Received: from smtp4.osuosl.org (smtp4.osuosl.org [140.211.166.137])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 4D2F8C000B
- for <iommu@lists.linux-foundation.org>; Fri, 11 Jun 2021 09:55:51 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 9371FC000D;
+	Fri, 11 Jun 2021 18:30:31 +0000 (UTC)
+Received: from smtp1.osuosl.org (smtp1.osuosl.org [IPv6:2605:bc80:3010::138])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 8BD5AC000B
+ for <iommu@lists.linux-foundation.org>; Fri, 11 Jun 2021 18:30:30 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by smtp4.osuosl.org (Postfix) with ESMTP id 2CD5B414B2
- for <iommu@lists.linux-foundation.org>; Fri, 11 Jun 2021 09:55:51 +0000 (UTC)
+ by smtp1.osuosl.org (Postfix) with ESMTP id 6D09F83E61
+ for <iommu@lists.linux-foundation.org>; Fri, 11 Jun 2021 18:30:30 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from smtp4.osuosl.org ([127.0.0.1])
- by localhost (smtp4.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id QxX-nC_Xeifa for <iommu@lists.linux-foundation.org>;
- Fri, 11 Jun 2021 09:55:50 +0000 (UTC)
+Authentication-Results: smtp1.osuosl.org (amavisd-new);
+ dkim=pass (2048-bit key) header.d=nvidia.com
+Received: from smtp1.osuosl.org ([127.0.0.1])
+ by localhost (smtp1.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+ with ESMTP id O46yy59POmFV for <iommu@lists.linux-foundation.org>;
+ Fri, 11 Jun 2021 18:30:29 +0000 (UTC)
 X-Greylist: whitelisted by SQLgrey-1.8.0
-Received: from mail-lf1-x12e.google.com (mail-lf1-x12e.google.com
- [IPv6:2a00:1450:4864:20::12e])
- by smtp4.osuosl.org (Postfix) with ESMTPS id 095FD406AB
- for <iommu@lists.linux-foundation.org>; Fri, 11 Jun 2021 09:55:49 +0000 (UTC)
-Received: by mail-lf1-x12e.google.com with SMTP id bp38so7769077lfb.0
- for <iommu@lists.linux-foundation.org>; Fri, 11 Jun 2021 02:55:49 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=gmail.com; s=20161025;
- h=from:to:cc:subject:date:message-id:mime-version
- :content-transfer-encoding;
- bh=L6Nq/3eMJ61O2ppaiV+K5WCKa4wxPQ8pA+EactXa5/Q=;
- b=ph/XomxAPqIvxyU2lBvMH35+Kz6l15GgxHvCZPiV1EKnsNbwv18k8r3CfcXnDTadvY
- 0HnwK+tCN0fm+FLw08qSlxbWGgLd6GqEV8gP9+/y3mC8mcoEseYaHD7LCYroqq3CWIuc
- rvV1kJGEsSsa+H0Bu3TBsRdiyQHI4toAKrUIEEeDeNkbUJRQmjgiwHPiHMItUrOZc1Jp
- W4prezTF9Lefwdpg90MeiDy/5zo0TrVfeIoYveukEK7APT3Exak8EMxXVAcMlp+QDfko
- P6XaKRDFXiSX8yq0rw+oLRrog118hw6/Wc5k0gg7+VdGPRxrUvhmGPfxUDfyLjcQfPpN
- E6/w==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
- d=1e100.net; s=20161025;
- h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
- :content-transfer-encoding;
- bh=L6Nq/3eMJ61O2ppaiV+K5WCKa4wxPQ8pA+EactXa5/Q=;
- b=BSTK9e7oqs1GbUNxfXxbWwa3BwaYDXKuWhxjfiziNPdtIwFA6p7p+dVh0UDI5m+DSL
- ZsZxHNo7ii3CBDSqtGuTaRst/ROeV2mfBrc2PVF1isMis/iw7kDKGYFXR+eO9GR1Fdx0
- mAjMrxcAT5RPx4ih4mNQzPuAreu3hnpPHA0LuvOJEEF3SPbHF5dmTYK6pkgLldxBDkzQ
- yYMqnMWwR8OiZ3XHGhWMEJPT2cUzakCQ9Mvtg85jYe8NkuCAH895AxzNcjviM+1BOQLf
- vogwyyGCZ0RXC2KX8ka+MzWWVxGFM1Y26uR/X3eI6DMyKPxa2VjC4YtZkR2NsGiyyWhF
- 0mmQ==
-X-Gm-Message-State: AOAM533J4R9gY5YymhGepCbQSnSH+ugd+P9TN/Znn3K8xNN21XzJ4NWt
- 6oSoBGDH0AHe2JRwu65tyrQ=
-X-Google-Smtp-Source: ABdhPJy8EDHCE1f4s4ZC6KDj2A/UHmJhDH+REBsIFZnu4F/CM9rWslxdJXdDy1hMj7lLIs/rkF7G0w==
-X-Received: by 2002:a19:dc02:: with SMTP id t2mr2158836lfg.261.1623405347760; 
- Fri, 11 Jun 2021 02:55:47 -0700 (PDT)
-Received: from localhost ([178.151.124.169])
- by smtp.gmail.com with ESMTPSA id r17sm651828ljp.40.2021.06.11.02.55.46
- (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
- Fri, 11 Jun 2021 02:55:47 -0700 (PDT)
-From: Roman Skakun <rm.skakun@gmail.com>
-X-Google-Original-From: Roman Skakun <roman_skakun@epam.com>
-To: Konrad Rzeszutek Wilk <konrad.wilk@oracle.com>,
- Boris Ostrovsky <boris.ostrovsky@oracle.com>,
- Juergen Gross <jgross@suse.com>,
- Stefano Stabellini <sstabellini@kernel.org>,
- xen-devel@lists.xenproject.org, iommu@lists.linux-foundation.org,
- linux-kernel@vger.kernel.org
-Subject: [PATCH] swiotlb-xen: override common mmap and get_sgtable dma ops
-Date: Fri, 11 Jun 2021 12:55:28 +0300
-Message-Id: <20210611095528.9230-1-roman_skakun@epam.com>
-X-Mailer: git-send-email 2.25.1
+Received: from NAM12-MW2-obe.outbound.protection.outlook.com
+ (mail-mw2nam12on2086.outbound.protection.outlook.com [40.107.244.86])
+ by smtp1.osuosl.org (Postfix) with ESMTPS id 8B2FA83E5B
+ for <iommu@lists.linux-foundation.org>; Fri, 11 Jun 2021 18:30:29 +0000 (UTC)
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=Xz9QTeK/51V44KMwsPY2QTgP2aTHBNU2yHPOMpfVwiyiuNHOaVCT8EkArK4gU7L9AnewapaU+LFBG9fL195YAcPQDh25Zv7uKXGP0iieUyJKAkFccZzXy5mRRVGIY7Tvik5U40aXPKUU0ZcanXYK5gqz4peMQvYJTYhZMcRoepHDmCjjOoI6TZbPiaWQrXSmmTmFfiiqwUOSyS05aPudv6FCiEnhf72PjoX6PKnVDa3P/7JS3KQL6vFF9euIFKgReFSuA9Ksb/57YWsBkCYvI7mEhmcwoVOW5FEc3AHHOB0LQDY7lxQuUMp51mGtDxjidN5uad2VgTmREpVgOkD6PQ==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com; 
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=bmYp6AxKY21kVqxh8QywAE5SuK/vIOiOMt7I+5EfNLM=;
+ b=g6Wn9eq6ve4MlapwYA9QgW/wbW9TcFF0cMafTpQ0FYlXV2NS4O6SBXg3PRRz6fikD2cuJpvrRDZ8z5QFf9SwepsHj2Df0Fg1xX11P+WjyLFOOezg3l2WSY3AzhCowyckTx1u3LfSR8yJU8Oa3yTrpjArjuFUMSUGJR666cJ0PPHPmN3kUhT8QTY4AueOe5dZNPUlvyHBc2UeXys23APOtqiqolOI7ZbdkDT+utuaPhxGe22IlpoV8rx8AV6rZdsvBC2EGJ8E7X7QQhTe+8NaPi1ctKHyBcgdzvFwqoedpmapqp6czOG5+kH6qNH4O+cMV9oFgTBJ4tKySCST5cE1cw==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=nvidia.com; dmarc=pass action=none header.from=nvidia.com;
+ dkim=pass header.d=nvidia.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
+ s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=bmYp6AxKY21kVqxh8QywAE5SuK/vIOiOMt7I+5EfNLM=;
+ b=aBHLdrWXmSthVMVUJrX1SvTTk8lEuMQbuXvf46jOI8OK+5S5DCXxkNqwR6vkhsjjOMdQREihTuhgYo/9xkJdyMS9U2RPXput1g3LkWT8102yAzyH3VDqT6eA0Qc9SFpg1n5dieRlQVzSeqSNatAa7jYoX0+0NN+hXbVP3iddVDwPfY9nKZeRjKrMQPn0pt6dy/2Ehmj41KaC4ava7lTUGBuuTdT1O8yo3XyTn3MK6W9c587a+Q+MR/40HJHN9vWgNkTT/YE/evEYkZGOTdKX3ixD3hzFHGihSCGG9qsT+yH01uaLvsuymG2DLcni5AgnW6JuEPwp5I/VToWHFayk8w==
+Received: from BY5PR12MB3764.namprd12.prod.outlook.com (2603:10b6:a03:1ac::17)
+ by BY5PR12MB3730.namprd12.prod.outlook.com (2603:10b6:a03:1ac::14)
+ with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4195.24; Fri, 11 Jun
+ 2021 18:30:25 +0000
+Received: from BY5PR12MB3764.namprd12.prod.outlook.com
+ ([fe80::d05:4bca:ea51:15af]) by BY5PR12MB3764.namprd12.prod.outlook.com
+ ([fe80::d05:4bca:ea51:15af%6]) with mapi id 15.20.4219.024; Fri, 11 Jun 2021
+ 18:30:25 +0000
+From: Krishna Reddy <vdumpa@nvidia.com>
+To: Will Deacon <will@kernel.org>, Ashish Mhetre <amhetre@nvidia.com>
+Subject: RE: [PATCH 1/2] iommu: Fix race condition during default domain
+ allocation
+Thread-Topic: [PATCH 1/2] iommu: Fix race condition during default domain
+ allocation
+Thread-Index: AQHXXa+J5wsxx82rEEuAly1r38xpAasOomQAgAB2fqA=
+Date: Fri, 11 Jun 2021 18:30:25 +0000
+Message-ID: <BY5PR12MB3764CB9BBC42426B67537563B3349@BY5PR12MB3764.namprd12.prod.outlook.com>
+References: <1623298614-31755-1-git-send-email-amhetre@nvidia.com>
+ <1623298614-31755-2-git-send-email-amhetre@nvidia.com>
+ <20210611104524.GD15274@willie-the-truck>
+In-Reply-To: <20210611104524.GD15274@willie-the-truck>
+Accept-Language: en-US
+Content-Language: en-US
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+authentication-results: kernel.org; dkim=none (message not signed)
+ header.d=none;kernel.org; dmarc=none action=none header.from=nvidia.com;
+x-originating-ip: [216.228.112.22]
+x-ms-publictraffictype: Email
+x-ms-office365-filtering-correlation-id: b4caf8f9-3bc5-4c36-0de3-08d92d06fb12
+x-ms-traffictypediagnostic: BY5PR12MB3730:
+x-ms-exchange-transport-forked: True
+x-microsoft-antispam-prvs: <BY5PR12MB37308985932AFB936CB625B4B3349@BY5PR12MB3730.namprd12.prod.outlook.com>
+x-ms-oob-tlc-oobclassifiers: OLM:9508;
+x-ms-exchange-senderadcheck: 1
+x-microsoft-antispam: BCL:0;
+x-microsoft-antispam-message-info: 26SQbDPz8y7+tXv7fe72fHEQzysTm21F5260IiipP5NedlZCS9WXDdh30QcO3gR/XJT0hqMvRwvYEeigLlUwuNVEPG0PdK8kv9YXIRwhSWGDGX+HLq9pCQRJdnYKxrjgdPtutAAFJu83RX/z2xF5dfjRo/oJd/HLlv3txtYKBm/2mzKf5eu1G8JQaYj7St63zkhGh/tOZWOBmedyGpgZU7VcSrVGGcuMXsL3Gkyp40J5lC/+gHpZfYL0dzGsc2jyPWeA78AirGh3SYblCzpOMud+YCb+h2AZYLznHvyM0eJkSwHyAlU3pSlEO/ytNKtx8MlRwMb1k1tLAKsZBDl+9OgzheRSk7veqIdkmE61ywd4mAHUGaCX6UZ60Xmx/y9bKXdMcXXPkoak0nhuwOjmySRtrKlUVjTFguQC33ikylOm9cX4KeNXSfRx7XMRYCmw7J97v+xZHOFFXF8ikIoIU5sH4A2nCL/tR5U6VdANdhKpQqnmn53gTV7qJFFSUNW4gbX1Id9blmaD0/oJH08rgLWlEFzbOI+2XvkzxKQ3L+d9v7vGjzpHhXerX330lCFrUmZZ2rA12mfGmKdNE9rvcRybbEYvpy72hMlHCKqbvoA=
+x-forefront-antispam-report: CIP:255.255.255.255; CTRY:; LANG:en; SCL:1; SRV:;
+ IPV:NLI; SFV:NSPM; H:BY5PR12MB3764.namprd12.prod.outlook.com; PTR:; CAT:NONE;
+ SFS:(4636009)(346002)(136003)(396003)(366004)(376002)(39860400002)(8676002)(478600001)(8936002)(26005)(5660300002)(6506007)(38100700002)(110136005)(2906002)(83380400001)(52536014)(66556008)(86362001)(76116006)(7696005)(55016002)(4326008)(64756008)(66476007)(71200400001)(33656002)(66446008)(66946007)(6636002)(9686003)(316002)(122000001)(186003)(54906003);
+ DIR:OUT; SFP:1101; 
+x-ms-exchange-antispam-messagedata-chunkcount: 1
+x-ms-exchange-antispam-messagedata-0: =?us-ascii?Q?1VLjEx9rx1acZ/avB8Hrx6TE3pNjXGbxK7sotgqaDCQB5vPYMZGee0G5zBj6?=
+ =?us-ascii?Q?8WW2huM4cdlHKjJjK2x6Jj+BawTsnwiobixUYUyZKdJnrKda+yLrFOz6Uca6?=
+ =?us-ascii?Q?L/zYjSxOPB69zqD/gI0LxJkwGDzqXkLVg3x40/PrnSxlJIo1lZojQRkfXCAb?=
+ =?us-ascii?Q?kBAFkqE5hAP0eitItHqEQhRkpX/ESRuiqFX5gQ24fLqzR6eCgtcR68ttMaWY?=
+ =?us-ascii?Q?gLm8F/PGLoQk48VoKY4zOmcQ+KHXGaBoQrJVHUTwTUzfDEqgUjwzRMZ+luDM?=
+ =?us-ascii?Q?hosv3CDQq+3yODjOjoAK6poJMxjagRTy06N1OwAJForhX/YlDkI17hha/d+n?=
+ =?us-ascii?Q?Mll4EzKCCZm6gP2IkUKZJZHjojuWmwcSUrF+qziC8ZXnWXm14uLZMoSRFg1c?=
+ =?us-ascii?Q?4Wlbh783vOWEA86uvNwCj5hR21/+on3c+xxFZfdgL/ZKsWEf+fYjrg7t1pIQ?=
+ =?us-ascii?Q?6d0uQK+BN5sQGyc08aAwoQ+a5b6/+5UJAAv8qBKd28EDzLS5YYXvEX/WHN9g?=
+ =?us-ascii?Q?neR0PNJEvp+Ai6kcZ/YovFLgrkqAitxUODa9m6gqnPItj67dsYCG81WbSI9w?=
+ =?us-ascii?Q?IFZgj1DFdYNvN3cVqYUbhhXdBeBxWSN06bgohXk4/00sJR1OpoX+hjYm0zQF?=
+ =?us-ascii?Q?pVoKTxiA6uOpLMYK9Livnv8K9Nytu/vxu0ZkPSZzuXklreHuWy8err/ml3G4?=
+ =?us-ascii?Q?YyXEl/yYWm2FDwszgKJre8MWi/lLm2X3GN1u/CFx2h1Qk/XTbeFrPeRnhvpM?=
+ =?us-ascii?Q?fa2L00gkGJ2vZEkOs+CvwUBWkPY3tjClNRUD8aofP/AhNgWZdxSrCBWHCpsg?=
+ =?us-ascii?Q?7ITQ8sTXJqgGsLAIOiXD1dEHETQCMM+vgSw6s0IHomRmu4MkrZ+XX/C2fJFA?=
+ =?us-ascii?Q?JUJoz8t/dHsYrJo0E2go2NNz6a10uxbTtLi2RYHVSXvB1rCtut6k4LBzf/wd?=
+ =?us-ascii?Q?Q3Z4oYMpxMDCLDEBje4ZH9fh83/SzaxhHQQIAHh7PxlZgdYNVL+OBnlL/GXo?=
+ =?us-ascii?Q?qc6f3YyCbsSgL0MLFbLU4XCn3WjhoCAZhJXF6J77lhNRufOTK77n52xbrJ/u?=
+ =?us-ascii?Q?e5UWWgFvKxwkUMDP38js1v/tFelzKVEngcFfDuQChS1gzaJmiei9ON/4TC/V?=
+ =?us-ascii?Q?FY1oc8c66iC95EJXirupArndx4E4aub0ZWnGissHi1nT0iDpmk3+/uPsqtcD?=
+ =?us-ascii?Q?k1PjZ5AscwRUEk6POj1r4Zld8qq5pDCNHeBt7sB8pMOvMLKbVkmjI9q+lzTS?=
+ =?us-ascii?Q?AIgdkq6qh40q71r5k5Cl8mUDH7XZ21Rn4FHHF1Ndh11A1J++OxkN0aE1UjBu?=
+ =?us-ascii?Q?MwBn6aMEa82rY2qMk/pTDCr/?=
 MIME-Version: 1.0
-X-Mailman-Approved-At: Fri, 11 Jun 2021 17:35:11 +0000
-Cc: Andrii Anisov <andrii_anisov@epam.com>,
- Oleksandr Andrushchenko <oleksandr_andrushchenko@epam.com>,
- Oleksandr Tyshchenko <oleksandr_tyshchenko@epam.com>,
- Roman Skakun <roman_skakun@epam.com>, Roman Skakun <rm.skakun@gmail.com>,
- Volodymyr Babchuk <volodymyr_babchuk@epam.com>
+X-OriginatorOrg: Nvidia.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-AuthSource: BY5PR12MB3764.namprd12.prod.outlook.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: b4caf8f9-3bc5-4c36-0de3-08d92d06fb12
+X-MS-Exchange-CrossTenant-originalarrivaltime: 11 Jun 2021 18:30:25.2825 (UTC)
+X-MS-Exchange-CrossTenant-fromentityheader: Hosted
+X-MS-Exchange-CrossTenant-id: 43083d15-7273-40c1-b7db-39efd9ccc17a
+X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
+X-MS-Exchange-CrossTenant-userprincipalname: JHInlFzFfG04BXhquXeyflYB5n8lDkH7nYHk1ellh6lxSZ+lC6Hl6Vv1sKckafBXpKcVF0YBj9EJKgRI6wd3fQ==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: BY5PR12MB3730
+Cc: "robin.murphy@arm.com" <robin.murphy@arm.com>,
+ "iommu@lists.linux-foundation.org" <iommu@lists.linux-foundation.org>,
+ "linux-arm-kernel@lists.infradead.org" <linux-arm-kernel@lists.infradead.org>,
+ "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -115,110 +160,32 @@ Content-Transfer-Encoding: 7bit
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-This commit is dedicated to fix incorrect convertion from
-cpu_addr to page address in cases when we get virtual
-address which allocated throught xen_swiotlb_alloc_coherent()
-and can be mapped in the vmalloc range.
-As the result, virt_to_page() cannot convert this address
-properly and return incorrect page address.
+> > +     mutex_lock(&group->mutex);
+> >       iommu_alloc_default_domain(group, dev);
+> > +     mutex_unlock(&group->mutex);
+> 
+> It feels wrong to serialise this for everybody just to cater for systems with
+> aliasing SIDs between devices.
 
-Need to detect such cases and obtains the page address using
-vmalloc_to_page() instead.
+Serialization is limited to devices in the same group. Unless devices share SID, they wouldn't be in same group.
 
-The reference code was copied from kernel/dma/ops_helpers.c
-and modified to provide additional detections as described
-above.
+> Can you provide some more information about exactly what the h/w
+> configuration is, and the callstack which exhibits the race, please?
 
-Signed-off-by: Roman Skakun <roman_skakun@epam.com>
-Reviewed-by: Andrii Anisov <andrii_anisov@epam.com>
+The failure is an after effect and is a page fault.  Don't have a failure call stack here. Ashish has traced it through print messages and he can provide them.
 
----
-Also, I have observed that the original common code didn't 
-make additional checks about contiguity of the memory region
-represented by cpu_addr and size
+From the prints messages, The following was observed in page fault case:
 
-May be, this means that these functions can get only physically 
-contiguous memory.
-Is this correct?
+Device1:  iommu_probe_device() --> iommu_alloc_default_domain() --> iommu_group_alloc_default_domain() --> __iommu_attach_device(group->default_domain)
+Device2:  iommu_probe_device() --> iommu_alloc_default_domain() --> iommu_group_alloc_default_domain() --> __iommu_attach_device(group->default_domain)
 
-Cheers!
+Both devices(with same SID) are entering into iommu_group_alloc_default_domain() function and each one getting attached to a different group->default_domain 
+as the second one overwrites  group->default_domain after the first one attaches to group->default_domain it has created.
 
----
- drivers/xen/swiotlb-xen.c | 51 +++++++++++++++++++++++++++++++++++++--
- 1 file changed, 49 insertions(+), 2 deletions(-)
+SMMU would be setup to use first domain for the context page table. Whereas all the dma map/unamp requests from second device would
+be performed on a domain that is not used by SMMU for context translations and IOVA (not mapped in first domain) accesses from second device lead to page faults. 
 
-diff --git a/drivers/xen/swiotlb-xen.c b/drivers/xen/swiotlb-xen.c
-index 2b385c1b4a99..f99c98472927 100644
---- a/drivers/xen/swiotlb-xen.c
-+++ b/drivers/xen/swiotlb-xen.c
-@@ -563,6 +563,53 @@ xen_swiotlb_dma_supported(struct device *hwdev, u64 mask)
- 	return xen_virt_to_bus(hwdev, xen_io_tlb_end - 1) <= mask;
- }
- 
-+static int
-+xen_swiotlb_dma_mmap(struct device *dev, struct vm_area_struct *vma,
-+		void *cpu_addr, dma_addr_t dma_addr, size_t size,
-+		unsigned long attrs)
-+{
-+	unsigned long user_count = vma_pages(vma);
-+	unsigned long count = PAGE_ALIGN(size) >> PAGE_SHIFT;
-+	unsigned long off = vma->vm_pgoff;
-+	struct page *page;
-+
-+	if (is_vmalloc_addr(cpu_addr))
-+		page = vmalloc_to_page(cpu_addr);
-+	else
-+		page = virt_to_page(cpu_addr);
-+
-+	vma->vm_page_prot = dma_pgprot(dev, vma->vm_page_prot, attrs);
-+
-+	if (dma_mmap_from_dev_coherent(dev, vma, cpu_addr, size, &ret))
-+		return -ENXIO;
-+
-+	if (off >= count || user_count > count - off)
-+		return -ENXIO;
-+
-+	return remap_pfn_range(vma, vma->vm_start,
-+			page_to_pfn(page) + vma->vm_pgoff,
-+			user_count << PAGE_SHIFT, vma->vm_page_prot);
-+}
-+
-+static int
-+xen_swiotlb_dma_get_sgtable(struct device *dev, struct sg_table *sgt,
-+		 void *cpu_addr, dma_addr_t dma_addr, size_t size,
-+		 unsigned long attrs)
-+{
-+	struct page *page;
-+	int ret;
-+
-+	if (is_vmalloc_addr(cpu_addr))
-+		page = vmalloc_to_page(cpu_addr);
-+	else
-+		page = virt_to_page(cpu_addr);
-+
-+	ret = sg_alloc_table(sgt, 1, GFP_KERNEL);
-+	if (!ret)
-+		sg_set_page(sgt->sgl, page, PAGE_ALIGN(size), 0);
-+	return ret;
-+}
-+
- const struct dma_map_ops xen_swiotlb_dma_ops = {
- 	.alloc = xen_swiotlb_alloc_coherent,
- 	.free = xen_swiotlb_free_coherent,
-@@ -575,8 +622,8 @@ const struct dma_map_ops xen_swiotlb_dma_ops = {
- 	.map_page = xen_swiotlb_map_page,
- 	.unmap_page = xen_swiotlb_unmap_page,
- 	.dma_supported = xen_swiotlb_dma_supported,
--	.mmap = dma_common_mmap,
--	.get_sgtable = dma_common_get_sgtable,
-+	.mmap = xen_swiotlb_dma_mmap,
-+	.get_sgtable = xen_swiotlb_dma_get_sgtable,
- 	.alloc_pages = dma_common_alloc_pages,
- 	.free_pages = dma_common_free_pages,
- };
--- 
-2.27.0
-
+-KR
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
