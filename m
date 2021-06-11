@@ -2,99 +2,102 @@ Return-Path: <SRS0=1MD/=LF=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-10.5 required=3.0 tests=BAYES_00,
+X-Spam-Status: No, score=-13.5 required=3.0 tests=BAYES_00,
 	DKIM_ADSP_CUSTOM_MED,DKIM_INVALID,DKIM_SIGNED,FREEMAIL_FORGED_FROMDOMAIN,
 	FREEMAIL_FROM,HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_CR_TRAILER,
-	INCLUDES_PATCH,MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,URIBL_RED
-	autolearn=ham autolearn_force=no version=3.4.0
+	INCLUDES_PATCH,MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,URIBL_RED,
+	USER_AGENT_GIT autolearn=unavailable autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0EECBC48BE0
-	for <iommu@archiver.kernel.org>; Fri, 11 Jun 2021 16:50:39 +0000 (UTC)
-Received: from smtp1.osuosl.org (smtp1.osuosl.org [140.211.166.138])
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6A437C48BE0
+	for <iommu@archiver.kernel.org>; Fri, 11 Jun 2021 17:35:15 +0000 (UTC)
+Received: from smtp4.osuosl.org (smtp4.osuosl.org [140.211.166.137])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id B6183613C3
-	for <iommu@archiver.kernel.org>; Fri, 11 Jun 2021 16:50:38 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org B6183613C3
+	by mail.kernel.org (Postfix) with ESMTPS id F280D613D0
+	for <iommu@archiver.kernel.org>; Fri, 11 Jun 2021 17:35:14 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org F280D613D0
 Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=gmail.com
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by smtp1.osuosl.org (Postfix) with ESMTP id 8585883E5B;
-	Fri, 11 Jun 2021 16:50:38 +0000 (UTC)
+	by smtp4.osuosl.org (Postfix) with ESMTP id AD7FC415B8;
+	Fri, 11 Jun 2021 17:35:14 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from smtp1.osuosl.org ([127.0.0.1])
-	by localhost (smtp1.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id htm4wOSuUEnU; Fri, 11 Jun 2021 16:50:37 +0000 (UTC)
+Received: from smtp4.osuosl.org ([127.0.0.1])
+	by localhost (smtp4.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+	with ESMTP id SC5liAnVI07d; Fri, 11 Jun 2021 17:35:12 +0000 (UTC)
 Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by smtp1.osuosl.org (Postfix) with ESMTPS id 2C11283AF4;
-	Fri, 11 Jun 2021 16:50:37 +0000 (UTC)
+	by smtp4.osuosl.org (Postfix) with ESMTPS id 7A7B9415C6;
+	Fri, 11 Jun 2021 17:35:12 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 065D2C000D;
-	Fri, 11 Jun 2021 16:50:37 +0000 (UTC)
-Received: from smtp2.osuosl.org (smtp2.osuosl.org [140.211.166.133])
- by lists.linuxfoundation.org (Postfix) with ESMTP id E7C6CC000B
- for <iommu@lists.linux-foundation.org>; Fri, 11 Jun 2021 16:50:35 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 510ACC000E;
+	Fri, 11 Jun 2021 17:35:12 +0000 (UTC)
+Received: from smtp4.osuosl.org (smtp4.osuosl.org [140.211.166.137])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 4D2F8C000B
+ for <iommu@lists.linux-foundation.org>; Fri, 11 Jun 2021 09:55:51 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by smtp2.osuosl.org (Postfix) with ESMTP id C96784016D
- for <iommu@lists.linux-foundation.org>; Fri, 11 Jun 2021 16:50:35 +0000 (UTC)
+ by smtp4.osuosl.org (Postfix) with ESMTP id 2CD5B414B2
+ for <iommu@lists.linux-foundation.org>; Fri, 11 Jun 2021 09:55:51 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Authentication-Results: smtp2.osuosl.org (amavisd-new);
- dkim=pass (2048-bit key) header.d=gmail.com
-Received: from smtp2.osuosl.org ([127.0.0.1])
- by localhost (smtp2.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id EnSmXBcPfBFr for <iommu@lists.linux-foundation.org>;
- Fri, 11 Jun 2021 16:50:34 +0000 (UTC)
+Received: from smtp4.osuosl.org ([127.0.0.1])
+ by localhost (smtp4.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+ with ESMTP id QxX-nC_Xeifa for <iommu@lists.linux-foundation.org>;
+ Fri, 11 Jun 2021 09:55:50 +0000 (UTC)
 X-Greylist: whitelisted by SQLgrey-1.8.0
-Received: from mail-pf1-x432.google.com (mail-pf1-x432.google.com
- [IPv6:2607:f8b0:4864:20::432])
- by smtp2.osuosl.org (Postfix) with ESMTPS id A70A14012A
- for <iommu@lists.linux-foundation.org>; Fri, 11 Jun 2021 16:50:34 +0000 (UTC)
-Received: by mail-pf1-x432.google.com with SMTP id h12so4926067pfe.2
- for <iommu@lists.linux-foundation.org>; Fri, 11 Jun 2021 09:50:34 -0700 (PDT)
+Received: from mail-lf1-x12e.google.com (mail-lf1-x12e.google.com
+ [IPv6:2a00:1450:4864:20::12e])
+ by smtp4.osuosl.org (Postfix) with ESMTPS id 095FD406AB
+ for <iommu@lists.linux-foundation.org>; Fri, 11 Jun 2021 09:55:49 +0000 (UTC)
+Received: by mail-lf1-x12e.google.com with SMTP id bp38so7769077lfb.0
+ for <iommu@lists.linux-foundation.org>; Fri, 11 Jun 2021 02:55:49 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=gmail.com; s=20161025;
- h=from:message-id:mime-version:subject:date:in-reply-to:cc:to
- :references; bh=YxiModSScxrX6wWlEE0AEHNoN023vebR9RIyb3JQrHo=;
- b=TY+8/u7kG9aTVxM5eVsmnRQsN3HnGN8R42yXl3Ws2EBv2+N0JClnaMf2orLQfMtz/W
- e4YDzf08xvSGpj+S6YzlxHkjFigXzNHAkNG1MWjo97hLqwiS9ZLb5kulmRPkJ31lKF78
- 6JO9qjkZ2loDpi+yfwM/sW9NtUyeI2d3DdZ5+fwCY//Bq6B2JyaOJns2XfzKk+2j8CE8
- AIyLI+/FjhDxs2cRSa28Si/2AfFAANJboEk9EiYeojtIZlI72gHGdBTUrVzNaC7YSHeC
- a3pz1IOquw/XUDP7KbfvI57ykBHjNnZbxeaXeUfKzHCGNqRO7VFoFjDjTahfrXwPXbBY
- ovQA==
+ h=from:to:cc:subject:date:message-id:mime-version
+ :content-transfer-encoding;
+ bh=L6Nq/3eMJ61O2ppaiV+K5WCKa4wxPQ8pA+EactXa5/Q=;
+ b=ph/XomxAPqIvxyU2lBvMH35+Kz6l15GgxHvCZPiV1EKnsNbwv18k8r3CfcXnDTadvY
+ 0HnwK+tCN0fm+FLw08qSlxbWGgLd6GqEV8gP9+/y3mC8mcoEseYaHD7LCYroqq3CWIuc
+ rvV1kJGEsSsa+H0Bu3TBsRdiyQHI4toAKrUIEEeDeNkbUJRQmjgiwHPiHMItUrOZc1Jp
+ W4prezTF9Lefwdpg90MeiDy/5zo0TrVfeIoYveukEK7APT3Exak8EMxXVAcMlp+QDfko
+ P6XaKRDFXiSX8yq0rw+oLRrog118hw6/Wc5k0gg7+VdGPRxrUvhmGPfxUDfyLjcQfPpN
+ E6/w==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
  d=1e100.net; s=20161025;
- h=x-gm-message-state:from:message-id:mime-version:subject:date
- :in-reply-to:cc:to:references;
- bh=YxiModSScxrX6wWlEE0AEHNoN023vebR9RIyb3JQrHo=;
- b=quqwg5MuJ2UZh7FPbG+8qoDA0ZZE5kyJBKTITyRJRQOt+tsgnZR+QJSXE9tnUrMggM
- FZZDi+WKSuq8bPC0P8ohzn8G+OORudOtGchgC9gIJxr/XDS5zTcvvg8bPWXdgdE8SzaW
- Bd5RtSD6tDBYvHjo93wiadBEsRXKoRILdV9bEaqelIY8InA/GFbvifNmbzQbYeXOrQWe
- e7TA0lmcIgDMy6a9YGsOTSB7/6lbj+sCqnVosTJefukf5RYrArL6rUOMfpIv4S0v2MtR
- xtb3Vs6eeXn9Uh3XopGqCV8x6qNfZP40S4eW2+k3Ug4QHgUKloCiCzIoCTPDUVRrcBpo
- 3xEA==
-X-Gm-Message-State: AOAM531f9+c7699+pooiRsMOfCxcwPRre/6ULqMAGhSOppumBJUb+JI1
- jxUFVmvcvXXdbgEgpi5kcjg=
-X-Google-Smtp-Source: ABdhPJzRaHiA/tU5kv1KSjGXKSf5EXl3CidBPqHwIaYUedvh9iRfEN9EVAU2EogEJpU5K7kFm0IjYQ==
-X-Received: by 2002:a62:1d0f:0:b029:2d5:3ec2:feb8 with SMTP id
- d15-20020a621d0f0000b02902d53ec2feb8mr9364468pfd.19.1623430233840; 
- Fri, 11 Jun 2021 09:50:33 -0700 (PDT)
-Received: from smtpclient.apple (c-24-6-216-183.hsd1.ca.comcast.net.
- [24.6.216.183])
- by smtp.gmail.com with ESMTPSA id k1sm5599107pfa.30.2021.06.11.09.50.32
- (version=TLS1_2 cipher=ECDHE-ECDSA-AES128-GCM-SHA256 bits=128/128);
- Fri, 11 Jun 2021 09:50:32 -0700 (PDT)
-From: Nadav Amit <nadav.amit@gmail.com>
-Message-Id: <D76DA59C-023F-43D1-B4ED-BFA65D9D064F@gmail.com>
-Mime-Version: 1.0 (Mac OS X Mail 14.0 \(3654.100.0.2.22\))
-Subject: Re: [PATCH v3 4/6] iommu: Factor iommu_iotlb_gather_is_disjoint() out
-Date: Fri, 11 Jun 2021 09:50:31 -0700
-In-Reply-To: <20210611135746.GC15776@willie-the-truck>
-To: Will Deacon <will@kernel.org>
-References: <20210607182541.119756-1-namit@vmware.com>
- <20210607182541.119756-5-namit@vmware.com>
- <20210611135746.GC15776@willie-the-truck>
-X-Mailer: Apple Mail (2.3654.100.0.2.22)
-Cc: linux-kernel@vger.kernel.org, iommu@lists.linux-foundation.org,
- Jiajun Cao <caojiajun@vmware.com>, Robin Murphy <robin.murphy@arm.com>
+ h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+ :content-transfer-encoding;
+ bh=L6Nq/3eMJ61O2ppaiV+K5WCKa4wxPQ8pA+EactXa5/Q=;
+ b=BSTK9e7oqs1GbUNxfXxbWwa3BwaYDXKuWhxjfiziNPdtIwFA6p7p+dVh0UDI5m+DSL
+ ZsZxHNo7ii3CBDSqtGuTaRst/ROeV2mfBrc2PVF1isMis/iw7kDKGYFXR+eO9GR1Fdx0
+ mAjMrxcAT5RPx4ih4mNQzPuAreu3hnpPHA0LuvOJEEF3SPbHF5dmTYK6pkgLldxBDkzQ
+ yYMqnMWwR8OiZ3XHGhWMEJPT2cUzakCQ9Mvtg85jYe8NkuCAH895AxzNcjviM+1BOQLf
+ vogwyyGCZ0RXC2KX8ka+MzWWVxGFM1Y26uR/X3eI6DMyKPxa2VjC4YtZkR2NsGiyyWhF
+ 0mmQ==
+X-Gm-Message-State: AOAM533J4R9gY5YymhGepCbQSnSH+ugd+P9TN/Znn3K8xNN21XzJ4NWt
+ 6oSoBGDH0AHe2JRwu65tyrQ=
+X-Google-Smtp-Source: ABdhPJy8EDHCE1f4s4ZC6KDj2A/UHmJhDH+REBsIFZnu4F/CM9rWslxdJXdDy1hMj7lLIs/rkF7G0w==
+X-Received: by 2002:a19:dc02:: with SMTP id t2mr2158836lfg.261.1623405347760; 
+ Fri, 11 Jun 2021 02:55:47 -0700 (PDT)
+Received: from localhost ([178.151.124.169])
+ by smtp.gmail.com with ESMTPSA id r17sm651828ljp.40.2021.06.11.02.55.46
+ (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+ Fri, 11 Jun 2021 02:55:47 -0700 (PDT)
+From: Roman Skakun <rm.skakun@gmail.com>
+X-Google-Original-From: Roman Skakun <roman_skakun@epam.com>
+To: Konrad Rzeszutek Wilk <konrad.wilk@oracle.com>,
+ Boris Ostrovsky <boris.ostrovsky@oracle.com>,
+ Juergen Gross <jgross@suse.com>,
+ Stefano Stabellini <sstabellini@kernel.org>,
+ xen-devel@lists.xenproject.org, iommu@lists.linux-foundation.org,
+ linux-kernel@vger.kernel.org
+Subject: [PATCH] swiotlb-xen: override common mmap and get_sgtable dma ops
+Date: Fri, 11 Jun 2021 12:55:28 +0300
+Message-Id: <20210611095528.9230-1-roman_skakun@epam.com>
+X-Mailer: git-send-email 2.25.1
+MIME-Version: 1.0
+X-Mailman-Approved-At: Fri, 11 Jun 2021 17:35:11 +0000
+Cc: Andrii Anisov <andrii_anisov@epam.com>,
+ Oleksandr Andrushchenko <oleksandr_andrushchenko@epam.com>,
+ Oleksandr Tyshchenko <oleksandr_tyshchenko@epam.com>,
+ Roman Skakun <roman_skakun@epam.com>, Roman Skakun <rm.skakun@gmail.com>,
+ Volodymyr Babchuk <volodymyr_babchuk@epam.com>
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -107,192 +110,116 @@ List-Post: <mailto:iommu@lists.linux-foundation.org>
 List-Help: <mailto:iommu-request@lists.linux-foundation.org?subject=help>
 List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
  <mailto:iommu-request@lists.linux-foundation.org?subject=subscribe>
-Content-Type: multipart/mixed; boundary="===============1209085731192686754=="
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
+This commit is dedicated to fix incorrect convertion from
+cpu_addr to page address in cases when we get virtual
+address which allocated throught xen_swiotlb_alloc_coherent()
+and can be mapped in the vmalloc range.
+As the result, virt_to_page() cannot convert this address
+properly and return incorrect page address.
 
---===============1209085731192686754==
-Content-Type: multipart/signed;
-	boundary="Apple-Mail=_76AC0899-3851-4BEA-A8FB-C0802A2D5203";
-	protocol="application/pgp-signature";
-	micalg=pgp-sha256
+Need to detect such cases and obtains the page address using
+vmalloc_to_page() instead.
 
+The reference code was copied from kernel/dma/ops_helpers.c
+and modified to provide additional detections as described
+above.
 
---Apple-Mail=_76AC0899-3851-4BEA-A8FB-C0802A2D5203
-Content-Transfer-Encoding: quoted-printable
-Content-Type: text/plain;
-	charset=utf-8
+Signed-off-by: Roman Skakun <roman_skakun@epam.com>
+Reviewed-by: Andrii Anisov <andrii_anisov@epam.com>
 
+---
+Also, I have observed that the original common code didn't 
+make additional checks about contiguity of the memory region
+represented by cpu_addr and size
 
+May be, this means that these functions can get only physically 
+contiguous memory.
+Is this correct?
 
-> On Jun 11, 2021, at 6:57 AM, Will Deacon <will@kernel.org> wrote:
->=20
-> On Mon, Jun 07, 2021 at 11:25:39AM -0700, Nadav Amit wrote:
->> From: Nadav Amit <namit@vmware.com>
->>=20
->> Refactor iommu_iotlb_gather_add_page() and factor out the logic that
->> detects whether IOTLB gather range and a new range are disjoint. To =
-be
->> used by the next patch that implements different gathering logic for
->> AMD.
->>=20
->> Cc: Joerg Roedel <joro@8bytes.org>
->> Cc: Will Deacon <will@kernel.org>
->> Cc: Jiajun Cao <caojiajun@vmware.com>
->> Cc: Robin Murphy <robin.murphy@arm.com>
->> Cc: Lu Baolu <baolu.lu@linux.intel.com>
->> Cc: iommu@lists.linux-foundation.org
->> Cc: linux-kernel@vger.kernel.org>
->> Signed-off-by: Nadav Amit <namit@vmware.com>
->> ---
->> include/linux/iommu.h | 41 +++++++++++++++++++++++++++++++++--------
->> 1 file changed, 33 insertions(+), 8 deletions(-)
->=20
-> [...]
->=20
->> diff --git a/include/linux/iommu.h b/include/linux/iommu.h
->> index f254c62f3720..b5a2bfc68fb0 100644
->> --- a/include/linux/iommu.h
->> +++ b/include/linux/iommu.h
->> @@ -497,6 +497,28 @@ static inline void iommu_iotlb_sync(struct =
-iommu_domain *domain,
->> 	iommu_iotlb_gather_init(iotlb_gather);
->> }
->>=20
->> +/**
->> + * iommu_iotlb_gather_is_disjoint - Checks whether a new range is =
-disjoint
->> + *
->> + * @gather: TLB gather data
->> + * @iova: start of page to invalidate
->> + * @size: size of page to invalidate
->> + *
->> + * Helper for IOMMU drivers to check whether a new range is and the =
-gathered
->> + * range are disjoint.
->=20
-> I can't quite parse this. Delete the "is"?
+Cheers!
 
-Indeed. Will do (I mean I will do ;-) )
+---
+ drivers/xen/swiotlb-xen.c | 51 +++++++++++++++++++++++++++++++++++++--
+ 1 file changed, 49 insertions(+), 2 deletions(-)
 
->=20
->>    For many IOMMUs, flushing the IOMMU in this case is
->> + * better than merging the two, which might lead to unnecessary =
-invalidations.
->> + */
->> +static inline
->> +bool iommu_iotlb_gather_is_disjoint(struct iommu_iotlb_gather =
-*gather,
->> +				    unsigned long iova, size_t size)
->> +{
->> +	unsigned long start =3D iova, end =3D start + size - 1;
->> +
->> +	return gather->end !=3D 0 &&
->> +		(end + 1 < gather->start || start > gather->end + 1);
->> +}
->> +
->> +
->> /**
->>  * iommu_iotlb_gather_add_range - Gather for address-based TLB =
-invalidation
->>  * @gather: TLB gather data
->> @@ -533,20 +555,16 @@ static inline void =
-iommu_iotlb_gather_add_page(struct iommu_domain *domain,
->> 					       struct iommu_iotlb_gather =
-*gather,
->> 					       unsigned long iova, =
-size_t size)
->> {
->> -	unsigned long start =3D iova, end =3D start + size - 1;
->> -
->> 	/*
->> 	 * If the new page is disjoint from the current range or is =
-mapped at
->> 	 * a different granularity, then sync the TLB so that the gather
->> 	 * structure can be rewritten.
->> 	 */
->> -	if (gather->pgsize !=3D size ||
->> -	    end + 1 < gather->start || start > gather->end + 1) {
->> -		if (gather->pgsize)
->> -			iommu_iotlb_sync(domain, gather);
->> -		gather->pgsize =3D size;
->> -	}
->> +	if ((gather->pgsize && gather->pgsize !=3D size) ||
->> +	    iommu_iotlb_gather_is_disjoint(gather, iova, size))
->> +		iommu_iotlb_sync(domain, gather);
->>=20
->> +	gather->pgsize =3D size;
->=20
-> Why have you made this unconditional? I think it's ok, but just not =
-sure
-> if it's necessary or not.
-
-In regard to gather->pgsize, this function had (and has) an
-invariant, in which gather->pgsize always represents the flushing
-granularity of its range. Arguably, =E2=80=9Csize" should never be
-zero, but lets assume for the matter of discussion that it might.
-
-If =E2=80=9Csize=E2=80=9D equals to =E2=80=9Cgather->pgsize=E2=80=9D, =
-then the assignment in
-question has no impact.
-
-Otherwise, if =E2=80=9Csize=E2=80=9D is non-zero, then =
-iommu_iotlb_sync() would
-initialize the size and range (see iommu_iotlb_gather_init()),
-and the invariant is kept.
-
-Otherwise, =E2=80=9Csize=E2=80=9D is zero, and =E2=80=9Cgather=E2=80=9D =
-already holds a range,
-so gather->pgsize is non-zero and
-(gather->pgsize && gather->pgsize !=3D size) is true. Therefore,
-again, iommu_iotlb_sync() would be called and initialize the
-size.
-
-I think that this change makes the code much simpler to read.
-It probably has no performance impact as =E2=80=9Cgather=E2=80=9D is =
-probably
-cached and anyhow accessed shortly after.
-
-If anything, I can add a VM_BUG_ON() to check =E2=80=9Csize=E2=80=9D is
-non-zero, although this code seems correct regardless of that.
-
-
---Apple-Mail=_76AC0899-3851-4BEA-A8FB-C0802A2D5203
-Content-Transfer-Encoding: 7bit
-Content-Disposition: attachment;
-	filename=signature.asc
-Content-Type: application/pgp-signature;
-	name=signature.asc
-Content-Description: Message signed with OpenPGP
-
------BEGIN PGP SIGNATURE-----
-
-iQIzBAEBCAAdFiEESJL3osl5Ymx/w9I1HaAqSabaD1oFAmDDlFcACgkQHaAqSaba
-D1psvQ/9HvxhhClEEFqeQtBqS9yRwDhDfY5kgTJ+JKhwRPTTqTwa2FfULTlEPbhe
-jbVQyUC+PfpxrxInOWkhJuwHAHlC8YnYW4Gc3Pvdd4m6IQzjbAkqpYBCq663Bd52
-TPk75QPBDT9IAKfWXquU69qoe4qqTq/Kh9NZay5bpdMU7ScZDOnyrUc1rH2SyqUE
-wt8x0uo+ml4IR61lfth29EiDj4k0inoUNHnf9fWQNGklNKOY3dEqhYb6C3qlIK1K
-5B/2NkPFWGhdwysDDV/R37oR05OdYGskYE6a7paUHTFW8c1iPZqmR0PRAVQ79V/5
-fFZCjeBp9Rp0rPvLVd6+tWHL++Wg5rvacmcFeGuBTCPXw3rJ/l1k8jdu0PZSK73M
-TsRoczp+43Xg9BiAIoh5eJ/hH5pGSOYl9co12pGkjEHDguz6vG+6U3VyC04yBkPB
-xz7CiDJ8fGlotm/zUbDPBpFNsW5yJgrsze2TvXTvF8ZOP4Pcc7CMQRbSTW2KbIVk
-KbxnGPbGKmuECyVFhO1eC18uZOzClDYYg1TnxeYsXpoNAfJrJFdzb1QLvqwnmq7q
-Oy+XfvvHjgYTLXH7cykdGwykP1p1CH1iK9NROpR6EHoKdjG1g0PJU+nNGJxiYrZ1
-EXkbzwgn+LJG5U98nFzgt8Awe83fk6InMtfFzZ5zapnjtzFfvqg=
-=Q2i+
------END PGP SIGNATURE-----
-
---Apple-Mail=_76AC0899-3851-4BEA-A8FB-C0802A2D5203--
-
---===============1209085731192686754==
-Content-Type: text/plain; charset="us-ascii"
-MIME-Version: 1.0
-Content-Transfer-Encoding: 7bit
-Content-Disposition: inline
+diff --git a/drivers/xen/swiotlb-xen.c b/drivers/xen/swiotlb-xen.c
+index 2b385c1b4a99..f99c98472927 100644
+--- a/drivers/xen/swiotlb-xen.c
++++ b/drivers/xen/swiotlb-xen.c
+@@ -563,6 +563,53 @@ xen_swiotlb_dma_supported(struct device *hwdev, u64 mask)
+ 	return xen_virt_to_bus(hwdev, xen_io_tlb_end - 1) <= mask;
+ }
+ 
++static int
++xen_swiotlb_dma_mmap(struct device *dev, struct vm_area_struct *vma,
++		void *cpu_addr, dma_addr_t dma_addr, size_t size,
++		unsigned long attrs)
++{
++	unsigned long user_count = vma_pages(vma);
++	unsigned long count = PAGE_ALIGN(size) >> PAGE_SHIFT;
++	unsigned long off = vma->vm_pgoff;
++	struct page *page;
++
++	if (is_vmalloc_addr(cpu_addr))
++		page = vmalloc_to_page(cpu_addr);
++	else
++		page = virt_to_page(cpu_addr);
++
++	vma->vm_page_prot = dma_pgprot(dev, vma->vm_page_prot, attrs);
++
++	if (dma_mmap_from_dev_coherent(dev, vma, cpu_addr, size, &ret))
++		return -ENXIO;
++
++	if (off >= count || user_count > count - off)
++		return -ENXIO;
++
++	return remap_pfn_range(vma, vma->vm_start,
++			page_to_pfn(page) + vma->vm_pgoff,
++			user_count << PAGE_SHIFT, vma->vm_page_prot);
++}
++
++static int
++xen_swiotlb_dma_get_sgtable(struct device *dev, struct sg_table *sgt,
++		 void *cpu_addr, dma_addr_t dma_addr, size_t size,
++		 unsigned long attrs)
++{
++	struct page *page;
++	int ret;
++
++	if (is_vmalloc_addr(cpu_addr))
++		page = vmalloc_to_page(cpu_addr);
++	else
++		page = virt_to_page(cpu_addr);
++
++	ret = sg_alloc_table(sgt, 1, GFP_KERNEL);
++	if (!ret)
++		sg_set_page(sgt->sgl, page, PAGE_ALIGN(size), 0);
++	return ret;
++}
++
+ const struct dma_map_ops xen_swiotlb_dma_ops = {
+ 	.alloc = xen_swiotlb_alloc_coherent,
+ 	.free = xen_swiotlb_free_coherent,
+@@ -575,8 +622,8 @@ const struct dma_map_ops xen_swiotlb_dma_ops = {
+ 	.map_page = xen_swiotlb_map_page,
+ 	.unmap_page = xen_swiotlb_unmap_page,
+ 	.dma_supported = xen_swiotlb_dma_supported,
+-	.mmap = dma_common_mmap,
+-	.get_sgtable = dma_common_get_sgtable,
++	.mmap = xen_swiotlb_dma_mmap,
++	.get_sgtable = xen_swiotlb_dma_get_sgtable,
+ 	.alloc_pages = dma_common_alloc_pages,
+ 	.free_pages = dma_common_free_pages,
+ };
+-- 
+2.27.0
 
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
 https://lists.linuxfoundation.org/mailman/listinfo/iommu
---===============1209085731192686754==--
