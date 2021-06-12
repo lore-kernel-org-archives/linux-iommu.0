@@ -7,62 +7,66 @@ X-Spam-Status: No, score=-16.8 required=3.0 tests=BAYES_00,
 	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_GIT
 	autolearn=ham autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7BC71C48BE8
-	for <iommu@archiver.kernel.org>; Sat, 12 Jun 2021 09:46:27 +0000 (UTC)
-Received: from smtp4.osuosl.org (smtp4.osuosl.org [140.211.166.137])
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6A394C48BCF
+	for <iommu@archiver.kernel.org>; Sat, 12 Jun 2021 09:46:31 +0000 (UTC)
+Received: from smtp2.osuosl.org (smtp2.osuosl.org [140.211.166.133])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 26235613BA
-	for <iommu@archiver.kernel.org>; Sat, 12 Jun 2021 09:46:27 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 26235613BA
+	by mail.kernel.org (Postfix) with ESMTPS id 28062613AA
+	for <iommu@archiver.kernel.org>; Sat, 12 Jun 2021 09:46:31 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 28062613AA
 Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=somainline.org
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by smtp4.osuosl.org (Postfix) with ESMTP id D4C1940551;
-	Sat, 12 Jun 2021 09:46:26 +0000 (UTC)
+	by smtp2.osuosl.org (Postfix) with ESMTP id E687C400D2;
+	Sat, 12 Jun 2021 09:46:30 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from smtp4.osuosl.org ([127.0.0.1])
-	by localhost (smtp4.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id xi28CEgGWHoz; Sat, 12 Jun 2021 09:46:25 +0000 (UTC)
+Received: from smtp2.osuosl.org ([127.0.0.1])
+	by localhost (smtp2.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+	with ESMTP id Rw_22Evbojnd; Sat, 12 Jun 2021 09:46:30 +0000 (UTC)
 Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by smtp4.osuosl.org (Postfix) with ESMTPS id 881F3404F4;
-	Sat, 12 Jun 2021 09:46:25 +0000 (UTC)
+	by smtp2.osuosl.org (Postfix) with ESMTPS id DD8A4400BA;
+	Sat, 12 Jun 2021 09:46:29 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 5CD31C000D;
-	Sat, 12 Jun 2021 09:46:25 +0000 (UTC)
-Received: from smtp4.osuosl.org (smtp4.osuosl.org [IPv6:2605:bc80:3010::137])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 6EE69C000B
- for <iommu@lists.linux-foundation.org>; Sat, 12 Jun 2021 09:46:22 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id B5107C000D;
+	Sat, 12 Jun 2021 09:46:29 +0000 (UTC)
+Received: from smtp2.osuosl.org (smtp2.osuosl.org [140.211.166.133])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 25A1CC000B
+ for <iommu@lists.linux-foundation.org>; Sat, 12 Jun 2021 09:46:26 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by smtp4.osuosl.org (Postfix) with ESMTP id 543A340551
- for <iommu@lists.linux-foundation.org>; Sat, 12 Jun 2021 09:46:22 +0000 (UTC)
+ by smtp2.osuosl.org (Postfix) with ESMTP id 1276F40101
+ for <iommu@lists.linux-foundation.org>; Sat, 12 Jun 2021 09:46:26 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from smtp4.osuosl.org ([127.0.0.1])
- by localhost (smtp4.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id OrDQ1qQFA90W for <iommu@lists.linux-foundation.org>;
- Sat, 12 Jun 2021 09:46:21 +0000 (UTC)
+Received: from smtp2.osuosl.org ([127.0.0.1])
+ by localhost (smtp2.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+ with ESMTP id xr9ZgpgBboOP for <iommu@lists.linux-foundation.org>;
+ Sat, 12 Jun 2021 09:46:25 +0000 (UTC)
 X-Greylist: from auto-whitelisted by SQLgrey-1.8.0
-Received: from m-r2.th.seeweb.it (m-r2.th.seeweb.it [5.144.164.171])
- by smtp4.osuosl.org (Postfix) with ESMTPS id D2260404F4
- for <iommu@lists.linux-foundation.org>; Sat, 12 Jun 2021 09:46:20 +0000 (UTC)
+Received: from relay06.th.seeweb.it (relay06.th.seeweb.it [5.144.164.167])
+ by smtp2.osuosl.org (Postfix) with ESMTPS id 35F1E400BA
+ for <iommu@lists.linux-foundation.org>; Sat, 12 Jun 2021 09:46:25 +0000 (UTC)
 Received: from localhost.localdomain (bband-dyn73.178-41-129.t-com.sk
  [178.41.129.73])
- by m-r2.th.seeweb.it (Postfix) with ESMTPA id C14673F483;
- Sat, 12 Jun 2021 11:46:16 +0200 (CEST)
+ by m-r2.th.seeweb.it (Postfix) with ESMTPA id 0E0AC3F3E6;
+ Sat, 12 Jun 2021 11:46:20 +0200 (CEST)
 From: Martin Botka <martin.botka@somainline.org>
 To: 
-Subject: [PATCH V3 1/2] dt-bindings: iommu: arm-smmu: Add binding for sm6125
-Date: Sat, 12 Jun 2021 11:46:04 +0200
-Message-Id: <20210612094606.89576-1-martin.botka@somainline.org>
+Subject: [PATCH V3 2/2] iommu: arm-smmu-qcom: Add sm6125 compatible
+Date: Sat, 12 Jun 2021 11:46:05 +0200
+Message-Id: <20210612094606.89576-2-martin.botka@somainline.org>
 X-Mailer: git-send-email 2.31.1
+In-Reply-To: <20210612094606.89576-1-martin.botka@somainline.org>
+References: <20210612094606.89576-1-martin.botka@somainline.org>
 MIME-Version: 1.0
-Cc: devicetree@vger.kernel.org, Robin Murphy <robin.murphy@arm.com>,
- konrad.dybcio@somainline.org, linux-kernel@vger.kernel.org,
- jamipkettunen@somainline.org, iommu@lists.linux-foundation.org,
- Rob Herring <robh+dt@kernel.org>, Martin Botka <martin.botka@somainline.org>,
+Cc: Rob Clark <robdclark@chromium.org>, devicetree@vger.kernel.org,
+ Robin Murphy <robin.murphy@arm.com>, konrad.dybcio@somainline.org,
+ linux-kernel@vger.kernel.org, jamipkettunen@somainline.org,
+ iommu@lists.linux-foundation.org, Rob Herring <robh+dt@kernel.org>,
+ Martin Botka <martin.botka@somainline.org>,
  ~postmarketos/upstreaming@lists.sr.ht,
  angelogioacchino.delregno@somainline.org, marijn.suijten@somainline.org,
- Will Deacon <will@kernel.org>, linux-arm-kernel@lists.infradead.org
+ Will Deacon <will@kernel.org>, "Isaac J. Manjarres" <isaacm@codeaurora.org>,
+ linux-arm-kernel@lists.infradead.org
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -80,29 +84,27 @@ Content-Transfer-Encoding: 7bit
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-This patch adds binding for sm6125 SoC
+Add compatible for SM6125 SoC
 
 Signed-off-by: Martin Botka <martin.botka@somainline.org>
 ---
-Changes in V2:
-Add commit description
 Changes in V3:
-None
- Documentation/devicetree/bindings/iommu/arm,smmu.yaml | 1 +
+Add this file
+ drivers/iommu/arm/arm-smmu/arm-smmu-qcom.c | 1 +
  1 file changed, 1 insertion(+)
 
-diff --git a/Documentation/devicetree/bindings/iommu/arm,smmu.yaml b/Documentation/devicetree/bindings/iommu/arm,smmu.yaml
-index 9d27aa5111d4..26d7ca86e519 100644
---- a/Documentation/devicetree/bindings/iommu/arm,smmu.yaml
-+++ b/Documentation/devicetree/bindings/iommu/arm,smmu.yaml
-@@ -37,6 +37,7 @@ properties:
-               - qcom,sc7280-smmu-500
-               - qcom,sc8180x-smmu-500
-               - qcom,sdm845-smmu-500
-+              - qcom,sm6125-smmu-500
-               - qcom,sm8150-smmu-500
-               - qcom,sm8250-smmu-500
-               - qcom,sm8350-smmu-500
+diff --git a/drivers/iommu/arm/arm-smmu/arm-smmu-qcom.c b/drivers/iommu/arm/arm-smmu/arm-smmu-qcom.c
+index 98b3a1c2a181..7455bcc92f43 100644
+--- a/drivers/iommu/arm/arm-smmu/arm-smmu-qcom.c
++++ b/drivers/iommu/arm/arm-smmu/arm-smmu-qcom.c
+@@ -333,6 +333,7 @@ static const struct of_device_id __maybe_unused qcom_smmu_impl_of_match[] = {
+ 	{ .compatible = "qcom,sc8180x-smmu-500" },
+ 	{ .compatible = "qcom,sdm630-smmu-v2" },
+ 	{ .compatible = "qcom,sdm845-smmu-500" },
++	{ .compatible = "qcom,sm6125-smmu-500" },
+ 	{ .compatible = "qcom,sm8150-smmu-500" },
+ 	{ .compatible = "qcom,sm8250-smmu-500" },
+ 	{ .compatible = "qcom,sm8350-smmu-500" },
 -- 
 2.31.1
 
