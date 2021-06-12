@@ -2,115 +2,123 @@ Return-Path: <SRS0=Ewjr=LG=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-8.6 required=3.0 tests=BAYES_00,DKIM_INVALID,
-	DKIM_SIGNED,HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_CR_TRAILER,
-	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED autolearn=ham
-	autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-5.1 required=3.0 tests=BAYES_00,DKIM_INVALID,
+	DKIM_SIGNED,HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,SPF_HELO_NONE,
+	SPF_PASS,URIBL_BLOCKED,USER_AGENT_SANE_2 autolearn=no autolearn_force=no
+	version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E5A16C48BE5
-	for <iommu@archiver.kernel.org>; Sat, 12 Jun 2021 12:25:34 +0000 (UTC)
-Received: from smtp1.osuosl.org (smtp1.osuosl.org [140.211.166.138])
+	by smtp.lore.kernel.org (Postfix) with ESMTP id EF4B2C48BE8
+	for <iommu@archiver.kernel.org>; Sat, 12 Jun 2021 16:57:22 +0000 (UTC)
+Received: from smtp2.osuosl.org (smtp2.osuosl.org [140.211.166.133])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 7AADC6138C
-	for <iommu@archiver.kernel.org>; Sat, 12 Jun 2021 12:25:34 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 7AADC6138C
-Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=lists.linux-foundation.org
+	by mail.kernel.org (Postfix) with ESMTPS id 94CA6611CB
+	for <iommu@archiver.kernel.org>; Sat, 12 Jun 2021 16:57:22 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 94CA6611CB
+Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=redhat.com
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by smtp1.osuosl.org (Postfix) with ESMTP id 2C39C83C50;
-	Sat, 12 Jun 2021 12:25:34 +0000 (UTC)
+	by smtp2.osuosl.org (Postfix) with ESMTP id 412C5401D6;
+	Sat, 12 Jun 2021 16:57:22 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from smtp1.osuosl.org ([127.0.0.1])
-	by localhost (smtp1.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id fCJux3iVcEzC; Sat, 12 Jun 2021 12:25:33 +0000 (UTC)
+Received: from smtp2.osuosl.org ([127.0.0.1])
+	by localhost (smtp2.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+	with ESMTP id y3hmROdutITj; Sat, 12 Jun 2021 16:57:21 +0000 (UTC)
 Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [IPv6:2605:bc80:3010:104::8cd3:938])
-	by smtp1.osuosl.org (Postfix) with ESMTPS id C5F6083B5E;
-	Sat, 12 Jun 2021 12:25:32 +0000 (UTC)
+	by smtp2.osuosl.org (Postfix) with ESMTPS id F31CD4017A;
+	Sat, 12 Jun 2021 16:57:20 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 757CDC000E;
-	Sat, 12 Jun 2021 12:25:32 +0000 (UTC)
-Received: from smtp4.osuosl.org (smtp4.osuosl.org [IPv6:2605:bc80:3010::137])
- by lists.linuxfoundation.org (Postfix) with ESMTP id BCB24C000B
- for <iommu@lists.linux-foundation.org>; Sat, 12 Jun 2021 12:25:30 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id CC4D2C000E;
+	Sat, 12 Jun 2021 16:57:20 +0000 (UTC)
+Received: from smtp2.osuosl.org (smtp2.osuosl.org [IPv6:2605:bc80:3010::133])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 23A55C000B
+ for <iommu@lists.linux-foundation.org>; Sat, 12 Jun 2021 16:57:20 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by smtp4.osuosl.org (Postfix) with ESMTP id 9C1E1405B0
- for <iommu@lists.linux-foundation.org>; Sat, 12 Jun 2021 12:25:30 +0000 (UTC)
+ by smtp2.osuosl.org (Postfix) with ESMTP id EF8F940185
+ for <iommu@lists.linux-foundation.org>; Sat, 12 Jun 2021 16:57:19 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Authentication-Results: smtp4.osuosl.org (amavisd-new);
- dkim=pass (2048-bit key) header.d=svenpeter.dev header.b="t+pToX6y";
- dkim=pass (2048-bit key) header.d=messagingengine.com
- header.b="Ny6N8vAl"
-Received: from smtp4.osuosl.org ([127.0.0.1])
- by localhost (smtp4.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id vDdVwFMGaV83 for <iommu@lists.linux-foundation.org>;
- Sat, 12 Jun 2021 12:25:29 +0000 (UTC)
-X-Greylist: from auto-whitelisted by SQLgrey-1.8.0
-Received: from new3-smtp.messagingengine.com (new3-smtp.messagingengine.com
- [66.111.4.229])
- by smtp4.osuosl.org (Postfix) with ESMTPS id 444ED405AA
- for <iommu@lists.linux-foundation.org>; Sat, 12 Jun 2021 12:25:29 +0000 (UTC)
-Received: from compute3.internal (compute3.nyi.internal [10.202.2.43])
- by mailnew.nyi.internal (Postfix) with ESMTP id CAA4758069B;
- Sat, 12 Jun 2021 08:25:26 -0400 (EDT)
-Received: from imap21 ([10.202.2.71])
- by compute3.internal (MEProxy); Sat, 12 Jun 2021 08:25:26 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=svenpeter.dev;
- h=mime-version:message-id:in-reply-to:references:date:from:to
- :cc:subject:content-type; s=fm1; bh=3PQQZVdLA4n4rlbpJkJAKwEqsxv+
- D18QX971oe6+lnc=; b=t+pToX6ylR7fe3vR3pb6OB46fkMMUWm198p/1XFQzlYa
- mU+LDEFNrDGHzC8HgfOJovx/IZMzSsW2LznbFn720KiIRwOjYDF7KXgb2R+MzM+K
- JW1mhC54J3eW5uNby5olGvI2/A2fheOx1iJlpgbdg5fQAUhk+ENbTs4CbEIQHLvN
- OLY02bhKIcOe202N++fBVeZpsjEhkb4mkW58w8yOOgHF1HPcUDZzladLEKexg4mt
- rmCkEVeJfJuz9J6DcIyfnUAkEXDDYJHEE5LrQ17fRED1ael9BQgr0WINMlQSb6Lc
- Ixc1ZSAjuSu2Rk9qhRJG2rPfcTqbMS0oJHmbM18Vcw==
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
- messagingengine.com; h=cc:content-type:date:from:in-reply-to
- :message-id:mime-version:references:subject:to:x-me-proxy
- :x-me-proxy:x-me-sender:x-me-sender:x-sasl-enc; s=fm3; bh=3PQQZV
- dLA4n4rlbpJkJAKwEqsxv+D18QX971oe6+lnc=; b=Ny6N8vAlMSgGbeQFUTyrkq
- MPdVvNnienI+/h/kmb77s16Qrp++a1FnaC0wYyj6/Qafk6DZoa4mi3t0M4WbGfWF
- 1beaUtLPeEnXFWDIAuua5ZfLD059AZjIOR6FaEqUzTVzWh5P7X5d5DmqZt0ptlYz
- b2DQw+Jf3znqhM3qDbbI7HN8oRSSNhDbC0pZqM5DUF4v7hwotIE05ZYMXHxuiOuM
- +y7ygfyzaTFQDG5Ky4lPdvEVFiE/UD9PbzTbfv1k8Q+Uj53EE5VOf+PXFJvtAgbX
- b47qqrdl21EeTUsG5PqmbIngbpp2FgpQWNpoH/kpCsEb9yXCMv5sm9p+EHtmHXDw
- ==
-X-ME-Sender: <xms:tafEYEi3MG55JXV0hCxywKW0vRZ2HafBDz0WAwPlEtKXbv7LCn6sZg>
- <xme:tafEYNDVvl0I-YbiffTXe2foqONeaB_y759N8dWQDHGbqZbAfHk1CUBremEn76tvd
- 6MhHxmiC97RzkYqfEI>
-X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgeduledrfedvtddgheefucetufdoteggodetrfdotf
- fvucfrrhhofhhilhgvmecuhfgrshhtofgrihhlpdfqfgfvpdfurfetoffkrfgpnffqhgen
- uceurghilhhouhhtmecufedttdenucesvcftvggtihhpihgvnhhtshculddquddttddmne
- cujfgurhepofgfggfkjghffffhvffutgesthdtredtreertdenucfhrhhomhepfdfuvhgv
- nhcurfgvthgvrhdfuceoshhvvghnsehsvhgvnhhpvghtvghrrdguvghvqeenucggtffrrg
- htthgvrhhnpefgieegieffuefhtedtjefgteejteefleefgfefgfdvvddtgffhffduhedv
- feekffenucevlhhushhtvghrufhiiigvpedtnecurfgrrhgrmhepmhgrihhlfhhrohhmpe
- hsvhgvnhesshhvvghnphgvthgvrhdruggvvh
-X-ME-Proxy: <xmx:tafEYMFBetGL7__tAMLZoxJvuG0ePGGvD8Hmc2A4PHbejjjg0SHZ0Q>
- <xmx:tafEYFTR8EihGqAyXC_pmGZb-7p29sSHv6LI4TXHQOg7SJ28LA-Mlw>
- <xmx:tafEYBxdTnji6KhAu7SZpG9LrOBKeDdSnmHvRICispTjtChOREGZiA>
- <xmx:tqfEYEooqma0hYH0rmDgi-41Y2cOrX_RumCZgg7OVucifelUf89UoQ>
-Received: by mailuser.nyi.internal (Postfix, from userid 501)
- id BE28B51C0060; Sat, 12 Jun 2021 08:25:25 -0400 (EDT)
-X-Mailer: MessagingEngine.com Webmail Interface
-User-Agent: Cyrus-JMAP/3.5.0-alpha0-519-g27a961944e-fm-20210531.001-g27a96194
-Mime-Version: 1.0
-Message-Id: <9b226219-bf87-4fd4-8d99-9436861ca3cf@www.fastmail.com>
-In-Reply-To: <20210610165244.GA1948260@robh.at.kernel.org>
-References: <20210603085003.50465-1-sven@svenpeter.dev>
- <20210603085003.50465-3-sven@svenpeter.dev>
- <20210610165244.GA1948260@robh.at.kernel.org>
-Date: Sat, 12 Jun 2021 14:24:55 +0200
-To: "Rob Herring" <robh@kernel.org>
-Subject: Re: [PATCH v3 2/3] dt-bindings: iommu: add DART iommu bindings
-Cc: devicetree@vger.kernel.org, Arnd Bergmann <arnd@kernel.org>,
- Will Deacon <will@kernel.org>, Hector Martin <marcan@marcan.st>,
- linux-kernel@vger.kernel.org,
- Petr Mladek via iommu <iommu@lists.linux-foundation.org>,
- Alexander Graf <graf@amazon.com>, Marc Zyngier <maz@kernel.org>,
- Mohamed Mediouni <mohamed.mediouni@caramail.com>,
- Mark Kettenis <mark.kettenis@xs4all.nl>, Robin Murphy <robin.murphy@arm.com>,
- linux-arm-kernel@lists.infradead.org, Stan Skowronek <stan@corellium.com>
+Received: from smtp2.osuosl.org ([127.0.0.1])
+ by localhost (smtp2.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+ with ESMTP id EqIAUBBDJ41d for <iommu@lists.linux-foundation.org>;
+ Sat, 12 Jun 2021 16:57:19 +0000 (UTC)
+X-Greylist: domain auto-whitelisted by SQLgrey-1.8.0
+Received: from us-smtp-delivery-124.mimecast.com
+ (us-smtp-delivery-124.mimecast.com [216.205.24.124])
+ by smtp2.osuosl.org (Postfix) with ESMTPS id D69AC4017A
+ for <iommu@lists.linux-foundation.org>; Sat, 12 Jun 2021 16:57:18 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+ s=mimecast20190719; t=1623517037;
+ h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+ to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+ content-transfer-encoding:content-transfer-encoding:
+ in-reply-to:in-reply-to:references:references;
+ bh=shhxkeyT6sH5lJV4f12+U24GPPhn47S3juDgxTTkERI=;
+ b=aoatqcD4IDqiQcGVyVmhTcM+WDiodee0qJYFOG7Rv5p8ecN/eVoyGesLMnuMmaOLOQ55dU
+ sZPwopSQ+Ee4oCUVWv+ZRyiTOyCj8AEg2eB32r+pEH9/e+yBbQRoVk/KcAeBqe4RczRerD
+ 9B16zWSewqfq/LOKc64/DevlaFE2b/Q=
+Received: from mail-oo1-f72.google.com (mail-oo1-f72.google.com
+ [209.85.161.72]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-589-pGEVv7l_MZCwDzIcGVi_VA-1; Sat, 12 Jun 2021 12:57:16 -0400
+X-MC-Unique: pGEVv7l_MZCwDzIcGVi_VA-1
+Received: by mail-oo1-f72.google.com with SMTP id
+ r17-20020a4a96510000b029024988968d95so3997982ooi.2
+ for <iommu@lists.linux-foundation.org>; Sat, 12 Jun 2021 09:57:15 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+ d=1e100.net; s=20161025;
+ h=x-gm-message-state:date:from:to:cc:subject:message-id:in-reply-to
+ :references:organization:mime-version:content-transfer-encoding;
+ bh=shhxkeyT6sH5lJV4f12+U24GPPhn47S3juDgxTTkERI=;
+ b=IZQwPXQ6l0c6bQx19OZ6zyxR8D+R4/GOXVdKJeVMnfHqfdV863nTZ48GygzfWEcBn9
+ qk9Wof4UX2WfoijR6Ypvj6SyTycfUt8GzVyokm4/Q230LH3Mo0fk+KWqXHIUDAKEDJoF
+ rzZ2KsxI4JuZRsAN83A9wLTLlIMHSNUd9N0Xh+hhKqNKirkIkD0YNIg2JqvrpZntL68F
+ SOairtp19pLrDFfbHIZPCL9rtA7Ps7QJYtahZ0ttxX6zzp/9ESGWZDWPQvqkHEAXdWY+
+ SV9e2CQtiZXiCN5uOhB1yWDrzh2OLg+oYcMs6FKNMNedDPFkIDnl2EreBrMJg52nZoNN
+ ryrA==
+X-Gm-Message-State: AOAM531rWT1q+cFLuE3xfOfzcPHy0OQSrRuMZqwk28UX7N94QWEjkhy/
+ 9v80awjV/w5q0aFc94P4VAzYgKunUdNXRMXhGnGcT9xkjBRPvuO+LL9R9DmcDuq18AHtDCohXZy
+ nLsukd2puF6oF0XAzHhX+DEpyHrndyQ==
+X-Received: by 2002:a9d:7a55:: with SMTP id z21mr7445177otm.207.1623517035264; 
+ Sat, 12 Jun 2021 09:57:15 -0700 (PDT)
+X-Google-Smtp-Source: ABdhPJyuTiKSVBxMD+ahZaJ1En1PUkcexZpbiOJtftxlXbhzmxQW4kNWjPJHfTiwexjJMeyyHeq+vg==
+X-Received: by 2002:a9d:7a55:: with SMTP id z21mr7445167otm.207.1623517034995; 
+ Sat, 12 Jun 2021 09:57:14 -0700 (PDT)
+Received: from redhat.com ([198.99.80.109])
+ by smtp.gmail.com with ESMTPSA id z5sm441638oth.6.2021.06.12.09.57.13
+ (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+ Sat, 12 Jun 2021 09:57:14 -0700 (PDT)
+Date: Sat, 12 Jun 2021 10:57:11 -0600
+From: Alex Williamson <alex.williamson@redhat.com>
+To: Jason Gunthorpe <jgg@nvidia.com>
+Subject: Re: Plan for /dev/ioasid RFC v2
+Message-ID: <20210612105711.7ac68c83.alex.williamson@redhat.com>
+In-Reply-To: <20210612012846.GC1002214@nvidia.com>
+References: <20210609123919.GA1002214@nvidia.com> <YMDC8tOMvw4FtSek@8bytes.org>
+ <20210609150009.GE1002214@nvidia.com> <YMDjfmJKUDSrbZbo@8bytes.org>
+ <20210609101532.452851eb.alex.williamson@redhat.com>
+ <20210609102722.5abf62e1.alex.williamson@redhat.com>
+ <20210609184940.GH1002214@nvidia.com>
+ <20210610093842.6b9a4e5b.alex.williamson@redhat.com>
+ <20210611164529.GR1002214@nvidia.com>
+ <20210611133828.6c6e8b29.alex.williamson@redhat.com>
+ <20210612012846.GC1002214@nvidia.com>
+Organization: Red Hat
+X-Mailer: Claws Mail 3.17.8 (GTK+ 2.24.32; x86_64-redhat-linux-gnu)
+MIME-Version: 1.0
+Authentication-Results: relay.mimecast.com;
+ auth=pass smtp.auth=CUSA124A263 smtp.mailfrom=alex.williamson@redhat.com
+X-Mimecast-Spam-Score: 0
+X-Mimecast-Originator: redhat.com
+Cc: "kvm@vger.kernel.org" <kvm@vger.kernel.org>,
+ Jason Wang <jasowang@redhat.com>, Kirti Wankhede <kwankhede@nvidia.com>,
+ Jean-Philippe Brucker <jean-philippe@linaro.org>, "Jiang,
+ Dave" <dave.jiang@intel.com>, "Raj, Ashok" <ashok.raj@intel.com>,
+ Jonathan Corbet <corbet@lwn.net>, "Tian, Kevin" <kevin.tian@intel.com>,
+ "parav@mellanox.com" <parav@mellanox.com>, "Enrico Weigelt, metux IT
+ consult" <lkml@metux.net>, David Gibson <david@gibson.dropbear.id.au>,
+ Robin Murphy <robin.murphy@arm.com>, LKML <linux-kernel@vger.kernel.org>,
+ Shenming Lu <lushenming@huawei.com>,
+ "iommu@lists.linux-foundation.org" <iommu@lists.linux-foundation.org>,
+ Paolo Bonzini <pbonzini@redhat.com>, David Woodhouse <dwmw2@infradead.org>
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -123,43 +131,67 @@ List-Post: <mailto:iommu@lists.linux-foundation.org>
 List-Help: <mailto:iommu-request@lists.linux-foundation.org?subject=help>
 List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
  <mailto:iommu-request@lists.linux-foundation.org?subject=subscribe>
-From: Sven Peter via iommu <iommu@lists.linux-foundation.org>
-Reply-To: Sven Peter <sven@svenpeter.dev>
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-Hi,
+On Fri, 11 Jun 2021 22:28:46 -0300
+Jason Gunthorpe <jgg@nvidia.com> wrote:
 
-On Thu, Jun 10, 2021, at 18:52, Rob Herring wrote:
-> On Thu, Jun 03, 2021 at 10:50:02AM +0200, Sven Peter wrote:
-> > +
-> > +examples:
-> > +  - |+
-> > +    dart1: iommu@82f80000 {
-> > +      compatible = "apple,t8103-dart";
-> > +      reg = <0x82f80000 0x4000>;
-> > +      interrupts = <1 781 4>;
-> > +      #iommu-cells = <1>;
-> > +    };
-> > +
-> > +    master1 {
-> > +      iommus = <&{/dart1} 0>;
+> On Fri, Jun 11, 2021 at 01:38:28PM -0600, Alex Williamson wrote:
 > 
-> /dart1 is a path, but 'dart1' is a label. You need '&dart1' (or 
-> '&{/iommu@82f80000}' but that doesn't really work here because the 
-> examples get prefixed with /example-n/...)
+> > That's fine for a serial port, but not a device that can do DMA.
+> > The entire point of vfio is to try to provide secure, DMA capable
+> > userspace drivers.  If we relax enforcement of that isolation we've
+> > failed.  
 > 
-> With that fixed,
-> 
-> Reviewed-by: Rob Herring <robh@kernel.org>
+> I don't understand why the IOASID matters at all in this. Can you
+> explain? What is the breach of isolation?
 
-Makes sense, thanks for the review!
-Fixed for the next version.
+I think we're arguing past each other again.  VFIO does not care one
+iota how userspace configures IOASID domains for devices.  OTOH, VFIO
+must be absolutely obsessed that the devices we're providing userspace
+access to are isolated and continue to be isolated for the extent of
+that access.  Given that we define that a group is the smallest set of
+devices that can be isolated, that means that for a device to be
+isolated, the group needs to be isolated.
 
+VFIO currently has a contract with the IOMMU backend that a group is
+attached to an IOMMU context (container) and from that point forward,
+all devices within that group are known to be isolated.
 
-Sven
+I'm trying to figure out how a device based interface to the IOASID can
+provide that same contract or whether VFIO needs to be able to monitor
+the IOASID attachments of the devices in a group to control whether
+device access is secure.
+
+As I outlined to Kevin, I think it makes a lot of sense to maintain a
+group interface to the IOASID where registering a group signifies a
+hand-off of responsibility to the IOASIDfd that it is responsible for
+the isolation of those devices.  From there we can determine the value
+of exposing VFIO device fds directly and whether any of the VFIO
+interfaces for attaching devices to IOASIDs make sense versus switching
+to the IOASIDfd at that point.
+
+Otherwise, for a device centric VFIO/IOASID model, I need to understand
+exactly when and how VFIO can know that it's safe to provide access to
+a device and how the IOASID model guarantees the ongoing safety of that
+access, which must encompass the safety relative to the entire group.
+
+For example, is it VFIO's job to BIND every device in the group?  Does
+binding the device represent the point at which the IOASID takes
+responsibility for the isolation of the device?  If instead it's the
+ATTACH of a device that provides the isolation, how is VFIO supposed to
+handle device access across a group when one device is DETACH'd by the
+user?  If ATTACH is the point where isolation is guaranteed, can a
+DETACH occur through the IOASIDfd rather than the VFIOfd?  It seems
+like the IOASIDfd is going to need ways to manipulate device:IOASID
+mappings outside of VFIO, so again I wonder if we should switch to an
+IOASID uAPI at that point rather than using VFIO.  Thanks,
+
+Alex
+
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
