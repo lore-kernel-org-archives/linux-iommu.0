@@ -5,64 +5,65 @@ X-Spam-Level:
 X-Spam-Status: No, score=-15.7 required=3.0 tests=BAYES_00,
 	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_CR_TRAILER,INCLUDES_PATCH,
 	MAILING_LIST_MULTI,NICE_REPLY_A,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,
-	USER_AGENT_SANE_1 autolearn=ham autolearn_force=no version=3.4.0
+	USER_AGENT_SANE_1 autolearn=unavailable autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C2FDDC4743C
-	for <iommu@archiver.kernel.org>; Mon, 14 Jun 2021 15:54:46 +0000 (UTC)
-Received: from smtp1.osuosl.org (smtp1.osuosl.org [140.211.166.138])
+	by smtp.lore.kernel.org (Postfix) with ESMTP id DF364C4743C
+	for <iommu@archiver.kernel.org>; Mon, 14 Jun 2021 16:03:44 +0000 (UTC)
+Received: from smtp4.osuosl.org (smtp4.osuosl.org [140.211.166.137])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 6CAD1613BF
-	for <iommu@archiver.kernel.org>; Mon, 14 Jun 2021 15:54:46 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 6CAD1613BF
+	by mail.kernel.org (Postfix) with ESMTPS id 66C9661246
+	for <iommu@archiver.kernel.org>; Mon, 14 Jun 2021 16:03:44 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 66C9661246
 Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=arm.com
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by smtp1.osuosl.org (Postfix) with ESMTP id 3E8C583122;
-	Mon, 14 Jun 2021 15:54:46 +0000 (UTC)
+	by smtp4.osuosl.org (Postfix) with ESMTP id 32137402EA;
+	Mon, 14 Jun 2021 16:03:44 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from smtp1.osuosl.org ([127.0.0.1])
-	by localhost (smtp1.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id K_Of1OZ8_XUf; Mon, 14 Jun 2021 15:54:45 +0000 (UTC)
+Received: from smtp4.osuosl.org ([127.0.0.1])
+	by localhost (smtp4.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+	with ESMTP id 3tLnXK3dTJeA; Mon, 14 Jun 2021 16:03:43 +0000 (UTC)
 Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [IPv6:2605:bc80:3010:104::8cd3:938])
-	by smtp1.osuosl.org (Postfix) with ESMTPS id 4631E83A9F;
-	Mon, 14 Jun 2021 15:54:45 +0000 (UTC)
+	by smtp4.osuosl.org (Postfix) with ESMTPS id BD62D40298;
+	Mon, 14 Jun 2021 16:03:42 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 1C11EC000D;
-	Mon, 14 Jun 2021 15:54:45 +0000 (UTC)
-Received: from smtp1.osuosl.org (smtp1.osuosl.org [IPv6:2605:bc80:3010::138])
- by lists.linuxfoundation.org (Postfix) with ESMTP id A0898C000B
- for <iommu@lists.linux-foundation.org>; Mon, 14 Jun 2021 15:54:43 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 973EBC000D;
+	Mon, 14 Jun 2021 16:03:42 +0000 (UTC)
+Received: from smtp2.osuosl.org (smtp2.osuosl.org [140.211.166.133])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 020DAC000B
+ for <iommu@lists.linux-foundation.org>; Mon, 14 Jun 2021 16:03:42 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by smtp1.osuosl.org (Postfix) with ESMTP id 9C1B683A9F
- for <iommu@lists.linux-foundation.org>; Mon, 14 Jun 2021 15:54:43 +0000 (UTC)
+ by smtp2.osuosl.org (Postfix) with ESMTP id E4C5D4034B
+ for <iommu@lists.linux-foundation.org>; Mon, 14 Jun 2021 16:03:41 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from smtp1.osuosl.org ([127.0.0.1])
- by localhost (smtp1.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id uNobM17ZRV4D for <iommu@lists.linux-foundation.org>;
- Mon, 14 Jun 2021 15:54:42 +0000 (UTC)
+Received: from smtp2.osuosl.org ([127.0.0.1])
+ by localhost (smtp2.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+ with ESMTP id n14XqUStJ_JR for <iommu@lists.linux-foundation.org>;
+ Mon, 14 Jun 2021 16:03:40 +0000 (UTC)
 X-Greylist: domain auto-whitelisted by SQLgrey-1.8.0
 Received: from foss.arm.com (foss.arm.com [217.140.110.172])
- by smtp1.osuosl.org (Postfix) with ESMTP id DEF1083122
- for <iommu@lists.linux-foundation.org>; Mon, 14 Jun 2021 15:54:42 +0000 (UTC)
+ by smtp2.osuosl.org (Postfix) with ESMTP id 67862402E3
+ for <iommu@lists.linux-foundation.org>; Mon, 14 Jun 2021 16:03:39 +0000 (UTC)
 Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
- by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 48FDC11D4;
- Mon, 14 Jun 2021 08:54:42 -0700 (PDT)
+ by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 932A21FB;
+ Mon, 14 Jun 2021 09:03:38 -0700 (PDT)
 Received: from [10.57.9.136] (unknown [10.57.9.136])
- by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id C2AF73F70D;
- Mon, 14 Jun 2021 08:54:40 -0700 (PDT)
-Subject: Re: [PATCH v12 1/5] iommu: Print strict or lazy mode at init time
+ by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id D39653F70D;
+ Mon, 14 Jun 2021 09:03:36 -0700 (PDT)
+Subject: Re: [PATCH v12 2/5] iommu: Enhance IOMMU default DMA mode build
+ options
 To: John Garry <john.garry@huawei.com>, joro@8bytes.org, will@kernel.org,
  dwmw2@infradead.org, baolu.lu@linux.intel.com
 References: <1623414043-40745-1-git-send-email-john.garry@huawei.com>
- <1623414043-40745-2-git-send-email-john.garry@huawei.com>
+ <1623414043-40745-3-git-send-email-john.garry@huawei.com>
 From: Robin Murphy <robin.murphy@arm.com>
-Message-ID: <5d98ab53-2ff0-fcbb-3177-bb04a9d2b554@arm.com>
-Date: Mon, 14 Jun 2021 16:54:35 +0100
+Message-ID: <2fe7d268-bc9f-9808-29a5-610527a0fd32@arm.com>
+Date: Mon, 14 Jun 2021 17:03:31 +0100
 User-Agent: Mozilla/5.0 (Windows NT 10.0; rv:78.0) Gecko/20100101
  Thunderbird/78.10.1
 MIME-Version: 1.0
-In-Reply-To: <1623414043-40745-2-git-send-email-john.garry@huawei.com>
+In-Reply-To: <1623414043-40745-3-git-send-email-john.garry@huawei.com>
 Content-Language: en-GB
 Cc: iommu@lists.linux-foundation.org, linux-kernel@vger.kernel.org,
  linuxarm@huawei.com
@@ -84,43 +85,91 @@ Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
 On 2021-06-11 13:20, John Garry wrote:
-> As well as the default domain type, it's useful to know whether strict
-> or lazy for DMA domains, so add this info in a separate print.
+> From: Zhen Lei <thunder.leizhen@huawei.com>
 > 
-> The (stict/lazy) mode may be also set via iommu.strict earlyparm, but
-> this will be processed prior to iommu_subsys_init(), so that print will be
-> accurate for drivers which don't set the mode via custom means.
+> First, add build options IOMMU_DEFAULT_{LAZY|STRICT}, so that we have the
+> opportunity to set {lazy|strict} mode as default at build time. Then put
+> the two config options in an choice, as they are mutually exclusive.
 > 
-> For the drivers which do set the mode via custom means - the AMD and Intel
-> drivers - they still maintain prints to notify the change in policy.
+> [jpg: Make choice between strict and lazy only (and not passthrough)]
+> Signed-off-by: Zhen Lei <thunder.leizhen@huawei.com>
+> Signed-off-by: John Garry <john.garry@huawei.com>
+> ---
+>   drivers/iommu/Kconfig | 38 ++++++++++++++++++++++++++++++++++++++
+>   drivers/iommu/iommu.c |  3 ++-
+>   2 files changed, 40 insertions(+), 1 deletion(-)
+> 
+> diff --git a/drivers/iommu/Kconfig b/drivers/iommu/Kconfig
+> index 1f111b399bca..2a71347611d4 100644
+> --- a/drivers/iommu/Kconfig
+> +++ b/drivers/iommu/Kconfig
+> @@ -90,6 +90,44 @@ config IOMMU_DEFAULT_PASSTHROUGH
+>   
+>   	  If unsure, say N here.
+>   
+> +choice
+> +	prompt "IOMMU default DMA mode"
+> +	depends on IOMMU_DMA
+> +
+> +	default IOMMU_DEFAULT_STRICT
+> +	help
+> +	  This option allows an IOMMU DMA mode to be chosen at build time, to
+> +	  override the default DMA mode of each ARCH, removing the need to
+> +	  pass in kernel parameters through command line. It is still possible
+> +	  to provide ARCH-specific or common boot options to override this
+> +	  option.
+> +
+> +	  If unsure, keep the default.
+> +
+> +config IOMMU_DEFAULT_STRICT
+> +	bool "strict"
+> +	help
+> +	  For every IOMMU DMA unmap operation, the flush operation of IOTLB and
+> +	  the free operation of IOVA are guaranteed to be done in the unmap
+> +	  function.
+> +
+> +config IOMMU_DEFAULT_LAZY
+> +	bool "lazy"
+> +	help
+> +	  Support lazy mode, where for every IOMMU DMA unmap operation, the
+> +	  flush operation of IOTLB and the free operation of IOVA are deferred.
+> +	  They are only guaranteed to be done before the related IOVA will be
+> +	  reused.
+> +
+> +	  The isolation provided in this mode is not as secure as STRICT mode,
+> +	  such that a vulnerable time window may be created between the DMA
+> +	  unmap and the mapping finally being torn down in the IOMMU, where the
+> +	  device can still access the system memory. However this mode may
+> +	  provide better performance in high throughput scenarios, and is still
+> +	  considerably more secure than passthrough mode or no IOMMU.
+> +
+> +endchoice
+> +
+>   config OF_IOMMU
+>   	def_bool y
+>   	depends on OF && IOMMU_API
+> diff --git a/drivers/iommu/iommu.c b/drivers/iommu/iommu.c
+> index cf58949cc2f3..ccbd5d4c1a50 100644
+> --- a/drivers/iommu/iommu.c
+> +++ b/drivers/iommu/iommu.c
+> @@ -29,7 +29,8 @@ static struct kset *iommu_group_kset;
+>   static DEFINE_IDA(iommu_group_ida);
+>   
+>   static unsigned int iommu_def_domain_type __read_mostly;
+> -static bool iommu_dma_strict __read_mostly = true;
+> +static bool iommu_dma_strict __read_mostly =
+> +			IS_ENABLED(CONFIG_IOMMU_DEFAULT_STRICT);
 
-Note that you then start removing said prints later in the series, but 
-if we repurpose then as deprecation warnings instead as Baolu suggests 
-then I reckon it all works out OK. Assuming that,
+Nit: I reckon this is a fine place to wield the 100-character 
+relaxation, but it's not my call in the end.
+
+With the wording tweaks already mentioned,
 
 Reviewed-by: Robin Murphy <robin.murphy@arm.com>
 
-> Signed-off-by: John Garry <john.garry@huawei.com>
-> ---
->   drivers/iommu/iommu.c | 5 +++++
->   1 file changed, 5 insertions(+)
-> 
-> diff --git a/drivers/iommu/iommu.c b/drivers/iommu/iommu.c
-> index 5419c4b9f27a..cf58949cc2f3 100644
-> --- a/drivers/iommu/iommu.c
-> +++ b/drivers/iommu/iommu.c
-> @@ -138,6 +138,11 @@ static int __init iommu_subsys_init(void)
->   		(iommu_cmd_line & IOMMU_CMD_LINE_DMA_API) ?
->   			"(set via kernel command line)" : "");
+>   static u32 iommu_cmd_line __read_mostly;
 >   
-> +	pr_info("DMA domain TLB invalidation policy: %s mode %s\n",
-> +		iommu_dma_strict ? "strict" : "lazy",
-> +		(iommu_cmd_line & IOMMU_CMD_LINE_STRICT) ?
-> +			"(set via kernel command line)" : "");
-> +
->   	return 0;
->   }
->   subsys_initcall(iommu_subsys_init);
+>   struct iommu_group {
 > 
 _______________________________________________
 iommu mailing list
