@@ -2,86 +2,68 @@ Return-Path: <SRS0=DplC=LI=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-15.7 required=3.0 tests=BAYES_00,
-	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,
-	MENTIONS_GIT_HOSTING,NICE_REPLY_A,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,
-	USER_AGENT_SANE_1 autolearn=ham autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-5.2 required=3.0 tests=BAYES_00,
+	HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,
+	URIBL_BLOCKED,USER_AGENT_SANE_1 autolearn=no autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C55EDC2B9F4
-	for <iommu@archiver.kernel.org>; Mon, 14 Jun 2021 14:26:10 +0000 (UTC)
-Received: from smtp1.osuosl.org (smtp1.osuosl.org [140.211.166.138])
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6DDAFC49EA2
+	for <iommu@archiver.kernel.org>; Mon, 14 Jun 2021 14:51:14 +0000 (UTC)
+Received: from smtp4.osuosl.org (smtp4.osuosl.org [140.211.166.137])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 76CA9611C0
-	for <iommu@archiver.kernel.org>; Mon, 14 Jun 2021 14:26:10 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 76CA9611C0
-Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=huawei.com
+	by mail.kernel.org (Postfix) with ESMTPS id 1275F61283
+	for <iommu@archiver.kernel.org>; Mon, 14 Jun 2021 14:51:14 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 1275F61283
+Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=arm.com
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by smtp1.osuosl.org (Postfix) with ESMTP id 3F28E83AA8;
-	Mon, 14 Jun 2021 14:26:10 +0000 (UTC)
+	by smtp4.osuosl.org (Postfix) with ESMTP id BC4204049B;
+	Mon, 14 Jun 2021 14:51:13 +0000 (UTC)
+X-Virus-Scanned: amavisd-new at osuosl.org
+Received: from smtp4.osuosl.org ([127.0.0.1])
+	by localhost (smtp4.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+	with ESMTP id LBs5FEZ0uraD; Mon, 14 Jun 2021 14:51:12 +0000 (UTC)
+Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [IPv6:2605:bc80:3010:104::8cd3:938])
+	by smtp4.osuosl.org (Postfix) with ESMTPS id 49E6A4037A;
+	Mon, 14 Jun 2021 14:51:12 +0000 (UTC)
+Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 1A6A4C000E;
+	Mon, 14 Jun 2021 14:51:12 +0000 (UTC)
+Received: from smtp1.osuosl.org (smtp1.osuosl.org [140.211.166.138])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id E014CC000B
+ for <iommu@lists.linux-foundation.org>; Mon, 14 Jun 2021 14:51:10 +0000 (UTC)
+Received: from localhost (localhost [127.0.0.1])
+ by smtp1.osuosl.org (Postfix) with ESMTP id BE3C183AB9
+ for <iommu@lists.linux-foundation.org>; Mon, 14 Jun 2021 14:51:10 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
 Received: from smtp1.osuosl.org ([127.0.0.1])
-	by localhost (smtp1.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id Oq0u48MR3RlL; Mon, 14 Jun 2021 14:26:09 +0000 (UTC)
-Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [IPv6:2605:bc80:3010:104::8cd3:938])
-	by smtp1.osuosl.org (Postfix) with ESMTPS id A6A2483AA7;
-	Mon, 14 Jun 2021 14:26:08 +0000 (UTC)
-Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 7CFFAC000E;
-	Mon, 14 Jun 2021 14:26:08 +0000 (UTC)
-Received: from smtp2.osuosl.org (smtp2.osuosl.org [IPv6:2605:bc80:3010::133])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 803CFC000B
- for <iommu@lists.linux-foundation.org>; Mon, 14 Jun 2021 14:26:06 +0000 (UTC)
-Received: from localhost (localhost [127.0.0.1])
- by smtp2.osuosl.org (Postfix) with ESMTP id 6137D402F3
- for <iommu@lists.linux-foundation.org>; Mon, 14 Jun 2021 14:26:06 +0000 (UTC)
-X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from smtp2.osuosl.org ([127.0.0.1])
- by localhost (smtp2.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id enxsMxn8d_XB for <iommu@lists.linux-foundation.org>;
- Mon, 14 Jun 2021 14:26:05 +0000 (UTC)
+ by localhost (smtp1.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+ with ESMTP id A1da8bLwZgEc for <iommu@lists.linux-foundation.org>;
+ Mon, 14 Jun 2021 14:51:10 +0000 (UTC)
 X-Greylist: domain auto-whitelisted by SQLgrey-1.8.0
-Received: from frasgout.his.huawei.com (frasgout.his.huawei.com
- [185.176.79.56])
- by smtp2.osuosl.org (Postfix) with ESMTPS id 2AD5240131
- for <iommu@lists.linux-foundation.org>; Mon, 14 Jun 2021 14:26:04 +0000 (UTC)
-Received: from fraeml703-chm.china.huawei.com (unknown [172.18.147.207])
- by frasgout.his.huawei.com (SkyGuard) with ESMTP id 4G3YV2003Vz6G7Mx;
- Mon, 14 Jun 2021 22:19:05 +0800 (CST)
-Received: from lhreml724-chm.china.huawei.com (10.201.108.75) by
- fraeml703-chm.china.huawei.com (10.206.15.52) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id
- 15.1.2176.2; Mon, 14 Jun 2021 16:26:01 +0200
-Received: from [10.47.95.26] (10.47.95.26) by lhreml724-chm.china.huawei.com
- (10.201.108.75) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2176.2; Mon, 14 Jun
- 2021 15:26:01 +0100
-Subject: Re: [PATCH v12 3/5] iommu/vt-d: Add support for IOMMU default DMA
- mode build options
-To: Robin Murphy <robin.murphy@arm.com>, Lu Baolu <baolu.lu@linux.intel.com>, 
- "joro@8bytes.org" <joro@8bytes.org>, "will@kernel.org" <will@kernel.org>, 
- "dwmw2@infradead.org" <dwmw2@infradead.org>
-References: <1623414043-40745-1-git-send-email-john.garry@huawei.com>
- <1623414043-40745-4-git-send-email-john.garry@huawei.com>
- <4f2cec34-bad9-e1bf-85c1-04d1a0c1aecf@linux.intel.com>
- <6055cd0d-a1d3-a73a-6831-3837021f3c9c@huawei.com>
- <0a04f964-80f4-7b2a-9740-eae4596e4e09@arm.com>
-From: John Garry <john.garry@huawei.com>
-Message-ID: <453a4606-099c-3d06-13fd-dc29c24230f5@huawei.com>
-Date: Mon, 14 Jun 2021 15:19:57 +0100
-User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; rv:68.0) Gecko/20100101
- Thunderbird/68.1.2
+Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
+ by smtp1.osuosl.org (Postfix) with ESMTPS id 03A4A83AA8
+ for <iommu@lists.linux-foundation.org>; Mon, 14 Jun 2021 14:51:09 +0000 (UTC)
+Received: by mail.kernel.org (Postfix) with ESMTPSA id A31186128C;
+ Mon, 14 Jun 2021 14:51:07 +0000 (UTC)
+Date: Mon, 14 Jun 2021 15:51:05 +0100
+From: Catalin Marinas <catalin.marinas@arm.com>
+To: Dong Aisheng <dongas86@gmail.com>
+Subject: Re: [PATCH 1/1] dma: coherent: check no-map property for arm64
+Message-ID: <20210614145105.GC30667@arm.com>
+References: <20210611131056.3731084-1-aisheng.dong@nxp.com>
+ <20210614083609.GA18701@willie-the-truck>
+ <CAA+hA=S8x4S0sgAiJbqOC-wgtOshV_jhAq6eVqX5-EAeg3Dczg@mail.gmail.com>
 MIME-Version: 1.0
-In-Reply-To: <0a04f964-80f4-7b2a-9740-eae4596e4e09@arm.com>
-Content-Language: en-US
-X-Originating-IP: [10.47.95.26]
-X-ClientProxiedBy: lhreml725-chm.china.huawei.com (10.201.108.76) To
- lhreml724-chm.china.huawei.com (10.201.108.75)
-X-CFilter-Loop: Reflected
-Cc: "iommu@lists.linux-foundation.org" <iommu@lists.linux-foundation.org>,
- "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
- Linuxarm <linuxarm@huawei.com>
+Content-Disposition: inline
+In-Reply-To: <CAA+hA=S8x4S0sgAiJbqOC-wgtOshV_jhAq6eVqX5-EAeg3Dczg@mail.gmail.com>
+User-Agent: Mutt/1.10.1 (2018-07-13)
+Cc: Dong Aisheng <aisheng.dong@nxp.com>, Robin Murphy <robin.murphy@arm.com>,
+ open list <linux-kernel@vger.kernel.org>, linux-mm@kvack.org,
+ iommu@lists.linux-foundation.org, Will Deacon <will@kernel.org>,
+ Christoph Hellwig <hch@lst.de>,
+ "moderated list:ARM/FREESCALE IMX / MXC ARM ARCHITECTURE"
+ <linux-arm-kernel@lists.infradead.org>
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -94,35 +76,63 @@ List-Post: <mailto:iommu@lists.linux-foundation.org>
 List-Help: <mailto:iommu-request@lists.linux-foundation.org?subject=help>
 List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
  <mailto:iommu-request@lists.linux-foundation.org?subject=subscribe>
-Content-Transfer-Encoding: base64
-Content-Type: text/plain; charset="utf-8"; Format="flowed"
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-T24gMTQvMDYvMjAyMSAxNToxMSwgUm9iaW4gTXVycGh5IHdyb3RlOgo+IE9uIDIwMjEtMDYtMTQg
-MDg6NTMsIEpvaG4gR2Fycnkgd3JvdGU6Cj4+IE9uIDEyLzA2LzIwMjEgMDM6MjIsIEx1IEJhb2x1
-IHdyb3RlOgo+Pj4gT24gMjAyMS82LzExIDIwOjIwLCBKb2huIEdhcnJ5IHdyb3RlOgo+Pj4+IEBA
-IC00NTMsOCArNDUyLDcgQEAgc3RhdGljIGludCBfX2luaXQgaW50ZWxfaW9tbXVfc2V0dXAoY2hh
-ciAqc3RyKQo+Pj4+ICDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoCBwcl93YXJuKCJpbnRlbF9p
-b21tdT1mb3JjZWRhYyBkZXByZWNhdGVkOyB1c2UKPj4+PiBpb21tdS5mb3JjZWRhYyBpbnN0ZWFk
-XG4iKTsKPj4+PiAgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqAgaW9tbXVfZG1hX2ZvcmNlZGFj
-ID0gdHJ1ZTsKPj4+PiAgwqDCoMKgwqDCoMKgwqDCoMKgIH0gZWxzZSBpZiAoIXN0cm5jbXAoc3Ry
-LCAic3RyaWN0IiwgNikpIHsKPj4+PiAtwqDCoMKgwqDCoMKgwqDCoMKgwqDCoCBwcl9pbmZvKCJE
-aXNhYmxlIGJhdGNoZWQgSU9UTEIgZmx1c2hcbiIpOwo+Pj4+IC3CoMKgwqDCoMKgwqDCoMKgwqDC
-oMKgIGludGVsX2lvbW11X3N0cmljdCA9IDE7Cj4+Pj4gK8KgwqDCoMKgwqDCoMKgwqDCoMKgwqAg
-aW9tbXVfc2V0X2RtYV9zdHJpY3QodHJ1ZSk7Cj4+PiBJIHdvdWxkIGxpa2UgdG8gZGVwcmVjYXRl
-IHRoaXMgY29tbWFuZCBsaW5lIGFuZCBhc2sgdXNlcnMgdG8gdXNlCj4+PiBpb21tdS5zdHJpY3Qg
-aW5zdGVhZC4KPj4gb2ssIGJ1dCB0aGVuIEkgc2hvdWxkIHByb2JhYmx5IG1ha2UgdGhlIEFNRCBk
-cml2ZXIgYWxzbyBvZmZpY2lhbGx5Cj4+IHN1cHBvcnQgdGhpcy4KPiBPb3BzLCBJIHNob3VsZCBo
-YXZlIGRvY3VtZW50ZWQgdGhhdCAiaW9tbXUuc3RyaWN0IiBhbHJlYWR5IGFwcGxpZXMgdG8KPiB4
-ODYgYXMgd2VsbC4gVGhlIGludGVyYWN0aW9uIHdpdGggdGhlIGRyaXZlci1zcGVjaWZpYyBwYXJh
-bWV0ZXJzIGlzIGEKPiBiaXQgd2VpcmQgYW5kIHVuaW50dWl0aXZlLCBidXQgaXQgd2FzIGRvbmUg
-a25vd2luZ2x5LiBMZXQgbWUgcXVpY2tseQo+IHNwaW4gYSBrZXJuZWwtcGFyYW1ldGVycy50eHQg
-Zml4IGZvciB0aGF0Li4uCgpTbyBJIGFscmVhZHkgaGFkIGEgcGVuZGluZyBwYXRjaCBoZXJlIGZv
-ciB0aGUgc2FtZSB0byBiZSBpbmNsdWRlZCBpbiAKdGhpcyBzZXJpZXM6Cmh0dHBzOi8vZ2l0aHVi
-LmNvbS9oaXNpbGljb24va2VybmVsLWRldi9jb21taXQvMjM3NWEyZDg4OGQ3OGRlOWViN2Q5MWQ2
-ZjJjNTg5MTM5NTMwMGE5NgoKSWYgeW91IHdhbnQgdG8gZG8gaXQsIHRoZW4gb2suIEkgbWlnaHQg
-aGF2ZSB0byByZW9yZGVyIHRoZSBzZXJpZXMgdGhvdWdoLi4uCgpUaGFua3MsCkpvaG4KCgpfX19f
-X19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fXwppb21tdSBtYWlsaW5n
-IGxpc3QKaW9tbXVAbGlzdHMubGludXgtZm91bmRhdGlvbi5vcmcKaHR0cHM6Ly9saXN0cy5saW51
-eGZvdW5kYXRpb24ub3JnL21haWxtYW4vbGlzdGluZm8vaW9tbXU=
+On Mon, Jun 14, 2021 at 06:07:04PM +0800, Dong Aisheng wrote:
+> On Mon, Jun 14, 2021 at 4:36 PM Will Deacon <will@kernel.org> wrote:
+> > On Fri, Jun 11, 2021 at 09:10:56PM +0800, Dong Aisheng wrote:
+> > > Coherent dma on ARM64 also can't work with mapped system ram,
+> > > that means 'no-map' property must be specified in dts.
+> > > Add the missing check for ARM64 platforms as well.
+> > > Besides 'no-map' checking, 'linux,dma-default' feature is also
+> > > enabled for ARM64 along with this patch.
+> >
+> > Please can you explain _why_ it can't work? We don't need to tear down
+> > aliases from the linear map for the streaming DMA API, so why is this
+> > case different? Also, coherent devices wouldn't need this either way,
+> > would they? What problem are you solving here?
+> >
+> 
+> Not sure if i get your point correctly. Here is my understanding. (fix
+> me if wrong)
+> In current implementation, the coherent dma memory will be remapped as
+> writecombine and uncached type which can't reuse the linear mapping.
+> The prerequisite to do this is the memory must not be mapped System RAM.
+> e.g. reserved memory with no-map property and invisible to the buddy system.
+
+The architecture allows the system RAM to be mapped in the linear map
+while there's another writecombine alias, as long as there are no dirty
+cache lines that could be evicted randomly. This works fine with the DMA
+API (and we have some cache maintenance when the non-cacheable mapping
+is first created).
+
+Looking at the rmem_dma_device_init() -> dma_init_coherent_memory(), it
+ends up calling memremap(MEMREMAP_WC) which would warn if it intersects
+with system RAM regardless of the architecture. If the memory region is
+nomap, it doesn't end up as IORESOURCE_SYSTEM_RAM, so memremap() won't
+warn. But why is this specific only to arm (or arm64)?
+
+Is the "shared-dma-pool" property only meant for Normal Non-cacheable
+memory (hence the MEMREMAP_WC flag)? If a system is fully cache
+coherent, does this check still make sense or the DT is not supposed to
+have such nodes?
+
+> This seems a little different from CMA which the memory is still
+> underlying managed by the buddy system in order to support migration.
+> 
+> The patch here does not resolve a real issue but just open the sanity check for
+> ARM64 case as well as ARM  which reports the issue a little bit earlier at
+> rmem_dma_setup() time.
+
+I think we first need to figure out what the real issue is and then try
+to solve it.
+
+-- 
+Catalin
+_______________________________________________
+iommu mailing list
+iommu@lists.linux-foundation.org
+https://lists.linuxfoundation.org/mailman/listinfo/iommu
