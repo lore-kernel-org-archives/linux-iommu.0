@@ -6,59 +6,59 @@ X-Spam-Status: No, score=-5.2 required=3.0 tests=BAYES_00,
 	HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,
 	URIBL_BLOCKED,USER_AGENT_SANE_1 autolearn=no autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 46862C49EA2
-	for <iommu@archiver.kernel.org>; Mon, 14 Jun 2021 07:09:13 +0000 (UTC)
-Received: from smtp1.osuosl.org (smtp1.osuosl.org [140.211.166.138])
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 78B12C48BE8
+	for <iommu@archiver.kernel.org>; Mon, 14 Jun 2021 07:12:32 +0000 (UTC)
+Received: from smtp4.osuosl.org (smtp4.osuosl.org [140.211.166.137])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 04290613C5
-	for <iommu@archiver.kernel.org>; Mon, 14 Jun 2021 07:09:12 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 04290613C5
+	by mail.kernel.org (Postfix) with ESMTPS id E3FBC613BF
+	for <iommu@archiver.kernel.org>; Mon, 14 Jun 2021 07:12:31 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org E3FBC613BF
 Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=lst.de
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by smtp1.osuosl.org (Postfix) with ESMTP id CB02383B33;
-	Mon, 14 Jun 2021 07:09:12 +0000 (UTC)
+	by smtp4.osuosl.org (Postfix) with ESMTP id A128240483;
+	Mon, 14 Jun 2021 07:12:31 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from smtp1.osuosl.org ([127.0.0.1])
-	by localhost (smtp1.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id Kl-Aq5R6vuat; Mon, 14 Jun 2021 07:09:12 +0000 (UTC)
-Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by smtp1.osuosl.org (Postfix) with ESMTPS id DE50E83ACA;
-	Mon, 14 Jun 2021 07:09:11 +0000 (UTC)
+Received: from smtp4.osuosl.org ([127.0.0.1])
+	by localhost (smtp4.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+	with ESMTP id I0UYEi9ZnnQ2; Mon, 14 Jun 2021 07:12:30 +0000 (UTC)
+Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [IPv6:2605:bc80:3010:104::8cd3:938])
+	by smtp4.osuosl.org (Postfix) with ESMTPS id 6FCF04044F;
+	Mon, 14 Jun 2021 07:12:30 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id B5E21C000E;
-	Mon, 14 Jun 2021 07:09:11 +0000 (UTC)
-Received: from smtp3.osuosl.org (smtp3.osuosl.org [IPv6:2605:bc80:3010::136])
- by lists.linuxfoundation.org (Postfix) with ESMTP id DD4F4C000B
- for <iommu@lists.linux-foundation.org>; Mon, 14 Jun 2021 07:09:09 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 42C35C000E;
+	Mon, 14 Jun 2021 07:12:30 +0000 (UTC)
+Received: from smtp4.osuosl.org (smtp4.osuosl.org [140.211.166.137])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id EECC1C000B
+ for <iommu@lists.linux-foundation.org>; Mon, 14 Jun 2021 07:12:28 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by smtp3.osuosl.org (Postfix) with ESMTP id BCAE76067F
- for <iommu@lists.linux-foundation.org>; Mon, 14 Jun 2021 07:09:09 +0000 (UTC)
+ by smtp4.osuosl.org (Postfix) with ESMTP id CD6BC4044F
+ for <iommu@lists.linux-foundation.org>; Mon, 14 Jun 2021 07:12:28 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from smtp3.osuosl.org ([127.0.0.1])
- by localhost (smtp3.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id EtRr-T0wnQDC for <iommu@lists.linux-foundation.org>;
- Mon, 14 Jun 2021 07:09:09 +0000 (UTC)
+Received: from smtp4.osuosl.org ([127.0.0.1])
+ by localhost (smtp4.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+ with ESMTP id oplaFfBKQHDK for <iommu@lists.linux-foundation.org>;
+ Mon, 14 Jun 2021 07:12:28 +0000 (UTC)
 X-Greylist: from auto-whitelisted by SQLgrey-1.8.0
 Received: from verein.lst.de (verein.lst.de [213.95.11.211])
- by smtp3.osuosl.org (Postfix) with ESMTPS id 2E934605C0
- for <iommu@lists.linux-foundation.org>; Mon, 14 Jun 2021 07:09:09 +0000 (UTC)
+ by smtp4.osuosl.org (Postfix) with ESMTPS id 14CA240450
+ for <iommu@lists.linux-foundation.org>; Mon, 14 Jun 2021 07:12:27 +0000 (UTC)
 Received: by verein.lst.de (Postfix, from userid 2407)
- id 1F7FB67373; Mon, 14 Jun 2021 09:09:04 +0200 (CEST)
-Date: Mon, 14 Jun 2021 09:09:03 +0200
+ id 537CA67373; Mon, 14 Jun 2021 09:12:23 +0200 (CEST)
+Date: Mon, 14 Jun 2021 09:12:23 +0200
 From: Christoph Hellwig <hch@lst.de>
 To: Tianyu Lan <ltykernel@gmail.com>
-Subject: Re: [RFC PATCH V3 10/11] HV/Netvsc: Add Isolation VM support for
- netvsc driver
-Message-ID: <20210614070903.GA29976@lst.de>
+Subject: Re: [RFC PATCH V3 08/11] swiotlb: Add bounce buffer remap address
+ setting function
+Message-ID: <20210614071223.GA30171@lst.de>
 References: <20210530150628.2063957-1-ltykernel@gmail.com>
- <20210530150628.2063957-11-ltykernel@gmail.com>
- <20210607065007.GE24478@lst.de>
- <279cb4bf-c5b6-6db9-0f1e-9238e902c8f2@gmail.com>
+ <20210530150628.2063957-9-ltykernel@gmail.com>
+ <20210607064312.GB24478@lst.de>
+ <48516ce3-564c-419e-b355-0ce53794dcb1@gmail.com>
 MIME-Version: 1.0
 Content-Disposition: inline
-In-Reply-To: <279cb4bf-c5b6-6db9-0f1e-9238e902c8f2@gmail.com>
+In-Reply-To: <48516ce3-564c-419e-b355-0ce53794dcb1@gmail.com>
 User-Agent: Mutt/1.5.17 (2007-11-01)
 Cc: linux-hyperv@vger.kernel.org, brijesh.singh@amd.com,
  thomas.lendacky@amd.com, peterz@infradead.org, dave.hansen@linux.intel.com,
@@ -92,17 +92,12 @@ Content-Transfer-Encoding: 7bit
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-On Mon, Jun 07, 2021 at 11:21:20PM +0800, Tianyu Lan wrote:
->> dma_map_single can only be used on page baked memory, and if this is
->> using page backed memory you wouldn't need to do thee phys_to_virt
->> tricks.  Can someone explain the mess here in more detail?
->
-> Sorry. Could you elaborate the issue? These pages in the pb array are not 
-> allocated by DMA API and using dma_map_single() here is to map these pages' 
-> address to bounce buffer physical address.
+On Mon, Jun 07, 2021 at 10:56:47PM +0800, Tianyu Lan wrote:
+> These addresses in extra address space works as system memory mirror. The 
+> shared memory with host in Isolation VM needs to be accessed via extra 
+> address space which is above shared gpa boundary.
 
-dma_map_single just calls dma_map_page using virt_to_page.  So this
-can't work on addresses not in the kernel linear mapping.
+Why?
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
