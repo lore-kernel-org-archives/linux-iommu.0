@@ -2,96 +2,92 @@ Return-Path: <SRS0=DplC=LI=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-0.5 required=3.0 tests=BAYES_00,DKIM_ADSP_CUSTOM_MED,
-	DKIM_INVALID,DKIM_SIGNED,FREEMAIL_FORGED_FROMDOMAIN,FREEMAIL_FROM,
-	HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,
-	URIBL_BLOCKED autolearn=no autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-13.8 required=3.0 tests=BAYES_00,
+	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_CR_TRAILER,INCLUDES_PATCH,
+	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED autolearn=ham
+	autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id EDE85C4743C
-	for <iommu@archiver.kernel.org>; Mon, 14 Jun 2021 12:47:41 +0000 (UTC)
-Received: from smtp3.osuosl.org (smtp3.osuosl.org [140.211.166.136])
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8A51BC2B9F4
+	for <iommu@archiver.kernel.org>; Mon, 14 Jun 2021 12:49:35 +0000 (UTC)
+Received: from smtp2.osuosl.org (smtp2.osuosl.org [140.211.166.133])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 89F1E61241
-	for <iommu@archiver.kernel.org>; Mon, 14 Jun 2021 12:47:41 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 89F1E61241
-Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=gmail.com
+	by mail.kernel.org (Postfix) with ESMTPS id 183CE61159
+	for <iommu@archiver.kernel.org>; Mon, 14 Jun 2021 12:49:35 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 183CE61159
+Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=huawei.com
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by smtp3.osuosl.org (Postfix) with ESMTP id 429BE605F8;
-	Mon, 14 Jun 2021 12:47:41 +0000 (UTC)
+	by smtp2.osuosl.org (Postfix) with ESMTP id DD68C400B5;
+	Mon, 14 Jun 2021 12:49:34 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from smtp3.osuosl.org ([127.0.0.1])
-	by localhost (smtp3.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id qW2uvZfxxQ4c; Mon, 14 Jun 2021 12:47:40 +0000 (UTC)
-Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by smtp3.osuosl.org (Postfix) with ESMTPS id 23A8D60654;
-	Mon, 14 Jun 2021 12:47:40 +0000 (UTC)
+Received: from smtp2.osuosl.org ([127.0.0.1])
+	by localhost (smtp2.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+	with ESMTP id tC0-sgxrh0g9; Mon, 14 Jun 2021 12:49:33 +0000 (UTC)
+Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [IPv6:2605:bc80:3010:104::8cd3:938])
+	by smtp2.osuosl.org (Postfix) with ESMTPS id 897EF40163;
+	Mon, 14 Jun 2021 12:49:33 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id EC3D7C000E;
-	Mon, 14 Jun 2021 12:47:39 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 6EDC9C000E;
+	Mon, 14 Jun 2021 12:49:33 +0000 (UTC)
 Received: from smtp3.osuosl.org (smtp3.osuosl.org [IPv6:2605:bc80:3010::136])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 3350EC000B
- for <iommu@lists.linux-foundation.org>; Mon, 14 Jun 2021 12:47:39 +0000 (UTC)
+ by lists.linuxfoundation.org (Postfix) with ESMTP id A1F47C000B
+ for <iommu@lists.linux-foundation.org>; Mon, 14 Jun 2021 12:49:32 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by smtp3.osuosl.org (Postfix) with ESMTP id 1E56860654
- for <iommu@lists.linux-foundation.org>; Mon, 14 Jun 2021 12:47:39 +0000 (UTC)
+ by smtp3.osuosl.org (Postfix) with ESMTP id 83ED060630
+ for <iommu@lists.linux-foundation.org>; Mon, 14 Jun 2021 12:49:32 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
 Received: from smtp3.osuosl.org ([127.0.0.1])
  by localhost (smtp3.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id JV2g7gAPpoDH for <iommu@lists.linux-foundation.org>;
- Mon, 14 Jun 2021 12:47:38 +0000 (UTC)
-X-Greylist: whitelisted by SQLgrey-1.8.0
-Received: from mail-lj1-x229.google.com (mail-lj1-x229.google.com
- [IPv6:2a00:1450:4864:20::229])
- by smtp3.osuosl.org (Postfix) with ESMTPS id 43EB9605F8
- for <iommu@lists.linux-foundation.org>; Mon, 14 Jun 2021 12:47:38 +0000 (UTC)
-Received: by mail-lj1-x229.google.com with SMTP id 131so20040458ljj.3
- for <iommu@lists.linux-foundation.org>; Mon, 14 Jun 2021 05:47:38 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=gmail.com; s=20161025;
- h=mime-version:references:in-reply-to:from:date:message-id:subject:to
- :cc:content-transfer-encoding;
- bh=QUObwUNWvgk8Ic1w7m2h32Aq1YfuXrxksajQxqaMrIs=;
- b=rj6ZqtY0hWRNdi47dSpXnG5VlOgr15kVbYhmu6VWU8u6FjoktZ8tvzKvzlkPnDP+pV
- XO3nhrT0y6qyTJZjPH5sSQnLiK2So2RyVxzuj8bZTSrohk/KJTgF8P077y+Fvbm3p3MS
- adrMOeNBlgRIAQ8M4JksRyHAk91ctiTVHRxKE+Ysd4cv7fxq0GrTjF2zot+++owhWgOZ
- akrE4+2kZBZEEm5a4N3TOZdjIGXh/Ipfb6XTfSeGKR/mE8wojx+WFi//AUD6f13s38T+
- dh0ynmjkc4C4o/Er1BLAEQaXeS2zTdDzm++TKc2dXCS2gvmp9hROmv+KiK5rYRK9W/Lu
- mMbA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
- d=1e100.net; s=20161025;
- h=x-gm-message-state:mime-version:references:in-reply-to:from:date
- :message-id:subject:to:cc:content-transfer-encoding;
- bh=QUObwUNWvgk8Ic1w7m2h32Aq1YfuXrxksajQxqaMrIs=;
- b=KvXJY5SgMrd8//CrRsFW56M5vv/KAEdYqCeq0albuSFFdky2nV7sqVwfRtv4eYiWvn
- Fu/lUcoROuDvIyPrToKNgEvg2QoZqz+u2tHGYM2+tIo3K7shPnxJDXQu57eNZkMUpLc2
- 9wk9mMg0BbQDZy+6d1jEyvbz7dLM8E5TsFxta/i+OXawox3SMBmOKl65Yz/R9Fh4QVDY
- FNohMyZt2OG2AC7VjTn8iEds1S3T7W3Hxdo69fipF0P7trZ1AEU10XGQyZDbev65s7/9
- aB3B5lqYyJkykiQ5ONCvSUAYDqHK9s8kN07uKBunwKoBZOx1aJX1kIqPqP6XaLWVU96w
- NkmA==
-X-Gm-Message-State: AOAM532A4RizK3dSW9VXPaIQq6zO9tybopkkVFL0giTWAr9RxSTYVCWl
- MBvz6bdGxRGyWjPG9pVbBun+a8q1x/HQP4s8Tgs=
-X-Google-Smtp-Source: ABdhPJxC86d8VXC4py9RRymEPfI5ESRE2fKe8HepltlfpWhz75a3A3JMLKsQJcx2NkZi9XGq2Uggz8yzDs460UQlrTk=
-X-Received: by 2002:a2e:b8cc:: with SMTP id s12mr13710166ljp.66.1623674855928; 
- Mon, 14 Jun 2021 05:47:35 -0700 (PDT)
+ with ESMTP id OjKmlkyT8HBH for <iommu@lists.linux-foundation.org>;
+ Mon, 14 Jun 2021 12:49:31 +0000 (UTC)
+X-Greylist: domain auto-whitelisted by SQLgrey-1.8.0
+Received: from szxga03-in.huawei.com (szxga03-in.huawei.com [45.249.212.189])
+ by smtp3.osuosl.org (Postfix) with ESMTPS id 1262D605F8
+ for <iommu@lists.linux-foundation.org>; Mon, 14 Jun 2021 12:49:30 +0000 (UTC)
+Received: from dggemv703-chm.china.huawei.com (unknown [172.30.72.54])
+ by szxga03-in.huawei.com (SkyGuard) with ESMTP id 4G3WQ04LSBz6xWj;
+ Mon, 14 Jun 2021 20:45:28 +0800 (CST)
+Received: from dggema723-chm.china.huawei.com (10.3.20.87) by
+ dggemv703-chm.china.huawei.com (10.3.19.46) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256) id
+ 15.1.2176.2; Mon, 14 Jun 2021 20:49:25 +0800
+Received: from lhreml710-chm.china.huawei.com (10.201.108.61) by
+ dggema723-chm.china.huawei.com (10.3.20.87) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id
+ 15.1.2176.2; Mon, 14 Jun 2021 20:49:24 +0800
+Received: from lhreml710-chm.china.huawei.com ([169.254.81.184]) by
+ lhreml710-chm.china.huawei.com ([169.254.81.184]) with mapi id
+ 15.01.2176.012; Mon, 14 Jun 2021 13:49:22 +0100
+From: Shameerali Kolothum Thodi <shameerali.kolothum.thodi@huawei.com>
+To: Robin Murphy <robin.murphy@arm.com>, "linux-arm-kernel@lists.infradead.org"
+ <linux-arm-kernel@lists.infradead.org>, "linux-acpi@vger.kernel.org"
+ <linux-acpi@vger.kernel.org>, "iommu@lists.linux-foundation.org"
+ <iommu@lists.linux-foundation.org>
+Subject: RE: [PATCH v5 3/8] ACPI/IORT: Add a helper to retrieve RMR memory
+ regions
+Thread-Topic: [PATCH v5 3/8] ACPI/IORT: Add a helper to retrieve RMR memory
+ regions
+Thread-Index: AQHXUIxzNCstxTr9F0iaZEElN6n+2KsTbWwAgAAl39A=
+Date: Mon, 14 Jun 2021 12:49:22 +0000
+Message-ID: <3206cd67962242a69fb83adac892e34c@huawei.com>
+References: <20210524110222.2212-1-shameerali.kolothum.thodi@huawei.com>
+ <20210524110222.2212-4-shameerali.kolothum.thodi@huawei.com>
+ <9e788789-c1c2-10f1-d99c-93cfa6ea3348@arm.com>
+In-Reply-To: <9e788789-c1c2-10f1-d99c-93cfa6ea3348@arm.com>
+Accept-Language: en-GB, en-US
+Content-Language: en-US
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+x-originating-ip: [10.47.26.251]
 MIME-Version: 1.0
-References: <20210611095528.9230-1-roman_skakun@epam.com>
- <855a58e2-1e03-4763-cb56-81367b73762c@oracle.com>
-In-Reply-To: <855a58e2-1e03-4763-cb56-81367b73762c@oracle.com>
-From: Roman Skakun <rm.skakun@gmail.com>
-Date: Mon, 14 Jun 2021 15:47:25 +0300
-Message-ID: <CADu_u-MqALJkG8RJHrr65vC_sHu-UyvCGwwUfaBong0eir5+hQ@mail.gmail.com>
-Subject: Re: [PATCH] swiotlb-xen: override common mmap and get_sgtable dma ops
-To: Boris Ostrovsky <boris.ostrovsky@oracle.com>
-Cc: Juergen Gross <jgross@suse.com>,
- Stefano Stabellini <sstabellini@kernel.org>,
- Andrii Anisov <andrii_anisov@epam.com>,
- Konrad Rzeszutek Wilk <konrad.wilk@oracle.com>,
- Oleksandr Andrushchenko <oleksandr_andrushchenko@epam.com>,
- linux-kernel@vger.kernel.org,
- Oleksandr Tyshchenko <oleksandr_tyshchenko@epam.com>,
- iommu@lists.linux-foundation.org, Roman Skakun <roman_skakun@epam.com>,
- xen-devel@lists.xenproject.org, Volodymyr Babchuk <volodymyr_babchuk@epam.com>
+X-CFilter-Loop: Reflected
+Cc: "jon@solid-run.com" <jon@solid-run.com>, Linuxarm <linuxarm@huawei.com>,
+ "steven.price@arm.com" <steven.price@arm.com>,
+ "Guohanjun \(Hanjun Guo\)" <guohanjun@huawei.com>,
+ yangyicong <yangyicong@huawei.com>,
+ "Sami.Mujawar@arm.com" <Sami.Mujawar@arm.com>,
+ wanghuiqiang <wanghuiqiang@huawei.com>
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -104,51 +100,189 @@ List-Post: <mailto:iommu@lists.linux-foundation.org>
 List-Help: <mailto:iommu-request@lists.linux-foundation.org?subject=help>
 List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
  <mailto:iommu-request@lists.linux-foundation.org?subject=subscribe>
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-SGV5LCBCb3JpcyEKVGhhbmtzIGZvciB0aGUgcmV2aWV3LgoKSSBoYXZlIGFuIGFkZGl0aW9uYWwg
-cXVlc3Rpb24gYWJvdXQgY3VycmVudCBpbXBsZW1lbnRhdGlvbiB0aGF0IGRpc3R1cmJlZCBtZS4K
-SSB0aGluaywgdGhhdCB3ZSBjYW4gaGF2ZSBjYXNlcyB3aGVuIG1hcHBlZCBtZW1vcnkgY2FuIG5v
-dCBiZQpwaHlzaWNhbGx5IGNvbnRpZ3VvdXMuCkluIG9yZGVyIHRvIHByb2NlZWQgdGhpcyBjb3Jy
-ZWN0bHkgbmVlZCB0byBhcHBseSBzb21lIGFkZGl0aW9uYWwgc3RlcHMKdG8gY3VycmVudCBpbXBs
-ZW1lbnRhdGlvbiBhcyB3ZWxsLgoKSW4gbW1hcCgpIDoKMS4gSXMgdGhlIG1lbW9yeSByZWdpb24g
-cGh5c2ljYWxseSBjb250aWd1b3VzPwoyLiBSZW1hcCBtdWx0aXBsZSByYW5nZXMgaWYgaXQgaXMg
-bm90LgoKSW4gZ2V0X3NndGFibGUoKSA6CjEuIElzIHRoZSBtZW1vcnkgcmVnaW9uIHBoeXNpY2Fs
-bHkgY29udGlndW91cz8KMi4gQ3JlYXRlIHNndCB0aGF0IHdpbGwgYmUgaW5jbHVkZWQgbXVsdGlw
-bGUgY29udGlndW91cyByYW5nZXMgaWYgaXQgaXMgbm90LgoKV2hhdCBkbyB5b3UgdGhpbmsgYWJv
-dXQgaXQ/CgpDaGVlcnMhClJvbWFuCgoK0L/RgiwgMTEg0LjRjtC9LiAyMDIxINCzLiDQsiAxODoy
-MCwgQm9yaXMgT3N0cm92c2t5IDxib3Jpcy5vc3Ryb3Zza3lAb3JhY2xlLmNvbT46Cj4KPgo+IE9u
-IDYvMTEvMjEgNTo1NSBBTSwgUm9tYW4gU2tha3VuIHdyb3RlOgo+ID4KPiA+ICtzdGF0aWMgaW50
-Cj4gPiAreGVuX3N3aW90bGJfZG1hX21tYXAoc3RydWN0IGRldmljZSAqZGV2LCBzdHJ1Y3Qgdm1f
-YXJlYV9zdHJ1Y3QgKnZtYSwKPiA+ICsgICAgICAgICAgICAgdm9pZCAqY3B1X2FkZHIsIGRtYV9h
-ZGRyX3QgZG1hX2FkZHIsIHNpemVfdCBzaXplLAo+ID4gKyAgICAgICAgICAgICB1bnNpZ25lZCBs
-b25nIGF0dHJzKQo+ID4gK3sKPiA+ICsgICAgIHVuc2lnbmVkIGxvbmcgdXNlcl9jb3VudCA9IHZt
-YV9wYWdlcyh2bWEpOwo+ID4gKyAgICAgdW5zaWduZWQgbG9uZyBjb3VudCA9IFBBR0VfQUxJR04o
-c2l6ZSkgPj4gUEFHRV9TSElGVDsKPiA+ICsgICAgIHVuc2lnbmVkIGxvbmcgb2ZmID0gdm1hLT52
-bV9wZ29mZjsKPiA+ICsgICAgIHN0cnVjdCBwYWdlICpwYWdlOwo+ID4gKwo+ID4gKyAgICAgaWYg
-KGlzX3ZtYWxsb2NfYWRkcihjcHVfYWRkcikpCj4gPiArICAgICAgICAgICAgIHBhZ2UgPSB2bWFs
-bG9jX3RvX3BhZ2UoY3B1X2FkZHIpOwo+ID4gKyAgICAgZWxzZQo+ID4gKyAgICAgICAgICAgICBw
-YWdlID0gdmlydF90b19wYWdlKGNwdV9hZGRyKTsKPiA+ICsKPiA+ICsgICAgIHZtYS0+dm1fcGFn
-ZV9wcm90ID0gZG1hX3BncHJvdChkZXYsIHZtYS0+dm1fcGFnZV9wcm90LCBhdHRycyk7Cj4gPiAr
-Cj4gPiArICAgICBpZiAoZG1hX21tYXBfZnJvbV9kZXZfY29oZXJlbnQoZGV2LCB2bWEsIGNwdV9h
-ZGRyLCBzaXplLCAmcmV0KSkKPiA+ICsgICAgICAgICAgICAgcmV0dXJuIC1FTlhJTzsKPiA+ICsK
-PiA+ICsgICAgIGlmIChvZmYgPj0gY291bnQgfHwgdXNlcl9jb3VudCA+IGNvdW50IC0gb2ZmKQo+
-ID4gKyAgICAgICAgICAgICByZXR1cm4gLUVOWElPOwo+ID4gKwo+ID4gKyAgICAgcmV0dXJuIHJl
-bWFwX3Bmbl9yYW5nZSh2bWEsIHZtYS0+dm1fc3RhcnQsCj4gPiArICAgICAgICAgICAgICAgICAg
-ICAgcGFnZV90b19wZm4ocGFnZSkgKyB2bWEtPnZtX3Bnb2ZmLAo+ID4gKyAgICAgICAgICAgICAg
-ICAgICAgIHVzZXJfY291bnQgPDwgUEFHRV9TSElGVCwgdm1hLT52bV9wYWdlX3Byb3QpOwo+ID4g
-K30KPgo+Cj4gSSBzdWdnZXN0IHlvdSBjcmVhdGUgYSBoZWxwZXIgZm9yIGNvbXB1dGluZyBwYWdl
-IHZhbHVlIGFuZCB0aGVuIHJldmVydCA5MjI2NTllYTc3MWIzZmQ3MjgxNDkyNjJjNWVhMTU2MDhm
-YWI5NzE5IGFuZCBwYXNzIHJlc3VsdCBvZiB0aGUgaGVscGVyIGluc3RlYWQgb2YgY3B1X2FkZHIu
-IEhlcmUgYW5kIGluIHhlbl9zd2lvdGxiX2RtYV9nZXRfc2d0YWJsZSgpLgo+Cj4KPiBBbmQgdXNl
-IHRoaXMgbmV3IGhlbHBlciBpbiB4ZW5fc3dpb3RsYl9mcmVlX2NvaGVyZW50KCkgdG9vLiBJIGFt
-IGN1cmlvdXMgdGhvdWdoIHdoeSB0aGlzIHdhcyBub3QgYSBwcm9ibGVtIHdoZW4gU3RlZmFubyB3
-YXMgbG9va2luZyBhdCB0aGUgcHJvYmxlbSB0aGF0IGludHJvZHVjZWQgdGhpcyB2bWFsbG9jIGNo
-ZWNrIChpLmUuIDhiMWU4NjhmNjYwNzY0OTAxODlhMzZkOTg0ZmNjZTI4NmNkZDYyOTUpLiBTdGVm
-YW5vPwo+Cj4KPiAtYm9yaXMKCgoKLS0gCkJlc3QgUmVnYXJkcywgUm9tYW4uCl9fX19fX19fX19f
-X19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fCmlvbW11IG1haWxpbmcgbGlzdApp
-b21tdUBsaXN0cy5saW51eC1mb3VuZGF0aW9uLm9yZwpodHRwczovL2xpc3RzLmxpbnV4Zm91bmRh
-dGlvbi5vcmcvbWFpbG1hbi9saXN0aW5mby9pb21tdQ==
+
+
+> -----Original Message-----
+> From: Robin Murphy [mailto:robin.murphy@arm.com]
+> Sent: 14 June 2021 12:23
+> To: Shameerali Kolothum Thodi <shameerali.kolothum.thodi@huawei.com>;
+> linux-arm-kernel@lists.infradead.org; linux-acpi@vger.kernel.org;
+> iommu@lists.linux-foundation.org
+> Cc: jon@solid-run.com; Linuxarm <linuxarm@huawei.com>;
+> steven.price@arm.com; Guohanjun (Hanjun Guo) <guohanjun@huawei.com>;
+> yangyicong <yangyicong@huawei.com>; Sami.Mujawar@arm.com;
+> wanghuiqiang <wanghuiqiang@huawei.com>
+> Subject: Re: [PATCH v5 3/8] ACPI/IORT: Add a helper to retrieve RMR memory
+> regions
+> 
+> On 2021-05-24 12:02, Shameer Kolothum wrote:
+> > Add a helper function that retrieves RMR memory descriptors
+> > associated with a given IOMMU. This will be used by IOMMU
+> > drivers to setup necessary mappings.
+> >
+> > Now that we have this, invoke it from the generic helper
+> > interface.
+> >
+> > Signed-off-by: Shameer Kolothum
+> <shameerali.kolothum.thodi@huawei.com>
+> > ---
+> >   drivers/acpi/arm64/iort.c | 50
+> +++++++++++++++++++++++++++++++++++++++
+> >   drivers/iommu/dma-iommu.c |  4 ++++
+> >   include/linux/acpi_iort.h |  7 ++++++
+> >   3 files changed, 61 insertions(+)
+> >
+> > diff --git a/drivers/acpi/arm64/iort.c b/drivers/acpi/arm64/iort.c
+> > index fea1ffaedf3b..01917caf58de 100644
+> > --- a/drivers/acpi/arm64/iort.c
+> > +++ b/drivers/acpi/arm64/iort.c
+> > @@ -12,6 +12,7 @@
+> >
+> >   #include <linux/acpi_iort.h>
+> >   #include <linux/bitfield.h>
+> > +#include <linux/dma-iommu.h>
+> >   #include <linux/iommu.h>
+> >   #include <linux/kernel.h>
+> >   #include <linux/list.h>
+> > @@ -837,6 +838,53 @@ static inline int iort_add_device_replay(struct
+> device *dev)
+> >   	return err;
+> >   }
+> >
+> > +/**
+> > + * iort_iommu_get_rmrs - Helper to retrieve RMR info associated with
+> IOMMU
+> > + * @iommu: fwnode for the IOMMU
+> > + * @head: RMR list head to be populated
+> > + *
+> > + * Returns: 0 on success, <0 failure
+> > + */
+> > +int iort_iommu_get_rmrs(struct fwnode_handle *iommu_fwnode,
+> > +			struct list_head *head)
+> > +{
+> > +	struct iort_rmr_entry *e;
+> > +	struct acpi_iort_node *iommu;
+> > +	int rmrs = 0;
+> > +
+> > +	iommu = iort_get_iort_node(iommu_fwnode);
+> > +	if (!iommu || list_empty(&iort_rmr_list))
+> > +		return -ENODEV;
+> > +
+> > +	list_for_each_entry(e, &iort_rmr_list, list) {
+> > +		int prot = IOMMU_READ | IOMMU_WRITE | IOMMU_NOEXEC |
+> IOMMU_MMIO;
+> > +		struct iommu_resv_region *region;
+> > +		enum iommu_resv_type type;
+> > +		struct acpi_iort_rmr_desc *rmr_desc;
+> > +
+> > +		if (e->smmu != iommu)
+> > +			continue;
+> > +
+> > +		rmr_desc = e->rmr_desc;
+> > +		if (e->flags & IOMMU_RMR_REMAP_PERMITTED)
+> > +			type = IOMMU_RESV_DIRECT_RELAXABLE;
+> > +		else
+> > +			type = IOMMU_RESV_DIRECT;
+> 
+> Wasn't the idea that we can do all this during the initial parsing, i.e.
+> we don't even have iort_rmr_entry, we store them as iommu_resv_regions
+> and simply kmemdup() or whatever at this point?
+
+
+Hmm... Not yet. I removed struct iommu_rmr() from v4. But yes, it looks like
+we can get rid of iort_rmr_entry as well. Will give it a go in next.
+
+Thanks,
+Shameer
+
+> Robin.
+> 
+> > +
+> > +		region = iommu_alloc_resv_region(rmr_desc->base_address,
+> > +						 rmr_desc->length,
+> > +						 prot, type);
+> > +		if (region) {
+> > +			region->fw_data.rmr.flags = e->flags;
+> > +			region->fw_data.rmr.sid = e->sid;
+> > +			list_add_tail(&region->list, head);
+> > +			rmrs++;
+> > +		}
+> > +	}
+> > +
+> > +	return (rmrs == 0) ? -ENODEV : 0;
+> > +}
+> > +
+> >   /**
+> >    * iort_iommu_msi_get_resv_regions - Reserved region driver helper
+> >    * @dev: Device from iommu_get_resv_regions()
+> > @@ -1108,6 +1156,8 @@ int iort_iommu_msi_get_resv_regions(struct
+> device *dev, struct list_head *head)
+> >   const struct iommu_ops *iort_iommu_configure_id(struct device *dev,
+> >   						const u32 *input_id)
+> >   { return NULL; }
+> > +int iort_iommu_get_rmrs(struct fwnode_handle *fwnode, struct list_head
+> *head)
+> > +{ return -ENODEV; }
+> >   #endif
+> >
+> >   static int nc_dma_get_range(struct device *dev, u64 *size)
+> > diff --git a/drivers/iommu/dma-iommu.c b/drivers/iommu/dma-iommu.c
+> > index 229ec65d98be..f893d460cfa4 100644
+> > --- a/drivers/iommu/dma-iommu.c
+> > +++ b/drivers/iommu/dma-iommu.c
+> > @@ -185,6 +185,9 @@ EXPORT_SYMBOL(iommu_put_dma_cookie);
+> >   int iommu_dma_get_rmrs(struct fwnode_handle *iommu_fwnode,
+> >   		       struct list_head *list)
+> >   {
+> > +	if (!is_of_node(iommu_fwnode))
+> > +		return iort_iommu_get_rmrs(iommu_fwnode, list);
+> > +
+> >   	return -EINVAL;
+> >   }
+> >   EXPORT_SYMBOL(iommu_dma_get_rmrs);
+> > @@ -200,6 +203,7 @@ EXPORT_SYMBOL(iommu_dma_get_rmrs);
+> >   void iommu_dma_put_rmrs(struct fwnode_handle *iommu_fwnode,
+> >   			struct list_head *list)
+> >   {
+> > +	generic_iommu_put_resv_regions(iommu_fwnode->dev, list);
+> >   }
+> >   EXPORT_SYMBOL(iommu_dma_put_rmrs);
+> >
+> > diff --git a/include/linux/acpi_iort.h b/include/linux/acpi_iort.h
+> > index 1a12baa58e40..e8c45fa59531 100644
+> > --- a/include/linux/acpi_iort.h
+> > +++ b/include/linux/acpi_iort.h
+> > @@ -39,6 +39,8 @@ const struct iommu_ops
+> *iort_iommu_configure_id(struct device *dev,
+> >   						const u32 *id_in);
+> >   int iort_iommu_msi_get_resv_regions(struct device *dev, struct list_head
+> *head);
+> >   phys_addr_t acpi_iort_dma_get_max_cpu_address(void);
+> > +int iort_iommu_get_rmrs(struct fwnode_handle *iommu_fwnode,
+> > +			struct list_head *list);
+> >   #else
+> >   static inline void acpi_iort_init(void) { }
+> >   static inline u32 iort_msi_map_id(struct device *dev, u32 id)
+> > @@ -59,6 +61,11 @@ int iort_iommu_msi_get_resv_regions(struct device
+> *dev, struct list_head *head)
+> >
+> >   static inline phys_addr_t acpi_iort_dma_get_max_cpu_address(void)
+> >   { return PHYS_ADDR_MAX; }
+> > +
+> > +static inline
+> > +int iort_iommu_get_rmrs(struct fwnode_handle *iommu_fwnode,
+> > +			struct list_head *list)
+> > +{ return -ENODEV; }
+> >   #endif
+> >
+> >   #endif /* __ACPI_IORT_H__ */
+> >
+_______________________________________________
+iommu mailing list
+iommu@lists.linux-foundation.org
+https://lists.linuxfoundation.org/mailman/listinfo/iommu
