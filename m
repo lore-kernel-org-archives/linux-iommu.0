@@ -7,57 +7,56 @@ X-Spam-Status: No, score=-10.3 required=3.0 tests=BAYES_00,
 	SPF_HELO_NONE,SPF_PASS,USER_AGENT_SANE_1 autolearn=ham autolearn_force=no
 	version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5A87AC48BDF
-	for <iommu@archiver.kernel.org>; Tue, 15 Jun 2021 13:39:42 +0000 (UTC)
-Received: from smtp3.osuosl.org (smtp3.osuosl.org [140.211.166.136])
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 73AE4C48BE8
+	for <iommu@archiver.kernel.org>; Tue, 15 Jun 2021 13:39:53 +0000 (UTC)
+Received: from smtp4.osuosl.org (smtp4.osuosl.org [140.211.166.137])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 1371D61477
-	for <iommu@archiver.kernel.org>; Tue, 15 Jun 2021 13:39:42 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 1371D61477
+	by mail.kernel.org (Postfix) with ESMTPS id 4267B61477
+	for <iommu@archiver.kernel.org>; Tue, 15 Jun 2021 13:39:53 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 4267B61477
 Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=lst.de
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by smtp3.osuosl.org (Postfix) with ESMTP id DA08660887;
-	Tue, 15 Jun 2021 13:39:41 +0000 (UTC)
-X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from smtp3.osuosl.org ([127.0.0.1])
-	by localhost (smtp3.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id N26_pP1SYgZG; Tue, 15 Jun 2021 13:39:40 +0000 (UTC)
-Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by smtp3.osuosl.org (Postfix) with ESMTPS id 768DC60623;
-	Tue, 15 Jun 2021 13:39:40 +0000 (UTC)
-Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 5DE7EC000E;
-	Tue, 15 Jun 2021 13:39:40 +0000 (UTC)
-Received: from smtp4.osuosl.org (smtp4.osuosl.org [IPv6:2605:bc80:3010::137])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 25C9CC000B
- for <iommu@lists.linux-foundation.org>; Tue, 15 Jun 2021 13:39:39 +0000 (UTC)
-Received: from localhost (localhost [127.0.0.1])
- by smtp4.osuosl.org (Postfix) with ESMTP id 11437403ED
- for <iommu@lists.linux-foundation.org>; Tue, 15 Jun 2021 13:39:39 +0000 (UTC)
+	by smtp4.osuosl.org (Postfix) with ESMTP id 0D96240358;
+	Tue, 15 Jun 2021 13:39:53 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
 Received: from smtp4.osuosl.org ([127.0.0.1])
- by localhost (smtp4.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id SBLPNiN5IyPE for <iommu@lists.linux-foundation.org>;
- Tue, 15 Jun 2021 13:39:38 +0000 (UTC)
+	by localhost (smtp4.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+	with ESMTP id BuKX3tqJj7m9; Tue, 15 Jun 2021 13:39:52 +0000 (UTC)
+Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
+	by smtp4.osuosl.org (Postfix) with ESMTPS id CC5694038A;
+	Tue, 15 Jun 2021 13:39:51 +0000 (UTC)
+Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
+	by lists.linuxfoundation.org (Postfix) with ESMTP id A6B85C000E;
+	Tue, 15 Jun 2021 13:39:51 +0000 (UTC)
+Received: from smtp3.osuosl.org (smtp3.osuosl.org [140.211.166.136])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id EF23BC000B
+ for <iommu@lists.linux-foundation.org>; Tue, 15 Jun 2021 13:39:49 +0000 (UTC)
+Received: from localhost (localhost [127.0.0.1])
+ by smtp3.osuosl.org (Postfix) with ESMTP id CF26A6087F
+ for <iommu@lists.linux-foundation.org>; Tue, 15 Jun 2021 13:39:49 +0000 (UTC)
+X-Virus-Scanned: amavisd-new at osuosl.org
+Received: from smtp3.osuosl.org ([127.0.0.1])
+ by localhost (smtp3.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+ with ESMTP id O96xthpvb_Ek for <iommu@lists.linux-foundation.org>;
+ Tue, 15 Jun 2021 13:39:49 +0000 (UTC)
 X-Greylist: from auto-whitelisted by SQLgrey-1.8.0
 Received: from verein.lst.de (verein.lst.de [213.95.11.211])
- by smtp4.osuosl.org (Postfix) with ESMTPS id 40EF54038A
- for <iommu@lists.linux-foundation.org>; Tue, 15 Jun 2021 13:39:38 +0000 (UTC)
+ by smtp3.osuosl.org (Postfix) with ESMTPS id 2F98860873
+ for <iommu@lists.linux-foundation.org>; Tue, 15 Jun 2021 13:39:49 +0000 (UTC)
 Received: by verein.lst.de (Postfix, from userid 2407)
- id 7B81967373; Tue, 15 Jun 2021 15:39:35 +0200 (CEST)
-Date: Tue, 15 Jun 2021 15:39:35 +0200
+ id 4BA0568AFE; Tue, 15 Jun 2021 15:39:46 +0200 (CEST)
+Date: Tue, 15 Jun 2021 15:39:45 +0200
 From: Christoph Hellwig <hch@lst.de>
 To: Claire Chang <tientzu@chromium.org>
-Subject: Re: [PATCH v10 06/12] swiotlb: Use is_dev_swiotlb_force for
- swiotlb data bouncing
-Message-ID: <20210615133935.GF20389@lst.de>
+Subject: Re: [PATCH v10 07/12] swiotlb: Move alloc_size to swiotlb_find_slots
+Message-ID: <20210615133945.GG20389@lst.de>
 References: <20210615132711.553451-1-tientzu@chromium.org>
- <20210615132711.553451-7-tientzu@chromium.org>
+ <20210615132711.553451-8-tientzu@chromium.org>
 MIME-Version: 1.0
 Content-Disposition: inline
-In-Reply-To: <20210615132711.553451-7-tientzu@chromium.org>
+In-Reply-To: <20210615132711.553451-8-tientzu@chromium.org>
 User-Agent: Mutt/1.5.17 (2007-11-01)
 Cc: heikki.krogerus@linux.intel.com, thomas.hellstrom@linux.intel.com,
  peterz@infradead.org, benh@kernel.crashing.org,
@@ -100,10 +99,9 @@ Content-Transfer-Encoding: 7bit
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-On Tue, Jun 15, 2021 at 09:27:05PM +0800, Claire Chang wrote:
-> Propagate the swiotlb_force setting into io_tlb_default_mem->force and
-> use it to determine whether to bounce the data or not. This will be
-> useful later to allow for different pools.
+On Tue, Jun 15, 2021 at 09:27:06PM +0800, Claire Chang wrote:
+> Rename find_slots to swiotlb_find_slots and move the maintenance of
+> alloc_size to it for better code reusability later.
 > 
 > Signed-off-by: Claire Chang <tientzu@chromium.org>
 
