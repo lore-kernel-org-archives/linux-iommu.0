@@ -2,83 +2,102 @@ Return-Path: <SRS0=7V87=LJ=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-5.3 required=3.0 tests=BAYES_00,
-	HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,NICE_REPLY_A,SPF_HELO_NONE,
-	USER_AGENT_SANE_1 autolearn=no autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-16.6 required=3.0 tests=BAYES_00,DKIM_INVALID,
+	DKIM_SIGNED,HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,
+	MENTIONS_GIT_HOSTING,SPF_HELO_NONE,SPF_PASS,USER_AGENT_GIT autolearn=ham
+	autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id EFC08C48BDF
-	for <iommu@archiver.kernel.org>; Tue, 15 Jun 2021 13:54:00 +0000 (UTC)
-Received: from smtp4.osuosl.org (smtp4.osuosl.org [140.211.166.137])
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 17F69C48BDF
+	for <iommu@archiver.kernel.org>; Tue, 15 Jun 2021 14:14:04 +0000 (UTC)
+Received: from smtp1.osuosl.org (smtp1.osuosl.org [140.211.166.138])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 7462D61474
-	for <iommu@archiver.kernel.org>; Tue, 15 Jun 2021 13:54:00 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 7462D61474
-Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=arm.com
+	by mail.kernel.org (Postfix) with ESMTPS id A3787613DA
+	for <iommu@archiver.kernel.org>; Tue, 15 Jun 2021 14:14:03 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org A3787613DA
+Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=bytedance.com
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by smtp4.osuosl.org (Postfix) with ESMTP id 42D31405E9;
-	Tue, 15 Jun 2021 13:54:00 +0000 (UTC)
+	by smtp1.osuosl.org (Postfix) with ESMTP id 6FC36838F0;
+	Tue, 15 Jun 2021 14:14:03 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from smtp4.osuosl.org ([127.0.0.1])
-	by localhost (smtp4.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id cFfNySrMprIJ; Tue, 15 Jun 2021 13:53:56 +0000 (UTC)
-Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [IPv6:2605:bc80:3010:104::8cd3:938])
-	by smtp4.osuosl.org (Postfix) with ESMTPS id 22B7240456;
-	Tue, 15 Jun 2021 13:53:56 +0000 (UTC)
+Received: from smtp1.osuosl.org ([127.0.0.1])
+	by localhost (smtp1.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+	with ESMTP id 1m8kUbSLAO8U; Tue, 15 Jun 2021 14:14:02 +0000 (UTC)
+Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
+	by smtp1.osuosl.org (Postfix) with ESMTPS id 16903835C8;
+	Tue, 15 Jun 2021 14:14:02 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id E0FA9C000E;
-	Tue, 15 Jun 2021 13:53:55 +0000 (UTC)
-Received: from smtp3.osuosl.org (smtp3.osuosl.org [140.211.166.136])
- by lists.linuxfoundation.org (Postfix) with ESMTP id BA407C000B
- for <iommu@lists.linux-foundation.org>; Tue, 15 Jun 2021 13:53:54 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id D1EF1C000E;
+	Tue, 15 Jun 2021 14:14:01 +0000 (UTC)
+Received: from smtp3.osuosl.org (smtp3.osuosl.org [IPv6:2605:bc80:3010::136])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 2E02FC000B
+ for <iommu@lists.linux-foundation.org>; Tue, 15 Jun 2021 14:14:00 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by smtp3.osuosl.org (Postfix) with ESMTP id 9BF74607BE
- for <iommu@lists.linux-foundation.org>; Tue, 15 Jun 2021 13:53:54 +0000 (UTC)
+ by smtp3.osuosl.org (Postfix) with ESMTP id 1CCE0607C9
+ for <iommu@lists.linux-foundation.org>; Tue, 15 Jun 2021 14:14:00 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
+Authentication-Results: smtp3.osuosl.org (amavisd-new);
+ dkim=pass (2048-bit key) header.d=bytedance-com.20150623.gappssmtp.com
 Received: from smtp3.osuosl.org ([127.0.0.1])
  by localhost (smtp3.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id 2HSSOOzEZIZp for <iommu@lists.linux-foundation.org>;
- Tue, 15 Jun 2021 13:53:52 +0000 (UTC)
-X-Greylist: domain auto-whitelisted by SQLgrey-1.8.0
-Received: from foss.arm.com (foss.arm.com [217.140.110.172])
- by smtp3.osuosl.org (Postfix) with ESMTP id 9AA496002E
- for <iommu@lists.linux-foundation.org>; Tue, 15 Jun 2021 13:53:52 +0000 (UTC)
-Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
- by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id DECF312FC;
- Tue, 15 Jun 2021 06:53:51 -0700 (PDT)
-Received: from [10.57.9.136] (unknown [10.57.9.136])
- by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id A01003F719;
- Tue, 15 Jun 2021 06:53:50 -0700 (PDT)
-Subject: Re: [PATCH] iommu/io-pgtable-arm: Optimize partial walk flush for
- large scatter-gather list
-To: Sai Prakash Ranjan <saiprakash.ranjan@codeaurora.org>,
- Krishna Reddy <vdumpa@nvidia.com>
-References: <20210609145315.25750-1-saiprakash.ranjan@codeaurora.org>
- <dbcd394a-4d85-316c-5dd0-033546a66132@arm.com>
- <c600e9b2534d54082a5272b508a7985f@codeaurora.org>
- <35bfd245-45e2-8083-b620-330d6dbd7bd7@arm.com>
- <12067ffb8243b220cf03e83aaac3e823@codeaurora.org>
- <266f190e-99ae-9175-cf13-7a77730af389@arm.com>
- <dfdabcdec99a4c6e3bf2b3c5eebe067f@codeaurora.org>
- <61c69d23-324a-85d7-2458-dfff8df9280b@arm.com>
- <BY5PR12MB37646698F37C00381EFF7C77B3349@BY5PR12MB3764.namprd12.prod.outlook.com>
- <07001b4ed6c0a491eacce6e4dc13ab5e@codeaurora.org>
- <BY5PR12MB376480219C42E5FCE0FE0FFBB3349@BY5PR12MB3764.namprd12.prod.outlook.com>
- <f749ba0957b516ab5f0ea57033d308c7@codeaurora.org>
- <BY5PR12MB376433B3FD0A59EF57C4522DB3319@BY5PR12MB3764.namprd12.prod.outlook.com>
- <5eb5146ab51a8fe0b558680d479a26cd@codeaurora.org>
-From: Robin Murphy <robin.murphy@arm.com>
-Message-ID: <da62ff1c-9b49-34d3-69a1-1a674e4a30f7@arm.com>
-Date: Tue, 15 Jun 2021 14:53:45 +0100
-User-Agent: Mozilla/5.0 (Windows NT 10.0; rv:78.0) Gecko/20100101
- Thunderbird/78.10.1
+ with ESMTP id x-jbteMZHfBw for <iommu@lists.linux-foundation.org>;
+ Tue, 15 Jun 2021 14:13:54 +0000 (UTC)
+X-Greylist: whitelisted by SQLgrey-1.8.0
+Received: from mail-pj1-x1030.google.com (mail-pj1-x1030.google.com
+ [IPv6:2607:f8b0:4864:20::1030])
+ by smtp3.osuosl.org (Postfix) with ESMTPS id 75924606B0
+ for <iommu@lists.linux-foundation.org>; Tue, 15 Jun 2021 14:13:54 +0000 (UTC)
+Received: by mail-pj1-x1030.google.com with SMTP id
+ g6-20020a17090adac6b029015d1a9a6f1aso1866227pjx.1
+ for <iommu@lists.linux-foundation.org>; Tue, 15 Jun 2021 07:13:54 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+ d=bytedance-com.20150623.gappssmtp.com; s=20150623;
+ h=from:to:cc:subject:date:message-id:mime-version
+ :content-transfer-encoding;
+ bh=/6gpQ02X7gBO8pjc42DY/js8aRctYucdCbW6L6v5kow=;
+ b=dYRwAWKN2A96134398w/mjn2jG0oZvcCX0VtYPA6DYSpi5gkdOjOmluKYziXbhtEx+
+ phKtRTapNBc5jyDIgnmJ70IrlaTujJgoYqwht215PRvRUdSJFR9JvonysplgkLltQBPk
+ Dxo2EMjkKUodP7549wef4eUlVm1SdII1yvodX/AxyZkrOyyXVQ5xfgk0NYSl2uuMbElZ
+ oM9FEtg8Lz31J8gD0vnyDpzhG/Y3AKU5+9af/KleS8Xv6zsM+yH0vEkHxMY+piRe/E79
+ IM/rNEVJbza1Dg3P/oZJlEX3vAA4F0ak1MkFZSRNHMpgaX+zvkm0ibxfVAxTisKdyLCw
+ F6AA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+ d=1e100.net; s=20161025;
+ h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+ :content-transfer-encoding;
+ bh=/6gpQ02X7gBO8pjc42DY/js8aRctYucdCbW6L6v5kow=;
+ b=Wi9lLDzdgfln9i1jg5fjR1dxmtv5008AjdoYZiyDDDZlPRFcSi9gW1artTenIbUTKW
+ 5880SkH8ydmgmJB6SYEE9GE5SFbYflu3VWZN5KXAFyBnIDHN6e4HxDnvIvSCq8501rxn
+ Am23QsmPCDdkttBd5uxS8z7Dgfk4dbttRiD+hBwfbgiPa+ekdTPCTuOu6h1emblzHrC7
+ phOmiTCJBQNp9k/TbE7Fs/8Hql8azoqhmIWuRqhL9ltYOKUE5fEzAxWV2nMvKcdyrAL4
+ j2+LWbdQ3Qr2y1dRAc7xfAd4Q9hWSbK+kLzVUBX1UxDYqrQd6t6aoBooReoYshRO74uH
+ AO4Q==
+X-Gm-Message-State: AOAM5302oWU4VeYkMrOUHpoGQczGKhveGVCHWC7G3vbwhgZmkMpA0yeT
+ G+P81B6fmEoRGZOAF0na7CnL
+X-Google-Smtp-Source: ABdhPJwkbgtquzUNz+rnnpPJarAojJTuaVzACvyc0OKWpIjl7r+D5LXQddCqzIPANuxSKCSy8dPI6Q==
+X-Received: by 2002:a17:902:82c9:b029:104:dd1d:9c51 with SMTP id
+ u9-20020a17090282c9b0290104dd1d9c51mr4356933plz.50.1623766433590; 
+ Tue, 15 Jun 2021 07:13:53 -0700 (PDT)
+Received: from localhost ([139.177.225.241])
+ by smtp.gmail.com with ESMTPSA id v8sm2817452pff.34.2021.06.15.07.13.52
+ (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+ Tue, 15 Jun 2021 07:13:53 -0700 (PDT)
+From: Xie Yongji <xieyongji@bytedance.com>
+To: mst@redhat.com, jasowang@redhat.com, stefanha@redhat.com,
+ sgarzare@redhat.com, parav@nvidia.com, hch@infradead.org,
+ christian.brauner@canonical.com, rdunlap@infradead.org,
+ willy@infradead.org, viro@zeniv.linux.org.uk, axboe@kernel.dk,
+ bcrl@kvack.org, corbet@lwn.net, mika.penttila@nextfour.com,
+ dan.carpenter@oracle.com, joro@8bytes.org, gregkh@linuxfoundation.org
+Subject: [PATCH v8 00/10] Introduce VDUSE - vDPA Device in Userspace
+Date: Tue, 15 Jun 2021 22:13:21 +0800
+Message-Id: <20210615141331.407-1-xieyongji@bytedance.com>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
-In-Reply-To: <5eb5146ab51a8fe0b558680d479a26cd@codeaurora.org>
-Content-Language: en-GB
-Cc: linux-arm-msm@vger.kernel.org, linux-kernel@vger.kernel.org,
- iommu@lists.linux-foundation.org, Thierry Reding <treding@nvidia.com>,
- Will Deacon <will@kernel.org>, linux-arm-kernel@lists.infradead.org
+Cc: kvm@vger.kernel.org, netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+ virtualization@lists.linux-foundation.org, iommu@lists.linux-foundation.org,
+ songmuchun@bytedance.com, linux-fsdevel@vger.kernel.org
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -91,101 +110,223 @@ List-Post: <mailto:iommu@lists.linux-foundation.org>
 List-Help: <mailto:iommu-request@lists.linux-foundation.org?subject=help>
 List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
  <mailto:iommu-request@lists.linux-foundation.org?subject=subscribe>
-Content-Transfer-Encoding: base64
-Content-Type: text/plain; charset="utf-8"; Format="flowed"
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-T24gMjAyMS0wNi0xNSAxMjo1MSwgU2FpIFByYWthc2ggUmFuamFuIHdyb3RlOgo+IEhpIEtyaXNo
-bmEsCj4gCj4gT24gMjAyMS0wNi0xNCAyMzoxOCwgS3Jpc2huYSBSZWRkeSB3cm90ZToKPj4+IFJp
-Z2h0IGJ1dCB3ZSB3b24ndCBrbm93IHVudGlsIHdlIHByb2ZpbGUgdGhlIHNwZWNpZmljIHVzZWNh
-c2VzIG9yIHRyeSAKPj4+IHRoZW0gaW4KPj4+IGdlbmVyaWMgd29ya2xvYWQgdG8gc2VlIGlmIHRo
-ZXkgYWZmZWN0IHRoZSBwZXJmb3JtYW5jZS4gU3VyZSwgb3ZlciAKPj4+IGludmFsaWRhdGlvbiBp
-cwo+Pj4gYSBjb25jZXJuIHdoZXJlIG11bHRpcGxlIGJ1ZmZlcnMgY2FuIGJlIG1hcHBlZCB0byBz
-YW1lIGNvbnRleHQgYW5kIAo+Pj4gdGhlIGNhY2hlCj4+PiBpcyBub3QgdXNhYmxlIGF0IHRoZSB0
-aW1lIGZvciBsb29rdXAgYW5kIHN1Y2ggYnV0IHdlIGRvbid0IGRvIGl0IGZvciAKPj4+IHNtYWxs
-IGJ1ZmZlcnMKPj4+IGFuZCBvbmx5IGZvciBsYXJnZSBidWZmZXJzIHdoaWNoIG1lYW5zIHRob3Vz
-YW5kcyBvZiBUTEIgZW50cnkgCj4+PiBtYXBwaW5ncyBpbgo+Pj4gd2hpY2ggY2FzZSBUTEJJQVNJ
-RCBpcyBwcmVmZXJyZWQgKG5vdGU6IEkgbWVudGlvbmVkIHRoZSBIVyB0ZWFtCj4+PiByZWNvbW1l
-bmRhdGlvbiB0byB1c2UgaXQgZm9yIGFueXRoaW5nIGdyZWF0ZXIgdGhhbiAxMjggVExCIGVudHJp
-ZXMpIAo+Pj4gaW4gbXkKPj4+IGVhcmxpZXIgcmVwbHkuIEFuZCBhbHNvIG5vdGUgdGhhdCB3ZSBk
-byB0aGlzIG9ubHkgZm9yIHBhcnRpYWwgd2FsayAKPj4+IGZsdXNoLCB3ZSBhcmUgbm90Cj4+PiBh
-cmJpdHJhcmlseSBjaGFuZ2luZyBhbGwgdGhlIFRMQklzIHRvIEFTSUQgYmFzZWQuCj4+Cj4+IE1v
-c3Qgb2YgdGhlIGhlYXZ5IGJ3IHVzZSBjYXNlcyBkb2VzIGludm9sdmUgcHJvY2Vzc2luZyBsYXJn
-ZXIgYnVmZmVycy4KPj4gV2hlbiB0aGUgcGh5c2ljYWwgbWVtb3J5IGlzIGFsbG9jYXRlZCBkaXMt
-Y29udGlndW91c2x5IGF0IHBhZ2Vfc2l6ZQo+PiAobGV0J3MgdXNlIDRLQiBoZXJlKQo+PiBncmFu
-dWxhcml0eSwgZWFjaCBhbGlnbmVkIDJNQiBjaHVua3MgSU9WQSB1bm1hcCB3b3VsZCBpbnZvbHZl
-Cj4+IHBlcmZvcm1pbmcgYSBUTEJJQVNJRAo+PiBhcyAyTUIgaXMgbm90IGEgbGVhZi4gRXNzZW50
-aWFsbHksIEl0IGhhcHBlbnMgYWxsIHRoZSB0aW1lIGR1cmluZwo+PiBsYXJnZSBidWZmZXIgdW5t
-YXBzIGFuZAo+PiBwb3RlbnRpYWxseSBpbXBhY3QgYWN0aXZlIHRyYWZmaWMgb24gb3RoZXIgbGFy
-Z2UgYnVmZmVycy4gRGVwZW5kaW5nIG9uIAo+PiBob3cgbXVjaAo+PiBsYXRlbmN5IEhXIGVuZ2lu
-ZXMgY2FuIGFic29yYiwgdGhlIG92ZXJmbG93L3VuZGVyZmxvdyBpc3N1ZXMgZm9yIElTTwo+PiBl
-bmdpbmVzIGNhbiBiZQo+PiBzcG9yYWRpYyBhbmQgdmVuZG9yIHNwZWNpZmljLgo+PiBQZXJmb3Jt
-aW5nIFRMQklBU0lEIGFzIGRlZmF1bHQgZm9yIGFsbCBTb0NzIGlzIG5vdCBhIHNhZmUgb3BlcmF0
-aW9uLgo+Pgo+IAo+IE9rIHNvIGZyb20gd2hhdCBJIGdhdGhlciBmcm9tIHRoaXMgaXMgdGhhdCBp
-dHMgbm90IGVhc3kgdG8gdGVzdCBmb3IgdGhlCj4gbmVnYXRpdmUgaW1wYWN0IGFuZCB5b3UgZG9u
-J3QgaGF2ZSBkYXRhIG9uIHN1Y2ggeWV0IGFuZCB0aGUgYmVoYXZpb3VyIGlzCj4gdmVyeSB2ZW5k
-b3Igc3BlY2lmaWMuIFRvIGFkZCBvbiBxY29tIGltcGwsIHdlIGhhdmUgc2V2ZXJhbCBwZXJmb3Jt
-YW5jZQo+IGltcHJvdmVtZW50cyBmb3IgVExCIGNhY2hlIGludmFsaWRhdGlvbnMgaW4gSFcgbGlr
-ZSB3YWl0LWZvci1zYWZlKGZvciAKPiByZWFsdGltZQo+IGNsaWVudHMgc3VjaCBhcyBjYW1lcmEg
-YW5kIGRpc3BsYXkpIGFuZCBmZXcgb3RoZXJzIHRvIGFsbG93IGZvciBjYWNoZQo+IGxvb2t1cHMv
-dXBkYXRlcyB3aGVuIFRMQkkgaXMgaW4gcHJvZ3Jlc3MgZm9yIHRoZSBzYW1lIGNvbnRleHQgYmFu
-aywgc28gCj4gYXRsZWFzdAo+IHdlIGFyZSBnb29kIGhlcmUuCj4gCj4+Cj4+PiBJIGFtIG5vIGNh
-bWVyYSBleHBlcnQgYnV0IGZyb20gd2hhdCB0aGUgY2FtZXJhIHRlYW0gbWVudGlvbmVkIGlzIHRo
-YXQgCj4+PiB0aGVyZQo+Pj4gaXMgYSB0aHJlYWQgd2hpY2ggZnJlZXMgbWVtb3J5KGxhcmdlIHVu
-dXNlZCBtZW1vcnkgYnVmZmVycykgCj4+PiBwZXJpb2RpY2FsbHkgd2hpY2gKPj4+IGVuZHMgdXAg
-dGFraW5nIGFyb3VuZCAxMDArbXMgYW5kIGNhdXNpbmcgc29tZSBjYW1lcmEgdGVzdCBmYWlsdXJl
-cyB3aXRoCj4+PiBmcmFtZSBkcm9wcy4gUGFyYWxsZWwgZWZmb3J0cyBhcmUgYWxyZWFkeSBiZWlu
-ZyBtYWRlIHRvIG9wdGltaXplIHRoaXMgCj4+PiB1c2FnZSBvZgo+Pj4gdGhyZWFkIGJ1dCBhcyBJ
-IG1lbnRpb25lZCBwcmV2aW91c2x5LCB0aGlzIGlzICpub3QgYSBjYW1lcmEgCj4+PiBzcGVjaWZp
-YyosIGxldHMgc2F5Cj4+PiBzb21lb25lIGVsc2UgaW52b2tlcyBzdWNoIGxhcmdlIHVubWFwcywg
-aXQncyBnb2luZyB0byBmYWNlIHRoZSBzYW1lIAo+Pj4gaXNzdWUuCj4+Cj4+IEZyb20gdGhlIGFi
-b3ZlLCBJdCBkb2Vzbid0IGxvb2sgbGlrZSB0aGUgcm9vdCBjYXVzZSBvZiBmcmFtZSBkcm9wcyBp
-cwo+PiBmdWxseSB1bmRlcnN0b29kLgo+PiBXaHkgaXMgMTAwK21zIGRlbGF5IGNhdXNpbmcgY2Ft
-ZXJhIGZyYW1lIGRyb3A/wqAgSXMgdGhlIHNhbWUgdGhyZWFkCj4+IHN1Ym1pdHRpbmcgdGhlIGJ1
-ZmZlcnMKPj4gdG8gY2FtZXJhIGFmdGVyIHVubWFwIGlzIGNvbXBsZXRlPyBJZiBub3QsIGhvdyBp
-cyB0aGUgdW5tYXAgbGF0ZW5jeQo+PiBjYXVzaW5nIGlzc3VlIGhlcmU/Cj4+Cj4gCj4gT2sgc2lu
-Y2UgeW91IGFyZSBpbnRlcmVzdGVkIGluIGNhbWVyYSB1c2VjYXNlLCBJIGhhdmUgcmVxdWVzdGVk
-IGZvciBtb3JlIAo+IGRldGFpbHMKPiBmcm9tIHRoZSBjYW1lcmEgdGVhbSBhbmQgd2lsbCBnaXZl
-IGl0IG9uY2UgdGhleSBjb21lYmFjay4gSG93ZXZlciBJIAo+IGRvbid0IHRoaW5rCj4gaXRzIGdv
-b2QgdG8gaGF2ZSB1bm1hcCBsYXRlbmN5IGF0IGFsbCBhbmQgdGhhdCBpcyBiZWluZyBhZGRyZXNz
-ZWQgYnkgCj4gdGhpcyBwYXRjaC4KPiAKPj4KPj4+ID4gSWYgdW5tYXAgaXMgcXVldWVkIGFuZCBw
-ZXJmb3JtZWQgb24gYSBiYWNrIGdyb3VuZCB0aHJlYWQsIHdvdWxkIGl0Cj4+PiA+IHJlc29sdmUg
-dGhlIGZyYW1lIGRyb3BzPwo+Pj4KPj4+IE5vdCBzdXJlIEkgdW5kZXJzdGFuZCB3aGF0IHlvdSBt
-ZWFuIGJ5IHF1ZXVpbmcgb24gYmFja2dyb3VuZCB0aHJlYWQgCj4+PiBidXQgd2l0aAo+Pj4gdGhh
-dCBvciBub3QsIHdlIHN0aWxsIGRvIHRoZSBzYW1lIG51bWJlciBvZiBUTEJJcyBhbmQgaG9wIHRo
-cm91Z2gKPj4+IGlvbW11LT5pby1wZ3RhYmxlLT5hcm0tc21tdSB0byBwZXJmb3JtIHRoZSB0aGUg
-dW5tYXAsIHNvIGhvdyB3aWxsIHRoYXQKPj4+IGhlbHA/Cj4+Cj4+IEkgbWVhbiBhZGRpbmcgdGhl
-IHVubWFwIHJlcXVlc3RzIGludG8gYSBxdWV1ZSBhbmQgcHJvY2Vzc2luZyB0aGVtIGZyb20KPj4g
-YSBkaWZmZXJlbnQgdGhyZWFkLgo+PiBJdCBpcyBub3QgdG8gcmVkdWNlIHRoZSBUTEJJcy4gQnV0
-LCBub3QgdG8gYmxvY2sgc3Vic2VxdWVudCBidWZmZXIKPj4gYWxsb2NhdGlvbiwgSU9WQSBtYXAg
-cmVxdWVzdHMsIGlmIHRoZXkKPj4gYXJlIGJlaW5nIHJlcXVlc3RlZCBmcm9tIHNhbWUgdGhyZWFk
-IHRoYXQgaXMgcGVyZm9ybWluZyB1bm1hcC4gSWYKPj4gdW5tYXAgaXMgYWxyZWFkeSBwZXJmb3Jt
-ZWQgZnJvbQo+PiBhIGRpZmZlcmVudCB0aHJlYWQsIHRoZW4gdGhlIGlzc3VlIHN0aWxsIG5lZWQg
-dG8gYmUgcm9vdCBjYXVzZWQgdG8KPj4gdW5kZXJzdGFuZCBpdCBmdWxseS4gQ2hlY2sgZm9yIGFu
-eQo+PiBzZXJpYWxpemF0aW9uIGlzc3Vlcy4KPj4KPiAKPiBUaGlzIHBhdGNoIGlzIHRvIG9wdGlt
-aXplIHVubWFwIGxhdGVuY3kgYmVjYXVzZSBvZiBsYXJnZSBudW1iZXIgb2YgbW1pbyAKPiB3cml0
-ZXMoVExCSVZBcykKPiB3YXN0aW5nIENQVSBjeWNsZXMgYW5kIG5vdCB0byBmaXggY2FtZXJhIGlz
-c3VlIHdoaWNoIGNhbiBwcm9iYWJseSBiZSAKPiBzb2x2ZWQgYnkKPiBwYXJhbGxlbGl6YXRpb24u
-IEl0IHNlZW1zIHRvIG1lIGxpa2UgeW91IGFyZSBvayB3aXRoIHRoZSB1bm1hcCBsYXRlbmN5IAo+
-IGluIGdlbmVyYWwKPiB3aGljaCB3ZSBhcmUgbm90IGFuZCB3YW50IHRvIGF2b2lkIHRoYXQgbGF0
-ZW5jeS4KPiAKPiBIaSBAUm9iaW4sIGZyb20gdGhlc2UgZGlzY3Vzc2lvbnMgaXQgc2VlbXMgdGhl
-eSBhcmUgbm90IG9rIHdpdGggdGhlIGNoYW5nZQo+IGZvciBhbGwgU29DIHZlbmRvciBpbXBsZW1l
-bnRhdGlvbnMgYW5kIGRvIG5vdCBoYXZlIGFueSBkYXRhIG9uIHN1Y2ggaW1wYWN0Lgo+IEFzIEkg
-bWVudGlvbmVkIGFib3ZlLCBvbiBRQ09NIHBsYXRmb3JtcyB3ZSBkbyBoYXZlIHNldmVyYWwgb3B0
-aW1pemF0aW9ucyAKPiBpbiBIVwo+IGZvciBUTEJJcyBhbmQgd291bGQgbGlrZSB0byBtYWtlIHVz
-ZSBvZiBpdCBhbmQgcmVkdWNlIHRoZSB1bm1hcCBsYXRlbmN5Lgo+IFdoYXQgZG8geW91IHRoaW5r
-LCBzaG91bGQgdGhpcyBiZSBtYWRlIGltcGxlbWVudGF0aW9uIHNwZWNpZmljPwoKWWVzLCBpdCBz
-b3VuZHMgbGlrZSB0aGVyZSdzIGVub3VnaCB1bmNlcnRhaW50eSBmb3Igbm93IHRoYXQgdGhpcyBu
-ZWVkcyAKdG8gYmUgYW4gb3B0LWluIGZlYXR1cmUuIEhvd2V2ZXIsIEkgc3RpbGwgdGhpbmsgdGhh
-dCBub24tc3RyaWN0IG1vZGUgCmNvdWxkIHVzZSBpdCBnZW5lcmljYWxseSwgc2luY2UgdGhhdCdz
-IGFsbCBhYm91dCBvdmVyLWludmFsaWRhdGluZyB0byAKc2F2ZSB0aW1lIG9uIGluZGl2aWR1YWwg
-dW5tYXBzIC0gYW5kIHJlbGF0aXZlbHkgbm9uLWRldGVybWluaXN0aWMgLSBhbHJlYWR5LgoKU28g
-bWF5YmUgd2UgaGF2ZSBhIHNlY29uZCBzZXQgb2YgaW9tbXVfZmx1c2hfb3BzLCBvciBqdXN0IGEg
-ZmxhZyAKc29tZXdoZXJlIHRvIGNvbnRyb2wgdGhlIHRsYl9mbHVzaF93YWxrIGZ1bmN0aW9ucyBp
-bnRlcm5hbGx5LCBhbmQgdGhlIApjaG9pY2UgY2FuIGJlIG1hZGUgaW4gdGhlIGlvbW11X2dldF9k
-bWFfc3RyaWN0KCkgdGVzdCwgYnV0IGFsc28gZm9yY2VkIApvbiBhbGwgdGhlIHRpbWUgYnkgeW91
-ciBpbml0X2NvbnRleHQgaG9vay4gV2hhdCBkbyB5b3UgcmVja29uPwoKUm9iaW4uCl9fX19fX19f
-X19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fCmlvbW11IG1haWxpbmcgbGlz
-dAppb21tdUBsaXN0cy5saW51eC1mb3VuZGF0aW9uLm9yZwpodHRwczovL2xpc3RzLmxpbnV4Zm91
-bmRhdGlvbi5vcmcvbWFpbG1hbi9saXN0aW5mby9pb21tdQ==
+This series introduces a framework that makes it possible to implement
+software-emulated vDPA devices in userspace. And to make it simple, the
+emulated vDPA device's control path is handled in the kernel and only the
+data path is implemented in the userspace.
+
+Since the emuldated vDPA device's control path is handled in the kernel,
+a message mechnism is introduced to make userspace be aware of the data
+path related changes. Userspace can use read()/write() to receive/reply
+the control messages.
+
+In the data path, the core is mapping dma buffer into VDUSE daemon's
+address space, which can be implemented in different ways depending on
+the vdpa bus to which the vDPA device is attached.
+
+In virtio-vdpa case, we implements a MMU-based on-chip IOMMU driver with
+bounce-buffering mechanism to achieve that. And in vhost-vdpa case, the dma
+buffer is reside in a userspace memory region which can be shared to the
+VDUSE userspace processs via transferring the shmfd.
+
+The details and our user case is shown below:
+
+------------------------    -------------------------   ----------------------------------------------
+|            Container |    |              QEMU(VM) |   |                               VDUSE daemon |
+|       ---------      |    |  -------------------  |   | ------------------------- ---------------- |
+|       |dev/vdx|      |    |  |/dev/vhost-vdpa-x|  |   | | vDPA device emulation | | block driver | |
+------------+-----------     -----------+------------   -------------+----------------------+---------
+            |                           |                            |                      |
+            |                           |                            |                      |
+------------+---------------------------+----------------------------+----------------------+---------
+|    | block device |           |  vhost device |            | vduse driver |          | TCP/IP |    |
+|    -------+--------           --------+--------            -------+--------          -----+----    |
+|           |                           |                           |                       |        |
+| ----------+----------       ----------+-----------         -------+-------                |        |
+| | virtio-blk driver |       |  vhost-vdpa driver |         | vdpa device |                |        |
+| ----------+----------       ----------+-----------         -------+-------                |        |
+|           |      virtio bus           |                           |                       |        |
+|   --------+----+-----------           |                           |                       |        |
+|                |                      |                           |                       |        |
+|      ----------+----------            |                           |                       |        |
+|      | virtio-blk device |            |                           |                       |        |
+|      ----------+----------            |                           |                       |        |
+|                |                      |                           |                       |        |
+|     -----------+-----------           |                           |                       |        |
+|     |  virtio-vdpa driver |           |                           |                       |        |
+|     -----------+-----------           |                           |                       |        |
+|                |                      |                           |    vdpa bus           |        |
+|     -----------+----------------------+---------------------------+------------           |        |
+|                                                                                        ---+---     |
+-----------------------------------------------------------------------------------------| NIC |------
+                                                                                         ---+---
+                                                                                            |
+                                                                                   ---------+---------
+                                                                                   | Remote Storages |
+                                                                                   -------------------
+
+We make use of it to implement a block device connecting to
+our distributed storage, which can be used both in containers and
+VMs. Thus, we can have an unified technology stack in this two cases.
+
+To test it with null-blk:
+
+  $ qemu-storage-daemon \
+      --chardev socket,id=charmonitor,path=/tmp/qmp.sock,server,nowait \
+      --monitor chardev=charmonitor \
+      --blockdev driver=host_device,cache.direct=on,aio=native,filename=/dev/nullb0,node-name=disk0 \
+      --export type=vduse-blk,id=test,node-name=disk0,writable=on,name=vduse-null,num-queues=16,queue-size=128
+
+The qemu-storage-daemon can be found at https://github.com/bytedance/qemu/tree/vduse
+
+To make the userspace VDUSE processes such as qemu-storage-daemon able to
+be run by an unprivileged user. We did some works on virtio driver to avoid
+trusting device, including:
+
+  - validating the used length: 
+
+    * https://lore.kernel.org/lkml/20210531135852.113-1-xieyongji@bytedance.com/
+    * https://lore.kernel.org/lkml/20210525125622.1203-1-xieyongji@bytedance.com/
+
+  - validating the device config:
+    
+    * https://lore.kernel.org/lkml/20210615104810.151-1-xieyongji@bytedance.com/
+
+  - validating the device response:
+
+    * https://lore.kernel.org/lkml/20210615105218.214-1-xieyongji@bytedance.com/
+
+Since I'm not sure if I missing something during auditing, especially on some
+virtio device drivers that I'm not familiar with, we limit the supported device
+type to virtio block device currently. The support for other device types can be
+added after the security issue of corresponding device driver is clarified or
+fixed in the future.
+
+Future work:
+  - Improve performance
+  - Userspace library (find a way to reuse device emulation code in qemu/rust-vmm)
+  - Support more device types
+
+V7 to V8:
+- Rebased to newest kernel tree
+- Rework VDUSE driver to handle the device's control path in kernel
+- Limit the supported device type to virtio block device
+- Export free_iova_fast()
+- Remove the virtio-blk and virtio-scsi patches (will send them alone)
+- Remove all module parameters
+- Use the same MAJOR for both control device and VDUSE devices
+- Avoid eventfd cleanup in vduse_dev_release()
+
+V6 to V7:
+- Export alloc_iova_fast()
+- Add get_config_size() callback
+- Add some patches to avoid trusting virtio devices
+- Add limited device emulation
+- Add some documents
+- Use workqueue to inject config irq
+- Add parameter on vq irq injecting
+- Rename vduse_domain_get_mapping_page() to vduse_domain_get_coherent_page()
+- Add WARN_ON() to catch message failure
+- Add some padding/reserved fields to uAPI structure
+- Fix some bugs
+- Rebase to vhost.git
+
+V5 to V6:
+- Export receive_fd() instead of __receive_fd()
+- Factor out the unmapping logic of pa and va separatedly
+- Remove the logic of bounce page allocation in page fault handler
+- Use PAGE_SIZE as IOVA allocation granule
+- Add EPOLLOUT support
+- Enable setting API version in userspace
+- Fix some bugs
+
+V4 to V5:
+- Remove the patch for irq binding
+- Use a single IOTLB for all types of mapping
+- Factor out vhost_vdpa_pa_map()
+- Add some sample codes in document
+- Use receice_fd_user() to pass file descriptor
+- Fix some bugs
+
+V3 to V4:
+- Rebase to vhost.git
+- Split some patches
+- Add some documents
+- Use ioctl to inject interrupt rather than eventfd
+- Enable config interrupt support
+- Support binding irq to the specified cpu
+- Add two module parameter to limit bounce/iova size
+- Create char device rather than anon inode per vduse
+- Reuse vhost IOTLB for iova domain
+- Rework the message mechnism in control path
+
+V2 to V3:
+- Rework the MMU-based IOMMU driver
+- Use the iova domain as iova allocator instead of genpool
+- Support transferring vma->vm_file in vhost-vdpa
+- Add SVA support in vhost-vdpa
+- Remove the patches on bounce pages reclaim
+
+V1 to V2:
+- Add vhost-vdpa support
+- Add some documents
+- Based on the vdpa management tool
+- Introduce a workqueue for irq injection
+- Replace interval tree with array map to store the iova_map
+
+Xie Yongji (10):
+  iova: Export alloc_iova_fast() and free_iova_fast();
+  file: Export receive_fd() to modules
+  eventfd: Increase the recursion depth of eventfd_signal()
+  vhost-iotlb: Add an opaque pointer for vhost IOTLB
+  vdpa: Add an opaque pointer for vdpa_config_ops.dma_map()
+  vdpa: factor out vhost_vdpa_pa_map() and vhost_vdpa_pa_unmap()
+  vdpa: Support transferring virtual addressing during DMA mapping
+  vduse: Implement an MMU-based IOMMU driver
+  vduse: Introduce VDUSE - vDPA Device in Userspace
+  Documentation: Add documentation for VDUSE
+
+ Documentation/userspace-api/index.rst              |    1 +
+ Documentation/userspace-api/ioctl/ioctl-number.rst |    1 +
+ Documentation/userspace-api/vduse.rst              |  222 +++
+ drivers/iommu/iova.c                               |    2 +
+ drivers/vdpa/Kconfig                               |   10 +
+ drivers/vdpa/Makefile                              |    1 +
+ drivers/vdpa/ifcvf/ifcvf_main.c                    |    2 +-
+ drivers/vdpa/mlx5/net/mlx5_vnet.c                  |    2 +-
+ drivers/vdpa/vdpa.c                                |    9 +-
+ drivers/vdpa/vdpa_sim/vdpa_sim.c                   |    8 +-
+ drivers/vdpa/vdpa_user/Makefile                    |    5 +
+ drivers/vdpa/vdpa_user/iova_domain.c               |  545 ++++++++
+ drivers/vdpa/vdpa_user/iova_domain.h               |   73 +
+ drivers/vdpa/vdpa_user/vduse_dev.c                 | 1453 ++++++++++++++++++++
+ drivers/vdpa/virtio_pci/vp_vdpa.c                  |    2 +-
+ drivers/vhost/iotlb.c                              |   20 +-
+ drivers/vhost/vdpa.c                               |  148 +-
+ fs/eventfd.c                                       |    2 +-
+ fs/file.c                                          |    6 +
+ include/linux/eventfd.h                            |    5 +-
+ include/linux/file.h                               |    7 +-
+ include/linux/vdpa.h                               |   21 +-
+ include/linux/vhost_iotlb.h                        |    3 +
+ include/uapi/linux/vduse.h                         |  143 ++
+ 24 files changed, 2641 insertions(+), 50 deletions(-)
+ create mode 100644 Documentation/userspace-api/vduse.rst
+ create mode 100644 drivers/vdpa/vdpa_user/Makefile
+ create mode 100644 drivers/vdpa/vdpa_user/iova_domain.c
+ create mode 100644 drivers/vdpa/vdpa_user/iova_domain.h
+ create mode 100644 drivers/vdpa/vdpa_user/vduse_dev.c
+ create mode 100644 include/uapi/linux/vduse.h
+
+-- 
+2.11.0
+
+_______________________________________________
+iommu mailing list
+iommu@lists.linux-foundation.org
+https://lists.linuxfoundation.org/mailman/listinfo/iommu
