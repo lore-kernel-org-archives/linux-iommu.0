@@ -7,77 +7,76 @@ X-Spam-Status: No, score=-16.6 required=3.0 tests=BAYES_00,DKIM_INVALID,
 	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_GIT
 	autolearn=unavailable autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 01C04C48BE8
-	for <iommu@archiver.kernel.org>; Wed, 16 Jun 2021 06:23:22 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8A3CCC48BE6
+	for <iommu@archiver.kernel.org>; Wed, 16 Jun 2021 06:23:32 +0000 (UTC)
 Received: from smtp3.osuosl.org (smtp3.osuosl.org [140.211.166.136])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id BEB2B61369
-	for <iommu@archiver.kernel.org>; Wed, 16 Jun 2021 06:23:21 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org BEB2B61369
+	by mail.kernel.org (Postfix) with ESMTPS id 52E9E613BF
+	for <iommu@archiver.kernel.org>; Wed, 16 Jun 2021 06:23:32 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 52E9E613BF
 Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=chromium.org
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by smtp3.osuosl.org (Postfix) with ESMTP id 8E1FF606C8;
-	Wed, 16 Jun 2021 06:23:21 +0000 (UTC)
+	by smtp3.osuosl.org (Postfix) with ESMTP id 28D0C608F7;
+	Wed, 16 Jun 2021 06:23:32 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
 Received: from smtp3.osuosl.org ([127.0.0.1])
 	by localhost (smtp3.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id Huf_t4BoK3j5; Wed, 16 Jun 2021 06:23:20 +0000 (UTC)
-Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [IPv6:2605:bc80:3010:104::8cd3:938])
-	by smtp3.osuosl.org (Postfix) with ESMTPS id 8149360690;
-	Wed, 16 Jun 2021 06:23:20 +0000 (UTC)
+	with ESMTP id hcGVhxM2ezxO; Wed, 16 Jun 2021 06:23:31 +0000 (UTC)
+Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
+	by smtp3.osuosl.org (Postfix) with ESMTPS id D7AF0606C8;
+	Wed, 16 Jun 2021 06:23:30 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 69EDEC000E;
-	Wed, 16 Jun 2021 06:23:20 +0000 (UTC)
-Received: from smtp4.osuosl.org (smtp4.osuosl.org [IPv6:2605:bc80:3010::137])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 7153CC000B
- for <iommu@lists.linux-foundation.org>; Wed, 16 Jun 2021 06:23:19 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id AE424C000E;
+	Wed, 16 Jun 2021 06:23:30 +0000 (UTC)
+Received: from smtp2.osuosl.org (smtp2.osuosl.org [140.211.166.133])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 1D082C000B
+ for <iommu@lists.linux-foundation.org>; Wed, 16 Jun 2021 06:23:29 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by smtp4.osuosl.org (Postfix) with ESMTP id 5DC114064D
- for <iommu@lists.linux-foundation.org>; Wed, 16 Jun 2021 06:23:19 +0000 (UTC)
+ by smtp2.osuosl.org (Postfix) with ESMTP id E057F401D0
+ for <iommu@lists.linux-foundation.org>; Wed, 16 Jun 2021 06:23:27 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Authentication-Results: smtp4.osuosl.org (amavisd-new);
+Authentication-Results: smtp2.osuosl.org (amavisd-new);
  dkim=pass (1024-bit key) header.d=chromium.org
-Received: from smtp4.osuosl.org ([127.0.0.1])
- by localhost (smtp4.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id 0aifZgE2j9Xp for <iommu@lists.linux-foundation.org>;
- Wed, 16 Jun 2021 06:23:18 +0000 (UTC)
+Received: from smtp2.osuosl.org ([127.0.0.1])
+ by localhost (smtp2.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+ with ESMTP id I2Rv34afdZN8 for <iommu@lists.linux-foundation.org>;
+ Wed, 16 Jun 2021 06:23:27 +0000 (UTC)
 X-Greylist: whitelisted by SQLgrey-1.8.0
-Received: from mail-pf1-x435.google.com (mail-pf1-x435.google.com
- [IPv6:2607:f8b0:4864:20::435])
- by smtp4.osuosl.org (Postfix) with ESMTPS id 7572F40622
- for <iommu@lists.linux-foundation.org>; Wed, 16 Jun 2021 06:23:18 +0000 (UTC)
-Received: by mail-pf1-x435.google.com with SMTP id s14so1329652pfd.9
- for <iommu@lists.linux-foundation.org>; Tue, 15 Jun 2021 23:23:18 -0700 (PDT)
+Received: from mail-pf1-x42c.google.com (mail-pf1-x42c.google.com
+ [IPv6:2607:f8b0:4864:20::42c])
+ by smtp2.osuosl.org (Postfix) with ESMTPS id 066B3400BF
+ for <iommu@lists.linux-foundation.org>; Wed, 16 Jun 2021 06:23:27 +0000 (UTC)
+Received: by mail-pf1-x42c.google.com with SMTP id q25so1339225pfh.7
+ for <iommu@lists.linux-foundation.org>; Tue, 15 Jun 2021 23:23:27 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=chromium.org; s=google;
  h=from:to:cc:subject:date:message-id:in-reply-to:references
  :mime-version:content-transfer-encoding;
- bh=4uQkI0iLfUCijuOepwUkiZcSLaj5vr9UchvXk27nRw0=;
- b=i8vpfgPJ9bPz7Z1Al2l+J6+mN/Xl35Xu1XE2A22X8XR/Zq8Z0ZAIZW1TRjKf3ok7nZ
- cVehop1oa/YF7qhuElQsqUmYkYcuOfcjTbNEd4KCXAUWVnRRY2/VoP7cICHlXtOyLHuZ
- HdMm+p5xlQYTdItRv/hg6efoNr1CAhA7jHk00=
+ bh=//XvPeeos9rDreXGanBmItfF/L7P6KDOKno/Q971SkI=;
+ b=GTtz78AqdP/K84KwrCCWY+yBsCK9twtSZHRyXSvV/h2opQBzsZMnn60wDFOZINUrOZ
+ 0URxUFIrHTlHymU+oZhs7U+vJo/L/4H0gb8jFa6zVJwXW+SAx8XnjdNmFzoaBe1BaNN9
+ vTj8mjzgSlRGdibtD+PBwbIuvuowKhfhtnBHE=
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
  d=1e100.net; s=20161025;
  h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
  :references:mime-version:content-transfer-encoding;
- bh=4uQkI0iLfUCijuOepwUkiZcSLaj5vr9UchvXk27nRw0=;
- b=AvMpgtXAeSY8OSd2z1fNPE1bNRjddgfvVcJBAG6+ZO+MrkyH9ELoQH5b+p4m7is9S1
- iKbpX3vn8r9Yg6yvjQgeGAp+/haUX/yNS7ghTmTsCRC0wYDKcSVlTPJ+TQuUgQXtmyjj
- uwZOtuDN8VHT3/pUl83iffsUU5DSWr2/O1Ju0v8jWnsP/PerDL4T0tZSL7tgRZuJvgy6
- T/DEVDZyKDByiyAfmW0IgLrzTf9nuk0pVSPLGDMsxa8Jm3E8bAJiAocK2zrQ9XQxg9kh
- kTSaDLsy0gMApPrRHNdwW3A5YdY3fdTRdth+JrjZKyiSqkq9cL+524I+2PeSfCUgoUmd
- N5Xw==
-X-Gm-Message-State: AOAM5305/l0qtmbGPTKTyuETcH4SQjL/fxJtBASYrC14p7wHeEkwMLO1
- Z8zzCLrL5lPhLZ6ThePtwn22ZA==
-X-Google-Smtp-Source: ABdhPJzlTcTJITW8roEO1Qs6Oi6y2lI0FUouCTwChc7sW4UDPIgbdbK3IINTmKh9YLKWu+Lc6AZqFA==
-X-Received: by 2002:aa7:9118:0:b029:2eb:2ef3:f197 with SMTP id
- 24-20020aa791180000b02902eb2ef3f197mr7844722pfh.27.1623824597932; 
- Tue, 15 Jun 2021 23:23:17 -0700 (PDT)
+ bh=//XvPeeos9rDreXGanBmItfF/L7P6KDOKno/Q971SkI=;
+ b=ripgU3T517T+DaXkI+p6XK7v+QJRQ/RaEIb8O4Kk38JHNKt3XNEwlEH4apG39/vCQU
+ rQMkucFlgaEblOGtG8PPVfY2SvsjH/5DqqcIQYtpvy7K2rAXcAk7PcFwIvLJxU7NXTw+
+ oI5YW49aRv14wvqyI1X/r/zcOGHEVI6HTnNAywoHjennV+OXUYiABC0sFjoRrzVhg7ZG
+ Gshsiv53Ix13LiN8u0mII1EAp9hZtVSVOQ5Xbi7myH1+0vSCqhvORW0KTbEPy+iS4GKP
+ L33GiH67BsHVQf+Cv8Mf8Zgyywla4KryAovDy/WYo3K9CYc0p1yucKjcu6umONwABH+l
+ MfqQ==
+X-Gm-Message-State: AOAM531P6OkhopeAthlBEknAFTY5Tu7KKHbP1XP5uXLSzudJXoM53FMB
+ ZcXBtp10NtOtTYWlWTMC8aXKVQ==
+X-Google-Smtp-Source: ABdhPJz6EHrLqZ49j895TpaXeqXynHRoBE7uCDjKORaP6OUYcVW6K9wplRvx6YQFZ25ZL8MPI1QCfA==
+X-Received: by 2002:a65:49c3:: with SMTP id t3mr3542154pgs.150.1623824606539; 
+ Tue, 15 Jun 2021 23:23:26 -0700 (PDT)
 Received: from localhost ([2401:fa00:95:205:3d52:f252:7393:1992])
- by smtp.gmail.com with UTF8SMTPSA id a187sm943813pfb.66.2021.06.15.23.23.10
+ by smtp.gmail.com with UTF8SMTPSA id w23sm962726pfi.220.2021.06.15.23.23.19
  (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
- Tue, 15 Jun 2021 23:23:17 -0700 (PDT)
+ Tue, 15 Jun 2021 23:23:26 -0700 (PDT)
 From: Claire Chang <tientzu@chromium.org>
 To: Rob Herring <robh+dt@kernel.org>, mpe@ellerman.id.au,
  Joerg Roedel <joro@8bytes.org>, Will Deacon <will@kernel.org>,
@@ -85,9 +84,9 @@ To: Rob Herring <robh+dt@kernel.org>, mpe@ellerman.id.au,
  Konrad Rzeszutek Wilk <konrad.wilk@oracle.com>, boris.ostrovsky@oracle.com,
  jgross@suse.com, Christoph Hellwig <hch@lst.de>,
  Marek Szyprowski <m.szyprowski@samsung.com>
-Subject: [PATCH v12 08/12] swiotlb: Refactor swiotlb_tbl_unmap_single
-Date: Wed, 16 Jun 2021 14:21:53 +0800
-Message-Id: <20210616062157.953777-9-tientzu@chromium.org>
+Subject: [PATCH v12 09/12] swiotlb: Add restricted DMA alloc/free support
+Date: Wed, 16 Jun 2021 14:21:54 +0800
+Message-Id: <20210616062157.953777-10-tientzu@chromium.org>
 X-Mailer: git-send-email 2.32.0.272.g935e593368-goog
 In-Reply-To: <20210616062157.953777-1-tientzu@chromium.org>
 References: <20210616062157.953777-1-tientzu@chromium.org>
@@ -131,74 +130,262 @@ Content-Transfer-Encoding: 7bit
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-Add a new function, swiotlb_release_slots, to make the code reusable for
-supporting different bounce buffer pools.
+Add the functions, swiotlb_{alloc,free} and is_swiotlb_for_alloc to
+support the memory allocation from restricted DMA pool.
+
+The restricted DMA pool is preferred if available.
+
+Note that since coherent allocation needs remapping, one must set up
+another device coherent pool by shared-dma-pool and use
+dma_alloc_from_dev_coherent instead for atomic coherent allocation.
 
 Signed-off-by: Claire Chang <tientzu@chromium.org>
-Reviewed-by: Christoph Hellwig <hch@lst.de>
 ---
- kernel/dma/swiotlb.c | 35 ++++++++++++++++++++---------------
- 1 file changed, 20 insertions(+), 15 deletions(-)
+ include/linux/swiotlb.h | 26 ++++++++++++++++++++++
+ kernel/dma/direct.c     | 49 +++++++++++++++++++++++++++++++----------
+ kernel/dma/swiotlb.c    | 38 ++++++++++++++++++++++++++++++--
+ 3 files changed, 99 insertions(+), 14 deletions(-)
 
-diff --git a/kernel/dma/swiotlb.c b/kernel/dma/swiotlb.c
-index b59e689aa79d..688c6e0c43ff 100644
---- a/kernel/dma/swiotlb.c
-+++ b/kernel/dma/swiotlb.c
-@@ -555,27 +555,15 @@ phys_addr_t swiotlb_tbl_map_single(struct device *dev, phys_addr_t orig_addr,
- 	return tlb_addr;
- }
+diff --git a/include/linux/swiotlb.h b/include/linux/swiotlb.h
+index 8d8855c77d9a..a73fad460162 100644
+--- a/include/linux/swiotlb.h
++++ b/include/linux/swiotlb.h
+@@ -85,6 +85,7 @@ extern enum swiotlb_force swiotlb_force;
+  * @debugfs:	The dentry to debugfs.
+  * @late_alloc:	%true if allocated using the page allocator
+  * @force_bounce: %true if swiotlb bouncing is forced
++ * @for_alloc:  %true if the pool is used for memory allocation
+  */
+ struct io_tlb_mem {
+ 	phys_addr_t start;
+@@ -96,6 +97,7 @@ struct io_tlb_mem {
+ 	struct dentry *debugfs;
+ 	bool late_alloc;
+ 	bool force_bounce;
++	bool for_alloc;
+ 	struct io_tlb_slot {
+ 		phys_addr_t orig_addr;
+ 		size_t alloc_size;
+@@ -156,4 +158,28 @@ static inline void swiotlb_adjust_size(unsigned long size)
+ extern void swiotlb_print_info(void);
+ extern void swiotlb_set_max_segment(unsigned int);
  
--/*
-- * tlb_addr is the physical address of the bounce buffer to unmap.
-- */
--void swiotlb_tbl_unmap_single(struct device *hwdev, phys_addr_t tlb_addr,
--			      size_t mapping_size, enum dma_data_direction dir,
--			      unsigned long attrs)
-+static void swiotlb_release_slots(struct device *dev, phys_addr_t tlb_addr)
- {
--	struct io_tlb_mem *mem = hwdev->dma_io_tlb_mem;
-+	struct io_tlb_mem *mem = dev->dma_io_tlb_mem;
- 	unsigned long flags;
--	unsigned int offset = swiotlb_align_offset(hwdev, tlb_addr);
-+	unsigned int offset = swiotlb_align_offset(dev, tlb_addr);
- 	int index = (tlb_addr - offset - mem->start) >> IO_TLB_SHIFT;
- 	int nslots = nr_slots(mem->slots[index].alloc_size + offset);
- 	int count, i;
- 
--	/*
--	 * First, sync the memory before unmapping the entry
--	 */
--	if (!(attrs & DMA_ATTR_SKIP_CPU_SYNC) &&
--	    (dir == DMA_FROM_DEVICE || dir == DMA_BIDIRECTIONAL))
--		swiotlb_bounce(hwdev, tlb_addr, mapping_size, DMA_FROM_DEVICE);
--
- 	/*
- 	 * Return the buffer to the free list by setting the corresponding
- 	 * entries to indicate the number of contiguous entries available.
-@@ -610,6 +598,23 @@ void swiotlb_tbl_unmap_single(struct device *hwdev, phys_addr_t tlb_addr,
- 	spin_unlock_irqrestore(&mem->lock, flags);
- }
- 
-+/*
-+ * tlb_addr is the physical address of the bounce buffer to unmap.
-+ */
-+void swiotlb_tbl_unmap_single(struct device *dev, phys_addr_t tlb_addr,
-+			      size_t mapping_size, enum dma_data_direction dir,
-+			      unsigned long attrs)
-+{
-+	/*
-+	 * First, sync the memory before unmapping the entry
-+	 */
-+	if (!(attrs & DMA_ATTR_SKIP_CPU_SYNC) &&
-+	    (dir == DMA_FROM_DEVICE || dir == DMA_BIDIRECTIONAL))
-+		swiotlb_bounce(dev, tlb_addr, mapping_size, DMA_FROM_DEVICE);
++#ifdef CONFIG_DMA_RESTRICTED_POOL
++struct page *swiotlb_alloc(struct device *dev, size_t size);
++bool swiotlb_free(struct device *dev, struct page *page, size_t size);
 +
-+	swiotlb_release_slots(dev, tlb_addr);
++static inline bool is_swiotlb_for_alloc(struct device *dev)
++{
++	return dev->dma_io_tlb_mem->for_alloc;
++}
++#else
++static inline struct page *swiotlb_alloc(struct device *dev, size_t size)
++{
++	return NULL;
++}
++static inline bool swiotlb_free(struct device *dev, struct page *page,
++				size_t size)
++{
++	return false;
++}
++static inline bool is_swiotlb_for_alloc(struct device *dev)
++{
++	return false;
++}
++#endif /* CONFIG_DMA_RESTRICTED_POOL */
++
+ #endif /* __LINUX_SWIOTLB_H */
+diff --git a/kernel/dma/direct.c b/kernel/dma/direct.c
+index a92465b4eb12..2de33e5d302b 100644
+--- a/kernel/dma/direct.c
++++ b/kernel/dma/direct.c
+@@ -75,6 +75,15 @@ static bool dma_coherent_ok(struct device *dev, phys_addr_t phys, size_t size)
+ 		min_not_zero(dev->coherent_dma_mask, dev->bus_dma_limit);
+ }
+ 
++static void __dma_direct_free_pages(struct device *dev, struct page *page,
++				    size_t size)
++{
++	if (IS_ENABLED(CONFIG_DMA_RESTRICTED_POOL) &&
++	    swiotlb_free(dev, page, size))
++		return;
++	dma_free_contiguous(dev, page, size);
 +}
 +
- void swiotlb_sync_single_for_device(struct device *dev, phys_addr_t tlb_addr,
- 		size_t size, enum dma_data_direction dir)
+ static struct page *__dma_direct_alloc_pages(struct device *dev, size_t size,
+ 		gfp_t gfp)
  {
+@@ -86,6 +95,16 @@ static struct page *__dma_direct_alloc_pages(struct device *dev, size_t size,
+ 
+ 	gfp |= dma_direct_optimal_gfp_mask(dev, dev->coherent_dma_mask,
+ 					   &phys_limit);
++	if (IS_ENABLED(CONFIG_DMA_RESTRICTED_POOL) &&
++	    is_swiotlb_for_alloc(dev)) {
++		page = swiotlb_alloc(dev, size);
++		if (page && !dma_coherent_ok(dev, page_to_phys(page), size)) {
++			__dma_direct_free_pages(dev, page, size);
++			return NULL;
++		}
++		return page;
++	}
++
+ 	page = dma_alloc_contiguous(dev, size, gfp);
+ 	if (page && !dma_coherent_ok(dev, page_to_phys(page), size)) {
+ 		dma_free_contiguous(dev, page, size);
+@@ -142,7 +161,7 @@ void *dma_direct_alloc(struct device *dev, size_t size,
+ 		gfp |= __GFP_NOWARN;
+ 
+ 	if ((attrs & DMA_ATTR_NO_KERNEL_MAPPING) &&
+-	    !force_dma_unencrypted(dev)) {
++	    !force_dma_unencrypted(dev) && !is_swiotlb_for_alloc(dev)) {
+ 		page = __dma_direct_alloc_pages(dev, size, gfp & ~__GFP_ZERO);
+ 		if (!page)
+ 			return NULL;
+@@ -155,18 +174,23 @@ void *dma_direct_alloc(struct device *dev, size_t size,
+ 	}
+ 
+ 	if (!IS_ENABLED(CONFIG_ARCH_HAS_DMA_SET_UNCACHED) &&
+-	    !IS_ENABLED(CONFIG_DMA_DIRECT_REMAP) &&
+-	    !dev_is_dma_coherent(dev))
++	    !IS_ENABLED(CONFIG_DMA_DIRECT_REMAP) && !dev_is_dma_coherent(dev) &&
++	    !is_swiotlb_for_alloc(dev))
+ 		return arch_dma_alloc(dev, size, dma_handle, gfp, attrs);
+ 
+ 	/*
+ 	 * Remapping or decrypting memory may block. If either is required and
+ 	 * we can't block, allocate the memory from the atomic pools.
++	 * If restricted DMA (i.e., is_swiotlb_for_alloc) is required, one must
++	 * set up another device coherent pool by shared-dma-pool and use
++	 * dma_alloc_from_dev_coherent instead.
+ 	 */
+ 	if (IS_ENABLED(CONFIG_DMA_COHERENT_POOL) &&
+ 	    !gfpflags_allow_blocking(gfp) &&
+ 	    (force_dma_unencrypted(dev) ||
+-	     (IS_ENABLED(CONFIG_DMA_DIRECT_REMAP) && !dev_is_dma_coherent(dev))))
++	     (IS_ENABLED(CONFIG_DMA_DIRECT_REMAP) &&
++	      !dev_is_dma_coherent(dev))) &&
++	    !is_swiotlb_for_alloc(dev))
+ 		return dma_direct_alloc_from_pool(dev, size, dma_handle, gfp);
+ 
+ 	/* we always manually zero the memory once we are done */
+@@ -237,7 +261,7 @@ void *dma_direct_alloc(struct device *dev, size_t size,
+ 			return NULL;
+ 	}
+ out_free_pages:
+-	dma_free_contiguous(dev, page, size);
++	__dma_direct_free_pages(dev, page, size);
+ 	return NULL;
+ }
+ 
+@@ -247,15 +271,15 @@ void dma_direct_free(struct device *dev, size_t size,
+ 	unsigned int page_order = get_order(size);
+ 
+ 	if ((attrs & DMA_ATTR_NO_KERNEL_MAPPING) &&
+-	    !force_dma_unencrypted(dev)) {
++	    !force_dma_unencrypted(dev) && !is_swiotlb_for_alloc(dev)) {
+ 		/* cpu_addr is a struct page cookie, not a kernel address */
+ 		dma_free_contiguous(dev, cpu_addr, size);
+ 		return;
+ 	}
+ 
+ 	if (!IS_ENABLED(CONFIG_ARCH_HAS_DMA_SET_UNCACHED) &&
+-	    !IS_ENABLED(CONFIG_DMA_DIRECT_REMAP) &&
+-	    !dev_is_dma_coherent(dev)) {
++	    !IS_ENABLED(CONFIG_DMA_DIRECT_REMAP) && !dev_is_dma_coherent(dev) &&
++	    !is_swiotlb_for_alloc(dev)) {
+ 		arch_dma_free(dev, size, cpu_addr, dma_addr, attrs);
+ 		return;
+ 	}
+@@ -273,7 +297,7 @@ void dma_direct_free(struct device *dev, size_t size,
+ 	else if (IS_ENABLED(CONFIG_ARCH_HAS_DMA_CLEAR_UNCACHED))
+ 		arch_dma_clear_uncached(cpu_addr, size);
+ 
+-	dma_free_contiguous(dev, dma_direct_to_page(dev, dma_addr), size);
++	__dma_direct_free_pages(dev, dma_direct_to_page(dev, dma_addr), size);
+ }
+ 
+ struct page *dma_direct_alloc_pages(struct device *dev, size_t size,
+@@ -283,7 +307,8 @@ struct page *dma_direct_alloc_pages(struct device *dev, size_t size,
+ 	void *ret;
+ 
+ 	if (IS_ENABLED(CONFIG_DMA_COHERENT_POOL) &&
+-	    force_dma_unencrypted(dev) && !gfpflags_allow_blocking(gfp))
++	    force_dma_unencrypted(dev) && !gfpflags_allow_blocking(gfp) &&
++	    !is_swiotlb_for_alloc(dev))
+ 		return dma_direct_alloc_from_pool(dev, size, dma_handle, gfp);
+ 
+ 	page = __dma_direct_alloc_pages(dev, size, gfp);
+@@ -310,7 +335,7 @@ struct page *dma_direct_alloc_pages(struct device *dev, size_t size,
+ 	*dma_handle = phys_to_dma_direct(dev, page_to_phys(page));
+ 	return page;
+ out_free_pages:
+-	dma_free_contiguous(dev, page, size);
++	__dma_direct_free_pages(dev, page, size);
+ 	return NULL;
+ }
+ 
+@@ -329,7 +354,7 @@ void dma_direct_free_pages(struct device *dev, size_t size,
+ 	if (force_dma_unencrypted(dev))
+ 		set_memory_encrypted((unsigned long)vaddr, 1 << page_order);
+ 
+-	dma_free_contiguous(dev, page, size);
++	__dma_direct_free_pages(dev, page, size);
+ }
+ 
+ #if defined(CONFIG_ARCH_HAS_SYNC_DMA_FOR_DEVICE) || \
+diff --git a/kernel/dma/swiotlb.c b/kernel/dma/swiotlb.c
+index 688c6e0c43ff..d3d4f1a25fee 100644
+--- a/kernel/dma/swiotlb.c
++++ b/kernel/dma/swiotlb.c
+@@ -462,8 +462,9 @@ static int swiotlb_find_slots(struct device *dev, phys_addr_t orig_addr,
+ 
+ 	index = wrap = wrap_index(mem, ALIGN(mem->index, stride));
+ 	do {
+-		if ((slot_addr(tbl_dma_addr, index) & iotlb_align_mask) !=
+-		    (orig_addr & iotlb_align_mask)) {
++		if (orig_addr &&
++		    (slot_addr(tbl_dma_addr, index) & iotlb_align_mask) !=
++			    (orig_addr & iotlb_align_mask)) {
+ 			index = wrap_index(mem, index + 1);
+ 			continue;
+ 		}
+@@ -702,3 +703,36 @@ static int __init swiotlb_create_default_debugfs(void)
+ late_initcall(swiotlb_create_default_debugfs);
+ 
+ #endif
++
++#ifdef CONFIG_DMA_RESTRICTED_POOL
++struct page *swiotlb_alloc(struct device *dev, size_t size)
++{
++	struct io_tlb_mem *mem = dev->dma_io_tlb_mem;
++	phys_addr_t tlb_addr;
++	int index;
++
++	if (!mem)
++		return NULL;
++
++	index = swiotlb_find_slots(dev, 0, size);
++	if (index == -1)
++		return NULL;
++
++	tlb_addr = slot_addr(mem->start, index);
++
++	return pfn_to_page(PFN_DOWN(tlb_addr));
++}
++
++bool swiotlb_free(struct device *dev, struct page *page, size_t size)
++{
++	phys_addr_t tlb_addr = page_to_phys(page);
++
++	if (!is_swiotlb_buffer(dev, tlb_addr))
++		return false;
++
++	swiotlb_release_slots(dev, tlb_addr);
++
++	return true;
++}
++
++#endif /* CONFIG_DMA_RESTRICTED_POOL */
 -- 
 2.32.0.272.g935e593368-goog
 
