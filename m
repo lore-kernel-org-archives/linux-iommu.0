@@ -2,123 +2,99 @@ Return-Path: <SRS0=eGnl=LK=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-13.6 required=3.0 tests=BAYES_00,DKIM_INVALID,
+X-Spam-Status: No, score=-8.6 required=3.0 tests=BAYES_00,DKIM_INVALID,
 	DKIM_SIGNED,HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,
-	MENTIONS_GIT_HOSTING,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED autolearn=ham
-	autolearn_force=no version=3.4.0
+	SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED autolearn=unavailable autolearn_force=no
+	version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 35F0EC48BE8
-	for <iommu@archiver.kernel.org>; Wed, 16 Jun 2021 06:25:42 +0000 (UTC)
-Received: from smtp2.osuosl.org (smtp2.osuosl.org [140.211.166.133])
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 73EEFC48BE5
+	for <iommu@archiver.kernel.org>; Wed, 16 Jun 2021 06:34:57 +0000 (UTC)
+Received: from smtp1.osuosl.org (smtp1.osuosl.org [140.211.166.138])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id E63D2613C2
-	for <iommu@archiver.kernel.org>; Wed, 16 Jun 2021 06:25:41 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org E63D2613C2
-Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=chromium.org
+	by mail.kernel.org (Postfix) with ESMTPS id 22FE46101B
+	for <iommu@archiver.kernel.org>; Wed, 16 Jun 2021 06:34:57 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 22FE46101B
+Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=linaro.org
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by smtp2.osuosl.org (Postfix) with ESMTP id B2A13400CF;
-	Wed, 16 Jun 2021 06:25:41 +0000 (UTC)
+	by smtp1.osuosl.org (Postfix) with ESMTP id E853483B1D;
+	Wed, 16 Jun 2021 06:34:56 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from smtp2.osuosl.org ([127.0.0.1])
-	by localhost (smtp2.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id Kq6BQA5VzNRw; Wed, 16 Jun 2021 06:25:40 +0000 (UTC)
-Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by smtp2.osuosl.org (Postfix) with ESMTPS id 5F38F400A9;
-	Wed, 16 Jun 2021 06:25:40 +0000 (UTC)
-Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 2873DC000E;
-	Wed, 16 Jun 2021 06:25:40 +0000 (UTC)
-Received: from smtp1.osuosl.org (smtp1.osuosl.org [IPv6:2605:bc80:3010::138])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 8E380C000B
- for <iommu@lists.linux-foundation.org>; Wed, 16 Jun 2021 06:25:38 +0000 (UTC)
-Received: from localhost (localhost [127.0.0.1])
- by smtp1.osuosl.org (Postfix) with ESMTP id 7BD5683547
- for <iommu@lists.linux-foundation.org>; Wed, 16 Jun 2021 06:25:38 +0000 (UTC)
-X-Virus-Scanned: amavisd-new at osuosl.org
-Authentication-Results: smtp1.osuosl.org (amavisd-new);
- dkim=pass (1024-bit key) header.d=chromium.org
 Received: from smtp1.osuosl.org ([127.0.0.1])
- by localhost (smtp1.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id dvfyj04TB4zy for <iommu@lists.linux-foundation.org>;
- Wed, 16 Jun 2021 06:25:37 +0000 (UTC)
+	by localhost (smtp1.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+	with ESMTP id QFWvwfTV33Uy; Wed, 16 Jun 2021 06:34:56 +0000 (UTC)
+Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
+	by smtp1.osuosl.org (Postfix) with ESMTPS id E557783AFD;
+	Wed, 16 Jun 2021 06:34:55 +0000 (UTC)
+Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
+	by lists.linuxfoundation.org (Postfix) with ESMTP id BC1CFC000E;
+	Wed, 16 Jun 2021 06:34:55 +0000 (UTC)
+Received: from smtp4.osuosl.org (smtp4.osuosl.org [IPv6:2605:bc80:3010::137])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id F3A00C000B
+ for <iommu@lists.linux-foundation.org>; Wed, 16 Jun 2021 06:34:53 +0000 (UTC)
+Received: from localhost (localhost [127.0.0.1])
+ by smtp4.osuosl.org (Postfix) with ESMTP id D0D8440358
+ for <iommu@lists.linux-foundation.org>; Wed, 16 Jun 2021 06:34:52 +0000 (UTC)
+X-Virus-Scanned: amavisd-new at osuosl.org
+Authentication-Results: smtp4.osuosl.org (amavisd-new);
+ dkim=pass (2048-bit key) header.d=linaro.org
+Received: from smtp4.osuosl.org ([127.0.0.1])
+ by localhost (smtp4.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+ with ESMTP id 4RIuYTFhSOxm for <iommu@lists.linux-foundation.org>;
+ Wed, 16 Jun 2021 06:34:50 +0000 (UTC)
 X-Greylist: whitelisted by SQLgrey-1.8.0
-Received: from mail-io1-xd30.google.com (mail-io1-xd30.google.com
- [IPv6:2607:f8b0:4864:20::d30])
- by smtp1.osuosl.org (Postfix) with ESMTPS id 633D7834FC
- for <iommu@lists.linux-foundation.org>; Wed, 16 Jun 2021 06:25:37 +0000 (UTC)
-Received: by mail-io1-xd30.google.com with SMTP id d9so1871902ioo.2
- for <iommu@lists.linux-foundation.org>; Tue, 15 Jun 2021 23:25:37 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=chromium.org; s=google;
- h=mime-version:references:in-reply-to:from:date:message-id:subject:to
- :cc; bh=ahYpHO9B/+cUbYyFJd5R0IQOMPNRU7XLvRaVxvXYrwA=;
- b=jKYxRf5BLwVd+aOILdWyEQ9NEe6v5aYFQD8W2wYKnYxbx/kY+mKyD67t59FT+p6nN5
- Mpk6mfOcBOKrQiveQedh4qw5JCQtFiqVzV2RVlhONm9wznK7lpmoPFuDVcf3/tc5Ov2+
- CFj22Re2YUg+UI7p9tNWP8f+4QqCG/oIc1mEo=
+Received: from mail-ed1-x52f.google.com (mail-ed1-x52f.google.com
+ [IPv6:2a00:1450:4864:20::52f])
+ by smtp4.osuosl.org (Postfix) with ESMTPS id 985784032B
+ for <iommu@lists.linux-foundation.org>; Wed, 16 Jun 2021 06:34:50 +0000 (UTC)
+Received: by mail-ed1-x52f.google.com with SMTP id t7so1165899edd.5
+ for <iommu@lists.linux-foundation.org>; Tue, 15 Jun 2021 23:34:50 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linaro.org; s=google;
+ h=date:from:to:cc:subject:message-id:references:mime-version
+ :content-disposition:in-reply-to;
+ bh=tQ+aFclY7mFrJp03PtWRtGMxzfcha+8ZtdzqiTJIvPY=;
+ b=sodWDtxolW8SZ4J/QbhtvXgN8sJJ1NwrEnLg7GNAcl4DP6pyr87NJe+hWWQH+h8kOs
+ tDJAUDHm36j6aaV5hGC5Tq0vuUYwMTRnevpzFTvaJ2dNI7W+gqoOfCmg26dC2cfogWXy
+ pmWeyw04BWf7kCfFYvHz9ei/2wECnUW2ltF1VbbxccX6NtYbkHj7mbLx4saqs42dHXtm
+ qQuiM1JwK63NVlVfNzgA6ziUbKAGQQwtarrvlo3q8bsQ07oGsGI8YoEaKHgDgp7chOvs
+ noOKUqGAbLPJub8gCD/oCpjqYFP6qlhUOXHwKk1VNct+Ta3stxyC85QB0J6GPsZhuHx/
+ 2t3w==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
  d=1e100.net; s=20161025;
- h=x-gm-message-state:mime-version:references:in-reply-to:from:date
- :message-id:subject:to:cc;
- bh=ahYpHO9B/+cUbYyFJd5R0IQOMPNRU7XLvRaVxvXYrwA=;
- b=RSIydRxQBjguf9Vk2/adzDf4sj8gMeuhNEO7GaFhLa4q9mQ7SbopqazQuxtK8ClFa0
- vIOlUJ7dyShznBNjgoR+6IPSlixja1Ugp4NOkiOM0aboYaxHWBh7iXIZ+hl4rXnta9u2
- SrhdRle7gZjvlg/LN5QDCTL6PcspP+zTTQOUtuT6hf7OYjUxHKyhvNPbBEBVpEa55lUl
- HRinccixJxhUqEVN9Dul9jEBXsG1H7PHZYWQsVU16O7367IY3izQT5F7dEmZ8DWa4QAo
- xBn752i+9krQCIMkSWzXsQtBk0kOElrownC5plTtsJf3r96Byq9dpbS9EE98gFtpncPt
- 0Djw==
-X-Gm-Message-State: AOAM531hx8vp8ENmnxH8fkU8XkXpZvZvrmI8ZsNS4z+xEvsZoW0lBUhp
- cfL3snxJsID2Mh1EE2gUKfOnIACnAUUqVQ==
-X-Google-Smtp-Source: ABdhPJyuNb0uvp56iIY1pPDX+OED790FiX2QRU9UGm8WU9QOKCgffulnlUypOvTurSkQwGgUfi/jDA==
-X-Received: by 2002:a6b:b74e:: with SMTP id h75mr2417270iof.125.1623824736179; 
- Tue, 15 Jun 2021 23:25:36 -0700 (PDT)
-Received: from mail-il1-f171.google.com (mail-il1-f171.google.com.
- [209.85.166.171])
- by smtp.gmail.com with ESMTPSA id e1sm711806ilm.7.2021.06.15.23.25.35
- for <iommu@lists.linux-foundation.org>
- (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
- Tue, 15 Jun 2021 23:25:35 -0700 (PDT)
-Received: by mail-il1-f171.google.com with SMTP id b14so1379326ilq.7
- for <iommu@lists.linux-foundation.org>; Tue, 15 Jun 2021 23:25:35 -0700 (PDT)
-X-Received: by 2002:a05:6e02:e8d:: with SMTP id
- t13mr2425681ilj.189.1623824734590; 
- Tue, 15 Jun 2021 23:25:34 -0700 (PDT)
+ h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+ :mime-version:content-disposition:in-reply-to;
+ bh=tQ+aFclY7mFrJp03PtWRtGMxzfcha+8ZtdzqiTJIvPY=;
+ b=JsBdYy6jB+jQsnGbm6bKm5RP45WgJR5GM+bVx08UFEeOgbAtCSc9EbjPym6h3sPcCe
+ wVD7SsrT90SmOJRigRMAdz3GNoGG6UQbrB6PDVMEX42WzAv8aDnghRl0YZdgfLzQHKr2
+ xG88sCBZqdWNur2m9ElcuT3Aju7jSJ94DGZeVq1VIx5UgTFIL3BrVUIToXwG9GvuwehZ
+ b44oP/WBMq5KQnBkX8oeaO/mhkqv3KGLevKKWgiMQa2RPIGo5ZDmKoNeUp6qlnXoU5a9
+ cq1HUjnkmw0Jxlux+Jqm+bCY7A9Vg1YgtqyuRaT1VsKKvZyaqsfxUtsyQcH+HP/q9NPU
+ 7AHg==
+X-Gm-Message-State: AOAM532/Pcmhl+kKbNYVClJw8ZJccKS4SPhsGqh11ABHmElGX6ttkXtz
+ iT08KUdw6XV/0d1nR1u0UFBO6Q==
+X-Google-Smtp-Source: ABdhPJytn6iV+QqlLDcEBGVV9cwmZHvnBd0b+hyOWIjCF87Ob32rWc20CRqdZ0W0K7O0ZWMVsmoufA==
+X-Received: by 2002:a05:6402:3514:: with SMTP id
+ b20mr2254993edd.12.1623825288710; 
+ Tue, 15 Jun 2021 23:34:48 -0700 (PDT)
+Received: from myrica (adsl-84-226-111-173.adslplus.ch. [84.226.111.173])
+ by smtp.gmail.com with ESMTPSA id b10sm649538edx.4.2021.06.15.23.34.47
+ (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+ Tue, 15 Jun 2021 23:34:48 -0700 (PDT)
+Date: Wed, 16 Jun 2021 08:34:28 +0200
+From: Jean-Philippe Brucker <jean-philippe@linaro.org>
+To: rjw@rjwysocki.net, lenb@kernel.org, joro@8bytes.org, mst@redhat.com
+Subject: Re: [PATCH v4 0/6] Add support for ACPI VIOT
+Message-ID: <YMmbdBuKzkoxEgme@myrica>
+References: <20210610075130.67517-1-jean-philippe@linaro.org>
 MIME-Version: 1.0
-References: <20210616035240.840463-1-tientzu@chromium.org>
-In-Reply-To: <20210616035240.840463-1-tientzu@chromium.org>
-From: Claire Chang <tientzu@chromium.org>
-Date: Wed, 16 Jun 2021 14:25:23 +0800
-X-Gmail-Original-Message-ID: <CALiNf29qdqmk4Uzysz3VfGd=QcQse8Hu0MajcMeOauykxMyqXg@mail.gmail.com>
-Message-ID: <CALiNf29qdqmk4Uzysz3VfGd=QcQse8Hu0MajcMeOauykxMyqXg@mail.gmail.com>
-Subject: Re: [PATCH v11 00/12] Restricted DMA
-To: Rob Herring <robh+dt@kernel.org>, mpe@ellerman.id.au,
- Joerg Roedel <joro@8bytes.org>, 
- Will Deacon <will@kernel.org>, Frank Rowand <frowand.list@gmail.com>, 
- Konrad Rzeszutek Wilk <konrad.wilk@oracle.com>, boris.ostrovsky@oracle.com,
- jgross@suse.com, 
- Christoph Hellwig <hch@lst.de>, Marek Szyprowski <m.szyprowski@samsung.com>
-Cc: heikki.krogerus@linux.intel.com, thomas.hellstrom@linux.intel.com,
- peterz@infradead.org, benh@kernel.crashing.org,
- joonas.lahtinen@linux.intel.com, dri-devel@lists.freedesktop.org,
- chris@chris-wilson.co.uk, grant.likely@arm.com, paulus@samba.org,
- mingo@kernel.org, Jianxiong Gao <jxgao@google.com>, sstabellini@kernel.org,
- Saravana Kannan <saravanak@google.com>, xypron.glpk@gmx.de,
- "Rafael J . Wysocki" <rafael.j.wysocki@intel.com>,
- Bartosz Golaszewski <bgolaszewski@baylibre.com>, bskeggs@redhat.com,
- linux-pci@vger.kernel.org, xen-devel@lists.xenproject.org,
- Thierry Reding <treding@nvidia.com>, intel-gfx@lists.freedesktop.org,
- matthew.auld@intel.com, linux-devicetree <devicetree@vger.kernel.org>,
- Daniel Vetter <daniel@ffwll.ch>, airlied@linux.ie,
- maarten.lankhorst@linux.intel.com, linuxppc-dev@lists.ozlabs.org,
- jani.nikula@linux.intel.com, Nicolas Boichat <drinkcat@chromium.org>,
- rodrigo.vivi@intel.com, Bjorn Helgaas <bhelgaas@google.com>,
- Dan Williams <dan.j.williams@intel.com>,
- Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
- Greg KH <gregkh@linuxfoundation.org>, Randy Dunlap <rdunlap@infradead.org>,
- lkml <linux-kernel@vger.kernel.org>,
- "list@263.net:IOMMU DRIVERS" <iommu@lists.linux-foundation.org>,
- Jim Quinlan <james.quinlan@broadcom.com>, Robin Murphy <robin.murphy@arm.com>,
- bauerman@linux.ibm.com
+Content-Disposition: inline
+In-Reply-To: <20210610075130.67517-1-jean-philippe@linaro.org>
+Cc: kevin.tian@intel.com, catalin.marinas@arm.com, sudeep.holla@arm.com,
+ robin.murphy@arm.com, virtualization@lists.linux-foundation.org,
+ linux-acpi@vger.kernel.org, iommu@lists.linux-foundation.org,
+ sebastien.boeuf@intel.com, guohanjun@huawei.com, will@kernel.org,
+ dwmw2@infradead.org, linux-arm-kernel@lists.infradead.org
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -136,142 +112,71 @@ Content-Transfer-Encoding: 7bit
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-v12: https://lore.kernel.org/patchwork/cover/1447254/
+Hi Rafael,
 
-On Wed, Jun 16, 2021 at 11:52 AM Claire Chang <tientzu@chromium.org> wrote:
->
-> This series implements mitigations for lack of DMA access control on
-> systems without an IOMMU, which could result in the DMA accessing the
-> system memory at unexpected times and/or unexpected addresses, possibly
-> leading to data leakage or corruption.
->
-> For example, we plan to use the PCI-e bus for Wi-Fi and that PCI-e bus is
-> not behind an IOMMU. As PCI-e, by design, gives the device full access to
-> system memory, a vulnerability in the Wi-Fi firmware could easily escalate
-> to a full system exploit (remote wifi exploits: [1a], [1b] that shows a
-> full chain of exploits; [2], [3]).
->
-> To mitigate the security concerns, we introduce restricted DMA. Restricted
-> DMA utilizes the existing swiotlb to bounce streaming DMA in and out of a
-> specially allocated region and does memory allocation from the same region.
-> The feature on its own provides a basic level of protection against the DMA
-> overwriting buffer contents at unexpected times. However, to protect
-> against general data leakage and system memory corruption, the system needs
-> to provide a way to restrict the DMA to a predefined memory region (this is
-> usually done at firmware level, e.g. MPU in ATF on some ARM platforms [4]).
->
-> [1a] https://googleprojectzero.blogspot.com/2017/04/over-air-exploiting-broadcoms-wi-fi_4.html
-> [1b] https://googleprojectzero.blogspot.com/2017/04/over-air-exploiting-broadcoms-wi-fi_11.html
-> [2] https://blade.tencent.com/en/advisories/qualpwn/
-> [3] https://www.bleepingcomputer.com/news/security/vulnerabilities-found-in-highly-popular-firmware-for-wifi-chips/
-> [4] https://github.com/ARM-software/arm-trusted-firmware/blob/master/plat/mediatek/mt8183/drivers/emi_mpu/emi_mpu.c#L132
->
-> v11:
-> - Rebase against swiotlb devel/for-linus-5.14
-> - s/mempry/memory/g
-> - exchange the order of patch 09/12 and 10/12
-> https://lore.kernel.org/patchwork/cover/1446882/
->
-> v10:
-> Address the comments in v9 to
->   - fix the dev->dma_io_tlb_mem assignment
->   - propagate swiotlb_force setting into io_tlb_default_mem->force
->   - move set_memory_decrypted out of swiotlb_init_io_tlb_mem
->   - move debugfs_dir declaration into the main CONFIG_DEBUG_FS block
->   - add swiotlb_ prefix to find_slots and release_slots
->   - merge the 3 alloc/free related patches
->   - move the CONFIG_DMA_RESTRICTED_POOL later
->
-> v9:
-> Address the comments in v7 to
->   - set swiotlb active pool to dev->dma_io_tlb_mem
->   - get rid of get_io_tlb_mem
->   - dig out the device struct for is_swiotlb_active
->   - move debugfs_create_dir out of swiotlb_create_debugfs
->   - do set_memory_decrypted conditionally in swiotlb_init_io_tlb_mem
->   - use IS_ENABLED in kernel/dma/direct.c
->   - fix redefinition of 'of_dma_set_restricted_buffer'
-> https://lore.kernel.org/patchwork/cover/1445081/
->
-> v8:
-> - Fix reserved-memory.txt and add the reg property in example.
-> - Fix sizeof for of_property_count_elems_of_size in
->   drivers/of/address.c#of_dma_set_restricted_buffer.
-> - Apply Will's suggestion to try the OF node having DMA configuration in
->   drivers/of/address.c#of_dma_set_restricted_buffer.
-> - Fix typo in the comment of drivers/of/address.c#of_dma_set_restricted_buffer.
-> - Add error message for PageHighMem in
->   kernel/dma/swiotlb.c#rmem_swiotlb_device_init and move it to
->   rmem_swiotlb_setup.
-> - Fix the message string in rmem_swiotlb_setup.
-> https://lore.kernel.org/patchwork/cover/1437112/
->
-> v7:
-> Fix debugfs, PageHighMem and comment style in rmem_swiotlb_device_init
-> https://lore.kernel.org/patchwork/cover/1431031/
->
-> v6:
-> Address the comments in v5
-> https://lore.kernel.org/patchwork/cover/1423201/
->
-> v5:
-> Rebase on latest linux-next
-> https://lore.kernel.org/patchwork/cover/1416899/
->
-> v4:
-> - Fix spinlock bad magic
-> - Use rmem->name for debugfs entry
-> - Address the comments in v3
-> https://lore.kernel.org/patchwork/cover/1378113/
->
-> v3:
-> Using only one reserved memory region for both streaming DMA and memory
-> allocation.
-> https://lore.kernel.org/patchwork/cover/1360992/
->
-> v2:
-> Building on top of swiotlb.
-> https://lore.kernel.org/patchwork/cover/1280705/
->
-> v1:
-> Using dma_map_ops.
-> https://lore.kernel.org/patchwork/cover/1271660/
->
-> Claire Chang (12):
->   swiotlb: Refactor swiotlb init functions
->   swiotlb: Refactor swiotlb_create_debugfs
->   swiotlb: Set dev->dma_io_tlb_mem to the swiotlb pool used
->   swiotlb: Update is_swiotlb_buffer to add a struct device argument
->   swiotlb: Update is_swiotlb_active to add a struct device argument
->   swiotlb: Use is_dev_swiotlb_force for swiotlb data bouncing
->   swiotlb: Move alloc_size to swiotlb_find_slots
->   swiotlb: Refactor swiotlb_tbl_unmap_single
->   swiotlb: Add restricted DMA alloc/free support
->   swiotlb: Add restricted DMA pool initialization
->   dt-bindings: of: Add restricted DMA pool
->   of: Add plumbing for restricted DMA pool
->
->  .../reserved-memory/reserved-memory.txt       |  36 ++-
->  drivers/base/core.c                           |   4 +
->  drivers/gpu/drm/i915/gem/i915_gem_internal.c  |   2 +-
->  drivers/gpu/drm/nouveau/nouveau_ttm.c         |   2 +-
->  drivers/iommu/dma-iommu.c                     |  12 +-
->  drivers/of/address.c                          |  33 +++
->  drivers/of/device.c                           |   3 +
->  drivers/of/of_private.h                       |   6 +
->  drivers/pci/xen-pcifront.c                    |   2 +-
->  drivers/xen/swiotlb-xen.c                     |   2 +-
->  include/linux/device.h                        |   4 +
->  include/linux/swiotlb.h                       |  40 ++-
->  kernel/dma/Kconfig                            |  14 +
->  kernel/dma/direct.c                           |  60 +++--
->  kernel/dma/direct.h                           |   8 +-
->  kernel/dma/swiotlb.c                          | 255 +++++++++++++-----
->  16 files changed, 380 insertions(+), 103 deletions(-)
->
-> --
-> 2.32.0.272.g935e593368-goog
->
+On Thu, Jun 10, 2021 at 09:51:27AM +0200, Jean-Philippe Brucker wrote:
+> Add a driver for the ACPI VIOT table, which provides topology
+> information for para-virtual IOMMUs. Enable virtio-iommu on
+> non-devicetree platforms, including x86.
+> 
+> Since v3 [1] I fixed a build bug for !CONFIG_IOMMU_API. Joerg offered to
+> take this series through the IOMMU tree, which requires Acks for patches
+> 1-3.
+
+I was wondering if you could take a look at patches 1-3, otherwise we'll
+miss the mark for 5.14 since I won't be able to resend next week. The
+series adds support for virtio-iommu on QEMU and cloud hypervisor.
+
+Thanks,
+Jean
+
+> 
+> You can find a QEMU implementation at [2], with extra support for
+> testing all VIOT nodes including MMIO-based endpoints and IOMMU.
+> This series is at [3].
+> 
+> [1] https://lore.kernel.org/linux-iommu/20210602154444.1077006-1-jean-philippe@linaro.org/
+> [2] https://jpbrucker.net/git/qemu/log/?h=virtio-iommu/acpi
+> [3] https://jpbrucker.net/git/linux/log/?h=virtio-iommu/acpi
+> 
+> 
+> Jean-Philippe Brucker (6):
+>   ACPI: arm64: Move DMA setup operations out of IORT
+>   ACPI: Move IOMMU setup code out of IORT
+>   ACPI: Add driver for the VIOT table
+>   iommu/dma: Pass address limit rather than size to
+>     iommu_setup_dma_ops()
+>   iommu/dma: Simplify calls to iommu_setup_dma_ops()
+>   iommu/virtio: Enable x86 support
+> 
+>  drivers/acpi/Kconfig         |   3 +
+>  drivers/iommu/Kconfig        |   4 +-
+>  drivers/acpi/Makefile        |   2 +
+>  drivers/acpi/arm64/Makefile  |   1 +
+>  include/acpi/acpi_bus.h      |   3 +
+>  include/linux/acpi.h         |   3 +
+>  include/linux/acpi_iort.h    |  14 +-
+>  include/linux/acpi_viot.h    |  19 ++
+>  include/linux/dma-iommu.h    |   4 +-
+>  arch/arm64/mm/dma-mapping.c  |   2 +-
+>  drivers/acpi/arm64/dma.c     |  50 +++++
+>  drivers/acpi/arm64/iort.c    | 129 ++-----------
+>  drivers/acpi/bus.c           |   2 +
+>  drivers/acpi/scan.c          |  78 +++++++-
+>  drivers/acpi/viot.c          | 364 +++++++++++++++++++++++++++++++++++
+>  drivers/iommu/amd/iommu.c    |   9 +-
+>  drivers/iommu/dma-iommu.c    |  17 +-
+>  drivers/iommu/intel/iommu.c  |  10 +-
+>  drivers/iommu/virtio-iommu.c |   8 +
+>  MAINTAINERS                  |   8 +
+>  20 files changed, 580 insertions(+), 150 deletions(-)
+>  create mode 100644 include/linux/acpi_viot.h
+>  create mode 100644 drivers/acpi/arm64/dma.c
+>  create mode 100644 drivers/acpi/viot.c
+> 
+> -- 
+> 2.31.1
+> 
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
