@@ -5,76 +5,78 @@ X-Spam-Level:
 X-Spam-Status: No, score=-16.6 required=3.0 tests=BAYES_00,DKIM_INVALID,
 	DKIM_SIGNED,HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_CR_TRAILER,INCLUDES_PATCH,
 	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_GIT
-	autolearn=unavailable autolearn_force=no version=3.4.0
+	autolearn=ham autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B321EC48BE5
-	for <iommu@archiver.kernel.org>; Wed, 16 Jun 2021 03:53:08 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6BD42C49361
+	for <iommu@archiver.kernel.org>; Wed, 16 Jun 2021 03:53:18 +0000 (UTC)
 Received: from smtp3.osuosl.org (smtp3.osuosl.org [140.211.166.136])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 682F561369
-	for <iommu@archiver.kernel.org>; Wed, 16 Jun 2021 03:53:08 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 682F561369
+	by mail.kernel.org (Postfix) with ESMTPS id 2330F61369
+	for <iommu@archiver.kernel.org>; Wed, 16 Jun 2021 03:53:18 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 2330F61369
 Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=chromium.org
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by smtp3.osuosl.org (Postfix) with ESMTP id 36584605A1;
-	Wed, 16 Jun 2021 03:53:08 +0000 (UTC)
+	by smtp3.osuosl.org (Postfix) with ESMTP id EEF08605A1;
+	Wed, 16 Jun 2021 03:53:17 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
 Received: from smtp3.osuosl.org ([127.0.0.1])
 	by localhost (smtp3.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id QpHn50cYCvYS; Wed, 16 Jun 2021 03:53:05 +0000 (UTC)
-Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [IPv6:2605:bc80:3010:104::8cd3:938])
-	by smtp3.osuosl.org (Postfix) with ESMTPS id C744960599;
-	Wed, 16 Jun 2021 03:53:04 +0000 (UTC)
+	with ESMTP id QUz9VpAWobYP; Wed, 16 Jun 2021 03:53:17 +0000 (UTC)
+Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
+	by smtp3.osuosl.org (Postfix) with ESMTPS id EB27F60599;
+	Wed, 16 Jun 2021 03:53:16 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id A4414C000E;
-	Wed, 16 Jun 2021 03:53:04 +0000 (UTC)
-Received: from smtp3.osuosl.org (smtp3.osuosl.org [140.211.166.136])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 5CD0FC000B
- for <iommu@lists.linux-foundation.org>; Wed, 16 Jun 2021 03:53:03 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id D5543C000E;
+	Wed, 16 Jun 2021 03:53:16 +0000 (UTC)
+Received: from smtp1.osuosl.org (smtp1.osuosl.org [140.211.166.138])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 66608C000B
+ for <iommu@lists.linux-foundation.org>; Wed, 16 Jun 2021 03:53:15 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by smtp3.osuosl.org (Postfix) with ESMTP id 4AFA8605A1
- for <iommu@lists.linux-foundation.org>; Wed, 16 Jun 2021 03:53:03 +0000 (UTC)
+ by smtp1.osuosl.org (Postfix) with ESMTP id 626B282F41
+ for <iommu@lists.linux-foundation.org>; Wed, 16 Jun 2021 03:53:15 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from smtp3.osuosl.org ([127.0.0.1])
- by localhost (smtp3.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id 7OXmaOdcQ9w5 for <iommu@lists.linux-foundation.org>;
- Wed, 16 Jun 2021 03:53:02 +0000 (UTC)
+Authentication-Results: smtp1.osuosl.org (amavisd-new);
+ dkim=pass (1024-bit key) header.d=chromium.org
+Received: from smtp1.osuosl.org ([127.0.0.1])
+ by localhost (smtp1.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+ with ESMTP id Yn9GUxdKF36o for <iommu@lists.linux-foundation.org>;
+ Wed, 16 Jun 2021 03:53:10 +0000 (UTC)
 X-Greylist: whitelisted by SQLgrey-1.8.0
-Received: from mail-pg1-x529.google.com (mail-pg1-x529.google.com
- [IPv6:2607:f8b0:4864:20::529])
- by smtp3.osuosl.org (Postfix) with ESMTPS id 3706760599
- for <iommu@lists.linux-foundation.org>; Wed, 16 Jun 2021 03:53:02 +0000 (UTC)
-Received: by mail-pg1-x529.google.com with SMTP id m2so852906pgk.7
- for <iommu@lists.linux-foundation.org>; Tue, 15 Jun 2021 20:53:02 -0700 (PDT)
+Received: from mail-pf1-x435.google.com (mail-pf1-x435.google.com
+ [IPv6:2607:f8b0:4864:20::435])
+ by smtp1.osuosl.org (Postfix) with ESMTPS id B9F5C82F50
+ for <iommu@lists.linux-foundation.org>; Wed, 16 Jun 2021 03:53:10 +0000 (UTC)
+Received: by mail-pf1-x435.google.com with SMTP id x16so1066627pfa.13
+ for <iommu@lists.linux-foundation.org>; Tue, 15 Jun 2021 20:53:10 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=chromium.org; s=google;
  h=from:to:cc:subject:date:message-id:in-reply-to:references
  :mime-version:content-transfer-encoding;
- bh=w8jpaGfzoLiwzikPo4cNB/z3ajmfRt4xSbdunsHd/ZI=;
- b=e09qxnrBWof91JKHEkUW/giVJtTvZmH8jr9Dd4Su1RWDV3XwXARSSQRgkr9HNYU7+F
- xfWT4ubcXBP6WIhPaOX3vFLQCLFhqmxhHXvBHccvrEGKsvHnieOM35s2iYF6pLJaXyJ/
- 2e11UL+so6Eg69fq0bTkeYvB01cyhy65RZc2k=
+ bh=U6ZYMbmpZtiKwFDcQ7JFrtewUpbfgXD5Ls9ZoD2Zrzg=;
+ b=RZd9rxgKkVABYLQTSq6F5uS2C29CsSdg36ip3FvrlN8FR4TLMNlm3ETn/gcglxg0VH
+ +1WxkUy7ZqMrM1JYwzaBTnnUjGVHlY6H2dMNBKQlvyd/XPL2EbpKZBPFjCBcKqXScjgL
+ sO86XIdkFZpgufpRs2QMpcNH/rozerebhjh1Y=
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
  d=1e100.net; s=20161025;
  h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
  :references:mime-version:content-transfer-encoding;
- bh=w8jpaGfzoLiwzikPo4cNB/z3ajmfRt4xSbdunsHd/ZI=;
- b=tU68hgSk93jmYjfk8wV84UPAhzfP/QMwntB0dqw98SmWtxYN+Vy4nnBeFymgWKQj4x
- 37wHppE33blQUaevQtNAF+dNBrHzobNW7gKmLCDlQiutFOsMUxQvYXtXB5MDy/84Rpgj
- VkICsZmrUNjyAPRXV+e8PfstlRi5QYTmKzk1Rmpv1y/ab6sveAXFfMnLIvPbnAwS5KfH
- mlZ9hyJCn7bC5mLvt9Mrc0rqOtNlt1do6Az6V8DBBqGKoCfcfULwSC22OeUoC7kFBU6t
- fdGSmoTCA9QnJ+vs/j07vcC7jvjFy1mcethOjcbb+OkJm+QGmIOTs/BGQqNnw1XIW9y1
- ReAw==
-X-Gm-Message-State: AOAM533oJID9wl9gNr2z+0SJ/V/VUlUWQ48+hb2DVx3N5RYfAnTuyG1d
- f5HlBOdXBm5SU/ECTzl3ugGIFQ==
-X-Google-Smtp-Source: ABdhPJwa+ZmgeINp/qzrrMwMjmV1PlQ+238tMPYnN9cw69LWPLnWlkpTpgH9AKKMvgYOHqDOuIhj8A==
-X-Received: by 2002:a63:5c4e:: with SMTP id n14mr2900002pgm.192.1623815581647; 
- Tue, 15 Jun 2021 20:53:01 -0700 (PDT)
+ bh=U6ZYMbmpZtiKwFDcQ7JFrtewUpbfgXD5Ls9ZoD2Zrzg=;
+ b=Z9YKFNHN4J86K7yii79CbMG4upUwSuibxasM4hu4t0oJoKR246m+zhs8VXb23OC7EW
+ AkLnuf4g6hDb5GwigV2TL2E2sNMeFyfqzF0jiql5aJWhwXZ/olEfWxiRpf8QtVVIW/C2
+ tCH5DtOgGC6PUC9wmQ1Xrd2DLyle9OQIJxV9Quuc6Y0ST+gKsgQszR6apmyUHU2pBDtW
+ /ZbCd7BpLttCUIvd3/Utqk+NLrAXQjYiJYA4WkyzLGZRDPjB9gdg3pgRunrSMQolSMv5
+ VPBO9pyWyFz2S9o7PsqbVC6+Meeo0OJOsXEL3KgT+ta87Pp683x3JfhQM1veQhvDgt6/
+ etIw==
+X-Gm-Message-State: AOAM5307rkCJKjexJfYchbO7Ay6oqN/fQqXXGVyygF1uPjBzFy9PGl0K
+ UrA5ISdrnkVcMYxL3GDP/GyYEg==
+X-Google-Smtp-Source: ABdhPJwmduDhMHaz4gp1KWw9pFkGmBZM/DTXojEyWC2D7eYdCuhZ3NXD60A0zg3fj181Q33R/6IAmA==
+X-Received: by 2002:a63:a805:: with SMTP id o5mr2939730pgf.328.1623815590191; 
+ Tue, 15 Jun 2021 20:53:10 -0700 (PDT)
 Received: from localhost ([2401:fa00:95:205:3d52:f252:7393:1992])
- by smtp.gmail.com with UTF8SMTPSA id j7sm5188658pjf.0.2021.06.15.20.52.54
+ by smtp.gmail.com with UTF8SMTPSA id k19sm557774pji.32.2021.06.15.20.53.02
  (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
- Tue, 15 Jun 2021 20:53:01 -0700 (PDT)
+ Tue, 15 Jun 2021 20:53:09 -0700 (PDT)
 From: Claire Chang <tientzu@chromium.org>
 To: Rob Herring <robh+dt@kernel.org>, mpe@ellerman.id.au,
  Joerg Roedel <joro@8bytes.org>, Will Deacon <will@kernel.org>,
@@ -82,9 +84,9 @@ To: Rob Herring <robh+dt@kernel.org>, mpe@ellerman.id.au,
  Konrad Rzeszutek Wilk <konrad.wilk@oracle.com>, boris.ostrovsky@oracle.com,
  jgross@suse.com, Christoph Hellwig <hch@lst.de>,
  Marek Szyprowski <m.szyprowski@samsung.com>
-Subject: [PATCH v11 01/12] swiotlb: Refactor swiotlb init functions
-Date: Wed, 16 Jun 2021 11:52:29 +0800
-Message-Id: <20210616035240.840463-2-tientzu@chromium.org>
+Subject: [PATCH v11 02/12] swiotlb: Refactor swiotlb_create_debugfs
+Date: Wed, 16 Jun 2021 11:52:30 +0800
+Message-Id: <20210616035240.840463-3-tientzu@chromium.org>
 X-Mailer: git-send-email 2.32.0.272.g935e593368-goog
 In-Reply-To: <20210616035240.840463-1-tientzu@chromium.org>
 References: <20210616035240.840463-1-tientzu@chromium.org>
@@ -128,100 +130,53 @@ Content-Transfer-Encoding: 7bit
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-Add a new function, swiotlb_init_io_tlb_mem, for the io_tlb_mem struct
-initialization to make the code reusable.
+Split the debugfs creation to make the code reusable for supporting
+different bounce buffer pools.
 
 Signed-off-by: Claire Chang <tientzu@chromium.org>
 Reviewed-by: Christoph Hellwig <hch@lst.de>
 ---
- kernel/dma/swiotlb.c | 49 ++++++++++++++++++++++----------------------
- 1 file changed, 24 insertions(+), 25 deletions(-)
+ kernel/dma/swiotlb.c | 21 ++++++++++++++-------
+ 1 file changed, 14 insertions(+), 7 deletions(-)
 
 diff --git a/kernel/dma/swiotlb.c b/kernel/dma/swiotlb.c
-index 52e2ac526757..3ba0f08a39a1 100644
+index 3ba0f08a39a1..af416bcd1914 100644
 --- a/kernel/dma/swiotlb.c
 +++ b/kernel/dma/swiotlb.c
-@@ -168,9 +168,28 @@ void __init swiotlb_update_mem_attributes(void)
- 	memset(vaddr, 0, bytes);
- }
+@@ -670,19 +670,26 @@ bool is_swiotlb_active(void)
+ EXPORT_SYMBOL_GPL(is_swiotlb_active);
  
--int __init swiotlb_init_with_tbl(char *tlb, unsigned long nslabs, int verbose)
-+static void swiotlb_init_io_tlb_mem(struct io_tlb_mem *mem, phys_addr_t start,
-+				    unsigned long nslabs, bool late_alloc)
+ #ifdef CONFIG_DEBUG_FS
++static struct dentry *debugfs_dir;
+ 
+-static int __init swiotlb_create_debugfs(void)
++static void swiotlb_create_debugfs_files(struct io_tlb_mem *mem)
  {
-+	void *vaddr = phys_to_virt(start);
- 	unsigned long bytes = nslabs << IO_TLB_SHIFT, i;
-+
-+	mem->nslabs = nslabs;
-+	mem->start = start;
-+	mem->end = mem->start + bytes;
-+	mem->index = 0;
-+	mem->late_alloc = late_alloc;
-+	spin_lock_init(&mem->lock);
-+	for (i = 0; i < mem->nslabs; i++) {
-+		mem->slots[i].list = IO_TLB_SEGSIZE - io_tlb_offset(i);
-+		mem->slots[i].orig_addr = INVALID_PHYS_ADDR;
-+		mem->slots[i].alloc_size = 0;
-+	}
-+	memset(vaddr, 0, bytes);
+-	struct io_tlb_mem *mem = io_tlb_default_mem;
+-
+-	if (!mem)
+-		return 0;
+-	mem->debugfs = debugfs_create_dir("swiotlb", NULL);
+ 	debugfs_create_ulong("io_tlb_nslabs", 0400, mem->debugfs, &mem->nslabs);
+ 	debugfs_create_ulong("io_tlb_used", 0400, mem->debugfs, &mem->used);
 +}
 +
-+int __init swiotlb_init_with_tbl(char *tlb, unsigned long nslabs, int verbose)
++static int __init swiotlb_create_default_debugfs(void)
 +{
- 	struct io_tlb_mem *mem;
- 	size_t alloc_size;
- 
-@@ -186,16 +205,8 @@ int __init swiotlb_init_with_tbl(char *tlb, unsigned long nslabs, int verbose)
- 	if (!mem)
- 		panic("%s: Failed to allocate %zu bytes align=0x%lx\n",
- 		      __func__, alloc_size, PAGE_SIZE);
--	mem->nslabs = nslabs;
--	mem->start = __pa(tlb);
--	mem->end = mem->start + bytes;
--	mem->index = 0;
--	spin_lock_init(&mem->lock);
--	for (i = 0; i < mem->nslabs; i++) {
--		mem->slots[i].list = IO_TLB_SEGSIZE - io_tlb_offset(i);
--		mem->slots[i].orig_addr = INVALID_PHYS_ADDR;
--		mem->slots[i].alloc_size = 0;
--	}
++	struct io_tlb_mem *mem = io_tlb_default_mem;
 +
-+	swiotlb_init_io_tlb_mem(mem, __pa(tlb), nslabs, false);
++	debugfs_dir = debugfs_create_dir("swiotlb", NULL);
++	if (mem) {
++		mem->debugfs = debugfs_dir;
++		swiotlb_create_debugfs_files(mem);
++	}
+ 	return 0;
+ }
  
- 	io_tlb_default_mem = mem;
- 	if (verbose)
-@@ -282,8 +293,8 @@ swiotlb_late_init_with_default_size(size_t default_size)
- int
- swiotlb_late_init_with_tbl(char *tlb, unsigned long nslabs)
- {
--	unsigned long bytes = nslabs << IO_TLB_SHIFT, i;
- 	struct io_tlb_mem *mem;
-+	unsigned long bytes = nslabs << IO_TLB_SHIFT;
+-late_initcall(swiotlb_create_debugfs);
++late_initcall(swiotlb_create_default_debugfs);
  
- 	if (swiotlb_force == SWIOTLB_NO_FORCE)
- 		return 0;
-@@ -297,20 +308,8 @@ swiotlb_late_init_with_tbl(char *tlb, unsigned long nslabs)
- 	if (!mem)
- 		return -ENOMEM;
- 
--	mem->nslabs = nslabs;
--	mem->start = virt_to_phys(tlb);
--	mem->end = mem->start + bytes;
--	mem->index = 0;
--	mem->late_alloc = 1;
--	spin_lock_init(&mem->lock);
--	for (i = 0; i < mem->nslabs; i++) {
--		mem->slots[i].list = IO_TLB_SEGSIZE - io_tlb_offset(i);
--		mem->slots[i].orig_addr = INVALID_PHYS_ADDR;
--		mem->slots[i].alloc_size = 0;
--	}
--
-+	swiotlb_init_io_tlb_mem(mem, virt_to_phys(tlb), nslabs, true);
- 	set_memory_decrypted((unsigned long)tlb, bytes >> PAGE_SHIFT);
--	memset(tlb, 0, bytes);
- 
- 	io_tlb_default_mem = mem;
- 	swiotlb_print_info();
+ #endif
 -- 
 2.32.0.272.g935e593368-goog
 
