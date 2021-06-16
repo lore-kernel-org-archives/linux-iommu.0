@@ -7,76 +7,77 @@ X-Spam-Status: No, score=-16.5 required=3.0 tests=BAYES_00,DKIM_INVALID,
 	MAILING_LIST_MULTI,SPF_HELO_NONE,URIBL_BLOCKED,USER_AGENT_GIT
 	autolearn=unavailable autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2C12EC49361
-	for <iommu@archiver.kernel.org>; Wed, 16 Jun 2021 03:54:32 +0000 (UTC)
-Received: from smtp4.osuosl.org (smtp4.osuosl.org [140.211.166.137])
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1D726C49361
+	for <iommu@archiver.kernel.org>; Wed, 16 Jun 2021 03:54:41 +0000 (UTC)
+Received: from smtp2.osuosl.org (smtp2.osuosl.org [140.211.166.133])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id E540D613BF
-	for <iommu@archiver.kernel.org>; Wed, 16 Jun 2021 03:54:31 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org E540D613BF
+	by mail.kernel.org (Postfix) with ESMTPS id C9A3161246
+	for <iommu@archiver.kernel.org>; Wed, 16 Jun 2021 03:54:40 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org C9A3161246
 Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=chromium.org
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by smtp4.osuosl.org (Postfix) with ESMTP id AB2364025F;
-	Wed, 16 Jun 2021 03:54:31 +0000 (UTC)
+	by smtp2.osuosl.org (Postfix) with ESMTP id 9C5CC402F4;
+	Wed, 16 Jun 2021 03:54:40 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from smtp4.osuosl.org ([127.0.0.1])
-	by localhost (smtp4.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id Y3jE_1toY0xZ; Wed, 16 Jun 2021 03:54:30 +0000 (UTC)
-Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by smtp4.osuosl.org (Postfix) with ESMTPS id 561D640646;
-	Wed, 16 Jun 2021 03:54:30 +0000 (UTC)
-Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 31EFDC000E;
-	Wed, 16 Jun 2021 03:54:30 +0000 (UTC)
-Received: from smtp2.osuosl.org (smtp2.osuosl.org [IPv6:2605:bc80:3010::133])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 21193C000B
- for <iommu@lists.linux-foundation.org>; Wed, 16 Jun 2021 03:54:29 +0000 (UTC)
-Received: from localhost (localhost [127.0.0.1])
- by smtp2.osuosl.org (Postfix) with ESMTP id F353A402F4
- for <iommu@lists.linux-foundation.org>; Wed, 16 Jun 2021 03:54:28 +0000 (UTC)
-X-Virus-Scanned: amavisd-new at osuosl.org
-Authentication-Results: smtp2.osuosl.org (amavisd-new);
- dkim=pass (1024-bit key) header.d=chromium.org
 Received: from smtp2.osuosl.org ([127.0.0.1])
- by localhost (smtp2.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id w8TsU_LqiPpQ for <iommu@lists.linux-foundation.org>;
- Wed, 16 Jun 2021 03:54:28 +0000 (UTC)
+	by localhost (smtp2.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+	with ESMTP id ZJ4NVhgUrd5Y; Wed, 16 Jun 2021 03:54:39 +0000 (UTC)
+Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
+	by smtp2.osuosl.org (Postfix) with ESMTPS id 7C7FF401D0;
+	Wed, 16 Jun 2021 03:54:39 +0000 (UTC)
+Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 63CB5C000E;
+	Wed, 16 Jun 2021 03:54:39 +0000 (UTC)
+Received: from smtp4.osuosl.org (smtp4.osuosl.org [140.211.166.137])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 61C1CC000B
+ for <iommu@lists.linux-foundation.org>; Wed, 16 Jun 2021 03:54:38 +0000 (UTC)
+Received: from localhost (localhost [127.0.0.1])
+ by smtp4.osuosl.org (Postfix) with ESMTP id 4EDF24029D
+ for <iommu@lists.linux-foundation.org>; Wed, 16 Jun 2021 03:54:38 +0000 (UTC)
+X-Virus-Scanned: amavisd-new at osuosl.org
+Authentication-Results: smtp4.osuosl.org (amavisd-new);
+ dkim=pass (1024-bit key) header.d=chromium.org
+Received: from smtp4.osuosl.org ([127.0.0.1])
+ by localhost (smtp4.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+ with ESMTP id Ba6H5qqoHaoG for <iommu@lists.linux-foundation.org>;
+ Wed, 16 Jun 2021 03:54:37 +0000 (UTC)
 X-Greylist: whitelisted by SQLgrey-1.8.0
-Received: from mail-pg1-x532.google.com (mail-pg1-x532.google.com
- [IPv6:2607:f8b0:4864:20::532])
- by smtp2.osuosl.org (Postfix) with ESMTPS id 3F057401D0
- for <iommu@lists.linux-foundation.org>; Wed, 16 Jun 2021 03:54:28 +0000 (UTC)
-Received: by mail-pg1-x532.google.com with SMTP id e20so906073pgg.0
- for <iommu@lists.linux-foundation.org>; Tue, 15 Jun 2021 20:54:28 -0700 (PDT)
+Received: from mail-pl1-x62f.google.com (mail-pl1-x62f.google.com
+ [IPv6:2607:f8b0:4864:20::62f])
+ by smtp4.osuosl.org (Postfix) with ESMTPS id 6B9864025F
+ for <iommu@lists.linux-foundation.org>; Wed, 16 Jun 2021 03:54:37 +0000 (UTC)
+Received: by mail-pl1-x62f.google.com with SMTP id v13so422144ple.9
+ for <iommu@lists.linux-foundation.org>; Tue, 15 Jun 2021 20:54:37 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=chromium.org; s=google;
  h=from:to:cc:subject:date:message-id:in-reply-to:references
  :mime-version:content-transfer-encoding;
- bh=GymVnULBeJ03m5EPo7c7VEX7DSqoBwMT6L2fMWoeeEc=;
- b=bKNX+61KY+497C18UMf9tzB54BN9JmhN17dgRMarCuH6/YI06HcZUO1rsG8qU0UaJg
- 9iacuS6rTIiJCommP10+VQN+2EY3YjRv+hgL0/TXA9Ap9/T8W18MYpuKAZHM60A9JzTy
- NcemwkgEoNzTX8rMbFHfcKVugBejDTMzKi1yI=
+ bh=4psftO+uH/TVnoki1qOI27Xe5kV3FYGMoE+zQAlSb7o=;
+ b=Li4AEy2JF5gPy9ukpQUJjDPB8rq/Zch13XpWyeO7bHztoc5ctZfpP5asNBSNDWCRJ9
+ ebBl8RVKocmQh3z5hITYqIYweSnFDje1ai0AgaL9yWsFuJH6pOsddoNur+1F3lLEmeDF
+ LM382R5+plRtaFQ3A0pI0SFPAyiAdN6Elek1g=
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
  d=1e100.net; s=20161025;
  h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
  :references:mime-version:content-transfer-encoding;
- bh=GymVnULBeJ03m5EPo7c7VEX7DSqoBwMT6L2fMWoeeEc=;
- b=GKxIbIsaXk8U0uFB24uUypXefM9LUCYoi6J8Sx1PZmXfPUooOxovJ+ioJaVw8i6cTb
- 5rS1990spf2QE6xH8RLnpk+Fw+xVHdMJ6axRM/9WCk/2v3FQMgWTRd5p6w9moC/r/aBJ
- PCgm/TL8qO+mTRTHLe0H77Mp0LUBvGezte5AcyNjIsml4oPZCHg2evNyciPXQxVA35f8
- qbSJFW8J3bBicOJwY/78UVjCV1FqDpwUlx/VOAnpd8r7z7A2+wYmFqLC+DNghaCuNcHz
- E2psYWNeP7qCFvKnxf/KInfFbWMHf6jzjMF0XLqDX1PBmJ/lIiI20QnBSKLpF3l6ctbZ
- L2vw==
-X-Gm-Message-State: AOAM530j7JTAlqD9p9vjPIAXCZR0T/NgoPMhk4FdKZooQUPqWNF8Xhf7
- FW/4RvC84H6JIAIzYKRTviUuqA==
-X-Google-Smtp-Source: ABdhPJyE12O0mP5M3Jhr5nm1IKCwmz9NUZqWaZOhZUHV0/ZLS5Hyi/5IPzyx8nJy3XXN3OzKpotPIA==
-X-Received: by 2002:a65:58c1:: with SMTP id e1mr2877486pgu.200.1623815667680; 
- Tue, 15 Jun 2021 20:54:27 -0700 (PDT)
+ bh=4psftO+uH/TVnoki1qOI27Xe5kV3FYGMoE+zQAlSb7o=;
+ b=iAi/AJS3MSn2gr4d2jlTH3qeTxIIC90dZX/mK111qOH53qsAuJvd40zwynliJmbyhh
+ 8Qx7q+ybUbP5Ls4lYr+0ShslXTnFK6X+Xko4X9Y6djXt4KbqSQN/UZMObraXCCfZtU+P
+ nGcHTv9YteZJLxOUvfpZI8FAL6IujeJ8CIUaIYZXnJvsoSsTMjv55Xw3Ic5ohQQzrNbp
+ loj3uHgnv5MLBDSySwXRo+SfNmRJHO4wmwrKZTspK2kWIIhX3bqy1XeBbUXD/84XKK6D
+ ci2YMReRpfYvDME126wmRek9mq4TdDLrIL7kx0Vadk5GgImVJJk4kjoRSMn5yGvKGcrm
+ hdow==
+X-Gm-Message-State: AOAM532nkdv4F7c0Zls3gw/heTFWnIBVcOkJm/CN6oxOZbn2WpwkAXwn
+ OaIHMan35wXWWi8e8k5F4K4COg==
+X-Google-Smtp-Source: ABdhPJxIA/TwmqjYIYiJDhgzfrw1oBecMGqUYPCqotzqYdZPBQm2bHhvFmGRXaCctCumXjdHnaXVuA==
+X-Received: by 2002:a17:902:d645:b029:11d:d075:cf43 with SMTP id
+ y5-20020a170902d645b029011dd075cf43mr4991840plh.14.1623815676876; 
+ Tue, 15 Jun 2021 20:54:36 -0700 (PDT)
 Received: from localhost ([2401:fa00:95:205:3d52:f252:7393:1992])
- by smtp.gmail.com with UTF8SMTPSA id w18sm599561pjg.50.2021.06.15.20.54.20
+ by smtp.gmail.com with UTF8SMTPSA id bv3sm3688867pjb.1.2021.06.15.20.54.29
  (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
- Tue, 15 Jun 2021 20:54:27 -0700 (PDT)
+ Tue, 15 Jun 2021 20:54:36 -0700 (PDT)
 From: Claire Chang <tientzu@chromium.org>
 To: Rob Herring <robh+dt@kernel.org>, mpe@ellerman.id.au,
  Joerg Roedel <joro@8bytes.org>, Will Deacon <will@kernel.org>,
@@ -84,9 +85,9 @@ To: Rob Herring <robh+dt@kernel.org>, mpe@ellerman.id.au,
  Konrad Rzeszutek Wilk <konrad.wilk@oracle.com>, boris.ostrovsky@oracle.com,
  jgross@suse.com, Christoph Hellwig <hch@lst.de>,
  Marek Szyprowski <m.szyprowski@samsung.com>
-Subject: [PATCH v11 11/12] dt-bindings: of: Add restricted DMA pool
-Date: Wed, 16 Jun 2021 11:52:39 +0800
-Message-Id: <20210616035240.840463-12-tientzu@chromium.org>
+Subject: [PATCH v11 12/12] of: Add plumbing for restricted DMA pool
+Date: Wed, 16 Jun 2021 11:52:40 +0800
+Message-Id: <20210616035240.840463-13-tientzu@chromium.org>
 X-Mailer: git-send-email 2.32.0.272.g935e593368-goog
 In-Reply-To: <20210616035240.840463-1-tientzu@chromium.org>
 References: <20210616035240.840463-1-tientzu@chromium.org>
@@ -130,82 +131,104 @@ Content-Transfer-Encoding: 7bit
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-Introduce the new compatible string, restricted-dma-pool, for restricted
-DMA. One can specify the address and length of the restricted DMA memory
-region by restricted-dma-pool in the reserved-memory node.
+If a device is not behind an IOMMU, we look up the device node and set
+up the restricted DMA when the restricted-dma-pool is presented.
 
 Signed-off-by: Claire Chang <tientzu@chromium.org>
 ---
- .../reserved-memory/reserved-memory.txt       | 36 +++++++++++++++++--
- 1 file changed, 33 insertions(+), 3 deletions(-)
+ drivers/of/address.c    | 33 +++++++++++++++++++++++++++++++++
+ drivers/of/device.c     |  3 +++
+ drivers/of/of_private.h |  6 ++++++
+ 3 files changed, 42 insertions(+)
 
-diff --git a/Documentation/devicetree/bindings/reserved-memory/reserved-memory.txt b/Documentation/devicetree/bindings/reserved-memory/reserved-memory.txt
-index e8d3096d922c..46804f24df05 100644
---- a/Documentation/devicetree/bindings/reserved-memory/reserved-memory.txt
-+++ b/Documentation/devicetree/bindings/reserved-memory/reserved-memory.txt
-@@ -51,6 +51,23 @@ compatible (optional) - standard definition
-           used as a shared pool of DMA buffers for a set of devices. It can
-           be used by an operating system to instantiate the necessary pool
-           management subsystem if necessary.
-+        - restricted-dma-pool: This indicates a region of memory meant to be
-+          used as a pool of restricted DMA buffers for a set of devices. The
-+          memory region would be the only region accessible to those devices.
-+          When using this, the no-map and reusable properties must not be set,
-+          so the operating system can create a virtual mapping that will be used
-+          for synchronization. The main purpose for restricted DMA is to
-+          mitigate the lack of DMA access control on systems without an IOMMU,
-+          which could result in the DMA accessing the system memory at
-+          unexpected times and/or unexpected addresses, possibly leading to data
-+          leakage or corruption. The feature on its own provides a basic level
-+          of protection against the DMA overwriting buffer contents at
-+          unexpected times. However, to protect against general data leakage and
-+          system memory corruption, the system needs to provide way to lock down
-+          the memory access, e.g., MPU. Note that since coherent allocation
-+          needs remapping, one must set up another device coherent pool by
-+          shared-dma-pool and use dma_alloc_from_dev_coherent instead for atomic
-+          coherent allocation.
-         - vendor specific string in the form <vendor>,[<device>-]<usage>
- no-map (optional) - empty property
-     - Indicates the operating system must not create a virtual mapping
-@@ -85,10 +102,11 @@ memory-region-names (optional) - a list of names, one for each corresponding
- 
- Example
- -------
--This example defines 3 contiguous regions are defined for Linux kernel:
-+This example defines 4 contiguous regions for Linux kernel:
- one default of all device drivers (named linux,cma@72000000 and 64MiB in size),
--one dedicated to the framebuffer device (named framebuffer@78000000, 8MiB), and
--one for multimedia processing (named multimedia-memory@77000000, 64MiB).
-+one dedicated to the framebuffer device (named framebuffer@78000000, 8MiB),
-+one for multimedia processing (named multimedia-memory@77000000, 64MiB), and
-+one for restricted dma pool (named restricted_dma_reserved@0x50000000, 64MiB).
- 
- / {
- 	#address-cells = <1>;
-@@ -120,6 +138,11 @@ one for multimedia processing (named multimedia-memory@77000000, 64MiB).
- 			compatible = "acme,multimedia-memory";
- 			reg = <0x77000000 0x4000000>;
- 		};
+diff --git a/drivers/of/address.c b/drivers/of/address.c
+index 73ddf2540f3f..cdf700fba5c4 100644
+--- a/drivers/of/address.c
++++ b/drivers/of/address.c
+@@ -8,6 +8,7 @@
+ #include <linux/logic_pio.h>
+ #include <linux/module.h>
+ #include <linux/of_address.h>
++#include <linux/of_reserved_mem.h>
+ #include <linux/pci.h>
+ #include <linux/pci_regs.h>
+ #include <linux/sizes.h>
+@@ -1022,6 +1023,38 @@ int of_dma_get_range(struct device_node *np, const struct bus_dma_region **map)
+ 	of_node_put(node);
+ 	return ret;
+ }
 +
-+		restricted_dma_reserved: restricted_dma_reserved {
-+			compatible = "restricted-dma-pool";
-+			reg = <0x50000000 0x4000000>;
-+		};
- 	};
- 
- 	/* ... */
-@@ -138,4 +161,11 @@ one for multimedia processing (named multimedia-memory@77000000, 64MiB).
- 		memory-region = <&multimedia_reserved>;
- 		/* ... */
- 	};
++int of_dma_set_restricted_buffer(struct device *dev, struct device_node *np)
++{
++	struct device_node *node, *of_node = dev->of_node;
++	int count, i;
 +
-+	pcie_device: pcie_device@0,0 {
-+		reg = <0x83010000 0x0 0x00000000 0x0 0x00100000
-+		       0x83010000 0x0 0x00100000 0x0 0x00100000>;
-+		memory-region = <&restricted_dma_mem_reserved>;
-+		/* ... */
-+	};
- };
++	count = of_property_count_elems_of_size(of_node, "memory-region",
++						sizeof(u32));
++	/*
++	 * If dev->of_node doesn't exist or doesn't contain memory-region, try
++	 * the OF node having DMA configuration.
++	 */
++	if (count <= 0) {
++		of_node = np;
++		count = of_property_count_elems_of_size(
++			of_node, "memory-region", sizeof(u32));
++	}
++
++	for (i = 0; i < count; i++) {
++		node = of_parse_phandle(of_node, "memory-region", i);
++		/*
++		 * There might be multiple memory regions, but only one
++		 * restricted-dma-pool region is allowed.
++		 */
++		if (of_device_is_compatible(node, "restricted-dma-pool") &&
++		    of_device_is_available(node))
++			return of_reserved_mem_device_init_by_idx(dev, of_node,
++								  i);
++	}
++
++	return 0;
++}
+ #endif /* CONFIG_HAS_DMA */
+ 
+ /**
+diff --git a/drivers/of/device.c b/drivers/of/device.c
+index 6cb86de404f1..e68316836a7a 100644
+--- a/drivers/of/device.c
++++ b/drivers/of/device.c
+@@ -165,6 +165,9 @@ int of_dma_configure_id(struct device *dev, struct device_node *np,
+ 
+ 	arch_setup_dma_ops(dev, dma_start, size, iommu, coherent);
+ 
++	if (!iommu)
++		return of_dma_set_restricted_buffer(dev, np);
++
+ 	return 0;
+ }
+ EXPORT_SYMBOL_GPL(of_dma_configure_id);
+diff --git a/drivers/of/of_private.h b/drivers/of/of_private.h
+index d9e6a324de0a..25cebbed5f02 100644
+--- a/drivers/of/of_private.h
++++ b/drivers/of/of_private.h
+@@ -161,12 +161,18 @@ struct bus_dma_region;
+ #if defined(CONFIG_OF_ADDRESS) && defined(CONFIG_HAS_DMA)
+ int of_dma_get_range(struct device_node *np,
+ 		const struct bus_dma_region **map);
++int of_dma_set_restricted_buffer(struct device *dev, struct device_node *np);
+ #else
+ static inline int of_dma_get_range(struct device_node *np,
+ 		const struct bus_dma_region **map)
+ {
+ 	return -ENODEV;
+ }
++static inline int of_dma_set_restricted_buffer(struct device *dev,
++					       struct device_node *np)
++{
++	return -ENODEV;
++}
+ #endif
+ 
+ #endif /* _LINUX_OF_PRIVATE_H */
 -- 
 2.32.0.272.g935e593368-goog
 
