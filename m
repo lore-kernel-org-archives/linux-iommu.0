@@ -2,96 +2,110 @@ Return-Path: <SRS0=K0Me=LL=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-15.3 required=3.0 tests=BAYES_00,DKIM_INVALID,
-	DKIM_SIGNED,INCLUDES_CR_TRAILER,INCLUDES_PATCH,MAILING_LIST_MULTI,
-	SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,URIBL_RED,USER_AGENT_SANE_1
-	autolearn=unavailable autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-3.5 required=3.0 tests=BAYES_00,DKIM_INVALID,
+	DKIM_SIGNED,HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,SPF_HELO_NONE,
+	SPF_PASS,URIBL_RED autolearn=no autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 34EDFC48BE6
-	for <iommu@archiver.kernel.org>; Thu, 17 Jun 2021 00:09:37 +0000 (UTC)
-Received: from smtp3.osuosl.org (smtp3.osuosl.org [140.211.166.136])
+	by smtp.lore.kernel.org (Postfix) with ESMTP id CB708C48BE8
+	for <iommu@archiver.kernel.org>; Thu, 17 Jun 2021 00:27:49 +0000 (UTC)
+Received: from smtp4.osuosl.org (smtp4.osuosl.org [140.211.166.137])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id BBF58613CD
-	for <iommu@archiver.kernel.org>; Thu, 17 Jun 2021 00:09:36 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org BBF58613CD
-Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=kernel.org
+	by mail.kernel.org (Postfix) with ESMTPS id 2DC34613C2
+	for <iommu@archiver.kernel.org>; Thu, 17 Jun 2021 00:27:49 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 2DC34613C2
+Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=darnok.org
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by smtp3.osuosl.org (Postfix) with ESMTP id 7F3F3606C8;
-	Thu, 17 Jun 2021 00:09:36 +0000 (UTC)
+	by smtp4.osuosl.org (Postfix) with ESMTP id CE80C415DC;
+	Thu, 17 Jun 2021 00:27:48 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from smtp3.osuosl.org ([127.0.0.1])
-	by localhost (smtp3.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id JMk2YLdzS-5C; Thu, 17 Jun 2021 00:09:35 +0000 (UTC)
-Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [IPv6:2605:bc80:3010:104::8cd3:938])
-	by smtp3.osuosl.org (Postfix) with ESMTPS id 5EE14606CB;
-	Thu, 17 Jun 2021 00:09:35 +0000 (UTC)
+Received: from smtp4.osuosl.org ([127.0.0.1])
+	by localhost (smtp4.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+	with ESMTP id yTFxfh6kTaui; Thu, 17 Jun 2021 00:27:47 +0000 (UTC)
+Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
+	by smtp4.osuosl.org (Postfix) with ESMTPS id 79B0B415C6;
+	Thu, 17 Jun 2021 00:27:47 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 26A12C000E;
-	Thu, 17 Jun 2021 00:09:35 +0000 (UTC)
-Received: from smtp3.osuosl.org (smtp3.osuosl.org [IPv6:2605:bc80:3010::136])
- by lists.linuxfoundation.org (Postfix) with ESMTP id ED987C000B
- for <iommu@lists.linux-foundation.org>; Thu, 17 Jun 2021 00:09:33 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 5965CC000E;
+	Thu, 17 Jun 2021 00:27:47 +0000 (UTC)
+Received: from smtp1.osuosl.org (smtp1.osuosl.org [140.211.166.138])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id D0D13C000B
+ for <iommu@lists.linux-foundation.org>; Thu, 17 Jun 2021 00:27:45 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by smtp3.osuosl.org (Postfix) with ESMTP id D3945606CB
- for <iommu@lists.linux-foundation.org>; Thu, 17 Jun 2021 00:09:33 +0000 (UTC)
+ by smtp1.osuosl.org (Postfix) with ESMTP id AC03283CA7
+ for <iommu@lists.linux-foundation.org>; Thu, 17 Jun 2021 00:27:45 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from smtp3.osuosl.org ([127.0.0.1])
- by localhost (smtp3.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id JqOXURfBWHfm for <iommu@lists.linux-foundation.org>;
- Thu, 17 Jun 2021 00:09:33 +0000 (UTC)
-X-Greylist: domain auto-whitelisted by SQLgrey-1.8.0
-Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
- by smtp3.osuosl.org (Postfix) with ESMTPS id 2D08D606C8
- for <iommu@lists.linux-foundation.org>; Thu, 17 Jun 2021 00:09:33 +0000 (UTC)
-Received: by mail.kernel.org (Postfix) with ESMTPSA id 70EFE61351;
- Thu, 17 Jun 2021 00:09:30 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
- s=k20201202; t=1623888572;
- bh=mN2okVVdTICmc/8v91DABSXp7kK2mc41VelpLLMzraM=;
- h=Date:From:To:cc:Subject:In-Reply-To:References:From;
- b=ZYuvhN96769HVBf9HwXfEMrx5h2joXFESxJj/lRenrF7yXWLZjtrg1PWIka+vT/Q0
- oFtXyOpOZ9yR7QPt6WZ9qiVwYGYEJ72zE5pEW7HiR62r0bK1cPffUlPeluSwwsGV++
- 8riMe4sA8jh8H05UnuJF58KJLPG9dNHhkmEpW63Symhvau9C6X5CTpmeRZXg03FBNA
- YdmM71is91QiA8p/farR5qTSk/+kZjwaUjrHEt7/cAUyCA79A0OF17vUa8D0c+gd+H
- nwIEeujLTdx4sfeAu0ptJEutsq4BmObXoP4A9/HlakW6ogsicBITdzMemlH7LIUWJw
- GZfH7kl1LZ6XQ==
-Date: Wed, 16 Jun 2021 17:09:29 -0700 (PDT)
-From: Stefano Stabellini <sstabellini@kernel.org>
-X-X-Sender: sstabellini@sstabellini-ThinkPad-T480s
-To: Claire Chang <tientzu@chromium.org>
-Subject: Re: [PATCH v12 11/12] dt-bindings: of: Add restricted DMA pool
-In-Reply-To: <20210616062157.953777-12-tientzu@chromium.org>
-Message-ID: <alpine.DEB.2.21.2106161651290.24906@sstabellini-ThinkPad-T480s>
-References: <20210616062157.953777-1-tientzu@chromium.org>
- <20210616062157.953777-12-tientzu@chromium.org>
-User-Agent: Alpine 2.21 (DEB 202 2017-01-01)
+Authentication-Results: smtp1.osuosl.org (amavisd-new);
+ dkim=pass (2048-bit key) header.d=gmail.com
+Received: from smtp1.osuosl.org ([127.0.0.1])
+ by localhost (smtp1.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+ with ESMTP id FFwwypvQ_qiG for <iommu@lists.linux-foundation.org>;
+ Thu, 17 Jun 2021 00:27:44 +0000 (UTC)
+X-Greylist: whitelisted by SQLgrey-1.8.0
+Received: from mail-qt1-x82b.google.com (mail-qt1-x82b.google.com
+ [IPv6:2607:f8b0:4864:20::82b])
+ by smtp1.osuosl.org (Postfix) with ESMTPS id B23F583C93
+ for <iommu@lists.linux-foundation.org>; Thu, 17 Jun 2021 00:27:44 +0000 (UTC)
+Received: by mail-qt1-x82b.google.com with SMTP id v6so3372437qta.9
+ for <iommu@lists.linux-foundation.org>; Wed, 16 Jun 2021 17:27:44 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=gmail.com; s=20161025;
+ h=sender:date:from:to:cc:subject:message-id:references:mime-version
+ :content-disposition:content-transfer-encoding:in-reply-to;
+ bh=KIvX93fO1J/dtkzHBZn8boN5+A8/IK0ceANMVQz1H7w=;
+ b=qyWGlEfBCmuW1vkYP1a/17mpWZwFwo2b5T6H+eLhobsEMeZT9UI2+HPorM9Gaxj2TJ
+ K+Pmp82x05L9FQvOlDVvPBw8SU6Id7yv/C5zy8Pu/j195dQDGp7mIDjoTA+f+4t9SX8A
+ 56+ONe+Ce1iadJJrIdcf0xlCKR2r0bFVDuP708nvc7PQL5ioQf7Xl1S0jDNnky2J9cLr
+ WN7uqwghTSmqJHcsO9rWBJO7clEh5DG+MocU4I7rnYOowVJkXo8ozuNW1LaG/Mz4b6e9
+ ylqKMrlWM2mtHfrykRQND+VsO9m/Xe9moKN42gmu+XTbXxQNOLm0V9FweP67GI93V7jd
+ Jw7w==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+ d=1e100.net; s=20161025;
+ h=x-gm-message-state:sender:date:from:to:cc:subject:message-id
+ :references:mime-version:content-disposition
+ :content-transfer-encoding:in-reply-to;
+ bh=KIvX93fO1J/dtkzHBZn8boN5+A8/IK0ceANMVQz1H7w=;
+ b=TfKsstygu1Vv2qU7nC1cclzPJUPB1XWle5uNx19HgGhIX9o7U2neEk8wVps5EpiI4U
+ ybRwQXdgTChSJqbI0eOb5pjkMkvgPfj5l4jrUBCeGN8kO8OdU05VDxST/g2RU60Ec92t
+ LPeUaOCbXRLXBrPNmx8htA+8D5zB8tsoDUk1xtF5I8a/OoxTMBfL54hw3Z0ZhAyjfh2E
+ 5IiKymKA/nk7rU/Fst/ANESlVAEZ4ohHFfcBuhaF6NbZXy1IAgMi4kBOb2F9Jyv3I16R
+ D1FXCeGKkp8a0iKN5DiAl3BbpkJFujgJSWzYSYD3G4lN4/w2z7QpvyMjlWJePGPXajES
+ 75/A==
+X-Gm-Message-State: AOAM533oh4sSsC8lI5tRmbdjFX5f0wrj/j5vtqkPV1k5vT5tCebYlNZa
+ bNh6BepBVtFQ5m/2+bereeA=
+X-Google-Smtp-Source: ABdhPJw3JMIhmiMleh1odDPpGbOyCHN65qWDrIoPtWJ7bPJpDzLoarpEgqHnr4snhp+s2K9Zkc/uIA==
+X-Received: by 2002:ac8:7d0c:: with SMTP id g12mr2469507qtb.248.1623889663317; 
+ Wed, 16 Jun 2021 17:27:43 -0700 (PDT)
+Received: from fedora (cpe-24-59-204-221.twcny.res.rr.com. [24.59.204.221])
+ by smtp.gmail.com with ESMTPSA id o12sm668710qki.44.2021.06.16.17.27.41
+ (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+ Wed, 16 Jun 2021 17:27:42 -0700 (PDT)
+Date: Wed, 16 Jun 2021 20:27:39 -0400
+From: Konrad Rzeszutek Wilk <konrad@darnok.org>
+To: Jianxiong Gao <jxgao@google.com>
+Subject: Re: swiotlb/caamjr regression (Was: [GIT PULL] (swiotlb)
+ stable/for-linus-5.12)
+Message-ID: <YMqW+/gQvM+uWUTw@fedora>
+References: <YDkbCHHBUOmfI59K@Konrads-MacBook-Pro.local>
+ <YL7XXNOnbaDgmTB9@atmark-techno.com>
+ <2e899de2-4b69-c4b6-33a6-09fb8949d2fd@nxp.com>
+ <20210611062153.GA30906@lst.de> <YMM8Ua0HMmErLIQg@0xbeefdead.lan>
+ <CAMGD6P1v2JoJoxSuAYL8UjdtCaLCc4K_7xzVkumspeb0qn=LBQ@mail.gmail.com>
 MIME-Version: 1.0
-Cc: heikki.krogerus@linux.intel.com, thomas.hellstrom@linux.intel.com,
- peterz@infradead.org, benh@kernel.crashing.org,
- joonas.lahtinen@linux.intel.com, dri-devel@lists.freedesktop.org,
- chris@chris-wilson.co.uk, grant.likely@arm.com, paulus@samba.org,
- Frank Rowand <frowand.list@gmail.com>, mingo@kernel.org,
- sstabellini@kernel.org, Saravana Kannan <saravanak@google.com>,
- mpe@ellerman.id.au, "Rafael J . Wysocki" <rafael.j.wysocki@intel.com>,
- Christoph Hellwig <hch@lst.de>,
- Bartosz Golaszewski <bgolaszewski@baylibre.com>, bskeggs@redhat.com,
- linux-pci@vger.kernel.org, xen-devel@lists.xenproject.org,
- Thierry Reding <treding@nvidia.com>, intel-gfx@lists.freedesktop.org,
- matthew.auld@intel.com, linux-devicetree <devicetree@vger.kernel.org>,
- jxgao@google.com, daniel@ffwll.ch, Will Deacon <will@kernel.org>,
- Konrad Rzeszutek Wilk <konrad.wilk@oracle.com>,
- maarten.lankhorst@linux.intel.com, airlied@linux.ie,
- Dan Williams <dan.j.williams@intel.com>, linuxppc-dev@lists.ozlabs.org,
- jani.nikula@linux.intel.com, Rob Herring <robh+dt@kernel.org>,
- rodrigo.vivi@intel.com, bhelgaas@google.com, boris.ostrovsky@oracle.com,
- Andy Shevchenko <andriy.shevchenko@linux.intel.com>, jgross@suse.com,
- Nicolas Boichat <drinkcat@chromium.org>, Greg KH <gregkh@linuxfoundation.org>,
- Randy Dunlap <rdunlap@infradead.org>, lkml <linux-kernel@vger.kernel.org>,
- "list@263.net:IOMMU DRIVERS" <iommu@lists.linux-foundation.org>,
- Jim Quinlan <james.quinlan@broadcom.com>, xypron.glpk@gmx.de,
- Robin Murphy <robin.murphy@arm.com>, bauerman@linux.ibm.com
+Content-Disposition: inline
+In-Reply-To: <CAMGD6P1v2JoJoxSuAYL8UjdtCaLCc4K_7xzVkumspeb0qn=LBQ@mail.gmail.com>
+Cc: Dominique MARTINET <dominique.martinet@atmark-techno.com>,
+ Aymen Sghaier <aymen.sghaier@nxp.com>,
+ Herbert Xu <herbert@gondor.apana.org.au>,
+ Horia =?utf-8?Q?Geant=C4=83?= <horia.geanta@nxp.com>,
+ Konrad Rzeszutek Wilk <konrad.wilk@oracle.com>, Marc Orr <marcorr@google.com>,
+ Lukas Hartmann <lukas@mntmn.com>,
+ "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+ "David S. Miller" <davem@davemloft.net>,
+ "iommu@lists.linux-foundation.org" <iommu@lists.linux-foundation.org>,
+ "linux-crypto@vger.kernel.org" <linux-crypto@vger.kernel.org>,
+ Peter Gonda <pgonda@google.com>,
+ Linus Torvalds <torvalds@linux-foundation.org>, Christoph Hellwig <hch@lst.de>
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -104,89 +118,35 @@ List-Post: <mailto:iommu@lists.linux-foundation.org>
 List-Help: <mailto:iommu-request@lists.linux-foundation.org?subject=help>
 List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
  <mailto:iommu-request@lists.linux-foundation.org?subject=subscribe>
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-On Wed, 16 Jun 2021, Claire Chang wrote:
-> Introduce the new compatible string, restricted-dma-pool, for restricted
-> DMA. One can specify the address and length of the restricted DMA memory
-> region by restricted-dma-pool in the reserved-memory node.
-> 
-> Signed-off-by: Claire Chang <tientzu@chromium.org>
-> ---
->  .../reserved-memory/reserved-memory.txt       | 36 +++++++++++++++++--
->  1 file changed, 33 insertions(+), 3 deletions(-)
-> 
-> diff --git a/Documentation/devicetree/bindings/reserved-memory/reserved-memory.txt b/Documentation/devicetree/bindings/reserved-memory/reserved-memory.txt
-> index e8d3096d922c..46804f24df05 100644
-> --- a/Documentation/devicetree/bindings/reserved-memory/reserved-memory.txt
-> +++ b/Documentation/devicetree/bindings/reserved-memory/reserved-memory.txt
-> @@ -51,6 +51,23 @@ compatible (optional) - standard definition
->            used as a shared pool of DMA buffers for a set of devices. It can
->            be used by an operating system to instantiate the necessary pool
->            management subsystem if necessary.
-> +        - restricted-dma-pool: This indicates a region of memory meant to be
-> +          used as a pool of restricted DMA buffers for a set of devices. The
-> +          memory region would be the only region accessible to those devices.
-> +          When using this, the no-map and reusable properties must not be set,
-> +          so the operating system can create a virtual mapping that will be used
-> +          for synchronization. The main purpose for restricted DMA is to
-> +          mitigate the lack of DMA access control on systems without an IOMMU,
-> +          which could result in the DMA accessing the system memory at
-> +          unexpected times and/or unexpected addresses, possibly leading to data
-> +          leakage or corruption. The feature on its own provides a basic level
-> +          of protection against the DMA overwriting buffer contents at
-> +          unexpected times. However, to protect against general data leakage and
-> +          system memory corruption, the system needs to provide way to lock down
-> +          the memory access, e.g., MPU. Note that since coherent allocation
-> +          needs remapping, one must set up another device coherent pool by
-> +          shared-dma-pool and use dma_alloc_from_dev_coherent instead for atomic
-> +          coherent allocation.
->          - vendor specific string in the form <vendor>,[<device>-]<usage>
->  no-map (optional) - empty property
->      - Indicates the operating system must not create a virtual mapping
-> @@ -85,10 +102,11 @@ memory-region-names (optional) - a list of names, one for each corresponding
->  
->  Example
->  -------
-> -This example defines 3 contiguous regions are defined for Linux kernel:
-> +This example defines 4 contiguous regions for Linux kernel:
->  one default of all device drivers (named linux,cma@72000000 and 64MiB in size),
-> -one dedicated to the framebuffer device (named framebuffer@78000000, 8MiB), and
-> -one for multimedia processing (named multimedia-memory@77000000, 64MiB).
-> +one dedicated to the framebuffer device (named framebuffer@78000000, 8MiB),
-> +one for multimedia processing (named multimedia-memory@77000000, 64MiB), and
-> +one for restricted dma pool (named restricted_dma_reserved@0x50000000, 64MiB).
->  
->  / {
->  	#address-cells = <1>;
-> @@ -120,6 +138,11 @@ one for multimedia processing (named multimedia-memory@77000000, 64MiB).
->  			compatible = "acme,multimedia-memory";
->  			reg = <0x77000000 0x4000000>;
->  		};
-> +
-> +		restricted_dma_reserved: restricted_dma_reserved {
-> +			compatible = "restricted-dma-pool";
-> +			reg = <0x50000000 0x4000000>;
-> +		};
->  	};
->  
->  	/* ... */
-> @@ -138,4 +161,11 @@ one for multimedia processing (named multimedia-memory@77000000, 64MiB).
->  		memory-region = <&multimedia_reserved>;
->  		/* ... */
->  	};
-> +
-> +	pcie_device: pcie_device@0,0 {
-> +		reg = <0x83010000 0x0 0x00000000 0x0 0x00100000
-> +		       0x83010000 0x0 0x00100000 0x0 0x00100000>;
-> +		memory-region = <&restricted_dma_mem_reserved>;
-
-Shouldn't it be &restricted_dma_reserved ?
-
-_______________________________________________
-iommu mailing list
-iommu@lists.linux-foundation.org
-https://lists.linuxfoundation.org/mailman/listinfo/iommu
+T24gV2VkLCBKdW4gMTYsIDIwMjEgYXQgMDE6NDk6NTRQTSAtMDcwMCwgSmlhbnhpb25nIEdhbyB3
+cm90ZToKPiBPbiBGcmksIEp1biAxMSwgMjAyMSBhdCAzOjM1IEFNIEtvbnJhZCBSemVzenV0ZWsg
+V2lsawo+IDxrb25yYWQud2lsa0BvcmFjbGUuY29tPiB3cm90ZToKPiA+Cj4gPiBPbiBGcmksIEp1
+biAxMSwgMjAyMSBhdCAwODoyMTo1M0FNICswMjAwLCBDaHJpc3RvcGggSGVsbHdpZyB3cm90ZToK
+PiA+ID4gT24gVGh1LCBKdW4gMTAsIDIwMjEgYXQgMDU6NTI6MDdQTSArMDMwMCwgSG9yaWEgR2Vh
+bnTEgyB3cm90ZToKPiA+ID4gPiBJJ3ZlIG5vdGljZWQgdGhlIGZhaWx1cmUgYWxzbyBpbiB2NS4x
+MCBhbmQgdjUuMTEgc3RhYmxlIGtlcm5lbHMsCj4gPiA+ID4gc2luY2UgdGhlIHBhdGNoIHNldCBo
+YXMgYmVlbiBiYWNrcG9ydGVkLgo+ID4gPgo+ID4gPiBGWUksIHRoZXJlIGhhcyBiZWVuIGEgcGF0
+Y2ggb24gdGhlIGxpc3QgdGhhdCBzaG91bGQgaGF2ZSBmaXhlZCB0aGlzCj4gPiA+IGZvciBhYm91
+dCBhIG1vbnRoOgo+ID4gPgo+ID4gPiBodHRwczovL2xvcmUua2VybmVsLm9yZy9saW51eC1pb21t
+dS8yMDIxMDUxMDA5MTgxNi5HQTIwODRAbHN0LmRlL1QvI20wZDBkZjY0OTAzNTBhMDhkY2MyNGM5
+MDg2YzhlZGMxNjViNDAyZDZmCj4gPiA+Cj4gPiA+IGJ1dCBpdCBzZWVtcyBsaWtlIGl0IG5ldmVy
+IGdvdCBwaWNrZWQgdXAuCj4gPgo+ID4gSmlhbnhpb25nLAo+ID4gV291bGQgeW91IGJlIHVwIGZv
+ciB0ZXN0aW5nIHRoaXMgcGF0Y2ggb24geW91ciBOVk1lIHJpZyBwbGVhc2U/IEkgZG9uJ3QKPiA+
+IGZvcnNlZSBhIHByb2JsZW0uLiBidXQganVzdCBpbiBjYXNlCj4gPgo+IEkgaGF2ZSB0ZXN0ZWQg
+dGhlIGF0dGFjaGVkIHBhdGNoIGFuZCBpdCBnZW5lcmF0ZXMgYW4gZXJyb3Igd2hlbgo+IGZvcm1h
+dHRpbmcgYSBkaXNrIHRvIHhmcyBmb3JtYXQgaW4gUmhlbCA4IGVudmlyb25tZW50OgoKVGhhbmsg
+eW91IGZvciB0ZXN0aW5nIHRoYXQgLSBhbmQgdGhpcyBpcyBhIGJ1bW1lciBpbmRlZWQuCgpKaWFu
+eGlvbmcsCkhvdyB1bmlxdWUgaXMgdGhpcyBOVk1lPyBTaG91bGQgSSBiZSBhYmxlIHRvIHJlcHJv
+ZHVjZSB0aGlzIHdpdGggYW55CnR5cGUgb3IgaXMgaXQgc3BlY2lmaWMgdG8gR29vZ2xlIENsb3Vk
+PwoKRG9taW5pcXVlLCBIb3JpYSwKCkFyZSB0aG9zZSBjcnlwdG8gZGV2aWNlcyBzb21laG93IGVh
+c2lseSBhdmFpbGFibGUgdG8gdGVzdCBvdXQgdGhlCnBhdGNoZXM/CgpQLlMuCk1vc3QgdW5mb3J0
+dW5hdGUgdGltaW5nIC0gSSBhbSBvdXQgaW4gcnVyYWwgYXJlYXMgaW4gVVMgd2l0aCBub3QgZ3Jl
+YXQKSW50ZXJuZXQsIHNvIHdvbid0IGJlIGFibGUgdG8gZ2V0IGZ1bGx5IGRvd24gdG8gdGhpcyB1
+bnRpbCBNb25kYXkuCl9fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19f
+X19fCmlvbW11IG1haWxpbmcgbGlzdAppb21tdUBsaXN0cy5saW51eC1mb3VuZGF0aW9uLm9yZwpo
+dHRwczovL2xpc3RzLmxpbnV4Zm91bmRhdGlvbi5vcmcvbWFpbG1hbi9saXN0aW5mby9pb21tdQ==
