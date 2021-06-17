@@ -2,79 +2,81 @@ Return-Path: <SRS0=K0Me=LL=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-15.5 required=3.0 tests=BAYES_00,
-	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_CR_TRAILER,INCLUDES_PATCH,
-	MAILING_LIST_MULTI,NICE_REPLY_A,SPF_HELO_NONE,SPF_PASS,USER_AGENT_SANE_1
-	autolearn=unavailable autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-2.0 required=3.0 tests=BAYES_00,DATE_IN_PAST_03_06,
+	DKIM_INVALID,DKIM_SIGNED,HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,
+	SPF_HELO_NONE,SPF_PASS autolearn=no autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 833E8C2B9F4
-	for <iommu@archiver.kernel.org>; Thu, 17 Jun 2021 07:20:25 +0000 (UTC)
-Received: from smtp1.osuosl.org (smtp1.osuosl.org [140.211.166.138])
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 825C4C49EA3
+	for <iommu@archiver.kernel.org>; Thu, 17 Jun 2021 07:22:19 +0000 (UTC)
+Received: from smtp2.osuosl.org (smtp2.osuosl.org [140.211.166.133])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 31483613B9
-	for <iommu@archiver.kernel.org>; Thu, 17 Jun 2021 07:20:25 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 31483613B9
-Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=linux.intel.com
+	by mail.kernel.org (Postfix) with ESMTPS id 30E8B613C1
+	for <iommu@archiver.kernel.org>; Thu, 17 Jun 2021 07:22:19 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 30E8B613C1
+Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=gibson.dropbear.id.au
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by smtp1.osuosl.org (Postfix) with ESMTP id 0991583DE6;
-	Thu, 17 Jun 2021 07:20:25 +0000 (UTC)
+	by smtp2.osuosl.org (Postfix) with ESMTP id 0155E40570;
+	Thu, 17 Jun 2021 07:22:19 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from smtp1.osuosl.org ([127.0.0.1])
-	by localhost (smtp1.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id B0GlpjvwZWaC; Thu, 17 Jun 2021 07:20:23 +0000 (UTC)
-Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by smtp1.osuosl.org (Postfix) with ESMTPS id AD7F583DC7;
-	Thu, 17 Jun 2021 07:20:22 +0000 (UTC)
+Received: from smtp2.osuosl.org ([127.0.0.1])
+	by localhost (smtp2.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+	with ESMTP id SkwDhJFH1W_7; Thu, 17 Jun 2021 07:22:15 +0000 (UTC)
+Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [IPv6:2605:bc80:3010:104::8cd3:938])
+	by smtp2.osuosl.org (Postfix) with ESMTPS id 16B5240150;
+	Thu, 17 Jun 2021 07:22:15 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 81A2BC000E;
-	Thu, 17 Jun 2021 07:20:22 +0000 (UTC)
-Received: from smtp1.osuosl.org (smtp1.osuosl.org [140.211.166.138])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 142C6C000B
- for <iommu@lists.linux-foundation.org>; Thu, 17 Jun 2021 07:20:21 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id EA3C2C000E;
+	Thu, 17 Jun 2021 07:22:14 +0000 (UTC)
+Received: from smtp3.osuosl.org (smtp3.osuosl.org [IPv6:2605:bc80:3010::136])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 142F4C000B
+ for <iommu@lists.linux-foundation.org>; Thu, 17 Jun 2021 07:22:14 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by smtp1.osuosl.org (Postfix) with ESMTP id E4ADC83DE7
- for <iommu@lists.linux-foundation.org>; Thu, 17 Jun 2021 07:20:20 +0000 (UTC)
+ by smtp3.osuosl.org (Postfix) with ESMTP id 0A6C36072E
+ for <iommu@lists.linux-foundation.org>; Thu, 17 Jun 2021 07:22:14 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from smtp1.osuosl.org ([127.0.0.1])
- by localhost (smtp1.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id Evw0lDjan4mb for <iommu@lists.linux-foundation.org>;
- Thu, 17 Jun 2021 07:20:20 +0000 (UTC)
+Authentication-Results: smtp3.osuosl.org (amavisd-new);
+ dkim=pass (1024-bit key) header.d=gibson.dropbear.id.au
+Received: from smtp3.osuosl.org ([127.0.0.1])
+ by localhost (smtp3.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+ with ESMTP id WxYgpJO1jXT0 for <iommu@lists.linux-foundation.org>;
+ Thu, 17 Jun 2021 07:22:10 +0000 (UTC)
 X-Greylist: domain auto-whitelisted by SQLgrey-1.8.0
-Received: from mga09.intel.com (mga09.intel.com [134.134.136.24])
- by smtp1.osuosl.org (Postfix) with ESMTPS id B7BA183DC4
- for <iommu@lists.linux-foundation.org>; Thu, 17 Jun 2021 07:20:09 +0000 (UTC)
-IronPort-SDR: 12On6J9oGG0Ar06ieXTpCzC+YjcdsKFBqXqmh/kVpFobUbfravrsF/L9JK3HJ18ZLO+jIfT6Al
- Ni9jdb6h3pvg==
-X-IronPort-AV: E=McAfee;i="6200,9189,10017"; a="206273502"
-X-IronPort-AV: E=Sophos;i="5.83,278,1616482800"; d="scan'208";a="206273502"
-Received: from fmsmga004.fm.intel.com ([10.253.24.48])
- by orsmga102.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384;
- 17 Jun 2021 00:20:09 -0700
-IronPort-SDR: f5uyLCePA4vQedp0tG3ISxCOvFjgXxQLmtIdc/4UlSvhvwSV1D1ygdcsL/yeyrAgdrl+LIWqsE
- s/z3BhsOKRXw==
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.83,278,1616482800"; d="scan'208";a="472326493"
-Received: from allen-box.sh.intel.com (HELO [10.239.159.118])
- ([10.239.159.118])
- by fmsmga004.fm.intel.com with ESMTP; 17 Jun 2021 00:20:06 -0700
-Subject: Re: [PATCH v7 08/15] iommu: Add support for the map_pages() callback
-To: Georgi Djakov <quic_c_gdjako@quicinc.com>, will@kernel.org,
- robin.murphy@arm.com
-References: <1623850736-389584-1-git-send-email-quic_c_gdjako@quicinc.com>
- <1623850736-389584-9-git-send-email-quic_c_gdjako@quicinc.com>
-From: Lu Baolu <baolu.lu@linux.intel.com>
-Message-ID: <bc003ab7-5067-53de-a94e-815462991f8f@linux.intel.com>
-Date: Thu, 17 Jun 2021 15:18:39 +0800
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
- Thunderbird/78.8.1
+Received: from ozlabs.org (bilbo.ozlabs.org [203.11.71.1])
+ by smtp3.osuosl.org (Postfix) with ESMTPS id D13B56070B
+ for <iommu@lists.linux-foundation.org>; Thu, 17 Jun 2021 07:22:09 +0000 (UTC)
+Received: by ozlabs.org (Postfix, from userid 1007)
+ id 4G5D5W491pz9sT6; Thu, 17 Jun 2021 17:22:07 +1000 (AEST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+ d=gibson.dropbear.id.au; s=201602; t=1623914527;
+ bh=zVWbZ8t57yg6jr2vkel/FfVJmSI+OssX8pb3npfVLG0=;
+ h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+ b=ENOesf92LKWneTrHhvauCH/Tmz57Jo+jwf8vIfQXhSZv8qrfNtxWwMvrrUa2SVU85
+ L0HfZQWRvkWHZMCKtSOeTz9BQwNcM4AlPFK8MywJ35dgPX49Y+2nTAo3fTCsNIzYfq
+ TJ1ygljN2+gEkdiRP9N8vES/H6QCe87y/Ri6vUKc=
+Date: Thu, 17 Jun 2021 12:42:31 +1000
+From: David Gibson <david@gibson.dropbear.id.au>
+To: Jason Gunthorpe <jgg@nvidia.com>
+Subject: Re: [RFC] /dev/ioasid uAPI proposal
+Message-ID: <YMq2l7YId3cjmVKG@yekko>
+References: <MWHPR11MB1886422D4839B372C6AB245F8C239@MWHPR11MB1886.namprd11.prod.outlook.com>
+ <20210528173538.GA3816344@nvidia.com> <YLcl+zaK6Y0gB54a@yekko>
+ <20210602161648.GY1002214@nvidia.com> <YLhlCINGPGob4Nld@yekko>
+ <20210603115224.GQ1002214@nvidia.com> <YL6/bjHyuHJTn4Rd@yekko>
+ <20210608190406.GN1002214@nvidia.com>
 MIME-Version: 1.0
-In-Reply-To: <1623850736-389584-9-git-send-email-quic_c_gdjako@quicinc.com>
-Content-Language: en-US
-Cc: isaacm@codeaurora.org, linux-kernel@vger.kernel.org,
- iommu@lists.linux-foundation.org, djakov@kernel.org, pratikp@codeaurora.org,
- linux-arm-kernel@lists.infradead.org
+In-Reply-To: <20210608190406.GN1002214@nvidia.com>
+Cc: Jean-Philippe Brucker <jean-philippe@linaro.org>, "Tian,
+ Kevin" <kevin.tian@intel.com>,
+ "Alex Williamson \(alex.williamson@redhat.com\)" <alex.williamson@redhat.com>,
+ "Raj, Ashok" <ashok.raj@intel.com>,
+ "kvm@vger.kernel.org" <kvm@vger.kernel.org>, Jonathan Corbet <corbet@lwn.net>,
+ Robin Murphy <robin.murphy@arm.com>, LKML <linux-kernel@vger.kernel.org>,
+ Kirti Wankhede <kwankhede@nvidia.com>,
+ "iommu@lists.linux-foundation.org" <iommu@lists.linux-foundation.org>, "Jiang,
+ Dave" <dave.jiang@intel.com>, David Woodhouse <dwmw2@infradead.org>,
+ Jason Wang <jasowang@redhat.com>
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -87,106 +89,102 @@ List-Post: <mailto:iommu@lists.linux-foundation.org>
 List-Help: <mailto:iommu-request@lists.linux-foundation.org?subject=help>
 List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
  <mailto:iommu-request@lists.linux-foundation.org?subject=subscribe>
-Content-Transfer-Encoding: 7bit
-Content-Type: text/plain; charset="us-ascii"; Format="flowed"
+Content-Type: multipart/mixed; boundary="===============3627616849997158332=="
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-On 6/16/21 9:38 PM, Georgi Djakov wrote:
-> From: "Isaac J. Manjarres" <isaacm@codeaurora.org>
-> 
-> Since iommu_pgsize can calculate how many pages of the
-> same size can be mapped/unmapped before the next largest
-> page size boundary, add support for invoking an IOMMU
-> driver's map_pages() callback, if it provides one.
-> 
-> Signed-off-by: Isaac J. Manjarres <isaacm@codeaurora.org>
-> Suggested-by: Will Deacon <will@kernel.org>
-> Signed-off-by: Georgi Djakov <quic_c_gdjako@quicinc.com>
-> ---
->   drivers/iommu/iommu.c | 43 +++++++++++++++++++++++++++++++++++--------
->   1 file changed, 35 insertions(+), 8 deletions(-)
-> 
-> diff --git a/drivers/iommu/iommu.c b/drivers/iommu/iommu.c
-> index 725622c7e603..70a729ce88b1 100644
-> --- a/drivers/iommu/iommu.c
-> +++ b/drivers/iommu/iommu.c
-> @@ -2429,6 +2429,30 @@ static size_t iommu_pgsize(struct iommu_domain *domain, unsigned long iova,
->   	return pgsize;
->   }
->   
-> +static int __iommu_map_pages(struct iommu_domain *domain, unsigned long iova,
-> +			     phys_addr_t paddr, size_t size, int prot,
-> +			     gfp_t gfp, size_t *mapped)
-> +{
-> +	const struct iommu_ops *ops = domain->ops;
-> +	size_t pgsize, count;
-> +	int ret;
-> +
-> +	pgsize = iommu_pgsize(domain, iova, paddr, size, &count);
-> +
-> +	pr_debug("mapping: iova 0x%lx pa %pa pgsize 0x%zx count %zu\n",
-> +		 iova, &paddr, pgsize, count);
-> +
-> +	if (ops->map_pages) {
-> +		ret = ops->map_pages(domain, iova, paddr, pgsize, count, prot,
-> +				     gfp, mapped);
-> +	} else {
-> +		ret = ops->map(domain, iova, paddr, pgsize, prot, gfp);
-> +		*mapped = ret ? 0 : pgsize;
-> +	}
-> +
-> +	return ret;
-> +}
-> +
->   static int __iommu_map(struct iommu_domain *domain, unsigned long iova,
->   		       phys_addr_t paddr, size_t size, int prot, gfp_t gfp)
->   {
-> @@ -2439,7 +2463,7 @@ static int __iommu_map(struct iommu_domain *domain, unsigned long iova,
->   	phys_addr_t orig_paddr = paddr;
->   	int ret = 0;
->   
-> -	if (unlikely(ops->map == NULL ||
-> +	if (unlikely(!(ops->map || ops->map_pages) ||
->   		     domain->pgsize_bitmap == 0UL))
->   		return -ENODEV;
->   
-> @@ -2463,18 +2487,21 @@ static int __iommu_map(struct iommu_domain *domain, unsigned long iova,
->   	pr_debug("map: iova 0x%lx pa %pa size 0x%zx\n", iova, &paddr, size);
->   
->   	while (size) {
-> -		size_t pgsize = iommu_pgsize(domain, iova, paddr, size, NULL);
-> +		size_t mapped = 0;
->   
-> -		pr_debug("mapping: iova 0x%lx pa %pa pgsize 0x%zx\n",
-> -			 iova, &paddr, pgsize);
-> -		ret = ops->map(domain, iova, paddr, pgsize, prot, gfp);
-> +		ret = __iommu_map_pages(domain, iova, paddr, size, prot, gfp,
-> +					&mapped);
-> +		/*
-> +		 * Some pages may have been mapped, even if an error occurred,
-> +		 * so we should account for those so they can be unmapped.
-> +		 */
-> +		size -= mapped;
->   
->   		if (ret)
->   			break;
->   
-> -		iova += pgsize;
-> -		paddr += pgsize;
-> -		size -= pgsize;
-> +		iova += mapped;
-> +		paddr += mapped;
->   	}
->   
->   	/* unroll mapping in case something went wrong */
-> 
 
-Reviewed-by: Lu Baolu <baolu.lu@linux.intel.com>
+--===============3627616849997158332==
+Content-Type: multipart/signed; micalg=pgp-sha256;
+	protocol="application/pgp-signature"; boundary="5bobZhJ8ovb9pZNW"
+Content-Disposition: inline
 
-Best regards,
-baolu
+
+--5bobZhJ8ovb9pZNW
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
+
+On Tue, Jun 08, 2021 at 04:04:06PM -0300, Jason Gunthorpe wrote:
+> On Tue, Jun 08, 2021 at 10:53:02AM +1000, David Gibson wrote:
+> > On Thu, Jun 03, 2021 at 08:52:24AM -0300, Jason Gunthorpe wrote:
+> > > On Thu, Jun 03, 2021 at 03:13:44PM +1000, David Gibson wrote:
+> > >=20
+> > > > > We can still consider it a single "address space" from the IOMMU
+> > > > > perspective. What has happened is that the address table is not j=
+ust a
+> > > > > 64 bit IOVA, but an extended ~80 bit IOVA formed by "PASID, IOVA".
+> > > >=20
+> > > > True.  This does complexify how we represent what IOVA ranges are
+> > > > valid, though.  I'll bet you most implementations don't actually
+> > > > implement a full 64-bit IOVA, which means we effectively have a lar=
+ge
+> > > > number of windows from (0..max IOVA) for each valid pasid.  This ad=
+ds
+> > > > another reason I don't think my concept of IOVA windows is just a
+> > > > power specific thing.
+> > >=20
+> > > Yes
+> > >=20
+> > > Things rapidly get into weird hardware specific stuff though, the
+> > > request will be for things like:
+> > >   "ARM PASID&IO page table format from SMMU IP block vXX"
+> >=20
+> > So, I'm happy enough for picking a user-managed pagetable format to
+> > imply the set of valid IOVA ranges (though a query might be nice).
+>=20
+> I think a query is mandatory, and optionally asking for ranges seems
+> generally useful as a HW property.
+>=20
+> The danger is things can get really tricky as the app can ask for
+> ranges some HW needs but other HW can't provide.=20
+>=20
+> I would encourage a flow where "generic" apps like DPDK can somehow
+> just ignore this, or at least be very, very simplified "I want around
+> XX GB of IOVA space"
+>=20
+> dpdk type apps vs qemu apps are really quite different and we should
+> be carefully that the needs of HW accelerated vIOMMU emulation do not
+> trump the needs of simple universal control over a DMA map.
+
+Agreed.
+
+--=20
+David Gibson			| I'll have my music baroque, and my code
+david AT gibson.dropbear.id.au	| minimalist, thank you.  NOT _the_ _other_
+				| _way_ _around_!
+http://www.ozlabs.org/~dgibson
+
+--5bobZhJ8ovb9pZNW
+Content-Type: application/pgp-signature; name="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+
+iQIzBAEBCAAdFiEEdfRlhq5hpmzETofcbDjKyiDZs5IFAmDKtpUACgkQbDjKyiDZ
+s5L55hAAz7xTXdVl6Sc751CmGpD70USGAOw/RdKHKOF7XHOzBuYE9TL3q5fk1JDy
+xbJA2l9E6UsZDNafSc4V36fAx7MUHmengBK4zqzLK3uhP+xq/4IfJ1vugMt3SJNW
+Bq78GzvTs3O0j/eVDp/Ha81XK20Dy/RFfcP1E6j7YDSsXjEwkOwavFyna/xMPpGP
+HJl/cLDR2rXrAIURWO33A3W7am7TZVsLPzXblykE03XVPHDupsZTDr/vd6GXf4W0
+8atDbuq09y1mi7fLdNaOMx/LVZTFQtaQwd8+1jprYEc4UJ6n/f++HS7NtNCBsPwZ
+QH0LJrWjW8RaG6IVOPuQIwJ1SBAZ/gtXC65UdrBMAjQaKjxoO5b/WvUxXpXktMod
+CD2dYHIzo/RKmg7NBTExYOzw9J31jIoNLXXu1Ao++RmXSSHlCb5aWkS3TQFilnMp
+hdZm/4Aih4DDrgFdDYBuhanzS6IpRAwysxDj9h2cJWOR/OwYdZAcnZHS03FC6DQ0
+fzIbGVFKhVk+Kstnkb8AgoLgdIFSONHdUoH8ISWIZ0bO+XGBGE9PjeqV3v9C+EhD
+J8xPnFzRlGgK1BleopuME+ukjT4t1yjAfqud6EYVKzN7DcfC9kkwTNtFX2CRjRNV
+H/hCA3c9kxdjRi6tk/juYHoLEAHevB1IAtTukDrsw6f+vxSQ2yE=
+=PXAb
+-----END PGP SIGNATURE-----
+
+--5bobZhJ8ovb9pZNW--
+
+--===============3627616849997158332==
+Content-Type: text/plain; charset="us-ascii"
+MIME-Version: 1.0
+Content-Transfer-Encoding: 7bit
+Content-Disposition: inline
+
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
 https://lists.linuxfoundation.org/mailman/listinfo/iommu
+--===============3627616849997158332==--
