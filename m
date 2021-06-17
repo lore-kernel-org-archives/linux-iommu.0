@@ -2,91 +2,79 @@ Return-Path: <SRS0=K0Me=LL=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-13.6 required=3.0 tests=BAYES_00,DKIM_INVALID,
-	DKIM_SIGNED,HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_CR_TRAILER,INCLUDES_PATCH,
-	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,URIBL_RED autolearn=ham
-	autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-5.3 required=3.0 tests=BAYES_00,DKIM_INVALID,
+	DKIM_SIGNED,MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,URIBL_RED,
+	USER_AGENT_SANE_1 autolearn=no autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4E92BC49361
-	for <iommu@archiver.kernel.org>; Thu, 17 Jun 2021 17:17:10 +0000 (UTC)
-Received: from smtp3.osuosl.org (smtp3.osuosl.org [140.211.166.136])
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B750AC48BE5
+	for <iommu@archiver.kernel.org>; Thu, 17 Jun 2021 17:49:09 +0000 (UTC)
+Received: from smtp2.osuosl.org (smtp2.osuosl.org [140.211.166.133])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id C3A28613FA
-	for <iommu@archiver.kernel.org>; Thu, 17 Jun 2021 17:17:09 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org C3A28613FA
-Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=lists.linux-foundation.org
+	by mail.kernel.org (Postfix) with ESMTPS id 6713D613CE
+	for <iommu@archiver.kernel.org>; Thu, 17 Jun 2021 17:49:09 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 6713D613CE
+Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=kernel.org
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by smtp3.osuosl.org (Postfix) with ESMTP id 76DA660E67;
-	Thu, 17 Jun 2021 17:17:09 +0000 (UTC)
+	by smtp2.osuosl.org (Postfix) with ESMTP id 32E1140149;
+	Thu, 17 Jun 2021 17:49:09 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from smtp3.osuosl.org ([127.0.0.1])
-	by localhost (smtp3.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id Rv9sdqVJvHNh; Thu, 17 Jun 2021 17:17:08 +0000 (UTC)
+Received: from smtp2.osuosl.org ([127.0.0.1])
+	by localhost (smtp2.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+	with ESMTP id 1NWuwfwY268y; Thu, 17 Jun 2021 17:49:08 +0000 (UTC)
 Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by smtp3.osuosl.org (Postfix) with ESMTPS id 65BC360E5D;
-	Thu, 17 Jun 2021 17:17:08 +0000 (UTC)
+	by smtp2.osuosl.org (Postfix) with ESMTPS id 12771400AF;
+	Thu, 17 Jun 2021 17:49:08 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 33C62C000E;
-	Thu, 17 Jun 2021 17:17:08 +0000 (UTC)
-Received: from smtp4.osuosl.org (smtp4.osuosl.org [140.211.166.137])
- by lists.linuxfoundation.org (Postfix) with ESMTP id BCAF0C000B
- for <iommu@lists.linux-foundation.org>; Thu, 17 Jun 2021 17:17:06 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id D8204C000E;
+	Thu, 17 Jun 2021 17:49:07 +0000 (UTC)
+Received: from smtp3.osuosl.org (smtp3.osuosl.org [IPv6:2605:bc80:3010::136])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 88B54C000B
+ for <iommu@lists.linux-foundation.org>; Thu, 17 Jun 2021 17:49:06 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by smtp4.osuosl.org (Postfix) with ESMTP id 8CCFC42238
- for <iommu@lists.linux-foundation.org>; Thu, 17 Jun 2021 17:17:06 +0000 (UTC)
+ by smtp3.osuosl.org (Postfix) with ESMTP id 8432C6065D
+ for <iommu@lists.linux-foundation.org>; Thu, 17 Jun 2021 17:49:06 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Authentication-Results: smtp4.osuosl.org (amavisd-new);
- dkim=pass (2048-bit key) header.d=google.com
-Received: from smtp4.osuosl.org ([127.0.0.1])
- by localhost (smtp4.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id Xo102aQUj3Sp for <iommu@lists.linux-foundation.org>;
- Thu, 17 Jun 2021 17:17:05 +0000 (UTC)
-X-Greylist: whitelisted by SQLgrey-1.8.0
-Received: from mail-lj1-x22b.google.com (mail-lj1-x22b.google.com
- [IPv6:2a00:1450:4864:20::22b])
- by smtp4.osuosl.org (Postfix) with ESMTPS id 7DBAF4223D
- for <iommu@lists.linux-foundation.org>; Thu, 17 Jun 2021 17:17:04 +0000 (UTC)
-Received: by mail-lj1-x22b.google.com with SMTP id b37so10006868ljr.13
- for <iommu@lists.linux-foundation.org>; Thu, 17 Jun 2021 10:17:04 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=google.com; s=20161025;
- h=mime-version:references:in-reply-to:from:date:message-id:subject:to
- :cc; bh=+UCmKSCa3QiyF+EVqn93Vr8LzsTTd7mIrDf+DuAyIo8=;
- b=GnIRWtOHp+scyIC0BY9GkWMc6n9RX9972fc1ku9BzR7mGKCasApJoQFVjH+bK68b6b
- nuO7MYsmXkE34O4F++2m2n4VlYsHAsGUuTWd6poGkIJBIaGPRP+gyhi3NeQKdansAuKE
- EnrvYXa7jYZUDOPXQzHXsLLiJhmcbQ/rFcme3BWB9QrEdHrq+qupHgTEUfWRC6gd8g0/
- QWiXmA55VKW5ujqD/HFlrgrWo86hEhnf5TCzPQfkozMhih+2CABhRpdVAcZ7V05l8txb
- XAnZMDk79vW42BxNLCUtSYciT27a6ZeqjLiRFAl5TBrnuHqArdAmWxK8utoCnE6uM400
- vgHA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
- d=1e100.net; s=20161025;
- h=x-gm-message-state:mime-version:references:in-reply-to:from:date
- :message-id:subject:to:cc;
- bh=+UCmKSCa3QiyF+EVqn93Vr8LzsTTd7mIrDf+DuAyIo8=;
- b=VPl2VlFXTCSiJvtL5aeYtFwAADVzsXXVj1Jq1PanvdhYRSg1+7VkFrkposBfTmCO6S
- oOXWz1oTfAhZjA8oSdmHIuZUUtwypeBgRKtk6zacXCbmUH96yqxMecvrpje5St38Oznp
- umtxfSIuJcOzjxHOrQDlGhTrixa7v90t2vj4KUPNN/oTAgT4LaFaHUIFr9kixtg1XsPn
- pk0va3on+Wjp3Cx+HzuaCGZnwMymF46HRKLCm5euHCDSD+N/81soz1K3HVpCFVv6/W8w
- jiWuwrZaYNBwdMD7U+d8/e3MEns1ik16hTU3Kem2C+3MHeT908VI0Dw6T/l9OnaPMUDX
- YAdA==
-X-Gm-Message-State: AOAM532X2WVanYQLlix21JSZVEEr0VZqqxKX45w1inJnqyZyyeVij8V1
- DHg830Ci8opt9oJDE4mbV286mjHUXCMk3qqWWVscnQ==
-X-Google-Smtp-Source: ABdhPJxgWkkL8Fk/SBBmYIYiPs9dkdIiTPmkNy2TuzTzUAeR2E1A8icgKJtMe2NusLT2AwOAjvy60BlA3/Wuf8+dzQM=
-X-Received: by 2002:a05:651c:604:: with SMTP id
- k4mr5605183lje.244.1623950222030; 
- Thu, 17 Jun 2021 10:17:02 -0700 (PDT)
+Authentication-Results: smtp3.osuosl.org (amavisd-new);
+ dkim=pass (2048-bit key) header.d=kernel.org
+Received: from smtp3.osuosl.org ([127.0.0.1])
+ by localhost (smtp3.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+ with ESMTP id QKjNLYNsxBsd for <iommu@lists.linux-foundation.org>;
+ Thu, 17 Jun 2021 17:49:05 +0000 (UTC)
+X-Greylist: domain auto-whitelisted by SQLgrey-1.8.0
+Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
+ by smtp3.osuosl.org (Postfix) with ESMTPS id 6F20460640
+ for <iommu@lists.linux-foundation.org>; Thu, 17 Jun 2021 17:49:05 +0000 (UTC)
+Received: by mail.kernel.org (Postfix) with ESMTPSA id E782C613CB;
+ Thu, 17 Jun 2021 17:49:03 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+ s=k20201202; t=1623952145;
+ bh=PEswRSOUEybmrluFbTBGtoEux41ybWZrhm0/5ADHUig=;
+ h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+ b=SRgVQddYQNsX/0bSReJIMePYroJG5R758EyKUDaj8Yz83/tvT+yuc4bWIU/ujjZkt
+ Wv55bqQNR+hlU1Aa1D7IEWIsDpPiiwYdRd4YifEV78OcGVjqb6ftUvgL1xW4Xst4rE
+ lt2+XMMUhQW9cMW7acVtOTW1j4Yt0ClW/MyxIzGi6FBPEB9mR+UUzq8SVbxABPYO9/
+ LUxHiW+DrPi1FzOA5zInVb9Mf3e9kDZJ7jlt2Y+w/4VfLWqptN5V/w5pe7W1kNejYa
+ efDZ4y9uRMklWBPAjOsYVNLPhdqc4sDj13XfdBDfn6V+BLJqMZixAQM14wU2KTbha6
+ /SmYiHn8JO0fA==
+Date: Thu, 17 Jun 2021 18:49:00 +0100
+From: Will Deacon <will@kernel.org>
+To: Ashish Mhetre <amhetre@nvidia.com>
+Subject: Re: [PATCH 1/2] iommu: Fix race condition during default domain
+ allocation
+Message-ID: <20210617174859.GD24813@willie-the-truck>
+References: <1623298614-31755-1-git-send-email-amhetre@nvidia.com>
+ <1623298614-31755-2-git-send-email-amhetre@nvidia.com>
+ <20210611104524.GD15274@willie-the-truck>
+ <faf4504c-43f2-f68e-9a00-5e450dd7f352@arm.com>
+ <315fe1c5-2685-6ee3-2aa4-35a27233127b@nvidia.com>
 MIME-Version: 1.0
-References: <20210617145339.2692-1-joro@8bytes.org>
-In-Reply-To: <20210617145339.2692-1-joro@8bytes.org>
-Date: Thu, 17 Jun 2021 10:16:50 -0700
-Message-ID: <CAKwvOd=8jUsRFKg6+sqq2-DakbRBGR6Z6mR_smuxp+cMEmCHLw@mail.gmail.com>
-Subject: Re: [PATCH] iommu/vt-d: Fix W=1 clang warning in intel/perf.c
-To: Joerg Roedel <joro@8bytes.org>
-Cc: Joerg Roedel <jroedel@suse.de>, kernel test robot <lkp@intel.com>,
- Will Deacon <will@kernel.org>, LKML <linux-kernel@vger.kernel.org>,
- clang-built-linux <clang-built-linux@googlegroups.com>,
- iommu@lists.linux-foundation.org, David Woodhouse <dwmw2@infradead.org>
+Content-Disposition: inline
+In-Reply-To: <315fe1c5-2685-6ee3-2aa4-35a27233127b@nvidia.com>
+User-Agent: Mutt/1.10.1 (2018-07-13)
+Cc: Robin Murphy <robin.murphy@arm.com>, iommu@lists.linux-foundation.org,
+ linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -99,57 +87,67 @@ List-Post: <mailto:iommu@lists.linux-foundation.org>
 List-Help: <mailto:iommu-request@lists.linux-foundation.org?subject=help>
 List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
  <mailto:iommu-request@lists.linux-foundation.org?subject=subscribe>
-From: Nick Desaulniers via iommu <iommu@lists.linux-foundation.org>
-Reply-To: Nick Desaulniers <ndesaulniers@google.com>
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-On Thu, Jun 17, 2021 at 7:54 AM Joerg Roedel <joro@8bytes.org> wrote:
->
-> From: Joerg Roedel <jroedel@suse.de>
->
-> Fix this warning when compiled with clang and W=1:
->
->         drivers/iommu/intel/perf.c:16: warning: Function parameter or member 'latency_lock' not described in 'DEFINE_SPINLOCK'
->         drivers/iommu/intel/perf.c:16: warning: expecting prototype for perf.c(). Prototype was for DEFINE_SPINLOCK() instead
+On Thu, Jun 17, 2021 at 11:21:39AM +0530, Ashish Mhetre wrote:
+> 
+> 
+> On 6/11/2021 6:19 PM, Robin Murphy wrote:
+> > External email: Use caution opening links or attachments
+> > 
+> > 
+> > On 2021-06-11 11:45, Will Deacon wrote:
+> > > On Thu, Jun 10, 2021 at 09:46:53AM +0530, Ashish Mhetre wrote:
+> > > > Domain is getting created more than once during asynchronous multiple
+> > > > display heads(devices) probe. All the display heads share same SID and
+> > > > are expected to be in same domain. As iommu_alloc_default_domain() call
+> > > > is not protected, the group->default_domain and group->domain are ending
+> > > > up with different domains and leading to subsequent IOMMU faults.
+> > > > Fix this by protecting iommu_alloc_default_domain() call with
+> > > > group->mutex.
+> > > 
+> > > Can you provide some more information about exactly what the h/w
+> > > configuration is, and the callstack which exhibits the race, please?
+> > 
+> > It'll be basically the same as the issue reported long ago with PCI
+> > groups in the absence of ACS not being constructed correctly. Triggering
+> > the iommu_probe_device() replay in of_iommu_configure() off the back of
+> > driver probe is way too late and allows calls to happen in the wrong
+> > order, or indeed race in parallel as here. Fixing that is still on my
+> > radar, but will not be simple, and will probably go hand-in-hand with
+> > phasing out the bus ops (for the multiple-driver-coexistence problem).
+> > 
+> For iommu group creation, the stack flow during race is like:
+> Display device 1:
+> iommu_probe_device -> iommu_group_get_for_dev -> arm_smmu_device_group
+> Display device 2:
+> iommu_probe_device -> iommu_group_get_for_dev -> arm_smmu_device_group
+> 
+> And this way it ends up in creating 2 groups for 2 display devices sharing
+> same SID.
+> Ideally for 2nd display device, iommu_group_get call from
+> iommu_group_get_for_dev should return same group as 1st display device. But
+> due to the race, it ends up with 2 groups.
+> 
+> For default domain, the stack flow during race is like:
+> Display device 1:
+> iommu_probe_device -> iommu_alloc_default_domain -> arm_smmu_domain_alloc
+> Display device 2:
+> iommu_probe_device -> iommu_alloc_default_domain -> arm_smmu_domain_alloc
+> 
+> Here also 2nd device should already have domain allocated and
+> 'if(group->default_domain)' condition from iommu_alloc_default_domain should
+> be true for 2nd device.
+> 
+> Issue with this is IOVA accesses from 2nd device results in context faults.
 
-I think these warnings are actually produced by kernel-doc? (not clang)
+Thanks for the explanation (also Robin and Krishna). Please put some of this
+in the commit message for the next version.
 
->
-> Cc: Lu Baolu <baolu.lu@linux.intel.com>
-> Reported-by: kernel test robot <lkp@intel.com>
-> Fixes: 55ee5e67a59a ("iommu/vt-d: Add common code for dmar latency performance monitors")
-> Signed-off-by: Joerg Roedel <jroedel@suse.de>
-> ---
->  drivers/iommu/intel/perf.c | 2 +-
->  1 file changed, 1 insertion(+), 1 deletion(-)
->
-> diff --git a/drivers/iommu/intel/perf.c b/drivers/iommu/intel/perf.c
-> index 73b7ec705552..0e8e03252d92 100644
-> --- a/drivers/iommu/intel/perf.c
-> +++ b/drivers/iommu/intel/perf.c
-> @@ -1,5 +1,5 @@
->  // SPDX-License-Identifier: GPL-2.0
-> -/**
-> +/*
->   * perf.c - performance monitor
->   *
->   * Copyright (C) 2021 Intel Corporation
-> --
-> 2.31.1
->
-> --
-> You received this message because you are subscribed to the Google Groups "Clang Built Linux" group.
-> To unsubscribe from this group and stop receiving emails from it, send an email to clang-built-linux+unsubscribe@googlegroups.com.
-> To view this discussion on the web visit https://groups.google.com/d/msgid/clang-built-linux/20210617145339.2692-1-joro%408bytes.org.
-
-
-
--- 
-Thanks,
-~Nick Desaulniers
+Will
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
