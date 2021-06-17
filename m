@@ -2,131 +2,162 @@ Return-Path: <SRS0=K0Me=LL=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-5.0 required=3.0 tests=BAYES_00,DKIM_INVALID,
+X-Spam-Status: No, score=-3.5 required=3.0 tests=BAYES_00,DKIM_INVALID,
 	DKIM_SIGNED,HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,SPF_HELO_NONE,
-	SPF_PASS,URIBL_RED,USER_AGENT_SANE_2 autolearn=no autolearn_force=no
-	version=3.4.0
+	SPF_PASS,URIBL_RED autolearn=no autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 228B6C49EA2
-	for <iommu@archiver.kernel.org>; Thu, 17 Jun 2021 21:15:06 +0000 (UTC)
-Received: from smtp4.osuosl.org (smtp4.osuosl.org [140.211.166.137])
+	by smtp.lore.kernel.org (Postfix) with ESMTP id EC534C2B9F4
+	for <iommu@archiver.kernel.org>; Thu, 17 Jun 2021 21:18:44 +0000 (UTC)
+Received: from smtp2.osuosl.org (smtp2.osuosl.org [140.211.166.133])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id C534F613CE
-	for <iommu@archiver.kernel.org>; Thu, 17 Jun 2021 21:15:05 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org C534F613CE
-Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=redhat.com
+	by mail.kernel.org (Postfix) with ESMTPS id 89362613CB
+	for <iommu@archiver.kernel.org>; Thu, 17 Jun 2021 21:18:44 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 89362613CB
+Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=nvidia.com
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by smtp4.osuosl.org (Postfix) with ESMTP id 8C0CD421D8;
-	Thu, 17 Jun 2021 21:15:05 +0000 (UTC)
+	by smtp2.osuosl.org (Postfix) with ESMTP id 55EB34002B;
+	Thu, 17 Jun 2021 21:18:44 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from smtp4.osuosl.org ([127.0.0.1])
-	by localhost (smtp4.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id ZGQWdL_eZxyM; Thu, 17 Jun 2021 21:15:03 +0000 (UTC)
+Received: from smtp2.osuosl.org ([127.0.0.1])
+	by localhost (smtp2.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+	with ESMTP id x6djbiT0eYU6; Thu, 17 Jun 2021 21:18:43 +0000 (UTC)
 Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by smtp4.osuosl.org (Postfix) with ESMTPS id CB626421D6;
-	Thu, 17 Jun 2021 21:15:02 +0000 (UTC)
+	by smtp2.osuosl.org (Postfix) with ESMTPS id 669BE400BE;
+	Thu, 17 Jun 2021 21:18:43 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id A3404C000D;
-	Thu, 17 Jun 2021 21:15:02 +0000 (UTC)
-Received: from smtp3.osuosl.org (smtp3.osuosl.org [IPv6:2605:bc80:3010::136])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 9365EC000B
- for <iommu@lists.linux-foundation.org>; Thu, 17 Jun 2021 21:15:01 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 418EEC000D;
+	Thu, 17 Jun 2021 21:18:43 +0000 (UTC)
+Received: from smtp2.osuosl.org (smtp2.osuosl.org [IPv6:2605:bc80:3010::133])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 5E58DC000B
+ for <iommu@lists.linux-foundation.org>; Thu, 17 Jun 2021 21:18:41 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by smtp3.osuosl.org (Postfix) with ESMTP id 7DA6560606
- for <iommu@lists.linux-foundation.org>; Thu, 17 Jun 2021 21:15:01 +0000 (UTC)
+ by smtp2.osuosl.org (Postfix) with ESMTP id 40036400BE
+ for <iommu@lists.linux-foundation.org>; Thu, 17 Jun 2021 21:18:41 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Authentication-Results: smtp3.osuosl.org (amavisd-new);
- dkim=pass (1024-bit key) header.d=redhat.com
-Received: from smtp3.osuosl.org ([127.0.0.1])
- by localhost (smtp3.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id xtpLfxcMvOkt for <iommu@lists.linux-foundation.org>;
- Thu, 17 Jun 2021 21:14:59 +0000 (UTC)
-X-Greylist: domain auto-whitelisted by SQLgrey-1.8.0
-Received: from us-smtp-delivery-124.mimecast.com
- (us-smtp-delivery-124.mimecast.com [170.10.133.124])
- by smtp3.osuosl.org (Postfix) with ESMTPS id 5C319605E5
- for <iommu@lists.linux-foundation.org>; Thu, 17 Jun 2021 21:14:59 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
- s=mimecast20190719; t=1623964498;
- h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
- to:to:cc:cc:mime-version:mime-version:content-type:content-type:
- content-transfer-encoding:content-transfer-encoding:
- in-reply-to:in-reply-to:references:references;
- bh=oo47wIqh+64AN4kysHC5ZnpWcOA2roMCcbT87S0ukUA=;
- b=Mah9jFWbH1mlKqAdclA0eaimZHgXfO/jYaHsuFxDSaalwwrLgy4jXLtlsjVY1k9MM18apF
- 1Q/S7BoA0fvCwnYwe/flD4TdnzjWMHvEdegmlkxQ77kcWXehCbEYeI7p70sXCE7ub/ehMF
- aUYoE4Qc+/0+/ztZSq5ZI0OvbvtEyM4=
-Received: from mail-oi1-f197.google.com (mail-oi1-f197.google.com
- [209.85.167.197]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-408-8EGQ0gVWN-CiNEUsb51ZGQ-1; Thu, 17 Jun 2021 17:14:56 -0400
-X-MC-Unique: 8EGQ0gVWN-CiNEUsb51ZGQ-1
-Received: by mail-oi1-f197.google.com with SMTP id
- k11-20020a54440b0000b02901f3e6a011b4so3643126oiw.23
- for <iommu@lists.linux-foundation.org>; Thu, 17 Jun 2021 14:14:56 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
- d=1e100.net; s=20161025;
- h=x-gm-message-state:date:from:to:cc:subject:message-id:in-reply-to
- :references:mime-version:content-transfer-encoding;
- bh=oo47wIqh+64AN4kysHC5ZnpWcOA2roMCcbT87S0ukUA=;
- b=SKXdcm9lCgjOOnHmDdON8nBHBepW0+Da0CnsCAXRE9rzDAarjEkdSaWYakdjpkCCMp
- LbsWA7ba9JlXDmH2HBKS5mgOefA9wkIbdfgx6XMaHwN8jbFtzwHvxC9h1tCKOfySHF3o
- 7ApkrKbD7sNtmU7//FeOVhOCvoe+Tdh+sQLadYyP0wDl2KTcddXF4usHEZpJ9yd1BY2q
- 792eZm5t5UVxifKWjRZkavg56DRNwYb0BbOCjMBphFoEQhUJXSjpyGGUvuKS9M06cvdY
- t7TEEZWlgKbbEQ8j/HRBEk03v+14Z+vMpdlu/FpMAwtA3brkqXkpBbUBxgnXMMdTn5fV
- PEBw==
-X-Gm-Message-State: AOAM533xFvz1jgDpvyrY/FMq6w5hzziY4dji6RIyXKEqBnHBt/Zr81oN
- QmmE5spARmJtn+pWw/xvHX+FLlEq1gaXwp4OWrjcsVJPJlLABVLBIgh2ah0RHQmberxPh9hnbdx
- qokLspc9QVnsa8muWSp/pUoN0fahc7A==
-X-Received: by 2002:a9d:39e3:: with SMTP id y90mr6460348otb.257.1623964496109; 
- Thu, 17 Jun 2021 14:14:56 -0700 (PDT)
-X-Google-Smtp-Source: ABdhPJzSDm+Eyz4eQuTDZ9rpOqXZ442ZY5ensHDsN/la5BGEoSZAyELo4lhUDjVxeAhh3NadRWCr6g==
-X-Received: by 2002:a9d:39e3:: with SMTP id y90mr6460309otb.257.1623964495561; 
- Thu, 17 Jun 2021 14:14:55 -0700 (PDT)
-Received: from redhat.com ([198.99.80.109])
- by smtp.gmail.com with ESMTPSA id g38sm1567134otg.28.2021.06.17.14.14.54
- (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
- Thu, 17 Jun 2021 14:14:55 -0700 (PDT)
-Date: Thu, 17 Jun 2021 15:14:52 -0600
-From: Alex Williamson <alex.williamson@redhat.com>
-To: "Tian, Kevin" <kevin.tian@intel.com>
-Subject: Re: Plan for /dev/ioasid RFC v2
-Message-ID: <20210617151452.08beadae.alex.williamson@redhat.com>
-In-Reply-To: <MWHPR11MB18865DF9C50F295820D038798C0E9@MWHPR11MB1886.namprd11.prod.outlook.com>
-References: <20210609150009.GE1002214@nvidia.com> <YMDjfmJKUDSrbZbo@8bytes.org>
- <20210609101532.452851eb.alex.williamson@redhat.com>
- <20210609102722.5abf62e1.alex.williamson@redhat.com>
- <20210609184940.GH1002214@nvidia.com>
- <20210610093842.6b9a4e5b.alex.williamson@redhat.com>
- <20210611164529.GR1002214@nvidia.com>
- <20210611133828.6c6e8b29.alex.williamson@redhat.com>
- <20210612012846.GC1002214@nvidia.com>
- <20210612105711.7ac68c83.alex.williamson@redhat.com>
- <20210614140711.GI1002214@nvidia.com>
- <20210614102814.43ada8df.alex.williamson@redhat.com>
- <MWHPR11MB1886239C82D6B66A732830B88C309@MWHPR11MB1886.namprd11.prod.outlook.com>
- <20210615101215.4ba67c86.alex.williamson@redhat.com>
- <MWHPR11MB188692A6182B1292FADB3BDB8C0F9@MWHPR11MB1886.namprd11.prod.outlook.com>
- <20210616133937.59050e1a.alex.williamson@redhat.com>
- <MWHPR11MB18865DF9C50F295820D038798C0E9@MWHPR11MB1886.namprd11.prod.outlook.com>
-X-Mailer: Claws Mail 3.17.8 (GTK+ 2.24.33; x86_64-redhat-linux-gnu)
+Received: from smtp2.osuosl.org ([127.0.0.1])
+ by localhost (smtp2.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+ with ESMTP id SY7JpyIrIumg for <iommu@lists.linux-foundation.org>;
+ Thu, 17 Jun 2021 21:18:37 +0000 (UTC)
+X-Greylist: whitelisted by SQLgrey-1.8.0
+Received: from NAM12-MW2-obe.outbound.protection.outlook.com
+ (mail-mw2nam12on20602.outbound.protection.outlook.com
+ [IPv6:2a01:111:f400:fe5a::602])
+ by smtp2.osuosl.org (Postfix) with ESMTPS id 8F6974002B
+ for <iommu@lists.linux-foundation.org>; Thu, 17 Jun 2021 21:18:37 +0000 (UTC)
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=eVD0zYdVMAsm650zqa3JTuIsUEnm5Dut82axcWBLDlVuCDsgMSiIfaZOlP5JJG4j3UbDOGDY8l5TlKzFwDCZv4amosczNxVE8wP/3MaVT5268dLpsO+/OLlGOnrvbMa1D1nHDdBSGqvBJps8jp2Ta8aIq3ikBMjp+EZDOKx0man7rbBVo7Ccy0ydnwL7J+meEgtMhy9VGV/w8A6NJYyKLKqzC30iWLi2YR/cXCWGORJ891IfKj0nFnCv4e12UpRmo6u+HBC/BkLHzG0WVOjXZS+FKKXZOQ/o1b9lVtGND9shAswcqKzIQ1tu+3g3TYz2lf6FbcAlvhIOuKex8bCbHg==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com; 
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=bmEYs5v60QAHo5ExFrjtYxBat3AJyZqfrxvA172ryeY=;
+ b=du0IL+IK+xqDx1BqVuLRyhL5TtZi5O2WvCMRUPs0xSctQhv7J9xPBZMjKrt0Bc84SLJ39c8h/9ai2A9RU9C6zZMnhPAKFzY0CBkyRicW2p6u9J1pHmv7s5tIZt4ZjF6LBnpWxG0vxyzF73pVZUc0/tw5UpeL2tgzTLjawEQvG4cecGNOZO1Frcav3+cERFLdRjT/tJoWkLzyFHIhycvU+1kAsGhlN97nBLE5WmtxcVnMNBk+K+6k/TJFg6qjSH8NdjXMZmv0FTpd3ssfMJH/9DJB1newsdYreqZKuTbMlvwUkRA/YRRGb+XlUQVZNUM6Fgentba7BTWj/JnhXcp9/w==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=nvidia.com; dmarc=pass action=none header.from=nvidia.com;
+ dkim=pass header.d=nvidia.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
+ s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=bmEYs5v60QAHo5ExFrjtYxBat3AJyZqfrxvA172ryeY=;
+ b=KQOWCBhwRsKfqjnudpp2zF+sbOv1f2JDmL5vJvIRG8WG4xNOcZy8SjCvaKAQwGe8TJxFPyFEBd6kRTua0i4Vfw1wI7aAvN+WslEQbaLQ5HL96t3TudbfZ9dawj2ZzMMJPSgVhsripgN6meELYQddor+HXsToL4KpaD6whiipvKOSaQQoQQwhc9mdR87SI5wQgfPPrRZ2ijIWGAFegxQ/1cUXMCSAWAJKolsIcSkfmJ4aljnO+fur39NjFV6NoKcK5/vb+QbCv9CQATuYaF/8I+z+dTneb8zrbtGGtI6xHj5COQL9qq2c2UmiJfBOXGJtWP1MjDRto70ZEl5BHlQaeA==
+Received: from BY5PR12MB3764.namprd12.prod.outlook.com (2603:10b6:a03:1ac::17)
+ by BY5PR12MB3843.namprd12.prod.outlook.com (2603:10b6:a03:1a4::17)
+ with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4242.19; Thu, 17 Jun
+ 2021 21:18:34 +0000
+Received: from BY5PR12MB3764.namprd12.prod.outlook.com
+ ([fe80::d05:4bca:ea51:15af]) by BY5PR12MB3764.namprd12.prod.outlook.com
+ ([fe80::d05:4bca:ea51:15af%6]) with mapi id 15.20.4219.026; Thu, 17 Jun 2021
+ 21:18:34 +0000
+From: Krishna Reddy <vdumpa@nvidia.com>
+To: Sai Prakash Ranjan <saiprakash.ranjan@codeaurora.org>, Robin Murphy
+ <robin.murphy@arm.com>
+Subject: RE: [PATCH] iommu/io-pgtable-arm: Optimize partial walk flush for
+ large scatter-gather list
+Thread-Topic: [PATCH] iommu/io-pgtable-arm: Optimize partial walk flush for
+ large scatter-gather list
+Thread-Index: AQHXXT84btg0466hEE2rkvq94oyuZasMBHAAgACy+QCAAD6WAIAAB6mAgAAg2ACAAAWcgIAAPESAgACQdxCAAA05AIABAqfQgACvFQCABA+AcIABP6aAgAAiRoCAAR4wgIAAIu4AgAJcYlA=
+Date: Thu, 17 Jun 2021 21:18:34 +0000
+Message-ID: <BY5PR12MB37641A153EAAC556C85A411FB30E9@BY5PR12MB3764.namprd12.prod.outlook.com>
+References: <20210609145315.25750-1-saiprakash.ranjan@codeaurora.org>
+ <dbcd394a-4d85-316c-5dd0-033546a66132@arm.com>
+ <c600e9b2534d54082a5272b508a7985f@codeaurora.org>
+ <35bfd245-45e2-8083-b620-330d6dbd7bd7@arm.com>
+ <12067ffb8243b220cf03e83aaac3e823@codeaurora.org>
+ <266f190e-99ae-9175-cf13-7a77730af389@arm.com>
+ <dfdabcdec99a4c6e3bf2b3c5eebe067f@codeaurora.org>
+ <61c69d23-324a-85d7-2458-dfff8df9280b@arm.com>
+ <BY5PR12MB37646698F37C00381EFF7C77B3349@BY5PR12MB3764.namprd12.prod.outlook.com>
+ <07001b4ed6c0a491eacce6e4dc13ab5e@codeaurora.org>
+ <BY5PR12MB376480219C42E5FCE0FE0FFBB3349@BY5PR12MB3764.namprd12.prod.outlook.com>
+ <f749ba0957b516ab5f0ea57033d308c7@codeaurora.org>
+ <BY5PR12MB376433B3FD0A59EF57C4522DB3319@BY5PR12MB3764.namprd12.prod.outlook.com>
+ <5eb5146ab51a8fe0b558680d479a26cd@codeaurora.org>
+ <da62ff1c-9b49-34d3-69a1-1a674e4a30f7@arm.com>
+ <8535b6c757a5584b495f135f4377053c@codeaurora.org>
+ <d9226f4349c445c6ca63dc632b29e3e0@codeaurora.org>
+In-Reply-To: <d9226f4349c445c6ca63dc632b29e3e0@codeaurora.org>
+Accept-Language: en-US
+Content-Language: en-US
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+authentication-results: codeaurora.org; dkim=none (message not signed)
+ header.d=none;codeaurora.org; dmarc=none action=none header.from=nvidia.com;
+x-originating-ip: [216.228.112.22]
+x-ms-publictraffictype: Email
+x-ms-office365-filtering-correlation-id: 1d0176fb-3b05-4fb2-6ee8-08d931d576ed
+x-ms-traffictypediagnostic: BY5PR12MB3843:
+x-ms-exchange-transport-forked: True
+x-microsoft-antispam-prvs: <BY5PR12MB38432AF1B19C9FAC1FAD814DB30E9@BY5PR12MB3843.namprd12.prod.outlook.com>
+x-ms-oob-tlc-oobclassifiers: OLM:7691;
+x-ms-exchange-senderadcheck: 1
+x-microsoft-antispam: BCL:0;
+x-microsoft-antispam-message-info: 9ObuA49ycSJxXAUZBlWwAT0RSJvw6qIpDQQvJHoE0wGF25aO9QLlA7Zb7I+tPWPsdDh4tyiQQpIwCTCMwtHzsmShTrKkApDM7UP1DhSV2PEg1Xrai3bUG85UJTa8CcaFYSmAMw2XHI/O3c8gwi5cJTLo4VeSDaSNFFXkUiaLvngvqheD5T3TPlqjOuxzNv5MvwqEtCt0RmBM1f5MbXiT7SHUkMPFTruzNkJeQp20rCTEMcxRbHSvaHo1h4vTX0kQCuXIUuJqqjMmASb+eIxLUXIKxTWDCnYWwtjcrHDUGlc14IhXwLMBYuYALh4kM2tVuS2rwMuO57OXz/8ynRyvP2A8x7Kmzvj59k9cWv2NaTRDtfDUY18vh7uyFWNfXI4YD87yEKX7ArSH7mMTmw9EmYXospIBHV7QECbca0HUj3btZzbdif75FhNUnHFrc7wexFETW/KYfZnK9tCjMhDS6GYdqjeuhr7EXO63ymVIXp1IRVGamXevRtLZ0mO+EgxFYx746GAjmF7Psl9umNnJyhCM7hzFijyhnczCnIQvo7jZ9jW6LtbKciNKwfdMRNTEeBJzN3IX4t9hGnLCmHZsQYjGwKDP/5nD6P53CDFhwn8=
+x-forefront-antispam-report: CIP:255.255.255.255; CTRY:; LANG:en; SCL:1; SRV:;
+ IPV:NLI; SFV:NSPM; H:BY5PR12MB3764.namprd12.prod.outlook.com; PTR:; CAT:NONE;
+ SFS:(4636009)(136003)(366004)(396003)(39860400002)(376002)(346002)(66476007)(66946007)(64756008)(66446008)(52536014)(66556008)(5660300002)(76116006)(122000001)(9686003)(110136005)(86362001)(478600001)(2906002)(54906003)(316002)(71200400001)(6506007)(7696005)(107886003)(186003)(26005)(4326008)(4744005)(33656002)(8936002)(38100700002)(8676002)(55016002);
+ DIR:OUT; SFP:1101; 
+x-ms-exchange-antispam-messagedata-chunkcount: 1
+x-ms-exchange-antispam-messagedata-0: =?us-ascii?Q?09reG7Jx2x22eN8UhmvdMyi2SvTzgvseRUbJ7rKn8f6/LnLEKKtBiCkh6Si7?=
+ =?us-ascii?Q?ikCKN4gBpSnzzvwd6t4CAzWAsdgrVTsswJbrqhn3tl0ulCRgSdiXmZQ3vpJQ?=
+ =?us-ascii?Q?l0C87qGl64lsjHshC5LC9iPDmN22eh7pYHCy4jLJLPlP2jfdc5Eo21sJ7rZR?=
+ =?us-ascii?Q?6+pEdtqAOEz0ZZbFgoyuzH5YSNEKTdotIjWRqiA1NuRQ96NTirk5M4YyObgz?=
+ =?us-ascii?Q?Mdxa1qecQQ06PJQ0h9+XXsnpkQT/8Cyn3d7aQI/kYm3Iv221ruUwnfNrx6Ko?=
+ =?us-ascii?Q?zBXnZu/+SCxKHM4wUjbVUEl1W5Vb6AYNzFLzJDl6oK40h5SKRA8SDuBb/k4W?=
+ =?us-ascii?Q?cBZLB+gfaVzRpbeAFE5VXNKQA7E30Bz5z3Mv7TeSnNzMMZjsVsmdmq4eXAq3?=
+ =?us-ascii?Q?1dNjcjYujm2Z+r9qSsAsBK0pLTjS1061L1ypt6RhaYSaq4V8tnEl/s/9kUPM?=
+ =?us-ascii?Q?wu8EnCyT2rwIDcAoOdbds7gb8ujm+suGEMZftzvX5E9R3JnMSvC7fiq2BKZ4?=
+ =?us-ascii?Q?tHCGDhNsnTKO1u+nbvU2dL6VXYdQPCTwFnK6wBoIcsWS+126eXUsAjnvaM8M?=
+ =?us-ascii?Q?0ZgI4zkTF9KInFsF44al7wDKEPH3f7V4JCaGtpFs6MP82YAAuiujeJvbs94f?=
+ =?us-ascii?Q?zylM9ims50Y0aftbvs58Uuum8Ak7J67rrLU1Z0ghas5BVVlogSaz6J/oe/zw?=
+ =?us-ascii?Q?SeIqNqiTc7v2auT6LB7vTvMZihYOWQNnh6WYku8/dcZWhY6Kq3W1QY6Pn+GN?=
+ =?us-ascii?Q?cgpotuAfucb4meJlQJWDSeybbvFryS8HGPdsmZiNHztGQtYaOcoxUcsg10wH?=
+ =?us-ascii?Q?gzSy3ArsOp+1943e0/4SZ72WkioZnVKhEkrvX7BTmBlv9xB6goJjeSvHBN93?=
+ =?us-ascii?Q?5thgl9b2+pYm5Q2/XaI4+/FgScr6CcTdJb6Xv5wXUsABkG8XnBrabv8pM/6g?=
+ =?us-ascii?Q?eMFxeAiGTygcrN38m/6+1Ze9Iu2GmLuEyeuy0fcHPcEBDbf2CcWzZ4z454NY?=
+ =?us-ascii?Q?jktQ9zmMckiZqvgUBHPqMNdIn8Cd+C67+gbYh9AvHEL5FhK4Aw0gHM7r82JJ?=
+ =?us-ascii?Q?+iStDeEfkHixP20alcqu3DWEzhHkKFtLc3y2eD9eH03gG5ZJ5VJHV5f2Xxe1?=
+ =?us-ascii?Q?j4CX+f/Eonh/cJBqAaSpMG2c0pzrcIrWdqZq2QgpX4mRe/112Ox8IPT6FIzA?=
+ =?us-ascii?Q?PCpo7ZbIgKVXhvJvyND5rxhZVfzCUKq5wsQqRoDr9lyCgHZJmnGAI7Kb38Ci?=
+ =?us-ascii?Q?OJN7rZw4dEYT2SU2Ny796aI4J/ZCZwMlcu7EXeSkZHeX9ZkYLv9vvo7ESukt?=
+ =?us-ascii?Q?O3096XMaq2taYzCu6mmUDlXZ?=
 MIME-Version: 1.0
-Authentication-Results: relay.mimecast.com;
- auth=pass smtp.auth=CUSA124A263 smtp.mailfrom=alex.williamson@redhat.com
-X-Mimecast-Spam-Score: 0
-X-Mimecast-Originator: redhat.com
-Cc: "kvm@vger.kernel.org" <kvm@vger.kernel.org>,
- Jason Wang <jasowang@redhat.com>, Kirti Wankhede <kwankhede@nvidia.com>,
- Jean-Philippe Brucker <jean-philippe@linaro.org>, "Jiang,
- Dave" <dave.jiang@intel.com>, "Raj, Ashok" <ashok.raj@intel.com>,
- Jonathan Corbet <corbet@lwn.net>, Jason Gunthorpe <jgg@nvidia.com>,
- "parav@mellanox.com" <parav@mellanox.com>, "Enrico Weigelt, metux IT
- consult" <lkml@metux.net>, David Gibson <david@gibson.dropbear.id.au>,
- Robin Murphy <robin.murphy@arm.com>, LKML <linux-kernel@vger.kernel.org>,
- Shenming Lu <lushenming@huawei.com>,
+X-OriginatorOrg: Nvidia.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-AuthSource: BY5PR12MB3764.namprd12.prod.outlook.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 1d0176fb-3b05-4fb2-6ee8-08d931d576ed
+X-MS-Exchange-CrossTenant-originalarrivaltime: 17 Jun 2021 21:18:34.1503 (UTC)
+X-MS-Exchange-CrossTenant-fromentityheader: Hosted
+X-MS-Exchange-CrossTenant-id: 43083d15-7273-40c1-b7db-39efd9ccc17a
+X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
+X-MS-Exchange-CrossTenant-userprincipalname: I7TXhFuEWZfzHl9qDDRrvalzDxFbLRetf+2/7e/djz37447pjxKe/6KulBr50lL34wuBSnJfE5Zzkx5rZ3v17Q==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: BY5PR12MB3843
+Cc: "linux-arm-msm@vger.kernel.org" <linux-arm-msm@vger.kernel.org>,
+ "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
  "iommu@lists.linux-foundation.org" <iommu@lists.linux-foundation.org>,
- Paolo Bonzini <pbonzini@redhat.com>, David Woodhouse <dwmw2@infradead.org>
+ Thierry Reding <treding@nvidia.com>, Will Deacon <will@kernel.org>,
+ "linux-arm-kernel@lists.infradead.org" <linux-arm-kernel@lists.infradead.org>
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -144,621 +175,22 @@ Content-Transfer-Encoding: 7bit
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-On Thu, 17 Jun 2021 07:31:03 +0000
-"Tian, Kevin" <kevin.tian@intel.com> wrote:
+> Instead of flush_ops in init_context hook, perhaps a io_pgtable quirk since this is
+> related to tlb, probably a bad name but IO_PGTABLE_QUIRK_TLB_INV which will
+> be set in init_context impl hook and the prev condition in
+> io_pgtable_tlb_flush_walk()
+> becomes something like below. Seems very minimal and neat instead of poking
+> into tlb_flush_walk functions or touching dma strict with some flag?
+> 
+> if (iop->cfg.quirks & IO_PGTABLE_QUIRK_NON_STRICT ||
+>      iop->cfg.quirks & IO_PGTABLE_QUIRK_TLB_INV) {
+>          iop->cfg.tlb->tlb_flush_all(iop->cookie);
+>          return;
+> }
 
-> > From: Alex Williamson <alex.williamson@redhat.com>
-> > Sent: Thursday, June 17, 2021 3:40 AM
-> > 
-> > On Wed, 16 Jun 2021 06:43:23 +0000
-> > "Tian, Kevin" <kevin.tian@intel.com> wrote:
-> >   
-> > > > From: Alex Williamson <alex.williamson@redhat.com>
-> > > > Sent: Wednesday, June 16, 2021 12:12 AM
-> > > >
-> > > > On Tue, 15 Jun 2021 02:31:39 +0000
-> > > > "Tian, Kevin" <kevin.tian@intel.com> wrote:
-> > > >  
-> > > > > > From: Alex Williamson <alex.williamson@redhat.com>
-> > > > > > Sent: Tuesday, June 15, 2021 12:28 AM
-> > > > > >  
-> > > > > [...]  
-> > > > > > > IOASID. Today the group fd requires an IOASID before it hands out a
-> > > > > > > device_fd. With iommu_fd the device_fd will not allow IOCTLs until  
-> > it  
-> > > > > > > has a blocked DMA IOASID and is successefully joined to an  
-> > iommu_fd.  
-> > > > > >
-> > > > > > Which is the root of my concern.  Who owns ioctls to the device fd?
-> > > > > > It's my understanding this is a vfio provided file descriptor and it's
-> > > > > > therefore vfio's responsibility.  A device-level IOASID interface
-> > > > > > therefore requires that vfio manage the group aspect of device access.
-> > > > > > AFAICT, that means that device access can therefore only begin when  
-> > all  
-> > > > > > devices for a given group are attached to the IOASID and must halt for
-> > > > > > all devices in the group if any device is ever detached from an IOASID,
-> > > > > > even temporarily.  That suggests a lot more oversight of the IOASIDs  
-> > by  
-> > > > > > vfio than I'd prefer.
-> > > > > >  
-> > > > >
-> > > > > This is possibly the point that is worthy of more clarification and
-> > > > > alignment, as it sounds like the root of controversy here.
-> > > > >
-> > > > > I feel the goal of vfio group management is more about ownership, i.e.
-> > > > > all devices within a group must be assigned to a single user. Following
-> > > > > the three rules defined by Jason, what we really care is whether a group
-> > > > > of devices can be isolated from the rest of the world, i.e. no access to
-> > > > > memory/device outside of its security context and no access to its
-> > > > > security context from devices outside of this group. This can be  
-> > achieved  
-> > > > > as long as every device in the group is either in block-DMA state when
-> > > > > it's not attached to any security context or attached to an IOASID  
-> > context  
-> > > > > in IOMMU fd.
-> > > > >
-> > > > > As long as group-level isolation is satisfied, how devices within a group
-> > > > > are further managed is decided by the user (unattached, all attached to
-> > > > > same IOASID, attached to different IOASIDs) as long as the user
-> > > > > understands the implication of lacking of isolation within the group.  
-> > This  
-> > > > > is what a device-centric model comes to play. Misconfiguration just  
-> > hurts  
-> > > > > the user itself.
-> > > > >
-> > > > > If this rationale can be agreed, then I didn't see the point of having VFIO
-> > > > > to mandate all devices in the group must be attached/detached in
-> > > > > lockstep.  
-> > > >
-> > > > In theory this sounds great, but there are still too many assumptions
-> > > > and too much hand waving about where isolation occurs for me to feel
-> > > > like I really have the complete picture.  So let's walk through some
-> > > > examples.  Please fill in and correct where I'm wrong.  
-> > >
-> > > Thanks for putting these examples. They are helpful for clearing the
-> > > whole picture.
-> > >
-> > > Before filling in let's first align on what is the key difference between
-> > > current VFIO model and this new proposal. With this comparison we'll
-> > > know which of following questions are answered with existing VFIO
-> > > mechanism and which are handled differently.
-> > >
-> > > With Yi's help we figured out the current mechanism:
-> > >
-> > > 1) vfio_group_viable. The code comment explains the intention clearly:
-> > >
-> > > --
-> > > * A vfio group is viable for use by userspace if all devices are in
-> > >  * one of the following states:
-> > >  *  - driver-less
-> > >  *  - bound to a vfio driver
-> > >  *  - bound to an otherwise allowed driver
-> > >  *  - a PCI interconnect device
-> > > --
-> > >
-> > > Note this check is not related to an IOMMU security context.  
-> > 
-> > Because this is a pre-requisite for imposing that IOMMU security
-> > context.
-> >   
-> > > 2) vfio_iommu_group_notifier. When an IOMMU_GROUP_NOTIFY_
-> > > BOUND_DRIVER event is notified, vfio_group_viable is re-evaluated.
-> > > If the affected group was previously viable but now becomes not
-> > > viable, BUG_ON() as it implies that this device is bound to a non-vfio
-> > > driver which breaks the group isolation.  
-> > 
-> > This notifier action is conditional on there being users of devices
-> > within a secure group IOMMU context.
-> >   
-> > > 3) vfio_group_get_device_fd. User can acquire a device fd only after
-> > > 	a) the group is viable;
-> > > 	b) the group is attached to a container;
-> > > 	c) iommu is set on the container (implying a security context
-> > > 	    established);  
-> > 
-> > The order is actually b) a) c) but arguably b) is a no-op until:
-> > 
-> >     d) a device fd is provided to the user
-> >   
-> > > The new device-centric proposal suggests:
-> > >
-> > > 1) vfio_group_viable;
-> > > 2) vfio_iommu_group_notifier;
-> > > 3) block-DMA if a device is detached from previous domain (instead of
-> > > switching back to default domain as today);  
-> > 
-> > I'm literally begging for specifics in this thread, but none are
-> > provided here.  What is the "previous domain"?  How is a device placed
-> > into a DMA blocking IOMMU context?  Is this the IOMMU default domain?
-> > Doesn't that represent a change in IOMMU behavior to place devices into
-> > a blocking DMA context in several of the group-viable scenarios?  
-> 
-> Yes, it represents a change in current IOMMU behavior. Here I just
-> described what would be the desired logic in concept. 
-> 
-> More specifically, the current IOMMU behavior is that:
-> 
-> -   A device is attached to the default domain (identity or dma) when it's
->     probed by the iommu driver. If the domain type is dma, iommu
->     isolation is enabled with an empty I/O page table thus the device
->     DMA is blocked. If the domain type is identity, iommu isolation is
->     disabled thus the device can access arbitrary memory/device even
->     when it's not bound to any driver.
-> 
-> -   Once the device is bound to a driver which doesn't allocate a new
->     domain, the default domain allows the driver to do DMA API on 
->     the device. Unbound from the driver doesn't change device/domain
->     attaching status i.e. the device is still attached to the default domain.
->     Whether the device can access certain memory locations after unbind
->     depends on whether the driver clears up its mappings properly.
-> 
-> -   Now the device is bound to a driver (vfio) which manages its own
->     security context (domain type is unmanaged). The device stays
->     attaching to the default domain before the driver explicitly switches
->     it to use the new unmanaged domain. Detaching the device from an 
->     unmanaged domain later puts it back to use the default domain.
-> 
-> Then the current vfio mechanism makes sense because there is no
-> guarantee that the default domain can isolate the device from the 
-> rest system (if domain type is identity or dma but previous driver 
-> leaves stale mappings due to some bug). vfio has to allow user access
-> only after all devices in the group are switched to a known security 
-> context that is created by vfio itself.
-> 
-> Now let's talk about the new IOMMU behavior:
-> 
-> -   A device is blocked from doing DMA to any resource outside of
->     its group when it's probed by the IOMMU driver. This could be a
->     special state w/o attaching to any domain, or a new special domain
->     type which differentiates it from existing domain types (identity, 
->     dma, or unmanged). Actually existing code already includes a
->     IOMMU_DOMAIN_BLOCKED type but nobody uses it.
-> 
-> -   Once the device is bound to a driver which doesn't allocate a new
->     domain, the first DMA API call implicitly switches the device from
->     block-DMA state to use the existing default domain (identity or
->     dma). This change should be easy as current code already supports
->     a deferred attach mode which is activated in kdump kernel. Unbound
->     from the driver implicitly detaches the device from the default 
->     domain and switches it back to the block-DMA state. This can be
->     enforced via iommu_bus_notifier().
-> 
-> -   Now the device is bound to a driver (vfio) which delegates management
->     of security context to iommu fd. The device stays in the block-DMA 
->     state before its attached to an IOASID. After IOASID attaching, it is put
->     in a new security context represented by the IOASID. Detaching the 
->     device from an IOASID puts it back to block-DMA. 
-> 
-> With this new behavior vfio just needs to track that all devices are in 
-> block-DMA state before user access is allowed. This can be reported
-> via a new iommu interface and checked in vfio_group_viable() in 
-> addition to what it verifies today. Once a group is viable, the user can 
-> get a device fd from the group and bind it to iommu fd. vfio doesn't
-> need wait for all devices in the group attached to the same IOASID 
-> before granting user access, because they are all isolated from the 
-> rest system being either in block-DMA or in a new security context.
-> Thus a device-centric interface between vfio and iommu fd should
-> be sufficient.
+Can you name it as IO_PGTABLE_QUIRK_TLB_INV_ASID or IO_PGTABLE_QUIRK_TLB_INV_ALL_ASID?
 
-Thanks for the additional detail.
- 
-> vfio_iommu_group_notifier will be slightly changed to check whether 
-> any device within the group is bound to iommu fd. If yes BUG_ON 
-> is raised to avoid breaking the group isolation. To be consistent
-> VFIO_BIND_IOMMU_FD need also check group viability.
-> 
-> >   
-> > > 4) vfio_group_get_device_fd. User can acquire a device fd once the group
-> > > is viable;  
-> > 
-> > But as you've noted, "viable" doesn't test the IOMMU context of the
-> > group devices, it's only a pre-condition for attaching the group to an
-> > IOMMU context for isolated access.  What changes in the kernel that
-> > makes "viable" become "isolated"?  A device bound to pci-stub today is
-> > certainly not in a DMA blocking context when the host is booted with
-> > iommu=pt.  Enabling the IOMMU only for device assignment by using
-> > iommu=pt is arguably the predominant use case of the IOMMU.  
-> 
-> vfio_group_viable() needs to check block-DMA, and iommu=pt 
-> only affects the DMA API path now. A device which is not bound
-> to any driver or the driver doesn't do DMA on is left in block-DMA
-> state.
-
-I think you're going to get friction from any remaining non-vfio
-userspace drivers that rely on a passthrough default domain.  Any such
-drivers are clearly insecure, and in the case of uio-pci-generic
-violate the intended non-DMA use case of the driver, but I think they
-still exist.  This effectively flips the switch that those drivers can
-no longer work in an IOMMU enabled environment.
- 
-> > > 5) device-centric when binding to IOMMU fd or attaching to IOASID
-> > >
-> > > In this model the group viability mechanism is kept but there is no need
-> > > for VFIO to track the actual attaching status.
-> > >
-> > > Now let's look at how the new model works.
-> > >  
-> > > >
-> > > > 1) A dual-function PCIe e1000e NIC where the functions are grouped
-> > > >    together due to ACS isolation issues.
-> > > >
-> > > >    a) Initial state: functions 0 & 1 are both bound to e1000e driver.
-> > > >
-> > > >    b) Admin uses driverctl to bind function 1 to vfio-pci, creating
-> > > >       vfio device file, which is chmod'd to grant to a user.  
-> > >
-> > > This implies that function 1 is in block-DMA mode when it's unbound
-> > > from e1000e.  
-> > 
-> > Does this require a kernel change from current?  Does it require the
-> > host is not in iommu=pt mode?  Did vfio or vfio-pci do anything to
-> > impose this DMA blocking context?  What if function 1 is actually a DMA  
-> 
-> I hope above explanation answers them.
-> 
-> > alias of function 0, wouldn't changing function 1's IOMMU context break
-> > the operation of function 0?  
-> 
-> Sorry I'm not familiar with this DMA aliasing thing. Can you elaborate?
-
-Look for users of pci_add_dma_alias().  These are often multi-function
-devices where DMA uses the wrong RID, for instance a driver using
-function 0 generates TLPs as function 1, or vice versa.  There are
-various other combinations of similar, but it's also used for a couple
-non-transparent bridges.  Effectively the IOMMU must map all aliases of
-a device.  Sometimes those aliases are physical devices within the same
-IOMMU group, sometimes there's no struct device at the alias address.
-It's a flavor of the addressibility issue we have with conventional PCI
-devices, but on PCIe.
-
-In the theoretical case above, we actually can't manipulate function 1
-IOMMU mappings separate from function 0 if they were aliases.  There's
-a "userspace can shoot themselves in the foot" aspect to this, but there
-should also be a way that userspace can understand these dependencies.
-
-> > > >
-> > > >    c) User opens vfio function 1 device file and an iommu_fd, binds
-> > > >    device_fd to iommu_fd.  
-> > >
-> > > User should check group viability before step c).  
-> > 
-> > Sure, but "user should" is not a viable security model.
-> >   
-> > > >
-> > > >    Does this succeed?
-> > > >      - if no, specifically where does it fail?
-> > > >      - if yes, vfio can now allow access to the device?
-> > > >  
-> > >
-> > > with group viability step c) fails.  
-> > 
-> > I'm asking for specifics, is it vfio's responsibility to test viability
-> > before trying to bind the device_fd to the iommu_fd and it's vfio that
-> > triggers this failure?  This sounds like vfio is entirely responsible
-> > for managing the integrity of the group.  
-> 
-> manage integrity of the group based on block-DMA, but no need of 
-> a group interface with iommu fd to track group attaching status.
-> 
-> >   
-> > > >    d) Repeat b) for function 0.  
-> > >
-> > > function 0 is in block DMA mode now.  
-> > 
-> > Somehow...
-> >   
-> > > >
-> > > >    e) Repeat c), still using function 1, is it different?  Where?  Why?  
-> > >
-> > > it's different because group becomes viable now. Then step c) succeeds.
-> > > At this point, both function 0/1 are in block-DMA mode thus isolated
-> > > from the rest of the system. VFIO allows the user to access function 1
-> > > without the need of knowing when function 1 is attached to a new
-> > > context (IOASID) via IOMMU fd and whether function 0 is left detached.
-> > >  
-> > > >
-> > > > 2) The same NIC as 1)
-> > > >
-> > > >    a) Initial state: functions 0 & 1 bound to vfio-pci, vfio device
-> > > >       files granted to user, user has bound both device_fds to the same
-> > > >       iommu_fd.
-> > > >
-> > > >    AIUI, even though not bound to an IOASID, vfio can now enable access
-> > > >    through the device_fds, right?  What specific entity has placed these  
-> > >
-> > > yes
-> > >  
-> > > >    devices into a block DMA state, when, and how?  
-> > >
-> > > As explained in 2.b), both devices are put into block-DMA when they
-> > > are detached from the default domain which is used when they are
-> > > bound to e1000e driver.  
-> > 
-> > How do stub drivers interact with this model?  How do PCI interconnect
-> > drivers work with this model?  How do DMA alias devices work with this
-> > model?  How does iommu=pt work with this model?  Does vfio just
-> > passively assume the DMA blocking IOMMU context based on other random
-> > attributes of the device?  
-> 
-> pci-stub and bridge drivers follow the existing viability check.
-> 
-> iommu=pt has no impact on block-DMA.
-> 
-> vfio explicitly tracks the dma-blocking state, which doesn't rely on iommu fd.
-> 
-> but I haven't got time to think about DMA aliasing yet.
-> 
-> >   
-> > > >
-> > > >    b) Both devices are attached to the same IOASID.
-> > > >
-> > > >    Are we assuming that each device was atomically moved to the new
-> > > >    IOMMU context by the IOASID code?  What if the IOMMU cannot  
-> > change  
-> > > >    the domain atomically?  
-> > >
-> > > No. Moving function 0 then function 1, or moving function 0 alone can
-> > > all works. The one which hasn't been attached to an IOASID is kept in
-> > > block-DMA state.  
-> > 
-> > I'm asking whether this can be accomplished atomically relative to
-> > device DMA.  If the user has access to the device after the bind
-> > operation and the device operates in a DMA blocking IOMMU context at
-> > that point, it seems that every IOASID context switch must be atomic
-> > relative to device DMA or we present an exploitable gap to the user.  
-> 
-> the switch is always between block-DMA and a driver-created domain
-> which are both secure. Does this assumption meet the 'atomic' behavior
-> in your mind?
-
-It's not whether the target domains are secure, it's the fact that
-we're now allowing userspace access to a device AND the user can
-arbitrarily create new IOASID contexts and switch the device between
-them while retaining that access.  That's not possible with vfio and
-implies that either the DMA context of the device must remain secure
-during the switch or we need to determine a means to revoke device
-access during the switch.  For example, if there was any gap in DMA
-isolation of the device during the context switch while the user has
-access to the device, then the user could exploit that by repeatedly
-switching a device between IOASIDs.
-
-I want to make sure vfio doesn't need to be involved in IOASID changes.
-
-> > This is another change from vfio, the lifetime of the IOMMU context
-> > encompasses the lifetime of device access.
-> >   
-> > > >
-> > > >    c) The device_fd for function 1 is detached from the IOASID.
-> > > >
-> > > >    Are we assuming the reverse of b) performed by the IOASID code?  
-> > >
-> > > function 1 turns back to block-DMA
-> > >  
-> > > >
-> > > >    d) The device_fd for function 1 is unbound from the iommu_fd.
-> > > >
-> > > >    Does this succeed?
-> > > >      - if yes, what is the resulting IOMMU context of the device and
-> > > >        who owns it?
-> > > >      - if no, well, that results in numerous tear-down issues.  
-> > >
-> > > Yes. function 1 is block-DMA while function 0 still attached to IOASID.
-> > > Actually unbind from IOMMU fd doesn't change the security context.
-> > > the change is conducted when attaching/detaching device to/from an
-> > > IOASID.  
-> > 
-> > But I think you're suggesting that the IOMMU context is simply the
-> > device's default domain, so vfio is left in the position where the user
-> > gained access to the device by binding it to an iommu_fd, but now the
-> > device exists outside of the iommu_fd.  Doesn't that make it pointless
-> > to gate device access on binding the device to the iommu_fd?  The user
-> > can get an accessible device_fd unbound from an iommu_fd on the reverse
-> > path.  
-> 
-> yes, binding to iommu_fd is not the appropriate point of gating
-> device access.
-> 
-> > 
-> > That would mean vfio's only control point for device access is on
-> > open().  
-> 
-> yes, on open() via block-DMA check in vfio_group_viable().
-
-Let's explore that.  DeviceA, DeviceB, and DeviceC are grouped together,
-vfio gets an open() call on DeviceA, it passes the group viable and DMA
-blocked check, the user now has a device_fd with full device access
-(within a DMA blocking IOMMU context).  vfio now gets an open() call on
-DeviceB... Is it a userspace problem with ACLs on the device files that
-the next open could come from a different user?
-
-When the user(s) start binding these device_fds to an iommu_fd, is it
-vfio's responsibility to make sure all devices within the group bind to
-the same iommu_fd?  I think that suggests internal serialization per
-group to ioasid binding and a reference per group to the iommu_fd.
-
-The user has now bound DeviceA to an iommu_fd and attached it to an
-IOASID, we then get an open() for DeviceC.  Does the DMA-blocking
-domain check skip DeviceA because it's already attached to an iommu_fd?
-
-I think we also have some pathological cases around DMA aliases and
-conventional PCI, for instance DeviceY is a DMA alias of DeviceX, the
-user gets a device_fd for DeviceX, binds it to an iommu_fd and attaches
-DeviceX to an IOASID... this triggers the IOMMU notifier because the
-DMA blocking state of DeviceY has changed and triggers a BUG_ON.  Maybe
-a niche case, but this particular one would be exploitable by a user
-and it's not entirely clear what safeguards and proper sequence by the
-user would prevent it.
-
-> > > >
-> > > >    e) Function 1 is unbound from vfio-pci.
-> > > >
-> > > >    Does this work or is it blocked?  If blocked, by what entity
-> > > >    specifically?  
-> > >
-> > > works.
-> > >  
-> > > >
-> > > >    f) Function 1 is bound to e1000e driver.
-> > > >
-> > > >    We clearly have a violation here, specifically where and by who in
-> > > >    this path should have prevented us from getting here or who pushes
-> > > >    the BUG_ON to abort this?  
-> > >
-> > > via vfio_iommu_group_notifier, same as today.  
-> > 
-> > So as above, group integrity remains entirely vfio's issue?  Didn't we  
-> 
-> sort of...
-> 
-> > discuss elsewhere in this thread that unless group integrity is managed
-> > by /dev/iommu that we're going to have a mess of different consumers
-> > managing it different degrees and effectiveness (or more likely just
-> > ignoring it)?  
-> 
-> Yes, that was the original impression. But after figuring out the new
-> block-DMA behavior, I'm not sure whether /dev/iommu must maintain
-> its own group integrity check. If it trusts vfio, I feel it's fine to avoid 
-> such check which even allows a group of devices bound to different
-> IOMMU fd's if user likes. Also if we want to sustain the current vfio
-> semantics which doesn't require all devices in the group bound to
-> vfio driver, seems it's pointless to enforce such integrity check in
-> /dev/iommu.
-
-"even allows a group of devices bound to different IOMMU fd's if user
-likes", here lies madness.  This is exactly why vfio uses the group as
-the unit of ownership.  To place the entire burden of group isolation
-on userspace is essentially the same as removing any concept of group
-isolation.  This instantly leads to VMs sharing resources they
-shouldn't, bizarre address space issues, and exploits through devices
-between VMs.  I think the kernel would be neglecting its duty to manage
-and isolate resources for userspace if such were allowed.
-
-Besides, how would the DMA blocking check pass if other devices in the
-group were attached to a random non-blocking domain, ie. another user's
-IOASID?
-
-Whether isolation enforcement happens in vfio or /dev/iommu shouldn't
-be a question of whether vfio is trusted, it should be a question of
-whether vfio's use case is sufficiently unique that other users of the
-IOASID infrastructure wouldn't need to reproduce the same security
-measures.
-
-> Jason, what's your opinion?
-> 
-> >   
-> > > >
-> > > > 3) A dual-function conventional PCI e1000 NIC where the functions are
-> > > >    grouped together due to shared RID.
-> > > >
-> > > >    a) Repeat 2.a) and 2.b) such that we have a valid, user accessible
-> > > >       devices in the same IOMMU context.
-> > > >
-> > > >    b) Function 1 is detached from the IOASID.
-> > > >
-> > > >    I think function 1 cannot be placed into a different IOMMU context
-> > > >    here, does the detach work?  What's the IOMMU context now?  
-> > >
-> > > Yes. Function 1 is back to block-DMA. Since both functions share RID,
-> > > essentially it implies function 0 is in block-DMA state too (though its
-> > > tracking state may not change yet) since the shared IOMMU context
-> > > entry blocks DMA now. In IOMMU fd function 0 is still attached to the
-> > > IOASID thus the user still needs do an explicit detach to clear the
-> > > tracking state for function 0.
-> > >  
-> > > >
-> > > >    c) A new IOASID is alloc'd within the existing iommu_fd and function
-> > > >       1 is attached to the new IOASID.
-> > > >
-> > > >    Where, how, by whom does this fail?  
-> > >
-> > > No need to fail. It can succeed since doing so just hurts user's own foot.
-> > >
-> > > The only question is how user knows the fact that a group of devices
-> > > share RID thus avoid such thing. I'm curious how it is communicated
-> > > with today's VFIO mechanism. Yes the group-centric VFIO uAPI prevents
-> > > a group of devices from attaching to multiple IOMMU contexts, but
-> > > suppose we still need a way to tell the user to not do so. Especially
-> > > such knowledge would be also reflected in the virtual PCI topology
-> > > when the entire group is assigned to the guest which needs to know
-> > > this fact when vIOMMU is exposed. I haven't found time to investigate
-> > > it but suppose if such channel exists it could be reused, or in the worst
-> > > case we may have the new device capability interface to convey...  
-> > 
-> > No such channel currently exists, it's not an issue today, IOMMU
-> > context is group-based.  
-> 
-> Interesting... If such group of devices are assigned to a guest, how does
-> Qemu decide the virtual PCI topology for them? Do they have same
-> vRID or different?
-
-That's the beauty of it, it doesn't matter how many RIDs exist in the
-group, or which devices have aliases, the group is the minimum
-granularity of a container where QEMU knows that a container provides
-a single address space.  Therefore a container must exist in a single
-address space in the PCI topology.  In a conventional or non-vIOMMU
-topology, the PCI address space is equivalent to the system memory
-address space.  When vIOMMU gets involved, multiple devices within the
-same group must exist in the same address space.  A vPCIe-to-PCI bridge
-can be used to create that shared address space.
-
-I've referred to this as a limitation of type1, that we can't put
-devices within the same group into different address spaces, such as
-behind separate vRoot-Ports in a vIOMMU config, but really, who cares?
-As isolation support improves we see fewer multi-device groups, this
-scenario becomes the exception.  Buy better hardware to use the devices
-independently.
-
-> > > > If vfio gets to offload all of it's group management to IOASID code,
-> > > > that's great, but I'm afraid that IOASID is so focused on a
-> > > > device-level API that we're instead just ignoring the group dynamics
-> > > > and vfio will be forced to provide oversight to maintain secure
-> > > > userspace access.  Thanks,
-> > > >  
-> > >
-> > > In summary, the security of the group dynamics are handled through
-> > > block-DMA plus existing vfio_group_viable mechanism in this device-
-> > > centric design. VFIO still keeps its group management, but no need
-> > > to track the attaching status for allowing user access.  
-> > 
-> > Still seems pretty loosely defined to me, the DMA blocking mechanism  
-> 
-> Sorry for that and hope the explanation in this mail makes it clearer.
-> 
-> > isn't specified, there's no verification of the IOMMU context for
-> > "stray" group devices, the group management is based in the IOASID
-> > consumer code leading to varying degrees of implementation and
-> > effectiveness between callers, we lean more heavily on a fragile
-> > notifier to notice and hit the panic button on violation.
-> > 
-> > It would make a lot more sense to me if the model were for vfio to
-> > bind groups to /dev/iommu, the IOASID code manages group integrity, and
-> > devices can still be moved between IOASIDs as is the overall goal.  The
-> > group is the basis of ownership, which makes it a worthwhile part of
-> > the API.  Thanks,
-> >   
-> 
-> Having explained the device-centric design, honestly speaking I think
-> your model could also work. Group is an iommu concept, thus not
-> unsound by asking /dev/iommu to manage the group integrity, e.g. 
-> moving the block-DMA verification and vfio_group_viable() into 
-> /dev/iommu and verify it when doing group binding. A successful 
-> group binding implies all group verification passed then user access 
-> can be allowed. But even doing so I don't expect /dev/iommu uAPI 
-> will include any explicit group semantics. Just the in-kernel helper 
-> functions accepts group via VFIO_GROUP_BIND_IOMMU_FD.
-
-As above, how unique is the vfio use case?  IMO, if there are cases
-where we're providing userspace DMA capable access to a device and
-we're not taking into account the full IOMMU group isolation model of
-that device, it's broken.  Is it really feasible to expect every
-consumer of the interface to do this sort of homework?
-
-There are aspects here that I like, it would be convenient to hide
-groups, but I'm also rediscovering how many problems we solved with our
-usage of groups in vfio.  Thanks,
-
-Alex
-
+-KR
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
