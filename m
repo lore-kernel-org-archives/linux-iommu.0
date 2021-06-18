@@ -2,95 +2,103 @@ Return-Path: <SRS0=sMz+=LM=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-16.6 required=3.0 tests=BAYES_00,DKIM_INVALID,
+X-Spam-Status: No, score=-13.6 required=3.0 tests=BAYES_00,DKIM_INVALID,
 	DKIM_SIGNED,HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_CR_TRAILER,INCLUDES_PATCH,
-	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_GIT
-	autolearn=unavailable autolearn_force=no version=3.4.0
+	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED autolearn=unavailable
+	autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C1BEAC49361
-	for <iommu@archiver.kernel.org>; Fri, 18 Jun 2021 02:51:53 +0000 (UTC)
-Received: from smtp4.osuosl.org (smtp4.osuosl.org [140.211.166.137])
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 55B01C49EA4
+	for <iommu@archiver.kernel.org>; Fri, 18 Jun 2021 03:29:37 +0000 (UTC)
+Received: from smtp2.osuosl.org (smtp2.osuosl.org [140.211.166.133])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 64FFD61241
-	for <iommu@archiver.kernel.org>; Fri, 18 Jun 2021 02:51:53 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 64FFD61241
-Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=codeaurora.org
+	by mail.kernel.org (Postfix) with ESMTPS id BD056613BF
+	for <iommu@archiver.kernel.org>; Fri, 18 Jun 2021 03:29:36 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org BD056613BF
+Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=bytedance.com
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by smtp4.osuosl.org (Postfix) with ESMTP id 2409640332;
-	Fri, 18 Jun 2021 02:51:53 +0000 (UTC)
+	by smtp2.osuosl.org (Postfix) with ESMTP id 86940401EC;
+	Fri, 18 Jun 2021 03:29:36 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from smtp4.osuosl.org ([127.0.0.1])
-	by localhost (smtp4.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id Mq1mwDLRMnYt; Fri, 18 Jun 2021 02:51:52 +0000 (UTC)
+Received: from smtp2.osuosl.org ([127.0.0.1])
+	by localhost (smtp2.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+	with ESMTP id ocA-IRnMaWJG; Fri, 18 Jun 2021 03:29:35 +0000 (UTC)
 Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [IPv6:2605:bc80:3010:104::8cd3:938])
-	by smtp4.osuosl.org (Postfix) with ESMTPS id AED50415A4;
-	Fri, 18 Jun 2021 02:51:51 +0000 (UTC)
+	by smtp2.osuosl.org (Postfix) with ESMTPS id 5B46E40003;
+	Fri, 18 Jun 2021 03:29:35 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 980A9C000D;
-	Fri, 18 Jun 2021 02:51:51 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 2E5C2C000D;
+	Fri, 18 Jun 2021 03:29:35 +0000 (UTC)
 Received: from smtp2.osuosl.org (smtp2.osuosl.org [IPv6:2605:bc80:3010::133])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 5BA7FC000B
- for <iommu@lists.linux-foundation.org>; Fri, 18 Jun 2021 02:51:50 +0000 (UTC)
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 0B194C000B
+ for <iommu@lists.linux-foundation.org>; Fri, 18 Jun 2021 03:29:34 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by smtp2.osuosl.org (Postfix) with UTF8SMTP id 4B4044022B
- for <iommu@lists.linux-foundation.org>; Fri, 18 Jun 2021 02:51:50 +0000 (UTC)
+ by smtp2.osuosl.org (Postfix) with ESMTP id D675B401CB
+ for <iommu@lists.linux-foundation.org>; Fri, 18 Jun 2021 03:29:33 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Authentication-Results: smtp2.osuosl.org (amavisd-new);
- dkim=pass (1024-bit key) header.d=mg.codeaurora.org
 Received: from smtp2.osuosl.org ([127.0.0.1])
  by localhost (smtp2.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with UTF8SMTP id oYTM88UJNL7x for <iommu@lists.linux-foundation.org>;
- Fri, 18 Jun 2021 02:51:49 +0000 (UTC)
-X-Greylist: from auto-whitelisted by SQLgrey-1.8.0
-Received: from so254-9.mailgun.net (so254-9.mailgun.net [198.61.254.9])
- by smtp2.osuosl.org (Postfix) with UTF8SMTPS id EDC2A40236
- for <iommu@lists.linux-foundation.org>; Fri, 18 Jun 2021 02:51:47 +0000 (UTC)
-DKIM-Signature: a=rsa-sha256; v=1; c=relaxed/relaxed; d=mg.codeaurora.org;
- q=dns/txt; 
- s=smtp; t=1623984709; h=Content-Transfer-Encoding: MIME-Version:
- References: In-Reply-To: Message-Id: Date: Subject: Cc: To: From:
- Sender; bh=xxSjvx9FX3p13QwnOpawsCd6aq6mAIMLGM9MTx8atwg=;
- b=xg7yukJh5xgQii0QY/bpK5NwYiWKfeFze19nGZ1K8k4ASxTEpd0aZOHBKlgjz7tG8kcdiWc4
- 0X2H1hkSF/hvnQZF21JtUiJQzqyB4pd/UHn33m6rzzMsOkKFn2qprB5XXmKXJZzJLl2152GK
- nZ7tLYS2XYIRHWokPOr2D7ol2zs=
-X-Mailgun-Sending-Ip: 198.61.254.9
-X-Mailgun-Sid: WyI3NDkwMCIsICJpb21tdUBsaXN0cy5saW51eC1mb3VuZGF0aW9uLm9yZyIsICJiZTllNGEiXQ==
-Received: from smtp.codeaurora.org
- (ec2-35-166-182-171.us-west-2.compute.amazonaws.com [35.166.182.171]) by
- smtp-out-n04.prod.us-west-2.postgun.com with SMTP id
- 60cc0a34ed59bf69ccb3588f (version=TLS1.2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256); Fri, 18 Jun 2021 02:51:32
- GMT
-Received: by smtp.codeaurora.org (Postfix, from userid 1001)
- id 1980CC433F1; Fri, 18 Jun 2021 02:51:32 +0000 (UTC)
-Received: from blr-ubuntu-253.qualcomm.com
- (blr-bdr-fw-01_GlobalNAT_AllZones-Outside.qualcomm.com [103.229.18.19])
- (using TLSv1.2 with cipher ECDHE-RSA-AES128-SHA256 (128/128 bits))
- (No client certificate requested)
- (Authenticated sender: saiprakash.ranjan)
- by smtp.codeaurora.org (Postfix) with ESMTPSA id 2260DC43460;
- Fri, 18 Jun 2021 02:51:27 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 smtp.codeaurora.org 2260DC43460
-Authentication-Results: aws-us-west-2-caf-mail-1.web.codeaurora.org;
- dmarc=none (p=none dis=none) header.from=codeaurora.org
-Authentication-Results: aws-us-west-2-caf-mail-1.web.codeaurora.org; spf=fail
- smtp.mailfrom=saiprakash.ranjan@codeaurora.org
-From: Sai Prakash Ranjan <saiprakash.ranjan@codeaurora.org>
-To: Will Deacon <will@kernel.org>, Robin Murphy <robin.murphy@arm.com>,
- Joerg Roedel <joro@8bytes.org>
-Subject: [PATCHv2 2/3] iommu/io-pgtable: Optimize partial walk flush for large
- scatter-gather list
-Date: Fri, 18 Jun 2021 08:21:04 +0530
-Message-Id: <150fc7ab1c7f9b70a95dae1f4bc3b9018c0f9e04.1623981933.git.saiprakash.ranjan@codeaurora.org>
-X-Mailer: git-send-email 2.29.0
-In-Reply-To: <cover.1623981933.git.saiprakash.ranjan@codeaurora.org>
-References: <cover.1623981933.git.saiprakash.ranjan@codeaurora.org>
+ with ESMTP id stGvfc8aTvhu for <iommu@lists.linux-foundation.org>;
+ Fri, 18 Jun 2021 03:29:32 +0000 (UTC)
+X-Greylist: whitelisted by SQLgrey-1.8.0
+Received: from mail-ed1-x52a.google.com (mail-ed1-x52a.google.com
+ [IPv6:2a00:1450:4864:20::52a])
+ by smtp2.osuosl.org (Postfix) with ESMTPS id 41E23401C8
+ for <iommu@lists.linux-foundation.org>; Fri, 18 Jun 2021 03:29:31 +0000 (UTC)
+Received: by mail-ed1-x52a.google.com with SMTP id df12so4118115edb.2
+ for <iommu@lists.linux-foundation.org>; Thu, 17 Jun 2021 20:29:31 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+ d=bytedance-com.20150623.gappssmtp.com; s=20150623;
+ h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+ :cc; bh=RMJgBEdiibhwSUyvuLKFkBrL4/U8fE/jxx04irYLGbA=;
+ b=av/95B/MiI0xJSuNnIDSIou3GubtAy+v+Cj0IrEJ68VjpsLdRM7w3o1oORGPuxM9E9
+ WcXBTXk69tPR+JRT9pirwPl1i4rEmPN+ROSzO+PpYUb6DGevaUs4cQChuJ9gWp9jybLU
+ 337xsWnlSDEFmVS8b9WCf45xojO+ucnKBtO3ThsQgErg6gNQGMsF1NJtWAQTA+IzuLEE
+ lYIbqpRQcPEBixvBPRcSDXBPAnVFOEE11AW5zQ6nXaMHXzougZshHL3HBZOa0i1hhh2b
+ I2Et2SNidVGS73kG8qlrW1IyTkcBNKTv++J6c5+xl/hwwNMONF8NwQMk+WXrJ33LwaNC
+ opBw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+ d=1e100.net; s=20161025;
+ h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+ :message-id:subject:to:cc;
+ bh=RMJgBEdiibhwSUyvuLKFkBrL4/U8fE/jxx04irYLGbA=;
+ b=VZDAmPgSiOIGJAadOJ4laafw6b7tVRPm6VDGVYHm88NyvRP7nVdW4pYnHAPLSkMSky
+ /RRzqNJBilVqNyXFB6K1pLvXVeYiiaqP9w6C+1Vp0GYBtg0HrAmiFZuUtjVToKPkWRjt
+ Nl7hiKe+cVg7R59Tg/F+S7jvlw8bQ1iK8qCuSbsznxQOJkG2QZGy2ORN4/53074oo+T9
+ P2sAdFziW7mj45PKPZeM1Ap1WlYRRNnLwb6jNDJ2TZXgljMY9AJkYEU69XvyLjPg3l7b
+ uPBNzwGmXbBs8BmIrKKlvoamswIL2mt6m3jAZJSakT2ppYvaWateH7/bmSJGsxNp7lIC
+ LK8A==
+X-Gm-Message-State: AOAM533spxM74KAoXnhMt/VIQhX7j5gz7hndYzS3xgULgAhDHzwR2+yl
+ a7ViftvIRSWdD8w3ldBkg3hfIer+tCHVbAfbenxq
+X-Google-Smtp-Source: ABdhPJykGigJ4CmNJwWRgh5x2T6MNjBJPAc2OA16hTcBQrCjxSZwuj53EmfZdOWUW2UcDeCGl7ONh7uq9+Uou058YZU=
+X-Received: by 2002:aa7:d9d3:: with SMTP id v19mr2042806eds.145.1623986969936; 
+ Thu, 17 Jun 2021 20:29:29 -0700 (PDT)
 MIME-Version: 1.0
-Cc: Thierry Reding <treding@nvidia.com>, linux-arm-msm@vger.kernel.org,
- Douglas Anderson <dianders@chromium.org>, linux-kernel@vger.kernel.org,
- iommu@lists.linux-foundation.org, linux-arm-kernel@lists.infradead.org
+References: <20210615141331.407-1-xieyongji@bytedance.com>
+ <20210615141331.407-4-xieyongji@bytedance.com>
+ <8aeac914-7602-7323-31bd-71015a26f74c@windriver.com>
+In-Reply-To: <8aeac914-7602-7323-31bd-71015a26f74c@windriver.com>
+From: Yongji Xie <xieyongji@bytedance.com>
+Date: Fri, 18 Jun 2021 11:29:19 +0800
+Message-ID: <CACycT3t1Dgrzsr7LbBrDhRLDa3qZ85ZOgj9H7r1fqPi-kf7r6Q@mail.gmail.com>
+Subject: Re: Re: [PATCH v8 03/10] eventfd: Increase the recursion depth of
+ eventfd_signal()
+To: He Zhe <zhe.he@windriver.com>
+Cc: kvm <kvm@vger.kernel.org>, "Michael S. Tsirkin" <mst@redhat.com>,
+ Jason Wang <jasowang@redhat.com>,
+ virtualization <virtualization@lists.linux-foundation.org>,
+ Christian Brauner <christian.brauner@canonical.com>, qiang.zhang@windriver.com,
+ Jonathan Corbet <corbet@lwn.net>, Matthew Wilcox <willy@infradead.org>,
+ Christoph Hellwig <hch@infradead.org>,
+ Dan Carpenter <dan.carpenter@oracle.com>,
+ Stefano Garzarella <sgarzare@redhat.com>, Al Viro <viro@zeniv.linux.org.uk>,
+ Stefan Hajnoczi <stefanha@redhat.com>, songmuchun@bytedance.com,
+ Jens Axboe <axboe@kernel.dk>, Greg KH <gregkh@linuxfoundation.org>,
+ Randy Dunlap <rdunlap@infradead.org>,
+ linux-kernel <linux-kernel@vger.kernel.org>, iommu@lists.linux-foundation.org,
+ bcrl@kvack.org, netdev@vger.kernel.org, linux-fsdevel@vger.kernel.org,
+ =?UTF-8?Q?Mika_Penttil=C3=A4?= <mika.penttila@nextfour.com>
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -108,92 +116,91 @@ Content-Transfer-Encoding: 7bit
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-Currently for iommu_unmap() of large scatter-gather list with page size
-elements, the majority of time is spent in flushing of partial walks in
-__arm_lpae_unmap() which is a VA based TLB invalidation invalidating
-page-by-page on iommus like arm-smmu-v2 (TLBIVA) which do not support
-range based invalidations like on arm-smmu-v3.2.
+On Thu, Jun 17, 2021 at 4:34 PM He Zhe <zhe.he@windriver.com> wrote:
+>
+>
+>
+> On 6/15/21 10:13 PM, Xie Yongji wrote:
+> > Increase the recursion depth of eventfd_signal() to 1. This
+> > is the maximum recursion depth we have found so far, which
+> > can be triggered with the following call chain:
+> >
+> >     kvm_io_bus_write                        [kvm]
+> >       --> ioeventfd_write                   [kvm]
+> >         --> eventfd_signal                  [eventfd]
+> >           --> vhost_poll_wakeup             [vhost]
+> >             --> vduse_vdpa_kick_vq          [vduse]
+> >               --> eventfd_signal            [eventfd]
+> >
+> > Signed-off-by: Xie Yongji <xieyongji@bytedance.com>
+> > Acked-by: Jason Wang <jasowang@redhat.com>
+>
+> The fix had been posted one year ago.
+>
+> https://lore.kernel.org/lkml/20200410114720.24838-1-zhe.he@windriver.com/
+>
 
-For example: to unmap a 32MB scatter-gather list with page size elements
-(8192 entries), there are 16->2MB buffer unmaps based on the pgsize (2MB
-for 4K granule) and each of 2MB will further result in 512 TLBIVAs (2MB/4K)
-resulting in a total of 8192 TLBIVAs (512*16) for 16->2MB causing a huge
-overhead.
+OK, so it seems to be a fix for the RT system if my understanding is
+correct? Any reason why it's not merged? I'm happy to rebase my series
+on your patch if you'd like to repost it.
 
-So instead use tlb_flush_all() callback (TLBIALL/TLBIASID) to invalidate
-the entire context for partial walk flush on select few platforms where
-cost of over-invalidation is less than unmap latency using the newly
-introduced quirk IO_PGTABLE_QUIRK_TLB_INV_ALL. We also do this for
-non-strict mode given its all about over-invalidation saving time on
-individual unmaps and non-deterministic generally.
+BTW, I also notice another thread for this issue:
 
-For this example of 32MB scatter-gather list unmap, this results in just
-16 ASID based TLB invalidations (TLBIASIDs) as opposed to 8192 TLBIVAs
-thereby increasing the performance of unmaps drastically.
+https://lore.kernel.org/linux-fsdevel/DM6PR11MB420291B550A10853403C7592FF349@DM6PR11MB4202.namprd11.prod.outlook.com/T/
 
-Test on QTI SM8150 SoC for 10 iterations of iommu_{map_sg}/unmap:
-(average over 10 iterations)
+>
+> > ---
+> >  fs/eventfd.c            | 2 +-
+> >  include/linux/eventfd.h | 5 ++++-
+> >  2 files changed, 5 insertions(+), 2 deletions(-)
+> >
+> > diff --git a/fs/eventfd.c b/fs/eventfd.c
+> > index e265b6dd4f34..cc7cd1dbedd3 100644
+> > --- a/fs/eventfd.c
+> > +++ b/fs/eventfd.c
+> > @@ -71,7 +71,7 @@ __u64 eventfd_signal(struct eventfd_ctx *ctx, __u64 n)
+> >        * it returns true, the eventfd_signal() call should be deferred to a
+> >        * safe context.
+> >        */
+> > -     if (WARN_ON_ONCE(this_cpu_read(eventfd_wake_count)))
+> > +     if (WARN_ON_ONCE(this_cpu_read(eventfd_wake_count) > EFD_WAKE_DEPTH))
+> >               return 0;
+> >
+> >       spin_lock_irqsave(&ctx->wqh.lock, flags);
+> > diff --git a/include/linux/eventfd.h b/include/linux/eventfd.h
+> > index fa0a524baed0..886d99cd38ef 100644
+> > --- a/include/linux/eventfd.h
+> > +++ b/include/linux/eventfd.h
+> > @@ -29,6 +29,9 @@
+> >  #define EFD_SHARED_FCNTL_FLAGS (O_CLOEXEC | O_NONBLOCK)
+> >  #define EFD_FLAGS_SET (EFD_SHARED_FCNTL_FLAGS | EFD_SEMAPHORE)
+> >
+> > +/* Maximum recursion depth */
+> > +#define EFD_WAKE_DEPTH 1
+> > +
+> >  struct eventfd_ctx;
+> >  struct file;
+> >
+> > @@ -47,7 +50,7 @@ DECLARE_PER_CPU(int, eventfd_wake_count);
+> >
+> >  static inline bool eventfd_signal_count(void)
+> >  {
+> > -     return this_cpu_read(eventfd_wake_count);
+> > +     return this_cpu_read(eventfd_wake_count) > EFD_WAKE_DEPTH;
+>
+> count is just count. How deep is acceptable should be put
+> where eventfd_signal_count is called.
+>
 
-Before this optimization:
+The return value of this function is boolean rather than integer.
+Please see the comments in eventfd_signal():
 
-    size        iommu_map_sg      iommu_unmap
-      4K            2.067 us         1.854 us
-     64K            9.598 us         8.802 us
-      1M          148.890 us       130.718 us
-      2M          305.864 us        67.291 us
-     12M         1793.604 us       390.838 us
-     16M         2386.848 us       518.187 us
-     24M         3563.296 us       775.989 us
-     32M         4747.171 us      1033.364 us
+"then it should check eventfd_signal_count() before calling this
+function. If it returns true, the eventfd_signal() call should be
+deferred to a safe context."
 
-After this optimization:
-
-    size        iommu_map_sg      iommu_unmap
-      4K            1.723 us         1.765 us
-     64K            9.880 us         8.869 us
-      1M          155.364 us       135.223 us
-      2M          303.906 us         5.385 us
-     12M         1786.557 us        21.250 us
-     16M         2391.890 us        27.437 us
-     24M         3570.895 us        39.937 us
-     32M         4755.234 us        51.797 us
-
-This is further reduced once the map/unmap_pages() support gets in which
-will result in just 1 TLBIASID as compared to 16 TLBIASIDs.
-
-Real world data also shows big difference in unmap performance as below:
-
-There were reports of camera frame drops because of high overhead in
-iommu unmap without this optimization because of frequent unmaps issued
-by camera of about 100MB/s taking more than 100ms thereby causing frame
-drops.
-
-Signed-off-by: Sai Prakash Ranjan <saiprakash.ranjan@codeaurora.org>
----
- include/linux/io-pgtable.h | 6 ++++++
- 1 file changed, 6 insertions(+)
-
-diff --git a/include/linux/io-pgtable.h b/include/linux/io-pgtable.h
-index 45441592a0e6..fd6b30cfdbf7 100644
---- a/include/linux/io-pgtable.h
-+++ b/include/linux/io-pgtable.h
-@@ -219,6 +219,12 @@ static inline void
- io_pgtable_tlb_flush_walk(struct io_pgtable *iop, unsigned long iova,
- 			  size_t size, size_t granule)
- {
-+	if (iop->cfg.quirks & IO_PGTABLE_QUIRK_NON_STRICT ||
-+	    iop->cfg.quirks & IO_PGTABLE_QUIRK_TLB_INV_ALL) {
-+		iop->cfg.tlb->tlb_flush_all(iop->cookie);
-+		return;
-+	}
-+
- 	if (iop->cfg.tlb && iop->cfg.tlb->tlb_flush_walk)
- 		iop->cfg.tlb->tlb_flush_walk(iova, size, granule, iop->cookie);
- }
--- 
-QUALCOMM INDIA, on behalf of Qualcomm Innovation Center, Inc. is a member
-of Code Aurora Forum, hosted by The Linux Foundation
-
+Thanks,
+Yongji
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
