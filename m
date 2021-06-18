@@ -5,91 +5,90 @@ X-Spam-Level:
 X-Spam-Status: No, score=-16.6 required=3.0 tests=BAYES_00,DKIM_INVALID,
 	DKIM_SIGNED,HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_CR_TRAILER,INCLUDES_PATCH,
 	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_GIT
-	autolearn=unavailable autolearn_force=no version=3.4.0
+	autolearn=ham autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0B7CFC49EA2
-	for <iommu@archiver.kernel.org>; Fri, 18 Jun 2021 15:30:30 +0000 (UTC)
-Received: from smtp2.osuosl.org (smtp2.osuosl.org [140.211.166.133])
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 79EC6C48BE8
+	for <iommu@archiver.kernel.org>; Fri, 18 Jun 2021 15:30:32 +0000 (UTC)
+Received: from smtp3.osuosl.org (smtp3.osuosl.org [140.211.166.136])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id C1E1A613C2
-	for <iommu@archiver.kernel.org>; Fri, 18 Jun 2021 15:30:29 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org C1E1A613C2
+	by mail.kernel.org (Postfix) with ESMTPS id 340FB613BD
+	for <iommu@archiver.kernel.org>; Fri, 18 Jun 2021 15:30:32 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 340FB613BD
 Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=linaro.org
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by smtp2.osuosl.org (Postfix) with ESMTP id 9431E40261;
-	Fri, 18 Jun 2021 15:30:29 +0000 (UTC)
+	by smtp3.osuosl.org (Postfix) with ESMTP id ECB0860825;
+	Fri, 18 Jun 2021 15:30:31 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from smtp2.osuosl.org ([127.0.0.1])
-	by localhost (smtp2.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id V-ciPq1XN4Av; Fri, 18 Jun 2021 15:30:28 +0000 (UTC)
-Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [IPv6:2605:bc80:3010:104::8cd3:938])
-	by smtp2.osuosl.org (Postfix) with ESMTPS id 310D94025F;
-	Fri, 18 Jun 2021 15:30:28 +0000 (UTC)
-Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id ABA09C0023;
-	Fri, 18 Jun 2021 15:30:27 +0000 (UTC)
-Received: from smtp3.osuosl.org (smtp3.osuosl.org [IPv6:2605:bc80:3010::136])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 6F9BFC000F
- for <iommu@lists.linux-foundation.org>; Fri, 18 Jun 2021 15:30:24 +0000 (UTC)
-Received: from localhost (localhost [127.0.0.1])
- by smtp3.osuosl.org (Postfix) with ESMTP id 5DE4F60771
- for <iommu@lists.linux-foundation.org>; Fri, 18 Jun 2021 15:30:24 +0000 (UTC)
-X-Virus-Scanned: amavisd-new at osuosl.org
-Authentication-Results: smtp3.osuosl.org (amavisd-new);
- dkim=pass (2048-bit key) header.d=linaro.org
 Received: from smtp3.osuosl.org ([127.0.0.1])
- by localhost (smtp3.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id s2G30tibl_gL for <iommu@lists.linux-foundation.org>;
- Fri, 18 Jun 2021 15:30:23 +0000 (UTC)
+	by localhost (smtp3.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+	with ESMTP id 7oihRDfqh-oh; Fri, 18 Jun 2021 15:30:30 +0000 (UTC)
+Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
+	by smtp3.osuosl.org (Postfix) with ESMTPS id 334DF607D2;
+	Fri, 18 Jun 2021 15:30:30 +0000 (UTC)
+Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 0A950C0029;
+	Fri, 18 Jun 2021 15:30:30 +0000 (UTC)
+Received: from smtp4.osuosl.org (smtp4.osuosl.org [140.211.166.137])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 13197C000D
+ for <iommu@lists.linux-foundation.org>; Fri, 18 Jun 2021 15:30:27 +0000 (UTC)
+Received: from localhost (localhost [127.0.0.1])
+ by smtp4.osuosl.org (Postfix) with ESMTP id 0170040417
+ for <iommu@lists.linux-foundation.org>; Fri, 18 Jun 2021 15:30:27 +0000 (UTC)
+X-Virus-Scanned: amavisd-new at osuosl.org
+Authentication-Results: smtp4.osuosl.org (amavisd-new);
+ dkim=pass (2048-bit key) header.d=linaro.org
+Received: from smtp4.osuosl.org ([127.0.0.1])
+ by localhost (smtp4.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+ with ESMTP id 9gnDX2eXmduE for <iommu@lists.linux-foundation.org>;
+ Fri, 18 Jun 2021 15:30:25 +0000 (UTC)
 X-Greylist: whitelisted by SQLgrey-1.8.0
-Received: from mail-ej1-x629.google.com (mail-ej1-x629.google.com
- [IPv6:2a00:1450:4864:20::629])
- by smtp3.osuosl.org (Postfix) with ESMTPS id 44ABE60733
- for <iommu@lists.linux-foundation.org>; Fri, 18 Jun 2021 15:30:23 +0000 (UTC)
-Received: by mail-ej1-x629.google.com with SMTP id g8so16600592ejx.1
- for <iommu@lists.linux-foundation.org>; Fri, 18 Jun 2021 08:30:23 -0700 (PDT)
+Received: from mail-ed1-x52e.google.com (mail-ed1-x52e.google.com
+ [IPv6:2a00:1450:4864:20::52e])
+ by smtp4.osuosl.org (Postfix) with ESMTPS id BBB5A404F7
+ for <iommu@lists.linux-foundation.org>; Fri, 18 Jun 2021 15:30:24 +0000 (UTC)
+Received: by mail-ed1-x52e.google.com with SMTP id b11so9194765edy.4
+ for <iommu@lists.linux-foundation.org>; Fri, 18 Jun 2021 08:30:24 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linaro.org; s=google;
  h=from:to:cc:subject:date:message-id:in-reply-to:references
  :mime-version:content-transfer-encoding;
- bh=eqle/OCYXDxNdjnZ1wFywzj9WfxVngnpHvqMuE4PDdY=;
- b=oSpx3SuXguIkyhDWQfcPXMKPst/QtblDxlM49Sm4LXWkinQeOP7iMjz8t193E6xxXw
- iHXAG1G1hpe/PVzX2QGN3WDmNLHz4LLFwsvv6wTOY7B48tfUMIqz4+pGM9HdXhIQxnMh
- wxTTr3D2GaSr9p8BonZ1aKhJexmJiy1v1b911F7K20j0i4WtEN11XV5Pb87/PHp19K03
- zbTXpyAYM2re+SUsa9zA7dKVERJwWMt2yPeNWKiEuQUotQ1tBvy4aTunTpRVAbq7tA4p
- 6B2Gilc1vzZIDlf4mSSK+lBu0AUGyFVBdS0/K+Q0EwqwV89AK47C221kQlFATssMZkKr
- +uLQ==
+ bh=3RJvmSJ/+f/V03bHoFZ5s1IRTQ5s1X6msMRZ53R8N2s=;
+ b=oioqaxpkR8SXIXsuuuqfhe1y54ghB+nhunACRkw9yGWY4W4VArabsdKhQMs7PJxpnJ
+ lKHyN+oXycpLVvMvhCzZ4PnXHGRZNKX5gne5Bkme7KuqexJZyeel7IZ3ePq+YV4xqPxH
+ kyBLyVnObm6/ZgeX6ktLVHE3s36zgzxSnWVkrG629nwmKiWXXiNbmmYydPXUznPbLbqm
+ Mz05okZ+Mm8F3eD8sZ/Yz919mIi/O/j57XlVuAZefM3o6BWGey4P/L/mO/qbjfIH/mCB
+ 0BlOXf5rNd72R6U6bAFl5PkWBKHqT7Ib/J7AI72HUx+iJ5AKvANdjQSJi3sBrX15bs83
+ ZJRQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
  d=1e100.net; s=20161025;
  h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
  :references:mime-version:content-transfer-encoding;
- bh=eqle/OCYXDxNdjnZ1wFywzj9WfxVngnpHvqMuE4PDdY=;
- b=lU9xyorovmmY9vcxSHnKO7D4v5W9xEDEWk2ItZq3CO1SIupRttuxiOFiPMoX08CAm6
- ts216LMpvoUH88sIuXe58haEhk5luT4xCq13l0jAKxnIzl6x84uqafBY9KsplYcayXY9
- Y4POcDXfkj+9VnIMPhFRJqaQnrIgZiFMRLK9uzbkOi1haZxjVGnbqK5NZzfWeqb8oUOc
- Lj55Bu2RwwhHjYfCP4+pqHjYdlF9Fs3Pe7gAMiNVHTFY/Xj3g+IYEh9DDE/HcVEvmzzr
- 8SR71YVC/WP83bTetCbcBhU7Um+92pGKya3ne1uPfU7xzdMWnWSRS+2XLYpYMIyN/RB2
- /3Mw==
-X-Gm-Message-State: AOAM531pa2/dEb6Egk9ghqfU2zDjAMCpwzHuOMie6cJ3ljfoQk/c9mc/
- aqks2H/JRyn+ThqK7d9LT5i8pg==
-X-Google-Smtp-Source: ABdhPJz3PJkempW9N4fzuZAgqhgm1EhOMdxDSXKkaLqOdNYXoB8yNzannFWDMbdV9LYNQSNF/OaEbw==
-X-Received: by 2002:a17:906:1487:: with SMTP id
- x7mr10124847ejc.456.1624030221498; 
- Fri, 18 Jun 2021 08:30:21 -0700 (PDT)
+ bh=3RJvmSJ/+f/V03bHoFZ5s1IRTQ5s1X6msMRZ53R8N2s=;
+ b=EEyXY2i8fNkaV3ApbJJvhkV+uLxeVKE9CYl6lXTQ2PYRk+TkPsUY2xzesQNmFeD56J
+ h0YD7ZfwJtGakbf49mN4s9bajNcnULQij/7cmQHZYrdP+8X5fcCaGp/j6kW/hkkUBGwv
+ KRGZbdbfg0YPGrXiFTxaGtUZWmGlbbZJNPWGQtP/j+czlhMJxtbeJliO2+0y45L2PNS7
+ rlch9oiTyHvXFh88ye5qnKt8kj0hNdvc5xgDnqSx2CgdUCB23UptnP1aj0yhXy/cNMh9
+ qGnq8g1ihjTsZR/5COSn0bUVYoR8KCtAiY7+LEiuJPtRt4R8WSBwIIXcutkiF0iJtWdB
+ VdsQ==
+X-Gm-Message-State: AOAM5318mo+0nOpSzzFjwHZAwu7WtWs7S6gP79nRw2wjINzC3S9laZ/y
+ PV9WAv0VMskgPbBdPZJg0UOl+w==
+X-Google-Smtp-Source: ABdhPJwCamzfSj0xnhiQ2/ksdMlkwnH9GAimKe7Rf2vuGhulO5aBxZ96tgWS3b5kdmy8/GVA43+BWg==
+X-Received: by 2002:a50:d64a:: with SMTP id c10mr5913596edj.199.1624030222977; 
+ Fri, 18 Jun 2021 08:30:22 -0700 (PDT)
 Received: from localhost.localdomain (adsl-84-226-111-173.adslplus.ch.
  [84.226.111.173])
- by smtp.gmail.com with ESMTPSA id bn7sm1197613ejb.111.2021.06.18.08.30.20
+ by smtp.gmail.com with ESMTPSA id bn7sm1197613ejb.111.2021.06.18.08.30.21
  (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
- Fri, 18 Jun 2021 08:30:21 -0700 (PDT)
+ Fri, 18 Jun 2021 08:30:22 -0700 (PDT)
 From: Jean-Philippe Brucker <jean-philippe@linaro.org>
 To: rjw@rjwysocki.net,
 	lenb@kernel.org,
 	joro@8bytes.org,
 	mst@redhat.com
-Subject: [PATCH v5 2/5] ACPI: Move IOMMU setup code out of IORT
-Date: Fri, 18 Jun 2021 17:20:57 +0200
-Message-Id: <20210618152059.1194210-3-jean-philippe@linaro.org>
+Subject: [PATCH v5 3/5] ACPI: Add driver for the VIOT table
+Date: Fri, 18 Jun 2021 17:20:58 +0200
+Message-Id: <20210618152059.1194210-4-jean-philippe@linaro.org>
 X-Mailer: git-send-email 2.32.0
 In-Reply-To: <20210618152059.1194210-1-jean-philippe@linaro.org>
 References: <20210618152059.1194210-1-jean-philippe@linaro.org>
@@ -117,294 +116,538 @@ Content-Transfer-Encoding: 7bit
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-Extract the code that sets up the IOMMU infrastructure from IORT, since
-it can be reused by VIOT. Move it one level up into a new
-acpi_iommu_configure_id() function, which calls the IORT parsing
-function which in turn calls the acpi_iommu_fwspec_init() helper.
+The ACPI Virtual I/O Translation Table describes topology of
+para-virtual platforms, similarly to vendor tables DMAR, IVRS and IORT.
+For now it describes the relation between virtio-iommu and the endpoints
+it manages.
 
+Three steps are needed to configure DMA of endpoints:
+
+(1) acpi_viot_init(): parse the VIOT table, find or create the fwnode
+    associated to each vIOMMU device. This needs to happen after
+    acpi_scan_init(), because it relies on the struct device and their
+    fwnode to be available.
+
+(2) When probing the vIOMMU device, the driver registers its IOMMU ops
+    within the IOMMU subsystem. This step doesn't require any
+    intervention from the VIOT driver.
+
+(3) viot_iommu_configure(): before binding the endpoint to a driver,
+    find the associated IOMMU ops. Register them, along with the
+    endpoint ID, into the device's iommu_fwspec.
+
+If step (3) happens before step (2), it is deferred until the IOMMU is
+initialized, then retried.
+
+Tested-by: Eric Auger <eric.auger@redhat.com>
+Reviewed-by: Eric Auger <eric.auger@redhat.com>
 Signed-off-by: Jean-Philippe Brucker <jean-philippe@linaro.org>
 ---
- include/acpi/acpi_bus.h   |  3 ++
- include/linux/acpi_iort.h |  8 ++---
- drivers/acpi/arm64/iort.c | 74 +++++----------------------------------
- drivers/acpi/scan.c       | 73 +++++++++++++++++++++++++++++++++++++-
- 4 files changed, 86 insertions(+), 72 deletions(-)
+ drivers/acpi/Kconfig      |   3 +
+ drivers/iommu/Kconfig     |   1 +
+ drivers/acpi/Makefile     |   2 +
+ include/linux/acpi_viot.h |  19 ++
+ drivers/acpi/bus.c        |   2 +
+ drivers/acpi/scan.c       |   3 +
+ drivers/acpi/viot.c       | 366 ++++++++++++++++++++++++++++++++++++++
+ MAINTAINERS               |   8 +
+ 8 files changed, 404 insertions(+)
+ create mode 100644 include/linux/acpi_viot.h
+ create mode 100644 drivers/acpi/viot.c
 
-diff --git a/include/acpi/acpi_bus.h b/include/acpi/acpi_bus.h
-index 3a82faac5767..41f092a269f6 100644
---- a/include/acpi/acpi_bus.h
-+++ b/include/acpi/acpi_bus.h
-@@ -588,6 +588,9 @@ struct acpi_pci_root {
+diff --git a/drivers/acpi/Kconfig b/drivers/acpi/Kconfig
+index eedec61e3476..3758c6940ed7 100644
+--- a/drivers/acpi/Kconfig
++++ b/drivers/acpi/Kconfig
+@@ -526,6 +526,9 @@ endif
  
- bool acpi_dma_supported(struct acpi_device *adev);
- enum dev_dma_attr acpi_get_dma_attr(struct acpi_device *adev);
-+int acpi_iommu_fwspec_init(struct device *dev, u32 id,
-+			   struct fwnode_handle *fwnode,
-+			   const struct iommu_ops *ops);
- int acpi_dma_get_range(struct device *dev, u64 *dma_addr, u64 *offset,
- 		       u64 *size);
- int acpi_dma_configure_id(struct device *dev, enum dev_dma_attr attr,
-diff --git a/include/linux/acpi_iort.h b/include/linux/acpi_iort.h
-index f7f054833afd..f1f0842a2cb2 100644
---- a/include/linux/acpi_iort.h
-+++ b/include/linux/acpi_iort.h
-@@ -35,8 +35,7 @@ void acpi_configure_pmsi_domain(struct device *dev);
- int iort_pmsi_get_dev_id(struct device *dev, u32 *dev_id);
- /* IOMMU interface */
- int iort_dma_get_ranges(struct device *dev, u64 *size);
--const struct iommu_ops *iort_iommu_configure_id(struct device *dev,
--						const u32 *id_in);
-+int iort_iommu_configure_id(struct device *dev, const u32 *id_in);
- int iort_iommu_msi_get_resv_regions(struct device *dev, struct list_head *head);
- phys_addr_t acpi_iort_dma_get_max_cpu_address(void);
- #else
-@@ -50,9 +49,8 @@ static inline void acpi_configure_pmsi_domain(struct device *dev) { }
- /* IOMMU interface */
- static inline int iort_dma_get_ranges(struct device *dev, u64 *size)
- { return -ENODEV; }
--static inline const struct iommu_ops *iort_iommu_configure_id(
--				      struct device *dev, const u32 *id_in)
--{ return NULL; }
-+static inline int iort_iommu_configure_id(struct device *dev, const u32 *id_in)
-+{ return -ENODEV; }
- static inline
- int iort_iommu_msi_get_resv_regions(struct device *dev, struct list_head *head)
- { return 0; }
-diff --git a/drivers/acpi/arm64/iort.c b/drivers/acpi/arm64/iort.c
-index a940be1cf2af..487d1095030d 100644
---- a/drivers/acpi/arm64/iort.c
-+++ b/drivers/acpi/arm64/iort.c
-@@ -806,23 +806,6 @@ static struct acpi_iort_node *iort_get_msi_resv_iommu(struct device *dev)
- 	return NULL;
- }
+ source "drivers/acpi/pmic/Kconfig"
  
--static inline const struct iommu_ops *iort_fwspec_iommu_ops(struct device *dev)
--{
--	struct iommu_fwspec *fwspec = dev_iommu_fwspec_get(dev);
--
--	return (fwspec && fwspec->ops) ? fwspec->ops : NULL;
--}
--
--static inline int iort_add_device_replay(struct device *dev)
--{
--	int err = 0;
--
--	if (dev->bus && !device_iommu_mapped(dev))
--		err = iommu_probe_device(dev);
--
--	return err;
--}
--
- /**
-  * iort_iommu_msi_get_resv_regions - Reserved region driver helper
-  * @dev: Device from iommu_get_resv_regions()
-@@ -900,18 +883,6 @@ static inline bool iort_iommu_driver_enabled(u8 type)
- 	}
- }
++config ACPI_VIOT
++	bool
++
+ endif	# ACPI
  
--static int arm_smmu_iort_xlate(struct device *dev, u32 streamid,
--			       struct fwnode_handle *fwnode,
--			       const struct iommu_ops *ops)
--{
--	int ret = iommu_fwspec_init(dev, fwnode, ops);
--
--	if (!ret)
--		ret = iommu_fwspec_add_ids(dev, &streamid, 1);
--
--	return ret;
--}
--
- static bool iort_pci_rc_supports_ats(struct acpi_iort_node *node)
- {
- 	struct acpi_iort_root_complex *pci_rc;
-@@ -946,7 +917,7 @@ static int iort_iommu_xlate(struct device *dev, struct acpi_iort_node *node,
- 		return iort_iommu_driver_enabled(node->type) ?
- 		       -EPROBE_DEFER : -ENODEV;
+ config X86_PM_TIMER
+diff --git a/drivers/iommu/Kconfig b/drivers/iommu/Kconfig
+index 1f111b399bca..aff8a4830dd1 100644
+--- a/drivers/iommu/Kconfig
++++ b/drivers/iommu/Kconfig
+@@ -403,6 +403,7 @@ config VIRTIO_IOMMU
+ 	depends on ARM64
+ 	select IOMMU_API
+ 	select INTERVAL_TREE
++	select ACPI_VIOT if ACPI
+ 	help
+ 	  Para-virtualised IOMMU driver with virtio.
  
--	return arm_smmu_iort_xlate(dev, streamid, iort_fwnode, ops);
-+	return acpi_iommu_fwspec_init(dev, streamid, iort_fwnode, ops);
- }
+diff --git a/drivers/acpi/Makefile b/drivers/acpi/Makefile
+index 700b41adf2db..a6e644c48987 100644
+--- a/drivers/acpi/Makefile
++++ b/drivers/acpi/Makefile
+@@ -118,3 +118,5 @@ video-objs			+= acpi_video.o video_detect.o
+ obj-y				+= dptf/
  
- struct iort_pci_alias_info {
-@@ -1020,24 +991,13 @@ static int iort_nc_iommu_map_id(struct device *dev,
-  * @dev: device to configure
-  * @id_in: optional input id const value pointer
-  *
-- * Returns: iommu_ops pointer on configuration success
-- *          NULL on configuration failure
-+ * Returns: 0 on success, <0 on failure
-  */
--const struct iommu_ops *iort_iommu_configure_id(struct device *dev,
--						const u32 *id_in)
-+int iort_iommu_configure_id(struct device *dev, const u32 *id_in)
- {
- 	struct acpi_iort_node *node;
--	const struct iommu_ops *ops;
- 	int err = -ENODEV;
- 
--	/*
--	 * If we already translated the fwspec there
--	 * is nothing left to do, return the iommu_ops.
--	 */
--	ops = iort_fwspec_iommu_ops(dev);
--	if (ops)
--		return ops;
--
- 	if (dev_is_pci(dev)) {
- 		struct iommu_fwspec *fwspec;
- 		struct pci_bus *bus = to_pci_dev(dev)->bus;
-@@ -1046,7 +1006,7 @@ const struct iommu_ops *iort_iommu_configure_id(struct device *dev,
- 		node = iort_scan_node(ACPI_IORT_NODE_PCI_ROOT_COMPLEX,
- 				      iort_match_node_callback, &bus->dev);
- 		if (!node)
--			return NULL;
-+			return -ENODEV;
- 
- 		info.node = node;
- 		err = pci_for_each_dma_alias(to_pci_dev(dev),
-@@ -1059,7 +1019,7 @@ const struct iommu_ops *iort_iommu_configure_id(struct device *dev,
- 		node = iort_scan_node(ACPI_IORT_NODE_NAMED_COMPONENT,
- 				      iort_match_node_callback, dev);
- 		if (!node)
--			return NULL;
-+			return -ENODEV;
- 
- 		err = id_in ? iort_nc_iommu_map_id(dev, node, id_in) :
- 			      iort_nc_iommu_map(dev, node);
-@@ -1068,32 +1028,14 @@ const struct iommu_ops *iort_iommu_configure_id(struct device *dev,
- 			iort_named_component_init(dev, node);
- 	}
- 
--	/*
--	 * If we have reason to believe the IOMMU driver missed the initial
--	 * add_device callback for dev, replay it to get things in order.
--	 */
--	if (!err) {
--		ops = iort_fwspec_iommu_ops(dev);
--		err = iort_add_device_replay(dev);
--	}
--
--	/* Ignore all other errors apart from EPROBE_DEFER */
--	if (err == -EPROBE_DEFER) {
--		ops = ERR_PTR(err);
--	} else if (err) {
--		dev_dbg(dev, "Adding to IOMMU failed: %d\n", err);
--		ops = NULL;
--	}
--
--	return ops;
-+	return err;
- }
- 
- #else
- int iort_iommu_msi_get_resv_regions(struct device *dev, struct list_head *head)
- { return 0; }
--const struct iommu_ops *iort_iommu_configure_id(struct device *dev,
--						const u32 *input_id)
--{ return NULL; }
-+int iort_iommu_configure_id(struct device *dev, const u32 *input_id)
-+{ return -ENODEV; }
+ obj-$(CONFIG_ARM64)		+= arm64/
++
++obj-$(CONFIG_ACPI_VIOT)		+= viot.o
+diff --git a/include/linux/acpi_viot.h b/include/linux/acpi_viot.h
+new file mode 100644
+index 000000000000..1eb8ee5b0e5f
+--- /dev/null
++++ b/include/linux/acpi_viot.h
+@@ -0,0 +1,19 @@
++/* SPDX-License-Identifier: GPL-2.0-only */
++
++#ifndef __ACPI_VIOT_H__
++#define __ACPI_VIOT_H__
++
++#include <linux/acpi.h>
++
++#ifdef CONFIG_ACPI_VIOT
++void __init acpi_viot_init(void);
++int viot_iommu_configure(struct device *dev);
++#else
++static inline void acpi_viot_init(void) {}
++static inline int viot_iommu_configure(struct device *dev)
++{
++	return -ENODEV;
++}
++#endif
++
++#endif /* __ACPI_VIOT_H__ */
+diff --git a/drivers/acpi/bus.c b/drivers/acpi/bus.c
+index a4bd673934c0..d6f4e2f06fdb 100644
+--- a/drivers/acpi/bus.c
++++ b/drivers/acpi/bus.c
+@@ -27,6 +27,7 @@
+ #include <linux/dmi.h>
  #endif
+ #include <linux/acpi_iort.h>
++#include <linux/acpi_viot.h>
+ #include <linux/pci.h>
+ #include <acpi/apei.h>
+ #include <linux/suspend.h>
+@@ -1334,6 +1335,7 @@ static int __init acpi_init(void)
+ 	acpi_wakeup_device_init();
+ 	acpi_debugger_init();
+ 	acpi_setup_sb_notify_handler();
++	acpi_viot_init();
+ 	return 0;
+ }
  
- static int nc_dma_get_range(struct device *dev, u64 *size)
 diff --git a/drivers/acpi/scan.c b/drivers/acpi/scan.c
-index ea613df8f913..2a2e690040e9 100644
+index 2a2e690040e9..3e2bb04ab528 100644
 --- a/drivers/acpi/scan.c
 +++ b/drivers/acpi/scan.c
 @@ -9,6 +9,7 @@
  #include <linux/kernel.h>
  #include <linux/acpi.h>
  #include <linux/acpi_iort.h>
-+#include <linux/iommu.h>
++#include <linux/acpi_viot.h>
+ #include <linux/iommu.h>
  #include <linux/signal.h>
  #include <linux/kthread.h>
- #include <linux/dmi.h>
-@@ -1520,6 +1521,76 @@ int acpi_dma_get_range(struct device *dev, u64 *dma_addr, u64 *offset,
- 	return ret >= 0 ? 0 : ret;
- }
+@@ -1556,6 +1557,8 @@ static const struct iommu_ops *acpi_iommu_configure_id(struct device *dev,
+ 		return ops;
  
-+#ifdef CONFIG_IOMMU_API
-+int acpi_iommu_fwspec_init(struct device *dev, u32 id,
-+			   struct fwnode_handle *fwnode,
-+			   const struct iommu_ops *ops)
+ 	err = iort_iommu_configure_id(dev, id_in);
++	if (err && err != -EPROBE_DEFER)
++		err = viot_iommu_configure(dev);
+ 
+ 	/*
+ 	 * If we have reason to believe the IOMMU driver missed the initial
+diff --git a/drivers/acpi/viot.c b/drivers/acpi/viot.c
+new file mode 100644
+index 000000000000..d2256326c73a
+--- /dev/null
++++ b/drivers/acpi/viot.c
+@@ -0,0 +1,366 @@
++// SPDX-License-Identifier: GPL-2.0
++/*
++ * Virtual I/O topology
++ *
++ * The Virtual I/O Translation Table (VIOT) describes the topology of
++ * para-virtual IOMMUs and the endpoints they manage. The OS uses it to
++ * initialize devices in the right order, preventing endpoints from issuing DMA
++ * before their IOMMU is ready.
++ *
++ * When binding a driver to a device, before calling the device driver's probe()
++ * method, the driver infrastructure calls dma_configure(). At that point the
++ * VIOT driver looks for an IOMMU associated to the device in the VIOT table.
++ * If an IOMMU exists and has been initialized, the VIOT driver initializes the
++ * device's IOMMU fwspec, allowing the DMA infrastructure to invoke the IOMMU
++ * ops when the device driver configures DMA mappings. If an IOMMU exists and
++ * hasn't yet been initialized, VIOT returns -EPROBE_DEFER to postpone probing
++ * the device until the IOMMU is available.
++ */
++#define pr_fmt(fmt) "ACPI: VIOT: " fmt
++
++#include <linux/acpi_viot.h>
++#include <linux/dma-iommu.h>
++#include <linux/fwnode.h>
++#include <linux/iommu.h>
++#include <linux/list.h>
++#include <linux/pci.h>
++#include <linux/platform_device.h>
++
++struct viot_iommu {
++	/* Node offset within the table */
++	unsigned int			offset;
++	struct fwnode_handle		*fwnode;
++	struct list_head		list;
++};
++
++struct viot_endpoint {
++	union {
++		/* PCI range */
++		struct {
++			u16		segment_start;
++			u16		segment_end;
++			u16		bdf_start;
++			u16		bdf_end;
++		};
++		/* MMIO */
++		u64			address;
++	};
++	u32				endpoint_id;
++	struct viot_iommu		*viommu;
++	struct list_head		list;
++};
++
++static struct acpi_table_viot *viot;
++static LIST_HEAD(viot_iommus);
++static LIST_HEAD(viot_pci_ranges);
++static LIST_HEAD(viot_mmio_endpoints);
++
++static int __init viot_check_bounds(const struct acpi_viot_header *hdr)
 +{
-+	int ret = iommu_fwspec_init(dev, fwnode, ops);
++	struct acpi_viot_header *start, *end, *hdr_end;
 +
-+	if (!ret)
-+		ret = iommu_fwspec_add_ids(dev, &id, 1);
++	start = ACPI_ADD_PTR(struct acpi_viot_header, viot,
++			     max_t(size_t, sizeof(*viot), viot->node_offset));
++	end = ACPI_ADD_PTR(struct acpi_viot_header, viot, viot->header.length);
++	hdr_end = ACPI_ADD_PTR(struct acpi_viot_header, hdr, sizeof(*hdr));
 +
-+	return ret;
-+}
-+
-+static inline const struct iommu_ops *acpi_iommu_fwspec_ops(struct device *dev)
-+{
-+	struct iommu_fwspec *fwspec = dev_iommu_fwspec_get(dev);
-+
-+	return fwspec ? fwspec->ops : NULL;
-+}
-+
-+static const struct iommu_ops *acpi_iommu_configure_id(struct device *dev,
-+						       const u32 *id_in)
-+{
-+	int err;
-+	const struct iommu_ops *ops;
-+
-+	/*
-+	 * If we already translated the fwspec there is nothing left to do,
-+	 * return the iommu_ops.
-+	 */
-+	ops = acpi_iommu_fwspec_ops(dev);
-+	if (ops)
-+		return ops;
-+
-+	err = iort_iommu_configure_id(dev, id_in);
-+
-+	/*
-+	 * If we have reason to believe the IOMMU driver missed the initial
-+	 * iommu_probe_device() call for dev, replay it to get things in order.
-+	 */
-+	if (!err && dev->bus && !device_iommu_mapped(dev))
-+		err = iommu_probe_device(dev);
-+
-+	/* Ignore all other errors apart from EPROBE_DEFER */
-+	if (err == -EPROBE_DEFER) {
-+		return ERR_PTR(err);
-+	} else if (err) {
-+		dev_dbg(dev, "Adding to IOMMU failed: %d\n", err);
-+		return NULL;
++	if (hdr < start || hdr_end > end) {
++		pr_err(FW_BUG "Node pointer overflows\n");
++		return -EOVERFLOW;
 +	}
-+	return acpi_iommu_fwspec_ops(dev);
++	if (hdr->length < sizeof(*hdr)) {
++		pr_err(FW_BUG "Empty node\n");
++		return -EINVAL;
++	}
++	return 0;
 +}
 +
-+#else /* !CONFIG_IOMMU_API */
-+
-+int acpi_iommu_fwspec_init(struct device *dev, u32 id,
-+			   struct fwnode_handle *fwnode,
-+			   const struct iommu_ops *ops)
++static int __init viot_get_pci_iommu_fwnode(struct viot_iommu *viommu,
++					    u16 segment, u16 bdf)
 +{
-+	return -ENODEV;
++	struct pci_dev *pdev;
++	struct fwnode_handle *fwnode;
++
++	pdev = pci_get_domain_bus_and_slot(segment, PCI_BUS_NUM(bdf),
++					   bdf & 0xff);
++	if (!pdev) {
++		pr_err("Could not find PCI IOMMU\n");
++		return -ENODEV;
++	}
++
++	fwnode = pdev->dev.fwnode;
++	if (!fwnode) {
++		/*
++		 * PCI devices aren't necessarily described by ACPI. Create a
++		 * fwnode so the IOMMU subsystem can identify this device.
++		 */
++		fwnode = acpi_alloc_fwnode_static();
++		if (!fwnode) {
++			pci_dev_put(pdev);
++			return -ENOMEM;
++		}
++		set_primary_fwnode(&pdev->dev, fwnode);
++	}
++	viommu->fwnode = pdev->dev.fwnode;
++	pci_dev_put(pdev);
++	return 0;
 +}
 +
-+static const struct iommu_ops *acpi_iommu_configure_id(struct device *dev,
-+						       const u32 *id_in)
++static int __init viot_get_mmio_iommu_fwnode(struct viot_iommu *viommu,
++					     u64 address)
 +{
++	struct acpi_device *adev;
++	struct resource res = {
++		.start	= address,
++		.end	= address,
++		.flags	= IORESOURCE_MEM,
++	};
++
++	adev = acpi_resource_consumer(&res);
++	if (!adev) {
++		pr_err("Could not find MMIO IOMMU\n");
++		return -EINVAL;
++	}
++	viommu->fwnode = &adev->fwnode;
++	return 0;
++}
++
++static struct viot_iommu * __init viot_get_iommu(unsigned int offset)
++{
++	int ret;
++	struct viot_iommu *viommu;
++	struct acpi_viot_header *hdr = ACPI_ADD_PTR(struct acpi_viot_header,
++						    viot, offset);
++	union {
++		struct acpi_viot_virtio_iommu_pci pci;
++		struct acpi_viot_virtio_iommu_mmio mmio;
++	} *node = (void *)hdr;
++
++	list_for_each_entry(viommu, &viot_iommus, list)
++		if (viommu->offset == offset)
++			return viommu;
++
++	if (viot_check_bounds(hdr))
++		return NULL;
++
++	viommu = kzalloc(sizeof(*viommu), GFP_KERNEL);
++	if (!viommu)
++		return NULL;
++
++	viommu->offset = offset;
++	switch (hdr->type) {
++	case ACPI_VIOT_NODE_VIRTIO_IOMMU_PCI:
++		if (hdr->length < sizeof(node->pci))
++			goto err_free;
++
++		ret = viot_get_pci_iommu_fwnode(viommu, node->pci.segment,
++						node->pci.bdf);
++		break;
++	case ACPI_VIOT_NODE_VIRTIO_IOMMU_MMIO:
++		if (hdr->length < sizeof(node->mmio))
++			goto err_free;
++
++		ret = viot_get_mmio_iommu_fwnode(viommu,
++						 node->mmio.base_address);
++		break;
++	default:
++		ret = -EINVAL;
++	}
++	if (ret)
++		goto err_free;
++
++	list_add(&viommu->list, &viot_iommus);
++	return viommu;
++
++err_free:
++	kfree(viommu);
 +	return NULL;
 +}
 +
-+#endif /* !CONFIG_IOMMU_API */
++static int __init viot_parse_node(const struct acpi_viot_header *hdr)
++{
++	int ret = -EINVAL;
++	struct list_head *list;
++	struct viot_endpoint *ep;
++	union {
++		struct acpi_viot_mmio mmio;
++		struct acpi_viot_pci_range pci;
++	} *node = (void *)hdr;
 +
- /**
-  * acpi_dma_configure_id - Set-up DMA configuration for the device.
-  * @dev: The pointer to the device
-@@ -1539,7 +1610,7 @@ int acpi_dma_configure_id(struct device *dev, enum dev_dma_attr attr,
++	if (viot_check_bounds(hdr))
++		return -EINVAL;
++
++	if (hdr->type == ACPI_VIOT_NODE_VIRTIO_IOMMU_PCI ||
++	    hdr->type == ACPI_VIOT_NODE_VIRTIO_IOMMU_MMIO)
++		return 0;
++
++	ep = kzalloc(sizeof(*ep), GFP_KERNEL);
++	if (!ep)
++		return -ENOMEM;
++
++	switch (hdr->type) {
++	case ACPI_VIOT_NODE_PCI_RANGE:
++		if (hdr->length < sizeof(node->pci)) {
++			pr_err(FW_BUG "Invalid PCI node size\n");
++			goto err_free;
++		}
++
++		ep->segment_start = node->pci.segment_start;
++		ep->segment_end = node->pci.segment_end;
++		ep->bdf_start = node->pci.bdf_start;
++		ep->bdf_end = node->pci.bdf_end;
++		ep->endpoint_id = node->pci.endpoint_start;
++		ep->viommu = viot_get_iommu(node->pci.output_node);
++		list = &viot_pci_ranges;
++		break;
++	case ACPI_VIOT_NODE_MMIO:
++		if (hdr->length < sizeof(node->mmio)) {
++			pr_err(FW_BUG "Invalid MMIO node size\n");
++			goto err_free;
++		}
++
++		ep->address = node->mmio.base_address;
++		ep->endpoint_id = node->mmio.endpoint;
++		ep->viommu = viot_get_iommu(node->mmio.output_node);
++		list = &viot_mmio_endpoints;
++		break;
++	default:
++		pr_warn("Unsupported node %x\n", hdr->type);
++		ret = 0;
++		goto err_free;
++	}
++
++	if (!ep->viommu) {
++		pr_warn("No IOMMU node found\n");
++		/*
++		 * A future version of the table may use the node for other
++		 * purposes. Keep parsing.
++		 */
++		ret = 0;
++		goto err_free;
++	}
++
++	list_add(&ep->list, list);
++	return 0;
++
++err_free:
++	kfree(ep);
++	return ret;
++}
++
++/**
++ * acpi_viot_init - Parse the VIOT table
++ *
++ * Parse the VIOT table, prepare the list of endpoints to be used during DMA
++ * setup of devices.
++ */
++void __init acpi_viot_init(void)
++{
++	int i;
++	acpi_status status;
++	struct acpi_table_header *hdr;
++	struct acpi_viot_header *node;
++
++	status = acpi_get_table(ACPI_SIG_VIOT, 0, &hdr);
++	if (ACPI_FAILURE(status)) {
++		if (status != AE_NOT_FOUND) {
++			const char *msg = acpi_format_exception(status);
++
++			pr_err("Failed to get table, %s\n", msg);
++		}
++		return;
++	}
++
++	viot = (void *)hdr;
++
++	node = ACPI_ADD_PTR(struct acpi_viot_header, viot, viot->node_offset);
++	for (i = 0; i < viot->node_count; i++) {
++		if (viot_parse_node(node))
++			return;
++
++		node = ACPI_ADD_PTR(struct acpi_viot_header, node,
++				    node->length);
++	}
++
++	acpi_put_table(hdr);
++}
++
++static int viot_dev_iommu_init(struct device *dev, struct viot_iommu *viommu,
++			       u32 epid)
++{
++	const struct iommu_ops *ops;
++
++	if (!viommu)
++		return -ENODEV;
++
++	/* We're not translating ourself */
++	if (viommu->fwnode == dev->fwnode)
++		return -EINVAL;
++
++	ops = iommu_ops_from_fwnode(viommu->fwnode);
++	if (!ops)
++		return IS_ENABLED(CONFIG_VIRTIO_IOMMU) ?
++			-EPROBE_DEFER : -ENODEV;
++
++	return acpi_iommu_fwspec_init(dev, epid, viommu->fwnode, ops);
++}
++
++static int viot_pci_dev_iommu_init(struct pci_dev *pdev, u16 dev_id, void *data)
++{
++	u32 epid;
++	struct viot_endpoint *ep;
++	u32 domain_nr = pci_domain_nr(pdev->bus);
++
++	list_for_each_entry(ep, &viot_pci_ranges, list) {
++		if (domain_nr >= ep->segment_start &&
++		    domain_nr <= ep->segment_end &&
++		    dev_id >= ep->bdf_start &&
++		    dev_id <= ep->bdf_end) {
++			epid = ((domain_nr - ep->segment_start) << 16) +
++				dev_id - ep->bdf_start + ep->endpoint_id;
++
++			/*
++			 * If we found a PCI range managed by the viommu, we're
++			 * the one that has to request ACS.
++			 */
++			pci_request_acs();
++
++			return viot_dev_iommu_init(&pdev->dev, ep->viommu,
++						   epid);
++		}
++	}
++	return -ENODEV;
++}
++
++static int viot_mmio_dev_iommu_init(struct platform_device *pdev)
++{
++	struct resource *mem;
++	struct viot_endpoint *ep;
++
++	mem = platform_get_resource(pdev, IORESOURCE_MEM, 0);
++	if (!mem)
++		return -ENODEV;
++
++	list_for_each_entry(ep, &viot_mmio_endpoints, list) {
++		if (ep->address == mem->start)
++			return viot_dev_iommu_init(&pdev->dev, ep->viommu,
++						   ep->endpoint_id);
++	}
++	return -ENODEV;
++}
++
++/**
++ * viot_iommu_configure - Setup IOMMU ops for an endpoint described by VIOT
++ * @dev: the endpoint
++ *
++ * Return: 0 on success, <0 on failure
++ */
++int viot_iommu_configure(struct device *dev)
++{
++	if (dev_is_pci(dev))
++		return pci_for_each_dma_alias(to_pci_dev(dev),
++					      viot_pci_dev_iommu_init, NULL);
++	else if (dev_is_platform(dev))
++		return viot_mmio_dev_iommu_init(to_platform_device(dev));
++	return -ENODEV;
++}
+diff --git a/MAINTAINERS b/MAINTAINERS
+index bc0ceef87b73..11f68a07772d 100644
+--- a/MAINTAINERS
++++ b/MAINTAINERS
+@@ -431,6 +431,14 @@ W:	https://01.org/linux-acpi
+ B:	https://bugzilla.kernel.org
+ F:	drivers/acpi/acpi_video.c
  
- 	acpi_arch_dma_setup(dev, &dma_addr, &size);
- 
--	iommu = iort_iommu_configure_id(dev, input_id);
-+	iommu = acpi_iommu_configure_id(dev, input_id);
- 	if (PTR_ERR(iommu) == -EPROBE_DEFER)
- 		return -EPROBE_DEFER;
- 
++ACPI VIOT DRIVER
++M:	Jean-Philippe Brucker <jean-philippe@linaro.org>
++L:	linux-acpi@vger.kernel.org
++L:	iommu@lists.linux-foundation.org
++S:	Maintained
++F:	drivers/acpi/viot.c
++F:	include/linux/acpi_viot.h
++
+ ACPI WMI DRIVER
+ L:	platform-driver-x86@vger.kernel.org
+ S:	Orphan
 -- 
 2.32.0
 
