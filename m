@@ -2,105 +2,108 @@ Return-Path: <SRS0=sMz+=LM=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-8.6 required=3.0 tests=BAYES_00,DKIM_INVALID,
-	DKIM_SIGNED,HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,
-	SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED autolearn=ham autolearn_force=no
-	version=3.4.0
+X-Spam-Status: No, score=-3.5 required=3.0 tests=BAYES_00,DKIM_INVALID,
+	DKIM_SIGNED,HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,SPF_HELO_NONE,
+	SPF_PASS,URIBL_BLOCKED autolearn=no autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id EEECCC48BE8
-	for <iommu@archiver.kernel.org>; Fri, 18 Jun 2021 07:54:55 +0000 (UTC)
-Received: from smtp2.osuosl.org (smtp2.osuosl.org [140.211.166.133])
+	by smtp.lore.kernel.org (Postfix) with ESMTP id CEB05C48BDF
+	for <iommu@archiver.kernel.org>; Fri, 18 Jun 2021 07:57:30 +0000 (UTC)
+Received: from smtp4.osuosl.org (smtp4.osuosl.org [140.211.166.137])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id AF37D61396
-	for <iommu@archiver.kernel.org>; Fri, 18 Jun 2021 07:54:55 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org AF37D61396
-Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=linaro.org
+	by mail.kernel.org (Postfix) with ESMTPS id 783E96101A
+	for <iommu@archiver.kernel.org>; Fri, 18 Jun 2021 07:57:30 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 783E96101A
+Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=suse.de
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by smtp2.osuosl.org (Postfix) with ESMTP id 755B04024E;
-	Fri, 18 Jun 2021 07:54:55 +0000 (UTC)
+	by smtp4.osuosl.org (Postfix) with ESMTP id 406F9414C0;
+	Fri, 18 Jun 2021 07:57:30 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from smtp2.osuosl.org ([127.0.0.1])
-	by localhost (smtp2.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id lEv4dwnk8EhJ; Fri, 18 Jun 2021 07:54:52 +0000 (UTC)
-Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by smtp2.osuosl.org (Postfix) with ESMTPS id 1633540221;
-	Fri, 18 Jun 2021 07:54:52 +0000 (UTC)
+Received: from smtp4.osuosl.org ([127.0.0.1])
+	by localhost (smtp4.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+	with ESMTP id 3LO9_lpx9mXV; Fri, 18 Jun 2021 07:57:29 +0000 (UTC)
+Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [IPv6:2605:bc80:3010:104::8cd3:938])
+	by smtp4.osuosl.org (Postfix) with ESMTPS id EDE3D40569;
+	Fri, 18 Jun 2021 07:57:28 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id B7564C000D;
-	Fri, 18 Jun 2021 07:54:51 +0000 (UTC)
-Received: from smtp1.osuosl.org (smtp1.osuosl.org [IPv6:2605:bc80:3010::138])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 814DBC000B
- for <iommu@lists.linux-foundation.org>; Fri, 18 Jun 2021 07:54:50 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id C56C5C000D;
+	Fri, 18 Jun 2021 07:57:28 +0000 (UTC)
+Received: from smtp4.osuosl.org (smtp4.osuosl.org [140.211.166.137])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 4F7E7C000B
+ for <iommu@lists.linux-foundation.org>; Fri, 18 Jun 2021 07:57:28 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by smtp1.osuosl.org (Postfix) with ESMTP id 6EE19839D8
- for <iommu@lists.linux-foundation.org>; Fri, 18 Jun 2021 07:54:50 +0000 (UTC)
+ by smtp4.osuosl.org (Postfix) with ESMTP id 27360414C0
+ for <iommu@lists.linux-foundation.org>; Fri, 18 Jun 2021 07:57:28 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Authentication-Results: smtp1.osuosl.org (amavisd-new);
- dkim=pass (2048-bit key) header.d=linaro.org
-Received: from smtp1.osuosl.org ([127.0.0.1])
- by localhost (smtp1.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id pnvTYvmM15qt for <iommu@lists.linux-foundation.org>;
- Fri, 18 Jun 2021 07:54:49 +0000 (UTC)
-X-Greylist: whitelisted by SQLgrey-1.8.0
-Received: from mail-ed1-x531.google.com (mail-ed1-x531.google.com
- [IPv6:2a00:1450:4864:20::531])
- by smtp1.osuosl.org (Postfix) with ESMTPS id A2E0C836FE
- for <iommu@lists.linux-foundation.org>; Fri, 18 Jun 2021 07:54:49 +0000 (UTC)
-Received: by mail-ed1-x531.google.com with SMTP id n20so7365595edv.8
- for <iommu@lists.linux-foundation.org>; Fri, 18 Jun 2021 00:54:49 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linaro.org; s=google;
- h=date:from:to:cc:subject:message-id:references:mime-version
- :content-disposition:in-reply-to;
- bh=o2WQZjhwoaHMxBb+srOde8YwelPLzLRldEZbtvlgRGU=;
- b=k1T0ECGGh1W0dhEm5YpW3R4tr4w2ouXUmoAkc4fnu+nm3wfGl1D/XzfrjxPVvNpD9R
- GUN87sw+XheVvqk6OE0++OuYZdogI1z1/Z+Lp7EcaWueCIl0eiIDcgBLTpL+k3ODqRRi
- o1irouPqfd1Q1/YN2nVPDXvXxcg204pgHRGlmEY1D6DM1HPSCvgbILp/o8l/Wvkr0Iw3
- rGuOE9LxvMTkCXpX5w0+1LTUHt3sZIF4mC2s2Skw8CTsGlTa12/M8ao345z4GdUAlnPd
- JDFt5F5xmanD8rpTrdfn3E8eDxfl207dVuGecnb6ZmTyEXAW4IxIunr2hSUFxui1Sf+u
- +S/w==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
- d=1e100.net; s=20161025;
- h=x-gm-message-state:date:from:to:cc:subject:message-id:references
- :mime-version:content-disposition:in-reply-to;
- bh=o2WQZjhwoaHMxBb+srOde8YwelPLzLRldEZbtvlgRGU=;
- b=A6Lu1j61KE3f5ScIGegQEVeOw1koTaYrph1vkMrW3vOJsnaH760eF/H2vML9AwYFk+
- dv/8prVXesQ+x67/PESpXDG6dm3DrhdMgMEHGE36sRxFceVBNDWIHybouyYcfqsuR0ck
- W1byGENnaJRZ+Xb8fW2JjlekdiiOsX/NJpkx+vQ69tpMBPR+KfqfafL17omRt1IEkoaU
- i3rJP4nVRfIQRiW0czYH8cZCafSLMvrw25r4lcWFLnYyh3rBEhT/zzTb7Nm8EIwPOijQ
- maEfItAUjEUnYjV5Xd4K1bwDY0PLpmObJIdxlvxsPdOU6YWnrXLH104htQuh2vMqHG9E
- 0UDw==
-X-Gm-Message-State: AOAM533Z77NjN/60iHgEuSTBIpMUfBOKeFTnnZlvdHJcWM4IYKz+U7MN
- 4X3rZsQnFjEYckYQAxvucxe2Iw==
-X-Google-Smtp-Source: ABdhPJw47GTVGsZ2XZZsLWgVTPMHWXGLZ9JfMKbH6mO4cozlyWGnWGY9YGBYGbYr6USC4QNEMkKYww==
-X-Received: by 2002:a05:6402:4395:: with SMTP id
- o21mr3261040edc.163.1624002887797; 
- Fri, 18 Jun 2021 00:54:47 -0700 (PDT)
-Received: from myrica (adsl-84-226-111-173.adslplus.ch. [84.226.111.173])
- by smtp.gmail.com with ESMTPSA id j22sm680988eje.123.2021.06.18.00.54.46
- (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
- Fri, 18 Jun 2021 00:54:47 -0700 (PDT)
-Date: Fri, 18 Jun 2021 09:54:28 +0200
-From: Jean-Philippe Brucker <jean-philippe@linaro.org>
-To: "Rafael J. Wysocki" <rafael@kernel.org>
-Subject: Re: [PATCH v4 3/6] ACPI: Add driver for the VIOT table
-Message-ID: <YMxRNHVjKk3H6r7t@myrica>
-References: <20210610075130.67517-1-jean-philippe@linaro.org>
- <20210610075130.67517-4-jean-philippe@linaro.org>
- <CAJZ5v0gTZDyEC7MuBEv2gg6Usq+PD-WEQJbiAqKrFC3KV-M52g@mail.gmail.com>
+Received: from smtp4.osuosl.org ([127.0.0.1])
+ by localhost (smtp4.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+ with ESMTP id D9mwViBicbzA for <iommu@lists.linux-foundation.org>;
+ Fri, 18 Jun 2021 07:57:27 +0000 (UTC)
+X-Greylist: domain auto-whitelisted by SQLgrey-1.8.0
+Received: from smtp-out2.suse.de (smtp-out2.suse.de [195.135.220.29])
+ by smtp4.osuosl.org (Postfix) with ESMTPS id 5471C40569
+ for <iommu@lists.linux-foundation.org>; Fri, 18 Jun 2021 07:57:27 +0000 (UTC)
+Received: from imap.suse.de (imap-alt.suse-dmz.suse.de [192.168.254.47])
+ (using TLSv1.2 with cipher ECDHE-ECDSA-AES128-GCM-SHA256 (128/128 bits))
+ (No client certificate requested)
+ by smtp-out2.suse.de (Postfix) with ESMTPS id 7B5AD1FDE7;
+ Fri, 18 Jun 2021 07:57:24 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.de; s=susede2_rsa;
+ t=1624003044; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+ mime-version:mime-version:content-type:content-type:
+ in-reply-to:in-reply-to:references:references;
+ bh=00PGLHSy+8q9cRmQ8fgZXfLgJHGTi7QAl5WB49PoiEY=;
+ b=NlPIItnwAI7vEYQyT3Nf6AimO6jm0zVj46b/cqshLivcLlvrDhFn1TpBPyRB4cwwL/BRI7
+ SrQLjSyqffKPvMgRaPwtP7YHRL/nf2rfQZMpyoq9L68ugkg8HeIL4kSnNWvmffzQS/Yln1
+ hxvOWCC6jp5yTgkVoWer1VVCK+kp1/o=
+DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=suse.de;
+ s=susede2_ed25519; t=1624003044;
+ h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+ mime-version:mime-version:content-type:content-type:
+ in-reply-to:in-reply-to:references:references;
+ bh=00PGLHSy+8q9cRmQ8fgZXfLgJHGTi7QAl5WB49PoiEY=;
+ b=BWmbx4uWUUSAHrzr4+MS4N6T7M2PNVfdBol3/YMZzHBXWQqKw/6q7LVz0R3JBs3mH/85nE
+ Y/GtZbc80bG/CEDQ==
+Received: from imap3-int (imap-alt.suse-dmz.suse.de [192.168.254.47])
+ by imap.suse.de (Postfix) with ESMTP id 1EB6E118DD;
+ Fri, 18 Jun 2021 07:57:24 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.de; s=susede2_rsa;
+ t=1624003044; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+ mime-version:mime-version:content-type:content-type:
+ in-reply-to:in-reply-to:references:references;
+ bh=00PGLHSy+8q9cRmQ8fgZXfLgJHGTi7QAl5WB49PoiEY=;
+ b=NlPIItnwAI7vEYQyT3Nf6AimO6jm0zVj46b/cqshLivcLlvrDhFn1TpBPyRB4cwwL/BRI7
+ SrQLjSyqffKPvMgRaPwtP7YHRL/nf2rfQZMpyoq9L68ugkg8HeIL4kSnNWvmffzQS/Yln1
+ hxvOWCC6jp5yTgkVoWer1VVCK+kp1/o=
+DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=suse.de;
+ s=susede2_ed25519; t=1624003044;
+ h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+ mime-version:mime-version:content-type:content-type:
+ in-reply-to:in-reply-to:references:references;
+ bh=00PGLHSy+8q9cRmQ8fgZXfLgJHGTi7QAl5WB49PoiEY=;
+ b=BWmbx4uWUUSAHrzr4+MS4N6T7M2PNVfdBol3/YMZzHBXWQqKw/6q7LVz0R3JBs3mH/85nE
+ Y/GtZbc80bG/CEDQ==
+Received: from director2.suse.de ([192.168.254.72]) by imap3-int with ESMTPSA
+ id mCyyBeRRzGCGVAAALh3uQQ
+ (envelope-from <jroedel@suse.de>); Fri, 18 Jun 2021 07:57:24 +0000
+Date: Fri, 18 Jun 2021 09:57:22 +0200
+From: Joerg Roedel <jroedel@suse.de>
+To: Nathan Chancellor <nathan@kernel.org>
+Subject: Re: [PATCH] iommu/vt-d: Fix W=1 clang warning in intel/perf.c
+Message-ID: <YMxR4ggRGZQZbiz1@suse.de>
+References: <20210617145339.2692-1-joro@8bytes.org>
+ <CAKwvOd=8jUsRFKg6+sqq2-DakbRBGR6Z6mR_smuxp+cMEmCHLw@mail.gmail.com>
+ <YMuw+LtM/B1QTTJI@suse.de>
+ <32f14288-315a-b75d-913b-2fc6a16cd748@kernel.org>
 MIME-Version: 1.0
 Content-Disposition: inline
-In-Reply-To: <CAJZ5v0gTZDyEC7MuBEv2gg6Usq+PD-WEQJbiAqKrFC3KV-M52g@mail.gmail.com>
-Cc: kevin.tian@intel.com, "Michael S. Tsirkin" <mst@redhat.com>,
- Catalin Marinas <catalin.marinas@arm.com>, Sudeep Holla <sudeep.holla@arm.com>,
- "Rafael J. Wysocki" <rjw@rjwysocki.net>, Robin Murphy <robin.murphy@arm.com>,
- virtualization@lists.linux-foundation.org,
- ACPI Devel Maling List <linux-acpi@vger.kernel.org>,
- "open list:AMD IOMMU \(AMD-VI\)" <iommu@lists.linux-foundation.org>,
- sebastien.boeuf@intel.com, Hanjun Guo <guohanjun@huawei.com>,
- Will Deacon <will@kernel.org>, David Woodhouse <dwmw2@infradead.org>,
- Linux ARM <linux-arm-kernel@lists.infradead.org>, Len Brown <lenb@kernel.org>
+In-Reply-To: <32f14288-315a-b75d-913b-2fc6a16cd748@kernel.org>
+Cc: kernel test robot <lkp@intel.com>, David Woodhouse <dwmw2@infradead.org>,
+ Nick Desaulniers <ndesaulniers@google.com>,
+ LKML <linux-kernel@vger.kernel.org>,
+ clang-built-linux <clang-built-linux@googlegroups.com>,
+ iommu@lists.linux-foundation.org, Will Deacon <will@kernel.org>
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -118,75 +121,14 @@ Content-Transfer-Encoding: 7bit
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-On Thu, Jun 17, 2021 at 01:50:59PM +0200, Rafael J. Wysocki wrote:
-> > diff --git a/drivers/acpi/bus.c b/drivers/acpi/bus.c
-> > index be7da23fad76..b835ca702ff0 100644
-> > --- a/drivers/acpi/bus.c
-> > +++ b/drivers/acpi/bus.c
-> > @@ -27,6 +27,7 @@
-> >  #include <linux/dmi.h>
-> >  #endif
-> >  #include <linux/acpi_iort.h>
-> > +#include <linux/acpi_viot.h>
-> >  #include <linux/pci.h>
-> >  #include <acpi/apei.h>
-> >  #include <linux/suspend.h>
-> > @@ -1339,6 +1340,7 @@ static int __init acpi_init(void)
-> >         pci_mmcfg_late_init();
-> >         acpi_iort_init();
-> >         acpi_scan_init();
-> > +       acpi_viot_init();
-> 
-> Is there a specific reason why to call it right here?
-> 
-> In particular, does it need to be called after acpi_scan_init()?  And
-> does it need to be called before the subsequent functions?  If so,
-> then why?
+On Thu, Jun 17, 2021 at 01:51:24PM -0700, Nathan Chancellor wrote:
+> kernel-doc is run automatically with W=1, regardless of gcc versus clang.
 
-It does need to be called after acpi_scan_init(), because it relies on
-struct device and their fwnode to be initialized. In particular to find a
-PCI device we call pci_get_domain_bus_and_slot(), which needs the PCI
-topology made available by acpi_scan_init().
-
-It does not need to be before the subsequent functions however, I can move
-it at the end.
-
-> > +void __init acpi_viot_init(void)
-> > +{
-> > +       int i;
-> > +       acpi_status status;
-> > +       struct acpi_table_header *hdr;
-> > +       struct acpi_viot_header *node;
-> > +
-> > +       status = acpi_get_table(ACPI_SIG_VIOT, 0, &hdr);
-> > +       if (ACPI_FAILURE(status)) {
-> > +               if (status != AE_NOT_FOUND) {
-> > +                       const char *msg = acpi_format_exception(status);
-> > +
-> > +                       pr_err("Failed to get table, %s\n", msg);
-> > +               }
-> > +               return;
-> > +       }
-> > +
-> > +       viot = (void *)hdr;
-> > +
-> > +       node = ACPI_ADD_PTR(struct acpi_viot_header, viot, viot->node_offset);
-> > +       for (i = 0; i < viot->node_count; i++) {
-> > +               if (viot_parse_node(node))
-> > +                       return;
-> > +
-> > +               node = ACPI_ADD_PTR(struct acpi_viot_header, node,
-> > +                                   node->length);
-> > +       }
-> 
-> Do you still need the table after the above is complete?  If not,
-> release the reference on it acquired above.
-
-We don't need the table anymore, I'll drop the reference
+I see, thanks. Will update the commit message.
 
 Thanks,
-Jean
 
+	Joerg
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
