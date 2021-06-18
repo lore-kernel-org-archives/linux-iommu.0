@@ -2,76 +2,84 @@ Return-Path: <SRS0=sMz+=LM=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-10.5 required=3.0 tests=BAYES_00,
-	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_CR_TRAILER,MAILING_LIST_MULTI,
-	NICE_REPLY_A,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_SANE_1
-	autolearn=ham autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-5.5 required=3.0 tests=BAYES_00,
+	HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,NICE_REPLY_A,SPF_HELO_NONE,
+	SPF_PASS,URIBL_BLOCKED,USER_AGENT_SANE_1 autolearn=no autolearn_force=no
+	version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7450AC48BDF
-	for <iommu@archiver.kernel.org>; Fri, 18 Jun 2021 07:30:15 +0000 (UTC)
-Received: from smtp3.osuosl.org (smtp3.osuosl.org [140.211.166.136])
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 131B8C49361
+	for <iommu@archiver.kernel.org>; Fri, 18 Jun 2021 07:37:31 +0000 (UTC)
+Received: from smtp1.osuosl.org (smtp1.osuosl.org [140.211.166.138])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id D957761351
-	for <iommu@archiver.kernel.org>; Fri, 18 Jun 2021 07:30:14 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org D957761351
-Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=linux.intel.com
+	by mail.kernel.org (Postfix) with ESMTPS id A905A613BA
+	for <iommu@archiver.kernel.org>; Fri, 18 Jun 2021 07:37:30 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org A905A613BA
+Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=huawei.com
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by smtp3.osuosl.org (Postfix) with ESMTP id A76F8605E0;
-	Fri, 18 Jun 2021 07:30:14 +0000 (UTC)
-X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from smtp3.osuosl.org ([127.0.0.1])
-	by localhost (smtp3.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id PxuFZp1e3B-k; Fri, 18 Jun 2021 07:30:13 +0000 (UTC)
-Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [IPv6:2605:bc80:3010:104::8cd3:938])
-	by smtp3.osuosl.org (Postfix) with ESMTPS id 8C436605D0;
-	Fri, 18 Jun 2021 07:30:13 +0000 (UTC)
-Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 26256C000D;
-	Fri, 18 Jun 2021 07:30:13 +0000 (UTC)
-Received: from smtp1.osuosl.org (smtp1.osuosl.org [140.211.166.138])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 9D40CC000B
- for <iommu@lists.linux-foundation.org>; Fri, 18 Jun 2021 07:30:11 +0000 (UTC)
-Received: from localhost (localhost [127.0.0.1])
- by smtp1.osuosl.org (Postfix) with ESMTP id 9071683AD5
- for <iommu@lists.linux-foundation.org>; Fri, 18 Jun 2021 07:30:11 +0000 (UTC)
+	by smtp1.osuosl.org (Postfix) with ESMTP id 7A00E82BED;
+	Fri, 18 Jun 2021 07:37:30 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
 Received: from smtp1.osuosl.org ([127.0.0.1])
- by localhost (smtp1.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id bg-uuv_ymENc for <iommu@lists.linux-foundation.org>;
- Fri, 18 Jun 2021 07:30:10 +0000 (UTC)
+	by localhost (smtp1.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+	with ESMTP id 97g67-BFtsm8; Fri, 18 Jun 2021 07:37:29 +0000 (UTC)
+Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
+	by smtp1.osuosl.org (Postfix) with ESMTPS id 70093828F5;
+	Fri, 18 Jun 2021 07:37:29 +0000 (UTC)
+Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 29682C000D;
+	Fri, 18 Jun 2021 07:37:29 +0000 (UTC)
+Received: from smtp4.osuosl.org (smtp4.osuosl.org [IPv6:2605:bc80:3010::137])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 5CDFEC000B
+ for <iommu@lists.linux-foundation.org>; Fri, 18 Jun 2021 07:37:27 +0000 (UTC)
+Received: from localhost (localhost [127.0.0.1])
+ by smtp4.osuosl.org (Postfix) with ESMTP id 431BB40412
+ for <iommu@lists.linux-foundation.org>; Fri, 18 Jun 2021 07:37:27 +0000 (UTC)
+X-Virus-Scanned: amavisd-new at osuosl.org
+Received: from smtp4.osuosl.org ([127.0.0.1])
+ by localhost (smtp4.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+ with ESMTP id D68QkauLZbMH for <iommu@lists.linux-foundation.org>;
+ Fri, 18 Jun 2021 07:37:26 +0000 (UTC)
 X-Greylist: domain auto-whitelisted by SQLgrey-1.8.0
-Received: from mga14.intel.com (mga14.intel.com [192.55.52.115])
- by smtp1.osuosl.org (Postfix) with ESMTPS id AE77B83ABE
- for <iommu@lists.linux-foundation.org>; Fri, 18 Jun 2021 07:30:10 +0000 (UTC)
-IronPort-SDR: C02+vyFwY0NTeBeTcvb+59WSUz+m5J0ZTM1ewma/qeUhuXGf0f/B/pk1UdXC2wKPAkw9q0e+YC
- Z+ZoRHGFJ+lA==
-X-IronPort-AV: E=McAfee;i="6200,9189,10018"; a="206329453"
-X-IronPort-AV: E=Sophos;i="5.83,283,1616482800"; d="scan'208";a="206329453"
-Received: from fmsmga008.fm.intel.com ([10.253.24.58])
- by fmsmga103.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384;
- 18 Jun 2021 00:30:09 -0700
-IronPort-SDR: DtvcpqXKRib4nPghAbogwHlPsjrRus/8LU7F7k7RiOl3Tq20r5Q9vDcFtzke1WUdbRZvP5VEgd
- fLBSWcfScBeQ==
-X-IronPort-AV: E=Sophos;i="5.83,283,1616482800"; d="scan'208";a="453064554"
-Received: from blu2-mobl3.ccr.corp.intel.com (HELO [10.254.211.225])
- ([10.254.211.225])
- by fmsmga008-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384;
- 18 Jun 2021 00:30:08 -0700
-Subject: Re: [bug report] iommu/vt-d: Allocate/register iopf queue for sva
- devices
-To: Dan Carpenter <dan.carpenter@oracle.com>
-References: <YMxDc2Wtn+sMAYDj@mwanda>
-From: Lu Baolu <baolu.lu@linux.intel.com>
-Message-ID: <e45d5d5e-2eb3-08c1-3f43-d7ae314ea103@linux.intel.com>
-Date: Fri, 18 Jun 2021 15:30:06 +0800
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:78.0) Gecko/20100101
- Thunderbird/78.11.0
+Received: from frasgout.his.huawei.com (frasgout.his.huawei.com
+ [185.176.79.56])
+ by smtp4.osuosl.org (Postfix) with ESMTPS id D9118403F2
+ for <iommu@lists.linux-foundation.org>; Fri, 18 Jun 2021 07:37:25 +0000 (UTC)
+Received: from fraeml712-chm.china.huawei.com (unknown [172.18.147.200])
+ by frasgout.his.huawei.com (SkyGuard) with ESMTP id 4G5r5Q1d3Jz6GB6f;
+ Fri, 18 Jun 2021 15:24:10 +0800 (CST)
+Received: from lhreml724-chm.china.huawei.com (10.201.108.75) by
+ fraeml712-chm.china.huawei.com (10.206.15.61) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2176.2; Fri, 18 Jun 2021 09:37:22 +0200
+Received: from [10.47.95.81] (10.47.95.81) by lhreml724-chm.china.huawei.com
+ (10.201.108.75) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2176.2; Fri, 18 Jun
+ 2021 08:37:21 +0100
+Subject: Re: [PATCH v13 4/6] iommu/vt-d: Add support for IOMMU default DMA
+ mode build options
+To: Lu Baolu <baolu.lu@linux.intel.com>, <joro@8bytes.org>, <will@kernel.org>, 
+ <dwmw2@infradead.org>, <robin.murphy@arm.com>, <corbet@lwn.net>
+References: <1623841437-211832-1-git-send-email-john.garry@huawei.com>
+ <1623841437-211832-5-git-send-email-john.garry@huawei.com>
+ <46dbce5c-1c2b-60d4-df56-d2b95a959425@linux.intel.com>
+ <f3fe6c4b-f360-ab7b-7ad2-ced63269499d@huawei.com>
+ <d53a6472-4628-313e-30a5-f76e016c9cb9@linux.intel.com>
+From: John Garry <john.garry@huawei.com>
+Message-ID: <b654480e-d5ac-9e4c-1074-1158cccc5806@huawei.com>
+Date: Fri, 18 Jun 2021 08:31:05 +0100
+User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; rv:68.0) Gecko/20100101
+ Thunderbird/68.1.2
 MIME-Version: 1.0
-In-Reply-To: <YMxDc2Wtn+sMAYDj@mwanda>
+In-Reply-To: <d53a6472-4628-313e-30a5-f76e016c9cb9@linux.intel.com>
 Content-Language: en-US
-Cc: iommu@lists.linux-foundation.org
+X-Originating-IP: [10.47.95.81]
+X-ClientProxiedBy: lhreml743-chm.china.huawei.com (10.201.108.193) To
+ lhreml724-chm.china.huawei.com (10.201.108.75)
+X-CFilter-Loop: Reflected
+Cc: linux-doc@vger.kernel.org, linux-kernel@vger.kernel.org,
+ linuxarm@huawei.com, iommu@lists.linux-foundation.org
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -84,68 +92,30 @@ List-Post: <mailto:iommu@lists.linux-foundation.org>
 List-Help: <mailto:iommu-request@lists.linux-foundation.org?subject=help>
 List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
  <mailto:iommu-request@lists.linux-foundation.org?subject=subscribe>
-Content-Transfer-Encoding: 7bit
-Content-Type: text/plain; charset="us-ascii"; Format="flowed"
+Content-Transfer-Encoding: base64
+Content-Type: text/plain; charset="utf-8"; Format="flowed"
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-Thanks for letting me know this. We already have a fix in linux-next.
-
-commit 90141a0fb72340937ed9ec05301cc548901d8eec
-Author: Colin Ian King <colin.king@canonical.com>
-Date:   Fri Jun 11 14:50:24 2021 +0100
-
-     iommu/vt-d: Fix dereference of pointer info before it is null checked
-
-     The assignment of iommu from info->iommu occurs before info is null 
-checked
-     hence leading to a potential null pointer dereference issue. Fix 
-this by
-     assigning iommu and checking if iommu is null after null checking info.
-
-     Fixes: 4c82b88696ac ("iommu/vt-d: Allocate/register iopf queue for 
-sva devices")
-     Signed-off-by: Colin Ian King <colin.king@canonical.com>
-     Addresses-Coverity: ("Dereference before null check")
-     Link: 
-https://lore.kernel.org/r/20210611135024.32781-1-colin.king@canonical.com
-     Signed-off-by: Lu Baolu <baolu.lu@linux.intel.com>
-
-Best regards,
-baolu
-
-On 2021/6/18 14:55, Dan Carpenter wrote:
-> Hello Lu Baolu,
-> 
-> This is a semi-automatic email about new static checker warnings.
-> 
-> The patch 4c82b88696ac: "iommu/vt-d: Allocate/register iopf queue for
-> sva devices" from Jun 10, 2021, leads to the following Smatch
-> complaint:
-> 
->      drivers/iommu/intel/iommu.c:5335 intel_iommu_enable_sva()
->      warn: variable dereferenced before check 'info' (see line 5332)
-> 
-> drivers/iommu/intel/iommu.c
->    5331		struct device_domain_info *info = get_domain_info(dev);
->    5332		struct intel_iommu *iommu = info->iommu;
->                                              ^^^^^^^^^^^
-> Dereferenced
-> 
->    5333		int ret;
->    5334	
->    5335		if (!info || !iommu || dmar_disabled)
->                      ^^^^^
-> Checked too late.  <dramatic prairie dog.gif>
-> 
-> 
->    5336			return -EINVAL;
->    5337	
-> 
-> regards,
-> dan carpenter
-> 
-_______________________________________________
-iommu mailing list
-iommu@lists.linux-foundation.org
-https://lists.linuxfoundation.org/mailman/listinfo/iommu
+T24gMTgvMDYvMjAyMSAwMjo0NiwgTHUgQmFvbHUgd3JvdGU6CgpIaSBiYW9sdSwKCj4+IEkgbmVl
+ZCB0byBjaGFuZ2UgdGhhdC4gSG93IGFib3V0IHRoaXM6Cj4+Cj4+IGJvb2wgcHJpbnRfd2Fybmlu
+ZyA9IGZhbHNlOwo+Pgo+PiBmb3JfZWFjaF9hY3RpdmVfaW9tbXUoaW9tbXUsIGRyaGQpIHsKPj4g
+wqDCoMKgwqDCoC8qCj4+IMKgwqDCoMKgwqAgKiBUaGUgZmx1c2ggcXVldWUgaW1wbGVtZW50YXRp
+b24gZG9lcyBub3QgcGVyZm9ybQo+PiDCoMKgwqDCoMKgICogcGFnZS1zZWxlY3RpdmUgaW52YWxp
+ZGF0aW9ucyB0aGF0IGFyZSByZXF1aXJlZCBmb3IgZWZmaWNpZW50Cj4+IMKgwqDCoMKgwqAgKiBU
+TEIgZmx1c2hlcyBpbiB2aXJ0dWFsIGVudmlyb25tZW50cy7CoCBUaGUgYmVuZWZpdCBvZiBiYXRj
+aGluZwo+PiDCoMKgwqDCoMKgICogaXMgbGlrZWx5IHRvIGJlIG11Y2ggbG93ZXIgdGhhbiB0aGUg
+b3ZlcmhlYWQgb2Ygc3luY2hyb25pemluZwo+PiDCoMKgwqDCoMKgICogdGhlIHZpcnR1YWwgYW5k
+IHBoeXNpY2FsIElPTU1VIHBhZ2UtdGFibGVzLgo+PiDCoMKgwqDCoMKgICovCj4+IMKgwqDCoMKg
+wqBpZiAoIXByaW50X3dhcm5pbmcgJiYgY2FwX2NhY2hpbmdfbW9kZShpb21tdS0+Y2FwKSkgewo+
+PiDCoMKgwqDCoMKgwqDCoMKgIHByX3dhcm4oIklPTU1VIGJhdGNoaW5nIGRpc2FsbG93ZWQgZHVl
+IHRvIHZpcnR1YWxpemF0aW9uXG4iKTsKPj4gwqDCoMKgwqDCoMKgwqDCoCBpb21tdV9zZXRfZG1h
+X3N0cmljdCh0cnVlKTsKPj4gwqDCoMKgwqDCoMKgwqDCoCBwcmludF93YXJuaW5nID0gdHJ1ZTsK
+Pj4gwqDCoMKgwqDCoH0KPj4gwqDCoMKgwqDCoC4uLgo+PiB9Cj4+Cj4+IG9yIHVzZSBwcl93YXJu
+X29uY2UoKS4KPiAKPiAgRnJvbSBteSBwLm8udiwgcHJfeHh4eF9vbmNlKCkgaXMgYmV0dGVyLgo+
+IAo+IEhvdyBhYm91dCB1c2luZyBhIHByX2luZm9fb25jZSgpPyBJIGRvbid0IHRoaW5rIGl0J3Mg
+YSB3YXJuaW5nLCBpdCdzCj4ganVzdCBhIHBvbGljeSBjaG9pY2UgaW4gVk0gZW52aXJvbm1lbnQu
+CgpvaywgSSBjYW4gZ28gd2l0aCB0aGF0LCB3aGljaCBSb2JpbiBtb3N0bHkgYWdyZWVzIHdpdGgu
+CgpUaGFua3MsCkpvaG4KX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19f
+X19fX18KaW9tbXUgbWFpbGluZyBsaXN0CmlvbW11QGxpc3RzLmxpbnV4LWZvdW5kYXRpb24ub3Jn
+Cmh0dHBzOi8vbGlzdHMubGludXhmb3VuZGF0aW9uLm9yZy9tYWlsbWFuL2xpc3RpbmZvL2lvbW11
