@@ -2,89 +2,124 @@ Return-Path: <SRS0=sMz+=LM=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-5.5 required=3.0 tests=BAYES_00,
-	HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,NICE_REPLY_A,SPF_HELO_NONE,
-	SPF_PASS,URIBL_BLOCKED,USER_AGENT_SANE_1 autolearn=no autolearn_force=no
-	version=3.4.0
+X-Spam-Status: No, score=-13.6 required=3.0 tests=BAYES_00,DKIM_INVALID,
+	DKIM_SIGNED,HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_CR_TRAILER,INCLUDES_PATCH,
+	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED autolearn=ham
+	autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 26273C48BDF
-	for <iommu@archiver.kernel.org>; Fri, 18 Jun 2021 05:23:29 +0000 (UTC)
-Received: from smtp2.osuosl.org (smtp2.osuosl.org [140.211.166.133])
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1BB01C48BDF
+	for <iommu@archiver.kernel.org>; Fri, 18 Jun 2021 06:25:55 +0000 (UTC)
+Received: from smtp3.osuosl.org (smtp3.osuosl.org [140.211.166.136])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id AC05A60C40
-	for <iommu@archiver.kernel.org>; Fri, 18 Jun 2021 05:23:28 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org AC05A60C40
-Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=linux.intel.com
+	by mail.kernel.org (Postfix) with ESMTPS id A752061209
+	for <iommu@archiver.kernel.org>; Fri, 18 Jun 2021 06:25:54 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org A752061209
+Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=chromium.org
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by smtp2.osuosl.org (Postfix) with ESMTP id 5EBE240146;
-	Fri, 18 Jun 2021 05:23:28 +0000 (UTC)
+	by smtp3.osuosl.org (Postfix) with ESMTP id 60B7A60605;
+	Fri, 18 Jun 2021 06:25:54 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from smtp2.osuosl.org ([127.0.0.1])
-	by localhost (smtp2.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id 6f8ktrJSki0Q; Fri, 18 Jun 2021 05:23:27 +0000 (UTC)
-Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [IPv6:2605:bc80:3010:104::8cd3:938])
-	by smtp2.osuosl.org (Postfix) with ESMTPS id 475FE40003;
-	Fri, 18 Jun 2021 05:23:27 +0000 (UTC)
+Received: from smtp3.osuosl.org ([127.0.0.1])
+	by localhost (smtp3.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+	with ESMTP id BlBOY9j10cFv; Fri, 18 Jun 2021 06:25:53 +0000 (UTC)
+Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
+	by smtp3.osuosl.org (Postfix) with ESMTPS id 25870605EC;
+	Fri, 18 Jun 2021 06:25:53 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 18655C000D;
-	Fri, 18 Jun 2021 05:23:27 +0000 (UTC)
-Received: from smtp4.osuosl.org (smtp4.osuosl.org [IPv6:2605:bc80:3010::137])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 2EE80C000B
- for <iommu@lists.linux-foundation.org>; Fri, 18 Jun 2021 05:23:25 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 04CE7C000D;
+	Fri, 18 Jun 2021 06:25:53 +0000 (UTC)
+Received: from smtp1.osuosl.org (smtp1.osuosl.org [140.211.166.138])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 4FE2AC000B
+ for <iommu@lists.linux-foundation.org>; Fri, 18 Jun 2021 06:25:52 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by smtp4.osuosl.org (Postfix) with ESMTP id 143C5414C6
- for <iommu@lists.linux-foundation.org>; Fri, 18 Jun 2021 05:23:25 +0000 (UTC)
+ by smtp1.osuosl.org (Postfix) with ESMTP id 4342283CB0
+ for <iommu@lists.linux-foundation.org>; Fri, 18 Jun 2021 06:25:52 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from smtp4.osuosl.org ([127.0.0.1])
- by localhost (smtp4.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id BrHYPaoDC014 for <iommu@lists.linux-foundation.org>;
- Fri, 18 Jun 2021 05:23:23 +0000 (UTC)
-X-Greylist: domain auto-whitelisted by SQLgrey-1.8.0
-Received: from mga11.intel.com (mga11.intel.com [192.55.52.93])
- by smtp4.osuosl.org (Postfix) with ESMTPS id B5CEA40409
- for <iommu@lists.linux-foundation.org>; Fri, 18 Jun 2021 05:23:22 +0000 (UTC)
-IronPort-SDR: ou5nSDm7glyqDlTsgKxCifFfPJtXNESkWqir4wyWTO9es6mU8RUK0XsUvQ0XSQSAS9ifM/g4ff
- CxkT6zNT3FFg==
-X-IronPort-AV: E=McAfee;i="6200,9189,10018"; a="203474710"
-X-IronPort-AV: E=Sophos;i="5.83,283,1616482800"; d="scan'208";a="203474710"
-Received: from fmsmga001.fm.intel.com ([10.253.24.23])
- by fmsmga102.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384;
- 17 Jun 2021 22:23:21 -0700
-IronPort-SDR: 4NGXo4KjN3kz+xI8wopVyXJfV6B9U5dgiyrFssRbBVsZnBC+5BLY00MKKQNFZOy06EeRcJ8FJr
- 9RnOGfuyridQ==
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.83,283,1616482800"; d="scan'208";a="555469079"
-Received: from allen-box.sh.intel.com (HELO [10.239.159.118])
- ([10.239.159.118])
- by fmsmga001.fm.intel.com with ESMTP; 17 Jun 2021 22:23:16 -0700
-Subject: Re: Plan for /dev/ioasid RFC v2
-To: David Gibson <david@gibson.dropbear.id.au>
-References: <MWHPR11MB188699D0B9C10EB51686C4138C389@MWHPR11MB1886.namprd11.prod.outlook.com>
- <YMCy48Xnt/aphfh3@8bytes.org> <20210609123919.GA1002214@nvidia.com>
- <14d884a8-13bc-b2ba-7020-94b219e3e2d9@linux.intel.com>
- <YMrcLcTL+cUKd1a5@yekko>
-From: Lu Baolu <baolu.lu@linux.intel.com>
-Message-ID: <b9c48526-8b8f-ff9e-4ece-4a39f476e3b7@linux.intel.com>
-Date: Fri, 18 Jun 2021 13:21:47 +0800
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
- Thunderbird/78.8.1
+Authentication-Results: smtp1.osuosl.org (amavisd-new);
+ dkim=pass (1024-bit key) header.d=chromium.org
+Received: from smtp1.osuosl.org ([127.0.0.1])
+ by localhost (smtp1.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+ with ESMTP id QkGY6oWtbhRv for <iommu@lists.linux-foundation.org>;
+ Fri, 18 Jun 2021 06:25:51 +0000 (UTC)
+X-Greylist: whitelisted by SQLgrey-1.8.0
+Received: from mail-il1-x136.google.com (mail-il1-x136.google.com
+ [IPv6:2607:f8b0:4864:20::136])
+ by smtp1.osuosl.org (Postfix) with ESMTPS id 1042483C79
+ for <iommu@lists.linux-foundation.org>; Fri, 18 Jun 2021 06:25:50 +0000 (UTC)
+Received: by mail-il1-x136.google.com with SMTP id a11so786448ilf.2
+ for <iommu@lists.linux-foundation.org>; Thu, 17 Jun 2021 23:25:50 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=chromium.org; s=google;
+ h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+ :cc; bh=K4gmwVrd4ipCgh7Pt4U3qK6zM5RZFqVsfT+5m/JaTNY=;
+ b=b3TOMvQ1kXF7QuAFyHdOkvmT8LXOEbUEDAbnT1VD77ESf6dWqJqkel2pij6H8qazUH
+ qeKiHzooTElNu69H2pMv9jI9D4woaiXlDH7E4nc1glsurOz9EYewwC9YHW+cnkiHTax7
+ tbypLVBnZif7y60KH97lEwI+rEiH+ILoO0+Go=
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+ d=1e100.net; s=20161025;
+ h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+ :message-id:subject:to:cc;
+ bh=K4gmwVrd4ipCgh7Pt4U3qK6zM5RZFqVsfT+5m/JaTNY=;
+ b=Uaeh5sKB6X24Ens/k7kEUXwsZB+744ul9R/+z64aRVFtZmjWljAUQTFWAhZ+3nUQVG
+ vj7EumXRC9l8973gD7bn1tSFiVU29msBzYcjodQnRwwL6fd9eIjf6ns2045y4vvN+4z7
+ UCaIanPJjaDKq3Nc0Km3KB77mTUe5h8pejPLvV5EP03gG0VtuIjd4HIN+/dYNVzJl7Vf
+ eROTueeO8mL1g8+jltEPCU0w5kn2EsEcnJ3zyBo1MKYMCcZzb8NMr6LH7f6H2IuSgWto
+ usSLYUvZ3H2zTgh9aBlZanv65JFEmZgE4xLz0c55iywBAlqSAGbuafzgCWAFy9msVhr9
+ jhFQ==
+X-Gm-Message-State: AOAM530aqUBd4p4VwnbzTqwdTho0UX2W9c8NzXfP+/bZE12yfHjxjh/j
+ 4zDTxCkNHgOLcbCAvxkjC+ncdV4OhhbhCQ==
+X-Google-Smtp-Source: ABdhPJz7Zg0CX2LqLdVSHofDmqYnKe5M3FcsG62lapWqqpwluTkuWKRN+4PswP/q6c87iFepbjWvcg==
+X-Received: by 2002:a05:6e02:e85:: with SMTP id
+ t5mr6052451ilj.65.1623997549857; 
+ Thu, 17 Jun 2021 23:25:49 -0700 (PDT)
+Received: from mail-io1-f54.google.com (mail-io1-f54.google.com.
+ [209.85.166.54])
+ by smtp.gmail.com with ESMTPSA id a22sm3980776iot.37.2021.06.17.23.25.48
+ for <iommu@lists.linux-foundation.org>
+ (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+ Thu, 17 Jun 2021 23:25:49 -0700 (PDT)
+Received: by mail-io1-f54.google.com with SMTP id k5so5833745iow.12
+ for <iommu@lists.linux-foundation.org>; Thu, 17 Jun 2021 23:25:48 -0700 (PDT)
+X-Received: by 2002:a02:384b:: with SMTP id v11mr1842282jae.90.1623997548077; 
+ Thu, 17 Jun 2021 23:25:48 -0700 (PDT)
 MIME-Version: 1.0
-In-Reply-To: <YMrcLcTL+cUKd1a5@yekko>
-Content-Language: en-US
-Cc: "kvm@vger.kernel.org" <kvm@vger.kernel.org>,
- Jason Wang <jasowang@redhat.com>, Kirti Wankhede <kwankhede@nvidia.com>,
- Jean-Philippe Brucker <jean-philippe@linaro.org>, "Jiang,
- Dave" <dave.jiang@intel.com>, "Raj, Ashok" <ashok.raj@intel.com>,
- Jonathan Corbet <corbet@lwn.net>, Jason Gunthorpe <jgg@nvidia.com>, "Tian,
- Kevin" <kevin.tian@intel.com>, "parav@mellanox.com" <parav@mellanox.com>,
- "Alex Williamson \(alex.williamson@redhat.com\)" <alex.williamson@redhat.com>,
- "Enrico Weigelt, metux IT consult" <lkml@metux.net>,
- David Woodhouse <dwmw2@infradead.org>, LKML <linux-kernel@vger.kernel.org>,
- Shenming Lu <lushenming@huawei.com>,
- "iommu@lists.linux-foundation.org" <iommu@lists.linux-foundation.org>,
- Paolo Bonzini <pbonzini@redhat.com>, Robin Murphy <robin.murphy@arm.com>
+References: <20210617062635.1660944-1-tientzu@chromium.org>
+ <20210617062635.1660944-2-tientzu@chromium.org>
+ <alpine.DEB.2.21.2106171434480.24906@sstabellini-ThinkPad-T480s>
+In-Reply-To: <alpine.DEB.2.21.2106171434480.24906@sstabellini-ThinkPad-T480s>
+From: Claire Chang <tientzu@chromium.org>
+Date: Fri, 18 Jun 2021 14:25:37 +0800
+X-Gmail-Original-Message-ID: <CALiNf29SJ0jXirWVDhJw4BUNvkjUeGPyGNJK9m8c30OPX41=5Q@mail.gmail.com>
+Message-ID: <CALiNf29SJ0jXirWVDhJw4BUNvkjUeGPyGNJK9m8c30OPX41=5Q@mail.gmail.com>
+Subject: Re: [PATCH v13 01/12] swiotlb: Refactor swiotlb init functions
+To: Stefano Stabellini <sstabellini@kernel.org>
+Cc: heikki.krogerus@linux.intel.com, thomas.hellstrom@linux.intel.com,
+ peterz@infradead.org, benh@kernel.crashing.org,
+ joonas.lahtinen@linux.intel.com, dri-devel@lists.freedesktop.org,
+ chris@chris-wilson.co.uk, grant.likely@arm.com, paulus@samba.org,
+ Frank Rowand <frowand.list@gmail.com>, mingo@kernel.org,
+ Nicolas Boichat <drinkcat@chromium.org>,
+ Saravana Kannan <saravanak@google.com>, mpe@ellerman.id.au,
+ "Rafael J . Wysocki" <rafael.j.wysocki@intel.com>,
+ Christoph Hellwig <hch@lst.de>,
+ Bartosz Golaszewski <bgolaszewski@baylibre.com>, bskeggs@redhat.com,
+ linux-pci@vger.kernel.org, xen-devel@lists.xenproject.org,
+ Thierry Reding <treding@nvidia.com>, intel-gfx@lists.freedesktop.org,
+ matthew.auld@intel.com, linux-devicetree <devicetree@vger.kernel.org>,
+ Jianxiong Gao <jxgao@google.com>, Daniel Vetter <daniel@ffwll.ch>,
+ Will Deacon <will@kernel.org>, Konrad Rzeszutek Wilk <konrad.wilk@oracle.com>,
+ maarten.lankhorst@linux.intel.com, airlied@linux.ie,
+ Dan Williams <dan.j.williams@intel.com>, linuxppc-dev@lists.ozlabs.org,
+ jani.nikula@linux.intel.com, Rob Herring <robh+dt@kernel.org>,
+ rodrigo.vivi@intel.com, Bjorn Helgaas <bhelgaas@google.com>,
+ boris.ostrovsky@oracle.com,
+ Andy Shevchenko <andriy.shevchenko@linux.intel.com>, jgross@suse.com,
+ Greg KH <gregkh@linuxfoundation.org>, Randy Dunlap <rdunlap@infradead.org>,
+ lkml <linux-kernel@vger.kernel.org>,
+ "list@263.net:IOMMU DRIVERS" <iommu@lists.linux-foundation.org>,
+ Jim Quinlan <james.quinlan@broadcom.com>, xypron.glpk@gmx.de,
+ Robin Murphy <robin.murphy@arm.com>, bauerman@linux.ibm.com
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -97,82 +132,125 @@ List-Post: <mailto:iommu@lists.linux-foundation.org>
 List-Help: <mailto:iommu-request@lists.linux-foundation.org?subject=help>
 List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
  <mailto:iommu-request@lists.linux-foundation.org?subject=subscribe>
+Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
-Content-Type: text/plain; charset="us-ascii"; Format="flowed"
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-Hi David,
+On Fri, Jun 18, 2021 at 7:30 AM Stefano Stabellini
+<sstabellini@kernel.org> wrote:
+>
+> On Thu, 17 Jun 2021, Claire Chang wrote:
+> > Add a new function, swiotlb_init_io_tlb_mem, for the io_tlb_mem struct
+> > initialization to make the code reusable.
+> >
+> > Signed-off-by: Claire Chang <tientzu@chromium.org>
+> > Reviewed-by: Christoph Hellwig <hch@lst.de>
+> > Tested-by: Stefano Stabellini <sstabellini@kernel.org>
+> > Tested-by: Will Deacon <will@kernel.org>
+> > ---
+> >  kernel/dma/swiotlb.c | 50 ++++++++++++++++++++++----------------------
+> >  1 file changed, 25 insertions(+), 25 deletions(-)
+> >
+> > diff --git a/kernel/dma/swiotlb.c b/kernel/dma/swiotlb.c
+> > index 52e2ac526757..47bb2a766798 100644
+> > --- a/kernel/dma/swiotlb.c
+> > +++ b/kernel/dma/swiotlb.c
+> > @@ -168,9 +168,28 @@ void __init swiotlb_update_mem_attributes(void)
+> >       memset(vaddr, 0, bytes);
+> >  }
+> >
+> > -int __init swiotlb_init_with_tbl(char *tlb, unsigned long nslabs, int verbose)
+> > +static void swiotlb_init_io_tlb_mem(struct io_tlb_mem *mem, phys_addr_t start,
+> > +                                 unsigned long nslabs, bool late_alloc)
+> >  {
+> > +     void *vaddr = phys_to_virt(start);
+> >       unsigned long bytes = nslabs << IO_TLB_SHIFT, i;
+> > +
+> > +     mem->nslabs = nslabs;
+> > +     mem->start = start;
+> > +     mem->end = mem->start + bytes;
+> > +     mem->index = 0;
+> > +     mem->late_alloc = late_alloc;
+> > +     spin_lock_init(&mem->lock);
+> > +     for (i = 0; i < mem->nslabs; i++) {
+> > +             mem->slots[i].list = IO_TLB_SEGSIZE - io_tlb_offset(i);
+> > +             mem->slots[i].orig_addr = INVALID_PHYS_ADDR;
+> > +             mem->slots[i].alloc_size = 0;
+> > +     }
+> > +     memset(vaddr, 0, bytes);
+> > +}
+> > +
+> > +int __init swiotlb_init_with_tbl(char *tlb, unsigned long nslabs, int verbose)
+> > +{
+> >       struct io_tlb_mem *mem;
+> >       size_t alloc_size;
+> >
+> > @@ -186,16 +205,8 @@ int __init swiotlb_init_with_tbl(char *tlb, unsigned long nslabs, int verbose)
+> >       if (!mem)
+> >               panic("%s: Failed to allocate %zu bytes align=0x%lx\n",
+> >                     __func__, alloc_size, PAGE_SIZE);
+> > -     mem->nslabs = nslabs;
+> > -     mem->start = __pa(tlb);
+> > -     mem->end = mem->start + bytes;
+> > -     mem->index = 0;
+> > -     spin_lock_init(&mem->lock);
+> > -     for (i = 0; i < mem->nslabs; i++) {
+> > -             mem->slots[i].list = IO_TLB_SEGSIZE - io_tlb_offset(i);
+> > -             mem->slots[i].orig_addr = INVALID_PHYS_ADDR;
+> > -             mem->slots[i].alloc_size = 0;
+> > -     }
+> > +
+> > +     swiotlb_init_io_tlb_mem(mem, __pa(tlb), nslabs, false);
+> >
+> >       io_tlb_default_mem = mem;
+> >       if (verbose)
+> > @@ -282,8 +293,8 @@ swiotlb_late_init_with_default_size(size_t default_size)
+> >  int
+> >  swiotlb_late_init_with_tbl(char *tlb, unsigned long nslabs)
+> >  {
+> > -     unsigned long bytes = nslabs << IO_TLB_SHIFT, i;
+> >       struct io_tlb_mem *mem;
+> > +     unsigned long bytes = nslabs << IO_TLB_SHIFT;
+> >
+> >       if (swiotlb_force == SWIOTLB_NO_FORCE)
+> >               return 0;
+> > @@ -297,20 +308,9 @@ swiotlb_late_init_with_tbl(char *tlb, unsigned long nslabs)
+> >       if (!mem)
+> >               return -ENOMEM;
+> >
+> > -     mem->nslabs = nslabs;
+> > -     mem->start = virt_to_phys(tlb);
+> > -     mem->end = mem->start + bytes;
+> > -     mem->index = 0;
+> > -     mem->late_alloc = 1;
+> > -     spin_lock_init(&mem->lock);
+> > -     for (i = 0; i < mem->nslabs; i++) {
+> > -             mem->slots[i].list = IO_TLB_SEGSIZE - io_tlb_offset(i);
+> > -             mem->slots[i].orig_addr = INVALID_PHYS_ADDR;
+> > -             mem->slots[i].alloc_size = 0;
+> > -     }
+> > -
+> > +     memset(mem, 0, sizeof(*mem));
+> > +     swiotlb_init_io_tlb_mem(mem, virt_to_phys(tlb), nslabs, true);
+> >       set_memory_decrypted((unsigned long)tlb, bytes >> PAGE_SHIFT);
+> > -     memset(tlb, 0, bytes);
+>
+> This is good for swiotlb_late_init_with_tbl. However I have just noticed
+> that mem could also be allocated from swiotlb_init_with_tbl, in which
+> case the zeroing is missing. I think we need another memset in
+> swiotlb_init_with_tbl as well. Or maybe it could be better to have a
+> single memset at the beginning of swiotlb_init_io_tlb_mem instead. Up to
+> you.
 
-On 6/17/21 1:22 PM, David Gibson wrote:
->> The iommu_group can guarantee the isolation among different physical
->> devices (represented by RIDs). But when it comes to sub-devices (ex. mdev or
->> vDPA devices represented by RID + SSID), we have to rely on the
->> device driver for isolation. The devices which are able to generate sub-
->> devices should either use their own on-device mechanisms or use the
->> platform features like Intel Scalable IOV to isolate the sub-devices.
-> This seems like a misunderstanding of groups.  Groups are not tied to
-> any PCI meaning.  Groups are the smallest unit of isolation, no matter
-> what is providing that isolation.
-> 
-> If mdevs are isolated from each other by clever software, even though
-> they're on the same PCI device they are in different groups from each
-> other*by definition*.  They are also in a different group from their
-> parent device (however the mdevs only exist when mdev driver is
-> active, which implies that the parent device's group is owned by the
-> kernel).
+swiotlb_init_with_tbl uses memblock_alloc to allocate the io_tlb_mem
+and memblock_alloc[1] will do memset in memblock_alloc_try_nid[2], so
+swiotlb_init_with_tbl is also good.
+I'm happy to add the memset in swiotlb_init_io_tlb_mem if you think
+it's clearer and safer.
 
-
-You are right. This is also my understanding of an "isolation group".
-
-But, as I understand it, iommu_group is only the isolation group visible
-to IOMMU. When we talk about sub-devices (sw-mdev or mdev w/ pasid),
-only the device and device driver knows the details of isolation, hence
-iommu_group could not be extended to cover them. The device drivers
-should define their own isolation groups.
-
-Otherwise, the device driver has to fake an iommu_group and add hacky
-code to link the related IOMMU elements (iommu device, domain, group
-etc.) together. Actually this is part of the problem that this proposal
-tries to solve.
-
-> 
->> Under above conditions, different sub-device from a same RID device
->> could be able to use different IOASID. This seems to means that we can't
->> support mixed mode where, for example, two RIDs share an iommu_group and
->> one (or both) of them have sub-devices.
-> That doesn't necessarily follow.  mdevs which can be successfully
-> isolated by their mdev driver are in a different group from their
-> parent device, and therefore need not be affected by whether the
-> parent device shares a group with some other physical device.  They
-> *might*  be, but that's up to the mdev driver to determine based on
-> what it can safely isolate.
-> 
-
-If we understand it as multiple levels of isolation, can we classify the
-devices into the following categories?
-
-1) Legacy devices
-    - devices without device-level isolation
-    - multiple devices could sit in a single iommu_group
-    - only a single I/O address space could be bound to IOMMU
-
-2) Modern devices
-    - devices capable of device-level isolation
-    - able to have subdevices
-    - self-isolated, hence not share iommu_group with others
-    - multiple I/O address spaces could be bound to IOMMU
-
-For 1), all devices in an iommu_group should be bound to a single
-IOASID; The isolation is guaranteed by an iommu_group.
-
-For 2) a single device could be bound to multiple IOASIDs with each sub-
-device corresponding to an IOASID. The isolation of each subdevice is
-guaranteed by the device driver.
-
-Best regards,
-baolu
-
+[1] https://elixir.bootlin.com/linux/v5.13-rc6/source/include/linux/memblock.h#L407
+[2] https://elixir.bootlin.com/linux/v5.13-rc6/source/mm/memblock.c#L1555
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
