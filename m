@@ -2,174 +2,74 @@ Return-Path: <SRS0=sMz+=LM=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-16.5 required=3.0 tests=BAYES_00,DKIM_INVALID,
-	DKIM_SIGNED,HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_CR_TRAILER,INCLUDES_PATCH,
-	MAILING_LIST_MULTI,MSGID_FROM_MTA_HEADER,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,
-	USER_AGENT_GIT autolearn=unavailable autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-5.5 required=3.0 tests=BAYES_00,
+	HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,NICE_REPLY_A,SPF_HELO_NONE,
+	URIBL_BLOCKED,USER_AGENT_SANE_1 autolearn=no autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 68560C48BE8
-	for <iommu@archiver.kernel.org>; Fri, 18 Jun 2021 09:13:10 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0A461C49EA3
+	for <iommu@archiver.kernel.org>; Fri, 18 Jun 2021 09:16:33 +0000 (UTC)
 Received: from smtp3.osuosl.org (smtp3.osuosl.org [140.211.166.136])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 1C884613ED
-	for <iommu@archiver.kernel.org>; Fri, 18 Jun 2021 09:13:10 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 1C884613ED
-Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=windriver.com
+	by mail.kernel.org (Postfix) with ESMTPS id AF05C613D6
+	for <iommu@archiver.kernel.org>; Fri, 18 Jun 2021 09:16:32 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org AF05C613D6
+Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=arm.com
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by smtp3.osuosl.org (Postfix) with ESMTP id E2B98606CF;
-	Fri, 18 Jun 2021 09:13:09 +0000 (UTC)
+	by smtp3.osuosl.org (Postfix) with ESMTP id 73308605E5;
+	Fri, 18 Jun 2021 09:16:32 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
 Received: from smtp3.osuosl.org ([127.0.0.1])
 	by localhost (smtp3.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id mENZ23YZcsCH; Fri, 18 Jun 2021 09:13:09 +0000 (UTC)
-Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [IPv6:2605:bc80:3010:104::8cd3:938])
-	by smtp3.osuosl.org (Postfix) with ESMTPS id C3DB360755;
-	Fri, 18 Jun 2021 09:13:08 +0000 (UTC)
+	with ESMTP id GEJWJuiD2tOA; Fri, 18 Jun 2021 09:16:31 +0000 (UTC)
+Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
+	by smtp3.osuosl.org (Postfix) with ESMTPS id 5983260633;
+	Fri, 18 Jun 2021 09:16:31 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 08886C0027;
-	Fri, 18 Jun 2021 09:13:08 +0000 (UTC)
-Received: from smtp2.osuosl.org (smtp2.osuosl.org [IPv6:2605:bc80:3010::133])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 8F5E8C000B;
- Fri, 18 Jun 2021 09:13:06 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id BBE91C0023;
+	Fri, 18 Jun 2021 09:16:30 +0000 (UTC)
+Received: from smtp4.osuosl.org (smtp4.osuosl.org [140.211.166.137])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 7BD7DC000B;
+ Fri, 18 Jun 2021 09:16:29 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by smtp2.osuosl.org (Postfix) with ESMTP id 700384016A;
- Fri, 18 Jun 2021 09:13:06 +0000 (UTC)
+ by smtp4.osuosl.org (Postfix) with ESMTP id 68AF940661;
+ Fri, 18 Jun 2021 09:16:29 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Authentication-Results: smtp2.osuosl.org (amavisd-new);
- dkim=pass (1024-bit key) header.d=windriversystems.onmicrosoft.com
-Received: from smtp2.osuosl.org ([127.0.0.1])
- by localhost (smtp2.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id DC-yJp0SwI21; Fri, 18 Jun 2021 09:13:05 +0000 (UTC)
-X-Greylist: delayed 00:25:45 by SQLgrey-1.8.0
-X-Greylist: from auto-whitelisted by SQLgrey-1.8.0
-Received: from mx0b-0064b401.pphosted.com (mx0b-0064b401.pphosted.com
- [205.220.178.238])
- by smtp2.osuosl.org (Postfix) with ESMTPS id 4723740201;
- Fri, 18 Jun 2021 09:13:05 +0000 (UTC)
-Received: from pps.filterd (m0250811.ppops.net [127.0.0.1])
- by mx0a-0064b401.pphosted.com (8.16.0.43/8.16.0.43) with SMTP id
- 15I8hEvu030536; Fri, 18 Jun 2021 08:47:12 GMT
-Received: from nam11-dm6-obe.outbound.protection.outlook.com
- (mail-dm6nam11lp2172.outbound.protection.outlook.com [104.47.57.172])
- by mx0a-0064b401.pphosted.com with ESMTP id 398k62r5kx-1
- (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
- Fri, 18 Jun 2021 08:47:12 +0000
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=T5bxhVWe+i8oTty2OWQrSl4pjO4DrR5HcROBWf0sm/9GeBGgKIuGFSXCX+lifrmvi1BbnNlVJKbgrowPpMmydqJROmEdjOOpv1Ahwh6eP6c99ffeiTzQhHhN7Kk2oIb/dQ4jFJweg7RuCJ1O/Dj4VryMwWbdVfbIcKHKNyu0OHOysOHE3vV0rkemN6jPiqV+JP3p6z5QnVteoOwgHT5SxaiYtKiYJvklbvFgki+2Fhr0pZmymjEawQddrfelbIH5NZj3LoS1sFxMVmQMsD6FNiUW9BHhFq8q9FCr1KaxOdPxXZi4bV88WqtSyBXBjt99UAWQTAMVmg30M0i7gzCm+A==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com; 
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=WepxGmDRn7tL5JNzfvQ6ZOuRufYs7VazI6JlZYiKaQg=;
- b=J65cb/bpPjU0du10j7Jts0TezCK2lXpsozUaqBdzpQLltvUe4JUlkdChZF0O7TKH2T/Pq43ey+p7dSgiWinotM2926ajxVIiua3+oAzhh36FV09mcOGwMfUNtHtuVj61QVPZlfDydPQ+SkYtw5Yna6i9fumenAWOqPfJQLG016xgFAP9emAVk6C7jWfNbkmD0kiN6q7Jlt2L6so1slGyw+GsmwZiQ9WwLmQOMTlvmnVbI3AMeQXHABNb6SyaV7jfdT6iRxflcobSRVF7lFO9TqKz6G6BUpUL+StHflOG/UCdaoKvi6iH4auGaZKS++xmSsTZLCijXDvV06Q5nVQoKg==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=windriver.com; dmarc=pass action=none
- header.from=windriver.com; dkim=pass header.d=windriver.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
- d=windriversystems.onmicrosoft.com;
- s=selector2-windriversystems-onmicrosoft-com;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=WepxGmDRn7tL5JNzfvQ6ZOuRufYs7VazI6JlZYiKaQg=;
- b=dV7kRFHNgcbpHAaE+aAADDKWwemM9b25JwuJxM2kA7g49hF/b51aM6UZRvUi0YbUwHVxP+xR0jGnpgcDAqe9CLQFH+DMpBQXudOTlMmpSFMuAathm55WRUkuLkTCjj2gwUb5B3gh+9P2Lb+23RP8/I4aL4LBGP+G9O8vC1lLQcs=
-Authentication-Results: bytedance.com; dkim=none (message not signed)
- header.d=none;bytedance.com; dmarc=none action=none
- header.from=windriver.com;
-Received: from MWHPR1101MB2351.namprd11.prod.outlook.com
- (2603:10b6:300:74::18) by CO1PR11MB4817.namprd11.prod.outlook.com
- (2603:10b6:303:98::7) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4242.21; Fri, 18 Jun
- 2021 08:47:10 +0000
-Received: from MWHPR1101MB2351.namprd11.prod.outlook.com
- ([fe80::c5c:9f78:ea96:40e2]) by MWHPR1101MB2351.namprd11.prod.outlook.com
- ([fe80::c5c:9f78:ea96:40e2%10]) with mapi id 15.20.4242.021; Fri, 18 Jun 2021
- 08:47:10 +0000
-From: He Zhe <zhe.he@windriver.com>
-To: xieyongji@bytedance.com, mst@redhat.com, jasowang@redhat.com,
- stefanha@redhat.com, sgarzare@redhat.com, parav@nvidia.com,
- hch@infradead.org, christian.brauner@canonical.com,
- rdunlap@infradead.org, willy@infradead.org, viro@zeniv.linux.org.uk,
- axboe@kernel.dk, bcrl@kvack.org, corbet@lwn.net,
- mika.penttila@nextfour.com, dan.carpenter@oracle.com,
- gregkh@linuxfoundation.org, songmuchun@bytedance.com,
- virtualization@lists.linux-foundation.org, kvm@vger.kernel.org,
- linux-fsdevel@vger.kernel.org, iommu@lists.linux-foundation.org,
- linux-kernel@vger.kernel.org, qiang.zhang@windriver.com,
- zhe.he@windriver.com
-Subject: [PATCH] eventfd: Enlarge recursion limit to allow vhost to work
-Date: Fri, 18 Jun 2021 16:44:12 +0800
-Message-Id: <20210618084412.18257-1-zhe.he@windriver.com>
-X-Mailer: git-send-email 2.17.1
-In-Reply-To: <CACycT3t1Dgrzsr7LbBrDhRLDa3qZ85ZOgj9H7r1fqPi-kf7r6Q@mail.gmail.com>
-References: <CACycT3t1Dgrzsr7LbBrDhRLDa3qZ85ZOgj9H7r1fqPi-kf7r6Q@mail.gmail.com>
-X-Originating-IP: [60.247.85.82]
-X-ClientProxiedBy: HK0PR03CA0099.apcprd03.prod.outlook.com
- (2603:1096:203:b0::15) To MWHPR1101MB2351.namprd11.prod.outlook.com
- (2603:10b6:300:74::18)
+Received: from smtp4.osuosl.org ([127.0.0.1])
+ by localhost (smtp4.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+ with ESMTP id rq0wcLv2sy6j; Fri, 18 Jun 2021 09:16:28 +0000 (UTC)
+X-Greylist: domain auto-whitelisted by SQLgrey-1.8.0
+X-Greylist: domain auto-whitelisted by SQLgrey-1.8.0
+Received: from foss.arm.com (foss.arm.com [217.140.110.172])
+ by smtp4.osuosl.org (Postfix) with ESMTP id DFCDF40623;
+ Fri, 18 Jun 2021 09:16:27 +0000 (UTC)
+Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
+ by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 7BF711424;
+ Fri, 18 Jun 2021 02:16:26 -0700 (PDT)
+Received: from [10.57.9.136] (unknown [10.57.9.136])
+ by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id F2FDE3F694;
+ Fri, 18 Jun 2021 02:16:23 -0700 (PDT)
+Subject: Re: [PATCH v4 2/6] ACPI: Move IOMMU setup code out of IORT
+To: Jean-Philippe Brucker <jean-philippe@linaro.org>,
+ Eric Auger <eric.auger@redhat.com>
+References: <20210610075130.67517-1-jean-philippe@linaro.org>
+ <20210610075130.67517-3-jean-philippe@linaro.org>
+ <2c53c9cf-43e6-11c2-6ee3-530ad1f87aec@redhat.com> <YMxOOq8YIBhRhzQM@myrica>
+From: Robin Murphy <robin.murphy@arm.com>
+Message-ID: <ff35c106-6254-1a6f-4b95-32a25bbccb96@arm.com>
+Date: Fri, 18 Jun 2021 10:16:19 +0100
+User-Agent: Mozilla/5.0 (Windows NT 10.0; rv:78.0) Gecko/20100101
+ Thunderbird/78.10.1
 MIME-Version: 1.0
-X-MS-Exchange-MessageSentRepresentingType: 1
-Received: from pek-lpg-core2.corp.ad.wrs.com (60.247.85.82) by
- HK0PR03CA0099.apcprd03.prod.outlook.com (2603:1096:203:b0::15) with Microsoft
- SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.20.4242.18 via Frontend Transport; Fri, 18 Jun 2021 08:47:04 +0000
-X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: dd09178b-f290-49e0-b13d-08d93235a8db
-X-MS-TrafficTypeDiagnostic: CO1PR11MB4817:
-X-MS-Exchange-Transport-Forked: True
-X-Microsoft-Antispam-PRVS: <CO1PR11MB4817F9DAD2E61F87FC5601A88F0D9@CO1PR11MB4817.namprd11.prod.outlook.com>
-X-MS-Oob-TLC-OOBClassifiers: OLM:8273;
-X-MS-Exchange-SenderADCheck: 1
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: t8T5GBalhfSCkIW1K0QsgKsXfdzuHuVnHtFdREinG5uj2T99VjP3xitCcqa529viHjdQAWHTPzsyYEPK8TIvZb1CpoNJaZQiRDNrJVcc7Kj8JQ6uqPiT6Fu6l4WA6THqWSpKyxPBkycFbjgg1T4hJzMwUBYjEGMjbbBlyrTMwMJjdJ5hARLxgaDoyx1NfPu8uPDkzhh/ia74RGRbHKmU2nowlUS+bfu7wMuMTIv9wGLLaTgHDdNBCTnlbtcqFxsX3u6roa3EiInLJxzljLp1Qx7bguEFbGmRSSxjpjol+KUsBwB3vTkKKWwIaJ/sCiUczaOWkkQm+3d6VTEjRBig7rlrUXznSPgjbogG7G98pEEcVz5t886fk3RCsXKD7YIE29/zpzSOMZYlKc+hU/27bHu2HUvAmLR5spwYMGEOzscj7hj1WzGwbF1rkASpL/NDTsV6Wq1/c7gPJiuJS64sHNMVwWLs8YIzpUub42H0MwO4a/No8sDJpgiBFnTbSWlRTVf924xoqAZY2ZsTIIOp9O9YEXh2kEHe5Bm8H/s9ntgNdRKb3Kz+adD2FOI5p6XHgqnXG6tYVznXAHBao6l15SBUIg0r2LqCWkhhUc+2R8/r61RWILZgH7dpi5ki8aIvX2uGBfKIJMk+vZ87rFlFULbMV5p9uzksGjmqdA3TF05HuhDr8yuvbL439EqRlqVlYN5gfJHAhXeMPtAOY6Ce1tIqH+BNoGaNU0B2UrZ2/dk=
-X-Forefront-Antispam-Report: CIP:255.255.255.255; CTRY:; LANG:en; SCL:1; SRV:;
- IPV:NLI; SFV:NSPM; H:MWHPR1101MB2351.namprd11.prod.outlook.com; PTR:; CAT:NONE;
- SFS:(4636009)(366004)(39850400004)(376002)(396003)(136003)(346002)(1076003)(7416002)(5660300002)(316002)(6512007)(8936002)(478600001)(956004)(2616005)(6486002)(8676002)(86362001)(36756003)(38100700002)(2906002)(83380400001)(16526019)(186003)(26005)(66946007)(6666004)(52116002)(6506007)(38350700002)(66476007)(66556008)(921005)(161623001)(147533002);
- DIR:OUT; SFP:1101; 
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?t1pJWMYhEbN3BAjnIJ9Ci2mdgoAHqNeAiZrJodWCmZTIOoO1F3AQUquUcKg4?=
- =?us-ascii?Q?ZB0220Y8AJG6lAPNkVKRfCiL28CRQe824Ok4reowg/Er5rpvcwKs3b9bUk/m?=
- =?us-ascii?Q?gSm+P4w7AJ6psOLrTz5O03of3iKdg4LdNd/heKNHE3q9V/7Qq6WpdMIigg+i?=
- =?us-ascii?Q?iwQss/eQiIKv/Fu4ESCMCPCjWkDL/kkRwrd2D19ih0lFmBhtCb0vDHn+v0/0?=
- =?us-ascii?Q?HgpuFkXaF5toyILSrvLxj6syKkzydlRwMtzBVt693H7TfheIDvwSxS0eWsLo?=
- =?us-ascii?Q?WmUxEwF/+AuiFc4xPrw3vEddpYPPG1WaPEySS/Bf7bNrGlHCm2a7SlEPiO2U?=
- =?us-ascii?Q?l3ypeBhPzGNl9/kEQprGUJ4VAL5x9BfYae6p0evO4zA4BlIdf0ijTwdCvaSQ?=
- =?us-ascii?Q?qfsbAzAkoSaQVWjmPG0aFIhhZyan7a23aTxiPMnn30pIAli0ILQrKO/ib1xP?=
- =?us-ascii?Q?yf7Q7ylux+hJHN6GE1wvcgx6vMSJEMiavgZk790Y/opXRDYOuqQPF1kRmx3L?=
- =?us-ascii?Q?qZw1o6U6eQUWjTUnAXlW+L2ltkuf3aLkPa9ZOSLQUnJFfj18ow5BVHOJsuKa?=
- =?us-ascii?Q?EvpIuhknFVp4nERiT8G9WioCPzME4X1YeHK6kw1ULOhlf4RAoTWn/Td6Scp3?=
- =?us-ascii?Q?A7B1vegWNzZb7CWqgD/7fT9KOvSAAPirkYV7kO8qnI9omaGrG/kDJURu3QFK?=
- =?us-ascii?Q?mMApXYoPsJOxk0NsmUWGwAOi/xW0A0uzIkGnRQR99I5LT9QNBKlZNn1eMElK?=
- =?us-ascii?Q?Y5nyIgrtLM8tQblQFRHJsn8fBOJaDl1xX0ORqr7J5Q6qljo+cGqubpWpSezC?=
- =?us-ascii?Q?/Y+mfR06xlSlrVes0JufDbO+NYNgimglyj9/nLk1yWqaLAAmKxNhZrUusPod?=
- =?us-ascii?Q?y5CAbslynWT4EjPxKE9KmvkSnOV//t/SPjIquCxFpcAwxKN9yfWjPydd0+g8?=
- =?us-ascii?Q?l0KYAupL9AORhybqTEKJmk8bJ+45iqjSqW/xxD6pG4+X0MnotoQl+ySTntjY?=
- =?us-ascii?Q?fnY65lhuPSvkFHXFQH3RoDCaBQZUZVN5O50zjqy0zHIW3BX73sQIgFy7XaOE?=
- =?us-ascii?Q?2A+vj57ECh510RqE1ShStEwS0FMmNOEGjejVXVWBn15UMzekoQN0v8KU0Fi5?=
- =?us-ascii?Q?2wA2sgG67MOuw2fAd4Z3wxhZoFOn1JdL/EaGkLpcA9/yli8cd+LHOAXzQPye?=
- =?us-ascii?Q?4N83Rp5HUgyZBPfI1pTOPEWxFjYl0+DaYJVCl9xAc+yide1tclPPgiCEsyKM?=
- =?us-ascii?Q?9jReVswLnzHTiVr2KFh6uJ7FB/eVHrGinTu37ItYKUqzluN1GOkW0jj9Ru8A?=
- =?us-ascii?Q?HgVkEWqvrlJjd+8QAbZEXDpC?=
-X-OriginatorOrg: windriver.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: dd09178b-f290-49e0-b13d-08d93235a8db
-X-MS-Exchange-CrossTenant-AuthSource: MWHPR1101MB2351.namprd11.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 18 Jun 2021 08:47:09.9540 (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 8ddb2873-a1ad-4a18-ae4e-4644631433be
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: L31OlygYudXwkVfUYGJGcVvkDUwJRGoHbWYDN71CSHMq+ymw5uzLOIBh9n6cKjSagZLopemQOEpAnX4qbaZOUA==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: CO1PR11MB4817
-X-Proofpoint-ORIG-GUID: ugHlmLXunpNnw6okHRVS4U8aruk8iJdD
-X-Proofpoint-GUID: ugHlmLXunpNnw6okHRVS4U8aruk8iJdD
-X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.391, 18.0.790
- definitions=2021-06-18_04:2021-06-15,
- 2021-06-18 signatures=0
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0
- clxscore=1015 phishscore=0
- suspectscore=0 adultscore=0 spamscore=0 mlxscore=0 malwarescore=0
- impostorscore=0 priorityscore=1501 bulkscore=0 mlxlogscore=999
- lowpriorityscore=0 classifier=spam adjust=0 reason=mlx scancount=1
- engine=8.12.0-2104190000 definitions=main-2106180049
+In-Reply-To: <YMxOOq8YIBhRhzQM@myrica>
+Content-Language: en-GB
+Cc: kevin.tian@intel.com, mst@redhat.com, catalin.marinas@arm.com,
+ guohanjun@huawei.com, rjw@rjwysocki.net,
+ virtualization@lists.linux-foundation.org, linux-acpi@vger.kernel.org,
+ iommu@lists.linux-foundation.org, sebastien.boeuf@intel.com,
+ sudeep.holla@arm.com, will@kernel.org, dwmw2@infradead.org,
+ linux-arm-kernel@lists.infradead.org, lenb@kernel.org
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -182,117 +82,58 @@ List-Post: <mailto:iommu@lists.linux-foundation.org>
 List-Help: <mailto:iommu-request@lists.linux-foundation.org?subject=help>
 List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
  <mailto:iommu-request@lists.linux-foundation.org?subject=subscribe>
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: base64
+Content-Type: text/plain; charset="utf-8"; Format="flowed"
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-commit b5e683d5cab8 ("eventfd: track eventfd_signal() recursion depth")
-introduces a percpu counter that tracks the percpu recursion depth and
-warn if it greater than zero, to avoid potential deadlock and stack
-overflow.
-
-However sometimes different eventfds may be used in parallel. Specifically,
-when heavy network load goes through kvm and vhost, working as below, it
-would trigger the following call trace.
-
--  100.00%
-   - 66.51%
-        ret_from_fork
-        kthread
-      - vhost_worker
-         - 33.47% handle_tx_kick
-              handle_tx
-              handle_tx_copy
-              vhost_tx_batch.isra.0
-              vhost_add_used_and_signal_n
-              eventfd_signal
-         - 33.05% handle_rx_net
-              handle_rx
-              vhost_add_used_and_signal_n
-              eventfd_signal
-   - 33.49%
-        ioctl
-        entry_SYSCALL_64_after_hwframe
-        do_syscall_64
-        __x64_sys_ioctl
-        ksys_ioctl
-        do_vfs_ioctl
-        kvm_vcpu_ioctl
-        kvm_arch_vcpu_ioctl_run
-        vmx_handle_exit
-        handle_ept_misconfig
-        kvm_io_bus_write
-        __kvm_io_bus_write
-        eventfd_signal
-
-001: WARNING: CPU: 1 PID: 1503 at fs/eventfd.c:73 eventfd_signal+0x85/0xa0
----- snip ----
-001: Call Trace:
-001:  vhost_signal+0x15e/0x1b0 [vhost]
-001:  vhost_add_used_and_signal_n+0x2b/0x40 [vhost]
-001:  handle_rx+0xb9/0x900 [vhost_net]
-001:  handle_rx_net+0x15/0x20 [vhost_net]
-001:  vhost_worker+0xbe/0x120 [vhost]
-001:  kthread+0x106/0x140
-001:  ? log_used.part.0+0x20/0x20 [vhost]
-001:  ? kthread_park+0x90/0x90
-001:  ret_from_fork+0x35/0x40
-001: ---[ end trace 0000000000000003 ]---
-
-This patch enlarges the limit to 1 which is the maximum recursion depth we
-have found so far.
-
-The credit of modification for eventfd_signal_count goes to
-Xie Yongji <xieyongji@bytedance.com>
-
-Signed-off-by: He Zhe <zhe.he@windriver.com>
----
- fs/eventfd.c            | 3 ++-
- include/linux/eventfd.h | 5 ++++-
- 2 files changed, 6 insertions(+), 2 deletions(-)
-
-diff --git a/fs/eventfd.c b/fs/eventfd.c
-index e265b6dd4f34..add6af91cacf 100644
---- a/fs/eventfd.c
-+++ b/fs/eventfd.c
-@@ -71,7 +71,8 @@ __u64 eventfd_signal(struct eventfd_ctx *ctx, __u64 n)
- 	 * it returns true, the eventfd_signal() call should be deferred to a
- 	 * safe context.
- 	 */
--	if (WARN_ON_ONCE(this_cpu_read(eventfd_wake_count)))
-+	if (WARN_ON_ONCE(this_cpu_read(eventfd_wake_count) >
-+	    EFD_WAKE_COUNT_MAX))
- 		return 0;
- 
- 	spin_lock_irqsave(&ctx->wqh.lock, flags);
-diff --git a/include/linux/eventfd.h b/include/linux/eventfd.h
-index fa0a524baed0..74be152ebe87 100644
---- a/include/linux/eventfd.h
-+++ b/include/linux/eventfd.h
-@@ -29,6 +29,9 @@
- #define EFD_SHARED_FCNTL_FLAGS (O_CLOEXEC | O_NONBLOCK)
- #define EFD_FLAGS_SET (EFD_SHARED_FCNTL_FLAGS | EFD_SEMAPHORE)
- 
-+/* This is the maximum recursion depth we find so far */
-+#define EFD_WAKE_COUNT_MAX 1
-+
- struct eventfd_ctx;
- struct file;
- 
-@@ -47,7 +50,7 @@ DECLARE_PER_CPU(int, eventfd_wake_count);
- 
- static inline bool eventfd_signal_count(void)
- {
--	return this_cpu_read(eventfd_wake_count);
-+	return this_cpu_read(eventfd_wake_count) > EFD_WAKE_COUNT_MAX;
- }
- 
- #else /* CONFIG_EVENTFD */
--- 
-2.17.1
-
-_______________________________________________
-iommu mailing list
-iommu@lists.linux-foundation.org
-https://lists.linuxfoundation.org/mailman/listinfo/iommu
+T24gMjAyMS0wNi0xOCAwODo0MSwgSmVhbi1QaGlsaXBwZSBCcnVja2VyIHdyb3RlOgo+IEhpIEVy
+aWMsCj4gCj4gT24gV2VkLCBKdW4gMTYsIDIwMjEgYXQgMTE6MzU6MTNBTSArMDIwMCwgRXJpYyBB
+dWdlciB3cm90ZToKPj4+IC1jb25zdCBzdHJ1Y3QgaW9tbXVfb3BzICppb3J0X2lvbW11X2NvbmZp
+Z3VyZV9pZChzdHJ1Y3QgZGV2aWNlICpkZXYsCj4+PiAtCQkJCQkJY29uc3QgdTMyICppZF9pbikK
+Pj4+ICtpbnQgaW9ydF9pb21tdV9jb25maWd1cmVfaWQoc3RydWN0IGRldmljZSAqZGV2LCBjb25z
+dCB1MzIgKmlkX2luKQo+Pj4gICB7Cj4+PiAgIAlzdHJ1Y3QgYWNwaV9pb3J0X25vZGUgKm5vZGU7
+Cj4+PiAtCWNvbnN0IHN0cnVjdCBpb21tdV9vcHMgKm9wczsKPj4+ICsJY29uc3Qgc3RydWN0IGlv
+bW11X29wcyAqb3BzID0gTlVMTDsKPiAKPiBPb3BzLCBJIG5lZWQgdG8gcmVtb3ZlIHRoaXMgKGFu
+ZCBhZGQgLVdlcnJvciB0byBteSB0ZXN0cy4pCj4gCj4gCj4+PiArc3RhdGljIGNvbnN0IHN0cnVj
+dCBpb21tdV9vcHMgKmFjcGlfaW9tbXVfY29uZmlndXJlX2lkKHN0cnVjdCBkZXZpY2UgKmRldiwK
+Pj4+ICsJCQkJCQkgICAgICAgY29uc3QgdTMyICppZF9pbikKPj4+ICt7Cj4+PiArCWludCBlcnI7
+Cj4+PiArCWNvbnN0IHN0cnVjdCBpb21tdV9vcHMgKm9wczsKPj4+ICsKPj4+ICsJLyoKPj4+ICsJ
+ICogSWYgd2UgYWxyZWFkeSB0cmFuc2xhdGVkIHRoZSBmd3NwZWMgdGhlcmUgaXMgbm90aGluZyBs
+ZWZ0IHRvIGRvLAo+Pj4gKwkgKiByZXR1cm4gdGhlIGlvbW11X29wcy4KPj4+ICsJICovCj4+PiAr
+CW9wcyA9IGFjcGlfaW9tbXVfZndzcGVjX29wcyhkZXYpOwo+Pj4gKwlpZiAob3BzKQo+Pj4gKwkJ
+cmV0dXJuIG9wczsKPj4+ICsKPj4+ICsJZXJyID0gaW9ydF9pb21tdV9jb25maWd1cmVfaWQoZGV2
+LCBpZF9pbik7Cj4+PiArCj4+PiArCS8qCj4+PiArCSAqIElmIHdlIGhhdmUgcmVhc29uIHRvIGJl
+bGlldmUgdGhlIElPTU1VIGRyaXZlciBtaXNzZWQgdGhlIGluaXRpYWwKPj4+ICsJICogYWRkX2Rl
+dmljZSBjYWxsYmFjayBmb3IgZGV2LCByZXBsYXkgaXQgdG8gZ2V0IHRoaW5ncyBpbiBvcmRlci4K
+Pj4+ICsJICovCj4+PiArCWlmICghZXJyICYmIGRldi0+YnVzICYmICFkZXZpY2VfaW9tbXVfbWFw
+cGVkKGRldikpCj4+PiArCQllcnIgPSBpb21tdV9wcm9iZV9kZXZpY2UoZGV2KTsKPj4gUHJldmlv
+dXNseSB3ZSBoYWQ6Cj4+ICDCoMKgwqAgaWYgKCFlcnIpIHsKPj4gIMKgwqDCoCDCoMKgwqAgb3Bz
+ID0gaW9ydF9md3NwZWNfaW9tbXVfb3BzKGRldik7Cj4+ICDCoMKgwqAgwqDCoMKgIGVyciA9IGlv
+cnRfYWRkX2RldmljZV9yZXBsYXkoZGV2KTsKPj4gIMKgwqDCoCB9Cj4+Cj4+IFBsZWFzZSBjYW4g
+eW91IGV4cGxhaW4gdGhlIHRyYW5zZm9ybT8gSSBzZWUgdGhlCj4+Cj4+IGFjcGlfaW9tbXVfZndz
+cGVjX29wcyBjYWxsIGJlbG93IGJ1dCBpcyBpdCBub3Qgc3RyYWlnaHRmb3J3YXJkIHRvIG1lLgo+
+IAo+IEkgZmlndXJlZCB0aGF0IGlvcnRfYWRkX2RldmljZV9yZXBsYXkoKSBpcyBvbmx5IHVzZWQg
+b25jZSBhbmQgaXMKPiBzdWZmaWNpZW50bHkgc2ltcGxlIHRvIGJlIGlubGluZWQgbWFudWFsbHkg
+KHNhdmluZyAxMCBsaW5lcykuIFRoZW4gSQo+IHJlcGxhY2VkIHRoZSBvcHMgYXNzaWdubWVudCB3
+aXRoIHJldHVybnMsIHdoaWNoIHNhdmVzIGFub3RoZXIgbGluZSBhbmQgbWF5Cj4gYmUgc2xpZ2h0
+bHkgY2xlYXJlcj8gIEkgZ3Vlc3MgaXQncyBtb3N0bHkgYSBtYXR0ZXIgb2YgdGFzdGUsIHRoZSBi
+ZWhhdmlvcgo+IHNob3VsZCBiZSBleGFjdGx5IHRoZSBzYW1lLgoKUmlnaHQsIElJUkMgdGhlIG11
+bHRpcGxlIGFzc2lnbm1lbnRzIHRvIG9wcyB3ZXJlIG1vcmUgb2YgYSBoYXBoYXphcmQgCmV2b2x1
+dGlvbiBpbmhlcml0ZWQgZnJvbSB0aGUgRFQgdmVyc2lvbiwgYW5kIGxvb2tpbmcgYXQgaXQgbm93
+IEkgdGhpbmsgCnRoZSBtdWx0aXBsZS1yZXR1cm4gaXMgaW5kZWVkIGEgYml0IG5pY2VyLgoKU2lt
+aWxhcmx5LCBpdCBsb29rcyBsaWtlIHRoZSBmYWN0b3Jpbmcgb3V0IG9mIGlvcnRfYWRkX2Rldmlj
+ZV9yZXBsYXkoKSAKd2FzIG9yaWdpbmFsbHkgYW4gYXR0ZW1wdCB0byBlbmNhcHN1bGF0ZSB0aGUg
+SU9NTVVfQVBJIGRlcGVuZGVuY3ksIGJ1dCAKdGhpbmdzIGhhdmUgbW92ZWQgYXJvdW5kIGEgbG90
+IHNpbmNlIHRoZW4sIHNvIHRoYXQgc2VlbXMgbGlrZSBhIHNlbnNpYmxlIApzaW1wbGlmaWNhdGlv
+biB0byBtYWtlIHRvby4KClJvYmluLgoKPiAKPj4gQWxzbyB0aGUgY29tbWVudCBtZW50aW9ucyBy
+ZXBsYXkuIFVuc3VyZSBpZiBpdCBpcyBzdGlsbCBPSy4KPiAKPiBUaGUgInJlcGxheSIgcGFydCBp
+cywgYnV0ICJhZGRfZGV2aWNlIiBpc24ndCBhY2N1cmF0ZSBiZWNhdXNlIGl0IGhhcyBzaW5jZQo+
+IGJlZW4gcmVwbGFjZWQgYnkgcHJvYmVfZGV2aWNlLiBJJ2xsIHJlZnJlc2ggdGhlIGNvbW1lbnQu
+Cj4gCj4gVGhhbmtzLAo+IEplYW4KPiBfX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19f
+X19fX19fX19fX19fXwo+IGlvbW11IG1haWxpbmcgbGlzdAo+IGlvbW11QGxpc3RzLmxpbnV4LWZv
+dW5kYXRpb24ub3JnCj4gaHR0cHM6Ly9saXN0cy5saW51eGZvdW5kYXRpb24ub3JnL21haWxtYW4v
+bGlzdGluZm8vaW9tbXUKPiAKX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19f
+X19fX19fX18KaW9tbXUgbWFpbGluZyBsaXN0CmlvbW11QGxpc3RzLmxpbnV4LWZvdW5kYXRpb24u
+b3JnCmh0dHBzOi8vbGlzdHMubGludXhmb3VuZGF0aW9uLm9yZy9tYWlsbWFuL2xpc3RpbmZvL2lv
+bW11
