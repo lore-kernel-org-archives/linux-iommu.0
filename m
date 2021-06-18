@@ -7,95 +7,93 @@ X-Spam-Status: No, score=-16.5 required=3.0 tests=BAYES_00,DKIM_INVALID,
 	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,UNPARSEABLE_RELAY,URIBL_BLOCKED,
 	USER_AGENT_GIT autolearn=ham autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 790F0C49EA5
-	for <iommu@archiver.kernel.org>; Fri, 18 Jun 2021 16:07:45 +0000 (UTC)
-Received: from smtp3.osuosl.org (smtp3.osuosl.org [140.211.166.136])
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 75109C49EA6
+	for <iommu@archiver.kernel.org>; Fri, 18 Jun 2021 16:07:48 +0000 (UTC)
+Received: from smtp1.osuosl.org (smtp1.osuosl.org [140.211.166.138])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 4A058613D5
-	for <iommu@archiver.kernel.org>; Fri, 18 Jun 2021 16:07:45 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 4A058613D5
+	by mail.kernel.org (Postfix) with ESMTPS id 4303F613E8
+	for <iommu@archiver.kernel.org>; Fri, 18 Jun 2021 16:07:48 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 4303F613E8
 Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=oracle.com
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by smtp3.osuosl.org (Postfix) with ESMTP id 15BF6607AD;
-	Fri, 18 Jun 2021 16:07:45 +0000 (UTC)
+	by smtp1.osuosl.org (Postfix) with ESMTP id 2759A82BBA;
+	Fri, 18 Jun 2021 16:07:48 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from smtp3.osuosl.org ([127.0.0.1])
-	by localhost (smtp3.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id Nsmn16b1s4-W; Fri, 18 Jun 2021 16:07:44 +0000 (UTC)
-Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by smtp3.osuosl.org (Postfix) with ESMTPS id 05B096079B;
-	Fri, 18 Jun 2021 16:07:44 +0000 (UTC)
+Received: from smtp1.osuosl.org ([127.0.0.1])
+	by localhost (smtp1.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+	with ESMTP id iq5yG4VKj2Co; Fri, 18 Jun 2021 16:07:47 +0000 (UTC)
+Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [IPv6:2605:bc80:3010:104::8cd3:938])
+	by smtp1.osuosl.org (Postfix) with ESMTPS id 0196582AF5;
+	Fri, 18 Jun 2021 16:07:47 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 9B508C0023;
-	Fri, 18 Jun 2021 16:07:43 +0000 (UTC)
-Received: from smtp2.osuosl.org (smtp2.osuosl.org [IPv6:2605:bc80:3010::133])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 7DBF5C000B
- for <iommu@lists.linux-foundation.org>; Fri, 18 Jun 2021 16:07:42 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id DFB2BC000D;
+	Fri, 18 Jun 2021 16:07:46 +0000 (UTC)
+Received: from smtp1.osuosl.org (smtp1.osuosl.org [140.211.166.138])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 16F04C000B
+ for <iommu@lists.linux-foundation.org>; Fri, 18 Jun 2021 16:07:44 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by smtp2.osuosl.org (Postfix) with ESMTP id 6CF70400DC
+ by smtp1.osuosl.org (Postfix) with ESMTP id 72BDE82ACA
  for <iommu@lists.linux-foundation.org>; Fri, 18 Jun 2021 16:07:42 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Authentication-Results: smtp2.osuosl.org (amavisd-new);
- dkim=pass (2048-bit key) header.d=oracle.com
-Received: from smtp2.osuosl.org ([127.0.0.1])
- by localhost (smtp2.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id 8Im9F4Cvs6v5 for <iommu@lists.linux-foundation.org>;
+Received: from smtp1.osuosl.org ([127.0.0.1])
+ by localhost (smtp1.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+ with ESMTP id QdyjiJq6sp-G for <iommu@lists.linux-foundation.org>;
  Fri, 18 Jun 2021 16:07:41 +0000 (UTC)
 X-Greylist: domain auto-whitelisted by SQLgrey-1.8.0
 Received: from mx0a-00069f02.pphosted.com (mx0a-00069f02.pphosted.com
  [205.220.165.32])
- by smtp2.osuosl.org (Postfix) with ESMTPS id 1737E4028B
- for <iommu@lists.linux-foundation.org>; Fri, 18 Jun 2021 16:07:40 +0000 (UTC)
+ by smtp1.osuosl.org (Postfix) with ESMTPS id C5ED582BBA
+ for <iommu@lists.linux-foundation.org>; Fri, 18 Jun 2021 16:07:41 +0000 (UTC)
 Received: from pps.filterd (m0246617.ppops.net [127.0.0.1])
  by mx0b-00069f02.pphosted.com (8.16.0.43/8.16.0.43) with SMTP id
- 15IG0vxw005150; Fri, 18 Jun 2021 16:06:57 GMT
+ 15IG0sKU005131; Fri, 18 Jun 2021 16:06:56 GMT
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=oracle.com;
  h=from : to : cc :
  subject : date : message-id : in-reply-to : references; s=corp-2020-01-29;
- bh=XrGHIaHHaXwLYu2CFXEuXnO6cEoUo0eTbOP7lAlnnPs=;
- b=i0Hx9dkvEXG1437lli4MHh55wuXe0lEfa476URaec+mbPU5rf9Cte8RH3BxXk7mv2sqb
- gLtBlCgBYiQGLCNiBc/uK5SljeUaEzgrnedMur3BXLZLCMrC5FTVSzjCv4jSc76xFQQ3
- QUBxDkbA4iBDQ4Q30jJ/+tW2v5qCgaR9GevqoWwxh0Pe1Cjb+X1RLQfXwSdOQLE1cT3m
- cMyiuhsBfjzztubiu2WrRSVRWebfzJFsiLh8JKSoBuZpdm/CqYAZP/ES72T/vaJPKEQr
- Ngt8a6/A8hxK1I6LP6ASklUPa3T2nukkFi2sYxLitQJxguP0OQDh4JG1ubcLXQEsIPNb yA== 
-Received: from userp3020.oracle.com (userp3020.oracle.com [156.151.31.79])
- by mx0b-00069f02.pphosted.com with ESMTP id 397mptmbhb-1
+ bh=g5RTqi/e2VZEnD4YII83visKqCzEsKpSz2d4ciHrfvI=;
+ b=J5OVyn8YADZ1xCs67GxaeKo0XEMBqF5k82yuOVWu1vhDdmtyIOh17b3Peckiho9IBRI8
+ PUWjIvNQiSKUzZaQ8+6CKUBJdIm5CGvRit1zBO8tVIorFzxac0MjU2gErtw1dIpln9TP
+ OVfGCh3mIxDW7SML4QTiVfGOFVGKPkpg1ClkAaFW5NerjkESfUuFKEHH9f/X5OgBec0q
+ CMWC9XZJsgwT8pFDUaWIES6Jv77dlRsFWVt7V3b0YRSe2AEr/+hm3m0g5WIUOLZl698g
+ bYCuzJdsWHVuItLzK468P/ZcAkmlHwVn836VW9Coo4EJfzhEbT+Y3xg/Vzx20QZg99U6 YA== 
+Received: from aserp3020.oracle.com (aserp3020.oracle.com [141.146.126.70])
+ by mx0b-00069f02.pphosted.com with ESMTP id 397mptmbh9-1
  (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
  Fri, 18 Jun 2021 16:06:56 +0000
-Received: from pps.filterd (userp3020.oracle.com [127.0.0.1])
- by userp3020.oracle.com (8.16.0.42/8.16.0.42) with SMTP id 15IG1c0X154948;
+Received: from pps.filterd (aserp3020.oracle.com [127.0.0.1])
+ by aserp3020.oracle.com (8.16.0.42/8.16.0.42) with SMTP id 15IG1DgW172978;
  Fri, 18 Jun 2021 16:06:55 GMT
 Received: from pps.reinject (localhost [127.0.0.1])
- by userp3020.oracle.com with ESMTP id 396wayyuy0-1
+ by aserp3020.oracle.com with ESMTP id 396way7631-1
  (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
  Fri, 18 Jun 2021 16:06:55 +0000
-Received: from userp3020.oracle.com (userp3020.oracle.com [127.0.0.1])
- by pps.reinject (8.16.0.36/8.16.0.36) with SMTP id 15IG6sAF167646;
+Received: from aserp3020.oracle.com (aserp3020.oracle.com [127.0.0.1])
+ by pps.reinject (8.16.0.36/8.16.0.36) with SMTP id 15IG6sFj014246;
  Fri, 18 Jun 2021 16:06:54 GMT
-Received: from aserv0121.oracle.com (aserv0121.oracle.com [141.146.126.235])
- by userp3020.oracle.com with ESMTP id 396wayyuxf-1
+Received: from aserv0122.oracle.com (aserv0122.oracle.com [141.146.126.236])
+ by aserp3020.oracle.com with ESMTP id 396way761q-1
  (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
  Fri, 18 Jun 2021 16:06:54 +0000
 Received: from abhmp0001.oracle.com (abhmp0001.oracle.com [141.146.116.7])
- by aserv0121.oracle.com (8.14.4/8.13.8) with ESMTP id 15IG6keu018472;
- Fri, 18 Jun 2021 16:06:46 GMT
+ by aserv0122.oracle.com (8.14.4/8.14.4) with ESMTP id 15IG6jD2002531;
+ Fri, 18 Jun 2021 16:06:45 GMT
 Received: from lateralus.us.oracle.com (/10.149.232.101)
  by default (Oracle Beehive Gateway v4.0)
- with ESMTP ; Fri, 18 Jun 2021 16:06:46 +0000
+ with ESMTP ; Fri, 18 Jun 2021 16:06:45 +0000
 From: Ross Philipson <ross.philipson@oracle.com>
 To: linux-kernel@vger.kernel.org, x86@kernel.org,
  iommu@lists.linux-foundation.org, linux-integrity@vger.kernel.org,
  linux-doc@vger.kernel.org
-Subject: [PATCH v2 02/12] x86: Secure Launch Kconfig
-Date: Fri, 18 Jun 2021 12:12:47 -0400
-Message-Id: <1624032777-7013-3-git-send-email-ross.philipson@oracle.com>
+Subject: [PATCH v2 01/12] x86/boot: Place kernel_info at a fixed offset
+Date: Fri, 18 Jun 2021 12:12:46 -0400
+Message-Id: <1624032777-7013-2-git-send-email-ross.philipson@oracle.com>
 X-Mailer: git-send-email 1.8.3.1
 In-Reply-To: <1624032777-7013-1-git-send-email-ross.philipson@oracle.com>
 References: <1624032777-7013-1-git-send-email-ross.philipson@oracle.com>
-X-Proofpoint-GUID: LsQH5TrBIUCZUqniYzId3TotAvVgrspv
-X-Proofpoint-ORIG-GUID: LsQH5TrBIUCZUqniYzId3TotAvVgrspv
+X-Proofpoint-GUID: -QRecCBmK_5XwLnJX6fuA2k3sPD-9GF9
+X-Proofpoint-ORIG-GUID: -QRecCBmK_5XwLnJX6fuA2k3sPD-9GF9
 Cc: dpsmith@apertussolutions.com, ross.philipson@oracle.com,
  luto@amacapital.net, mingo@redhat.com, bp@alien8.de, hpa@zytor.com,
  tglx@linutronix.de, trenchboot-devel@googlegroups.com
@@ -117,57 +115,126 @@ Content-Transfer-Encoding: 7bit
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-Initial bits to bring in Secure Launch functionality. Add Kconfig
-options for compiling in/out the Secure Launch code.
+From: Arvind Sankar <nivedita@alum.mit.edu>
 
+There are use cases for storing the offset of a symbol in kernel_info.
+For example, the trenchboot series [0] needs to store the offset of the
+Measured Launch Environment header in kernel_info.
+
+Since commit (note: commit ID from tip/master)
+
+  527afc212231 ("x86/boot: Check that there are no run-time relocations")
+
+run-time relocations are not allowed in the compressed kernel, so simply
+using the symbol in kernel_info, as
+
+	.long	symbol
+
+will cause a linker error because this is not position-independent.
+
+With kernel_info being a separate object file and in a different section
+from startup_32, there is no way to calculate the offset of a symbol
+from the start of the image in a position-independent way.
+
+To enable such use cases, put kernel_info into its own section which is
+placed at a predetermined offset (KERNEL_INFO_OFFSET) via the linker
+script. This will allow calculating the symbol offset in a
+position-independent way, by adding the offset from the start of
+kernel_info to KERNEL_INFO_OFFSET.
+
+Ensure that kernel_info is aligned, and use the SYM_DATA.* macros
+instead of bare labels. This stores the size of the kernel_info
+structure in the ELF symbol table.
+
+Signed-off-by: Arvind Sankar <nivedita@alum.mit.edu>
+Cc: Ross Philipson <ross.philipson@oracle.com>
 Signed-off-by: Ross Philipson <ross.philipson@oracle.com>
 ---
- arch/x86/Kconfig | 32 ++++++++++++++++++++++++++++++++
- 1 file changed, 32 insertions(+)
+ arch/x86/boot/compressed/kernel_info.S | 19 +++++++++++++++----
+ arch/x86/boot/compressed/kernel_info.h | 12 ++++++++++++
+ arch/x86/boot/compressed/vmlinux.lds.S |  6 ++++++
+ 3 files changed, 33 insertions(+), 4 deletions(-)
+ create mode 100644 arch/x86/boot/compressed/kernel_info.h
 
-diff --git a/arch/x86/Kconfig b/arch/x86/Kconfig
-index 0045e1b..65d69f0 100644
---- a/arch/x86/Kconfig
-+++ b/arch/x86/Kconfig
-@@ -1989,6 +1989,38 @@ config EFI_MIXED
+diff --git a/arch/x86/boot/compressed/kernel_info.S b/arch/x86/boot/compressed/kernel_info.S
+index f818ee8..c18f071 100644
+--- a/arch/x86/boot/compressed/kernel_info.S
++++ b/arch/x86/boot/compressed/kernel_info.S
+@@ -1,12 +1,23 @@
+ /* SPDX-License-Identifier: GPL-2.0 */
  
- 	   If unsure, say N.
++#include <linux/linkage.h>
+ #include <asm/bootparam.h>
++#include "kernel_info.h"
  
-+config SECURE_LAUNCH
-+	bool "Secure Launch support"
-+	default n
-+	depends on X86_64 && X86_X2APIC
-+	help
-+	   The Secure Launch feature allows a kernel to be loaded
-+	   directly through an Intel TXT measured launch. Intel TXT
-+	   establishes a Dynamic Root of Trust for Measurement (DRTM)
-+	   where the CPU measures the kernel image. This feature then
-+	   continues the measurement chain over kernel configuration
-+	   information and init images.
+-	.section ".rodata.kernel_info", "a"
++/*
++ * If a field needs to hold the offset of a symbol from the start
++ * of the image, use the macro below, eg
++ *	.long	rva(symbol)
++ * This will avoid creating run-time relocations, which are not
++ * allowed in the compressed kernel.
++ */
 +
-+config SECURE_LAUNCH_ALT_PCR19
-+	bool "Secure Launch Alternate PCR 19 usage"
-+	default n
-+	depends on SECURE_LAUNCH
-+	help
-+	   In the post ACM environment, Secure Launch by default measures
-+	   configuration information into PCR18. This feature allows finer
-+	   control over measurements by moving configuration measurements
-+	   into PCR19.
-+
-+config SECURE_LAUNCH_ALT_PCR20
-+	bool "Secure Launch Alternate PCR 20 usage"
-+	default n
-+	depends on SECURE_LAUNCH
-+	help
-+	   In the post ACM environment, Secure Launch by default measures
-+	   image data like any external initrd into PCR17. This feature
-+	   allows finer control over measurements by moving image measurements
-+	   into PCR20.
-+
- source "kernel/Kconfig.hz"
++#define rva(X) (((X) - kernel_info) + KERNEL_INFO_OFFSET)
  
- config KEXEC
+-	.global kernel_info
++	.section ".rodata.kernel_info", "a"
+ 
+-kernel_info:
++	.balign	16
++SYM_DATA_START(kernel_info)
+ 	/* Header, Linux top (structure). */
+ 	.ascii	"LToP"
+ 	/* Size. */
+@@ -19,4 +30,4 @@ kernel_info:
+ 
+ kernel_info_var_len_data:
+ 	/* Empty for time being... */
+-kernel_info_end:
++SYM_DATA_END_LABEL(kernel_info, SYM_L_LOCAL, kernel_info_end)
+diff --git a/arch/x86/boot/compressed/kernel_info.h b/arch/x86/boot/compressed/kernel_info.h
+new file mode 100644
+index 00000000..c127f84
+--- /dev/null
++++ b/arch/x86/boot/compressed/kernel_info.h
+@@ -0,0 +1,12 @@
++/* SPDX-License-Identifier: GPL-2.0 */
++
++#ifndef BOOT_COMPRESSED_KERNEL_INFO_H
++#define BOOT_COMPRESSED_KERNEL_INFO_H
++
++#ifdef CONFIG_X86_64
++#define KERNEL_INFO_OFFSET 0x500
++#else /* 32-bit */
++#define KERNEL_INFO_OFFSET 0x100
++#endif
++
++#endif /* BOOT_COMPRESSED_KERNEL_INFO_H */
+diff --git a/arch/x86/boot/compressed/vmlinux.lds.S b/arch/x86/boot/compressed/vmlinux.lds.S
+index 112b237..84c7b4d 100644
+--- a/arch/x86/boot/compressed/vmlinux.lds.S
++++ b/arch/x86/boot/compressed/vmlinux.lds.S
+@@ -7,6 +7,7 @@ OUTPUT_FORMAT(CONFIG_OUTPUT_FORMAT)
+ 
+ #include <asm/cache.h>
+ #include <asm/page_types.h>
++#include "kernel_info.h"
+ 
+ #ifdef CONFIG_X86_64
+ OUTPUT_ARCH(i386:x86-64)
+@@ -27,6 +28,11 @@ SECTIONS
+ 		HEAD_TEXT
+ 		_ehead = . ;
+ 	}
++	.rodata.kernel_info KERNEL_INFO_OFFSET : {
++		*(.rodata.kernel_info)
++	}
++	ASSERT(ABSOLUTE(kernel_info) == KERNEL_INFO_OFFSET, "kernel_info at bad address!")
++
+ 	.rodata..compressed : {
+ 		*(.rodata..compressed)
+ 	}
 -- 
 1.8.3.1
 
