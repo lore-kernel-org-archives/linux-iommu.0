@@ -3,96 +3,99 @@ X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
 X-Spam-Status: No, score=-16.5 required=3.0 tests=BAYES_00,DKIM_INVALID,
-	DKIM_SIGNED,HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,
-	MENTIONS_GIT_HOSTING,SPF_HELO_NONE,SPF_PASS,UNPARSEABLE_RELAY,URIBL_BLOCKED,
+	DKIM_SIGNED,HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_CR_TRAILER,INCLUDES_PATCH,
+	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,UNPARSEABLE_RELAY,URIBL_BLOCKED,
 	USER_AGENT_GIT autolearn=ham autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5B02BC49EA2
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 790F0C49EA5
 	for <iommu@archiver.kernel.org>; Fri, 18 Jun 2021 16:07:45 +0000 (UTC)
-Received: from smtp1.osuosl.org (smtp1.osuosl.org [140.211.166.138])
+Received: from smtp3.osuosl.org (smtp3.osuosl.org [140.211.166.136])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 2776A613EE
+	by mail.kernel.org (Postfix) with ESMTPS id 4A058613D5
 	for <iommu@archiver.kernel.org>; Fri, 18 Jun 2021 16:07:45 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 2776A613EE
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 4A058613D5
 Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=oracle.com
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by smtp1.osuosl.org (Postfix) with ESMTP id 015FF82BBA;
+	by smtp3.osuosl.org (Postfix) with ESMTP id 15BF6607AD;
 	Fri, 18 Jun 2021 16:07:45 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from smtp1.osuosl.org ([127.0.0.1])
-	by localhost (smtp1.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id EbVj9Ann5aWS; Fri, 18 Jun 2021 16:07:43 +0000 (UTC)
+Received: from smtp3.osuosl.org ([127.0.0.1])
+	by localhost (smtp3.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+	with ESMTP id Nsmn16b1s4-W; Fri, 18 Jun 2021 16:07:44 +0000 (UTC)
 Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by smtp1.osuosl.org (Postfix) with ESMTPS id 9619482A72;
-	Fri, 18 Jun 2021 16:07:43 +0000 (UTC)
+	by smtp3.osuosl.org (Postfix) with ESMTPS id 05B096079B;
+	Fri, 18 Jun 2021 16:07:44 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 6EF65C000D;
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 9B508C0023;
 	Fri, 18 Jun 2021 16:07:43 +0000 (UTC)
-Received: from smtp1.osuosl.org (smtp1.osuosl.org [140.211.166.138])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 2E0D7C000B
+Received: from smtp2.osuosl.org (smtp2.osuosl.org [IPv6:2605:bc80:3010::133])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 7DBF5C000B
  for <iommu@lists.linux-foundation.org>; Fri, 18 Jun 2021 16:07:42 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by smtp1.osuosl.org (Postfix) with ESMTP id 0F7A182D0F
+ by smtp2.osuosl.org (Postfix) with ESMTP id 6CF70400DC
  for <iommu@lists.linux-foundation.org>; Fri, 18 Jun 2021 16:07:42 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from smtp1.osuosl.org ([127.0.0.1])
- by localhost (smtp1.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id 5FtCJ7qXjQoD for <iommu@lists.linux-foundation.org>;
- Fri, 18 Jun 2021 16:07:40 +0000 (UTC)
+Authentication-Results: smtp2.osuosl.org (amavisd-new);
+ dkim=pass (2048-bit key) header.d=oracle.com
+Received: from smtp2.osuosl.org ([127.0.0.1])
+ by localhost (smtp2.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+ with ESMTP id 8Im9F4Cvs6v5 for <iommu@lists.linux-foundation.org>;
+ Fri, 18 Jun 2021 16:07:41 +0000 (UTC)
 X-Greylist: domain auto-whitelisted by SQLgrey-1.8.0
 Received: from mx0a-00069f02.pphosted.com (mx0a-00069f02.pphosted.com
  [205.220.165.32])
- by smtp1.osuosl.org (Postfix) with ESMTPS id E0B3882AF5
+ by smtp2.osuosl.org (Postfix) with ESMTPS id 1737E4028B
  for <iommu@lists.linux-foundation.org>; Fri, 18 Jun 2021 16:07:40 +0000 (UTC)
 Received: from pps.filterd (m0246617.ppops.net [127.0.0.1])
  by mx0b-00069f02.pphosted.com (8.16.0.43/8.16.0.43) with SMTP id
- 15IG0sSL005128; Fri, 18 Jun 2021 16:06:57 GMT
+ 15IG0vxw005150; Fri, 18 Jun 2021 16:06:57 GMT
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=oracle.com;
  h=from : to : cc :
- subject : date : message-id; s=corp-2020-01-29;
- bh=cZtN+8nwtoxzhypWMGF1iqcvE3f3HnWCGtPwWI8XDW4=;
- b=x1D8TcHCTJNefN2K5hbMyHjXlF1f+b65shWXgPtY260zKpZHmZ5PiSEx/J4sg6n/W2J/
- ynDNa6bn1hPMnOavDvBVgox82u3/nzM5mS6Oo6WbBQ5WAxW3vm/6sfJCgXsaKOwucI3o
- SQw9zyLrTP/lq7Vjyq4h0hsgT9w9H4U7TcI2lWwGzUxdaMeQHMmjnu/ci4/t/iRwpecG
- jiYKo3l4NbfArpFW9rbIgLU6fY43fWgdNkgqsTGkqQ7t1ZzBR5aXdt/OAyObDGF4xT4r
- M1yBMPPyq1c4H2lWEPeX/ek0Qu6EXUA43hb1MpTRGcqcQaJO24TWiZONQK7aenn3yEEU cA== 
-Received: from aserp3020.oracle.com (aserp3020.oracle.com [141.146.126.70])
- by mx0b-00069f02.pphosted.com with ESMTP id 397mptmbhd-1
+ subject : date : message-id : in-reply-to : references; s=corp-2020-01-29;
+ bh=XrGHIaHHaXwLYu2CFXEuXnO6cEoUo0eTbOP7lAlnnPs=;
+ b=i0Hx9dkvEXG1437lli4MHh55wuXe0lEfa476URaec+mbPU5rf9Cte8RH3BxXk7mv2sqb
+ gLtBlCgBYiQGLCNiBc/uK5SljeUaEzgrnedMur3BXLZLCMrC5FTVSzjCv4jSc76xFQQ3
+ QUBxDkbA4iBDQ4Q30jJ/+tW2v5qCgaR9GevqoWwxh0Pe1Cjb+X1RLQfXwSdOQLE1cT3m
+ cMyiuhsBfjzztubiu2WrRSVRWebfzJFsiLh8JKSoBuZpdm/CqYAZP/ES72T/vaJPKEQr
+ Ngt8a6/A8hxK1I6LP6ASklUPa3T2nukkFi2sYxLitQJxguP0OQDh4JG1ubcLXQEsIPNb yA== 
+Received: from userp3020.oracle.com (userp3020.oracle.com [156.151.31.79])
+ by mx0b-00069f02.pphosted.com with ESMTP id 397mptmbhb-1
  (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
  Fri, 18 Jun 2021 16:06:56 +0000
-Received: from pps.filterd (aserp3020.oracle.com [127.0.0.1])
- by aserp3020.oracle.com (8.16.0.42/8.16.0.42) with SMTP id 15IG1Hbf173276;
+Received: from pps.filterd (userp3020.oracle.com [127.0.0.1])
+ by userp3020.oracle.com (8.16.0.42/8.16.0.42) with SMTP id 15IG1c0X154948;
  Fri, 18 Jun 2021 16:06:55 GMT
 Received: from pps.reinject (localhost [127.0.0.1])
- by aserp3020.oracle.com with ESMTP id 396way763w-1
+ by userp3020.oracle.com with ESMTP id 396wayyuy0-1
  (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
  Fri, 18 Jun 2021 16:06:55 +0000
-Received: from aserp3020.oracle.com (aserp3020.oracle.com [127.0.0.1])
- by pps.reinject (8.16.0.36/8.16.0.36) with SMTP id 15IG6s8f014307;
+Received: from userp3020.oracle.com (userp3020.oracle.com [127.0.0.1])
+ by pps.reinject (8.16.0.36/8.16.0.36) with SMTP id 15IG6sAF167646;
  Fri, 18 Jun 2021 16:06:54 GMT
-Received: from userv0122.oracle.com (userv0122.oracle.com [156.151.31.75])
- by aserp3020.oracle.com with ESMTP id 396way7622-1
+Received: from aserv0121.oracle.com (aserv0121.oracle.com [141.146.126.235])
+ by userp3020.oracle.com with ESMTP id 396wayyuxf-1
  (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
  Fri, 18 Jun 2021 16:06:54 +0000
 Received: from abhmp0001.oracle.com (abhmp0001.oracle.com [141.146.116.7])
- by userv0122.oracle.com (8.14.4/8.14.4) with ESMTP id 15IG6iP0011853;
- Fri, 18 Jun 2021 16:06:44 GMT
+ by aserv0121.oracle.com (8.14.4/8.13.8) with ESMTP id 15IG6keu018472;
+ Fri, 18 Jun 2021 16:06:46 GMT
 Received: from lateralus.us.oracle.com (/10.149.232.101)
  by default (Oracle Beehive Gateway v4.0)
- with ESMTP ; Fri, 18 Jun 2021 16:06:44 +0000
+ with ESMTP ; Fri, 18 Jun 2021 16:06:46 +0000
 From: Ross Philipson <ross.philipson@oracle.com>
 To: linux-kernel@vger.kernel.org, x86@kernel.org,
  iommu@lists.linux-foundation.org, linux-integrity@vger.kernel.org,
  linux-doc@vger.kernel.org
-Subject: [PATCH v2 00/12] x86: Trenchboot secure dynamic launch Linux kernel
- support
-Date: Fri, 18 Jun 2021 12:12:45 -0400
-Message-Id: <1624032777-7013-1-git-send-email-ross.philipson@oracle.com>
+Subject: [PATCH v2 02/12] x86: Secure Launch Kconfig
+Date: Fri, 18 Jun 2021 12:12:47 -0400
+Message-Id: <1624032777-7013-3-git-send-email-ross.philipson@oracle.com>
 X-Mailer: git-send-email 1.8.3.1
-X-Proofpoint-GUID: kfnuDuVbn0NqkP9qJ6fRNWohmbPfUOk1
-X-Proofpoint-ORIG-GUID: kfnuDuVbn0NqkP9qJ6fRNWohmbPfUOk1
+In-Reply-To: <1624032777-7013-1-git-send-email-ross.philipson@oracle.com>
+References: <1624032777-7013-1-git-send-email-ross.philipson@oracle.com>
+X-Proofpoint-GUID: LsQH5TrBIUCZUqniYzId3TotAvVgrspv
+X-Proofpoint-ORIG-GUID: LsQH5TrBIUCZUqniYzId3TotAvVgrspv
 Cc: dpsmith@apertussolutions.com, ross.philipson@oracle.com,
  luto@amacapital.net, mingo@redhat.com, bp@alien8.de, hpa@zytor.com,
  tglx@linutronix.de, trenchboot-devel@googlegroups.com
@@ -114,174 +117,57 @@ Content-Transfer-Encoding: 7bit
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-The focus of Trechboot project (https://github.com/TrenchBoot) is to
-enhance the boot security and integrity. This requires the linux kernel
-to be directly invoked by x86 Dynamic launch measurements to establish
-Dynamic Root of Trust for Measurement (DRTM). The dynamic launch will
-be initiated by a boot loader with associated support added to it, for
-example the first targeted boot loader will be GRUB2. An integral part of
-establishing the DRTM involves measuring everything that is intended to
-be run (kernel image, initrd, etc) and everything that will configure
-that kernel to run (command line, boot params, etc) into specific PCRs,
-the DRTM PCRs (17-22), in the TPM. Another key aspect is the dynamic
-launch is rooted in hardware, that is to say the hardware (CPU) is what
-takes the first measurement for the chain of integrity measurements. On
-Intel this is done using the GETSEC instruction provided by Intel's TXT
-and the SKINIT instruction provided by AMD's AMD-V. Information on these
-technologies can be readily found online. This patchset introduces Intel
-TXT support.
+Initial bits to bring in Secure Launch functionality. Add Kconfig
+options for compiling in/out the Secure Launch code.
 
-To enable the kernel to be launched by GETSEC, a stub must be built
-into the setup section of the compressed kernel to handle the specific
-state that the dynamic launch process leaves the BSP in. Also this stub
-must measure everything that is going to be used as early as possible.
-This stub code and subsequent code must also deal with the specific
-state that the dynamic launch leaves the APs in.
+Signed-off-by: Ross Philipson <ross.philipson@oracle.com>
+---
+ arch/x86/Kconfig | 32 ++++++++++++++++++++++++++++++++
+ 1 file changed, 32 insertions(+)
 
-A quick note on terminology. The larger open source project itself is
-called Trenchboot, which is hosted on Github (links below). The kernel
-feature enabling the use of the x86 technology is referred to as "Secure
-Launch" within the kernel code. As such the prefixes sl_/SL_ or
-slaunch/SLAUNCH will be seen in the code. The stub code discussed above
-is referred to as the SL stub.
-
-Note that patch 1 was authored by Arvind Sankar. We were not able to get
-a status on this patch but Secure Launch depends on it so it is included
-with the set.
-
-The basic flow is:
-
- - Entry from the dynamic launch jumps to the SL stub
- - SL stub fixes up the world on the BSP
- - For TXT, SL stub wakes the APs, fixes up their worlds
- - For TXT, APs are left halted waiting for an NMI to wake them
- - SL stub jumps to startup_32
- - SL main locates the TPM event log and writes the measurements of
-   configuration and module information into it.
- - Kernel boot proceeds normally from this point.
- - During early setup, slaunch_setup() runs to finish some validation
-   and setup tasks.
- - The SMP bringup code is modified to wake the waiting APs. APs vector
-   to rmpiggy and start up normally from that point.
- - SL platform module is registered as a late initcall module. It reads
-   the TPM event log and extends the measurements taken into the TPM PCRs.
- - SL platform module initializes the securityfs interface to allow
-   asccess to the TPM event log and TXT public registers.
- - Kernel boot finishes booting normally
- - SEXIT support to leave SMX mode is present on the kexec path and
-   the various reboot paths (poweroff, reset, halt).
-
-Links:
-
-The Trenchboot project including documentation:
-
-https://github.com/trenchboot
-
-Intel TXT is documented in its own specification and in the SDM Instruction Set volume:
-
-https://www.intel.com/content/dam/www/public/us/en/documents/guides/intel-txt-software-development-guide.pdf
-https://software.intel.com/en-us/articles/intel-sdm
-
-AMD SKINIT is documented in the System Programming manual:
-
-https://www.amd.com/system/files/TechDocs/24593.pdf
-
-GRUB2 pre-launch support patchset (WIP):
-
-https://lists.gnu.org/archive/html/grub-devel/2020-05/msg00011.html
-
-Thanks
-Ross Philipson and Daniel P. Smith
-
-Changes in v2:
-
- - Modified 32b entry code to prevent causing relocations in the compressed
-   kernel.
- - Dropped patches for compressed kernel TPM PCR extender.
- - Modified event log code to insert log delimiter events and not rely
-   on TPM access.
- - Stop extending PCRs in the early Secure Launch stub code.
- - Removed Kconfig options for hash algorithms and use the algorithms the
-   ACM used.
- - Match Secure Launch measurement algorithm use to those reported in the
-   TPM 2.0 event log.
- - Read the TPM events out of the TPM and extend them into the PCRs using
-   the mainline TPM driver. This is done in the late initcall module.
- - Allow use of alternate PCR 19 and 20 for post ACM measurements.
- - Add Kconfig constraints needed by Secure Launch (disable KASLR
-   and add x2apic dependency).
- - Fix testing of SL_FLAGS when determining if Secure Launch is active
-   and the architecture is TXT.
- - Use SYM_DATA_START_LOCAL macros in early entry point code.
- - Security audit changes:
-   - Validate buffers passed to MLE do not overlap the MLE and are
-     properly laid out.
-   - Validate buffers and memory regions used by the MLE are
-     protected by IOMMU PMRs.
- - Force IOMMU to not use passthrough mode during a Secure Launch.
- - Prevent KASLR use during a Secure Launch.
-
-Arvind Sankar (1):
-  x86/boot: Place kernel_info at a fixed offset
-
-Daniel P. Smith (2):
-  x86: Add early SHA support for Secure Launch early measurements
-  x86: Secure Launch late initcall platform module
-
-Ross Philipson (9):
-  x86: Secure Launch Kconfig
-  x86: Secure Launch main header file
-  x86: Secure Launch kernel early boot stub
-  x86: Secure Launch kernel late boot stub
-  x86: Secure Launch SMP bringup support
-  kexec: Secure Launch kexec SEXIT support
-  reboot: Secure Launch SEXIT support on reboot paths
-  tpm: Allow locality 2 to be set when initializing the TPM for Secure
-    Launch
-  iommu: Do not allow IOMMU passthrough with Secure Launch
-
- Documentation/x86/boot.rst              |  13 +
- arch/x86/Kconfig                        |  32 ++
- arch/x86/boot/compressed/Makefile       |   3 +
- arch/x86/boot/compressed/early_sha1.c   | 103 +++++
- arch/x86/boot/compressed/early_sha1.h   |  17 +
- arch/x86/boot/compressed/early_sha256.c |   7 +
- arch/x86/boot/compressed/head_64.S      |  37 ++
- arch/x86/boot/compressed/kaslr.c        |  11 +
- arch/x86/boot/compressed/kernel_info.S  |  52 ++-
- arch/x86/boot/compressed/kernel_info.h  |  12 +
- arch/x86/boot/compressed/sl_main.c      | 523 +++++++++++++++++++++++++
- arch/x86/boot/compressed/sl_stub.S      | 667 ++++++++++++++++++++++++++++++++
- arch/x86/boot/compressed/vmlinux.lds.S  |   6 +
- arch/x86/include/asm/realmode.h         |   3 +
- arch/x86/kernel/Makefile                |   2 +
- arch/x86/kernel/asm-offsets.c           |  19 +
- arch/x86/kernel/reboot.c                |  10 +
- arch/x86/kernel/setup.c                 |   3 +
- arch/x86/kernel/slaunch.c               | 543 ++++++++++++++++++++++++++
- arch/x86/kernel/slmodule.c              | 495 ++++++++++++++++++++++++
- arch/x86/kernel/smpboot.c               |  86 ++++
- arch/x86/realmode/rm/header.S           |   3 +
- arch/x86/realmode/rm/trampoline_64.S    |  37 ++
- drivers/char/tpm/tpm-chip.c             |  13 +-
- drivers/iommu/intel/dmar.c              |   4 +
- drivers/iommu/intel/iommu.c             |   5 +
- drivers/iommu/iommu.c                   |   6 +-
- include/linux/slaunch.h                 | 540 ++++++++++++++++++++++++++
- kernel/kexec_core.c                     |   4 +
- lib/crypto/sha256.c                     |   8 +
- lib/sha1.c                              |   4 +
- 31 files changed, 3261 insertions(+), 7 deletions(-)
- create mode 100644 arch/x86/boot/compressed/early_sha1.c
- create mode 100644 arch/x86/boot/compressed/early_sha1.h
- create mode 100644 arch/x86/boot/compressed/early_sha256.c
- create mode 100644 arch/x86/boot/compressed/kernel_info.h
- create mode 100644 arch/x86/boot/compressed/sl_main.c
- create mode 100644 arch/x86/boot/compressed/sl_stub.S
- create mode 100644 arch/x86/kernel/slaunch.c
- create mode 100644 arch/x86/kernel/slmodule.c
- create mode 100644 include/linux/slaunch.h
-
+diff --git a/arch/x86/Kconfig b/arch/x86/Kconfig
+index 0045e1b..65d69f0 100644
+--- a/arch/x86/Kconfig
++++ b/arch/x86/Kconfig
+@@ -1989,6 +1989,38 @@ config EFI_MIXED
+ 
+ 	   If unsure, say N.
+ 
++config SECURE_LAUNCH
++	bool "Secure Launch support"
++	default n
++	depends on X86_64 && X86_X2APIC
++	help
++	   The Secure Launch feature allows a kernel to be loaded
++	   directly through an Intel TXT measured launch. Intel TXT
++	   establishes a Dynamic Root of Trust for Measurement (DRTM)
++	   where the CPU measures the kernel image. This feature then
++	   continues the measurement chain over kernel configuration
++	   information and init images.
++
++config SECURE_LAUNCH_ALT_PCR19
++	bool "Secure Launch Alternate PCR 19 usage"
++	default n
++	depends on SECURE_LAUNCH
++	help
++	   In the post ACM environment, Secure Launch by default measures
++	   configuration information into PCR18. This feature allows finer
++	   control over measurements by moving configuration measurements
++	   into PCR19.
++
++config SECURE_LAUNCH_ALT_PCR20
++	bool "Secure Launch Alternate PCR 20 usage"
++	default n
++	depends on SECURE_LAUNCH
++	help
++	   In the post ACM environment, Secure Launch by default measures
++	   image data like any external initrd into PCR17. This feature
++	   allows finer control over measurements by moving image measurements
++	   into PCR20.
++
+ source "kernel/Kconfig.hz"
+ 
+ config KEXEC
 -- 
 1.8.3.1
 
