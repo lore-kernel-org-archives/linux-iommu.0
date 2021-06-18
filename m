@@ -5,97 +5,97 @@ X-Spam-Level:
 X-Spam-Status: No, score=-16.5 required=3.0 tests=BAYES_00,DKIM_INVALID,
 	DKIM_SIGNED,HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_CR_TRAILER,INCLUDES_PATCH,
 	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,UNPARSEABLE_RELAY,URIBL_BLOCKED,
-	USER_AGENT_GIT autolearn=ham autolearn_force=no version=3.4.0
+	USER_AGENT_GIT autolearn=unavailable autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B6544C49ECB
-	for <iommu@archiver.kernel.org>; Fri, 18 Jun 2021 16:07:30 +0000 (UTC)
-Received: from smtp3.osuosl.org (smtp3.osuosl.org [140.211.166.136])
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E1935C4BA06
+	for <iommu@archiver.kernel.org>; Fri, 18 Jun 2021 16:07:31 +0000 (UTC)
+Received: from smtp4.osuosl.org (smtp4.osuosl.org [140.211.166.137])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 7C0D1613E8
-	for <iommu@archiver.kernel.org>; Fri, 18 Jun 2021 16:07:30 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 7C0D1613E8
+	by mail.kernel.org (Postfix) with ESMTPS id A9CD3613E2
+	for <iommu@archiver.kernel.org>; Fri, 18 Jun 2021 16:07:31 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org A9CD3613E2
 Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=oracle.com
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by smtp3.osuosl.org (Postfix) with ESMTP id 9C892607AD;
-	Fri, 18 Jun 2021 16:07:29 +0000 (UTC)
+	by smtp4.osuosl.org (Postfix) with ESMTP id 77434415C6;
+	Fri, 18 Jun 2021 16:07:31 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from smtp3.osuosl.org ([127.0.0.1])
-	by localhost (smtp3.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id Q2N-iawiBwbr; Fri, 18 Jun 2021 16:07:28 +0000 (UTC)
-Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by smtp3.osuosl.org (Postfix) with ESMTPS id 073B46079B;
+Received: from smtp4.osuosl.org ([127.0.0.1])
+	by localhost (smtp4.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+	with ESMTP id pKIRlg_YdAlu; Fri, 18 Jun 2021 16:07:29 +0000 (UTC)
+Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [IPv6:2605:bc80:3010:104::8cd3:938])
+	by smtp4.osuosl.org (Postfix) with ESMTPS id CFEB8415D7;
 	Fri, 18 Jun 2021 16:07:28 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 9DCD2C0023;
-	Fri, 18 Jun 2021 16:07:27 +0000 (UTC)
-Received: from smtp3.osuosl.org (smtp3.osuosl.org [140.211.166.136])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 846DDC0023
- for <iommu@lists.linux-foundation.org>; Fri, 18 Jun 2021 16:07:23 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 0A4B6C000F;
+	Fri, 18 Jun 2021 16:07:28 +0000 (UTC)
+Received: from smtp2.osuosl.org (smtp2.osuosl.org [IPv6:2605:bc80:3010::133])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id EB12FC000B
+ for <iommu@lists.linux-foundation.org>; Fri, 18 Jun 2021 16:07:24 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by smtp3.osuosl.org (Postfix) with ESMTP id 71FA860771
- for <iommu@lists.linux-foundation.org>; Fri, 18 Jun 2021 16:07:23 +0000 (UTC)
+ by smtp2.osuosl.org (Postfix) with ESMTP id BBBFF404B9
+ for <iommu@lists.linux-foundation.org>; Fri, 18 Jun 2021 16:07:24 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from smtp3.osuosl.org ([127.0.0.1])
- by localhost (smtp3.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id J6Aimd7arTVB for <iommu@lists.linux-foundation.org>;
+Authentication-Results: smtp2.osuosl.org (amavisd-new);
+ dkim=pass (2048-bit key) header.d=oracle.com
+Received: from smtp2.osuosl.org ([127.0.0.1])
+ by localhost (smtp2.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+ with ESMTP id MYqXkNuZfxFb for <iommu@lists.linux-foundation.org>;
  Fri, 18 Jun 2021 16:07:22 +0000 (UTC)
 X-Greylist: domain auto-whitelisted by SQLgrey-1.8.0
 Received: from mx0a-00069f02.pphosted.com (mx0a-00069f02.pphosted.com
  [205.220.165.32])
- by smtp3.osuosl.org (Postfix) with ESMTPS id 40B51605DD
+ by smtp2.osuosl.org (Postfix) with ESMTPS id 43780400DC
  for <iommu@lists.linux-foundation.org>; Fri, 18 Jun 2021 16:07:22 +0000 (UTC)
-Received: from pps.filterd (m0246629.ppops.net [127.0.0.1])
+Received: from pps.filterd (m0246627.ppops.net [127.0.0.1])
  by mx0b-00069f02.pphosted.com (8.16.0.43/8.16.0.43) with SMTP id
- 15IG27Nn010940; Fri, 18 Jun 2021 16:06:56 GMT
+ 15IG2iAZ030721; Fri, 18 Jun 2021 16:06:57 GMT
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=oracle.com;
  h=from : to : cc :
- subject : date : message-id : in-reply-to : references : mime-version :
- content-type : content-transfer-encoding; s=corp-2020-01-29;
- bh=ywRYdfe4bagcyGPWPLacw7UIxWIFVal1iBliSqB3JJw=;
- b=j10iJlUrrpEU0t/W+Toa1kvMYbuJRLiVTMXw0vtrbV3CToqn59vTXUKTeLjuI8m34kla
- kR8aJkB/ju4qDJSl1wk9yTQLTCFNiVgajFnRJPJcceeW0s+58FeiAElbSQpDNbKRbGaF
- MTWIcv9h2O+83oop9zpU8nooPdCtFSOygE5mvAkcmxoxY6slnuV+aGPTu++6Rcswarjy
- nk3X+2nMWoa9wROKj2bNP+JFilBSDDCkDoTAdzwuDOB/mzr47HcDAG8Y4ni80B0YTcZQ
- 3jVrXUQeVbjlb5DGNnkayC0/aSII7gV/4hCVLIPhkNRIgMGk97ciqneZQKqabrlen7b/ 9A== 
-Received: from aserp3020.oracle.com (aserp3020.oracle.com [141.146.126.70])
- by mx0b-00069f02.pphosted.com with ESMTP id 398xmp00cg-1
+ subject : date : message-id : in-reply-to : references; s=corp-2020-01-29;
+ bh=TG7/oBiNUyYBBN3Qt71HamKkCDEgHpTtZLRCVvXCLJg=;
+ b=jc+NY/MX3iTvddlaoSzPVN4uyzDRMxwYzxq+/6wM/l2s46XPI29QEhhxQac4icEh1oco
+ Vsygaj2YICeV3b8NINyc0Rx9VfViq/UWMCyhhHCSR8ofNLbDO0wwntuEF8N4lRYm8jtC
+ vOSn38mnuizdzJLaq4e3FclQ789htM8DKogX3aMTzLWvciZHOYvr9DpLj0o2hPAPyJGq
+ aMtgmERFs1r1ShXgeSm6pils99jG/6mvrjV4mmuuYGnbq0CXo6GY/TL/UgQNGm1fiK0X
+ vg4JjXnzWyeNwMcmQ4UooqvldvMmZUt38cpdAEbKl0SVmzfC4yB26HfxnhTPc6iAMJIB Pg== 
+Received: from userp3030.oracle.com (userp3030.oracle.com [156.151.31.80])
+ by mx0b-00069f02.pphosted.com with ESMTP id 398tu1rgsb-1
  (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
- Fri, 18 Jun 2021 16:06:56 +0000
-Received: from pps.filterd (aserp3020.oracle.com [127.0.0.1])
- by aserp3020.oracle.com (8.16.0.42/8.16.0.42) with SMTP id 15IG1G9P173063;
+ Fri, 18 Jun 2021 16:06:57 +0000
+Received: from pps.filterd (userp3030.oracle.com [127.0.0.1])
+ by userp3030.oracle.com (8.16.0.42/8.16.0.42) with SMTP id 15IG10vw115012;
  Fri, 18 Jun 2021 16:06:55 GMT
 Received: from pps.reinject (localhost [127.0.0.1])
- by aserp3020.oracle.com with ESMTP id 396way7634-1
+ by userp3030.oracle.com with ESMTP id 396warjeyq-1
  (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
  Fri, 18 Jun 2021 16:06:55 +0000
-Received: from aserp3020.oracle.com (aserp3020.oracle.com [127.0.0.1])
- by pps.reinject (8.16.0.36/8.16.0.36) with SMTP id 15IG6sbL014257;
+Received: from userp3030.oracle.com (userp3030.oracle.com [127.0.0.1])
+ by pps.reinject (8.16.0.36/8.16.0.36) with SMTP id 15IG19Lx115972;
  Fri, 18 Jun 2021 16:06:54 GMT
-Received: from aserv0121.oracle.com (aserv0121.oracle.com [141.146.126.235])
- by aserp3020.oracle.com with ESMTP id 396way761u-1
+Received: from userv0121.oracle.com (userv0121.oracle.com [156.151.31.72])
+ by userp3030.oracle.com with ESMTP id 396warjey9-1
  (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
  Fri, 18 Jun 2021 16:06:54 +0000
 Received: from abhmp0001.oracle.com (abhmp0001.oracle.com [141.146.116.7])
- by aserv0121.oracle.com (8.14.4/8.13.8) with ESMTP id 15IG6lTd018473;
- Fri, 18 Jun 2021 16:06:47 GMT
+ by userv0121.oracle.com (8.14.4/8.13.8) with ESMTP id 15IG6nZJ021784;
+ Fri, 18 Jun 2021 16:06:49 GMT
 Received: from lateralus.us.oracle.com (/10.149.232.101)
  by default (Oracle Beehive Gateway v4.0)
- with ESMTP ; Fri, 18 Jun 2021 16:06:47 +0000
+ with ESMTP ; Fri, 18 Jun 2021 16:06:48 +0000
 From: Ross Philipson <ross.philipson@oracle.com>
 To: linux-kernel@vger.kernel.org, x86@kernel.org,
  iommu@lists.linux-foundation.org, linux-integrity@vger.kernel.org,
  linux-doc@vger.kernel.org
-Subject: [PATCH v2 03/12] x86: Secure Launch main header file
-Date: Fri, 18 Jun 2021 12:12:48 -0400
-Message-Id: <1624032777-7013-4-git-send-email-ross.philipson@oracle.com>
+Subject: [PATCH v2 05/12] x86: Secure Launch kernel early boot stub
+Date: Fri, 18 Jun 2021 12:12:50 -0400
+Message-Id: <1624032777-7013-6-git-send-email-ross.philipson@oracle.com>
 X-Mailer: git-send-email 1.8.3.1
 In-Reply-To: <1624032777-7013-1-git-send-email-ross.philipson@oracle.com>
 References: <1624032777-7013-1-git-send-email-ross.philipson@oracle.com>
-MIME-Version: 1.0
-X-Proofpoint-ORIG-GUID: vFDgaay_qK1AIOGvZenEKJNH8IWEvujj
-X-Proofpoint-GUID: vFDgaay_qK1AIOGvZenEKJNH8IWEvujj
+X-Proofpoint-GUID: -a6CK5K8EpOvD21FLPJU6hagZ-I-Hj9b
+X-Proofpoint-ORIG-GUID: -a6CK5K8EpOvD21FLPJU6hagZ-I-Hj9b
 Cc: dpsmith@apertussolutions.com, ross.philipson@oracle.com,
  luto@amacapital.net, mingo@redhat.com, bp@alien8.de, hpa@zytor.com,
  tglx@linutronix.de, trenchboot-devel@googlegroups.com
@@ -111,275 +111,1449 @@ List-Post: <mailto:iommu@lists.linux-foundation.org>
 List-Help: <mailto:iommu-request@lists.linux-foundation.org?subject=help>
 List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
  <mailto:iommu-request@lists.linux-foundation.org?subject=subscribe>
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
+MIME-Version: 1.0
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-SW50cm9kdWNlIHRoZSBtYWluIFNlY3VyZSBMYXVuY2ggaGVhZGVyIGZpbGUgdXNlZCBpbiB0aGUg
-ZWFybHkgU0wgc3R1YgphbmQgdGhlIGVhcmx5IHNldHVwIGNvZGUuCgpTaWduZWQtb2ZmLWJ5OiBS
-b3NzIFBoaWxpcHNvbiA8cm9zcy5waGlsaXBzb25Ab3JhY2xlLmNvbT4KLS0tCiBpbmNsdWRlL2xp
-bnV4L3NsYXVuY2guaCB8IDU0MCArKysrKysrKysrKysrKysrKysrKysrKysrKysrKysrKysrKysr
-KysrKysrKysrKysKIDEgZmlsZSBjaGFuZ2VkLCA1NDAgaW5zZXJ0aW9ucygrKQogY3JlYXRlIG1v
-ZGUgMTAwNjQ0IGluY2x1ZGUvbGludXgvc2xhdW5jaC5oCgpkaWZmIC0tZ2l0IGEvaW5jbHVkZS9s
-aW51eC9zbGF1bmNoLmggYi9pbmNsdWRlL2xpbnV4L3NsYXVuY2guaApuZXcgZmlsZSBtb2RlIDEw
-MDY0NAppbmRleCAwMDAwMDAwMC4uZGQ4ZDkyZQotLS0gL2Rldi9udWxsCisrKyBiL2luY2x1ZGUv
-bGludXgvc2xhdW5jaC5oCkBAIC0wLDAgKzEsNTQwIEBACisvKiBTUERYLUxpY2Vuc2UtSWRlbnRp
-ZmllcjogR1BMLTIuMCAqLworLyoKKyAqIE1haW4gU2VjdXJlIExhdW5jaCBoZWFkZXIgZmlsZS4K
-KyAqCisgKiBDb3B5cmlnaHQgKGMpIDIwMjEsIE9yYWNsZSBhbmQvb3IgaXRzIGFmZmlsaWF0ZXMu
-CisgKi8KKworI2lmbmRlZiBfTElOVVhfU0xBVU5DSF9ICisjZGVmaW5lIF9MSU5VWF9TTEFVTkNI
-X0gKKworLyoKKyAqIFNlY3VyZSBMYXVuY2ggRGVmaW5lZCBTdGF0ZSBGbGFncworICovCisjZGVm
-aW5lIFNMX0ZMQUdfQUNUSVZFCQkweDAwMDAwMDAxCisjZGVmaW5lIFNMX0ZMQUdfQVJDSF9TS0lO
-SVQJMHgwMDAwMDAwMgorI2RlZmluZSBTTF9GTEFHX0FSQ0hfVFhUCTB4MDAwMDAwMDQKKworLyoK
-KyAqIFNlY3VyZSBMYXVuY2ggQ1BVIFR5cGUKKyAqLworI2RlZmluZSBTTF9DUFVfQU1ECTEKKyNk
-ZWZpbmUgU0xfQ1BVX0lOVEVMCTIKKworI2lmIElTX0VOQUJMRUQoQ09ORklHX1NFQ1VSRV9MQVVO
-Q0gpCisKKyNkZWZpbmUgX19TTDMyX0NTCTB4MDAwOAorI2RlZmluZSBfX1NMMzJfRFMJMHgwMDEw
-CisKKyNkZWZpbmUgSU5URUxfQ1BVSURfTUZHSURfRUJYCTB4NzU2ZTY1NDcgLyogR2VudSAqLwor
-I2RlZmluZSBJTlRFTF9DUFVJRF9NRkdJRF9FRFgJMHg0OTY1NmU2OSAvKiBpbmVJICovCisjZGVm
-aW5lIElOVEVMX0NQVUlEX01GR0lEX0VDWAkweDZjNjU3NDZlIC8qIG50ZWwgKi8KKworI2RlZmlu
-ZSBBTURfQ1BVSURfTUZHSURfRUJYCTB4Njg3NDc1NDEgLyogQXV0aCAqLworI2RlZmluZSBBTURf
-Q1BVSURfTUZHSURfRURYCTB4Njk3NDZlNjUgLyogZW50aSAqLworI2RlZmluZSBBTURfQ1BVSURf
-TUZHSURfRUNYCTB4NDQ0ZDQxNjMgLyogY0FNRCAqLworCisvKgorICogSW50ZWwgU2FmZXIgTW9k
-ZSBFeHRlbnNpb25zIChTTVgpCisgKgorICogSW50ZWwgU01YIHByb3ZpZGVzIGEgcHJvZ3JhbW1p
-bmcgaW50ZXJmYWNlIHRvIGVzdGFibGlzaCBhIE1lYXN1cmVkIExhdW5jaGVkCisgKiBFbnZpcm9u
-bWVudCAoTUxFKS4gVGhlIG1lYXN1cmVtZW50IGFuZCBwcm90ZWN0aW9uIG1lY2hhbmlzbXMgc3Vw
-cG9ydGVkIGJ5IHRoZQorICogY2FwYWJpbGl0aWVzIG9mIGFuIEludGVsIFRydXN0ZWQgRXhlY3V0
-aW9uIFRlY2hub2xvZ3kgKFRYVCkgcGxhdGZvcm0uIFNNWCBpcworICogdGhlIHByb2Nlc3NvcuKA
-mXMgcHJvZ3JhbW1pbmcgaW50ZXJmYWNlIGluIGFuIEludGVsIFRYVCBwbGF0Zm9ybS4KKyAqCisg
-KiBTZWUgSW50ZWwgU0RNIFZvbHVtZSAyIC0gNi4xICJTYWZlciBNb2RlIEV4dGVuc2lvbnMgUmVm
-ZXJlbmNlIgorICovCisKKy8qCisgKiBTTVggR0VUU0VDIExlYWYgRnVuY3Rpb25zCisgKi8KKyNk
-ZWZpbmUgU01YX1g4Nl9HRVRTRUNfU0VYSVQJNQorI2RlZmluZSBTTVhfWDg2X0dFVFNFQ19TTUNU
-UkwJNworI2RlZmluZSBTTVhfWDg2X0dFVFNFQ19XQUtFVVAJOAorCisvKgorICogSW50ZWwgVHJ1
-c3RlZCBFeGVjdXRpb24gVGVjaG5vbG9neSBNTUlPIFJlZ2lzdGVycyBCYW5rcworICovCisjZGVm
-aW5lIFRYVF9QVUJfQ09ORklHX1JFR1NfQkFTRQkweGZlZDMwMDAwCisjZGVmaW5lIFRYVF9QUklW
-X0NPTkZJR19SRUdTX0JBU0UJMHhmZWQyMDAwMAorI2RlZmluZSBUWFRfTlJfQ09ORklHX1BBR0VT
-ICAgICAoKFRYVF9QVUJfQ09ORklHX1JFR1NfQkFTRSAtIFwKKwkJCQkgIFRYVF9QUklWX0NPTkZJ
-R19SRUdTX0JBU0UpID4+IFBBR0VfU0hJRlQpCisKKy8qCisgKiBJbnRlbCBUcnVzdGVkIEV4ZWN1
-dGlvbiBUZWNobm9sb2d5IChUWFQpIFJlZ2lzdGVycworICovCisjZGVmaW5lIFRYVF9DUl9TVFMJ
-CQkweDAwMDAKKyNkZWZpbmUgVFhUX0NSX0VTVFMJCQkweDAwMDgKKyNkZWZpbmUgVFhUX0NSX0VS
-Uk9SQ09ERQkJMHgwMDMwCisjZGVmaW5lIFRYVF9DUl9DTURfUkVTRVQJCTB4MDAzOAorI2RlZmlu
-ZSBUWFRfQ1JfQ01EX0NMT1NFX1BSSVZBVEUJMHgwMDQ4CisjZGVmaW5lIFRYVF9DUl9ESURWSUQJ
-CQkweDAxMTAKKyNkZWZpbmUgVFhUX0NSX1ZFUl9FTUlGCQkJMHgwMjAwCisjZGVmaW5lIFRYVF9D
-Ul9DTURfVU5MT0NLX01FTV9DT05GSUcJMHgwMjE4CisjZGVmaW5lIFRYVF9DUl9TSU5JVF9CQVNF
-CQkweDAyNzAKKyNkZWZpbmUgVFhUX0NSX1NJTklUX1NJWkUJCTB4MDI3OAorI2RlZmluZSBUWFRf
-Q1JfTUxFX0pPSU4JCQkweDAyOTAKKyNkZWZpbmUgVFhUX0NSX0hFQVBfQkFTRQkJMHgwMzAwCisj
-ZGVmaW5lIFRYVF9DUl9IRUFQX1NJWkUJCTB4MDMwOAorI2RlZmluZSBUWFRfQ1JfU0NSQVRDSFBB
-RAkJMHgwMzc4CisjZGVmaW5lIFRYVF9DUl9DTURfT1BFTl9MT0NBTElUWTEJMHgwMzgwCisjZGVm
-aW5lIFRYVF9DUl9DTURfQ0xPU0VfTE9DQUxJVFkxCTB4MDM4OAorI2RlZmluZSBUWFRfQ1JfQ01E
-X09QRU5fTE9DQUxJVFkyCTB4MDM5MAorI2RlZmluZSBUWFRfQ1JfQ01EX0NMT1NFX0xPQ0FMSVRZ
-MgkweDAzOTgKKyNkZWZpbmUgVFhUX0NSX0NNRF9TRUNSRVRTCQkweDA4ZTAKKyNkZWZpbmUgVFhU
-X0NSX0NNRF9OT19TRUNSRVRTCQkweDA4ZTgKKyNkZWZpbmUgVFhUX0NSX0UyU1RTCQkJMHgwOGYw
-CisKKy8qIFRYVCBkZWZhdWx0IHJlZ2lzdGVyIHZhbHVlICovCisjZGVmaW5lIFRYVF9SRUdWQUxV
-RV9PTkUJCTB4MVVMTAorCisvKiBUWFRDUl9TVFMgc3RhdHVzIGJpdHMgKi8KKyNkZWZpbmUgVFhU
-X1NFTlRFUl9ET05FX1NUUwkJKDE8PDApCisjZGVmaW5lIFRYVF9TRVhJVF9ET05FX1NUUwkJKDE8
-PDEpCisKKy8qCisgKiBTSU5JVC9NTEUgQ2FwYWJpbGl0aWVzIEZpZWxkIEJpdCBEZWZpbml0aW9u
-cworICovCisjZGVmaW5lIFRYVF9TSU5JVF9NTEVfQ0FQX1dBS0VfR0VUU0VDCTAKKyNkZWZpbmUg
-VFhUX1NJTklUX01MRV9DQVBfV0FLRV9NT05JVE9SCTEKKworLyoKKyAqIE9TL01MRSBTZWN1cmUg
-TGF1bmNoIFNwZWNpZmljIERlZmluaXRpb25zCisgKi8KKyNkZWZpbmUgVFhUX09TX01MRV9TVFJV
-Q1RfVkVSU0lPTgkxCisjZGVmaW5lIFRYVF9PU19NTEVfTUFYX1ZBUklBQkxFX01UUlJTCTMyCisK
-Ky8qCisgKiBUWFQgSGVhcCBUYWJsZSBFbnVtZXJhdGlvbgorICovCisjZGVmaW5lIFRYVF9CSU9T
-X0RBVEFfVEFCTEUJCTEKKyNkZWZpbmUgVFhUX09TX01MRV9EQVRBX1RBQkxFCQkyCisjZGVmaW5l
-IFRYVF9PU19TSU5JVF9EQVRBX1RBQkxFCQkzCisjZGVmaW5lIFRYVF9TSU5JVF9NTEVfREFUQV9U
-QUJMRQk0CisjZGVmaW5lIFRYVF9TSU5JVF9UQUJMRV9NQVgJCVRYVF9TSU5JVF9NTEVfREFUQV9U
-QUJMRQorCisvKgorICogU2VjdXJlIExhdW5jaCBEZWZpbmVkIEVycm9yIENvZGVzIHVzZWQgaW4g
-TUxFLWluaXRpYXRlZCBUWFQgcmVzZXRzLgorICoKKyAqIFRYVCBTcGVjaWZpY2F0aW9uCisgKiBB
-cHBlbmRpeCBJIEFDTSBFcnJvciBDb2RlcworICovCisjZGVmaW5lIFNMX0VSUk9SX0dFTkVSSUMJ
-CTB4YzAwMDgwMDEKKyNkZWZpbmUgU0xfRVJST1JfVFBNX0lOSVQJCTB4YzAwMDgwMDIKKyNkZWZp
-bmUgU0xfRVJST1JfVFBNX0lOVkFMSURfTE9HMjAJMHhjMDAwODAwMworI2RlZmluZSBTTF9FUlJP
-Ul9UUE1fTE9HR0lOR19GQUlMRUQJMHhjMDAwODAwNAorI2RlZmluZSBTTF9FUlJPUl9SRUdJT05f
-U1RSQURETEVfNEdCCTB4YzAwMDgwMDUKKyNkZWZpbmUgU0xfRVJST1JfVFBNX0VYVEVORAkJMHhj
-MDAwODAwNgorI2RlZmluZSBTTF9FUlJPUl9NVFJSX0lOVl9WQ05UCQkweGMwMDA4MDA3CisjZGVm
-aW5lIFNMX0VSUk9SX01UUlJfSU5WX0RFRl9UWVBFCTB4YzAwMDgwMDgKKyNkZWZpbmUgU0xfRVJS
-T1JfTVRSUl9JTlZfQkFTRQkJMHhjMDAwODAwOQorI2RlZmluZSBTTF9FUlJPUl9NVFJSX0lOVl9N
-QVNLCQkweGMwMDA4MDBhCisjZGVmaW5lIFNMX0VSUk9SX01TUl9JTlZfTUlTQ19FTgkweGMwMDA4
-MDBiCisjZGVmaW5lIFNMX0VSUk9SX0lOVl9BUF9JTlRFUlJVUFQJMHhjMDAwODAwYworI2RlZmlu
-ZSBTTF9FUlJPUl9JTlRFR0VSX09WRVJGTE9XCTB4YzAwMDgwMGQKKyNkZWZpbmUgU0xfRVJST1Jf
-SEVBUF9XQUxLCQkweGMwMDA4MDBlCisjZGVmaW5lIFNMX0VSUk9SX0hFQVBfTUFQCQkweGMwMDA4
-MDBmCisjZGVmaW5lIFNMX0VSUk9SX1JFR0lPTl9BQk9WRV80R0IJMHhjMDAwODAxMAorI2RlZmlu
-ZSBTTF9FUlJPUl9IRUFQX0lOVkFMSURfRE1BUgkweGMwMDA4MDExCisjZGVmaW5lIFNMX0VSUk9S
-X0hFQVBfRE1BUl9TSVpFCQkweGMwMDA4MDEyCisjZGVmaW5lIFNMX0VSUk9SX0hFQVBfRE1BUl9N
-QVAJCTB4YzAwMDgwMTMKKyNkZWZpbmUgU0xfRVJST1JfSElfUE1SX0JBU0UJCTB4YzAwMDgwMTQK
-KyNkZWZpbmUgU0xfRVJST1JfSElfUE1SX1NJWkUJCTB4YzAwMDgwMTUKKyNkZWZpbmUgU0xfRVJS
-T1JfTE9fUE1SX0JBU0UJCTB4YzAwMDgwMTYKKyNkZWZpbmUgU0xfRVJST1JfTE9fUE1SX01MRQkJ
-MHhjMDAwODAxNworI2RlZmluZSBTTF9FUlJPUl9JTklUUkRfVE9PX0JJRwkJMHhjMDAwODAxOAor
-I2RlZmluZSBTTF9FUlJPUl9IRUFQX1pFUk9fT0ZGU0VUCTB4YzAwMDgwMTkKKyNkZWZpbmUgU0xf
-RVJST1JfV0FLRV9CTE9DS19UT09fU01BTEwJMHhjMDAwODAxYQorI2RlZmluZSBTTF9FUlJPUl9N
-TEVfQlVGRkVSX09WRVJMQVAJMHhjMDAwODAxYgorI2RlZmluZSBTTF9FUlJPUl9CVUZGRVJfQkVZ
-T05EX1BNUgkweGMwMDA4MDFjCisjZGVmaW5lIFNMX0VSUk9SX09TX1NJTklUX0JBRF9WRVJTSU9O
-CTB4YzAwMDgwMWQKKyNkZWZpbmUgU0xfRVJST1JfRVZFTlRMT0dfTUFQCQkweGMwMDA4MDFlCisj
-ZGVmaW5lIFNMX0VSUk9SX1RQTV9OVU1CRVJfQUxHUwkweGMwMDA4MDFmCisjZGVmaW5lIFNMX0VS
-Uk9SX1RQTV9VTktOT1dOX0RJR0VTVAkweGMwMDA4MDIwCisjZGVmaW5lIFNMX0VSUk9SX1RQTV9J
-TlZBTElEX0VWRU5UCTB4YzAwMDgwMjEKKworLyoKKyAqIFNlY3VyZSBMYXVuY2ggRGVmaW5lZCBM
-aW1pdHMKKyAqLworI2RlZmluZSBUWFRfTUFYX0NQVVMJCTUxMgorI2RlZmluZSBUWFRfQk9PVF9T
-VEFDS19TSVpFCTI0CisKKy8qCisgKiBTZWN1cmUgTGF1bmNoIGV2ZW50IGxvZyBlbnRyeSB0eXBl
-LiBUaGUgVFhUIHNwZWNpZmljYXRpb24gZGVmaW5lcyB0aGUKKyAqIGJhc2UgZXZlbnQgdmFsdWUg
-YXMgMHg0MDAgZm9yIERSVE0gdmFsdWVzLgorICovCisjZGVmaW5lIFRYVF9FVlRZUEVfQkFTRQkJ
-CTB4NDAwCisjZGVmaW5lIFRYVF9FVlRZUEVfU0xBVU5DSAkJKFRYVF9FVlRZUEVfQkFTRSArIDB4
-MTAyKQorI2RlZmluZSBUWFRfRVZUWVBFX1NMQVVOQ0hfU1RBUlQJKFRYVF9FVlRZUEVfQkFTRSAr
-IDB4MTAzKQorI2RlZmluZSBUWFRfRVZUWVBFX1NMQVVOQ0hfRU5ECQkoVFhUX0VWVFlQRV9CQVNF
-ICsgMHgxMDQpCisKKy8qCisgKiBNZWFzdXJlZCBMYXVuY2ggUENScworICovCisjZGVmaW5lIFNM
-X0RFRl9JTUFHRV9QQ1IxNwkxNyAvKiBUQ0cgRGV0YWlscyBQQ1IgKi8KKyNkZWZpbmUgU0xfREVG
-X0NPTkZJR19QQ1IxOAkxOCAvKiBUQ0cgQXV0aG9yaXRpZXMgUENSICovCisjZGVmaW5lIFNMX0FM
-VF9DT05GSUdfUENSMTkJMTkKKyNkZWZpbmUgU0xfQUxUX0lNQUdFX1BDUjIwCTIwCisKKy8qCisg
-KiBNTEUgc2NyYXRjaCBhcmVhIG9mZnNldHMKKyAqLworI2RlZmluZSBTTF9TQ1JBVENIX0FQX0VC
-WAkJMAorI2RlZmluZSBTTF9TQ1JBVENIX0FQX0pNUF9PRkZTRVQJNAorI2RlZmluZSBTTF9TQ1JB
-VENIX0FQX1BBVVNFCQk4CisKKyNpZm5kZWYgX19BU1NFTUJMWV9fCisKKyNpbmNsdWRlIDxsaW51
-eC9pby5oPgorI2luY2x1ZGUgPGxpbnV4L3RwbS5oPgorI2luY2x1ZGUgPGxpbnV4L3RwbV9ldmVu
-dGxvZy5oPgorCisvKgorICogU2VjdXJlIExhdW5jaCBBUCB3YWtldXAgaW5mb3JtYXRpb24gZmV0
-Y2hlZCBpbiBTTVAgYm9vdCBjb2RlLgorICovCitzdHJ1Y3Qgc2xfYXBfd2FrZV9pbmZvIHsKKwl1
-MzIgYXBfd2FrZV9ibG9jazsKKwl1MzIgYXBfd2FrZV9ibG9ja19zaXplOworCXUzMiBhcF9qbXBf
-b2Zmc2V0OworfTsKKworLyoKKyAqIFRYVCBoZWFwIGV4dGVuZGVkIGRhdGEgZWxlbWVudHMuCisg
-Ki8KK3N0cnVjdCB0eHRfaGVhcF9leHRfZGF0YV9lbGVtZW50IHsKKwl1MzIgdHlwZTsKKwl1MzIg
-c2l6ZTsKKwkvKiBEYXRhICovCit9IF9fcGFja2VkOworCisjZGVmaW5lIFRYVF9IRUFQX0VYVERB
-VEFfVFlQRV9FTkQJCQkwCisKK3N0cnVjdCB0eHRfaGVhcF9lbmRfZWxlbWVudCB7CisJdTMyIHR5
-cGU7CisJdTMyIHNpemU7Cit9IF9fcGFja2VkOworCisjZGVmaW5lIFRYVF9IRUFQX0VYVERBVEFf
-VFlQRV9UUE1fRVZFTlRfTE9HX1BUUgkJNQorCitzdHJ1Y3QgdHh0X2hlYXBfZXZlbnRfbG9nX2Vs
-ZW1lbnQgeworCXU2NCBldmVudF9sb2dfcGh5c19hZGRyOworfSBfX3BhY2tlZDsKKworI2RlZmlu
-ZSBUWFRfSEVBUF9FWFREQVRBX1RZUEVfRVZFTlRfTE9HX1BPSU5URVIyXzEJOAorCitzdHJ1Y3Qg
-dHh0X2hlYXBfZXZlbnRfbG9nX3BvaW50ZXIyXzFfZWxlbWVudCB7CisJdTY0IHBoeXNfYWRkcjsK
-Kwl1MzIgYWxsb2NhdGVkX2V2ZW50X2NvbnRhaW5lcl9zaXplOworCXUzMiBmaXJzdF9yZWNvcmRf
-b2Zmc2V0OworCXUzMiBuZXh0X3JlY29yZF9vZmZzZXQ7Cit9IF9fcGFja2VkOworCisvKgorICog
-U2VjdXJlIExhdW5jaCBkZWZpbmVkIE1UUlIgc2F2aW5nIHN0cnVjdHVyZXMKKyAqLworc3RydWN0
-IHR4dF9tdHJyX3BhaXIgeworCXU2NCBtdHJyX3BoeXNiYXNlOworCXU2NCBtdHJyX3BoeXNtYXNr
-OworfSBfX3BhY2tlZDsKKworc3RydWN0IHR4dF9tdHJyX3N0YXRlIHsKKwl1NjQgZGVmYXVsdF9t
-ZW1fdHlwZTsKKwl1NjQgbXRycl92Y250OworCXN0cnVjdCB0eHRfbXRycl9wYWlyIG10cnJfcGFp
-cltUWFRfT1NfTUxFX01BWF9WQVJJQUJMRV9NVFJSU107Cit9IF9fcGFja2VkOworCisvKgorICog
-U2VjdXJlIExhdW5jaCBkZWZpbmVkIE9TL01MRSBUWFQgSGVhcCB0YWJsZQorICovCitzdHJ1Y3Qg
-dHh0X29zX21sZV9kYXRhIHsKKwl1MzIgdmVyc2lvbjsKKwl1MzIgYm9vdF9wYXJhbXNfYWRkcjsK
-Kwl1NjQgc2F2ZWRfbWlzY19lbmFibGVfbXNyOworCXN0cnVjdCB0eHRfbXRycl9zdGF0ZSBzYXZl
-ZF9ic3BfbXRycnM7CisJdTMyIGFwX3dha2VfYmxvY2s7CisJdTMyIGFwX3dha2VfYmxvY2tfc2l6
-ZTsKKwl1NjQgZXZ0bG9nX2FkZHI7CisJdTMyIGV2dGxvZ19zaXplOworCXU4IG1sZV9zY3JhdGNo
-WzY0XTsKK30gX19wYWNrZWQ7CisKKy8qCisgKiBUWFQgc3BlY2lmaWNhdGlvbiBkZWZpbmVkIEJJ
-T1MgZGF0YSBUWFQgSGVhcCB0YWJsZQorICovCitzdHJ1Y3QgdHh0X2Jpb3NfZGF0YSB7CisJdTMy
-IHZlcnNpb247IC8qIEN1cnJlbnRseSA1IGZvciBUUE0gMS4yIGFuZCA2IGZvciBUUE0gMi4wICov
-CisJdTMyIGJpb3Nfc2luaXRfc2l6ZTsKKwl1NjQgcmVzZXJ2ZWQxOworCXU2NCByZXNlcnZlZDI7
-CisJdTMyIG51bV9sb2dpY2FsX3Byb2NzOworCS8qIFZlcnNpb25zID49IDUgd2l0aCB1cGRhdGVz
-IGluIHZlcnNpb24gNiAqLworCXUzMiBzaW5pdF9mbGFnczsKKwl1MzIgbWxlX2ZsYWdzOworCS8q
-IFZlcnNpb25zID49IDQgKi8KKwkvKiBFeHQgRGF0YSBFbGVtZW50cyAqLworfSBfX3BhY2tlZDsK
-KworLyoKKyAqIFRYVCBzcGVjaWZpY2F0aW9uIGRlZmluZWQgT1MvU0lOSVQgVFhUIEhlYXAgdGFi
-bGUKKyAqLworc3RydWN0IHR4dF9vc19zaW5pdF9kYXRhIHsKKwl1MzIgdmVyc2lvbjsgLyogQ3Vy
-cmVudGx5IDYgZm9yIFRQTSAxLjIgYW5kIDcgZm9yIFRQTSAyLjAgKi8KKwl1MzIgZmxhZ3M7CisJ
-dTY0IG1sZV9wdGFiOworCXU2NCBtbGVfc2l6ZTsKKwl1NjQgbWxlX2hkcl9iYXNlOworCXU2NCB2
-dGRfcG1yX2xvX2Jhc2U7CisJdTY0IHZ0ZF9wbXJfbG9fc2l6ZTsKKwl1NjQgdnRkX3Btcl9oaV9i
-YXNlOworCXU2NCB2dGRfcG1yX2hpX3NpemU7CisJdTY0IGxjcF9wb19iYXNlOworCXU2NCBsY3Bf
-cG9fc2l6ZTsKKwl1MzIgY2FwYWJpbGl0aWVzOworCS8qIFZlcnNpb24gPSA1ICovCisJdTY0IGVm
-aV9yc2R0X3B0cjsKKwkvKiBWZXJzaW9ucyA+PSA2ICovCisJLyogRXh0IERhdGEgRWxlbWVudHMg
-Ki8KK30gX19wYWNrZWQ7CisKKy8qCisgKiBUWFQgc3BlY2lmaWNhdGlvbiBkZWZpbmVkIFNJTklU
-L01MRSBUWFQgSGVhcCB0YWJsZQorICovCitzdHJ1Y3QgdHh0X3Npbml0X21sZV9kYXRhIHsKKwl1
-MzIgdmVyc2lvbjsgICAgICAgICAgICAgLyogQ3VycmVudCB2YWx1ZXMgYXJlIDYgdGhyb3VnaCA5
-ICovCisJLyogVmVyc2lvbnMgPD0gOCAqLworCXU4IGJpb3NfYWNtX2lkWzIwXTsKKwl1MzIgZWR4
-X3NlbnRlcl9mbGFnczsKKwl1NjQgbXNlZ192YWxpZDsKKwl1OCBzaW5pdF9oYXNoWzIwXTsKKwl1
-OCBtbGVfaGFzaFsyMF07CisJdTggc3RtX2hhc2hbMjBdOworCXU4IGxjcF9wb2xpY3lfaGFzaFsy
-MF07CisJdTMyIGxjcF9wb2xpY3lfY29udHJvbDsKKwkvKiBWZXJzaW9ucyA+PSA3ICovCisJdTMy
-IHJscF93YWtldXBfYWRkcjsKKwl1MzIgcmVzZXJ2ZWQ7CisJdTMyIG51bV9vZl9zaW5pdF9tZHJz
-OworCXUzMiBzaW5pdF9tZHJzX3RhYmxlX29mZnNldDsKKwl1MzIgc2luaXRfdnRkX2RtYXJfdGFi
-bGVfc2l6ZTsKKwl1MzIgc2luaXRfdnRkX2RtYXJfdGFibGVfb2Zmc2V0OworCS8qIFZlcnNpb25z
-ID49IDggKi8KKwl1MzIgcHJvY2Vzc29yX3NjcnRtX3N0YXR1czsKKwkvKiBWZXJzaW9ucyA+PSA5
-ICovCisJLyogRXh0IERhdGEgRWxlbWVudHMgKi8KK30gX19wYWNrZWQ7CisKKy8qCisgKiBUWFQg
-ZGF0YSByZXBvcnRpbmcgc3RydWN0dXJlIGZvciBtZW1vcnkgdHlwZXMKKyAqLworc3RydWN0IHR4
-dF9zaW5pdF9tZW1vcnlfZGVzY3JpcHRvcl9yZWNvcmQgeworCXU2NCBhZGRyZXNzOworCXU2NCBs
-ZW5ndGg7CisJdTggdHlwZTsKKwl1OCByZXNlcnZlZFs3XTsKK30gX19wYWNrZWQ7CisKKy8qCisg
-KiBUWFQgZGF0YSBzdHJ1Y3R1cmUgdXNlZCBieSBhIHJlc3BvbnNpdmUgbG9jYWwgcHJvY2Vzc29y
-IChSTFApIHRvIHN0YXJ0CisgKiBleGVjdXRpb24gaW4gcmVzcG9uc2UgdG8gYSBHRVRTRUNbV0FL
-RVVQXS4KKyAqLworc3RydWN0IHNteF9ybHBfbWxlX2pvaW4geworCXUzMiBybHBfZ2R0X2xpbWl0
-OworCXUzMiBybHBfZ2R0X2Jhc2U7CisJdTMyIHJscF9zZWdfc2VsOyAgICAgLyogY3MgKGRzLCBl
-cywgc3MgYXJlIHNlZ19zZWwrOCkgKi8KKwl1MzIgcmxwX2VudHJ5X3BvaW50OyAvKiBwaHlzIGFk
-ZHIgKi8KK30gX19wYWNrZWQ7CisKKy8qCisgKiBUUE0gZXZlbnQgbG9nIHN0cnVjdHVyZXMgZGVm
-aW5lZCBpbiBib3RoIHRoZSBUWFQgc3BlY2lmaWNhdGlvbiBhbmQKKyAqIHRoZSBUQ0cgZG9jdW1l
-bnRhdGlvbi4KKyAqLworI2RlZmluZSBUUE0xMl9FVlRMT0dfU0lHTkFUVVJFICJUWFQgRXZlbnQg
-Q29udGFpbmVyIgorCitzdHJ1Y3QgdHBtMTJfZXZlbnRfbG9nX2hlYWRlciB7CisJY2hhciBzaWdu
-YXR1cmVbMjBdOworCWNoYXIgcmVzZXJ2ZWRbMTJdOworCXU4IGNvbnRhaW5lcl92ZXJfbWFqb3I7
-CisJdTggY29udGFpbmVyX3Zlcl9taW5vcjsKKwl1OCBwY3JfZXZlbnRfdmVyX21ham9yOworCXU4
-IHBjcl9ldmVudF92ZXJfbWlub3I7CisJdTMyIGNvbnRhaW5lcl9zaXplOworCXUzMiBwY3JfZXZl
-bnRzX29mZnNldDsKKwl1MzIgbmV4dF9ldmVudF9vZmZzZXQ7CisJLyogUENSRXZlbnRzW10gKi8K
-K30gX19wYWNrZWQ7CisKKy8qCisgKiBGdW5jdGlvbnMgdG8gZXh0cmFjdCBkYXRhIGZyb20gdGhl
-IEludGVsIFRYVCBIZWFwIE1lbW9yeS4gVGhlIGxheW91dAorICogb2YgdGhlIGhlYXAgaXMgYXMg
-Zm9sbG93czoKKyAqICArLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLSsKKyAqICB8IFNpemUg
-QmlvcyBEYXRhIHRhYmxlICh1NjQpIHwKKyAqICArLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0t
-LSsKKyAqICB8IEJpb3MgRGF0YSB0YWJsZSAgICAgICAgICAgIHwKKyAqICArLS0tLS0tLS0tLS0t
-LS0tLS0tLS0tLS0tLS0tLSsKKyAqICB8IFNpemUgT1MgTUxFIHRhYmxlICh1NjQpICAgIHwKKyAq
-ICArLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLSsKKyAqICB8IE9TIE1MRSB0YWJsZSAgICAg
-ICAgICAgICAgIHwKKyAqICArLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tICsKKyAqICB8IFNp
-emUgT1MgU0lOSVQgdGFibGUgKHU2NCkgIHwKKyAqICArLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0t
-LS0tLSsKKyAqICB8IE9TIFNJTklUIHRhYmxlICAgICAgICAgICAgIHwKKyAqICArLS0tLS0tLS0t
-LS0tLS0tLS0tLS0tLS0tLS0tLSsKKyAqICB8IFNpemUgU0lOSVQgTUxFIHRhYmxlICh1NjQpIHwK
-KyAqICArLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLSsKKyAqICB8IFNJTklUIE1MRSB0YWJs
-ZSAgICAgICAgICAgIHwKKyAqICArLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLSsKKyAqCisg
-KiAgTk9URTogdGhlIHRhYmxlIHNpemUgZmllbGRzIGluY2x1ZGUgdGhlIDggYnl0ZSBzaXplIGZp
-ZWxkIGl0c2VsZi4KKyAqLworc3RhdGljIGlubGluZSB1NjQgdHh0X2Jpb3NfZGF0YV9zaXplKHZv
-aWQgKmhlYXApCit7CisJcmV0dXJuICooKHU2NCAqKWhlYXApOworfQorCitzdGF0aWMgaW5saW5l
-IHZvaWQgKnR4dF9iaW9zX2RhdGFfc3RhcnQodm9pZCAqaGVhcCkKK3sKKwlyZXR1cm4gaGVhcCAr
-IHNpemVvZih1NjQpOworfQorCitzdGF0aWMgaW5saW5lIHU2NCB0eHRfb3NfbWxlX2RhdGFfc2l6
-ZSh2b2lkICpoZWFwKQoreworCXJldHVybiAqKCh1NjQgKikoaGVhcCArIHR4dF9iaW9zX2RhdGFf
-c2l6ZShoZWFwKSkpOworfQorCitzdGF0aWMgaW5saW5lIHZvaWQgKnR4dF9vc19tbGVfZGF0YV9z
-dGFydCh2b2lkICpoZWFwKQoreworCXJldHVybiBoZWFwICsgdHh0X2Jpb3NfZGF0YV9zaXplKGhl
-YXApICsgc2l6ZW9mKHU2NCk7Cit9CisKK3N0YXRpYyBpbmxpbmUgdTY0IHR4dF9vc19zaW5pdF9k
-YXRhX3NpemUodm9pZCAqaGVhcCkKK3sKKwlyZXR1cm4gKigodTY0ICopKGhlYXAgKyB0eHRfYmlv
-c19kYXRhX3NpemUoaGVhcCkgKworCQkJdHh0X29zX21sZV9kYXRhX3NpemUoaGVhcCkpKTsKK30K
-Kworc3RhdGljIGlubGluZSB2b2lkICp0eHRfb3Nfc2luaXRfZGF0YV9zdGFydCh2b2lkICpoZWFw
-KQoreworCXJldHVybiBoZWFwICsgdHh0X2Jpb3NfZGF0YV9zaXplKGhlYXApICsKKwkJdHh0X29z
-X21sZV9kYXRhX3NpemUoaGVhcCkgKyBzaXplb2YodTY0KTsKK30KKworc3RhdGljIGlubGluZSB1
-NjQgdHh0X3Npbml0X21sZV9kYXRhX3NpemUodm9pZCAqaGVhcCkKK3sKKwlyZXR1cm4gKigodTY0
-ICopKGhlYXAgKyB0eHRfYmlvc19kYXRhX3NpemUoaGVhcCkgKworCQkJdHh0X29zX21sZV9kYXRh
-X3NpemUoaGVhcCkgKworCQkJdHh0X29zX3Npbml0X2RhdGFfc2l6ZShoZWFwKSkpOworfQorCitz
-dGF0aWMgaW5saW5lIHZvaWQgKnR4dF9zaW5pdF9tbGVfZGF0YV9zdGFydCh2b2lkICpoZWFwKQor
-eworCXJldHVybiBoZWFwICsgdHh0X2Jpb3NfZGF0YV9zaXplKGhlYXApICsKKwkJdHh0X29zX21s
-ZV9kYXRhX3NpemUoaGVhcCkgKworCQl0eHRfc2luaXRfbWxlX2RhdGFfc2l6ZShoZWFwKSArIHNp
-emVvZih1NjQpOworfQorCisvKgorICogVFBNIGV2ZW50IGxvZ2dpbmcgZnVuY3Rpb25zLgorICov
-CitzdGF0aWMgaW5saW5lIHN0cnVjdCB0eHRfaGVhcF9ldmVudF9sb2dfcG9pbnRlcjJfMV9lbGVt
-ZW50KgordHBtMjBfZmluZF9sb2cyXzFfZWxlbWVudChzdHJ1Y3QgdHh0X29zX3Npbml0X2RhdGEg
-Km9zX3Npbml0X2RhdGEpCit7CisJc3RydWN0IHR4dF9oZWFwX2V4dF9kYXRhX2VsZW1lbnQgKmV4
-dF9lbGVtOworCisJLyogVGhlIGV4dGVuZGVkIGVsZW1lbnQgYXJyYXkgYXMgYXQgdGhlIGVuZCBv
-ZiB0aGlzIHRhYmxlICovCisJZXh0X2VsZW0gPSAoc3RydWN0IHR4dF9oZWFwX2V4dF9kYXRhX2Vs
-ZW1lbnQgKikKKwkJKCh1OCAqKW9zX3Npbml0X2RhdGEgKyBzaXplb2Yoc3RydWN0IHR4dF9vc19z
-aW5pdF9kYXRhKSk7CisKKwl3aGlsZSAoZXh0X2VsZW0tPnR5cGUgIT0gVFhUX0hFQVBfRVhUREFU
-QV9UWVBFX0VORCkgeworCQlpZiAoZXh0X2VsZW0tPnR5cGUgPT0KKwkJICAgIFRYVF9IRUFQX0VY
-VERBVEFfVFlQRV9FVkVOVF9MT0dfUE9JTlRFUjJfMSkgeworCQkJcmV0dXJuIChzdHJ1Y3QgdHh0
-X2hlYXBfZXZlbnRfbG9nX3BvaW50ZXIyXzFfZWxlbWVudCAqKQorCQkJCSgodTggKilleHRfZWxl
-bSArCisJCQkJCXNpemVvZihzdHJ1Y3QgdHh0X2hlYXBfZXh0X2RhdGFfZWxlbWVudCkpOworCQl9
-CisJCWV4dF9lbGVtID0KKwkJCShzdHJ1Y3QgdHh0X2hlYXBfZXh0X2RhdGFfZWxlbWVudCAqKQor
-CQkJKCh1OCAqKWV4dF9lbGVtICsgZXh0X2VsZW0tPnNpemUpOworCX0KKworCXJldHVybiBOVUxM
-OworfQorCitzdGF0aWMgaW5saW5lIGludCB0cG0xMl9sb2dfZXZlbnQodm9pZCAqZXZ0bG9nX2Jh
-c2UsIHUzMiBldnRsb2dfc2l6ZSwKKwkJCQkgIHUzMiBldmVudF9zaXplLCB2b2lkICpldmVudCkK
-K3sKKwlzdHJ1Y3QgdHBtMTJfZXZlbnRfbG9nX2hlYWRlciAqZXZ0bG9nID0KKwkJKHN0cnVjdCB0
-cG0xMl9ldmVudF9sb2dfaGVhZGVyICopZXZ0bG9nX2Jhc2U7CisKKwlpZiAobWVtY21wKGV2dGxv
-Zy0+c2lnbmF0dXJlLCBUUE0xMl9FVlRMT0dfU0lHTkFUVVJFLAorCQkgICBzaXplb2YoVFBNMTJf
-RVZUTE9HX1NJR05BVFVSRSkpKQorCQlyZXR1cm4gLUVJTlZBTDsKKworCWlmIChldnRsb2ctPmNv
-bnRhaW5lcl9zaXplID4gZXZ0bG9nX3NpemUpCisJCXJldHVybiAtRUlOVkFMOworCisJaWYgKGV2
-dGxvZy0+bmV4dF9ldmVudF9vZmZzZXQgKyBldmVudF9zaXplID4gZXZ0bG9nLT5jb250YWluZXJf
-c2l6ZSkKKwkJcmV0dXJuIC1FMkJJRzsKKworCW1lbWNweShldnRsb2dfYmFzZSArIGV2dGxvZy0+
-bmV4dF9ldmVudF9vZmZzZXQsIGV2ZW50LCBldmVudF9zaXplKTsKKwlldnRsb2ctPm5leHRfZXZl
-bnRfb2Zmc2V0ICs9IGV2ZW50X3NpemU7CisKKwlyZXR1cm4gMDsKK30KKworc3RhdGljIGlubGlu
-ZSBpbnQgdHBtMjBfbG9nX2V2ZW50KHN0cnVjdCB0eHRfaGVhcF9ldmVudF9sb2dfcG9pbnRlcjJf
-MV9lbGVtZW50ICplbGVtLAorCQkJCSAgdm9pZCAqZXZ0bG9nX2Jhc2UsIHUzMiBldnRsb2dfc2l6
-ZSwKKwkJCQkgIHUzMiBldmVudF9zaXplLCB2b2lkICpldmVudCkKK3sKKwlzdHJ1Y3QgdGNnX3Bj
-cl9ldmVudCAqaGVhZGVyID0KKwkJKHN0cnVjdCB0Y2dfcGNyX2V2ZW50ICopZXZ0bG9nX2Jhc2U7
-CisKKwkvKiBIYXMgdG8gYmUgYXQgbGVhc3QgYmlnIGVub3VnaCBmb3IgdGhlIHNpZ25hdHVyZSAq
-LworCWlmIChoZWFkZXItPmV2ZW50X3NpemUgPCBzaXplb2YoVENHX1NQRUNJRF9TSUcpKQorCQly
-ZXR1cm4gLUVJTlZBTDsKKworCWlmIChtZW1jbXAoKHU4ICopaGVhZGVyICsgc2l6ZW9mKHN0cnVj
-dCB0Y2dfcGNyX2V2ZW50KSwKKwkJICAgVENHX1NQRUNJRF9TSUcsIHNpemVvZihUQ0dfU1BFQ0lE
-X1NJRykpKQorCQlyZXR1cm4gLUVJTlZBTDsKKworCWlmIChlbGVtLT5hbGxvY2F0ZWRfZXZlbnRf
-Y29udGFpbmVyX3NpemUgPiBldnRsb2dfc2l6ZSkKKwkJcmV0dXJuIC1FSU5WQUw7CisKKwlpZiAo
-ZWxlbS0+bmV4dF9yZWNvcmRfb2Zmc2V0ICsgZXZlbnRfc2l6ZSA+CisJICAgIGVsZW0tPmFsbG9j
-YXRlZF9ldmVudF9jb250YWluZXJfc2l6ZSkKKwkJcmV0dXJuIC1FMkJJRzsKKworCW1lbWNweShl
-dnRsb2dfYmFzZSArIGVsZW0tPm5leHRfcmVjb3JkX29mZnNldCwgZXZlbnQsIGV2ZW50X3NpemUp
-OworCWVsZW0tPm5leHRfcmVjb3JkX29mZnNldCArPSBldmVudF9zaXplOworCisJcmV0dXJuIDA7
-Cit9CisKKy8qCisgKiBFeHRlcm5hbCBmdW5jdGlvbnMgYXZhbGFpbGFibGUgaW4gY29tcHJlc3Nl
-ZCBrZXJuZWwuCisgKi8KK2V4dGVybiB1MzIgc2xhdW5jaF9nZXRfY3B1X3R5cGUodm9pZCk7CisK
-Ky8qCisgKiBFeHRlcm5hbCBmdW5jdGlvbnMgYXZhbGFpbGFibGUgaW4gbWFpbmxpbmUga2VybmVs
-LgorICovCitleHRlcm4gdm9pZCBzbGF1bmNoX3NldHVwKHZvaWQpOworZXh0ZXJuIHUzMiBzbGF1
-bmNoX2dldF9mbGFncyh2b2lkKTsKK2V4dGVybiBzdHJ1Y3Qgc2xfYXBfd2FrZV9pbmZvICpzbGF1
-bmNoX2dldF9hcF93YWtlX2luZm8odm9pZCk7CitleHRlcm4gc3RydWN0IGFjcGlfdGFibGVfaGVh
-ZGVyICpzbGF1bmNoX2dldF9kbWFyX3RhYmxlKHN0cnVjdCBhY3BpX3RhYmxlX2hlYWRlciAqZG1h
-cik7CitleHRlcm4gdm9pZCBfX25vcmV0dXJuIHNsYXVuY2hfdHh0X3Jlc2V0KHZvaWQgX19pb21l
-bSAqdHh0LAorCQkJCQkgY29uc3QgY2hhciAqbXNnLCB1NjQgZXJyb3IpOworZXh0ZXJuIHZvaWQg
-c2xhdW5jaF9maW5hbGl6ZShpbnQgZG9fc2V4aXQpOworCisjZW5kaWYgLyogIV9fQVNTRU1CTFkg
-Ki8KKworI2Vsc2UKKworI2RlZmluZSBzbGF1bmNoX2dldF9jcHVfdHlwZSgpCQkwCisjZGVmaW5l
-IHNsYXVuY2hfc2V0dXAoKQkJCWRvIHsgfSB3aGlsZSAoMCkKKyNkZWZpbmUgc2xhdW5jaF9nZXRf
-ZmxhZ3MoKQkJMAorI2RlZmluZSBzbGF1bmNoX2dldF9kbWFyX3RhYmxlKGQpCShkKQorI2RlZmlu
-ZSBzbGF1bmNoX2ZpbmFsaXplKGQpCQlkbyB7IH0gd2hpbGUgKDApCisKKyNlbmRpZiAvKiAhSVNf
-RU5BQkxFRChDT05GSUdfU0VDVVJFX0xBVU5DSCkgKi8KKworI2VuZGlmIC8qIF9MSU5VWF9TTEFV
-TkNIX0ggKi8KLS0gCjEuOC4zLjEKCl9fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19f
-X19fX19fX19fX19fCmlvbW11IG1haWxpbmcgbGlzdAppb21tdUBsaXN0cy5saW51eC1mb3VuZGF0
-aW9uLm9yZwpodHRwczovL2xpc3RzLmxpbnV4Zm91bmRhdGlvbi5vcmcvbWFpbG1hbi9saXN0aW5m
-by9pb21tdQ==
+The Secure Launch (SL) stub provides the entry point for Intel TXT (and
+later AMD SKINIT) to vector to during the late launch. The symbol
+sl_stub_entry is that entry point and its offset into the kernel is
+conveyed to the launching code using the MLE (Measured Launch
+Environment) header in the structure named mle_header. The offset of the
+MLE header is set in the kernel_info. The routine sl_stub contains the
+very early late launch setup code responsible for setting up the basic
+environment to allow the normal kernel startup_32 code to proceed. It is
+also responsible for properly waking and handling the APs on Intel
+platforms. The routine sl_main which runs after entering 64b mode is
+responsible for measuring configuration and module information before
+it is used like the boot params, the kernel command line, the TXT heap,
+an external initramfs, etc.
+
+Signed-off-by: Ross Philipson <ross.philipson@oracle.com>
+---
+ Documentation/x86/boot.rst             |  13 +
+ arch/x86/boot/compressed/Makefile      |   3 +-
+ arch/x86/boot/compressed/head_64.S     |  37 ++
+ arch/x86/boot/compressed/kaslr.c       |  11 +
+ arch/x86/boot/compressed/kernel_info.S |  33 ++
+ arch/x86/boot/compressed/sl_main.c     | 523 ++++++++++++++++++++++++++
+ arch/x86/boot/compressed/sl_stub.S     | 667 +++++++++++++++++++++++++++++++++
+ arch/x86/kernel/asm-offsets.c          |  19 +
+ 8 files changed, 1305 insertions(+), 1 deletion(-)
+ create mode 100644 arch/x86/boot/compressed/sl_main.c
+ create mode 100644 arch/x86/boot/compressed/sl_stub.S
+
+diff --git a/Documentation/x86/boot.rst b/Documentation/x86/boot.rst
+index fc84491..7623f60 100644
+--- a/Documentation/x86/boot.rst
++++ b/Documentation/x86/boot.rst
+@@ -1026,6 +1026,19 @@ Offset/size:	0x000c/4
+ 
+   This field contains maximal allowed type for setup_data and setup_indirect structs.
+ 
++============	=================
++Field name:	mle_header_offset
++Offset/size:	0x0010/4
++============	=================
++
++  This field contains the offset to the Secure Launch Measured Launch Environment
++  (MLE) header. This offset is used to locate information needed during a secure
++  late launch using Intel TXT. If the offset is zero, the kernel does not have
++  Secure Launch capabilities. The MLE entry point is called from TXT on the BSP
++  following a success measured launch. The specific state of the processors is
++  outlined in the TXT Software Development Guide, the latest can be found here:
++  https://www.intel.com/content/dam/www/public/us/en/documents/guides/intel-txt-software-development-guide.pdf
++
+ 
+ The Image Checksum
+ ==================
+diff --git a/arch/x86/boot/compressed/Makefile b/arch/x86/boot/compressed/Makefile
+index 059d49a..1fe55a5 100644
+--- a/arch/x86/boot/compressed/Makefile
++++ b/arch/x86/boot/compressed/Makefile
+@@ -102,7 +102,8 @@ vmlinux-objs-$(CONFIG_ACPI) += $(obj)/acpi.o
+ vmlinux-objs-$(CONFIG_EFI_MIXED) += $(obj)/efi_thunk_$(BITS).o
+ efi-obj-$(CONFIG_EFI_STUB) = $(objtree)/drivers/firmware/efi/libstub/lib.a
+ 
+-vmlinux-objs-$(CONFIG_SECURE_LAUNCH) += $(obj)/early_sha1.o $(obj)/early_sha256.o
++vmlinux-objs-$(CONFIG_SECURE_LAUNCH) += $(obj)/early_sha1.o $(obj)/early_sha256.o \
++	$(obj)/sl_main.o $(obj)/sl_stub.o
+ 
+ $(obj)/vmlinux: $(vmlinux-objs-y) $(efi-obj-y) FORCE
+ 	$(call if_changed,ld)
+diff --git a/arch/x86/boot/compressed/head_64.S b/arch/x86/boot/compressed/head_64.S
+index a2347de..b35e072 100644
+--- a/arch/x86/boot/compressed/head_64.S
++++ b/arch/x86/boot/compressed/head_64.S
+@@ -498,6 +498,17 @@ trampoline_return:
+ 	pushq	$0
+ 	popfq
+ 
++#ifdef CONFIG_SECURE_LAUNCH
++	pushq	%rsi
++
++	/* Ensure the relocation region coverd by a PMR */
++	movq	%rbx, %rdi
++	movl	$(_bss - startup_32), %esi
++	callq	sl_check_region
++
++	popq	%rsi
++#endif
++
+ /*
+  * Copy the compressed kernel to the end of our buffer
+  * where decompression in place becomes safe.
+@@ -556,6 +567,32 @@ SYM_FUNC_START_LOCAL_NOALIGN(.Lrelocated)
+ 	shrq	$3, %rcx
+ 	rep	stosq
+ 
++#ifdef CONFIG_SECURE_LAUNCH
++	/*
++	 * Have to do the final early sl stub work in 64b area.
++	 *
++	 * *********** NOTE ***********
++	 *
++	 * Several boot params get used before we get a chance to measure
++	 * them in this call. This is a known issue and we currently don't
++	 * have a solution. The scratch field doesn't matter. There is no
++	 * obvious way to do anything about the use of kernel_alignment or
++	 * init_size though these seem low risk with all the PMR and overlap
++	 * checks in place.
++	 */
++	pushq	%rsi
++
++	movq	%rsi, %rdi
++	callq	sl_main
++
++	/* Ensure the decompression location is coverd by a PMR */
++	movq	%rbp, %rdi
++	movq	output_len(%rip), %rsi
++	callq	sl_check_region
++
++	popq	%rsi
++#endif
++
+ /*
+  * If running as an SEV guest, the encryption mask is required in the
+  * page-table setup code below. When the guest also has SEV-ES enabled
+diff --git a/arch/x86/boot/compressed/kaslr.c b/arch/x86/boot/compressed/kaslr.c
+index e366907..f935468 100644
+--- a/arch/x86/boot/compressed/kaslr.c
++++ b/arch/x86/boot/compressed/kaslr.c
+@@ -29,6 +29,7 @@
+ #include <linux/utsname.h>
+ #include <linux/ctype.h>
+ #include <linux/efi.h>
++#include <linux/slaunch.h>
+ #include <generated/utsrelease.h>
+ #include <asm/efi.h>
+ 
+@@ -840,6 +841,16 @@ void choose_random_location(unsigned long input,
+ 		return;
+ 	}
+ 
++	/*
++	 * If a secure launch is in progress, KASLR cannot be used
++	 * since knowing the exact location of things is a crucial
++	 * part of the secure launch.
++	 */
++	if (slaunch_get_cpu_type() & SL_CPU_INTEL) {
++		warn("KASLR disabled: by Secure Launch");
++		return;
++	}
++
+ 	boot_params->hdr.loadflags |= KASLR_FLAG;
+ 
+ 	if (IS_ENABLED(CONFIG_X86_32))
+diff --git a/arch/x86/boot/compressed/kernel_info.S b/arch/x86/boot/compressed/kernel_info.S
+index c18f071..91914eb 100644
+--- a/arch/x86/boot/compressed/kernel_info.S
++++ b/arch/x86/boot/compressed/kernel_info.S
+@@ -28,6 +28,39 @@ SYM_DATA_START(kernel_info)
+ 	/* Maximal allowed type for setup_data and setup_indirect structs. */
+ 	.long	SETUP_TYPE_MAX
+ 
++	/* Offset to the MLE header structure */
++#if IS_ENABLED(CONFIG_SECURE_LAUNCH)
++	.long	rva(mle_header)
++#else
++	.long	0
++#endif
++
+ kernel_info_var_len_data:
+ 	/* Empty for time being... */
+ SYM_DATA_END_LABEL(kernel_info, SYM_L_LOCAL, kernel_info_end)
++
++#if IS_ENABLED(CONFIG_SECURE_LAUNCH)
++	/*
++	 * The MLE Header per the TXT Specification, section 2.1
++	 * MLE capabilities, see table 4. Capabilities set:
++	 * bit 0: Support for GETSEC[WAKEUP] for RLP wakeup
++	 * bit 1: Support for RLP wakeup using MONITOR address
++	 * bit 5: TPM 1.2 family: Details/authorities PCR usage support
++	 * bit 9: Supported format of TPM 2.0 event log - TCG compliant
++	 */
++SYM_DATA_START(mle_header)
++	.long	0x9082ac5a  /* UUID0 */
++	.long	0x74a7476f  /* UUID1 */
++	.long	0xa2555c0f  /* UUID2 */
++	.long	0x42b651cb  /* UUID3 */
++	.long	0x00000034  /* MLE header size */
++	.long	0x00020002  /* MLE version 2.2 */
++	.long	rva(sl_stub_entry) /* Linear entry point of MLE (virt. address) */
++	.long	0x00000000  /* First valid page of MLE */
++	.long	0x00000000  /* Offset within binary of first byte of MLE */
++	.long	rva(_edata) /* Offset within binary of last byte + 1 of MLE */
++	.long	0x00000223  /* Bit vector of MLE-supported capabilities */
++	.long	0x00000000  /* Starting linear address of command line (unused) */
++	.long	0x00000000  /* Ending linear address of command line (unused) */
++SYM_DATA_END(mle_header)
++#endif
+diff --git a/arch/x86/boot/compressed/sl_main.c b/arch/x86/boot/compressed/sl_main.c
+new file mode 100644
+index 00000000..64ada2a
+--- /dev/null
++++ b/arch/x86/boot/compressed/sl_main.c
+@@ -0,0 +1,523 @@
++// SPDX-License-Identifier: GPL-2.0
++/*
++ * Secure Launch early measurement and validation routines.
++ *
++ * Copyright (c) 2021, Oracle and/or its affiliates.
++ */
++
++#include <linux/init.h>
++#include <linux/string.h>
++#include <linux/linkage.h>
++#include <linux/efi.h>
++#include <asm/segment.h>
++#include <asm/boot.h>
++#include <asm/msr.h>
++#include <asm/io.h>
++#include <asm/mtrr.h>
++#include <asm/processor-flags.h>
++#include <asm/asm-offsets.h>
++#include <asm/bootparam.h>
++#include <asm/efi.h>
++#include <asm/bootparam_utils.h>
++#include <linux/slaunch.h>
++#include <crypto/sha1.h>
++#include <crypto/sha2.h>
++
++#include "misc.h"
++#include "early_sha1.h"
++
++#define CAPS_VARIABLE_MTRR_COUNT_MASK	0xff
++
++#define SL_TPM12_LOG		1
++#define SL_TPM20_LOG		2
++
++#define SL_TPM20_MAX_ALGS	2
++
++#define SL_MAX_EVENT_DATA	64
++#define SL_TPM12_LOG_SIZE	(sizeof(struct tcg_pcr_event) + \
++				SL_MAX_EVENT_DATA)
++#define SL_TPM20_LOG_SIZE	(sizeof(struct tcg_pcr_event2_head) + \
++				SHA1_DIGEST_SIZE + SHA256_DIGEST_SIZE + \
++				sizeof(struct tcg_event_field) + \
++				SL_MAX_EVENT_DATA)
++
++static void *evtlog_base;
++static u32 evtlog_size;
++static struct txt_heap_event_log_pointer2_1_element *log20_elem;
++static u32 tpm_log_ver = SL_TPM12_LOG;
++struct tcg_efi_specid_event_algs tpm_algs[SL_TPM20_MAX_ALGS] = {0};
++
++#if !IS_ENABLED(CONFIG_SECURE_LAUNCH_ALT_PCR19)
++static u32 pcr_config = SL_DEF_CONFIG_PCR18;
++#else
++static u32 pcr_config = SL_ALT_CONFIG_PCR19;
++#endif
++
++#if !IS_ENABLED(CONFIG_SECURE_LAUNCH_ALT_PCR20)
++static u32 pcr_image = SL_DEF_IMAGE_PCR17;
++#else
++static u32 pcr_image = SL_ALT_IMAGE_PCR20;
++#endif
++
++extern u32 sl_cpu_type;
++extern u32 sl_mle_start;
++
++u32 slaunch_get_cpu_type(void)
++{
++	return sl_cpu_type;
++}
++
++static u64 sl_txt_read(u32 reg)
++{
++	return readq((void *)(u64)(TXT_PRIV_CONFIG_REGS_BASE + reg));
++}
++
++static void sl_txt_write(u32 reg, u64 val)
++{
++	writeq(val, (void *)(u64)(TXT_PRIV_CONFIG_REGS_BASE + reg));
++}
++
++static void __noreturn sl_txt_reset(u64 error)
++{
++	/* Reading the E2STS register acts as a barrier for TXT registers */
++	sl_txt_write(TXT_CR_ERRORCODE, error);
++	sl_txt_read(TXT_CR_E2STS);
++	sl_txt_write(TXT_CR_CMD_UNLOCK_MEM_CONFIG, 1);
++	sl_txt_read(TXT_CR_E2STS);
++	sl_txt_write(TXT_CR_CMD_RESET, 1);
++
++	for ( ; ; )
++		asm volatile ("hlt");
++
++	unreachable();
++}
++
++static u64 sl_rdmsr(u32 reg)
++{
++	u64 lo, hi;
++
++	asm volatile ("rdmsr" : "=a" (lo), "=d" (hi) : "c" (reg));
++
++	return (hi << 32) | lo;
++}
++
++static void sl_check_pmr_coverage(void *base, u32 size, bool allow_hi)
++{
++	void *end = base + size;
++	struct txt_os_sinit_data *os_sinit_data;
++	void *txt_heap;
++
++	if (!(sl_cpu_type & SL_CPU_INTEL))
++		return;
++
++	txt_heap = (void *)sl_txt_read(TXT_CR_HEAP_BASE);
++	os_sinit_data = txt_os_sinit_data_start(txt_heap);
++
++	if ((end >= (void *)0x100000000ULL) &&
++	    (base < (void *)0x100000000ULL))
++		sl_txt_reset(SL_ERROR_REGION_STRADDLE_4GB);
++
++	/*
++	 * Note that the late stub code validates that the hi PMR covers
++	 * all memory above 4G. At this point the code can only check that
++	 * regions are within the hi PMR but that is sufficient.
++	 */
++	if ((end > (void *)0x100000000ULL) &&
++	    (base >= (void *)0x100000000ULL)) {
++		if (allow_hi) {
++			if (end >= (void *)(os_sinit_data->vtd_pmr_hi_base +
++					   os_sinit_data->vtd_pmr_hi_size))
++				sl_txt_reset(SL_ERROR_BUFFER_BEYOND_PMR);
++		} else
++			sl_txt_reset(SL_ERROR_REGION_ABOVE_4GB);
++	}
++
++	if (end >= (void *)os_sinit_data->vtd_pmr_lo_size)
++		sl_txt_reset(SL_ERROR_BUFFER_BEYOND_PMR);
++}
++
++/*
++ * Some MSRs are modified by the pre-launch code including the MTRRs.
++ * The early MLE code has to restore these values. This code validates
++ * the values after they are measured.
++ */
++static void sl_txt_validate_msrs(struct txt_os_mle_data *os_mle_data)
++{
++	u64 mtrr_caps, mtrr_def_type, mtrr_var, misc_en_msr;
++	u32 vcnt, i;
++	struct txt_mtrr_state *saved_bsp_mtrrs =
++		&(os_mle_data->saved_bsp_mtrrs);
++
++	mtrr_caps = sl_rdmsr(MSR_MTRRcap);
++	vcnt = (u32)(mtrr_caps & CAPS_VARIABLE_MTRR_COUNT_MASK);
++
++	if (saved_bsp_mtrrs->mtrr_vcnt > vcnt)
++		sl_txt_reset(SL_ERROR_MTRR_INV_VCNT);
++	if (saved_bsp_mtrrs->mtrr_vcnt > TXT_OS_MLE_MAX_VARIABLE_MTRRS)
++		sl_txt_reset(SL_ERROR_MTRR_INV_VCNT);
++
++	mtrr_def_type = sl_rdmsr(MSR_MTRRdefType);
++	if (saved_bsp_mtrrs->default_mem_type != mtrr_def_type)
++		sl_txt_reset(SL_ERROR_MTRR_INV_DEF_TYPE);
++
++	for (i = 0; i < saved_bsp_mtrrs->mtrr_vcnt; i++) {
++		mtrr_var = sl_rdmsr(MTRRphysBase_MSR(i));
++		if (saved_bsp_mtrrs->mtrr_pair[i].mtrr_physbase != mtrr_var)
++			sl_txt_reset(SL_ERROR_MTRR_INV_BASE);
++		mtrr_var = sl_rdmsr(MTRRphysMask_MSR(i));
++		if (saved_bsp_mtrrs->mtrr_pair[i].mtrr_physmask != mtrr_var)
++			sl_txt_reset(SL_ERROR_MTRR_INV_MASK);
++	}
++
++	misc_en_msr = sl_rdmsr(MSR_IA32_MISC_ENABLE);
++	if (os_mle_data->saved_misc_enable_msr != misc_en_msr)
++		sl_txt_reset(SL_ERROR_MSR_INV_MISC_EN);
++}
++
++static void sl_find_event_log(void)
++{
++	struct txt_os_mle_data *os_mle_data;
++	struct txt_os_sinit_data *os_sinit_data;
++	void *txt_heap;
++
++	txt_heap = (void *)sl_txt_read(TXT_CR_HEAP_BASE);
++
++	os_mle_data = txt_os_mle_data_start(txt_heap);
++	evtlog_base = (void *)os_mle_data->evtlog_addr;
++	evtlog_size = os_mle_data->evtlog_size;
++
++	/*
++	 * For TPM 2.0, the event log 2.1 extended data structure has to also
++	 * be located and fixed up.
++	 */
++	os_sinit_data = txt_os_sinit_data_start(txt_heap);
++
++	/*
++	 * Only support version 6 and later that properly handle the
++	 * list of ExtDataElements in the OS-SINIT structure.
++	 */
++	if (os_sinit_data->version < 6)
++		sl_txt_reset(SL_ERROR_OS_SINIT_BAD_VERSION);
++
++	/* Find the TPM2.0 logging extended heap element */
++	log20_elem = tpm20_find_log2_1_element(os_sinit_data);
++
++	/* If found, this implies TPM20 log and family */
++	if (log20_elem)
++		tpm_log_ver = SL_TPM20_LOG;
++}
++
++static void sl_validate_event_log_buffer(void)
++{
++	void *mle_base = (void *)(u64)sl_mle_start;
++	void *mle_end;
++	struct txt_os_sinit_data *os_sinit_data;
++	void *txt_heap;
++	void *txt_heap_end;
++	void *evtlog_end;
++
++	if ((u64)evtlog_size > (LLONG_MAX - (u64)evtlog_base))
++		sl_txt_reset(SL_ERROR_INTEGER_OVERFLOW);
++	evtlog_end = evtlog_base + evtlog_size;
++
++	txt_heap = (void *)sl_txt_read(TXT_CR_HEAP_BASE);
++	txt_heap_end = txt_heap + sl_txt_read(TXT_CR_HEAP_SIZE);
++	os_sinit_data = txt_os_sinit_data_start(txt_heap);
++
++	mle_end = mle_base + os_sinit_data->mle_size;
++
++	/*
++	 * This check is to ensure the event log buffer does not overlap with
++	 * the MLE image.
++	 */
++	if ((evtlog_base >= mle_end) &&
++	    (evtlog_end > mle_end))
++		goto pmr_check; /* above */
++
++	if ((evtlog_end <= mle_base) &&
++	    (evtlog_base < mle_base))
++		goto pmr_check; /* below */
++
++	sl_txt_reset(SL_ERROR_MLE_BUFFER_OVERLAP);
++
++pmr_check:
++	/*
++	 * The TXT heap is protected by the DPR. If the TPM event log is
++	 * inside the TXT heap, there is no need for a PMR check.
++	 */
++	if ((evtlog_base > txt_heap) &&
++	    (evtlog_end < txt_heap_end))
++		return;
++
++	sl_check_pmr_coverage(evtlog_base, evtlog_size, true);
++}
++
++static void sl_find_event_log_algorithms(void)
++{
++	struct tcg_efi_specid_event_head *efi_head =
++		(struct tcg_efi_specid_event_head *)(evtlog_base +
++					log20_elem->first_record_offset +
++					sizeof(struct tcg_pcr_event));
++
++	if (efi_head->num_algs == 0 || efi_head->num_algs > 2)
++		sl_txt_reset(SL_ERROR_TPM_NUMBER_ALGS);
++
++	memcpy(&tpm_algs[0], &efi_head->digest_sizes[0],
++	       sizeof(struct tcg_efi_specid_event_algs) * efi_head->num_algs);
++}
++
++static void sl_tpm12_log_event(u32 pcr, u32 event_type,
++			       const u8 *data, u32 length,
++			       const u8 *event_data, u32 event_size)
++{
++	struct tcg_pcr_event *pcr_event;
++	struct sha1_state sctx = {0};
++	u32 total_size;
++	u8 log_buf[SL_TPM12_LOG_SIZE] = {0};
++	u8 sha1_hash[SHA1_DIGEST_SIZE] = {0};
++
++	pcr_event = (struct tcg_pcr_event *)log_buf;
++	pcr_event->pcr_idx = pcr;
++	pcr_event->event_type = event_type;
++	if (length > 0) {
++		early_sha1_init(&sctx);
++		early_sha1_update(&sctx, data, length);
++		early_sha1_final(&sctx, &sha1_hash[0]);
++		memcpy(&pcr_event->digest[0], &sha1_hash[0], SHA1_DIGEST_SIZE);
++	}
++	pcr_event->event_size = event_size;
++	if (event_size > 0)
++		memcpy((u8 *)pcr_event + sizeof(struct tcg_pcr_event),
++		       event_data, event_size);
++
++	total_size = sizeof(struct tcg_pcr_event) + event_size;
++
++	if (tpm12_log_event(evtlog_base, evtlog_size, total_size, pcr_event))
++		sl_txt_reset(SL_ERROR_TPM_LOGGING_FAILED);
++}
++
++static void sl_tpm20_log_event(u32 pcr, u32 event_type,
++			       const u8 *data, u32 length,
++			       const u8 *event_data, u32 event_size)
++{
++	struct tcg_pcr_event2_head *head;
++	struct tcg_event_field *event;
++	struct sha1_state sctx1 = {0};
++	struct sha256_state sctx256 = {0};
++	u32 total_size;
++	u16 *alg_ptr;
++	u8 *dgst_ptr;
++	u8 log_buf[SL_TPM20_LOG_SIZE] = {0};
++	u8 sha1_hash[SHA1_DIGEST_SIZE] = {0};
++	u8 sha256_hash[SHA256_DIGEST_SIZE] = {0};
++
++	head = (struct tcg_pcr_event2_head *)log_buf;
++	head->pcr_idx = pcr;
++	head->event_type = event_type;
++	total_size = sizeof(struct tcg_pcr_event2_head);
++	alg_ptr = (u16 *)(log_buf + sizeof(struct tcg_pcr_event2_head));
++
++	for ( ; head->count < 2; head->count++) {
++		if (!tpm_algs[head->count].alg_id)
++			break;
++
++		*alg_ptr = tpm_algs[head->count].alg_id;
++		dgst_ptr = (u8 *)alg_ptr + sizeof(u16);
++
++		if (tpm_algs[head->count].alg_id == TPM_ALG_SHA256 &&
++		    length) {
++			sha256_init(&sctx256);
++			sha256_update(&sctx256, data, length);
++			sha256_final(&sctx256, &sha256_hash[0]);
++		} else if (tpm_algs[head->count].alg_id == TPM_ALG_SHA1 &&
++			   length) {
++			early_sha1_init(&sctx1);
++			early_sha1_update(&sctx1, data, length);
++			early_sha1_final(&sctx1, &sha1_hash[0]);
++		}
++
++		if (tpm_algs[head->count].alg_id == TPM_ALG_SHA256) {
++			memcpy(dgst_ptr, &sha256_hash[0], SHA256_DIGEST_SIZE);
++			total_size += SHA256_DIGEST_SIZE + sizeof(u16);
++			alg_ptr = (u16 *)((u8 *)alg_ptr + SHA256_DIGEST_SIZE + sizeof(u16));
++		} else if (tpm_algs[head->count].alg_id == TPM_ALG_SHA1) {
++			memcpy(dgst_ptr, &sha1_hash[0], SHA1_DIGEST_SIZE);
++			total_size += SHA1_DIGEST_SIZE + sizeof(u16);
++			alg_ptr = (u16 *)((u8 *)alg_ptr + SHA1_DIGEST_SIZE + sizeof(u16));
++		} else
++			sl_txt_reset(SL_ERROR_TPM_UNKNOWN_DIGEST);
++	}
++
++	event = (struct tcg_event_field *)(log_buf + total_size);
++	event->event_size = event_size;
++	if (event_size > 0)
++		memcpy((u8 *)event + sizeof(struct tcg_event_field),
++		       event_data, event_size);
++	total_size += sizeof(struct tcg_event_field) + event_size;
++
++	if (tpm20_log_event(log20_elem, evtlog_base, evtlog_size,
++	    total_size, &log_buf[0]))
++		sl_txt_reset(SL_ERROR_TPM_LOGGING_FAILED);
++}
++
++static void sl_tpm_extend_evtlog(u32 pcr, u32 type,
++				 const u8 *data, u32 length, const char *desc)
++{
++	if (tpm_log_ver == SL_TPM20_LOG)
++		sl_tpm20_log_event(pcr, type, data, length,
++				   (const u8 *)desc, strlen(desc));
++	else
++		sl_tpm12_log_event(pcr, type, data, length,
++				   (const u8 *)desc, strlen(desc));
++}
++
++asmlinkage __visible void sl_check_region(void *base, u32 size)
++{
++	sl_check_pmr_coverage(base, size, false);
++}
++
++asmlinkage __visible void sl_main(void *bootparams)
++{
++	struct boot_params *bp;
++	struct setup_data *data;
++	struct txt_os_mle_data *os_mle_data;
++	struct txt_os_mle_data os_mle_tmp = {0};
++	const char *signature;
++	unsigned long mmap = 0;
++	void *txt_heap;
++	u32 data_count;
++
++	/*
++	 * Currently only Intel TXT is supported for Secure Launch. Testing
++	 * this value also indicates that the kernel was booted successfully
++	 * through the Secure Launch entry point and is in SMX mode.
++	 */
++	if (!(sl_cpu_type & SL_CPU_INTEL))
++		return;
++
++	/* Locate the TPM event log. */
++	sl_find_event_log();
++
++	/* Validate the location of the event log buffer before using it */
++	sl_validate_event_log_buffer();
++
++	/*
++	 * Find the TPM hash algorithms used by the ACM and recorded in the
++	 * event log.
++	 */
++	if (tpm_log_ver == SL_TPM20_LOG)
++		sl_find_event_log_algorithms();
++
++	/* Sanitize them before measuring */
++	boot_params = (struct boot_params *)bootparams;
++	sanitize_boot_params(boot_params);
++
++	/* Place event log NO_ACTION tags before and after measurements */
++	sl_tpm_extend_evtlog(17, TXT_EVTYPE_SLAUNCH_START, NULL, 0, "");
++
++	sl_check_pmr_coverage(bootparams, PAGE_SIZE, false);
++
++	/* Measure the zero page/boot params */
++	sl_tpm_extend_evtlog(pcr_config, TXT_EVTYPE_SLAUNCH,
++			     bootparams, PAGE_SIZE,
++			     "Measured boot parameters");
++
++	/* Now safe to use boot params */
++	bp = (struct boot_params *)bootparams;
++
++	/* Measure the command line */
++	if (bp->hdr.cmdline_size > 0) {
++		u64 cmdline = (u64)bp->hdr.cmd_line_ptr;
++
++		if (bp->ext_cmd_line_ptr > 0)
++			cmdline = cmdline | ((u64)bp->ext_cmd_line_ptr << 32);
++
++		sl_check_pmr_coverage((void *)cmdline,
++				      bp->hdr.cmdline_size, true);
++
++		sl_tpm_extend_evtlog(pcr_config, TXT_EVTYPE_SLAUNCH,
++				     (u8 *)cmdline,
++				     bp->hdr.cmdline_size,
++				     "Measured Kernel command line");
++	}
++
++	/*
++	 * Measuring the boot params measured the fixed e820 memory map.
++	 * Measure any setup_data entries including e820 extended entries.
++	 */
++	data = (struct setup_data *)(unsigned long)bp->hdr.setup_data;
++	while (data) {
++		sl_check_pmr_coverage(((u8 *)data) + sizeof(struct setup_data),
++				      data->len, true);
++
++		sl_tpm_extend_evtlog(pcr_config, TXT_EVTYPE_SLAUNCH,
++				     ((u8 *)data) + sizeof(struct setup_data),
++				     data->len,
++				     "Measured Kernel setup_data");
++
++		data = (struct setup_data *)(unsigned long)data->next;
++	}
++
++	/* If bootloader was EFI, measure the memory map passed across */
++	signature =
++		(const char *)&bp->efi_info.efi_loader_signature;
++
++	if (!strncmp(signature, EFI32_LOADER_SIGNATURE, 4))
++		mmap =  bp->efi_info.efi_memmap;
++	else if (!strncmp(signature, EFI64_LOADER_SIGNATURE, 4))
++		mmap = (bp->efi_info.efi_memmap |
++			((u64)bp->efi_info.efi_memmap_hi << 32));
++
++	if (mmap)
++		sl_tpm_extend_evtlog(pcr_config, TXT_EVTYPE_SLAUNCH,
++				     (void *)mmap,
++				     bp->efi_info.efi_memmap_size,
++				     "Measured EFI memory map");
++
++	/* Measure any external initrd */
++	if (bp->hdr.ramdisk_image != 0 && bp->hdr.ramdisk_size != 0) {
++		u64 ramdisk = (u64)bp->hdr.ramdisk_image;
++
++		if (bp->ext_ramdisk_size > 0)
++			sl_txt_reset(SL_ERROR_INITRD_TOO_BIG);
++
++		if (bp->ext_ramdisk_image > 0)
++			ramdisk = ramdisk |
++				  ((u64)bp->ext_ramdisk_image << 32);
++
++		sl_check_pmr_coverage((void *)ramdisk,
++				      bp->hdr.ramdisk_size, true);
++
++		sl_tpm_extend_evtlog(pcr_image, TXT_EVTYPE_SLAUNCH,
++				     (u8 *)(ramdisk),
++				     bp->hdr.ramdisk_size,
++				     "Measured initramfs");
++	}
++
++	/*
++	 * Some extra work to do on Intel, have to measure the OS-MLE
++	 * heap area.
++	 */
++	txt_heap = (void *)sl_txt_read(TXT_CR_HEAP_BASE);
++	os_mle_data = txt_os_mle_data_start(txt_heap);
++
++	/* Measure only portions of OS-MLE data, not addresses/sizes etc. */
++	os_mle_tmp.version = os_mle_data->version;
++	os_mle_tmp.saved_misc_enable_msr = os_mle_data->saved_misc_enable_msr;
++	os_mle_tmp.saved_bsp_mtrrs = os_mle_data->saved_bsp_mtrrs;
++
++	/* No PMR check is needed, the TXT heap is covered by the DPR */
++
++	sl_tpm_extend_evtlog(pcr_config, TXT_EVTYPE_SLAUNCH,
++			     (u8 *)&os_mle_tmp,
++			     sizeof(struct txt_os_mle_data),
++			     "Measured TXT OS-MLE data");
++
++	sl_tpm_extend_evtlog(17, TXT_EVTYPE_SLAUNCH_END, NULL, 0, "");
++
++	/*
++	 * Now that the OS-MLE data is measured, ensure the MTRR and
++	 * misc enable MSRs are what we expect.
++	 */
++	sl_txt_validate_msrs(os_mle_data);
++}
+diff --git a/arch/x86/boot/compressed/sl_stub.S b/arch/x86/boot/compressed/sl_stub.S
+new file mode 100644
+index 00000000..311539c7
+--- /dev/null
++++ b/arch/x86/boot/compressed/sl_stub.S
+@@ -0,0 +1,667 @@
++/* SPDX-License-Identifier: GPL-2.0 */
++
++/*
++ * Secure Launch protected mode entry point.
++ *
++ * Copyright (c) 2021, Oracle and/or its affiliates.
++ */
++	.code32
++	.text
++#include <linux/linkage.h>
++#include <asm/segment.h>
++#include <asm/msr.h>
++#include <asm/processor-flags.h>
++#include <asm/asm-offsets.h>
++#include <asm/bootparam.h>
++#include <asm/page_types.h>
++#include <asm/irq_vectors.h>
++#include <linux/slaunch.h>
++
++/* Can't include apiddef.h in asm */
++#define XAPIC_ENABLE	(1 << 11)
++#define X2APIC_ENABLE	(1 << 10)
++
++/* Can't include traps.h in asm */
++#define X86_TRAP_NMI	2
++
++/* Can't include mtrr.h in asm */
++#define MTRRphysBase0	0x200
++
++#define IDT_VECTOR_LO_BITS	0
++#define IDT_VECTOR_HI_BITS	6
++
++/*
++ * See the comment in head_64.S for detailed informatoin on what this macro
++ * is used for.
++ */
++#define rva(X) ((X) - sl_stub_entry)
++
++/*
++ * The GETSEC op code is open coded because older versions of
++ * GCC do not support the getsec mnemonic.
++ */
++.macro GETSEC leaf
++	pushl	%ebx
++	xorl	%ebx, %ebx	/* Must be zero for SMCTRL */
++	movl	\leaf, %eax	/* Leaf function */
++	.byte 	0x0f, 0x37	/* GETSEC opcode */
++	popl	%ebx
++.endm
++
++.macro TXT_RESET error
++	/*
++	 * Set a sticky error value and reset. Note the movs to %eax act as
++	 * TXT register barriers.
++	 */
++	movl	\error, (TXT_PRIV_CONFIG_REGS_BASE + TXT_CR_ERRORCODE)
++	movl	(TXT_PRIV_CONFIG_REGS_BASE + TXT_CR_E2STS), %eax
++	movl	$1, (TXT_PRIV_CONFIG_REGS_BASE + TXT_CR_CMD_NO_SECRETS)
++	movl	(TXT_PRIV_CONFIG_REGS_BASE + TXT_CR_E2STS), %eax
++	movl	$1, (TXT_PRIV_CONFIG_REGS_BASE + TXT_CR_CMD_UNLOCK_MEM_CONFIG)
++	movl	(TXT_PRIV_CONFIG_REGS_BASE + TXT_CR_E2STS), %eax
++	movl	$1, (TXT_PRIV_CONFIG_REGS_BASE + TXT_CR_CMD_RESET)
++1:
++	hlt
++	jmp	1b
++.endm
++
++	.code32
++SYM_FUNC_START(sl_stub_entry)
++	cli
++	cld
++
++	/*
++	 * On entry, %ebx has the entry abs offset to sl_stub_entry. This
++	 * will be correctly scaled using the rva macro and avoid causing
++	 * relocations. Only %cs and %ds segments are known good.
++	 */
++
++	/* Load GDT, set segment regs and lret to __SL32_CS */
++	leal	rva(sl_gdt_desc)(%ebx), %eax
++	addl	%eax, 2(%eax)
++	lgdt	(%eax)
++
++	movl	$(__SL32_DS), %eax
++	movw	%ax, %ds
++	movw	%ax, %es
++	movw	%ax, %fs
++	movw	%ax, %gs
++	movw	%ax, %ss
++
++	/*
++	 * Now that %ss is known good, take the first stack for the BSP. The
++	 * AP stacks are only used on Intel.
++	 */
++	leal	rva(sl_stacks_end)(%ebx), %esp
++
++	leal	rva(.Lsl_cs)(%ebx), %eax
++	pushl	$(__SL32_CS)
++	pushl	%eax
++	lret
++
++.Lsl_cs:
++	/* Save our base pointer reg */
++	pushl	%ebx
++
++	/* Now see if it is GenuineIntel. CPUID 0 returns the manufacturer */
++	xorl	%eax, %eax
++	cpuid
++	cmpl	$(INTEL_CPUID_MFGID_EBX), %ebx
++	jnz	.Ldo_unknown_cpu
++	cmpl	$(INTEL_CPUID_MFGID_EDX), %edx
++	jnz	.Ldo_unknown_cpu
++	cmpl	$(INTEL_CPUID_MFGID_ECX), %ecx
++	jnz	.Ldo_unknown_cpu
++
++	popl	%ebx
++
++	/* Know it is Intel */
++	movl	$(SL_CPU_INTEL), rva(sl_cpu_type)(%ebx)
++
++	/* Increment CPU count for BSP */
++	incl	rva(sl_txt_cpu_count)(%ebx)
++
++	/* Enable SMI with GETSEC[SMCTRL] */
++	GETSEC	$(SMX_X86_GETSEC_SMCTRL)
++
++	/* IRET-to-self can be used to enable NMIs which SENTER disabled */
++	leal	rva(.Lnmi_enabled)(%ebx), %eax
++	pushfl
++	pushl	$(__SL32_CS)
++	pushl	%eax
++	iret
++
++.Lnmi_enabled:
++	/* Clear the TXT error registers for a clean start of day */
++	movl	$0, (TXT_PRIV_CONFIG_REGS_BASE + TXT_CR_ERRORCODE)
++	movl	$0xffffffff, (TXT_PRIV_CONFIG_REGS_BASE + TXT_CR_ESTS)
++
++	/* On Intel, the zero page address is passed in the TXT heap */
++	/* Read physical base of heap into EAX */
++	movl	(TXT_PRIV_CONFIG_REGS_BASE + TXT_CR_HEAP_BASE), %eax
++	/* Read the size of the BIOS data into ECX (first 8 bytes) */
++	movl	(%eax), %ecx
++	/* Skip over BIOS data and size of OS to MLE data section */
++	leal	8(%eax, %ecx), %eax
++
++	/* Need to verify the values in the OS-MLE struct passed in */
++	call	sl_txt_verify_os_mle_struct
++
++	/*
++	 * Get the boot params address from the heap. Note %esi and %ebx MUST
++	 * be preserved across calls and operations.
++	 */
++	movl	SL_boot_params_addr(%eax), %esi
++
++	/* Save %ebx so the APs can find their way home */
++	movl	%ebx, (SL_mle_scratch + SL_SCRATCH_AP_EBX)(%eax)
++
++	/* Fetch the AP wake code block address from the heap */
++	movl	SL_ap_wake_block(%eax), %edi
++	movl	%edi, rva(sl_txt_ap_wake_block)(%ebx)
++
++	/* Store the offset in the AP wake block to the jmp address */
++	movl	$(sl_ap_jmp_offset - sl_txt_ap_wake_begin), \
++		(SL_mle_scratch + SL_SCRATCH_AP_JMP_OFFSET)(%eax)
++
++	/* %eax still is the base of the OS-MLE block, save it */
++	pushl	%eax
++
++	/* Relocate the AP wake code to the safe block */
++	call	sl_txt_reloc_ap_wake
++
++	/*
++	 * Wake up all APs that are blocked in the ACM and wait for them to
++	 * halt. This should be done before restoring the MTRRs so the ACM is
++	 * still properly in WB memory.
++	 */
++	call	sl_txt_wake_aps
++
++	/*
++	 * Pop OS-MLE base address (was in %eax above) for call to load
++	 * MTRRs/MISC MSR
++	 */
++	popl	%edi
++	call	sl_txt_load_regs
++
++	jmp	.Lcpu_setup_done
++
++.Ldo_unknown_cpu:
++	/* Non-Intel CPUs are not yet supported */
++	ud2
++
++.Lcpu_setup_done:
++	/*
++	 * Don't enable MCE at this point. The kernel will enable
++	 * it on the BSP later when it is ready.
++	 */
++
++	/* Done, jump to normal 32b pm entry */
++	jmp	startup_32
++SYM_FUNC_END(sl_stub_entry)
++
++SYM_FUNC_START(sl_check_buffer_mle_overlap)
++	/* %ecx: buffer begin %edx: buffer end */
++	/* %ebx: MLE begin %edi: MLE end */
++
++	cmpl	%edi, %ecx
++	jb	.Lnext_check
++	cmpl	%edi, %edx
++	jbe	.Lnext_check
++	jmp	.Lvalid /* Buffer above MLE */
++
++.Lnext_check:
++	cmpl	%ebx, %edx
++	ja	.Linvalid
++	cmpl	%ebx, %ecx
++	jae	.Linvalid
++	jmp	.Lvalid /* Buffer below MLE */
++
++.Linvalid:
++	TXT_RESET $(SL_ERROR_MLE_BUFFER_OVERLAP)
++
++.Lvalid:
++	ret
++SYM_FUNC_END(sl_check_buffer_mle_overlap)
++
++SYM_FUNC_START(sl_txt_verify_os_mle_struct)
++	/*
++	 * %eax points to the base of the OS-MLE struct. Need to also
++	 * read some values from the OS-SINIT struct too.
++	 */
++	movl	-8(%eax), %ecx
++	/* Skip over OS to MLE data section and size of OS-SINIT structure */
++	leal	(%eax, %ecx), %edx
++
++	/* Save MLE image base for sl_main's use */
++	movl	%ebx, rva(sl_mle_start)(%ebx)
++
++	/* Verify the value of the low PMR base. It should always be 0. */
++	movl	SL_vtd_pmr_lo_base(%edx), %esi
++	cmpl	$0, %esi
++	jz	.Lvalid_pmr_base
++	TXT_RESET $(SL_ERROR_LO_PMR_BASE)
++
++.Lvalid_pmr_base:
++	/* Grab some values from OS-SINIT structure */
++	movl	SL_mle_size(%edx), %edi
++	addl	%ebx, %edi
++	jc	.Loverflow_detected
++	movl	SL_vtd_pmr_lo_size(%edx), %esi
++
++	/* Check the AP wake block */
++	movl	SL_ap_wake_block(%eax), %ecx
++	movl	SL_ap_wake_block_size(%eax), %edx
++	addl	%ecx, %edx
++	jc	.Loverflow_detected
++	call	sl_check_buffer_mle_overlap
++	cmpl	%esi, %edx
++	ja	.Lbuffer_beyond_pmr
++
++	/* Check the boot params */
++	movl	SL_boot_params_addr(%eax), %ecx
++	movl	$(PAGE_SIZE), %edx
++	addl	%ecx, %edx
++	jc	.Loverflow_detected
++	call	sl_check_buffer_mle_overlap
++	cmpl	%esi, %edx
++	ja	.Lbuffer_beyond_pmr
++
++	/* Check that the AP wake block is big enough */
++	cmpl	$(sl_txt_ap_wake_end - sl_txt_ap_wake_begin), \
++		SL_ap_wake_block_size(%eax)
++	jae	.Lwake_block_ok
++	TXT_RESET $(SL_ERROR_WAKE_BLOCK_TOO_SMALL)
++
++.Lwake_block_ok:
++	ret
++
++.Loverflow_detected:
++	TXT_RESET $(SL_ERROR_INTEGER_OVERFLOW)
++
++.Lbuffer_beyond_pmr:
++	TXT_RESET $(SL_ERROR_BUFFER_BEYOND_PMR)
++SYM_FUNC_END(sl_txt_verify_os_mle_struct)
++
++SYM_FUNC_START(sl_txt_ap_entry)
++	cli
++	cld
++	/*
++	 * The %cs and %ds segments are known good after waking the AP.
++	 * First order of business is to find where we are and
++	 * save it in %ebx.
++	 */
++
++	/* Read physical base of heap into EAX */
++	movl	(TXT_PRIV_CONFIG_REGS_BASE + TXT_CR_HEAP_BASE), %eax
++	/* Read the size of the BIOS data into ECX (first 8 bytes) */
++	movl	(%eax), %ecx
++	/* Skip over BIOS data and size of OS to MLE data section */
++	leal	8(%eax, %ecx), %eax
++
++	/* Saved %ebx from the BSP and stash OS-MLE pointer */
++	movl	(SL_mle_scratch + SL_SCRATCH_AP_EBX)(%eax), %ebx
++	/* Save OS-MLE base in %edi for call to sl_txt_load_regs */
++	movl	%eax, %edi
++
++	/* Lock and get our stack index */
++	movl	$1, %ecx
++.Lspin:
++	xorl	%eax, %eax
++	lock cmpxchgl	%ecx, rva(sl_txt_spin_lock)(%ebx)
++	pause
++	jnz	.Lspin
++
++	/* Increment the stack index and use the next value inside lock */
++	incl	rva(sl_txt_stack_index)(%ebx)
++	movl	rva(sl_txt_stack_index)(%ebx), %eax
++
++	/* Unlock */
++	movl	$0, rva(sl_txt_spin_lock)(%ebx)
++
++	/* Location of the relocated AP wake block */
++	movl	rva(sl_txt_ap_wake_block)(%ebx), %ecx
++
++	/* Load reloc GDT, set segment regs and lret to __SL32_CS */
++	lgdt	(sl_ap_gdt_desc - sl_txt_ap_wake_begin)(%ecx)
++
++	movl	$(__SL32_DS), %edx
++	movw	%dx, %ds
++	movw	%dx, %es
++	movw	%dx, %fs
++	movw	%dx, %gs
++	movw	%dx, %ss
++
++	/* Load our reloc AP stack */
++	movl	$(TXT_BOOT_STACK_SIZE), %edx
++	mull	%edx
++	leal	(sl_stacks_end - sl_txt_ap_wake_begin)(%ecx), %esp
++	subl	%eax, %esp
++
++	/* Switch to AP code segment */
++	leal	rva(.Lsl_ap_cs)(%ebx), %eax
++	pushl	$(__SL32_CS)
++	pushl	%eax
++	lret
++
++.Lsl_ap_cs:
++	/* Load the relocated AP IDT */
++	lidt	(sl_ap_idt_desc - sl_txt_ap_wake_begin)(%ecx)
++
++	/* Fixup MTRRs and misc enable MSR on APs too */
++	call	sl_txt_load_regs
++
++	/* Enable SMI with GETSEC[SMCTRL] */
++	GETSEC $(SMX_X86_GETSEC_SMCTRL)
++
++	/* IRET-to-self can be used to enable NMIs which SENTER disabled */
++	leal	rva(.Lnmi_enabled_ap)(%ebx), %eax
++	pushfl
++	pushl	$(__SL32_CS)
++	pushl	%eax
++	iret
++
++.Lnmi_enabled_ap:
++	/* Put APs in X2APIC mode like the BSP */
++	movl	$(MSR_IA32_APICBASE), %ecx
++	rdmsr
++	orl	$(XAPIC_ENABLE | X2APIC_ENABLE), %eax
++	wrmsr
++
++	/*
++	 * Basically done, increment the CPU count and jump off to the AP
++	 * wake block to wait.
++	 */
++	lock incl	rva(sl_txt_cpu_count)(%ebx)
++
++	movl	rva(sl_txt_ap_wake_block)(%ebx), %eax
++	jmp	*%eax
++SYM_FUNC_END(sl_txt_ap_entry)
++
++SYM_FUNC_START(sl_txt_reloc_ap_wake)
++	/* Save boot params register */
++	pushl	%esi
++
++	movl	rva(sl_txt_ap_wake_block)(%ebx), %edi
++
++	/* Fixup AP IDT and GDT descriptor before relocating */
++	leal	rva(sl_ap_idt_desc)(%ebx), %eax
++	addl	%edi, 2(%eax)
++	leal	rva(sl_ap_gdt_desc)(%ebx), %eax
++	addl	%edi, 2(%eax)
++
++	/*
++	 * Copy the AP wake code and AP GDT/IDT to the protected wake block
++	 * provided by the loader. Destination already in %edi.
++	 */
++	movl	$(sl_txt_ap_wake_end - sl_txt_ap_wake_begin), %ecx
++	leal	rva(sl_txt_ap_wake_begin)(%ebx), %esi
++	rep movsb
++
++	/* Setup the IDT for the APs to use in the relocation block */
++	movl	rva(sl_txt_ap_wake_block)(%ebx), %ecx
++	addl	$(sl_ap_idt - sl_txt_ap_wake_begin), %ecx
++	xorl	%edx, %edx
++
++	/* Form the default reset vector relocation address */
++	movl	rva(sl_txt_ap_wake_block)(%ebx), %esi
++	addl	$(sl_txt_int_reset - sl_txt_ap_wake_begin), %esi
++
++1:
++	cmpw	$(NR_VECTORS), %dx
++	jz	.Lap_idt_done
++
++	cmpw	$(X86_TRAP_NMI), %dx
++	jz	2f
++
++	/* Load all other fixed vectors with reset handler */
++	movl	%esi, %eax
++	movw	%ax, (IDT_VECTOR_LO_BITS)(%ecx)
++	shrl	$16, %eax
++	movw	%ax, (IDT_VECTOR_HI_BITS)(%ecx)
++	jmp	3f
++
++2:
++	/* Load single wake NMI IPI vector at the relocation address */
++	movl	rva(sl_txt_ap_wake_block)(%ebx), %eax
++	addl	$(sl_txt_int_ipi_wake - sl_txt_ap_wake_begin), %eax
++	movw	%ax, (IDT_VECTOR_LO_BITS)(%ecx)
++	shrl	$16, %eax
++	movw	%ax, (IDT_VECTOR_HI_BITS)(%ecx)
++
++3:
++	incw	%dx
++	addl	$8, %ecx
++	jmp	1b
++
++.Lap_idt_done:
++	popl	%esi
++	ret
++SYM_FUNC_END(sl_txt_reloc_ap_wake)
++
++SYM_FUNC_START(sl_txt_load_regs)
++	/* Save base pointer register */
++	pushl	%ebx
++
++	/*
++	 * On Intel, the original variable MTRRs and Misc Enable MSR are
++	 * restored on the BSP at early boot. Each AP will also restore
++	 * its MTRRs and Misc Enable MSR.
++	 */
++	pushl	%edi
++	addl	$(SL_saved_bsp_mtrrs), %edi
++	movl	(%edi), %ebx
++	pushl	%ebx /* default_mem_type lo */
++	addl	$4, %edi
++	movl	(%edi), %ebx
++	pushl	%ebx /* default_mem_type hi */
++	addl	$4, %edi
++	movl	(%edi), %ebx /* mtrr_vcnt lo, don't care about hi part */
++	addl	$8, %edi /* now at MTRR pair array */
++	/* Write the variable MTRRs */
++	movl	$(MTRRphysBase0), %ecx
++1:
++	cmpl	$0, %ebx
++	jz	2f
++
++	movl	(%edi), %eax /* MTRRphysBaseX lo */
++	addl	$4, %edi
++	movl	(%edi), %edx /* MTRRphysBaseX hi */
++	wrmsr
++	addl	$4, %edi
++	incl	%ecx
++	movl	(%edi), %eax /* MTRRphysMaskX lo */
++	addl	$4, %edi
++	movl	(%edi), %edx /* MTRRphysMaskX hi */
++	wrmsr
++	addl	$4, %edi
++	incl	%ecx
++
++	decl	%ebx
++	jmp	1b
++2:
++	/* Write the default MTRR register */
++	popl	%edx
++	popl	%eax
++	movl	$(MSR_MTRRdefType), %ecx
++	wrmsr
++
++	/* Return to beginning and write the misc enable msr */
++	popl	%edi
++	addl	$(SL_saved_misc_enable_msr), %edi
++	movl	(%edi), %eax /* saved_misc_enable_msr lo */
++	addl	$4, %edi
++	movl	(%edi), %edx /* saved_misc_enable_msr hi */
++	movl	$(MSR_IA32_MISC_ENABLE), %ecx
++	wrmsr
++
++	popl	%ebx
++	ret
++SYM_FUNC_END(sl_txt_load_regs)
++
++SYM_FUNC_START(sl_txt_wake_aps)
++	/* Save boot params register */
++	pushl	%esi
++
++	/* First setup the MLE join structure and load it into TXT reg */
++	leal	rva(sl_gdt)(%ebx), %eax
++	leal	rva(sl_txt_ap_entry)(%ebx), %ecx
++	leal	rva(sl_smx_rlp_mle_join)(%ebx), %edx
++	movl	%eax, SL_rlp_gdt_base(%edx)
++	movl	%ecx, SL_rlp_entry_point(%edx)
++	movl	%edx, (TXT_PRIV_CONFIG_REGS_BASE + TXT_CR_MLE_JOIN)
++
++	/* Another TXT heap walk to find various values needed to wake APs */
++	movl	(TXT_PRIV_CONFIG_REGS_BASE + TXT_CR_HEAP_BASE), %eax
++	/* At BIOS data size, find the number of logical processors */
++	movl	(SL_num_logical_procs + 8)(%eax), %edx
++	/* Skip over BIOS data */
++	movl	(%eax), %ecx
++	addl	%ecx, %eax
++	/* Skip over OS to MLE */
++	movl	(%eax), %ecx
++	addl	%ecx, %eax
++	/* At OS-SNIT size, get capabilities to know how to wake up the APs */
++	movl	(SL_capabilities + 8)(%eax), %esi
++	/* Skip over OS to SNIT */
++	movl	(%eax), %ecx
++	addl	%ecx, %eax
++	/* At SINIT-MLE size, get the AP wake MONITOR address */
++	movl	(SL_rlp_wakeup_addr + 8)(%eax), %edi
++
++	/* Determine how to wake up the APs */
++	testl	$(1 << TXT_SINIT_MLE_CAP_WAKE_MONITOR), %esi
++	jz	.Lwake_getsec
++
++	/* Wake using MWAIT MONITOR */
++	movl	$1, (%edi)
++	jmp	.Laps_awake
++
++.Lwake_getsec:
++	/* Wake using GETSEC(WAKEUP) */
++	GETSEC	$(SMX_X86_GETSEC_WAKEUP)
++
++.Laps_awake:
++	/*
++	 * All of the APs are woken up and rendesvous in the relocated wake
++	 * block starting at sl_txt_ap_wake_begin. Wait for all of them to
++	 * halt.
++	 */
++	pause
++	cmpl	rva(sl_txt_cpu_count)(%ebx), %edx
++	jne	.Laps_awake
++
++	popl	%esi
++	ret
++SYM_FUNC_END(sl_txt_wake_aps)
++
++/* This is the beginning of the relocated AP wake code block */
++	.global sl_txt_ap_wake_begin
++sl_txt_ap_wake_begin:
++
++	/*
++	 * Wait for NMI IPI in the relocated AP wake block which was provided
++	 * and protected in the memory map by the prelaunch code. Leave all
++	 * other interrupts masked since we do not expect anything but an NMI.
++	 */
++	xorl	%edx, %edx
++
++1:
++	hlt
++	testl	%edx, %edx
++	jz	1b
++
++	/*
++	 * This is the long absolute jump to the 32b Secure Launch protected
++	 * mode stub code in the rmpiggy. The jump address will be fixed in
++	 * the SMP boot code when the first AP is brought up. This whole area
++	 * is provided and protected in the memory map by the prelaunch code.
++	 */
++	.byte	0xea
++sl_ap_jmp_offset:
++	.long	0x00000000
++	.word	__SL32_CS
++
++SYM_FUNC_START(sl_txt_int_ipi_wake)
++	movl	$1, %edx
++
++	/* NMI context, just IRET */
++	iret
++SYM_FUNC_END(sl_txt_int_ipi_wake)
++
++SYM_FUNC_START(sl_txt_int_reset)
++	TXT_RESET $(SL_ERROR_INV_AP_INTERRUPT)
++SYM_FUNC_END(sl_txt_int_reset)
++
++	.balign 8
++SYM_DATA_START_LOCAL(sl_ap_idt_desc)
++	.word	sl_ap_idt_end - sl_ap_idt - 1		/* Limit */
++	.long	sl_ap_idt - sl_txt_ap_wake_begin	/* Base */
++SYM_DATA_END_LABEL(sl_ap_idt_desc, SYM_L_LOCAL, sl_ap_idt_desc_end)
++
++	.balign 8
++SYM_DATA_START_LOCAL(sl_ap_idt)
++	.rept	NR_VECTORS
++	.word	0x0000		/* Offset 15 to 0 */
++	.word	__SL32_CS	/* Segment selector */
++	.word	0x8e00		/* Present, DPL=0, 32b Vector, Interrupt */
++	.word	0x0000		/* Offset 31 to 16 */
++	.endr
++SYM_DATA_END_LABEL(sl_ap_idt, SYM_L_LOCAL, sl_ap_idt_end)
++
++	.balign 8
++SYM_DATA_START_LOCAL(sl_ap_gdt_desc)
++	.word	sl_ap_gdt_end - sl_ap_gdt - 1
++	.long	sl_ap_gdt - sl_txt_ap_wake_begin
++SYM_DATA_END_LABEL(sl_ap_gdt_desc, SYM_L_LOCAL, sl_ap_gdt_desc_end)
++
++	.balign	8
++SYM_DATA_START_LOCAL(sl_ap_gdt)
++	.quad	0x0000000000000000	/* NULL */
++	.quad	0x00cf9a000000ffff	/* __SL32_CS */
++	.quad	0x00cf92000000ffff	/* __SL32_DS */
++SYM_DATA_END_LABEL(sl_ap_gdt, SYM_L_LOCAL, sl_ap_gdt_end)
++
++	/* Small stacks for BSP and APs to work with */
++	.balign 4
++SYM_DATA_START_LOCAL(sl_stacks)
++	.fill (TXT_MAX_CPUS * TXT_BOOT_STACK_SIZE), 1, 0
++SYM_DATA_END_LABEL(sl_stacks, SYM_L_LOCAL, sl_stacks_end)
++
++/* This is the end of the relocated AP wake code block */
++	.global sl_txt_ap_wake_end
++sl_txt_ap_wake_end:
++
++	.data
++	.balign 8
++SYM_DATA_START_LOCAL(sl_gdt_desc)
++	.word	sl_gdt_end - sl_gdt - 1
++	.long	sl_gdt - sl_gdt_desc
++SYM_DATA_END_LABEL(sl_gdt_desc, SYM_L_LOCAL, sl_gdt_desc_end)
++
++	.balign	8
++SYM_DATA_START_LOCAL(sl_gdt)
++	.quad	0x0000000000000000	/* NULL */
++	.quad	0x00cf9a000000ffff	/* __SL32_CS */
++	.quad	0x00cf92000000ffff	/* __SL32_DS */
++SYM_DATA_END_LABEL(sl_gdt, SYM_L_LOCAL, sl_gdt_end)
++
++	.balign 8
++SYM_DATA_START_LOCAL(sl_smx_rlp_mle_join)
++	.long	sl_gdt_end - sl_gdt - 1	/* GDT limit */
++	.long	0x00000000		/* GDT base */
++	.long	__SL32_CS	/* Seg Sel - CS (DS, ES, SS = seg_sel+8) */
++	.long	0x00000000	/* Entry point physical address */
++SYM_DATA_END(sl_smx_rlp_mle_join)
++
++SYM_DATA(sl_cpu_type, .long 0x00000000)
++
++SYM_DATA(sl_mle_start, .long 0x00000000)
++
++SYM_DATA_LOCAL(sl_txt_spin_lock, .long 0x00000000)
++
++SYM_DATA_LOCAL(sl_txt_stack_index, .long 0x00000000)
++
++SYM_DATA_LOCAL(sl_txt_cpu_count, .long 0x00000000)
++
++SYM_DATA_LOCAL(sl_txt_ap_wake_block, .long 0x00000000)
+diff --git a/arch/x86/kernel/asm-offsets.c b/arch/x86/kernel/asm-offsets.c
+index ecd3fd6..b665c51 100644
+--- a/arch/x86/kernel/asm-offsets.c
++++ b/arch/x86/kernel/asm-offsets.c
+@@ -12,6 +12,7 @@
+ #include <linux/hardirq.h>
+ #include <linux/suspend.h>
+ #include <linux/kbuild.h>
++#include <linux/slaunch.h>
+ #include <asm/processor.h>
+ #include <asm/thread_info.h>
+ #include <asm/sigframe.h>
+@@ -93,4 +94,22 @@ static void __used common(void)
+ 	OFFSET(TSS_sp0, tss_struct, x86_tss.sp0);
+ 	OFFSET(TSS_sp1, tss_struct, x86_tss.sp1);
+ 	OFFSET(TSS_sp2, tss_struct, x86_tss.sp2);
++
++#ifdef CONFIG_SECURE_LAUNCH
++	BLANK();
++	OFFSET(SL_boot_params_addr, txt_os_mle_data, boot_params_addr);
++	OFFSET(SL_saved_misc_enable_msr, txt_os_mle_data, saved_misc_enable_msr);
++	OFFSET(SL_saved_bsp_mtrrs, txt_os_mle_data, saved_bsp_mtrrs);
++	OFFSET(SL_ap_wake_block, txt_os_mle_data, ap_wake_block);
++	OFFSET(SL_ap_wake_block_size, txt_os_mle_data, ap_wake_block_size);
++	OFFSET(SL_mle_scratch, txt_os_mle_data, mle_scratch);
++	OFFSET(SL_num_logical_procs, txt_bios_data, num_logical_procs);
++	OFFSET(SL_capabilities, txt_os_sinit_data, capabilities);
++	OFFSET(SL_mle_size, txt_os_sinit_data, mle_size);
++	OFFSET(SL_vtd_pmr_lo_base, txt_os_sinit_data, vtd_pmr_lo_base);
++	OFFSET(SL_vtd_pmr_lo_size, txt_os_sinit_data, vtd_pmr_lo_size);
++	OFFSET(SL_rlp_wakeup_addr, txt_sinit_mle_data, rlp_wakeup_addr);
++	OFFSET(SL_rlp_gdt_base, smx_rlp_mle_join, rlp_gdt_base);
++	OFFSET(SL_rlp_entry_point, smx_rlp_mle_join, rlp_entry_point);
++#endif
+ }
+-- 
+1.8.3.1
+
+
+_______________________________________________
+iommu mailing list
+iommu@lists.linux-foundation.org
+https://lists.linuxfoundation.org/mailman/listinfo/iommu
+
