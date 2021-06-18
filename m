@@ -2,102 +2,82 @@ Return-Path: <SRS0=sMz+=LM=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-8.6 required=3.0 tests=BAYES_00,DKIM_INVALID,
-	DKIM_SIGNED,HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_CR_TRAILER,
-	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED autolearn=ham
-	autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-15.5 required=3.0 tests=BAYES_00,
+	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_CR_TRAILER,INCLUDES_PATCH,
+	MAILING_LIST_MULTI,NICE_REPLY_A,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,
+	USER_AGENT_SANE_1 autolearn=ham autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3895FC48BDF
-	for <iommu@archiver.kernel.org>; Fri, 18 Jun 2021 07:44:13 +0000 (UTC)
-Received: from smtp1.osuosl.org (smtp1.osuosl.org [140.211.166.138])
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 40CECC48BDF
+	for <iommu@archiver.kernel.org>; Fri, 18 Jun 2021 07:49:57 +0000 (UTC)
+Received: from smtp4.osuosl.org (smtp4.osuosl.org [140.211.166.137])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id EC992613BD
-	for <iommu@archiver.kernel.org>; Fri, 18 Jun 2021 07:44:12 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org EC992613BD
-Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=linaro.org
+	by mail.kernel.org (Postfix) with ESMTPS id A64DA61209
+	for <iommu@archiver.kernel.org>; Fri, 18 Jun 2021 07:49:56 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org A64DA61209
+Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=huawei.com
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by smtp1.osuosl.org (Postfix) with ESMTP id AFB3183C9A;
-	Fri, 18 Jun 2021 07:44:12 +0000 (UTC)
+	by smtp4.osuosl.org (Postfix) with ESMTP id 66F0340309;
+	Fri, 18 Jun 2021 07:49:56 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from smtp1.osuosl.org ([127.0.0.1])
-	by localhost (smtp1.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id CS9juz5z8PMA; Fri, 18 Jun 2021 07:44:11 +0000 (UTC)
-Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by smtp1.osuosl.org (Postfix) with ESMTPS id 9A26083C93;
-	Fri, 18 Jun 2021 07:44:11 +0000 (UTC)
-Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id E3297C0023;
-	Fri, 18 Jun 2021 07:44:10 +0000 (UTC)
-Received: from smtp4.osuosl.org (smtp4.osuosl.org [140.211.166.137])
- by lists.linuxfoundation.org (Postfix) with ESMTP id B2554C000B
- for <iommu@lists.linux-foundation.org>; Fri, 18 Jun 2021 07:44:09 +0000 (UTC)
-Received: from localhost (localhost [127.0.0.1])
- by smtp4.osuosl.org (Postfix) with ESMTP id A03FB40494
- for <iommu@lists.linux-foundation.org>; Fri, 18 Jun 2021 07:44:09 +0000 (UTC)
-X-Virus-Scanned: amavisd-new at osuosl.org
-Authentication-Results: smtp4.osuosl.org (amavisd-new);
- dkim=pass (2048-bit key) header.d=linaro.org
 Received: from smtp4.osuosl.org ([127.0.0.1])
- by localhost (smtp4.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id GJpqxiPrIJz2 for <iommu@lists.linux-foundation.org>;
- Fri, 18 Jun 2021 07:44:08 +0000 (UTC)
-X-Greylist: whitelisted by SQLgrey-1.8.0
-Received: from mail-ed1-x52e.google.com (mail-ed1-x52e.google.com
- [IPv6:2a00:1450:4864:20::52e])
- by smtp4.osuosl.org (Postfix) with ESMTPS id A7B7240462
- for <iommu@lists.linux-foundation.org>; Fri, 18 Jun 2021 07:44:08 +0000 (UTC)
-Received: by mail-ed1-x52e.google.com with SMTP id c7so6398762edn.6
- for <iommu@lists.linux-foundation.org>; Fri, 18 Jun 2021 00:44:08 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linaro.org; s=google;
- h=date:from:to:cc:subject:message-id:references:mime-version
- :content-disposition:in-reply-to;
- bh=xrVDbV297cRNejKsonngV4vGhbIFMI93Q9VE4px56sk=;
- b=DJrFso3Sd/PK31zGllWY1zpb+A/KUBtA1E8u5Qir0hsdifTQYSdRZW1U6CNektQcl7
- 8Gwsv7C1odv1jrBJeUaUkxlcjlp8X1pKeC2J+1DP3IUSv0CsFCITaq8JZc3WjTws7uPQ
- 4IxWmREr3j6FYQj+LSiYl4jQTvWE68g/xCWzMfT0kpokkoIFlm0HlOIaovz3NUm3XRbN
- wE7uyBGbqLDvxaWPAzFanMx77+YZjL556iOB0wbtNEUUYyaZWtg3ae9HJjDoNyKVy1IK
- fvCBuKgdbz3tUsMUMs1z8Q2cwdxKNYtxY/sI/BfDgxkDL/babYZa0vN5UhC3RLA+ilVb
- 2Qtw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
- d=1e100.net; s=20161025;
- h=x-gm-message-state:date:from:to:cc:subject:message-id:references
- :mime-version:content-disposition:in-reply-to;
- bh=xrVDbV297cRNejKsonngV4vGhbIFMI93Q9VE4px56sk=;
- b=dVCYRC2ldPAf5NmXJZollzlEcKy5WvUskD9Crj4FCdQxergPWZbhVjpDqMayX4Sfdb
- ea5UvNy94DFIwWIjS0KAQ/Y2uZqO5d7JwDtQLQW7ulBx4Y4O0DacBoaizj5ELU5gh8R5
- AExBxxBzLSygn0sFNLr+jcpPlayT8zFtrsUBh007hl4/O4Xt2ibatLqxI/+A2DECksU/
- Pikr85n19aFb762bgcw5wx4eM/iJxRoGJrWeIVmvDhvN88pSI3RnjxkWbKdg7ysOzY3C
- DI07Mwn8FboDNoEb/SPojUzdaz7sh30VTeV4kmEuOO7oenBTaCqetqLSazDztutuvo6H
- cVag==
-X-Gm-Message-State: AOAM531CtzFudKb1wY2bBveBOJAB7k6zUTKyJ0Sst+n5JgDoUVmusvmT
- OcJvvGUX1TLMiOAfTJvolAzr1A==
-X-Google-Smtp-Source: ABdhPJzREIN0+D0Q7W8RSrNNQ4NDgbr/Euk9okd86tzehslscukuMpktyxR1ml4l0LZerVVX4xGYvQ==
-X-Received: by 2002:a05:6402:17d3:: with SMTP id
- s19mr1921993edy.222.1624002246807; 
- Fri, 18 Jun 2021 00:44:06 -0700 (PDT)
-Received: from myrica (adsl-84-226-111-173.adslplus.ch. [84.226.111.173])
- by smtp.gmail.com with ESMTPSA id cf26sm680470ejb.38.2021.06.18.00.44.05
- (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
- Fri, 18 Jun 2021 00:44:06 -0700 (PDT)
-Date: Fri, 18 Jun 2021 09:43:47 +0200
-From: Jean-Philippe Brucker <jean-philippe@linaro.org>
-To: Eric Auger <eric.auger@redhat.com>
-Subject: Re: [PATCH v4 3/6] ACPI: Add driver for the VIOT table
-Message-ID: <YMxOs8MV+nlCKq7j@myrica>
-References: <20210610075130.67517-1-jean-philippe@linaro.org>
- <20210610075130.67517-4-jean-philippe@linaro.org>
- <5a16c21f-ca02-1016-80e9-c374a6fe2b25@redhat.com>
+	by localhost (smtp4.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+	with ESMTP id bhBS4xhJrvz8; Fri, 18 Jun 2021 07:49:55 +0000 (UTC)
+Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
+	by smtp4.osuosl.org (Postfix) with ESMTPS id 25BB140326;
+	Fri, 18 Jun 2021 07:49:55 +0000 (UTC)
+Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
+	by lists.linuxfoundation.org (Postfix) with ESMTP id CD584C000D;
+	Fri, 18 Jun 2021 07:49:54 +0000 (UTC)
+Received: from smtp3.osuosl.org (smtp3.osuosl.org [IPv6:2605:bc80:3010::136])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id DD3FAC000B
+ for <iommu@lists.linux-foundation.org>; Fri, 18 Jun 2021 07:49:52 +0000 (UTC)
+Received: from localhost (localhost [127.0.0.1])
+ by smtp3.osuosl.org (Postfix) with ESMTP id C2FC4605F6
+ for <iommu@lists.linux-foundation.org>; Fri, 18 Jun 2021 07:49:52 +0000 (UTC)
+X-Virus-Scanned: amavisd-new at osuosl.org
+Received: from smtp3.osuosl.org ([127.0.0.1])
+ by localhost (smtp3.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+ with ESMTP id Xam1UVa37pWb for <iommu@lists.linux-foundation.org>;
+ Fri, 18 Jun 2021 07:49:51 +0000 (UTC)
+X-Greylist: domain auto-whitelisted by SQLgrey-1.8.0
+Received: from frasgout.his.huawei.com (frasgout.his.huawei.com
+ [185.176.79.56])
+ by smtp3.osuosl.org (Postfix) with ESMTPS id 6901860011
+ for <iommu@lists.linux-foundation.org>; Fri, 18 Jun 2021 07:49:51 +0000 (UTC)
+Received: from fraeml742-chm.china.huawei.com (unknown [172.18.147.207])
+ by frasgout.his.huawei.com (SkyGuard) with ESMTP id 4G5rMm1F1mz6G9tV;
+ Fri, 18 Jun 2021 15:36:36 +0800 (CST)
+Received: from lhreml724-chm.china.huawei.com (10.201.108.75) by
+ fraeml742-chm.china.huawei.com (10.206.15.223) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2176.2; Fri, 18 Jun 2021 09:49:48 +0200
+Received: from [10.47.95.81] (10.47.95.81) by lhreml724-chm.china.huawei.com
+ (10.201.108.75) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2176.2; Fri, 18 Jun
+ 2021 08:49:47 +0100
+Subject: Re: [PATCH v13 1/6] iommu: Deprecate Intel and AMD cmdline methods to
+ enable strict mode
+To: Robin Murphy <robin.murphy@arm.com>, <joro@8bytes.org>, <will@kernel.org>, 
+ <dwmw2@infradead.org>, <baolu.lu@linux.intel.com>, <corbet@lwn.net>
+References: <1623841437-211832-1-git-send-email-john.garry@huawei.com>
+ <1623841437-211832-2-git-send-email-john.garry@huawei.com>
+ <f95252ce-f834-103b-f96d-7e35fa59d5ec@arm.com>
+From: John Garry <john.garry@huawei.com>
+Message-ID: <c8ca952e-4070-0a48-0a77-1cdf6985bb19@huawei.com>
+Date: Fri, 18 Jun 2021 08:43:32 +0100
+User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; rv:68.0) Gecko/20100101
+ Thunderbird/68.1.2
 MIME-Version: 1.0
-Content-Disposition: inline
-In-Reply-To: <5a16c21f-ca02-1016-80e9-c374a6fe2b25@redhat.com>
-Cc: kevin.tian@intel.com, mst@redhat.com, catalin.marinas@arm.com,
- sudeep.holla@arm.com, rjw@rjwysocki.net, robin.murphy@arm.com,
- virtualization@lists.linux-foundation.org, linux-acpi@vger.kernel.org,
- iommu@lists.linux-foundation.org, sebastien.boeuf@intel.com,
- guohanjun@huawei.com, will@kernel.org, dwmw2@infradead.org,
- linux-arm-kernel@lists.infradead.org, lenb@kernel.org
+In-Reply-To: <f95252ce-f834-103b-f96d-7e35fa59d5ec@arm.com>
+Content-Language: en-US
+X-Originating-IP: [10.47.95.81]
+X-ClientProxiedBy: lhreml743-chm.china.huawei.com (10.201.108.193) To
+ lhreml724-chm.china.huawei.com (10.201.108.75)
+X-CFilter-Loop: Reflected
+Cc: linux-doc@vger.kernel.org, linux-kernel@vger.kernel.org,
+ linuxarm@huawei.com, iommu@lists.linux-foundation.org
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -110,54 +90,37 @@ List-Post: <mailto:iommu@lists.linux-foundation.org>
 List-Help: <mailto:iommu-request@lists.linux-foundation.org?subject=help>
 List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
  <mailto:iommu-request@lists.linux-foundation.org?subject=subscribe>
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: base64
+Content-Type: text/plain; charset="utf-8"; Format="flowed"
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-On Wed, Jun 16, 2021 at 03:26:08PM +0200, Eric Auger wrote:
-> > +	default:
-> > +		pr_warn("Unsupported node %x\n", hdr->type);
-> > +		ret = 0;
-> > +		goto err_free;
-> > +	}
-> > +
-> > +	/*
-> > +	 * To be compatible with future versions of the table which may include
-> > +	 * other node types, keep parsing.
-> > +	 */
-> nit: doesn't this comment rather apply to the default clause in the
-> switch.
-
-Yes, the comment doesn't accurately explain the code below, I'll tweak it.
-
-        /*
-         * A future version of the table may use the node for other purposes.
-         * Keep parsing.
-         */
-
-> In case the PCI range node or the single MMIO endoint node does
-> not refer to any translation element, isn't it simply an error case?
-
-It is permissible in my opinion. If a future version of the spec appends
-new fields to the MMIO endpoint describing some PV property (I can't think
-of a useful example), then the table can contain the vIOMMU topology as
-usual plus one MMIO node that's only here to describe that property, and
-doesn't have a translation element. If we encounter that I think we should
-keep parsing.
-
-> > +	if (!ep->viommu) {
-> > +		pr_warn("No IOMMU node found\n");
-> > +		ret = 0;
-> > +		goto err_free;
-> > +	}
-
-> Besides
-> Reviewed-by: Eric Auger <eric.auger@redhat.com>
-
-Thanks!
-Jean
-_______________________________________________
-iommu mailing list
-iommu@lists.linux-foundation.org
-https://lists.linuxfoundation.org/mailman/listinfo/iommu
+T24gMTcvMDYvMjAyMSAyMDowMSwgUm9iaW4gTXVycGh5IHdyb3RlOgo+PiDCoMKgwqDCoMKgwqDC
+oMKgwqDCoMKgwqDCoCBETUEuCj4+IC3CoMKgwqDCoMKgwqDCoCBzdHJpY3QgW0RlZmF1bHQgT2Zm
+XQo+PiArwqDCoMKgwqDCoMKgwqAgc3RyaWN0IFtEZWZhdWx0IE9mZl0gW0RlcHJlY2F0ZWQsIHVz
+ZSBpb21tdS5zdHJpY3QgaW5zdGVhZF0KPj4gwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqAgV2l0
+aCB0aGlzIG9wdGlvbiBvbiBldmVyeSB1bm1hcF9zaW5nbGUgb3BlcmF0aW9uIHdpbGwKPj4gwqDC
+oMKgwqDCoMKgwqDCoMKgwqDCoMKgwqAgcmVzdWx0IGluIGEgaGFyZHdhcmUgSU9UTEIgZmx1c2gg
+b3BlcmF0aW9uIGFzIG9wcG9zZWQKPj4gwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqAgdG8gYmF0
+Y2hpbmcgdGhlbSBmb3IgcGVyZm9ybWFuY2UuCj4gCj4gRldJVyBJJ2QgYmUgaW5jbGluZWQgdG8g
+cmVwbGFjZSBib3RoIHdob2xlIGRlc2NyaXB0aW9ucyB3aXRoIGp1c3QgCj4gc29tZXRoaW5nIGxp
+a2UgIkRlcHJlY2F0ZWQsIGVxdWl2YWxlbnQgdG8gaW9tbXUuc3RyaWN0PTEiLgo+IAo+PiBkaWZm
+IC0tZ2l0IGEvZHJpdmVycy9pb21tdS9hbWQvaW5pdC5jIGIvZHJpdmVycy9pb21tdS9hbWQvaW5p
+dC5jCj4+IGluZGV4IDQ2MjgwZTZlMTUzNS4uOWYzMDk2ZDY1MGFhIDEwMDY0NAo+PiAtLS0gYS9k
+cml2ZXJzL2lvbW11L2FtZC9pbml0LmMKPj4gKysrIGIvZHJpdmVycy9pb21tdS9hbWQvaW5pdC5j
+Cj4+IEBAIC0zMDk4LDggKzMwOTgsMTAgQEAgc3RhdGljIGludCBfX2luaXQgcGFyc2VfYW1kX2lv
+bW11X2ludHIoY2hhciAqc3RyKQo+PiDCoCBzdGF0aWMgaW50IF9faW5pdCBwYXJzZV9hbWRfaW9t
+bXVfb3B0aW9ucyhjaGFyICpzdHIpCj4+IMKgIHsKPj4gwqDCoMKgwqDCoCBmb3IgKDsgKnN0cjsg
+KytzdHIpIHsKPj4gLcKgwqDCoMKgwqDCoMKgIGlmIChzdHJuY21wKHN0ciwgImZ1bGxmbHVzaCIs
+IDkpID09IDApCj4+ICvCoMKgwqDCoMKgwqDCoCBpZiAoc3RybmNtcChzdHIsICJmdWxsZmx1c2gi
+LCA5KSA9PSAwKSB7Cj4+ICvCoMKgwqDCoMKgwqDCoMKgwqDCoMKgIHByX3dhcm4oImFtZF9pb21t
+dT1mdWxsZmx1c2ggZGVwcmVjYXRlZDsgdXNlIGlvbW11LnN0cmljdCAKPj4gaW5zdGVhZFxuIik7
+Cj4gCj4gTml0OiBtYXliZSB3ZSBzaG91bGQgc3BlbGwgb3V0ICIuLi51c2UgPG9wdGlvbj49MSBp
+bnN0ZWFkIiBpbiBhbGwgb2YgCj4gdGhlc2UgbWVzc2FnZXMganVzdCBpbiBjYXNlIGFueW9uZSB0
+YWtlcyB0aGVtIGxpdGVyYWxseT8KCgo+IChJJ20gbm90IHN1cmUgCj4gdGhlIG9wdGlvbnMgcGFy
+c2UgY29ycmVjdGx5IHdpdGggbm8gYXJndW1lbnQpCgpJIGRvbid0IHRoaW5rIHRoZXkgZG8uCgpC
+dXQgSSdsbCB0YWtlIGJvdGggc3VnZ2VzdGlvbnMgb24gYm9hcmQuCgo+IAo+IEVpdGhlciB3YXks
+Cj4gCj4gQWNrZWQtYnk6IFJvYmluIE11cnBoeSA8cm9iaW4ubXVycGh5QGFybS5jb20+CgpDaGVl
+cnMhCgpfX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fXwppb21t
+dSBtYWlsaW5nIGxpc3QKaW9tbXVAbGlzdHMubGludXgtZm91bmRhdGlvbi5vcmcKaHR0cHM6Ly9s
+aXN0cy5saW51eGZvdW5kYXRpb24ub3JnL21haWxtYW4vbGlzdGluZm8vaW9tbXU=
