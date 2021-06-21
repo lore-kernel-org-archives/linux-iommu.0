@@ -2,79 +2,93 @@ Return-Path: <SRS0=Ta7z=LP=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-10.2 required=3.0 tests=BAYES_00,
-	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,NICE_REPLY_A,
-	SPF_HELO_NONE,SPF_PASS,URIBL_RED,USER_AGENT_SANE_1 autolearn=ham
-	autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-3.5 required=3.0 tests=BAYES_00,DKIM_INVALID,
+	DKIM_SIGNED,HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,SPF_HELO_NONE,
+	SPF_PASS,URIBL_RED autolearn=no autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 72C2CC48BE5
-	for <iommu@archiver.kernel.org>; Mon, 21 Jun 2021 05:17:40 +0000 (UTC)
-Received: from smtp3.osuosl.org (smtp3.osuosl.org [140.211.166.136])
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0A45FC48BE5
+	for <iommu@archiver.kernel.org>; Mon, 21 Jun 2021 05:47:59 +0000 (UTC)
+Received: from smtp4.osuosl.org (smtp4.osuosl.org [140.211.166.137])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id D0A4160FE9
-	for <iommu@archiver.kernel.org>; Mon, 21 Jun 2021 05:17:38 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org D0A4160FE9
-Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=linux.intel.com
+	by mail.kernel.org (Postfix) with ESMTPS id 92C00610EA
+	for <iommu@archiver.kernel.org>; Mon, 21 Jun 2021 05:47:58 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 92C00610EA
+Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=codeaurora.org
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by smtp3.osuosl.org (Postfix) with ESMTP id 8910960648;
-	Mon, 21 Jun 2021 05:17:38 +0000 (UTC)
-X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from smtp3.osuosl.org ([127.0.0.1])
-	by localhost (smtp3.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id QH7AR73qtQK1; Mon, 21 Jun 2021 05:17:37 +0000 (UTC)
-Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [IPv6:2605:bc80:3010:104::8cd3:938])
-	by smtp3.osuosl.org (Postfix) with ESMTPS id 7A3FF6063E;
-	Mon, 21 Jun 2021 05:17:37 +0000 (UTC)
-Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 2A53AC0010;
-	Mon, 21 Jun 2021 05:17:37 +0000 (UTC)
-Received: from smtp4.osuosl.org (smtp4.osuosl.org [IPv6:2605:bc80:3010::137])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 3602FC000C
- for <iommu@lists.linux-foundation.org>; Mon, 21 Jun 2021 05:17:36 +0000 (UTC)
-Received: from localhost (localhost [127.0.0.1])
- by smtp4.osuosl.org (Postfix) with ESMTP id 0E55940348
- for <iommu@lists.linux-foundation.org>; Mon, 21 Jun 2021 05:17:36 +0000 (UTC)
+	by smtp4.osuosl.org (Postfix) with ESMTP id 4F7C840322;
+	Mon, 21 Jun 2021 05:47:58 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
 Received: from smtp4.osuosl.org ([127.0.0.1])
- by localhost (smtp4.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id lww6P0kGgcpd for <iommu@lists.linux-foundation.org>;
- Mon, 21 Jun 2021 05:17:34 +0000 (UTC)
-X-Greylist: domain auto-whitelisted by SQLgrey-1.8.0
-Received: from mga07.intel.com (mga07.intel.com [134.134.136.100])
- by smtp4.osuosl.org (Postfix) with ESMTPS id C745140345
- for <iommu@lists.linux-foundation.org>; Mon, 21 Jun 2021 05:17:34 +0000 (UTC)
-IronPort-SDR: E+nMwv7TTNRgQ6qNqsz+/NgYvd6XSNg9BfFR+IbtcFwB8inhICETeOW4nt9BR1UDbfmzv4mTYz
- 2ixFYaz3TU7A==
-X-IronPort-AV: E=McAfee;i="6200,9189,10021"; a="270623939"
-X-IronPort-AV: E=Sophos;i="5.83,289,1616482800"; d="scan'208";a="270623939"
-Received: from fmsmga008.fm.intel.com ([10.253.24.58])
- by orsmga105.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384;
- 20 Jun 2021 22:17:32 -0700
-IronPort-SDR: 9Xxri7XJd9v6KBQMO9fhv7VvxtB0dH0OGtBQ4S0a8I7KOm46M0mLtWytuAniowgdp2Wya2YagJ
- ed//po5RjGhA==
-X-IronPort-AV: E=Sophos;i="5.83,289,1616482800"; d="scan'208";a="453761991"
-Received: from blu2-mobl3.ccr.corp.intel.com (HELO [10.254.211.249])
- ([10.254.211.249])
- by fmsmga008-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384;
- 20 Jun 2021 22:17:29 -0700
-To: John Garry <john.garry@huawei.com>, joro@8bytes.org, will@kernel.org,
- dwmw2@infradead.org, robin.murphy@arm.com, corbet@lwn.net
-References: <1624016058-189713-1-git-send-email-john.garry@huawei.com>
- <1624016058-189713-7-git-send-email-john.garry@huawei.com>
-From: Lu Baolu <baolu.lu@linux.intel.com>
-Subject: Re: [PATCH v14 6/6] iommu: Remove mode argument from
- iommu_set_dma_strict()
-Message-ID: <c062ef9e-c106-4218-ba2a-c94fdcb6d955@linux.intel.com>
-Date: Mon, 21 Jun 2021 13:17:11 +0800
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:78.0) Gecko/20100101
- Thunderbird/78.11.0
+	by localhost (smtp4.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+	with ESMTP id idJUT1rcGk5s; Mon, 21 Jun 2021 05:47:57 +0000 (UTC)
+Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
+	by smtp4.osuosl.org (Postfix) with ESMTPS id E846F402E3;
+	Mon, 21 Jun 2021 05:47:56 +0000 (UTC)
+Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
+	by lists.linuxfoundation.org (Postfix) with ESMTP id A1F28C0010;
+	Mon, 21 Jun 2021 05:47:56 +0000 (UTC)
+Received: from smtp3.osuosl.org (smtp3.osuosl.org [140.211.166.136])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 71EE6C000C
+ for <iommu@lists.linux-foundation.org>; Mon, 21 Jun 2021 05:47:55 +0000 (UTC)
+Received: from localhost (localhost [127.0.0.1])
+ by smtp3.osuosl.org (Postfix) with UTF8SMTP id 4A91060621
+ for <iommu@lists.linux-foundation.org>; Mon, 21 Jun 2021 05:47:55 +0000 (UTC)
+X-Virus-Scanned: amavisd-new at osuosl.org
+Authentication-Results: smtp3.osuosl.org (amavisd-new);
+ dkim=pass (1024-bit key) header.d=mg.codeaurora.org
+Received: from smtp3.osuosl.org ([127.0.0.1])
+ by localhost (smtp3.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+ with UTF8SMTP id jEkmEVzJH4qq for <iommu@lists.linux-foundation.org>;
+ Mon, 21 Jun 2021 05:47:54 +0000 (UTC)
+X-Greylist: from auto-whitelisted by SQLgrey-1.8.0
+Received: from so254-9.mailgun.net (so254-9.mailgun.net [198.61.254.9])
+ by smtp3.osuosl.org (Postfix) with UTF8SMTPS id DB37060593
+ for <iommu@lists.linux-foundation.org>; Mon, 21 Jun 2021 05:47:50 +0000 (UTC)
+DKIM-Signature: a=rsa-sha256; v=1; c=relaxed/relaxed; d=mg.codeaurora.org;
+ q=dns/txt; 
+ s=smtp; t=1624254474; h=Message-ID: References: In-Reply-To: Subject:
+ Cc: To: From: Date: Content-Transfer-Encoding: Content-Type:
+ MIME-Version: Sender; bh=dd/c0WzWEfKMbrpV11k4uuAZn72RvTRCSkxT5YGla6U=;
+ b=Gc1nyEN8+HYw/uDqFaI40oFM0MrWuN3bLQD9e1dybnZP/fgzinvAKwiUeWTERlSuTm9qRC/z
+ CdBnrC52I0kI/6lsSP3xVwLJ5xLejE7hSlvx2QcfBwHTvQ7LSo7xmdAaQM3PoPuqNYye3Nbh
+ rsry12DMWs5RfErLvNWzPgShedM=
+X-Mailgun-Sending-Ip: 198.61.254.9
+X-Mailgun-Sid: WyI3NDkwMCIsICJpb21tdUBsaXN0cy5saW51eC1mb3VuZGF0aW9uLm9yZyIsICJiZTllNGEiXQ==
+Received: from smtp.codeaurora.org
+ (ec2-35-166-182-171.us-west-2.compute.amazonaws.com [35.166.182.171]) by
+ smtp-out-n04.prod.us-east-1.postgun.com with SMTP id
+ 60d027fbe27c0cc77f425a7d (version=TLS1.2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256); Mon, 21 Jun 2021 05:47:39
+ GMT
+Received: by smtp.codeaurora.org (Postfix, from userid 1001)
+ id D1D77C433D3; Mon, 21 Jun 2021 05:47:38 +0000 (UTC)
+Received: from mail.codeaurora.org (localhost.localdomain [127.0.0.1])
+ (using TLSv1 with cipher ECDHE-RSA-AES256-SHA (256/256 bits))
+ (No client certificate requested)
+ (Authenticated sender: saiprakash.ranjan)
+ by smtp.codeaurora.org (Postfix) with ESMTPSA id 84534C433F1;
+ Mon, 21 Jun 2021 05:47:36 +0000 (UTC)
 MIME-Version: 1.0
-In-Reply-To: <1624016058-189713-7-git-send-email-john.garry@huawei.com>
-Content-Language: en-US
-Cc: linux-doc@vger.kernel.org, linuxarm@huawei.com,
- linux-kernel@vger.kernel.org, iommu@lists.linux-foundation.org
+Date: Mon, 21 Jun 2021 11:17:36 +0530
+From: Sai Prakash Ranjan <saiprakash.ranjan@codeaurora.org>
+To: Doug Anderson <dianders@chromium.org>
+Subject: Re: [PATCHv2 2/3] iommu/io-pgtable: Optimize partial walk flush for
+ large scatter-gather list
+In-Reply-To: <CAD=FV=WA_mBnxv-D3YOYUkDAAcYgktFgnw2zeTkMneqFxBg=yg@mail.gmail.com>
+References: <cover.1623981933.git.saiprakash.ranjan@codeaurora.org>
+ <150fc7ab1c7f9b70a95dae1f4bc3b9018c0f9e04.1623981933.git.saiprakash.ranjan@codeaurora.org>
+ <CAD=FV=WA_mBnxv-D3YOYUkDAAcYgktFgnw2zeTkMneqFxBg=yg@mail.gmail.com>
+Message-ID: <716fbc51ec73434e325d84752a471e89@codeaurora.org>
+X-Sender: saiprakash.ranjan@codeaurora.org
+User-Agent: Roundcube Webmail/1.3.9
+Cc: Robin Murphy <robin.murphy@arm.com>, LKML <linux-kernel@vger.kernel.org>,
+ "list@263.net:IOMMU DRIVERS , Joerg Roedel
+ <joro@8bytes.org>, " <iommu@lists.linux-foundation.org>,
+ linux-arm-msm <linux-arm-msm@vger.kernel.org>,
+ Thierry Reding <treding@nvidia.com>, Will Deacon <will@kernel.org>,
+ Linux ARM <linux-arm-kernel@lists.infradead.org>
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -92,53 +106,100 @@ Content-Type: text/plain; charset="us-ascii"; Format="flowed"
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-On 2021/6/18 19:34, John Garry wrote:
-> diff --git a/drivers/iommu/iommu.c b/drivers/iommu/iommu.c
-> index 60b1ec42e73b..ff221d3ddcbc 100644
-> --- a/drivers/iommu/iommu.c
-> +++ b/drivers/iommu/iommu.c
-> @@ -349,10 +349,9 @@ static int __init iommu_dma_setup(char *str)
->   }
->   early_param("iommu.strict", iommu_dma_setup);
->   
-> -void iommu_set_dma_strict(bool strict)
-> +void iommu_set_dma_strict(void)
->   {
-> -	if (strict || !(iommu_cmd_line & IOMMU_CMD_LINE_STRICT))
-> -		iommu_dma_strict = strict;
-> +	iommu_dma_strict = true;
->   }
+Hi,
 
-Sorry for this late comment.
+On 2021-06-19 03:39, Doug Anderson wrote:
+> Hi,
+> 
+> On Thu, Jun 17, 2021 at 7:51 PM Sai Prakash Ranjan
+> <saiprakash.ranjan@codeaurora.org> wrote:
+>> 
+>> Currently for iommu_unmap() of large scatter-gather list with page 
+>> size
+>> elements, the majority of time is spent in flushing of partial walks 
+>> in
+>> __arm_lpae_unmap() which is a VA based TLB invalidation invalidating
+>> page-by-page on iommus like arm-smmu-v2 (TLBIVA) which do not support
+>> range based invalidations like on arm-smmu-v3.2.
+>> 
+>> For example: to unmap a 32MB scatter-gather list with page size 
+>> elements
+>> (8192 entries), there are 16->2MB buffer unmaps based on the pgsize 
+>> (2MB
+>> for 4K granule) and each of 2MB will further result in 512 TLBIVAs 
+>> (2MB/4K)
+>> resulting in a total of 8192 TLBIVAs (512*16) for 16->2MB causing a 
+>> huge
+>> overhead.
+>> 
+>> So instead use tlb_flush_all() callback (TLBIALL/TLBIASID) to 
+>> invalidate
+>> the entire context for partial walk flush on select few platforms 
+>> where
+>> cost of over-invalidation is less than unmap latency
+> 
+> It would probably be worth punching this description up a little bit.
+> Elsewhere you said in more detail why this over-invalidation is less
+> of a big deal for the Qualcomm SMMU. It's probably worth saying
+> something like that here, too. Like this bit paraphrased from your
+> other email:
+> 
+> On qcom impl, we have several performance improvements for TLB cache
+> invalidations in HW like wait-for-safe (for realtime clients such as
+> camera and display) and few others to allow for cache lookups/updates
+> when TLBI is in progress for the same context bank.
+> 
 
-Normally the cache invalidation policy should come from the user. We
-have pre-build kernel option and also a kernel boot command iommu.strict
-to override it. These seem reasonable.
+Sure will add this info as well in the next version.
 
-We also have a helper (iommu_set_dma_strict()) so that the vendor iommu
-driver could squeeze in and change the previous settings mostly due to:
+> 
+>> using the newly
+>> introduced quirk IO_PGTABLE_QUIRK_TLB_INV_ALL. We also do this for
+>> non-strict mode given its all about over-invalidation saving time on
+>> individual unmaps and non-deterministic generally.
+> 
+> As per usual I'm mostly clueless, but I don't quite understand why you
+> want this new behavior for non-strict mode. To me it almost seems like
+> the opposite? Specifically, non-strict mode is already outside the
+> critical path today and so there's no need to optimize it. I'm
+> probably not explaining myself clearly, but I guess i'm thinking:
+> 
+> a) today for strict, unmap is in the critical path and it's important
+> to get it out of there. Getting it out of the critical path is so
+> important that we're willing to over-invalidate to speed up the
+> critical path.
+> 
+> b) today for non-strict, unmap is not in the critical path.
+> 
+> So I would almost expect your patch to _disable_ your new feature for
+> non-strict mappings, not auto-enable your new feature for non-strict
+> mappings.
+> 
+> If I'm babbling, feel free to ignore. ;-) Looking back, I guess Robin
+> was the one that suggested the behavior you're implementing, so it's
+> more likely he's right than I am. ;-)
+> 
 
-a) vendor iommu driver specific kernel boot command. (We are about to
-    deprecate those.)
+Thanks for taking a look. Non-strict mode is only for leaf entries and
+dma domains and this optimization is for non-leaf entries and is 
+applicable
+for both, see __arm_lpae_unmap(). In other words, if you have 
+iommu.strict=0
+(non-strict mode) and try unmapping a large sg buffer as the problem 
+described
+in the commit text, you would still go via this path in unmap and see 
+the
+delay without this patch. So what Robin suggested is that, let's do this
+unconditionally for all users with non-strict mode as opposed to only
+restricting it to implementation specific in case of strict mode.
 
-b) quirky hardware.
+Thanks,
+Sai
 
-c) kernel optimization (e.x. strict mode in VM environment).
-
-a) and b) are mandatory, while c) is optional. In any instance should c)
-override the flush mode specified by the user. Hence, probably we should
-also have another helper like:
-
-void iommu_set_dma_strict_optional()
-{
-	if (!(iommu_cmd_line & IOMMU_CMD_LINE_STRICT))
-		iommu_dma_strict = true;
-}
-
-Any thoughts?
-
-Best regards,
-baolu
+-- 
+QUALCOMM INDIA, on behalf of Qualcomm Innovation Center, Inc. is a 
+member
+of Code Aurora Forum, hosted by The Linux Foundation
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
