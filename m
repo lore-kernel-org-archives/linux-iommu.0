@@ -2,104 +2,82 @@ Return-Path: <SRS0=Ta7z=LP=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-15.2 required=3.0 tests=BAYES_00,
-	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_CR_TRAILER,INCLUDES_PATCH,
-	MAILING_LIST_MULTI,NICE_REPLY_A,SPF_HELO_NONE,SPF_PASS,URIBL_RED,
-	USER_AGENT_SANE_1 autolearn=unavailable autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-10.2 required=3.0 tests=BAYES_00,
+	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,NICE_REPLY_A,
+	SPF_HELO_NONE,SPF_PASS,URIBL_RED,USER_AGENT_SANE_1 autolearn=ham
+	autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 64404C48BE5
-	for <iommu@archiver.kernel.org>; Mon, 21 Jun 2021 06:47:07 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id BBEF7C48BE5
+	for <iommu@archiver.kernel.org>; Mon, 21 Jun 2021 08:19:04 +0000 (UTC)
 Received: from smtp1.osuosl.org (smtp1.osuosl.org [140.211.166.138])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 01E686102A
-	for <iommu@archiver.kernel.org>; Mon, 21 Jun 2021 06:47:04 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 01E686102A
-Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=canonical.com
+	by mail.kernel.org (Postfix) with ESMTPS id 482F4610C7
+	for <iommu@archiver.kernel.org>; Mon, 21 Jun 2021 08:19:04 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 482F4610C7
+Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=huawei.com
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by smtp1.osuosl.org (Postfix) with ESMTP id C12F28301F;
-	Mon, 21 Jun 2021 06:47:04 +0000 (UTC)
+	by smtp1.osuosl.org (Postfix) with ESMTP id E7CE1831B0;
+	Mon, 21 Jun 2021 08:19:03 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
 Received: from smtp1.osuosl.org ([127.0.0.1])
 	by localhost (smtp1.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id nEly3kzF78BF; Mon, 21 Jun 2021 06:47:03 +0000 (UTC)
+	with ESMTP id GrmVBlNoKMiv; Mon, 21 Jun 2021 08:19:03 +0000 (UTC)
 Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by smtp1.osuosl.org (Postfix) with ESMTPS id 9321B82FAE;
-	Mon, 21 Jun 2021 06:47:03 +0000 (UTC)
+	by smtp1.osuosl.org (Postfix) with ESMTPS id A6D6D83103;
+	Mon, 21 Jun 2021 08:19:02 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 603A3C000E;
-	Mon, 21 Jun 2021 06:47:03 +0000 (UTC)
-Received: from smtp2.osuosl.org (smtp2.osuosl.org [140.211.166.133])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 835C1C000C
- for <iommu@lists.linux-foundation.org>; Mon, 21 Jun 2021 06:47:01 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 6D409C000E;
+	Mon, 21 Jun 2021 08:19:02 +0000 (UTC)
+Received: from smtp4.osuosl.org (smtp4.osuosl.org [IPv6:2605:bc80:3010::137])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 11A1DC000C
+ for <iommu@lists.linux-foundation.org>; Mon, 21 Jun 2021 08:19:01 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by smtp2.osuosl.org (Postfix) with ESMTP id 5D42C400F3
- for <iommu@lists.linux-foundation.org>; Mon, 21 Jun 2021 06:47:01 +0000 (UTC)
+ by smtp4.osuosl.org (Postfix) with ESMTP id EB5674036C
+ for <iommu@lists.linux-foundation.org>; Mon, 21 Jun 2021 08:19:00 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from smtp2.osuosl.org ([127.0.0.1])
- by localhost (smtp2.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id U2niCfKrxYUw for <iommu@lists.linux-foundation.org>;
- Mon, 21 Jun 2021 06:47:00 +0000 (UTC)
+Received: from smtp4.osuosl.org ([127.0.0.1])
+ by localhost (smtp4.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+ with ESMTP id WNmgrPyZS790 for <iommu@lists.linux-foundation.org>;
+ Mon, 21 Jun 2021 08:18:59 +0000 (UTC)
 X-Greylist: domain auto-whitelisted by SQLgrey-1.8.0
-Received: from youngberry.canonical.com (youngberry.canonical.com
- [91.189.89.112])
- by smtp2.osuosl.org (Postfix) with ESMTPS id 0FE24400CD
- for <iommu@lists.linux-foundation.org>; Mon, 21 Jun 2021 06:46:59 +0000 (UTC)
-Received: from mail-ed1-f70.google.com ([209.85.208.70])
- by youngberry.canonical.com with esmtps (TLS1.2) tls
- TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256 (Exim 4.93)
- (envelope-from <krzysztof.kozlowski@canonical.com>)
- id 1lvDhx-0004mT-Lg
- for iommu@lists.linux-foundation.org; Mon, 21 Jun 2021 06:46:57 +0000
-Received: by mail-ed1-f70.google.com with SMTP id
- l9-20020a0564022549b0290394bafbfbcaso435638edb.3
- for <iommu@lists.linux-foundation.org>; Sun, 20 Jun 2021 23:46:57 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
- d=1e100.net; s=20161025;
- h=x-gm-message-state:subject:to:cc:references:from:message-id:date
- :user-agent:mime-version:in-reply-to:content-language
- :content-transfer-encoding;
- bh=HBV8dNLDqIEAfk7W6R3y2yg9WhGkmywydr9E1vv22xo=;
- b=jPkDS4T0ZIRv8bmVNgNm6FU+M+BGLOVPSq3+d+QIN5oLhBh9ix5Tx5ucKe1zr4d4gV
- 30B03cpaDDzefea/miZCDvL8m//aShKxCRzV9wcZWWQpgRgrlMPJLnuuTycTk+qcVIc1
- ch+0+D96mmruTHREZTGIe415Vnqv6nE4Shuup57v92SSwZBKKBf3H9cLFOjAaDT8jnZL
- iuPfqV5q7Tp757v38FgFbbpQTYg65RR5KxlN2U/84yiHY5yp9kzgMSLMeGk6Mc8fZHe/
- 4fEYk1C9vgQG54Gz3xQY44tbGmKHzL1ehqgXhnqqmeZ2tyh5O21noCrtEA1e8qB5sLjO
- Z4qg==
-X-Gm-Message-State: AOAM530FV8cCwmI7bATGbcxXUhHMXidVKZtH3XJBcnACjl5D2ghkhVSS
- TjvkYrCqgI8gWOn/L6HunWxNT63M6CitRf1eqCxL0tKNX4kyhFVfWATPJxaHy9u2TKtGSJEzndc
- SvcW3lCJYBzlfps/yJApK6RnZT8VvX/p062rELleHW6zLBIY=
-X-Received: by 2002:aa7:cb43:: with SMTP id w3mr11978035edt.126.1624258016711; 
- Sun, 20 Jun 2021 23:46:56 -0700 (PDT)
-X-Google-Smtp-Source: ABdhPJwW7f8aTJ93Kkruw0X6I/5OojOVeM3oazExumrI1P2lMRb9QkgVXDIlJDsddLfp5/Vdq5FSOA==
-X-Received: by 2002:aa7:cb43:: with SMTP id w3mr11977987edt.126.1624258016218; 
- Sun, 20 Jun 2021 23:46:56 -0700 (PDT)
-Received: from [192.168.1.115] (xdsl-188-155-177-222.adslplus.ch.
- [188.155.177.222])
- by smtp.gmail.com with ESMTPSA id w8sm9950041edc.39.2021.06.20.23.46.54
- (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
- Sun, 20 Jun 2021 23:46:55 -0700 (PDT)
-Subject: Re: [PATCH v3 2/9] dt-bindings: arm-smmu: Add Tegra186 compatible
- string
-To: Rob Herring <robh@kernel.org>, Thierry Reding <thierry.reding@gmail.com>, 
- Will Deacon <will@kernel.org>
-References: <20210603164632.1000458-1-thierry.reding@gmail.com>
- <20210603164632.1000458-3-thierry.reding@gmail.com>
- <CAL_JsqLDKxwANn2Pba0Db6J9337pK0dNL=bBN8ucn-k4DZ3gyg@mail.gmail.com>
-From: Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>
-Message-ID: <14551e79-853d-471f-bb5e-0d2d6581a9b6@canonical.com>
-Date: Mon, 21 Jun 2021 08:46:54 +0200
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
- Thunderbird/78.8.1
+Received: from frasgout.his.huawei.com (frasgout.his.huawei.com
+ [185.176.79.56])
+ by smtp4.osuosl.org (Postfix) with ESMTPS id 09F0240345
+ for <iommu@lists.linux-foundation.org>; Mon, 21 Jun 2021 08:18:58 +0000 (UTC)
+Received: from fraeml715-chm.china.huawei.com (unknown [172.18.147.201])
+ by frasgout.his.huawei.com (SkyGuard) with ESMTP id 4G7hxk3T1Vz6K7Td;
+ Mon, 21 Jun 2021 16:08:58 +0800 (CST)
+Received: from lhreml724-chm.china.huawei.com (10.201.108.75) by
+ fraeml715-chm.china.huawei.com (10.206.15.34) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2176.2; Mon, 21 Jun 2021 10:18:54 +0200
+Received: from [10.47.93.67] (10.47.93.67) by lhreml724-chm.china.huawei.com
+ (10.201.108.75) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2176.2; Mon, 21 Jun
+ 2021 09:18:53 +0100
+Subject: Re: [PATCH v14 6/6] iommu: Remove mode argument from
+ iommu_set_dma_strict()
+To: Lu Baolu <baolu.lu@linux.intel.com>, <joro@8bytes.org>, <will@kernel.org>, 
+ <dwmw2@infradead.org>, <robin.murphy@arm.com>, <corbet@lwn.net>
+References: <1624016058-189713-1-git-send-email-john.garry@huawei.com>
+ <1624016058-189713-7-git-send-email-john.garry@huawei.com>
+ <c062ef9e-c106-4218-ba2a-c94fdcb6d955@linux.intel.com>
+From: John Garry <john.garry@huawei.com>
+Message-ID: <60bdd7c3-d73e-c005-ddf7-069bc5065bce@huawei.com>
+Date: Mon, 21 Jun 2021 09:12:29 +0100
+User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; rv:68.0) Gecko/20100101
+ Thunderbird/68.1.2
 MIME-Version: 1.0
-In-Reply-To: <CAL_JsqLDKxwANn2Pba0Db6J9337pK0dNL=bBN8ucn-k4DZ3gyg@mail.gmail.com>
+In-Reply-To: <c062ef9e-c106-4218-ba2a-c94fdcb6d955@linux.intel.com>
 Content-Language: en-US
-Cc: Jon Hunter <jonathanh@nvidia.com>,
- Linux IOMMU <iommu@lists.linux-foundation.org>,
- Nicolin Chen <nicolinc@nvidia.com>, linux-tegra <linux-tegra@vger.kernel.org>,
- Robin Murphy <robin.murphy@arm.com>,
- linux-arm-kernel <linux-arm-kernel@lists.infradead.org>
+X-Originating-IP: [10.47.93.67]
+X-ClientProxiedBy: lhreml747-chm.china.huawei.com (10.201.108.197) To
+ lhreml724-chm.china.huawei.com (10.201.108.75)
+X-CFilter-Loop: Reflected
+Cc: linux-doc@vger.kernel.org, linux-kernel@vger.kernel.org,
+ linuxarm@huawei.com, iommu@lists.linux-foundation.org
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -112,90 +90,58 @@ List-Post: <mailto:iommu@lists.linux-foundation.org>
 List-Help: <mailto:iommu-request@lists.linux-foundation.org?subject=help>
 List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
  <mailto:iommu-request@lists.linux-foundation.org?subject=subscribe>
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: base64
+Content-Type: text/plain; charset="utf-8"; Format="flowed"
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-On 18/06/2021 21:47, Rob Herring wrote:
-> On Thu, Jun 3, 2021 at 10:49 AM Thierry Reding <thierry.reding@gmail.com> wrote:
->>
->> From: Thierry Reding <treding@nvidia.com>
->>
->> The ARM SMMU instantiations found on Tegra186 and later need inter-
->> operation with the memory controller in order to correctly program
->> stream ID overrides.
->>
->> Furthermore, on Tegra194 multiple instances of the SMMU can gang up
->> to achieve higher throughput. In order to do this, they have to be
->> programmed identically so that the memory controller can interleave
->> memory accesses between them.
->>
->> Add the Tegra186 compatible string to make sure the interoperation
->> with the memory controller can be enabled on that SoC generation.
->>
->> Signed-off-by: Thierry Reding <treding@nvidia.com>
->> ---
->>  Documentation/devicetree/bindings/iommu/arm,smmu.yaml | 11 +++++++++--
->>  1 file changed, 9 insertions(+), 2 deletions(-)
->>
->> diff --git a/Documentation/devicetree/bindings/iommu/arm,smmu.yaml b/Documentation/devicetree/bindings/iommu/arm,smmu.yaml
->> index 9d27aa5111d4..1181b590db71 100644
->> --- a/Documentation/devicetree/bindings/iommu/arm,smmu.yaml
->> +++ b/Documentation/devicetree/bindings/iommu/arm,smmu.yaml
->> @@ -54,8 +54,14 @@ properties:
->>            - const: arm,mmu-500
->>        - description: NVIDIA SoCs that program two ARM MMU-500s identically
->>          items:
->> +      - description: NVIDIA SoCs that require memory controller interaction
-> 
-> This is not valid jsonschema:
-> 
-> /builds/robherring/linux-dt/Documentation/devicetree/bindings/iommu/arm,smmu.yaml:
-> properties:compatible:oneOf:4:items: 'anyOf' conditional failed, one
-> must be fixed:
-> None is not of type 'object', 'boolean'
-> None is not of type 'array'
-> from schema $id: http://json-schema.org/draft-07/schema#
-> /builds/robherring/linux-dt/Documentation/devicetree/bindings/iommu/arm,smmu.yaml:
-> properties:compatible:oneOf:4:items: 'oneOf' conditional failed, one
-> must be fixed:
-> None is not of type 'object'
-> None is not of type 'array'
-> from schema $id: http://devicetree.org/meta-schemas/keywords.yaml#
-> /builds/robherring/linux-dt/Documentation/devicetree/bindings/iommu/arm,smmu.yaml:
-> properties:compatible:oneOf:4:items: 'oneOf' conditional failed, one
-> must be fixed:
-> None is not of type 'object'
-> None is not of type 'array'
-> from schema $id: http://devicetree.org/meta-schemas/string-array.yaml#
-> /builds/robherring/linux-dt/Documentation/devicetree/bindings/iommu/arm,smmu.yaml:
-> properties:compatible:oneOf:5:items: 'oneOf' conditional failed, one
-> must be fixed:
-> [{'enum': [{'const': 'nvidia,tegra194-smmu'}, {'const':
-> 'nvidia,tegra186-smmu'}]}, {'const': 'nvidia,smmu-500'}] is not of
-> type 'object'
-> {'const': 'nvidia,tegra194-smmu'} is not of type 'string'
-> {'const': 'nvidia,tegra186-smmu'} is not of type 'string'
-> from schema $id: http://devicetree.org/meta-schemas/string-array.yaml#
-> 
-> 
-> This was not reviewed nor tested since the DT list was not Cc'ed.
-
-Ugh, I see now weird empty item on a list... and not only DT list was
-skipped - Thierry did not Cc you either.
-
-My bad, I did not check that patch thoroughly before applying.
-
-Thierry, please Cc folks mentioned by get_maintainer.pl. Either sent a
-fix or a revert, if fix needs more time.
-
-Additionally, why the patch changes reg to "minItems: 1" for
-nvidia,tegra194-smmu?
-
-Best regards,
-Krzysztof
-_______________________________________________
-iommu mailing list
-iommu@lists.linux-foundation.org
-https://lists.linuxfoundation.org/mailman/listinfo/iommu
+T24gMjEvMDYvMjAyMSAwNjoxNywgTHUgQmFvbHUgd3JvdGU6Cj4gT24gMjAyMS82LzE4IDE5OjM0
+LCBKb2huIEdhcnJ5IHdyb3RlOgo+PiBkaWZmIC0tZ2l0IGEvZHJpdmVycy9pb21tdS9pb21tdS5j
+IGIvZHJpdmVycy9pb21tdS9pb21tdS5jCj4+IGluZGV4IDYwYjFlYzQyZTczYi4uZmYyMjFkM2Rk
+Y2JjIDEwMDY0NAo+PiAtLS0gYS9kcml2ZXJzL2lvbW11L2lvbW11LmMKPj4gKysrIGIvZHJpdmVy
+cy9pb21tdS9pb21tdS5jCj4+IEBAIC0zNDksMTAgKzM0OSw5IEBAIHN0YXRpYyBpbnQgX19pbml0
+IGlvbW11X2RtYV9zZXR1cChjaGFyICpzdHIpCj4+IMKgIH0KPj4gwqAgZWFybHlfcGFyYW0oImlv
+bW11LnN0cmljdCIsIGlvbW11X2RtYV9zZXR1cCk7Cj4+IC12b2lkIGlvbW11X3NldF9kbWFfc3Ry
+aWN0KGJvb2wgc3RyaWN0KQo+PiArdm9pZCBpb21tdV9zZXRfZG1hX3N0cmljdCh2b2lkKQo+PiDC
+oCB7Cj4+IC3CoMKgwqAgaWYgKHN0cmljdCB8fCAhKGlvbW11X2NtZF9saW5lICYgSU9NTVVfQ01E
+X0xJTkVfU1RSSUNUKSkKPj4gLcKgwqDCoMKgwqDCoMKgIGlvbW11X2RtYV9zdHJpY3QgPSBzdHJp
+Y3Q7Cj4+ICvCoMKgwqAgaW9tbXVfZG1hX3N0cmljdCA9IHRydWU7Cj4+IMKgIH0KPiAKCkhpIGJh
+b2x1LAoKPiBTb3JyeSBmb3IgdGhpcyBsYXRlIGNvbW1lbnQuCj4gID4gTm9ybWFsbHkgdGhlIGNh
+Y2hlIGludmFsaWRhdGlvbiBwb2xpY3kgc2hvdWxkIGNvbWUgZnJvbSB0aGUgdXNlci4gV2UKPiBo
+YXZlIHByZS1idWlsZCBrZXJuZWwgb3B0aW9uIGFuZCBhbHNvIGEga2VybmVsIGJvb3QgY29tbWFu
+ZCBpb21tdS5zdHJpY3QKPiB0byBvdmVycmlkZSBpdC4gVGhlc2Ugc2VlbSByZWFzb25hYmxlLgo+
+IAo+IFdlIGFsc28gaGF2ZSBhIGhlbHBlciAoaW9tbXVfc2V0X2RtYV9zdHJpY3QoKSkgc28gdGhh
+dCB0aGUgdmVuZG9yIGlvbW11Cj4gZHJpdmVyIGNvdWxkIHNxdWVlemUgaW4gYW5kIGNoYW5nZSB0
+aGUgcHJldmlvdXMgc2V0dGluZ3MgbW9zdGx5IGR1ZSB0bzoKPiAKPiBhKSB2ZW5kb3IgaW9tbXUg
+ZHJpdmVyIHNwZWNpZmljIGtlcm5lbCBib290IGNvbW1hbmQuIChXZSBhcmUgYWJvdXQgdG8KPiAg
+wqDCoCBkZXByZWNhdGUgdGhvc2UuKQo+IAo+IGIpIHF1aXJreSBoYXJkd2FyZS4KPiAKPiBjKSBr
+ZXJuZWwgb3B0aW1pemF0aW9uIChlLnguIHN0cmljdCBtb2RlIGluIFZNIGVudmlyb25tZW50KS4K
+PiAKPiBhKSBhbmQgYikgYXJlIG1hbmRhdG9yeSwgd2hpbGUgYykgaXMgb3B0aW9uYWwuIEluIGFu
+eSBpbnN0YW5jZSBzaG91bGQgYykKPiBvdmVycmlkZSB0aGUgZmx1c2ggbW9kZSBzcGVjaWZpZWQg
+YnkgdGhlIHVzZXIuIEhlbmNlLCBwcm9iYWJseSB3ZSBzaG91bGQKPiBhbHNvIGhhdmUgYW5vdGhl
+ciBoZWxwZXIgbGlrZToKPiAKPiB2b2lkIGlvbW11X3NldF9kbWFfc3RyaWN0X29wdGlvbmFsKCkK
+PiB7Cj4gIMKgwqDCoMKgaWYgKCEoaW9tbXVfY21kX2xpbmUgJiBJT01NVV9DTURfTElORV9TVFJJ
+Q1QpKQo+ICDCoMKgwqDCoMKgwqDCoCBpb21tdV9kbWFfc3RyaWN0ID0gdHJ1ZTsKPiB9Cj4gCj4g
+QW55IHRob3VnaHRzPwoKV2hhdCB5b3UgYXJlIHN1Z2dlc3RpbmcgaXMgYSBjaGFuZ2UgaW4gcG9s
+aWN5IGZyb20gbWFpbmxpbmUgY29kZS4gCkN1cnJlbnRseSBmb3IgYykgd2UgYWx3YXlzIHNldCBz
+dHJpY3QgZW5hYmxlZCwgcmVnYXJkbGVzcyBvZiBhbnkgdXNlciAKY21kbGluZSBpbnB1dC4gQnV0
+IG5vdyB5b3UgYXJlIHNheWluZyB0aGF0IHlvdSB3YW50IGlvbW11LnN0cmljdCB0byAKb3ZlcnJp
+ZGUgaW4gcGFydGljdWxhciBzY2VuYXJpbywgcmlnaHQ/CgpJbiB0aGF0IGNhc2UgSSB3b3VsZCB0
+aGluayBpdCdzIGJldHRlciB0byByZXdvcmsgdGhlIGN1cnJlbnQgQVBJLCBsaWtlIAphZGRpbmcg
+YW4gb3B0aW9uIHRvICJmb3JjZSIgc3RyaWN0IG1vZGU6Cgp2b2lkIGlvbW11X3NldF9kbWFfc3Ry
+aWN0KGJvb2wgZm9yY2UpCnsKICAgICAgCWlmIChmb3JjZSA9PSB0cnVlKQoJCWlvbW11X2RtYV9z
+dHJpY3QgPSB0cnVlOwoJZWxzZSBpZiAoIShpb21tdV9jbWRfbGluZSAmIElPTU1VX0NNRF9MSU5F
+X1NUUklDVCkpCgkJaW9tbXVfZG1hX3N0cmljdCA9IHRydWU7Cn0KClNvIHdlIHdvdWxkIHVzZSBp
+b21tdV9zZXRfZG1hX3N0cmljdCh0cnVlKSBmb3IgYSkgYW5kIGIpLCBidXQgCmlvbW11X3NldF9k
+bWFfc3RyaWN0KGZhbHNlKSBmb3IgYykuCgpUaGVuIEkgYW0gbm90IHN1cmUgd2hhdCB5b3Ugd2Fu
+dCB0byBkbyB3aXRoIHRoZSBhY2NvbXBhbnlpbmcgcHJpbnQgZm9yIApjKS4gSXQgd2FzOgoiSU9N
+TVUgYmF0Y2hpbmcgaXMgZGlzYWJsZWQgZHVlIHRvIHZpcnR1YWxpemF0aW9uIgoKQW5kIG5vdyBp
+cyBmcm9tIHRoaXMgc2VyaWVzOgoiSU9NTVUgYmF0Y2hpbmcgZGlzYWxsb3dlZCBkdWUgdG8gdmly
+dHVhbGl6YXRpb24iCgpVc2luZyBpb21tdV9nZXRfZG1hX3N0cmljdChkb21haW4pIGlzIG5vdCBh
+cHByb3ByaWF0ZSBoZXJlIHRvIGtub3cgdGhlIApjdXJyZW50IG1vZGUgKHNvIHdlIGtub3cgd2hl
+dGhlciB0byBwcmludCkuCgpOb3RlIHRoYXQgdGhpcyBjaGFuZ2Ugd291bGQgbWVhbiB0aGF0IHRo
+ZSBjdXJyZW50IHNlcmllcyB3b3VsZCByZXF1aXJlIApub24tdHJpdmlhbCByZXdvcmssIHdoaWNo
+IHdvdWxkIGJlIHVuZm9ydHVuYXRlIHNvIGxhdGUgaW4gdGhlIGN5Y2xlLgoKVGhhbmtzLApKb2hu
+Cl9fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fCmlvbW11IG1h
+aWxpbmcgbGlzdAppb21tdUBsaXN0cy5saW51eC1mb3VuZGF0aW9uLm9yZwpodHRwczovL2xpc3Rz
+LmxpbnV4Zm91bmRhdGlvbi5vcmcvbWFpbG1hbi9saXN0aW5mby9pb21tdQ==
