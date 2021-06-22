@@ -2,116 +2,112 @@ Return-Path: <SRS0=IFPa=LQ=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-15.1 required=3.0 tests=BAYES_00,DKIM_INVALID,
-	DKIM_SIGNED,HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_CR_TRAILER,INCLUDES_PATCH,
-	MAILING_LIST_MULTI,NICE_REPLY_A,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,
-	USER_AGENT_SANE_1 autolearn=unavailable autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-3.7 required=3.0 tests=BAYES_00,
+	HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,
+	URIBL_BLOCKED autolearn=no autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 01F9BC2B9F4
-	for <iommu@archiver.kernel.org>; Tue, 22 Jun 2021 07:46:38 +0000 (UTC)
-Received: from smtp4.osuosl.org (smtp4.osuosl.org [140.211.166.137])
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 71E61C48BDF
+	for <iommu@archiver.kernel.org>; Tue, 22 Jun 2021 07:48:45 +0000 (UTC)
+Received: from smtp1.osuosl.org (smtp1.osuosl.org [140.211.166.138])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id B69946128E
-	for <iommu@archiver.kernel.org>; Tue, 22 Jun 2021 07:46:37 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org B69946128E
-Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=redhat.com
+	by mail.kernel.org (Postfix) with ESMTPS id 26B846128C
+	for <iommu@archiver.kernel.org>; Tue, 22 Jun 2021 07:48:45 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 26B846128C
+Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=atmark-techno.com
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by smtp4.osuosl.org (Postfix) with ESMTP id 8542E4047B;
-	Tue, 22 Jun 2021 07:46:37 +0000 (UTC)
+	by smtp1.osuosl.org (Postfix) with ESMTP id EE5C483216;
+	Tue, 22 Jun 2021 07:48:44 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from smtp4.osuosl.org ([127.0.0.1])
-	by localhost (smtp4.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id bO3WItinQrxD; Tue, 22 Jun 2021 07:46:36 +0000 (UTC)
+Received: from smtp1.osuosl.org ([127.0.0.1])
+	by localhost (smtp1.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+	with ESMTP id LiZagolExhtK; Tue, 22 Jun 2021 07:48:44 +0000 (UTC)
 Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [IPv6:2605:bc80:3010:104::8cd3:938])
-	by smtp4.osuosl.org (Postfix) with ESMTPS id A17E34046C;
-	Tue, 22 Jun 2021 07:46:35 +0000 (UTC)
+	by smtp1.osuosl.org (Postfix) with ESMTPS id ECBF3831A2;
+	Tue, 22 Jun 2021 07:48:43 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 7A3FDC001A;
-	Tue, 22 Jun 2021 07:46:35 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 94D65C001A;
+	Tue, 22 Jun 2021 07:48:43 +0000 (UTC)
 Received: from smtp3.osuosl.org (smtp3.osuosl.org [140.211.166.136])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 9A21CC000E
- for <iommu@lists.linux-foundation.org>; Tue, 22 Jun 2021 07:46:32 +0000 (UTC)
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 3DA5BC000E
+ for <iommu@lists.linux-foundation.org>; Tue, 22 Jun 2021 07:48:42 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by smtp3.osuosl.org (Postfix) with ESMTP id 892F060604
- for <iommu@lists.linux-foundation.org>; Tue, 22 Jun 2021 07:46:32 +0000 (UTC)
+ by smtp3.osuosl.org (Postfix) with ESMTP id 2BF6C6063B
+ for <iommu@lists.linux-foundation.org>; Tue, 22 Jun 2021 07:48:42 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Authentication-Results: smtp3.osuosl.org (amavisd-new);
- dkim=pass (1024-bit key) header.d=redhat.com
 Received: from smtp3.osuosl.org ([127.0.0.1])
  by localhost (smtp3.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id WTET2YzNiH4o for <iommu@lists.linux-foundation.org>;
- Tue, 22 Jun 2021 07:46:31 +0000 (UTC)
-X-Greylist: domain auto-whitelisted by SQLgrey-1.8.0
-Received: from us-smtp-delivery-124.mimecast.com
- (us-smtp-delivery-124.mimecast.com [170.10.133.124])
- by smtp3.osuosl.org (Postfix) with ESMTPS id 7D6B560658
- for <iommu@lists.linux-foundation.org>; Tue, 22 Jun 2021 07:46:31 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
- s=mimecast20190719; t=1624347990;
- h=from:from:reply-to:reply-to:subject:subject:date:date:
- message-id:message-id:to:to:cc:cc:mime-version:mime-version:
- content-type:content-type:
- content-transfer-encoding:content-transfer-encoding:
- in-reply-to:in-reply-to:references:references;
- bh=x5f3bvS7GZvWVtyFwxLN1QlKyB6zTisOpr3FYaadj24=;
- b=duLAhcngzVOkNlgswjWMGLO8UBLYN1guCeZXzNnOj3SUVFEaVGuT8oT4yDSt2WrJd6MWge
- sK4ForLidMY8ZBu90JOxxKg0+EkvIiGSk4BkmsvkSPXAWW1RgasmOL/fDj0BOPW9BTRcpl
- aiRI+9/tNYcb+ZMfDV/JqlXYrbkSdeE=
-Received: from mail-wm1-f72.google.com (mail-wm1-f72.google.com
- [209.85.128.72]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-222-jzgpT0dHPRatoXKx_H4FHA-1; Tue, 22 Jun 2021 03:46:29 -0400
-X-MC-Unique: jzgpT0dHPRatoXKx_H4FHA-1
-Received: by mail-wm1-f72.google.com with SMTP id
- i82-20020a1c22550000b02901d64e84b3c9so963973wmi.5
- for <iommu@lists.linux-foundation.org>; Tue, 22 Jun 2021 00:46:28 -0700 (PDT)
+ with ESMTP id ogNyP7tBcH_S for <iommu@lists.linux-foundation.org>;
+ Tue, 22 Jun 2021 07:48:41 +0000 (UTC)
+X-Greylist: from auto-whitelisted by SQLgrey-1.8.0
+Received: from gw2.atmark-techno.com (gw2.atmark-techno.com [35.74.137.57])
+ by smtp3.osuosl.org (Postfix) with ESMTP id 513DD60636
+ for <iommu@lists.linux-foundation.org>; Tue, 22 Jun 2021 07:48:40 +0000 (UTC)
+Received: from mail-pl1-f199.google.com (mail-pl1-f199.google.com
+ [209.85.214.199])
+ by gw2.atmark-techno.com (Postfix) with ESMTPS id 95BD620D12
+ for <iommu@lists.linux-foundation.org>; Tue, 22 Jun 2021 16:48:39 +0900 (JST)
+Received: by mail-pl1-f199.google.com with SMTP id
+ o7-20020a1709026b07b029011a0d4de43dso5992908plk.5
+ for <iommu@lists.linux-foundation.org>; Tue, 22 Jun 2021 00:48:39 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
  d=1e100.net; s=20161025;
- h=x-gm-message-state:reply-to:subject:to:cc:references:from
- :message-id:date:user-agent:mime-version:in-reply-to
- :content-transfer-encoding:content-language;
- bh=x5f3bvS7GZvWVtyFwxLN1QlKyB6zTisOpr3FYaadj24=;
- b=ejrgyS19I7GxE/sPhgqmAQ8WMSrX3ZSfSQ/LUP3ljTAF/YCyKy9qx870dGVROHqxMg
- 2Omwk8yTJLdxCRCKI3pA+sfQr3mFA6kslvJUie1WItA0npxOG/a9OCYflrtMxZzPFLl0
- 5EKOUX0HGr3oZzkBWhctiqM9a5bVJywLii1d/Y5beJJW3+7ysXcYrnd2AOu+BpQqVGgK
- DCMbgOjZhc8pOUoVXaASXfrjulL7B7OpmWfDaWq9GkCs2KBRS7+/4/AuKJdVsCvgseiN
- 1dGuR9A67Yfk1lfjkrpICrRZHCO2D/hEt/wQkZ07ryVZUQyJKfHdNRfV9M7zlt21JEMZ
- 7mkA==
-X-Gm-Message-State: AOAM531kPweJ9GES77ST/94rrSy/sfMkUi1UoYhCvUIWbv6wQrd2N68Y
- sJ95iJ+iJ6X95hxV25S81oPPpueaOmx54IlYFB4l726IoKYOUx4BXWjXJjiaHnYL8e1iJt5sTQi
- CPke4+x52usvfWSPoIjBC/YsZ2nbL4w==
-X-Received: by 2002:adf:c54b:: with SMTP id s11mr3106172wrf.349.1624347988124; 
- Tue, 22 Jun 2021 00:46:28 -0700 (PDT)
-X-Google-Smtp-Source: ABdhPJw7QcWI8FJ95aqU4FW0VTatFzT/ZlH2y3xbB+zmvo9mrdoUIlvfW4P0sodDcWmUan4mPoZSHw==
-X-Received: by 2002:adf:c54b:: with SMTP id s11mr3106134wrf.349.1624347987821; 
- Tue, 22 Jun 2021 00:46:27 -0700 (PDT)
-Received: from [192.168.43.95] ([37.173.9.63])
- by smtp.gmail.com with ESMTPSA id g10sm1443719wmh.33.2021.06.22.00.46.25
- (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
- Tue, 22 Jun 2021 00:46:27 -0700 (PDT)
-Subject: Re: [PATCH v5 2/5] ACPI: Move IOMMU setup code out of IORT
-To: Jean-Philippe Brucker <jean-philippe@linaro.org>, rjw@rjwysocki.net,
- lenb@kernel.org, joro@8bytes.org, mst@redhat.com
-References: <20210618152059.1194210-1-jean-philippe@linaro.org>
- <20210618152059.1194210-3-jean-philippe@linaro.org>
-From: Eric Auger <eric.auger@redhat.com>
-Message-ID: <6da435e7-3204-e0d1-4c53-e7115e537cb5@redhat.com>
-Date: Tue, 22 Jun 2021 09:46:24 +0200
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
- Thunderbird/78.10.1
+ h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+ :mime-version:content-disposition:in-reply-to;
+ bh=K2/PCim2TgrlrpWsUBXXxC0v9+AUPcQxYb8PsC1cUMs=;
+ b=R9RFN6AyN/7P50BrxurOj+dR3tNSWShLEjAaqsmGZnZDedoXR8dHqbgsXzuA1ijpQu
+ NBpivP5L7ihy3szjTtdqh1DW8wqUUZ8thdt1tpD2B/6p7TlgsnD1z6gh670UKIAZlLc/
+ zqgvkwaxHJFL+G+GTpbQKCuA4IKDLxvSNjj4ScM/5DxGJr7ve1b3MFQStx3jDB5kUs3q
+ vy9SWN6RV8uqmxMsnOZUxMSDC2GjPdsf9qYz9US1djirOO7yS5p5GTGdpE+utzxyiwyl
+ A2ek40d+jQ5c5SIesafYhPFKIrIw70gAM2cX7RjInZ04a83BbKGk0V1gPkoD5sOlOXaq
+ BH7A==
+X-Gm-Message-State: AOAM532AaOen3vE9+WH9E5FOmnJM9B6KX85k20ypB5LYfwEiA8Iqkz15
+ 2Yxr2sroePG6IzRak89NmATJQW8Fw0k7kcIM7EnVZ8uBmEaLBCG0aUdNqP7Gjgwf8JDUvE/KecF
+ eFA/ddhJtRA2k2QxoIQfcjaXkfSr63p8=
+X-Received: by 2002:a17:90a:4812:: with SMTP id
+ a18mr2670008pjh.40.1624348118681; 
+ Tue, 22 Jun 2021 00:48:38 -0700 (PDT)
+X-Google-Smtp-Source: ABdhPJwfgoRVVp6JmSP2/8H6vwINnTVMm7MriWlKRzk6O1jIIF/9JeL5ZPHTpSyHUlltCbzyiAQDkQ==
+X-Received: by 2002:a17:90a:4812:: with SMTP id
+ a18mr2669988pjh.40.1624348118458; 
+ Tue, 22 Jun 2021 00:48:38 -0700 (PDT)
+Received: from pc-0115 (178.101.200.35.bc.googleusercontent.com.
+ [35.200.101.178])
+ by smtp.gmail.com with ESMTPSA id n12sm7972919pfu.5.2021.06.22.00.48.37
+ (version=TLS1_2 cipher=ECDHE-ECDSA-AES128-GCM-SHA256 bits=128/128);
+ Tue, 22 Jun 2021 00:48:37 -0700 (PDT)
+Received: from martinet by pc-0115 with local (Exim 4.94.2)
+ (envelope-from <martinet@pc-0115>)
+ id 1lvb98-002Mj2-Pa; Tue, 22 Jun 2021 16:48:34 +0900
+Date: Tue, 22 Jun 2021 16:48:24 +0900
+From: 'Dominique MARTINET' <dominique.martinet@atmark-techno.com>
+To: Konrad Rzeszutek Wilk <konrad@darnok.org>
+Subject: Re: swiotlb/caamjr regression (Was: [GIT PULL] (swiotlb)
+ stable/for-linus-5.12)
+Message-ID: <YNGVyOyD+CAMmPos@atmark-techno.com>
+References: <YMqW+/gQvM+uWUTw@fedora> <YMqZswFnSNKk4Z7B@atmark-techno.com>
+ <20210617051232.GB27192@lst.de>
+ <YMrfWBLsJxCRhX5U@atmark-techno.com>
+ <CAMGD6P0=9RE1-q1WHkwR1jymK5jyvN6QgypQ2KgdvBQn0CUTHw@mail.gmail.com>
+ <CGME20210621020328epcas2p207e9fa2df119730ceb993543621437d8@epcas2p2.samsung.com>
+ <YM/zWyZlk1bzHWgI@atmark-techno.com>
+ <2038148563.21624247281621.JavaMail.epsvc@epcpadp4>
+ <YNASOEGsDxhFC8qJ@atmark-techno.com> <YNCROxI328u7IKdQ@fedora>
 MIME-Version: 1.0
-In-Reply-To: <20210618152059.1194210-3-jean-philippe@linaro.org>
-Authentication-Results: relay.mimecast.com;
- auth=pass smtp.auth=CUSA124A263 smtp.mailfrom=eric.auger@redhat.com
-X-Mimecast-Spam-Score: 0
-X-Mimecast-Originator: redhat.com
-Content-Language: en-US
-Cc: kevin.tian@intel.com, catalin.marinas@arm.com, sudeep.holla@arm.com,
- robin.murphy@arm.com, virtualization@lists.linux-foundation.org,
- linux-acpi@vger.kernel.org, iommu@lists.linux-foundation.org,
- sebastien.boeuf@intel.com, guohanjun@huawei.com, will@kernel.org,
- dwmw2@infradead.org, linux-arm-kernel@lists.infradead.org
+Content-Disposition: inline
+In-Reply-To: <YNCROxI328u7IKdQ@fedora>
+Cc: 'Aymen Sghaier' <aymen.sghaier@nxp.com>,
+ 'Herbert Xu' <herbert@gondor.apana.org.au>,
+ 'Horia =?utf-8?Q?Geant=C4=83'?= <horia.geanta@nxp.com>,
+ 'Konrad Rzeszutek Wilk' <konrad.wilk@oracle.com>,
+ 'Marc Orr' <marcorr@google.com>, 'Lukas Hartmann' <lukas@mntmn.com>,
+ linux-kernel@vger.kernel.org, "'David S. Miller'" <davem@davemloft.net>,
+ iommu@lists.linux-foundation.org, linux-crypto@vger.kernel.org,
+ 'Peter Gonda' <pgonda@google.com>, Chanho Park <chanho61.park@samsung.com>,
+ 'Bumyong Lee' <bumyong.lee@samsung.com>,
+ 'Linus Torvalds' <torvalds@linux-foundation.org>,
+ 'Christoph Hellwig' <hch@lst.de>, 'Jianxiong Gao' <jxgao@google.com>
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -124,309 +120,56 @@ List-Post: <mailto:iommu@lists.linux-foundation.org>
 List-Help: <mailto:iommu-request@lists.linux-foundation.org?subject=help>
 List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
  <mailto:iommu-request@lists.linux-foundation.org?subject=subscribe>
-Reply-To: eric.auger@redhat.com
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-Hi Jean,
-On 6/18/21 5:20 PM, Jean-Philippe Brucker wrote:
-> Extract the code that sets up the IOMMU infrastructure from IORT, since
-> it can be reused by VIOT. Move it one level up into a new
-> acpi_iommu_configure_id() function, which calls the IORT parsing
-> function which in turn calls the acpi_iommu_fwspec_init() helper.
->
-> Signed-off-by: Jean-Philippe Brucker <jean-philippe@linaro.org>
-Reviewed-by: Eric Auger <eric.auger@redhat.com>
+Konrad Rzeszutek Wilk wrote on Mon, Jun 21, 2021 at 09:16:43AM -0400:
+> The beaty of 'devel' and 'linux-next' is that they can be reshuffled and
+> mangled. I pushed them original patch from Bumyong there and will let
+> it sit for a day and then create a stable branch and give it to Linus.
 
-Thanks
+Thanks, that should be good.
 
-Eric
+Do you want me to send a follow-up patch with the two extra checks
+(tlb_addr & (IO_TLB_SIZE -1)) > swiotlb_align_offset(dev, orig_addr)
+tlb_offset < alloc_size
 
-> ---
->  include/acpi/acpi_bus.h   |  3 ++
->  include/linux/acpi_iort.h |  8 ++---
->  drivers/acpi/arm64/iort.c | 74 +++++----------------------------------
->  drivers/acpi/scan.c       | 73 +++++++++++++++++++++++++++++++++++++-
->  4 files changed, 86 insertions(+), 72 deletions(-)
->
-> diff --git a/include/acpi/acpi_bus.h b/include/acpi/acpi_bus.h
-> index 3a82faac5767..41f092a269f6 100644
-> --- a/include/acpi/acpi_bus.h
-> +++ b/include/acpi/acpi_bus.h
-> @@ -588,6 +588,9 @@ struct acpi_pci_root {
->  
->  bool acpi_dma_supported(struct acpi_device *adev);
->  enum dev_dma_attr acpi_get_dma_attr(struct acpi_device *adev);
-> +int acpi_iommu_fwspec_init(struct device *dev, u32 id,
-> +			   struct fwnode_handle *fwnode,
-> +			   const struct iommu_ops *ops);
->  int acpi_dma_get_range(struct device *dev, u64 *dma_addr, u64 *offset,
->  		       u64 *size);
->  int acpi_dma_configure_id(struct device *dev, enum dev_dma_attr attr,
-> diff --git a/include/linux/acpi_iort.h b/include/linux/acpi_iort.h
-> index f7f054833afd..f1f0842a2cb2 100644
-> --- a/include/linux/acpi_iort.h
-> +++ b/include/linux/acpi_iort.h
-> @@ -35,8 +35,7 @@ void acpi_configure_pmsi_domain(struct device *dev);
->  int iort_pmsi_get_dev_id(struct device *dev, u32 *dev_id);
->  /* IOMMU interface */
->  int iort_dma_get_ranges(struct device *dev, u64 *size);
-> -const struct iommu_ops *iort_iommu_configure_id(struct device *dev,
-> -						const u32 *id_in);
-> +int iort_iommu_configure_id(struct device *dev, const u32 *id_in);
->  int iort_iommu_msi_get_resv_regions(struct device *dev, struct list_head *head);
->  phys_addr_t acpi_iort_dma_get_max_cpu_address(void);
->  #else
-> @@ -50,9 +49,8 @@ static inline void acpi_configure_pmsi_domain(struct device *dev) { }
->  /* IOMMU interface */
->  static inline int iort_dma_get_ranges(struct device *dev, u64 *size)
->  { return -ENODEV; }
-> -static inline const struct iommu_ops *iort_iommu_configure_id(
-> -				      struct device *dev, const u32 *id_in)
-> -{ return NULL; }
-> +static inline int iort_iommu_configure_id(struct device *dev, const u32 *id_in)
-> +{ return -ENODEV; }
->  static inline
->  int iort_iommu_msi_get_resv_regions(struct device *dev, struct list_head *head)
->  { return 0; }
-> diff --git a/drivers/acpi/arm64/iort.c b/drivers/acpi/arm64/iort.c
-> index a940be1cf2af..487d1095030d 100644
-> --- a/drivers/acpi/arm64/iort.c
-> +++ b/drivers/acpi/arm64/iort.c
-> @@ -806,23 +806,6 @@ static struct acpi_iort_node *iort_get_msi_resv_iommu(struct device *dev)
->  	return NULL;
->  }
->  
-> -static inline const struct iommu_ops *iort_fwspec_iommu_ops(struct device *dev)
-> -{
-> -	struct iommu_fwspec *fwspec = dev_iommu_fwspec_get(dev);
-> -
-> -	return (fwspec && fwspec->ops) ? fwspec->ops : NULL;
-> -}
-> -
-> -static inline int iort_add_device_replay(struct device *dev)
-> -{
-> -	int err = 0;
-> -
-> -	if (dev->bus && !device_iommu_mapped(dev))
-> -		err = iommu_probe_device(dev);
-> -
-> -	return err;
-> -}
-> -
->  /**
->   * iort_iommu_msi_get_resv_regions - Reserved region driver helper
->   * @dev: Device from iommu_get_resv_regions()
-> @@ -900,18 +883,6 @@ static inline bool iort_iommu_driver_enabled(u8 type)
->  	}
->  }
->  
-> -static int arm_smmu_iort_xlate(struct device *dev, u32 streamid,
-> -			       struct fwnode_handle *fwnode,
-> -			       const struct iommu_ops *ops)
-> -{
-> -	int ret = iommu_fwspec_init(dev, fwnode, ops);
-> -
-> -	if (!ret)
-> -		ret = iommu_fwspec_add_ids(dev, &streamid, 1);
-> -
-> -	return ret;
-> -}
-> -
->  static bool iort_pci_rc_supports_ats(struct acpi_iort_node *node)
->  {
->  	struct acpi_iort_root_complex *pci_rc;
-> @@ -946,7 +917,7 @@ static int iort_iommu_xlate(struct device *dev, struct acpi_iort_node *node,
->  		return iort_iommu_driver_enabled(node->type) ?
->  		       -EPROBE_DEFER : -ENODEV;
->  
-> -	return arm_smmu_iort_xlate(dev, streamid, iort_fwnode, ops);
-> +	return acpi_iommu_fwspec_init(dev, streamid, iort_fwnode, ops);
->  }
->  
->  struct iort_pci_alias_info {
-> @@ -1020,24 +991,13 @@ static int iort_nc_iommu_map_id(struct device *dev,
->   * @dev: device to configure
->   * @id_in: optional input id const value pointer
->   *
-> - * Returns: iommu_ops pointer on configuration success
-> - *          NULL on configuration failure
-> + * Returns: 0 on success, <0 on failure
->   */
-> -const struct iommu_ops *iort_iommu_configure_id(struct device *dev,
-> -						const u32 *id_in)
-> +int iort_iommu_configure_id(struct device *dev, const u32 *id_in)
->  {
->  	struct acpi_iort_node *node;
-> -	const struct iommu_ops *ops;
->  	int err = -ENODEV;
->  
-> -	/*
-> -	 * If we already translated the fwspec there
-> -	 * is nothing left to do, return the iommu_ops.
-> -	 */
-> -	ops = iort_fwspec_iommu_ops(dev);
-> -	if (ops)
-> -		return ops;
-> -
->  	if (dev_is_pci(dev)) {
->  		struct iommu_fwspec *fwspec;
->  		struct pci_bus *bus = to_pci_dev(dev)->bus;
-> @@ -1046,7 +1006,7 @@ const struct iommu_ops *iort_iommu_configure_id(struct device *dev,
->  		node = iort_scan_node(ACPI_IORT_NODE_PCI_ROOT_COMPLEX,
->  				      iort_match_node_callback, &bus->dev);
->  		if (!node)
-> -			return NULL;
-> +			return -ENODEV;
->  
->  		info.node = node;
->  		err = pci_for_each_dma_alias(to_pci_dev(dev),
-> @@ -1059,7 +1019,7 @@ const struct iommu_ops *iort_iommu_configure_id(struct device *dev,
->  		node = iort_scan_node(ACPI_IORT_NODE_NAMED_COMPONENT,
->  				      iort_match_node_callback, dev);
->  		if (!node)
-> -			return NULL;
-> +			return -ENODEV;
->  
->  		err = id_in ? iort_nc_iommu_map_id(dev, node, id_in) :
->  			      iort_nc_iommu_map(dev, node);
-> @@ -1068,32 +1028,14 @@ const struct iommu_ops *iort_iommu_configure_id(struct device *dev,
->  			iort_named_component_init(dev, node);
->  	}
->  
-> -	/*
-> -	 * If we have reason to believe the IOMMU driver missed the initial
-> -	 * add_device callback for dev, replay it to get things in order.
-> -	 */
-> -	if (!err) {
-> -		ops = iort_fwspec_iommu_ops(dev);
-> -		err = iort_add_device_replay(dev);
-> -	}
-> -
-> -	/* Ignore all other errors apart from EPROBE_DEFER */
-> -	if (err == -EPROBE_DEFER) {
-> -		ops = ERR_PTR(err);
-> -	} else if (err) {
-> -		dev_dbg(dev, "Adding to IOMMU failed: %d\n", err);
-> -		ops = NULL;
-> -	}
-> -
-> -	return ops;
-> +	return err;
->  }
->  
->  #else
->  int iort_iommu_msi_get_resv_regions(struct device *dev, struct list_head *head)
->  { return 0; }
-> -const struct iommu_ops *iort_iommu_configure_id(struct device *dev,
-> -						const u32 *input_id)
-> -{ return NULL; }
-> +int iort_iommu_configure_id(struct device *dev, const u32 *input_id)
-> +{ return -ENODEV; }
->  #endif
->  
->  static int nc_dma_get_range(struct device *dev, u64 *size)
-> diff --git a/drivers/acpi/scan.c b/drivers/acpi/scan.c
-> index ea613df8f913..2a2e690040e9 100644
-> --- a/drivers/acpi/scan.c
-> +++ b/drivers/acpi/scan.c
-> @@ -9,6 +9,7 @@
->  #include <linux/kernel.h>
->  #include <linux/acpi.h>
->  #include <linux/acpi_iort.h>
-> +#include <linux/iommu.h>
->  #include <linux/signal.h>
->  #include <linux/kthread.h>
->  #include <linux/dmi.h>
-> @@ -1520,6 +1521,76 @@ int acpi_dma_get_range(struct device *dev, u64 *dma_addr, u64 *offset,
->  	return ret >= 0 ? 0 : ret;
->  }
->  
-> +#ifdef CONFIG_IOMMU_API
-> +int acpi_iommu_fwspec_init(struct device *dev, u32 id,
-> +			   struct fwnode_handle *fwnode,
-> +			   const struct iommu_ops *ops)
-> +{
-> +	int ret = iommu_fwspec_init(dev, fwnode, ops);
-> +
-> +	if (!ret)
-> +		ret = iommu_fwspec_add_ids(dev, &id, 1);
-> +
-> +	return ret;
-> +}
-> +
-> +static inline const struct iommu_ops *acpi_iommu_fwspec_ops(struct device *dev)
-> +{
-> +	struct iommu_fwspec *fwspec = dev_iommu_fwspec_get(dev);
-> +
-> +	return fwspec ? fwspec->ops : NULL;
-> +}
-> +
-> +static const struct iommu_ops *acpi_iommu_configure_id(struct device *dev,
-> +						       const u32 *id_in)
-> +{
-> +	int err;
-> +	const struct iommu_ops *ops;
-> +
-> +	/*
-> +	 * If we already translated the fwspec there is nothing left to do,
-> +	 * return the iommu_ops.
-> +	 */
-> +	ops = acpi_iommu_fwspec_ops(dev);
-> +	if (ops)
-> +		return ops;
-> +
-> +	err = iort_iommu_configure_id(dev, id_in);
-> +
-> +	/*
-> +	 * If we have reason to believe the IOMMU driver missed the initial
-> +	 * iommu_probe_device() call for dev, replay it to get things in order.
-> +	 */
-> +	if (!err && dev->bus && !device_iommu_mapped(dev))
-> +		err = iommu_probe_device(dev);
-> +
-> +	/* Ignore all other errors apart from EPROBE_DEFER */
-> +	if (err == -EPROBE_DEFER) {
-> +		return ERR_PTR(err);
-> +	} else if (err) {
-> +		dev_dbg(dev, "Adding to IOMMU failed: %d\n", err);
-> +		return NULL;
-> +	}
-> +	return acpi_iommu_fwspec_ops(dev);
-> +}
-> +
-> +#else /* !CONFIG_IOMMU_API */
-> +
-> +int acpi_iommu_fwspec_init(struct device *dev, u32 id,
-> +			   struct fwnode_handle *fwnode,
-> +			   const struct iommu_ops *ops)
-> +{
-> +	return -ENODEV;
-> +}
-> +
-> +static const struct iommu_ops *acpi_iommu_configure_id(struct device *dev,
-> +						       const u32 *id_in)
-> +{
-> +	return NULL;
-> +}
-> +
-> +#endif /* !CONFIG_IOMMU_API */
-> +
->  /**
->   * acpi_dma_configure_id - Set-up DMA configuration for the device.
->   * @dev: The pointer to the device
-> @@ -1539,7 +1610,7 @@ int acpi_dma_configure_id(struct device *dev, enum dev_dma_attr attr,
->  
->  	acpi_arch_dma_setup(dev, &dma_addr, &size);
->  
-> -	iommu = iort_iommu_configure_id(dev, input_id);
-> +	iommu = acpi_iommu_configure_id(dev, input_id);
->  	if (PTR_ERR(iommu) == -EPROBE_DEFER)
->  		return -EPROBE_DEFER;
->  
+or are we certain this can't ever happen?
+(I didn't see any hit in dmesg when I ran with these, but my opinion is
+better safe than sorry...)
 
+
+> Then I need to expand the test-regression bucket so that this does not
+> happen again. Dominique, how easy would it be to purchase one of those
+> devices?
+
+My company is making such a device, but it's not on the market yet
+(was planned for august, with some delay in approvisionning it'll
+probably be a bit late), and would mean buying from Japan so I'm not
+sure how convenient that would be...
+
+These are originally NXP devices so I assume Horia would have better
+suggestions, if you would?
+
+
+> I was originally thinking to create a crypto device in QEMU to simulate
+> this but that may take longer to write than just getting the real thing.
+> 
+> Or I could create some fake devices with weird offsets and write a driver
+> for it to exercise this.. like this one I had done some time ago that
+> needs some brushing off.
+
+Just a fake device with fake offsets as a test is probably good enough,
+ideally would need to exerce both failures we've seen (offset in
+dma_sync_single_for_device like caam does and in the original mapping (I
+assume?) like the NVMe driver does), but that sounds possible :)
+
+
+Thanks again!
+-- 
+Dominique
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
