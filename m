@@ -2,89 +2,76 @@ Return-Path: <SRS0=IFPa=LQ=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-10.2 required=3.0 tests=BAYES_00,
-	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,NICE_REPLY_A,
-	SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_SANE_1 autolearn=ham
-	autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-5.2 required=3.0 tests=BAYES_00,
+	HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,NICE_REPLY_A,SPF_HELO_NONE,
+	SPF_PASS,URIBL_BLOCKED,USER_AGENT_SANE_1 autolearn=no autolearn_force=no
+	version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C640BC2B9F4
-	for <iommu@archiver.kernel.org>; Tue, 22 Jun 2021 17:46:28 +0000 (UTC)
-Received: from smtp3.osuosl.org (smtp3.osuosl.org [140.211.166.136])
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B9EABC2B9F4
+	for <iommu@archiver.kernel.org>; Tue, 22 Jun 2021 18:37:49 +0000 (UTC)
+Received: from smtp1.osuosl.org (smtp1.osuosl.org [140.211.166.138])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 5E4B56109E
-	for <iommu@archiver.kernel.org>; Tue, 22 Jun 2021 17:46:28 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 5E4B56109E
-Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=huawei.com
+	by mail.kernel.org (Postfix) with ESMTPS id 5D22A611CE
+	for <iommu@archiver.kernel.org>; Tue, 22 Jun 2021 18:37:49 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 5D22A611CE
+Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=arm.com
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by smtp3.osuosl.org (Postfix) with ESMTP id 22BD560862;
-	Tue, 22 Jun 2021 17:46:28 +0000 (UTC)
+	by smtp1.osuosl.org (Postfix) with ESMTP id 2B23C81DE0;
+	Tue, 22 Jun 2021 18:37:49 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from smtp3.osuosl.org ([127.0.0.1])
-	by localhost (smtp3.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id qyg7PRrqJhhN; Tue, 22 Jun 2021 17:46:27 +0000 (UTC)
-Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by smtp3.osuosl.org (Postfix) with ESMTPS id 1438F60860;
-	Tue, 22 Jun 2021 17:46:27 +0000 (UTC)
+Received: from smtp1.osuosl.org ([127.0.0.1])
+	by localhost (smtp1.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+	with ESMTP id yl0OGujEmf_Q; Tue, 22 Jun 2021 18:37:48 +0000 (UTC)
+Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [IPv6:2605:bc80:3010:104::8cd3:938])
+	by smtp1.osuosl.org (Postfix) with ESMTPS id 1363B81DA3;
+	Tue, 22 Jun 2021 18:37:48 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id E418DC0010;
-	Tue, 22 Jun 2021 17:46:26 +0000 (UTC)
-Received: from smtp3.osuosl.org (smtp3.osuosl.org [IPv6:2605:bc80:3010::136])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 51231C000E
- for <iommu@lists.linux-foundation.org>; Tue, 22 Jun 2021 17:46:25 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id DACF6C001A;
+	Tue, 22 Jun 2021 18:37:47 +0000 (UTC)
+Received: from smtp2.osuosl.org (smtp2.osuosl.org [140.211.166.133])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 4A43BC000E
+ for <iommu@lists.linux-foundation.org>; Tue, 22 Jun 2021 18:37:47 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by smtp3.osuosl.org (Postfix) with ESMTP id 3FA3060861
- for <iommu@lists.linux-foundation.org>; Tue, 22 Jun 2021 17:46:25 +0000 (UTC)
+ by smtp2.osuosl.org (Postfix) with ESMTP id 2C7EA4017A
+ for <iommu@lists.linux-foundation.org>; Tue, 22 Jun 2021 18:37:47 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from smtp3.osuosl.org ([127.0.0.1])
- by localhost (smtp3.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id 7Ihq2ozPUpXd for <iommu@lists.linux-foundation.org>;
- Tue, 22 Jun 2021 17:46:24 +0000 (UTC)
+Received: from smtp2.osuosl.org ([127.0.0.1])
+ by localhost (smtp2.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+ with ESMTP id PK74gjam0dY8 for <iommu@lists.linux-foundation.org>;
+ Tue, 22 Jun 2021 18:37:46 +0000 (UTC)
 X-Greylist: domain auto-whitelisted by SQLgrey-1.8.0
-Received: from frasgout.his.huawei.com (frasgout.his.huawei.com
- [185.176.79.56])
- by smtp3.osuosl.org (Postfix) with ESMTPS id AB44F60860
- for <iommu@lists.linux-foundation.org>; Tue, 22 Jun 2021 17:46:23 +0000 (UTC)
-Received: from fraeml701-chm.china.huawei.com (unknown [172.18.147.201])
- by frasgout.his.huawei.com (SkyGuard) with ESMTP id 4G8YTv621Sz6H7Gp;
- Wed, 23 Jun 2021 01:36:19 +0800 (CST)
-Received: from lhreml724-chm.china.huawei.com (10.201.108.75) by
- fraeml701-chm.china.huawei.com (10.206.15.50) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id
- 15.1.2176.2; Tue, 22 Jun 2021 19:46:19 +0200
-Received: from [10.47.89.126] (10.47.89.126) by lhreml724-chm.china.huawei.com
- (10.201.108.75) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2176.2; Tue, 22 Jun
- 2021 18:46:18 +0100
-Subject: Re: [PATCH 0/6] iommu: Enable devices to request non-strict DMA,
- starting with QCom SD/MMC
-To: Douglas Anderson <dianders@chromium.org>, <gregkh@linuxfoundation.org>,
- <rafael@kernel.org>, <rafael.j.wysocki@intel.com>, <will@kernel.org>,
- <robin.murphy@arm.com>, <joro@8bytes.org>, <bjorn.andersson@linaro.org>,
- <ulf.hansson@linaro.org>, <adrian.hunter@intel.com>, <bhelgaas@google.com>
-References: <20210621235248.2521620-1-dianders@chromium.org>
-From: John Garry <john.garry@huawei.com>
-Message-ID: <f3078ff2-97a6-6029-b584-1589ed184579@huawei.com>
-Date: Tue, 22 Jun 2021 18:39:50 +0100
-User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; rv:68.0) Gecko/20100101
- Thunderbird/68.1.2
+Received: from foss.arm.com (foss.arm.com [217.140.110.172])
+ by smtp2.osuosl.org (Postfix) with ESMTP id 15DA4400E8
+ for <iommu@lists.linux-foundation.org>; Tue, 22 Jun 2021 18:37:45 +0000 (UTC)
+Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
+ by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id DBE8931B;
+ Tue, 22 Jun 2021 11:37:44 -0700 (PDT)
+Received: from [10.57.9.136] (unknown [10.57.9.136])
+ by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id 4EBCD3F719;
+ Tue, 22 Jun 2021 11:37:43 -0700 (PDT)
+Subject: Re: [PATCHv2 1/3] iommu/io-pgtable: Add a quirk to use
+ tlb_flush_all() for partial walk flush
+To: Sai Prakash Ranjan <saiprakash.ranjan@codeaurora.org>
+References: <cover.1623981933.git.saiprakash.ranjan@codeaurora.org>
+ <b099af10926b34249f4a30262db37f50491bebe7.1623981933.git.saiprakash.ranjan@codeaurora.org>
+ <904f283c-f8b1-ba84-d010-eacc87bb53c5@arm.com>
+ <a110e58e36af207be2bed04d1331832a@codeaurora.org>
+ <2b093b93-7fab-be35-59d8-4463c199719a@arm.com>
+ <c0329da89bee9b51b88d907875608877@codeaurora.org>
+From: Robin Murphy <robin.murphy@arm.com>
+Message-ID: <015e1274-d28e-f5e3-7f96-b79cf3d56a8e@arm.com>
+Date: Tue, 22 Jun 2021 19:37:37 +0100
+User-Agent: Mozilla/5.0 (Windows NT 10.0; rv:78.0) Gecko/20100101
+ Thunderbird/78.10.1
 MIME-Version: 1.0
-In-Reply-To: <20210621235248.2521620-1-dianders@chromium.org>
-Content-Language: en-US
-X-Originating-IP: [10.47.89.126]
-X-ClientProxiedBy: lhreml721-chm.china.huawei.com (10.201.108.72) To
- lhreml724-chm.china.huawei.com (10.201.108.75)
-X-CFilter-Loop: Reflected
-Cc: robdclark@chromium.org, Heikki Krogerus <heikki.krogerus@linux.intel.com>,
- saravanak@google.com, linux-arm-msm@vger.kernel.org,
- Randy Dunlap <rdunlap@infradead.org>, linux-mmc@vger.kernel.org,
- quic_c_gdjako@quicinc.com, linux-kernel@vger.kernel.org,
- Bartosz Golaszewski <bgolaszewski@baylibre.com>,
- iommu@lists.linux-foundation.org, Andy Gross <agross@kernel.org>, Geert
- Uytterhoeven <geert@linux-m68k.org>, linux-pci@vger.kernel.org,
- joel@joelfernandes.org, Dan Williams <dan.j.williams@intel.com>,
- rajatja@google.com, sonnyrao@chromium.org, vbadigan@codeaurora.org
+In-Reply-To: <c0329da89bee9b51b88d907875608877@codeaurora.org>
+Content-Language: en-GB
+Cc: linux-arm-msm@vger.kernel.org, Douglas Anderson <dianders@chromium.org>,
+ linux-kernel@vger.kernel.org, iommu@lists.linux-foundation.org,
+ Thierry Reding <treding@nvidia.com>, Will Deacon <will@kernel.org>,
+ linux-arm-kernel@lists.infradead.org
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -102,60 +89,89 @@ Content-Type: text/plain; charset="us-ascii"; Format="flowed"
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-On 22/06/2021 00:52, Douglas Anderson wrote:
+On 2021-06-22 15:27, Sai Prakash Ranjan wrote:
+> Hi Robin,
 > 
-> This patch attempts to put forward a proposal for enabling non-strict
-> DMA on a device-by-device basis. The patch series requests non-strict
-> DMA for the Qualcomm SDHCI controller as a first device to enable,
-> getting a nice bump in performance with what's believed to be a very
-> small drop in security / safety (see the patch for the full argument).
+> On 2021-06-22 17:41, Robin Murphy wrote:
+>> On 2021-06-22 08:11, Sai Prakash Ranjan wrote:
+>>> Hi Robin,
+>>>
+>>> On 2021-06-21 21:15, Robin Murphy wrote:
+>>>> On 2021-06-18 03:51, Sai Prakash Ranjan wrote:
+>>>>> Add a quirk IO_PGTABLE_QUIRK_TLB_INV_ALL to invalidate entire context
+>>>>> with tlb_flush_all() callback in partial walk flush to improve unmap
+>>>>> performance on select few platforms where the cost of 
+>>>>> over-invalidation
+>>>>> is less than the unmap latency.
+>>>>
+>>>> I still think this doesn't belong anywhere near io-pgtable at all.
+>>>> It's a driver-internal decision how exactly it implements a non-leaf
+>>>> invalidation, and that may be more complex than a predetermined
+>>>> boolean decision. For example, I've just realised for SMMUv3 we can't
+>>>> invalidate multiple levels of table at once with a range command,
+>>>> since if we assume the whole thing is mapped at worst-case page
+>>>> granularity we may fail to invalidate any parts which are mapped as
+>>>> intermediate-level blocks. If invalidating a 1GB region (with 4KB
+>>>> granule) means having to fall back to 256K non-range commands, we may
+>>>> not want to invalidate by VA then, even though doing so for a 2MB
+>>>> region is still optimal.
+>>>>
+>>>> It's also quite feasible that drivers might want to do this for leaf
+>>>> invalidations too - if you don't like issuing 512 commands to
+>>>> invalidate 2MB, do you like issuing 511 commands to invalidate 2044KB?
+>>>> - and at that point the logic really has to be in the driver anyway.
+>>>>
+>>>
+>>> Ok I will move this to tlb_flush_walk() functions in the drivers. In 
+>>> the previous
+>>> v1 thread, you suggested to make the choice in iommu_get_dma_strict() 
+>>> test,
+>>> I assume you meant the test in iommu_dma_init_domain() with a flag or 
+>>> was it
+>>> the leaf driver(ex:arm-smmu.c) test of iommu_get_dma_strict() in 
+>>> init_domain?
+>>
+>> Yes, I meant literally inside the same condition where we currently
+>> set "pgtbl_cfg.quirks |= IO_PGTABLE_QUIRK_NON_STRICT;" in
+>> arm_smmu_init_domain_context().
+>>
 > 
-> As part of this patch series I am end up slightly cleaning up some of
-> the interactions between the PCI subsystem and the IOMMU subsystem but
-> I don't go all the way to fully remove all the tentacles. Specifically
-> this patch series only concerns itself with a single aspect: strict
-> vs. non-strict mode for the IOMMU. I'm hoping that this will be easier
-> to talk about / reason about for more subsystems compared to overall
-> deciding what it means for a device to be "external" or "untrusted".
+> Ok got it, thanks.
 > 
-> If something like this patch series ends up being landable, it will
-> undoubtedly need coordination between many maintainers to land. I
-> believe it's fully bisectable but later patches in the series
-> definitely depend on earlier ones. Sorry for the long CC list. :(
+>>> I am still a bit confused on where this flag would be? Should this be 
+>>> a part
+>>> of struct iommu_domain?
+>>
+>> Well, if you were to rewrite the config with an alternative set of
+>> flush_ops at that point it would be implicit. For a flag, probably
+>> either in arm_smmu_domain or arm_smmu_impl. Maybe a flag would be less
+>> useful than generalising straight to a "maximum number of by-VA
+>> invalidations it's worth sending individually" threshold value?
 > 
+> But then we would still need some flag to make this implementation
+> specific (qcom specific for now) and this threshold would just be
+> another condition although it would have been useful if this was
+> generic enough.
 
-JFYI, In case to missed it, and I know it's not the same thing as you 
-want, above, but the following series will allow you to build the kernel 
-to default to lazy mode:
+Well, for that approach I assume we could do something like special-case 
+0, or if it's a mutable per-domain value maybe just initialise it to 
+SIZE_MAX or whatever such that it would never be reached in practice. 
+Whichever way, it was meant to be implied that anything at the domain 
+level would still be subject to final adjustment by the init_context hook.
 
-https://lore.kernel.org/linux-iommu/1624016058-189713-1-git-send-email-john.garry@huawei.com/T/#m21bc07b9353b3ba85f2a40557645c2bcc13cbb3e
+Robin.
 
-So iommu.strict=0 would be no longer always required for arm64.
-
-Thanks,
-John
-
-
+>> It's clear to me what overall shape and separation of responsibility is
+>> most logical, but beyond that I don't have a particularly strong
+>> opinion on the exact implementation; I've just been chucking ideas
+>> around :)
+>>
 > 
-> Douglas Anderson (6):
->    drivers: base: Add the concept of "pre_probe" to drivers
->    drivers: base: Add bits to struct device to control iommu strictness
->    PCI: Indicate that we want to force strict DMA for untrusted devices
->    iommu: Combine device strictness requests with the global default
->    iommu: Stop reaching into PCIe devices to decide strict vs. non-strict
->    mmc: sdhci-msm: Request non-strict IOMMU mode
+> Your ideas are very informative and useful :)
 > 
->   drivers/base/dd.c             | 10 +++++--
->   drivers/iommu/dma-iommu.c     |  2 +-
->   drivers/iommu/iommu.c         | 56 +++++++++++++++++++++++++++--------
->   drivers/mmc/host/sdhci-msm.c  |  8 +++++
->   drivers/pci/probe.c           |  4 ++-
->   include/linux/device.h        | 11 +++++++
->   include/linux/device/driver.h |  9 ++++++
->   include/linux/iommu.h         |  2 ++
->   8 files changed, 85 insertions(+), 17 deletions(-)
+> Thanks,
+> Sai
 > 
-
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
