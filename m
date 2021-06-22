@@ -2,76 +2,74 @@ Return-Path: <SRS0=IFPa=LQ=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-15.2 required=3.0 tests=BAYES_00,
-	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_CR_TRAILER,INCLUDES_PATCH,
-	MAILING_LIST_MULTI,NICE_REPLY_A,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,
-	USER_AGENT_SANE_1 autolearn=unavailable autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-5.2 required=3.0 tests=BAYES_00,
+	HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,NICE_REPLY_A,SPF_HELO_NONE,
+	SPF_PASS,URIBL_BLOCKED,USER_AGENT_SANE_1 autolearn=no autolearn_force=no
+	version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 035F9C2B9F4
-	for <iommu@archiver.kernel.org>; Tue, 22 Jun 2021 11:49:26 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E17A8C48BE5
+	for <iommu@archiver.kernel.org>; Tue, 22 Jun 2021 12:11:25 +0000 (UTC)
 Received: from smtp1.osuosl.org (smtp1.osuosl.org [140.211.166.138])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id ABD40611CE
-	for <iommu@archiver.kernel.org>; Tue, 22 Jun 2021 11:49:25 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org ABD40611CE
+	by mail.kernel.org (Postfix) with ESMTPS id 9A9CC60FF1
+	for <iommu@archiver.kernel.org>; Tue, 22 Jun 2021 12:11:25 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 9A9CC60FF1
 Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=arm.com
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by smtp1.osuosl.org (Postfix) with ESMTP id 793788270B;
-	Tue, 22 Jun 2021 11:49:25 +0000 (UTC)
+	by smtp1.osuosl.org (Postfix) with ESMTP id 6ACB583938;
+	Tue, 22 Jun 2021 12:11:25 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
 Received: from smtp1.osuosl.org ([127.0.0.1])
 	by localhost (smtp1.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id WzylKBVmLZb6; Tue, 22 Jun 2021 11:49:24 +0000 (UTC)
+	with ESMTP id MUU_Xh0gssbM; Tue, 22 Jun 2021 12:11:24 +0000 (UTC)
 Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [IPv6:2605:bc80:3010:104::8cd3:938])
-	by smtp1.osuosl.org (Postfix) with ESMTPS id 4EDC38274F;
-	Tue, 22 Jun 2021 11:49:24 +0000 (UTC)
+	by smtp1.osuosl.org (Postfix) with ESMTPS id 6732A837EC;
+	Tue, 22 Jun 2021 12:11:24 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 03E25C0010;
-	Tue, 22 Jun 2021 11:49:24 +0000 (UTC)
-Received: from smtp4.osuosl.org (smtp4.osuosl.org [140.211.166.137])
- by lists.linuxfoundation.org (Postfix) with ESMTP id E8EE1C000E
- for <iommu@lists.linux-foundation.org>; Tue, 22 Jun 2021 11:49:21 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 48AD1C001A;
+	Tue, 22 Jun 2021 12:11:24 +0000 (UTC)
+Received: from smtp1.osuosl.org (smtp1.osuosl.org [IPv6:2605:bc80:3010::138])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 14EE7C000E
+ for <iommu@lists.linux-foundation.org>; Tue, 22 Jun 2021 12:11:22 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by smtp4.osuosl.org (Postfix) with ESMTP id E3BF240333
- for <iommu@lists.linux-foundation.org>; Tue, 22 Jun 2021 11:49:21 +0000 (UTC)
+ by smtp1.osuosl.org (Postfix) with ESMTP id E270F83938
+ for <iommu@lists.linux-foundation.org>; Tue, 22 Jun 2021 12:11:21 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from smtp4.osuosl.org ([127.0.0.1])
- by localhost (smtp4.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id WQzpbp5XE-y1 for <iommu@lists.linux-foundation.org>;
- Tue, 22 Jun 2021 11:49:20 +0000 (UTC)
+Received: from smtp1.osuosl.org ([127.0.0.1])
+ by localhost (smtp1.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+ with ESMTP id rXWSm3fn_KL5 for <iommu@lists.linux-foundation.org>;
+ Tue, 22 Jun 2021 12:11:21 +0000 (UTC)
 X-Greylist: domain auto-whitelisted by SQLgrey-1.8.0
 Received: from foss.arm.com (foss.arm.com [217.140.110.172])
- by smtp4.osuosl.org (Postfix) with ESMTP id 6BAA74016C
- for <iommu@lists.linux-foundation.org>; Tue, 22 Jun 2021 11:49:20 +0000 (UTC)
+ by smtp1.osuosl.org (Postfix) with ESMTP id E6987837EC
+ for <iommu@lists.linux-foundation.org>; Tue, 22 Jun 2021 12:11:20 +0000 (UTC)
 Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
- by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 602D231B;
- Tue, 22 Jun 2021 04:49:19 -0700 (PDT)
+ by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id D5853ED1;
+ Tue, 22 Jun 2021 05:11:19 -0700 (PDT)
 Received: from [10.57.9.136] (unknown [10.57.9.136])
- by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id 178F33F694;
- Tue, 22 Jun 2021 04:49:15 -0700 (PDT)
-Subject: Re: [PATCH 4/6] iommu: Combine device strictness requests with the
- global default
-To: Douglas Anderson <dianders@chromium.org>, gregkh@linuxfoundation.org,
- rafael@kernel.org, rafael.j.wysocki@intel.com, will@kernel.org,
- joro@8bytes.org, bjorn.andersson@linaro.org, ulf.hansson@linaro.org,
- adrian.hunter@intel.com, bhelgaas@google.com
-References: <20210621235248.2521620-1-dianders@chromium.org>
- <20210621165230.4.Id84a954e705fcad3fdb35beb2bc372e4bf2108c7@changeid>
+ by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id 73A493F694;
+ Tue, 22 Jun 2021 05:11:18 -0700 (PDT)
+Subject: Re: [PATCHv2 1/3] iommu/io-pgtable: Add a quirk to use
+ tlb_flush_all() for partial walk flush
+To: Sai Prakash Ranjan <saiprakash.ranjan@codeaurora.org>
+References: <cover.1623981933.git.saiprakash.ranjan@codeaurora.org>
+ <b099af10926b34249f4a30262db37f50491bebe7.1623981933.git.saiprakash.ranjan@codeaurora.org>
+ <904f283c-f8b1-ba84-d010-eacc87bb53c5@arm.com>
+ <a110e58e36af207be2bed04d1331832a@codeaurora.org>
 From: Robin Murphy <robin.murphy@arm.com>
-Message-ID: <a023af85-5060-0a3c-4648-b00f8b8c0430@arm.com>
-Date: Tue, 22 Jun 2021 12:49:10 +0100
+Message-ID: <2b093b93-7fab-be35-59d8-4463c199719a@arm.com>
+Date: Tue, 22 Jun 2021 13:11:12 +0100
 User-Agent: Mozilla/5.0 (Windows NT 10.0; rv:78.0) Gecko/20100101
  Thunderbird/78.10.1
 MIME-Version: 1.0
-In-Reply-To: <20210621165230.4.Id84a954e705fcad3fdb35beb2bc372e4bf2108c7@changeid>
+In-Reply-To: <a110e58e36af207be2bed04d1331832a@codeaurora.org>
 Content-Language: en-GB
-Cc: robdclark@chromium.org, saravanak@google.com, linux-arm-msm@vger.kernel.org,
- linux-mmc@vger.kernel.org, quic_c_gdjako@quicinc.com,
+Cc: linux-arm-msm@vger.kernel.org, Douglas Anderson <dianders@chromium.org>,
  linux-kernel@vger.kernel.org, iommu@lists.linux-foundation.org,
- linux-pci@vger.kernel.org, joel@joelfernandes.org, rajatja@google.com,
- sonnyrao@chromium.org, vbadigan@codeaurora.org
+ Thierry Reding <treding@nvidia.com>, Will Deacon <will@kernel.org>,
+ linux-arm-kernel@lists.infradead.org
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -89,197 +87,61 @@ Content-Type: text/plain; charset="us-ascii"; Format="flowed"
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-On 2021-06-22 00:52, Douglas Anderson wrote:
-> In the patch ("drivers: base: Add bits to struct device to control
-> iommu strictness") we add the ability for devices to tell us about
-> their IOMMU strictness requirements. Let's now take that into account
-> in the IOMMU layer.
+On 2021-06-22 08:11, Sai Prakash Ranjan wrote:
+> Hi Robin,
 > 
-> A few notes here:
-> * Presumably this is always how iommu_get_dma_strict() was intended to
->    behave. Had this not been the intention then it never would have
->    taken a domain as a parameter.
+> On 2021-06-21 21:15, Robin Murphy wrote:
+>> On 2021-06-18 03:51, Sai Prakash Ranjan wrote:
+>>> Add a quirk IO_PGTABLE_QUIRK_TLB_INV_ALL to invalidate entire context
+>>> with tlb_flush_all() callback in partial walk flush to improve unmap
+>>> performance on select few platforms where the cost of over-invalidation
+>>> is less than the unmap latency.
+>>
+>> I still think this doesn't belong anywhere near io-pgtable at all.
+>> It's a driver-internal decision how exactly it implements a non-leaf
+>> invalidation, and that may be more complex than a predetermined
+>> boolean decision. For example, I've just realised for SMMUv3 we can't
+>> invalidate multiple levels of table at once with a range command,
+>> since if we assume the whole thing is mapped at worst-case page
+>> granularity we may fail to invalidate any parts which are mapped as
+>> intermediate-level blocks. If invalidating a 1GB region (with 4KB
+>> granule) means having to fall back to 256K non-range commands, we may
+>> not want to invalidate by VA then, even though doing so for a 2MB
+>> region is still optimal.
+>>
+>> It's also quite feasible that drivers might want to do this for leaf
+>> invalidations too - if you don't like issuing 512 commands to
+>> invalidate 2MB, do you like issuing 511 commands to invalidate 2044KB?
+>> - and at that point the logic really has to be in the driver anyway.
+>>
+> 
+> Ok I will move this to tlb_flush_walk() functions in the drivers. In the 
+> previous
+> v1 thread, you suggested to make the choice in iommu_get_dma_strict() test,
+> I assume you meant the test in iommu_dma_init_domain() with a flag or 
+> was it
+> the leaf driver(ex:arm-smmu.c) test of iommu_get_dma_strict() in 
+> init_domain?
 
-FWIW strictness does have the semantic of being a per-domain property, 
-but mostly in the sense that it's only relevant to IOMMU_DOMAIN_DMA 
-domains, so the main thing was encapsulating that check rather than 
-duplicating it all over callsites.
+Yes, I meant literally inside the same condition where we currently set 
+"pgtbl_cfg.quirks |= IO_PGTABLE_QUIRK_NON_STRICT;" in 
+arm_smmu_init_domain_context().
 
-> * The iommu_set_dma_strict() feels awfully non-symmetric now. That
->    function sets the _default_ strictness globally in the system
->    whereas iommu_get_dma_strict() returns the value for a given domain
->    (falling back to the default). Presumably, at least, the fact that
->    iommu_set_dma_strict() doesn't take a domain makes this obvious.
+> I am still a bit confused on where this flag would be? Should this be a 
+> part
+> of struct iommu_domain?
 
-It *is* asymmetric - one is for IOMMU core code and individual driver 
-internals to know whether they need to do whatever bits of setting up a 
-flush queue for a given domain they are responsible for, while the other 
-is specifically for two drivers to force the global default in order to 
-preserve legacy driver-specific behaviour. Maybe that should have been 
-called something like iommu_set_dma_default_strict instead... :/
+Well, if you were to rewrite the config with an alternative set of 
+flush_ops at that point it would be implicit. For a flag, probably 
+either in arm_smmu_domain or arm_smmu_impl. Maybe a flag would be less 
+useful than generalising straight to a "maximum number of by-VA 
+invalidations it's worth sending individually" threshold value? It's 
+clear to me what overall shape and separation of responsibility is most 
+logical, but beyond that I don't have a particularly strong opinion on 
+the exact implementation; I've just been chucking ideas around :)
 
+Cheers,
 Robin.
-
-> The function iommu_get_dma_strict() should now make it super obvious
-> where strictness comes from and who overides who. Though the function
-> changed a bunch to make the logic clearer, the only two new rules
-> should be:
-> * Devices can force strictness for themselves, overriding the cmdline
->    "iommu.strict=0" or a call to iommu_set_dma_strict(false)).
-> * Devices can request non-strictness for themselves, assuming there
->    was no cmdline "iommu.strict=1" or a call to
->    iommu_set_dma_strict(true).
-> 
-> Signed-off-by: Douglas Anderson <dianders@chromium.org>
-> ---
-> 
->   drivers/iommu/iommu.c | 56 +++++++++++++++++++++++++++++++++----------
->   include/linux/iommu.h |  2 ++
->   2 files changed, 45 insertions(+), 13 deletions(-)
-> 
-> diff --git a/drivers/iommu/iommu.c b/drivers/iommu/iommu.c
-> index 808ab70d5df5..0c84a4c06110 100644
-> --- a/drivers/iommu/iommu.c
-> +++ b/drivers/iommu/iommu.c
-> @@ -28,8 +28,19 @@
->   static struct kset *iommu_group_kset;
->   static DEFINE_IDA(iommu_group_ida);
->   
-> +enum iommu_strictness {
-> +	IOMMU_DEFAULT_STRICTNESS = -1,
-> +	IOMMU_NOT_STRICT = 0,
-> +	IOMMU_STRICT = 1,
-> +};
-> +static inline enum iommu_strictness bool_to_strictness(bool strictness)
-> +{
-> +	return (enum iommu_strictness)strictness;
-> +}
-> +
->   static unsigned int iommu_def_domain_type __read_mostly;
-> -static bool iommu_dma_strict __read_mostly = true;
-> +static enum iommu_strictness cmdline_dma_strict __read_mostly = IOMMU_DEFAULT_STRICTNESS;
-> +static enum iommu_strictness driver_dma_strict __read_mostly = IOMMU_DEFAULT_STRICTNESS;
->   static u32 iommu_cmd_line __read_mostly;
->   
->   struct iommu_group {
-> @@ -69,7 +80,6 @@ static const char * const iommu_group_resv_type_string[] = {
->   };
->   
->   #define IOMMU_CMD_LINE_DMA_API		BIT(0)
-> -#define IOMMU_CMD_LINE_STRICT		BIT(1)
->   
->   static int iommu_alloc_default_domain(struct iommu_group *group,
->   				      struct device *dev);
-> @@ -336,25 +346,38 @@ early_param("iommu.passthrough", iommu_set_def_domain_type);
->   
->   static int __init iommu_dma_setup(char *str)
->   {
-> -	int ret = kstrtobool(str, &iommu_dma_strict);
-> +	bool strict;
-> +	int ret = kstrtobool(str, &strict);
->   
->   	if (!ret)
-> -		iommu_cmd_line |= IOMMU_CMD_LINE_STRICT;
-> +		cmdline_dma_strict = bool_to_strictness(strict);
->   	return ret;
->   }
->   early_param("iommu.strict", iommu_dma_setup);
->   
->   void iommu_set_dma_strict(bool strict)
->   {
-> -	if (strict || !(iommu_cmd_line & IOMMU_CMD_LINE_STRICT))
-> -		iommu_dma_strict = strict;
-> +	/* A driver can request strictness but not the other way around */
-> +	if (driver_dma_strict != IOMMU_STRICT)
-> +		driver_dma_strict = bool_to_strictness(strict);
->   }
->   
->   bool iommu_get_dma_strict(struct iommu_domain *domain)
->   {
-> -	/* only allow lazy flushing for DMA domains */
-> -	if (domain->type == IOMMU_DOMAIN_DMA)
-> -		return iommu_dma_strict;
-> +	/* Non-DMA domains or anyone forcing it to strict makes it strict */
-> +	if (domain->type != IOMMU_DOMAIN_DMA ||
-> +	    cmdline_dma_strict == IOMMU_STRICT ||
-> +	    driver_dma_strict == IOMMU_STRICT ||
-> +	    domain->force_strict)
-> +		return true;
-> +
-> +	/* Anyone requesting non-strict (if no forces) makes it non-strict */
-> +	if (cmdline_dma_strict == IOMMU_NOT_STRICT ||
-> +	    driver_dma_strict == IOMMU_NOT_STRICT ||
-> +	    domain->request_non_strict)
-> +		return false;
-> +
-> +	/* Nobody said anything, so it's strict by default */
->   	return true;
->   }
->   EXPORT_SYMBOL_GPL(iommu_get_dma_strict);
-> @@ -1519,7 +1542,8 @@ static int iommu_get_def_domain_type(struct device *dev)
->   
->   static int iommu_group_alloc_default_domain(struct bus_type *bus,
->   					    struct iommu_group *group,
-> -					    unsigned int type)
-> +					    unsigned int type,
-> +					    struct device *dev)
->   {
->   	struct iommu_domain *dom;
->   
-> @@ -1534,6 +1558,12 @@ static int iommu_group_alloc_default_domain(struct bus_type *bus,
->   	if (!dom)
->   		return -ENOMEM;
->   
-> +	/* Save the strictness requests from the device */
-> +	if (dev && type == IOMMU_DOMAIN_DMA) {
-> +		dom->request_non_strict = dev->request_non_strict_iommu;
-> +		dom->force_strict = dev->force_strict_iommu;
-> +	}
-> +
->   	group->default_domain = dom;
->   	if (!group->domain)
->   		group->domain = dom;
-> @@ -1550,7 +1580,7 @@ static int iommu_alloc_default_domain(struct iommu_group *group,
->   
->   	type = iommu_get_def_domain_type(dev) ? : iommu_def_domain_type;
->   
-> -	return iommu_group_alloc_default_domain(dev->bus, group, type);
-> +	return iommu_group_alloc_default_domain(dev->bus, group, type, dev);
->   }
->   
->   /**
-> @@ -1721,7 +1751,7 @@ static void probe_alloc_default_domain(struct bus_type *bus,
->   	if (!gtype.type)
->   		gtype.type = iommu_def_domain_type;
->   
-> -	iommu_group_alloc_default_domain(bus, group, gtype.type);
-> +	iommu_group_alloc_default_domain(bus, group, gtype.type, NULL);
->   
->   }
->   
-> @@ -3130,7 +3160,7 @@ static int iommu_change_dev_def_domain(struct iommu_group *group,
->   	}
->   
->   	/* Sets group->default_domain to the newly allocated domain */
-> -	ret = iommu_group_alloc_default_domain(dev->bus, group, type);
-> +	ret = iommu_group_alloc_default_domain(dev->bus, group, type, dev);
->   	if (ret)
->   		goto out;
->   
-> diff --git a/include/linux/iommu.h b/include/linux/iommu.h
-> index 32d448050bf7..0bddef77f415 100644
-> --- a/include/linux/iommu.h
-> +++ b/include/linux/iommu.h
-> @@ -81,6 +81,8 @@ struct iommu_domain_geometry {
->   
->   struct iommu_domain {
->   	unsigned type;
-> +	bool force_strict:1;
-> +	bool request_non_strict:1;
->   	const struct iommu_ops *ops;
->   	unsigned long pgsize_bitmap;	/* Bitmap of page sizes in use */
->   	iommu_fault_handler_t handler;
-> 
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
