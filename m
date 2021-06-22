@@ -2,99 +2,114 @@ Return-Path: <SRS0=IFPa=LQ=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-15.3 required=3.0 tests=BAYES_00,DKIM_INVALID,
-	DKIM_SIGNED,INCLUDES_CR_TRAILER,INCLUDES_PATCH,MAILING_LIST_MULTI,
-	SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_SANE_1 autolearn=unavailable
-	autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-8.5 required=3.0 tests=BAYES_00,DKIM_INVALID,
+	DKIM_SIGNED,HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,
+	MENTIONS_GIT_HOSTING,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED
+	autolearn=unavailable autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3F138C48BDF
-	for <iommu@archiver.kernel.org>; Tue, 22 Jun 2021 21:03:05 +0000 (UTC)
-Received: from smtp1.osuosl.org (smtp1.osuosl.org [140.211.166.138])
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 810A5C48BE5
+	for <iommu@archiver.kernel.org>; Tue, 22 Jun 2021 21:58:23 +0000 (UTC)
+Received: from smtp2.osuosl.org (smtp2.osuosl.org [140.211.166.133])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id ED65461374
-	for <iommu@archiver.kernel.org>; Tue, 22 Jun 2021 21:03:04 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org ED65461374
-Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=kernel.org
+	by mail.kernel.org (Postfix) with ESMTPS id E37F46137D
+	for <iommu@archiver.kernel.org>; Tue, 22 Jun 2021 21:58:22 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org E37F46137D
+Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=darnok.org
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by smtp1.osuosl.org (Postfix) with ESMTP id B466183926;
-	Tue, 22 Jun 2021 21:03:04 +0000 (UTC)
+	by smtp2.osuosl.org (Postfix) with ESMTP id 9EFD040257;
+	Tue, 22 Jun 2021 21:58:22 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from smtp1.osuosl.org ([127.0.0.1])
-	by localhost (smtp1.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id EDGtusjAXrhk; Tue, 22 Jun 2021 21:03:03 +0000 (UTC)
-Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [IPv6:2605:bc80:3010:104::8cd3:938])
-	by smtp1.osuosl.org (Postfix) with ESMTPS id 8A04E82D12;
-	Tue, 22 Jun 2021 21:03:03 +0000 (UTC)
-Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 38973C001A;
-	Tue, 22 Jun 2021 21:03:03 +0000 (UTC)
-Received: from smtp2.osuosl.org (smtp2.osuosl.org [IPv6:2605:bc80:3010::133])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 61D7DC000E
- for <iommu@lists.linux-foundation.org>; Tue, 22 Jun 2021 21:03:02 +0000 (UTC)
-Received: from localhost (localhost [127.0.0.1])
- by smtp2.osuosl.org (Postfix) with ESMTP id 2B7E24011D
- for <iommu@lists.linux-foundation.org>; Tue, 22 Jun 2021 21:03:02 +0000 (UTC)
-X-Virus-Scanned: amavisd-new at osuosl.org
-Authentication-Results: smtp2.osuosl.org (amavisd-new);
- dkim=pass (2048-bit key) header.d=kernel.org
 Received: from smtp2.osuosl.org ([127.0.0.1])
- by localhost (smtp2.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id WAYAVvzWACJ2 for <iommu@lists.linux-foundation.org>;
- Tue, 22 Jun 2021 21:03:01 +0000 (UTC)
-X-Greylist: domain auto-whitelisted by SQLgrey-1.8.0
-Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
- by smtp2.osuosl.org (Postfix) with ESMTPS id 7E7EB400C8
- for <iommu@lists.linux-foundation.org>; Tue, 22 Jun 2021 21:03:01 +0000 (UTC)
-Received: by mail.kernel.org (Postfix) with ESMTPSA id B82596108E;
- Tue, 22 Jun 2021 21:02:58 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
- s=k20201202; t=1624395780;
- bh=v96U5qnlOhDf3w1FKsu7SjrxREMp2X2HSv3JOsCkgmU=;
- h=Date:From:To:cc:Subject:In-Reply-To:References:From;
- b=jp86WFjWXckU//EExyz6NMfilYlNSGD/Sp+e74iycIMnJPnrnvb2f/IMZhcf30u/Y
- nZN/eIYPHlNFb7aaAK4BGrzQ8h60A0DeuaUctP8s9mDpf/LCXTiw3xhjYNzVwnhtzX
- TCr/gTHfn3WY41P/JfXANtN8uFlsPQPDxHmgwY0xOxtbMzYm2w8bezm6pQenS5mO9T
- QACOuqiKoEaVeTvNfrREoxgLiMZfrcQDhTBPBD0g1ngPW8KyWNjA64wNxxoLTDCtna
- okD7zfnO67pIIlP+aLcNDcQOeKWv20TpkQkk9C2UIZdw5p+0AdNoxQDYVfglebC4DR
- 9wbHzTawfV26w==
-Date: Tue, 22 Jun 2021 14:02:58 -0700 (PDT)
-From: Stefano Stabellini <sstabellini@kernel.org>
-X-X-Sender: sstabellini@sstabellini-ThinkPad-T480s
-To: Claire Chang <tientzu@chromium.org>
-Subject: Re: [PATCH v14 01/12] swiotlb: Refactor swiotlb init functions
-In-Reply-To: <20210619034043.199220-2-tientzu@chromium.org>
-Message-ID: <alpine.DEB.2.21.2106221402390.24906@sstabellini-ThinkPad-T480s>
-References: <20210619034043.199220-1-tientzu@chromium.org>
- <20210619034043.199220-2-tientzu@chromium.org>
-User-Agent: Alpine 2.21 (DEB 202 2017-01-01)
+	by localhost (smtp2.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+	with ESMTP id 3P7DxklFaiSh; Tue, 22 Jun 2021 21:58:21 +0000 (UTC)
+Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
+	by smtp2.osuosl.org (Postfix) with ESMTPS id 831A0400C8;
+	Tue, 22 Jun 2021 21:58:21 +0000 (UTC)
+Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 5A40AC0010;
+	Tue, 22 Jun 2021 21:58:21 +0000 (UTC)
+Received: from smtp3.osuosl.org (smtp3.osuosl.org [IPv6:2605:bc80:3010::136])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id E56C6C000E
+ for <iommu@lists.linux-foundation.org>; Tue, 22 Jun 2021 21:58:19 +0000 (UTC)
+Received: from localhost (localhost [127.0.0.1])
+ by smtp3.osuosl.org (Postfix) with ESMTP id CB99D605BB
+ for <iommu@lists.linux-foundation.org>; Tue, 22 Jun 2021 21:58:19 +0000 (UTC)
+X-Virus-Scanned: amavisd-new at osuosl.org
+Authentication-Results: smtp3.osuosl.org (amavisd-new);
+ dkim=pass (2048-bit key) header.d=gmail.com
+Received: from smtp3.osuosl.org ([127.0.0.1])
+ by localhost (smtp3.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+ with ESMTP id 7o9Pii5EhLnV for <iommu@lists.linux-foundation.org>;
+ Tue, 22 Jun 2021 21:58:18 +0000 (UTC)
+X-Greylist: whitelisted by SQLgrey-1.8.0
+Received: from mail-qk1-x735.google.com (mail-qk1-x735.google.com
+ [IPv6:2607:f8b0:4864:20::735])
+ by smtp3.osuosl.org (Postfix) with ESMTPS id B9A5B60592
+ for <iommu@lists.linux-foundation.org>; Tue, 22 Jun 2021 21:58:18 +0000 (UTC)
+Received: by mail-qk1-x735.google.com with SMTP id q190so193008qkd.2
+ for <iommu@lists.linux-foundation.org>; Tue, 22 Jun 2021 14:58:18 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=gmail.com; s=20161025;
+ h=sender:date:from:to:cc:subject:message-id:references:mime-version
+ :content-disposition:in-reply-to;
+ bh=An1CO7YkpX2LBRNnkvDhYRhDtsz5fNak0K0KltYMWHE=;
+ b=G9hBpWsQA2qNJz6g8CmPS+fbzFFLh6rh7G15fLU4ZxcRyaU3QSU29x7NyPYmR8Ia/D
+ n2B54HijZUbq2DwnXWIWTFpUjhpze+X82aSP8/LcdWVkRmYDlQxoRlHKyIo+qqE8FP9Q
+ bZJ9oAe/6/gP2bUYJ5ZFFroBuXxolJekjgy3qddtVuXERWKt1Jcy1EIQjqWkw0C51ysM
+ haXf2JVkp1uwcRw012LkgvKNWWUzIMpmOT1ctB0SsxOitZmrdQ5OIq+Lf5VI1fWUL5+I
+ R8kn030r+rgR07DGG1Tpi11b0k3Is/XKRw94yDYcdtEwn5ozVyEdHEmcFv6vnQqH4GC8
+ /eug==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+ d=1e100.net; s=20161025;
+ h=x-gm-message-state:sender:date:from:to:cc:subject:message-id
+ :references:mime-version:content-disposition:in-reply-to;
+ bh=An1CO7YkpX2LBRNnkvDhYRhDtsz5fNak0K0KltYMWHE=;
+ b=aPQTCt0EjjrgIDXK48rpVPM+jxHwZQDL3RZPeNSX30d0s9OdCPT031sCCsQ58lzpNd
+ 9cyT44+LsQNlk4KDlZmzxWspxNMC/dz3evQDKzrQ9Hr+Hf9rjG3uNqsCiMNuvqveZ/jw
+ QaVKXtuvsTvgtSxvm8OolWjqRvKIsrwJMStjEWyiJzbuLxH5KPcjRPabeiUR1at5bFbi
+ d+BzNuMR6pMVt0RQ7dJ0GgxxUvRQpcSjEhDzvqX7kTMijuPBe/gCbseHN3YCMXf8XOWA
+ TCAsjCn6GqxACq3gB8ev7g++ix5w5O7Y2u6VSw1d6OX87TyoLtQ9amJ9ns5XgKQZXs0q
+ wDJg==
+X-Gm-Message-State: AOAM532jWaMJBhUTbhQj40KW6ABHeYKaFeZ7ZV2mESeoznaJoLEh6DKJ
+ BFziuhqb72yEOPaoaKxO1gE=
+X-Google-Smtp-Source: ABdhPJxrJylyDE4d1u5hNmra4JCUXIlB65RCzJZS6mL8q5Nn7+pP3O583qQWV0u07LTl8dOSRnF9RA==
+X-Received: by 2002:a05:620a:4509:: with SMTP id
+ t9mr6703948qkp.403.1624399097540; 
+ Tue, 22 Jun 2021 14:58:17 -0700 (PDT)
+Received: from fedora ([130.44.160.152])
+ by smtp.gmail.com with ESMTPSA id 85sm12802577qkl.46.2021.06.22.14.58.15
+ (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+ Tue, 22 Jun 2021 14:58:16 -0700 (PDT)
+Date: Tue, 22 Jun 2021 17:58:14 -0400
+From: Konrad Rzeszutek Wilk <konrad@darnok.org>
+To: 'Dominique MARTINET' <dominique.martinet@atmark-techno.com>
+Subject: Re: swiotlb/caamjr regression (Was: [GIT PULL] (swiotlb)
+ stable/for-linus-5.12)
+Message-ID: <YNJc9qxeIjy6VuLt@fedora>
+References: <YMqZswFnSNKk4Z7B@atmark-techno.com>
+ <20210617051232.GB27192@lst.de>
+ <YMrfWBLsJxCRhX5U@atmark-techno.com>
+ <CAMGD6P0=9RE1-q1WHkwR1jymK5jyvN6QgypQ2KgdvBQn0CUTHw@mail.gmail.com>
+ <CGME20210621020328epcas2p207e9fa2df119730ceb993543621437d8@epcas2p2.samsung.com>
+ <YM/zWyZlk1bzHWgI@atmark-techno.com>
+ <2038148563.21624247281621.JavaMail.epsvc@epcpadp4>
+ <YNASOEGsDxhFC8qJ@atmark-techno.com> <YNCROxI328u7IKdQ@fedora>
+ <YNGVyOyD+CAMmPos@atmark-techno.com>
 MIME-Version: 1.0
-Cc: heikki.krogerus@linux.intel.com, thomas.hellstrom@linux.intel.com,
- peterz@infradead.org, benh@kernel.crashing.org,
- joonas.lahtinen@linux.intel.com, dri-devel@lists.freedesktop.org,
- chris@chris-wilson.co.uk, grant.likely@arm.com, paulus@samba.org,
- Frank Rowand <frowand.list@gmail.com>, mingo@kernel.org,
- sstabellini@kernel.org, Saravana Kannan <saravanak@google.com>,
- mpe@ellerman.id.au, "Rafael J . Wysocki" <rafael.j.wysocki@intel.com>,
- Christoph Hellwig <hch@lst.de>,
- Bartosz Golaszewski <bgolaszewski@baylibre.com>, bskeggs@redhat.com,
- linux-pci@vger.kernel.org, xen-devel@lists.xenproject.org,
- Thierry Reding <treding@nvidia.com>, intel-gfx@lists.freedesktop.org,
- matthew.auld@intel.com, linux-devicetree <devicetree@vger.kernel.org>,
- jxgao@google.com, daniel@ffwll.ch, Will Deacon <will@kernel.org>,
- Konrad Rzeszutek Wilk <konrad.wilk@oracle.com>,
- maarten.lankhorst@linux.intel.com, airlied@linux.ie,
- Dan Williams <dan.j.williams@intel.com>, linuxppc-dev@lists.ozlabs.org,
- jani.nikula@linux.intel.com, Rob Herring <robh+dt@kernel.org>,
- rodrigo.vivi@intel.com, bhelgaas@google.com, boris.ostrovsky@oracle.com,
- Andy Shevchenko <andriy.shevchenko@linux.intel.com>, jgross@suse.com,
- Nicolas Boichat <drinkcat@chromium.org>, Greg KH <gregkh@linuxfoundation.org>,
- Randy Dunlap <rdunlap@infradead.org>, lkml <linux-kernel@vger.kernel.org>,
- "list@263.net:IOMMU DRIVERS" <iommu@lists.linux-foundation.org>,
- Jim Quinlan <james.quinlan@broadcom.com>, xypron.glpk@gmx.de,
- thomas.lendacky@amd.com, Robin Murphy <robin.murphy@arm.com>,
- bauerman@linux.ibm.com
+Content-Disposition: inline
+In-Reply-To: <YNGVyOyD+CAMmPos@atmark-techno.com>
+Cc: 'Aymen Sghaier' <aymen.sghaier@nxp.com>,
+ 'Herbert Xu' <herbert@gondor.apana.org.au>,
+ 'Horia =?utf-8?Q?Geant=C4=83'?= <horia.geanta@nxp.com>,
+ 'Konrad Rzeszutek Wilk' <konrad.wilk@oracle.com>,
+ 'Marc Orr' <marcorr@google.com>, 'Lukas Hartmann' <lukas@mntmn.com>,
+ linux-kernel@vger.kernel.org, "'David S. Miller'" <davem@davemloft.net>,
+ iommu@lists.linux-foundation.org, linux-crypto@vger.kernel.org,
+ 'Peter Gonda' <pgonda@google.com>, Chanho Park <chanho61.park@samsung.com>,
+ 'Bumyong Lee' <bumyong.lee@samsung.com>,
+ 'Linus Torvalds' <torvalds@linux-foundation.org>,
+ 'Christoph Hellwig' <hch@lst.de>, 'Jianxiong Gao' <jxgao@google.com>
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -112,111 +127,67 @@ Content-Transfer-Encoding: 7bit
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-On Sat, 19 Jun 2021, Claire Chang wrote:
-> Add a new function, swiotlb_init_io_tlb_mem, for the io_tlb_mem struct
-> initialization to make the code reusable.
+On Tue, Jun 22, 2021 at 04:48:24PM +0900, 'Dominique MARTINET' wrote:
+> Konrad Rzeszutek Wilk wrote on Mon, Jun 21, 2021 at 09:16:43AM -0400:
+> > The beaty of 'devel' and 'linux-next' is that they can be reshuffled and
+> > mangled. I pushed them original patch from Bumyong there and will let
+> > it sit for a day and then create a stable branch and give it to Linus.
 > 
-> Signed-off-by: Claire Chang <tientzu@chromium.org>
-> Reviewed-by: Christoph Hellwig <hch@lst.de>
-> Tested-by: Stefano Stabellini <sstabellini@kernel.org>
-> Tested-by: Will Deacon <will@kernel.org>
-
-Acked-by: Stefano Stabellini <sstabellini@kernel.org>
-
-
-> ---
->  kernel/dma/swiotlb.c | 50 ++++++++++++++++++++++----------------------
->  1 file changed, 25 insertions(+), 25 deletions(-)
+> Thanks, that should be good.
 > 
-> diff --git a/kernel/dma/swiotlb.c b/kernel/dma/swiotlb.c
-> index 52e2ac526757..1f9b2b9e7490 100644
-> --- a/kernel/dma/swiotlb.c
-> +++ b/kernel/dma/swiotlb.c
-> @@ -168,9 +168,28 @@ void __init swiotlb_update_mem_attributes(void)
->  	memset(vaddr, 0, bytes);
->  }
->  
-> -int __init swiotlb_init_with_tbl(char *tlb, unsigned long nslabs, int verbose)
-> +static void swiotlb_init_io_tlb_mem(struct io_tlb_mem *mem, phys_addr_t start,
-> +				    unsigned long nslabs, bool late_alloc)
->  {
-> +	void *vaddr = phys_to_virt(start);
->  	unsigned long bytes = nslabs << IO_TLB_SHIFT, i;
-> +
-> +	mem->nslabs = nslabs;
-> +	mem->start = start;
-> +	mem->end = mem->start + bytes;
-> +	mem->index = 0;
-> +	mem->late_alloc = late_alloc;
-> +	spin_lock_init(&mem->lock);
-> +	for (i = 0; i < mem->nslabs; i++) {
-> +		mem->slots[i].list = IO_TLB_SEGSIZE - io_tlb_offset(i);
-> +		mem->slots[i].orig_addr = INVALID_PHYS_ADDR;
-> +		mem->slots[i].alloc_size = 0;
-> +	}
-> +	memset(vaddr, 0, bytes);
-> +}
-> +
-> +int __init swiotlb_init_with_tbl(char *tlb, unsigned long nslabs, int verbose)
-> +{
->  	struct io_tlb_mem *mem;
->  	size_t alloc_size;
->  
-> @@ -186,16 +205,8 @@ int __init swiotlb_init_with_tbl(char *tlb, unsigned long nslabs, int verbose)
->  	if (!mem)
->  		panic("%s: Failed to allocate %zu bytes align=0x%lx\n",
->  		      __func__, alloc_size, PAGE_SIZE);
-> -	mem->nslabs = nslabs;
-> -	mem->start = __pa(tlb);
-> -	mem->end = mem->start + bytes;
-> -	mem->index = 0;
-> -	spin_lock_init(&mem->lock);
-> -	for (i = 0; i < mem->nslabs; i++) {
-> -		mem->slots[i].list = IO_TLB_SEGSIZE - io_tlb_offset(i);
-> -		mem->slots[i].orig_addr = INVALID_PHYS_ADDR;
-> -		mem->slots[i].alloc_size = 0;
-> -	}
-> +
-> +	swiotlb_init_io_tlb_mem(mem, __pa(tlb), nslabs, false);
->  
->  	io_tlb_default_mem = mem;
->  	if (verbose)
-> @@ -282,8 +293,8 @@ swiotlb_late_init_with_default_size(size_t default_size)
->  int
->  swiotlb_late_init_with_tbl(char *tlb, unsigned long nslabs)
->  {
-> -	unsigned long bytes = nslabs << IO_TLB_SHIFT, i;
->  	struct io_tlb_mem *mem;
-> +	unsigned long bytes = nslabs << IO_TLB_SHIFT;
->  
->  	if (swiotlb_force == SWIOTLB_NO_FORCE)
->  		return 0;
-> @@ -297,20 +308,9 @@ swiotlb_late_init_with_tbl(char *tlb, unsigned long nslabs)
->  	if (!mem)
->  		return -ENOMEM;
->  
-> -	mem->nslabs = nslabs;
-> -	mem->start = virt_to_phys(tlb);
-> -	mem->end = mem->start + bytes;
-> -	mem->index = 0;
-> -	mem->late_alloc = 1;
-> -	spin_lock_init(&mem->lock);
-> -	for (i = 0; i < mem->nslabs; i++) {
-> -		mem->slots[i].list = IO_TLB_SEGSIZE - io_tlb_offset(i);
-> -		mem->slots[i].orig_addr = INVALID_PHYS_ADDR;
-> -		mem->slots[i].alloc_size = 0;
-> -	}
-> -
-> +	memset(mem, 0, sizeof(*mem));
->  	set_memory_decrypted((unsigned long)tlb, bytes >> PAGE_SHIFT);
-> -	memset(tlb, 0, bytes);
-> +	swiotlb_init_io_tlb_mem(mem, virt_to_phys(tlb), nslabs, true);
->  
->  	io_tlb_default_mem = mem;
->  	swiotlb_print_info();
+> Do you want me to send a follow-up patch with the two extra checks
+> (tlb_addr & (IO_TLB_SIZE -1)) > swiotlb_align_offset(dev, orig_addr)
+> tlb_offset < alloc_size
+> 
+> or are we certain this can't ever happen?
+
+I would love more patches and I saw the previous one you posted.
+
+But we only got two (or one) weeks before the next merge window opens
+so I am sending to Linus the one that was tested with NVMe and crypto
+(see above).
+
+That is the
+https://git.kernel.org/pub/scm/linux/kernel/git/konrad/swiotlb.git/commit/?h=stable/for-linus-5.14
+
+And then after Linus releases the 5.14 - I would love to take your
+cleanup on top of that and test it?
+
+> (I didn't see any hit in dmesg when I ran with these, but my opinion is
+> better safe than sorry...)
+> 
+> 
+> > Then I need to expand the test-regression bucket so that this does not
+> > happen again. Dominique, how easy would it be to purchase one of those
+> > devices?
+> 
+> My company is making such a device, but it's not on the market yet
+> (was planned for august, with some delay in approvisionning it'll
+> probably be a bit late), and would mean buying from Japan so I'm not
+> sure how convenient that would be...
+> 
+> These are originally NXP devices so I assume Horia would have better
+> suggestions, if you would?
+> 
+> 
+> > I was originally thinking to create a crypto device in QEMU to simulate
+> > this but that may take longer to write than just getting the real thing.
+> > 
+> > Or I could create some fake devices with weird offsets and write a driver
+> > for it to exercise this.. like this one I had done some time ago that
+> > needs some brushing off.
+> 
+> Just a fake device with fake offsets as a test is probably good enough,
+> ideally would need to exerce both failures we've seen (offset in
+> dma_sync_single_for_device like caam does and in the original mapping (I
+> assume?) like the NVMe driver does), but that sounds possible :)
+
+Yup. Working on that now.
+> 
+> 
+> Thanks again!
 > -- 
-> 2.32.0.288.g62a8d224e6-goog
-> 
+> Dominique
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
