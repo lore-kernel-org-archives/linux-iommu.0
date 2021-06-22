@@ -2,104 +2,135 @@ Return-Path: <SRS0=IFPa=LQ=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-13.5 required=3.0 tests=BAYES_00,
-	DKIM_ADSP_CUSTOM_MED,DKIM_INVALID,DKIM_SIGNED,FREEMAIL_FORGED_FROMDOMAIN,
-	FREEMAIL_FROM,HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_CR_TRAILER,
-	INCLUDES_PATCH,MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,
-	USER_AGENT_GIT autolearn=ham autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-13.8 required=3.0 tests=BAYES_00,DKIM_INVALID,
+	DKIM_SIGNED,INCLUDES_CR_TRAILER,INCLUDES_PATCH,MAILING_LIST_MULTI,
+	SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED autolearn=unavailable autolearn_force=no
+	version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C9033C48BE5
-	for <iommu@archiver.kernel.org>; Tue, 22 Jun 2021 13:34:29 +0000 (UTC)
-Received: from smtp1.osuosl.org (smtp1.osuosl.org [140.211.166.138])
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 55416C49EBE
+	for <iommu@archiver.kernel.org>; Tue, 22 Jun 2021 13:43:58 +0000 (UTC)
+Received: from smtp4.osuosl.org (smtp4.osuosl.org [140.211.166.137])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 69EDB613B1
-	for <iommu@archiver.kernel.org>; Tue, 22 Jun 2021 13:34:29 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 69EDB613B1
-Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=gmail.com
+	by mail.kernel.org (Postfix) with ESMTPS id 092EE61289
+	for <iommu@archiver.kernel.org>; Tue, 22 Jun 2021 13:43:57 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 092EE61289
+Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=kernel.org
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by smtp1.osuosl.org (Postfix) with ESMTP id 396FF83A4E;
-	Tue, 22 Jun 2021 13:34:29 +0000 (UTC)
+	by smtp4.osuosl.org (Postfix) with ESMTP id B1E4C4025E;
+	Tue, 22 Jun 2021 13:43:57 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from smtp1.osuosl.org ([127.0.0.1])
-	by localhost (smtp1.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id 522su1nUjA0Q; Tue, 22 Jun 2021 13:34:28 +0000 (UTC)
-Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [IPv6:2605:bc80:3010:104::8cd3:938])
-	by smtp1.osuosl.org (Postfix) with ESMTPS id 241C68356E;
-	Tue, 22 Jun 2021 13:34:28 +0000 (UTC)
+Received: from smtp4.osuosl.org ([127.0.0.1])
+	by localhost (smtp4.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+	with ESMTP id JDF5GJ3vcqLD; Tue, 22 Jun 2021 13:43:56 +0000 (UTC)
+Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
+	by smtp4.osuosl.org (Postfix) with ESMTPS id 6D34A40242;
+	Tue, 22 Jun 2021 13:43:56 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 01850C0010;
-	Tue, 22 Jun 2021 13:34:28 +0000 (UTC)
-Received: from smtp2.osuosl.org (smtp2.osuosl.org [IPv6:2605:bc80:3010::133])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 74106C000E
- for <iommu@lists.linux-foundation.org>; Tue, 22 Jun 2021 13:34:27 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 26B2DC0010;
+	Tue, 22 Jun 2021 13:43:56 +0000 (UTC)
+Received: from smtp2.osuosl.org (smtp2.osuosl.org [140.211.166.133])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 8DA3BC000E
+ for <iommu@lists.linux-foundation.org>; Tue, 22 Jun 2021 13:43:54 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by smtp2.osuosl.org (Postfix) with ESMTP id 5501C402DF
- for <iommu@lists.linux-foundation.org>; Tue, 22 Jun 2021 13:34:27 +0000 (UTC)
+ by smtp2.osuosl.org (Postfix) with ESMTP id 73DCF402CD
+ for <iommu@lists.linux-foundation.org>; Tue, 22 Jun 2021 13:43:54 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
 Authentication-Results: smtp2.osuosl.org (amavisd-new);
- dkim=pass (2048-bit key) header.d=gmail.com
+ dkim=pass (2048-bit key) header.d=kernel.org
 Received: from smtp2.osuosl.org ([127.0.0.1])
  by localhost (smtp2.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id qg3w9Ibd3vfi for <iommu@lists.linux-foundation.org>;
- Tue, 22 Jun 2021 13:34:26 +0000 (UTC)
-X-Greylist: whitelisted by SQLgrey-1.8.0
-Received: from mail-lf1-x12f.google.com (mail-lf1-x12f.google.com
- [IPv6:2a00:1450:4864:20::12f])
- by smtp2.osuosl.org (Postfix) with ESMTPS id 784CC402D5
- for <iommu@lists.linux-foundation.org>; Tue, 22 Jun 2021 13:34:26 +0000 (UTC)
-Received: by mail-lf1-x12f.google.com with SMTP id a11so22953410lfg.11
- for <iommu@lists.linux-foundation.org>; Tue, 22 Jun 2021 06:34:26 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=gmail.com; s=20161025;
- h=from:to:cc:subject:date:message-id:in-reply-to:references
- :mime-version:content-transfer-encoding;
- bh=VpDilbWjWRuwm2Y0aj2xxaAxAvje8bBd6jPUCV3pOXQ=;
- b=fMPS6tmNxJ4WajUXO/WI+lAB/0vRCw/g40VCYzUAplHrCiShgYL4/pOWQt53jgsCrf
- grGcdhQjl09EnXls7tfkPf8x+Ekama0Z44pP8gN135yakp6jJ7WWKkoYaJkmCL6OFLUP
- nzOd+zztLMvLPOmX/8NCU+Nk6hN+3hpThfa+ReQZO3uaXdRMX34IHf9sOOvRgnLkv9G6
- alLI1QKAtA9yVaF6DuEsmIzeEi1WOWG1sjS4RoyJ/m5jVWPmmDB72ai9HnffPCdZGRoU
- 45nWuPRiQFyqomMSwjaZkjlqTkynSdsmN1sLTW+F35Ra3uJpZOrA6cn28uqXYgBBKVYK
- yvuw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
- d=1e100.net; s=20161025;
- h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
- :references:mime-version:content-transfer-encoding;
- bh=VpDilbWjWRuwm2Y0aj2xxaAxAvje8bBd6jPUCV3pOXQ=;
- b=Mhhfuwo7yaz6Zc6C/ugo/xjdPdgcyUvdC+E+y/rrcHZhtiVqjOULb3d8AnIv7q3LtE
- I3mKeUWnul/RdxCD4VSA2Ua9yy7vOJ+IixE63UVUY+lZ0gMIO5MfkY/enrBwsiIBKnb2
- iAriXnRNE0GYUpcCQsMu4eT3LGqy4Li7oX16KxPI7feKheWBObBLQFRpdhamXSAi0HOq
- Xd8qcHY5m6TA4D4SSrrHDDJyyy3eQVcX3Bg/u0sJksJVzV3DrW84KT9TQUwnZm0kNw7D
- 7MMp071e7+gnIVuAXI2sPcAUnKdr4yzXdMZAkwophBmFEwgqr3461wgoWwLwKyJmhWtz
- n8Uw==
-X-Gm-Message-State: AOAM5321InzLx0vGIegDnlXoRMEuD0N/wXu4Rac14ett+piK7cjislNu
- 7yXaenz2HXO8ug5b13pe14M=
-X-Google-Smtp-Source: ABdhPJyfiEMp266a5Vc5gXIKMSmpRt+IMoLHqhjEwQPGGcLOElP7Q+Iu0ooyEO/TCg6nVx1MPndmrQ==
-X-Received: by 2002:ac2:5192:: with SMTP id u18mr2841831lfi.619.1624368864308; 
- Tue, 22 Jun 2021 06:34:24 -0700 (PDT)
-Received: from localhost ([178.151.124.169])
- by smtp.gmail.com with ESMTPSA id l27sm2790583ljb.90.2021.06.22.06.34.23
- (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
- Tue, 22 Jun 2021 06:34:23 -0700 (PDT)
-From: Roman Skakun <rm.skakun@gmail.com>
-To: Konrad Rzeszutek Wilk <konrad.wilk@oracle.com>,
- Boris Ostrovsky <boris.ostrovsky@oracle.com>,
- Juergen Gross <jgross@suse.com>,
- Stefano Stabellini <sstabellini@kernel.org>,
- xen-devel@lists.xenproject.org, iommu@lists.linux-foundation.org,
- linux-kernel@vger.kernel.org
-Subject: [PATCH v2] dma-mapping: use vmalloc_to_page for vmalloc addresses
-Date: Tue, 22 Jun 2021 16:34:14 +0300
-Message-Id: <20210622133414.132754-1-rm.skakun@gmail.com>
-X-Mailer: git-send-email 2.25.1
-In-Reply-To: <20210616154436.GA7619@lst.de>
-References: <20210616154436.GA7619@lst.de>
+ with ESMTP id pmStgf6mZGCO for <iommu@lists.linux-foundation.org>;
+ Tue, 22 Jun 2021 13:43:53 +0000 (UTC)
+X-Greylist: domain auto-whitelisted by SQLgrey-1.8.0
+Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
+ by smtp2.osuosl.org (Postfix) with ESMTPS id 3A12240103
+ for <iommu@lists.linux-foundation.org>; Tue, 22 Jun 2021 13:43:53 +0000 (UTC)
+Received: by mail.kernel.org (Postfix) with ESMTPSA id C5B4D61378
+ for <iommu@lists.linux-foundation.org>; Tue, 22 Jun 2021 13:43:52 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+ s=k20201202; t=1624369432;
+ bh=NqFXh1RzaIB7T3yUivBhV+3jLDLAyj/zzCtWY0JA0SQ=;
+ h=References:In-Reply-To:From:Date:Subject:To:Cc:From;
+ b=n2C4l95B/w+7fm3Hy/W1ls3BjWTgUnPkeMWPcJwuHNhjALViq36NSNRvf1J+UxXwT
+ W1of8Zg2OiipKGz+JaQJVEN0Rymz9BqpYAiOBzmrtdT5/mgiDbEVBsHlr3gDk+TOBO
+ Fe7qpiKq+UgUir5JlR9fsJDRZtySIEJhB36NWX9yf5t0mO64+Z1mYCq7ew8ZAwg0KI
+ F5hwQr8sPPDgEGs9UTcylTzkdsRMaQyTccf/acpKJhxDJxKtULLFNQYEsUOGj4MJxK
+ B3a0hJqzs9FjH4X1uUrkMDUidT5NSByby5xfUTkfYV6nW2261SSjbz6fXsdgEAv5QU
+ qCbHec6qB4IfA==
+Received: by mail-ed1-f42.google.com with SMTP id h17so13819999edw.11
+ for <iommu@lists.linux-foundation.org>; Tue, 22 Jun 2021 06:43:52 -0700 (PDT)
+X-Gm-Message-State: AOAM532tKVEp6BbhCTnUGz/dVQcYWr1gZrMb48og/YzOG8us3P9VKT9B
+ MuuhrcDiZV9BEaznkopVyUy4SBu58Z9DDfxz6A==
+X-Google-Smtp-Source: ABdhPJzR0Ub3ZgSNkr3MEhjSHq6x9DynzmvMX7quMzOS1boijoDJs7nsAsYPAJuJ3rupM/aSXMVZuLXS4ayPZR+vCGA=
+X-Received: by 2002:a05:6402:ca2:: with SMTP id
+ cn2mr2897976edb.62.1624369431373; 
+ Tue, 22 Jun 2021 06:43:51 -0700 (PDT)
 MIME-Version: 1.0
-Cc: Andrii Anisov <andrii_anisov@epam.com>,
- Oleksandr Andrushchenko <oleksandr_andrushchenko@epam.com>,
- Oleksandr Tyshchenko <oleksandr_tyshchenko@epam.com>,
- Roman Skakun <roman_skakun@epam.com>, Roman Skakun <rm.skakun@gmail.com>,
- Volodymyr Babchuk <volodymyr_babchuk@epam.com>
+References: <20210615191543.1043414-1-robh@kernel.org>
+ <CAMuHMdUGXu8yj3JWKwM8mt7axkrzGMiowC1t0PHrbpxRCBME3w@mail.gmail.com>
+In-Reply-To: <CAMuHMdUGXu8yj3JWKwM8mt7axkrzGMiowC1t0PHrbpxRCBME3w@mail.gmail.com>
+From: Rob Herring <robh@kernel.org>
+Date: Tue, 22 Jun 2021 07:43:37 -0600
+X-Gmail-Original-Message-ID: <CAL_JsqJ8jjkufTAmoFHuqpWB0bMUfCCkUR-pFFa2MoyeGzgBvA@mail.gmail.com>
+Message-ID: <CAL_JsqJ8jjkufTAmoFHuqpWB0bMUfCCkUR-pFFa2MoyeGzgBvA@mail.gmail.com>
+Subject: Re: [PATCH] dt-bindings: Drop redundant minItems/maxItems
+To: Geert Uytterhoeven <geert@linux-m68k.org>
+Cc: Andrew Lunn <andrew@lunn.ch>,
+ ALSA Development Mailing List <alsa-devel@alsa-project.org>,
+ Daniel Lezcano <daniel.lezcano@linaro.org>,
+ Alexandre Belloni <alexandre.belloni@bootlin.com>,
+ Linux PWM List <linux-pwm@vger.kernel.org>,
+ "open list:IIO SUBSYSTEM AND DRIVERS" <linux-iio@vger.kernel.org>,
+ linux-pci <linux-pci@vger.kernel.org>,
+ Linus Walleij <linus.walleij@linaro.org>,
+ Wim Van Sebroeck <wim@linux-watchdog.org>,
+ "open list:REMOTE PROCESSOR \(REMOTEPROC\) SUBSYSTEM"
+ <linux-remoteproc@vger.kernel.org>, Ulf Hansson <ulf.hansson@linaro.org>,
+ DRI Development <dri-devel@lists.freedesktop.org>,
+ "open list:LIBATA SUBSYSTEM \(Serial and Parallel ATA drivers\)"
+ <linux-ide@vger.kernel.org>, Linux I2C <linux-i2c@vger.kernel.org>,
+ linux-phy@lists.infradead.org, linux-riscv <linux-riscv@lists.infradead.org>,
+ Lee Jones <lee.jones@linaro.org>, linux-clk <linux-clk@vger.kernel.org>,
+ "open list:REAL TIME CLOCK \(RTC\) SUBSYSTEM" <linux-rtc@vger.kernel.org>,
+ Lars-Peter Clausen <lars@metafoo.de>, Herbert Xu <herbert@gondor.apana.org.au>,
+ Bartosz Golaszewski <bgolaszewski@baylibre.com>, Marc Zyngier <maz@kernel.org>,
+ Jassi Brar <jassisinghbrar@gmail.com>, Vinod Koul <vkoul@kernel.org>,
+ Kishon Vijay Abraham I <kishon@ti.com>, David Airlie <airlied@linux.ie>,
+ "open list:SERIAL DRIVERS" <linux-serial@vger.kernel.org>,
+ =?UTF-8?Q?Uwe_Kleine=2DK=C3=B6nig?= <u.kleine-koenig@pengutronix.de>,
+ Jakub Kicinski <kuba@kernel.org>, Zhang Rui <rui.zhang@intel.com>,
+ Vivien Didelot <vivien.didelot@gmail.com>,
+ Wolfgang Grandegger <wg@grandegger.com>,
+ Linux Media Mailing List <linux-media@vger.kernel.org>,
+ Ohad Ben-Cohen <ohad@wizery.com>,
+ "open list:OPEN FIRMWARE AND FLATTENED DEVICE TREE BINDINGS"
+ <devicetree@vger.kernel.org>, Albert Ou <aou@eecs.berkeley.edu>,
+ Linux Watchdog Mailing List <linux-watchdog@vger.kernel.org>,
+ Linux PM list <linux-pm@vger.kernel.org>, linux-can@vger.kernel.org,
+ "open list:GPIO SUBSYSTEM" <linux-gpio@vger.kernel.org>,
+ Mark Brown <broonie@kernel.org>, Marc Kleine-Budde <mkl@pengutronix.de>,
+ Kamal Dasu <kdasu.kdev@gmail.com>, Paul Walmsley <paul.walmsley@sifive.com>,
+ Bjorn Helgaas <bhelgaas@google.com>,
+ Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>,
+ Thomas Gleixner <tglx@linutronix.de>,
+ Mauro Carvalho Chehab <mchehab@kernel.org>,
+ Linux ARM <linux-arm-kernel@lists.infradead.org>, Jens Axboe <axboe@kernel.dk>,
+ Alessandro Zummo <a.zummo@towertech.it>, Guenter Roeck <linux@roeck-us.net>,
+ Mathieu Poirier <mathieu.poirier@linaro.org>, Stephen Boyd <sboyd@kernel.org>,
+ netdev <netdev@vger.kernel.org>, Philipp Zabel <p.zabel@pengutronix.de>,
+ USB list <linux-usb@vger.kernel.org>,
+ Linux MMC List <linux-mmc@vger.kernel.org>,
+ Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+ linux-spi <linux-spi@vger.kernel.org>,
+ Linux IOMMU <iommu@lists.linux-foundation.org>,
+ Palmer Dabbelt <palmer@dabbelt.com>,
+ Linux Crypto Mailing List <linux-crypto@vger.kernel.org>,
+ Daniel Vetter <daniel@ffwll.ch>,
+ Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+ dmaengine <dmaengine@vger.kernel.org>, Vladimir Oltean <olteanv@gmail.com>,
+ "David S. Miller" <davem@davemloft.net>, Jonathan Cameron <jic23@kernel.org>
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -117,68 +148,66 @@ Content-Transfer-Encoding: 7bit
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-This commit is dedicated to fix incorrect conversion from
-cpu_addr to page address in cases when we get virtual
-address which allocated in the vmalloc range.
-As the result, virt_to_page() cannot convert this address
-properly and return incorrect page address.
+On Tue, Jun 22, 2021 at 2:17 AM Geert Uytterhoeven <geert@linux-m68k.org> wrote:
+>
+> Hi Rob,
+>
+> On Tue, Jun 15, 2021 at 9:16 PM Rob Herring <robh@kernel.org> wrote:
+> > If a property has an 'items' list, then a 'minItems' or 'maxItems' with the
+> > same size as the list is redundant and can be dropped. Note that is DT
+> > schema specific behavior and not standard json-schema behavior. The tooling
+> > will fixup the final schema adding any unspecified minItems/maxItems.
+> >
+> > This condition is partially checked with the meta-schema already, but
+> > only if both 'minItems' and 'maxItems' are equal to the 'items' length.
+> > An improved meta-schema is pending.
+>
+> > Signed-off-by: Rob Herring <robh@kernel.org>
+>
+> > --- a/Documentation/devicetree/bindings/net/stm32-dwmac.yaml
+> > +++ b/Documentation/devicetree/bindings/net/stm32-dwmac.yaml
+> > @@ -46,7 +46,6 @@ properties:
+> >
+> >    clocks:
+> >      minItems: 3
+> > -    maxItems: 5
+> >      items:
+> >        - description: GMAC main clock
+> >        - description: MAC TX clock
+>
+> While resolving the conflict with commit fea99822914039c6
+> ("dt-bindings: net: document ptp_ref clk in dwmac") in soc/for-next,
+> I noticed the following construct for clock-names:
+>
+>   clock-names:
+>     minItems: 3
+>     maxItems: 6
+>     contains:
+>       enum:
+>         - stmmaceth
+>         - mac-clk-tx
+>         - mac-clk-rx
+>         - ethstp
+>         - eth-ck
+>         - ptp_ref
+>
+> Should this use items instead of enum, and drop maxItems, or is this
+> a valid construct to support specifying the clocks in random order?
+> If the latter, it does mean that the order of clock-names may not
+> match the order of the clock descriptions.
 
-Need to detect such cases and obtains the page address using
-vmalloc_to_page() instead.
+'contains' is true if one or more entries match the strings. So it is
+really saying one of these is required. That's not really much of a
+constraint. There's 'minContains' and 'maxContains' in newer
+json-schema versions (not yet supported) that could add some
+constraints if there has to be at least N entries from contains. An
+'items' schema (as opposed to a list) would say all items have to
+match one of the strings. I'm sure that's too strict.
 
-Signed-off-by: Roman Skakun <roman_skakun@epam.com>
-Reviewed-by: Andrii Anisov <andrii_anisov@epam.com>
----
-Hey!
-Thanks for suggestions, Christoph!
-I updated the patch according to your advice.
-But, I'm so surprised because nobody catches this problem
-in the common code before. It looks a bit strange as for me. 
+TLDR: clocks for this binding are a mess and the above is probably all
+we can do here.
 
-
- kernel/dma/ops_helpers.c | 12 ++++++++++--
- 1 file changed, 10 insertions(+), 2 deletions(-)
-
-diff --git a/kernel/dma/ops_helpers.c b/kernel/dma/ops_helpers.c
-index 910ae69cae77..782728d8a393 100644
---- a/kernel/dma/ops_helpers.c
-+++ b/kernel/dma/ops_helpers.c
-@@ -5,6 +5,14 @@
-  */
- #include <linux/dma-map-ops.h>
- 
-+static struct page *cpu_addr_to_page(void *cpu_addr)
-+{
-+	if (is_vmalloc_addr(cpu_addr))
-+		return vmalloc_to_page(cpu_addr);
-+	else
-+		return virt_to_page(cpu_addr);
-+}
-+
- /*
-  * Create scatter-list for the already allocated DMA buffer.
-  */
-@@ -12,7 +20,7 @@ int dma_common_get_sgtable(struct device *dev, struct sg_table *sgt,
- 		 void *cpu_addr, dma_addr_t dma_addr, size_t size,
- 		 unsigned long attrs)
- {
--	struct page *page = virt_to_page(cpu_addr);
-+	struct page *page = cpu_addr_to_page(cpu_addr);
- 	int ret;
- 
- 	ret = sg_alloc_table(sgt, 1, GFP_KERNEL);
-@@ -43,7 +51,7 @@ int dma_common_mmap(struct device *dev, struct vm_area_struct *vma,
- 		return -ENXIO;
- 
- 	return remap_pfn_range(vma, vma->vm_start,
--			page_to_pfn(virt_to_page(cpu_addr)) + vma->vm_pgoff,
-+			page_to_pfn(cpu_addr_to_page(cpu_addr)) + vma->vm_pgoff,
- 			user_count << PAGE_SHIFT, vma->vm_page_prot);
- #else
- 	return -ENXIO;
--- 
-2.25.1
-
+Rob
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
