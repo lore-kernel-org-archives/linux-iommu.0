@@ -2,111 +2,98 @@ Return-Path: <SRS0=khdJ=LR=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-3.5 required=3.0 tests=BAYES_00,DKIM_INVALID,
-	DKIM_SIGNED,HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,SPF_HELO_NONE,
-	SPF_PASS autolearn=no autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-6.8 required=3.0 tests=BAYES_00,
+	HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,
+	USER_AGENT_GIT autolearn=no autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A79D5C4743C
-	for <iommu@archiver.kernel.org>; Wed, 23 Jun 2021 05:50:20 +0000 (UTC)
-Received: from smtp3.osuosl.org (smtp3.osuosl.org [140.211.166.136])
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 70E1BC4743C
+	for <iommu@archiver.kernel.org>; Wed, 23 Jun 2021 05:56:47 +0000 (UTC)
+Received: from smtp2.osuosl.org (smtp2.osuosl.org [140.211.166.133])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 2311461164
-	for <iommu@archiver.kernel.org>; Wed, 23 Jun 2021 05:50:20 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 2311461164
-Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=bytedance.com
+	by mail.kernel.org (Postfix) with ESMTPS id 02B90611AC
+	for <iommu@archiver.kernel.org>; Wed, 23 Jun 2021 05:56:46 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 02B90611AC
+Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=canonical.com
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by smtp3.osuosl.org (Postfix) with ESMTP id D590A606C8;
-	Wed, 23 Jun 2021 05:50:19 +0000 (UTC)
+	by smtp2.osuosl.org (Postfix) with ESMTP id C10B24014B;
+	Wed, 23 Jun 2021 05:56:46 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from smtp3.osuosl.org ([127.0.0.1])
-	by localhost (smtp3.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id ixBL-Wdqy53L; Wed, 23 Jun 2021 05:50:19 +0000 (UTC)
-Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by smtp3.osuosl.org (Postfix) with ESMTPS id DF5D260694;
-	Wed, 23 Jun 2021 05:50:18 +0000 (UTC)
-Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 9E542C0010;
-	Wed, 23 Jun 2021 05:50:18 +0000 (UTC)
-Received: from smtp2.osuosl.org (smtp2.osuosl.org [IPv6:2605:bc80:3010::133])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 7B2D3C000E
- for <iommu@lists.linux-foundation.org>; Wed, 23 Jun 2021 05:50:16 +0000 (UTC)
-Received: from localhost (localhost [127.0.0.1])
- by smtp2.osuosl.org (Postfix) with ESMTP id 5DEDC400BE
- for <iommu@lists.linux-foundation.org>; Wed, 23 Jun 2021 05:50:16 +0000 (UTC)
-X-Virus-Scanned: amavisd-new at osuosl.org
-Authentication-Results: smtp2.osuosl.org (amavisd-new);
- dkim=pass (2048-bit key) header.d=bytedance-com.20150623.gappssmtp.com
 Received: from smtp2.osuosl.org ([127.0.0.1])
- by localhost (smtp2.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id 3hI73_XVvTo3 for <iommu@lists.linux-foundation.org>;
- Wed, 23 Jun 2021 05:50:13 +0000 (UTC)
-X-Greylist: whitelisted by SQLgrey-1.8.0
-Received: from mail-ej1-x634.google.com (mail-ej1-x634.google.com
- [IPv6:2a00:1450:4864:20::634])
- by smtp2.osuosl.org (Postfix) with ESMTPS id 515BF400E8
- for <iommu@lists.linux-foundation.org>; Wed, 23 Jun 2021 05:50:12 +0000 (UTC)
-Received: by mail-ej1-x634.google.com with SMTP id bu12so2178215ejb.0
- for <iommu@lists.linux-foundation.org>; Tue, 22 Jun 2021 22:50:12 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
- d=bytedance-com.20150623.gappssmtp.com; s=20150623;
- h=mime-version:references:in-reply-to:from:date:message-id:subject:to
- :cc:content-transfer-encoding;
- bh=4GiuBeValxmP+XXrOzcRmIGN8AohLiEvZ/1N4xkfEsc=;
- b=1ojgGgahexzFXE9RdNLyeoPjvzgy1FuMSknCgn9K5GwXoXKChPXHlt8RFqJU6xJGuF
- Cgrqzm5EDspyu9pceCZQxvmPvCVRPYcOLwyyVOaWAFc+/73Sd1ei8PUVLb3hMJg85yGd
- OoiS+Tom58BzQ4gVjO0sTB3pg1TBBl4FTS0KCFKWgNCJHr3b6clNKWi9sch5PBKWSbC5
- hdgylXBSI1fEHL65mcL5+HqoUj0DqlN+Vgg5BbVMgsnjT5z5R29YjArWCkkrPQkSQcTP
- G0euaC5g3D/chfHTH21pgGDle3JiDm7q2fqGYTk+72WN78OHY9b3+JAT5mbt83TyJaUN
- rngA==
+	by localhost (smtp2.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+	with ESMTP id g_D1eXWQSa1W; Wed, 23 Jun 2021 05:56:46 +0000 (UTC)
+Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
+	by smtp2.osuosl.org (Postfix) with ESMTPS id BF40D400BE;
+	Wed, 23 Jun 2021 05:56:45 +0000 (UTC)
+Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
+	by lists.linuxfoundation.org (Postfix) with ESMTP id A079CC0010;
+	Wed, 23 Jun 2021 05:56:45 +0000 (UTC)
+Received: from smtp1.osuosl.org (smtp1.osuosl.org [140.211.166.138])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 970FFC000E
+ for <iommu@lists.linux-foundation.org>; Wed, 23 Jun 2021 05:56:44 +0000 (UTC)
+Received: from localhost (localhost [127.0.0.1])
+ by smtp1.osuosl.org (Postfix) with ESMTP id 7E4E08268F
+ for <iommu@lists.linux-foundation.org>; Wed, 23 Jun 2021 05:56:44 +0000 (UTC)
+X-Virus-Scanned: amavisd-new at osuosl.org
+Received: from smtp1.osuosl.org ([127.0.0.1])
+ by localhost (smtp1.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+ with ESMTP id 5kt4lrt8vymv for <iommu@lists.linux-foundation.org>;
+ Wed, 23 Jun 2021 05:56:43 +0000 (UTC)
+X-Greylist: domain auto-whitelisted by SQLgrey-1.8.0
+Received: from youngberry.canonical.com (youngberry.canonical.com
+ [91.189.89.112])
+ by smtp1.osuosl.org (Postfix) with ESMTPS id CEA938267F
+ for <iommu@lists.linux-foundation.org>; Wed, 23 Jun 2021 05:56:43 +0000 (UTC)
+Received: from mail-wm1-f72.google.com ([209.85.128.72])
+ by youngberry.canonical.com with esmtps (TLS1.2) tls
+ TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256 (Exim 4.93)
+ (envelope-from <krzysztof.kozlowski@canonical.com>)
+ id 1lvvsP-0002Gx-En
+ for iommu@lists.linux-foundation.org; Wed, 23 Jun 2021 05:56:41 +0000
+Received: by mail-wm1-f72.google.com with SMTP id
+ j18-20020a05600c1c12b02901dce930b374so156928wms.2
+ for <iommu@lists.linux-foundation.org>; Tue, 22 Jun 2021 22:56:41 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
  d=1e100.net; s=20161025;
- h=x-gm-message-state:mime-version:references:in-reply-to:from:date
- :message-id:subject:to:cc:content-transfer-encoding;
- bh=4GiuBeValxmP+XXrOzcRmIGN8AohLiEvZ/1N4xkfEsc=;
- b=OPjHGaskrtDK1tLCMcfS48I+YACDgbZFu3Pvo/d28i/zLD4SE6nYCUS9l6qAFOL09x
- H1qzpzwdGKGcqF8+3wauwUWHMoBGa0NoMjrux8er3eR7oMQari6PsqXcW/XWMBWRTiLc
- 1Od2vqB9kRyh7FNmIVxk/l1enBtvRLAE+WxjJNFGtQGS84NUfP9A+Ky0uc2uYhA9Weaw
- ZMO4Ve01s7yjn0VaXsI1MNDcORaae7fwZ7g9uC0HatiIi6TIjN8EcBPv0s6nCBnSluQe
- 1RM/xF7KG7NE/MT5Zs+VNNj3+9mDLE5LieYY4PT3vSPJWAd/GRqm4Vd/BEnKS3ALSq0D
- 5jFQ==
-X-Gm-Message-State: AOAM532bnJYbqAwPVH8zvdLyIh6uqvazN+h8cBA3Y2cfzHamgKgYzp1d
- LS998Q30UzDIxR2AvSXiaZPfRRRhD2MZJKsHNj4A
-X-Google-Smtp-Source: ABdhPJwbg3yWypQN4cxrZmP3uYn4KoXMLaW0oW+bJJtUlpWP6iDiZd3Hcvf9/eWyaRh10eQQqnKlblyzvYXHH4O6Z7k=
-X-Received: by 2002:a17:906:9a4f:: with SMTP id
- aj15mr7921850ejc.197.1624427411326; 
- Tue, 22 Jun 2021 22:50:11 -0700 (PDT)
+ h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
+ :references:mime-version:content-transfer-encoding;
+ bh=Y1jDlUMkwrAiNSpYqmp6DTWEmsBUMLxkuAWlef8a84E=;
+ b=WqWaEuAaARdKieN0L6Mjwao1kKjCLfOWXQYIEtIQgaw89hDsDwsbNAqV8sarkdvFGO
+ sQzYkqgOXdr/E/qY5T/QiWKlLCS4tFIJCDg0H2Tb0XkAgpqWZTahO9sNtxBaKzA2Oa6X
+ SYtAE9rw7xDLMOZObBDsSzGX6JacnAVArLbtA016jdy5/GsXN5x6tgelFpUnseoNKlgk
+ 4qLifdmPiP6oHDN5FIhMmEervsrgXcrewIpE3rQoaVZ1vQNvzBhuGGh8SXbQyeC0MvF/
+ aveaiLZoqqMFAUI/GBXOUgBc38PjpEWz2VfCA6E8tKbi3sd3OLhw5VvMIAB3ebqwV9TT
+ uB8A==
+X-Gm-Message-State: AOAM532KHxuGEJdyAqlhNQ61/IM/HsXXTq85RskDI0CwUmQosQkPwJOL
+ 7amgD76Wiy7GlrExxjb2GZ2cgO4F0Zodr9+EX1ftPZ4zzOzGXGleGijjL1otswV+BdWZar8QW+H
+ riyd97rrEqgTkCMeU9w8iiganB/wl19jQFbh92J+tuCxw5/0=
+X-Received: by 2002:a05:600c:2e53:: with SMTP id
+ q19mr8945296wmf.39.1624427801155; 
+ Tue, 22 Jun 2021 22:56:41 -0700 (PDT)
+X-Google-Smtp-Source: ABdhPJyze8HeAsFtSsdRC1iygn/4uNoruW16F+7eeE14pFIaQkDBttwj9NY01uUA8WINYMF7R2Dr4w==
+X-Received: by 2002:a05:600c:2e53:: with SMTP id
+ q19mr8945284wmf.39.1624427801039; 
+ Tue, 22 Jun 2021 22:56:41 -0700 (PDT)
+Received: from localhost.localdomain (xdsl-188-155-177-222.adslplus.ch.
+ [188.155.177.222])
+ by smtp.gmail.com with ESMTPSA id r3sm4301005wmq.8.2021.06.22.22.56.40
+ (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+ Tue, 22 Jun 2021 22:56:40 -0700 (PDT)
+From: Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>
+To: Thierry Reding <thierry.reding@gmail.com>
+Subject: Re: [PATCH] dt-bindings: arm-smmu: Fix json-schema syntax
+Date: Wed, 23 Jun 2021 07:56:37 +0200
+Message-Id: <162442779339.5511.14827117243689906234.b4-ty@canonical.com>
+X-Mailer: git-send-email 2.27.0
+In-Reply-To: <20210621140036.2879563-1-thierry.reding@gmail.com>
+References: <20210621140036.2879563-1-thierry.reding@gmail.com>
 MIME-Version: 1.0
-References: <20210615141331.407-1-xieyongji@bytedance.com>
- <20210615141331.407-10-xieyongji@bytedance.com>
- <adfb2be9-9ed9-ca37-ac37-4cd00bdff349@redhat.com>
- <CACycT3tAON+-qZev+9EqyL2XbgH5HDspOqNt3ohQLQ8GqVK=EA@mail.gmail.com>
- <1bba439f-ffc8-c20e-e8a4-ac73e890c592@redhat.com>
- <CACycT3uzMJS7vw6MVMOgY4rb=SPfT2srV+8DPdwUVeELEiJgbA@mail.gmail.com>
- <0aeb7cb7-58e5-1a95-d830-68edd7e8ec2e@redhat.com>
- <CACycT3uuooKLNnpPHewGZ=q46Fap2P4XCFirdxxn=FxK+X1ECg@mail.gmail.com>
- <e4cdee72-b6b4-d055-9aac-3beae0e5e3e1@redhat.com>
-In-Reply-To: <e4cdee72-b6b4-d055-9aac-3beae0e5e3e1@redhat.com>
-From: Yongji Xie <xieyongji@bytedance.com>
-Date: Wed, 23 Jun 2021 13:50:00 +0800
-Message-ID: <CACycT3u8=_D3hCtJR+d5BgeUQMce6S7c_6P3CVfvWfYhCQeXFA@mail.gmail.com>
-Subject: Re: Re: [PATCH v8 09/10] vduse: Introduce VDUSE - vDPA Device in
- Userspace
-To: Jason Wang <jasowang@redhat.com>
-Cc: kvm <kvm@vger.kernel.org>, "Michael S. Tsirkin" <mst@redhat.com>,
- virtualization <virtualization@lists.linux-foundation.org>,
- Christian Brauner <christian.brauner@canonical.com>,
- Jonathan Corbet <corbet@lwn.net>, Matthew Wilcox <willy@infradead.org>,
- Christoph Hellwig <hch@infradead.org>,
- Dan Carpenter <dan.carpenter@oracle.com>,
- Stefano Garzarella <sgarzare@redhat.com>, Al Viro <viro@zeniv.linux.org.uk>,
- Stefan Hajnoczi <stefanha@redhat.com>, songmuchun@bytedance.com,
- Jens Axboe <axboe@kernel.dk>, Greg KH <gregkh@linuxfoundation.org>,
- Randy Dunlap <rdunlap@infradead.org>,
- linux-kernel <linux-kernel@vger.kernel.org>, iommu@lists.linux-foundation.org,
- bcrl@kvack.org, netdev@vger.kernel.org, linux-fsdevel@vger.kernel.org,
- =?UTF-8?Q?Mika_Penttil=C3=A4?= <mika.penttila@nextfour.com>
+Cc: devicetree@vger.kernel.org,
+ Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>,
+ Will Deacon <will@kernel.org>, iommu@lists.linux-foundation.org,
+ Rob Herring <robh+dt@kernel.org>, Robin Murphy <robin.murphy@arm.com>,
+ Rob Herring <robh@kernel.org>
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -119,38 +106,25 @@ List-Post: <mailto:iommu@lists.linux-foundation.org>
 List-Help: <mailto:iommu-request@lists.linux-foundation.org?subject=help>
 List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
  <mailto:iommu-request@lists.linux-foundation.org?subject=subscribe>
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-T24gV2VkLCBKdW4gMjMsIDIwMjEgYXQgMTE6MzEgQU0gSmFzb24gV2FuZyA8amFzb3dhbmdAcmVk
-aGF0LmNvbT4gd3JvdGU6Cj4KPgo+IOWcqCAyMDIxLzYvMjIg5LiL5Y2INDoxNCwgWW9uZ2ppIFhp
-ZSDlhpnpgZM6Cj4gPiBPbiBUdWUsIEp1biAyMiwgMjAyMSBhdCAzOjUwIFBNIEphc29uIFdhbmcg
-PGphc293YW5nQHJlZGhhdC5jb20+IHdyb3RlOgo+ID4+Cj4gPj4g5ZyoIDIwMjEvNi8yMiDkuIvl
-jYgzOjIyLCBZb25namkgWGllIOWGmemBkzoKPiA+Pj4+IFdlIG5lZWQgZml4IGEgd2F5IHRvIHBy
-b3BhZ2F0ZSB0aGUgZXJyb3IgdG8gdGhlIHVzZXJzcGFjZS4KPiA+Pj4+Cj4gPj4+PiBFLmcgaWYg
-d2Ugd2FudCB0byBzdG9wIHRoZSBkZWl2Y2UsIHdlIHdpbGwgZGVsYXkgdGhlIHN0YXR1cyByZXNl
-dCB1bnRpbAo+ID4+Pj4gd2UgZ2V0IHJlc3Bvc2UgZnJvbSB0aGUgdXNlcnNwYWNlPwo+ID4+Pj4K
-PiA+Pj4gSSBkaWRuJ3QgZ2V0IGhvdyB0byBkZWxheSB0aGUgc3RhdHVzIHJlc2V0LiBBbmQgc2hv
-dWxkIGl0IGJlIGEgRG9TCj4gPj4+IHRoYXQgd2Ugd2FudCB0byBmaXggaWYgdGhlIHVzZXJzcGFj
-ZSBkb2Vzbid0IGdpdmUgYSByZXNwb25zZSBmb3JldmVyPwo+ID4+Cj4gPj4gWW91J3JlIHJpZ2h0
-LiBTbyBsZXQncyBtYWtlIHNldF9zdGF0dXMoKSBjYW4gZmFpbCBmaXJzdCwgdGhlbiBwcm9wYWdh
-dGUKPiA+PiBpdHMgZmFpbHVyZSB2aWEgVkhPU1RfVkRQQV9TRVRfU1RBVFVTLgo+ID4+Cj4gPiBP
-Sy4gU28gd2Ugb25seSBuZWVkIHRvIHByb3BhZ2F0ZSB0aGUgZmFpbHVyZSBpbiB0aGUgdmhvc3Qt
-dmRwYSBjYXNlLCByaWdodD8KPgo+Cj4gSSB0aGluayBub3QsIHdlIG5lZWQgdG8gZGVhbCB3aXRo
-IHRoZSByZXNldCBmb3IgdmlydGlvIGFzIHdlbGw6Cj4KPiBFLmcgaW4gcmVnaXN0ZXJfdmlydGlv
-X2RldmljZXMoKSwgd2UgaGF2ZToKPgo+ICAgICAgICAgIC8qIFdlIGFsd2F5cyBzdGFydCBieSBy
-ZXNldHRpbmcgdGhlIGRldmljZSwgaW4gY2FzZSBhIHByZXZpb3VzCj4gICAgICAgICAgICogZHJp
-dmVyIG1lc3NlZCBpdCB1cC4gIFRoaXMgYWxzbyB0ZXN0cyB0aGF0IGNvZGUgcGF0aCBhCj4gbGl0
-dGxlLiAqLwo+ICAgICAgICBkZXYtPmNvbmZpZy0+cmVzZXQoZGV2KTsKPgo+IFdlIHByb2JhYmx5
-IG5lZWQgdG8gbWFrZSByZXNldCBjYW4gZmFpbCBhbmQgdGhlbiBmYWlsIHRoZQo+IHJlZ2lzdGVy
-X3ZpcnRpb19kZXZpY2UoKSBhcyB3ZWxsLgo+CgpPSywgbG9va3MgbGlrZSB2aXJ0aW9fYWRkX3N0
-YXR1cygpIGFuZCB2aXJ0aW9fZGV2aWNlX3JlYWR5KClbMV0gc2hvdWxkCmJlIGFsc28gbW9kaWZp
-ZWQgaWYgd2UgbmVlZCB0byBwcm9wYWdhdGUgdGhlIGZhaWx1cmUgaW4gdGhlCnZpcnRpby12ZHBh
-IGNhc2UuIE9yIGRvIHdlIG9ubHkgbmVlZCB0byBjYXJlIGFib3V0IHRoZSByZXNldCBjYXNlPwoK
-WzFdIGh0dHBzOi8vbG9yZS5rZXJuZWwub3JnL2xrbWwvMjAyMTA1MTcwOTM0MjguNjcwLTEteGll
-eW9uZ2ppQGJ5dGVkYW5jZS5jb20vCgpUaGFua3MsCllvbmdqaQpfX19fX19fX19fX19fX19fX19f
-X19fX19fX19fX19fX19fX19fX19fX19fX19fXwppb21tdSBtYWlsaW5nIGxpc3QKaW9tbXVAbGlz
-dHMubGludXgtZm91bmRhdGlvbi5vcmcKaHR0cHM6Ly9saXN0cy5saW51eGZvdW5kYXRpb24ub3Jn
-L21haWxtYW4vbGlzdGluZm8vaW9tbXU=
+On Mon, 21 Jun 2021 16:00:36 +0200, Thierry Reding wrote:
+> Commit 4287861dca9d ("dt-bindings: arm-smmu: Add Tegra186 compatible
+> string") introduced a jsonschema syntax error as a result of a rebase
+> gone wrong. Fix it.
+
+Applied, thanks!
+
+[1/1] dt-bindings: arm-smmu: Fix json-schema syntax
+      commit: bf3ec9deaa33889630722c47f7bb86ba58872ea7
+
+Best regards,
+-- 
+Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>
+_______________________________________________
+iommu mailing list
+iommu@lists.linux-foundation.org
+https://lists.linuxfoundation.org/mailman/listinfo/iommu
