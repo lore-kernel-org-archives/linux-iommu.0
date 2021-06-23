@@ -2,103 +2,113 @@ Return-Path: <SRS0=khdJ=LR=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-3.8 required=3.0 tests=BAYES_00,DKIM_INVALID,
-	DKIM_SIGNED,MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS autolearn=no
-	autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-15.1 required=3.0 tests=BAYES_00,DKIM_INVALID,
+	DKIM_SIGNED,HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_CR_TRAILER,INCLUDES_PATCH,
+	MAILING_LIST_MULTI,NICE_REPLY_A,SPF_HELO_NONE,SPF_PASS,USER_AGENT_SANE_1
+	autolearn=unavailable autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4129CC4743C
-	for <iommu@archiver.kernel.org>; Wed, 23 Jun 2021 13:54:36 +0000 (UTC)
-Received: from smtp2.osuosl.org (smtp2.osuosl.org [140.211.166.133])
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 058E8C4743C
+	for <iommu@archiver.kernel.org>; Wed, 23 Jun 2021 16:57:27 +0000 (UTC)
+Received: from smtp4.osuosl.org (smtp4.osuosl.org [140.211.166.137])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id EC78261076
-	for <iommu@archiver.kernel.org>; Wed, 23 Jun 2021 13:54:35 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org EC78261076
-Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=kernel.org
+	by mail.kernel.org (Postfix) with ESMTPS id 7895E611AD
+	for <iommu@archiver.kernel.org>; Wed, 23 Jun 2021 16:57:26 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 7895E611AD
+Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=quicinc.com
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by smtp2.osuosl.org (Postfix) with ESMTP id B9532401C9;
-	Wed, 23 Jun 2021 13:54:35 +0000 (UTC)
+	by smtp4.osuosl.org (Postfix) with ESMTP id 3C1D24027B;
+	Wed, 23 Jun 2021 16:57:26 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from smtp2.osuosl.org ([127.0.0.1])
-	by localhost (smtp2.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id YvSq9ou4_qEX; Wed, 23 Jun 2021 13:54:34 +0000 (UTC)
+Received: from smtp4.osuosl.org ([127.0.0.1])
+	by localhost (smtp4.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+	with ESMTP id njPI8ivXFwm6; Wed, 23 Jun 2021 16:57:24 +0000 (UTC)
 Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [IPv6:2605:bc80:3010:104::8cd3:938])
-	by smtp2.osuosl.org (Postfix) with ESMTPS id 6E6E5400DF;
-	Wed, 23 Jun 2021 13:54:34 +0000 (UTC)
+	by smtp4.osuosl.org (Postfix) with ESMTPS id 53F2940246;
+	Wed, 23 Jun 2021 16:57:24 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 40307C0010;
-	Wed, 23 Jun 2021 13:54:34 +0000 (UTC)
-Received: from smtp2.osuosl.org (smtp2.osuosl.org [IPv6:2605:bc80:3010::133])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 05D85C000E
- for <iommu@lists.linux-foundation.org>; Wed, 23 Jun 2021 13:54:33 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 2BDB7C001A;
+	Wed, 23 Jun 2021 16:57:24 +0000 (UTC)
+Received: from smtp1.osuosl.org (smtp1.osuosl.org [IPv6:2605:bc80:3010::138])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 82F63C000E
+ for <iommu@lists.linux-foundation.org>; Wed, 23 Jun 2021 16:45:43 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by smtp2.osuosl.org (Postfix) with ESMTP id DA8DD40201
- for <iommu@lists.linux-foundation.org>; Wed, 23 Jun 2021 13:54:32 +0000 (UTC)
+ by smtp1.osuosl.org (Postfix) with ESMTP id 7D66A83B46
+ for <iommu@lists.linux-foundation.org>; Wed, 23 Jun 2021 16:45:43 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from smtp2.osuosl.org ([127.0.0.1])
- by localhost (smtp2.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id qGSfBrJ1Z2Oc for <iommu@lists.linux-foundation.org>;
- Wed, 23 Jun 2021 13:54:30 +0000 (UTC)
-X-Greylist: domain auto-whitelisted by SQLgrey-1.8.0
-Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
- by smtp2.osuosl.org (Postfix) with ESMTPS id 2B48D400DF
- for <iommu@lists.linux-foundation.org>; Wed, 23 Jun 2021 13:54:30 +0000 (UTC)
-Received: by mail.kernel.org (Postfix) with ESMTPSA id C22DA611CE
- for <iommu@lists.linux-foundation.org>; Wed, 23 Jun 2021 13:54:29 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
- s=k20201202; t=1624456469;
- bh=hYyYMjvBoYqZUjc4iHoF9iZ8mlqdhcrrQvHE2YL+mXE=;
- h=References:In-Reply-To:From:Date:Subject:To:Cc:From;
- b=EMVeZtES9Vdre/xYD+DpqGJzCImQLmchVgaz7hkPA+UdrgT9GetR3qzqfRZ9Y0gDp
- TZigkXB85apMaifPLs/XcwYyJjDdjooSEHBK0UsR2Knj8pxrI/0Yw2QMNpjqR6ggNL
- BM/a4Vj4iO5echfTg4jSjx2nOHfQ10kOl2oyujDdFaM8xpaa5uEKZMOw6n6DfzAo6i
- KX0kH23DnoUaQEnznOl/2s0Y8v7dwISnw5SsCwoig8LzpAV4rl6qLnkikJ/SNkmsJL
- 18b5YTBgI0aOt+C5RhTSIVk38bBW44PiIQhD/G4of8QSzPy/O7HPiOIcmO1n/1D82G
- KB37tHT+twQGg==
-Received: by mail-ed1-f42.google.com with SMTP id s15so3559799edt.13
- for <iommu@lists.linux-foundation.org>; Wed, 23 Jun 2021 06:54:29 -0700 (PDT)
-X-Gm-Message-State: AOAM531meExKBRGNSyZWRFU38VhOy6trU8AdeFhtrYOUgSYDpKuJmqKc
- yuyM1xXL3D+vcg/hM98Y6ZtHB4oNuMi6s936iw==
-X-Google-Smtp-Source: ABdhPJwO57L7q1ZW6hb5vFBrMlfu6LlMGUtDVePd2PAuwzCptiJNAQhwqNrtQ3rOJTwpyMKB6H7wOX+np7PdpfrG5GM=
-X-Received: by 2002:a05:6402:cb0:: with SMTP id
- cn16mr12468162edb.165.1624456468126; 
- Wed, 23 Jun 2021 06:54:28 -0700 (PDT)
+Authentication-Results: smtp1.osuosl.org (amavisd-new);
+ dkim=pass (1024-bit key) header.d=quicinc.com
+Received: from smtp1.osuosl.org ([127.0.0.1])
+ by localhost (smtp1.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+ with ESMTP id bgPItWR2AdK9 for <iommu@lists.linux-foundation.org>;
+ Wed, 23 Jun 2021 16:45:42 +0000 (UTC)
+X-Greylist: delayed 00:06:04 by SQLgrey-1.8.0
+Received: from alexa-out-sd-02.qualcomm.com (alexa-out-sd-02.qualcomm.com
+ [199.106.114.39])
+ by smtp1.osuosl.org (Postfix) with ESMTPS id 81F7883B64
+ for <iommu@lists.linux-foundation.org>; Wed, 23 Jun 2021 16:45:42 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple;
+ d=quicinc.com; i=@quicinc.com; q=dns/txt; s=qcdkim;
+ t=1624466742; x=1656002742;
+ h=subject:to:cc:references:from:message-id:date:
+ mime-version:in-reply-to:content-transfer-encoding;
+ bh=bD3fHcpKfJA9p2zej1L/UrxZaxu1AH26pxH4pa5HgfE=;
+ b=KxGS0+4Ay8vhl8y/0kczlixT3LnYo50qRXUPEWvV40qZLN+odus0KEb7
+ 4vh/u+j7M+8A4LQUrzvvE9+PXNBctWXBz/gwb3ySkcaiOpWxr2V3QSkyg
+ vC5/OEA+vbh+W8QIYUsNqUY4f9Ei9o1oXEft3qjGAP6yWQVd9+0uNuhk6 g=;
+Received: from unknown (HELO ironmsg01-sd.qualcomm.com) ([10.53.140.141])
+ by alexa-out-sd-02.qualcomm.com with ESMTP; 23 Jun 2021 09:39:37 -0700
+X-QCInternal: smtphost
+Received: from nasanexm03e.na.qualcomm.com ([10.85.0.48])
+ by ironmsg01-sd.qualcomm.com with ESMTP/TLS/AES256-SHA;
+ 23 Jun 2021 09:39:35 -0700
+Received: from [10.38.240.33] (10.80.80.8) by nasanexm03e.na.qualcomm.com
+ (10.85.0.48) with Microsoft SMTP Server (TLS) id 15.0.1497.18; Wed, 23 Jun
+ 2021 09:39:31 -0700
+Subject: Re: [PATCH v14 06/12] swiotlb: Use is_swiotlb_force_bounce for
+ swiotlb data bouncing
+To: Claire Chang <tientzu@chromium.org>, Rob Herring <robh+dt@kernel.org>,
+ <mpe@ellerman.id.au>, Joerg Roedel <joro@8bytes.org>, Will Deacon
+ <will@kernel.org>, Frank Rowand <frowand.list@gmail.com>, Konrad Rzeszutek
+ Wilk <konrad.wilk@oracle.com>, <boris.ostrovsky@oracle.com>,
+ <jgross@suse.com>, Christoph Hellwig <hch@lst.de>, Marek Szyprowski
+ <m.szyprowski@samsung.com>
+References: <20210619034043.199220-1-tientzu@chromium.org>
+ <20210619034043.199220-7-tientzu@chromium.org>
+From: Qian Cai <quic_qiancai@quicinc.com>
+Message-ID: <76c3343d-72e5-9df3-8924-5474ee698ef4@quicinc.com>
+Date: Wed, 23 Jun 2021 12:39:29 -0400
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:78.0) Gecko/20100101
+ Thunderbird/78.11.0
 MIME-Version: 1.0
-References: <20210621235248.2521620-1-dianders@chromium.org>
- <067dd86d-da7f-ac83-6ce6-b8fd5aba0b6f@arm.com>
- <CAD=FV=Vg7kqhgxZppHXwMPMc0xATZ+MqbrXx-FB0eg7pHhNE8w@mail.gmail.com>
- <20210622200219.GA28722@robh.at.kernel.org>
- <CAGETcx8Cpjvsr2K6f2oDNJDcGiu2T1fEf3D_2S4THduH4cPzKQ@mail.gmail.com>
- <CAD=FV=Xw=NBkozOb4d4TM5DwBCSOG7v3ZA5ZgpcZqtQXE5UPsg@mail.gmail.com>
-In-Reply-To: <CAD=FV=Xw=NBkozOb4d4TM5DwBCSOG7v3ZA5ZgpcZqtQXE5UPsg@mail.gmail.com>
-From: Rob Herring <robh@kernel.org>
-Date: Wed, 23 Jun 2021 07:54:15 -0600
-X-Gmail-Original-Message-ID: <CAL_Jsq+3a0FZxNGoFqBWkj4kKDBB1YtjcY0h4tvbNPus9F4XOA@mail.gmail.com>
-Message-ID: <CAL_Jsq+3a0FZxNGoFqBWkj4kKDBB1YtjcY0h4tvbNPus9F4XOA@mail.gmail.com>
-Subject: Re: [PATCH 0/6] iommu: Enable devices to request non-strict DMA,
- starting with QCom SD/MMC
-To: Doug Anderson <dianders@chromium.org>
-Cc: Ulf Hansson <ulf.hansson@linaro.org>,
- Heikki Krogerus <heikki.krogerus@linux.intel.com>,
- "Rafael J. Wysocki" <rafael@kernel.org>, PCI <linux-pci@vger.kernel.org>,
- Joel Fernandes <joel@joelfernandes.org>, Rajat Jain <rajatja@google.com>,
- Will Deacon <will@kernel.org>, Rob Clark <robdclark@chromium.org>,
- Saravana Kannan <saravanak@google.com>,
- "Rafael J. Wysocki" <rafael.j.wysocki@intel.com>, quic_c_gdjako@quicinc.com,
- Bartosz Golaszewski <bgolaszewski@baylibre.com>,
- Andy Gross <agross@kernel.org>, Geert Uytterhoeven <geert@linux-m68k.org>,
- Veerabhadrarao Badiganti <vbadigan@codeaurora.org>,
- linux-arm-msm <linux-arm-msm@vger.kernel.org>,
- Bjorn Helgaas <bhelgaas@google.com>, Dan Williams <dan.j.williams@intel.com>,
- Sonny Rao <sonnyrao@chromium.org>,
- Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
- Randy Dunlap <rdunlap@infradead.org>,
- Linux MMC List <linux-mmc@vger.kernel.org>,
- Adrian Hunter <adrian.hunter@intel.com>, LKML <linux-kernel@vger.kernel.org>,
- "list@263.net:IOMMU DRIVERS <iommu@lists.linux-foundation.org>,
- Joerg Roedel <joro@8bytes.org>, " <iommu@lists.linux-foundation.org>,
- Robin Murphy <robin.murphy@arm.com>
+In-Reply-To: <20210619034043.199220-7-tientzu@chromium.org>
+Content-Language: en-US
+X-Originating-IP: [10.80.80.8]
+X-ClientProxiedBy: nasanex01a.na.qualcomm.com (10.52.223.231) To
+ nasanexm03e.na.qualcomm.com (10.85.0.48)
+X-Mailman-Approved-At: Wed, 23 Jun 2021 16:57:23 +0000
+Cc: heikki.krogerus@linux.intel.com,
+ linux-devicetree <devicetree@vger.kernel.org>, peterz@infradead.org,
+ benh@kernel.crashing.org, joonas.lahtinen@linux.intel.com,
+ dri-devel@lists.freedesktop.org, chris@chris-wilson.co.uk,
+ grant.likely@arm.com, paulus@samba.org, mingo@kernel.org, jxgao@google.com,
+ sstabellini@kernel.org, Saravana Kannan <saravanak@google.com>,
+ xypron.glpk@gmx.de, "Rafael J . Wysocki" <rafael.j.wysocki@intel.com>,
+ Bartosz Golaszewski <bgolaszewski@baylibre.com>, matthew.auld@intel.com,
+ linux-pci@vger.kernel.org, xen-devel@lists.xenproject.org,
+ Thierry Reding <treding@nvidia.com>, bskeggs@redhat.com,
+ thomas.hellstrom@linux.intel.com, Jim Quinlan <james.quinlan@broadcom.com>,
+ intel-gfx@lists.freedesktop.org, maarten.lankhorst@linux.intel.com,
+ Robin Murphy <robin.murphy@arm.com>, jani.nikula@linux.intel.com,
+ Nicolas Boichat <drinkcat@chromium.org>, rodrigo.vivi@intel.com,
+ bhelgaas@google.com, Dan Williams <dan.j.williams@intel.com>,
+ Andy Shevchenko <andriy.shevchenko@linux.intel.com>, airlied@linux.ie,
+ Greg KH <gregkh@linuxfoundation.org>, Randy Dunlap <rdunlap@infradead.org>,
+ lkml <linux-kernel@vger.kernel.org>,
+ "list@263.net:IOMMU DRIVERS" <iommu@lists.linux-foundation.org>,
+ daniel@ffwll.ch, thomas.lendacky@amd.com, linuxppc-dev@lists.ozlabs.org,
+ bauerman@linux.ibm.com
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -116,149 +126,221 @@ Content-Transfer-Encoding: 7bit
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-On Tue, Jun 22, 2021 at 2:10 PM Doug Anderson <dianders@chromium.org> wrote:
->
-> Hi,
->
-> On Tue, Jun 22, 2021 at 1:06 PM Saravana Kannan <saravanak@google.com> wrote:
-> >
-> > On Tue, Jun 22, 2021 at 1:02 PM Rob Herring <robh@kernel.org> wrote:
-> > >
-> > > On Tue, Jun 22, 2021 at 09:06:02AM -0700, Doug Anderson wrote:
-> > > > Hi,
-> > > >
-> > > > On Tue, Jun 22, 2021 at 4:35 AM Robin Murphy <robin.murphy@arm.com> wrote:
-> > > > >
-> > > > > Hi Doug,
-> > > > >
-> > > > > On 2021-06-22 00:52, Douglas Anderson wrote:
-> > > > > >
-> > > > > > This patch attempts to put forward a proposal for enabling non-strict
-> > > > > > DMA on a device-by-device basis. The patch series requests non-strict
-> > > > > > DMA for the Qualcomm SDHCI controller as a first device to enable,
-> > > > > > getting a nice bump in performance with what's believed to be a very
-> > > > > > small drop in security / safety (see the patch for the full argument).
-> > > > > >
-> > > > > > As part of this patch series I am end up slightly cleaning up some of
-> > > > > > the interactions between the PCI subsystem and the IOMMU subsystem but
-> > > > > > I don't go all the way to fully remove all the tentacles. Specifically
-> > > > > > this patch series only concerns itself with a single aspect: strict
-> > > > > > vs. non-strict mode for the IOMMU. I'm hoping that this will be easier
-> > > > > > to talk about / reason about for more subsystems compared to overall
-> > > > > > deciding what it means for a device to be "external" or "untrusted".
-> > > > > >
-> > > > > > If something like this patch series ends up being landable, it will
-> > > > > > undoubtedly need coordination between many maintainers to land. I
-> > > > > > believe it's fully bisectable but later patches in the series
-> > > > > > definitely depend on earlier ones. Sorry for the long CC list. :(
-> > > > >
-> > > > > Unfortunately, this doesn't work. In normal operation, the default
-> > > > > domains should be established long before individual drivers are even
-> > > > > loaded (if they are modules), let alone anywhere near probing. The fact
-> > > > > that iommu_probe_device() sometimes gets called far too late off the
-> > > > > back of driver probe is an unfortunate artefact of the original
-> > > > > probe-deferral scheme, and causes other problems like potentially
-> > > > > malformed groups - I've been forming a plan to fix that for a while now,
-> > > > > so I for one really can't condone anything trying to rely on it.
-> > > > > Non-deterministic behaviour based on driver probe order for multi-device
-> > > > > groups is part of the existing problem, and your proposal seems equally
-> > > > > vulnerable to that too.
-> > > >
-> > > > Doh! :( I definitely can't say I understand the iommu subsystem
-> > > > amazingly well. It was working for me, but I could believe that I was
-> > > > somehow violating a rule somewhere.
-> > > >
-> > > > I'm having a bit of a hard time understanding where the problem is
-> > > > though. Is there any chance that you missed the part of my series
-> > > > where I introduced a "pre_probe" step? Specifically, I see this:
-> > > >
-> > > > * really_probe() is called w/ a driver and a device.
-> > > > * -> calls dev->bus->dma_configure() w/ a "struct device *"
-> > > > * -> eventually calls iommu_probe_device() w/ the device.
-> > > > * -> calls iommu_alloc_default_domain() w/ the device
-> > > > * -> calls iommu_group_alloc_default_domain()
-> > > > * -> always allocates a new domain
-> > > >
-> > > > ...so we always have a "struct device" when a domain is allocated if
-> > > > that domain is going to be associated with a device.
-> > > >
-> > > > I will agree that iommu_probe_device() is called before the driver
-> > > > probe, but unless I missed something it's after the device driver is
-> > > > loaded.  ...and assuming something like patch #1 in this series looks
-> > > > OK then iommu_probe_device() will be called after "pre_probe".
-> > > >
-> > > > So assuming I'm not missing something, I'm not actually relying the
-> > > > IOMMU getting init off the back of driver probe.
-> > > >
-> > > >
-> > > > > FWIW we already have a go-faster knob for people who want to tweak the
-> > > > > security/performance compromise for specific devices, namely the sysfs
-> > > > > interface for changing a group's domain type before binding the relevant
-> > > > > driver(s). Is that something you could use in your application, say from
-> > > > > an initramfs script?
-> > > >
-> > > > We've never had an initramfs script in Chrome OS. I don't know all the
-> > > > history of why (I'm trying to check), but I'm nearly certain it was a
-> > > > conscious decision. Probably it has to do with the fact that we're not
-> > > > trying to build a generic distribution where a single boot source can
-> > > > boot a huge variety of hardware. We generally have one kernel for a
-> > > > class of devices. I believe avoiding the initramfs just keeps things
-> > > > simpler.
-> > > >
-> > > > I think trying to revamp Chrome OS to switch to an initramfs type
-> > > > system would be a pretty big undertaking since (as I understand it)
-> > > > you can't just run a little command and then return to the normal boot
-> > > > flow. Once you switch to initramfs you're committing to finding /
-> > > > setting up the rootfs yourself and on Chrome OS I believe that means a
-> > > > whole bunch of dm-verity work.
-> > > >
-> > > >
-> > > > ...so probably the initramfs is a no-go for me, but I'm still crossing
-> > > > my fingers that the pre_probe() might be legit if you take a second
-> > > > look at it?
-> > >
-> > > Couldn't you have a driver flag that has the same effect as twiddling
-> > > sysfs? At the being of probe, check the flag and go set the underlying
-> > > sysfs setting in the device.
-> >
-> > My understanding of what Robin is saying is that we'd need this info
-> > well before the driver is even available. The pre_probe() is
-> > effectively doing the same thing you are suggesting.
->
-> Right, I was just about to respond with the same. ;-) So overall right
-> now we're blocked waiting for someone to point out the error in my
-> logic. ;-)
 
-Okay, I don't see how sysfs would work in that case either. You can't
-assume the driver is not available until after sysfs. But I'll defer
-to others...
 
-> > > Though you may want this to be per device, not per driver. To do that
-> > > early, I think you'd need a DT property. I wouldn't be totally opposed
-> > > to that and I appreciate you not starting there. :)
-> >
-> > Which is what I'm suggest elsewhere in the thread:
-> >
-> > https://lore.kernel.org/lkml/CAGETcx83qCZF5JN5cqXxdSFiEgfc4jYESJg-RepL2wJXJv0Eww@mail.gmail.com/
->
-> Rob: I'd be happy if you wanted to comment on that thread. If you say
-> that it's fine to add a generic device tree property to control
-> strictness then I'm more than happy to add support for it. I've been
-> going on the theory that you'd NAK such a property but I'm totally
-> good with being wrong. ;-)
->
-> I'd be more than happy if you could suggest what you'd envision such a
-> property to be named.
+On 6/18/2021 11:40 PM, Claire Chang wrote:
+> Propagate the swiotlb_force into io_tlb_default_mem->force_bounce and
+> use it to determine whether to bounce the data or not. This will be
+> useful later to allow for different pools.
+> 
+> Signed-off-by: Claire Chang <tientzu@chromium.org>
+> Reviewed-by: Christoph Hellwig <hch@lst.de>
+> Tested-by: Stefano Stabellini <sstabellini@kernel.org>
+> Tested-by: Will Deacon <will@kernel.org>
+> Acked-by: Stefano Stabellini <sstabellini@kernel.org>
 
-You want me to do the hard part? ;)
+Reverting the rest of the series up to this patch fixed a boot crash with NVMe on today's linux-next.
 
-Would this work as a flag in iommus cell (either another cell or bit
-in the existing cell)?
+[   22.286574][    T7] Unable to handle kernel paging request at virtual address dfff80000000000e
+[   22.295225][    T7] Mem abort info:
+[   22.298743][    T7]   ESR = 0x96000004
+[   22.302496][    T7]   EC = 0x25: DABT (current EL), IL = 32 bits
+[   22.308525][    T7]   SET = 0, FnV = 0
+[   22.312274][    T7]   EA = 0, S1PTW = 0
+[   22.316131][    T7]   FSC = 0x04: level 0 translation fault
+[   22.321704][    T7] Data abort info:
+[   22.325278][    T7]   ISV = 0, ISS = 0x00000004
+[   22.329840][    T7]   CM = 0, WnR = 0
+[   22.333503][    T7] [dfff80000000000e] address between user and kernel address ranges
+[   22.338543][  T256] igb 0006:01:00.0: Intel(R) Gigabit Ethernet Network Connection
+[   22.341400][    T7] Internal error: Oops: 96000004 [#1] SMP
+[   22.348915][  T256] igb 0006:01:00.0: eth0: (PCIe:2.5Gb/s:Width x1) 4c:38:d5:09:c8:83
+[   22.354458][    T7] Modules linked in: igb(+) i2c_algo_bit nvme mlx5_core(+) i2c_core nvme_core firmware_class
+[   22.362512][  T256] igb 0006:01:00.0: eth0: PBA No: G69016-004
+[   22.372287][    T7] CPU: 13 PID: 7 Comm: kworker/u64:0 Not tainted 5.13.0-rc7-next-20210623+ #47
+[   22.372293][    T7] Hardware name: MiTAC RAPTOR EV-883832-X3-0001/RAPTOR, BIOS 1.6 06/28/2020
+[   22.372298][    T7] Workqueue: nvme-reset-wq nvme_reset_work [nvme]
+[   22.378145][  T256] igb 0006:01:00.0: Using MSI-X interrupts. 4 rx queue(s), 4 tx queue(s)
+[   22.386901][    T7] 
+[   22.386905][    T7] pstate: 10000005 (nzcV daif -PAN -UAO -TCO BTYPE=--)
+[   22.386910][    T7] pc : dma_direct_map_sg+0x304/0x8f0
 
-You could go the compatible match list route as well. At least until
-you work out the kernel implementation.
+is_swiotlb_force_bounce at /usr/src/linux-next/./include/linux/swiotlb.h:119
+(inlined by) dma_direct_map_page at /usr/src/linux-next/kernel/dma/direct.h:90
+(inlined by) dma_direct_map_sg at /usr/src/linux-next/kernel/dma/direct.c:428
 
-Rob
+[   22.386919][    T7] lr : dma_map_sg_attrs+0x6c/0x118
+[   22.386924][    T7] sp : ffff80001dc8eac0
+[   22.386926][    T7] x29: ffff80001dc8eac0 x28: ffff0000199e70b0 x27: 0000000000000000
+[   22.386935][    T7] x26: ffff000847ee7000 x25: ffff80001158e570 x24: 0000000000000002
+[   22.386943][    T7] x23: dfff800000000000 x22: 0000000000000100 x21: ffff0000199e7460
+[   22.386951][    T7] x20: ffff0000199e7488 x19: 0000000000000001 x18: ffff000010062670
+[   22.386955][  T253] Unable to handle kernel paging request at virtual address dfff80000000000e
+[   22.386958][    T7] x17: ffff8000109f6a90 x16: ffff8000109e1b4c x15: ffff800009303420
+[   22.386965][  T253] Mem abort info:
+[   22.386967][    T7] x14: 0000000000000001 x13: ffff80001158e000
+[   22.386970][  T253]   ESR = 0x96000004
+[   22.386972][    T7]  x12: 1fffe00108fdce01
+[   22.386975][  T253]   EC = 0x25: DABT (current EL), IL = 32 bits
+[   22.386976][    T7] x11: 1fffe00108fdce03 x10: ffff000847ee700c x9 : 0000000000000004
+[   22.386981][  T253]   SET = 0, FnV = 0
+[   22.386983][    T7] 
+[   22.386985][    T7] x8 : ffff700003b91d72
+[   22.386986][  T253]   EA = 0, S1PTW = 0
+[   22.386987][    T7]  x7 : 0000000000000000 x6 : 000000000000000e
+[   22.386990][  T253]   FSC = 0x04: level 0 translation fault
+[   22.386992][    T7] 
+[   22.386994][    T7] x5 : dfff800000000000
+[   22.386995][  T253] Data abort info:
+[   22.386997][    T7]  x4 : 00000008c7ede000
+[   22.386999][  T253]   ISV = 0, ISS = 0x00000004
+[   22.386999][    T7]  x3 : 00000008c7ede000
+[   22.387003][    T7] x2 : 0000000000001000
+[   22.387003][  T253]   CM = 0, WnR = 0
+[   22.387006][    T7]  x1 : 0000000000000000 x0 : 0000000000000071
+[   22.387008][  T253] [dfff80000000000e] address between user and kernel address ranges
+[   22.387011][    T7] 
+[   22.387013][    T7] Call trace:
+[   22.387016][    T7]  dma_direct_map_sg+0x304/0x8f0
+[   22.387022][    T7]  dma_map_sg_attrs+0x6c/0x118
+[   22.387026][    T7]  nvme_map_data+0x2ec/0x21d8 [nvme]
+[   22.387040][    T7]  nvme_queue_rq+0x274/0x3f0 [nvme]
+[   22.387052][    T7]  blk_mq_dispatch_rq_list+0x2ec/0x18a0
+[   22.387060][    T7]  __blk_mq_sched_dispatch_requests+0x2a0/0x3e8
+[   22.387065][    T7]  blk_mq_sched_dispatch_requests+0xa4/0x100
+[   22.387070][    T7]  __blk_mq_run_hw_queue+0x148/0x1d8
+[   22.387075][    T7]  __blk_mq_delay_run_hw_queue+0x3f8/0x730
+[   22.414539][  T269] igb 0006:01:00.0 enP6p1s0: renamed from eth0
+[   22.418957][    T7]  blk_mq_run_hw_queue+0x148/0x248
+[   22.418969][    T7]  blk_mq_sched_insert_request+0x2a4/0x330
+[   22.418975][    T7]  blk_execute_rq_nowait+0xc8/0x118
+[   22.418981][    T7]  blk_execute_rq+0xd4/0x188
+[   22.453203][  T255] udevadm (255) used greatest stack depth: 57408 bytes left
+[   22.456504][    T7]  __nvme_submit_sync_cmd+0x4e0/0x730 [nvme_core]
+[   22.673245][    T7]  nvme_identify_ctrl.isra.0+0x124/0x1e0 [nvme_core]
+[   22.679784][    T7]  nvme_init_identify+0x90/0x1868 [nvme_core]
+[   22.685713][    T7]  nvme_init_ctrl_finish+0x1a8/0xb88 [nvme_core]
+[   22.691903][    T7]  nvme_reset_work+0xe5c/0x2aa4 [nvme]
+[   22.697219][    T7]  process_one_work+0x7e4/0x19a0
+[   22.702005][    T7]  worker_thread+0x334/0xae0
+[   22.706442][    T7]  kthread+0x3bc/0x470
+[   22.710359][    T7]  ret_from_fork+0x10/0x18
+[   22.714627][    T7] Code: f941ef81 9101c420 1200080e d343fc06 (38f768c6) 
+[   22.721407][    T7] ---[ end trace 1f3c4181ae408676 ]---
+[   22.726712][    T7] Kernel panic - not syncing: Oops: Fatal exception
+[   22.733169][    T7] SMP: stopping secondary CPUs
+[   23.765164][    T7] SMP: failed to stop secondary CPUs 13,15
+[   23.770818][    T7] Kernel Offset: disabled
+[   23.774991][    T7] CPU features: 0x00000251,20000846
+[   23.780034][    T7] Memory Limit: none
+[   23.783794][    T7] ---[ end Kernel panic - not syncing: Oops: Fatal exception ]---
+
+> ---
+>  drivers/xen/swiotlb-xen.c |  2 +-
+>  include/linux/swiotlb.h   | 11 +++++++++++
+>  kernel/dma/direct.c       |  2 +-
+>  kernel/dma/direct.h       |  2 +-
+>  kernel/dma/swiotlb.c      |  4 ++++
+>  5 files changed, 18 insertions(+), 3 deletions(-)
+> 
+> diff --git a/drivers/xen/swiotlb-xen.c b/drivers/xen/swiotlb-xen.c
+> index 0c6ed09f8513..4730a146fa35 100644
+> --- a/drivers/xen/swiotlb-xen.c
+> +++ b/drivers/xen/swiotlb-xen.c
+> @@ -369,7 +369,7 @@ static dma_addr_t xen_swiotlb_map_page(struct device *dev, struct page *page,
+>  	if (dma_capable(dev, dev_addr, size, true) &&
+>  	    !range_straddles_page_boundary(phys, size) &&
+>  		!xen_arch_need_swiotlb(dev, phys, dev_addr) &&
+> -		swiotlb_force != SWIOTLB_FORCE)
+> +		!is_swiotlb_force_bounce(dev))
+>  		goto done;
+>  
+>  	/*
+> diff --git a/include/linux/swiotlb.h b/include/linux/swiotlb.h
+> index dd1c30a83058..8d8855c77d9a 100644
+> --- a/include/linux/swiotlb.h
+> +++ b/include/linux/swiotlb.h
+> @@ -84,6 +84,7 @@ extern enum swiotlb_force swiotlb_force;
+>   *		unmap calls.
+>   * @debugfs:	The dentry to debugfs.
+>   * @late_alloc:	%true if allocated using the page allocator
+> + * @force_bounce: %true if swiotlb bouncing is forced
+>   */
+>  struct io_tlb_mem {
+>  	phys_addr_t start;
+> @@ -94,6 +95,7 @@ struct io_tlb_mem {
+>  	spinlock_t lock;
+>  	struct dentry *debugfs;
+>  	bool late_alloc;
+> +	bool force_bounce;
+>  	struct io_tlb_slot {
+>  		phys_addr_t orig_addr;
+>  		size_t alloc_size;
+> @@ -109,6 +111,11 @@ static inline bool is_swiotlb_buffer(struct device *dev, phys_addr_t paddr)
+>  	return mem && paddr >= mem->start && paddr < mem->end;
+>  }
+>  
+> +static inline bool is_swiotlb_force_bounce(struct device *dev)
+> +{
+> +	return dev->dma_io_tlb_mem->force_bounce;
+> +}
+> +
+>  void __init swiotlb_exit(void);
+>  unsigned int swiotlb_max_segment(void);
+>  size_t swiotlb_max_mapping_size(struct device *dev);
+> @@ -120,6 +127,10 @@ static inline bool is_swiotlb_buffer(struct device *dev, phys_addr_t paddr)
+>  {
+>  	return false;
+>  }
+> +static inline bool is_swiotlb_force_bounce(struct device *dev)
+> +{
+> +	return false;
+> +}
+>  static inline void swiotlb_exit(void)
+>  {
+>  }
+> diff --git a/kernel/dma/direct.c b/kernel/dma/direct.c
+> index 7a88c34d0867..a92465b4eb12 100644
+> --- a/kernel/dma/direct.c
+> +++ b/kernel/dma/direct.c
+> @@ -496,7 +496,7 @@ size_t dma_direct_max_mapping_size(struct device *dev)
+>  {
+>  	/* If SWIOTLB is active, use its maximum mapping size */
+>  	if (is_swiotlb_active(dev) &&
+> -	    (dma_addressing_limited(dev) || swiotlb_force == SWIOTLB_FORCE))
+> +	    (dma_addressing_limited(dev) || is_swiotlb_force_bounce(dev)))
+>  		return swiotlb_max_mapping_size(dev);
+>  	return SIZE_MAX;
+>  }
+> diff --git a/kernel/dma/direct.h b/kernel/dma/direct.h
+> index 13e9e7158d94..4632b0f4f72e 100644
+> --- a/kernel/dma/direct.h
+> +++ b/kernel/dma/direct.h
+> @@ -87,7 +87,7 @@ static inline dma_addr_t dma_direct_map_page(struct device *dev,
+>  	phys_addr_t phys = page_to_phys(page) + offset;
+>  	dma_addr_t dma_addr = phys_to_dma(dev, phys);
+>  
+> -	if (unlikely(swiotlb_force == SWIOTLB_FORCE))
+> +	if (is_swiotlb_force_bounce(dev))
+>  		return swiotlb_map(dev, phys, size, dir, attrs);
+>  
+>  	if (unlikely(!dma_capable(dev, dma_addr, size, true))) {
+> diff --git a/kernel/dma/swiotlb.c b/kernel/dma/swiotlb.c
+> index 8a120f42340b..0d294bbf274c 100644
+> --- a/kernel/dma/swiotlb.c
+> +++ b/kernel/dma/swiotlb.c
+> @@ -179,6 +179,10 @@ static void swiotlb_init_io_tlb_mem(struct io_tlb_mem *mem, phys_addr_t start,
+>  	mem->end = mem->start + bytes;
+>  	mem->index = 0;
+>  	mem->late_alloc = late_alloc;
+> +
+> +	if (swiotlb_force == SWIOTLB_FORCE)
+> +		mem->force_bounce = true;
+> +
+>  	spin_lock_init(&mem->lock);
+>  	for (i = 0; i < mem->nslabs; i++) {
+>  		mem->slots[i].list = IO_TLB_SEGSIZE - io_tlb_offset(i);
+> 
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
