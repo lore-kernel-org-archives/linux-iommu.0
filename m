@@ -2,112 +2,100 @@ Return-Path: <SRS0=khdJ=LR=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-10.1 required=3.0 tests=BAYES_00,DKIM_INVALID,
-	DKIM_SIGNED,HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_CR_TRAILER,
-	MAILING_LIST_MULTI,NICE_REPLY_A,SPF_HELO_NONE,SPF_PASS,USER_AGENT_SANE_1
-	autolearn=ham autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-3.5 required=3.0 tests=BAYES_00,DKIM_INVALID,
+	DKIM_SIGNED,HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,SPF_HELO_NONE,
+	SPF_PASS autolearn=no autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 55144C48BC2
-	for <iommu@archiver.kernel.org>; Wed, 23 Jun 2021 18:44:46 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id EDAE0C4743C
+	for <iommu@archiver.kernel.org>; Wed, 23 Jun 2021 18:50:15 +0000 (UTC)
 Received: from smtp2.osuosl.org (smtp2.osuosl.org [140.211.166.133])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 02EE360240
-	for <iommu@archiver.kernel.org>; Wed, 23 Jun 2021 18:44:45 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 02EE360240
-Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=quicinc.com
+	by mail.kernel.org (Postfix) with ESMTPS id A1D1B611AC
+	for <iommu@archiver.kernel.org>; Wed, 23 Jun 2021 18:50:15 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org A1D1B611AC
+Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=debian.org
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by smtp2.osuosl.org (Postfix) with ESMTP id BB12F40284;
-	Wed, 23 Jun 2021 18:44:45 +0000 (UTC)
+	by smtp2.osuosl.org (Postfix) with ESMTP id 6FFFE40290;
+	Wed, 23 Jun 2021 18:50:15 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
 Received: from smtp2.osuosl.org ([127.0.0.1])
 	by localhost (smtp2.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id Z29krHX26CZB; Wed, 23 Jun 2021 18:44:44 +0000 (UTC)
+	with ESMTP id QSxsxvq2Obsr; Wed, 23 Jun 2021 18:50:14 +0000 (UTC)
 Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by smtp2.osuosl.org (Postfix) with ESMTPS id 8ECB4400CA;
-	Wed, 23 Jun 2021 18:44:44 +0000 (UTC)
+	by smtp2.osuosl.org (Postfix) with ESMTPS id 66CBC4025E;
+	Wed, 23 Jun 2021 18:50:14 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 70C5EC001A;
-	Wed, 23 Jun 2021 18:44:44 +0000 (UTC)
-Received: from smtp2.osuosl.org (smtp2.osuosl.org [IPv6:2605:bc80:3010::133])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 2FF51C000E
- for <iommu@lists.linux-foundation.org>; Wed, 23 Jun 2021 18:44:44 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 4A099C001A;
+	Wed, 23 Jun 2021 18:50:14 +0000 (UTC)
+Received: from smtp4.osuosl.org (smtp4.osuosl.org [140.211.166.137])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 550ADC000E
+ for <iommu@lists.linux-foundation.org>; Wed, 23 Jun 2021 18:50:11 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by smtp2.osuosl.org (Postfix) with ESMTP id 103D34025E
- for <iommu@lists.linux-foundation.org>; Wed, 23 Jun 2021 18:44:44 +0000 (UTC)
+ by smtp4.osuosl.org (Postfix) with ESMTP id 0CBEE40668
+ for <iommu@lists.linux-foundation.org>; Wed, 23 Jun 2021 18:50:10 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from smtp2.osuosl.org ([127.0.0.1])
- by localhost (smtp2.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id wncPj1Eyi0-1 for <iommu@lists.linux-foundation.org>;
- Wed, 23 Jun 2021 18:44:43 +0000 (UTC)
-X-Greylist: domain auto-whitelisted by SQLgrey-1.8.0
-Received: from alexa-out-sd-01.qualcomm.com (alexa-out-sd-01.qualcomm.com
- [199.106.114.38])
- by smtp2.osuosl.org (Postfix) with ESMTPS id 5568A400CA
- for <iommu@lists.linux-foundation.org>; Wed, 23 Jun 2021 18:44:43 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple;
- d=quicinc.com; i=@quicinc.com; q=dns/txt; s=qcdkim;
- t=1624473883; x=1656009883;
- h=subject:to:cc:references:from:message-id:date:
- mime-version:in-reply-to:content-transfer-encoding;
- bh=N07wTNJU87j8J0GwX4jxR069BiU3mP0B1FK82hyEXsU=;
- b=YaQG1kmOJmrIQ4OYRGvFbMs7YdDbMfAUzTt5+3dU3awrC3ogq9wrVQyF
- by/8dBmI481zG9rDrDT63r5gl0+4Lgssz8Mjz1GicA/qq40Nz3W4Z2g8Y
- cwdpP2PDxeqtQnpQtwpqB5cxljkW9npsn4gepj+IF4rWnVDZ0OlwyEZ53 U=;
-Received: from unknown (HELO ironmsg05-sd.qualcomm.com) ([10.53.140.145])
- by alexa-out-sd-01.qualcomm.com with ESMTP; 23 Jun 2021 11:44:42 -0700
-X-QCInternal: smtphost
-Received: from nasanexm03e.na.qualcomm.com ([10.85.0.48])
- by ironmsg05-sd.qualcomm.com with ESMTP/TLS/AES256-SHA;
- 23 Jun 2021 11:44:41 -0700
-Received: from [10.38.240.33] (10.80.80.8) by nasanexm03e.na.qualcomm.com
- (10.85.0.48) with Microsoft SMTP Server (TLS) id 15.0.1497.18; Wed, 23 Jun
- 2021 11:44:35 -0700
-Subject: Re: [PATCH v14 06/12] swiotlb: Use is_swiotlb_force_bounce for
- swiotlb data bouncing
-To: Will Deacon <will@kernel.org>
-References: <20210619034043.199220-1-tientzu@chromium.org>
- <20210619034043.199220-7-tientzu@chromium.org>
- <76c3343d-72e5-9df3-8924-5474ee698ef4@quicinc.com>
- <20210623183736.GA472@willie-the-truck>
-From: Qian Cai <quic_qiancai@quicinc.com>
-Message-ID: <19d4c7a2-744d-21e0-289c-a576e1f0e6f3@quicinc.com>
-Date: Wed, 23 Jun 2021 14:44:34 -0400
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:78.0) Gecko/20100101
- Thunderbird/78.11.0
+Authentication-Results: smtp4.osuosl.org (amavisd-new);
+ dkim=pass (2048-bit key) header.d=gmail.com
+Received: from smtp4.osuosl.org ([127.0.0.1])
+ by localhost (smtp4.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+ with ESMTP id wGbMPbqTry8R for <iommu@lists.linux-foundation.org>;
+ Wed, 23 Jun 2021 18:50:09 +0000 (UTC)
+X-Greylist: whitelisted by SQLgrey-1.8.0
+Received: from mail-wr1-x429.google.com (mail-wr1-x429.google.com
+ [IPv6:2a00:1450:4864:20::429])
+ by smtp4.osuosl.org (Postfix) with ESMTPS id F09C540696
+ for <iommu@lists.linux-foundation.org>; Wed, 23 Jun 2021 18:50:08 +0000 (UTC)
+Received: by mail-wr1-x429.google.com with SMTP id u11so3730262wrw.11
+ for <iommu@lists.linux-foundation.org>; Wed, 23 Jun 2021 11:50:08 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=gmail.com; s=20161025;
+ h=sender:date:from:to:cc:subject:message-id:references:mime-version
+ :content-disposition:in-reply-to;
+ bh=t9g61bv+JZ07tY5UuVmyIiDTVqgatmyK1QRV0XqD+Hc=;
+ b=KLXuHll2RXbwuztCykmE1EQTu6vmTzU1QQjpNTWzNCxaM1/Ps+7XEiFt8zUeOZ1baA
+ xe7gg6HXyDZ4KaB5Rul1MiFZoKZ0NCIbHMmtoCQwOsmnIQiG+kgYk7+D1Nwn5IGm+2zB
+ +ei/17jncOmir+dd9UyMDCtbBeqxpGTR5rZqJk0gYytyX0CnJeaGFqWYDEu6HFskFOOE
+ nDzu6jGbO5UvY6TkF6GoI2grAJpQLbjUvI6cQO7vFjzZCaOOWSL1cuXCzLO2WUEC+XMu
+ tRtnxpuK28KFSNdjX7/SGtxLwQUIkf75kqAgcewqO+eglB9DMfpSiAc0IPNPS5ithG0y
+ BKnQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+ d=1e100.net; s=20161025;
+ h=x-gm-message-state:sender:date:from:to:cc:subject:message-id
+ :references:mime-version:content-disposition:in-reply-to;
+ bh=t9g61bv+JZ07tY5UuVmyIiDTVqgatmyK1QRV0XqD+Hc=;
+ b=q7Uqbr38TKM6l8n0BDyG77lzDxxlbX9w9R79T4ix1cNqVY40KxN2pRltDS2THL7vn/
+ 8i/Bk9BzwCRK/Qaqklqk8pbVPPqidVrnaEaEBZQSPHtJmO1pQLrXF8hOduD8UszO4pBC
+ hSC55vZEpaiVE0O6wQWag2MMSXYrB0F+oJewRvRupN0+8Qw3lTIMRVplyUPW684FMTbs
+ sAg4/TMPK9/+qShTSXYEFeroLRl1/tnm+/u4CmIvXsiKHGSKGV2cWTVRTS408hvS8UxO
+ YCy3xkRwM1bRJyUIsgV2SVETbrhSrsoLiQVIUArsvLqNvba4e3xdYFp/FOitRudqgIuh
+ SRqA==
+X-Gm-Message-State: AOAM533Fa90elte/7c98vpAZlUOlRQKbhNl50veBat/zP1pb/Ft7woBS
+ tpw9qDEQoXTVUyi8+F6CxX4=
+X-Google-Smtp-Source: ABdhPJwow7ob1nYUTJTVlm2hcLViMuMJ7U2nNz+pDoNObCJVja/RfxSZArMIJ4rIufME1rWIeSAkvw==
+X-Received: by 2002:a5d:6b91:: with SMTP id n17mr1793938wrx.166.1624474207108; 
+ Wed, 23 Jun 2021 11:50:07 -0700 (PDT)
+Received: from eldamar (80-218-24-251.dclient.hispeed.ch. [80.218.24.251])
+ by smtp.gmail.com with ESMTPSA id x10sm848038wru.58.2021.06.23.11.50.05
+ (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+ Wed, 23 Jun 2021 11:50:06 -0700 (PDT)
+Date: Wed, 23 Jun 2021 20:50:05 +0200
+From: Salvatore Bonaccorso <carnil@debian.org>
+To: Robin Murphy <robin.murphy@arm.com>, 989778-maintonly@bugs.debian.org
+Subject: Re: Bug#989778: Regression in at least 5.10.y and mainline: Firewire
+ audio interface fails to work properly (when booted under Xen)
+Message-ID: <YNOCXe1cuNDNAB+Z@eldamar.lan>
+References: <162352833546.2353.230557992597997974.reportbug@home.kota.moe>
+ <YMWl4UnFBAVRDnys@eldamar.lan>
+ <162352833546.2353.230557992597997974.reportbug@home.kota.moe>
+ <2f7c7d36-b6f4-f8ab-756e-a563fa03b9e4@arm.com>
 MIME-Version: 1.0
-In-Reply-To: <20210623183736.GA472@willie-the-truck>
-Content-Language: en-US
-X-Originating-IP: [10.80.80.8]
-X-ClientProxiedBy: nasanex01b.na.qualcomm.com (10.46.141.250) To
- nasanexm03e.na.qualcomm.com (10.85.0.48)
-Cc: heikki.krogerus@linux.intel.com,
- linux-devicetree <devicetree@vger.kernel.org>, peterz@infradead.org,
- benh@kernel.crashing.org, joonas.lahtinen@linux.intel.com,
- dri-devel@lists.freedesktop.org, chris@chris-wilson.co.uk,
- grant.likely@arm.com, paulus@samba.org, Frank Rowand <frowand.list@gmail.com>,
- mingo@kernel.org, jxgao@google.com, sstabellini@kernel.org,
- Saravana Kannan <saravanak@google.com>, mpe@ellerman.id.au,
- "Rafael J . Wysocki" <rafael.j.wysocki@intel.com>,
- Christoph Hellwig <hch@lst.de>,
- Bartosz Golaszewski <bgolaszewski@baylibre.com>, bskeggs@redhat.com,
- linux-pci@vger.kernel.org, xen-devel@lists.xenproject.org,
- Dan Williams <dan.j.williams@intel.com>, matthew.auld@intel.com,
- Nicolas Boichat <drinkcat@chromium.org>, thomas.hellstrom@linux.intel.com,
- Jim Quinlan <james.quinlan@broadcom.com>,
- Konrad Rzeszutek Wilk <konrad.wilk@oracle.com>,
- intel-gfx@lists.freedesktop.org, maarten.lankhorst@linux.intel.com,
- Robin Murphy <robin.murphy@arm.com>, jani.nikula@linux.intel.com,
- Rob Herring <robh+dt@kernel.org>, rodrigo.vivi@intel.com, bhelgaas@google.com,
- Claire Chang <tientzu@chromium.org>, boris.ostrovsky@oracle.com,
- Andy Shevchenko <andriy.shevchenko@linux.intel.com>, jgross@suse.com,
- airlied@linux.ie, Thierry Reding <treding@nvidia.com>,
- Greg KH <gregkh@linuxfoundation.org>, Randy Dunlap <rdunlap@infradead.org>,
- lkml <linux-kernel@vger.kernel.org>,
- "list@263.net:IOMMU DRIVERS" <iommu@lists.linux-foundation.org>,
- daniel@ffwll.ch, xypron.glpk@gmx.de, thomas.lendacky@amd.com,
- linuxppc-dev@lists.ozlabs.org, bauerman@linux.ibm.com
+Content-Disposition: inline
+In-Reply-To: <2f7c7d36-b6f4-f8ab-756e-a563fa03b9e4@arm.com>
+Cc: Konrad Rzeszutek Wilk <konrad.wilk@oracle.com>,
+ linux-kernel@vger.kernel.org, iommu@lists.linux-foundation.org,
+ xen-devel@lists.xenproject.org, =?utf-8?B?5bCP5aSq?= <nospam@kota.moe>,
+ Christoph Hellwig <hch@lst.de>, Jianxiong Gao <jxgao@google.com>
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -125,51 +113,25 @@ Content-Transfer-Encoding: 7bit
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
+Hi Robin,
 
-
-On 6/23/2021 2:37 PM, Will Deacon wrote:
-> On Wed, Jun 23, 2021 at 12:39:29PM -0400, Qian Cai wrote:
->>
->>
->> On 6/18/2021 11:40 PM, Claire Chang wrote:
->>> Propagate the swiotlb_force into io_tlb_default_mem->force_bounce and
->>> use it to determine whether to bounce the data or not. This will be
->>> useful later to allow for different pools.
->>>
->>> Signed-off-by: Claire Chang <tientzu@chromium.org>
->>> Reviewed-by: Christoph Hellwig <hch@lst.de>
->>> Tested-by: Stefano Stabellini <sstabellini@kernel.org>
->>> Tested-by: Will Deacon <will@kernel.org>
->>> Acked-by: Stefano Stabellini <sstabellini@kernel.org>
->>
->> Reverting the rest of the series up to this patch fixed a boot crash with NVMe on today's linux-next.
+On Mon, Jun 14, 2021 at 02:29:08PM +0100, Robin Murphy wrote:
+> On 2021-06-13 07:29, Salvatore Bonaccorso wrote:
+> > A user in Debian reported the above issue, which was reproducible with
+> > 5.13-rc5 and 5.10.y as packaged in Debian and found that 85a5a6875ca9
+> > ("swiotlb: don't modify orig_addr in swiotlb_tbl_sync_single") that
+> > introduced the issue.
 > 
-> Hmm, so that makes patch 7 the suspicious one, right?
-
-Will, no. It is rather patch #6 (this patch). Only the patch from #6 to #12 were reverted to fix the issue. Also, looking at this offset of the crash,
-
-pc : dma_direct_map_sg+0x304/0x8f0
-is_swiotlb_force_bounce at /usr/src/linux-next/./include/linux/swiotlb.h:119
-
-is_swiotlb_force_bounce() was the new function introduced in this patch here.
-
-+static inline bool is_swiotlb_force_bounce(struct device *dev)
-+{
-+	return dev->dma_io_tlb_mem->force_bounce;
-+}
-
+> Sounds like it's probably the same thing as being discussed over here:
 > 
-> Looking at that one more closely, it looks like swiotlb_find_slots() takes
-> 'alloc_size + offset' as its 'alloc_size' parameter from
-> swiotlb_tbl_map_single() and initialises 'mem->slots[i].alloc_size' based
-> on 'alloc_size + offset', which looks like a change in behaviour from the
-> old code, which didn't include the offset there.
-> 
-> swiotlb_release_slots() then adds the offset back on afaict, so we end up
-> accounting for it twice and possibly unmap more than we're supposed to?
-> 
-> Will
-> 
+> https://lore.kernel.org/linux-iommu/2e899de2-4b69-c4b6-33a6-09fb8949d2fd@nxp.com/
+
+Thanks for the pointer, it seems that now it has been fixed upstream
+with 5f89468e2f06 ("swiotlb: manipulate orig_addr when tlb_addr has
+offset").
+
+Regards,
+Salvatore
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
