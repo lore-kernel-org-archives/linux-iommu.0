@@ -2,89 +2,110 @@ Return-Path: <SRS0=kzsj=LS=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-14.0 required=3.0 tests=BAYES_00,INCLUDES_CR_TRAILER,
-	INCLUDES_PATCH,MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED
-	autolearn=ham autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-13.5 required=3.0 tests=BAYES_00,DKIM_INVALID,
+	DKIM_SIGNED,HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_CR_TRAILER,INCLUDES_PATCH,
+	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED autolearn=unavailable
+	autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9172DC49EA5
-	for <iommu@archiver.kernel.org>; Thu, 24 Jun 2021 19:26:32 +0000 (UTC)
-Received: from smtp4.osuosl.org (smtp4.osuosl.org [140.211.166.137])
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 815C1C49EA5
+	for <iommu@archiver.kernel.org>; Thu, 24 Jun 2021 23:11:55 +0000 (UTC)
+Received: from smtp3.osuosl.org (smtp3.osuosl.org [140.211.166.136])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 3F940613C1
-	for <iommu@archiver.kernel.org>; Thu, 24 Jun 2021 19:26:32 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 3F940613C1
-Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=kernel.org
+	by mail.kernel.org (Postfix) with ESMTPS id 04C5661351
+	for <iommu@archiver.kernel.org>; Thu, 24 Jun 2021 23:11:54 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 04C5661351
+Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=chromium.org
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by smtp4.osuosl.org (Postfix) with ESMTP id 023DB414CB;
-	Thu, 24 Jun 2021 19:26:32 +0000 (UTC)
+	by smtp3.osuosl.org (Postfix) with ESMTP id B1B4860687;
+	Thu, 24 Jun 2021 23:11:54 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from smtp4.osuosl.org ([127.0.0.1])
-	by localhost (smtp4.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id QWxB-L8lhVLF; Thu, 24 Jun 2021 19:26:31 +0000 (UTC)
-Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [IPv6:2605:bc80:3010:104::8cd3:938])
-	by smtp4.osuosl.org (Postfix) with ESMTPS id B58B540455;
-	Thu, 24 Jun 2021 19:26:30 +0000 (UTC)
+Received: from smtp3.osuosl.org ([127.0.0.1])
+	by localhost (smtp3.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+	with ESMTP id ZEVVoTVNqMQM; Thu, 24 Jun 2021 23:11:53 +0000 (UTC)
+Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
+	by smtp3.osuosl.org (Postfix) with ESMTPS id 519AB60672;
+	Thu, 24 Jun 2021 23:11:53 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 8645DC001A;
-	Thu, 24 Jun 2021 19:26:30 +0000 (UTC)
-Received: from smtp1.osuosl.org (smtp1.osuosl.org [IPv6:2605:bc80:3010::138])
- by lists.linuxfoundation.org (Postfix) with ESMTP id CF701C000E
- for <iommu@lists.linux-foundation.org>; Thu, 24 Jun 2021 19:26:28 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 285EBC001A;
+	Thu, 24 Jun 2021 23:11:53 +0000 (UTC)
+Received: from smtp1.osuosl.org (smtp1.osuosl.org [140.211.166.138])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 1F9A8C000E
+ for <iommu@lists.linux-foundation.org>; Thu, 24 Jun 2021 23:11:52 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by smtp1.osuosl.org (Postfix) with ESMTP id BB7C483E25
- for <iommu@lists.linux-foundation.org>; Thu, 24 Jun 2021 19:26:28 +0000 (UTC)
+ by smtp1.osuosl.org (Postfix) with ESMTP id ED3B683BE0
+ for <iommu@lists.linux-foundation.org>; Thu, 24 Jun 2021 23:11:51 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
+Authentication-Results: smtp1.osuosl.org (amavisd-new);
+ dkim=pass (1024-bit key) header.d=chromium.org
 Received: from smtp1.osuosl.org ([127.0.0.1])
  by localhost (smtp1.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id PmGcmaVVVbz2 for <iommu@lists.linux-foundation.org>;
- Thu, 24 Jun 2021 19:26:27 +0000 (UTC)
+ with ESMTP id BMkoRygYeX59 for <iommu@lists.linux-foundation.org>;
+ Thu, 24 Jun 2021 23:11:50 +0000 (UTC)
 X-Greylist: whitelisted by SQLgrey-1.8.0
-Received: from mail-il1-f170.google.com (mail-il1-f170.google.com
- [209.85.166.170])
- by smtp1.osuosl.org (Postfix) with ESMTPS id 8E7A283CC7
- for <iommu@lists.linux-foundation.org>; Thu, 24 Jun 2021 19:26:27 +0000 (UTC)
-Received: by mail-il1-f170.google.com with SMTP id o10so2565983ils.6
- for <iommu@lists.linux-foundation.org>; Thu, 24 Jun 2021 12:26:27 -0700 (PDT)
+Received: from mail-qk1-x732.google.com (mail-qk1-x732.google.com
+ [IPv6:2607:f8b0:4864:20::732])
+ by smtp1.osuosl.org (Postfix) with ESMTPS id 92E3B83BDD
+ for <iommu@lists.linux-foundation.org>; Thu, 24 Jun 2021 23:11:50 +0000 (UTC)
+Received: by mail-qk1-x732.google.com with SMTP id o6so17294948qkh.4
+ for <iommu@lists.linux-foundation.org>; Thu, 24 Jun 2021 16:11:50 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=chromium.org; s=google;
+ h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+ :cc; bh=OVGe70VQ7Bofs1GsJDbN4DH060Z/5/8km4zQo9PX9Z0=;
+ b=MJhioia1IT1d05V8QLP3QAmMcl+n8b0r3nyXI6yDlQGvUP4e4uWfsLU9g1lixGxL3Z
+ kErmOg59tZQv9l36Vky1BEm/+e9ro4cQkf8kOWUVvdZ7eB4ypM9aK3Ej15JburBfyZH6
+ qOSnyreGroIMvqSgeVo0p2f02c4xlHSOHXvIo=
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
  d=1e100.net; s=20161025;
- h=x-gm-message-state:date:from:to:cc:subject:message-id:references
- :mime-version:content-disposition:in-reply-to;
- bh=6h1Sx3JbYU2baky6rD9hMRn1kfJYQMiqvIqi3obyV8I=;
- b=Wbv5oozK/cl+gUpJgV9Ze5sf4535P2NWepgD6kWZ+m/A11NsTVbIvx5xsTqaoh4ekt
- wP3DCcZo13Ou48MfndI1OLVZ+iFRJkKHcxbdXm0Sm0lhhmgkvCIfu0yKhF62ItXskF2m
- HgAxKnAOLT4xV8PauN1L6ZSc3BWgbiiyQielVGAES3Xbd8FZd0JrqF2QfvQ1btuDDisM
- ksPQl9PM7Ui0pSgvpI/992C8PNWL6jG+3ziiHh8KK6K0qKpFPXkZib2b5RDYBeylJhb5
- L98NkS9wTjR1nB4nZsLBOZAcdW/9Wm6k8JCjcj3xOEG/JFr5P+PsjZrBBnYt4DhWoSu2
- zsqA==
-X-Gm-Message-State: AOAM530dlFzrNIrA9u7kWDrih3JdGe7zB3kJVb8oTZZmkphzqS+/P93y
- 7m1PujOMkEn31nl6rxvr+A==
-X-Google-Smtp-Source: ABdhPJz0Vgwv3Iq8nazL1YEj6niGuV9FnumXPQVtk8MmnklrGEOvQn76JOi0eS/UbHwhIZJMgNMjvQ==
-X-Received: by 2002:a92:3610:: with SMTP id d16mr4554156ila.16.1624562786757; 
- Thu, 24 Jun 2021 12:26:26 -0700 (PDT)
-Received: from robh.at.kernel.org ([64.188.179.248])
- by smtp.gmail.com with ESMTPSA id r6sm1711534ioh.27.2021.06.24.12.26.23
- (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
- Thu, 24 Jun 2021 12:26:25 -0700 (PDT)
-Received: (nullmailer pid 1846846 invoked by uid 1000);
- Thu, 24 Jun 2021 19:26:22 -0000
-Date: Thu, 24 Jun 2021 13:26:22 -0600
-From: Rob Herring <robh@kernel.org>
-To: Martin Botka <martin.botka@somainline.org>
-Subject: Re: [PATCH V3 1/2] dt-bindings: iommu: arm-smmu: Add binding for
- sm6125
-Message-ID: <20210624192622.GA1846816@robh.at.kernel.org>
-References: <20210612094606.89576-1-martin.botka@somainline.org>
+ h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+ :message-id:subject:to:cc;
+ bh=OVGe70VQ7Bofs1GsJDbN4DH060Z/5/8km4zQo9PX9Z0=;
+ b=WXNghKduszpRjYzsUFhP+IlzQ1pCm1UmUNnZOMvlN51r5/9eDFHe05MfqvUeWTnZIi
+ 2f74DgA86UCvsmURiXPaMDBDmNCQfCcyw8d0Zqlp5R2MmnuoXZimWT0OgW8eLv5wScCd
+ pAvw2PAvoYzhWvfmLxuF5nZtgBnNkfvHYkZr8E4nuHtQOjh+SCz35hMu7WlIgPiDpCzM
+ NL+UP9o7ULWIIYKUUxGUr/pFo8L8oL5SMhArRZNjJaDddzHNnBrBoxWf5YCSs4JoilA1
+ zEi2xsc1SGgUGEw0UxQdrBQwh7sKDjt0I1Z4zp+Jqn9dd3FCgI6VQh8f5RvSL2mDWLrM
+ AXXw==
+X-Gm-Message-State: AOAM532O0+vWYdqqmMEv8EUxWXsEveogIrixXUtvRxqSGlcgLPoo8inV
+ TScutvX4P4vByhkKnv9Y3XTJYDO7+3TD4Q==
+X-Google-Smtp-Source: ABdhPJysHWkBXCC1WKU1GBLzwxnbToqM49CIlqrmwLLSLy/dABAZXRoyWaFWmdjlaeG3Vp93h5zv+Q==
+X-Received: by 2002:a37:a117:: with SMTP id k23mr8511320qke.239.1624576309219; 
+ Thu, 24 Jun 2021 16:11:49 -0700 (PDT)
+Received: from mail-yb1-f170.google.com (mail-yb1-f170.google.com.
+ [209.85.219.170])
+ by smtp.gmail.com with ESMTPSA id 189sm3686456qkh.45.2021.06.24.16.11.49
+ for <iommu@lists.linux-foundation.org>
+ (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+ Thu, 24 Jun 2021 16:11:49 -0700 (PDT)
+Received: by mail-yb1-f170.google.com with SMTP id b64so1797732yba.0
+ for <iommu@lists.linux-foundation.org>; Thu, 24 Jun 2021 16:11:49 -0700 (PDT)
+X-Received: by 2002:a25:8082:: with SMTP id n2mr8357075ybk.79.1624575952073;
+ Thu, 24 Jun 2021 16:05:52 -0700 (PDT)
 MIME-Version: 1.0
-Content-Disposition: inline
-In-Reply-To: <20210612094606.89576-1-martin.botka@somainline.org>
-Cc: devicetree@vger.kernel.org, Will Deacon <will@kernel.org>,
- konrad.dybcio@somainline.org, linux-kernel@vger.kernel.org,
- jamipkettunen@somainline.org, iommu@lists.linux-foundation.org,
- Rob Herring <robh+dt@kernel.org>, ~postmarketos/upstreaming@lists.sr.ht,
- angelogioacchino.delregno@somainline.org, marijn.suijten@somainline.org,
- Robin Murphy <robin.murphy@arm.com>, linux-arm-kernel@lists.infradead.org
+References: <20210624171759.4125094-1-dianders@chromium.org>
+ <20210624101557.v2.3.Icde6be7601a5939960caf802056c88cd5132eb4e@changeid>
+In-Reply-To: <20210624101557.v2.3.Icde6be7601a5939960caf802056c88cd5132eb4e@changeid>
+From: Doug Anderson <dianders@chromium.org>
+Date: Thu, 24 Jun 2021 16:05:39 -0700
+X-Gmail-Original-Message-ID: <CAD=FV=Uf3U-kC5j_g7FB6U6_Qf2PVwKJfEsB-b+bVydW4eLymg@mail.gmail.com>
+Message-ID: <CAD=FV=Uf3U-kC5j_g7FB6U6_Qf2PVwKJfEsB-b+bVydW4eLymg@mail.gmail.com>
+Subject: Re: [PATCH v2 3/3] mmc: sdhci-msm: Request non-strict IOMMU mode
+To: Will Deacon <will@kernel.org>, Robin Murphy <robin.murphy@arm.com>, 
+ Joerg Roedel <joro@8bytes.org>, Bjorn Andersson <bjorn.andersson@linaro.org>, 
+ Ulf Hansson <ulf.hansson@linaro.org>, Adrian Hunter <adrian.hunter@intel.com>, 
+ Bjorn Helgaas <bhelgaas@google.com>
+Cc: Rob Clark <robdclark@chromium.org>, LKML <linux-kernel@vger.kernel.org>,
+ Saravana Kannan <saravanak@google.com>,
+ linux-arm-msm <linux-arm-msm@vger.kernel.org>,
+ Konrad Dybcio <konrad.dybcio@somainline.org>,
+ Linux MMC List <linux-mmc@vger.kernel.org>, quic_c_gdjako@quicinc.com,
+ "list@263.net:IOMMU DRIVERS <iommu@lists.linux-foundation.org>,
+ Joerg Roedel <joro@8bytes.org>, " <iommu@lists.linux-foundation.org>,
+ Linux ARM <linux-arm-kernel@lists.infradead.org>, linux-pci@vger.kernel.org,
+ Joel Fernandes <joel@joelfernandes.org>, Rajat Jain <rajatja@google.com>,
+ Sonny Rao <sonnyrao@chromium.org>,
+ Veerabhadrarao Badiganti <vbadigan@codeaurora.org>
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -102,20 +123,222 @@ Content-Transfer-Encoding: 7bit
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-On Sat, 12 Jun 2021 11:46:04 +0200, Martin Botka wrote:
-> This patch adds binding for sm6125 SoC
-> 
-> Signed-off-by: Martin Botka <martin.botka@somainline.org>
-> ---
-> Changes in V2:
-> Add commit description
-> Changes in V3:
-> None
->  Documentation/devicetree/bindings/iommu/arm,smmu.yaml | 1 +
->  1 file changed, 1 insertion(+)
-> 
+Hi,
 
-Acked-by: Rob Herring <robh@kernel.org>
+On Thu, Jun 24, 2021 at 10:18 AM Douglas Anderson <dianders@chromium.org> wrote:
+>
+> The concept of IOMMUs being in strict vs. non-strict mode is a
+> pre-existing Linux concept. I've included a rough summary here to help
+> evaluate this patch.
+>
+> IOMMUs can be run in "strict" mode or in "non-strict" mode. The
+> quick-summary difference between the two is that in "strict" mode we
+> wait until everything is flushed out when we unmap DMA memory. In
+> "non-strict" we don't.
+>
+> Using the IOMMU in "strict" mode is more secure/safer but slower
+> because we have to sit and wait for flushes while we're unmapping. To
+> explain a bit why "non-strict" mode is unsafe, let's imagine two
+> examples.
+>
+> An example of "non-strict" being insecure when reading from a device:
+> a) Linux driver maps memory for DMA.
+> b) Linux driver starts DMA on the device.
+> c) Device write to RAM subject to bounds checking done by IOMMU.
+> d) Device finishes writing to RAM and signals transfer is finished.
+> e) Linux driver starts unmapping DMA memory but doesn't wait for the
+>    unmap to finish (the definition of non-strict). At this point,
+>    though, the Linux APIs say that the driver owns the memory and
+>    shouldn't expect any more scribbling from the DMA device.
+> f) Linux driver validates that the data in memory looks sane and that
+>    accessing it won't cause the driver to, for instance, overflow a
+>    buffer.
+> g) Device takes advantage of knowledge of how the Linux driver works
+>    and sneaks in a modification to the data after the validation but
+>    before the IOMMU unmap flush finishes.
+> h) Device has now caused the Linux driver to access memory it
+>    shouldn't.
+>
+> An example of "non-strict" being insecure when writing to a device:
+> a) Linux driver writes data intended for the device to RAM.
+> b) Linux driver maps memory for DMA.
+> c) Linux driver starts DMA on the device.
+> d) Device reads from RAM subject to bounds checking done by IOMMU.
+> e) Device finishes reading from RAM and signals transfer is finished.
+> f) Linux driver starts unmapping DMA memory but doesn't wait for the
+>    unmap to finish (the definition of non-strict)
+> g) Linux driver frees memory and returns it to the pool of memory
+>    available for other users to allocate.
+> h) Memory is allocated for another purpose since it was free memory.
+> i) Device takes advantage of the period of time before IOMMU flush to
+>    read memory that it shouldn't have had access to. What exactly the
+>    memory could contain depends on the randomness of who allocated
+>    next, though exploits have been built on flimisier holes.
+>
+> As you can see from the above examples, using the iommu in
+> "non-strict" mode might not sound _too_ scary (the window of badness
+> is small and the exposed memory is small) but there is certainly
+> risk. Let's evaluate the risk by breaking it down into two problems
+> that IOMMUs are supposed to be protecting us against:
+>
+> Case 1: IOMMUs prevent malicious code running on the peripheral (maybe
+> a malicious peripheral or maybe someone exploited a benign peripheral)
+> from turning into an exploit of the Linux kernel. This is particularly
+> important if the peripheral has loadable / updatable firmware or if
+> the peripheral has some type of general purpose processor and is
+> processing untrusted inputs. It's also important if the device is
+> something that can be easily plugged into the host and the device has
+> direct DMA access itself, like a PCIe device.
+>
+> Case 2: IOMMUs limit the severity of a class of software bugs in the
+> kernel. If we misconfigure a peripheral by accident then instead of
+> the peripheral clobbering random memory due to a bug we might get an
+> IOMMU error.
+>
+> Now that we understand the issue and the risks, let's evaluate whether
+> we really need "strict" mode for the Qualcomm SDHCI controllers. I
+> will make the argument that we don't _need_ strict mode for them. Why?
+> * The SDHCI controller on Qualcomm SoCs doesn't appear to have
+>   loadable / updatable firmware and, assuming it's got some firmware
+>   baked into it, I see no evidence that the firmware could be
+>   compromised.
+> * Even though, for external SD cards in particular, the controller is
+>   dealing with "untrusted" inputs, it's dealing with them in a very
+>   controlled way.  It seems unlikely that a rogue SD card would be
+>   able to present something to the SDHCI controller that would cause
+>   it to DMA to/from an address other than one the kernel told it
+>   about.
+> * Although it would be nice to catch more software bugs, once the
+>   Linux driver has been debugged and stressed the value is not very
+>   high. If the IOMMU caught something like this the system would be in
+>   a pretty bad shape anyway (we don't really recover from IOMMU
+>   errors) and the only benefit would be a better spotlight on what
+>   went wrong.
+>
+> Now we have a good understanding of the benefits of "strict" mode for
+> our SDHCI controllers, let's look at some performance numbers. I used
+> "dd" to measure read speeds from eMMC on a sc7180-trogdor-lazor
+> board. Basic test command (while booted from USB):
+>   echo 3 > /proc/sys/vm/drop_caches
+>   dd if=/dev/mmcblk1 of=/dev/null bs=4M count=512
+>
+> I attempted to run my tests for enough iterations that results
+> stabilized and weren't too noisy. Tests were run with patches picked
+> to the chromeos-5.4 tree (sanity checked against v5.13-rc7). I also
+> attempted to compare to other attempts to address IOMMU problems
+> and/or attempts to bump the cpufreq up to solve this problem:
+> - eMMC datasheet spec: 300 MB/s "Typical Sequential Performance"
+>   NOTE: we're driving the bus at 192 MHz instead of 200 Mhz so we might
+>   not be able to achieve the full 300 MB/s.
+> - Baseline: 210.9 MB/s
+> - Baseline + peg cpufreq to max: 284.3 MB/s
+> - This patch: 279.6 MB/s
+> - This patch + peg cpufreq to max: 288.1 MB/s
+> - Joel's IO Wait fix [1]: 258.4 MB/s
+> - Joel's IO Wait fix [1] + peg cpufreq to max: 287.8 MB/s
+> - TLBIVA patches [2] + [3]: 214.7 MB/s
+> - TLBIVA patches [2] + [3] + peg cpufreq to max: 285.7 MB/s
+> - This patch plus Joel's [1]: 280.2 MB/s
+> - This patch plus Joel's [1] + peg...: 279.0 MB/s
+>   NOTE: I suspect something in the system was thermal throttling since
+>   there's a heat wave right now.
+>
+> I also spent a little bit of time trying to see if I could get the
+> IOMMU flush for MMC out of the critical path but was unable to figure
+> out how to do this and get good performance.
+>
+> Overall I'd say that the performance results above show:
+> * It's really not straightforward to point at "one thing" that is
+>   making our eMMC performance bad.
+> * It's certainly possible to get pretty good eMMC performance even
+>   without this patch.
+> * This patch makes it much easier to get good eMMC performance.
+> * No other solutions that I found resulted in quite as good eMMC
+>   performance as having this patch.
+>
+> Given all the above (security safety concerns are minimal and it's a
+> nice performance win), I'm proposing that running SDHCI on Qualcomm
+> SoCs in non-strict mode is the right thing to do until such point in
+> time as someone can come up with a better solution to get good SD/eMMC
+> performance without it.
+>
+> Now that we've decided we want the SD/MMC controller in non-strict
+> mode, we need to figure out how to make it happen. We will take
+> advantage of the fact that on Qualcomm IOMMUs we know that SD/MMC
+> controllers are in a domain by themselves and hook in when initting
+> the domain context. In response to a previous version of this series
+> there had been discussion [4] of having this driven from a device tree
+> property and this solution doesn't preclude that but is a good jumping
+> off point.
+>
+> NOTES:
+> * It's likely that arguments similar to the above can be made for
+>   other SDHCI controllers. However, given that this is something that
+>   can have an impact on security it feels like we want each SDHCI
+>   controller to opt-in. I believe it is conceivable, for instance,
+>   that some SDHCI controllers might have loadable or updatable
+>   firmware.
+> * It's also likely other peripherals will want this to get the quick
+>   performance win. That also should be fine, though anyone landing a
+>   similar patch should be very careful that it is low risk for all
+>   users of a given peripheral.
+> * Conceivably if even this patch is considered too "high risk", we
+>   could limit this to just non-removable cards (like eMMC) by just
+>   checking the device tree. This is one nice advantage of using the
+>   pre_probe() to set this.
+>
+> [1] https://lore.kernel.org/r/20210618040639.3113489-1-joel@joelfernandes.org
+> [2] https://lore.kernel.org/r/1623850736-389584-1-git-send-email-quic_c_gdjako@quicinc.com/
+> [3] https://lore.kernel.org/r/cover.1623981933.git.saiprakash.ranjan@codeaurora.org/
+> [4] https://lore.kernel.org/r/20210621235248.2521620-1-dianders@chromium.org
+>
+> Signed-off-by: Douglas Anderson <dianders@chromium.org>
+> ---
+>
+> Changes in v2:
+> - Now accomplish the goal by putting rules in the IOMMU driver.
+> - Reworded commit message to clarify things pointed out by Greg.
+>
+>  drivers/iommu/arm/arm-smmu/arm-smmu-qcom.c | 19 +++++++++++++++++++
+>  1 file changed, 19 insertions(+)
+
+Ugh, I really miffed up ${SUBJECT}. I thought I had fixed it to the
+proper iommu prefix but clearly I didn't. :(
+
+
+> diff --git a/drivers/iommu/arm/arm-smmu/arm-smmu-qcom.c b/drivers/iommu/arm/arm-smmu/arm-smmu-qcom.c
+> index 98b3a1c2a181..bd66376d21ce 100644
+> --- a/drivers/iommu/arm/arm-smmu/arm-smmu-qcom.c
+> +++ b/drivers/iommu/arm/arm-smmu/arm-smmu-qcom.c
+> @@ -172,6 +172,24 @@ static const struct of_device_id qcom_smmu_client_of_match[] __maybe_unused = {
+>         { }
+>  };
+>
+> +static const struct of_device_id qcom_smmu_nonstrict_of_match[] __maybe_unused = {
+> +       { .compatible = "qcom,sdhci-msm-v4" },
+> +       { .compatible = "qcom,sdhci-msm-v5" },
+> +       { }
+> +};
+
+I will note that I've done more testing and I've also found that I get
+a really nice USB performance win with a similar change there. I have
+run as many variety of tests there, but atop the patches that are
+already in the chromeos-5.4 tree (which includes Joel's io wait patch)
+I saw an "dd" from a USB 3.0 SD card reader (with a fast card) go from
+~74 MB/s to ~86 MB/s by adding "snps,dwc3".
+
+I believe that the USB controller is a more complicated beast than the
+SDHCI controller so perhaps it's harder to have quite as much
+confidence in it, but it still does technically fulfil the
+requirements above.
+
+I'd also say that since it appears that both Intel and AMD IOMMU
+drivers appear to default to non-strict for anything that's not an
+external PCI device that we could probably default to non-secure for
+dwc3 as well. I'll include a 4th patch in the next version of this
+series assuming that the series as a whole isn't NAKed.
+
+-Doug
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
