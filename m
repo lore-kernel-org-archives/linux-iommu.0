@@ -7,76 +7,77 @@ X-Spam-Status: No, score=-16.5 required=3.0 tests=BAYES_00,DKIM_INVALID,
 	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_GIT
 	autolearn=unavailable autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6F61FC49EA6
-	for <iommu@archiver.kernel.org>; Thu, 24 Jun 2021 15:56:48 +0000 (UTC)
-Received: from smtp1.osuosl.org (smtp1.osuosl.org [140.211.166.138])
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D3ECBC49EA6
+	for <iommu@archiver.kernel.org>; Thu, 24 Jun 2021 15:56:55 +0000 (UTC)
+Received: from smtp2.osuosl.org (smtp2.osuosl.org [140.211.166.133])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 3ADAE613EB
-	for <iommu@archiver.kernel.org>; Thu, 24 Jun 2021 15:56:48 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 3ADAE613EB
+	by mail.kernel.org (Postfix) with ESMTPS id 9DF0E613EB
+	for <iommu@archiver.kernel.org>; Thu, 24 Jun 2021 15:56:55 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 9DF0E613EB
 Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=chromium.org
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by smtp1.osuosl.org (Postfix) with ESMTP id 12F3183DB9;
-	Thu, 24 Jun 2021 15:56:48 +0000 (UTC)
+	by smtp2.osuosl.org (Postfix) with ESMTP id 6C50940155;
+	Thu, 24 Jun 2021 15:56:55 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from smtp1.osuosl.org ([127.0.0.1])
-	by localhost (smtp1.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id g0Su5NVOhgrp; Thu, 24 Jun 2021 15:56:46 +0000 (UTC)
-Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [IPv6:2605:bc80:3010:104::8cd3:938])
-	by smtp1.osuosl.org (Postfix) with ESMTPS id 8CA3083DAD;
-	Thu, 24 Jun 2021 15:56:46 +0000 (UTC)
+Received: from smtp2.osuosl.org ([127.0.0.1])
+	by localhost (smtp2.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+	with ESMTP id gzO_CXMmU__o; Thu, 24 Jun 2021 15:56:54 +0000 (UTC)
+Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
+	by smtp2.osuosl.org (Postfix) with ESMTPS id 0001B404BC;
+	Thu, 24 Jun 2021 15:56:53 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 9A0FFC0024;
-	Thu, 24 Jun 2021 15:56:44 +0000 (UTC)
-Received: from smtp1.osuosl.org (smtp1.osuosl.org [140.211.166.138])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 545C5C000E
- for <iommu@lists.linux-foundation.org>; Thu, 24 Jun 2021 15:56:43 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id DD3F4C001A;
+	Thu, 24 Jun 2021 15:56:53 +0000 (UTC)
+Received: from smtp4.osuosl.org (smtp4.osuosl.org [140.211.166.137])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 2A06FC000E
+ for <iommu@lists.linux-foundation.org>; Thu, 24 Jun 2021 15:56:53 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by smtp1.osuosl.org (Postfix) with ESMTP id 4221683DB5
- for <iommu@lists.linux-foundation.org>; Thu, 24 Jun 2021 15:56:43 +0000 (UTC)
+ by smtp4.osuosl.org (Postfix) with ESMTP id C077941615
+ for <iommu@lists.linux-foundation.org>; Thu, 24 Jun 2021 15:56:52 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from smtp1.osuosl.org ([127.0.0.1])
- by localhost (smtp1.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id qStnK4IotEti for <iommu@lists.linux-foundation.org>;
- Thu, 24 Jun 2021 15:56:42 +0000 (UTC)
+Authentication-Results: smtp4.osuosl.org (amavisd-new);
+ dkim=pass (1024-bit key) header.d=chromium.org
+Received: from smtp4.osuosl.org ([127.0.0.1])
+ by localhost (smtp4.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+ with ESMTP id VMkU3zsYz0Bf for <iommu@lists.linux-foundation.org>;
+ Thu, 24 Jun 2021 15:56:51 +0000 (UTC)
 X-Greylist: whitelisted by SQLgrey-1.8.0
-Received: from mail-pj1-x1033.google.com (mail-pj1-x1033.google.com
- [IPv6:2607:f8b0:4864:20::1033])
- by smtp1.osuosl.org (Postfix) with ESMTPS id 7742E83DB3
- for <iommu@lists.linux-foundation.org>; Thu, 24 Jun 2021 15:56:42 +0000 (UTC)
-Received: by mail-pj1-x1033.google.com with SMTP id
- z3-20020a17090a3983b029016bc232e40bso3750573pjb.4
- for <iommu@lists.linux-foundation.org>; Thu, 24 Jun 2021 08:56:42 -0700 (PDT)
+Received: from mail-pf1-x429.google.com (mail-pf1-x429.google.com
+ [IPv6:2607:f8b0:4864:20::429])
+ by smtp4.osuosl.org (Postfix) with ESMTPS id D8FE74161C
+ for <iommu@lists.linux-foundation.org>; Thu, 24 Jun 2021 15:56:51 +0000 (UTC)
+Received: by mail-pf1-x429.google.com with SMTP id g21so3846576pfc.11
+ for <iommu@lists.linux-foundation.org>; Thu, 24 Jun 2021 08:56:51 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=chromium.org; s=google;
  h=from:to:cc:subject:date:message-id:in-reply-to:references
  :mime-version:content-transfer-encoding;
- bh=k2v4ULCUV3P/ZykooMt4RnFrTyFS8LVxGS67nnIjZ/E=;
- b=QrT3tJse9UwGIKHlr8MsnQ/5shpb9vzqfj7YMQ2fYijn7FCRoIijuokKPkX0W4emjg
- zIW9mO8KXkFug0OUuL1YqRloVsCf7/HNDUAAE7RH/8xRS3Mt1GINoLA/1NQjeCh/6ZZs
- IZdWLInrLmUEvcR0rzL0waTaUCb67EWeMYbx0=
+ bh=DgMLkxnMrm1ElKh2pKbH6DNaZYR5ugLD1JouEAo1Krw=;
+ b=CBMnwj3bqWSxJk9QuIRXj7AXS1rDlhnCorGo2xL5ODh+Y1ZQXuqRVjdQ1sf+NKMF68
+ LGTA1Lrr3OIkG7vhENTIDNd/H+9BmAfoCOyqiHCsY0TRSuVzsnR4mZ3/RZi0ObYA87bL
+ L7rL4dqepWMHniYpyZxN1LD1FH654rL7Zq2lk=
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
  d=1e100.net; s=20161025;
  h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
  :references:mime-version:content-transfer-encoding;
- bh=k2v4ULCUV3P/ZykooMt4RnFrTyFS8LVxGS67nnIjZ/E=;
- b=AnZvq/KjUOsKDfnI/g9TzGmiOP4mglL9mtRjVL076Vfnia/xyxklc2toZIOeG8pORJ
- nGnzP6NYijPSl0RMnChPFq1ZkIQ30oYgvf2MmBUe/RK80f+22AfqAiO3SUwKCeUw1+a5
- l0xYb/rrwlhMtmGpOQQMo9N6o5m6ewS1QEUe8nd44Tw53zmkeTQz4xqnJIXNwJpluz4a
- /s65Ql1b8lUIQS15HaDxfsNdtTN2v59emvsFeFpNNhlG+wxscrYOwSg+TgYbIRWg6b/k
- LFQAPNgpXiafG/EnOC6+QlaUoUqLfjqINyXzOrBXtG7tJZ6GsUAeUPZS1nFx9Eauset2
- AVHw==
-X-Gm-Message-State: AOAM5306xX8Ay8+jSbJZr93dJ9ebl96yc13oFYJMMd3g4zishDpRYL6Y
- au03KRlKBE7RUtXI9n/CJWXuUA==
-X-Google-Smtp-Source: ABdhPJzbejiNIcTS+DoAyoRSN0idnXT3+mB1g+t9ZbfEjTYMX6+0aJ+6gkXmZUbbSTOePShgS47cWw==
-X-Received: by 2002:a17:90b:1bc6:: with SMTP id
- oa6mr15922344pjb.151.1624550201945; 
- Thu, 24 Jun 2021 08:56:41 -0700 (PDT)
+ bh=DgMLkxnMrm1ElKh2pKbH6DNaZYR5ugLD1JouEAo1Krw=;
+ b=bCdK3erfm9zVdStRACEL9bEizlM7kIBYcmRl/JMzCmfBtQvHVUJC50IkMdALEARMRB
+ XPNkYjC/572oCIDYyGHXpGT4+DmGC56UGPcMANOX8rS/uzQhPwrF2y/iw5E+dgO81dMG
+ XzIMXC9ZdZyZ2y2/0Y4o5yBsEcMJ+WkGT0090JQvztVFO/A5q9KRAe46F0jeT71rZh6M
+ E5z+H3pqm8KQnH9gJG3R9oSiE7ZtEydcsGTJ0qEljJxEZ/x/b+IMIt8XbR/6m1VYKWrl
+ WvN+rUvOzofHhaeYVZBbFtLhlgMvyyqkJaPiN1NRiVXfceLiFmrfktK5f9XeN9/v6TrL
+ y3bQ==
+X-Gm-Message-State: AOAM532JNdi1KEqByAzw+adhVYDmE/4RVK0iQQae3zh+XZHgH+ZmG/pM
+ qaRDrjdAPMMoh8IWMSt5E6avzA==
+X-Google-Smtp-Source: ABdhPJz0K8c/e85685sEfhv/cLt8Y/+djdObhlSxD8seBO46vO4znhwmAjNx3on/y8xXncFvFChqNA==
+X-Received: by 2002:a62:d41e:0:b029:305:b3ff:4056 with SMTP id
+ a30-20020a62d41e0000b0290305b3ff4056mr5643354pfh.78.1624550211262; 
+ Thu, 24 Jun 2021 08:56:51 -0700 (PDT)
 Received: from localhost ([2401:fa00:95:205:165a:99ec:42d5:d8b])
- by smtp.gmail.com with UTF8SMTPSA id t13sm3434704pfq.173.2021.06.24.08.56.34
+ by smtp.gmail.com with UTF8SMTPSA id s1sm2804633pgg.49.2021.06.24.08.56.43
  (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
- Thu, 24 Jun 2021 08:56:41 -0700 (PDT)
+ Thu, 24 Jun 2021 08:56:50 -0700 (PDT)
 From: Claire Chang <tientzu@chromium.org>
 To: Rob Herring <robh+dt@kernel.org>, mpe@ellerman.id.au,
  Joerg Roedel <joro@8bytes.org>, Will Deacon <will@kernel.org>,
@@ -84,9 +85,9 @@ To: Rob Herring <robh+dt@kernel.org>, mpe@ellerman.id.au,
  Konrad Rzeszutek Wilk <konrad.wilk@oracle.com>, boris.ostrovsky@oracle.com,
  jgross@suse.com, Christoph Hellwig <hch@lst.de>,
  Marek Szyprowski <m.szyprowski@samsung.com>
-Subject: [PATCH v15 07/12] swiotlb: Move alloc_size to swiotlb_find_slots
-Date: Thu, 24 Jun 2021 23:55:21 +0800
-Message-Id: <20210624155526.2775863-8-tientzu@chromium.org>
+Subject: [PATCH v15 08/12] swiotlb: Refactor swiotlb_tbl_unmap_single
+Date: Thu, 24 Jun 2021 23:55:22 +0800
+Message-Id: <20210624155526.2775863-9-tientzu@chromium.org>
 X-Mailer: git-send-email 2.32.0.288.g62a8d224e6-goog
 In-Reply-To: <20210624155526.2775863-1-tientzu@chromium.org>
 References: <20210624155526.2775863-1-tientzu@chromium.org>
@@ -130,75 +131,76 @@ Content-Transfer-Encoding: 7bit
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-Rename find_slots to swiotlb_find_slots and move the maintenance of
-alloc_size to it for better code reusability later.
+Add a new function, swiotlb_release_slots, to make the code reusable for
+supporting different bounce buffer pools.
 
 Signed-off-by: Claire Chang <tientzu@chromium.org>
 Reviewed-by: Christoph Hellwig <hch@lst.de>
 Tested-by: Stefano Stabellini <sstabellini@kernel.org>
 Tested-by: Will Deacon <will@kernel.org>
 ---
- kernel/dma/swiotlb.c | 17 +++++++++--------
- 1 file changed, 9 insertions(+), 8 deletions(-)
+ kernel/dma/swiotlb.c | 35 ++++++++++++++++++++---------------
+ 1 file changed, 20 insertions(+), 15 deletions(-)
 
 diff --git a/kernel/dma/swiotlb.c b/kernel/dma/swiotlb.c
-index 0d294bbf274c..b41d16e92cf6 100644
+index b41d16e92cf6..93752e752e76 100644
 --- a/kernel/dma/swiotlb.c
 +++ b/kernel/dma/swiotlb.c
-@@ -432,8 +432,8 @@ static unsigned int wrap_index(struct io_tlb_mem *mem, unsigned int index)
-  * Find a suitable number of IO TLB entries size that will fit this request and
-  * allocate a buffer from that IO TLB pool.
-  */
--static int find_slots(struct device *dev, phys_addr_t orig_addr,
--		size_t alloc_size)
-+static int swiotlb_find_slots(struct device *dev, phys_addr_t orig_addr,
-+			      size_t alloc_size)
+@@ -557,27 +557,15 @@ phys_addr_t swiotlb_tbl_map_single(struct device *dev, phys_addr_t orig_addr,
+ 	return tlb_addr;
+ }
+ 
+-/*
+- * tlb_addr is the physical address of the bounce buffer to unmap.
+- */
+-void swiotlb_tbl_unmap_single(struct device *hwdev, phys_addr_t tlb_addr,
+-			      size_t mapping_size, enum dma_data_direction dir,
+-			      unsigned long attrs)
++static void swiotlb_release_slots(struct device *dev, phys_addr_t tlb_addr)
  {
- 	struct io_tlb_mem *mem = dev->dma_io_tlb_mem;
- 	unsigned long boundary_mask = dma_get_seg_boundary(dev);
-@@ -444,6 +444,7 @@ static int find_slots(struct device *dev, phys_addr_t orig_addr,
- 		dma_get_min_align_mask(dev) & ~(IO_TLB_SIZE - 1);
- 	unsigned int nslots = nr_slots(alloc_size), stride;
- 	unsigned int index, wrap, count = 0, i;
-+	unsigned int offset = swiotlb_align_offset(dev, orig_addr);
+-	struct io_tlb_mem *mem = hwdev->dma_io_tlb_mem;
++	struct io_tlb_mem *mem = dev->dma_io_tlb_mem;
  	unsigned long flags;
+-	unsigned int offset = swiotlb_align_offset(hwdev, tlb_addr);
++	unsigned int offset = swiotlb_align_offset(dev, tlb_addr);
+ 	int index = (tlb_addr - offset - mem->start) >> IO_TLB_SHIFT;
+ 	int nslots = nr_slots(mem->slots[index].alloc_size + offset);
+ 	int count, i;
  
- 	BUG_ON(!nslots);
-@@ -488,8 +489,11 @@ static int find_slots(struct device *dev, phys_addr_t orig_addr,
- 	return -1;
+-	/*
+-	 * First, sync the memory before unmapping the entry
+-	 */
+-	if (!(attrs & DMA_ATTR_SKIP_CPU_SYNC) &&
+-	    (dir == DMA_FROM_DEVICE || dir == DMA_BIDIRECTIONAL))
+-		swiotlb_bounce(hwdev, tlb_addr, mapping_size, DMA_FROM_DEVICE);
+-
+ 	/*
+ 	 * Return the buffer to the free list by setting the corresponding
+ 	 * entries to indicate the number of contiguous entries available.
+@@ -612,6 +600,23 @@ void swiotlb_tbl_unmap_single(struct device *hwdev, phys_addr_t tlb_addr,
+ 	spin_unlock_irqrestore(&mem->lock, flags);
+ }
  
- found:
--	for (i = index; i < index + nslots; i++)
-+	for (i = index; i < index + nslots; i++) {
- 		mem->slots[i].list = 0;
-+		mem->slots[i].alloc_size =
-+			alloc_size - (offset + ((i - index) << IO_TLB_SHIFT));
-+	}
- 	for (i = index - 1;
- 	     io_tlb_offset(i) != IO_TLB_SEGSIZE - 1 &&
- 	     mem->slots[i].list; i--)
-@@ -530,7 +534,7 @@ phys_addr_t swiotlb_tbl_map_single(struct device *dev, phys_addr_t orig_addr,
- 		return (phys_addr_t)DMA_MAPPING_ERROR;
- 	}
- 
--	index = find_slots(dev, orig_addr, alloc_size + offset);
-+	index = swiotlb_find_slots(dev, orig_addr, alloc_size + offset);
- 	if (index == -1) {
- 		if (!(attrs & DMA_ATTR_NO_WARN))
- 			dev_warn_ratelimited(dev,
-@@ -544,11 +548,8 @@ phys_addr_t swiotlb_tbl_map_single(struct device *dev, phys_addr_t orig_addr,
- 	 * This is needed when we sync the memory.  Then we sync the buffer if
- 	 * needed.
- 	 */
--	for (i = 0; i < nr_slots(alloc_size + offset); i++) {
-+	for (i = 0; i < nr_slots(alloc_size + offset); i++)
- 		mem->slots[index + i].orig_addr = slot_addr(orig_addr, i);
--		mem->slots[index + i].alloc_size =
--			alloc_size - (i << IO_TLB_SHIFT);
--	}
- 	tlb_addr = slot_addr(mem->start, index) + offset;
- 	if (!(attrs & DMA_ATTR_SKIP_CPU_SYNC) &&
- 	    (dir == DMA_TO_DEVICE || dir == DMA_BIDIRECTIONAL))
++/*
++ * tlb_addr is the physical address of the bounce buffer to unmap.
++ */
++void swiotlb_tbl_unmap_single(struct device *dev, phys_addr_t tlb_addr,
++			      size_t mapping_size, enum dma_data_direction dir,
++			      unsigned long attrs)
++{
++	/*
++	 * First, sync the memory before unmapping the entry
++	 */
++	if (!(attrs & DMA_ATTR_SKIP_CPU_SYNC) &&
++	    (dir == DMA_FROM_DEVICE || dir == DMA_BIDIRECTIONAL))
++		swiotlb_bounce(dev, tlb_addr, mapping_size, DMA_FROM_DEVICE);
++
++	swiotlb_release_slots(dev, tlb_addr);
++}
++
+ void swiotlb_sync_single_for_device(struct device *dev, phys_addr_t tlb_addr,
+ 		size_t size, enum dma_data_direction dir)
+ {
 -- 
 2.32.0.288.g62a8d224e6-goog
 
