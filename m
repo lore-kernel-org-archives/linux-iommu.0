@@ -2,116 +2,68 @@ Return-Path: <SRS0=kzsj=LS=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-16.5 required=3.0 tests=BAYES_00,DKIM_INVALID,
-	DKIM_SIGNED,HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_CR_TRAILER,INCLUDES_PATCH,
-	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_GIT
+X-Spam-Status: No, score=-15.2 required=3.0 tests=BAYES_00,
+	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_CR_TRAILER,INCLUDES_PATCH,
+	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_SANE_2
 	autolearn=unavailable autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 32CA0C49EA5
-	for <iommu@archiver.kernel.org>; Thu, 24 Jun 2021 15:59:14 +0000 (UTC)
-Received: from smtp4.osuosl.org (smtp4.osuosl.org [140.211.166.137])
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 72AB5C49EA6
+	for <iommu@archiver.kernel.org>; Thu, 24 Jun 2021 16:00:07 +0000 (UTC)
+Received: from smtp3.osuosl.org (smtp3.osuosl.org [140.211.166.136])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id DFCA3613DC
-	for <iommu@archiver.kernel.org>; Thu, 24 Jun 2021 15:59:13 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org DFCA3613DC
-Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=chromium.org
+	by mail.kernel.org (Postfix) with ESMTPS id 2A18E613EB
+	for <iommu@archiver.kernel.org>; Thu, 24 Jun 2021 16:00:07 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 2A18E613EB
+Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=arm.com
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by smtp4.osuosl.org (Postfix) with ESMTP id ABD5D4035D;
-	Thu, 24 Jun 2021 15:59:13 +0000 (UTC)
+	by smtp3.osuosl.org (Postfix) with ESMTP id EF2F560AD5;
+	Thu, 24 Jun 2021 16:00:06 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from smtp4.osuosl.org ([127.0.0.1])
-	by localhost (smtp4.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id XQcABVgZztt8; Thu, 24 Jun 2021 15:59:12 +0000 (UTC)
-Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [IPv6:2605:bc80:3010:104::8cd3:938])
-	by smtp4.osuosl.org (Postfix) with ESMTPS id BFAC240406;
-	Thu, 24 Jun 2021 15:59:11 +0000 (UTC)
+Received: from smtp3.osuosl.org ([127.0.0.1])
+	by localhost (smtp3.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+	with ESMTP id 4kqSHkosXfXo; Thu, 24 Jun 2021 16:00:06 +0000 (UTC)
+Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
+	by smtp3.osuosl.org (Postfix) with ESMTPS id AAB4660AD3;
+	Thu, 24 Jun 2021 16:00:05 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id A40C8C001A;
-	Thu, 24 Jun 2021 15:59:11 +0000 (UTC)
-Received: from smtp4.osuosl.org (smtp4.osuosl.org [140.211.166.137])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 19AC8C000E
- for <iommu@lists.linux-foundation.org>; Thu, 24 Jun 2021 15:59:10 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 6597BC000E;
+	Thu, 24 Jun 2021 16:00:05 +0000 (UTC)
+Received: from smtp1.osuosl.org (smtp1.osuosl.org [140.211.166.138])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 166FDC001A
+ for <iommu@lists.linux-foundation.org>; Thu, 24 Jun 2021 16:00:03 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by smtp4.osuosl.org (Postfix) with ESMTP id AB49B42279
- for <iommu@lists.linux-foundation.org>; Thu, 24 Jun 2021 15:57:32 +0000 (UTC)
+ by smtp1.osuosl.org (Postfix) with ESMTP id 4595B83DDF
+ for <iommu@lists.linux-foundation.org>; Thu, 24 Jun 2021 15:58:15 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from smtp4.osuosl.org ([127.0.0.1])
- by localhost (smtp4.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id wIfVJ4WOE2Ti for <iommu@lists.linux-foundation.org>;
- Thu, 24 Jun 2021 15:57:28 +0000 (UTC)
-X-Greylist: whitelisted by SQLgrey-1.8.0
-Received: from mail-pj1-x102c.google.com (mail-pj1-x102c.google.com
- [IPv6:2607:f8b0:4864:20::102c])
- by smtp4.osuosl.org (Postfix) with ESMTPS id 967924226A
- for <iommu@lists.linux-foundation.org>; Thu, 24 Jun 2021 15:57:28 +0000 (UTC)
-Received: by mail-pj1-x102c.google.com with SMTP id k5so3753988pjj.1
- for <iommu@lists.linux-foundation.org>; Thu, 24 Jun 2021 08:57:28 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=chromium.org; s=google;
- h=from:to:cc:subject:date:message-id:in-reply-to:references
- :mime-version:content-transfer-encoding;
- bh=xfRvKXXPDGozL9xpkc2RXgCWY6OxEYfQN41+lxoFnvY=;
- b=kEshnj7M08k1T5XsbOYdzjZbq7nVnmjng6eJnfjl4lHMzaAZWk6m94BUgoAkO9vE9h
- LGUHt/CR+GHi3cdJm3u8om1RbudjT01C0RCIVYBXBb3iKIFLf6Hz/aFd03GLLTot9C9q
- is4g5Rc9w98QwWpmpTahpJ12S/0U2a21x3Eus=
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
- d=1e100.net; s=20161025;
- h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
- :references:mime-version:content-transfer-encoding;
- bh=xfRvKXXPDGozL9xpkc2RXgCWY6OxEYfQN41+lxoFnvY=;
- b=TQQXMCyUfD6lyIbkta0ZL0yI3esM4MBGtQvqf3JE74QAs/b0hjPNvO5z37IyvSzJPD
- nyp/8BBwWSZZzD2+PXoTe1uc/CvfgJZeJprjsDr8rBb7xdZtZDx5fzGSPsRukerZvGZV
- TlVSYfhgX9QSq6Wyl/z4QCGzl/Q6YdENUvEu8X4RAKxtBZfjxFB/6qowkwC3jai8rSCy
- MLOKJ6eZ+kpI4AXqxrhygzDEy7WAX4TbKnk+GB886v38VJeoZAmT1Gi0DPJM+Anl8oBd
- hyHMa/aHNXVtlF7bpPUqKim/H2yLIUMotRgZo2II3f/RK6PeqW3P6btrOfzyW/7zX+8U
- IebQ==
-X-Gm-Message-State: AOAM530qSiC94F3kgCQYM3tBaZKOC/FuZLrfkn0OmFfJD05gygppRXiC
- T29ePBVweWYjBXQ2AWuNDSjpAQ==
-X-Google-Smtp-Source: ABdhPJzInUpAy17snFNN0CGcBB/ghyLU73coTfwG0l77wDEHQQH9RWDi8n5UN9ZkYoU3wlPKMD5xpQ==
-X-Received: by 2002:a17:90b:2282:: with SMTP id
- kx2mr5939882pjb.60.1624550248050; 
- Thu, 24 Jun 2021 08:57:28 -0700 (PDT)
-Received: from localhost ([2401:fa00:95:205:165a:99ec:42d5:d8b])
- by smtp.gmail.com with UTF8SMTPSA id n6sm2862924pgt.7.2021.06.24.08.57.20
- (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
- Thu, 24 Jun 2021 08:57:27 -0700 (PDT)
-From: Claire Chang <tientzu@chromium.org>
-To: Rob Herring <robh+dt@kernel.org>, mpe@ellerman.id.au,
- Joerg Roedel <joro@8bytes.org>, Will Deacon <will@kernel.org>,
- Frank Rowand <frowand.list@gmail.com>,
- Konrad Rzeszutek Wilk <konrad.wilk@oracle.com>, boris.ostrovsky@oracle.com,
- jgross@suse.com, Christoph Hellwig <hch@lst.de>,
- Marek Szyprowski <m.szyprowski@samsung.com>
-Subject: [PATCH v15 12/12] of: Add plumbing for restricted DMA pool
-Date: Thu, 24 Jun 2021 23:55:26 +0800
-Message-Id: <20210624155526.2775863-13-tientzu@chromium.org>
-X-Mailer: git-send-email 2.32.0.288.g62a8d224e6-goog
-In-Reply-To: <20210624155526.2775863-1-tientzu@chromium.org>
-References: <20210624155526.2775863-1-tientzu@chromium.org>
+Received: from smtp1.osuosl.org ([127.0.0.1])
+ by localhost (smtp1.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+ with ESMTP id X2rh38D10-pE for <iommu@lists.linux-foundation.org>;
+ Thu, 24 Jun 2021 15:58:14 +0000 (UTC)
+X-Greylist: domain auto-whitelisted by SQLgrey-1.8.0
+Received: from foss.arm.com (foss.arm.com [217.140.110.172])
+ by smtp1.osuosl.org (Postfix) with ESMTP id 28FE083DE2
+ for <iommu@lists.linux-foundation.org>; Thu, 24 Jun 2021 15:58:14 +0000 (UTC)
+Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
+ by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 52299ED1;
+ Thu, 24 Jun 2021 08:58:13 -0700 (PDT)
+Received: from slackpad.fritz.box (unknown [172.31.20.19])
+ by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id 8C2A63F719;
+ Thu, 24 Jun 2021 08:58:12 -0700 (PDT)
+Date: Thu, 24 Jun 2021 16:57:53 +0100
+From: Andre Przywara <andre.przywara@arm.com>
+To: Robin Murphy <robin.murphy@arm.com>
+Subject: Re: [PATCH] iommu/arm-smmu-v3: Add default domain quirk for Arm
+ Fast Models
+Message-ID: <20210624165753.7f47bdbc@slackpad.fritz.box>
+In-Reply-To: <bf7020acf5ca7306a51d1950e3ff2afe2229e037.1624032324.git.robin.murphy@arm.com>
+References: <bf7020acf5ca7306a51d1950e3ff2afe2229e037.1624032324.git.robin.murphy@arm.com>
+Organization: Arm Ltd.
+X-Mailer: Claws Mail 3.17.1 (GTK+ 2.24.31; x86_64-slackware-linux-gnu)
 MIME-Version: 1.0
-Cc: heikki.krogerus@linux.intel.com, thomas.hellstrom@linux.intel.com,
- peterz@infradead.org, benh@kernel.crashing.org,
- joonas.lahtinen@linux.intel.com, dri-devel@lists.freedesktop.org,
- chris@chris-wilson.co.uk, grant.likely@arm.com, paulus@samba.org,
- mingo@kernel.org, jxgao@google.com, sstabellini@kernel.org,
- Saravana Kannan <saravanak@google.com>, xypron.glpk@gmx.de,
- "Rafael J . Wysocki" <rafael.j.wysocki@intel.com>,
- Bartosz Golaszewski <bgolaszewski@baylibre.com>, bskeggs@redhat.com,
- linux-pci@vger.kernel.org, xen-devel@lists.xenproject.org,
- Thierry Reding <treding@nvidia.com>, intel-gfx@lists.freedesktop.org,
- matthew.auld@intel.com, linux-devicetree <devicetree@vger.kernel.org>,
- daniel@ffwll.ch, airlied@linux.ie, maarten.lankhorst@linux.intel.com,
- linuxppc-dev@lists.ozlabs.org, jani.nikula@linux.intel.com,
- Nicolas Boichat <drinkcat@chromium.org>, rodrigo.vivi@intel.com,
- bhelgaas@google.com, tientzu@chromium.org,
- Dan Williams <dan.j.williams@intel.com>,
- Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
- Greg KH <gregkh@linuxfoundation.org>, Randy Dunlap <rdunlap@infradead.org>,
- quic_qiancai@quicinc.com, lkml <linux-kernel@vger.kernel.org>,
- "list@263.net:IOMMU DRIVERS" <iommu@lists.linux-foundation.org>,
- Jim Quinlan <james.quinlan@broadcom.com>, thomas.lendacky@amd.com,
- Robin Murphy <robin.murphy@arm.com>, bauerman@linux.ibm.com
+Cc: will@kernel.org, iommu@lists.linux-foundation.org,
+ linux-arm-kernel@lists.infradead.org
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -129,108 +81,71 @@ Content-Transfer-Encoding: 7bit
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-If a device is not behind an IOMMU, we look up the device node and set
-up the restricted DMA when the restricted-dma-pool is presented.
+On Fri, 18 Jun 2021 17:24:49 +0100
+Robin Murphy <robin.murphy@arm.com> wrote:
 
-Signed-off-by: Claire Chang <tientzu@chromium.org>
-Tested-by: Stefano Stabellini <sstabellini@kernel.org>
-Tested-by: Will Deacon <will@kernel.org>
----
- drivers/of/address.c    | 33 +++++++++++++++++++++++++++++++++
- drivers/of/device.c     |  3 +++
- drivers/of/of_private.h |  6 ++++++
- 3 files changed, 42 insertions(+)
+Hi Robin,
 
-diff --git a/drivers/of/address.c b/drivers/of/address.c
-index 73ddf2540f3f..cdf700fba5c4 100644
---- a/drivers/of/address.c
-+++ b/drivers/of/address.c
-@@ -8,6 +8,7 @@
- #include <linux/logic_pio.h>
- #include <linux/module.h>
- #include <linux/of_address.h>
-+#include <linux/of_reserved_mem.h>
- #include <linux/pci.h>
- #include <linux/pci_regs.h>
- #include <linux/sizes.h>
-@@ -1022,6 +1023,38 @@ int of_dma_get_range(struct device_node *np, const struct bus_dma_region **map)
- 	of_node_put(node);
- 	return ret;
- }
-+
-+int of_dma_set_restricted_buffer(struct device *dev, struct device_node *np)
-+{
-+	struct device_node *node, *of_node = dev->of_node;
-+	int count, i;
-+
-+	count = of_property_count_elems_of_size(of_node, "memory-region",
-+						sizeof(u32));
-+	/*
-+	 * If dev->of_node doesn't exist or doesn't contain memory-region, try
-+	 * the OF node having DMA configuration.
-+	 */
-+	if (count <= 0) {
-+		of_node = np;
-+		count = of_property_count_elems_of_size(
-+			of_node, "memory-region", sizeof(u32));
-+	}
-+
-+	for (i = 0; i < count; i++) {
-+		node = of_parse_phandle(of_node, "memory-region", i);
-+		/*
-+		 * There might be multiple memory regions, but only one
-+		 * restricted-dma-pool region is allowed.
-+		 */
-+		if (of_device_is_compatible(node, "restricted-dma-pool") &&
-+		    of_device_is_available(node))
-+			return of_reserved_mem_device_init_by_idx(dev, of_node,
-+								  i);
-+	}
-+
-+	return 0;
-+}
- #endif /* CONFIG_HAS_DMA */
- 
- /**
-diff --git a/drivers/of/device.c b/drivers/of/device.c
-index 6cb86de404f1..e68316836a7a 100644
---- a/drivers/of/device.c
-+++ b/drivers/of/device.c
-@@ -165,6 +165,9 @@ int of_dma_configure_id(struct device *dev, struct device_node *np,
- 
- 	arch_setup_dma_ops(dev, dma_start, size, iommu, coherent);
- 
-+	if (!iommu)
-+		return of_dma_set_restricted_buffer(dev, np);
-+
- 	return 0;
- }
- EXPORT_SYMBOL_GPL(of_dma_configure_id);
-diff --git a/drivers/of/of_private.h b/drivers/of/of_private.h
-index d9e6a324de0a..25cebbed5f02 100644
---- a/drivers/of/of_private.h
-+++ b/drivers/of/of_private.h
-@@ -161,12 +161,18 @@ struct bus_dma_region;
- #if defined(CONFIG_OF_ADDRESS) && defined(CONFIG_HAS_DMA)
- int of_dma_get_range(struct device_node *np,
- 		const struct bus_dma_region **map);
-+int of_dma_set_restricted_buffer(struct device *dev, struct device_node *np);
- #else
- static inline int of_dma_get_range(struct device_node *np,
- 		const struct bus_dma_region **map)
- {
- 	return -ENODEV;
- }
-+static inline int of_dma_set_restricted_buffer(struct device *dev,
-+					       struct device_node *np)
-+{
-+	return -ENODEV;
-+}
- #endif
- 
- #endif /* _LINUX_OF_PRIVATE_H */
--- 
-2.32.0.288.g62a8d224e6-goog
+> Arm Fast Models are still implementing legacy virtio-pci devices behind
+> the SMMU, which continue to be problematic as "real hardware" devices
+> (from the point of view of the simulated system) without the mitigating
+> VIRTIO_F_ACCESS_PLATFORM feature.
+> 
+> Since we now have the ability to force passthrough on a device-specific
+> basis, let's use it to work around this particular oddity so that people
+> who just want to boot Linux on a model don't have to fiddle around with
+> things to avoid the SMMU getting in the way by default (and I don't have
+> to keep telling them which things...)
+> 
+> Signed-off-by: Robin Murphy <robin.murphy@arm.com>
+
+So it looks somewhat quirky, but it indeed fixes the boot problems on
+the RevC model for me.
+And given that currently an out-of-the-box kernel build fails booting
+(with the kernel DT), I'd like to see that merged.
+
+Tested-by: Andre Przywara <andre.przywara@arm.com>
+
+Thanks,
+Andre
+
+> ---
+>  drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c | 15 +++++++++++++++
+>  1 file changed, 15 insertions(+)
+> 
+> diff --git a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
+> index 54b2f27b81d4..13cf16e8f45b 100644
+> --- a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
+> +++ b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
+> @@ -2649,6 +2649,20 @@ static int arm_smmu_dev_disable_feature(struct device *dev,
+>  	}
+>  }
+>  
+> +static int arm_smmu_def_domain_type(struct device *dev)
+> +{
+> +	if (dev_is_pci(dev)) {
+> +		struct pci_dev *pdev = to_pci_dev(dev);
+> +
+> +		/* Legacy virtio-block devices on Arm Fast Models */
+> +		if (pdev->vendor == 0x1af4 && pdev->device == 0x1001 &&
+> +		    pdev->subsystem_vendor == 0x00ff && pdev->subsystem_device == 0x0002)
+> +			return IOMMU_DOMAIN_IDENTITY;
+> +	}
+> +
+> +	return 0;
+> +}
+> +
+>  static struct iommu_ops arm_smmu_ops = {
+>  	.capable		= arm_smmu_capable,
+>  	.domain_alloc		= arm_smmu_domain_alloc,
+> @@ -2673,6 +2687,7 @@ static struct iommu_ops arm_smmu_ops = {
+>  	.sva_bind		= arm_smmu_sva_bind,
+>  	.sva_unbind		= arm_smmu_sva_unbind,
+>  	.sva_get_pasid		= arm_smmu_sva_get_pasid,
+> +	.def_domain_type	= arm_smmu_def_domain_type,
+>  	.pgsize_bitmap		= -1UL, /* Restricted during device attach */
+>  	.owner			= THIS_MODULE,
+>  };
 
 _______________________________________________
 iommu mailing list
