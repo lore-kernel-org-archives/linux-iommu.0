@@ -6,109 +6,75 @@ X-Spam-Status: No, score=-3.5 required=3.0 tests=BAYES_00,DKIM_INVALID,
 	DKIM_SIGNED,HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,SPF_HELO_NONE,
 	SPF_PASS,URIBL_BLOCKED autolearn=no autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2005CC49EA7
-	for <iommu@archiver.kernel.org>; Thu, 24 Jun 2021 04:46:50 +0000 (UTC)
-Received: from smtp1.osuosl.org (smtp1.osuosl.org [140.211.166.138])
+	by smtp.lore.kernel.org (Postfix) with ESMTP id DBB2BC48BDF
+	for <iommu@archiver.kernel.org>; Thu, 24 Jun 2021 04:52:30 +0000 (UTC)
+Received: from smtp4.osuosl.org (smtp4.osuosl.org [140.211.166.137])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id A848F613D9
-	for <iommu@archiver.kernel.org>; Thu, 24 Jun 2021 04:46:49 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org A848F613D9
-Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=bytedance.com
+	by mail.kernel.org (Postfix) with ESMTPS id 3C64F613D9
+	for <iommu@archiver.kernel.org>; Thu, 24 Jun 2021 04:52:30 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 3C64F613D9
+Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=gibson.dropbear.id.au
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by smtp1.osuosl.org (Postfix) with ESMTP id 6262A83BF5;
-	Thu, 24 Jun 2021 04:46:49 +0000 (UTC)
+	by smtp4.osuosl.org (Postfix) with ESMTP id F12DC406B0;
+	Thu, 24 Jun 2021 04:52:29 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from smtp1.osuosl.org ([127.0.0.1])
-	by localhost (smtp1.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id 1kh6iXHliUZm; Thu, 24 Jun 2021 04:46:48 +0000 (UTC)
-Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by smtp1.osuosl.org (Postfix) with ESMTPS id 4B6DA83AB5;
-	Thu, 24 Jun 2021 04:46:48 +0000 (UTC)
+Received: from smtp4.osuosl.org ([127.0.0.1])
+	by localhost (smtp4.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+	with ESMTP id QJTPS96Tr5Pe; Thu, 24 Jun 2021 04:52:28 +0000 (UTC)
+Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [IPv6:2605:bc80:3010:104::8cd3:938])
+	by smtp4.osuosl.org (Postfix) with ESMTPS id 16DF840659;
+	Thu, 24 Jun 2021 04:52:28 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id DD6EEC001A;
-	Thu, 24 Jun 2021 04:46:47 +0000 (UTC)
-Received: from smtp3.osuosl.org (smtp3.osuosl.org [IPv6:2605:bc80:3010::136])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 8484FC001A
- for <iommu@lists.linux-foundation.org>; Thu, 24 Jun 2021 04:46:45 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id DD13CC001A;
+	Thu, 24 Jun 2021 04:52:27 +0000 (UTC)
+Received: from smtp3.osuosl.org (smtp3.osuosl.org [140.211.166.136])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 769AEC000E
+ for <iommu@lists.linux-foundation.org>; Thu, 24 Jun 2021 04:52:26 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by smtp3.osuosl.org (Postfix) with ESMTP id 5C43460804
- for <iommu@lists.linux-foundation.org>; Thu, 24 Jun 2021 04:46:45 +0000 (UTC)
+ by smtp3.osuosl.org (Postfix) with ESMTP id 66999607B3
+ for <iommu@lists.linux-foundation.org>; Thu, 24 Jun 2021 04:52:26 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
 Authentication-Results: smtp3.osuosl.org (amavisd-new);
- dkim=pass (2048-bit key) header.d=bytedance-com.20150623.gappssmtp.com
+ dkim=pass (1024-bit key) header.d=gibson.dropbear.id.au
 Received: from smtp3.osuosl.org ([127.0.0.1])
  by localhost (smtp3.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id BXLlrdh57ltT for <iommu@lists.linux-foundation.org>;
- Thu, 24 Jun 2021 04:46:44 +0000 (UTC)
-X-Greylist: whitelisted by SQLgrey-1.8.0
-Received: from mail-ej1-x632.google.com (mail-ej1-x632.google.com
- [IPv6:2a00:1450:4864:20::632])
- by smtp3.osuosl.org (Postfix) with ESMTPS id E674A607AB
- for <iommu@lists.linux-foundation.org>; Thu, 24 Jun 2021 04:46:43 +0000 (UTC)
-Received: by mail-ej1-x632.google.com with SMTP id hq39so7398670ejc.5
- for <iommu@lists.linux-foundation.org>; Wed, 23 Jun 2021 21:46:43 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
- d=bytedance-com.20150623.gappssmtp.com; s=20150623;
- h=mime-version:references:in-reply-to:from:date:message-id:subject:to
- :cc:content-transfer-encoding;
- bh=qV+mylXL/2SS4mJCMLehWyslEuC3Qq8x/PXCguBgY/I=;
- b=yLsRfVae0FF0DXCc80Qe7rbCzVIrdmQDyeaVXSgU7731bg1QMqw4lgqLCxjyZUZjwu
- TDH7cb0lIajOurwizpXzJMb1Ld/YEZ/vOZ/tKUWon1ytyFmk7qtEyniUaT9wfomHXaCZ
- Q5k7DOlqy4oW2+TRbKidZkfTZk1foP9dbr9CEZLKOgBzOUjNXSWZEPhSFmyl+eKMt16P
- UetkLAJ4Ll73DccWxMTSvwQYbyiWwHF4SXeF68p10765hT8FeXCxeTOqWo6XDYYUASaW
- U0fLxWjMmOWM2r455SZayrz6m1rBoWQox1axwCaI6sMaC6VcTv4xi2V6T6wMsgxpGUUR
- 4qsA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
- d=1e100.net; s=20161025;
- h=x-gm-message-state:mime-version:references:in-reply-to:from:date
- :message-id:subject:to:cc:content-transfer-encoding;
- bh=qV+mylXL/2SS4mJCMLehWyslEuC3Qq8x/PXCguBgY/I=;
- b=CjLZ8hbXD2BitH2kY0Ux28ZObHuCOGPBKQFg4s8NbBz/dw+jXmKv0MuEFvS27a1KAo
- VCGPjabWZ8Se3fmRe2kTt/UeZ6lz6Xz4vIMFLjqWEqDS7IXg7/xDDBlXcg5cMwNMTDbp
- ns1iG36v7+tSahhkLuFE75LfRBzBmO9kTHewZRu5tfQOGCdBF0OTcMS0AlHK++f9DYKP
- W0lTUPoi3gfz8BW3u3n7soUaV3gu4hVczBHF1Otsmq+x5SxPn80/NfSIQI5ubBuyN1aZ
- i5J2f1l3sAt4XlKtz82Be2O+TisRjWV9fVVag3KuxCLJWViZv+Tb2+59Hs5i5B7XURaO
- 4k3g==
-X-Gm-Message-State: AOAM532jKxdzVQ3r5jtoybR3hursP2JbVlKmmiCxM8NFjNQ74zbFJxph
- +VTWj0j5DVQIa4DDNRUUrMx0ooV5elqWboZZ2OI9
-X-Google-Smtp-Source: ABdhPJxLv6gMYjF4IzwXDzBGPms1QJcwsfrq54qSD0tH6LJ386sUw0R2U1ERHQHkfRm0DArekdU8YwZzZP3+ubsA+P4=
-X-Received: by 2002:a17:906:3c4a:: with SMTP id
- i10mr3283231ejg.372.1624510001769; 
- Wed, 23 Jun 2021 21:46:41 -0700 (PDT)
+ with ESMTP id upl2dCNF0LmG for <iommu@lists.linux-foundation.org>;
+ Thu, 24 Jun 2021 04:52:25 +0000 (UTC)
+X-Greylist: domain auto-whitelisted by SQLgrey-1.8.0
+Received: from ozlabs.org (ozlabs.org [IPv6:2401:3900:2:1::2])
+ by smtp3.osuosl.org (Postfix) with ESMTPS id 6A5526079D
+ for <iommu@lists.linux-foundation.org>; Thu, 24 Jun 2021 04:52:25 +0000 (UTC)
+Received: by ozlabs.org (Postfix, from userid 1007)
+ id 4G9SRT1z33z9sf9; Thu, 24 Jun 2021 14:52:21 +1000 (AEST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+ d=gibson.dropbear.id.au; s=201602; t=1624510341;
+ bh=gtNqfON2b+uPZ4FFUk66B4cN5cUYbQo0UQOhSPJibRU=;
+ h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+ b=jACRQu74hhjVKLkBHbKaYa++no5/SpyDDCAmXLWGBqnA2Fk6QNQppmT/jPuootYM6
+ nz5PGPPdqUHpyANKEcuRG0xRLh0p5eDHB2pw4NGtnyyxnslef26zVe84l9SgVHRh2s
+ jXTKqSjziY1gxL9oUH4FD6j5EeZKTIYHg7jP5La4=
+Date: Thu, 24 Jun 2021 13:55:17 +1000
+From: David Gibson <david@gibson.dropbear.id.au>
+To: "Tian, Kevin" <kevin.tian@intel.com>
+Subject: Re: [RFC] /dev/ioasid uAPI proposal
+Message-ID: <YNQCJfU/G5uwDCSE@yekko>
+References: <MWHPR11MB1886422D4839B372C6AB245F8C239@MWHPR11MB1886.namprd11.prod.outlook.com>
+ <YLch6zbbYqV4PyVf@yekko>
+ <MWHPR11MB188668D220E1BF7360F2A6BE8C3C9@MWHPR11MB1886.namprd11.prod.outlook.com>
+ <YMrKksUeNW/PEGPM@yekko>
+ <MWHPR11MB188672DF8E0AC2C0D56EF86D8C089@MWHPR11MB1886.namprd11.prod.outlook.com>
 MIME-Version: 1.0
-References: <20210615141331.407-1-xieyongji@bytedance.com>
- <20210615141331.407-10-xieyongji@bytedance.com>
- <adfb2be9-9ed9-ca37-ac37-4cd00bdff349@redhat.com>
- <CACycT3tAON+-qZev+9EqyL2XbgH5HDspOqNt3ohQLQ8GqVK=EA@mail.gmail.com>
- <1bba439f-ffc8-c20e-e8a4-ac73e890c592@redhat.com>
- <CACycT3uzMJS7vw6MVMOgY4rb=SPfT2srV+8DPdwUVeELEiJgbA@mail.gmail.com>
- <0aeb7cb7-58e5-1a95-d830-68edd7e8ec2e@redhat.com>
- <CACycT3uuooKLNnpPHewGZ=q46Fap2P4XCFirdxxn=FxK+X1ECg@mail.gmail.com>
- <e4cdee72-b6b4-d055-9aac-3beae0e5e3e1@redhat.com>
- <CACycT3u8=_D3hCtJR+d5BgeUQMce6S7c_6P3CVfvWfYhCQeXFA@mail.gmail.com>
- <d2334f66-907c-2e9c-ea4f-f912008e9be8@redhat.com>
-In-Reply-To: <d2334f66-907c-2e9c-ea4f-f912008e9be8@redhat.com>
-From: Yongji Xie <xieyongji@bytedance.com>
-Date: Thu, 24 Jun 2021 12:46:30 +0800
-Message-ID: <CACycT3uCSLUDVpQHdrmuxSuoBDg-4n22t+N-Jm2GoNNp9JYB2w@mail.gmail.com>
-Subject: Re: Re: [PATCH v8 09/10] vduse: Introduce VDUSE - vDPA Device in
- Userspace
-To: Jason Wang <jasowang@redhat.com>
-Cc: kvm <kvm@vger.kernel.org>, "Michael S. Tsirkin" <mst@redhat.com>,
- virtualization <virtualization@lists.linux-foundation.org>,
- Christian Brauner <christian.brauner@canonical.com>,
- Jonathan Corbet <corbet@lwn.net>, Matthew Wilcox <willy@infradead.org>,
- Christoph Hellwig <hch@infradead.org>,
- Dan Carpenter <dan.carpenter@oracle.com>,
- Stefano Garzarella <sgarzare@redhat.com>, Al Viro <viro@zeniv.linux.org.uk>,
- Stefan Hajnoczi <stefanha@redhat.com>, songmuchun@bytedance.com,
- Jens Axboe <axboe@kernel.dk>, Greg KH <gregkh@linuxfoundation.org>,
- Randy Dunlap <rdunlap@infradead.org>,
- linux-kernel <linux-kernel@vger.kernel.org>, iommu@lists.linux-foundation.org,
- bcrl@kvack.org, netdev@vger.kernel.org, linux-fsdevel@vger.kernel.org,
- =?UTF-8?Q?Mika_Penttil=C3=A4?= <mika.penttila@nextfour.com>
+In-Reply-To: <MWHPR11MB188672DF8E0AC2C0D56EF86D8C089@MWHPR11MB1886.namprd11.prod.outlook.com>
+Cc: Jean-Philippe Brucker <jean-philippe@linaro.org>, "Jiang,
+ Dave" <dave.jiang@intel.com>, "Raj, Ashok" <ashok.raj@intel.com>,
+ "kvm@vger.kernel.org" <kvm@vger.kernel.org>, Jonathan Corbet <corbet@lwn.net>,
+ David Woodhouse <dwmw2@infradead.org>, Jason Wang <jasowang@redhat.com>,
+ LKML <linux-kernel@vger.kernel.org>, Kirti Wankhede <kwankhede@nvidia.com>,
+ "Alex Williamson \(alex.williamson@redhat.com\)" <alex.williamson@redhat.com>,
+ "iommu@lists.linux-foundation.org" <iommu@lists.linux-foundation.org>,
+ Jason Gunthorpe <jgg@nvidia.com>, Robin Murphy <robin.murphy@arm.com>
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -121,73 +87,132 @@ List-Post: <mailto:iommu@lists.linux-foundation.org>
 List-Help: <mailto:iommu-request@lists.linux-foundation.org?subject=help>
 List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
  <mailto:iommu-request@lists.linux-foundation.org?subject=subscribe>
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
+Content-Type: multipart/mixed; boundary="===============1881697991112076121=="
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-T24gVGh1LCBKdW4gMjQsIDIwMjEgYXQgMTE6MzUgQU0gSmFzb24gV2FuZyA8amFzb3dhbmdAcmVk
-aGF0LmNvbT4gd3JvdGU6Cj4KPgo+IOWcqCAyMDIxLzYvMjMg5LiL5Y2IMTo1MCwgWW9uZ2ppIFhp
-ZSDlhpnpgZM6Cj4gPiBPbiBXZWQsIEp1biAyMywgMjAyMSBhdCAxMTozMSBBTSBKYXNvbiBXYW5n
-IDxqYXNvd2FuZ0ByZWRoYXQuY29tPiB3cm90ZToKPiA+Pgo+ID4+IOWcqCAyMDIxLzYvMjIg5LiL
-5Y2INDoxNCwgWW9uZ2ppIFhpZSDlhpnpgZM6Cj4gPj4+IE9uIFR1ZSwgSnVuIDIyLCAyMDIxIGF0
-IDM6NTAgUE0gSmFzb24gV2FuZyA8amFzb3dhbmdAcmVkaGF0LmNvbT4gd3JvdGU6Cj4gPj4+PiDl
-nKggMjAyMS82LzIyIOS4i+WNiDM6MjIsIFlvbmdqaSBYaWUg5YaZ6YGTOgo+ID4+Pj4+PiBXZSBu
-ZWVkIGZpeCBhIHdheSB0byBwcm9wYWdhdGUgdGhlIGVycm9yIHRvIHRoZSB1c2Vyc3BhY2UuCj4g
-Pj4+Pj4+Cj4gPj4+Pj4+IEUuZyBpZiB3ZSB3YW50IHRvIHN0b3AgdGhlIGRlaXZjZSwgd2Ugd2ls
-bCBkZWxheSB0aGUgc3RhdHVzIHJlc2V0IHVudGlsCj4gPj4+Pj4+IHdlIGdldCByZXNwb3NlIGZy
-b20gdGhlIHVzZXJzcGFjZT8KPiA+Pj4+Pj4KPiA+Pj4+PiBJIGRpZG4ndCBnZXQgaG93IHRvIGRl
-bGF5IHRoZSBzdGF0dXMgcmVzZXQuIEFuZCBzaG91bGQgaXQgYmUgYSBEb1MKPiA+Pj4+PiB0aGF0
-IHdlIHdhbnQgdG8gZml4IGlmIHRoZSB1c2Vyc3BhY2UgZG9lc24ndCBnaXZlIGEgcmVzcG9uc2Ug
-Zm9yZXZlcj8KPiA+Pj4+IFlvdSdyZSByaWdodC4gU28gbGV0J3MgbWFrZSBzZXRfc3RhdHVzKCkg
-Y2FuIGZhaWwgZmlyc3QsIHRoZW4gcHJvcGFnYXRlCj4gPj4+PiBpdHMgZmFpbHVyZSB2aWEgVkhP
-U1RfVkRQQV9TRVRfU1RBVFVTLgo+ID4+Pj4KPiA+Pj4gT0suIFNvIHdlIG9ubHkgbmVlZCB0byBw
-cm9wYWdhdGUgdGhlIGZhaWx1cmUgaW4gdGhlIHZob3N0LXZkcGEgY2FzZSwgcmlnaHQ/Cj4gPj4K
-PiA+PiBJIHRoaW5rIG5vdCwgd2UgbmVlZCB0byBkZWFsIHdpdGggdGhlIHJlc2V0IGZvciB2aXJ0
-aW8gYXMgd2VsbDoKPiA+Pgo+ID4+IEUuZyBpbiByZWdpc3Rlcl92aXJ0aW9fZGV2aWNlcygpLCB3
-ZSBoYXZlOgo+ID4+Cj4gPj4gICAgICAgICAgIC8qIFdlIGFsd2F5cyBzdGFydCBieSByZXNldHRp
-bmcgdGhlIGRldmljZSwgaW4gY2FzZSBhIHByZXZpb3VzCj4gPj4gICAgICAgICAgICAqIGRyaXZl
-ciBtZXNzZWQgaXQgdXAuICBUaGlzIGFsc28gdGVzdHMgdGhhdCBjb2RlIHBhdGggYQo+ID4+IGxp
-dHRsZS4gKi8KPiA+PiAgICAgICAgIGRldi0+Y29uZmlnLT5yZXNldChkZXYpOwo+ID4+Cj4gPj4g
-V2UgcHJvYmFibHkgbmVlZCB0byBtYWtlIHJlc2V0IGNhbiBmYWlsIGFuZCB0aGVuIGZhaWwgdGhl
-Cj4gPj4gcmVnaXN0ZXJfdmlydGlvX2RldmljZSgpIGFzIHdlbGwuCj4gPj4KPiA+IE9LLCBsb29r
-cyBsaWtlIHZpcnRpb19hZGRfc3RhdHVzKCkgYW5kIHZpcnRpb19kZXZpY2VfcmVhZHkoKVsxXSBz
-aG91bGQKPiA+IGJlIGFsc28gbW9kaWZpZWQgaWYgd2UgbmVlZCB0byBwcm9wYWdhdGUgdGhlIGZh
-aWx1cmUgaW4gdGhlCj4gPiB2aXJ0aW8tdmRwYSBjYXNlLiBPciBkbyB3ZSBvbmx5IG5lZWQgdG8g
-Y2FyZSBhYm91dCB0aGUgcmVzZXQgY2FzZT8KPiA+Cj4gPiBbMV0gaHR0cHM6Ly9sb3JlLmtlcm5l
-bC5vcmcvbGttbC8yMDIxMDUxNzA5MzQyOC42NzAtMS14aWV5b25namlAYnl0ZWRhbmNlLmNvbS8K
-Pgo+Cj4gTXkgdW5kZXJzdGFuZGluZyBpcyBEUklWRVJfT0sgaXMgbm90IHNvbWV0aGluZyB0aGF0
-IG5lZWRzIHRvIGJlIHZhbGlkYXRlZDoKPgo+ICIKPgo+IERSSVZFUl9PSyAoNCkKPiBJbmRpY2F0
-ZXMgdGhhdCB0aGUgZHJpdmVyIGlzIHNldCB1cCBhbmQgcmVhZHkgdG8gZHJpdmUgdGhlIGRldmlj
-ZS4KPgo+ICIKPgo+IFNpbmNlIHRoZSBzcGVjIGRvZXNuJ3QgcmVxdWlyZSB0byByZS1yZWFkIHRo
-ZSBhbmQgY2hlY2sgaWYgRFJJVkVSX09LIGlzCj4gc2V0IGluIDMuMS4xIERyaXZlciBSZXF1aXJl
-bWVudHM6IERldmljZSBJbml0aWFsaXphdGlvbi4KPgo+IEl0J3MgbW9yZSBhYm91dCAidGVsbGlu
-ZyB0aGUgZGV2aWNlIHRoYXQgZHJpdmVyIGlzIHJlYWR5LiIKPgo+IEJ1dCB3ZSBkb24gaGF2ZSBz
-b21lIHN0YXR1cyBiaXQgdGhhdCByZXF1aXJlcyB0aGUgc3luY2hyb25pemF0aW9uIHdpdGgKPiB0
-aGUgZGV2aWNlLgo+Cj4gMSkgRkVBVFVSRVNfT0ssIHNwZWMgcmVxdWlyZXMgdG8gcmUtcmVhZCB0
-aGUgc3RhdHVzIGJpdCB0byBjaGVjayB3aGV0aGVyCj4gb3IgaXQgaXQgd2FzIHNldCBieSB0aGUg
-ZGV2aWNlOgo+Cj4gIgo+Cj4gUmUtcmVhZCBkZXZpY2Ugc3RhdHVzIHRvIGVuc3VyZSB0aGUgRkVB
-VFVSRVNfT0sgYml0IGlzIHN0aWxsIHNldDoKPiBvdGhlcndpc2UsIHRoZSBkZXZpY2UgZG9lcyBu
-b3Qgc3VwcG9ydCBvdXIgc3Vic2V0IG9mIGZlYXR1cmVzIGFuZCB0aGUKPiBkZXZpY2UgaXMgdW51
-c2FibGUuCj4KPiAiCj4KPiBUaGlzIGlzIHVzZWZ1bCBmb3Igc29tZSBkZXZpY2Ugd2hpY2ggY2Fu
-IG9ubHkgc3VwcG9ydCBhIHN1YnNldCBvZiB0aGUKPiBmZWF0dXJlcy4gRS5nIGEgZGV2aWNlIHRo
-YXQgY2FuIG9ubHkgd29yayBmb3IgcGFja2VkIHZpcnRxdWV1ZS4gVGhpcwo+IG1lYW5zIHRoZSBj
-dXJyZW50IGRlc2lnbiBvZiBzZXRfZmVhdHVyZXMgd29uJ3Qgd29yaywgd2UgbmVlZCBlaXRoZXI6
-Cj4KPiAxYSkgcmVsYXkgdGhlIHNldF9mZWF0dXJlcyByZXF1ZXN0IHRvIHVzZXJzcGFjZQo+Cj4g
-b3IKPgo+IDFiKSBpbnRyb2R1Y2UgYSBtYW5kYXRlZF9kZXZpY2VfZmVhdHVyZXMgZHVyaW5nIGRl
-dmljZSBjcmVhdGlvbiBhbmQKPiB2YWxpZGF0ZSB0aGUgZHJpdmVyIGZlYXR1cmVzIGR1cmluZyB0
-aGUgc2V0X2ZlYXR1cmVzKCksIGFuZCBkb24ndCBzZXQKPiBGRUFUVVJFU19PSyBpZiB0aGV5IGRv
-bid0IG1hdGNoLgo+Cj4KPiAyKSBTb21lIHRyYW5zcG9ydHMgKFBDSSkgcmVxdWlyZXMgdG8gcmUt
-cmVhZCB0aGUgc3RhdHVzIHRvIGVuc3VyZSB0aGUKPiBzeW5jaHJvbml6YXRpb24uCj4KPiAiCj4K
-PiBBZnRlciB3cml0aW5nIDAgdG8gZGV2aWNlX3N0YXR1cywgdGhlIGRyaXZlciBNVVNUIHdhaXQg
-Zm9yIGEgcmVhZCBvZgo+IGRldmljZV9zdGF0dXMgdG8gcmV0dXJuIDAgYmVmb3JlIHJlaW5pdGlh
-bGl6aW5nIHRoZSBkZXZpY2UuCj4KPiAiCj4KPiBTbyB3ZSBuZWVkIHRvIGRlYWwgd2l0aCBib3Ro
-IEZFQVRVUkVTX09LIGFuZCByZXNldCwgYnV0IHByb2JhYmx5IG5vdAo+IERSSVZFUl9PSy4KPgoK
-T0ssIEkgc2VlLiBUaGFua3MgZm9yIHRoZSBleHBsYW5hdGlvbi4gT25lIG1vcmUgcXVlc3Rpb24g
-aXMgaG93IGFib3V0CmNsZWFyaW5nIHRoZSBjb3JyZXNwb25kaW5nIHN0YXR1cyBiaXQgaW4gZ2V0
-X3N0YXR1cygpIHJhdGhlciB0aGFuCm1ha2luZyBzZXRfc3RhdHVzKCkgZmFpbC4gU2luY2UgdGhl
-IHNwZWMgcmVjb21tZW5kcyB0aGlzIHdheSBmb3IKdmFsaWRhdGlvbiB3aGljaCBpcyBkb25lIGlu
-IHZpcnRpb19kZXZfcmVtb3ZlKCkgYW5kCnZpcnRpb19maW5hbGl6ZV9mZWF0dXJlcygpLgoKVGhh
-bmtzLApZb25namkKX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19f
-X18KaW9tbXUgbWFpbGluZyBsaXN0CmlvbW11QGxpc3RzLmxpbnV4LWZvdW5kYXRpb24ub3JnCmh0
-dHBzOi8vbGlzdHMubGludXhmb3VuZGF0aW9uLm9yZy9tYWlsbWFuL2xpc3RpbmZvL2lvbW11
+
+--===============1881697991112076121==
+Content-Type: multipart/signed; micalg=pgp-sha256;
+	protocol="application/pgp-signature"; boundary="p3xeV50Hfib5E9x2"
+Content-Disposition: inline
+
+
+--p3xeV50Hfib5E9x2
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
+
+On Wed, Jun 23, 2021 at 08:00:49AM +0000, Tian, Kevin wrote:
+> > From: David Gibson
+> > Sent: Thursday, June 17, 2021 12:08 PM
+> >=20
+> > On Thu, Jun 03, 2021 at 08:12:27AM +0000, Tian, Kevin wrote:
+> > > > From: David Gibson <david@gibson.dropbear.id.au>
+> > > > Sent: Wednesday, June 2, 2021 2:15 PM
+> > > >
+> > > [...]
+> > >
+> > > > >
+> > > > > /*
+> > > > >   * Get information about an I/O address space
+> > > > >   *
+> > > > >   * Supported capabilities:
+> > > > >   *	- VFIO type1 map/unmap;
+> > > > >   *	- pgtable/pasid_table binding
+> > > > >   *	- hardware nesting vs. software nesting;
+> > > > >   *	- ...
+> > > > >   *
+> > > > >   * Related attributes:
+> > > > >   * 	- supported page sizes, reserved IOVA ranges (DMA
+> > mapping);
+> > > >
+> > > > Can I request we represent this in terms of permitted IOVA ranges,
+> > > > rather than reserved IOVA ranges.  This works better with the "wind=
+ow"
+> > > > model I have in mind for unifying the restrictions of the POWER IOM=
+MU
+> > > > with Type1 like mapping.
+> > >
+> > > Can you elaborate how permitted range work better here?
+> >=20
+> > Pretty much just that MAP operations would fail if they don't entirely
+> > lie within a permitted range.  So, for example if your IOMMU only
+> > implements say, 45 bits of IOVA, then you'd have 0..0x1fffffffffff as
+> > your only permitted range.  If, like the POWER paravirtual IOMMU (in
+> > defaut configuration) you have a small (1G) 32-bit range and a large
+> > (45-bit) 64-bit range at a high address, you'd have say:
+> > 	0x00000000..0x3fffffff (32-bit range)
+> > and
+> > 	0x800000000000000 .. 0x8001fffffffffff (64-bit range)
+> > as your permitted ranges.
+> >=20
+> > If your IOMMU supports truly full 64-bit addressing, but has a
+> > reserved range (for MSIs or whatever) at 0xaaaa000..0xbbbb0000 then
+> > you'd have permitted ranges of 0..0xaaa9ffff and
+> > 0xbbbb0000..0xffffffffffffffff.
+>=20
+> I see. Has incorporated this comment in v2.
+>=20
+> >=20
+> > [snip]
+> > > > For debugging and certain hypervisor edge cases it might be useful =
+to
+> > > > have a call to allow userspace to lookup and specific IOVA in a gue=
+st
+> > > > managed pgtable.
+> > >
+> > > Since all the mapping metadata is from userspace, why would one
+> > > rely on the kernel to provide such service? Or are you simply asking
+> > > for some debugfs node to dump the I/O page table for a given
+> > > IOASID?
+> >=20
+> > I'm thinking of this as a debugging aid so you can make sure that how
+> > the kernel is interpreting that metadata in the same way that your
+> > userspace expects it to interpret that metadata.
+> >=20
+>=20
+> I'll not include it in this RFC. There are already too many stuff. The
+> debugging aid can be added anyway when it's actually required.
+
+Fair enough.
+
+--=20
+David Gibson			| I'll have my music baroque, and my code
+david AT gibson.dropbear.id.au	| minimalist, thank you.  NOT _the_ _other_
+				| _way_ _around_!
+http://www.ozlabs.org/~dgibson
+
+--p3xeV50Hfib5E9x2
+Content-Type: application/pgp-signature; name="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+
+iQIzBAEBCAAdFiEEdfRlhq5hpmzETofcbDjKyiDZs5IFAmDUAiUACgkQbDjKyiDZ
+s5JCJA//d6pXwX9h3dUB9R3TtYglCzE5E3WU1J/RJ2hPYPSn1FwmUqC/d+pCcBzz
+0S/8iAD90q2/Ng8z2o/6bb6Tqd85xB892OT32V3QBh+NI4AGPP3qP5oD5lLdGQnI
+uCv7s6VkPK5kPZ0rM1C2WTHI07dFMZWLcS0BqBaxXBXF2IkSbqU/2lhNTqyZzOih
+TpQNsnXyjyU/IpgugqYfsKgUtWG6g/sKqv1mNOcybEeLbCJx0iFfxJRZz/snJzZo
+5VKSP8DOU0Rb53jJo0mAprcCVOd0xUViuoMd1S3SoRjeyY1NFx6A5IxjgyZRWWiS
+LWMqsyr9mLSoQ8jLd7DZ+tSjbreP1uQxuvuEpTdOUvoqNdTTYRJW3bwlT8KgduMP
+0xGD1FMwbsdg5MkeelGWaiM+pJdEmX/qf5RuWMKm/lUMP6tceG9TJhwLbmv54uDt
+nwVtVS/p05hbYdpF3iLfoyGf3Sn8m+qN/x12tX6dAgBpb6xNqRwt7OahBZJ0BFXF
+akWb3aclIeeo77zyMxcAz5KcA5XCHlhwagPdEFe40G4mGBQ7kUSx5BduEruB87kC
+eGzHy/XzL+9LVF10FQ27FR4wXQifjafgJ0ois5wZOzY2GiauK9Efkop1jZQV6KiU
+m0uZtPlFOjfSXLMp6Z9dmaYa74oyLJvF+9ArZwxTpBa4DgHcT5E=
+=R3gb
+-----END PGP SIGNATURE-----
+
+--p3xeV50Hfib5E9x2--
+
+--===============1881697991112076121==
+Content-Type: text/plain; charset="us-ascii"
+MIME-Version: 1.0
+Content-Transfer-Encoding: 7bit
+Content-Disposition: inline
+
+_______________________________________________
+iommu mailing list
+iommu@lists.linux-foundation.org
+https://lists.linuxfoundation.org/mailman/listinfo/iommu
+--===============1881697991112076121==--
