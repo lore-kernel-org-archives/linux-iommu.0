@@ -7,93 +7,93 @@ X-Spam-Status: No, score=-16.5 required=3.0 tests=BAYES_00,DKIM_INVALID,
 	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_GIT
 	autolearn=ham autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 35D28C49EA6
-	for <iommu@archiver.kernel.org>; Thu, 24 Jun 2021 17:18:35 +0000 (UTC)
-Received: from smtp2.osuosl.org (smtp2.osuosl.org [140.211.166.133])
+	by smtp.lore.kernel.org (Postfix) with ESMTP id BB92FC49EA5
+	for <iommu@archiver.kernel.org>; Thu, 24 Jun 2021 17:18:36 +0000 (UTC)
+Received: from smtp1.osuosl.org (smtp1.osuosl.org [140.211.166.138])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id E974761057
-	for <iommu@archiver.kernel.org>; Thu, 24 Jun 2021 17:18:34 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org E974761057
+	by mail.kernel.org (Postfix) with ESMTPS id 7E21B61057
+	for <iommu@archiver.kernel.org>; Thu, 24 Jun 2021 17:18:36 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 7E21B61057
 Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=chromium.org
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by smtp2.osuosl.org (Postfix) with ESMTP id C1F194017B;
-	Thu, 24 Jun 2021 17:18:34 +0000 (UTC)
+	by smtp1.osuosl.org (Postfix) with ESMTP id 54C6A83E33;
+	Thu, 24 Jun 2021 17:18:36 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from smtp2.osuosl.org ([127.0.0.1])
-	by localhost (smtp2.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id l3MlDyPfFIhH; Thu, 24 Jun 2021 17:18:34 +0000 (UTC)
-Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [IPv6:2605:bc80:3010:104::8cd3:938])
-	by smtp2.osuosl.org (Postfix) with ESMTPS id D488E4060C;
-	Thu, 24 Jun 2021 17:18:33 +0000 (UTC)
+Received: from smtp1.osuosl.org ([127.0.0.1])
+	by localhost (smtp1.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+	with ESMTP id j5zcP6hm07uZ; Thu, 24 Jun 2021 17:18:35 +0000 (UTC)
+Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
+	by smtp1.osuosl.org (Postfix) with ESMTPS id 1778583E2F;
+	Thu, 24 Jun 2021 17:18:35 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id AA2F8C001A;
-	Thu, 24 Jun 2021 17:18:33 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id E3F6CC001A;
+	Thu, 24 Jun 2021 17:18:34 +0000 (UTC)
 Received: from smtp3.osuosl.org (smtp3.osuosl.org [140.211.166.136])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 5C5E2C000E
- for <iommu@lists.linux-foundation.org>; Thu, 24 Jun 2021 17:18:30 +0000 (UTC)
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 1C30DC000E
+ for <iommu@lists.linux-foundation.org>; Thu, 24 Jun 2021 17:18:33 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by smtp3.osuosl.org (Postfix) with ESMTP id 4783C60AD5
- for <iommu@lists.linux-foundation.org>; Thu, 24 Jun 2021 17:18:30 +0000 (UTC)
+ by smtp3.osuosl.org (Postfix) with ESMTP id F2D16605D5
+ for <iommu@lists.linux-foundation.org>; Thu, 24 Jun 2021 17:18:32 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
 Authentication-Results: smtp3.osuosl.org (amavisd-new);
  dkim=pass (1024-bit key) header.d=chromium.org
 Received: from smtp3.osuosl.org ([127.0.0.1])
  by localhost (smtp3.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id k3ELqXvTOeq3 for <iommu@lists.linux-foundation.org>;
- Thu, 24 Jun 2021 17:18:29 +0000 (UTC)
+ with ESMTP id 6WOF4YEtawej for <iommu@lists.linux-foundation.org>;
+ Thu, 24 Jun 2021 17:18:31 +0000 (UTC)
 X-Greylist: whitelisted by SQLgrey-1.8.0
-Received: from mail-pf1-x432.google.com (mail-pf1-x432.google.com
- [IPv6:2607:f8b0:4864:20::432])
- by smtp3.osuosl.org (Postfix) with ESMTPS id 76AD760BFA
- for <iommu@lists.linux-foundation.org>; Thu, 24 Jun 2021 17:18:29 +0000 (UTC)
-Received: by mail-pf1-x432.google.com with SMTP id y4so5737876pfi.9
- for <iommu@lists.linux-foundation.org>; Thu, 24 Jun 2021 10:18:29 -0700 (PDT)
+Received: from mail-pj1-x1030.google.com (mail-pj1-x1030.google.com
+ [IPv6:2607:f8b0:4864:20::1030])
+ by smtp3.osuosl.org (Postfix) with ESMTPS id B0DD660AE5
+ for <iommu@lists.linux-foundation.org>; Thu, 24 Jun 2021 17:18:31 +0000 (UTC)
+Received: by mail-pj1-x1030.google.com with SMTP id
+ b5-20020a17090a9905b029016fc06f6c5bso3897204pjp.5
+ for <iommu@lists.linux-foundation.org>; Thu, 24 Jun 2021 10:18:31 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=chromium.org; s=google;
  h=from:to:cc:subject:date:message-id:in-reply-to:references
  :mime-version:content-transfer-encoding;
- bh=ltzQtO7QGv7ihuZ03SI1P6XFOPcuSJGUvlCT/41r+iE=;
- b=E3OBm6d+DSXVCCSeW92dikvGwmwuqWU/DsoUwEYgJrR2tlg8YH4d/NZF7DVqR7/He+
- LenZJUO1mfAjegUrPWjAnmmG5S7PCCZ42geQk165WsFmQEdnb0Ad39+HwartwwMFYgMQ
- 9jjJUrS+i22102pFcWK6Q0jsikCiBKGzI6+UY=
+ bh=nkeWCBI+uU/7cGiyR8KqX3jtouOj5+BeMGH/nCx1Gq8=;
+ b=Ayx3KtOrfzrF668/PdjmLpf7tQlp6VlbptxTyKHq7GsvYQIJPQY5qKMrWpc9iYrXjR
+ kUJX4rrZWID0zFM5jzuOxvaqFCw8/SZ/SXf6IwfZ9urvuDnhdrQFQCEb2gseUY8BXV7p
+ KwbwUAVnc+MiyP4GgT8glTY6U/l2S8y2wDwOU=
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
  d=1e100.net; s=20161025;
  h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
  :references:mime-version:content-transfer-encoding;
- bh=ltzQtO7QGv7ihuZ03SI1P6XFOPcuSJGUvlCT/41r+iE=;
- b=T+5N5EP1xiyLX3n4q9pm3h0T62ts+n6TW3P4w4hAw/hD0yKDxHwS8A+z5GDcrfO8WA
- iKR1jnDVtM2RnfjrvcSN7E461xjCv/ShXv4PV79igzb/4AjQ+MKizqi631T4ACahmpzo
- d26jRyYO2yjCPnTMBgLR5QBTbtP1uKTxY/o+AwmYRqUrjHu35obtTexALwaQxZ45dT4O
- yhrbsQqlY2MR7sjuVpbRNjj6qo9R1lyxddqtsFxlW2Y0fVh7Vrr5IlUod0tzZRKLp7N7
- qkK7Ux19laZOB+86ls2lwhnzxey7Qm1g4PeEkO88D4l2K4Yg/jjWi+9tLwVIo6nrGwYu
- FDyw==
-X-Gm-Message-State: AOAM532h7NavS3bLPP2fhQWhaZPEj6+NcRntaKo3AiQD83uHyLd0B9TB
- bANgGV/LkznrcD3xDO7tLLi1UQ==
-X-Google-Smtp-Source: ABdhPJy3hQDCnPl6h1dVLCWoQFoDYGjFrg2/1rsYH0TJwFbq3jVshaM62dCqdnk2IUlzQb/NxFXZ3A==
-X-Received: by 2002:a63:1263:: with SMTP id 35mr5496773pgs.221.1624555108972; 
- Thu, 24 Jun 2021 10:18:28 -0700 (PDT)
+ bh=nkeWCBI+uU/7cGiyR8KqX3jtouOj5+BeMGH/nCx1Gq8=;
+ b=A9fgKX8XElZxfpJakmyzHRXOug7ZA2elZ7q5/b25BPJhjtubW7gJVyLJq70eUdG9DN
+ 3Zpi+opStGwWz5B7Dj+lBzriC3ovuz0yVhA3rhyrAZfS6snzzW8Lhb8AB7Y9Q3gQ0CxL
+ 3d24aLrQvVnHFbcceimtqzapXkH7m0KUNGbCHnygw0s50LBWOwL6KPmRXPZCZKfo5chi
+ UuXWn0xczHfKTFfClvAeFHF6QvyiHs5sAbwu4M8K//62Mf3Y/dVMzg0OjvSdGXFS5FoY
+ tqdXl0139jRCDzpUCuWev8j3JCgQTZa3gjqgNPpuRmDkWNKfekZ2I6nVQ6yFsCiirifK
+ SUwQ==
+X-Gm-Message-State: AOAM533+UgSw46Sxqv+s4DAPnwvg7CfVYVs04aa1pUQztaVAcf97Q5Jo
+ 4rYP5o3sEXjpcynH9zEYxG/5XA==
+X-Google-Smtp-Source: ABdhPJyh24ZBk4IyfzZyEkgHlKXR3pzQ1j5uOTe/6sAHkvrmVGAJ4JM61YDjzhKl8PSKbPF0E6Cx2A==
+X-Received: by 2002:a17:90a:8c4:: with SMTP id 4mr16092152pjn.82.1624555111053; 
+ Thu, 24 Jun 2021 10:18:31 -0700 (PDT)
 Received: from tictac2.mtv.corp.google.com
  ([2620:15c:202:201:fd74:62bc:19e3:a43b])
- by smtp.gmail.com with ESMTPSA id z9sm3365960pfa.2.2021.06.24.10.18.27
+ by smtp.gmail.com with ESMTPSA id z9sm3365960pfa.2.2021.06.24.10.18.29
  (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
- Thu, 24 Jun 2021 10:18:28 -0700 (PDT)
+ Thu, 24 Jun 2021 10:18:30 -0700 (PDT)
 From: Douglas Anderson <dianders@chromium.org>
 To: will@kernel.org, robin.murphy@arm.com, joro@8bytes.org,
  bjorn.andersson@linaro.org, ulf.hansson@linaro.org,
  adrian.hunter@intel.com, bhelgaas@google.com
-Subject: [PATCH v2 2/3] iommu/arm-smmu: Check for strictness after calling
- impl->init_context()
-Date: Thu, 24 Jun 2021 10:17:58 -0700
-Message-Id: <20210624101557.v2.2.I0ddf490bdaa450eb50ab568f35b1cae03bf358f0@changeid>
+Subject: [PATCH v2 3/3] mmc: sdhci-msm: Request non-strict IOMMU mode
+Date: Thu, 24 Jun 2021 10:17:59 -0700
+Message-Id: <20210624101557.v2.3.Icde6be7601a5939960caf802056c88cd5132eb4e@changeid>
 X-Mailer: git-send-email 2.32.0.93.g670b81a890-goog
 In-Reply-To: <20210624171759.4125094-1-dianders@chromium.org>
 References: <20210624171759.4125094-1-dianders@chromium.org>
 MIME-Version: 1.0
 Cc: robdclark@chromium.org, linux-kernel@vger.kernel.org, saravanak@google.com,
- linux-arm-msm@vger.kernel.org, linux-mmc@vger.kernel.org,
- quic_c_gdjako@quicinc.com, Douglas Anderson <dianders@chromium.org>,
- iommu@lists.linux-foundation.org, Thierry Reding <thierry.reding@gmail.com>,
+ linux-arm-msm@vger.kernel.org, Konrad Dybcio <konrad.dybcio@somainline.org>,
+ linux-mmc@vger.kernel.org, quic_c_gdjako@quicinc.com,
+ Douglas Anderson <dianders@chromium.org>, iommu@lists.linux-foundation.org,
  linux-arm-kernel@lists.infradead.org, linux-pci@vger.kernel.org,
  joel@joelfernandes.org, rajatja@google.com, sonnyrao@chromium.org,
  vbadigan@codeaurora.org
@@ -114,41 +114,218 @@ Content-Transfer-Encoding: 7bit
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-Implementations should be able to affect the strictness so reorder a
-little bit so we call them before we look at the strictness.
+The concept of IOMMUs being in strict vs. non-strict mode is a
+pre-existing Linux concept. I've included a rough summary here to help
+evaluate this patch.
+
+IOMMUs can be run in "strict" mode or in "non-strict" mode. The
+quick-summary difference between the two is that in "strict" mode we
+wait until everything is flushed out when we unmap DMA memory. In
+"non-strict" we don't.
+
+Using the IOMMU in "strict" mode is more secure/safer but slower
+because we have to sit and wait for flushes while we're unmapping. To
+explain a bit why "non-strict" mode is unsafe, let's imagine two
+examples.
+
+An example of "non-strict" being insecure when reading from a device:
+a) Linux driver maps memory for DMA.
+b) Linux driver starts DMA on the device.
+c) Device write to RAM subject to bounds checking done by IOMMU.
+d) Device finishes writing to RAM and signals transfer is finished.
+e) Linux driver starts unmapping DMA memory but doesn't wait for the
+   unmap to finish (the definition of non-strict). At this point,
+   though, the Linux APIs say that the driver owns the memory and
+   shouldn't expect any more scribbling from the DMA device.
+f) Linux driver validates that the data in memory looks sane and that
+   accessing it won't cause the driver to, for instance, overflow a
+   buffer.
+g) Device takes advantage of knowledge of how the Linux driver works
+   and sneaks in a modification to the data after the validation but
+   before the IOMMU unmap flush finishes.
+h) Device has now caused the Linux driver to access memory it
+   shouldn't.
+
+An example of "non-strict" being insecure when writing to a device:
+a) Linux driver writes data intended for the device to RAM.
+b) Linux driver maps memory for DMA.
+c) Linux driver starts DMA on the device.
+d) Device reads from RAM subject to bounds checking done by IOMMU.
+e) Device finishes reading from RAM and signals transfer is finished.
+f) Linux driver starts unmapping DMA memory but doesn't wait for the
+   unmap to finish (the definition of non-strict)
+g) Linux driver frees memory and returns it to the pool of memory
+   available for other users to allocate.
+h) Memory is allocated for another purpose since it was free memory.
+i) Device takes advantage of the period of time before IOMMU flush to
+   read memory that it shouldn't have had access to. What exactly the
+   memory could contain depends on the randomness of who allocated
+   next, though exploits have been built on flimisier holes.
+
+As you can see from the above examples, using the iommu in
+"non-strict" mode might not sound _too_ scary (the window of badness
+is small and the exposed memory is small) but there is certainly
+risk. Let's evaluate the risk by breaking it down into two problems
+that IOMMUs are supposed to be protecting us against:
+
+Case 1: IOMMUs prevent malicious code running on the peripheral (maybe
+a malicious peripheral or maybe someone exploited a benign peripheral)
+from turning into an exploit of the Linux kernel. This is particularly
+important if the peripheral has loadable / updatable firmware or if
+the peripheral has some type of general purpose processor and is
+processing untrusted inputs. It's also important if the device is
+something that can be easily plugged into the host and the device has
+direct DMA access itself, like a PCIe device.
+
+Case 2: IOMMUs limit the severity of a class of software bugs in the
+kernel. If we misconfigure a peripheral by accident then instead of
+the peripheral clobbering random memory due to a bug we might get an
+IOMMU error.
+
+Now that we understand the issue and the risks, let's evaluate whether
+we really need "strict" mode for the Qualcomm SDHCI controllers. I
+will make the argument that we don't _need_ strict mode for them. Why?
+* The SDHCI controller on Qualcomm SoCs doesn't appear to have
+  loadable / updatable firmware and, assuming it's got some firmware
+  baked into it, I see no evidence that the firmware could be
+  compromised.
+* Even though, for external SD cards in particular, the controller is
+  dealing with "untrusted" inputs, it's dealing with them in a very
+  controlled way.  It seems unlikely that a rogue SD card would be
+  able to present something to the SDHCI controller that would cause
+  it to DMA to/from an address other than one the kernel told it
+  about.
+* Although it would be nice to catch more software bugs, once the
+  Linux driver has been debugged and stressed the value is not very
+  high. If the IOMMU caught something like this the system would be in
+  a pretty bad shape anyway (we don't really recover from IOMMU
+  errors) and the only benefit would be a better spotlight on what
+  went wrong.
+
+Now we have a good understanding of the benefits of "strict" mode for
+our SDHCI controllers, let's look at some performance numbers. I used
+"dd" to measure read speeds from eMMC on a sc7180-trogdor-lazor
+board. Basic test command (while booted from USB):
+  echo 3 > /proc/sys/vm/drop_caches
+  dd if=/dev/mmcblk1 of=/dev/null bs=4M count=512
+
+I attempted to run my tests for enough iterations that results
+stabilized and weren't too noisy. Tests were run with patches picked
+to the chromeos-5.4 tree (sanity checked against v5.13-rc7). I also
+attempted to compare to other attempts to address IOMMU problems
+and/or attempts to bump the cpufreq up to solve this problem:
+- eMMC datasheet spec: 300 MB/s "Typical Sequential Performance"
+  NOTE: we're driving the bus at 192 MHz instead of 200 Mhz so we might
+  not be able to achieve the full 300 MB/s.
+- Baseline: 210.9 MB/s
+- Baseline + peg cpufreq to max: 284.3 MB/s
+- This patch: 279.6 MB/s
+- This patch + peg cpufreq to max: 288.1 MB/s
+- Joel's IO Wait fix [1]: 258.4 MB/s
+- Joel's IO Wait fix [1] + peg cpufreq to max: 287.8 MB/s
+- TLBIVA patches [2] + [3]: 214.7 MB/s
+- TLBIVA patches [2] + [3] + peg cpufreq to max: 285.7 MB/s
+- This patch plus Joel's [1]: 280.2 MB/s
+- This patch plus Joel's [1] + peg...: 279.0 MB/s
+  NOTE: I suspect something in the system was thermal throttling since
+  there's a heat wave right now.
+
+I also spent a little bit of time trying to see if I could get the
+IOMMU flush for MMC out of the critical path but was unable to figure
+out how to do this and get good performance.
+
+Overall I'd say that the performance results above show:
+* It's really not straightforward to point at "one thing" that is
+  making our eMMC performance bad.
+* It's certainly possible to get pretty good eMMC performance even
+  without this patch.
+* This patch makes it much easier to get good eMMC performance.
+* No other solutions that I found resulted in quite as good eMMC
+  performance as having this patch.
+
+Given all the above (security safety concerns are minimal and it's a
+nice performance win), I'm proposing that running SDHCI on Qualcomm
+SoCs in non-strict mode is the right thing to do until such point in
+time as someone can come up with a better solution to get good SD/eMMC
+performance without it.
+
+Now that we've decided we want the SD/MMC controller in non-strict
+mode, we need to figure out how to make it happen. We will take
+advantage of the fact that on Qualcomm IOMMUs we know that SD/MMC
+controllers are in a domain by themselves and hook in when initting
+the domain context. In response to a previous version of this series
+there had been discussion [4] of having this driven from a device tree
+property and this solution doesn't preclude that but is a good jumping
+off point.
+
+NOTES:
+* It's likely that arguments similar to the above can be made for
+  other SDHCI controllers. However, given that this is something that
+  can have an impact on security it feels like we want each SDHCI
+  controller to opt-in. I believe it is conceivable, for instance,
+  that some SDHCI controllers might have loadable or updatable
+  firmware.
+* It's also likely other peripherals will want this to get the quick
+  performance win. That also should be fine, though anyone landing a
+  similar patch should be very careful that it is low risk for all
+  users of a given peripheral.
+* Conceivably if even this patch is considered too "high risk", we
+  could limit this to just non-removable cards (like eMMC) by just
+  checking the device tree. This is one nice advantage of using the
+  pre_probe() to set this.
+
+[1] https://lore.kernel.org/r/20210618040639.3113489-1-joel@joelfernandes.org
+[2] https://lore.kernel.org/r/1623850736-389584-1-git-send-email-quic_c_gdjako@quicinc.com/
+[3] https://lore.kernel.org/r/cover.1623981933.git.saiprakash.ranjan@codeaurora.org/
+[4] https://lore.kernel.org/r/20210621235248.2521620-1-dianders@chromium.org
 
 Signed-off-by: Douglas Anderson <dianders@chromium.org>
 ---
 
 Changes in v2:
-- Patch moving check for strictness in arm-smmu new for v2.
+- Now accomplish the goal by putting rules in the IOMMU driver.
+- Reworded commit message to clarify things pointed out by Greg.
 
- drivers/iommu/arm/arm-smmu/arm-smmu.c | 6 +++---
- 1 file changed, 3 insertions(+), 3 deletions(-)
+ drivers/iommu/arm/arm-smmu/arm-smmu-qcom.c | 19 +++++++++++++++++++
+ 1 file changed, 19 insertions(+)
 
-diff --git a/drivers/iommu/arm/arm-smmu/arm-smmu.c b/drivers/iommu/arm/arm-smmu/arm-smmu.c
-index 6f72c4d208ca..659d3fddffa5 100644
---- a/drivers/iommu/arm/arm-smmu/arm-smmu.c
-+++ b/drivers/iommu/arm/arm-smmu/arm-smmu.c
-@@ -761,15 +761,15 @@ static int arm_smmu_init_domain_context(struct iommu_domain *domain,
- 		.iommu_dev	= smmu->dev,
- 	};
+diff --git a/drivers/iommu/arm/arm-smmu/arm-smmu-qcom.c b/drivers/iommu/arm/arm-smmu/arm-smmu-qcom.c
+index 98b3a1c2a181..bd66376d21ce 100644
+--- a/drivers/iommu/arm/arm-smmu/arm-smmu-qcom.c
++++ b/drivers/iommu/arm/arm-smmu/arm-smmu-qcom.c
+@@ -172,6 +172,24 @@ static const struct of_device_id qcom_smmu_client_of_match[] __maybe_unused = {
+ 	{ }
+ };
  
--	if (!iommu_get_dma_strict(domain))
--		pgtbl_cfg.quirks |= IO_PGTABLE_QUIRK_NON_STRICT;
--
- 	if (smmu->impl && smmu->impl->init_context) {
- 		ret = smmu->impl->init_context(smmu_domain, &pgtbl_cfg, dev);
- 		if (ret)
- 			goto out_clear_smmu;
- 	}
- 
-+	if (!iommu_get_dma_strict(domain))
-+		pgtbl_cfg.quirks |= IO_PGTABLE_QUIRK_NON_STRICT;
++static const struct of_device_id qcom_smmu_nonstrict_of_match[] __maybe_unused = {
++	{ .compatible = "qcom,sdhci-msm-v4" },
++	{ .compatible = "qcom,sdhci-msm-v5" },
++	{ }
++};
 +
- 	if (smmu_domain->pgtbl_quirks)
- 		pgtbl_cfg.quirks |= smmu_domain->pgtbl_quirks;
++static int qcom_smmu_init_context(struct arm_smmu_domain *smmu_domain,
++		struct io_pgtable_cfg *pgtbl_cfg, struct device *dev)
++{
++	const struct of_device_id *match =
++		of_match_device(qcom_smmu_nonstrict_of_match, dev);
++
++	if (match)
++		smmu_domain->domain.strictness = IOMMU_NOT_STRICT;
++
++	return 0;
++}
++
+ static int qcom_smmu_cfg_probe(struct arm_smmu_device *smmu)
+ {
+ 	unsigned int last_s2cr = ARM_SMMU_GR0_S2CR(smmu->num_mapping_groups - 1);
+@@ -295,6 +313,7 @@ static int qcom_smmu500_reset(struct arm_smmu_device *smmu)
+ }
  
+ static const struct arm_smmu_impl qcom_smmu_impl = {
++	.init_context = qcom_smmu_init_context,
+ 	.cfg_probe = qcom_smmu_cfg_probe,
+ 	.def_domain_type = qcom_smmu_def_domain_type,
+ 	.reset = qcom_smmu500_reset,
 -- 
 2.32.0.93.g670b81a890-goog
 
