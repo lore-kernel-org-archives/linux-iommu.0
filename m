@@ -2,117 +2,105 @@ Return-Path: <SRS0=Ze3H=LT=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-3.5 required=3.0 tests=BAYES_00,DKIM_INVALID,
-	DKIM_SIGNED,HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,SPF_HELO_NONE,
+X-Spam-Status: No, score=-5.5 required=3.0 tests=BAYES_00,DKIM_ADSP_CUSTOM_MED,
+	DKIM_INVALID,DKIM_SIGNED,FREEMAIL_FORGED_FROMDOMAIN,FREEMAIL_FROM,
+	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,SPF_HELO_NONE,
 	SPF_PASS autolearn=no autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 429FBC2B9F4
-	for <iommu@archiver.kernel.org>; Fri, 25 Jun 2021 14:49:49 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 483CBC2B9F4
+	for <iommu@archiver.kernel.org>; Fri, 25 Jun 2021 15:39:05 +0000 (UTC)
 Received: from smtp4.osuosl.org (smtp4.osuosl.org [140.211.166.137])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id DA3D561962
-	for <iommu@archiver.kernel.org>; Fri, 25 Jun 2021 14:49:48 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org DA3D561962
-Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=chromium.org
+	by mail.kernel.org (Postfix) with ESMTPS id D926661981
+	for <iommu@archiver.kernel.org>; Fri, 25 Jun 2021 15:39:04 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org D926661981
+Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=gmail.com
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by smtp4.osuosl.org (Postfix) with ESMTP id 9A335404C7;
-	Fri, 25 Jun 2021 14:49:48 +0000 (UTC)
+	by smtp4.osuosl.org (Postfix) with ESMTP id 9719D40407;
+	Fri, 25 Jun 2021 15:39:04 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
 Received: from smtp4.osuosl.org ([127.0.0.1])
 	by localhost (smtp4.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id 9f3iaSGE97jp; Fri, 25 Jun 2021 14:49:47 +0000 (UTC)
+	with ESMTP id ncGL_I2690i4; Fri, 25 Jun 2021 15:39:03 +0000 (UTC)
 Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by smtp4.osuosl.org (Postfix) with ESMTPS id B1E744021D;
-	Fri, 25 Jun 2021 14:49:46 +0000 (UTC)
+	by smtp4.osuosl.org (Postfix) with ESMTPS id 4ED71421F2;
+	Fri, 25 Jun 2021 15:39:03 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 9814EC0010;
-	Fri, 25 Jun 2021 14:49:46 +0000 (UTC)
-Received: from smtp4.osuosl.org (smtp4.osuosl.org [IPv6:2605:bc80:3010::137])
- by lists.linuxfoundation.org (Postfix) with ESMTP id EB521C000E
- for <iommu@lists.linux-foundation.org>; Fri, 25 Jun 2021 14:49:45 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 213B3C001A;
+	Fri, 25 Jun 2021 15:39:03 +0000 (UTC)
+Received: from smtp2.osuosl.org (smtp2.osuosl.org [140.211.166.133])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 41342C000E
+ for <iommu@lists.linux-foundation.org>; Fri, 25 Jun 2021 15:39:02 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by smtp4.osuosl.org (Postfix) with ESMTP id CBEDD404C7
- for <iommu@lists.linux-foundation.org>; Fri, 25 Jun 2021 14:49:45 +0000 (UTC)
+ by smtp2.osuosl.org (Postfix) with ESMTP id 28B074015D
+ for <iommu@lists.linux-foundation.org>; Fri, 25 Jun 2021 15:39:02 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from smtp4.osuosl.org ([127.0.0.1])
- by localhost (smtp4.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id SdB8FeHDFPdS for <iommu@lists.linux-foundation.org>;
- Fri, 25 Jun 2021 14:49:44 +0000 (UTC)
+Authentication-Results: smtp2.osuosl.org (amavisd-new);
+ dkim=pass (2048-bit key) header.d=gmail.com
+Received: from smtp2.osuosl.org ([127.0.0.1])
+ by localhost (smtp2.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+ with ESMTP id B_0kUpyZA5Mh for <iommu@lists.linux-foundation.org>;
+ Fri, 25 Jun 2021 15:39:01 +0000 (UTC)
 X-Greylist: whitelisted by SQLgrey-1.8.0
-Received: from mail-ot1-x32f.google.com (mail-ot1-x32f.google.com
- [IPv6:2607:f8b0:4864:20::32f])
- by smtp4.osuosl.org (Postfix) with ESMTPS id 78AD44021D
- for <iommu@lists.linux-foundation.org>; Fri, 25 Jun 2021 14:49:44 +0000 (UTC)
-Received: by mail-ot1-x32f.google.com with SMTP id
- d21-20020a9d72d50000b02904604cda7e66so7728157otk.7
- for <iommu@lists.linux-foundation.org>; Fri, 25 Jun 2021 07:49:44 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=chromium.org; s=google;
+Received: from mail-wr1-x430.google.com (mail-wr1-x430.google.com
+ [IPv6:2a00:1450:4864:20::430])
+ by smtp2.osuosl.org (Postfix) with ESMTPS id 44CCB40129
+ for <iommu@lists.linux-foundation.org>; Fri, 25 Jun 2021 15:39:01 +0000 (UTC)
+Received: by mail-wr1-x430.google.com with SMTP id g7so6440411wri.7
+ for <iommu@lists.linux-foundation.org>; Fri, 25 Jun 2021 08:39:01 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=gmail.com; s=20161025;
  h=mime-version:references:in-reply-to:from:date:message-id:subject:to
- :cc; bh=j8m5Di25YEHezMhSM0CIBaRcSl+2cupixwUQS08gJpo=;
- b=M6vw5n1mivkEmZrZaE7zieAlKLsTCL3sm9eT56bSI/8K31Go3QolQ35P0EOIUStr1i
- Ps9F1aHzu148M6CnpnCl479CYign0nk21Ld54dTETQxPeTlpC0v+vVMC1vqhwLBpIR1T
- 3JmEdCj0y7cmRGSI/pvihxB5MGkxE/h5jVHys=
+ :cc; bh=vdo63xtloDEOamPYATEH0AS03eYl+iSZfl6fPLjUbC0=;
+ b=Jb0i1Lvqmij+LCFT/Mg28ra5KlS0qJQBQ26bnZVtH4y9cZM+GnQHp1dvUZ3LUnWJU1
+ VzKHiDXKJ9TXOkl17FLwldxn5maUTbOx3wMjeu2i22mk56UmTrPM2C2y1zrh2p4371l0
+ ngGo21DjmXU8rIwuOaB0GEvcMZhCKAAVE7WsMozqU4xp0DWnN/diafx6zcMFlVz8YtbY
+ aIz9j5DOTQ8JoWobUYeiB5EYVcMY3rgGVqh20F/KXHQpiUCypMMwLwq0Qv/Y/y5sMS5I
+ Wf5LtD+mCjflS70/C4h1O3yl6AOOjPMzZUBQRWl3uyvHi7tsu3jsi7mwnFUC1vgtP6yY
+ uOMQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
  d=1e100.net; s=20161025;
  h=x-gm-message-state:mime-version:references:in-reply-to:from:date
  :message-id:subject:to:cc;
- bh=j8m5Di25YEHezMhSM0CIBaRcSl+2cupixwUQS08gJpo=;
- b=RR4pOlZKabLSCQPx5ltIjGQ5m9cjcwiobwAjWsmbvqdSjf45s01IH6zdhEREYjtRzF
- A4MvwacH4Wy5n9rw9VjZYuB2urpGMI4tOZZXHje38RfyLUV63uCY9DJASDMcRS06Ykfb
- V5/9oB5irmtXDR7ahU0bK4tx11uX8Z7OkryeDu9MGq9hZXiMBgA11iAdX95J06j/30LN
- yvoDgFldqtAdPYKOIPgFuxFexMsJUj0ZnD/JhyI5D5nL6H3s5ku1f5uF7KtFE1T3eybx
- Q+foYG65eGwMBKxhEtj4Lq69oc1ETyt2WzSU3BmyXkleo9pWJ2DD3EZlPZpjCBe9Xr2E
- ywrA==
-X-Gm-Message-State: AOAM533QE0KfIyWxhpInKQBJztpH2AqXy67nWckdbLuDmtWPCl/qUWv8
- ZsIUfdE4Gs+aUMXbyGrYiPLJBfyXnWoR3w==
-X-Google-Smtp-Source: ABdhPJzlndc9R985Xz03TJRmrMZVV3Bx1Qz7clz3oqzV/Uw9fAzmZMTzqEZdNQa8FwaiQ6kT/caw8g==
-X-Received: by 2002:a05:6830:410c:: with SMTP id
- w12mr9813453ott.304.1624632583392; 
- Fri, 25 Jun 2021 07:49:43 -0700 (PDT)
-Received: from mail-ot1-f45.google.com (mail-ot1-f45.google.com.
- [209.85.210.45])
- by smtp.gmail.com with ESMTPSA id v8sm1391507oth.69.2021.06.25.07.49.43
- for <iommu@lists.linux-foundation.org>
- (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
- Fri, 25 Jun 2021 07:49:43 -0700 (PDT)
-Received: by mail-ot1-f45.google.com with SMTP id
- x17-20020a05683000d1b029045fb1889a9eso9055061oto.5
- for <iommu@lists.linux-foundation.org>; Fri, 25 Jun 2021 07:49:43 -0700 (PDT)
-X-Received: by 2002:a25:ad60:: with SMTP id l32mr10591974ybe.276.1624632147433; 
- Fri, 25 Jun 2021 07:42:27 -0700 (PDT)
+ bh=vdo63xtloDEOamPYATEH0AS03eYl+iSZfl6fPLjUbC0=;
+ b=ZCLOb2IIMq04A+OmrAk89pPh+adn0a+9KWGcrhncLrSt0dBcQ+RKRqXMHqDxKeyBid
+ oT/pExpOzFhh7tzFeJD8t/c/IQ494X5Cz4AOOczhNM9cFXiW50K2zHVCVBwYK6jPiFSE
+ 5PrP8wUgv9RibmhxHgnLlC+hcTXAKXrRiRyF77FAEFL9734GGc7nDdmLv4DGcvx/M4vs
+ G+ewocURimd1N3JbjODvzBOcwDqpQ3XFRwB/RGOKBgoN2P3GHhQmmhupp5bV57F/6DSa
+ PB5WxtwV4zfqkZIs7hOhVyhauCGh/2HoYgngSdHPp91OG3zH0M9XVRkIJdLzwsVzHun2
+ bOqA==
+X-Gm-Message-State: AOAM532bNCfV6g1czuu19m7g5vJzUppogF8Lfh9UK+fNeJZ/DMpKCA7j
+ 0qK1ba6G+7SzrAt1w9XQjxtDHWE8XfzJmcMgGLA=
+X-Google-Smtp-Source: ABdhPJxMd2QD5QxjGCuh4pj9v343g3SW9Px0O12bqlsmSQOJev5MZ4vy4Nc2H7rSC6xBZLfN8VeV69ccnD8vSa1vkF0=
+X-Received: by 2002:adf:fcc5:: with SMTP id f5mr11934898wrs.83.1624635539523; 
+ Fri, 25 Jun 2021 08:38:59 -0700 (PDT)
 MIME-Version: 1.0
-References: <20210624171759.4125094-1-dianders@chromium.org>
- <YNXXwvuErVnlHt+s@8bytes.org>
-In-Reply-To: <YNXXwvuErVnlHt+s@8bytes.org>
-From: Doug Anderson <dianders@chromium.org>
-Date: Fri, 25 Jun 2021 07:42:15 -0700
-X-Gmail-Original-Message-ID: <CAD=FV=UFxZH7g8gH5+M=Fv4Y-e1bsLkNkPGJhNwhvVychcGQcQ@mail.gmail.com>
-Message-ID: <CAD=FV=UFxZH7g8gH5+M=Fv4Y-e1bsLkNkPGJhNwhvVychcGQcQ@mail.gmail.com>
-Subject: Re: [PATCH v2 0/3] iommu: Enable non-strict DMA on QCom SD/MMC
-To: Joerg Roedel <joro@8bytes.org>
-Cc: Ulf Hansson <ulf.hansson@linaro.org>,
- Linux Doc Mailing List <linux-doc@vger.kernel.org>,
- Peter Zijlstra <peterz@infradead.org>, linux-pci@vger.kernel.org,
+References: <20210610214431.539029-1-robdclark@gmail.com>
+ <20210610214431.539029-4-robdclark@gmail.com>
+ <YNVP6rfQ699BejsI@yoga>
+In-Reply-To: <YNVP6rfQ699BejsI@yoga>
+From: Rob Clark <robdclark@gmail.com>
+Date: Fri, 25 Jun 2021 08:42:59 -0700
+Message-ID: <CAF6AEGvTjTUQXqom-xhdh456tdLscbVFPQ+iud1H1gHc8A2=hA@mail.gmail.com>
+Subject: Re: [PATCH v5 3/5] drm/msm: Improve the a6xx page fault handler
+To: Bjorn Andersson <bjorn.andersson@linaro.org>
+Cc: Rob Clark <robdclark@chromium.org>,
+ freedreno <freedreno@lists.freedesktop.org>,
+ Jordan Crouse <jcrouse@codeaurora.org>, Jonathan Marek <jonathan@marek.ca>,
+ David Airlie <airlied@linux.ie>, linux-arm-msm <linux-arm-msm@vger.kernel.org>,
+ Sharat Masetty <smasetty@codeaurora.org>,
  Konrad Dybcio <konrad.dybcio@somainline.org>,
- Thierry Reding <thierry.reding@gmail.com>,
- Joel Fernandes <joel@joelfernandes.org>, Rajat Jain <rajatja@google.com>,
- Will Deacon <will@kernel.org>, Rob Clark <robdclark@chromium.org>,
- Saravana Kannan <saravanak@google.com>, Jonathan Corbet <corbet@lwn.net>,
- quic_c_gdjako@quicinc.com, Linux ARM <linux-arm-kernel@lists.infradead.org>,
- Viresh Kumar <viresh.kumar@linaro.org>,
- Veerabhadrarao Badiganti <vbadigan@codeaurora.org>,
- "Paul E. McKenney" <paulmck@kernel.org>,
- linux-arm-msm <linux-arm-msm@vger.kernel.org>,
- Bjorn Helgaas <bhelgaas@google.com>, Sonny Rao <sonnyrao@chromium.org>,
- Vlastimil Babka <vbabka@suse.cz>, Randy Dunlap <rdunlap@infradead.org>,
- Linux MMC List <linux-mmc@vger.kernel.org>,
- Adrian Hunter <adrian.hunter@intel.com>, LKML <linux-kernel@vger.kernel.org>,
+ Douglas Anderson <dianders@chromium.org>,
+ dri-devel <dri-devel@lists.freedesktop.org>,
+ Akhil P Oommen <akhilpo@codeaurora.org>, Eric Anholt <eric@anholt.net>,
  "list@263.net:IOMMU DRIVERS <iommu@lists.linux-foundation.org>,
  Joerg Roedel <joro@8bytes.org>, " <iommu@lists.linux-foundation.org>,
- Andrew Morton <akpm@linux-foundation.org>, Robin Murphy <robin.murphy@arm.com>,
- "Maciej W. Rozycki" <macro@orcam.me.uk>
+ "Kristian H. Kristensen" <hoegsberg@google.com>,
+ Daniel Vetter <daniel@ffwll.ch>,
+ AngeloGioacchino Del Regno <angelogioacchino.delregno@somainline.org>,
+ Marijn Suijten <marijn.suijten@somainline.org>, Sean Paul <sean@poorly.run>,
+ open list <linux-kernel@vger.kernel.org>
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -130,116 +118,85 @@ Content-Transfer-Encoding: 7bit
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-Hi,
-
-On Fri, Jun 25, 2021 at 6:19 AM Joerg Roedel <joro@8bytes.org> wrote:
+On Thu, Jun 24, 2021 at 8:39 PM Bjorn Andersson
+<bjorn.andersson@linaro.org> wrote:
 >
-> Hi Douglas,
+> On Thu 10 Jun 16:44 CDT 2021, Rob Clark wrote:
+> [..]
+> > diff --git a/drivers/gpu/drm/msm/msm_iommu.c b/drivers/gpu/drm/msm/msm_iommu.c
+> > index 50d881794758..6975b95c3c29 100644
+> > --- a/drivers/gpu/drm/msm/msm_iommu.c
+> > +++ b/drivers/gpu/drm/msm/msm_iommu.c
+> > @@ -211,8 +211,17 @@ static int msm_fault_handler(struct iommu_domain *domain, struct device *dev,
+> >               unsigned long iova, int flags, void *arg)
+> >  {
+> >       struct msm_iommu *iommu = arg;
+> > +     struct adreno_smmu_priv *adreno_smmu = dev_get_drvdata(iommu->base.dev);
+> > +     struct adreno_smmu_fault_info info, *ptr = NULL;
+> > +
+> > +     if (adreno_smmu->get_fault_info) {
 >
-> On Thu, Jun 24, 2021 at 10:17:56AM -0700, Douglas Anderson wrote:
-> > The goal of this patch series is to get better SD/MMC performance on
-> > Qualcomm eMMC controllers and in generally nudge us forward on the
-> > path of allowing some devices to be in strict mode and others to be in
-> > non-strict mode.
+> This seemed reasonable when I read it last time, but I didn't realize
+> that the msm_fault_handler() is installed for all msm_iommu instances.
 >
-> So if I understand it right, this patch-set wants a per-device decision
-> about setting dma-mode to strict vs. non-strict.
+> So while we're trying to recover from the boot splash and setup the new
+> framebuffer we end up here with iommu->base.dev being the mdss device.
+> Naturally drvdata of mdss is not a struct adreno_smmu_priv.
 >
-> I think we should get to the reason why strict mode is used by default
-> first. Is the default on ARM platforms to use iommu-strict mode by
-> default and if so, why?
+> > +             adreno_smmu->get_fault_info(adreno_smmu->cookie, &info);
 >
-> The x86 IOMMUs use non-strict mode by default (yes, it is a security
-> trade-off).
+> So here we just jump straight out into hyperspace, never to return.
+>
+> Not sure how to wire this up to avoid the problem, but right now I don't
+> think we can boot any device with a boot splash.
+>
 
-It is certainly a good question. I will say that, as per usual, I'm
-fumbling around trying to solve problems in subsystems I'm not an
-expert at, so if something I'm saying sounds like nonsense it probably
-is. Please correct me.
+I think we could do:
 
-I guess I'd start out by thinking about what devices I think need to
-be in "strict" mode. Most of my thoughts on this are in the 3rd patch
-in the series. I think devices where it's important to be in strict
-mode fall into "Case 1" from that patch description, copied here:
+------------------------
+diff --git a/drivers/gpu/drm/msm/msm_iommu.c b/drivers/gpu/drm/msm/msm_iommu.c
+index eed2a762e9dd..30ee8866154e 100644
+--- a/drivers/gpu/drm/msm/msm_iommu.c
++++ b/drivers/gpu/drm/msm/msm_iommu.c
+@@ -29,6 +29,9 @@ static struct msm_iommu_pagetable
+*to_pagetable(struct msm_mmu *mmu)
+  return container_of(mmu, struct msm_iommu_pagetable, base);
+ }
 
-Case 1: IOMMUs prevent malicious code running on the peripheral (maybe
-a malicious peripheral or maybe someone exploited a benign peripheral)
-from turning into an exploit of the Linux kernel. This is particularly
-important if the peripheral has loadable / updatable firmware or if
-the peripheral has some type of general purpose processor and is
-processing untrusted inputs. It's also important if the device is
-something that can be easily plugged into the host and the device has
-direct DMA access itself, like a PCIe device.
++static int msm_fault_handler(struct iommu_domain *domain, struct device *dev,
++ unsigned long iova, int flags, void *arg);
++
+ static int msm_iommu_pagetable_unmap(struct msm_mmu *mmu, u64 iova,
+  size_t size)
+ {
+@@ -151,6 +154,8 @@ struct msm_mmu *msm_iommu_pagetable_create(struct
+msm_mmu *parent)
+  struct io_pgtable_cfg ttbr0_cfg;
+  int ret;
 
++ iommu_set_fault_handler(iommu->domain, msm_fault_handler, iommu);
++
+  /* Get the pagetable configuration from the domain */
+  if (adreno_smmu->cookie)
+  ttbr1_cfg = adreno_smmu->get_ttbr1_cfg(adreno_smmu->cookie);
+@@ -300,7 +305,6 @@ struct msm_mmu *msm_iommu_new(struct device *dev,
+struct iommu_domain *domain)
 
-Using sc7180 as an example (searching for iommus in sc7180.dtsi), I'd
-expect these peripherals to be in strict mode:
+  iommu->domain = domain;
+  msm_mmu_init(&iommu->base, dev, &funcs, MSM_MMU_IOMMU);
+- iommu_set_fault_handler(domain, msm_fault_handler, iommu);
 
-* WiFi / LTE - I'm almost certain we want this in "strict" mode. Both
-have loadable / updatable firmware and both do complex processing on
-untrusted inputs. Both have a history of being compromised over the
-air just by being near an attacker. Note that on sc7180 these are
-_not_ connected over PCI so we can't leverage any PCI mechanism for
-deciding strict / non-strict.
+  atomic_set(&iommu->pagetables, 0);
 
-* Video decode / encode - pretty sure we want this in strict. It's got
-loadable / updatable firmware and processing complex / untrusted
-inputs.
+------------------------
 
-* LPASS (low power audio subsystem) - I don't know a ton and I think
-we don't use this much on our designs, but I believe it meets the
-definitions for needing "strict".
+That would have the result of setting the same fault handler multiple
+times, but that looks harmless.  Mostly the fault handling stuff is to
+make it easier to debug userspace issues, the fallback dmesg spam from
+arm-smmu should be sufficient for any kernel side issues.
 
-* The QUPs (handles UART, SPI, and i2c) - I'm not as sure here. These
-are much "smarter" than you'd expect. They have loadable / updatable
-firmware and certainly have a sort of general purpose processor in
-them. They also might be processing untrusted inputs, but presumably
-in a pretty simple way. At the moment we don't use a ton of DMA here
-anyway and these are pretty low speed, so I would tend to leave them
-as strict just to be on the safe side.
-
-
-I'd expect these to be non-strict:
-
-* SD/MMC - as described in this patch series.
-
-* USB - As far as I know firmware isn't updatable and has no history
-of being compromised.
-
-
-Special:
-
-* GPU - This already has a bunch of special cases, so we probably
-don't need to discuss here.
-
-
-As far as I can tell everything in sc7180.dtsi that has an "iommus"
-property is classified above. So, unless I'm wrong and it's totally
-fine to run LTE / WiFi / Video / LPASS in non-strict mode then:
-
-* We still need some way to pick strict vs. non-strict.
-
-* Since I've only identified two peripherals that I think should be
-non-strict, having "strict" the default seems like fewer special
-cases. It's also safer.
-
-
-In terms of thinking about x86 / AMD where the default is non-strict,
-I don't have any historical knowledge there. I guess the use of PCI
-for connecting WiFi is more common (so you can use the PCI special
-cases) and I'd sorta hope that WiFi is running in strict mode. For
-video encode / decode, perhaps x86 / AMD are just accepting the risk
-here because there was no kernel infrastructure for doing better? I'd
-also expect that x86/AMD don't have something quite as crazy as the
-QUPs for UART/I2C/SPI, but even if they do I wouldn't be terribly
-upset if they were in non-strict mode.
-
-...so I guess maybe the super short answer to everything above is that
-I believe that at least WiFi ought to be in "strict" mode and it's not
-on PCI so we need to come up with some type of per-device solution.
-
-
--Doug
+BR,
+-R
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
