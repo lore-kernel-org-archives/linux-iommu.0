@@ -3,104 +3,102 @@ X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
 X-Spam-Status: No, score=-16.6 required=3.0 tests=BAYES_00,DKIM_INVALID,
-	DKIM_SIGNED,HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_CR_TRAILER,INCLUDES_PATCH,
-	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,URIBL_RED,USER_AGENT_GIT
+	DKIM_SIGNED,HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,
+	MENTIONS_GIT_HOSTING,SPF_HELO_NONE,SPF_PASS,URIBL_RED,USER_AGENT_GIT
 	autolearn=unavailable autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0022AC49EAF
-	for <iommu@archiver.kernel.org>; Sun, 27 Jun 2021 14:37:32 +0000 (UTC)
-Received: from smtp1.osuosl.org (smtp1.osuosl.org [140.211.166.138])
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4D324C49EB7
+	for <iommu@archiver.kernel.org>; Sun, 27 Jun 2021 14:37:33 +0000 (UTC)
+Received: from smtp4.osuosl.org (smtp4.osuosl.org [140.211.166.137])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 8651E61C5B
-	for <iommu@archiver.kernel.org>; Sun, 27 Jun 2021 14:37:31 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 8651E61C5B
+	by mail.kernel.org (Postfix) with ESMTPS id E0D0261C29
+	for <iommu@archiver.kernel.org>; Sun, 27 Jun 2021 14:37:32 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org E0D0261C29
 Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=lists.linux-foundation.org
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by smtp1.osuosl.org (Postfix) with ESMTP id 45A1E8239A;
-	Sun, 27 Jun 2021 14:37:31 +0000 (UTC)
+	by smtp4.osuosl.org (Postfix) with ESMTP id A18684031E;
+	Sun, 27 Jun 2021 14:37:32 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from smtp1.osuosl.org ([127.0.0.1])
-	by localhost (smtp1.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id FR4KHmfTCiG2; Sun, 27 Jun 2021 14:37:30 +0000 (UTC)
+Received: from smtp4.osuosl.org ([127.0.0.1])
+	by localhost (smtp4.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+	with ESMTP id BgL6xo0Zvg9q; Sun, 27 Jun 2021 14:37:31 +0000 (UTC)
 Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by smtp1.osuosl.org (Postfix) with ESMTPS id 1F5A981C67;
+	by smtp4.osuosl.org (Postfix) with ESMTPS id B227140338;
 	Sun, 27 Jun 2021 14:37:30 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id E37B2C0010;
-	Sun, 27 Jun 2021 14:37:29 +0000 (UTC)
-Received: from smtp4.osuosl.org (smtp4.osuosl.org [IPv6:2605:bc80:3010::137])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 904B7C000E
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 26828C000E;
+	Sun, 27 Jun 2021 14:37:30 +0000 (UTC)
+Received: from smtp3.osuosl.org (smtp3.osuosl.org [IPv6:2605:bc80:3010::136])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 9F866C0010
  for <iommu@lists.linux-foundation.org>; Sun, 27 Jun 2021 14:37:29 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by smtp4.osuosl.org (Postfix) with ESMTP id 764EA40338
+ by smtp3.osuosl.org (Postfix) with ESMTP id 79FDB60662
  for <iommu@lists.linux-foundation.org>; Sun, 27 Jun 2021 14:37:29 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Authentication-Results: smtp4.osuosl.org (amavisd-new);
- dkim=pass (2048-bit key) header.d=svenpeter.dev header.b="v622dmoM";
+Authentication-Results: smtp3.osuosl.org (amavisd-new);
+ dkim=pass (2048-bit key) header.d=svenpeter.dev header.b="y6fT8Wg3";
  dkim=pass (2048-bit key) header.d=messagingengine.com
- header.b="gjLKQ1ic"
-Received: from smtp4.osuosl.org ([127.0.0.1])
- by localhost (smtp4.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id uw4RmOdagoYA for <iommu@lists.linux-foundation.org>;
+ header.b="NDilULHx"
+Received: from smtp3.osuosl.org ([127.0.0.1])
+ by localhost (smtp3.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+ with ESMTP id wFPc2P3aeKg9 for <iommu@lists.linux-foundation.org>;
  Sun, 27 Jun 2021 14:37:27 +0000 (UTC)
 X-Greylist: from auto-whitelisted by SQLgrey-1.8.0
 Received: from new4-smtp.messagingengine.com (new4-smtp.messagingengine.com
  [66.111.4.230])
- by smtp4.osuosl.org (Postfix) with ESMTPS id 632B24031E
+ by smtp3.osuosl.org (Postfix) with ESMTPS id 652E0605FB
  for <iommu@lists.linux-foundation.org>; Sun, 27 Jun 2021 14:37:27 +0000 (UTC)
 Received: from compute4.internal (compute4.nyi.internal [10.202.2.44])
- by mailnew.nyi.internal (Postfix) with ESMTP id 452C15806DA;
- Sun, 27 Jun 2021 10:37:26 -0400 (EDT)
+ by mailnew.nyi.internal (Postfix) with ESMTP id 583E25806BC;
+ Sun, 27 Jun 2021 10:37:23 -0400 (EDT)
 Received: from mailfrontend2 ([10.202.2.163])
- by compute4.internal (MEProxy); Sun, 27 Jun 2021 10:37:26 -0400
+ by compute4.internal (MEProxy); Sun, 27 Jun 2021 10:37:23 -0400
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=svenpeter.dev;
- h=from:to:cc:subject:date:message-id:in-reply-to:references
- :mime-version:content-transfer-encoding; s=fm1; bh=6dgROPTG2FgZP
- QhdtR6kWJqhz8OvQLzcBN89UwKC3T4=; b=v622dmoMM7/W3OCI/R8QGIKw6vVl7
- NU5dPRqXCz6M4PDrvC3+PC/1Z1xex058OW1ydvH+qE/97e83UOiZOzQMpHwuJuze
- ZmVDmf54wFrVu/qKpTq8iqZGohx28MRq8n2i8x9LImSVwigNdtPXjKHS8IQ/A1xT
- S+hg9JIeH5w1QBVuKn55OIO4IGzlKe7sSk/MWe5nazvig9MFRRvIOlhKcILeo3qE
- grvKG/0S5df19blbtI8LTEVaKDrKXqAUWrTNwfskdpanGj+0SZ9lIKtUxltEXiAR
- TPb7HfVVqXte/J04ZEGKF7QdQy6Mpfeu2pzRU8mh68wXLx6u8K348KGnw==
+ h=from:to:cc:subject:date:message-id:mime-version
+ :content-transfer-encoding; s=fm1; bh=ucRXwWejv64MFzazAwEltyGum6
+ z36bD1hippP3YWEjE=; b=y6fT8Wg3YQl154OoxC/i89oc0BfPzg4kSavNyvbJie
+ 5WoSv52BvjpEAsxmoSAMU3HudImrE/z4gAxJYlUXXBLcGRpM+DzMkQHQB6qRAwO/
+ eJnLDTPdE3ClLkMXq+9cHKgML5+hR6lgDUWoL995nIGfV/PEAGMtIIPk2lg7iOLO
+ At05o/RmZDH13FqfxLC22DLMSnfM6CQRPrOOvyvKH/zMoT9A10Wtu1YUNcZ9P1fF
+ 61yiSckJ1Kk429P3EQuQ1VeBgeMIGGHmZ7WMmcMRr0WNSCShxA2TAjiTLy4zpoBu
+ eq1qvjn1hU4dfod1Ws4L+Qz+UjRanws7vnzmuZvgOY7A==
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
  messagingengine.com; h=cc:content-transfer-encoding:date:from
- :in-reply-to:message-id:mime-version:references:subject:to
- :x-me-proxy:x-me-proxy:x-me-sender:x-me-sender:x-sasl-enc; s=
- fm3; bh=6dgROPTG2FgZPQhdtR6kWJqhz8OvQLzcBN89UwKC3T4=; b=gjLKQ1ic
- fguSAuUwVKEenXTzK/coo3q+DXBo++s14UcAE9+vxdUJRvVYoZpqMXVkaCXe6IzV
- fg2gKosTMYMzp1XkpoB9y/CPaODu2kj7F9SgNoSABXtIgc/qJelOFmh3NCR8wJJ5
- we2pQD4uDSDzA+b9+pFpraA6LsPVb6Tigc9v0upeiTidD5d8tmumJNakD5iPyEFL
- MaVEY5dUjmACpRPvSfVLw4qvCFV+xUBEYCELKAHNDYLPe+V4TDpmRAyivaKOZLPT
- PZdj1tRWnChBUziJibXDNrE3Woc1Pe++m/poweQC4SuTtBlDLKTMIduY/2uf6VYg
- Ax2P8LKVNXE6Zw==
-X-ME-Sender: <xms:Jo3YYLyoIw1hzPhy7RNh2YXZ-9f412_ERAqNSl6W4ekMvtZ1iHN-3g>
- <xme:Jo3YYDTcDX8GLgCH-bI--UZ-rcXxoHkSTwkXsr2MOuifTtLMLC7lEW36a5oXEhjnE
- eq6BlJTPuphJ_O9jm8>
-X-ME-Received: <xmr:Jo3YYFXSDZx8jw6A3PoTMU3fuK_NHR0C6pFI6ECieJd9reJJq_2XmgxLNwg8cIaQZO4qePO6YyMtMH8G9YhRyxCeKu4EdKfbpFWxTV-MmhpXtMcpx4YjGfbsbZ-VEQ>
+ :message-id:mime-version:subject:to:x-me-proxy:x-me-proxy
+ :x-me-sender:x-me-sender:x-sasl-enc; s=fm3; bh=ucRXwWejv64MFzazA
+ wEltyGum6z36bD1hippP3YWEjE=; b=NDilULHx486ywwTpyQ/u2gF53NLcUrjk9
+ McaKDbpetGTdQZ4bNYJTK1J7hQZtTrzYGmOEN6xGG047hVXGySF+r7vco/MIz4vZ
+ yaM++EqkzYeaGQS5nP1i5X7H8WJxu6F11dp9L4wRz3Iph2eBnjd9sNfneOxPxIk8
+ JMZlSojnbj/klfi4oJpgTqs4R0YMZNXQcMsg3nVQRwB6XYgReV3jflw0RmPHkuoS
+ q+ApqPobomS+Xws72YpXd0Wk63weKqBHURBBqfDJ1w+aZux8fH0YCBbyT4mfEt0f
+ 88MoK1BM1UncdzJtzj+WWawFW8bw/B63YOIYyFWoo8vghEsX6twIg==
+X-ME-Sender: <xms:IY3YYE9uj2Sl9-c5XLH3U71O7b9DtK2IWER4LL1zIprlcNuR-IwXEw>
+ <xme:IY3YYMsN9ygMAVRb6TS7d3-xHZBXJpIGyVe-p02MvfRDRZSLNJK0B937vJ0a3p0Wi
+ M-L6MneQdZ27oPFHJg>
+X-ME-Received: <xmr:IY3YYKCZGSBiCUou2-3WrrtIt51QyeE09JoEGL-Fb87SOTRTAhKHu0L_z7muegjoDPL3RDNhryt8TtekAlk90ZObxmplrRmXZniKPJN-5zCuGf0T8NJOr-coZ7SSyQ>
 X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgeduledrfeehvddgjeekucetufdoteggodetrfdotf
  fvucfrrhhofhhilhgvmecuhfgrshhtofgrihhlpdfqfgfvpdfurfetoffkrfgpnffqhgen
  uceurghilhhouhhtmecufedttdenucesvcftvggtihhpihgvnhhtshculddquddttddmne
- cujfgurhephffvufffkffojghfggfgsedtkeertdertddtnecuhfhrohhmpefuvhgvnhcu
- rfgvthgvrhcuoehsvhgvnhesshhvvghnphgvthgvrhdruggvvheqnecuggftrfgrthhtvg
- hrnheptedvkeetleeuffffhfekteetffeggffgveehieelueefvddtueffveevlefhfeej
- necuvehluhhsthgvrhfuihiivgeptdenucfrrghrrghmpehmrghilhhfrhhomhepshhvvg
- hnsehsvhgvnhhpvghtvghrrdguvghv
-X-ME-Proxy: <xmx:Jo3YYFhYGr5_sfjoKMF7o7HOPzK_P8NOMRS8-zs-7gUxvJO3nsiA3A>
- <xmx:Jo3YYNBx-plsUf-IrgZDokM7oSWCS5AwQd3NLP059nUSVsOCOqZFsA>
- <xmx:Jo3YYOLxiV5EotCEyb_5msXrkmZKcdWw310eVH0p3F7hd5h_CNqVBA>
- <xmx:Jo3YYPyqyLnTNsL0073osuiGdv195NbZsfrgasm2sURG4-3OKRke7g>
+ cujfgurhephffvufffkffoggfgsedtkeertdertddtnecuhfhrohhmpefuvhgvnhcurfgv
+ thgvrhcuoehsvhgvnhesshhvvghnphgvthgvrhdruggvvheqnecuggftrfgrthhtvghrnh
+ epvdffieelfeekteeuvdejvdduteehfeeijeefkeevteehueegveeltdehkeffjeejnecu
+ ffhomhgrihhnpegrshgrhhhilhhinhhugidrohhrghdpkhgvrhhnvghlrdhorhhgpdhgih
+ hthhhusgdrtghomhenucevlhhushhtvghrufhiiigvpedtnecurfgrrhgrmhepmhgrihhl
+ fhhrohhmpehsvhgvnhesshhvvghnphgvthgvrhdruggvvh
+X-ME-Proxy: <xmx:IY3YYEeVT08VJu4gdMbAwWlO1EM2oNkp3nrILbHYeXl480emxkUUsw>
+ <xmx:IY3YYJMduLC9HrJKP7F9SPkMt0D_dVT0wUYE_7NA8sIzJC3OAd-qvg>
+ <xmx:IY3YYOlFYef-sgKH3kUcHxn5VwwGiNnDuqMWkdxeNy5sXJbUlVPNEQ>
+ <xmx:I43YYGexxLMifB7lhoiLz2EDB0HPMrTYTh8boHZrOJuGx9PXnVKhzA>
 Received: by mail.messagingengine.com (Postfix) with ESMTPA; Sun,
- 27 Jun 2021 10:37:23 -0400 (EDT)
+ 27 Jun 2021 10:37:18 -0400 (EDT)
 To: Will Deacon <will@kernel.org>, Robin Murphy <robin.murphy@arm.com>,
  Joerg Roedel <joro@8bytes.org>
-Subject: [PATCH v4 1/3] iommu: io-pgtable: add DART pagetable format
-Date: Sun, 27 Jun 2021 16:34:03 +0200
-Message-Id: <20210627143405.77298-2-sven@svenpeter.dev>
+Subject: [PATCH v4 0/3] Apple M1 DART IOMMU driver
+Date: Sun, 27 Jun 2021 16:34:02 +0200
+Message-Id: <20210627143405.77298-1-sven@svenpeter.dev>
 X-Mailer: git-send-email 2.30.1 (Apple Git-130)
-In-Reply-To: <20210627143405.77298-1-sven@svenpeter.dev>
-References: <20210627143405.77298-1-sven@svenpeter.dev>
 MIME-Version: 1.0
 Cc: Arnd Bergmann <arnd@kernel.org>, r.czerwinski@pengutronix.de,
  devicetree@vger.kernel.org, Marc Zyngier <maz@kernel.org>,
@@ -130,155 +128,150 @@ Content-Transfer-Encoding: 7bit
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-Apple's DART iommu uses a pagetable format that shares some
-similarities with the ones already implemented by io-pgtable.c.
-Add a new format variant to support the required differences
-so that we don't have to duplicate the pagetable handling code.
+Hi,
 
-Signed-off-by: Sven Peter <sven@svenpeter.dev>
----
- drivers/iommu/io-pgtable-arm.c | 62 ++++++++++++++++++++++++++++++++++
- drivers/iommu/io-pgtable.c     |  1 +
- include/linux/io-pgtable.h     |  7 ++++
- 3 files changed, 70 insertions(+)
+This is v4 of my Apple M1 DART IOMMU driver series as a follow up to the previous
+versions [1][2][3].
 
-diff --git a/drivers/iommu/io-pgtable-arm.c b/drivers/iommu/io-pgtable-arm.c
-index 87def58e79b5..1dd5c45b4b5b 100644
---- a/drivers/iommu/io-pgtable-arm.c
-+++ b/drivers/iommu/io-pgtable-arm.c
-@@ -127,6 +127,9 @@
- #define ARM_MALI_LPAE_MEMATTR_IMP_DEF	0x88ULL
- #define ARM_MALI_LPAE_MEMATTR_WRITE_ALLOC 0x8DULL
- 
-+#define APPLE_DART_PTE_PROT_NO_WRITE (1<<7)
-+#define APPLE_DART_PTE_PROT_NO_READ (1<<8)
-+
- /* IOPTE accessors */
- #define iopte_deref(pte,d) __va(iopte_to_paddr(pte, d))
- 
-@@ -381,6 +384,15 @@ static arm_lpae_iopte arm_lpae_prot_to_pte(struct arm_lpae_io_pgtable *data,
- {
- 	arm_lpae_iopte pte;
- 
-+	if (data->iop.fmt == ARM_APPLE_DART) {
-+		pte = 0;
-+		if (!(prot & IOMMU_WRITE))
-+			pte |= APPLE_DART_PTE_PROT_NO_WRITE;
-+		if (!(prot & IOMMU_READ))
-+			pte |= APPLE_DART_PTE_PROT_NO_READ;
-+		return pte;
-+	}
-+
- 	if (data->iop.fmt == ARM_64_LPAE_S1 ||
- 	    data->iop.fmt == ARM_32_LPAE_S1) {
- 		pte = ARM_LPAE_PTE_nG;
-@@ -1043,6 +1055,51 @@ arm_mali_lpae_alloc_pgtable(struct io_pgtable_cfg *cfg, void *cookie)
- 	return NULL;
- }
- 
-+static struct io_pgtable *
-+apple_dart_alloc_pgtable(struct io_pgtable_cfg *cfg, void *cookie)
-+{
-+	struct arm_lpae_io_pgtable *data;
-+	int i;
-+
-+	if (cfg->oas > 36)
-+		return NULL;
-+
-+	data = arm_lpae_alloc_pgtable(cfg);
-+	if (!data)
-+		return NULL;
-+
-+	/*
-+	 * Apple's DART always requires three levels with the first level being
-+	 * stored in four MMIO registers. We always concatenate the first and
-+	 * second level so that we only have to setup the MMIO registers once.
-+	 * This results in an effective two level pagetable.
-+	 */
-+	if (data->start_level < 1)
-+		return NULL;
-+	if (data->start_level == 1 && data->pgd_bits > 2)
-+		return NULL;
-+	if (data->start_level > 1)
-+		data->pgd_bits = 0;
-+	data->start_level = 2;
-+	cfg->apple_dart_cfg.n_ttbrs = 1 << data->pgd_bits;
-+	data->pgd_bits += data->bits_per_level;
-+
-+	data->pgd = __arm_lpae_alloc_pages(ARM_LPAE_PGD_SIZE(data), GFP_KERNEL,
-+					   cfg);
-+	if (!data->pgd)
-+		goto out_free_data;
-+
-+	for (i = 0; i < cfg->apple_dart_cfg.n_ttbrs; ++i)
-+		cfg->apple_dart_cfg.ttbr[i] =
-+			virt_to_phys(data->pgd + i * ARM_LPAE_GRANULE(data));
-+
-+	return &data->iop;
-+
-+out_free_data:
-+	kfree(data);
-+	return NULL;
-+}
-+
- struct io_pgtable_init_fns io_pgtable_arm_64_lpae_s1_init_fns = {
- 	.alloc	= arm_64_lpae_alloc_pgtable_s1,
- 	.free	= arm_lpae_free_pgtable,
-@@ -1068,6 +1125,11 @@ struct io_pgtable_init_fns io_pgtable_arm_mali_lpae_init_fns = {
- 	.free	= arm_lpae_free_pgtable,
- };
- 
-+struct io_pgtable_init_fns io_pgtable_apple_dart_init_fns = {
-+	.alloc	= apple_dart_alloc_pgtable,
-+	.free	= arm_lpae_free_pgtable,
-+};
-+
- #ifdef CONFIG_IOMMU_IO_PGTABLE_LPAE_SELFTEST
- 
- static struct io_pgtable_cfg *cfg_cookie __initdata;
-diff --git a/drivers/iommu/io-pgtable.c b/drivers/iommu/io-pgtable.c
-index 6e9917ce980f..fd8e6bd6caf9 100644
---- a/drivers/iommu/io-pgtable.c
-+++ b/drivers/iommu/io-pgtable.c
-@@ -20,6 +20,7 @@ io_pgtable_init_table[IO_PGTABLE_NUM_FMTS] = {
- 	[ARM_64_LPAE_S1] = &io_pgtable_arm_64_lpae_s1_init_fns,
- 	[ARM_64_LPAE_S2] = &io_pgtable_arm_64_lpae_s2_init_fns,
- 	[ARM_MALI_LPAE] = &io_pgtable_arm_mali_lpae_init_fns,
-+	[ARM_APPLE_DART] = &io_pgtable_apple_dart_init_fns,
- #endif
- #ifdef CONFIG_IOMMU_IO_PGTABLE_ARMV7S
- 	[ARM_V7S] = &io_pgtable_arm_v7s_init_fns,
-diff --git a/include/linux/io-pgtable.h b/include/linux/io-pgtable.h
-index 4d40dfa75b55..a4bfac7f85f7 100644
---- a/include/linux/io-pgtable.h
-+++ b/include/linux/io-pgtable.h
-@@ -16,6 +16,7 @@ enum io_pgtable_fmt {
- 	ARM_V7S,
- 	ARM_MALI_LPAE,
- 	AMD_IOMMU_V1,
-+	ARM_APPLE_DART,
- 	IO_PGTABLE_NUM_FMTS,
- };
- 
-@@ -136,6 +137,11 @@ struct io_pgtable_cfg {
- 			u64	transtab;
- 			u64	memattr;
- 		} arm_mali_lpae_cfg;
-+
-+		struct {
-+			u64 ttbr[4];
-+			u32 n_ttbrs;
-+		} apple_dart_cfg;
- 	};
- };
- 
-@@ -246,5 +252,6 @@ extern struct io_pgtable_init_fns io_pgtable_arm_64_lpae_s2_init_fns;
- extern struct io_pgtable_init_fns io_pgtable_arm_v7s_init_fns;
- extern struct io_pgtable_init_fns io_pgtable_arm_mali_lpae_init_fns;
- extern struct io_pgtable_init_fns io_pgtable_amd_iommu_v1_init_fns;
-+extern struct io_pgtable_init_fns io_pgtable_apple_dart_init_fns;
- 
- #endif /* __IO_PGTABLE_H */
+Short summary: this series adds support for the iommu found in Apple's new M1
+SoC which is required to use DMA on most peripherals like the display controller,
+the USB ports or the internal PCIe bus (which is used for WiFi, Ethernet and
+more USB ports).
+So far this code has been tested by multiple people with dwc3 in host and
+device mode (which both only require changes to the device tree after this
+patchset) and PCIe (using a yet to be finalized patchset).
+
+
+== Testing this patchset with the USB-C controller == 
+
+The two USB-C ports on the M1 machines are exposed as two separate dwc3
+controllers which are behind a DART. Now that my USB phy bringup code has been
+merged into our bootloader m1n1 you can easily test this patchset yourself:
+
+1) Follow the instructions at [4] to setup our bootloader m1n1 on your M1
+   machine which will allow you to boot kernels using a normal USB cable.
+   Note that you'll still need a special setup to expose the UART for very
+   low-level debugging.
+
+2) Either apply this patchset and add the DART and dwc3 nodes as done in [5]
+   or alternatively just pull from [6] to get the tree that I've been using.
+   (That tree contains two commits already in linux-next, this patchset and
+    a final commit to add the dart+dwc3 nodes)
+
+3) Boot the kernel through our bootloader m1n1. You'll need a version after
+   commit [7] which enables the USB PHY and the USB PD chip.
+
+Note that the dwc3 controller has a quirk where each root port can only be used
+once right now. The most stable way to test is to already connected the USB
+device(s) before booting the kernel.
+
+It's also possible to test the PCIe bus but this requires a more complex setup
+for now. I can write a quick howto if anyone is interested though.
+(tl;dr: Mark Kettenis has a u-boot fork that includes PCIe bringup code and
+Marc Zyngier has a WIP patchset to add a PCIe driver)
+
+
+== Hardwired 16K IOMMU pagesize ==
+
+This IOMMU comes with a hard-wired pagesize of 16K. This makes booting a
+kernel with 4K page challenging. Right now it will hit a BUG_ON if a translated
+domain is used.
+
+For dwc3 this is no issue: As long as the iommu is set to bypass mode
+dwc3 works just fine. Translated mode just isn't supported then.
+
+The most controversial part on which I'd like to get feedback are the
+PCIe DARTs. These DARTs do not support hardware bypass mode and also limit
+the iova space to 32 bit. To still allow booting on kernels with a 4K
+pagesize I manually program a software bypass mode. With a correctly configured
+dma-ranges in the PCIe nodes this then also allows a 4K kernel to boot.
+
+In the long term, I'd like to extend the dma-iommu framework itself to
+support iommu pagesizes with a larger granule than the CPU pagesize if that is
+something you agree with.
+This would be important to later support the thunderbolt DARTs since I would be
+very uncomfortable to have these running in (software or hardware) bypass mode.
+
+== Project Blurb ==
+
+Asahi Linux is an open community project dedicated to developing and
+maintaining mainline support for Apple Silicon on Linux. Feel free to
+drop by #asahi and #asahi-dev on OFTC to chat with us, or check
+our website for more information on the project:
+
+https://asahilinux.org/
+
+== Changes ==
+
+Changes for v4:
+ - Addressed Rob Herring's remark about the incorrect phandles in the device
+   tree binding example and added his reviewed-by tag
+ - Take the software linear mapping range from the bus instead of hardcoding
+   it in the driver
+ - Use def_domain_type to force bypass mode if there's a pagesize mismatch
+   between the DART (hardwired to 16KB) and the kernel (may use 4K)
+ - Added lockdep_assert_held instead of comments as suggested by Rouven Czerwinski
+ - rebased on 5.13-rc7
+
+Changes for v3:
+ - fixed name of the iommu node in the device tree binding example
+   pointed out by Arnd Bergmann
+ - remove hardware specific checks from io-pgtable.c  as pointed out by
+   Will Deacon
+ - introduced a fake bypass mode by programming static linear pagetables
+   if the DART does not support regular bypass mode as proposed by Alex
+   Graf
+ - added checks to enforce bypass mode if there is a pagesize mismatch
+   between the DART HW and the CPU.
+ - fixed usage of GFP_KERNEL during a held spinlock found by Julia Lawall
+ - rebased on v5.13-rc3
+
+Changes for v2:
+ - fixed devicetree binding linting issues pointed out by Rob Herring and
+   reworked that file.
+ - made DART-specific code in io-pgtable.c unconditional and removed flag from
+   Kconfig as proposed by Robin Murphy.
+ - allowed multiple DART nodes in the "iommus" property as proposed by
+   Rob Herring and Robin Murphy. this resulted in significant changes
+   to apple-iommu-dart.c.
+ - the domain aperture is now forced to 32bit if translation is enabled after
+   the original suggestion to limit the aperture by Mark Kettenis and the
+   follow-up discussion and investigation with Mark Kettenis, Arnd Bergmann,
+   Robin Murphy and Rob Herring. This change also simplified the code
+   in io-pgtable.c and made some of the improvements suggested during review
+   not apply anymore.
+ - added support for bypassed and isolated domain modes.
+ - reject IOMMU_MMIO and IOMMU_NOEXEC since it's unknown how to set these up
+   for now or if the hardware even supports these flags.
+ - renamed some registers to be less confusing (mainly s/DOMAIN/STREAM/ to
+   prevent confusion with linux's iommu domain concept).
+
+
+[1] https://lore.kernel.org/linux-iommu/20210320151903.60759-1-sven@svenpeter.dev/
+[2] https://lore.kernel.org/linux-iommu/20210328074009.95932-1-sven@svenpeter.dev/
+[3] https://lore.kernel.org/linux-iommu/20210603085003.50465-1-sven@svenpeter.dev/
+[4] https://github.com/AsahiLinux/docs/wiki/Developer-Quickstart
+[5] https://github.com/AsahiLinux/linux/commit/7d4ebb0b22e9bfec849e2af86ddeb46ec29d7feb
+[6] https://github.com/AsahiLinux/linux/tree/dart/dev
+[7] https://github.com/AsahiLinux/m1n1/commit/9529ec2b4fd6550f9cfd66d9f2448b90804699a1
+
+Sven Peter (3):
+  iommu: io-pgtable: add DART pagetable format
+  dt-bindings: iommu: add DART iommu bindings
+  iommu: dart: Add DART iommu driver
+
+ .../devicetree/bindings/iommu/apple,dart.yaml |   81 ++
+ MAINTAINERS                                   |    7 +
+ drivers/iommu/Kconfig                         |   15 +
+ drivers/iommu/Makefile                        |    1 +
+ drivers/iommu/apple-dart-iommu.c              | 1058 +++++++++++++++++
+ drivers/iommu/io-pgtable-arm.c                |   62 +
+ drivers/iommu/io-pgtable.c                    |    1 +
+ include/linux/io-pgtable.h                    |    7 +
+ 8 files changed, 1232 insertions(+)
+ create mode 100644 Documentation/devicetree/bindings/iommu/apple,dart.yaml
+ create mode 100644 drivers/iommu/apple-dart-iommu.c
+
 -- 
 2.25.1
 
