@@ -2,93 +2,167 @@ Return-Path: <SRS0=XPcP=LW=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-10.1 required=3.0 tests=BAYES_00,DATE_IN_PAST_96_XX,
-	DKIM_INVALID,DKIM_SIGNED,HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_CR_TRAILER,
-	INCLUDES_PATCH,MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED
-	autolearn=ham autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-3.5 required=3.0 tests=BAYES_00,DKIM_INVALID,
+	DKIM_SIGNED,HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,
+	MSGID_FROM_MTA_HEADER,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED autolearn=no
+	autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7DFF6C49EB7
-	for <iommu@archiver.kernel.org>; Mon, 28 Jun 2021 13:24:10 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 07870C2B9F4
+	for <iommu@archiver.kernel.org>; Mon, 28 Jun 2021 14:41:17 +0000 (UTC)
 Received: from smtp1.osuosl.org (smtp1.osuosl.org [140.211.166.138])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 453D761C6B
-	for <iommu@archiver.kernel.org>; Mon, 28 Jun 2021 13:24:10 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 453D761C6B
-Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=redhat.com
+	by mail.kernel.org (Postfix) with ESMTPS id B298961CCB
+	for <iommu@archiver.kernel.org>; Mon, 28 Jun 2021 14:41:16 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org B298961CCB
+Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=nvidia.com
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by smtp1.osuosl.org (Postfix) with ESMTP id 15506831E3;
-	Mon, 28 Jun 2021 13:24:09 +0000 (UTC)
+	by smtp1.osuosl.org (Postfix) with ESMTP id 7B6A082E4C;
+	Mon, 28 Jun 2021 14:41:16 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
 Received: from smtp1.osuosl.org ([127.0.0.1])
 	by localhost (smtp1.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id h0zQnEDzpDxw; Mon, 28 Jun 2021 13:24:08 +0000 (UTC)
+	with ESMTP id ULNhQnEXxWWG; Mon, 28 Jun 2021 14:41:15 +0000 (UTC)
 Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by smtp1.osuosl.org (Postfix) with ESMTPS id C5C9F83033;
-	Mon, 28 Jun 2021 13:24:07 +0000 (UTC)
+	by smtp1.osuosl.org (Postfix) with ESMTPS id 525E982CCA;
+	Mon, 28 Jun 2021 14:41:15 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id DD289C0027;
-	Mon, 28 Jun 2021 13:24:06 +0000 (UTC)
-Received: from smtp3.osuosl.org (smtp3.osuosl.org [140.211.166.136])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 22143C000E
- for <iommu@lists.linux-foundation.org>; Mon, 28 Jun 2021 13:02:14 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 229B1C001A;
+	Mon, 28 Jun 2021 14:41:15 +0000 (UTC)
+Received: from smtp2.osuosl.org (smtp2.osuosl.org [140.211.166.133])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id AA0BDC000E
+ for <iommu@lists.linux-foundation.org>; Mon, 28 Jun 2021 14:41:13 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by smtp3.osuosl.org (Postfix) with ESMTP id C1E60607A6
- for <iommu@lists.linux-foundation.org>; Mon, 28 Jun 2021 13:02:13 +0000 (UTC)
+ by smtp2.osuosl.org (Postfix) with ESMTP id 98160400DB
+ for <iommu@lists.linux-foundation.org>; Mon, 28 Jun 2021 14:41:13 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Authentication-Results: smtp3.osuosl.org (amavisd-new);
- dkim=pass (1024-bit key) header.d=redhat.com
-Received: from smtp3.osuosl.org ([127.0.0.1])
- by localhost (smtp3.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id 12pVAQaxnvsH for <iommu@lists.linux-foundation.org>;
- Mon, 28 Jun 2021 13:02:12 +0000 (UTC)
-X-Greylist: domain auto-whitelisted by SQLgrey-1.8.0
-Received: from us-smtp-delivery-124.mimecast.com
- (us-smtp-delivery-124.mimecast.com [170.10.133.124])
- by smtp3.osuosl.org (Postfix) with ESMTPS id C8E436077A
- for <iommu@lists.linux-foundation.org>; Mon, 28 Jun 2021 13:02:12 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
- s=mimecast20190719; t=1624885331;
- h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
- to:to:cc:cc:mime-version:mime-version:content-type:content-type:
- in-reply-to:in-reply-to:references:references;
- bh=UNDTi50C/I3z0zGPjPUY0PC1vqjdyHJdKwJ5ive2urU=;
- b=K3Z0q5vr76jblGtIbqd6fu4WcSM6swRy7MtsHWJcrFoMC71+AZKSKUholScCOT/Z1U5Ch5
- kuuF43+aUGO5/kVMBMwCHYjadMiWPYjIxq56AaNQEk6wHCTvDClyeuw5RwEyAfDGOV4Mfn
- zYcsZy08ySi+A2XHyq+21U/f4fcaO8o=
-Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
- [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-158-nMz5OLACMdmjwSI-na1RPA-1; Mon, 28 Jun 2021 09:01:59 -0400
-X-MC-Unique: nMz5OLACMdmjwSI-na1RPA-1
-Received: from smtp.corp.redhat.com (int-mx07.intmail.prod.int.phx2.redhat.com
- [10.5.11.22])
- (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
- (No client certificate requested)
- by mimecast-mx01.redhat.com (Postfix) with ESMTPS id E599C1018738;
- Mon, 28 Jun 2021 13:01:56 +0000 (UTC)
-Received: from localhost (ovpn-112-170.ams2.redhat.com [10.36.112.170])
- by smtp.corp.redhat.com (Postfix) with ESMTP id BE1F2101F965;
- Mon, 28 Jun 2021 13:01:49 +0000 (UTC)
-Date: Thu, 24 Jun 2021 14:01:19 +0100
-From: Stefan Hajnoczi <stefanha@redhat.com>
-To: Xie Yongji <xieyongji@bytedance.com>
-Subject: Re: [PATCH v8 10/10] Documentation: Add documentation for VDUSE
-Message-ID: <YNSCH6l31zwPxBjL@stefanha-x1.localdomain>
-References: <20210615141331.407-1-xieyongji@bytedance.com>
- <20210615141331.407-11-xieyongji@bytedance.com>
+Authentication-Results: smtp2.osuosl.org (amavisd-new);
+ dkim=pass (2048-bit key) header.d=nvidia.com
+Received: from smtp2.osuosl.org ([127.0.0.1])
+ by localhost (smtp2.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+ with ESMTP id PRP47I6OGVKa for <iommu@lists.linux-foundation.org>;
+ Mon, 28 Jun 2021 14:41:12 +0000 (UTC)
+X-Greylist: whitelisted by SQLgrey-1.8.0
+Received: from NAM10-BN7-obe.outbound.protection.outlook.com
+ (mail-bn7nam10on2065.outbound.protection.outlook.com [40.107.92.65])
+ by smtp2.osuosl.org (Postfix) with ESMTPS id 9947740003
+ for <iommu@lists.linux-foundation.org>; Mon, 28 Jun 2021 14:41:12 +0000 (UTC)
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=ay9rXKpyh5fG56LkyiUVzCvqT39QQlBMTuTHV45wI7jtH8jfQd6hZBVFq09EERxyfQQbzbrynQbGRo/1R4BwzT0SH3qYIGxPenn8boA6LOHDrqAVY+jAG8jnDRzef4aZlp3to5+qoFx+YnbiLPGWKKvBEmPafN6fODZOX2knlMvsji0EswPEI+hVnqMqGzzddxzejUb0uhh0Obq1EdirL5gQxAhc21BJ4YQVa4tPb3r9PuYEKUYBWcVnGJW8f7lAyoCS6T1XXD8PlJM0DBBoXdKcn1xEHANh3DgzzygsIl40wo55Z1F+raEgwpx6mQ9beAHMeEu0hTUy6BTv3PO9rA==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com; 
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=2h+Zjtve4P3scgOfIw/418Rdb7R5UdWO7K+mRjA+R8Q=;
+ b=ncG8GynfTS+yNf47+oiUmikAv16PH8F7ZS4tQ6RLpbb01AtcRqAo3wDpK3A4CWIZX7Zx8wZ16XWd4zGHZUnv/jW+OqhMwtaDIGLsNW96LU3c8i/Qe1GVHzPLGEelO3P8fN8wFe/yu5KksHhEoZDuc4Dfb/X84wIWPYEcCPXsGkp9k7UoZ0cDZbx/FV/N4h9VOjnD+XnpU3wzmM3/qBKRyCec2YHpLxpUztYqYOQLFwY7fKzTx1JSetf5uRUKlARYna1KhLgh5Vvj0mnt/1oeNwp5NAN4J2Zadc+PbttEIPk4MzGz2zZqGa8tPQxRmdcjw5cTw2rZ+w7cScvr3xBgyw==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=nvidia.com; dmarc=pass action=none header.from=nvidia.com;
+ dkim=pass header.d=nvidia.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
+ s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=2h+Zjtve4P3scgOfIw/418Rdb7R5UdWO7K+mRjA+R8Q=;
+ b=WXg9cV29eS4TW/NU6jOD2VOQ+4snHnHude4pW4V2k5LWU0m7nmpyQiCG7X4STAZR8vZK9vtgsLfHULx5/qX8EysSufhj2zfdWSzmU0e8NuOKCeunh69vcdpWEm8BCSgXTsbrpwWflYqe+1G8NIw7JRDLmyKrjTQ4jvujTL1g4QDUzsBjX23FZmPe+aC6ihuDjB8+/Hajar35Q8ThIGcUv4NFnlaO6oP+dKYSVaklOjVOhgatHHU84JSuFyBs0o+aAf/t+TiM68qgsui5HL9yejkShz0gqbhQuyq3GXl/0kWsvdhDRUzAa4HU7NBMC0RyUgp60pTbKHf9NqtDFS+sow==
+Authentication-Results: intel.com; dkim=none (message not signed)
+ header.d=none;intel.com; dmarc=none action=none header.from=nvidia.com;
+Received: from BL0PR12MB5506.namprd12.prod.outlook.com (2603:10b6:208:1cb::22)
+ by BL1PR12MB5336.namprd12.prod.outlook.com (2603:10b6:208:314::8)
+ with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4264.18; Mon, 28 Jun
+ 2021 14:41:10 +0000
+Received: from BL0PR12MB5506.namprd12.prod.outlook.com
+ ([fe80::3d51:a3b9:8611:684e]) by BL0PR12MB5506.namprd12.prod.outlook.com
+ ([fe80::3d51:a3b9:8611:684e%8]) with mapi id 15.20.4264.026; Mon, 28 Jun 2021
+ 14:41:10 +0000
+Date: Mon, 28 Jun 2021 11:41:09 -0300
+From: Jason Gunthorpe <jgg@nvidia.com>
+To: "Tian, Kevin" <kevin.tian@intel.com>
+Subject: Re: Plan for /dev/ioasid RFC v2
+Message-ID: <20210628144109.GC4459@nvidia.com>
+References: <MWHPR11MB188692A6182B1292FADB3BDB8C0F9@MWHPR11MB1886.namprd11.prod.outlook.com>
+ <20210616133937.59050e1a.alex.williamson@redhat.com>
+ <MWHPR11MB18865DF9C50F295820D038798C0E9@MWHPR11MB1886.namprd11.prod.outlook.com>
+ <20210617151452.08beadae.alex.williamson@redhat.com>
+ <20210618001956.GA1987166@nvidia.com>
+ <MWHPR11MB1886A17124605251DF394E888C0D9@MWHPR11MB1886.namprd11.prod.outlook.com>
+ <20210618182306.GI1002214@nvidia.com>
+ <BN9PR11MB5433B9C0577CF0BD8EFCC9BC8C069@BN9PR11MB5433.namprd11.prod.outlook.com>
+ <20210625143616.GT2371267@nvidia.com>
+ <BN9PR11MB5433DCBE6DE1EC27CFB9D3738C039@BN9PR11MB5433.namprd11.prod.outlook.com>
+Content-Disposition: inline
+In-Reply-To: <BN9PR11MB5433DCBE6DE1EC27CFB9D3738C039@BN9PR11MB5433.namprd11.prod.outlook.com>
+X-Originating-IP: [47.55.113.94]
+X-ClientProxiedBy: MN2PR19CA0070.namprd19.prod.outlook.com
+ (2603:10b6:208:19b::47) To BL0PR12MB5506.namprd12.prod.outlook.com
+ (2603:10b6:208:1cb::22)
 MIME-Version: 1.0
-In-Reply-To: <20210615141331.407-11-xieyongji@bytedance.com>
-X-Scanned-By: MIMEDefang 2.84 on 10.5.11.22
-X-Mailman-Approved-At: Mon, 28 Jun 2021 13:24:05 +0000
-Cc: kvm@vger.kernel.org, mst@redhat.com, jasowang@redhat.com,
- virtualization@lists.linux-foundation.org, christian.brauner@canonical.com,
- corbet@lwn.net, willy@infradead.org, hch@infradead.org,
- dan.carpenter@oracle.com, sgarzare@redhat.com, viro@zeniv.linux.org.uk,
- songmuchun@bytedance.com, axboe@kernel.dk, gregkh@linuxfoundation.org,
- rdunlap@infradead.org, linux-kernel@vger.kernel.org,
- iommu@lists.linux-foundation.org, bcrl@kvack.org, netdev@vger.kernel.org,
- linux-fsdevel@vger.kernel.org, mika.penttila@nextfour.com
+X-MS-Exchange-MessageSentRepresentingType: 1
+Received: from mlx.ziepe.ca (47.55.113.94) by
+ MN2PR19CA0070.namprd19.prod.outlook.com (2603:10b6:208:19b::47) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4264.18 via Frontend
+ Transport; Mon, 28 Jun 2021 14:41:10 +0000
+Received: from jgg by mlx with local (Exim 4.94)	(envelope-from
+ <jgg@nvidia.com>)	id 1lxsRh-000dW5-90; Mon, 28 Jun 2021 11:41:09 -0300
+X-MS-PublicTrafficType: Email
+X-MS-Office365-Filtering-Correlation-Id: d0296a37-8e39-4a7d-4c69-08d93a42c569
+X-MS-TrafficTypeDiagnostic: BL1PR12MB5336:
+X-MS-Exchange-Transport-Forked: True
+X-Microsoft-Antispam-PRVS: <BL1PR12MB5336F34748A19B1573958B9FC2039@BL1PR12MB5336.namprd12.prod.outlook.com>
+X-MS-Oob-TLC-OOBClassifiers: OLM:5516;
+X-MS-Exchange-SenderADCheck: 1
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: jGBVpiu49HrsFf+gv4cB6hEkvGw5WZuZQXfgflE6UJX0gUmnij/+gNE8E7wXO4vUBWg8KG7sgxqViSQqKZN5PDHHQtFGxE3rcTdQQOLRF1ruXalGOyeYKmgIaz0XWEZ51OOFF1Sd7fXP8BuZ4ZOE4xgr8mYIhJ2t2JDojKhEGu2X8nx/hg80PL5q2EV3YTysPFEyw7jcAQpszxLX+3O5iPcoO+Mt0Byp/njSiI9nl75JPjUzcHKBYwMvdJ3/78RaJd+hYNWOMO8G4uTpdY14VRcqfOMrJA0fajEfbpzHGRB01peHddlOIBEbGg1KGqyaahlqAJ7TOQHSrYlY6eIsD678r5p0CEC7QFhUk7KwMX4ZM6km8Gw9alPoULCX1Zc0FBlvHTa8ShzsfXVyTFVTO5PcktCqO6TBkg+/JMcxm5UCEDK/lA/0ZgmxcmI+qpebEcXWI+UYZMHN5l07MbFGTrSY0Xx2nzbYVGADM6IqEEqmBvF/XrKYvrUCBvZ7rhqcFXUSAXjijRoHNe5kbC6HXpu4VHqQBu1e4izqFasT5pAgGk5Q3nbjTCg6BrYipchhXcsY44JG98zfbfT0bM+q23fZtD844aPYuweY8AGjndiVuI2GoGTaXDaJh68lflVXAxv5Si3WtVVkB/+I0UWZrw==
+X-Forefront-Antispam-Report: CIP:255.255.255.255; CTRY:; LANG:en; SCL:1; SRV:;
+ IPV:NLI; SFV:NSPM; H:BL0PR12MB5506.namprd12.prod.outlook.com; PTR:; CAT:NONE;
+ SFS:(4636009)(136003)(346002)(376002)(366004)(396003)(39860400002)(83380400001)(5660300002)(186003)(9786002)(2616005)(1076003)(9746002)(426003)(2906002)(4326008)(36756003)(38100700002)(26005)(54906003)(66946007)(316002)(86362001)(7416002)(8676002)(6916009)(66476007)(66556008)(8936002)(33656002)(478600001);
+ DIR:OUT; SFP:1101; 
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?FVlADGL1oJfH3h4c28VN+ex4dmbMMpcRMWXz/r8rwjNh/6/fXClgIAVPGZPv?=
+ =?us-ascii?Q?LXFA4/Mjp3GGIthZxig8WDANkTl86GPoKhjbL3X/qAJ7NEmQW4oWwovSNrAf?=
+ =?us-ascii?Q?+8gE+yT49+ZN/1I6XNtbcSCefDB6vko691FOHb1a27PojF/6xiCN4ooQKUiu?=
+ =?us-ascii?Q?oMqevQPJiYxRTr7O+Z0ixiKgpTdzjMTJLXq0TkqMIev0REev8Xe8ucGGjdxx?=
+ =?us-ascii?Q?KdTGlBrDz7jW/L8Vx6me5lKa7CqCdgqCr5RHBgaY/mOsuLPpv/pdZg2bvCYO?=
+ =?us-ascii?Q?aBLLfDbOKqCPuqXNv64zpbuYB2fQNFO4koDlYuW8WQbCVh0j9eyZRG4LL2PX?=
+ =?us-ascii?Q?QcyrNfa+FyjVd0rkHLNwv+re0+tICx9h7kEPTUpQ42OY6BdJzhM68tlMC0nd?=
+ =?us-ascii?Q?bJOxy+lEOj46vp64cdcWfzmZvqsGCYLnk+RC4aacIfEpO8AVG6nKBy1rsb98?=
+ =?us-ascii?Q?REH1NnhicEzoKCd/RawMffmHtrZHSiGI5dMdxVOYvkVV+ylge02yuESYjntK?=
+ =?us-ascii?Q?56ggLL3OcU8lg1UlLfzXq5yutjnoIfcgwmVxGZ6OQcmFhXNVg1fBaTpU2m7G?=
+ =?us-ascii?Q?7H2e43zy1BlrVFaRc7uq4Ldo8WPb5B5oGJUIGokYq8U01qHf3dlHiNGVzt1z?=
+ =?us-ascii?Q?zjzcPiU9NnMccEvxkZKTRn9rY16/vwdP7J9maV7DL0fA5R4PMKZhHCngBNw/?=
+ =?us-ascii?Q?W73w+4WBEBd8M/phRmSXM0tDbsG5iz7Xvt1OM9adtk99in3mCxV6fB3MRELH?=
+ =?us-ascii?Q?GqrTHXdJgJ68d0cQs4DL5uKNb5zSUcUkY74wVpfnO43Vvj9MXyjP7IHpkt5e?=
+ =?us-ascii?Q?cOi0mgRwuIzIOLST85ThqgJc92E6WAeOboj6A1WF1IFtgDQjTCc1iElocxWx?=
+ =?us-ascii?Q?+cgDlL9VLjU+unvm28lcMiMzrDpUuk7a7R2jUlqwKnklZRlZw/5wlHcYpd+i?=
+ =?us-ascii?Q?etnHOce+Kh6PX9lGSvus7/DJnUcptEVg5B8oUt4dKQHrV0HPKkpBgYlEcZcr?=
+ =?us-ascii?Q?Iev5aRPy1TeTtFvnEdRTsidQMCuvOko0uVkP982pU0U9jDOkh3KoLorWFhj2?=
+ =?us-ascii?Q?9fR6+IbJAk1fWQc0bvSzSB+OTnT+jkWP3jDz4d5BTll2/nHXMebF8O0+PiX0?=
+ =?us-ascii?Q?neX8RSSP7poVKMbcQcPXKaum38IZp2AlMHOdHwpLIu/VebnmGsjTqdUUMfxU?=
+ =?us-ascii?Q?pTr1zDmHDD4NF5Ag9s4Pp3GUwXTAjcIK0HuSfrhokxiHcXlGH91lbitAtCWy?=
+ =?us-ascii?Q?2IOI0m4B9jtnCIafx+dHO/HHx15aBkITnJ7BJ+ZxRGeLLzvp+jL0zaCJbkkP?=
+ =?us-ascii?Q?tIE9G/wosj5foogtf7hL2Kms?=
+X-OriginatorOrg: Nvidia.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: d0296a37-8e39-4a7d-4c69-08d93a42c569
+X-MS-Exchange-CrossTenant-AuthSource: BL0PR12MB5506.namprd12.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 28 Jun 2021 14:41:10.6579 (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: MHJv8vOAb2gRNsBUmqjfLH6f0svrK1mILGs7hveGXxTN9LemaMqBNn+7IjjuXTBP
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: BL1PR12MB5336
+Cc: "kvm@vger.kernel.org" <kvm@vger.kernel.org>,
+ Jason Wang <jasowang@redhat.com>, Kirti Wankhede <kwankhede@nvidia.com>,
+ Jean-Philippe Brucker <jean-philippe@linaro.org>, "Jiang,
+ Dave" <dave.jiang@intel.com>, "Raj, Ashok" <ashok.raj@intel.com>,
+ Jonathan Corbet <corbet@lwn.net>, "parav@mellanox.com" <parav@mellanox.com>,
+ "Alex Williamson \(alex.williamson@redhat.com\)" <alex.williamson@redhat.com>,
+ "Enrico Weigelt, metux IT consult" <lkml@metux.net>,
+ David Gibson <david@gibson.dropbear.id.au>,
+ Robin Murphy <robin.murphy@arm.com>, LKML <linux-kernel@vger.kernel.org>,
+ Shenming Lu <lushenming@huawei.com>,
+ "iommu@lists.linux-foundation.org" <iommu@lists.linux-foundation.org>,
+ Paolo Bonzini <pbonzini@redhat.com>, David Woodhouse <dwmw2@infradead.org>
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -101,336 +175,38 @@ List-Post: <mailto:iommu@lists.linux-foundation.org>
 List-Help: <mailto:iommu-request@lists.linux-foundation.org?subject=help>
 List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
  <mailto:iommu-request@lists.linux-foundation.org?subject=subscribe>
-Content-Type: multipart/mixed; boundary="===============4916237315244792524=="
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
+On Mon, Jun 28, 2021 at 02:03:56AM +0000, Tian, Kevin wrote:
 
---===============4916237315244792524==
-Content-Type: multipart/signed; micalg=pgp-sha256;
-	protocol="application/pgp-signature"; boundary="I4spE8BfCHxxKtuA"
-Content-Disposition: inline
+> Combining with the last paragraph above, are you actually suggesting 
+> that 1:1 group (including mdev) should use a new device-centric vfio 
+> uAPI (without group fd) while existing group-centric vfio uAPI is only 
+> kept for 1:N group (with slight semantics change in my sketch to match 
+> device-centric iommu fd API)?
 
+Yes, this is one approach
 
---I4spE8BfCHxxKtuA
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
+Using a VFIO_GROUP_GET_DEVICE_FD_NEW on the group FD is another
+option, but locks us into having the group FD.
 
-On Tue, Jun 15, 2021 at 10:13:31PM +0800, Xie Yongji wrote:
-> VDUSE (vDPA Device in Userspace) is a framework to support
-> implementing software-emulated vDPA devices in userspace. This
-> document is intended to clarify the VDUSE design and usage.
->=20
-> Signed-off-by: Xie Yongji <xieyongji@bytedance.com>
-> ---
->  Documentation/userspace-api/index.rst |   1 +
->  Documentation/userspace-api/vduse.rst | 222 ++++++++++++++++++++++++++++=
-++++++
->  2 files changed, 223 insertions(+)
->  create mode 100644 Documentation/userspace-api/vduse.rst
->=20
-> diff --git a/Documentation/userspace-api/index.rst b/Documentation/usersp=
-ace-api/index.rst
-> index 0b5eefed027e..c432be070f67 100644
-> --- a/Documentation/userspace-api/index.rst
-> +++ b/Documentation/userspace-api/index.rst
-> @@ -27,6 +27,7 @@ place where this information is gathered.
->     iommu
->     media/index
->     sysfs-platform_profile
-> +   vduse
-> =20
->  .. only::  subproject and html
-> =20
-> diff --git a/Documentation/userspace-api/vduse.rst b/Documentation/usersp=
-ace-api/vduse.rst
-> new file mode 100644
-> index 000000000000..2f9cd1a4e530
-> --- /dev/null
-> +++ b/Documentation/userspace-api/vduse.rst
-> @@ -0,0 +1,222 @@
-> +=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
-=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D
-> +VDUSE - "vDPA Device in Userspace"
-> +=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
-=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D
-> +
-> +vDPA (virtio data path acceleration) device is a device that uses a
-> +datapath which complies with the virtio specifications with vendor
-> +specific control path. vDPA devices can be both physically located on
-> +the hardware or emulated by software. VDUSE is a framework that makes it
-> +possible to implement software-emulated vDPA devices in userspace. And
-> +to make it simple, the emulated vDPA device's control path is handled in
-> +the kernel and only the data path is implemented in the userspace.
-> +
-> +Note that only virtio block device is supported by VDUSE framework now,
-> +which can reduce security risks when the userspace process that implemen=
-ts
-> +the data path is run by an unprivileged user. The Support for other devi=
-ce
-> +types can be added after the security issue is clarified or fixed in the=
- future.
-> +
-> +Start/Stop VDUSE devices
-> +------------------------
-> +
-> +VDUSE devices are started as follows:
-> +
-> +1. Create a new VDUSE instance with ioctl(VDUSE_CREATE_DEV) on
-> +   /dev/vduse/control.
-> +
-> +2. Begin processing VDUSE messages from /dev/vduse/$NAME. The first
-> +   messages will arrive while attaching the VDUSE instance to vDPA bus.
-> +
-> +3. Send the VDPA_CMD_DEV_NEW netlink message to attach the VDUSE
-> +   instance to vDPA bus.
-> +
-> +VDUSE devices are stopped as follows:
-> +
-> +1. Send the VDPA_CMD_DEV_DEL netlink message to detach the VDUSE
-> +   instance from vDPA bus.
-> +
-> +2. Close the file descriptor referring to /dev/vduse/$NAME
-> +
-> +3. Destroy the VDUSE instance with ioctl(VDUSE_DESTROY_DEV) on
-> +   /dev/vduse/control
-> +
-> +The netlink messages metioned above can be sent via vdpa tool in iproute2
-> +or use the below sample codes:
-> +
-> +.. code-block:: c
-> +
-> +	static int netlink_add_vduse(const char *name, enum vdpa_command cmd)
-> +	{
-> +		struct nl_sock *nlsock;
-> +		struct nl_msg *msg;
-> +		int famid;
-> +
-> +		nlsock =3D nl_socket_alloc();
-> +		if (!nlsock)
-> +			return -ENOMEM;
-> +
-> +		if (genl_connect(nlsock))
-> +			goto free_sock;
-> +
-> +		famid =3D genl_ctrl_resolve(nlsock, VDPA_GENL_NAME);
-> +		if (famid < 0)
-> +			goto close_sock;
-> +
-> +		msg =3D nlmsg_alloc();
-> +		if (!msg)
-> +			goto close_sock;
-> +
-> +		if (!genlmsg_put(msg, NL_AUTO_PORT, NL_AUTO_SEQ, famid, 0, 0, cmd, 0))
-> +			goto nla_put_failure;
-> +
-> +		NLA_PUT_STRING(msg, VDPA_ATTR_DEV_NAME, name);
-> +		if (cmd =3D=3D VDPA_CMD_DEV_NEW)
-> +			NLA_PUT_STRING(msg, VDPA_ATTR_MGMTDEV_DEV_NAME, "vduse");
-> +
-> +		if (nl_send_sync(nlsock, msg))
-> +			goto close_sock;
-> +
-> +		nl_close(nlsock);
-> +		nl_socket_free(nlsock);
-> +
-> +		return 0;
-> +	nla_put_failure:
-> +		nlmsg_free(msg);
-> +	close_sock:
-> +		nl_close(nlsock);
-> +	free_sock:
-> +		nl_socket_free(nlsock);
-> +		return -1;
-> +	}
-> +
-> +How VDUSE works
-> +---------------
-> +
-> +Since the emuldated vDPA device's control path is handled in the kernel,
+Which is better possibly depends on some details when going through
+the code transformation, though I prefer not to design assuming the
+group FD must exist.
 
-s/emuldated/emulated/
+> (not via an indirect group ioctl). Then it implies that we may have to allow 
+> the user open a device before it is put into a security context, thus the 
+> safe guard may have to be enabled on mmap() for 1:1 group. This is a
+> different sequence from the existing group-centric model.
 
-> +a message-based communication protocol and few types of control messages
-> +are introduced by VDUSE framework to make userspace be aware of the data
-> +path related changes:
-> +
-> +- VDUSE_GET_VQ_STATE: Get the state for virtqueue from userspace
-> +
-> +- VDUSE_START_DATAPLANE: Notify userspace to start the dataplane
-> +
-> +- VDUSE_STOP_DATAPLANE: Notify userspace to stop the dataplane
-> +
-> +- VDUSE_UPDATE_IOTLB: Notify userspace to update the memory mapping in d=
-evice IOTLB
-> +
-> +Userspace needs to read()/write() on /dev/vduse/$NAME to receive/reply
-> +those control messages from/to VDUSE kernel module as follows:
-> +
-> +.. code-block:: c
-> +
-> +	static int vduse_message_handler(int dev_fd)
-> +	{
-> +		int len;
-> +		struct vduse_dev_request req;
-> +		struct vduse_dev_response resp;
-> +
-> +		len =3D read(dev_fd, &req, sizeof(req));
-> +		if (len !=3D sizeof(req))
-> +			return -1;
-> +
-> +		resp.request_id =3D req.request_id;
-> +
-> +		switch (req.type) {
-> +
-> +		/* handle different types of message */
-> +
-> +		}
-> +
-> +		if (req.flags & VDUSE_REQ_FLAGS_NO_REPLY)
-> +			return 0;
-> +
-> +		len =3D write(dev_fd, &resp, sizeof(resp));
-> +		if (len !=3D sizeof(resp))
-> +			return -1;
-> +
-> +		return 0;
-> +	}
-> +
-> +After VDUSE_START_DATAPLANE messages is received, userspace should start=
- the
-> +dataplane processing with the help of some ioctls on /dev/vduse/$NAME:
-> +
-> +- VDUSE_IOTLB_GET_FD: get the file descriptor to the first overlapped io=
-va region.
-> +  Userspace can access this iova region by passing fd and corresponding =
-size, offset,
-> +  perm to mmap(). For example:
-> +
-> +.. code-block:: c
-> +
-> +	static int perm_to_prot(uint8_t perm)
-> +	{
-> +		int prot =3D 0;
-> +
-> +		switch (perm) {
-> +		case VDUSE_ACCESS_WO:
-> +			prot |=3D PROT_WRITE;
-> +			break;
-> +		case VDUSE_ACCESS_RO:
-> +			prot |=3D PROT_READ;
-> +			break;
-> +		case VDUSE_ACCESS_RW:
-> +			prot |=3D PROT_READ | PROT_WRITE;
-> +			break;
-> +		}
-> +
-> +		return prot;
-> +	}
-> +
-> +	static void *iova_to_va(int dev_fd, uint64_t iova, uint64_t *len)
-> +	{
-> +		int fd;
-> +		void *addr;
-> +		size_t size;
-> +		struct vduse_iotlb_entry entry;
-> +
-> +		entry.start =3D iova;
-> +		entry.last =3D iova + 1;
+Yes, but I think this is fairly minor, it would just start with a
+dummy fops and move to operational fops once things are setup enough.
 
-Why +1?
-
-I expected the request to include *len so that VDUSE can create a bounce
-buffer for the full iova range, if necessary.
-
-> +		fd =3D ioctl(dev_fd, VDUSE_IOTLB_GET_FD, &entry);
-> +		if (fd < 0)
-> +			return NULL;
-> +
-> +		size =3D entry.last - entry.start + 1;
-> +		*len =3D entry.last - iova + 1;
-> +		addr =3D mmap(0, size, perm_to_prot(entry.perm), MAP_SHARED,
-> +			    fd, entry.offset);
-> +		close(fd);
-> +		if (addr =3D=3D MAP_FAILED)
-> +			return NULL;
-> +
-> +		/* do something to cache this iova region */
-
-How is userspace expected to manage iotlb mmaps? When should munmap(2)
-be called?
-
-Should userspace expect VDUSE_IOTLB_GET_FD to return a full chunk of
-guest RAM (e.g. multiple gigabytes) that can be cached permanently or
-will it return just enough pages to cover [start, last)?
-
-> +
-> +		return addr + iova - entry.start;
-> +	}
-> +
-> +- VDUSE_DEV_GET_FEATURES: Get the negotiated features
-
-Are these VIRTIO feature bits? Please explain how feature negotiation
-works. There must be a way for userspace to report the device's
-supported feature bits to the kernel.
-
-> +- VDUSE_DEV_UPDATE_CONFIG: Update the configuration space and inject a c=
-onfig interrupt
-
-Does this mean the contents of the configuration space are cached by
-VDUSE? The downside is that the userspace code cannot generate the
-contents on demand. Most devices doin't need to generate the contents
-on demand, so I think this is okay but I had expected a different
-interface:
-
-kernel->userspace VDUSE_DEV_GET_CONFIG
-userspace->kernel VDUSE_DEV_INJECT_CONFIG_IRQ
-
-I think you can leave it the way it is, but I wanted to mention this in
-case someone thinks it's important to support generating the contents of
-the configuration space on demand.
-
-> +- VDUSE_VQ_GET_INFO: Get the specified virtqueue's metadata
-> +
-> +- VDUSE_VQ_SETUP_KICKFD: set the kickfd for virtqueue, this eventfd is u=
-sed
-> +  by VDUSE kernel module to notify userspace to consume the vring.
-> +
-> +- VDUSE_INJECT_VQ_IRQ: inject an interrupt for specific virtqueue
-
-This information is useful but it's not enough to be able to implement a
-userspace device. Please provide more developer documentation or at
-least refer to uapi header files, published documents, etc that contain
-the details.
-
---I4spE8BfCHxxKtuA
-Content-Type: application/pgp-signature; name="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-
-iQEzBAEBCAAdFiEEhpWov9P5fNqsNXdanKSrs4Grc8gFAmDUgh8ACgkQnKSrs4Gr
-c8iq0gf+MttuBSbGdiR42Y0KTKP08u+x6dI4kws0Q3+47jwN/3K8/1STobbpQAO/
-JHuFkqNm/f/qi6rDnxfFhja4pbPqfQ4Wf3PVN7FZRNmOEK3jArmjMYVaAWbhZDcz
-/ILoCXxWM9EC/5mJo1x6qBISXDbOud3ZUYcqQgguxryN4DVHCF91W5DVTlyTACPx
-h7nMES7/lFQj14wtgHpPbAZJ32bp2+7vGxgVh7jSZPA40ix2RzNgDoQ1TZSv+LBC
-CjI6DvDsuBWQZkhNTpS6rMPyw6zZ+bdfUjegksxL7j5oGwrfpNxYIm3fnHNYtN2s
-I1jhSQXC2vq9SxAQGTUWG41UNjdZGw==
-=inFF
------END PGP SIGNATURE-----
-
---I4spE8BfCHxxKtuA--
-
-
---===============4916237315244792524==
-Content-Type: text/plain; charset="us-ascii"
-MIME-Version: 1.0
-Content-Transfer-Encoding: 7bit
-Content-Disposition: inline
-
+Jason
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
 https://lists.linuxfoundation.org/mailman/listinfo/iommu
---===============4916237315244792524==--
-
