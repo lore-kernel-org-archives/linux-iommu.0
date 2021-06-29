@@ -2,97 +2,126 @@ Return-Path: <SRS0=I0uF=LX=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-13.6 required=3.0 tests=BAYES_00,DKIM_INVALID,
-	DKIM_SIGNED,HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_CR_TRAILER,INCLUDES_PATCH,
-	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no
+X-Spam-Status: No, score=-5.1 required=3.0 tests=BAYES_00,DKIM_INVALID,
+	DKIM_SIGNED,HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,NICE_REPLY_A,
+	SPF_HELO_NONE,SPF_PASS,USER_AGENT_SANE_1 autolearn=no autolearn_force=no
 	version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 75086C11F66
-	for <iommu@archiver.kernel.org>; Tue, 29 Jun 2021 07:04:40 +0000 (UTC)
-Received: from smtp3.osuosl.org (smtp3.osuosl.org [140.211.166.136])
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2CFBBC11F6C
+	for <iommu@archiver.kernel.org>; Tue, 29 Jun 2021 07:34:10 +0000 (UTC)
+Received: from smtp2.osuosl.org (smtp2.osuosl.org [140.211.166.133])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id F16A5611AB
-	for <iommu@archiver.kernel.org>; Tue, 29 Jun 2021 07:04:39 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org F16A5611AB
-Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=solid-run.com
+	by mail.kernel.org (Postfix) with ESMTPS id D584B61DBC
+	for <iommu@archiver.kernel.org>; Tue, 29 Jun 2021 07:34:09 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org D584B61DBC
+Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=redhat.com
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by smtp3.osuosl.org (Postfix) with ESMTP id BA9956077A;
-	Tue, 29 Jun 2021 07:04:39 +0000 (UTC)
+	by smtp2.osuosl.org (Postfix) with ESMTP id 73F8441D15;
+	Tue, 29 Jun 2021 07:34:09 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from smtp3.osuosl.org ([127.0.0.1])
-	by localhost (smtp3.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id xrwuyuoi9gdD; Tue, 29 Jun 2021 07:04:38 +0000 (UTC)
+Received: from smtp2.osuosl.org ([127.0.0.1])
+	by localhost (smtp2.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+	with ESMTP id thlJD5QbiHLv; Tue, 29 Jun 2021 07:34:07 +0000 (UTC)
 Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by smtp3.osuosl.org (Postfix) with ESMTPS id 88700605F6;
-	Tue, 29 Jun 2021 07:04:38 +0000 (UTC)
+	by smtp2.osuosl.org (Postfix) with ESMTPS id 3B83041D13;
+	Tue, 29 Jun 2021 07:34:07 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 5F331C0010;
-	Tue, 29 Jun 2021 07:04:38 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 12D55C001A;
+	Tue, 29 Jun 2021 07:34:07 +0000 (UTC)
 Received: from smtp2.osuosl.org (smtp2.osuosl.org [140.211.166.133])
- by lists.linuxfoundation.org (Postfix) with ESMTP id E8412C000E
- for <iommu@lists.linux-foundation.org>; Tue, 29 Jun 2021 07:04:37 +0000 (UTC)
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 05AAEC000E
+ for <iommu@lists.linux-foundation.org>; Tue, 29 Jun 2021 07:34:05 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by smtp2.osuosl.org (Postfix) with ESMTP id CE58940284
- for <iommu@lists.linux-foundation.org>; Tue, 29 Jun 2021 07:04:37 +0000 (UTC)
+ by smtp2.osuosl.org (Postfix) with ESMTP id D638741D15
+ for <iommu@lists.linux-foundation.org>; Tue, 29 Jun 2021 07:34:04 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Authentication-Results: smtp2.osuosl.org (amavisd-new);
- dkim=pass (2048-bit key) header.d=solid-run-com.20150623.gappssmtp.com
 Received: from smtp2.osuosl.org ([127.0.0.1])
  by localhost (smtp2.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id nPDwgk8RjDiV for <iommu@lists.linux-foundation.org>;
- Tue, 29 Jun 2021 07:04:37 +0000 (UTC)
-X-Greylist: whitelisted by SQLgrey-1.8.0
-Received: from mail-ej1-x631.google.com (mail-ej1-x631.google.com
- [IPv6:2a00:1450:4864:20::631])
- by smtp2.osuosl.org (Postfix) with ESMTPS id CE72E4027E
- for <iommu@lists.linux-foundation.org>; Tue, 29 Jun 2021 07:04:36 +0000 (UTC)
-Received: by mail-ej1-x631.google.com with SMTP id nd37so34575927ejc.3
- for <iommu@lists.linux-foundation.org>; Tue, 29 Jun 2021 00:04:36 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
- d=solid-run-com.20150623.gappssmtp.com; s=20150623;
- h=mime-version:references:in-reply-to:from:date:message-id:subject:to
- :cc; bh=NYBTmnbrFY6e4uVDJho3HTMoNaiYI6JT+kpQ+czjgBc=;
- b=ubbHAgyQ+0/up/IYI6m2dbl28D92eV8V1EjvNKM2mtc2mwfewaWs651zFMwhO4/iUI
- V/QngHmNVz57v2VAELy6TB/A4Gs3HKFOsxSYkaPKMric5VI8q4e6RGpFxJl/PZRK1P1Z
- vQ4oWjoToo0geS57I9ByRm6DaObhdZWlbsgO7KhvRq26ssAgNth0DY9kNLw1deDKYXWa
- uaXW70YyHvJdDWVdW3pL97GaulAZCfJvaMkOw06iKlCjLC7LgSO+jV9b2898wO5e2Gyn
- nJKGmytoVCTwXkIaYoRDCttjNxFlnB6CwkjxtO7uz1CO1751NNXBkwrHhAM4i4C0K7MB
- EP/g==
+ with ESMTP id 6uTVLsuSvKvK for <iommu@lists.linux-foundation.org>;
+ Tue, 29 Jun 2021 07:34:04 +0000 (UTC)
+X-Greylist: domain auto-whitelisted by SQLgrey-1.8.0
+Received: from us-smtp-delivery-124.mimecast.com
+ (us-smtp-delivery-124.mimecast.com [216.205.24.124])
+ by smtp2.osuosl.org (Postfix) with ESMTPS id 1468F41D13
+ for <iommu@lists.linux-foundation.org>; Tue, 29 Jun 2021 07:34:03 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+ s=mimecast20190719; t=1624952042;
+ h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+ to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+ content-transfer-encoding:content-transfer-encoding:
+ in-reply-to:in-reply-to:references:references;
+ bh=X7aRa/ari9ndRrZW6yGfSw3dQvpOEYQN4vmyoY/ZeNU=;
+ b=QDgeywfxmxZQEo7IQCYNxePBlSYwC86akw8fgAgO/QLSDydrDl2sqmap5r/QOLm97tjKTA
+ T8xcDv1m+hsijuTv9FQpWP5yQqNGNAwvXE77vE1nYKL1yrHPgYMGAChsipVyqPyaavNvU0
+ nX/PIZXaxUNcZNzrdh8syfJGh1brgIc=
+Received: from mail-pj1-f69.google.com (mail-pj1-f69.google.com
+ [209.85.216.69]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-61-39zPAPJhNnC9Ny0vYE9QvA-1; Tue, 29 Jun 2021 03:34:01 -0400
+X-MC-Unique: 39zPAPJhNnC9Ny0vYE9QvA-1
+Received: by mail-pj1-f69.google.com with SMTP id
+ t5-20020a17090a4485b029016f7fcb8a3dso1725283pjg.2
+ for <iommu@lists.linux-foundation.org>; Tue, 29 Jun 2021 00:34:00 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
  d=1e100.net; s=20161025;
- h=x-gm-message-state:mime-version:references:in-reply-to:from:date
- :message-id:subject:to:cc;
- bh=NYBTmnbrFY6e4uVDJho3HTMoNaiYI6JT+kpQ+czjgBc=;
- b=F3cTJo43gZ9QFLws01QyR9IQD/vQfGLcmqPbA6/ZL1pty56fVlCpZk1kX3c6KT8/nW
- wN1elgvLCx3AK6ZhrEqm0sLhfqU6iRlL323an7VNn+xr9nQGole3A9R11Vl7ZH7nknvP
- oqUXE0c4sNB0LxB7PD04NOCL+Esio2DmrfUXleAqxDhq+49U1ThKv38R+FPuPTrlorFy
- e1/wK42pkqxPvNB5rLHWbjEYsDvK2Cod09+kP/SKCzKus21tW0Z6jBsigsQyozA3i/6M
- EbRyT+77M6JpJ2ciSJ7BrPBmshQkpns9eGAtGRokx3lW8LH1ALv7W5yU70IOoi4NLShc
- v4TA==
-X-Gm-Message-State: AOAM530q9X3rPTNy8Hmjj2hgs2NfEsSelCkLz5M18wFswrAJp5JG7C5w
- VKcndnmN4GxspiAa8lU9hJ68sYDxsiudL8LMvX715w==
-X-Google-Smtp-Source: ABdhPJxtQA+v0rp/NT2snj2jrDToSRx2to2k1C/zj58bDlD0p023vCUDoh9aRvnwnKFJjf8Le0Lu/hijhCo63Uyqk2Q=
-X-Received: by 2002:a17:907:c87:: with SMTP id
- gi7mr28276614ejc.452.1624950274959; 
- Tue, 29 Jun 2021 00:04:34 -0700 (PDT)
+ h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+ :user-agent:mime-version:in-reply-to:content-transfer-encoding
+ :content-language;
+ bh=X7aRa/ari9ndRrZW6yGfSw3dQvpOEYQN4vmyoY/ZeNU=;
+ b=umUXexvvEkqnn7DG6oh2GrcBCZ7vcCjBGQw7JpqKt619MIVCEiOg5/40RHujaWQwZA
+ oH3/HXV7oeCuYgeuAuVlJxT+olYpEbZmfYx2HXy7cPH8zPwZBp9cUj/bq+b+BqFWlKYT
+ wdk+cy5YIRXusm30lAOTc+xLy+5DzxdMlIewtf6G0acDuCCuVRwJ9h5tBKW1WB0z46vG
+ 67jAp8fSnffLzedK4mAGbBoC5ICLGK3YmJBTHMhNxQu82ZRDawTSzC96skEFihrMMXp2
+ LZ2SKHnyFWjltSXkTiX1XKnz8Z9eb602hN69axXTNvOYzv7xEf0y0QQ6pKxFEiJxP+l9
+ hE7Q==
+X-Gm-Message-State: AOAM532G0GC/39IuxYHrz02O/rQWpMvXNIhRzqxZ7wWD5IFfRi+q90mI
+ TZeTq4KT18sMcbzOrtJfnoRZfBieEkLqSPbfWEdhH+NlWefs3Ht8uf64c6euvA/Q4qXfkbXRNjc
+ e1/gRI/qjnLpDpVGhoWZcWlA4QVHw7w==
+X-Received: by 2002:a63:43c4:: with SMTP id
+ q187mr12256871pga.172.1624952039993; 
+ Tue, 29 Jun 2021 00:33:59 -0700 (PDT)
+X-Google-Smtp-Source: ABdhPJw7prtHQtaiL3wMVzoCQQ1u9za913WVNoujdQYVZqZ/2wS5MelCYOe6dyArhR9IgMLsZIzYyg==
+X-Received: by 2002:a63:43c4:: with SMTP id
+ q187mr12256834pga.172.1624952039684; 
+ Tue, 29 Jun 2021 00:33:59 -0700 (PDT)
+Received: from wangxiaodeMacBook-Air.local ([209.132.188.80])
+ by smtp.gmail.com with ESMTPSA id c2sm17127924pjv.10.2021.06.29.00.33.51
+ (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+ Tue, 29 Jun 2021 00:33:59 -0700 (PDT)
+Subject: Re: [PATCH v8 00/10] Introduce VDUSE - vDPA Device in Userspace
+To: Yongji Xie <xieyongji@bytedance.com>
+References: <20210615141331.407-1-xieyongji@bytedance.com>
+ <20210628103309.GA205554@storage2.sh.intel.com>
+ <CAONzpcbjr2zKOAQrWa46Tv=oR1fYkcKLcqqm_tSgO7RkU20yBA@mail.gmail.com>
+ <d5321870-ef29-48e2-fdf6-32d99a5fa3b9@redhat.com>
+ <CACycT3vVhNdhtyohKJQuMXTic5m6jDjEfjzbzvp=2FJgwup8mg@mail.gmail.com>
+From: Jason Wang <jasowang@redhat.com>
+Message-ID: <90e30d9e-5709-2a0b-0449-858eea9dfec9@redhat.com>
+Date: Tue, 29 Jun 2021 15:33:49 +0800
+User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:78.0)
+ Gecko/20100101 Thunderbird/78.11.0
 MIME-Version: 1.0
-References: <20210524110222.2212-1-shameerali.kolothum.thodi@huawei.com>
- <20210524110222.2212-8-shameerali.kolothum.thodi@huawei.com>
- <2bc3ae21-f2af-ee2c-5e9d-d47633e0439e@arm.com>
-In-Reply-To: <2bc3ae21-f2af-ee2c-5e9d-d47633e0439e@arm.com>
-From: Jon Nettleton <jon@solid-run.com>
-Date: Tue, 29 Jun 2021 09:03:57 +0200
-Message-ID: <CABdtJHtpN7s2gTwUkeWcachOnk6djgMaJLGtnKq5SExA82bDDA@mail.gmail.com>
-Subject: Re: [PATCH v5 7/8] iommu/arm-smmu: Get associated RMR info and
- install bypass SMR
-To: Robin Murphy <robin.murphy@arm.com>
-Cc: Linuxarm <linuxarm@huawei.com>, Steven Price <steven.price@arm.com>,
- ACPI Devel Maling List <linux-acpi@vger.kernel.org>,
- iommu@lists.linux-foundation.org, wanghuiqiang <wanghuiqiang@huawei.com>,
- Hanjun Guo <guohanjun@huawei.com>, yangyicong <yangyicong@huawei.com>,
- Sami.Mujawar@arm.com, linux-arm-kernel <linux-arm-kernel@lists.infradead.org>
+In-Reply-To: <CACycT3vVhNdhtyohKJQuMXTic5m6jDjEfjzbzvp=2FJgwup8mg@mail.gmail.com>
+Authentication-Results: relay.mimecast.com;
+ auth=pass smtp.auth=CUSA124A263 smtp.mailfrom=jasowang@redhat.com
+X-Mimecast-Spam-Score: 0
+X-Mimecast-Originator: redhat.com
+Content-Language: en-US
+Cc: kvm <kvm@vger.kernel.org>, "Michael S. Tsirkin" <mst@redhat.com>,
+ virtualization <virtualization@lists.linux-foundation.org>,
+ Christian Brauner <christian.brauner@canonical.com>,
+ Jonathan Corbet <corbet@lwn.net>, Matthew Wilcox <willy@infradead.org>,
+ Christoph Hellwig <hch@infradead.org>,
+ Dan Carpenter <dan.carpenter@oracle.com>,
+ Stefano Garzarella <sgarzare@redhat.com>,
+ Liu Xiaodong <xiaodong.liu@intel.com>, Yongji Xie <elohimes@gmail.com>,
+ Al Viro <viro@zeniv.linux.org.uk>, Stefan Hajnoczi <stefanha@redhat.com>,
+ songmuchun@bytedance.com, Jens Axboe <axboe@kernel.dk>,
+ Greg KH <gregkh@linuxfoundation.org>, Randy Dunlap <rdunlap@infradead.org>,
+ linux-kernel <linux-kernel@vger.kernel.org>, iommu@lists.linux-foundation.org,
+ bcrl@kvack.org, netdev@vger.kernel.org, linux-fsdevel@vger.kernel.org,
+ =?UTF-8?Q?Mika_Penttil=c3=a4?= <mika.penttila@nextfour.com>
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -105,156 +134,30 @@ List-Post: <mailto:iommu@lists.linux-foundation.org>
 List-Help: <mailto:iommu-request@lists.linux-foundation.org?subject=help>
 List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
  <mailto:iommu-request@lists.linux-foundation.org?subject=subscribe>
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: base64
+Content-Type: text/plain; charset="utf-8"; Format="flowed"
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-On Mon, Jun 14, 2021 at 12:06 PM Robin Murphy <robin.murphy@arm.com> wrote:
->
-> On 2021-05-24 12:02, Shameer Kolothum wrote:
-> > From: Jon Nettleton <jon@solid-run.com>
-> >
-> > Check if there is any RMR info associated with the devices behind
-> > the SMMU and if any, install bypass SMRs for them. This is to
-> > keep any ongoing traffic associated with these devices alive
-> > when we enable/reset SMMU during probe().
-> >
-> > Signed-off-by: Jon Nettleton <jon@solid-run.com>
-> > Signed-off-by: Steven Price <steven.price@arm.com>
-> > Signed-off-by: Shameer Kolothum <shameerali.kolothum.thodi@huawei.com>
-> > ---
-> >   drivers/iommu/arm/arm-smmu/arm-smmu.c | 65 +++++++++++++++++++++++++++
-> >   1 file changed, 65 insertions(+)
-> >
-> > diff --git a/drivers/iommu/arm/arm-smmu/arm-smmu.c b/drivers/iommu/arm/arm-smmu/arm-smmu.c
-> > index 6f72c4d208ca..56db3d3238fc 100644
-> > --- a/drivers/iommu/arm/arm-smmu/arm-smmu.c
-> > +++ b/drivers/iommu/arm/arm-smmu/arm-smmu.c
-> > @@ -2042,6 +2042,67 @@ err_reset_platform_ops: __maybe_unused;
-> >       return err;
-> >   }
-> >
-> > +static void arm_smmu_rmr_install_bypass_smr(struct arm_smmu_device *smmu)
-> > +{
-> > +     struct list_head rmr_list;
-> > +     struct iommu_resv_region *e;
-> > +     int i, cnt = 0;
-> > +     u32 smr;
-> > +     u32 reg;
-> > +
-> > +     INIT_LIST_HEAD(&rmr_list);
-> > +     if (iommu_dma_get_rmrs(dev_fwnode(smmu->dev), &rmr_list))
-> > +             return;
-> > +
-> > +     reg = arm_smmu_gr0_read(smmu, ARM_SMMU_GR0_sCR0);
-> > +
-> > +     if ((reg & ARM_SMMU_sCR0_USFCFG) && !(reg & ARM_SMMU_sCR0_CLIENTPD)) {
-> > +             /*
-> > +              * SMMU is already enabled and disallowing bypass, so preserve
-> > +              * the existing SMRs
-> > +              */
-> > +             for (i = 0; i < smmu->num_mapping_groups; i++) {
-> > +                     smr = arm_smmu_gr0_read(smmu, ARM_SMMU_GR0_SMR(i));
->
-> To reiterate, just because a bootloader/crashed kernel/whatever may have
-> left some configuration behind doesn't mean that it matters (e.g. what
-> if these SMRs are pointing at translation contexts?). All we should be
-> doing here is setting the relevant RMR accommodations in our "clean
-> slate" software state before the reset routine applies it to the
-> hardware, just like patch #5 does for SMMUv3.
->
-> Trying to safely reset an SMMU when we discover it with CLIENTPD=0 is
-> really another issue entirely, and I'd say is beyond the scope of this
-> series
->
-> > +                     if (!FIELD_GET(ARM_SMMU_SMR_VALID, smr))
-> > +                             continue;
->
-> Note that that's not even necessarily correct (thanks to EXIDS).
->
-> > +                     smmu->smrs[i].id = FIELD_GET(ARM_SMMU_SMR_ID, smr);
-> > +                     smmu->smrs[i].mask = FIELD_GET(ARM_SMMU_SMR_MASK, smr);
-> > +                     smmu->smrs[i].valid = true;
-> > +             }
-> > +     }
-> > +
-> > +     list_for_each_entry(e, &rmr_list, list) {
-> > +             u32 sid = e->fw_data.rmr.sid;
-> > +
-> > +             i = arm_smmu_find_sme(smmu, sid, ~0);
-> > +             if (i < 0)
-> > +                     continue;
-> > +             if (smmu->s2crs[i].count == 0) {
-> > +                     smmu->smrs[i].id = sid;
-> > +                     smmu->smrs[i].mask = ~0;
->
-> This is very wrong (as has now already been pointed out).
->
-> > +                     smmu->smrs[i].valid = true;
-> > +             }
-> > +             smmu->s2crs[i].count++;
-> > +             smmu->s2crs[i].type = S2CR_TYPE_BYPASS;
-> > +             smmu->s2crs[i].privcfg = S2CR_PRIVCFG_DEFAULT;
-> > +             smmu->s2crs[i].cbndx = 0xff;
->
-> Nit: cbndx is left uninitialised for bypass/fault entries elsewhere, so
-> there's little point touching it here.
->
-> > +
-> > +             cnt++;
-> > +     }
-> > +
-> > +     if ((reg & ARM_SMMU_sCR0_USFCFG) && !(reg & ARM_SMMU_sCR0_CLIENTPD)) {
-> > +             /* Remove the valid bit for unused SMRs */
-> > +             for (i = 0; i < smmu->num_mapping_groups; i++) {
-> > +                     if (smmu->s2crs[i].count == 0)
-> > +                             smmu->smrs[i].valid = false;
-> > +             }
->
-> If this dance is only about avoiding stream match conflicts when trying
-> to reprogram live SMRs, simply turning the SMMU off beforehand would be
-> a lot simpler.
-
-Robin,
-
-I am not sure what you mean here, and maybe Steve wants to jump in and
-help clarify.
-
-My understanding is that "dance" is required for regions that need to
-continue to work
-throughout the boot process.  I think the example I have seen the most
-is for GOP drivers that
-use system memory rather than dedicated VRAM.
-
--Jon
-
->
-> Robin.
->
-> > +     }
-> > +
-> > +     dev_notice(smmu->dev, "\tpreserved %d boot mapping%s\n", cnt,
-> > +                cnt == 1 ? "" : "s");
-> > +     iommu_dma_put_rmrs(dev_fwnode(smmu->dev), &rmr_list);
-> > +}
-> > +
-> >   static int arm_smmu_device_probe(struct platform_device *pdev)
-> >   {
-> >       struct resource *res;
-> > @@ -2168,6 +2229,10 @@ static int arm_smmu_device_probe(struct platform_device *pdev)
-> >       }
-> >
-> >       platform_set_drvdata(pdev, smmu);
-> > +
-> > +     /* Check for RMRs and install bypass SMRs if any */
-> > +     arm_smmu_rmr_install_bypass_smr(smmu);
-> > +
-> >       arm_smmu_device_reset(smmu);
-> >       arm_smmu_test_smr_masks(smmu);
-> >
-> >
-_______________________________________________
-iommu mailing list
-iommu@lists.linux-foundation.org
-https://lists.linuxfoundation.org/mailman/listinfo/iommu
+CuWcqCAyMDIxLzYvMjkg5LiL5Y2IMjo0MCwgWW9uZ2ppIFhpZSDlhpnpgZM6Cj4gT24gVHVlLCBK
+dW4gMjksIDIwMjEgYXQgMTI6MTMgUE0gSmFzb24gV2FuZyA8amFzb3dhbmdAcmVkaGF0LmNvbT4g
+d3JvdGU6Cj4+Cj4+IOWcqCAyMDIxLzYvMjgg5LiL5Y2INjozMiwgWW9uZ2ppIFhpZSDlhpnpgZM6
+Cj4+Pj4gVGhlIGxhcmdlIGJhcnJpZXIgaXMgYm91bmNlLWJ1ZmZlciBtYXBwaW5nOiBTUERLIHJl
+cXVpcmVzIGh1Z2VwYWdlcwo+Pj4+IGZvciBOVk1lIG92ZXIgUENJZSBhbmQgUkRNQSwgc28gdGFr
+ZSBzb21lIHByZWFsbGNvYXRlZCBodWdlcGFnZXMgdG8KPj4+PiBtYXAgYXMgYm91bmNlIGJ1ZmZl
+ciBpcyBuZWNlc3NhcnkuIE9yIGl0J3MgaGFyZCB0byBhdm9pZCBhbiBleHRyYQo+Pj4+IG1lbWNw
+eSBmcm9tIGJvdW5jZS1idWZmZXIgdG8gaHVnZXBhZ2UuCj4+Pj4gSWYgeW91IGNhbiBhZGQgYW4g
+b3B0aW9uIHRvIG1hcCBodWdlcGFnZXMgYXMgYm91bmNlLWJ1ZmZlciwKPj4+PiB0aGVuIFNQREsg
+Y291bGQgYWxzbyBiZSBhIHBvdGVudGlhbCB1c2VyIG9mIHZkdXNlLgo+Pj4+Cj4+PiBJIHRoaW5r
+IHdlIGNhbiBzdXBwb3J0IHJlZ2lzdGVyaW5nIHVzZXIgc3BhY2UgbWVtb3J5IGZvciBib3VuY2Ut
+YnVmZmVyCj4+PiB1c2UgbGlrZSBYRFAgZG9lcy4gQnV0IHRoaXMgbmVlZHMgdG8gcGluIHRoZSBw
+YWdlcywgc28gSSBkaWRuJ3QKPj4+IGNvbnNpZGVyIGl0IGluIHRoaXMgaW5pdGlhbCB2ZXJzaW9u
+Lgo+Pj4KPj4gTm90ZSB0aGF0IHVzZXJzcGFjZSBzaG91bGQgYmUgdW5hd2FyZSBvZiB0aGUgZXhp
+c3RlbmNlIG9mIHRoZSBib3VuY2UgYnVmZmVyLgo+Pgo+IElmIHNvLCBpdCBtaWdodCBiZSBoYXJk
+IHRvIHVzZSB1bWVtLiBCZWNhdXNlIHdlIGNhbid0IHVzZSB1bWVtIGZvcgo+IGNvaGVyZW50IG1h
+cHBpbmcgd2hpY2ggbmVlZHMgcGh5c2ljYWwgYWRkcmVzcyBjb250aWd1b3VzIHNwYWNlLgo+Cj4g
+VGhhbmtzLAo+IFlvbmdqaQoKCldlIHByb2JhYmx5IGNhbiB1c2UgdW1lbSBmb3IgbWVtb3J5IG90
+aGVyIHRoYW4gdGhlIHZpcnRxdWV1ZSAoc3RpbGwgdmlhIAptbWFwKCkpLgoKVGhhbmtzCgoKX19f
+X19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX18KaW9tbXUgbWFpbGlu
+ZyBsaXN0CmlvbW11QGxpc3RzLmxpbnV4LWZvdW5kYXRpb24ub3JnCmh0dHBzOi8vbGlzdHMubGlu
+dXhmb3VuZGF0aW9uLm9yZy9tYWlsbWFuL2xpc3RpbmZvL2lvbW11
