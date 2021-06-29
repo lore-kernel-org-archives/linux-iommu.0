@@ -2,126 +2,114 @@ Return-Path: <SRS0=I0uF=LX=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-5.1 required=3.0 tests=BAYES_00,DKIM_INVALID,
-	DKIM_SIGNED,HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,NICE_REPLY_A,
-	SPF_HELO_NONE,SPF_PASS,USER_AGENT_SANE_1 autolearn=no autolearn_force=no
-	version=3.4.0
+X-Spam-Status: No, score=-13.6 required=3.0 tests=BAYES_00,DKIM_INVALID,
+	DKIM_SIGNED,HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_CR_TRAILER,INCLUDES_PATCH,
+	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS autolearn=unavailable
+	autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2CFBBC11F6C
-	for <iommu@archiver.kernel.org>; Tue, 29 Jun 2021 07:34:10 +0000 (UTC)
-Received: from smtp2.osuosl.org (smtp2.osuosl.org [140.211.166.133])
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7ABF5C11F66
+	for <iommu@archiver.kernel.org>; Tue, 29 Jun 2021 07:38:19 +0000 (UTC)
+Received: from smtp4.osuosl.org (smtp4.osuosl.org [140.211.166.137])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id D584B61DBC
-	for <iommu@archiver.kernel.org>; Tue, 29 Jun 2021 07:34:09 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org D584B61DBC
-Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=redhat.com
+	by mail.kernel.org (Postfix) with ESMTPS id 0823C61DD1
+	for <iommu@archiver.kernel.org>; Tue, 29 Jun 2021 07:38:18 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 0823C61DD1
+Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=lists.linux-foundation.org
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by smtp2.osuosl.org (Postfix) with ESMTP id 73F8441D15;
-	Tue, 29 Jun 2021 07:34:09 +0000 (UTC)
+	by smtp4.osuosl.org (Postfix) with ESMTP id C817540413;
+	Tue, 29 Jun 2021 07:38:18 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from smtp2.osuosl.org ([127.0.0.1])
-	by localhost (smtp2.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id thlJD5QbiHLv; Tue, 29 Jun 2021 07:34:07 +0000 (UTC)
+Received: from smtp4.osuosl.org ([127.0.0.1])
+	by localhost (smtp4.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+	with ESMTP id TLIjNfeuo5-d; Tue, 29 Jun 2021 07:38:17 +0000 (UTC)
 Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by smtp2.osuosl.org (Postfix) with ESMTPS id 3B83041D13;
-	Tue, 29 Jun 2021 07:34:07 +0000 (UTC)
+	by smtp4.osuosl.org (Postfix) with ESMTPS id 6299A4029E;
+	Tue, 29 Jun 2021 07:38:17 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 12D55C001A;
-	Tue, 29 Jun 2021 07:34:07 +0000 (UTC)
-Received: from smtp2.osuosl.org (smtp2.osuosl.org [140.211.166.133])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 05AAEC000E
- for <iommu@lists.linux-foundation.org>; Tue, 29 Jun 2021 07:34:05 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 43E0AC001A;
+	Tue, 29 Jun 2021 07:38:17 +0000 (UTC)
+Received: from smtp4.osuosl.org (smtp4.osuosl.org [IPv6:2605:bc80:3010::137])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 6ABB2C000E
+ for <iommu@lists.linux-foundation.org>; Tue, 29 Jun 2021 07:38:16 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by smtp2.osuosl.org (Postfix) with ESMTP id D638741D15
- for <iommu@lists.linux-foundation.org>; Tue, 29 Jun 2021 07:34:04 +0000 (UTC)
+ by smtp4.osuosl.org (Postfix) with ESMTP id 4317840406
+ for <iommu@lists.linux-foundation.org>; Tue, 29 Jun 2021 07:38:16 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from smtp2.osuosl.org ([127.0.0.1])
- by localhost (smtp2.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id 6uTVLsuSvKvK for <iommu@lists.linux-foundation.org>;
- Tue, 29 Jun 2021 07:34:04 +0000 (UTC)
-X-Greylist: domain auto-whitelisted by SQLgrey-1.8.0
-Received: from us-smtp-delivery-124.mimecast.com
- (us-smtp-delivery-124.mimecast.com [216.205.24.124])
- by smtp2.osuosl.org (Postfix) with ESMTPS id 1468F41D13
- for <iommu@lists.linux-foundation.org>; Tue, 29 Jun 2021 07:34:03 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
- s=mimecast20190719; t=1624952042;
- h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
- to:to:cc:cc:mime-version:mime-version:content-type:content-type:
- content-transfer-encoding:content-transfer-encoding:
- in-reply-to:in-reply-to:references:references;
- bh=X7aRa/ari9ndRrZW6yGfSw3dQvpOEYQN4vmyoY/ZeNU=;
- b=QDgeywfxmxZQEo7IQCYNxePBlSYwC86akw8fgAgO/QLSDydrDl2sqmap5r/QOLm97tjKTA
- T8xcDv1m+hsijuTv9FQpWP5yQqNGNAwvXE77vE1nYKL1yrHPgYMGAChsipVyqPyaavNvU0
- nX/PIZXaxUNcZNzrdh8syfJGh1brgIc=
-Received: from mail-pj1-f69.google.com (mail-pj1-f69.google.com
- [209.85.216.69]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-61-39zPAPJhNnC9Ny0vYE9QvA-1; Tue, 29 Jun 2021 03:34:01 -0400
-X-MC-Unique: 39zPAPJhNnC9Ny0vYE9QvA-1
-Received: by mail-pj1-f69.google.com with SMTP id
- t5-20020a17090a4485b029016f7fcb8a3dso1725283pjg.2
- for <iommu@lists.linux-foundation.org>; Tue, 29 Jun 2021 00:34:00 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
- d=1e100.net; s=20161025;
- h=x-gm-message-state:subject:to:cc:references:from:message-id:date
- :user-agent:mime-version:in-reply-to:content-transfer-encoding
- :content-language;
- bh=X7aRa/ari9ndRrZW6yGfSw3dQvpOEYQN4vmyoY/ZeNU=;
- b=umUXexvvEkqnn7DG6oh2GrcBCZ7vcCjBGQw7JpqKt619MIVCEiOg5/40RHujaWQwZA
- oH3/HXV7oeCuYgeuAuVlJxT+olYpEbZmfYx2HXy7cPH8zPwZBp9cUj/bq+b+BqFWlKYT
- wdk+cy5YIRXusm30lAOTc+xLy+5DzxdMlIewtf6G0acDuCCuVRwJ9h5tBKW1WB0z46vG
- 67jAp8fSnffLzedK4mAGbBoC5ICLGK3YmJBTHMhNxQu82ZRDawTSzC96skEFihrMMXp2
- LZ2SKHnyFWjltSXkTiX1XKnz8Z9eb602hN69axXTNvOYzv7xEf0y0QQ6pKxFEiJxP+l9
- hE7Q==
-X-Gm-Message-State: AOAM532G0GC/39IuxYHrz02O/rQWpMvXNIhRzqxZ7wWD5IFfRi+q90mI
- TZeTq4KT18sMcbzOrtJfnoRZfBieEkLqSPbfWEdhH+NlWefs3Ht8uf64c6euvA/Q4qXfkbXRNjc
- e1/gRI/qjnLpDpVGhoWZcWlA4QVHw7w==
-X-Received: by 2002:a63:43c4:: with SMTP id
- q187mr12256871pga.172.1624952039993; 
- Tue, 29 Jun 2021 00:33:59 -0700 (PDT)
-X-Google-Smtp-Source: ABdhPJw7prtHQtaiL3wMVzoCQQ1u9za913WVNoujdQYVZqZ/2wS5MelCYOe6dyArhR9IgMLsZIzYyg==
-X-Received: by 2002:a63:43c4:: with SMTP id
- q187mr12256834pga.172.1624952039684; 
- Tue, 29 Jun 2021 00:33:59 -0700 (PDT)
-Received: from wangxiaodeMacBook-Air.local ([209.132.188.80])
- by smtp.gmail.com with ESMTPSA id c2sm17127924pjv.10.2021.06.29.00.33.51
- (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
- Tue, 29 Jun 2021 00:33:59 -0700 (PDT)
-Subject: Re: [PATCH v8 00/10] Introduce VDUSE - vDPA Device in Userspace
-To: Yongji Xie <xieyongji@bytedance.com>
-References: <20210615141331.407-1-xieyongji@bytedance.com>
- <20210628103309.GA205554@storage2.sh.intel.com>
- <CAONzpcbjr2zKOAQrWa46Tv=oR1fYkcKLcqqm_tSgO7RkU20yBA@mail.gmail.com>
- <d5321870-ef29-48e2-fdf6-32d99a5fa3b9@redhat.com>
- <CACycT3vVhNdhtyohKJQuMXTic5m6jDjEfjzbzvp=2FJgwup8mg@mail.gmail.com>
-From: Jason Wang <jasowang@redhat.com>
-Message-ID: <90e30d9e-5709-2a0b-0449-858eea9dfec9@redhat.com>
-Date: Tue, 29 Jun 2021 15:33:49 +0800
-User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:78.0)
- Gecko/20100101 Thunderbird/78.11.0
-MIME-Version: 1.0
-In-Reply-To: <CACycT3vVhNdhtyohKJQuMXTic5m6jDjEfjzbzvp=2FJgwup8mg@mail.gmail.com>
-Authentication-Results: relay.mimecast.com;
- auth=pass smtp.auth=CUSA124A263 smtp.mailfrom=jasowang@redhat.com
-X-Mimecast-Spam-Score: 0
-X-Mimecast-Originator: redhat.com
-Content-Language: en-US
-Cc: kvm <kvm@vger.kernel.org>, "Michael S. Tsirkin" <mst@redhat.com>,
- virtualization <virtualization@lists.linux-foundation.org>,
- Christian Brauner <christian.brauner@canonical.com>,
- Jonathan Corbet <corbet@lwn.net>, Matthew Wilcox <willy@infradead.org>,
- Christoph Hellwig <hch@infradead.org>,
- Dan Carpenter <dan.carpenter@oracle.com>,
- Stefano Garzarella <sgarzare@redhat.com>,
- Liu Xiaodong <xiaodong.liu@intel.com>, Yongji Xie <elohimes@gmail.com>,
- Al Viro <viro@zeniv.linux.org.uk>, Stefan Hajnoczi <stefanha@redhat.com>,
- songmuchun@bytedance.com, Jens Axboe <axboe@kernel.dk>,
- Greg KH <gregkh@linuxfoundation.org>, Randy Dunlap <rdunlap@infradead.org>,
- linux-kernel <linux-kernel@vger.kernel.org>, iommu@lists.linux-foundation.org,
- bcrl@kvack.org, netdev@vger.kernel.org, linux-fsdevel@vger.kernel.org,
- =?UTF-8?Q?Mika_Penttil=c3=a4?= <mika.penttila@nextfour.com>
+Received: from smtp4.osuosl.org ([127.0.0.1])
+ by localhost (smtp4.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+ with ESMTP id 6MDgRpEGKqeR for <iommu@lists.linux-foundation.org>;
+ Tue, 29 Jun 2021 07:38:15 +0000 (UTC)
+X-Greylist: from auto-whitelisted by SQLgrey-1.8.0
+Received: from new2-smtp.messagingengine.com (new2-smtp.messagingengine.com
+ [66.111.4.224])
+ by smtp4.osuosl.org (Postfix) with ESMTPS id 1CF0D4029E
+ for <iommu@lists.linux-foundation.org>; Tue, 29 Jun 2021 07:38:14 +0000 (UTC)
+Received: from compute1.internal (compute1.nyi.internal [10.202.2.41])
+ by mailnew.nyi.internal (Postfix) with ESMTP id 305505802F1;
+ Tue, 29 Jun 2021 03:38:12 -0400 (EDT)
+Received: from imap21 ([10.202.2.71])
+ by compute1.internal (MEProxy); Tue, 29 Jun 2021 03:38:12 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=svenpeter.dev;
+ h=mime-version:message-id:in-reply-to:references:date:from:to
+ :cc:subject:content-type; s=fm1; bh=xPpV66HQWYVIE36VUh3s2k+KXaQN
+ uzOi6HGwB2vvLlI=; b=AazxlZZVrmqm57X0pNXcZihlgEw8Rja3NTqf4rJAhrId
+ sZzWqzxnLqo9mXUeGtBkomuHVceuBcpOlkThWQ8sOCGcUEAuGD7E84/1QgptxDxp
+ VohUFHg1FgeZAkZM2TuUVE2+3LnW1tT6vvKOOsE5ulSvvJJYmwHOfxGqIKe4F8/V
+ tewSxjjE5XOKAqhA6el1jejPmzn4RT05Sh1L3odwkPPLSZTZNhe5q3yGyLkLzgT5
+ j+mhG6OzVYFkdnZS7X0UaF1NnkY/Iu+b2mupZW6OfpC70kQXkA+3gSuv7eEnsqu8
+ 75vU/K8OhArsVgjGt0825AP9cpRgKIGF0h2MQw+33w==
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
+ messagingengine.com; h=cc:content-type:date:from:in-reply-to
+ :message-id:mime-version:references:subject:to:x-me-proxy
+ :x-me-proxy:x-me-sender:x-me-sender:x-sasl-enc; s=fm3; bh=xPpV66
+ HQWYVIE36VUh3s2k+KXaQNuzOi6HGwB2vvLlI=; b=TVuybdMj+mIXjt/SMDwlbh
+ sXV0LMaYWH58nxAH7/2fyt/n3U4cV6gQiBPI4xJYnAfdtof8Nadjo7h1zqcoMTRc
+ wms/fAYBxqNKdFdeLMQuUdZA9wdSyBQpQ7izbbYNtShwZKI62QDMOgxnxqy/23BI
+ lOJ1xx+YDU2E46iftghvIJLGtijpPE4z2vFrUfrANhOreffUS6hxqfY84+uGqCkD
+ beAxPx8FwIZcpClmn+SrFwQESJ9v5O2t3dE5dvw/ZnHgTlyBp5+sZmd7Chm/mg0B
+ OSwlldu12dqSG9D4HEWm0ibGdmUcvxU/fN/fVSx5ttYRTBeFIdHZFoWbWZWlpIyw
+ ==
+X-ME-Sender: <xms:4s3aYCw9WS5tkBhIVaEiwWmfJPFFLn1LHq14l3laXRWdD1wXOecRLA>
+ <xme:4s3aYOSver13dt2IzApPeQtnAmFfKdnSi9E3IqwmT1HVPizgWmgX4UEHkjRjIijUg
+ qZeuIwj8Q9T6AXB7tM>
+X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgeduledrfeehhedguddujecutefuodetggdotefrod
+ ftvfcurfhrohhfihhlvgemucfhrghsthforghilhdpqfgfvfdpuffrtefokffrpgfnqfgh
+ necuuegrihhlohhuthemuceftddtnecusecvtfgvtghiphhivghnthhsucdlqddutddtmd
+ enucfjughrpefofgggkfgjfhffhffvufgtsehttdertderredtnecuhfhrohhmpedfufhv
+ vghnucfrvghtvghrfdcuoehsvhgvnhesshhvvghnphgvthgvrhdruggvvheqnecuggftrf
+ grthhtvghrnhepgfeigeeiffeuhfettdejgfetjeetfeelfefgfefgvddvtdfghfffudeh
+ vdefkeffnecuvehluhhsthgvrhfuihiivgeptdenucfrrghrrghmpehmrghilhhfrhhomh
+ epshhvvghnsehsvhgvnhhpvghtvghrrdguvghv
+X-ME-Proxy: <xmx:4s3aYEUU1LxQqndKn8vTxCWrNEdOpMqbGFQbrzw1B8yG1edecv94EQ>
+ <xmx:4s3aYIgLArskBRvcBRNz_paU13207fSaGy1M4-9hkrZA5MUjpRPqNg>
+ <xmx:4s3aYEDd3kPwpjbysHG8_AAKYdSwen0ND6HnGlmS-C_FYcfb00uq1A>
+ <xmx:5M3aYMaNWz_GSwOBNaTU7SxjDGMOZpvJXMTXg9BzOj_uaV5jLK3e4g>
+Received: by mailuser.nyi.internal (Postfix, from userid 501)
+ id 3F1AB51C0060; Tue, 29 Jun 2021 03:38:10 -0400 (EDT)
+X-Mailer: MessagingEngine.com Webmail Interface
+User-Agent: Cyrus-JMAP/3.5.0-alpha0-530-gd0c265785f-fm-20210616.002-gd0c26578
+Mime-Version: 1.0
+Message-Id: <fedb8d5a-a0f1-4216-bb46-1af31b716309@www.fastmail.com>
+In-Reply-To: <3a43b2de-6a71-2373-8695-5e96657c8fc2@amazon.com>
+References: <20210627143405.77298-1-sven@svenpeter.dev>
+ <20210627143405.77298-2-sven@svenpeter.dev>
+ <3a43b2de-6a71-2373-8695-5e96657c8fc2@amazon.com>
+Date: Tue, 29 Jun 2021 09:37:48 +0200
+To: "Alexander Graf" <graf@amazon.com>, "Will Deacon" <will@kernel.org>,
+ "Robin Murphy" <robin.murphy@arm.com>, "Joerg Roedel" <joro@8bytes.org>
+Subject: Re: [PATCH v4 1/3] iommu: io-pgtable: add DART pagetable format
+Cc: Arnd Bergmann <arnd@kernel.org>,
+ Rouven Czerwinski <r.czerwinski@pengutronix.de>, devicetree@vger.kernel.org,
+ Marc Zyngier <maz@kernel.org>, Hector Martin <marcan@marcan.st>,
+ linux-kernel@vger.kernel.org,
+ Petr Mladek via iommu <iommu@lists.linux-foundation.org>,
+ Rob Herring <robh+dt@kernel.org>,
+ Alyssa Rosenzweig <alyssa.rosenzweig@collabora.com>,
+ Mohamed Mediouni <mohamed.mediouni@caramail.com>,
+ Mark Kettenis <mark.kettenis@xs4all.nl>, linux-arm-kernel@lists.infradead.org,
+ Stan Skowronek <stan@corellium.com>
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -134,30 +122,119 @@ List-Post: <mailto:iommu@lists.linux-foundation.org>
 List-Help: <mailto:iommu-request@lists.linux-foundation.org?subject=help>
 List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
  <mailto:iommu-request@lists.linux-foundation.org?subject=subscribe>
-Content-Transfer-Encoding: base64
-Content-Type: text/plain; charset="utf-8"; Format="flowed"
+From: Sven Peter via iommu <iommu@lists.linux-foundation.org>
+Reply-To: Sven Peter <sven@svenpeter.dev>
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-CuWcqCAyMDIxLzYvMjkg5LiL5Y2IMjo0MCwgWW9uZ2ppIFhpZSDlhpnpgZM6Cj4gT24gVHVlLCBK
-dW4gMjksIDIwMjEgYXQgMTI6MTMgUE0gSmFzb24gV2FuZyA8amFzb3dhbmdAcmVkaGF0LmNvbT4g
-d3JvdGU6Cj4+Cj4+IOWcqCAyMDIxLzYvMjgg5LiL5Y2INjozMiwgWW9uZ2ppIFhpZSDlhpnpgZM6
-Cj4+Pj4gVGhlIGxhcmdlIGJhcnJpZXIgaXMgYm91bmNlLWJ1ZmZlciBtYXBwaW5nOiBTUERLIHJl
-cXVpcmVzIGh1Z2VwYWdlcwo+Pj4+IGZvciBOVk1lIG92ZXIgUENJZSBhbmQgUkRNQSwgc28gdGFr
-ZSBzb21lIHByZWFsbGNvYXRlZCBodWdlcGFnZXMgdG8KPj4+PiBtYXAgYXMgYm91bmNlIGJ1ZmZl
-ciBpcyBuZWNlc3NhcnkuIE9yIGl0J3MgaGFyZCB0byBhdm9pZCBhbiBleHRyYQo+Pj4+IG1lbWNw
-eSBmcm9tIGJvdW5jZS1idWZmZXIgdG8gaHVnZXBhZ2UuCj4+Pj4gSWYgeW91IGNhbiBhZGQgYW4g
-b3B0aW9uIHRvIG1hcCBodWdlcGFnZXMgYXMgYm91bmNlLWJ1ZmZlciwKPj4+PiB0aGVuIFNQREsg
-Y291bGQgYWxzbyBiZSBhIHBvdGVudGlhbCB1c2VyIG9mIHZkdXNlLgo+Pj4+Cj4+PiBJIHRoaW5r
-IHdlIGNhbiBzdXBwb3J0IHJlZ2lzdGVyaW5nIHVzZXIgc3BhY2UgbWVtb3J5IGZvciBib3VuY2Ut
-YnVmZmVyCj4+PiB1c2UgbGlrZSBYRFAgZG9lcy4gQnV0IHRoaXMgbmVlZHMgdG8gcGluIHRoZSBw
-YWdlcywgc28gSSBkaWRuJ3QKPj4+IGNvbnNpZGVyIGl0IGluIHRoaXMgaW5pdGlhbCB2ZXJzaW9u
-Lgo+Pj4KPj4gTm90ZSB0aGF0IHVzZXJzcGFjZSBzaG91bGQgYmUgdW5hd2FyZSBvZiB0aGUgZXhp
-c3RlbmNlIG9mIHRoZSBib3VuY2UgYnVmZmVyLgo+Pgo+IElmIHNvLCBpdCBtaWdodCBiZSBoYXJk
-IHRvIHVzZSB1bWVtLiBCZWNhdXNlIHdlIGNhbid0IHVzZSB1bWVtIGZvcgo+IGNvaGVyZW50IG1h
-cHBpbmcgd2hpY2ggbmVlZHMgcGh5c2ljYWwgYWRkcmVzcyBjb250aWd1b3VzIHNwYWNlLgo+Cj4g
-VGhhbmtzLAo+IFlvbmdqaQoKCldlIHByb2JhYmx5IGNhbiB1c2UgdW1lbSBmb3IgbWVtb3J5IG90
-aGVyIHRoYW4gdGhlIHZpcnRxdWV1ZSAoc3RpbGwgdmlhIAptbWFwKCkpLgoKVGhhbmtzCgoKX19f
-X19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX18KaW9tbXUgbWFpbGlu
-ZyBsaXN0CmlvbW11QGxpc3RzLmxpbnV4LWZvdW5kYXRpb24ub3JnCmh0dHBzOi8vbGlzdHMubGlu
-dXhmb3VuZGF0aW9uLm9yZy9tYWlsbWFuL2xpc3RpbmZvL2lvbW11
+
+
+On Mon, Jun 28, 2021, at 12:54, Alexander Graf wrote:
+> 
+> 
+> On 27.06.21 16:34, Sven Peter wrote:
+> > 
+> > Apple's DART iommu uses a pagetable format that shares some
+> > similarities with the ones already implemented by io-pgtable.c.
+> > Add a new format variant to support the required differences
+> > so that we don't have to duplicate the pagetable handling code.
+> > 
+> > Signed-off-by: Sven Peter <sven@svenpeter.dev>
+> > ---
+> >   drivers/iommu/io-pgtable-arm.c | 62 ++++++++++++++++++++++++++++++++++
+> >   drivers/iommu/io-pgtable.c     |  1 +
+> >   include/linux/io-pgtable.h     |  7 ++++
+> >   3 files changed, 70 insertions(+)
+> > 
+> > diff --git a/drivers/iommu/io-pgtable-arm.c b/drivers/iommu/io-pgtable-arm.c
+> > index 87def58e79b5..1dd5c45b4b5b 100644
+> > --- a/drivers/iommu/io-pgtable-arm.c
+> > +++ b/drivers/iommu/io-pgtable-arm.c
+> > @@ -127,6 +127,9 @@
+> >   #define ARM_MALI_LPAE_MEMATTR_IMP_DEF  0x88ULL
+> >   #define ARM_MALI_LPAE_MEMATTR_WRITE_ALLOC 0x8DULL
+> > 
+> > +#define APPLE_DART_PTE_PROT_NO_WRITE (1<<7)
+> > +#define APPLE_DART_PTE_PROT_NO_READ (1<<8)
+> > +
+> >   /* IOPTE accessors */
+> >   #define iopte_deref(pte,d) __va(iopte_to_paddr(pte, d))
+> > 
+> > @@ -381,6 +384,15 @@ static arm_lpae_iopte arm_lpae_prot_to_pte(struct arm_lpae_io_pgtable *data,
+> >   {
+> >          arm_lpae_iopte pte;
+> > 
+> > +       if (data->iop.fmt == ARM_APPLE_DART) {
+> > +               pte = 0;
+> > +               if (!(prot & IOMMU_WRITE))
+> > +                       pte |= APPLE_DART_PTE_PROT_NO_WRITE;
+> > +               if (!(prot & IOMMU_READ))
+> > +                       pte |= APPLE_DART_PTE_PROT_NO_READ;
+> > +               return pte;
+> 
+> What about the other bits, such as sharability, XN, etc? Do they not 
+> exist on DART? Or have they not been reverse engineered and 0s happen to 
+> "just work"?
+
+I'm fairly certain they don't exist (or are at least not used by XNU).
+
+The co-processors that can run code also either use an entire separate iommu
+(e.g. the GPU) or only use DART as a "second stage" and have their own
+MMU which e.g. handles XN (e.g. the SEP or AOP).
+
+> 
+> > +       }
+> > +
+> >          if (data->iop.fmt == ARM_64_LPAE_S1 ||
+> >              data->iop.fmt == ARM_32_LPAE_S1) {
+> >                  pte = ARM_LPAE_PTE_nG;
+> > @@ -1043,6 +1055,51 @@ arm_mali_lpae_alloc_pgtable(struct io_pgtable_cfg *cfg, void *cookie)
+> >          return NULL;
+> >   }
+> > 
+> > +static struct io_pgtable *
+> > +apple_dart_alloc_pgtable(struct io_pgtable_cfg *cfg, void *cookie)
+> > +{
+> > +       struct arm_lpae_io_pgtable *data;
+> > +       int i;
+> > +
+> > +       if (cfg->oas > 36)
+> > +               return NULL;
+> > +
+> > +       data = arm_lpae_alloc_pgtable(cfg);
+> > +       if (!data)
+> > +               return NULL;
+> > +
+> > +       /*
+> > +        * Apple's DART always requires three levels with the first level being
+> > +        * stored in four MMIO registers. We always concatenate the first and
+> > +        * second level so that we only have to setup the MMIO registers once.
+> > +        * This results in an effective two level pagetable.
+> > +        */
+> > +       if (data->start_level < 1)
+> > +               return NULL;
+> > +       if (data->start_level == 1 && data->pgd_bits > 2)
+> > +               return NULL;
+> > +       if (data->start_level > 1)
+> > +               data->pgd_bits = 0;
+> > +       data->start_level = 2;
+> > +       cfg->apple_dart_cfg.n_ttbrs = 1 << data->pgd_bits;
+> 
+> Maybe add a BUG_ON if n_ttbrs > ARRAY_SIZE(ttbr)? Or alternatively, do a 
+> normal runtime check and bail out then.
+
+n_ttbrs can't actually be larger than 4 at this point already due to the
+previous checks.
+I can add a BUG_ON though just to make it explicit and be safe in case those
+checks or the array size ever change.
+
+
+Sven
+
+
+_______________________________________________
+iommu mailing list
+iommu@lists.linux-foundation.org
+https://lists.linuxfoundation.org/mailman/listinfo/iommu
