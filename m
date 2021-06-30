@@ -7,63 +7,63 @@ X-Spam-Status: No, score=-16.8 required=3.0 tests=BAYES_00,
 	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,UNPARSEABLE_RELAY,URIBL_BLOCKED,
 	USER_AGENT_GIT autolearn=unavailable autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 125C5C11F67
-	for <iommu@archiver.kernel.org>; Wed, 30 Jun 2021 02:42:49 +0000 (UTC)
-Received: from smtp4.osuosl.org (smtp4.osuosl.org [140.211.166.137])
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4986FC11F67
+	for <iommu@archiver.kernel.org>; Wed, 30 Jun 2021 02:43:12 +0000 (UTC)
+Received: from smtp1.osuosl.org (smtp1.osuosl.org [140.211.166.138])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id C70BA61D8C
-	for <iommu@archiver.kernel.org>; Wed, 30 Jun 2021 02:42:48 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org C70BA61D8C
+	by mail.kernel.org (Postfix) with ESMTPS id 1373E61D8C
+	for <iommu@archiver.kernel.org>; Wed, 30 Jun 2021 02:43:12 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 1373E61D8C
 Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=mediatek.com
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by smtp4.osuosl.org (Postfix) with ESMTP id A429740603;
-	Wed, 30 Jun 2021 02:42:48 +0000 (UTC)
+	by smtp1.osuosl.org (Postfix) with ESMTP id E495083ABC;
+	Wed, 30 Jun 2021 02:43:11 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from smtp4.osuosl.org ([127.0.0.1])
-	by localhost (smtp4.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id vIULWYPQtHqJ; Wed, 30 Jun 2021 02:42:47 +0000 (UTC)
+Received: from smtp1.osuosl.org ([127.0.0.1])
+	by localhost (smtp1.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+	with ESMTP id KI0nBLWUxnv7; Wed, 30 Jun 2021 02:43:11 +0000 (UTC)
 Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by smtp4.osuosl.org (Postfix) with ESMTPS id 75409405FB;
-	Wed, 30 Jun 2021 02:42:47 +0000 (UTC)
+	by smtp1.osuosl.org (Postfix) with ESMTPS id CC84183ABB;
+	Wed, 30 Jun 2021 02:43:10 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 5E12CC0010;
-	Wed, 30 Jun 2021 02:42:47 +0000 (UTC)
-Received: from smtp4.osuosl.org (smtp4.osuosl.org [140.211.166.137])
- by lists.linuxfoundation.org (Postfix) with ESMTP id B66C8C000E
- for <iommu@lists.linux-foundation.org>; Wed, 30 Jun 2021 02:42:45 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id A3483C0010;
+	Wed, 30 Jun 2021 02:43:10 +0000 (UTC)
+Received: from smtp4.osuosl.org (smtp4.osuosl.org [IPv6:2605:bc80:3010::137])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id F335CC000E
+ for <iommu@lists.linux-foundation.org>; Wed, 30 Jun 2021 02:43:08 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by smtp4.osuosl.org (Postfix) with ESMTP id B199F40603
- for <iommu@lists.linux-foundation.org>; Wed, 30 Jun 2021 02:42:45 +0000 (UTC)
+ by smtp4.osuosl.org (Postfix) with ESMTP id D32FF4060B
+ for <iommu@lists.linux-foundation.org>; Wed, 30 Jun 2021 02:43:08 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
 Received: from smtp4.osuosl.org ([127.0.0.1])
  by localhost (smtp4.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id zRNBwTXMcgp1 for <iommu@lists.linux-foundation.org>;
- Wed, 30 Jun 2021 02:42:45 +0000 (UTC)
+ with ESMTP id lDhr6wVlj0tX for <iommu@lists.linux-foundation.org>;
+ Wed, 30 Jun 2021 02:43:08 +0000 (UTC)
 X-Greylist: from auto-whitelisted by SQLgrey-1.8.0
 Received: from mailgw01.mediatek.com (unknown [60.244.123.138])
- by smtp4.osuosl.org (Postfix) with ESMTPS id B3271405FB
- for <iommu@lists.linux-foundation.org>; Wed, 30 Jun 2021 02:42:44 +0000 (UTC)
-X-UUID: cf01319e079d4900bf48d323f8c13343-20210630
-X-UUID: cf01319e079d4900bf48d323f8c13343-20210630
-Received: from mtkmbs10n1.mediatek.inc [(172.21.101.34)] by
+ by smtp4.osuosl.org (Postfix) with ESMTPS id 9B2134060A
+ for <iommu@lists.linux-foundation.org>; Wed, 30 Jun 2021 02:43:07 +0000 (UTC)
+X-UUID: 04ffcceb0c0a4197b8728507ead0ebf5-20210630
+X-UUID: 04ffcceb0c0a4197b8728507ead0ebf5-20210630
+Received: from mtkmbs10n2.mediatek.inc [(172.21.101.183)] by
  mailgw01.mediatek.com (envelope-from <yong.wu@mediatek.com>)
  (Generic MTA with TLSv1.2 ECDHE-RSA-AES256-GCM-SHA384 256/256)
- with ESMTP id 1338062040; Wed, 30 Jun 2021 10:37:39 +0800
+ with ESMTP id 1803475303; Wed, 30 Jun 2021 10:38:00 +0800
 Received: from mtkcas11.mediatek.inc (172.21.101.40) by
  mtkmbs07n2.mediatek.inc (172.21.101.141) with Microsoft SMTP Server (TLS) id
- 15.0.1497.2; Wed, 30 Jun 2021 10:37:37 +0800
+ 15.0.1497.2; Wed, 30 Jun 2021 10:37:59 +0800
 Received: from localhost.localdomain (10.17.3.153) by mtkcas11.mediatek.inc
  (172.21.101.73) with Microsoft SMTP Server id 15.0.1497.2 via Frontend
- Transport; Wed, 30 Jun 2021 10:37:36 +0800
+ Transport; Wed, 30 Jun 2021 10:37:57 +0800
 From: Yong Wu <yong.wu@mediatek.com>
 To: Joerg Roedel <joro@8bytes.org>, Rob Herring <robh+dt@kernel.org>, Matthias
  Brugger <matthias.bgg@gmail.com>, Will Deacon <will@kernel.org>,
  Robin Murphy <robin.murphy@arm.com>
-Subject: [PATCH 17/24] iommu/mediatek: Just move code position in hw_init
-Date: Wed, 30 Jun 2021 10:34:57 +0800
-Message-ID: <20210630023504.18177-18-yong.wu@mediatek.com>
+Subject: [PATCH 20/24] iommu/mediatek: Add bank_nr and bank_enable
+Date: Wed, 30 Jun 2021 10:35:00 +0800
+Message-ID: <20210630023504.18177-21-yong.wu@mediatek.com>
 X-Mailer: git-send-email 2.18.0
 In-Reply-To: <20210630023504.18177-1-yong.wu@mediatek.com>
 References: <20210630023504.18177-1-yong.wu@mediatek.com>
@@ -93,82 +93,119 @@ Content-Transfer-Encoding: 7bit
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-No functional change too. mt8195 IOMMU support bank functions.
-some global control etting is in bank0. and the other banks have its
-bank independent setting. this patch only moves the control settings
-and the independent registers together.
+This patch adds two variables in the plat_data:
+bank_nr: the bank number that this SoC support;
+bank_enable: list if the banks is enabled.
+
+This patch add them for all the current SoC, bank_nr always is 1 and
+only bank_enable[0] is enabled. it is preparing for supporting
+multi banks.
 
 Signed-off-by: Yong Wu <yong.wu@mediatek.com>
 ---
- drivers/iommu/mtk_iommu.c | 48 +++++++++++++++++++--------------------
- 1 file changed, 24 insertions(+), 24 deletions(-)
+ drivers/iommu/mtk_iommu.c | 18 ++++++++++++++++++
+ drivers/iommu/mtk_iommu.h |  3 +++
+ 2 files changed, 21 insertions(+)
 
 diff --git a/drivers/iommu/mtk_iommu.c b/drivers/iommu/mtk_iommu.c
-index 1072a10e36ce..5237c837128e 100644
+index ed3cf75850ce..042489b8e402 100644
 --- a/drivers/iommu/mtk_iommu.c
 +++ b/drivers/iommu/mtk_iommu.c
-@@ -743,30 +743,6 @@ static int mtk_iommu_hw_init(const struct mtk_iommu_data *data)
- 	}
- 	writel_relaxed(regval, data->base + REG_MMU_CTRL_REG);
+@@ -1116,6 +1116,8 @@ static const struct mtk_iommu_plat_data mt2712_data = {
+ 			NOT_STD_AXI_MODE | MTK_IOMMU_TYPE_MM,
+ 	.hw_list      = &m4ulist,
+ 	.inv_sel_reg  = REG_MMU_INV_SEL_GEN1,
++	.bank_nr      = 1,
++	.bank_enable  = {true},
+ 	.iova_region  = single_domain,
+ 	.iova_region_nr = ARRAY_SIZE(single_domain),
+ 	.larbid_remap = {{0}, {1}, {2}, {3}, {4}, {5}, {6}, {7}},
+@@ -1126,6 +1128,8 @@ static const struct mtk_iommu_plat_data mt6779_data = {
+ 	.flags         = HAS_SUB_COMM_2BITS | OUT_ORDER_WR_EN | WR_THROT_EN |
+ 			 NOT_STD_AXI_MODE | MTK_IOMMU_TYPE_MM,
+ 	.inv_sel_reg   = REG_MMU_INV_SEL_GEN2,
++	.bank_nr       = 1,
++	.bank_enable   = {true},
+ 	.iova_region   = single_domain,
+ 	.iova_region_nr = ARRAY_SIZE(single_domain),
+ 	.larbid_remap  = {{0}, {1}, {2}, {3}, {5}, {7, 8}, {10}, {9}},
+@@ -1136,6 +1140,8 @@ static const struct mtk_iommu_plat_data mt8167_data = {
+ 	.flags        = RESET_AXI | HAS_LEGACY_IVRP_PADDR | NOT_STD_AXI_MODE |
+ 			MTK_IOMMU_TYPE_MM,
+ 	.inv_sel_reg  = REG_MMU_INV_SEL_GEN1,
++	.bank_nr      = 1,
++	.bank_enable  = {true},
+ 	.iova_region  = single_domain,
+ 	.iova_region_nr = ARRAY_SIZE(single_domain),
+ 	.larbid_remap = {{0}, {1}, {2}}, /* Linear mapping. */
+@@ -1147,6 +1153,8 @@ static const struct mtk_iommu_plat_data mt8173_data = {
+ 			HAS_LEGACY_IVRP_PADDR | NOT_STD_AXI_MODE |
+ 			MTK_IOMMU_TYPE_MM,
+ 	.inv_sel_reg  = REG_MMU_INV_SEL_GEN1,
++	.bank_nr      = 1,
++	.bank_enable  = {true},
+ 	.iova_region  = single_domain,
+ 	.iova_region_nr = ARRAY_SIZE(single_domain),
+ 	.larbid_remap = {{0}, {1}, {2}, {3}, {4}, {5}}, /* Linear mapping. */
+@@ -1156,6 +1164,8 @@ static const struct mtk_iommu_plat_data mt8183_data = {
+ 	.m4u_plat     = M4U_MT8183,
+ 	.flags        = RESET_AXI | MTK_IOMMU_TYPE_MM,
+ 	.inv_sel_reg  = REG_MMU_INV_SEL_GEN1,
++	.bank_nr      = 1,
++	.bank_enable  = {true},
+ 	.iova_region  = single_domain,
+ 	.iova_region_nr = ARRAY_SIZE(single_domain),
+ 	.larbid_remap = {{0}, {4}, {5}, {6}, {7}, {2}, {3}, {1}},
+@@ -1167,6 +1177,8 @@ static const struct mtk_iommu_plat_data mt8192_data = {
+ 			  WR_THROT_EN | IOVA_34_EN | NOT_STD_AXI_MODE |
+ 			  MTK_IOMMU_TYPE_MM,
+ 	.inv_sel_reg    = REG_MMU_INV_SEL_GEN2,
++	.bank_nr        = 1,
++	.bank_enable    = {true},
+ 	.iova_region    = mt8192_multi_dom,
+ 	.iova_region_nr = ARRAY_SIZE(mt8192_multi_dom),
+ 	.larbid_remap   = {{0}, {1}, {4, 5}, {7}, {2}, {9, 11, 19, 20},
+@@ -1178,6 +1190,8 @@ static const struct mtk_iommu_plat_data mt8195_data_infra = {
+ 	.flags            = WR_THROT_EN | DCM_DISABLE |
+ 			    MTK_IOMMU_TYPE_INFRA | IFA_IOMMU_PCIe_SUPPORT,
+ 	.pericfg_comp_str = "mediatek,mt8195-pericfg_ao",
++	.bank_nr	  = 1,
++	.bank_enable      = {true},
+ 	.inv_sel_reg      = REG_MMU_INV_SEL_GEN2,
+ 	.iova_region      = single_domain,
+ 	.iova_region_nr   = ARRAY_SIZE(single_domain),
+@@ -1190,6 +1204,8 @@ static const struct mtk_iommu_plat_data mt8195_data_vdo = {
+ 			  MTK_IOMMU_TYPE_MM,
+ 	.hw_list        = &m4ulist,
+ 	.inv_sel_reg    = REG_MMU_INV_SEL_GEN2,
++	.bank_nr	= 1,
++	.bank_enable    = {true},
+ 	.iova_region	= mt8192_multi_dom,
+ 	.iova_region_nr	= ARRAY_SIZE(mt8192_multi_dom),
+ 	.larbid_remap   = {{2, 0}, {21}, {24}, {7}, {19}, {9, 10, 11},
+@@ -1203,6 +1219,8 @@ static const struct mtk_iommu_plat_data mt8195_data_vdp = {
+ 			  MTK_IOMMU_TYPE_MM,
+ 	.hw_list        = &m4ulist,
+ 	.inv_sel_reg    = REG_MMU_INV_SEL_GEN2,
++	.bank_nr	= 1,
++	.bank_enable    = {true},
+ 	.iova_region	= mt8192_multi_dom,
+ 	.iova_region_nr	= ARRAY_SIZE(mt8192_multi_dom),
+ 	.larbid_remap   = {{1}, {3}, {22, 0, 0, 0, 23}, {8},
+diff --git a/drivers/iommu/mtk_iommu.h b/drivers/iommu/mtk_iommu.h
+index 7193278501dd..78d9481d67b5 100644
+--- a/drivers/iommu/mtk_iommu.h
++++ b/drivers/iommu/mtk_iommu.h
+@@ -62,6 +62,9 @@ struct mtk_iommu_plat_data {
+ 	struct list_head			*hw_list;
+ 	unsigned int				iova_region_nr;
+ 	const struct mtk_iommu_iova_region	*iova_region;
++
++	u32                 bank_nr;
++	bool                bank_enable[MTK_IOMMU_BANK_MAX];
+ 	unsigned char       larbid_remap[MTK_LARB_COM_MAX][MTK_LARB_SUBCOM_MAX];
+ };
  
--	regval = F_L2_MULIT_HIT_EN |
--		F_TABLE_WALK_FAULT_INT_EN |
--		F_PREETCH_FIFO_OVERFLOW_INT_EN |
--		F_MISS_FIFO_OVERFLOW_INT_EN |
--		F_PREFETCH_FIFO_ERR_INT_EN |
--		F_MISS_FIFO_ERR_INT_EN;
--	writel_relaxed(regval, data->base + REG_MMU_INT_CONTROL0);
--
--	regval = F_INT_TRANSLATION_FAULT |
--		F_INT_MAIN_MULTI_HIT_FAULT |
--		F_INT_INVALID_PA_FAULT |
--		F_INT_ENTRY_REPLACEMENT_FAULT |
--		F_INT_TLB_MISS_FAULT |
--		F_INT_MISS_TRANSACTION_FIFO_FAULT |
--		F_INT_PRETETCH_TRANSATION_FIFO_FAULT;
--	writel_relaxed(regval, data->base + REG_MMU_INT_MAIN_CONTROL);
--
--	if (MTK_IOMMU_HAS_FLAG(data->plat_data, HAS_LEGACY_IVRP_PADDR))
--		regval = (data->protect_base >> 1) | (data->enable_4GB << 31);
--	else
--		regval = lower_32_bits(data->protect_base) |
--			 upper_32_bits(data->protect_base);
--	writel_relaxed(regval, data->base + REG_MMU_IVRP_PADDR);
--
- 	if (data->enable_4GB &&
- 	    MTK_IOMMU_HAS_FLAG(data->plat_data, HAS_VLD_PA_RNG)) {
- 		/*
-@@ -800,6 +776,30 @@ static int mtk_iommu_hw_init(const struct mtk_iommu_data *data)
- 	}
- 	writel_relaxed(regval, data->base + REG_MMU_MISC_CTRL);
- 
-+	regval = F_L2_MULIT_HIT_EN |
-+		F_TABLE_WALK_FAULT_INT_EN |
-+		F_PREETCH_FIFO_OVERFLOW_INT_EN |
-+		F_MISS_FIFO_OVERFLOW_INT_EN |
-+		F_PREFETCH_FIFO_ERR_INT_EN |
-+		F_MISS_FIFO_ERR_INT_EN;
-+	writel_relaxed(regval, data->base + REG_MMU_INT_CONTROL0);
-+
-+	regval = F_INT_TRANSLATION_FAULT |
-+		F_INT_MAIN_MULTI_HIT_FAULT |
-+		F_INT_INVALID_PA_FAULT |
-+		F_INT_ENTRY_REPLACEMENT_FAULT |
-+		F_INT_TLB_MISS_FAULT |
-+		F_INT_MISS_TRANSACTION_FIFO_FAULT |
-+		F_INT_PRETETCH_TRANSATION_FIFO_FAULT;
-+	writel_relaxed(regval, data->base + REG_MMU_INT_MAIN_CONTROL);
-+
-+	if (MTK_IOMMU_HAS_FLAG(data->plat_data, HAS_LEGACY_IVRP_PADDR))
-+		regval = (data->protect_base >> 1) | (data->enable_4GB << 31);
-+	else
-+		regval = lower_32_bits(data->protect_base) |
-+			 upper_32_bits(data->protect_base);
-+	writel_relaxed(regval, data->base + REG_MMU_IVRP_PADDR);
-+
- 	if (devm_request_irq(data->dev, data->irq, mtk_iommu_isr, 0,
- 			     dev_name(data->dev), (void *)data)) {
- 		writel_relaxed(0, data->base + REG_MMU_PT_BASE_ADDR);
 -- 
 2.18.0
 
