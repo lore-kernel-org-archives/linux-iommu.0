@@ -6,86 +6,86 @@ X-Spam-Status: No, score=-3.6 required=3.0 tests=BAYES_00,DKIM_INVALID,
 	DKIM_SIGNED,HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,SPF_HELO_NONE,
 	SPF_PASS,URIBL_BLOCKED autolearn=no autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id ABAFCC11F6A
-	for <iommu@archiver.kernel.org>; Wed, 30 Jun 2021 06:57:57 +0000 (UTC)
-Received: from smtp2.osuosl.org (smtp2.osuosl.org [140.211.166.133])
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 420B0C11F65
+	for <iommu@archiver.kernel.org>; Wed, 30 Jun 2021 07:02:45 +0000 (UTC)
+Received: from smtp4.osuosl.org (smtp4.osuosl.org [140.211.166.137])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 5127561C71
-	for <iommu@archiver.kernel.org>; Wed, 30 Jun 2021 06:57:57 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 5127561C71
+	by mail.kernel.org (Postfix) with ESMTPS id E992061469
+	for <iommu@archiver.kernel.org>; Wed, 30 Jun 2021 07:02:44 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org E992061469
 Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=infradead.org
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by smtp2.osuosl.org (Postfix) with ESMTP id 188AB4010C;
-	Wed, 30 Jun 2021 06:57:57 +0000 (UTC)
+	by smtp4.osuosl.org (Postfix) with ESMTP id B42734063D;
+	Wed, 30 Jun 2021 07:02:44 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from smtp2.osuosl.org ([127.0.0.1])
-	by localhost (smtp2.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id 5TLSA9_IORbH; Wed, 30 Jun 2021 06:57:56 +0000 (UTC)
+Received: from smtp4.osuosl.org ([127.0.0.1])
+	by localhost (smtp4.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+	with ESMTP id aMHh-9jZcaRO; Wed, 30 Jun 2021 07:02:43 +0000 (UTC)
 Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by smtp2.osuosl.org (Postfix) with ESMTPS id E78F740004;
-	Wed, 30 Jun 2021 06:57:55 +0000 (UTC)
+	by smtp4.osuosl.org (Postfix) with ESMTPS id 7A51840639;
+	Wed, 30 Jun 2021 07:02:43 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id C88C0C0010;
-	Wed, 30 Jun 2021 06:57:55 +0000 (UTC)
-Received: from smtp2.osuosl.org (smtp2.osuosl.org [IPv6:2605:bc80:3010::133])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 1A012C000E
- for <iommu@lists.linux-foundation.org>; Wed, 30 Jun 2021 06:57:55 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 1F19CC0010;
+	Wed, 30 Jun 2021 07:02:43 +0000 (UTC)
+Received: from smtp4.osuosl.org (smtp4.osuosl.org [140.211.166.137])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 64D64C000E
+ for <iommu@lists.linux-foundation.org>; Wed, 30 Jun 2021 07:02:41 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by smtp2.osuosl.org (Postfix) with ESMTP id 00B094010C
- for <iommu@lists.linux-foundation.org>; Wed, 30 Jun 2021 06:57:55 +0000 (UTC)
+ by smtp4.osuosl.org (Postfix) with ESMTP id 3CC864063B
+ for <iommu@lists.linux-foundation.org>; Wed, 30 Jun 2021 07:02:41 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from smtp2.osuosl.org ([127.0.0.1])
- by localhost (smtp2.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id GZIq_JV-ldQa for <iommu@lists.linux-foundation.org>;
- Wed, 30 Jun 2021 06:57:54 +0000 (UTC)
+Received: from smtp4.osuosl.org ([127.0.0.1])
+ by localhost (smtp4.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+ with ESMTP id xuO-tM4oD8HM for <iommu@lists.linux-foundation.org>;
+ Wed, 30 Jun 2021 07:02:40 +0000 (UTC)
 X-Greylist: from auto-whitelisted by SQLgrey-1.8.0
 Received: from casper.infradead.org (casper.infradead.org
  [IPv6:2001:8b0:10b:1236::1])
- by smtp2.osuosl.org (Postfix) with ESMTPS id 71B3040004
- for <iommu@lists.linux-foundation.org>; Wed, 30 Jun 2021 06:57:54 +0000 (UTC)
+ by smtp4.osuosl.org (Postfix) with ESMTPS id 7C76D40639
+ for <iommu@lists.linux-foundation.org>; Wed, 30 Jun 2021 07:02:40 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
  d=infradead.org; s=casper.20170209; h=In-Reply-To:Content-Type:MIME-Version:
  References:Message-ID:Subject:Cc:To:From:Date:Sender:Reply-To:
  Content-Transfer-Encoding:Content-ID:Content-Description;
- bh=7hjCe6790yJYG2knci/u7lshTqKfgMUWNj9c/qQQmOI=; b=msqZuJMeBAI1Ng4YKMnTEPn4me
- ZUo+C+FnoFV8z/5bZoOnp+CkdeyyLQV2+Ohs+D5B7OcVQhY4BJVc5puoZVPPEFoteqh/AsSe8PoND
- QfH9zFiPJv41TALoDbOZkP/NwW/W9zFeZiEs4t9U+IzXEuU1LXjvWqfFlu9eghIBRbiWzMQHTqVev
- V/LcMCU3NMCcYXJ96J+luawTeg9igB77ulhin/ZRPQt9Osh6dJmDGgxIcF7/5+foNRdc/AFkNzmSC
- fDZ3o5udhRXWu/5GqiIYdAUJlURi62LvWS/L2fhf3Jh0j3RjkA/XiXikszGS3ZXwUz+gbaQGjU/4w
- fCjpyQ0A==;
+ bh=PoknwIAy8Q9q+U6w+2a12vknwq+F35xgmvor8JHbCT0=; b=lhnHlNjmjExRd4kOidxPSUtHCF
+ lThr4z+W8p4z9I5Y0rKEDt2xxMBs6nqRsTPYUcwm01rqZGiL6BhwMqG70F9eJyhIh5NUvA1BGqqng
+ JVQ4sw5ouU8XKwWoMKDDo/2UQM4xLgLIsJobhS04QOf37hoyxdpTBlTWOa/xRlMM7SvDue9WSLdzw
+ dXizTRiFfG3ZU8vVDW6II2yjz1FclnXukf/xHjRSJz4pjnPXinchMsgdHyLWM8lZv6s0EYUqr4/kq
+ Uf8NR9mabxA6Qwpt1ElKsJdmFLdqvCWzrLZdJgwPFbYpSkA1aNI8jrMOE1cb4BVyBY4MLZo3/IEZb
+ 8wWXiC1Q==;
 Received: from hch by casper.infradead.org with local (Exim 4.94.2 #2 (Red Hat
- Linux)) id 1lyU9N-0050qE-2A; Wed, 30 Jun 2021 06:56:50 +0000
-Date: Wed, 30 Jun 2021 07:56:45 +0100
+ Linux)) id 1lyUDz-005199-Qi; Wed, 30 Jun 2021 07:01:38 +0000
+Date: Wed, 30 Jun 2021 08:01:31 +0100
 From: Christoph Hellwig <hch@infradead.org>
-To: "Tian, Kevin" <kevin.tian@intel.com>
+To: Jason Gunthorpe <jgg@nvidia.com>
 Subject: Re: [RFC] /dev/ioasid uAPI proposal
-Message-ID: <YNwVrZoR5k3RnWeL@infradead.org>
-References: <20210604122830.GK1002214@nvidia.com>
- <20210604092620.16aaf5db.alex.williamson@redhat.com>
- <815fd392-0870-f410-cbac-859070df1b83@redhat.com>
- <20210604155016.GR1002214@nvidia.com>
- <30e5c597-b31c-56de-c75e-950c91947d8f@redhat.com>
- <20210604160336.GA414156@nvidia.com>
- <2c62b5c7-582a-c710-0436-4ac5e8fd8b39@redhat.com>
- <20210604172207.GT1002214@nvidia.com>
- <20210604152918.57d0d369.alex.williamson@redhat.com>
- <MWHPR11MB1886E95C6646F7663DBA10DD8C389@MWHPR11MB1886.namprd11.prod.outlook.com>
+Message-ID: <YNwWy/j+diR7Y4Iv@infradead.org>
+References: <2d1ad075-bec6-bfb9-ce71-ed873795e973@redhat.com>
+ <20210607175926.GJ1002214@nvidia.com>
+ <fdb2f38c-da1f-9c12-af44-22df039fcfea@redhat.com>
+ <20210608131547.GE1002214@nvidia.com>
+ <89d30977-119c-49f3-3bf6-d3f7104e07d8@redhat.com>
+ <20210608124700.7b9aa5a6.alex.williamson@redhat.com>
+ <MWHPR11MB18861A89FE6620921E7A7CAC8C369@MWHPR11MB1886.namprd11.prod.outlook.com>
+ <20210609115759.GY1002214@nvidia.com>
+ <086ca28f-42e5-a432-8bef-ac47a0a6df45@redhat.com>
+ <20210609124742.GB1002214@nvidia.com>
 MIME-Version: 1.0
 Content-Disposition: inline
-In-Reply-To: <MWHPR11MB1886E95C6646F7663DBA10DD8C389@MWHPR11MB1886.namprd11.prod.outlook.com>
+In-Reply-To: <20210609124742.GB1002214@nvidia.com>
 X-SRS-Rewrite: SMTP reverse-path rewritten from <hch@infradead.org> by
  casper.infradead.org. See http://www.infradead.org/rpr.html
-Cc: Jean-Philippe Brucker <jean-philippe@linaro.org>, "Jiang,
- Dave" <dave.jiang@intel.com>, "Raj, Ashok" <ashok.raj@intel.com>,
- "kvm@vger.kernel.org" <kvm@vger.kernel.org>, Jonathan Corbet <corbet@lwn.net>,
- Robin Murphy <robin.murphy@arm.com>, Jason Wang <jasowang@redhat.com>,
- LKML <linux-kernel@vger.kernel.org>, Kirti Wankhede <kwankhede@nvidia.com>,
- Alex Williamson <alex.williamson@redhat.com>,
+Cc: Jean-Philippe Brucker <jean-philippe@linaro.org>, "Tian,
+ Kevin" <kevin.tian@intel.com>, "Jiang, Dave" <dave.jiang@intel.com>, "Raj,
+ Ashok" <ashok.raj@intel.com>, "kvm@vger.kernel.org" <kvm@vger.kernel.org>,
+ Jonathan Corbet <corbet@lwn.net>, Robin Murphy <robin.murphy@arm.com>,
+ Jason Wang <jasowang@redhat.com>, LKML <linux-kernel@vger.kernel.org>,
+ Kirti Wankhede <kwankhede@nvidia.com>,
  "iommu@lists.linux-foundation.org" <iommu@lists.linux-foundation.org>,
- Jason Gunthorpe <jgg@nvidia.com>, Paolo Bonzini <pbonzini@redhat.com>,
- David Woodhouse <dwmw2@infradead.org>,
+ Alex Williamson <alex.williamson@redhat.com>,
+ Paolo Bonzini <pbonzini@redhat.com>, David Woodhouse <dwmw2@infradead.org>,
  David Gibson <david@gibson.dropbear.id.au>
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
@@ -104,20 +104,13 @@ Content-Transfer-Encoding: 7bit
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-On Mon, Jun 07, 2021 at 03:25:32AM +0000, Tian, Kevin wrote:
-> 
-> Possibly just a naming thing, but I feel it's better to just talk about
-> no-snoop or non-coherent in the uAPI. Per Intel SDM wbinvd is a
-> privileged instruction. A process on the host has no privilege to 
-> execute it. Only when this process holds a VM, this instruction matters
-> as there are guest privilege levels. But having VFIO uAPI (which is
-> userspace oriented) to explicitly deal with a CPU instruction which
-> makes sense only in a virtualization context sounds a bit weird...
+On Wed, Jun 09, 2021 at 09:47:42AM -0300, Jason Gunthorpe wrote:
+> I can vaugely understand this rational for vfio, but not at all for
+> the platform's iommu driver, sorry.
 
-More importantly the Intel instructions here are super weird.
-Pretty much every other architecture just has plan old cache
-writeback/invalidate/writeback+invalidate instructions without all these
-weird implications.
+Agreed.  More importantly the dependency is not for the platform iommu
+driver but just for the core iommu code, which is always built in if
+enabled.
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
