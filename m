@@ -2,144 +2,77 @@ Return-Path: <SRS0=eogA=LY=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-15.1 required=3.0 tests=BAYES_00,DKIM_INVALID,
-	DKIM_SIGNED,HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_CR_TRAILER,INCLUDES_PATCH,
-	MAILING_LIST_MULTI,NICE_REPLY_A,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,
-	USER_AGENT_SANE_1 autolearn=ham autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-15.3 required=3.0 tests=BAYES_00,DKIM_INVALID,
+	DKIM_SIGNED,INCLUDES_CR_TRAILER,INCLUDES_PATCH,MAILING_LIST_MULTI,
+	SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_SANE_1 autolearn=ham
+	autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D80BBC11F65
-	for <iommu@archiver.kernel.org>; Wed, 30 Jun 2021 12:48:25 +0000 (UTC)
-Received: from smtp4.osuosl.org (smtp4.osuosl.org [140.211.166.137])
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 568C4C11F65
+	for <iommu@archiver.kernel.org>; Wed, 30 Jun 2021 12:59:51 +0000 (UTC)
+Received: from smtp1.osuosl.org (smtp1.osuosl.org [140.211.166.138])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 86D2B61414
-	for <iommu@archiver.kernel.org>; Wed, 30 Jun 2021 12:48:25 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 86D2B61414
-Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=samsung.com
+	by mail.kernel.org (Postfix) with ESMTPS id 0B02A6140B
+	for <iommu@archiver.kernel.org>; Wed, 30 Jun 2021 12:59:50 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 0B02A6140B
+Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=kernel.org
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by smtp4.osuosl.org (Postfix) with ESMTP id 49D50405EA;
-	Wed, 30 Jun 2021 12:48:25 +0000 (UTC)
+	by smtp1.osuosl.org (Postfix) with ESMTP id CB40183B4E;
+	Wed, 30 Jun 2021 12:59:50 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from smtp4.osuosl.org ([127.0.0.1])
-	by localhost (smtp4.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id zY78BECJF6hJ; Wed, 30 Jun 2021 12:48:24 +0000 (UTC)
-Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [IPv6:2605:bc80:3010:104::8cd3:938])
-	by smtp4.osuosl.org (Postfix) with ESMTPS id A77B5405DE;
-	Wed, 30 Jun 2021 12:48:23 +0000 (UTC)
+Received: from smtp1.osuosl.org ([127.0.0.1])
+	by localhost (smtp1.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+	with ESMTP id DolHiG3U-ajt; Wed, 30 Jun 2021 12:59:50 +0000 (UTC)
+Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
+	by smtp1.osuosl.org (Postfix) with ESMTPS id BE09F83B3A;
+	Wed, 30 Jun 2021 12:59:49 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 8326CC001A;
-	Wed, 30 Jun 2021 12:48:23 +0000 (UTC)
-Received: from smtp3.osuosl.org (smtp3.osuosl.org [IPv6:2605:bc80:3010::136])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 32A8EC000E
- for <iommu@lists.linux-foundation.org>; Wed, 30 Jun 2021 12:48:22 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 78ABDC001A;
+	Wed, 30 Jun 2021 12:59:49 +0000 (UTC)
+Received: from smtp1.osuosl.org (smtp1.osuosl.org [IPv6:2605:bc80:3010::138])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 681C6C000E
+ for <iommu@lists.linux-foundation.org>; Wed, 30 Jun 2021 12:59:48 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by smtp3.osuosl.org (Postfix) with ESMTP id 2195C60646
- for <iommu@lists.linux-foundation.org>; Wed, 30 Jun 2021 12:48:22 +0000 (UTC)
+ by smtp1.osuosl.org (Postfix) with ESMTP id 555CB83B42
+ for <iommu@lists.linux-foundation.org>; Wed, 30 Jun 2021 12:59:48 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Authentication-Results: smtp3.osuosl.org (amavisd-new);
- dkim=pass (1024-bit key) header.d=samsung.com
-Received: from smtp3.osuosl.org ([127.0.0.1])
- by localhost (smtp3.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id 2nk0RJIH_-Q6 for <iommu@lists.linux-foundation.org>;
- Wed, 30 Jun 2021 12:48:20 +0000 (UTC)
+Received: from smtp1.osuosl.org ([127.0.0.1])
+ by localhost (smtp1.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+ with ESMTP id MJ2aN86TpBsh for <iommu@lists.linux-foundation.org>;
+ Wed, 30 Jun 2021 12:59:47 +0000 (UTC)
 X-Greylist: domain auto-whitelisted by SQLgrey-1.8.0
-Received: from mailout1.w1.samsung.com (mailout1.w1.samsung.com
- [210.118.77.11])
- by smtp3.osuosl.org (Postfix) with ESMTPS id 8216B60633
- for <iommu@lists.linux-foundation.org>; Wed, 30 Jun 2021 12:48:20 +0000 (UTC)
-Received: from eucas1p2.samsung.com (unknown [182.198.249.207])
- by mailout1.w1.samsung.com (KnoxPortal) with ESMTP id
- 20210630124817euoutp01aef74f4a0fc596a806c868cd14e13334~NXQCWMH292958529585euoutp01Z
- for <iommu@lists.linux-foundation.org>; Wed, 30 Jun 2021 12:48:17 +0000 (GMT)
-DKIM-Filter: OpenDKIM Filter v2.11.0 mailout1.w1.samsung.com
- 20210630124817euoutp01aef74f4a0fc596a806c868cd14e13334~NXQCWMH292958529585euoutp01Z
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=samsung.com;
- s=mail20170921; t=1625057297;
- bh=LS326IHcmThfGZLvyS6l7wE9Us45WReO7ABvmSg1Q7Q=;
- h=Subject:To:Cc:From:Date:In-Reply-To:References:From;
- b=fKSpEFxXqFPFjjIcdGVx5OxCLVq3sPOhm4k88FLF4DOR8Mw7mxZYmvackYGZrne9o
- VtuQOjqIdn5QuQpWUj16VuwDUbyRbgn4hUpyLXfLWWYwg9eGWlTWlWKBQkBQEDUdZq
- CGA56TLMAaDQU0Zay5LhGy05WrP0rEPiEKijfwVo=
-Received: from eusmges2new.samsung.com (unknown [203.254.199.244]) by
- eucas1p2.samsung.com (KnoxPortal) with ESMTP id
- 20210630124817eucas1p21efef28e445b9f796bf4b257d8b1b18b~NXQB_wcWV2866528665eucas1p2L;
- Wed, 30 Jun 2021 12:48:17 +0000 (GMT)
-Received: from eucas1p1.samsung.com ( [182.198.249.206]) by
- eusmges2new.samsung.com (EUCPMTA) with SMTP id 89.FE.42068.1186CD06; Wed, 30
- Jun 2021 13:48:17 +0100 (BST)
-Received: from eusmtrp2.samsung.com (unknown [182.198.249.139]) by
- eucas1p2.samsung.com (KnoxPortal) with ESMTPA id
- 20210630124816eucas1p27563f0a456c0196e20937619aa2f8d26~NXQBcUOo11121111211eucas1p21;
- Wed, 30 Jun 2021 12:48:16 +0000 (GMT)
-Received: from eusmgms2.samsung.com (unknown [182.198.249.180]) by
- eusmtrp2.samsung.com (KnoxPortal) with ESMTP id
- 20210630124816eusmtrp2e5b941e017519c5ce3446209c7ac01c6~NXQBbJT2-0449304493eusmtrp2G;
- Wed, 30 Jun 2021 12:48:16 +0000 (GMT)
-X-AuditID: cbfec7f4-c89ff7000002a454-a9-60dc6811b3c7
-Received: from eusmtip1.samsung.com ( [203.254.199.221]) by
- eusmgms2.samsung.com (EUCPMTA) with SMTP id B3.C6.20981.0186CD06; Wed, 30
- Jun 2021 13:48:16 +0100 (BST)
-Received: from [106.210.134.192] (unknown [106.210.134.192]) by
- eusmtip1.samsung.com (KnoxPortal) with ESMTPA id
- 20210630124815eusmtip166c7fa03f59754ba0c91ac0064408db1~NXQAj9ie52302923029eusmtip1B;
- Wed, 30 Jun 2021 12:48:15 +0000 (GMT)
+Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
+ by smtp1.osuosl.org (Postfix) with ESMTPS id 4238083B3A
+ for <iommu@lists.linux-foundation.org>; Wed, 30 Jun 2021 12:59:47 +0000 (UTC)
+Received: by mail.kernel.org (Postfix) with ESMTPSA id 4B50961364;
+ Wed, 30 Jun 2021 12:59:44 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+ s=k20201202; t=1625057986;
+ bh=4UI5RKPIij7TUgl1lgCZCSJpLQ2Uyt70B7pj+JIfU14=;
+ h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+ b=dU0v1zwuPzsz8RuFIlMI7GqlG64x4T7MGB7PSTKUoHcWcPgpIRNzgVIVu5MLB4Uvs
+ 1A8/Wmc++QCeqkzSJOHkRFhPZhAjb9R0zKhRNB1Ob4lQ+dTuYzUSs7/0Enx6Myzgvc
+ FNyFQ010U0PvFlOFUytjoYE+NyOaFbCdhJX8bpRLGGCEqb8PrONHUSNI9xUgBbkeNl
+ hlrjZnBcz7csJ9FIWy5d5CD6EJfN6S87J9X5kUs3/6Nr1sn7F/OjVbz7p0CmwH65sj
+ QPkqz2gnczZWWQm7cpqLA7HOAwZzVM7vXNyj9bME416DpUTo763YA/kQZ5QsMngLdL
+ agMk7aRtUe27w==
+Date: Wed, 30 Jun 2021 13:59:40 +0100
+From: Will Deacon <will@kernel.org>
+To: Marek Szyprowski <m.szyprowski@samsung.com>
 Subject: Re: [PATCH] iommu/arm: Cleanup resources in case of probe error path
-To: Amey Narkhede <ameynarkhede03@gmail.com>, Rob Clark <robdclark@gmail.com>
-From: Marek Szyprowski <m.szyprowski@samsung.com>
-Message-ID: <26f6a765-37c8-d63a-a779-384f095d5770@samsung.com>
-Date: Wed, 30 Jun 2021 14:48:15 +0200
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:78.0)
- Gecko/20100101 Thunderbird/78.11.0
-MIME-Version: 1.0
-In-Reply-To: <20210608164559.204023-1-ameynarkhede03@gmail.com>
-Content-Language: en-US
-X-Brightmail-Tracker: H4sIAAAAAAAAA+NgFnrNKsWRmVeSWpSXmKPExsWy7djPc7qCGXcSDM5O4LK4tH0Zq8WC/dYW
- DasvsFqsWniNzaJl1iIWi87ZG9gtNj2+xmoxcf9ZdovLu+awWTxf+IPZ4uCHJ6wWS6YeZLOY
- fO0bq0Xf3iCLljumFjeXbmB3EPB4cnAek8eaeWsYPS739TJ57Jx1l93j8dyN7B4tR96yemxa
- 1cnmcefaHjaPzUvqPSbfWM7o0dv8js3j8ya5AJ4oLpuU1JzMstQifbsErow//88wFkw3q7jZ
- NYW1gXG3bhcjB4eEgInEsx7ZLkYuDiGBFYwSx++eYYFwvjBKTN03hw3C+cwocfJOP1CGE6xj
- esM+qMRyRonbt84zQzgfGSX2XOkCqxIW8Jfo/PabEcQWAbK/vZjMCFLELLCEReLNvPdgCTYB
- Q4mut11sIDavgJ3EudNd7CA2i4CqREvnf1YQW1QgWeL9vBmsEDWCEidnPgFbwClgL7Hu/Euw
- OLOAvETz1tnMELa4xK0n85lAlkkI7OeUWLL2BhvE3S4SBy88ZYewhSVeHd8CZctI/N8J09DM
- KPHw3Fp2CKeHUeJy0wxGiCpriTvnfrGBwoxZQFNi/S59iLCjxJL+ucyQoOSTuPFWEOIIPolJ
- 26ZDhXklOtqEIKrVJGYdXwe39uCFS8wTGJVmIXltFpJ3ZiF5ZxbC3gWMLKsYxVNLi3PTU4uN
- 8lLL9YoTc4tL89L1kvNzNzEC0+Ppf8e/7GBc/uqj3iFGJg7GQ4wSHMxKIrxRO28nCPGmJFZW
- pRblxxeV5qQWH2KU5mBREudN2rImXkggPbEkNTs1tSC1CCbLxMEp1cC0/oaEkuesmdwNdcdm
- TVp5j0ue+cNbxwmFDz663Tg5fe3S5qi/alvVvHqXd3xyPSI+p4B7mrKVSNjT+01ajlO2Bhfv
- 5X18qbJvizE75/zC3ocqOxa9cTjbvEno3iYGtsmyceHORmu82LKniF783h436Z2Arcmkd1rb
- jCXnl0/zfuQhY8X7ZNWqnLwPvt8cip4E+Uv/uG93bva18/4hcyNWffnFeCj138Q/UtpK9XE8
- dQzxEU1cWV2rX/t/E9jyxanDMoPlXM9ZX6P+KfUPlHfdFJG+ctij9abc/nves74zPmg6ruPB
- WT3TykH3ftjCi6Emupq2DytrNkosPFg154iTaw7THBvpSbmOrw/IpqcqsRRnJBpqMRcVJwIA
- pxdzOP4DAAA=
-X-Brightmail-Tracker: H4sIAAAAAAAAA+NgFvrDIsWRmVeSWpSXmKPExsVy+t/xu7oCGXcSDPqXKllc2r6M1WLBfmuL
- htUXWC1WLbzGZtEyaxGLRefsDewWmx5fY7WYuP8su8XlXXPYLJ4v/MFscfDDE1aLJVMPsllM
- vvaN1aJvb5BFyx1Ti5tLN7A7CHg8OTiPyWPNvDWMHpf7epk8ds66y+7xeO5Gdo+WI29ZPTat
- 6mTzuHNtD5vH5iX1HpNvLGf06G1+x+bxeZNcAE+Unk1RfmlJqkJGfnGJrVK0oYWRnqGlhZ6R
- iaWeobF5rJWRqZK+nU1Kak5mWWqRvl2CXsaf/2cYC6abVdzsmsLawLhbt4uRk0NCwERiesM+
- NhBbSGApo8SqjYoQcRmJk9MaWCFsYYk/17qAariAat4zSjw7swgsISzgK7HwyD5GEFsEyL55
- +Q8rSBGzwDIWib1tM9khptpJLFn2CcxmEzCU6HrbBbaNFyh+7nQXWJxFQFWipfM/2FBRgWSJ
- n+vboWoEJU7OfMICYnMK2EusO/8SrIZZwExi3uaHzBC2vETz1tlQtrjErSfzmSYwCs1C0j4L
- ScssJC2zkLQsYGRZxSiSWlqcm55bbKRXnJhbXJqXrpecn7uJEZgMth37uWUH48pXH/UOMTJx
- MB5ilOBgVhLhjdp5O0GINyWxsiq1KD++qDQntfgQoynQPxOZpUST84HpKK8k3tDMwNTQxMzS
- wNTSzFhJnNfkyJp4IYH0xJLU7NTUgtQimD4mDk6pBib29s/W86Yqrz+49uZsa5md7y/H5sif
- mTNPws3IvVNEcV1yQ4Qst0Bb19y8tX5/y69odUzfx1IffL1415HaF+dKd02buZsl77eqSaC+
- Y12q9Ynir9Nem/0zmud/ndHXw2919HaHE+nOPAkn/twRUFeR4dlpsDGpznyddkLTarujXvPO
- Hp+1vyo8gHV/rOeNE04t54+qJO33mr3j156+l2esHI5vsXaNnFzsk6t31fSkkN7mejMdRuYF
- Ea2r74a03zt454jHrseaksmGh5PstqUrG39x4gvljFBYfJ47KSpQeuKvgN0ZixT/sO58obbf
- 7ulKBwuWTHZJn8MCTY0+X3+w6MrXC3+8qbTGQvFpiBJLcUaioRZzUXEiAG5LloOPAwAA
-X-CMS-MailID: 20210630124816eucas1p27563f0a456c0196e20937619aa2f8d26
-X-Msg-Generator: CA
-X-RootMTR: 20210630124816eucas1p27563f0a456c0196e20937619aa2f8d26
-X-EPHeader: CA
-CMS-TYPE: 201P
-X-CMS-RootMailID: 20210630124816eucas1p27563f0a456c0196e20937619aa2f8d26
+Message-ID: <20210630125940.GA8515@willie-the-truck>
 References: <20210608164559.204023-1-ameynarkhede03@gmail.com>
  <CGME20210630124816eucas1p27563f0a456c0196e20937619aa2f8d26@eucas1p2.samsung.com>
+ <26f6a765-37c8-d63a-a779-384f095d5770@samsung.com>
+MIME-Version: 1.0
+Content-Disposition: inline
+In-Reply-To: <26f6a765-37c8-d63a-a779-384f095d5770@samsung.com>
+User-Agent: Mutt/1.10.1 (2018-07-13)
 Cc: Jean-Philippe Brucker <jean-philippe@linaro.org>,
- Will Deacon <will@kernel.org>, linux-kernel@vger.kernel.org,
- Jon Hunter <jonathanh@nvidia.com>, iommu@lists.linux-foundation.org,
- linux-arm-msm@vger.kernel.org, Robin Murphy <robin.murphy@arm.com>,
+ linux-arm-msm@vger.kernel.org, iommu@lists.linux-foundation.org,
+ linux-kernel@vger.kernel.org, Amey Narkhede <ameynarkhede03@gmail.com>,
+ Jon Hunter <jonathanh@nvidia.com>, Robin Murphy <robin.murphy@arm.com>,
  linux-arm-kernel@lists.infradead.org
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
@@ -153,130 +86,128 @@ List-Post: <mailto:iommu@lists.linux-foundation.org>
 List-Help: <mailto:iommu-request@lists.linux-foundation.org?subject=help>
 List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
  <mailto:iommu-request@lists.linux-foundation.org?subject=subscribe>
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
+Content-Type: text/plain; charset="iso-8859-1"
+Content-Transfer-Encoding: quoted-printable
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-SGksCgpPbiAwOC4wNi4yMDIxIDE4OjQ1LCBBbWV5IE5hcmtoZWRlIHdyb3RlOgo+IElmIGRldmlj
-ZSByZWdpc3RyYXRpb24gZmFpbHMsIHJlbW92ZSBzeXNmcyBhdHRyaWJ1dGUKPiBhbmQgaWYgc2V0
-dGluZyBidXMgY2FsbGJhY2tzIGZhaWxzLCB1bnJlZ2lzdGVyIHRoZSBkZXZpY2UKPiBhbmQgY2xl
-YW51cCB0aGUgc3lzZnMgYXR0cmlidXRlLgo+Cj4gU2lnbmVkLW9mZi1ieTogQW1leSBOYXJraGVk
-ZSA8YW1leW5hcmtoZWRlMDNAZ21haWwuY29tPgoKVGhpcyBwYXRjaCBsYW5kZWQgaW4gbGludXgt
-bmV4dCBzb21lIHRpbWUgYWdvIGFzIGNvbW1pdCAyNDljOWRjNmFhMGQgCigiaW9tbXUvYXJtOiBD
-bGVhbnVwIHJlc291cmNlcyBpbiBjYXNlIG9mIHByb2JlIGVycm9yIHBhdGgiKS4gQWZ0ZXIgCmJp
-c2VjdGluZyBhbmQgc29tZSBtYW51YWwgc2VhcmNoaW5nIEkgZmluYWxseSBmb3VuZCB0aGF0IGl0
-IGlzIApyZXNwb25zaWJsZSBmb3IgYnJlYWtpbmcgczJpZGxlIG9uIERyYWdvbkJvYXJkIDQxMGMu
-IEhlcmUgaXMgdGhlIGxvZyAKKGNhcHR1cmVkIHdpdGggbm9fY29uc29sZV9zdXNwZW5kKToKCiMg
-dGltZSBydGN3YWtlIC1zMTAgLW1tZW0KcnRjd2FrZTogd2FrZXVwIGZyb20gIm1lbSIgdXNpbmcg
-L2Rldi9ydGMwIGF0IFRodSBKYW7CoCAxIDAwOjAyOjEzIDE5NzAKUE06IHN1c3BlbmQgZW50cnkg
-KHMyaWRsZSkKRmlsZXN5c3RlbXMgc3luYzogMC4wMDIgc2Vjb25kcwpGcmVlemluZyB1c2VyIHNw
-YWNlIHByb2Nlc3NlcyAuLi4gKGVsYXBzZWQgMC4wMDYgc2Vjb25kcykgZG9uZS4KT09NIGtpbGxl
-ciBkaXNhYmxlZC4KRnJlZXppbmcgcmVtYWluaW5nIGZyZWV6YWJsZSB0YXNrcyAuLi4gKGVsYXBz
-ZWQgMC4wMDQgc2Vjb25kcykgZG9uZS4KVW5hYmxlIHRvIGhhbmRsZSBrZXJuZWwgTlVMTCBwb2lu
-dGVyIGRlcmVmZXJlbmNlIGF0IHZpcnR1YWwgYWRkcmVzcyAKMDAwMDAwMDAwMDAwMDA3MApNZW0g
-YWJvcnQgaW5mbzoKIMKgIEVTUiA9IDB4OTYwMDAwMDYKIMKgIEVDID0gMHgyNTogREFCVCAoY3Vy
-cmVudCBFTCksIElMID0gMzIgYml0cwogwqAgU0VUID0gMCwgRm5WID0gMAogwqAgRUEgPSAwLCBT
-MVBUVyA9IDAKIMKgIEZTQyA9IDB4MDY6IGxldmVsIDIgdHJhbnNsYXRpb24gZmF1bHQKRGF0YSBh
-Ym9ydCBpbmZvOgogwqAgSVNWID0gMCwgSVNTID0gMHgwMDAwMDAwNgogwqAgQ00gPSAwLCBXblIg
-PSAwCnVzZXIgcGd0YWJsZTogNGsgcGFnZXMsIDQ4LWJpdCBWQXMsIHBnZHA9MDAwMDAwMDA4YWQw
-ODAwMApbMDAwMDAwMDAwMDAwMDA3MF0gcGdkPTA4MDAwMDAwODVjM2MwMDMsIHA0ZD0wODAwMDAw
-MDg1YzNjMDAzLCAKcHVkPTA4MDAwMDAwODhkY2YwMDMsIHBtZD0wMDAwMDAwMDAwMDAwMDAwCklu
-dGVybmFsIGVycm9yOiBPb3BzOiA5NjAwMDAwNiBbIzFdIFBSRUVNUFQgU01QCk1vZHVsZXMgbGlu
-a2VkIGluOiBibHVldG9vdGggZWNkaF9nZW5lcmljIGVjYyByZmtpbGwgaXB2NiBheDg4Nzk2YiAK
-dmVudXNfZW5jIHZlbnVzX2RlYyB2aWRlb2J1ZjJfZG1hX2NvbnRpZyBhc2l4IGNyY3QxMGRpZl9j
-ZSBhZHY3NTExIApzbmRfc29jX21zbTg5MTZfYW5hbG9nIHFjb21fc3BtaV90ZW1wX2FsYXJtIHJ0
-Y19wbTh4eHggcWNvbV9wb24gCnFjb21fY2Ftc3MgcWNvbV9zcG1pX3ZhZGMgdmlkZW9idWYyX2Rt
-YV9zZyBxY29tX3ZhZGNfY29tbW9uIG1zbSAKdmVudXNfY29yZSB2NGwyX2Z3bm9kZSB2NGwyX2Fz
-eW5jIHNuZF9zb2NfbXNtODkxNl9kaWdpdGFsIAp2aWRlb2J1ZjJfbWVtb3BzIHNuZF9zb2NfbHBh
-c3NfYXBxODAxNiBzbmRfc29jX2xwYXNzX2NwdSB2NGwyX21lbTJtZW0gCnNuZF9zb2NfbHBhc3Nf
-cGxhdGZvcm0gc25kX3NvY19hcHE4MDE2X3NiYyB2aWRlb2J1ZjJfdjRsMiAKc25kX3NvY19xY29t
-X2NvbW1vbiBxY29tX3JuZyB2aWRlb2J1ZjJfY29tbW9uIGkyY19xY29tX2NjaSBxbm9jX21zbTg5
-MTYgCnZpZGVvZGV2IG1jIGljY19zbWRfcnBtIG1kdF9sb2FkZXIgc29jaW5mbyBkaXNwbGF5X2Nv
-bm5lY3RvciBybXRmc19tZW0KQ1BVOiAxIFBJRDogMTUyMiBDb21tOiBydGN3YWtlIE5vdCB0YWlu
-dGVkIDUuMTMuMC1uZXh0LTIwMjEwNjI5ICMzNTkyCkhhcmR3YXJlIG5hbWU6IFF1YWxjb21tIFRl
-Y2hub2xvZ2llcywgSW5jLiBBUFEgODAxNiBTQkMgKERUKQpwc3RhdGU6IDgwMDAwMDA1IChOemN2
-IGRhaWYgLVBBTiAtVUFPIC1UQ08gQlRZUEU9LS0pCnBjIDogbXNtX3J1bnRpbWVfc3VzcGVuZCsw
-eDFjLzB4NjAgW21zbV0KbHIgOiBtc21fcG1fc3VzcGVuZCsweDE4LzB4MzggW21zbV0KLi4uCkNh
-bGwgdHJhY2U6CiDCoG1zbV9ydW50aW1lX3N1c3BlbmQrMHgxYy8weDYwIFttc21dCiDCoG1zbV9w
-bV9zdXNwZW5kKzB4MTgvMHgzOCBbbXNtXQogwqBkcG1fcnVuX2NhbGxiYWNrKzB4ODQvMHgzNzgK
-IMKgX19kZXZpY2Vfc3VzcGVuZCsweDExOC8weDY4MAogwqBkcG1fc3VzcGVuZCsweDE1MC8weDRm
-MAogwqBkcG1fc3VzcGVuZF9zdGFydCsweDk4LzB4YTAKIMKgc3VzcGVuZF9kZXZpY2VzX2FuZF9l
-bnRlcisweGZjLzB4YWYwCiDCoHBtX3N1c3BlbmQrMHgyYjAvMHgzZDAKIMKgc3RhdGVfc3RvcmUr
-MHg4NC8weDEwOAogwqBrb2JqX2F0dHJfc3RvcmUrMHgxNC8weDI4CiDCoHN5c2ZzX2tmX3dyaXRl
-KzB4NjAvMHg3MAogwqBrZXJuZnNfZm9wX3dyaXRlX2l0ZXIrMHgxMjQvMHgxYTgKIMKgbmV3X3N5
-bmNfd3JpdGUrMHhlOC8weDFiMAogwqB2ZnNfd3JpdGUrMHgxZTgvMHg0NTAKIMKga3N5c193cml0
-ZSsweDY0LzB4ZjAKIMKgX19hcm02NF9zeXNfd3JpdGUrMHgxNC8weDIwCiDCoGludm9rZV9zeXNj
-YWxsKzB4NDAvMHhmOAogwqBlbDBfc3ZjX2NvbW1vbisweDYwLzB4MTAwCiDCoGRvX2VsMF9zdmNf
-Y29tcGF0KzB4MWMvMHg0OAogwqBlbDBfc3ZjX2NvbXBhdCsweDIwLzB4MzAKIMKgZWwwdF8zMl9z
-eW5jX2hhbmRsZXIrMHhlYy8weDE0MAogwqBlbDB0XzMyX3N5bmMrMHgxNjgvMHgxNmMKQ29kZTog
-OTEwMDAzZmQgZjkwMDBiZjMgZjk0MDNjMDIgNTI4MDAwNDAgKGY5NDAzODQyKQotLS1bIGVuZCB0
-cmFjZSAyMTViNzJmY2Q3MDI2OTQ3IF0tLS0KClJldmVydGluZyBpdCBvbiB0b3Agb2YgbGludXgt
-bmV4dCBmaXhlcyBzMmlkbGUgb2VwcmF0aW9uIG9uIHRoYXQgYm9hcmQuCgo+IC0tLQo+ICAgZHJp
-dmVycy9pb21tdS9hcm0vYXJtLXNtbXUtdjMvYXJtLXNtbXUtdjMuYyB8IDE0ICsrKysrKysrKysr
-Ky0tCj4gICBkcml2ZXJzL2lvbW11L2FybS9hcm0tc21tdS9hcm0tc21tdS5jICAgICAgIHwgMTUg
-KysrKysrKysrKysrLS0tCj4gICBkcml2ZXJzL2lvbW11L2FybS9hcm0tc21tdS9xY29tX2lvbW11
-LmMgICAgIHwgMTMgKysrKysrKysrKystLQo+ICAgMyBmaWxlcyBjaGFuZ2VkLCAzNSBpbnNlcnRp
-b25zKCspLCA3IGRlbGV0aW9ucygtKQo+Cj4gZGlmZiAtLWdpdCBhL2RyaXZlcnMvaW9tbXUvYXJt
-L2FybS1zbW11LXYzL2FybS1zbW11LXYzLmMgYi9kcml2ZXJzL2lvbW11L2FybS9hcm0tc21tdS12
-My9hcm0tc21tdS12My5jCj4gaW5kZXggNTRiMmYyN2I4MWQ0Li5kZTI0OTk3NTQwMjUgMTAwNjQ0
-Cj4gLS0tIGEvZHJpdmVycy9pb21tdS9hcm0vYXJtLXNtbXUtdjMvYXJtLXNtbXUtdjMuYwo+ICsr
-KyBiL2RyaXZlcnMvaW9tbXUvYXJtL2FybS1zbW11LXYzL2FybS1zbW11LXYzLmMKPiBAQCAtMzY2
-OSwxMCArMzY2OSwyMCBAQCBzdGF0aWMgaW50IGFybV9zbW11X2RldmljZV9wcm9iZShzdHJ1Y3Qg
-cGxhdGZvcm1fZGV2aWNlICpwZGV2KQo+ICAgCXJldCA9IGlvbW11X2RldmljZV9yZWdpc3Rlcigm
-c21tdS0+aW9tbXUsICZhcm1fc21tdV9vcHMsIGRldik7Cj4gICAJaWYgKHJldCkgewo+ICAgCQlk
-ZXZfZXJyKGRldiwgIkZhaWxlZCB0byByZWdpc3RlciBpb21tdVxuIik7Cj4gLQkJcmV0dXJuIHJl
-dDsKPiArCQlnb3RvIGVycl9zeXNmc19yZW1vdmU7Cj4gICAJfQo+Cj4gLQlyZXR1cm4gYXJtX3Nt
-bXVfc2V0X2J1c19vcHMoJmFybV9zbW11X29wcyk7Cj4gKwlyZXQgPSBhcm1fc21tdV9zZXRfYnVz
-X29wcygmYXJtX3NtbXVfb3BzKTsKPiArCWlmIChyZXQpCj4gKwkJZ290byBlcnJfdW5yZWdpc3Rl
-cl9kZXZpY2U7Cj4gKwo+ICsJcmV0dXJuIDA7Cj4gKwo+ICtlcnJfdW5yZWdpc3Rlcl9kZXZpY2U6
-Cj4gKwlpb21tdV9kZXZpY2VfdW5yZWdpc3Rlcigmc21tdS0+aW9tbXUpOwo+ICtlcnJfc3lzZnNf
-cmVtb3ZlOgo+ICsJaW9tbXVfZGV2aWNlX3N5c2ZzX3JlbW92ZSgmc21tdS0+aW9tbXUpOwo+ICsJ
-cmV0dXJuIHJldDsKPiAgIH0KPgo+ICAgc3RhdGljIGludCBhcm1fc21tdV9kZXZpY2VfcmVtb3Zl
-KHN0cnVjdCBwbGF0Zm9ybV9kZXZpY2UgKnBkZXYpCj4gZGlmZiAtLWdpdCBhL2RyaXZlcnMvaW9t
-bXUvYXJtL2FybS1zbW11L2FybS1zbW11LmMgYi9kcml2ZXJzL2lvbW11L2FybS9hcm0tc21tdS9h
-cm0tc21tdS5jCj4gaW5kZXggNmY3MmM0ZDIwOGNhLi44OGEzMDIzNjc2Y2UgMTAwNjQ0Cj4gLS0t
-IGEvZHJpdmVycy9pb21tdS9hcm0vYXJtLXNtbXUvYXJtLXNtbXUuYwo+ICsrKyBiL2RyaXZlcnMv
-aW9tbXUvYXJtL2FybS1zbW11L2FybS1zbW11LmMKPiBAQCAtMjE2NCw3ICsyMTY0LDcgQEAgc3Rh
-dGljIGludCBhcm1fc21tdV9kZXZpY2VfcHJvYmUoc3RydWN0IHBsYXRmb3JtX2RldmljZSAqcGRl
-dikKPiAgIAllcnIgPSBpb21tdV9kZXZpY2VfcmVnaXN0ZXIoJnNtbXUtPmlvbW11LCAmYXJtX3Nt
-bXVfb3BzLCBkZXYpOwo+ICAgCWlmIChlcnIpIHsKPiAgIAkJZGV2X2VycihkZXYsICJGYWlsZWQg
-dG8gcmVnaXN0ZXIgaW9tbXVcbiIpOwo+IC0JCXJldHVybiBlcnI7Cj4gKwkJZ290byBlcnJfc3lz
-ZnNfcmVtb3ZlOwo+ICAgCX0KPgo+ICAgCXBsYXRmb3JtX3NldF9kcnZkYXRhKHBkZXYsIHNtbXUp
-Owo+IEBAIC0yMTg3LDEwICsyMTg3LDE5IEBAIHN0YXRpYyBpbnQgYXJtX3NtbXVfZGV2aWNlX3By
-b2JlKHN0cnVjdCBwbGF0Zm9ybV9kZXZpY2UgKnBkZXYpCj4gICAJICogYW55IGRldmljZSB3aGlj
-aCBtaWdodCBuZWVkIGl0LCBzbyB3ZSB3YW50IHRoZSBidXMgb3BzIGluIHBsYWNlCj4gICAJICog
-cmVhZHkgdG8gaGFuZGxlIGRlZmF1bHQgZG9tYWluIHNldHVwIGFzIHNvb24gYXMgYW55IFNNTVUg
-ZXhpc3RzLgo+ICAgCSAqLwo+IC0JaWYgKCF1c2luZ19sZWdhY3lfYmluZGluZykKPiAtCQlyZXR1
-cm4gYXJtX3NtbXVfYnVzX2luaXQoJmFybV9zbW11X29wcyk7Cj4gKwlpZiAoIXVzaW5nX2xlZ2Fj
-eV9iaW5kaW5nKSB7Cj4gKwkJZXJyID0gYXJtX3NtbXVfYnVzX2luaXQoJmFybV9zbW11X29wcyk7
-Cj4gKwkJaWYgKGVycikKPiArCQkJZ290byBlcnJfdW5yZWdpc3Rlcl9kZXZpY2U7Cj4gKwl9Cj4K
-PiAgIAlyZXR1cm4gMDsKPiArCj4gK2Vycl91bnJlZ2lzdGVyX2RldmljZToKPiArCWlvbW11X2Rl
-dmljZV91bnJlZ2lzdGVyKCZzbW11LT5pb21tdSk7Cj4gK2Vycl9zeXNmc19yZW1vdmU6Cj4gKwlp
-b21tdV9kZXZpY2Vfc3lzZnNfcmVtb3ZlKCZzbW11LT5pb21tdSk7Cj4gKwlyZXR1cm4gZXJyOwo+
-ICAgfQo+Cj4gICBzdGF0aWMgaW50IGFybV9zbW11X2RldmljZV9yZW1vdmUoc3RydWN0IHBsYXRm
-b3JtX2RldmljZSAqcGRldikKPiBkaWZmIC0tZ2l0IGEvZHJpdmVycy9pb21tdS9hcm0vYXJtLXNt
-bXUvcWNvbV9pb21tdS5jIGIvZHJpdmVycy9pb21tdS9hcm0vYXJtLXNtbXUvcWNvbV9pb21tdS5j
-Cj4gaW5kZXggNDI5NGFiZTM4OWIyLi5iNzg1ZDlmYjc2MDIgMTAwNjQ0Cj4gLS0tIGEvZHJpdmVy
-cy9pb21tdS9hcm0vYXJtLXNtbXUvcWNvbV9pb21tdS5jCj4gKysrIGIvZHJpdmVycy9pb21tdS9h
-cm0vYXJtLXNtbXUvcWNvbV9pb21tdS5jCj4gQEAgLTg1MCwxMCArODUwLDEyIEBAIHN0YXRpYyBp
-bnQgcWNvbV9pb21tdV9kZXZpY2VfcHJvYmUoc3RydWN0IHBsYXRmb3JtX2RldmljZSAqcGRldikK
-PiAgIAlyZXQgPSBpb21tdV9kZXZpY2VfcmVnaXN0ZXIoJnFjb21faW9tbXUtPmlvbW11LCAmcWNv
-bV9pb21tdV9vcHMsIGRldik7Cj4gICAJaWYgKHJldCkgewo+ICAgCQlkZXZfZXJyKGRldiwgIkZh
-aWxlZCB0byByZWdpc3RlciBpb21tdVxuIik7Cj4gLQkJcmV0dXJuIHJldDsKPiArCQlnb3RvIGVy
-cl9zeXNmc19yZW1vdmU7Cj4gICAJfQo+Cj4gLQlidXNfc2V0X2lvbW11KCZwbGF0Zm9ybV9idXNf
-dHlwZSwgJnFjb21faW9tbXVfb3BzKTsKPiArCXJldCA9IGJ1c19zZXRfaW9tbXUoJnBsYXRmb3Jt
-X2J1c190eXBlLCAmcWNvbV9pb21tdV9vcHMpOwo+ICsJaWYgKHJldCkKPiArCQlnb3RvIGVycl91
-bnJlZ2lzdGVyX2RldmljZTsKPgo+ICAgCWlmIChxY29tX2lvbW11LT5sb2NhbF9iYXNlKSB7Cj4g
-ICAJCXBtX3J1bnRpbWVfZ2V0X3N5bmMoZGV2KTsKPiBAQCAtODYyLDYgKzg2NCwxMyBAQCBzdGF0
-aWMgaW50IHFjb21faW9tbXVfZGV2aWNlX3Byb2JlKHN0cnVjdCBwbGF0Zm9ybV9kZXZpY2UgKnBk
-ZXYpCj4gICAJfQo+Cj4gICAJcmV0dXJuIDA7Cj4gKwo+ICtlcnJfdW5yZWdpc3Rlcl9kZXZpY2U6
-Cj4gKwlpb21tdV9kZXZpY2VfdW5yZWdpc3RlcigmcWNvbV9pb21tdS0+aW9tbXUpOwo+ICsKPiAr
-ZXJyX3N5c2ZzX3JlbW92ZToKPiArCWlvbW11X2RldmljZV9zeXNmc19yZW1vdmUoJnFjb21faW9t
-bXUtPmlvbW11KTsKPiArCXJldHVybiByZXQ7Cj4gICB9Cj4KPiAgIHN0YXRpYyBpbnQgcWNvbV9p
-b21tdV9kZXZpY2VfcmVtb3ZlKHN0cnVjdCBwbGF0Zm9ybV9kZXZpY2UgKnBkZXYpCj4gLS0KPiAy
-LjMxLjEKPgpCZXN0IHJlZ2FyZHMKLS0gCk1hcmVrIFN6eXByb3dza2ksIFBoRApTYW1zdW5nIFIm
-RCBJbnN0aXR1dGUgUG9sYW5kCgpfX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19f
-X19fX19fX19fXwppb21tdSBtYWlsaW5nIGxpc3QKaW9tbXVAbGlzdHMubGludXgtZm91bmRhdGlv
-bi5vcmcKaHR0cHM6Ly9saXN0cy5saW51eGZvdW5kYXRpb24ub3JnL21haWxtYW4vbGlzdGluZm8v
-aW9tbXU=
+On Wed, Jun 30, 2021 at 02:48:15PM +0200, Marek Szyprowski wrote:
+> On 08.06.2021 18:45, Amey Narkhede wrote:
+> > If device registration fails, remove sysfs attribute
+> > and if setting bus callbacks fails, unregister the device
+> > and cleanup the sysfs attribute.
+> >
+> > Signed-off-by: Amey Narkhede <ameynarkhede03@gmail.com>
+> =
+
+> This patch landed in linux-next some time ago as commit 249c9dc6aa0d =
+
+> ("iommu/arm: Cleanup resources in case of probe error path"). After =
+
+> bisecting and some manual searching I finally found that it is =
+
+> responsible for breaking s2idle on DragonBoard 410c. Here is the log =
+
+> (captured with no_console_suspend):
+> =
+
+> # time rtcwake -s10 -mmem
+> rtcwake: wakeup from "mem" using /dev/rtc0 at Thu Jan=A0 1 00:02:13 1970
+> PM: suspend entry (s2idle)
+> Filesystems sync: 0.002 seconds
+> Freezing user space processes ... (elapsed 0.006 seconds) done.
+> OOM killer disabled.
+> Freezing remaining freezable tasks ... (elapsed 0.004 seconds) done.
+> Unable to handle kernel NULL pointer dereference at virtual address =
+
+> 0000000000000070
+> Mem abort info:
+>  =A0 ESR =3D 0x96000006
+>  =A0 EC =3D 0x25: DABT (current EL), IL =3D 32 bits
+>  =A0 SET =3D 0, FnV =3D 0
+>  =A0 EA =3D 0, S1PTW =3D 0
+>  =A0 FSC =3D 0x06: level 2 translation fault
+> Data abort info:
+>  =A0 ISV =3D 0, ISS =3D 0x00000006
+>  =A0 CM =3D 0, WnR =3D 0
+> user pgtable: 4k pages, 48-bit VAs, pgdp=3D000000008ad08000
+> [0000000000000070] pgd=3D0800000085c3c003, p4d=3D0800000085c3c003, =
+
+> pud=3D0800000088dcf003, pmd=3D0000000000000000
+> Internal error: Oops: 96000006 [#1] PREEMPT SMP
+> Modules linked in: bluetooth ecdh_generic ecc rfkill ipv6 ax88796b =
+
+> venus_enc venus_dec videobuf2_dma_contig asix crct10dif_ce adv7511 =
+
+> snd_soc_msm8916_analog qcom_spmi_temp_alarm rtc_pm8xxx qcom_pon =
+
+> qcom_camss qcom_spmi_vadc videobuf2_dma_sg qcom_vadc_common msm =
+
+> venus_core v4l2_fwnode v4l2_async snd_soc_msm8916_digital =
+
+> videobuf2_memops snd_soc_lpass_apq8016 snd_soc_lpass_cpu v4l2_mem2mem =
+
+> snd_soc_lpass_platform snd_soc_apq8016_sbc videobuf2_v4l2 =
+
+> snd_soc_qcom_common qcom_rng videobuf2_common i2c_qcom_cci qnoc_msm8916 =
+
+> videodev mc icc_smd_rpm mdt_loader socinfo display_connector rmtfs_mem
+> CPU: 1 PID: 1522 Comm: rtcwake Not tainted 5.13.0-next-20210629 #3592
+> Hardware name: Qualcomm Technologies, Inc. APQ 8016 SBC (DT)
+> pstate: 80000005 (Nzcv daif -PAN -UAO -TCO BTYPE=3D--)
+> pc : msm_runtime_suspend+0x1c/0x60 [msm]
+> lr : msm_pm_suspend+0x18/0x38 [msm]
+> ...
+> Call trace:
+>  =A0msm_runtime_suspend+0x1c/0x60 [msm]
+>  =A0msm_pm_suspend+0x18/0x38 [msm]
+>  =A0dpm_run_callback+0x84/0x378
+
+I wonder if we're missing a pm_runtime_disable() call on the failure path?
+i.e. something like the diff below...
+
+Will
+
+--->8
+
+diff --git a/drivers/iommu/arm/arm-smmu/qcom_iommu.c b/drivers/iommu/arm/ar=
+m-smmu/qcom_iommu.c
+index 25ed444ff94d..ce8f354755d0 100644
+--- a/drivers/iommu/arm/arm-smmu/qcom_iommu.c
++++ b/drivers/iommu/arm/arm-smmu/qcom_iommu.c
+@@ -836,14 +836,14 @@ static int qcom_iommu_device_probe(struct platform_de=
+vice *pdev)
+        ret =3D devm_of_platform_populate(dev);
+        if (ret) {
+                dev_err(dev, "Failed to populate iommu contexts\n");
+-               return ret;
++               goto err_pm_disable;
+        }
+ =
+
+        ret =3D iommu_device_sysfs_add(&qcom_iommu->iommu, dev, NULL,
+                                     dev_name(dev));
+        if (ret) {
+                dev_err(dev, "Failed to register iommu in sysfs\n");
+-               return ret;
++               goto err_pm_disable;
+        }
+ =
+
+        ret =3D iommu_device_register(&qcom_iommu->iommu, &qcom_iommu_ops, =
+dev);
+@@ -869,6 +869,9 @@ static int qcom_iommu_device_probe(struct platform_devi=
+ce *pdev)
+ =
+
+ err_sysfs_remove:
+        iommu_device_sysfs_remove(&qcom_iommu->iommu);
++
++err_pm_disable:
++       pm_runtime_disable(dev);
+        return ret;
+ }
+_______________________________________________
+iommu mailing list
+iommu@lists.linux-foundation.org
+https://lists.linuxfoundation.org/mailman/listinfo/iommu
