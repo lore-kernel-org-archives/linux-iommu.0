@@ -6,65 +6,65 @@ X-Spam-Status: No, score=-3.6 required=3.0 tests=BAYES_00,DKIM_INVALID,
 	DKIM_SIGNED,HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,SPF_HELO_NONE,
 	SPF_PASS,URIBL_BLOCKED autolearn=no autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 445E4C11F65
-	for <iommu@archiver.kernel.org>; Wed, 30 Jun 2021 06:50:09 +0000 (UTC)
-Received: from smtp1.osuosl.org (smtp1.osuosl.org [140.211.166.138])
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1F392C11F69
+	for <iommu@archiver.kernel.org>; Wed, 30 Jun 2021 06:55:06 +0000 (UTC)
+Received: from smtp3.osuosl.org (smtp3.osuosl.org [140.211.166.136])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id EBD1D61D0B
-	for <iommu@archiver.kernel.org>; Wed, 30 Jun 2021 06:50:08 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org EBD1D61D0B
+	by mail.kernel.org (Postfix) with ESMTPS id C71A061C72
+	for <iommu@archiver.kernel.org>; Wed, 30 Jun 2021 06:55:05 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org C71A061C72
 Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=infradead.org
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by smtp1.osuosl.org (Postfix) with ESMTP id B49AD83AB9;
-	Wed, 30 Jun 2021 06:50:08 +0000 (UTC)
+	by smtp3.osuosl.org (Postfix) with ESMTP id 9156260624;
+	Wed, 30 Jun 2021 06:55:05 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from smtp1.osuosl.org ([127.0.0.1])
-	by localhost (smtp1.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id rtb9b0acGNwm; Wed, 30 Jun 2021 06:50:07 +0000 (UTC)
-Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by smtp1.osuosl.org (Postfix) with ESMTPS id CDFD983AB2;
-	Wed, 30 Jun 2021 06:50:06 +0000 (UTC)
+Received: from smtp3.osuosl.org ([127.0.0.1])
+	by localhost (smtp3.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+	with ESMTP id U2A1vqtv1J5R; Wed, 30 Jun 2021 06:55:04 +0000 (UTC)
+Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [IPv6:2605:bc80:3010:104::8cd3:938])
+	by smtp3.osuosl.org (Postfix) with ESMTPS id 8160E606FD;
+	Wed, 30 Jun 2021 06:55:04 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 9BEFDC0010;
-	Wed, 30 Jun 2021 06:50:06 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 50F31C0010;
+	Wed, 30 Jun 2021 06:55:04 +0000 (UTC)
 Received: from smtp1.osuosl.org (smtp1.osuosl.org [140.211.166.138])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 6BCCCC000E
- for <iommu@lists.linux-foundation.org>; Wed, 30 Jun 2021 06:50:05 +0000 (UTC)
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 11F1FC000E
+ for <iommu@lists.linux-foundation.org>; Wed, 30 Jun 2021 06:55:03 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by smtp1.osuosl.org (Postfix) with ESMTP id 52E4283AB4
- for <iommu@lists.linux-foundation.org>; Wed, 30 Jun 2021 06:50:05 +0000 (UTC)
+ by smtp1.osuosl.org (Postfix) with ESMTP id F06AA83AB2
+ for <iommu@lists.linux-foundation.org>; Wed, 30 Jun 2021 06:55:02 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
+Authentication-Results: smtp1.osuosl.org (amavisd-new);
+ dkim=pass (2048-bit key) header.d=infradead.org
 Received: from smtp1.osuosl.org ([127.0.0.1])
  by localhost (smtp1.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id OGzvyHThWrQH for <iommu@lists.linux-foundation.org>;
- Wed, 30 Jun 2021 06:50:04 +0000 (UTC)
+ with ESMTP id Rbj6sWNbYdq7 for <iommu@lists.linux-foundation.org>;
+ Wed, 30 Jun 2021 06:55:02 +0000 (UTC)
 X-Greylist: from auto-whitelisted by SQLgrey-1.8.0
 Received: from casper.infradead.org (casper.infradead.org
  [IPv6:2001:8b0:10b:1236::1])
- by smtp1.osuosl.org (Postfix) with ESMTPS id 2144D83AB2
- for <iommu@lists.linux-foundation.org>; Wed, 30 Jun 2021 06:50:03 +0000 (UTC)
+ by smtp1.osuosl.org (Postfix) with ESMTPS id 5D02683AA9
+ for <iommu@lists.linux-foundation.org>; Wed, 30 Jun 2021 06:55:02 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
  d=infradead.org; s=casper.20170209; h=In-Reply-To:Content-Type:MIME-Version:
  References:Message-ID:Subject:Cc:To:From:Date:Sender:Reply-To:
  Content-Transfer-Encoding:Content-ID:Content-Description;
- bh=b+svzs78j/62UsetKE/X8fy/L/Rti/5BS8qNFSo3AdY=; b=YvWJ06tpNI/PQXlniltz4HwA3w
- qvb35mtIRc7zoasrxSW0mwsdp8zrl4IJSUR7/UExaPp/G8HsbZqhmZlr4ASbIIp59RN4JH3VQh7fp
- xHEDUrkCCy2uCHpgfbSjVyKOkg4PTOCvVF4Enjph0VlxcF4zTLWkTlRaISyXvZB/VwmOM3y+FpBoV
- 6qZoJl6WMlxndz8lCibcQIqcC5UECay58H2CbwSkj9LoPW1VLcWhEzsZrRfGx/73bje+xZPfyhKNH
- lVnlsQnRDYwDqRdQZanFGZ7dwRrA4fkXGgnVrpwNPbUCu1xejZSK9SK+jWBqCRn8QlyeNiYye6v4P
- Swb3eHsA==;
+ bh=f/Ss2iSM2QGOE0K5ddDAmgJLDWuc6gafnUUbn6I+ywE=; b=EjtYVsIFXW62/EkGI7hOZiVxWu
+ WtQ1QOiJ+kE2LqSAajX/iny/lZxgDgpw4Lqlm87T+L3KdMUw9xtCm/qbkjnNm+n9HchMjHUuhlxdz
+ w2OPufXyWbuv31Dot4DIGelHWZHewJ/p/raVKncRixUUmP7uchkRq1HvqmlhbTVJgHVFLODbv/YHA
+ RNDQhV6qzSdLYF0g40BOD2Ta0/YGu2gzi83bR6eLmhaerMvfLzmNz8rtyEcmJ8Yhva1wvB3sNhoIm
+ 1xB1suxXnDYbBmr21iG+4XFobuyQO+ec3qti7Yrj8KfMA7I5Z33WvXyyfut+u94vA1XrYQhuXZ2+W
+ lhuwYjjA==;
 Received: from hch by casper.infradead.org with local (Exim 4.94.2 #2 (Red Hat
- Linux)) id 1lyU1x-0050Oj-1M; Wed, 30 Jun 2021 06:49:09 +0000
-Date: Wed, 30 Jun 2021 07:49:05 +0100
+ Linux)) id 1lyU6N-0050fY-DH; Wed, 30 Jun 2021 06:53:46 +0000
+Date: Wed, 30 Jun 2021 07:53:39 +0100
 From: Christoph Hellwig <hch@infradead.org>
-To: Jason Gunthorpe <jgg@nvidia.com>
+To: Jason Wang <jasowang@redhat.com>
 Subject: Re: [RFC] /dev/ioasid uAPI proposal
-Message-ID: <YNwT4eO2LCIEXyiq@infradead.org>
-References: <30e5c597-b31c-56de-c75e-950c91947d8f@redhat.com>
- <20210604160336.GA414156@nvidia.com>
- <2c62b5c7-582a-c710-0436-4ac5e8fd8b39@redhat.com>
+Message-ID: <YNwU801EDIJsfTqV@infradead.org>
+References: <2c62b5c7-582a-c710-0436-4ac5e8fd8b39@redhat.com>
  <20210604172207.GT1002214@nvidia.com>
  <20210604152918.57d0d369.alex.williamson@redhat.com>
  <20210604230108.GB1002214@nvidia.com>
@@ -72,20 +72,22 @@ References: <30e5c597-b31c-56de-c75e-950c91947d8f@redhat.com>
  <20210607181858.GM1002214@nvidia.com>
  <20210607125946.056aafa2.alex.williamson@redhat.com>
  <20210607190802.GO1002214@nvidia.com>
+ <20210607134128.58c2ea31.alex.williamson@redhat.com>
+ <12631cf3-4ef8-7c38-73bb-649d57c0226b@redhat.com>
 MIME-Version: 1.0
 Content-Disposition: inline
-In-Reply-To: <20210607190802.GO1002214@nvidia.com>
+In-Reply-To: <12631cf3-4ef8-7c38-73bb-649d57c0226b@redhat.com>
 X-SRS-Rewrite: SMTP reverse-path rewritten from <hch@infradead.org> by
  casper.infradead.org. See http://www.infradead.org/rpr.html
 Cc: Jean-Philippe Brucker <jean-philippe@linaro.org>, "Tian,
  Kevin" <kevin.tian@intel.com>, "Jiang, Dave" <dave.jiang@intel.com>, "Raj,
  Ashok" <ashok.raj@intel.com>, "kvm@vger.kernel.org" <kvm@vger.kernel.org>,
  Jonathan Corbet <corbet@lwn.net>, Robin Murphy <robin.murphy@arm.com>,
- Jason Wang <jasowang@redhat.com>, LKML <linux-kernel@vger.kernel.org>,
- Kirti Wankhede <kwankhede@nvidia.com>,
+ LKML <linux-kernel@vger.kernel.org>, Kirti Wankhede <kwankhede@nvidia.com>,
  Alex Williamson <alex.williamson@redhat.com>,
  "iommu@lists.linux-foundation.org" <iommu@lists.linux-foundation.org>,
- Paolo Bonzini <pbonzini@redhat.com>, David Woodhouse <dwmw2@infradead.org>,
+ Jason Gunthorpe <jgg@nvidia.com>, Paolo Bonzini <pbonzini@redhat.com>,
+ David Woodhouse <dwmw2@infradead.org>,
  David Gibson <david@gibson.dropbear.id.au>
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
@@ -104,17 +106,25 @@ Content-Transfer-Encoding: 7bit
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-On Mon, Jun 07, 2021 at 04:08:02PM -0300, Jason Gunthorpe wrote:
-> Compatibility is important, but when I look in the kernel code I see
-> very few places that call wbinvd(). Basically all DRM for something
-> relavent to qemu.
+On Tue, Jun 08, 2021 at 09:20:29AM +0800, Jason Wang wrote:
+> "
 > 
-> That tells me that the vast majority of PCI devices do not generate
-> no-snoop traffic.
+> 6.2.17 _CCA (Cache Coherency Attribute) The _CCA object returns whether or
+> not a bus-master device supports hardware managed cache coherency. Expected
+> values are 0 to indicate it is not supported, and 1 to indicate that it is
+> supported. All other values are reserved.
+> 
+> ...
+> 
+> On Intel platforms, if the _CCA object is not supplied, the OSPM will assume
+> the devices are hardware cache coherent.
+> 
+> "
 
-Part of it is that we have no general API for it, because the DRM folks
-as usual just tarted piling up local hacks instead of introducing
-a proper API..
+_CCA is mostly used on arm/arm64 platforms to figure out if a device
+needs non-coherent DMA handling in the DMA API or not.  It is not
+related to the NoSnoop TLPs that override the setting for an otherwise
+coherent device.
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
