@@ -2,93 +2,90 @@ Return-Path: <SRS0=eogA=LY=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-3.6 required=3.0 tests=BAYES_00,DKIM_INVALID,
-	DKIM_SIGNED,HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,SPF_HELO_NONE,
-	SPF_PASS,URIBL_BLOCKED autolearn=no autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-15.1 required=3.0 tests=BAYES_00,DKIM_INVALID,
+	DKIM_SIGNED,HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_CR_TRAILER,INCLUDES_PATCH,
+	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,UNPARSEABLE_RELAY,URIBL_BLOCKED,
+	USER_AGENT_SANE_2 autolearn=ham autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 52375C11F65
-	for <iommu@archiver.kernel.org>; Wed, 30 Jun 2021 07:08:49 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id AB2A5C11F68
+	for <iommu@archiver.kernel.org>; Wed, 30 Jun 2021 07:31:48 +0000 (UTC)
 Received: from smtp2.osuosl.org (smtp2.osuosl.org [140.211.166.133])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 0398161C72
-	for <iommu@archiver.kernel.org>; Wed, 30 Jun 2021 07:08:48 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 0398161C72
-Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=infradead.org
+	by mail.kernel.org (Postfix) with ESMTPS id 6080B61D03
+	for <iommu@archiver.kernel.org>; Wed, 30 Jun 2021 07:31:48 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 6080B61D03
+Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=mediatek.com
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by smtp2.osuosl.org (Postfix) with ESMTP id C30414011F;
-	Wed, 30 Jun 2021 07:08:48 +0000 (UTC)
+	by smtp2.osuosl.org (Postfix) with ESMTP id 196EB40178;
+	Wed, 30 Jun 2021 07:31:48 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
 Received: from smtp2.osuosl.org ([127.0.0.1])
 	by localhost (smtp2.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id huiak8zGZohH; Wed, 30 Jun 2021 07:08:48 +0000 (UTC)
+	with ESMTP id 3LzvU-zCNzou; Wed, 30 Jun 2021 07:31:46 +0000 (UTC)
 Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [IPv6:2605:bc80:3010:104::8cd3:938])
-	by smtp2.osuosl.org (Postfix) with ESMTPS id AA0B540004;
-	Wed, 30 Jun 2021 07:08:47 +0000 (UTC)
+	by smtp2.osuosl.org (Postfix) with ESMTPS id 4ED8F40184;
+	Wed, 30 Jun 2021 07:31:46 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 80132C001A;
-	Wed, 30 Jun 2021 07:08:47 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 2614EC0010;
+	Wed, 30 Jun 2021 07:31:46 +0000 (UTC)
 Received: from smtp4.osuosl.org (smtp4.osuosl.org [IPv6:2605:bc80:3010::137])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 1404DC000E
- for <iommu@lists.linux-foundation.org>; Wed, 30 Jun 2021 07:08:47 +0000 (UTC)
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 7E9CDC000E
+ for <iommu@lists.linux-foundation.org>; Wed, 30 Jun 2021 07:31:45 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by smtp4.osuosl.org (Postfix) with ESMTP id E3A5240247
- for <iommu@lists.linux-foundation.org>; Wed, 30 Jun 2021 07:08:46 +0000 (UTC)
+ by smtp4.osuosl.org (Postfix) with ESMTP id 5478B40639
+ for <iommu@lists.linux-foundation.org>; Wed, 30 Jun 2021 07:31:45 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
 Authentication-Results: smtp4.osuosl.org (amavisd-new);
- dkim=pass (2048-bit key) header.d=infradead.org
+ dkim=pass (1024-bit key) header.d=mediatek.com
 Received: from smtp4.osuosl.org ([127.0.0.1])
  by localhost (smtp4.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id b_5WR59m3Ehv for <iommu@lists.linux-foundation.org>;
- Wed, 30 Jun 2021 07:08:46 +0000 (UTC)
-X-Greylist: from auto-whitelisted by SQLgrey-1.8.0
-Received: from casper.infradead.org (casper.infradead.org
- [IPv6:2001:8b0:10b:1236::1])
- by smtp4.osuosl.org (Postfix) with ESMTPS id 30A3340215
- for <iommu@lists.linux-foundation.org>; Wed, 30 Jun 2021 07:08:45 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
- d=infradead.org; s=casper.20170209; h=In-Reply-To:Content-Type:MIME-Version:
- References:Message-ID:Subject:Cc:To:From:Date:Sender:Reply-To:
- Content-Transfer-Encoding:Content-ID:Content-Description;
- bh=p7u2nhiPZvS5G76wt+ReyJp7BmL9rTijTlM9kJWCQB0=; b=jU5tD1CKWUN2AvCok5TsR6gq5q
- 81SLjO6tt7FaxBgRBWbUqVQXYcd+87wzkSA8t5M/0YIYGHDaAwJ4mVWYqS08CyL9xA6xYGazt+zVu
- HrOCne0sUDUViBVSpeOcH9BlQuxUE5WmHnJVoZsMw3FEjm0KkUb8Aq2UrpreawCFSPumgz0hExF8S
- em/wR9b6nST13qoCMk80+oupPxiPawRJp+WiDrdGomoU04Ed39H4EOEgR4+PX08HWhhS+5oSGU4kD
- zqug+xGjvphgGP9lDwW0JcYkroBQHh5Yo7oW/WgF188MFE86PE4qMxwhIKJNTjr1CtqGaHMXS8Mwm
- WKtY+Mxw==;
-Received: from hch by casper.infradead.org with local (Exim 4.94.2 #2 (Red Hat
- Linux)) id 1lyUK4-0051XX-C6; Wed, 30 Jun 2021 07:07:57 +0000
-Date: Wed, 30 Jun 2021 08:07:48 +0100
-From: Christoph Hellwig <hch@infradead.org>
-To: Jason Gunthorpe <jgg@nvidia.com>
-Subject: Re: [RFC] /dev/ioasid uAPI proposal
-Message-ID: <YNwYREuSWElXwiAC@infradead.org>
-References: <20210602180925.GH1002214@nvidia.com>
- <20210602130053.615db578.alex.williamson@redhat.com>
- <20210602195404.GI1002214@nvidia.com>
- <20210602143734.72fb4fa4.alex.williamson@redhat.com>
- <6a9426d7-ed55-e006-9c4c-6b7c78142e39@redhat.com>
- <20210603130927.GZ1002214@nvidia.com>
- <65614634-1db4-7119-1a90-64ba5c6e9042@redhat.com>
- <20210604115805.GG1002214@nvidia.com>
- <895671cc-5ef8-bc1a-734c-e9e2fdf03652@redhat.com>
- <20210607141424.GF1002214@nvidia.com>
+ with ESMTP id CdGfQYliWhRA for <iommu@lists.linux-foundation.org>;
+ Wed, 30 Jun 2021 07:31:37 +0000 (UTC)
+X-Greylist: domain auto-whitelisted by SQLgrey-1.8.0
+Received: from mailgw01.mediatek.com (unknown [1.203.163.78])
+ by smtp4.osuosl.org (Postfix) with ESMTP id 720DD405FB
+ for <iommu@lists.linux-foundation.org>; Wed, 30 Jun 2021 07:31:30 +0000 (UTC)
+X-UUID: d8c28328ba0341c8a7351691847667c5-20210630
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=mediatek.com;
+ s=dk; 
+ h=Content-Transfer-Encoding:MIME-Version:Content-Type:References:In-Reply-To:Date:CC:To:From:Subject:Message-ID;
+ bh=62IYE54IdDULAKwoKbHVM6/DHaOQllqFJgwJn2lFs3o=; 
+ b=Js6kweoZOvtGLYzNFo9t8a6+U0vW5lmffG+YczPcM8ZIJNp9LAJ2Ldjy9xqh81eVmBJJgc1hfG1FBIJtP0VJKWyMSewHqH4K4tuJEWDOGUgjyn6wIks8PM/I3ocSQxFLg/JMQFk+ft45X+EgAYPvsMJpjQugEuHmV8xvZqKMIHY=;
+X-UUID: d8c28328ba0341c8a7351691847667c5-20210630
+Received: from mtkcas35.mediatek.inc [(172.27.4.253)] by mailgw01.mediatek.com
+ (envelope-from <yong.wu@mediatek.com>)
+ (mailgw01.mediatek.com ESMTP with TLSv1.2 ECDHE-RSA-AES256-SHA384 256/256)
+ with ESMTP id 1737304554; Wed, 30 Jun 2021 15:31:08 +0800
+Received: from MTKCAS36.mediatek.inc (172.27.4.186) by MTKMBS31N1.mediatek.inc
+ (172.27.4.69) with Microsoft SMTP Server (TLS) id 15.0.1497.2;
+ Wed, 30 Jun 2021 15:30:58 +0800
+Received: from [10.17.3.153] (10.17.3.153) by MTKCAS36.mediatek.inc
+ (172.27.4.170) with Microsoft SMTP Server id 15.0.1497.2 via Frontend
+ Transport; Wed, 30 Jun 2021 15:30:57 +0800
+Message-ID: <1625038257.25647.5.camel@mhfsdcap03>
+Subject: Re: [PATCH 01/24] dt-bindings: mediatek: mt8195: Add binding for MM
+ IOMMU
+From: Yong Wu <yong.wu@mediatek.com>
+To: Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>
+Date: Wed, 30 Jun 2021 15:30:57 +0800
+In-Reply-To: <41809d87-0f1b-13fd-b565-26a17626aad9@canonical.com>
+References: <20210630023504.18177-1-yong.wu@mediatek.com>
+ <20210630023504.18177-2-yong.wu@mediatek.com>
+ <41809d87-0f1b-13fd-b565-26a17626aad9@canonical.com>
+X-Mailer: Evolution 3.10.4-0ubuntu2 
 MIME-Version: 1.0
-Content-Disposition: inline
-In-Reply-To: <20210607141424.GF1002214@nvidia.com>
-X-SRS-Rewrite: SMTP reverse-path rewritten from <hch@infradead.org> by
- casper.infradead.org. See http://www.infradead.org/rpr.html
-Cc: Jean-Philippe Brucker <jean-philippe@linaro.org>, "Tian,
- Kevin" <kevin.tian@intel.com>, "Jiang, Dave" <dave.jiang@intel.com>, "Raj,
- Ashok" <ashok.raj@intel.com>, "kvm@vger.kernel.org" <kvm@vger.kernel.org>,
- Jonathan Corbet <corbet@lwn.net>, Robin Murphy <robin.murphy@arm.com>,
- Jason Wang <jasowang@redhat.com>, LKML <linux-kernel@vger.kernel.org>,
- Kirti Wankhede <kwankhede@nvidia.com>,
- "iommu@lists.linux-foundation.org" <iommu@lists.linux-foundation.org>,
- Alex Williamson <alex.williamson@redhat.com>,
- David Woodhouse <dwmw2@infradead.org>,
- David Gibson <david@gibson.dropbear.id.au>
+X-TM-SNTS-SMTP: 1963F5674633076AEF957F6E442E2D1D0BE305E0B7F438FD146FEE00D7D59E362000:8
+X-MTK: N
+Cc: youlin.pei@mediatek.com, devicetree@vger.kernel.org,
+ Nicolas Boichat <drinkcat@chromium.org>, srv_heupstream@mediatek.com,
+ chao.hao@mediatek.com, Will Deacon <will@kernel.org>,
+ linux-kernel@vger.kernel.org, Evan Green <evgreen@chromium.org>,
+ Tomasz Figa <tfiga@google.com>, iommu@lists.linux-foundation.org,
+ Rob Herring <robh+dt@kernel.org>, linux-mediatek@lists.infradead.org,
+ Matthias Brugger <matthias.bgg@gmail.com>, anan.sun@mediatek.com,
+ Robin Murphy <robin.murphy@arm.com>, linux-arm-kernel@lists.infradead.org
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -106,14 +103,69 @@ Content-Transfer-Encoding: 7bit
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-On Mon, Jun 07, 2021 at 11:14:24AM -0300, Jason Gunthorpe wrote:
-> "non-coherent DMA" is some general euphemism that evokes images of
-> embedded platforms that don't have coherent DMA at all and have low
-> cost ways to regain coherence. This is not at all what we are talking
-> about here at all.
+On Wed, 2021-06-30 at 08:26 +0200, Krzysztof Kozlowski wrote:
+> On 30/06/2021 04:34, Yong Wu wrote:
+> > This patch adds descriptions for mt8195 IOMMU which also use ARM
+> > Short-Descriptor translation table format.
+> > 
+> > In mt8195, there are two smi-common HW and IOMMU, one is for vdo(video
+> > output), the other is for vpp(video processing pipe). They connects
+> > with different smi-larbs, then some setting(larbid_remap) is different.
+> > Differentiate them with the compatible string.
+> > 
+> > Something like this:
+> > 
+> >     IOMMU(VDO)          IOMMU(VPP)
+> >        |                   |
+> >   SMI_COMMON_VDO      SMI_COMMON_VPP
+> >   ---------------     ----------------
+> >   |      |   ...      |      |     ...
+> > larb0 larb2  ...    larb1 larb3    ...
+> > 
+> > Another change is that we have a new IOMMU that is for infra master like
+> > PCIe and USB. The infra master don't have the larb and ports, thus we
+> > rename the port header file to mt8195-memory-port.h rather than
+> > mt8195-larb-port.h.
+> > 
+> > Also, the IOMMU is not only for MM, thus, we don't call it "m4u" which
+> > means "MultiMedia Memory Management UNIT". thus, use the "iommu" as the
+> > compatiable string.
+> > 
+> > Signed-off-by: Yong Wu <yong.wu@mediatek.com>
+> > ---
+> >  .../bindings/iommu/mediatek,iommu.yaml        |   7 +
+> >  .../dt-bindings/memory/mt8195-memory-port.h   | 390 ++++++++++++++++++
+> >  2 files changed, 397 insertions(+)
+> >  create mode 100644 include/dt-bindings/memory/mt8195-memory-port.h
+> > 
+> 
+> I understand this will go through IOMMU tree. Do you know about any
+> further patches for memory controllers which will need the header?
 
-It literally is the same way of working.  And not just low-end embedded
-platforms use this, but a lot of older server platforms did as well.
+This header file will only be used in dtsi file. the iommu masters will
+use these port definitions in the dtsi.
+
+The SMI driver no need include this header file.
+
+By the way, the mt8195 SMI patches is at:
+
+https://lore.kernel.org/linux-mediatek/20210616114346.18812-1-yong.wu@mediatek.com/ 
+
+> 
+> Acked-by: Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>
+
+Thanks very much for your quick review.
+
+> 
+> 
+> Best regards,
+> Krzysztof
+> 
+> _______________________________________________
+> Linux-mediatek mailing list
+> Linux-mediatek@lists.infradead.org
+> http://lists.infradead.org/mailman/listinfo/linux-mediatek
+
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
