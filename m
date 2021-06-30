@@ -2,80 +2,92 @@ Return-Path: <SRS0=eogA=LY=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-16.8 required=3.0 tests=BAYES_00,
-	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_CR_TRAILER,INCLUDES_PATCH,
-	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,UNPARSEABLE_RELAY,URIBL_BLOCKED,
-	USER_AGENT_GIT autolearn=unavailable autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-16.6 required=3.0 tests=BAYES_00,DKIM_INVALID,
+	DKIM_SIGNED,HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_CR_TRAILER,INCLUDES_PATCH,
+	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_GIT
+	autolearn=ham autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 215C0C11F67
-	for <iommu@archiver.kernel.org>; Wed, 30 Jun 2021 02:43:26 +0000 (UTC)
-Received: from smtp4.osuosl.org (smtp4.osuosl.org [140.211.166.137])
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3700EC11F65
+	for <iommu@archiver.kernel.org>; Wed, 30 Jun 2021 04:06:27 +0000 (UTC)
+Received: from smtp1.osuosl.org (smtp1.osuosl.org [140.211.166.138])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id CE18961D8C
-	for <iommu@archiver.kernel.org>; Wed, 30 Jun 2021 02:43:25 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org CE18961D8C
-Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=mediatek.com
+	by mail.kernel.org (Postfix) with ESMTPS id DBFEC61D28
+	for <iommu@archiver.kernel.org>; Wed, 30 Jun 2021 04:06:26 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org DBFEC61D28
+Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=chromium.org
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by smtp4.osuosl.org (Postfix) with ESMTP id ACE3C4060A;
-	Wed, 30 Jun 2021 02:43:25 +0000 (UTC)
+	by smtp1.osuosl.org (Postfix) with ESMTP id A222A83AB0;
+	Wed, 30 Jun 2021 04:06:26 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from smtp4.osuosl.org ([127.0.0.1])
-	by localhost (smtp4.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id WjIDen6OE5_4; Wed, 30 Jun 2021 02:43:24 +0000 (UTC)
-Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [IPv6:2605:bc80:3010:104::8cd3:938])
-	by smtp4.osuosl.org (Postfix) with ESMTPS id 4147F405FB;
-	Wed, 30 Jun 2021 02:43:24 +0000 (UTC)
+Received: from smtp1.osuosl.org ([127.0.0.1])
+	by localhost (smtp1.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+	with ESMTP id lfHYZTEe2YFw; Wed, 30 Jun 2021 04:06:25 +0000 (UTC)
+Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
+	by smtp1.osuosl.org (Postfix) with ESMTPS id 9A4DD83AAE;
+	Wed, 30 Jun 2021 04:06:25 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 2B45CC0010;
-	Wed, 30 Jun 2021 02:43:24 +0000 (UTC)
-Received: from smtp4.osuosl.org (smtp4.osuosl.org [IPv6:2605:bc80:3010::137])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 01D62C000E
- for <iommu@lists.linux-foundation.org>; Wed, 30 Jun 2021 02:43:23 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 771F9C001A;
+	Wed, 30 Jun 2021 04:06:25 +0000 (UTC)
+Received: from smtp3.osuosl.org (smtp3.osuosl.org [140.211.166.136])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 0080CC000E
+ for <iommu@lists.linux-foundation.org>; Wed, 30 Jun 2021 04:06:23 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by smtp4.osuosl.org (Postfix) with ESMTP id D694940605
- for <iommu@lists.linux-foundation.org>; Wed, 30 Jun 2021 02:43:22 +0000 (UTC)
+ by smtp3.osuosl.org (Postfix) with ESMTP id DAE75605E8
+ for <iommu@lists.linux-foundation.org>; Wed, 30 Jun 2021 04:06:23 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from smtp4.osuosl.org ([127.0.0.1])
- by localhost (smtp4.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id nyDTCaSCAjpz for <iommu@lists.linux-foundation.org>;
- Wed, 30 Jun 2021 02:43:21 +0000 (UTC)
-X-Greylist: from auto-whitelisted by SQLgrey-1.8.0
-Received: from mailgw01.mediatek.com (unknown [60.244.123.138])
- by smtp4.osuosl.org (Postfix) with ESMTPS id 7579C405FB
- for <iommu@lists.linux-foundation.org>; Wed, 30 Jun 2021 02:43:21 +0000 (UTC)
-X-UUID: 498bb3bb3b404ae8b658ed20d6647802-20210630
-X-UUID: 498bb3bb3b404ae8b658ed20d6647802-20210630
-Received: from mtkmbs10n1.mediatek.inc [(172.21.101.34)] by
- mailgw01.mediatek.com (envelope-from <yong.wu@mediatek.com>)
- (Generic MTA with TLSv1.2 ECDHE-RSA-AES256-GCM-SHA384 256/256)
- with ESMTP id 1818565443; Wed, 30 Jun 2021 10:38:16 +0800
-Received: from mtkcas11.mediatek.inc (172.21.101.40) by
- mtkmbs07n1.mediatek.inc (172.21.101.16) with Microsoft SMTP Server (TLS) id
- 15.0.1497.2; Wed, 30 Jun 2021 10:38:14 +0800
-Received: from localhost.localdomain (10.17.3.153) by mtkcas11.mediatek.inc
- (172.21.101.73) with Microsoft SMTP Server id 15.0.1497.2 via Frontend
- Transport; Wed, 30 Jun 2021 10:38:13 +0800
-From: Yong Wu <yong.wu@mediatek.com>
-To: Joerg Roedel <joro@8bytes.org>, Rob Herring <robh+dt@kernel.org>, Matthias
- Brugger <matthias.bgg@gmail.com>, Will Deacon <will@kernel.org>,
- Robin Murphy <robin.murphy@arm.com>
-Subject: [PATCH 23/24] iommu/mediatek: Add multi bank support
-Date: Wed, 30 Jun 2021 10:35:03 +0800
-Message-ID: <20210630023504.18177-24-yong.wu@mediatek.com>
-X-Mailer: git-send-email 2.18.0
-In-Reply-To: <20210630023504.18177-1-yong.wu@mediatek.com>
-References: <20210630023504.18177-1-yong.wu@mediatek.com>
+Authentication-Results: smtp3.osuosl.org (amavisd-new);
+ dkim=pass (1024-bit key) header.d=chromium.org
+Received: from smtp3.osuosl.org ([127.0.0.1])
+ by localhost (smtp3.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+ with ESMTP id RGiOVAgV3I7I for <iommu@lists.linux-foundation.org>;
+ Wed, 30 Jun 2021 04:06:23 +0000 (UTC)
+X-Greylist: whitelisted by SQLgrey-1.8.0
+Received: from mail-pf1-x434.google.com (mail-pf1-x434.google.com
+ [IPv6:2607:f8b0:4864:20::434])
+ by smtp3.osuosl.org (Postfix) with ESMTPS id 53E5D60594
+ for <iommu@lists.linux-foundation.org>; Wed, 30 Jun 2021 04:06:23 +0000 (UTC)
+Received: by mail-pf1-x434.google.com with SMTP id g21so1187187pfc.11
+ for <iommu@lists.linux-foundation.org>; Tue, 29 Jun 2021 21:06:23 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=chromium.org; s=google;
+ h=from:to:cc:subject:date:message-id:mime-version
+ :content-transfer-encoding;
+ bh=vBJD4JFUNrU/4Zr4GHTZ0cbKWbsN7ynXpqMyWSZuNks=;
+ b=dwNl699PBL5B58FmaDpVfL75n8ZRKUXs2RNoJqAhVYMvToRUCqOPdJslYwxpyi8x/o
+ PUG7M7nd3CueZnEyY1roDTdHocmQob3cdTJTB/XJooAVzdHxjFqMsFFnq7MmpDNQxBsC
+ 59fIJvd6H6q/qwTjGKOk57dw/7R583m8iL3Q8=
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+ d=1e100.net; s=20161025;
+ h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+ :content-transfer-encoding;
+ bh=vBJD4JFUNrU/4Zr4GHTZ0cbKWbsN7ynXpqMyWSZuNks=;
+ b=GmWbx+uxKu3fVoWhmLi5t8VwpIHpBsIjbF+9tF3IIzuoxZ7xNueIRpQ4QA7jaCZ4OQ
+ EK3mVthjRCiTYAasVKMJ8zpVwwKBT4u8EmTEcuKdd3WbbwmUG+BzlrMOukh+gPC/mDD3
+ IMAHKTTNjZekXAvpwkVE096OUy0BELqv8JxGAIktAchktkTI4hXXIFy46IeKlphbynRg
+ X+hRtyf3CZsOEtn5Efss2du/7GairglOSPg/Rgea56u8A5djlmbAznKioxmq9WEud8Sp
+ OAzR7LlV5Z9igMKeEGq9AAkT6mtvWTQJTxDI+9FeOK49ig+rK4b6o0EWpdtFjqqrQXpK
+ ztkg==
+X-Gm-Message-State: AOAM530L0/b8BQu3eAjJu2UBfM2WaGux8qVDQXKY4ueA3jwOM2TyZm3k
+ 7CXSMh4ENFy7e0KB9q31uXJK1Q==
+X-Google-Smtp-Source: ABdhPJyDNSfiMLEx1IjDrOQBQe0ELtIJOclgwIvSOu8aXf3zCZlrspUVX6l2BzINSKHYgZOnxNzdQg==
+X-Received: by 2002:a63:f609:: with SMTP id m9mr9895587pgh.74.1625025982775;
+ Tue, 29 Jun 2021 21:06:22 -0700 (PDT)
+Received: from localhost ([2401:fa00:95:205:94c8:1447:c37c:e392])
+ by smtp.gmail.com with UTF8SMTPSA id b25sm19665184pft.76.2021.06.29.21.06.19
+ (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+ Tue, 29 Jun 2021 21:06:22 -0700 (PDT)
+From: Claire Chang <tientzu@chromium.org>
+To: konrad.wilk@oracle.com, hch@lst.de, m.szyprowski@samsung.com,
+ robin.murphy@arm.com, Will Deacon <will@kernel.org>, sstabellini@kernel.org
+Subject: [PATCH v3] swiotlb: fix implicit debugfs_create_dir declaration
+Date: Wed, 30 Jun 2021 12:06:15 +0800
+Message-Id: <20210630040616.3914990-1-tientzu@chromium.org>
+X-Mailer: git-send-email 2.32.0.93.g670b81a890-goog
 MIME-Version: 1.0
-X-MTK: N
-Cc: youlin.pei@mediatek.com, devicetree@vger.kernel.org,
- Nicolas Boichat <drinkcat@chromium.org>, srv_heupstream@mediatek.com,
- Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>,
- linux-kernel@vger.kernel.org, Evan Green <evgreen@chromium.org>,
- Tomasz Figa <tfiga@google.com>, iommu@lists.linux-foundation.org,
- linux-mediatek@lists.infradead.org, chao.hao@mediatek.com,
- anan.sun@mediatek.com, linux-arm-kernel@lists.infradead.org
+Cc: Nicolas Boichat <drinkcat@chromium.org>, kernel test robot <lkp@intel.com>,
+ linux-kernel@vger.kernel.org, iommu@lists.linux-foundation.org,
+ Claire Chang <tientzu@chromium.org>
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -93,195 +105,53 @@ Content-Transfer-Encoding: 7bit
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-The registers for each bank of the IOMMU base are in order, delta is
-0x1000. Initialise the base for each bank.
+Factor out the debugfs bits from rmem_swiotlb_device_init() into a separate
+rmem_swiotlb_debugfs_init().
 
-Meanwhile, Each bank has some independent registers. thus,
-backup/restore them for each a bank.
-
-For all the previous SoC, we only have bank0. thus use "do {} while()"
-to allow bank0 always go.
-
-Signed-off-by: Yong Wu <yong.wu@mediatek.com>
+Fixes: 461021875c50 ("swiotlb: Add restricted DMA pool initialization")
+Reported-by: kernel test robot <lkp@intel.com>
+Signed-off-by: Claire Chang <tientzu@chromium.org>
 ---
- drivers/iommu/mtk_iommu.c | 78 +++++++++++++++++++++++++++++----------
- drivers/iommu/mtk_iommu.h |  6 +--
- 2 files changed, 61 insertions(+), 23 deletions(-)
+ kernel/dma/swiotlb.c | 17 ++++++++++++-----
+ 1 file changed, 12 insertions(+), 5 deletions(-)
 
-diff --git a/drivers/iommu/mtk_iommu.c b/drivers/iommu/mtk_iommu.c
-index e297a50adced..3aaf425d5a18 100644
---- a/drivers/iommu/mtk_iommu.c
-+++ b/drivers/iommu/mtk_iommu.c
-@@ -114,6 +114,7 @@
- #define F_MMU_INT_ID_PORT_ID(a)			(((a) >> 2) & 0x1f)
+diff --git a/kernel/dma/swiotlb.c b/kernel/dma/swiotlb.c
+index 0ffbaae9fba2..355dc98d381c 100644
+--- a/kernel/dma/swiotlb.c
++++ b/kernel/dma/swiotlb.c
+@@ -709,6 +709,16 @@ static int __init swiotlb_create_default_debugfs(void)
  
- #define MTK_PROTECT_PA_ALIGN			256
-+#define MTK_IOMMU_BANK_SZ			0x1000
+ late_initcall(swiotlb_create_default_debugfs);
  
- #define PERICFG_IOMMU_1				0x714
++static void rmem_swiotlb_debugfs_init(const char *name, struct io_tlb_mem *mem)
++{
++	mem->debugfs = debugfs_create_dir(name, debugfs_dir);
++	swiotlb_create_debugfs_files(mem);
++}
++#else
++__maybe_unused static void rmem_swiotlb_debugfs_init(const char *name,
++						     struct io_tlb_mem *mem)
++{
++}
+ #endif
  
-@@ -925,11 +926,11 @@ static int mtk_iommu_probe(struct platform_device *pdev)
- 	struct mtk_iommu_data   *data;
- 	struct device           *dev = &pdev->dev;
- 	struct resource         *res;
--	resource_size_t		ioaddr;
-+	resource_size_t		ioaddr, size;
- 	struct component_match  *match = NULL;
- 	struct regmap		*infracfg;
- 	void                    *protect;
--	int                     ret;
-+	int                     ret, i = 0;
- 	u32			val;
- 	char                    *p;
- 	struct mtk_iommu_bank_data *bank;
-@@ -971,19 +972,30 @@ static int mtk_iommu_probe(struct platform_device *pdev)
+ #ifdef CONFIG_DMA_RESTRICTED_POOL
+@@ -766,11 +776,8 @@ static int rmem_swiotlb_device_init(struct reserved_mem *rmem,
+ 
+ 		rmem->priv = mem;
+ 
+-		if (IS_ENABLED(CONFIG_DEBUG_FS)) {
+-			mem->debugfs =
+-				debugfs_create_dir(rmem->name, debugfs_dir);
+-			swiotlb_create_debugfs_files(mem);
+-		}
++		if (IS_ENABLED(CONFIG_DEBUG_FS))
++			rmem_swiotlb_debugfs_init(rmem->name, mem);
  	}
  
- 	res = platform_get_resource(pdev, IORESOURCE_MEM, 0);
-+	size = resource_size(res);
-+	if (size < data->plat_data->bank_nr * MTK_IOMMU_BANK_SZ) {
-+		dev_err(dev, "banknr %d. res %pR is not enough.\n",
-+			data->plat_data->bank_nr, res);
-+		return -EINVAL;
-+	}
- 	base = devm_ioremap_resource(dev, res);
- 	if (IS_ERR(base))
- 		return PTR_ERR(base);
- 	ioaddr = res->start;
- 
--	bank = &data->bank[0];
--	bank->base = base;
--	bank->irq = platform_get_irq(pdev, 0);
--	if (bank->irq < 0)
--		return bank->irq;
--	bank->pdev = dev;
--	bank->pdata = data;
--	spin_lock_init(&bank->tlb_lock);
-+	do {
-+		if (!data->plat_data->bank_enable[i])
-+			continue;
-+		bank = &data->bank[i];
-+		bank->base = base + i * MTK_IOMMU_BANK_SZ;
-+
-+		bank->irq = platform_get_irq(pdev, i);
-+		if (bank->irq < 0)
-+			return bank->irq;
-+		bank->pdev = dev;
-+		bank->pdata = data;
-+		spin_lock_init(&bank->tlb_lock);
-+	} while (++i < data->plat_data->bank_nr);
- 
- 	if (MTK_IOMMU_HAS_FLAG(data->plat_data, HAS_BCLK)) {
- 		data->bclk = devm_clk_get(dev, "bclk");
-@@ -1068,7 +1080,9 @@ static int mtk_iommu_probe(struct platform_device *pdev)
- static int mtk_iommu_remove(struct platform_device *pdev)
- {
- 	struct mtk_iommu_data *data = platform_get_drvdata(pdev);
--	struct mtk_iommu_bank_data *bank = &data->bank[0];
-+	struct mtk_iommu_bank_data *bank;
-+	bool bank_hwinit;
-+	int i;
- 
- 	iommu_device_sysfs_remove(&data->iommu);
- 	iommu_device_unregister(&data->iommu);
-@@ -1080,7 +1094,18 @@ static int mtk_iommu_remove(struct platform_device *pdev)
- 	if (MTK_IOMMU_IS_TYPE(data->plat_data, MTK_IOMMU_TYPE_MM))
- 		device_link_remove(data->smicomm_dev, &pdev->dev);
- 	pm_runtime_disable(&pdev->dev);
--	devm_free_irq(&pdev->dev, bank->irq, bank);
-+	for (i = 0; i < data->plat_data->bank_nr; i++) {
-+		bank = &data->bank[i];
-+		/*
-+		 * Use a register value to confirm if this bank HW is initialised.
-+		 * If the bank has no consumer, the bank HW still won't be
-+		 * initialised even though bank_enable is true.
-+		 */
-+		bank_hwinit = !!readl_relaxed(bank->base + REG_MMU_PT_BASE_ADDR);
-+		if (!bank_hwinit)
-+			continue;
-+		devm_free_irq(&pdev->dev, bank->irq, bank);
-+	}
- 	component_master_del(&pdev->dev, &mtk_iommu_com_ops);
- 	return 0;
- }
-@@ -1090,15 +1115,21 @@ static int __maybe_unused mtk_iommu_runtime_suspend(struct device *dev)
- 	struct mtk_iommu_data *data = dev_get_drvdata(dev);
- 	struct mtk_iommu_suspend_reg *reg = &data->reg;
- 	void __iomem *base = data->bank[0].base;
-+	int i = 0;
- 
- 	reg->wr_len_ctrl = readl_relaxed(base + REG_MMU_WR_LEN_CTRL);
- 	reg->misc_ctrl = readl_relaxed(base + REG_MMU_MISC_CTRL);
- 	reg->dcm_dis = readl_relaxed(base + REG_MMU_DCM_DIS);
- 	reg->ctrl_reg = readl_relaxed(base + REG_MMU_CTRL_REG);
--	reg->int_control0 = readl_relaxed(base + REG_MMU_INT_CONTROL0);
--	reg->int_main_control = readl_relaxed(base + REG_MMU_INT_MAIN_CONTROL);
--	reg->ivrp_paddr = readl_relaxed(base + REG_MMU_IVRP_PADDR);
- 	reg->vld_pa_rng = readl_relaxed(base + REG_MMU_VLD_PA_RNG);
-+	do {
-+		if (!data->plat_data->bank_enable[i])
-+			continue;
-+		base = data->bank[i].base;
-+		reg->int_control0[i] = readl_relaxed(base + REG_MMU_INT_CONTROL0);
-+		reg->int_main_control[i] = readl_relaxed(base + REG_MMU_INT_MAIN_CONTROL);
-+		reg->ivrp_paddr[i] = readl_relaxed(base + REG_MMU_IVRP_PADDR);
-+	} while (++i < data->plat_data->bank_nr);
- 	clk_disable_unprepare(data->bclk);
- 	return 0;
- }
-@@ -1109,7 +1140,7 @@ static int __maybe_unused mtk_iommu_runtime_resume(struct device *dev)
- 	struct mtk_iommu_suspend_reg *reg = &data->reg;
- 	struct mtk_iommu_domain *m4u_dom = data->bank[0].m4u_dom;
- 	void __iomem *base = data->bank[0].base;
--	int ret;
-+	int ret, i = 0;
- 
- 	ret = clk_prepare_enable(data->bclk);
- 	if (ret) {
-@@ -1128,11 +1159,18 @@ static int __maybe_unused mtk_iommu_runtime_resume(struct device *dev)
- 	writel_relaxed(reg->misc_ctrl, base + REG_MMU_MISC_CTRL);
- 	writel_relaxed(reg->dcm_dis, base + REG_MMU_DCM_DIS);
- 	writel_relaxed(reg->ctrl_reg, base + REG_MMU_CTRL_REG);
--	writel_relaxed(reg->int_control0, base + REG_MMU_INT_CONTROL0);
--	writel_relaxed(reg->int_main_control, base + REG_MMU_INT_MAIN_CONTROL);
--	writel_relaxed(reg->ivrp_paddr, base + REG_MMU_IVRP_PADDR);
- 	writel_relaxed(reg->vld_pa_rng, base + REG_MMU_VLD_PA_RNG);
--	writel(m4u_dom->cfg.arm_v7s_cfg.ttbr & MMU_PT_ADDR_MASK, base + REG_MMU_PT_BASE_ADDR);
-+	do {
-+		if (!data->plat_data->bank_enable[i])
-+			continue;
-+		base = data->bank[i].base;
-+		m4u_dom = data->bank[i].m4u_dom;
-+		writel_relaxed(reg->int_control0[i], base + REG_MMU_INT_CONTROL0);
-+		writel_relaxed(reg->int_main_control[i], base + REG_MMU_INT_MAIN_CONTROL);
-+		writel_relaxed(reg->ivrp_paddr[i], base + REG_MMU_IVRP_PADDR);
-+		writel(m4u_dom->cfg.arm_v7s_cfg.ttbr & MMU_PT_ADDR_MASK,
-+		       base + REG_MMU_PT_BASE_ADDR);
-+	} while (++i < data->plat_data->bank_nr);
- 	return 0;
- }
- 
-diff --git a/drivers/iommu/mtk_iommu.h b/drivers/iommu/mtk_iommu.h
-index 8235957f1592..813e60de89d6 100644
---- a/drivers/iommu/mtk_iommu.h
-+++ b/drivers/iommu/mtk_iommu.h
-@@ -33,11 +33,11 @@ struct mtk_iommu_suspend_reg {
- 	};
- 	u32				dcm_dis;
- 	u32				ctrl_reg;
--	u32				int_control0;
--	u32				int_main_control;
--	u32				ivrp_paddr;
- 	u32				vld_pa_rng;
- 	u32				wr_len_ctrl;
-+	u32				int_control0[MTK_IOMMU_BANK_MAX];
-+	u32				int_main_control[MTK_IOMMU_BANK_MAX];
-+	u32				ivrp_paddr[MTK_IOMMU_BANK_MAX];
- };
- 
- enum mtk_iommu_plat {
+ 	dev->dma_io_tlb_mem = mem;
 -- 
-2.18.0
+2.32.0.93.g670b81a890-goog
 
 _______________________________________________
 iommu mailing list
