@@ -2,105 +2,71 @@ Return-Path: <SRS0=eogA=LY=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-3.6 required=3.0 tests=BAYES_00,DKIM_INVALID,
-	DKIM_SIGNED,HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,SPF_HELO_NONE,
-	SPF_PASS,URIBL_BLOCKED autolearn=no autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-15.3 required=3.0 tests=BAYES_00,
+	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_CR_TRAILER,INCLUDES_PATCH,
+	MAILING_LIST_MULTI,NICE_REPLY_A,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,
+	USER_AGENT_SANE_1 autolearn=ham autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C06ADC11F65
-	for <iommu@archiver.kernel.org>; Wed, 30 Jun 2021 10:08:19 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D8AC6C11F65
+	for <iommu@archiver.kernel.org>; Wed, 30 Jun 2021 11:07:16 +0000 (UTC)
 Received: from smtp4.osuosl.org (smtp4.osuosl.org [140.211.166.137])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 653C6611CE
-	for <iommu@archiver.kernel.org>; Wed, 30 Jun 2021 10:08:19 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 653C6611CE
-Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=codeaurora.org
+	by mail.kernel.org (Postfix) with ESMTPS id 6F3A861C75
+	for <iommu@archiver.kernel.org>; Wed, 30 Jun 2021 11:07:16 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 6F3A861C75
+Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=arm.com
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by smtp4.osuosl.org (Postfix) with ESMTP id 26F8B40699;
-	Wed, 30 Jun 2021 10:08:19 +0000 (UTC)
+	by smtp4.osuosl.org (Postfix) with ESMTP id 33B0C41480;
+	Wed, 30 Jun 2021 11:07:16 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
 Received: from smtp4.osuosl.org ([127.0.0.1])
 	by localhost (smtp4.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id 6baCtIDN0NAl; Wed, 30 Jun 2021 10:08:18 +0000 (UTC)
+	with ESMTP id 1WtEXY3lcJyO; Wed, 30 Jun 2021 11:07:15 +0000 (UTC)
 Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by smtp4.osuosl.org (Postfix) with ESMTPS id 9C939406A2;
-	Wed, 30 Jun 2021 10:08:17 +0000 (UTC)
+	by smtp4.osuosl.org (Postfix) with ESMTPS id DBA2A4147E;
+	Wed, 30 Jun 2021 11:07:14 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 74DFFC001A;
-	Wed, 30 Jun 2021 10:08:17 +0000 (UTC)
-Received: from smtp3.osuosl.org (smtp3.osuosl.org [IPv6:2605:bc80:3010::136])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 14D99C000E
- for <iommu@lists.linux-foundation.org>; Wed, 30 Jun 2021 10:08:16 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id AD2CAC001A;
+	Wed, 30 Jun 2021 11:07:14 +0000 (UTC)
+Received: from smtp4.osuosl.org (smtp4.osuosl.org [IPv6:2605:bc80:3010::137])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 34FE9C000E
+ for <iommu@lists.linux-foundation.org>; Wed, 30 Jun 2021 11:07:13 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by smtp3.osuosl.org (Postfix) with UTF8SMTP id 0E47B60650
- for <iommu@lists.linux-foundation.org>; Wed, 30 Jun 2021 10:08:16 +0000 (UTC)
+ by smtp4.osuosl.org (Postfix) with ESMTP id 2EDD4406A1
+ for <iommu@lists.linux-foundation.org>; Wed, 30 Jun 2021 11:07:13 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Authentication-Results: smtp3.osuosl.org (amavisd-new);
- dkim=pass (1024-bit key) header.d=mg.codeaurora.org
-Received: from smtp3.osuosl.org ([127.0.0.1])
- by localhost (smtp3.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with UTF8SMTP id Kv10Pp2umQXC for <iommu@lists.linux-foundation.org>;
- Wed, 30 Jun 2021 10:08:14 +0000 (UTC)
-X-Greylist: from auto-whitelisted by SQLgrey-1.8.0
-Received: from so254-9.mailgun.net (so254-9.mailgun.net [198.61.254.9])
- by smtp3.osuosl.org (Postfix) with UTF8SMTPS id C917F605E6
- for <iommu@lists.linux-foundation.org>; Wed, 30 Jun 2021 10:08:10 +0000 (UTC)
-DKIM-Signature: a=rsa-sha256; v=1; c=relaxed/relaxed; d=mg.codeaurora.org;
- q=dns/txt; 
- s=smtp; t=1625047694; h=Message-ID: References: In-Reply-To: Subject:
- Cc: To: From: Date: Content-Transfer-Encoding: Content-Type:
- MIME-Version: Sender; bh=V2ANtGMjJP031vwtea0cvuT0DcS61OO8FRdPjBQ676g=;
- b=i4UqcSLEXdc2JM9cK5p25V3wesj0kzB+u7tR6M/IyTtux4eGiwt9whU+0IkD5VxeWpXl5g8H
- Zi7pfYQPa69v5mnJW15x3KTCwQvBzNb1vPTgPdOAcZyv/+7h0cJJCuOxdQFuqhpQcQUrPTvT
- lUUKdUHkRrmhy/W7pzZMMZ3w6vY=
-X-Mailgun-Sending-Ip: 198.61.254.9
-X-Mailgun-Sid: WyI3NDkwMCIsICJpb21tdUBsaXN0cy5saW51eC1mb3VuZGF0aW9uLm9yZyIsICJiZTllNGEiXQ==
-Received: from smtp.codeaurora.org
- (ec2-35-166-182-171.us-west-2.compute.amazonaws.com [35.166.182.171]) by
- smtp-out-n06.prod.us-east-1.postgun.com with SMTP id
- 60dc4281ec0b18a7459eb612 (version=TLS1.2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256); Wed, 30 Jun 2021 10:08:01
- GMT
-Received: by smtp.codeaurora.org (Postfix, from userid 1001)
- id 761EBC4323A; Wed, 30 Jun 2021 10:08:00 +0000 (UTC)
-Received: from mail.codeaurora.org (localhost.localdomain [127.0.0.1])
- (using TLSv1 with cipher ECDHE-RSA-AES256-SHA (256/256 bits))
- (No client certificate requested)
- (Authenticated sender: saiprakash.ranjan)
- by smtp.codeaurora.org (Postfix) with ESMTPSA id 17A87C433D3;
- Wed, 30 Jun 2021 10:07:59 +0000 (UTC)
+Received: from smtp4.osuosl.org ([127.0.0.1])
+ by localhost (smtp4.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+ with ESMTP id QTz7h35DLdP5 for <iommu@lists.linux-foundation.org>;
+ Wed, 30 Jun 2021 11:07:12 +0000 (UTC)
+X-Greylist: domain auto-whitelisted by SQLgrey-1.8.0
+Received: from foss.arm.com (foss.arm.com [217.140.110.172])
+ by smtp4.osuosl.org (Postfix) with ESMTP id E04754148E
+ for <iommu@lists.linux-foundation.org>; Wed, 30 Jun 2021 11:07:11 +0000 (UTC)
+Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
+ by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id EA73411D4;
+ Wed, 30 Jun 2021 04:07:10 -0700 (PDT)
+Received: from [10.57.40.45] (unknown [10.57.40.45])
+ by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id 1E6D33F5A1;
+ Wed, 30 Jun 2021 04:07:08 -0700 (PDT)
+Subject: Re: [PATCH] iommu/arm-smmu-v3: Add default domain quirk for Arm Fast
+ Models
+To: Marc Zyngier <maz@kernel.org>, Will Deacon <will@kernel.org>
+References: <bf7020acf5ca7306a51d1950e3ff2afe2229e037.1624032324.git.robin.murphy@arm.com>
+ <20210629173440.GA7556@willie-the-truck> <87h7hfybmb.wl-maz@kernel.org>
+From: Robin Murphy <robin.murphy@arm.com>
+Message-ID: <60c3dccb-b6a8-2f04-7994-80d51a70d49f@arm.com>
+Date: Wed, 30 Jun 2021 12:07:03 +0100
+User-Agent: Mozilla/5.0 (Windows NT 10.0; rv:78.0) Gecko/20100101
+ Thunderbird/78.11.0
 MIME-Version: 1.0
-Date: Wed, 30 Jun 2021 15:37:59 +0530
-From: Sai Prakash Ranjan <saiprakash.ranjan@codeaurora.org>
-To: Will Deacon <will@kernel.org>
-Subject: Re: [PATCH 2/3] iommu/io-pgtable-arm: Add IOMMU_LLC page protection
- flag
-In-Reply-To: <20210325173311.GA15504@willie-the-truck>
-References: <3f589e7de3f9fa93e84c83420c5270c546a0c368.1610372717.git.saiprakash.ranjan@codeaurora.org>
- <20210129090516.GB3998@willie-the-truck>
- <5d23fce629323bcda71594010824aad0@codeaurora.org>
- <20210201111556.GA7172@willie-the-truck>
- <CAF6AEGsARmkAFsjaQLfa2miMgeijo183MWDKGtW_ti-UCpzBqA@mail.gmail.com>
- <20210201182016.GA21629@jcrouse1-lnx.qualcomm.com>
- <7e9aade14d0b7f69285852ade4a5a9f4@codeaurora.org>
- <20210203214612.GB19847@willie-the-truck>
- <4988e2ef35f76a0c2f1fe3f66f023a3b@codeaurora.org>
- <9362873a3bcf37cdd073a6128f29c683@codeaurora.org>
- <20210325173311.GA15504@willie-the-truck>
-Message-ID: <21239ba603d0bdc4e4c696588a905f88@codeaurora.org>
-X-Sender: saiprakash.ranjan@codeaurora.org
-User-Agent: Roundcube Webmail/1.3.9
-Cc: "Isaac J. Manjarres" <isaacm@codeaurora.org>,
- David Airlie <airlied@linux.ie>, Sean Paul <sean@poorly.run>,
- Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
- dri-devel <dri-devel@lists.freedesktop.org>,
- Akhil P Oommen <akhilpo@codeaurora.org>, "list@263.net:IOMMU
- DRIVERS , Joerg Roedel <joro@8bytes.org>, " <iommu@lists.linux-foundation.org>,
- Kristian H Kristensen <hoegsberg@google.com>, Daniel Vetter <daniel@ffwll.ch>,
- linux-arm-msm <linux-arm-msm@vger.kernel.org>,
- freedreno <freedreno@lists.freedesktop.org>,
- linux-arm-kernel@lists.infradead.org, Robin Murphy <robin.murphy@arm.com>
+In-Reply-To: <87h7hfybmb.wl-maz@kernel.org>
+Content-Language: en-GB
+Cc: mark.rutland@arm.com, andre.przywara@arm.com,
+ iommu@lists.linux-foundation.org, catalin.marinas@arm.com,
+ linux-arm-kernel@lists.infradead.org
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -118,132 +84,72 @@ Content-Type: text/plain; charset="us-ascii"; Format="flowed"
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-Hi Will,
-
-On 2021-03-25 23:03, Will Deacon wrote:
-> On Tue, Mar 09, 2021 at 12:10:44PM +0530, Sai Prakash Ranjan wrote:
->> On 2021-02-05 17:38, Sai Prakash Ranjan wrote:
->> > On 2021-02-04 03:16, Will Deacon wrote:
->> > > On Tue, Feb 02, 2021 at 11:56:27AM +0530, Sai Prakash Ranjan wrote:
->> > > > On 2021-02-01 23:50, Jordan Crouse wrote:
->> > > > > On Mon, Feb 01, 2021 at 08:20:44AM -0800, Rob Clark wrote:
->> > > > > > On Mon, Feb 1, 2021 at 3:16 AM Will Deacon <will@kernel.org> wrote:
->> > > > > > > On Fri, Jan 29, 2021 at 03:12:59PM +0530, Sai Prakash Ranjan wrote:
->> > > > > > > > On 2021-01-29 14:35, Will Deacon wrote:
->> > > > > > > > > On Mon, Jan 11, 2021 at 07:45:04PM +0530, Sai Prakash Ranjan wrote:
->> > > > > > > > > > +#define IOMMU_LLC        (1 << 6)
->> > > > > > > > >
->> > > > > > > > > On reflection, I'm a bit worried about exposing this because I think it
->> > > > > > > > > will
->> > > > > > > > > introduce a mismatched virtual alias with the CPU (we don't even have a
->> > > > > > > > > MAIR
->> > > > > > > > > set up for this memory type). Now, we also have that issue for the PTW,
->> > > > > > > > > but
->> > > > > > > > > since we always use cache maintenance (i.e. the streaming API) for
->> > > > > > > > > publishing the page-tables to a non-coheren walker, it works out.
->> > > > > > > > > However,
->> > > > > > > > > if somebody expects IOMMU_LLC to be coherent with a DMA API coherent
->> > > > > > > > > allocation, then they're potentially in for a nasty surprise due to the
->> > > > > > > > > mismatched outer-cacheability attributes.
->> > > > > > > > >
->> > > > > > > >
->> > > > > > > > Can't we add the syscached memory type similar to what is done on android?
->> > > > > > >
->> > > > > > > Maybe. How does the GPU driver map these things on the CPU side?
->> > > > > >
->> > > > > > Currently we use writecombine mappings for everything, although there
->> > > > > > are some cases that we'd like to use cached (but have not merged
->> > > > > > patches that would give userspace a way to flush/invalidate)
->> > > > > >
->> > > > >
->> > > > > LLC/system cache doesn't have a relationship with the CPU cache.  Its
->> > > > > just a
->> > > > > little accelerator that sits on the connection from the GPU to DDR and
->> > > > > caches
->> > > > > accesses. The hint that Sai is suggesting is used to mark the buffers as
->> > > > > 'no-write-allocate' to prevent GPU write operations from being cached in
->> > > > > the LLC
->> > > > > which a) isn't interesting and b) takes up cache space for read
->> > > > > operations.
->> > > > >
->> > > > > Its easiest to think of the LLC as a bonus accelerator that has no cost
->> > > > > for
->> > > > > us to use outside of the unfortunate per buffer hint.
->> > > > >
->> > > > > We do have to worry about the CPU cache w.r.t I/O coherency (which is a
->> > > > > different hint) and in that case we have all of concerns that Will
->> > > > > identified.
->> > > > >
->> > > >
->> > > > For mismatched outer cacheability attributes which Will
->> > > > mentioned, I was
->> > > > referring to [1] in android kernel.
->> > >
->> > > I've lost track of the conversation here :/
->> > >
->> > > When the GPU has a buffer mapped with IOMMU_LLC, is the buffer also
->> > > mapped
->> > > into the CPU and with what attributes? Rob said "writecombine for
->> > > everything" -- does that mean ioremap_wc() / MEMREMAP_WC?
->> > >
->> >
->> > Rob answered this.
->> >
->> > > Finally, we need to be careful when we use the word "hint" as
->> > > "allocation
->> > > hint" has a specific meaning in the architecture, and if we only
->> > > mismatch on
->> > > those then we're actually ok. But I think IOMMU_LLC is more than
->> > > just a
->> > > hint, since it actually drives eviction policy (i.e. it enables
->> > > writeback).
->> > >
->> > > Sorry for the pedantry, but I just want to make sure we're all talking
->> > > about the same things!
->> > >
->> >
->> > Sorry for the confusion which probably was caused by my mentioning of
->> > android, NWA(no write allocate) is an allocation hint which we can
->> > ignore
->> > for now as it is not introduced yet in upstream.
->> >
->> 
->> Any chance of taking this forward? We do not want to miss out on small 
->> fps
->> gain when the product gets released.
+On 2021-06-30 09:56, Marc Zyngier wrote:
+> On Tue, 29 Jun 2021 18:34:40 +0100,
+> Will Deacon <will@kernel.org> wrote:
+>>
+>> On Fri, Jun 18, 2021 at 05:24:49PM +0100, Robin Murphy wrote:
+>>> Arm Fast Models are still implementing legacy virtio-pci devices behind
+>>> the SMMU, which continue to be problematic as "real hardware" devices
+>>> (from the point of view of the simulated system) without the mitigating
+>>> VIRTIO_F_ACCESS_PLATFORM feature.
+>>>
+>>> Since we now have the ability to force passthrough on a device-specific
+>>> basis, let's use it to work around this particular oddity so that people
+>>> who just want to boot Linux on a model don't have to fiddle around with
+>>> things to avoid the SMMU getting in the way by default (and I don't have
+>>> to keep telling them which things...)
+>>>
+>>> Signed-off-by: Robin Murphy <robin.murphy@arm.com>
+>>> ---
+>>>   drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c | 15 +++++++++++++++
+>>>   1 file changed, 15 insertions(+)
+>>
+>> Any chance of getting the fastmodels updated instead? It feels like it
+>> has to happen *eventually*, and then there would be no need for this bodge.
 > 
-> Do we have a solution to the mismatched virtual alias?
+> That'd be ideal. What are the chances of that happening before the Sun
+> turns into a black hole?
+
+We'll try making some noise again internally and see where that goes, 
+but given the progress over the last 4 years I'd be inclined to posit a 
+new theory of the universe eventually ending in one giant event 0x10.
+
+>>> diff --git a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
+>>> index 54b2f27b81d4..13cf16e8f45b 100644
+>>> --- a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
+>>> +++ b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
+>>> @@ -2649,6 +2649,20 @@ static int arm_smmu_dev_disable_feature(struct device *dev,
+>>>   	}
+>>>   }
+>>>   
+>>> +static int arm_smmu_def_domain_type(struct device *dev)
+>>> +{
+>>> +	if (dev_is_pci(dev)) {
+>>> +		struct pci_dev *pdev = to_pci_dev(dev);
+>>> +
+>>> +		/* Legacy virtio-block devices on Arm Fast Models */
+>>> +		if (pdev->vendor == 0x1af4 && pdev->device == 0x1001 &&
+>>> +		    pdev->subsystem_vendor == 0x00ff && pdev->subsystem_device == 0x0002)
+>>> +			return IOMMU_DOMAIN_IDENTITY;
+>>> +	}
+>>> +
+>>> +	return 0;
+>>> +}
 > 
+> Could this be expressed as a PCI quirk instead? It would at least keep
+> the ID matching out of the SMMU driver...
 
-Sorry for the long delay on this thread.
+I don't think so - getting the information from the PCI layer to the 
+IOMMU layer at the right place and time to influence the default domain 
+choice would seemingly need some uglier and even less popular 
+infrastructure adding. It's something that only the IOMMU layer has any 
+need to be aware of, and the def_domain_type callback essentially exists 
+for this kind of special-casing - compare intel-iommu's 
+device_def_domain_type() for example. If we accept a workaround at all, 
+I do believe this is the least-worst option.
 
-For mismatched virtual alias question, wasn't this already discussed in 
-stretch
-when initial support for system cache [1] (which was reverted by you) 
-was added?
-
-Excerpt from there,
-
-"As seen in downstream kernels there are few non-coherent devices which
-would not want to allocate in system cache, and therefore would want
-Inner/Outer non-cached memory. So, we may want to either override the
-attributes per-device, or as you suggested we may want to introduce
-another memory type 'sys-cached' that can be added with its separate
-infra."
-
-As for DMA API usage, we do not have any upstream users (video will be
-one if they decide to upstream that).
-
-[1] 
-https://patchwork.kernel.org/project/linux-arm-msm/patch/20180615105329.26800-1-vivek.gautam@codeaurora.org/
-
-Thanks,
-Sai
-
--- 
-QUALCOMM INDIA, on behalf of Qualcomm Innovation Center, Inc. is a 
-member
-of Code Aurora Forum, hosted by The Linux Foundation
+Robin.
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
