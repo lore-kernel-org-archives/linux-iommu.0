@@ -2,149 +2,81 @@ Return-Path: <SRS0=eogA=LY=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-15.1 required=3.0 tests=BAYES_00,DKIM_INVALID,
-	DKIM_SIGNED,HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_CR_TRAILER,INCLUDES_PATCH,
-	MAILING_LIST_MULTI,NICE_REPLY_A,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,
-	USER_AGENT_SANE_1 autolearn=ham autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-8.8 required=3.0 tests=BAYES_00,DKIM_INVALID,
+	DKIM_SIGNED,INCLUDES_CR_TRAILER,MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,
+	URIBL_BLOCKED autolearn=ham autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 971E3C11F65
-	for <iommu@archiver.kernel.org>; Wed, 30 Jun 2021 11:12:43 +0000 (UTC)
-Received: from smtp1.osuosl.org (smtp1.osuosl.org [140.211.166.138])
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A9F05C11F65
+	for <iommu@archiver.kernel.org>; Wed, 30 Jun 2021 11:17:04 +0000 (UTC)
+Received: from smtp3.osuosl.org (smtp3.osuosl.org [140.211.166.136])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 481D161409
-	for <iommu@archiver.kernel.org>; Wed, 30 Jun 2021 11:12:43 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 481D161409
-Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=samsung.com
+	by mail.kernel.org (Postfix) with ESMTPS id 64F0C6141C
+	for <iommu@archiver.kernel.org>; Wed, 30 Jun 2021 11:17:04 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 64F0C6141C
+Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=kernel.org
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by smtp1.osuosl.org (Postfix) with ESMTP id 12CB283B0E;
-	Wed, 30 Jun 2021 11:12:43 +0000 (UTC)
+	by smtp3.osuosl.org (Postfix) with ESMTP id 1E607608B1;
+	Wed, 30 Jun 2021 11:17:04 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from smtp1.osuosl.org ([127.0.0.1])
-	by localhost (smtp1.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id 2vSJXlhaEofO; Wed, 30 Jun 2021 11:12:41 +0000 (UTC)
-Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by smtp1.osuosl.org (Postfix) with ESMTPS id 30CB7828F7;
-	Wed, 30 Jun 2021 11:12:41 +0000 (UTC)
+Received: from smtp3.osuosl.org ([127.0.0.1])
+	by localhost (smtp3.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+	with ESMTP id 4wMrHw_waWpd; Wed, 30 Jun 2021 11:17:03 +0000 (UTC)
+Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [IPv6:2605:bc80:3010:104::8cd3:938])
+	by smtp3.osuosl.org (Postfix) with ESMTPS id 0F27460687;
+	Wed, 30 Jun 2021 11:17:02 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id E5810C001A;
-	Wed, 30 Jun 2021 11:12:40 +0000 (UTC)
-Received: from smtp2.osuosl.org (smtp2.osuosl.org [IPv6:2605:bc80:3010::133])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 259E1C000E
- for <iommu@lists.linux-foundation.org>; Wed, 30 Jun 2021 11:12:39 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id AE3A8C0010;
+	Wed, 30 Jun 2021 11:17:02 +0000 (UTC)
+Received: from smtp3.osuosl.org (smtp3.osuosl.org [140.211.166.136])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 3C258C000E
+ for <iommu@lists.linux-foundation.org>; Wed, 30 Jun 2021 11:17:01 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by smtp2.osuosl.org (Postfix) with ESMTP id 135BE40447
- for <iommu@lists.linux-foundation.org>; Wed, 30 Jun 2021 11:12:39 +0000 (UTC)
+ by smtp3.osuosl.org (Postfix) with ESMTP id 239D760894
+ for <iommu@lists.linux-foundation.org>; Wed, 30 Jun 2021 11:17:01 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Authentication-Results: smtp2.osuosl.org (amavisd-new);
- dkim=pass (1024-bit key) header.d=samsung.com
-Received: from smtp2.osuosl.org ([127.0.0.1])
- by localhost (smtp2.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id aGU5WvKIt73P for <iommu@lists.linux-foundation.org>;
- Wed, 30 Jun 2021 11:12:31 +0000 (UTC)
+Received: from smtp3.osuosl.org ([127.0.0.1])
+ by localhost (smtp3.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+ with ESMTP id GUttlXED-rkA for <iommu@lists.linux-foundation.org>;
+ Wed, 30 Jun 2021 11:17:00 +0000 (UTC)
 X-Greylist: domain auto-whitelisted by SQLgrey-1.8.0
-Received: from mailout2.w1.samsung.com (mailout2.w1.samsung.com
- [210.118.77.12])
- by smtp2.osuosl.org (Postfix) with ESMTPS id 419A1401BC
- for <iommu@lists.linux-foundation.org>; Wed, 30 Jun 2021 11:12:30 +0000 (UTC)
-Received: from eucas1p2.samsung.com (unknown [182.198.249.207])
- by mailout2.w1.samsung.com (KnoxPortal) with ESMTP id
- 20210630111228euoutp02a65f246ee643d398e1be1184796dadc1~NV8X9-tb_1861418614euoutp02U
- for <iommu@lists.linux-foundation.org>; Wed, 30 Jun 2021 11:12:28 +0000 (GMT)
-DKIM-Filter: OpenDKIM Filter v2.11.0 mailout2.w1.samsung.com
- 20210630111228euoutp02a65f246ee643d398e1be1184796dadc1~NV8X9-tb_1861418614euoutp02U
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=samsung.com;
- s=mail20170921; t=1625051548;
- bh=DBhQiqnyaEcnmYW9rAcKcJr53aru8+yj2xqDE4QGRb0=;
- h=Subject:To:Cc:From:Date:In-Reply-To:References:From;
- b=aMY9kONbCaQmdUCZ3F6ESjCcIRIqzRQ9/KofLB2p948ikIkiZJqWW5egjtuB6Om6/
- Q25Mv8zgMCeMNn5Lg5UrvXf9qt85qvAyDbDoFBOT25R6ajXiWls2Hq6xu+2rO7CYY/
- 83ZxCS0lP2M04fsoFg65eC1KqEoHzvAxEk+d/J4o=
-Received: from eusmges2new.samsung.com (unknown [203.254.199.244]) by
- eucas1p2.samsung.com (KnoxPortal) with ESMTP id
- 20210630111227eucas1p2a3eacbb4afd334d5e95f56382fa866ea~NV8Xg-fX11124411244eucas1p2P;
- Wed, 30 Jun 2021 11:12:27 +0000 (GMT)
-Received: from eucas1p2.samsung.com ( [182.198.249.207]) by
- eusmges2new.samsung.com (EUCPMTA) with SMTP id 51.1E.42068.B915CD06; Wed, 30
- Jun 2021 12:12:27 +0100 (BST)
-Received: from eusmtrp2.samsung.com (unknown [182.198.249.139]) by
- eucas1p2.samsung.com (KnoxPortal) with ESMTPA id
- 20210630111227eucas1p2212b63f5d9da6788e57319c35ce9eaf4~NV8W996F01601316013eucas1p2i;
- Wed, 30 Jun 2021 11:12:27 +0000 (GMT)
-Received: from eusmgms2.samsung.com (unknown [182.198.249.180]) by
- eusmtrp2.samsung.com (KnoxPortal) with ESMTP id
- 20210630111227eusmtrp253edc5d7797c74c617621ceadd526c86~NV8W9DKud2520925209eusmtrp2k;
- Wed, 30 Jun 2021 11:12:27 +0000 (GMT)
-X-AuditID: cbfec7f4-c89ff7000002a454-17-60dc519bf3dd
-Received: from eusmtip1.samsung.com ( [203.254.199.221]) by
- eusmgms2.samsung.com (EUCPMTA) with SMTP id 25.48.20981.B915CD06; Wed, 30
- Jun 2021 12:12:27 +0100 (BST)
-Received: from [106.210.134.192] (unknown [106.210.134.192]) by
- eusmtip1.samsung.com (KnoxPortal) with ESMTPA id
- 20210630111226eusmtip1fc9667faf8afc06752f6e23e4928e446~NV8WGQsZn0506005060eusmtip1q;
- Wed, 30 Jun 2021 11:12:26 +0000 (GMT)
+Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
+ by smtp3.osuosl.org (Postfix) with ESMTPS id 9CAF960687
+ for <iommu@lists.linux-foundation.org>; Wed, 30 Jun 2021 11:17:00 +0000 (UTC)
+Received: by mail.kernel.org (Postfix) with ESMTPSA id 71FDC61416;
+ Wed, 30 Jun 2021 11:16:59 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+ s=k20201202; t=1625051819;
+ bh=gUK7CVS8e2cXpIkn5P9a80Ni/fjjiEdxLr686zwbYwo=;
+ h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+ b=LrE5xBZGvBzxMMDr7xPpC0LgFueWQu9wnpPgxKFozVNI8/77In5i8c/hdO5MtVNMC
+ RVEOP5F5mHswSXrFPMxFi7/iAel9d4oGLGucGIc7r9FEpoKRJZcQ2HVWGjvG5VU69Q
+ c6cjOrpWuI+1VjsBTf1qKdsQQ3D4afJAQrbf/4rqnfptmLydhn4PAhaWaB9I/Tsbdp
+ ldRiKGTkwLmboPAvmvH0tfaKael5yebU5xrM108RV5xDelyF1SYVwz4c8V7MQGY2LB
+ okwz61hRCid9ECCu5DhsCWAgdpyNIkdX0wBxVdoeQjrUMcUxYe1uL0oLn267Ja83oM
+ bDJsfPF7DHZvg==
+Date: Wed, 30 Jun 2021 14:16:56 +0300
+From: Leon Romanovsky <leon@kernel.org>
+To: Marek Szyprowski <m.szyprowski@samsung.com>
 Subject: Re: [PATCH rdma-next v1 1/2] lib/scatterlist: Fix wrong update of
  orig_nents
-To: Leon Romanovsky <leon@kernel.org>, Doug Ledford <dledford@redhat.com>,
- Jason Gunthorpe <jgg@nvidia.com>
-From: Marek Szyprowski <m.szyprowski@samsung.com>
-Message-ID: <a9462d67-2279-93f1-e042-d46033c208df@samsung.com>
-Date: Wed, 30 Jun 2021 13:12:26 +0200
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:78.0)
- Gecko/20100101 Thunderbird/78.11.0
-MIME-Version: 1.0
-In-Reply-To: <dadb01a81e7498f6415233cf19cfc2a0d9b312f2.1624955710.git.leonro@nvidia.com>
-Content-Language: en-US
-X-Brightmail-Tracker: H4sIAAAAAAAAA+NgFrrOKsWRmVeSWpSXmKPExsWy7djP87qzA+8kGLQdNrbYOGM9q8XrPfOZ
- LV6e/8BqsXL1USaLBfutLa7828NoMeXXUmaLy7vmsFk8O9TLYrHxOqfFu7dfWSwOfnjCarFs
- KpfF+WP97A58HmvmrWH02HZtC4vHzll32T02repk85h8Yzmjx+6bDWwevc3v2Dze77vK5tG3
- ZRWjx+dNcgFcUVw2Kak5mWWpRfp2CVwZk9tnMRVcMKt4fKGFqYGxS7uLkZNDQsBE4urOJUxd
- jFwcQgIrGCW+Hl/LBuF8YZRYvu0MI4TzmVGi7cNDli5GDrCWz7+MIeLLGSUWTuxkgXA+MkpM
- PDmLCaRIWCBcYlKHF8gKEYFciS+zFrKD1DALvGGWmLlzDRtIgk3AUKLrbReYzStgJ7G+ZwqY
- zSKgKnHu72UmEFtUIFni/bwZrBA1ghInZz5hAbE5BSIktt5YwgxiMwvISzRvnQ1li0vcejIf
- 7B8Jgc2cEjdbO1ghHnWR+L9jAhuELSzx6vgWdghbRuL/TpiGZkaJh+fWskM4PYwSl5tmMEJU
- WUvcOfeLDeQ1ZgFNifW79CHCjhKzTx9lggQLn8SNt4IQR/BJTNo2nRkizCvR0SYEUa0mMev4
- Ori1By9cYp7AqDQLyWuzkLwzC8k7sxD2LmBkWcUonlpanJueWmyUl1quV5yYW1yal66XnJ+7
- iRGY9k7/O/5lB+PyVx/1DjEycTAeYpTgYFYS4Y3aeTtBiDclsbIqtSg/vqg0J7X4EKM0B4uS
- OG/SljXxQgLpiSWp2ampBalFMFkmDk6pBib+3108cx8dlj81i/mzg94K1WUzRHjD3z9fpSau
- VlEXFDnBUnpm3elTrTqWoS/2OHS6Ch7KTn92POlVxZ5zkzefvZjxmdsw/IvBKdU3EbuU+M4G
- MgiIyTv6XaxbbfXszsXA7MO21te2yL7c/vBQzhJ7lQniYU5BKgnafjPtm+43XxDfysu8+dzx
- gnnpRzruf9EXOL9JpfOQ90HGJztFHh+5Xu1bxpH2q2H6080FnwM/Z7jdO2uo4PI86L7yxLLd
- Kp/O6L+bofv1lyan2Gdjuy8dG8/GyjptWqx3Z8+NeMOTvp/qWG8dS+HbIC9SpFdef/D7/n1/
- 7HbveTCJT2fJ9z3Sm30XuFizHFGtYL/9ZIWhEktxRqKhFnNRcSIAUTDuJOoDAAA=
-X-Brightmail-Tracker: H4sIAAAAAAAAA+NgFnrJIsWRmVeSWpSXmKPExsVy+t/xu7qzA+8kGPQ0c1tsnLGe1eL1nvnM
- Fi/Pf2C1WLn6KJPFgv3WFlf+7WG0mPJrKbPF5V1z2CyeHeplsdh4ndPi3duvLBYHPzxhtVg2
- lcvi/LF+dgc+jzXz1jB6bLu2hcVj56y77B6bVnWyeUy+sZzRY/fNBjaP3uZ3bB7v911l8+jb
- sorR4/MmuQCuKD2bovzSklSFjPziElulaEMLIz1DSws9IxNLPUNj81grI1MlfTublNSczLLU
- In27BL2Mye2zmAoumFU8vtDC1MDYpd3FyMEhIWAi8fmXcRcjF4eQwFJGiYY7Hxm7GDmB4jIS
- J6c1sELYwhJ/rnWxQRS9Z5S4cmcNO0izsEC4xKQOL5AaEYFciUfN7SwgNcwCb5gl1r++xwLR
- 0MQoMf9CExtIFZuAoUTX2y4wm1fATmJ9zxQwm0VAVeLc38tMILaoQLLEz/XtUDWCEidnPmEB
- sTkFIiS23ljCDGIzC5hJzNv8EMqWl2jeOhvKFpe49WQ+0wRGoVlI2mchaZmFpGUWkpYFjCyr
- GEVSS4tz03OLjfSKE3OLS/PS9ZLzczcxAuN827GfW3Ywrnz1Ue8QIxMH4yFGCQ5mJRHeqJ23
- E4R4UxIrq1KL8uOLSnNSiw8xmgL9M5FZSjQ5H5ho8kriDc0MTA1NzCwNTC3NjJXEeU2OrIkX
- EkhPLEnNTk0tSC2C6WPi4JRqYJodc36GXT1fp5BuyC6lAv+SE3tPVz98qzL/Y3Ze1oRn0ms8
- DlfHMBz+enbCRfEtz1Ja9pzuXLPQxjjkf/2jJ4vqZvz+YP5W7fv2Nv/5R4yKqkwOH2xQOR3/
- R68me149y+Fo98W/Fp5s3PaJ9U3jqR27a699Sc569W2KiPxaJdlnE+8dCmpiebY96rTO82fz
- 2W2l5F7uW7tz3u2HZz9N99jrtPh72uROwbb7/9ROMNZ/FQz8kMdjf/d3xLMIzrsXj9oVfVSf
- 6nVOW1D0374d4neq3O9Pmj3RJNitz7jX7VOzdZpt84GV17e1PX+TFP3N5d2mD3Z9xjMqjb8w
- qb2pW7fjaPyjrT/NpCt2es5bvK/BQImlOCPRUIu5qDgRAC5Gy8B8AwAA
-X-CMS-MailID: 20210630111227eucas1p2212b63f5d9da6788e57319c35ce9eaf4
-X-Msg-Generator: CA
-X-RootMTR: 20210630111227eucas1p2212b63f5d9da6788e57319c35ce9eaf4
-X-EPHeader: CA
-CMS-TYPE: 201P
-X-CMS-RootMailID: 20210630111227eucas1p2212b63f5d9da6788e57319c35ce9eaf4
+Message-ID: <YNxSqOeECXGG2fX8@unreal>
 References: <cover.1624955710.git.leonro@nvidia.com>
  <dadb01a81e7498f6415233cf19cfc2a0d9b312f2.1624955710.git.leonro@nvidia.com>
  <CGME20210630111227eucas1p2212b63f5d9da6788e57319c35ce9eaf4@eucas1p2.samsung.com>
+ <a9462d67-2279-93f1-e042-d46033c208df@samsung.com>
+MIME-Version: 1.0
+Content-Disposition: inline
+In-Reply-To: <a9462d67-2279-93f1-e042-d46033c208df@samsung.com>
 Cc: Yishai Hadas <yishaih@nvidia.com>,
  Dennis Dalessandro <dennis.dalessandro@cornelisnetworks.com>,
  linux-rdma@vger.kernel.org, Robin Murphy <robin.murphy@arm.com>,
  Mike Marciniszyn <mike.marciniszyn@cornelisnetworks.com>,
  linux-kernel@vger.kernel.org,
  "iommu@lists.linux-foundation.org" <iommu@lists.linux-foundation.org>,
- Zhu Yanjun <zyjzyj2000@gmail.com>, Maor Gottlieb <maorg@nvidia.com>,
+ Doug Ledford <dledford@redhat.com>, Zhu Yanjun <zyjzyj2000@gmail.com>,
+ Jason Gunthorpe <jgg@nvidia.com>, Maor Gottlieb <maorg@nvidia.com>,
  Christoph Hellwig <hch@lst.de>,
  Bartlomiej Zolnierkiewicz <b.zolnierkie@samsung.com>
 X-BeenThere: iommu@lists.linux-foundation.org
@@ -159,130 +91,42 @@ List-Post: <mailto:iommu@lists.linux-foundation.org>
 List-Help: <mailto:iommu-request@lists.linux-foundation.org?subject=help>
 List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
  <mailto:iommu-request@lists.linux-foundation.org?subject=subscribe>
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-SGkgTGVvbiwKCk9uIDI5LjA2LjIwMjEgMTA6NDAsIExlb24gUm9tYW5vdnNreSB3cm90ZToKPiBG
-cm9tOiBNYW9yIEdvdHRsaWViIDxtYW9yZ0BudmlkaWEuY29tPgo+Cj4gb3JpZ19uZW50cyBzaG91
-bGQgcmVwcmVzZW50IHRoZSBudW1iZXIgb2YgZW50cmllcyB3aXRoIHBhZ2VzLAo+IGJ1dCBfX3Nn
-X2FsbG9jX3RhYmxlX2Zyb21fcGFnZXMgc2V0cyBvcmlnX25lbnRzIGFzIHRoZSBudW1iZXIgb2YK
-PiB0b3RhbCBlbnRyaWVzIGluIHRoZSB0YWJsZS4gVGhpcyBpcyB3cm9uZyB3aGVuIHRoZSBBUEkg
-aXMgdXNlZCBmb3IKPiBkeW5hbWljIGFsbG9jYXRpb24gd2hlcmUgbm90IGFsbCB0aGUgdGFibGUg
-ZW50cmllcyBhcmUgbWFwcGVkIHdpdGgKPiBwYWdlcy4gSXQgd2Fzbid0IG9ic2VydmVkIHVudGls
-IG5vdywgc2luY2UgUkRNQSB1bWVtIHdobyB1c2VzIHRoaXMKPiBBUEkgaW4gdGhlIGR5bmFtaWMg
-Zm9ybSBkb2Vzbid0IHVzZSBvcmlnX25lbnRzIGltcGxpY2l0IG9yIGV4cGxpY2l0Cj4gYnkgdGhl
-IHNjYXR0ZXJsaXN0IEFQSXMuCj4KPiBGaXggaXQgYnk6Cj4gMS4gU2V0IG9yaWdfbmVudHMgYXMg
-bnVtYmVyIG9mIGVudHJpZXMgd2l0aCBwYWdlcyBhbHNvIGluCj4gICAgIF9fc2dfYWxsb2NfdGFi
-bGVfZnJvbV9wYWdlcy4KPiAyLiBBZGQgYSBuZXcgZmllbGQgdG90YWxfbmVudHMgdG8gcmVmbGVj
-dCB0aGUgdG90YWwgbnVtYmVyIG9mIGVudHJpZXMKPiAgICAgaW4gdGhlIHRhYmxlLiBUaGlzIGlz
-IHJlcXVpcmVkIGZvciB0aGUgcmVsZWFzZSBmbG93IChzZ19mcmVlX3RhYmxlKS4KPiAgICAgVGhp
-cyBmaWxlZCBzaG91bGQgYmUgdXNlZCBpbnRlcm5hbGx5IG9ubHkgYnkgc2NhdHRlcmxpc3QuCj4K
-PiBGaXhlczogMDdkYTEyMjNlYzkzICgibGliL3NjYXR0ZXJsaXN0OiBBZGQgc3VwcG9ydCBpbiBk
-eW5hbWljIGFsbG9jYXRpb24gb2YgU0cgdGFibGUgZnJvbSBwYWdlcyIpCj4gU2lnbmVkLW9mZi1i
-eTogTWFvciBHb3R0bGllYiA8bWFvcmdAbnZpZGlhLmNvbT4KPiBTaWduZWQtb2ZmLWJ5OiBMZW9u
-IFJvbWFub3Zza3kgPGxlb25yb0BudmlkaWEuY29tPgoKVGhpcyBwYXRjaCBsYW5kZWQgaW4gbGlu
-dXgtbmV4dCAyMDIxMDYzMCBhcyBjb21taXQgYTUyNzI0NDU2OTI4IAooImxpYi9zY2F0dGVybGlz
-dDogRml4IHdyb25nIHVwZGF0ZSBvZiBvcmlnX25lbnRzIikuIEl0IGNhdXNlcyBzZXJpb3VzIApy
-ZWdyZXNzaW9uIGluIERNQS1JT01NVSBpbnRlZ3JhdGlvbiwgd2hpY2ggY2FuIGJlIG9ic2VydmVk
-IGZvciBleGFtcGxlIApvbiBBUk0gSnVubyBib2FyZCBkdXJpbmcgYm9vdDoKClVuYWJsZSB0byBo
-YW5kbGUga2VybmVsIHBhZ2luZyByZXF1ZXN0IGF0IHZpcnR1YWwgYWRkcmVzcyAwMDM3NmY0MmE2
-ZTQwNDU0Ck1lbSBhYm9ydCBpbmZvOgogwqAgRVNSID0gMHg5NjAwMDAwNAogwqAgRUMgPSAweDI1
-OiBEQUJUIChjdXJyZW50IEVMKSwgSUwgPSAzMiBiaXRzCiDCoCBTRVQgPSAwLCBGblYgPSAwCiDC
-oCBFQSA9IDAsIFMxUFRXID0gMAogwqAgRlNDID0gMHgwNDogbGV2ZWwgMCB0cmFuc2xhdGlvbiBm
-YXVsdApEYXRhIGFib3J0IGluZm86CiDCoCBJU1YgPSAwLCBJU1MgPSAweDAwMDAwMDA0CiDCoCBD
-TSA9IDAsIFduUiA9IDAKWzAwMzc2ZjQyYTZlNDA0NTRdIGFkZHJlc3MgYmV0d2VlbiB1c2VyIGFu
-ZCBrZXJuZWwgYWRkcmVzcyByYW5nZXMKSW50ZXJuYWwgZXJyb3I6IE9vcHM6IDk2MDAwMDA0IFsj
-MV0gUFJFRU1QVCBTTVAKTW9kdWxlcyBsaW5rZWQgaW46CkNQVTogMiBQSUQ6IDEgQ29tbTogc3dh
-cHBlci8wIE5vdCB0YWludGVkIDUuMTMuMC1uZXh0LTIwMjEwNjMwKyAjMzU4NQpIYXJkd2FyZSBu
-YW1lOiBBUk0gSnVubyBkZXZlbG9wbWVudCBib2FyZCAocjEpIChEVCkKcHN0YXRlOiA4MDAwMDAw
-NSAoTnpjdiBkYWlmIC1QQU4gLVVBTyAtVENPIEJUWVBFPS0tKQpwYyA6IF9fc2dfZnJlZV90YWJs
-ZSsweDYwLzB4YTAKbHIgOiBfX3NnX2ZyZWVfdGFibGUrMHg3Yy8weGEwCi4uCkNhbGwgdHJhY2U6
-CiDCoF9fc2dfZnJlZV90YWJsZSsweDYwLzB4YTAKIMKgc2dfZnJlZV90YWJsZSsweDFjLzB4MjgK
-IMKgaW9tbXVfZG1hX2FsbG9jKzB4YzgvMHgzODgKIMKgZG1hX2FsbG9jX2F0dHJzKzB4Y2MvMHhm
-MAogwqBkbWFtX2FsbG9jX2F0dHJzKzB4NjgvMHhiOAogwqBzaWwyNF9wb3J0X3N0YXJ0KzB4NjAv
-MHhlMAogwqBhdGFfaG9zdF9zdGFydC5wYXJ0LjMyKzB4YmMvMHgyMDgKIMKgYXRhX2hvc3RfYWN0
-aXZhdGUrMHg2NC8weDE1MAogwqBzaWwyNF9pbml0X29uZSsweDFlOC8weDI2OAogwqBsb2NhbF9w
-Y2lfcHJvYmUrMHgzYy8weGEwCiDCoHBjaV9kZXZpY2VfcHJvYmUrMHgxMjgvMHgxYzgKIMKgcmVh
-bGx5X3Byb2JlKzB4MTM4LzB4MmQwCiDCoF9fZHJpdmVyX3Byb2JlX2RldmljZSsweDc4LzB4ZDgK
-IMKgZHJpdmVyX3Byb2JlX2RldmljZSsweDQwLzB4MTEwCiDCoF9fZHJpdmVyX2F0dGFjaCsweGNj
-LzB4MTE4CiDCoGJ1c19mb3JfZWFjaF9kZXYrMHg2OC8weGM4CiDCoGRyaXZlcl9hdHRhY2grMHgy
-MC8weDI4CiDCoGJ1c19hZGRfZHJpdmVyKzB4MTY4LzB4MWY4CiDCoGRyaXZlcl9yZWdpc3Rlcisw
-eDYwLzB4MTEwCiDCoF9fcGNpX3JlZ2lzdGVyX2RyaXZlcisweDVjLzB4NjgKIMKgc2lsMjRfcGNp
-X2RyaXZlcl9pbml0KzB4MjAvMHgyOAogwqBkb19vbmVfaW5pdGNhbGwrMHg4NC8weDQ1MAogwqBr
-ZXJuZWxfaW5pdF9mcmVlYWJsZSsweDMxYy8weDM4YwogwqBrZXJuZWxfaW5pdCsweDIwLzB4MTIw
-CiDCoHJldF9mcm9tX2ZvcmsrMHgxMC8weDE4CkNvZGU6IGQzN2JlODg1IDZiMDEwMDdmIDUyODAw
-MDA0IDU0MDAwMGEyIChmODY1NjgxMykKLS0tWyBlbmQgdHJhY2UgNGJhNGYwYzljNDg3MTFhMSBd
-LS0tCktlcm5lbCBwYW5pYyAtIG5vdCBzeW5jaW5nOiBBdHRlbXB0ZWQgdG8ga2lsbCBpbml0ISBl
-eGl0Y29kZT0weDAwMDAwMDBiCgpJdCBsb29rcyB0aGF0IHNvbWUgY2hhbmdlcyB0byB0aGUgc2Nh
-dHRlcmxpc3Qgc3RydWN0dXJlcyBhcmUgbWlzc2luZyAKb3V0c2lkZSBvZiB0aGUgbGliL3NjYXR0
-ZXJsaXN0LmMuCgpGb3Igbm93IEkgd291bGQgc3VnZ2VzdCB0byByZXZlcnQgdGhpcyBjaGFuZ2Uu
-Cgo+IC0tLQo+ICAgaW5jbHVkZS9saW51eC9zY2F0dGVybGlzdC5oIHwgIDggKysrKysrLS0KPiAg
-IGxpYi9zY2F0dGVybGlzdC5jICAgICAgICAgICB8IDMyICsrKysrKysrLS0tLS0tLS0tLS0tLS0t
-LS0tLS0tLS0tCj4gICAyIGZpbGVzIGNoYW5nZWQsIDE0IGluc2VydGlvbnMoKyksIDI2IGRlbGV0
-aW9ucygtKQo+Cj4gZGlmZiAtLWdpdCBhL2luY2x1ZGUvbGludXgvc2NhdHRlcmxpc3QuaCBiL2lu
-Y2x1ZGUvbGludXgvc2NhdHRlcmxpc3QuaAo+IGluZGV4IDZmNzA1NzJiMjkzOC4uMWM4ODkxNDFl
-YjkxIDEwMDY0NAo+IC0tLSBhL2luY2x1ZGUvbGludXgvc2NhdHRlcmxpc3QuaAo+ICsrKyBiL2lu
-Y2x1ZGUvbGludXgvc2NhdHRlcmxpc3QuaAo+IEBAIC0zNSw4ICszNSwxMiBAQCBzdHJ1Y3Qgc2Nh
-dHRlcmxpc3Qgewo+ICAgCj4gICBzdHJ1Y3Qgc2dfdGFibGUgewo+ICAgCXN0cnVjdCBzY2F0dGVy
-bGlzdCAqc2dsOwkvKiB0aGUgbGlzdCAqLwo+IC0JdW5zaWduZWQgaW50IG5lbnRzOwkJLyogbnVt
-YmVyIG9mIG1hcHBlZCBlbnRyaWVzICovCj4gLQl1bnNpZ25lZCBpbnQgb3JpZ19uZW50czsJLyog
-b3JpZ2luYWwgc2l6ZSBvZiBsaXN0ICovCj4gKwl1bnNpZ25lZCBpbnQgbmVudHM7CQkvKiBudW1i
-ZXIgb2YgRE1BIG1hcHBlZCBlbnRyaWVzICovCj4gKwl1bnNpZ25lZCBpbnQgb3JpZ19uZW50czsJ
-LyogbnVtYmVyIG9mIENQVSBtYXBwZWQgZW50cmllcyAqLwo+ICsJLyogVGhlIGZpZWxkcyBiZWxv
-dyBzaG91bGQgYmUgdXNlZCBpbnRlcm5hbGx5IG9ubHkgYnkKPiArCSAqIHNjYXR0ZXJsaXN0IGlt
-cGxlbWVudGF0aW9uLgo+ICsJICovCj4gKwl1bnNpZ25lZCBpbnQgdG90YWxfbmVudHM7CS8qIG51
-bWJlciBvZiB0b3RhbCBlbnRyaWVzIGluIHRoZSB0YWJsZSAqLwo+ICAgfTsKPiAgIAo+ICAgLyoK
-PiBkaWZmIC0tZ2l0IGEvbGliL3NjYXR0ZXJsaXN0LmMgYi9saWIvc2NhdHRlcmxpc3QuYwo+IGlu
-ZGV4IGE1OTc3ODk0NjQwNC4uNmRiNzBhMWU3ZGQwIDEwMDY0NAo+IC0tLSBhL2xpYi9zY2F0dGVy
-bGlzdC5jCj4gKysrIGIvbGliL3NjYXR0ZXJsaXN0LmMKPiBAQCAtMTkyLDMzICsxOTIsMjYgQEAg
-c3RhdGljIHZvaWQgc2dfa2ZyZWUoc3RydWN0IHNjYXR0ZXJsaXN0ICpzZywgdW5zaWduZWQgaW50
-IG5lbnRzKQo+ICAgdm9pZCBfX3NnX2ZyZWVfdGFibGUoc3RydWN0IHNnX3RhYmxlICp0YWJsZSwg
-dW5zaWduZWQgaW50IG1heF9lbnRzLAo+ICAgCQkgICAgIHVuc2lnbmVkIGludCBuZW50c19maXJz
-dF9jaHVuaywgc2dfZnJlZV9mbiAqZnJlZV9mbikKPiAgIHsKPiAtCXN0cnVjdCBzY2F0dGVybGlz
-dCAqc2dsLCAqbmV4dDsKPiArCXN0cnVjdCBzY2F0dGVybGlzdCAqc2dsLCAqbmV4dCA9IE5VTEw7
-Cj4gICAJdW5zaWduZWQgY3Vycl9tYXhfZW50cyA9IG5lbnRzX2ZpcnN0X2NodW5rID86IG1heF9l
-bnRzOwo+ICAgCj4gICAJaWYgKHVubGlrZWx5KCF0YWJsZS0+c2dsKSkKPiAgIAkJcmV0dXJuOwo+
-ICAgCj4gICAJc2dsID0gdGFibGUtPnNnbDsKPiAtCXdoaWxlICh0YWJsZS0+b3JpZ19uZW50cykg
-ewo+IC0JCXVuc2lnbmVkIGludCBhbGxvY19zaXplID0gdGFibGUtPm9yaWdfbmVudHM7Cj4gLQkJ
-dW5zaWduZWQgaW50IHNnX3NpemU7Cj4gKwl3aGlsZSAodGFibGUtPnRvdGFsX25lbnRzKSB7Cj4g
-KwkJdW5zaWduZWQgaW50IGFsbG9jX3NpemUgPSB0YWJsZS0+dG90YWxfbmVudHM7Cj4gICAKPiAg
-IAkJLyoKPiAgIAkJICogSWYgd2UgaGF2ZSBtb3JlIHRoYW4gbWF4X2VudHMgc2VnbWVudHMgbGVm
-dCwKPiAgIAkJICogdGhlbiBhc3NpZ24gJ25leHQnIHRvIHRoZSBzZyB0YWJsZSBhZnRlciB0aGUg
-Y3VycmVudCBvbmUuCj4gLQkJICogc2dfc2l6ZSBpcyB0aGVuIG9uZSBsZXNzIHRoYW4gYWxsb2Mg
-c2l6ZSwgc2luY2UgdGhlIGxhc3QKPiAtCQkgKiBlbGVtZW50IGlzIHRoZSBjaGFpbiBwb2ludGVy
-Lgo+ICAgCQkgKi8KPiAgIAkJaWYgKGFsbG9jX3NpemUgPiBjdXJyX21heF9lbnRzKSB7Cj4gICAJ
-CQluZXh0ID0gc2dfY2hhaW5fcHRyKCZzZ2xbY3Vycl9tYXhfZW50cyAtIDFdKTsKPiAgIAkJCWFs
-bG9jX3NpemUgPSBjdXJyX21heF9lbnRzOwo+IC0JCQlzZ19zaXplID0gYWxsb2Nfc2l6ZSAtIDE7
-Cj4gLQkJfSBlbHNlIHsKPiAtCQkJc2dfc2l6ZSA9IGFsbG9jX3NpemU7Cj4gLQkJCW5leHQgPSBO
-VUxMOwo+ICAgCQl9Cj4gICAKPiAtCQl0YWJsZS0+b3JpZ19uZW50cyAtPSBzZ19zaXplOwo+ICsJ
-CXRhYmxlLT50b3RhbF9uZW50cyAtPSBhbGxvY19zaXplOwo+ICAgCQlpZiAobmVudHNfZmlyc3Rf
-Y2h1bmspCj4gICAJCQluZW50c19maXJzdF9jaHVuayA9IDA7Cj4gICAJCWVsc2UKPiBAQCAtMzAx
-LDIwICsyOTQsMTEgQEAgaW50IF9fc2dfYWxsb2NfdGFibGUoc3RydWN0IHNnX3RhYmxlICp0YWJs
-ZSwgdW5zaWduZWQgaW50IG5lbnRzLAo+ICAgCQl9IGVsc2Ugewo+ICAgCQkJc2cgPSBhbGxvY19m
-bihhbGxvY19zaXplLCBnZnBfbWFzayk7Cj4gICAJCX0KPiAtCQlpZiAodW5saWtlbHkoIXNnKSkg
-ewo+IC0JCQkvKgo+IC0JCQkgKiBBZGp1c3QgZW50cnkgY291bnQgdG8gcmVmbGVjdCB0aGF0IHRo
-ZSBsYXN0Cj4gLQkJCSAqIGVudHJ5IG9mIHRoZSBwcmV2aW91cyB0YWJsZSB3b24ndCBiZSB1c2Vk
-IGZvcgo+IC0JCQkgKiBsaW5rYWdlLiAgV2l0aG91dCB0aGlzLCBzZ19rZnJlZSgpIG1heSBnZXQK
-PiAtCQkJICogY29uZnVzZWQuCj4gLQkJCSAqLwo+IC0JCQlpZiAocHJ2KQo+IC0JCQkJdGFibGUt
-Pm5lbnRzID0gKyt0YWJsZS0+b3JpZ19uZW50czsKPiAtCj4gKwkJaWYgKHVubGlrZWx5KCFzZykp
-Cj4gICAJCQlyZXR1cm4gLUVOT01FTTsKPiAtCQl9Cj4gICAKPiAgIAkJc2dfaW5pdF90YWJsZShz
-ZywgYWxsb2Nfc2l6ZSk7Cj4gKwkJdGFibGUtPnRvdGFsX25lbnRzICs9IGFsbG9jX3NpemU7Cj4g
-ICAJCXRhYmxlLT5uZW50cyA9IHRhYmxlLT5vcmlnX25lbnRzICs9IHNnX3NpemU7Cj4gICAKPiAg
-IAkJLyoKPiBAQCAtMzg1LDEyICszNjksMTEgQEAgc3RhdGljIHN0cnVjdCBzY2F0dGVybGlzdCAq
-Z2V0X25leHRfc2coc3RydWN0IHNnX3RhYmxlICp0YWJsZSwKPiAgIAlpZiAoIW5ld19zZykKPiAg
-IAkJcmV0dXJuIEVSUl9QVFIoLUVOT01FTSk7Cj4gICAJc2dfaW5pdF90YWJsZShuZXdfc2csIGFs
-bG9jX3NpemUpOwo+ICsJdGFibGUtPnRvdGFsX25lbnRzICs9IGFsbG9jX3NpemU7Cj4gICAJaWYg
-KGN1cikgewo+ICAgCQlfX3NnX2NoYWluKG5leHRfc2csIG5ld19zZyk7Cj4gLQkJdGFibGUtPm9y
-aWdfbmVudHMgKz0gYWxsb2Nfc2l6ZSAtIDE7Cj4gICAJfSBlbHNlIHsKPiAgIAkJdGFibGUtPnNn
-bCA9IG5ld19zZzsKPiAtCQl0YWJsZS0+b3JpZ19uZW50cyA9IGFsbG9jX3NpemU7Cj4gICAJCXRh
-YmxlLT5uZW50cyA9IDA7Cj4gICAJfQo+ICAgCXJldHVybiBuZXdfc2c7Cj4gQEAgLTUxNSw2ICs0
-OTgsNyBAQCBzdHJ1Y3Qgc2NhdHRlcmxpc3QgKl9fc2dfYWxsb2NfdGFibGVfZnJvbV9wYWdlcyhz
-dHJ1Y3Qgc2dfdGFibGUgKnNndCwKPiAgIAkJY3VyX3BhZ2UgPSBqOwo+ICAgCX0KPiAgIAlzZ3Qt
-Pm5lbnRzICs9IGFkZGVkX25lbnRzOwo+ICsJc2d0LT5vcmlnX25lbnRzID0gc2d0LT5uZW50czsK
-PiAgIG91dDoKPiAgIAlpZiAoIWxlZnRfcGFnZXMpCj4gICAJCXNnX21hcmtfZW5kKHMpOwoKQmVz
-dCByZWdhcmRzCi0tIApNYXJlayBTenlwcm93c2tpLCBQaEQKU2Ftc3VuZyBSJkQgSW5zdGl0dXRl
-IFBvbGFuZAoKX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX18K
-aW9tbXUgbWFpbGluZyBsaXN0CmlvbW11QGxpc3RzLmxpbnV4LWZvdW5kYXRpb24ub3JnCmh0dHBz
-Oi8vbGlzdHMubGludXhmb3VuZGF0aW9uLm9yZy9tYWlsbWFuL2xpc3RpbmZvL2lvbW11
+On Wed, Jun 30, 2021 at 01:12:26PM +0200, Marek Szyprowski wrote:
+> Hi Leon,
+> 
+> On 29.06.2021 10:40, Leon Romanovsky wrote:
+> > From: Maor Gottlieb <maorg@nvidia.com>
+> >
+> > orig_nents should represent the number of entries with pages,
+> > but __sg_alloc_table_from_pages sets orig_nents as the number of
+> > total entries in the table. This is wrong when the API is used for
+> > dynamic allocation where not all the table entries are mapped with
+> > pages. It wasn't observed until now, since RDMA umem who uses this
+> > API in the dynamic form doesn't use orig_nents implicit or explicit
+> > by the scatterlist APIs.
+> >
+> > Fix it by:
+> > 1. Set orig_nents as number of entries with pages also in
+> >     __sg_alloc_table_from_pages.
+> > 2. Add a new field total_nents to reflect the total number of entries
+> >     in the table. This is required for the release flow (sg_free_table).
+> >     This filed should be used internally only by scatterlist.
+> >
+> > Fixes: 07da1223ec93 ("lib/scatterlist: Add support in dynamic allocation of SG table from pages")
+> > Signed-off-by: Maor Gottlieb <maorg@nvidia.com>
+> > Signed-off-by: Leon Romanovsky <leonro@nvidia.com>
+
+<...>
+
+> For now I would suggest to revert this change.
+
+Thanks for the report, we will drop this patch.
+_______________________________________________
+iommu mailing list
+iommu@lists.linux-foundation.org
+https://lists.linuxfoundation.org/mailman/listinfo/iommu
