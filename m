@@ -2,75 +2,105 @@ Return-Path: <SRS0=eogA=LY=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-8.8 required=3.0 tests=BAYES_00,
-	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_CR_TRAILER,MAILING_LIST_MULTI,
-	SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED autolearn=ham autolearn_force=no
+X-Spam-Status: No, score=-13.8 required=3.0 tests=BAYES_00,DKIM_INVALID,
+	DKIM_SIGNED,INCLUDES_CR_TRAILER,MAILING_LIST_MULTI,MENTIONS_GIT_HOSTING,
+	SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED autolearn=unavailable autolearn_force=no
 	version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 59F6FC11F69
-	for <iommu@archiver.kernel.org>; Wed, 30 Jun 2021 14:07:23 +0000 (UTC)
-Received: from smtp3.osuosl.org (smtp3.osuosl.org [140.211.166.136])
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5AC12C11F65
+	for <iommu@archiver.kernel.org>; Wed, 30 Jun 2021 15:57:01 +0000 (UTC)
+Received: from smtp1.osuosl.org (smtp1.osuosl.org [140.211.166.138])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 1FE4E61433
-	for <iommu@archiver.kernel.org>; Wed, 30 Jun 2021 14:07:23 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 1FE4E61433
-Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=collabora.com
+	by mail.kernel.org (Postfix) with ESMTPS id 0A14461490
+	for <iommu@archiver.kernel.org>; Wed, 30 Jun 2021 15:57:00 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 0A14461490
+Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=kernel.org
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by smtp3.osuosl.org (Postfix) with ESMTP id 2BFDC60A7C;
-	Wed, 30 Jun 2021 14:07:22 +0000 (UTC)
+	by smtp1.osuosl.org (Postfix) with ESMTP id B363983BAD;
+	Wed, 30 Jun 2021 15:57:00 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from smtp3.osuosl.org ([127.0.0.1])
-	by localhost (smtp3.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id CYy_NWRULSXS; Wed, 30 Jun 2021 14:07:18 +0000 (UTC)
-Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [IPv6:2605:bc80:3010:104::8cd3:938])
-	by smtp3.osuosl.org (Postfix) with ESMTPS id 5390360A57;
-	Wed, 30 Jun 2021 14:07:17 +0000 (UTC)
+Received: from smtp1.osuosl.org ([127.0.0.1])
+	by localhost (smtp1.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+	with ESMTP id bJSb65qbhi14; Wed, 30 Jun 2021 15:56:59 +0000 (UTC)
+Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
+	by smtp1.osuosl.org (Postfix) with ESMTPS id 8F01E83B86;
+	Wed, 30 Jun 2021 15:56:59 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 05F09C0026;
-	Wed, 30 Jun 2021 14:07:17 +0000 (UTC)
-Received: from smtp3.osuosl.org (smtp3.osuosl.org [IPv6:2605:bc80:3010::136])
- by lists.linuxfoundation.org (Postfix) with ESMTP id B62F4C000E
- for <iommu@lists.linux-foundation.org>; Wed, 30 Jun 2021 13:53:42 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 4D1AAC0010;
+	Wed, 30 Jun 2021 15:56:59 +0000 (UTC)
+Received: from smtp4.osuosl.org (smtp4.osuosl.org [IPv6:2605:bc80:3010::137])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id B5722C000E
+ for <iommu@lists.linux-foundation.org>; Wed, 30 Jun 2021 15:56:57 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by smtp3.osuosl.org (Postfix) with ESMTP id A34A660592
- for <iommu@lists.linux-foundation.org>; Wed, 30 Jun 2021 13:53:41 +0000 (UTC)
+ by smtp4.osuosl.org (Postfix) with ESMTP id 99F01415A7
+ for <iommu@lists.linux-foundation.org>; Wed, 30 Jun 2021 15:56:57 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from smtp3.osuosl.org ([127.0.0.1])
- by localhost (smtp3.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id c929WY2C6DM7 for <iommu@lists.linux-foundation.org>;
- Wed, 30 Jun 2021 13:53:41 +0000 (UTC)
+Authentication-Results: smtp4.osuosl.org (amavisd-new);
+ dkim=pass (2048-bit key) header.d=kernel.org
+Received: from smtp4.osuosl.org ([127.0.0.1])
+ by localhost (smtp4.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+ with ESMTP id UPuzGLIYuZeY for <iommu@lists.linux-foundation.org>;
+ Wed, 30 Jun 2021 15:56:56 +0000 (UTC)
 X-Greylist: domain auto-whitelisted by SQLgrey-1.8.0
-Received: from bhuna.collabora.co.uk (bhuna.collabora.co.uk [46.235.227.227])
- by smtp3.osuosl.org (Postfix) with ESMTPS id 1533D6079A
- for <iommu@lists.linux-foundation.org>; Wed, 30 Jun 2021 13:53:40 +0000 (UTC)
-Received: from maud (unknown [IPv6:2600:8800:8c04:8c00::912b])
- (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
- (No client certificate requested) (Authenticated sender: alyssa)
- by bhuna.collabora.co.uk (Postfix) with ESMTPSA id 3BA061F43564;
- Wed, 30 Jun 2021 14:53:32 +0100 (BST)
-Date: Wed, 30 Jun 2021 09:53:26 -0400
-From: Alyssa Rosenzweig <alyssa@collabora.com>
-To: Sven Peter <sven@svenpeter.dev>
-Subject: Re: [PATCH v4 1/3] iommu: io-pgtable: add DART pagetable format
-Message-ID: <YNx3Vvs9VjvIpx2f@maud>
-References: <20210627143405.77298-1-sven@svenpeter.dev>
- <20210627143405.77298-2-sven@svenpeter.dev>
+Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
+ by smtp4.osuosl.org (Postfix) with ESMTPS id 719334159E
+ for <iommu@lists.linux-foundation.org>; Wed, 30 Jun 2021 15:56:56 +0000 (UTC)
+Received: by mail.kernel.org (Postfix) with ESMTPSA id 3EC0061396;
+ Wed, 30 Jun 2021 15:56:53 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+ s=k20201202; t=1625068615;
+ bh=t4c1D/KrdZudddoFFMreAQi55GnAG0OUL4mpRujr/+8=;
+ h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+ b=nFQR+NYjpCrpMIj0+9nBAj35wlj1qXRWbFKtyhNDLpJTAm3BAAOI+jIUn7QIQ6LMC
+ /D08b/Wyq1LKmfD6NJJYuuUXm1XpHRMF+bzag+U7SE0Xnf1l+0yaFFUCUoKE4yB6Fx
+ KHCUGF9UUbr1kSihYQ7S2P6QTrW/0sw9J8RiF/5y7S55QWGDrjBUVqbIJpceKtB839
+ 13XYMsllNYSyOsjMPZqtEclitRsqTPicPLIWpPGvJ9tnj6RZjijLVBtTMriTuGUDnx
+ pujXO32GnzzUvzSsthpj3FxbtH2/lBtbWkeBfV4uT8mpQQ+qjMcUVFz7XO5LQkzFA7
+ Ko9guip4RPSmA==
+Date: Wed, 30 Jun 2021 08:56:51 -0700
+From: Nathan Chancellor <nathan@kernel.org>
+To: Will Deacon <will@kernel.org>
+Subject: Re: [PATCH v15 06/12] swiotlb: Use is_swiotlb_force_bounce for
+ swiotlb data bouncing
+Message-ID: <YNyUQwiagNeZ9YeJ@Ryzen-9-3900X.localdomain>
+References: <20210624155526.2775863-1-tientzu@chromium.org>
+ <20210624155526.2775863-7-tientzu@chromium.org>
+ <YNvMDFWKXSm4LRfZ@Ryzen-9-3900X.localdomain>
+ <CALiNf2-a-haQN0-4+gX8+wa++52-0CnO2O4BEkxrQCxoTa_47w@mail.gmail.com>
+ <20210630114348.GA8383@willie-the-truck>
 MIME-Version: 1.0
 Content-Disposition: inline
-In-Reply-To: <20210627143405.77298-2-sven@svenpeter.dev>
-X-Mailman-Approved-At: Wed, 30 Jun 2021 14:07:16 +0000
-Cc: devicetree@vger.kernel.org, r.czerwinski@pengutronix.de,
- Arnd Bergmann <arnd@kernel.org>, Will Deacon <will@kernel.org>,
- Hector Martin <marcan@marcan.st>, linux-kernel@vger.kernel.org,
- iommu@lists.linux-foundation.org, Rob Herring <robh+dt@kernel.org>,
- Alexander Graf <graf@amazon.com>,
- Alyssa Rosenzweig <alyssa.rosenzweig@collabora.com>,
- Marc Zyngier <maz@kernel.org>,
- Mohamed Mediouni <mohamed.mediouni@caramail.com>,
- Mark Kettenis <mark.kettenis@xs4all.nl>, Robin Murphy <robin.murphy@arm.com>,
- linux-arm-kernel@lists.infradead.org, Stan Skowronek <stan@corellium.com>
+In-Reply-To: <20210630114348.GA8383@willie-the-truck>
+Cc: heikki.krogerus@linux.intel.com, thomas.hellstrom@linux.intel.com,
+ peterz@infradead.org, benh@kernel.crashing.org,
+ joonas.lahtinen@linux.intel.com, dri-devel@lists.freedesktop.org,
+ chris@chris-wilson.co.uk, grant.likely@arm.com, paulus@samba.org,
+ Frank Rowand <frowand.list@gmail.com>, mingo@kernel.org,
+ Stefano Stabellini <sstabellini@kernel.org>,
+ Saravana Kannan <saravanak@google.com>, mpe@ellerman.id.au,
+ "Rafael J . Wysocki" <rafael.j.wysocki@intel.com>,
+ Christoph Hellwig <hch@lst.de>,
+ Bartosz Golaszewski <bgolaszewski@baylibre.com>, bskeggs@redhat.com,
+ linux-pci@vger.kernel.org, xen-devel@lists.xenproject.org,
+ Thierry Reding <treding@nvidia.com>, intel-gfx@lists.freedesktop.org,
+ matthew.auld@intel.com, linux-devicetree <devicetree@vger.kernel.org>,
+ Jianxiong Gao <jxgao@google.com>, Daniel Vetter <daniel@ffwll.ch>,
+ Konrad Rzeszutek Wilk <konrad.wilk@oracle.com>,
+ maarten.lankhorst@linux.intel.com, airlied@linux.ie,
+ Dan Williams <dan.j.williams@intel.com>, linuxppc-dev@lists.ozlabs.org,
+ jani.nikula@linux.intel.com, Rob Herring <robh+dt@kernel.org>,
+ rodrigo.vivi@intel.com, Bjorn Helgaas <bhelgaas@google.com>,
+ Claire Chang <tientzu@chromium.org>, boris.ostrovsky@oracle.com,
+ Andy Shevchenko <andriy.shevchenko@linux.intel.com>, jgross@suse.com,
+ Nicolas Boichat <drinkcat@chromium.org>, Greg KH <gregkh@linuxfoundation.org>,
+ Randy Dunlap <rdunlap@infradead.org>, Qian Cai <quic_qiancai@quicinc.com>,
+ lkml <linux-kernel@vger.kernel.org>,
+ "list@263.net:IOMMU DRIVERS" <iommu@lists.linux-foundation.org>,
+ Jim Quinlan <james.quinlan@broadcom.com>, xypron.glpk@gmx.de,
+ Tom Lendacky <thomas.lendacky@amd.com>, Robin Murphy <robin.murphy@arm.com>,
+ bauerman@linux.ibm.com
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -88,7 +118,84 @@ Content-Transfer-Encoding: 7bit
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-Reviewed-by: Alyssa Rosenzweig <alyssa.rosenzweig@collabora.com>
+Hi Will and Claire,
+
+On Wed, Jun 30, 2021 at 12:43:48PM +0100, Will Deacon wrote:
+> On Wed, Jun 30, 2021 at 05:17:27PM +0800, Claire Chang wrote:
+> > On Wed, Jun 30, 2021 at 9:43 AM Nathan Chancellor <nathan@kernel.org> wrote:
+> > >
+> > > On Thu, Jun 24, 2021 at 11:55:20PM +0800, Claire Chang wrote:
+> > > > Propagate the swiotlb_force into io_tlb_default_mem->force_bounce and
+> > > > use it to determine whether to bounce the data or not. This will be
+> > > > useful later to allow for different pools.
+> > > >
+> > > > Signed-off-by: Claire Chang <tientzu@chromium.org>
+> > > > Reviewed-by: Christoph Hellwig <hch@lst.de>
+> > > > Tested-by: Stefano Stabellini <sstabellini@kernel.org>
+> > > > Tested-by: Will Deacon <will@kernel.org>
+> > > > Acked-by: Stefano Stabellini <sstabellini@kernel.org>
+> > >
+> > > This patch as commit af452ec1b1a3 ("swiotlb: Use is_swiotlb_force_bounce
+> > > for swiotlb data bouncing") causes my Ryzen 3 4300G system to fail to
+> > > get to an X session consistently (although not every single time),
+> > > presumably due to a crash in the AMDGPU driver that I see in dmesg.
+> > >
+> > > I have attached logs at af452ec1b1a3 and f127c9556a8e and I am happy
+> > > to provide any further information, debug, or test patches as necessary.
+> > 
+> > Are you using swiotlb=force? or the swiotlb_map is called because of
+> > !dma_capable? (https://git.kernel.org/pub/scm/linux/kernel/git/next/linux-next.git/tree/kernel/dma/direct.h#n93)
+> 
+> The command line is in the dmesg:
+> 
+>   | Kernel command line: initrd=\amd-ucode.img initrd=\initramfs-linux-next-llvm.img root=PARTUUID=8680aa0c-cf09-4a69-8cf3-970478040ee7 rw intel_pstate=no_hwp irqpoll
+> 
+> but I worry that this looks _very_ similar to the issue reported by Qian
+> Cai which we thought we had fixed. Nathan -- is the failure deterministic?
+
+Yes, for the most part. It does not happen every single boot so when I
+was bisecting, I did a series of seven boots and only considered the
+revision good when all seven of them made it to LightDM's greeter. My
+results that I notated show most bad revisions failed anywhere from four
+to six times.
+
+> > `BUG: unable to handle page fault for address: 00000000003a8290` and
+> > the fact it crashed at `_raw_spin_lock_irqsave` look like the memory
+> > (maybe dev->dma_io_tlb_mem) was corrupted?
+> > The dev->dma_io_tlb_mem should be set here
+> > (https://git.kernel.org/pub/scm/linux/kernel/git/next/linux-next.git/tree/drivers/pci/probe.c#n2528)
+> > through device_initialize.
+> 
+> I'm less sure about this. 'dma_io_tlb_mem' should be pointing at
+> 'io_tlb_default_mem', which is a page-aligned allocation from memblock.
+> The spinlock is at offset 0x24 in that structure, and looking at the
+> register dump from the crash:
+> 
+> Jun 29 18:28:42 hp-4300G kernel: RSP: 0018:ffffadb4013db9e8 EFLAGS: 00010006
+> Jun 29 18:28:42 hp-4300G kernel: RAX: 00000000003a8290 RBX: 0000000000000000 RCX: ffff8900572ad580
+> Jun 29 18:28:42 hp-4300G kernel: RDX: ffff89005653f024 RSI: 00000000000c0000 RDI: 0000000000001d17
+> Jun 29 18:28:42 hp-4300G kernel: RBP: 000000000a20d000 R08: 00000000000c0000 R09: 0000000000000000
+> Jun 29 18:28:42 hp-4300G kernel: R10: 000000000a20d000 R11: ffff89005653f000 R12: 0000000000000212
+> Jun 29 18:28:42 hp-4300G kernel: R13: 0000000000001000 R14: 0000000000000002 R15: 0000000000200000
+> Jun 29 18:28:42 hp-4300G kernel: FS:  00007f1f8898ea40(0000) GS:ffff890057280000(0000) knlGS:0000000000000000
+> Jun 29 18:28:42 hp-4300G kernel: CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
+> Jun 29 18:28:42 hp-4300G kernel: CR2: 00000000003a8290 CR3: 00000001020d0000 CR4: 0000000000350ee0
+> Jun 29 18:28:42 hp-4300G kernel: Call Trace:
+> Jun 29 18:28:42 hp-4300G kernel:  _raw_spin_lock_irqsave+0x39/0x50
+> Jun 29 18:28:42 hp-4300G kernel:  swiotlb_tbl_map_single+0x12b/0x4c0
+> 
+> Then that correlates with R11 holding the 'dma_io_tlb_mem' pointer and
+> RDX pointing at the spinlock. Yet RAX is holding junk :/
+> 
+> I agree that enabling KASAN would be a good idea, but I also think we
+> probably need to get some more information out of swiotlb_tbl_map_single()
+> to see see what exactly is going wrong in there.
+
+I can certainly enable KASAN and if there is any debug print I can add
+or dump anything, let me know!
+
+Cheers,
+Nathan
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
