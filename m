@@ -2,106 +2,105 @@ Return-Path: <SRS0=acbz=LZ=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-3.5 required=3.0 tests=BAYES_00,DKIM_INVALID,
-	DKIM_SIGNED,HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,SPF_HELO_NONE,
-	SPF_PASS,URIBL_RED autolearn=no autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-10.3 required=3.0 tests=BAYES_00,DKIM_INVALID,
+	DKIM_SIGNED,MAILING_LIST_MULTI,MENTIONS_GIT_HOSTING,SPF_HELO_NONE,SPF_PASS,
+	URIBL_RED,USER_AGENT_SANE_1 autolearn=unavailable autolearn_force=no
+	version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7F79FC11F64
-	for <iommu@archiver.kernel.org>; Thu,  1 Jul 2021 06:50:22 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 17546C11F69
+	for <iommu@archiver.kernel.org>; Thu,  1 Jul 2021 07:41:03 +0000 (UTC)
 Received: from smtp3.osuosl.org (smtp3.osuosl.org [140.211.166.136])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id F13B16147D
-	for <iommu@archiver.kernel.org>; Thu,  1 Jul 2021 06:50:21 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org F13B16147D
-Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=bytedance.com
+	by mail.kernel.org (Postfix) with ESMTPS id A687B614A5
+	for <iommu@archiver.kernel.org>; Thu,  1 Jul 2021 07:41:02 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org A687B614A5
+Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=kernel.org
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by smtp3.osuosl.org (Postfix) with ESMTP id BC09360643;
-	Thu,  1 Jul 2021 06:50:21 +0000 (UTC)
+	by smtp3.osuosl.org (Postfix) with ESMTP id 723DF60651;
+	Thu,  1 Jul 2021 07:41:02 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
 Received: from smtp3.osuosl.org ([127.0.0.1])
 	by localhost (smtp3.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id 8R-bX9c2TfPP; Thu,  1 Jul 2021 06:50:21 +0000 (UTC)
+	with ESMTP id EVM3chMt8QmS; Thu,  1 Jul 2021 07:41:01 +0000 (UTC)
 Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by smtp3.osuosl.org (Postfix) with ESMTPS id AD7EA60627;
-	Thu,  1 Jul 2021 06:50:20 +0000 (UTC)
+	by smtp3.osuosl.org (Postfix) with ESMTPS id 66C7A608EC;
+	Thu,  1 Jul 2021 07:41:01 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 7F286C0010;
-	Thu,  1 Jul 2021 06:50:20 +0000 (UTC)
-Received: from smtp2.osuosl.org (smtp2.osuosl.org [140.211.166.133])
- by lists.linuxfoundation.org (Postfix) with ESMTP id E8D20C0010
- for <iommu@lists.linux-foundation.org>; Thu,  1 Jul 2021 06:50:17 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 3FBF5C001A;
+	Thu,  1 Jul 2021 07:41:01 +0000 (UTC)
+Received: from smtp3.osuosl.org (smtp3.osuosl.org [140.211.166.136])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 6012CC000E
+ for <iommu@lists.linux-foundation.org>; Thu,  1 Jul 2021 07:41:00 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by smtp2.osuosl.org (Postfix) with ESMTP id E46384039F
- for <iommu@lists.linux-foundation.org>; Thu,  1 Jul 2021 06:50:17 +0000 (UTC)
+ by smtp3.osuosl.org (Postfix) with ESMTP id 38850608EC
+ for <iommu@lists.linux-foundation.org>; Thu,  1 Jul 2021 07:41:00 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Authentication-Results: smtp2.osuosl.org (amavisd-new);
- dkim=pass (2048-bit key) header.d=bytedance-com.20150623.gappssmtp.com
-Received: from smtp2.osuosl.org ([127.0.0.1])
- by localhost (smtp2.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id YpYY67sfpSLr for <iommu@lists.linux-foundation.org>;
- Thu,  1 Jul 2021 06:50:16 +0000 (UTC)
-X-Greylist: whitelisted by SQLgrey-1.8.0
-Received: from mail-ej1-x62b.google.com (mail-ej1-x62b.google.com
- [IPv6:2a00:1450:4864:20::62b])
- by smtp2.osuosl.org (Postfix) with ESMTPS id 8561A401DF
- for <iommu@lists.linux-foundation.org>; Thu,  1 Jul 2021 06:50:16 +0000 (UTC)
-Received: by mail-ej1-x62b.google.com with SMTP id c17so8564807ejk.13
- for <iommu@lists.linux-foundation.org>; Wed, 30 Jun 2021 23:50:16 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
- d=bytedance-com.20150623.gappssmtp.com; s=20150623;
- h=mime-version:references:in-reply-to:from:date:message-id:subject:to
- :cc; bh=j02ToljqO7cRBUGAX2kOb5odUf1+MulKZRF56vB9XJw=;
- b=szPt3yjQkK/eOHnZmjZxK4k+ezfPy7N6CPhm+x7EICOpDhKGVX0SiYPkZ71JWWvZoa
- 8pTmz5fIarGaEdAOZPXlqb3Ft+IEB/7WrLziKTUMgfJwbxqKu7WpgOrDt2jDUDrJtIWr
- cbeLlyv90jBAQgkaG5PcPMpKIESF32ydtpd5t9BVRkR/UxOzB7/03fJbEeEofSeS0xm4
- nBRhtXHTm/IybqaRL0yZyrTa8PU3gB2gMQ79/soCsEBZSt5m98thaMV4L8/9brwhRN7o
- B363iYyE78ClSv8CfWaatXdNXexk42WbsmRlR9FUB8yp+pkqine3MzByepxq/Xp9WTk6
- QDZw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
- d=1e100.net; s=20161025;
- h=x-gm-message-state:mime-version:references:in-reply-to:from:date
- :message-id:subject:to:cc;
- bh=j02ToljqO7cRBUGAX2kOb5odUf1+MulKZRF56vB9XJw=;
- b=f0ek0ea9Axo1vJEa12f9J9VzDOTZg5YFyR6+8ifwa1nHmyl4/OgcKNOpbv+OblL0Zx
- FWLosJi3YWUV2xmu0ODgpK8ndLb8lX5/mmCl/LhMvIrSTJwouK/k7LTF+ZtMm0vZtLyR
- GAwPv4r49ITB87PM+58GAZ7GPrcYO8hk8CKRHzd/od0t/K21Vr37ddpOR+XKJFyrMvPA
- rbmnRfUdgKZlOwFfFpzMgbi2CjzGLmZ6W5bfzcDSuC5D1hbM2uu3bNsl3CdLTk9aBqFc
- 9NvN7bOI7/bGZo4o6ZyVi7uRP7Bkpm7ebVonPzMbQjdliPbs/vyiJfA0QHAijPxJ88mO
- mw2A==
-X-Gm-Message-State: AOAM532GKd4lfkjkEEY1S7p/Swe3g7yHOqJJfBHrTTahIiAgklpmXjjG
- +ahfdxddC+P6Ydy7gJpg8HOdPnIfG1zVytLNHTBQ
-X-Google-Smtp-Source: ABdhPJw5rO5qehXjBGvgudrN3VY1PB04pXHwf1f+BSEDIJShRRuy3gy/c2hvero6OzD/zDnU0PCg34TMpYMSKS1otIo=
-X-Received: by 2002:a17:907:1b11:: with SMTP id
- mp17mr39880031ejc.1.1625122214373; 
- Wed, 30 Jun 2021 23:50:14 -0700 (PDT)
+Received: from smtp3.osuosl.org ([127.0.0.1])
+ by localhost (smtp3.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+ with ESMTP id jlBl_8k9RP5h for <iommu@lists.linux-foundation.org>;
+ Thu,  1 Jul 2021 07:40:59 +0000 (UTC)
+X-Greylist: domain auto-whitelisted by SQLgrey-1.8.0
+Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
+ by smtp3.osuosl.org (Postfix) with ESMTPS id 6B62F60651
+ for <iommu@lists.linux-foundation.org>; Thu,  1 Jul 2021 07:40:59 +0000 (UTC)
+Received: by mail.kernel.org (Postfix) with ESMTPSA id 0BF8F61490;
+ Thu,  1 Jul 2021 07:40:49 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+ s=k20201202; t=1625125258;
+ bh=V3O+3W7jB9kkeE64PRRWE2Y3UpoZf8XatBMI8/4BWL4=;
+ h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+ b=F47xX0udIB6iAhzJO4OCoYXustVjtbNDusBM6+5rMT4M3Jwb59Ij6VbvwwiLyzT6q
+ lVI9XKD0neOgmCNGZhPOuPRmgvUtcJwOJudRhNq8QU0qAxfZtInwaJU1ov8QiZuLeT
+ DSyGO4DRrv/TOQGPwoVHvv2mYwNhMKcCDaJwQuNmTPf97jcrOnjcpDKJmqwAzkdem5
+ hHvVa4UcTux22+QKhFYM3yrVmN1Vb2rSgrqmfY6qt7l9uLrocYxekS5t84/HB7q0FV
+ t30L31wv/VRZpgr/tSPS/Ve7LY6CjYBHT4Q7WRQAtBhB8uvBHYNybLCcdlqWGz6LE7
+ dIvbEvT0BuNHw==
+Date: Thu, 1 Jul 2021 08:40:46 +0100
+From: Will Deacon <will@kernel.org>
+To: Nathan Chancellor <nathan@kernel.org>
+Subject: Re: [PATCH v15 06/12] swiotlb: Use is_swiotlb_force_bounce for
+ swiotlb data bouncing
+Message-ID: <20210701074045.GA9436@willie-the-truck>
+References: <20210624155526.2775863-1-tientzu@chromium.org>
+ <20210624155526.2775863-7-tientzu@chromium.org>
+ <YNvMDFWKXSm4LRfZ@Ryzen-9-3900X.localdomain>
+ <CALiNf2-a-haQN0-4+gX8+wa++52-0CnO2O4BEkxrQCxoTa_47w@mail.gmail.com>
+ <20210630114348.GA8383@willie-the-truck>
+ <YNyUQwiagNeZ9YeJ@Ryzen-9-3900X.localdomain>
 MIME-Version: 1.0
-References: <20210615141331.407-1-xieyongji@bytedance.com>
- <20210615141331.407-10-xieyongji@bytedance.com>
- <YNSatrDFsg+4VvH4@stefanha-x1.localdomain>
- <CACycT3vaXQ4dxC9QUzXXJs7og6TVqqVGa8uHZnTStacsYAiFwQ@mail.gmail.com>
- <YNw+q/ADMPviZi6S@stefanha-x1.localdomain>
-In-Reply-To: <YNw+q/ADMPviZi6S@stefanha-x1.localdomain>
-From: Yongji Xie <xieyongji@bytedance.com>
-Date: Thu, 1 Jul 2021 14:50:03 +0800
-Message-ID: <CACycT3t6M5i0gznABm52v=rdmeeLZu8smXAOLg+WsM3WY1fgTw@mail.gmail.com>
-Subject: Re: Re: Re: [PATCH v8 09/10] vduse: Introduce VDUSE - vDPA Device in
- Userspace
-To: Stefan Hajnoczi <stefanha@redhat.com>
-Cc: kvm <kvm@vger.kernel.org>, "Michael S. Tsirkin" <mst@redhat.com>,
- Jason Wang <jasowang@redhat.com>,
- virtualization <virtualization@lists.linux-foundation.org>,
- Christian Brauner <christian.brauner@canonical.com>,
- Jonathan Corbet <corbet@lwn.net>, Matthew Wilcox <willy@infradead.org>,
- Christoph Hellwig <hch@infradead.org>,
- Dan Carpenter <dan.carpenter@oracle.com>,
- Stefano Garzarella <sgarzare@redhat.com>, Al Viro <viro@zeniv.linux.org.uk>,
- songmuchun@bytedance.com, Jens Axboe <axboe@kernel.dk>,
- Greg KH <gregkh@linuxfoundation.org>, Randy Dunlap <rdunlap@infradead.org>,
- linux-kernel <linux-kernel@vger.kernel.org>, iommu@lists.linux-foundation.org,
- bcrl@kvack.org, netdev@vger.kernel.org, linux-fsdevel@vger.kernel.org,
- =?UTF-8?Q?Mika_Penttil=C3=A4?= <mika.penttila@nextfour.com>
+Content-Disposition: inline
+In-Reply-To: <YNyUQwiagNeZ9YeJ@Ryzen-9-3900X.localdomain>
+User-Agent: Mutt/1.10.1 (2018-07-13)
+Cc: heikki.krogerus@linux.intel.com, thomas.hellstrom@linux.intel.com,
+ peterz@infradead.org, benh@kernel.crashing.org,
+ joonas.lahtinen@linux.intel.com, dri-devel@lists.freedesktop.org,
+ chris@chris-wilson.co.uk, grant.likely@arm.com, paulus@samba.org,
+ Frank Rowand <frowand.list@gmail.com>, mingo@kernel.org,
+ Stefano Stabellini <sstabellini@kernel.org>,
+ Saravana Kannan <saravanak@google.com>, mpe@ellerman.id.au,
+ "Rafael J . Wysocki" <rafael.j.wysocki@intel.com>,
+ Christoph Hellwig <hch@lst.de>,
+ Bartosz Golaszewski <bgolaszewski@baylibre.com>, bskeggs@redhat.com,
+ linux-pci@vger.kernel.org, xen-devel@lists.xenproject.org,
+ Thierry Reding <treding@nvidia.com>, intel-gfx@lists.freedesktop.org,
+ matthew.auld@intel.com, linux-devicetree <devicetree@vger.kernel.org>,
+ Jianxiong Gao <jxgao@google.com>, Daniel Vetter <daniel@ffwll.ch>,
+ Konrad Rzeszutek Wilk <konrad.wilk@oracle.com>,
+ maarten.lankhorst@linux.intel.com, airlied@linux.ie,
+ Dan Williams <dan.j.williams@intel.com>, linuxppc-dev@lists.ozlabs.org,
+ jani.nikula@linux.intel.com, Rob Herring <robh+dt@kernel.org>,
+ rodrigo.vivi@intel.com, Bjorn Helgaas <bhelgaas@google.com>,
+ Claire Chang <tientzu@chromium.org>, boris.ostrovsky@oracle.com,
+ Andy Shevchenko <andriy.shevchenko@linux.intel.com>, jgross@suse.com,
+ Nicolas Boichat <drinkcat@chromium.org>, Greg KH <gregkh@linuxfoundation.org>,
+ Randy Dunlap <rdunlap@infradead.org>, Qian Cai <quic_qiancai@quicinc.com>,
+ lkml <linux-kernel@vger.kernel.org>,
+ "list@263.net:IOMMU DRIVERS" <iommu@lists.linux-foundation.org>,
+ Jim Quinlan <james.quinlan@broadcom.com>, xypron.glpk@gmx.de,
+ Tom Lendacky <thomas.lendacky@amd.com>, Robin Murphy <robin.murphy@arm.com>,
+ bauerman@linux.ibm.com
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -119,70 +118,50 @@ Content-Transfer-Encoding: 7bit
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-On Wed, Jun 30, 2021 at 5:51 PM Stefan Hajnoczi <stefanha@redhat.com> wrote:
->
-> On Tue, Jun 29, 2021 at 10:59:51AM +0800, Yongji Xie wrote:
-> > On Mon, Jun 28, 2021 at 9:02 PM Stefan Hajnoczi <stefanha@redhat.com> wrote:
-> > >
-> > > On Tue, Jun 15, 2021 at 10:13:30PM +0800, Xie Yongji wrote:
-> > > > +/* ioctls */
-> > > > +
-> > > > +struct vduse_dev_config {
-> > > > +     char name[VDUSE_NAME_MAX]; /* vduse device name */
-> > > > +     __u32 vendor_id; /* virtio vendor id */
-> > > > +     __u32 device_id; /* virtio device id */
-> > > > +     __u64 features; /* device features */
-> > > > +     __u64 bounce_size; /* bounce buffer size for iommu */
-> > > > +     __u16 vq_size_max; /* the max size of virtqueue */
-> > >
-> > > The VIRTIO specification allows per-virtqueue sizes. A device can have
-> > > two virtqueues, where the first one allows up to 1024 descriptors and
-> > > the second one allows only 128 descriptors, for example.
-> > >
-> >
-> > Good point! But it looks like virtio-vdpa/virtio-pci doesn't support
-> > that now. All virtqueues have the same maximum size.
->
-> I see struct vpda_config_ops only supports a per-device max vq size:
-> u16 (*get_vq_num_max)(struct vdpa_device *vdev);
->
-> virtio-pci supports per-virtqueue sizes because the struct
-> virtio_pci_common_cfg->queue_size register is per-queue (controlled by
-> queue_select).
->
+On Wed, Jun 30, 2021 at 08:56:51AM -0700, Nathan Chancellor wrote:
+> On Wed, Jun 30, 2021 at 12:43:48PM +0100, Will Deacon wrote:
+> > On Wed, Jun 30, 2021 at 05:17:27PM +0800, Claire Chang wrote:
+> > > `BUG: unable to handle page fault for address: 00000000003a8290` and
+> > > the fact it crashed at `_raw_spin_lock_irqsave` look like the memory
+> > > (maybe dev->dma_io_tlb_mem) was corrupted?
+> > > The dev->dma_io_tlb_mem should be set here
+> > > (https://git.kernel.org/pub/scm/linux/kernel/git/next/linux-next.git/tree/drivers/pci/probe.c#n2528)
+> > > through device_initialize.
+> > 
+> > I'm less sure about this. 'dma_io_tlb_mem' should be pointing at
+> > 'io_tlb_default_mem', which is a page-aligned allocation from memblock.
+> > The spinlock is at offset 0x24 in that structure, and looking at the
+> > register dump from the crash:
+> > 
+> > Jun 29 18:28:42 hp-4300G kernel: RSP: 0018:ffffadb4013db9e8 EFLAGS: 00010006
+> > Jun 29 18:28:42 hp-4300G kernel: RAX: 00000000003a8290 RBX: 0000000000000000 RCX: ffff8900572ad580
+> > Jun 29 18:28:42 hp-4300G kernel: RDX: ffff89005653f024 RSI: 00000000000c0000 RDI: 0000000000001d17
+> > Jun 29 18:28:42 hp-4300G kernel: RBP: 000000000a20d000 R08: 00000000000c0000 R09: 0000000000000000
+> > Jun 29 18:28:42 hp-4300G kernel: R10: 000000000a20d000 R11: ffff89005653f000 R12: 0000000000000212
+> > Jun 29 18:28:42 hp-4300G kernel: R13: 0000000000001000 R14: 0000000000000002 R15: 0000000000200000
+> > Jun 29 18:28:42 hp-4300G kernel: FS:  00007f1f8898ea40(0000) GS:ffff890057280000(0000) knlGS:0000000000000000
+> > Jun 29 18:28:42 hp-4300G kernel: CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
+> > Jun 29 18:28:42 hp-4300G kernel: CR2: 00000000003a8290 CR3: 00000001020d0000 CR4: 0000000000350ee0
+> > Jun 29 18:28:42 hp-4300G kernel: Call Trace:
+> > Jun 29 18:28:42 hp-4300G kernel:  _raw_spin_lock_irqsave+0x39/0x50
+> > Jun 29 18:28:42 hp-4300G kernel:  swiotlb_tbl_map_single+0x12b/0x4c0
+> > 
+> > Then that correlates with R11 holding the 'dma_io_tlb_mem' pointer and
+> > RDX pointing at the spinlock. Yet RAX is holding junk :/
+> > 
+> > I agree that enabling KASAN would be a good idea, but I also think we
+> > probably need to get some more information out of swiotlb_tbl_map_single()
+> > to see see what exactly is going wrong in there.
+> 
+> I can certainly enable KASAN and if there is any debug print I can add
+> or dump anything, let me know!
 
-Oh, yes. I miss queue_select.
+I bit the bullet and took v5.13 with swiotlb/for-linus-5.14 merged in, built
+x86 defconfig and ran it on my laptop. However, it seems to work fine!
 
-> I guess this is a question for Jason: will vdpa will keep this limitation?
-> If yes, then VDUSE can stick to it too without running into problems in
-> the future.
->
-> > > > +     __u16 padding; /* padding */
-> > > > +     __u32 vq_num; /* the number of virtqueues */
-> > > > +     __u32 vq_align; /* the allocation alignment of virtqueue's metadata */
-> > >
-> > > I'm not sure what this is?
-> > >
-> >
-> >  This will be used by vring_create_virtqueue() too.
->
-> If there is no official definition for the meaning of this value then
-> "/* same as vring_create_virtqueue()'s vring_align parameter */" would
-> be clearer. That way the reader knows what to research in order to
-> understand how this field works.
->
+Please can you share your .config?
 
-OK.
-
-> I don't remember but maybe it was used to support vrings when the
-> host/guest have non-4KB page sizes. I wonder if anyone has an official
-> definition for this value?
-
-Not sure. Maybe we might need some alignment which is less than
-PAGE_SIZE sometimes.
-
-Thanks,
-Yongji
+Will
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
