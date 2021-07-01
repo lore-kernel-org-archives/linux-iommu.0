@@ -2,99 +2,102 @@ Return-Path: <SRS0=acbz=LZ=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-3.5 required=3.0 tests=BAYES_00,DKIM_INVALID,
-	DKIM_SIGNED,HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,SPF_HELO_NONE,
-	SPF_PASS,URIBL_RED autolearn=no autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-12.0 required=3.0 tests=BAYES_00,
+	DKIM_ADSP_CUSTOM_MED,DKIM_INVALID,DKIM_SIGNED,FREEMAIL_FORGED_FROMDOMAIN,
+	FREEMAIL_FROM,HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_CR_TRAILER,
+	INCLUDES_PATCH,MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,URIBL_RED,
+	USER_AGENT_SANE_1 autolearn=ham autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 278F7C11F64
-	for <iommu@archiver.kernel.org>; Thu,  1 Jul 2021 13:16:12 +0000 (UTC)
-Received: from smtp3.osuosl.org (smtp3.osuosl.org [140.211.166.136])
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 18ACBC11F64
+	for <iommu@archiver.kernel.org>; Thu,  1 Jul 2021 18:12:13 +0000 (UTC)
+Received: from smtp2.osuosl.org (smtp2.osuosl.org [140.211.166.133])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id BC35B6140D
-	for <iommu@archiver.kernel.org>; Thu,  1 Jul 2021 13:16:11 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org BC35B6140D
-Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=redhat.com
+	by mail.kernel.org (Postfix) with ESMTPS id A00D761417
+	for <iommu@archiver.kernel.org>; Thu,  1 Jul 2021 18:12:12 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org A00D761417
+Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=gmail.com
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by smtp3.osuosl.org (Postfix) with ESMTP id 7349160AD2;
-	Thu,  1 Jul 2021 13:16:11 +0000 (UTC)
+	by smtp2.osuosl.org (Postfix) with ESMTP id 69BFE401F4;
+	Thu,  1 Jul 2021 18:12:12 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from smtp3.osuosl.org ([127.0.0.1])
-	by localhost (smtp3.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id dcVrgjWLELfD; Thu,  1 Jul 2021 13:16:08 +0000 (UTC)
-Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [IPv6:2605:bc80:3010:104::8cd3:938])
-	by smtp3.osuosl.org (Postfix) with ESMTPS id 62DBB60AC2;
-	Thu,  1 Jul 2021 13:16:06 +0000 (UTC)
+Received: from smtp2.osuosl.org ([127.0.0.1])
+	by localhost (smtp2.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+	with ESMTP id DCxytatHEHsp; Thu,  1 Jul 2021 18:12:10 +0000 (UTC)
+Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
+	by smtp2.osuosl.org (Postfix) with ESMTPS id 79F98400F0;
+	Thu,  1 Jul 2021 18:12:10 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id CA348C0023;
-	Thu,  1 Jul 2021 13:16:05 +0000 (UTC)
-Received: from smtp3.osuosl.org (smtp3.osuosl.org [140.211.166.136])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 54A87C000E
- for <iommu@lists.linux-foundation.org>; Thu,  1 Jul 2021 13:16:05 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 4CBE6C0010;
+	Thu,  1 Jul 2021 18:12:10 +0000 (UTC)
+Received: from smtp2.osuosl.org (smtp2.osuosl.org [140.211.166.133])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 6F4C0C000E
+ for <iommu@lists.linux-foundation.org>; Thu,  1 Jul 2021 18:12:08 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by smtp3.osuosl.org (Postfix) with ESMTP id AAEB060AAD
- for <iommu@lists.linux-foundation.org>; Thu,  1 Jul 2021 13:16:04 +0000 (UTC)
+ by smtp2.osuosl.org (Postfix) with ESMTP id 505A2401F4
+ for <iommu@lists.linux-foundation.org>; Thu,  1 Jul 2021 18:12:08 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from smtp3.osuosl.org ([127.0.0.1])
- by localhost (smtp3.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id WyVmD-vHuoiM for <iommu@lists.linux-foundation.org>;
- Thu,  1 Jul 2021 13:16:00 +0000 (UTC)
-X-Greylist: domain auto-whitelisted by SQLgrey-1.8.0
-Received: from us-smtp-delivery-124.mimecast.com
- (us-smtp-delivery-124.mimecast.com [170.10.133.124])
- by smtp3.osuosl.org (Postfix) with ESMTPS id EFAFC60A9C
- for <iommu@lists.linux-foundation.org>; Thu,  1 Jul 2021 13:15:59 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
- s=mimecast20190719; t=1625145358;
- h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
- to:to:cc:cc:mime-version:mime-version:content-type:content-type:
- in-reply-to:in-reply-to:references:references;
- bh=2FzcUtZnWf2crS3Iy4vIMzI/4b5Wprx4OSu15nOYlXM=;
- b=VW0GpvflP+NpfNsq5OrFmBU4yB7Of+8H/V0blfnQ+68Ro6jtMijUZmyIaS4PGmRg4k4o/I
- rKwUrWyqtnKc6dFOPasBkY51xlL8DKIuv4qZHoD8emlBnxbNL8BvAw1iZOIf9VUcfifluM
- xwzARhjZxZOI76jq26lMGVqR6JHPZOU=
-Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
- [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-300-pE_8q3jJN4uiIjQ-fSeD2Q-1; Thu, 01 Jul 2021 09:15:55 -0400
-X-MC-Unique: pE_8q3jJN4uiIjQ-fSeD2Q-1
-Received: from smtp.corp.redhat.com (int-mx03.intmail.prod.int.phx2.redhat.com
- [10.5.11.13])
- (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
- (No client certificate requested)
- by mimecast-mx01.redhat.com (Postfix) with ESMTPS id D40EF802E66;
- Thu,  1 Jul 2021 13:15:52 +0000 (UTC)
-Received: from localhost (ovpn-115-84.ams2.redhat.com [10.36.115.84])
- by smtp.corp.redhat.com (Postfix) with ESMTP id 3A06C60862;
- Thu,  1 Jul 2021 13:15:51 +0000 (UTC)
-Date: Thu, 1 Jul 2021 14:15:50 +0100
-From: Stefan Hajnoczi <stefanha@redhat.com>
-To: Yongji Xie <xieyongji@bytedance.com>
-Subject: Re: Re: Re: [PATCH v8 10/10] Documentation: Add documentation for
- VDUSE
-Message-ID: <YN3ABqCMLQf7ejOm@stefanha-x1.localdomain>
-References: <20210615141331.407-1-xieyongji@bytedance.com>
- <20210615141331.407-11-xieyongji@bytedance.com>
- <YNSCH6l31zwPxBjL@stefanha-x1.localdomain>
- <CACycT3uxnQmXWsgmNVxQtiRhz1UXXTAJFY3OiAJqokbJH6ifMA@mail.gmail.com>
- <YNxCDpM3bO5cPjqi@stefanha-x1.localdomain>
- <CACycT3taKhf1cWp3Jd0aSVekAZvpbR-_fkyPLQ=B+jZBB5H=8Q@mail.gmail.com>
+Received: from smtp2.osuosl.org ([127.0.0.1])
+ by localhost (smtp2.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+ with ESMTP id C3eoBswgIl69 for <iommu@lists.linux-foundation.org>;
+ Thu,  1 Jul 2021 18:12:06 +0000 (UTC)
+X-Greylist: whitelisted by SQLgrey-1.8.0
+Received: from mail-ej1-x636.google.com (mail-ej1-x636.google.com
+ [IPv6:2a00:1450:4864:20::636])
+ by smtp2.osuosl.org (Postfix) with ESMTPS id ACE6E400F0
+ for <iommu@lists.linux-foundation.org>; Thu,  1 Jul 2021 18:12:06 +0000 (UTC)
+Received: by mail-ej1-x636.google.com with SMTP id hc16so11871829ejc.12
+ for <iommu@lists.linux-foundation.org>; Thu, 01 Jul 2021 11:12:06 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=gmail.com; s=20161025;
+ h=date:from:to:cc:subject:message-id:references:mime-version
+ :content-disposition:in-reply-to:user-agent;
+ bh=F36MKMagRhGCfKVfRAwtt9xJFZWHcYRQG0ajOVreECg=;
+ b=sXBMX71ZsDJHpmuzo1jBlRAOpZcNUKocEYuEHW/ck2Jnkb/4Qk7+Rma8JfUKZcdxp1
+ aXAN24ht8QX03jvqqW4shnVflz+OJrtLZkM/pUdQHUn5hnxtdox12AZpa5U9GfJnRU8X
+ ZiJJQJkF6NxHGlj2Qu++GhT6c60dy9HcyMx79WlC4vK7CEyTj4F/gRtWLpJZ5eqKHAbr
+ eaIhM2R5DFou7f6IOI4eEhjeH/+Ys42UrYDqxPRcETg2MpxJBLDzPkD74EDK+t2Zc6yt
+ Nyp81qJQ0VZHi137abD9SySk+srqxQoI44zjenl2QnVG+vXVUaGDFOFoQKe74c3dq7yM
+ 2pcQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+ d=1e100.net; s=20161025;
+ h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+ :mime-version:content-disposition:in-reply-to:user-agent;
+ bh=F36MKMagRhGCfKVfRAwtt9xJFZWHcYRQG0ajOVreECg=;
+ b=rHXdY8rNlHF7b00RgW5JbRgZ2lEVU7fBN2UiBXehfT4D3VaXFLeZII9yAgTcIx3jN5
+ C73F0M5IbGLZ787UwcRxW5ZaYFT6QNcRh57UTt8LajmABVMoCllW/WFyUp8ifnCdVGPm
+ ktpDIo/nqS2mHBVXLz43M9WMFr0lshIJxV0iKAeeckTO7MdR8ebn12X2LzrzzzTEalyi
+ ktrn3BgqZvUt2qoao4GenCRIpN7bY3yijPQAhI+T/iac46TV39RwQNtfTbmujcTztGrb
+ pi1KKs6vhTczysaHhH4h5lIktzLfE2ZTc48PvSuD8jC/9R56FBIsanAw+xKtdOxzhZU6
+ MSCg==
+X-Gm-Message-State: AOAM531hi2OQzlRxlqxzys9zEVWJwAR/bfFGVCje2EoB6qBbxiZG8MML
+ H1YjswsCk1tZCb8AzucKbXo=
+X-Google-Smtp-Source: ABdhPJx04srL5Kqb+Afxp55H3f+2E1NfRi73cTc19jrKbgpZQZM7MrtQy1ibUdloVutzgPzTdIq0MA==
+X-Received: by 2002:a17:907:207c:: with SMTP id
+ qp28mr1204891ejb.311.1625163124916; 
+ Thu, 01 Jul 2021 11:12:04 -0700 (PDT)
+Received: from localhost ([62.96.65.119])
+ by smtp.gmail.com with ESMTPSA id j22sm185495eje.123.2021.07.01.11.12.03
+ (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+ Thu, 01 Jul 2021 11:12:03 -0700 (PDT)
+Date: Thu, 1 Jul 2021 20:14:22 +0200
+From: Thierry Reding <thierry.reding@gmail.com>
+To: Rob Herring <robh@kernel.org>
+Subject: Re: [PATCH v2 1/5] dt-bindings: reserved-memory: Document memory
+ region specifier
+Message-ID: <YN4F/nH/9tDuWDnQ@orome.fritz.box>
+References: <20210423163234.3651547-1-thierry.reding@gmail.com>
+ <20210423163234.3651547-2-thierry.reding@gmail.com>
+ <20210520220306.GA1976116@robh.at.kernel.org>
+ <YLEgXyLBF8PEFNw2@orome.fritz.box>
+ <YL+gHN4YZ4vt1vPk@orome.fritz.box>
 MIME-Version: 1.0
-In-Reply-To: <CACycT3taKhf1cWp3Jd0aSVekAZvpbR-_fkyPLQ=B+jZBB5H=8Q@mail.gmail.com>
-X-Scanned-By: MIMEDefang 2.79 on 10.5.11.13
-Cc: kvm <kvm@vger.kernel.org>, "Michael S. Tsirkin" <mst@redhat.com>,
- Jason Wang <jasowang@redhat.com>,
- virtualization <virtualization@lists.linux-foundation.org>,
- Christian Brauner <christian.brauner@canonical.com>,
- Jonathan Corbet <corbet@lwn.net>, Matthew Wilcox <willy@infradead.org>,
- Christoph Hellwig <hch@infradead.org>,
- Dan Carpenter <dan.carpenter@oracle.com>,
- Stefano Garzarella <sgarzare@redhat.com>, Al Viro <viro@zeniv.linux.org.uk>,
- songmuchun@bytedance.com, Jens Axboe <axboe@kernel.dk>,
- Greg KH <gregkh@linuxfoundation.org>, Randy Dunlap <rdunlap@infradead.org>,
- linux-kernel <linux-kernel@vger.kernel.org>, iommu@lists.linux-foundation.org,
- bcrl@kvack.org, netdev@vger.kernel.org, linux-fsdevel@vger.kernel.org,
- Mika =?iso-8859-1?Q?Penttil=E4?= <mika.penttila@nextfour.com>
+In-Reply-To: <YL+gHN4YZ4vt1vPk@orome.fritz.box>
+User-Agent: Mutt/2.1 (4b100969) (2021-06-12)
+Cc: devicetree@vger.kernel.org, Will Deacon <will@kernel.org>,
+ iommu@lists.linux-foundation.org, Nicolin Chen <nicolinc@nvidia.com>,
+ linux-tegra@vger.kernel.org, Dmitry Osipenko <digetx@gmail.com>,
+ Robin Murphy <robin.murphy@arm.com>
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -107,227 +110,160 @@ List-Post: <mailto:iommu@lists.linux-foundation.org>
 List-Help: <mailto:iommu-request@lists.linux-foundation.org?subject=help>
 List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
  <mailto:iommu-request@lists.linux-foundation.org?subject=subscribe>
-Content-Type: multipart/mixed; boundary="===============8208600604087071072=="
+Content-Type: multipart/mixed; boundary="===============6213601486486988222=="
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
 
---===============8208600604087071072==
+--===============6213601486486988222==
 Content-Type: multipart/signed; micalg=pgp-sha256;
-	protocol="application/pgp-signature"; boundary="IKAacefjibf5YNdD"
+	protocol="application/pgp-signature"; boundary="6YBegNniYlMh6yBT"
 Content-Disposition: inline
 
 
---IKAacefjibf5YNdD
+--6YBegNniYlMh6yBT
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
 Content-Transfer-Encoding: quoted-printable
 
-On Thu, Jul 01, 2021 at 06:00:48PM +0800, Yongji Xie wrote:
-> On Wed, Jun 30, 2021 at 6:06 PM Stefan Hajnoczi <stefanha@redhat.com> wro=
-te:
-> >
-> > On Tue, Jun 29, 2021 at 01:43:11PM +0800, Yongji Xie wrote:
-> > > On Mon, Jun 28, 2021 at 9:02 PM Stefan Hajnoczi <stefanha@redhat.com>=
- wrote:
-> > > > On Tue, Jun 15, 2021 at 10:13:31PM +0800, Xie Yongji wrote:
-> > > > > +     static void *iova_to_va(int dev_fd, uint64_t iova, uint64_t=
- *len)
-> > > > > +     {
-> > > > > +             int fd;
-> > > > > +             void *addr;
-> > > > > +             size_t size;
-> > > > > +             struct vduse_iotlb_entry entry;
-> > > > > +
-> > > > > +             entry.start =3D iova;
-> > > > > +             entry.last =3D iova + 1;
-> > > >
-> > > > Why +1?
-> > > >
-> > > > I expected the request to include *len so that VDUSE can create a b=
-ounce
-> > > > buffer for the full iova range, if necessary.
-> > > >
-> > >
-> > > The function is used to translate iova to va. And the *len is not
-> > > specified by the caller. Instead, it's used to tell the caller the
-> > > length of the contiguous iova region from the specified iova. And the
-> > > ioctl VDUSE_IOTLB_GET_FD will get the file descriptor to the first
-> > > overlapped iova region. So using iova + 1 should be enough here.
-> >
-> > Does the entry.last field have any purpose with VDUSE_IOTLB_GET_FD? I
-> > wonder why userspace needs to assign a value at all if it's always +1.
-> >
+On Tue, Jun 08, 2021 at 06:51:40PM +0200, Thierry Reding wrote:
+> On Fri, May 28, 2021 at 06:54:55PM +0200, Thierry Reding wrote:
+> > On Thu, May 20, 2021 at 05:03:06PM -0500, Rob Herring wrote:
+> > > On Fri, Apr 23, 2021 at 06:32:30PM +0200, Thierry Reding wrote:
+> > > > From: Thierry Reding <treding@nvidia.com>
+> > > >=20
+> > > > Reserved memory region phandle references can be accompanied by a
+> > > > specifier that provides additional information about how that speci=
+fic
+> > > > reference should be treated.
+> > > >=20
+> > > > One use-case is to mark a memory region as needing an identity mapp=
+ing
+> > > > in the system's IOMMU for the device that references the region. Th=
+is is
+> > > > needed for example when the bootloader has set up hardware (such as=
+ a
+> > > > display controller) to actively access a memory region (e.g. a boot
+> > > > splash screen framebuffer) during boot. The operating system can us=
+e the
+> > > > identity mapping flag from the specifier to make sure an IOMMU iden=
+tity
+> > > > mapping is set up for the framebuffer before IOMMU translations are
+> > > > enabled for the display controller.
+> > > >=20
+> > > > Signed-off-by: Thierry Reding <treding@nvidia.com>
+> > > > ---
+> > > >  .../reserved-memory/reserved-memory.txt       | 21 +++++++++++++++=
+++++
+> > > >  include/dt-bindings/reserved-memory.h         |  8 +++++++
+> > > >  2 files changed, 29 insertions(+)
+> > > >  create mode 100644 include/dt-bindings/reserved-memory.h
+> > >=20
+> > > Sorry for being slow on this. I have 2 concerns.
+> > >=20
+> > > First, this creates an ABI issue. A DT with cells in 'memory-region'=
+=20
+> > > will not be understood by an existing OS. I'm less concerned about th=
+is=20
+> > > if we address that with a stable fix. (Though I'm pretty sure we've=
+=20
+> > > naively added #?-cells in the past ignoring this issue.)
+> >=20
+> > A while ago I had proposed adding memory-region*s* as an alternative
+> > name for memory-region to make the naming more consistent with other
+> > types of properties (think clocks, resets, gpios, ...). If we added
+> > that, we could easily differentiate between the "legacy" cases where
+> > no #memory-region-cells was allowed and the new cases where it was.
+> >=20
+> > > Second, it could be the bootloader setting up the reserved region. If=
+ a=20
+> > > node already has 'memory-region', then adding more regions is more=20
+> > > complicated compared to adding new properties. And defining what each=
+=20
+> > > memory-region entry is or how many in schemas is impossible.
+> >=20
+> > It's true that updating the property gets a bit complicated, but it's
+> > not exactly rocket science. We really just need to splice the array. I
+> > have a working implemention for this in U-Boot.
+> >=20
+> > For what it's worth, we could run into the same issue with any new
+> > property that we add. Even if we renamed this to iommu-memory-region,
+> > it's still possible that a bootloader may have to update this property
+> > if it already exists (it could be hard-coded in DT, or it could have
+> > been added by some earlier bootloader or firmware).
+> >=20
+> > > Both could be addressed with a new property. Perhaps something like=
+=20
+> > > 'iommu-memory-region =3D <&phandle>;'. I think the 'iommu' prefix is=
+=20
+> > > appropriate given this is entirely because of the IOMMU being in the=
+=20
+> > > mix. I might feel differently if we had other uses for cells, but I=
+=20
+> > > don't really see it in this case.=20
+> >=20
+> > I'm afraid that down the road we'll end up with other cases and then we
+> > might proliferate a number of *-memory-region properties with varying
+> > prefixes.
+> >=20
+> > I am aware of one other case where we might need something like this: on
+> > some Tegra SoCs we have audio processors that will access memory buffers
+> > using a DMA engine. These processors are booted from early firmware
+> > using firmware from system memory. In order to avoid trashing the
+> > firmware, we need to reserve memory. We can do this using reserved
+> > memory nodes. However, the audio DMA engine also uses the SMMU, so we
+> > need to make sure that the firmware memory is marked as reserved within
+> > the SMMU. This is similar to the identity mapping case, but not exactly
+> > the same. Instead of creating a 1:1 mapping, we just want that IOVA
+> > region to be reserved (i.e. IOMMU_RESV_RESERVED instead of
+> > IOMMU_RESV_DIRECT{,_RELAXABLE}).
+> >=20
+> > That would also fall into the IOMMU domain, but we can't reuse the
+> > iommu-memory-region property for that because then we don't have enough
+> > information to decide which type of reservation we need.
+> >=20
+> > We could obviously make iommu-memory-region take a specifier, but we
+> > could just as well use memory-regions in that case since we have
+> > something more generic anyway.
+> >=20
+> > With the #memory-region-cells proposal, we can easily extend the cell in
+> > the specifier with an additional MEMORY_REGION_IOMMU_RESERVE flag to
+> > take that other use case into account. If we than also change to the new
+> > memory-regions property name, we avoid the ABI issue (and we gain a bit
+> > of consistency while at it).
 >=20
-> If we need to get some iova regions in the specified range, we need
-> the entry.last field. For example, we can use [0, ULONG_MAX] to get
-> the first overlapped iova region which might be [4096, 8192]. But in
-> this function, we don't use VDUSE_IOTLB_GET_FD like this. We need to
-> get the iova region including the specified iova.
+> Ping? Rob, do you want me to add this second use-case to the patch
+> series to make it more obvious that this isn't just a one-off thing? Or
+> how do we proceed?
 
-I see, thanks for explaining!
+Rob, given that additional use-case, do you want me to run with this
+proposal and send out an updated series?
 
-> > > > > +             return addr + iova - entry.start;
-> > > > > +     }
-> > > > > +
-> > > > > +- VDUSE_DEV_GET_FEATURES: Get the negotiated features
-> > > >
-> > > > Are these VIRTIO feature bits? Please explain how feature negotiati=
-on
-> > > > works. There must be a way for userspace to report the device's
-> > > > supported feature bits to the kernel.
-> > > >
-> > >
-> > > Yes, these are VIRTIO feature bits. Userspace will specify the
-> > > device's supported feature bits when creating a new VDUSE device with
-> > > ioctl(VDUSE_CREATE_DEV).
-> >
-> > Can the VDUSE device influence feature bit negotiation? For example, if
-> > the VDUSE virtio-blk device does not implement discard/write-zeroes, how
-> > does QEMU or the guest find out about this?
-> >
->=20
-> There is a "features" field in struct vduse_dev_config which is used
-> to do feature negotiation.
+Thierry
 
-This approach is more restrictive than required by the VIRTIO
-specification:
-
-  "The device SHOULD accept any valid subset of features the driver
-  accepts, otherwise it MUST fail to set the FEATURES_OK device status
-  bit when the driver writes it."
-
-  https://docs.oasis-open.org/virtio/virtio/v1.1/cs01/virtio-v1.1-cs01.html=
-#x1-130002
-
-The spec allows a device to reject certain subsets of features. For
-example, if feature B depends on feature A and can only be enabled when
-feature A is also enabled.
-
-=46rom your description I think VDUSE would accept feature B without
-feature A since the device implementation has no opportunity to fail
-negotiation with custom logic.
-
-Ideally VDUSE would send a SET_FEATURES message to userspace, allowing
-the device implementation full flexibility in which subsets of features
-to accept.
-
-This is a corner case. Many or maybe even all existing VIRTIO devices
-don't need this flexibility, but I want to point out this limitation in
-the VDUSE interface because it may cause issues in the future.
-
-> > > > > +- VDUSE_DEV_UPDATE_CONFIG: Update the configuration space and in=
-ject a config interrupt
-> > > >
-> > > > Does this mean the contents of the configuration space are cached by
-> > > > VDUSE?
-> > >
-> > > Yes, but the kernel will also store the same contents.
-> > >
-> > > > The downside is that the userspace code cannot generate the
-> > > > contents on demand. Most devices doin't need to generate the conten=
-ts
-> > > > on demand, so I think this is okay but I had expected a different
-> > > > interface:
-> > > >
-> > > > kernel->userspace VDUSE_DEV_GET_CONFIG
-> > > > userspace->kernel VDUSE_DEV_INJECT_CONFIG_IRQ
-> > > >
-> > >
-> > > The problem is how to handle the failure of VDUSE_DEV_GET_CONFIG. We
-> > > will need lots of modification of virtio codes to support that. So to
-> > > make it simple, we choose this way:
-> > >
-> > > userspace -> kernel VDUSE_DEV_SET_CONFIG
-> > > userspace -> kernel VDUSE_DEV_INJECT_CONFIG_IRQ
-> > >
-> > > > I think you can leave it the way it is, but I wanted to mention thi=
-s in
-> > > > case someone thinks it's important to support generating the conten=
-ts of
-> > > > the configuration space on demand.
-> > > >
-> > >
-> > > Sorry, I didn't get you here. Can't VDUSE_DEV_SET_CONFIG and
-> > > VDUSE_DEV_INJECT_CONFIG_IRQ achieve that?
-> >
-> > If the contents of the configuration space change continuously, then the
-> > VDUSE_DEV_SET_CONFIG approach is inefficient and might have race
-> > conditions. For example, imagine a device where the driver can read a
-> > timer from the configuration space. I think the VIRTIO device model
-> > allows that although I'm not aware of any devices that do something like
-> > it today. The problem is that VDUSE_DEV_SET_CONFIG would have to be
-> > called frequently to keep the timer value updated even though the guest
-> > driver probably isn't accessing it.
-> >
->=20
-> OK, I get you now. Since the VIRTIO specification says "Device
-> configuration space is generally used for rarely-changing or
-> initialization-time parameters". I assume the VDUSE_DEV_SET_CONFIG
-> ioctl should not be called frequently.
-
-The spec uses MUST and other terms to define the precise requirements.
-Here the language (especially the word "generally") is weaker and means
-there may be exceptions.
-
-Another type of access that doesn't work with the VDUSE_DEV_SET_CONFIG
-approach is reads that have side-effects. For example, imagine a field
-containing an error code if the device encounters a problem unrelated to
-a specific virtqueue request. Reading from this field resets the error
-code to 0, saving the driver an extra configuration space write access
-and possibly race conditions. It isn't possible to implement those
-semantics suing VDUSE_DEV_SET_CONFIG. It's another corner case, but it
-makes me think that the interface does not allow full VIRTIO semantics.
-
-> > What's worse is that there might be race conditions where other
-> > driver->device operations are supposed to update the configuration space
-> > but VDUSE_DEV_SET_CONFIG means that the VDUSE kernel code is caching an
-> > outdated copy.
-> >
->=20
-> I'm not sure. Should the device and driver be able to access the same
-> fields concurrently?
-
-Yes. The VIRTIO spec has a generation count to handle multi-field
-accesses so that consistency can be ensured:
-https://docs.oasis-open.org/virtio/virtio/v1.1/cs01/virtio-v1.1-cs01.html#x=
-1-180004
-
->=20
-> > Again, I don't think it's a problem for existing devices in the VIRTIO
-> > specification. But I'm not 100% sure and future devices might require
-> > what I've described, so the VDUSE_DEV_SET_CONFIG interface could become
-> > a problem.
-> >
->=20
-> If so, maybe a new interface can be added at that time. The
-> VDUSE_DEV_GET_CONFIG might be better, but I still did not find a good
-> way for failure handling.
-
-I'm not aware of the details of why the current approach was necessary,
-so I don't have any concrete suggestions. Sorry!
-
-Stefan
-
---IKAacefjibf5YNdD
+--6YBegNniYlMh6yBT
 Content-Type: application/pgp-signature; name="signature.asc"
 
 -----BEGIN PGP SIGNATURE-----
 
-iQEzBAEBCAAdFiEEhpWov9P5fNqsNXdanKSrs4Grc8gFAmDdwAYACgkQnKSrs4Gr
-c8jehAgAnluXJzRbFUuK89b8dvdKf3FY6Lv1D9Kt6Wr/asGLoWxeorzLE3QiA8Ao
-x24ZIi8kSiLVTJ79hVdtkQAKeRbL8KXzRiCdxWmVRI6dTik6VCuewC2tjjJi1i0w
-yryJff3u3EimSMmxAnAkjP5mL5ed821qmydnLX4oxSXjvoBPF10g4rX4pORIfGva
-3iDlvFNbXQPGZS/J+LXE6QDTg52QaVExKwRWcZVyO/6ZF4CKud3QVHTrPjnNS4ny
-3ZubmWb2U0byyX+dqox47Ldq5B5arWwxDdO80KP4IqqG+PItumN36tm/KqTI6+89
-cmt6ky4mmI9qrVLmYo2+MOGwCUEisA==
-=ktns
+iQIzBAABCAAdFiEEiOrDCAFJzPfAjcif3SOs138+s6EFAmDeBfsACgkQ3SOs138+
+s6FEoRAArgfUJ2pN2AQEZGJFT3iV5IkbrhYdC58xmVQA7m0oyqllaDYcVzehvr3K
+/srNiOAoCsVqY0NX2oHNjS5osnC8j9spEG70LqEt3EuThasMFU4D2Z3Ron1IV6v3
+j0ycepZfYlxeCl/gHgvFIevQA8sWabNx+qjuSJoAjqgFALMdv0wBrdCdG0oOsqCI
+Z9a0B2TQG0JX+TSrlJNbM25zH/g1orMvWRo5H1cBDxCXSeRbbdJNZ/K+DY12kAVW
+dKWogA+wwereYONfIzQsCS/HqfT7dSSiA0sqBpAO78NfbD26OGMqd3Ue+mFp55mM
+dDca4qoEe8n9Je6Smu3YHMNcbkjgS5WZ2yklg8uDTkiQZBt70ZIFU5sgDsx9/I5d
+jEl6s20aCI7N8Bnj2zALU8VbZyBEUdGjGpgz9m+4Z2MXuPIEW0zcv63OdLPfapD3
+1D5DfGQrpkHzcjmCXf5usPTtHm6oi5iRb2xn9khuShYc9td2ZpxhSP7yugtbtbdO
+Vq2mf5wJO+hJeHSkRZlwQAW+lQ6eduHUAzI8f85+388XBC++pdcAA2Ku4rwzTVf1
+VSCL+6LBoTA+qVsGtFUIuXH+vJnO2cXz+WQf7mZ5j0a5dqaNNjHlQsWgkAvewt3M
+4UpP+4zqqb8fAupzRTIuC+8oZQ+szDDS8r0RMYqePR0w/1uYjAw=
+=/Iz1
 -----END PGP SIGNATURE-----
 
---IKAacefjibf5YNdD--
+--6YBegNniYlMh6yBT--
 
-
---===============8208600604087071072==
+--===============6213601486486988222==
 Content-Type: text/plain; charset="us-ascii"
 MIME-Version: 1.0
 Content-Transfer-Encoding: 7bit
@@ -337,5 +273,4 @@ _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
 https://lists.linuxfoundation.org/mailman/listinfo/iommu
---===============8208600604087071072==--
-
+--===============6213601486486988222==--
