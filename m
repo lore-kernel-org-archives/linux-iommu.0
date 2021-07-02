@@ -1,103 +1,118 @@
-Return-Path: <SRS0=acbz=LZ=lists.linux-foundation.org=iommu-bounces@kernel.org>
+Return-Path: <SRS0=c+U5=L2=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-12.0 required=3.0 tests=BAYES_00,
-	DKIM_ADSP_CUSTOM_MED,DKIM_INVALID,DKIM_SIGNED,FREEMAIL_FORGED_FROMDOMAIN,
-	FREEMAIL_FROM,HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_CR_TRAILER,
-	INCLUDES_PATCH,MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,URIBL_RED,
-	USER_AGENT_SANE_1 autolearn=ham autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-8.6 required=3.0 tests=BAYES_00,DKIM_INVALID,
+	DKIM_SIGNED,HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_CR_TRAILER,
+	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED autolearn=unavailable
+	autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 18ACBC11F64
-	for <iommu@archiver.kernel.org>; Thu,  1 Jul 2021 18:12:13 +0000 (UTC)
-Received: from smtp2.osuosl.org (smtp2.osuosl.org [140.211.166.133])
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 923DEC11F6A
+	for <iommu@archiver.kernel.org>; Fri,  2 Jul 2021 03:08:15 +0000 (UTC)
+Received: from smtp4.osuosl.org (smtp4.osuosl.org [140.211.166.137])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id A00D761417
-	for <iommu@archiver.kernel.org>; Thu,  1 Jul 2021 18:12:12 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org A00D761417
-Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=gmail.com
+	by mail.kernel.org (Postfix) with ESMTPS id EE3696140A
+	for <iommu@archiver.kernel.org>; Fri,  2 Jul 2021 03:08:14 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org EE3696140A
+Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=roeck-us.net
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by smtp2.osuosl.org (Postfix) with ESMTP id 69BFE401F4;
-	Thu,  1 Jul 2021 18:12:12 +0000 (UTC)
+	by smtp4.osuosl.org (Postfix) with ESMTP id AD1194225B;
+	Fri,  2 Jul 2021 03:08:14 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from smtp2.osuosl.org ([127.0.0.1])
-	by localhost (smtp2.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id DCxytatHEHsp; Thu,  1 Jul 2021 18:12:10 +0000 (UTC)
+Received: from smtp4.osuosl.org ([127.0.0.1])
+	by localhost (smtp4.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+	with ESMTP id fksxqvkIFq-p; Fri,  2 Jul 2021 03:08:13 +0000 (UTC)
 Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by smtp2.osuosl.org (Postfix) with ESMTPS id 79F98400F0;
-	Thu,  1 Jul 2021 18:12:10 +0000 (UTC)
+	by smtp4.osuosl.org (Postfix) with ESMTPS id 534C342259;
+	Fri,  2 Jul 2021 03:08:13 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 4CBE6C0010;
-	Thu,  1 Jul 2021 18:12:10 +0000 (UTC)
-Received: from smtp2.osuosl.org (smtp2.osuosl.org [140.211.166.133])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 6F4C0C000E
- for <iommu@lists.linux-foundation.org>; Thu,  1 Jul 2021 18:12:08 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 3249BC0010;
+	Fri,  2 Jul 2021 03:08:13 +0000 (UTC)
+Received: from smtp2.osuosl.org (smtp2.osuosl.org [IPv6:2605:bc80:3010::133])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 21196C000E
+ for <iommu@lists.linux-foundation.org>; Fri,  2 Jul 2021 03:08:11 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by smtp2.osuosl.org (Postfix) with ESMTP id 505A2401F4
- for <iommu@lists.linux-foundation.org>; Thu,  1 Jul 2021 18:12:08 +0000 (UTC)
+ by smtp2.osuosl.org (Postfix) with ESMTP id EDEEE405A0
+ for <iommu@lists.linux-foundation.org>; Fri,  2 Jul 2021 03:08:10 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
+Authentication-Results: smtp2.osuosl.org (amavisd-new);
+ dkim=pass (2048-bit key) header.d=gmail.com
 Received: from smtp2.osuosl.org ([127.0.0.1])
  by localhost (smtp2.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id C3eoBswgIl69 for <iommu@lists.linux-foundation.org>;
- Thu,  1 Jul 2021 18:12:06 +0000 (UTC)
+ with ESMTP id bRgPtE9eBIrL for <iommu@lists.linux-foundation.org>;
+ Fri,  2 Jul 2021 03:08:10 +0000 (UTC)
 X-Greylist: whitelisted by SQLgrey-1.8.0
-Received: from mail-ej1-x636.google.com (mail-ej1-x636.google.com
- [IPv6:2a00:1450:4864:20::636])
- by smtp2.osuosl.org (Postfix) with ESMTPS id ACE6E400F0
- for <iommu@lists.linux-foundation.org>; Thu,  1 Jul 2021 18:12:06 +0000 (UTC)
-Received: by mail-ej1-x636.google.com with SMTP id hc16so11871829ejc.12
- for <iommu@lists.linux-foundation.org>; Thu, 01 Jul 2021 11:12:06 -0700 (PDT)
+Received: from mail-oi1-x232.google.com (mail-oi1-x232.google.com
+ [IPv6:2607:f8b0:4864:20::232])
+ by smtp2.osuosl.org (Postfix) with ESMTPS id 2759940121
+ for <iommu@lists.linux-foundation.org>; Fri,  2 Jul 2021 03:08:10 +0000 (UTC)
+Received: by mail-oi1-x232.google.com with SMTP id s17so9854736oij.0
+ for <iommu@lists.linux-foundation.org>; Thu, 01 Jul 2021 20:08:09 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=gmail.com; s=20161025;
- h=date:from:to:cc:subject:message-id:references:mime-version
- :content-disposition:in-reply-to:user-agent;
- bh=F36MKMagRhGCfKVfRAwtt9xJFZWHcYRQG0ajOVreECg=;
- b=sXBMX71ZsDJHpmuzo1jBlRAOpZcNUKocEYuEHW/ck2Jnkb/4Qk7+Rma8JfUKZcdxp1
- aXAN24ht8QX03jvqqW4shnVflz+OJrtLZkM/pUdQHUn5hnxtdox12AZpa5U9GfJnRU8X
- ZiJJQJkF6NxHGlj2Qu++GhT6c60dy9HcyMx79WlC4vK7CEyTj4F/gRtWLpJZ5eqKHAbr
- eaIhM2R5DFou7f6IOI4eEhjeH/+Ys42UrYDqxPRcETg2MpxJBLDzPkD74EDK+t2Zc6yt
- Nyp81qJQ0VZHi137abD9SySk+srqxQoI44zjenl2QnVG+vXVUaGDFOFoQKe74c3dq7yM
- 2pcQ==
+ h=sender:date:from:to:cc:subject:message-id:references:mime-version
+ :content-disposition:in-reply-to;
+ bh=vnC0TqPJlyIMqLOncGpr5zl9pmbmcIIyiC4phT6PUIQ=;
+ b=rcatVMwnoboRAVBm6z7P2HYmOyqx+HWthzA0HOg5zSVWMr7WIAx3ZVtmMQBABS3jSs
+ ll3cBrlaV5N4g4Rvy938v3Mka2o7BKSsLAnp0j9BVKtd6G0HRyhUAM117EPetSB6PYk4
+ aIzksvokAZwg7oj60y4L3zka5GOYTYtCADcKKqh9eOpTeqFos+tdtKUeh13pl/ncaATb
+ z+gsly2qHHMFdyn0yxdy8vih0i6Y3VD1swKheCHmBE++JlII4Ajp+FJ6942Kfxfr0p9t
+ PlSPUBKWfUPw26fCx2/8jDss0gWJ7ZhSbqGnHJzN7Y9CqXNOHLSOGPQ6Z7xfZJI1OXzp
+ hIRw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
  d=1e100.net; s=20161025;
- h=x-gm-message-state:date:from:to:cc:subject:message-id:references
- :mime-version:content-disposition:in-reply-to:user-agent;
- bh=F36MKMagRhGCfKVfRAwtt9xJFZWHcYRQG0ajOVreECg=;
- b=rHXdY8rNlHF7b00RgW5JbRgZ2lEVU7fBN2UiBXehfT4D3VaXFLeZII9yAgTcIx3jN5
- C73F0M5IbGLZ787UwcRxW5ZaYFT6QNcRh57UTt8LajmABVMoCllW/WFyUp8ifnCdVGPm
- ktpDIo/nqS2mHBVXLz43M9WMFr0lshIJxV0iKAeeckTO7MdR8ebn12X2LzrzzzTEalyi
- ktrn3BgqZvUt2qoao4GenCRIpN7bY3yijPQAhI+T/iac46TV39RwQNtfTbmujcTztGrb
- pi1KKs6vhTczysaHhH4h5lIktzLfE2ZTc48PvSuD8jC/9R56FBIsanAw+xKtdOxzhZU6
- MSCg==
-X-Gm-Message-State: AOAM531hi2OQzlRxlqxzys9zEVWJwAR/bfFGVCje2EoB6qBbxiZG8MML
- H1YjswsCk1tZCb8AzucKbXo=
-X-Google-Smtp-Source: ABdhPJx04srL5Kqb+Afxp55H3f+2E1NfRi73cTc19jrKbgpZQZM7MrtQy1ibUdloVutzgPzTdIq0MA==
-X-Received: by 2002:a17:907:207c:: with SMTP id
- qp28mr1204891ejb.311.1625163124916; 
- Thu, 01 Jul 2021 11:12:04 -0700 (PDT)
-Received: from localhost ([62.96.65.119])
- by smtp.gmail.com with ESMTPSA id j22sm185495eje.123.2021.07.01.11.12.03
+ h=x-gm-message-state:sender:date:from:to:cc:subject:message-id
+ :references:mime-version:content-disposition:in-reply-to;
+ bh=vnC0TqPJlyIMqLOncGpr5zl9pmbmcIIyiC4phT6PUIQ=;
+ b=hua+oF/5sqqVbv4KLBTMEgYyRX09no0cH6PlXho+rkm/61WyPn+euijJjyh6LOiMpA
+ dEflPRLFonGrL0cg8uJbPrvmOfqrRATflPZB2SwGM8pyclG0cg+Vc1BGGguFkkg+MtmW
+ AeDNp8ewJ52MQvYb6F/+SEb/b1tDinBWDraaC5l++TurtHQCpLIRqSrFRgESEcMLWKic
+ /zd0xtsK6HtEcttts7Jv1VVyR0SrCChXKLYNOp2/XNc0SotzOLmxmoKOwZ5xY/MKjJFC
+ KRsbIAVkSvLhdrU+3ix1luLNkinIWUzbbmY7x/FDC7arAPAD1uL1ebvluJUcrraBwukw
+ yymg==
+X-Gm-Message-State: AOAM530MRJl7z3C9mfOBCkzm/Hu8JIJhoxIlbHp1NeHnCuQlyqhBfkxb
+ wvUxTZF3nn7SnAoMX/icXCE=
+X-Google-Smtp-Source: ABdhPJxROyx59a65CULGKnIjDKL6LEkceViIozGHO/6JCiILIO/ostWPfjk3TYymGpFPnNGZwku3+w==
+X-Received: by 2002:a54:4187:: with SMTP id 7mr2101677oiy.127.1625195289117;
+ Thu, 01 Jul 2021 20:08:09 -0700 (PDT)
+Received: from localhost ([2600:1700:e321:62f0:329c:23ff:fee3:9d7c])
+ by smtp.gmail.com with ESMTPSA id l2sm374555otl.27.2021.07.01.20.08.07
  (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
- Thu, 01 Jul 2021 11:12:03 -0700 (PDT)
-Date: Thu, 1 Jul 2021 20:14:22 +0200
-From: Thierry Reding <thierry.reding@gmail.com>
-To: Rob Herring <robh@kernel.org>
-Subject: Re: [PATCH v2 1/5] dt-bindings: reserved-memory: Document memory
- region specifier
-Message-ID: <YN4F/nH/9tDuWDnQ@orome.fritz.box>
-References: <20210423163234.3651547-1-thierry.reding@gmail.com>
- <20210423163234.3651547-2-thierry.reding@gmail.com>
- <20210520220306.GA1976116@robh.at.kernel.org>
- <YLEgXyLBF8PEFNw2@orome.fritz.box>
- <YL+gHN4YZ4vt1vPk@orome.fritz.box>
+ Thu, 01 Jul 2021 20:08:08 -0700 (PDT)
+Date: Thu, 1 Jul 2021 20:08:07 -0700
+From: Guenter Roeck <linux@roeck-us.net>
+To: Claire Chang <tientzu@chromium.org>
+Subject: Re: [PATCH v15 12/12] of: Add plumbing for restricted DMA pool
+Message-ID: <20210702030807.GA2685166@roeck-us.net>
+References: <20210624155526.2775863-1-tientzu@chromium.org>
+ <20210624155526.2775863-13-tientzu@chromium.org>
 MIME-Version: 1.0
-In-Reply-To: <YL+gHN4YZ4vt1vPk@orome.fritz.box>
-User-Agent: Mutt/2.1 (4b100969) (2021-06-12)
-Cc: devicetree@vger.kernel.org, Will Deacon <will@kernel.org>,
- iommu@lists.linux-foundation.org, Nicolin Chen <nicolinc@nvidia.com>,
- linux-tegra@vger.kernel.org, Dmitry Osipenko <digetx@gmail.com>,
- Robin Murphy <robin.murphy@arm.com>
+Content-Disposition: inline
+In-Reply-To: <20210624155526.2775863-13-tientzu@chromium.org>
+Cc: heikki.krogerus@linux.intel.com,
+ linux-devicetree <devicetree@vger.kernel.org>, peterz@infradead.org,
+ linux-pci@vger.kernel.org, dri-devel@lists.freedesktop.org,
+ chris@chris-wilson.co.uk, grant.likely@arm.com, paulus@samba.org,
+ Frank Rowand <frowand.list@gmail.com>, mingo@kernel.org, jxgao@google.com,
+ sstabellini@kernel.org, Saravana Kannan <saravanak@google.com>,
+ mpe@ellerman.id.au, "Rafael J . Wysocki" <rafael.j.wysocki@intel.com>,
+ Christoph Hellwig <hch@lst.de>,
+ Bartosz Golaszewski <bgolaszewski@baylibre.com>, bskeggs@redhat.com,
+ xen-devel@lists.xenproject.org, matthew.auld@intel.com,
+ Nicolas Boichat <drinkcat@chromium.org>, thomas.hellstrom@linux.intel.com,
+ Will Deacon <will@kernel.org>, Konrad Rzeszutek Wilk <konrad.wilk@oracle.com>,
+ intel-gfx@lists.freedesktop.org, Dan Williams <dan.j.williams@intel.com>,
+ linuxppc-dev@lists.ozlabs.org, Rob Herring <robh+dt@kernel.org>,
+ rodrigo.vivi@intel.com, bhelgaas@google.com, boris.ostrovsky@oracle.com,
+ Andy Shevchenko <andriy.shevchenko@linux.intel.com>, jgross@suse.com,
+ airlied@linux.ie, Thierry Reding <treding@nvidia.com>,
+ Greg KH <gregkh@linuxfoundation.org>, Randy Dunlap <rdunlap@infradead.org>,
+ quic_qiancai@quicinc.com, lkml <linux-kernel@vger.kernel.org>,
+ "list@263.net:IOMMU DRIVERS" <iommu@lists.linux-foundation.org>,
+ Jim Quinlan <james.quinlan@broadcom.com>, xypron.glpk@gmx.de,
+ thomas.lendacky@amd.com, Robin Murphy <robin.murphy@arm.com>,
+ bauerman@linux.ibm.com
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -110,167 +125,61 @@ List-Post: <mailto:iommu@lists.linux-foundation.org>
 List-Help: <mailto:iommu-request@lists.linux-foundation.org?subject=help>
 List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
  <mailto:iommu-request@lists.linux-foundation.org?subject=subscribe>
-Content-Type: multipart/mixed; boundary="===============6213601486486988222=="
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
+Hi,
 
---===============6213601486486988222==
-Content-Type: multipart/signed; micalg=pgp-sha256;
-	protocol="application/pgp-signature"; boundary="6YBegNniYlMh6yBT"
-Content-Disposition: inline
+On Thu, Jun 24, 2021 at 11:55:26PM +0800, Claire Chang wrote:
+> If a device is not behind an IOMMU, we look up the device node and set
+> up the restricted DMA when the restricted-dma-pool is presented.
+> 
+> Signed-off-by: Claire Chang <tientzu@chromium.org>
+> Tested-by: Stefano Stabellini <sstabellini@kernel.org>
+> Tested-by: Will Deacon <will@kernel.org>
 
+With this patch in place, all sparc and sparc64 qemu emulations
+fail to boot. Symptom is that the root file system is not found.
+Reverting this patch fixes the problem. Bisect log is attached.
 
---6YBegNniYlMh6yBT
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
+Guenter
 
-On Tue, Jun 08, 2021 at 06:51:40PM +0200, Thierry Reding wrote:
-> On Fri, May 28, 2021 at 06:54:55PM +0200, Thierry Reding wrote:
-> > On Thu, May 20, 2021 at 05:03:06PM -0500, Rob Herring wrote:
-> > > On Fri, Apr 23, 2021 at 06:32:30PM +0200, Thierry Reding wrote:
-> > > > From: Thierry Reding <treding@nvidia.com>
-> > > >=20
-> > > > Reserved memory region phandle references can be accompanied by a
-> > > > specifier that provides additional information about how that speci=
-fic
-> > > > reference should be treated.
-> > > >=20
-> > > > One use-case is to mark a memory region as needing an identity mapp=
-ing
-> > > > in the system's IOMMU for the device that references the region. Th=
-is is
-> > > > needed for example when the bootloader has set up hardware (such as=
- a
-> > > > display controller) to actively access a memory region (e.g. a boot
-> > > > splash screen framebuffer) during boot. The operating system can us=
-e the
-> > > > identity mapping flag from the specifier to make sure an IOMMU iden=
-tity
-> > > > mapping is set up for the framebuffer before IOMMU translations are
-> > > > enabled for the display controller.
-> > > >=20
-> > > > Signed-off-by: Thierry Reding <treding@nvidia.com>
-> > > > ---
-> > > >  .../reserved-memory/reserved-memory.txt       | 21 +++++++++++++++=
-++++
-> > > >  include/dt-bindings/reserved-memory.h         |  8 +++++++
-> > > >  2 files changed, 29 insertions(+)
-> > > >  create mode 100644 include/dt-bindings/reserved-memory.h
-> > >=20
-> > > Sorry for being slow on this. I have 2 concerns.
-> > >=20
-> > > First, this creates an ABI issue. A DT with cells in 'memory-region'=
-=20
-> > > will not be understood by an existing OS. I'm less concerned about th=
-is=20
-> > > if we address that with a stable fix. (Though I'm pretty sure we've=
-=20
-> > > naively added #?-cells in the past ignoring this issue.)
-> >=20
-> > A while ago I had proposed adding memory-region*s* as an alternative
-> > name for memory-region to make the naming more consistent with other
-> > types of properties (think clocks, resets, gpios, ...). If we added
-> > that, we could easily differentiate between the "legacy" cases where
-> > no #memory-region-cells was allowed and the new cases where it was.
-> >=20
-> > > Second, it could be the bootloader setting up the reserved region. If=
- a=20
-> > > node already has 'memory-region', then adding more regions is more=20
-> > > complicated compared to adding new properties. And defining what each=
-=20
-> > > memory-region entry is or how many in schemas is impossible.
-> >=20
-> > It's true that updating the property gets a bit complicated, but it's
-> > not exactly rocket science. We really just need to splice the array. I
-> > have a working implemention for this in U-Boot.
-> >=20
-> > For what it's worth, we could run into the same issue with any new
-> > property that we add. Even if we renamed this to iommu-memory-region,
-> > it's still possible that a bootloader may have to update this property
-> > if it already exists (it could be hard-coded in DT, or it could have
-> > been added by some earlier bootloader or firmware).
-> >=20
-> > > Both could be addressed with a new property. Perhaps something like=
-=20
-> > > 'iommu-memory-region =3D <&phandle>;'. I think the 'iommu' prefix is=
-=20
-> > > appropriate given this is entirely because of the IOMMU being in the=
-=20
-> > > mix. I might feel differently if we had other uses for cells, but I=
-=20
-> > > don't really see it in this case.=20
-> >=20
-> > I'm afraid that down the road we'll end up with other cases and then we
-> > might proliferate a number of *-memory-region properties with varying
-> > prefixes.
-> >=20
-> > I am aware of one other case where we might need something like this: on
-> > some Tegra SoCs we have audio processors that will access memory buffers
-> > using a DMA engine. These processors are booted from early firmware
-> > using firmware from system memory. In order to avoid trashing the
-> > firmware, we need to reserve memory. We can do this using reserved
-> > memory nodes. However, the audio DMA engine also uses the SMMU, so we
-> > need to make sure that the firmware memory is marked as reserved within
-> > the SMMU. This is similar to the identity mapping case, but not exactly
-> > the same. Instead of creating a 1:1 mapping, we just want that IOVA
-> > region to be reserved (i.e. IOMMU_RESV_RESERVED instead of
-> > IOMMU_RESV_DIRECT{,_RELAXABLE}).
-> >=20
-> > That would also fall into the IOMMU domain, but we can't reuse the
-> > iommu-memory-region property for that because then we don't have enough
-> > information to decide which type of reservation we need.
-> >=20
-> > We could obviously make iommu-memory-region take a specifier, but we
-> > could just as well use memory-regions in that case since we have
-> > something more generic anyway.
-> >=20
-> > With the #memory-region-cells proposal, we can easily extend the cell in
-> > the specifier with an additional MEMORY_REGION_IOMMU_RESERVE flag to
-> > take that other use case into account. If we than also change to the new
-> > memory-regions property name, we avoid the ABI issue (and we gain a bit
-> > of consistency while at it).
->=20
-> Ping? Rob, do you want me to add this second use-case to the patch
-> series to make it more obvious that this isn't just a one-off thing? Or
-> how do we proceed?
-
-Rob, given that additional use-case, do you want me to run with this
-proposal and send out an updated series?
-
-Thierry
-
---6YBegNniYlMh6yBT
-Content-Type: application/pgp-signature; name="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-
-iQIzBAABCAAdFiEEiOrDCAFJzPfAjcif3SOs138+s6EFAmDeBfsACgkQ3SOs138+
-s6FEoRAArgfUJ2pN2AQEZGJFT3iV5IkbrhYdC58xmVQA7m0oyqllaDYcVzehvr3K
-/srNiOAoCsVqY0NX2oHNjS5osnC8j9spEG70LqEt3EuThasMFU4D2Z3Ron1IV6v3
-j0ycepZfYlxeCl/gHgvFIevQA8sWabNx+qjuSJoAjqgFALMdv0wBrdCdG0oOsqCI
-Z9a0B2TQG0JX+TSrlJNbM25zH/g1orMvWRo5H1cBDxCXSeRbbdJNZ/K+DY12kAVW
-dKWogA+wwereYONfIzQsCS/HqfT7dSSiA0sqBpAO78NfbD26OGMqd3Ue+mFp55mM
-dDca4qoEe8n9Je6Smu3YHMNcbkjgS5WZ2yklg8uDTkiQZBt70ZIFU5sgDsx9/I5d
-jEl6s20aCI7N8Bnj2zALU8VbZyBEUdGjGpgz9m+4Z2MXuPIEW0zcv63OdLPfapD3
-1D5DfGQrpkHzcjmCXf5usPTtHm6oi5iRb2xn9khuShYc9td2ZpxhSP7yugtbtbdO
-Vq2mf5wJO+hJeHSkRZlwQAW+lQ6eduHUAzI8f85+388XBC++pdcAA2Ku4rwzTVf1
-VSCL+6LBoTA+qVsGtFUIuXH+vJnO2cXz+WQf7mZ5j0a5dqaNNjHlQsWgkAvewt3M
-4UpP+4zqqb8fAupzRTIuC+8oZQ+szDDS8r0RMYqePR0w/1uYjAw=
-=/Iz1
------END PGP SIGNATURE-----
-
---6YBegNniYlMh6yBT--
-
---===============6213601486486988222==
-Content-Type: text/plain; charset="us-ascii"
-MIME-Version: 1.0
-Content-Transfer-Encoding: 7bit
-Content-Disposition: inline
-
+---
+# bad: [fb0ca446157a86b75502c1636b0d81e642fe6bf1] Add linux-next specific files for 20210701
+# good: [62fb9874f5da54fdb243003b386128037319b219] Linux 5.13
+git bisect start 'HEAD' 'v5.13'
+# bad: [f63c4fda987a19b1194cc45cb72fd5bf968d9d90] Merge remote-tracking branch 'rdma/for-next'
+git bisect bad f63c4fda987a19b1194cc45cb72fd5bf968d9d90
+# good: [46bb5dd1d2a63e906e374e97dfd4a5e33934b1c4] Merge remote-tracking branch 'ipsec/master'
+git bisect good 46bb5dd1d2a63e906e374e97dfd4a5e33934b1c4
+# good: [43ba6969cfb8185353a7a6fc79070f13b9e3d6d3] Merge remote-tracking branch 'clk/clk-next'
+git bisect good 43ba6969cfb8185353a7a6fc79070f13b9e3d6d3
+# good: [1ca5eddcf8dca1d6345471c6404e7364af0d7019] Merge remote-tracking branch 'fuse/for-next'
+git bisect good 1ca5eddcf8dca1d6345471c6404e7364af0d7019
+# good: [8f6d7b3248705920187263a4e7147b0752ec7dcf] Merge remote-tracking branch 'pci/next'
+git bisect good 8f6d7b3248705920187263a4e7147b0752ec7dcf
+# good: [df1885a755784da3ef285f36d9230c1d090ef186] RDMA/rtrs_clt: Alloc less memory with write path fast memory registration
+git bisect good df1885a755784da3ef285f36d9230c1d090ef186
+# good: [93d31efb58c8ad4a66bbedbc2d082df458c04e45] Merge remote-tracking branch 'cpufreq-arm/cpufreq/arm/linux-next'
+git bisect good 93d31efb58c8ad4a66bbedbc2d082df458c04e45
+# good: [46308965ae6fdc7c25deb2e8c048510ae51bbe66] RDMA/irdma: Check contents of user-space irdma_mem_reg_req object
+git bisect good 46308965ae6fdc7c25deb2e8c048510ae51bbe66
+# good: [6de7a1d006ea9db235492b288312838d6878385f] thermal/drivers/int340x/processor_thermal: Split enumeration and processing part
+git bisect good 6de7a1d006ea9db235492b288312838d6878385f
+# good: [081bec2577cda3d04f6559c60b6f4e2242853520] dt-bindings: of: Add restricted DMA pool
+git bisect good 081bec2577cda3d04f6559c60b6f4e2242853520
+# good: [bf95ac0bcd69979af146852f6a617a60285ebbc1] Merge remote-tracking branch 'thermal/thermal/linux-next'
+git bisect good bf95ac0bcd69979af146852f6a617a60285ebbc1
+# good: [3d8287544223a3d2f37981c1f9ffd94d0b5e9ffc] RDMA/core: Always release restrack object
+git bisect good 3d8287544223a3d2f37981c1f9ffd94d0b5e9ffc
+# bad: [cff1f23fad6e0bd7d671acce0d15285c709f259c] Merge remote-tracking branch 'swiotlb/linux-next'
+git bisect bad cff1f23fad6e0bd7d671acce0d15285c709f259c
+# bad: [b655006619b7bccd0dc1e055bd72de5d613e7b5c] of: Add plumbing for restricted DMA pool
+git bisect bad b655006619b7bccd0dc1e055bd72de5d613e7b5c
+# first bad commit: [b655006619b7bccd0dc1e055bd72de5d613e7b5c] of: Add plumbing for restricted DMA pool
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
 https://lists.linuxfoundation.org/mailman/listinfo/iommu
---===============6213601486486988222==--
