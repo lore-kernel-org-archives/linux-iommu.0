@@ -6,75 +6,75 @@ X-Spam-Status: No, score=-8.8 required=3.0 tests=BAYES_00,DKIM_INVALID,
 	DKIM_SIGNED,MAILING_LIST_MULTI,MENTIONS_GIT_HOSTING,SPF_HELO_NONE,SPF_PASS,
 	URIBL_BLOCKED autolearn=ham autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E36A7C07E97
-	for <iommu@archiver.kernel.org>; Fri,  2 Jul 2021 21:47:30 +0000 (UTC)
-Received: from smtp2.osuosl.org (smtp2.osuosl.org [140.211.166.133])
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 118F1C07E98
+	for <iommu@archiver.kernel.org>; Fri,  2 Jul 2021 21:47:32 +0000 (UTC)
+Received: from smtp3.osuosl.org (smtp3.osuosl.org [140.211.166.136])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 72C3E613FE
-	for <iommu@archiver.kernel.org>; Fri,  2 Jul 2021 21:47:30 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 72C3E613FE
+	by mail.kernel.org (Postfix) with ESMTPS id BC975613CF
+	for <iommu@archiver.kernel.org>; Fri,  2 Jul 2021 21:47:31 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org BC975613CF
 Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=kernel.org
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by smtp2.osuosl.org (Postfix) with ESMTP id 3E03140232;
-	Fri,  2 Jul 2021 21:47:30 +0000 (UTC)
+	by smtp3.osuosl.org (Postfix) with ESMTP id 4E9EE60B6C;
+	Fri,  2 Jul 2021 21:47:31 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from smtp2.osuosl.org ([127.0.0.1])
-	by localhost (smtp2.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id e4UwI6Q3LtRy; Fri,  2 Jul 2021 21:47:29 +0000 (UTC)
-Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [IPv6:2605:bc80:3010:104::8cd3:938])
-	by smtp2.osuosl.org (Postfix) with ESMTPS id 1BBCA40123;
-	Fri,  2 Jul 2021 21:47:29 +0000 (UTC)
-Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id E4BD9C001A;
-	Fri,  2 Jul 2021 21:47:28 +0000 (UTC)
-Received: from smtp3.osuosl.org (smtp3.osuosl.org [IPv6:2605:bc80:3010::136])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 6FC2CC000E
- for <iommu@lists.linux-foundation.org>; Fri,  2 Jul 2021 21:47:27 +0000 (UTC)
-Received: from localhost (localhost [127.0.0.1])
- by smtp3.osuosl.org (Postfix) with ESMTP id 5ECA860BEC
- for <iommu@lists.linux-foundation.org>; Fri,  2 Jul 2021 21:47:27 +0000 (UTC)
-X-Virus-Scanned: amavisd-new at osuosl.org
-Authentication-Results: smtp3.osuosl.org (amavisd-new);
- dkim=pass (2048-bit key) header.d=kernel.org
 Received: from smtp3.osuosl.org ([127.0.0.1])
- by localhost (smtp3.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id k6Md37ypaCIO for <iommu@lists.linux-foundation.org>;
- Fri,  2 Jul 2021 21:47:26 +0000 (UTC)
+	by localhost (smtp3.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+	with ESMTP id AbbkvVVAtI6U; Fri,  2 Jul 2021 21:47:30 +0000 (UTC)
+Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [IPv6:2605:bc80:3010:104::8cd3:938])
+	by smtp3.osuosl.org (Postfix) with ESMTPS id 4365060BEF;
+	Fri,  2 Jul 2021 21:47:30 +0000 (UTC)
+Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 2B83FC001A;
+	Fri,  2 Jul 2021 21:47:30 +0000 (UTC)
+Received: from smtp1.osuosl.org (smtp1.osuosl.org [140.211.166.138])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 8C477C000E
+ for <iommu@lists.linux-foundation.org>; Fri,  2 Jul 2021 21:47:28 +0000 (UTC)
+Received: from localhost (localhost [127.0.0.1])
+ by smtp1.osuosl.org (Postfix) with ESMTP id 6EEC2827CE
+ for <iommu@lists.linux-foundation.org>; Fri,  2 Jul 2021 21:47:28 +0000 (UTC)
+X-Virus-Scanned: amavisd-new at osuosl.org
+Authentication-Results: smtp1.osuosl.org (amavisd-new);
+ dkim=pass (2048-bit key) header.d=kernel.org
+Received: from smtp1.osuosl.org ([127.0.0.1])
+ by localhost (smtp1.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+ with ESMTP id Lzz0sbQLqg4U for <iommu@lists.linux-foundation.org>;
+ Fri,  2 Jul 2021 21:47:27 +0000 (UTC)
 X-Greylist: domain auto-whitelisted by SQLgrey-1.8.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
- by smtp3.osuosl.org (Postfix) with ESMTPS id BAE5C60B6C
+ by smtp1.osuosl.org (Postfix) with ESMTPS id 0A06B81B01
  for <iommu@lists.linux-foundation.org>; Fri,  2 Jul 2021 21:47:26 +0000 (UTC)
-Received: by mail.kernel.org (Postfix) with ESMTPS id 49FC1613C5;
+Received: by mail.kernel.org (Postfix) with ESMTPS id 9D380613FC;
  Fri,  2 Jul 2021 21:47:26 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
  s=k20201202; t=1625262446;
- bh=EO9AxEgMOLzM2Q6/nyEjGEeF17ZjoCabe8lMhr+K/Cw=;
+ bh=dt0Uq9m23UqZKIIfgUp7yjZd3OZUmiA+H07EWR+B8Ns=;
  h=Subject:From:In-Reply-To:References:Date:To:Cc:From;
- b=RT3PcEDDkWTJiD+Rn3CgVG6xXktyPgDhHl3hGlxUeowjnVxfhoDA5Rl+6vJ6XReC9
- spApdOPzvKM8++9xLpSI+y8pymCzQ+TEtnNZqFD8lJsmZWVMQtbEsBBAFP/bBvJc1s
- iXE9m1bk5iy9IcornUWPkJEqmnL/cprR5yk2VCD+zsDJGqUMgMEuQCngC351XxcHD9
- +uRau76ZoXx212Wk+mhwML+d/J+BKg6KnroihAjttyM6EF1FU4RoPZXIxzxz98dhec
- xusZrW4eLJjTyJ3DwLRuLY+cWMXTCt20uRgSdsVMDPxrji0DPjK4eX4JGkIivI9Oce
- E9+lhb35aOdqA==
-Subject: Re: [git pull] IOMMU Updates for Linux v5.14
+ b=nM8PHk6HjZnSImA7rkgQ7cquHU796KXyjlY++BYfHDqWv/AQ+zTnSppUiMEVmtvuc
+ 2IilplP4twN3QOmup9Xkc1HxA1XrHfY75mdZWpSWFefc25TR2Jpkflg8YAItt9viPz
+ p+HXSQLvuIq1KD/8Delmb1E5IkBKpCWM9TkPVdZJ84Qxk1YGNlR1bYcg4d5CjjzoOb
+ oSUEY9juX6TFJPyx/Rwsza1yCMbQ2T5KFR9Pa2OxKQtn+mkitoVoxlMFqo/i0eyNd6
+ z97gzyPFjpg6eSrbHIiXoF5aZAlxAIDtOT+W95ESsztGHRrXqYOzcmj2oavYyyzG/M
+ tpIrhHM1oy/FA==
+Subject: Re: [GIT PULL] dma-mapping updates for Linux 5.14
 From: pr-tracker-bot@kernel.org
-In-Reply-To: <YN7IDbKZFQnYFCNq@8bytes.org>
-References: <YN7IDbKZFQnYFCNq@8bytes.org>
+In-Reply-To: <YN85ebItWEBp98jL@infradead.org>
+References: <YN85ebItWEBp98jL@infradead.org>
 X-PR-Tracked-List-Id: Development issues for Linux IOMMU support
  <iommu.lists.linux-foundation.org>
-X-PR-Tracked-Message-Id: <YN7IDbKZFQnYFCNq@8bytes.org>
-X-PR-Tracked-Remote: git://git.kernel.org/pub/scm/linux/kernel/git/joro/iommu.git
- tags/iommu-updates-v5.14
-X-PR-Tracked-Commit-Id: 2b9d8e3e9a9bb693a8b8bd26ad192db037517759
+X-PR-Tracked-Message-Id: <YN85ebItWEBp98jL@infradead.org>
+X-PR-Tracked-Remote: git://git.infradead.org/users/hch/dma-mapping.git
+ tags/dma-mapping-5.14
+X-PR-Tracked-Commit-Id: 2b4bbc6231d789f58676d2ccc42177df163e1c4a
 X-PR-Merge-Tree: torvalds/linux.git
 X-PR-Merge-Refname: refs/heads/master
-X-PR-Merge-Commit-Id: cd3eb7efaa995db00db0ba64893814f9831be842
-Message-Id: <162526244616.28144.17442613568063715973.pr-tracker-bot@kernel.org>
+X-PR-Merge-Commit-Id: e72b069609aa76cc1de35f5d434dbfaa5392ae9a
+Message-Id: <162526244661.28144.17308914428564456116.pr-tracker-bot@kernel.org>
 Date: Fri, 02 Jul 2021 21:47:26 +0000
-To: Joerg Roedel <joro@8bytes.org>
-Cc: Will Deacon <will@kernel.org>, iommu@lists.linux-foundation.org,
+To: Christoph Hellwig <hch@infradead.org>
+Cc: iommu@lists.linux-foundation.org,
  Linus Torvalds <torvalds@linux-foundation.org>, linux-kernel@vger.kernel.org
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
@@ -94,12 +94,12 @@ Content-Transfer-Encoding: 7bit
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-The pull request you sent on Fri, 2 Jul 2021 10:02:21 +0200:
+The pull request you sent on Fri, 2 Jul 2021 18:06:17 +0200:
 
-> git://git.kernel.org/pub/scm/linux/kernel/git/joro/iommu.git tags/iommu-updates-v5.14
+> git://git.infradead.org/users/hch/dma-mapping.git tags/dma-mapping-5.14
 
 has been merged into torvalds/linux.git:
-https://git.kernel.org/torvalds/c/cd3eb7efaa995db00db0ba64893814f9831be842
+https://git.kernel.org/torvalds/c/e72b069609aa76cc1de35f5d434dbfaa5392ae9a
 
 Thank you!
 
