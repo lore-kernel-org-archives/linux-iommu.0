@@ -2,103 +2,75 @@ Return-Path: <SRS0=c+U5=L2=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-10.3 required=3.0 tests=BAYES_00,
-	HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,MENTIONS_GIT_HOSTING,
-	NICE_REPLY_A,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_SANE_1
-	autolearn=unavailable autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-18.6 required=3.0 tests=BAYES_00,DKIM_INVALID,
+	DKIM_SIGNED,HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,
+	INCLUDES_PULL_REQUEST,MAILING_LIST_MULTI,MENTIONS_GIT_HOSTING,SPF_HELO_NONE,
+	SPF_PASS,URIBL_BLOCKED autolearn=ham autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B1708C11F68
-	for <iommu@archiver.kernel.org>; Fri,  2 Jul 2021 15:14:07 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id ED8A9C11F68
+	for <iommu@archiver.kernel.org>; Fri,  2 Jul 2021 16:06:46 +0000 (UTC)
 Received: from smtp1.osuosl.org (smtp1.osuosl.org [140.211.166.138])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 66D4361416
-	for <iommu@archiver.kernel.org>; Fri,  2 Jul 2021 15:14:07 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 66D4361416
-Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=arm.com
+	by mail.kernel.org (Postfix) with ESMTPS id 9AC5F6141D
+	for <iommu@archiver.kernel.org>; Fri,  2 Jul 2021 16:06:46 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 9AC5F6141D
+Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=infradead.org
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by smtp1.osuosl.org (Postfix) with ESMTP id 31C6283EEB;
-	Fri,  2 Jul 2021 15:14:07 +0000 (UTC)
+	by smtp1.osuosl.org (Postfix) with ESMTP id 6891A83FC8;
+	Fri,  2 Jul 2021 16:06:46 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
 Received: from smtp1.osuosl.org ([127.0.0.1])
 	by localhost (smtp1.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id Kar-zPQbw6Dx; Fri,  2 Jul 2021 15:14:06 +0000 (UTC)
-Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by smtp1.osuosl.org (Postfix) with ESMTPS id F248583E8B;
-	Fri,  2 Jul 2021 15:14:05 +0000 (UTC)
+	with ESMTP id 8H3vQ3pRM67N; Fri,  2 Jul 2021 16:06:45 +0000 (UTC)
+Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [IPv6:2605:bc80:3010:104::8cd3:938])
+	by smtp1.osuosl.org (Postfix) with ESMTPS id 2C117840DB;
+	Fri,  2 Jul 2021 16:06:45 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id C5B28C001A;
-	Fri,  2 Jul 2021 15:14:05 +0000 (UTC)
-Received: from smtp1.osuosl.org (smtp1.osuosl.org [140.211.166.138])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 924D1C000E
- for <iommu@lists.linux-foundation.org>; Fri,  2 Jul 2021 15:14:04 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id F315AC001A;
+	Fri,  2 Jul 2021 16:06:44 +0000 (UTC)
+Received: from smtp4.osuosl.org (smtp4.osuosl.org [140.211.166.137])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id B42AEC000E
+ for <iommu@lists.linux-foundation.org>; Fri,  2 Jul 2021 16:06:43 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by smtp1.osuosl.org (Postfix) with ESMTP id 7877F83EEB
- for <iommu@lists.linux-foundation.org>; Fri,  2 Jul 2021 15:14:04 +0000 (UTC)
+ by smtp4.osuosl.org (Postfix) with ESMTP id A1718423BC
+ for <iommu@lists.linux-foundation.org>; Fri,  2 Jul 2021 16:06:43 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from smtp1.osuosl.org ([127.0.0.1])
- by localhost (smtp1.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id 75unsazeFnTh for <iommu@lists.linux-foundation.org>;
- Fri,  2 Jul 2021 15:14:03 +0000 (UTC)
-X-Greylist: domain auto-whitelisted by SQLgrey-1.8.0
-Received: from foss.arm.com (foss.arm.com [217.140.110.172])
- by smtp1.osuosl.org (Postfix) with ESMTP id 2A9E483E8B
- for <iommu@lists.linux-foundation.org>; Fri,  2 Jul 2021 15:14:03 +0000 (UTC)
-Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
- by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 26FB4D6E;
- Fri,  2 Jul 2021 08:14:02 -0700 (PDT)
-Received: from [10.57.40.45] (unknown [10.57.40.45])
- by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id A13EA3F5A1;
- Fri,  2 Jul 2021 08:13:54 -0700 (PDT)
-Subject: Re: [PATCH v15 06/12] swiotlb: Use is_swiotlb_force_bounce for
- swiotlb data bouncing
-To: Will Deacon <will@kernel.org>, Nathan Chancellor <nathan@kernel.org>
-References: <20210624155526.2775863-1-tientzu@chromium.org>
- <20210624155526.2775863-7-tientzu@chromium.org>
- <YNvMDFWKXSm4LRfZ@Ryzen-9-3900X.localdomain>
- <CALiNf2-a-haQN0-4+gX8+wa++52-0CnO2O4BEkxrQCxoTa_47w@mail.gmail.com>
- <20210630114348.GA8383@willie-the-truck>
- <YNyUQwiagNeZ9YeJ@Ryzen-9-3900X.localdomain>
- <20210701074045.GA9436@willie-the-truck>
- <ea28db1f-846e-4f0a-4f13-beb67e66bbca@kernel.org>
- <20210702135856.GB11132@willie-the-truck>
-From: Robin Murphy <robin.murphy@arm.com>
-Message-ID: <0f7bd903-e309-94a0-21d7-f0e8e9546018@arm.com>
-Date: Fri, 2 Jul 2021 16:13:50 +0100
-User-Agent: Mozilla/5.0 (Windows NT 10.0; rv:78.0) Gecko/20100101
- Thunderbird/78.11.0
+Authentication-Results: smtp4.osuosl.org (amavisd-new);
+ dkim=pass (2048-bit key) header.d=infradead.org
+Received: from smtp4.osuosl.org ([127.0.0.1])
+ by localhost (smtp4.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+ with ESMTP id XPrIMOyZbY1y for <iommu@lists.linux-foundation.org>;
+ Fri,  2 Jul 2021 16:06:42 +0000 (UTC)
+X-Greylist: from auto-whitelisted by SQLgrey-1.8.0
+Received: from casper.infradead.org (casper.infradead.org
+ [IPv6:2001:8b0:10b:1236::1])
+ by smtp4.osuosl.org (Postfix) with ESMTPS id 7C794423B6
+ for <iommu@lists.linux-foundation.org>; Fri,  2 Jul 2021 16:06:41 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+ d=infradead.org; s=casper.20170209; h=Content-Type:MIME-Version:Message-ID:
+ Subject:Cc:To:From:Date:Sender:Reply-To:Content-Transfer-Encoding:Content-ID:
+ Content-Description:In-Reply-To:References;
+ bh=iC1QZXy9Cno3bICQJjkmHqM8p3uVRAtns8+PaSPO5+8=; b=wQz/0NOVk+4ejBAefuHHoMDhFo
+ Cju+ikF+UTkF83UxB0g7Q0yOycGv8B/02IsEly3HlBSQRqmwzD1N1LNICcl7V6HSTi7X3zWSSfCg/
+ 66uWKjK3z4dBoWmtSvymJUuNvgYApDm7j5QNULwKpEhVmWVUovceE+puYsr9msn66TRZkrCdRdBBS
+ h2Gq/uwWaajij7DgJpxJz9TO4If1LTwbpH20J79WuAzrPMoPnDXmekyXq7eAghJSjy6PZAGs864qO
+ 0pintKwMm7sUJJpN/jnRowqmyIi6sJ8G/R/QidmFEq9WENDD17Mm1Y9m0uIoRBziafiFrGsQ1fRu3
+ rp+Pa9+g==;
+Received: from [2001:4bb8:180:285:6928:4a94:34bd:6961] (helo=localhost)
+ by casper.infradead.org with esmtpsa (Exim 4.94.2 #2 (Red Hat Linux))
+ id 1lzLgJ-007qUJ-3Q; Fri, 02 Jul 2021 16:06:24 +0000
+Date: Fri, 2 Jul 2021 18:06:17 +0200
+From: Christoph Hellwig <hch@infradead.org>
+To: Linus Torvalds <torvalds@linux-foundation.org>
+Subject: [GIT PULL] dma-mapping updates for Linux 5.14
+Message-ID: <YN85ebItWEBp98jL@infradead.org>
 MIME-Version: 1.0
-In-Reply-To: <20210702135856.GB11132@willie-the-truck>
-Content-Language: en-GB
-Cc: heikki.krogerus@linux.intel.com, thomas.hellstrom@linux.intel.com,
- peterz@infradead.org, benh@kernel.crashing.org,
- joonas.lahtinen@linux.intel.com, dri-devel@lists.freedesktop.org,
- chris@chris-wilson.co.uk, grant.likely@arm.com, paulus@samba.org,
- Frank Rowand <frowand.list@gmail.com>, mingo@kernel.org,
- Stefano Stabellini <sstabellini@kernel.org>,
- Saravana Kannan <saravanak@google.com>, mpe@ellerman.id.au,
- "Rafael J . Wysocki" <rafael.j.wysocki@intel.com>,
- Christoph Hellwig <hch@lst.de>,
- Bartosz Golaszewski <bgolaszewski@baylibre.com>, bskeggs@redhat.com,
- linux-pci@vger.kernel.org, xen-devel@lists.xenproject.org,
- Thierry Reding <treding@nvidia.com>, intel-gfx@lists.freedesktop.org,
- matthew.auld@intel.com, linux-devicetree <devicetree@vger.kernel.org>,
- Jianxiong Gao <jxgao@google.com>, Daniel Vetter <daniel@ffwll.ch>,
- Konrad Rzeszutek Wilk <konrad.wilk@oracle.com>,
- maarten.lankhorst@linux.intel.com, airlied@linux.ie,
- Dan Williams <dan.j.williams@intel.com>, jani.nikula@linux.intel.com,
- Rob Herring <robh+dt@kernel.org>, rodrigo.vivi@intel.com,
- Bjorn Helgaas <bhelgaas@google.com>, Claire Chang <tientzu@chromium.org>,
- boris.ostrovsky@oracle.com,
- Andy Shevchenko <andriy.shevchenko@linux.intel.com>, jgross@suse.com,
- Nicolas Boichat <drinkcat@chromium.org>, Greg KH <gregkh@linuxfoundation.org>,
- Randy Dunlap <rdunlap@infradead.org>, Qian Cai <quic_qiancai@quicinc.com>,
- lkml <linux-kernel@vger.kernel.org>,
- "list@263.net:IOMMU DRIVERS" <iommu@lists.linux-foundation.org>,
- Jim Quinlan <james.quinlan@broadcom.com>, xypron.glpk@gmx.de,
- Tom Lendacky <thomas.lendacky@amd.com>, linuxppc-dev@lists.ozlabs.org,
- bauerman@linux.ibm.com
+Content-Disposition: inline
+X-SRS-Rewrite: SMTP reverse-path rewritten from <hch@infradead.org> by
+ casper.infradead.org. See http://www.infradead.org/rpr.html
+Cc: iommu@lists.linux-foundation.org, linux-kernel@vger.kernel.org
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -111,100 +83,39 @@ List-Post: <mailto:iommu@lists.linux-foundation.org>
 List-Help: <mailto:iommu-request@lists.linux-foundation.org?subject=help>
 List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
  <mailto:iommu-request@lists.linux-foundation.org?subject=subscribe>
+Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
-Content-Type: text/plain; charset="us-ascii"; Format="flowed"
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-On 2021-07-02 14:58, Will Deacon wrote:
-> Hi Nathan,
-> 
-> On Thu, Jul 01, 2021 at 12:52:20AM -0700, Nathan Chancellor wrote:
->> On 7/1/2021 12:40 AM, Will Deacon wrote:
->>> On Wed, Jun 30, 2021 at 08:56:51AM -0700, Nathan Chancellor wrote:
->>>> On Wed, Jun 30, 2021 at 12:43:48PM +0100, Will Deacon wrote:
->>>>> On Wed, Jun 30, 2021 at 05:17:27PM +0800, Claire Chang wrote:
->>>>>> `BUG: unable to handle page fault for address: 00000000003a8290` and
->>>>>> the fact it crashed at `_raw_spin_lock_irqsave` look like the memory
->>>>>> (maybe dev->dma_io_tlb_mem) was corrupted?
->>>>>> The dev->dma_io_tlb_mem should be set here
->>>>>> (https://git.kernel.org/pub/scm/linux/kernel/git/next/linux-next.git/tree/drivers/pci/probe.c#n2528)
->>>>>> through device_initialize.
->>>>>
->>>>> I'm less sure about this. 'dma_io_tlb_mem' should be pointing at
->>>>> 'io_tlb_default_mem', which is a page-aligned allocation from memblock.
->>>>> The spinlock is at offset 0x24 in that structure, and looking at the
->>>>> register dump from the crash:
->>>>>
->>>>> Jun 29 18:28:42 hp-4300G kernel: RSP: 0018:ffffadb4013db9e8 EFLAGS: 00010006
->>>>> Jun 29 18:28:42 hp-4300G kernel: RAX: 00000000003a8290 RBX: 0000000000000000 RCX: ffff8900572ad580
->>>>> Jun 29 18:28:42 hp-4300G kernel: RDX: ffff89005653f024 RSI: 00000000000c0000 RDI: 0000000000001d17
->>>>> Jun 29 18:28:42 hp-4300G kernel: RBP: 000000000a20d000 R08: 00000000000c0000 R09: 0000000000000000
->>>>> Jun 29 18:28:42 hp-4300G kernel: R10: 000000000a20d000 R11: ffff89005653f000 R12: 0000000000000212
->>>>> Jun 29 18:28:42 hp-4300G kernel: R13: 0000000000001000 R14: 0000000000000002 R15: 0000000000200000
->>>>> Jun 29 18:28:42 hp-4300G kernel: FS:  00007f1f8898ea40(0000) GS:ffff890057280000(0000) knlGS:0000000000000000
->>>>> Jun 29 18:28:42 hp-4300G kernel: CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
->>>>> Jun 29 18:28:42 hp-4300G kernel: CR2: 00000000003a8290 CR3: 00000001020d0000 CR4: 0000000000350ee0
->>>>> Jun 29 18:28:42 hp-4300G kernel: Call Trace:
->>>>> Jun 29 18:28:42 hp-4300G kernel:  _raw_spin_lock_irqsave+0x39/0x50
->>>>> Jun 29 18:28:42 hp-4300G kernel:  swiotlb_tbl_map_single+0x12b/0x4c0
->>>>>
->>>>> Then that correlates with R11 holding the 'dma_io_tlb_mem' pointer and
->>>>> RDX pointing at the spinlock. Yet RAX is holding junk :/
->>>>>
->>>>> I agree that enabling KASAN would be a good idea, but I also think we
->>>>> probably need to get some more information out of swiotlb_tbl_map_single()
->>>>> to see see what exactly is going wrong in there.
->>>>
->>>> I can certainly enable KASAN and if there is any debug print I can add
->>>> or dump anything, let me know!
->>>
->>> I bit the bullet and took v5.13 with swiotlb/for-linus-5.14 merged in, built
->>> x86 defconfig and ran it on my laptop. However, it seems to work fine!
->>>
->>> Please can you share your .config?
->>
->> Sure thing, it is attached. It is just Arch Linux's config run through
->> olddefconfig. The original is below in case you need to diff it.
->>
->> https://raw.githubusercontent.com/archlinux/svntogit-packages/9045405dc835527164f3034b3ceb9a67c7a53cd4/trunk/config
->>
->> If there is anything more that I can provide, please let me know.
-> 
-> I eventually got this booting (for some reason it was causing LD to SEGV
-> trying to link it for a while...) and sadly it works fine on my laptop. Hmm.
-> 
-> Did you manage to try again with KASAN?
-> 
-> It might also be worth taking the IOMMU out of the equation, since that
-> interfaces differently with SWIOTLB and I couldn't figure out the code path
-> from the log you provided. What happens if you boot with "amd_iommu=off
-> swiotlb=force"?
+The following changes since commit a7f3d3d3600c8ed119eb0d2483de0062ce2e3707:
 
-Oh, now there's a thing... the chat from the IOMMU API in the boot log 
-implies that the IOMMU *should* be in the picture - we see that default 
-domains are IOMMU_DOMAIN_DMA default and the GPU 0000:0c:00.0 was added 
-to a group. That means dev->dma_ops should be set and DMA API calls 
-should be going through iommu-dma, yet the callstack in the crash says 
-we've gone straight from dma_map_page_attrs() to swiotlb_map(), implying 
-the inline dma_direct_map_page() path.
+  dma-mapping: add unlikely hint to error path in dma_mapping_error (2021-04-02 16:41:08 +0200)
 
-If dev->dma_ops didn't look right in the first place, it's perhaps less 
-surprising that dev->dma_io_tlb_mem might be wild as well. It doesn't 
-seem plausible that we should have a race between initialising the 
-device and probing its driver, so maybe the whole dev pointer is getting 
-trampled earlier in the callchain (or is fundamentally wrong to begin 
-with, but from a quick skim of the amdgpu code it did look like 
-adev->dev and adev->pdev are appropriately set early on by 
-amdgpu_pci_probe()).
+are available in the Git repository at:
 
-> (although word of warning here: i915 dies horribly on my laptop if I pass
-> swiotlb=force, even with the distro 5.10 kernel)
+  git://git.infradead.org/users/hch/dma-mapping.git tags/dma-mapping-5.14
 
-FWIW I'd imagine you probably need to massively increase the SWIOTLB 
-buffer size to have hope of that working.
+for you to fetch changes up to 2b4bbc6231d789f58676d2ccc42177df163e1c4a:
 
-Robin.
+  dma-debug: report -EEXIST errors in add_dma_entry (2021-06-22 08:15:47 +0200)
+
+----------------------------------------------------------------
+dma-mapping updates for Linux 5.14
+
+ - a trivivial whitespace fix (Zhen Lei)
+ - report -EEXIST errors in add_dma_entry (Hamza Mahfooz)
+
+----------------------------------------------------------------
+Hamza Mahfooz (1):
+      dma-debug: report -EEXIST errors in add_dma_entry
+
+Zhen Lei (1):
+      dma-mapping: remove a trailing space
+
+ kernel/dma/coherent.c | 2 +-
+ kernel/dma/debug.c    | 6 ++----
+ 2 files changed, 3 insertions(+), 5 deletions(-)
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
