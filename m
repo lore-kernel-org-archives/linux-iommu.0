@@ -1,117 +1,105 @@
-Return-Path: <SRS0=xdAu=L3=lists.linux-foundation.org=iommu-bounces@kernel.org>
+Return-Path: <SRS0=1ePL=L4=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-13.6 required=3.0 tests=BAYES_00,DKIM_INVALID,
+X-Spam-Status: No, score=-13.5 required=3.0 tests=BAYES_00,DKIM_INVALID,
 	DKIM_SIGNED,HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_CR_TRAILER,INCLUDES_PATCH,
-	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no
-	version=3.4.0
+	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED autolearn=unavailable
+	autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D207DC07E99
-	for <iommu@archiver.kernel.org>; Sat,  3 Jul 2021 08:31:20 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id DF8EBC07E95
+	for <iommu@archiver.kernel.org>; Sun,  4 Jul 2021 07:39:22 +0000 (UTC)
 Received: from smtp1.osuosl.org (smtp1.osuosl.org [140.211.166.138])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 71F6C6142B
-	for <iommu@archiver.kernel.org>; Sat,  3 Jul 2021 08:31:20 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 71F6C6142B
-Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=redhat.com
+	by mail.kernel.org (Postfix) with ESMTPS id 7BE136135D
+	for <iommu@archiver.kernel.org>; Sun,  4 Jul 2021 07:39:22 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 7BE136135D
+Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=solid-run.com
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by smtp1.osuosl.org (Postfix) with ESMTP id D38AF83DF8;
-	Sat,  3 Jul 2021 08:31:19 +0000 (UTC)
+	by smtp1.osuosl.org (Postfix) with ESMTP id 3D1B883BDD;
+	Sun,  4 Jul 2021 07:39:22 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
 Received: from smtp1.osuosl.org ([127.0.0.1])
 	by localhost (smtp1.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id JpHRW77WWQvT; Sat,  3 Jul 2021 08:31:18 +0000 (UTC)
-Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by smtp1.osuosl.org (Postfix) with ESMTPS id 32A7E83EEF;
-	Sat,  3 Jul 2021 08:31:18 +0000 (UTC)
+	with ESMTP id VTwSOME-eQMG; Sun,  4 Jul 2021 07:39:21 +0000 (UTC)
+Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [IPv6:2605:bc80:3010:104::8cd3:938])
+	by smtp1.osuosl.org (Postfix) with ESMTPS id BF38083B60;
+	Sun,  4 Jul 2021 07:39:20 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 0A1FDC001A;
-	Sat,  3 Jul 2021 08:31:18 +0000 (UTC)
-Received: from smtp3.osuosl.org (smtp3.osuosl.org [IPv6:2605:bc80:3010::136])
- by lists.linuxfoundation.org (Postfix) with ESMTP id C8C25C001A
- for <iommu@lists.linux-foundation.org>; Sat,  3 Jul 2021 08:31:16 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 92503C0010;
+	Sun,  4 Jul 2021 07:39:20 +0000 (UTC)
+Received: from smtp2.osuosl.org (smtp2.osuosl.org [IPv6:2605:bc80:3010::133])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 55980C000E
+ for <iommu@lists.linux-foundation.org>; Sun,  4 Jul 2021 07:39:18 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by smtp3.osuosl.org (Postfix) with ESMTP id 1AE46606D9
- for <iommu@lists.linux-foundation.org>; Sat,  3 Jul 2021 08:31:16 +0000 (UTC)
+ by smtp2.osuosl.org (Postfix) with ESMTP id 2F6AF400CF
+ for <iommu@lists.linux-foundation.org>; Sun,  4 Jul 2021 07:39:18 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Authentication-Results: smtp3.osuosl.org (amavisd-new);
- dkim=pass (1024-bit key) header.d=redhat.com
-Received: from smtp3.osuosl.org ([127.0.0.1])
- by localhost (smtp3.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id GYLvvrIsR-Ze for <iommu@lists.linux-foundation.org>;
- Sat,  3 Jul 2021 08:31:14 +0000 (UTC)
-X-Greylist: domain auto-whitelisted by SQLgrey-1.8.0
-Received: from us-smtp-delivery-124.mimecast.com
- (us-smtp-delivery-124.mimecast.com [170.10.133.124])
- by smtp3.osuosl.org (Postfix) with ESMTPS id A10E260C07
- for <iommu@lists.linux-foundation.org>; Sat,  3 Jul 2021 08:31:14 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
- s=mimecast20190719; t=1625301073;
- h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
- to:to:cc:cc:mime-version:mime-version:content-type:content-type:
- in-reply-to:in-reply-to:references:references;
- bh=A5pLvLjSYytl9fxuQeHwRO0qsjIw9mqvaKkb7Y9O3i8=;
- b=eFY+saDpB3yRNFoGN+HMUaDEsl//zqpPAP2m8INoI0g88LjWeljAwDhPKO9+2qQu9/yJQz
- Fsm2VO8hiFKUuX6ccqdanskY9dD8rzh56sgJlptp3HjhYsm735axJtu+fMP2FCGwLpsvfe
- hC+PSk5KhNz0tcILfT5du3nZqIGheVg=
-Received: from mail-wm1-f70.google.com (mail-wm1-f70.google.com
- [209.85.128.70]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-86-JSmYrEwdN6mCCAHu43dtPA-1; Sat, 03 Jul 2021 04:31:10 -0400
-X-MC-Unique: JSmYrEwdN6mCCAHu43dtPA-1
-Received: by mail-wm1-f70.google.com with SMTP id
- j38-20020a05600c1c26b02901dbf7d18ff8so7497887wms.8
- for <iommu@lists.linux-foundation.org>; Sat, 03 Jul 2021 01:31:10 -0700 (PDT)
+Authentication-Results: smtp2.osuosl.org (amavisd-new);
+ dkim=pass (2048-bit key) header.d=solid-run-com.20150623.gappssmtp.com
+Received: from smtp2.osuosl.org ([127.0.0.1])
+ by localhost (smtp2.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+ with ESMTP id TzLgLQ9MfXNF for <iommu@lists.linux-foundation.org>;
+ Sun,  4 Jul 2021 07:39:16 +0000 (UTC)
+X-Greylist: whitelisted by SQLgrey-1.8.0
+Received: from mail-ed1-x530.google.com (mail-ed1-x530.google.com
+ [IPv6:2a00:1450:4864:20::530])
+ by smtp2.osuosl.org (Postfix) with ESMTPS id 9C78B400A8
+ for <iommu@lists.linux-foundation.org>; Sun,  4 Jul 2021 07:39:16 +0000 (UTC)
+Received: by mail-ed1-x530.google.com with SMTP id l2so36904edt.1
+ for <iommu@lists.linux-foundation.org>; Sun, 04 Jul 2021 00:39:16 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+ d=solid-run-com.20150623.gappssmtp.com; s=20150623;
+ h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+ :cc; bh=ZQQunou8Q0jU/ZTZKKb+xKzAPXywIUcNSDrbg6Hzbc4=;
+ b=UjBVv2491CcHTIl2ATdhgmoHRqENOKjD/s9fEr6BmjS4hjsG4DmtJLUUPKHihIsA1C
+ vxtr/6HuL6/4Nwd7tZ6FaRtkeGZ8TyICt0/UicK2lshtPi3Z21FHBhfO+UuYaD83Lfio
+ O3Or/CAdIZ9Fv8K70hyrHATAE0523OYgM6b+OqRN79RPLpRuBEMRThRK4vlmYgxeVFd0
+ wBZ4gDmL/ro2+BNzVV6kGD7FSznlVvb3UnLb5Nz4LokDKDki8xGm5kJmcuUu5NUtdnaD
+ EsZtbAXMJNYlFF57C5T1MekwwOJci97v2N8Rt9n0wN8ev8LUmkNvXw2wRyiJ3WCaPGYB
+ OxMQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
  d=1e100.net; s=20161025;
- h=x-gm-message-state:date:from:to:cc:subject:message-id:references
- :mime-version:content-disposition:in-reply-to;
- bh=A5pLvLjSYytl9fxuQeHwRO0qsjIw9mqvaKkb7Y9O3i8=;
- b=TymGHQKuAU+M1gEAu3bSYPcTZdeFIm4z5WkXGQyXHOC1FNpi+jC+RAuFtzQ1mUTxH1
- jLT0BkTXTFljdnciCoWKH5WEULglNatbqq64C56fQBVDsHTdaPX0PM7jMdJvrkNQz0Uk
- t55Ah5Gn0/7WPZ79n/m5jMTbpTPTu8gDNGWmv36ZGmUfwjBir4ICr25bhgtTI/WHFsAc
- /a+sxYEkX8HUEnIDKnYk0s24KVTTwy8EEvu4MKyFcgroi57hxoHYsY2sOxfGE6G+Tf9P
- 92GrXEIRdv4xpo/J8ULxXt5G4tFFpYVwljVtQG54QQoTt9rX914W+NVglSxOSve7FoeK
- ZFPA==
-X-Gm-Message-State: AOAM533232opD5mFQqJ+SfR9iSjJq9Oz/J9MSk/rHnyD8nj4Ermp2Ob5
- W7KTJ5NSOHHJ+6jZx60hX5905MbvzuUxYl5Z27+dOyKXTuVxJBF6qv5vrQrjmAWOwJQcEfQS3Ek
- EQnHaAsLTPnid66iTBBdaj60EuCcNGw==
-X-Received: by 2002:a05:600c:296:: with SMTP id
- 22mr3900765wmk.17.1625301069177; 
- Sat, 03 Jul 2021 01:31:09 -0700 (PDT)
-X-Google-Smtp-Source: ABdhPJzrvv4LtZcQ7zdL29oxvTkKz5qNfM0qWp0wXMltlMPDTMTgPHfjYLGKI6BE2STBxqHT1590MA==
-X-Received: by 2002:a05:600c:296:: with SMTP id
- 22mr3900747wmk.17.1625301069032; 
- Sat, 03 Jul 2021 01:31:09 -0700 (PDT)
-Received: from redhat.com ([2.55.4.39])
- by smtp.gmail.com with ESMTPSA id k5sm5943632wmk.11.2021.07.03.01.31.05
- (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
- Sat, 03 Jul 2021 01:31:08 -0700 (PDT)
-Date: Sat, 3 Jul 2021 04:31:03 -0400
-From: "Michael S. Tsirkin" <mst@redhat.com>
-To: He Zhe <zhe.he@windriver.com>
-Subject: Re: [PATCH] eventfd: Enlarge recursion limit to allow vhost to work
-Message-ID: <20210703043039-mutt-send-email-mst@kernel.org>
-References: <CACycT3t1Dgrzsr7LbBrDhRLDa3qZ85ZOgj9H7r1fqPi-kf7r6Q@mail.gmail.com>
- <20210618084412.18257-1-zhe.he@windriver.com>
+ h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+ :message-id:subject:to:cc;
+ bh=ZQQunou8Q0jU/ZTZKKb+xKzAPXywIUcNSDrbg6Hzbc4=;
+ b=AmWwkka96052IkupO3rr8AtHFhellKW72R1TGkxDTX60Pe9RurlAUpizWa+aZhJHD/
+ Y08ISjpr+xE5HOdTvSHvTrYv1s4w2UeXb2eYM2E17yFhZkLqLT3WwgLQQ0xZxaxp5u7v
+ eKYD35jTJXRh0WX0yxLuIv8g+IypeKpC0y+C0Wz2Lq+a8SgxyY7SXcq//yc9W/+BCx7f
+ DrV+SHn7ka7To1o/g/JKCiETKSYt6bQy3YKjQiYrGoe1DWMHDbG0I/ceiPZZoeYzDNt6
+ +jvozSJZ5YwENlwTkTVp0bgbl0CSld0CBCj2NcB+JTLgy++C6T7mYJ3DChmxDGah0lFx
+ JxnQ==
+X-Gm-Message-State: AOAM530ZjO1mm9cx77EbyoDH1En6YIxHswSHxTDxW0zyA9/v6luWZbkE
+ M89V7OMcGsX8KJqvuAdVhqvvGg8i5E8XJG9u7XDhZg==
+X-Google-Smtp-Source: ABdhPJwalleSo2mpNse89qa/sYo5DJP09VqLJNHOKmmanvivMJEtn8Shbt4ycDGarig9R7C/Qg8RJQrvPd1p3TVh4tg=
+X-Received: by 2002:a05:6402:50d4:: with SMTP id
+ h20mr9147653edb.361.1625384354669; 
+ Sun, 04 Jul 2021 00:39:14 -0700 (PDT)
 MIME-Version: 1.0
-In-Reply-To: <20210618084412.18257-1-zhe.he@windriver.com>
-Authentication-Results: relay.mimecast.com;
- auth=pass smtp.auth=CUSA124A263 smtp.mailfrom=mst@redhat.com
-X-Mimecast-Spam-Score: 0
-X-Mimecast-Originator: redhat.com
-Content-Disposition: inline
-Cc: kvm@vger.kernel.org, jasowang@redhat.com,
- virtualization@lists.linux-foundation.org, christian.brauner@canonical.com,
- qiang.zhang@windriver.com, corbet@lwn.net, willy@infradead.org,
- hch@infradead.org, xieyongji@bytedance.com, dan.carpenter@oracle.com,
- sgarzare@redhat.com, viro@zeniv.linux.org.uk, stefanha@redhat.com,
- songmuchun@bytedance.com, axboe@kernel.dk, gregkh@linuxfoundation.org,
- rdunlap@infradead.org, linux-kernel@vger.kernel.org,
- iommu@lists.linux-foundation.org, bcrl@kvack.org,
- linux-fsdevel@vger.kernel.org, mika.penttila@nextfour.com
+References: <20210524110222.2212-1-shameerali.kolothum.thodi@huawei.com>
+ <20210524110222.2212-4-shameerali.kolothum.thodi@huawei.com>
+ <9e788789-c1c2-10f1-d99c-93cfa6ea3348@arm.com>
+ <3206cd67962242a69fb83adac892e34c@huawei.com>
+ <CABdtJHuKT2WfsR+hrPkpXkhyvzKumrc=KNhgeo9P01=tfWfg2w@mail.gmail.com>
+In-Reply-To: <CABdtJHuKT2WfsR+hrPkpXkhyvzKumrc=KNhgeo9P01=tfWfg2w@mail.gmail.com>
+From: Jon Nettleton <jon@solid-run.com>
+Date: Sun, 4 Jul 2021 09:38:38 +0200
+Message-ID: <CABdtJHuz9e9H15gUCBKBRongt-Yqy=aHGsnjzM3cGpEhZ7ZFng@mail.gmail.com>
+Subject: Re: [PATCH v5 3/8] ACPI/IORT: Add a helper to retrieve RMR memory
+ regions
+To: Shameerali Kolothum Thodi <shameerali.kolothum.thodi@huawei.com>
+Cc: Linuxarm <linuxarm@huawei.com>,
+ "steven.price@arm.com" <steven.price@arm.com>,
+ "linux-acpi@vger.kernel.org" <linux-acpi@vger.kernel.org>,
+ "iommu@lists.linux-foundation.org" <iommu@lists.linux-foundation.org>,
+ wanghuiqiang <wanghuiqiang@huawei.com>,
+ "Guohanjun \(Hanjun Guo\)" <guohanjun@huawei.com>,
+ yangyicong <yangyicong@huawei.com>,
+ "Sami.Mujawar@arm.com" <Sami.Mujawar@arm.com>,
+ Robin Murphy <robin.murphy@arm.com>,
+ "linux-arm-kernel@lists.infradead.org" <linux-arm-kernel@lists.infradead.org>
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -129,119 +117,232 @@ Content-Transfer-Encoding: 7bit
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-On Fri, Jun 18, 2021 at 04:44:12PM +0800, He Zhe wrote:
-> commit b5e683d5cab8 ("eventfd: track eventfd_signal() recursion depth")
-> introduces a percpu counter that tracks the percpu recursion depth and
-> warn if it greater than zero, to avoid potential deadlock and stack
-> overflow.
-> 
-> However sometimes different eventfds may be used in parallel. Specifically,
-> when heavy network load goes through kvm and vhost, working as below, it
-> would trigger the following call trace.
-> 
-> -  100.00%
->    - 66.51%
->         ret_from_fork
->         kthread
->       - vhost_worker
->          - 33.47% handle_tx_kick
->               handle_tx
->               handle_tx_copy
->               vhost_tx_batch.isra.0
->               vhost_add_used_and_signal_n
->               eventfd_signal
->          - 33.05% handle_rx_net
->               handle_rx
->               vhost_add_used_and_signal_n
->               eventfd_signal
->    - 33.49%
->         ioctl
->         entry_SYSCALL_64_after_hwframe
->         do_syscall_64
->         __x64_sys_ioctl
->         ksys_ioctl
->         do_vfs_ioctl
->         kvm_vcpu_ioctl
->         kvm_arch_vcpu_ioctl_run
->         vmx_handle_exit
->         handle_ept_misconfig
->         kvm_io_bus_write
->         __kvm_io_bus_write
->         eventfd_signal
-> 
-> 001: WARNING: CPU: 1 PID: 1503 at fs/eventfd.c:73 eventfd_signal+0x85/0xa0
-> ---- snip ----
-> 001: Call Trace:
-> 001:  vhost_signal+0x15e/0x1b0 [vhost]
-> 001:  vhost_add_used_and_signal_n+0x2b/0x40 [vhost]
-> 001:  handle_rx+0xb9/0x900 [vhost_net]
-> 001:  handle_rx_net+0x15/0x20 [vhost_net]
-> 001:  vhost_worker+0xbe/0x120 [vhost]
-> 001:  kthread+0x106/0x140
-> 001:  ? log_used.part.0+0x20/0x20 [vhost]
-> 001:  ? kthread_park+0x90/0x90
-> 001:  ret_from_fork+0x35/0x40
-> 001: ---[ end trace 0000000000000003 ]---
-> 
-> This patch enlarges the limit to 1 which is the maximum recursion depth we
-> have found so far.
-> 
-> The credit of modification for eventfd_signal_count goes to
-> Xie Yongji <xieyongji@bytedance.com>
-> 
+On Tue, Jun 29, 2021 at 7:34 PM Jon Nettleton <jon@solid-run.com> wrote:
+>
+> On Mon, Jun 14, 2021 at 2:49 PM Shameerali Kolothum Thodi
+> <shameerali.kolothum.thodi@huawei.com> wrote:
+> >
+> >
+> >
+> > > -----Original Message-----
+> > > From: Robin Murphy [mailto:robin.murphy@arm.com]
+> > > Sent: 14 June 2021 12:23
+> > > To: Shameerali Kolothum Thodi <shameerali.kolothum.thodi@huawei.com>;
+> > > linux-arm-kernel@lists.infradead.org; linux-acpi@vger.kernel.org;
+> > > iommu@lists.linux-foundation.org
+> > > Cc: jon@solid-run.com; Linuxarm <linuxarm@huawei.com>;
+> > > steven.price@arm.com; Guohanjun (Hanjun Guo) <guohanjun@huawei.com>;
+> > > yangyicong <yangyicong@huawei.com>; Sami.Mujawar@arm.com;
+> > > wanghuiqiang <wanghuiqiang@huawei.com>
+> > > Subject: Re: [PATCH v5 3/8] ACPI/IORT: Add a helper to retrieve RMR memory
+> > > regions
+> > >
+> > > On 2021-05-24 12:02, Shameer Kolothum wrote:
+> > > > Add a helper function that retrieves RMR memory descriptors
+> > > > associated with a given IOMMU. This will be used by IOMMU
+> > > > drivers to setup necessary mappings.
+> > > >
+> > > > Now that we have this, invoke it from the generic helper
+> > > > interface.
+> > > >
+> > > > Signed-off-by: Shameer Kolothum
+> > > <shameerali.kolothum.thodi@huawei.com>
+> > > > ---
+> > > >   drivers/acpi/arm64/iort.c | 50
+> > > +++++++++++++++++++++++++++++++++++++++
+> > > >   drivers/iommu/dma-iommu.c |  4 ++++
+> > > >   include/linux/acpi_iort.h |  7 ++++++
+> > > >   3 files changed, 61 insertions(+)
+> > > >
+> > > > diff --git a/drivers/acpi/arm64/iort.c b/drivers/acpi/arm64/iort.c
+> > > > index fea1ffaedf3b..01917caf58de 100644
+> > > > --- a/drivers/acpi/arm64/iort.c
+> > > > +++ b/drivers/acpi/arm64/iort.c
+> > > > @@ -12,6 +12,7 @@
+> > > >
+> > > >   #include <linux/acpi_iort.h>
+> > > >   #include <linux/bitfield.h>
+> > > > +#include <linux/dma-iommu.h>
+> > > >   #include <linux/iommu.h>
+> > > >   #include <linux/kernel.h>
+> > > >   #include <linux/list.h>
+> > > > @@ -837,6 +838,53 @@ static inline int iort_add_device_replay(struct
+> > > device *dev)
+> > > >     return err;
+> > > >   }
+> > > >
+> > > > +/**
+> > > > + * iort_iommu_get_rmrs - Helper to retrieve RMR info associated with
+> > > IOMMU
+> > > > + * @iommu: fwnode for the IOMMU
+> > > > + * @head: RMR list head to be populated
+> > > > + *
+> > > > + * Returns: 0 on success, <0 failure
+> > > > + */
+> > > > +int iort_iommu_get_rmrs(struct fwnode_handle *iommu_fwnode,
+> > > > +                   struct list_head *head)
+> > > > +{
+> > > > +   struct iort_rmr_entry *e;
+> > > > +   struct acpi_iort_node *iommu;
+> > > > +   int rmrs = 0;
+> > > > +
+> > > > +   iommu = iort_get_iort_node(iommu_fwnode);
+> > > > +   if (!iommu || list_empty(&iort_rmr_list))
+> > > > +           return -ENODEV;
+> > > > +
+> > > > +   list_for_each_entry(e, &iort_rmr_list, list) {
+> > > > +           int prot = IOMMU_READ | IOMMU_WRITE | IOMMU_NOEXEC |
+> > > IOMMU_MMIO;
+> > > > +           struct iommu_resv_region *region;
+> > > > +           enum iommu_resv_type type;
+> > > > +           struct acpi_iort_rmr_desc *rmr_desc;
+> > > > +
+> > > > +           if (e->smmu != iommu)
+> > > > +                   continue;
+> > > > +
+> > > > +           rmr_desc = e->rmr_desc;
+> > > > +           if (e->flags & IOMMU_RMR_REMAP_PERMITTED)
+> > > > +                   type = IOMMU_RESV_DIRECT_RELAXABLE;
+> > > > +           else
+> > > > +                   type = IOMMU_RESV_DIRECT;
+> > >
+>
+> I have been looking at this a bit more and looking at the history of
+> RMR_REMAP_PERMITTED.  Based on the history I have found it
+> seems to me like this would be the better options for prot.
+>
+> @@ -840,7 +840,7 @@ int iort_iommu_get_rmrs(struct fwnode_handle *iommu_fwnode,
+>                 return -ENODEV;
+>
+>         list_for_each_entry(e, &iort_rmr_list, list) {
+> -               int prot = IOMMU_READ | IOMMU_WRITE | IOMMU_NOEXEC | IOMMU_MMIO;
+> +               int prot = IOMMU_READ | IOMMU_WRITE;
+>                 struct iommu_resv_region *region;
+>                 enum iommu_resv_type type;
+>                 struct acpi_iort_rmr_desc *rmr_desc;
+> @@ -849,10 +849,13 @@ int iort_iommu_get_rmrs(struct fwnode_handle
+> *iommu_fwnode,
+>                         continue;
+>
+>                 rmr_desc = e->rmr_desc;
+> -               if (e->flags & IOMMU_RMR_REMAP_PERMITTED)
+> +               if (e->flags & IOMMU_RMR_REMAP_PERMITTED) {
+>                         type = IOMMU_RESV_DIRECT_RELAXABLE;
+> -               else
+> +                       prot |= IOMMU_CACHE;
+> +               } else {
+>                         type = IOMMU_RESV_DIRECT;
+> +                       prot |= IOMMU_MMIO;
+> +               }
+>
+>                 region = iommu_alloc_resv_region(rmr_desc->base_address,
+>                                                  rmr_desc->length,
+>
+> any input on this?  My reasoning is that IOMMU_RESV_DIRECT is specifically
+> referenced for things like MSI doorbell and in all the examples needs
+> IOMMU_MMIO, while REMAP_PERMITTED seems to be used for allocated
+> system memory that is then used for device specific reserved regions which
+> commits say would be like a GPU or USB device.
+>
+> -Jon
+>
+> > > Wasn't the idea that we can do all this during the initial parsing, i.e.
+> > > we don't even have iort_rmr_entry, we store them as iommu_resv_regions
+> > > and simply kmemdup() or whatever at this point?
+> >
+> >
+> > Hmm... Not yet. I removed struct iommu_rmr() from v4. But yes, it looks like
+> > we can get rid of iort_rmr_entry as well. Will give it a go in next.
+> >
+> > Thanks,
+> > Shameer
+> >
+> > > Robin.
+> > >
+> > > > +
+> > > > +           region = iommu_alloc_resv_region(rmr_desc->base_address,
+> > > > +                                            rmr_desc->length,
+> > > > +                                            prot, type);
+> > > > +           if (region) {
+> > > > +                   region->fw_data.rmr.flags = e->flags;
+> > > > +                   region->fw_data.rmr.sid = e->sid;
+> > > > +                   list_add_tail(&region->list, head);
+> > > > +                   rmrs++;
+> > > > +           }
+> > > > +   }
+> > > > +
+> > > > +   return (rmrs == 0) ? -ENODEV : 0;
+> > > > +}
+> > > > +
+> > > >   /**
+> > > >    * iort_iommu_msi_get_resv_regions - Reserved region driver helper
+> > > >    * @dev: Device from iommu_get_resv_regions()
+> > > > @@ -1108,6 +1156,8 @@ int iort_iommu_msi_get_resv_regions(struct
+> > > device *dev, struct list_head *head)
+> > > >   const struct iommu_ops *iort_iommu_configure_id(struct device *dev,
+> > > >                                             const u32 *input_id)
+> > > >   { return NULL; }
+> > > > +int iort_iommu_get_rmrs(struct fwnode_handle *fwnode, struct list_head
+> > > *head)
+> > > > +{ return -ENODEV; }
+> > > >   #endif
+> > > >
+> > > >   static int nc_dma_get_range(struct device *dev, u64 *size)
+> > > > diff --git a/drivers/iommu/dma-iommu.c b/drivers/iommu/dma-iommu.c
+> > > > index 229ec65d98be..f893d460cfa4 100644
+> > > > --- a/drivers/iommu/dma-iommu.c
+> > > > +++ b/drivers/iommu/dma-iommu.c
+> > > > @@ -185,6 +185,9 @@ EXPORT_SYMBOL(iommu_put_dma_cookie);
+> > > >   int iommu_dma_get_rmrs(struct fwnode_handle *iommu_fwnode,
+> > > >                    struct list_head *list)
+> > > >   {
+> > > > +   if (!is_of_node(iommu_fwnode))
+> > > > +           return iort_iommu_get_rmrs(iommu_fwnode, list);
+> > > > +
+> > > >     return -EINVAL;
+> > > >   }
+> > > >   EXPORT_SYMBOL(iommu_dma_get_rmrs);
+> > > > @@ -200,6 +203,7 @@ EXPORT_SYMBOL(iommu_dma_get_rmrs);
+> > > >   void iommu_dma_put_rmrs(struct fwnode_handle *iommu_fwnode,
+> > > >                     struct list_head *list)
+> > > >   {
+> > > > +   generic_iommu_put_resv_regions(iommu_fwnode->dev, list);
+> > > >   }
+> > > >   EXPORT_SYMBOL(iommu_dma_put_rmrs);
+> > > >
+> > > > diff --git a/include/linux/acpi_iort.h b/include/linux/acpi_iort.h
+> > > > index 1a12baa58e40..e8c45fa59531 100644
+> > > > --- a/include/linux/acpi_iort.h
+> > > > +++ b/include/linux/acpi_iort.h
+> > > > @@ -39,6 +39,8 @@ const struct iommu_ops
+> > > *iort_iommu_configure_id(struct device *dev,
+> > > >                                             const u32 *id_in);
+> > > >   int iort_iommu_msi_get_resv_regions(struct device *dev, struct list_head
+> > > *head);
+> > > >   phys_addr_t acpi_iort_dma_get_max_cpu_address(void);
+> > > > +int iort_iommu_get_rmrs(struct fwnode_handle *iommu_fwnode,
+> > > > +                   struct list_head *list);
+> > > >   #else
+> > > >   static inline void acpi_iort_init(void) { }
+> > > >   static inline u32 iort_msi_map_id(struct device *dev, u32 id)
+> > > > @@ -59,6 +61,11 @@ int iort_iommu_msi_get_resv_regions(struct device
+> > > *dev, struct list_head *head)
+> > > >
+> > > >   static inline phys_addr_t acpi_iort_dma_get_max_cpu_address(void)
+> > > >   { return PHYS_ADDR_MAX; }
+> > > > +
+> > > > +static inline
+> > > > +int iort_iommu_get_rmrs(struct fwnode_handle *iommu_fwnode,
+> > > > +                   struct list_head *list)
+> > > > +{ return -ENODEV; }
+> > > >   #endif
+> > > >
+> > > >   #endif /* __ACPI_IORT_H__ */
+> > > >
 
-And maybe:
+Ping.  Any comments on this?
 
-Fixes: b5e683d5cab8 ("eventfd: track eventfd_signal() recursion depth")
-
-who's merging this?
-
-> Signed-off-by: He Zhe <zhe.he@windriver.com>
-> ---
->  fs/eventfd.c            | 3 ++-
->  include/linux/eventfd.h | 5 ++++-
->  2 files changed, 6 insertions(+), 2 deletions(-)
-> 
-> diff --git a/fs/eventfd.c b/fs/eventfd.c
-> index e265b6dd4f34..add6af91cacf 100644
-> --- a/fs/eventfd.c
-> +++ b/fs/eventfd.c
-> @@ -71,7 +71,8 @@ __u64 eventfd_signal(struct eventfd_ctx *ctx, __u64 n)
->  	 * it returns true, the eventfd_signal() call should be deferred to a
->  	 * safe context.
->  	 */
-> -	if (WARN_ON_ONCE(this_cpu_read(eventfd_wake_count)))
-> +	if (WARN_ON_ONCE(this_cpu_read(eventfd_wake_count) >
-> +	    EFD_WAKE_COUNT_MAX))
->  		return 0;
->  
->  	spin_lock_irqsave(&ctx->wqh.lock, flags);
-> diff --git a/include/linux/eventfd.h b/include/linux/eventfd.h
-> index fa0a524baed0..74be152ebe87 100644
-> --- a/include/linux/eventfd.h
-> +++ b/include/linux/eventfd.h
-> @@ -29,6 +29,9 @@
->  #define EFD_SHARED_FCNTL_FLAGS (O_CLOEXEC | O_NONBLOCK)
->  #define EFD_FLAGS_SET (EFD_SHARED_FCNTL_FLAGS | EFD_SEMAPHORE)
->  
-> +/* This is the maximum recursion depth we find so far */
-> +#define EFD_WAKE_COUNT_MAX 1
-> +
->  struct eventfd_ctx;
->  struct file;
->  
-> @@ -47,7 +50,7 @@ DECLARE_PER_CPU(int, eventfd_wake_count);
->  
->  static inline bool eventfd_signal_count(void)
->  {
-> -	return this_cpu_read(eventfd_wake_count);
-> +	return this_cpu_read(eventfd_wake_count) > EFD_WAKE_COUNT_MAX;
->  }
->  
->  #else /* CONFIG_EVENTFD */
-> -- 
-> 2.17.1
-
+-Jon
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
