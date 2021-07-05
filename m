@@ -1,107 +1,130 @@
-Return-Path: <SRS0=1ePL=L4=lists.linux-foundation.org=iommu-bounces@kernel.org>
+Return-Path: <SRS0=3QBT=L5=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-5.5 required=3.0 tests=BAYES_00,DKIM_ADSP_CUSTOM_MED,
-	DKIM_INVALID,DKIM_SIGNED,FREEMAIL_FORGED_FROMDOMAIN,FREEMAIL_FROM,
-	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,SPF_HELO_NONE,
-	SPF_PASS,URIBL_BLOCKED autolearn=no autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-5.1 required=3.0 tests=BAYES_00,DKIM_INVALID,
+	DKIM_SIGNED,HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,NICE_REPLY_A,
+	SPF_HELO_NONE,SPF_PASS,USER_AGENT_SANE_1 autolearn=no autolearn_force=no
+	version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4E483C07E96
-	for <iommu@archiver.kernel.org>; Sun,  4 Jul 2021 18:16:47 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9599AC07E95
+	for <iommu@archiver.kernel.org>; Mon,  5 Jul 2021 03:36:38 +0000 (UTC)
 Received: from smtp2.osuosl.org (smtp2.osuosl.org [140.211.166.133])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id D879361364
-	for <iommu@archiver.kernel.org>; Sun,  4 Jul 2021 18:16:46 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org D879361364
-Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=gmail.com
+	by mail.kernel.org (Postfix) with ESMTPS id 42A8D610E6
+	for <iommu@archiver.kernel.org>; Mon,  5 Jul 2021 03:36:38 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 42A8D610E6
+Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=redhat.com
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by smtp2.osuosl.org (Postfix) with ESMTP id A22B640156;
-	Sun,  4 Jul 2021 18:16:46 +0000 (UTC)
+	by smtp2.osuosl.org (Postfix) with ESMTP id 13C3B40403;
+	Mon,  5 Jul 2021 03:36:38 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
 Received: from smtp2.osuosl.org ([127.0.0.1])
 	by localhost (smtp2.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id bAqOLaqIACuS; Sun,  4 Jul 2021 18:16:45 +0000 (UTC)
-Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by smtp2.osuosl.org (Postfix) with ESMTPS id 82889400C4;
-	Sun,  4 Jul 2021 18:16:45 +0000 (UTC)
+	with ESMTP id TyzDTFO8QvEi; Mon,  5 Jul 2021 03:36:37 +0000 (UTC)
+Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [IPv6:2605:bc80:3010:104::8cd3:938])
+	by smtp2.osuosl.org (Postfix) with ESMTPS id DA24A40270;
+	Mon,  5 Jul 2021 03:36:36 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 63864C0010;
-	Sun,  4 Jul 2021 18:16:45 +0000 (UTC)
-Received: from smtp3.osuosl.org (smtp3.osuosl.org [140.211.166.136])
- by lists.linuxfoundation.org (Postfix) with ESMTP id A1BCBC000E
- for <iommu@lists.linux-foundation.org>; Sun,  4 Jul 2021 18:16:44 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id B72FEC001A;
+	Mon,  5 Jul 2021 03:36:36 +0000 (UTC)
+Received: from smtp1.osuosl.org (smtp1.osuosl.org [140.211.166.138])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 7008CC000E
+ for <iommu@lists.linux-foundation.org>; Mon,  5 Jul 2021 03:36:35 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by smtp3.osuosl.org (Postfix) with ESMTP id 7C4D4605E4
- for <iommu@lists.linux-foundation.org>; Sun,  4 Jul 2021 18:16:44 +0000 (UTC)
+ by smtp1.osuosl.org (Postfix) with ESMTP id 505C9839DB
+ for <iommu@lists.linux-foundation.org>; Mon,  5 Jul 2021 03:36:34 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Authentication-Results: smtp3.osuosl.org (amavisd-new);
- dkim=pass (2048-bit key) header.d=gmail.com
-Received: from smtp3.osuosl.org ([127.0.0.1])
- by localhost (smtp3.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id vxUMHtVYcJDQ for <iommu@lists.linux-foundation.org>;
- Sun,  4 Jul 2021 18:16:43 +0000 (UTC)
-X-Greylist: whitelisted by SQLgrey-1.8.0
-Received: from mail-wr1-x429.google.com (mail-wr1-x429.google.com
- [IPv6:2a00:1450:4864:20::429])
- by smtp3.osuosl.org (Postfix) with ESMTPS id 6528A605C5
- for <iommu@lists.linux-foundation.org>; Sun,  4 Jul 2021 18:16:43 +0000 (UTC)
-Received: by mail-wr1-x429.google.com with SMTP id n9so1864836wrs.13
- for <iommu@lists.linux-foundation.org>; Sun, 04 Jul 2021 11:16:43 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=gmail.com; s=20161025;
- h=mime-version:references:in-reply-to:from:date:message-id:subject:to
- :cc; bh=miJU8b04qqipglFSfedfahzFO5P9/VuRwGLqZ5UonxA=;
- b=sadO98ciWj/6FqhCdSiYXg7eS3ipmrZ2bwJ3FAXgaAhoWhBPzbV+zMvsaChj7gP23C
- XQOkPXd65OjjNPZV2rIXp01e4FU2+nPoiCNBvlXmy2xzEoywupkzZOOHdpEMUja8I8SE
- AJE1Z/TmWfXPFtm3dCvO+aBBikKGryJ02zyI6zQ36zWIn2xzpIZIyeDCldXgjbT0Z3OX
- d0Ixb1PoaQ7zDQxIMg2Xwg5ji1KII2FugaR6OkpGiUs883u0ABnlYYgHI0GJGopadw16
- 0eEMhd+B6iHPdg/LHOnlapBeFV3jJ64GeQ7rTPEMVgyYkxIhrc5HS9fW1VCQyoyUniAI
- +daQ==
+Authentication-Results: smtp1.osuosl.org (amavisd-new);
+ dkim=pass (1024-bit key) header.d=redhat.com
+Received: from smtp1.osuosl.org ([127.0.0.1])
+ by localhost (smtp1.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+ with ESMTP id Wsj8aOmikDGY for <iommu@lists.linux-foundation.org>;
+ Mon,  5 Jul 2021 03:36:33 +0000 (UTC)
+X-Greylist: domain auto-whitelisted by SQLgrey-1.8.0
+Received: from us-smtp-delivery-124.mimecast.com
+ (us-smtp-delivery-124.mimecast.com [216.205.24.124])
+ by smtp1.osuosl.org (Postfix) with ESMTPS id 87257839CD
+ for <iommu@lists.linux-foundation.org>; Mon,  5 Jul 2021 03:36:33 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+ s=mimecast20190719; t=1625456192;
+ h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+ to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+ content-transfer-encoding:content-transfer-encoding:
+ in-reply-to:in-reply-to:references:references;
+ bh=PNRaRFhxCfnbw9LvPZ80acVFOHmYfRIDpgg4dy1jTTw=;
+ b=Jm6V8izceJAUQCCstomzgHXd76VIUr8hJ8V8A9P5GwkvSw5mnxQOAVitAVgCBRzuHoeLoS
+ YwE3PR8lMYOeShDX84DjYFs0btf7viGpj5dBW1vvszdSMahMnSJpGsxyT6BE1xtM4FWZKP
+ e9qvECiIp7L7SEm57MyiE8tkRZVx8Xw=
+Received: from mail-pf1-f197.google.com (mail-pf1-f197.google.com
+ [209.85.210.197]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-485-VUTC3cTsMGy4-pD_8VpfAw-1; Sun, 04 Jul 2021 23:36:28 -0400
+X-MC-Unique: VUTC3cTsMGy4-pD_8VpfAw-1
+Received: by mail-pf1-f197.google.com with SMTP id
+ d22-20020a056a0024d6b0290304cbae6fdcso11120609pfv.21
+ for <iommu@lists.linux-foundation.org>; Sun, 04 Jul 2021 20:36:28 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
  d=1e100.net; s=20161025;
- h=x-gm-message-state:mime-version:references:in-reply-to:from:date
- :message-id:subject:to:cc;
- bh=miJU8b04qqipglFSfedfahzFO5P9/VuRwGLqZ5UonxA=;
- b=QrQ/JEy0+EQ5RxDO9mPsOCMH0NY3mMuqItucy3TXmswxt83W6avsGFtDkv3SuQT/ot
- wWUDpjOC9FBpvJykA63p2By4jTWyJFoiSaYM+229smcht1OXJifSLj6TV/SnrujiEoAu
- beQhamSO1SkTcZjd3piQZb/YbYWe7ni9Q3brVXLmuf2BWp4R8yS5YF+WF9Svc2uv6OKu
- Ii10taH08ZjOuz0169vc2RZlVfxPO7gi3ThQGwGNAFm0p9tekPJBbUl19W/qmcmhCqgW
- c8dagSO/jwBwvsQ7mOlmeUeDK5gEQEnvr5GcfjQrfeVfPqqludG/4B0sLpb+SdpjMpge
- tX8A==
-X-Gm-Message-State: AOAM530o5StFCDgrEjO9v4yZHNh6PzuSRnryxhZLR7Z0hJh/rUC1KCtD
- VEqs6aPxYmq5l4UOos5hQLgZehkry2Ou3X8hrrM=
-X-Google-Smtp-Source: ABdhPJybAZlml4By7IUmHm+CwJj4AogiRenrlTNVsLwz2P5TR+I4uckHpD3LeJoevYMRoITwkCKKpvPkU3Zix9MNJIY=
-X-Received: by 2002:adf:f48e:: with SMTP id l14mr7294511wro.28.1625422601605; 
- Sun, 04 Jul 2021 11:16:41 -0700 (PDT)
+ h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+ :user-agent:mime-version:in-reply-to:content-transfer-encoding
+ :content-language;
+ bh=PNRaRFhxCfnbw9LvPZ80acVFOHmYfRIDpgg4dy1jTTw=;
+ b=VyL+mEF/ItbQ8VaFeB7IEBIXgcGLHgtkDt9lzg+NADOhZrYBD0EMQHClMd4qw+mTyd
+ cW38FRRxIEb1UN0r3WGVSLwP+vZa0qxBYC0DwBR0Qp7/VXMXkz9nz8OpAPVph6VkE/yI
+ fafZqSZRWLP+VepkzBUGxGXWMdP0GtjOiQWsI4po62pla49X6TiAfFc2cUP6V8pmgQf1
+ tWLyrPnQ4GbK2/UNkMMKXrIiLmQlLLu0ljo4s3v973Ph4UU8GMSQ7Fxy1ycF3o6R1iOc
+ GkESud2T2IATAkSXzujpQ5eGUbB9eTROeFYCTRAJQp4DetZ0/06+7IVtXMkOvFEpa0gx
+ Z/XA==
+X-Gm-Message-State: AOAM5323YuzSEj1orLK5j/rg1fYOuJeiqq1hOOEnwp/riZthxX3jvfeD
+ aLHvE2sfdVXjXme2UHDfaog5mhk0E/y7eBzrRnOX4By5Xd1p+MQ95T7uoJ79Um8nKX9OtnEwxFR
+ BNnJo8QWhRaT4anYgn213zSb0oonxtQ==
+X-Received: by 2002:a62:b502:0:b029:2ec:a539:e29b with SMTP id
+ y2-20020a62b5020000b02902eca539e29bmr12907044pfe.37.1625456187878; 
+ Sun, 04 Jul 2021 20:36:27 -0700 (PDT)
+X-Google-Smtp-Source: ABdhPJxU1ORvJgRFvEdcSUoAIpBbFs4fUYC6vc+xVQFL1exU5Y4g4vdf/8e25LPd+joB4XFQ5Hj+PQ==
+X-Received: by 2002:a62:b502:0:b029:2ec:a539:e29b with SMTP id
+ y2-20020a62b5020000b02902eca539e29bmr12907014pfe.37.1625456187646; 
+ Sun, 04 Jul 2021 20:36:27 -0700 (PDT)
+Received: from wangxiaodeMacBook-Air.local ([209.132.188.80])
+ by smtp.gmail.com with ESMTPSA id u13sm10509834pfi.54.2021.07.04.20.36.20
+ (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+ Sun, 04 Jul 2021 20:36:27 -0700 (PDT)
+Subject: Re: [PATCH v8 10/10] Documentation: Add documentation for VDUSE
+To: Yongji Xie <xieyongji@bytedance.com>, Stefan Hajnoczi <stefanha@redhat.com>
+References: <20210615141331.407-1-xieyongji@bytedance.com>
+ <20210615141331.407-11-xieyongji@bytedance.com>
+ <YNSCH6l31zwPxBjL@stefanha-x1.localdomain>
+ <CACycT3uxnQmXWsgmNVxQtiRhz1UXXTAJFY3OiAJqokbJH6ifMA@mail.gmail.com>
+ <YNxCDpM3bO5cPjqi@stefanha-x1.localdomain>
+ <CACycT3taKhf1cWp3Jd0aSVekAZvpbR-_fkyPLQ=B+jZBB5H=8Q@mail.gmail.com>
+ <YN3ABqCMLQf7ejOm@stefanha-x1.localdomain>
+ <CACycT3vo-diHgTSLw_FS2E+5ia5VjihE3qw7JmZR7JT55P-wQA@mail.gmail.com>
+From: Jason Wang <jasowang@redhat.com>
+Message-ID: <8320d26d-6637-85c6-8773-49553dfa502d@redhat.com>
+Date: Mon, 5 Jul 2021 11:36:15 +0800
+User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:78.0)
+ Gecko/20100101 Thunderbird/78.11.0
 MIME-Version: 1.0
-References: <20210610214431.539029-1-robdclark@gmail.com>
- <2016473f-2b38-f049-1e8d-04bdf5af6cea@linaro.org>
-In-Reply-To: <2016473f-2b38-f049-1e8d-04bdf5af6cea@linaro.org>
-From: Rob Clark <robdclark@gmail.com>
-Date: Sun, 4 Jul 2021 11:20:43 -0700
-Message-ID: <CAF6AEGu6Wt+FDh_Kp8GrZB9TV7ufTuidmqBfkzA9rcCJc7zSQQ@mail.gmail.com>
-Subject: Re: [PATCH v5 0/5] iommu/arm-smmu: adreno-smmu page fault handling
-To: Dmitry Baryshkov <dmitry.baryshkov@linaro.org>
-Cc: Konrad Dybcio <konrad.dybcio@somainline.org>,
- Akhil P Oommen <akhilpo@codeaurora.org>,
- dri-devel <dri-devel@lists.freedesktop.org>,
- open list <linux-kernel@vger.kernel.org>, Eric Anholt <eric@anholt.net>,
- AngeloGioacchino Del Regno <angelogioacchino.delregno@somainline.org>,
- Marijn Suijten <marijn.suijten@somainline.org>,
- Lee Jones <lee.jones@linaro.org>, Rob Clark <robdclark@chromium.org>,
- Jonathan Marek <jonathan@marek.ca>, Will Deacon <will@kernel.org>,
- Zhenzhong Duan <zhenzhong.duan@gmail.com>, Joerg Roedel <jroedel@suse.de>,
- linux-arm-msm <linux-arm-msm@vger.kernel.org>,
- Sharat Masetty <smasetty@codeaurora.org>, John Stultz <john.stultz@linaro.org>,
- "moderated list:ARM SMMU DRIVERS" <linux-arm-kernel@lists.infradead.org>,
- "Isaac J. Manjarres" <isaacm@codeaurora.org>,
- Robin Murphy <robin.murphy@arm.com>, Douglas Anderson <dianders@chromium.org>,
- "list@263.net:IOMMU DRIVERS <iommu@lists.linux-foundation.org>,
- Joerg Roedel <joro@8bytes.org>, " <iommu@lists.linux-foundation.org>,
- "Kristian H. Kristensen" <hoegsberg@google.com>,
- freedreno <freedreno@lists.freedesktop.org>
+In-Reply-To: <CACycT3vo-diHgTSLw_FS2E+5ia5VjihE3qw7JmZR7JT55P-wQA@mail.gmail.com>
+Authentication-Results: relay.mimecast.com;
+ auth=pass smtp.auth=CUSA124A263 smtp.mailfrom=jasowang@redhat.com
+X-Mimecast-Spam-Score: 0
+X-Mimecast-Originator: redhat.com
+Content-Language: en-US
+Cc: kvm <kvm@vger.kernel.org>, "Michael S. Tsirkin" <mst@redhat.com>,
+ virtualization <virtualization@lists.linux-foundation.org>,
+ Christian Brauner <christian.brauner@canonical.com>,
+ Jonathan Corbet <corbet@lwn.net>, Matthew Wilcox <willy@infradead.org>,
+ Christoph Hellwig <hch@infradead.org>,
+ Dan Carpenter <dan.carpenter@oracle.com>,
+ Stefano Garzarella <sgarzare@redhat.com>, Al Viro <viro@zeniv.linux.org.uk>,
+ songmuchun@bytedance.com, Jens Axboe <axboe@kernel.dk>,
+ Greg KH <gregkh@linuxfoundation.org>, Randy Dunlap <rdunlap@infradead.org>,
+ linux-kernel <linux-kernel@vger.kernel.org>, iommu@lists.linux-foundation.org,
+ bcrl@kvack.org, netdev@vger.kernel.org, linux-fsdevel@vger.kernel.org,
+ =?UTF-8?Q?Mika_Penttil=c3=a4?= <mika.penttila@nextfour.com>
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -114,92 +137,49 @@ List-Post: <mailto:iommu@lists.linux-foundation.org>
 List-Help: <mailto:iommu-request@lists.linux-foundation.org?subject=help>
 List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
  <mailto:iommu-request@lists.linux-foundation.org?subject=subscribe>
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: base64
+Content-Type: text/plain; charset="utf-8"; Format="flowed"
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-I suspect you are getting a dpu fault, and need:
-
-https://lore.kernel.org/linux-arm-msm/CAF6AEGvTjTUQXqom-xhdh456tdLscbVFPQ+iud1H1gHc8A2=hA@mail.gmail.com/
-
-I suppose Bjorn was expecting me to send that patch
-
-BR,
--R
-
-On Sun, Jul 4, 2021 at 5:53 AM Dmitry Baryshkov
-<dmitry.baryshkov@linaro.org> wrote:
->
-> Hi,
->
-> I've had splash screen disabled on my RB3. However once I've enabled it,
-> I've got the attached crash during the boot on the msm/msm-next. It
-> looks like it is related to this particular set of changes.
->
-> On 11/06/2021 00:44, Rob Clark wrote:
-> > From: Rob Clark <robdclark@chromium.org>
-> >
-> > This picks up an earlier series[1] from Jordan, and adds additional
-> > support needed to generate GPU devcore dumps on iova faults.  Original
-> > description:
-> >
-> > This is a stack to add an Adreno GPU specific handler for pagefaults. The first
-> > patch starts by wiring up report_iommu_fault for arm-smmu. The next patch adds
-> > a adreno-smmu-priv function hook to capture a handful of important debugging
-> > registers such as TTBR0, CONTEXTIDR, FSYNR0 and others. This is used by the
-> > third patch to print more detailed information on page fault such as the TTBR0
-> > for the pagetable that caused the fault and the source of the fault as
-> > determined by a combination of the FSYNR1 register and an internal GPU
-> > register.
-> >
-> > This code provides a solid base that we can expand on later for even more
-> > extensive GPU side page fault debugging capabilities.
-> >
-> > v5: [Rob] Use RBBM_STATUS3.SMMU_STALLED_ON_FAULT to detect case where
-> >      GPU snapshotting needs to avoid crashdumper, and check the
-> >      RBBM_STATUS3.SMMU_STALLED_ON_FAULT in GPU hang irq paths
-> > v4: [Rob] Add support to stall SMMU on fault, and let the GPU driver
-> >      resume translation after it has had a chance to snapshot the GPUs
-> >      state
-> > v3: Always clear FSR even if the target driver is going to handle resume
-> > v2: Fix comment wording and function pointer check per Rob Clark
-> >
-> > [1] https://lore.kernel.org/dri-devel/20210225175135.91922-1-jcrouse@codeaurora.org/
-> >
-> > Jordan Crouse (3):
-> >    iommu/arm-smmu: Add support for driver IOMMU fault handlers
-> >    iommu/arm-smmu-qcom: Add an adreno-smmu-priv callback to get pagefault
-> >      info
-> >    drm/msm: Improve the a6xx page fault handler
-> >
-> > Rob Clark (2):
-> >    iommu/arm-smmu-qcom: Add stall support
-> >    drm/msm: devcoredump iommu fault support
-> >
-> >   drivers/gpu/drm/msm/adreno/a5xx_gpu.c       |  23 +++-
-> >   drivers/gpu/drm/msm/adreno/a6xx_gpu.c       | 110 +++++++++++++++++++-
-> >   drivers/gpu/drm/msm/adreno/a6xx_gpu_state.c |  42 ++++++--
-> >   drivers/gpu/drm/msm/adreno/adreno_gpu.c     |  15 +++
-> >   drivers/gpu/drm/msm/msm_gem.h               |   1 +
-> >   drivers/gpu/drm/msm/msm_gem_submit.c        |   1 +
-> >   drivers/gpu/drm/msm/msm_gpu.c               |  48 +++++++++
-> >   drivers/gpu/drm/msm/msm_gpu.h               |  17 +++
-> >   drivers/gpu/drm/msm/msm_gpummu.c            |   5 +
-> >   drivers/gpu/drm/msm/msm_iommu.c             |  22 +++-
-> >   drivers/gpu/drm/msm/msm_mmu.h               |   5 +-
-> >   drivers/iommu/arm/arm-smmu/arm-smmu-qcom.c  |  50 +++++++++
-> >   drivers/iommu/arm/arm-smmu/arm-smmu.c       |   9 +-
-> >   drivers/iommu/arm/arm-smmu/arm-smmu.h       |   2 +
-> >   include/linux/adreno-smmu-priv.h            |  38 ++++++-
-> >   15 files changed, 367 insertions(+), 21 deletions(-)
-> >
->
->
-> --
-> With best wishes
-> Dmitry
-_______________________________________________
-iommu mailing list
-iommu@lists.linux-foundation.org
-https://lists.linuxfoundation.org/mailman/listinfo/iommu
+CuWcqCAyMDIxLzcvNCDkuIvljYg1OjQ5LCBZb25namkgWGllIOWGmemBkzoKPj4+IE9LLCBJIGdl
+dCB5b3Ugbm93LiBTaW5jZSB0aGUgVklSVElPIHNwZWNpZmljYXRpb24gc2F5cyAiRGV2aWNlCj4+
+PiBjb25maWd1cmF0aW9uIHNwYWNlIGlzIGdlbmVyYWxseSB1c2VkIGZvciByYXJlbHktY2hhbmdp
+bmcgb3IKPj4+IGluaXRpYWxpemF0aW9uLXRpbWUgcGFyYW1ldGVycyIuIEkgYXNzdW1lIHRoZSBW
+RFVTRV9ERVZfU0VUX0NPTkZJRwo+Pj4gaW9jdGwgc2hvdWxkIG5vdCBiZSBjYWxsZWQgZnJlcXVl
+bnRseS4KPj4gVGhlIHNwZWMgdXNlcyBNVVNUIGFuZCBvdGhlciB0ZXJtcyB0byBkZWZpbmUgdGhl
+IHByZWNpc2UgcmVxdWlyZW1lbnRzLgo+PiBIZXJlIHRoZSBsYW5ndWFnZSAoZXNwZWNpYWxseSB0
+aGUgd29yZCAiZ2VuZXJhbGx5IikgaXMgd2Vha2VyIGFuZCBtZWFucwo+PiB0aGVyZSBtYXkgYmUg
+ZXhjZXB0aW9ucy4KPj4KPj4gQW5vdGhlciB0eXBlIG9mIGFjY2VzcyB0aGF0IGRvZXNuJ3Qgd29y
+ayB3aXRoIHRoZSBWRFVTRV9ERVZfU0VUX0NPTkZJRwo+PiBhcHByb2FjaCBpcyByZWFkcyB0aGF0
+IGhhdmUgc2lkZS1lZmZlY3RzLiBGb3IgZXhhbXBsZSwgaW1hZ2luZSBhIGZpZWxkCj4+IGNvbnRh
+aW5pbmcgYW4gZXJyb3IgY29kZSBpZiB0aGUgZGV2aWNlIGVuY291bnRlcnMgYSBwcm9ibGVtIHVu
+cmVsYXRlZCB0bwo+PiBhIHNwZWNpZmljIHZpcnRxdWV1ZSByZXF1ZXN0LiBSZWFkaW5nIGZyb20g
+dGhpcyBmaWVsZCByZXNldHMgdGhlIGVycm9yCj4+IGNvZGUgdG8gMCwgc2F2aW5nIHRoZSBkcml2
+ZXIgYW4gZXh0cmEgY29uZmlndXJhdGlvbiBzcGFjZSB3cml0ZSBhY2Nlc3MKPj4gYW5kIHBvc3Np
+Ymx5IHJhY2UgY29uZGl0aW9ucy4gSXQgaXNuJ3QgcG9zc2libGUgdG8gaW1wbGVtZW50IHRob3Nl
+Cj4+IHNlbWFudGljcyBzdWluZyBWRFVTRV9ERVZfU0VUX0NPTkZJRy4gSXQncyBhbm90aGVyIGNv
+cm5lciBjYXNlLCBidXQgaXQKPj4gbWFrZXMgbWUgdGhpbmsgdGhhdCB0aGUgaW50ZXJmYWNlIGRv
+ZXMgbm90IGFsbG93IGZ1bGwgVklSVElPIHNlbWFudGljcy4KCgpOb3RlIHRoYXQgdGhvdWdoIHlv
+dSdyZSBjb3JyZWN0LCBteSB1bmRlcnN0YW5kaW5nIGlzIHRoYXQgY29uZmlnIHNwYWNlIAppcyBu
+b3Qgc3VpdGFibGUgZm9yIHRoaXMga2luZCBvZiBlcnJvciBwcm9wYWdhdGluZy4gQW5kIGl0IHdv
+dWxkIGJlIHZlcnkgCmhhcmQgdG8gaW1wbGVtZW50IHN1Y2gga2luZCBvZiBzZW1hbnRpYyBpbiBz
+b21lIHRyYW5zcG9ydHMuwqAgVmlydHF1ZXVlIApzaG91bGQgYmUgbXVjaCBiZXR0ZXIuIEFzIFlv
+bmcgSmkgcXVvdGVkLCB0aGUgY29uZmlnIHNwYWNlIGlzIHVzZWQgZm9yIAoicmFyZWx5LWNoYW5n
+aW5nIG9yIGludGlhbGl6YXRpb24tdGltZSBwYXJhbWV0ZXJzIi4KCgo+IEFncmVlZC4gSSB3aWxs
+IHVzZSBWRFVTRV9ERVZfR0VUX0NPTkZJRyBpbiB0aGUgbmV4dCB2ZXJzaW9uLiBBbmQgdG8KPiBo
+YW5kbGUgdGhlIG1lc3NhZ2UgZmFpbHVyZSwgSSdtIGdvaW5nIHRvIGFkZCBhIHJldHVybiB2YWx1
+ZSB0bwo+IHZpcnRpb19jb25maWdfb3BzLmdldCgpIGFuZCB2aXJ0aW9fY3JlYWRfKiBBUEkgc28g
+dGhhdCB0aGUgZXJyb3IgY2FuCj4gYmUgcHJvcGFnYXRlZCB0byB0aGUgdmlydGlvIGRldmljZSBk
+cml2ZXIuIFRoZW4gdGhlIHZpcnRpby1ibGsgZGV2aWNlCj4gZHJpdmVyIGNhbiBiZSBtb2RpZmll
+ZCB0byBoYW5kbGUgdGhhdC4KPgo+IEphc29uIGFuZCBTdGVmYW4sIHdoYXQgZG8geW91IHRoaW5r
+IG9mIHRoaXMgd2F5PwoKCkknZCBsaWtlIHRvIHN0aWNrIHRvIHRoZSBjdXJyZW50IGFzc3VtcHRp
+b24gdGhpY2ggZ2V0X2NvbmZpZyB3b24ndCBmYWlsLiAKVGhhdCBpcyB0byBzYXksCgoxKSBtYWlu
+dGFpbiBhIGNvbmZpZyBpbiB0aGUga2VybmVsLCBtYWtlIHN1cmUgdGhlIGNvbmZpZyBzcGFjZSBy
+ZWFkIGNhbiAKYWx3YXlzIHN1Y2NlZWQKMikgaW50cm9kdWNlIGFuIGlvY3RsIGZvciB0aGUgdmR1
+c2UgdXNlcnNhcGNlIHRvIHVwZGF0ZSB0aGUgY29uZmlnIHNwYWNlLgozKSB3ZSBjYW4gc3luY2hy
+b25pemUgd2l0aCB0aGUgdmR1c2UgdXNlcnNwYWNlIGR1cmluZyBzZXRfY29uZmlnCgpEb2VzIHRo
+aXMgd29yaz8KClRoYW5rcwoKCj4KCl9fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19f
+X19fX19fX19fX19fCmlvbW11IG1haWxpbmcgbGlzdAppb21tdUBsaXN0cy5saW51eC1mb3VuZGF0
+aW9uLm9yZwpodHRwczovL2xpc3RzLmxpbnV4Zm91bmRhdGlvbi5vcmcvbWFpbG1hbi9saXN0aW5m
+by9pb21tdQ==
