@@ -2,110 +2,114 @@ Return-Path: <SRS0=3QBT=L5=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-5.3 required=3.0 tests=BAYES_00,DKIM_INVALID,
-	DKIM_SIGNED,MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,USER_AGENT_SANE_1
-	autolearn=no autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-11.6 required=3.0 tests=BAYES_00,DKIM_INVALID,
+	DKIM_SIGNED,HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,
+	SPF_HELO_NONE,SPF_PASS,USER_AGENT_GIT autolearn=ham autolearn_force=no
+	version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6C864C07E99
-	for <iommu@archiver.kernel.org>; Mon,  5 Jul 2021 19:04:09 +0000 (UTC)
-Received: from smtp3.osuosl.org (smtp3.osuosl.org [140.211.166.136])
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A4393C07E99
+	for <iommu@archiver.kernel.org>; Mon,  5 Jul 2021 20:13:06 +0000 (UTC)
+Received: from smtp2.osuosl.org (smtp2.osuosl.org [140.211.166.133])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 0C18461987
-	for <iommu@archiver.kernel.org>; Mon,  5 Jul 2021 19:04:08 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 0C18461987
-Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=kernel.org
+	by mail.kernel.org (Postfix) with ESMTPS id 39A9261977
+	for <iommu@archiver.kernel.org>; Mon,  5 Jul 2021 20:13:06 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 39A9261977
+Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=linux.ibm.com
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by smtp3.osuosl.org (Postfix) with ESMTP id D4978605D7;
-	Mon,  5 Jul 2021 19:04:08 +0000 (UTC)
+	by smtp2.osuosl.org (Postfix) with ESMTP id E5F21400D2;
+	Mon,  5 Jul 2021 20:13:05 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from smtp3.osuosl.org ([127.0.0.1])
-	by localhost (smtp3.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id HOtdjPANgaW8; Mon,  5 Jul 2021 19:04:08 +0000 (UTC)
+Received: from smtp2.osuosl.org ([127.0.0.1])
+	by localhost (smtp2.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+	with ESMTP id p8w8UlCF_Hwt; Mon,  5 Jul 2021 20:13:05 +0000 (UTC)
 Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by smtp3.osuosl.org (Postfix) with ESMTPS id B985A60674;
-	Mon,  5 Jul 2021 19:04:07 +0000 (UTC)
+	by smtp2.osuosl.org (Postfix) with ESMTPS id D9B47403B1;
+	Mon,  5 Jul 2021 20:13:04 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 848AEC0010;
-	Mon,  5 Jul 2021 19:04:07 +0000 (UTC)
-Received: from smtp1.osuosl.org (smtp1.osuosl.org [IPv6:2605:bc80:3010::138])
- by lists.linuxfoundation.org (Postfix) with ESMTP id D13ECC000E
- for <iommu@lists.linux-foundation.org>; Mon,  5 Jul 2021 19:04:06 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 77923C001A;
+	Mon,  5 Jul 2021 20:13:04 +0000 (UTC)
+Received: from smtp1.osuosl.org (smtp1.osuosl.org [140.211.166.138])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 31073C000E
+ for <iommu@lists.linux-foundation.org>; Mon,  5 Jul 2021 18:53:04 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by smtp1.osuosl.org (Postfix) with ESMTP id BB9A883A92
- for <iommu@lists.linux-foundation.org>; Mon,  5 Jul 2021 19:04:06 +0000 (UTC)
+ by smtp1.osuosl.org (Postfix) with ESMTP id 2015783503
+ for <iommu@lists.linux-foundation.org>; Mon,  5 Jul 2021 18:53:04 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
 Authentication-Results: smtp1.osuosl.org (amavisd-new);
- dkim=pass (2048-bit key) header.d=kernel.org
+ dkim=pass (2048-bit key) header.d=ibm.com
 Received: from smtp1.osuosl.org ([127.0.0.1])
  by localhost (smtp1.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id FcyRDKUSAdrJ for <iommu@lists.linux-foundation.org>;
- Mon,  5 Jul 2021 19:04:06 +0000 (UTC)
+ with ESMTP id u7e1TXAYoLDS for <iommu@lists.linux-foundation.org>;
+ Mon,  5 Jul 2021 18:53:03 +0000 (UTC)
 X-Greylist: domain auto-whitelisted by SQLgrey-1.8.0
-Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
- by smtp1.osuosl.org (Postfix) with ESMTPS id 3F16683A8E
- for <iommu@lists.linux-foundation.org>; Mon,  5 Jul 2021 19:04:04 +0000 (UTC)
-Received: by mail.kernel.org (Postfix) with ESMTPSA id 3D07161978;
- Mon,  5 Jul 2021 19:03:56 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
- s=k20201202; t=1625511844;
- bh=o012umLuvyjggdb73nB1nx1kOYsPv1SNeUIs18hDcAw=;
- h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
- b=GRwf1cGaUQnGNSK48BMiS8/L53RP5G/QW+0L7WarqJg3vdXhPi76IMHEfxJBcIPa3
- O/IVWGS61Gw63qZ6P/lu+E1G7lOjBRQgMMYZUlxciRBcXpXeaEm0Nt8VlI20vyORW0
- 5Yt77iWQoVMzfxA0eNrndYooJS41ndFVzjZWCxmusBkktvSuT3rDjxcvXFg+FyE3zq
- Tiys8WKwLxyKU0wwkmXs/VX0V/xsNc/cZvd76dhCDw80UkiEfPmHKQyUCziEG4n9+X
- zngjj2Bp6GquWJbjoHo8XOCLo60dYdheBX5hvWTEA+kb21c5xQf9Khdj2j/E3DZMQq
- mzeeqFIjv4raA==
-Date: Mon, 5 Jul 2021 20:03:52 +0100
-From: Will Deacon <will@kernel.org>
-To: Nathan Chancellor <nathan@kernel.org>
-Subject: Re: [PATCH v15 06/12] swiotlb: Use is_swiotlb_force_bounce for
- swiotlb data bouncing
-Message-ID: <20210705190352.GA19461@willie-the-truck>
-References: <20210624155526.2775863-7-tientzu@chromium.org>
- <YNvMDFWKXSm4LRfZ@Ryzen-9-3900X.localdomain>
- <CALiNf2-a-haQN0-4+gX8+wa++52-0CnO2O4BEkxrQCxoTa_47w@mail.gmail.com>
- <20210630114348.GA8383@willie-the-truck>
- <YNyUQwiagNeZ9YeJ@Ryzen-9-3900X.localdomain>
- <20210701074045.GA9436@willie-the-truck>
- <ea28db1f-846e-4f0a-4f13-beb67e66bbca@kernel.org>
- <20210702135856.GB11132@willie-the-truck>
- <0f7bd903-e309-94a0-21d7-f0e8e9546018@arm.com>
- <YN/7xcxt/XGAKceZ@Ryzen-9-3900X.localdomain>
+Received: from mx0a-001b2d01.pphosted.com (mx0b-001b2d01.pphosted.com
+ [148.163.158.5])
+ by smtp1.osuosl.org (Postfix) with ESMTPS id 705DB834BA
+ for <iommu@lists.linux-foundation.org>; Mon,  5 Jul 2021 18:53:03 +0000 (UTC)
+Received: from pps.filterd (m0098419.ppops.net [127.0.0.1])
+ by mx0b-001b2d01.pphosted.com (8.16.0.43/8.16.0.43) with SMTP id
+ 165IZHtI134717; Mon, 5 Jul 2021 14:53:02 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com;
+ h=from : to : cc : subject
+ : date : message-id : mime-version : content-transfer-encoding; s=pp1;
+ bh=czo1vFpxqD713Z2zbAYdbC/AI+eQiwU5XzkJ7mBbe7k=;
+ b=WlhTUOZ/G4jMWjeuyd/Tt40oaC82am81sepq8/s/k9Hj3sGCJxVLNK36aQAEUeiGESTG
+ /UyHybELJWlmGrFY1RF4y0gqYbTgp5Mka9QJDecS7EuJAgnq8Km9wgZ//Jl2LMCbceGL
+ 0l5jw543+q4SmZ7X6hZJpFCspJXXy+P0dJGptfZbnwq34VI7nLI1+KP+hnS9aWKF0aXX
+ 1nLzgHw2vchb5S8pDhrtJ4hnwaKo3qHiiGPIIy5wJEX6eHs1yzsLuqid1u7vFkYWXgRj
+ agynqTfiYjaLJmPXDt5oZJpoShKMspVGN1o1uvLMHxA4Jtv8aZHS4OAXvRNEmd/VKOM8 tA== 
+Received: from ppma03fra.de.ibm.com (6b.4a.5195.ip4.static.sl-reverse.com
+ [149.81.74.107])
+ by mx0b-001b2d01.pphosted.com with ESMTP id 39m0k73us7-1
+ (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+ Mon, 05 Jul 2021 14:53:02 -0400
+Received: from pps.filterd (ppma03fra.de.ibm.com [127.0.0.1])
+ by ppma03fra.de.ibm.com (8.16.1.2/8.16.1.2) with SMTP id 165IqOrZ029046;
+ Mon, 5 Jul 2021 18:53:00 GMT
+Received: from b06cxnps3075.portsmouth.uk.ibm.com
+ (d06relay10.portsmouth.uk.ibm.com [9.149.109.195])
+ by ppma03fra.de.ibm.com with ESMTP id 39jfh88gck-1
+ (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+ Mon, 05 Jul 2021 18:53:00 +0000
+Received: from d06av24.portsmouth.uk.ibm.com (mk.ibm.com [9.149.105.60])
+ by b06cxnps3075.portsmouth.uk.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id
+ 165IqvBY33292622
+ (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+ Mon, 5 Jul 2021 18:52:57 GMT
+Received: from d06av24.portsmouth.uk.ibm.com (unknown [127.0.0.1])
+ by IMSVA (Postfix) with ESMTP id 38EA54203F;
+ Mon,  5 Jul 2021 18:52:57 +0000 (GMT)
+Received: from d06av24.portsmouth.uk.ibm.com (unknown [127.0.0.1])
+ by IMSVA (Postfix) with ESMTP id E186342041;
+ Mon,  5 Jul 2021 18:52:56 +0000 (GMT)
+Received: from tuxmaker.boeblingen.de.ibm.com (unknown [9.152.85.9])
+ by d06av24.portsmouth.uk.ibm.com (Postfix) with ESMTP;
+ Mon,  5 Jul 2021 18:52:56 +0000 (GMT)
+From: Gerald Schaefer <gerald.schaefer@linux.ibm.com>
+To: Christoph Hellwig <hch@lst.de>, <iommu@lists.linux-foundation.org>
+Subject: [RFC PATCH 0/1] dma-debug: fix check_for_illegal_area() in
+ debug_dma_map_sg()
+Date: Mon,  5 Jul 2021 20:52:51 +0200
+Message-Id: <20210705185252.4074653-1-gerald.schaefer@linux.ibm.com>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
-Content-Disposition: inline
-In-Reply-To: <YN/7xcxt/XGAKceZ@Ryzen-9-3900X.localdomain>
-User-Agent: Mutt/1.10.1 (2018-07-13)
-Cc: heikki.krogerus@linux.intel.com, thomas.hellstrom@linux.intel.com,
- peterz@infradead.org, benh@kernel.crashing.org,
- joonas.lahtinen@linux.intel.com, dri-devel@lists.freedesktop.org,
- chris@chris-wilson.co.uk, grant.likely@arm.com, paulus@samba.org,
- Frank Rowand <frowand.list@gmail.com>, mingo@kernel.org,
- Stefano Stabellini <sstabellini@kernel.org>,
- Saravana Kannan <saravanak@google.com>, xypron.glpk@gmx.de,
- "Rafael J . Wysocki" <rafael.j.wysocki@intel.com>,
- Christoph Hellwig <hch@lst.de>,
- Bartosz Golaszewski <bgolaszewski@baylibre.com>, bskeggs@redhat.com,
- linux-pci@vger.kernel.org, xen-devel@lists.xenproject.org,
- Thierry Reding <treding@nvidia.com>, intel-gfx@lists.freedesktop.org,
- matthew.auld@intel.com, linux-devicetree <devicetree@vger.kernel.org>,
- Jianxiong Gao <jxgao@google.com>, Daniel Vetter <daniel@ffwll.ch>,
- Konrad Rzeszutek Wilk <konrad.wilk@oracle.com>,
- maarten.lankhorst@linux.intel.com, airlied@linux.ie,
- Dan Williams <dan.j.williams@intel.com>, linuxppc-dev@lists.ozlabs.org,
- jani.nikula@linux.intel.com, Rob Herring <robh+dt@kernel.org>,
- rodrigo.vivi@intel.com, Bjorn Helgaas <bhelgaas@google.com>,
- Claire Chang <tientzu@chromium.org>, boris.ostrovsky@oracle.com,
- Andy Shevchenko <andriy.shevchenko@linux.intel.com>, jgross@suse.com,
- Nicolas Boichat <drinkcat@chromium.org>, Greg KH <gregkh@linuxfoundation.org>,
- Randy Dunlap <rdunlap@infradead.org>, Qian Cai <quic_qiancai@quicinc.com>,
- lkml <linux-kernel@vger.kernel.org>,
- "list@263.net:IOMMU DRIVERS" <iommu@lists.linux-foundation.org>,
- Jim Quinlan <james.quinlan@broadcom.com>, mpe@ellerman.id.au,
- Tom Lendacky <thomas.lendacky@amd.com>, Robin Murphy <robin.murphy@arm.com>,
- bauerman@linux.ibm.com
+X-TM-AS-GCONF: 00
+X-Proofpoint-GUID: qHm7NlTafyVvKnbnd_SNpAa3ymBoTpkw
+X-Proofpoint-ORIG-GUID: qHm7NlTafyVvKnbnd_SNpAa3ymBoTpkw
+X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.391, 18.0.790
+ definitions=2021-07-05_10:2021-07-02,
+ 2021-07-05 signatures=0
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0
+ bulkscore=0 phishscore=0
+ mlxscore=0 spamscore=0 malwarescore=0 mlxlogscore=999 priorityscore=1501
+ impostorscore=0 lowpriorityscore=0 adultscore=0 suspectscore=0
+ clxscore=1011 classifier=spam adjust=0 reason=mlx scancount=1
+ engine=8.12.0-2104190000 definitions=main-2107050099
+X-Mailman-Approved-At: Mon, 05 Jul 2021 20:13:02 +0000
+Cc: linux-s390 <linux-s390@vger.kernel.org>,
+ LKML <linux-kernel@vger.kernel.org>, Niklas Schnelle <schnelle@linux.ibm.com>
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -123,41 +127,32 @@ Content-Transfer-Encoding: 7bit
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-Hi Nathan,
+The following warning occurred sporadically on s390:
+DMA-API: nvme 0006:00:00.0: device driver maps memory from kernel text or rodata [addr=0000000048cc5e2f] [len=131072]
+WARNING: CPU: 4 PID: 825 at kernel/dma/debug.c:1083 check_for_illegal_area+0xa8/0x138
 
-I may have just spotted something in these logs...
+It is a false-positive warning, due to a broken logic in debug_dma_map_sg(),
+see patch description. In short, the check is mixing up kernel start address
+for sg elements with the length of possibly combined sg elements in the DMA
+address space.
 
-On Fri, Jul 02, 2021 at 10:55:17PM -0700, Nathan Chancellor wrote:
-> [    2.340956] pci 0000:0c:00.1: Adding to iommu group 4
-> [    2.340996] pci 0000:0c:00.2: Adding to iommu group 4
-> [    2.341038] pci 0000:0c:00.3: Adding to iommu group 4
-> [    2.341078] pci 0000:0c:00.4: Adding to iommu group 4
-> [    2.341122] pci 0000:0c:00.6: Adding to iommu group 4
-> [    2.341163] pci 0000:0d:00.0: Adding to iommu group 4
-> [    2.341203] pci 0000:0d:00.1: Adding to iommu group 4
-> [    2.361821] pci 0000:00:00.2: AMD-Vi: Found IOMMU cap 0x40
-> [    2.361839] pci 0000:00:00.2: AMD-Vi: Extended features (0x206d73ef22254ade):
-> [    2.361846]  PPR X2APIC NX GT IA GA PC GA_vAPIC
-> [    2.361861] AMD-Vi: Interrupt remapping enabled
-> [    2.361865] AMD-Vi: Virtual APIC enabled
-> [    2.361870] AMD-Vi: X2APIC enabled
-> [    2.362272] AMD-Vi: Lazy IO/TLB flushing enabled
+I am a bit confused by the whole logic, and not sure what would be the best
+way to fix this. The false-postives should have been possible since commit
+884d05970bfb ("dma-debug: use sg_dma_len accessor"), which is included since
+2.6.31. Also, it seems to me that even before that commit, the check would
+have been wrong, or at least incomplete, because it is located in a loop
+that iterates over mapped_ents instead of nents. So it would not check all
+physical sg elements if any were combined in DMA address space.
 
-So at this point, the AMD IOMMU driver does:
+Gerald Schaefer (1):
+  dma-debug: fix check_for_illegal_area() in debug_dma_map_sg()
 
-	swiotlb        = (iommu_default_passthrough() || sme_me_mask) ? 1 : 0;
+ kernel/dma/debug.c | 10 ++++++----
+ 1 file changed, 6 insertions(+), 4 deletions(-)
 
-where 'swiotlb' is a global variable indicating whether or not swiotlb
-is in use. It's picked up a bit later on by pci_swiotlb_late_init(), which
-will call swiotlb_exit() if 'swiotlb' is false.
+-- 
+2.25.1
 
-Now, that used to work fine, because swiotlb_exit() clears
-'io_tlb_default_mem' to NULL, but now with the restricted DMA changes, I
-think that all the devices which have successfully probed beforehand will
-have stale pointers to the freed structure in their 'dev->dma_io_tlb_mem'
-field.
-
-Will
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
