@@ -2,135 +2,95 @@ Return-Path: <SRS0=3QBT=L5=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-13.6 required=3.0 tests=BAYES_00,DKIM_INVALID,
-	DKIM_SIGNED,HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,
-	MENTIONS_GIT_HOSTING,SPF_HELO_NONE,SPF_PASS autolearn=unavailable
-	autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-13.8 required=3.0 tests=BAYES_00,
+	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_CR_TRAILER,INCLUDES_PATCH,
+	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no
+	version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 880E3C07E98
-	for <iommu@archiver.kernel.org>; Mon,  5 Jul 2021 07:35:19 +0000 (UTC)
-Received: from smtp2.osuosl.org (smtp2.osuosl.org [140.211.166.133])
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 41566C07E98
+	for <iommu@archiver.kernel.org>; Mon,  5 Jul 2021 09:10:35 +0000 (UTC)
+Received: from smtp3.osuosl.org (smtp3.osuosl.org [140.211.166.136])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 3E422613C2
-	for <iommu@archiver.kernel.org>; Mon,  5 Jul 2021 07:35:19 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 3E422613C2
-Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=chromium.org
+	by mail.kernel.org (Postfix) with ESMTPS id E49A361222
+	for <iommu@archiver.kernel.org>; Mon,  5 Jul 2021 09:10:34 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org E49A361222
+Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=huawei.com
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by smtp2.osuosl.org (Postfix) with ESMTP id 05BE440109;
-	Mon,  5 Jul 2021 07:35:19 +0000 (UTC)
+	by smtp3.osuosl.org (Postfix) with ESMTP id 9EA6760699;
+	Mon,  5 Jul 2021 09:10:34 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from smtp2.osuosl.org ([127.0.0.1])
-	by localhost (smtp2.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id QmoNSb8hHrcp; Mon,  5 Jul 2021 07:35:17 +0000 (UTC)
+Received: from smtp3.osuosl.org ([127.0.0.1])
+	by localhost (smtp3.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+	with ESMTP id Y4NNm6UKu9aG; Mon,  5 Jul 2021 09:10:33 +0000 (UTC)
 Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by smtp2.osuosl.org (Postfix) with ESMTPS id 885C9400B5;
-	Mon,  5 Jul 2021 07:35:17 +0000 (UTC)
+	by smtp3.osuosl.org (Postfix) with ESMTPS id 3A5CB600C6;
+	Mon,  5 Jul 2021 09:10:33 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 57A88C001A;
-	Mon,  5 Jul 2021 07:35:17 +0000 (UTC)
-Received: from smtp1.osuosl.org (smtp1.osuosl.org [IPv6:2605:bc80:3010::138])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 5A8C8C000E
- for <iommu@lists.linux-foundation.org>; Mon,  5 Jul 2021 07:35:16 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 18EC4C001A;
+	Mon,  5 Jul 2021 09:10:33 +0000 (UTC)
+Received: from smtp4.osuosl.org (smtp4.osuosl.org [140.211.166.137])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id E3126C000E
+ for <iommu@lists.linux-foundation.org>; Mon,  5 Jul 2021 09:10:31 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by smtp1.osuosl.org (Postfix) with ESMTP id 2B30C83A66
- for <iommu@lists.linux-foundation.org>; Mon,  5 Jul 2021 07:35:16 +0000 (UTC)
+ by smtp4.osuosl.org (Postfix) with ESMTP id CF4FB40486
+ for <iommu@lists.linux-foundation.org>; Mon,  5 Jul 2021 09:10:31 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Authentication-Results: smtp1.osuosl.org (amavisd-new);
- dkim=pass (1024-bit key) header.d=chromium.org
-Received: from smtp1.osuosl.org ([127.0.0.1])
- by localhost (smtp1.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id ByGdlFv1mcQu for <iommu@lists.linux-foundation.org>;
- Mon,  5 Jul 2021 07:35:15 +0000 (UTC)
-X-Greylist: whitelisted by SQLgrey-1.8.0
-Received: from mail-io1-xd2a.google.com (mail-io1-xd2a.google.com
- [IPv6:2607:f8b0:4864:20::d2a])
- by smtp1.osuosl.org (Postfix) with ESMTPS id DE3C883A5F
- for <iommu@lists.linux-foundation.org>; Mon,  5 Jul 2021 07:35:14 +0000 (UTC)
-Received: by mail-io1-xd2a.google.com with SMTP id g3so17939965iok.12
- for <iommu@lists.linux-foundation.org>; Mon, 05 Jul 2021 00:35:14 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=chromium.org; s=google;
- h=mime-version:references:in-reply-to:from:date:message-id:subject:to
- :cc; bh=Z8aOTxpCpkipy5n3d0JHyfRjSSgUP3aCWoPMsdbSOV4=;
- b=MJjJv9vXGkq68MzcWqJ8Lqqow7NxZ75tHGPZbYF1jhN9Bhg/MWiZ0zY75eGHeJNh5Z
- PszBTQni1VZca3yQMBDVtTmKafxxH3GNCEriEJqlKouIDe5e4/R1nL0etnQNDybC+N/V
- LRgX2z3bSUPhZ4K1Wms/UIusjY+z2apf3AHmo=
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
- d=1e100.net; s=20161025;
- h=x-gm-message-state:mime-version:references:in-reply-to:from:date
- :message-id:subject:to:cc;
- bh=Z8aOTxpCpkipy5n3d0JHyfRjSSgUP3aCWoPMsdbSOV4=;
- b=TmTGN8o3FIGulISIRMBq6exFIpJ/XHLLvHuJC2XTZDy6h9KsIOmOLHPuVjzf9Oz+tU
- QX+Bb9u+fCsgkzqjhfRfozMeKQ1LPhJYJ0La/idoourZFIkRglEsAvCK3VDQLxrrt0Xw
- yjaRxKFrJgAPOosTazgewzDH4DTyhTu+LnIKgWpXXjUO/iOZ7Jk7VHDzegSIRYbKH4+6
- TMPDiH7tg2FMdz6H2sMSJplBp61XUMvcJnXdMEWrmxH2Lb9JUSiPunH8Q/fb9HPhZmL7
- uFc3n7oS6opoGsf/ZBINRGf5aBi8Xf52mX3oGINP0Igi4D6jBOEK5bVrEJOwl5GSVPUR
- Xc/Q==
-X-Gm-Message-State: AOAM531uuGkcZCV+YgD4Ywrronww7jCp7SMq8bA8HV6UQ+4wn1Xh5gQj
- 99gZZdUaYd0TuBvuhPkRGWqRZG7dtpPQzg==
-X-Google-Smtp-Source: ABdhPJx8HKxBLpUT8vK24kpCLg5z9TYoeZObIFGPIXn4TxM43GuYpRBOtFssi96JQ9Fz3sb78GZCYg==
-X-Received: by 2002:a05:6602:42:: with SMTP id
- z2mr10710880ioz.91.1625470513826; 
- Mon, 05 Jul 2021 00:35:13 -0700 (PDT)
-Received: from mail-io1-f41.google.com (mail-io1-f41.google.com.
- [209.85.166.41])
- by smtp.gmail.com with ESMTPSA id e3sm6652287iob.31.2021.07.05.00.35.13
- for <iommu@lists.linux-foundation.org>
- (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
- Mon, 05 Jul 2021 00:35:13 -0700 (PDT)
-Received: by mail-io1-f41.google.com with SMTP id m16so5438599ioh.8
- for <iommu@lists.linux-foundation.org>; Mon, 05 Jul 2021 00:35:13 -0700 (PDT)
-X-Received: by 2002:a92:d10:: with SMTP id 16mr9764177iln.189.1625470185557;
- Mon, 05 Jul 2021 00:29:45 -0700 (PDT)
+Received: from smtp4.osuosl.org ([127.0.0.1])
+ by localhost (smtp4.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+ with ESMTP id e9IwIDPAVgGA for <iommu@lists.linux-foundation.org>;
+ Mon,  5 Jul 2021 09:10:30 +0000 (UTC)
+X-Greylist: domain auto-whitelisted by SQLgrey-1.8.0
+Received: from szxga02-in.huawei.com (szxga02-in.huawei.com [45.249.212.188])
+ by smtp4.osuosl.org (Postfix) with ESMTPS id 99F444046A
+ for <iommu@lists.linux-foundation.org>; Mon,  5 Jul 2021 09:10:29 +0000 (UTC)
+Received: from dggemv703-chm.china.huawei.com (unknown [172.30.72.57])
+ by szxga02-in.huawei.com (SkyGuard) with ESMTP id 4GJKZC5CjKz783B;
+ Mon,  5 Jul 2021 17:06:59 +0800 (CST)
+Received: from dggpemm500003.china.huawei.com (7.185.36.56) by
+ dggemv703-chm.china.huawei.com (10.3.19.46) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2176.2; Mon, 5 Jul 2021 17:10:06 +0800
+Received: from lhreml710-chm.china.huawei.com (10.201.108.61) by
+ dggpemm500003.china.huawei.com (7.185.36.56) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2176.2; Mon, 5 Jul 2021 17:10:04 +0800
+Received: from lhreml710-chm.china.huawei.com ([169.254.81.184]) by
+ lhreml710-chm.china.huawei.com ([169.254.81.184]) with mapi id
+ 15.01.2176.012; Mon, 5 Jul 2021 10:10:02 +0100
+From: Shameerali Kolothum Thodi <shameerali.kolothum.thodi@huawei.com>
+To: Jon Nettleton <jon@solid-run.com>, Robin Murphy <robin.murphy@arm.com>
+Subject: RE: [PATCH v5 3/8] ACPI/IORT: Add a helper to retrieve RMR memory
+ regions
+Thread-Topic: [PATCH v5 3/8] ACPI/IORT: Add a helper to retrieve RMR memory
+ regions
+Thread-Index: AQHXUIxzNCstxTr9F0iaZEElN6n+2KsTbWwAgAAl39CAF9T/AIAHNQ4AgAG6w9A=
+Date: Mon, 5 Jul 2021 09:10:02 +0000
+Message-ID: <c93639053db74891bc73606b7a36b476@huawei.com>
+References: <20210524110222.2212-1-shameerali.kolothum.thodi@huawei.com>
+ <20210524110222.2212-4-shameerali.kolothum.thodi@huawei.com>
+ <9e788789-c1c2-10f1-d99c-93cfa6ea3348@arm.com>
+ <3206cd67962242a69fb83adac892e34c@huawei.com>
+ <CABdtJHuKT2WfsR+hrPkpXkhyvzKumrc=KNhgeo9P01=tfWfg2w@mail.gmail.com>
+ <CABdtJHuz9e9H15gUCBKBRongt-Yqy=aHGsnjzM3cGpEhZ7ZFng@mail.gmail.com>
+In-Reply-To: <CABdtJHuz9e9H15gUCBKBRongt-Yqy=aHGsnjzM3cGpEhZ7ZFng@mail.gmail.com>
+Accept-Language: en-GB, en-US
+Content-Language: en-US
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+x-originating-ip: [10.47.83.49]
 MIME-Version: 1.0
-References: <20210624155526.2775863-1-tientzu@chromium.org>
- <20210624155526.2775863-7-tientzu@chromium.org>
- <YNvMDFWKXSm4LRfZ@Ryzen-9-3900X.localdomain>
- <CALiNf2-a-haQN0-4+gX8+wa++52-0CnO2O4BEkxrQCxoTa_47w@mail.gmail.com>
- <20210630114348.GA8383@willie-the-truck>
- <YNyUQwiagNeZ9YeJ@Ryzen-9-3900X.localdomain>
- <20210701074045.GA9436@willie-the-truck>
- <ea28db1f-846e-4f0a-4f13-beb67e66bbca@kernel.org>
- <20210702135856.GB11132@willie-the-truck>
- <0f7bd903-e309-94a0-21d7-f0e8e9546018@arm.com>
- <YN/7xcxt/XGAKceZ@Ryzen-9-3900X.localdomain>
-In-Reply-To: <YN/7xcxt/XGAKceZ@Ryzen-9-3900X.localdomain>
-From: Claire Chang <tientzu@chromium.org>
-Date: Mon, 5 Jul 2021 15:29:34 +0800
-X-Gmail-Original-Message-ID: <CALiNf2_ZJq4MoxOGe_m_KFv5xYw8t9SdscTFUwSoLBy5rEuxwQ@mail.gmail.com>
-Message-ID: <CALiNf2_ZJq4MoxOGe_m_KFv5xYw8t9SdscTFUwSoLBy5rEuxwQ@mail.gmail.com>
-Subject: Re: [PATCH v15 06/12] swiotlb: Use is_swiotlb_force_bounce for
- swiotlb data bouncing
-To: Nathan Chancellor <nathan@kernel.org>
-Cc: heikki.krogerus@linux.intel.com, thomas.hellstrom@linux.intel.com,
- peterz@infradead.org, benh@kernel.crashing.org,
- joonas.lahtinen@linux.intel.com, dri-devel@lists.freedesktop.org,
- chris@chris-wilson.co.uk, grant.likely@arm.com, paulus@samba.org,
- Frank Rowand <frowand.list@gmail.com>, mingo@kernel.org,
- Stefano Stabellini <sstabellini@kernel.org>,
- Saravana Kannan <saravanak@google.com>, xypron.glpk@gmx.de,
- "Rafael J . Wysocki" <rafael.j.wysocki@intel.com>,
- Christoph Hellwig <hch@lst.de>,
- Bartosz Golaszewski <bgolaszewski@baylibre.com>, bskeggs@redhat.com,
- linux-pci@vger.kernel.org, xen-devel@lists.xenproject.org,
- Thierry Reding <treding@nvidia.com>, intel-gfx@lists.freedesktop.org,
- matthew.auld@intel.com, linux-devicetree <devicetree@vger.kernel.org>,
- Jianxiong Gao <jxgao@google.com>, Daniel Vetter <daniel@ffwll.ch>,
- Will Deacon <will@kernel.org>, Konrad Rzeszutek Wilk <konrad.wilk@oracle.com>,
- maarten.lankhorst@linux.intel.com, airlied@linux.ie,
- Dan Williams <dan.j.williams@intel.com>, linuxppc-dev@lists.ozlabs.org,
- jani.nikula@linux.intel.com, Rob Herring <robh+dt@kernel.org>,
- rodrigo.vivi@intel.com, Bjorn Helgaas <bhelgaas@google.com>,
- boris.ostrovsky@oracle.com,
- Andy Shevchenko <andriy.shevchenko@linux.intel.com>, jgross@suse.com,
- Nicolas Boichat <drinkcat@chromium.org>, Greg KH <gregkh@linuxfoundation.org>,
- Randy Dunlap <rdunlap@infradead.org>, Qian Cai <quic_qiancai@quicinc.com>,
- lkml <linux-kernel@vger.kernel.org>,
- "list@263.net:IOMMU DRIVERS" <iommu@lists.linux-foundation.org>,
- Jim Quinlan <james.quinlan@broadcom.com>, mpe@ellerman.id.au,
- Tom Lendacky <thomas.lendacky@amd.com>, Robin Murphy <robin.murphy@arm.com>,
- bauerman@linux.ibm.com
+X-CFilter-Loop: Reflected
+Cc: Linuxarm <linuxarm@huawei.com>,
+ "steven.price@arm.com" <steven.price@arm.com>,
+ "linux-acpi@vger.kernel.org" <linux-acpi@vger.kernel.org>,
+ "iommu@lists.linux-foundation.org" <iommu@lists.linux-foundation.org>,
+ wanghuiqiang <wanghuiqiang@huawei.com>,
+ "Guohanjun \(Hanjun Guo\)" <guohanjun@huawei.com>,
+ yangyicong <yangyicong@huawei.com>,
+ "Sami.Mujawar@arm.com" <Sami.Mujawar@arm.com>,
+ "linux-arm-kernel@lists.infradead.org" <linux-arm-kernel@lists.infradead.org>
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -148,176 +108,272 @@ Content-Transfer-Encoding: 7bit
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-On Sat, Jul 3, 2021 at 1:55 PM Nathan Chancellor <nathan@kernel.org> wrote:
->
-> Hi Will and Robin,
->
-> On Fri, Jul 02, 2021 at 04:13:50PM +0100, Robin Murphy wrote:
-> > On 2021-07-02 14:58, Will Deacon wrote:
-> > > Hi Nathan,
+
+
+> -----Original Message-----
+> From: Jon Nettleton [mailto:jon@solid-run.com]
+> Sent: 04 July 2021 08:39
+> To: Shameerali Kolothum Thodi <shameerali.kolothum.thodi@huawei.com>
+> Cc: Robin Murphy <robin.murphy@arm.com>;
+> linux-arm-kernel@lists.infradead.org; linux-acpi@vger.kernel.org;
+> iommu@lists.linux-foundation.org; Linuxarm <linuxarm@huawei.com>;
+> steven.price@arm.com; Guohanjun (Hanjun Guo) <guohanjun@huawei.com>;
+> yangyicong <yangyicong@huawei.com>; Sami.Mujawar@arm.com;
+> wanghuiqiang <wanghuiqiang@huawei.com>
+> Subject: Re: [PATCH v5 3/8] ACPI/IORT: Add a helper to retrieve RMR memory
+> regions
+> 
+> On Tue, Jun 29, 2021 at 7:34 PM Jon Nettleton <jon@solid-run.com> wrote:
+> >
+> > On Mon, Jun 14, 2021 at 2:49 PM Shameerali Kolothum Thodi
+> > <shameerali.kolothum.thodi@huawei.com> wrote:
 > > >
-> > > On Thu, Jul 01, 2021 at 12:52:20AM -0700, Nathan Chancellor wrote:
-> > > > On 7/1/2021 12:40 AM, Will Deacon wrote:
-> > > > > On Wed, Jun 30, 2021 at 08:56:51AM -0700, Nathan Chancellor wrote:
-> > > > > > On Wed, Jun 30, 2021 at 12:43:48PM +0100, Will Deacon wrote:
-> > > > > > > On Wed, Jun 30, 2021 at 05:17:27PM +0800, Claire Chang wrote:
-> > > > > > > > `BUG: unable to handle page fault for address: 00000000003a8290` and
-> > > > > > > > the fact it crashed at `_raw_spin_lock_irqsave` look like the memory
-> > > > > > > > (maybe dev->dma_io_tlb_mem) was corrupted?
-> > > > > > > > The dev->dma_io_tlb_mem should be set here
-> > > > > > > > (https://git.kernel.org/pub/scm/linux/kernel/git/next/linux-next.git/tree/drivers/pci/probe.c#n2528)
-> > > > > > > > through device_initialize.
-> > > > > > >
-> > > > > > > I'm less sure about this. 'dma_io_tlb_mem' should be pointing at
-> > > > > > > 'io_tlb_default_mem', which is a page-aligned allocation from memblock.
-> > > > > > > The spinlock is at offset 0x24 in that structure, and looking at the
-> > > > > > > register dump from the crash:
-> > > > > > >
-> > > > > > > Jun 29 18:28:42 hp-4300G kernel: RSP: 0018:ffffadb4013db9e8 EFLAGS: 00010006
-> > > > > > > Jun 29 18:28:42 hp-4300G kernel: RAX: 00000000003a8290 RBX: 0000000000000000 RCX: ffff8900572ad580
-> > > > > > > Jun 29 18:28:42 hp-4300G kernel: RDX: ffff89005653f024 RSI: 00000000000c0000 RDI: 0000000000001d17
-> > > > > > > Jun 29 18:28:42 hp-4300G kernel: RBP: 000000000a20d000 R08: 00000000000c0000 R09: 0000000000000000
-> > > > > > > Jun 29 18:28:42 hp-4300G kernel: R10: 000000000a20d000 R11: ffff89005653f000 R12: 0000000000000212
-> > > > > > > Jun 29 18:28:42 hp-4300G kernel: R13: 0000000000001000 R14: 0000000000000002 R15: 0000000000200000
-> > > > > > > Jun 29 18:28:42 hp-4300G kernel: FS:  00007f1f8898ea40(0000) GS:ffff890057280000(0000) knlGS:0000000000000000
-> > > > > > > Jun 29 18:28:42 hp-4300G kernel: CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
-> > > > > > > Jun 29 18:28:42 hp-4300G kernel: CR2: 00000000003a8290 CR3: 00000001020d0000 CR4: 0000000000350ee0
-> > > > > > > Jun 29 18:28:42 hp-4300G kernel: Call Trace:
-> > > > > > > Jun 29 18:28:42 hp-4300G kernel:  _raw_spin_lock_irqsave+0x39/0x50
-> > > > > > > Jun 29 18:28:42 hp-4300G kernel:  swiotlb_tbl_map_single+0x12b/0x4c0
-> > > > > > >
-> > > > > > > Then that correlates with R11 holding the 'dma_io_tlb_mem' pointer and
-> > > > > > > RDX pointing at the spinlock. Yet RAX is holding junk :/
-> > > > > > >
-> > > > > > > I agree that enabling KASAN would be a good idea, but I also think we
-> > > > > > > probably need to get some more information out of swiotlb_tbl_map_single()
-> > > > > > > to see see what exactly is going wrong in there.
-> > > > > >
-> > > > > > I can certainly enable KASAN and if there is any debug print I can add
-> > > > > > or dump anything, let me know!
-> > > > >
-> > > > > I bit the bullet and took v5.13 with swiotlb/for-linus-5.14 merged in, built
-> > > > > x86 defconfig and ran it on my laptop. However, it seems to work fine!
-> > > > >
-> > > > > Please can you share your .config?
-> > > >
-> > > > Sure thing, it is attached. It is just Arch Linux's config run through
-> > > > olddefconfig. The original is below in case you need to diff it.
-> > > >
-> > > > https://raw.githubusercontent.com/archlinux/svntogit-packages/9045405dc835527164f3034b3ceb9a67c7a53cd4/trunk/config
-> > > >
-> > > > If there is anything more that I can provide, please let me know.
 > > >
-> > > I eventually got this booting (for some reason it was causing LD to SEGV
-> > > trying to link it for a while...) and sadly it works fine on my laptop. Hmm.
->
-> Seems like it might be something specific to the amdgpu module?
->
-> > > Did you manage to try again with KASAN?
->
-> Yes, it took a few times to reproduce the issue but I did manage to get
-> a dmesg, please find it attached. I build from commit 7d31f1c65cc9 ("swiotlb:
-> fix implicit debugfs declarations") in Konrad's tree.
-
-Looking at the logs, the use-after-free bug looked somehow relevant
-(and it's nvme again. Qian's crash is about nvme too):
-
-[    2.468288] BUG: KASAN: use-after-free in __iommu_dma_unmap_swiotlb+0x64/0xb0
-[    2.468288] Read of size 8 at addr ffff8881d7830000 by task swapper/0/0
-
-[    2.468288] CPU: 0 PID: 0 Comm: swapper/0 Not tainted 5.12.0-rc3-debug #1
-[    2.468288] Hardware name: HP HP Desktop M01-F1xxx/87D6, BIOS F.12 12/17/2020
-[    2.468288] Call Trace:
-[    2.468288]  <IRQ>
-[    2.479433]  dump_stack+0x9c/0xcf
-[    2.479433]  print_address_description.constprop.0+0x18/0x130
-[    2.479433]  ? __iommu_dma_unmap_swiotlb+0x64/0xb0
-[    2.479433]  kasan_report.cold+0x7f/0x111
-[    2.479433]  ? __iommu_dma_unmap_swiotlb+0x64/0xb0
-[    2.479433]  __iommu_dma_unmap_swiotlb+0x64/0xb0
-[    2.479433]  nvme_pci_complete_rq+0x73/0x130
-[    2.479433]  blk_complete_reqs+0x6f/0x80
-[    2.479433]  __do_softirq+0xfc/0x3be
-[    2.479433]  irq_exit_rcu+0xce/0x120
-[    2.479433]  common_interrupt+0x80/0xa0
-[    2.479433]  </IRQ>
-[    2.479433]  asm_common_interrupt+0x1e/0x40
-[    2.479433] RIP: 0010:cpuidle_enter_state+0xf9/0x590
-
-I wonder if this ended up unmapping something wrong and messing up the
-dev->dma_io_tlb_mem (i.e. io_tlb_default_mem)?
-
-Could you try this patch on top of 7d31f1c65cc9? This patch helps
-check if we try to unmap the wrong address.
-
-```
-diff --git a/kernel/dma/swiotlb.c b/kernel/dma/swiotlb.c
-index b7f76bca89bf..5ac08d50a394 100644
---- a/kernel/dma/swiotlb.c
-+++ b/kernel/dma/swiotlb.c
-@@ -613,6 +613,21 @@ void swiotlb_tbl_unmap_single(struct device *dev,
-phys_addr_t tlb_addr,
-                              size_t mapping_size, enum dma_data_direction dir,
-                              unsigned long attrs)
- {
-+       struct io_tlb_mem *mem = dev->dma_io_tlb_mem;
-+       unsigned int offset = swiotlb_align_offset(dev, tlb_addr);
-+       int index;
-+
-+       if (!is_swiotlb_buffer(dev, tlb_addr - offset)) {
-+               dev_err(dev, "%s: attempt to unmap invalid address
-(0x%llx, offset=%u)\n", __func__, tlb_addr, offset);
-+               return;
-+       }
-+
-+       index = (tlb_addr - offset - mem->start) >> IO_TLB_SHIFT;
-+       if (mem->slots[index].orig_addr == INVALID_PHYS_ADDR) {
-+               dev_err(dev, "%s: memory is not mapped before (0x%llx,
-offset=%u)\n", __func__, tlb_addr, offset);
-+               return;
-+       }
-+
-        /*
-         * First, sync the memory before unmapping the entry
-         */
-```
-It might be useful to have CONFIG_SLUB_DEBUG=y, CONFIG_SLUB_DEBUG_ON=y
-and line numbers (scripts/decode_stacktrace.sh) too.
-
-Thank you so much for helping!
-
->
-> > > It might also be worth taking the IOMMU out of the equation, since that
-> > > interfaces differently with SWIOTLB and I couldn't figure out the code path
-> > > from the log you provided. What happens if you boot with "amd_iommu=off
-> > > swiotlb=force"?
+> > >
+> > > > -----Original Message-----
+> > > > From: Robin Murphy [mailto:robin.murphy@arm.com]
+> > > > Sent: 14 June 2021 12:23
+> > > > To: Shameerali Kolothum Thodi
+> > > > <shameerali.kolothum.thodi@huawei.com>;
+> > > > linux-arm-kernel@lists.infradead.org; linux-acpi@vger.kernel.org;
+> > > > iommu@lists.linux-foundation.org
+> > > > Cc: jon@solid-run.com; Linuxarm <linuxarm@huawei.com>;
+> > > > steven.price@arm.com; Guohanjun (Hanjun Guo)
+> > > > <guohanjun@huawei.com>; yangyicong <yangyicong@huawei.com>;
+> > > > Sami.Mujawar@arm.com; wanghuiqiang <wanghuiqiang@huawei.com>
+> > > > Subject: Re: [PATCH v5 3/8] ACPI/IORT: Add a helper to retrieve
+> > > > RMR memory regions
+> > > >
+> > > > On 2021-05-24 12:02, Shameer Kolothum wrote:
+> > > > > Add a helper function that retrieves RMR memory descriptors
+> > > > > associated with a given IOMMU. This will be used by IOMMU
+> > > > > drivers to setup necessary mappings.
+> > > > >
+> > > > > Now that we have this, invoke it from the generic helper
+> > > > > interface.
+> > > > >
+> > > > > Signed-off-by: Shameer Kolothum
+> > > > <shameerali.kolothum.thodi@huawei.com>
+> > > > > ---
+> > > > >   drivers/acpi/arm64/iort.c | 50
+> > > > +++++++++++++++++++++++++++++++++++++++
+> > > > >   drivers/iommu/dma-iommu.c |  4 ++++
+> > > > >   include/linux/acpi_iort.h |  7 ++++++
+> > > > >   3 files changed, 61 insertions(+)
+> > > > >
+> > > > > diff --git a/drivers/acpi/arm64/iort.c
+> > > > > b/drivers/acpi/arm64/iort.c index fea1ffaedf3b..01917caf58de
+> > > > > 100644
+> > > > > --- a/drivers/acpi/arm64/iort.c
+> > > > > +++ b/drivers/acpi/arm64/iort.c
+> > > > > @@ -12,6 +12,7 @@
+> > > > >
+> > > > >   #include <linux/acpi_iort.h>
+> > > > >   #include <linux/bitfield.h>
+> > > > > +#include <linux/dma-iommu.h>
+> > > > >   #include <linux/iommu.h>
+> > > > >   #include <linux/kernel.h>
+> > > > >   #include <linux/list.h>
+> > > > > @@ -837,6 +838,53 @@ static inline int
+> > > > > iort_add_device_replay(struct
+> > > > device *dev)
+> > > > >     return err;
+> > > > >   }
+> > > > >
+> > > > > +/**
+> > > > > + * iort_iommu_get_rmrs - Helper to retrieve RMR info associated
+> > > > > +with
+> > > > IOMMU
+> > > > > + * @iommu: fwnode for the IOMMU
+> > > > > + * @head: RMR list head to be populated
+> > > > > + *
+> > > > > + * Returns: 0 on success, <0 failure  */ int
+> > > > > +iort_iommu_get_rmrs(struct fwnode_handle *iommu_fwnode,
+> > > > > +                   struct list_head *head) {
+> > > > > +   struct iort_rmr_entry *e;
+> > > > > +   struct acpi_iort_node *iommu;
+> > > > > +   int rmrs = 0;
+> > > > > +
+> > > > > +   iommu = iort_get_iort_node(iommu_fwnode);
+> > > > > +   if (!iommu || list_empty(&iort_rmr_list))
+> > > > > +           return -ENODEV;
+> > > > > +
+> > > > > +   list_for_each_entry(e, &iort_rmr_list, list) {
+> > > > > +           int prot = IOMMU_READ | IOMMU_WRITE |
+> IOMMU_NOEXEC |
+> > > > IOMMU_MMIO;
+> > > > > +           struct iommu_resv_region *region;
+> > > > > +           enum iommu_resv_type type;
+> > > > > +           struct acpi_iort_rmr_desc *rmr_desc;
+> > > > > +
+> > > > > +           if (e->smmu != iommu)
+> > > > > +                   continue;
+> > > > > +
+> > > > > +           rmr_desc = e->rmr_desc;
+> > > > > +           if (e->flags & IOMMU_RMR_REMAP_PERMITTED)
+> > > > > +                   type = IOMMU_RESV_DIRECT_RELAXABLE;
+> > > > > +           else
+> > > > > +                   type = IOMMU_RESV_DIRECT;
+> > > >
 > >
-> > Oh, now there's a thing... the chat from the IOMMU API in the boot log
-> > implies that the IOMMU *should* be in the picture - we see that default
-> > domains are IOMMU_DOMAIN_DMA default and the GPU 0000:0c:00.0 was added to a
-> > group. That means dev->dma_ops should be set and DMA API calls should be
-> > going through iommu-dma, yet the callstack in the crash says we've gone
-> > straight from dma_map_page_attrs() to swiotlb_map(), implying the inline
-> > dma_direct_map_page() path.
+> > I have been looking at this a bit more and looking at the history of
+> > RMR_REMAP_PERMITTED.  Based on the history I have found it seems to
+> me
+> > like this would be the better options for prot.
 > >
-> > If dev->dma_ops didn't look right in the first place, it's perhaps less
-> > surprising that dev->dma_io_tlb_mem might be wild as well. It doesn't seem
-> > plausible that we should have a race between initialising the device and
-> > probing its driver, so maybe the whole dev pointer is getting trampled
-> > earlier in the callchain (or is fundamentally wrong to begin with, but from
-> > a quick skim of the amdgpu code it did look like adev->dev and adev->pdev
-> > are appropriately set early on by amdgpu_pci_probe()).
+> > @@ -840,7 +840,7 @@ int iort_iommu_get_rmrs(struct fwnode_handle
+> *iommu_fwnode,
+> >                 return -ENODEV;
 > >
-> > > (although word of warning here: i915 dies horribly on my laptop if I pass
-> > > swiotlb=force, even with the distro 5.10 kernel)
+> >         list_for_each_entry(e, &iort_rmr_list, list) {
+> > -               int prot = IOMMU_READ | IOMMU_WRITE |
+> IOMMU_NOEXEC | IOMMU_MMIO;
+> > +               int prot = IOMMU_READ | IOMMU_WRITE;
+> >                 struct iommu_resv_region *region;
+> >                 enum iommu_resv_type type;
+> >                 struct acpi_iort_rmr_desc *rmr_desc; @@ -849,10
+> > +849,13 @@ int iort_iommu_get_rmrs(struct fwnode_handle
+> *iommu_fwnode,
+> >                         continue;
 > >
-> > FWIW I'd imagine you probably need to massively increase the SWIOTLB buffer
-> > size to have hope of that working.
->
-> Is it worth trying this still then?
->
-> Cheers,
-> Nathan
+> >                 rmr_desc = e->rmr_desc;
+> > -               if (e->flags & IOMMU_RMR_REMAP_PERMITTED)
+> > +               if (e->flags & IOMMU_RMR_REMAP_PERMITTED) {
+> >                         type = IOMMU_RESV_DIRECT_RELAXABLE;
+> > -               else
+> > +                       prot |= IOMMU_CACHE;
+> > +               } else {
+> >                         type = IOMMU_RESV_DIRECT;
+> > +                       prot |= IOMMU_MMIO;
+> > +               }
+> >
+> >                 region =
+> iommu_alloc_resv_region(rmr_desc->base_address,
+> >                                                  rmr_desc->length,
+> >
+> > any input on this?  My reasoning is that IOMMU_RESV_DIRECT is
+> > specifically referenced for things like MSI doorbell and in all the
+> > examples needs IOMMU_MMIO, while REMAP_PERMITTED seems to be used
+> for
+> > allocated system memory that is then used for device specific reserved
+> > regions which commits say would be like a GPU or USB device.
+
+I am Ok to make those changes but not sure we can make the above assumptions
+based on the way it is currently used. 
+
+Hi Robin,
+
+Any thoughts?
+
+Thanks,
+Shameer
+
+> >
+> > -Jon
+> >
+> > > > Wasn't the idea that we can do all this during the initial parsing, i.e.
+> > > > we don't even have iort_rmr_entry, we store them as
+> > > > iommu_resv_regions and simply kmemdup() or whatever at this point?
+> > >
+> > >
+> > > Hmm... Not yet. I removed struct iommu_rmr() from v4. But yes, it
+> > > looks like we can get rid of iort_rmr_entry as well. Will give it a go in next.
+> > >
+> > > Thanks,
+> > > Shameer
+> > >
+> > > > Robin.
+> > > >
+> > > > > +
+> > > > > +           region =
+> iommu_alloc_resv_region(rmr_desc->base_address,
+> > > > > +                                            rmr_desc->length,
+> > > > > +                                            prot, type);
+> > > > > +           if (region) {
+> > > > > +                   region->fw_data.rmr.flags = e->flags;
+> > > > > +                   region->fw_data.rmr.sid = e->sid;
+> > > > > +                   list_add_tail(&region->list, head);
+> > > > > +                   rmrs++;
+> > > > > +           }
+> > > > > +   }
+> > > > > +
+> > > > > +   return (rmrs == 0) ? -ENODEV : 0; }
+> > > > > +
+> > > > >   /**
+> > > > >    * iort_iommu_msi_get_resv_regions - Reserved region driver helper
+> > > > >    * @dev: Device from iommu_get_resv_regions() @@ -1108,6
+> > > > > +1156,8 @@ int iort_iommu_msi_get_resv_regions(struct
+> > > > device *dev, struct list_head *head)
+> > > > >   const struct iommu_ops *iort_iommu_configure_id(struct device
+> *dev,
+> > > > >                                             const u32
+> *input_id)
+> > > > >   { return NULL; }
+> > > > > +int iort_iommu_get_rmrs(struct fwnode_handle *fwnode, struct
+> > > > > +list_head
+> > > > *head)
+> > > > > +{ return -ENODEV; }
+> > > > >   #endif
+> > > > >
+> > > > >   static int nc_dma_get_range(struct device *dev, u64 *size)
+> > > > > diff --git a/drivers/iommu/dma-iommu.c
+> > > > > b/drivers/iommu/dma-iommu.c index 229ec65d98be..f893d460cfa4
+> > > > > 100644
+> > > > > --- a/drivers/iommu/dma-iommu.c
+> > > > > +++ b/drivers/iommu/dma-iommu.c
+> > > > > @@ -185,6 +185,9 @@ EXPORT_SYMBOL(iommu_put_dma_cookie);
+> > > > >   int iommu_dma_get_rmrs(struct fwnode_handle *iommu_fwnode,
+> > > > >                    struct list_head *list)
+> > > > >   {
+> > > > > +   if (!is_of_node(iommu_fwnode))
+> > > > > +           return iort_iommu_get_rmrs(iommu_fwnode, list);
+> > > > > +
+> > > > >     return -EINVAL;
+> > > > >   }
+> > > > >   EXPORT_SYMBOL(iommu_dma_get_rmrs);
+> > > > > @@ -200,6 +203,7 @@ EXPORT_SYMBOL(iommu_dma_get_rmrs);
+> > > > >   void iommu_dma_put_rmrs(struct fwnode_handle *iommu_fwnode,
+> > > > >                     struct list_head *list)
+> > > > >   {
+> > > > > +   generic_iommu_put_resv_regions(iommu_fwnode->dev, list);
+> > > > >   }
+> > > > >   EXPORT_SYMBOL(iommu_dma_put_rmrs);
+> > > > >
+> > > > > diff --git a/include/linux/acpi_iort.h
+> > > > > b/include/linux/acpi_iort.h index 1a12baa58e40..e8c45fa59531
+> > > > > 100644
+> > > > > --- a/include/linux/acpi_iort.h
+> > > > > +++ b/include/linux/acpi_iort.h
+> > > > > @@ -39,6 +39,8 @@ const struct iommu_ops
+> > > > *iort_iommu_configure_id(struct device *dev,
+> > > > >                                             const u32 *id_in);
+> > > > >   int iort_iommu_msi_get_resv_regions(struct device *dev, struct
+> > > > > list_head
+> > > > *head);
+> > > > >   phys_addr_t acpi_iort_dma_get_max_cpu_address(void);
+> > > > > +int iort_iommu_get_rmrs(struct fwnode_handle *iommu_fwnode,
+> > > > > +                   struct list_head *list);
+> > > > >   #else
+> > > > >   static inline void acpi_iort_init(void) { }
+> > > > >   static inline u32 iort_msi_map_id(struct device *dev, u32 id)
+> > > > > @@ -59,6 +61,11 @@ int iort_iommu_msi_get_resv_regions(struct
+> > > > > device
+> > > > *dev, struct list_head *head)
+> > > > >
+> > > > >   static inline phys_addr_t acpi_iort_dma_get_max_cpu_address(void)
+> > > > >   { return PHYS_ADDR_MAX; }
+> > > > > +
+> > > > > +static inline
+> > > > > +int iort_iommu_get_rmrs(struct fwnode_handle *iommu_fwnode,
+> > > > > +                   struct list_head *list) { return -ENODEV; }
+> > > > >   #endif
+> > > > >
+> > > > >   #endif /* __ACPI_IORT_H__ */
+> > > > >
+> 
+> Ping.  Any comments on this?
+> 
+> -Jon
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
