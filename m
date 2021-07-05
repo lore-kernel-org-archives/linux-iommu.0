@@ -2,95 +2,173 @@ Return-Path: <SRS0=3QBT=L5=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-13.8 required=3.0 tests=BAYES_00,
-	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_CR_TRAILER,INCLUDES_PATCH,
-	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no
-	version=3.4.0
+X-Spam-Status: No, score=-0.8 required=3.0 tests=BAYES_00,DKIM_INVALID,
+	DKIM_SIGNED,HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,
+	MSGID_FROM_MTA_HEADER,SPF_HELO_NONE,SPF_PASS,UNWANTED_LANGUAGE_BODY
+	autolearn=no autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 41566C07E98
-	for <iommu@archiver.kernel.org>; Mon,  5 Jul 2021 09:10:35 +0000 (UTC)
-Received: from smtp3.osuosl.org (smtp3.osuosl.org [140.211.166.136])
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 98147C07E9C
+	for <iommu@archiver.kernel.org>; Mon,  5 Jul 2021 10:24:24 +0000 (UTC)
+Received: from smtp2.osuosl.org (smtp2.osuosl.org [140.211.166.133])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id E49A361222
-	for <iommu@archiver.kernel.org>; Mon,  5 Jul 2021 09:10:34 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org E49A361222
-Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=huawei.com
+	by mail.kernel.org (Postfix) with ESMTPS id 33CC3600D3
+	for <iommu@archiver.kernel.org>; Mon,  5 Jul 2021 10:24:24 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 33CC3600D3
+Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=oracle.com
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by smtp3.osuosl.org (Postfix) with ESMTP id 9EA6760699;
-	Mon,  5 Jul 2021 09:10:34 +0000 (UTC)
+	by smtp2.osuosl.org (Postfix) with ESMTP id F024940343;
+	Mon,  5 Jul 2021 10:24:23 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from smtp3.osuosl.org ([127.0.0.1])
-	by localhost (smtp3.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id Y4NNm6UKu9aG; Mon,  5 Jul 2021 09:10:33 +0000 (UTC)
-Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by smtp3.osuosl.org (Postfix) with ESMTPS id 3A5CB600C6;
-	Mon,  5 Jul 2021 09:10:33 +0000 (UTC)
+Received: from smtp2.osuosl.org ([127.0.0.1])
+	by localhost (smtp2.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+	with ESMTP id 3C8p2ZhWCHRK; Mon,  5 Jul 2021 10:24:23 +0000 (UTC)
+Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [IPv6:2605:bc80:3010:104::8cd3:938])
+	by smtp2.osuosl.org (Postfix) with ESMTPS id BB4FD400C6;
+	Mon,  5 Jul 2021 10:24:22 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 18EC4C001A;
-	Mon,  5 Jul 2021 09:10:33 +0000 (UTC)
-Received: from smtp4.osuosl.org (smtp4.osuosl.org [140.211.166.137])
- by lists.linuxfoundation.org (Postfix) with ESMTP id E3126C000E
- for <iommu@lists.linux-foundation.org>; Mon,  5 Jul 2021 09:10:31 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 984A6C001A;
+	Mon,  5 Jul 2021 10:24:22 +0000 (UTC)
+Received: from smtp2.osuosl.org (smtp2.osuosl.org [140.211.166.133])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 45FF4C000E
+ for <iommu@lists.linux-foundation.org>; Mon,  5 Jul 2021 10:24:21 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by smtp4.osuosl.org (Postfix) with ESMTP id CF4FB40486
- for <iommu@lists.linux-foundation.org>; Mon,  5 Jul 2021 09:10:31 +0000 (UTC)
+ by smtp2.osuosl.org (Postfix) with ESMTP id 33288402A8
+ for <iommu@lists.linux-foundation.org>; Mon,  5 Jul 2021 10:24:21 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from smtp4.osuosl.org ([127.0.0.1])
- by localhost (smtp4.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id e9IwIDPAVgGA for <iommu@lists.linux-foundation.org>;
- Mon,  5 Jul 2021 09:10:30 +0000 (UTC)
+Received: from smtp2.osuosl.org ([127.0.0.1])
+ by localhost (smtp2.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+ with ESMTP id 5-WeQyS5TJMA for <iommu@lists.linux-foundation.org>;
+ Mon,  5 Jul 2021 10:24:20 +0000 (UTC)
 X-Greylist: domain auto-whitelisted by SQLgrey-1.8.0
-Received: from szxga02-in.huawei.com (szxga02-in.huawei.com [45.249.212.188])
- by smtp4.osuosl.org (Postfix) with ESMTPS id 99F444046A
- for <iommu@lists.linux-foundation.org>; Mon,  5 Jul 2021 09:10:29 +0000 (UTC)
-Received: from dggemv703-chm.china.huawei.com (unknown [172.30.72.57])
- by szxga02-in.huawei.com (SkyGuard) with ESMTP id 4GJKZC5CjKz783B;
- Mon,  5 Jul 2021 17:06:59 +0800 (CST)
-Received: from dggpemm500003.china.huawei.com (7.185.36.56) by
- dggemv703-chm.china.huawei.com (10.3.19.46) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2176.2; Mon, 5 Jul 2021 17:10:06 +0800
-Received: from lhreml710-chm.china.huawei.com (10.201.108.61) by
- dggpemm500003.china.huawei.com (7.185.36.56) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2176.2; Mon, 5 Jul 2021 17:10:04 +0800
-Received: from lhreml710-chm.china.huawei.com ([169.254.81.184]) by
- lhreml710-chm.china.huawei.com ([169.254.81.184]) with mapi id
- 15.01.2176.012; Mon, 5 Jul 2021 10:10:02 +0100
-From: Shameerali Kolothum Thodi <shameerali.kolothum.thodi@huawei.com>
-To: Jon Nettleton <jon@solid-run.com>, Robin Murphy <robin.murphy@arm.com>
-Subject: RE: [PATCH v5 3/8] ACPI/IORT: Add a helper to retrieve RMR memory
- regions
-Thread-Topic: [PATCH v5 3/8] ACPI/IORT: Add a helper to retrieve RMR memory
- regions
-Thread-Index: AQHXUIxzNCstxTr9F0iaZEElN6n+2KsTbWwAgAAl39CAF9T/AIAHNQ4AgAG6w9A=
-Date: Mon, 5 Jul 2021 09:10:02 +0000
-Message-ID: <c93639053db74891bc73606b7a36b476@huawei.com>
-References: <20210524110222.2212-1-shameerali.kolothum.thodi@huawei.com>
- <20210524110222.2212-4-shameerali.kolothum.thodi@huawei.com>
- <9e788789-c1c2-10f1-d99c-93cfa6ea3348@arm.com>
- <3206cd67962242a69fb83adac892e34c@huawei.com>
- <CABdtJHuKT2WfsR+hrPkpXkhyvzKumrc=KNhgeo9P01=tfWfg2w@mail.gmail.com>
- <CABdtJHuz9e9H15gUCBKBRongt-Yqy=aHGsnjzM3cGpEhZ7ZFng@mail.gmail.com>
-In-Reply-To: <CABdtJHuz9e9H15gUCBKBRongt-Yqy=aHGsnjzM3cGpEhZ7ZFng@mail.gmail.com>
-Accept-Language: en-GB, en-US
-Content-Language: en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-x-originating-ip: [10.47.83.49]
+Received: from mx0b-00069f02.pphosted.com (mx0b-00069f02.pphosted.com
+ [205.220.177.32])
+ by smtp2.osuosl.org (Postfix) with ESMTPS id E53DD400C6
+ for <iommu@lists.linux-foundation.org>; Mon,  5 Jul 2021 10:24:19 +0000 (UTC)
+Received: from pps.filterd (m0246630.ppops.net [127.0.0.1])
+ by mx0b-00069f02.pphosted.com (8.16.0.43/8.16.0.43) with SMTP id
+ 165AG2lR023847; Mon, 5 Jul 2021 10:24:18 GMT
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=oracle.com;
+ h=date : from : to : cc
+ : subject : message-id : content-type : mime-version; s=corp-2020-01-29;
+ bh=XZeSdFfLCYeIFMztC3S/pFM/tQ+tCENIU/Vtz0jmk4Q=;
+ b=fBbBElDLrGO18NxXgyHjaDL68T5caeTOs6fCbvQpEsG6DU0XGc3rDXXPwVVrY2Ll4Rue
+ 9cM5arT3AzEforQ2xzRYeXw7qenV5k7b27Uqg1ItXvJjLVqsnbznZLlxjlIcsxxr4gBV
+ a9jebdYQwRXmKRo1s07pIdtyk1e+xQ2s02q6EgggoEJQiA9EgDxz8uqLld8IO6W1GEgU
+ A+eOsUjoa+h3SA3U73Cp07QNg6OPoZmnKwZURH7GYeZaKo4svaWEo9wS3X+VJMKUF+C8
+ yLXAWEA6RAkQ9Gz4zakLXsmpsDRDealeDmQlwhNI8O673aI/VE3EndYIWEuSiR/ugG0o Xg== 
+Received: from aserp3020.oracle.com (aserp3020.oracle.com [141.146.126.70])
+ by mx0b-00069f02.pphosted.com with ESMTP id 39jeacjc82-1
+ (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+ Mon, 05 Jul 2021 10:24:18 +0000
+Received: from pps.filterd (aserp3020.oracle.com [127.0.0.1])
+ by aserp3020.oracle.com (8.16.0.42/8.16.0.42) with SMTP id 165AGBec019683;
+ Mon, 5 Jul 2021 10:24:17 GMT
+Received: from nam12-bn8-obe.outbound.protection.outlook.com
+ (mail-bn8nam12lp2172.outbound.protection.outlook.com [104.47.55.172])
+ by aserp3020.oracle.com with ESMTP id 39jfq6hs0m-1
+ (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+ Mon, 05 Jul 2021 10:24:17 +0000
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=hmHFcR0MPIcGM05hDvcDiUnbKG4V6n2ZtrphPxcYBY/H+1BA/KAj5O8oBDC2r6g55MuWDowjaUAzUm0/b1gDhCuxsH9HOeb1+04H6NuCY/ApNcUN/4CJRcPozULtK9MqTvE+OuVr200JXhe/Zil8kOxC3Atuuxg1YJV7vV6pRmfJ/dqg2K7duyxl6lbBazPc4nlxK8sX4kfKZbNqklnu2PqTz3Sug/AHAsFzW4aKLCfMvnOj34qTYE6fWHlHfN6cfrcvKx/X3nOxI5pWYlj8daj++pjT9SZ54kZ0h+97IBZYhnyAXNzLNw1t9Ehr2ALkV6FC6k2IPUAL9a2hYYzugA==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com; 
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=XZeSdFfLCYeIFMztC3S/pFM/tQ+tCENIU/Vtz0jmk4Q=;
+ b=Gy7/x6eJhX1iTByCcxu5QvJl+/IDt//Mx5dkfoj/E4gT8/rKvgUK0o2uiS85WP6QrtnHlWlA+hlQ9mupc9PQgID5HPN+ShiYdbVdGWvAJLBy93csG8o7MhM7EAc777s+XfrDKkyRILz/ZawGEZE3IoDJfYtQj48aa/zLDbI7KvA4+QO1ISGrScQLeWSpODGtek4CeaDHfWu5ozs4A8K7NKgYoIp52G7GUFa5UoCCmHcm2P3bEKfSh6UANe7hgPVf1s0gFF3WXSzcv1VuGwkJFAaqGdb4vALzyizq6bb29yD/Y3adH0oBUHhJi3sgMWr0p77IV6QHxu8wGVKBdgSCpw==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=oracle.com; dmarc=pass action=none header.from=oracle.com;
+ dkim=pass header.d=oracle.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+ d=oracle.onmicrosoft.com; s=selector2-oracle-onmicrosoft-com;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=XZeSdFfLCYeIFMztC3S/pFM/tQ+tCENIU/Vtz0jmk4Q=;
+ b=J057HQ0PjIFE5+VZcyTBPwZS2zd1+b48j3sF8dXc7OzeE7c+inqchnz6gUGQC5LZaeSSn9ee2E/ULp4ThbmXZnrh+25IDz8tjUCaNWB9pNx3BcJwsksU6ecwmIBUH0Q2+nXwzNPugp6KpsJsC6wkVHm7o53cZSCd2qGr9eafY2E=
+Authentication-Results: cisco.com; dkim=none (message not signed)
+ header.d=none;cisco.com; dmarc=none action=none header.from=oracle.com;
+Received: from MWHPR1001MB2365.namprd10.prod.outlook.com
+ (2603:10b6:301:2d::28) by MWHPR10MB1616.namprd10.prod.outlook.com
+ (2603:10b6:301:9::15) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4287.23; Mon, 5 Jul
+ 2021 10:24:15 +0000
+Received: from MWHPR1001MB2365.namprd10.prod.outlook.com
+ ([fe80::3413:3c61:5067:ba73]) by MWHPR1001MB2365.namprd10.prod.outlook.com
+ ([fe80::3413:3c61:5067:ba73%5]) with mapi id 15.20.4287.033; Mon, 5 Jul 2021
+ 10:24:15 +0000
+Date: Mon, 5 Jul 2021 13:23:57 +0300
+From: Dan Carpenter <dan.carpenter@oracle.com>
+To: umalhi@cisco.com
+Subject: [bug report] IB/usnic: Add Cisco VIC low-level hardware driver
+Message-ID: <YOLdvTe4MJ4kS01z@mwanda>
+Content-Disposition: inline
+X-Originating-IP: [102.222.70.252]
+X-ClientProxiedBy: JNXP275CA0044.ZAFP275.PROD.OUTLOOK.COM (2603:1086:0:18::32)
+ To MWHPR1001MB2365.namprd10.prod.outlook.com
+ (2603:10b6:301:2d::28)
 MIME-Version: 1.0
-X-CFilter-Loop: Reflected
-Cc: Linuxarm <linuxarm@huawei.com>,
- "steven.price@arm.com" <steven.price@arm.com>,
- "linux-acpi@vger.kernel.org" <linux-acpi@vger.kernel.org>,
- "iommu@lists.linux-foundation.org" <iommu@lists.linux-foundation.org>,
- wanghuiqiang <wanghuiqiang@huawei.com>,
- "Guohanjun \(Hanjun Guo\)" <guohanjun@huawei.com>,
- yangyicong <yangyicong@huawei.com>,
- "Sami.Mujawar@arm.com" <Sami.Mujawar@arm.com>,
- "linux-arm-kernel@lists.infradead.org" <linux-arm-kernel@lists.infradead.org>
+X-MS-Exchange-MessageSentRepresentingType: 1
+Received: from mwanda (102.222.70.252) by
+ JNXP275CA0044.ZAFP275.PROD.OUTLOOK.COM (2603:1086:0:18::32) with Microsoft
+ SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.20.4287.23 via Frontend Transport; Mon, 5 Jul 2021 10:24:11 +0000
+X-MS-PublicTrafficType: Email
+X-MS-Office365-Filtering-Correlation-Id: b9a3ed64-c575-489b-d0aa-08d93f9f09bf
+X-MS-TrafficTypeDiagnostic: MWHPR10MB1616:
+X-MS-Exchange-Transport-Forked: True
+X-Microsoft-Antispam-PRVS: <MWHPR10MB161689CA63EE32FE1AE1E6EF8E1C9@MWHPR10MB1616.namprd10.prod.outlook.com>
+X-MS-Oob-TLC-OOBClassifiers: OLM:5236;
+X-MS-Exchange-SenderADCheck: 1
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: wXUipM9+zOqjy4mKl9gc5YFQNSu5ISTLvHTivLOiIZMseII+0Ls0RNCfJUU1ULK32TpnpwmsITWEKdzjlZkLlijFKVY1KqnFTv/4wEGM0Hylh44zaGxrwxvX0GuJi1DN8YhHXHJlDsOAZTGrnl0+IRd723UqCVmz5TkIyS4jnsVM5YDOB5PtTnDqvD5gRQIuycNfgi5VB5p5Xf5dQmUFpg/6JVp+X3NbT4n73ZFta5dw+oTjphju9cSBg6/B1P5HJk3U/0kWCwqWzanqtC9KKf/jpED9HeWvSwODRQLHNJ5pJk26vuqbOUDwziEVtisteg0WbYK1XK+gZPuE9jYqHSeKyc14Epku/EcGbDq8mepuJqjpdnQPoa2klxFp2i4vpp86fzGt0JPt++T8yCqUVRq+TxRG6N5K9/Rb2yN48/+AXZHnve4mYrqDEjh+QropGScjzY70ThgGJrFS9VxYPWibderoQeiQOx/OqaDtxloQXpuX/+12gWQ+yzlaIm1NRKlhz7mjjlplK8FCOJHraRmMxNqXNCR81fp4w76nGRuhi3tlqCdSS432FOi8ohmIVdsWYAR5uvg55GrDFIPmw3vAPNub23T+o4OFwLj8QLVKLaQ0c2znqqkuuzrGRMnsJqmyyuQJe8knlF2A2FW+yQwML+VzfVb0fqSTSuWLb9dPhwTPpmhov8MFhh1RMUrh
+X-Forefront-Antispam-Report: CIP:255.255.255.255; CTRY:; LANG:en; SCL:1; SRV:;
+ IPV:NLI; SFV:NSPM; H:MWHPR1001MB2365.namprd10.prod.outlook.com; PTR:; CAT:NONE;
+ SFS:(376002)(366004)(346002)(396003)(136003)(39860400002)(33716001)(44832011)(8676002)(66556008)(52116002)(66946007)(6496006)(66476007)(83380400001)(6666004)(956004)(5660300002)(16526019)(478600001)(6916009)(316002)(38100700002)(38350700002)(86362001)(2906002)(26005)(9686003)(8936002)(186003)(4326008)(55016002)(9576002);
+ DIR:OUT; SFP:1101; 
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?/DF6n1mQRVFT2BqhjnmVorgRW9AZVS3LFle8pi/NMdVd0/EY7OpAmRwjQ/Pr?=
+ =?us-ascii?Q?QeFgZrZtYAHS6N3ageFmx59MR+PQcear6bNv3GwK9qerWPDx6dsDOxCThAp3?=
+ =?us-ascii?Q?raHIALRfZKrAiYwBbUlPlfbRhtVVtvMsqpq/mxLLsRaMDbpOSpSpq1eWD9jL?=
+ =?us-ascii?Q?zxWqbgZrtec3/wg5jqyeUWPBR1ZTI0TOGWRqre9BZ7EKSaHrxhO9u9lGEQnc?=
+ =?us-ascii?Q?CZSv653y1hBGYJHuV90lM/idf8S5as2wW776CVGl4BcndXPnZ1qrcod594Y1?=
+ =?us-ascii?Q?2FjdIO5MqfPDL2om74fZsQj0dOFtvfxzFFJ9l632/ARIc7xlzaqqrCyqXlta?=
+ =?us-ascii?Q?xfryv9jz1v26KnJCaEoIpNPyJMroOYiIL8BJplFQevAoA0eQgCWcBYKTpJt4?=
+ =?us-ascii?Q?0S+ay5pw1yPjhj0zJ1PlQ88agvFF8EfgQwI/6lag7GhL7DrGNcTFw7VQ8HNQ?=
+ =?us-ascii?Q?Mpr1xq8mBgAa0tc0a0ovpgOrmZ/khh99E2IKvYXRMVbfCrsxAkPZ2dt0QKHR?=
+ =?us-ascii?Q?RvyXiIDtd4V/rpX24wrIdTZtPZiwHl8KsK8fqzO8SUcKLK4FWgng8pTwjbY0?=
+ =?us-ascii?Q?EDeO5q/Er7TB8elMsPO9WtGBjQb2v30ykcPCx/Ihy6Ex2HkqZKlTzn5fgIJ1?=
+ =?us-ascii?Q?R7D3HWK2gkoL14+rCvISSwSNH4YbI31asDpFLcgdYGkdKvm3IJE2En5c0htl?=
+ =?us-ascii?Q?4la7+jofLFsHnC7g0b4TWcJa32AAMb0XW3PGgcZjyCxrhS5frA4l4h3KB8se?=
+ =?us-ascii?Q?LCtPbO+EAF3/8Onqg2AgDegzuRQ9TxAFUAwI0hFNpBerC2SVZtEdjsXvsWRE?=
+ =?us-ascii?Q?PnodlcM9BYjUSo8y3a3t4UB0zGDN4ryQ/aT8NiFAlBlnE6YA8YNNfAFNkhWv?=
+ =?us-ascii?Q?EyXrh7ophIqxpFEv50kGm9y0dFshW2chbmp8CvLMqjgSt64JZoUnlpB88IIp?=
+ =?us-ascii?Q?oxv+U0KaZzsyWd3ywI6TugkJQ/9wkNf6euXguhvY6zJKMHFfwe0LcIAFENde?=
+ =?us-ascii?Q?HvB4LFa980slAMNadDLAXPfDzZKhLLHmQLxiqjJkZrp+ihNebugn2DXPh0zW?=
+ =?us-ascii?Q?T2qj/XaIDIsiYsLfhgqtzTxmhHRZENk8WU29bULt2MRaotJ01fRNDRr+nAUF?=
+ =?us-ascii?Q?5S9ZdqXApEafH+3sHCEm1X3vFTzj31j16Jp7oJMVs0Zp3Ihv9HUSKO1r9vJ/?=
+ =?us-ascii?Q?OYc+yJygwpEg8PM2GbWpPzfFfCx+wzIVLIqlIw9Yd+UPJSIHCLupo9+58RPO?=
+ =?us-ascii?Q?OF1NBfW7WjahiDum1ExPI1J9N9izz/O1+gb0S/DP2u4fSBqWfgLYcKpfYBMA?=
+ =?us-ascii?Q?mL1kSFttLN833tNRvRomIxKJ?=
+X-OriginatorOrg: oracle.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: b9a3ed64-c575-489b-d0aa-08d93f9f09bf
+X-MS-Exchange-CrossTenant-AuthSource: MWHPR1001MB2365.namprd10.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 05 Jul 2021 10:24:14.9649 (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 4e2c6054-71cb-48f1-bd6c-3a9705aca71b
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: QTgMf8xP1KoABuPIpUNDWPMo3WPTwQSCiVngv0FOT7xNcFMkPp01dbxQtKs6779wfJRyIirMCPV3zxucJlkJPsVT8qO67fInJcOCQU9MEUc=
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: MWHPR10MB1616
+X-Proofpoint-Virus-Version: vendor=nai engine=6200 definitions=10035
+ signatures=668682
+X-Proofpoint-Spam-Details: rule=notspam policy=default score=0 suspectscore=0
+ spamscore=0 phishscore=0
+ mlxscore=0 bulkscore=0 malwarescore=0 adultscore=0 mlxlogscore=999
+ classifier=spam adjust=0 reason=mlx scancount=1 engine=8.12.0-2104190000
+ definitions=main-2107050055
+X-Proofpoint-GUID: 353zQFG3ONCmQeqxmS6Ft9ilpzblh9Sl
+X-Proofpoint-ORIG-GUID: 353zQFG3ONCmQeqxmS6Ft9ilpzblh9Sl
+Cc: linux-rdma@vger.kernel.org, iommu@lists.linux-foundation.org
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -108,272 +186,120 @@ Content-Transfer-Encoding: 7bit
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
+[ Ancient code, but the bug seems real enough still.  -dan ]
 
+Hello Upinder Malhi,
 
-> -----Original Message-----
-> From: Jon Nettleton [mailto:jon@solid-run.com]
-> Sent: 04 July 2021 08:39
-> To: Shameerali Kolothum Thodi <shameerali.kolothum.thodi@huawei.com>
-> Cc: Robin Murphy <robin.murphy@arm.com>;
-> linux-arm-kernel@lists.infradead.org; linux-acpi@vger.kernel.org;
-> iommu@lists.linux-foundation.org; Linuxarm <linuxarm@huawei.com>;
-> steven.price@arm.com; Guohanjun (Hanjun Guo) <guohanjun@huawei.com>;
-> yangyicong <yangyicong@huawei.com>; Sami.Mujawar@arm.com;
-> wanghuiqiang <wanghuiqiang@huawei.com>
-> Subject: Re: [PATCH v5 3/8] ACPI/IORT: Add a helper to retrieve RMR memory
-> regions
-> 
-> On Tue, Jun 29, 2021 at 7:34 PM Jon Nettleton <jon@solid-run.com> wrote:
-> >
-> > On Mon, Jun 14, 2021 at 2:49 PM Shameerali Kolothum Thodi
-> > <shameerali.kolothum.thodi@huawei.com> wrote:
-> > >
-> > >
-> > >
-> > > > -----Original Message-----
-> > > > From: Robin Murphy [mailto:robin.murphy@arm.com]
-> > > > Sent: 14 June 2021 12:23
-> > > > To: Shameerali Kolothum Thodi
-> > > > <shameerali.kolothum.thodi@huawei.com>;
-> > > > linux-arm-kernel@lists.infradead.org; linux-acpi@vger.kernel.org;
-> > > > iommu@lists.linux-foundation.org
-> > > > Cc: jon@solid-run.com; Linuxarm <linuxarm@huawei.com>;
-> > > > steven.price@arm.com; Guohanjun (Hanjun Guo)
-> > > > <guohanjun@huawei.com>; yangyicong <yangyicong@huawei.com>;
-> > > > Sami.Mujawar@arm.com; wanghuiqiang <wanghuiqiang@huawei.com>
-> > > > Subject: Re: [PATCH v5 3/8] ACPI/IORT: Add a helper to retrieve
-> > > > RMR memory regions
-> > > >
-> > > > On 2021-05-24 12:02, Shameer Kolothum wrote:
-> > > > > Add a helper function that retrieves RMR memory descriptors
-> > > > > associated with a given IOMMU. This will be used by IOMMU
-> > > > > drivers to setup necessary mappings.
-> > > > >
-> > > > > Now that we have this, invoke it from the generic helper
-> > > > > interface.
-> > > > >
-> > > > > Signed-off-by: Shameer Kolothum
-> > > > <shameerali.kolothum.thodi@huawei.com>
-> > > > > ---
-> > > > >   drivers/acpi/arm64/iort.c | 50
-> > > > +++++++++++++++++++++++++++++++++++++++
-> > > > >   drivers/iommu/dma-iommu.c |  4 ++++
-> > > > >   include/linux/acpi_iort.h |  7 ++++++
-> > > > >   3 files changed, 61 insertions(+)
-> > > > >
-> > > > > diff --git a/drivers/acpi/arm64/iort.c
-> > > > > b/drivers/acpi/arm64/iort.c index fea1ffaedf3b..01917caf58de
-> > > > > 100644
-> > > > > --- a/drivers/acpi/arm64/iort.c
-> > > > > +++ b/drivers/acpi/arm64/iort.c
-> > > > > @@ -12,6 +12,7 @@
-> > > > >
-> > > > >   #include <linux/acpi_iort.h>
-> > > > >   #include <linux/bitfield.h>
-> > > > > +#include <linux/dma-iommu.h>
-> > > > >   #include <linux/iommu.h>
-> > > > >   #include <linux/kernel.h>
-> > > > >   #include <linux/list.h>
-> > > > > @@ -837,6 +838,53 @@ static inline int
-> > > > > iort_add_device_replay(struct
-> > > > device *dev)
-> > > > >     return err;
-> > > > >   }
-> > > > >
-> > > > > +/**
-> > > > > + * iort_iommu_get_rmrs - Helper to retrieve RMR info associated
-> > > > > +with
-> > > > IOMMU
-> > > > > + * @iommu: fwnode for the IOMMU
-> > > > > + * @head: RMR list head to be populated
-> > > > > + *
-> > > > > + * Returns: 0 on success, <0 failure  */ int
-> > > > > +iort_iommu_get_rmrs(struct fwnode_handle *iommu_fwnode,
-> > > > > +                   struct list_head *head) {
-> > > > > +   struct iort_rmr_entry *e;
-> > > > > +   struct acpi_iort_node *iommu;
-> > > > > +   int rmrs = 0;
-> > > > > +
-> > > > > +   iommu = iort_get_iort_node(iommu_fwnode);
-> > > > > +   if (!iommu || list_empty(&iort_rmr_list))
-> > > > > +           return -ENODEV;
-> > > > > +
-> > > > > +   list_for_each_entry(e, &iort_rmr_list, list) {
-> > > > > +           int prot = IOMMU_READ | IOMMU_WRITE |
-> IOMMU_NOEXEC |
-> > > > IOMMU_MMIO;
-> > > > > +           struct iommu_resv_region *region;
-> > > > > +           enum iommu_resv_type type;
-> > > > > +           struct acpi_iort_rmr_desc *rmr_desc;
-> > > > > +
-> > > > > +           if (e->smmu != iommu)
-> > > > > +                   continue;
-> > > > > +
-> > > > > +           rmr_desc = e->rmr_desc;
-> > > > > +           if (e->flags & IOMMU_RMR_REMAP_PERMITTED)
-> > > > > +                   type = IOMMU_RESV_DIRECT_RELAXABLE;
-> > > > > +           else
-> > > > > +                   type = IOMMU_RESV_DIRECT;
-> > > >
-> >
-> > I have been looking at this a bit more and looking at the history of
-> > RMR_REMAP_PERMITTED.  Based on the history I have found it seems to
-> me
-> > like this would be the better options for prot.
-> >
-> > @@ -840,7 +840,7 @@ int iort_iommu_get_rmrs(struct fwnode_handle
-> *iommu_fwnode,
-> >                 return -ENODEV;
-> >
-> >         list_for_each_entry(e, &iort_rmr_list, list) {
-> > -               int prot = IOMMU_READ | IOMMU_WRITE |
-> IOMMU_NOEXEC | IOMMU_MMIO;
-> > +               int prot = IOMMU_READ | IOMMU_WRITE;
-> >                 struct iommu_resv_region *region;
-> >                 enum iommu_resv_type type;
-> >                 struct acpi_iort_rmr_desc *rmr_desc; @@ -849,10
-> > +849,13 @@ int iort_iommu_get_rmrs(struct fwnode_handle
-> *iommu_fwnode,
-> >                         continue;
-> >
-> >                 rmr_desc = e->rmr_desc;
-> > -               if (e->flags & IOMMU_RMR_REMAP_PERMITTED)
-> > +               if (e->flags & IOMMU_RMR_REMAP_PERMITTED) {
-> >                         type = IOMMU_RESV_DIRECT_RELAXABLE;
-> > -               else
-> > +                       prot |= IOMMU_CACHE;
-> > +               } else {
-> >                         type = IOMMU_RESV_DIRECT;
-> > +                       prot |= IOMMU_MMIO;
-> > +               }
-> >
-> >                 region =
-> iommu_alloc_resv_region(rmr_desc->base_address,
-> >                                                  rmr_desc->length,
-> >
-> > any input on this?  My reasoning is that IOMMU_RESV_DIRECT is
-> > specifically referenced for things like MSI doorbell and in all the
-> > examples needs IOMMU_MMIO, while REMAP_PERMITTED seems to be used
-> for
-> > allocated system memory that is then used for device specific reserved
-> > regions which commits say would be like a GPU or USB device.
+The patch e3cf00d0a87f: "IB/usnic: Add Cisco VIC low-level hardware
+driver" from Sep 10, 2013, leads to the following static checker
+warning:
 
-I am Ok to make those changes but not sure we can make the above assumptions
-based on the way it is currently used. 
+	drivers/iommu/iommu.c:2482 iommu_map()
+	warn: sleeping in atomic context
 
-Hi Robin,
+drivers/infiniband/hw/usnic/usnic_uiom.c
+   244  static int usnic_uiom_map_sorted_intervals(struct list_head *intervals,
+   245                                                  struct usnic_uiom_reg *uiomr)
 
-Any thoughts?
+This function is always called from usnic_uiom_reg_get() which is holding
+spin_lock(&pd->lock); so it can't sleep.
 
-Thanks,
-Shameer
+   246  {
+   247          int i, err;
+   248          size_t size;
+   249          struct usnic_uiom_chunk *chunk;
+   250          struct usnic_uiom_interval_node *interval_node;
+   251          dma_addr_t pa;
+   252          dma_addr_t pa_start = 0;
+   253          dma_addr_t pa_end = 0;
+   254          long int va_start = -EINVAL;
+   255          struct usnic_uiom_pd *pd = uiomr->pd;
+   256          long int va = uiomr->va & PAGE_MASK;
+   257          int flags = IOMMU_READ | IOMMU_CACHE;
+   258  
+   259          flags |= (uiomr->writable) ? IOMMU_WRITE : 0;
+   260          chunk = list_first_entry(&uiomr->chunk_list, struct usnic_uiom_chunk,
+   261                                                                          list);
+   262          list_for_each_entry(interval_node, intervals, link) {
+   263  iter_chunk:
+   264                  for (i = 0; i < chunk->nents; i++, va += PAGE_SIZE) {
+   265                          pa = sg_phys(&chunk->page_list[i]);
+   266                          if ((va >> PAGE_SHIFT) < interval_node->start)
+   267                                  continue;
+   268  
+   269                          if ((va >> PAGE_SHIFT) == interval_node->start) {
+   270                                  /* First page of the interval */
+   271                                  va_start = va;
+   272                                  pa_start = pa;
+   273                                  pa_end = pa;
+   274                          }
+   275  
+   276                          WARN_ON(va_start == -EINVAL);
+   277  
+   278                          if ((pa_end + PAGE_SIZE != pa) &&
+   279                                          (pa != pa_start)) {
+   280                                  /* PAs are not contiguous */
+   281                                  size = pa_end - pa_start + PAGE_SIZE;
+   282                                  usnic_dbg("va 0x%lx pa %pa size 0x%zx flags 0x%x",
+   283                                          va_start, &pa_start, size, flags);
+   284                                  err = iommu_map(pd->domain, va_start, pa_start,
+   285                                                          size, flags);
 
-> >
-> > -Jon
-> >
-> > > > Wasn't the idea that we can do all this during the initial parsing, i.e.
-> > > > we don't even have iort_rmr_entry, we store them as
-> > > > iommu_resv_regions and simply kmemdup() or whatever at this point?
-> > >
-> > >
-> > > Hmm... Not yet. I removed struct iommu_rmr() from v4. But yes, it
-> > > looks like we can get rid of iort_rmr_entry as well. Will give it a go in next.
-> > >
-> > > Thanks,
-> > > Shameer
-> > >
-> > > > Robin.
-> > > >
-> > > > > +
-> > > > > +           region =
-> iommu_alloc_resv_region(rmr_desc->base_address,
-> > > > > +                                            rmr_desc->length,
-> > > > > +                                            prot, type);
-> > > > > +           if (region) {
-> > > > > +                   region->fw_data.rmr.flags = e->flags;
-> > > > > +                   region->fw_data.rmr.sid = e->sid;
-> > > > > +                   list_add_tail(&region->list, head);
-> > > > > +                   rmrs++;
-> > > > > +           }
-> > > > > +   }
-> > > > > +
-> > > > > +   return (rmrs == 0) ? -ENODEV : 0; }
-> > > > > +
-> > > > >   /**
-> > > > >    * iort_iommu_msi_get_resv_regions - Reserved region driver helper
-> > > > >    * @dev: Device from iommu_get_resv_regions() @@ -1108,6
-> > > > > +1156,8 @@ int iort_iommu_msi_get_resv_regions(struct
-> > > > device *dev, struct list_head *head)
-> > > > >   const struct iommu_ops *iort_iommu_configure_id(struct device
-> *dev,
-> > > > >                                             const u32
-> *input_id)
-> > > > >   { return NULL; }
-> > > > > +int iort_iommu_get_rmrs(struct fwnode_handle *fwnode, struct
-> > > > > +list_head
-> > > > *head)
-> > > > > +{ return -ENODEV; }
-> > > > >   #endif
-> > > > >
-> > > > >   static int nc_dma_get_range(struct device *dev, u64 *size)
-> > > > > diff --git a/drivers/iommu/dma-iommu.c
-> > > > > b/drivers/iommu/dma-iommu.c index 229ec65d98be..f893d460cfa4
-> > > > > 100644
-> > > > > --- a/drivers/iommu/dma-iommu.c
-> > > > > +++ b/drivers/iommu/dma-iommu.c
-> > > > > @@ -185,6 +185,9 @@ EXPORT_SYMBOL(iommu_put_dma_cookie);
-> > > > >   int iommu_dma_get_rmrs(struct fwnode_handle *iommu_fwnode,
-> > > > >                    struct list_head *list)
-> > > > >   {
-> > > > > +   if (!is_of_node(iommu_fwnode))
-> > > > > +           return iort_iommu_get_rmrs(iommu_fwnode, list);
-> > > > > +
-> > > > >     return -EINVAL;
-> > > > >   }
-> > > > >   EXPORT_SYMBOL(iommu_dma_get_rmrs);
-> > > > > @@ -200,6 +203,7 @@ EXPORT_SYMBOL(iommu_dma_get_rmrs);
-> > > > >   void iommu_dma_put_rmrs(struct fwnode_handle *iommu_fwnode,
-> > > > >                     struct list_head *list)
-> > > > >   {
-> > > > > +   generic_iommu_put_resv_regions(iommu_fwnode->dev, list);
-> > > > >   }
-> > > > >   EXPORT_SYMBOL(iommu_dma_put_rmrs);
-> > > > >
-> > > > > diff --git a/include/linux/acpi_iort.h
-> > > > > b/include/linux/acpi_iort.h index 1a12baa58e40..e8c45fa59531
-> > > > > 100644
-> > > > > --- a/include/linux/acpi_iort.h
-> > > > > +++ b/include/linux/acpi_iort.h
-> > > > > @@ -39,6 +39,8 @@ const struct iommu_ops
-> > > > *iort_iommu_configure_id(struct device *dev,
-> > > > >                                             const u32 *id_in);
-> > > > >   int iort_iommu_msi_get_resv_regions(struct device *dev, struct
-> > > > > list_head
-> > > > *head);
-> > > > >   phys_addr_t acpi_iort_dma_get_max_cpu_address(void);
-> > > > > +int iort_iommu_get_rmrs(struct fwnode_handle *iommu_fwnode,
-> > > > > +                   struct list_head *list);
-> > > > >   #else
-> > > > >   static inline void acpi_iort_init(void) { }
-> > > > >   static inline u32 iort_msi_map_id(struct device *dev, u32 id)
-> > > > > @@ -59,6 +61,11 @@ int iort_iommu_msi_get_resv_regions(struct
-> > > > > device
-> > > > *dev, struct list_head *head)
-> > > > >
-> > > > >   static inline phys_addr_t acpi_iort_dma_get_max_cpu_address(void)
-> > > > >   { return PHYS_ADDR_MAX; }
-> > > > > +
-> > > > > +static inline
-> > > > > +int iort_iommu_get_rmrs(struct fwnode_handle *iommu_fwnode,
-> > > > > +                   struct list_head *list) { return -ENODEV; }
-> > > > >   #endif
-> > > > >
-> > > > >   #endif /* __ACPI_IORT_H__ */
-> > > > >
-> 
-> Ping.  Any comments on this?
-> 
-> -Jon
+The iommu_map() function sleeps.
+
+   286                                  if (err) {
+   287                                          usnic_err("Failed to map va 0x%lx pa %pa size 0x%zx with err %d\n",
+   288                                                  va_start, &pa_start, size, err);
+   289                                          goto err_out;
+   290                                  }
+   291                                  va_start = va;
+   292                                  pa_start = pa;
+   293                                  pa_end = pa;
+   294                          }
+   295  
+   296                          if ((va >> PAGE_SHIFT) == interval_node->last) {
+   297                                  /* Last page of the interval */
+   298                                  size = pa - pa_start + PAGE_SIZE;
+   299                                  usnic_dbg("va 0x%lx pa %pa size 0x%zx flags 0x%x\n",
+   300                                          va_start, &pa_start, size, flags);
+   301                                  err = iommu_map(pd->domain, va_start, pa_start,
+   302                                                  size, flags);
+
+iommu_map() again.
+
+   303                                  if (err) {
+   304                                          usnic_err("Failed to map va 0x%lx pa %pa size 0x%zx with err %d\n",
+   305                                                  va_start, &pa_start, size, err);
+   306                                          goto err_out;
+   307                                  }
+   308                                  break;
+   309                          }
+   310  
+   311                          if (pa != pa_start)
+   312                                  pa_end += PAGE_SIZE;
+   313                  }
+   314  
+   315                  if (i == chunk->nents) {
+   316                          /*
+   317                           * Hit last entry of the chunk,
+   318                           * hence advance to next chunk
+   319                           */
+   320                          chunk = list_first_entry(&chunk->list,
+   321                                                          struct usnic_uiom_chunk,
+   322                                                          list);
+   323                          goto iter_chunk;
+   324                  }
+   325          }
+   326  
+   327          return 0;
+   328  
+   329  err_out:
+   330          usnic_uiom_unmap_sorted_intervals(intervals, pd);
+   331          return err;
+   332  }
+
+regards,
+dan carpenter
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
