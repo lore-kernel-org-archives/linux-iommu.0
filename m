@@ -2,72 +2,120 @@ Return-Path: <SRS0=cNfX=L6=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-15.3 required=3.0 tests=BAYES_00,
-	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_CR_TRAILER,INCLUDES_PATCH,
-	MAILING_LIST_MULTI,NICE_REPLY_A,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,
-	USER_AGENT_SANE_1 autolearn=unavailable autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-15.1 required=3.0 tests=BAYES_00,DKIM_INVALID,
+	DKIM_SIGNED,HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_CR_TRAILER,INCLUDES_PATCH,
+	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_SANE_2
+	autolearn=unavailable autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id AB5D8C07E9B
-	for <iommu@archiver.kernel.org>; Tue,  6 Jul 2021 18:03:09 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E1193C07E9C
+	for <iommu@archiver.kernel.org>; Tue,  6 Jul 2021 19:12:21 +0000 (UTC)
 Received: from smtp3.osuosl.org (smtp3.osuosl.org [140.211.166.136])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 4544861C63
-	for <iommu@archiver.kernel.org>; Tue,  6 Jul 2021 18:03:09 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 4544861C63
-Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=arm.com
+	by mail.kernel.org (Postfix) with ESMTPS id 94A0561356
+	for <iommu@archiver.kernel.org>; Tue,  6 Jul 2021 19:12:21 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 94A0561356
+Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=linux.ibm.com
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by smtp3.osuosl.org (Postfix) with ESMTP id 0EBA56FC47;
-	Tue,  6 Jul 2021 18:03:09 +0000 (UTC)
+	by smtp3.osuosl.org (Postfix) with ESMTP id 55368608F5;
+	Tue,  6 Jul 2021 19:12:21 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
 Received: from smtp3.osuosl.org ([127.0.0.1])
 	by localhost (smtp3.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id 1JPkW1GbxF1P; Tue,  6 Jul 2021 18:03:08 +0000 (UTC)
+	with ESMTP id nny1ZJsPL-Mh; Tue,  6 Jul 2021 19:12:20 +0000 (UTC)
 Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by smtp3.osuosl.org (Postfix) with ESMTPS id C33F66069E;
-	Tue,  6 Jul 2021 18:03:07 +0000 (UTC)
+	by smtp3.osuosl.org (Postfix) with ESMTPS id 21FA2605C0;
+	Tue,  6 Jul 2021 19:12:20 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 8A6C9C0010;
-	Tue,  6 Jul 2021 18:03:07 +0000 (UTC)
-Received: from smtp3.osuosl.org (smtp3.osuosl.org [IPv6:2605:bc80:3010::136])
- by lists.linuxfoundation.org (Postfix) with ESMTP id BCF17C000E
- for <iommu@lists.linux-foundation.org>; Tue,  6 Jul 2021 18:03:05 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 0244EC0010;
+	Tue,  6 Jul 2021 19:12:20 +0000 (UTC)
+Received: from smtp4.osuosl.org (smtp4.osuosl.org [IPv6:2605:bc80:3010::137])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 15479C000E
+ for <iommu@lists.linux-foundation.org>; Tue,  6 Jul 2021 19:12:19 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by smtp3.osuosl.org (Postfix) with ESMTP id 899DC60876
- for <iommu@lists.linux-foundation.org>; Tue,  6 Jul 2021 18:03:05 +0000 (UTC)
+ by smtp4.osuosl.org (Postfix) with ESMTP id DC2F94055E
+ for <iommu@lists.linux-foundation.org>; Tue,  6 Jul 2021 19:12:18 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from smtp3.osuosl.org ([127.0.0.1])
- by localhost (smtp3.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id fUfu6QfyLzka for <iommu@lists.linux-foundation.org>;
- Tue,  6 Jul 2021 18:03:04 +0000 (UTC)
+Authentication-Results: smtp4.osuosl.org (amavisd-new);
+ dkim=pass (2048-bit key) header.d=ibm.com
+Received: from smtp4.osuosl.org ([127.0.0.1])
+ by localhost (smtp4.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+ with ESMTP id qY9Vr3jHhX7o for <iommu@lists.linux-foundation.org>;
+ Tue,  6 Jul 2021 19:12:17 +0000 (UTC)
 X-Greylist: domain auto-whitelisted by SQLgrey-1.8.0
-Received: from foss.arm.com (foss.arm.com [217.140.110.172])
- by smtp3.osuosl.org (Postfix) with ESMTP id 6B46C6FC47
- for <iommu@lists.linux-foundation.org>; Tue,  6 Jul 2021 18:03:04 +0000 (UTC)
-Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
- by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 60B191042;
- Tue,  6 Jul 2021 11:03:03 -0700 (PDT)
-Received: from [10.57.40.45] (unknown [10.57.40.45])
- by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id 7E7FE3F5A1;
- Tue,  6 Jul 2021 11:03:02 -0700 (PDT)
-Subject: Re: [PATCH] iommu: Fallback to default setting when def_domain_type()
- callback returns 0
-To: Kai-Heng Feng <kai.heng.feng@canonical.com>
-References: <20210706065106.271765-1-kai.heng.feng@canonical.com>
- <d9fa9a62-6522-7d26-0cca-16f6886136ec@arm.com>
- <CAAd53p7ZXWkD8DiL0kMP8dZA5qFGRcdAMizv3THgo2XABPe25g@mail.gmail.com>
-From: Robin Murphy <robin.murphy@arm.com>
-Message-ID: <55a31c97-a3f4-97d7-0663-13c15b68d5c0@arm.com>
-Date: Tue, 6 Jul 2021 19:02:57 +0100
-User-Agent: Mozilla/5.0 (Windows NT 10.0; rv:78.0) Gecko/20100101
- Thunderbird/78.11.0
+Received: from mx0a-001b2d01.pphosted.com (mx0b-001b2d01.pphosted.com
+ [148.163.158.5])
+ by smtp4.osuosl.org (Postfix) with ESMTPS id C67124054F
+ for <iommu@lists.linux-foundation.org>; Tue,  6 Jul 2021 19:12:17 +0000 (UTC)
+Received: from pps.filterd (m0098420.ppops.net [127.0.0.1])
+ by mx0b-001b2d01.pphosted.com (8.16.0.43/8.16.0.43) with SMTP id
+ 166J4JCu173365; Tue, 6 Jul 2021 15:12:14 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com;
+ h=date : from : to : cc :
+ subject : message-id : in-reply-to : references : mime-version :
+ content-type : content-transfer-encoding; s=pp1;
+ bh=HG1GLNmHvotq6EFCX6QsGejnQKziX83yfMZ01HgZuUU=;
+ b=lS3iiZ+QpjpOUYGyg4AHuW4crOM1qmYhdfLsppQZ4HMju5H29ggiH1mKQhbZFKFpvxtF
+ qlEWTUf/CTj9F5Ev4F4FPWMnWt+8dB+ZAmL1RqAFvtmSwMi3IfSEktO3cApglU2FcEVE
+ tcszdaOyAhrajaLOUWzleIWhXHBV5RaJADESbO0/zppgMarS6GR+fwJy8qilACByShTk
+ 37w8I4Q4WfLy4h6r0lrq/BZkBLrxvW05lHTMz3bPRcZjipB5Y682pWhGEL/hve3FxAvT
+ EyVBrg6Y7Ttf+Sdvn9dezpIrk0HsOiDeex2P6I1Ko538ElAJt+EkJWbYj4SzKBcp/zMv yQ== 
+Received: from ppma04ams.nl.ibm.com (63.31.33a9.ip4.static.sl-reverse.com
+ [169.51.49.99])
+ by mx0b-001b2d01.pphosted.com with ESMTP id 39mkpv17y5-1
+ (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+ Tue, 06 Jul 2021 15:12:14 -0400
+Received: from pps.filterd (ppma04ams.nl.ibm.com [127.0.0.1])
+ by ppma04ams.nl.ibm.com (8.16.1.2/8.16.1.2) with SMTP id 166J2rS2007971;
+ Tue, 6 Jul 2021 19:12:12 GMT
+Received: from b06cxnps4074.portsmouth.uk.ibm.com
+ (d06relay11.portsmouth.uk.ibm.com [9.149.109.196])
+ by ppma04ams.nl.ibm.com with ESMTP id 39jfh8sdcj-1
+ (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+ Tue, 06 Jul 2021 19:12:12 +0000
+Received: from d06av23.portsmouth.uk.ibm.com (d06av23.portsmouth.uk.ibm.com
+ [9.149.105.59])
+ by b06cxnps4074.portsmouth.uk.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id
+ 166JC8n028442920
+ (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+ Tue, 6 Jul 2021 19:12:09 GMT
+Received: from d06av23.portsmouth.uk.ibm.com (unknown [127.0.0.1])
+ by IMSVA (Postfix) with ESMTP id DA4F3A4057;
+ Tue,  6 Jul 2021 19:12:08 +0000 (GMT)
+Received: from d06av23.portsmouth.uk.ibm.com (unknown [127.0.0.1])
+ by IMSVA (Postfix) with ESMTP id 7AFBDA404D;
+ Tue,  6 Jul 2021 19:12:08 +0000 (GMT)
+Received: from thinkpad (unknown [9.171.59.58])
+ by d06av23.portsmouth.uk.ibm.com (Postfix) with SMTP;
+ Tue,  6 Jul 2021 19:12:08 +0000 (GMT)
+Date: Tue, 6 Jul 2021 21:12:07 +0200
+From: Gerald Schaefer <gerald.schaefer@linux.ibm.com>
+To: Robin Murphy <robin.murphy@arm.com>
+Subject: Re: [RFC PATCH 1/1] dma-debug: fix check_for_illegal_area() in
+ debug_dma_map_sg()
+Message-ID: <20210706211207.48f15496@thinkpad>
+In-Reply-To: <3bb87b4c-f646-20fe-7cc5-c7449432811e@arm.com>
+References: <20210705185252.4074653-1-gerald.schaefer@linux.ibm.com>
+ <20210705185252.4074653-2-gerald.schaefer@linux.ibm.com>
+ <3bb87b4c-f646-20fe-7cc5-c7449432811e@arm.com>
+X-Mailer: Claws Mail 3.17.8 (GTK+ 2.24.33; x86_64-redhat-linux-gnu)
 MIME-Version: 1.0
-In-Reply-To: <CAAd53p7ZXWkD8DiL0kMP8dZA5qFGRcdAMizv3THgo2XABPe25g@mail.gmail.com>
-Content-Language: en-GB
-Cc: will@kernel.org,
- "open list:IOMMU DRIVERS" <iommu@lists.linux-foundation.org>,
- open list <linux-kernel@vger.kernel.org>
+X-TM-AS-GCONF: 00
+X-Proofpoint-ORIG-GUID: ROsvXMbitoGNJM55LtbKTVrOQx9nf8tg
+X-Proofpoint-GUID: ROsvXMbitoGNJM55LtbKTVrOQx9nf8tg
+X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.391, 18.0.790
+ definitions=2021-07-06_10:2021-07-06,
+ 2021-07-06 signatures=0
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0
+ mlxscore=0 adultscore=0
+ malwarescore=0 spamscore=0 suspectscore=0 impostorscore=0 phishscore=0
+ mlxlogscore=999 lowpriorityscore=0 priorityscore=1501 clxscore=1011
+ bulkscore=0 classifier=spam adjust=0 reason=mlx scancount=1
+ engine=8.12.0-2104190000 definitions=main-2107060089
+Cc: linux-s390 <linux-s390@vger.kernel.org>, iommu@lists.linux-foundation.org,
+ Niklas Schnelle <schnelle@linux.ibm.com>, Christoph Hellwig <hch@lst.de>,
+ LKML <linux-kernel@vger.kernel.org>
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -80,115 +128,91 @@ List-Post: <mailto:iommu@lists.linux-foundation.org>
 List-Help: <mailto:iommu-request@lists.linux-foundation.org?subject=help>
 List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
  <mailto:iommu-request@lists.linux-foundation.org?subject=subscribe>
+Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
-Content-Type: text/plain; charset="us-ascii"; Format="flowed"
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-On 2021-07-06 17:21, Kai-Heng Feng wrote:
-> On Tue, Jul 6, 2021 at 5:27 PM Robin Murphy <robin.murphy@arm.com> wrote:
->>
->> On 2021-07-06 07:51, Kai-Heng Feng wrote:
->>> Commit 28b41e2c6aeb ("iommu: Move def_domain type check for untrusted
->>> device into core") not only moved the check for untrusted device to
->>> IOMMU core, it also introduced a behavioral change by returning
->>> def_domain_type() directly without checking its return value. That makes
->>> many devices no longer use the default IOMMU setting.
->>>
->>> So revert back to the old behavior which defaults to
->>> iommu_def_domain_type when driver callback returns 0.
->>>
->>> Fixes: 28b41e2c6aeb ("iommu: Move def_domain type check for untrusted device into core")
->>
->> Are you sure about that? From that same commit:
->>
->> @@ -1507,7 +1509,7 @@ static int iommu_alloc_default_domain(struct
->> iommu_group *group,
->>           if (group->default_domain)
->>                   return 0;
->>
->> -       type = iommu_get_def_domain_type(dev);
->> +       type = iommu_get_def_domain_type(dev) ? : iommu_def_domain_type;
->>
->>           return iommu_group_alloc_default_domain(dev->bus, group, type);
->>    }
->>
->> AFAICS the other two callers should also handle 0 correctly. Have you
->> seen a problem in practice?
+On Tue, 6 Jul 2021 10:22:40 +0100
+Robin Murphy <robin.murphy@arm.com> wrote:
+
+> On 2021-07-05 19:52, Gerald Schaefer wrote:
+> > The following warning occurred sporadically on s390:
+> > DMA-API: nvme 0006:00:00.0: device driver maps memory from kernel text or rodata [addr=0000000048cc5e2f] [len=131072]
+> > WARNING: CPU: 4 PID: 825 at kernel/dma/debug.c:1083 check_for_illegal_area+0xa8/0x138
+> > 
+> > It is a false-positive warning, due to a broken logic in debug_dma_map_sg().
+> > check_for_illegal_area() should check for overlay of sg elements with kernel
+> > text or rodata. It is called with sg_dma_len(s) instead of s->length as
+> > parameter. After the call to ->map_sg(), sg_dma_len() contains the length
+> > of possibly combined sg elements in the DMA address space, and not the
+> > individual sg element length, which would be s->length.
+> > 
+> > The check will then use the kernel start address of an sg element, and add
+> > the DMA length for overlap check, which can result in the false-positive
+> > warning because the DMA length can be larger than the actual single sg
+> > element length in kernel address space.
+> > 
+> > In addition, the call to check_for_illegal_area() happens in the iteration
+> > over mapped_ents, which will not include all individual sg elements if
+> > any of them were combined in ->map_sg().
+> > 
+> > Fix this by using s->length instead of sg_dma_len(s). Also put the call to
+> > check_for_illegal_area() in a separate loop, iterating over all the
+> > individual sg elements ("nents" instead of "mapped_ents").
+> > 
+> > Fixes: 884d05970bfb ("dma-debug: use sg_dma_len accessor")
+> > Tested-by: Niklas Schnelle <schnelle@linux.ibm.com>
+> > Signed-off-by: Gerald Schaefer <gerald.schaefer@linux.ibm.com>
+> > ---
+> >   kernel/dma/debug.c | 10 ++++++----
+> >   1 file changed, 6 insertions(+), 4 deletions(-)
+> > 
+> > diff --git a/kernel/dma/debug.c b/kernel/dma/debug.c
+> > index 14de1271463f..d7d44b7fe7e2 100644
+> > --- a/kernel/dma/debug.c
+> > +++ b/kernel/dma/debug.c
+> > @@ -1299,6 +1299,12 @@ void debug_dma_map_sg(struct device *dev, struct scatterlist *sg,
+> >   	if (unlikely(dma_debug_disabled()))
+> >   		return;
+> >   
+> > +	for_each_sg(sg, s, nents, i) {
+> > +		if (!PageHighMem(sg_page(s))) {
+> > +			check_for_illegal_area(dev, sg_virt(s), s->length);
+> > +		}
+> > +	}
+> > +
+> >   	for_each_sg(sg, s, mapped_ents, i) {
+> >   		entry = dma_entry_alloc();
+> >   		if (!entry)
+> > @@ -1316,10 +1322,6 @@ void debug_dma_map_sg(struct device *dev, struct scatterlist *sg,
+> >   
+> >   		check_for_stack(dev, sg_page(s), s->offset);
 > 
-> Thanks for pointing out how the return value is being handled by the callers.
-> However, the same check is missing in probe_get_default_domain_type():
-> static int probe_get_default_domain_type(struct device *dev, void *data)
-> {
->          struct __group_domain_type *gtype = data;
->          unsigned int type = iommu_get_def_domain_type(dev);
-> ...
-> }
+> Strictly this should probably be moved to the new loop as well, as it is 
+> similarly concerned with validating the source segments rather than the 
+> DMA mappings - I think with virtually-mapped stacks it might technically 
+> be possible for a stack page to be physically adjacent to a "valid" page 
+> such that it could get merged and overlooked if it were near the end of 
+> the list, although in fairness that would probably be indicative of 
+> something having gone far more fundamentally wrong. Otherwise, the 
+> overall reasoning looks sound to me.
 
-I'm still not following - the next line right after that is "if (type)", 
-which means it won't touch gtype, and if that happens for every 
-iteration, probe_alloc_default_domain() subsequently hits its "if 
-(!gtype.type)" condition and still ends up with iommu_def_domain_type. 
-This *was* one of the other two callers I was talking about (the second 
-being iommu_change_dev_def_domain()), and in fact on second look I think 
-your proposed change will actually break this logic, since it's 
-necessary to differentiate between a specific type being requested for 
-the given device, and a "don't care" response which only implies to use 
-the global default type if it's still standing after *all* the 
-appropriate devices have been queried.
+I see, good point. I think I can add this to my patch, and a different
+subject like "dma-debug: fix sg checks in debug_dma_map_sg()".
 
-> I personally prefer the old way instead of open coding with ternary
-> operator, so I'll do that in v2.
-> 
-> In practice, this causes a kernel panic when probing Realtek WiFi.
-> Because of the bug, dma_ops isn't set by probe_finalize(),
-> dma_map_single() falls back to swiotlb which isn't set and caused a
-> kernel panic.
+However, I do not quite understand why check_for_stack() does not also
+consider s->length. It seems to check only the first page of an sg
+element.
 
-Hmm, but if that's the case, wouldn't it still be a problem anyway if 
-the end result was IOMMU_DOMAIN_IDENTITY? I can't claim to fully 
-understand the x86 swiotlb and no_iommu dance, but nothing really stands 
-out to give me confidence that it handles the passthrough options correctly.
+So, shouldn't check_for_stack() behave similar to check_for_illegal_area(),
+i.e. check all source sg elements for overlap with the task stack area?
 
-Robin.
-
-> I didn't attach the panic log because the system simply is frozen at
-> that point so the message is not logged to the storage.
-> I'll see if I can find another way to collect the log and attach it in v2.
-> 
-> Kai-Heng
-> 
->>
->> Robin.
->>
->>> Signed-off-by: Kai-Heng Feng <kai.heng.feng@canonical.com>
->>> ---
->>>    drivers/iommu/iommu.c | 5 +++--
->>>    1 file changed, 3 insertions(+), 2 deletions(-)
->>>
->>> diff --git a/drivers/iommu/iommu.c b/drivers/iommu/iommu.c
->>> index 5419c4b9f27a..faac4f795025 100644
->>> --- a/drivers/iommu/iommu.c
->>> +++ b/drivers/iommu/iommu.c
->>> @@ -1507,14 +1507,15 @@ EXPORT_SYMBOL_GPL(fsl_mc_device_group);
->>>    static int iommu_get_def_domain_type(struct device *dev)
->>>    {
->>>        const struct iommu_ops *ops = dev->bus->iommu_ops;
->>> +     unsigned int type = 0;
->>>
->>>        if (dev_is_pci(dev) && to_pci_dev(dev)->untrusted)
->>>                return IOMMU_DOMAIN_DMA;
->>>
->>>        if (ops->def_domain_type)
->>> -             return ops->def_domain_type(dev);
->>> +             type = ops->def_domain_type(dev);
->>>
->>> -     return 0;
->>> +     return (type == 0) ? iommu_def_domain_type : type;
->>>    }
->>>
->>>    static int iommu_group_alloc_default_domain(struct bus_type *bus,
->>>
+If yes, then this probably should be a separate patch, but I can try
+to come up with something and send a new RFC with two patches. Maybe
+check_for_stack() can also be integrated into check_for_illegal_area(),
+they are both called at the same places. And mapping memory from the
+stack also sounds rather illegal.
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
