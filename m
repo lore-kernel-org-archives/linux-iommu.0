@@ -2,104 +2,111 @@ Return-Path: <SRS0=cNfX=L6=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-3.5 required=3.0 tests=BAYES_00,DKIM_INVALID,
-	DKIM_SIGNED,HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,SPF_HELO_NONE,
-	SPF_PASS,URIBL_BLOCKED autolearn=no autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-10.3 required=3.0 tests=BAYES_00,DKIM_INVALID,
+	DKIM_SIGNED,INCLUDES_PATCH,MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,
+	URIBL_BLOCKED,USER_AGENT_SANE_1 autolearn=unavailable autolearn_force=no
+	version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3FFF7C07E9B
-	for <iommu@archiver.kernel.org>; Tue,  6 Jul 2021 10:22:57 +0000 (UTC)
-Received: from smtp4.osuosl.org (smtp4.osuosl.org [140.211.166.137])
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 172E6C11F66
+	for <iommu@archiver.kernel.org>; Tue,  6 Jul 2021 13:24:40 +0000 (UTC)
+Received: from smtp2.osuosl.org (smtp2.osuosl.org [140.211.166.133])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id EA2B2619AB
-	for <iommu@archiver.kernel.org>; Tue,  6 Jul 2021 10:22:56 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org EA2B2619AB
-Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=redhat.com
+	by mail.kernel.org (Postfix) with ESMTPS id B6EB7619C0
+	for <iommu@archiver.kernel.org>; Tue,  6 Jul 2021 13:24:39 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org B6EB7619C0
+Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=kernel.org
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by smtp4.osuosl.org (Postfix) with ESMTP id C4A88403DE;
-	Tue,  6 Jul 2021 10:22:56 +0000 (UTC)
+	by smtp2.osuosl.org (Postfix) with ESMTP id 81170401C5;
+	Tue,  6 Jul 2021 13:24:39 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from smtp4.osuosl.org ([127.0.0.1])
-	by localhost (smtp4.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id lcWpJ_Msj-yq; Tue,  6 Jul 2021 10:22:55 +0000 (UTC)
+Received: from smtp2.osuosl.org ([127.0.0.1])
+	by localhost (smtp2.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+	with ESMTP id MkiT4obhqP1D; Tue,  6 Jul 2021 13:24:38 +0000 (UTC)
 Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [IPv6:2605:bc80:3010:104::8cd3:938])
-	by smtp4.osuosl.org (Postfix) with ESMTPS id 4A9D040456;
-	Tue,  6 Jul 2021 10:22:55 +0000 (UTC)
+	by smtp2.osuosl.org (Postfix) with ESMTPS id 2EAEA40022;
+	Tue,  6 Jul 2021 13:24:38 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 29BDDC001A;
-	Tue,  6 Jul 2021 10:22:55 +0000 (UTC)
-Received: from smtp3.osuosl.org (smtp3.osuosl.org [140.211.166.136])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 6BFBDC001F
- for <iommu@lists.linux-foundation.org>; Tue,  6 Jul 2021 10:22:53 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 13FA1C0010;
+	Tue,  6 Jul 2021 13:24:38 +0000 (UTC)
+Received: from smtp4.osuosl.org (smtp4.osuosl.org [IPv6:2605:bc80:3010::137])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id EDF81C000E
+ for <iommu@lists.linux-foundation.org>; Tue,  6 Jul 2021 13:24:36 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by smtp3.osuosl.org (Postfix) with ESMTP id 5AEB060838
- for <iommu@lists.linux-foundation.org>; Tue,  6 Jul 2021 10:22:53 +0000 (UTC)
+ by smtp4.osuosl.org (Postfix) with ESMTP id DA6BB403EC
+ for <iommu@lists.linux-foundation.org>; Tue,  6 Jul 2021 13:24:36 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Authentication-Results: smtp3.osuosl.org (amavisd-new);
- dkim=pass (1024-bit key) header.d=redhat.com
-Received: from smtp3.osuosl.org ([127.0.0.1])
- by localhost (smtp3.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id JHxb7lyufOEb for <iommu@lists.linux-foundation.org>;
- Tue,  6 Jul 2021 10:22:52 +0000 (UTC)
+Authentication-Results: smtp4.osuosl.org (amavisd-new);
+ dkim=pass (2048-bit key) header.d=kernel.org
+Received: from smtp4.osuosl.org ([127.0.0.1])
+ by localhost (smtp4.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+ with ESMTP id uOEycl0E_B6X for <iommu@lists.linux-foundation.org>;
+ Tue,  6 Jul 2021 13:24:35 +0000 (UTC)
 X-Greylist: domain auto-whitelisted by SQLgrey-1.8.0
-Received: from us-smtp-delivery-124.mimecast.com
- (us-smtp-delivery-124.mimecast.com [216.205.24.124])
- by smtp3.osuosl.org (Postfix) with ESMTPS id 7EA4060628
- for <iommu@lists.linux-foundation.org>; Tue,  6 Jul 2021 10:22:52 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
- s=mimecast20190719; t=1625566971;
- h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
- to:to:cc:cc:mime-version:mime-version:content-type:content-type:
- in-reply-to:in-reply-to:references:references;
- bh=dgg93eWae1Wvf2u2bYZ3f3yNqkz9O5G8CdOIvTgPtmk=;
- b=hgY+INg1ECORT9r+esCLA3VErYfJWyCIWWxRM5uuU2egValclZsoxiugTfiNThd63wHR3o
- 7Ty/XMHmbwgpsuM9XAwcdN5324W99EtF2uFj7HEzflJKZGucrKA7hG7VG9W6YY+WOKh2p7
- 4WUpiFs8KSipzxbidw+R+Q1LoLVJEto=
-Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
- [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-563-3y1_KB2RMHmhRdGAGjoVig-1; Tue, 06 Jul 2021 06:22:47 -0400
-X-MC-Unique: 3y1_KB2RMHmhRdGAGjoVig-1
-Received: from smtp.corp.redhat.com (int-mx04.intmail.prod.int.phx2.redhat.com
- [10.5.11.14])
- (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
- (No client certificate requested)
- by mimecast-mx01.redhat.com (Postfix) with ESMTPS id E6A8A18D6A2A;
- Tue,  6 Jul 2021 10:22:44 +0000 (UTC)
-Received: from localhost (ovpn-115-23.ams2.redhat.com [10.36.115.23])
- by smtp.corp.redhat.com (Postfix) with ESMTP id 4F78B5D9DC;
- Tue,  6 Jul 2021 10:22:42 +0000 (UTC)
-Date: Tue, 6 Jul 2021 11:22:41 +0100
-From: Stefan Hajnoczi <stefanha@redhat.com>
-To: Yongji Xie <xieyongji@bytedance.com>
-Subject: Re: [PATCH v8 10/10] Documentation: Add documentation for VDUSE
-Message-ID: <YOQu8dB6tlb9juNz@stefanha-x1.localdomain>
-References: <20210615141331.407-11-xieyongji@bytedance.com>
- <YNSCH6l31zwPxBjL@stefanha-x1.localdomain>
- <CACycT3uxnQmXWsgmNVxQtiRhz1UXXTAJFY3OiAJqokbJH6ifMA@mail.gmail.com>
- <YNxCDpM3bO5cPjqi@stefanha-x1.localdomain>
- <CACycT3taKhf1cWp3Jd0aSVekAZvpbR-_fkyPLQ=B+jZBB5H=8Q@mail.gmail.com>
- <YN3ABqCMLQf7ejOm@stefanha-x1.localdomain>
- <CACycT3vo-diHgTSLw_FS2E+5ia5VjihE3qw7JmZR7JT55P-wQA@mail.gmail.com>
- <8320d26d-6637-85c6-8773-49553dfa502d@redhat.com>
- <YOL/9mxkJaokKDHc@stefanha-x1.localdomain>
- <CACycT3t-BTMrpNTwBUfbvaxTh6tLthxbo3OJwMk_iuiSpMuZPg@mail.gmail.com>
+Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
+ by smtp4.osuosl.org (Postfix) with ESMTPS id 680E940395
+ for <iommu@lists.linux-foundation.org>; Tue,  6 Jul 2021 13:24:35 +0000 (UTC)
+Received: by mail.kernel.org (Postfix) with ESMTPSA id BE61061164;
+ Tue,  6 Jul 2021 13:24:26 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+ s=k20201202; t=1625577874;
+ bh=1b6k92EMOVzHgyTq1RFb48ZKUcEXJlaaPAFN5oqwmF4=;
+ h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+ b=Tx92MCkf/DXZd6nh5mgnaOshLB4ggq26FqyP7BRdqm4hXED58hUYg3wTzF/ZikCOl
+ U+1P1/gbNfCqV4xnZ7pHjCf8/b987/nQ/mVKU1HbWyoJyOKg9fJOcN462l6+qNBbsk
+ mG027LEWXpfZtreWSaiuUnUFKCuYwjJn+lLcTB45MSBdJeGNl0JTrXgxYvizMLKavG
+ ZjJErAdgAQUwjFypjPCvRFBu+p+iugJjiDv/3nE/dAIeatFPDVEKPcPUEgF80LgmiZ
+ dhxesW61+bCVt47G9QVFd9FVhqxuurozkVLZ3Q4Ql0HvqNzplvnBtOnAkUoP1it1tH
+ ndRwRZDbWWvhQ==
+Date: Tue, 6 Jul 2021 14:24:23 +0100
+From: Will Deacon <will@kernel.org>
+To: Christoph Hellwig <hch@lst.de>
+Subject: Re: [PATCH v15 06/12] swiotlb: Use is_swiotlb_force_bounce for
+ swiotlb data bouncing
+Message-ID: <20210706132422.GA20327@willie-the-truck>
+References: <CALiNf2-a-haQN0-4+gX8+wa++52-0CnO2O4BEkxrQCxoTa_47w@mail.gmail.com>
+ <20210630114348.GA8383@willie-the-truck>
+ <YNyUQwiagNeZ9YeJ@Ryzen-9-3900X.localdomain>
+ <20210701074045.GA9436@willie-the-truck>
+ <ea28db1f-846e-4f0a-4f13-beb67e66bbca@kernel.org>
+ <20210702135856.GB11132@willie-the-truck>
+ <0f7bd903-e309-94a0-21d7-f0e8e9546018@arm.com>
+ <YN/7xcxt/XGAKceZ@Ryzen-9-3900X.localdomain>
+ <20210705190352.GA19461@willie-the-truck>
+ <20210706044848.GA13640@lst.de>
 MIME-Version: 1.0
-In-Reply-To: <CACycT3t-BTMrpNTwBUfbvaxTh6tLthxbo3OJwMk_iuiSpMuZPg@mail.gmail.com>
-X-Scanned-By: MIMEDefang 2.79 on 10.5.11.14
-Cc: kvm <kvm@vger.kernel.org>, "Michael S. Tsirkin" <mst@redhat.com>,
- Jason Wang <jasowang@redhat.com>,
- virtualization <virtualization@lists.linux-foundation.org>,
- Christian Brauner <christian.brauner@canonical.com>,
- Jonathan Corbet <corbet@lwn.net>, Matthew Wilcox <willy@infradead.org>,
- Christoph Hellwig <hch@infradead.org>,
- Dan Carpenter <dan.carpenter@oracle.com>,
- Stefano Garzarella <sgarzare@redhat.com>, Al Viro <viro@zeniv.linux.org.uk>,
- songmuchun@bytedance.com, Jens Axboe <axboe@kernel.dk>,
- Greg KH <gregkh@linuxfoundation.org>, Randy Dunlap <rdunlap@infradead.org>,
- linux-kernel <linux-kernel@vger.kernel.org>, iommu@lists.linux-foundation.org,
- bcrl@kvack.org, netdev@vger.kernel.org, linux-fsdevel@vger.kernel.org,
- Mika =?iso-8859-1?Q?Penttil=E4?= <mika.penttila@nextfour.com>
+Content-Disposition: inline
+In-Reply-To: <20210706044848.GA13640@lst.de>
+User-Agent: Mutt/1.10.1 (2018-07-13)
+Cc: heikki.krogerus@linux.intel.com, thomas.hellstrom@linux.intel.com,
+ peterz@infradead.org, benh@kernel.crashing.org,
+ joonas.lahtinen@linux.intel.com, dri-devel@lists.freedesktop.org,
+ chris@chris-wilson.co.uk, grant.likely@arm.com, paulus@samba.org,
+ Frank Rowand <frowand.list@gmail.com>, mingo@kernel.org,
+ Stefano Stabellini <sstabellini@kernel.org>,
+ Saravana Kannan <saravanak@google.com>, mpe@ellerman.id.au,
+ "Rafael J . Wysocki" <rafael.j.wysocki@intel.com>,
+ Bartosz Golaszewski <bgolaszewski@baylibre.com>, bskeggs@redhat.com,
+ linux-pci@vger.kernel.org, xen-devel@lists.xenproject.org,
+ Thierry Reding <treding@nvidia.com>, intel-gfx@lists.freedesktop.org,
+ matthew.auld@intel.com, linux-devicetree <devicetree@vger.kernel.org>,
+ Jianxiong Gao <jxgao@google.com>, Daniel Vetter <daniel@ffwll.ch>,
+ Konrad Rzeszutek Wilk <konrad.wilk@oracle.com>,
+ maarten.lankhorst@linux.intel.com, airlied@linux.ie,
+ Dan Williams <dan.j.williams@intel.com>, linuxppc-dev@lists.ozlabs.org,
+ jani.nikula@linux.intel.com, Nathan Chancellor <nathan@kernel.org>,
+ Rob Herring <robh+dt@kernel.org>, rodrigo.vivi@intel.com,
+ Bjorn Helgaas <bhelgaas@google.com>, Claire Chang <tientzu@chromium.org>,
+ boris.ostrovsky@oracle.com,
+ Andy Shevchenko <andriy.shevchenko@linux.intel.com>, jgross@suse.com,
+ Nicolas Boichat <drinkcat@chromium.org>, Greg KH <gregkh@linuxfoundation.org>,
+ Randy Dunlap <rdunlap@infradead.org>, Qian Cai <quic_qiancai@quicinc.com>,
+ lkml <linux-kernel@vger.kernel.org>,
+ "list@263.net:IOMMU DRIVERS" <iommu@lists.linux-foundation.org>,
+ Jim Quinlan <james.quinlan@broadcom.com>, xypron.glpk@gmx.de,
+ Tom Lendacky <thomas.lendacky@amd.com>, Robin Murphy <robin.murphy@arm.com>,
+ bauerman@linux.ibm.com
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -112,148 +119,299 @@ List-Post: <mailto:iommu@lists.linux-foundation.org>
 List-Help: <mailto:iommu-request@lists.linux-foundation.org?subject=help>
 List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
  <mailto:iommu-request@lists.linux-foundation.org?subject=subscribe>
-Content-Type: multipart/mixed; boundary="===============6117976444092422473=="
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
+On Tue, Jul 06, 2021 at 06:48:48AM +0200, Christoph Hellwig wrote:
+> On Mon, Jul 05, 2021 at 08:03:52PM +0100, Will Deacon wrote:
+> > So at this point, the AMD IOMMU driver does:
+> > 
+> > 	swiotlb        = (iommu_default_passthrough() || sme_me_mask) ? 1 : 0;
+> > 
+> > where 'swiotlb' is a global variable indicating whether or not swiotlb
+> > is in use. It's picked up a bit later on by pci_swiotlb_late_init(), which
+> > will call swiotlb_exit() if 'swiotlb' is false.
+> > 
+> > Now, that used to work fine, because swiotlb_exit() clears
+> > 'io_tlb_default_mem' to NULL, but now with the restricted DMA changes, I
+> > think that all the devices which have successfully probed beforehand will
+> > have stale pointers to the freed structure in their 'dev->dma_io_tlb_mem'
+> > field.
+> 
+> Yeah.  I don't think we can do that anymore, and I also think it is
+> a bad idea to start with.
 
---===============6117976444092422473==
-Content-Type: multipart/signed; micalg=pgp-sha256;
-	protocol="application/pgp-signature"; boundary="Pn5Pfd0OLzKU2Op2"
-Content-Disposition: inline
+I've had a crack at reworking things along the following lines:
 
+  - io_tlb_default_mem now lives in the BSS, the flexible array member
+    is now a pointer and that part is allocated dynamically (downside of
+    this is an extra indirection to get at the slots).
 
---Pn5Pfd0OLzKU2Op2
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
+  - io_tlb_default_mem.nslabs tells you whether the thing is valid
 
-On Tue, Jul 06, 2021 at 11:04:18AM +0800, Yongji Xie wrote:
-> On Mon, Jul 5, 2021 at 8:50 PM Stefan Hajnoczi <stefanha@redhat.com> wrot=
-e:
-> >
-> > On Mon, Jul 05, 2021 at 11:36:15AM +0800, Jason Wang wrote:
-> > >
-> > > =E5=9C=A8 2021/7/4 =E4=B8=8B=E5=8D=885:49, Yongji Xie =E5=86=99=E9=81=
-=93:
-> > > > > > OK, I get you now. Since the VIRTIO specification says "Device
-> > > > > > configuration space is generally used for rarely-changing or
-> > > > > > initialization-time parameters". I assume the VDUSE_DEV_SET_CON=
-FIG
-> > > > > > ioctl should not be called frequently.
-> > > > > The spec uses MUST and other terms to define the precise requirem=
-ents.
-> > > > > Here the language (especially the word "generally") is weaker and=
- means
-> > > > > there may be exceptions.
-> > > > >
-> > > > > Another type of access that doesn't work with the VDUSE_DEV_SET_C=
-ONFIG
-> > > > > approach is reads that have side-effects. For example, imagine a =
-field
-> > > > > containing an error code if the device encounters a problem unrel=
-ated to
-> > > > > a specific virtqueue request. Reading from this field resets the =
-error
-> > > > > code to 0, saving the driver an extra configuration space write a=
-ccess
-> > > > > and possibly race conditions. It isn't possible to implement those
-> > > > > semantics suing VDUSE_DEV_SET_CONFIG. It's another corner case, b=
-ut it
-> > > > > makes me think that the interface does not allow full VIRTIO sema=
-ntics.
-> > >
-> > >
-> > > Note that though you're correct, my understanding is that config spac=
-e is
-> > > not suitable for this kind of error propagating. And it would be very=
- hard
-> > > to implement such kind of semantic in some transports.  Virtqueue sho=
-uld be
-> > > much better. As Yong Ji quoted, the config space is used for
-> > > "rarely-changing or intialization-time parameters".
-> > >
-> > >
-> > > > Agreed. I will use VDUSE_DEV_GET_CONFIG in the next version. And to
-> > > > handle the message failure, I'm going to add a return value to
-> > > > virtio_config_ops.get() and virtio_cread_* API so that the error can
-> > > > be propagated to the virtio device driver. Then the virtio-blk devi=
-ce
-> > > > driver can be modified to handle that.
-> > > >
-> > > > Jason and Stefan, what do you think of this way?
-> >
-> > Why does VDUSE_DEV_GET_CONFIG need to support an error return value?
-> >
->=20
-> We add a timeout and return error in case userspace never replies to
-> the message.
->=20
-> > The VIRTIO spec provides no way for the device to report errors from
-> > config space accesses.
-> >
-> > The QEMU virtio-pci implementation returns -1 from invalid
-> > virtio_config_read*() and silently discards virtio_config_write*()
-> > accesses.
-> >
-> > VDUSE can take the same approach with
-> > VDUSE_DEV_GET_CONFIG/VDUSE_DEV_SET_CONFIG.
-> >
->=20
-> I noticed that virtio_config_read*() only returns -1 when we access a
-> invalid field. But in the VDUSE case, VDUSE_DEV_GET_CONFIG might fail
-> when we access a valid field. Not sure if it's ok to silently ignore
-> this kind of error.
+  - swiotlb_exit() frees the slots array and clears the rest of the
+    structure to 0. I also extended it to free the actual slabs, but I'm
+    not sure why it wasn't doing that before.
 
-That's a good point but it's a general VIRTIO issue. Any device
-implementation (QEMU userspace, hardware vDPA, etc) can fail, so the
-VIRTIO specification needs to provide a way for the driver to detect
-this.
+So a non-NULL dev->dma_io_tlb_mem should always be valid to follow.
 
-If userspace violates the contract then VDUSE needs to mark the device
-broken. QEMU's device emulation does something similar with the
-vdev->broken flag.
+Untested diff below... Nathan, it would be ace if you're brave enough
+to give this a shot.
 
-The VIRTIO Device Status field DEVICE_NEEDS_RESET bit can be set by
-vDPA/VDUSE to indicate that the device is not operational and must be
-reset.
+Will
 
-The driver code may still process the -1 value read from the
-configuration space. Hopefully this isn't a problem. There is currently
-no VIRTIO interface besides DEVICE_NEEDS_RESET to indicate configuration
-space access failures. On the other hand, drivers need to handle
-malicious devices so they should be able to cope with the -1 value
-anyway.
+--->8
 
-Stefan
-
---Pn5Pfd0OLzKU2Op2
-Content-Type: application/pgp-signature; name="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-
-iQEzBAEBCAAdFiEEhpWov9P5fNqsNXdanKSrs4Grc8gFAmDkLvEACgkQnKSrs4Gr
-c8ixbggAg14mm0zlZMb0rxwzWppmsIJSjV7mHSefxDiIfWBRZcioci9QPSFBFYiR
-QfLj7B4ecMS0znXnAllOG2ik7JBoFnYEsiQUyKzzjPtlv9NzdRWbls4mtXpdZxz2
-l0vojVgJvpLHJcajROmnDPyRR0NCwFASkLIw0qJaICOK8yVEQt/zyegr0dBTV8M7
-TdJUhls34j99hQp21YymI7oq2wbvYEAORzrOmZbGYxU1olf4tONkQEs5ZBrKct4C
-fdEC0+kWKj+iQXO0DFCequFabbrt3CfBg03px1bEiMgbo1ejJ3KytSlx+n8QESMJ
-wNP4YRO2hAtBl0HSUUF//ns2yKBsAg==
-=Vok0
------END PGP SIGNATURE-----
-
---Pn5Pfd0OLzKU2Op2--
-
-
---===============6117976444092422473==
-Content-Type: text/plain; charset="us-ascii"
-MIME-Version: 1.0
-Content-Transfer-Encoding: 7bit
-Content-Disposition: inline
-
+diff --git a/drivers/base/core.c b/drivers/base/core.c
+index bbad7c559901..9e1218f89e4b 100644
+--- a/drivers/base/core.c
++++ b/drivers/base/core.c
+@@ -2820,7 +2820,7 @@ void device_initialize(struct device *dev)
+ 	dev->dma_coherent = dma_default_coherent;
+ #endif
+ #ifdef CONFIG_SWIOTLB
+-	dev->dma_io_tlb_mem = io_tlb_default_mem;
++	dev->dma_io_tlb_mem = &io_tlb_default_mem;
+ #endif
+ }
+ EXPORT_SYMBOL_GPL(device_initialize);
+diff --git a/drivers/xen/swiotlb-xen.c b/drivers/xen/swiotlb-xen.c
+index 785ec7e8be01..f06d9b4f1e0f 100644
+--- a/drivers/xen/swiotlb-xen.c
++++ b/drivers/xen/swiotlb-xen.c
+@@ -164,7 +164,7 @@ int __ref xen_swiotlb_init(void)
+ 	int rc = -ENOMEM;
+ 	char *start;
+ 
+-	if (io_tlb_default_mem != NULL) {
++	if (io_tlb_default_mem.nslabs) {
+ 		pr_warn("swiotlb buffer already initialized\n");
+ 		return -EEXIST;
+ 	}
+@@ -547,7 +547,7 @@ xen_swiotlb_sync_sg_for_device(struct device *dev, struct scatterlist *sgl,
+ static int
+ xen_swiotlb_dma_supported(struct device *hwdev, u64 mask)
+ {
+-	return xen_phys_to_dma(hwdev, io_tlb_default_mem->end - 1) <= mask;
++	return xen_phys_to_dma(hwdev, io_tlb_default_mem.end - 1) <= mask;
+ }
+ 
+ const struct dma_map_ops xen_swiotlb_dma_ops = {
+diff --git a/include/linux/swiotlb.h b/include/linux/swiotlb.h
+index 39284ff2a6cd..b0cb2a9973f4 100644
+--- a/include/linux/swiotlb.h
++++ b/include/linux/swiotlb.h
+@@ -103,9 +103,9 @@ struct io_tlb_mem {
+ 		phys_addr_t orig_addr;
+ 		size_t alloc_size;
+ 		unsigned int list;
+-	} slots[];
++	} *slots;
+ };
+-extern struct io_tlb_mem *io_tlb_default_mem;
++extern struct io_tlb_mem io_tlb_default_mem;
+ 
+ static inline bool is_swiotlb_buffer(struct device *dev, phys_addr_t paddr)
+ {
+diff --git a/kernel/dma/swiotlb.c b/kernel/dma/swiotlb.c
+index 0ffbaae9fba2..91cd1d413027 100644
+--- a/kernel/dma/swiotlb.c
++++ b/kernel/dma/swiotlb.c
+@@ -70,7 +70,7 @@
+ 
+ enum swiotlb_force swiotlb_force;
+ 
+-struct io_tlb_mem *io_tlb_default_mem;
++struct io_tlb_mem io_tlb_default_mem;
+ 
+ /*
+  * Max segment that we can provide which (if pages are contingous) will
+@@ -101,7 +101,7 @@ early_param("swiotlb", setup_io_tlb_npages);
+ 
+ unsigned int swiotlb_max_segment(void)
+ {
+-	return io_tlb_default_mem ? max_segment : 0;
++	return io_tlb_default_mem.nslabs ? max_segment : 0;
+ }
+ EXPORT_SYMBOL_GPL(swiotlb_max_segment);
+ 
+@@ -134,9 +134,9 @@ void __init swiotlb_adjust_size(unsigned long size)
+ 
+ void swiotlb_print_info(void)
+ {
+-	struct io_tlb_mem *mem = io_tlb_default_mem;
++	struct io_tlb_mem *mem = &io_tlb_default_mem;
+ 
+-	if (!mem) {
++	if (!mem->nslabs) {
+ 		pr_warn("No low mem\n");
+ 		return;
+ 	}
+@@ -163,11 +163,11 @@ static inline unsigned long nr_slots(u64 val)
+  */
+ void __init swiotlb_update_mem_attributes(void)
+ {
+-	struct io_tlb_mem *mem = io_tlb_default_mem;
++	struct io_tlb_mem *mem = &io_tlb_default_mem;
+ 	void *vaddr;
+ 	unsigned long bytes;
+ 
+-	if (!mem || mem->late_alloc)
++	if (!mem->nslabs || mem->late_alloc)
+ 		return;
+ 	vaddr = phys_to_virt(mem->start);
+ 	bytes = PAGE_ALIGN(mem->nslabs << IO_TLB_SHIFT);
+@@ -201,25 +201,24 @@ static void swiotlb_init_io_tlb_mem(struct io_tlb_mem *mem, phys_addr_t start,
+ 
+ int __init swiotlb_init_with_tbl(char *tlb, unsigned long nslabs, int verbose)
+ {
+-	struct io_tlb_mem *mem;
++	struct io_tlb_mem *mem = &io_tlb_default_mem;
+ 	size_t alloc_size;
+ 
+ 	if (swiotlb_force == SWIOTLB_NO_FORCE)
+ 		return 0;
+ 
+ 	/* protect against double initialization */
+-	if (WARN_ON_ONCE(io_tlb_default_mem))
++	if (WARN_ON_ONCE(mem->nslabs))
+ 		return -ENOMEM;
+ 
+-	alloc_size = PAGE_ALIGN(struct_size(mem, slots, nslabs));
+-	mem = memblock_alloc(alloc_size, PAGE_SIZE);
+-	if (!mem)
++	alloc_size = PAGE_ALIGN(array_size(sizeof(*mem->slots), nslabs));
++	mem->slots = memblock_alloc(alloc_size, PAGE_SIZE);
++	if (!mem->slots)
+ 		panic("%s: Failed to allocate %zu bytes align=0x%lx\n",
+ 		      __func__, alloc_size, PAGE_SIZE);
+ 
+ 	swiotlb_init_io_tlb_mem(mem, __pa(tlb), nslabs, false);
+ 
+-	io_tlb_default_mem = mem;
+ 	if (verbose)
+ 		swiotlb_print_info();
+ 	swiotlb_set_max_segment(mem->nslabs << IO_TLB_SHIFT);
+@@ -304,26 +303,24 @@ swiotlb_late_init_with_default_size(size_t default_size)
+ int
+ swiotlb_late_init_with_tbl(char *tlb, unsigned long nslabs)
+ {
+-	struct io_tlb_mem *mem;
++	struct io_tlb_mem *mem = &io_tlb_default_mem;
+ 	unsigned long bytes = nslabs << IO_TLB_SHIFT;
+ 
+ 	if (swiotlb_force == SWIOTLB_NO_FORCE)
+ 		return 0;
+ 
+ 	/* protect against double initialization */
+-	if (WARN_ON_ONCE(io_tlb_default_mem))
++	if (WARN_ON_ONCE(mem->nslabs))
+ 		return -ENOMEM;
+ 
+-	mem = (void *)__get_free_pages(GFP_KERNEL,
+-		get_order(struct_size(mem, slots, nslabs)));
+-	if (!mem)
++	mem->slots = (void *)__get_free_pages(GFP_KERNEL | __GFP_ZERO,
++		get_order(array_size(sizeof(*mem->slots), nslabs)));
++	if (!mem->slots)
+ 		return -ENOMEM;
+ 
+-	memset(mem, 0, sizeof(*mem));
+ 	set_memory_decrypted((unsigned long)tlb, bytes >> PAGE_SHIFT);
+ 	swiotlb_init_io_tlb_mem(mem, virt_to_phys(tlb), nslabs, true);
+ 
+-	io_tlb_default_mem = mem;
+ 	swiotlb_print_info();
+ 	swiotlb_set_max_segment(mem->nslabs << IO_TLB_SHIFT);
+ 	return 0;
+@@ -331,18 +328,23 @@ swiotlb_late_init_with_tbl(char *tlb, unsigned long nslabs)
+ 
+ void __init swiotlb_exit(void)
+ {
+-	struct io_tlb_mem *mem = io_tlb_default_mem;
+-	size_t size;
++	struct io_tlb_mem *mem = &io_tlb_default_mem;
++	size_t tbl_size, slots_size;
+ 
+-	if (!mem)
++	if (!mem->nslabs)
+ 		return;
+ 
+-	size = struct_size(mem, slots, mem->nslabs);
+-	if (mem->late_alloc)
+-		free_pages((unsigned long)mem, get_order(size));
+-	else
+-		memblock_free_late(__pa(mem), PAGE_ALIGN(size));
+-	io_tlb_default_mem = NULL;
++	tbl_size = mem->end - mem->start;
++	slots_size = array_size(sizeof(*mem->slots), mem->nslabs);
++	if (mem->late_alloc) {
++		free_pages((unsigned long)mem->start, get_order(tbl_size));
++		free_pages((unsigned long)mem->slots, get_order(slots_size));
++	} else {
++		memblock_free_late(__pa(mem->start), PAGE_ALIGN(tbl_size));
++		memblock_free_late(__pa(mem->slots), PAGE_ALIGN(slots_size));
++	}
++
++	memset(mem, 0, sizeof(*mem));
+ }
+ 
+ /*
+@@ -682,7 +684,9 @@ size_t swiotlb_max_mapping_size(struct device *dev)
+ 
+ bool is_swiotlb_active(struct device *dev)
+ {
+-	return dev->dma_io_tlb_mem != NULL;
++	struct io_tlb_mem *mem = dev->dma_io_tlb_mem;
++
++	return mem && mem->nslabs;
+ }
+ EXPORT_SYMBOL_GPL(is_swiotlb_active);
+ 
+@@ -697,10 +701,10 @@ static void swiotlb_create_debugfs_files(struct io_tlb_mem *mem)
+ 
+ static int __init swiotlb_create_default_debugfs(void)
+ {
+-	struct io_tlb_mem *mem = io_tlb_default_mem;
++	struct io_tlb_mem *mem = &io_tlb_default_mem;
+ 
+ 	debugfs_dir = debugfs_create_dir("swiotlb", NULL);
+-	if (mem) {
++	if (mem->nslabs) {
+ 		mem->debugfs = debugfs_dir;
+ 		swiotlb_create_debugfs_files(mem);
+ 	}
+@@ -754,10 +758,17 @@ static int rmem_swiotlb_device_init(struct reserved_mem *rmem,
+ 	 * to it.
+ 	 */
+ 	if (!mem) {
+-		mem = kzalloc(struct_size(mem, slots, nslabs), GFP_KERNEL);
++		mem = kzalloc(sizeof(*mem), GFP_KERNEL);
+ 		if (!mem)
+ 			return -ENOMEM;
+ 
++		mem->slots = kzalloc(array_size(sizeof(*mem->slots), nslabs),
++				     GFP_KERNEL);
++		if (!mem->slots) {
++			kfree(mem);
++			return -ENOMEM;
++		}
++
+ 		set_memory_decrypted((unsigned long)phys_to_virt(rmem->base),
+ 				     rmem->size >> PAGE_SHIFT);
+ 		swiotlb_init_io_tlb_mem(mem, rmem->base, nslabs, false);
+@@ -781,7 +792,7 @@ static int rmem_swiotlb_device_init(struct reserved_mem *rmem,
+ static void rmem_swiotlb_device_release(struct reserved_mem *rmem,
+ 					struct device *dev)
+ {
+-	dev->dma_io_tlb_mem = io_tlb_default_mem;
++	dev->dma_io_tlb_mem = &io_tlb_default_mem;
+ }
+ 
+ static const struct reserved_mem_ops rmem_swiotlb_ops = {
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
 https://lists.linuxfoundation.org/mailman/listinfo/iommu
---===============6117976444092422473==--
-
