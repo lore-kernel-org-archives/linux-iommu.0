@@ -2,61 +2,57 @@ Return-Path: <SRS0=cNfX=L6=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-10.3 required=3.0 tests=BAYES_00,
-	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,NICE_REPLY_A,
-	SPF_HELO_NONE,SPF_PASS,URIBL_RED,USER_AGENT_SANE_1 autolearn=unavailable
-	autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-5.2 required=3.0 tests=BAYES_00,
+	HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,
+	URIBL_BLOCKED,USER_AGENT_SANE_1 autolearn=no autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B6EEEC07E96
-	for <iommu@archiver.kernel.org>; Tue,  6 Jul 2021 14:01:24 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 65B81C07E96
+	for <iommu@archiver.kernel.org>; Tue,  6 Jul 2021 14:05:26 +0000 (UTC)
 Received: from smtp3.osuosl.org (smtp3.osuosl.org [140.211.166.136])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 53293619B4
-	for <iommu@archiver.kernel.org>; Tue,  6 Jul 2021 14:01:24 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 53293619B4
-Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=arm.com
+	by mail.kernel.org (Postfix) with ESMTPS id E3D0A61A0F
+	for <iommu@archiver.kernel.org>; Tue,  6 Jul 2021 14:05:24 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org E3D0A61A0F
+Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=lst.de
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by smtp3.osuosl.org (Postfix) with ESMTP id 18C4C6085F;
-	Tue,  6 Jul 2021 14:01:24 +0000 (UTC)
+	by smtp3.osuosl.org (Postfix) with ESMTP id A0CA360657;
+	Tue,  6 Jul 2021 14:05:24 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
 Received: from smtp3.osuosl.org ([127.0.0.1])
 	by localhost (smtp3.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id r-O6Vgp6zu1O; Tue,  6 Jul 2021 14:01:23 +0000 (UTC)
+	with ESMTP id 1uZ3KgWLebmA; Tue,  6 Jul 2021 14:05:23 +0000 (UTC)
 Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [IPv6:2605:bc80:3010:104::8cd3:938])
-	by smtp3.osuosl.org (Postfix) with ESMTPS id B0E486084D;
-	Tue,  6 Jul 2021 14:01:22 +0000 (UTC)
+	by smtp3.osuosl.org (Postfix) with ESMTPS id 7618960603;
+	Tue,  6 Jul 2021 14:05:23 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 83A72C0010;
-	Tue,  6 Jul 2021 14:01:22 +0000 (UTC)
-Received: from smtp2.osuosl.org (smtp2.osuosl.org [IPv6:2605:bc80:3010::133])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 8B475C000E
- for <iommu@lists.linux-foundation.org>; Tue,  6 Jul 2021 14:01:20 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 41ED4C0010;
+	Tue,  6 Jul 2021 14:05:23 +0000 (UTC)
+Received: from smtp2.osuosl.org (smtp2.osuosl.org [140.211.166.133])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 47F7AC000E
+ for <iommu@lists.linux-foundation.org>; Tue,  6 Jul 2021 14:05:21 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by smtp2.osuosl.org (Postfix) with ESMTP id 85D3540555
- for <iommu@lists.linux-foundation.org>; Tue,  6 Jul 2021 14:01:20 +0000 (UTC)
+ by smtp2.osuosl.org (Postfix) with ESMTP id 32DA04024B
+ for <iommu@lists.linux-foundation.org>; Tue,  6 Jul 2021 14:05:21 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
 Received: from smtp2.osuosl.org ([127.0.0.1])
  by localhost (smtp2.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id DhUREyPcsVQP for <iommu@lists.linux-foundation.org>;
- Tue,  6 Jul 2021 14:01:19 +0000 (UTC)
-X-Greylist: domain auto-whitelisted by SQLgrey-1.8.0
-Received: from foss.arm.com (foss.arm.com [217.140.110.172])
- by smtp2.osuosl.org (Postfix) with ESMTP id 65D74401B5
- for <iommu@lists.linux-foundation.org>; Tue,  6 Jul 2021 14:01:19 +0000 (UTC)
-Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
- by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 6E5E031B;
- Tue,  6 Jul 2021 07:01:18 -0700 (PDT)
-Received: from [10.57.40.45] (unknown [10.57.40.45])
- by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id 461163F73B;
- Tue,  6 Jul 2021 07:01:11 -0700 (PDT)
+ with ESMTP id bpEBsKohCEok for <iommu@lists.linux-foundation.org>;
+ Tue,  6 Jul 2021 14:05:20 +0000 (UTC)
+X-Greylist: from auto-whitelisted by SQLgrey-1.8.0
+Received: from verein.lst.de (verein.lst.de [213.95.11.211])
+ by smtp2.osuosl.org (Postfix) with ESMTPS id D6FFB40022
+ for <iommu@lists.linux-foundation.org>; Tue,  6 Jul 2021 14:05:19 +0000 (UTC)
+Received: by verein.lst.de (Postfix, from userid 2407)
+ id 67BF268BEB; Tue,  6 Jul 2021 16:05:13 +0200 (CEST)
+Date: Tue, 6 Jul 2021 16:05:13 +0200
+From: Christoph Hellwig <hch@lst.de>
+To: Robin Murphy <robin.murphy@arm.com>
 Subject: Re: [PATCH v15 06/12] swiotlb: Use is_swiotlb_force_bounce for
  swiotlb data bouncing
-To: Will Deacon <will@kernel.org>, Christoph Hellwig <hch@lst.de>
-References: <CALiNf2-a-haQN0-4+gX8+wa++52-0CnO2O4BEkxrQCxoTa_47w@mail.gmail.com>
- <20210630114348.GA8383@willie-the-truck>
- <YNyUQwiagNeZ9YeJ@Ryzen-9-3900X.localdomain>
+Message-ID: <20210706140513.GA26498@lst.de>
+References: <YNyUQwiagNeZ9YeJ@Ryzen-9-3900X.localdomain>
  <20210701074045.GA9436@willie-the-truck>
  <ea28db1f-846e-4f0a-4f13-beb67e66bbca@kernel.org>
  <20210702135856.GB11132@willie-the-truck>
@@ -64,14 +60,11 @@ References: <CALiNf2-a-haQN0-4+gX8+wa++52-0CnO2O4BEkxrQCxoTa_47w@mail.gmail.com>
  <YN/7xcxt/XGAKceZ@Ryzen-9-3900X.localdomain>
  <20210705190352.GA19461@willie-the-truck> <20210706044848.GA13640@lst.de>
  <20210706132422.GA20327@willie-the-truck>
-From: Robin Murphy <robin.murphy@arm.com>
-Message-ID: <a59f771f-3289-62f0-ca50-8f3675d9b166@arm.com>
-Date: Tue, 6 Jul 2021 15:01:04 +0100
-User-Agent: Mozilla/5.0 (Windows NT 10.0; rv:78.0) Gecko/20100101
- Thunderbird/78.11.0
+ <a59f771f-3289-62f0-ca50-8f3675d9b166@arm.com>
 MIME-Version: 1.0
-In-Reply-To: <20210706132422.GA20327@willie-the-truck>
-Content-Language: en-GB
+Content-Disposition: inline
+In-Reply-To: <a59f771f-3289-62f0-ca50-8f3675d9b166@arm.com>
+User-Agent: Mutt/1.5.17 (2007-11-01)
 Cc: Jim Quinlan <james.quinlan@broadcom.com>, heikki.krogerus@linux.intel.com,
  linux-devicetree <devicetree@vger.kernel.org>, peterz@infradead.org,
  benh@kernel.crashing.org, joonas.lahtinen@linux.intel.com,
@@ -81,11 +74,13 @@ Cc: Jim Quinlan <james.quinlan@broadcom.com>, heikki.krogerus@linux.intel.com,
  Stefano Stabellini <sstabellini@kernel.org>,
  Saravana Kannan <saravanak@google.com>, mpe@ellerman.id.au,
  "Rafael J . Wysocki" <rafael.j.wysocki@intel.com>,
- Bartosz Golaszewski <bgolaszewski@baylibre.com>, matthew.auld@intel.com,
+ Christoph Hellwig <hch@lst.de>,
+ Bartosz Golaszewski <bgolaszewski@baylibre.com>, bskeggs@redhat.com,
  linux-pci@vger.kernel.org, xen-devel@lists.xenproject.org,
- Thierry Reding <treding@nvidia.com>, bskeggs@redhat.com,
+ Thierry Reding <treding@nvidia.com>, matthew.auld@intel.com,
  Nicolas Boichat <drinkcat@chromium.org>, thomas.hellstrom@linux.intel.com,
- jgross@suse.com, Konrad Rzeszutek Wilk <konrad.wilk@oracle.com>,
+ jgross@suse.com, Will Deacon <will@kernel.org>,
+ Konrad Rzeszutek Wilk <konrad.wilk@oracle.com>,
  intel-gfx@lists.freedesktop.org, maarten.lankhorst@linux.intel.com,
  jani.nikula@linux.intel.com, Nathan Chancellor <nathan@kernel.org>,
  Rob Herring <robh+dt@kernel.org>, rodrigo.vivi@intel.com,
@@ -111,183 +106,23 @@ List-Post: <mailto:iommu@lists.linux-foundation.org>
 List-Help: <mailto:iommu-request@lists.linux-foundation.org?subject=help>
 List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
  <mailto:iommu-request@lists.linux-foundation.org?subject=subscribe>
+Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
-Content-Type: text/plain; charset="us-ascii"; Format="flowed"
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-On 2021-07-06 14:24, Will Deacon wrote:
-> On Tue, Jul 06, 2021 at 06:48:48AM +0200, Christoph Hellwig wrote:
->> On Mon, Jul 05, 2021 at 08:03:52PM +0100, Will Deacon wrote:
->>> So at this point, the AMD IOMMU driver does:
->>>
->>> 	swiotlb        = (iommu_default_passthrough() || sme_me_mask) ? 1 : 0;
->>>
->>> where 'swiotlb' is a global variable indicating whether or not swiotlb
->>> is in use. It's picked up a bit later on by pci_swiotlb_late_init(), which
->>> will call swiotlb_exit() if 'swiotlb' is false.
->>>
->>> Now, that used to work fine, because swiotlb_exit() clears
->>> 'io_tlb_default_mem' to NULL, but now with the restricted DMA changes, I
->>> think that all the devices which have successfully probed beforehand will
->>> have stale pointers to the freed structure in their 'dev->dma_io_tlb_mem'
->>> field.
->>
->> Yeah.  I don't think we can do that anymore, and I also think it is
->> a bad idea to start with.
-> 
-> I've had a crack at reworking things along the following lines:
-> 
->    - io_tlb_default_mem now lives in the BSS, the flexible array member
->      is now a pointer and that part is allocated dynamically (downside of
->      this is an extra indirection to get at the slots).
-> 
->    - io_tlb_default_mem.nslabs tells you whether the thing is valid
-> 
->    - swiotlb_exit() frees the slots array and clears the rest of the
->      structure to 0. I also extended it to free the actual slabs, but I'm
->      not sure why it wasn't doing that before.
-> 
-> So a non-NULL dev->dma_io_tlb_mem should always be valid to follow.
+On Tue, Jul 06, 2021 at 03:01:04PM +0100, Robin Murphy wrote:
+> FWIW I was pondering the question of whether to do something along those 
+> lines or just scrap the default assignment entirely, so since I hadn't got 
+> round to saying that I've gone ahead and hacked up the alternative 
+> (similarly untested) for comparison :)
+>
+> TBH I'm still not sure which one I prefer...
 
-FWIW I was pondering the question of whether to do something along those 
-lines or just scrap the default assignment entirely, so since I hadn't 
-got round to saying that I've gone ahead and hacked up the alternative 
-(similarly untested) for comparison :)
-
-TBH I'm still not sure which one I prefer...
-
-Robin.
-
------>8-----
-diff --git a/drivers/base/core.c b/drivers/base/core.c
-index ea5b85354526..394abf184c1a 100644
---- a/drivers/base/core.c
-+++ b/drivers/base/core.c
-@@ -2847,9 +2847,6 @@ void device_initialize(struct device *dev)
-      defined(CONFIG_ARCH_HAS_SYNC_DMA_FOR_CPU_ALL)
-  	dev->dma_coherent = dma_default_coherent;
-  #endif
--#ifdef CONFIG_SWIOTLB
--	dev->dma_io_tlb_mem = io_tlb_default_mem;
--#endif
-  }
-  EXPORT_SYMBOL_GPL(device_initialize);
-
-diff --git a/include/linux/swiotlb.h b/include/linux/swiotlb.h
-index 39284ff2a6cd..620f16d89a98 100644
---- a/include/linux/swiotlb.h
-+++ b/include/linux/swiotlb.h
-@@ -107,16 +107,21 @@ struct io_tlb_mem {
-  };
-  extern struct io_tlb_mem *io_tlb_default_mem;
-
-+static inline struct io_tlb_mem *dev_iotlb_mem(struct device *dev)
-+{
-+	return dev->dma_io_tlb_mem ?: io_tlb_default_mem;
-+}
-+
-  static inline bool is_swiotlb_buffer(struct device *dev, phys_addr_t 
-paddr)
-  {
--	struct io_tlb_mem *mem = dev->dma_io_tlb_mem;
-+	struct io_tlb_mem *mem = dev_iotlb_mem(dev);
-
-  	return mem && paddr >= mem->start && paddr < mem->end;
-  }
-
-  static inline bool is_swiotlb_force_bounce(struct device *dev)
-  {
--	struct io_tlb_mem *mem = dev->dma_io_tlb_mem;
-+	struct io_tlb_mem *mem = dev_iotlb_mem(dev);
-
-  	return mem && mem->force_bounce;
-  }
-@@ -167,7 +172,7 @@ bool swiotlb_free(struct device *dev, struct page 
-*page, size_t size);
-
-  static inline bool is_swiotlb_for_alloc(struct device *dev)
-  {
--	return dev->dma_io_tlb_mem->for_alloc;
-+	return dev_iotlb_mem(dev)->for_alloc;
-  }
-  #else
-  static inline struct page *swiotlb_alloc(struct device *dev, size_t size)
-diff --git a/kernel/dma/swiotlb.c b/kernel/dma/swiotlb.c
-index b7f76bca89bf..f4942149f87d 100644
---- a/kernel/dma/swiotlb.c
-+++ b/kernel/dma/swiotlb.c
-@@ -359,7 +359,7 @@ static unsigned int swiotlb_align_offset(struct 
-device *dev, u64 addr)
-  static void swiotlb_bounce(struct device *dev, phys_addr_t tlb_addr, 
-size_t size,
-  			   enum dma_data_direction dir)
-  {
--	struct io_tlb_mem *mem = dev->dma_io_tlb_mem;
-+	struct io_tlb_mem *mem = dev_iotlb_mem(dev);
-  	int index = (tlb_addr - mem->start) >> IO_TLB_SHIFT;
-  	phys_addr_t orig_addr = mem->slots[index].orig_addr;
-  	size_t alloc_size = mem->slots[index].alloc_size;
-@@ -440,7 +440,7 @@ static unsigned int wrap_index(struct io_tlb_mem 
-*mem, unsigned int index)
-  static int swiotlb_find_slots(struct device *dev, phys_addr_t orig_addr,
-  			      size_t alloc_size)
-  {
--	struct io_tlb_mem *mem = dev->dma_io_tlb_mem;
-+	struct io_tlb_mem *mem = dev_iotlb_mem(dev);
-  	unsigned long boundary_mask = dma_get_seg_boundary(dev);
-  	dma_addr_t tbl_dma_addr =
-  		phys_to_dma_unencrypted(dev, mem->start) & boundary_mask;
-@@ -522,7 +522,7 @@ phys_addr_t swiotlb_tbl_map_single(struct device 
-*dev, phys_addr_t orig_addr,
-  		size_t mapping_size, size_t alloc_size,
-  		enum dma_data_direction dir, unsigned long attrs)
-  {
--	struct io_tlb_mem *mem = dev->dma_io_tlb_mem;
-+	struct io_tlb_mem *mem = dev_iotlb_mem(dev);
-  	unsigned int offset = swiotlb_align_offset(dev, orig_addr);
-  	unsigned int i;
-  	int index;
-@@ -565,7 +565,7 @@ phys_addr_t swiotlb_tbl_map_single(struct device 
-*dev, phys_addr_t orig_addr,
-
-  static void swiotlb_release_slots(struct device *dev, phys_addr_t 
-tlb_addr)
-  {
--	struct io_tlb_mem *mem = dev->dma_io_tlb_mem;
-+	struct io_tlb_mem *mem = dev_iotlb_mem(dev);
-  	unsigned long flags;
-  	unsigned int offset = swiotlb_align_offset(dev, tlb_addr);
-  	int index = (tlb_addr - offset - mem->start) >> IO_TLB_SHIFT;
-@@ -682,7 +682,7 @@ size_t swiotlb_max_mapping_size(struct device *dev)
-
-  bool is_swiotlb_active(struct device *dev)
-  {
--	return dev->dma_io_tlb_mem != NULL;
-+	return dev_iotlb_mem(dev) != NULL;
-  }
-  EXPORT_SYMBOL_GPL(is_swiotlb_active);
-
-@@ -729,7 +729,7 @@ static void rmem_swiotlb_debugfs_init(struct 
-reserved_mem *rmem)
-
-  struct page *swiotlb_alloc(struct device *dev, size_t size)
-  {
--	struct io_tlb_mem *mem = dev->dma_io_tlb_mem;
-+	struct io_tlb_mem *mem = dev_iotlb_mem(dev);
-  	phys_addr_t tlb_addr;
-  	int index;
-
-@@ -792,7 +792,7 @@ static int rmem_swiotlb_device_init(struct 
-reserved_mem *rmem,
-  static void rmem_swiotlb_device_release(struct reserved_mem *rmem,
-  					struct device *dev)
-  {
--	dev->dma_io_tlb_mem = io_tlb_default_mem;
-+	dev->dma_io_tlb_mem = NULL;
-  }
-
-  static const struct reserved_mem_ops rmem_swiotlb_ops = {
+Claire did implement something like your suggestion originally, but
+I don't really like it as it doesn't scale for adding multiple global
+pools, e.g. for the 64-bit addressable one for the various encrypted
+secure guest schemes.
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
