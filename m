@@ -8,80 +8,80 @@ X-Spam-Status: No, score=-13.5 required=3.0 tests=BAYES_00,
 	INCLUDES_PATCH,MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,URIBL_RED,
 	USER_AGENT_GIT autolearn=ham autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id EF3DBC07E9E
-	for <iommu@archiver.kernel.org>; Wed,  7 Jul 2021 15:47:11 +0000 (UTC)
-Received: from smtp2.osuosl.org (smtp2.osuosl.org [140.211.166.133])
+	by smtp.lore.kernel.org (Postfix) with ESMTP id AC9C2C07E95
+	for <iommu@archiver.kernel.org>; Wed,  7 Jul 2021 15:47:15 +0000 (UTC)
+Received: from smtp4.osuosl.org (smtp4.osuosl.org [140.211.166.137])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id BED1361CC5
-	for <iommu@archiver.kernel.org>; Wed,  7 Jul 2021 15:47:11 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org BED1361CC5
+	by mail.kernel.org (Postfix) with ESMTPS id 7822E61CC3
+	for <iommu@archiver.kernel.org>; Wed,  7 Jul 2021 15:47:15 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 7822E61CC3
 Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=gmail.com
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by smtp2.osuosl.org (Postfix) with ESMTP id 94C1240687;
-	Wed,  7 Jul 2021 15:47:11 +0000 (UTC)
+	by smtp4.osuosl.org (Postfix) with ESMTP id 3F29240687;
+	Wed,  7 Jul 2021 15:47:15 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from smtp2.osuosl.org ([127.0.0.1])
-	by localhost (smtp2.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id XVMgJ4VcR8ga; Wed,  7 Jul 2021 15:47:10 +0000 (UTC)
+Received: from smtp4.osuosl.org ([127.0.0.1])
+	by localhost (smtp4.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+	with ESMTP id LjkbC6X5z5u4; Wed,  7 Jul 2021 15:47:14 +0000 (UTC)
 Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by smtp2.osuosl.org (Postfix) with ESMTPS id 70C37401BD;
-	Wed,  7 Jul 2021 15:47:10 +0000 (UTC)
+	by smtp4.osuosl.org (Postfix) with ESMTPS id B091340678;
+	Wed,  7 Jul 2021 15:47:13 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 46F6AC001A;
-	Wed,  7 Jul 2021 15:47:10 +0000 (UTC)
-Received: from smtp3.osuosl.org (smtp3.osuosl.org [IPv6:2605:bc80:3010::136])
- by lists.linuxfoundation.org (Postfix) with ESMTP id D2FACC000E
- for <iommu@lists.linux-foundation.org>; Wed,  7 Jul 2021 15:47:08 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 86084C001A;
+	Wed,  7 Jul 2021 15:47:13 +0000 (UTC)
+Received: from smtp2.osuosl.org (smtp2.osuosl.org [140.211.166.133])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 13CF6C000E
+ for <iommu@lists.linux-foundation.org>; Wed,  7 Jul 2021 15:47:12 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by smtp3.osuosl.org (Postfix) with ESMTP id C01EF60A40
- for <iommu@lists.linux-foundation.org>; Wed,  7 Jul 2021 15:47:08 +0000 (UTC)
+ by smtp2.osuosl.org (Postfix) with ESMTP id E6C65401BD
+ for <iommu@lists.linux-foundation.org>; Wed,  7 Jul 2021 15:47:11 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Authentication-Results: smtp3.osuosl.org (amavisd-new);
+Authentication-Results: smtp2.osuosl.org (amavisd-new);
  dkim=pass (2048-bit key) header.d=gmail.com
-Received: from smtp3.osuosl.org ([127.0.0.1])
- by localhost (smtp3.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id Bnti-E9z9c2I for <iommu@lists.linux-foundation.org>;
- Wed,  7 Jul 2021 15:47:08 +0000 (UTC)
+Received: from smtp2.osuosl.org ([127.0.0.1])
+ by localhost (smtp2.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+ with ESMTP id yOmNyRJ4O3iZ for <iommu@lists.linux-foundation.org>;
+ Wed,  7 Jul 2021 15:47:11 +0000 (UTC)
 X-Greylist: whitelisted by SQLgrey-1.8.0
-Received: from mail-pf1-x431.google.com (mail-pf1-x431.google.com
- [IPv6:2607:f8b0:4864:20::431])
- by smtp3.osuosl.org (Postfix) with ESMTPS id 039AA60AB2
- for <iommu@lists.linux-foundation.org>; Wed,  7 Jul 2021 15:47:07 +0000 (UTC)
-Received: by mail-pf1-x431.google.com with SMTP id b12so2540978pfv.6
- for <iommu@lists.linux-foundation.org>; Wed, 07 Jul 2021 08:47:07 -0700 (PDT)
+Received: from mail-pf1-x436.google.com (mail-pf1-x436.google.com
+ [IPv6:2607:f8b0:4864:20::436])
+ by smtp2.osuosl.org (Postfix) with ESMTPS id 0D4F940669
+ for <iommu@lists.linux-foundation.org>; Wed,  7 Jul 2021 15:47:10 +0000 (UTC)
+Received: by mail-pf1-x436.google.com with SMTP id w22so2542666pff.5
+ for <iommu@lists.linux-foundation.org>; Wed, 07 Jul 2021 08:47:10 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=gmail.com; s=20161025;
  h=from:to:cc:subject:date:message-id:in-reply-to:references
  :mime-version:content-transfer-encoding;
- bh=uSViD25AWGJ6J+QgAwUoKBubGeqJPy/dkYcV0Fzox+c=;
- b=cQcYT5XSBLbRJRDUNa0e5CgSigjoy2I5REnIiUUUqfnwYfNGPXXLVSum+8IzUodfaP
- NTItaqDrZixn5v3ga9DqqV+CMjZrPq+hOq0qzW+JzdevrlfXgqEqK2Ehmyky0HMcgFP3
- fBUAJnZALGSD2lwUXPo1oB7+tjhYoonkMW4pDlMoiGMuEP1yUjVan+9lRbSkG9DNhWQV
- dWxY/vIo+6ak/OXzqcOGKv7Ch8+RaNsC9N5387m4YR1JdwzUEvcBUBdz3axjyvNLlHdK
- q4JRQ6k96Mk9DN+/RNIoDW1vtP7bBHzLBDQcvP33UQJ6r+BeKTe/eU2ca43MQb/lQL6x
- TM5g==
+ bh=d9G7rX1Wf2e4jgYzMUXcCiOPT4rIMtwlWsRa/j4ZTx8=;
+ b=MBccprpsRZbRBzn6Q74+KmpWH/C6n7RGUH8aA689Jf6+OWOMykcnt/ZY37atWT4gic
+ DOjRNhV5KQvMsBL9VxsrKxt3IkxH7xLFDJNZiPni9y6shi6ugb60m7cU9VeXX64Y81LP
+ xgPcv35SphN43aCrwRWGJr9XUKndx9QxVUhL/4TdO18lYNSAEJluabGylM3ACDVDtJ/h
+ sBUs2A7aqcwl2SUBmvmD4p7RBT0gOmbRB7ShQ8nx7G0M5dGHQbYtntiAQ27Cy6+XC6wa
+ f+tRGI3zFgJhUOaZEHGkNaMdOsoeZm+p5CYOC1oMvnExhumjI6l4IEtWCcA/ChkzHZO4
+ 5tCQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
  d=1e100.net; s=20161025;
  h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
  :references:mime-version:content-transfer-encoding;
- bh=uSViD25AWGJ6J+QgAwUoKBubGeqJPy/dkYcV0Fzox+c=;
- b=Ti348uG1MOF/W7v4JxFsExJhUqsOSkGx0pcPyl2diWb1ANpG5PSEFsTNH3Dd/NfiCB
- Ppzf0Zx89FWOfBrBsuYU0ekjhD7I/AUuiqV5NmnlZPsCZgQs290ufRqLU3AM6LyPwh7o
- +P6zK2Jv9bS7mW6lYASlz4XMnq7tXMeJSualY2Ag4cwx7uFRvNe6QssNtCwVTCmUUqo/
- ElJjqzTgxOoicrsLm0wZWpG4dTebBFbm2ug6vWXJCeJ7v3f2o+WT3FCByUXmcDulDZI2
- N4Qk1vAysKB8sgBuSfICg2PSGpNvg20LXVo/mraOB+YQwlSTalIoDbS6nAFnMbYBCCBt
- 1pqw==
-X-Gm-Message-State: AOAM532iLqtqxcv5UJckThF4o6vLSXUJa5weHAFTyX4BGOIU2UWVR+58
- SQEeCb0hHAmQ5jE99GXi/fQ=
-X-Google-Smtp-Source: ABdhPJy7eYx9Hj+tY38P1ebQQq0y3i61YfxbRUD8cqpY0wJNgpDT6hIlSZDAU9aZE7BllJmWIxymNA==
-X-Received: by 2002:a63:ed12:: with SMTP id d18mr26142030pgi.12.1625672827391; 
- Wed, 07 Jul 2021 08:47:07 -0700 (PDT)
+ bh=d9G7rX1Wf2e4jgYzMUXcCiOPT4rIMtwlWsRa/j4ZTx8=;
+ b=TuNuTpQn9Y4xxNYjUbTehBGMKUm9PlfcvPBHrTypfvI/EzO2Xv6z+67uJ57jrWg6ME
+ nCGmhl75mK9MFwEKUFcWrbMndTv3bLzFiwEYUGdRg/uqO7HDUrFfc+GhNYi7ejqpRux2
+ cue+hSJDeDyi5VVACK0uTAtsB1h4jz0spaAwAihK8bpHllNtOnUeegNnNxPaZr57lnFZ
+ mA5hEP0YJR6poznDSPNGpuOpyBKKhxRz99UOKKFD5WPdd/6dg+q6TRYH5Es6IoupplkV
+ LdEI4OlG+Tw9YpRkLI7WArqBTx3HY775wggPQNhz6IGHD6jsxKsd0kh6X6jPTymVI2ot
+ EAXg==
+X-Gm-Message-State: AOAM533kdwt6beiumUeTHiVuT82q4EKz6eF7/JWVaVPvsiCo6GFTloqx
+ UldK/lhmb/aX64XouER9oq4=
+X-Google-Smtp-Source: ABdhPJzvlBIKPtUWe4+tZyz+A3EwlEGnKYo9dj5XU3MYJvkGWWUZOwWT2GALfxenXK+wdhiIBd383w==
+X-Received: by 2002:a63:d915:: with SMTP id r21mr26953592pgg.283.1625672830421; 
+ Wed, 07 Jul 2021 08:47:10 -0700 (PDT)
 Received: from ubuntu-Virtual-Machine.corp.microsoft.com
  ([2001:4898:80e8:38:6b47:cf3e:bbf2:d229])
- by smtp.gmail.com with ESMTPSA id q18sm23093560pgj.8.2021.07.07.08.47.06
+ by smtp.gmail.com with ESMTPSA id q18sm23093560pgj.8.2021.07.07.08.47.09
  (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
- Wed, 07 Jul 2021 08:47:07 -0700 (PDT)
+ Wed, 07 Jul 2021 08:47:10 -0700 (PDT)
 From: Tianyu Lan <ltykernel@gmail.com>
 To: kys@microsoft.com, haiyangz@microsoft.com, sthemmin@microsoft.com,
  wei.liu@kernel.org, decui@microsoft.com, tglx@linutronix.de,
@@ -99,10 +99,10 @@ To: kys@microsoft.com, haiyangz@microsoft.com, sthemmin@microsoft.com,
  krish.sadhukhan@oracle.com, saravanand@fb.com,
  xen-devel@lists.xenproject.org, keescook@chromium.org, rientjes@google.com,
  hannes@cmpxchg.org, michael.h.kelley@microsoft.com
-Subject: [Resend RFC PATCH V4 10/13] HV/IOMMU: Enable swiotlb bounce buffer
- for Isolation VM
-Date: Wed,  7 Jul 2021 11:46:24 -0400
-Message-Id: <20210707154629.3977369-11-ltykernel@gmail.com>
+Subject: [Resend RFC PATCH V4 11/13] HV/Netvsc: Add Isolation VM support for
+ netvsc driver
+Date: Wed,  7 Jul 2021 11:46:25 -0400
+Message-Id: <20210707154629.3977369-12-ltykernel@gmail.com>
 X-Mailer: git-send-email 2.25.1
 In-Reply-To: <20210707154629.3977369-1-ltykernel@gmail.com>
 References: <20210707154629.3977369-1-ltykernel@gmail.com>
@@ -130,196 +130,306 @@ Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
 From: Tianyu Lan <Tianyu.Lan@microsoft.com>
 
-Hyper-V Isolation VM requires bounce buffer support to copy
-data from/to encrypted memory and so enable swiotlb force
-mode to use swiotlb bounce buffer for DMA transaction.
-
-In Isolation VM with AMD SEV, the bounce buffer needs to be
-accessed via extra address space which is above shared_gpa_boundary
-(E.G 39 bit address line) reported by Hyper-V CPUID ISOLATION_CONFIG.
-The access physical address will be original physical address +
-shared_gpa_boundary. The shared_gpa_boundary in the AMD SEV SNP
-spec is called virtual top of memory(vTOM). Memory addresses below
-vTOM are automatically treated as private while memory above
-vTOM is treated as shared.
-
-Swiotlb bounce buffer code calls set_memory_decrypted_map()
-to mark bounce buffer visible to host and map it in extra
-address space.
-
-Hyper-V initalizes swiotlb bounce buffer and default swiotlb
-needs to be disabled. pci_swiotlb_detect_override() and
-pci_swiotlb_detect_4gb() enable the default one. To override
-the setting, hyperv_swiotlb_detect() needs to run before
-these detect functions which depends on the pci_xen_swiotlb_
-init(). Make pci_xen_swiotlb_init() depends on the hyperv_swiotlb
-_detect() to keep the order.
-
-The map function vmap_pfn() can't work in the early place
-hyperv_iommu_swiotlb_init() and so initialize swiotlb bounce
-buffer in the hyperv_iommu_swiotlb_later_init().
+In Isolation VM, all shared memory with host needs to mark visible
+to host via hvcall. vmbus_establish_gpadl() has already done it for
+netvsc rx/tx ring buffer. The page buffer used by vmbus_sendpacket_
+pagebuffer() still need to handle. Use DMA API to map/umap these
+memory during sending/receiving packet and Hyper-V DMA ops callback
+will use swiotlb function to allocate bounce buffer and copy data
+from/to bounce buffer.
 
 Signed-off-by: Tianyu Lan <Tianyu.Lan@microsoft.com>
 ---
- arch/x86/xen/pci-swiotlb-xen.c |  3 +-
- drivers/hv/vmbus_drv.c         |  3 ++
- drivers/iommu/hyperv-iommu.c   | 62 ++++++++++++++++++++++++++++++++++
- include/linux/hyperv.h         |  1 +
- 4 files changed, 68 insertions(+), 1 deletion(-)
+ drivers/net/hyperv/hyperv_net.h   |   6 ++
+ drivers/net/hyperv/netvsc.c       | 144 +++++++++++++++++++++++++++++-
+ drivers/net/hyperv/rndis_filter.c |   2 +
+ include/linux/hyperv.h            |   5 ++
+ 4 files changed, 154 insertions(+), 3 deletions(-)
 
-diff --git a/arch/x86/xen/pci-swiotlb-xen.c b/arch/x86/xen/pci-swiotlb-xen.c
-index 54f9aa7e8457..43bd031aa332 100644
---- a/arch/x86/xen/pci-swiotlb-xen.c
-+++ b/arch/x86/xen/pci-swiotlb-xen.c
-@@ -4,6 +4,7 @@
- 
- #include <linux/dma-map-ops.h>
- #include <linux/pci.h>
-+#include <linux/hyperv.h>
- #include <xen/swiotlb-xen.h>
- 
- #include <asm/xen/hypervisor.h>
-@@ -91,6 +92,6 @@ int pci_xen_swiotlb_init_late(void)
- EXPORT_SYMBOL_GPL(pci_xen_swiotlb_init_late);
- 
- IOMMU_INIT_FINISH(pci_xen_swiotlb_detect,
--		  NULL,
-+		  hyperv_swiotlb_detect,
- 		  pci_xen_swiotlb_init,
- 		  NULL);
-diff --git a/drivers/hv/vmbus_drv.c b/drivers/hv/vmbus_drv.c
-index 92cb3f7d21d9..5e3bb76d4dee 100644
---- a/drivers/hv/vmbus_drv.c
-+++ b/drivers/hv/vmbus_drv.c
-@@ -23,6 +23,7 @@
- #include <linux/cpu.h>
- #include <linux/sched/task_stack.h>
- 
-+#include <linux/dma-map-ops.h>
- #include <linux/delay.h>
- #include <linux/notifier.h>
- #include <linux/ptrace.h>
-@@ -2080,6 +2081,7 @@ struct hv_device *vmbus_device_create(const guid_t *type,
- 	return child_device_obj;
- }
- 
-+static u64 vmbus_dma_mask = DMA_BIT_MASK(64);
- /*
-  * vmbus_device_register - Register the child device
-  */
-@@ -2120,6 +2122,7 @@ int vmbus_device_register(struct hv_device *child_device_obj)
- 	}
- 	hv_debug_add_dev_dir(child_device_obj);
- 
-+	child_device_obj->device.dma_mask = &vmbus_dma_mask;
- 	return 0;
- 
- err_kset_unregister:
-diff --git a/drivers/iommu/hyperv-iommu.c b/drivers/iommu/hyperv-iommu.c
-index e285a220c913..d7ea8e05b991 100644
---- a/drivers/iommu/hyperv-iommu.c
-+++ b/drivers/iommu/hyperv-iommu.c
-@@ -13,14 +13,22 @@
- #include <linux/irq.h>
- #include <linux/iommu.h>
- #include <linux/module.h>
-+#include <linux/hyperv.h>
-+#include <linux/io.h>
- 
- #include <asm/apic.h>
- #include <asm/cpu.h>
- #include <asm/hw_irq.h>
- #include <asm/io_apic.h>
-+#include <asm/iommu.h>
-+#include <asm/iommu_table.h>
- #include <asm/irq_remapping.h>
- #include <asm/hypervisor.h>
- #include <asm/mshyperv.h>
-+#include <asm/swiotlb.h>
-+#include <linux/dma-map-ops.h>
-+#include <linux/dma-direct.h>
-+#include <linux/set_memory.h>
- 
- #include "irq_remapping.h"
- 
-@@ -36,6 +44,8 @@
- static cpumask_t ioapic_max_cpumask = { CPU_BITS_NONE };
- static struct irq_domain *ioapic_ir_domain;
- 
-+static unsigned long hyperv_io_tlb_start, hyperv_io_tlb_size;
-+
- static int hyperv_ir_set_affinity(struct irq_data *data,
- 		const struct cpumask *mask, bool force)
- {
-@@ -337,4 +347,56 @@ static const struct irq_domain_ops hyperv_root_ir_domain_ops = {
- 	.free = hyperv_root_irq_remapping_free,
+diff --git a/drivers/net/hyperv/hyperv_net.h b/drivers/net/hyperv/hyperv_net.h
+index b11aa68b44ec..c2fbb9d4df2c 100644
+--- a/drivers/net/hyperv/hyperv_net.h
++++ b/drivers/net/hyperv/hyperv_net.h
+@@ -164,6 +164,7 @@ struct hv_netvsc_packet {
+ 	u32 total_bytes;
+ 	u32 send_buf_index;
+ 	u32 total_data_buflen;
++	struct hv_dma_range *dma_range;
  };
  
-+void __init hyperv_iommu_swiotlb_init(void)
-+{
-+	unsigned long bytes;
-+	void *vstart;
+ #define NETVSC_HASH_KEYLEN 40
+@@ -1074,6 +1075,7 @@ struct netvsc_device {
+ 
+ 	/* Receive buffer allocated by us but manages by NetVSP */
+ 	void *recv_buf;
++	void *recv_original_buf;
+ 	u32 recv_buf_size; /* allocated bytes */
+ 	u32 recv_buf_gpadl_handle;
+ 	u32 recv_section_cnt;
+@@ -1082,6 +1084,8 @@ struct netvsc_device {
+ 
+ 	/* Send buffer allocated by us */
+ 	void *send_buf;
++	void *send_original_buf;
++	u32 send_buf_size;
+ 	u32 send_buf_gpadl_handle;
+ 	u32 send_section_cnt;
+ 	u32 send_section_size;
+@@ -1729,4 +1733,6 @@ struct rndis_message {
+ #define RETRY_US_HI	10000
+ #define RETRY_MAX	2000	/* >10 sec */
+ 
++void netvsc_dma_unmap(struct hv_device *hv_dev,
++		      struct hv_netvsc_packet *packet);
+ #endif /* _HYPERV_NET_H */
+diff --git a/drivers/net/hyperv/netvsc.c b/drivers/net/hyperv/netvsc.c
+index 7bd935412853..fc312e5db4d5 100644
+--- a/drivers/net/hyperv/netvsc.c
++++ b/drivers/net/hyperv/netvsc.c
+@@ -153,8 +153,21 @@ static void free_netvsc_device(struct rcu_head *head)
+ 	int i;
+ 
+ 	kfree(nvdev->extension);
+-	vfree(nvdev->recv_buf);
+-	vfree(nvdev->send_buf);
 +
-+	/*
-+	 * Allocate Hyper-V swiotlb bounce buffer at early place
-+	 * to reserve large contiguous memory.
-+	 */
-+	hyperv_io_tlb_size = 200 * 1024 * 1024;
-+	hyperv_io_tlb_start = memblock_alloc_low(PAGE_ALIGN(hyperv_io_tlb_size),
-+						 HV_HYP_PAGE_SIZE);
-+
-+	if (!hyperv_io_tlb_start) {
-+		pr_warn("Fail to allocate Hyper-V swiotlb buffer.\n");
-+		return;
++	if (nvdev->recv_original_buf) {
++		vunmap(nvdev->recv_buf);
++		vfree(nvdev->recv_original_buf);
++	} else {
++		vfree(nvdev->recv_buf);
 +	}
++
++	if (nvdev->send_original_buf) {
++		vunmap(nvdev->send_buf);
++		vfree(nvdev->send_original_buf);
++	} else {
++		vfree(nvdev->send_buf);
++	}
++
+ 	kfree(nvdev->send_section_map);
+ 
+ 	for (i = 0; i < VRSS_CHANNEL_MAX; i++) {
+@@ -330,6 +343,27 @@ int netvsc_alloc_recv_comp_ring(struct netvsc_device *net_device, u32 q_idx)
+ 	return nvchan->mrc.slots ? 0 : -ENOMEM;
+ }
+ 
++static void *netvsc_remap_buf(void *buf, unsigned long size)
++{
++	unsigned long *pfns;
++	void *vaddr;
++	int i;
++
++	pfns = kcalloc(size / HV_HYP_PAGE_SIZE, sizeof(unsigned long),
++		       GFP_KERNEL);
++	if (!pfns)
++		return NULL;
++
++	for (i = 0; i < size / HV_HYP_PAGE_SIZE; i++)
++		pfns[i] = virt_to_hvpfn(buf + i * HV_HYP_PAGE_SIZE)
++			+ (ms_hyperv.shared_gpa_boundary >> HV_HYP_PAGE_SHIFT);
++
++	vaddr = vmap_pfn(pfns, size / HV_HYP_PAGE_SIZE, PAGE_KERNEL_IO);
++	kfree(pfns);
++
++	return vaddr;
 +}
 +
-+int __init hyperv_swiotlb_detect(void)
+ static int netvsc_init_buf(struct hv_device *device,
+ 			   struct netvsc_device *net_device,
+ 			   const struct netvsc_device_info *device_info)
+@@ -340,6 +374,7 @@ static int netvsc_init_buf(struct hv_device *device,
+ 	unsigned int buf_size;
+ 	size_t map_words;
+ 	int i, ret = 0;
++	void *vaddr;
+ 
+ 	/* Get receive buffer area. */
+ 	buf_size = device_info->recv_sections * device_info->recv_section_size;
+@@ -375,6 +410,15 @@ static int netvsc_init_buf(struct hv_device *device,
+ 		goto cleanup;
+ 	}
+ 
++	if (hv_isolation_type_snp()) {
++		vaddr = netvsc_remap_buf(net_device->recv_buf, buf_size);
++		if (!vaddr)
++			goto cleanup;
++
++		net_device->recv_original_buf = net_device->recv_buf;
++		net_device->recv_buf = vaddr;
++	}
++
+ 	/* Notify the NetVsp of the gpadl handle */
+ 	init_packet = &net_device->channel_init_pkt;
+ 	memset(init_packet, 0, sizeof(struct nvsp_message));
+@@ -477,6 +521,15 @@ static int netvsc_init_buf(struct hv_device *device,
+ 		goto cleanup;
+ 	}
+ 
++	if (hv_isolation_type_snp()) {
++		vaddr = netvsc_remap_buf(net_device->send_buf, buf_size);
++		if (!vaddr)
++			goto cleanup;
++
++		net_device->send_original_buf = net_device->send_buf;
++		net_device->send_buf = vaddr;
++	}
++
+ 	/* Notify the NetVsp of the gpadl handle */
+ 	init_packet = &net_device->channel_init_pkt;
+ 	memset(init_packet, 0, sizeof(struct nvsp_message));
+@@ -767,7 +820,7 @@ static void netvsc_send_tx_complete(struct net_device *ndev,
+ 
+ 	/* Notify the layer above us */
+ 	if (likely(skb)) {
+-		const struct hv_netvsc_packet *packet
++		struct hv_netvsc_packet *packet
+ 			= (struct hv_netvsc_packet *)skb->cb;
+ 		u32 send_index = packet->send_buf_index;
+ 		struct netvsc_stats *tx_stats;
+@@ -783,6 +836,7 @@ static void netvsc_send_tx_complete(struct net_device *ndev,
+ 		tx_stats->bytes += packet->total_bytes;
+ 		u64_stats_update_end(&tx_stats->syncp);
+ 
++		netvsc_dma_unmap(ndev_ctx->device_ctx, packet);
+ 		napi_consume_skb(skb, budget);
+ 	}
+ 
+@@ -947,6 +1001,82 @@ static void netvsc_copy_to_send_buf(struct netvsc_device *net_device,
+ 		memset(dest, 0, padding);
+ }
+ 
++void netvsc_dma_unmap(struct hv_device *hv_dev,
++		      struct hv_netvsc_packet *packet)
 +{
-+	if (hypervisor_is_type(X86_HYPER_MS_HYPERV)
-+	    && hv_is_isolation_supported()) {
-+		/*
-+		 * Enable swiotlb force mode in Isolation VM to
-+		 * use swiotlb bounce buffer for dma transaction.
-+		 */
-+		swiotlb_force = SWIOTLB_FORCE;
-+		return 1;
++	u32 page_count = packet->cp_partial ?
++		packet->page_buf_cnt - packet->rmsg_pgcnt :
++		packet->page_buf_cnt;
++	int i;
++
++	if (!hv_is_isolation_supported())
++		return;
++
++	if (!packet->dma_range)
++		return;
++
++	for (i = 0; i < page_count; i++)
++		dma_unmap_single(&hv_dev->device, packet->dma_range[i].dma,
++				 packet->dma_range[i].mapping_size,
++				 DMA_TO_DEVICE);
++
++	kfree(packet->dma_range);
++}
++
++/* netvsc_dma_map - Map swiotlb bounce buffer with data page of
++ * packet sent by vmbus_sendpacket_pagebuffer() in the Isolation
++ * VM.
++ *
++ * In isolation VM, netvsc send buffer has been marked visible to
++ * host and so the data copied to send buffer doesn't need to use
++ * bounce buffer. The data pages handled by vmbus_sendpacket_pagebuffer()
++ * may not be copied to send buffer and so these pages need to be
++ * mapped with swiotlb bounce buffer. netvsc_dma_map() is to do
++ * that. The pfns in the struct hv_page_buffer need to be converted
++ * to bounce buffer's pfn. The loop here is necessary and so not
++ * use dma_map_sg() here.
++ */
++int netvsc_dma_map(struct hv_device *hv_dev,
++		   struct hv_netvsc_packet *packet,
++		   struct hv_page_buffer *pb)
++{
++	u32 page_count =  packet->cp_partial ?
++		packet->page_buf_cnt - packet->rmsg_pgcnt :
++		packet->page_buf_cnt;
++	dma_addr_t dma;
++	int i;
++
++	if (!hv_is_isolation_supported())
++		return 0;
++
++	packet->dma_range = kcalloc(page_count,
++				    sizeof(*packet->dma_range),
++				    GFP_KERNEL);
++	if (!packet->dma_range)
++		return -ENOMEM;
++
++	for (i = 0; i < page_count; i++) {
++		char *src = phys_to_virt((pb[i].pfn << HV_HYP_PAGE_SHIFT)
++					 + pb[i].offset);
++		u32 len = pb[i].len;
++
++		dma = dma_map_single(&hv_dev->device, src, len,
++				     DMA_TO_DEVICE);
++		if (dma_mapping_error(&hv_dev->device, dma)) {
++			kfree(packet->dma_range);
++			return -ENOMEM;
++		}
++
++		packet->dma_range[i].dma = dma;
++		packet->dma_range[i].mapping_size = len;
++		pb[i].pfn = dma >> HV_HYP_PAGE_SHIFT;
++		pb[i].offset = offset_in_hvpage(dma);
++		pb[i].len = len;
 +	}
 +
 +	return 0;
 +}
 +
-+void __init hyperv_iommu_swiotlb_later_init(void)
-+{
-+	void *hyperv_io_tlb_remap;
-+	int ret;
+ static inline int netvsc_send_pkt(
+ 	struct hv_device *device,
+ 	struct hv_netvsc_packet *packet,
+@@ -987,14 +1117,22 @@ static inline int netvsc_send_pkt(
+ 
+ 	trace_nvsp_send_pkt(ndev, out_channel, rpkt);
+ 
++	packet->dma_range = NULL;
+ 	if (packet->page_buf_cnt) {
+ 		if (packet->cp_partial)
+ 			pb += packet->rmsg_pgcnt;
+ 
++		ret = netvsc_dma_map(ndev_ctx->device_ctx, packet, pb);
++		if (ret)
++			return ret;
 +
-+	/*
-+	 * Swiotlb bounce buffer needs to be mapped in extra address
-+	 * space. Map function doesn't work in the early place and so
-+	 * call swiotlb_late_init_with_tbl() here.
-+	 */
-+	swiotlb_late_init_with_tbl(hyperv_io_tlb_start,
-+				   hyperv_io_tlb_size >> IO_TLB_SHIFT);
-+}
+ 		ret = vmbus_sendpacket_pagebuffer(out_channel,
+ 						  pb, packet->page_buf_cnt,
+ 						  &nvmsg, sizeof(nvmsg),
+ 						  req_id);
 +
-+IOMMU_INIT_FINISH(hyperv_swiotlb_detect,
-+		  NULL, hyperv_iommu_swiotlb_init,
-+		  hyperv_iommu_swiotlb_later_init);
-+
- #endif
++		if (ret)
++			netvsc_dma_unmap(ndev_ctx->device_ctx, packet);
+ 	} else {
+ 		ret = vmbus_sendpacket(out_channel,
+ 				       &nvmsg, sizeof(nvmsg),
+diff --git a/drivers/net/hyperv/rndis_filter.c b/drivers/net/hyperv/rndis_filter.c
+index 983bf362466a..9425fee85aa0 100644
+--- a/drivers/net/hyperv/rndis_filter.c
++++ b/drivers/net/hyperv/rndis_filter.c
+@@ -361,6 +361,8 @@ static void rndis_filter_receive_response(struct net_device *ndev,
+ 			}
+ 		}
+ 
++		netvsc_dma_unmap(((struct net_device_context *)
++			netdev_priv(ndev))->device_ctx, &request->pkt);
+ 		complete(&request->wait_event);
+ 	} else {
+ 		netdev_err(ndev,
 diff --git a/include/linux/hyperv.h b/include/linux/hyperv.h
-index 06eccaba10c5..babbe19f57e2 100644
+index babbe19f57e2..90abff664495 100644
 --- a/include/linux/hyperv.h
 +++ b/include/linux/hyperv.h
-@@ -1759,6 +1759,7 @@ int hyperv_write_cfg_blk(struct pci_dev *dev, void *buf, unsigned int len,
- int hyperv_reg_block_invalidate(struct pci_dev *dev, void *context,
- 				void (*block_invalidate)(void *context,
- 							 u64 block_mask));
-+int __init hyperv_swiotlb_detect(void);
+@@ -1616,6 +1616,11 @@ struct hyperv_service_callback {
+ 	void (*callback)(void *context);
+ };
  
- struct hyperv_pci_block_ops {
- 	int (*read_block)(struct pci_dev *dev, void *buf, unsigned int buf_len,
++struct hv_dma_range {
++	dma_addr_t dma;
++	u32 mapping_size;
++};
++
+ #define MAX_SRV_VER	0x7ffffff
+ extern bool vmbus_prep_negotiate_resp(struct icmsg_hdr *icmsghdrp, u8 *buf, u32 buflen,
+ 				const int *fw_version, int fw_vercnt,
 -- 
 2.25.1
 
