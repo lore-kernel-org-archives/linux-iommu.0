@@ -8,80 +8,80 @@ X-Spam-Status: No, score=-13.5 required=3.0 tests=BAYES_00,
 	INCLUDES_PATCH,MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,URIBL_RED,
 	USER_AGENT_GIT autolearn=ham autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id BABB5C11F6E
-	for <iommu@archiver.kernel.org>; Wed,  7 Jul 2021 15:35:39 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7C4BCC11F67
+	for <iommu@archiver.kernel.org>; Wed,  7 Jul 2021 15:35:34 +0000 (UTC)
 Received: from smtp3.osuosl.org (smtp3.osuosl.org [140.211.166.136])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 88D9D61CBE
-	for <iommu@archiver.kernel.org>; Wed,  7 Jul 2021 15:35:39 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 88D9D61CBE
+	by mail.kernel.org (Postfix) with ESMTPS id 4461061CC3
+	for <iommu@archiver.kernel.org>; Wed,  7 Jul 2021 15:35:34 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 4461061CC3
 Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=gmail.com
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by smtp3.osuosl.org (Postfix) with ESMTP id 644B8605AC;
-	Wed,  7 Jul 2021 15:35:39 +0000 (UTC)
+	by smtp3.osuosl.org (Postfix) with ESMTP id 8916560AA6;
+	Wed,  7 Jul 2021 15:35:33 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
 Received: from smtp3.osuosl.org ([127.0.0.1])
 	by localhost (smtp3.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id 3ZemEZ6-ZEqX; Wed,  7 Jul 2021 15:35:36 +0000 (UTC)
+	with ESMTP id OW5X1IkJTadn; Wed,  7 Jul 2021 15:35:32 +0000 (UTC)
 Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by smtp3.osuosl.org (Postfix) with ESMTPS id 1525960A86;
-	Wed,  7 Jul 2021 15:35:36 +0000 (UTC)
+	by smtp3.osuosl.org (Postfix) with ESMTPS id 3E25D60648;
+	Wed,  7 Jul 2021 15:35:32 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id ADA70C0023;
-	Wed,  7 Jul 2021 15:35:35 +0000 (UTC)
-Received: from smtp3.osuosl.org (smtp3.osuosl.org [IPv6:2605:bc80:3010::136])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 821FCC000E
- for <iommu@lists.linux-foundation.org>; Wed,  7 Jul 2021 15:35:34 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 125AAC001A;
+	Wed,  7 Jul 2021 15:35:32 +0000 (UTC)
+Received: from smtp2.osuosl.org (smtp2.osuosl.org [140.211.166.133])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 2D2A6C000E
+ for <iommu@lists.linux-foundation.org>; Wed,  7 Jul 2021 15:35:31 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by smtp3.osuosl.org (Postfix) with ESMTP id 712CF60A86
- for <iommu@lists.linux-foundation.org>; Wed,  7 Jul 2021 15:35:34 +0000 (UTC)
+ by smtp2.osuosl.org (Postfix) with ESMTP id 0E8A440630
+ for <iommu@lists.linux-foundation.org>; Wed,  7 Jul 2021 15:35:31 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from smtp3.osuosl.org ([127.0.0.1])
- by localhost (smtp3.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id eegfrfhiKGDn for <iommu@lists.linux-foundation.org>;
- Wed,  7 Jul 2021 15:35:33 +0000 (UTC)
+Authentication-Results: smtp2.osuosl.org (amavisd-new);
+ dkim=pass (2048-bit key) header.d=gmail.com
+Received: from smtp2.osuosl.org ([127.0.0.1])
+ by localhost (smtp2.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+ with ESMTP id I_FIIVan31XM for <iommu@lists.linux-foundation.org>;
+ Wed,  7 Jul 2021 15:35:26 +0000 (UTC)
 X-Greylist: whitelisted by SQLgrey-1.8.0
-Received: from mail-pj1-x1036.google.com (mail-pj1-x1036.google.com
- [IPv6:2607:f8b0:4864:20::1036])
- by smtp3.osuosl.org (Postfix) with ESMTPS id 526B2606C2
- for <iommu@lists.linux-foundation.org>; Wed,  7 Jul 2021 15:35:33 +0000 (UTC)
-Received: by mail-pj1-x1036.google.com with SMTP id
- b5-20020a17090a9905b029016fc06f6c5bso1882094pjp.5
- for <iommu@lists.linux-foundation.org>; Wed, 07 Jul 2021 08:35:33 -0700 (PDT)
+Received: from mail-pf1-x42f.google.com (mail-pf1-x42f.google.com
+ [IPv6:2607:f8b0:4864:20::42f])
+ by smtp2.osuosl.org (Postfix) with ESMTPS id 775544059D
+ for <iommu@lists.linux-foundation.org>; Wed,  7 Jul 2021 15:35:26 +0000 (UTC)
+Received: by mail-pf1-x42f.google.com with SMTP id 17so2519326pfz.4
+ for <iommu@lists.linux-foundation.org>; Wed, 07 Jul 2021 08:35:26 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=gmail.com; s=20161025;
  h=from:to:cc:subject:date:message-id:in-reply-to:references
  :mime-version:content-transfer-encoding;
- bh=HlyScOtQVoYnoHAZopBay4tlsKScaz3uD66IFgkGB/I=;
- b=bxNW29cQvWv3ujr0f58UjRu80DYsbpoGdhnIi/lG1c6YsKb4ztVOaciTtQsat/2hmY
- ylqCpErElnSmMMEwnm0xzwkPMzgpIThweHJbOgPQNWplt1zjoHk2gKy/i5mQUyxwK1nt
- TSJoaaT4RSoZGSUJxQ46jxAq6r+VG8ydemfCRwxghzMJsVh4Yicqg2DXYqd01kIFu7jj
- iNGBFRcmLAjLNa4rzkwkJZMtnKADBmqzdLPSaw+tM9QyLkOxDPEWpCIXBIfFVrmSZYPK
- GdWEVdbpBPX/opp6/oIg4LO/ghCsDtY6L41B4UJGaDYzMk4mS2QYngShB3OVMKPn2jhE
- f76w==
+ bh=vp54ZQawAXt49CkThDbFLyNwiKlz10UxxnQhsKUA4kk=;
+ b=mwz531LG8VwujMK/fd5kQ/Q8ztNgBlPusuZpI54hFc8jgqOztkk7xMjkai9f1xw53X
+ 3jxlAZ4KOhdZzm/m4iKXDfDQhymoaUUYGhagpN7uMa8SDq+Sa/a+9QYq8IIiAk61RTQH
+ FISIxcvVNyPYsimguuW+ypAYfEtcepFacqbJC/17qxvGWSlq60CpijWs/75jJZvZzyGb
+ qvIKYMC9RmADtJQMWKkXUtdz8rboMK6L4hW0HIUXaeky620CVc2L3afCPwaINmrFFCRY
+ JZYaWq9lQwV+TVAsHHKe80RS57OD7apJlBxNfhMxCkhzAHCrwmE8wU2j7aIcz7I+/im4
+ RQnA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
  d=1e100.net; s=20161025;
  h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
  :references:mime-version:content-transfer-encoding;
- bh=HlyScOtQVoYnoHAZopBay4tlsKScaz3uD66IFgkGB/I=;
- b=pTLB7JCplpKaLuebq7RJ3iETxOlhg4JtfxaIZyW9WgX2iF6KofB9PqCHIvsdPRvP6D
- JaK+DEGgim8zCfjL+qaTrYdDwL1J3/yds1vwYejTVHbzMuI0qO5szSF11bqkzC6u0Bvm
- HuCumxrJwvwtCqK4zh+xIcSiHkM4pg+mqe0zbrhg9QIRp5ofbhgAmgAQQaO8bW6AwTOL
- psl5F6NidY+eYDfgBT/qc37jX32CZuzatGm4x6qpwt+7BCsnKDqXx1v6tdGv5stDb2tY
- Z2erDAifDpb6AosaiWLBa04etoS8D/UZVQo3hHzV1nZZkri8cZExNXZxzF1IsdWPYKX5
- dHjA==
-X-Gm-Message-State: AOAM532M6d1DkD28E5TaJ8XNL6faXHhgFSBWpBfw86Q63zvIsWNgTV84
- 3EdK6COLgIHcCI5CW1scQYs=
-X-Google-Smtp-Source: ABdhPJx3i9GuiMNnKWlirproWAKBg0JIByqpe9SRXfc5+rRXed51xGE09BIxEwoqau8Zy8jDwnsrlQ==
-X-Received: by 2002:a17:90a:c28a:: with SMTP id
- f10mr27527975pjt.15.1625672132814; 
- Wed, 07 Jul 2021 08:35:32 -0700 (PDT)
+ bh=vp54ZQawAXt49CkThDbFLyNwiKlz10UxxnQhsKUA4kk=;
+ b=EG/hfmezkMkSrWPBPDPLGBoygkSWAgI0gqaYKCFnkYnUt+Zr1DpTKoz8rKO+r5bvoE
+ o+RMM70wfPNwtwOcs6jV/PEdrsWiEBdFiOTqVwWDrfaWRFc56b3smxWfx4BXBIFjffK9
+ R81gdOYH1b+N3/DhYGKgnlccEshvqBxWpDHzMHs3DOz3f4aSmlsZzlf6Iy6L2ma0/YJz
+ +OOveqadybfTLd1Zqa6ki+1AxFweLpfm6Y6uOUQj7FOuOsOYkX72ssn44w7VQkmehSGS
+ 0/jnNGD5MoqYA7YgwceLXbFXiHBQXoMVDLtPU4Fg1PgDrIStxMwdr0eTdtqCOGvdWbCP
+ cmmQ==
+X-Gm-Message-State: AOAM532U4w2eurAhBMKVUFWnJ5jeabjGGDncN799GvWXfiAwI/0vcyRE
+ +Tfae9s8U3+1iZUhht9UoMQ=
+X-Google-Smtp-Source: ABdhPJy/YtYVUOWKU35lbBAipCtqLf3uH0TJVUFZXqf0ls2icNYxU0hgKlwktbZS6t3Am5XVfFxACw==
+X-Received: by 2002:a65:4286:: with SMTP id j6mr14062875pgp.10.1625672125944; 
+ Wed, 07 Jul 2021 08:35:25 -0700 (PDT)
 Received: from ubuntu-Virtual-Machine.corp.microsoft.com
  ([2001:4898:80e8:0:6b7f:cf3e:bbf2:d229])
- by smtp.gmail.com with ESMTPSA id y11sm21096877pfo.160.2021.07.07.08.35.32
+ by smtp.gmail.com with ESMTPSA id y11sm21096877pfo.160.2021.07.07.08.35.25
  (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
- Wed, 07 Jul 2021 08:35:32 -0700 (PDT)
+ Wed, 07 Jul 2021 08:35:25 -0700 (PDT)
 From: Tianyu Lan <ltykernel@gmail.com>
 To: kys@microsoft.com, haiyangz@microsoft.com, sthemmin@microsoft.com,
  wei.liu@kernel.org, decui@microsoft.com, tglx@linutronix.de,
@@ -99,10 +99,10 @@ To: kys@microsoft.com, haiyangz@microsoft.com, sthemmin@microsoft.com,
  hannes@cmpxchg.org, saravanand@fb.com, krish.sadhukhan@oracle.com,
  xen-devel@lists.xenproject.org, tj@kernel.org,
  michael.h.kelley@microsoft.com
-Subject: [RFC PATCH V4 11/12] HV/Storvsc: Add Isolation VM support for storvsc
- driver
-Date: Wed,  7 Jul 2021 11:34:52 -0400
-Message-Id: <20210707153456.3976348-12-ltykernel@gmail.com>
+Subject: [RFC PATCH V4 08/12] x86/Swiotlb/HV: Add Swiotlb bounce buffer remap
+ function for HV IVM
+Date: Wed,  7 Jul 2021 11:34:49 -0400
+Message-Id: <20210707153456.3976348-9-ltykernel@gmail.com>
 X-Mailer: git-send-email 2.25.1
 In-Reply-To: <20210707153456.3976348-1-ltykernel@gmail.com>
 References: <20210707153456.3976348-1-ltykernel@gmail.com>
@@ -130,160 +130,184 @@ Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
 From: Tianyu Lan <Tianyu.Lan@microsoft.com>
 
-In Isolation VM, all shared memory with host needs to mark visible
-to host via hvcall. vmbus_establish_gpadl() has already done it for
-storvsc rx/tx ring buffer. The page buffer used by vmbus_sendpacket_
-mpb_desc() still need to handle. Use DMA API to map/umap these
-memory during sending/receiving packet and Hyper-V DMA ops callback
-will use swiotlb function to allocate bounce buffer and copy data
-from/to bounce buffer.
+In Isolation VM with AMD SEV, bounce buffer needs to be accessed via
+extra address space which is above shared_gpa_boundary
+(E.G 39 bit address line) reported by Hyper-V CPUID ISOLATION_CONFIG.
+The access physical address will be original physical address +
+shared_gpa_boundary. The shared_gpa_boundary in the AMD SEV SNP
+spec is called virtual top of memory(vTOM). Memory addresses below
+vTOM are automatically treated as private while memory above
+vTOM is treated as shared.
+
+Introduce set_memory_decrypted_map() function to decrypt memory and
+remap memory with platform callback. Use set_memory_decrypted_
+map() in the swiotlb code, store remap address returned by the new
+API and use the remap address to copy data from/to swiotlb bounce buffer.
 
 Signed-off-by: Tianyu Lan <Tianyu.Lan@microsoft.com>
 ---
- drivers/scsi/storvsc_drv.c | 68 +++++++++++++++++++++++++++++++++++---
- 1 file changed, 63 insertions(+), 5 deletions(-)
+ arch/x86/hyperv/ivm.c             | 30 ++++++++++++++++++++++++++++++
+ arch/x86/include/asm/mshyperv.h   |  2 ++
+ arch/x86/include/asm/set_memory.h |  2 ++
+ arch/x86/mm/pat/set_memory.c      | 28 ++++++++++++++++++++++++++++
+ include/linux/swiotlb.h           |  4 ++++
+ kernel/dma/swiotlb.c              | 11 ++++++++---
+ 6 files changed, 74 insertions(+), 3 deletions(-)
 
-diff --git a/drivers/scsi/storvsc_drv.c b/drivers/scsi/storvsc_drv.c
-index 403753929320..cc9cb32f6621 100644
---- a/drivers/scsi/storvsc_drv.c
-+++ b/drivers/scsi/storvsc_drv.c
-@@ -21,6 +21,8 @@
- #include <linux/device.h>
- #include <linux/hyperv.h>
- #include <linux/blkdev.h>
-+#include <linux/io.h>
-+#include <linux/dma-mapping.h>
- #include <scsi/scsi.h>
- #include <scsi/scsi_cmnd.h>
- #include <scsi/scsi_host.h>
-@@ -427,6 +429,8 @@ struct storvsc_cmd_request {
- 	u32 payload_sz;
- 
- 	struct vstor_packet vstor_packet;
-+	u32 hvpg_count;
-+	struct hv_dma_range *dma_range;
- };
- 
- 
-@@ -509,6 +513,14 @@ struct storvsc_scan_work {
- 	u8 tgt_id;
- };
- 
-+#define storvsc_dma_map(dev, page, offset, size, dir) \
-+	dma_map_page(dev, page, offset, size, dir)
+diff --git a/arch/x86/hyperv/ivm.c b/arch/x86/hyperv/ivm.c
+index 8a6f4e9e3d6c..ea33935e0c17 100644
+--- a/arch/x86/hyperv/ivm.c
++++ b/arch/x86/hyperv/ivm.c
+@@ -267,3 +267,33 @@ int hv_set_mem_enc(unsigned long addr, int numpages, bool enc)
+ 			enc ? VMBUS_PAGE_NOT_VISIBLE
+ 			: VMBUS_PAGE_VISIBLE_READ_WRITE);
+ }
 +
-+#define storvsc_dma_unmap(dev, dma_range, dir)		\
-+		dma_unmap_page(dev, dma_range.dma,	\
-+			       dma_range.mapping_size,	\
-+			       dir ? DMA_FROM_DEVICE : DMA_TO_DEVICE)
-+
- static void storvsc_device_scan(struct work_struct *work)
- {
- 	struct storvsc_scan_work *wrk;
-@@ -1267,6 +1279,7 @@ static void storvsc_on_channel_callback(void *context)
- 	struct hv_device *device;
- 	struct storvsc_device *stor_device;
- 	struct Scsi_Host *shost;
++/*
++ * hv_map_memory - map memory to extra space in the AMD SEV-SNP Isolation VM.
++ */
++unsigned long hv_map_memory(unsigned long addr, unsigned long size)
++{
++	unsigned long *pfns = kcalloc(size / HV_HYP_PAGE_SIZE,
++				      sizeof(unsigned long),
++		       GFP_KERNEL);
++	unsigned long vaddr;
 +	int i;
- 
- 	if (channel->primary_channel != NULL)
- 		device = channel->primary_channel->device_obj;
-@@ -1321,6 +1334,15 @@ static void storvsc_on_channel_callback(void *context)
- 				request = (struct storvsc_cmd_request *)scsi_cmd_priv(scmnd);
- 			}
- 
-+			if (request->dma_range) {
-+				for (i = 0; i < request->hvpg_count; i++)
-+					storvsc_dma_unmap(&device->device,
-+						request->dma_range[i],
-+						request->vstor_packet.vm_srb.data_in == READ_TYPE);
 +
-+				kfree(request->dma_range);
-+			}
++	if (!pfns)
++		return (unsigned long)NULL;
 +
- 			storvsc_on_receive(stor_device, packet, request);
- 			continue;
- 		}
-@@ -1817,7 +1839,9 @@ static int storvsc_queuecommand(struct Scsi_Host *host, struct scsi_cmnd *scmnd)
- 		unsigned int hvpgoff, hvpfns_to_add;
- 		unsigned long offset_in_hvpg = offset_in_hvpage(sgl->offset);
- 		unsigned int hvpg_count = HVPFN_UP(offset_in_hvpg + length);
-+		dma_addr_t dma;
- 		u64 hvpfn;
-+		u32 size;
- 
- 		if (hvpg_count > MAX_PAGE_BUFFER_COUNT) {
- 
-@@ -1831,6 +1855,13 @@ static int storvsc_queuecommand(struct Scsi_Host *host, struct scsi_cmnd *scmnd)
- 		payload->range.len = length;
- 		payload->range.offset = offset_in_hvpg;
- 
-+		cmd_request->dma_range = kcalloc(hvpg_count,
-+				 sizeof(*cmd_request->dma_range),
-+				 GFP_ATOMIC);
-+		if (!cmd_request->dma_range) {
-+			ret = -ENOMEM;
-+			goto free_payload;
-+		}
- 
- 		for (i = 0; sgl != NULL; sgl = sg_next(sgl)) {
- 			/*
-@@ -1854,9 +1885,29 @@ static int storvsc_queuecommand(struct Scsi_Host *host, struct scsi_cmnd *scmnd)
- 			 * last sgl should be reached at the same time that
- 			 * the PFN array is filled.
- 			 */
--			while (hvpfns_to_add--)
--				payload->range.pfn_array[i++] =	hvpfn++;
-+			while (hvpfns_to_add--) {
-+				size = min(HV_HYP_PAGE_SIZE - offset_in_hvpg,
-+					   (unsigned long)length);
-+				dma = storvsc_dma_map(&dev->device, pfn_to_page(hvpfn++),
-+						      offset_in_hvpg, size,
-+						      scmnd->sc_data_direction);
-+				if (dma_mapping_error(&dev->device, dma)) {
-+					ret = -ENOMEM;
-+					goto free_dma_range;
-+				}
++	for (i = 0; i < size / HV_HYP_PAGE_SIZE; i++)
++		pfns[i] = virt_to_hvpfn((void *)addr + i * HV_HYP_PAGE_SIZE) +
++			(ms_hyperv.shared_gpa_boundary >> HV_HYP_PAGE_SHIFT);
 +
-+				if (offset_in_hvpg) {
-+					payload->range.offset = dma & ~HV_HYP_PAGE_MASK;
-+					offset_in_hvpg = 0;
-+				}
++	vaddr = (unsigned long)vmap_pfn(pfns, size / HV_HYP_PAGE_SIZE,
++					PAGE_KERNEL_IO);
++	kfree(pfns);
 +
-+				cmd_request->dma_range[i].dma = dma;
-+				cmd_request->dma_range[i].mapping_size = size;
-+				payload->range.pfn_array[i++] = dma >> HV_HYP_PAGE_SHIFT;
-+				length -= size;
-+			}
- 		}
-+		cmd_request->hvpg_count = hvpg_count;
++	return vaddr;
++}
++
++void hv_unmap_memory(unsigned long addr)
++{
++	vunmap((void *)addr);
++}
+diff --git a/arch/x86/include/asm/mshyperv.h b/arch/x86/include/asm/mshyperv.h
+index fe03e3e833ac..ba3cb9e32fdb 100644
+--- a/arch/x86/include/asm/mshyperv.h
++++ b/arch/x86/include/asm/mshyperv.h
+@@ -253,6 +253,8 @@ int hv_map_ioapic_interrupt(int ioapic_id, bool level, int vcpu, int vector,
+ int hv_unmap_ioapic_interrupt(int ioapic_id, struct hv_interrupt_entry *entry);
+ int hv_mark_gpa_visibility(u16 count, const u64 pfn[], u32 visibility);
+ int hv_set_mem_enc(unsigned long addr, int numpages, bool enc);
++unsigned long hv_map_memory(unsigned long addr, unsigned long size);
++void hv_unmap_memory(unsigned long addr);
+ void hv_sint_wrmsrl_ghcb(u64 msr, u64 value);
+ void hv_sint_rdmsrl_ghcb(u64 msr, u64 *value);
+ void hv_signal_eom_ghcb(void);
+diff --git a/arch/x86/include/asm/set_memory.h b/arch/x86/include/asm/set_memory.h
+index 43fa081a1adb..7a2117931830 100644
+--- a/arch/x86/include/asm/set_memory.h
++++ b/arch/x86/include/asm/set_memory.h
+@@ -49,6 +49,8 @@ int set_memory_decrypted(unsigned long addr, int numpages);
+ int set_memory_np_noalias(unsigned long addr, int numpages);
+ int set_memory_nonglobal(unsigned long addr, int numpages);
+ int set_memory_global(unsigned long addr, int numpages);
++unsigned long set_memory_decrypted_map(unsigned long addr, unsigned long size);
++int set_memory_encrypted_unmap(unsigned long addr, unsigned long size);
+ 
+ int set_pages_array_uc(struct page **pages, int addrinarray);
+ int set_pages_array_wc(struct page **pages, int addrinarray);
+diff --git a/arch/x86/mm/pat/set_memory.c b/arch/x86/mm/pat/set_memory.c
+index 6cc83c57383d..5d4d3963f4a2 100644
+--- a/arch/x86/mm/pat/set_memory.c
++++ b/arch/x86/mm/pat/set_memory.c
+@@ -2039,6 +2039,34 @@ int set_memory_decrypted(unsigned long addr, int numpages)
+ }
+ EXPORT_SYMBOL_GPL(set_memory_decrypted);
+ 
++static unsigned long __map_memory(unsigned long addr, unsigned long size)
++{
++	if (hv_is_isolation_supported())
++		return hv_map_memory(addr, size);
++
++	return addr;
++}
++
++static void __unmap_memory(unsigned long addr)
++{
++	if (hv_is_isolation_supported())
++		hv_unmap_memory(addr);
++}
++
++unsigned long set_memory_decrypted_map(unsigned long addr, unsigned long size)
++{
++	if (__set_memory_enc_dec(addr, size / PAGE_SIZE, false))
++		return (unsigned long)NULL;
++
++	return __map_memory(addr, size);
++}
++
++int set_memory_encrypted_unmap(unsigned long addr, unsigned long size)
++{
++	__unmap_memory(addr);
++	return __set_memory_enc_dec(addr, size / PAGE_SIZE, true);
++}
++
+ int set_pages_uc(struct page *page, int numpages)
+ {
+ 	unsigned long addr = (unsigned long)page_address(page);
+diff --git a/include/linux/swiotlb.h b/include/linux/swiotlb.h
+index f507e3eacbea..5c6f6c7380ef 100644
+--- a/include/linux/swiotlb.h
++++ b/include/linux/swiotlb.h
+@@ -72,6 +72,9 @@ extern enum swiotlb_force swiotlb_force;
+  * @end:	The end address of the swiotlb memory pool. Used to do a quick
+  *		range check to see if the memory was in fact allocated by this
+  *		API.
++ * @vstart:	The virtual start address of the swiotlb memory pool. The swiotlb
++ *		memory pool may be remapped in the memory encrypted case and store
++ *		virtual address for bounce buffer operation.
+  * @nslabs:	The number of IO TLB blocks (in groups of 64) between @start and
+  *		@end. For default swiotlb, this is command line adjustable via
+  *		setup_io_tlb_npages.
+@@ -89,6 +92,7 @@ extern enum swiotlb_force swiotlb_force;
+ struct io_tlb_mem {
+ 	phys_addr_t start;
+ 	phys_addr_t end;
++	void *vstart;
+ 	unsigned long nslabs;
+ 	unsigned long used;
+ 	unsigned int index;
+diff --git a/kernel/dma/swiotlb.c b/kernel/dma/swiotlb.c
+index d3fa4669229b..9911817250a8 100644
+--- a/kernel/dma/swiotlb.c
++++ b/kernel/dma/swiotlb.c
+@@ -194,8 +194,13 @@ static void swiotlb_init_io_tlb_mem(struct io_tlb_mem *mem, phys_addr_t start,
+ 		mem->slots[i].alloc_size = 0;
  	}
  
- 	cmd_request->payload = payload;
-@@ -1867,13 +1918,20 @@ static int storvsc_queuecommand(struct Scsi_Host *host, struct scsi_cmnd *scmnd)
- 	put_cpu();
- 
- 	if (ret == -EAGAIN) {
--		if (payload_sz > sizeof(cmd_request->mpb))
--			kfree(payload);
- 		/* no more space */
--		return SCSI_MLQUEUE_DEVICE_BUSY;
-+		ret = SCSI_MLQUEUE_DEVICE_BUSY;
-+		goto free_dma_range;
- 	}
- 
- 	return 0;
+-	set_memory_decrypted((unsigned long)vaddr, bytes >> PAGE_SHIFT);
+-	memset(vaddr, 0, bytes);
++	mem->vstart = (void *)set_memory_decrypted_map((unsigned long)vaddr, bytes);
++	if (!mem->vstart) {
++		pr_err("Failed to decrypt memory.\n");
++		return;
++	}
 +
-+free_dma_range:
-+	kfree(cmd_request->dma_range);
-+
-+free_payload:
-+	if (payload_sz > sizeof(cmd_request->mpb))
-+		kfree(payload);
-+	return ret;
++	memset(mem->vstart, 0, bytes);
  }
  
- static struct scsi_host_template scsi_driver = {
+ int __init swiotlb_init_with_tbl(char *tlb, unsigned long nslabs, int verbose)
+@@ -352,7 +357,7 @@ static void swiotlb_bounce(struct device *dev, phys_addr_t tlb_addr, size_t size
+ 	phys_addr_t orig_addr = mem->slots[index].orig_addr;
+ 	size_t alloc_size = mem->slots[index].alloc_size;
+ 	unsigned long pfn = PFN_DOWN(orig_addr);
+-	unsigned char *vaddr = phys_to_virt(tlb_addr);
++	unsigned char *vaddr = mem->vstart + tlb_addr - mem->start;
+ 
+ 	if (orig_addr == INVALID_PHYS_ADDR)
+ 		return;
 -- 
 2.25.1
 
