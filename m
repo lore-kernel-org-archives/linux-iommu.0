@@ -2,73 +2,116 @@ Return-Path: <SRS0=iPMr=L7=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-15.2 required=3.0 tests=BAYES_00,
-	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_CR_TRAILER,INCLUDES_PATCH,
-	MAILING_LIST_MULTI,NICE_REPLY_A,SPF_HELO_NONE,SPF_PASS,URIBL_RED,
-	USER_AGENT_SANE_1 autolearn=unavailable autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-13.5 required=3.0 tests=BAYES_00,
+	DKIM_ADSP_CUSTOM_MED,DKIM_INVALID,DKIM_SIGNED,FREEMAIL_FORGED_FROMDOMAIN,
+	FREEMAIL_FROM,HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_CR_TRAILER,
+	INCLUDES_PATCH,MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,URIBL_RED,
+	USER_AGENT_GIT autolearn=ham autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E7BBCC07E95
-	for <iommu@archiver.kernel.org>; Wed,  7 Jul 2021 11:47:18 +0000 (UTC)
-Received: from smtp4.osuosl.org (smtp4.osuosl.org [140.211.166.137])
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 724A7C07E9B
+	for <iommu@archiver.kernel.org>; Wed,  7 Jul 2021 15:35:12 +0000 (UTC)
+Received: from smtp2.osuosl.org (smtp2.osuosl.org [140.211.166.133])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 82A9B61CBA
-	for <iommu@archiver.kernel.org>; Wed,  7 Jul 2021 11:47:18 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 82A9B61CBA
-Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=arm.com
+	by mail.kernel.org (Postfix) with ESMTPS id 221A961CBF
+	for <iommu@archiver.kernel.org>; Wed,  7 Jul 2021 15:35:11 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 221A961CBF
+Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=gmail.com
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by smtp4.osuosl.org (Postfix) with ESMTP id 46242403A9;
-	Wed,  7 Jul 2021 11:47:18 +0000 (UTC)
+	by smtp2.osuosl.org (Postfix) with ESMTP id BE88E4059D;
+	Wed,  7 Jul 2021 15:35:11 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from smtp4.osuosl.org ([127.0.0.1])
-	by localhost (smtp4.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id 38LOwvgG5UEU; Wed,  7 Jul 2021 11:47:17 +0000 (UTC)
+Received: from smtp2.osuosl.org ([127.0.0.1])
+	by localhost (smtp2.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+	with ESMTP id mqkgG31ecSSX; Wed,  7 Jul 2021 15:35:09 +0000 (UTC)
 Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by smtp4.osuosl.org (Postfix) with ESMTPS id D182B40294;
-	Wed,  7 Jul 2021 11:47:16 +0000 (UTC)
+	by smtp2.osuosl.org (Postfix) with ESMTPS id 869B540282;
+	Wed,  7 Jul 2021 15:35:09 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id A562BC001A;
-	Wed,  7 Jul 2021 11:47:16 +0000 (UTC)
-Received: from smtp1.osuosl.org (smtp1.osuosl.org [IPv6:2605:bc80:3010::138])
- by lists.linuxfoundation.org (Postfix) with ESMTP id E85ABC000E
- for <iommu@lists.linux-foundation.org>; Wed,  7 Jul 2021 11:47:14 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 5EA3DC001A;
+	Wed,  7 Jul 2021 15:35:09 +0000 (UTC)
+Received: from smtp3.osuosl.org (smtp3.osuosl.org [140.211.166.136])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id C57CFC000E
+ for <iommu@lists.linux-foundation.org>; Wed,  7 Jul 2021 15:35:07 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by smtp1.osuosl.org (Postfix) with ESMTP id E42C0835D9
- for <iommu@lists.linux-foundation.org>; Wed,  7 Jul 2021 11:47:14 +0000 (UTC)
+ by smtp3.osuosl.org (Postfix) with ESMTP id B385560648
+ for <iommu@lists.linux-foundation.org>; Wed,  7 Jul 2021 15:35:07 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from smtp1.osuosl.org ([127.0.0.1])
- by localhost (smtp1.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id nTs0Rxlkhe4v for <iommu@lists.linux-foundation.org>;
- Wed,  7 Jul 2021 11:47:14 +0000 (UTC)
-X-Greylist: domain auto-whitelisted by SQLgrey-1.8.0
-Received: from foss.arm.com (foss.arm.com [217.140.110.172])
- by smtp1.osuosl.org (Postfix) with ESMTP id DFF74834C6
- for <iommu@lists.linux-foundation.org>; Wed,  7 Jul 2021 11:47:13 +0000 (UTC)
-Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
- by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 0300C1042;
- Wed,  7 Jul 2021 04:47:13 -0700 (PDT)
-Received: from [10.57.35.192] (unknown [10.57.35.192])
- by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id EABE63F73B;
- Wed,  7 Jul 2021 04:47:11 -0700 (PDT)
-Subject: Re: [RFC PATCH 1/1] dma-debug: fix check_for_illegal_area() in
- debug_dma_map_sg()
-To: Gerald Schaefer <gerald.schaefer@linux.ibm.com>
-References: <20210705185252.4074653-1-gerald.schaefer@linux.ibm.com>
- <20210705185252.4074653-2-gerald.schaefer@linux.ibm.com>
- <3bb87b4c-f646-20fe-7cc5-c7449432811e@arm.com>
- <20210706211207.48f15496@thinkpad>
-From: Robin Murphy <robin.murphy@arm.com>
-Message-ID: <ae61c67a-6735-ed72-adf3-56570c9b7251@arm.com>
-Date: Wed, 7 Jul 2021 12:47:07 +0100
-User-Agent: Mozilla/5.0 (Windows NT 10.0; rv:78.0) Gecko/20100101
- Thunderbird/78.11.0
+Authentication-Results: smtp3.osuosl.org (amavisd-new);
+ dkim=pass (2048-bit key) header.d=gmail.com
+Received: from smtp3.osuosl.org ([127.0.0.1])
+ by localhost (smtp3.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+ with ESMTP id pMjWkUytiqs1 for <iommu@lists.linux-foundation.org>;
+ Wed,  7 Jul 2021 15:35:07 +0000 (UTC)
+X-Greylist: whitelisted by SQLgrey-1.8.0
+Received: from mail-pg1-x532.google.com (mail-pg1-x532.google.com
+ [IPv6:2607:f8b0:4864:20::532])
+ by smtp3.osuosl.org (Postfix) with ESMTPS id 35C56605AC
+ for <iommu@lists.linux-foundation.org>; Wed,  7 Jul 2021 15:35:07 +0000 (UTC)
+Received: by mail-pg1-x532.google.com with SMTP id u14so2606840pga.11
+ for <iommu@lists.linux-foundation.org>; Wed, 07 Jul 2021 08:35:07 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=gmail.com; s=20161025;
+ h=from:to:cc:subject:date:message-id:in-reply-to:references
+ :mime-version:content-transfer-encoding;
+ bh=0MmjMjO7XvUbpBRdqqPG7tGmikUa5z2pWikCp/JzIEY=;
+ b=NVwj9Iuc5KEhy+VNjKuoKXzwovkub/uFAwYhE0AnnHBmasJim5Egk/ApBPBkeHElpd
+ Ip4OV9iRzcuH1M98BYimUE0ATtc9OZzjxhp9kVenh+1g2GC7j0FGlwVlX76/eAv9AUy5
+ 9BQLpOGq8N2Gl/12RRnCeEgUIV0/g/2A0sPA+EBgMkN3+JMDARX4y7TLbUDo0GsG2/oC
+ JKM5rBkRlzM/vVRtQvdfIYDxvguje020NHwrbcvP3/tBkvF9IwOH4Gv8qwl1sFaYA/rf
+ CE1zyF098euLk/pqCyShxE6yRwQHIyt8iAJXiqdBMrt+jGjPdOKIVaPjsI5TtBYHsTF2
+ b/SQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+ d=1e100.net; s=20161025;
+ h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
+ :references:mime-version:content-transfer-encoding;
+ bh=0MmjMjO7XvUbpBRdqqPG7tGmikUa5z2pWikCp/JzIEY=;
+ b=DuFgAkaOc3/V6pmsOjhfzdRksB62nH/8/2px7HhnXpAm7tmdXAbCRMJF56T/MnQfLD
+ 9jSjPVS6XMED1TshMg1jrEi3NVXVJAqtP13LK4F4k1w+jblQUlbOCfDT5QgqOWx0plxO
+ JAMbjB8I2/R48QeL3In2SH2rHv7Hya3NkW0ENkpFocwfxVl05c67451XO6bNqRJaESU1
+ 25ju7Fk2Fw+k4giWChifMYFqribe9RVcFEuK0hMCt4InO2TDOPSUQHfTnwTSp7ZZ5abo
+ Bxx7yYmcdW1o1UdsvzwOZ6K211IYBrM6yWwUb/WmAfdzClRRSPIFMDE69K5yONKH5rMw
+ hq9A==
+X-Gm-Message-State: AOAM532NsUHolN3RT9UYPG6iJOD7Tpeqf2VZilK2vHAxuYrpIYF0OWPB
+ 1x1Vs8/Hy9DMJnokoHQotM0=
+X-Google-Smtp-Source: ABdhPJyEyO7Cyr41C6lgwYWdThy32+NVXiborZ3KnwFy57UZ1FE8H+OlybQRDClF4kF5jUwodhf1Og==
+X-Received: by 2002:aa7:8e18:0:b029:2ec:a754:570e with SMTP id
+ c24-20020aa78e180000b02902eca754570emr26014073pfr.38.1625672106748; 
+ Wed, 07 Jul 2021 08:35:06 -0700 (PDT)
+Received: from ubuntu-Virtual-Machine.corp.microsoft.com
+ ([2001:4898:80e8:0:6b7f:cf3e:bbf2:d229])
+ by smtp.gmail.com with ESMTPSA id y11sm21096877pfo.160.2021.07.07.08.35.05
+ (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+ Wed, 07 Jul 2021 08:35:06 -0700 (PDT)
+From: Tianyu Lan <ltykernel@gmail.com>
+To: kys@microsoft.com, haiyangz@microsoft.com, sthemmin@microsoft.com,
+ wei.liu@kernel.org, decui@microsoft.com, tglx@linutronix.de,
+ mingo@redhat.com, bp@alien8.de, x86@kernel.org, hpa@zytor.com,
+ dave.hansen@linux.intel.com, luto@kernel.org, peterz@infradead.org,
+ konrad.wilk@oracle.com, boris.ostrovsky@oracle.com, jgross@suse.com,
+ sstabellini@kernel.org, joro@8bytes.org, will@kernel.org,
+ davem@davemloft.net, kuba@kernel.org, jejb@linux.ibm.com,
+ martin.petersen@oracle.com, arnd@arndb.de, hch@lst.de,
+ m.szyprowski@samsung.com, robin.murphy@arm.com, rppt@kernel.org,
+ akpm@linux-foundation.org, kirill.shutemov@linux.intel.com,
+ Tianyu.Lan@microsoft.com, thomas.lendacky@amd.com, ardb@kernel.org,
+ nramas@linux.microsoft.com, robh@kernel.org, keescook@chromium.org,
+ rientjes@google.com, pgonda@google.com, martin.b.radev@gmail.com,
+ hannes@cmpxchg.org, saravanand@fb.com, krish.sadhukhan@oracle.com,
+ xen-devel@lists.xenproject.org, tj@kernel.org,
+ michael.h.kelley@microsoft.com
+Subject: [RFC PATCH V4 01/12] x86/HV: Initialize shared memory boundary in the
+ Isolation VM.
+Date: Wed,  7 Jul 2021 11:34:42 -0400
+Message-Id: <20210707153456.3976348-2-ltykernel@gmail.com>
+X-Mailer: git-send-email 2.25.1
+In-Reply-To: <20210707153456.3976348-1-ltykernel@gmail.com>
+References: <20210707153456.3976348-1-ltykernel@gmail.com>
 MIME-Version: 1.0
-In-Reply-To: <20210706211207.48f15496@thinkpad>
-Content-Language: en-GB
-Cc: linux-s390 <linux-s390@vger.kernel.org>, iommu@lists.linux-foundation.org,
- Niklas Schnelle <schnelle@linux.ibm.com>, Christoph Hellwig <hch@lst.de>,
- LKML <linux-kernel@vger.kernel.org>
+Cc: linux-arch@vger.kernel.org, linux-hyperv@vger.kernel.org,
+ brijesh.singh@amd.com, linux-scsi@vger.kernel.org, netdev@vger.kernel.org,
+ linux-kernel@vger.kernel.org, iommu@lists.linux-foundation.org,
+ anparri@microsoft.com, vkuznets@redhat.com
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -81,108 +124,64 @@ List-Post: <mailto:iommu@lists.linux-foundation.org>
 List-Help: <mailto:iommu-request@lists.linux-foundation.org?subject=help>
 List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
  <mailto:iommu-request@lists.linux-foundation.org?subject=subscribe>
+Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
-Content-Type: text/plain; charset="us-ascii"; Format="flowed"
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-On 2021-07-06 20:12, Gerald Schaefer wrote:
-> On Tue, 6 Jul 2021 10:22:40 +0100
-> Robin Murphy <robin.murphy@arm.com> wrote:
-> 
->> On 2021-07-05 19:52, Gerald Schaefer wrote:
->>> The following warning occurred sporadically on s390:
->>> DMA-API: nvme 0006:00:00.0: device driver maps memory from kernel text or rodata [addr=0000000048cc5e2f] [len=131072]
->>> WARNING: CPU: 4 PID: 825 at kernel/dma/debug.c:1083 check_for_illegal_area+0xa8/0x138
->>>
->>> It is a false-positive warning, due to a broken logic in debug_dma_map_sg().
->>> check_for_illegal_area() should check for overlay of sg elements with kernel
->>> text or rodata. It is called with sg_dma_len(s) instead of s->length as
->>> parameter. After the call to ->map_sg(), sg_dma_len() contains the length
->>> of possibly combined sg elements in the DMA address space, and not the
->>> individual sg element length, which would be s->length.
->>>
->>> The check will then use the kernel start address of an sg element, and add
->>> the DMA length for overlap check, which can result in the false-positive
->>> warning because the DMA length can be larger than the actual single sg
->>> element length in kernel address space.
->>>
->>> In addition, the call to check_for_illegal_area() happens in the iteration
->>> over mapped_ents, which will not include all individual sg elements if
->>> any of them were combined in ->map_sg().
->>>
->>> Fix this by using s->length instead of sg_dma_len(s). Also put the call to
->>> check_for_illegal_area() in a separate loop, iterating over all the
->>> individual sg elements ("nents" instead of "mapped_ents").
->>>
->>> Fixes: 884d05970bfb ("dma-debug: use sg_dma_len accessor")
->>> Tested-by: Niklas Schnelle <schnelle@linux.ibm.com>
->>> Signed-off-by: Gerald Schaefer <gerald.schaefer@linux.ibm.com>
->>> ---
->>>    kernel/dma/debug.c | 10 ++++++----
->>>    1 file changed, 6 insertions(+), 4 deletions(-)
->>>
->>> diff --git a/kernel/dma/debug.c b/kernel/dma/debug.c
->>> index 14de1271463f..d7d44b7fe7e2 100644
->>> --- a/kernel/dma/debug.c
->>> +++ b/kernel/dma/debug.c
->>> @@ -1299,6 +1299,12 @@ void debug_dma_map_sg(struct device *dev, struct scatterlist *sg,
->>>    	if (unlikely(dma_debug_disabled()))
->>>    		return;
->>>    
->>> +	for_each_sg(sg, s, nents, i) {
->>> +		if (!PageHighMem(sg_page(s))) {
->>> +			check_for_illegal_area(dev, sg_virt(s), s->length);
->>> +		}
->>> +	}
->>> +
->>>    	for_each_sg(sg, s, mapped_ents, i) {
->>>    		entry = dma_entry_alloc();
->>>    		if (!entry)
->>> @@ -1316,10 +1322,6 @@ void debug_dma_map_sg(struct device *dev, struct scatterlist *sg,
->>>    
->>>    		check_for_stack(dev, sg_page(s), s->offset);
->>
->> Strictly this should probably be moved to the new loop as well, as it is
->> similarly concerned with validating the source segments rather than the
->> DMA mappings - I think with virtually-mapped stacks it might technically
->> be possible for a stack page to be physically adjacent to a "valid" page
->> such that it could get merged and overlooked if it were near the end of
->> the list, although in fairness that would probably be indicative of
->> something having gone far more fundamentally wrong. Otherwise, the
->> overall reasoning looks sound to me.
-> 
-> I see, good point. I think I can add this to my patch, and a different
-> subject like "dma-debug: fix sg checks in debug_dma_map_sg()".
+From: Tianyu Lan <Tianyu.Lan@microsoft.com>
 
-TBH it's more of a conceptual cleanliness thing than a significant 
-practical concern, but if we *are* breaking out a separate "validate the 
-source elements" step then it does seem logical to capture everything 
-relevant at once.
+Hyper-V exposes shared memory boundary via cpuid
+HYPERV_CPUID_ISOLATION_CONFIG and store it in the
+shared_gpa_boundary of ms_hyperv struct. This prepares
+to share memory with host for SNP guest.
 
-> However, I do not quite understand why check_for_stack() does not also
-> consider s->length. It seems to check only the first page of an sg
-> element.
-> 
-> So, shouldn't check_for_stack() behave similar to check_for_illegal_area(),
-> i.e. check all source sg elements for overlap with the task stack area?
+Signed-off-by: Tianyu Lan <Tianyu.Lan@microsoft.com>
+---
+ arch/x86/kernel/cpu/mshyperv.c |  2 ++
+ include/asm-generic/mshyperv.h | 12 +++++++++++-
+ 2 files changed, 13 insertions(+), 1 deletion(-)
 
-Realistically, creating a scatterlist segment pointing to the stack at 
-all would already be quite an audacious feat of brokenness, but getting 
-a random stack page in the middle of a segment would seem to imply 
-something having gone so catastrophically wrong that it's destined to 
-end very badly whether or not dma-debug squawks about it - not to 
-mention getting lucky enough for said random stack page to actually 
-belong to the current task stack in the first place :)
+diff --git a/arch/x86/kernel/cpu/mshyperv.c b/arch/x86/kernel/cpu/mshyperv.c
+index 10b2a8c10cb6..8aed689db621 100644
+--- a/arch/x86/kernel/cpu/mshyperv.c
++++ b/arch/x86/kernel/cpu/mshyperv.c
+@@ -334,6 +334,8 @@ static void __init ms_hyperv_init_platform(void)
+ 	if (ms_hyperv.priv_high & HV_ISOLATION) {
+ 		ms_hyperv.isolation_config_a = cpuid_eax(HYPERV_CPUID_ISOLATION_CONFIG);
+ 		ms_hyperv.isolation_config_b = cpuid_ebx(HYPERV_CPUID_ISOLATION_CONFIG);
++		ms_hyperv.shared_gpa_boundary =
++			(u64)1 << ms_hyperv.shared_gpa_boundary_bits;
+ 
+ 		pr_info("Hyper-V: Isolation Config: Group A 0x%x, Group B 0x%x\n",
+ 			ms_hyperv.isolation_config_a, ms_hyperv.isolation_config_b);
+diff --git a/include/asm-generic/mshyperv.h b/include/asm-generic/mshyperv.h
+index 3ae56a29594f..2914e27b0429 100644
+--- a/include/asm-generic/mshyperv.h
++++ b/include/asm-generic/mshyperv.h
+@@ -34,8 +34,18 @@ struct ms_hyperv_info {
+ 	u32 max_vp_index;
+ 	u32 max_lp_index;
+ 	u32 isolation_config_a;
+-	u32 isolation_config_b;
++	union {
++		u32 isolation_config_b;
++		struct {
++			u32 cvm_type : 4;
++			u32 Reserved11 : 1;
++			u32 shared_gpa_boundary_active : 1;
++			u32 shared_gpa_boundary_bits : 6;
++			u32 Reserved12 : 20;
++		};
++	};
+ 	void  __percpu **ghcb_base;
++	u64 shared_gpa_boundary;
+ };
+ extern struct ms_hyperv_info ms_hyperv;
+ 
+-- 
+2.25.1
 
-Robin.
-
-> If yes, then this probably should be a separate patch, but I can try
-> to come up with something and send a new RFC with two patches. Maybe
-> check_for_stack() can also be integrated into check_for_illegal_area(),
-> they are both called at the same places. And mapping memory from the
-> stack also sounds rather illegal.
-> 
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
