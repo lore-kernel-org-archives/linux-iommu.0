@@ -2,80 +2,109 @@ Return-Path: <SRS0=RnLw=MA=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-16.8 required=3.0 tests=BAYES_00,DKIM_INVALID,
-	DKIM_SIGNED,HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_CR_TRAILER,INCLUDES_PATCH,
-	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_GIT
-	autolearn=unavailable autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-5.3 required=3.0 tests=BAYES_00,DKIM_INVALID,
+	DKIM_SIGNED,MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,
+	USER_AGENT_SANE_1 autolearn=no autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 90DC4C07E99
-	for <iommu@archiver.kernel.org>; Thu,  8 Jul 2021 16:44:30 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9AEE6C11F67
+	for <iommu@archiver.kernel.org>; Thu,  8 Jul 2021 16:44:34 +0000 (UTC)
 Received: from smtp1.osuosl.org (smtp1.osuosl.org [140.211.166.138])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 46AD761451
-	for <iommu@archiver.kernel.org>; Thu,  8 Jul 2021 16:44:30 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 46AD761451
-Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=canonical.com
+	by mail.kernel.org (Postfix) with ESMTPS id 4B0F961874
+	for <iommu@archiver.kernel.org>; Thu,  8 Jul 2021 16:44:34 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 4B0F961874
+Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=kernel.org
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by smtp1.osuosl.org (Postfix) with ESMTP id 08ED383C48;
-	Thu,  8 Jul 2021 16:44:30 +0000 (UTC)
+	by smtp1.osuosl.org (Postfix) with ESMTP id 1B87C83C48;
+	Thu,  8 Jul 2021 16:44:34 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
 Received: from smtp1.osuosl.org ([127.0.0.1])
 	by localhost (smtp1.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id dItdsZ9Y6QP1; Thu,  8 Jul 2021 16:44:29 +0000 (UTC)
+	with ESMTP id HYJx4rlcJfoa; Thu,  8 Jul 2021 16:44:33 +0000 (UTC)
 Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by smtp1.osuosl.org (Postfix) with ESMTPS id D934D83C51;
-	Thu,  8 Jul 2021 16:44:28 +0000 (UTC)
+	by smtp1.osuosl.org (Postfix) with ESMTPS id 037A183C51;
+	Thu,  8 Jul 2021 16:44:32 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id B1D57C001A;
-	Thu,  8 Jul 2021 16:44:28 +0000 (UTC)
-Received: from smtp4.osuosl.org (smtp4.osuosl.org [IPv6:2605:bc80:3010::137])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 01518C001A
- for <iommu@lists.linux-foundation.org>; Thu,  8 Jul 2021 16:44:28 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id DFD47C001A;
+	Thu,  8 Jul 2021 16:44:32 +0000 (UTC)
+Received: from smtp3.osuosl.org (smtp3.osuosl.org [IPv6:2605:bc80:3010::136])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 4BDFCC000E
+ for <iommu@lists.linux-foundation.org>; Thu,  8 Jul 2021 16:44:32 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by smtp4.osuosl.org (Postfix) with ESMTP id D3B46421D8
- for <iommu@lists.linux-foundation.org>; Thu,  8 Jul 2021 16:44:27 +0000 (UTC)
+ by smtp3.osuosl.org (Postfix) with ESMTP id 2AAAC60C10
+ for <iommu@lists.linux-foundation.org>; Thu,  8 Jul 2021 16:44:32 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Authentication-Results: smtp4.osuosl.org (amavisd-new);
- dkim=pass (2048-bit key) header.d=canonical.com
-Received: from smtp4.osuosl.org ([127.0.0.1])
- by localhost (smtp4.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id F1UbTI6u3QBy for <iommu@lists.linux-foundation.org>;
- Thu,  8 Jul 2021 16:44:27 +0000 (UTC)
-X-Greylist: from auto-whitelisted by SQLgrey-1.8.0
-Received: from smtp-relay-canonical-1.canonical.com
- (185-125-188-181.canonical.com [185.125.188.181])
- by smtp4.osuosl.org (Postfix) with ESMTPS id 0F76C41643
- for <iommu@lists.linux-foundation.org>; Thu,  8 Jul 2021 16:44:26 +0000 (UTC)
-Received: from localhost (1.general.khfeng.us.vpn [10.172.68.174])
- (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
- key-exchange ECDHE (P-256) server-signature RSA-PSS (2048 bits) server-digest
- SHA256) (No client certificate requested)
- by smtp-relay-canonical-1.canonical.com (Postfix) with ESMTPSA id 326D4406F3; 
- Thu,  8 Jul 2021 16:44:22 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=canonical.com;
- s=20210705; t=1625762664;
- bh=XUa/LxK/s1WBFKG79HL0lzKF1+tqdljpwl7aEBKLbJM=;
- h=From:To:Subject:Date:Message-Id:MIME-Version;
- b=BuT2lY6wzvJJPmPGVhx86BZjbaETEf1NHcmMrLPexly4/T/vxGGwwblXcUMxU7ken
- yeFUZ5PR8H9hJQDDkQdieq5rqe5yPMQOhLOi/eMuzCrnmcizo0uCBbR9CZgGZfVHto
- z5rYmTrd8eZ5eI692SiIa5+aqR/MojPO7uImWVNkXEvZnaSoQoGMLPccBehwlgZ05A
- L5BlT94SDGbwJtU6ly5wtyZMA1uaPrRDe97IIlwXU2c+dy3wyUj7ul2o0JKenHfqO8
- EUMMl5IKY4tw4fnea0JNBpYA7MCQQnMhNXVB3F7jf+nPxSMzkcUHibR6KMNLrlZUC+
- GKq35NGeWAGrQ==
-From: Kai-Heng Feng <kai.heng.feng@canonical.com>
-To: joro@8bytes.org,
-	will@kernel.org
-Subject: [PATCH v2] iommu/amd: Keep swiotlb enabled to ensure devices with
- 32bit DMA still work
-Date: Fri,  9 Jul 2021 00:44:18 +0800
-Message-Id: <20210708164418.974092-1-kai.heng.feng@canonical.com>
-X-Mailer: git-send-email 2.31.1
+Authentication-Results: smtp3.osuosl.org (amavisd-new);
+ dkim=pass (2048-bit key) header.d=kernel.org
+Received: from smtp3.osuosl.org ([127.0.0.1])
+ by localhost (smtp3.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+ with ESMTP id MoeZvtbztSsf for <iommu@lists.linux-foundation.org>;
+ Thu,  8 Jul 2021 16:44:31 +0000 (UTC)
+X-Greylist: domain auto-whitelisted by SQLgrey-1.8.0
+Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
+ by smtp3.osuosl.org (Postfix) with ESMTPS id 867F660BFA
+ for <iommu@lists.linux-foundation.org>; Thu,  8 Jul 2021 16:44:31 +0000 (UTC)
+Received: by mail.kernel.org (Postfix) with ESMTPSA id 88F256145A;
+ Thu,  8 Jul 2021 16:44:23 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+ s=k20201202; t=1625762671;
+ bh=W3zJ1dUIVfwK2RD5Gb/pjjaY8IvTpKuqVuwPdbuz25M=;
+ h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+ b=Sp+30VCoqVzKdRCHxsdjheJ32Al4GyKkdqY67UI3HBglP9/4ElBHuP/C2H/FyWKo7
+ e/R4/9B3d7vhaPNlh1DPVXpIf7uT6p/REBIACdKpJwJF9GZS42ymRBAxS0kVUi63dX
+ LFzIygW0HZtu2Ulg0IazOQ0jJMqOOsCWNLsNFVLNWlAdaw+e6puTS7FlMwyfD5gEdI
+ lFB3Rrin6g2B0nXBBJNO+PUuvd4DpkVlBGoDw/jR5Tje1HakbrKaEjYhMjAxMq0G0/
+ 9JUb/J7ll5Lxx3f7sEDifcv8wjoDYV7KpD0n+YA4MYDlWDIvbopDufBoyo/NtyqWxC
+ FAtOTP/W4ikEQ==
+Date: Thu, 8 Jul 2021 17:44:19 +0100
+From: Will Deacon <will@kernel.org>
+To: Nathan Chancellor <nathan@kernel.org>
+Subject: Re: [PATCH v15 06/12] swiotlb: Use is_swiotlb_force_bounce for
+ swiotlb data bouncing
+Message-ID: <20210708164418.GB23598@willie-the-truck>
+References: <0f7bd903-e309-94a0-21d7-f0e8e9546018@arm.com>
+ <YN/7xcxt/XGAKceZ@Ryzen-9-3900X.localdomain>
+ <20210705190352.GA19461@willie-the-truck>
+ <20210706044848.GA13640@lst.de>
+ <20210706132422.GA20327@willie-the-truck>
+ <a59f771f-3289-62f0-ca50-8f3675d9b166@arm.com>
+ <20210706140513.GA26498@lst.de>
+ <bb32d5a6-2b34-4524-e171-3e9f5f4d3a94@arm.com>
+ <20210706170657.GD20750@willie-the-truck>
+ <e1c026c6-22c7-8979-4941-de9cfab3863a@kernel.org>
 MIME-Version: 1.0
-Cc: "open list:AMD IOMMU AMD-VI" <iommu@lists.linux-foundation.org>,
- Kai-Heng Feng <kai.heng.feng@canonical.com>,
- Robin Murphy <robin.murphy@arm.com>, open list <linux-kernel@vger.kernel.org>
+Content-Disposition: inline
+In-Reply-To: <e1c026c6-22c7-8979-4941-de9cfab3863a@kernel.org>
+User-Agent: Mutt/1.10.1 (2018-07-13)
+Cc: Jim Quinlan <james.quinlan@broadcom.com>, heikki.krogerus@linux.intel.com,
+ linux-devicetree <devicetree@vger.kernel.org>, peterz@infradead.org,
+ benh@kernel.crashing.org, joonas.lahtinen@linux.intel.com,
+ dri-devel@lists.freedesktop.org, chris@chris-wilson.co.uk,
+ grant.likely@arm.com, paulus@samba.org, Frank Rowand <frowand.list@gmail.com>,
+ mingo@kernel.org, Jianxiong Gao <jxgao@google.com>,
+ Stefano Stabellini <sstabellini@kernel.org>,
+ Saravana Kannan <saravanak@google.com>, mpe@ellerman.id.au,
+ "Rafael J . Wysocki" <rafael.j.wysocki@intel.com>, xypron.glpk@gmx.de,
+ Christoph Hellwig <hch@lst.de>,
+ Bartosz Golaszewski <bgolaszewski@baylibre.com>, bskeggs@redhat.com,
+ linux-pci@vger.kernel.org, xen-devel@lists.xenproject.org,
+ Thierry Reding <treding@nvidia.com>, matthew.auld@intel.com,
+ Nicolas Boichat <drinkcat@chromium.org>, thomas.hellstrom@linux.intel.com,
+ jgross@suse.com, Konrad Rzeszutek Wilk <konrad.wilk@oracle.com>,
+ intel-gfx@lists.freedesktop.org, maarten.lankhorst@linux.intel.com,
+ jani.nikula@linux.intel.com, Rob Herring <robh+dt@kernel.org>,
+ rodrigo.vivi@intel.com, Bjorn Helgaas <bhelgaas@google.com>,
+ Claire Chang <tientzu@chromium.org>, Dan Williams <dan.j.williams@intel.com>,
+ Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
+ boris.ostrovsky@oracle.com, airlied@linux.ie, linuxppc-dev@lists.ozlabs.org,
+ Randy Dunlap <rdunlap@infradead.org>, Qian Cai <quic_qiancai@quicinc.com>,
+ lkml <linux-kernel@vger.kernel.org>,
+ "list@263.net:IOMMU DRIVERS" <iommu@lists.linux-foundation.org>,
+ Daniel Vetter <daniel@ffwll.ch>, Greg KH <gregkh@linuxfoundation.org>,
+ Tom Lendacky <thomas.lendacky@amd.com>, Robin Murphy <robin.murphy@arm.com>,
+ bauerman@linux.ibm.com
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -93,101 +122,53 @@ Content-Transfer-Encoding: 7bit
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-We are seeing kernel panic on rtw88 probe routine because swiotlb isn't
-set:
-[  252.036773] rtw_8821ce 0000:06:00.0: enabling device (0000 -> 0003)
-[  252.037084] Kernel panic - not syncing: Can not allocate SWIOTLB buffer earlier and can't now provide you with the DMA bounce buffer
-[  252.037146] CPU: 7 PID: 1174 Comm: modprobe Not tainted 5.13.0+ #39
-[  252.037175] Hardware name: HP HP ProDesk 405 G6 Small Form Factor PC/8835, BIOS S05 Ver. 02.04.00 06/03/2021
-[  252.037218] Call Trace:
-[  252.037231]  dump_stack_lvl+0x4a/0x5f
-[  252.037251]  dump_stack+0x10/0x12
-[  252.037267]  panic+0x101/0x2e3
-[  252.037284]  swiotlb_tbl_map_single.cold+0xc/0x73
-[  252.037305]  ? __mod_lruvec_page_state+0x95/0xb0
-[  252.037329]  ? kmalloc_large_node+0x8c/0xb0
-[  252.037348]  ? __netdev_alloc_skb+0x44/0x160
-[  252.037370]  swiotlb_map+0x61/0x240
-[  252.037387]  ? __alloc_skb+0xed/0x1e0
-[  252.037404]  dma_map_page_attrs+0x12c/0x1f0
-[  252.037422]  ? __netdev_alloc_skb+0x44/0x160
-[  252.037443]  rtw_pci_probe+0x30f/0x872 [rtw88_pci]
-[  252.037467]  local_pci_probe+0x48/0x80
-[  252.037487]  pci_device_probe+0x105/0x1c0
-[  252.037506]  really_probe+0x1fe/0x3f0
-[  252.037524]  __driver_probe_device+0x109/0x180
-[  252.037545]  driver_probe_device+0x23/0x90
-[  252.037564]  __driver_attach+0xac/0x1b0
-[  252.037582]  ? __device_attach_driver+0xe0/0xe0
-[  252.037602]  bus_for_each_dev+0x7e/0xc0
-[  252.037620]  driver_attach+0x1e/0x20
-[  252.037637]  bus_add_driver+0x135/0x1f0
-[  252.037654]  driver_register+0x95/0xf0
-[  252.037672]  ? 0xffffffffc0fa0000
-[  252.037687]  __pci_register_driver+0x68/0x70
-[  252.037707]  rtw_8821ce_driver_init+0x23/0x1000 [rtw88_8821ce]
-[  252.037734]  do_one_initcall+0x48/0x1d0
-[  252.037752]  ? __cond_resched+0x1a/0x50
-[  252.037771]  ? kmem_cache_alloc_trace+0x29d/0x3c0
-[  252.037792]  do_init_module+0x62/0x280
-[  252.037810]  load_module+0x2577/0x27c0
-[  252.037862]  __do_sys_finit_module+0xbf/0x120
-[  252.037877]  __x64_sys_finit_module+0x1a/0x20
-[  252.037893]  do_syscall_64+0x3b/0xc0
-[  252.037907]  entry_SYSCALL_64_after_hwframe+0x44/0xae
-[  252.037925] RIP: 0033:0x7ff5a2f9408d
-[  252.037938] Code: 27 0d 00 0f 05 eb a9 66 0f 1f 44 00 00 f3 0f 1e fa 48 89 f8 48 89 f7 48 89 d6 48 89 ca 4d 89 c2 4d 89 c8 4c 8b 4c 24 08 0f 05 <48> 3d 01 f0 ff ff 73 01 c3 48 8b 0d ab dd 0c 00 f7 d8 64 89 01 48
-[  252.037993] RSP: 002b:00007fffaa89dce8 EFLAGS: 00000246 ORIG_RAX: 0000000000000139
-[  252.038017] RAX: ffffffffffffffda RBX: 000055fd4f881080 RCX: 00007ff5a2f9408d
-[  252.038039] RDX: 0000000000000000 RSI: 000055fd4f63ec02 RDI: 0000000000000009
-[  252.038063] RBP: 0000000000040000 R08: 0000000000000000 R09: 000055fd4f8885b0
-[  252.038085] R10: 0000000000000009 R11: 0000000000000246 R12: 000055fd4f63ec02
-[  252.038107] R13: 000055fd4f881120 R14: 0000000000000000 R15: 000055fd4f88e350
-[  252.038293] Kernel Offset: 0x30600000 from 0xffffffff81000000 (relocation range: 0xffffffff80000000-0xffffffffbfffffff)
+On Tue, Jul 06, 2021 at 12:14:16PM -0700, Nathan Chancellor wrote:
+> On 7/6/2021 10:06 AM, Will Deacon wrote:
+> > On Tue, Jul 06, 2021 at 04:39:11PM +0100, Robin Murphy wrote:
+> > > On 2021-07-06 15:05, Christoph Hellwig wrote:
+> > > > On Tue, Jul 06, 2021 at 03:01:04PM +0100, Robin Murphy wrote:
+> > > > > FWIW I was pondering the question of whether to do something along those
+> > > > > lines or just scrap the default assignment entirely, so since I hadn't got
+> > > > > round to saying that I've gone ahead and hacked up the alternative
+> > > > > (similarly untested) for comparison :)
+> > > > > 
+> > > > > TBH I'm still not sure which one I prefer...
+> > > > 
+> > > > Claire did implement something like your suggestion originally, but
+> > > > I don't really like it as it doesn't scale for adding multiple global
+> > > > pools, e.g. for the 64-bit addressable one for the various encrypted
+> > > > secure guest schemes.
+> > > 
+> > > Ah yes, that had slipped my mind, and it's a fair point indeed. Since we're
+> > > not concerned with a minimal fix for backports anyway I'm more than happy to
+> > > focus on Will's approach. Another thing is that that looks to take us a
+> > > quiet step closer to the possibility of dynamically resizing a SWIOTLB pool,
+> > > which is something that some of the hypervisor protection schemes looking to
+> > > build on top of this series may want to explore at some point.
+> > 
+> > Ok, I'll split that nasty diff I posted up into a reviewable series and we
+> > can take it from there.
+> 
+> For what it's worth, I attempted to boot Will's diff on top of Konrad's
+> devel/for-linus-5.14 and it did not work; in fact, I got no output on my
+> monitor period, even with earlyprintk=, and I do not think this machine has
+> a serial console.
 
-Because the Realtek WiFi (PCI 06:00.0) is in the same IOMMU group as AMD
-graphics (PCI 01:00.0),
-[    1.326166] pci 0000:01:00.0: Adding to iommu group 0
-...
-[    1.326268] pci 0000:06:00.0: Adding to iommu group 0
+Looking back at the diff, I completely messed up swiotlb_exit() by mixing up
+physical and virtual addresses.
 
-And the AMD graphics supports iommu_v2, so the group uses intentity
-mapping based on the query from amd_iommu_def_domain_type().
+> Robin's fix does work, it survived ten reboots with no issues getting to X
+> and I do not see the KASAN and slub debug messages anymore but I understand
+> that this is not the preferred solution it seems (although Konrad did want
+> to know if it works).
+> 
+> I am happy to test any further patches or follow ups as needed, just keep me
+> on CC.
 
-However, the Realtek WiFi only supports 32bit DMA, so we need to
-make sure swiotlb is enabled.
+Cheers. Since this isn't 5.14 material any more, I'll CC you on a series
+next week.
 
-The swiotlb is enabled by pci_swiotlb_detect_4gb() to support legacy
-devices, but it gets disabled later by amd_iommu_init_dma_ops(). Keep
-swiotlb enabled to resolve the issue.
-
-Cc: Robin Murphy <robin.murphy@arm.com>
-Signed-off-by: Kai-Heng Feng <kai.heng.feng@canonical.com>
----
-v2:
- - Keep swiotlb enabled if it's already set.
- - Some wording change.
-
- drivers/iommu/amd/iommu.c | 3 ++-
- 1 file changed, 2 insertions(+), 1 deletion(-)
-
-diff --git a/drivers/iommu/amd/iommu.c b/drivers/iommu/amd/iommu.c
-index 811a49a95d04..a893a6b6aeba 100644
---- a/drivers/iommu/amd/iommu.c
-+++ b/drivers/iommu/amd/iommu.c
-@@ -1774,7 +1774,8 @@ void amd_iommu_domain_update(struct protection_domain *domain)
- 
- static void __init amd_iommu_init_dma_ops(void)
- {
--	swiotlb = (iommu_default_passthrough() || sme_me_mask) ? 1 : 0;
-+	if (!swiotlb)
-+		swiotlb = (iommu_default_passthrough() || sme_me_mask) ? 1 : 0;
- 
- 	if (amd_iommu_unmap_flush)
- 		pr_info("IO/TLB flush on unmap enabled\n");
--- 
-2.31.1
-
+Will
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
