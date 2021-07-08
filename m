@@ -2,62 +2,105 @@ Return-Path: <SRS0=RnLw=MA=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-14.0 required=3.0 tests=BAYES_00,
+X-Spam-Status: No, score=-15.5 required=3.0 tests=BAYES_00,
 	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_CR_TRAILER,INCLUDES_PATCH,
-	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED autolearn=unavailable
-	autolearn_force=no version=3.4.0
+	MAILING_LIST_MULTI,NICE_REPLY_A,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,
+	USER_AGENT_SANE_1 autolearn=ham autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id F147FC07E96
-	for <iommu@archiver.kernel.org>; Thu,  8 Jul 2021 09:17:53 +0000 (UTC)
-Received: from smtp2.osuosl.org (smtp2.osuosl.org [140.211.166.133])
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4E804C07E96
+	for <iommu@archiver.kernel.org>; Thu,  8 Jul 2021 09:26:19 +0000 (UTC)
+Received: from smtp4.osuosl.org (smtp4.osuosl.org [140.211.166.137])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 9474E6143A
-	for <iommu@archiver.kernel.org>; Thu,  8 Jul 2021 09:17:53 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 9474E6143A
-Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=8bytes.org
+	by mail.kernel.org (Postfix) with ESMTPS id DE373619C5
+	for <iommu@archiver.kernel.org>; Thu,  8 Jul 2021 09:26:18 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org DE373619C5
+Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=canonical.com
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by smtp2.osuosl.org (Postfix) with ESMTP id 58545400E0;
-	Thu,  8 Jul 2021 09:17:53 +0000 (UTC)
+	by smtp4.osuosl.org (Postfix) with ESMTP id A6BD8406AB;
+	Thu,  8 Jul 2021 09:26:18 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from smtp2.osuosl.org ([127.0.0.1])
-	by localhost (smtp2.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id eJoATX1e46u0; Thu,  8 Jul 2021 09:17:52 +0000 (UTC)
+Received: from smtp4.osuosl.org ([127.0.0.1])
+	by localhost (smtp4.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+	with ESMTP id rnMNTwaPqgst; Thu,  8 Jul 2021 09:26:17 +0000 (UTC)
 Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by smtp2.osuosl.org (Postfix) with ESMTPS id 221B2401C0;
-	Thu,  8 Jul 2021 09:17:52 +0000 (UTC)
+	by smtp4.osuosl.org (Postfix) with ESMTPS id 6621A404A3;
+	Thu,  8 Jul 2021 09:26:17 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id DD532C0010;
-	Thu,  8 Jul 2021 09:17:51 +0000 (UTC)
-Received: from smtp3.osuosl.org (smtp3.osuosl.org [IPv6:2605:bc80:3010::136])
- by lists.linuxfoundation.org (Postfix) with ESMTP id C653AC000E
- for <iommu@lists.linux-foundation.org>; Thu,  8 Jul 2021 09:17:50 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 3ED5CC0010;
+	Thu,  8 Jul 2021 09:26:17 +0000 (UTC)
+Received: from smtp4.osuosl.org (smtp4.osuosl.org [IPv6:2605:bc80:3010::137])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 882D0C000E
+ for <iommu@lists.linux-foundation.org>; Thu,  8 Jul 2021 09:26:15 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by smtp3.osuosl.org (Postfix) with ESMTP id C35086063B
- for <iommu@lists.linux-foundation.org>; Thu,  8 Jul 2021 09:17:50 +0000 (UTC)
+ by smtp4.osuosl.org (Postfix) with ESMTP id 680C8404A3
+ for <iommu@lists.linux-foundation.org>; Thu,  8 Jul 2021 09:26:15 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from smtp3.osuosl.org ([127.0.0.1])
- by localhost (smtp3.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id 2XL9heftU551 for <iommu@lists.linux-foundation.org>;
- Thu,  8 Jul 2021 09:17:50 +0000 (UTC)
-X-Greylist: from auto-whitelisted by SQLgrey-1.8.0
-Received: from theia.8bytes.org (8bytes.org [81.169.241.247])
- by smtp3.osuosl.org (Postfix) with ESMTPS id C53846060B
- for <iommu@lists.linux-foundation.org>; Thu,  8 Jul 2021 09:17:49 +0000 (UTC)
-Received: by theia.8bytes.org (Postfix, from userid 1000)
- id 56C6F312; Thu,  8 Jul 2021 11:17:46 +0200 (CEST)
-Date: Thu, 8 Jul 2021 11:17:41 +0200
-From: Joerg Roedel <joro@8bytes.org>
-To: David Stevens <stevensd@chromium.org>, Robin Murphy <robin.murphy@arm.com>
-Subject: Re: [PATCH 1/2] dma-iommu: fix swiotlb SKIP_CPU_SYNC and arch sync
-Message-ID: <YObCtaW2UPii7mUL@8bytes.org>
-References: <20210702053742.842850-1-stevensd@google.com>
+Received: from smtp4.osuosl.org ([127.0.0.1])
+ by localhost (smtp4.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+ with ESMTP id B55SN_5JBR-U for <iommu@lists.linux-foundation.org>;
+ Thu,  8 Jul 2021 09:26:11 +0000 (UTC)
+X-Greylist: domain auto-whitelisted by SQLgrey-1.8.0
+Received: from youngberry.canonical.com (youngberry.canonical.com
+ [91.189.89.112])
+ by smtp4.osuosl.org (Postfix) with ESMTPS id 96BCE40603
+ for <iommu@lists.linux-foundation.org>; Thu,  8 Jul 2021 09:26:11 +0000 (UTC)
+Received: from mail-wm1-f70.google.com ([209.85.128.70])
+ by youngberry.canonical.com with esmtps (TLS1.2) tls
+ TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256 (Exim 4.93)
+ (envelope-from <krzysztof.kozlowski@canonical.com>)
+ id 1m1QIL-0006Bp-3j
+ for iommu@lists.linux-foundation.org; Thu, 08 Jul 2021 09:26:09 +0000
+Received: by mail-wm1-f70.google.com with SMTP id
+ h4-20020a05600c3504b02902190c4d3d18so380337wmq.8
+ for <iommu@lists.linux-foundation.org>; Thu, 08 Jul 2021 02:26:09 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+ d=1e100.net; s=20161025;
+ h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+ :user-agent:mime-version:in-reply-to:content-language
+ :content-transfer-encoding;
+ bh=koIPrhzeeGnASWujJpf7LVgsTrCU+gcQgVFV1kcN3ho=;
+ b=r2hn5MqOhWYG/z7n1olc+fK9uC/a28YgoyRfF9zzktnGWtRI4MUAuO+lr0YTJ6oq4D
+ zL67cA6l/Tm/a8nEZJO1fKiZN8MVCYqOtClaTb7n8blP7gairNm3jCbsR6QohFJayT1K
+ yCS1FzseVWLuN0yeCRlg+zLqNeyRMpqjkAYnArY7Fsbx1O5p1Y36Cnx696i7343eB7vA
+ 0IdS0NBJR6rkLA5rFiDjOn0/etLDbNTc3B9uMyuwdDO2ECitqNArfU0awF/u6XOKajT7
+ LXuIs4S1IxBvwsaVuTrm6S1NMz62gKSTMHnDurzmj/wZxhvyBZBLl2Vyk0C81UXT2ToI
+ psFQ==
+X-Gm-Message-State: AOAM532Z1v1cYpuy/jzjHktwh7KcK0yR3RK3HqXFfs1ZuV+h7VuJmANO
+ B9wBUGqgp1gLwXsAAu+3YAYhNjx40rdyQslCq66TTgGtEUshEiCkQHepHsTlBJMUXLCDZMeQwHc
+ CACieCecFxIFFpCpaTeNAelh8qcyZhy6EZ8WMoWcMZ59FjZ0=
+X-Received: by 2002:a05:6000:1ac6:: with SMTP id
+ i6mr29153776wry.327.1625736368926; 
+ Thu, 08 Jul 2021 02:26:08 -0700 (PDT)
+X-Google-Smtp-Source: ABdhPJz9bTjhzy4ewOg0e87DpVaZF42E3AYLNFYRiKycIX46b0OEGS9rxawBZpCgOiwlhnyBj7S+/Q==
+X-Received: by 2002:a05:6000:1ac6:: with SMTP id
+ i6mr29153760wry.327.1625736368771; 
+ Thu, 08 Jul 2021 02:26:08 -0700 (PDT)
+Received: from [192.168.3.211] (xdsl-188-155-177-222.adslplus.ch.
+ [188.155.177.222])
+ by smtp.gmail.com with ESMTPSA id h10sm4020332wmb.46.2021.07.08.02.26.07
+ (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+ Thu, 08 Jul 2021 02:26:08 -0700 (PDT)
+Subject: Re: [PATCH 1/9] dt-bindings: memory: mediatek: Add mt8195 smi binding
+To: Yong Wu <yong.wu@mediatek.com>, Rob Herring <robh+dt@kernel.org>,
+ Matthias Brugger <matthias.bgg@gmail.com>
+References: <20210616114346.18812-1-yong.wu@mediatek.com>
+ <20210616114346.18812-2-yong.wu@mediatek.com>
+From: Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>
+Message-ID: <6e512d15-3acc-2097-1fd1-e021552fdc8d@canonical.com>
+Date: Thu, 8 Jul 2021 11:26:07 +0200
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
+ Thunderbird/78.11.0
 MIME-Version: 1.0
-Content-Disposition: inline
-In-Reply-To: <20210702053742.842850-1-stevensd@google.com>
-Cc: iommu@lists.linux-foundation.org, Will Deacon <will@kernel.org>,
- linux-kernel@vger.kernel.org, Tom Murphy <murphyt7@tcd.ie>
+In-Reply-To: <20210616114346.18812-2-yong.wu@mediatek.com>
+Content-Language: en-US
+Cc: youlin.pei@mediatek.com, anan.sun@mediatek.com, srv_heupstream@mediatek.com,
+ Will Deacon <will@kernel.org>, linux-kernel@vger.kernel.org,
+ Krzysztof Kozlowski <krzk@kernel.org>, iommu@lists.linux-foundation.org,
+ linux-mediatek@lists.infradead.org, anthony.huang@mediatek.com,
+ ming-fan.chen@mediatek.com, yi.kuo@mediatek.com,
+ Robin Murphy <robin.murphy@arm.com>, linux-arm-kernel@lists.infradead.org
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -75,215 +118,36 @@ Content-Transfer-Encoding: 7bit
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-Adding Robin.
-
-On Fri, Jul 02, 2021 at 02:37:41PM +0900, David Stevens wrote:
-> From: David Stevens <stevensd@chromium.org>
+On 16/06/2021 13:43, Yong Wu wrote:
+> This patch adds mt8195 smi supporting in the bindings.
 > 
-> Make map_swiotlb and unmap_swiotlb only for mapping, and consistently
-> use sync_single_for and sync_sg_for functions for swiotlb sync and arch
-> sync. This ensures that the same code path is responsible for syncing
-> regardless of whether or not SKIP_CPU_SYNC is set. In the process, fix
-> various places where the original physical address and swiotlb tlb_addr
-> are mixed up:
->   - Make sync_sg functions call sync_single functions for untrusted
->     devices, so they use tlb_addr when checking is_swiotlb_buffer and
->     when doing arch sync if necessary.
->   - Use tlb_addr for arch sync in map_page if necessary.
->   - In map_sg, map before syncing so that arch sync can target the
->     bounce buffer if necessary.
->   - Pass SKIP_CPU_SYNC to swiotlb map and unmap to avoid double syncing
->     the swiotlb. This had previously only happened in the unmap_page
->     case, but is now necessary for all swiotlb cases.
+> In mt8195, there are two smi-common HW, one is for vdo(video output),
+> the other is for vpp(video processing pipe). They connects with different
+> smi-larbs, then some setting(bus_sel) is different. Differentiate them
+> with the compatible string.
 > 
-> Fixes: 82612d66d51d ("iommu: Allow the dma-iommu api to use bounce buffers")
-> Signed-off-by: David Stevens <stevensd@chromium.org>
+> Something like this:
+> 
+>     IOMMU(VDO)          IOMMU(VPP)
+>        |                   |
+>   SMI_COMMON_VDO      SMI_COMMON_VPP
+>   ---------------     ----------------
+>   |      |   ...      |      |     ...
+> larb0 larb2  ...    larb1 larb3    ...
+> 
+> Signed-off-by: Yong Wu <yong.wu@mediatek.com>
 > ---
->  drivers/iommu/dma-iommu.c | 82 ++++++++++++++++++++++++---------------
->  1 file changed, 51 insertions(+), 31 deletions(-)
+>  .../bindings/memory-controllers/mediatek,smi-common.yaml    | 6 +++++-
+>  .../bindings/memory-controllers/mediatek,smi-larb.yaml      | 3 +++
+>  2 files changed, 8 insertions(+), 1 deletion(-)
 > 
-> diff --git a/drivers/iommu/dma-iommu.c b/drivers/iommu/dma-iommu.c
-> index 7bcdd1205535..24d1042cd052 100644
-> --- a/drivers/iommu/dma-iommu.c
-> +++ b/drivers/iommu/dma-iommu.c
-> @@ -505,7 +505,8 @@ static void __iommu_dma_unmap_swiotlb(struct device *dev, dma_addr_t dma_addr,
->  	__iommu_dma_unmap(dev, dma_addr, size);
->  
->  	if (unlikely(is_swiotlb_buffer(phys)))
-> -		swiotlb_tbl_unmap_single(dev, phys, size, dir, attrs);
-> +		swiotlb_tbl_unmap_single(dev, phys, size, dir,
-> +					 attrs | DMA_ATTR_SKIP_CPU_SYNC);
->  }
->  
->  static dma_addr_t __iommu_dma_map(struct device *dev, phys_addr_t phys,
-> @@ -536,7 +537,8 @@ static dma_addr_t __iommu_dma_map(struct device *dev, phys_addr_t phys,
->  
->  static dma_addr_t __iommu_dma_map_swiotlb(struct device *dev, phys_addr_t phys,
->  		size_t org_size, dma_addr_t dma_mask, bool coherent,
-> -		enum dma_data_direction dir, unsigned long attrs)
-> +		enum dma_data_direction dir, unsigned long attrs,
-> +		phys_addr_t *adj_phys)
->  {
->  	int prot = dma_info_to_prot(dir, coherent, attrs);
->  	struct iommu_domain *domain = iommu_get_dma_domain(dev);
-> @@ -555,7 +557,8 @@ static dma_addr_t __iommu_dma_map_swiotlb(struct device *dev, phys_addr_t phys,
->  	    iova_offset(iovad, phys | org_size)) {
->  		aligned_size = iova_align(iovad, org_size);
->  		phys = swiotlb_tbl_map_single(dev, phys, org_size,
-> -					      aligned_size, dir, attrs);
-> +					      aligned_size, dir,
-> +					      attrs | DMA_ATTR_SKIP_CPU_SYNC);
->  
->  		if (phys == DMA_MAPPING_ERROR)
->  			return DMA_MAPPING_ERROR;
-> @@ -573,6 +576,8 @@ static dma_addr_t __iommu_dma_map_swiotlb(struct device *dev, phys_addr_t phys,
->  
->  		memset(padding_start, 0, padding_size);
->  	}
-> +	if (adj_phys)
-> +		*adj_phys = phys;
->  
->  	iova = __iommu_dma_map(dev, phys, aligned_size, prot, dma_mask);
->  	if (iova == DMA_MAPPING_ERROR && is_swiotlb_buffer(phys))
-> @@ -785,15 +790,17 @@ static void iommu_dma_sync_single_for_cpu(struct device *dev,
->  		swiotlb_sync_single_for_cpu(dev, phys, size, dir);
->  }
->  
-> -static void iommu_dma_sync_single_for_device(struct device *dev,
-> -		dma_addr_t dma_handle, size_t size, enum dma_data_direction dir)
-> +static void __iommu_dma_sync_single_for_device(struct device *dev,
-> +		dma_addr_t dma_handle, size_t size,
-> +		enum dma_data_direction dir, phys_addr_t phys)
->  {
-> -	phys_addr_t phys;
-> -
->  	if (dev_is_dma_coherent(dev) && !dev_is_untrusted(dev))
->  		return;
->  
-> -	phys = iommu_iova_to_phys(iommu_get_dma_domain(dev), dma_handle);
-> +	if (phys == 0)
-> +		phys = iommu_iova_to_phys(iommu_get_dma_domain(dev),
-> +					  dma_handle);
-> +
->  	if (is_swiotlb_buffer(phys))
->  		swiotlb_sync_single_for_device(dev, phys, size, dir);
->  
-> @@ -801,6 +808,12 @@ static void iommu_dma_sync_single_for_device(struct device *dev,
->  		arch_sync_dma_for_device(phys, size, dir);
->  }
->  
-> +static void iommu_dma_sync_single_for_device(struct device *dev,
-> +		dma_addr_t dma_handle, size_t size, enum dma_data_direction dir)
-> +{
-> +	__iommu_dma_sync_single_for_device(dev, dma_handle, size, dir, 0);
-> +}
-> +
->  static void iommu_dma_sync_sg_for_cpu(struct device *dev,
->  		struct scatterlist *sgl, int nelems,
->  		enum dma_data_direction dir)
-> @@ -811,14 +824,13 @@ static void iommu_dma_sync_sg_for_cpu(struct device *dev,
->  	if (dev_is_dma_coherent(dev) && !dev_is_untrusted(dev))
->  		return;
->  
-> -	for_each_sg(sgl, sg, nelems, i) {
-> -		if (!dev_is_dma_coherent(dev))
-> +	if (dev_is_untrusted(dev))
-> +		for_each_sg(sgl, sg, nelems, i)
-> +			iommu_dma_sync_single_for_cpu(dev, sg_dma_address(sg),
-> +						      sg->length, dir);
-> +	else
-> +		for_each_sg(sgl, sg, nelems, i)
->  			arch_sync_dma_for_cpu(sg_phys(sg), sg->length, dir);
-> -
-> -		if (is_swiotlb_buffer(sg_phys(sg)))
-> -			swiotlb_sync_single_for_cpu(dev, sg_phys(sg),
-> -						    sg->length, dir);
-> -	}
->  }
->  
->  static void iommu_dma_sync_sg_for_device(struct device *dev,
-> @@ -831,29 +843,30 @@ static void iommu_dma_sync_sg_for_device(struct device *dev,
->  	if (dev_is_dma_coherent(dev) && !dev_is_untrusted(dev))
->  		return;
->  
-> -	for_each_sg(sgl, sg, nelems, i) {
-> -		if (is_swiotlb_buffer(sg_phys(sg)))
-> -			swiotlb_sync_single_for_device(dev, sg_phys(sg),
-> -						       sg->length, dir);
-> -
-> -		if (!dev_is_dma_coherent(dev))
-> +	if (dev_is_untrusted(dev))
-> +		for_each_sg(sgl, sg, nelems, i)
-> +			__iommu_dma_sync_single_for_device(dev,
-> +							   sg_dma_address(sg),
-> +							   sg->length, dir, 0);
-> +	else
-> +		for_each_sg(sgl, sg, nelems, i)
->  			arch_sync_dma_for_device(sg_phys(sg), sg->length, dir);
-> -	}
->  }
->  
->  static dma_addr_t iommu_dma_map_page(struct device *dev, struct page *page,
->  		unsigned long offset, size_t size, enum dma_data_direction dir,
->  		unsigned long attrs)
->  {
-> -	phys_addr_t phys = page_to_phys(page) + offset;
-> +	phys_addr_t phys = page_to_phys(page) + offset, adj_phys;
->  	bool coherent = dev_is_dma_coherent(dev);
->  	dma_addr_t dma_handle;
->  
-> -	dma_handle = __iommu_dma_map_swiotlb(dev, phys, size, dma_get_mask(dev),
-> -			coherent, dir, attrs);
-> -	if (!coherent && !(attrs & DMA_ATTR_SKIP_CPU_SYNC) &&
-> +	dma_handle = __iommu_dma_map_swiotlb(dev, phys, size,
-> +			dma_get_mask(dev), coherent, dir, attrs, &adj_phys);
-> +	if (!(attrs & DMA_ATTR_SKIP_CPU_SYNC) &&
->  	    dma_handle != DMA_MAPPING_ERROR)
-> -		arch_sync_dma_for_device(phys, size, dir);
-> +		__iommu_dma_sync_single_for_device(dev, dma_handle, size,
-> +						   dir, adj_phys);
->  	return dma_handle;
->  }
->  
-> @@ -960,7 +973,7 @@ static int iommu_dma_map_sg_swiotlb(struct device *dev, struct scatterlist *sg,
->  	for_each_sg(sg, s, nents, i) {
->  		sg_dma_address(s) = __iommu_dma_map_swiotlb(dev, sg_phys(s),
->  				s->length, dma_get_mask(dev),
-> -				dev_is_dma_coherent(dev), dir, attrs);
-> +				dev_is_dma_coherent(dev), dir, attrs, NULL);
->  		if (sg_dma_address(s) == DMA_MAPPING_ERROR)
->  			goto out_unmap;
->  		sg_dma_len(s) = s->length;
-> @@ -991,17 +1004,24 @@ static int iommu_dma_map_sg(struct device *dev, struct scatterlist *sg,
->  	dma_addr_t iova;
->  	size_t iova_len = 0;
->  	unsigned long mask = dma_get_seg_boundary(dev);
-> -	int i;
-> +	int i, early_mapped = 0;
->  
->  	if (static_branch_unlikely(&iommu_deferred_attach_enabled) &&
->  	    iommu_deferred_attach(dev, domain))
->  		return 0;
->  
-> +	if (dev_is_untrusted(dev)) {
-> +		early_mapped = iommu_dma_map_sg_swiotlb(dev, sg, nents,
-> +							dir, attrs);
-> +		if (!early_mapped)
-> +			return 0;
-> +	}
-> +
->  	if (!(attrs & DMA_ATTR_SKIP_CPU_SYNC))
->  		iommu_dma_sync_sg_for_device(dev, sg, nents, dir);
->  
-> -	if (dev_is_untrusted(dev))
-> -		return iommu_dma_map_sg_swiotlb(dev, sg, nents, dir, attrs);
-> +	if (early_mapped)
-> +		return early_mapped;
->  
->  	/*
->  	 * Work out how much IOVA space we need, and align the segments to
-> -- 
-> 2.32.0.93.g670b81a890-goog
+
+I cannot find it on devicetree list, it seems you did not Cc it. Please
+use scripts/get_maintainer.pl.
+
+
+Best regards,
+Krzysztof
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
