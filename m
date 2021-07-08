@@ -2,66 +2,70 @@ Return-Path: <SRS0=RnLw=MA=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-14.0 required=3.0 tests=BAYES_00,
-	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_CR_TRAILER,INCLUDES_PATCH,
-	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED autolearn=ham
+X-Spam-Status: No, score=-10.5 required=3.0 tests=BAYES_00,
+	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,NICE_REPLY_A,
+	SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_SANE_1 autolearn=ham
 	autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7F5F4C07E96
-	for <iommu@archiver.kernel.org>; Thu,  8 Jul 2021 10:03:57 +0000 (UTC)
-Received: from smtp1.osuosl.org (smtp1.osuosl.org [140.211.166.138])
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9BEB0C07E96
+	for <iommu@archiver.kernel.org>; Thu,  8 Jul 2021 10:18:57 +0000 (UTC)
+Received: from smtp3.osuosl.org (smtp3.osuosl.org [140.211.166.136])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 2EB2161C5B
-	for <iommu@archiver.kernel.org>; Thu,  8 Jul 2021 10:03:57 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 2EB2161C5B
-Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=8bytes.org
+	by mail.kernel.org (Postfix) with ESMTPS id 17D6261C5F
+	for <iommu@archiver.kernel.org>; Thu,  8 Jul 2021 10:18:56 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 17D6261C5F
+Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=arm.com
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by smtp1.osuosl.org (Postfix) with ESMTP id EFACB83AE2;
-	Thu,  8 Jul 2021 10:03:56 +0000 (UTC)
+	by smtp3.osuosl.org (Postfix) with ESMTP id B1264606D9;
+	Thu,  8 Jul 2021 10:18:56 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from smtp1.osuosl.org ([127.0.0.1])
-	by localhost (smtp1.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id joun7G4Fhjlt; Thu,  8 Jul 2021 10:03:56 +0000 (UTC)
-Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by smtp1.osuosl.org (Postfix) with ESMTPS id D79E783A4A;
-	Thu,  8 Jul 2021 10:03:55 +0000 (UTC)
+Received: from smtp3.osuosl.org ([127.0.0.1])
+	by localhost (smtp3.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+	with ESMTP id rlsqkUfhmwlN; Thu,  8 Jul 2021 10:18:56 +0000 (UTC)
+Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [IPv6:2605:bc80:3010:104::8cd3:938])
+	by smtp3.osuosl.org (Postfix) with ESMTPS id 9F049606AA;
+	Thu,  8 Jul 2021 10:18:55 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id A1380C0010;
-	Thu,  8 Jul 2021 10:03:55 +0000 (UTC)
-Received: from smtp1.osuosl.org (smtp1.osuosl.org [140.211.166.138])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 154A6C000E
- for <iommu@lists.linux-foundation.org>; Thu,  8 Jul 2021 10:03:54 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 667EDC001A;
+	Thu,  8 Jul 2021 10:18:55 +0000 (UTC)
+Received: from smtp3.osuosl.org (smtp3.osuosl.org [140.211.166.136])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id F3BFEC000E
+ for <iommu@lists.linux-foundation.org>; Thu,  8 Jul 2021 10:18:53 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by smtp1.osuosl.org (Postfix) with ESMTP id EA1BF83A5B
- for <iommu@lists.linux-foundation.org>; Thu,  8 Jul 2021 10:03:53 +0000 (UTC)
+ by smtp3.osuosl.org (Postfix) with ESMTP id D5322606D9
+ for <iommu@lists.linux-foundation.org>; Thu,  8 Jul 2021 10:18:53 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from smtp1.osuosl.org ([127.0.0.1])
- by localhost (smtp1.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id Bxb91_ggFOqt for <iommu@lists.linux-foundation.org>;
- Thu,  8 Jul 2021 10:03:53 +0000 (UTC)
-X-Greylist: from auto-whitelisted by SQLgrey-1.8.0
-Received: from theia.8bytes.org (8bytes.org
- [IPv6:2a01:238:4383:600:38bc:a715:4b6d:a889])
- by smtp1.osuosl.org (Postfix) with ESMTPS id 441AB83A4A
- for <iommu@lists.linux-foundation.org>; Thu,  8 Jul 2021 10:03:53 +0000 (UTC)
-Received: by theia.8bytes.org (Postfix, from userid 1000)
- id F1134312; Thu,  8 Jul 2021 12:03:50 +0200 (CEST)
-Date: Thu, 8 Jul 2021 12:03:45 +0200
-From: Joerg Roedel <joro@8bytes.org>
-To: Marek Szyprowski <m.szyprowski@samsung.com>
-Subject: Re: [PATCH] iommu: qcom: Revert "iommu/arm: Cleanup resources in
- case of probe error path"
-Message-ID: <YObNgSs+pd0nDfjG@8bytes.org>
-References: <CGME20210705065703eucas1p2e89258a2fc286896b755047e06f514cb@eucas1p2.samsung.com>
- <20210705065657.30356-1-m.szyprowski@samsung.com>
+Received: from smtp3.osuosl.org ([127.0.0.1])
+ by localhost (smtp3.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+ with ESMTP id OrS74xtQr78A for <iommu@lists.linux-foundation.org>;
+ Thu,  8 Jul 2021 10:18:52 +0000 (UTC)
+X-Greylist: domain auto-whitelisted by SQLgrey-1.8.0
+Received: from foss.arm.com (foss.arm.com [217.140.110.172])
+ by smtp3.osuosl.org (Postfix) with ESMTP id A5668606AA
+ for <iommu@lists.linux-foundation.org>; Thu,  8 Jul 2021 10:18:52 +0000 (UTC)
+Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
+ by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id C223CED1;
+ Thu,  8 Jul 2021 03:18:51 -0700 (PDT)
+Received: from [10.57.35.192] (unknown [10.57.35.192])
+ by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id E03C63F5A1;
+ Thu,  8 Jul 2021 03:18:50 -0700 (PDT)
+Subject: Re: [PATCH] iommu/amd: Enable swiotlb if any device supports iommu v2
+ and uses identity mapping
+To: Joerg Roedel <joro@8bytes.org>, Kai-Heng Feng <kai.heng.feng@canonical.com>
+References: <20210708074232.924844-1-kai.heng.feng@canonical.com>
+ <YObFJREB9/JlcNZP@8bytes.org>
+From: Robin Murphy <robin.murphy@arm.com>
+Message-ID: <fde11cec-d1bd-49be-f129-c69a973d1b3b@arm.com>
+Date: Thu, 8 Jul 2021 11:18:45 +0100
+User-Agent: Mozilla/5.0 (Windows NT 10.0; rv:78.0) Gecko/20100101
+ Thunderbird/78.11.0
 MIME-Version: 1.0
-Content-Disposition: inline
-In-Reply-To: <20210705065657.30356-1-m.szyprowski@samsung.com>
-Cc: linux-arm-msm@vger.kernel.org, iommu@lists.linux-foundation.org,
- Amey Narkhede <ameynarkhede03@gmail.com>, Will Deacon <will@kernel.org>,
- linux-arm-kernel@lists.infradead.org, Robin Murphy <robin.murphy@arm.com>
+In-Reply-To: <YObFJREB9/JlcNZP@8bytes.org>
+Content-Language: en-GB
+Cc: "open list:AMD IOMMU \(AMD-VI\)" <iommu@lists.linux-foundation.org>,
+ will@kernel.org, open list <linux-kernel@vger.kernel.org>
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -74,29 +78,38 @@ List-Post: <mailto:iommu@lists.linux-foundation.org>
 List-Help: <mailto:iommu-request@lists.linux-foundation.org?subject=help>
 List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
  <mailto:iommu-request@lists.linux-foundation.org?subject=subscribe>
-Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset="us-ascii"; Format="flowed"
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-On Mon, Jul 05, 2021 at 08:56:57AM +0200, Marek Szyprowski wrote:
-> QCOM IOMMU driver calls bus_set_iommu() for every IOMMU device controller,
-> what fails for the second and latter IOMMU devices. This is intended and
-> must be not fatal to the driver registration process. Also the cleanup
-> path should take care of the runtime PM state, what is missing in the
-> current patch. Revert relevant changes to the QCOM IOMMU driver until
-> a proper fix is prepared.
+On 2021-07-08 10:28, Joerg Roedel wrote:
+> On Thu, Jul 08, 2021 at 03:42:32PM +0800, Kai-Heng Feng wrote:
+>> @@ -344,6 +344,9 @@ static int iommu_init_device(struct device *dev)
+>>   
+>>   		iommu = amd_iommu_rlookup_table[dev_data->devid];
+>>   		dev_data->iommu_v2 = iommu->is_iommu_v2;
+>> +
+>> +		if (dev_data->iommu_v2)
+>> +			swiotlb = 1;
 > 
-> This partially reverts commit 249c9dc6aa0db74a0f7908efd04acf774e19b155.
+> This looks like the big hammer, as it will affect all other systems
+> where the AMD GPUs are in their own group.
 > 
-> Fixes: 249c9dc6aa0d ("iommu/arm: Cleanup resources in case of probe error path")
-> Suggested-by: Will Deacon <will@kernel.org>
-> Signed-off-by: Marek Szyprowski <m.szyprowski@samsung.com>
-> ---
->  drivers/iommu/arm/arm-smmu/qcom_iommu.c | 13 ++-----------
->  1 file changed, 2 insertions(+), 11 deletions(-)
+> What is needed here is an explicit check whether a non-iommu-v2 device
+> is direct-mapped because it shares a group with the GPU, and only enable
+> swiotlb in this case.
 
-Applied to iommu/fixes, thanks.
+Right, it's basically about whether any DMA-limited device might at any 
+time end up in an IOMMU_DOMAIN_IDENTITY domain. And given the 
+possibility of device hotplug and the user being silly with the sysfs 
+interface, I don't think we can categorically determine that at boot time.
+
+Also note that Intel systems are likely to be similarly affected (in 
+fact intel-iommu doesn't even have the iommu_default_passthough() check 
+so it's probably even easier to blow up).
+
+Robin.
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
