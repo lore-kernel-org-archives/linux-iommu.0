@@ -2,102 +2,62 @@ Return-Path: <SRS0=RnLw=MA=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-3.8 required=3.0 tests=BAYES_00,DKIM_INVALID,
-	DKIM_SIGNED,HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,SPF_HELO_NONE,
-	SPF_PASS,URIBL_BLOCKED autolearn=no autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-14.0 required=3.0 tests=BAYES_00,
+	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_CR_TRAILER,INCLUDES_PATCH,
+	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED autolearn=unavailable
+	autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9132EC07E96
-	for <iommu@archiver.kernel.org>; Thu,  8 Jul 2021 09:07:28 +0000 (UTC)
-Received: from smtp1.osuosl.org (smtp1.osuosl.org [140.211.166.138])
+	by smtp.lore.kernel.org (Postfix) with ESMTP id F147FC07E96
+	for <iommu@archiver.kernel.org>; Thu,  8 Jul 2021 09:17:53 +0000 (UTC)
+Received: from smtp2.osuosl.org (smtp2.osuosl.org [140.211.166.133])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 4296761C94
-	for <iommu@archiver.kernel.org>; Thu,  8 Jul 2021 09:07:28 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 4296761C94
-Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=redhat.com
+	by mail.kernel.org (Postfix) with ESMTPS id 9474E6143A
+	for <iommu@archiver.kernel.org>; Thu,  8 Jul 2021 09:17:53 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 9474E6143A
+Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=8bytes.org
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by smtp1.osuosl.org (Postfix) with ESMTP id 1006881A1C;
-	Thu,  8 Jul 2021 09:07:28 +0000 (UTC)
+	by smtp2.osuosl.org (Postfix) with ESMTP id 58545400E0;
+	Thu,  8 Jul 2021 09:17:53 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from smtp1.osuosl.org ([127.0.0.1])
-	by localhost (smtp1.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id e64irFMQWUGm; Thu,  8 Jul 2021 09:07:27 +0000 (UTC)
-Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [IPv6:2605:bc80:3010:104::8cd3:938])
-	by smtp1.osuosl.org (Postfix) with ESMTPS id D88A481010;
-	Thu,  8 Jul 2021 09:07:26 +0000 (UTC)
+Received: from smtp2.osuosl.org ([127.0.0.1])
+	by localhost (smtp2.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+	with ESMTP id eJoATX1e46u0; Thu,  8 Jul 2021 09:17:52 +0000 (UTC)
+Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
+	by smtp2.osuosl.org (Postfix) with ESMTPS id 221B2401C0;
+	Thu,  8 Jul 2021 09:17:52 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 65710C0020;
-	Thu,  8 Jul 2021 09:07:26 +0000 (UTC)
-Received: from smtp1.osuosl.org (smtp1.osuosl.org [IPv6:2605:bc80:3010::138])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 60C5AC000E
- for <iommu@lists.linux-foundation.org>; Thu,  8 Jul 2021 09:07:25 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id DD532C0010;
+	Thu,  8 Jul 2021 09:17:51 +0000 (UTC)
+Received: from smtp3.osuosl.org (smtp3.osuosl.org [IPv6:2605:bc80:3010::136])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id C653AC000E
+ for <iommu@lists.linux-foundation.org>; Thu,  8 Jul 2021 09:17:50 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by smtp1.osuosl.org (Postfix) with ESMTP id 4F89583AF6
- for <iommu@lists.linux-foundation.org>; Thu,  8 Jul 2021 09:07:25 +0000 (UTC)
+ by smtp3.osuosl.org (Postfix) with ESMTP id C35086063B
+ for <iommu@lists.linux-foundation.org>; Thu,  8 Jul 2021 09:17:50 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from smtp1.osuosl.org ([127.0.0.1])
- by localhost (smtp1.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id Oe6SvEoxxGj1 for <iommu@lists.linux-foundation.org>;
- Thu,  8 Jul 2021 09:07:24 +0000 (UTC)
-X-Greylist: domain auto-whitelisted by SQLgrey-1.8.0
-Received: from us-smtp-delivery-124.mimecast.com
- (us-smtp-delivery-124.mimecast.com [170.10.133.124])
- by smtp1.osuosl.org (Postfix) with ESMTPS id 8524783AF4
- for <iommu@lists.linux-foundation.org>; Thu,  8 Jul 2021 09:07:24 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
- s=mimecast20190719; t=1625735243;
- h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
- to:to:cc:cc:mime-version:mime-version:content-type:content-type:
- in-reply-to:in-reply-to:references:references;
- bh=yKsQQhdebDXEx1+61ELONXUK6wL4wa5lTwMISxD88g0=;
- b=KFcOCA8RlhjrxyHy9L/WQ8f3CmLI4df3SgFlkgU4ks12Pa3YDFYSBnmCyBrfrFnoAR7LYp
- YMx54NDRpa/N6mRUOeHUNR7st2D0zZUo/PNurqLYTudRgla6Y43KgIILCzFixp3bX+R052
- UOZgri5W4kuGwdeZ/zRtp1VP8MsKDV0=
-Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
- [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-8-11uk5Y45N-SljR8RLm1AGw-1; Thu, 08 Jul 2021 05:07:21 -0400
-X-MC-Unique: 11uk5Y45N-SljR8RLm1AGw-1
-Received: from smtp.corp.redhat.com (int-mx07.intmail.prod.int.phx2.redhat.com
- [10.5.11.22])
- (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
- (No client certificate requested)
- by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 7189719200C0;
- Thu,  8 Jul 2021 09:07:19 +0000 (UTC)
-Received: from localhost (ovpn-114-141.ams2.redhat.com [10.36.114.141])
- by smtp.corp.redhat.com (Postfix) with ESMTP id 2ED2D10372C0;
- Thu,  8 Jul 2021 09:07:15 +0000 (UTC)
-Date: Thu, 8 Jul 2021 10:07:14 +0100
-From: Stefan Hajnoczi <stefanha@redhat.com>
-To: Yongji Xie <xieyongji@bytedance.com>
-Subject: Re: [PATCH v8 10/10] Documentation: Add documentation for VDUSE
-Message-ID: <YObAQsmJjKWxuO/C@stefanha-x1.localdomain>
-References: <CACycT3uxnQmXWsgmNVxQtiRhz1UXXTAJFY3OiAJqokbJH6ifMA@mail.gmail.com>
- <YNxCDpM3bO5cPjqi@stefanha-x1.localdomain>
- <CACycT3taKhf1cWp3Jd0aSVekAZvpbR-_fkyPLQ=B+jZBB5H=8Q@mail.gmail.com>
- <YN3ABqCMLQf7ejOm@stefanha-x1.localdomain>
- <CACycT3vo-diHgTSLw_FS2E+5ia5VjihE3qw7JmZR7JT55P-wQA@mail.gmail.com>
- <8320d26d-6637-85c6-8773-49553dfa502d@redhat.com>
- <YOL/9mxkJaokKDHc@stefanha-x1.localdomain>
- <CACycT3t-BTMrpNTwBUfbvaxTh6tLthxbo3OJwMk_iuiSpMuZPg@mail.gmail.com>
- <YOQu8dB6tlb9juNz@stefanha-x1.localdomain>
- <CACycT3t=V-VV7LYDda8mt=QxN_Ay-N+3dgWp382TObkeei9MOg@mail.gmail.com>
+Received: from smtp3.osuosl.org ([127.0.0.1])
+ by localhost (smtp3.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+ with ESMTP id 2XL9heftU551 for <iommu@lists.linux-foundation.org>;
+ Thu,  8 Jul 2021 09:17:50 +0000 (UTC)
+X-Greylist: from auto-whitelisted by SQLgrey-1.8.0
+Received: from theia.8bytes.org (8bytes.org [81.169.241.247])
+ by smtp3.osuosl.org (Postfix) with ESMTPS id C53846060B
+ for <iommu@lists.linux-foundation.org>; Thu,  8 Jul 2021 09:17:49 +0000 (UTC)
+Received: by theia.8bytes.org (Postfix, from userid 1000)
+ id 56C6F312; Thu,  8 Jul 2021 11:17:46 +0200 (CEST)
+Date: Thu, 8 Jul 2021 11:17:41 +0200
+From: Joerg Roedel <joro@8bytes.org>
+To: David Stevens <stevensd@chromium.org>, Robin Murphy <robin.murphy@arm.com>
+Subject: Re: [PATCH 1/2] dma-iommu: fix swiotlb SKIP_CPU_SYNC and arch sync
+Message-ID: <YObCtaW2UPii7mUL@8bytes.org>
+References: <20210702053742.842850-1-stevensd@google.com>
 MIME-Version: 1.0
-In-Reply-To: <CACycT3t=V-VV7LYDda8mt=QxN_Ay-N+3dgWp382TObkeei9MOg@mail.gmail.com>
-X-Scanned-By: MIMEDefang 2.84 on 10.5.11.22
-Cc: kvm <kvm@vger.kernel.org>, "Michael S. Tsirkin" <mst@redhat.com>,
- Jason Wang <jasowang@redhat.com>,
- virtualization <virtualization@lists.linux-foundation.org>,
- Christian Brauner <christian.brauner@canonical.com>,
- Jonathan Corbet <corbet@lwn.net>, Matthew Wilcox <willy@infradead.org>,
- Christoph Hellwig <hch@infradead.org>,
- Dan Carpenter <dan.carpenter@oracle.com>,
- Stefano Garzarella <sgarzare@redhat.com>, Al Viro <viro@zeniv.linux.org.uk>,
- songmuchun@bytedance.com, Jens Axboe <axboe@kernel.dk>,
- Greg KH <gregkh@linuxfoundation.org>, Randy Dunlap <rdunlap@infradead.org>,
- linux-kernel <linux-kernel@vger.kernel.org>, iommu@lists.linux-foundation.org,
- bcrl@kvack.org, netdev@vger.kernel.org, linux-fsdevel@vger.kernel.org,
- Mika =?iso-8859-1?Q?Penttil=E4?= <mika.penttila@nextfour.com>
+Content-Disposition: inline
+In-Reply-To: <20210702053742.842850-1-stevensd@google.com>
+Cc: iommu@lists.linux-foundation.org, Will Deacon <will@kernel.org>,
+ linux-kernel@vger.kernel.org, Tom Murphy <murphyt7@tcd.ie>
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -110,158 +70,221 @@ List-Post: <mailto:iommu@lists.linux-foundation.org>
 List-Help: <mailto:iommu-request@lists.linux-foundation.org?subject=help>
 List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
  <mailto:iommu-request@lists.linux-foundation.org?subject=subscribe>
-Content-Type: multipart/mixed; boundary="===============3157717786274608018=="
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
+Adding Robin.
 
---===============3157717786274608018==
-Content-Type: multipart/signed; micalg=pgp-sha256;
-	protocol="application/pgp-signature"; boundary="JRfIoP81GtaBg/o+"
-Content-Disposition: inline
-
-
---JRfIoP81GtaBg/o+
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
-
-On Wed, Jul 07, 2021 at 05:09:13PM +0800, Yongji Xie wrote:
-> On Tue, Jul 6, 2021 at 6:22 PM Stefan Hajnoczi <stefanha@redhat.com> wrot=
-e:
-> >
-> > On Tue, Jul 06, 2021 at 11:04:18AM +0800, Yongji Xie wrote:
-> > > On Mon, Jul 5, 2021 at 8:50 PM Stefan Hajnoczi <stefanha@redhat.com> =
-wrote:
-> > > >
-> > > > On Mon, Jul 05, 2021 at 11:36:15AM +0800, Jason Wang wrote:
-> > > > >
-> > > > > =E5=9C=A8 2021/7/4 =E4=B8=8B=E5=8D=885:49, Yongji Xie =E5=86=99=
-=E9=81=93:
-> > > > > > > > OK, I get you now. Since the VIRTIO specification says "Dev=
-ice
-> > > > > > > > configuration space is generally used for rarely-changing or
-> > > > > > > > initialization-time parameters". I assume the VDUSE_DEV_SET=
-_CONFIG
-> > > > > > > > ioctl should not be called frequently.
-> > > > > > > The spec uses MUST and other terms to define the precise requ=
-irements.
-> > > > > > > Here the language (especially the word "generally") is weaker=
- and means
-> > > > > > > there may be exceptions.
-> > > > > > >
-> > > > > > > Another type of access that doesn't work with the VDUSE_DEV_S=
-ET_CONFIG
-> > > > > > > approach is reads that have side-effects. For example, imagin=
-e a field
-> > > > > > > containing an error code if the device encounters a problem u=
-nrelated to
-> > > > > > > a specific virtqueue request. Reading from this field resets =
-the error
-> > > > > > > code to 0, saving the driver an extra configuration space wri=
-te access
-> > > > > > > and possibly race conditions. It isn't possible to implement =
-those
-> > > > > > > semantics suing VDUSE_DEV_SET_CONFIG. It's another corner cas=
-e, but it
-> > > > > > > makes me think that the interface does not allow full VIRTIO =
-semantics.
-> > > > >
-> > > > >
-> > > > > Note that though you're correct, my understanding is that config =
-space is
-> > > > > not suitable for this kind of error propagating. And it would be =
-very hard
-> > > > > to implement such kind of semantic in some transports.  Virtqueue=
- should be
-> > > > > much better. As Yong Ji quoted, the config space is used for
-> > > > > "rarely-changing or intialization-time parameters".
-> > > > >
-> > > > >
-> > > > > > Agreed. I will use VDUSE_DEV_GET_CONFIG in the next version. An=
-d to
-> > > > > > handle the message failure, I'm going to add a return value to
-> > > > > > virtio_config_ops.get() and virtio_cread_* API so that the erro=
-r can
-> > > > > > be propagated to the virtio device driver. Then the virtio-blk =
-device
-> > > > > > driver can be modified to handle that.
-> > > > > >
-> > > > > > Jason and Stefan, what do you think of this way?
-> > > >
-> > > > Why does VDUSE_DEV_GET_CONFIG need to support an error return value?
-> > > >
-> > >
-> > > We add a timeout and return error in case userspace never replies to
-> > > the message.
-> > >
-> > > > The VIRTIO spec provides no way for the device to report errors from
-> > > > config space accesses.
-> > > >
-> > > > The QEMU virtio-pci implementation returns -1 from invalid
-> > > > virtio_config_read*() and silently discards virtio_config_write*()
-> > > > accesses.
-> > > >
-> > > > VDUSE can take the same approach with
-> > > > VDUSE_DEV_GET_CONFIG/VDUSE_DEV_SET_CONFIG.
-> > > >
-> > >
-> > > I noticed that virtio_config_read*() only returns -1 when we access a
-> > > invalid field. But in the VDUSE case, VDUSE_DEV_GET_CONFIG might fail
-> > > when we access a valid field. Not sure if it's ok to silently ignore
-> > > this kind of error.
-> >
-> > That's a good point but it's a general VIRTIO issue. Any device
-> > implementation (QEMU userspace, hardware vDPA, etc) can fail, so the
-> > VIRTIO specification needs to provide a way for the driver to detect
-> > this.
-> >
-> > If userspace violates the contract then VDUSE needs to mark the device
-> > broken. QEMU's device emulation does something similar with the
-> > vdev->broken flag.
-> >
-> > The VIRTIO Device Status field DEVICE_NEEDS_RESET bit can be set by
-> > vDPA/VDUSE to indicate that the device is not operational and must be
-> > reset.
-> >
->=20
-> It might be a solution. But DEVICE_NEEDS_RESET  is not implemented
-> currently. So I'm thinking whether it's ok to add a check of
-> DEVICE_NEEDS_RESET status bit in probe function of virtio device
-> driver (e.g. virtio-blk driver). Then VDUSE can make use of it to fail
-> device initailization when configuration space access failed.
-
-Okay.
-
-Stefan
-
---JRfIoP81GtaBg/o+
-Content-Type: application/pgp-signature; name="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-
-iQEzBAEBCAAdFiEEhpWov9P5fNqsNXdanKSrs4Grc8gFAmDmwEIACgkQnKSrs4Gr
-c8h1Uwf/V57anfkJGNBdE/1nvE9TLQ0SZ4PD1vU4fyfrXmi1FuC/T0RDPx2KpjhM
-pTZtL/+8qsT68q4dLuI3vRpys19JEXe5G6qtKeJp6Hj2gWhq5fcIQE40rwjI2Q0M
-r7hKT/3JCtuQMcv8XDUOU7QRg32V/uP7DABqOqHvhEU0D3nK07bLS2J5g035Tn6X
-munQgDzLg0BPKTntfz1CUooXjcF6l9HOuBnRBPIldlavndT3KKMnWW9atAf9Tofl
-2N1is88HX38huzt8UCnp57cdjFNtA59nfH3Au3mZ4s1NDKmwtAwGLRc0yJch4+cG
-M+8mdGvmL3lc/0owKY8YpOtgyL4xIg==
-=kNcQ
------END PGP SIGNATURE-----
-
---JRfIoP81GtaBg/o+--
-
-
---===============3157717786274608018==
-Content-Type: text/plain; charset="us-ascii"
-MIME-Version: 1.0
-Content-Transfer-Encoding: 7bit
-Content-Disposition: inline
-
+On Fri, Jul 02, 2021 at 02:37:41PM +0900, David Stevens wrote:
+> From: David Stevens <stevensd@chromium.org>
+> 
+> Make map_swiotlb and unmap_swiotlb only for mapping, and consistently
+> use sync_single_for and sync_sg_for functions for swiotlb sync and arch
+> sync. This ensures that the same code path is responsible for syncing
+> regardless of whether or not SKIP_CPU_SYNC is set. In the process, fix
+> various places where the original physical address and swiotlb tlb_addr
+> are mixed up:
+>   - Make sync_sg functions call sync_single functions for untrusted
+>     devices, so they use tlb_addr when checking is_swiotlb_buffer and
+>     when doing arch sync if necessary.
+>   - Use tlb_addr for arch sync in map_page if necessary.
+>   - In map_sg, map before syncing so that arch sync can target the
+>     bounce buffer if necessary.
+>   - Pass SKIP_CPU_SYNC to swiotlb map and unmap to avoid double syncing
+>     the swiotlb. This had previously only happened in the unmap_page
+>     case, but is now necessary for all swiotlb cases.
+> 
+> Fixes: 82612d66d51d ("iommu: Allow the dma-iommu api to use bounce buffers")
+> Signed-off-by: David Stevens <stevensd@chromium.org>
+> ---
+>  drivers/iommu/dma-iommu.c | 82 ++++++++++++++++++++++++---------------
+>  1 file changed, 51 insertions(+), 31 deletions(-)
+> 
+> diff --git a/drivers/iommu/dma-iommu.c b/drivers/iommu/dma-iommu.c
+> index 7bcdd1205535..24d1042cd052 100644
+> --- a/drivers/iommu/dma-iommu.c
+> +++ b/drivers/iommu/dma-iommu.c
+> @@ -505,7 +505,8 @@ static void __iommu_dma_unmap_swiotlb(struct device *dev, dma_addr_t dma_addr,
+>  	__iommu_dma_unmap(dev, dma_addr, size);
+>  
+>  	if (unlikely(is_swiotlb_buffer(phys)))
+> -		swiotlb_tbl_unmap_single(dev, phys, size, dir, attrs);
+> +		swiotlb_tbl_unmap_single(dev, phys, size, dir,
+> +					 attrs | DMA_ATTR_SKIP_CPU_SYNC);
+>  }
+>  
+>  static dma_addr_t __iommu_dma_map(struct device *dev, phys_addr_t phys,
+> @@ -536,7 +537,8 @@ static dma_addr_t __iommu_dma_map(struct device *dev, phys_addr_t phys,
+>  
+>  static dma_addr_t __iommu_dma_map_swiotlb(struct device *dev, phys_addr_t phys,
+>  		size_t org_size, dma_addr_t dma_mask, bool coherent,
+> -		enum dma_data_direction dir, unsigned long attrs)
+> +		enum dma_data_direction dir, unsigned long attrs,
+> +		phys_addr_t *adj_phys)
+>  {
+>  	int prot = dma_info_to_prot(dir, coherent, attrs);
+>  	struct iommu_domain *domain = iommu_get_dma_domain(dev);
+> @@ -555,7 +557,8 @@ static dma_addr_t __iommu_dma_map_swiotlb(struct device *dev, phys_addr_t phys,
+>  	    iova_offset(iovad, phys | org_size)) {
+>  		aligned_size = iova_align(iovad, org_size);
+>  		phys = swiotlb_tbl_map_single(dev, phys, org_size,
+> -					      aligned_size, dir, attrs);
+> +					      aligned_size, dir,
+> +					      attrs | DMA_ATTR_SKIP_CPU_SYNC);
+>  
+>  		if (phys == DMA_MAPPING_ERROR)
+>  			return DMA_MAPPING_ERROR;
+> @@ -573,6 +576,8 @@ static dma_addr_t __iommu_dma_map_swiotlb(struct device *dev, phys_addr_t phys,
+>  
+>  		memset(padding_start, 0, padding_size);
+>  	}
+> +	if (adj_phys)
+> +		*adj_phys = phys;
+>  
+>  	iova = __iommu_dma_map(dev, phys, aligned_size, prot, dma_mask);
+>  	if (iova == DMA_MAPPING_ERROR && is_swiotlb_buffer(phys))
+> @@ -785,15 +790,17 @@ static void iommu_dma_sync_single_for_cpu(struct device *dev,
+>  		swiotlb_sync_single_for_cpu(dev, phys, size, dir);
+>  }
+>  
+> -static void iommu_dma_sync_single_for_device(struct device *dev,
+> -		dma_addr_t dma_handle, size_t size, enum dma_data_direction dir)
+> +static void __iommu_dma_sync_single_for_device(struct device *dev,
+> +		dma_addr_t dma_handle, size_t size,
+> +		enum dma_data_direction dir, phys_addr_t phys)
+>  {
+> -	phys_addr_t phys;
+> -
+>  	if (dev_is_dma_coherent(dev) && !dev_is_untrusted(dev))
+>  		return;
+>  
+> -	phys = iommu_iova_to_phys(iommu_get_dma_domain(dev), dma_handle);
+> +	if (phys == 0)
+> +		phys = iommu_iova_to_phys(iommu_get_dma_domain(dev),
+> +					  dma_handle);
+> +
+>  	if (is_swiotlb_buffer(phys))
+>  		swiotlb_sync_single_for_device(dev, phys, size, dir);
+>  
+> @@ -801,6 +808,12 @@ static void iommu_dma_sync_single_for_device(struct device *dev,
+>  		arch_sync_dma_for_device(phys, size, dir);
+>  }
+>  
+> +static void iommu_dma_sync_single_for_device(struct device *dev,
+> +		dma_addr_t dma_handle, size_t size, enum dma_data_direction dir)
+> +{
+> +	__iommu_dma_sync_single_for_device(dev, dma_handle, size, dir, 0);
+> +}
+> +
+>  static void iommu_dma_sync_sg_for_cpu(struct device *dev,
+>  		struct scatterlist *sgl, int nelems,
+>  		enum dma_data_direction dir)
+> @@ -811,14 +824,13 @@ static void iommu_dma_sync_sg_for_cpu(struct device *dev,
+>  	if (dev_is_dma_coherent(dev) && !dev_is_untrusted(dev))
+>  		return;
+>  
+> -	for_each_sg(sgl, sg, nelems, i) {
+> -		if (!dev_is_dma_coherent(dev))
+> +	if (dev_is_untrusted(dev))
+> +		for_each_sg(sgl, sg, nelems, i)
+> +			iommu_dma_sync_single_for_cpu(dev, sg_dma_address(sg),
+> +						      sg->length, dir);
+> +	else
+> +		for_each_sg(sgl, sg, nelems, i)
+>  			arch_sync_dma_for_cpu(sg_phys(sg), sg->length, dir);
+> -
+> -		if (is_swiotlb_buffer(sg_phys(sg)))
+> -			swiotlb_sync_single_for_cpu(dev, sg_phys(sg),
+> -						    sg->length, dir);
+> -	}
+>  }
+>  
+>  static void iommu_dma_sync_sg_for_device(struct device *dev,
+> @@ -831,29 +843,30 @@ static void iommu_dma_sync_sg_for_device(struct device *dev,
+>  	if (dev_is_dma_coherent(dev) && !dev_is_untrusted(dev))
+>  		return;
+>  
+> -	for_each_sg(sgl, sg, nelems, i) {
+> -		if (is_swiotlb_buffer(sg_phys(sg)))
+> -			swiotlb_sync_single_for_device(dev, sg_phys(sg),
+> -						       sg->length, dir);
+> -
+> -		if (!dev_is_dma_coherent(dev))
+> +	if (dev_is_untrusted(dev))
+> +		for_each_sg(sgl, sg, nelems, i)
+> +			__iommu_dma_sync_single_for_device(dev,
+> +							   sg_dma_address(sg),
+> +							   sg->length, dir, 0);
+> +	else
+> +		for_each_sg(sgl, sg, nelems, i)
+>  			arch_sync_dma_for_device(sg_phys(sg), sg->length, dir);
+> -	}
+>  }
+>  
+>  static dma_addr_t iommu_dma_map_page(struct device *dev, struct page *page,
+>  		unsigned long offset, size_t size, enum dma_data_direction dir,
+>  		unsigned long attrs)
+>  {
+> -	phys_addr_t phys = page_to_phys(page) + offset;
+> +	phys_addr_t phys = page_to_phys(page) + offset, adj_phys;
+>  	bool coherent = dev_is_dma_coherent(dev);
+>  	dma_addr_t dma_handle;
+>  
+> -	dma_handle = __iommu_dma_map_swiotlb(dev, phys, size, dma_get_mask(dev),
+> -			coherent, dir, attrs);
+> -	if (!coherent && !(attrs & DMA_ATTR_SKIP_CPU_SYNC) &&
+> +	dma_handle = __iommu_dma_map_swiotlb(dev, phys, size,
+> +			dma_get_mask(dev), coherent, dir, attrs, &adj_phys);
+> +	if (!(attrs & DMA_ATTR_SKIP_CPU_SYNC) &&
+>  	    dma_handle != DMA_MAPPING_ERROR)
+> -		arch_sync_dma_for_device(phys, size, dir);
+> +		__iommu_dma_sync_single_for_device(dev, dma_handle, size,
+> +						   dir, adj_phys);
+>  	return dma_handle;
+>  }
+>  
+> @@ -960,7 +973,7 @@ static int iommu_dma_map_sg_swiotlb(struct device *dev, struct scatterlist *sg,
+>  	for_each_sg(sg, s, nents, i) {
+>  		sg_dma_address(s) = __iommu_dma_map_swiotlb(dev, sg_phys(s),
+>  				s->length, dma_get_mask(dev),
+> -				dev_is_dma_coherent(dev), dir, attrs);
+> +				dev_is_dma_coherent(dev), dir, attrs, NULL);
+>  		if (sg_dma_address(s) == DMA_MAPPING_ERROR)
+>  			goto out_unmap;
+>  		sg_dma_len(s) = s->length;
+> @@ -991,17 +1004,24 @@ static int iommu_dma_map_sg(struct device *dev, struct scatterlist *sg,
+>  	dma_addr_t iova;
+>  	size_t iova_len = 0;
+>  	unsigned long mask = dma_get_seg_boundary(dev);
+> -	int i;
+> +	int i, early_mapped = 0;
+>  
+>  	if (static_branch_unlikely(&iommu_deferred_attach_enabled) &&
+>  	    iommu_deferred_attach(dev, domain))
+>  		return 0;
+>  
+> +	if (dev_is_untrusted(dev)) {
+> +		early_mapped = iommu_dma_map_sg_swiotlb(dev, sg, nents,
+> +							dir, attrs);
+> +		if (!early_mapped)
+> +			return 0;
+> +	}
+> +
+>  	if (!(attrs & DMA_ATTR_SKIP_CPU_SYNC))
+>  		iommu_dma_sync_sg_for_device(dev, sg, nents, dir);
+>  
+> -	if (dev_is_untrusted(dev))
+> -		return iommu_dma_map_sg_swiotlb(dev, sg, nents, dir, attrs);
+> +	if (early_mapped)
+> +		return early_mapped;
+>  
+>  	/*
+>  	 * Work out how much IOVA space we need, and align the segments to
+> -- 
+> 2.32.0.93.g670b81a890-goog
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
 https://lists.linuxfoundation.org/mailman/listinfo/iommu
---===============3157717786274608018==--
-
