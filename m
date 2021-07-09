@@ -2,81 +2,94 @@ Return-Path: <SRS0=6oxg=MB=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-10.5 required=3.0 tests=BAYES_00,
-	HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,MENTIONS_GIT_HOSTING,
-	NICE_REPLY_A,SPF_HELO_NONE,SPF_PASS,USER_AGENT_SANE_1 autolearn=ham
-	autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-17.0 required=3.0 tests=BAYES_00,INCLUDES_CR_TRAILER,
+	INCLUDES_PATCH,MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,USER_AGENT_GIT
+	autolearn=unavailable autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7AA23C07E99
-	for <iommu@archiver.kernel.org>; Fri,  9 Jul 2021 11:11:53 +0000 (UTC)
-Received: from smtp2.osuosl.org (smtp2.osuosl.org [140.211.166.133])
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1ED3CC11F66
+	for <iommu@archiver.kernel.org>; Fri,  9 Jul 2021 11:43:54 +0000 (UTC)
+Received: from smtp1.osuosl.org (smtp1.osuosl.org [140.211.166.138])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 254DB613E1
-	for <iommu@archiver.kernel.org>; Fri,  9 Jul 2021 11:11:53 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 254DB613E1
-Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=huawei.com
+	by mail.kernel.org (Postfix) with ESMTPS id C9E8F613C9
+	for <iommu@archiver.kernel.org>; Fri,  9 Jul 2021 11:43:53 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org C9E8F613C9
+Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=kernel.org
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by smtp2.osuosl.org (Postfix) with ESMTP id DB595405D3;
-	Fri,  9 Jul 2021 11:11:52 +0000 (UTC)
+	by smtp1.osuosl.org (Postfix) with ESMTP id 8ED6883D3A;
+	Fri,  9 Jul 2021 11:43:53 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from smtp2.osuosl.org ([127.0.0.1])
-	by localhost (smtp2.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id cfTTvRpTih8c; Fri,  9 Jul 2021 11:11:52 +0000 (UTC)
+Received: from smtp1.osuosl.org ([127.0.0.1])
+	by localhost (smtp1.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+	with ESMTP id vvqfsZb2jLmz; Fri,  9 Jul 2021 11:43:52 +0000 (UTC)
 Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by smtp2.osuosl.org (Postfix) with ESMTPS id C6FD7405A0;
-	Fri,  9 Jul 2021 11:11:51 +0000 (UTC)
+	by smtp1.osuosl.org (Postfix) with ESMTPS id 5F56383D17;
+	Fri,  9 Jul 2021 11:43:52 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 98543C001B;
-	Fri,  9 Jul 2021 11:11:51 +0000 (UTC)
-Received: from smtp2.osuosl.org (smtp2.osuosl.org [140.211.166.133])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 3183DC001A
- for <iommu@lists.linux-foundation.org>; Fri,  9 Jul 2021 11:11:50 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 39248C001A;
+	Fri,  9 Jul 2021 11:43:52 +0000 (UTC)
+Received: from smtp3.osuosl.org (smtp3.osuosl.org [140.211.166.136])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 76EBDC000E;
+ Fri,  9 Jul 2021 11:43:50 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by smtp2.osuosl.org (Postfix) with ESMTP id AB730405C5
- for <iommu@lists.linux-foundation.org>; Fri,  9 Jul 2021 11:11:48 +0000 (UTC)
+ by smtp3.osuosl.org (Postfix) with ESMTP id 586BF6074A;
+ Fri,  9 Jul 2021 11:43:50 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from smtp2.osuosl.org ([127.0.0.1])
- by localhost (smtp2.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id jmb0p7fntssE for <iommu@lists.linux-foundation.org>;
- Fri,  9 Jul 2021 11:11:47 +0000 (UTC)
-X-Greylist: domain auto-whitelisted by SQLgrey-1.8.0
-Received: from frasgout.his.huawei.com (frasgout.his.huawei.com
- [185.176.79.56])
- by smtp2.osuosl.org (Postfix) with ESMTPS id 20E93405A7
- for <iommu@lists.linux-foundation.org>; Fri,  9 Jul 2021 11:11:47 +0000 (UTC)
-Received: from fraeml734-chm.china.huawei.com (unknown [172.18.147.200])
- by frasgout.his.huawei.com (SkyGuard) with ESMTP id 4GLqyn74LDz6J6X3;
- Fri,  9 Jul 2021 19:03:29 +0800 (CST)
-Received: from lhreml724-chm.china.huawei.com (10.201.108.75) by
- fraeml734-chm.china.huawei.com (10.206.15.215) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2176.2; Fri, 9 Jul 2021 13:11:44 +0200
-Received: from [10.47.93.40] (10.47.93.40) by lhreml724-chm.china.huawei.com
- (10.201.108.75) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2176.2; Fri, 9 Jul 2021
- 12:11:43 +0100
-Subject: Re: [bug report] iommu_dma_unmap_sg() is very slow then running IO
- from remote numa node
-To: Robin Murphy <robin.murphy@arm.com>, Ming Lei <ming.lei@redhat.com>,
- <linux-nvme@lists.infradead.org>, Will Deacon <will@kernel.org>,
- <linux-arm-kernel@lists.infradead.org>, <iommu@lists.linux-foundation.org>
-References: <YOgK8fdv7dOQtkET@T590>
- <23e7956b-f3b5-b585-3c18-724165994051@arm.com>
-From: John Garry <john.garry@huawei.com>
-Message-ID: <a44e8a68-d789-e3db-4fbb-404defb431f6@huawei.com>
-Date: Fri, 9 Jul 2021 12:04:24 +0100
-User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; rv:68.0) Gecko/20100101
- Thunderbird/68.1.2
+Received: from smtp3.osuosl.org ([127.0.0.1])
+ by localhost (smtp3.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+ with ESMTP id bjasu24yTbDX; Fri,  9 Jul 2021 11:43:49 +0000 (UTC)
+X-Greylist: whitelisted by SQLgrey-1.8.0
+X-Greylist: whitelisted by SQLgrey-1.8.0
+Received: from mail-wm1-f48.google.com (mail-wm1-f48.google.com
+ [209.85.128.48])
+ by smtp3.osuosl.org (Postfix) with ESMTPS id 8CA20605DE;
+ Fri,  9 Jul 2021 11:43:49 +0000 (UTC)
+Received: by mail-wm1-f48.google.com with SMTP id
+ u5-20020a7bc0450000b02901480e40338bso6363031wmc.1; 
+ Fri, 09 Jul 2021 04:43:49 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+ d=1e100.net; s=20161025;
+ h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
+ :references:mime-version:content-transfer-encoding;
+ bh=pLOJW7d88vrY9GmA9ucvUaUUVOlvzPYC8Oyh2a0Sb1s=;
+ b=CYxMhUiH1ZqtOGS6NeuptdTSdKSQ18bDEO2gp7Hha0hYOq4IYJ2eMWeuJ4Wn9ZHRss
+ ZPCx3xH+xeR23PFI0Sa3C5FW1oqdRPcwT/xE77EhxYdZ/EXcxT1EjpatF1Ih2ZH4PbrM
+ XpMhPEQqjhuIEkPCERUkMtKIc1Or7CUZk1ljaLLKopZBDDZTfQFAWWq3daJ3yWHFM6qo
+ 0VD4zmfSk6z/X2PzPs2YFcVNsRCe3dCKtTLG8CClKmXPtEoxq2XZA0TOWh6eshSiHj6T
+ NwEvlmvhxtvT6syrEKpwVRbVQ7Br0c+GgaMvCWWp3TwG9evBZfujRenAvW0U92ScZYLg
+ 82zw==
+X-Gm-Message-State: AOAM530DX+qULLFh3rFXQZt03ADOhGSllegNigUPJ2FVZfrs6hQjzjnt
+ sSRD0ui7m7UARGdssWfV2SQ=
+X-Google-Smtp-Source: ABdhPJyoOzdW1/ocaitVPdNhN15vIaawhkBqprEc88D3z21sdADkciIP1zBasQCgJY0b30+cUdo/Wg==
+X-Received: by 2002:a05:600c:4a09:: with SMTP id
+ c9mr38602838wmp.11.1625831027824; 
+ Fri, 09 Jul 2021 04:43:47 -0700 (PDT)
+Received: from
+ liuwe-devbox-debian-v2.j3c5onc20sse1dnehy4noqpfcg.zx.internal.cloudapp.net
+ ([51.145.34.42])
+ by smtp.gmail.com with ESMTPSA id z12sm4896849wrs.39.2021.07.09.04.43.47
+ (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+ Fri, 09 Jul 2021 04:43:47 -0700 (PDT)
+From: Wei Liu <wei.liu@kernel.org>
+To: Linux on Hyper-V List <linux-hyperv@vger.kernel.org>
+Subject: [RFC v1 3/8] intel/vt-d: make DMAR table parsing code more flexible
+Date: Fri,  9 Jul 2021 11:43:34 +0000
+Message-Id: <20210709114339.3467637-4-wei.liu@kernel.org>
+X-Mailer: git-send-email 2.30.2
+In-Reply-To: <20210709114339.3467637-1-wei.liu@kernel.org>
+References: <20210709114339.3467637-1-wei.liu@kernel.org>
 MIME-Version: 1.0
-In-Reply-To: <23e7956b-f3b5-b585-3c18-724165994051@arm.com>
-Content-Language: en-US
-X-Originating-IP: [10.47.93.40]
-X-ClientProxiedBy: lhreml737-chm.china.huawei.com (10.201.108.187) To
- lhreml724-chm.china.huawei.com (10.201.108.75)
-X-CFilter-Loop: Reflected
-Cc: linux-kernel@vger.kernel.org
+Cc: Wei Liu <wei.liu@kernel.org>, pasha.tatashin@soleen.com,
+ Will Deacon <will@kernel.org>, kumarpraveen@linux.microsoft.com,
+ David Woodhouse <dwmw2@infradead.org>,
+ Linux Kernel List <linux-kernel@vger.kernel.org>,
+ Michael Kelley <mikelley@microsoft.com>,
+ "open list:INTEL IOMMU VT-d" <iommu@lists.linux-foundation.org>,
+ Nuno Das Neves <nunodasneves@linux.microsoft.com>,
+ Sunil Muthuswamy <sunilmut@microsoft.com>,
+ virtualization@lists.linux-foundation.org,
+ Vineeth Pillai <viremana@linux.microsoft.com>
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -89,67 +102,165 @@ List-Post: <mailto:iommu@lists.linux-foundation.org>
 List-Help: <mailto:iommu-request@lists.linux-foundation.org?subject=help>
 List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
  <mailto:iommu-request@lists.linux-foundation.org?subject=subscribe>
-Content-Transfer-Encoding: base64
-Content-Type: text/plain; charset="utf-8"; Format="flowed"
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-T24gMDkvMDcvMjAyMSAxMToyNiwgUm9iaW4gTXVycGh5IHdyb3RlOgo+IG4gMjAyMS0wNy0wOSAw
-OTozOCwgTWluZyBMZWkgd3JvdGU6Cj4+IEhlbGxvLAo+Pgo+PiBJIG9ic2VydmVkIHRoYXQgTlZN
-ZSBwZXJmb3JtYW5jZSBpcyB2ZXJ5IGJhZCB3aGVuIHJ1bm5pbmcgZmlvIG9uIG9uZQo+PiBDUFUo
-YWFyY2g2NCkgaW4gcmVtb3RlIG51bWEgbm9kZSBjb21wYXJlZCB3aXRoIHRoZSBudm1lIHBjaSBu
-dW1hIG5vZGUuCj4+Cj4+IFBsZWFzZSBzZWUgdGhlIHRlc3QgcmVzdWx0WzFdIDMyN0sgdnMuIDM0
-LjlLLgo+Pgo+PiBMYXRlbmN5IHRyYWNlIHNob3dzIHRoYXQgb25lIGJpZyBkaWZmZXJlbmNlIGlz
-IGluIGlvbW11X2RtYV91bm1hcF9zZygpLAo+PiAxMTExIG5zZWNzIHZzIDI1NDM3IG5zZWNzLgo+
-IAo+IEFyZSB5b3UgYWJsZSB0byBkaWcgZG93biBmdXJ0aGVyIGludG8gdGhhdD8gaW9tbXVfZG1h
-X3VubWFwX3NnKCkgaXRzZWxmIAo+IGRvZXNuJ3QgZG8gYW55dGhpbmcgcGFydGljdWxhcmx5IHNw
-ZWNpYWwsIHNvIHdoYXRldmVyIG1ha2VzIGEgZGlmZmVyZW5jZSAKPiBpcyBwcm9iYWJseSBoYXBw
-ZW5pbmcgYXQgYSBsb3dlciBsZXZlbCwgYW5kIEkgc3VzcGVjdCB0aGVyZSdzIHByb2JhYmx5IAo+
-IGFuIFNNTVUgaW52b2x2ZWQuIElmIGZvciBpbnN0YW5jZSBpdCB0dXJucyBvdXQgdG8gZ28gYWxs
-IHRoZSB3YXkgZG93biB0byAKPiBfX2FybV9zbW11X2NtZHFfcG9sbF91bnRpbF9jb25zdW1lZCgp
-IGJlY2F1c2UgcG9sbGluZyBNTUlPIGZyb20gdGhlIAo+IHdyb25nIG5vZGUgaXMgc2xvdywgdGhl
-cmUncyB1bmxpa2VseSB0byBiZSBtdWNoIHlvdSBjYW4gZG8gYWJvdXQgdGhhdCAKPiBvdGhlciB0
-aGFuIHRoZSBnbG9iYWwgImdvIGZhc3RlciIga25vYnMgKGlvbW11LnN0cmljdCBhbmQgCj4gaW9t
-bXUucGFzc3Rocm91Z2gpIHdpdGggdGhlaXIgYXNzb2NpYXRlZCBjb21wcm9taXNlcy4KClRoZXJl
-IHdhcyBhbHNvIHRoZSBkaXNhYmxlX21zaXBvbGxpbmcgb3B0aW9uOgoKaHR0cHM6Ly9naXQua2Vy
-bmVsLm9yZy9wdWIvc2NtL2xpbnV4L2tlcm5lbC9naXQvdG9ydmFsZHMvbGludXguZ2l0L3RyZWUv
-ZHJpdmVycy9pb21tdS9hcm0vYXJtLXNtbXUtdjMvYXJtLXNtbXUtdjMuYyNuNDIKCkJ1dCBJIGFt
-IG5vdCBzdXJlIGlmIHRoYXQgcGxhdGZvcm0gZXZlbiBzdXBwb3J0cyBNU0kgcG9sbGluZyAob3Ig
-aGFzIApzbW11IHYzKS4KCllvdSBjb3VsZCBhbHNvIHRyeSBpb21tdS5mb3JjZWRhYz0xIGNtZGxp
-bmUgb3B0aW9uLiBCdXQgSSBkb3VidCBpdCB3aWxsIApoZWxwIHNpbmNlIHRoZSBpc3N1ZSB3YXMg
-bWVudGlvbmVkIHRvIGJlIE5VTUEgcmVsYXRlZC4KCj4gCj4gUm9iaW4uCj4gCj4+IFsxXSBmaW8g
-dGVzdCAmIHJlc3VsdHMKPj4KPj4gMSkgZmlvIHRlc3QgcmVzdWx0Ogo+Pgo+PiAtIHJ1biBmaW8g
-b24gbG9jYWwgQ1BVCj4+IHRhc2tzZXQgLWMgMCB+L2dpdC90b29scy90ZXN0L252bWUvaW9fdXJp
-bmcgMTAgMSAvZGV2L252bWUxbjEgNGsKPj4gKyBmaW8gLS1icz00ayAtLWlvZW5naW5lPWlvX3Vy
-aW5nIC0tZml4ZWRidWZzIC0tcmVnaXN0ZXJmaWxlcyAtLWhpcHJpIAo+PiAtLWlvZGVwdGg9NjQg
-LS1pb2RlcHRoX2JhdGNoX3N1Ym1pdD0xNiAtLWlvZGVwdGhfYmF0Y2hfY29tcGxldGVfbWluPTE2
-IAo+PiAtLWZpbGVuYW1lPS9kZXYvbnZtZTFuMSAtLWRpcmVjdD0xIC0tcnVudGltZT0xMCAtLW51
-bWpvYnM9MSAKPj4gLS1ydz1yYW5kcmVhZCAtLW5hbWU9dGVzdCAtLWdyb3VwX3JlcG9ydGluZwo+
-Pgo+PiBJT1BTOiAzMjdLCj4+IGF2ZyBsYXRlbmN5IG9mIGlvbW11X2RtYV91bm1hcF9zZygpOiAx
-MTExIG5zZWNzCj4+Cj4+Cj4+IC0gcnVuIGZpbyBvbiByZW1vdGUgQ1BVCj4+IHRhc2tzZXQgLWMg
-ODAgfi9naXQvdG9vbHMvdGVzdC9udm1lL2lvX3VyaW5nIDEwIDEgL2Rldi9udm1lMW4xIDRrCj4+
-ICsgZmlvIC0tYnM9NGsgLS1pb2VuZ2luZT1pb191cmluZyAtLWZpeGVkYnVmcyAtLXJlZ2lzdGVy
-ZmlsZXMgLS1oaXByaSAKPj4gLS1pb2RlcHRoPTY0IC0taW9kZXB0aF9iYXRjaF9zdWJtaXQ9MTYg
-LS1pb2RlcHRoX2JhdGNoX2NvbXBsZXRlX21pbj0xNiAKPj4gLS1maWxlbmFtZT0vZGV2L252bWUx
-bjEgLS1kaXJlY3Q9MSAtLXJ1bnRpbWU9MTAgLS1udW1qb2JzPTEgCj4+IC0tcnc9cmFuZHJlYWQg
-LS1uYW1lPXRlc3QgLS1ncm91cF9yZXBvcnRpbmcKPj4KPj4gSU9QUzogMzQuOUsKPj4gYXZnIGxh
-dGVuY3kgb2YgaW9tbXVfZG1hX3VubWFwX3NnKCk6IDI1NDM3IG5zZWNzCj4+Cj4+IDIpIHN5c3Rl
-bSBpbmZvCj4+IFtyb290QGFtcGVyZS1tdGphZGUtMDQgfl0jIGxzY3B1IHwgZ3JlcCBOVU1BCj4+
-IE5VTUEgbm9kZShzKTrCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoCAyCj4+
-IE5VTUEgbm9kZTAgQ1BVKHMpOsKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqAgMC03OQo+PiBO
-VU1BIG5vZGUxIENQVShzKTrCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgIDgwLTE1OQo+Pgo+
-PiBsc3BjaSB8IGdyZXAgTlZNZQo+PiAwMDAzOjAxOjAwLjAgTm9uLVZvbGF0aWxlIG1lbW9yeSBj
-b250cm9sbGVyOiBTYW1zdW5nIEVsZWN0cm9uaWNzIENvIAo+PiBMdGQgTlZNZSBTU0QgQ29udHJv
-bGxlciBTTTk4MS9QTTk4MS9QTTk4Mwo+Pgo+PiBbcm9vdEBhbXBlcmUtbXRqYWRlLTA0IH5dIyBj
-YXQgL3N5cy9ibG9jay9udm1lMW4xL2RldmljZS9kZXZpY2UvbnVtYV9ub2RlIAoKU2luY2UgaXQn
-cyBhbXBlcmUsIEkgZ3Vlc3MgaXQncyBzbW11IHYzLgoKQlRXLCBpZiB5b3UgcmVtZW1iZXIsIEkg
-ZGlkIHJhaXNlIGEgcGVyZm9ybWFuY2UgaXNzdWUgb2Ygc21tdXYzIHdpdGggCk5WTWUgYmVmb3Jl
-OgpodHRwczovL2xvcmUua2VybmVsLm9yZy9saW51eC1pb21tdS9iMmE2ZTI2ZC02ZDBkLTdmMGQt
-ZjIyMi01ODk4MTJmNzAxZDJAaHVhd2VpLmNvbS8KCkkgZGlkIGhhdmUgdGhpcyBzZXJpZXMgdG8g
-aW1wcm92ZSBwZXJmb3JtYW5jZSBmb3Igc3lzdGVtcyB3aXRoIGxvdHMgb2YgCkNQVXMsIGxpa2Ug
-YWJvdmUsIGJ1dCBub3QgYWNjZXB0ZWQ6Cmh0dHBzOi8vbG9yZS5rZXJuZWwub3JnL2xpbnV4LWlv
-bW11LzE1OTgwMTgwNjItMTc1NjA4LTEtZ2l0LXNlbmQtZW1haWwtam9obi5nYXJyeUBodWF3ZWku
-Y29tLwoKVGhhbmtzLApKb2huCgpfX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19f
-X19fX19fX19fXwppb21tdSBtYWlsaW5nIGxpc3QKaW9tbXVAbGlzdHMubGludXgtZm91bmRhdGlv
-bi5vcmcKaHR0cHM6Ly9saXN0cy5saW51eGZvdW5kYXRpb24ub3JnL21haWxtYW4vbGlzdGluZm8v
-aW9tbXU=
+Microsoft Hypervisor provides a set of hypercalls to manage device
+domains. The root kernel should parse the DMAR so that it can program
+the IOMMU (with hypercalls) correctly.
+
+The DMAR code was designed to work with Intel IOMMU only. Add two more
+parameters to make it useful to Microsoft Hypervisor. Microsoft
+Hypervisor does not need the DMAR parsing code to allocate an Intel
+IOMMU structure; it also wishes to always reparse the DMAR table even
+after it has been parsed before.
+
+Adjust Intel IOMMU code to use the new dmar_table_init. There should be
+no functional change to Intel IOMMU code.
+
+Signed-off-by: Wei Liu <wei.liu@kernel.org>
+---
+We may be able to combine alloc and force_parse?
+---
+ drivers/iommu/intel/dmar.c          | 38 ++++++++++++++++++++---------
+ drivers/iommu/intel/iommu.c         |  2 +-
+ drivers/iommu/intel/irq_remapping.c |  2 +-
+ include/linux/dmar.h                |  2 +-
+ 4 files changed, 30 insertions(+), 14 deletions(-)
+
+diff --git a/drivers/iommu/intel/dmar.c b/drivers/iommu/intel/dmar.c
+index 84057cb9596c..bd72f47c728b 100644
+--- a/drivers/iommu/intel/dmar.c
++++ b/drivers/iommu/intel/dmar.c
+@@ -408,7 +408,8 @@ dmar_find_dmaru(struct acpi_dmar_hardware_unit *drhd)
+  * structure which uniquely represent one DMA remapping hardware unit
+  * present in the platform
+  */
+-static int dmar_parse_one_drhd(struct acpi_dmar_header *header, void *arg)
++static int dmar_parse_one_drhd_internal(struct acpi_dmar_header *header,
++		void *arg, bool alloc)
+ {
+ 	struct acpi_dmar_hardware_unit *drhd;
+ 	struct dmar_drhd_unit *dmaru;
+@@ -440,12 +441,14 @@ static int dmar_parse_one_drhd(struct acpi_dmar_header *header, void *arg)
+ 		return -ENOMEM;
+ 	}
+ 
+-	ret = alloc_iommu(dmaru);
+-	if (ret) {
+-		dmar_free_dev_scope(&dmaru->devices,
+-				    &dmaru->devices_cnt);
+-		kfree(dmaru);
+-		return ret;
++	if (alloc) {
++		ret = alloc_iommu(dmaru);
++		if (ret) {
++			dmar_free_dev_scope(&dmaru->devices,
++					    &dmaru->devices_cnt);
++			kfree(dmaru);
++			return ret;
++		}
+ 	}
+ 	dmar_register_drhd_unit(dmaru);
+ 
+@@ -456,6 +459,16 @@ static int dmar_parse_one_drhd(struct acpi_dmar_header *header, void *arg)
+ 	return 0;
+ }
+ 
++static int dmar_parse_one_drhd(struct acpi_dmar_header *header, void *arg)
++{
++	return dmar_parse_one_drhd_internal(header, arg, true);
++}
++
++int dmar_parse_one_drhd_noalloc(struct acpi_dmar_header *header, void *arg)
++{
++	return dmar_parse_one_drhd_internal(header, arg, false);
++}
++
+ static void dmar_free_drhd(struct dmar_drhd_unit *dmaru)
+ {
+ 	if (dmaru->devices && dmaru->devices_cnt)
+@@ -633,7 +646,7 @@ static inline int dmar_walk_dmar_table(struct acpi_table_dmar *dmar,
+  * parse_dmar_table - parses the DMA reporting table
+  */
+ static int __init
+-parse_dmar_table(void)
++parse_dmar_table(bool alloc)
+ {
+ 	struct acpi_table_dmar *dmar;
+ 	int drhd_count = 0;
+@@ -650,6 +663,9 @@ parse_dmar_table(void)
+ 		.cb[ACPI_DMAR_TYPE_SATC] = &dmar_parse_one_satc,
+ 	};
+ 
++	if (!alloc)
++		cb.cb[ACPI_DMAR_TYPE_HARDWARE_UNIT] = &dmar_parse_one_drhd_noalloc;
++
+ 	/*
+ 	 * Do it again, earlier dmar_tbl mapping could be mapped with
+ 	 * fixed map.
+@@ -840,13 +856,13 @@ void __init dmar_register_bus_notifier(void)
+ }
+ 
+ 
+-int __init dmar_table_init(void)
++int __init dmar_table_init(bool alloc, bool force_parse)
+ {
+ 	static int dmar_table_initialized;
+ 	int ret;
+ 
+-	if (dmar_table_initialized == 0) {
+-		ret = parse_dmar_table();
++	if (dmar_table_initialized == 0 || force_parse) {
++		ret = parse_dmar_table(alloc);
+ 		if (ret < 0) {
+ 			if (ret != -ENODEV)
+ 				pr_info("Parse DMAR table failure.\n");
+diff --git a/drivers/iommu/intel/iommu.c b/drivers/iommu/intel/iommu.c
+index be35284a2016..a4294d310b93 100644
+--- a/drivers/iommu/intel/iommu.c
++++ b/drivers/iommu/intel/iommu.c
+@@ -4310,7 +4310,7 @@ int __init intel_iommu_init(void)
+ 	}
+ 
+ 	down_write(&dmar_global_lock);
+-	if (dmar_table_init()) {
++	if (dmar_table_init(true, false)) {
+ 		if (force_on)
+ 			panic("tboot: Failed to initialize DMAR table\n");
+ 		goto out_free_dmar;
+diff --git a/drivers/iommu/intel/irq_remapping.c b/drivers/iommu/intel/irq_remapping.c
+index f912fe45bea2..0e8abef862e4 100644
+--- a/drivers/iommu/intel/irq_remapping.c
++++ b/drivers/iommu/intel/irq_remapping.c
+@@ -732,7 +732,7 @@ static int __init intel_prepare_irq_remapping(void)
+ 		return -ENODEV;
+ 	}
+ 
+-	if (dmar_table_init() < 0)
++	if (dmar_table_init(true, false) < 0)
+ 		return -ENODEV;
+ 
+ 	if (intel_cap_audit(CAP_AUDIT_STATIC_IRQR, NULL))
+diff --git a/include/linux/dmar.h b/include/linux/dmar.h
+index e04436a7ff27..f88535d41a6e 100644
+--- a/include/linux/dmar.h
++++ b/include/linux/dmar.h
+@@ -106,7 +106,7 @@ static inline bool dmar_rcu_check(void)
+ 	for_each_dev_scope((devs), (cnt), (i), (tmp))			\
+ 		if (!(tmp)) { continue; } else
+ 
+-extern int dmar_table_init(void);
++extern int dmar_table_init(bool alloc, bool force_parse);
+ extern int dmar_dev_scope_init(void);
+ extern void dmar_register_bus_notifier(void);
+ extern int dmar_parse_dev_scope(void *start, void *end, int *cnt,
+-- 
+2.30.2
+
+_______________________________________________
+iommu mailing list
+iommu@lists.linux-foundation.org
+https://lists.linuxfoundation.org/mailman/listinfo/iommu
