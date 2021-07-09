@@ -2,93 +2,88 @@ Return-Path: <SRS0=6oxg=MB=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-4.0 required=3.0 tests=BAYES_00,MAILING_LIST_MULTI,
-	SPF_HELO_NONE,SPF_PASS autolearn=no autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-5.5 required=3.0 tests=BAYES_00,
+	HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,NICE_REPLY_A,SPF_HELO_NONE,
+	SPF_PASS,USER_AGENT_SANE_1 autolearn=no autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4C3B5C11F67
-	for <iommu@archiver.kernel.org>; Fri,  9 Jul 2021 13:43:02 +0000 (UTC)
-Received: from smtp1.osuosl.org (smtp1.osuosl.org [140.211.166.138])
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E7F1BC07E99
+	for <iommu@archiver.kernel.org>; Fri,  9 Jul 2021 13:57:03 +0000 (UTC)
+Received: from smtp2.osuosl.org (smtp2.osuosl.org [140.211.166.133])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 0613E613C3
-	for <iommu@archiver.kernel.org>; Fri,  9 Jul 2021 13:43:01 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 0613E613C3
-Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=kernel.org
+	by mail.kernel.org (Postfix) with ESMTPS id 93DC5613B2
+	for <iommu@archiver.kernel.org>; Fri,  9 Jul 2021 13:57:03 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 93DC5613B2
+Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=arm.com
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by smtp1.osuosl.org (Postfix) with ESMTP id C446683D71;
-	Fri,  9 Jul 2021 13:43:01 +0000 (UTC)
+	by smtp2.osuosl.org (Postfix) with ESMTP id 5EF2D402C1;
+	Fri,  9 Jul 2021 13:57:03 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from smtp1.osuosl.org ([127.0.0.1])
-	by localhost (smtp1.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id JR2uZFwnDLmz; Fri,  9 Jul 2021 13:43:01 +0000 (UTC)
-Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by smtp1.osuosl.org (Postfix) with ESMTPS id A544E83D66;
-	Fri,  9 Jul 2021 13:43:00 +0000 (UTC)
+Received: from smtp2.osuosl.org ([127.0.0.1])
+	by localhost (smtp2.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+	with ESMTP id xwTjON1Ogj4r; Fri,  9 Jul 2021 13:57:02 +0000 (UTC)
+Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [IPv6:2605:bc80:3010:104::8cd3:938])
+	by smtp2.osuosl.org (Postfix) with ESMTPS id 3CB384014B;
+	Fri,  9 Jul 2021 13:57:02 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 7DC4FC001A;
-	Fri,  9 Jul 2021 13:43:00 +0000 (UTC)
-Received: from smtp4.osuosl.org (smtp4.osuosl.org [140.211.166.137])
- by lists.linuxfoundation.org (Postfix) with ESMTP id D2BAAC000E;
- Fri,  9 Jul 2021 13:42:58 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 18B28C001A;
+	Fri,  9 Jul 2021 13:57:02 +0000 (UTC)
+Received: from smtp3.osuosl.org (smtp3.osuosl.org [140.211.166.136])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id BEF0FC000E
+ for <iommu@lists.linux-foundation.org>; Fri,  9 Jul 2021 13:57:00 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by smtp4.osuosl.org (Postfix) with ESMTP id BF7A0423C3;
- Fri,  9 Jul 2021 13:42:58 +0000 (UTC)
+ by smtp3.osuosl.org (Postfix) with ESMTP id AC4B560774
+ for <iommu@lists.linux-foundation.org>; Fri,  9 Jul 2021 13:57:00 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from smtp4.osuosl.org ([127.0.0.1])
- by localhost (smtp4.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id 4F6rFXtS2hmJ; Fri,  9 Jul 2021 13:42:57 +0000 (UTC)
-X-Greylist: whitelisted by SQLgrey-1.8.0
-X-Greylist: whitelisted by SQLgrey-1.8.0
-Received: from mail-wr1-f52.google.com (mail-wr1-f52.google.com
- [209.85.221.52])
- by smtp4.osuosl.org (Postfix) with ESMTPS id 83980423C1;
- Fri,  9 Jul 2021 13:42:57 +0000 (UTC)
-Received: by mail-wr1-f52.google.com with SMTP id l7so11287125wrv.7;
- Fri, 09 Jul 2021 06:42:57 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
- d=1e100.net; s=20161025;
- h=x-gm-message-state:date:from:to:cc:subject:message-id:references
- :mime-version:content-disposition:in-reply-to;
- bh=Q7mB1luMo6HbqDXiBnl1Lwdd0jsa0W6EKAtYOrdTCZQ=;
- b=NJOFIxy/hzvIvEcg/rkxXdRHKZyQ67IlcQRPEm84MsXq3HTCSWMVqr67XAfm0C7LIf
- cOvyYmaqeMmu0VOzl9iMhjWsbsJwEFUG8B4XazQaKAlBuDD294yq46njyD5WJE5rKCcT
- eIsFtECLG2BkpuFpnU6M3zm5RIKzEhCIxy7SZMPIWJmFYAejSynttqKsbOUanClO/TPo
- Q5GjRl1iAweMxiEnDxJWmF2tpkaOPhu6Dk2FCrYosQc40tzEcCWbx0vwIKZ+iL5B8cq4
- EzBKGxdchyoUqtUwjEYNWgqdMvVWA+LwCHd6n6b5gXHpLnUilY5HqpvjS/vfAR/bsd2k
- spog==
-X-Gm-Message-State: AOAM530hdo5NhHP16C5MCNgNsW3L4KTO26uvozIAN/4zNOxrYOKzQGz5
- ivwWMjzl6PeRw88S58QVJvk=
-X-Google-Smtp-Source: ABdhPJy1Vhv89E6JlCPqe86nNsogAgxU+t9rVvrr2JLaDugrBsREJ7+fYhw4wwqlJCIcXWLMD2M1ow==
-X-Received: by 2002:adf:fd4d:: with SMTP id h13mr36177102wrs.5.1625838175836; 
- Fri, 09 Jul 2021 06:42:55 -0700 (PDT)
-Received: from liuwe-devbox-debian-v2 ([51.145.34.42])
- by smtp.gmail.com with ESMTPSA id s9sm5305291wrn.87.2021.07.09.06.42.55
- (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
- Fri, 09 Jul 2021 06:42:55 -0700 (PDT)
-Date: Fri, 9 Jul 2021 13:42:53 +0000
-From: Wei Liu <wei.liu@kernel.org>
-To: Robin Murphy <robin.murphy@arm.com>
-Subject: Re: [RFC v1 3/8] intel/vt-d: make DMAR table parsing code more
- flexible
-Message-ID: <20210709134253.274m4dpqukxn43q7@liuwe-devbox-debian-v2>
-References: <20210709114339.3467637-1-wei.liu@kernel.org>
- <20210709114339.3467637-4-wei.liu@kernel.org>
- <e1dcc315-4ebb-661e-4289-d176b3db39b5@arm.com>
+Received: from smtp3.osuosl.org ([127.0.0.1])
+ by localhost (smtp3.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+ with ESMTP id 3ucWWR8qJ5rm for <iommu@lists.linux-foundation.org>;
+ Fri,  9 Jul 2021 13:56:59 +0000 (UTC)
+X-Greylist: domain auto-whitelisted by SQLgrey-1.8.0
+Received: from foss.arm.com (foss.arm.com [217.140.110.172])
+ by smtp3.osuosl.org (Postfix) with ESMTP id 61E8A60675
+ for <iommu@lists.linux-foundation.org>; Fri,  9 Jul 2021 13:56:59 +0000 (UTC)
+Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
+ by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 7BF5FED1;
+ Fri,  9 Jul 2021 06:56:58 -0700 (PDT)
+Received: from [10.57.35.192] (unknown [10.57.35.192])
+ by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id 000A63F694;
+ Fri,  9 Jul 2021 06:56:52 -0700 (PDT)
+Subject: Re: [PATCH v2 0/3] iommu: Enable non-strict DMA on QCom SD/MMC
+To: Joerg Roedel <joro@8bytes.org>, Doug Anderson <dianders@chromium.org>
+References: <20210624171759.4125094-1-dianders@chromium.org>
+ <YNXXwvuErVnlHt+s@8bytes.org>
+ <CAD=FV=UFxZH7g8gH5+M=Fv4Y-e1bsLkNkPGJhNwhvVychcGQcQ@mail.gmail.com>
+ <CAD=FV=W=HmgH3O3z+nThWL6U+X4Oh37COe-uTzVB9SanP2n86w@mail.gmail.com>
+ <YOaymBHc4g2cIfRn@8bytes.org>
+From: Robin Murphy <robin.murphy@arm.com>
+Message-ID: <edd1de35-5b9e-b679-9428-23c6d5005740@arm.com>
+Date: Fri, 9 Jul 2021 14:56:47 +0100
+User-Agent: Mozilla/5.0 (Windows NT 10.0; rv:78.0) Gecko/20100101
+ Thunderbird/78.11.0
 MIME-Version: 1.0
-Content-Disposition: inline
-In-Reply-To: <e1dcc315-4ebb-661e-4289-d176b3db39b5@arm.com>
-Cc: Jean-Philippe Brucker <jean-philippe@linaro.org>,
- Wei Liu <wei.liu@kernel.org>, pasha.tatashin@soleen.com,
- kumarpraveen@linux.microsoft.com, Will Deacon <will@kernel.org>,
- virtualization@lists.linux-foundation.org,
- Linux on Hyper-V List <linux-hyperv@vger.kernel.org>,
- Linux Kernel List <linux-kernel@vger.kernel.org>,
- "open list:INTEL IOMMU VT-d" <iommu@lists.linux-foundation.org>,
- Nuno Das Neves <nunodasneves@linux.microsoft.com>,
- Sunil Muthuswamy <sunilmut@microsoft.com>,
- Michael Kelley <mikelley@microsoft.com>, David Woodhouse <dwmw2@infradead.org>,
- Vineeth Pillai <viremana@linux.microsoft.com>
+In-Reply-To: <YOaymBHc4g2cIfRn@8bytes.org>
+Content-Language: en-GB
+Cc: Ulf Hansson <ulf.hansson@linaro.org>,
+ Linux Doc Mailing List <linux-doc@vger.kernel.org>,
+ Peter Zijlstra <peterz@infradead.org>, linux-pci@vger.kernel.org,
+ Konrad Dybcio <konrad.dybcio@somainline.org>,
+ LKML <linux-kernel@vger.kernel.org>, Thierry Reding <thierry.reding@gmail.com>,
+ Joel Fernandes <joel@joelfernandes.org>, Rajat Jain <rajatja@google.com>,
+ Will Deacon <will@kernel.org>, Rob Clark <robdclark@chromium.org>,
+ Saravana Kannan <saravanak@google.com>, Jonathan Corbet <corbet@lwn.net>,
+ quic_c_gdjako@quicinc.com, Linux ARM <linux-arm-kernel@lists.infradead.org>,
+ Viresh Kumar <viresh.kumar@linaro.org>,
+ Veerabhadrarao Badiganti <vbadigan@codeaurora.org>,
+ "Paul E. McKenney" <paulmck@kernel.org>,
+ linux-arm-msm <linux-arm-msm@vger.kernel.org>,
+ Bjorn Helgaas <bhelgaas@google.com>, Sonny Rao <sonnyrao@chromium.org>,
+ Vlastimil Babka <vbabka@suse.cz>, Randy Dunlap <rdunlap@infradead.org>,
+ Linux MMC List <linux-mmc@vger.kernel.org>,
+ Adrian Hunter <adrian.hunter@intel.com>, iommu@lists.linux-foundation.org,
+ Andrew Morton <akpm@linux-foundation.org>,
+ "Maciej W. Rozycki" <macro@orcam.me.uk>
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -101,46 +96,52 @@ List-Post: <mailto:iommu@lists.linux-foundation.org>
 List-Help: <mailto:iommu-request@lists.linux-foundation.org?subject=help>
 List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
  <mailto:iommu-request@lists.linux-foundation.org?subject=subscribe>
-Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset="us-ascii"; Format="flowed"
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-On Fri, Jul 09, 2021 at 01:56:46PM +0100, Robin Murphy wrote:
-> On 2021-07-09 12:43, Wei Liu wrote:
-> > Microsoft Hypervisor provides a set of hypercalls to manage device
-> > domains. The root kernel should parse the DMAR so that it can program
-> > the IOMMU (with hypercalls) correctly.
-> > 
-> > The DMAR code was designed to work with Intel IOMMU only. Add two more
-> > parameters to make it useful to Microsoft Hypervisor. Microsoft
-> > Hypervisor does not need the DMAR parsing code to allocate an Intel
-> > IOMMU structure; it also wishes to always reparse the DMAR table even
-> > after it has been parsed before.
+On 2021-07-08 09:08, Joerg Roedel wrote:
+> On Wed, Jul 07, 2021 at 01:00:13PM -0700, Doug Anderson wrote:
+>> a) Nothing is inherently broken with my current approach.
+>>
+>> b) My current approach doesn't make anybody terribly upset even if
+>> nobody is totally in love with it.
 > 
-> We've recently defined the VIOT table for describing paravirtualised IOMMUs
-> - would it make more sense to extend that to support the Microsoft
-> implementation than to abuse a hardware-specific table? Am I right in
+> Well, no, sorry :)
+> 
+> I don't think it is a good idea to allow drivers to opt-out of the
+> strict-setting. This is a platform or user decision, and the driver
+> should accept whatever it gets.
+> 
+> So the real question is still why strict is the default setting and how
+> to change that. Or document for the users that want performance how to
+> change the setting, so that they can decide.
 
-I searched for VIOT and believed I found the correct link
-https://lwn.net/Articles/859291/. My understanding is based on the
-reading of that series.
+As I mentioned before, conceptually I think this very much belongs in 
+sysfs as a user decision. We essentially have 4 levels of "strictness":
 
-VIOT is useful. I think it solves the problem for guests.
+1: DMA domain with bounce pages
+2: DMA domain
+3: DMA domain with flush queue
+4: Identity domain
 
-It does not solve the problem we have though. The DMAR tables are not
-conjured up by some backend software running on the host side. They are
-the real tables provided by the firmware. The kernel here is part of the
-host setup, dealing with physical hardware.
+The "make this device go faster because I trust it" use-case is why we 
+have the sysfs interface to switch between 2 and 4, so it's entirely 
+logical to have the intermediate option as well for when 3 is "faster" 
+enough while still giving a bit more peace of mind than full-on bypass.
 
-No matter how much I wish all vendors unified their tables, I don't see
-how that's going to happen for readily available servers. :-(
+Making it a platform-specific decision that's hidden in a driver - 
+arm-smmu-qcom can be considered a dumping ground of detailed platform 
+knowledge ;) - happens to work as a reasonable compromise for this 
+specific case, but I concur that it could be viewed as setting a 
+precedent for other cases which we definitely aren't as reasonable.
 
-> assuming said hypervisor isn't intended to only ever run on Intel hardware?
+I've been thinking about the sysfs thing some more, and since it's 
+Friday afternoon and I can't concentrate on what I'm supposed to be 
+doing anyway, let's see how far I can get by Monday...
 
-Yes, that's correct. We also plan to add support AMD and ARM64.
-
-Wei.
+Robin.
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
