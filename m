@@ -2,88 +2,81 @@ Return-Path: <SRS0=6oxg=MB=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-5.5 required=3.0 tests=BAYES_00,
-	HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,NICE_REPLY_A,SPF_HELO_NONE,
-	SPF_PASS,USER_AGENT_SANE_1 autolearn=no autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-15.5 required=3.0 tests=BAYES_00,
+	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_CR_TRAILER,INCLUDES_PATCH,
+	MAILING_LIST_MULTI,NICE_REPLY_A,SPF_HELO_NONE,SPF_PASS,USER_AGENT_SANE_1
+	autolearn=unavailable autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E7F1BC07E99
-	for <iommu@archiver.kernel.org>; Fri,  9 Jul 2021 13:57:03 +0000 (UTC)
-Received: from smtp2.osuosl.org (smtp2.osuosl.org [140.211.166.133])
+	by smtp.lore.kernel.org (Postfix) with ESMTP id F3419C07E9E
+	for <iommu@archiver.kernel.org>; Fri,  9 Jul 2021 14:17:39 +0000 (UTC)
+Received: from smtp3.osuosl.org (smtp3.osuosl.org [140.211.166.136])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 93DC5613B2
-	for <iommu@archiver.kernel.org>; Fri,  9 Jul 2021 13:57:03 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 93DC5613B2
-Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=arm.com
+	by mail.kernel.org (Postfix) with ESMTPS id 83325613BD
+	for <iommu@archiver.kernel.org>; Fri,  9 Jul 2021 14:17:39 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 83325613BD
+Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=linux.intel.com
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by smtp2.osuosl.org (Postfix) with ESMTP id 5EF2D402C1;
-	Fri,  9 Jul 2021 13:57:03 +0000 (UTC)
-X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from smtp2.osuosl.org ([127.0.0.1])
-	by localhost (smtp2.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id xwTjON1Ogj4r; Fri,  9 Jul 2021 13:57:02 +0000 (UTC)
-Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [IPv6:2605:bc80:3010:104::8cd3:938])
-	by smtp2.osuosl.org (Postfix) with ESMTPS id 3CB384014B;
-	Fri,  9 Jul 2021 13:57:02 +0000 (UTC)
-Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 18B28C001A;
-	Fri,  9 Jul 2021 13:57:02 +0000 (UTC)
-Received: from smtp3.osuosl.org (smtp3.osuosl.org [140.211.166.136])
- by lists.linuxfoundation.org (Postfix) with ESMTP id BEF0FC000E
- for <iommu@lists.linux-foundation.org>; Fri,  9 Jul 2021 13:57:00 +0000 (UTC)
-Received: from localhost (localhost [127.0.0.1])
- by smtp3.osuosl.org (Postfix) with ESMTP id AC4B560774
- for <iommu@lists.linux-foundation.org>; Fri,  9 Jul 2021 13:57:00 +0000 (UTC)
+	by smtp3.osuosl.org (Postfix) with ESMTP id 46B1E60B38;
+	Fri,  9 Jul 2021 14:17:39 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
 Received: from smtp3.osuosl.org ([127.0.0.1])
- by localhost (smtp3.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id 3ucWWR8qJ5rm for <iommu@lists.linux-foundation.org>;
- Fri,  9 Jul 2021 13:56:59 +0000 (UTC)
+	by localhost (smtp3.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+	with ESMTP id adaTCS7qdlaH; Fri,  9 Jul 2021 14:17:38 +0000 (UTC)
+Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
+	by smtp3.osuosl.org (Postfix) with ESMTPS id 1582F6065A;
+	Fri,  9 Jul 2021 14:17:38 +0000 (UTC)
+Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
+	by lists.linuxfoundation.org (Postfix) with ESMTP id E53F2C0010;
+	Fri,  9 Jul 2021 14:17:37 +0000 (UTC)
+Received: from smtp4.osuosl.org (smtp4.osuosl.org [IPv6:2605:bc80:3010::137])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id AD453C000E;
+ Fri,  9 Jul 2021 14:17:36 +0000 (UTC)
+Received: from localhost (localhost [127.0.0.1])
+ by smtp4.osuosl.org (Postfix) with ESMTP id 94A79423D1;
+ Fri,  9 Jul 2021 14:17:36 +0000 (UTC)
+X-Virus-Scanned: amavisd-new at osuosl.org
+Received: from smtp4.osuosl.org ([127.0.0.1])
+ by localhost (smtp4.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+ with ESMTP id K71P7IHkmBAQ; Fri,  9 Jul 2021 14:17:35 +0000 (UTC)
 X-Greylist: domain auto-whitelisted by SQLgrey-1.8.0
-Received: from foss.arm.com (foss.arm.com [217.140.110.172])
- by smtp3.osuosl.org (Postfix) with ESMTP id 61E8A60675
- for <iommu@lists.linux-foundation.org>; Fri,  9 Jul 2021 13:56:59 +0000 (UTC)
-Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
- by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 7BF5FED1;
- Fri,  9 Jul 2021 06:56:58 -0700 (PDT)
-Received: from [10.57.35.192] (unknown [10.57.35.192])
- by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id 000A63F694;
- Fri,  9 Jul 2021 06:56:52 -0700 (PDT)
-Subject: Re: [PATCH v2 0/3] iommu: Enable non-strict DMA on QCom SD/MMC
-To: Joerg Roedel <joro@8bytes.org>, Doug Anderson <dianders@chromium.org>
-References: <20210624171759.4125094-1-dianders@chromium.org>
- <YNXXwvuErVnlHt+s@8bytes.org>
- <CAD=FV=UFxZH7g8gH5+M=Fv4Y-e1bsLkNkPGJhNwhvVychcGQcQ@mail.gmail.com>
- <CAD=FV=W=HmgH3O3z+nThWL6U+X4Oh37COe-uTzVB9SanP2n86w@mail.gmail.com>
- <YOaymBHc4g2cIfRn@8bytes.org>
-From: Robin Murphy <robin.murphy@arm.com>
-Message-ID: <edd1de35-5b9e-b679-9428-23c6d5005740@arm.com>
-Date: Fri, 9 Jul 2021 14:56:47 +0100
-User-Agent: Mozilla/5.0 (Windows NT 10.0; rv:78.0) Gecko/20100101
+X-Greylist: domain auto-whitelisted by SQLgrey-1.8.0
+Received: from mga14.intel.com (mga14.intel.com [192.55.52.115])
+ by smtp4.osuosl.org (Postfix) with ESMTPS id 472C5423B9;
+ Fri,  9 Jul 2021 14:17:35 +0000 (UTC)
+X-IronPort-AV: E=McAfee;i="6200,9189,10039"; a="209521815"
+X-IronPort-AV: E=Sophos;i="5.84,226,1620716400"; d="scan'208";a="209521815"
+Received: from fmsmga003.fm.intel.com ([10.253.24.29])
+ by fmsmga103.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384;
+ 09 Jul 2021 07:17:32 -0700
+X-IronPort-AV: E=Sophos;i="5.84,226,1620716400"; d="scan'208";a="488060340"
+Received: from blu2-mobl3.ccr.corp.intel.com (HELO [10.254.208.213])
+ ([10.254.208.213])
+ by fmsmga003-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384;
+ 09 Jul 2021 07:17:28 -0700
+Subject: Re: [RFC v1 4/8] intel/vt-d: export intel_iommu_get_resv_regions
+To: Wei Liu <wei.liu@kernel.org>,
+ Linux on Hyper-V List <linux-hyperv@vger.kernel.org>
+References: <20210709114339.3467637-1-wei.liu@kernel.org>
+ <20210709114339.3467637-5-wei.liu@kernel.org>
+From: Lu Baolu <baolu.lu@linux.intel.com>
+Message-ID: <f32e17d4-e435-cd50-8afc-68f6133fd1a0@linux.intel.com>
+Date: Fri, 9 Jul 2021 22:17:25 +0800
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:78.0) Gecko/20100101
  Thunderbird/78.11.0
 MIME-Version: 1.0
-In-Reply-To: <YOaymBHc4g2cIfRn@8bytes.org>
-Content-Language: en-GB
-Cc: Ulf Hansson <ulf.hansson@linaro.org>,
- Linux Doc Mailing List <linux-doc@vger.kernel.org>,
- Peter Zijlstra <peterz@infradead.org>, linux-pci@vger.kernel.org,
- Konrad Dybcio <konrad.dybcio@somainline.org>,
- LKML <linux-kernel@vger.kernel.org>, Thierry Reding <thierry.reding@gmail.com>,
- Joel Fernandes <joel@joelfernandes.org>, Rajat Jain <rajatja@google.com>,
- Will Deacon <will@kernel.org>, Rob Clark <robdclark@chromium.org>,
- Saravana Kannan <saravanak@google.com>, Jonathan Corbet <corbet@lwn.net>,
- quic_c_gdjako@quicinc.com, Linux ARM <linux-arm-kernel@lists.infradead.org>,
- Viresh Kumar <viresh.kumar@linaro.org>,
- Veerabhadrarao Badiganti <vbadigan@codeaurora.org>,
- "Paul E. McKenney" <paulmck@kernel.org>,
- linux-arm-msm <linux-arm-msm@vger.kernel.org>,
- Bjorn Helgaas <bhelgaas@google.com>, Sonny Rao <sonnyrao@chromium.org>,
- Vlastimil Babka <vbabka@suse.cz>, Randy Dunlap <rdunlap@infradead.org>,
- Linux MMC List <linux-mmc@vger.kernel.org>,
- Adrian Hunter <adrian.hunter@intel.com>, iommu@lists.linux-foundation.org,
- Andrew Morton <akpm@linux-foundation.org>,
- "Maciej W. Rozycki" <macro@orcam.me.uk>
+In-Reply-To: <20210709114339.3467637-5-wei.liu@kernel.org>
+Content-Language: en-US
+Cc: pasha.tatashin@soleen.com, Will Deacon <will@kernel.org>,
+ kumarpraveen@linux.microsoft.com, David Woodhouse <dwmw2@infradead.org>,
+ Linux Kernel List <linux-kernel@vger.kernel.org>,
+ virtualization@lists.linux-foundation.org,
+ "open list:INTEL IOMMU \(VT-d\)" <iommu@lists.linux-foundation.org>,
+ Nuno Das Neves <nunodasneves@linux.microsoft.com>,
+ Sunil Muthuswamy <sunilmut@microsoft.com>,
+ Michael Kelley <mikelley@microsoft.com>,
+ Vineeth Pillai <viremana@linux.microsoft.com>
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -101,47 +94,69 @@ Content-Type: text/plain; charset="us-ascii"; Format="flowed"
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-On 2021-07-08 09:08, Joerg Roedel wrote:
-> On Wed, Jul 07, 2021 at 01:00:13PM -0700, Doug Anderson wrote:
->> a) Nothing is inherently broken with my current approach.
->>
->> b) My current approach doesn't make anybody terribly upset even if
->> nobody is totally in love with it.
+On 2021/7/9 19:43, Wei Liu wrote:
+> When Microsoft Hypervisor runs on Intel platforms it needs to know the
+> reserved regions to program devices correctly. There is no reason to
+> duplicate intel_iommu_get_resv_regions. Export it.
+
+Why not using iommu_get_resv_regions()?
+
+Best regards,
+baolu
+
 > 
-> Well, no, sorry :)
+> Signed-off-by: Wei Liu <wei.liu@kernel.org>
+> ---
+>   drivers/iommu/intel/iommu.c | 5 +++--
+>   include/linux/intel-iommu.h | 4 ++++
+>   2 files changed, 7 insertions(+), 2 deletions(-)
 > 
-> I don't think it is a good idea to allow drivers to opt-out of the
-> strict-setting. This is a platform or user decision, and the driver
-> should accept whatever it gets.
+> diff --git a/drivers/iommu/intel/iommu.c b/drivers/iommu/intel/iommu.c
+> index a4294d310b93..01973bc20080 100644
+> --- a/drivers/iommu/intel/iommu.c
+> +++ b/drivers/iommu/intel/iommu.c
+> @@ -5176,8 +5176,8 @@ static void intel_iommu_probe_finalize(struct device *dev)
+>   		set_dma_ops(dev, NULL);
+>   }
+>   
+> -static void intel_iommu_get_resv_regions(struct device *device,
+> -					 struct list_head *head)
+> +void intel_iommu_get_resv_regions(struct device *device,
+> +				 struct list_head *head)
+>   {
+>   	int prot = DMA_PTE_READ | DMA_PTE_WRITE;
+>   	struct iommu_resv_region *reg;
+> @@ -5232,6 +5232,7 @@ static void intel_iommu_get_resv_regions(struct device *device,
+>   		return;
+>   	list_add_tail(&reg->list, head);
+>   }
+> +EXPORT_SYMBOL_GPL(intel_iommu_get_resv_regions);
+>   
+>   int intel_iommu_enable_pasid(struct intel_iommu *iommu, struct device *dev)
+>   {
+> diff --git a/include/linux/intel-iommu.h b/include/linux/intel-iommu.h
+> index 03faf20a6817..f91869f765bc 100644
+> --- a/include/linux/intel-iommu.h
+> +++ b/include/linux/intel-iommu.h
+> @@ -814,6 +814,8 @@ extern int iommu_calculate_max_sagaw(struct intel_iommu *iommu);
+>   extern int dmar_disabled;
+>   extern int intel_iommu_enabled;
+>   extern int intel_iommu_gfx_mapped;
+> +extern void intel_iommu_get_resv_regions(struct device *device,
+> +				 struct list_head *head);
+>   #else
+>   static inline int iommu_calculate_agaw(struct intel_iommu *iommu)
+>   {
+> @@ -825,6 +827,8 @@ static inline int iommu_calculate_max_sagaw(struct intel_iommu *iommu)
+>   }
+>   #define dmar_disabled	(1)
+>   #define intel_iommu_enabled (0)
+> +static inline void intel_iommu_get_resv_regions(struct device *device,
+> +				 struct list_head *head) {}
+>   #endif
+>   
+>   #endif
 > 
-> So the real question is still why strict is the default setting and how
-> to change that. Or document for the users that want performance how to
-> change the setting, so that they can decide.
-
-As I mentioned before, conceptually I think this very much belongs in 
-sysfs as a user decision. We essentially have 4 levels of "strictness":
-
-1: DMA domain with bounce pages
-2: DMA domain
-3: DMA domain with flush queue
-4: Identity domain
-
-The "make this device go faster because I trust it" use-case is why we 
-have the sysfs interface to switch between 2 and 4, so it's entirely 
-logical to have the intermediate option as well for when 3 is "faster" 
-enough while still giving a bit more peace of mind than full-on bypass.
-
-Making it a platform-specific decision that's hidden in a driver - 
-arm-smmu-qcom can be considered a dumping ground of detailed platform 
-knowledge ;) - happens to work as a reasonable compromise for this 
-specific case, but I concur that it could be viewed as setting a 
-precedent for other cases which we definitely aren't as reasonable.
-
-I've been thinking about the sysfs thing some more, and since it's 
-Friday afternoon and I can't concentrate on what I'm supposed to be 
-doing anyway, let's see how far I can get by Monday...
-
-Robin.
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
