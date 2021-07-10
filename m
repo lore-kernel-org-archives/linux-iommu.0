@@ -7,75 +7,74 @@ X-Spam-Status: No, score=-16.8 required=3.0 tests=BAYES_00,DKIM_INVALID,
 	SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_GIT autolearn=ham
 	autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 91A08C07E99
-	for <iommu@archiver.kernel.org>; Sat, 10 Jul 2021 02:23:21 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 59B1DC07E99
+	for <iommu@archiver.kernel.org>; Sat, 10 Jul 2021 02:25:48 +0000 (UTC)
 Received: from smtp2.osuosl.org (smtp2.osuosl.org [140.211.166.133])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 5E986613FD
-	for <iommu@archiver.kernel.org>; Sat, 10 Jul 2021 02:23:21 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 5E986613FD
+	by mail.kernel.org (Postfix) with ESMTPS id 1C1236143F
+	for <iommu@archiver.kernel.org>; Sat, 10 Jul 2021 02:25:48 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 1C1236143F
 Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=kernel.org
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by smtp2.osuosl.org (Postfix) with ESMTP id 3B7A6400CC;
-	Sat, 10 Jul 2021 02:23:21 +0000 (UTC)
+	by smtp2.osuosl.org (Postfix) with ESMTP id E4470402F0;
+	Sat, 10 Jul 2021 02:25:47 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
 Received: from smtp2.osuosl.org ([127.0.0.1])
 	by localhost (smtp2.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id g8V3mWHFSkgH; Sat, 10 Jul 2021 02:23:20 +0000 (UTC)
-Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [IPv6:2605:bc80:3010:104::8cd3:938])
-	by smtp2.osuosl.org (Postfix) with ESMTPS id 1475F402F0;
-	Sat, 10 Jul 2021 02:23:20 +0000 (UTC)
+	with ESMTP id zgzGts_JjtSd; Sat, 10 Jul 2021 02:25:47 +0000 (UTC)
+Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
+	by smtp2.osuosl.org (Postfix) with ESMTPS id B7A27400CC;
+	Sat, 10 Jul 2021 02:25:46 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id EB5F9C0010;
-	Sat, 10 Jul 2021 02:23:19 +0000 (UTC)
-Received: from smtp1.osuosl.org (smtp1.osuosl.org [140.211.166.138])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 32E32C0022
- for <iommu@lists.linux-foundation.org>; Sat, 10 Jul 2021 02:23:18 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 80364C0010;
+	Sat, 10 Jul 2021 02:25:46 +0000 (UTC)
+Received: from smtp3.osuosl.org (smtp3.osuosl.org [140.211.166.136])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id AB5EAC000E
+ for <iommu@lists.linux-foundation.org>; Sat, 10 Jul 2021 02:25:44 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by smtp1.osuosl.org (Postfix) with ESMTP id 158F683D49
- for <iommu@lists.linux-foundation.org>; Sat, 10 Jul 2021 02:23:18 +0000 (UTC)
+ by smtp3.osuosl.org (Postfix) with ESMTP id 8C7E7606C0
+ for <iommu@lists.linux-foundation.org>; Sat, 10 Jul 2021 02:25:44 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Authentication-Results: smtp1.osuosl.org (amavisd-new);
+Authentication-Results: smtp3.osuosl.org (amavisd-new);
  dkim=pass (2048-bit key) header.d=kernel.org
-Received: from smtp1.osuosl.org ([127.0.0.1])
- by localhost (smtp1.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id clas98dUFGxF for <iommu@lists.linux-foundation.org>;
- Sat, 10 Jul 2021 02:23:17 +0000 (UTC)
+Received: from smtp3.osuosl.org ([127.0.0.1])
+ by localhost (smtp3.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+ with ESMTP id ZS63PcJIQZoh for <iommu@lists.linux-foundation.org>;
+ Sat, 10 Jul 2021 02:25:43 +0000 (UTC)
 X-Greylist: domain auto-whitelisted by SQLgrey-1.8.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
- by smtp1.osuosl.org (Postfix) with ESMTPS id 6D0E683046
- for <iommu@lists.linux-foundation.org>; Sat, 10 Jul 2021 02:23:17 +0000 (UTC)
-Received: by mail.kernel.org (Postfix) with ESMTPSA id 24168613D9;
- Sat, 10 Jul 2021 02:23:16 +0000 (UTC)
+ by smtp3.osuosl.org (Postfix) with ESMTPS id D1B376068F
+ for <iommu@lists.linux-foundation.org>; Sat, 10 Jul 2021 02:25:43 +0000 (UTC)
+Received: by mail.kernel.org (Postfix) with ESMTPSA id 7C68B6143E;
+ Sat, 10 Jul 2021 02:25:41 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
- s=k20201202; t=1625883797;
- bh=zStzLJS4xcITcBHd4Vg7AE4hq9AFPaBO0/AS7BNFqB8=;
+ s=k20201202; t=1625883942;
+ bh=LTVGr3f4WlwQKL+UpiRVjG7mfst75GqkV/0rmOgPNRw=;
  h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
- b=uWFmyQie1PENUBQ3jUbICQ4Y2lQO7Ibn8JHhXBA4giCvdWNRdp2LcDK/tBMG+wTyE
- o/VmRocOTtx7v/ogRd22jG5AqR+SSm8L6J+ZJ0xpM277lWKrlnBjAKksw0axBU0yiA
- i1Fm3EEGFdc8/E9PfuU/+gAPSmQoH8Htsqh14PPxEgTahkuKhxTDP5fjEeNTTKj0cZ
- VFVfS03hg2xHmHaujdTS23Mgk2XE5AOwaJ9eYnlXvwuPAAnohlgljhJYJfY7awMMi9
- 7B9cmVI71bPeJcbi1DJbkfvtaLjiTBn1bDs6trhFQaXo+MwWm/f6jrxmcCRiy7iVgt
- d7OWOp1qzV0dA==
+ b=T+fy2BUGifbytIs6zFt6gLzABm3TBBWBBmdqY/gbsUB3qYUu3xTlezQw6YIfWih6D
+ SrBMdCiogUC5hLX8VL1bJ91LhuTUrn7dRXFU7Q0N38VTF8SPi80ZktBjrO01I46vpV
+ iCj7Ptx+n/OzQ4Vt563WuvKRg04gvdQF8PaFL5Bvg0/9dmV3PghYcQtkZoKrGieI5X
+ qMATxjD6TtDJ9PrAFZXKBH8Eabd9djW2i1esMvUxYbGuvUQVF4UUOnH8itBtI0MVAh
+ ghD+XFd1ECxiAfLbQ/Uy8B5HtOMSiPZzmoSEevRpqIbShs8UjHgDpfUQ47EEPArEnA
+ OzJ7bRvPPs/eA==
 From: Sasha Levin <sashal@kernel.org>
 To: linux-kernel@vger.kernel.org,
 	stable@vger.kernel.org
-Subject: [PATCH AUTOSEL 5.12 061/104] iommu/arm-smmu: Fix arm_smmu_device
- refcount leak in address translation
-Date: Fri,  9 Jul 2021 22:21:13 -0400
-Message-Id: <20210710022156.3168825-61-sashal@kernel.org>
+Subject: [PATCH AUTOSEL 5.10 56/93] iommu/arm-smmu: Fix arm_smmu_device
+ refcount leak when arm_smmu_rpm_get fails
+Date: Fri,  9 Jul 2021 22:23:50 -0400
+Message-Id: <20210710022428.3169839-56-sashal@kernel.org>
 X-Mailer: git-send-email 2.30.2
-In-Reply-To: <20210710022156.3168825-1-sashal@kernel.org>
-References: <20210710022156.3168825-1-sashal@kernel.org>
+In-Reply-To: <20210710022428.3169839-1-sashal@kernel.org>
+References: <20210710022428.3169839-1-sashal@kernel.org>
 MIME-Version: 1.0
 X-stable: review
 X-Patchwork-Hint: Ignore
-Cc: Rob Clark <robdclark@chromium.org>, Sasha Levin <sashal@kernel.org>,
- Xin Tan <tanxin.ctf@gmail.com>, Xiyu Yang <xiyuyang19@fudan.edu.cn>,
- iommu@lists.linux-foundation.org, Will Deacon <will@kernel.org>,
- linux-arm-kernel@lists.infradead.org
+Cc: Sasha Levin <sashal@kernel.org>, Xin Tan <tanxin.ctf@gmail.com>,
+ Xiyu Yang <xiyuyang19@fudan.edu.cn>, iommu@lists.linux-foundation.org,
+ Will Deacon <will@kernel.org>, linux-arm-kernel@lists.infradead.org
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -95,63 +94,42 @@ Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
 From: Xiyu Yang <xiyuyang19@fudan.edu.cn>
 
-[ Upstream commit 7c8f176d6a3fa18aa0f8875da6f7c672ed2a8554 ]
+[ Upstream commit 1adf30f198c26539a62d761e45af72cde570413d ]
 
-The reference counting issue happens in several exception handling paths
-of arm_smmu_iova_to_phys_hard(). When those error scenarios occur, the
-function forgets to decrease the refcount of "smmu" increased by
-arm_smmu_rpm_get(), causing a refcount leak.
+arm_smmu_rpm_get() invokes pm_runtime_get_sync(), which increases the
+refcount of the "smmu" even though the return value is less than 0.
 
-Fix this issue by jumping to "out" label when those error scenarios
-occur.
+The reference counting issue happens in some error handling paths of
+arm_smmu_rpm_get() in its caller functions. When arm_smmu_rpm_get()
+fails, the caller functions forget to decrease the refcount of "smmu"
+increased by arm_smmu_rpm_get(), causing a refcount leak.
+
+Fix this issue by calling pm_runtime_resume_and_get() instead of
+pm_runtime_get_sync() in arm_smmu_rpm_get(), which can keep the refcount
+balanced in case of failure.
 
 Signed-off-by: Xiyu Yang <xiyuyang19@fudan.edu.cn>
 Signed-off-by: Xin Tan <tanxin.ctf@gmail.com>
-Reviewed-by: Rob Clark <robdclark@chromium.org>
-Link: https://lore.kernel.org/r/1623293391-17261-1-git-send-email-xiyuyang19@fudan.edu.cn
+Link: https://lore.kernel.org/r/1623293672-17954-1-git-send-email-xiyuyang19@fudan.edu.cn
 Signed-off-by: Will Deacon <will@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/iommu/arm/arm-smmu/arm-smmu.c | 8 ++++++--
- 1 file changed, 6 insertions(+), 2 deletions(-)
+ drivers/iommu/arm/arm-smmu/arm-smmu.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
 diff --git a/drivers/iommu/arm/arm-smmu/arm-smmu.c b/drivers/iommu/arm/arm-smmu/arm-smmu.c
-index 128c2c87b4e5..c6ff32797a23 100644
+index bcbacf22331d..052f0a1bf037 100644
 --- a/drivers/iommu/arm/arm-smmu/arm-smmu.c
 +++ b/drivers/iommu/arm/arm-smmu/arm-smmu.c
-@@ -1268,6 +1268,7 @@ static phys_addr_t arm_smmu_iova_to_phys_hard(struct iommu_domain *domain,
- 	u64 phys;
- 	unsigned long va, flags;
- 	int ret, idx = cfg->cbndx;
-+	phys_addr_t addr = 0;
+@@ -74,7 +74,7 @@ static bool using_legacy_binding, using_generic_binding;
+ static inline int arm_smmu_rpm_get(struct arm_smmu_device *smmu)
+ {
+ 	if (pm_runtime_enabled(smmu->dev))
+-		return pm_runtime_get_sync(smmu->dev);
++		return pm_runtime_resume_and_get(smmu->dev);
  
- 	ret = arm_smmu_rpm_get(smmu);
- 	if (ret < 0)
-@@ -1287,6 +1288,7 @@ static phys_addr_t arm_smmu_iova_to_phys_hard(struct iommu_domain *domain,
- 		dev_err(dev,
- 			"iova to phys timed out on %pad. Falling back to software table walk.\n",
- 			&iova);
-+		arm_smmu_rpm_put(smmu);
- 		return ops->iova_to_phys(ops, iova);
- 	}
- 
-@@ -1295,12 +1297,14 @@ static phys_addr_t arm_smmu_iova_to_phys_hard(struct iommu_domain *domain,
- 	if (phys & ARM_SMMU_CB_PAR_F) {
- 		dev_err(dev, "translation fault!\n");
- 		dev_err(dev, "PAR = 0x%llx\n", phys);
--		return 0;
-+		goto out;
- 	}
- 
-+	addr = (phys & GENMASK_ULL(39, 12)) | (iova & 0xfff);
-+out:
- 	arm_smmu_rpm_put(smmu);
- 
--	return (phys & GENMASK_ULL(39, 12)) | (iova & 0xfff);
-+	return addr;
+ 	return 0;
  }
- 
- static phys_addr_t arm_smmu_iova_to_phys(struct iommu_domain *domain,
 -- 
 2.30.2
 
