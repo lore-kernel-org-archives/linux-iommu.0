@@ -7,73 +7,70 @@ X-Spam-Status: No, score=-16.8 required=3.0 tests=BAYES_00,DKIM_INVALID,
 	SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_GIT autolearn=ham
 	autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id BB9FCC11F66
-	for <iommu@archiver.kernel.org>; Sat, 10 Jul 2021 02:19:23 +0000 (UTC)
-Received: from smtp1.osuosl.org (smtp1.osuosl.org [140.211.166.138])
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3D371C07E9B
+	for <iommu@archiver.kernel.org>; Sat, 10 Jul 2021 02:23:15 +0000 (UTC)
+Received: from smtp2.osuosl.org (smtp2.osuosl.org [140.211.166.133])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 7F149613F0
-	for <iommu@archiver.kernel.org>; Sat, 10 Jul 2021 02:19:23 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 7F149613F0
+	by mail.kernel.org (Postfix) with ESMTPS id E7E6A613ED
+	for <iommu@archiver.kernel.org>; Sat, 10 Jul 2021 02:23:14 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org E7E6A613ED
 Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=kernel.org
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by smtp1.osuosl.org (Postfix) with ESMTP id 55A5983D85;
-	Sat, 10 Jul 2021 02:19:23 +0000 (UTC)
+	by smtp2.osuosl.org (Postfix) with ESMTP id BBC3A402F0;
+	Sat, 10 Jul 2021 02:23:14 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from smtp1.osuosl.org ([127.0.0.1])
-	by localhost (smtp1.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id dUu023T0YW3g; Sat, 10 Jul 2021 02:19:22 +0000 (UTC)
-Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by smtp1.osuosl.org (Postfix) with ESMTPS id 4575083D97;
-	Sat, 10 Jul 2021 02:19:22 +0000 (UTC)
+Received: from smtp2.osuosl.org ([127.0.0.1])
+	by localhost (smtp2.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+	with ESMTP id KJPueuwNjAcy; Sat, 10 Jul 2021 02:23:13 +0000 (UTC)
+Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [IPv6:2605:bc80:3010:104::8cd3:938])
+	by smtp2.osuosl.org (Postfix) with ESMTPS id 8AF51400CC;
+	Sat, 10 Jul 2021 02:23:13 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id C4136C000E;
-	Sat, 10 Jul 2021 02:19:21 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 5E357C0010;
+	Sat, 10 Jul 2021 02:23:13 +0000 (UTC)
 Received: from smtp2.osuosl.org (smtp2.osuosl.org [IPv6:2605:bc80:3010::133])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 83E1CC0010
- for <iommu@lists.linux-foundation.org>; Sat, 10 Jul 2021 02:19:19 +0000 (UTC)
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 01D2EC000E
+ for <iommu@lists.linux-foundation.org>; Sat, 10 Jul 2021 02:23:11 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by smtp2.osuosl.org (Postfix) with ESMTP id 7F89C4061D
- for <iommu@lists.linux-foundation.org>; Sat, 10 Jul 2021 02:19:19 +0000 (UTC)
+ by smtp2.osuosl.org (Postfix) with ESMTP id CEB48400EE
+ for <iommu@lists.linux-foundation.org>; Sat, 10 Jul 2021 02:23:11 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Authentication-Results: smtp2.osuosl.org (amavisd-new);
- dkim=pass (2048-bit key) header.d=kernel.org
 Received: from smtp2.osuosl.org ([127.0.0.1])
  by localhost (smtp2.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id OvinTX3tsaGo for <iommu@lists.linux-foundation.org>;
- Sat, 10 Jul 2021 02:19:18 +0000 (UTC)
+ with ESMTP id lAQZtKkMJ3mF for <iommu@lists.linux-foundation.org>;
+ Sat, 10 Jul 2021 02:23:11 +0000 (UTC)
 X-Greylist: domain auto-whitelisted by SQLgrey-1.8.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
- by smtp2.osuosl.org (Postfix) with ESMTPS id B0984400CC
- for <iommu@lists.linux-foundation.org>; Sat, 10 Jul 2021 02:19:18 +0000 (UTC)
-Received: by mail.kernel.org (Postfix) with ESMTPSA id 5CC9B613E4;
- Sat, 10 Jul 2021 02:19:17 +0000 (UTC)
+ by smtp2.osuosl.org (Postfix) with ESMTPS id 1DA9F400CC
+ for <iommu@lists.linux-foundation.org>; Sat, 10 Jul 2021 02:23:11 +0000 (UTC)
+Received: by mail.kernel.org (Postfix) with ESMTPSA id B0E51613EB;
+ Sat, 10 Jul 2021 02:23:09 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
- s=k20201202; t=1625883558;
- bh=Lst4pXqfUhCRoD0flbxYKCxTTB3UKBzfb72GcLSlJIw=;
+ s=k20201202; t=1625883790;
+ bh=6MAIkxHaPo+Yqp2Ff/ElNQYLdszBr4YG2QdZKdHUdtg=;
  h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
- b=nbWUdZfek9SpwfDOi9Nq/+Iq26vPYEsWF+yA3TcPoFqOTOvGc5zaJQgOUuJBrzpxB
- WSQQMKjCrrI+0uLiW5adapW608+zsXY0CayuVE2qh6r6Qsq3LjYfVAxFSl3ZZ8/0iO
- 8BLugfI9gH5M0M4QCzwDMKUWcFnapIBBRY3hzuijEtzvlZ511EsFeQlLboh+zVEnSB
- YcBm3NQYO1ihc8ivUVFIbQqo0qoV1Wn2BXcTFshROZedLCFqvmFVBu0lWZU1la8KbC
- Vi16X/n7xyoLZHFUGxedN/EvTL65EtM+LF0CXMjFF5EMbdzg9VpxaZCKM07xVZS7gh
- EqrD0WAZWb0CQ==
+ b=NzHshrDh8K/Q3OksNEHC3LOxtlRv6GGp6kSjGbD9sRR+0RhiTVzytrZ8mEQsAN7/N
+ kf9ffs3SKjLnT9xexayZPVXwtRFl1vd5UE2OIkVwiHBxbEki+wPZrfTNXtHd75Of1j
+ 3mM9T8LoaFxAVv3Gad6rqoz+N0J+16iGswBgKJFD+ceOJmZnbqHkuMr2YPG/9IhZh/
+ O9tlGGXY3G/21FqfE4L+384fMYSmr4SuqGXO4tLWy6/LJELoEIe62uTsnneABnc+oi
+ V4kz/iGVGk874zH/yOu9LtLGDF4vHZfM3YkWS6FYWwWcmjAYHaL33YNj421np1bDV9
+ iaQX0aU8Z5GJA==
 From: Sasha Levin <sashal@kernel.org>
 To: linux-kernel@vger.kernel.org,
 	stable@vger.kernel.org
-Subject: [PATCH AUTOSEL 5.13 066/114] iommu/arm-smmu: Fix arm_smmu_device
- refcount leak in address translation
-Date: Fri,  9 Jul 2021 22:17:00 -0400
-Message-Id: <20210710021748.3167666-66-sashal@kernel.org>
+Subject: [PATCH AUTOSEL 5.12 056/104] iommu/arm-smmu-qcom: Skip the TTBR1
+ quirk for db820c.
+Date: Fri,  9 Jul 2021 22:21:08 -0400
+Message-Id: <20210710022156.3168825-56-sashal@kernel.org>
 X-Mailer: git-send-email 2.30.2
-In-Reply-To: <20210710021748.3167666-1-sashal@kernel.org>
-References: <20210710021748.3167666-1-sashal@kernel.org>
+In-Reply-To: <20210710022156.3168825-1-sashal@kernel.org>
+References: <20210710022156.3168825-1-sashal@kernel.org>
 MIME-Version: 1.0
 X-stable: review
 X-Patchwork-Hint: Ignore
-Cc: Rob Clark <robdclark@chromium.org>, Sasha Levin <sashal@kernel.org>,
- Xin Tan <tanxin.ctf@gmail.com>, Xiyu Yang <xiyuyang19@fudan.edu.cn>,
+Cc: Sasha Levin <sashal@kernel.org>, Eric Anholt <eric@anholt.net>,
  iommu@lists.linux-foundation.org, Will Deacon <will@kernel.org>,
  linux-arm-kernel@lists.infradead.org
 X-BeenThere: iommu@lists.linux-foundation.org
@@ -93,65 +90,55 @@ Content-Transfer-Encoding: 7bit
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-From: Xiyu Yang <xiyuyang19@fudan.edu.cn>
+From: Eric Anholt <eric@anholt.net>
 
-[ Upstream commit 7c8f176d6a3fa18aa0f8875da6f7c672ed2a8554 ]
+[ Upstream commit a242f4297cfe3f4589a7620dcd42cc503607fc6b ]
 
-The reference counting issue happens in several exception handling paths
-of arm_smmu_iova_to_phys_hard(). When those error scenarios occur, the
-function forgets to decrease the refcount of "smmu" increased by
-arm_smmu_rpm_get(), causing a refcount leak.
+db820c wants to use the qcom smmu path to get HUPCF set (which keeps
+the GPU from wedging and then sometimes wedging the kernel after a
+page fault), but it doesn't have separate pagetables support yet in
+drm/msm so we can't go all the way to the TTBR1 path.
 
-Fix this issue by jumping to "out" label when those error scenarios
-occur.
-
-Signed-off-by: Xiyu Yang <xiyuyang19@fudan.edu.cn>
-Signed-off-by: Xin Tan <tanxin.ctf@gmail.com>
-Reviewed-by: Rob Clark <robdclark@chromium.org>
-Link: https://lore.kernel.org/r/1623293391-17261-1-git-send-email-xiyuyang19@fudan.edu.cn
+Signed-off-by: Eric Anholt <eric@anholt.net>
+Reviewed-by: Bjorn Andersson <bjorn.andersson@linaro.org>
+Link: https://lore.kernel.org/r/20210326231303.3071950-1-eric@anholt.net
 Signed-off-by: Will Deacon <will@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/iommu/arm/arm-smmu/arm-smmu.c | 8 ++++++--
- 1 file changed, 6 insertions(+), 2 deletions(-)
+ drivers/iommu/arm/arm-smmu/arm-smmu-qcom.c | 13 ++++++++++++-
+ 1 file changed, 12 insertions(+), 1 deletion(-)
 
-diff --git a/drivers/iommu/arm/arm-smmu/arm-smmu.c b/drivers/iommu/arm/arm-smmu/arm-smmu.c
-index ee6cac9e7c02..1a647e0ea3eb 100644
---- a/drivers/iommu/arm/arm-smmu/arm-smmu.c
-+++ b/drivers/iommu/arm/arm-smmu/arm-smmu.c
-@@ -1271,6 +1271,7 @@ static phys_addr_t arm_smmu_iova_to_phys_hard(struct iommu_domain *domain,
- 	u64 phys;
- 	unsigned long va, flags;
- 	int ret, idx = cfg->cbndx;
-+	phys_addr_t addr = 0;
- 
- 	ret = arm_smmu_rpm_get(smmu);
- 	if (ret < 0)
-@@ -1290,6 +1291,7 @@ static phys_addr_t arm_smmu_iova_to_phys_hard(struct iommu_domain *domain,
- 		dev_err(dev,
- 			"iova to phys timed out on %pad. Falling back to software table walk.\n",
- 			&iova);
-+		arm_smmu_rpm_put(smmu);
- 		return ops->iova_to_phys(ops, iova);
- 	}
- 
-@@ -1298,12 +1300,14 @@ static phys_addr_t arm_smmu_iova_to_phys_hard(struct iommu_domain *domain,
- 	if (phys & ARM_SMMU_CB_PAR_F) {
- 		dev_err(dev, "translation fault!\n");
- 		dev_err(dev, "PAR = 0x%llx\n", phys);
--		return 0;
-+		goto out;
- 	}
- 
-+	addr = (phys & GENMASK_ULL(39, 12)) | (iova & 0xfff);
-+out:
- 	arm_smmu_rpm_put(smmu);
- 
--	return (phys & GENMASK_ULL(39, 12)) | (iova & 0xfff);
-+	return addr;
+diff --git a/drivers/iommu/arm/arm-smmu/arm-smmu-qcom.c b/drivers/iommu/arm/arm-smmu/arm-smmu-qcom.c
+index 98b3a1c2a181..44a427833385 100644
+--- a/drivers/iommu/arm/arm-smmu/arm-smmu-qcom.c
++++ b/drivers/iommu/arm/arm-smmu/arm-smmu-qcom.c
+@@ -130,6 +130,16 @@ static int qcom_adreno_smmu_alloc_context_bank(struct arm_smmu_domain *smmu_doma
+ 	return __arm_smmu_alloc_bitmap(smmu->context_map, start, count);
  }
  
- static phys_addr_t arm_smmu_iova_to_phys(struct iommu_domain *domain,
++static bool qcom_adreno_can_do_ttbr1(struct arm_smmu_device *smmu)
++{
++	const struct device_node *np = smmu->dev->of_node;
++
++	if (of_device_is_compatible(np, "qcom,msm8996-smmu-v2"))
++		return false;
++
++	return true;
++}
++
+ static int qcom_adreno_smmu_init_context(struct arm_smmu_domain *smmu_domain,
+ 		struct io_pgtable_cfg *pgtbl_cfg, struct device *dev)
+ {
+@@ -144,7 +154,8 @@ static int qcom_adreno_smmu_init_context(struct arm_smmu_domain *smmu_domain,
+ 	 * be AARCH64 stage 1 but double check because the arm-smmu code assumes
+ 	 * that is the case when the TTBR1 quirk is enabled
+ 	 */
+-	if ((smmu_domain->stage == ARM_SMMU_DOMAIN_S1) &&
++	if (qcom_adreno_can_do_ttbr1(smmu_domain->smmu) &&
++	    (smmu_domain->stage == ARM_SMMU_DOMAIN_S1) &&
+ 	    (smmu_domain->cfg.fmt == ARM_SMMU_CTX_FMT_AARCH64))
+ 		pgtbl_cfg->quirks |= IO_PGTABLE_QUIRK_ARM_TTBR1;
+ 
 -- 
 2.30.2
 
