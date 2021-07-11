@@ -2,88 +2,73 @@ Return-Path: <SRS0=Ihqs=MD=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-15.1 required=3.0 tests=BAYES_00,DKIM_INVALID,
-	DKIM_SIGNED,HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_CR_TRAILER,INCLUDES_PATCH,
-	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,UNPARSEABLE_RELAY,USER_AGENT_SANE_2
-	autolearn=ham autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-15.9 required=3.0 tests=BAYES_00,
+	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_CR_TRAILER,INCLUDES_PATCH,
+	MAILING_LIST_MULTI,NICE_REPLY_A,SPF_HELO_NONE,SPF_PASS,USER_AGENT_SANE_1
+	autolearn=unavailable autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 875A4C07E96
-	for <iommu@archiver.kernel.org>; Sun, 11 Jul 2021 08:30:14 +0000 (UTC)
-Received: from smtp4.osuosl.org (smtp4.osuosl.org [140.211.166.137])
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 328AAC07E96
+	for <iommu@archiver.kernel.org>; Sun, 11 Jul 2021 23:25:15 +0000 (UTC)
+Received: from smtp1.osuosl.org (smtp1.osuosl.org [140.211.166.138])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id E72B3611F1
-	for <iommu@archiver.kernel.org>; Sun, 11 Jul 2021 08:30:12 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org E72B3611F1
-Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=mediatek.com
+	by mail.kernel.org (Postfix) with ESMTPS id C0A906101C
+	for <iommu@archiver.kernel.org>; Sun, 11 Jul 2021 23:25:13 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org C0A906101C
+Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=linux.intel.com
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by smtp4.osuosl.org (Postfix) with ESMTP id 9F1EE404D0;
-	Sun, 11 Jul 2021 08:30:12 +0000 (UTC)
+	by smtp1.osuosl.org (Postfix) with ESMTP id 7E92C83396;
+	Sun, 11 Jul 2021 23:25:13 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from smtp4.osuosl.org ([127.0.0.1])
-	by localhost (smtp4.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id F563zWeTysma; Sun, 11 Jul 2021 08:30:11 +0000 (UTC)
+Received: from smtp1.osuosl.org ([127.0.0.1])
+	by localhost (smtp1.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+	with ESMTP id GgqAPt3v6GTP; Sun, 11 Jul 2021 23:25:12 +0000 (UTC)
 Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by smtp4.osuosl.org (Postfix) with ESMTPS id 7D9A140477;
-	Sun, 11 Jul 2021 08:30:11 +0000 (UTC)
+	by smtp1.osuosl.org (Postfix) with ESMTPS id 5781083231;
+	Sun, 11 Jul 2021 23:25:12 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 509BBC001A;
-	Sun, 11 Jul 2021 08:30:11 +0000 (UTC)
-Received: from smtp2.osuosl.org (smtp2.osuosl.org [140.211.166.133])
- by lists.linuxfoundation.org (Postfix) with ESMTP id C7E29C000E
- for <iommu@lists.linux-foundation.org>; Sun, 11 Jul 2021 08:30:09 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 3054FC001A;
+	Sun, 11 Jul 2021 23:25:12 +0000 (UTC)
+Received: from smtp1.osuosl.org (smtp1.osuosl.org [IPv6:2605:bc80:3010::138])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 9653EC000E
+ for <iommu@lists.linux-foundation.org>; Sun, 11 Jul 2021 23:25:10 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by smtp2.osuosl.org (Postfix) with ESMTP id 9EDFB400F7
- for <iommu@lists.linux-foundation.org>; Sun, 11 Jul 2021 08:30:09 +0000 (UTC)
+ by smtp1.osuosl.org (Postfix) with ESMTP id 838AF83396
+ for <iommu@lists.linux-foundation.org>; Sun, 11 Jul 2021 23:25:10 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Authentication-Results: smtp2.osuosl.org (amavisd-new);
- dkim=pass (1024-bit key) header.d=mediatek.com
-Received: from smtp2.osuosl.org ([127.0.0.1])
- by localhost (smtp2.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id WCDHeBoakFaI for <iommu@lists.linux-foundation.org>;
- Sun, 11 Jul 2021 08:30:08 +0000 (UTC)
+Received: from smtp1.osuosl.org ([127.0.0.1])
+ by localhost (smtp1.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+ with ESMTP id u8u5VxF-wVFS for <iommu@lists.linux-foundation.org>;
+ Sun, 11 Jul 2021 23:25:07 +0000 (UTC)
 X-Greylist: domain auto-whitelisted by SQLgrey-1.8.0
-Received: from mailgw01.mediatek.com (unknown [1.203.163.78])
- by smtp2.osuosl.org (Postfix) with ESMTP id 66E17400C3
- for <iommu@lists.linux-foundation.org>; Sun, 11 Jul 2021 08:30:07 +0000 (UTC)
-X-UUID: af929080615347d7addfaa6af8e1dd1c-20210711
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=mediatek.com;
- s=dk; 
- h=Content-Transfer-Encoding:MIME-Version:Content-Type:References:In-Reply-To:Date:CC:To:From:Subject:Message-ID;
- bh=t9mLnCFBNPQ+QFBApPB3w3g/T+cWtNxPL3HGdUb3WsA=; 
- b=iyijnGoDBCAKLaJbAoNDrkvq1J5QEqOoWQ401AkZkzyB8w4mmgc3XKcPgP9RYdgRj3/Ei5iVY8zXeDsvKVT5jPDagwKv9YV3ym4jg0i1S6mRM62hotVS5ovbsvGlv5YdSxVh8SmpL/iv6gXb7iPmkZaEUxx50oQhTADLPOJH8c4=;
-X-UUID: af929080615347d7addfaa6af8e1dd1c-20210711
-Received: from mtkcas34.mediatek.inc [(172.27.4.253)] by mailgw01.mediatek.com
- (envelope-from <yong.wu@mediatek.com>)
- (mailgw01.mediatek.com ESMTP with TLSv1.2 ECDHE-RSA-AES256-SHA384 256/256)
- with ESMTP id 1398523848; Sun, 11 Jul 2021 16:30:02 +0800
-Received: from MTKCAS36.mediatek.inc (172.27.4.186) by MTKMBS31N1.mediatek.inc
- (172.27.4.69) with Microsoft SMTP Server (TLS) id 15.0.1497.2;
- Sun, 11 Jul 2021 16:29:59 +0800
-Received: from [10.17.3.153] (10.17.3.153) by MTKCAS36.mediatek.inc
- (172.27.4.170) with Microsoft SMTP Server id 15.0.1497.2 via Frontend
- Transport; Sun, 11 Jul 2021 16:29:59 +0800
-Message-ID: <1625992199.22309.15.camel@mhfsdcap03>
-Subject: Re: [PATCH 3/9] memory: mtk-smi: Use clk_bulk instead of the clk ops
-From: Yong Wu <yong.wu@mediatek.com>
-To: Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>
-Date: Sun, 11 Jul 2021 16:29:59 +0800
-In-Reply-To: <4047dfaf-f2f8-b6b2-52fd-41821475b162@canonical.com>
-References: <20210616114346.18812-1-yong.wu@mediatek.com>
- <20210616114346.18812-4-yong.wu@mediatek.com>
- <4047dfaf-f2f8-b6b2-52fd-41821475b162@canonical.com>
-X-Mailer: Evolution 3.10.4-0ubuntu2 
+Received: from mga01.intel.com (mga01.intel.com [192.55.52.88])
+ by smtp1.osuosl.org (Postfix) with ESMTPS id 5E14F83231
+ for <iommu@lists.linux-foundation.org>; Sun, 11 Jul 2021 23:25:07 +0000 (UTC)
+X-IronPort-AV: E=McAfee;i="6200,9189,10042"; a="231684716"
+X-IronPort-AV: E=Sophos;i="5.84,232,1620716400"; d="scan'208";a="231684716"
+Received: from fmsmga008.fm.intel.com ([10.253.24.58])
+ by fmsmga101.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384;
+ 11 Jul 2021 16:25:05 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.84,232,1620716400"; d="scan'208";a="464088767"
+Received: from allen-box.sh.intel.com (HELO [10.239.159.118])
+ ([10.239.159.118])
+ by fmsmga008.fm.intel.com with ESMTP; 11 Jul 2021 16:25:03 -0700
+Subject: Re: [PATCH 1/4] iommu/vt-d: Disable superpage for Geminilake igfx
+To: Ville Syrjala <ville.syrjala@linux.intel.com>,
+ intel-gfx@lists.freedesktop.org
+References: <20210709164750.9465-1-ville.syrjala@linux.intel.com>
+ <20210709164750.9465-2-ville.syrjala@linux.intel.com>
+From: Lu Baolu <baolu.lu@linux.intel.com>
+Message-ID: <ab04666c-229c-fbd2-07f3-6955b46985db@linux.intel.com>
+Date: Mon, 12 Jul 2021 07:23:07 +0800
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
+ Thunderbird/78.11.0
 MIME-Version: 1.0
-X-TM-SNTS-SMTP: 755D024FD7727026C23CB3E6A5D8D9521A587CF4AB7DEEF2F8C0332526F861752000:8
-X-MTK: N
-Cc: youlin.pei@mediatek.com, anan.sun@mediatek.com, srv_heupstream@mediatek.com,
- Will Deacon <will@kernel.org>, linux-kernel@vger.kernel.org,
- Krzysztof Kozlowski <krzk@kernel.org>, iommu@lists.linux-foundation.org,
- Rob Herring <robh+dt@kernel.org>, linux-mediatek@lists.infradead.org,
- Matthias Brugger <matthias.bgg@gmail.com>, anthony.huang@mediatek.com,
- ming-fan.chen@mediatek.com, yi.kuo@mediatek.com,
- Robin Murphy <robin.murphy@arm.com>, linux-arm-kernel@lists.infradead.org
+In-Reply-To: <20210709164750.9465-2-ville.syrjala@linux.intel.com>
+Content-Language: en-US
+Cc: iommu@lists.linux-foundation.org, David Woodhouse <dwmw2@infradead.org>
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -96,131 +81,57 @@ List-Post: <mailto:iommu@lists.linux-foundation.org>
 List-Help: <mailto:iommu-request@lists.linux-foundation.org?subject=help>
 List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
  <mailto:iommu-request@lists.linux-foundation.org?subject=subscribe>
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: base64
+Content-Type: text/plain; charset="utf-8"; Format="flowed"
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-On Thu, 2021-07-08 at 11:32 +0200, Krzysztof Kozlowski wrote:
-> On 16/06/2021 13:43, Yong Wu wrote:
-> > smi have many clocks: apb/smi/gals.
-> > This patch use clk_bulk interface instead of the orginal one to simply
-> > the code.
-> > 
-> > gals is optional clk(some larbs may don't have gals). use clk_bulk_optional
-> > instead. and then remove the has_gals flag.
-> > 
-> > Also remove clk fail logs since bulk interface already output fail log.
-> > 
-> > Signed-off-by: Yong Wu <yong.wu@mediatek.com>
-> > ---
-> >  drivers/memory/mtk-smi.c | 124 +++++++++++----------------------------
-> >  1 file changed, 34 insertions(+), 90 deletions(-)
-> > 
-> > diff --git a/drivers/memory/mtk-smi.c b/drivers/memory/mtk-smi.c
-> > index c5fb51f73b34..bcd2bf130655 100644
-> > --- a/drivers/memory/mtk-smi.c
-> > +++ b/drivers/memory/mtk-smi.c
-> > @@ -60,9 +60,18 @@ enum mtk_smi_gen {
-> >  	MTK_SMI_GEN2
-> >  };
-> >  
-> > +#define MTK_SMI_CLK_NR_MAX			4
-> > +
-> > +static const char * const mtk_smi_common_clocks[] = {
-> > +	"apb", "smi", "gals0", "gals1", /* glas is optional */
-> 
-> Typo here - glas.
-
-Will Fix. Thanks.
-
-> 
-> > +};
-> > +
-
-[snip]
-
-> > @@ -493,7 +449,7 @@ static int mtk_smi_common_probe(struct platform_device *pdev)
-> >  	struct device *dev = &pdev->dev;
-> >  	struct mtk_smi *common;
-> >  	struct resource *res;
-> > -	int ret;
-> > +	int i, ret;
-> >  
-> >  	common = devm_kzalloc(dev, sizeof(*common), GFP_KERNEL);
-> >  	if (!common)
-> > @@ -501,23 +457,13 @@ static int mtk_smi_common_probe(struct platform_device *pdev)
-> >  	common->dev = dev;
-> >  	common->plat = of_device_get_match_data(dev);
-> >  
-> > -	common->clk_apb = devm_clk_get(dev, "apb");
-> > -	if (IS_ERR(common->clk_apb))
-> > -		return PTR_ERR(common->clk_apb);
-> > -
-> > -	common->clk_smi = devm_clk_get(dev, "smi");
-> > -	if (IS_ERR(common->clk_smi))
-> > -		return PTR_ERR(common->clk_smi);
-> > +	common->clk_num = ARRAY_SIZE(mtk_smi_common_clocks);
-> > +	for (i = 0; i < common->clk_num; i++)
-> > +		common->clks[i].id = mtk_smi_common_clocks[i];
-> >  
-> > -	if (common->plat->has_gals) {
-> > -		common->clk_gals0 = devm_clk_get(dev, "gals0");
-> > -		if (IS_ERR(common->clk_gals0))
-> > -			return PTR_ERR(common->clk_gals0);
-> > -
-> > -		common->clk_gals1 = devm_clk_get(dev, "gals1");
-> > -		if (IS_ERR(common->clk_gals1))
-> > -			return PTR_ERR(common->clk_gals1);
-> > -	}
-> > +	ret = devm_clk_bulk_get_optional(dev, common->clk_num, common->clks);
-> > +	if (ret)
-> > +		return ret;
-> 
-> How do you handle now missing required clocks?
-
-It looks this is a common issue for this function which supports all the
-clocks could be optional. Is there common suggestion for this?
-
-For our case, the apb/smi clocks are required while "gals" are optional.
-
-thus, we should use devm_clk_bulk_get for the necessary clocks and
-devm_clk_bulk_get_optional for the optional ones. right?
-
-> 
-> >  
-> >  	/*
-> >  	 * for mtk smi gen 1, we need to get the ao(always on) base to config
-> > @@ -561,11 +507,9 @@ static int __maybe_unused mtk_smi_common_resume(struct device *dev)
-> >  	u32 bus_sel = common->plat->bus_sel;
-> >  	int ret;
-> >  
-> > -	ret = mtk_smi_clk_enable(common);
-> > -	if (ret) {
-> > -		dev_err(common->dev, "Failed to enable clock(%d).\n", ret);
-> > +	ret = clk_bulk_prepare_enable(common->clk_num, common->clks);
-> > +	if (ret)
-> >  		return ret;
-> > -	}
-> >  
-> >  	if (common->plat->gen == MTK_SMI_GEN2 && bus_sel)
-> >  		writel(bus_sel, common->base + SMI_BUS_SEL);
-> > @@ -576,7 +520,7 @@ static int __maybe_unused mtk_smi_common_suspend(struct device *dev)
-> >  {
-> >  	struct mtk_smi *common = dev_get_drvdata(dev);
-> >  
-> > -	mtk_smi_clk_disable(common);
-> > +	clk_bulk_disable_unprepare(common->clk_num, common->clks);
-> >  	return 0;
-> >  }
-> >  
-> > 
-> 
-> 
-> Best regards,
-> Krzysztof
-
-_______________________________________________
-iommu mailing list
-iommu@lists.linux-foundation.org
-https://lists.linuxfoundation.org/mailman/listinfo/iommu
+T24gNy8xMC8yMSAxMjo0NyBBTSwgVmlsbGUgU3lyamFsYSB3cm90ZToKPiBGcm9tOiBWaWxsZSBT
+eXJqw6Rsw6QgPHZpbGxlLnN5cmphbGFAbGludXguaW50ZWwuY29tPgo+IAo+IFdoaWxlIHJ1bm5p
+bmcgImdlbV9leGVjX2JpZyAtLXIgc2luZ2xlIiBmcm9tIGlndC1ncHUtdG9vbHMgb24KPiBHZW1p
+bmlsYWtlIGFzIHNvb24gYXMgYSAyTSBtYXBwaW5nIGlzIG1hZGUgSSB0ZW5kIHRvIGdldCBhIERN
+QVIKPiB3cml0ZSBmYXVsdC4gU3RyYW5nZWx5IHRoZSBmYXVsdGluZyBhZGRyZXNzIGlzIGFsd2F5
+cyBhIDRLIHBhZ2UKPiBhbmQgdXN1YWxseSB2ZXJ5IGZhciBhd2F5IGZyb20gdGhlIDJNIHBhZ2Ug
+dGhhdCBnb3QgbWFwcGVkLgo+IEJ1dCBpZiBubyAyTSBtYXBwaW5ncyBnZXQgdXNlZCBJIGNhbid0
+IHJlcHJvZHVjZSB0aGUgZmF1bHQuCj4gCj4gSSBhbHNvIHRyaWVkIHRvIGR1bXAgdGhlIFBURSBm
+b3IgdGhlIGZhdWx0aW5nIGFkZHJlc3MgYnV0IGl0IGFjdHVhbGx5Cj4gbG9va3MgY29ycmVjdCB0
+byBtZSAoaWUuIGRlZmluaXRlbHkgc2VlbXMgdG8gaGF2ZSB0aGUgd3JpdGUgYml0IHNldCk6Cj4g
+ICBETUFSOiBEUkhEOiBoYW5kbGluZyBmYXVsdCBzdGF0dXMgcmVnIDIKPiAgIERNQVI6IFtETUEg
+V3JpdGVdIFJlcXVlc3QgZGV2aWNlIFswMDowMi4wXSBQQVNJRCBmZmZmZmZmZiBmYXVsdCBhZGRy
+IDdmYThhNzgwMDAgW2ZhdWx0IHJlYXNvbiAwNV0gUFRFIFdyaXRlIGFjY2VzcyBpcyBub3Qgc2V0
+Cj4gICBETUFSOiBmYXVsdCA3ZmE4YTc4MDAwIChsZXZlbD0xKSBQVEUgPSAxNDllZmMwMDMKPiAK
+PiBTbyBub3QgcmVhbGx5IHN1cmUgd2hhdCdzIGdvaW5nIG9uIGFuZCB0aGlzIG1pZ2h0IGp1c3Qg
+YmUgZnVsbCBvbiBkdWN0Cj4gdGFwZSwgYnV0IGl0IHNlZW1zIHRvIHdvcmsgaGVyZS4gVGhlIG1h
+Y2hpbmUgaGFzIG5vdyBzdXJ2aXZlZCBhIHdob2xlIGRheQo+IHJ1bm5pbmcgdGhhdCB0ZXN0IHdo
+ZXJlYXMgd2l0aCBzdXBlcnBhZ2UgZW5hYmxlZCBpdCBmYWlscyBpbiBsZXNzIHRoYW4KPiBhIG1p
+bnV0ZSB1c3VhbGx5Lgo+IAo+IFRPRE86IG1pZ2h0IGJlIG5pY2UgdG8gZGlzYWJsZSBzdXBlcnBh
+Z2Ugb25seSBmb3IgdGhlIGlnZnggaW9tbXUKPiAgICAgICAgaW5zdGVhZCBvZiBib3RoIGlvbW11
+cwoKSWYgYWxsIHRoZXNlIHF1aXJrcyBhcmUgYWJvdXQgaWdmeCBkZWRpY2F0ZWQgaW9tbXUncywg
+SSB3b3VsZCBzdWdnZXN0IHRvCmRpc2FibGUgc3VwZXJwYWdlIG9ubHkgZm9yIHRoZSBpZ2Z4IG9u
+ZXMuCgpCZXN0IHJlZ2FyZHMsCmJhb2x1Cgo+IFRPRE86IHdvdWxkIGJlIG5pY2UgdG8gdXNlIHRo
+ZSBtYWNyb3MgZnJvbSBpbmNsdWRlL2RybS9pOTE1X3BjaWlkcy5oLAo+ICAgICAgICBidXQgY2Fu
+J3QgZG8gdGhhdCB3aXRoIERFQ0xBUkVfUENJX0ZJWFVQX0hFQURFUigpCj4gCj4gQ2M6IERhdmlk
+IFdvb2Rob3VzZSA8ZHdtdzJAaW5mcmFkZWFkLm9yZz4KPiBDYzogTHUgQmFvbHUgPGJhb2x1Lmx1
+QGxpbnV4LmludGVsLmNvbT4KPiBDYzogaW9tbXVAbGlzdHMubGludXgtZm91bmRhdGlvbi5vcmcK
+PiBTaWduZWQtb2ZmLWJ5OiBWaWxsZSBTeXJqw6Rsw6QgPHZpbGxlLnN5cmphbGFAbGludXguaW50
+ZWwuY29tPgo+IC0tLQo+ICAgZHJpdmVycy9pb21tdS9pbnRlbC9pb21tdS5jIHwgMTAgKysrKysr
+KysrKwo+ICAgMSBmaWxlIGNoYW5nZWQsIDEwIGluc2VydGlvbnMoKykKPiAKPiBkaWZmIC0tZ2l0
+IGEvZHJpdmVycy9pb21tdS9pbnRlbC9pb21tdS5jIGIvZHJpdmVycy9pb21tdS9pbnRlbC9pb21t
+dS5jCj4gaW5kZXggMTljNzg4OGNiYjg2Li40ZmZmMmM5Yzg2YWYgMTAwNjQ0Cj4gLS0tIGEvZHJp
+dmVycy9pb21tdS9pbnRlbC9pb21tdS5jCj4gKysrIGIvZHJpdmVycy9pb21tdS9pbnRlbC9pb21t
+dS5jCj4gQEAgLTU2MTcsNiArNTYxNywxNiBAQCBERUNMQVJFX1BDSV9GSVhVUF9IRUFERVIoUENJ
+X1ZFTkRPUl9JRF9JTlRFTCwgMHgxNjMyLCBxdWlya19pb21tdV9pZ2Z4KTsKPiAgIERFQ0xBUkVf
+UENJX0ZJWFVQX0hFQURFUihQQ0lfVkVORE9SX0lEX0lOVEVMLCAweDE2M0EsIHF1aXJrX2lvbW11
+X2lnZngpOwo+ICAgREVDTEFSRV9QQ0lfRklYVVBfSEVBREVSKFBDSV9WRU5ET1JfSURfSU5URUws
+IDB4MTYzRCwgcXVpcmtfaW9tbXVfaWdmeCk7Cj4gICAKPiArc3RhdGljIHZvaWQgcXVpcmtfaW9t
+bXVfbm9zcChzdHJ1Y3QgcGNpX2RldiAqZGV2KQo+ICt7Cj4gKwlwY2lfaW5mbyhkZXYsICJEaXNh
+YmxpbmcgSU9NTVUgc3VwZXJwYWdlIGZvciBncmFwaGljcyBvbiB0aGlzIGNoaXBzZXRcbiIpOwo+
+ICsJaW50ZWxfaW9tbXVfc3VwZXJwYWdlID0gMDsKPiArfQo+ICsKPiArLyogR2VtaW5pbGFrZSBp
+Z2Z4IGFwcGVhcnMgdG8gaGF2ZSBpc3N1ZXMgd2l0aCBzdXBlcnBhZ2UgKi8KPiArREVDTEFSRV9Q
+Q0lfRklYVVBfSEVBREVSKFBDSV9WRU5ET1JfSURfSU5URUwsIDB4MzE4NCwgcXVpcmtfaW9tbXVf
+bm9zcCk7Cj4gK0RFQ0xBUkVfUENJX0ZJWFVQX0hFQURFUihQQ0lfVkVORE9SX0lEX0lOVEVMLCAw
+eDMxODUsIHF1aXJrX2lvbW11X25vc3ApOwo+ICsKPiAgIHN0YXRpYyB2b2lkIHF1aXJrX2lvbW11
+X3J3YmYoc3RydWN0IHBjaV9kZXYgKmRldikKPiAgIHsKPiAgIAlpZiAocmlza3lfZGV2aWNlKGRl
+dikpCj4gCl9fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fCmlv
+bW11IG1haWxpbmcgbGlzdAppb21tdUBsaXN0cy5saW51eC1mb3VuZGF0aW9uLm9yZwpodHRwczov
+L2xpc3RzLmxpbnV4Zm91bmRhdGlvbi5vcmcvbWFpbG1hbi9saXN0aW5mby9pb21tdQ==
