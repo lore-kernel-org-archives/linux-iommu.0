@@ -7,64 +7,64 @@ X-Spam-Status: No, score=-16.6 required=3.0 tests=BAYES_00,DKIM_INVALID,
 	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_GIT
 	autolearn=ham autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 81EEBC07E99
-	for <iommu@archiver.kernel.org>; Mon, 12 Jul 2021 06:22:48 +0000 (UTC)
-Received: from smtp3.osuosl.org (smtp3.osuosl.org [140.211.166.136])
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4E311C07E99
+	for <iommu@archiver.kernel.org>; Mon, 12 Jul 2021 06:24:14 +0000 (UTC)
+Received: from smtp4.osuosl.org (smtp4.osuosl.org [140.211.166.137])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 2D5B161178
-	for <iommu@archiver.kernel.org>; Mon, 12 Jul 2021 06:22:48 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 2D5B161178
+	by mail.kernel.org (Postfix) with ESMTPS id F00D3611AC
+	for <iommu@archiver.kernel.org>; Mon, 12 Jul 2021 06:24:13 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org F00D3611AC
 Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=lst.de
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by smtp3.osuosl.org (Postfix) with ESMTP id F23A56058D;
-	Mon, 12 Jul 2021 06:22:47 +0000 (UTC)
+	by smtp4.osuosl.org (Postfix) with ESMTP id AC65E40469;
+	Mon, 12 Jul 2021 06:24:13 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from smtp3.osuosl.org ([127.0.0.1])
-	by localhost (smtp3.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id Ak11HVAs-0Mt; Mon, 12 Jul 2021 06:22:47 +0000 (UTC)
-Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by smtp3.osuosl.org (Postfix) with ESMTPS id D1BAC607DB;
-	Mon, 12 Jul 2021 06:22:46 +0000 (UTC)
+Received: from smtp4.osuosl.org ([127.0.0.1])
+	by localhost (smtp4.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+	with ESMTP id 35PWpVSZ11ZZ; Mon, 12 Jul 2021 06:24:12 +0000 (UTC)
+Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [IPv6:2605:bc80:3010:104::8cd3:938])
+	by smtp4.osuosl.org (Postfix) with ESMTPS id 458B140461;
+	Mon, 12 Jul 2021 06:24:12 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id ACC70C0010;
-	Mon, 12 Jul 2021 06:22:46 +0000 (UTC)
-Received: from smtp3.osuosl.org (smtp3.osuosl.org [140.211.166.136])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 082E6C000E
- for <iommu@lists.linux-foundation.org>; Mon, 12 Jul 2021 06:22:46 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 29DEEC0010;
+	Mon, 12 Jul 2021 06:24:12 +0000 (UTC)
+Received: from smtp4.osuosl.org (smtp4.osuosl.org [140.211.166.137])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id B68C3C000E
+ for <iommu@lists.linux-foundation.org>; Mon, 12 Jul 2021 06:24:10 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by smtp3.osuosl.org (Postfix) with ESMTP id DD65E607DB
- for <iommu@lists.linux-foundation.org>; Mon, 12 Jul 2021 06:22:45 +0000 (UTC)
+ by smtp4.osuosl.org (Postfix) with ESMTP id 9629B40464
+ for <iommu@lists.linux-foundation.org>; Mon, 12 Jul 2021 06:24:10 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from smtp3.osuosl.org ([127.0.0.1])
- by localhost (smtp3.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id insnmP9FgAUq for <iommu@lists.linux-foundation.org>;
- Mon, 12 Jul 2021 06:22:45 +0000 (UTC)
+Received: from smtp4.osuosl.org ([127.0.0.1])
+ by localhost (smtp4.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+ with ESMTP id ashF0eTCtzm6 for <iommu@lists.linux-foundation.org>;
+ Mon, 12 Jul 2021 06:24:09 +0000 (UTC)
 X-Greylist: from auto-whitelisted by SQLgrey-1.8.0
 Received: from casper.infradead.org (casper.infradead.org
  [IPv6:2001:8b0:10b:1236::1])
- by smtp3.osuosl.org (Postfix) with ESMTPS id 2EDDF6058D
- for <iommu@lists.linux-foundation.org>; Mon, 12 Jul 2021 06:22:45 +0000 (UTC)
+ by smtp4.osuosl.org (Postfix) with ESMTPS id B24F040461
+ for <iommu@lists.linux-foundation.org>; Mon, 12 Jul 2021 06:24:09 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
  d=infradead.org; s=casper.20170209; h=Content-Transfer-Encoding:MIME-Version:
  References:In-Reply-To:Message-Id:Date:Subject:Cc:To:From:Sender:Reply-To:
  Content-Type:Content-ID:Content-Description;
- bh=eVxB7IvANlcif6hq/pqZXhaiA82oKpkzsJI2QfP+SPc=; b=rZgrnlJ0qlx2ZIn795mfHCSoCB
- StQY/6FsSQNEsU/FWRg9jy5p8sMfV7aEz1F0+WPJuJ/RYdOO5VMXORF8eSj0VT1Nt3lHQ0X9jp+of
- v99xmipPH5RZXef8CyYFeoMHesYxli/R/dRrivW6qi2YeCLNO4SC18NWllwnYRQo4F5/SSSiRJF4s
- S8Fpwl4CCjGgHwV5jzPS5SXg1jjUeT3kgs+gkkXk4uHvw8TCa8WjBcq0J1/WOoz35P+3rjngtjaKD
- hs1k+odKLzmtJ8wCGWdPo4U+r5XoFair8jVchXSO6s1xfNtDaLlhcCv+Mhn7oCplvqRsqaExsWvYP
- zRGcPGDg==;
+ bh=scCOCDZAM0ESIiijfdMPCg1lGN//v3TmQdJkkjnF864=; b=DzyK7yGpb0OScE1g15LS/6iqJf
+ BbNQMY9JTOUQ2+s0vSB2i34gqBttkK6b4ZGpW8V2mFyQwvOTtSE79ugUSqIegyl7MVqTwgkKJ0sAj
+ uQqeLXAo4L+FEaaw6ru+kmZGnYvqfqcSE+C1QrhhCk7tgRM8WMISvWTr084tlZ97eq9b8HeRtgM8A
+ TcGD5YrZz65+ColIsTUda2/TmspmnBb5gYVy2rVyMwC8A7vOjSWmZt/58Cn/PJ89UPn9ZdlrW6liB
+ dVRNDcBf29PrJ0zI4/ZhumJb50YxuXNSqbBHaJZB3pco0Pjabn+vvErFu+19G+4Ny89sQ7w3afRCp
+ SS+K34Xw==;
 Received: from [2001:4bb8:184:8b7c:bd9:61b8:39ba:d78a] (helo=localhost)
  by casper.infradead.org with esmtpsa (Exim 4.94.2 #2 (Red Hat Linux))
- id 1m2pJt-00GxR6-2V; Mon, 12 Jul 2021 06:22:06 +0000
+ id 1m2pL2-00GxZL-3o; Mon, 12 Jul 2021 06:23:15 +0000
 From: Christoph Hellwig <hch@lst.de>
 To: iommu@lists.linux-foundation.org, Russell King <linux@armlinux.org.uk>,
  Brian Cain <bcain@codeaurora.org>
-Subject: [PATCH 4/7] dma-mapping: simplify dma_init_coherent_memory
-Date: Mon, 12 Jul 2021 08:17:01 +0200
-Message-Id: <20210712061704.4162464-5-hch@lst.de>
+Subject: [PATCH 5/7] dma-mapping: add a dma_init_global_coherent helper
+Date: Mon, 12 Jul 2021 08:17:02 +0200
+Message-Id: <20210712061704.4162464-6-hch@lst.de>
 X-Mailer: git-send-email 2.30.2
 In-Reply-To: <20210712061704.4162464-1-hch@lst.de>
 References: <20210712061704.4162464-1-hch@lst.de>
@@ -91,137 +91,83 @@ Content-Transfer-Encoding: 7bit
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-Return the allocated dma_coherent_mem structure, set the
-use_dma_pfn_offset and print the failure warning inside of
-dma_init_coherent_memory instead of leaving that to the callers.
+Add a new helper to initialize the global coherent pool.  This both
+cleans up the existing initialization which indirects through the
+reserved_mem_ops that are normally only used for struct device, and
+also allows using the global pool for non-devicetree architectures.
 
 Signed-off-by: Christoph Hellwig <hch@lst.de>
 Tested-by: Dillon Min <dillon.minfei@gmail.com>
 ---
- kernel/dma/coherent.c | 78 ++++++++++++++++++-------------------------
- 1 file changed, 33 insertions(+), 45 deletions(-)
+ include/linux/dma-map-ops.h |  2 +-
+ kernel/dma/coherent.c       | 32 ++++++++++++++------------------
+ 2 files changed, 15 insertions(+), 19 deletions(-)
 
+diff --git a/include/linux/dma-map-ops.h b/include/linux/dma-map-ops.h
+index 0d53a96a3d64..7e49bb86a0c0 100644
+--- a/include/linux/dma-map-ops.h
++++ b/include/linux/dma-map-ops.h
+@@ -176,7 +176,7 @@ void *dma_alloc_from_global_coherent(struct device *dev, ssize_t size,
+ int dma_release_from_global_coherent(int order, void *vaddr);
+ int dma_mmap_from_global_coherent(struct vm_area_struct *vma, void *cpu_addr,
+ 		size_t size, int *ret);
+-
++int dma_init_global_coherent(phys_addr_t phys_addr, size_t size);
+ #else
+ static inline int dma_declare_coherent_memory(struct device *dev,
+ 		phys_addr_t phys_addr, dma_addr_t device_addr, size_t size)
 diff --git a/kernel/dma/coherent.c b/kernel/dma/coherent.c
-index 67b126afac5a..ab397ebfd5ad 100644
+index ab397ebfd5ad..160d4e246ecb 100644
 --- a/kernel/dma/coherent.c
 +++ b/kernel/dma/coherent.c
-@@ -37,51 +37,44 @@ static inline dma_addr_t dma_get_device_base(struct device *dev,
- 	return mem->device_base;
+@@ -300,6 +300,18 @@ int dma_mmap_from_global_coherent(struct vm_area_struct *vma, void *vaddr,
+ 					vaddr, size, ret);
  }
  
--static int dma_init_coherent_memory(phys_addr_t phys_addr,
--		dma_addr_t device_addr, size_t size,
--		struct dma_coherent_mem **mem)
-+static struct dma_coherent_mem *dma_init_coherent_memory(phys_addr_t phys_addr,
-+		dma_addr_t device_addr, size_t size, bool use_dma_pfn_offset)
- {
--	struct dma_coherent_mem *dma_mem = NULL;
--	void *mem_base = NULL;
-+	struct dma_coherent_mem *dma_mem;
- 	int pages = size >> PAGE_SHIFT;
- 	int bitmap_size = BITS_TO_LONGS(pages) * sizeof(long);
--	int ret;
-+	void *mem_base;
- 
--	if (!size) {
--		ret = -EINVAL;
--		goto out;
--	}
-+	if (!size)
-+		return ERR_PTR(-EINVAL);
- 
- 	mem_base = memremap(phys_addr, size, MEMREMAP_WC);
--	if (!mem_base) {
--		ret = -EINVAL;
--		goto out;
--	}
-+	if (!mem_base)
-+		return ERR_PTR(-EINVAL);
++int dma_init_global_coherent(phys_addr_t phys_addr, size_t size)
++{
++	struct dma_coherent_mem *mem;
 +
- 	dma_mem = kzalloc(sizeof(struct dma_coherent_mem), GFP_KERNEL);
--	if (!dma_mem) {
--		ret = -ENOMEM;
--		goto out;
--	}
-+	if (!dma_mem)
-+		goto out_unmap_membase;
- 	dma_mem->bitmap = kzalloc(bitmap_size, GFP_KERNEL);
--	if (!dma_mem->bitmap) {
--		ret = -ENOMEM;
--		goto out;
--	}
-+	if (!dma_mem->bitmap)
-+		goto out_free_dma_mem;
- 
- 	dma_mem->virt_base = mem_base;
- 	dma_mem->device_base = device_addr;
- 	dma_mem->pfn_base = PFN_DOWN(phys_addr);
- 	dma_mem->size = pages;
-+	dma_mem->use_dev_dma_pfn_offset = use_dma_pfn_offset;
- 	spin_lock_init(&dma_mem->spinlock);
- 
--	*mem = dma_mem;
--	return 0;
-+	return dma_mem;
- 
--out:
-+out_free_dma_mem:
- 	kfree(dma_mem);
--	if (mem_base)
--		memunmap(mem_base);
--	return ret;
-+out_unmap_membase:
-+	memunmap(mem_base);
-+	pr_err("Reserved memory: failed to init DMA memory pool at %pa, size %zd MiB\n",
-+		&phys_addr, size / SZ_1M);
-+	return ERR_PTR(-ENOMEM);
- }
- 
- static void dma_release_coherent_memory(struct dma_coherent_mem *mem)
-@@ -130,9 +123,9 @@ int dma_declare_coherent_memory(struct device *dev, phys_addr_t phys_addr,
- 	struct dma_coherent_mem *mem;
- 	int ret;
- 
--	ret = dma_init_coherent_memory(phys_addr, device_addr, size, &mem);
--	if (ret)
--		return ret;
-+	mem = dma_init_coherent_memory(phys_addr, device_addr, size, false);
++	mem = dma_init_coherent_memory(phys_addr, phys_addr, size, true);
 +	if (IS_ERR(mem))
 +		return PTR_ERR(mem);
++	dma_coherent_default_memory = mem;
++	pr_info("DMA: default coherent area is set\n");
++	return 0;
++}
++
+ /*
+  * Support for reserved memory regions defined in device tree
+  */
+@@ -367,26 +379,10 @@ static int __init rmem_dma_setup(struct reserved_mem *rmem)
  
- 	ret = dma_assign_coherent_memory(dev, mem);
- 	if (ret)
-@@ -319,21 +312,16 @@ static struct reserved_mem *dma_reserved_default_memory __initdata;
- 
- static int rmem_dma_device_init(struct reserved_mem *rmem, struct device *dev)
+ static int __init dma_init_reserved_memory(void)
  {
--	struct dma_coherent_mem *mem = rmem->priv;
+-	const struct reserved_mem_ops *ops;
 -	int ret;
 -
--	if (!mem) {
--		ret = dma_init_coherent_memory(rmem->base, rmem->base,
--					       rmem->size, &mem);
--		if (ret) {
--			pr_err("Reserved memory: failed to init DMA memory pool at %pa, size %ld MiB\n",
--				&rmem->base, (unsigned long)rmem->size / SZ_1M);
--			return ret;
--		}
-+	if (!rmem->priv) {
-+		struct dma_coherent_mem *mem;
-+
-+		mem = dma_init_coherent_memory(rmem->base, rmem->base,
-+					       rmem->size, true);
-+		if (IS_ERR(mem))
-+			return PTR_ERR(mem);
-+		rmem->priv = mem;
- 	}
--	mem->use_dev_dma_pfn_offset = true;
--	rmem->priv = mem;
--	dma_assign_coherent_memory(dev, mem);
-+	dma_assign_coherent_memory(dev, rmem->priv);
- 	return 0;
+ 	if (!dma_reserved_default_memory)
+ 		return -ENOMEM;
+-
+-	ops = dma_reserved_default_memory->ops;
+-
+-	/*
+-	 * We rely on rmem_dma_device_init() does not propagate error of
+-	 * dma_assign_coherent_memory() for "NULL" device.
+-	 */
+-	ret = ops->device_init(dma_reserved_default_memory, NULL);
+-
+-	if (!ret) {
+-		dma_coherent_default_memory = dma_reserved_default_memory->priv;
+-		pr_info("DMA: default coherent area is set\n");
+-	}
+-
+-	return ret;
++	return dma_init_global_coherent(dma_reserved_default_memory->base,
++					dma_reserved_default_memory->size);
  }
  
+ core_initcall(dma_init_reserved_memory);
 -- 
 2.30.2
 
