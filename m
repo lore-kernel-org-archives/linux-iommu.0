@@ -7,75 +7,70 @@ X-Spam-Status: No, score=-16.6 required=3.0 tests=BAYES_00,DKIM_INVALID,
 	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_GIT
 	autolearn=ham autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7EF33C07E99
-	for <iommu@archiver.kernel.org>; Mon, 12 Jul 2021 06:26:14 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id ED602C07E99
+	for <iommu@archiver.kernel.org>; Mon, 12 Jul 2021 06:47:17 +0000 (UTC)
 Received: from smtp3.osuosl.org (smtp3.osuosl.org [140.211.166.136])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 2E9F761205
-	for <iommu@archiver.kernel.org>; Mon, 12 Jul 2021 06:26:14 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 2E9F761205
-Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=lst.de
+	by mail.kernel.org (Postfix) with ESMTPS id 925A460FD8
+	for <iommu@archiver.kernel.org>; Mon, 12 Jul 2021 06:47:17 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 925A460FD8
+Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=linuxfoundation.org
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by smtp3.osuosl.org (Postfix) with ESMTP id EFEB3607E9;
-	Mon, 12 Jul 2021 06:26:13 +0000 (UTC)
+	by smtp3.osuosl.org (Postfix) with ESMTP id 66CC6606E8;
+	Mon, 12 Jul 2021 06:47:17 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
 Received: from smtp3.osuosl.org ([127.0.0.1])
 	by localhost (smtp3.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id WjwkJIb-MjnA; Mon, 12 Jul 2021 06:26:13 +0000 (UTC)
-Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by smtp3.osuosl.org (Postfix) with ESMTPS id CB1D9607B1;
-	Mon, 12 Jul 2021 06:26:12 +0000 (UTC)
+	with ESMTP id hobdEyTthR0M; Mon, 12 Jul 2021 06:47:16 +0000 (UTC)
+Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [IPv6:2605:bc80:3010:104::8cd3:938])
+	by smtp3.osuosl.org (Postfix) with ESMTPS id 47FCB6066E;
+	Mon, 12 Jul 2021 06:47:16 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id B3928C0010;
-	Mon, 12 Jul 2021 06:26:12 +0000 (UTC)
-Received: from smtp1.osuosl.org (smtp1.osuosl.org [IPv6:2605:bc80:3010::138])
- by lists.linuxfoundation.org (Postfix) with ESMTP id A700EC000E
- for <iommu@lists.linux-foundation.org>; Mon, 12 Jul 2021 06:26:11 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 28DE7C0010;
+	Mon, 12 Jul 2021 06:47:16 +0000 (UTC)
+Received: from smtp4.osuosl.org (smtp4.osuosl.org [IPv6:2605:bc80:3010::137])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id A41F1C000E
+ for <iommu@lists.linux-foundation.org>; Mon, 12 Jul 2021 06:47:14 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by smtp1.osuosl.org (Postfix) with ESMTP id 8862083560
- for <iommu@lists.linux-foundation.org>; Mon, 12 Jul 2021 06:26:11 +0000 (UTC)
+ by smtp4.osuosl.org (Postfix) with ESMTP id 8A4734033E
+ for <iommu@lists.linux-foundation.org>; Mon, 12 Jul 2021 06:47:14 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Authentication-Results: smtp1.osuosl.org (amavisd-new);
- dkim=pass (2048-bit key) header.d=infradead.org
-Received: from smtp1.osuosl.org ([127.0.0.1])
- by localhost (smtp1.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id Vh4mmfcODncA for <iommu@lists.linux-foundation.org>;
- Mon, 12 Jul 2021 06:26:11 +0000 (UTC)
+Authentication-Results: smtp4.osuosl.org (amavisd-new);
+ dkim=pass (1024-bit key) header.d=linuxfoundation.org
+Received: from smtp4.osuosl.org ([127.0.0.1])
+ by localhost (smtp4.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+ with ESMTP id OG3hB6uSgapY for <iommu@lists.linux-foundation.org>;
+ Mon, 12 Jul 2021 06:47:13 +0000 (UTC)
 X-Greylist: from auto-whitelisted by SQLgrey-1.8.0
-Received: from casper.infradead.org (casper.infradead.org
- [IPv6:2001:8b0:10b:1236::1])
- by smtp1.osuosl.org (Postfix) with ESMTPS id D1C518355F
- for <iommu@lists.linux-foundation.org>; Mon, 12 Jul 2021 06:26:10 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
- d=infradead.org; s=casper.20170209; h=Content-Transfer-Encoding:MIME-Version:
- References:In-Reply-To:Message-Id:Date:Subject:Cc:To:From:Sender:Reply-To:
- Content-Type:Content-ID:Content-Description;
- bh=O5uvaUdSp6FqM7+gNK9rRhzVPwV15QaVwrDrGAsNxTE=; b=MPGmLxDmFoDvPr/4xVjyljFCs6
- PDpD7Wh/Kz3P1srVFgaLrTGJFNPSNDy5RwoYZmGin1LSUarfbaXpHeoi0PlOQasi/bNJEi/FGBxdY
- J0s+qJzBJgLR2eWdUTlq5NcTRoUgqMDtMB2vGqg28SBuMQc/Pbf/df7DTTN5UE0QVVXB3ms1rsyQG
- alV6Bd37KPiIk9iWHzeF7V8vWN5OimVFPnperLg0u9w9XiIpy0DC6zrZi1qsfOYbhXjBWLD5MBOHn
- S4db/57uJgbhhrh1a28hv2/7X9dLOgYWBZvg4rFITMtbIAPpW//hur9uDqM+hvIhj96jqsJt3Qeio
- eK3oWRwg==;
-Received: from [2001:4bb8:184:8b7c:bd9:61b8:39ba:d78a] (helo=localhost)
- by casper.infradead.org with esmtpsa (Exim 4.94.2 #2 (Red Hat Linux))
- id 1m2pNR-00Gxne-2Z; Mon, 12 Jul 2021 06:25:36 +0000
-From: Christoph Hellwig <hch@lst.de>
-To: iommu@lists.linux-foundation.org, Russell King <linux@armlinux.org.uk>,
- Brian Cain <bcain@codeaurora.org>
-Subject: [PATCH 7/7] hexagon: use the generic global coherent pool
-Date: Mon, 12 Jul 2021 08:17:04 +0200
-Message-Id: <20210712061704.4162464-8-hch@lst.de>
-X-Mailer: git-send-email 2.30.2
-In-Reply-To: <20210712061704.4162464-1-hch@lst.de>
-References: <20210712061704.4162464-1-hch@lst.de>
+Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
+ by smtp4.osuosl.org (Postfix) with ESMTPS id 651F14032C
+ for <iommu@lists.linux-foundation.org>; Mon, 12 Jul 2021 06:47:13 +0000 (UTC)
+Received: by mail.kernel.org (Postfix) with ESMTPSA id 8A0A660233;
+ Mon, 12 Jul 2021 06:47:12 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+ s=korg; t=1626072433;
+ bh=TPqrhvWSbqivqZ5a41ZEfzvmKfyldbGLR3fy+hiu7IM=;
+ h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+ b=W6nYYouHWtwhf8kJrBTpxVsFRdBDG0u+VdlNcV7ifTIMhMaiujxHSE8hU7oL6cwPV
+ 8aY/Mrh1XDuMFHcg/5MjL/kkM2ou6gGkNhzz/bdiwm1gqDTiGX06yyS625lr8WPKBj
+ tTsttWi6+8M72UvY1BRd7pAC9ZIKk7Gz7VcsEX34=
+From: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To: linux-kernel@vger.kernel.org
+Subject: [PATCH 5.10 495/593] iommu/amd: Fix extended features logging
+Date: Mon, 12 Jul 2021 08:10:55 +0200
+Message-Id: <20210712060945.845643734@linuxfoundation.org>
+X-Mailer: git-send-email 2.32.0
+In-Reply-To: <20210712060843.180606720@linuxfoundation.org>
+References: <20210712060843.180606720@linuxfoundation.org>
+User-Agent: quilt/0.66
 MIME-Version: 1.0
-X-SRS-Rewrite: SMTP reverse-path rewritten from <hch@infradead.org> by
- casper.infradead.org. See http://www.infradead.org/rpr.html
-Cc: linux-hexagon@vger.kernel.org, Vladimir Murzin <vladimir.murzin@arm.com>,
- Dillon Min <dillon.minfei@gmail.com>, linux-kernel@vger.kernel.org,
- linux-arm-kernel@lists.infradead.org
+Cc: Sasha Levin <sashal@kernel.org>, Paul Menzel <pmenzel@molgen.mpg.de>,
+ Joerg Roedel <jroedel@suse.de>,
+ Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+ Alexander Monakov <amonakov@ispras.ru>, stable@vger.kernel.org,
+ iommu@lists.linux-foundation.org
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -93,103 +88,65 @@ Content-Transfer-Encoding: 7bit
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-Switch hexagon to use the generic code for dma_alloc_coherent from
-a global pre-filled pool.
+From: Alexander Monakov <amonakov@ispras.ru>
 
-Signed-off-by: Christoph Hellwig <hch@lst.de>
+[ Upstream commit 4b21a503adf597773e4b37db05db0e9b16a81d53 ]
+
+print_iommu_info prints the EFR register and then the decoded list of
+features on a separate line:
+
+pci 0000:00:00.2: AMD-Vi: Extended features (0x206d73ef22254ade):
+ PPR X2APIC NX GT IA GA PC GA_vAPIC
+
+The second line is emitted via 'pr_cont', which causes it to have a
+different ('warn') loglevel compared to the previous line ('info').
+
+Commit 9a295ff0ffc9 attempted to rectify this by removing the newline
+from the pci_info format string, but this doesn't work, as pci_info
+calls implicitly append a newline anyway.
+
+Printing the decoded features on the same line would make it quite long.
+Instead, change pci_info() to pr_info() to omit PCI bus location info,
+which is also shown in the preceding message. This results in:
+
+pci 0000:00:00.2: AMD-Vi: Found IOMMU cap 0x40
+AMD-Vi: Extended features (0x206d73ef22254ade): PPR X2APIC NX GT IA GA PC GA_vAPIC
+AMD-Vi: Interrupt remapping enabled
+
+Fixes: 9a295ff0ffc9 ("iommu/amd: Print extended features in one line to fix divergent log levels")
+Link: https://lore.kernel.org/lkml/alpine.LNX.2.20.13.2104112326460.11104@monopod.intra.ispras.ru
+Signed-off-by: Alexander Monakov <amonakov@ispras.ru>
+Cc: Paul Menzel <pmenzel@molgen.mpg.de>
+Cc: Joerg Roedel <jroedel@suse.de>
+Cc: Suravee Suthikulpanit <suravee.suthikulpanit@amd.com>
+Cc: iommu@lists.linux-foundation.org
+Reviewed-by: Paul Menzel <pmenzel@molgen.mpg.de>
+Link: https://lore.kernel.org/r/20210504102220.1793-1-amonakov@ispras.ru
+Signed-off-by: Joerg Roedel <jroedel@suse.de>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- arch/hexagon/Kconfig      |  1 +
- arch/hexagon/kernel/dma.c | 57 ++++++++-------------------------------
- 2 files changed, 12 insertions(+), 46 deletions(-)
+ drivers/iommu/amd/init.c | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
-diff --git a/arch/hexagon/Kconfig b/arch/hexagon/Kconfig
-index e5a852080730..aab1a40eb653 100644
---- a/arch/hexagon/Kconfig
-+++ b/arch/hexagon/Kconfig
-@@ -7,6 +7,7 @@ config HEXAGON
- 	select ARCH_32BIT_OFF_T
- 	select ARCH_HAS_SYNC_DMA_FOR_DEVICE
- 	select ARCH_NO_PREEMPT
-+	select DMA_GLOBAL_POOL
- 	# Other pending projects/to-do items.
- 	# select HAVE_REGS_AND_STACK_ACCESS_API
- 	# select HAVE_HW_BREAKPOINT if PERF_EVENTS
-diff --git a/arch/hexagon/kernel/dma.c b/arch/hexagon/kernel/dma.c
-index 00b9a81075dd..882680e81a30 100644
---- a/arch/hexagon/kernel/dma.c
-+++ b/arch/hexagon/kernel/dma.c
-@@ -7,54 +7,8 @@
+diff --git a/drivers/iommu/amd/init.c b/drivers/iommu/amd/init.c
+index cc9869cc48e4..fa57986c2309 100644
+--- a/drivers/iommu/amd/init.c
++++ b/drivers/iommu/amd/init.c
+@@ -1914,8 +1914,8 @@ static void print_iommu_info(void)
+ 		pci_info(pdev, "Found IOMMU cap 0x%hx\n", iommu->cap_ptr);
  
- #include <linux/dma-map-ops.h>
- #include <linux/memblock.h>
--#include <linux/genalloc.h>
--#include <linux/module.h>
- #include <asm/page.h>
- 
--static struct gen_pool *coherent_pool;
--
--
--/* Allocates from a pool of uncached memory that was reserved at boot time */
--
--void *arch_dma_alloc(struct device *dev, size_t size, dma_addr_t *dma_addr,
--		gfp_t flag, unsigned long attrs)
--{
--	void *ret;
--
--	/*
--	 * Our max_low_pfn should have been backed off by 16MB in
--	 * mm/init.c to create DMA coherent space.  Use that as the VA
--	 * for the pool.
--	 */
--
--	if (coherent_pool == NULL) {
--		coherent_pool = gen_pool_create(PAGE_SHIFT, -1);
--
--		if (coherent_pool == NULL)
--			panic("Can't create %s() memory pool!", __func__);
--		else
--			gen_pool_add(coherent_pool,
--				(unsigned long)pfn_to_virt(max_low_pfn),
--				hexagon_coherent_pool_size, -1);
--	}
--
--	ret = (void *) gen_pool_alloc(coherent_pool, size);
--
--	if (ret) {
--		memset(ret, 0, size);
--		*dma_addr = (dma_addr_t) virt_to_phys(ret);
--	} else
--		*dma_addr = ~0;
--
--	return ret;
--}
--
--void arch_dma_free(struct device *dev, size_t size, void *vaddr,
--		dma_addr_t dma_addr, unsigned long attrs)
--{
--	gen_pool_free(coherent_pool, (unsigned long) vaddr, size);
--}
--
- void arch_sync_dma_for_device(phys_addr_t paddr, size_t size,
- 		enum dma_data_direction dir)
- {
-@@ -77,3 +31,14 @@ void arch_sync_dma_for_device(phys_addr_t paddr, size_t size,
- 		BUG();
- 	}
- }
+ 		if (iommu->cap & (1 << IOMMU_CAP_EFR)) {
+-			pci_info(pdev, "Extended features (%#llx):",
+-				 iommu->features);
++			pr_info("Extended features (%#llx):", iommu->features);
 +
-+/*
-+ * Our max_low_pfn should have been backed off by 16MB in mm/init.c to create
-+ * DMA coherent space.  Use that for the pool.
-+ */
-+static int __init hexagon_dma_init(void)
-+{
-+	return dma_init_global_coherent(PFN_PHYS(max_low_pfn),
-+					hexagon_coherent_pool_size);
-+}
-+core_initcall(hexagon_dma_init);
+ 			for (i = 0; i < ARRAY_SIZE(feat_str); ++i) {
+ 				if (iommu_feature(iommu, (1ULL << i)))
+ 					pr_cont(" %s", feat_str[i]);
 -- 
 2.30.2
+
+
 
 _______________________________________________
 iommu mailing list
