@@ -7,61 +7,63 @@ X-Spam-Status: No, score=-16.6 required=3.0 tests=BAYES_00,DKIM_INVALID,
 	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_GIT
 	autolearn=ham autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9E241C07E99
-	for <iommu@archiver.kernel.org>; Mon, 12 Jul 2021 07:21:12 +0000 (UTC)
-Received: from smtp2.osuosl.org (smtp2.osuosl.org [140.211.166.133])
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 041DFC07E9C
+	for <iommu@archiver.kernel.org>; Mon, 12 Jul 2021 07:55:22 +0000 (UTC)
+Received: from smtp3.osuosl.org (smtp3.osuosl.org [140.211.166.136])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 5E51F61404
-	for <iommu@archiver.kernel.org>; Mon, 12 Jul 2021 07:21:12 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 5E51F61404
+	by mail.kernel.org (Postfix) with ESMTPS id AC89F61CC7
+	for <iommu@archiver.kernel.org>; Mon, 12 Jul 2021 07:55:21 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org AC89F61CC7
 Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=linuxfoundation.org
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by smtp2.osuosl.org (Postfix) with ESMTP id 22E9E40185;
-	Mon, 12 Jul 2021 07:21:12 +0000 (UTC)
+	by smtp3.osuosl.org (Postfix) with ESMTP id 79CCF60730;
+	Mon, 12 Jul 2021 07:55:21 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from smtp2.osuosl.org ([127.0.0.1])
-	by localhost (smtp2.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id 1yNk7SbFx6QQ; Mon, 12 Jul 2021 07:21:11 +0000 (UTC)
-Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by smtp2.osuosl.org (Postfix) with ESMTPS id DF0F440118;
-	Mon, 12 Jul 2021 07:21:10 +0000 (UTC)
+Received: from smtp3.osuosl.org ([127.0.0.1])
+	by localhost (smtp3.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+	with ESMTP id OIyLnjnwdHT0; Mon, 12 Jul 2021 07:55:20 +0000 (UTC)
+Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [IPv6:2605:bc80:3010:104::8cd3:938])
+	by smtp3.osuosl.org (Postfix) with ESMTPS id 548E76065D;
+	Mon, 12 Jul 2021 07:55:20 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id B815CC001A;
-	Mon, 12 Jul 2021 07:21:10 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 29DB1C001A;
+	Mon, 12 Jul 2021 07:55:20 +0000 (UTC)
 Received: from smtp2.osuosl.org (smtp2.osuosl.org [IPv6:2605:bc80:3010::133])
- by lists.linuxfoundation.org (Postfix) with ESMTP id C337CC001F
- for <iommu@lists.linux-foundation.org>; Mon, 12 Jul 2021 07:21:09 +0000 (UTC)
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 2B2B2C000E
+ for <iommu@lists.linux-foundation.org>; Mon, 12 Jul 2021 07:55:19 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by smtp2.osuosl.org (Postfix) with ESMTP id A45FE40118
- for <iommu@lists.linux-foundation.org>; Mon, 12 Jul 2021 07:21:09 +0000 (UTC)
+ by smtp2.osuosl.org (Postfix) with ESMTP id 0574C4013D
+ for <iommu@lists.linux-foundation.org>; Mon, 12 Jul 2021 07:55:19 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
+Authentication-Results: smtp2.osuosl.org (amavisd-new);
+ dkim=pass (1024-bit key) header.d=linuxfoundation.org
 Received: from smtp2.osuosl.org ([127.0.0.1])
  by localhost (smtp2.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id QUrw9z2g8I2U for <iommu@lists.linux-foundation.org>;
- Mon, 12 Jul 2021 07:21:08 +0000 (UTC)
+ with ESMTP id ZyoGrIsQ5dQH for <iommu@lists.linux-foundation.org>;
+ Mon, 12 Jul 2021 07:55:17 +0000 (UTC)
 X-Greylist: from auto-whitelisted by SQLgrey-1.8.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
- by smtp2.osuosl.org (Postfix) with ESMTPS id D680A4013F
- for <iommu@lists.linux-foundation.org>; Mon, 12 Jul 2021 07:21:08 +0000 (UTC)
-Received: by mail.kernel.org (Postfix) with ESMTPSA id C57AA613FC;
- Mon, 12 Jul 2021 07:21:07 +0000 (UTC)
+ by smtp2.osuosl.org (Postfix) with ESMTPS id E822C400BD
+ for <iommu@lists.linux-foundation.org>; Mon, 12 Jul 2021 07:55:17 +0000 (UTC)
+Received: by mail.kernel.org (Postfix) with ESMTPSA id 0158361288;
+ Mon, 12 Jul 2021 07:55:16 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
- s=korg; t=1626074468;
- bh=jBd8K/LtS279RBWv70A3r2yW/e/MMspYC7ufWmjs2oI=;
+ s=korg; t=1626076517;
+ bh=34xt80RJF4I//y4+/q8nJo1dNwguP9ZfN8t/nvPVXCQ=;
  h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
- b=iJkP+BPdgzr9/ggfrhOG5o6GVIaNED2kSF+NZabeVNGw5rQPWETtMKOpBSOOaoLNs
- CrYYFUwy4a5Bew5GUZrkGxUwNRS6eeBmNucSfFklnLrsNieV8XSPWpK+EUDl4objYi
- wENZa3kKgOWzLxaQSOa0Dk/DCQUCqtEDhT03zkb0=
+ b=ubZLxQqJOZs7bSWqWOBynf2IOHlC5NJe22o2zjQ8BgFZLJXHbAC1+zxmkVRtf/gbc
+ d29V4kQmBmkdBQZCFlyBKjmCrzpflkQBVDEM73BHCRJtO8xHpuVvX7lFcaQHdhodPM
+ cgnyaYyHLuOJ9iy7hlT07xtwSyeJsi6RCgO7hMMw=
 From: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To: linux-kernel@vger.kernel.org
-Subject: [PATCH 5.12 591/700] iommu/amd: Fix extended features logging
-Date: Mon, 12 Jul 2021 08:11:14 +0200
-Message-Id: <20210712061038.853801729@linuxfoundation.org>
+Subject: [PATCH 5.13 677/800] iommu/amd: Fix extended features logging
+Date: Mon, 12 Jul 2021 08:11:40 +0200
+Message-Id: <20210712061038.921078376@linuxfoundation.org>
 X-Mailer: git-send-email 2.32.0
-In-Reply-To: <20210712060924.797321836@linuxfoundation.org>
-References: <20210712060924.797321836@linuxfoundation.org>
+In-Reply-To: <20210712060912.995381202@linuxfoundation.org>
+References: <20210712060912.995381202@linuxfoundation.org>
 User-Agent: quilt/0.66
 MIME-Version: 1.0
 Cc: Sasha Levin <sashal@kernel.org>, Paul Menzel <pmenzel@molgen.mpg.de>,
@@ -127,10 +129,10 @@ Signed-off-by: Sasha Levin <sashal@kernel.org>
  1 file changed, 2 insertions(+), 2 deletions(-)
 
 diff --git a/drivers/iommu/amd/init.c b/drivers/iommu/amd/init.c
-index df7b19ff0a9e..ecc7308130ba 100644
+index d006724f4dc2..1ded8a69c246 100644
 --- a/drivers/iommu/amd/init.c
 +++ b/drivers/iommu/amd/init.c
-@@ -1911,8 +1911,8 @@ static void print_iommu_info(void)
+@@ -1908,8 +1908,8 @@ static void print_iommu_info(void)
  		pci_info(pdev, "Found IOMMU cap 0x%x\n", iommu->cap_ptr);
  
  		if (iommu->cap & (1 << IOMMU_CAP_EFR)) {
