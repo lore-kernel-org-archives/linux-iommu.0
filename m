@@ -2,83 +2,104 @@ Return-Path: <SRS0=kZfo=MF=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-3.5 required=3.0 tests=BAYES_00,DKIM_INVALID,
-	DKIM_SIGNED,HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,
-	MSGID_FROM_MTA_HEADER,SPF_HELO_NONE,SPF_PASS,URIBL_RED autolearn=no
-	autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-3.6 required=3.0 tests=BAYES_00,DKIM_INVALID,
+	DKIM_SIGNED,HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,SPF_HELO_NONE,
+	SPF_PASS,URIBL_RED autolearn=no autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 61F3CC07E95
-	for <iommu@archiver.kernel.org>; Tue, 13 Jul 2021 23:03:08 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 58C38C07E95
+	for <iommu@archiver.kernel.org>; Tue, 13 Jul 2021 23:20:26 +0000 (UTC)
 Received: from smtp3.osuosl.org (smtp3.osuosl.org [140.211.166.136])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id F0D3B6128C
-	for <iommu@archiver.kernel.org>; Tue, 13 Jul 2021 23:03:07 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org F0D3B6128C
-Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=nvidia.com
+	by mail.kernel.org (Postfix) with ESMTPS id E23106136D
+	for <iommu@archiver.kernel.org>; Tue, 13 Jul 2021 23:20:25 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org E23106136D
+Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=intel.com
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by smtp3.osuosl.org (Postfix) with ESMTP id 9DA436FC05;
-	Tue, 13 Jul 2021 23:03:07 +0000 (UTC)
+	by smtp3.osuosl.org (Postfix) with ESMTP id A3358608FE;
+	Tue, 13 Jul 2021 23:20:25 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
 Received: from smtp3.osuosl.org ([127.0.0.1])
 	by localhost (smtp3.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id TMRSVgYrhKeN; Tue, 13 Jul 2021 23:03:06 +0000 (UTC)
+	with ESMTP id W2OyivhRZTPC; Tue, 13 Jul 2021 23:20:25 +0000 (UTC)
 Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by smtp3.osuosl.org (Postfix) with ESMTPS id 8CA816FC0B;
-	Tue, 13 Jul 2021 23:03:06 +0000 (UTC)
+	by smtp3.osuosl.org (Postfix) with ESMTPS id A1F04608E3;
+	Tue, 13 Jul 2021 23:20:24 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 418A5C0010;
-	Tue, 13 Jul 2021 23:03:06 +0000 (UTC)
-Received: from smtp2.osuosl.org (smtp2.osuosl.org [IPv6:2605:bc80:3010::133])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 04423C000E
- for <iommu@lists.linux-foundation.org>; Tue, 13 Jul 2021 23:03:04 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 6E70DC001A;
+	Tue, 13 Jul 2021 23:20:24 +0000 (UTC)
+Received: from smtp3.osuosl.org (smtp3.osuosl.org [140.211.166.136])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 2700EC000E
+ for <iommu@lists.linux-foundation.org>; Tue, 13 Jul 2021 23:20:23 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by smtp2.osuosl.org (Postfix) with ESMTP id 9B7AE404EF
- for <iommu@lists.linux-foundation.org>; Tue, 13 Jul 2021 23:03:04 +0000 (UTC)
+ by smtp3.osuosl.org (Postfix) with ESMTP id F21CE608EA
+ for <iommu@lists.linux-foundation.org>; Tue, 13 Jul 2021 23:20:22 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Authentication-Results: smtp2.osuosl.org (amavisd-new);
- dkim=pass (2048-bit key) header.d=nvidia.com
-Received: from smtp2.osuosl.org ([127.0.0.1])
- by localhost (smtp2.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id tulVMrtQpuzw for <iommu@lists.linux-foundation.org>;
- Tue, 13 Jul 2021 23:03:03 +0000 (UTC)
-X-Greylist: whitelisted by SQLgrey-1.8.0
-Received: from NAM10-DM6-obe.outbound.protection.outlook.com
- (mail-dm6nam10on2042.outbound.protection.outlook.com [40.107.93.42])
- by smtp2.osuosl.org (Postfix) with ESMTPS id 5186E40171
- for <iommu@lists.linux-foundation.org>; Tue, 13 Jul 2021 23:03:03 +0000 (UTC)
+Received: from smtp3.osuosl.org ([127.0.0.1])
+ by localhost (smtp3.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+ with ESMTP id wKfzkNTGGwl2 for <iommu@lists.linux-foundation.org>;
+ Tue, 13 Jul 2021 23:20:17 +0000 (UTC)
+X-Greylist: domain auto-whitelisted by SQLgrey-1.8.0
+Received: from mga06.intel.com (mga06.intel.com [134.134.136.31])
+ by smtp3.osuosl.org (Postfix) with ESMTPS id 27EFB608E3
+ for <iommu@lists.linux-foundation.org>; Tue, 13 Jul 2021 23:20:16 +0000 (UTC)
+X-IronPort-AV: E=McAfee;i="6200,9189,10044"; a="271369537"
+X-IronPort-AV: E=Sophos;i="5.84,237,1620716400"; d="scan'208";a="271369537"
+Received: from fmsmga006.fm.intel.com ([10.253.24.20])
+ by orsmga104.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384;
+ 13 Jul 2021 16:20:16 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.84,237,1620716400"; d="scan'208";a="650053766"
+Received: from fmsmsx601.amr.corp.intel.com ([10.18.126.81])
+ by fmsmga006.fm.intel.com with ESMTP; 13 Jul 2021 16:20:15 -0700
+Received: from fmsmsx607.amr.corp.intel.com (10.18.126.87) by
+ fmsmsx601.amr.corp.intel.com (10.18.126.81) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2242.10; Tue, 13 Jul 2021 16:20:15 -0700
+Received: from fmsmsx607.amr.corp.intel.com (10.18.126.87) by
+ fmsmsx607.amr.corp.intel.com (10.18.126.87) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2242.10; Tue, 13 Jul 2021 16:20:14 -0700
+Received: from fmsedg602.ED.cps.intel.com (10.1.192.136) by
+ fmsmsx607.amr.corp.intel.com (10.18.126.87) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2242.10 via Frontend Transport; Tue, 13 Jul 2021 16:20:14 -0700
+Received: from NAM10-BN7-obe.outbound.protection.outlook.com (104.47.70.102)
+ by edgegateway.intel.com (192.55.55.71) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.1.2242.10; Tue, 13 Jul 2021 16:20:14 -0700
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=RezNrOQ6XSnmn3IKA/bAAkhGGFIRwFjZ3oXUzR8OP1gUM+3fG9Wu6hYMSQUeaBlq+voANTGTIKtRzg/lijWicCJILg5qgkUFQcld/44NV0he/gFLpS1N38xQTLBqzjpZTC6v1TNCDqz9IC0ONvzHP7aMKZgvxNtsm2Z+6pOugQxW7EX+c59d0b70jvRJ2Xs5LUuHboswbjlG67QT0QALzZJKrK3+wLPvQUqWlVIEFYoyZWC8P2j9bAAuwe2msogJGi2MLaJwqTi6CRD44SVuBLe3E4sAocHYNr6yQN7eXhNJX21+bH0w2YtZUmZLnLCG7mP3Hy3UrYuQUTMW56+DYA==
+ b=cAVnf+eqf7OuEgeRSNrCQFeVMOcWknz5Sw6pzqmc4mUoojEfUEqZP6GGjyrR7Swu0o5SGAETcCChZ6B1KfVDEQNzUyg0fotpxC1c6zzCq0Zrj+8rVRQajuMIuqmD/IH8aHGCyO9VbvT9RZdHjMt/7DmgJs/WpgcdT0z2eCfVjh+SiGPyL7Oza65nn6lPS7H4tCZdjVkhqenbI5X17J9AVmJEUpqTuiJzgcIrgeaMtgMyfkanSYgVBu8HICwBJc4JZDo9pgTyKn7x42v5HJHVW/rq4mxFXTk1WBN239mWXjvL3Wrswk8ctxc6wcmB2pN3GttREn6rTjTeTIiNI++mMQ==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com; 
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=qPiba1nk3Wjbp3b3j8Fk4cAhlMpAilpMFgE3GUtQUA4=;
- b=VmoYjzYeMI0H/icSrYXJx6rsFSAGUeSxcCwAZjdBZiqkmJ3VCDPrp3RsQjQrSdn6G32HtkK1sOJWCVu44Jg9tFyLeBLIwWiK658pGNTwjKSFfPRZroJz/NeqLmsQm2Y4KsTMuCIHDoo5seiyVcQzmkx/RoG8ciHjf/uHemBV+RSh673EfBNZg+N65gkeTbCHmqsmbJwzjD0dCCcgATBlMdRlIjRZbpRPGZA/AKe8rQlBcCOjMNp05n0v0zID1J+BsolAN+R80IM0KGG4WLXaeMi5qj66by3AUZz4WvjVYQGX3UW+Asu3Ej1SHxdIxzV3hIJMhUX+u28JKSxLa8nA3g==
+ bh=BIyihp4mfYOkvhbZJhpbhECRMS8Zzr83s4sutUr4pD4=;
+ b=UgwO1fIOWytLLU4a3wDQB9V9tWgVjcYYXat5aTDCuznri0iiPI/JDMG8mPjzaImG/682tTDaduZEsMI6L+02LnjcT7ldeGrk16wWD6wnfl1nCOsWlLSDtTF0QO9QteF/BPqUJQcK8/JJAuUSmrM0JgY1DMycyC84IwIlTTtVFrIUfDWr1SqGVlBPX3tD9Gel48LgNwWcLDA9w5olrrlIkGY23tmZ9MvIq961bqy9+FvrWsIMlK7seYx7/hSFErx0zX39ZqqwnYQYtvfch3g1R1JjNagCVdqi6lhRQXHBFq9dibfnm33jfG/3rr0qi38QZzpT+I+Luw4+GjGuZFyTKQ==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=nvidia.com; dmarc=pass action=none header.from=nvidia.com;
- dkim=pass header.d=nvidia.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
- s=selector2;
+ smtp.mailfrom=intel.com; dmarc=pass action=none header.from=intel.com;
+ dkim=pass header.d=intel.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=intel.onmicrosoft.com; 
+ s=selector2-intel-onmicrosoft-com;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=qPiba1nk3Wjbp3b3j8Fk4cAhlMpAilpMFgE3GUtQUA4=;
- b=ODxGqs96ZZ3PvHmfFdHxVFXhSiwbpWXT2NzlI1NgjarXkOyqt035pN4bhu3jQxVzOxHniBs9UYPx1P6WOj6MfaosXlRWTJRV6lHO7QgrlFd4M3bhTuCkMPeT6Z5qwVFdPfiSAYD/cbtZQQ/CA7va4I1AGNPV5/sJvNR0+d+enShRRgwOtonn+CU/HC2DnVxpIBnsdKrSdKVeTPmiSBytAyDIihux3oYA7YTGDDwOeAVLeHnhczGcYVaaVJgrPnonYZ+VHvCzov4bB0BCPJCeAbYBN/zFz8ClkpFqWGGxWmezZDu42XmXHJdB0EJ98WKpx8sYUwO8Dihj3s0JG1yrGw==
-Authentication-Results: intel.com; dkim=none (message not signed)
- header.d=none;intel.com; dmarc=none action=none header.from=nvidia.com;
-Received: from BL0PR12MB5506.namprd12.prod.outlook.com (2603:10b6:208:1cb::22)
- by BL1PR12MB5191.namprd12.prod.outlook.com (2603:10b6:208:318::21)
+ bh=BIyihp4mfYOkvhbZJhpbhECRMS8Zzr83s4sutUr4pD4=;
+ b=INOxTw4AotZ050gvnTYcAeWEskrOIoq8zQlVE9Jp/uYA+WtftdMut7zKj9ZYR8+4bWenaydv4HtGOJYuIPGANfbITYLAi51NvBtBaQ7TNIqqtIRqTU3T83tfMlGL8NvXlevWs9RBW6Vs9mkSAZxanJjrtJz6vzJby06lLLp+Wvc=
+Received: from BN9PR11MB5433.namprd11.prod.outlook.com (2603:10b6:408:11e::13)
+ by BN7PR11MB2596.namprd11.prod.outlook.com (2603:10b6:406:b2::20)
  with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4308.22; Tue, 13 Jul
- 2021 23:02:59 +0000
-Received: from BL0PR12MB5506.namprd12.prod.outlook.com
- ([fe80::d017:af2f:7049:5482]) by BL0PR12MB5506.namprd12.prod.outlook.com
- ([fe80::d017:af2f:7049:5482%5]) with mapi id 15.20.4331.021; Tue, 13 Jul 2021
- 23:02:59 +0000
-Date: Tue, 13 Jul 2021 20:02:58 -0300
-From: Jason Gunthorpe <jgg@nvidia.com>
-To: "Tian, Kevin" <kevin.tian@intel.com>
-Subject: Re: [RFC v2] /dev/iommu uAPI proposal
-Message-ID: <20210713230258.GH136586@nvidia.com>
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4308.21; Tue, 13 Jul
+ 2021 23:20:12 +0000
+Received: from BN9PR11MB5433.namprd11.prod.outlook.com
+ ([fe80::fd4b:cdde:6790:134]) by BN9PR11MB5433.namprd11.prod.outlook.com
+ ([fe80::fd4b:cdde:6790:134%7]) with mapi id 15.20.4308.027; Tue, 13 Jul 2021
+ 23:20:12 +0000
+From: "Tian, Kevin" <kevin.tian@intel.com>
+To: Jason Gunthorpe <jgg@nvidia.com>
+Subject: RE: [RFC v2] /dev/iommu uAPI proposal
+Thread-Topic: [RFC v2] /dev/iommu uAPI proposal
+Thread-Index: Add0lrMH87IsTsl5Rp6WN1oQU6kGMQAdcmAAAGvGIGAAJH+YAAAKpxYQABuHCIAAB18VgAAAO+iAAA0EGnAAAJwcAAAAZsfA
+Date: Tue, 13 Jul 2021 23:20:12 +0000
+Message-ID: <BN9PR11MB54331F80DA135AF3EAD025998C149@BN9PR11MB5433.namprd11.prod.outlook.com>
 References: <BN9PR11MB5433B1E4AE5B0480369F97178C189@BN9PR11MB5433.namprd11.prod.outlook.com>
  <20210709155052.2881f561.alex.williamson@redhat.com>
  <BN9PR11MB54336FB9845649BB2D53022C8C159@BN9PR11MB5433.namprd11.prod.outlook.com>
@@ -88,66 +109,66 @@ References: <BN9PR11MB5433B1E4AE5B0480369F97178C189@BN9PR11MB5433.namprd11.prod.
  <20210713102607.3a886fee.alex.williamson@redhat.com>
  <20210713163249.GE136586@nvidia.com>
  <BN9PR11MB5433438C17AE123B9C7F83A68C149@BN9PR11MB5433.namprd11.prod.outlook.com>
-Content-Disposition: inline
-In-Reply-To: <BN9PR11MB5433438C17AE123B9C7F83A68C149@BN9PR11MB5433.namprd11.prod.outlook.com>
-X-ClientProxiedBy: CH0PR04CA0075.namprd04.prod.outlook.com
- (2603:10b6:610:74::20) To BL0PR12MB5506.namprd12.prod.outlook.com
- (2603:10b6:208:1cb::22)
+ <20210713230258.GH136586@nvidia.com>
+In-Reply-To: <20210713230258.GH136586@nvidia.com>
+Accept-Language: en-US
+Content-Language: en-US
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+dlp-version: 11.5.1.3
+dlp-product: dlpe-windows
+dlp-reaction: no-action
+authentication-results: nvidia.com; dkim=none (message not signed)
+ header.d=none;nvidia.com; dmarc=none action=none header.from=intel.com;
+x-ms-publictraffictype: Email
+x-ms-office365-filtering-correlation-id: 37fd1f9d-4bcc-4865-2afb-08d94654c3bf
+x-ms-traffictypediagnostic: BN7PR11MB2596:
+x-ld-processed: 46c98d88-e344-4ed4-8496-4ed7712e255d,ExtAddr
+x-ms-exchange-transport-forked: True
+x-microsoft-antispam-prvs: <BN7PR11MB25967CE831BA261D458EB6CF8C149@BN7PR11MB2596.namprd11.prod.outlook.com>
+x-ms-oob-tlc-oobclassifiers: OLM:8273;
+x-ms-exchange-senderadcheck: 1
+x-microsoft-antispam: BCL:0;
+x-microsoft-antispam-message-info: xeUO+QILAysqKOSLrzKuYyfZA3HBeAQn+kqAp4UTGrAsd3bf7gSOKTpsAVIxoNRbFcPdr1MAG+nvKdgkKX0/XqnzTtkq4Mk+sifn86enaKp0CwhS2Lh/SgNHwTvr5OVlaZeLzYXbbtqb4krTMzVf4Vq57/AJnOST62gjya3/VFoWmaOlibnTy2jSTRnAaC1naJB4Y8AG4g3DjYBDzUkjO+wgtPmXYswD59xcVM04PyTfir3P0QP68ezQdDmTs+7NA+x0EPPLL9PtyuNDyA6YhZqSVRTsU3anTJTjmJ5zwdiJLhzG+5L4JJZiONWXPZADyTz18UCYcjj914jKR6Loc1MhfSbp55FhW87vol6cKgzxKd647VX5jACU3CZP4Br83reHs6MeWj01JN2wUPD5wLHMZYOeIz+dE4VMIm7lgLOdfXS/7HEZQgoOHi6jSywL/h5BzK8yHNBpjp6v6h4S2DmZDywoAQgDlPYCN7zWiIBW+f+jDPiREKttgjJNUORZymgw/W9EnTYCLVe52OgvYjjv3PBnxYwavEpqA0d5UYqsMgCnHvLkwUh7cTz0uZQJYgQ1PpsiDl7vyAKw3kcIMf9cP1kZI8vK2YwxGS3p5OsYT4XJTmnHIlkcXS/3coohRLQZ41XrSTyfZrIuRA6dI0QVVnckTz8b6p/cJAW8QBJxPCO+/n52x5Aivjvj1tf6DIErP3vc9iK6SNaRiMBZgg==
+x-forefront-antispam-report: CIP:255.255.255.255; CTRY:; LANG:en; SCL:1; SRV:;
+ IPV:NLI; SFV:NSPM; H:BN9PR11MB5433.namprd11.prod.outlook.com; PTR:; CAT:NONE;
+ SFS:(4636009)(376002)(346002)(136003)(396003)(39860400002)(366004)(7416002)(8936002)(54906003)(33656002)(55016002)(52536014)(6916009)(26005)(9686003)(86362001)(478600001)(8676002)(4744005)(4326008)(2906002)(38100700002)(66946007)(83380400001)(316002)(5660300002)(66556008)(6506007)(71200400001)(122000001)(66446008)(66476007)(186003)(76116006)(64756008)(7696005)(38070700004);
+ DIR:OUT; SFP:1102; 
+x-ms-exchange-antispam-messagedata-chunkcount: 1
+x-ms-exchange-antispam-messagedata-0: =?us-ascii?Q?i5tUywMCQp27z9s+dA0q8uTW1S98dVU9YWxzupYV26UcAwN+Oezad7572Nxz?=
+ =?us-ascii?Q?6XcymVgw4OSrxrKwiRUjMZbGHL9G50Ck1RPdAwHcM7wDA/o0pORV1LcX5w/V?=
+ =?us-ascii?Q?cm19PShQhe4lLQFi8BgyccKHzu8DvSpAMhjoGk9sPRsy98K+e7xS0jPvznko?=
+ =?us-ascii?Q?ePc820HcsErOPOEZZ08SVG3b0yu1lk0G/Md1e/rPLr/60R52h3gjAHp2593U?=
+ =?us-ascii?Q?FDUe+mPacabbM2i5ar5GsuyzEzG+YNkU2+l0XS3QEPiX2fngnlmyVPaYTR7V?=
+ =?us-ascii?Q?k4q0Mvu+dpdYSBJ+SpSWKCM27GiecVugmMuLujrF9f2/gxK2Zx/5bCFrunri?=
+ =?us-ascii?Q?EOmqAH9FJN8LZ1cjD2/iORpnOKcHmT5lcjsZe2T9MMlGpgImVsyBZz0AelGc?=
+ =?us-ascii?Q?pg6HlyaB98PyQ15MrSEsTvM7D7fQaQ3FYgkYPdvQAnXLQ2wp8xvzFjyEyTpS?=
+ =?us-ascii?Q?+YRjCnBaM+r3pQ6i1sFJGiNA3BkUJHq+qb8u3iPKbTDQUMNJtLytcIDkdnid?=
+ =?us-ascii?Q?kod6vMLB6oggk97m/uaMrWafYE/l9lY95iHNwLYHkYkUaOgqtdyIOZYrgowC?=
+ =?us-ascii?Q?DYBVHOlvnORNN5TfAnOdLRMrNlhKzMqIak15dgso44x09MBJRrAIgo6fJmY9?=
+ =?us-ascii?Q?6GqyenE/l/hZISFxQtNVGCU5GOSt/Goq6HpoW468BgL7rqR5GQGShHoRKG7U?=
+ =?us-ascii?Q?CaxCEaanmNncwofj7I5Sps7C0i2R338ZzDRt/PEQworGH7AtBEDqTf4eIx7X?=
+ =?us-ascii?Q?PgvA2m65ZKlFIdT0jS/8PEitp5/paBtgFAxPrDxgKB4QBL0ThoQbTd+ryp0J?=
+ =?us-ascii?Q?lWralnj5vrcuo/rLOpWU3XhZOqFsji5Spn5r2pSiV3B1aMfc9SflJx/V11ye?=
+ =?us-ascii?Q?T5ArqQucRO548wraf9h91RSqgcjHi8+gGPnzukFsGhU3ucm/V/eH9y6XHl7E?=
+ =?us-ascii?Q?OKAaLBaX//FPQ79uimJzOg7/cF1cVOvBrFLzhF9pYvdhCXb7RBWxZ3bKeNCo?=
+ =?us-ascii?Q?zY1CVxKGIxEKaDTkYPBkgQfguk8Qqw5Rrz90HSsskrP574QC/setLjEcn0Sp?=
+ =?us-ascii?Q?T8GSUWEEUIP6PURC9LcIkZ0ADLOWSBwbsrhBeD0qIw2RC/ARYvv6JgtiUGng?=
+ =?us-ascii?Q?ztWKrsgiEKQ/4wRxHGpLAF61no5qL1PWRYgD9oP80jOAE+9mhqd8BRNr5gjl?=
+ =?us-ascii?Q?mnvmBvIce8YV7gjnylNL1yDZ05gNoDiZxNO4/d7egggqIj5dOOu+zUJ+g9h6?=
+ =?us-ascii?Q?ZSbCFkTpcppL8DpMqy3BhcajFEjQYFGyjYrjKw5sJbCEFySRt+4IJ1J5bWLe?=
+ =?us-ascii?Q?QEtu2WcJKa14Z5wlzmDQ8GOE?=
 MIME-Version: 1.0
-X-MS-Exchange-MessageSentRepresentingType: 1
-Received: from mlx.ziepe.ca (206.223.160.26) by
- CH0PR04CA0075.namprd04.prod.outlook.com (2603:10b6:610:74::20) with Microsoft
- SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.20.4331.21 via Frontend Transport; Tue, 13 Jul 2021 23:02:59 +0000
-Received: from jgg by mlx with local (Exim 4.94)	(envelope-from
- <jgg@nvidia.com>)	id 1m3RQY-0023Nw-0x; Tue, 13 Jul 2021 20:02:58 -0300
-X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: e27d1cfd-bf85-42b1-a125-08d946525c10
-X-MS-TrafficTypeDiagnostic: BL1PR12MB5191:
-X-MS-Exchange-Transport-Forked: True
-X-Microsoft-Antispam-PRVS: <BL1PR12MB5191A0BC2D2F45B3FAA80C77C2149@BL1PR12MB5191.namprd12.prod.outlook.com>
-X-MS-Oob-TLC-OOBClassifiers: OLM:8882;
-X-MS-Exchange-SenderADCheck: 1
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: C83Ql2uGfBTkxyIbQdbp/txr0/zbg6Zj6w4H8H7e9jhi7IvaZ/qBlRndUc9aqNzigp0weuxK9AvSMfpLNBcBGVCEP7dJoQdRDtBRs7enrXdW0bcAdthenC7Z2CyRPPBFdmIpXVQyJ7uLAOijR3aBH6OPPRPOkbyhskSVmr9rxXLbeY9G7n8LT+7XLVj3u55/zIhrLhVpqGDVcaXuzS/1upeqUEsCcgkAAcr13pkDmdvnmAqFTlkkS5wGQiYxJyzLz3zXfOrl6YORZiq2GvREUKZ/3CSH+oczv37UD7KBk6KYqnxQET9zdZjOR8JXRlxb4VF47wyOOGOZVXCIONYEuT4OT6/21NavOu5OgZVpL8Ys/VDs1zUOwxvOEq5PDiNqV9XG6qVAS4WXZ7VMXvp3SxQRXxHV7rvGKvbjyR5KWAeXAZBq0D/GX6IE8DTTM4FKlwnaqTzf+lcit6FTTPTvluzPniNt6bWfFaqE4Qdh92zUmxdz13k0B+nWe+GFJo1JlnsU03o/OSKtrdx7cpyyCTvYvvMJqCd7OeO/KKb8pZ9SdHlev7mwdouTgHce7seHI7443x0l5qhcPiS2mr1nLNzm5hJf5OirLJveUr3nceXEE2xrKGFnhlrheKAUyA7IEtpaAdLy/MeKpKg8Tw8IiYlBLkcoZEQOPQy83YUAY9btyv/Fx2twlQYOuSYFFlNq4DczvZSF+SPhp3Nau0Q4YQ==
-X-Forefront-Antispam-Report: CIP:255.255.255.255; CTRY:; LANG:en; SCL:1; SRV:;
- IPV:NLI; SFV:NSPM; H:BL0PR12MB5506.namprd12.prod.outlook.com; PTR:; CAT:NONE;
- SFS:(4636009)(396003)(39860400002)(366004)(376002)(136003)(346002)(4326008)(86362001)(26005)(8676002)(36756003)(4744005)(478600001)(316002)(38100700002)(426003)(66946007)(66476007)(2616005)(66556008)(5660300002)(54906003)(8936002)(1076003)(6916009)(2906002)(9786002)(9746002)(7416002)(33656002)(186003)(83380400001)(27376004);
- DIR:OUT; SFP:1101; 
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?p2e6F9ymXkxbiMGKwJ6nhfO7dEkLOOTJNl1qICCU5QEJcQ/dTDHtHKa8Ow0n?=
- =?us-ascii?Q?4Iya/NIhqyhNhzmhahI2qiFXqSNY1WvH24dXEkJsb+SXY0i7wQie5OUAi7d4?=
- =?us-ascii?Q?HFpSiNLYJuueHRX7dY/2zcPP2pUs/IZJ9zx+e/DpiF0YpXGRXv4qTcvzDR3h?=
- =?us-ascii?Q?o6XUhk06NdGKtvXbS0vONDt/J7Mthh09g2gCQLSsnYouTQnYe6Toif47BKZN?=
- =?us-ascii?Q?lGHVdzIv/f3qXIXmLSmWV1QtsGDUYRcQS0O0XwBgYxeXU9EwSuGSjzJOYOzS?=
- =?us-ascii?Q?Jgcn9P4U36wz0vJ7I7Wn+gienc4bXeJkACT1sohidx4OLwEplDd/dqY8VXj3?=
- =?us-ascii?Q?/34ffux/oYcZpBiYOhoo1RqNBWDHSq56a7MwMXAcQVyQCBkL44E0+br1THeB?=
- =?us-ascii?Q?Avl3rCMPyr0dqK9XY8gpK50jiMa2Y++uEECnU2F6nDDPAWicg1O6zgZMU+Qc?=
- =?us-ascii?Q?ojHq9js547sk8mlKyRCtxmEtQue2yAu1Jj/gXRlu9TmXt0ftp/tsf2vdzY4S?=
- =?us-ascii?Q?LhDurfdjJivcXf3elOnd/33b20oW9XPFZowV5lM0fbg4Ade3DVlq5mChPFwk?=
- =?us-ascii?Q?+ILqeKDmI+Zg8KJ+/xU7xsnTGyg/sCcgarFd44DUQU82P/9LME/zCi8XyuC2?=
- =?us-ascii?Q?WLb/31F65csCQi2m33dmutCdQQLK+GdhpxQjG7eD3qfKz1AjxRoXdafZEoKM?=
- =?us-ascii?Q?f9+mH40kCFMbqTR29UliY+EQi4fCqLu3+7QhMZ/ajEsBAQKO+5WLpOPb+6vS?=
- =?us-ascii?Q?Ky8125tkfStay1IOc5KrkByvOaojVST+8h7OeJY0CA5OC62P23psZAUvIWFG?=
- =?us-ascii?Q?6tmEeCulc7Y6ueL7eeyk/C4cBtzh35V8lYjQWgcUYHK/8rIqMn7/V+CX139Y?=
- =?us-ascii?Q?sutQR5z+6NRJsu80VJc+uvdwFHLk6nAtQMn/yS+xUVMhexBuZclbH7tWCaJI?=
- =?us-ascii?Q?ula1+R/uN5OduomTOymBIsbH6CL7m5zIYMMSDO4PoWuViagvDzV9+GeNZMER?=
- =?us-ascii?Q?yUqDrTx/uzU7g+0KN6hlNvbHZcqazIgqFW8YUSSU881kHsnmRdS8nOjMTjZT?=
- =?us-ascii?Q?EMrsJCk3AHI5YaOB2LnJlcN1m8UPy2oJzyxQmm9zVtgPbhjDdh2qOXP6z9xD?=
- =?us-ascii?Q?5jJuKaDdyJbdymgGpc5nDCvMeOm+78masrepMOwXxvemvgr4XSKJZ+n7vPsS?=
- =?us-ascii?Q?GcO694RCn0R7qAoRJ6hDdnClBqUk6jN61wBPHtTR17YxG2naXqtzWH6iKhp0?=
- =?us-ascii?Q?vlNgWso+6CCQrKGtGKLw4aA4m8SpG6ae7YScrDs6np2NfP/KDL8WUue9W985?=
- =?us-ascii?Q?7tMs/FwZ90Qar7hn85Ebtco+?=
-X-OriginatorOrg: Nvidia.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: e27d1cfd-bf85-42b1-a125-08d946525c10
-X-MS-Exchange-CrossTenant-AuthSource: BL0PR12MB5506.namprd12.prod.outlook.com
 X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 13 Jul 2021 23:02:59.8090 (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: Q+8TQmPK/CdiE4spGhMh2hp6k+t+oakQfA5yKZkmv6OUDgqNDDthAJI+ZpL+WkC/
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: BL1PR12MB5191
+X-MS-Exchange-CrossTenant-AuthSource: BN9PR11MB5433.namprd11.prod.outlook.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 37fd1f9d-4bcc-4865-2afb-08d94654c3bf
+X-MS-Exchange-CrossTenant-originalarrivaltime: 13 Jul 2021 23:20:12.3863 (UTC)
+X-MS-Exchange-CrossTenant-fromentityheader: Hosted
+X-MS-Exchange-CrossTenant-id: 46c98d88-e344-4ed4-8496-4ed7712e255d
+X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
+X-MS-Exchange-CrossTenant-userprincipalname: ss6tqpmeN6wICRpXmxyKikQzdwRHzyIasX9OfPHIhdsPw72au/TuYGj051+urUZCu+GA6Y7uzzKA5amG9mGA4Q==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: BN7PR11MB2596
+X-OriginatorOrg: intel.com
 Cc: "kvm@vger.kernel.org" <kvm@vger.kernel.org>,
  Jason Wang <jasowang@redhat.com>, Kirti Wankhede <kwankhede@nvidia.com>,
  Jean-Philippe Brucker <jean-philippe@linaro.org>, "Jiang,
@@ -176,16 +197,27 @@ Content-Transfer-Encoding: 7bit
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-On Tue, Jul 13, 2021 at 10:48:38PM +0000, Tian, Kevin wrote:
+> From: Jason Gunthorpe <jgg@nvidia.com>
+> Sent: Wednesday, July 14, 2021 7:03 AM
+> 
+> On Tue, Jul 13, 2021 at 10:48:38PM +0000, Tian, Kevin wrote:
+> 
+> > We can still bind to the parent with cookie, but with
+> > iommu_register_ sw_device() IOMMU fd knows that this binding doesn't
+> > need to establish any security context via IOMMU API.
+> 
+> AFAIK there is no reason to involve the parent PCI or other device in
+> SW mode. The iommufd doesn't need to be aware of anything there.
+> 
 
-> We can still bind to the parent with cookie, but with
-> iommu_register_ sw_device() IOMMU fd knows that this binding doesn't
-> need to establish any security context via IOMMU API.
+Yes. but does it makes sense to have an unified model in IOMMU fd
+which always have a [struct device, cookie] with flags to indicate whether 
+the binding/attaching should be specially handled for sw mdev? Or
+are you suggesting that lacking of struct device is actually the indicator
+for such trick?
 
-AFAIK there is no reason to involve the parent PCI or other device in
-SW mode. The iommufd doesn't need to be aware of anything there.
-
-Jason
+Thanks
+Kevin
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
