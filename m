@@ -7,65 +7,72 @@ X-Spam-Status: No, score=-15.6 required=3.0 tests=BAYES_00,
 	MAILING_LIST_MULTI,NICE_REPLY_A,SPF_HELO_NONE,SPF_PASS,URIBL_RED,
 	USER_AGENT_SANE_1 autolearn=unavailable autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7894DC07E96
-	for <iommu@archiver.kernel.org>; Tue, 13 Jul 2021 18:40:10 +0000 (UTC)
-Received: from smtp3.osuosl.org (smtp3.osuosl.org [140.211.166.136])
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1F948C07E95
+	for <iommu@archiver.kernel.org>; Tue, 13 Jul 2021 19:17:54 +0000 (UTC)
+Received: from smtp2.osuosl.org (smtp2.osuosl.org [140.211.166.133])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 0BB7961158
-	for <iommu@archiver.kernel.org>; Tue, 13 Jul 2021 18:40:10 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 0BB7961158
+	by mail.kernel.org (Postfix) with ESMTPS id B9B69611AB
+	for <iommu@archiver.kernel.org>; Tue, 13 Jul 2021 19:17:53 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org B9B69611AB
 Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=arm.com
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by smtp3.osuosl.org (Postfix) with ESMTP id CA16B608CD;
-	Tue, 13 Jul 2021 18:40:09 +0000 (UTC)
+	by smtp2.osuosl.org (Postfix) with ESMTP id 82070401B1;
+	Tue, 13 Jul 2021 19:17:53 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from smtp3.osuosl.org ([127.0.0.1])
-	by localhost (smtp3.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id SxasvB2t1yYY; Tue, 13 Jul 2021 18:40:09 +0000 (UTC)
-Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by smtp3.osuosl.org (Postfix) with ESMTPS id 9D763606F5;
-	Tue, 13 Jul 2021 18:40:08 +0000 (UTC)
+Received: from smtp2.osuosl.org ([127.0.0.1])
+	by localhost (smtp2.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+	with ESMTP id 6kheQHoRgTgb; Tue, 13 Jul 2021 19:17:52 +0000 (UTC)
+Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [IPv6:2605:bc80:3010:104::8cd3:938])
+	by smtp2.osuosl.org (Postfix) with ESMTPS id 3F32940003;
+	Tue, 13 Jul 2021 19:17:52 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 7B769C0010;
-	Tue, 13 Jul 2021 18:40:08 +0000 (UTC)
-Received: from smtp1.osuosl.org (smtp1.osuosl.org [140.211.166.138])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 0E96AC000E
- for <iommu@lists.linux-foundation.org>; Tue, 13 Jul 2021 18:40:08 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 09915C001A;
+	Tue, 13 Jul 2021 19:17:52 +0000 (UTC)
+Received: from smtp4.osuosl.org (smtp4.osuosl.org [140.211.166.137])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 04483C000E
+ for <iommu@lists.linux-foundation.org>; Tue, 13 Jul 2021 19:17:51 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by smtp1.osuosl.org (Postfix) with ESMTP id E434983AA4
- for <iommu@lists.linux-foundation.org>; Tue, 13 Jul 2021 18:40:07 +0000 (UTC)
+ by smtp4.osuosl.org (Postfix) with ESMTP id E62A9405F0
+ for <iommu@lists.linux-foundation.org>; Tue, 13 Jul 2021 19:17:50 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from smtp1.osuosl.org ([127.0.0.1])
- by localhost (smtp1.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id 0QFl4i-Rm4g3 for <iommu@lists.linux-foundation.org>;
- Tue, 13 Jul 2021 18:40:07 +0000 (UTC)
+Received: from smtp4.osuosl.org ([127.0.0.1])
+ by localhost (smtp4.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+ with ESMTP id LQIFjnCxRnV1 for <iommu@lists.linux-foundation.org>;
+ Tue, 13 Jul 2021 19:17:49 +0000 (UTC)
 X-Greylist: domain auto-whitelisted by SQLgrey-1.8.0
 Received: from foss.arm.com (foss.arm.com [217.140.110.172])
- by smtp1.osuosl.org (Postfix) with ESMTP id 0BFA083AE8
- for <iommu@lists.linux-foundation.org>; Tue, 13 Jul 2021 18:40:06 +0000 (UTC)
+ by smtp4.osuosl.org (Postfix) with ESMTP id 8C5EB400A9
+ for <iommu@lists.linux-foundation.org>; Tue, 13 Jul 2021 19:17:49 +0000 (UTC)
 Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
- by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 167E11FB;
- Tue, 13 Jul 2021 11:40:06 -0700 (PDT)
+ by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id D5B321FB;
+ Tue, 13 Jul 2021 12:17:48 -0700 (PDT)
 Received: from [10.57.36.240] (unknown [10.57.36.240])
- by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id ED2963F7D8;
- Tue, 13 Jul 2021 11:40:04 -0700 (PDT)
-Subject: Re: [PATCH v5 5/7] iommu/amd: Tailored gather logic for AMD
-To: Nadav Amit <nadav.amit@gmail.com>, Joerg Roedel <joro@8bytes.org>
-References: <20210713094151.652597-1-namit@vmware.com>
- <20210713094151.652597-6-namit@vmware.com>
+ by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id 6656F3F7D8;
+ Tue, 13 Jul 2021 12:17:46 -0700 (PDT)
+Subject: Re: [PATCH v4 1/3] iommu: io-pgtable: add DART pagetable format
+To: Sven Peter <sven@svenpeter.dev>, Will Deacon <will@kernel.org>,
+ Joerg Roedel <joro@8bytes.org>
+References: <20210627143405.77298-1-sven@svenpeter.dev>
+ <20210627143405.77298-2-sven@svenpeter.dev>
 From: Robin Murphy <robin.murphy@arm.com>
-Message-ID: <d9818e0b-681c-29a0-d9cd-e2f4dc963eb4@arm.com>
-Date: Tue, 13 Jul 2021 19:40:00 +0100
+Message-ID: <e7dd955b-ae6b-bd1f-bf1f-4a1df61f1fc6@arm.com>
+Date: Tue, 13 Jul 2021 20:17:40 +0100
 User-Agent: Mozilla/5.0 (Windows NT 10.0; rv:78.0) Gecko/20100101
  Thunderbird/78.11.0
 MIME-Version: 1.0
-In-Reply-To: <20210713094151.652597-6-namit@vmware.com>
+In-Reply-To: <20210627143405.77298-2-sven@svenpeter.dev>
 Content-Language: en-GB
-Cc: Will Deacon <will@kernel.org>, iommu@lists.linux-foundation.org,
- Nadav Amit <namit@vmware.com>, linux-kernel@vger.kernel.org,
- Jiajun Cao <caojiajun@vmware.com>
+Cc: Arnd Bergmann <arnd@kernel.org>, r.czerwinski@pengutronix.de,
+ devicetree@vger.kernel.org, Marc Zyngier <maz@kernel.org>,
+ Hector Martin <marcan@marcan.st>, linux-kernel@vger.kernel.org,
+ iommu@lists.linux-foundation.org, Rob Herring <robh+dt@kernel.org>,
+ Alexander Graf <graf@amazon.com>,
+ Alyssa Rosenzweig <alyssa.rosenzweig@collabora.com>,
+ Mohamed Mediouni <mohamed.mediouni@caramail.com>,
+ Mark Kettenis <mark.kettenis@xs4all.nl>, linux-arm-kernel@lists.infradead.org,
+ Stan Skowronek <stan@corellium.com>
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -83,96 +90,176 @@ Content-Type: text/plain; charset="us-ascii"; Format="flowed"
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-On 2021-07-13 10:41, Nadav Amit wrote:
-> From: Nadav Amit <namit@vmware.com>
+On 2021-06-27 15:34, Sven Peter wrote:
+> Apple's DART iommu uses a pagetable format that shares some
+> similarities with the ones already implemented by io-pgtable.c.
+> Add a new format variant to support the required differences
+> so that we don't have to duplicate the pagetable handling code.
 > 
-> AMD's IOMMU can flush efficiently (i.e., in a single flush) any range.
-> This is in contrast, for instnace, to Intel IOMMUs that have a limit on
-> the number of pages that can be flushed in a single flush.  In addition,
-> AMD's IOMMU do not care about the page-size, so changes of the page size
-> do not need to trigger a TLB flush.
-> 
-> So in most cases, a TLB flush due to disjoint range is not needed for
-> AMD. Yet, vIOMMUs require the hypervisor to synchronize the virtualized
-> IOMMU's PTEs with the physical ones. This process induce overheads, so
-> it is better not to cause unnecessary flushes, i.e., flushes of PTEs
-> that were not modified.
-> 
-> Implement and use amd_iommu_iotlb_gather_add_page() and use it instead
-> of the generic iommu_iotlb_gather_add_page(). Ignore disjoint regions
-> unless "non-present cache" feature is reported by the IOMMU
-> capabilities, as this is an indication we are running on a physical
-> IOMMU. A similar indication is used by VT-d (see "caching mode"). The
-> new logic retains the same flushing behavior that we had before the
-> introduction of page-selective IOTLB flushes for AMD.
-> 
-> On virtualized environments, check if the newly flushed region and the
-> gathered one are disjoint and flush if it is.
-> 
-> Cc: Joerg Roedel <joro@8bytes.org>
-> Cc: Will Deacon <will@kernel.org>
-> Cc: Jiajun Cao <caojiajun@vmware.com>
-> Cc: Lu Baolu <baolu.lu@linux.intel.com>
-> Cc: iommu@lists.linux-foundation.org
-> Cc: linux-kernel@vger.kernel.org>
-> Cc: Robin Murphy <robin.murphy@arm.com>
-> Signed-off-by: Nadav Amit <namit@vmware.com>
+> Signed-off-by: Sven Peter <sven@svenpeter.dev>
 > ---
->   drivers/iommu/amd/iommu.c | 23 ++++++++++++++++++++++-
->   1 file changed, 22 insertions(+), 1 deletion(-)
+>   drivers/iommu/io-pgtable-arm.c | 62 ++++++++++++++++++++++++++++++++++
+>   drivers/iommu/io-pgtable.c     |  1 +
+>   include/linux/io-pgtable.h     |  7 ++++
+>   3 files changed, 70 insertions(+)
 > 
-> diff --git a/drivers/iommu/amd/iommu.c b/drivers/iommu/amd/iommu.c
-> index bfae3928b98f..cc55c4c6a355 100644
-> --- a/drivers/iommu/amd/iommu.c
-> +++ b/drivers/iommu/amd/iommu.c
-> @@ -2048,6 +2048,27 @@ static int amd_iommu_map(struct iommu_domain *dom, unsigned long iova,
->   	return ret;
+> diff --git a/drivers/iommu/io-pgtable-arm.c b/drivers/iommu/io-pgtable-arm.c
+> index 87def58e79b5..1dd5c45b4b5b 100644
+> --- a/drivers/iommu/io-pgtable-arm.c
+> +++ b/drivers/iommu/io-pgtable-arm.c
+> @@ -127,6 +127,9 @@
+>   #define ARM_MALI_LPAE_MEMATTR_IMP_DEF	0x88ULL
+>   #define ARM_MALI_LPAE_MEMATTR_WRITE_ALLOC 0x8DULL
+>   
+> +#define APPLE_DART_PTE_PROT_NO_WRITE (1<<7)
+> +#define APPLE_DART_PTE_PROT_NO_READ (1<<8)
+> +
+>   /* IOPTE accessors */
+>   #define iopte_deref(pte,d) __va(iopte_to_paddr(pte, d))
+>   
+> @@ -381,6 +384,15 @@ static arm_lpae_iopte arm_lpae_prot_to_pte(struct arm_lpae_io_pgtable *data,
+>   {
+>   	arm_lpae_iopte pte;
+>   
+> +	if (data->iop.fmt == ARM_APPLE_DART) {
+> +		pte = 0;
+> +		if (!(prot & IOMMU_WRITE))
+> +			pte |= APPLE_DART_PTE_PROT_NO_WRITE;
+> +		if (!(prot & IOMMU_READ))
+> +			pte |= APPLE_DART_PTE_PROT_NO_READ;
+> +		return pte;
+> +	}
+> +
+>   	if (data->iop.fmt == ARM_64_LPAE_S1 ||
+>   	    data->iop.fmt == ARM_32_LPAE_S1) {
+>   		pte = ARM_LPAE_PTE_nG;
+> @@ -1043,6 +1055,51 @@ arm_mali_lpae_alloc_pgtable(struct io_pgtable_cfg *cfg, void *cookie)
+>   	return NULL;
 >   }
 >   
-> +static void amd_iommu_iotlb_gather_add_page(struct iommu_domain *domain,
-> +					    struct iommu_iotlb_gather *gather,
-> +					    unsigned long iova, size_t size)
+> +static struct io_pgtable *
+> +apple_dart_alloc_pgtable(struct io_pgtable_cfg *cfg, void *cookie)
 > +{
+> +	struct arm_lpae_io_pgtable *data;
+> +	int i;
+> +
+> +	if (cfg->oas > 36)
+> +		return NULL;
+> +
+> +	data = arm_lpae_alloc_pgtable(cfg);
+> +	if (!data)
+> +		return NULL;
+> +
 > +	/*
-> +	 * AMD's IOMMU can flush as many pages as necessary in a single flush.
-> +	 * Unless we run in a virtual machine, which can be inferred according
-> +	 * to whether "non-present cache" is on, it is probably best to prefer
-> +	 * (potentially) too extensive TLB flushing (i.e., more misses) over
-> +	 * mutliple TLB flushes (i.e., more flushes). For virtual machines the
-> +	 * hypervisor needs to synchronize the host IOMMU PTEs with those of
-> +	 * the guest, and the trade-off is different: unnecessary TLB flushes
-> +	 * should be avoided.
+> +	 * Apple's DART always requires three levels with the first level being
+> +	 * stored in four MMIO registers. We always concatenate the first and
+> +	 * second level so that we only have to setup the MMIO registers once.
+> +	 * This results in an effective two level pagetable.
 > +	 */
-> +	if (amd_iommu_np_cache && gather->end != 0 &&
 
-iommu_iotlb_gather_is_disjoint() is also checking "gather->end != 0", so 
-I don't think we need both. Strictly it's only necessary here since the 
-other call from iommu_iotlb_gather_add_page() equivalently asserts that 
-the gather is already non-empty via its gather->pgsize check, but one 
-could argue it either way and I don't have a hugely strong preference.
+Nit: I appreciate the effort to document the weirdness, but this comment 
+did rather mislead me initially, and now that I (think I) understand how 
+things work it seems a bit backwards. Could we say something like:
 
-Otherwise, I love how neat this has all ended up, thanks for persevering!
+   "The table format itself always uses two levels, but the total VA
+    space is mapped by four separate tables, making the MMIO registers
+    an effective "level 1". For simplicity, though, we treat this
+    equivalently to LPAE stage 2 concatenation at level 2, with the
+    additional TTBRs each just pointing at consecutive pages."
+
+?
+
+> +	if (data->start_level < 1)
+> +		return NULL;
+> +	if (data->start_level == 1 && data->pgd_bits > 2)
+> +		return NULL;
+> +	if (data->start_level > 1)
+> +		data->pgd_bits = 0;
+> +	data->start_level = 2;
+> +	cfg->apple_dart_cfg.n_ttbrs = 1 << data->pgd_bits;
+> +	data->pgd_bits += data->bits_per_level;
+> +
+> +	data->pgd = __arm_lpae_alloc_pages(ARM_LPAE_PGD_SIZE(data), GFP_KERNEL,
+> +					   cfg);
+> +	if (!data->pgd)
+> +		goto out_free_data;
+> +
+> +	for (i = 0; i < cfg->apple_dart_cfg.n_ttbrs; ++i)
+> +		cfg->apple_dart_cfg.ttbr[i] =
+> +			virt_to_phys(data->pgd + i * ARM_LPAE_GRANULE(data));
+> +
+> +	return &data->iop;
+> +
+> +out_free_data:
+> +	kfree(data);
+> +	return NULL;
+> +}
+> +
+>   struct io_pgtable_init_fns io_pgtable_arm_64_lpae_s1_init_fns = {
+>   	.alloc	= arm_64_lpae_alloc_pgtable_s1,
+>   	.free	= arm_lpae_free_pgtable,
+> @@ -1068,6 +1125,11 @@ struct io_pgtable_init_fns io_pgtable_arm_mali_lpae_init_fns = {
+>   	.free	= arm_lpae_free_pgtable,
+>   };
+>   
+> +struct io_pgtable_init_fns io_pgtable_apple_dart_init_fns = {
+> +	.alloc	= apple_dart_alloc_pgtable,
+> +	.free	= arm_lpae_free_pgtable,
+> +};
+> +
+>   #ifdef CONFIG_IOMMU_IO_PGTABLE_LPAE_SELFTEST
+>   
+>   static struct io_pgtable_cfg *cfg_cookie __initdata;
+> diff --git a/drivers/iommu/io-pgtable.c b/drivers/iommu/io-pgtable.c
+> index 6e9917ce980f..fd8e6bd6caf9 100644
+> --- a/drivers/iommu/io-pgtable.c
+> +++ b/drivers/iommu/io-pgtable.c
+> @@ -20,6 +20,7 @@ io_pgtable_init_table[IO_PGTABLE_NUM_FMTS] = {
+>   	[ARM_64_LPAE_S1] = &io_pgtable_arm_64_lpae_s1_init_fns,
+>   	[ARM_64_LPAE_S2] = &io_pgtable_arm_64_lpae_s2_init_fns,
+>   	[ARM_MALI_LPAE] = &io_pgtable_arm_mali_lpae_init_fns,
+> +	[ARM_APPLE_DART] = &io_pgtable_apple_dart_init_fns,
+>   #endif
+>   #ifdef CONFIG_IOMMU_IO_PGTABLE_ARMV7S
+>   	[ARM_V7S] = &io_pgtable_arm_v7s_init_fns,
+> diff --git a/include/linux/io-pgtable.h b/include/linux/io-pgtable.h
+> index 4d40dfa75b55..a4bfac7f85f7 100644
+> --- a/include/linux/io-pgtable.h
+> +++ b/include/linux/io-pgtable.h
+> @@ -16,6 +16,7 @@ enum io_pgtable_fmt {
+>   	ARM_V7S,
+>   	ARM_MALI_LPAE,
+>   	AMD_IOMMU_V1,
+> +	ARM_APPLE_DART,
+
+s/ARM_// - this is pure Apple ;)
+
+With that fixed and hopefully a somewhat clarified comment above,
 
 Reviewed-by: Robin Murphy <robin.murphy@arm.com>
 
-> +	    iommu_iotlb_gather_is_disjoint(gather, iova, size))
-> +		iommu_iotlb_sync(domain, gather);
+>   	IO_PGTABLE_NUM_FMTS,
+>   };
+>   
+> @@ -136,6 +137,11 @@ struct io_pgtable_cfg {
+>   			u64	transtab;
+>   			u64	memattr;
+>   		} arm_mali_lpae_cfg;
 > +
-> +	iommu_iotlb_gather_add_range(gather, iova, size);
-> +}
-> +
->   static size_t amd_iommu_unmap(struct iommu_domain *dom, unsigned long iova,
->   			      size_t page_size,
->   			      struct iommu_iotlb_gather *gather)
-> @@ -2062,7 +2083,7 @@ static size_t amd_iommu_unmap(struct iommu_domain *dom, unsigned long iova,
+> +		struct {
+> +			u64 ttbr[4];
+> +			u32 n_ttbrs;
+> +		} apple_dart_cfg;
+>   	};
+>   };
 >   
->   	r = (ops->unmap) ? ops->unmap(ops, iova, page_size, gather) : 0;
+> @@ -246,5 +252,6 @@ extern struct io_pgtable_init_fns io_pgtable_arm_64_lpae_s2_init_fns;
+>   extern struct io_pgtable_init_fns io_pgtable_arm_v7s_init_fns;
+>   extern struct io_pgtable_init_fns io_pgtable_arm_mali_lpae_init_fns;
+>   extern struct io_pgtable_init_fns io_pgtable_amd_iommu_v1_init_fns;
+> +extern struct io_pgtable_init_fns io_pgtable_apple_dart_init_fns;
 >   
-> -	iommu_iotlb_gather_add_page(dom, gather, iova, page_size);
-> +	amd_iommu_iotlb_gather_add_page(dom, gather, iova, page_size);
->   
->   	return r;
->   }
+>   #endif /* __IO_PGTABLE_H */
 > 
 _______________________________________________
 iommu mailing list
