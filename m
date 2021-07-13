@@ -2,181 +2,96 @@ Return-Path: <SRS0=kZfo=MF=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-3.6 required=3.0 tests=BAYES_00,DKIM_INVALID,
-	DKIM_SIGNED,HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,SPF_HELO_NONE,
-	SPF_PASS,URIBL_RED autolearn=no autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-8.6 required=3.0 tests=BAYES_00,DKIM_INVALID,
+	DKIM_SIGNED,HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_CR_TRAILER,
+	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,URIBL_RED autolearn=ham
+	autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 54379C07E95
-	for <iommu@archiver.kernel.org>; Tue, 13 Jul 2021 23:24:52 +0000 (UTC)
-Received: from smtp1.osuosl.org (smtp1.osuosl.org [140.211.166.138])
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 34A9AC07E95
+	for <iommu@archiver.kernel.org>; Tue, 13 Jul 2021 23:54:23 +0000 (UTC)
+Received: from smtp3.osuosl.org (smtp3.osuosl.org [140.211.166.136])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 0E3C661363
-	for <iommu@archiver.kernel.org>; Tue, 13 Jul 2021 23:24:52 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 0E3C661363
-Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=intel.com
+	by mail.kernel.org (Postfix) with ESMTPS id 992D761369
+	for <iommu@archiver.kernel.org>; Tue, 13 Jul 2021 23:54:22 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 992D761369
+Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=darnok.org
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by smtp1.osuosl.org (Postfix) with ESMTP id D2016839BB;
-	Tue, 13 Jul 2021 23:24:51 +0000 (UTC)
+	by smtp3.osuosl.org (Postfix) with ESMTP id 5F87560795;
+	Tue, 13 Jul 2021 23:54:22 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from smtp1.osuosl.org ([127.0.0.1])
-	by localhost (smtp1.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id D8OILzzyR6bt; Tue, 13 Jul 2021 23:24:51 +0000 (UTC)
-Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [IPv6:2605:bc80:3010:104::8cd3:938])
-	by smtp1.osuosl.org (Postfix) with ESMTPS id B72B883A5E;
-	Tue, 13 Jul 2021 23:24:50 +0000 (UTC)
+Received: from smtp3.osuosl.org ([127.0.0.1])
+	by localhost (smtp3.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+	with ESMTP id sXvNzt_A0Nid; Tue, 13 Jul 2021 23:54:21 +0000 (UTC)
+Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
+	by smtp3.osuosl.org (Postfix) with ESMTPS id 530726071C;
+	Tue, 13 Jul 2021 23:54:21 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 8B5F7C001A;
-	Tue, 13 Jul 2021 23:24:50 +0000 (UTC)
-Received: from smtp1.osuosl.org (smtp1.osuosl.org [IPv6:2605:bc80:3010::138])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 0543CC000E
- for <iommu@lists.linux-foundation.org>; Tue, 13 Jul 2021 23:24:50 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 14D33C001A;
+	Tue, 13 Jul 2021 23:54:21 +0000 (UTC)
+Received: from smtp3.osuosl.org (smtp3.osuosl.org [140.211.166.136])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id B5907C000E
+ for <iommu@lists.linux-foundation.org>; Tue, 13 Jul 2021 23:54:18 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by smtp1.osuosl.org (Postfix) with ESMTP id DA5D283A5E
- for <iommu@lists.linux-foundation.org>; Tue, 13 Jul 2021 23:24:49 +0000 (UTC)
+ by smtp3.osuosl.org (Postfix) with ESMTP id 8E83460724
+ for <iommu@lists.linux-foundation.org>; Tue, 13 Jul 2021 23:54:18 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from smtp1.osuosl.org ([127.0.0.1])
- by localhost (smtp1.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id l5xBr9VBLWVQ for <iommu@lists.linux-foundation.org>;
- Tue, 13 Jul 2021 23:24:49 +0000 (UTC)
-X-Greylist: domain auto-whitelisted by SQLgrey-1.8.0
-Received: from mga04.intel.com (mga04.intel.com [192.55.52.120])
- by smtp1.osuosl.org (Postfix) with ESMTPS id 0FEA9839BB
- for <iommu@lists.linux-foundation.org>; Tue, 13 Jul 2021 23:24:48 +0000 (UTC)
-X-IronPort-AV: E=McAfee;i="6200,9189,10044"; a="208441530"
-X-IronPort-AV: E=Sophos;i="5.84,237,1620716400"; d="scan'208";a="208441530"
-Received: from fmsmga001.fm.intel.com ([10.253.24.23])
- by fmsmga104.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384;
- 13 Jul 2021 16:24:48 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.84,237,1620716400"; d="scan'208";a="570877220"
-Received: from fmsmsx606.amr.corp.intel.com ([10.18.126.86])
- by fmsmga001.fm.intel.com with ESMTP; 13 Jul 2021 16:24:48 -0700
-Received: from fmsmsx611.amr.corp.intel.com (10.18.126.91) by
- fmsmsx606.amr.corp.intel.com (10.18.126.86) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2242.10; Tue, 13 Jul 2021 16:24:47 -0700
-Received: from FMSEDG603.ED.cps.intel.com (10.1.192.133) by
- fmsmsx611.amr.corp.intel.com (10.18.126.91) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2242.10 via Frontend Transport; Tue, 13 Jul 2021 16:24:47 -0700
-Received: from NAM10-DM6-obe.outbound.protection.outlook.com (104.47.58.107)
- by edgegateway.intel.com (192.55.55.68) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.1.2242.10; Tue, 13 Jul 2021 16:24:47 -0700
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=JX1Xy56vfmK5Cjuzcqo28WSEJykP8HYg7vPaHQ9Lf+iBI6aQVvLtz3iVYTS4VpTkHN35Mf47VwL3PgU5x6Gjer5lw1NIV+pAAZqYHp9ON/2iZXJ3mUR3WjGbALrXW75u4yJzjIoJVEg+tXaw6zILv7vfuFUBrNG+aQiAGFnRAzxB/FamWYcv9rqs4p8O0UAC+7iPFGZfbEbkHsHlLN4jVzPaHbkS0nWzdkCGOgWv+gi7QzlGXiX2uTFZ2NGtWtk5pjiRFjtbHrIGy3HlLmefdYtF3bcP/FJ18UwiEFmGJcLwjOIZNvsYAZ3l8njnlyorAtyaquEXm76/HmAmJocjPw==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com; 
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=7hYD4QSQszhuVoJ2Dgfq8c+7EU6nqbg/zyGfKBMwgpI=;
- b=oCbiiO6YxbZde7yrAhNHuegdfep2vBsqVZvxaP+pA70IpZkBju9D1JfZ9NvN1w2+DYcIvOl0g+ldEWK0Rj5PZdVIaZuGFAEm0vdZprs/u9ML/Brfm3QQEB4dAeNEUTjFHKCtg+2jXFJPuDmjRhiU5u67EmN1pUGPQ+Ltpxjx5fY76aN9hW5zujulZr3Oa7TiNXPcQjlOpPkbKUiOvLd8yI0Ll+dtskxto895ObJSGqKKVRlzNeGK1R5lhmnGWs6q++q48Y6kmE5vcFESCjfaEdXHhbCvoTAHXiOs6eXtP3HlzVKnIwiucM1oKm5GLktCaBxX2sE0ogLWLR+FhT/Njw==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=intel.com; dmarc=pass action=none header.from=intel.com;
- dkim=pass header.d=intel.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=intel.onmicrosoft.com; 
- s=selector2-intel-onmicrosoft-com;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=7hYD4QSQszhuVoJ2Dgfq8c+7EU6nqbg/zyGfKBMwgpI=;
- b=emSMvDoHLUnfn9Sfgs7roLptl3B1z8mlbv6QEmmT+GEslbbnwoZkOW5f+AX0/Av36Q0HnvRpvK1W1WzaATocgyI7UQ2jELCakJ7vz4pDwGxSikMTVgm9ZpwRbnWpBo6gUqCmnN51TyjBwfFICQYsRoObWfuuSx/aNDzdvGZJ7lQ=
-Received: from BN9PR11MB5433.namprd11.prod.outlook.com (2603:10b6:408:11e::13)
- by BN6PR1101MB2337.namprd11.prod.outlook.com (2603:10b6:404:92::23)
- with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4308.23; Tue, 13 Jul
- 2021 23:24:45 +0000
-Received: from BN9PR11MB5433.namprd11.prod.outlook.com
- ([fe80::fd4b:cdde:6790:134]) by BN9PR11MB5433.namprd11.prod.outlook.com
- ([fe80::fd4b:cdde:6790:134%7]) with mapi id 15.20.4308.027; Tue, 13 Jul 2021
- 23:24:45 +0000
-From: "Tian, Kevin" <kevin.tian@intel.com>
-To: Jason Gunthorpe <jgg@nvidia.com>
-Subject: RE: [RFC v2] /dev/iommu uAPI proposal
-Thread-Topic: [RFC v2] /dev/iommu uAPI proposal
-Thread-Index: Add0lrMH87IsTsl5Rp6WN1oQU6kGMQAdcmAAAGvGIGAAJH+YAAAKpxYQABuHCIAAB18VgAAAO+iAAA0EGnAAAJwcAAAAZsfAAABJ8wAAAA+coA==
-Date: Tue, 13 Jul 2021 23:24:45 +0000
-Message-ID: <BN9PR11MB543392E18CB0B7746157C3F18C149@BN9PR11MB5433.namprd11.prod.outlook.com>
-References: <20210709155052.2881f561.alex.williamson@redhat.com>
- <BN9PR11MB54336FB9845649BB2D53022C8C159@BN9PR11MB5433.namprd11.prod.outlook.com>
- <20210712124150.2bf421d1.alex.williamson@redhat.com>
- <BL1PR11MB54299D9554D71F53D74E1E378C159@BL1PR11MB5429.namprd11.prod.outlook.com>
- <20210713125503.GC136586@nvidia.com>
- <20210713102607.3a886fee.alex.williamson@redhat.com>
- <20210713163249.GE136586@nvidia.com>
- <BN9PR11MB5433438C17AE123B9C7F83A68C149@BN9PR11MB5433.namprd11.prod.outlook.com>
- <20210713230258.GH136586@nvidia.com>
- <BN9PR11MB54331F80DA135AF3EAD025998C149@BN9PR11MB5433.namprd11.prod.outlook.com>
- <20210713232244.GJ136586@nvidia.com>
-In-Reply-To: <20210713232244.GJ136586@nvidia.com>
-Accept-Language: en-US
-Content-Language: en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-dlp-version: 11.5.1.3
-dlp-product: dlpe-windows
-dlp-reaction: no-action
-authentication-results: nvidia.com; dkim=none (message not signed)
- header.d=none;nvidia.com; dmarc=none action=none header.from=intel.com;
-x-ms-publictraffictype: Email
-x-ms-office365-filtering-correlation-id: e012b453-3c10-4c9a-aa58-08d9465566ae
-x-ms-traffictypediagnostic: BN6PR1101MB2337:
-x-ld-processed: 46c98d88-e344-4ed4-8496-4ed7712e255d,ExtAddr
-x-ms-exchange-transport-forked: True
-x-microsoft-antispam-prvs: <BN6PR1101MB233753130786199BC2EE3B7D8C149@BN6PR1101MB2337.namprd11.prod.outlook.com>
-x-ms-oob-tlc-oobclassifiers: OLM:7691;
-x-ms-exchange-senderadcheck: 1
-x-microsoft-antispam: BCL:0;
-x-microsoft-antispam-message-info: DOQKcnooBdORQ3cSem2UgJwI6j0jzQVoFDy4DV9AAsQ2feWWtgxcro2MypjChfsplH6+HCGSrwq3s8+Wrljyu95iTaZwZRsXURVQIGD25y1rrPK8HciuCoHSZlVPds4+D7wBJMSVhwkfBjPdm9GGBcovnRxffIHBJVhB9ZaZ874SONNvNd6aAybfPm6zxcyzFHYJd3HjT4fG8WOgFAmwdd5ydcmmp+tSX2nWiAJMm9DRT9lRAEo9n6Lyl617h7iZmCvNPlD3gG6REa2cPAWNd6qn18/Pg7nT9e8FfrvpKPmaj2C882TBTVpgPvOedlGvTf6ItuRY7MmjDaUUK8najlyFnR5rnQSsQzHWLntXz2vutWq5z2VxTM5t9pzsIaOxD06kpyvkhl+3M8nvea3+wj0AGUwJAS6NRO2RQlcfzLTcKkupJpkdAOlRb5zTffatcwAadLlXZcGniBDu9Ia/kCKPQIqkyWZy2KUkSZuFnMjNzNBT8UE7GrvcPSHXExgUFOkgCwMBw5HGhqwP5duku6mX2Z0kFhz/uKe9tFPw9Q7BBCP7Ils5QnKOA0k+ByQzz0UGk5KBED7mXstpHCNwN3L/cEa2vnphnR0V2bATqBbE5rUAEyIuPEZ3xCA/pSl+8B5l5eNY77TwCaQEMzXUgjlNRX0dybFWLy2LOVo65+FpZszIAcJjm8clFqmNDCjp3RJp2aOG+q1AbLxCjtTeaQ==
-x-forefront-antispam-report: CIP:255.255.255.255; CTRY:; LANG:en; SCL:1; SRV:;
- IPV:NLI; SFV:NSPM; H:BN9PR11MB5433.namprd11.prod.outlook.com; PTR:; CAT:NONE;
- SFS:(4636009)(39860400002)(136003)(366004)(346002)(396003)(376002)(33656002)(66556008)(66446008)(64756008)(76116006)(9686003)(54906003)(86362001)(66946007)(478600001)(5660300002)(122000001)(7696005)(4326008)(7416002)(26005)(66476007)(83380400001)(55016002)(8936002)(52536014)(186003)(71200400001)(2906002)(8676002)(316002)(6506007)(6916009)(38100700002)(38070700004);
- DIR:OUT; SFP:1102; 
-x-ms-exchange-antispam-messagedata-chunkcount: 1
-x-ms-exchange-antispam-messagedata-0: =?us-ascii?Q?wti5UeM+quGj5f3ZGlXm0CgM53dvlHvCMKC24mDwbuCPl+jOxMMbKCrqKvA2?=
- =?us-ascii?Q?r4bTdGikYcKr+DBzR+mIh3/nTaZfmeRMl6Dok0xTi8AK03xgP6FLWGNWh/v/?=
- =?us-ascii?Q?DyLXckQHE6KXujwFiNaA2ZF4SYwXvCEdtxm0KCw4XZz1LqHN6/x7drtTp0Kt?=
- =?us-ascii?Q?ltwNf0Ecz3zI+tbcvudf5EfjR8fIlB2wxSECyap0eTuENyCMHIwRIaaRHxgj?=
- =?us-ascii?Q?RHSmkvzKKg2OXdCmsJoWeEvgsCyZ7mirrFI1zG+KTIIV9mrxoReJF+aBwAvi?=
- =?us-ascii?Q?08rfauoax9MpCwIyWHNrIiTYiC+ko5/BAlqunIu76tKDn/7IsE/XaUjzG+My?=
- =?us-ascii?Q?p0/wwCATQnkaB4wCvuma7d+ej9A+Wcpda/Qw6LRoYwUjVSdKv5FF1QGe306/?=
- =?us-ascii?Q?GIRDQ1Vg1EaffW3yHH6sjvr+7EvipBwBwTc1SMcAXxewzUbRQLcvw9CiXHFD?=
- =?us-ascii?Q?GIoGIzs252fu64YHRbxlnh1dAR+ySt0fZw5L2CBeUTk0xkVv1sSa/PV+bTv7?=
- =?us-ascii?Q?oYgIdILl1IEFUL9B1oOechF1Ef4450qwBV6K6oGgqfg++RcGa9qakHm6D3Ev?=
- =?us-ascii?Q?54elUIeWkEieMV6v/CNivDifY78CRUKCNk59CZgB345/Y5yrVZ7EwDyYmIuk?=
- =?us-ascii?Q?8uTdY9WTsHAN/ywUnlA8hcDLVLk9xpOHNp6OLcVsheD/Q/hRY6t4h+y1k+ej?=
- =?us-ascii?Q?HhUVUtYs694jETebjzUEvNkbJcy6/IaS1ZFdM6sSvKXiGuLgh48YI3sB5iJ2?=
- =?us-ascii?Q?qey8836KAulT6zledUgaNPW6uNg4sGYAFPK3gwWjsi/5htiLjRYHPK8ngXN8?=
- =?us-ascii?Q?jV3WXSWhE5JhtHXJqx5f0Qvio3a0lVdS+U8h12D63jFSQAMdWJLb15OXsQe1?=
- =?us-ascii?Q?Hfzb5duHBa0/gH3OWc3UuXS5MzyOAUeZ6v/PWXX4AetdwQCG34Xtg3alqhK+?=
- =?us-ascii?Q?cTZQGuopcCVLbmghjWKNCgjNUgQ/BW9l6zIKuvZQaYLbhSobLJL5vUo6+fA0?=
- =?us-ascii?Q?TVsF9WKB3DJrvi7GGrlM1Kmipc32IegxC1p/5tV8+lb+UIV3AUwmVSTsyLX7?=
- =?us-ascii?Q?4G5bKuwL/tobXAKR5a3ketdBur/zZWRA9gxczKYJnlmtT/NVmfnZzJPJoff0?=
- =?us-ascii?Q?RfhI2oBLn9GlU/vyuR4K/DUbLD7tyXdEAMkC1kDJ2EhOD4gHe3DlY6Z5KHib?=
- =?us-ascii?Q?qDuM6MtUKB/nTHlX5pb39dvgpNGKBVdFp1lF6tziyFq3F6+3w1TlCAPrktNe?=
- =?us-ascii?Q?TigBzZRvZwxWqoMBcP+JOAuhY/dIFp3pKAoI1vEEIjnAsczWwNwdWrmM+tKd?=
- =?us-ascii?Q?xx/9BrISIwakJG5EkR6GPcOf?=
+Received: from smtp3.osuosl.org ([127.0.0.1])
+ by localhost (smtp3.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+ with ESMTP id p12GpJRpQy0x for <iommu@lists.linux-foundation.org>;
+ Tue, 13 Jul 2021 23:54:16 +0000 (UTC)
+X-Greylist: whitelisted by SQLgrey-1.8.0
+Received: from mail-qk1-x732.google.com (mail-qk1-x732.google.com
+ [IPv6:2607:f8b0:4864:20::732])
+ by smtp3.osuosl.org (Postfix) with ESMTPS id 88A146071C
+ for <iommu@lists.linux-foundation.org>; Tue, 13 Jul 2021 23:54:16 +0000 (UTC)
+Received: by mail-qk1-x732.google.com with SMTP id s6so20681821qkc.8
+ for <iommu@lists.linux-foundation.org>; Tue, 13 Jul 2021 16:54:16 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=gmail.com; s=20161025;
+ h=sender:date:from:to:cc:subject:message-id:references:mime-version
+ :content-disposition:in-reply-to;
+ bh=psNqCrBwCGRPV0GMx0UJi9q1GTstXYN3y24OgE9aFHA=;
+ b=nAn1ZBctObW5/4rzcwbWcXacQkKZzr+xNKjOPvXZEJkFWoXKOXpGusecOIwp2Bkkg8
+ gQx0KPcNl3VanNIuObMwevvxTyfI3v5ASEzsLaWrlzElfTAv2KwigogKaIDDqyk38nTU
+ 21v2QUakO9PeQqSV/k9mHvzbQmbPMvbgbHCedUgtf8szFThAeyNt6Q3ek3wTC6RZEUhl
+ p37zswHknxz2+J7q4tV+WF/DUblIwzz73KSWFvdWA5MatZv4P5NRdAihrggZKv4IBWl5
+ mwqZuMZZS6cpQPBZL17XvkhZOGLnGW81B9ErVPSttvz6F20wjdSYJm+vC9ceHZQq20qv
+ wjTw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+ d=1e100.net; s=20161025;
+ h=x-gm-message-state:sender:date:from:to:cc:subject:message-id
+ :references:mime-version:content-disposition:in-reply-to;
+ bh=psNqCrBwCGRPV0GMx0UJi9q1GTstXYN3y24OgE9aFHA=;
+ b=WOysubyColVJmqVibsvG5C1Q2nKsjVNDWLAY55ZXr+tiNdK7x7A4VkNefgS6RXBfq0
+ RucU42yNMM4XnJ8OU/+g79e9KhSQQTKByVgWXyE5WEesJYKt99fp+Nyu88AAsR4TfMPz
+ G2aFVa73oaZPmD7zb6hmA4og83QR02mTqpTtS5H0xRoSik4zd+v8/TeUnTWVipUixYT5
+ 6glnIjqO3gJ5oM/2t4cdmF/qX5o5B76FEggmbNNNmXw2YM4lPGu7nLb97kBqguMoHOsp
+ iymhj3aBRSrGn81t3a8D40cLHKTt8G15u19jYiDCuWQGRy+yySkkBOYvGL9h1SA9Yao4
+ RLWA==
+X-Gm-Message-State: AOAM530EPQnSla3jylNJ9o8ioXeja5bq2r3WM+e1jn1m6dmU/ITj58yc
+ qN4PdJNp04Bpybc4hHne+CY=
+X-Google-Smtp-Source: ABdhPJy9aRtw6TRboqtQn9nRqg1AhyGHGFH4KJheCNecEuLTHHQvQx/DiTyi4lhZrGrHwKCG81Niug==
+X-Received: by 2002:a05:620a:709:: with SMTP id
+ 9mr6857281qkc.493.1626220455313; 
+ Tue, 13 Jul 2021 16:54:15 -0700 (PDT)
+Received: from fedora ([130.44.160.152])
+ by smtp.gmail.com with ESMTPSA id l4sm206872qkd.77.2021.07.13.16.54.14
+ (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+ Tue, 13 Jul 2021 16:54:14 -0700 (PDT)
+Date: Tue, 13 Jul 2021 19:54:12 -0400
+From: Konrad Rzeszutek Wilk <konrad@darnok.org>
+To: Dominique Martinet <dominique.martinet@atmark-techno.com>
+Subject: Re: [PATCH] swiotlb: add overflow checks to swiotlb_bounce
+Message-ID: <YO4npNvmgEKFotvq@fedora>
+References: <20210707051254.2121603-1-dominique.martinet@atmark-techno.com>
 MIME-Version: 1.0
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-AuthSource: BN9PR11MB5433.namprd11.prod.outlook.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: e012b453-3c10-4c9a-aa58-08d9465566ae
-X-MS-Exchange-CrossTenant-originalarrivaltime: 13 Jul 2021 23:24:45.7278 (UTC)
-X-MS-Exchange-CrossTenant-fromentityheader: Hosted
-X-MS-Exchange-CrossTenant-id: 46c98d88-e344-4ed4-8496-4ed7712e255d
-X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: FHrHr3HbP7ZZYBfNiJpPY3cNUXZe3i3Mhk3OPzXyraVkcCkYgu/g1HB81HYs25e5kFFINolSy0YA1hGV9fy/cw==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: BN6PR1101MB2337
-X-OriginatorOrg: intel.com
-Cc: "kvm@vger.kernel.org" <kvm@vger.kernel.org>,
- Jason Wang <jasowang@redhat.com>, Kirti Wankhede <kwankhede@nvidia.com>,
- Jean-Philippe Brucker <jean-philippe@linaro.org>, "Jiang,
- Dave" <dave.jiang@intel.com>, "Raj, Ashok" <ashok.raj@intel.com>,
- Jonathan Corbet <corbet@lwn.net>, "parav@mellanox.com" <parav@mellanox.com>,
- Alex Williamson <alex.williamson@redhat.com>, "Enrico Weigelt,
- metux IT consult" <lkml@metux.net>, David Gibson <david@gibson.dropbear.id.au>,
- Robin Murphy <robin.murphy@arm.com>, LKML <linux-kernel@vger.kernel.org>,
- Shenming Lu <lushenming@huawei.com>,
- "iommu@lists.linux-foundation.org" <iommu@lists.linux-foundation.org>,
- Paolo Bonzini <pbonzini@redhat.com>, David Woodhouse <dwmw2@infradead.org>
+Content-Disposition: inline
+In-Reply-To: <20210707051254.2121603-1-dominique.martinet@atmark-techno.com>
+Cc: Konrad Rzeszutek Wilk <konrad.wilk@oracle.com>,
+ linux-kernel@vger.kernel.org, Bumyong Lee <bumyong.lee@samsung.com>,
+ iommu@lists.linux-foundation.org, Chanho Park <chanho61.park@samsung.com>,
+ Robin Murphy <robin.murphy@arm.com>, Christoph Hellwig <hch@lst.de>
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -194,39 +109,56 @@ Content-Transfer-Encoding: 7bit
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-> From: Jason Gunthorpe <jgg@nvidia.com>
-> Sent: Wednesday, July 14, 2021 7:23 AM
+On Wed, Jul 07, 2021 at 02:12:54PM +0900, Dominique Martinet wrote:
+> This is a follow-up on 5f89468e2f06 ("swiotlb: manipulate orig_addr
+> when tlb_addr has offset") which fixed unaligned dma mappings,
+> making sure the following overflows are caught:
 > 
-> On Tue, Jul 13, 2021 at 11:20:12PM +0000, Tian, Kevin wrote:
-> > > From: Jason Gunthorpe <jgg@nvidia.com>
-> > > Sent: Wednesday, July 14, 2021 7:03 AM
-> > >
-> > > On Tue, Jul 13, 2021 at 10:48:38PM +0000, Tian, Kevin wrote:
-> > >
-> > > > We can still bind to the parent with cookie, but with
-> > > > iommu_register_ sw_device() IOMMU fd knows that this binding
-> doesn't
-> > > > need to establish any security context via IOMMU API.
-> > >
-> > > AFAIK there is no reason to involve the parent PCI or other device in
-> > > SW mode. The iommufd doesn't need to be aware of anything there.
-> > >
-> >
-> > Yes. but does it makes sense to have an unified model in IOMMU fd
-> > which always have a [struct device, cookie] with flags to indicate whether
-> > the binding/attaching should be specially handled for sw mdev? Or
-> > are you suggesting that lacking of struct device is actually the indicator
-> > for such trick?
+> - offset of the start of the slot within the device bigger than
+> requested address' offset, in other words if the base address
+> given in swiotlb_tbl_map_single to create the mapping (orig_addr)
+> was after the requested address for the sync (tlb_offset) in the
+> same block:
 > 
-> I think you've veered into such micro implementation details that it
-> is better to wait and see how things look.
+>  |------------------------------------------| block
+>               <----------------------------> mapped part of the block
+>               ^
+>               orig_addr
+>        ^
+>        invalid tlb_addr for sync
 > 
-> The important point here is that whatever physical device is under a
-> SW mdev does not need to be passed to the iommufd because there is
-> nothing it can do with that information.
+> - if the resulting offset was bigger than the allocation size
+> this one could happen if the mapping was not until the end. e.g.
 > 
+>  |------------------------------------------| block
+>       <---------------------> mapped part of the block
+>       ^                               ^
+>       orig_addr                       invalid tlb_addr
+> 
+> Both should never happen so print a warning and bail out without trying
+> to adjust the sizes/offsets: the first one could try to sync from
+> orig_addr to whatever is left of the requested size, but the later
+> really has nothing to sync there...
+> 
+> Signed-off-by: Dominique Martinet <dominique.martinet@atmark-techno.com>
+> Cc: Konrad Rzeszutek Wilk <konrad.wilk@oracle.com>
+> Cc: Bumyong Lee <bumyong.lee@samsung.com>
+> Cc: Chanho Park <chanho61.park@samsung.com>
+> Cc: Christoph Hellwig <hch@lst.de>
+> ---
+> 
+> Hi Konrad,
+> 
+> here's the follow up for the swiotlb/caamjr regression I had promissed.
 
-Make sense
+Awesome!
+> It doesn't really change anything, and I confirmed I don't hit either of
+> the warnings on our board, but it's probably best to have as either
+> could really happen.
+
+:nods:
+
+I put it in the devel/for-linus-5.14 and linux-next. Thank you!
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
