@@ -2,196 +2,85 @@ Return-Path: <SRS0=i+j8=MG=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-10.0 required=3.0 tests=BAYES_00,DKIM_INVALID,
-	DKIM_SIGNED,HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,
-	MSGID_FROM_MTA_HEADER,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_SANE_1
-	autolearn=ham autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-15.3 required=3.0 tests=BAYES_00,
+	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_CR_TRAILER,INCLUDES_PATCH,
+	MAILING_LIST_MULTI,NICE_REPLY_A,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,
+	USER_AGENT_SANE_1 autolearn=unavailable autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9953BC07E9A
-	for <iommu@archiver.kernel.org>; Wed, 14 Jul 2021 08:06:13 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 786F0C07E9A
+	for <iommu@archiver.kernel.org>; Wed, 14 Jul 2021 08:13:17 +0000 (UTC)
 Received: from smtp4.osuosl.org (smtp4.osuosl.org [140.211.166.137])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 27A2161360
-	for <iommu@archiver.kernel.org>; Wed, 14 Jul 2021 08:06:13 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 27A2161360
-Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=oracle.com
+	by mail.kernel.org (Postfix) with ESMTPS id 26C6F613B0
+	for <iommu@archiver.kernel.org>; Wed, 14 Jul 2021 08:13:17 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 26C6F613B0
+Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=collabora.com
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by smtp4.osuosl.org (Postfix) with ESMTP id D62F1414B4;
-	Wed, 14 Jul 2021 08:06:12 +0000 (UTC)
+	by smtp4.osuosl.org (Postfix) with ESMTP id E03D9414B4;
+	Wed, 14 Jul 2021 08:13:16 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
 Received: from smtp4.osuosl.org ([127.0.0.1])
 	by localhost (smtp4.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id 8p4ryH2_Xazw; Wed, 14 Jul 2021 08:06:11 +0000 (UTC)
-Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [IPv6:2605:bc80:3010:104::8cd3:938])
-	by smtp4.osuosl.org (Postfix) with ESMTPS id 69F3F405D1;
-	Wed, 14 Jul 2021 08:06:11 +0000 (UTC)
+	with ESMTP id GX9CZtOB1OF5; Wed, 14 Jul 2021 08:13:15 +0000 (UTC)
+Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
+	by smtp4.osuosl.org (Postfix) with ESMTPS id F1F9F405D1;
+	Wed, 14 Jul 2021 08:13:14 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 3A23EC0010;
-	Wed, 14 Jul 2021 08:06:11 +0000 (UTC)
-Received: from smtp4.osuosl.org (smtp4.osuosl.org [140.211.166.137])
- by lists.linuxfoundation.org (Postfix) with ESMTP id E2FD4C000E;
- Wed, 14 Jul 2021 08:06:09 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id CA486C001A;
+	Wed, 14 Jul 2021 08:13:14 +0000 (UTC)
+Received: from smtp3.osuosl.org (smtp3.osuosl.org [140.211.166.136])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 68933C000E
+ for <iommu@lists.linux-foundation.org>; Wed, 14 Jul 2021 08:13:13 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by smtp4.osuosl.org (Postfix) with ESMTP id DCED1405D1;
- Wed, 14 Jul 2021 08:06:09 +0000 (UTC)
+ by smtp3.osuosl.org (Postfix) with ESMTP id 4FAF360726
+ for <iommu@lists.linux-foundation.org>; Wed, 14 Jul 2021 08:13:13 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from smtp4.osuosl.org ([127.0.0.1])
- by localhost (smtp4.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id RxwQL1P99pmD; Wed, 14 Jul 2021 08:06:08 +0000 (UTC)
+Received: from smtp3.osuosl.org ([127.0.0.1])
+ by localhost (smtp3.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+ with ESMTP id 4oDV5DiZdiAk for <iommu@lists.linux-foundation.org>;
+ Wed, 14 Jul 2021 08:13:09 +0000 (UTC)
 X-Greylist: domain auto-whitelisted by SQLgrey-1.8.0
-X-Greylist: domain auto-whitelisted by SQLgrey-1.8.0
-Received: from mx0b-00069f02.pphosted.com (mx0b-00069f02.pphosted.com
- [205.220.177.32])
- by smtp4.osuosl.org (Postfix) with ESMTPS id 236AD40580;
- Wed, 14 Jul 2021 08:06:07 +0000 (UTC)
-Received: from pps.filterd (m0246631.ppops.net [127.0.0.1])
- by mx0b-00069f02.pphosted.com (8.16.0.43/8.16.0.43) with SMTP id
- 16E82viB002641; Wed, 14 Jul 2021 08:05:56 GMT
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=oracle.com;
- h=date : from : to : cc
- : subject : message-id : references : content-type :
- content-transfer-encoding : in-reply-to : mime-version; s=corp-2020-01-29;
- bh=2aMRnxf4q0qGjXWqt9IqyAouyCjXtcLlRPi/lTe6FWc=;
- b=ljXnHRU52sls3Lxw0akVaXTOPNR3XOqMh2oBM0A5DeB4ZG37zmVjW4mq69Tst2R9XS3X
- oUSOKSVDdMWnaTMJJBJtNgrWL5QPRJQS4ciqNlQuOo0+pEhsANDufyz8LU/bSUkCEiw2
- v88Zn5QxXR1MJ4yPc3d7bkm4RdtNQ47mEzx5IpwEMIw+LTZ3TvPiif11BFeLMuCCEUc6
- CJxTB/AA46+CKYAvzJ4nvQcFUhzzs0zmK5pTuO/9abO8pXKRc9PRDGezSKHf2N/jjC+w
- TXgbj7ilYW4EUPgXOkDzCIAYpu0OtLHX1ljG5o/38Gqsun40f37cWN/59KuOIvfgp77v jw== 
-Received: from aserp3020.oracle.com (aserp3020.oracle.com [141.146.126.70])
- by mx0b-00069f02.pphosted.com with ESMTP id 39rpd8vbtv-1
- (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
- Wed, 14 Jul 2021 08:05:56 +0000
-Received: from pps.filterd (aserp3020.oracle.com [127.0.0.1])
- by aserp3020.oracle.com (8.16.0.42/8.16.0.42) with SMTP id 16E80mpI146936;
- Wed, 14 Jul 2021 08:05:55 GMT
-Received: from nam04-dm6-obe.outbound.protection.outlook.com
- (mail-dm6nam08lp2049.outbound.protection.outlook.com [104.47.73.49])
- by aserp3020.oracle.com with ESMTP id 39q3cekgef-1
- (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
- Wed, 14 Jul 2021 08:05:55 +0000
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=ftkGNcPwybH7eN3kw8gkIagWC9onMEQd0EUFZoCqAbFr/6Ge2EKZLkMxV/bTvrAZ0WZWkR3pdzfYoSpVCwOqYq5VNYbjtqF2Odt5CxboCLgp6haJ8IywE3pgJF6bYwVEX54Q2kNZC1Cttz+XVDG04qmLC28FT4MJkJVqMy+N/USuJABkHZxuKamOddachC3dVDfevX/+X7ikk9eCINosaQZfcakqCBQCRfH0OkEM+ZnTrWQQTnLbzK6RqD7mXRMu6BlMFbzUZft44xE/QMbDtmcJMVD37d63CGL2aDBF49Omu8cPdAcvH2Og2LIPyPI7A9ZSyaN7sTxeXD7b7ULj3w==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com; 
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=2aMRnxf4q0qGjXWqt9IqyAouyCjXtcLlRPi/lTe6FWc=;
- b=b9y5A+gmqgvVivjZuPnl/c74WJveCF6cVq1R2bjfBCnrylan/a62PZzyeIiQUZvbHHFCwyITk8ToNHKMCXtFY+kTA7O6p3OsN3WGBFbR+tXyYLoMzckDftnOCrcoqRCY2NtdNqHxQkAH6iA1v6mc1yqzkuaTKooK+axv1TrJOQJ4Z7cWDgK0NZR76BV0eddAdiamKirfI8nQfgevnWbyw9SWMLNjpoW/C/odWiDrOqQh8MpsTurpneEoCoIJpSHGOMnpnr5B9zWqiPOLAp6aSNR1F+FSK+/O6/t7ENcAqoR66Ngiq9EU9C090vBhECm8XYgrcO00QhYy8RaYCBumWQ==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=oracle.com; dmarc=pass action=none header.from=oracle.com;
- dkim=pass header.d=oracle.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
- d=oracle.onmicrosoft.com; s=selector2-oracle-onmicrosoft-com;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=2aMRnxf4q0qGjXWqt9IqyAouyCjXtcLlRPi/lTe6FWc=;
- b=JtVcghPlZTFacNHYoxIfYz6Quvf29l77Z/dIqKFngkXiasaRw/MrQ2AQVcG7Tgsn2A+upEjck+idqI7yAsSf7kb56vC0EFjekI5RAu8jNyTOQ8mO8Bllp+/tgVe27MTJS32tBQ0bZzEJKeZtN5JpKdOITv0g2FbzS75CU6LnF3w=
-Authentication-Results: redhat.com; dkim=none (message not signed)
- header.d=none;redhat.com; dmarc=none action=none header.from=oracle.com;
-Received: from MWHPR1001MB2365.namprd10.prod.outlook.com
- (2603:10b6:301:2d::28) by CO1PR10MB4483.namprd10.prod.outlook.com
- (2603:10b6:303:98::13) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4331.21; Wed, 14 Jul
- 2021 08:05:53 +0000
-Received: from MWHPR1001MB2365.namprd10.prod.outlook.com
- ([fe80::3413:3c61:5067:ba73]) by MWHPR1001MB2365.namprd10.prod.outlook.com
- ([fe80::3413:3c61:5067:ba73%5]) with mapi id 15.20.4308.027; Wed, 14 Jul 2021
- 08:05:53 +0000
-Date: Wed, 14 Jul 2021 11:05:12 +0300
-From: Dan Carpenter <dan.carpenter@oracle.com>
-To: Jason Wang <jasowang@redhat.com>
-Subject: Re: [PATCH v9 13/17] vdpa: factor out vhost_vdpa_pa_map() and
- vhost_vdpa_pa_unmap()
-Message-ID: <20210714080512.GW1954@kadam>
-References: <20210713084656.232-1-xieyongji@bytedance.com>
- <20210713084656.232-14-xieyongji@bytedance.com>
- <20210713113114.GL1954@kadam>
- <20e75b53-0dce-2f2d-b717-f78553bddcd8@redhat.com>
-Content-Disposition: inline
-In-Reply-To: <20e75b53-0dce-2f2d-b717-f78553bddcd8@redhat.com>
-User-Agent: Mutt/1.9.4 (2018-02-28)
-X-ClientProxiedBy: JNAP275CA0049.ZAFP275.PROD.OUTLOOK.COM (2603:1086:0:4e::12)
- To MWHPR1001MB2365.namprd10.prod.outlook.com
- (2603:10b6:301:2d::28)
+Received: from bhuna.collabora.co.uk (bhuna.collabora.co.uk [46.235.227.227])
+ by smtp3.osuosl.org (Postfix) with ESMTPS id 668AA606BD
+ for <iommu@lists.linux-foundation.org>; Wed, 14 Jul 2021 08:13:09 +0000 (UTC)
+Received: from [IPv6:2a02:810a:880:f54:e49e:3ed0:1a77:5623] (unknown
+ [IPv6:2a02:810a:880:f54:e49e:3ed0:1a77:5623])
+ (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+ (No client certificate requested) (Authenticated sender: dafna)
+ by bhuna.collabora.co.uk (Postfix) with ESMTPSA id 516A11F42B01;
+ Wed, 14 Jul 2021 09:13:06 +0100 (BST)
+Subject: Re: [PATCH v6 01/11] dt-binding: mediatek: Get rid of mediatek, larb
+ for multimedia HW
+To: Yong Wu <yong.wu@mediatek.com>, Matthias Brugger
+ <matthias.bgg@gmail.com>, Joerg Roedel <joro@8bytes.org>,
+ Rob Herring <robh+dt@kernel.org>,
+ Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>,
+ David Airlie <airlied@linux.ie>, Mauro Carvalho Chehab <mchehab@kernel.org>
+References: <20210714025626.5528-1-yong.wu@mediatek.com>
+ <20210714025626.5528-2-yong.wu@mediatek.com>
+From: Dafna Hirschfeld <dafna.hirschfeld@collabora.com>
+Message-ID: <56885a72-9130-c6be-e9e5-cb4755ff0827@collabora.com>
+Date: Wed, 14 Jul 2021 10:13:01 +0200
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
+ Thunderbird/78.11.0
 MIME-Version: 1.0
-X-MS-Exchange-MessageSentRepresentingType: 1
-Received: from kadam (102.222.70.252) by
- JNAP275CA0049.ZAFP275.PROD.OUTLOOK.COM (2603:1086:0:4e::12) with Microsoft
- SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.20.4331.21 via Frontend Transport; Wed, 14 Jul 2021 08:05:29 +0000
-X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: dd917d8d-68ca-4805-5f80-08d9469e3338
-X-MS-TrafficTypeDiagnostic: CO1PR10MB4483:
-X-MS-Exchange-Transport-Forked: True
-X-Microsoft-Antispam-PRVS: <CO1PR10MB44834A42145BD63D9730C1ED8E139@CO1PR10MB4483.namprd10.prod.outlook.com>
-X-MS-Oob-TLC-OOBClassifiers: OLM:5516;
-X-MS-Exchange-SenderADCheck: 1
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: M0OaoS6zF+rsSwlJZaOGZm7h2cBuTijTMvEcizkW0BXuwNO96fV1UqLA5GJSWngw4RtBP8BQpujnjGTjCPacw+W3dQ1epkjHqmXJap5cuzv/ec0mzb8ZBMIsSuyikyTG7ezUM0R3jgmnaGG5ZdNczqcKhi0NP60X3m0dIGZ5i5Wnk+r3wvHY5vKsGwY4C9w4w8mDN5jIjSXI6o3rG6XYM+wPoeA6mJX+fYCoytazd8pXeiroimKHQCypFYSnLnO8D+zl0HKbWvxpcRu0Dy4fFoJbxVlcqV457pDaSNwCDO4Guw6qVcAgKXIQfs+vWdAEhXI+Q2M3K9rta7tnisnRhEi4/TsbFMCWIKdM7FrZYbRztkJ39exmfOHe1KS8oRd1QN8TLVxz/W6/bhPWUMeYTL9XVFQk7b4i0/XKIRYkJRRWKimZjSGh8bFxxSn9il2+vLBlRZ5D/PmISdJN+WqOSuXbwJjZO1/rjA4fzznkOL3Lyqtz3owwUlRQoNRrTH5WcCZdkwNoqxPAyOAKKlhWub5RNw8Dzy4YtzmQkoASb3Xg6F60xAc/620SaRL9tp/ql+4gtoMihhZ8dAhTmYM5mkvayNehvWPsEvivkbL73M62xHjChixElTLMKg/rgt/txxIlMy/5OSz2ZPYhToABJ/fQfL5oDvckQiPbDmokAqV37pm6MG1wCAN2dfbxw1s8x4FKjSNZCGj8uHaAqxeleQ==
-X-Forefront-Antispam-Report: CIP:255.255.255.255; CTRY:; LANG:en; SCL:1; SRV:;
- IPV:NLI; SFV:NSPM; H:MWHPR1001MB2365.namprd10.prod.outlook.com; PTR:; CAT:NONE;
- SFS:(376002)(346002)(396003)(136003)(366004)(39860400002)(478600001)(55016002)(9686003)(8936002)(8676002)(33656002)(83380400001)(4326008)(6666004)(6916009)(38100700002)(38350700002)(9576002)(316002)(956004)(2906002)(7416002)(1076003)(52116002)(6496006)(186003)(66476007)(5660300002)(66946007)(86362001)(66556008)(33716001)(26005)(44832011);
- DIR:OUT; SFP:1101; 
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?utf-8?B?YUp4cmJnY28vTW5QZ0JrTTFhb3RhQkhsWkMzQ0R4Y1V0Q1N6S3lIU0lza0RY?=
- =?utf-8?B?cDhUTytiVzhIQktyYzBLaWxpNXF0RmZ4LzJSeUZIQzNZallUbVdKVDRkcm9o?=
- =?utf-8?B?b3Z2NWJETWxxOEZpNlVtZVA1WXRaVG84azdXZ0NNRFhsRlJTVkh4emcwWFpm?=
- =?utf-8?B?cWwrdVR0T0pNcDFZZko4MkhKajZ3VWlLK1lsR2NmY3A2VDduTWRBY3o5bEYz?=
- =?utf-8?B?Y01ZaVlQOWtyRFowNEswSTM1QlU2WGRqQktHNzQvNTQxTHZCMTgxUitDVUUx?=
- =?utf-8?B?UEYzQWU5NEV3di92c0xZSG5PUWxFRDMxVjF1clF4eUNiOTFzWVYxSjMzM3lJ?=
- =?utf-8?B?cVJOUmorS3Rrcyt3UldNTVdrM0lqTDFnTkE4RjZ0QlVac2p1RHIydE05bVoy?=
- =?utf-8?B?aWgxamo0cEp1TlMrMmcwWjBrWlROK3Q3a2xnZHNSb29rWXJXNkQ0UHg5aUZS?=
- =?utf-8?B?a1pzcGRNaDNCUnhPbUJIZ3lFOXYwVGd1WG9aWVNGNkRMbkFieVExK2wxYU9Y?=
- =?utf-8?B?aXdVbU01VERieGFoOEdjUmFTK1Z4cmpOWndKbCszL2E3aGErU0hwY2tWQW5E?=
- =?utf-8?B?QXhnQkZLSXdhb0F1RHRFL3FoZU14Tm1ibDEybUkwaGF0VUJwWUJqUXZmWlB6?=
- =?utf-8?B?Zi8ydVpBbEdpN0o3YWw4Tk9FUzkyRWRodjF6eHF4SmJqb1hkREdHL2MrSGFG?=
- =?utf-8?B?VmdGczBIYXpqSDBZV1NFRVNNU2RUd3ZNd3dGdTFIZVlhT05NeDJ3VDl3VTdG?=
- =?utf-8?B?dVNOMUpmdjc3REF2d2RHQkoyUnB4aGc4SHVKVnQxUWdZMmZtUzNMQlNWQWE5?=
- =?utf-8?B?RTFjRUpMRzBhZWhCaEtTOEVjQng0NjNFWVJMRTkyOGR0d0o2Kyt6UkdUMmxz?=
- =?utf-8?B?bFVlRmEwRWVFdE5keFlNcXN6ZUpaek5qT2drL1lweER0R0ZDcXBlMWdnSUtz?=
- =?utf-8?B?UTZHZUZCUG9ENEJYWUtYTjd1REVLWENqYi9qMmphTVVlMFVLVmYrWTQwZnVH?=
- =?utf-8?B?cHZ5NkYwemRzM2pHY1NiWSt4TVQyUzZ5eWhOUW1PdDJydUtyZGd6STYvclBT?=
- =?utf-8?B?Vmx0TnQ0b3NNdnpEaDRYYnZFczdFZWtsMlA0NjdwOEg0MlVYRmxOV1RqMTZZ?=
- =?utf-8?B?Tzc1d0VOOUlNTjZHaW9pNUtQNTJSRE53T0ZJZFVYa1dOdm5BK3VVb29wWFB1?=
- =?utf-8?B?ZHU5UWNQaE5EcnJZaG1JZkVYemVmQTJLQWRsSC85MnJKeXRXZ2k4QW15djNv?=
- =?utf-8?B?T3I5VHJJYmhLTXhCZlFyK2UrSWsrM3hRS3VoU3NtYitxOW4zZnpVNjF0YXNs?=
- =?utf-8?B?TS9YK1QzV2ZoYlh4ZTNON05SWllFZUFPWDNqU3dPcm1uc2QyZXpwMlRCcGxG?=
- =?utf-8?B?RTFxejFQVGVyWWNCY29WRUx3RjRzcUV1T0FrQmNkdm9vMk41cDRMT3pwc29P?=
- =?utf-8?B?WDMrVGYxVlI5Q1kyeW41enBJZ2paNDRaeXM1ekJBdGpiOXhYWU1ncVg4cnhv?=
- =?utf-8?B?K3ErcWI3S2d6Uk9palV4QVZiS3hrOWFFYkQ3YjRkcUowYi9PQkY5ZjBGUE1l?=
- =?utf-8?B?aktCa2NlSURLK1FtYnJ3NlQzR1RkSzh2aE94ckZOczdXNHRqZDAyaDN2M2Rn?=
- =?utf-8?B?b3dISC9FSEhWTEFhQ3dBYXlVQ09zdWhUZ241ZXJmVzNzUjVkdTRYbDhmdVAy?=
- =?utf-8?B?Z1lncUdvZlpyNmFDWHA2MWVOWjhqWWdHeWZ6WExYUkUvbHNZeWV5ZmdNaW5x?=
- =?utf-8?Q?c+aNIVVq//2JME5PJyiK9l3Hg4tu/TfVvDm0oBX?=
-X-OriginatorOrg: oracle.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: dd917d8d-68ca-4805-5f80-08d9469e3338
-X-MS-Exchange-CrossTenant-AuthSource: MWHPR1001MB2365.namprd10.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 14 Jul 2021 08:05:53.3112 (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 4e2c6054-71cb-48f1-bd6c-3a9705aca71b
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: SUhx5rHBP/c9tDOnZRauYWqXXZ9aE4oEJND9iXUm8H9whENcj8JCyNVCMx+ryNMHAMwJo2C8upQnhFptEfl6FJ0ZKhIndBtm59+jrH7QiKE=
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: CO1PR10MB4483
-X-Proofpoint-Virus-Version: vendor=nai engine=6200 definitions=10044
- signatures=668682
-X-Proofpoint-Spam-Details: rule=notspam policy=default score=0 spamscore=0
- malwarescore=0 mlxscore=0
- suspectscore=0 phishscore=0 adultscore=0 mlxlogscore=870 bulkscore=0
- classifier=spam adjust=0 reason=mlx scancount=1 engine=8.12.0-2104190000
- definitions=main-2107140051
-X-Proofpoint-GUID: Xy6BNIYKnJ9bTEb3yuv1KWtknz2jLlMB
-X-Proofpoint-ORIG-GUID: Xy6BNIYKnJ9bTEb3yuv1KWtknz2jLlMB
-Cc: kvm@vger.kernel.org, mst@redhat.com,
- virtualization@lists.linux-foundation.org, christian.brauner@canonical.com,
- corbet@lwn.net, willy@infradead.org, hch@infradead.org,
- Xie Yongji <xieyongji@bytedance.com>, sgarzare@redhat.com,
- xiaodong.liu@intel.com, viro@zeniv.linux.org.uk, stefanha@redhat.com,
- songmuchun@bytedance.com, axboe@kernel.dk, zhe.he@windriver.com,
- gregkh@linuxfoundation.org, rdunlap@infradead.org,
- linux-kernel@vger.kernel.org, iommu@lists.linux-foundation.org, bcrl@kvack.org,
- netdev@vger.kernel.org, linux-fsdevel@vger.kernel.org,
- mika.penttila@nextfour.com
+In-Reply-To: <20210714025626.5528-2-yong.wu@mediatek.com>
+Content-Language: en-US
+Cc: Xia Jiang <xia.jiang@mediatek.com>, Chun-Kuang Hu <chunkuang.hu@kernel.org>,
+ Will Deacon <will.deacon@arm.com>, dri-devel@lists.freedesktop.org,
+ anthony.huang@mediatek.com, youlin.pei@mediatek.com,
+ Nicolas Boichat <drinkcat@chromium.org>, Evan Green <evgreen@chromium.org>,
+ Eizan Miyamoto <eizan@chromium.org>, Matthias Kaehlcke <mka@chromium.org>,
+ linux-media@vger.kernel.org, devicetree@vger.kernel.org,
+ Philipp Zabel <p.zabel@pengutronix.de>, yi.kuo@mediatek.com,
+ linux-mediatek@lists.infradead.org, Hsin-Yi Wang <hsinyi@chromium.org>,
+ ming-fan.chen@mediatek.com, Tiffany Lin <tiffany.lin@mediatek.com>,
+ linux-arm-kernel@lists.infradead.org, anan.sun@mediatek.com,
+ srv_heupstream@mediatek.com, acourbot@chromium.org,
+ linux-kernel@vger.kernel.org, iommu@lists.linux-foundation.org,
+ Daniel Vetter <daniel@ffwll.ch>, Robin Murphy <robin.murphy@arm.com>
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -204,47 +93,268 @@ List-Post: <mailto:iommu@lists.linux-foundation.org>
 List-Help: <mailto:iommu-request@lists.linux-foundation.org?subject=help>
 List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
  <mailto:iommu-request@lists.linux-foundation.org?subject=subscribe>
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
+Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset="us-ascii"; Format="flowed"
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-T24gV2VkLCBKdWwgMTQsIDIwMjEgYXQgMTA6MTQ6MzJBTSArMDgwMCwgSmFzb24gV2FuZyB3cm90
-ZToKPiAKPiDlnKggMjAyMS83LzEzIOS4i+WNiDc6MzEsIERhbiBDYXJwZW50ZXIg5YaZ6YGTOgo+
-ID4gT24gVHVlLCBKdWwgMTMsIDIwMjEgYXQgMDQ6NDY6NTJQTSArMDgwMCwgWGllIFlvbmdqaSB3
-cm90ZToKPiA+ID4gQEAgLTYxMywzNyArNjE4LDI4IEBAIHN0YXRpYyB2b2lkIHZob3N0X3ZkcGFf
-dW5tYXAoc3RydWN0IHZob3N0X3ZkcGEgKnYsIHU2NCBpb3ZhLCB1NjQgc2l6ZSkKPiA+ID4gICAJ
-fQo+ID4gPiAgIH0KPiA+ID4gLXN0YXRpYyBpbnQgdmhvc3RfdmRwYV9wcm9jZXNzX2lvdGxiX3Vw
-ZGF0ZShzdHJ1Y3Qgdmhvc3RfdmRwYSAqdiwKPiA+ID4gLQkJCQkJICAgc3RydWN0IHZob3N0X2lv
-dGxiX21zZyAqbXNnKQo+ID4gPiArc3RhdGljIGludCB2aG9zdF92ZHBhX3BhX21hcChzdHJ1Y3Qg
-dmhvc3RfdmRwYSAqdiwKPiA+ID4gKwkJCSAgICAgdTY0IGlvdmEsIHU2NCBzaXplLCB1NjQgdWFk
-ZHIsIHUzMiBwZXJtKQo+ID4gPiAgIHsKPiA+ID4gICAJc3RydWN0IHZob3N0X2RldiAqZGV2ID0g
-JnYtPnZkZXY7Cj4gPiA+IC0Jc3RydWN0IHZob3N0X2lvdGxiICppb3RsYiA9IGRldi0+aW90bGI7
-Cj4gPiA+ICAgCXN0cnVjdCBwYWdlICoqcGFnZV9saXN0Owo+ID4gPiAgIAl1bnNpZ25lZCBsb25n
-IGxpc3Rfc2l6ZSA9IFBBR0VfU0laRSAvIHNpemVvZihzdHJ1Y3QgcGFnZSAqKTsKPiA+ID4gICAJ
-dW5zaWduZWQgaW50IGd1cF9mbGFncyA9IEZPTExfTE9OR1RFUk07Cj4gPiA+ICAgCXVuc2lnbmVk
-IGxvbmcgbnBhZ2VzLCBjdXJfYmFzZSwgbWFwX3BmbiwgbGFzdF9wZm4gPSAwOwo+ID4gPiAgIAl1
-bnNpZ25lZCBsb25nIGxvY2tfbGltaXQsIHN6MnBpbiwgbmNodW5rcywgaTsKPiA+ID4gLQl1NjQg
-aW92YSA9IG1zZy0+aW92YTsKPiA+ID4gKwl1NjQgc3RhcnQgPSBpb3ZhOwo+ID4gPiAgIAlsb25n
-IHBpbm5lZDsKPiA+ID4gICAJaW50IHJldCA9IDA7Cj4gPiA+IC0JaWYgKG1zZy0+aW92YSA8IHYt
-PnJhbmdlLmZpcnN0IHx8Cj4gPiA+IC0JICAgIG1zZy0+aW92YSArIG1zZy0+c2l6ZSAtIDEgPiB2
-LT5yYW5nZS5sYXN0KQo+ID4gPiAtCQlyZXR1cm4gLUVJTlZBTDsKPiA+IFRoaXMgaXMgbm90IHJl
-bGF0ZWQgdG8geW91ciBwYXRjaCwgYnV0IGNhbiB0aGUgIm1zZy0+aW92YSArIG1zZy0+c2l6ZSIK
-PiA+IGFkZGl0aW9uIGNhbiBoYXZlIGFuIGludGVnZXIgb3ZlcmZsb3cuICBGcm9tIGxvb2tpbmcg
-YXQgdGhlIGNhbGxlcnMgaXQKPiA+IHNlZW1zIGxpa2UgaXQgY2FuLiAgbXNnIGNvbWVzIGZyb206
-Cj4gPiAgICB2aG9zdF9jaHJfd3JpdGVfaXRlcigpCj4gPiAgICAtLT4gZGV2LT5tc2dfaGFuZGxl
-cihkZXYsICZtc2cpOwo+ID4gICAgICAgIC0tPiB2aG9zdF92ZHBhX3Byb2Nlc3NfaW90bGJfbXNn
-KCkKPiA+ICAgICAgICAgICAtLT4gdmhvc3RfdmRwYV9wcm9jZXNzX2lvdGxiX3VwZGF0ZSgpCj4g
-Cj4gCj4gWWVzLgo+IAo+IAo+ID4gCj4gPiBJZiBJJ20gdGhpbmtpbmcgb2YgdGhlIHJpZ2h0IHRo
-aW5nIHRoZW4gdGhlc2UgYXJlIGFsbG93ZWQgdG8gb3ZlcmZsb3cgdG8KPiA+IDAgYmVjYXVzZSBv
-ZiB0aGUgIiAtIDEiIGJ1dCBub3QgZnVydGhlciB0aGFuIHRoYXQuICBJIGJlbGlldmUgdGhlIGNo
-ZWNrCj4gPiBuZWVkcyB0byBiZSBzb21ldGhpbmcgbGlrZToKPiA+IAo+ID4gCWlmIChtc2ctPmlv
-dmEgPCB2LT5yYW5nZS5maXJzdCB8fAo+ID4gCSAgICBtc2ctPmlvdmEgLSAxID4gVTY0X01BWCAt
-IG1zZy0+c2l6ZSB8fAo+IAo+IAo+IEkgZ3Vlc3Mgd2UgZG9uJ3QgbmVlZCAtIDEgaGVyZT8KClRo
-ZSAtIDEgaXMgaW1wb3J0YW50LiAgVGhlIGhpZ2hlc3QgYWRkcmVzcyBpcyAweGZmZmZmZmZmLiAg
-U28gaXQgZ29lcwpzdGFydCArIHNpemUgPSAwIGFuZCB0aGVuIHN0YXJ0ICsgc2l6ZSAtIDEgPT0g
-MHhmZmZmZmZmZi4KCkkgZ3Vlc3Mgd2UgY291bGQgbW92ZSB0aGUgLSAxIHRvIHRoZSBvdGhlciBz
-aWRlPwoKCW1zZy0+aW92YSA+IFU2NF9NQVggLSBtc2ctPnNpemUgKyAxIHx8CgpyZWdhcmRzLApk
-YW4gY2FycGVudGVyCgoKX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19f
-X19fX18KaW9tbXUgbWFpbGluZyBsaXN0CmlvbW11QGxpc3RzLmxpbnV4LWZvdW5kYXRpb24ub3Jn
-Cmh0dHBzOi8vbGlzdHMubGludXhmb3VuZGF0aW9uLm9yZy9tYWlsbWFuL2xpc3RpbmZvL2lvbW11
+Hi,
+thanks for the patch
+
+On 14.07.21 04:56, Yong Wu wrote:
+> After adding device_link between the consumer with the smi-larbs,
+> if the consumer call its owner pm_runtime_get(_sync), the
+> pm_runtime_get(_sync) of smi-larb and smi-common will be called
+> automatically. Thus, the consumer don't need the property.
+> 
+> And IOMMU also know which larb this consumer connects with from
+> iommu id in the "iommus=" property.
+> 
+> Signed-off-by: Yong Wu <yong.wu@mediatek.com>
+> Reviewed-by: Rob Herring <robh@kernel.org>
+> Reviewed-by: Evan Green <evgreen@chromium.org>
+> ---
+>   .../bindings/display/mediatek/mediatek,disp.txt          | 9 ---------
+>   .../devicetree/bindings/media/mediatek-jpeg-decoder.yaml | 9 ---------
+>   .../devicetree/bindings/media/mediatek-jpeg-encoder.yaml | 9 ---------
+
+On which repo are these patches based on ?
+In linux-next the file mediatek-jpeg-encoder.yaml don't exist
+
+Thanks,
+Dafna
+
+>   Documentation/devicetree/bindings/media/mediatek-mdp.txt | 8 --------
+>   .../devicetree/bindings/media/mediatek-vcodec.txt        | 4 ----
+>   5 files changed, 39 deletions(-)
+> 
+> diff --git a/Documentation/devicetree/bindings/display/mediatek/mediatek,disp.txt b/Documentation/devicetree/bindings/display/mediatek/mediatek,disp.txt
+> index fbb59c9ddda6..867bd82e2f03 100644
+> --- a/Documentation/devicetree/bindings/display/mediatek/mediatek,disp.txt
+> +++ b/Documentation/devicetree/bindings/display/mediatek/mediatek,disp.txt
+> @@ -61,8 +61,6 @@ Required properties (DMA function blocks):
+>   	"mediatek,<chip>-disp-rdma"
+>   	"mediatek,<chip>-disp-wdma"
+>     the supported chips are mt2701, mt8167 and mt8173.
+> -- larb: Should contain a phandle pointing to the local arbiter device as defined
+> -  in Documentation/devicetree/bindings/memory-controllers/mediatek,smi-larb.yaml
+>   - iommus: Should point to the respective IOMMU block with master port as
+>     argument, see Documentation/devicetree/bindings/iommu/mediatek,iommu.yaml
+>     for details.
+> @@ -91,7 +89,6 @@ ovl0: ovl@1400c000 {
+>   	power-domains = <&scpsys MT8173_POWER_DOMAIN_MM>;
+>   	clocks = <&mmsys CLK_MM_DISP_OVL0>;
+>   	iommus = <&iommu M4U_PORT_DISP_OVL0>;
+> -	mediatek,larb = <&larb0>;
+>   };
+>   
+>   ovl1: ovl@1400d000 {
+> @@ -101,7 +98,6 @@ ovl1: ovl@1400d000 {
+>   	power-domains = <&scpsys MT8173_POWER_DOMAIN_MM>;
+>   	clocks = <&mmsys CLK_MM_DISP_OVL1>;
+>   	iommus = <&iommu M4U_PORT_DISP_OVL1>;
+> -	mediatek,larb = <&larb4>;
+>   };
+>   
+>   rdma0: rdma@1400e000 {
+> @@ -111,7 +107,6 @@ rdma0: rdma@1400e000 {
+>   	power-domains = <&scpsys MT8173_POWER_DOMAIN_MM>;
+>   	clocks = <&mmsys CLK_MM_DISP_RDMA0>;
+>   	iommus = <&iommu M4U_PORT_DISP_RDMA0>;
+> -	mediatek,larb = <&larb0>;
+>   	mediatek,rdma-fifosize = <8192>;
+>   };
+>   
+> @@ -122,7 +117,6 @@ rdma1: rdma@1400f000 {
+>   	power-domains = <&scpsys MT8173_POWER_DOMAIN_MM>;
+>   	clocks = <&mmsys CLK_MM_DISP_RDMA1>;
+>   	iommus = <&iommu M4U_PORT_DISP_RDMA1>;
+> -	mediatek,larb = <&larb4>;
+>   };
+>   
+>   rdma2: rdma@14010000 {
+> @@ -132,7 +126,6 @@ rdma2: rdma@14010000 {
+>   	power-domains = <&scpsys MT8173_POWER_DOMAIN_MM>;
+>   	clocks = <&mmsys CLK_MM_DISP_RDMA2>;
+>   	iommus = <&iommu M4U_PORT_DISP_RDMA2>;
+> -	mediatek,larb = <&larb4>;
+>   };
+>   
+>   wdma0: wdma@14011000 {
+> @@ -142,7 +135,6 @@ wdma0: wdma@14011000 {
+>   	power-domains = <&scpsys MT8173_POWER_DOMAIN_MM>;
+>   	clocks = <&mmsys CLK_MM_DISP_WDMA0>;
+>   	iommus = <&iommu M4U_PORT_DISP_WDMA0>;
+> -	mediatek,larb = <&larb0>;
+>   };
+>   
+>   wdma1: wdma@14012000 {
+> @@ -152,7 +144,6 @@ wdma1: wdma@14012000 {
+>   	power-domains = <&scpsys MT8173_POWER_DOMAIN_MM>;
+>   	clocks = <&mmsys CLK_MM_DISP_WDMA1>;
+>   	iommus = <&iommu M4U_PORT_DISP_WDMA1>;
+> -	mediatek,larb = <&larb4>;
+>   };
+>   
+>   color0: color@14013000 {
+> diff --git a/Documentation/devicetree/bindings/media/mediatek-jpeg-decoder.yaml b/Documentation/devicetree/bindings/media/mediatek-jpeg-decoder.yaml
+> index 9b87f036f178..052e752157b4 100644
+> --- a/Documentation/devicetree/bindings/media/mediatek-jpeg-decoder.yaml
+> +++ b/Documentation/devicetree/bindings/media/mediatek-jpeg-decoder.yaml
+> @@ -42,13 +42,6 @@ properties:
+>     power-domains:
+>       maxItems: 1
+>   
+> -  mediatek,larb:
+> -    $ref: '/schemas/types.yaml#/definitions/phandle'
+> -    description: |
+> -      Must contain the local arbiters in the current Socs, see
+> -      Documentation/devicetree/bindings/memory-controllers/mediatek,smi-larb.yaml
+> -      for details.
+> -
+>     iommus:
+>       maxItems: 2
+>       description: |
+> @@ -63,7 +56,6 @@ required:
+>     - clocks
+>     - clock-names
+>     - power-domains
+> -  - mediatek,larb
+>     - iommus
+>   
+>   additionalProperties: false
+> @@ -83,7 +75,6 @@ examples:
+>         clock-names = "jpgdec-smi",
+>                       "jpgdec";
+>         power-domains = <&scpsys MT2701_POWER_DOMAIN_ISP>;
+> -      mediatek,larb = <&larb2>;
+>         iommus = <&iommu MT2701_M4U_PORT_JPGDEC_WDMA>,
+>                  <&iommu MT2701_M4U_PORT_JPGDEC_BSDMA>;
+>       };
+> diff --git a/Documentation/devicetree/bindings/media/mediatek-jpeg-encoder.yaml b/Documentation/devicetree/bindings/media/mediatek-jpeg-encoder.yaml
+> index fcd9b829e036..8bfdfdfaba59 100644
+> --- a/Documentation/devicetree/bindings/media/mediatek-jpeg-encoder.yaml
+> +++ b/Documentation/devicetree/bindings/media/mediatek-jpeg-encoder.yaml
+> @@ -35,13 +35,6 @@ properties:
+>     power-domains:
+>       maxItems: 1
+>   
+> -  mediatek,larb:
+> -    $ref: '/schemas/types.yaml#/definitions/phandle'
+> -    description: |
+> -      Must contain the local arbiters in the current Socs, see
+> -      Documentation/devicetree/bindings/memory-controllers/mediatek,smi-larb.yaml
+> -      for details.
+> -
+>     iommus:
+>       maxItems: 2
+>       description: |
+> @@ -56,7 +49,6 @@ required:
+>     - clocks
+>     - clock-names
+>     - power-domains
+> -  - mediatek,larb
+>     - iommus
+>   
+>   additionalProperties: false
+> @@ -75,7 +67,6 @@ examples:
+>         clocks =  <&imgsys CLK_IMG_VENC>;
+>         clock-names = "jpgenc";
+>         power-domains = <&scpsys MT2701_POWER_DOMAIN_ISP>;
+> -      mediatek,larb = <&larb2>;
+>         iommus = <&iommu MT2701_M4U_PORT_JPGENC_RDMA>,
+>                  <&iommu MT2701_M4U_PORT_JPGENC_BSDMA>;
+>       };
+> diff --git a/Documentation/devicetree/bindings/media/mediatek-mdp.txt b/Documentation/devicetree/bindings/media/mediatek-mdp.txt
+> index caa24943da33..53ef26e2c857 100644
+> --- a/Documentation/devicetree/bindings/media/mediatek-mdp.txt
+> +++ b/Documentation/devicetree/bindings/media/mediatek-mdp.txt
+> @@ -27,9 +27,6 @@ Required properties (DMA function blocks, child node):
+>   - iommus: should point to the respective IOMMU block with master port as
+>     argument, see Documentation/devicetree/bindings/iommu/mediatek,iommu.yaml
+>     for details.
+> -- mediatek,larb: must contain the local arbiters in the current Socs, see
+> -  Documentation/devicetree/bindings/memory-controllers/mediatek,smi-larb.yaml
+> -  for details.
+>   
+>   Example:
+>   	mdp_rdma0: rdma@14001000 {
+> @@ -40,7 +37,6 @@ Example:
+>   			 <&mmsys CLK_MM_MUTEX_32K>;
+>   		power-domains = <&scpsys MT8173_POWER_DOMAIN_MM>;
+>   		iommus = <&iommu M4U_PORT_MDP_RDMA0>;
+> -		mediatek,larb = <&larb0>;
+>   		mediatek,vpu = <&vpu>;
+>   	};
+>   
+> @@ -51,7 +47,6 @@ Example:
+>   			 <&mmsys CLK_MM_MUTEX_32K>;
+>   		power-domains = <&scpsys MT8173_POWER_DOMAIN_MM>;
+>   		iommus = <&iommu M4U_PORT_MDP_RDMA1>;
+> -		mediatek,larb = <&larb4>;
+>   	};
+>   
+>   	mdp_rsz0: rsz@14003000 {
+> @@ -81,7 +76,6 @@ Example:
+>   		clocks = <&mmsys CLK_MM_MDP_WDMA>;
+>   		power-domains = <&scpsys MT8173_POWER_DOMAIN_MM>;
+>   		iommus = <&iommu M4U_PORT_MDP_WDMA>;
+> -		mediatek,larb = <&larb0>;
+>   	};
+>   
+>   	mdp_wrot0: wrot@14007000 {
+> @@ -90,7 +84,6 @@ Example:
+>   		clocks = <&mmsys CLK_MM_MDP_WROT0>;
+>   		power-domains = <&scpsys MT8173_POWER_DOMAIN_MM>;
+>   		iommus = <&iommu M4U_PORT_MDP_WROT0>;
+> -		mediatek,larb = <&larb0>;
+>   	};
+>   
+>   	mdp_wrot1: wrot@14008000 {
+> @@ -99,5 +92,4 @@ Example:
+>   		clocks = <&mmsys CLK_MM_MDP_WROT1>;
+>   		power-domains = <&scpsys MT8173_POWER_DOMAIN_MM>;
+>   		iommus = <&iommu M4U_PORT_MDP_WROT1>;
+> -		mediatek,larb = <&larb4>;
+>   	};
+> diff --git a/Documentation/devicetree/bindings/media/mediatek-vcodec.txt b/Documentation/devicetree/bindings/media/mediatek-vcodec.txt
+> index ad1321e5a22d..71237355cc7e 100644
+> --- a/Documentation/devicetree/bindings/media/mediatek-vcodec.txt
+> +++ b/Documentation/devicetree/bindings/media/mediatek-vcodec.txt
+> @@ -13,7 +13,6 @@ Required properties:
+>   - reg : Physical base address of the video codec registers and length of
+>     memory mapped region.
+>   - interrupts : interrupt number to the cpu.
+> -- mediatek,larb : must contain the local arbiters in the current Socs.
+>   - clocks : list of clock specifiers, corresponding to entries in
+>     the clock-names property.
+>   - clock-names: avc encoder must contain "venc_sel", vp8 encoder must
+> @@ -46,7 +45,6 @@ vcodec_dec: vcodec@16000000 {
+>             <0 0x16027800 0 0x800>,   /*VP8_VL*/
+>             <0 0x16028400 0 0x400>;   /*VP9_VD*/
+>       interrupts = <GIC_SPI 204 IRQ_TYPE_LEVEL_LOW>;
+> -    mediatek,larb = <&larb1>;
+>       iommus = <&iommu M4U_PORT_HW_VDEC_MC_EXT>,
+>                <&iommu M4U_PORT_HW_VDEC_PP_EXT>,
+>                <&iommu M4U_PORT_HW_VDEC_AVC_MV_EXT>,
+> @@ -99,7 +97,6 @@ vcodec_enc_avc: vcodec@18002000 {
+>                <&iommu M4U_PORT_VENC_REF_CHROMA>,
+>                <&iommu M4U_PORT_VENC_NBM_RDMA>,
+>                <&iommu M4U_PORT_VENC_NBM_WDMA>;
+> -    mediatek,larb = <&larb3>;
+>       mediatek,vpu = <&vpu>;
+>       clocks = <&topckgen CLK_TOP_VENC_SEL>;
+>       clock-names = "venc_sel";
+> @@ -120,7 +117,6 @@ vcodec_enc_vp8: vcodec@19002000 {
+>                <&iommu M4U_PORT_VENC_CUR_CHROMA_SET2>,
+>                <&iommu M4U_PORT_VENC_REF_LUMA_SET2>,
+>                <&iommu M4U_PORT_VENC_REC_CHROMA_SET2>;
+> -    mediatek,larb = <&larb5>;
+>       mediatek,vpu = <&vpu>;
+>       clocks = <&topckgen CLK_TOP_VENC_LT_SEL>;
+>       clock-names = "venc_lt_sel";
+> 
+_______________________________________________
+iommu mailing list
+iommu@lists.linux-foundation.org
+https://lists.linuxfoundation.org/mailman/listinfo/iommu
