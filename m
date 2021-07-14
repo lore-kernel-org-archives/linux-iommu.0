@@ -2,85 +2,74 @@ Return-Path: <SRS0=i+j8=MG=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-8.7 required=3.0 tests=BAYES_00,
-	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,SPF_HELO_NONE,
-	SPF_PASS,UNPARSEABLE_RELAY,URIBL_BLOCKED autolearn=unavailable
-	autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-3.8 required=3.0 tests=BAYES_00,DKIM_INVALID,
+	DKIM_SIGNED,MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED
+	autolearn=no autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 355F1C11F66
-	for <iommu@archiver.kernel.org>; Wed, 14 Jul 2021 13:46:13 +0000 (UTC)
-Received: from smtp3.osuosl.org (smtp3.osuosl.org [140.211.166.136])
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B6B97C07E9A
+	for <iommu@archiver.kernel.org>; Wed, 14 Jul 2021 15:04:30 +0000 (UTC)
+Received: from smtp1.osuosl.org (smtp1.osuosl.org [140.211.166.138])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id B2F83613BF
-	for <iommu@archiver.kernel.org>; Wed, 14 Jul 2021 13:46:12 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org B2F83613BF
-Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=perches.com
+	by mail.kernel.org (Postfix) with ESMTPS id 5505A613C5
+	for <iommu@archiver.kernel.org>; Wed, 14 Jul 2021 15:04:30 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 5505A613C5
+Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=kernel.org
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by smtp3.osuosl.org (Postfix) with ESMTP id 7BED260717;
-	Wed, 14 Jul 2021 13:46:12 +0000 (UTC)
+	by smtp1.osuosl.org (Postfix) with ESMTP id 0060683CBB;
+	Wed, 14 Jul 2021 15:04:30 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from smtp3.osuosl.org ([127.0.0.1])
-	by localhost (smtp3.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id cFZ8qe4Reajy; Wed, 14 Jul 2021 13:46:11 +0000 (UTC)
-Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by smtp3.osuosl.org (Postfix) with ESMTPS id 6EFD360733;
-	Wed, 14 Jul 2021 13:46:11 +0000 (UTC)
+Received: from smtp1.osuosl.org ([127.0.0.1])
+	by localhost (smtp1.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+	with ESMTP id qkTps4LTewbu; Wed, 14 Jul 2021 15:04:29 +0000 (UTC)
+Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [IPv6:2605:bc80:3010:104::8cd3:938])
+	by smtp1.osuosl.org (Postfix) with ESMTPS id EDCBB83CA3;
+	Wed, 14 Jul 2021 15:04:28 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 266F1C0010;
-	Wed, 14 Jul 2021 13:46:11 +0000 (UTC)
-Received: from smtp4.osuosl.org (smtp4.osuosl.org [140.211.166.137])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 9C17CC000E;
- Wed, 14 Jul 2021 13:46:09 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 94B6AC001A;
+	Wed, 14 Jul 2021 15:04:28 +0000 (UTC)
+Received: from smtp1.osuosl.org (smtp1.osuosl.org [140.211.166.138])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id B12E4C000E
+ for <iommu@lists.linux-foundation.org>; Wed, 14 Jul 2021 14:24:36 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by smtp4.osuosl.org (Postfix) with ESMTP id 87B31402EA;
- Wed, 14 Jul 2021 13:46:09 +0000 (UTC)
+ by smtp1.osuosl.org (Postfix) with ESMTP id 92CCE83BFB
+ for <iommu@lists.linux-foundation.org>; Wed, 14 Jul 2021 14:24:36 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from smtp4.osuosl.org ([127.0.0.1])
- by localhost (smtp4.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id LcH0tR2KllZ6; Wed, 14 Jul 2021 13:46:08 +0000 (UTC)
-X-Greylist: delayed 05:50:02 by SQLgrey-1.8.0
-X-Greylist: from auto-whitelisted by SQLgrey-1.8.0
-Received: from smtprelay.hostedemail.com (smtprelay0200.hostedemail.com
- [216.40.44.200])
- by smtp4.osuosl.org (Postfix) with ESMTPS id 67213402D2;
- Wed, 14 Jul 2021 13:46:08 +0000 (UTC)
-Received: from smtprelay.hostedemail.com (10.5.19.251.rfc1918.com
- [10.5.19.251])
- by smtpgrave02.hostedemail.com (Postfix) with ESMTP id 9EC7418282F1F;
- Wed, 14 Jul 2021 04:20:20 +0000 (UTC)
-Received: from omf20.hostedemail.com (clb03-v110.bra.tucows.net [216.40.38.60])
- by smtprelay07.hostedemail.com (Postfix) with ESMTP id 8829C1844C6AC;
- Wed, 14 Jul 2021 04:20:17 +0000 (UTC)
-Received: from [HIDDEN] (Authenticated sender: joe@perches.com) by
- omf20.hostedemail.com (Postfix) with ESMTPA id A90B018A600; 
- Wed, 14 Jul 2021 04:20:10 +0000 (UTC)
-Message-ID: <8aa028a0117ecb51d209861f926a84ce74fe0c46.camel@perches.com>
-Subject: Re: [PATCH v9 03/17] vdpa: Fix code indentation
-From: Joe Perches <joe@perches.com>
-To: Xie Yongji <xieyongji@bytedance.com>, mst@redhat.com,
- jasowang@redhat.com,  stefanha@redhat.com, sgarzare@redhat.com,
- parav@nvidia.com, hch@infradead.org,  christian.brauner@canonical.com,
- rdunlap@infradead.org, willy@infradead.org,  viro@zeniv.linux.org.uk,
- axboe@kernel.dk, bcrl@kvack.org, corbet@lwn.net, 
- mika.penttila@nextfour.com, dan.carpenter@oracle.com, joro@8bytes.org, 
- gregkh@linuxfoundation.org, zhe.he@windriver.com, xiaodong.liu@intel.com
-Date: Tue, 13 Jul 2021 21:20:09 -0700
-In-Reply-To: <20210713084656.232-4-xieyongji@bytedance.com>
-References: <20210713084656.232-1-xieyongji@bytedance.com>
- <20210713084656.232-4-xieyongji@bytedance.com>
-User-Agent: Evolution 3.40.0-1 
+Received: from smtp1.osuosl.org ([127.0.0.1])
+ by localhost (smtp1.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+ with ESMTP id pgaSQ9rQjEPg for <iommu@lists.linux-foundation.org>;
+ Wed, 14 Jul 2021 14:24:36 +0000 (UTC)
+X-Greylist: domain auto-whitelisted by SQLgrey-1.8.0
+Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
+ by smtp1.osuosl.org (Postfix) with ESMTPS id 1DB6383BF8
+ for <iommu@lists.linux-foundation.org>; Wed, 14 Jul 2021 14:24:36 +0000 (UTC)
+Received: by mail.kernel.org (Postfix) with ESMTPSA id 57CFD61154;
+ Wed, 14 Jul 2021 14:24:32 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+ s=k20201202; t=1626272675;
+ bh=uGr4g/Ee6pV+EYvldgWLzrmg2C688Tc8vlJSlq63pk8=;
+ h=Subject:To:Cc:References:From:Date:In-Reply-To:From;
+ b=cET9p+pZsUlfkwOTPAtB5/mDe7yDJsg4FzfZffrQRnOVuD0rYqFVb6ZeVscmNktjM
+ bNA7IV3qJNt14ok7rAS5FJ3LfAXGNCKyl42bXGsyuyHfNyQIkBZURhjTYhGVDqTBSH
+ TxgYKIosOSty1JV9snDp7ZdJ2NYRoq/gkKi0nMNIZMI7NA/frs3I90G5cVnZT1Cid6
+ WIvbWsHG0zjCrPhEFXqGGcASjc9YI16y+p/Xh8ELeyNyhOoZo7e9/786yUHZUa6oAg
+ Do/lYC41xrtfNZS757OeycCgPNWOg2pYEI3fjwaTGVfKxUaSRe6HSlXOboC0wLIOdF
+ XC0EsUYXlRjdg==
+Subject: Re: [PATCH v7 00/15] Optimizing iommu_[map/unmap] performance
+To: Georgi Djakov <quic_c_gdjako@quicinc.com>, will@kernel.org,
+ robin.murphy@arm.com
+References: <1623850736-389584-1-git-send-email-quic_c_gdjako@quicinc.com>
+From: Georgi Djakov <djakov@kernel.org>
+Message-ID: <e6c8993e-353e-6a05-9b6d-9a49de471cb6@kernel.org>
+Date: Wed, 14 Jul 2021 17:24:29 +0300
 MIME-Version: 1.0
-X-Rspamd-Server: rspamout05
-X-Rspamd-Queue-Id: A90B018A600
-X-Stat-Signature: w8c8skx4hq53kyxkkcs5f64b7rox7x57
-X-Session-Marker: 6A6F6540706572636865732E636F6D
-X-Session-ID: U2FsdGVkX19IxVK6JNPE/co+tp8AToMXmxFv5EZRX50=
-X-HE-Tag: 1626236410-955187
-Cc: kvm@vger.kernel.org, netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
- virtualization@lists.linux-foundation.org, iommu@lists.linux-foundation.org,
- songmuchun@bytedance.com, linux-fsdevel@vger.kernel.org
+In-Reply-To: <1623850736-389584-1-git-send-email-quic_c_gdjako@quicinc.com>
+Content-Language: en-US
+X-Mailman-Approved-At: Wed, 14 Jul 2021 15:04:27 +0000
+Cc: isaacm@codeaurora.org, linux-kernel@vger.kernel.org,
+ iommu@lists.linux-foundation.org, pratikp@codeaurora.org,
+ linux-arm-kernel@lists.infradead.org
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -93,129 +82,45 @@ List-Post: <mailto:iommu@lists.linux-foundation.org>
 List-Help: <mailto:iommu-request@lists.linux-foundation.org?subject=help>
 List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
  <mailto:iommu-request@lists.linux-foundation.org?subject=subscribe>
-Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset="us-ascii"; Format="flowed"
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-On Tue, 2021-07-13 at 16:46 +0800, Xie Yongji wrote:
-> Use tabs to indent the code instead of spaces.
+On 16.06.21 16:38, Georgi Djakov wrote:
+> When unmapping a buffer from an IOMMU domain, the IOMMU framework unmaps
+> the buffer at a granule of the largest page size that is supported by
+> the IOMMU hardware and fits within the buffer. For every block that
+> is unmapped, the IOMMU framework will call into the IOMMU driver, and
+> then the io-pgtable framework to walk the page tables to find the entry
+> that corresponds to the IOVA, and then unmaps the entry.
+> 
+> This can be suboptimal in scenarios where a buffer or a piece of a
+> buffer can be split into several contiguous page blocks of the same size.
+> For example, consider an IOMMU that supports 4 KB page blocks, 2 MB page
+> blocks, and 1 GB page blocks, and a buffer that is 4 MB in size is being
+> unmapped at IOVA 0. The current call-flow will result in 4 indirect calls,
+> and 2 page table walks, to unmap 2 entries that are next to each other in
+> the page-tables, when both entries could have been unmapped in one shot
+> by clearing both page table entries in the same call.
+> 
+> The same optimization is applicable to mapping buffers as well, so
+> these patches implement a set of callbacks called unmap_pages and
+> map_pages to the io-pgtable code and IOMMU drivers which unmaps or maps
+> an IOVA range that consists of a number of pages of the same
+> page size that is supported by the IOMMU hardware, and allows for
+> manipulating multiple page table entries in the same set of indirect
+> calls. The reason for introducing these callbacks is to give other IOMMU
+> drivers/io-pgtable formats time to change to using the new callbacks, so
+> that the transition to using this approach can be done piecemeal.
 
-There are a lot more of these in this file.
+Hi Will,
 
-$ ./scripts/checkpatch.pl --fix-inplace --strict include/linux/vdpa.h
+Did you get a chance to look at this patchset? Most patches are already
+acked/reviewed and all still applies clean on rc1.
 
-and a little typing gives:
----
- include/linux/vdpa.h | 50 +++++++++++++++++++++++++-------------------------
- 1 file changed, 25 insertions(+), 25 deletions(-)
-
-diff --git a/include/linux/vdpa.h b/include/linux/vdpa.h
-index 3357ac98878d4..14cd4248e59fd 100644
---- a/include/linux/vdpa.h
-+++ b/include/linux/vdpa.h
-@@ -43,17 +43,17 @@ struct vdpa_vq_state_split {
-  * @last_used_idx: used index
-  */
- struct vdpa_vq_state_packed {
--        u16	last_avail_counter:1;
--        u16	last_avail_idx:15;
--        u16	last_used_counter:1;
--        u16	last_used_idx:15;
-+	u16	last_avail_counter:1;
-+	u16	last_avail_idx:15;
-+	u16	last_used_counter:1;
-+	u16	last_used_idx:15;
- };
- 
- struct vdpa_vq_state {
--     union {
--          struct vdpa_vq_state_split split;
--          struct vdpa_vq_state_packed packed;
--     };
-+	union {
-+		struct vdpa_vq_state_split split;
-+		struct vdpa_vq_state_packed packed;
-+	};
- };
- 
- struct vdpa_mgmt_dev;
-@@ -131,7 +131,7 @@ struct vdpa_iova_range {
-  *				@vdev: vdpa device
-  *				@idx: virtqueue index
-  *				@state: pointer to returned state (last_avail_idx)
-- * @get_vq_notification: 	Get the notification area for a virtqueue
-+ * @get_vq_notification:	Get the notification area for a virtqueue
-  *				@vdev: vdpa device
-  *				@idx: virtqueue index
-  *				Returns the notifcation area
-@@ -277,13 +277,13 @@ struct vdpa_device *__vdpa_alloc_device(struct device *parent,
- 					const struct vdpa_config_ops *config,
- 					size_t size, const char *name);
- 
--#define vdpa_alloc_device(dev_struct, member, parent, config, name)   \
--			  container_of(__vdpa_alloc_device( \
--				       parent, config, \
--				       sizeof(dev_struct) + \
--				       BUILD_BUG_ON_ZERO(offsetof( \
--				       dev_struct, member)), name), \
--				       dev_struct, member)
-+#define vdpa_alloc_device(dev_struct, member, parent, config, name)	\
-+	container_of(__vdpa_alloc_device(parent, config,		\
-+					 sizeof(dev_struct) +		\
-+					 BUILD_BUG_ON_ZERO(offsetof(dev_struct,	\
-+								    member)), \
-+					 name),				\
-+		     dev_struct, member)
- 
- int vdpa_register_device(struct vdpa_device *vdev, int nvqs);
- void vdpa_unregister_device(struct vdpa_device *vdev);
-@@ -308,8 +308,8 @@ struct vdpa_driver {
- int __vdpa_register_driver(struct vdpa_driver *drv, struct module *owner);
- void vdpa_unregister_driver(struct vdpa_driver *drv);
- 
--#define module_vdpa_driver(__vdpa_driver) \
--	module_driver(__vdpa_driver, vdpa_register_driver,	\
-+#define module_vdpa_driver(__vdpa_driver)				\
-+	module_driver(__vdpa_driver, vdpa_register_driver,		\
- 		      vdpa_unregister_driver)
- 
- static inline struct vdpa_driver *drv_to_vdpa(struct device_driver *driver)
-@@ -339,25 +339,25 @@ static inline struct device *vdpa_get_dma_dev(struct vdpa_device *vdev)
- 
- static inline void vdpa_reset(struct vdpa_device *vdev)
- {
--        const struct vdpa_config_ops *ops = vdev->config;
-+	const struct vdpa_config_ops *ops = vdev->config;
- 
- 	vdev->features_valid = false;
--        ops->set_status(vdev, 0);
-+	ops->set_status(vdev, 0);
- }
- 
- static inline int vdpa_set_features(struct vdpa_device *vdev, u64 features)
- {
--        const struct vdpa_config_ops *ops = vdev->config;
-+	const struct vdpa_config_ops *ops = vdev->config;
- 
- 	vdev->features_valid = true;
--        return ops->set_features(vdev, features);
-+	return ops->set_features(vdev, features);
- }
- 
--
--static inline void vdpa_get_config(struct vdpa_device *vdev, unsigned offset,
-+static inline void vdpa_get_config(struct vdpa_device *vdev,
-+				   unsigned int offset,
- 				   void *buf, unsigned int len)
- {
--        const struct vdpa_config_ops *ops = vdev->config;
-+	const struct vdpa_config_ops *ops = vdev->config;
- 
- 	/*
- 	 * Config accesses aren't supposed to trigger before features are set.
-
-
+Thanks,
+Georgi
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
