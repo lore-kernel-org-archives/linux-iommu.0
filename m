@@ -2,84 +2,122 @@ Return-Path: <SRS0=i+j8=MG=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-15.3 required=3.0 tests=BAYES_00,
-	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_CR_TRAILER,INCLUDES_PATCH,
-	MAILING_LIST_MULTI,NICE_REPLY_A,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,
-	USER_AGENT_SANE_1 autolearn=unavailable autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-5.1 required=3.0 tests=BAYES_00,DKIM_INVALID,
+	DKIM_SIGNED,HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,NICE_REPLY_A,
+	SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_SANE_1 autolearn=no
+	autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 310D0C11F66
-	for <iommu@archiver.kernel.org>; Wed, 14 Jul 2021 08:56:31 +0000 (UTC)
-Received: from smtp3.osuosl.org (smtp3.osuosl.org [140.211.166.136])
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 868F9C11F66
+	for <iommu@archiver.kernel.org>; Wed, 14 Jul 2021 08:57:13 +0000 (UTC)
+Received: from smtp4.osuosl.org (smtp4.osuosl.org [140.211.166.137])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id D809F613AA
-	for <iommu@archiver.kernel.org>; Wed, 14 Jul 2021 08:56:30 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org D809F613AA
-Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=collabora.com
+	by mail.kernel.org (Postfix) with ESMTPS id 419B761363
+	for <iommu@archiver.kernel.org>; Wed, 14 Jul 2021 08:57:13 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 419B761363
+Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=redhat.com
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by smtp3.osuosl.org (Postfix) with ESMTP id A7C3D60A76;
-	Wed, 14 Jul 2021 08:56:30 +0000 (UTC)
+	by smtp4.osuosl.org (Postfix) with ESMTP id 064434069D;
+	Wed, 14 Jul 2021 08:57:13 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from smtp3.osuosl.org ([127.0.0.1])
-	by localhost (smtp3.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id KV9l97izUppF; Wed, 14 Jul 2021 08:56:29 +0000 (UTC)
+Received: from smtp4.osuosl.org ([127.0.0.1])
+	by localhost (smtp4.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+	with ESMTP id LSzHM8E-VLJ9; Wed, 14 Jul 2021 08:57:12 +0000 (UTC)
 Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [IPv6:2605:bc80:3010:104::8cd3:938])
-	by smtp3.osuosl.org (Postfix) with ESMTPS id 4C18B60A6D;
-	Wed, 14 Jul 2021 08:56:29 +0000 (UTC)
+	by smtp4.osuosl.org (Postfix) with ESMTPS id A502B40531;
+	Wed, 14 Jul 2021 08:57:11 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 05274C001A;
-	Wed, 14 Jul 2021 08:56:29 +0000 (UTC)
-Received: from smtp2.osuosl.org (smtp2.osuosl.org [IPv6:2605:bc80:3010::133])
- by lists.linuxfoundation.org (Postfix) with ESMTP id CC3E6C000E
- for <iommu@lists.linux-foundation.org>; Wed, 14 Jul 2021 08:56:27 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 7960FC001A;
+	Wed, 14 Jul 2021 08:57:11 +0000 (UTC)
+Received: from smtp4.osuosl.org (smtp4.osuosl.org [IPv6:2605:bc80:3010::137])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 2E543C000E
+ for <iommu@lists.linux-foundation.org>; Wed, 14 Jul 2021 08:57:10 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by smtp2.osuosl.org (Postfix) with ESMTP id 9BFB9401FA
- for <iommu@lists.linux-foundation.org>; Wed, 14 Jul 2021 08:56:27 +0000 (UTC)
+ by smtp4.osuosl.org (Postfix) with ESMTP id 1AA3640699
+ for <iommu@lists.linux-foundation.org>; Wed, 14 Jul 2021 08:57:10 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from smtp2.osuosl.org ([127.0.0.1])
- by localhost (smtp2.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id 4ujaWglqDHBJ for <iommu@lists.linux-foundation.org>;
- Wed, 14 Jul 2021 08:56:26 +0000 (UTC)
+Received: from smtp4.osuosl.org ([127.0.0.1])
+ by localhost (smtp4.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+ with ESMTP id nwmCn0BhD0hR for <iommu@lists.linux-foundation.org>;
+ Wed, 14 Jul 2021 08:57:08 +0000 (UTC)
 X-Greylist: domain auto-whitelisted by SQLgrey-1.8.0
-Received: from bhuna.collabora.co.uk (bhuna.collabora.co.uk
- [IPv6:2a00:1098:0:82:1000:25:2eeb:e3e3])
- by smtp2.osuosl.org (Postfix) with ESMTPS id 589C840114
- for <iommu@lists.linux-foundation.org>; Wed, 14 Jul 2021 08:56:26 +0000 (UTC)
-Received: from [IPv6:2a02:810a:880:f54:e49e:3ed0:1a77:5623] (unknown
- [IPv6:2a02:810a:880:f54:e49e:3ed0:1a77:5623])
- (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
- (No client certificate requested) (Authenticated sender: dafna)
- by bhuna.collabora.co.uk (Postfix) with ESMTPSA id 4DB701F42B69;
- Wed, 14 Jul 2021 09:56:23 +0100 (BST)
-Subject: Re: [PATCH v6 00/11] Clean up "mediatek,larb"
-To: Yong Wu <yong.wu@mediatek.com>, Matthias Brugger
- <matthias.bgg@gmail.com>, Joerg Roedel <joro@8bytes.org>,
- Rob Herring <robh+dt@kernel.org>,
- Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>,
- David Airlie <airlied@linux.ie>, Mauro Carvalho Chehab <mchehab@kernel.org>
-References: <20210714025626.5528-1-yong.wu@mediatek.com>
-From: Dafna Hirschfeld <dafna.hirschfeld@collabora.com>
-Message-ID: <672ef386-aa95-da45-0f17-acb398a1f6e0@collabora.com>
-Date: Wed, 14 Jul 2021 10:56:20 +0200
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
- Thunderbird/78.11.0
+Received: from us-smtp-delivery-124.mimecast.com
+ (us-smtp-delivery-124.mimecast.com [216.205.24.124])
+ by smtp4.osuosl.org (Postfix) with ESMTPS id AF46540531
+ for <iommu@lists.linux-foundation.org>; Wed, 14 Jul 2021 08:57:08 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+ s=mimecast20190719; t=1626253027;
+ h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+ to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+ content-transfer-encoding:content-transfer-encoding:
+ in-reply-to:in-reply-to:references:references;
+ bh=b67pj1XjCFcb4vjOC6L9gEcYmcQccLEDJzYb3n+c66I=;
+ b=NbM7RsWJIkcbd7Zf5cmO5p7jU5A/21B5nXMLmMABf2kzFBvklDuZeVVCndeSpoPxUfe/QZ
+ iu6ZRkJiVpc/afy5fVIVMD4+qqAe008dFOJV9uW6MyXqTj16gc5cL45GSZyjxGq4fZoCr+
+ c7NOxY6Tmua2w6uieEJKMkk4qz1OLHg=
+Received: from mail-pf1-f199.google.com (mail-pf1-f199.google.com
+ [209.85.210.199]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-167--Ws65vHXNny6nH2pd0hEeg-1; Wed, 14 Jul 2021 04:57:06 -0400
+X-MC-Unique: -Ws65vHXNny6nH2pd0hEeg-1
+Received: by mail-pf1-f199.google.com with SMTP id
+ w191-20020a62ddc80000b0290318fa423788so1138932pff.11
+ for <iommu@lists.linux-foundation.org>; Wed, 14 Jul 2021 01:57:06 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+ d=1e100.net; s=20161025;
+ h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+ :user-agent:mime-version:in-reply-to:content-transfer-encoding
+ :content-language;
+ bh=b67pj1XjCFcb4vjOC6L9gEcYmcQccLEDJzYb3n+c66I=;
+ b=hNbSdPH43oU+aTqjoA4VDw07sCoSJnoeCUXKXjkLofTGCE/5Avcy4cSezga/NV1rNP
+ R21mN7aLRePgA/mRjaRqXoppRPqWmbjbMAsJ45mZ6bMqXjh8TR2ryycb2jXVONOBC1UI
+ EqvE1YIsA93YxPEErRp8mSJP1l6bwZFYK7ZYpx8924nJAPkWjrB8dRy3QN6nL3tFI1Pe
+ AFRO759PBwLfvhMxE9eUgKs0cWowyLciA8EthkxgQ995ASN5Q/qc0SQbcxvm0tes5clO
+ VAdk4bwLWpLtpAAG4+OXP/9PvsY6jGwc+kUCB/KxDAAPt09yVHfzBZarUHlIQYaYemTv
+ fJDg==
+X-Gm-Message-State: AOAM5319Qc1eMh4hZFvsadGbbL/ZkCQTH8x7KaBlyiyvvGfxNVhDw4Cz
+ VUJN84GpB29ttxxdt2IHt62KIo90cNrv3LuzQkrjRGYHjHUd6vUMEXICIGGzBvgEihTF8oq3lUI
+ /QQ+Nh2tCP3uKW1R28P5A8IY7svilwA==
+X-Received: by 2002:a17:90a:af90:: with SMTP id
+ w16mr2814482pjq.129.1626253025290; 
+ Wed, 14 Jul 2021 01:57:05 -0700 (PDT)
+X-Google-Smtp-Source: ABdhPJzI/UxSDMVXZBsCbO/ysTuOL+td5Krg49S3x+yII+Nt1pi43Zbgr08iKwIXB4LRw/hvEMwy1w==
+X-Received: by 2002:a17:90a:af90:: with SMTP id
+ w16mr2814452pjq.129.1626253024987; 
+ Wed, 14 Jul 2021 01:57:04 -0700 (PDT)
+Received: from wangxiaodeMacBook-Air.local ([209.132.188.80])
+ by smtp.gmail.com with ESMTPSA id d2sm2127796pgh.59.2021.07.14.01.56.57
+ (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+ Wed, 14 Jul 2021 01:57:04 -0700 (PDT)
+Subject: Re: [PATCH v9 16/17] vduse: Introduce VDUSE - vDPA Device in Userspace
+To: Greg KH <gregkh@linuxfoundation.org>
+References: <20210713084656.232-1-xieyongji@bytedance.com>
+ <20210713084656.232-17-xieyongji@bytedance.com>
+ <26116714-f485-eeab-4939-71c4c10c30de@redhat.com>
+ <20210714014817-mutt-send-email-mst@kernel.org>
+ <0565ed6c-88e2-6d93-7cc6-7b4afaab599c@redhat.com>
+ <YO6IiDIMUjQsA2LS@kroah.com>
+From: Jason Wang <jasowang@redhat.com>
+Message-ID: <a493bc51-9a5c-05f1-2eac-54cb9e6c9d9b@redhat.com>
+Date: Wed, 14 Jul 2021 16:56:55 +0800
+User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:78.0)
+ Gecko/20100101 Thunderbird/78.11.0
 MIME-Version: 1.0
-In-Reply-To: <20210714025626.5528-1-yong.wu@mediatek.com>
+In-Reply-To: <YO6IiDIMUjQsA2LS@kroah.com>
+Authentication-Results: relay.mimecast.com;
+ auth=pass smtp.auth=CUSA124A263 smtp.mailfrom=jasowang@redhat.com
+X-Mimecast-Spam-Score: 0
+X-Mimecast-Originator: redhat.com
 Content-Language: en-US
-Cc: Xia Jiang <xia.jiang@mediatek.com>, Chun-Kuang Hu <chunkuang.hu@kernel.org>,
- Will Deacon <will.deacon@arm.com>, dri-devel@lists.freedesktop.org,
- anthony.huang@mediatek.com, youlin.pei@mediatek.com,
- Nicolas Boichat <drinkcat@chromium.org>, Evan Green <evgreen@chromium.org>,
- Eizan Miyamoto <eizan@chromium.org>, Matthias Kaehlcke <mka@chromium.org>,
- linux-media@vger.kernel.org, devicetree@vger.kernel.org,
- Philipp Zabel <p.zabel@pengutronix.de>, yi.kuo@mediatek.com,
- linux-mediatek@lists.infradead.org, Hsin-Yi Wang <hsinyi@chromium.org>,
- ming-fan.chen@mediatek.com, Tiffany Lin <tiffany.lin@mediatek.com>,
- linux-arm-kernel@lists.infradead.org, anan.sun@mediatek.com,
- srv_heupstream@mediatek.com, acourbot@chromium.org,
- linux-kernel@vger.kernel.org, iommu@lists.linux-foundation.org,
- Daniel Vetter <daniel@ffwll.ch>, Robin Murphy <robin.murphy@arm.com>
+Cc: kvm@vger.kernel.org, "Michael S. Tsirkin" <mst@redhat.com>,
+ virtualization@lists.linux-foundation.org, christian.brauner@canonical.com,
+ corbet@lwn.net, willy@infradead.org, hch@infradead.org,
+ Xie Yongji <xieyongji@bytedance.com>, dan.carpenter@oracle.com,
+ sgarzare@redhat.com, xiaodong.liu@intel.com, viro@zeniv.linux.org.uk,
+ stefanha@redhat.com, songmuchun@bytedance.com, axboe@kernel.dk,
+ zhe.he@windriver.com, netdev@vger.kernel.org, rdunlap@infradead.org,
+ linux-kernel@vger.kernel.org, iommu@lists.linux-foundation.org, bcrl@kvack.org,
+ linux-fsdevel@vger.kernel.org, mika.penttila@nextfour.com
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -92,147 +130,46 @@ List-Post: <mailto:iommu@lists.linux-foundation.org>
 List-Help: <mailto:iommu-request@lists.linux-foundation.org?subject=help>
 List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
  <mailto:iommu-request@lists.linux-foundation.org?subject=subscribe>
-Content-Transfer-Encoding: 7bit
-Content-Type: text/plain; charset="us-ascii"; Format="flowed"
+Content-Transfer-Encoding: base64
+Content-Type: text/plain; charset="utf-8"; Format="flowed"
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-Hi
-
-Thanks for the patchset.
-
-I tested it on mt8173 (elm) with chromeos userspace.
-Before that patchset, the test:
-
-tast -verbose run -build=false 10.42.0.175 video.DecodeAccel.h264
-
-sometimes passed and sometimes failed with 'context deadline exceeded'.
-With this patchset it seems that the test always passes so I added tested-by:
-
-Tested-by: Dafna Hirschfeld <dafna.hirschfeld@collabora.com>
-
-Thanks,
-Dafna
-
-
-
-
-On 14.07.21 04:56, Yong Wu wrote:
-> MediaTek IOMMU block diagram always like below:
-> 
->          M4U
->           |
->      smi-common
->           |
->    -------------
->    |         |  ...
->    |         |
-> larb1     larb2
->    |         |
-> vdec       venc
-> 
-> All the consumer connect with smi-larb, then connect with smi-common.
-> 
-> When the consumer works, it should enable the smi-larb's power which also
-> need enable the smi-common's power firstly.
-> 
-> Thus, Firstly, use the device link connect the consumer and the
-> smi-larbs. then add device link between the smi-larb and smi-common.
-> 
-> After adding the device_link, then "mediatek,larb" property can be removed.
-> the iommu consumer don't need call the mtk_smi_larb_get/put to enable
-> the power and clock of smi-larb and smi-common.
-> 
-> About the MM dt-binding/dtsi patches, I guess they should go together, thus
-> I don't split them for each a MM module and each a SoC.
-> 
-> Base on v5.14-rc1, and a jpeg[1] and mdp[2] patchset.
-> 
-> [1] https://lore.kernel.org/linux-mediatek/20210702102304.3346429-1-hsinyi@chromium.org/
-> [2] https://lore.kernel.org/linux-mediatek/20210709022324.1607884-1-eizan@chromium.org/
-> 
-> Change notes:
-> v6: 1) rebase on v5.14-rc1.
->      2) Fix the issue commented in v5 from Dafna and Hsin-Yi.
->      3) Remove the patches about using pm_runtime_resume_and_get since they have
->         already been merged by other patches.
-> 
-> v5: https://lore.kernel.org/linux-mediatek/20210410091128.31823-1-yong.wu@mediatek.com/
->      1) Base v5.12-rc2.
->      2) Remove changing the mtk-iommu to module_platform_driver patch, It have already been a
->      independent patch.
-> 
-> v4: https://lore.kernel.org/linux-mediatek/1590826218-23653-1-git-send-email-yong.wu@mediatek.com/
->      base on v5.7-rc1.
->    1) Move drm PM patch before smi patchs.
->    2) Change builtin_platform_driver to module_platform_driver since we may need
->       build as module.
->    3) Rebase many patchset as above.
-> 
-> v3: https://lore.kernel.org/linux-iommu/1567503456-24725-1-git-send-email-yong.wu@mediatek.com/
->      1) rebase on v5.3-rc1 and the latest mt8183 patchset.
->      2) Use device_is_bound to check whether the driver is ready from Matthias.
->      3) Add DL_FLAG_STATELESS flag when calling device_link_add and explain the
->     reason in the commit message[3/14].
->      4) Add a display patch[12/14] into this series. otherwise it may affect
->     display HW fastlogo even though it don't happen in mt8183.
->     
-> v2: https://lore.kernel.org/linux-iommu/1560171313-28299-1-git-send-email-yong.wu@mediatek.com/
->     1) rebase on v5.2-rc1.
->     2) Move adding device_link between the consumer and smi-larb into
-> iommu_add_device from Robin.
->     3) add DL_FLAG_AUTOREMOVE_CONSUMER even though the smi is built-in from Evan.
->     4) Remove the shutdown callback in iommu.
-> 
-> v1: https://lore.kernel.org/linux-iommu/1546318276-18993-1-git-send-email-yong.wu@mediatek.com/
-> 
-> Yong Wu (10):
->    dt-binding: mediatek: Get rid of mediatek,larb for multimedia HW
->    iommu/mediatek: Add probe_defer for smi-larb
->    iommu/mediatek: Add device_link between the consumer and the larb
->      devices
->    media: mtk-jpeg: Get rid of mtk_smi_larb_get/put
->    media: mtk-mdp: Get rid of mtk_smi_larb_get/put
->    drm/mediatek: Get rid of mtk_smi_larb_get/put
->    media: mtk-vcodec: Get rid of mtk_smi_larb_get/put
->    memory: mtk-smi: Get rid of mtk_smi_larb_get/put
->    arm: dts: mediatek: Get rid of mediatek,larb for MM nodes
->    arm64: dts: mediatek: Get rid of mediatek,larb for MM nodes
-> 
-> Yongqiang Niu (1):
->    drm/mediatek: Add pm runtime support for ovl and rdma
-> 
->   .../display/mediatek/mediatek,disp.txt        |  9 ----
->   .../bindings/media/mediatek-jpeg-decoder.yaml |  9 ----
->   .../bindings/media/mediatek-jpeg-encoder.yaml |  9 ----
->   .../bindings/media/mediatek-mdp.txt           |  8 ----
->   .../bindings/media/mediatek-vcodec.txt        |  4 --
->   arch/arm/boot/dts/mt2701.dtsi                 |  2 -
->   arch/arm/boot/dts/mt7623n.dtsi                |  5 --
->   arch/arm64/boot/dts/mediatek/mt8173.dtsi      | 16 -------
->   arch/arm64/boot/dts/mediatek/mt8183.dtsi      |  6 ---
->   drivers/gpu/drm/mediatek/mtk_disp_ovl.c       |  9 +++-
->   drivers/gpu/drm/mediatek/mtk_disp_rdma.c      |  9 +++-
->   drivers/gpu/drm/mediatek/mtk_drm_crtc.c       | 19 ++++----
->   drivers/gpu/drm/mediatek/mtk_drm_ddp_comp.c   | 36 +--------------
->   drivers/gpu/drm/mediatek/mtk_drm_ddp_comp.h   |  1 -
->   drivers/gpu/drm/mediatek/mtk_drm_drv.c        |  5 +-
->   drivers/iommu/mtk_iommu.c                     | 24 +++++++++-
->   drivers/iommu/mtk_iommu_v1.c                  | 22 ++++++++-
->   .../media/platform/mtk-jpeg/mtk_jpeg_core.c   | 45 +-----------------
->   .../media/platform/mtk-jpeg/mtk_jpeg_core.h   |  2 -
->   drivers/media/platform/mtk-mdp/mtk_mdp_comp.c | 46 +------------------
->   drivers/media/platform/mtk-mdp/mtk_mdp_comp.h |  2 -
->   drivers/media/platform/mtk-mdp/mtk_mdp_core.c |  1 -
->   .../platform/mtk-vcodec/mtk_vcodec_dec_pm.c   | 37 ++-------------
->   .../platform/mtk-vcodec/mtk_vcodec_drv.h      |  3 --
->   .../platform/mtk-vcodec/mtk_vcodec_enc.c      |  1 -
->   .../platform/mtk-vcodec/mtk_vcodec_enc_pm.c   | 44 ++----------------
->   drivers/memory/mtk-smi.c                      | 14 ------
->   include/soc/mediatek/smi.h                    | 20 --------
->   28 files changed, 85 insertions(+), 323 deletions(-)
-> 
-_______________________________________________
-iommu mailing list
-iommu@lists.linux-foundation.org
-https://lists.linuxfoundation.org/mailman/listinfo/iommu
+CuWcqCAyMDIxLzcvMTQg5LiL5Y2IMjo0NywgR3JlZyBLSCDlhpnpgZM6Cj4gT24gV2VkLCBKdWwg
+MTQsIDIwMjEgYXQgMDI6MDI6NTBQTSArMDgwMCwgSmFzb24gV2FuZyB3cm90ZToKPj4g5ZyoIDIw
+MjEvNy8xNCDkuIvljYgxOjU0LCBNaWNoYWVsIFMuIFRzaXJraW4g5YaZ6YGTOgo+Pj4gT24gV2Vk
+LCBKdWwgMTQsIDIwMjEgYXQgMDE6NDU6MzlQTSArMDgwMCwgSmFzb24gV2FuZyB3cm90ZToKPj4+
+Pj4gK3N0YXRpYyBpbnQgdmR1c2VfZGV2X21zZ19zeW5jKHN0cnVjdCB2ZHVzZV9kZXYgKmRldiwK
+Pj4+Pj4gKwkJCSAgICAgIHN0cnVjdCB2ZHVzZV9kZXZfbXNnICptc2cpCj4+Pj4+ICt7Cj4+Pj4+
+ICsJaW50IHJldDsKPj4+Pj4gKwo+Pj4+PiArCWluaXRfd2FpdHF1ZXVlX2hlYWQoJm1zZy0+d2Fp
+dHEpOwo+Pj4+PiArCXNwaW5fbG9jaygmZGV2LT5tc2dfbG9jayk7Cj4+Pj4+ICsJbXNnLT5yZXEu
+cmVxdWVzdF9pZCA9IGRldi0+bXNnX3VuaXF1ZSsrOwo+Pj4+PiArCXZkdXNlX2VucXVldWVfbXNn
+KCZkZXYtPnNlbmRfbGlzdCwgbXNnKTsKPj4+Pj4gKwl3YWtlX3VwKCZkZXYtPndhaXRxKTsKPj4+
+Pj4gKwlzcGluX3VubG9jaygmZGV2LT5tc2dfbG9jayk7Cj4+Pj4+ICsKPj4+Pj4gKwl3YWl0X2V2
+ZW50X2tpbGxhYmxlX3RpbWVvdXQobXNnLT53YWl0cSwgbXNnLT5jb21wbGV0ZWQsCj4+Pj4+ICsJ
+CQkJICAgIFZEVVNFX1JFUVVFU1RfVElNRU9VVCAqIEhaKTsKPj4+Pj4gKwlzcGluX2xvY2soJmRl
+di0+bXNnX2xvY2spOwo+Pj4+PiArCWlmICghbXNnLT5jb21wbGV0ZWQpIHsKPj4+Pj4gKwkJbGlz
+dF9kZWwoJm1zZy0+bGlzdCk7Cj4+Pj4+ICsJCW1zZy0+cmVzcC5yZXN1bHQgPSBWRFVTRV9SRVFf
+UkVTVUxUX0ZBSUxFRDsKPj4+Pj4gKwl9Cj4+Pj4+ICsJcmV0ID0gKG1zZy0+cmVzcC5yZXN1bHQg
+PT0gVkRVU0VfUkVRX1JFU1VMVF9PSykgPyAwIDogLUVJTzsKPj4+PiBJIHRoaW5rIHdlIHNob3Vs
+ZCBtYXJrIHRoZSBkZXZpY2UgYXMgbWFsZnVuY3Rpb24gd2hlbiB0aGVyZSBpcyBhIHRpbWVvdXQg
+YW5kCj4+Pj4gZm9yYmlkIGFueSB1c2Vyc3BhY2Ugb3BlcmF0aW9ucyBleGNlcHQgZm9yIHRoZSBk
+ZXN0cm95IGFmdHdhcmRzIGZvciBzYWZldHkuCj4+PiBUaGlzIGxvb2tzIGxpa2UgaWYgb25lIHRy
+aWVkIHRvIHJ1biBnZGIgb24gdGhlIHByb2dyYW0gdGhlIGJlaGF2aW91cgo+Pj4gd2lsbCBjaGFu
+Z2UgY29tcGxldGVseSBiZWNhdXNlIGtlcm5lbCB3YW50cyBpdCB0byByZXNwb25kIHdpdGhpbgo+
+Pj4gc3BlY2lmaWMgdGltZS4gTG9va3MgbGlrZSBhIHJlY2VpcGUgZm9yIGhlaXNlbmJ1Z3MuCj4+
+Pgo+Pj4gTGV0J3Mgbm90IGJ1aWxkIGludGVyZmFjZXMgd2l0aCBhcmJpdHJhcnkgdGltZW91dHMg
+bGlrZSB0aGF0Lgo+Pj4gSW50ZXJydXB0aWJsZSB3YWl0IGV4aXN0cyBmb3IgdGhpcyB2ZXJ5IHJl
+YXNvbi4KPj4KPj4gVGhlIHByb2JsZW0gaXMuIERvIHdlIHdhbnQgdXNlcnNwYWNlIHByb2dyYW0g
+bGlrZSBtb2Rwcm9iZSB0byBiZSBzdHVjayBmb3IKPj4gaW5kZWZpbml0ZSB0aW1lIGFuZCBleHBl
+Y3QgdGhlIGFkbWluaXN0cmF0b3IgdG8ga2lsbCB0aGF0Pwo+IFdoeSB3b3VsZCBtb2Rwcm9iZSBi
+ZSBzdHVjayBmb3IgZm9yZXZlcj8KPgo+IElzIHRoaXMgb24gdGhlIG1vZHVsZSBwcm9iZSBwYXRo
+PwoKClllcywgaXQgaXMgY2FsbGVkIGluIHRoZSBkZXZpY2UgcHJvYmluZyBwYXRoIHdoZXJlIHRo
+ZSBrZXJuZWwgZm9yd2FyZHMgCnRoZSBkZXZpY2UgY29uZmlndXJhdGlvbiByZXF1ZXN0IHRvIHVz
+ZXJzcGFjZSBhbmQgd2FpdCBmb3IgaXRzIHJlc3BvbnNlLgoKSWYgaXQgdHVybnMgb3V0IHRvIGJl
+IHRyaWNreSwgd2UgY2FuIGltcGxlbWVudCB0aGUgd2hvbGUgZGV2aWNlIGluc2lkZSAKdGhlIGtl
+cm5lbCBhbmQgbGVhdmUgb25seSB0aGUgZGF0YXBhdGggaW4gdGhlIHVzZXJzcGFjZSAoYXMgd2hh
+dCBUVU4gZGlkKS4KClRoYW5rcwoKCj4KCl9fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19f
+X19fX19fX19fX19fX19fCmlvbW11IG1haWxpbmcgbGlzdAppb21tdUBsaXN0cy5saW51eC1mb3Vu
+ZGF0aW9uLm9yZwpodHRwczovL2xpc3RzLmxpbnV4Zm91bmRhdGlvbi5vcmcvbWFpbG1hbi9saXN0
+aW5mby9pb21tdQ==
