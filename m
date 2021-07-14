@@ -7,76 +7,74 @@ X-Spam-Status: No, score=-15.0 required=3.0 tests=BAYES_00,DKIM_INVALID,
 	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,UNPARSEABLE_RELAY,URIBL_BLOCKED,
 	USER_AGENT_SANE_2 autolearn=ham autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 442C0C07E9A
-	for <iommu@archiver.kernel.org>; Wed, 14 Jul 2021 11:16:44 +0000 (UTC)
-Received: from smtp1.osuosl.org (smtp1.osuosl.org [140.211.166.138])
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 79B85C07E9A
+	for <iommu@archiver.kernel.org>; Wed, 14 Jul 2021 11:17:36 +0000 (UTC)
+Received: from smtp3.osuosl.org (smtp3.osuosl.org [140.211.166.136])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id EA0B1613B6
-	for <iommu@archiver.kernel.org>; Wed, 14 Jul 2021 11:16:43 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org EA0B1613B6
+	by mail.kernel.org (Postfix) with ESMTPS id 2FE5B613B2
+	for <iommu@archiver.kernel.org>; Wed, 14 Jul 2021 11:17:36 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 2FE5B613B2
 Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=mediatek.com
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by smtp1.osuosl.org (Postfix) with ESMTP id 98E5183BE7;
-	Wed, 14 Jul 2021 11:16:43 +0000 (UTC)
+	by smtp3.osuosl.org (Postfix) with ESMTP id 025E360B41;
+	Wed, 14 Jul 2021 11:17:36 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from smtp1.osuosl.org ([127.0.0.1])
-	by localhost (smtp1.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id 2VDCUxIHO3Ja; Wed, 14 Jul 2021 11:16:42 +0000 (UTC)
+Received: from smtp3.osuosl.org ([127.0.0.1])
+	by localhost (smtp3.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+	with ESMTP id N5GOyghPXFnZ; Wed, 14 Jul 2021 11:17:34 +0000 (UTC)
 Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [IPv6:2605:bc80:3010:104::8cd3:938])
-	by smtp1.osuosl.org (Postfix) with ESMTPS id 5EDA083B8B;
-	Wed, 14 Jul 2021 11:16:42 +0000 (UTC)
+	by smtp3.osuosl.org (Postfix) with ESMTPS id C100660B19;
+	Wed, 14 Jul 2021 11:17:33 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 33E2FC0010;
-	Wed, 14 Jul 2021 11:16:42 +0000 (UTC)
-Received: from smtp2.osuosl.org (smtp2.osuosl.org [140.211.166.133])
- by lists.linuxfoundation.org (Postfix) with ESMTP id BD9B4C000E
- for <iommu@lists.linux-foundation.org>; Wed, 14 Jul 2021 11:16:40 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id AB2E6C0010;
+	Wed, 14 Jul 2021 11:17:33 +0000 (UTC)
+Received: from smtp3.osuosl.org (smtp3.osuosl.org [IPv6:2605:bc80:3010::136])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 766A3C000E
+ for <iommu@lists.linux-foundation.org>; Wed, 14 Jul 2021 11:17:31 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by smtp2.osuosl.org (Postfix) with ESMTP id 9DADB40265
- for <iommu@lists.linux-foundation.org>; Wed, 14 Jul 2021 11:16:40 +0000 (UTC)
+ by smtp3.osuosl.org (Postfix) with ESMTP id 650A560B41
+ for <iommu@lists.linux-foundation.org>; Wed, 14 Jul 2021 11:17:31 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Authentication-Results: smtp2.osuosl.org (amavisd-new);
- dkim=pass (1024-bit key) header.d=mediatek.com
-Received: from smtp2.osuosl.org ([127.0.0.1])
- by localhost (smtp2.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id RFrYVUzJNK78 for <iommu@lists.linux-foundation.org>;
- Wed, 14 Jul 2021 11:16:35 +0000 (UTC)
-X-Greylist: domain auto-whitelisted by SQLgrey-1.8.0
-Received: from mailgw01.mediatek.com (unknown [1.203.163.78])
- by smtp2.osuosl.org (Postfix) with ESMTP id 0A4CC401B8
- for <iommu@lists.linux-foundation.org>; Wed, 14 Jul 2021 11:16:34 +0000 (UTC)
-X-UUID: 278399093b1c47ff99b8fa073b4ed77b-20210714
+Received: from smtp3.osuosl.org ([127.0.0.1])
+ by localhost (smtp3.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+ with ESMTP id JcL8zcA6FKLu for <iommu@lists.linux-foundation.org>;
+ Wed, 14 Jul 2021 11:17:30 +0000 (UTC)
+X-Greylist: from auto-whitelisted by SQLgrey-1.8.0
+Received: from mailgw02.mediatek.com (unknown [1.203.163.81])
+ by smtp3.osuosl.org (Postfix) with ESMTP id A10EE60B19
+ for <iommu@lists.linux-foundation.org>; Wed, 14 Jul 2021 11:17:29 +0000 (UTC)
+X-UUID: 37b55c57c3454cd8b103485dbf769f8b-20210714
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=mediatek.com;
  s=dk; 
  h=Content-Transfer-Encoding:MIME-Version:Content-Type:References:In-Reply-To:Date:CC:To:From:Subject:Message-ID;
- bh=I1AIYOviiCLaz5bYm8DUlQalApcOd6QrzCO//5CMBTY=; 
- b=ADHw3ajNtu6FHv6+8fzGn58ykua4BCJSnSeVfH6yYIL2tAzFlw0XO9ClzNBfAD3TYzC/8S2rom3QYUzHG2Siwz1zKbU0uQi4P1BEmXC/gct44uNDu+Bef3Ls/LS5knhoNxBJw/qHS1+nO5UOba1Jsx1aVqx0j0/vItJrFHpsIsQ=;
-X-UUID: 278399093b1c47ff99b8fa073b4ed77b-20210714
-Received: from mtkcas35.mediatek.inc [(172.27.4.253)] by mailgw01.mediatek.com
+ bh=Q6LzrYoLA5I8zE2H4Wb3+h6SVEZjseCiEm0eHzHqVVY=; 
+ b=Y1vmKf1JjW7fRct618pV5oa5Z4kb7hgjD2TkcFjjj+p9/1ijs5I3S///bHnVdVC6E+/uh2bQgRjZwz9zBBWjc1A0gdm55I+yH1AmUv0OD9WlpoMtFWZcXajNzBTq+rTYerQnF/NKoW7HZIHuWMiF6mOIwa7HpXBtE7zudMjUugo=;
+X-UUID: 37b55c57c3454cd8b103485dbf769f8b-20210714
+Received: from mtkcas34.mediatek.inc [(172.27.4.253)] by mailgw02.mediatek.com
  (envelope-from <yong.wu@mediatek.com>)
  (mailgw01.mediatek.com ESMTP with TLSv1.2 ECDHE-RSA-AES256-SHA384 256/256)
- with ESMTP id 2053316303; Wed, 14 Jul 2021 19:16:28 +0800
-Received: from MTKCAS36.mediatek.inc (172.27.4.186) by MTKMBS31N2.mediatek.inc
- (172.27.4.87) with Microsoft SMTP Server (TLS) id 15.0.1497.2;
- Wed, 14 Jul 2021 19:16:25 +0800
+ with ESMTP id 1517682039; Wed, 14 Jul 2021 19:17:19 +0800
+Received: from MTKCAS36.mediatek.inc (172.27.4.186) by MTKMBS31N1.mediatek.inc
+ (172.27.4.69) with Microsoft SMTP Server (TLS) id 15.0.1497.2;
+ Wed, 14 Jul 2021 19:17:15 +0800
 Received: from [10.17.3.153] (10.17.3.153) by MTKCAS36.mediatek.inc
  (172.27.4.170) with Microsoft SMTP Server id 15.0.1497.2 via Frontend
- Transport; Wed, 14 Jul 2021 19:16:24 +0800
-Message-ID: <1626261384.14352.13.camel@mhfsdcap03>
-Subject: Re: [PATCH v6 03/11] iommu/mediatek: Add device_link between the
- consumer and the larb devices
+ Transport; Wed, 14 Jul 2021 19:17:13 +0800
+Message-ID: <1626261434.14352.14.camel@mhfsdcap03>
+Subject: Re: [PATCH v6 06/11] drm/mediatek: Add pm runtime support for ovl
+ and rdma
 From: Yong Wu <yong.wu@mediatek.com>
 To: Dafna Hirschfeld <dafna.hirschfeld@collabora.com>
-Date: Wed, 14 Jul 2021 19:16:24 +0800
-In-Reply-To: <f7b2c5e5-f540-b885-f063-9611031035bc@collabora.com>
+Date: Wed, 14 Jul 2021 19:17:14 +0800
+In-Reply-To: <61aa5aa9-5bd2-e99c-02ef-f5d13526eb43@collabora.com>
 References: <20210714025626.5528-1-yong.wu@mediatek.com>
- <20210714025626.5528-4-yong.wu@mediatek.com>
- <f7b2c5e5-f540-b885-f063-9611031035bc@collabora.com>
+ <20210714025626.5528-7-yong.wu@mediatek.com>
+ <61aa5aa9-5bd2-e99c-02ef-f5d13526eb43@collabora.com>
 X-Mailer: Evolution 3.10.4-0ubuntu2 
 MIME-Version: 1.0
-X-TM-SNTS-SMTP: 0F41A4D2E10A0920DEDC22C00094324303009B46911208F4D64AC685FD3491552000:8
+X-TM-SNTS-SMTP: 71B93BC55DBF796D54EF11802D7AD481B3722F9B783DF86A1B40DE94AAC8E5FC2000:8
 X-MTK: N
 Cc: Xia Jiang <xia.jiang@mediatek.com>, Chun-Kuang Hu <chunkuang.hu@kernel.org>,
  David Airlie <airlied@linux.ie>, Will
@@ -86,6 +84,7 @@ Cc: Xia Jiang <xia.jiang@mediatek.com>, Chun-Kuang Hu <chunkuang.hu@kernel.org>,
  Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>,
  Evan Green <evgreen@chromium.org>, Eizan
  Miyamoto <eizan@chromium.org>, Matthias Kaehlcke <mka@chromium.org>,
+ yongqiang.niu@mediatek.com, CK Hu <ck.hu@mediatek.com>,
  linux-media@vger.kernel.org, devicetree@vger.kernel.org,
  Philipp Zabel <p.zabel@pengutronix.de>, Tiffany Lin <tiffany.lin@mediatek.com>,
  yi.kuo@mediatek.com, Rob Herring <robh+dt@kernel.org>,
@@ -112,171 +111,157 @@ Content-Transfer-Encoding: 7bit
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-On Wed, 2021-07-14 at 10:26 +0200, Dafna Hirschfeld wrote:
+On Wed, 2021-07-14 at 10:44 +0200, Dafna Hirschfeld wrote:
 > 
 > On 14.07.21 04:56, Yong Wu wrote:
-> > MediaTek IOMMU-SMI diagram is like below. all the consumer connect with
-> > smi-larb, then connect with smi-common.
+> > From: Yongqiang Niu <yongqiang.niu@mediatek.com>
 > > 
-> >          M4U
-> >           |
-> >      smi-common
-> >           |
-> >    -------------
-> >    |         |    ...
-> >    |         |
-> > larb1     larb2
-> >    |         |
-> > vdec       venc
+> > Prepare for smi cleaning up "mediatek,larb".
 > > 
-> > When the consumer works, it should enable the smi-larb's power which
-> > also need enable the smi-common's power firstly.
+> > Display use the dispsys device to call pm_rumtime_get_sync before.
+> > This patch add pm_runtime_xx with ovl and rdma device whose nodes has
+> > "iommus" property, then display could help pm_runtime_get for smi via
+> > ovl or rdma device.
 > > 
-> > Thus, First of all, use the device link connect the consumer and the
-> > smi-larbs. then add device link between the smi-larb and smi-common.
-> > 
-> > This patch adds device_link between the consumer and the larbs.
-> > 
-> > When device_link_add, I add the flag DL_FLAG_STATELESS to avoid calling
-> > pm_runtime_xx to keep the original status of clocks. It can avoid two
-> > issues:
-> > 1) Display HW show fastlogo abnormally reported in [1]. At the beggining,
-> > all the clocks are enabled before entering kernel, but the clocks for
-> > display HW(always in larb0) will be gated after clk_enable and clk_disable
-> > called from device_link_add(->pm_runtime_resume) and rpm_idle. The clock
-> > operation happened before display driver probe. At that time, the display
-> > HW will be abnormal.
-> > 
-> > 2) A deadlock issue reported in [2]. Use DL_FLAG_STATELESS to skip
-> > pm_runtime_xx to avoid the deadlock.
-> > 
-> > Corresponding, DL_FLAG_AUTOREMOVE_CONSUMER can't be added, then
-> > device_link_removed should be added explicitly.
-> > 
-> > [1] https://lore.kernel.org/linux-mediatek/1564213888.22908.4.camel@mhfsdcap03/
-> > [2] https://lore.kernel.org/patchwork/patch/1086569/
-> > 
-> > Suggested-by: Tomasz Figa <tfiga@chromium.org>
+> > CC: CK Hu <ck.hu@mediatek.com>
+> > Signed-off-by: Yongqiang Niu <yongqiang.niu@mediatek.com>
 > > Signed-off-by: Yong Wu <yong.wu@mediatek.com>
+> > (Yong: Use pm_runtime_resume_and_get instead of pm_runtime_get_sync)
+> > Acked-by: Chun-Kuang Hu <chunkuang.hu@kernel.org>
 > > ---
-> >   drivers/iommu/mtk_iommu.c    | 22 ++++++++++++++++++++++
-> >   drivers/iommu/mtk_iommu_v1.c | 20 +++++++++++++++++++-
-> >   2 files changed, 41 insertions(+), 1 deletion(-)
+> >   drivers/gpu/drm/mediatek/mtk_disp_ovl.c  |  9 ++++++++-
+> >   drivers/gpu/drm/mediatek/mtk_disp_rdma.c |  9 ++++++++-
+> >   drivers/gpu/drm/mediatek/mtk_drm_crtc.c  | 12 +++++++++++-
+> >   3 files changed, 27 insertions(+), 3 deletions(-)
 > > 
-> > diff --git a/drivers/iommu/mtk_iommu.c b/drivers/iommu/mtk_iommu.c
-> > index a02dde094788..ee742900cf4b 100644
-> > --- a/drivers/iommu/mtk_iommu.c
-> > +++ b/drivers/iommu/mtk_iommu.c
-> > @@ -571,22 +571,44 @@ static struct iommu_device *mtk_iommu_probe_device(struct device *dev)
+> > diff --git a/drivers/gpu/drm/mediatek/mtk_disp_ovl.c b/drivers/gpu/drm/mediatek/mtk_disp_ovl.c
+> > index fa9d79963cd3..ea5760f856ec 100644
+> > --- a/drivers/gpu/drm/mediatek/mtk_disp_ovl.c
+> > +++ b/drivers/gpu/drm/mediatek/mtk_disp_ovl.c
+> > @@ -11,6 +11,7 @@
+> >   #include <linux/of_device.h>
+> >   #include <linux/of_irq.h>
+> >   #include <linux/platform_device.h>
+> > +#include <linux/pm_runtime.h>
+> >   #include <linux/soc/mediatek/mtk-cmdq.h>
+> >   
+> >   #include "mtk_disp_drv.h"
+> > @@ -414,15 +415,21 @@ static int mtk_disp_ovl_probe(struct platform_device *pdev)
+> >   		return ret;
+> >   	}
+> >   
+> > +	pm_runtime_enable(dev);
+> > +
+> >   	ret = component_add(dev, &mtk_disp_ovl_component_ops);
+> > -	if (ret)
+> > +	if (ret) {
+> > +		pm_runtime_disable(dev);
+> >   		dev_err(dev, "Failed to add component: %d\n", ret);
+> > +	}
+> >   
+> >   	return ret;
+> >   }
+> >   
+> >   static int mtk_disp_ovl_remove(struct platform_device *pdev)
 > >   {
-> >   	struct iommu_fwspec *fwspec = dev_iommu_fwspec_get(dev);
-> >   	struct mtk_iommu_data *data;
-> > +	struct device_link *link;
-> > +	struct device *larbdev;
-> > +	unsigned int larbid;
+> > +	pm_runtime_disable(&pdev->dev);
+> > +
+> >   	return 0;
+> >   }
 > >   
-> >   	if (!fwspec || fwspec->ops != &mtk_iommu_ops)
-> >   		return ERR_PTR(-ENODEV); /* Not a iommu client device */
+> > diff --git a/drivers/gpu/drm/mediatek/mtk_disp_rdma.c b/drivers/gpu/drm/mediatek/mtk_disp_rdma.c
+> > index 705f28ceb4dd..0f31d1c8e37c 100644
+> > --- a/drivers/gpu/drm/mediatek/mtk_disp_rdma.c
+> > +++ b/drivers/gpu/drm/mediatek/mtk_disp_rdma.c
+> > @@ -9,6 +9,7 @@
+> >   #include <linux/of_device.h>
+> >   #include <linux/of_irq.h>
+> >   #include <linux/platform_device.h>
+> > +#include <linux/pm_runtime.h>
+> >   #include <linux/soc/mediatek/mtk-cmdq.h>
 > >   
-> >   	data = dev_iommu_priv_get(dev);
+> >   #include "mtk_disp_drv.h"
+> > @@ -327,9 +328,13 @@ static int mtk_disp_rdma_probe(struct platform_device *pdev)
 > >   
-> > +	/*
-> > +	 * Link the consumer device with the smi-larb device(supplier)
-> > +	 * The device in each a larb is a independent HW. thus only link
-> > +	 * one larb here.
-> > +	 */
-> > +	larbid = MTK_M4U_TO_LARB(fwspec->ids[0]);
-> > +	larbdev = data->larb_imu[larbid].dev;
-> > +	link = device_link_add(dev, larbdev,
-> > +			       DL_FLAG_PM_RUNTIME | DL_FLAG_STATELESS);
-> > +	if (!link)
-> > +		dev_err(dev, "Unable to link %s\n", dev_name(larbdev));
-> shoudn't ERR_PTR be returned in case of failure?
+> >   	platform_set_drvdata(pdev, priv);
+> >   
+> > +	pm_runtime_enable(dev);
+> > +
+> >   	ret = component_add(dev, &mtk_disp_rdma_component_ops);
+> > -	if (ret)
+> > +	if (ret) {
+> > +		pm_runtime_disable(dev);
+> >   		dev_err(dev, "Failed to add component: %d\n", ret);
+> > +	}
+> >   
+> >   	return ret;
+> >   }
+> > @@ -338,6 +343,8 @@ static int mtk_disp_rdma_remove(struct platform_device *pdev)
+> >   {
+> >   	component_del(&pdev->dev, &mtk_disp_rdma_component_ops);
+> >   
+> > +	pm_runtime_disable(&pdev->dev);
+> > +
+> >   	return 0;
+> >   }
+> >   
+> > diff --git a/drivers/gpu/drm/mediatek/mtk_drm_crtc.c b/drivers/gpu/drm/mediatek/mtk_drm_crtc.c
+> > index 474efb844249..08e3f352377d 100644
+> > --- a/drivers/gpu/drm/mediatek/mtk_drm_crtc.c
+> > +++ b/drivers/gpu/drm/mediatek/mtk_drm_crtc.c
+> > @@ -557,9 +557,15 @@ static void mtk_drm_crtc_atomic_enable(struct drm_crtc *crtc,
+> >   		return;
+> >   	}
+> >   
+> > +	ret = pm_runtime_resume_and_get(comp->dev);
+> > +	if (ret < 0)
+> > +		DRM_DEV_ERROR(comp->dev, "Failed to enable power domain: %d\n",
+> > +			      ret);
+> 
+> shouldn't the code return in case of failure here?
 
-In the previous design, this is not a fatal error. the consumer device
-could probe continuously even though it fail here..Returning here may
-let the issue be caught earlier, I will add this in next version.
+After confirm with yongqiang, We will fix this in next version.
 
- if (!link) {
-      ...
-      return ERR_PTR(EINVAL);
-  }
+Thanks.
 
 > 
 > Thanks,
 > Dafna
 > 
-> >   	return &data->iommu;
-> >   }
-> >   
-> >   static void mtk_iommu_release_device(struct device *dev)
-> >   {
-> >   	struct iommu_fwspec *fwspec = dev_iommu_fwspec_get(dev);
-> > +	struct mtk_iommu_data *data;
-> > +	struct device *larbdev;
-> > +	unsigned int larbid;
-> >   
-> >   	if (!fwspec || fwspec->ops != &mtk_iommu_ops)
+> > +
+> >   	ret = mtk_crtc_ddp_hw_init(mtk_crtc);
+> >   	if (ret) {
+> >   		mtk_smi_larb_put(comp->larb_dev);
+> > +		pm_runtime_put(comp->dev);
 > >   		return;
+> >   	}
 > >   
-> > +	data = dev_iommu_priv_get(dev);
-> > +	larbid = MTK_M4U_TO_LARB(fwspec->ids[0]);
-> > +	larbdev = data->larb_imu[larbid].dev;
-> > +	device_link_remove(dev, larbdev);
-> > +
-> >   	iommu_fwspec_free(dev);
-> >   }
-> >   
-> > diff --git a/drivers/iommu/mtk_iommu_v1.c b/drivers/iommu/mtk_iommu_v1.c
-> > index d9365a3d8dc9..d2a7c66b8239 100644
-> > --- a/drivers/iommu/mtk_iommu_v1.c
-> > +++ b/drivers/iommu/mtk_iommu_v1.c
-> > @@ -424,7 +424,9 @@ static struct iommu_device *mtk_iommu_probe_device(struct device *dev)
-> >   	struct iommu_fwspec *fwspec = dev_iommu_fwspec_get(dev);
-> >   	struct of_phandle_args iommu_spec;
-> >   	struct mtk_iommu_data *data;
-> > -	int err, idx = 0;
-> > +	int err, idx = 0, larbid;
-> > +	struct device_link *link;
-> > +	struct device *larbdev;
-> >   
-> >   	while (!of_parse_phandle_with_args(dev->of_node, "iommus",
-> >   					   "#iommu-cells",
-> > @@ -445,6 +447,14 @@ static struct iommu_device *mtk_iommu_probe_device(struct device *dev)
-> >   
-> >   	data = dev_iommu_priv_get(dev);
-> >   
-> > +	/* Link the consumer device with the smi-larb device(supplier) */
-> > +	larbid = mt2701_m4u_to_larb(fwspec->ids[0]);
-> > +	larbdev = data->larb_imu[larbid].dev;
-> > +	link = device_link_add(dev, larbdev,
-> > +			       DL_FLAG_PM_RUNTIME | DL_FLAG_STATELESS);
-> > +	if (!link)
-> > +		dev_err(dev, "Unable to link %s\n", dev_name(larbdev));
-> > +
-> >   	return &data->iommu;
-> >   }
-> >   
-> > @@ -465,10 +475,18 @@ static void mtk_iommu_probe_finalize(struct device *dev)
-> >   static void mtk_iommu_release_device(struct device *dev)
+> > @@ -572,7 +578,7 @@ static void mtk_drm_crtc_atomic_disable(struct drm_crtc *crtc,
 > >   {
-> >   	struct iommu_fwspec *fwspec = dev_iommu_fwspec_get(dev);
-> > +	struct mtk_iommu_data *data;
-> > +	struct device *larbdev;
-> > +	unsigned int larbid;
+> >   	struct mtk_drm_crtc *mtk_crtc = to_mtk_crtc(crtc);
+> >   	struct mtk_ddp_comp *comp = mtk_crtc->ddp_comp[0];
+> > -	int i;
+> > +	int i, ret;
 > >   
-> >   	if (!fwspec || fwspec->ops != &mtk_iommu_ops)
-> >   		return;
+> >   	DRM_DEBUG_DRIVER("%s %d\n", __func__, crtc->base.id);
+> >   	if (!mtk_crtc->enabled)
+> > @@ -596,6 +602,10 @@ static void mtk_drm_crtc_atomic_disable(struct drm_crtc *crtc,
+> >   	drm_crtc_vblank_off(crtc);
+> >   	mtk_crtc_ddp_hw_fini(mtk_crtc);
+> >   	mtk_smi_larb_put(comp->larb_dev);
+> > +	ret = pm_runtime_put(comp->dev);
+> > +	if (ret < 0)
+> > +		DRM_DEV_ERROR(comp->dev, "Failed to disable power domain: %d\n",
+> > +			      ret);
 > >   
-> > +	data = dev_iommu_priv_get(dev);
-> > +	larbid = mt2701_m4u_to_larb(fwspec->ids[0]);
-> > +	larbdev = data->larb_imu[larbid].dev;
-> > +	device_link_remove(dev, larbdev);
-> > +
-> >   	iommu_fwspec_free(dev);
+> >   	mtk_crtc->enabled = false;
 > >   }
-> >   
 > > 
+> 
+> _______________________________________________
+> Linux-mediatek mailing list
+> Linux-mediatek@lists.infradead.org
+> http://lists.infradead.org/mailman/listinfo/linux-mediatek
 
 _______________________________________________
 iommu mailing list
