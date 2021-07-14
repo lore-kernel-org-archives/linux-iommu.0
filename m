@@ -2,98 +2,104 @@ Return-Path: <SRS0=i+j8=MG=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-15.0 required=3.0 tests=BAYES_00,DKIM_INVALID,
-	DKIM_SIGNED,HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_CR_TRAILER,INCLUDES_PATCH,
-	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,UNPARSEABLE_RELAY,URIBL_BLOCKED,
-	USER_AGENT_SANE_2 autolearn=ham autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-2.0 required=3.0 tests=BAYES_00,DKIM_ADSP_CUSTOM_MED,
+	DKIM_INVALID,DKIM_SIGNED,FREEMAIL_FORGED_FROMDOMAIN,FREEMAIL_FROM,
+	HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,NICE_REPLY_A,SPF_HELO_NONE,
+	SPF_PASS,URIBL_BLOCKED,USER_AGENT_SANE_1 autolearn=no autolearn_force=no
+	version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 79B85C07E9A
-	for <iommu@archiver.kernel.org>; Wed, 14 Jul 2021 11:17:36 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8CFF1C07E9C
+	for <iommu@archiver.kernel.org>; Wed, 14 Jul 2021 11:17:59 +0000 (UTC)
 Received: from smtp3.osuosl.org (smtp3.osuosl.org [140.211.166.136])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 2FE5B613B2
-	for <iommu@archiver.kernel.org>; Wed, 14 Jul 2021 11:17:36 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 2FE5B613B2
-Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=mediatek.com
+	by mail.kernel.org (Postfix) with ESMTPS id 582D1613B9
+	for <iommu@archiver.kernel.org>; Wed, 14 Jul 2021 11:17:57 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 582D1613B9
+Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=gmail.com
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by smtp3.osuosl.org (Postfix) with ESMTP id 025E360B41;
-	Wed, 14 Jul 2021 11:17:36 +0000 (UTC)
+	by smtp3.osuosl.org (Postfix) with ESMTP id 31EFB60B45;
+	Wed, 14 Jul 2021 11:17:57 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
 Received: from smtp3.osuosl.org ([127.0.0.1])
 	by localhost (smtp3.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id N5GOyghPXFnZ; Wed, 14 Jul 2021 11:17:34 +0000 (UTC)
-Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [IPv6:2605:bc80:3010:104::8cd3:938])
-	by smtp3.osuosl.org (Postfix) with ESMTPS id C100660B19;
-	Wed, 14 Jul 2021 11:17:33 +0000 (UTC)
+	with ESMTP id IpRTDvFx5aFU; Wed, 14 Jul 2021 11:17:56 +0000 (UTC)
+Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
+	by smtp3.osuosl.org (Postfix) with ESMTPS id 2BF0360B19;
+	Wed, 14 Jul 2021 11:17:56 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id AB2E6C0010;
-	Wed, 14 Jul 2021 11:17:33 +0000 (UTC)
-Received: from smtp3.osuosl.org (smtp3.osuosl.org [IPv6:2605:bc80:3010::136])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 766A3C000E
- for <iommu@lists.linux-foundation.org>; Wed, 14 Jul 2021 11:17:31 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id F0404C0010;
+	Wed, 14 Jul 2021 11:17:55 +0000 (UTC)
+Received: from smtp2.osuosl.org (smtp2.osuosl.org [140.211.166.133])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 937C4C000E
+ for <iommu@lists.linux-foundation.org>; Wed, 14 Jul 2021 11:17:54 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by smtp3.osuosl.org (Postfix) with ESMTP id 650A560B41
- for <iommu@lists.linux-foundation.org>; Wed, 14 Jul 2021 11:17:31 +0000 (UTC)
+ by smtp2.osuosl.org (Postfix) with ESMTP id 7482740588
+ for <iommu@lists.linux-foundation.org>; Wed, 14 Jul 2021 11:17:54 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from smtp3.osuosl.org ([127.0.0.1])
- by localhost (smtp3.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id JcL8zcA6FKLu for <iommu@lists.linux-foundation.org>;
- Wed, 14 Jul 2021 11:17:30 +0000 (UTC)
-X-Greylist: from auto-whitelisted by SQLgrey-1.8.0
-Received: from mailgw02.mediatek.com (unknown [1.203.163.81])
- by smtp3.osuosl.org (Postfix) with ESMTP id A10EE60B19
- for <iommu@lists.linux-foundation.org>; Wed, 14 Jul 2021 11:17:29 +0000 (UTC)
-X-UUID: 37b55c57c3454cd8b103485dbf769f8b-20210714
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=mediatek.com;
- s=dk; 
- h=Content-Transfer-Encoding:MIME-Version:Content-Type:References:In-Reply-To:Date:CC:To:From:Subject:Message-ID;
- bh=Q6LzrYoLA5I8zE2H4Wb3+h6SVEZjseCiEm0eHzHqVVY=; 
- b=Y1vmKf1JjW7fRct618pV5oa5Z4kb7hgjD2TkcFjjj+p9/1ijs5I3S///bHnVdVC6E+/uh2bQgRjZwz9zBBWjc1A0gdm55I+yH1AmUv0OD9WlpoMtFWZcXajNzBTq+rTYerQnF/NKoW7HZIHuWMiF6mOIwa7HpXBtE7zudMjUugo=;
-X-UUID: 37b55c57c3454cd8b103485dbf769f8b-20210714
-Received: from mtkcas34.mediatek.inc [(172.27.4.253)] by mailgw02.mediatek.com
- (envelope-from <yong.wu@mediatek.com>)
- (mailgw01.mediatek.com ESMTP with TLSv1.2 ECDHE-RSA-AES256-SHA384 256/256)
- with ESMTP id 1517682039; Wed, 14 Jul 2021 19:17:19 +0800
-Received: from MTKCAS36.mediatek.inc (172.27.4.186) by MTKMBS31N1.mediatek.inc
- (172.27.4.69) with Microsoft SMTP Server (TLS) id 15.0.1497.2;
- Wed, 14 Jul 2021 19:17:15 +0800
-Received: from [10.17.3.153] (10.17.3.153) by MTKCAS36.mediatek.inc
- (172.27.4.170) with Microsoft SMTP Server id 15.0.1497.2 via Frontend
- Transport; Wed, 14 Jul 2021 19:17:13 +0800
-Message-ID: <1626261434.14352.14.camel@mhfsdcap03>
-Subject: Re: [PATCH v6 06/11] drm/mediatek: Add pm runtime support for ovl
- and rdma
-From: Yong Wu <yong.wu@mediatek.com>
-To: Dafna Hirschfeld <dafna.hirschfeld@collabora.com>
-Date: Wed, 14 Jul 2021 19:17:14 +0800
-In-Reply-To: <61aa5aa9-5bd2-e99c-02ef-f5d13526eb43@collabora.com>
-References: <20210714025626.5528-1-yong.wu@mediatek.com>
- <20210714025626.5528-7-yong.wu@mediatek.com>
- <61aa5aa9-5bd2-e99c-02ef-f5d13526eb43@collabora.com>
-X-Mailer: Evolution 3.10.4-0ubuntu2 
+Authentication-Results: smtp2.osuosl.org (amavisd-new);
+ dkim=pass (2048-bit key) header.d=gmail.com
+Received: from smtp2.osuosl.org ([127.0.0.1])
+ by localhost (smtp2.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+ with ESMTP id cwGUkhFZwwNf for <iommu@lists.linux-foundation.org>;
+ Wed, 14 Jul 2021 11:17:53 +0000 (UTC)
+X-Greylist: whitelisted by SQLgrey-1.8.0
+Received: from mail-lf1-x135.google.com (mail-lf1-x135.google.com
+ [IPv6:2a00:1450:4864:20::135])
+ by smtp2.osuosl.org (Postfix) with ESMTPS id 0875C40265
+ for <iommu@lists.linux-foundation.org>; Wed, 14 Jul 2021 11:17:52 +0000 (UTC)
+Received: by mail-lf1-x135.google.com with SMTP id q16so2982537lfa.5
+ for <iommu@lists.linux-foundation.org>; Wed, 14 Jul 2021 04:17:52 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=gmail.com; s=20161025;
+ h=subject:to:cc:references:from:message-id:date:user-agent
+ :mime-version:in-reply-to:content-language:content-transfer-encoding;
+ bh=S9CrgQqGn5mkur2H1auPSMo6yYyTfwNd3lzn8O6SIGw=;
+ b=riPdNj4nnn9+vFqNzMZJogEZahBnodLVfG8St8ipsNT0UBjxKFX2vW3ci3rdWcmZ88
+ VRiImWCPQK7fykq639PSAazmul6V971xU7kpsDGmx80lalx05Nz04pd90+wjhlejxlYe
+ K8A89OJw/gI4YKCUMYhLiOe7h/8Z9Mdrrmcws8fsS4IDnLPMEgqppuoAsqsJz8JAFw/L
+ 7p5eEU2P4SZLtekb/5hikLzOQKAT4iRISXSBwq9cv80cLXMvYn/5BKjFVTOng0qcJfjs
+ Ck2DzRyg9VQuUZfhstr0bbbk8yfcLI9RdK9iFuZYq9lIr8FdYd5CA25uItRMQg1O+E0g
+ yjIA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+ d=1e100.net; s=20161025;
+ h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+ :user-agent:mime-version:in-reply-to:content-language
+ :content-transfer-encoding;
+ bh=S9CrgQqGn5mkur2H1auPSMo6yYyTfwNd3lzn8O6SIGw=;
+ b=AB7Hkent/ImuEi13hr5kO8s1Rutas0OvPuTslLMry8m10AnAvIIxU4VyGFeTSOm5gk
+ 94VkXkytPaA9kJBY03f3HYLuTBa7rTs8vu1FaO2MMKcYiW8U+YweW/PGzWMH/JrQbw0H
+ xd6l5Lud+mopJMiXsaGABaVuZGHWDYcsRhW+q157F3/9mS77YmWjpQb6pkLI7wPkKdCy
+ izlvHfPEJHCh20ToiFbcQ1Cc2FCfrVscI5o1OIZShfbcD8JZHNPgm/kC10U797HxkE2d
+ rcmv39D1TWqOiRBydRBur2cfSHdFRY827XBMthqo/Rg77IoG693OsInolOByxmWSzDUE
+ rXog==
+X-Gm-Message-State: AOAM533btXd3tm1EKynXLoLaff2eJo8RmAyFvKRyJiiHPWueWEo3/wWV
+ Hq/PEqw1rsgxwhnL7XiLRlI=
+X-Google-Smtp-Source: ABdhPJyB+72mH8f+hRwoSWwuew4QNci28WM3A0pjoJ19MaVqYMg2UaIgTNSbVLIAJhMLj+x+uuuFVA==
+X-Received: by 2002:a05:6512:34d1:: with SMTP id
+ w17mr7752370lfr.439.1626261469836; 
+ Wed, 14 Jul 2021 04:17:49 -0700 (PDT)
+Received: from [192.168.2.145] (94-29-37-113.dynamic.spd-mgts.ru.
+ [94.29.37.113])
+ by smtp.googlemail.com with ESMTPSA id b4sm141504lfp.223.2021.07.14.04.17.48
+ (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+ Wed, 14 Jul 2021 04:17:49 -0700 (PDT)
+Subject: Re: [PATCH v1] iommu/tegra-smmu: Change debugfs directory name
+To: Joerg Roedel <joro@8bytes.org>
+References: <20210712001341.11166-1-digetx@gmail.com>
+ <YO7B56Mkz3kx5U5Q@8bytes.org>
+From: Dmitry Osipenko <digetx@gmail.com>
+Message-ID: <43abb785-8b6a-555b-7d66-fa1911d2f8a0@gmail.com>
+Date: Wed, 14 Jul 2021 14:17:48 +0300
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
+ Thunderbird/78.11.0
 MIME-Version: 1.0
-X-TM-SNTS-SMTP: 71B93BC55DBF796D54EF11802D7AD481B3722F9B783DF86A1B40DE94AAC8E5FC2000:8
-X-MTK: N
-Cc: Xia Jiang <xia.jiang@mediatek.com>, Chun-Kuang Hu <chunkuang.hu@kernel.org>,
- David Airlie <airlied@linux.ie>, Will
- Deacon <will.deacon@arm.com>, dri-devel@lists.freedesktop.org,
- anthony.huang@mediatek.com, youlin.pei@mediatek.com,
- Nicolas Boichat <drinkcat@chromium.org>,
- Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>,
- Evan Green <evgreen@chromium.org>, Eizan
- Miyamoto <eizan@chromium.org>, Matthias Kaehlcke <mka@chromium.org>,
- yongqiang.niu@mediatek.com, CK Hu <ck.hu@mediatek.com>,
- linux-media@vger.kernel.org, devicetree@vger.kernel.org,
- Philipp Zabel <p.zabel@pengutronix.de>, Tiffany Lin <tiffany.lin@mediatek.com>,
- yi.kuo@mediatek.com, Rob Herring <robh+dt@kernel.org>,
- linux-mediatek@lists.infradead.org, Hsin-Yi Wang <hsinyi@chromium.org>,
- Matthias Brugger <matthias.bgg@gmail.com>, ming-fan.chen@mediatek.com, Mauro
- Carvalho Chehab <mchehab@kernel.org>, linux-arm-kernel@lists.infradead.org,
- anan.sun@mediatek.com, acourbot@chromium.org, srv_heupstream@mediatek.com,
- linux-kernel@vger.kernel.org, iommu@lists.linux-foundation.org,
- Daniel Vetter <daniel@ffwll.ch>, Robin Murphy <robin.murphy@arm.com>
+In-Reply-To: <YO7B56Mkz3kx5U5Q@8bytes.org>
+Content-Language: en-US
+Cc: linux-kernel@vger.kernel.org, iommu@lists.linux-foundation.org,
+ Jonathan Hunter <jonathanh@nvidia.com>,
+ Thierry Reding <thierry.reding@gmail.com>, linux-tegra@vger.kernel.org,
+ Will Deacon <will@kernel.org>
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -106,164 +112,28 @@ List-Post: <mailto:iommu@lists.linux-foundation.org>
 List-Help: <mailto:iommu-request@lists.linux-foundation.org?subject=help>
 List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
  <mailto:iommu-request@lists.linux-foundation.org?subject=subscribe>
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-On Wed, 2021-07-14 at 10:44 +0200, Dafna Hirschfeld wrote:
-> 
-> On 14.07.21 04:56, Yong Wu wrote:
-> > From: Yongqiang Niu <yongqiang.niu@mediatek.com>
-> > 
-> > Prepare for smi cleaning up "mediatek,larb".
-> > 
-> > Display use the dispsys device to call pm_rumtime_get_sync before.
-> > This patch add pm_runtime_xx with ovl and rdma device whose nodes has
-> > "iommus" property, then display could help pm_runtime_get for smi via
-> > ovl or rdma device.
-> > 
-> > CC: CK Hu <ck.hu@mediatek.com>
-> > Signed-off-by: Yongqiang Niu <yongqiang.niu@mediatek.com>
-> > Signed-off-by: Yong Wu <yong.wu@mediatek.com>
-> > (Yong: Use pm_runtime_resume_and_get instead of pm_runtime_get_sync)
-> > Acked-by: Chun-Kuang Hu <chunkuang.hu@kernel.org>
-> > ---
-> >   drivers/gpu/drm/mediatek/mtk_disp_ovl.c  |  9 ++++++++-
-> >   drivers/gpu/drm/mediatek/mtk_disp_rdma.c |  9 ++++++++-
-> >   drivers/gpu/drm/mediatek/mtk_drm_crtc.c  | 12 +++++++++++-
-> >   3 files changed, 27 insertions(+), 3 deletions(-)
-> > 
-> > diff --git a/drivers/gpu/drm/mediatek/mtk_disp_ovl.c b/drivers/gpu/drm/mediatek/mtk_disp_ovl.c
-> > index fa9d79963cd3..ea5760f856ec 100644
-> > --- a/drivers/gpu/drm/mediatek/mtk_disp_ovl.c
-> > +++ b/drivers/gpu/drm/mediatek/mtk_disp_ovl.c
-> > @@ -11,6 +11,7 @@
-> >   #include <linux/of_device.h>
-> >   #include <linux/of_irq.h>
-> >   #include <linux/platform_device.h>
-> > +#include <linux/pm_runtime.h>
-> >   #include <linux/soc/mediatek/mtk-cmdq.h>
-> >   
-> >   #include "mtk_disp_drv.h"
-> > @@ -414,15 +415,21 @@ static int mtk_disp_ovl_probe(struct platform_device *pdev)
-> >   		return ret;
-> >   	}
-> >   
-> > +	pm_runtime_enable(dev);
-> > +
-> >   	ret = component_add(dev, &mtk_disp_ovl_component_ops);
-> > -	if (ret)
-> > +	if (ret) {
-> > +		pm_runtime_disable(dev);
-> >   		dev_err(dev, "Failed to add component: %d\n", ret);
-> > +	}
-> >   
-> >   	return ret;
-> >   }
-> >   
-> >   static int mtk_disp_ovl_remove(struct platform_device *pdev)
-> >   {
-> > +	pm_runtime_disable(&pdev->dev);
-> > +
-> >   	return 0;
-> >   }
-> >   
-> > diff --git a/drivers/gpu/drm/mediatek/mtk_disp_rdma.c b/drivers/gpu/drm/mediatek/mtk_disp_rdma.c
-> > index 705f28ceb4dd..0f31d1c8e37c 100644
-> > --- a/drivers/gpu/drm/mediatek/mtk_disp_rdma.c
-> > +++ b/drivers/gpu/drm/mediatek/mtk_disp_rdma.c
-> > @@ -9,6 +9,7 @@
-> >   #include <linux/of_device.h>
-> >   #include <linux/of_irq.h>
-> >   #include <linux/platform_device.h>
-> > +#include <linux/pm_runtime.h>
-> >   #include <linux/soc/mediatek/mtk-cmdq.h>
-> >   
-> >   #include "mtk_disp_drv.h"
-> > @@ -327,9 +328,13 @@ static int mtk_disp_rdma_probe(struct platform_device *pdev)
-> >   
-> >   	platform_set_drvdata(pdev, priv);
-> >   
-> > +	pm_runtime_enable(dev);
-> > +
-> >   	ret = component_add(dev, &mtk_disp_rdma_component_ops);
-> > -	if (ret)
-> > +	if (ret) {
-> > +		pm_runtime_disable(dev);
-> >   		dev_err(dev, "Failed to add component: %d\n", ret);
-> > +	}
-> >   
-> >   	return ret;
-> >   }
-> > @@ -338,6 +343,8 @@ static int mtk_disp_rdma_remove(struct platform_device *pdev)
-> >   {
-> >   	component_del(&pdev->dev, &mtk_disp_rdma_component_ops);
-> >   
-> > +	pm_runtime_disable(&pdev->dev);
-> > +
-> >   	return 0;
-> >   }
-> >   
-> > diff --git a/drivers/gpu/drm/mediatek/mtk_drm_crtc.c b/drivers/gpu/drm/mediatek/mtk_drm_crtc.c
-> > index 474efb844249..08e3f352377d 100644
-> > --- a/drivers/gpu/drm/mediatek/mtk_drm_crtc.c
-> > +++ b/drivers/gpu/drm/mediatek/mtk_drm_crtc.c
-> > @@ -557,9 +557,15 @@ static void mtk_drm_crtc_atomic_enable(struct drm_crtc *crtc,
-> >   		return;
-> >   	}
-> >   
-> > +	ret = pm_runtime_resume_and_get(comp->dev);
-> > +	if (ret < 0)
-> > +		DRM_DEV_ERROR(comp->dev, "Failed to enable power domain: %d\n",
-> > +			      ret);
-> 
-> shouldn't the code return in case of failure here?
-
-After confirm with yongqiang, We will fix this in next version.
-
-Thanks.
-
-> 
-> Thanks,
-> Dafna
-> 
-> > +
-> >   	ret = mtk_crtc_ddp_hw_init(mtk_crtc);
-> >   	if (ret) {
-> >   		mtk_smi_larb_put(comp->larb_dev);
-> > +		pm_runtime_put(comp->dev);
-> >   		return;
-> >   	}
-> >   
-> > @@ -572,7 +578,7 @@ static void mtk_drm_crtc_atomic_disable(struct drm_crtc *crtc,
-> >   {
-> >   	struct mtk_drm_crtc *mtk_crtc = to_mtk_crtc(crtc);
-> >   	struct mtk_ddp_comp *comp = mtk_crtc->ddp_comp[0];
-> > -	int i;
-> > +	int i, ret;
-> >   
-> >   	DRM_DEBUG_DRIVER("%s %d\n", __func__, crtc->base.id);
-> >   	if (!mtk_crtc->enabled)
-> > @@ -596,6 +602,10 @@ static void mtk_drm_crtc_atomic_disable(struct drm_crtc *crtc,
-> >   	drm_crtc_vblank_off(crtc);
-> >   	mtk_crtc_ddp_hw_fini(mtk_crtc);
-> >   	mtk_smi_larb_put(comp->larb_dev);
-> > +	ret = pm_runtime_put(comp->dev);
-> > +	if (ret < 0)
-> > +		DRM_DEV_ERROR(comp->dev, "Failed to disable power domain: %d\n",
-> > +			      ret);
-> >   
-> >   	mtk_crtc->enabled = false;
-> >   }
-> > 
-> 
-> _______________________________________________
-> Linux-mediatek mailing list
-> Linux-mediatek@lists.infradead.org
-> http://lists.infradead.org/mailman/listinfo/linux-mediatek
-
-_______________________________________________
-iommu mailing list
-iommu@lists.linux-foundation.org
-https://lists.linuxfoundation.org/mailman/listinfo/iommu
+MTQuMDcuMjAyMSAxMzo1MiwgSm9lcmcgUm9lZGVsINC/0LjRiNC10YI6Cj4gT24gTW9uLCBKdWwg
+MTIsIDIwMjEgYXQgMDM6MTM6NDFBTSArMDMwMCwgRG1pdHJ5IE9zaXBlbmtvIHdyb3RlOgo+PiAt
+CWVyciA9IGlvbW11X2RldmljZV9zeXNmc19hZGQoJnNtbXUtPmlvbW11LCBkZXYsIE5VTEwsIGRl
+dl9uYW1lKGRldikpOwo+PiArCWVyciA9IGlvbW11X2RldmljZV9zeXNmc19hZGQoJnNtbXUtPmlv
+bW11LCBkZXYsIE5VTEwsICJzbW11Iik7Cj4gCj4gQXJlIHlvdSBzdXJlIG5vIG9uZSBpcyByZWx5
+aW5nIG9uIHRoZSBvbGQgbmFtZSBzbyB0aGF0IHRoaXMgY2hhbmdlCj4gYnJlYWtzIEFCST8KCklJ
+VUMsIFRoaWVycnkgYW5kIEpvbiBoYXZlIGEgdGVzdGluZyBzdWl0ZSB0aGF0IHVzZXMgdGhlIG9s
+ZCBuYW1lLCBidXQKaXQgc2hvdWxkbid0IGJlIGEgcHJvYmxlbSB0byBzdXBwb3J0IHRoZSBuZXcg
+bmFtZSBpbiBhZGRpdGlvbiB0byB0aGUgb2xkCm5hbWUgc2luY2UgaXQncyBpbnRlcm5hbC9wcml2
+YXRlIHRlc3Rpbmcgc3VpdGUuCgpUaGUgcmVhc29uIEknbSBwcm9wb3NpbmcgdGhpcyBjaGFuZ2Ug
+aXMgYmVjYXVzZSBpdCdzIG5vdCBvYnZpb3VzIHdoZXJlCnRoZSBTTU1VIGRlYnVnIGlzIGxvY2F0
+ZWQgd2hlbiB5b3UgbG9vayBhdCB0aGUgZGVidWdmcyBkaXJlY3RvcnksIGl0CnRha2VzIHNvbWUg
+ZWZmb3J0IHRvIGZpbmQgaXQuCgo+IEFsc28gdGhpcyBjaGFuZ2UgbWVhbnMgdGhhdCB0aGVyZSBp
+cyBhbHdheXMgYmUgb25seSBvbmUgU01NVQo+IHBlciBzeXN0ZW0uIElzIHRoYXQgZ3VhcmFudGVl
+ZCB0b28/CgpBIHNpbmdsZSBTTU1VIGlzIGd1YXJhbnRlZWQgaGVyZS4gT25seSBsYXRlc3QgVGVn
+cmEgU29DcyBoYXZlIHR3byBTTU1VcwphbmQgdGhvc2UgYXJlIEFSTSBTTU1Vcywgd2hpbGUgdGhp
+cyBpcyBhIGxlZ2FjeSBUZWdyYSBTTU1VIGhlcmUuCl9fX19fX19fX19fX19fX19fX19fX19fX19f
+X19fX19fX19fX19fX19fX19fX19fCmlvbW11IG1haWxpbmcgbGlzdAppb21tdUBsaXN0cy5saW51
+eC1mb3VuZGF0aW9uLm9yZwpodHRwczovL2xpc3RzLmxpbnV4Zm91bmRhdGlvbi5vcmcvbWFpbG1h
+bi9saXN0aW5mby9pb21tdQ==
