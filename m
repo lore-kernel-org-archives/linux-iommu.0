@@ -7,103 +7,101 @@ X-Spam-Status: No, score=-8.6 required=3.0 tests=BAYES_00,DKIM_INVALID,
 	SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED autolearn=unavailable autolearn_force=no
 	version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8DD19C07E9A
-	for <iommu@archiver.kernel.org>; Wed, 14 Jul 2021 04:59:44 +0000 (UTC)
-Received: from smtp3.osuosl.org (smtp3.osuosl.org [140.211.166.136])
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 64A7BC07E9A
+	for <iommu@archiver.kernel.org>; Wed, 14 Jul 2021 05:24:21 +0000 (UTC)
+Received: from smtp2.osuosl.org (smtp2.osuosl.org [140.211.166.133])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 1CB20613B0
-	for <iommu@archiver.kernel.org>; Wed, 14 Jul 2021 04:59:44 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 1CB20613B0
-Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=canonical.com
+	by mail.kernel.org (Postfix) with ESMTPS id DEAF5613AF
+	for <iommu@archiver.kernel.org>; Wed, 14 Jul 2021 05:24:20 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org DEAF5613AF
+Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=bytedance.com
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by smtp3.osuosl.org (Postfix) with ESMTP id D36F4608F2;
-	Wed, 14 Jul 2021 04:59:43 +0000 (UTC)
+	by smtp2.osuosl.org (Postfix) with ESMTP id A2A3B4019A;
+	Wed, 14 Jul 2021 05:24:20 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from smtp3.osuosl.org ([127.0.0.1])
-	by localhost (smtp3.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id sy0ht3iDgSAm; Wed, 14 Jul 2021 04:59:43 +0000 (UTC)
+Received: from smtp2.osuosl.org ([127.0.0.1])
+	by localhost (smtp2.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+	with ESMTP id vPzzkLk6hY2Q; Wed, 14 Jul 2021 05:24:19 +0000 (UTC)
 Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by smtp3.osuosl.org (Postfix) with ESMTPS id BB4EA6071F;
-	Wed, 14 Jul 2021 04:59:42 +0000 (UTC)
+	by smtp2.osuosl.org (Postfix) with ESMTPS id 6ED9B40104;
+	Wed, 14 Jul 2021 05:24:19 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 8E77CC0010;
-	Wed, 14 Jul 2021 04:59:42 +0000 (UTC)
-Received: from smtp4.osuosl.org (smtp4.osuosl.org [140.211.166.137])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 86D99C000E
- for <iommu@lists.linux-foundation.org>; Wed, 14 Jul 2021 04:59:40 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 4B854C001A;
+	Wed, 14 Jul 2021 05:24:19 +0000 (UTC)
+Received: from smtp4.osuosl.org (smtp4.osuosl.org [IPv6:2605:bc80:3010::137])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 70518C001A
+ for <iommu@lists.linux-foundation.org>; Wed, 14 Jul 2021 05:24:16 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by smtp4.osuosl.org (Postfix) with ESMTP id 6D55440697
- for <iommu@lists.linux-foundation.org>; Wed, 14 Jul 2021 04:59:40 +0000 (UTC)
+ by smtp4.osuosl.org (Postfix) with ESMTP id 66116406AC
+ for <iommu@lists.linux-foundation.org>; Wed, 14 Jul 2021 05:24:16 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
 Authentication-Results: smtp4.osuosl.org (amavisd-new);
- dkim=pass (2048-bit key) header.d=canonical.com
+ dkim=pass (2048-bit key) header.d=bytedance-com.20150623.gappssmtp.com
 Received: from smtp4.osuosl.org ([127.0.0.1])
  by localhost (smtp4.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id ViUEIyylLqzx for <iommu@lists.linux-foundation.org>;
- Wed, 14 Jul 2021 04:59:39 +0000 (UTC)
-X-Greylist: domain auto-whitelisted by SQLgrey-1.8.0
-Received: from smtp-relay-canonical-0.canonical.com
- (smtp-relay-canonical-0.canonical.com [185.125.188.120])
- by smtp4.osuosl.org (Postfix) with ESMTPS id 2DA4140685
- for <iommu@lists.linux-foundation.org>; Wed, 14 Jul 2021 04:59:39 +0000 (UTC)
-Received: from mail-ed1-f71.google.com (mail-ed1-f71.google.com
- [209.85.208.71])
- (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
- key-exchange X25519 server-signature RSA-PSS (2048 bits) server-digest SHA256)
- (No client certificate requested)
- by smtp-relay-canonical-0.canonical.com (Postfix) with ESMTPS id 62CE440616
- for <iommu@lists.linux-foundation.org>; Wed, 14 Jul 2021 04:59:37 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=canonical.com;
- s=20210705; t=1626238777;
- bh=IuNCZleIvRlLDBhEJUxcoa5xesWkXuXCrji39Y/aMPw=;
- h=MIME-Version:From:Date:Message-ID:Subject:To:Content-Type;
- b=oRphYpdinUW/r8iLyGw3EUSNu2NsivHyjeqX2j8GRgZ8bjLta2Ygj4h0Ajz4Fi4y/
- n+vldnmywXFuU7cbngTgTso66ZWOhjlvOPRiK27haqSN0xFEh/4QhCeSJCkqIXtYjn
- 37jOMvptS2FCK50fYlXaNcCKp11RlGtE1RmmNK2hro8W0QkhZqX/BOMGrYY6B0dxHF
- CHI9No5i0VhlyNUIH7XmCJ3JLuCpY9UuBiNl6bJBlRI+YTcsxGuz/07+r3tFHpPCPl
- To5ngp+FPR/yQan+hAHm2FaVhH7KqdRWBM6kNRwYmvhxOAJeg8gAfq894Ot8MKIyGl
- iraVwnxcqjEpA==
-Received: by mail-ed1-f71.google.com with SMTP id
- c21-20020aa7d6150000b02903ab03a06e86so572497edr.14
- for <iommu@lists.linux-foundation.org>; Tue, 13 Jul 2021 21:59:37 -0700 (PDT)
+ with ESMTP id qrTT27L_CjlK for <iommu@lists.linux-foundation.org>;
+ Wed, 14 Jul 2021 05:24:15 +0000 (UTC)
+X-Greylist: whitelisted by SQLgrey-1.8.0
+Received: from mail-ej1-x636.google.com (mail-ej1-x636.google.com
+ [IPv6:2a00:1450:4864:20::636])
+ by smtp4.osuosl.org (Postfix) with ESMTPS id 24256406AB
+ for <iommu@lists.linux-foundation.org>; Wed, 14 Jul 2021 05:24:14 +0000 (UTC)
+Received: by mail-ej1-x636.google.com with SMTP id hr1so1314953ejc.1
+ for <iommu@lists.linux-foundation.org>; Tue, 13 Jul 2021 22:24:14 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+ d=bytedance-com.20150623.gappssmtp.com; s=20150623;
+ h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+ :cc; bh=IR3H7P/Qqdz0+z7mAz+4BcJc0mjzsggsr8mNH8312vk=;
+ b=J2IDtTc5DxsvAMq/DAkPuYqj0Y7dNpRgm5w+Q5Mo3F1Au3zIy957DexG4xM3ot9TeB
+ gz7qUXOBffxs7ZJq8NwJJx3+F2yWdVty637g3WtUU13nzkMXjdWWulrIly/TOJxD+Hyy
+ /NqXLpxJ8/rX9zvF4onj7kuKA/hY855NC/q2nDjsHgyYw3/sSLkn4POQUtEcySzhEGrh
+ CDn9h5b45a/ov20IIHnvFDOFr1x5Vomj6Ve9ZjPNFGa6QG+3p9U0VzK3a00J7z6C/fWK
+ eWV/SVtA1pGWD7wh4Q6+tQY/Bv7Ble6R8AihTwasCDJOPdVPj+NAufXpshOEW+KCfFKO
+ W7Lg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
  d=1e100.net; s=20161025;
  h=x-gm-message-state:mime-version:references:in-reply-to:from:date
  :message-id:subject:to:cc;
- bh=IuNCZleIvRlLDBhEJUxcoa5xesWkXuXCrji39Y/aMPw=;
- b=mNUWhW5Uz41XWEoC2O+EmfPz6NFtWjRgHzcmc4MvIoCoKb3iSnB6dnVO01YDpSjUlP
- JJyCrz0bd98qhfmXX3KsFvGZ4GOHnl51TwnKUvneTI76DzNP8QJGdBO9LZSPr3DVhCLa
- aEOQnU1X45NzhmUd/YmsNq3Y0OwBsIz/gHCIEvFwIAoSsBLQ426H2o+LbrDV9mREsfnA
- DedjbCO/KzHnt1un6JaXqnePWY5lisBwK8eFo1wKWl1DI6ZSC84CN6aWOvB75SjfSJ4f
- O+TRcCoNLANq2gdybYlW09KvM7fvLcIsVvVsUx+Fx08TncWUmQhD3agIy4/ROr9rUagR
- ah8w==
-X-Gm-Message-State: AOAM5326koa4eQV3qJ+tJG/cT6x3NZJzBNyqKjU5fJxfNcVA+VsaTSp/
- AUznNvZ8GE0ljYQ1REj55XTiqchcjB+xobQKiSi18IjIbZZ7eJqwI5ym43WK8fRO8Mz0a3wWj1f
- N2g5Yt8k7OS1GU9E5vHHw8t7dM8tgAScdalmrjw928TJcwvYfYJrOMXxPviEDmmk=
-X-Received: by 2002:a17:907:724b:: with SMTP id
- ds11mr10478506ejc.192.1626238777054; 
- Tue, 13 Jul 2021 21:59:37 -0700 (PDT)
-X-Google-Smtp-Source: ABdhPJwRbJHePPsqGNhB2jafTmgA7eCmZexPsfPxuY56irzwgXiVYXY8NchRXgcLJLBngqftlOI645bXKZZ6n8PRSoc=
-X-Received: by 2002:a17:907:724b:: with SMTP id
- ds11mr10478490ejc.192.1626238776826; 
- Tue, 13 Jul 2021 21:59:36 -0700 (PDT)
+ bh=IR3H7P/Qqdz0+z7mAz+4BcJc0mjzsggsr8mNH8312vk=;
+ b=ec2zEZsgGSFBvP68uNxQ2cMvM4CGNJxhsPcS4SX5WwVu/7zQjaukGTV/PtIHxBKuCf
+ 8bZuuOZiub10J9dbrqzT80/+NZ/4Jee4LSFQ+t7yms3zUJ6ilaF+9XmzVDOTYJGqsbkG
+ UnBOYVK+vbopUo9NhGJeTg9vajGqAyL460xoA2c+ZS8RkNHAjf+3oasuXunC/VGAIOrN
+ jUo/h783sNOf2wj/qwTieHHFVfUB5otVSvUKaeDLmaqWKv8qHfKgkWVe9CVSXKQ1A4S7
+ 3IeOyX9NczyT7OqsNiJP+jiBRVygnH68FA9LmWM+kMyC81s5idIIhZmWRKUSbprHp4dJ
+ fIEg==
+X-Gm-Message-State: AOAM530yocPQ3l03FRVpFzIe+Uns8/X3fF+Ct3+zIIoWR4XqEv2AuEIO
+ ry5laCGxw0SOG9FdJO7Es7xAstbaWbghpGAngEZ7
+X-Google-Smtp-Source: ABdhPJwiVScNvW759FNHFZbUm6bF1Hh8xD+5SHXF+XpeC6RBKLMlly39eCK/TlQciP+Rhit5f+SlsKPq8Beb+93M0R0=
+X-Received: by 2002:a17:906:4b46:: with SMTP id
+ j6mr10270164ejv.247.1626240253024; 
+ Tue, 13 Jul 2021 22:24:13 -0700 (PDT)
 MIME-Version: 1.0
-References: <20210708074232.924844-1-kai.heng.feng@canonical.com>
- <YObFJREB9/JlcNZP@8bytes.org> <fde11cec-d1bd-49be-f129-c69a973d1b3b@arm.com>
- <CAAd53p40RcG0oeYr9QAKMjYRtyq7he=d_b_a39n4Rt5JSVScRQ@mail.gmail.com>
- <f3bdedcb-5602-cbca-7df1-019e8b8c4217@arm.com> <YO4odF0EwqxfNLFq@fedora>
-In-Reply-To: <YO4odF0EwqxfNLFq@fedora>
-From: Kai-Heng Feng <kai.heng.feng@canonical.com>
-Date: Wed, 14 Jul 2021 12:59:25 +0800
-Message-ID: <CAAd53p4jgKGuLOyZH+KEzz-KiR2D0Th4MCBo13m4JO+a=n2Lhw@mail.gmail.com>
-Subject: Re: [PATCH] iommu/amd: Enable swiotlb if any device supports iommu v2
- and uses identity mapping
-To: Konrad Rzeszutek Wilk <konrad@darnok.org>
-Cc: will@kernel.org,
- "open list:AMD IOMMU \(AMD-VI\)" <iommu@lists.linux-foundation.org>,
- Robin Murphy <robin.murphy@arm.com>, open list <linux-kernel@vger.kernel.org>
+References: <20210713084656.232-1-xieyongji@bytedance.com>
+ <20210713084656.232-14-xieyongji@bytedance.com>
+ <20210713113114.GL1954@kadam>
+In-Reply-To: <20210713113114.GL1954@kadam>
+From: Yongji Xie <xieyongji@bytedance.com>
+Date: Wed, 14 Jul 2021 13:24:02 +0800
+Message-ID: <CACycT3uKwu5xzj2ynWH5njCKHaYyOPkDb8BVLTHE5NJ-qpD3xQ@mail.gmail.com>
+Subject: Re: [PATCH v9 13/17] vdpa: factor out vhost_vdpa_pa_map() and
+ vhost_vdpa_pa_unmap()
+To: Dan Carpenter <dan.carpenter@oracle.com>
+Cc: kvm <kvm@vger.kernel.org>, "Michael S. Tsirkin" <mst@redhat.com>,
+ Jason Wang <jasowang@redhat.com>,
+ virtualization <virtualization@lists.linux-foundation.org>,
+ Christian Brauner <christian.brauner@canonical.com>,
+ Jonathan Corbet <corbet@lwn.net>, Matthew Wilcox <willy@infradead.org>,
+ Christoph Hellwig <hch@infradead.org>,
+ Stefano Garzarella <sgarzare@redhat.com>,
+ Liu Xiaodong <xiaodong.liu@intel.com>, Al Viro <viro@zeniv.linux.org.uk>,
+ Stefan Hajnoczi <stefanha@redhat.com>, songmuchun@bytedance.com,
+ Jens Axboe <axboe@kernel.dk>, He Zhe <zhe.he@windriver.com>,
+ Greg KH <gregkh@linuxfoundation.org>, Randy Dunlap <rdunlap@infradead.org>,
+ linux-kernel <linux-kernel@vger.kernel.org>, iommu@lists.linux-foundation.org,
+ bcrl@kvack.org, netdev@vger.kernel.org, linux-fsdevel@vger.kernel.org,
+ =?UTF-8?Q?Mika_Penttil=C3=A4?= <mika.penttila@nextfour.com>
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -121,75 +119,62 @@ Content-Transfer-Encoding: 7bit
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-On Wed, Jul 14, 2021 at 7:57 AM Konrad Rzeszutek Wilk <konrad@darnok.org> wrote:
+On Tue, Jul 13, 2021 at 7:31 PM Dan Carpenter <dan.carpenter@oracle.com> wrote:
 >
-> On Thu, Jul 08, 2021 at 03:43:42PM +0100, Robin Murphy wrote:
-> > On 2021-07-08 14:57, Kai-Heng Feng wrote:
-> > > On Thu, Jul 8, 2021 at 6:18 PM Robin Murphy <robin.murphy@arm.com> wrote:
-> > > >
-> > > > On 2021-07-08 10:28, Joerg Roedel wrote:
-> > > > > On Thu, Jul 08, 2021 at 03:42:32PM +0800, Kai-Heng Feng wrote:
-> > > > > > @@ -344,6 +344,9 @@ static int iommu_init_device(struct device *dev)
-> > > > > >
-> > > > > >               iommu = amd_iommu_rlookup_table[dev_data->devid];
-> > > > > >               dev_data->iommu_v2 = iommu->is_iommu_v2;
-> > > > > > +
-> > > > > > +            if (dev_data->iommu_v2)
-> > > > > > +                    swiotlb = 1;
-> > > > >
-> > > > > This looks like the big hammer, as it will affect all other systems
-> > > > > where the AMD GPUs are in their own group.
-> > > > >
-> > > > > What is needed here is an explicit check whether a non-iommu-v2 device
-> > > > > is direct-mapped because it shares a group with the GPU, and only enable
-> > > > > swiotlb in this case.
-> > > >
-> > > > Right, it's basically about whether any DMA-limited device might at any
-> > > > time end up in an IOMMU_DOMAIN_IDENTITY domain. And given the
-> > > > possibility of device hotplug and the user being silly with the sysfs
-> > > > interface, I don't think we can categorically determine that at boot time.
-> > > >
-> > > > Also note that Intel systems are likely to be similarly affected (in
-> > > > fact intel-iommu doesn't even have the iommu_default_passthough() check
-> > > > so it's probably even easier to blow up).
-> > >
-> > > swiotlb is enabled by pci_swiotlb_detect_4gb() and intel-iommu doesn't
-> > > disable it.
+> On Tue, Jul 13, 2021 at 04:46:52PM +0800, Xie Yongji wrote:
+> > @@ -613,37 +618,28 @@ static void vhost_vdpa_unmap(struct vhost_vdpa *v, u64 iova, u64 size)
+> >       }
+> >  }
 > >
-> > Oh, right... I did say I found this dance hard to follow. Clearly I
-> > shouldn't have trusted what I thought I remembered from looking at it
-> > yesterday :)
+> > -static int vhost_vdpa_process_iotlb_update(struct vhost_vdpa *v,
+> > -                                        struct vhost_iotlb_msg *msg)
+> > +static int vhost_vdpa_pa_map(struct vhost_vdpa *v,
+> > +                          u64 iova, u64 size, u64 uaddr, u32 perm)
+> >  {
+> >       struct vhost_dev *dev = &v->vdev;
+> > -     struct vhost_iotlb *iotlb = dev->iotlb;
+> >       struct page **page_list;
+> >       unsigned long list_size = PAGE_SIZE / sizeof(struct page *);
+> >       unsigned int gup_flags = FOLL_LONGTERM;
+> >       unsigned long npages, cur_base, map_pfn, last_pfn = 0;
+> >       unsigned long lock_limit, sz2pin, nchunks, i;
+> > -     u64 iova = msg->iova;
+> > +     u64 start = iova;
+> >       long pinned;
+> >       int ret = 0;
 > >
-> > Also not helped by the fact that it sets iommu_detected which *does* disable
-> > SWIOTLB, but only on IA-64.
-> >
-> > > I wonder if we can take the same approach in amd-iommu?
-> >
-> > Certainly if there's a precedent for leaving SWIOTLB enabled even if it
-> > *might* be redundant, that seems like the easiest option (it's what we do on
-> > arm64 too, but then we have system topologies where some devices may not be
-> > behind IOMMUs even when others are). More fun would be to try to bring it up
-> > at the first sign of IOMMU_DOMAIN_IDENTITY if it was disabled previously,
-> > but I don't have the highest hope of that being practical.
+> > -     if (msg->iova < v->range.first ||
+> > -         msg->iova + msg->size - 1 > v->range.last)
+> > -             return -EINVAL;
 >
-> <scratches his head>
-> It is kind of silly to enable SWIOTLB which will just eat 64MB of memory
-> "just in case".
+> This is not related to your patch, but can the "msg->iova + msg->size"
+> addition can have an integer overflow.  From looking at the callers it
+> seems like it can.  msg comes from:
+>   vhost_chr_write_iter()
+>   --> dev->msg_handler(dev, &msg);
+>       --> vhost_vdpa_process_iotlb_msg()
+>          --> vhost_vdpa_process_iotlb_update()
 >
-> The SWIOTLB does have support to do late initialization (xen-pcifront
-> does that for example - so if you add devices that can't do 64-bit it
-> will allocate something like 4MB).
+> If I'm thinking of the right thing then these are allowed to overflow to
+> 0 because of the " - 1" but not further than that.  I believe the check
+> needs to be something like:
 >
-> Would that be a better choice going forward - that is allocate this
-> under those conditions?
+>         if (msg->iova < v->range.first ||
+>             msg->iova - 1 > U64_MAX - msg->size ||
+>             msg->iova + msg->size - 1 > v->range.last)
+>
 
-But how to practically do swiotlb late init on 32-bit capable devices?
-On the first DMA map requested by the driver?
+Make sense.
 
-Kai-Heng
+> But writing integer overflow check correctly is notoriously difficult.
+> Do you think you could send a fix for that which is separate from the
+> patcheset?  We'd want to backport it to stable.
+>
 
-> >
-> > Robin.
+OK, I will send a patch to fix it.
+
+Thanks,
+Yongji
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
