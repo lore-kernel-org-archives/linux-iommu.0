@@ -2,67 +2,69 @@ Return-Path: <SRS0=9Lhb=MH=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-16.8 required=3.0 tests=BAYES_00,
+X-Spam-Status: No, score=-14.0 required=3.0 tests=BAYES_00,
 	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_CR_TRAILER,INCLUDES_PATCH,
-	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,UNPARSEABLE_RELAY,USER_AGENT_GIT
-	autolearn=unavailable autolearn_force=no version=3.4.0
+	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,UNPARSEABLE_RELAY,
+	UNWANTED_LANGUAGE_BODY,USER_AGENT_GIT autolearn=unavailable
+	autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5E572C07E96
-	for <iommu@archiver.kernel.org>; Thu, 15 Jul 2021 12:13:49 +0000 (UTC)
-Received: from smtp1.osuosl.org (smtp1.osuosl.org [140.211.166.138])
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E8017C07E96
+	for <iommu@archiver.kernel.org>; Thu, 15 Jul 2021 12:13:53 +0000 (UTC)
+Received: from smtp4.osuosl.org (smtp4.osuosl.org [140.211.166.137])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 2966E613C3
-	for <iommu@archiver.kernel.org>; Thu, 15 Jul 2021 12:13:49 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 2966E613C3
+	by mail.kernel.org (Postfix) with ESMTPS id AF05961374
+	for <iommu@archiver.kernel.org>; Thu, 15 Jul 2021 12:13:53 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org AF05961374
 Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=mediatek.com
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by smtp1.osuosl.org (Postfix) with ESMTP id 08A4F83D55;
-	Thu, 15 Jul 2021 12:13:49 +0000 (UTC)
+	by smtp4.osuosl.org (Postfix) with ESMTP id 7FB70404A7;
+	Thu, 15 Jul 2021 12:13:53 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from smtp1.osuosl.org ([127.0.0.1])
-	by localhost (smtp1.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id vk7hz_4tD_Lt; Thu, 15 Jul 2021 12:13:48 +0000 (UTC)
-Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by smtp1.osuosl.org (Postfix) with ESMTPS id E888683D3A;
-	Thu, 15 Jul 2021 12:13:47 +0000 (UTC)
+Received: from smtp4.osuosl.org ([127.0.0.1])
+	by localhost (smtp4.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+	with ESMTP id AXQcyPdTgeHr; Thu, 15 Jul 2021 12:13:52 +0000 (UTC)
+Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [IPv6:2605:bc80:3010:104::8cd3:938])
+	by smtp4.osuosl.org (Postfix) with ESMTPS id 1B27D40384;
+	Thu, 15 Jul 2021 12:13:52 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id B1D71C0010;
-	Thu, 15 Jul 2021 12:13:47 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 053DEC0010;
+	Thu, 15 Jul 2021 12:13:52 +0000 (UTC)
 Received: from smtp4.osuosl.org (smtp4.osuosl.org [IPv6:2605:bc80:3010::137])
- by lists.linuxfoundation.org (Postfix) with ESMTP id B654CC000E
- for <iommu@lists.linux-foundation.org>; Thu, 15 Jul 2021 12:13:45 +0000 (UTC)
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 0B186C000E
+ for <iommu@lists.linux-foundation.org>; Thu, 15 Jul 2021 12:13:51 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by smtp4.osuosl.org (Postfix) with ESMTP id 9682440384
- for <iommu@lists.linux-foundation.org>; Thu, 15 Jul 2021 12:13:45 +0000 (UTC)
+ by smtp4.osuosl.org (Postfix) with ESMTP id DD97A40384
+ for <iommu@lists.linux-foundation.org>; Thu, 15 Jul 2021 12:13:50 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
 Received: from smtp4.osuosl.org ([127.0.0.1])
  by localhost (smtp4.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id Ds-2xt5mYHb3 for <iommu@lists.linux-foundation.org>;
- Thu, 15 Jul 2021 12:13:44 +0000 (UTC)
+ with ESMTP id CP5RTr3g_XmE for <iommu@lists.linux-foundation.org>;
+ Thu, 15 Jul 2021 12:13:50 +0000 (UTC)
 X-Greylist: from auto-whitelisted by SQLgrey-1.8.0
-Received: from mailgw01.mediatek.com (unknown [60.244.123.138])
- by smtp4.osuosl.org (Postfix) with ESMTPS id 936664037E
- for <iommu@lists.linux-foundation.org>; Thu, 15 Jul 2021 12:13:44 +0000 (UTC)
-X-UUID: 5ea5a78fce34403eb2e2d312fdf8a6d4-20210715
-X-UUID: 5ea5a78fce34403eb2e2d312fdf8a6d4-20210715
-Received: from mtkcas07.mediatek.inc [(172.21.101.84)] by mailgw01.mediatek.com
+Received: from mailgw02.mediatek.com (unknown [210.61.82.184])
+ by smtp4.osuosl.org (Postfix) with ESMTPS id C25A0402AC
+ for <iommu@lists.linux-foundation.org>; Thu, 15 Jul 2021 12:13:49 +0000 (UTC)
+X-UUID: 034a65031a1e412f87e6b233594a55e2-20210715
+X-UUID: 034a65031a1e412f87e6b233594a55e2-20210715
+Received: from mtkcas10.mediatek.inc [(172.21.101.39)] by mailgw02.mediatek.com
  (envelope-from <yong.wu@mediatek.com>)
  (Generic MTA with TLSv1.2 ECDHE-RSA-AES256-SHA384 256/256)
- with ESMTP id 1740297775; Thu, 15 Jul 2021 20:13:39 +0800
+ with ESMTP id 1659994283; Thu, 15 Jul 2021 20:13:46 +0800
 Received: from mtkcas07.mediatek.inc (172.21.101.84) by
  mtkmbs06n2.mediatek.inc (172.21.101.130) with Microsoft SMTP Server (TLS) id
- 15.0.1497.2; Thu, 15 Jul 2021 20:13:38 +0800
+ 15.0.1497.2; Thu, 15 Jul 2021 20:13:44 +0800
 Received: from localhost.localdomain (10.17.3.153) by mtkcas07.mediatek.inc
  (172.21.101.73) with Microsoft SMTP Server id 15.0.1497.2 via Frontend
- Transport; Thu, 15 Jul 2021 20:13:37 +0800
+ Transport; Thu, 15 Jul 2021 20:13:43 +0800
 From: Yong Wu <yong.wu@mediatek.com>
 To: Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>, Rob Herring
  <robh+dt@kernel.org>, Matthias Brugger <matthias.bgg@gmail.com>
-Subject: [PATCH v2 09/11] memory: mtk-smi: mt8195: Add smi support
-Date: Thu, 15 Jul 2021 20:12:07 +0800
-Message-ID: <20210715121209.31024-10-yong.wu@mediatek.com>
+Subject: [PATCH v2 10/11] memory: mtk-smi: mt8195: Add initial setting for
+ smi-common
+Date: Thu, 15 Jul 2021 20:12:08 +0800
+Message-ID: <20210715121209.31024-11-yong.wu@mediatek.com>
 X-Mailer: git-send-email 2.18.0
 In-Reply-To: <20210715121209.31024-1-yong.wu@mediatek.com>
 References: <20210715121209.31024-1-yong.wu@mediatek.com>
@@ -91,69 +93,116 @@ Content-Transfer-Encoding: 7bit
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-MT8195 has two smi-common, their IP are the same. Only the larbs that
-connect with the smi-common are different. thus the bus_sel are different
-for the two smi-common.
+To improve the performance, add initial setting for smi-common.
+some register use some fix setting(suggested from DE).
 
 Signed-off-by: Yong Wu <yong.wu@mediatek.com>
 ---
- drivers/memory/mtk-smi.c | 23 +++++++++++++++++++++++
- 1 file changed, 23 insertions(+)
+ drivers/memory/mtk-smi.c | 42 ++++++++++++++++++++++++++++++++++++----
+ 1 file changed, 38 insertions(+), 4 deletions(-)
 
 diff --git a/drivers/memory/mtk-smi.c b/drivers/memory/mtk-smi.c
-index e5a34b3952a0..3c288716a378 100644
+index 3c288716a378..c52bf02458ff 100644
 --- a/drivers/memory/mtk-smi.c
 +++ b/drivers/memory/mtk-smi.c
-@@ -250,6 +250,10 @@ static const struct mtk_smi_larb_gen mtk_smi_larb_mt8192 = {
- 	.config_port                = mtk_smi_larb_config_port_gen2_general,
+@@ -18,11 +18,19 @@
+ #include <dt-bindings/memory/mtk-memory-port.h>
+ 
+ /* SMI COMMON */
++#define SMI_L1LEN			0x100
++
+ #define SMI_BUS_SEL			0x220
+ #define SMI_BUS_LARB_SHIFT(larbid)	((larbid) << 1)
+ /* All are MMU0 defaultly. Only specialize mmu1 here. */
+ #define F_MMU1_LARB(larbid)		(0x1 << SMI_BUS_LARB_SHIFT(larbid))
+ 
++#define SMI_M4U_TH			0x234
++#define SMI_FIFO_TH1			0x238
++#define SMI_FIFO_TH2			0x23c
++#define SMI_DCM				0x300
++#define SMI_DUMMY			0x444
++
+ /* SMI LARB */
+ 
+ /* Below are about mmu enable registers, they are different in SoCs */
+@@ -58,6 +66,13 @@
+ 	(_id << 8 | _id << 10 | _id << 12 | _id << 14);	\
+ })
+ 
++#define SMI_COMMON_INIT_REGS_NR		6
++
++struct mtk_smi_reg_pair {
++	unsigned int		offset;
++	u32			value;
++};
++
+ enum mtk_smi_type {
+ 	MTK_SMI_GEN1,
+ 	MTK_SMI_GEN2,		/* gen2 smi common */
+@@ -74,6 +89,8 @@ static const char * const mtk_smi_larb_clks_optional[] = {"gals"};
+ struct mtk_smi_common_plat {
+ 	enum mtk_smi_type	type;
+ 	u32			bus_sel; /* Balance some larbs to enter mmu0 or mmu1 */
++
++	const struct mtk_smi_reg_pair	*init;
  };
  
-+static const struct mtk_smi_larb_gen mtk_smi_larb_mt8195 = {
-+	.config_port                = mtk_smi_larb_config_port_gen2_general,
-+};
-+
- static const struct of_device_id mtk_smi_larb_of_ids[] = {
- 	{.compatible = "mediatek,mt2701-smi-larb", .data = &mtk_smi_larb_mt2701},
- 	{.compatible = "mediatek,mt2712-smi-larb", .data = &mtk_smi_larb_mt2712},
-@@ -258,6 +262,7 @@ static const struct of_device_id mtk_smi_larb_of_ids[] = {
- 	{.compatible = "mediatek,mt8173-smi-larb", .data = &mtk_smi_larb_mt8173},
- 	{.compatible = "mediatek,mt8183-smi-larb", .data = &mtk_smi_larb_mt8183},
- 	{.compatible = "mediatek,mt8192-smi-larb", .data = &mtk_smi_larb_mt8192},
-+	{.compatible = "mediatek,mt8195-smi-larb", .data = &mtk_smi_larb_mt8195},
- 	{}
+ struct mtk_smi_larb_gen {
+@@ -409,6 +426,15 @@ static struct platform_driver mtk_smi_larb_driver = {
+ 	}
  };
  
-@@ -430,6 +435,21 @@ static const struct mtk_smi_common_plat mtk_smi_common_mt8192 = {
- 		    F_MMU1_LARB(6),
++static const struct mtk_smi_reg_pair mtk_smi_common_mt8195_init[SMI_COMMON_INIT_REGS_NR] = {
++	{SMI_L1LEN, 0xb},
++	{SMI_M4U_TH, 0xe100e10},
++	{SMI_FIFO_TH1, 0x506090a},
++	{SMI_FIFO_TH2, 0x506090a},
++	{SMI_DCM, 0x4f1},
++	{SMI_DUMMY, 0x1},
++};
++
+ static const struct mtk_smi_common_plat mtk_smi_common_gen1 = {
+ 	.type     = MTK_SMI_GEN1,
+ };
+@@ -439,11 +465,13 @@ static const struct mtk_smi_common_plat mtk_smi_common_mt8195_vdo = {
+ 	.type     = MTK_SMI_GEN2,
+ 	.bus_sel  = F_MMU1_LARB(1) | F_MMU1_LARB(3) | F_MMU1_LARB(5) |
+ 		    F_MMU1_LARB(7),
++	.init     = mtk_smi_common_mt8195_init,
  };
  
-+static const struct mtk_smi_common_plat mtk_smi_common_mt8195_vdo = {
-+	.type     = MTK_SMI_GEN2,
-+	.bus_sel  = F_MMU1_LARB(1) | F_MMU1_LARB(3) | F_MMU1_LARB(5) |
-+		    F_MMU1_LARB(7),
-+};
-+
-+static const struct mtk_smi_common_plat mtk_smi_common_mt8195_vpp = {
-+	.type     = MTK_SMI_GEN2,
-+	.bus_sel  = F_MMU1_LARB(1) | F_MMU1_LARB(2) | F_MMU1_LARB(7),
-+};
-+
-+static const struct mtk_smi_common_plat mtk_smi_sub_common_mt8195 = {
-+	.type     = MTK_SMI_GEN2_SUB_COMM,
-+};
-+
- static const struct of_device_id mtk_smi_common_of_ids[] = {
- 	{.compatible = "mediatek,mt2701-smi-common", .data = &mtk_smi_common_gen1},
- 	{.compatible = "mediatek,mt2712-smi-common", .data = &mtk_smi_common_gen2},
-@@ -438,6 +458,9 @@ static const struct of_device_id mtk_smi_common_of_ids[] = {
- 	{.compatible = "mediatek,mt8173-smi-common", .data = &mtk_smi_common_gen2},
- 	{.compatible = "mediatek,mt8183-smi-common", .data = &mtk_smi_common_mt8183},
- 	{.compatible = "mediatek,mt8192-smi-common", .data = &mtk_smi_common_mt8192},
-+	{.compatible = "mediatek,mt8195-smi-common-vdo", .data = &mtk_smi_common_mt8195_vdo},
-+	{.compatible = "mediatek,mt8195-smi-common-vpp", .data = &mtk_smi_common_mt8195_vpp},
-+	{.compatible = "mediatek,mt8195-smi-sub-common", .data = &mtk_smi_sub_common_mt8195},
- 	{}
+ static const struct mtk_smi_common_plat mtk_smi_common_mt8195_vpp = {
+ 	.type     = MTK_SMI_GEN2,
+ 	.bus_sel  = F_MMU1_LARB(1) | F_MMU1_LARB(2) | F_MMU1_LARB(7),
++	.init     = mtk_smi_common_mt8195_init,
  };
+ 
+ static const struct mtk_smi_common_plat mtk_smi_sub_common_mt8195 = {
+@@ -530,15 +558,21 @@ static int mtk_smi_common_remove(struct platform_device *pdev)
+ static int __maybe_unused mtk_smi_common_resume(struct device *dev)
+ {
+ 	struct mtk_smi *common = dev_get_drvdata(dev);
+-	u32 bus_sel = common->plat->bus_sel;
+-	int ret;
++	const struct mtk_smi_reg_pair *init = common->plat->init;
++	u32 bus_sel = common->plat->bus_sel; /* default is 0 */
++	int ret, i;
+ 
+ 	ret = clk_bulk_prepare_enable(common->clk_num, common->clks);
+ 	if (ret)
+ 		return ret;
+ 
+-	if (common->plat->type == MTK_SMI_GEN2 && bus_sel)
+-		writel(bus_sel, common->base + SMI_BUS_SEL);
++	if (common->plat->type != MTK_SMI_GEN2)
++		return 0;
++
++	for (i = 0; i < SMI_COMMON_INIT_REGS_NR && init && init[i].offset; i++)
++		writel_relaxed(init[i].value, common->base + init[i].offset);
++
++	writel(bus_sel, common->base + SMI_BUS_SEL);
+ 	return 0;
+ }
  
 -- 
 2.18.0
