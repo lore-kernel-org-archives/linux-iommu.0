@@ -7,74 +7,74 @@ X-Spam-Status: No, score=-16.6 required=3.0 tests=BAYES_00,DKIM_INVALID,
 	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,USER_AGENT_GIT autolearn=ham
 	autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1D72BC07E96
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9C260C47E48
 	for <iommu@archiver.kernel.org>; Thu, 15 Jul 2021 07:32:03 +0000 (UTC)
-Received: from smtp4.osuosl.org (smtp4.osuosl.org [140.211.166.137])
+Received: from smtp3.osuosl.org (smtp3.osuosl.org [140.211.166.136])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id C52D96128B
-	for <iommu@archiver.kernel.org>; Thu, 15 Jul 2021 07:32:02 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org C52D96128B
+	by mail.kernel.org (Postfix) with ESMTPS id 08B9E61360
+	for <iommu@archiver.kernel.org>; Thu, 15 Jul 2021 07:32:03 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 08B9E61360
 Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=fw-web.de
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by smtp4.osuosl.org (Postfix) with ESMTP id 7E9EC415A3;
+	by smtp3.osuosl.org (Postfix) with ESMTP id CEBD260B30;
 	Thu, 15 Jul 2021 07:32:02 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from smtp4.osuosl.org ([127.0.0.1])
-	by localhost (smtp4.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id uzpCIe2gABoX; Thu, 15 Jul 2021 07:32:01 +0000 (UTC)
+Received: from smtp3.osuosl.org ([127.0.0.1])
+	by localhost (smtp3.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+	with ESMTP id Z2b7bzV-J6nZ; Thu, 15 Jul 2021 07:32:02 +0000 (UTC)
 Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by smtp4.osuosl.org (Postfix) with ESMTPS id 5783D415AE;
+	by smtp3.osuosl.org (Postfix) with ESMTPS id D2DD160B22;
 	Thu, 15 Jul 2021 07:32:01 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 3073CC0010;
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 5B69BC0023;
 	Thu, 15 Jul 2021 07:32:01 +0000 (UTC)
-Received: from smtp2.osuosl.org (smtp2.osuosl.org [140.211.166.133])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 45465C000E
- for <iommu@lists.linux-foundation.org>; Thu, 15 Jul 2021 07:30:04 +0000 (UTC)
+Received: from smtp4.osuosl.org (smtp4.osuosl.org [IPv6:2605:bc80:3010::137])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 53CF5C000E
+ for <iommu@lists.linux-foundation.org>; Thu, 15 Jul 2021 07:30:09 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by smtp2.osuosl.org (Postfix) with ESMTP id 228C74021D
- for <iommu@lists.linux-foundation.org>; Thu, 15 Jul 2021 07:30:04 +0000 (UTC)
+ by smtp4.osuosl.org (Postfix) with ESMTP id 350F34159A
+ for <iommu@lists.linux-foundation.org>; Thu, 15 Jul 2021 07:30:09 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Authentication-Results: smtp2.osuosl.org (amavisd-new);
+Authentication-Results: smtp4.osuosl.org (amavisd-new);
  dkim=pass (1024-bit key) header.d=mailerdienst.de
-Received: from smtp2.osuosl.org ([127.0.0.1])
- by localhost (smtp2.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id tgvwZqdGNfbh for <iommu@lists.linux-foundation.org>;
- Thu, 15 Jul 2021 07:30:03 +0000 (UTC)
-X-Greylist: delayed 00:09:58 by SQLgrey-1.8.0
+Received: from smtp4.osuosl.org ([127.0.0.1])
+ by localhost (smtp4.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+ with ESMTP id lsSKniHaZPXu for <iommu@lists.linux-foundation.org>;
+ Thu, 15 Jul 2021 07:30:08 +0000 (UTC)
+X-Greylist: from auto-whitelisted by SQLgrey-1.8.0
 Received: from mxwww.masterlogin.de (mxwww.masterlogin.de
  [IPv6:2a03:2900:1:1::a])
- by smtp2.osuosl.org (Postfix) with ESMTPS id 14F41400CC
- for <iommu@lists.linux-foundation.org>; Thu, 15 Jul 2021 07:30:02 +0000 (UTC)
-Received: from mxout1.routing.net (unknown [192.168.10.81])
- by backup.mxwww.masterlogin.de (Postfix) with ESMTPS id 57DEA2C54F
- for <iommu@lists.linux-foundation.org>; Thu, 15 Jul 2021 07:12:08 +0000 (UTC)
-Received: from mxbox2.masterlogin.de (unknown [192.168.10.89])
- by mxout1.routing.net (Postfix) with ESMTP id E318940735;
- Thu, 15 Jul 2021 07:12:02 +0000 (UTC)
+ by smtp4.osuosl.org (Postfix) with ESMTPS id F2E1D415A3
+ for <iommu@lists.linux-foundation.org>; Thu, 15 Jul 2021 07:30:07 +0000 (UTC)
+Received: from mxout4.routing.net (unknown [192.168.10.112])
+ by backup.mxwww.masterlogin.de (Postfix) with ESMTPS id 97BDD2C55D
+ for <iommu@lists.linux-foundation.org>; Thu, 15 Jul 2021 07:12:09 +0000 (UTC)
+Received: from mxbox3.masterlogin.de (unknown [192.168.10.78])
+ by mxout4.routing.net (Postfix) with ESMTP id CFAD11008A2;
+ Thu, 15 Jul 2021 07:12:03 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=mailerdienst.de;
- s=20200217; t=1626333123;
+ s=20200217; t=1626333124;
  h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
  to:to:cc:cc:mime-version:mime-version:
  content-transfer-encoding:content-transfer-encoding;
  bh=bHCbwCI5MpbahEdZ+ZAHQEIG0Qqobtp7he3SCKGjng4=;
- b=Pb96nc4oos96q/wIf13w4dIhW+2Laxqwiz+nFcTpqusgGZU30ArRSv5AOjc6VCpL/l8xWy
- d/buLhtWrzb7aZ76Z7Sb1OrvX0nWCn/aNDEKMcBCnedXwKl5D4ZSOh2hOGss2Nm+X4l7Vr
- iLzDzVb9z1ADeHC/BhOgRBBDrWmkFzw=
+ b=UZUcYAROrcxiZ4qtTYQi8LA4YUQLgFnIF9U7QtMoI6bCOudaAFgjKITsbnZAIgaTV/JdPb
+ 7AG/U/I8x8rYv7Aiu3iRaFl4yFrXbjRerIQiiv/GyG6VCUAQgaS2+NQUS2epxEChEEbMfg
+ M/uPVC4nbhNRnOoWQ3Dy/MyF30X37RA=
 Received: from localhost.localdomain (fttx-pool-80.245.79.66.bambit.de
  [80.245.79.66])
- by mxbox2.masterlogin.de (Postfix) with ESMTPSA id 0DAE5100A1A;
- Thu, 15 Jul 2021 07:11:21 +0000 (UTC)
+ by mxbox3.masterlogin.de (Postfix) with ESMTPSA id 9C17B3606AA;
+ Thu, 15 Jul 2021 07:12:01 +0000 (UTC)
 From: Frank Wunderlich <linux@fw-web.de>
 To: iommu@lists.linux-foundation.org
 Subject: [PATCH] iommu: check if group is NULL before remove device
-Date: Thu, 15 Jul 2021 09:10:43 +0200
-Message-Id: <20210715071043.82055-1-linux@fw-web.de>
+Date: Thu, 15 Jul 2021 09:11:50 +0200
+Message-Id: <20210715071150.82157-1-linux@fw-web.de>
 X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
-X-Mail-ID: 820bd0e5-1d97-456a-a2a2-24dfac31751b
+X-Mail-ID: c6a9bf0f-a649-438f-8b8f-4f345d6069d2
 X-Mailman-Approved-At: Thu, 15 Jul 2021 07:31:59 +0000
 Cc: Will Deacon <will@kernel.org>, linux-kernel@vger.kernel.org,
  Frank Wunderlich <frank-w@public-files.de>
