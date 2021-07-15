@@ -2,129 +2,127 @@ Return-Path: <SRS0=9Lhb=MH=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-10.1 required=3.0 tests=BAYES_00,DKIM_INVALID,
-	DKIM_SIGNED,HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,
-	NICE_REPLY_A,SPF_HELO_NONE,SPF_PASS,USER_AGENT_SANE_1 autolearn=ham
-	autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-5.1 required=3.0 tests=BAYES_00,DKIM_INVALID,
+	DKIM_SIGNED,HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,NICE_REPLY_A,
+	SPF_HELO_NONE,SPF_PASS,USER_AGENT_SANE_1 autolearn=no autolearn_force=no
+	version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2F735C07E96
-	for <iommu@archiver.kernel.org>; Thu, 15 Jul 2021 04:44:20 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 729B6C1B08C
+	for <iommu@archiver.kernel.org>; Thu, 15 Jul 2021 05:01:25 +0000 (UTC)
 Received: from smtp1.osuosl.org (smtp1.osuosl.org [140.211.166.138])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id BD7986136E
-	for <iommu@archiver.kernel.org>; Thu, 15 Jul 2021 04:44:19 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org BD7986136E
-Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=lists.linux-foundation.org
+	by mail.kernel.org (Postfix) with ESMTPS id 266936128B
+	for <iommu@archiver.kernel.org>; Thu, 15 Jul 2021 05:01:25 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 266936128B
+Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=redhat.com
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by smtp1.osuosl.org (Postfix) with ESMTP id 8251B83CB2;
-	Thu, 15 Jul 2021 04:44:19 +0000 (UTC)
+	by smtp1.osuosl.org (Postfix) with ESMTP id A733183D3C;
+	Thu, 15 Jul 2021 05:01:23 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
 Received: from smtp1.osuosl.org ([127.0.0.1])
 	by localhost (smtp1.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id 2yRAdsuug6M8; Thu, 15 Jul 2021 04:44:18 +0000 (UTC)
-Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by smtp1.osuosl.org (Postfix) with ESMTPS id 75CB982F57;
-	Thu, 15 Jul 2021 04:44:18 +0000 (UTC)
+	with ESMTP id 4kZ8wTHUGa00; Thu, 15 Jul 2021 05:01:22 +0000 (UTC)
+Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [IPv6:2605:bc80:3010:104::8cd3:938])
+	by smtp1.osuosl.org (Postfix) with ESMTPS id 924A383D30;
+	Thu, 15 Jul 2021 05:01:22 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 29446C001A;
-	Thu, 15 Jul 2021 04:44:18 +0000 (UTC)
-Received: from smtp1.osuosl.org (smtp1.osuosl.org [IPv6:2605:bc80:3010::138])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 03511C000E
- for <iommu@lists.linux-foundation.org>; Thu, 15 Jul 2021 04:44:16 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 7C9A3C0022;
+	Thu, 15 Jul 2021 05:01:22 +0000 (UTC)
+Received: from smtp3.osuosl.org (smtp3.osuosl.org [140.211.166.136])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id B7202C001A
+ for <iommu@lists.linux-foundation.org>; Thu, 15 Jul 2021 05:01:19 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by smtp1.osuosl.org (Postfix) with ESMTP id D176583C68
- for <iommu@lists.linux-foundation.org>; Thu, 15 Jul 2021 04:44:16 +0000 (UTC)
+ by smtp3.osuosl.org (Postfix) with ESMTP id 94A9660B15
+ for <iommu@lists.linux-foundation.org>; Thu, 15 Jul 2021 05:01:19 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from smtp1.osuosl.org ([127.0.0.1])
- by localhost (smtp1.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id fBwiOvZNK2pi for <iommu@lists.linux-foundation.org>;
- Thu, 15 Jul 2021 04:44:15 +0000 (UTC)
-X-Greylist: whitelisted by SQLgrey-1.8.0
-Received: from NAM12-DM6-obe.outbound.protection.outlook.com
- (mail-dm6nam12on2062a.outbound.protection.outlook.com
- [IPv6:2a01:111:f400:fe59::62a])
- by smtp1.osuosl.org (Postfix) with ESMTPS id 8B76382F57
- for <iommu@lists.linux-foundation.org>; Thu, 15 Jul 2021 04:44:15 +0000 (UTC)
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=kv90uNmY8R4Vfk7NtukkOWEORBYC+Oq4ZQsQGg25KMCnWUXeziZKIDqn4jmjNi3Sen7p4z87SPG1FTzG+I5ue61bkEE3ONuuZknuXrnLns58ZQbXSzV1C/UL6BCm9/0+Aty0s4rJ7Uen9Pxm0gP2/CJ/mftzM5XCpkyFti5HDgwaCslIr/lHGMgGlQv6Ozfo/THrQCL7afDkv+eIn9ti/edNL1qTpGtCBOeiw3xln6BJxTZrP6YsSeV5RJO3IqJOBmWsgWokViTgtyi+64NWoY1/7DFM6EO57Oe6q1OmV9t5ZHk/3HKH8Tpjf0NqynsragD4qOjSthlaCOXpew/gDA==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com; 
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=mVGWvoB2IGwoNBsAtn0dydCdtBKFlCrZkbSKK/EZYaE=;
- b=E+IcT0/l+V3w770vlzoxO+t1e/YReLLm3Cmqb5Wdl9kAUKnkFkTM/wSMyqFDDuq7Wmz4OERz687LBER+tKl4g8HmQ/RrdmF8XVZ+dOAKRmaMeDeXa2SzISpmdi7l6BisD+9XlkpZFiNVapwgpZp7nKyVxv4xhwzBgl8eaBoh6dUPQCOLyeX5I/qveRdMFEmf9vJBtQJY5Q7kVGJ6WhiM51Wc0pf2E+exKC/ysTiLMn8KGNF1jJ+lzsC+hrWzDFkvLQ5kNYYW2WrUB2EQnoHNGOcTL0crVBOnW6trldT/IdF6j6dDlmxBySZWWqv0KMANbLCafIQskS3YqozDf0btyg==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
- 216.228.112.34) smtp.rcpttodomain=kernel.org smtp.mailfrom=nvidia.com;
- dmarc=pass (p=quarantine sp=none pct=100) action=none header.from=nvidia.com; 
- dkim=none (message not signed); arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
- s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=mVGWvoB2IGwoNBsAtn0dydCdtBKFlCrZkbSKK/EZYaE=;
- b=lJ4gPrrqDc6k9xls028MttBvcrk+jy7shXMIJKaxLZfDUxpUWjNF85H2x0l5zOjLgXQPymx35j0pGeXhbvuzAjWKYRp1BbXVPLzvdcF67HCbz+Y0MPELzNxAmz53LzA1TyWZjR8NEXiVJSxSG2u6PFIIcYkLVmTOz17JKHEn2vRX0Npz40Qmcap/tdLAbVUF7tuuCYjaB/gYJ5ip7fRy7zo4gFuUdYpbkOlNpjMnn8yOEQtj+ydYiAvvqIgGYKGHFjB7IXQyFYhm3STMOCczlE02OwrRlGXPaaOs8q8xfqS6OgkkphfsAs3DwTXwqrx2Z/v5qCvW37wqwJrIoM6ubA==
-Received: from DM5PR19CA0062.namprd19.prod.outlook.com (2603:10b6:3:116::24)
- by PH0PR12MB5500.namprd12.prod.outlook.com (2603:10b6:510:ef::8) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4331.21; Thu, 15 Jul
- 2021 04:44:12 +0000
-Received: from DM6NAM11FT016.eop-nam11.prod.protection.outlook.com
- (2603:10b6:3:116:cafe::87) by DM5PR19CA0062.outlook.office365.com
- (2603:10b6:3:116::24) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4331.21 via Frontend
- Transport; Thu, 15 Jul 2021 04:44:11 +0000
-X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 216.228.112.34)
- smtp.mailfrom=nvidia.com; kernel.org; dkim=none (message not signed)
- header.d=none;kernel.org; dmarc=pass action=none header.from=nvidia.com;
-Received-SPF: Pass (protection.outlook.com: domain of nvidia.com designates
- 216.228.112.34 as permitted sender) receiver=protection.outlook.com;
- client-ip=216.228.112.34; helo=mail.nvidia.com;
-Received: from mail.nvidia.com (216.228.112.34) by
- DM6NAM11FT016.mail.protection.outlook.com (10.13.173.139) with Microsoft SMTP
- Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id
- 15.20.4331.21 via Frontend Transport; Thu, 15 Jul 2021 04:44:11 +0000
-Received: from [10.40.102.103] (172.20.187.6) by HQMAIL107.nvidia.com
- (172.20.187.13) with Microsoft SMTP Server (TLS) id 15.0.1497.2; Thu, 15 Jul
- 2021 04:44:06 +0000
-Subject: Re: [Patch V2 0/2] iommu/arm-smmu: Fix races in iommu domain/group
- creation
-To: <robin.murphy@arm.com>, <will@kernel.org>, <vdumpa@nvidia.com>
-References: <1623961837-12540-1-git-send-email-amhetre@nvidia.com>
-Message-ID: <984e45e9-5dc0-fcdc-fa60-179faccb3715@nvidia.com>
-Date: Thu, 15 Jul 2021 10:14:04 +0530
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:78.0) Gecko/20100101
- Thunderbird/78.11.0
+Authentication-Results: smtp3.osuosl.org (amavisd-new);
+ dkim=pass (1024-bit key) header.d=redhat.com
+Received: from smtp3.osuosl.org ([127.0.0.1])
+ by localhost (smtp3.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+ with ESMTP id JB9nqU6asVM8 for <iommu@lists.linux-foundation.org>;
+ Thu, 15 Jul 2021 05:01:19 +0000 (UTC)
+X-Greylist: domain auto-whitelisted by SQLgrey-1.8.0
+Received: from us-smtp-delivery-124.mimecast.com
+ (us-smtp-delivery-124.mimecast.com [170.10.133.124])
+ by smtp3.osuosl.org (Postfix) with ESMTPS id ED7476076B
+ for <iommu@lists.linux-foundation.org>; Thu, 15 Jul 2021 05:01:18 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+ s=mimecast20190719; t=1626325277;
+ h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+ to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+ content-transfer-encoding:content-transfer-encoding:
+ in-reply-to:in-reply-to:references:references;
+ bh=WtjoUKLcgmL3bnw/gxqCJv6EYfcYaY0E3bn8JDpe3PI=;
+ b=NRHwQ0mfc+N910GwrP2+5WyQPvU2t5lzubt6aOZSL5Ifo9QIYZw+Y70g8fS7B/odNKMhL+
+ YgHnyPxgSnJiLx3r6rtfTgNcxoK+HHU5xfmijkaGRsIynHXh546pJVcCTptqOACMHpORfz
+ +q58YkukocLMtw/XtdJdEwWOSq4ksI8=
+Received: from mail-pj1-f72.google.com (mail-pj1-f72.google.com
+ [209.85.216.72]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-290-MnDLLlVlNyWbUSPR1JXTyg-1; Thu, 15 Jul 2021 01:01:14 -0400
+X-MC-Unique: MnDLLlVlNyWbUSPR1JXTyg-1
+Received: by mail-pj1-f72.google.com with SMTP id
+ jx12-20020a17090b46ccb029017365ced08eso5093587pjb.3
+ for <iommu@lists.linux-foundation.org>; Wed, 14 Jul 2021 22:01:13 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+ d=1e100.net; s=20161025;
+ h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+ :user-agent:mime-version:in-reply-to:content-transfer-encoding
+ :content-language;
+ bh=WtjoUKLcgmL3bnw/gxqCJv6EYfcYaY0E3bn8JDpe3PI=;
+ b=g13VwVZuMrSRLU1nj2JvML1jxo0jnqSEkFQd8XROR/1VUJaYqizr/T3Cz1L2OjA/Yr
+ Ff0imyqLPhD5V+cHIhqoA12ZHBnpQf/GVyIo0x6Y2HX6rFT39m8ekoLNW38pYPRKuLt4
+ inMpcWC/i5+ZZw6jaCpa7AZwmYCorWCuR5EDMnja2vFM4rpm+hRWHS+9yr6UzQpabw+l
+ SMq1fdt52UPFJVtJv3m3rMj4NrnDiMlFG99p/I8ECno+gAPMV29rKmELdSu2Cz+/dtdD
+ 3R8nDcB7THxa1XfeHZ8j+fAsLC7dESDoZNDdRGjdFLdD2UMekSRKyRHvWqDDzLRfzAQR
+ VM1g==
+X-Gm-Message-State: AOAM533EkP2oSoBowgGDAvbyBvIhCaqq3Qj8jM8ktd7wwuGp9g+OTRtS
+ xHkN1+WPyA9MPMbhX9Q99eNuq+ZDkRcXXLh06K3soX/JMa7U58RjykFTkqZ3lgXmFrnQo4458A9
+ 2Bie/pZyB7Z1sHrHmRfrTtklZdYHNPg==
+X-Received: by 2002:a63:1e5c:: with SMTP id p28mr2391182pgm.3.1626325272857;
+ Wed, 14 Jul 2021 22:01:12 -0700 (PDT)
+X-Google-Smtp-Source: ABdhPJwkpF4TSDI5DZm/B2bv9bWVuNXDKhmhRtseurS2rxggrCDnmBokVeS6bdawuICnE0MaFRu/xw==
+X-Received: by 2002:a63:1e5c:: with SMTP id p28mr2391148pgm.3.1626325272634;
+ Wed, 14 Jul 2021 22:01:12 -0700 (PDT)
+Received: from wangxiaodeMacBook-Air.local ([209.132.188.80])
+ by smtp.gmail.com with ESMTPSA id o20sm5070990pgv.80.2021.07.14.22.01.01
+ (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+ Wed, 14 Jul 2021 22:01:12 -0700 (PDT)
+Subject: Re: [PATCH v9 16/17] vduse: Introduce VDUSE - vDPA Device in Userspace
+To: Yongji Xie <xieyongji@bytedance.com>
+References: <20210713084656.232-1-xieyongji@bytedance.com>
+ <20210713084656.232-17-xieyongji@bytedance.com>
+ <26116714-f485-eeab-4939-71c4c10c30de@redhat.com>
+ <CACycT3uh+wUeDM1H7JiCJTMeCVCBngURGKeXD-h+meekNNwiQw@mail.gmail.com>
+ <ec3e2729-3490-851f-ed4b-6dee9c04831c@redhat.com>
+ <CACycT3vTyR=+6xOJyXCu_bGAKcz4Fx3bA25WfdBjhxJ6MOvLzw@mail.gmail.com>
+From: Jason Wang <jasowang@redhat.com>
+Message-ID: <5d756360-b540-2faf-6e52-e7e6e863ca0b@redhat.com>
+Date: Thu, 15 Jul 2021 13:00:56 +0800
+User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:78.0)
+ Gecko/20100101 Thunderbird/78.11.0
 MIME-Version: 1.0
-In-Reply-To: <1623961837-12540-1-git-send-email-amhetre@nvidia.com>
+In-Reply-To: <CACycT3vTyR=+6xOJyXCu_bGAKcz4Fx3bA25WfdBjhxJ6MOvLzw@mail.gmail.com>
+Authentication-Results: relay.mimecast.com;
+ auth=pass smtp.auth=CUSA124A263 smtp.mailfrom=jasowang@redhat.com
+X-Mimecast-Spam-Score: 0
+X-Mimecast-Originator: redhat.com
 Content-Language: en-US
-X-Originating-IP: [172.20.187.6]
-X-ClientProxiedBy: HQMAIL101.nvidia.com (172.20.187.10) To
- HQMAIL107.nvidia.com (172.20.187.13)
-X-EOPAttributedMessage: 0
-X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: 347b066e-bd09-4f44-b815-08d9474b30c0
-X-MS-TrafficTypeDiagnostic: PH0PR12MB5500:
-X-Microsoft-Antispam-PRVS: <PH0PR12MB550022CCED633794FA5367A8CA129@PH0PR12MB5500.namprd12.prod.outlook.com>
-X-MS-Oob-TLC-OOBClassifiers: OLM:8273;
-X-MS-Exchange-SenderADCheck: 1
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: F66/Wjd4+r/9Rbn52tOhKR8yTSefX1L+c7GDNRmXAOXxHm2uMsDbRyg5+QpBu6A17RrtHxHA3IeNqxT96zOpZ0M5gNjsZElShCUOZrB7SniExdvppLTFTQ8/ilCrRmUf9Id1ThXik8VEBq1KtA1DXtugv57UeDmHdctGpJVwDjPwKCmygwWq5HHA2lK8JdjgzWs6tJdpamM25ug3ZRRmPmmVEQiL1JEy0YWq1bMXL1Egjj3nHG6C//BIOWe1vUk6jCIavMYlWhAiquYIXLkf+ZJ6mKj0V6KS2aZv65Ou6RMe10PRt0n2f1LjF+brFg7Vwqt518jHog2BIngd43Ep7e4YP03sd1ZVOZGe+4LszkWGyAtU9N3ZgE3YnV6+OhjZClBdz1287x8hz+Hf5wogrXMdTbJ4Dy/Ki0MdOXLhRJiaajix2VCq4SsZY+d5g7FNlFrSU9fyXWgGOIjBSsfhimxp2jzTntkpCzRFVV6Y80BRtvQiDMqH61tRPW7r3P3MOQjhRXrIwVDfJ2ETTFS/LgcY7GcT2SZ/hlRk2R1EHMFwpgSPRY7psV2pCtvkEsF/C9SxDVl+dM3reX7rqd8BAtAQEKU0nNx2i1Wf8RzkPmWbF0ChnU9AZ/2B89iX6tHQW+v1NMQ4KH6QqzckuNM5TX5ss2gSZiB6A9xxAeBKPpvdBeK41bbD/PU1OJgLivpnd4nuzguQI16xZ1Hq9fbCnMH9TyvJBb4wPPoBs+sAhbpe7GDm9teNdOCMpCv6Zzj7lzj3teemWUrMwS8yQTCAxQ==
-X-Forefront-Antispam-Report: CIP:216.228.112.34; CTRY:US; LANG:en; SCL:1; SRV:;
- IPV:NLI; SFV:NSPM; H:mail.nvidia.com; PTR:schybrid03.nvidia.com; CAT:NONE;
- SFS:(4636009)(396003)(39860400002)(346002)(376002)(136003)(46966006)(36840700001)(34020700004)(186003)(16526019)(36906005)(4744005)(36860700001)(110136005)(82310400003)(83380400001)(16576012)(31696002)(7636003)(86362001)(4326008)(316002)(54906003)(31686004)(356005)(336012)(53546011)(478600001)(36756003)(47076005)(2906002)(8936002)(426003)(82740400003)(5660300002)(6636002)(8676002)(26005)(2616005)(70586007)(70206006)(43740500002);
- DIR:OUT; SFP:1101; 
-X-OriginatorOrg: Nvidia.com
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 15 Jul 2021 04:44:11.4562 (UTC)
-X-MS-Exchange-CrossTenant-Network-Message-Id: 347b066e-bd09-4f44-b815-08d9474b30c0
-X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
-X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=43083d15-7273-40c1-b7db-39efd9ccc17a; Ip=[216.228.112.34];
- Helo=[mail.nvidia.com]
-X-MS-Exchange-CrossTenant-AuthSource: DM6NAM11FT016.eop-nam11.prod.protection.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Anonymous
-X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: PH0PR12MB5500
-Cc: iommu@lists.linux-foundation.org, linux-kernel@vger.kernel.org,
- linux-arm-kernel@lists.infradead.org
+Cc: kvm <kvm@vger.kernel.org>, "Michael S. Tsirkin" <mst@redhat.com>,
+ virtualization <virtualization@lists.linux-foundation.org>,
+ Christian Brauner <christian.brauner@canonical.com>,
+ Jonathan Corbet <corbet@lwn.net>, Matthew Wilcox <willy@infradead.org>,
+ Christoph Hellwig <hch@infradead.org>,
+ Dan Carpenter <dan.carpenter@oracle.com>,
+ Stefano Garzarella <sgarzare@redhat.com>,
+ Liu Xiaodong <xiaodong.liu@intel.com>, Al Viro <viro@zeniv.linux.org.uk>,
+ Stefan Hajnoczi <stefanha@redhat.com>, songmuchun@bytedance.com,
+ Jens Axboe <axboe@kernel.dk>, He Zhe <zhe.he@windriver.com>,
+ Greg KH <gregkh@linuxfoundation.org>, Randy Dunlap <rdunlap@infradead.org>,
+ linux-kernel <linux-kernel@vger.kernel.org>, iommu@lists.linux-foundation.org,
+ bcrl@kvack.org, netdev@vger.kernel.org, linux-fsdevel@vger.kernel.org,
+ =?UTF-8?Q?Mika_Penttil=c3=a4?= <mika.penttila@nextfour.com>
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -137,42 +135,24 @@ List-Post: <mailto:iommu@lists.linux-foundation.org>
 List-Help: <mailto:iommu-request@lists.linux-foundation.org?subject=help>
 List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
  <mailto:iommu-request@lists.linux-foundation.org?subject=subscribe>
-From: Ashish Mhetre via iommu <iommu@lists.linux-foundation.org>
-Reply-To: Ashish Mhetre <amhetre@nvidia.com>
-Content-Transfer-Encoding: 7bit
-Content-Type: text/plain; charset="us-ascii"; Format="flowed"
+Content-Transfer-Encoding: base64
+Content-Type: text/plain; charset="utf-8"; Format="flowed"
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-
-
-On 6/18/2021 2:00 AM, Ashish Mhetre wrote:
-> Multiple iommu domains and iommu groups are getting created for the devices
-> sharing same SID. It is expected for devices sharing same SID to be in same
-> iommu group and same iommu domain.
-> This is leading to context faults when one device is accessing IOVA from
-> other device which shouldn't be the case for devices sharing same SID.
-> Fix this by protecting iommu domain and iommu group creation with mutexes.
-> 
-> Ashish Mhetre (1):
->    iommu: Fix race condition during default domain allocation
-> 
-> Krishna Reddy (1):
->    iommu/arm-smmu: Fix race condition during iommu_group creation
-> 
->   drivers/iommu/arm/arm-smmu/arm-smmu.c | 6 +++++-
->   drivers/iommu/iommu.c                 | 2 ++
->   2 files changed, 7 insertions(+), 1 deletion(-)
-> 
-
-Hi,
-
-Can you please help in reviewing this V2 change? Please let me know if 
-anymore changes are required.
-
-Thanks,
-Ashish Mhetre
-_______________________________________________
-iommu mailing list
-iommu@lists.linux-foundation.org
-https://lists.linuxfoundation.org/mailman/listinfo/iommu
+CuWcqCAyMDIxLzcvMTUg5LiL5Y2IMTI6MDMsIFlvbmdqaSBYaWUg5YaZ6YGTOgo+PiBXaGljaCBp
+b2N0bCBjYW4gYmUgdXNlZCBmb3IgdGhpcz8KPj4KPiBJIG1lYW4gd2UgY2FuIGludHJvZHVjZSBh
+IG5ldyBpb2N0bCBmb3IgdGhhdCBpbiB0aGUgZnV0dXJlLgoKCk9rLCBJIHNlZS4KCgo+Cj4+Pj4g
+SSB3b25kZXIgaWYgaXQncyBiZXR0ZXIgdG8gZG8gc29tZXRoaW5nIHNpbWlsYXIgdG8gY2N3Ogo+
+Pj4+Cj4+Pj4gMSkgcmVxdWlyZXMgdGhlIHVzZXJzcGFjZSB0byB1cGRhdGUgdGhlIHN0YXR1cyBi
+aXQgaW4gdGhlIHJlc3BvbnNlCj4+Pj4gMikgdXBkYXRlIHRoZSBkZXYtPnN0YXR1cyB0byB0aGUg
+c3RhdHVzIGluIHRoZSByZXNwb25zZSBpZiBubyB0aW1lb3V0Cj4+Pj4KPj4+PiBUaGVuIHVzZXJz
+cGFjZSBjb3VsZCB0aGVuIHNldCBORUVEU19SRVNFVCBpZiBuZWNlc3NhcnkuCj4+Pj4KPj4+IEJ1
+dCBORUVEU19SRVNFVCBkb2VzIG5vdCBvbmx5IGhhcHBlbiBpbiB0aGlzIGNhc2UuCj4+IFllcywg
+c28geW91IG5lZWQgYW4gaW9jdGwgZm9yIHVzZXJzcGFjZSB0byB1cGRhdGUgdGhlIGRldmljZSBz
+dGF0dXMKPj4gKE5FRURTX1JFU0VUKSBwcm9iYWJseS4KPj4KPiBZZXMsIGJ1dCBJJ2QgbGlrZSB0
+byBkbyB0aGF0IGFmdGVyIHRoZSBpbml0aWFsIHZlcnNpb24gaXMgbWVyZ2VkIHNpbmNlCj4gTkVF
+RFNfUkVTRVQgaXMgbm90IHN1cHBvcnRlZCBub3cuCgoKUmlnaHQuCgpUaGFua3MKCgo+CgpfX19f
+X19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fXwppb21tdSBtYWlsaW5n
+IGxpc3QKaW9tbXVAbGlzdHMubGludXgtZm91bmRhdGlvbi5vcmcKaHR0cHM6Ly9saXN0cy5saW51
+eGZvdW5kYXRpb24ub3JnL21haWxtYW4vbGlzdGluZm8vaW9tbXU=
