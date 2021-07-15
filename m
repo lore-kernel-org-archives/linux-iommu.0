@@ -4,65 +4,65 @@ X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 X-Spam-Level: 
 X-Spam-Status: No, score=-16.6 required=3.0 tests=BAYES_00,DKIM_INVALID,
 	DKIM_SIGNED,HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_CR_TRAILER,INCLUDES_PATCH,
-	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,USER_AGENT_GIT autolearn=ham
-	autolearn_force=no version=3.4.0
+	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,USER_AGENT_GIT
+	autolearn=unavailable autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 74304C636C7
-	for <iommu@archiver.kernel.org>; Thu, 15 Jul 2021 17:16:04 +0000 (UTC)
-Received: from smtp4.osuosl.org (smtp4.osuosl.org [140.211.166.137])
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7129BC636C8
+	for <iommu@archiver.kernel.org>; Thu, 15 Jul 2021 17:16:11 +0000 (UTC)
+Received: from smtp1.osuosl.org (smtp1.osuosl.org [140.211.166.138])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 399EF613C7
-	for <iommu@archiver.kernel.org>; Thu, 15 Jul 2021 17:16:04 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 399EF613C7
+	by mail.kernel.org (Postfix) with ESMTPS id 25893613D4
+	for <iommu@archiver.kernel.org>; Thu, 15 Jul 2021 17:16:11 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 25893613D4
 Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=deltatee.com
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by smtp4.osuosl.org (Postfix) with ESMTP id 15F85423C5;
-	Thu, 15 Jul 2021 17:16:04 +0000 (UTC)
+	by smtp1.osuosl.org (Postfix) with ESMTP id 0572B83E2E;
+	Thu, 15 Jul 2021 17:16:11 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from smtp4.osuosl.org ([127.0.0.1])
-	by localhost (smtp4.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id VPKNYqNutdCW; Thu, 15 Jul 2021 17:16:03 +0000 (UTC)
+Received: from smtp1.osuosl.org ([127.0.0.1])
+	by localhost (smtp1.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+	with ESMTP id OOg-Q4VF5Wff; Thu, 15 Jul 2021 17:16:10 +0000 (UTC)
 Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [IPv6:2605:bc80:3010:104::8cd3:938])
-	by smtp4.osuosl.org (Postfix) with ESMTPS id A3CDC422B6;
-	Thu, 15 Jul 2021 17:16:02 +0000 (UTC)
+	by smtp1.osuosl.org (Postfix) with ESMTPS id DE6BD83E08;
+	Thu, 15 Jul 2021 17:16:09 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 8CF7DC001A;
-	Thu, 15 Jul 2021 17:16:02 +0000 (UTC)
-Received: from smtp2.osuosl.org (smtp2.osuosl.org [140.211.166.133])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 4B947C000E
- for <iommu@lists.linux-foundation.org>; Thu, 15 Jul 2021 17:16:01 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id BAD44C001A;
+	Thu, 15 Jul 2021 17:16:09 +0000 (UTC)
+Received: from smtp3.osuosl.org (smtp3.osuosl.org [140.211.166.136])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 58005C000E
+ for <iommu@lists.linux-foundation.org>; Thu, 15 Jul 2021 17:16:08 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by smtp2.osuosl.org (Postfix) with ESMTP id 3BC084037B
- for <iommu@lists.linux-foundation.org>; Thu, 15 Jul 2021 17:16:01 +0000 (UTC)
+ by smtp3.osuosl.org (Postfix) with ESMTP id 476006074B
+ for <iommu@lists.linux-foundation.org>; Thu, 15 Jul 2021 17:16:08 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Authentication-Results: smtp2.osuosl.org (amavisd-new);
+Authentication-Results: smtp3.osuosl.org (amavisd-new);
  dkim=pass (2048-bit key) header.d=deltatee.com
-Received: from smtp2.osuosl.org ([127.0.0.1])
- by localhost (smtp2.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id qqPv29IK_f2G for <iommu@lists.linux-foundation.org>;
- Thu, 15 Jul 2021 17:16:00 +0000 (UTC)
+Received: from smtp3.osuosl.org ([127.0.0.1])
+ by localhost (smtp3.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+ with ESMTP id fh0SZK0z133e for <iommu@lists.linux-foundation.org>;
+ Thu, 15 Jul 2021 17:16:07 +0000 (UTC)
 X-Greylist: from auto-whitelisted by SQLgrey-1.8.0
 Received: from ale.deltatee.com (ale.deltatee.com [204.191.154.188])
- by smtp2.osuosl.org (Postfix) with ESMTPS id BB3EC40E62
- for <iommu@lists.linux-foundation.org>; Thu, 15 Jul 2021 17:16:00 +0000 (UTC)
+ by smtp3.osuosl.org (Postfix) with ESMTPS id AF40060BFC
+ for <iommu@lists.linux-foundation.org>; Thu, 15 Jul 2021 17:16:07 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
  d=deltatee.com; s=20200525; h=Subject:MIME-Version:References:In-Reply-To:
  Message-Id:Date:Cc:To:From:content-disposition;
- bh=9b2AxuIBWP2rX2JFr1XI1eezzTEXnwjOp4q66fJ74+c=; b=VCPgoVUtOm1WHuYxUHm4B1Cez8
- mgKPoApw/BVoyttnimQ9wao0paXUXJOoWTAeKzNKD0b0O+PN9rIuu9MsL7D1WqhjVospH7QSfnqgj
- tTtiY2untOl16Pf7pL3yLEXYv6FxLsiAJ5ZsMsouM+77PPl6NvU9bLajRizBa52UjsZUcwOV8FZ4M
- 2S6UZiOc8TCY4kwYOpVtUj9vcMBY8wlOdOt0ijVuZXzMwmGJLwtdBOqLxWpKTNem65sdax/XiI4NB
- 43PpGNCFhqXYOTFcO5eqUIoab7HGZEhnpz9t86SRNmXYO4aEoyDeVnz1VOxnsMe9SZs6AtMd7Nu8A
- RQrbtdcw==;
+ bh=Wrns5FFqiizJvY/sNvwDopZHfXFnxfOgrEtwhJFRdNw=; b=Sws5QpZQtGmVowR/5iUlwg8UgC
+ Q5huPCa0lRnH7erDaKrhzfZc3JEbtS/rjcSlaa8ceAyHmJK3qWsjN9/c4G6FhbYQ9HlDeJ9jETJXB
+ bdq2f8TzBEOEkrjZGT5Co1lxkWTp+AluJjL1bkBj90Yq6ajMWBMKV71yrDPw9lVFWzowjR6HfsXtg
+ d+Je/PWPnaLtSYNrKpkvSiyI5DRH5zJ66i9nbDkdeg3NtjmH3nUDa+Kbqhs6Z3Dk8wWp1fVvuoZAb
+ ByyrzFq6ya5bW2DjyLNWRxN8NNyR7KERo6lOJpGSIfwCgNHNa6vWbhtarhteipE1N4ZU/tBRoJcGY
+ 7hO7A1Vg==;
 Received: from cgy1-donard.priv.deltatee.com ([172.16.1.31])
  by ale.deltatee.com with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
  (Exim 4.92) (envelope-from <gunthorp@deltatee.com>)
- id 1m44V0-0001yd-25; Thu, 15 Jul 2021 10:46:10 -0600
+ id 1m44Ux-0001yb-0X; Thu, 15 Jul 2021 10:46:08 -0600
 Received: from gunthorp by cgy1-donard.priv.deltatee.com with local (Exim 4.92)
  (envelope-from <gunthorp@deltatee.com>)
- id 1m44Uo-0001nT-JD; Thu, 15 Jul 2021 10:45:58 -0600
+ id 1m44Uo-0001nZ-TI; Thu, 15 Jul 2021 10:45:58 -0600
 From: Logan Gunthorpe <logang@deltatee.com>
 To: linux-kernel@vger.kernel.org, linux-alpha@vger.kernel.org,
  linux-arm-kernel@lists.infradead.org, linux-ia64@vger.kernel.org,
@@ -70,8 +70,8 @@ To: linux-kernel@vger.kernel.org, linux-alpha@vger.kernel.org,
  linux-s390@vger.kernel.org, sparclinux@vger.kernel.org,
  iommu@lists.linux-foundation.org, linux-parisc@vger.kernel.org,
  xen-devel@lists.xenproject.org
-Date: Thu, 15 Jul 2021 10:45:36 -0600
-Message-Id: <20210715164544.6827-9-logang@deltatee.com>
+Date: Thu, 15 Jul 2021 10:45:38 -0600
+Message-Id: <20210715164544.6827-11-logang@deltatee.com>
 X-Mailer: git-send-email 2.20.1
 In-Reply-To: <20210715164544.6827-1-logang@deltatee.com>
 References: <20210715164544.6827-1-logang@deltatee.com>
@@ -84,17 +84,20 @@ X-SA-Exim-Rcpt-To: linux-arm-kernel@lists.infradead.org,
  linux-s390@vger.kernel.org, sparclinux@vger.kernel.org,
  linux-parisc@vger.kernel.org, xen-devel@lists.xenproject.org, hch@lst.de,
  m.szyprowski@samsung.com, robin.murphy@arm.com, sbates@raithlin.com,
- martin.oliveira@eideticom.com, logang@deltatee.com, tsbogend@alpha.franken.de
+ martin.oliveira@eideticom.com, logang@deltatee.com, schnelle@linux.ibm.com,
+ gerald.schaefer@linux.ibm.com, hca@linux.ibm.com, gor@linux.ibm.com,
+ borntraeger@de.ibm.com
 X-SA-Exim-Mail-From: gunthorp@deltatee.com
-Subject: [PATCH v1 08/16] MIPS/jazzdma: return error code from
- jazz_dma_map_sg()
+Subject: [PATCH v1 10/16] s390/pci: return error code from s390_dma_map_sg()
 X-SA-Exim-Version: 4.2.1 (built Wed, 08 May 2019 21:11:16 +0000)
 X-SA-Exim-Scanned: Yes (on ale.deltatee.com)
-Cc: Thomas Bogendoerfer <tsbogend@alpha.franken.de>,
- Robin Murphy <robin.murphy@arm.com>,
+Cc: Vasily Gorbik <gor@linux.ibm.com>, Niklas Schnelle <schnelle@linux.ibm.com>,
+ Robin Murphy <robin.murphy@arm.com>, Heiko Carstens <hca@linux.ibm.com>,
  Martin Oliveira <martin.oliveira@eideticom.com>,
- Stephen Bates <sbates@raithlin.com>, Logan Gunthorpe <logang@deltatee.com>,
- Christoph Hellwig <hch@lst.de>
+ Stephen Bates <sbates@raithlin.com>,
+ Christian Borntraeger <borntraeger@de.ibm.com>,
+ Gerald Schaefer <gerald.schaefer@linux.ibm.com>,
+ Logan Gunthorpe <logang@deltatee.com>, Christoph Hellwig <hch@lst.de>
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -116,32 +119,66 @@ From: Martin Oliveira <martin.oliveira@eideticom.com>
 
 The .map_sg() op now expects an error code instead of zero on failure.
 
-vdma_alloc() may fail for different reasons, but since it only supports
-indicating an error via a return of DMA_MAPPING_ERROR, we coalesce the
-different reasons into -EINVAL.
+So propagate the error from __s390_dma_map_sg() up.
 
 Signed-off-by: Martin Oliveira <martin.oliveira@eideticom.com>
 Signed-off-by: Logan Gunthorpe <logang@deltatee.com>
-Cc: Thomas Bogendoerfer <tsbogend@alpha.franken.de>
+Cc: Niklas Schnelle <schnelle@linux.ibm.com>
+Cc: Gerald Schaefer <gerald.schaefer@linux.ibm.com>
+Cc: Heiko Carstens <hca@linux.ibm.com>
+Cc: Vasily Gorbik <gor@linux.ibm.com>
+Cc: Christian Borntraeger <borntraeger@de.ibm.com>
 ---
- arch/mips/jazz/jazzdma.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ arch/s390/pci/pci_dma.c | 12 +++++++-----
+ 1 file changed, 7 insertions(+), 5 deletions(-)
 
-diff --git a/arch/mips/jazz/jazzdma.c b/arch/mips/jazz/jazzdma.c
-index 461457b28982..3b99743435db 100644
---- a/arch/mips/jazz/jazzdma.c
-+++ b/arch/mips/jazz/jazzdma.c
-@@ -552,7 +552,7 @@ static int jazz_dma_map_sg(struct device *dev, struct scatterlist *sglist,
- 				dir);
- 		sg->dma_address = vdma_alloc(sg_phys(sg), sg->length);
- 		if (sg->dma_address == DMA_MAPPING_ERROR)
--			return 0;
-+			return -EINVAL;
- 		sg_dma_len(sg) = sg->length;
+diff --git a/arch/s390/pci/pci_dma.c b/arch/s390/pci/pci_dma.c
+index ebc9a49523aa..c78b02012764 100644
+--- a/arch/s390/pci/pci_dma.c
++++ b/arch/s390/pci/pci_dma.c
+@@ -487,7 +487,7 @@ static int s390_dma_map_sg(struct device *dev, struct scatterlist *sg,
+ 	unsigned int max = dma_get_max_seg_size(dev);
+ 	unsigned int size = s->offset + s->length;
+ 	unsigned int offset = s->offset;
+-	int count = 0, i;
++	int count = 0, i, ret;
+ 
+ 	for (i = 1; i < nr_elements; i++) {
+ 		s = sg_next(s);
+@@ -497,8 +497,9 @@ static int s390_dma_map_sg(struct device *dev, struct scatterlist *sg,
+ 
+ 		if (s->offset || (size & ~PAGE_MASK) ||
+ 		    size + s->length > max) {
+-			if (__s390_dma_map_sg(dev, start, size,
+-					      &dma->dma_address, dir))
++			ret = __s390_dma_map_sg(dev, start, size,
++						&dma->dma_address, dir);
++			if (ret)
+ 				goto unmap;
+ 
+ 			dma->dma_address += offset;
+@@ -511,7 +512,8 @@ static int s390_dma_map_sg(struct device *dev, struct scatterlist *sg,
+ 		}
+ 		size += s->length;
  	}
-
---
+-	if (__s390_dma_map_sg(dev, start, size, &dma->dma_address, dir))
++	ret = __s390_dma_map_sg(dev, start, size, &dma->dma_address, dir);
++	if (ret)
+ 		goto unmap;
+ 
+ 	dma->dma_address += offset;
+@@ -523,7 +525,7 @@ static int s390_dma_map_sg(struct device *dev, struct scatterlist *sg,
+ 		s390_dma_unmap_pages(dev, sg_dma_address(s), sg_dma_len(s),
+ 				     dir, attrs);
+ 
+-	return 0;
++	return ret;
+ }
+ 
+ static void s390_dma_unmap_sg(struct device *dev, struct scatterlist *sg,
+-- 
 2.20.1
+
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
