@@ -2,64 +2,84 @@ Return-Path: <SRS0=9Lhb=MH=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-16.8 required=3.0 tests=BAYES_00,
-	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_CR_TRAILER,INCLUDES_PATCH,
-	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,USER_AGENT_GIT autolearn=ham
-	autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-3.8 required=3.0 tests=BAYES_00,
+	HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS
+	autolearn=no autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 965A2C47E48
-	for <iommu@archiver.kernel.org>; Thu, 15 Jul 2021 13:04:45 +0000 (UTC)
-Received: from smtp4.osuosl.org (smtp4.osuosl.org [140.211.166.137])
+	by smtp.lore.kernel.org (Postfix) with ESMTP id ED6A6C47E48
+	for <iommu@archiver.kernel.org>; Thu, 15 Jul 2021 13:58:29 +0000 (UTC)
+Received: from smtp3.osuosl.org (smtp3.osuosl.org [140.211.166.136])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 3B060613C4
-	for <iommu@archiver.kernel.org>; Thu, 15 Jul 2021 13:04:45 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 3B060613C4
-Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=arm.com
+	by mail.kernel.org (Postfix) with ESMTPS id 94779613D4
+	for <iommu@archiver.kernel.org>; Thu, 15 Jul 2021 13:58:29 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 94779613D4
+Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=intel.com
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by smtp4.osuosl.org (Postfix) with ESMTP id F32A8414BE;
-	Thu, 15 Jul 2021 13:04:44 +0000 (UTC)
+	by smtp3.osuosl.org (Postfix) with ESMTP id 5D86E60B85;
+	Thu, 15 Jul 2021 13:58:29 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from smtp4.osuosl.org ([127.0.0.1])
-	by localhost (smtp4.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id HLHWV4vaiuzc; Thu, 15 Jul 2021 13:04:41 +0000 (UTC)
-Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by smtp4.osuosl.org (Postfix) with ESMTPS id 34135403F9;
-	Thu, 15 Jul 2021 13:04:41 +0000 (UTC)
+Received: from smtp3.osuosl.org ([127.0.0.1])
+	by localhost (smtp3.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+	with ESMTP id RxA4HzvnkeVZ; Thu, 15 Jul 2021 13:58:28 +0000 (UTC)
+Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [IPv6:2605:bc80:3010:104::8cd3:938])
+	by smtp3.osuosl.org (Postfix) with ESMTPS id 4B0FD6063F;
+	Thu, 15 Jul 2021 13:58:28 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 0DCA3C0010;
-	Thu, 15 Jul 2021 13:04:41 +0000 (UTC)
-Received: from smtp1.osuosl.org (smtp1.osuosl.org [IPv6:2605:bc80:3010::138])
- by lists.linuxfoundation.org (Postfix) with ESMTP id D84D5C000E
- for <iommu@lists.linux-foundation.org>; Thu, 15 Jul 2021 13:04:39 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id EE6DEC001A;
+	Thu, 15 Jul 2021 13:58:27 +0000 (UTC)
+Received: from smtp2.osuosl.org (smtp2.osuosl.org [IPv6:2605:bc80:3010::133])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 96EEEC000E
+ for <iommu@lists.linux-foundation.org>; Thu, 15 Jul 2021 13:58:26 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by smtp1.osuosl.org (Postfix) with ESMTP id B8B2483DC5
- for <iommu@lists.linux-foundation.org>; Thu, 15 Jul 2021 13:04:39 +0000 (UTC)
+ by smtp2.osuosl.org (Postfix) with ESMTP id 73D7840697
+ for <iommu@lists.linux-foundation.org>; Thu, 15 Jul 2021 13:58:26 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from smtp1.osuosl.org ([127.0.0.1])
- by localhost (smtp1.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id 8l8h3COrzDs4 for <iommu@lists.linux-foundation.org>;
- Thu, 15 Jul 2021 13:04:38 +0000 (UTC)
+Received: from smtp2.osuosl.org ([127.0.0.1])
+ by localhost (smtp2.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+ with ESMTP id 4jNOhAWboKE2 for <iommu@lists.linux-foundation.org>;
+ Thu, 15 Jul 2021 13:58:24 +0000 (UTC)
 X-Greylist: domain auto-whitelisted by SQLgrey-1.8.0
-Received: from foss.arm.com (foss.arm.com [217.140.110.172])
- by smtp1.osuosl.org (Postfix) with ESMTP id 8C1CC82EF1
- for <iommu@lists.linux-foundation.org>; Thu, 15 Jul 2021 13:04:38 +0000 (UTC)
-Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
- by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id C37E031B;
- Thu, 15 Jul 2021 06:04:37 -0700 (PDT)
-Received: from 010265703453.arm.com (unknown [10.57.36.240])
- by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPA id B35513F694;
- Thu, 15 Jul 2021 06:04:36 -0700 (PDT)
-From: Robin Murphy <robin.murphy@arm.com>
-To: joro@8bytes.org
-Subject: [PATCH v2] iommu: Streamline iommu_iova_to_phys()
-Date: Thu, 15 Jul 2021 14:04:24 +0100
-Message-Id: <f564f3f6ff731b898ff7a898919bf871c2c7745a.1626354264.git.robin.murphy@arm.com>
-X-Mailer: git-send-email 2.25.1
+Received: from mga09.intel.com (mga09.intel.com [134.134.136.24])
+ by smtp2.osuosl.org (Postfix) with ESMTPS id B4147402A8
+ for <iommu@lists.linux-foundation.org>; Thu, 15 Jul 2021 13:58:24 +0000 (UTC)
+X-IronPort-AV: E=McAfee;i="6200,9189,10045"; a="210537493"
+X-IronPort-AV: E=Sophos;i="5.84,242,1620716400"; d="scan'208";a="210537493"
+Received: from orsmga001.jf.intel.com ([10.7.209.18])
+ by orsmga102.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384;
+ 15 Jul 2021 06:58:23 -0700
+X-IronPort-AV: E=Sophos;i="5.84,242,1620716400"; d="scan'208";a="494592190"
+Received: from otc-nc-03.jf.intel.com (HELO otc-nc-03) ([10.54.39.36])
+ by orsmga001-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384;
+ 15 Jul 2021 06:58:23 -0700
+Date: Thu, 15 Jul 2021 06:57:57 -0700
+From: "Raj, Ashok" <ashok.raj@intel.com>
+To: Jason Gunthorpe <jgg@nvidia.com>
+Subject: Re: [RFC v2] /dev/iommu uAPI proposal
+Message-ID: <20210715135757.GC590891@otc-nc-03>
+References: <BN9PR11MB5433B1E4AE5B0480369F97178C189@BN9PR11MB5433.namprd11.prod.outlook.com>
+ <7ea349f8-8c53-e240-fe80-382954ba7f28@huawei.com>
+ <BN9PR11MB5433A9B792441CAF21A183A38C129@BN9PR11MB5433.namprd11.prod.outlook.com>
+ <a8edb2c1-9c9c-6204-072c-4f1604b7dace@huawei.com>
+ <BN9PR11MB54336D6A8CAE31F951770A428C129@BN9PR11MB5433.namprd11.prod.outlook.com>
+ <20210715124813.GC543781@nvidia.com>
 MIME-Version: 1.0
-Cc: iommu@lists.linux-foundation.org, will@kernel.org,
- linux-arm-kernel@lists.infradead.org
+Content-Disposition: inline
+In-Reply-To: <20210715124813.GC543781@nvidia.com>
+Cc: "kvm@vger.kernel.org" <kvm@vger.kernel.org>,
+ Jason Wang <jasowang@redhat.com>, Kirti Wankhede <kwankhede@nvidia.com>,
+ Jean-Philippe Brucker <jean-philippe@linaro.org>, "Jiang,
+ Dave" <dave.jiang@intel.com>, Jonathan Corbet <corbet@lwn.net>,
+ "wanghaibin.wang@huawei.com" <wanghaibin.wang@huawei.com>, "Tian,
+ Kevin" <kevin.tian@intel.com>, "parav@mellanox.com" <parav@mellanox.com>,
+ "Alex Williamson \(alex.williamson@redhat.com\)" <alex.williamson@redhat.com>,
+ "Enrico Weigelt, metux IT consult" <lkml@metux.net>,
+ David Gibson <david@gibson.dropbear.id.au>,
+ Robin Murphy <robin.murphy@arm.com>, LKML <linux-kernel@vger.kernel.org>,
+ Shenming Lu <lushenming@huawei.com>,
+ "iommu@lists.linux-foundation.org" <iommu@lists.linux-foundation.org>,
+ Paolo Bonzini <pbonzini@redhat.com>, David Woodhouse <dwmw2@infradead.org>
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -77,91 +97,21 @@ Content-Transfer-Encoding: 7bit
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-If people are going to insist on calling iommu_iova_to_phys()
-pointlessly and expecting it to work, we can at least do ourselves a
-favour by handling those cases in the core code, rather than repeatedly
-across an inconsistent handful of drivers.
+On Thu, Jul 15, 2021 at 09:48:13AM -0300, Jason Gunthorpe wrote:
+> On Thu, Jul 15, 2021 at 06:49:54AM +0000, Tian, Kevin wrote:
+> 
+> > No. You are right on this case. I don't think there is a way to 
+> > differentiate one mdev from the other if they come from the
+> > same parent and attached by the same guest process. In this
+> > case the fault could be reported on either mdev (e.g. the first
+> > matching one) to get it fixed in the guest.
+> 
+> If the IOMMU can't distinguish the two mdevs they are not isolated
+> and would have to share a group. Since group sharing is not supported
+> today this seems like a non-issue
 
-Since all the existing drivers implement the internal callback, and any
-future ones are likely to want to work with iommu-dma which relies on
-iova_to_phys a fair bit, we may as well remove that currently-redundant
-check as well and consider it mandatory.
-
-Reviewed-by: Lu Baolu <baolu.lu@linux.intel.com>
-Signed-off-by: Robin Murphy <robin.murphy@arm.com>
-
----
-
-v2: Lowered the priority of the ops check per Baolu's suggestion, only
-    even further to the point of non-existence :)
----
- drivers/iommu/amd/io_pgtable.c              | 3 ---
- drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c | 3 ---
- drivers/iommu/arm/arm-smmu/arm-smmu.c       | 3 ---
- drivers/iommu/iommu.c                       | 5 ++++-
- 4 files changed, 4 insertions(+), 10 deletions(-)
-
-diff --git a/drivers/iommu/amd/io_pgtable.c b/drivers/iommu/amd/io_pgtable.c
-index bb0ee5c9fde7..182c93a43efd 100644
---- a/drivers/iommu/amd/io_pgtable.c
-+++ b/drivers/iommu/amd/io_pgtable.c
-@@ -493,9 +493,6 @@ static phys_addr_t iommu_v1_iova_to_phys(struct io_pgtable_ops *ops, unsigned lo
- 	unsigned long offset_mask, pte_pgsize;
- 	u64 *pte, __pte;
- 
--	if (pgtable->mode == PAGE_MODE_NONE)
--		return iova;
--
- 	pte = fetch_pte(pgtable, iova, &pte_pgsize);
- 
- 	if (!pte || !IOMMU_PTE_PRESENT(*pte))
-diff --git a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
-index 3e87a9cf6da3..c9fdd0d097be 100644
---- a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
-+++ b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
-@@ -2481,9 +2481,6 @@ arm_smmu_iova_to_phys(struct iommu_domain *domain, dma_addr_t iova)
- {
- 	struct io_pgtable_ops *ops = to_smmu_domain(domain)->pgtbl_ops;
- 
--	if (domain->type == IOMMU_DOMAIN_IDENTITY)
--		return iova;
--
- 	if (!ops)
- 		return 0;
- 
-diff --git a/drivers/iommu/arm/arm-smmu/arm-smmu.c b/drivers/iommu/arm/arm-smmu/arm-smmu.c
-index 0f181f76c31b..0d04eafa3fdb 100644
---- a/drivers/iommu/arm/arm-smmu/arm-smmu.c
-+++ b/drivers/iommu/arm/arm-smmu/arm-smmu.c
-@@ -1317,9 +1317,6 @@ static phys_addr_t arm_smmu_iova_to_phys(struct iommu_domain *domain,
- 	struct arm_smmu_domain *smmu_domain = to_smmu_domain(domain);
- 	struct io_pgtable_ops *ops = smmu_domain->pgtbl_ops;
- 
--	if (domain->type == IOMMU_DOMAIN_IDENTITY)
--		return iova;
--
- 	if (!ops)
- 		return 0;
- 
-diff --git a/drivers/iommu/iommu.c b/drivers/iommu/iommu.c
-index 43a2041d9629..d4ba324fb0bc 100644
---- a/drivers/iommu/iommu.c
-+++ b/drivers/iommu/iommu.c
-@@ -2371,7 +2371,10 @@ EXPORT_SYMBOL_GPL(iommu_detach_group);
- 
- phys_addr_t iommu_iova_to_phys(struct iommu_domain *domain, dma_addr_t iova)
- {
--	if (unlikely(domain->ops->iova_to_phys == NULL))
-+	if (domain->type == IOMMU_DOMAIN_IDENTITY)
-+		return iova;
-+
-+	if (domain->type == IOMMU_DOMAIN_BLOCKED)
- 		return 0;
- 
- 	return domain->ops->iova_to_phys(domain, iova);
--- 
-2.25.1
-
+Does this mean we have to prevent 2 mdev's from same pdev being assigned to
+the same guest? 
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
