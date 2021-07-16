@@ -5,64 +5,64 @@ X-Spam-Level:
 X-Spam-Status: No, score=-16.8 required=3.0 tests=BAYES_00,
 	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_CR_TRAILER,INCLUDES_PATCH,
 	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_GIT
-	autolearn=unavailable autolearn_force=no version=3.4.0
+	autolearn=ham autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1B1FDC07E95
-	for <iommu@archiver.kernel.org>; Fri, 16 Jul 2021 08:35:30 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4B8ADC12002
+	for <iommu@archiver.kernel.org>; Fri, 16 Jul 2021 08:35:38 +0000 (UTC)
 Received: from smtp2.osuosl.org (smtp2.osuosl.org [140.211.166.133])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id D5CE3613C3
-	for <iommu@archiver.kernel.org>; Fri, 16 Jul 2021 08:35:29 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org D5CE3613C3
+	by mail.kernel.org (Postfix) with ESMTPS id 07BA1613E8
+	for <iommu@archiver.kernel.org>; Fri, 16 Jul 2021 08:35:38 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 07BA1613E8
 Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=huawei.com
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by smtp2.osuosl.org (Postfix) with ESMTP id A31D340EED;
-	Fri, 16 Jul 2021 08:35:29 +0000 (UTC)
+	by smtp2.osuosl.org (Postfix) with ESMTP id D62AD40EDF;
+	Fri, 16 Jul 2021 08:35:37 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
 Received: from smtp2.osuosl.org ([127.0.0.1])
 	by localhost (smtp2.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id XRQFF9P1E3by; Fri, 16 Jul 2021 08:35:28 +0000 (UTC)
+	with ESMTP id ZNCGp4dr89Nm; Fri, 16 Jul 2021 08:35:37 +0000 (UTC)
 Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by smtp2.osuosl.org (Postfix) with ESMTPS id 8ECF640EE4;
-	Fri, 16 Jul 2021 08:35:28 +0000 (UTC)
+	by smtp2.osuosl.org (Postfix) with ESMTPS id B7C794012F;
+	Fri, 16 Jul 2021 08:35:36 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 58AFFC0010;
-	Fri, 16 Jul 2021 08:35:28 +0000 (UTC)
-Received: from smtp1.osuosl.org (smtp1.osuosl.org [IPv6:2605:bc80:3010::138])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 8C549C000E
- for <iommu@lists.linux-foundation.org>; Fri, 16 Jul 2021 08:35:27 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 99C48C0010;
+	Fri, 16 Jul 2021 08:35:36 +0000 (UTC)
+Received: from smtp3.osuosl.org (smtp3.osuosl.org [140.211.166.136])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 53F96C000E
+ for <iommu@lists.linux-foundation.org>; Fri, 16 Jul 2021 08:35:35 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by smtp1.osuosl.org (Postfix) with ESMTP id 7CBD6843AC
- for <iommu@lists.linux-foundation.org>; Fri, 16 Jul 2021 08:35:27 +0000 (UTC)
+ by smtp3.osuosl.org (Postfix) with ESMTP id 40D2260D4C
+ for <iommu@lists.linux-foundation.org>; Fri, 16 Jul 2021 08:35:35 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from smtp1.osuosl.org ([127.0.0.1])
- by localhost (smtp1.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id 7cdIRebchGHU for <iommu@lists.linux-foundation.org>;
- Fri, 16 Jul 2021 08:35:26 +0000 (UTC)
+Received: from smtp3.osuosl.org ([127.0.0.1])
+ by localhost (smtp3.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+ with ESMTP id B7y9Lh3I1hOl for <iommu@lists.linux-foundation.org>;
+ Fri, 16 Jul 2021 08:35:34 +0000 (UTC)
 X-Greylist: domain auto-whitelisted by SQLgrey-1.8.0
 Received: from frasgout.his.huawei.com (frasgout.his.huawei.com
  [185.176.79.56])
- by smtp1.osuosl.org (Postfix) with ESMTPS id 9C64C843A7
- for <iommu@lists.linux-foundation.org>; Fri, 16 Jul 2021 08:35:26 +0000 (UTC)
-Received: from fraeml709-chm.china.huawei.com (unknown [172.18.147.206])
- by frasgout.his.huawei.com (SkyGuard) with ESMTP id 4GR45k30k6z6H7M0;
- Fri, 16 Jul 2021 16:24:10 +0800 (CST)
+ by smtp3.osuosl.org (Postfix) with ESMTPS id 9DCEC60C03
+ for <iommu@lists.linux-foundation.org>; Fri, 16 Jul 2021 08:35:34 +0000 (UTC)
+Received: from fraeml707-chm.china.huawei.com (unknown [172.18.147.207])
+ by frasgout.his.huawei.com (SkyGuard) with ESMTP id 4GR48x1PfNz6FDCj;
+ Fri, 16 Jul 2021 16:26:57 +0800 (CST)
 Received: from lhreml710-chm.china.huawei.com (10.201.108.61) by
- fraeml709-chm.china.huawei.com (10.206.15.37) with Microsoft SMTP Server
+ fraeml707-chm.china.huawei.com (10.206.15.35) with Microsoft SMTP Server
  (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2176.2; Fri, 16 Jul 2021 10:35:24 +0200
+ 15.1.2176.2; Fri, 16 Jul 2021 10:35:32 +0200
 Received: from A2006125610.china.huawei.com (10.47.80.222) by
  lhreml710-chm.china.huawei.com (10.201.108.61) with Microsoft SMTP Server
  (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2176.2; Fri, 16 Jul 2021 09:35:18 +0100
+ 15.1.2176.2; Fri, 16 Jul 2021 09:35:26 +0100
 From: Shameer Kolothum <shameerali.kolothum.thodi@huawei.com>
 To: <linux-arm-kernel@lists.infradead.org>, <linux-acpi@vger.kernel.org>,
  <iommu@lists.linux-foundation.org>
-Subject: [PATCH v6 4/9] ACPI/IORT: Add a helper to retrieve RMR memory regions
-Date: Fri, 16 Jul 2021 09:34:37 +0100
-Message-ID: <20210716083442.1708-5-shameerali.kolothum.thodi@huawei.com>
+Subject: [PATCH v6 5/9] iommu/arm-smmu-v3: Introduce strtab init helper
+Date: Fri, 16 Jul 2021 09:34:38 +0100
+Message-ID: <20210716083442.1708-6-shameerali.kolothum.thodi@huawei.com>
 X-Mailer: git-send-email 2.12.0.windows.1
 In-Reply-To: <20210716083442.1708-1-shameerali.kolothum.thodi@huawei.com>
 References: <20210716083442.1708-1-shameerali.kolothum.thodi@huawei.com>
@@ -91,122 +91,62 @@ Content-Transfer-Encoding: 7bit
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-Add a helper function (iort_iommu_get_rmrs()) that retrieves RMR
-memory descriptors associated with a given IOMMU. This will be used
-by IOMMU drivers to setup necessary mappings.
-
-Invoke it from the generic helper iommu_dma_get_rmrs().
+Introduce a helper to check the sid range and to init the l2 strtab
+entries(bypass). This will be useful when we have to initialize the
+l2 strtab with bypass for RMR SIDs.
 
 Signed-off-by: Shameer Kolothum <shameerali.kolothum.thodi@huawei.com>
 ---
- drivers/acpi/arm64/iort.c | 38 ++++++++++++++++++++++++++++++++++++++
- drivers/iommu/dma-iommu.c |  4 ++++
- include/linux/acpi_iort.h |  7 +++++++
- 3 files changed, 49 insertions(+)
+ drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c | 28 +++++++++++----------
+ 1 file changed, 15 insertions(+), 13 deletions(-)
 
-diff --git a/drivers/acpi/arm64/iort.c b/drivers/acpi/arm64/iort.c
-index d76ba46ebe67..3c32d62e63b6 100644
---- a/drivers/acpi/arm64/iort.c
-+++ b/drivers/acpi/arm64/iort.c
-@@ -809,6 +809,42 @@ static struct acpi_iort_node *iort_get_msi_resv_iommu(struct device *dev)
- 	return NULL;
+diff --git a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
+index dd20b01771c4..33f5556aefeb 100644
+--- a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
++++ b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
+@@ -2517,6 +2517,19 @@ static bool arm_smmu_sid_in_range(struct arm_smmu_device *smmu, u32 sid)
+ 	return sid < limit;
  }
  
-+/**
-+ * iort_iommu_get_rmrs() - Helper to retrieve RMR info associated with IOMMU
-+ * @iommu_fwnode: fwnode for the IOMMU
-+ * @head: RMR list head to be populated
-+ *
-+ * Returns: 0 on success, <0 failure. Please note, we will keep the already
-+ *          allocated RMR reserve regions in case of a kmemdup()
-+ *          failure.
-+ */
-+int iort_iommu_get_rmrs(struct fwnode_handle *iommu_fwnode,
-+			struct list_head *head)
++static int arm_smmu_init_sid_strtab(struct arm_smmu_device *smmu, u32 sid)
 +{
-+	struct iommu_resv_region *e;
-+	struct acpi_iort_node *iommu;
-+	int rmrs = 0;
++	/* Check the SIDs are in range of the SMMU and our stream table */
++	if (!arm_smmu_sid_in_range(smmu, sid))
++		return -ERANGE;
 +
-+	iommu = iort_get_iort_node(iommu_fwnode);
-+	if (!iommu || list_empty(&iort_rmr_list))
-+		return -ENODEV;
++	/* Ensure l2 strtab is initialised */
++	if (smmu->features & ARM_SMMU_FEAT_2_LVL_STRTAB)
++		return arm_smmu_init_l2_strtab(smmu, sid);
 +
-+	list_for_each_entry(e, &iort_rmr_list, list) {
-+		struct iommu_resv_region *region;
-+
-+		if (e->fw_data.rmr.smmu != iommu)
-+			continue;
-+
-+		region = kmemdup(e, sizeof(*region), GFP_KERNEL);
-+		if (region) {
-+			list_add_tail(&region->list, head);
-+			rmrs++;
-+		}
-+	}
-+
-+	return (rmrs == 0) ? -ENODEV : 0;
++	return 0;
 +}
 +
- /**
-  * iort_iommu_msi_get_resv_regions - Reserved region driver helper
-  * @dev: Device from iommu_get_resv_regions()
-@@ -1041,6 +1077,8 @@ int iort_iommu_msi_get_resv_regions(struct device *dev, struct list_head *head)
- { return 0; }
- int iort_iommu_configure_id(struct device *dev, const u32 *input_id)
- { return -ENODEV; }
-+int iort_iommu_get_rmrs(struct fwnode_handle *fwnode, struct list_head *head)
-+{ return -ENODEV; }
- #endif
- 
- static int nc_dma_get_range(struct device *dev, u64 *size)
-diff --git a/drivers/iommu/dma-iommu.c b/drivers/iommu/dma-iommu.c
-index 2fa2445e9070..1b6e27475279 100644
---- a/drivers/iommu/dma-iommu.c
-+++ b/drivers/iommu/dma-iommu.c
-@@ -185,6 +185,9 @@ EXPORT_SYMBOL(iommu_put_dma_cookie);
- int iommu_dma_get_rmrs(struct fwnode_handle *iommu_fwnode,
- 		       struct list_head *list)
+ static int arm_smmu_insert_master(struct arm_smmu_device *smmu,
+ 				  struct arm_smmu_master *master)
  {
-+	if (!is_of_node(iommu_fwnode))
-+		return iort_iommu_get_rmrs(iommu_fwnode, list);
-+
- 	return -EINVAL;
- }
- EXPORT_SYMBOL(iommu_dma_get_rmrs);
-@@ -200,6 +203,7 @@ EXPORT_SYMBOL(iommu_dma_get_rmrs);
- void iommu_dma_put_rmrs(struct fwnode_handle *iommu_fwnode,
- 			struct list_head *list)
- {
-+	generic_iommu_put_resv_regions(iommu_fwnode->dev, list);
- }
- EXPORT_SYMBOL(iommu_dma_put_rmrs);
+@@ -2540,20 +2553,9 @@ static int arm_smmu_insert_master(struct arm_smmu_device *smmu,
+ 		new_stream->id = sid;
+ 		new_stream->master = master;
  
-diff --git a/include/linux/acpi_iort.h b/include/linux/acpi_iort.h
-index f1f0842a2cb2..d8c030c103f5 100644
---- a/include/linux/acpi_iort.h
-+++ b/include/linux/acpi_iort.h
-@@ -38,6 +38,8 @@ int iort_dma_get_ranges(struct device *dev, u64 *size);
- int iort_iommu_configure_id(struct device *dev, const u32 *id_in);
- int iort_iommu_msi_get_resv_regions(struct device *dev, struct list_head *head);
- phys_addr_t acpi_iort_dma_get_max_cpu_address(void);
-+int iort_iommu_get_rmrs(struct fwnode_handle *iommu_fwnode,
-+			struct list_head *list);
- #else
- static inline void acpi_iort_init(void) { }
- static inline u32 iort_msi_map_id(struct device *dev, u32 id)
-@@ -57,6 +59,11 @@ int iort_iommu_msi_get_resv_regions(struct device *dev, struct list_head *head)
+-		/*
+-		 * Check the SIDs are in range of the SMMU and our stream table
+-		 */
+-		if (!arm_smmu_sid_in_range(smmu, sid)) {
+-			ret = -ERANGE;
++		ret = arm_smmu_init_sid_strtab(smmu, sid);
++		if (ret)
+ 			break;
+-		}
+-
+-		/* Ensure l2 strtab is initialised */
+-		if (smmu->features & ARM_SMMU_FEAT_2_LVL_STRTAB) {
+-			ret = arm_smmu_init_l2_strtab(smmu, sid);
+-			if (ret)
+-				break;
+-		}
  
- static inline phys_addr_t acpi_iort_dma_get_max_cpu_address(void)
- { return PHYS_ADDR_MAX; }
-+
-+static inline
-+int iort_iommu_get_rmrs(struct fwnode_handle *iommu_fwnode,
-+			struct list_head *list)
-+{ return -ENODEV; }
- #endif
- 
- #endif /* __ACPI_IORT_H__ */
+ 		/* Insert into SID tree */
+ 		new_node = &(smmu->streams.rb_node);
 -- 
 2.17.1
 
