@@ -2,86 +2,78 @@ Return-Path: <SRS0=XGcg=MI=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-15.3 required=3.0 tests=BAYES_00,DKIM_INVALID,
-	DKIM_SIGNED,INCLUDES_CR_TRAILER,INCLUDES_PATCH,MAILING_LIST_MULTI,
-	SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_SANE_1 autolearn=unavailable
-	autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-5.3 required=3.0 tests=BAYES_00,
+	HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,NICE_REPLY_A,SPF_HELO_NONE,
+	SPF_PASS,URIBL_BLOCKED,USER_AGENT_SANE_1 autolearn=no autolearn_force=no
+	version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 24270C636CA
-	for <iommu@archiver.kernel.org>; Fri, 16 Jul 2021 15:30:00 +0000 (UTC)
-Received: from smtp2.osuosl.org (smtp2.osuosl.org [140.211.166.133])
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C5BCAC636CA
+	for <iommu@archiver.kernel.org>; Fri, 16 Jul 2021 15:33:04 +0000 (UTC)
+Received: from smtp1.osuosl.org (smtp1.osuosl.org [140.211.166.138])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id CBEBE613E3
-	for <iommu@archiver.kernel.org>; Fri, 16 Jul 2021 15:29:59 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org CBEBE613E3
-Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=kernel.org
+	by mail.kernel.org (Postfix) with ESMTPS id 6EC09613F8
+	for <iommu@archiver.kernel.org>; Fri, 16 Jul 2021 15:33:04 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 6EC09613F8
+Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=arm.com
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by smtp2.osuosl.org (Postfix) with ESMTP id 95CCC4010B;
-	Fri, 16 Jul 2021 15:29:59 +0000 (UTC)
+	by smtp1.osuosl.org (Postfix) with ESMTP id 36BA98447E;
+	Fri, 16 Jul 2021 15:33:04 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from smtp2.osuosl.org ([127.0.0.1])
-	by localhost (smtp2.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id neCVZ4fAGCQg; Fri, 16 Jul 2021 15:29:58 +0000 (UTC)
+Received: from smtp1.osuosl.org ([127.0.0.1])
+	by localhost (smtp1.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+	with ESMTP id WvEJTB6BqJ4z; Fri, 16 Jul 2021 15:33:03 +0000 (UTC)
 Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by smtp2.osuosl.org (Postfix) with ESMTPS id 6672C40F33;
-	Fri, 16 Jul 2021 15:29:58 +0000 (UTC)
+	by smtp1.osuosl.org (Postfix) with ESMTPS id 2CA8E8447C;
+	Fri, 16 Jul 2021 15:33:03 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 35A66C001A;
-	Fri, 16 Jul 2021 15:29:58 +0000 (UTC)
-Received: from smtp1.osuosl.org (smtp1.osuosl.org [IPv6:2605:bc80:3010::138])
- by lists.linuxfoundation.org (Postfix) with ESMTP id B4C02C000E
- for <iommu@lists.linux-foundation.org>; Fri, 16 Jul 2021 15:29:56 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id CC22FC001A;
+	Fri, 16 Jul 2021 15:33:02 +0000 (UTC)
+Received: from smtp1.osuosl.org (smtp1.osuosl.org [140.211.166.138])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 872D3C000E
+ for <iommu@lists.linux-foundation.org>; Fri, 16 Jul 2021 15:33:01 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by smtp1.osuosl.org (Postfix) with ESMTP id B0024844C4
- for <iommu@lists.linux-foundation.org>; Fri, 16 Jul 2021 15:29:56 +0000 (UTC)
+ by smtp1.osuosl.org (Postfix) with ESMTP id 669E58447D
+ for <iommu@lists.linux-foundation.org>; Fri, 16 Jul 2021 15:33:01 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Authentication-Results: smtp1.osuosl.org (amavisd-new);
- dkim=pass (2048-bit key) header.d=kernel.org
 Received: from smtp1.osuosl.org ([127.0.0.1])
  by localhost (smtp1.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id 376tH3cLeSoC for <iommu@lists.linux-foundation.org>;
- Fri, 16 Jul 2021 15:29:56 +0000 (UTC)
+ with ESMTP id aoD4F_pxGHB1 for <iommu@lists.linux-foundation.org>;
+ Fri, 16 Jul 2021 15:33:00 +0000 (UTC)
 X-Greylist: domain auto-whitelisted by SQLgrey-1.8.0
-Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
- by smtp1.osuosl.org (Postfix) with ESMTPS id 247C3844AB
- for <iommu@lists.linux-foundation.org>; Fri, 16 Jul 2021 15:29:56 +0000 (UTC)
-Received: by mail.kernel.org (Postfix) with ESMTPSA id 5133E613E3;
- Fri, 16 Jul 2021 15:29:55 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
- s=k20201202; t=1626449395;
- bh=gwbpEM2I/t3yULslsQrJ4ImN5wzlSWPQIZoIz0IW+1s=;
- h=Date:From:To:cc:Subject:In-Reply-To:References:From;
- b=f4ofUif5kH18TRPd4Y5z3aE1G7LQpbotUnjc8VuGp2I0yUtnZmdrMkMmoSR88EIa+
- 93kwmtIAUZ+oxmpJDNFFwxMEHn0SbGInIDxf63X8rFRBR/PMU2qW79TzYbsdKUXP6E
- TUlYwbBlP/kaK9xxZMt+hsAHUqpt7w2RQi8IUzGxo22CMlgSQ1xq/KON5g8oKnjDtG
- K1m2MpWwWkYQGM59WC2at2zpyln+B+Pz1po9li/5AK7BX73kdWyYxj8uTBAb1OJoMe
- bW9dDdfbJ+KUVFSQqbzf2kBoLOQu77gYyJ+5VtTHbUVbGYj6U6W33FpA43P3eumjUD
- 88TIOyOE730zQ==
-Date: Fri, 16 Jul 2021 08:29:54 -0700 (PDT)
-From: Stefano Stabellini <sstabellini@kernel.org>
-X-X-Sender: sstabellini@sstabellini-ThinkPad-T480s
-To: Roman Skakun <rm.skakun@gmail.com>
-Subject: Re: [PATCH v2] dma-mapping: use vmalloc_to_page for vmalloc addresses
-In-Reply-To: <CADu_u-OYA+Z_y-DBLxyUYGhmLVMtLggmZ_SnRiEtw9EGrO4oGg@mail.gmail.com>
-Message-ID: <alpine.DEB.2.21.2107160828430.3916@sstabellini-ThinkPad-T480s>
-References: <20210715170011.GA17324@lst.de>
- <20210716083934.154992-1-rm.skakun@gmail.com> <20210716093551.GA17981@lst.de>
- <CADu_u-OYA+Z_y-DBLxyUYGhmLVMtLggmZ_SnRiEtw9EGrO4oGg@mail.gmail.com>
-User-Agent: Alpine 2.21 (DEB 202 2017-01-01)
+Received: from foss.arm.com (foss.arm.com [217.140.110.172])
+ by smtp1.osuosl.org (Postfix) with ESMTP id 653708447C
+ for <iommu@lists.linux-foundation.org>; Fri, 16 Jul 2021 15:33:00 +0000 (UTC)
+Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
+ by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 74B81D6E;
+ Fri, 16 Jul 2021 08:32:59 -0700 (PDT)
+Received: from [10.57.36.240] (unknown [10.57.36.240])
+ by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id A607E3F774;
+ Fri, 16 Jul 2021 08:32:56 -0700 (PDT)
+Subject: Re: [PATCH v4 0/3] Apple M1 DART IOMMU driver
+To: Christoph Hellwig <hch@infradead.org>
+References: <20210627143405.77298-1-sven@svenpeter.dev>
+ <7261df01-34a9-4e53-37cd-ae1aa15b1fb4@arm.com>
+ <YPEmA0rdXHiGtHSx@infradead.org>
+From: Robin Murphy <robin.murphy@arm.com>
+Message-ID: <0d20bd6b-d0a1-019c-6398-b12f83f4fdf7@arm.com>
+Date: Fri, 16 Jul 2021 16:32:50 +0100
+User-Agent: Mozilla/5.0 (Windows NT 10.0; rv:78.0) Gecko/20100101
+ Thunderbird/78.11.0
 MIME-Version: 1.0
-Content-Type: multipart/mixed; boundary="8323329-2042327733-1626449395=:3916"
-Cc: Juergen Gross <jgross@suse.com>,
- Stefano Stabellini <sstabellini@kernel.org>,
- Andrii Anisov <andrii_anisov@epam.com>,
- Konrad Rzeszutek Wilk <konrad.wilk@oracle.com>,
- Oleksandr Andrushchenko <oleksandr_andrushchenko@epam.com>,
- linux-kernel@vger.kernel.org,
- Oleksandr Tyshchenko <oleksandr_tyshchenko@epam.com>,
- iommu@lists.linux-foundation.org, Roman Skakun <Roman_Skakun@epam.com>,
- xen-devel@lists.xenproject.org, Boris Ostrovsky <boris.ostrovsky@oracle.com>,
- Volodymyr Babchuk <volodymyr_babchuk@epam.com>, Christoph Hellwig <hch@lst.de>
+In-Reply-To: <YPEmA0rdXHiGtHSx@infradead.org>
+Content-Language: en-GB
+Cc: Arnd Bergmann <arnd@kernel.org>, Mauro Carvalho Chehab <mchehab@kernel.org>,
+ r.czerwinski@pengutronix.de, linux-media@vger.kernel.org,
+ devicetree@vger.kernel.org, Marc Zyngier <maz@kernel.org>,
+ Hector Martin <marcan@marcan.st>, linux-kernel@vger.kernel.org,
+ iommu@lists.linux-foundation.org, Rob Herring <robh+dt@kernel.org>,
+ Alexander Graf <graf@amazon.com>,
+ Alyssa Rosenzweig <alyssa.rosenzweig@collabora.com>,
+ Mohamed Mediouni <mohamed.mediouni@caramail.com>,
+ Mark Kettenis <mark.kettenis@xs4all.nl>, Will Deacon <will@kernel.org>,
+ linux-arm-kernel@lists.infradead.org, Stan Skowronek <stan@corellium.com>
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -94,127 +86,34 @@ List-Post: <mailto:iommu@lists.linux-foundation.org>
 List-Help: <mailto:iommu-request@lists.linux-foundation.org?subject=help>
 List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
  <mailto:iommu-request@lists.linux-foundation.org?subject=subscribe>
+Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset="us-ascii"; Format="flowed"
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-  This message is in MIME format.  The first part should be readable text,
-  while the remaining parts are likely unreadable without MIME-aware tools.
-
---8323329-2042327733-1626449395=:3916
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8BIT
-
-On Fri, 16 Jul 2021, Roman Skakun wrote:
-> > Technically this looks good.  But given that exposing a helper
-> > that does either vmalloc_to_page or virt_to_page is one of the
-> > never ending MM discussions I don't want to get into that discussion
-> > and just keep it local in the DMA code.
-> >
-> > Are you fine with me applying this version?
+On 2021-07-16 07:24, Christoph Hellwig wrote:
+> On Wed, Jul 14, 2021 at 07:19:50PM +0100, Robin Murphy wrote:
+>> Even at the DMA API level you could hide *some* of it (at the cost of
+>> effectively only having 1/4 of the usable address space), but there are
+>> still cases like where v4l2 has a hard requirement that a page-aligned
+>> scatterlist can be mapped into a contiguous region of DMA addresses.
 > 
-> Looks good to me, thanks!
-> But, Stefano asked me about using created helper in the
-> xen_swiotlb_free_coherent()
-> and I created a patch according to this mention.
-> 
-> We can merge this patch and create a new one for
-> xen_swiotlb_free_coherent() later.
+> Where does v4l2 make that broken assumption?  Plenty of dma mapping
+> implementations including dma-direct do not support that.
 
-Yeah, no worries, I didn't know that exposing dma_common_vaddr_to_page
-was problematic.
+See vb2_dc_get_contiguous_size() and its callers. I still remember 
+spending an entire work day on writing one email at the culmination of 
+this discussion:
 
-This patch is fine by me.
+https://lore.kernel.org/linux-iommu/56409B6D.5090903@arm.com/
 
+809eac54cdd6 was framed as an efficiency improvement because it 
+technically was one (and something I had wanted to implement anyway), 
+but it was also very much to save myself from any further email debates 
+or customer calls about "regressing" code ported from 32-bit platforms...
 
-> пт, 16 июл. 2021 г. в 12:35, Christoph Hellwig <hch@lst.de>:
-> >
-> > Technically this looks good.  But given that exposing a helper
-> > that does either vmalloc_to_page or virt_to_page is one of the
-> > never ending MM discussions I don't want to get into that discussion
-> > and just keep it local in the DMA code.
-> >
-> > Are you fine with me applying this version?
-> >
-> > ---
-> > From 40ac971eab89330d6153e7721e88acd2d98833f9 Mon Sep 17 00:00:00 2001
-> > From: Roman Skakun <Roman_Skakun@epam.com>
-> > Date: Fri, 16 Jul 2021 11:39:34 +0300
-> > Subject: dma-mapping: handle vmalloc addresses in
-> >  dma_common_{mmap,get_sgtable}
-> >
-> > xen-swiotlb can use vmalloc backed addresses for dma coherent allocations
-> > and uses the common helpers.  Properly handle them to unbreak Xen on
-> > ARM platforms.
-> >
-> > Fixes: 1b65c4e5a9af ("swiotlb-xen: use xen_alloc/free_coherent_pages")
-> > Signed-off-by: Roman Skakun <roman_skakun@epam.com>
-> > Reviewed-by: Andrii Anisov <andrii_anisov@epam.com>
-> > [hch: split the patch, renamed the helpers]
-> > Signed-off-by: Christoph Hellwig <hch@lst.de>
-> > ---
-> >  kernel/dma/ops_helpers.c | 12 ++++++++++--
-> >  1 file changed, 10 insertions(+), 2 deletions(-)
-> >
-> > diff --git a/kernel/dma/ops_helpers.c b/kernel/dma/ops_helpers.c
-> > index 910ae69cae77..af4a6ef48ce0 100644
-> > --- a/kernel/dma/ops_helpers.c
-> > +++ b/kernel/dma/ops_helpers.c
-> > @@ -5,6 +5,13 @@
-> >   */
-> >  #include <linux/dma-map-ops.h>
-> >
-> > +static struct page *dma_common_vaddr_to_page(void *cpu_addr)
-> > +{
-> > +       if (is_vmalloc_addr(cpu_addr))
-> > +               return vmalloc_to_page(cpu_addr);
-> > +       return virt_to_page(cpu_addr);
-> > +}
-> > +
-> >  /*
-> >   * Create scatter-list for the already allocated DMA buffer.
-> >   */
-> > @@ -12,7 +19,7 @@ int dma_common_get_sgtable(struct device *dev, struct sg_table *sgt,
-> >                  void *cpu_addr, dma_addr_t dma_addr, size_t size,
-> >                  unsigned long attrs)
-> >  {
-> > -       struct page *page = virt_to_page(cpu_addr);
-> > +       struct page *page = dma_common_vaddr_to_page(cpu_addr);
-> >         int ret;
-> >
-> >         ret = sg_alloc_table(sgt, 1, GFP_KERNEL);
-> > @@ -32,6 +39,7 @@ int dma_common_mmap(struct device *dev, struct vm_area_struct *vma,
-> >         unsigned long user_count = vma_pages(vma);
-> >         unsigned long count = PAGE_ALIGN(size) >> PAGE_SHIFT;
-> >         unsigned long off = vma->vm_pgoff;
-> > +       struct page *page = dma_common_vaddr_to_page(cpu_addr);
-> >         int ret = -ENXIO;
-> >
-> >         vma->vm_page_prot = dma_pgprot(dev, vma->vm_page_prot, attrs);
-> > @@ -43,7 +51,7 @@ int dma_common_mmap(struct device *dev, struct vm_area_struct *vma,
-> >                 return -ENXIO;
-> >
-> >         return remap_pfn_range(vma, vma->vm_start,
-> > -                       page_to_pfn(virt_to_page(cpu_addr)) + vma->vm_pgoff,
-> > +                       page_to_pfn(page) + vma->vm_pgoff,
-> >                         user_count << PAGE_SHIFT, vma->vm_page_prot);
-> >  #else
-> >         return -ENXIO;
-> > --
-> > 2.30.2
-> >
-> 
-> 
-> -- 
-> Best Regards, Roman.
-> 
---8323329-2042327733-1626449395=:3916
-Content-Type: text/plain; charset="us-ascii"
-MIME-Version: 1.0
-Content-Transfer-Encoding: 7bit
-Content-Disposition: inline
-
+Robin.
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
 https://lists.linuxfoundation.org/mailman/listinfo/iommu
---8323329-2042327733-1626449395=:3916--
