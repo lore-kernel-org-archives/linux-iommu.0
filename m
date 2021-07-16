@@ -5,65 +5,65 @@ X-Spam-Level:
 X-Spam-Status: No, score=-16.8 required=3.0 tests=BAYES_00,
 	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_CR_TRAILER,INCLUDES_PATCH,
 	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_GIT
-	autolearn=ham autolearn_force=no version=3.4.0
+	autolearn=unavailable autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D0F70C12002
-	for <iommu@archiver.kernel.org>; Fri, 16 Jul 2021 08:35:54 +0000 (UTC)
-Received: from smtp3.osuosl.org (smtp3.osuosl.org [140.211.166.136])
+	by smtp.lore.kernel.org (Postfix) with ESMTP id DFC10C07E95
+	for <iommu@archiver.kernel.org>; Fri, 16 Jul 2021 08:36:02 +0000 (UTC)
+Received: from smtp1.osuosl.org (smtp1.osuosl.org [140.211.166.138])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 8C8C5613C3
-	for <iommu@archiver.kernel.org>; Fri, 16 Jul 2021 08:35:54 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 8C8C5613C3
+	by mail.kernel.org (Postfix) with ESMTPS id AC5C86109E
+	for <iommu@archiver.kernel.org>; Fri, 16 Jul 2021 08:36:02 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org AC5C86109E
 Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=huawei.com
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by smtp3.osuosl.org (Postfix) with ESMTP id 6087660D5E;
-	Fri, 16 Jul 2021 08:35:54 +0000 (UTC)
+	by smtp1.osuosl.org (Postfix) with ESMTP id 882DB843B2;
+	Fri, 16 Jul 2021 08:36:02 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from smtp3.osuosl.org ([127.0.0.1])
-	by localhost (smtp3.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id 10AGdC21XieO; Fri, 16 Jul 2021 08:35:53 +0000 (UTC)
+Received: from smtp1.osuosl.org ([127.0.0.1])
+	by localhost (smtp1.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+	with ESMTP id pfoHDMtBAigh; Fri, 16 Jul 2021 08:36:01 +0000 (UTC)
 Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [IPv6:2605:bc80:3010:104::8cd3:938])
-	by smtp3.osuosl.org (Postfix) with ESMTPS id 43ABA60C03;
-	Fri, 16 Jul 2021 08:35:53 +0000 (UTC)
+	by smtp1.osuosl.org (Postfix) with ESMTPS id 6C9D4843A7;
+	Fri, 16 Jul 2021 08:36:01 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 18C53C0010;
-	Fri, 16 Jul 2021 08:35:53 +0000 (UTC)
-Received: from smtp3.osuosl.org (smtp3.osuosl.org [IPv6:2605:bc80:3010::136])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 5D983C000E
- for <iommu@lists.linux-foundation.org>; Fri, 16 Jul 2021 08:35:51 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 5307AC0010;
+	Fri, 16 Jul 2021 08:36:01 +0000 (UTC)
+Received: from smtp2.osuosl.org (smtp2.osuosl.org [IPv6:2605:bc80:3010::133])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id A0BF1C000E
+ for <iommu@lists.linux-foundation.org>; Fri, 16 Jul 2021 08:35:59 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by smtp3.osuosl.org (Postfix) with ESMTP id 4D2FD60D5D
- for <iommu@lists.linux-foundation.org>; Fri, 16 Jul 2021 08:35:51 +0000 (UTC)
+ by smtp2.osuosl.org (Postfix) with ESMTP id 9580740EEE
+ for <iommu@lists.linux-foundation.org>; Fri, 16 Jul 2021 08:35:59 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from smtp3.osuosl.org ([127.0.0.1])
- by localhost (smtp3.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id iLAppGOAJjKx for <iommu@lists.linux-foundation.org>;
- Fri, 16 Jul 2021 08:35:50 +0000 (UTC)
+Received: from smtp2.osuosl.org ([127.0.0.1])
+ by localhost (smtp2.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+ with ESMTP id KkWrO2WbvYoh for <iommu@lists.linux-foundation.org>;
+ Fri, 16 Jul 2021 08:35:59 +0000 (UTC)
 X-Greylist: domain auto-whitelisted by SQLgrey-1.8.0
 Received: from frasgout.his.huawei.com (frasgout.his.huawei.com
  [185.176.79.56])
- by smtp3.osuosl.org (Postfix) with ESMTPS id AB7DC60C03
- for <iommu@lists.linux-foundation.org>; Fri, 16 Jul 2021 08:35:50 +0000 (UTC)
-Received: from fraeml706-chm.china.huawei.com (unknown [172.18.147.226])
- by frasgout.his.huawei.com (SkyGuard) with ESMTP id 4GR42N5bQqz6D8WS;
- Fri, 16 Jul 2021 16:21:16 +0800 (CST)
+ by smtp2.osuosl.org (Postfix) with ESMTPS id BE04240EDF
+ for <iommu@lists.linux-foundation.org>; Fri, 16 Jul 2021 08:35:58 +0000 (UTC)
+Received: from fraeml705-chm.china.huawei.com (unknown [172.18.147.200])
+ by frasgout.his.huawei.com (SkyGuard) with ESMTP id 4GR46K4vNgz6H7P4;
+ Fri, 16 Jul 2021 16:24:41 +0800 (CST)
 Received: from lhreml710-chm.china.huawei.com (10.201.108.61) by
- fraeml706-chm.china.huawei.com (10.206.15.55) with Microsoft SMTP Server
+ fraeml705-chm.china.huawei.com (10.206.15.54) with Microsoft SMTP Server
  (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id
- 15.1.2176.2; Fri, 16 Jul 2021 10:35:48 +0200
+ 15.1.2176.2; Fri, 16 Jul 2021 10:35:55 +0200
 Received: from A2006125610.china.huawei.com (10.47.80.222) by
  lhreml710-chm.china.huawei.com (10.201.108.61) with Microsoft SMTP Server
  (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2176.2; Fri, 16 Jul 2021 09:35:41 +0100
+ 15.1.2176.2; Fri, 16 Jul 2021 09:35:49 +0100
 From: Shameer Kolothum <shameerali.kolothum.thodi@huawei.com>
 To: <linux-arm-kernel@lists.infradead.org>, <linux-acpi@vger.kernel.org>,
  <iommu@lists.linux-foundation.org>
-Subject: [PATCH v6 7/9] iommu/arm-smmu-v3: Get associated RMR info and install
- bypass STE
-Date: Fri, 16 Jul 2021 09:34:40 +0100
-Message-ID: <20210716083442.1708-8-shameerali.kolothum.thodi@huawei.com>
+Subject: [PATCH v6 8/9] iommu/arm-smmu: Get associated RMR info and install
+ bypass SMR
+Date: Fri, 16 Jul 2021 09:34:41 +0100
+Message-ID: <20210716083442.1708-9-shameerali.kolothum.thodi@huawei.com>
 X-Mailer: git-send-email 2.12.0.windows.1
 In-Reply-To: <20210716083442.1708-1-shameerali.kolothum.thodi@huawei.com>
 References: <20210716083442.1708-1-shameerali.kolothum.thodi@huawei.com>
@@ -87,45 +87,95 @@ List-Post: <mailto:iommu@lists.linux-foundation.org>
 List-Help: <mailto:iommu-request@lists.linux-foundation.org?subject=help>
 List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
  <mailto:iommu-request@lists.linux-foundation.org?subject=subscribe>
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-Q2hlY2sgaWYgdGhlcmUgaXMgYW55IFJNUiBpbmZvIGFzc29jaWF0ZWTCoHdpdGggdGhlIGRldmlj
-ZXMgYmVoaW5kCnRoZSBTTU1VdjMgYW5kIGlmIGFueSwgaW5zdGFsbCBieXBhc3MgU1RFcyBmb3Ig
-dGhlbS4gVGhpcyBpcyB0bwprZWVwIGFueSBvbmdvaW5nIHRyYWZmaWMgYXNzb2NpYXRlZCB3aXRo
-IHRoZXNlIGRldmljZXMgYWxpdmUKd2hlbiB3ZSBlbmFibGUvcmVzZXQgU01NVXYzIGR1cmluZyBw
-cm9iZSgpLgoKU2lnbmVkLW9mZi1ieTogU2hhbWVlciBLb2xvdGh1bSA8c2hhbWVlcmFsaS5rb2xv
-dGh1bS50aG9kaUBodWF3ZWkuY29tPgotLS0KIGRyaXZlcnMvaW9tbXUvYXJtL2FybS1zbW11LXYz
-L2FybS1zbW11LXYzLmMgfCAzMSArKysrKysrKysrKysrKysrKysrKysKIDEgZmlsZSBjaGFuZ2Vk
-LCAzMSBpbnNlcnRpb25zKCspCgpkaWZmIC0tZ2l0IGEvZHJpdmVycy9pb21tdS9hcm0vYXJtLXNt
-bXUtdjMvYXJtLXNtbXUtdjMuYyBiL2RyaXZlcnMvaW9tbXUvYXJtL2FybS1zbW11LXYzL2FybS1z
-bW11LXYzLmMKaW5kZXggMzRmODQ2NDFkYzZhLi43MWE2ODJmYjM3NWIgMTAwNjQ0Ci0tLSBhL2Ry
-aXZlcnMvaW9tbXUvYXJtL2FybS1zbW11LXYzL2FybS1zbW11LXYzLmMKKysrIGIvZHJpdmVycy9p
-b21tdS9hcm0vYXJtLXNtbXUtdjMvYXJtLXNtbXUtdjMuYwpAQCAtMzc1OSw2ICszNzU5LDM0IEBA
-IHN0YXRpYyB2b2lkIF9faW9tZW0gKmFybV9zbW11X2lvcmVtYXAoc3RydWN0IGRldmljZSAqZGV2
-LCByZXNvdXJjZV9zaXplX3Qgc3RhcnQsCiAJcmV0dXJuIGRldm1faW9yZW1hcF9yZXNvdXJjZShk
-ZXYsICZyZXMpOwogfQogCitzdGF0aWMgdm9pZCBhcm1fc21tdV9ybXJfaW5zdGFsbF9ieXBhc3Nf
-c3RlKHN0cnVjdCBhcm1fc21tdV9kZXZpY2UgKnNtbXUpCit7CisJc3RydWN0IGxpc3RfaGVhZCBy
-bXJfbGlzdDsKKwlzdHJ1Y3QgaW9tbXVfcmVzdl9yZWdpb24gKmU7CisJaW50IHJldDsKKworCUlO
-SVRfTElTVF9IRUFEKCZybXJfbGlzdCk7CisJaWYgKGlvbW11X2RtYV9nZXRfcm1ycyhkZXZfZndu
-b2RlKHNtbXUtPmRldiksICZybXJfbGlzdCkpCisJCXJldHVybjsKKworCWxpc3RfZm9yX2VhY2hf
-ZW50cnkoZSwgJnJtcl9saXN0LCBsaXN0KSB7CisJCV9fbGU2NCAqc3RlcDsKKwkJdTMyIHNpZCA9
-IGUtPmZ3X2RhdGEucm1yLnNpZDsKKworCQlyZXQgPSBhcm1fc21tdV9pbml0X3NpZF9zdHJ0YWIo
-c21tdSwgc2lkKTsKKwkJaWYgKHJldCkgeworCQkJZGV2X2VycihzbW11LT5kZXYsICJSTVIgU0lE
-KDB4JXgpIGJ5cGFzcyBmYWlsZWRcbiIsCisJCQkJc2lkKTsKKwkJCWNvbnRpbnVlOworCQl9CisK
-KwkJc3RlcCA9IGFybV9zbW11X2dldF9zdGVwX2Zvcl9zaWQoc21tdSwgc2lkKTsKKwkJYXJtX3Nt
-bXVfaW5pdF9ieXBhc3Nfc3RlcyhzdGVwLCAxLCB0cnVlKTsKKwl9CisKKwlpb21tdV9kbWFfcHV0
-X3JtcnMoZGV2X2Z3bm9kZShzbW11LT5kZXYpLCAmcm1yX2xpc3QpOworfQorCiBzdGF0aWMgaW50
-IGFybV9zbW11X2RldmljZV9wcm9iZShzdHJ1Y3QgcGxhdGZvcm1fZGV2aWNlICpwZGV2KQogewog
-CWludCBpcnEsIHJldDsKQEAgLTM4NDAsNiArMzg2OCw5IEBAIHN0YXRpYyBpbnQgYXJtX3NtbXVf
-ZGV2aWNlX3Byb2JlKHN0cnVjdCBwbGF0Zm9ybV9kZXZpY2UgKnBkZXYpCiAJLyogUmVjb3JkIG91
-ciBwcml2YXRlIGRldmljZSBzdHJ1Y3R1cmUgKi8KIAlwbGF0Zm9ybV9zZXRfZHJ2ZGF0YShwZGV2
-LCBzbW11KTsKIAorCS8qIENoZWNrIGZvciBSTVJzIGFuZCBpbnN0YWxsIGJ5cGFzcyBTVEVzIGlm
-IGFueSAqLworCWFybV9zbW11X3Jtcl9pbnN0YWxsX2J5cGFzc19zdGUoc21tdSk7CisKIAkvKiBS
-ZXNldCB0aGUgZGV2aWNlICovCiAJcmV0ID0gYXJtX3NtbXVfZGV2aWNlX3Jlc2V0KHNtbXUsIGJ5
-cGFzcyk7CiAJaWYgKHJldCkKLS0gCjIuMTcuMQoKX19fX19fX19fX19fX19fX19fX19fX19fX19f
-X19fX19fX19fX19fX19fX19fX18KaW9tbXUgbWFpbGluZyBsaXN0CmlvbW11QGxpc3RzLmxpbnV4
-LWZvdW5kYXRpb24ub3JnCmh0dHBzOi8vbGlzdHMubGludXhmb3VuZGF0aW9uLm9yZy9tYWlsbWFu
-L2xpc3RpbmZvL2lvbW11
+From: Jon Nettleton <jon@solid-run.com>
+
+Check if there is any RMR info associated with the devices behind
+the SMMU and if any, install bypass SMRs for them. This is to
+keep any ongoing traffic associated with these devices alive
+when we enable/reset SMMU during probe().
+
+Signed-off-by: Jon Nettleton <jon@solid-run.com>
+Signed-off-by: Steven Price <steven.price@arm.com>
+Signed-off-by: Shameer Kolothum <shameerali.kolothum.thodi@huawei.com>
+---
+ drivers/iommu/arm/arm-smmu/arm-smmu.c | 48 +++++++++++++++++++++++++++
+ 1 file changed, 48 insertions(+)
+
+diff --git a/drivers/iommu/arm/arm-smmu/arm-smmu.c b/drivers/iommu/arm/arm-smmu/arm-smmu.c
+index f22dbeb1e510..e9fb3d962a86 100644
+--- a/drivers/iommu/arm/arm-smmu/arm-smmu.c
++++ b/drivers/iommu/arm/arm-smmu/arm-smmu.c
+@@ -2063,6 +2063,50 @@ err_reset_platform_ops: __maybe_unused;
+ 	return err;
+ }
+ 
++static void arm_smmu_rmr_install_bypass_smr(struct arm_smmu_device *smmu)
++{
++	struct list_head rmr_list;
++	struct iommu_resv_region *e;
++	int i, cnt = 0;
++	u32 reg;
++
++	INIT_LIST_HEAD(&rmr_list);
++	if (iommu_dma_get_rmrs(dev_fwnode(smmu->dev), &rmr_list))
++		return;
++
++	/*
++	 * Rather than trying to look at existing mappings that
++	 * are setup by the firmware and then invalidate the ones
++	 * that do no have matching RMR entries, just disable the
++	 * SMMU until it gets enabled again in the reset routine.
++	 */
++	reg = arm_smmu_gr0_read(smmu, ARM_SMMU_GR0_sCR0);
++	reg &= ~ARM_SMMU_sCR0_CLIENTPD;
++	arm_smmu_gr0_write(smmu, ARM_SMMU_GR0_sCR0, reg);
++
++	list_for_each_entry(e, &rmr_list, list) {
++		u32 sid = e->fw_data.rmr.sid;
++
++		i = arm_smmu_find_sme(smmu, sid, ~0);
++		if (i < 0)
++			continue;
++		if (smmu->s2crs[i].count == 0) {
++			smmu->smrs[i].id = sid;
++			smmu->smrs[i].mask = 0;
++			smmu->smrs[i].valid = true;
++		}
++		smmu->s2crs[i].count++;
++		smmu->s2crs[i].type = S2CR_TYPE_BYPASS;
++		smmu->s2crs[i].privcfg = S2CR_PRIVCFG_DEFAULT;
++
++		cnt++;
++	}
++
++	dev_notice(smmu->dev, "\tpreserved %d boot mapping%s\n", cnt,
++		   cnt == 1 ? "" : "s");
++	iommu_dma_put_rmrs(dev_fwnode(smmu->dev), &rmr_list);
++}
++
+ static int arm_smmu_device_probe(struct platform_device *pdev)
+ {
+ 	struct resource *res;
+@@ -2189,6 +2233,10 @@ static int arm_smmu_device_probe(struct platform_device *pdev)
+ 	}
+ 
+ 	platform_set_drvdata(pdev, smmu);
++
++	/* Check for RMRs and install bypass SMRs if any */
++	arm_smmu_rmr_install_bypass_smr(smmu);
++
+ 	arm_smmu_device_reset(smmu);
+ 	arm_smmu_test_smr_masks(smmu);
+ 
+-- 
+2.17.1
+
+_______________________________________________
+iommu mailing list
+iommu@lists.linux-foundation.org
+https://lists.linuxfoundation.org/mailman/listinfo/iommu
