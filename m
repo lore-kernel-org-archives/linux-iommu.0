@@ -2,105 +2,99 @@ Return-Path: <SRS0=ss7l=MJ=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-13.6 required=3.0 tests=BAYES_00,DKIM_INVALID,
-	DKIM_SIGNED,HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_CR_TRAILER,INCLUDES_PATCH,
-	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,URIBL_RED autolearn=unavailable
-	autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-10.5 required=3.0 tests=BAYES_00,
+	DKIM_ADSP_CUSTOM_MED,DKIM_INVALID,DKIM_SIGNED,FREEMAIL_FORGED_FROMDOMAIN,
+	FREEMAIL_FROM,HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_CR_TRAILER,
+	INCLUDES_PATCH,MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,URIBL_RED
+	autolearn=ham autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3C091C636CA
-	for <iommu@archiver.kernel.org>; Sat, 17 Jul 2021 05:01:21 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B1D40C636C9
+	for <iommu@archiver.kernel.org>; Sat, 17 Jul 2021 08:39:39 +0000 (UTC)
 Received: from smtp1.osuosl.org (smtp1.osuosl.org [140.211.166.138])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id DE098613E3
-	for <iommu@archiver.kernel.org>; Sat, 17 Jul 2021 05:01:20 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org DE098613E3
-Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=linaro.org
+	by mail.kernel.org (Postfix) with ESMTPS id 562F5613C3
+	for <iommu@archiver.kernel.org>; Sat, 17 Jul 2021 08:39:39 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 562F5613C3
+Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=gmail.com
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by smtp1.osuosl.org (Postfix) with ESMTP id 7E3028441E;
-	Sat, 17 Jul 2021 05:01:20 +0000 (UTC)
+	by smtp1.osuosl.org (Postfix) with ESMTP id 1B6D983CC2;
+	Sat, 17 Jul 2021 08:39:39 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
 Received: from smtp1.osuosl.org ([127.0.0.1])
 	by localhost (smtp1.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id gN9UxyYUxlL4; Sat, 17 Jul 2021 05:01:19 +0000 (UTC)
+	with ESMTP id b4qVjOKfHCBO; Sat, 17 Jul 2021 08:39:38 +0000 (UTC)
 Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by smtp1.osuosl.org (Postfix) with ESMTPS id 482F7843AB;
-	Sat, 17 Jul 2021 05:01:19 +0000 (UTC)
+	by smtp1.osuosl.org (Postfix) with ESMTPS id E358083B04;
+	Sat, 17 Jul 2021 08:39:37 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 23499C0010;
-	Sat, 17 Jul 2021 05:01:19 +0000 (UTC)
-Received: from smtp2.osuosl.org (smtp2.osuosl.org [140.211.166.133])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 921ADC000E
- for <iommu@lists.linux-foundation.org>; Sat, 17 Jul 2021 05:01:17 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 8C736C0010;
+	Sat, 17 Jul 2021 08:39:37 +0000 (UTC)
+Received: from smtp1.osuosl.org (smtp1.osuosl.org [IPv6:2605:bc80:3010::138])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id A21C3C000E
+ for <iommu@lists.linux-foundation.org>; Sat, 17 Jul 2021 08:39:35 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by smtp2.osuosl.org (Postfix) with ESMTP id 7C66E40143
- for <iommu@lists.linux-foundation.org>; Sat, 17 Jul 2021 05:01:17 +0000 (UTC)
+ by smtp1.osuosl.org (Postfix) with ESMTP id 90A7A83B24
+ for <iommu@lists.linux-foundation.org>; Sat, 17 Jul 2021 08:39:35 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Authentication-Results: smtp2.osuosl.org (amavisd-new);
- dkim=pass (2048-bit key) header.d=linaro.org
-Received: from smtp2.osuosl.org ([127.0.0.1])
- by localhost (smtp2.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id a1FFEHFOK7ok for <iommu@lists.linux-foundation.org>;
- Sat, 17 Jul 2021 05:01:16 +0000 (UTC)
+Received: from smtp1.osuosl.org ([127.0.0.1])
+ by localhost (smtp1.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+ with ESMTP id lNl-hg2QJJiZ for <iommu@lists.linux-foundation.org>;
+ Sat, 17 Jul 2021 08:39:34 +0000 (UTC)
 X-Greylist: whitelisted by SQLgrey-1.8.0
-Received: from mail-oi1-x229.google.com (mail-oi1-x229.google.com
- [IPv6:2607:f8b0:4864:20::229])
- by smtp2.osuosl.org (Postfix) with ESMTPS id 3801340015
- for <iommu@lists.linux-foundation.org>; Sat, 17 Jul 2021 05:01:16 +0000 (UTC)
-Received: by mail-oi1-x229.google.com with SMTP id u15so13582638oiw.3
- for <iommu@lists.linux-foundation.org>; Fri, 16 Jul 2021 22:01:15 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linaro.org; s=google;
- h=date:from:to:cc:subject:message-id:references:mime-version
- :content-disposition:in-reply-to;
- bh=tO7v/jiDZA9pK4soZtcjDfack9qaYbeOrYeQ+83PgxA=;
- b=oM7cTlTGTfCnTxR3IIxviM8SUDiKRxATrVQXYlVMXangvFPozYcwG8YfkQy2saViPI
- Si7McqcD/vJkVCcD/PnnsjHSNZTTGsYb31R7/+Rs+J1i847qF99Ku978nol0AwInhmWo
- xwrYSnywp2OUORrjgxUkaMJ74gL0X0ArkqEA/Cpx3dGNQrN66CFs1/yB7MCiF9CU/cCv
- njdZJ6EtmJUCrf5fXyOKuGEHs67mhtESvA5//D0wpCEhlIndRyNtGfYjDeA+Q4x8aaMn
- VWKUcuEyXQcQy9HbI3kjW6lxlTNB1V8Itl/0CQ+nkVV/4OefU07nzBsoGV0qS0f6QDQM
- NOYg==
+Received: from mail-lj1-x22a.google.com (mail-lj1-x22a.google.com
+ [IPv6:2a00:1450:4864:20::22a])
+ by smtp1.osuosl.org (Postfix) with ESMTPS id 9E0DF83B04
+ for <iommu@lists.linux-foundation.org>; Sat, 17 Jul 2021 08:39:34 +0000 (UTC)
+Received: by mail-lj1-x22a.google.com with SMTP id s18so17427237ljg.7
+ for <iommu@lists.linux-foundation.org>; Sat, 17 Jul 2021 01:39:34 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=gmail.com; s=20161025;
+ h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+ :cc:content-transfer-encoding;
+ bh=L/Ph4KXH21cp1cKWqCha4JghboKhxeBssRdrgGEsZ/g=;
+ b=NFuCS2VLQWPpHzhymx9nA39Hfr7bWiXg/IN9dUX+ZiJ4zU2AcVuWqCxkeX430TJ57H
+ F1HczOYd4Fqt5nMNvkujGGhZ7a6Yt3BzgJ1mEsDSK4dbswVO6I6ycwiRkB8dzw3WSNJ8
+ i1Lde1EJD5oy0SXRCDwtPzqmdw4wC5iqWY4e7hE0pfb0jE8P23WSfRDoh2xfVw+UBYfX
+ Q8n8aqRkqMrt3KEqKQ7EqoWuf8IbB/rBR7xbRSZYEZ0sclhldvqqcSUFMybD15jsW8j/
+ N5oJ4eBNBJV278RQOPlJ8/CGf/Slr+xDsFLGv1Dg9aP4tg4SZ3aWwWKnci15i8i7VM+u
+ rb+w==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
  d=1e100.net; s=20161025;
- h=x-gm-message-state:date:from:to:cc:subject:message-id:references
- :mime-version:content-disposition:in-reply-to;
- bh=tO7v/jiDZA9pK4soZtcjDfack9qaYbeOrYeQ+83PgxA=;
- b=oVZlX9qHnSwNGw+ExS+gyBv580OmHomYtRJF6i0nEEuWmEOjKnfb7nFZMnY8C157KV
- z4rtlzyR9ywWCGwOr/CX5NGeOqH/iym4XYDm3Q7p/JOK4Dwq5oSR3QF3GzqSIDgL1b/K
- fP9zhWBVdOImI94yOwwwVMJyWLBlPvAb718ZJw19ALj3NABzpAeNCcPXViUtcsF+bK66
- WIms0uVfL//UHI4661V+li2Y9vb4PjV82q0R73wME4pr4Vpr4wezxU6U3KKOWOFcPUwq
- 01ch+aSrym8Ecz2PEcifsnGhaC4VcXkScTTb9KOqPqx2JDch6G7Vv6TljL0Pj3+UTH6g
- B+8w==
-X-Gm-Message-State: AOAM533/i7fEbHxlibd1lKMSJn2ByDS1d77NHFe0ISs0qanZUsUJ7+Z6
- y4+eoPwzTpXblkBONCdPjtXzSA==
-X-Google-Smtp-Source: ABdhPJxyXgA295NXV3VbckZ0LIjmGP+mh2GywCT72CDbvBkp+4fh3bZsPvxv4L3arGMbPAFRKD10Vg==
-X-Received: by 2002:a05:6808:14c8:: with SMTP id
- f8mr10427694oiw.7.1626498074588; 
- Fri, 16 Jul 2021 22:01:14 -0700 (PDT)
-Received: from yoga (104-57-184-186.lightspeed.austtx.sbcglobal.net.
- [104.57.184.186])
- by smtp.gmail.com with ESMTPSA id s16sm2404675otg.51.2021.07.16.22.01.13
- (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
- Fri, 16 Jul 2021 22:01:14 -0700 (PDT)
-Date: Sat, 17 Jul 2021 00:01:11 -0500
-From: Bjorn Andersson <bjorn.andersson@linaro.org>
-To: John Stultz <john.stultz@linaro.org>
-Subject: Re: [PATCH] firmware: QCOM_SCM: Allow qcom_scm driver to be loadable
- as a permenent module
-Message-ID: <YPJkF21ItYlKODyq@yoga>
-References: <20210707045320.529186-1-john.stultz@linaro.org>
+ h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+ :message-id:subject:to:cc:content-transfer-encoding;
+ bh=L/Ph4KXH21cp1cKWqCha4JghboKhxeBssRdrgGEsZ/g=;
+ b=EzsLNvQjspnwsbskO2IuB5OoGmmaL+/jVmjjLTRzQiJm0pmt09ttpl+vGFgb2kCSs1
+ FQzwnNcc6j3YRgIcj3I14Tu8J6IHcAvzKNoBkBe5510K+XI3UKubHA5eA8D15lHkHPSj
+ wyUrPonuoHhY8QFhxPvs6L6NxkJaXQgp41PmJmImcyykFRDnXg/C51hacHA23bEC4rsw
+ oE2+oBFTxQvBFkQD1iBrYwbgGZDmvkGducwwLtr4velV2W5qzF3+QyWqQl9BM2eUFaCi
+ 4eYt95jr6XmFsPMMXTnWOcypVlqGopvtu++qMRSuhbRfyvW5OKg/zMZ/AG8OyKDBUrAD
+ bCiA==
+X-Gm-Message-State: AOAM532dOtiLo/xpAdT/z0hNVSQrIzuFPU/zTTBRthgNMIW7TLP88fC8
+ J7OzJnmk+WuR5Yi4ctjw+uDsb/gO8L30oK26P1E=
+X-Google-Smtp-Source: ABdhPJyeRjTAQ3mrnLTYgab+MKBgvatMXBQP3Edmgnib1kkC6/oA7N1ZXSWANCX4akcXxJ45BHA43lcfioCMHsjfSIU=
+X-Received: by 2002:a2e:700f:: with SMTP id l15mr12600105ljc.149.1626511172469; 
+ Sat, 17 Jul 2021 01:39:32 -0700 (PDT)
 MIME-Version: 1.0
-Content-Disposition: inline
-In-Reply-To: <20210707045320.529186-1-john.stultz@linaro.org>
-Cc: Maulik Shah <mkshah@codeaurora.org>, Saravana Kannan <saravanak@google.com>,
- Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
- Catalin Marinas <catalin.marinas@arm.com>, lkml <linux-kernel@vger.kernel.org>,
- iommu@lists.linux-foundation.org, linux-gpio@vger.kernel.org,
- Vinod Koul <vkoul@kernel.org>, Andy Gross <agross@kernel.org>,
- Marc Zyngier <maz@kernel.org>, linux-arm-msm@vger.kernel.org,
- Thomas Gleixner <tglx@linutronix.de>, Will Deacon <will@kernel.org>,
- Linus Walleij <linus.walleij@linaro.org>, Kalle Valo <kvalo@codeaurora.org>,
- Todd Kjos <tkjos@google.com>
+References: <20210715170011.GA17324@lst.de>
+ <20210716083934.154992-1-rm.skakun@gmail.com>
+ <20210716093551.GA17981@lst.de>
+ <CADu_u-OYA+Z_y-DBLxyUYGhmLVMtLggmZ_SnRiEtw9EGrO4oGg@mail.gmail.com>
+ <alpine.DEB.2.21.2107160828430.3916@sstabellini-ThinkPad-T480s>
+In-Reply-To: <alpine.DEB.2.21.2107160828430.3916@sstabellini-ThinkPad-T480s>
+From: Roman Skakun <rm.skakun@gmail.com>
+Date: Sat, 17 Jul 2021 11:39:21 +0300
+Message-ID: <CADu_u-Psn5QpOyZ18_NCPx14DYxmGmSqVod=_RBC3A_A93tGUw@mail.gmail.com>
+Subject: Re: [PATCH v2] dma-mapping: use vmalloc_to_page for vmalloc addresses
+To: Christoph Hellwig <hch@lst.de>, Stefano Stabellini <sstabellini@kernel.org>
+Cc: Juergen Gross <jgross@suse.com>, Andrii Anisov <andrii_anisov@epam.com>,
+ Konrad Rzeszutek Wilk <konrad.wilk@oracle.com>,
+ Oleksandr Andrushchenko <oleksandr_andrushchenko@epam.com>,
+ linux-kernel@vger.kernel.org, Roman Skakun <rm.skakun@gmail.com>,
+ Oleksandr Tyshchenko <oleksandr_tyshchenko@epam.com>,
+ iommu@lists.linux-foundation.org, Roman Skakun <Roman_Skakun@epam.com>,
+ xen-devel@lists.xenproject.org, Boris Ostrovsky <boris.ostrovsky@oracle.com>,
+ Volodymyr Babchuk <volodymyr_babchuk@epam.com>
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -113,158 +107,89 @@ List-Post: <mailto:iommu@lists.linux-foundation.org>
 List-Help: <mailto:iommu-request@lists.linux-foundation.org?subject=help>
 List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
  <mailto:iommu-request@lists.linux-foundation.org?subject=subscribe>
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-On Tue 06 Jul 23:53 CDT 2021, John Stultz wrote:
-
-> Allow the qcom_scm driver to be loadable as a permenent module.
-> 
-> This still uses the "depends on QCOM_SCM || !QCOM_SCM" bit to
-> ensure that drivers that call into the qcom_scm driver are
-> also built as modules. While not ideal in some cases its the
-> only safe way I can find to avoid build errors without having
-> those drivers select QCOM_SCM and have to force it on (as
-> QCOM_SCM=n can be valid for those drivers).
-> 
-> Reviving this now that Saravana's fw_devlink defaults to on,
-> which should avoid loading troubles seen before.
-> 
-
-Are you (in this last paragraph) saying that all those who have been
-burnt by fw_devlink during the last months and therefor run with it
-disabled will have a less fun experience once this is merged?
-
-
-(I'm picking this up, but I don't fancy the idea that some people are
-turning the boot process into a lottery)
-
-Regards,
-Bjorn
-
-> Cc: Catalin Marinas <catalin.marinas@arm.com>
-> Cc: Will Deacon <will@kernel.org>
-> Cc: Andy Gross <agross@kernel.org>
-> Cc: Bjorn Andersson <bjorn.andersson@linaro.org>
-> Cc: Joerg Roedel <joro@8bytes.org>
-> Cc: Thomas Gleixner <tglx@linutronix.de>
-> Cc: Marc Zyngier <maz@kernel.org>
-> Cc: Linus Walleij <linus.walleij@linaro.org>
-> Cc: Vinod Koul <vkoul@kernel.org>
-> Cc: Kalle Valo <kvalo@codeaurora.org>
-> Cc: Maulik Shah <mkshah@codeaurora.org>
-> Cc: Saravana Kannan <saravanak@google.com>
-> Cc: Todd Kjos <tkjos@google.com>
-> Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-> Cc: linux-arm-msm@vger.kernel.org
-> Cc: iommu@lists.linux-foundation.org
-> Cc: linux-gpio@vger.kernel.org
-> Acked-by: Kalle Valo <kvalo@codeaurora.org>
-> Acked-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-> Acked-by: Will Deacon <will@kernel.org>
-> Reviewed-by: Bjorn Andersson <bjorn.andersson@linaro.org>
-> Signed-off-by: John Stultz <john.stultz@linaro.org>
-> ---
-> v3:
-> * Fix __arm_smccc_smc build issue reported by
->   kernel test robot <lkp@intel.com>
-> v4:
-> * Add "depends on QCOM_SCM || !QCOM_SCM" bit to ath10k
->   config that requires it.
-> v5:
-> * Fix QCOM_QCM typo in Kconfig, it should be QCOM_SCM
-> ---
->  drivers/firmware/Kconfig                | 2 +-
->  drivers/firmware/Makefile               | 3 ++-
->  drivers/firmware/qcom_scm.c             | 4 ++++
->  drivers/iommu/Kconfig                   | 2 ++
->  drivers/net/wireless/ath/ath10k/Kconfig | 1 +
->  5 files changed, 10 insertions(+), 2 deletions(-)
-> 
-> diff --git a/drivers/firmware/Kconfig b/drivers/firmware/Kconfig
-> index db0ea2d2d75a..af53778edc7e 100644
-> --- a/drivers/firmware/Kconfig
-> +++ b/drivers/firmware/Kconfig
-> @@ -235,7 +235,7 @@ config INTEL_STRATIX10_RSU
->  	  Say Y here if you want Intel RSU support.
->  
->  config QCOM_SCM
-> -	bool
-> +	tristate "Qcom SCM driver"
->  	depends on ARM || ARM64
->  	depends on HAVE_ARM_SMCCC
->  	select RESET_CONTROLLER
-> diff --git a/drivers/firmware/Makefile b/drivers/firmware/Makefile
-> index 5e013b6a3692..523173cbff33 100644
-> --- a/drivers/firmware/Makefile
-> +++ b/drivers/firmware/Makefile
-> @@ -17,7 +17,8 @@ obj-$(CONFIG_ISCSI_IBFT)	+= iscsi_ibft.o
->  obj-$(CONFIG_FIRMWARE_MEMMAP)	+= memmap.o
->  obj-$(CONFIG_RASPBERRYPI_FIRMWARE) += raspberrypi.o
->  obj-$(CONFIG_FW_CFG_SYSFS)	+= qemu_fw_cfg.o
-> -obj-$(CONFIG_QCOM_SCM)		+= qcom_scm.o qcom_scm-smc.o qcom_scm-legacy.o
-> +obj-$(CONFIG_QCOM_SCM)		+= qcom-scm.o
-> +qcom-scm-objs += qcom_scm.o qcom_scm-smc.o qcom_scm-legacy.o
->  obj-$(CONFIG_TI_SCI_PROTOCOL)	+= ti_sci.o
->  obj-$(CONFIG_TRUSTED_FOUNDATIONS) += trusted_foundations.o
->  obj-$(CONFIG_TURRIS_MOX_RWTM)	+= turris-mox-rwtm.o
-> diff --git a/drivers/firmware/qcom_scm.c b/drivers/firmware/qcom_scm.c
-> index ee9cb545e73b..bb9ce3f92931 100644
-> --- a/drivers/firmware/qcom_scm.c
-> +++ b/drivers/firmware/qcom_scm.c
-> @@ -1296,6 +1296,7 @@ static const struct of_device_id qcom_scm_dt_match[] = {
->  	{ .compatible = "qcom,scm" },
->  	{}
->  };
-> +MODULE_DEVICE_TABLE(of, qcom_scm_dt_match);
->  
->  static struct platform_driver qcom_scm_driver = {
->  	.driver = {
-> @@ -1312,3 +1313,6 @@ static int __init qcom_scm_init(void)
->  	return platform_driver_register(&qcom_scm_driver);
->  }
->  subsys_initcall(qcom_scm_init);
-> +
-> +MODULE_DESCRIPTION("Qualcomm Technologies, Inc. SCM driver");
-> +MODULE_LICENSE("GPL v2");
-> diff --git a/drivers/iommu/Kconfig b/drivers/iommu/Kconfig
-> index 07b7c25cbed8..f61516c17589 100644
-> --- a/drivers/iommu/Kconfig
-> +++ b/drivers/iommu/Kconfig
-> @@ -253,6 +253,7 @@ config SPAPR_TCE_IOMMU
->  config ARM_SMMU
->  	tristate "ARM Ltd. System MMU (SMMU) Support"
->  	depends on ARM64 || ARM || (COMPILE_TEST && !GENERIC_ATOMIC64)
-> +	depends on QCOM_SCM || !QCOM_SCM #if QCOM_SCM=m this can't be =y
->  	select IOMMU_API
->  	select IOMMU_IO_PGTABLE_LPAE
->  	select ARM_DMA_USE_IOMMU if ARM
-> @@ -382,6 +383,7 @@ config QCOM_IOMMU
->  	# Note: iommu drivers cannot (yet?) be built as modules
->  	bool "Qualcomm IOMMU Support"
->  	depends on ARCH_QCOM || (COMPILE_TEST && !GENERIC_ATOMIC64)
-> +	depends on QCOM_SCM=y
->  	select IOMMU_API
->  	select IOMMU_IO_PGTABLE_LPAE
->  	select ARM_DMA_USE_IOMMU
-> diff --git a/drivers/net/wireless/ath/ath10k/Kconfig b/drivers/net/wireless/ath/ath10k/Kconfig
-> index 40f91bc8514d..741289e385d5 100644
-> --- a/drivers/net/wireless/ath/ath10k/Kconfig
-> +++ b/drivers/net/wireless/ath/ath10k/Kconfig
-> @@ -44,6 +44,7 @@ config ATH10K_SNOC
->  	tristate "Qualcomm ath10k SNOC support"
->  	depends on ATH10K
->  	depends on ARCH_QCOM || COMPILE_TEST
-> +	depends on QCOM_SCM || !QCOM_SCM #if QCOM_SCM=m this can't be =y
->  	select QCOM_QMI_HELPERS
->  	help
->  	  This module adds support for integrated WCN3990 chip connected
-> -- 
-> 2.25.1
-> 
-_______________________________________________
-iommu mailing list
-iommu@lists.linux-foundation.org
-https://lists.linuxfoundation.org/mailman/listinfo/iommu
+PiBXZSBjYW4gbWVyZ2UgdGhpcyBwYXRjaCBhbmQgY3JlYXRlIGEgbmV3IG9uZSBmb3IKPiB4ZW5f
+c3dpb3RsYl9mcmVlX2NvaGVyZW50KCkgbGF0ZXIuCj4gWWVhaCwgbm8gd29ycmllcywgSSBkaWRu
+J3Qga25vdyB0aGF0IGV4cG9zaW5nIGRtYV9jb21tb25fdmFkZHJfdG9fcGFnZQo+IHdhcyBwcm9i
+bGVtYXRpYy4KPgo+IFRoaXMgcGF0Y2ggaXMgZmluZSBieSBtZS4KCkdvb2QuIEknbSBhZ3JlZWQg
+dG9vLiBXYWl0aW5nIGZvciBDaHJpc3RvcGguCgrQv9GCLCAxNiDQuNGO0LsuIDIwMjEg0LMuINCy
+IDE4OjI5LCBTdGVmYW5vIFN0YWJlbGxpbmkgPHNzdGFiZWxsaW5pQGtlcm5lbC5vcmc+Ogo+Cj4g
+T24gRnJpLCAxNiBKdWwgMjAyMSwgUm9tYW4gU2tha3VuIHdyb3RlOgo+ID4gPiBUZWNobmljYWxs
+eSB0aGlzIGxvb2tzIGdvb2QuICBCdXQgZ2l2ZW4gdGhhdCBleHBvc2luZyBhIGhlbHBlcgo+ID4g
+PiB0aGF0IGRvZXMgZWl0aGVyIHZtYWxsb2NfdG9fcGFnZSBvciB2aXJ0X3RvX3BhZ2UgaXMgb25l
+IG9mIHRoZQo+ID4gPiBuZXZlciBlbmRpbmcgTU0gZGlzY3Vzc2lvbnMgSSBkb24ndCB3YW50IHRv
+IGdldCBpbnRvIHRoYXQgZGlzY3Vzc2lvbgo+ID4gPiBhbmQganVzdCBrZWVwIGl0IGxvY2FsIGlu
+IHRoZSBETUEgY29kZS4KPiA+ID4KPiA+ID4gQXJlIHlvdSBmaW5lIHdpdGggbWUgYXBwbHlpbmcg
+dGhpcyB2ZXJzaW9uPwo+ID4KPiA+IExvb2tzIGdvb2QgdG8gbWUsIHRoYW5rcyEKPiA+IEJ1dCwg
+U3RlZmFubyBhc2tlZCBtZSBhYm91dCB1c2luZyBjcmVhdGVkIGhlbHBlciBpbiB0aGUKPiA+IHhl
+bl9zd2lvdGxiX2ZyZWVfY29oZXJlbnQoKQo+ID4gYW5kIEkgY3JlYXRlZCBhIHBhdGNoIGFjY29y
+ZGluZyB0byB0aGlzIG1lbnRpb24uCj4gPgo+ID4gV2UgY2FuIG1lcmdlIHRoaXMgcGF0Y2ggYW5k
+IGNyZWF0ZSBhIG5ldyBvbmUgZm9yCj4gPiB4ZW5fc3dpb3RsYl9mcmVlX2NvaGVyZW50KCkgbGF0
+ZXIuCj4KPiBZZWFoLCBubyB3b3JyaWVzLCBJIGRpZG4ndCBrbm93IHRoYXQgZXhwb3NpbmcgZG1h
+X2NvbW1vbl92YWRkcl90b19wYWdlCj4gd2FzIHByb2JsZW1hdGljLgo+Cj4gVGhpcyBwYXRjaCBp
+cyBmaW5lIGJ5IG1lLgo+Cj4KPiA+INC/0YIsIDE2INC40Y7Quy4gMjAyMSDQsy4g0LIgMTI6MzUs
+IENocmlzdG9waCBIZWxsd2lnIDxoY2hAbHN0LmRlPjoKPiA+ID4KPiA+ID4gVGVjaG5pY2FsbHkg
+dGhpcyBsb29rcyBnb29kLiAgQnV0IGdpdmVuIHRoYXQgZXhwb3NpbmcgYSBoZWxwZXIKPiA+ID4g
+dGhhdCBkb2VzIGVpdGhlciB2bWFsbG9jX3RvX3BhZ2Ugb3IgdmlydF90b19wYWdlIGlzIG9uZSBv
+ZiB0aGUKPiA+ID4gbmV2ZXIgZW5kaW5nIE1NIGRpc2N1c3Npb25zIEkgZG9uJ3Qgd2FudCB0byBn
+ZXQgaW50byB0aGF0IGRpc2N1c3Npb24KPiA+ID4gYW5kIGp1c3Qga2VlcCBpdCBsb2NhbCBpbiB0
+aGUgRE1BIGNvZGUuCj4gPiA+Cj4gPiA+IEFyZSB5b3UgZmluZSB3aXRoIG1lIGFwcGx5aW5nIHRo
+aXMgdmVyc2lvbj8KPiA+ID4KPiA+ID4gLS0tCj4gPiA+IEZyb20gNDBhYzk3MWVhYjg5MzMwZDYx
+NTNlNzcyMWU4OGFjZDJkOTg4MzNmOSBNb24gU2VwIDE3IDAwOjAwOjAwIDIwMDEKPiA+ID4gRnJv
+bTogUm9tYW4gU2tha3VuIDxSb21hbl9Ta2FrdW5AZXBhbS5jb20+Cj4gPiA+IERhdGU6IEZyaSwg
+MTYgSnVsIDIwMjEgMTE6Mzk6MzQgKzAzMDAKPiA+ID4gU3ViamVjdDogZG1hLW1hcHBpbmc6IGhh
+bmRsZSB2bWFsbG9jIGFkZHJlc3NlcyBpbgo+ID4gPiAgZG1hX2NvbW1vbl97bW1hcCxnZXRfc2d0
+YWJsZX0KPiA+ID4KPiA+ID4geGVuLXN3aW90bGIgY2FuIHVzZSB2bWFsbG9jIGJhY2tlZCBhZGRy
+ZXNzZXMgZm9yIGRtYSBjb2hlcmVudCBhbGxvY2F0aW9ucwo+ID4gPiBhbmQgdXNlcyB0aGUgY29t
+bW9uIGhlbHBlcnMuICBQcm9wZXJseSBoYW5kbGUgdGhlbSB0byB1bmJyZWFrIFhlbiBvbgo+ID4g
+PiBBUk0gcGxhdGZvcm1zLgo+ID4gPgo+ID4gPiBGaXhlczogMWI2NWM0ZTVhOWFmICgic3dpb3Rs
+Yi14ZW46IHVzZSB4ZW5fYWxsb2MvZnJlZV9jb2hlcmVudF9wYWdlcyIpCj4gPiA+IFNpZ25lZC1v
+ZmYtYnk6IFJvbWFuIFNrYWt1biA8cm9tYW5fc2tha3VuQGVwYW0uY29tPgo+ID4gPiBSZXZpZXdl
+ZC1ieTogQW5kcmlpIEFuaXNvdiA8YW5kcmlpX2FuaXNvdkBlcGFtLmNvbT4KPiA+ID4gW2hjaDog
+c3BsaXQgdGhlIHBhdGNoLCByZW5hbWVkIHRoZSBoZWxwZXJzXQo+ID4gPiBTaWduZWQtb2ZmLWJ5
+OiBDaHJpc3RvcGggSGVsbHdpZyA8aGNoQGxzdC5kZT4KPiA+ID4gLS0tCj4gPiA+ICBrZXJuZWwv
+ZG1hL29wc19oZWxwZXJzLmMgfCAxMiArKysrKysrKysrLS0KPiA+ID4gIDEgZmlsZSBjaGFuZ2Vk
+LCAxMCBpbnNlcnRpb25zKCspLCAyIGRlbGV0aW9ucygtKQo+ID4gPgo+ID4gPiBkaWZmIC0tZ2l0
+IGEva2VybmVsL2RtYS9vcHNfaGVscGVycy5jIGIva2VybmVsL2RtYS9vcHNfaGVscGVycy5jCj4g
+PiA+IGluZGV4IDkxMGFlNjljYWU3Ny4uYWY0YTZlZjQ4Y2UwIDEwMDY0NAo+ID4gPiAtLS0gYS9r
+ZXJuZWwvZG1hL29wc19oZWxwZXJzLmMKPiA+ID4gKysrIGIva2VybmVsL2RtYS9vcHNfaGVscGVy
+cy5jCj4gPiA+IEBAIC01LDYgKzUsMTMgQEAKPiA+ID4gICAqLwo+ID4gPiAgI2luY2x1ZGUgPGxp
+bnV4L2RtYS1tYXAtb3BzLmg+Cj4gPiA+Cj4gPiA+ICtzdGF0aWMgc3RydWN0IHBhZ2UgKmRtYV9j
+b21tb25fdmFkZHJfdG9fcGFnZSh2b2lkICpjcHVfYWRkcikKPiA+ID4gK3sKPiA+ID4gKyAgICAg
+ICBpZiAoaXNfdm1hbGxvY19hZGRyKGNwdV9hZGRyKSkKPiA+ID4gKyAgICAgICAgICAgICAgIHJl
+dHVybiB2bWFsbG9jX3RvX3BhZ2UoY3B1X2FkZHIpOwo+ID4gPiArICAgICAgIHJldHVybiB2aXJ0
+X3RvX3BhZ2UoY3B1X2FkZHIpOwo+ID4gPiArfQo+ID4gPiArCj4gPiA+ICAvKgo+ID4gPiAgICog
+Q3JlYXRlIHNjYXR0ZXItbGlzdCBmb3IgdGhlIGFscmVhZHkgYWxsb2NhdGVkIERNQSBidWZmZXIu
+Cj4gPiA+ICAgKi8KPiA+ID4gQEAgLTEyLDcgKzE5LDcgQEAgaW50IGRtYV9jb21tb25fZ2V0X3Nn
+dGFibGUoc3RydWN0IGRldmljZSAqZGV2LCBzdHJ1Y3Qgc2dfdGFibGUgKnNndCwKPiA+ID4gICAg
+ICAgICAgICAgICAgICB2b2lkICpjcHVfYWRkciwgZG1hX2FkZHJfdCBkbWFfYWRkciwgc2l6ZV90
+IHNpemUsCj4gPiA+ICAgICAgICAgICAgICAgICAgdW5zaWduZWQgbG9uZyBhdHRycykKPiA+ID4g
+IHsKPiA+ID4gLSAgICAgICBzdHJ1Y3QgcGFnZSAqcGFnZSA9IHZpcnRfdG9fcGFnZShjcHVfYWRk
+cik7Cj4gPiA+ICsgICAgICAgc3RydWN0IHBhZ2UgKnBhZ2UgPSBkbWFfY29tbW9uX3ZhZGRyX3Rv
+X3BhZ2UoY3B1X2FkZHIpOwo+ID4gPiAgICAgICAgIGludCByZXQ7Cj4gPiA+Cj4gPiA+ICAgICAg
+ICAgcmV0ID0gc2dfYWxsb2NfdGFibGUoc2d0LCAxLCBHRlBfS0VSTkVMKTsKPiA+ID4gQEAgLTMy
+LDYgKzM5LDcgQEAgaW50IGRtYV9jb21tb25fbW1hcChzdHJ1Y3QgZGV2aWNlICpkZXYsIHN0cnVj
+dCB2bV9hcmVhX3N0cnVjdCAqdm1hLAo+ID4gPiAgICAgICAgIHVuc2lnbmVkIGxvbmcgdXNlcl9j
+b3VudCA9IHZtYV9wYWdlcyh2bWEpOwo+ID4gPiAgICAgICAgIHVuc2lnbmVkIGxvbmcgY291bnQg
+PSBQQUdFX0FMSUdOKHNpemUpID4+IFBBR0VfU0hJRlQ7Cj4gPiA+ICAgICAgICAgdW5zaWduZWQg
+bG9uZyBvZmYgPSB2bWEtPnZtX3Bnb2ZmOwo+ID4gPiArICAgICAgIHN0cnVjdCBwYWdlICpwYWdl
+ID0gZG1hX2NvbW1vbl92YWRkcl90b19wYWdlKGNwdV9hZGRyKTsKPiA+ID4gICAgICAgICBpbnQg
+cmV0ID0gLUVOWElPOwo+ID4gPgo+ID4gPiAgICAgICAgIHZtYS0+dm1fcGFnZV9wcm90ID0gZG1h
+X3BncHJvdChkZXYsIHZtYS0+dm1fcGFnZV9wcm90LCBhdHRycyk7Cj4gPiA+IEBAIC00Myw3ICs1
+MSw3IEBAIGludCBkbWFfY29tbW9uX21tYXAoc3RydWN0IGRldmljZSAqZGV2LCBzdHJ1Y3Qgdm1f
+YXJlYV9zdHJ1Y3QgKnZtYSwKPiA+ID4gICAgICAgICAgICAgICAgIHJldHVybiAtRU5YSU87Cj4g
+PiA+Cj4gPiA+ICAgICAgICAgcmV0dXJuIHJlbWFwX3Bmbl9yYW5nZSh2bWEsIHZtYS0+dm1fc3Rh
+cnQsCj4gPiA+IC0gICAgICAgICAgICAgICAgICAgICAgIHBhZ2VfdG9fcGZuKHZpcnRfdG9fcGFn
+ZShjcHVfYWRkcikpICsgdm1hLT52bV9wZ29mZiwKPiA+ID4gKyAgICAgICAgICAgICAgICAgICAg
+ICAgcGFnZV90b19wZm4ocGFnZSkgKyB2bWEtPnZtX3Bnb2ZmLAo+ID4gPiAgICAgICAgICAgICAg
+ICAgICAgICAgICB1c2VyX2NvdW50IDw8IFBBR0VfU0hJRlQsIHZtYS0+dm1fcGFnZV9wcm90KTsK
+PiA+ID4gICNlbHNlCj4gPiA+ICAgICAgICAgcmV0dXJuIC1FTlhJTzsKPiA+ID4gLS0KPiA+ID4g
+Mi4zMC4yCj4gPiA+Cj4gPgo+ID4KPiA+IC0tCj4gPiBCZXN0IFJlZ2FyZHMsIFJvbWFuLgo+ID4K
+CgoKLS0gCkJlc3QgUmVnYXJkcywgUm9tYW4uCl9fX19fX19fX19fX19fX19fX19fX19fX19fX19f
+X19fX19fX19fX19fX19fX19fCmlvbW11IG1haWxpbmcgbGlzdAppb21tdUBsaXN0cy5saW51eC1m
+b3VuZGF0aW9uLm9yZwpodHRwczovL2xpc3RzLmxpbnV4Zm91bmRhdGlvbi5vcmcvbWFpbG1hbi9s
+aXN0aW5mby9pb21tdQ==
