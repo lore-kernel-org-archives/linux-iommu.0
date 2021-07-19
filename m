@@ -2,86 +2,74 @@ Return-Path: <SRS0=4OKN=ML=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-5.3 required=3.0 tests=BAYES_00,
-	HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,NICE_REPLY_A,SPF_HELO_NONE,
-	SPF_PASS,USER_AGENT_SANE_1 autolearn=no autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-11.8 required=3.0 tests=BAYES_00,DKIM_INVALID,
+	DKIM_SIGNED,INCLUDES_PATCH,MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,
+	USER_AGENT_GIT autolearn=ham autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 20942C07E9D
-	for <iommu@archiver.kernel.org>; Mon, 19 Jul 2021 10:45:38 +0000 (UTC)
-Received: from smtp3.osuosl.org (smtp3.osuosl.org [140.211.166.136])
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 031FEC07E9D
+	for <iommu@archiver.kernel.org>; Mon, 19 Jul 2021 12:31:52 +0000 (UTC)
+Received: from smtp2.osuosl.org (smtp2.osuosl.org [140.211.166.133])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 9D31D61026
-	for <iommu@archiver.kernel.org>; Mon, 19 Jul 2021 10:45:37 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 9D31D61026
-Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=huawei.com
+	by mail.kernel.org (Postfix) with ESMTPS id A8C126113B
+	for <iommu@archiver.kernel.org>; Mon, 19 Jul 2021 12:31:51 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org A8C126113B
+Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=kernel.org
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by smtp3.osuosl.org (Postfix) with ESMTP id 56023607B5;
-	Mon, 19 Jul 2021 10:45:37 +0000 (UTC)
-X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from smtp3.osuosl.org ([127.0.0.1])
-	by localhost (smtp3.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id cLw4N3ZTm4AK; Mon, 19 Jul 2021 10:45:35 +0000 (UTC)
-Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by smtp3.osuosl.org (Postfix) with ESMTPS id 41761607B9;
-	Mon, 19 Jul 2021 10:45:35 +0000 (UTC)
-Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 071CEC0010;
-	Mon, 19 Jul 2021 10:45:35 +0000 (UTC)
-Received: from smtp2.osuosl.org (smtp2.osuosl.org [140.211.166.133])
- by lists.linuxfoundation.org (Postfix) with ESMTP id ED615C000E
- for <iommu@lists.linux-foundation.org>; Mon, 19 Jul 2021 10:45:33 +0000 (UTC)
-Received: from localhost (localhost [127.0.0.1])
- by smtp2.osuosl.org (Postfix) with ESMTP id DBF67401F8
- for <iommu@lists.linux-foundation.org>; Mon, 19 Jul 2021 10:45:33 +0000 (UTC)
+	by smtp2.osuosl.org (Postfix) with ESMTP id 7A8374029A;
+	Mon, 19 Jul 2021 12:31:51 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
 Received: from smtp2.osuosl.org ([127.0.0.1])
- by localhost (smtp2.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id PAkn3VuhCnTc for <iommu@lists.linux-foundation.org>;
- Mon, 19 Jul 2021 10:45:31 +0000 (UTC)
+	by localhost (smtp2.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+	with ESMTP id OV6X-QHgEG3H; Mon, 19 Jul 2021 12:31:50 +0000 (UTC)
+Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
+	by smtp2.osuosl.org (Postfix) with ESMTPS id 43F0C40231;
+	Mon, 19 Jul 2021 12:31:50 +0000 (UTC)
+Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 14283C0010;
+	Mon, 19 Jul 2021 12:31:50 +0000 (UTC)
+Received: from smtp4.osuosl.org (smtp4.osuosl.org [140.211.166.137])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id E5EC8C000E
+ for <iommu@lists.linux-foundation.org>; Mon, 19 Jul 2021 12:31:47 +0000 (UTC)
+Received: from localhost (localhost [127.0.0.1])
+ by smtp4.osuosl.org (Postfix) with ESMTP id D3D0B40326
+ for <iommu@lists.linux-foundation.org>; Mon, 19 Jul 2021 12:31:47 +0000 (UTC)
+X-Virus-Scanned: amavisd-new at osuosl.org
+Authentication-Results: smtp4.osuosl.org (amavisd-new);
+ dkim=pass (2048-bit key) header.d=kernel.org
+Received: from smtp4.osuosl.org ([127.0.0.1])
+ by localhost (smtp4.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+ with ESMTP id XIPnV4FNwuAe for <iommu@lists.linux-foundation.org>;
+ Mon, 19 Jul 2021 12:31:46 +0000 (UTC)
 X-Greylist: domain auto-whitelisted by SQLgrey-1.8.0
-Received: from frasgout.his.huawei.com (frasgout.his.huawei.com
- [185.176.79.56])
- by smtp2.osuosl.org (Postfix) with ESMTPS id 03B3B400C7
- for <iommu@lists.linux-foundation.org>; Mon, 19 Jul 2021 10:45:30 +0000 (UTC)
-Received: from fraeml744-chm.china.huawei.com (unknown [172.18.147.207])
- by frasgout.his.huawei.com (SkyGuard) with ESMTP id 4GSyvD3Y5bz6DHSQ;
- Mon, 19 Jul 2021 18:36:40 +0800 (CST)
-Received: from lhreml724-chm.china.huawei.com (10.201.108.75) by
- fraeml744-chm.china.huawei.com (10.206.15.225) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2176.2; Mon, 19 Jul 2021 12:45:25 +0200
-Received: from [10.47.85.214] (10.47.85.214) by lhreml724-chm.china.huawei.com
- (10.201.108.75) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2176.2; Mon, 19 Jul
- 2021 11:45:25 +0100
-Subject: Re: [PATCH v4 6/6] dma-iommu: Pass iova len for IOVA domain init
-To: Robin Murphy <robin.murphy@arm.com>, Dan Carpenter
- <dan.carpenter@oracle.com>, "kbuild@lists.01.org" <kbuild@lists.01.org>,
- "joro@8bytes.org" <joro@8bytes.org>, "will@kernel.org" <will@kernel.org>,
- "baolu.lu@linux.intel.com" <baolu.lu@linux.intel.com>
-References: <202107150933.iNUojyx8-lkp@intel.com>
- <70faf101-63c9-ef08-78df-9697f6257778@huawei.com>
- <157833d9-e074-125d-1a7c-f9ef4c05b763@arm.com>
-From: John Garry <john.garry@huawei.com>
-Message-ID: <e6ebd533-e5a1-bb17-4e6b-71ad9df0a10a@huawei.com>
-Date: Mon, 19 Jul 2021 11:45:28 +0100
-User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; rv:68.0) Gecko/20100101
- Thunderbird/68.12.1
+Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
+ by smtp4.osuosl.org (Postfix) with ESMTPS id DB7FE4031C
+ for <iommu@lists.linux-foundation.org>; Mon, 19 Jul 2021 12:31:46 +0000 (UTC)
+Received: by mail.kernel.org (Postfix) with ESMTPSA id 6CEBE6113E;
+ Mon, 19 Jul 2021 12:31:44 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+ s=k20201202; t=1626697906;
+ bh=fheK/HYwVWc3ZOM2xABTkv7fnCAc75GRLPfud8UIPVQ=;
+ h=From:To:Cc:Subject:Date:From;
+ b=o5PHI94XBhXiBZwXAEpM5tiBAZxG0yn/0lyJ+lHBaOrGQMzFVaWYfMsv8a0MCeX5K
+ TJC+mgoilx+nJIag8FKZ/jHflf0pf4jwyBUEvFzSOOaxdclleY5E5Pts40JZ1wUPtC
+ SVEXWDE7N03DMIPHkPf6pk6k1cw/Xt099Iyq5YQMXStCQyYHK35GxiCWso3HVRsFfi
+ usVXi51WmNGr+We1pmezkF3EUOV9zDrvmbSv4n0JRsqvRtTmCNKH+H3CLAfspb/3+M
+ VhxQCLjb5Jqvi6AdzeGLKKLVct+483CuPq40Vi5qHOwURX2wvV96YmcXLysKVzBHTz
+ yAVXrfiyJwtBg==
+From: Will Deacon <will@kernel.org>
+To: iommu@lists.linux-foundation.org
+Subject: [PATCH 0/5] Fix restricted DMA vs swiotlb_exit()
+Date: Mon, 19 Jul 2021 13:30:49 +0100
+Message-Id: <20210719123054.6844-1-will@kernel.org>
+X-Mailer: git-send-email 2.20.1
 MIME-Version: 1.0
-In-Reply-To: <157833d9-e074-125d-1a7c-f9ef4c05b763@arm.com>
-Content-Language: en-US
-X-Originating-IP: [10.47.85.214]
-X-ClientProxiedBy: lhreml712-chm.china.huawei.com (10.201.108.63) To
- lhreml724-chm.china.huawei.com (10.201.108.75)
-X-CFilter-Loop: Reflected
-Cc: "kbuild-all@lists.01.org" <kbuild-all@lists.01.org>,
- "lkp@intel.com" <lkp@intel.com>, "airlied@linux.ie" <airlied@linux.ie>,
- Linuxarm <linuxarm@huawei.com>, "jonathanh@nvidia.com" <jonathanh@nvidia.com>,
- "iommu@lists.linux-foundation.org" <iommu@lists.linux-foundation.org>,
- "thierry.reding@gmail.com" <thierry.reding@gmail.com>,
- "daniel@ffwll.ch" <daniel@ffwll.ch>
+Cc: Konrad Rzeszutek Wilk <konrad.wilk@oracle.com>,
+ Will Deacon <will@kernel.org>, linux-kernel@vger.kernel.org,
+ Nathan Chancellor <nathan@kernel.org>, Claire Chang <tientzu@chromium.org>,
+ Robin Murphy <robin.murphy@arm.com>, Christoph Hellwig <hch@lst.de>,
+ Guenter Roeck <linux@roeck-us.net>
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -94,28 +82,69 @@ List-Post: <mailto:iommu@lists.linux-foundation.org>
 List-Help: <mailto:iommu-request@lists.linux-foundation.org?subject=help>
 List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
  <mailto:iommu-request@lists.linux-foundation.org?subject=subscribe>
-Content-Transfer-Encoding: base64
-Content-Type: text/plain; charset="utf-8"; Format="flowed"
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-T24gMTkvMDcvMjAyMSAxMDozMiwgUm9iaW4gTXVycGh5IHdyb3RlOgo+Pj4gN2MxYjA1OGM4YjVh
-MzEgUm9iaW4gTXVycGh5wqDCoMKgwqDCoMKgwqDCoMKgIDIwMTctMDMtMTbCoCAzOTPCoMKgwqDC
-oMKgIGlmICghZGV2KQo+Pj4gwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDC
-oMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKg
-wqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgIF5eXl4KPj4+IE9sZCBjb2RlIGhhcyBjaGVja3MgZm9y
-IE5VTEwKPj4+Cj4+Cj4+IEkgZG91YnQgdGhhdCBpbiBwcmFjdGljZSB3ZSBuZWVkIHRoaXMgY2hl
-Y2suCj4+Cj4+IEZ1bmN0aW9uIGlvbW11X2RtYV9pbml0X2RvbWFpbigpIGlzIG9ubHkgY2FsbGVk
-IGJ5IAo+PiBpb21tdV9zZXR1cF9kbWFfb3BzKCkuIEZ1cnRoZXJtb3JlLCBpb21tdV9zZXR1cF9k
-bWFfb3BzKCkgY2FsbHMgCj4+IGlvbW11X2dldF9kb21haW5fZm9yX2RldihkZXYpLCB3aGljaCBj
-YW5ub3Qgc2FmZWx5IGhhbmRsZSBkZXYgPT0gTlVMTCAKPj4gZm9yIHdoZW4gd2UgY2FsbCBpb21t
-dV9kbWFfaW5pdF9kb21haW4oKSB0aGVyZS4gQXMgc3VjaCwgdGhlIGRldiA9PSAKPj4gTlVMTCBj
-aGVja3MgaW4gaW9tbXVfZG1hX2luaXRfZG9tYWluKCkgYXJlIGVmZmVjdGl2ZWx5IHJlZHVuZGFu
-dC4KPiAKPiBJbmRlZWQsIEkgaGF2ZSBhIHBhdGNoIGZvciB0aGF0IGluIHRoZSBzdGFjayBJJ20g
-cHJlcGFyaW5nOgo+IAo+IGh0dHBzOi8vZ2l0bGFiLmFybS5jb20vbGludXgtYXJtL2xpbnV4LXJt
-Ly0vY29tbWl0LzliNmNmMmEyMTQxMDdjMTUzZWUyNzhiMTY2NGY2ODg4ODhkNzMyOGYKCkNvb2ws
-IHNvIGhvdyBhYm91dCBwbGVhc2UgY2hlY2tpbmcgdGhpcyBzZXJpZXMgd2hlbiB5b3UgZ2V0IGEg
-Y2hhbmNlPyAKWW91IGRpZCBzdWdnZXN0IHRoaXMgYXBwcm9hY2ggYWZ0ZXIgYWxsLi4KClRoYW5r
-cywKSm9obgpfX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fXwpp
-b21tdSBtYWlsaW5nIGxpc3QKaW9tbXVAbGlzdHMubGludXgtZm91bmRhdGlvbi5vcmcKaHR0cHM6
-Ly9saXN0cy5saW51eGZvdW5kYXRpb24ub3JnL21haWxtYW4vbGlzdGluZm8vaW9tbXU=
+Hi all,
+
+This series fixes the issues which have been reported against the
+Restricted DMA series in -next:
+
+  * Fix the build for Sparc as reported by Guenter [1].
+
+  * Rework the lifetime of 'io_tlb_default_mem' so that devices
+    can retain valid references to it even after swiotlb_exit(). This,
+    in turn, fixes the x86/AMD IOMMU regressions reported by Nathan [2].
+
+I also then added a diagnostic to swiotlb_exit(), as suggested by Konrad
+[3] and the final patch frees the underlying buffer memory during the
+tear down, but I must confess that I don't know why this wasn't being
+done already.
+
+A massive thank you to Nathan for helping to debug this and also for
+testing these patches to confirm that they address the issue on his
+machine.
+
+Patches are based against swiotlb devel/for-linus-5.15.
+
+Cheers,
+
+Will
+
+[1] https://lore.kernel.org/r/20210702030807.GA2685166@roeck-us.net
+[2] https://lore.kernel.org/r/YNvMDFWKXSm4LRfZ@Ryzen-9-3900X.localdomain
+[3] https://lore.kernel.org/r/YORsr0h7u5l9DZwh@char.us.oracle.com
+
+Cc: Guenter Roeck <linux@roeck-us.net>
+Cc: Claire Chang <tientzu@chromium.org>
+Cc: Christoph Hellwig <hch@lst.de>
+Cc: Robin Murphy <robin.murphy@arm.com>
+Cc: Konrad Rzeszutek Wilk <konrad.wilk@oracle.com>
+Cc: Nathan Chancellor <nathan@kernel.org>
+
+--->8
+
+Will Deacon (5):
+  of: Return success from of_dma_set_restricted_buffer() when
+    !OF_ADDRESS
+  swiotlb: Point io_default_tlb_mem at static allocation
+  swiotlb: Remove io_tlb_default_mem indirection
+  swiotlb: Emit diagnostic in swiotlb_exit()
+  swiotlb: Free tbl memory in swiotlb_exit()
+
+ drivers/base/core.c       |  2 +-
+ drivers/of/of_private.h   |  3 +-
+ drivers/xen/swiotlb-xen.c |  4 +-
+ include/linux/swiotlb.h   |  4 +-
+ kernel/dma/swiotlb.c      | 82 +++++++++++++++++++++++----------------
+ 5 files changed, 56 insertions(+), 39 deletions(-)
+
+-- 
+2.32.0.402.g57bb445576-goog
+
+_______________________________________________
+iommu mailing list
+iommu@lists.linux-foundation.org
+https://lists.linuxfoundation.org/mailman/listinfo/iommu
