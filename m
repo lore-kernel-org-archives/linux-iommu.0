@@ -6,84 +6,92 @@ X-Spam-Status: No, score=-3.5 required=3.0 tests=BAYES_00,DKIM_INVALID,
 	DKIM_SIGNED,HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,SPF_HELO_NONE,
 	SPF_PASS autolearn=no autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1FC0CC07E95
-	for <iommu@archiver.kernel.org>; Mon, 19 Jul 2021 19:00:23 +0000 (UTC)
-Received: from smtp2.osuosl.org (smtp2.osuosl.org [140.211.166.133])
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9B904C07E95
+	for <iommu@archiver.kernel.org>; Mon, 19 Jul 2021 19:36:12 +0000 (UTC)
+Received: from smtp3.osuosl.org (smtp3.osuosl.org [140.211.166.136])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id AD1D4610CC
-	for <iommu@archiver.kernel.org>; Mon, 19 Jul 2021 19:00:22 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org AD1D4610CC
+	by mail.kernel.org (Postfix) with ESMTPS id 383D360C41
+	for <iommu@archiver.kernel.org>; Mon, 19 Jul 2021 19:36:12 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 383D360C41
 Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=linaro.org
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by smtp2.osuosl.org (Postfix) with ESMTP id 672D2402F1;
-	Mon, 19 Jul 2021 19:00:22 +0000 (UTC)
+	by smtp3.osuosl.org (Postfix) with ESMTP id EAF93605B0;
+	Mon, 19 Jul 2021 19:36:11 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from smtp2.osuosl.org ([127.0.0.1])
-	by localhost (smtp2.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id WA_fcdlo1S31; Mon, 19 Jul 2021 19:00:21 +0000 (UTC)
-Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by smtp2.osuosl.org (Postfix) with ESMTPS id 48042400EA;
-	Mon, 19 Jul 2021 19:00:21 +0000 (UTC)
+Received: from smtp3.osuosl.org ([127.0.0.1])
+	by localhost (smtp3.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+	with ESMTP id 893z0SIJS3kH; Mon, 19 Jul 2021 19:36:10 +0000 (UTC)
+Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [IPv6:2605:bc80:3010:104::8cd3:938])
+	by smtp3.osuosl.org (Postfix) with ESMTPS id 13DDC605AA;
+	Mon, 19 Jul 2021 19:36:10 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 169F9C0010;
-	Mon, 19 Jul 2021 19:00:21 +0000 (UTC)
-Received: from smtp4.osuosl.org (smtp4.osuosl.org [140.211.166.137])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 1F6B0C000E
- for <iommu@lists.linux-foundation.org>; Mon, 19 Jul 2021 19:00:20 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id D9B98C001A;
+	Mon, 19 Jul 2021 19:36:09 +0000 (UTC)
+Received: from smtp4.osuosl.org (smtp4.osuosl.org [IPv6:2605:bc80:3010::137])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 60D52C000E
+ for <iommu@lists.linux-foundation.org>; Mon, 19 Jul 2021 19:36:09 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by smtp4.osuosl.org (Postfix) with ESMTP id F38224040E
- for <iommu@lists.linux-foundation.org>; Mon, 19 Jul 2021 19:00:19 +0000 (UTC)
+ by smtp4.osuosl.org (Postfix) with ESMTP id 346C4403CD
+ for <iommu@lists.linux-foundation.org>; Mon, 19 Jul 2021 19:36:09 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
 Authentication-Results: smtp4.osuosl.org (amavisd-new);
  dkim=pass (2048-bit key) header.d=linaro.org
 Received: from smtp4.osuosl.org ([127.0.0.1])
  by localhost (smtp4.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id Clmya2EWkUKY for <iommu@lists.linux-foundation.org>;
- Mon, 19 Jul 2021 19:00:18 +0000 (UTC)
+ with ESMTP id Ylt8D3jOyDqO for <iommu@lists.linux-foundation.org>;
+ Mon, 19 Jul 2021 19:36:07 +0000 (UTC)
 X-Greylist: whitelisted by SQLgrey-1.8.0
-Received: from mail-lf1-x132.google.com (mail-lf1-x132.google.com
- [IPv6:2a00:1450:4864:20::132])
- by smtp4.osuosl.org (Postfix) with ESMTPS id 6D0EE40404
- for <iommu@lists.linux-foundation.org>; Mon, 19 Jul 2021 19:00:18 +0000 (UTC)
-Received: by mail-lf1-x132.google.com with SMTP id m16so190014lfg.13
- for <iommu@lists.linux-foundation.org>; Mon, 19 Jul 2021 12:00:18 -0700 (PDT)
+Received: from mail-oi1-x22e.google.com (mail-oi1-x22e.google.com
+ [IPv6:2607:f8b0:4864:20::22e])
+ by smtp4.osuosl.org (Postfix) with ESMTPS id D6886403CA
+ for <iommu@lists.linux-foundation.org>; Mon, 19 Jul 2021 19:36:06 +0000 (UTC)
+Received: by mail-oi1-x22e.google.com with SMTP id u11so22000812oiv.1
+ for <iommu@lists.linux-foundation.org>; Mon, 19 Jul 2021 12:36:06 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linaro.org; s=google;
- h=mime-version:references:in-reply-to:from:date:message-id:subject:to
- :cc; bh=+jdLZvJN21CTu/nU9p3zM/7iZ/xDd3v4ptR1eHb187U=;
- b=GAA2TFcqcWKOiNo7WTflTgsUtZoVN+Sr0pFrALy8uy/woqt17QIoJqfYp3Tuf8NwtD
- jMiXlHSGBKJkq9CnBheHrhObo675Jc2Ua5Rd03WylMJj4URR+qAs5aEfbtR8twNDiUCq
- nxPCeUDKG8iUp9iK9SKc40K8Mljh6vKLRfOR0sz1fFweRa3X30nbCQJcwNA4f7pXWhs3
- B4R4+85bflBh80tdunaKPpbFV7h39mGQfhA94+U/bsyVicM5BZgtkOUpbNc1KIRbqTvS
- sF6tcpFTV1R0Pu4eIYZdf5XHr88AeJWG3VEIbp0uj1SDhe3DRa2rxXZPJfECGCM2yVaL
- rQkA==
+ h=date:from:to:cc:subject:message-id:references:mime-version
+ :content-disposition:in-reply-to;
+ bh=AsVttpaIz6o+7rFOVPCQbe/BzglpTdJrFiNYOm9U9B4=;
+ b=xwBMdYLctnwna9IrwiJvv/IFdbPquUVCJaJF02XKLjARg7WlxJB/ZVtGmpR6HAwm0B
+ DAlHudRafT5FK7eCPyfAYclwILvV18U9HWuu2hZRtoN9T+Bw77VtgScRYrx1vCdYlljg
+ Iwkn0CtuZQHomiyQ0XeFefYfEq8KrIE0MKe0xvF9Tk4uob+ziMZ5iANeS3APKqwZTqBL
+ TOTExV4mKvdgaUSAOiUfnI2rc3QQ2HFMHuiK4+BzFBTfRyzhtilJeMf7h/0DDv2p1abI
+ MmF7SoQw7rmLOEZyWTtQUX/prQbprT9Gvc3gUPlbBtx+ehl7grqisfervRPvs/PmOmMX
+ ijQw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
  d=1e100.net; s=20161025;
- h=x-gm-message-state:mime-version:references:in-reply-to:from:date
- :message-id:subject:to:cc;
- bh=+jdLZvJN21CTu/nU9p3zM/7iZ/xDd3v4ptR1eHb187U=;
- b=pjnqjCnKEkPwkjAC6ugz9GliHEMsNk+2/6h8SsE7WOsB3nEJGx8OSYxJpUt+btYlx+
- Pmh/g9yCE/JJV2cOs8VTa5kTtI7JxC1XQmnGb37ilh7NyZ+VL7FoEqcAlg2/HhiWQgiA
- JNQmgoM/HiuUg7eE6IRwPqeaUgp0FJKTFs6w44zlIGa62F1AEqpTnOHjxyKmije8HUxT
- if/xCPmfaK7Jv4IAkesu0C7rlrHLzOEgJxD/pdM1EgA9NED4m3vuTVPCTzN8ZeS7+QFZ
- oV6xB0OXRw+OX8h1WMXlhbYX2fFA7Q3DRe4vETfBI0BAJXs3EwYWITfW5Rq593DpzWxM
- TGBg==
-X-Gm-Message-State: AOAM53180Mrgxq3IsWpm9sPEiKNmW3fNClwYWKCV4a3ik8HkP8+TLS4I
- Bq4DBypYhiVHEaxfv11PEN1wlzAIblyGo/0wuL0ArA==
-X-Google-Smtp-Source: ABdhPJzfaiUMhEtqkQ8scwUqGoeeaz2XvfjZbPLzAoB9375A2Qo9QDi+PUY9EVT8e3XQhXZTEWfjw+m4kUjCVu+SYWs=
-X-Received: by 2002:a19:7408:: with SMTP id v8mr19183878lfe.508.1626721216181; 
- Mon, 19 Jul 2021 12:00:16 -0700 (PDT)
-MIME-Version: 1.0
-References: <20210707045320.529186-1-john.stultz@linaro.org>
- <YPJkF21ItYlKODyq@yoga>
-In-Reply-To: <YPJkF21ItYlKODyq@yoga>
-From: John Stultz <john.stultz@linaro.org>
-Date: Mon, 19 Jul 2021 12:00:05 -0700
-Message-ID: <CALAqxLUzTNiA7u=4_y9pkrh=Q_+vpPgFrhf_6F8-U0XPQU9crQ@mail.gmail.com>
+ h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+ :mime-version:content-disposition:in-reply-to;
+ bh=AsVttpaIz6o+7rFOVPCQbe/BzglpTdJrFiNYOm9U9B4=;
+ b=JkF6FPuic6U+KwlFLDJk3AdMNFrm/SbF3DyCOQuI1/iyDIfzABWTL/euaviPipBDF3
+ OpNnS92ISTMv1eV+i+J1kZSogiQg3o9gf9huHhIqG1YZ2kG8AbjvvuKy/M6ON0wAVrY0
+ 6u1Ic+lvEjByRM9y+Gyfpasn+GlzMrvV7tZhg7DsDdd/dar1LitDjSUeJm8gFvJGdJY0
+ HSqG/V8w9/9UtiHvffRUJcjiULqwHhY/zy5ita+wdz1utb/L+6lo9B2ZMksJtwWvJkyq
+ bZ0doIFZOa9OAoFWk8GVkmvSaaJR7WzTiGrwaBJCXIHvkoKGkMH1xiY2KO6STJ9R47K3
+ qq8A==
+X-Gm-Message-State: AOAM531Y3RVKgxV2CXVWkVzUUcI26eGXt97ixVQyr0ncELyJp4jE5TiR
+ n84mYOUaIaHK6VlC1VXlgwRFIA==
+X-Google-Smtp-Source: ABdhPJyja+h2hxOE+bpleMjs4kTNsVmCuEisdwIwTMDk7g7JkvErSsBCBiNgF7ZV7Ud5r3tIKV98WQ==
+X-Received: by 2002:aca:4406:: with SMTP id r6mr13822205oia.50.1626723365906; 
+ Mon, 19 Jul 2021 12:36:05 -0700 (PDT)
+Received: from yoga (104-57-184-186.lightspeed.austtx.sbcglobal.net.
+ [104.57.184.186])
+ by smtp.gmail.com with ESMTPSA id c8sm820849oto.17.2021.07.19.12.36.04
+ (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+ Mon, 19 Jul 2021 12:36:05 -0700 (PDT)
+Date: Mon, 19 Jul 2021 14:36:03 -0500
+From: Bjorn Andersson <bjorn.andersson@linaro.org>
+To: John Stultz <john.stultz@linaro.org>
 Subject: Re: [PATCH] firmware: QCOM_SCM: Allow qcom_scm driver to be loadable
  as a permenent module
-To: Bjorn Andersson <bjorn.andersson@linaro.org>
+Message-ID: <YPXUI0VzpxYO56BU@yoga>
+References: <20210707045320.529186-1-john.stultz@linaro.org>
+ <YPJkF21ItYlKODyq@yoga>
+ <CALAqxLUzTNiA7u=4_y9pkrh=Q_+vpPgFrhf_6F8-U0XPQU9crQ@mail.gmail.com>
+MIME-Version: 1.0
+Content-Disposition: inline
+In-Reply-To: <CALAqxLUzTNiA7u=4_y9pkrh=Q_+vpPgFrhf_6F8-U0XPQU9crQ@mail.gmail.com>
 Cc: Maulik Shah <mkshah@codeaurora.org>, Saravana Kannan <saravanak@google.com>,
  Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
  Catalin Marinas <catalin.marinas@arm.com>, lkml <linux-kernel@vger.kernel.org>,
@@ -112,52 +120,82 @@ Content-Transfer-Encoding: 7bit
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-On Fri, Jul 16, 2021 at 10:01 PM Bjorn Andersson
-<bjorn.andersson@linaro.org> wrote:
-> On Tue 06 Jul 23:53 CDT 2021, John Stultz wrote:
-> > Allow the qcom_scm driver to be loadable as a permenent module.
+On Mon 19 Jul 14:00 CDT 2021, John Stultz wrote:
+
+> On Fri, Jul 16, 2021 at 10:01 PM Bjorn Andersson
+> <bjorn.andersson@linaro.org> wrote:
+> > On Tue 06 Jul 23:53 CDT 2021, John Stultz wrote:
+> > > Allow the qcom_scm driver to be loadable as a permenent module.
+> > >
+> > > This still uses the "depends on QCOM_SCM || !QCOM_SCM" bit to
+> > > ensure that drivers that call into the qcom_scm driver are
+> > > also built as modules. While not ideal in some cases its the
+> > > only safe way I can find to avoid build errors without having
+> > > those drivers select QCOM_SCM and have to force it on (as
+> > > QCOM_SCM=n can be valid for those drivers).
+> > >
+> > > Reviving this now that Saravana's fw_devlink defaults to on,
+> > > which should avoid loading troubles seen before.
+> > >
 > >
-> > This still uses the "depends on QCOM_SCM || !QCOM_SCM" bit to
-> > ensure that drivers that call into the qcom_scm driver are
-> > also built as modules. While not ideal in some cases its the
-> > only safe way I can find to avoid build errors without having
-> > those drivers select QCOM_SCM and have to force it on (as
-> > QCOM_SCM=n can be valid for those drivers).
+> > Are you (in this last paragraph) saying that all those who have been
+> > burnt by fw_devlink during the last months and therefor run with it
+> > disabled will have a less fun experience once this is merged?
 > >
-> > Reviving this now that Saravana's fw_devlink defaults to on,
-> > which should avoid loading troubles seen before.
-> >
->
-> Are you (in this last paragraph) saying that all those who have been
-> burnt by fw_devlink during the last months and therefor run with it
-> disabled will have a less fun experience once this is merged?
->
+> 
+> I guess potentially. So way back when this was originally submitted,
+> some folks had trouble booting if it was set as a module due to it
+> loading due to the deferred_probe_timeout expiring.
+> My attempts to change the default timeout value to be larger ran into
+> trouble, but Saravana's fw_devlink does manage to resolve things
+> properly for this case.
+> 
 
-I guess potentially. So way back when this was originally submitted,
-some folks had trouble booting if it was set as a module due to it
-loading due to the deferred_probe_timeout expiring.
-My attempts to change the default timeout value to be larger ran into
-trouble, but Saravana's fw_devlink does manage to resolve things
-properly for this case.
+Unfortunately I see really weird things coming out of that, e.g. display
+on my db845c is waiting for the USB hub on PCIe to load its firmware,
+which typically times out after 60 seconds.
 
-But if folks are having issues w/ fw_devlink, and have it disabled,
-and set QCOM_SCM=m they could still trip over the issue with the
-timeout firing before it is loaded (especially if they are loading
-modules from late mounted storage rather than ramdisk).
+I've stared at it quite a bit and I don't understand how they are
+related.
 
-> (I'm picking this up, but I don't fancy the idea that some people are
-> turning the boot process into a lottery)
+> But if folks are having issues w/ fw_devlink, and have it disabled,
+> and set QCOM_SCM=m they could still trip over the issue with the
+> timeout firing before it is loaded (especially if they are loading
+> modules from late mounted storage rather than ramdisk).
+> 
 
-Me neither, and I definitely think the deferred_probe_timeout logic is
-way too fragile, which is why I'm eager for fw_devlink as it's a much
-less racy approach to handling module loading dependencies.  So if you
-want to hold on this, while any remaining fw_devlink issues get
-sorted, that's fine.  But I'd also not cast too much ire at
-fw_devlink, as the global probe timeout approach for handling optional
-links isn't great, and we need a better solution.
+I guess we'll have to force QCOM_SCM=y in the defconfig and hope people
+don't make it =m.
 
-thanks
--john
+> > (I'm picking this up, but I don't fancy the idea that some people are
+> > turning the boot process into a lottery)
+> 
+> Me neither, and I definitely think the deferred_probe_timeout logic is
+> way too fragile, which is why I'm eager for fw_devlink as it's a much
+> less racy approach to handling module loading dependencies.
+
+Right, deferred_probe_timeout is the main issue here. Without it we
+might get some weird probe deferral runs, but either some driver is
+missing or it settles eventually.
+
+With deferred_probe_timeout it's rather common for me to see things
+end up probe out of order (even more now with fw_devlink finding cyclic
+dependencies) and deferred_probe_timeout just breaking things.
+
+> So if you
+> want to hold on this, while any remaining fw_devlink issues get
+> sorted, that's fine.  But I'd also not cast too much ire at
+> fw_devlink, as the global probe timeout approach for handling optional
+> links isn't great, and we need a better solution.
+> 
+
+There's no end to the possible and valid ways you can setup your
+defconfig and run into the probe deferral issues, so I see no point in
+holding this one back any longer. I just hope that one day it will be
+possible to boot the upstream kernel in a reliable fashion.
+
+Thanks,
+Bjorn
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
