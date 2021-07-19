@@ -2,77 +2,59 @@ Return-Path: <SRS0=4OKN=ML=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-10.3 required=3.0 tests=BAYES_00,
-	HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,MENTIONS_GIT_HOSTING,
-	NICE_REPLY_A,SPF_HELO_NONE,SPF_PASS,USER_AGENT_SANE_1 autolearn=ham
-	autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-13.8 required=3.0 tests=BAYES_00,
+	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_CR_TRAILER,INCLUDES_PATCH,
+	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no
+	version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4DE36C636CB
-	for <iommu@archiver.kernel.org>; Mon, 19 Jul 2021 09:32:27 +0000 (UTC)
-Received: from smtp4.osuosl.org (smtp4.osuosl.org [140.211.166.137])
+	by smtp.lore.kernel.org (Postfix) with ESMTP id EE695C12002
+	for <iommu@archiver.kernel.org>; Mon, 19 Jul 2021 09:54:51 +0000 (UTC)
+Received: from smtp1.osuosl.org (smtp1.osuosl.org [140.211.166.138])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 019F26115B
-	for <iommu@archiver.kernel.org>; Mon, 19 Jul 2021 09:32:26 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 019F26115B
-Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=arm.com
+	by mail.kernel.org (Postfix) with ESMTPS id 4D1F060FD7
+	for <iommu@archiver.kernel.org>; Mon, 19 Jul 2021 09:54:51 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 4D1F060FD7
+Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=wantstofly.org
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by smtp4.osuosl.org (Postfix) with ESMTP id C2E5240356;
-	Mon, 19 Jul 2021 09:32:26 +0000 (UTC)
+	by smtp1.osuosl.org (Postfix) with ESMTP id 24C7382F98;
+	Mon, 19 Jul 2021 09:54:51 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from smtp4.osuosl.org ([127.0.0.1])
-	by localhost (smtp4.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id WAjPMusE2VFv; Mon, 19 Jul 2021 09:32:25 +0000 (UTC)
+Received: from smtp1.osuosl.org ([127.0.0.1])
+	by localhost (smtp1.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+	with ESMTP id sJwgz2Jc42IH; Mon, 19 Jul 2021 09:54:50 +0000 (UTC)
 Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by smtp4.osuosl.org (Postfix) with ESMTPS id 0E41540322;
-	Mon, 19 Jul 2021 09:32:25 +0000 (UTC)
+	by smtp1.osuosl.org (Postfix) with ESMTPS id E3AB483403;
+	Mon, 19 Jul 2021 09:54:49 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id D4CAEC001A;
-	Mon, 19 Jul 2021 09:32:24 +0000 (UTC)
-Received: from smtp3.osuosl.org (smtp3.osuosl.org [IPv6:2605:bc80:3010::136])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 6A28AC000E
- for <iommu@lists.linux-foundation.org>; Mon, 19 Jul 2021 09:32:24 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id BAC24C001A;
+	Mon, 19 Jul 2021 09:54:49 +0000 (UTC)
+Received: from smtp3.osuosl.org (smtp3.osuosl.org [140.211.166.136])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 04EE8C000E
+ for <iommu@lists.linux-foundation.org>; Mon, 19 Jul 2021 09:54:48 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by smtp3.osuosl.org (Postfix) with ESMTP id 4673760659
- for <iommu@lists.linux-foundation.org>; Mon, 19 Jul 2021 09:32:24 +0000 (UTC)
+ by smtp3.osuosl.org (Postfix) with ESMTP id CC16060659
+ for <iommu@lists.linux-foundation.org>; Mon, 19 Jul 2021 09:54:47 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
 Received: from smtp3.osuosl.org ([127.0.0.1])
  by localhost (smtp3.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id YX7Yoi-tGlvj for <iommu@lists.linux-foundation.org>;
- Mon, 19 Jul 2021 09:32:23 +0000 (UTC)
-X-Greylist: domain auto-whitelisted by SQLgrey-1.8.0
-Received: from foss.arm.com (foss.arm.com [217.140.110.172])
- by smtp3.osuosl.org (Postfix) with ESMTP id F26FA60653
- for <iommu@lists.linux-foundation.org>; Mon, 19 Jul 2021 09:32:22 +0000 (UTC)
-Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
- by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 2833C6D;
- Mon, 19 Jul 2021 02:32:22 -0700 (PDT)
-Received: from [10.57.36.146] (unknown [10.57.36.146])
- by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id 02CD73F73D;
- Mon, 19 Jul 2021 02:32:19 -0700 (PDT)
-Subject: Re: [PATCH v4 6/6] dma-iommu: Pass iova len for IOVA domain init
-To: John Garry <john.garry@huawei.com>,
- Dan Carpenter <dan.carpenter@oracle.com>,
- "kbuild@lists.01.org" <kbuild@lists.01.org>,
- "joro@8bytes.org" <joro@8bytes.org>, "will@kernel.org" <will@kernel.org>,
- "baolu.lu@linux.intel.com" <baolu.lu@linux.intel.com>
-References: <202107150933.iNUojyx8-lkp@intel.com>
- <70faf101-63c9-ef08-78df-9697f6257778@huawei.com>
-From: Robin Murphy <robin.murphy@arm.com>
-Message-ID: <157833d9-e074-125d-1a7c-f9ef4c05b763@arm.com>
-Date: Mon, 19 Jul 2021 10:32:14 +0100
-User-Agent: Mozilla/5.0 (Windows NT 10.0; rv:78.0) Gecko/20100101
- Thunderbird/78.12.0
+ with ESMTP id GjQ3SC8V4TbI for <iommu@lists.linux-foundation.org>;
+ Mon, 19 Jul 2021 09:54:46 +0000 (UTC)
+X-Greylist: from auto-whitelisted by SQLgrey-1.8.0
+Received: from mail.wantstofly.org (hmm.wantstofly.org [213.239.204.108])
+ by smtp3.osuosl.org (Postfix) with ESMTPS id B2CB060680
+ for <iommu@lists.linux-foundation.org>; Mon, 19 Jul 2021 09:54:46 +0000 (UTC)
+Received: by mail.wantstofly.org (Postfix, from userid 1000)
+ id CF5DF7F46A; Mon, 19 Jul 2021 12:54:43 +0300 (EEST)
+Date: Mon, 19 Jul 2021 12:54:43 +0300
+From: Lennert Buytenhek <buytenh@wantstofly.org>
+To: iommu@lists.linux-foundation.org, Joerg Roedel <joro@8bytes.org>,
+ Suravee Suthikulpanit <suravee.suthikulpanit@amd.com>
+Subject: [PATCH,RFC] iommu/amd: Use report_iommu_fault()
+Message-ID: <YPVL41ZO8Ih8WrKa@wantstofly.org>
 MIME-Version: 1.0
-In-Reply-To: <70faf101-63c9-ef08-78df-9697f6257778@huawei.com>
-Content-Language: en-GB
-Cc: "kbuild-all@lists.01.org" <kbuild-all@lists.01.org>,
- "lkp@intel.com" <lkp@intel.com>, "airlied@linux.ie" <airlied@linux.ie>,
- Linuxarm <linuxarm@huawei.com>, "jonathanh@nvidia.com" <jonathanh@nvidia.com>,
- "iommu@lists.linux-foundation.org" <iommu@lists.linux-foundation.org>,
- "thierry.reding@gmail.com" <thierry.reding@gmail.com>,
- "daniel@ffwll.ch" <daniel@ffwll.ch>
+Content-Disposition: inline
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -85,170 +67,114 @@ List-Post: <mailto:iommu@lists.linux-foundation.org>
 List-Help: <mailto:iommu-request@lists.linux-foundation.org?subject=help>
 List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
  <mailto:iommu-request@lists.linux-foundation.org?subject=subscribe>
-Content-Transfer-Encoding: base64
-Content-Type: text/plain; charset="utf-8"; Format="flowed"
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-T24gMjAyMS0wNy0xOSAxMDoxMiwgSm9obiBHYXJyeSB3cm90ZToKPiBPbiAxOS8wNy8yMDIxIDA4
-OjU4LCBEYW4gQ2FycGVudGVyIHdyb3RlOgo+PiBIaSBKb2huLAo+Pgo+PiB1cmw6ICAgIAo+PiBo
-dHRwczovL2dpdGh1Yi5jb20vMGRheS1jaS9saW51eC9jb21taXRzL0pvaG4tR2FycnkvaW9tbXUt
-QWxsb3ctSU9WQS1yY2FjaGUtcmFuZ2UtYmUtY29uZmlndXJlZC8yMDIxMDcxNC0xODQzMjggCj4+
-Cj4+IGJhc2U6wqDCoCBodHRwczovL2dpdC5rZXJuZWwub3JnL3B1Yi9zY20vbGludXgva2VybmVs
-L2dpdC9qb3JvL2lvbW11LmdpdCAKPj4gbmV4dAo+PiBjb25maWc6IGlhNjQtcmFuZGNvbmZpZy1t
-MDMxLTIwMjEwNzE0IChhdHRhY2hlZCBhcyAuY29uZmlnKQo+PiBjb21waWxlcjogaWE2NC1saW51
-eC1nY2MgKEdDQykgOS4zLjAKPj4KPj4gSWYgeW91IGZpeCB0aGUgaXNzdWUsIGtpbmRseSBhZGQg
-Zm9sbG93aW5nIHRhZyBhcyBhcHByb3ByaWF0ZQo+PiBSZXBvcnRlZC1ieToga2VybmVsIHRlc3Qg
-cm9ib3QgPGxrcEBpbnRlbC5jb20+Cj4+IFJlcG9ydGVkLWJ5OiBEYW4gQ2FycGVudGVyIDxkYW4u
-Y2FycGVudGVyQG9yYWNsZS5jb20+Cj4+Cj4+IHNtYXRjaCB3YXJuaW5nczoKPj4gZHJpdmVycy9p
-b21tdS9kbWEtaW9tbXUuYzozODQgaW9tbXVfZG1hX2luaXRfZG9tYWluKCkgd2FybjogdmFyaWFi
-bGUgCj4+IGRlcmVmZXJlbmNlZCBiZWZvcmUgY2hlY2sgJ2RldicgKHNlZSBsaW5lIDM3NCkKPj4K
-PiAKPiB0aGFua3MgZm9yIHRoZSBub3RpY2UKPiAKPj4gdmltICsvZGV2ICszODQgZHJpdmVycy9p
-b21tdS9kbWEtaW9tbXUuYwo+Pgo+PiAwNmQ2MDcyOGZmNWMwMSBDaHJpc3RvcGggSGVsbHdpZ8Kg
-wqDCoMKgIDIwMTktMDUtMjDCoCAzMzLCoCBzdGF0aWMgaW50IAo+PiBpb21tdV9kbWFfaW5pdF9k
-b21haW4oc3RydWN0IGlvbW11X2RvbWFpbiAqZG9tYWluLCBkbWFfYWRkcl90IGJhc2UsCj4+IGFj
-NmQ3MDQ2NzlkMzQzIEplYW4tUGhpbGlwcGUgQnJ1Y2tlciAyMDIxLTA2LTE4wqAgMzMzICAgICAg
-ICAgICAgICAgICAgIAo+PiBkbWFfYWRkcl90IGxpbWl0LCBzdHJ1Y3QgZGV2aWNlICpkZXYpCj4+
-IDBkYjJlNWQxOGY3NmE2IFJvYmluIE11cnBoecKgwqDCoMKgwqDCoMKgwqDCoCAyMDE1LTEwLTAx
-wqAgMzM0wqAgewo+PiBmZGJlNTc0ZWI2OTMxMiBSb2JpbiBNdXJwaHnCoMKgwqDCoMKgwqDCoMKg
-wqAgMjAxNy0wMS0xOcKgIDMzNcKgwqDCoMKgwqAgc3RydWN0IAo+PiBpb21tdV9kbWFfY29va2ll
-ICpjb29raWUgPSBkb21haW4tPmlvdmFfY29va2llOwo+PiBjNjFhNDYzM2E1NmFhYSBTaGFva3Vu
-IFpoYW5nwqDCoMKgwqDCoMKgwqDCoCAyMDE5LTAxLTI0wqAgMzM2wqDCoMKgwqDCoCB1bnNpZ25l
-ZCAKPj4gbG9uZyBvcmRlciwgYmFzZV9wZm47Cj4+IDZiMGM1NGU3ZjI3MTU5IFl1bnNoZW5nIExp
-bsKgwqDCoMKgwqDCoMKgwqDCoCAyMDE5LTA4LTI0wqAgMzM3wqDCoMKgwqDCoCBzdHJ1Y3QgCj4+
-IGlvdmFfZG9tYWluICppb3ZhZDsKPj4gZGU0YmEzNjBjM2U0ZWQgSm9obiBHYXJyecKgwqDCoMKg
-wqDCoMKgwqDCoMKgwqAgMjAyMS0wNy0xNMKgIDMzOMKgwqDCoMKgwqAgc2l6ZV90IAo+PiBtYXhf
-b3B0X2RtYV9zaXplOwo+PiBkZTRiYTM2MGMzZTRlZCBKb2huIEdhcnJ5wqDCoMKgwqDCoMKgwqDC
-oMKgwqDCoCAyMDIxLTA3LTE0wqAgMzM5wqDCoMKgwqDCoCB1bnNpZ25lZCAKPj4gbG9uZyBpb3Zh
-X2xlbiA9IDA7Cj4+IDBkYjJlNWQxOGY3NmE2IFJvYmluIE11cnBoecKgwqDCoMKgwqDCoMKgwqDC
-oCAyMDE1LTEwLTAxwqAgMzQwCj4+IGZkYmU1NzRlYjY5MzEyIFJvYmluIE11cnBoecKgwqDCoMKg
-wqDCoMKgwqDCoCAyMDE3LTAxLTE5wqAgMzQxwqDCoMKgwqDCoCBpZiAoIWNvb2tpZSAKPj4gfHwg
-Y29va2llLT50eXBlICE9IElPTU1VX0RNQV9JT1ZBX0NPT0tJRSkKPj4gZmRiZTU3NGViNjkzMTIg
-Um9iaW4gTXVycGh5wqDCoMKgwqDCoMKgwqDCoMKgIDIwMTctMDEtMTnCoCAzNDLCoMKgwqDCoMKg
-wqDCoMKgwqAgcmV0dXJuIAo+PiAtRUlOVkFMOwo+PiAwZGIyZTVkMThmNzZhNiBSb2JpbiBNdXJw
-aHnCoMKgwqDCoMKgwqDCoMKgwqAgMjAxNS0xMC0wMcKgIDM0Mwo+PiA2YjBjNTRlN2YyNzE1OSBZ
-dW5zaGVuZyBMaW7CoMKgwqDCoMKgwqDCoMKgwqAgMjAxOS0wOC0yNMKgIDM0NMKgwqDCoMKgwqAg
-aW92YWQgPSAKPj4gJmNvb2tpZS0+aW92YWQ7Cj4+IDZiMGM1NGU3ZjI3MTU5IFl1bnNoZW5nIExp
-bsKgwqDCoMKgwqDCoMKgwqDCoCAyMDE5LTA4LTI0wqAgMzQ1Cj4+IDBkYjJlNWQxOGY3NmE2IFJv
-YmluIE11cnBoecKgwqDCoMKgwqDCoMKgwqDCoCAyMDE1LTEwLTAxwqAgMzQ2wqDCoMKgwqDCoCAv
-KiBVc2UgdGhlIAo+PiBzbWFsbGVzdCBzdXBwb3J0ZWQgcGFnZSBzaXplIGZvciBJT1ZBIGdyYW51
-bGFyaXR5ICovCj4+IGQxNmUwZmFhYjkxMWNjIFJvYmluIE11cnBoecKgwqDCoMKgwqDCoMKgwqDC
-oCAyMDE2LTA0LTA3wqAgMzQ3wqDCoMKgwqDCoCBvcmRlciA9IAo+PiBfX2Zmcyhkb21haW4tPnBn
-c2l6ZV9iaXRtYXApOwo+PiAwZGIyZTVkMThmNzZhNiBSb2JpbiBNdXJwaHnCoMKgwqDCoMKgwqDC
-oMKgwqAgMjAxNS0xMC0wMcKgIDM0OMKgwqDCoMKgwqAgYmFzZV9wZm4gPSAKPj4gbWF4X3QodW5z
-aWduZWQgbG9uZywgMSwgYmFzZSA+PiBvcmRlcik7Cj4+IDBkYjJlNWQxOGY3NmE2IFJvYmluIE11
-cnBoecKgwqDCoMKgwqDCoMKgwqDCoCAyMDE1LTEwLTAxwqAgMzQ5Cj4+IDBkYjJlNWQxOGY3NmE2
-IFJvYmluIE11cnBoecKgwqDCoMKgwqDCoMKgwqDCoCAyMDE1LTEwLTAxwqAgMzUwwqDCoMKgwqDC
-oCAvKiBDaGVjayB0aGUgCj4+IGRvbWFpbiBhbGxvd3MgYXQgbGVhc3Qgc29tZSBhY2Nlc3MgdG8g
-dGhlIGRldmljZS4uLiAqLwo+PiAwZGIyZTVkMThmNzZhNiBSb2JpbiBNdXJwaHnCoMKgwqDCoMKg
-wqDCoMKgwqAgMjAxNS0xMC0wMcKgIDM1McKgwqDCoMKgwqAgaWYgCj4+IChkb21haW4tPmdlb21l
-dHJ5LmZvcmNlX2FwZXJ0dXJlKSB7Cj4+IDBkYjJlNWQxOGY3NmE2IFJvYmluIE11cnBoecKgwqDC
-oMKgwqDCoMKgwqDCoCAyMDE1LTEwLTAxwqAgMzUywqDCoMKgwqDCoMKgwqDCoMKgIGlmIChiYXNl
-IAo+PiA+IGRvbWFpbi0+Z2VvbWV0cnkuYXBlcnR1cmVfZW5kIHx8Cj4+IGFjNmQ3MDQ2NzlkMzQz
-IEplYW4tUGhpbGlwcGUgQnJ1Y2tlciAyMDIxLTA2LTE4wqAgMzUzICAgICAgICAgICAgICAKPj4g
-bGltaXQgPCBkb21haW4tPmdlb21ldHJ5LmFwZXJ0dXJlX3N0YXJ0KSB7Cj4+IDBkYjJlNWQxOGY3
-NmE2IFJvYmluIE11cnBoecKgwqDCoMKgwqDCoMKgwqDCoCAyMDE1LTEwLTAxwqAgMzU0ICAgICAg
-ICAgICAgICAKPj4gcHJfd2Fybigic3BlY2lmaWVkIERNQSByYW5nZSBvdXRzaWRlIElPTU1VIGNh
-cGFiaWxpdHlcbiIpOwo+PiAwZGIyZTVkMThmNzZhNiBSb2JpbiBNdXJwaHnCoMKgwqDCoMKgwqDC
-oMKgwqAgMjAxNS0xMC0wMcKgIDM1NSAgICAgICAgICAgICAgCj4+IHJldHVybiAtRUZBVUxUOwo+
-PiAwZGIyZTVkMThmNzZhNiBSb2JpbiBNdXJwaHnCoMKgwqDCoMKgwqDCoMKgwqAgMjAxNS0xMC0w
-McKgIDM1NsKgwqDCoMKgwqDCoMKgwqDCoCB9Cj4+IDBkYjJlNWQxOGY3NmE2IFJvYmluIE11cnBo
-ecKgwqDCoMKgwqDCoMKgwqDCoCAyMDE1LTEwLTAxwqAgMzU3wqDCoMKgwqDCoMKgwqDCoMKgIC8q
-IAo+PiAuLi50aGVuIGZpbmFsbHkgZ2l2ZSBpdCBhIGtpY2tpbmcgdG8gbWFrZSBzdXJlIGl0IGZp
-dHMgKi8KPj4gMGRiMmU1ZDE4Zjc2YTYgUm9iaW4gTXVycGh5wqDCoMKgwqDCoMKgwqDCoMKgIDIw
-MTUtMTAtMDHCoCAzNTjCoMKgwqDCoMKgwqDCoMKgwqAgYmFzZV9wZm4gCj4+ID0gbWF4X3QodW5z
-aWduZWQgbG9uZywgYmFzZV9wZm4sCj4+IDBkYjJlNWQxOGY3NmE2IFJvYmluIE11cnBoecKgwqDC
-oMKgwqDCoMKgwqDCoCAyMDE1LTEwLTAxwqAgMzU5ICAgICAgICAgICAgICAgICAgCj4+IGRvbWFp
-bi0+Z2VvbWV0cnkuYXBlcnR1cmVfc3RhcnQgPj4gb3JkZXIpOwo+PiAwZGIyZTVkMThmNzZhNiBS
-b2JpbiBNdXJwaHnCoMKgwqDCoMKgwqDCoMKgwqAgMjAxNS0xMC0wMcKgIDM2MMKgwqDCoMKgwqAg
-fQo+PiAwZGIyZTVkMThmNzZhNiBSb2JpbiBNdXJwaHnCoMKgwqDCoMKgwqDCoMKgwqAgMjAxNS0x
-MC0wMcKgIDM2MQo+PiBmNTFkN2JiNzljMTEyNCBSb2JpbiBNdXJwaHnCoMKgwqDCoMKgwqDCoMKg
-wqAgMjAxNy0wMS0xNsKgIDM2MsKgwqDCoMKgwqAgLyogc3RhcnRfcGZuIAo+PiBpcyBhbHdheXMg
-bm9uemVybyBmb3IgYW4gYWxyZWFkeS1pbml0aWFsaXNlZCBkb21haW4gKi8KPj4gMGRiMmU1ZDE4
-Zjc2YTYgUm9iaW4gTXVycGh5wqDCoMKgwqDCoMKgwqDCoMKgIDIwMTUtMTAtMDHCoCAzNjPCoMKg
-wqDCoMKgIGlmIAo+PiAoaW92YWQtPnN0YXJ0X3Bmbikgewo+PiAwZGIyZTVkMThmNzZhNiBSb2Jp
-biBNdXJwaHnCoMKgwqDCoMKgwqDCoMKgwqAgMjAxNS0xMC0wMcKgIDM2NMKgwqDCoMKgwqDCoMKg
-wqDCoCBpZiAoMVVMIAo+PiA8PCBvcmRlciAhPSBpb3ZhZC0+Z3JhbnVsZSB8fAo+PiBmNTFkN2Ji
-NzljMTEyNCBSb2JpbiBNdXJwaHnCoMKgwqDCoMKgwqDCoMKgwqAgMjAxNy0wMS0xNsKgIDM2NSAg
-ICAgICAgICAgICAgCj4+IGJhc2VfcGZuICE9IGlvdmFkLT5zdGFydF9wZm4pIHsKPj4gMGRiMmU1
-ZDE4Zjc2YTYgUm9iaW4gTXVycGh5wqDCoMKgwqDCoMKgwqDCoMKgIDIwMTUtMTAtMDHCoCAzNjYg
-ICAgICAgICAgICAgIAo+PiBwcl93YXJuKCJJbmNvbXBhdGlibGUgcmFuZ2UgZm9yIERNQSBkb21h
-aW5cbiIpOwo+PiAwZGIyZTVkMThmNzZhNiBSb2JpbiBNdXJwaHnCoMKgwqDCoMKgwqDCoMKgwqAg
-MjAxNS0xMC0wMcKgIDM2NyAgICAgICAgICAgICAgCj4+IHJldHVybiAtRUZBVUxUOwo+PiAwZGIy
-ZTVkMThmNzZhNiBSb2JpbiBNdXJwaHnCoMKgwqDCoMKgwqDCoMKgwqAgMjAxNS0xMC0wMcKgIDM2
-OMKgwqDCoMKgwqDCoMKgwqDCoCB9Cj4+IDdjMWIwNThjOGI1YTMxIFJvYmluIE11cnBoecKgwqDC
-oMKgwqDCoMKgwqDCoCAyMDE3LTAzLTE2wqAgMzY5Cj4+IDdjMWIwNThjOGI1YTMxIFJvYmluIE11
-cnBoecKgwqDCoMKgwqDCoMKgwqDCoCAyMDE3LTAzLTE2wqAgMzcwwqDCoMKgwqDCoMKgwqDCoMKg
-IHJldHVybiAwOwo+PiAwZGIyZTVkMThmNzZhNiBSb2JpbiBNdXJwaHnCoMKgwqDCoMKgwqDCoMKg
-wqAgMjAxNS0xMC0wMcKgIDM3McKgwqDCoMKgwqAgfQo+PiA3YzFiMDU4YzhiNWEzMSBSb2JpbiBN
-dXJwaHnCoMKgwqDCoMKgwqDCoMKgwqAgMjAxNy0wMy0xNsKgIDM3Mgo+PiBkZTRiYTM2MGMzZTRl
-ZCBKb2huIEdhcnJ5wqDCoMKgwqDCoMKgwqDCoMKgwqDCoCAyMDIxLTA3LTE0wqAgMzczCj4+IGRl
-NGJhMzYwYzNlNGVkIEpvaG4gR2FycnnCoMKgwqDCoMKgwqDCoMKgwqDCoMKgIDIwMjEtMDctMTQg
-QDM3NCAgICAgIAo+PiBtYXhfb3B0X2RtYV9zaXplID0gaW9tbXVfZ3JvdXBfZ2V0X21heF9vcHRf
-ZG1hX3NpemUoZGV2LT5pb21tdV9ncm91cCk7Cj4+ICAgICAgICAgICAgICAgICAgICAgICAgICAg
-ICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAg
-ICAgICAgICAgICAgICAgICAgICAgICAgICAKPj4gXl5eXl5eXl5eXl5eXl5eXgo+PiBOZXcgdW5j
-aGVja2VkIGRlcmVmZXJlbmNlCj4+Cj4+IGRlNGJhMzYwYzNlNGVkIEpvaG4gR2FycnnCoMKgwqDC
-oMKgwqDCoMKgwqDCoMKgIDIwMjEtMDctMTTCoCAzNzXCoMKgwqDCoMKgIGlmIAo+PiAobWF4X29w
-dF9kbWFfc2l6ZSkgewo+PiBkZTRiYTM2MGMzZTRlZCBKb2huIEdhcnJ5wqDCoMKgwqDCoMKgwqDC
-oMKgwqDCoCAyMDIxLTA3LTE0wqAgMzc2wqDCoMKgwqDCoMKgwqDCoMKgIHVuc2lnbmVkIAo+PiBs
-b25nIHNoaWZ0ID0gX19mZnMoMVVMIDw8IG9yZGVyKTsKPj4gZGU0YmEzNjBjM2U0ZWQgSm9obiBH
-YXJyecKgwqDCoMKgwqDCoMKgwqDCoMKgwqAgMjAyMS0wNy0xNMKgIDM3Nwo+PiBkZTRiYTM2MGMz
-ZTRlZCBKb2huIEdhcnJ5wqDCoMKgwqDCoMKgwqDCoMKgwqDCoCAyMDIxLTA3LTE0wqAgMzc4wqDC
-oMKgwqDCoMKgwqDCoMKgIGlvdmFfbGVuIAo+PiA9IG1heF9vcHRfZG1hX3NpemUgPj4gc2hpZnQ7
-Cj4+IGRlNGJhMzYwYzNlNGVkIEpvaG4gR2FycnnCoMKgwqDCoMKgwqDCoMKgwqDCoMKgIDIwMjEt
-MDctMTTCoCAzNznCoMKgwqDCoMKgwqDCoMKgwqAgaW92YV9sZW4gCj4+ID0gcm91bmR1cF9wb3df
-b2ZfdHdvKGlvdmFfbGVuKTsKPj4gZGU0YmEzNjBjM2U0ZWQgSm9obiBHYXJyecKgwqDCoMKgwqDC
-oMKgwqDCoMKgwqAgMjAyMS0wNy0xNMKgIDM4MMKgwqDCoMKgwqAgfQo+PiBkZTRiYTM2MGMzZTRl
-ZCBKb2huIEdhcnJ5wqDCoMKgwqDCoMKgwqDCoMKgwqDCoCAyMDIxLTA3LTE0wqAgMzgxCj4+IGRl
-NGJhMzYwYzNlNGVkIEpvaG4gR2FycnnCoMKgwqDCoMKgwqDCoMKgwqDCoMKgIDIwMjEtMDctMTTC
-oCAzODIgICAgICAKPj4gaW5pdF9pb3ZhX2RvbWFpbihpb3ZhZCwgMVVMIDw8IG9yZGVyLCBiYXNl
-X3BmbiwgaW92YV9sZW4pOwo+PiAyZGEyNzRjZGY5OThhMSBaaGVuIExlacKgwqDCoMKgwqDCoMKg
-wqDCoMKgwqDCoMKgIDIwMTgtMDktMjDCoCAzODMKPj4gODJjM2NlZmI5ZjE2NTIgTHUgQmFvbHXC
-oMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoCAyMDIxLTAyLTI1IEAzODTCoMKgwqDCoMKgIGlmIAo+
-PiAoIWNvb2tpZS0+ZnFfZG9tYWluICYmICghZGV2IHx8ICFkZXZfaXNfdW50cnVzdGVkKGRldikp
-ICYmCj4+ICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAg
-ICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAKPj4gXl5eXl5eXl5eXl5eXl5eXl5e
-Xl5eXl5eXl5eXl4KPj4KPj4KPj4gYTI1MGMyM2YxNWMyMWMgUm9iaW4gTXVycGh5wqDCoMKgwqDC
-oMKgwqDCoMKgIDIwMjEtMDQtMDHCoCAzODUgICAgICAgICAgCj4+IGRvbWFpbi0+b3BzLT5mbHVz
-aF9pb3RsYl9hbGwgJiYgIWlvbW11X2dldF9kbWFfc3RyaWN0KGRvbWFpbikpIHsKPj4gYjM0ZTli
-MGRlM2M0MTEgVG9tIE11cnBoecKgwqDCoMKgwqDCoMKgwqDCoMKgwqAgMjAyMC0wOS0xMMKgIDM4
-NsKgwqDCoMKgwqDCoMKgwqDCoCBpZiAKPj4gKGluaXRfaW92YV9mbHVzaF9xdWV1ZShpb3ZhZCwg
-aW9tbXVfZG1hX2ZsdXNoX2lvdGxiX2FsbCwKPj4gMmEyYjhlYWE1YjI1NjYgVG9tIE11cnBoecKg
-wqDCoMKgwqDCoMKgwqDCoMKgwqAgMjAyMC0xMS0yNCAgCj4+IDM4N8KgwqDCoMKgwqDCoMKgwqDC
-oMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqAgaW9tbXVfZG1hX2VudHJ5X2R0b3IpKQo+PiBi
-MzRlOWIwZGUzYzQxMSBUb20gTXVycGh5wqDCoMKgwqDCoMKgwqDCoMKgwqDCoCAyMDIwLTA5LTEw
-wqAgMzg4ICAgICAgICAgICAgICAKPj4gcHJfd2FybigiaW92YSBmbHVzaCBxdWV1ZSBpbml0aWFs
-aXphdGlvbiBmYWlsZWRcbiIpOwo+PiBiMzRlOWIwZGUzYzQxMSBUb20gTXVycGh5wqDCoMKgwqDC
-oMKgwqDCoMKgwqDCoCAyMDIwLTA5LTEwwqAgMzg5wqDCoMKgwqDCoMKgwqDCoMKgIGVsc2UKPj4g
-MmRhMjc0Y2RmOTk4YTEgWmhlbiBMZWnCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoCAyMDE4LTA5
-LTIwwqAgMzkwICAgICAgICAgICAgICAKPj4gY29va2llLT5mcV9kb21haW4gPSBkb21haW47Cj4+
-IDJkYTI3NGNkZjk5OGExIFpoZW4gTGVpwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqAgMjAxOC0w
-OS0yMMKgIDM5McKgwqDCoMKgwqAgfQo+PiAyZGEyNzRjZGY5OThhMSBaaGVuIExlacKgwqDCoMKg
-wqDCoMKgwqDCoMKgwqDCoMKgIDIwMTgtMDktMjDCoCAzOTIKPj4gN2MxYjA1OGM4YjVhMzEgUm9i
-aW4gTXVycGh5wqDCoMKgwqDCoMKgwqDCoMKgIDIwMTctMDMtMTbCoCAzOTPCoMKgwqDCoMKgIGlm
-ICghZGV2KQo+PiDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKg
-wqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDC
-oMKgwqDCoMKgwqDCoMKgwqAgXl5eXgo+PiBPbGQgY29kZSBoYXMgY2hlY2tzIGZvciBOVUxMCj4+
-Cj4gCj4gSSBkb3VidCB0aGF0IGluIHByYWN0aWNlIHdlIG5lZWQgdGhpcyBjaGVjay4KPiAKPiBG
-dW5jdGlvbiBpb21tdV9kbWFfaW5pdF9kb21haW4oKSBpcyBvbmx5IGNhbGxlZCBieSAKPiBpb21t
-dV9zZXR1cF9kbWFfb3BzKCkuIEZ1cnRoZXJtb3JlLCBpb21tdV9zZXR1cF9kbWFfb3BzKCkgY2Fs
-bHMgCj4gaW9tbXVfZ2V0X2RvbWFpbl9mb3JfZGV2KGRldiksIHdoaWNoIGNhbm5vdCBzYWZlbHkg
-aGFuZGxlIGRldiA9PSBOVUxMIAo+IGZvciB3aGVuIHdlIGNhbGwgaW9tbXVfZG1hX2luaXRfZG9t
-YWluKCkgdGhlcmUuIEFzIHN1Y2gsIHRoZSBkZXYgPT0gTlVMTCAKPiBjaGVja3MgaW4gaW9tbXVf
-ZG1hX2luaXRfZG9tYWluKCkgYXJlIGVmZmVjdGl2ZWx5IHJlZHVuZGFudC4KCkluZGVlZCwgSSBo
-YXZlIGEgcGF0Y2ggZm9yIHRoYXQgaW4gdGhlIHN0YWNrIEknbSBwcmVwYXJpbmc6CgpodHRwczov
-L2dpdGxhYi5hcm0uY29tL2xpbnV4LWFybS9saW51eC1ybS8tL2NvbW1pdC85YjZjZjJhMjE0MTA3
-YzE1M2VlMjc4YjE2NjRmNjg4ODg4ZDczMjhmCgpSb2Jpbi4KCj4+IDBkYjJlNWQxOGY3NmE2IFJv
-YmluIE11cnBoecKgwqDCoMKgwqDCoMKgwqDCoCAyMDE1LTEwLTAxwqAgMzk0wqDCoMKgwqDCoMKg
-wqDCoMKgIHJldHVybiAwOwo+PiA3YzFiMDU4YzhiNWEzMSBSb2JpbiBNdXJwaHnCoMKgwqDCoMKg
-wqDCoMKgwqAgMjAxNy0wMy0xNsKgIDM5NQo+PiA3YzFiMDU4YzhiNWEzMSBSb2JpbiBNdXJwaHnC
-oMKgwqDCoMKgwqDCoMKgwqAgMjAxNy0wMy0xNsKgIDM5NsKgwqDCoMKgwqAgcmV0dXJuIAo+PiBp
-b3ZhX3Jlc2VydmVfaW9tbXVfcmVnaW9ucyhkZXYsIGRvbWFpbik7Cj4+IDBkYjJlNWQxOGY3NmE2
-IFJvYmluIE11cnBoecKgwqDCoMKgwqDCoMKgwqDCoCAyMDE1LTEwLTAxwqAgMzk3wqAgfQo+Pgo+
-PiAtLS0KPj4gMC1EQVkgQ0kgS2VybmVsIFRlc3QgU2VydmljZSwgSW50ZWwgQ29ycG9yYXRpb24K
-Pj4gaHR0cHM6Ly9saXN0cy4wMS5vcmcvaHlwZXJraXR0eS9saXN0L2tidWlsZC1hbGxAbGlzdHMu
-MDEub3JnCj4+Cj4+IC4KPj4KPiAKX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19f
-X19fX19fX19fX18KaW9tbXUgbWFpbGluZyBsaXN0CmlvbW11QGxpc3RzLmxpbnV4LWZvdW5kYXRp
-b24ub3JnCmh0dHBzOi8vbGlzdHMubGludXhmb3VuZGF0aW9uLm9yZy9tYWlsbWFuL2xpc3RpbmZv
-L2lvbW11
+This patch makes iommu/amd call report_iommu_fault() when an I/O page
+fault occurs, which has two effects:
+
+1) It allows device drivers to register a callback to be notified of
+   I/O page faults, via the iommu_set_fault_handler() API.
+
+2) It triggers the io_page_fault tracepoint in report_iommu_fault()
+   when an I/O page fault occurs.
+
+I'm mainly interested in (2).  We have a daemon with some rasdaemon-like
+functionality for handling platform errors, and being able to be notified
+of I/O page faults for initiating corrective action is very useful -- and
+receiving such events via event tracing is a lot nicer than having to
+scrape them from kmsg.
+
+A number of other IOMMU drivers already use report_iommu_fault(), and
+I/O page faults on those IOMMUs therefore already seem to trigger this
+tracepoint -- but this isn't (yet) the case for AMD-Vi and Intel DMAR.
+
+I copied the logic from the other callers of report_iommu_fault(), where
+if that function returns zero, the driver will have handled the fault,
+in which case we avoid logging information about the fault to the printk
+buffer from the IOMMU driver.
+
+With this patch I see io_page_fault event tracing entries as expected:
+
+   irq/24-AMD-Vi-48    [002] ....   978.554289: io_page_fault: IOMMU:[drvname] 0000:05:00.0 iova=0x0000000091482640 flags=0x0000
+   irq/24-AMD-Vi-48    [002] ....   978.554294: io_page_fault: IOMMU:[drvname] 0000:05:00.0 iova=0x0000000091482650 flags=0x0000
+   irq/24-AMD-Vi-48    [002] ....   978.554299: io_page_fault: IOMMU:[drvname] 0000:05:00.0 iova=0x0000000091482660 flags=0x0000
+   irq/24-AMD-Vi-48    [002] ....   978.554305: io_page_fault: IOMMU:[drvname] 0000:05:00.0 iova=0x0000000091482670 flags=0x0000
+   irq/24-AMD-Vi-48    [002] ....   978.554310: io_page_fault: IOMMU:[drvname] 0000:05:00.0 iova=0x0000000091482680 flags=0x0000
+   irq/24-AMD-Vi-48    [002] ....   978.554315: io_page_fault: IOMMU:[drvname] 0000:05:00.0 iova=0x00000000914826a0 flags=0x0000
+
+For determining IOMMU_FAULT_{READ,WRITE}, I followed the AMD IOMMU
+spec, but I haven't tested that bit of the code, as the page faults I
+encounter are all to non-present (!EVENT_FLAG_PR) mappings, in which
+case EVENT_FLAG_RW doesn't make sense.
+
+Signed-off-by: Lennert Buytenhek <buytenh@wantstofly.org>
+---
+ drivers/iommu/amd/amd_iommu_types.h |    4 ++++
+ drivers/iommu/amd/iommu.c           |   25 +++++++++++++++++++++++++
+ 2 files changed, 29 insertions(+)
+
+diff --git a/drivers/iommu/amd/amd_iommu_types.h b/drivers/iommu/amd/amd_iommu_types.h
+index 94c1a7a9876d..2f2c6630c24c 100644
+--- a/drivers/iommu/amd/amd_iommu_types.h
++++ b/drivers/iommu/amd/amd_iommu_types.h
+@@ -138,6 +138,10 @@
+ #define EVENT_DOMID_MASK_HI	0xf0000
+ #define EVENT_FLAGS_MASK	0xfff
+ #define EVENT_FLAGS_SHIFT	0x10
++#define EVENT_FLAG_TR		0x100
++#define EVENT_FLAG_RW		0x020
++#define EVENT_FLAG_PR		0x010
++#define EVENT_FLAG_I		0x008
+ 
+ /* feature control bits */
+ #define CONTROL_IOMMU_EN        0x00ULL
+diff --git a/drivers/iommu/amd/iommu.c b/drivers/iommu/amd/iommu.c
+index 811a49a95d04..a02ace7ee794 100644
+--- a/drivers/iommu/amd/iommu.c
++++ b/drivers/iommu/amd/iommu.c
+@@ -480,6 +480,30 @@ static void amd_iommu_report_page_fault(u16 devid, u16 domain_id,
+ 	if (pdev)
+ 		dev_data = dev_iommu_priv_get(&pdev->dev);
+ 
++	if (dev_data) {
++		int report_flags;
++
++		/*
++		 * AMD I/O Virtualization Technology (IOMMU) Specification,
++		 * revision 3.00, section 2.5.3 ("IO_PAGE_FAULT Event") says
++		 * that the RW ("read-write") bit is only valid if the I/O
++		 * page fault was caused by a memory transaction request
++		 * referencing a page that was marked present.
++		 */
++		report_flags = 0;
++		if ((flags & (EVENT_FLAG_TR | EVENT_FLAG_PR | EVENT_FLAG_I)) ==
++								EVENT_FLAG_PR) {
++			if (flags & EVENT_FLAG_RW)
++				report_flags |= IOMMU_FAULT_WRITE;
++			else
++				report_flags |= IOMMU_FAULT_READ;
++		}
++
++		if (!report_iommu_fault(&dev_data->domain->domain,
++					&pdev->dev, address, report_flags))
++			goto out;
++	}
++
+ 	if (dev_data && __ratelimit(&dev_data->rs)) {
+ 		pci_err(pdev, "Event logged [IO_PAGE_FAULT domain=0x%04x address=0x%llx flags=0x%04x]\n",
+ 			domain_id, address, flags);
+@@ -489,6 +513,7 @@ static void amd_iommu_report_page_fault(u16 devid, u16 domain_id,
+ 			domain_id, address, flags);
+ 	}
+ 
++out:
+ 	if (pdev)
+ 		pci_dev_put(pdev);
+ }
+_______________________________________________
+iommu mailing list
+iommu@lists.linux-foundation.org
+https://lists.linuxfoundation.org/mailman/listinfo/iommu
