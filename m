@@ -7,61 +7,63 @@ X-Spam-Status: No, score=-16.8 required=3.0 tests=BAYES_00,DKIM_INVALID,
 	SPF_HELO_NONE,SPF_PASS,USER_AGENT_GIT autolearn=ham autolearn_force=no
 	version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 38A5EC12002
-	for <iommu@archiver.kernel.org>; Mon, 19 Jul 2021 12:31:54 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7272AC07E9D
+	for <iommu@archiver.kernel.org>; Mon, 19 Jul 2021 12:31:56 +0000 (UTC)
 Received: from smtp1.osuosl.org (smtp1.osuosl.org [140.211.166.138])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 05F056115B
-	for <iommu@archiver.kernel.org>; Mon, 19 Jul 2021 12:31:54 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 05F056115B
+	by mail.kernel.org (Postfix) with ESMTPS id 32674611EF
+	for <iommu@archiver.kernel.org>; Mon, 19 Jul 2021 12:31:56 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 32674611EF
 Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=kernel.org
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by smtp1.osuosl.org (Postfix) with ESMTP id C8D2E838E0;
-	Mon, 19 Jul 2021 12:31:53 +0000 (UTC)
+	by smtp1.osuosl.org (Postfix) with ESMTP id 097C7838ED;
+	Mon, 19 Jul 2021 12:31:56 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
 Received: from smtp1.osuosl.org ([127.0.0.1])
 	by localhost (smtp1.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id 6sA5Fghd_VxH; Mon, 19 Jul 2021 12:31:53 +0000 (UTC)
+	with ESMTP id niOOGefk5a6i; Mon, 19 Jul 2021 12:31:55 +0000 (UTC)
 Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by smtp1.osuosl.org (Postfix) with ESMTPS id 9C341838DE;
-	Mon, 19 Jul 2021 12:31:52 +0000 (UTC)
+	by smtp1.osuosl.org (Postfix) with ESMTPS id D2711838F7;
+	Mon, 19 Jul 2021 12:31:54 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 737FEC0010;
-	Mon, 19 Jul 2021 12:31:52 +0000 (UTC)
-Received: from smtp1.osuosl.org (smtp1.osuosl.org [140.211.166.138])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 28F68C0010
- for <iommu@lists.linux-foundation.org>; Mon, 19 Jul 2021 12:31:51 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id A8EFDC0010;
+	Mon, 19 Jul 2021 12:31:54 +0000 (UTC)
+Received: from smtp2.osuosl.org (smtp2.osuosl.org [140.211.166.133])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 579B3C000E
+ for <iommu@lists.linux-foundation.org>; Mon, 19 Jul 2021 12:31:53 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by smtp1.osuosl.org (Postfix) with ESMTP id 09AFD838DE
- for <iommu@lists.linux-foundation.org>; Mon, 19 Jul 2021 12:31:51 +0000 (UTC)
+ by smtp2.osuosl.org (Postfix) with ESMTP id 38C78402A6
+ for <iommu@lists.linux-foundation.org>; Mon, 19 Jul 2021 12:31:53 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from smtp1.osuosl.org ([127.0.0.1])
- by localhost (smtp1.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id Bee8Zf-uD2R3 for <iommu@lists.linux-foundation.org>;
- Mon, 19 Jul 2021 12:31:50 +0000 (UTC)
+Authentication-Results: smtp2.osuosl.org (amavisd-new);
+ dkim=pass (2048-bit key) header.d=kernel.org
+Received: from smtp2.osuosl.org ([127.0.0.1])
+ by localhost (smtp2.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+ with ESMTP id S3wq70ycHp9B for <iommu@lists.linux-foundation.org>;
+ Mon, 19 Jul 2021 12:31:52 +0000 (UTC)
 X-Greylist: domain auto-whitelisted by SQLgrey-1.8.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
- by smtp1.osuosl.org (Postfix) with ESMTPS id 54E42838CC
- for <iommu@lists.linux-foundation.org>; Mon, 19 Jul 2021 12:31:50 +0000 (UTC)
-Received: by mail.kernel.org (Postfix) with ESMTPSA id 754CF6112D;
- Mon, 19 Jul 2021 12:31:48 +0000 (UTC)
+ by smtp2.osuosl.org (Postfix) with ESMTPS id 5266D40231
+ for <iommu@lists.linux-foundation.org>; Mon, 19 Jul 2021 12:31:52 +0000 (UTC)
+Received: by mail.kernel.org (Postfix) with ESMTPSA id 7C41E61165;
+ Mon, 19 Jul 2021 12:31:50 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
- s=k20201202; t=1626697910;
- bh=Ug/r2feAaGIb6+QokAtRbFiyhRVvC2vbMd393hUZuo4=;
+ s=k20201202; t=1626697912;
+ bh=x+RB9Am0+UBxmf5N8DpwjNIkOrkArDEapjosy245dTs=;
  h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
- b=LaYcA2Zfi+afZ03bxatVFUeBhnW1jD0S60oUgq/xTMQsYlwFW3B/lekOhMyrobYmA
- yM7m+pDYEWDjEs/xjdca6gf1T09fXzO1ACWpWXhdJ2P/F+gjgdZG/GYH4cTRW9N2Jr
- iO5KgugNXKpGl/gNeLc80keRZ5kHuNHkf56U5OaEeJzoLoRx3kE2u0A3T7IXRdxYKw
- B7O9q1HU0BKAje/160E01TuLKmzBiHhzx0onvIMbStVtKRlkULFpoS00wD137RILid
- jEpJRqCZExnam+C+/HjFLuKbClPlA50km768M0uxZIXSsnv18dE46ICGYHjmCd5ouk
- LCzUTPvDx970w==
+ b=GojP7K0bbgsAdV7B1R/j02xfvFlzKE9PyrTaREI0SRY8tnXaQdCDp885U75S9QhCC
+ CjXXsQ9dkFV5MV9SCacMNJfUrO49s7Z9OhkUQsppNCW+0dQd3d2mtyhwlu2yvoOPRy
+ Mcw4iJ7/R0wECavN6hhBD2xIJR3lYKcETsgfyxOQxouDm1rEp7GobfD9WzSyNtEU1I
+ j09mKS9Q9mJyXTwMyruQPkTcJvj48gvcsdrRIvZMYuh2xzncfd1btzTuGp8HYUO/BI
+ nzOjMGRy0UIXeCxEQuUoVH1fFGOKFAMiVbGMsMMUFd0miXlW/eS1DaBHUqez2PnusZ
+ VTIse+uqnbV/g==
 From: Will Deacon <will@kernel.org>
 To: iommu@lists.linux-foundation.org
-Subject: [PATCH 2/5] swiotlb: Point io_default_tlb_mem at static allocation
-Date: Mon, 19 Jul 2021 13:30:51 +0100
-Message-Id: <20210719123054.6844-3-will@kernel.org>
+Subject: [PATCH 3/5] swiotlb: Remove io_tlb_default_mem indirection
+Date: Mon, 19 Jul 2021 13:30:52 +0100
+Message-Id: <20210719123054.6844-4-will@kernel.org>
 X-Mailer: git-send-email 2.20.1
 In-Reply-To: <20210719123054.6844-1-will@kernel.org>
 References: <20210719123054.6844-1-will@kernel.org>
@@ -88,153 +90,226 @@ Content-Transfer-Encoding: 7bit
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-Since commit 69031f500865 ("swiotlb: Set dev->dma_io_tlb_mem to the
-swiotlb pool used"), 'struct device' may hold a copy of the global
-'io_default_tlb_mem' pointer if the device is using swiotlb for DMA. A
-subsequent call to swiotlb_exit() will therefore leave dangling pointers
-behind in these device structures, resulting in KASAN splats such as:
+The indirection from the global 'io_tlb_default_mem' pointer to the
+static '_io_tlb_default_mem' structure is ugly and unnecessary.
 
-  |  BUG: KASAN: use-after-free in __iommu_dma_unmap_swiotlb+0x64/0xb0
-  |  Read of size 8 at addr ffff8881d7830000 by task swapper/0/0
-  |
-  |  CPU: 0 PID: 0 Comm: swapper/0 Not tainted 5.12.0-rc3-debug #1
-  |  Hardware name: HP HP Desktop M01-F1xxx/87D6, BIOS F.12 12/17/2020
-  |  Call Trace:
-  |   <IRQ>
-  |   dump_stack+0x9c/0xcf
-  |   print_address_description.constprop.0+0x18/0x130
-  |   kasan_report.cold+0x7f/0x111
-  |   __iommu_dma_unmap_swiotlb+0x64/0xb0
-  |   nvme_pci_complete_rq+0x73/0x130
-  |   blk_complete_reqs+0x6f/0x80
-  |   __do_softirq+0xfc/0x3be
-
-Point 'io_default_tlb_mem' at a static structure, so that the per-device
-pointers remain valid after swiotlb_exit() has been invoked. The 'slots'
-array is still allocated dynamically and referenced via a pointer rather
-than a flexible array member.
+Convert all users to reference the static structure directly, using the
+'nslabs' field to determine whether swiotlb has been initialised.
 
 Cc: Claire Chang <tientzu@chromium.org>
 Cc: Christoph Hellwig <hch@lst.de>
 Cc: Robin Murphy <robin.murphy@arm.com>
 Cc: Konrad Rzeszutek Wilk <konrad.wilk@oracle.com>
-Fixes: 69031f500865 ("swiotlb: Set dev->dma_io_tlb_mem to the swiotlb pool used")
-Reported-by: Nathan Chancellor <nathan@kernel.org>
 Tested-by: Nathan Chancellor <nathan@kernel.org>
 Signed-off-by: Will Deacon <will@kernel.org>
 ---
- include/linux/swiotlb.h |  2 +-
- kernel/dma/swiotlb.c    | 34 +++++++++++++++++++++-------------
- 2 files changed, 22 insertions(+), 14 deletions(-)
+ drivers/base/core.c       |  2 +-
+ drivers/xen/swiotlb-xen.c |  4 ++--
+ include/linux/swiotlb.h   |  2 +-
+ kernel/dma/swiotlb.c      | 38 ++++++++++++++++++--------------------
+ 4 files changed, 22 insertions(+), 24 deletions(-)
 
+diff --git a/drivers/base/core.c b/drivers/base/core.c
+index ea5b85354526..b49824001cfa 100644
+--- a/drivers/base/core.c
++++ b/drivers/base/core.c
+@@ -2848,7 +2848,7 @@ void device_initialize(struct device *dev)
+ 	dev->dma_coherent = dma_default_coherent;
+ #endif
+ #ifdef CONFIG_SWIOTLB
+-	dev->dma_io_tlb_mem = io_tlb_default_mem;
++	dev->dma_io_tlb_mem = &io_tlb_default_mem;
+ #endif
+ }
+ EXPORT_SYMBOL_GPL(device_initialize);
+diff --git a/drivers/xen/swiotlb-xen.c b/drivers/xen/swiotlb-xen.c
+index 785ec7e8be01..f06d9b4f1e0f 100644
+--- a/drivers/xen/swiotlb-xen.c
++++ b/drivers/xen/swiotlb-xen.c
+@@ -164,7 +164,7 @@ int __ref xen_swiotlb_init(void)
+ 	int rc = -ENOMEM;
+ 	char *start;
+ 
+-	if (io_tlb_default_mem != NULL) {
++	if (io_tlb_default_mem.nslabs) {
+ 		pr_warn("swiotlb buffer already initialized\n");
+ 		return -EEXIST;
+ 	}
+@@ -547,7 +547,7 @@ xen_swiotlb_sync_sg_for_device(struct device *dev, struct scatterlist *sgl,
+ static int
+ xen_swiotlb_dma_supported(struct device *hwdev, u64 mask)
+ {
+-	return xen_phys_to_dma(hwdev, io_tlb_default_mem->end - 1) <= mask;
++	return xen_phys_to_dma(hwdev, io_tlb_default_mem.end - 1) <= mask;
+ }
+ 
+ const struct dma_map_ops xen_swiotlb_dma_ops = {
 diff --git a/include/linux/swiotlb.h b/include/linux/swiotlb.h
-index 39284ff2a6cd..d3b617c19045 100644
+index d3b617c19045..b0cb2a9973f4 100644
 --- a/include/linux/swiotlb.h
 +++ b/include/linux/swiotlb.h
-@@ -103,7 +103,7 @@ struct io_tlb_mem {
- 		phys_addr_t orig_addr;
- 		size_t alloc_size;
+@@ -105,7 +105,7 @@ struct io_tlb_mem {
  		unsigned int list;
--	} slots[];
-+	} *slots;
+ 	} *slots;
  };
- extern struct io_tlb_mem *io_tlb_default_mem;
+-extern struct io_tlb_mem *io_tlb_default_mem;
++extern struct io_tlb_mem io_tlb_default_mem;
  
+ static inline bool is_swiotlb_buffer(struct device *dev, phys_addr_t paddr)
+ {
 diff --git a/kernel/dma/swiotlb.c b/kernel/dma/swiotlb.c
-index f1a9ae7fad8f..992d73cdc944 100644
+index 992d73cdc944..7948f274f9bb 100644
 --- a/kernel/dma/swiotlb.c
 +++ b/kernel/dma/swiotlb.c
-@@ -71,6 +71,7 @@
+@@ -70,8 +70,7 @@
+ 
  enum swiotlb_force swiotlb_force;
  
- struct io_tlb_mem *io_tlb_default_mem;
-+static struct io_tlb_mem _io_tlb_default_mem;
+-struct io_tlb_mem *io_tlb_default_mem;
+-static struct io_tlb_mem _io_tlb_default_mem;
++struct io_tlb_mem io_tlb_default_mem;
  
  /*
   * Max segment that we can provide which (if pages are contingous) will
-@@ -201,7 +202,7 @@ static void swiotlb_init_io_tlb_mem(struct io_tlb_mem *mem, phys_addr_t start,
+@@ -102,7 +101,7 @@ early_param("swiotlb", setup_io_tlb_npages);
+ 
+ unsigned int swiotlb_max_segment(void)
+ {
+-	return io_tlb_default_mem ? max_segment : 0;
++	return io_tlb_default_mem.nslabs ? max_segment : 0;
+ }
+ EXPORT_SYMBOL_GPL(swiotlb_max_segment);
+ 
+@@ -135,9 +134,9 @@ void __init swiotlb_adjust_size(unsigned long size)
+ 
+ void swiotlb_print_info(void)
+ {
+-	struct io_tlb_mem *mem = io_tlb_default_mem;
++	struct io_tlb_mem *mem = &io_tlb_default_mem;
+ 
+-	if (!mem) {
++	if (!mem->nslabs) {
+ 		pr_warn("No low mem\n");
+ 		return;
+ 	}
+@@ -164,11 +163,11 @@ static inline unsigned long nr_slots(u64 val)
+  */
+ void __init swiotlb_update_mem_attributes(void)
+ {
+-	struct io_tlb_mem *mem = io_tlb_default_mem;
++	struct io_tlb_mem *mem = &io_tlb_default_mem;
+ 	void *vaddr;
+ 	unsigned long bytes;
+ 
+-	if (!mem || mem->late_alloc)
++	if (!mem->nslabs || mem->late_alloc)
+ 		return;
+ 	vaddr = phys_to_virt(mem->start);
+ 	bytes = PAGE_ALIGN(mem->nslabs << IO_TLB_SHIFT);
+@@ -202,14 +201,14 @@ static void swiotlb_init_io_tlb_mem(struct io_tlb_mem *mem, phys_addr_t start,
  
  int __init swiotlb_init_with_tbl(char *tlb, unsigned long nslabs, int verbose)
  {
--	struct io_tlb_mem *mem;
-+	struct io_tlb_mem *mem = &_io_tlb_default_mem;
+-	struct io_tlb_mem *mem = &_io_tlb_default_mem;
++	struct io_tlb_mem *mem = &io_tlb_default_mem;
  	size_t alloc_size;
  
  	if (swiotlb_force == SWIOTLB_NO_FORCE)
-@@ -211,9 +212,9 @@ int __init swiotlb_init_with_tbl(char *tlb, unsigned long nslabs, int verbose)
- 	if (WARN_ON_ONCE(io_tlb_default_mem))
+ 		return 0;
+ 
+ 	/* protect against double initialization */
+-	if (WARN_ON_ONCE(io_tlb_default_mem))
++	if (WARN_ON_ONCE(mem->nslabs))
  		return -ENOMEM;
  
--	alloc_size = PAGE_ALIGN(struct_size(mem, slots, nslabs));
--	mem = memblock_alloc(alloc_size, PAGE_SIZE);
--	if (!mem)
-+	alloc_size = PAGE_ALIGN(array_size(sizeof(*mem->slots), nslabs));
-+	mem->slots = memblock_alloc(alloc_size, PAGE_SIZE);
-+	if (!mem->slots)
- 		panic("%s: Failed to allocate %zu bytes align=0x%lx\n",
- 		      __func__, alloc_size, PAGE_SIZE);
+ 	alloc_size = PAGE_ALIGN(array_size(sizeof(*mem->slots), nslabs));
+@@ -220,7 +219,6 @@ int __init swiotlb_init_with_tbl(char *tlb, unsigned long nslabs, int verbose)
  
-@@ -304,7 +305,7 @@ swiotlb_late_init_with_default_size(size_t default_size)
+ 	swiotlb_init_io_tlb_mem(mem, __pa(tlb), nslabs, false);
+ 
+-	io_tlb_default_mem = mem;
+ 	if (verbose)
+ 		swiotlb_print_info();
+ 	swiotlb_set_max_segment(mem->nslabs << IO_TLB_SHIFT);
+@@ -305,14 +303,14 @@ swiotlb_late_init_with_default_size(size_t default_size)
  int
  swiotlb_late_init_with_tbl(char *tlb, unsigned long nslabs)
  {
--	struct io_tlb_mem *mem;
-+	struct io_tlb_mem *mem = &_io_tlb_default_mem;
+-	struct io_tlb_mem *mem = &_io_tlb_default_mem;
++	struct io_tlb_mem *mem = &io_tlb_default_mem;
  	unsigned long bytes = nslabs << IO_TLB_SHIFT;
  
  	if (swiotlb_force == SWIOTLB_NO_FORCE)
-@@ -314,12 +315,11 @@ swiotlb_late_init_with_tbl(char *tlb, unsigned long nslabs)
- 	if (WARN_ON_ONCE(io_tlb_default_mem))
+ 		return 0;
+ 
+ 	/* protect against double initialization */
+-	if (WARN_ON_ONCE(io_tlb_default_mem))
++	if (WARN_ON_ONCE(mem->nslabs))
  		return -ENOMEM;
  
--	mem = (void *)__get_free_pages(GFP_KERNEL,
--		get_order(struct_size(mem, slots, nslabs)));
--	if (!mem)
-+	mem->slots = (void *)__get_free_pages(GFP_KERNEL | __GFP_ZERO,
-+		get_order(array_size(sizeof(*mem->slots), nslabs)));
-+	if (!mem->slots)
- 		return -ENOMEM;
- 
--	memset(mem, 0, sizeof(*mem));
+ 	mem->slots = (void *)__get_free_pages(GFP_KERNEL | __GFP_ZERO,
+@@ -323,7 +321,6 @@ swiotlb_late_init_with_tbl(char *tlb, unsigned long nslabs)
  	set_memory_decrypted((unsigned long)tlb, bytes >> PAGE_SHIFT);
  	swiotlb_init_io_tlb_mem(mem, virt_to_phys(tlb), nslabs, true);
  
-@@ -337,12 +337,13 @@ void __init swiotlb_exit(void)
- 	if (!mem)
+-	io_tlb_default_mem = mem;
+ 	swiotlb_print_info();
+ 	swiotlb_set_max_segment(mem->nslabs << IO_TLB_SHIFT);
+ 	return 0;
+@@ -331,10 +328,10 @@ swiotlb_late_init_with_tbl(char *tlb, unsigned long nslabs)
+ 
+ void __init swiotlb_exit(void)
+ {
+-	struct io_tlb_mem *mem = io_tlb_default_mem;
+ 	size_t size;
++	struct io_tlb_mem *mem = &io_tlb_default_mem;
+ 
+-	if (!mem)
++	if (!mem->nslabs)
  		return;
  
--	size = struct_size(mem, slots, mem->nslabs);
-+	size = array_size(sizeof(*mem->slots), mem->nslabs);
- 	if (mem->late_alloc)
--		free_pages((unsigned long)mem, get_order(size));
-+		free_pages((unsigned long)mem->slots, get_order(size));
+ 	size = array_size(sizeof(*mem->slots), mem->nslabs);
+@@ -342,7 +339,6 @@ void __init swiotlb_exit(void)
+ 		free_pages((unsigned long)mem->slots, get_order(size));
  	else
--		memblock_free_late(__pa(mem), PAGE_ALIGN(size));
-+		memblock_free_late(__pa(mem->slots), PAGE_ALIGN(size));
- 	io_tlb_default_mem = NULL;
-+	memset(mem, 0, sizeof(*mem));
+ 		memblock_free_late(__pa(mem->slots), PAGE_ALIGN(size));
+-	io_tlb_default_mem = NULL;
+ 	memset(mem, 0, sizeof(*mem));
  }
  
- /*
-@@ -783,10 +784,17 @@ static int rmem_swiotlb_device_init(struct reserved_mem *rmem,
- 	 * to it.
- 	 */
- 	if (!mem) {
--		mem = kzalloc(struct_size(mem, slots, nslabs), GFP_KERNEL);
-+		mem = kzalloc(sizeof(*mem), GFP_KERNEL);
- 		if (!mem)
- 			return -ENOMEM;
+@@ -697,7 +693,9 @@ size_t swiotlb_max_mapping_size(struct device *dev)
  
-+		mem->slots = kzalloc(array_size(sizeof(*mem->slots), nslabs),
-+				     GFP_KERNEL);
-+		if (!mem->slots) {
-+			kfree(mem);
-+			return -ENOMEM;
-+		}
+ bool is_swiotlb_active(struct device *dev)
+ {
+-	return dev->dma_io_tlb_mem != NULL;
++	struct io_tlb_mem *mem = dev->dma_io_tlb_mem;
 +
- 		set_memory_decrypted((unsigned long)phys_to_virt(rmem->base),
- 				     rmem->size >> PAGE_SHIFT);
- 		swiotlb_init_io_tlb_mem(mem, rmem->base, nslabs, false);
++	return mem && mem->nslabs;
+ }
+ EXPORT_SYMBOL_GPL(is_swiotlb_active);
+ 
+@@ -712,10 +710,10 @@ static void swiotlb_create_debugfs_files(struct io_tlb_mem *mem)
+ 
+ static int __init swiotlb_create_default_debugfs(void)
+ {
+-	struct io_tlb_mem *mem = io_tlb_default_mem;
++	struct io_tlb_mem *mem = &io_tlb_default_mem;
+ 
+ 	debugfs_dir = debugfs_create_dir("swiotlb", NULL);
+-	if (mem) {
++	if (mem->nslabs) {
+ 		mem->debugfs = debugfs_dir;
+ 		swiotlb_create_debugfs_files(mem);
+ 	}
+@@ -814,7 +812,7 @@ static int rmem_swiotlb_device_init(struct reserved_mem *rmem,
+ static void rmem_swiotlb_device_release(struct reserved_mem *rmem,
+ 					struct device *dev)
+ {
+-	dev->dma_io_tlb_mem = io_tlb_default_mem;
++	dev->dma_io_tlb_mem = &io_tlb_default_mem;
+ }
+ 
+ static const struct reserved_mem_ops rmem_swiotlb_ops = {
 -- 
 2.32.0.402.g57bb445576-goog
 
