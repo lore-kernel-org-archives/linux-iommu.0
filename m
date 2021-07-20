@@ -2,77 +2,80 @@ Return-Path: <SRS0=9TsP=MM=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-16.8 required=3.0 tests=BAYES_00,DKIM_INVALID,
-	DKIM_SIGNED,INCLUDES_CR_TRAILER,INCLUDES_PATCH,MAILING_LIST_MULTI,
-	SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_GIT autolearn=ham
-	autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-5.2 required=3.0 tests=BAYES_00,
+	HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,
+	URIBL_BLOCKED,USER_AGENT_SANE_1 autolearn=no autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3A63FC636C8
-	for <iommu@archiver.kernel.org>; Tue, 20 Jul 2021 13:38:46 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 66090C07E95
+	for <iommu@archiver.kernel.org>; Tue, 20 Jul 2021 13:54:49 +0000 (UTC)
 Received: from smtp2.osuosl.org (smtp2.osuosl.org [140.211.166.133])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id DE6FE61106
-	for <iommu@archiver.kernel.org>; Tue, 20 Jul 2021 13:38:45 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org DE6FE61106
-Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=kernel.org
+	by mail.kernel.org (Postfix) with ESMTPS id 1B65360FDA
+	for <iommu@archiver.kernel.org>; Tue, 20 Jul 2021 13:54:49 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 1B65360FDA
+Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=lst.de
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by smtp2.osuosl.org (Postfix) with ESMTP id BDE5540392;
-	Tue, 20 Jul 2021 13:38:45 +0000 (UTC)
+	by smtp2.osuosl.org (Postfix) with ESMTP id BFA1040137;
+	Tue, 20 Jul 2021 13:54:48 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
 Received: from smtp2.osuosl.org ([127.0.0.1])
 	by localhost (smtp2.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id BpU2s3h__ZwC; Tue, 20 Jul 2021 13:38:44 +0000 (UTC)
-Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by smtp2.osuosl.org (Postfix) with ESMTPS id 8CAF6402AB;
-	Tue, 20 Jul 2021 13:38:44 +0000 (UTC)
+	with ESMTP id 6zGv8rRZSnfS; Tue, 20 Jul 2021 13:54:48 +0000 (UTC)
+Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [IPv6:2605:bc80:3010:104::8cd3:938])
+	by smtp2.osuosl.org (Postfix) with ESMTPS id 9DB88400FC;
+	Tue, 20 Jul 2021 13:54:47 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 68C05C0010;
-	Tue, 20 Jul 2021 13:38:44 +0000 (UTC)
-Received: from smtp3.osuosl.org (smtp3.osuosl.org [140.211.166.136])
- by lists.linuxfoundation.org (Postfix) with ESMTP id A74EEC0022
- for <iommu@lists.linux-foundation.org>; Tue, 20 Jul 2021 13:38:43 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 58749C0010;
+	Tue, 20 Jul 2021 13:54:47 +0000 (UTC)
+Received: from smtp2.osuosl.org (smtp2.osuosl.org [IPv6:2605:bc80:3010::133])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 2F5C2C000E
+ for <iommu@lists.linux-foundation.org>; Tue, 20 Jul 2021 13:54:46 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by smtp3.osuosl.org (Postfix) with ESMTP id 8520960857
- for <iommu@lists.linux-foundation.org>; Tue, 20 Jul 2021 13:38:43 +0000 (UTC)
+ by smtp2.osuosl.org (Postfix) with ESMTP id 1E45040137
+ for <iommu@lists.linux-foundation.org>; Tue, 20 Jul 2021 13:54:46 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Authentication-Results: smtp3.osuosl.org (amavisd-new);
- dkim=pass (2048-bit key) header.d=kernel.org
-Received: from smtp3.osuosl.org ([127.0.0.1])
- by localhost (smtp3.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id K-CoiyCJ4001 for <iommu@lists.linux-foundation.org>;
- Tue, 20 Jul 2021 13:38:43 +0000 (UTC)
-X-Greylist: domain auto-whitelisted by SQLgrey-1.8.0
-Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
- by smtp3.osuosl.org (Postfix) with ESMTPS id 03D326059E
- for <iommu@lists.linux-foundation.org>; Tue, 20 Jul 2021 13:38:42 +0000 (UTC)
-Received: by mail.kernel.org (Postfix) with ESMTPSA id 2D28C61165;
- Tue, 20 Jul 2021 13:38:41 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
- s=k20201202; t=1626788322;
- bh=x8mc24R43OT2/dRfM/oJ6/ewTeaK9cijJPyAspd5MqI=;
- h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
- b=h4ugYLKFCRyeSPbI0TezWpziozHNOckH2oPTtPvRAGah0Uy5pdKRe/0LdoudHbGTo
- EyJKOdgHoRTFUBVhAm+qKdKC9gaHTuTeXcqIFEjGQnzql+Rcbqvjc1HFUYflV7iZhS
- e7Ne01/dAfCMwlJzHpisH42Q33pT4VFebfL5niHpr9y9xv6JbhRF9MyDupwSG0nooc
- V9rhZaXMqaUDhCDHPDNly8oeRutyFdqD+W+wHRWDzx2u90BHnCR5m5x9gzomefWyHH
- 1F4dOUy/7QIUSKAleeQTC6ccxjPkYHuBhbExAySCjIkHUjOQMbQzVU0bzTEwbSDV3O
- 8T8O8JmWDpvNQ==
-From: Will Deacon <will@kernel.org>
-To: iommu@lists.linux-foundation.org
-Subject: [PATCH v2 4/4] swiotlb: Free tbl memory in swiotlb_exit()
-Date: Tue, 20 Jul 2021 14:38:26 +0100
-Message-Id: <20210720133826.9075-5-will@kernel.org>
-X-Mailer: git-send-email 2.20.1
-In-Reply-To: <20210720133826.9075-1-will@kernel.org>
-References: <20210720133826.9075-1-will@kernel.org>
+Received: from smtp2.osuosl.org ([127.0.0.1])
+ by localhost (smtp2.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+ with ESMTP id zKOyQQA6Io6c for <iommu@lists.linux-foundation.org>;
+ Tue, 20 Jul 2021 13:54:45 +0000 (UTC)
+X-Greylist: from auto-whitelisted by SQLgrey-1.8.0
+Received: from verein.lst.de (verein.lst.de [213.95.11.211])
+ by smtp2.osuosl.org (Postfix) with ESMTPS id C4EF2400FC
+ for <iommu@lists.linux-foundation.org>; Tue, 20 Jul 2021 13:54:44 +0000 (UTC)
+Received: by verein.lst.de (Postfix, from userid 2407)
+ id C76616736F; Tue, 20 Jul 2021 15:54:37 +0200 (CEST)
+Date: Tue, 20 Jul 2021 15:54:37 +0200
+From: Christoph Hellwig <hch@lst.de>
+To: Tianyu Lan <ltykernel@gmail.com>
+Subject: Re: [Resend RFC PATCH V4 09/13] x86/Swiotlb/HV: Add Swiotlb bounce
+ buffer remap function for HV IVM
+Message-ID: <20210720135437.GA13554@lst.de>
+References: <20210707154629.3977369-1-ltykernel@gmail.com>
+ <20210707154629.3977369-10-ltykernel@gmail.com>
 MIME-Version: 1.0
-Cc: Konrad Rzeszutek Wilk <konrad.wilk@oracle.com>,
- Will Deacon <will@kernel.org>, linux-kernel@vger.kernel.org,
- Nathan Chancellor <nathan@kernel.org>, Claire Chang <tientzu@chromium.org>,
- Robin Murphy <robin.murphy@arm.com>, Christoph Hellwig <hch@lst.de>,
- Guenter Roeck <linux@roeck-us.net>
+Content-Disposition: inline
+In-Reply-To: <20210707154629.3977369-10-ltykernel@gmail.com>
+User-Agent: Mutt/1.5.17 (2007-11-01)
+Cc: linux-hyperv@vger.kernel.org, brijesh.singh@amd.com, david@redhat.com,
+ peterz@infradead.org, dave.hansen@linux.intel.com, hpa@zytor.com,
+ anparri@microsoft.com, kys@microsoft.com, will@kernel.org,
+ boris.ostrovsky@oracle.com, linux-arch@vger.kernel.org, robh@kernel.org,
+ wei.liu@kernel.org, sstabellini@kernel.org, sthemmin@microsoft.com,
+ xen-devel@lists.xenproject.org, linux-scsi@vger.kernel.org, x86@kernel.org,
+ decui@microsoft.com, hch@lst.de, michael.h.kelley@microsoft.com,
+ nramas@linux.microsoft.com, mingo@redhat.com, pgonda@google.com,
+ rientjes@google.com, kuba@kernel.org, jejb@linux.ibm.com,
+ martin.b.radev@gmail.com, thomas.lendacky@amd.com, Tianyu.Lan@microsoft.com,
+ keescook@chromium.org, arnd@arndb.de, konrad.wilk@oracle.com,
+ haiyangz@microsoft.com, bp@alien8.de, luto@kernel.org,
+ krish.sadhukhan@oracle.com, tglx@linutronix.de, vkuznets@redhat.com,
+ jgross@suse.com, martin.petersen@oracle.com, saravanand@fb.com,
+ netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+ iommu@lists.linux-foundation.org, rppt@kernel.org, hannes@cmpxchg.org,
+ ardb@kernel.org, akpm@linux-foundation.org, robin.murphy@arm.com,
+ davem@davemloft.net, kirill.shutemov@linux.intel.com
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -90,66 +93,90 @@ Content-Transfer-Encoding: 7bit
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-Although swiotlb_exit() frees the 'slots' metadata array referenced by
-'io_tlb_default_mem', it leaves the underlying buffer pages allocated
-despite no longer being usable.
 
-Extend swiotlb_exit() to free the buffer pages as well as the slots
-array.
+Please split the swiotlb changes into a separate patch from the
+consumer.
 
-Cc: Claire Chang <tientzu@chromium.org>
-Cc: Christoph Hellwig <hch@lst.de>
-Cc: Robin Murphy <robin.murphy@arm.com>
-Cc: Konrad Rzeszutek Wilk <konrad.wilk@oracle.com>
-Tested-by: Nathan Chancellor <nathan@kernel.org>
-Tested-by: Claire Chang <tientzu@chromium.org>
-Reviewed-by: Christoph Hellwig <hch@lst.de>
-Signed-off-by: Will Deacon <will@kernel.org>
----
- kernel/dma/swiotlb.c | 21 +++++++++++++++------
- 1 file changed, 15 insertions(+), 6 deletions(-)
+>  }
+> +
+> +/*
+> + * hv_map_memory - map memory to extra space in the AMD SEV-SNP Isolation VM.
+> + */
+> +unsigned long hv_map_memory(unsigned long addr, unsigned long size)
+> +{
+> +	unsigned long *pfns = kcalloc(size / HV_HYP_PAGE_SIZE,
+> +				      sizeof(unsigned long),
+> +		       GFP_KERNEL);
+> +	unsigned long vaddr;
+> +	int i;
+> +
+> +	if (!pfns)
+> +		return (unsigned long)NULL;
+> +
+> +	for (i = 0; i < size / HV_HYP_PAGE_SIZE; i++)
+> +		pfns[i] = virt_to_hvpfn((void *)addr + i * HV_HYP_PAGE_SIZE) +
+> +			(ms_hyperv.shared_gpa_boundary >> HV_HYP_PAGE_SHIFT);
+> +
+> +	vaddr = (unsigned long)vmap_pfn(pfns, size / HV_HYP_PAGE_SIZE,
+> +					PAGE_KERNEL_IO);
+> +	kfree(pfns);
+> +
+> +	return vaddr;
 
-diff --git a/kernel/dma/swiotlb.c b/kernel/dma/swiotlb.c
-index b3c793ed9e64..87c40517e822 100644
---- a/kernel/dma/swiotlb.c
-+++ b/kernel/dma/swiotlb.c
-@@ -328,18 +328,27 @@ swiotlb_late_init_with_tbl(char *tlb, unsigned long nslabs)
- 
- void __init swiotlb_exit(void)
- {
--	size_t size;
- 	struct io_tlb_mem *mem = &io_tlb_default_mem;
-+	unsigned long tbl_vaddr;
-+	size_t tbl_size, slots_size;
- 
- 	if (!mem->nslabs)
- 		return;
- 
- 	pr_info("tearing down default memory pool\n");
--	size = array_size(sizeof(*mem->slots), mem->nslabs);
--	if (mem->late_alloc)
--		free_pages((unsigned long)mem->slots, get_order(size));
--	else
--		memblock_free_late(__pa(mem->slots), PAGE_ALIGN(size));
-+	tbl_vaddr = (unsigned long)phys_to_virt(mem->start);
-+	tbl_size = PAGE_ALIGN(mem->end - mem->start);
-+	slots_size = PAGE_ALIGN(array_size(sizeof(*mem->slots), mem->nslabs));
-+
-+	set_memory_encrypted(tbl_vaddr, tbl_size >> PAGE_SHIFT);
-+	if (mem->late_alloc) {
-+		free_pages(tbl_vaddr, get_order(tbl_size));
-+		free_pages((unsigned long)mem->slots, get_order(slots_size));
-+	} else {
-+		memblock_free_late(mem->start, tbl_size);
-+		memblock_free_late(__pa(mem->slots), slots_size);
-+	}
-+
- 	memset(mem, 0, sizeof(*mem));
- }
- 
--- 
-2.32.0.402.g57bb445576-goog
+This seems to miss a 'select VMAP_PFN'.  But more importantly I don't
+think this actually works.  Various DMA APIs do expect a struct page
+backing, so how is this going to work with say dma_mmap_attrs or
+dma_get_sgtable_attrs?
 
+> +static unsigned long __map_memory(unsigned long addr, unsigned long size)
+> +{
+> +	if (hv_is_isolation_supported())
+> +		return hv_map_memory(addr, size);
+> +
+> +	return addr;
+> +}
+> +
+> +static void __unmap_memory(unsigned long addr)
+> +{
+> +	if (hv_is_isolation_supported())
+> +		hv_unmap_memory(addr);
+> +}
+> +
+> +unsigned long set_memory_decrypted_map(unsigned long addr, unsigned long size)
+> +{
+> +	if (__set_memory_enc_dec(addr, size / PAGE_SIZE, false))
+> +		return (unsigned long)NULL;
+> +
+> +	return __map_memory(addr, size);
+> +}
+> +
+> +int set_memory_encrypted_unmap(unsigned long addr, unsigned long size)
+> +{
+> +	__unmap_memory(addr);
+> +	return __set_memory_enc_dec(addr, size / PAGE_SIZE, true);
+> +}
+
+Why this obsfucation into all kinds of strange helpers?  Also I think
+we want an ops vectors (or alternative calls) instead of the random
+if checks here.
+
+> + * @vstart:	The virtual start address of the swiotlb memory pool. The swiotlb
+> + *		memory pool may be remapped in the memory encrypted case and store
+
+Normall we'd call this vaddr or cpu_addr.
+
+> -	set_memory_decrypted((unsigned long)vaddr, bytes >> PAGE_SHIFT);
+> -	memset(vaddr, 0, bytes);
+> +	mem->vstart = (void *)set_memory_decrypted_map((unsigned long)vaddr, bytes);
+
+Please always pass kernel virtual addresses as pointers.
+
+And I think these APIs might need better names, e.g.
+
+arch_dma_map_decrypted and arch_dma_unmap_decrypted.
+
+Also these will need fallback versions for non-x86 architectures that
+currently use memory encryption.
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
