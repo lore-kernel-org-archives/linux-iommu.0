@@ -7,78 +7,80 @@ X-Spam-Status: No, score=-13.6 required=3.0 tests=BAYES_00,DKIM_INVALID,
 	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no
 	version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 642D4C636C9
-	for <iommu@archiver.kernel.org>; Wed, 21 Jul 2021 11:44:13 +0000 (UTC)
-Received: from smtp2.osuosl.org (smtp2.osuosl.org [140.211.166.133])
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 72D0BC636C9
+	for <iommu@archiver.kernel.org>; Wed, 21 Jul 2021 11:44:37 +0000 (UTC)
+Received: from smtp1.osuosl.org (smtp1.osuosl.org [140.211.166.138])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 08AA56109F
-	for <iommu@archiver.kernel.org>; Wed, 21 Jul 2021 11:44:12 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 08AA56109F
+	by mail.kernel.org (Postfix) with ESMTPS id 2F08B610D2
+	for <iommu@archiver.kernel.org>; Wed, 21 Jul 2021 11:44:37 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 2F08B610D2
 Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=chromium.org
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by smtp2.osuosl.org (Postfix) with ESMTP id C0273404E2;
-	Wed, 21 Jul 2021 11:44:12 +0000 (UTC)
+	by smtp1.osuosl.org (Postfix) with ESMTP id EE9FC828A5;
+	Wed, 21 Jul 2021 11:44:36 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from smtp2.osuosl.org ([127.0.0.1])
-	by localhost (smtp2.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id 4EfGaxKJ1PSd; Wed, 21 Jul 2021 11:44:11 +0000 (UTC)
+Received: from smtp1.osuosl.org ([127.0.0.1])
+	by localhost (smtp1.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+	with ESMTP id ifHjgcFK6bT8; Wed, 21 Jul 2021 11:44:36 +0000 (UTC)
 Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by smtp2.osuosl.org (Postfix) with ESMTPS id 651F5400C3;
-	Wed, 21 Jul 2021 11:44:11 +0000 (UTC)
+	by smtp1.osuosl.org (Postfix) with ESMTPS id D4CB782CD4;
+	Wed, 21 Jul 2021 11:44:35 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 3C646C001A;
-	Wed, 21 Jul 2021 11:44:11 +0000 (UTC)
-Received: from smtp2.osuosl.org (smtp2.osuosl.org [140.211.166.133])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 3077DC000E
- for <iommu@lists.linux-foundation.org>; Wed, 21 Jul 2021 11:44:10 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 8E289C001A;
+	Wed, 21 Jul 2021 11:44:35 +0000 (UTC)
+Received: from smtp3.osuosl.org (smtp3.osuosl.org [IPv6:2605:bc80:3010::136])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id EA3DEC000E
+ for <iommu@lists.linux-foundation.org>; Wed, 21 Jul 2021 11:44:34 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by smtp2.osuosl.org (Postfix) with ESMTP id 1123C402CB
- for <iommu@lists.linux-foundation.org>; Wed, 21 Jul 2021 11:44:10 +0000 (UTC)
+ by smtp3.osuosl.org (Postfix) with ESMTP id E66526074A
+ for <iommu@lists.linux-foundation.org>; Wed, 21 Jul 2021 11:44:34 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from smtp2.osuosl.org ([127.0.0.1])
- by localhost (smtp2.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id ZukD-bZUSSkU for <iommu@lists.linux-foundation.org>;
- Wed, 21 Jul 2021 11:44:07 +0000 (UTC)
+Authentication-Results: smtp3.osuosl.org (amavisd-new);
+ dkim=pass (1024-bit key) header.d=chromium.org
+Received: from smtp3.osuosl.org ([127.0.0.1])
+ by localhost (smtp3.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+ with ESMTP id rMcaGKJoYxGP for <iommu@lists.linux-foundation.org>;
+ Wed, 21 Jul 2021 11:44:34 +0000 (UTC)
 X-Greylist: whitelisted by SQLgrey-1.8.0
-Received: from mail-pg1-x52d.google.com (mail-pg1-x52d.google.com
- [IPv6:2607:f8b0:4864:20::52d])
- by smtp2.osuosl.org (Postfix) with ESMTPS id 3F9F2404DA
- for <iommu@lists.linux-foundation.org>; Wed, 21 Jul 2021 11:44:07 +0000 (UTC)
-Received: by mail-pg1-x52d.google.com with SMTP id s18so1598052pgg.8
- for <iommu@lists.linux-foundation.org>; Wed, 21 Jul 2021 04:44:07 -0700 (PDT)
+Received: from mail-pg1-x52b.google.com (mail-pg1-x52b.google.com
+ [IPv6:2607:f8b0:4864:20::52b])
+ by smtp3.osuosl.org (Postfix) with ESMTPS id 23CEE6062A
+ for <iommu@lists.linux-foundation.org>; Wed, 21 Jul 2021 11:44:34 +0000 (UTC)
+Received: by mail-pg1-x52b.google.com with SMTP id k20so1606334pgg.7
+ for <iommu@lists.linux-foundation.org>; Wed, 21 Jul 2021 04:44:34 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=chromium.org; s=google;
  h=mime-version:references:in-reply-to:from:date:message-id:subject:to
- :cc; bh=4eOE5oXt0Te/GnUqshzOeQhr7DeyqOGjYygIrkfQGGA=;
- b=KdQI6LuD8Wmsu8sCpYBmVNr4uqXouJd6KbQ3iYRLn2UXIAxs+TuEUbZye6F9L7aj1V
- ZAgxxPSOUOm+s48Q3N1vGWUj2UI5ovvKG0zNnKpAZ+Y4nQZHgOrkuO2NxaUrVYYpljXg
- lyBhu/YTGUcqASeyyy69yxEUAvWHEkFO5P9HA=
+ :cc; bh=1e5owWDxMUbIBJfKFii6zS+/7R0v2+enWtZrIJ8w5gE=;
+ b=oOMBLoLdDZUmJwKPMItYIv30/3dAnF/IjyteNCMVTgAl7Vs00+i0xC49Mg4KcYCRQH
+ XDCA6ws6TiC9cYmziRd03GZESG5nW9Bi3IhSWJlzkL5ZjyknmAtZS/ryG5jgI5P56sJ0
+ IAFknBfWisrvP3CVkp8BV9frTdmNt/tX2auDQ=
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
  d=1e100.net; s=20161025;
  h=x-gm-message-state:mime-version:references:in-reply-to:from:date
  :message-id:subject:to:cc;
- bh=4eOE5oXt0Te/GnUqshzOeQhr7DeyqOGjYygIrkfQGGA=;
- b=Y8AVvYbXPXJUdqp6S8qf0GRRfaPBykbWy1TRJrC7VJ5hIBBXCOJCDPwZF24TlHDiLQ
- Sn2Le4H1jWKlmglgc/cnqgEO3s2kxQV6tuvx30HekG2P5FFg4XnxRvbsQm64oj6b90Xh
- 5BsRdw+GK4r4c1jwRFFH1iLsm9osNV6Mp81WHQCP+taSzitkM/NsRJ5niSzqdLPq7czf
- K+6UHi7B7M5EVzR+yAV2WIPKtS/5TAyiWOQuzJcmZUb4hog+FdaMPOLrsvU7Vg9k93kv
- /lVAdbZ5CrxD7uFAscnQQVzYhgcwKJtO/njCfaxx64RRbaLTPCNlc0cbTZ7dnCt14SPg
- XReg==
-X-Gm-Message-State: AOAM532Ss6vGlIhTGcoB9vNBnVGnEUdFy4RG7XcdQKaIE/hEoJHOBTaX
- +r66+aByFSZOE/a9vqdFCbKg6PYc+nZVBp8YUQSdOw==
-X-Google-Smtp-Source: ABdhPJwOBnuO9cyF8OBviJSYN7tjfT+V3IKi0eKLRcwtLf+HGoO48XKeVyIURCRqP1SfZkP8A4tRfzpBVnepdhLBrCI=
-X-Received: by 2002:a05:6a00:2407:b029:341:185e:8674 with SMTP id
- z7-20020a056a002407b0290341185e8674mr20738643pfh.42.1626867846555; Wed, 21
- Jul 2021 04:44:06 -0700 (PDT)
+ bh=1e5owWDxMUbIBJfKFii6zS+/7R0v2+enWtZrIJ8w5gE=;
+ b=YEE84GOG4A+rephlW1/5kL/VN6xz/EhNLeCTByAI77h0ZMLq0QF7Cc0iI6FVpoKq6E
+ E1ix6tTRZDkx4y11m+W8dS3oVDr3SoSax/2CLhstlKCyQWTE/2uextkHY/SrKnM9GMFV
+ aGHCIB+hPQF8nu6LxRKx868GHM3/snA9+jyfW3BgS3/xv2c3MaTV/3J17jpdLjj69gVX
+ 9hlyqdaTxwPm3jJiSWQO2X2+JkGB7wwul/SKYcmbuE5L700hVXn9ZUi0L7+tCY6JVwGI
+ O7mI77iMBxYY20bjc5vMOGvL/ENNNy9uC6T8kOBdhtH5gO1PHNgRA8xJMXRd8ClmqjXB
+ jTiw==
+X-Gm-Message-State: AOAM530o2Nw9o6oQYCo+AjaNg5KbU/dRkWLer+JBPrXW+iRaWfKo/DJ/
+ lmJqe9YrL7NWlqDJ78Z0FOR7jsAG8xXB4rdUlcgktA==
+X-Google-Smtp-Source: ABdhPJzDuuXuFsg+sEvfAF7SzXJ4MRUYLPDA9Vj5ACSar4H9upnFwBC/H+/Y7qoK7WoFI+0/zLdVgr5TPKu1KmiiWMI=
+X-Received: by 2002:a63:3601:: with SMTP id d1mr6530858pga.299.1626867873570; 
+ Wed, 21 Jul 2021 04:44:33 -0700 (PDT)
 MIME-Version: 1.0
 References: <20210715121209.31024-1-yong.wu@mediatek.com>
- <20210715121209.31024-8-yong.wu@mediatek.com>
-In-Reply-To: <20210715121209.31024-8-yong.wu@mediatek.com>
+ <20210715121209.31024-9-yong.wu@mediatek.com>
+In-Reply-To: <20210715121209.31024-9-yong.wu@mediatek.com>
 From: Ikjoon Jang <ikjn@chromium.org>
-Date: Wed, 21 Jul 2021 19:43:55 +0800
-Message-ID: <CAATdQgBDsPHcuPYd=a+fjjTuqwXdJ-1GuSkj47cH1Ju5geqSLg@mail.gmail.com>
-Subject: Re: [PATCH v2 07/11] memory: mtk-smi: Add smi sub common support
+Date: Wed, 21 Jul 2021 19:44:22 +0800
+Message-ID: <CAATdQgAnj2B=js44O8LQ6ALqEr9r_UhiwMnLX+wqxJkQ5Lw=Ew@mail.gmail.com>
+Subject: Re: [PATCH v2 08/11] memory: mtk-smi: Use
+ devm_platform_ioremap_resource
 To: Yong Wu <yong.wu@mediatek.com>
 Cc: youlin.pei@mediatek.com,
  "open list:OPEN FIRMWARE AND FLATTENED DEVICE TREE BINDINGS"
@@ -110,168 +112,68 @@ Content-Transfer-Encoding: 7bit
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-On Thu, Jul 15, 2021 at 8:25 PM Yong Wu <yong.wu@mediatek.com> wrote:
+On Thu, Jul 15, 2021 at 8:24 PM Yong Wu <yong.wu@mediatek.com> wrote:
 >
-> In mt8195, there are some larbs connect with the smi-sub-common, then
-> connect with smi-common.
-
-Not critical but I suggest to describe what is smi-sub-common.
-e.g. "some larbs are not directly connected to smi-common,
-they are connected to smi-sub-common which is a bridge(?) interface to..."
-
->
-> Before we create device link between smi-larb with smi-common. If we have
-> sub-common, we should use device link the smi-larb and smi-sub-common,
-> then use device link between the smi-sub-common with smi-common. This is
-> for enabling clock/power automatically.
->
-> Move the device link code to a new interface for reusing.
->
-> There is no SW extra setting for smi-sub-common.
+> No functional change. Simplify probing code.
 >
 > Signed-off-by: Yong Wu <yong.wu@mediatek.com>
 
 Reviewed-by: Ikjoon Jang <ikjn@chromium.org>
 
 > ---
->  drivers/memory/mtk-smi.c | 75 +++++++++++++++++++++++++++-------------
->  1 file changed, 51 insertions(+), 24 deletions(-)
+>  drivers/memory/mtk-smi.c | 11 +++--------
+>  1 file changed, 3 insertions(+), 8 deletions(-)
 >
 > diff --git a/drivers/memory/mtk-smi.c b/drivers/memory/mtk-smi.c
-> index e68cbb51dd12..ee49bb50f5f5 100644
+> index ee49bb50f5f5..e5a34b3952a0 100644
 > --- a/drivers/memory/mtk-smi.c
 > +++ b/drivers/memory/mtk-smi.c
-> @@ -60,7 +60,8 @@
->
->  enum mtk_smi_type {
->         MTK_SMI_GEN1,
-> -       MTK_SMI_GEN2
-> +       MTK_SMI_GEN2,           /* gen2 smi common */
-> +       MTK_SMI_GEN2_SUB_COMM,  /* gen2 smi sub common */
->  };
->
->  #define MTK_SMI_CLK_NR_MAX                     4
-> @@ -90,13 +91,14 @@ struct mtk_smi {
->                 void __iomem            *smi_ao_base; /* only for gen1 */
->                 void __iomem            *base;        /* only for gen2 */
->         };
-> +       struct device                   *smi_common_dev; /* for sub common */
->         const struct mtk_smi_common_plat *plat;
->  };
->
->  struct mtk_smi_larb { /* larb: local arbiter */
->         struct mtk_smi                  smi;
->         void __iomem                    *base;
-> -       struct device                   *smi_common_dev;
-> +       struct device                   *smi_common_dev; /* common or sub-common dev */
->         const struct mtk_smi_larb_gen   *larb_gen;
->         int                             larbid;
->         u32                             *mmu;
-> @@ -259,6 +261,38 @@ static const struct of_device_id mtk_smi_larb_of_ids[] = {
->         {}
->  };
->
-> +static int mtk_smi_device_link_common(struct device *dev, struct device **com_dev)
-> +{
-> +       struct platform_device *smi_com_pdev;
-> +       struct device_node *smi_com_node;
-> +       struct device *smi_com_dev;
-> +       struct device_link *link;
-> +
-> +       smi_com_node = of_parse_phandle(dev->of_node, "mediatek,smi", 0);
-> +       if (!smi_com_node)
-> +               return -EINVAL;
-> +
-> +       smi_com_pdev = of_find_device_by_node(smi_com_node);
-> +       of_node_put(smi_com_node);
-> +       if (smi_com_pdev) {
-> +               /* smi common is the supplier, Make sure it is ready before */
-> +               if (!platform_get_drvdata(smi_com_pdev))
-> +                       return -EPROBE_DEFER;
-> +               smi_com_dev = &smi_com_pdev->dev;
-> +               link = device_link_add(dev, smi_com_dev,
-> +                                      DL_FLAG_PM_RUNTIME | DL_FLAG_STATELESS);
-> +               if (!link) {
-> +                       dev_err(dev, "Unable to link smi-common dev\n");
-> +                       return -ENODEV;
-> +               }
-> +               *com_dev = smi_com_dev;
-> +       } else {
-> +               dev_err(dev, "Failed to get the smi_common device\n");
-> +               return -EINVAL;
-> +       }
-> +       return 0;
-> +}
-> +
->  static int mtk_smi_dts_clk_init(struct device *dev, struct mtk_smi *smi,
->                                 unsigned int clk_nr_optional,
->                                 const char * const clk_optional[])
-> @@ -285,9 +319,6 @@ static int mtk_smi_larb_probe(struct platform_device *pdev)
+> @@ -317,7 +317,6 @@ static int mtk_smi_dts_clk_init(struct device *dev, struct mtk_smi *smi,
+>  static int mtk_smi_larb_probe(struct platform_device *pdev)
+>  {
 >         struct mtk_smi_larb *larb;
->         struct resource *res;
+> -       struct resource *res;
 >         struct device *dev = &pdev->dev;
-> -       struct device_node *smi_node;
-> -       struct platform_device *smi_pdev;
-> -       struct device_link *link;
 >         int ret;
 >
->         larb = devm_kzalloc(dev, sizeof(*larb), GFP_KERNEL);
-> @@ -307,26 +338,10 @@ static int mtk_smi_larb_probe(struct platform_device *pdev)
->                 return ret;
+> @@ -326,8 +325,7 @@ static int mtk_smi_larb_probe(struct platform_device *pdev)
+>                 return -ENOMEM;
 >
->         larb->smi.dev = dev;
-> -       smi_node = of_parse_phandle(dev->of_node, "mediatek,smi", 0);
-> -       if (!smi_node)
-> -               return -EINVAL;
+>         larb->larb_gen = of_device_get_match_data(dev);
+> -       res = platform_get_resource(pdev, IORESOURCE_MEM, 0);
+> -       larb->base = devm_ioremap_resource(dev, res);
+> +       larb->base = devm_platform_ioremap_resource(pdev, 0);
+>         if (IS_ERR(larb->base))
+>                 return PTR_ERR(larb->base);
 >
-> -       smi_pdev = of_find_device_by_node(smi_node);
-> -       of_node_put(smi_node);
-> -       if (smi_pdev) {
-> -               if (!platform_get_drvdata(smi_pdev))
-> -                       return -EPROBE_DEFER;
-> -               larb->smi_common_dev = &smi_pdev->dev;
-> -               link = device_link_add(dev, larb->smi_common_dev,
-> -                                      DL_FLAG_PM_RUNTIME | DL_FLAG_STATELESS);
-> -               if (!link) {
-> -                       dev_err(dev, "Unable to link smi-common dev\n");
-> -                       return -ENODEV;
-> -               }
-> -       } else {
-> -               dev_err(dev, "Failed to get the smi_common device\n");
-> -               return -EINVAL;
-> -       }
-> +       ret = mtk_smi_device_link_common(dev, &larb->smi_common_dev);
-> +       if (ret < 0)
-> +               return ret;
+> @@ -447,7 +445,6 @@ static int mtk_smi_common_probe(struct platform_device *pdev)
+>  {
+>         struct device *dev = &pdev->dev;
+>         struct mtk_smi *common;
+> -       struct resource *res;
+>         int ret;
 >
->         pm_runtime_enable(dev);
->         platform_set_drvdata(pdev, larb);
-> @@ -471,6 +486,14 @@ static int mtk_smi_common_probe(struct platform_device *pdev)
+>         common = devm_kzalloc(dev, sizeof(*common), GFP_KERNEL);
+> @@ -468,8 +465,7 @@ static int mtk_smi_common_probe(struct platform_device *pdev)
+>          * base.
+>          */
+>         if (common->plat->type == MTK_SMI_GEN1) {
+> -               res = platform_get_resource(pdev, IORESOURCE_MEM, 0);
+> -               common->smi_ao_base = devm_ioremap_resource(dev, res);
+> +               common->smi_ao_base = devm_platform_ioremap_resource(pdev, 0);
+>                 if (IS_ERR(common->smi_ao_base))
+>                         return PTR_ERR(common->smi_ao_base);
+>
+> @@ -481,8 +477,7 @@ static int mtk_smi_common_probe(struct platform_device *pdev)
+>                 if (ret)
+>                         return ret;
+>         } else {
+> -               res = platform_get_resource(pdev, IORESOURCE_MEM, 0);
+> -               common->base = devm_ioremap_resource(dev, res);
+> +               common->base = devm_platform_ioremap_resource(pdev, 0);
 >                 if (IS_ERR(common->base))
 >                         return PTR_ERR(common->base);
 >         }
-> +
-> +       /* link its smi-common if this is smi-sub-common */
-> +       if (common->plat->type == MTK_SMI_GEN2_SUB_COMM) {
-> +               ret = mtk_smi_device_link_common(dev, &common->smi_common_dev);
-> +               if (ret < 0)
-> +                       return ret;
-> +       }
-> +
->         pm_runtime_enable(dev);
->         platform_set_drvdata(pdev, common);
->         return 0;
-> @@ -478,6 +501,10 @@ static int mtk_smi_common_probe(struct platform_device *pdev)
->
->  static int mtk_smi_common_remove(struct platform_device *pdev)
->  {
-> +       struct mtk_smi *common = dev_get_drvdata(&pdev->dev);
-> +
-> +       if (common->plat->type == MTK_SMI_GEN2_SUB_COMM)
-> +               device_link_remove(&pdev->dev, common->smi_common_dev);
->         pm_runtime_disable(&pdev->dev);
->         return 0;
->  }
 > --
 > 2.18.0
 > _______________________________________________
