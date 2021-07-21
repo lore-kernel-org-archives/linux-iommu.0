@@ -2,101 +2,82 @@ Return-Path: <SRS0=85So=MN=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-10.8 required=3.0 tests=BAYES_00,DKIM_INVALID,
-	DKIM_SIGNED,HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_CR_TRAILER,INCLUDES_PATCH,
-	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,UNWANTED_LANGUAGE_BODY
-	autolearn=unavailable autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-5.4 required=3.0 tests=BAYES_00,
+	HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,NICE_REPLY_A,SPF_HELO_NONE,
+	SPF_PASS,USER_AGENT_SANE_1 autolearn=no autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 151CDC636CE
-	for <iommu@archiver.kernel.org>; Wed, 21 Jul 2021 10:54:02 +0000 (UTC)
-Received: from smtp4.osuosl.org (smtp4.osuosl.org [140.211.166.137])
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 276ADC07E9B
+	for <iommu@archiver.kernel.org>; Wed, 21 Jul 2021 11:07:34 +0000 (UTC)
+Received: from smtp1.osuosl.org (smtp1.osuosl.org [140.211.166.138])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id BD6CF6124C
-	for <iommu@archiver.kernel.org>; Wed, 21 Jul 2021 10:54:01 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org BD6CF6124C
-Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=chromium.org
+	by mail.kernel.org (Postfix) with ESMTPS id BB2F660D07
+	for <iommu@archiver.kernel.org>; Wed, 21 Jul 2021 11:07:33 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org BB2F660D07
+Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=huawei.com
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by smtp4.osuosl.org (Postfix) with ESMTP id 7F5B4401C9;
-	Wed, 21 Jul 2021 10:54:01 +0000 (UTC)
+	by smtp1.osuosl.org (Postfix) with ESMTP id 8313381CBA;
+	Wed, 21 Jul 2021 11:07:33 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from smtp4.osuosl.org ([127.0.0.1])
-	by localhost (smtp4.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id 3Ei9tXatvjVS; Wed, 21 Jul 2021 10:54:00 +0000 (UTC)
+Received: from smtp1.osuosl.org ([127.0.0.1])
+	by localhost (smtp1.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+	with ESMTP id nMO70LwbJsJs; Wed, 21 Jul 2021 11:07:32 +0000 (UTC)
 Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by smtp4.osuosl.org (Postfix) with ESMTPS id BE01140303;
-	Wed, 21 Jul 2021 10:53:59 +0000 (UTC)
+	by smtp1.osuosl.org (Postfix) with ESMTPS id 5B57F81BB0;
+	Wed, 21 Jul 2021 11:07:32 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id B004BC0027;
-	Wed, 21 Jul 2021 10:53:58 +0000 (UTC)
-Received: from smtp3.osuosl.org (smtp3.osuosl.org [140.211.166.136])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 2760AC000E
- for <iommu@lists.linux-foundation.org>; Wed, 21 Jul 2021 10:44:51 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 2BE78C001A;
+	Wed, 21 Jul 2021 11:07:32 +0000 (UTC)
+Received: from smtp1.osuosl.org (smtp1.osuosl.org [140.211.166.138])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id B6A3FC000E
+ for <iommu@lists.linux-foundation.org>; Wed, 21 Jul 2021 11:07:30 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by smtp3.osuosl.org (Postfix) with ESMTP id 15626606C6
- for <iommu@lists.linux-foundation.org>; Wed, 21 Jul 2021 10:44:51 +0000 (UTC)
+ by smtp1.osuosl.org (Postfix) with ESMTP id B3D0081BB0
+ for <iommu@lists.linux-foundation.org>; Wed, 21 Jul 2021 11:07:30 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Authentication-Results: smtp3.osuosl.org (amavisd-new);
- dkim=pass (1024-bit key) header.d=chromium.org
-Received: from smtp3.osuosl.org ([127.0.0.1])
- by localhost (smtp3.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id B12Aflsjxpuz for <iommu@lists.linux-foundation.org>;
- Wed, 21 Jul 2021 10:44:49 +0000 (UTC)
-X-Greylist: whitelisted by SQLgrey-1.8.0
-Received: from mail-pj1-x102a.google.com (mail-pj1-x102a.google.com
- [IPv6:2607:f8b0:4864:20::102a])
- by smtp3.osuosl.org (Postfix) with ESMTPS id D78B1605DA
- for <iommu@lists.linux-foundation.org>; Wed, 21 Jul 2021 10:44:49 +0000 (UTC)
-Received: by mail-pj1-x102a.google.com with SMTP id
- g4-20020a17090ace84b029017554809f35so3738582pju.5
- for <iommu@lists.linux-foundation.org>; Wed, 21 Jul 2021 03:44:49 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=chromium.org; s=google;
- h=mime-version:references:in-reply-to:from:date:message-id:subject:to
- :cc; bh=m9KfU32Td3xB/wuWNhNbDVpIahkZHa5eXkr6/E8GaKE=;
- b=he/bvGRxDLSF7f0GBNdzXYHRkkjCsYcba5AlfCdmFGNOSPALoTInP/YKKXJkwF2DPu
- 90L1sVjKnum25CXgGjAHi/E3U9XJXUxXyt6f2VlovfiI7NI4CGfsdLzyn12fuW0W5d4g
- xlb3wCH4NBfE83xkTJy7oGw7zBhZkEwfYc3Lw=
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
- d=1e100.net; s=20161025;
- h=x-gm-message-state:mime-version:references:in-reply-to:from:date
- :message-id:subject:to:cc;
- bh=m9KfU32Td3xB/wuWNhNbDVpIahkZHa5eXkr6/E8GaKE=;
- b=py5q1ll9sANqDNOHRAyHQmtlY3Q+13OA7W22Fem0hQk6W+j1DQuBVDLwEu0v/EG5QU
- L8Be4QDF4LzJzfvI2G0byGxwfGobnbiymIlhWE0TVOzpiSQG4UchzSLKuu0h2HfETXmv
- +Q89yYyl0MwFfJG8+WglkM99DOG6c+evmJXNS/BGnMRHP0wrgNsYOwB561NeYQ0e1lG9
- S/oxv17Squugm0OPJYmhyHISRtGPEO9ftfGQ/kYuXHmc+zSll+jTXPFicN7yLyPc5BYg
- ck5/Qa0ZG+dCyg7B1BecITvgOSRfdZrmIsaYtzAm6sJ4y9g25BFdP8Sy1bO0TKfwBRJF
- yDHw==
-X-Gm-Message-State: AOAM5321kILJde6Hrn1YsQ9Nfg/izyaFI85SQ3QLRzpqDPyK7laEVHgn
- Y9Ant4SpJBahFOR2TInrY7R5W/oa3jPM+tR0ZUduLg==
-X-Google-Smtp-Source: ABdhPJwMQyEj40wDyMHpYAAPz6Zr7HtqGIr3IjYBKZh75hmdijcf7C1xGMIP2NE1ifwpN1NaVPhToI/+eV5K9Fo7Ztc=
-X-Received: by 2002:a17:902:8c83:b029:129:17e5:a1cc with SMTP id
- t3-20020a1709028c83b029012917e5a1ccmr27210970plo.49.1626864289274; Wed, 21
- Jul 2021 03:44:49 -0700 (PDT)
+Received: from smtp1.osuosl.org ([127.0.0.1])
+ by localhost (smtp1.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+ with ESMTP id jSexpL-jTqqV for <iommu@lists.linux-foundation.org>;
+ Wed, 21 Jul 2021 11:07:29 +0000 (UTC)
+X-Greylist: domain auto-whitelisted by SQLgrey-1.8.0
+Received: from frasgout.his.huawei.com (frasgout.his.huawei.com
+ [185.176.79.56])
+ by smtp1.osuosl.org (Postfix) with ESMTPS id 4CB9081B35
+ for <iommu@lists.linux-foundation.org>; Wed, 21 Jul 2021 11:07:29 +0000 (UTC)
+Received: from fraeml744-chm.china.huawei.com (unknown [172.18.147.201])
+ by frasgout.his.huawei.com (SkyGuard) with ESMTP id 4GVC8m0yxyz6D8Wf;
+ Wed, 21 Jul 2021 18:52:40 +0800 (CST)
+Received: from lhreml724-chm.china.huawei.com (10.201.108.75) by
+ fraeml744-chm.china.huawei.com (10.206.15.225) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2176.2; Wed, 21 Jul 2021 13:07:26 +0200
+Received: from [10.47.85.43] (10.47.85.43) by lhreml724-chm.china.huawei.com
+ (10.201.108.75) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2176.2; Wed, 21 Jul
+ 2021 12:07:25 +0100
+Subject: Re: [bug report] iommu_dma_unmap_sg() is very slow then running IO
+ from remote numa node
+To: Ming Lei <ming.lei@redhat.com>
+References: <YOgK8fdv7dOQtkET@T590>
+ <23e7956b-f3b5-b585-3c18-724165994051@arm.com> <YOhcOv1oOwm6fco+@T590>
+ <ad5bc549-d83f-bee0-9a9f-03a5afd7f3d9@huawei.com> <YPd7IGFZrsTRfUxE@T590>
+ <74537f9c-af5f-cd84-60ab-49ca6220310e@huawei.com> <YPfwAN1onpSKoeBj@T590>
+From: John Garry <john.garry@huawei.com>
+Message-ID: <a2650064-41cf-cb62-7ab4-d14ef1856966@huawei.com>
+Date: Wed, 21 Jul 2021 12:07:22 +0100
+User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; rv:68.0) Gecko/20100101
+ Thunderbird/68.12.1
 MIME-Version: 1.0
-References: <20210715121209.31024-1-yong.wu@mediatek.com>
- <20210715121209.31024-6-yong.wu@mediatek.com>
-In-Reply-To: <20210715121209.31024-6-yong.wu@mediatek.com>
-From: Ikjoon Jang <ikjn@chromium.org>
-Date: Wed, 21 Jul 2021 18:44:37 +0800
-Message-ID: <CAATdQgB4P=7Wvhc_SBxy1tGKRXD7qukc95bGNJJ=ECyVm_dgHQ@mail.gmail.com>
-Subject: Re: [PATCH v2 05/11] memory: mtk-smi: Adjust some code position
-To: Yong Wu <yong.wu@mediatek.com>
-X-Mailman-Approved-At: Wed, 21 Jul 2021 10:53:57 +0000
-Cc: youlin.pei@mediatek.com,
- "open list:OPEN FIRMWARE AND FLATTENED DEVICE TREE BINDINGS"
- <devicetree@vger.kernel.org>, yi.kuo@mediatek.com,
- srv_heupstream <srv_heupstream@mediatek.com>,
- Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>,
- Robin Murphy <robin.murphy@arm.com>, open list <linux-kernel@vger.kernel.org>,
- Krzysztof Kozlowski <krzk@kernel.org>, iommu@lists.linux-foundation.org,
- Rob Herring <robh+dt@kernel.org>,
- "moderated list:ARM/Mediatek SoC support" <linux-mediatek@lists.infradead.org>,
- Matthias Brugger <matthias.bgg@gmail.com>, anthony.huang@mediatek.com,
- ming-fan.chen@mediatek.com, anan.sun@mediatek.com,
- Will Deacon <will@kernel.org>, "moderated list:ARM/Mediatek SoC support"
- <linux-arm-kernel@lists.infradead.org>
+In-Reply-To: <YPfwAN1onpSKoeBj@T590>
+Content-Language: en-US
+X-Originating-IP: [10.47.85.43]
+X-ClientProxiedBy: lhreml734-chm.china.huawei.com (10.201.108.85) To
+ lhreml724-chm.china.huawei.com (10.201.108.75)
+X-CFilter-Loop: Reflected
+Cc: Robin Murphy <robin.murphy@arm.com>, linux-kernel@vger.kernel.org,
+ linux-nvme@lists.infradead.org, iommu@lists.linux-foundation.org,
+ Will Deacon <will@kernel.org>, linux-arm-kernel@lists.infradead.org
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -109,289 +90,45 @@ List-Post: <mailto:iommu@lists.linux-foundation.org>
 List-Help: <mailto:iommu-request@lists.linux-foundation.org?subject=help>
 List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
  <mailto:iommu-request@lists.linux-foundation.org?subject=subscribe>
-Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset="us-ascii"; Format="flowed"
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-Hi,
+On 21/07/2021 10:59, Ming Lei wrote:
+>> I have now removed that from the tree, so please re-pull.
+> Now the kernel can be built successfully, but not see obvious improvement
+> on the reported issue:
+> 
+> [root@ampere-mtjade-04 ~]# uname -a
+> Linux ampere-mtjade-04.khw4.lab.eng.bos.redhat.com 5.14.0-rc2_smmu_fix+ #2 SMP Wed Jul 21 05:49:03 EDT 2021 aarch64 aarch64 aarch64 GNU/Linux
+> 
+> [root@ampere-mtjade-04 ~]# taskset -c 0 ~/git/tools/test/nvme/io_uring 10 1 /dev/nvme1n1 4k
+> + fio --bs=4k --ioengine=io_uring --fixedbufs --registerfiles --hipri --iodepth=64 --iodepth_batch_submit=16 --iodepth_batch_complete_min=16 --filename=/dev/nvme1n1 --direct=1 --runtime=10 --numjobs=1 --rw=randread --name=test --group_reporting
+> test: (g=0): rw=randread, bs=(R) 4096B-4096B, (W) 4096B-4096B, (T) 4096B-4096B, ioengine=io_uring, iodepth=64
+> fio-3.27
+> Starting 1 process
+> Jobs: 1 (f=1): [r(1)][100.0%][r=1503MiB/s][r=385k IOPS][eta 00m:00s]
+> test: (groupid=0, jobs=1): err= 0: pid=3143: Wed Jul 21 05:58:14 2021
+>    read: IOPS=384k, BW=1501MiB/s (1573MB/s)(14.7GiB/10001msec)
 
-On Thu, Jul 15, 2021 at 8:23 PM Yong Wu <yong.wu@mediatek.com> wrote:
->
-> No functional change. Only move the code position to make the code more
-> readable.
-> 1. Put the register smi-common above smi-larb. Prepare to add some others
->    register setting.
-> 2. Put mtk_smi_larb_unbind around larb_bind.
-> 3. Sort the SoC data alphabetically. and put them in one line as the
->    current kernel allow it.
->
-> Signed-off-by: Yong Wu <yong.wu@mediatek.com>
+I am not sure what baseline you used previously, but you were getting 
+327K then, so at least this would be an improvement.
 
-Reviewed-by: Ikjoon Jang <ikjn@chromium.org>
+> 
+> [root@ampere-mtjade-04 ~]# taskset -c 80 ~/git/tools/test/nvme/io_uring 10 1 /dev/nvme1n1 4k
+> + fio --bs=4k --ioengine=io_uring --fixedbufs --registerfiles --hipri --iodepth=64 --iodepth_batch_submit=16 --iodepth_batch_complete_min=16 --filename=/dev/nvme1n1 --direct=1 --runtime=10 --numjobs=1 --rw=randread --name=test --group_reporting
+> test: (g=0): rw=randread, bs=(R) 4096B-4096B, (W) 4096B-4096B, (T) 4096B-4096B, ioengine=io_uring, iodepth=64
+> fio-3.27
+> Starting 1 process
+> Jobs: 1 (f=1): [r(1)][100.0%][r=138MiB/s][r=35.4k IOPS][eta 00m:00s]
+> test: (groupid=0, jobs=1): err= 0: pid=3063: Wed Jul 21 05:55:31 2021
+>    read: IOPS=35.4k, BW=138MiB/s (145MB/s)(1383MiB/10001msec)
 
-> ---
->  drivers/memory/mtk-smi.c | 185 +++++++++++++++------------------------
->  1 file changed, 73 insertions(+), 112 deletions(-)
->
-> diff --git a/drivers/memory/mtk-smi.c b/drivers/memory/mtk-smi.c
-> index ff07b14bcd66..6f8e582bace5 100644
-> --- a/drivers/memory/mtk-smi.c
-> +++ b/drivers/memory/mtk-smi.c
-> @@ -17,12 +17,15 @@
->  #include <dt-bindings/memory/mt2701-larb-port.h>
->  #include <dt-bindings/memory/mtk-memory-port.h>
->
-> -/* mt8173 */
-> -#define SMI_LARB_MMU_EN                0xf00
-> +/* SMI COMMON */
-> +#define SMI_BUS_SEL                    0x220
-> +#define SMI_BUS_LARB_SHIFT(larbid)     ((larbid) << 1)
-> +/* All are MMU0 defaultly. Only specialize mmu1 here. */
-> +#define F_MMU1_LARB(larbid)            (0x1 << SMI_BUS_LARB_SHIFT(larbid))
->
-> -/* mt8167 */
-> -#define MT8167_SMI_LARB_MMU_EN 0xfc0
-> +/* SMI LARB */
->
-> +/* Below are about mmu enable registers, they are different in SoCs */
->  /* mt2701 */
->  #define REG_SMI_SECUR_CON_BASE         0x5c0
->
-> @@ -41,20 +44,20 @@
->  /* mt2701 domain should be set to 3 */
->  #define SMI_SECUR_CON_VAL_DOMAIN(id)   (0x3 << ((((id) & 0x7) << 2) + 1))
->
-> -/* mt2712 */
-> -#define SMI_LARB_NONSEC_CON(id)        (0x380 + ((id) * 4))
-> -#define F_MMU_EN               BIT(0)
-> -#define BANK_SEL(id)           ({                      \
-> +/* mt8167 */
-> +#define MT8167_SMI_LARB_MMU_EN         0xfc0
-> +
-> +/* mt8173 */
-> +#define MT8173_SMI_LARB_MMU_EN         0xf00
-> +
-> +/* larb gen2 */
-> +#define SMI_LARB_NONSEC_CON(id)                (0x380 + ((id) * 4))
-> +#define F_MMU_EN                       BIT(0)
-> +#define BANK_SEL(id)                   ({              \
->         u32 _id = (id) & 0x3;                           \
->         (_id << 8 | _id << 10 | _id << 12 | _id << 14); \
->  })
->
-> -/* SMI COMMON */
-> -#define SMI_BUS_SEL                    0x220
-> -#define SMI_BUS_LARB_SHIFT(larbid)     ((larbid) << 1)
-> -/* All are MMU0 defaultly. Only specialize mmu1 here. */
-> -#define F_MMU1_LARB(larbid)            (0x1 << SMI_BUS_LARB_SHIFT(larbid))
-> -
->  enum mtk_smi_type {
->         MTK_SMI_GEN1,
->         MTK_SMI_GEN2
-> @@ -132,36 +135,16 @@ mtk_smi_larb_bind(struct device *dev, struct device *master, void *data)
->         return -ENODEV;
->  }
->
-> -static void mtk_smi_larb_config_port_gen2_general(struct device *dev)
-> -{
-> -       struct mtk_smi_larb *larb = dev_get_drvdata(dev);
-> -       u32 reg;
-> -       int i;
-> -
-> -       if (BIT(larb->larbid) & larb->larb_gen->larb_direct_to_common_mask)
-> -               return;
-> -
-> -       for_each_set_bit(i, (unsigned long *)larb->mmu, 32) {
-> -               reg = readl_relaxed(larb->base + SMI_LARB_NONSEC_CON(i));
-> -               reg |= F_MMU_EN;
-> -               reg |= BANK_SEL(larb->bank[i]);
-> -               writel(reg, larb->base + SMI_LARB_NONSEC_CON(i));
-> -       }
-> -}
-> -
-> -static void mtk_smi_larb_config_port_mt8173(struct device *dev)
-> +static void
-> +mtk_smi_larb_unbind(struct device *dev, struct device *master, void *data)
->  {
-> -       struct mtk_smi_larb *larb = dev_get_drvdata(dev);
-> -
-> -       writel(*larb->mmu, larb->base + SMI_LARB_MMU_EN);
-> +       /* Do nothing as the iommu is always enabled. */
->  }
->
-> -static void mtk_smi_larb_config_port_mt8167(struct device *dev)
-> -{
-> -       struct mtk_smi_larb *larb = dev_get_drvdata(dev);
-> -
-> -       writel(*larb->mmu, larb->base + MT8167_SMI_LARB_MMU_EN);
-> -}
-> +static const struct component_ops mtk_smi_larb_component_ops = {
-> +       .bind = mtk_smi_larb_bind,
-> +       .unbind = mtk_smi_larb_unbind,
-> +};
->
->  static void mtk_smi_larb_config_port_gen1(struct device *dev)
->  {
-> @@ -194,26 +177,36 @@ static void mtk_smi_larb_config_port_gen1(struct device *dev)
->         }
->  }
->
-> -static void
-> -mtk_smi_larb_unbind(struct device *dev, struct device *master, void *data)
-> +static void mtk_smi_larb_config_port_mt8167(struct device *dev)
->  {
-> -       /* Do nothing as the iommu is always enabled. */
-> +       struct mtk_smi_larb *larb = dev_get_drvdata(dev);
-> +
-> +       writel(*larb->mmu, larb->base + MT8167_SMI_LARB_MMU_EN);
->  }
->
-> -static const struct component_ops mtk_smi_larb_component_ops = {
-> -       .bind = mtk_smi_larb_bind,
-> -       .unbind = mtk_smi_larb_unbind,
-> -};
-> +static void mtk_smi_larb_config_port_mt8173(struct device *dev)
-> +{
-> +       struct mtk_smi_larb *larb = dev_get_drvdata(dev);
->
-> -static const struct mtk_smi_larb_gen mtk_smi_larb_mt8173 = {
-> -       /* mt8173 do not need the port in larb */
-> -       .config_port = mtk_smi_larb_config_port_mt8173,
-> -};
-> +       writel(*larb->mmu, larb->base + MT8173_SMI_LARB_MMU_EN);
-> +}
->
-> -static const struct mtk_smi_larb_gen mtk_smi_larb_mt8167 = {
-> -       /* mt8167 do not need the port in larb */
-> -       .config_port = mtk_smi_larb_config_port_mt8167,
-> -};
-> +static void mtk_smi_larb_config_port_gen2_general(struct device *dev)
-> +{
-> +       struct mtk_smi_larb *larb = dev_get_drvdata(dev);
-> +       u32 reg;
-> +       int i;
-> +
-> +       if (BIT(larb->larbid) & larb->larb_gen->larb_direct_to_common_mask)
-> +               return;
-> +
-> +       for_each_set_bit(i, (unsigned long *)larb->mmu, 32) {
-> +               reg = readl_relaxed(larb->base + SMI_LARB_NONSEC_CON(i));
-> +               reg |= F_MMU_EN;
-> +               reg |= BANK_SEL(larb->bank[i]);
-> +               writel(reg, larb->base + SMI_LARB_NONSEC_CON(i));
-> +       }
-> +}
->
->  static const struct mtk_smi_larb_gen mtk_smi_larb_mt2701 = {
->         .port_in_larb = {
-> @@ -235,6 +228,16 @@ static const struct mtk_smi_larb_gen mtk_smi_larb_mt6779 = {
->                 /* DUMMY | IPU0 | IPU1 | CCU | MDLA */
->  };
->
-> +static const struct mtk_smi_larb_gen mtk_smi_larb_mt8167 = {
-> +       /* mt8167 do not need the port in larb */
-> +       .config_port = mtk_smi_larb_config_port_mt8167,
-> +};
-> +
-> +static const struct mtk_smi_larb_gen mtk_smi_larb_mt8173 = {
-> +       /* mt8173 do not need the port in larb */
-> +       .config_port = mtk_smi_larb_config_port_mt8173,
-> +};
-> +
->  static const struct mtk_smi_larb_gen mtk_smi_larb_mt8183 = {
->         .config_port                = mtk_smi_larb_config_port_gen2_general,
->         .larb_direct_to_common_mask = BIT(2) | BIT(3) | BIT(7),
-> @@ -246,34 +249,13 @@ static const struct mtk_smi_larb_gen mtk_smi_larb_mt8192 = {
->  };
->
->  static const struct of_device_id mtk_smi_larb_of_ids[] = {
-> -       {
-> -               .compatible = "mediatek,mt8167-smi-larb",
-> -               .data = &mtk_smi_larb_mt8167
-> -       },
-> -       {
-> -               .compatible = "mediatek,mt8173-smi-larb",
-> -               .data = &mtk_smi_larb_mt8173
-> -       },
-> -       {
-> -               .compatible = "mediatek,mt2701-smi-larb",
-> -               .data = &mtk_smi_larb_mt2701
-> -       },
-> -       {
-> -               .compatible = "mediatek,mt2712-smi-larb",
-> -               .data = &mtk_smi_larb_mt2712
-> -       },
-> -       {
-> -               .compatible = "mediatek,mt6779-smi-larb",
-> -               .data = &mtk_smi_larb_mt6779
-> -       },
-> -       {
-> -               .compatible = "mediatek,mt8183-smi-larb",
-> -               .data = &mtk_smi_larb_mt8183
-> -       },
-> -       {
-> -               .compatible = "mediatek,mt8192-smi-larb",
-> -               .data = &mtk_smi_larb_mt8192
-> -       },
-> +       {.compatible = "mediatek,mt2701-smi-larb", .data = &mtk_smi_larb_mt2701},
-> +       {.compatible = "mediatek,mt2712-smi-larb", .data = &mtk_smi_larb_mt2712},
-> +       {.compatible = "mediatek,mt6779-smi-larb", .data = &mtk_smi_larb_mt6779},
-> +       {.compatible = "mediatek,mt8167-smi-larb", .data = &mtk_smi_larb_mt8167},
-> +       {.compatible = "mediatek,mt8173-smi-larb", .data = &mtk_smi_larb_mt8173},
-> +       {.compatible = "mediatek,mt8183-smi-larb", .data = &mtk_smi_larb_mt8183},
-> +       {.compatible = "mediatek,mt8192-smi-larb", .data = &mtk_smi_larb_mt8192},
->         {}
->  };
->
-> @@ -428,34 +410,13 @@ static const struct mtk_smi_common_plat mtk_smi_common_mt8192 = {
->  };
->
->  static const struct of_device_id mtk_smi_common_of_ids[] = {
-> -       {
-> -               .compatible = "mediatek,mt8173-smi-common",
-> -               .data = &mtk_smi_common_gen2,
-> -       },
-> -       {
-> -               .compatible = "mediatek,mt8167-smi-common",
-> -               .data = &mtk_smi_common_gen2,
-> -       },
-> -       {
-> -               .compatible = "mediatek,mt2701-smi-common",
-> -               .data = &mtk_smi_common_gen1,
-> -       },
-> -       {
-> -               .compatible = "mediatek,mt2712-smi-common",
-> -               .data = &mtk_smi_common_gen2,
-> -       },
-> -       {
-> -               .compatible = "mediatek,mt6779-smi-common",
-> -               .data = &mtk_smi_common_mt6779,
-> -       },
-> -       {
-> -               .compatible = "mediatek,mt8183-smi-common",
-> -               .data = &mtk_smi_common_mt8183,
-> -       },
-> -       {
-> -               .compatible = "mediatek,mt8192-smi-common",
-> -               .data = &mtk_smi_common_mt8192,
-> -       },
-> +       {.compatible = "mediatek,mt2701-smi-common", .data = &mtk_smi_common_gen1},
-> +       {.compatible = "mediatek,mt2712-smi-common", .data = &mtk_smi_common_gen2},
-> +       {.compatible = "mediatek,mt6779-smi-common", .data = &mtk_smi_common_mt6779},
-> +       {.compatible = "mediatek,mt8167-smi-common", .data = &mtk_smi_common_gen2},
-> +       {.compatible = "mediatek,mt8173-smi-common", .data = &mtk_smi_common_gen2},
-> +       {.compatible = "mediatek,mt8183-smi-common", .data = &mtk_smi_common_mt8183},
-> +       {.compatible = "mediatek,mt8192-smi-common", .data = &mtk_smi_common_mt8192},
->         {}
->  };
->
-> --
-> 2.18.0
-> _______________________________________________
-> Linux-mediatek mailing list
-> Linux-mediatek@lists.infradead.org
-> http://lists.infradead.org/mailman/listinfo/linux-mediatek
+I can try similar on our arm64 board when I get a chance.
+
+Thanks,
+John
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
