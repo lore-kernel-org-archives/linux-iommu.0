@@ -2,91 +2,81 @@ Return-Path: <SRS0=85So=MN=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-8.8 required=3.0 tests=BAYES_00,
-	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,SPF_HELO_NONE,
-	SPF_PASS autolearn=unavailable autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-5.4 required=3.0 tests=BAYES_00,
+	HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,NICE_REPLY_A,SPF_HELO_NONE,
+	SPF_PASS,USER_AGENT_SANE_1 autolearn=no autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id CAF6EC07E9B
-	for <iommu@archiver.kernel.org>; Wed, 21 Jul 2021 08:54:10 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 815AFC12002
+	for <iommu@archiver.kernel.org>; Wed, 21 Jul 2021 09:23:49 +0000 (UTC)
 Received: from smtp2.osuosl.org (smtp2.osuosl.org [140.211.166.133])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 50AF9611C1
-	for <iommu@archiver.kernel.org>; Wed, 21 Jul 2021 08:54:10 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 50AF9611C1
+	by mail.kernel.org (Postfix) with ESMTPS id 2FD676109F
+	for <iommu@archiver.kernel.org>; Wed, 21 Jul 2021 09:23:49 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 2FD676109F
 Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=huawei.com
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by smtp2.osuosl.org (Postfix) with ESMTP id 01C15404CB;
-	Wed, 21 Jul 2021 08:54:10 +0000 (UTC)
+	by smtp2.osuosl.org (Postfix) with ESMTP id ED7AF402DD;
+	Wed, 21 Jul 2021 09:23:48 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
 Received: from smtp2.osuosl.org ([127.0.0.1])
 	by localhost (smtp2.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id eaGlYnsMfmQ7; Wed, 21 Jul 2021 08:54:09 +0000 (UTC)
-Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [IPv6:2605:bc80:3010:104::8cd3:938])
-	by smtp2.osuosl.org (Postfix) with ESMTPS id 9789140138;
-	Wed, 21 Jul 2021 08:54:08 +0000 (UTC)
+	with ESMTP id dbQ4DMyQqvzG; Wed, 21 Jul 2021 09:23:48 +0000 (UTC)
+Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
+	by smtp2.osuosl.org (Postfix) with ESMTPS id D7DCA40138;
+	Wed, 21 Jul 2021 09:23:47 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 35034C001A;
-	Wed, 21 Jul 2021 08:54:08 +0000 (UTC)
-Received: from smtp3.osuosl.org (smtp3.osuosl.org [140.211.166.136])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 3A98CC000E
- for <iommu@lists.linux-foundation.org>; Wed, 21 Jul 2021 08:54:07 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id A2215C001A;
+	Wed, 21 Jul 2021 09:23:47 +0000 (UTC)
+Received: from smtp1.osuosl.org (smtp1.osuosl.org [IPv6:2605:bc80:3010::138])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 82914C000E
+ for <iommu@lists.linux-foundation.org>; Wed, 21 Jul 2021 09:23:46 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by smtp3.osuosl.org (Postfix) with ESMTP id 267AD607A6
- for <iommu@lists.linux-foundation.org>; Wed, 21 Jul 2021 08:54:07 +0000 (UTC)
+ by smtp1.osuosl.org (Postfix) with ESMTP id 69566829F2
+ for <iommu@lists.linux-foundation.org>; Wed, 21 Jul 2021 09:23:46 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from smtp3.osuosl.org ([127.0.0.1])
- by localhost (smtp3.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id 4gL9slaNBmmC for <iommu@lists.linux-foundation.org>;
- Wed, 21 Jul 2021 08:54:06 +0000 (UTC)
+Received: from smtp1.osuosl.org ([127.0.0.1])
+ by localhost (smtp1.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+ with ESMTP id 0YgzLjxauvYp for <iommu@lists.linux-foundation.org>;
+ Wed, 21 Jul 2021 09:23:45 +0000 (UTC)
 X-Greylist: domain auto-whitelisted by SQLgrey-1.8.0
 Received: from frasgout.his.huawei.com (frasgout.his.huawei.com
  [185.176.79.56])
- by smtp3.osuosl.org (Postfix) with ESMTPS id A97FB6077B
- for <iommu@lists.linux-foundation.org>; Wed, 21 Jul 2021 08:54:05 +0000 (UTC)
-Received: from fraeml744-chm.china.huawei.com (unknown [172.18.147.201])
- by frasgout.his.huawei.com (SkyGuard) with ESMTP id 4GV8Kd3ykkz6G982;
- Wed, 21 Jul 2021 16:45:09 +0800 (CST)
-Received: from lhreml720-chm.china.huawei.com (10.201.108.71) by
- fraeml744-chm.china.huawei.com (10.206.15.225) with Microsoft SMTP Server
+ by smtp1.osuosl.org (Postfix) with ESMTPS id 2E4AC828A5
+ for <iommu@lists.linux-foundation.org>; Wed, 21 Jul 2021 09:23:44 +0000 (UTC)
+Received: from fraeml740-chm.china.huawei.com (unknown [172.18.147.200])
+ by frasgout.his.huawei.com (SkyGuard) with ESMTP id 4GV8s41q2Hz6D8mK;
+ Wed, 21 Jul 2021 17:08:56 +0800 (CST)
+Received: from lhreml724-chm.china.huawei.com (10.201.108.75) by
+ fraeml740-chm.china.huawei.com (10.206.15.221) with Microsoft SMTP Server
  (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2176.2; Wed, 21 Jul 2021 10:54:00 +0200
-Received: from lhreml710-chm.china.huawei.com (10.201.108.61) by
- lhreml720-chm.china.huawei.com (10.201.108.71) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2176.2; Wed, 21 Jul 2021 09:54:00 +0100
-Received: from lhreml710-chm.china.huawei.com ([169.254.81.184]) by
- lhreml710-chm.china.huawei.com ([169.254.81.184]) with mapi id
- 15.01.2176.012; Wed, 21 Jul 2021 09:54:00 +0100
-From: Shameerali Kolothum Thodi <shameerali.kolothum.thodi@huawei.com>
-To: Jean-Philippe Brucker <jean-philippe@linaro.org>
-Subject: RE: [RFC PATCH 4/5] iommu/arm-smmu-v3: Use pinned VMID for NESTED
- stage with BTM
-Thread-Topic: [RFC PATCH 4/5] iommu/arm-smmu-v3: Use pinned VMID for NESTED
- stage with BTM
-Thread-Index: AQHXERlrJofV4Zjw70Ci8icDpSKnl6tN8a9g
-Date: Wed, 21 Jul 2021 08:54:00 +0000
-Message-ID: <903a06a9db8c45fe88158e1c35f38c25@huawei.com>
-References: <20210222155338.26132-1-shameerali.kolothum.thodi@huawei.com>
- <20210222155338.26132-5-shameerali.kolothum.thodi@huawei.com>
- <YEEUocRn3IfIDpLj@myrica>
-In-Reply-To: <YEEUocRn3IfIDpLj@myrica>
-Accept-Language: en-GB, en-US
-Content-Language: en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-x-originating-ip: [10.47.86.152]
+ 15.1.2176.2; Wed, 21 Jul 2021 11:23:41 +0200
+Received: from [10.47.85.43] (10.47.85.43) by lhreml724-chm.china.huawei.com
+ (10.201.108.75) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2176.2; Wed, 21 Jul
+ 2021 10:23:41 +0100
+Subject: Re: [bug report] iommu_dma_unmap_sg() is very slow then running IO
+ from remote numa node
+To: Ming Lei <ming.lei@redhat.com>
+References: <YOgK8fdv7dOQtkET@T590>
+ <23e7956b-f3b5-b585-3c18-724165994051@arm.com> <YOhcOv1oOwm6fco+@T590>
+ <ad5bc549-d83f-bee0-9a9f-03a5afd7f3d9@huawei.com> <YPd7IGFZrsTRfUxE@T590>
+From: John Garry <john.garry@huawei.com>
+Message-ID: <74537f9c-af5f-cd84-60ab-49ca6220310e@huawei.com>
+Date: Wed, 21 Jul 2021 10:23:38 +0100
+User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; rv:68.0) Gecko/20100101
+ Thunderbird/68.12.1
 MIME-Version: 1.0
+In-Reply-To: <YPd7IGFZrsTRfUxE@T590>
+Content-Language: en-US
+X-Originating-IP: [10.47.85.43]
+X-ClientProxiedBy: lhreml734-chm.china.huawei.com (10.201.108.85) To
+ lhreml724-chm.china.huawei.com (10.201.108.75)
 X-CFilter-Loop: Reflected
-Cc: "maz@kernel.org" <maz@kernel.org>, Linuxarm <linuxarm@huawei.com>,
- "alex.williamson@redhat.com" <alex.williamson@redhat.com>,
- "linuxarm@openeuler.org" <linuxarm@openeuler.org>,
- "iommu@lists.linux-foundation.org" <iommu@lists.linux-foundation.org>,
- "Zengtao \(B\)" <prime.zeng@hisilicon.com>,
- "zhangfei.gao@linaro.org" <zhangfei.gao@linaro.org>,
- "kvmarm@lists.cs.columbia.edu" <kvmarm@lists.cs.columbia.edu>,
- "linux-arm-kernel@lists.infradead.org" <linux-arm-kernel@lists.infradead.org>
+Cc: Robin Murphy <robin.murphy@arm.com>, linux-kernel@vger.kernel.org,
+ linux-nvme@lists.infradead.org, iommu@lists.linux-foundation.org,
+ Will Deacon <will@kernel.org>, linux-arm-kernel@lists.infradead.org
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -99,90 +89,36 @@ List-Post: <mailto:iommu@lists.linux-foundation.org>
 List-Help: <mailto:iommu-request@lists.linux-foundation.org?subject=help>
 List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
  <mailto:iommu-request@lists.linux-foundation.org?subject=subscribe>
-Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset="us-ascii"; Format="flowed"
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-Hi Jean,
-
-> -----Original Message-----
-> From: Jean-Philippe Brucker [mailto:jean-philippe@linaro.org]
-> Sent: 04 March 2021 17:11
-> To: Shameerali Kolothum Thodi <shameerali.kolothum.thodi@huawei.com>
-> Cc: linux-arm-kernel@lists.infradead.org; iommu@lists.linux-foundation.org;
-> kvmarm@lists.cs.columbia.edu; maz@kernel.org;
-> alex.williamson@redhat.com; eric.auger@redhat.com;
-> zhangfei.gao@linaro.org; Jonathan Cameron
-> <jonathan.cameron@huawei.com>; Zengtao (B) <prime.zeng@hisilicon.com>;
-> linuxarm@openeuler.org
-> Subject: Re: [RFC PATCH 4/5] iommu/arm-smmu-v3: Use pinned VMID for
-> NESTED stage with BTM
-
-[...]
-
-> >
-> >  	kfree(smmu_domain);
-> > @@ -3199,6 +3230,17 @@ static int arm_smmu_attach_pasid_table(struct
-> iommu_domain *domain,
-> >  				!(smmu->features & ARM_SMMU_FEAT_2_LVL_CDTAB))
-> >  			goto out;
-> >
-> > +		if (smmu->features & ARM_SMMU_FEAT_BTM) {
-> > +			ret = arm_smmu_pinned_vmid_get(smmu_domain);
-> > +			if (ret < 0)
-> > +				goto out;
-> > +
-> > +			if (smmu_domain->s2_cfg.vmid)
-> > +				arm_smmu_bitmap_free(smmu->vmid_map,
-> smmu_domain->s2_cfg.vmid);
-> > +
-> > +			smmu_domain->s2_cfg.vmid = (u16)ret;
+On 21/07/2021 02:40, Ming Lei wrote:
+>> I think that you should see a significant performance boost.
+> There is build issue, please check your tree:
 > 
-> That will require a TLB invalidation on the old VMID, once the STE is
-> rewritten.
-> 
-> More generally I think this pinned VMID set conflicts with that of
-> stage-2-only domains (which is the default state until a guest attaches a
-> PASID table). Say you have one guest using DOMAIN_NESTED without PASID
-> table, just DMA to IPA using VMID 0x8000. Now another guest attaches a
-> PASID table and obtains the same VMID from KVM. The stage-2 translation
-> might use TLB entries from the other guest, no?  They'll both create
-> stage-2 TLB entries with {StreamWorld=NS-EL1, VMID=0x8000}
+>    MODPOST vmlinux.symvers
+>    MODINFO modules.builtin.modinfo
+>    GEN     modules.builtin
+>    LD      .tmp_vmlinux.btf
+> ld: Unexpected GOT/PLT entries detected!
+> ld: Unexpected run-time procedure linkages detected!
+> ld: drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.o: in function `smmu_test_store':
+> /root/git/linux/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c:3892: undefined reference to `smmu_test_core'
+>    BTF     .btf.vmlinux.bin.o
+> pahole: .tmp_vmlinux.btf: No such file or directory
+>    LD      .tmp_vmlinux.kallsyms1
+> .btf.vmlinux.bin.o: file not recognized: file format not recognized
+> make: *** [Makefile:1177: vmlinux] Error 1
 
-Now that we are trying to align the KVM VMID allocation algorithm similar to
-that of the ASID allocator [1], I attempted to use that for the SMMU pinned 
-VMID allocation. But the issue you have mentioned above is still valid. 
+Ah, sorry. I had some test code which was not properly guarded with 
+necessary build switches.
 
-And as a solution what I have tried now is follow what pinned ASID is doing 
-in SVA,
- -Use xarray for private VMIDs
- -Get pinned VMID from KVM for DOMAIN_NESTED with PASID table
- -If the new pinned VMID is in use by private, then update the private
-  VMID(VMID update to a live STE).
-
-This seems to work, but still need to run more tests with this though.  
-
-> It's tempting to allocate all VMIDs through KVM instead, but that will
-> force a dependency on KVM to use VFIO_TYPE1_NESTING_IOMMU and might
-> break
-> existing users of that extension (though I'm not sure there are any).
-> Instead we might need to restrict the SMMU VMID bitmap to match the
-> private VMID set in KVM.
-
-Another solution I have in mind is, make the new KVM VMID allocator common
-between SMMUv3 and KVM. This will help to avoid all the private and shared
-VMID splitting, also no need for live updates to STE VMID. One possible drawback
-is less number of available KVM VMIDs but with 16 bit VMID space I am not sure
-how much that is a concern.
-
-Please let me know your thoughts.
+I have now removed that from the tree, so please re-pull.
 
 Thanks,
-Shameer
-
-[1]. https://lore.kernel.org/kvmarm/20210616155606.2806-1-shameerali.kolothum.thodi@huawei.com/
-
+John
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
