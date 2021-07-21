@@ -2,88 +2,122 @@ Return-Path: <SRS0=85So=MN=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-14.0 required=3.0 tests=BAYES_00,INCLUDES_CR_TRAILER,
-	INCLUDES_PATCH,MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS autolearn=ham
-	autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-2.2 required=3.0 tests=BAYES_00,DKIM_ADSP_CUSTOM_MED,
+	DKIM_INVALID,DKIM_SIGNED,FREEMAIL_FORGED_FROMDOMAIN,FREEMAIL_FROM,
+	HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,NICE_REPLY_A,SPF_HELO_NONE,
+	SPF_PASS,USER_AGENT_SANE_1 autolearn=no autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 47D13C636C9
-	for <iommu@archiver.kernel.org>; Wed, 21 Jul 2021 15:01:31 +0000 (UTC)
-Received: from smtp3.osuosl.org (smtp3.osuosl.org [140.211.166.136])
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B8F2AC636C9
+	for <iommu@archiver.kernel.org>; Wed, 21 Jul 2021 15:11:46 +0000 (UTC)
+Received: from smtp4.osuosl.org (smtp4.osuosl.org [140.211.166.137])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id EC55B60FF1
-	for <iommu@archiver.kernel.org>; Wed, 21 Jul 2021 15:01:30 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org EC55B60FF1
-Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=kernel.org
+	by mail.kernel.org (Postfix) with ESMTPS id 591666135B
+	for <iommu@archiver.kernel.org>; Wed, 21 Jul 2021 15:11:46 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 591666135B
+Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=gmail.com
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by smtp3.osuosl.org (Postfix) with ESMTP id B2306608AB;
-	Wed, 21 Jul 2021 15:01:30 +0000 (UTC)
+	by smtp4.osuosl.org (Postfix) with ESMTP id 1A27D402E9;
+	Wed, 21 Jul 2021 15:11:46 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from smtp3.osuosl.org ([127.0.0.1])
-	by localhost (smtp3.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id iyUdiEYuVIhm; Wed, 21 Jul 2021 15:01:29 +0000 (UTC)
-Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [IPv6:2605:bc80:3010:104::8cd3:938])
-	by smtp3.osuosl.org (Postfix) with ESMTPS id 87D656072F;
-	Wed, 21 Jul 2021 15:01:29 +0000 (UTC)
+Received: from smtp4.osuosl.org ([127.0.0.1])
+	by localhost (smtp4.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+	with ESMTP id 4bE5dG1zpoYh; Wed, 21 Jul 2021 15:11:45 +0000 (UTC)
+Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
+	by smtp4.osuosl.org (Postfix) with ESMTPS id BC17D402D8;
+	Wed, 21 Jul 2021 15:11:44 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 56922C0010;
-	Wed, 21 Jul 2021 15:01:29 +0000 (UTC)
-Received: from smtp1.osuosl.org (smtp1.osuosl.org [140.211.166.138])
- by lists.linuxfoundation.org (Postfix) with ESMTP id B997AC000E
- for <iommu@lists.linux-foundation.org>; Wed, 21 Jul 2021 15:01:28 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 9CB05C001A;
+	Wed, 21 Jul 2021 15:11:44 +0000 (UTC)
+Received: from smtp1.osuosl.org (smtp1.osuosl.org [IPv6:2605:bc80:3010::138])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 65EC4C000E
+ for <iommu@lists.linux-foundation.org>; Wed, 21 Jul 2021 15:11:43 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by smtp1.osuosl.org (Postfix) with ESMTP id A701082D40
- for <iommu@lists.linux-foundation.org>; Wed, 21 Jul 2021 15:01:28 +0000 (UTC)
+ by smtp1.osuosl.org (Postfix) with ESMTP id 4CD5B82D2F
+ for <iommu@lists.linux-foundation.org>; Wed, 21 Jul 2021 15:11:43 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
+Authentication-Results: smtp1.osuosl.org (amavisd-new);
+ dkim=pass (2048-bit key) header.d=gmail.com
 Received: from smtp1.osuosl.org ([127.0.0.1])
  by localhost (smtp1.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id JyIb4nOhSvxi for <iommu@lists.linux-foundation.org>;
- Wed, 21 Jul 2021 15:01:27 +0000 (UTC)
-X-Greylist: domain auto-whitelisted by SQLgrey-1.8.0
-Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
- by smtp1.osuosl.org (Postfix) with ESMTPS id 817B082D2F
- for <iommu@lists.linux-foundation.org>; Wed, 21 Jul 2021 15:01:27 +0000 (UTC)
-Received: from disco-boy.misterjones.org (disco-boy.misterjones.org
- [51.254.78.96])
- (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
- (No client certificate requested)
- by mail.kernel.org (Postfix) with ESMTPSA id 2D6A16120E;
- Wed, 21 Jul 2021 15:01:27 +0000 (UTC)
-Received: from sofa.misterjones.org ([185.219.108.64] helo=why.misterjones.org)
- by disco-boy.misterjones.org with esmtpsa (TLS1.3) tls
- TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384 (Exim 4.94.2)
- (envelope-from <maz@kernel.org>)
- id 1m6Div-0005Ox-3p; Wed, 21 Jul 2021 16:01:25 +0100
-Date: Wed, 21 Jul 2021 16:01:24 +0100
-Message-ID: <877dhj3e4b.wl-maz@kernel.org>
-From: Marc Zyngier <maz@kernel.org>
-To: Robin Murphy <robin.murphy@arm.com>
-Subject: Re: [PATCH -next] iommu/arm-smmu-v3: Add suspend and resume support
-In-Reply-To: <848befb0-7a9a-0b2b-8be9-3dfa02919488@arm.com>
-References: <20210721013350.17664-1-cuibixuan@huawei.com>
- <4e506481-5f6c-9c5e-eda3-300861581080@arm.com>
- <878s1z3j68.wl-maz@kernel.org>
- <848befb0-7a9a-0b2b-8be9-3dfa02919488@arm.com>
-User-Agent: Wanderlust/2.15.9 (Almost Unreal) SEMI-EPG/1.14.7 (Harue)
- FLIM-LB/1.14.9 (=?UTF-8?B?R29qxY0=?=) APEL-LB/10.8 EasyPG/1.0.0 Emacs/27.1
- (x86_64-pc-linux-gnu) MULE/6.0 (HANACHIRUSATO)
-MIME-Version: 1.0 (generated by SEMI-EPG 1.14.7 - "Harue")
-X-SA-Exim-Connect-IP: 185.219.108.64
-X-SA-Exim-Rcpt-To: robin.murphy@arm.com, cuibixuan@huawei.com,
- iommu@lists.linux-foundation.org, linux-kernel@vger.kernel.org,
- will@kernel.org, weiyongjun1@huawei.com, john.wanghui@huawei.com,
- dingtianhong@huawei.com, thunder.leizhen@huawei.com, guohanjun@huawei.com,
- joro@8bytes.org, jean-philippe@linaro.org, Jonathan.Cameron@huawei.com,
- song.bao.hua@hisilicon.com, linux-arm-kernel@lists.infradead.org
-X-SA-Exim-Mail-From: maz@kernel.org
-X-SA-Exim-Scanned: No (on disco-boy.misterjones.org);
- SAEximRunCond expanded to false
-Cc: jean-philippe@linaro.org, guohanjun@huawei.com,
- linux-kernel@vger.kernel.org, john.wanghui@huawei.com,
- iommu@lists.linux-foundation.org, Bixuan Cui <cuibixuan@huawei.com>,
- dingtianhong@huawei.com, weiyongjun1@huawei.com, will@kernel.org,
- linux-arm-kernel@lists.infradead.org
+ with ESMTP id rP04Uq1QaD4E for <iommu@lists.linux-foundation.org>;
+ Wed, 21 Jul 2021 15:11:42 +0000 (UTC)
+X-Greylist: whitelisted by SQLgrey-1.8.0
+Received: from mail-pj1-x102d.google.com (mail-pj1-x102d.google.com
+ [IPv6:2607:f8b0:4864:20::102d])
+ by smtp1.osuosl.org (Postfix) with ESMTPS id BF26282D2D
+ for <iommu@lists.linux-foundation.org>; Wed, 21 Jul 2021 15:11:42 +0000 (UTC)
+Received: by mail-pj1-x102d.google.com with SMTP id
+ g4-20020a17090ace84b029017554809f35so4189059pju.5
+ for <iommu@lists.linux-foundation.org>; Wed, 21 Jul 2021 08:11:42 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=gmail.com; s=20161025;
+ h=subject:to:cc:references:from:message-id:date:user-agent
+ :mime-version:in-reply-to:content-language:content-transfer-encoding;
+ bh=D1h2d+g+iMU4/jGzVM3W4ntrau1j74+yLE1tV8PoAic=;
+ b=JudKBwJXYhQRbS+X/S9haoQpA4vJDhCumYWHOc7uZasKxl1Q15/54S3UgtA5DU2MnM
+ lzw3uMGa0951XioyMj3JRFDtKLLdbQZHKtkmzd142ej6G99ZpSQbf4pbYKJMHmvy2Mvg
+ n+IsgH/Gi14qKpxeEr/tuJjCd3FpmXh2SNA8p3U4jEKfIwjxFSccYMGg+ONArMU/Wu6E
+ XfXZg/05bIatm0Sic/3vAKBQLh3YqfKOOK2+BKsvSUdJLbF0e9ivPdg52QOQvmKU+WWe
+ jjv9l41sek6SngfQtz7UvvRRFhkx72h8LHByGOFdzs8RI71z4WB014t9ZJNaOfnnb+nh
+ 5peg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+ d=1e100.net; s=20161025;
+ h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+ :user-agent:mime-version:in-reply-to:content-language
+ :content-transfer-encoding;
+ bh=D1h2d+g+iMU4/jGzVM3W4ntrau1j74+yLE1tV8PoAic=;
+ b=VyByPc8649x9QrxOWldnOgoG4sKGDjUrxMf0oaKZSC9qZSpQnfLXHiVc+m+YiNx8yA
+ d2d5Qrio4NFgcNbV79X3bZ1S+c1SlfZFjT0yD2kuJbivwegl6F+S2J6IY1x+NOrvM6e6
+ Re9dMASoPr+EjteVXXOvkiverHqyNFtP5AUckbEWUjCtSLVjc7we1vR+LeHGANGxErjE
+ 0ymn5tSQPnI/5c4chK2SqsbIC9cMwpZZIYwX7FoHg4EZJqjHp0h2XMfsrXKckpSfFNYr
+ P8fr+mSmI+J7h0EAHJRi+GZLAMcjfNdb9S5ogu+8dajdRz5sg7puJSwKyDteP3KrcjcF
+ k+Aw==
+X-Gm-Message-State: AOAM533LsCTDnmN5lmvZvGq4WLlnvs1yNTIvgBAphGWAugflyxPOLot3
+ CxLKjw0tcPlUHRsgs3ESndw=
+X-Google-Smtp-Source: ABdhPJx35AxUVV6O398anppLcbEKI32dfRaLuLVMxOpRJ+rodbbxxyqhUxP+qwoyGdOJ7uanWVT8yQ==
+X-Received: by 2002:a17:902:db11:b029:12b:4a2e:7ec4 with SMTP id
+ m17-20020a170902db11b029012b4a2e7ec4mr28239454plx.71.1626880302118; 
+ Wed, 21 Jul 2021 08:11:42 -0700 (PDT)
+Received: from ?IPv6:2404:f801:0:5:8000::4b1? ([2404:f801:9000:1a:efea::4b1])
+ by smtp.gmail.com with ESMTPSA id
+ j6sm23210086pji.23.2021.07.21.08.11.27
+ (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+ Wed, 21 Jul 2021 08:11:41 -0700 (PDT)
+Subject: Re: [Resend RFC PATCH V4 09/13] x86/Swiotlb/HV: Add Swiotlb bounce
+ buffer remap function for HV IVM
+To: Christoph Hellwig <hch@lst.de>
+References: <20210707154629.3977369-1-ltykernel@gmail.com>
+ <20210707154629.3977369-10-ltykernel@gmail.com>
+ <20210720135437.GA13554@lst.de>
+ <8f1a285d-4b67-8041-d326-af565b2756c0@gmail.com>
+ <20210721143355.GA10848@lst.de>
+From: Tianyu Lan <ltykernel@gmail.com>
+Message-ID: <0e2ca0e2-201d-68d4-5dc0-7341f8e9106a@gmail.com>
+Date: Wed, 21 Jul 2021 23:11:26 +0800
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:78.0) Gecko/20100101
+ Thunderbird/78.12.0
+MIME-Version: 1.0
+In-Reply-To: <20210721143355.GA10848@lst.de>
+Content-Language: en-US
+Cc: linux-hyperv@vger.kernel.org, brijesh.singh@amd.com, david@redhat.com,
+ peterz@infradead.org, dave.hansen@linux.intel.com, hpa@zytor.com,
+ anparri@microsoft.com, kys@microsoft.com, will@kernel.org,
+ boris.ostrovsky@oracle.com, linux-arch@vger.kernel.org, robh@kernel.org,
+ wei.liu@kernel.org, sstabellini@kernel.org, sthemmin@microsoft.com,
+ xen-devel@lists.xenproject.org, linux-scsi@vger.kernel.org, x86@kernel.org,
+ decui@microsoft.com, ardb@kernel.org, michael.h.kelley@microsoft.com,
+ nramas@linux.microsoft.com, mingo@redhat.com, pgonda@google.com,
+ rientjes@google.com, kuba@kernel.org, jejb@linux.ibm.com,
+ martin.b.radev@gmail.com, thomas.lendacky@amd.com, Tianyu.Lan@microsoft.com,
+ keescook@chromium.org, arnd@arndb.de, konrad.wilk@oracle.com,
+ haiyangz@microsoft.com, bp@alien8.de, luto@kernel.org,
+ krish.sadhukhan@oracle.com, tglx@linutronix.de, vkuznets@redhat.com,
+ jgross@suse.com, martin.petersen@oracle.com, saravanand@fb.com,
+ netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+ iommu@lists.linux-foundation.org, rppt@kernel.org, hannes@cmpxchg.org,
+ akpm@linux-foundation.org, robin.murphy@arm.com, davem@davemloft.net,
+ kirill.shutemov@linux.intel.com
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -96,109 +130,38 @@ List-Post: <mailto:iommu@lists.linux-foundation.org>
 List-Help: <mailto:iommu-request@lists.linux-foundation.org?subject=help>
 List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
  <mailto:iommu-request@lists.linux-foundation.org?subject=subscribe>
-Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset="us-ascii"; Format="flowed"
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-On Wed, 21 Jul 2021 14:59:47 +0100,
-Robin Murphy <robin.murphy@arm.com> wrote:
+
+
+On 7/21/2021 10:33 PM, Christoph Hellwig wrote:
+> On Wed, Jul 21, 2021 at 06:28:48PM +0800, Tianyu Lan wrote:
+>> dma_mmap_attrs() and dma_get_sgtable_attrs() get input virtual address
+>> belonging to backing memory with struct page and returns bounce buffer
+>> dma physical address which is below shared_gpa_boundary(vTOM) and passed
+>> to Hyper-V via vmbus protocol.
+>>
+>> The new map virtual address is only to access bounce buffer in swiotlb
+>> code and will not be used other places. It's stored in the mem->vstart.
+>> So the new API set_memory_decrypted_map() in this series is only called
+>> in the swiotlb code. Other platforms may replace set_memory_decrypted()
+>> with set_memory_decrypted_map() as requested.
 > 
-> On 2021-07-21 14:12, Marc Zyngier wrote:
-> > On Wed, 21 Jul 2021 12:42:14 +0100,
-> > Robin Murphy <robin.murphy@arm.com> wrote:
-> >> 
-> >> [ +Marc for MSI bits ]
-> >> 
-> >> On 2021-07-21 02:33, Bixuan Cui wrote:
-> >>> Add suspend and resume support for arm-smmu-v3 by low-power mode.
-> >>> 
-> >>> When the smmu is suspended, it is powered off and the registers are
-> >>> cleared. So saves the msi_msg context during msi interrupt initialization
-> >>> of smmu. When resume happens it calls arm_smmu_device_reset() to restore
-> >>> the registers.
-> >>> 
-> >>> Signed-off-by: Bixuan Cui <cuibixuan@huawei.com>
-> >>> Reviewed-by: Wei Yongjun <weiyongjun1@huawei.com>
-> >>> Reviewed-by: Zhen Lei <thunder.leizhen@huawei.com>
-> >>> Reviewed-by: Ding Tianhong <dingtianhong@huawei.com>
-> >>> Reviewed-by: Hanjun Guo <guohanjun@huawei.com>
-> >>> ---
-> >>> 
-> >>>    drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c | 72 ++++++++++++++++++---
-> >>>    1 file changed, 64 insertions(+), 8 deletions(-)
-> >>> 
-> >>> diff --git a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
-> >>> index 235f9bdaeaf2..bf1163acbcb1 100644
-> >>> --- a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
-> >>> +++ b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
-> >>> @@ -40,6 +40,7 @@ MODULE_PARM_DESC(disable_bypass,
-> >>>      static bool disable_msipolling;
-> >>>    module_param(disable_msipolling, bool, 0444);
-> >>> +static bool bypass;
-> >>>    MODULE_PARM_DESC(disable_msipolling,
-> >>>    	"Disable MSI-based polling for CMD_SYNC completion.");
-> >>>    @@ -3129,11 +3130,37 @@ static void arm_smmu_write_msi_msg(struct
-> >>> msi_desc *desc, struct msi_msg *msg)
-> >>>    	doorbell = (((u64)msg->address_hi) << 32) | msg->address_lo;
-> >>>    	doorbell &= MSI_CFG0_ADDR_MASK;
-> >>>    +	/* Saves the msg context for resume if desc->msg is empty */
-> >>> +	if (desc->msg.address_lo == 0 && desc->msg.address_hi == 0) {
-> >>> +		desc->msg.address_lo = msg->address_lo;
-> >>> +		desc->msg.address_hi = msg->address_hi;
-> >>> +		desc->msg.data = msg->data;
-> >>> +	}
-> >> 
-> >> My gut feeling is that this is something a device driver maybe
-> >> shouldn't be poking into, but I'm not entirely familiar with the area
-> >> :/
-> > 
-> > Certainly not. If you rely on the message being stored into the
-> > descriptors, then implement this in the core code, like we do for PCI.
+> It seems like you are indeed not using these new helpers in
+> dma_direct_alloc.  How is dma_alloc_attrs/dma_alloc_coherent going to
+> work on these systems?
 > 
-> Ah, so it would be an acceptable compromise to *read* desc->msg (and
-> thus avoid having to store our own copy of the message) if the core
-> was guaranteed to cache it? That's good to know, thanks.
 
-Yeah, vfio, a couple of other weird drivers and (*surprise!*) ia64 are
-using this kind of trick. I don't see a reason not to implement that
-for platform-MSI (although level signalling may be interesting...), or
-even to move it into the core MSI code.
+Current vmbus device drivers don't use dma_alloc_attrs/dma_alloc
+_coherent() because vmbus driver allocates ring buffer for all devices. 
+Ring buffer has been marked decrypted and remapped in vmbus driver. 
+Netvsc and storvsc drivers just need to use  dma_map_single/dma_map_page().
 
-> 
-> >>> +
-> >>>    	writeq_relaxed(doorbell, smmu->base + cfg[0]);
-> >>>    	writel_relaxed(msg->data, smmu->base + cfg[1]);
-> >>>    	writel_relaxed(ARM_SMMU_MEMATTR_DEVICE_nGnRE, smmu->base + cfg[2]);
-> >>>    }
-> >>>    +static void arm_smmu_resume_msis(struct arm_smmu_device *smmu)
-> >>> +{
-> >>> +	struct msi_desc *desc;
-> >>> +	struct device *dev = smmu->dev;
-> >>> +
-> >>> +	for_each_msi_entry(desc, dev) {
-> >>> +		switch (desc->platform.msi_index) {
-> >>> +		case EVTQ_MSI_INDEX:
-> >>> +		case GERROR_MSI_INDEX:
-> >>> +		case PRIQ_MSI_INDEX:
-> >>> +			arm_smmu_write_msi_msg(desc, &(desc->msg));
-> > 
-> > Consider using get_cached_msi_msg() instead of using the internals of
-> > the descriptor.
-> 
-> Oh, there's even a proper API for it, marvellous! I hadn't managed to
-> dig that far myself :)
 
-It is a bit odd in the sense that it takes a copy of the message
-instead of returning a pointer, but at least this solves lifetime
-issues.
 
-Thanks,
-
-	M.
-
--- 
-Without deviation from the norm, progress is not possible.
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
