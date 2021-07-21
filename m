@@ -7,66 +7,74 @@ X-Spam-Status: No, score=-15.4 required=3.0 tests=BAYES_00,
 	MAILING_LIST_MULTI,NICE_REPLY_A,SPF_HELO_NONE,SPF_PASS,USER_AGENT_SANE_1
 	autolearn=ham autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8B48BC636CE
-	for <iommu@archiver.kernel.org>; Wed, 21 Jul 2021 14:00:02 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7D25BC636CE
+	for <iommu@archiver.kernel.org>; Wed, 21 Jul 2021 14:18:19 +0000 (UTC)
 Received: from smtp3.osuosl.org (smtp3.osuosl.org [140.211.166.136])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 39EE861244
-	for <iommu@archiver.kernel.org>; Wed, 21 Jul 2021 14:00:02 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 39EE861244
-Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=arm.com
+	by mail.kernel.org (Postfix) with ESMTPS id 1D7346044F
+	for <iommu@archiver.kernel.org>; Wed, 21 Jul 2021 14:18:19 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 1D7346044F
+Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=linux.intel.com
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by smtp3.osuosl.org (Postfix) with ESMTP id F068360798;
-	Wed, 21 Jul 2021 14:00:01 +0000 (UTC)
+	by smtp3.osuosl.org (Postfix) with ESMTP id CF9576082C;
+	Wed, 21 Jul 2021 14:18:18 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
 Received: from smtp3.osuosl.org ([127.0.0.1])
 	by localhost (smtp3.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id oRaIewcBVopU; Wed, 21 Jul 2021 14:00:01 +0000 (UTC)
-Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by smtp3.osuosl.org (Postfix) with ESMTPS id 948046067C;
-	Wed, 21 Jul 2021 14:00:00 +0000 (UTC)
+	with ESMTP id ImohbZUQhMMu; Wed, 21 Jul 2021 14:18:18 +0000 (UTC)
+Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [IPv6:2605:bc80:3010:104::8cd3:938])
+	by smtp3.osuosl.org (Postfix) with ESMTPS id 9A794605FB;
+	Wed, 21 Jul 2021 14:18:17 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 5C4AFC001A;
-	Wed, 21 Jul 2021 14:00:00 +0000 (UTC)
-Received: from smtp3.osuosl.org (smtp3.osuosl.org [IPv6:2605:bc80:3010::136])
- by lists.linuxfoundation.org (Postfix) with ESMTP id D7B74C000E
- for <iommu@lists.linux-foundation.org>; Wed, 21 Jul 2021 13:59:58 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 667FFC0010;
+	Wed, 21 Jul 2021 14:18:17 +0000 (UTC)
+Received: from smtp2.osuosl.org (smtp2.osuosl.org [IPv6:2605:bc80:3010::133])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id E9D8EC000E
+ for <iommu@lists.linux-foundation.org>; Wed, 21 Jul 2021 14:18:15 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by smtp3.osuosl.org (Postfix) with ESMTP id C6B00606F6
- for <iommu@lists.linux-foundation.org>; Wed, 21 Jul 2021 13:59:58 +0000 (UTC)
+ by smtp2.osuosl.org (Postfix) with ESMTP id D90E2401D6
+ for <iommu@lists.linux-foundation.org>; Wed, 21 Jul 2021 14:18:15 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from smtp3.osuosl.org ([127.0.0.1])
- by localhost (smtp3.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id ZHhBi9X8dxLB for <iommu@lists.linux-foundation.org>;
- Wed, 21 Jul 2021 13:59:57 +0000 (UTC)
+Received: from smtp2.osuosl.org ([127.0.0.1])
+ by localhost (smtp2.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+ with ESMTP id M3itkk157BSv for <iommu@lists.linux-foundation.org>;
+ Wed, 21 Jul 2021 14:18:15 +0000 (UTC)
 X-Greylist: domain auto-whitelisted by SQLgrey-1.8.0
-Received: from foss.arm.com (foss.arm.com [217.140.110.172])
- by smtp3.osuosl.org (Postfix) with ESMTP id 5C6C56067C
- for <iommu@lists.linux-foundation.org>; Wed, 21 Jul 2021 13:59:57 +0000 (UTC)
-Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
- by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 564F31FB;
- Wed, 21 Jul 2021 06:59:56 -0700 (PDT)
-Received: from [10.57.36.146] (unknown [10.57.36.146])
- by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id 2B6C13F73D;
- Wed, 21 Jul 2021 06:59:54 -0700 (PDT)
-Subject: Re: [PATCH -next] iommu/arm-smmu-v3: Add suspend and resume support
-To: Marc Zyngier <maz@kernel.org>, Bixuan Cui <cuibixuan@huawei.com>
-References: <20210721013350.17664-1-cuibixuan@huawei.com>
- <4e506481-5f6c-9c5e-eda3-300861581080@arm.com> <878s1z3j68.wl-maz@kernel.org>
-From: Robin Murphy <robin.murphy@arm.com>
-Message-ID: <848befb0-7a9a-0b2b-8be9-3dfa02919488@arm.com>
-Date: Wed, 21 Jul 2021 14:59:47 +0100
-User-Agent: Mozilla/5.0 (Windows NT 10.0; rv:78.0) Gecko/20100101
+Received: from mga11.intel.com (mga11.intel.com [192.55.52.93])
+ by smtp2.osuosl.org (Postfix) with ESMTPS id 3FB69400D0
+ for <iommu@lists.linux-foundation.org>; Wed, 21 Jul 2021 14:18:15 +0000 (UTC)
+X-IronPort-AV: E=McAfee;i="6200,9189,10052"; a="208325212"
+X-IronPort-AV: E=Sophos;i="5.84,258,1620716400"; d="scan'208";a="208325212"
+Received: from fmsmga003.fm.intel.com ([10.253.24.29])
+ by fmsmga102.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384;
+ 21 Jul 2021 07:18:14 -0700
+X-IronPort-AV: E=Sophos;i="5.84,258,1620716400"; d="scan'208";a="501302795"
+Received: from blu2-mobl3.ccr.corp.intel.com (HELO [10.254.213.149])
+ ([10.254.213.149])
+ by fmsmga003-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384;
+ 21 Jul 2021 07:18:11 -0700
+To: Robin Murphy <robin.murphy@arm.com>, Joerg Roedel <joro@8bytes.org>,
+ Sanjay Kumar <sanjay.k.kumar@intel.com>, Kevin Tian <kevin.tian@intel.com>,
+ Ashok Raj <ashok.raj@intel.com>, Jacob Pan <jacob.jun.pan@linux.intel.com>,
+ Dave Jiang <dave.jiang@intel.com>, Liu Yi L <yi.l.liu@intel.com>
+References: <20210720013856.4143880-1-baolu.lu@linux.intel.com>
+ <20210720013856.4143880-5-baolu.lu@linux.intel.com>
+ <22302277-0470-db41-7a19-41b5f73bd2c5@arm.com>
+ <4d3a2546-da21-605d-26a9-1f6f52123056@linux.intel.com>
+ <5662caea-a974-e511-9509-010606fda251@arm.com>
+From: Lu Baolu <baolu.lu@linux.intel.com>
+Subject: Re: [PATCH 4/5] iommu/vt-d: Disallow SVA if devices don't support
+ 64-bit address
+Message-ID: <f1fd4464-d186-e18f-3e33-eac56d488bba@linux.intel.com>
+Date: Wed, 21 Jul 2021 22:17:18 +0800
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:78.0) Gecko/20100101
  Thunderbird/78.12.0
 MIME-Version: 1.0
-In-Reply-To: <878s1z3j68.wl-maz@kernel.org>
-Content-Language: en-GB
-Cc: jean-philippe@linaro.org, guohanjun@huawei.com,
- linux-kernel@vger.kernel.org, john.wanghui@huawei.com,
- iommu@lists.linux-foundation.org, weiyongjun1@huawei.com,
- dingtianhong@huawei.com, will@kernel.org, linux-arm-kernel@lists.infradead.org
+In-Reply-To: <5662caea-a974-e511-9509-010606fda251@arm.com>
+Content-Language: en-US
+Cc: iommu@lists.linux-foundation.org, linux-kernel@vger.kernel.org
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -79,267 +87,63 @@ List-Post: <mailto:iommu@lists.linux-foundation.org>
 List-Help: <mailto:iommu-request@lists.linux-foundation.org?subject=help>
 List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
  <mailto:iommu-request@lists.linux-foundation.org?subject=subscribe>
-Content-Transfer-Encoding: 7bit
-Content-Type: text/plain; charset="us-ascii"; Format="flowed"
+Content-Transfer-Encoding: base64
+Content-Type: text/plain; charset="utf-8"; Format="flowed"
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-On 2021-07-21 14:12, Marc Zyngier wrote:
-> On Wed, 21 Jul 2021 12:42:14 +0100,
-> Robin Murphy <robin.murphy@arm.com> wrote:
->>
->> [ +Marc for MSI bits ]
->>
->> On 2021-07-21 02:33, Bixuan Cui wrote:
->>> Add suspend and resume support for arm-smmu-v3 by low-power mode.
->>>
->>> When the smmu is suspended, it is powered off and the registers are
->>> cleared. So saves the msi_msg context during msi interrupt initialization
->>> of smmu. When resume happens it calls arm_smmu_device_reset() to restore
->>> the registers.
->>>
->>> Signed-off-by: Bixuan Cui <cuibixuan@huawei.com>
->>> Reviewed-by: Wei Yongjun <weiyongjun1@huawei.com>
->>> Reviewed-by: Zhen Lei <thunder.leizhen@huawei.com>
->>> Reviewed-by: Ding Tianhong <dingtianhong@huawei.com>
->>> Reviewed-by: Hanjun Guo <guohanjun@huawei.com>
->>> ---
->>>
->>>    drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c | 72 ++++++++++++++++++---
->>>    1 file changed, 64 insertions(+), 8 deletions(-)
->>>
->>> diff --git a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
->>> index 235f9bdaeaf2..bf1163acbcb1 100644
->>> --- a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
->>> +++ b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
->>> @@ -40,6 +40,7 @@ MODULE_PARM_DESC(disable_bypass,
->>>      static bool disable_msipolling;
->>>    module_param(disable_msipolling, bool, 0444);
->>> +static bool bypass;
->>>    MODULE_PARM_DESC(disable_msipolling,
->>>    	"Disable MSI-based polling for CMD_SYNC completion.");
->>>    @@ -3129,11 +3130,37 @@ static void arm_smmu_write_msi_msg(struct
->>> msi_desc *desc, struct msi_msg *msg)
->>>    	doorbell = (((u64)msg->address_hi) << 32) | msg->address_lo;
->>>    	doorbell &= MSI_CFG0_ADDR_MASK;
->>>    +	/* Saves the msg context for resume if desc->msg is empty */
->>> +	if (desc->msg.address_lo == 0 && desc->msg.address_hi == 0) {
->>> +		desc->msg.address_lo = msg->address_lo;
->>> +		desc->msg.address_hi = msg->address_hi;
->>> +		desc->msg.data = msg->data;
->>> +	}
->>
->> My gut feeling is that this is something a device driver maybe
->> shouldn't be poking into, but I'm not entirely familiar with the area
->> :/
-> 
-> Certainly not. If you rely on the message being stored into the
-> descriptors, then implement this in the core code, like we do for PCI.
-
-Ah, so it would be an acceptable compromise to *read* desc->msg (and 
-thus avoid having to store our own copy of the message) if the core was 
-guaranteed to cache it? That's good to know, thanks.
-
->>> +
->>>    	writeq_relaxed(doorbell, smmu->base + cfg[0]);
->>>    	writel_relaxed(msg->data, smmu->base + cfg[1]);
->>>    	writel_relaxed(ARM_SMMU_MEMATTR_DEVICE_nGnRE, smmu->base + cfg[2]);
->>>    }
->>>    +static void arm_smmu_resume_msis(struct arm_smmu_device *smmu)
->>> +{
->>> +	struct msi_desc *desc;
->>> +	struct device *dev = smmu->dev;
->>> +
->>> +	for_each_msi_entry(desc, dev) {
->>> +		switch (desc->platform.msi_index) {
->>> +		case EVTQ_MSI_INDEX:
->>> +		case GERROR_MSI_INDEX:
->>> +		case PRIQ_MSI_INDEX:
->>> +			arm_smmu_write_msi_msg(desc, &(desc->msg));
-> 
-> Consider using get_cached_msi_msg() instead of using the internals of
-> the descriptor.
-
-Oh, there's even a proper API for it, marvellous! I hadn't managed to 
-dig that far myself :)
-
->>> +			break;
->>> +		default:
->>> +			continue;
->>> +
->>> +		}
->>> +	}
->>> +}
->>> +
->>>    static void arm_smmu_setup_msis(struct arm_smmu_device *smmu)
->>>    {
->>>    	struct msi_desc *desc;
->>> @@ -3184,11 +3211,17 @@ static void arm_smmu_setup_msis(struct arm_smmu_device *smmu)
->>>    	devm_add_action(dev, arm_smmu_free_msis, dev);
->>>    }
->>>    -static void arm_smmu_setup_unique_irqs(struct arm_smmu_device
->>> *smmu)
->>> +static void arm_smmu_setup_unique_irqs(struct arm_smmu_device *smmu, bool resume_mode)
->>>    {
->>>    	int irq, ret;
->>>    -	arm_smmu_setup_msis(smmu);
->>> +	if (!resume_mode)
->>> +		arm_smmu_setup_msis(smmu);
->>> +	else {
->>> +		/* The irq doesn't need to be re-requested during resume */
->>> +		arm_smmu_resume_msis(smmu);
->>> +		return;
->>
->> What about wired IRQs?
-> 
-> Yeah. I assume the SMMU needs to be told which event gets signalled
-> using MSIs or IRQs? Or is that implied by the MSI being configured or
-> not (I used to know the answer to that, but I have long paged it out).
-
-My mistake there - I misread the rather convoluted existing flow to 
-think that bailing here would fail to enable wired IRQs, but of course 
-the signalling decision is based on whether the MSI address is non-zero, 
-and the enables in ARM_SMMU_IRQ_CTRL still apply either way.
-
-Given that, I think this is that point at which to refactor this whole 
-part so that logically requesting and physically programming the 
-interrupts are split into distinct stages, which can then be called 
-seperately as appropriate. Personally I have a particular dislike of 
-this general anti-pattern:
-
-	int do_a_thing(bool but_only_do_part_of_it)
-
->>> +	}
->>>      	/* Request interrupt lines */
->>>    	irq = smmu->evtq.q.irq;
->>> @@ -3230,7 +3263,7 @@ static void arm_smmu_setup_unique_irqs(struct arm_smmu_device *smmu)
->>>    	}
->>>    }
->>>    -static int arm_smmu_setup_irqs(struct arm_smmu_device *smmu)
->>> +static int arm_smmu_setup_irqs(struct arm_smmu_device *smmu, bool resume_mode)
->>>    {
->>>    	int ret, irq;
->>>    	u32 irqen_flags = IRQ_CTRL_EVTQ_IRQEN | IRQ_CTRL_GERROR_IRQEN;
->>> @@ -3257,7 +3290,7 @@ static int arm_smmu_setup_irqs(struct arm_smmu_device *smmu)
->>>    		if (ret < 0)
->>>    			dev_warn(smmu->dev, "failed to enable combined irq\n");
->>>    	} else
->>> -		arm_smmu_setup_unique_irqs(smmu);
->>> +		arm_smmu_setup_unique_irqs(smmu, resume_mode);
->>>      	if (smmu->features & ARM_SMMU_FEAT_PRI)
->>>    		irqen_flags |= IRQ_CTRL_PRIQ_IRQEN;
->>> @@ -3282,7 +3315,7 @@ static int arm_smmu_device_disable(struct arm_smmu_device *smmu)
->>>    	return ret;
->>>    }
->>>    -static int arm_smmu_device_reset(struct arm_smmu_device *smmu,
->>> bool bypass)
->>> +static int arm_smmu_device_reset(struct arm_smmu_device *smmu, bool resume_mode)
->>
->> Er, what about the use of "bypass" towards the end of the
->> function. Have you even compiled this?
-> 
-> The author of the patch has conveniently made it a global value (see
-> line 3 of the patch). I'm sure it doesn't break anything... :-(
-
-Oh blimey, I hadn't even turned on my "things that make no flippin' 
-sense" radar to notice that, thanks for the correction. Indeed that's 
-pretty busted for SMMU instances probing concurrently.
-
-As with interrupts, reset probably wants a bit of refactoring to 
-separate out the probe-time concerns of cleaning up any left-over 
-configuration from firmware/kdump/whatever, and the act of putting the 
-hardware into the operational state we want. For instance, if it happens 
-that state is *not* lost on suspend, subsequently warning about 
-CR0_SMMUEN being enabled on resume would be bad.
-
->>>    {
->>>    	int ret;
->>>    	u32 reg, enables;
->>> @@ -3392,7 +3425,7 @@ static int arm_smmu_device_reset(struct arm_smmu_device *smmu, bool bypass)
->>>    		}
->>>    	}
->>>    -	ret = arm_smmu_setup_irqs(smmu);
->>> +	ret = arm_smmu_setup_irqs(smmu, resume_mode);
->>>    	if (ret) {
->>>    		dev_err(smmu->dev, "failed to setup irqs\n");
->>>    		return ret;
->>> @@ -3749,6 +3782,24 @@ static void __iomem *arm_smmu_ioremap(struct device *dev, resource_size_t start,
->>>    	return devm_ioremap_resource(dev, &res);
->>>    }
->>>    +static int __maybe_unused arm_smmu_suspend(struct device *dev)
->>> +{
->>> +	/*
->>> +	 * The smmu is powered off and related registers are automatically
->>> +	 * cleared when suspend. No need to do anything.
->>> +	 */
->>
->> Is that guaranteed? What if suspend is only implemented by external
->> clock-gating?
-> 
-> +1. This seems awfully implementation/integration specific. I'd be
-> more in favour of a controlled teardown.
-> 
->>
->>> +	return 0;
->>> +}
->>> +
->>> +static int __maybe_unused arm_smmu_resume(struct device *dev)
->>> +{
->>> +	struct arm_smmu_device *smmu = dev_get_drvdata(dev);
->>> +
->>> +	arm_smmu_device_reset(smmu, true);
->>> +
->>> +	return 0;
->>> +}
->>> +
->>>    static int arm_smmu_device_probe(struct platform_device *pdev)
->>>    {
->>>    	int irq, ret;
->>> @@ -3756,7 +3807,6 @@ static int arm_smmu_device_probe(struct platform_device *pdev)
->>>    	resource_size_t ioaddr;
->>>    	struct arm_smmu_device *smmu;
->>>    	struct device *dev = &pdev->dev;
->>> -	bool bypass;
->>
->> Once again...
->>
->>>    	smmu = devm_kzalloc(dev, sizeof(*smmu), GFP_KERNEL);
->>>    	if (!smmu)
->>> @@ -3831,7 +3881,7 @@ static int arm_smmu_device_probe(struct platform_device *pdev)
->>>    	platform_set_drvdata(pdev, smmu);
->>>      	/* Reset the device */
->>> -	ret = arm_smmu_device_reset(smmu, bypass);
->>
->> ...either this is based on some out-of-tree hack which introduced its
->> own uninitialised-usage bug here, or it doesn't even compile.
-
-As above, apologies for the oversight there. It's not as badly wrong as 
-I thought, but it's still not right.
-
-Thanks,
-Robin.
-
->>
->>> +	ret = arm_smmu_device_reset(smmu, false);
->>>    	if (ret)
->>>    		return ret;
->>>    @@ -3884,6 +3934,11 @@ static const struct of_device_id
->>> arm_smmu_of_match[] = {
->>>    };
->>>    MODULE_DEVICE_TABLE(of, arm_smmu_of_match);
->>>    +static const struct dev_pm_ops arm_smmu_pm_ops = {
->>> +	.suspend = arm_smmu_suspend,
->>> +	.resume = arm_smmu_resume,
->>
->> Either use SET_SYSTEM_SLEEP_PM_OPS() here or drop the __maybe_unused
->> annmotations above - they're pointless if the callbacks are referenced
->> unconditionally.
-> 
-> Thanks,
-> 
-> 	M.
-> 
-_______________________________________________
-iommu mailing list
-iommu@lists.linux-foundation.org
-https://lists.linuxfoundation.org/mailman/listinfo/iommu
+T24gMjAyMS83LzIxIDE5OjEyLCBSb2JpbiBNdXJwaHkgd3JvdGU6Cj4gT24gMjAyMS0wNy0yMSAw
+Mjo1MCwgTHUgQmFvbHUgd3JvdGU6Cj4+IEhpIFJvYmluLAo+Pgo+PiBUaGFua3MgYSBsb3QgZm9y
+IHJldmlld2luZyBteSBwYXRjaCEKPj4KPj4gT24gNy8yMC8yMSA1OjI3IFBNLCBSb2JpbiBNdXJw
+aHkgd3JvdGU6Cj4+PiBPbiAyMDIxLTA3LTIwIDAyOjM4LCBMdSBCYW9sdSB3cm90ZToKPj4+PiBX
+aGVuIHRoZSBkZXZpY2UgYW5kIENQVSBzaGFyZSBhbiBhZGRyZXNzIHNwYWNlIChzdWNoIGFzIFNW
+QSksIHRoZSAKPj4+PiBkZXZpY2UKPj4+PiBtdXN0IHN1cHBvcnQgdGhlIHNhbWUgYWRkcmVzc2lu
+ZyBjYXBhYmlsaXR5IGFzIHRoZSBDUFUuIFRoZSBDUFUgZG9lcyAKPj4+PiBub3QKPj4+PiBjb25z
+aWRlciB0aGUgYWRkcmVzc2luZyBhYmlsaXR5IG9mIGFueSBkZXZpY2Ugd2hlbiBtYW5hZ2luZyB0
+aGUgcGFnZSAKPj4+PiB0YWJsZQo+Pj4+IG9mIGEgcHJvY2Vzcywgc28gdGhlIGRldmljZSBtdXN0
+IGhhdmUgZW5vdWdoIGFkZHJlc3NpbmcgYWJpbGl0eSB0byBiaW5kCj4+Pj4gdGhlIHBhZ2UgdGFi
+bGUgb2YgdGhlIHByb2Nlc3MuCj4+Pj4KPj4+PiBTaWduZWQtb2ZmLWJ5OiBMdSBCYW9sdSA8YmFv
+bHUubHVAbGludXguaW50ZWwuY29tPgo+Pj4+IC0tLQo+Pj4+IMKgIGRyaXZlcnMvaW9tbXUvaW50
+ZWwvaW9tbXUuYyB8IDMgKysrCj4+Pj4gwqAgMSBmaWxlIGNoYW5nZWQsIDMgaW5zZXJ0aW9ucygr
+KQo+Pj4+Cj4+Pj4gZGlmZiAtLWdpdCBhL2RyaXZlcnMvaW9tbXUvaW50ZWwvaW9tbXUuYyBiL2Ry
+aXZlcnMvaW9tbXUvaW50ZWwvaW9tbXUuYwo+Pj4+IGluZGV4IGY0NWM4MGNlMjM4MS4uZjNjY2Ex
+ZGQzODRkIDEwMDY0NAo+Pj4+IC0tLSBhL2RyaXZlcnMvaW9tbXUvaW50ZWwvaW9tbXUuYwo+Pj4+
+ICsrKyBiL2RyaXZlcnMvaW9tbXUvaW50ZWwvaW9tbXUuYwo+Pj4+IEBAIC01MzcyLDYgKzUzNzIs
+OSBAQCBzdGF0aWMgaW50IGludGVsX2lvbW11X2VuYWJsZV9zdmEoc3RydWN0IAo+Pj4+IGRldmlj
+ZSAqZGV2KQo+Pj4+IMKgwqDCoMKgwqAgaWYgKCEoaW9tbXUtPmZsYWdzICYgVlREX0ZMQUdfU1ZN
+X0NBUEFCTEUpKQo+Pj4+IMKgwqDCoMKgwqDCoMKgwqDCoCByZXR1cm4gLUVOT0RFVjsKPj4+PiAr
+wqDCoMKgIGlmICghZGV2LT5kbWFfbWFzayB8fCAqZGV2LT5kbWFfbWFzayAhPSBETUFfQklUX01B
+U0soNjQpKQo+Pj4KPj4+IENhcmVmdWwgLSBWRklPIGRvZXNuJ3Qgc2V0IERNQSBtYXNrcyAoc2lu
+Y2UgaXQgZG9lc24ndCB1c2UgdGhlIERNQSBBUEkpLAo+Pgo+PiBTVkEgZG9lc24ndCB3b3JrIHRo
+cm91Z2ggdGhlIFZGSU8gZnJhbWV3b3JrLgo+IAo+IERpZCBhbnlvbmUgc2F5IGl0IGRvZXM/IE15
+IHBvaW50IGlzIHRoYXQsIGFzIGZhciBhcyBJIHVuZGVyc3RhbmQsIHRoZSAKPiBTVkEgVUFQSSBp
+cyB2ZXJ5IG11Y2ggaW50ZW5kZWQgdG8gd29yayAqd2l0aCogVkZJTywgYW5kIGV2ZW4gaWYgdGhl
+IAo+IGZpbmVyIGRldGFpbHMgYXJlIHN0aWxsIG1pcmVkIGluIHRoZSAvZGV2L2lvYXNpZCBkaXNj
+dXNzaW9uIHRvZGF5IHdlIAo+IHNob3VsZCBkZWZpbml0ZWx5IGV4cGVjdCB0byBzZWUgVkZJTy1s
+aWtlIHVzZS1jYXNlcyBhdCBzb21lIHBvaW50LiBJIAo+IGNlcnRhaW5seSBkb24ndCBzZWUgd2h5
+IGFueSBvZiB0aGUgZ3Vlc3QgU1ZBIHN0dWZmIGV4aXN0cyBhbHJlYWR5IGlmIG5vdCAKPiBmb3Ig
+VkZJTy1hc3NpZ25lZCBkZXZpY2VzPwoKQWdyZWVkLiBGcm9tIC9kZXYvaW9hc2lkIGRlc2lnbiBw
+b2ludCBvZiB2aWV3LCBpdCdzIHBvc3NpYmxlIHRvIGhhdmUKVkZJTy1saWtlIHVzZSBjYXNlIG9m
+IFNWQS4gUGVyaGFwcyB0aGUgZGV2aWNlIGFkZHJlc3NpbmcgY2FwYWJpbGl0eQpjb3VsZCBiZSBp
+bmNsdWRlZCBpbiBHRVRfREVWX0lORk8gb2YgL2Rldi9pb2FzaWQgVUFQSS4KCj4gCj4+PiBzbyB0
+aGlzIGFwcGVhcnMgdG8gYmUgcmVseWluZyBvbiBhbm90aGVyIGRyaXZlciBoYXZpbmcgYm91bmQg
+cHJldmlvdXNseSwKPj4KPj4gWWVzLiBZb3UgYXJlIHJpZ2h0Lgo+Pgo+Pj4gb3RoZXJ3aXNlIHRo
+ZSBtYXNrIHdvdWxkIHN0aWxsIGJlIHRoZSBkZWZhdWx0IDMyLWJpdCBvbmUgZnJvbSAKPj4+IHBj
+aV9zZXR1cF9kZXZpY2UoKS4gSSdtIG5vdCBzdXJlIHRoYXQncyBhbiBlbnRpcmVseSByb2J1c3Qg
+YXNzdW1wdGlvbi4KPj4KPj4gQ3VycmVudGx5IFNWQSBpbXBsZW1lbnRhdGlvbiBhbHdheXMgcmVx
+dWlyZXMgYSBuYXRpdmUga2VybmVsIGRyaXZlci4gVGhlCj4+IGFzc3VtcHRpb24gaXMgdGhhdCB0
+aGUgZHJpdmVycyBzaG91bGQgY2hlY2sgYW5kIHNldCA2NC1iaXQgYWRkcmVzc2luZwo+PiBjYXBh
+YmlsaXR5IGJlZm9yZSBjYWxsaW5nIGlvbW11X3N2YV94eHgoKSBBUElzLgo+IAo+IC4uLmFuZCBn
+aXZlbiB0aGF0IHRoYXQgaXMgbm90IGEgZG9jdW1lbnRlZCByZXF1aXJlbWVudCwgYW5kIGNlcnRh
+aW5seSAKPiBub3QgYSB0ZWNobmljYWwgb25lIChldmVuIGEgc2VsZi1jb250YWluZWQga2VybmVs
+IGRyaXZlciBjb3VsZCBjaG9vc2UgdG8gCj4gb25seSB1c2UgU1ZBIGNvbnRleHRzIGFuZCBub3Qg
+dG91Y2ggdGhlIERNQSBBUEkpLCBpdCdzIGFuIGluaGVyZW50bHkgCj4gZnJhZ2lsZSBhc3N1bXB0
+aW9uIHdoaWNoIEknbSBjb25maWRlbnQgKndpbGwqIGJlIGJyb2tlbiBldmVudHVhbGx5IDopCj4g
+CgpGYWlyIGVub3VnaC4gSSB3aWxsIGRyb3AgdGhpcyBwYXRjaC4KClRoYW5rcyBhIGxvdCBmb3Ig
+dGhlIGNvbW1lbnRzLgoKQmVzdCByZWdhcmRzLApiYW9sdQoKPiBSb2Jpbi4KPiAKPj4+PiArwqDC
+oMKgwqDCoMKgwqAgcmV0dXJuIC1FTk9ERVY7Cj4+Pj4gKwo+Pj4+IMKgwqDCoMKgwqAgaWYgKGlu
+dGVsX2lvbW11X2VuYWJsZV9wYXNpZChpb21tdSwgZGV2KSkKPj4+PiDCoMKgwqDCoMKgwqDCoMKg
+wqAgcmV0dXJuIC1FTk9ERVY7Cj4+Pj4KPj4KPj4gQmVzdCByZWdhcmRzLAo+PiBiYW9sdQpfX19f
+X19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fXwppb21tdSBtYWlsaW5n
+IGxpc3QKaW9tbXVAbGlzdHMubGludXgtZm91bmRhdGlvbi5vcmcKaHR0cHM6Ly9saXN0cy5saW51
+eGZvdW5kYXRpb24ub3JnL21haWxtYW4vbGlzdGluZm8vaW9tbXU=
