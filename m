@@ -2,85 +2,101 @@ Return-Path: <SRS0=85So=MN=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-14.0 required=3.0 tests=BAYES_00,INCLUDES_CR_TRAILER,
-	INCLUDES_PATCH,MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS autolearn=ham
-	autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-13.6 required=3.0 tests=BAYES_00,DKIM_INVALID,
+	DKIM_SIGNED,HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_CR_TRAILER,INCLUDES_PATCH,
+	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no
+	version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6DDB4C636CA
-	for <iommu@archiver.kernel.org>; Wed, 21 Jul 2021 13:12:25 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C8FA2C636CA
+	for <iommu@archiver.kernel.org>; Wed, 21 Jul 2021 13:40:34 +0000 (UTC)
 Received: from smtp4.osuosl.org (smtp4.osuosl.org [140.211.166.137])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 1ADC06120A
-	for <iommu@archiver.kernel.org>; Wed, 21 Jul 2021 13:12:25 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 1ADC06120A
-Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=kernel.org
+	by mail.kernel.org (Postfix) with ESMTPS id 77FC661245
+	for <iommu@archiver.kernel.org>; Wed, 21 Jul 2021 13:40:34 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 77FC661245
+Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=chromium.org
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by smtp4.osuosl.org (Postfix) with ESMTP id D50CD4037E;
-	Wed, 21 Jul 2021 13:12:24 +0000 (UTC)
+	by smtp4.osuosl.org (Postfix) with ESMTP id 3FB1C401D5;
+	Wed, 21 Jul 2021 13:40:34 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
 Received: from smtp4.osuosl.org ([127.0.0.1])
 	by localhost (smtp4.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id sSGE5j8j211h; Wed, 21 Jul 2021 13:12:23 +0000 (UTC)
-Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [IPv6:2605:bc80:3010:104::8cd3:938])
-	by smtp4.osuosl.org (Postfix) with ESMTPS id 13843402BD;
-	Wed, 21 Jul 2021 13:12:23 +0000 (UTC)
+	with ESMTP id K_gqWmF4r1Ro; Wed, 21 Jul 2021 13:40:32 +0000 (UTC)
+Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
+	by smtp4.osuosl.org (Postfix) with ESMTPS id 7A4E8401C3;
+	Wed, 21 Jul 2021 13:40:32 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id D5FF4C0010;
-	Wed, 21 Jul 2021 13:12:22 +0000 (UTC)
-Received: from smtp2.osuosl.org (smtp2.osuosl.org [140.211.166.133])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 82BEEC000E
- for <iommu@lists.linux-foundation.org>; Wed, 21 Jul 2021 13:12:21 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 42022C001A;
+	Wed, 21 Jul 2021 13:40:32 +0000 (UTC)
+Received: from smtp1.osuosl.org (smtp1.osuosl.org [140.211.166.138])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id DD81EC000E
+ for <iommu@lists.linux-foundation.org>; Wed, 21 Jul 2021 13:40:30 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by smtp2.osuosl.org (Postfix) with ESMTP id 700BD404D5
- for <iommu@lists.linux-foundation.org>; Wed, 21 Jul 2021 13:12:21 +0000 (UTC)
+ by smtp1.osuosl.org (Postfix) with ESMTP id D921182D7C
+ for <iommu@lists.linux-foundation.org>; Wed, 21 Jul 2021 13:40:30 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from smtp2.osuosl.org ([127.0.0.1])
- by localhost (smtp2.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id xwLbTLjUbYlg for <iommu@lists.linux-foundation.org>;
- Wed, 21 Jul 2021 13:12:19 +0000 (UTC)
-X-Greylist: domain auto-whitelisted by SQLgrey-1.8.0
-Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
- by smtp2.osuosl.org (Postfix) with ESMTPS id 807D440183
- for <iommu@lists.linux-foundation.org>; Wed, 21 Jul 2021 13:12:19 +0000 (UTC)
-Received: from disco-boy.misterjones.org (disco-boy.misterjones.org
- [51.254.78.96])
- (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
- (No client certificate requested)
- by mail.kernel.org (Postfix) with ESMTPSA id 0A3C561029;
- Wed, 21 Jul 2021 13:12:19 +0000 (UTC)
-Received: from sofa.misterjones.org ([185.219.108.64] helo=why.misterjones.org)
- by disco-boy.misterjones.org with esmtpsa (TLS1.3) tls
- TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384 (Exim 4.94.2)
- (envelope-from <maz@kernel.org>)
- id 1m6C1I-0003gp-V1; Wed, 21 Jul 2021 14:12:17 +0100
-Date: Wed, 21 Jul 2021 14:12:15 +0100
-Message-ID: <878s1z3j68.wl-maz@kernel.org>
-From: Marc Zyngier <maz@kernel.org>
-To: Robin Murphy <robin.murphy@arm.com>, Bixuan Cui <cuibixuan@huawei.com>
-Subject: Re: [PATCH -next] iommu/arm-smmu-v3: Add suspend and resume support
-In-Reply-To: <4e506481-5f6c-9c5e-eda3-300861581080@arm.com>
-References: <20210721013350.17664-1-cuibixuan@huawei.com>
- <4e506481-5f6c-9c5e-eda3-300861581080@arm.com>
-User-Agent: Wanderlust/2.15.9 (Almost Unreal) SEMI-EPG/1.14.7 (Harue)
- FLIM-LB/1.14.9 (=?UTF-8?B?R29qxY0=?=) APEL-LB/10.8 EasyPG/1.0.0 Emacs/27.1
- (x86_64-pc-linux-gnu) MULE/6.0 (HANACHIRUSATO)
-MIME-Version: 1.0 (generated by SEMI-EPG 1.14.7 - "Harue")
-X-SA-Exim-Connect-IP: 185.219.108.64
-X-SA-Exim-Rcpt-To: robin.murphy@arm.com, cuibixuan@huawei.com,
- iommu@lists.linux-foundation.org, linux-kernel@vger.kernel.org,
- will@kernel.org, weiyongjun1@huawei.com, john.wanghui@huawei.com,
- dingtianhong@huawei.com, thunder.leizhen@huawei.com, guohanjun@huawei.com,
- joro@8bytes.org, jean-philippe@linaro.org, Jonathan.Cameron@huawei.com,
- song.bao.hua@hisilicon.com, linux-arm-kernel@lists.infradead.org
-X-SA-Exim-Mail-From: maz@kernel.org
-X-SA-Exim-Scanned: No (on disco-boy.misterjones.org);
- SAEximRunCond expanded to false
-Cc: jean-philippe@linaro.org, guohanjun@huawei.com,
- linux-kernel@vger.kernel.org, john.wanghui@huawei.com,
- iommu@lists.linux-foundation.org, weiyongjun1@huawei.com,
- dingtianhong@huawei.com, will@kernel.org, linux-arm-kernel@lists.infradead.org
+Authentication-Results: smtp1.osuosl.org (amavisd-new);
+ dkim=pass (1024-bit key) header.d=chromium.org
+Received: from smtp1.osuosl.org ([127.0.0.1])
+ by localhost (smtp1.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+ with ESMTP id r_V-WFyznoSo for <iommu@lists.linux-foundation.org>;
+ Wed, 21 Jul 2021 13:40:29 +0000 (UTC)
+X-Greylist: whitelisted by SQLgrey-1.8.0
+Received: from mail-pj1-x1035.google.com (mail-pj1-x1035.google.com
+ [IPv6:2607:f8b0:4864:20::1035])
+ by smtp1.osuosl.org (Postfix) with ESMTPS id D87E382D5D
+ for <iommu@lists.linux-foundation.org>; Wed, 21 Jul 2021 13:40:29 +0000 (UTC)
+Received: by mail-pj1-x1035.google.com with SMTP id
+ i16-20020a17090acf90b02901736d9d2218so1055829pju.1
+ for <iommu@lists.linux-foundation.org>; Wed, 21 Jul 2021 06:40:29 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=chromium.org; s=google;
+ h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+ :cc; bh=2zLU7xCdFtfu9+Bw/8ezSHg3AfeYZUFk7U4CAtgzsSk=;
+ b=DLHpRRbO2RjAuMVpphDwHJoRmp8oEEm2MATAeF6UdAuJwx6eZbHLhj/xa1KIBmUapU
+ vvrK/O8gHWiQUba4dp6grGuRxiZInd+ONetpTm56l+rBFizt/z7Dy9AYvs9HhYvLMNfQ
+ OprQNoqgEfTNr0CZ8TwU+aR/v2mVhyzcaf6M8=
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+ d=1e100.net; s=20161025;
+ h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+ :message-id:subject:to:cc;
+ bh=2zLU7xCdFtfu9+Bw/8ezSHg3AfeYZUFk7U4CAtgzsSk=;
+ b=mLtPgxBEYoV2q6yn6/kyNwHCTZzAY9mKYCQEvhn4eED/+HPZgVpkPLG5icd9+GhOp2
+ Xv5ykFRnK8tEdTe4V1s5obV6nzWWWiRL1z45nlSyFaKEvHHfgQPNU8gJ3vPincJgkNwD
+ OyZCV6tYr3aMxvp79oG5sATk2XeioTX1QcVn1RdjTUfFB1gxdxpB30zXtZxFFe7TgsCA
+ WhK2NgzHegUVK8wn/WjRY09vfecQNrsMh7safr+O8maceyxHLkpAXYZZ/OJivbrxECFq
+ tStIr+nRejd4tDp2zlr6pgN4SOvsSNHaZuCB+NTrbgCDAElt7llyxYMQ51MK17kC6183
+ JdWw==
+X-Gm-Message-State: AOAM531aatCzlAc41SVmETUNpPYmqcCEg3ymnM8llDNqWvJlmKiRgoN/
+ lHNtva+T4i9zF24DRty3veeuso5FaAgXcWUT6UzbqA==
+X-Google-Smtp-Source: ABdhPJx22xhPEIxOvOdw0zD9THkPvLXa3uzUD5hc6KKSjL7/wue/Gk1Ox9vE25uU+NrX5EvLd6pJ/RDET8kRqJVOJzU=
+X-Received: by 2002:a17:90a:4f02:: with SMTP id
+ p2mr3750645pjh.112.1626874829285; 
+ Wed, 21 Jul 2021 06:40:29 -0700 (PDT)
+MIME-Version: 1.0
+References: <20210715121209.31024-1-yong.wu@mediatek.com>
+ <20210715121209.31024-12-yong.wu@mediatek.com>
+In-Reply-To: <20210715121209.31024-12-yong.wu@mediatek.com>
+From: Ikjoon Jang <ikjn@chromium.org>
+Date: Wed, 21 Jul 2021 21:40:18 +0800
+Message-ID: <CAATdQgAfo9oNR5=ogEottHajODngi1ahvKUnEOUczzjreYpPcQ@mail.gmail.com>
+Subject: Re: [PATCH v2 11/11] memory: mtk-smi: mt8195: Add initial setting for
+ smi-larb
+To: Yong Wu <yong.wu@mediatek.com>
+Cc: youlin.pei@mediatek.com,
+ "open list:OPEN FIRMWARE AND FLATTENED DEVICE TREE BINDINGS"
+ <devicetree@vger.kernel.org>, yi.kuo@mediatek.com,
+ srv_heupstream <srv_heupstream@mediatek.com>,
+ Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>,
+ Robin Murphy <robin.murphy@arm.com>, open list <linux-kernel@vger.kernel.org>,
+ Krzysztof Kozlowski <krzk@kernel.org>, iommu@lists.linux-foundation.org,
+ Rob Herring <robh+dt@kernel.org>,
+ "moderated list:ARM/Mediatek SoC support" <linux-mediatek@lists.infradead.org>,
+ Matthias Brugger <matthias.bgg@gmail.com>, anthony.huang@mediatek.com,
+ ming-fan.chen@mediatek.com, anan.sun@mediatek.com,
+ Will Deacon <will@kernel.org>, "moderated list:ARM/Mediatek SoC support"
+ <linux-arm-kernel@lists.infradead.org>
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -98,227 +114,156 @@ Content-Transfer-Encoding: 7bit
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-On Wed, 21 Jul 2021 12:42:14 +0100,
-Robin Murphy <robin.murphy@arm.com> wrote:
-> 
-> [ +Marc for MSI bits ]
-> 
-> On 2021-07-21 02:33, Bixuan Cui wrote:
-> > Add suspend and resume support for arm-smmu-v3 by low-power mode.
-> > 
-> > When the smmu is suspended, it is powered off and the registers are
-> > cleared. So saves the msi_msg context during msi interrupt initialization
-> > of smmu. When resume happens it calls arm_smmu_device_reset() to restore
-> > the registers.
-> > 
-> > Signed-off-by: Bixuan Cui <cuibixuan@huawei.com>
-> > Reviewed-by: Wei Yongjun <weiyongjun1@huawei.com>
-> > Reviewed-by: Zhen Lei <thunder.leizhen@huawei.com>
-> > Reviewed-by: Ding Tianhong <dingtianhong@huawei.com>
-> > Reviewed-by: Hanjun Guo <guohanjun@huawei.com>
-> > ---
-> > 
-> >   drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c | 72 ++++++++++++++++++---
-> >   1 file changed, 64 insertions(+), 8 deletions(-)
-> > 
-> > diff --git a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
-> > index 235f9bdaeaf2..bf1163acbcb1 100644
-> > --- a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
-> > +++ b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
-> > @@ -40,6 +40,7 @@ MODULE_PARM_DESC(disable_bypass,
-> >     static bool disable_msipolling;
-> >   module_param(disable_msipolling, bool, 0444);
-> > +static bool bypass;
-> >   MODULE_PARM_DESC(disable_msipolling,
-> >   	"Disable MSI-based polling for CMD_SYNC completion.");
-> >   @@ -3129,11 +3130,37 @@ static void arm_smmu_write_msi_msg(struct
-> > msi_desc *desc, struct msi_msg *msg)
-> >   	doorbell = (((u64)msg->address_hi) << 32) | msg->address_lo;
-> >   	doorbell &= MSI_CFG0_ADDR_MASK;
-> >   +	/* Saves the msg context for resume if desc->msg is empty */
-> > +	if (desc->msg.address_lo == 0 && desc->msg.address_hi == 0) {
-> > +		desc->msg.address_lo = msg->address_lo;
-> > +		desc->msg.address_hi = msg->address_hi;
-> > +		desc->msg.data = msg->data;
-> > +	}
-> 
-> My gut feeling is that this is something a device driver maybe
-> shouldn't be poking into, but I'm not entirely familiar with the area
-> :/
+On Thu, Jul 15, 2021 at 8:23 PM Yong Wu <yong.wu@mediatek.com> wrote:
+>
+> To improve the performance, We add some initial setting for smi larbs.
+> there are two part:
+> 1), Each port has the special ostd(outstanding) value in each larb.
+> 2), Two general setting for each larb.
+>
+> In some SoC, this setting maybe changed dynamically for some special case
+> like 4K, and this initial setting is enough in mt8195.
+>
+> Signed-off-by: Yong Wu <yong.wu@mediatek.com>
+> ---
+>  drivers/memory/mtk-smi.c | 74 +++++++++++++++++++++++++++++++++++++++-
+>  1 file changed, 73 insertions(+), 1 deletion(-)
+>
+> diff --git a/drivers/memory/mtk-smi.c b/drivers/memory/mtk-smi.c
+> index c52bf02458ff..1d9e67520433 100644
+> --- a/drivers/memory/mtk-smi.c
+> +++ b/drivers/memory/mtk-smi.c
+> @@ -32,6 +32,14 @@
+>  #define SMI_DUMMY                      0x444
+>
+>  /* SMI LARB */
+> +#define SMI_LARB_CMD_THRT_CON          0x24
+> +#define SMI_LARB_THRT_EN               0x370256
+> +
+> +#define SMI_LARB_SW_FLAG               0x40
+> +#define SMI_LARB_SW_FLAG_1             0x1
+> +
+> +#define SMI_LARB_OSTDL_PORT            0x200
+> +#define SMI_LARB_OSTDL_PORTx(id)       (SMI_LARB_OSTDL_PORT + (((id) & 0x1f) << 2))
+>
+>  /* Below are about mmu enable registers, they are different in SoCs */
+>  /* mt2701 */
+> @@ -67,6 +75,11 @@
+>  })
+>
+>  #define SMI_COMMON_INIT_REGS_NR                6
+> +#define SMI_LARB_PORT_NR_MAX           32
+> +
+> +#define MTK_SMI_FLAG_LARB_THRT_EN      BIT(0)
+> +#define MTK_SMI_FLAG_LARB_SW_FLAG      BIT(1)
+> +#define MTK_SMI_CAPS(flags, _x)                (!!((flags) & (_x)))
+>
+>  struct mtk_smi_reg_pair {
+>         unsigned int            offset;
+> @@ -97,6 +110,8 @@ struct mtk_smi_larb_gen {
+>         int port_in_larb[MTK_LARB_NR_MAX + 1];
+>         void (*config_port)(struct device *dev);
+>         unsigned int                    larb_direct_to_common_mask;
+> +       unsigned int                    flags_general;
+> +       const u8                        (*ostd)[SMI_LARB_PORT_NR_MAX];
+>  };
+>
+>  struct mtk_smi {
+> @@ -213,12 +228,22 @@ static void mtk_smi_larb_config_port_mt8173(struct device *dev)
+>  static void mtk_smi_larb_config_port_gen2_general(struct device *dev)
+>  {
+>         struct mtk_smi_larb *larb = dev_get_drvdata(dev);
+> -       u32 reg;
+> +       u32 reg, flags_general = larb->larb_gen->flags_general;
+> +       const u8 *larbostd = larb->larb_gen->ostd[larb->larbid];
+>         int i;
+>
+>         if (BIT(larb->larbid) & larb->larb_gen->larb_direct_to_common_mask)
+>                 return;
+>
+> +       if (MTK_SMI_CAPS(flags_general, MTK_SMI_FLAG_LARB_THRT_EN))
+> +               writel_relaxed(SMI_LARB_THRT_EN, larb->base + SMI_LARB_CMD_THRT_CON);
+> +
+> +       if (MTK_SMI_CAPS(flags_general, MTK_SMI_FLAG_LARB_SW_FLAG))
+> +               writel_relaxed(SMI_LARB_SW_FLAG_1, larb->base + SMI_LARB_SW_FLAG);
+> +
+> +       for (i = 0; i < SMI_LARB_PORT_NR_MAX && larbostd && !!larbostd[i]; i++)
+> +               writel_relaxed(larbostd[i], larb->base + SMI_LARB_OSTDL_PORTx(i));
 
-Certainly not. If you rely on the message being stored into the
-descriptors, then implement this in the core code, like we do for PCI.
+All other mtk platform's larbs have the same format for SMI_LARB_OSTDL_PORTx()
+registers at the same offset? or is this unique feature for mt8195?
 
-> 
-> > +
-> >   	writeq_relaxed(doorbell, smmu->base + cfg[0]);
-> >   	writel_relaxed(msg->data, smmu->base + cfg[1]);
-> >   	writel_relaxed(ARM_SMMU_MEMATTR_DEVICE_nGnRE, smmu->base + cfg[2]);
-> >   }
-> >   +static void arm_smmu_resume_msis(struct arm_smmu_device *smmu)
-> > +{
-> > +	struct msi_desc *desc;
-> > +	struct device *dev = smmu->dev;
-> > +
-> > +	for_each_msi_entry(desc, dev) {
-> > +		switch (desc->platform.msi_index) {
-> > +		case EVTQ_MSI_INDEX:
-> > +		case GERROR_MSI_INDEX:
-> > +		case PRIQ_MSI_INDEX:
-> > +			arm_smmu_write_msi_msg(desc, &(desc->msg));
-
-Consider using get_cached_msi_msg() instead of using the internals of
-the descriptor.
-
-> > +			break;
-> > +		default:
-> > +			continue;
-> > +
-> > +		}
-> > +	}
-> > +}
-> > +
-> >   static void arm_smmu_setup_msis(struct arm_smmu_device *smmu)
-> >   {
-> >   	struct msi_desc *desc;
-> > @@ -3184,11 +3211,17 @@ static void arm_smmu_setup_msis(struct arm_smmu_device *smmu)
-> >   	devm_add_action(dev, arm_smmu_free_msis, dev);
-> >   }
-> >   -static void arm_smmu_setup_unique_irqs(struct arm_smmu_device
-> > *smmu)
-> > +static void arm_smmu_setup_unique_irqs(struct arm_smmu_device *smmu, bool resume_mode)
-> >   {
-> >   	int irq, ret;
-> >   -	arm_smmu_setup_msis(smmu);
-> > +	if (!resume_mode)
-> > +		arm_smmu_setup_msis(smmu);
-> > +	else {
-> > +		/* The irq doesn't need to be re-requested during resume */
-> > +		arm_smmu_resume_msis(smmu);
-> > +		return;
-> 
-> What about wired IRQs?
-
-Yeah. I assume the SMMU needs to be told which event gets signalled
-using MSIs or IRQs? Or is that implied by the MSI being configured or
-not (I used to know the answer to that, but I have long paged it out).
-
-> 
-> > +	}
-> >     	/* Request interrupt lines */
-> >   	irq = smmu->evtq.q.irq;
-> > @@ -3230,7 +3263,7 @@ static void arm_smmu_setup_unique_irqs(struct arm_smmu_device *smmu)
-> >   	}
-> >   }
-> >   -static int arm_smmu_setup_irqs(struct arm_smmu_device *smmu)
-> > +static int arm_smmu_setup_irqs(struct arm_smmu_device *smmu, bool resume_mode)
-> >   {
-> >   	int ret, irq;
-> >   	u32 irqen_flags = IRQ_CTRL_EVTQ_IRQEN | IRQ_CTRL_GERROR_IRQEN;
-> > @@ -3257,7 +3290,7 @@ static int arm_smmu_setup_irqs(struct arm_smmu_device *smmu)
-> >   		if (ret < 0)
-> >   			dev_warn(smmu->dev, "failed to enable combined irq\n");
-> >   	} else
-> > -		arm_smmu_setup_unique_irqs(smmu);
-> > +		arm_smmu_setup_unique_irqs(smmu, resume_mode);
-> >     	if (smmu->features & ARM_SMMU_FEAT_PRI)
-> >   		irqen_flags |= IRQ_CTRL_PRIQ_IRQEN;
-> > @@ -3282,7 +3315,7 @@ static int arm_smmu_device_disable(struct arm_smmu_device *smmu)
-> >   	return ret;
-> >   }
-> >   -static int arm_smmu_device_reset(struct arm_smmu_device *smmu,
-> > bool bypass)
-> > +static int arm_smmu_device_reset(struct arm_smmu_device *smmu, bool resume_mode)
-> 
-> Er, what about the use of "bypass" towards the end of the
-> function. Have you even compiled this?
-
-The author of the patch has conveniently made it a global value (see
-line 3 of the patch). I'm sure it doesn't break anything... :-(
-
-> 
-> >   {
-> >   	int ret;
-> >   	u32 reg, enables;
-> > @@ -3392,7 +3425,7 @@ static int arm_smmu_device_reset(struct arm_smmu_device *smmu, bool bypass)
-> >   		}
-> >   	}
-> >   -	ret = arm_smmu_setup_irqs(smmu);
-> > +	ret = arm_smmu_setup_irqs(smmu, resume_mode);
-> >   	if (ret) {
-> >   		dev_err(smmu->dev, "failed to setup irqs\n");
-> >   		return ret;
-> > @@ -3749,6 +3782,24 @@ static void __iomem *arm_smmu_ioremap(struct device *dev, resource_size_t start,
-> >   	return devm_ioremap_resource(dev, &res);
-> >   }
-> >   +static int __maybe_unused arm_smmu_suspend(struct device *dev)
-> > +{
-> > +	/*
-> > +	 * The smmu is powered off and related registers are automatically
-> > +	 * cleared when suspend. No need to do anything.
-> > +	 */
-> 
-> Is that guaranteed? What if suspend is only implemented by external
-> clock-gating?
-
-+1. This seems awfully implementation/integration specific. I'd be
-more in favour of a controlled teardown.
-
-> 
-> > +	return 0;
-> > +}
-> > +
-> > +static int __maybe_unused arm_smmu_resume(struct device *dev)
-> > +{
-> > +	struct arm_smmu_device *smmu = dev_get_drvdata(dev);
-> > +
-> > +	arm_smmu_device_reset(smmu, true);
-> > +
-> > +	return 0;
-> > +}
-> > +
-> >   static int arm_smmu_device_probe(struct platform_device *pdev)
-> >   {
-> >   	int irq, ret;
-> > @@ -3756,7 +3807,6 @@ static int arm_smmu_device_probe(struct platform_device *pdev)
-> >   	resource_size_t ioaddr;
-> >   	struct arm_smmu_device *smmu;
-> >   	struct device *dev = &pdev->dev;
-> > -	bool bypass;
-> 
-> Once again...
-> 
-> >   	smmu = devm_kzalloc(dev, sizeof(*smmu), GFP_KERNEL);
-> >   	if (!smmu)
-> > @@ -3831,7 +3881,7 @@ static int arm_smmu_device_probe(struct platform_device *pdev)
-> >   	platform_set_drvdata(pdev, smmu);
-> >     	/* Reset the device */
-> > -	ret = arm_smmu_device_reset(smmu, bypass);
-> 
-> ...either this is based on some out-of-tree hack which introduced its
-> own uninitialised-usage bug here, or it doesn't even compile.
-> 
-> > +	ret = arm_smmu_device_reset(smmu, false);
-> >   	if (ret)
-> >   		return ret;
-> >   @@ -3884,6 +3934,11 @@ static const struct of_device_id
-> > arm_smmu_of_match[] = {
-> >   };
-> >   MODULE_DEVICE_TABLE(of, arm_smmu_of_match);
-> >   +static const struct dev_pm_ops arm_smmu_pm_ops = {
-> > +	.suspend = arm_smmu_suspend,
-> > +	.resume = arm_smmu_resume,
-> 
-> Either use SET_SYSTEM_SLEEP_PM_OPS() here or drop the __maybe_unused
-> annmotations above - they're pointless if the callbacks are referenced
-> unconditionally.
-
-Thanks,
-
-	M.
-
--- 
-Without deviation from the norm, progress is not possible.
+> +
+>         for_each_set_bit(i, (unsigned long *)larb->mmu, 32) {
+>                 reg = readl_relaxed(larb->base + SMI_LARB_NONSEC_CON(i));
+>                 reg |= F_MMU_EN;
+> @@ -227,6 +252,51 @@ static void mtk_smi_larb_config_port_gen2_general(struct device *dev)
+>         }
+>  }
+>
+> +static const u8 mtk_smi_larb_mt8195_ostd[][SMI_LARB_PORT_NR_MAX] = {
+> +       [0] = {0x0a, 0xc, 0x22, 0x22, 0x01, 0x0a,}, /* larb0 */
+> +       [1] = {0x0a, 0xc, 0x22, 0x22, 0x01, 0x0a,}, /* larb1 */
+> +       [2] = {0x12, 0x12, 0x12, 0x12, 0x0a,},      /* ... */
+> +       [3] = {0x12, 0x12, 0x12, 0x12, 0x28, 0x28, 0x0a,},
+> +       [4] = {0x06, 0x01, 0x17, 0x06, 0x0a,},
+> +       [5] = {0x06, 0x01, 0x17, 0x06, 0x06, 0x01, 0x06, 0x0a,},
+> +       [6] = {0x06, 0x01, 0x06, 0x0a,},
+> +       [7] = {0x0c, 0x0c, 0x12,},
+> +       [8] = {0x0c, 0x0c, 0x12,},
+> +       [9] = {0x0a, 0x08, 0x04, 0x06, 0x01, 0x01, 0x10, 0x18, 0x11, 0x0a,
+> +               0x08, 0x04, 0x11, 0x06, 0x02, 0x06, 0x01, 0x11, 0x11, 0x06,},
+> +       [10] = {0x18, 0x08, 0x01, 0x01, 0x20, 0x12, 0x18, 0x06, 0x05, 0x10,
+> +               0x08, 0x08, 0x10, 0x08, 0x08, 0x18, 0x0c, 0x09, 0x0b, 0x0d,
+> +               0x0d, 0x06, 0x10, 0x10,},
+> +       [11] = {0x0e, 0x0e, 0x0e, 0x0e, 0x0e, 0x0e, 0x01, 0x01, 0x01, 0x01,},
+> +       [12] = {0x09, 0x09, 0x05, 0x05, 0x0c, 0x18, 0x02, 0x02, 0x04, 0x02,},
+> +       [13] = {0x02, 0x02, 0x12, 0x12, 0x02, 0x02, 0x02, 0x02, 0x08, 0x01,},
+> +       [14] = {0x12, 0x12, 0x02, 0x02, 0x02, 0x02, 0x16, 0x01, 0x16, 0x01,
+> +               0x01, 0x02, 0x02, 0x08, 0x02,},
+> +       [15] = {},
+> +       [16] = {0x28, 0x02, 0x02, 0x12, 0x02, 0x12, 0x10, 0x02, 0x02, 0x0a,
+> +               0x12, 0x02, 0x0a, 0x16, 0x02, 0x04,},
+> +       [17] = {0x1a, 0x0e, 0x0a, 0x0a, 0x0c, 0x0e, 0x10,},
+> +       [18] = {0x12, 0x06, 0x12, 0x06,},
+> +       [19] = {0x01, 0x04, 0x01, 0x01, 0x01, 0x01, 0x01, 0x04, 0x04, 0x01,
+> +               0x01, 0x01, 0x04, 0x0a, 0x06, 0x01, 0x01, 0x01, 0x0a, 0x06,
+> +               0x01, 0x01, 0x05, 0x03, 0x03, 0x04, 0x01,},
+> +       [20] = {0x01, 0x04, 0x01, 0x01, 0x01, 0x01, 0x01, 0x04, 0x04, 0x01,
+> +               0x01, 0x01, 0x04, 0x0a, 0x06, 0x01, 0x01, 0x01, 0x0a, 0x06,
+> +               0x01, 0x01, 0x05, 0x03, 0x03, 0x04, 0x01,},
+> +       [21] = {0x28, 0x19, 0x0c, 0x01, 0x01, 0x01, 0x01, 0x01, 0x01, 0x04,},
+> +       [22] = {0x28, 0x19, 0x0c, 0x01, 0x01, 0x01, 0x01, 0x01, 0x01, 0x04,},
+> +       [23] = {0x18, 0x01,},
+> +       [24] = {0x01, 0x01, 0x04, 0x01, 0x01, 0x01, 0x01, 0x01, 0x04, 0x01,
+> +               0x01, 0x01,},
+> +       [25] = {0x02, 0x02, 0x02, 0x28, 0x16, 0x02, 0x02, 0x02, 0x12, 0x16,
+> +               0x02, 0x01,},
+> +       [26] = {0x02, 0x02, 0x02, 0x28, 0x16, 0x02, 0x02, 0x02, 0x12, 0x16,
+> +               0x02, 0x01,},
+> +       [27] = {0x02, 0x02, 0x02, 0x28, 0x16, 0x02, 0x02, 0x02, 0x12, 0x16,
+> +               0x02, 0x01,},
+> +       [28] = {0x1a, 0x0e, 0x0a, 0x0a, 0x0c, 0x0e, 0x10,},
+> +};
+> +
+>  static const struct mtk_smi_larb_gen mtk_smi_larb_mt2701 = {
+>         .port_in_larb = {
+>                 LARB0_PORT_OFFSET, LARB1_PORT_OFFSET,
+> @@ -269,6 +339,8 @@ static const struct mtk_smi_larb_gen mtk_smi_larb_mt8192 = {
+>
+>  static const struct mtk_smi_larb_gen mtk_smi_larb_mt8195 = {
+>         .config_port                = mtk_smi_larb_config_port_gen2_general,
+> +       .flags_general              = MTK_SMI_FLAG_LARB_THRT_EN | MTK_SMI_FLAG_LARB_SW_FLAG,
+> +       .ostd                       = mtk_smi_larb_mt8195_ostd,
+>  };
+>
+>  static const struct of_device_id mtk_smi_larb_of_ids[] = {
+> --
+> 2.18.0
+> _______________________________________________
+> Linux-mediatek mailing list
+> Linux-mediatek@lists.infradead.org
+> http://lists.infradead.org/mailman/listinfo/linux-mediatek
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
