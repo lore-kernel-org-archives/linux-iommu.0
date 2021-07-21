@@ -7,56 +7,56 @@ X-Spam-Status: No, score=-16.8 required=3.0 tests=BAYES_00,
 	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,USER_AGENT_GIT autolearn=ham
 	autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D390FC636CA
-	for <iommu@archiver.kernel.org>; Wed, 21 Jul 2021 18:21:22 +0000 (UTC)
-Received: from smtp3.osuosl.org (smtp3.osuosl.org [140.211.166.136])
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 23061C636C9
+	for <iommu@archiver.kernel.org>; Wed, 21 Jul 2021 18:21:25 +0000 (UTC)
+Received: from smtp1.osuosl.org (smtp1.osuosl.org [140.211.166.138])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id A0E0161264
-	for <iommu@archiver.kernel.org>; Wed, 21 Jul 2021 18:21:22 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org A0E0161264
+	by mail.kernel.org (Postfix) with ESMTPS id DFC0E61248
+	for <iommu@archiver.kernel.org>; Wed, 21 Jul 2021 18:21:24 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org DFC0E61248
 Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=arm.com
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by smtp3.osuosl.org (Postfix) with ESMTP id 7E8CA608CF;
-	Wed, 21 Jul 2021 18:21:22 +0000 (UTC)
+	by smtp1.osuosl.org (Postfix) with ESMTP id C016B82FF9;
+	Wed, 21 Jul 2021 18:21:24 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from smtp3.osuosl.org ([127.0.0.1])
-	by localhost (smtp3.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id ACyc-oUkOpZ7; Wed, 21 Jul 2021 18:21:21 +0000 (UTC)
-Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [IPv6:2605:bc80:3010:104::8cd3:938])
-	by smtp3.osuosl.org (Postfix) with ESMTPS id 5C7A6608CA;
-	Wed, 21 Jul 2021 18:21:21 +0000 (UTC)
+Received: from smtp1.osuosl.org ([127.0.0.1])
+	by localhost (smtp1.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+	with ESMTP id 6_OIg44RFDHD; Wed, 21 Jul 2021 18:21:24 +0000 (UTC)
+Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
+	by smtp1.osuosl.org (Postfix) with ESMTPS id A51F282FD5;
+	Wed, 21 Jul 2021 18:21:23 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 31AA3C0010;
-	Wed, 21 Jul 2021 18:21:21 +0000 (UTC)
-Received: from smtp4.osuosl.org (smtp4.osuosl.org [IPv6:2605:bc80:3010::137])
- by lists.linuxfoundation.org (Postfix) with ESMTP id D6399C000E
- for <iommu@lists.linux-foundation.org>; Wed, 21 Jul 2021 18:21:19 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 80E03C0010;
+	Wed, 21 Jul 2021 18:21:23 +0000 (UTC)
+Received: from smtp1.osuosl.org (smtp1.osuosl.org [140.211.166.138])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id BAD45C0010
+ for <iommu@lists.linux-foundation.org>; Wed, 21 Jul 2021 18:21:21 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by smtp4.osuosl.org (Postfix) with ESMTP id BF36C40575
- for <iommu@lists.linux-foundation.org>; Wed, 21 Jul 2021 18:21:19 +0000 (UTC)
+ by smtp1.osuosl.org (Postfix) with ESMTP id 9795382F14
+ for <iommu@lists.linux-foundation.org>; Wed, 21 Jul 2021 18:21:21 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from smtp4.osuosl.org ([127.0.0.1])
- by localhost (smtp4.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id jAB6F2f2H7t8 for <iommu@lists.linux-foundation.org>;
- Wed, 21 Jul 2021 18:21:18 +0000 (UTC)
+Received: from smtp1.osuosl.org ([127.0.0.1])
+ by localhost (smtp1.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+ with ESMTP id hKa4gDq_XD11 for <iommu@lists.linux-foundation.org>;
+ Wed, 21 Jul 2021 18:21:20 +0000 (UTC)
 X-Greylist: domain auto-whitelisted by SQLgrey-1.8.0
 Received: from foss.arm.com (foss.arm.com [217.140.110.172])
- by smtp4.osuosl.org (Postfix) with ESMTP id DEC7040362
- for <iommu@lists.linux-foundation.org>; Wed, 21 Jul 2021 18:21:18 +0000 (UTC)
+ by smtp1.osuosl.org (Postfix) with ESMTP id BD9B882EDB
+ for <iommu@lists.linux-foundation.org>; Wed, 21 Jul 2021 18:21:20 +0000 (UTC)
 Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
- by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 6A3F411FB;
- Wed, 21 Jul 2021 11:21:18 -0700 (PDT)
+ by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 26BD712FC;
+ Wed, 21 Jul 2021 11:21:20 -0700 (PDT)
 Received: from 010265703453.arm.com (unknown [10.57.36.146])
- by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPA id EC58A3F694;
- Wed, 21 Jul 2021 11:21:16 -0700 (PDT)
+ by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPA id A81CB3F694;
+ Wed, 21 Jul 2021 11:21:18 -0700 (PDT)
 From: Robin Murphy <robin.murphy@arm.com>
 To: joro@8bytes.org,
 	will@kernel.org
-Subject: [PATCH 19/23] iommu: Expose DMA domain strictness via sysfs
-Date: Wed, 21 Jul 2021 19:20:30 +0100
-Message-Id: <fb1dc51d19772284f357bf5603d8f150ff857b41.1626888445.git.robin.murphy@arm.com>
+Subject: [PATCH 20/23] iommu: Allow choosing DMA strictness at build time
+Date: Wed, 21 Jul 2021 19:20:31 +0100
+Message-Id: <002cd8280cc4935e294d79bef838fbfb633bb3ed.1626888445.git.robin.murphy@arm.com>
 X-Mailer: git-send-email 2.25.1
 In-Reply-To: <cover.1626888444.git.robin.murphy@arm.com>
 References: <cover.1626888444.git.robin.murphy@arm.com>
@@ -80,48 +80,94 @@ Content-Transfer-Encoding: 7bit
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-The sysfs interface for default domain types exists primarily so users
-can choose the performance/security tradeoff relevant to their own
-workload. As such, the choice between the policies for DMA domains fits
-perfectly as an additional point on that scale - downgrading a
-particular device from a strict default to non-strict may be enough to
-let it reach the desired level of performance, while still retaining
-more peace of mind than with a wide-open identity domain. Now that we've
-abstracted non-strict mode as a distinct type of DMA domain, allow it to
-be chosen through the user interface as well.
+To parallel the sysfs behaviour, extend the build-time configuration
+for default domains to include the new type as well.
 
 Signed-off-by: Robin Murphy <robin.murphy@arm.com>
----
- Documentation/ABI/testing/sysfs-kernel-iommu_groups | 2 ++
- drivers/iommu/iommu.c                               | 2 ++
- 2 files changed, 4 insertions(+)
 
-diff --git a/Documentation/ABI/testing/sysfs-kernel-iommu_groups b/Documentation/ABI/testing/sysfs-kernel-iommu_groups
-index eae2f1c1e11e..43ba764ba5b7 100644
---- a/Documentation/ABI/testing/sysfs-kernel-iommu_groups
-+++ b/Documentation/ABI/testing/sysfs-kernel-iommu_groups
-@@ -42,6 +42,8 @@ Description:	/sys/kernel/iommu_groups/<grp_id>/type shows the type of default
- 		========  ======================================================
- 		DMA       All the DMA transactions from the device in this group
- 		          are translated by the iommu.
-+		DMA-FQ    As above, but using batched invalidation to lazily
-+		          remove translations after use.
- 		identity  All the DMA transactions from the device in this group
- 		          are not translated by the iommu.
- 		auto      Change to the type the device was booted with.
+---
+
+This effectively replaces patch #3 of John's "iommu: Enhance IOMMU
+default DMA mode build options" series.
+---
+ drivers/iommu/Kconfig | 48 +++++++++++++++++++++++++++++++++++--------
+ drivers/iommu/iommu.c |  2 +-
+ 2 files changed, 41 insertions(+), 9 deletions(-)
+
+diff --git a/drivers/iommu/Kconfig b/drivers/iommu/Kconfig
+index 07b7c25cbed8..e3f7990046ae 100644
+--- a/drivers/iommu/Kconfig
++++ b/drivers/iommu/Kconfig
+@@ -79,16 +79,48 @@ config IOMMU_DEBUGFS
+ 	  debug/iommu directory, and then populate a subdirectory with
+ 	  entries as required.
+ 
+-config IOMMU_DEFAULT_PASSTHROUGH
+-	bool "IOMMU passthrough by default"
++choice
++	prompt "Default IOMMU domain type"
+ 	depends on IOMMU_API
+-	help
+-	  Enable passthrough by default, removing the need to pass in
+-	  iommu.passthrough=on or iommu=pt through command line. If this
+-	  is enabled, you can still disable with iommu.passthrough=off
+-	  or iommu=nopt depending on the architecture.
++	default IOMMU_DEFAULT_DMA_LAZY if INTEL_IOMMU || AMD_IOMMU
++	default IOMMU_DEFAULT_DMA_STRICT
+ 
+-	  If unsure, say N here.
++config IOMMU_DEFAULT_DMA_STRICT
++	bool "Translated - Strict"
++	help
++	  Trusted devices use translation to restrict their access to only
++	  DMA-mapped pages, with strict TLB invalidation on unmap. Equivalent
++	  to passing "iommu.passthrough=0 iommu.strict=1" on the command line.
++
++	  Untrusted devices always use this mode, with an additional layer of
++	  bounce-buffering such that they cannot gain access to any unrelated
++	  data within a mapped page.
++
++config IOMMU_DEFAULT_DMA_LAZY
++	bool "Translated - Lazy"
++	help
++	  Trusted devices use translation to restrict their access to only
++	  DMA-mapped pages, but with "lazy" batched TLB invalidation. This
++	  mode allows higher performance with some IOMMUs due to reduced TLB
++	  flushing, but at the cost of reduced isolation since devices may be
++	  able to access memory for some time after it has been unmapped.
++	  Equivalent to passing "iommu.passthrough=0 iommu.strict=0" on the
++	  command line.
++
++	  If this mode is not supported by the IOMMU driver, the effective
++	  runtime default will fall back to IOMMU_DEFAULT_DMA_STRICT.
++
++config IOMMU_DEFAULT_PASSTHROUGH
++	bool "Passthrough"
++	help
++	  Trusted devices are identity-mapped, giving them unrestricted access
++	  to memory with minimal performance overhead. Equivalent to passing
++	  "iommu.passthrough=1" (historically "iommu=pt") on the command line.
++
++	  If this mode is not supported by the IOMMU driver, the effective
++	  runtime default will fall back to IOMMU_DEFAULT_DMA_STRICT.
++
++endchoice
+ 
+ config OF_IOMMU
+ 	def_bool y
 diff --git a/drivers/iommu/iommu.c b/drivers/iommu/iommu.c
-index d7eaacae0944..d3b562a33ac4 100644
+index d3b562a33ac4..4fad6d427d9d 100644
 --- a/drivers/iommu/iommu.c
 +++ b/drivers/iommu/iommu.c
-@@ -3195,6 +3195,8 @@ static ssize_t iommu_group_store_type(struct iommu_group *group,
- 		req_type = IOMMU_DOMAIN_IDENTITY;
- 	else if (sysfs_streq(buf, "DMA"))
- 		req_type = IOMMU_DOMAIN_DMA;
-+	else if (sysfs_streq(buf, "DMA-FQ"))
-+		req_type = IOMMU_DOMAIN_DMA_FQ;
- 	else if (sysfs_streq(buf, "auto"))
- 		req_type = 0;
- 	else
+@@ -30,7 +30,7 @@ static struct kset *iommu_group_kset;
+ static DEFINE_IDA(iommu_group_ida);
+ 
+ static unsigned int iommu_def_domain_type __read_mostly;
+-static bool iommu_dma_strict __read_mostly = true;
++static bool iommu_dma_strict __read_mostly = IS_ENABLED(CONFIG_IOMMU_DEFAULT_DMA_STRICT);
+ static u32 iommu_cmd_line __read_mostly;
+ 
+ struct iommu_group {
 -- 
 2.25.1
 
