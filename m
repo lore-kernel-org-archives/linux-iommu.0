@@ -2,89 +2,91 @@ Return-Path: <SRS0=85So=MN=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-13.6 required=3.0 tests=BAYES_00,DKIM_INVALID,
-	DKIM_SIGNED,HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_CR_TRAILER,INCLUDES_PATCH,
-	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no
-	version=3.4.0
+X-Spam-Status: No, score=-8.8 required=3.0 tests=BAYES_00,
+	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,SPF_HELO_NONE,
+	SPF_PASS autolearn=unavailable autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 94EF4C07E9B
-	for <iommu@archiver.kernel.org>; Wed, 21 Jul 2021 04:49:24 +0000 (UTC)
-Received: from smtp4.osuosl.org (smtp4.osuosl.org [140.211.166.137])
+	by smtp.lore.kernel.org (Postfix) with ESMTP id CAF6EC07E9B
+	for <iommu@archiver.kernel.org>; Wed, 21 Jul 2021 08:54:10 +0000 (UTC)
+Received: from smtp2.osuosl.org (smtp2.osuosl.org [140.211.166.133])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 2F8BE60FDA
-	for <iommu@archiver.kernel.org>; Wed, 21 Jul 2021 04:49:24 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 2F8BE60FDA
-Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=codeaurora.org
+	by mail.kernel.org (Postfix) with ESMTPS id 50AF9611C1
+	for <iommu@archiver.kernel.org>; Wed, 21 Jul 2021 08:54:10 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 50AF9611C1
+Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=huawei.com
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by smtp4.osuosl.org (Postfix) with ESMTP id D997A40347;
-	Wed, 21 Jul 2021 04:49:23 +0000 (UTC)
+	by smtp2.osuosl.org (Postfix) with ESMTP id 01C15404CB;
+	Wed, 21 Jul 2021 08:54:10 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from smtp4.osuosl.org ([127.0.0.1])
-	by localhost (smtp4.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id dHvpKVrTJGiY; Wed, 21 Jul 2021 04:49:22 +0000 (UTC)
+Received: from smtp2.osuosl.org ([127.0.0.1])
+	by localhost (smtp2.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+	with ESMTP id eaGlYnsMfmQ7; Wed, 21 Jul 2021 08:54:09 +0000 (UTC)
 Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [IPv6:2605:bc80:3010:104::8cd3:938])
-	by smtp4.osuosl.org (Postfix) with ESMTPS id 4904040317;
-	Wed, 21 Jul 2021 04:49:22 +0000 (UTC)
+	by smtp2.osuosl.org (Postfix) with ESMTPS id 9789140138;
+	Wed, 21 Jul 2021 08:54:08 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 1CCF2C001A;
-	Wed, 21 Jul 2021 04:49:22 +0000 (UTC)
-Received: from smtp4.osuosl.org (smtp4.osuosl.org [140.211.166.137])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 8BF06C000E
- for <iommu@lists.linux-foundation.org>; Wed, 21 Jul 2021 04:49:21 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 35034C001A;
+	Wed, 21 Jul 2021 08:54:08 +0000 (UTC)
+Received: from smtp3.osuosl.org (smtp3.osuosl.org [140.211.166.136])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 3A98CC000E
+ for <iommu@lists.linux-foundation.org>; Wed, 21 Jul 2021 08:54:07 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by smtp4.osuosl.org (Postfix) with UTF8SMTP id 6C39B40347
- for <iommu@lists.linux-foundation.org>; Wed, 21 Jul 2021 04:49:21 +0000 (UTC)
+ by smtp3.osuosl.org (Postfix) with ESMTP id 267AD607A6
+ for <iommu@lists.linux-foundation.org>; Wed, 21 Jul 2021 08:54:07 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from smtp4.osuosl.org ([127.0.0.1])
- by localhost (smtp4.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with UTF8SMTP id WrejiH48M1C3 for <iommu@lists.linux-foundation.org>;
- Wed, 21 Jul 2021 04:49:20 +0000 (UTC)
-X-Greylist: from auto-whitelisted by SQLgrey-1.8.0
-Received: from m43-7.mailgun.net (m43-7.mailgun.net [69.72.43.7])
- by smtp4.osuosl.org (Postfix) with UTF8SMTPS id 71EA040317
- for <iommu@lists.linux-foundation.org>; Wed, 21 Jul 2021 04:49:18 +0000 (UTC)
-DKIM-Signature: a=rsa-sha256; v=1; c=relaxed/relaxed; d=mg.codeaurora.org;
- q=dns/txt; 
- s=smtp; t=1626842960; h=Message-ID: References: In-Reply-To: Subject:
- Cc: To: From: Date: Content-Transfer-Encoding: Content-Type:
- MIME-Version: Sender; bh=ysfU1fmJUQ+goJDisL4cBXfJ715oyfGSSo4Tjw8BxEE=;
- b=N80JpU3Z03nMcukQXtK/y4rKgXZRk0Uab+HB1244In8xWkYbd/gb4NRyFaj55VuCEwRYAPu/
- xJz2bm6wX1+eTRE22Wld18jkXo1fE5YPFR8FCvZPGgtDokR7fV01bJ6AFFTfijtQyCdIkN43
- hQ7a6RaSwTNBpcCcVXwpF6fzaiI=
-X-Mailgun-Sending-Ip: 69.72.43.7
-X-Mailgun-Sid: WyI3NDkwMCIsICJpb21tdUBsaXN0cy5saW51eC1mb3VuZGF0aW9uLm9yZyIsICJiZTllNGEiXQ==
-Received: from smtp.codeaurora.org
- (ec2-35-166-182-171.us-west-2.compute.amazonaws.com [35.166.182.171]) by
- smtp-out-n04.prod.us-west-2.postgun.com with SMTP id
- 60f7a73ae31d882d181b1a22 (version=TLS1.2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256); Wed, 21 Jul 2021 04:48:58
- GMT
-Received: by smtp.codeaurora.org (Postfix, from userid 1001)
- id 90E65C4323A; Wed, 21 Jul 2021 04:48:58 +0000 (UTC)
-Received: from mail.codeaurora.org (localhost.localdomain [127.0.0.1])
- (using TLSv1 with cipher ECDHE-RSA-AES256-SHA (256/256 bits))
- (No client certificate requested)
- (Authenticated sender: saiprakash.ranjan)
- by smtp.codeaurora.org (Postfix) with ESMTPSA id D0DCEC433F1;
- Wed, 21 Jul 2021 04:48:56 +0000 (UTC)
+Received: from smtp3.osuosl.org ([127.0.0.1])
+ by localhost (smtp3.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+ with ESMTP id 4gL9slaNBmmC for <iommu@lists.linux-foundation.org>;
+ Wed, 21 Jul 2021 08:54:06 +0000 (UTC)
+X-Greylist: domain auto-whitelisted by SQLgrey-1.8.0
+Received: from frasgout.his.huawei.com (frasgout.his.huawei.com
+ [185.176.79.56])
+ by smtp3.osuosl.org (Postfix) with ESMTPS id A97FB6077B
+ for <iommu@lists.linux-foundation.org>; Wed, 21 Jul 2021 08:54:05 +0000 (UTC)
+Received: from fraeml744-chm.china.huawei.com (unknown [172.18.147.201])
+ by frasgout.his.huawei.com (SkyGuard) with ESMTP id 4GV8Kd3ykkz6G982;
+ Wed, 21 Jul 2021 16:45:09 +0800 (CST)
+Received: from lhreml720-chm.china.huawei.com (10.201.108.71) by
+ fraeml744-chm.china.huawei.com (10.206.15.225) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2176.2; Wed, 21 Jul 2021 10:54:00 +0200
+Received: from lhreml710-chm.china.huawei.com (10.201.108.61) by
+ lhreml720-chm.china.huawei.com (10.201.108.71) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2176.2; Wed, 21 Jul 2021 09:54:00 +0100
+Received: from lhreml710-chm.china.huawei.com ([169.254.81.184]) by
+ lhreml710-chm.china.huawei.com ([169.254.81.184]) with mapi id
+ 15.01.2176.012; Wed, 21 Jul 2021 09:54:00 +0100
+From: Shameerali Kolothum Thodi <shameerali.kolothum.thodi@huawei.com>
+To: Jean-Philippe Brucker <jean-philippe@linaro.org>
+Subject: RE: [RFC PATCH 4/5] iommu/arm-smmu-v3: Use pinned VMID for NESTED
+ stage with BTM
+Thread-Topic: [RFC PATCH 4/5] iommu/arm-smmu-v3: Use pinned VMID for NESTED
+ stage with BTM
+Thread-Index: AQHXERlrJofV4Zjw70Ci8icDpSKnl6tN8a9g
+Date: Wed, 21 Jul 2021 08:54:00 +0000
+Message-ID: <903a06a9db8c45fe88158e1c35f38c25@huawei.com>
+References: <20210222155338.26132-1-shameerali.kolothum.thodi@huawei.com>
+ <20210222155338.26132-5-shameerali.kolothum.thodi@huawei.com>
+ <YEEUocRn3IfIDpLj@myrica>
+In-Reply-To: <YEEUocRn3IfIDpLj@myrica>
+Accept-Language: en-GB, en-US
+Content-Language: en-US
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+x-originating-ip: [10.47.86.152]
 MIME-Version: 1.0
-Date: Wed, 21 Jul 2021 10:18:56 +0530
-From: Sai Prakash Ranjan <saiprakash.ranjan@codeaurora.org>
-To: Will Deacon <will@kernel.org>, Robin Murphy <robin.murphy@arm.com>,
- Joerg Roedel <joro@8bytes.org>
-Subject: Re: [PATCHv3] iommu/arm-smmu: Optimize ->tlb_flush_walk() for qcom
- implementation
-In-Reply-To: <ee8314e4752aa777131dda22c6f4e9ef@codeaurora.org>
-References: <20210623134201.16140-1-saiprakash.ranjan@codeaurora.org>
- <ee8314e4752aa777131dda22c6f4e9ef@codeaurora.org>
-Message-ID: <bf3f323c66eb8bd701a5f96933a08e11@codeaurora.org>
-X-Sender: saiprakash.ranjan@codeaurora.org
-User-Agent: Roundcube Webmail/1.3.9
-Cc: Doug Anderson <dianders@chromium.org>, linux-arm-msm@vger.kernel.org,
- linux-kernel@vger.kernel.org, iommu@lists.linux-foundation.org,
- Thierry Reding <treding@nvidia.com>, linux-arm-kernel@lists.infradead.org
+X-CFilter-Loop: Reflected
+Cc: "maz@kernel.org" <maz@kernel.org>, Linuxarm <linuxarm@huawei.com>,
+ "alex.williamson@redhat.com" <alex.williamson@redhat.com>,
+ "linuxarm@openeuler.org" <linuxarm@openeuler.org>,
+ "iommu@lists.linux-foundation.org" <iommu@lists.linux-foundation.org>,
+ "Zengtao \(B\)" <prime.zeng@hisilicon.com>,
+ "zhangfei.gao@linaro.org" <zhangfei.gao@linaro.org>,
+ "kvmarm@lists.cs.columbia.edu" <kvmarm@lists.cs.columbia.edu>,
+ "linux-arm-kernel@lists.infradead.org" <linux-arm-kernel@lists.infradead.org>
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -97,223 +99,90 @@ List-Post: <mailto:iommu@lists.linux-foundation.org>
 List-Help: <mailto:iommu-request@lists.linux-foundation.org?subject=help>
 List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
  <mailto:iommu-request@lists.linux-foundation.org?subject=subscribe>
+Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
-Content-Type: text/plain; charset="us-ascii"; Format="flowed"
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-Hi Robin, Will,
+Hi Jean,
 
-On 2021-07-12 09:39, Sai Prakash Ranjan wrote:
-> Hi Robin,
-> 
-> On 2021-06-23 19:12, Sai Prakash Ranjan wrote:
->> Currently for iommu_unmap() of large scatter-gather list with page 
->> size
->> elements, the majority of time is spent in flushing of partial walks 
->> in
->> __arm_lpae_unmap() which is a VA based TLB invalidation invalidating
->> page-by-page on iommus like arm-smmu-v2 (TLBIVA).
->> 
->> For example: to unmap a 32MB scatter-gather list with page size 
->> elements
->> (8192 entries), there are 16->2MB buffer unmaps based on the pgsize 
->> (2MB
->> for 4K granule) and each of 2MB will further result in 512 TLBIVAs 
->> (2MB/4K)
->> resulting in a total of 8192 TLBIVAs (512*16) for 16->2MB causing a 
->> huge
->> overhead.
->> 
->> On qcom implementation, there are several performance improvements for
->> TLB cache invalidations in HW like wait-for-safe (for realtime clients
->> such as camera and display) and few others to allow for cache
->> lookups/updates when TLBI is in progress for the same context bank.
->> So the cost of over-invalidation is less compared to the unmap latency
->> on several usecases like camera which deals with large buffers. So,
->> ASID based TLB invalidations (TLBIASID) can be used to invalidate the
->> entire context for partial walk flush thereby improving the unmap
->> latency.
->> 
->> Non-strict mode can use this by default for all platforms given its
->> all about over-invalidation saving time on individual unmaps and
->> non-deterministic generally.
->> 
->> For this example of 32MB scatter-gather list unmap, this change 
->> results
->> in just 16 ASID based TLB invalidations (TLBIASIDs) as opposed to 8192
->> TLBIVAs thereby increasing the performance of unmaps drastically.
->> 
->> Test on QTI SM8150 SoC for 10 iterations of iommu_{map_sg}/unmap:
->> (average over 10 iterations)
->> 
->> Before this optimization:
->> 
->>     size        iommu_map_sg      iommu_unmap
->>       4K            2.067 us         1.854 us
->>      64K            9.598 us         8.802 us
->>       1M          148.890 us       130.718 us
->>       2M          305.864 us        67.291 us
->>      12M         1793.604 us       390.838 us
->>      16M         2386.848 us       518.187 us
->>      24M         3563.296 us       775.989 us
->>      32M         4747.171 us      1033.364 us
->> 
->> After this optimization:
->> 
->>     size        iommu_map_sg      iommu_unmap
->>       4K            1.723 us         1.765 us
->>      64K            9.880 us         8.869 us
->>       1M          155.364 us       135.223 us
->>       2M          303.906 us         5.385 us
->>      12M         1786.557 us        21.250 us
->>      16M         2391.890 us        27.437 us
->>      24M         3570.895 us        39.937 us
->>      32M         4755.234 us        51.797 us
->> 
->> This is further reduced once the map/unmap_pages() support gets in 
->> which
->> will result in just 1 TLBIASID as compared to 16 TLBIASIDs.
->> 
->> Real world data also shows big difference in unmap performance as 
->> below:
->> 
->> There were reports of camera frame drops because of high overhead in
->> iommu unmap without this optimization because of frequent unmaps 
->> issued
->> by camera of about 100MB/s taking more than 100ms thereby causing 
->> frame
->> drops.
->> 
->> Signed-off-by: Sai Prakash Ranjan <saiprakash.ranjan@codeaurora.org>
->> ---
->> 
->> Changes in v3:
->>  * Move the logic to arm-smmu driver from io-pgtable (Robin)
->>  * Use a new set of iommu_flush_ops->arm_smmu_s1_tlb_impl_ops and use
->> it for qcom impl
->> 
->> Changes in v2:
->>  * Add a quirk to choose tlb_flush_all in partial walk flush
->>  * Set the quirk for QTI SoC implementation
->> 
->> ---
->>  drivers/iommu/arm/arm-smmu/arm-smmu-qcom.c | 13 +++++++++++++
->>  drivers/iommu/arm/arm-smmu/arm-smmu.c      | 17 ++++++++++++++++-
->>  2 files changed, 29 insertions(+), 1 deletion(-)
->> 
->> diff --git a/drivers/iommu/arm/arm-smmu/arm-smmu-qcom.c
->> b/drivers/iommu/arm/arm-smmu/arm-smmu-qcom.c
->> index 7771d40176de..218c71465819 100644
->> --- a/drivers/iommu/arm/arm-smmu/arm-smmu-qcom.c
->> +++ b/drivers/iommu/arm/arm-smmu/arm-smmu-qcom.c
->> @@ -10,6 +10,8 @@
->> 
->>  #include "arm-smmu.h"
->> 
->> +extern const struct iommu_flush_ops arm_smmu_s1_tlb_impl_ops;
->> +
->>  struct qcom_smmu {
->>  	struct arm_smmu_device smmu;
->>  	bool bypass_quirk;
->> @@ -146,6 +148,8 @@ static int qcom_adreno_smmu_init_context(struct
->> arm_smmu_domain *smmu_domain,
->>  {
->>  	struct adreno_smmu_priv *priv;
->> 
->> +	pgtbl_cfg->tlb = &arm_smmu_s1_tlb_impl_ops;
->> +
->>  	/* Only enable split pagetables for the GPU device (SID 0) */
->>  	if (!qcom_adreno_smmu_is_gpu_device(dev))
->>  		return 0;
->> @@ -185,6 +189,14 @@ static const struct of_device_id
->> qcom_smmu_client_of_match[] __maybe_unused = {
->>  	{ }
->>  };
->> 
->> +static int qcom_smmu_init_context(struct arm_smmu_domain 
->> *smmu_domain,
->> +		struct io_pgtable_cfg *pgtbl_cfg, struct device *dev)
->> +{
->> +	pgtbl_cfg->tlb = &arm_smmu_s1_tlb_impl_ops;
->> +
->> +	return 0;
->> +}
->> +
->>  static int qcom_smmu_cfg_probe(struct arm_smmu_device *smmu)
->>  {
->>  	unsigned int last_s2cr = ARM_SMMU_GR0_S2CR(smmu->num_mapping_groups 
->> - 1);
->> @@ -308,6 +320,7 @@ static int qcom_smmu500_reset(struct 
->> arm_smmu_device *smmu)
->>  }
->> 
->>  static const struct arm_smmu_impl qcom_smmu_impl = {
->> +	.init_context = qcom_smmu_init_context,
->>  	.cfg_probe = qcom_smmu_cfg_probe,
->>  	.def_domain_type = qcom_smmu_def_domain_type,
->>  	.reset = qcom_smmu500_reset,
->> diff --git a/drivers/iommu/arm/arm-smmu/arm-smmu.c
->> b/drivers/iommu/arm/arm-smmu/arm-smmu.c
->> index d3c6f54110a5..f3845e822565 100644
->> --- a/drivers/iommu/arm/arm-smmu/arm-smmu.c
->> +++ b/drivers/iommu/arm/arm-smmu/arm-smmu.c
->> @@ -341,6 +341,12 @@ static void arm_smmu_tlb_add_page_s1(struct
->> iommu_iotlb_gather *gather,
->>  				  ARM_SMMU_CB_S1_TLBIVAL);
->>  }
->> 
->> +static void arm_smmu_tlb_inv_walk_impl_s1(unsigned long iova, size_t 
->> size,
->> +				     size_t granule, void *cookie)
->> +{
->> +	arm_smmu_tlb_inv_context_s1(cookie);
->> +}
->> +
->>  static void arm_smmu_tlb_inv_walk_s2(unsigned long iova, size_t size,
->>  				     size_t granule, void *cookie)
->>  {
->> @@ -388,6 +394,12 @@ static const struct iommu_flush_ops 
->> arm_smmu_s1_tlb_ops = {
->>  	.tlb_add_page	= arm_smmu_tlb_add_page_s1,
->>  };
->> 
->> +const struct iommu_flush_ops arm_smmu_s1_tlb_impl_ops = {
->> +	.tlb_flush_all	= arm_smmu_tlb_inv_context_s1,
->> +	.tlb_flush_walk	= arm_smmu_tlb_inv_walk_impl_s1,
->> +	.tlb_add_page	= arm_smmu_tlb_add_page_s1,
->> +};
->> +
->>  static const struct iommu_flush_ops arm_smmu_s2_tlb_ops_v2 = {
->>  	.tlb_flush_all	= arm_smmu_tlb_inv_context_s2,
->>  	.tlb_flush_walk	= arm_smmu_tlb_inv_walk_s2,
->> @@ -703,7 +715,10 @@ static int arm_smmu_init_domain_context(struct
->> iommu_domain *domain,
->>  			ias = min(ias, 32UL);
->>  			oas = min(oas, 32UL);
->>  		}
->> -		smmu_domain->flush_ops = &arm_smmu_s1_tlb_ops;
->> +		if (!iommu_get_dma_strict(domain))
->> +			smmu_domain->flush_ops = &arm_smmu_s1_tlb_impl_ops;
->> +		else
->> +			smmu_domain->flush_ops = &arm_smmu_s1_tlb_ops;
->>  		break;
->>  	case ARM_SMMU_DOMAIN_NESTED:
->>  		/*
-> 
-> Any review comments on this version?
-> 
+> -----Original Message-----
+> From: Jean-Philippe Brucker [mailto:jean-philippe@linaro.org]
+> Sent: 04 March 2021 17:11
+> To: Shameerali Kolothum Thodi <shameerali.kolothum.thodi@huawei.com>
+> Cc: linux-arm-kernel@lists.infradead.org; iommu@lists.linux-foundation.org;
+> kvmarm@lists.cs.columbia.edu; maz@kernel.org;
+> alex.williamson@redhat.com; eric.auger@redhat.com;
+> zhangfei.gao@linaro.org; Jonathan Cameron
+> <jonathan.cameron@huawei.com>; Zengtao (B) <prime.zeng@hisilicon.com>;
+> linuxarm@openeuler.org
+> Subject: Re: [RFC PATCH 4/5] iommu/arm-smmu-v3: Use pinned VMID for
+> NESTED stage with BTM
 
-Was hoping to get this into 5.15 in case there aren't any concerns here?
-Let me know if there are any concerns.
+[...]
+
+> >
+> >  	kfree(smmu_domain);
+> > @@ -3199,6 +3230,17 @@ static int arm_smmu_attach_pasid_table(struct
+> iommu_domain *domain,
+> >  				!(smmu->features & ARM_SMMU_FEAT_2_LVL_CDTAB))
+> >  			goto out;
+> >
+> > +		if (smmu->features & ARM_SMMU_FEAT_BTM) {
+> > +			ret = arm_smmu_pinned_vmid_get(smmu_domain);
+> > +			if (ret < 0)
+> > +				goto out;
+> > +
+> > +			if (smmu_domain->s2_cfg.vmid)
+> > +				arm_smmu_bitmap_free(smmu->vmid_map,
+> smmu_domain->s2_cfg.vmid);
+> > +
+> > +			smmu_domain->s2_cfg.vmid = (u16)ret;
+> 
+> That will require a TLB invalidation on the old VMID, once the STE is
+> rewritten.
+> 
+> More generally I think this pinned VMID set conflicts with that of
+> stage-2-only domains (which is the default state until a guest attaches a
+> PASID table). Say you have one guest using DOMAIN_NESTED without PASID
+> table, just DMA to IPA using VMID 0x8000. Now another guest attaches a
+> PASID table and obtains the same VMID from KVM. The stage-2 translation
+> might use TLB entries from the other guest, no?  They'll both create
+> stage-2 TLB entries with {StreamWorld=NS-EL1, VMID=0x8000}
+
+Now that we are trying to align the KVM VMID allocation algorithm similar to
+that of the ASID allocator [1], I attempted to use that for the SMMU pinned 
+VMID allocation. But the issue you have mentioned above is still valid. 
+
+And as a solution what I have tried now is follow what pinned ASID is doing 
+in SVA,
+ -Use xarray for private VMIDs
+ -Get pinned VMID from KVM for DOMAIN_NESTED with PASID table
+ -If the new pinned VMID is in use by private, then update the private
+  VMID(VMID update to a live STE).
+
+This seems to work, but still need to run more tests with this though.  
+
+> It's tempting to allocate all VMIDs through KVM instead, but that will
+> force a dependency on KVM to use VFIO_TYPE1_NESTING_IOMMU and might
+> break
+> existing users of that extension (though I'm not sure there are any).
+> Instead we might need to restrict the SMMU VMID bitmap to match the
+> private VMID set in KVM.
+
+Another solution I have in mind is, make the new KVM VMID allocator common
+between SMMUv3 and KVM. This will help to avoid all the private and shared
+VMID splitting, also no need for live updates to STE VMID. One possible drawback
+is less number of available KVM VMIDs but with 16 bit VMID space I am not sure
+how much that is a concern.
+
+Please let me know your thoughts.
 
 Thanks,
-Sai
+Shameer
 
--- 
-QUALCOMM INDIA, on behalf of Qualcomm Innovation Center, Inc. is a 
-member
-of Code Aurora Forum, hosted by The Linux Foundation
+[1]. https://lore.kernel.org/kvmarm/20210616155606.2806-1-shameerali.kolothum.thodi@huawei.com/
+
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
