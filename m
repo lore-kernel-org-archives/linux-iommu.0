@@ -2,100 +2,85 @@ Return-Path: <SRS0=85So=MN=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-13.6 required=3.0 tests=BAYES_00,DKIM_INVALID,
-	DKIM_SIGNED,HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_CR_TRAILER,INCLUDES_PATCH,
-	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS autolearn=unavailable
+X-Spam-Status: No, score=-14.0 required=3.0 tests=BAYES_00,INCLUDES_CR_TRAILER,
+	INCLUDES_PATCH,MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS autolearn=ham
 	autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 17188C636CE
-	for <iommu@archiver.kernel.org>; Wed, 21 Jul 2021 12:54:17 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6DDB4C636CA
+	for <iommu@archiver.kernel.org>; Wed, 21 Jul 2021 13:12:25 +0000 (UTC)
 Received: from smtp4.osuosl.org (smtp4.osuosl.org [140.211.166.137])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id B3A3561285
-	for <iommu@archiver.kernel.org>; Wed, 21 Jul 2021 12:54:16 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org B3A3561285
-Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=chromium.org
+	by mail.kernel.org (Postfix) with ESMTPS id 1ADC06120A
+	for <iommu@archiver.kernel.org>; Wed, 21 Jul 2021 13:12:25 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 1ADC06120A
+Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=kernel.org
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by smtp4.osuosl.org (Postfix) with ESMTP id 72AC04027F;
-	Wed, 21 Jul 2021 12:54:16 +0000 (UTC)
+	by smtp4.osuosl.org (Postfix) with ESMTP id D50CD4037E;
+	Wed, 21 Jul 2021 13:12:24 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
 Received: from smtp4.osuosl.org ([127.0.0.1])
 	by localhost (smtp4.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id IwoU-sfFdRK0; Wed, 21 Jul 2021 12:54:15 +0000 (UTC)
-Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by smtp4.osuosl.org (Postfix) with ESMTPS id D8D0840280;
-	Wed, 21 Jul 2021 12:54:14 +0000 (UTC)
+	with ESMTP id sSGE5j8j211h; Wed, 21 Jul 2021 13:12:23 +0000 (UTC)
+Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [IPv6:2605:bc80:3010:104::8cd3:938])
+	by smtp4.osuosl.org (Postfix) with ESMTPS id 13843402BD;
+	Wed, 21 Jul 2021 13:12:23 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 97F86C0010;
-	Wed, 21 Jul 2021 12:54:14 +0000 (UTC)
-Received: from smtp1.osuosl.org (smtp1.osuosl.org [140.211.166.138])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 2B159C000E
- for <iommu@lists.linux-foundation.org>; Wed, 21 Jul 2021 12:54:13 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id D5FF4C0010;
+	Wed, 21 Jul 2021 13:12:22 +0000 (UTC)
+Received: from smtp2.osuosl.org (smtp2.osuosl.org [140.211.166.133])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 82BEEC000E
+ for <iommu@lists.linux-foundation.org>; Wed, 21 Jul 2021 13:12:21 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by smtp1.osuosl.org (Postfix) with ESMTP id 0A4FC82977
- for <iommu@lists.linux-foundation.org>; Wed, 21 Jul 2021 12:54:13 +0000 (UTC)
+ by smtp2.osuosl.org (Postfix) with ESMTP id 700BD404D5
+ for <iommu@lists.linux-foundation.org>; Wed, 21 Jul 2021 13:12:21 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Authentication-Results: smtp1.osuosl.org (amavisd-new);
- dkim=pass (1024-bit key) header.d=chromium.org
-Received: from smtp1.osuosl.org ([127.0.0.1])
- by localhost (smtp1.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id DZLs7WPooJeZ for <iommu@lists.linux-foundation.org>;
- Wed, 21 Jul 2021 12:54:12 +0000 (UTC)
-X-Greylist: whitelisted by SQLgrey-1.8.0
-Received: from mail-pl1-x62d.google.com (mail-pl1-x62d.google.com
- [IPv6:2607:f8b0:4864:20::62d])
- by smtp1.osuosl.org (Postfix) with ESMTPS id 23432828A5
- for <iommu@lists.linux-foundation.org>; Wed, 21 Jul 2021 12:54:12 +0000 (UTC)
-Received: by mail-pl1-x62d.google.com with SMTP id d1so922482plg.0
- for <iommu@lists.linux-foundation.org>; Wed, 21 Jul 2021 05:54:12 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=chromium.org; s=google;
- h=mime-version:references:in-reply-to:from:date:message-id:subject:to
- :cc; bh=iP4NUt/V0t1FXR1pars3ssyFHqsgxDoI/nyz3Is/Xqk=;
- b=gRk9/ILWwpLwl4zdj87BtAXrrYFGzkeVH6ObYfiKFfNQFmCyQIL6FYk80hsfm3asvB
- uGHNMJG+I/w9nTSOu1Yc/BAJFqRn1GkWPWM4/O1D8l2XKi6HSqHgNZzU3FokU5Idm1Tr
- ujF3MsuBvEb42eOWep8HcPBgTmsXD5KOQBb3k=
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
- d=1e100.net; s=20161025;
- h=x-gm-message-state:mime-version:references:in-reply-to:from:date
- :message-id:subject:to:cc;
- bh=iP4NUt/V0t1FXR1pars3ssyFHqsgxDoI/nyz3Is/Xqk=;
- b=j0pHUcTwHCuusng3Mllgn62Yd1rMkr9gT3i+NyubPGsraOcsZi9g3FLsVdBsxJhIuN
- ATaqryN08e8xdzNDrZoTIxabjE2LiQAbxECBfCgKAFc1wzCKs/mv330wd3bRflYjihhv
- QYYurkBjVyiJNEoebtvpZ7HyFTCYiI5yNjz/LgiCKKz/WpM1WMhMrbGVlYXo1onbNAeS
- crgTbweQpSqPhS9wnVO4SJN/WXUgA+YdiN4BOLT96DLp1ivj5r/HTvzqnO8nn2Eyo7Ci
- JFZGIDM3ryusvZXbm3vKk46Ug6+sIHNPDtZPGclg961a70Uq77IARhUaEre0h7t1M3rw
- B4AQ==
-X-Gm-Message-State: AOAM533RR5zL2DBR3l1S7SvSw9C6jEyAjrEc9ReonyWi7VXCd6B+cy6s
- T86xM25/5c9/00I1nxd6jivFvwmKLRK1UANYjctrfQ==
-X-Google-Smtp-Source: ABdhPJxsmHAT2BjdepvDkN94Ybs5nzq1uHhKtiM33GLd1tM4ZQBT6B0+xAjq7jQtTwOBEoILmIvJdMTSXTVC8Sch6dI=
-X-Received: by 2002:a17:902:8c83:b029:129:17e5:a1cc with SMTP id
- t3-20020a1709028c83b029012917e5a1ccmr27602827plo.49.1626872051386; Wed, 21
- Jul 2021 05:54:11 -0700 (PDT)
-MIME-Version: 1.0
-References: <20210715121209.31024-1-yong.wu@mediatek.com>
- <20210715121209.31024-11-yong.wu@mediatek.com>
-In-Reply-To: <20210715121209.31024-11-yong.wu@mediatek.com>
-From: Ikjoon Jang <ikjn@chromium.org>
-Date: Wed, 21 Jul 2021 20:54:00 +0800
-Message-ID: <CAATdQgDOGW7nudDoR5UPbax+d3e9omhPstrNd_FCPLd+96ZC9w@mail.gmail.com>
-Subject: Re: [PATCH v2 10/11] memory: mtk-smi: mt8195: Add initial setting for
- smi-common
-To: Yong Wu <yong.wu@mediatek.com>
-Cc: youlin.pei@mediatek.com,
- "open list:OPEN FIRMWARE AND FLATTENED DEVICE TREE BINDINGS"
- <devicetree@vger.kernel.org>, yi.kuo@mediatek.com,
- srv_heupstream <srv_heupstream@mediatek.com>,
- Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>,
- Robin Murphy <robin.murphy@arm.com>, open list <linux-kernel@vger.kernel.org>,
- Krzysztof Kozlowski <krzk@kernel.org>, iommu@lists.linux-foundation.org,
- Rob Herring <robh+dt@kernel.org>,
- "moderated list:ARM/Mediatek SoC support" <linux-mediatek@lists.infradead.org>,
- Matthias Brugger <matthias.bgg@gmail.com>, anthony.huang@mediatek.com,
- ming-fan.chen@mediatek.com, anan.sun@mediatek.com,
- Will Deacon <will@kernel.org>, "moderated list:ARM/Mediatek SoC support"
- <linux-arm-kernel@lists.infradead.org>
+Received: from smtp2.osuosl.org ([127.0.0.1])
+ by localhost (smtp2.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+ with ESMTP id xwLbTLjUbYlg for <iommu@lists.linux-foundation.org>;
+ Wed, 21 Jul 2021 13:12:19 +0000 (UTC)
+X-Greylist: domain auto-whitelisted by SQLgrey-1.8.0
+Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
+ by smtp2.osuosl.org (Postfix) with ESMTPS id 807D440183
+ for <iommu@lists.linux-foundation.org>; Wed, 21 Jul 2021 13:12:19 +0000 (UTC)
+Received: from disco-boy.misterjones.org (disco-boy.misterjones.org
+ [51.254.78.96])
+ (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+ (No client certificate requested)
+ by mail.kernel.org (Postfix) with ESMTPSA id 0A3C561029;
+ Wed, 21 Jul 2021 13:12:19 +0000 (UTC)
+Received: from sofa.misterjones.org ([185.219.108.64] helo=why.misterjones.org)
+ by disco-boy.misterjones.org with esmtpsa (TLS1.3) tls
+ TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384 (Exim 4.94.2)
+ (envelope-from <maz@kernel.org>)
+ id 1m6C1I-0003gp-V1; Wed, 21 Jul 2021 14:12:17 +0100
+Date: Wed, 21 Jul 2021 14:12:15 +0100
+Message-ID: <878s1z3j68.wl-maz@kernel.org>
+From: Marc Zyngier <maz@kernel.org>
+To: Robin Murphy <robin.murphy@arm.com>, Bixuan Cui <cuibixuan@huawei.com>
+Subject: Re: [PATCH -next] iommu/arm-smmu-v3: Add suspend and resume support
+In-Reply-To: <4e506481-5f6c-9c5e-eda3-300861581080@arm.com>
+References: <20210721013350.17664-1-cuibixuan@huawei.com>
+ <4e506481-5f6c-9c5e-eda3-300861581080@arm.com>
+User-Agent: Wanderlust/2.15.9 (Almost Unreal) SEMI-EPG/1.14.7 (Harue)
+ FLIM-LB/1.14.9 (=?UTF-8?B?R29qxY0=?=) APEL-LB/10.8 EasyPG/1.0.0 Emacs/27.1
+ (x86_64-pc-linux-gnu) MULE/6.0 (HANACHIRUSATO)
+MIME-Version: 1.0 (generated by SEMI-EPG 1.14.7 - "Harue")
+X-SA-Exim-Connect-IP: 185.219.108.64
+X-SA-Exim-Rcpt-To: robin.murphy@arm.com, cuibixuan@huawei.com,
+ iommu@lists.linux-foundation.org, linux-kernel@vger.kernel.org,
+ will@kernel.org, weiyongjun1@huawei.com, john.wanghui@huawei.com,
+ dingtianhong@huawei.com, thunder.leizhen@huawei.com, guohanjun@huawei.com,
+ joro@8bytes.org, jean-philippe@linaro.org, Jonathan.Cameron@huawei.com,
+ song.bao.hua@hisilicon.com, linux-arm-kernel@lists.infradead.org
+X-SA-Exim-Mail-From: maz@kernel.org
+X-SA-Exim-Scanned: No (on disco-boy.misterjones.org);
+ SAEximRunCond expanded to false
+Cc: jean-philippe@linaro.org, guohanjun@huawei.com,
+ linux-kernel@vger.kernel.org, john.wanghui@huawei.com,
+ iommu@lists.linux-foundation.org, weiyongjun1@huawei.com,
+ dingtianhong@huawei.com, will@kernel.org, linux-arm-kernel@lists.infradead.org
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -113,134 +98,227 @@ Content-Transfer-Encoding: 7bit
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-On Thu, Jul 15, 2021 at 8:25 PM Yong Wu <yong.wu@mediatek.com> wrote:
->
-> To improve the performance, add initial setting for smi-common.
-> some register use some fix setting(suggested from DE).
->
-> Signed-off-by: Yong Wu <yong.wu@mediatek.com>
-> ---
->  drivers/memory/mtk-smi.c | 42 ++++++++++++++++++++++++++++++++++++----
->  1 file changed, 38 insertions(+), 4 deletions(-)
->
-> diff --git a/drivers/memory/mtk-smi.c b/drivers/memory/mtk-smi.c
-> index 3c288716a378..c52bf02458ff 100644
-> --- a/drivers/memory/mtk-smi.c
-> +++ b/drivers/memory/mtk-smi.c
-> @@ -18,11 +18,19 @@
->  #include <dt-bindings/memory/mtk-memory-port.h>
->
->  /* SMI COMMON */
-> +#define SMI_L1LEN                      0x100
-> +
->  #define SMI_BUS_SEL                    0x220
->  #define SMI_BUS_LARB_SHIFT(larbid)     ((larbid) << 1)
->  /* All are MMU0 defaultly. Only specialize mmu1 here. */
->  #define F_MMU1_LARB(larbid)            (0x1 << SMI_BUS_LARB_SHIFT(larbid))
->
-> +#define SMI_M4U_TH                     0x234
-> +#define SMI_FIFO_TH1                   0x238
-> +#define SMI_FIFO_TH2                   0x23c
-> +#define SMI_DCM                                0x300
-> +#define SMI_DUMMY                      0x444
-> +
->  /* SMI LARB */
->
->  /* Below are about mmu enable registers, they are different in SoCs */
-> @@ -58,6 +66,13 @@
->         (_id << 8 | _id << 10 | _id << 12 | _id << 14); \
->  })
->
-> +#define SMI_COMMON_INIT_REGS_NR                6
-> +
-> +struct mtk_smi_reg_pair {
-> +       unsigned int            offset;
-> +       u32                     value;
-> +};
-> +
->  enum mtk_smi_type {
->         MTK_SMI_GEN1,
->         MTK_SMI_GEN2,           /* gen2 smi common */
-> @@ -74,6 +89,8 @@ static const char * const mtk_smi_larb_clks_optional[] = {"gals"};
->  struct mtk_smi_common_plat {
->         enum mtk_smi_type       type;
->         u32                     bus_sel; /* Balance some larbs to enter mmu0 or mmu1 */
-> +
-> +       const struct mtk_smi_reg_pair   *init;
->  };
->
->  struct mtk_smi_larb_gen {
-> @@ -409,6 +426,15 @@ static struct platform_driver mtk_smi_larb_driver = {
->         }
->  };
->
-> +static const struct mtk_smi_reg_pair mtk_smi_common_mt8195_init[SMI_COMMON_INIT_REGS_NR] = {
-> +       {SMI_L1LEN, 0xb},
-> +       {SMI_M4U_TH, 0xe100e10},
-> +       {SMI_FIFO_TH1, 0x506090a},
-> +       {SMI_FIFO_TH2, 0x506090a},
-> +       {SMI_DCM, 0x4f1},
-> +       {SMI_DUMMY, 0x1},
-> +};
-> +
->  static const struct mtk_smi_common_plat mtk_smi_common_gen1 = {
->         .type     = MTK_SMI_GEN1,
->  };
-> @@ -439,11 +465,13 @@ static const struct mtk_smi_common_plat mtk_smi_common_mt8195_vdo = {
->         .type     = MTK_SMI_GEN2,
->         .bus_sel  = F_MMU1_LARB(1) | F_MMU1_LARB(3) | F_MMU1_LARB(5) |
->                     F_MMU1_LARB(7),
-> +       .init     = mtk_smi_common_mt8195_init,
->  };
->
->  static const struct mtk_smi_common_plat mtk_smi_common_mt8195_vpp = {
->         .type     = MTK_SMI_GEN2,
->         .bus_sel  = F_MMU1_LARB(1) | F_MMU1_LARB(2) | F_MMU1_LARB(7),
-> +       .init     = mtk_smi_common_mt8195_init,
->  };
->
->  static const struct mtk_smi_common_plat mtk_smi_sub_common_mt8195 = {
-> @@ -530,15 +558,21 @@ static int mtk_smi_common_remove(struct platform_device *pdev)
->  static int __maybe_unused mtk_smi_common_resume(struct device *dev)
->  {
->         struct mtk_smi *common = dev_get_drvdata(dev);
-> -       u32 bus_sel = common->plat->bus_sel;
-> -       int ret;
-> +       const struct mtk_smi_reg_pair *init = common->plat->init;
-> +       u32 bus_sel = common->plat->bus_sel; /* default is 0 */
-> +       int ret, i;
->
->         ret = clk_bulk_prepare_enable(common->clk_num, common->clks);
->         if (ret)
->                 return ret;
->
-> -       if (common->plat->type == MTK_SMI_GEN2 && bus_sel)
-> -               writel(bus_sel, common->base + SMI_BUS_SEL);
-> +       if (common->plat->type != MTK_SMI_GEN2)
-> +               return 0;
-> +
-> +       for (i = 0; i < SMI_COMMON_INIT_REGS_NR && init && init[i].offset; i++)
-> +               writel_relaxed(init[i].value, common->base + init[i].offset);
+On Wed, 21 Jul 2021 12:42:14 +0100,
+Robin Murphy <robin.murphy@arm.com> wrote:
+> 
+> [ +Marc for MSI bits ]
+> 
+> On 2021-07-21 02:33, Bixuan Cui wrote:
+> > Add suspend and resume support for arm-smmu-v3 by low-power mode.
+> > 
+> > When the smmu is suspended, it is powered off and the registers are
+> > cleared. So saves the msi_msg context during msi interrupt initialization
+> > of smmu. When resume happens it calls arm_smmu_device_reset() to restore
+> > the registers.
+> > 
+> > Signed-off-by: Bixuan Cui <cuibixuan@huawei.com>
+> > Reviewed-by: Wei Yongjun <weiyongjun1@huawei.com>
+> > Reviewed-by: Zhen Lei <thunder.leizhen@huawei.com>
+> > Reviewed-by: Ding Tianhong <dingtianhong@huawei.com>
+> > Reviewed-by: Hanjun Guo <guohanjun@huawei.com>
+> > ---
+> > 
+> >   drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c | 72 ++++++++++++++++++---
+> >   1 file changed, 64 insertions(+), 8 deletions(-)
+> > 
+> > diff --git a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
+> > index 235f9bdaeaf2..bf1163acbcb1 100644
+> > --- a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
+> > +++ b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
+> > @@ -40,6 +40,7 @@ MODULE_PARM_DESC(disable_bypass,
+> >     static bool disable_msipolling;
+> >   module_param(disable_msipolling, bool, 0444);
+> > +static bool bypass;
+> >   MODULE_PARM_DESC(disable_msipolling,
+> >   	"Disable MSI-based polling for CMD_SYNC completion.");
+> >   @@ -3129,11 +3130,37 @@ static void arm_smmu_write_msi_msg(struct
+> > msi_desc *desc, struct msi_msg *msg)
+> >   	doorbell = (((u64)msg->address_hi) << 32) | msg->address_lo;
+> >   	doorbell &= MSI_CFG0_ADDR_MASK;
+> >   +	/* Saves the msg context for resume if desc->msg is empty */
+> > +	if (desc->msg.address_lo == 0 && desc->msg.address_hi == 0) {
+> > +		desc->msg.address_lo = msg->address_lo;
+> > +		desc->msg.address_hi = msg->address_hi;
+> > +		desc->msg.data = msg->data;
+> > +	}
+> 
+> My gut feeling is that this is something a device driver maybe
+> shouldn't be poking into, but I'm not entirely familiar with the area
+> :/
 
-I'm not sure this array for register settings could be applied to other
-platforms in future or only applied to mt8195. If it's only for mt8195,
-I think taking callback function instead of mtk_smi_reg_pair[] as init member
-would be better:
+Certainly not. If you rely on the message being stored into the
+descriptors, then implement this in the core code, like we do for PCI.
 
-if (common->plat->init)
-    common->plat->init(...);
+> 
+> > +
+> >   	writeq_relaxed(doorbell, smmu->base + cfg[0]);
+> >   	writel_relaxed(msg->data, smmu->base + cfg[1]);
+> >   	writel_relaxed(ARM_SMMU_MEMATTR_DEVICE_nGnRE, smmu->base + cfg[2]);
+> >   }
+> >   +static void arm_smmu_resume_msis(struct arm_smmu_device *smmu)
+> > +{
+> > +	struct msi_desc *desc;
+> > +	struct device *dev = smmu->dev;
+> > +
+> > +	for_each_msi_entry(desc, dev) {
+> > +		switch (desc->platform.msi_index) {
+> > +		case EVTQ_MSI_INDEX:
+> > +		case GERROR_MSI_INDEX:
+> > +		case PRIQ_MSI_INDEX:
+> > +			arm_smmu_write_msi_msg(desc, &(desc->msg));
 
-> +
-> +       writel(bus_sel, common->base + SMI_BUS_SEL);
->         return 0;
->  }
->
-> --
-> 2.18.0
-> _______________________________________________
-> Linux-mediatek mailing list
-> Linux-mediatek@lists.infradead.org
-> http://lists.infradead.org/mailman/listinfo/linux-mediatek
+Consider using get_cached_msi_msg() instead of using the internals of
+the descriptor.
+
+> > +			break;
+> > +		default:
+> > +			continue;
+> > +
+> > +		}
+> > +	}
+> > +}
+> > +
+> >   static void arm_smmu_setup_msis(struct arm_smmu_device *smmu)
+> >   {
+> >   	struct msi_desc *desc;
+> > @@ -3184,11 +3211,17 @@ static void arm_smmu_setup_msis(struct arm_smmu_device *smmu)
+> >   	devm_add_action(dev, arm_smmu_free_msis, dev);
+> >   }
+> >   -static void arm_smmu_setup_unique_irqs(struct arm_smmu_device
+> > *smmu)
+> > +static void arm_smmu_setup_unique_irqs(struct arm_smmu_device *smmu, bool resume_mode)
+> >   {
+> >   	int irq, ret;
+> >   -	arm_smmu_setup_msis(smmu);
+> > +	if (!resume_mode)
+> > +		arm_smmu_setup_msis(smmu);
+> > +	else {
+> > +		/* The irq doesn't need to be re-requested during resume */
+> > +		arm_smmu_resume_msis(smmu);
+> > +		return;
+> 
+> What about wired IRQs?
+
+Yeah. I assume the SMMU needs to be told which event gets signalled
+using MSIs or IRQs? Or is that implied by the MSI being configured or
+not (I used to know the answer to that, but I have long paged it out).
+
+> 
+> > +	}
+> >     	/* Request interrupt lines */
+> >   	irq = smmu->evtq.q.irq;
+> > @@ -3230,7 +3263,7 @@ static void arm_smmu_setup_unique_irqs(struct arm_smmu_device *smmu)
+> >   	}
+> >   }
+> >   -static int arm_smmu_setup_irqs(struct arm_smmu_device *smmu)
+> > +static int arm_smmu_setup_irqs(struct arm_smmu_device *smmu, bool resume_mode)
+> >   {
+> >   	int ret, irq;
+> >   	u32 irqen_flags = IRQ_CTRL_EVTQ_IRQEN | IRQ_CTRL_GERROR_IRQEN;
+> > @@ -3257,7 +3290,7 @@ static int arm_smmu_setup_irqs(struct arm_smmu_device *smmu)
+> >   		if (ret < 0)
+> >   			dev_warn(smmu->dev, "failed to enable combined irq\n");
+> >   	} else
+> > -		arm_smmu_setup_unique_irqs(smmu);
+> > +		arm_smmu_setup_unique_irqs(smmu, resume_mode);
+> >     	if (smmu->features & ARM_SMMU_FEAT_PRI)
+> >   		irqen_flags |= IRQ_CTRL_PRIQ_IRQEN;
+> > @@ -3282,7 +3315,7 @@ static int arm_smmu_device_disable(struct arm_smmu_device *smmu)
+> >   	return ret;
+> >   }
+> >   -static int arm_smmu_device_reset(struct arm_smmu_device *smmu,
+> > bool bypass)
+> > +static int arm_smmu_device_reset(struct arm_smmu_device *smmu, bool resume_mode)
+> 
+> Er, what about the use of "bypass" towards the end of the
+> function. Have you even compiled this?
+
+The author of the patch has conveniently made it a global value (see
+line 3 of the patch). I'm sure it doesn't break anything... :-(
+
+> 
+> >   {
+> >   	int ret;
+> >   	u32 reg, enables;
+> > @@ -3392,7 +3425,7 @@ static int arm_smmu_device_reset(struct arm_smmu_device *smmu, bool bypass)
+> >   		}
+> >   	}
+> >   -	ret = arm_smmu_setup_irqs(smmu);
+> > +	ret = arm_smmu_setup_irqs(smmu, resume_mode);
+> >   	if (ret) {
+> >   		dev_err(smmu->dev, "failed to setup irqs\n");
+> >   		return ret;
+> > @@ -3749,6 +3782,24 @@ static void __iomem *arm_smmu_ioremap(struct device *dev, resource_size_t start,
+> >   	return devm_ioremap_resource(dev, &res);
+> >   }
+> >   +static int __maybe_unused arm_smmu_suspend(struct device *dev)
+> > +{
+> > +	/*
+> > +	 * The smmu is powered off and related registers are automatically
+> > +	 * cleared when suspend. No need to do anything.
+> > +	 */
+> 
+> Is that guaranteed? What if suspend is only implemented by external
+> clock-gating?
+
++1. This seems awfully implementation/integration specific. I'd be
+more in favour of a controlled teardown.
+
+> 
+> > +	return 0;
+> > +}
+> > +
+> > +static int __maybe_unused arm_smmu_resume(struct device *dev)
+> > +{
+> > +	struct arm_smmu_device *smmu = dev_get_drvdata(dev);
+> > +
+> > +	arm_smmu_device_reset(smmu, true);
+> > +
+> > +	return 0;
+> > +}
+> > +
+> >   static int arm_smmu_device_probe(struct platform_device *pdev)
+> >   {
+> >   	int irq, ret;
+> > @@ -3756,7 +3807,6 @@ static int arm_smmu_device_probe(struct platform_device *pdev)
+> >   	resource_size_t ioaddr;
+> >   	struct arm_smmu_device *smmu;
+> >   	struct device *dev = &pdev->dev;
+> > -	bool bypass;
+> 
+> Once again...
+> 
+> >   	smmu = devm_kzalloc(dev, sizeof(*smmu), GFP_KERNEL);
+> >   	if (!smmu)
+> > @@ -3831,7 +3881,7 @@ static int arm_smmu_device_probe(struct platform_device *pdev)
+> >   	platform_set_drvdata(pdev, smmu);
+> >     	/* Reset the device */
+> > -	ret = arm_smmu_device_reset(smmu, bypass);
+> 
+> ...either this is based on some out-of-tree hack which introduced its
+> own uninitialised-usage bug here, or it doesn't even compile.
+> 
+> > +	ret = arm_smmu_device_reset(smmu, false);
+> >   	if (ret)
+> >   		return ret;
+> >   @@ -3884,6 +3934,11 @@ static const struct of_device_id
+> > arm_smmu_of_match[] = {
+> >   };
+> >   MODULE_DEVICE_TABLE(of, arm_smmu_of_match);
+> >   +static const struct dev_pm_ops arm_smmu_pm_ops = {
+> > +	.suspend = arm_smmu_suspend,
+> > +	.resume = arm_smmu_resume,
+> 
+> Either use SET_SYSTEM_SLEEP_PM_OPS() here or drop the __maybe_unused
+> annmotations above - they're pointless if the callbacks are referenced
+> unconditionally.
+
+Thanks,
+
+	M.
+
+-- 
+Without deviation from the norm, progress is not possible.
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
