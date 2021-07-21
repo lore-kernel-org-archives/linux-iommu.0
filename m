@@ -2,151 +2,75 @@ Return-Path: <SRS0=85So=MN=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-10.1 required=3.0 tests=BAYES_00,DKIM_INVALID,
-	DKIM_SIGNED,HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,
-	MSGID_FROM_MTA_HEADER,NICE_REPLY_A,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,
-	USER_AGENT_SANE_1 autolearn=ham autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-16.8 required=3.0 tests=BAYES_00,
+	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_CR_TRAILER,INCLUDES_PATCH,
+	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,USER_AGENT_GIT
+	autolearn=unavailable autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id DBDF3C636C8
-	for <iommu@archiver.kernel.org>; Wed, 21 Jul 2021 00:05:58 +0000 (UTC)
-Received: from smtp2.osuosl.org (smtp2.osuosl.org [140.211.166.133])
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 98113C07E9B
+	for <iommu@archiver.kernel.org>; Wed, 21 Jul 2021 01:36:33 +0000 (UTC)
+Received: from smtp3.osuosl.org (smtp3.osuosl.org [140.211.166.136])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 677B2610F7
-	for <iommu@archiver.kernel.org>; Wed, 21 Jul 2021 00:05:58 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 677B2610F7
-Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=lists.linux-foundation.org
+	by mail.kernel.org (Postfix) with ESMTPS id 3F23C61106
+	for <iommu@archiver.kernel.org>; Wed, 21 Jul 2021 01:36:33 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 3F23C61106
+Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=huawei.com
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by smtp2.osuosl.org (Postfix) with ESMTP id 228D8401B4;
-	Wed, 21 Jul 2021 00:05:58 +0000 (UTC)
+	by smtp3.osuosl.org (Postfix) with ESMTP id F0D9260833;
+	Wed, 21 Jul 2021 01:36:32 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from smtp2.osuosl.org ([127.0.0.1])
-	by localhost (smtp2.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id Am6VoODnh9Ws; Wed, 21 Jul 2021 00:05:57 +0000 (UTC)
-Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [IPv6:2605:bc80:3010:104::8cd3:938])
-	by smtp2.osuosl.org (Postfix) with ESMTPS id D79F74011C;
-	Wed, 21 Jul 2021 00:05:56 +0000 (UTC)
-Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id B77C7C0010;
-	Wed, 21 Jul 2021 00:05:56 +0000 (UTC)
-Received: from smtp3.osuosl.org (smtp3.osuosl.org [IPv6:2605:bc80:3010::136])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 38FC2C000E
- for <iommu@lists.linux-foundation.org>; Wed, 21 Jul 2021 00:05:56 +0000 (UTC)
-Received: from localhost (localhost [127.0.0.1])
- by smtp3.osuosl.org (Postfix) with ESMTP id 1285160791
- for <iommu@lists.linux-foundation.org>; Wed, 21 Jul 2021 00:05:56 +0000 (UTC)
-X-Virus-Scanned: amavisd-new at osuosl.org
-Authentication-Results: smtp3.osuosl.org (amavisd-new);
- dkim=pass (1024-bit key) header.d=amd.com
 Received: from smtp3.osuosl.org ([127.0.0.1])
- by localhost (smtp3.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id deakdgRIHNv0 for <iommu@lists.linux-foundation.org>;
- Wed, 21 Jul 2021 00:05:54 +0000 (UTC)
-X-Greylist: whitelisted by SQLgrey-1.8.0
-Received: from NAM12-MW2-obe.outbound.protection.outlook.com
- (mail-mw2nam12on2051.outbound.protection.outlook.com [40.107.244.51])
- by smtp3.osuosl.org (Postfix) with ESMTPS id B3D6E60093
- for <iommu@lists.linux-foundation.org>; Wed, 21 Jul 2021 00:05:54 +0000 (UTC)
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=H0G7lyA6KGahCwO7ZbeRVFC1I61aleEvdA+nizM/3QVPvQD6MOSPmAaQ7c0pYgX7OWPR/oGqVL1tlFIvKIzBwianJ16Qim+Pg36cbH7jGG5r9tt3lYwOICPlusLuUCY4nXMpgUT2Np2+VHq3DiNQodpvhEssl2W4QGypOHjIUt4fVCaljuh8G7YSpTNN2VyDOXFACdgEgJCGlBP/gaCaGLJcDypg1bm7e+Pp6LvlPURAV/gM6Nso7atjYlO3Tohpv0rc69ag2ZRpMxRWuLrfapyeselnNL9B1bURJdH0vX2F1NfP0v2UtKeiekLyBLx3No/To+YDk+TOrg2fy4sitA==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com; 
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=UsatPFEX2jgCmC/poNW5lCwEOf5D1phiklTq9fMplaw=;
- b=mQG3v4dMxuUkG9LUoxNb+R4xJzlIASDe6QVzyU/7YM+ohS3AsFvzk5NsbEqM2LYsFLwgGBq1smsn5/AanEgErjoEOcVK5JDFqFiSDR4/bpl5hITVjhfZtBWKGWHo91Db99QQY0m/i4O9ODaBCK+MB5jY51y29wiyQr7NSbVUgTUBtFdJrDPYvyWWQYEJf9fTUw8wus1pgICHG2LSgsgZqXz1SjL/ZNC0W7tQ3O9hr6khxBidNAOZNaZ0VyjucYqfZQ75jZqJMQW1b0ketq6hSu9PRvLdxlBeSNK/50HCEyX1Yo9m7B3YHbmJLf626Ku87oPcV30ojLS2z7CS0eZuPA==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=amd.com; dmarc=pass action=none header.from=amd.com; dkim=pass
- header.d=amd.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=amd.com; s=selector1; 
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=UsatPFEX2jgCmC/poNW5lCwEOf5D1phiklTq9fMplaw=;
- b=F/lEAy3AQpS8JtD2cKLD6yyePH7MctW6iKBfCfQZRbPBsMOfCtp2EqLPwkNAyLgQvJrxhJLlzlhlQY49oeYkWPULRQIH1Kr5FDZjNS87zUsGlZ+kJBbMaqwv0ovJT98ibWTbFA6opxW7vmQnRMerRP40huvHNVjo3VVTKQxOEqs=
-Authentication-Results: 8bytes.org; dkim=none (message not signed)
- header.d=none;8bytes.org; dmarc=none action=none header.from=amd.com;
-Received: from DM8PR12MB5445.namprd12.prod.outlook.com (2603:10b6:8:24::7) by
- DM4PR12MB5357.namprd12.prod.outlook.com (2603:10b6:5:39b::24) with
- Microsoft
- SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.20.4331.31; Wed, 21 Jul 2021 00:05:52 +0000
-Received: from DM8PR12MB5445.namprd12.prod.outlook.com
- ([fe80::b098:ccab:f79:9461]) by DM8PR12MB5445.namprd12.prod.outlook.com
- ([fe80::b098:ccab:f79:9461%5]) with mapi id 15.20.4331.034; Wed, 21 Jul 2021
- 00:05:52 +0000
-Subject: Re: [PATCH] iommu/amd: Fix I/O page fault logging ratelimit test
-To: Lennert Buytenhek <buytenh@wantstofly.org>,
- iommu@lists.linux-foundation.org, Joerg Roedel <joro@8bytes.org>
-References: <YPTLl7XHOGp5NiVH@wantstofly.org>
-Message-ID: <79c1cd8b-c680-b3fb-08f0-47c42290d1a4@amd.com>
-Date: Tue, 20 Jul 2021 19:05:50 -0500
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:78.0) Gecko/20100101
- Thunderbird/78.12.0
-In-Reply-To: <YPTLl7XHOGp5NiVH@wantstofly.org>
-Content-Language: en-US
-X-ClientProxiedBy: SA0PR11CA0202.namprd11.prod.outlook.com
- (2603:10b6:806:1bc::27) To DM8PR12MB5445.namprd12.prod.outlook.com
- (2603:10b6:8:24::7)
+	by localhost (smtp3.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+	with ESMTP id 7luIV88YOmjn; Wed, 21 Jul 2021 01:36:29 +0000 (UTC)
+Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
+	by smtp3.osuosl.org (Postfix) with ESMTPS id C45086059F;
+	Wed, 21 Jul 2021 01:36:28 +0000 (UTC)
+Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 7C801C0010;
+	Wed, 21 Jul 2021 01:36:28 +0000 (UTC)
+Received: from smtp1.osuosl.org (smtp1.osuosl.org [140.211.166.138])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 1254FC000E
+ for <iommu@lists.linux-foundation.org>; Wed, 21 Jul 2021 01:36:27 +0000 (UTC)
+Received: from localhost (localhost [127.0.0.1])
+ by smtp1.osuosl.org (Postfix) with ESMTP id EEAD88301D
+ for <iommu@lists.linux-foundation.org>; Wed, 21 Jul 2021 01:36:26 +0000 (UTC)
+X-Virus-Scanned: amavisd-new at osuosl.org
+Received: from smtp1.osuosl.org ([127.0.0.1])
+ by localhost (smtp1.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+ with ESMTP id oe6h0owWIWP2 for <iommu@lists.linux-foundation.org>;
+ Wed, 21 Jul 2021 01:36:25 +0000 (UTC)
+X-Greylist: domain auto-whitelisted by SQLgrey-1.8.0
+Received: from szxga01-in.huawei.com (szxga01-in.huawei.com [45.249.212.187])
+ by smtp1.osuosl.org (Postfix) with ESMTPS id 3CB3883004
+ for <iommu@lists.linux-foundation.org>; Wed, 21 Jul 2021 01:36:24 +0000 (UTC)
+Received: from dggemv711-chm.china.huawei.com (unknown [172.30.72.56])
+ by szxga01-in.huawei.com (SkyGuard) with ESMTP id 4GTyhB2GBJzYdZb;
+ Wed, 21 Jul 2021 09:30:34 +0800 (CST)
+Received: from dggpemm500004.china.huawei.com (7.185.36.219) by
+ dggemv711-chm.china.huawei.com (10.1.198.66) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2176.2; Wed, 21 Jul 2021 09:36:20 +0800
+Received: from huawei.com (10.174.28.241) by dggpemm500004.china.huawei.com
+ (7.185.36.219) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2176.2; Wed, 21 Jul
+ 2021 09:36:20 +0800
+From: Bixuan Cui <cuibixuan@huawei.com>
+To: <iommu@lists.linux-foundation.org>, <linux-kernel@vger.kernel.org>,
+ <will@kernel.org>
+Subject: [PATCH -next] iommu/arm-smmu-v3: Add suspend and resume support
+Date: Wed, 21 Jul 2021 09:33:50 +0800
+Message-ID: <20210721013350.17664-1-cuibixuan@huawei.com>
+X-Mailer: git-send-email 2.17.1
 MIME-Version: 1.0
-X-MS-Exchange-MessageSentRepresentingType: 1
-Received: from [10.236.188.23] (165.204.77.1) by
- SA0PR11CA0202.namprd11.prod.outlook.com (2603:10b6:806:1bc::27) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4331.21 via Frontend
- Transport; Wed, 21 Jul 2021 00:05:52 +0000
-X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: 166746b0-ed8b-4ccb-48f1-08d94bdb4dcd
-X-MS-TrafficTypeDiagnostic: DM4PR12MB5357:
-X-Microsoft-Antispam-PRVS: <DM4PR12MB5357DA7D62E8C9DACE1F7F4FF3E39@DM4PR12MB5357.namprd12.prod.outlook.com>
-X-MS-Oob-TLC-OOBClassifiers: OLM:10000;
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: OYgq/3cI271EyEpOrdRSELJqT2qaAceQBqcAjMfMadoEfmPgQ9NiUkV7BBln0wP6KNnLZcoobFsHFnsWx8WKLU18V7Ak7tsWCbPqyjMy+2gp5uQvtI8fxUBWkIlzkrZhC0e8fcqGXnfq6K3ngy0wz6Ev4cRR3CE99ZEhWQoHcik4MCY7jw6JaOOQJpe9kXoK9U1/EPxTFUFN4jSDYfZR4dKWEextVlGL+PJgMyW1vsqVcK5rWpDYgXRVV5+mo6q97fEj64/wwxLNZ6G/YNeSWk1+Iew1zhEpfwxULjXTJ5pPWPr7M8PiUC6oa2QIxrRWopK8h0qhTzM3roXy8Qmg9RDPmdq8Nv5j405PZCjo3TyuK70AIh8fNF1ZHXa7RDo+Ep5+9A1WnUMUESBAh/kCvTJO6/chVtU13No2hvj+y3PG7zs2hBVAnavOti0GP5LpGu6cUjm7JJZoyxnPOE1IzR6sfZQEqNalSlh0/MqpLMKcVmzvoGCW5UgqNXrMHA11mO4G+WqS25E3CcRraoPsN3Z/bsJeuC8ZDsxynj7UCJ2WmoI9ssCwC+Td4RKw21sOM4Ddkr67vh2ANC6GCuszVUksMuS9kDQfXeSO0QXUGQf/Nntg+BEro0QjhEwx5WnSo44UMRNnDLh4ajyIecIfPT6iVqgV8JFyRfBaLnabswbehm1hs2bOjNk5y9StkYUhPiv34k5sB/IHbt05mdIxWoAsUK6PGGD4b2RkUwY/cC0vAujuFyZ0gbs8jlPRO9o9ZCgleBgLlft/Uu+g/ZlZ/A==
-X-Forefront-Antispam-Report: CIP:255.255.255.255; CTRY:; LANG:en; SCL:1; SRV:;
- IPV:NLI; SFV:NSPM; H:DM8PR12MB5445.namprd12.prod.outlook.com; PTR:; CAT:NONE;
- SFS:(4636009)(136003)(39860400002)(376002)(396003)(346002)(366004)(31686004)(8936002)(26005)(52116002)(83380400001)(31696002)(2616005)(6486002)(53546011)(186003)(956004)(38350700002)(316002)(38100700002)(36756003)(16576012)(66946007)(86362001)(110136005)(66476007)(66556008)(5660300002)(2906002)(478600001)(8676002)(45980500001)(43740500002);
- DIR:OUT; SFP:1101; 
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?utf-8?B?cjdpM0FlNnZnaGowajl4SmV3dWU4TG1XOGpoWjZ2RVgzUkVzNXMzR0pDWU1H?=
- =?utf-8?B?Tmw5bkpYaFQwNUEwK0ZiQm9MTlc0ajdOYkxWL2xoR292c2h3RmNaSmcrV2Yr?=
- =?utf-8?B?c01Yc0MxR29lTXI0TFhhWkhTZHdFMVp6V2FnMkFHS1pXQTFaRUh5SjNhU3Fl?=
- =?utf-8?B?OG9nYkNuVWZSV0ovTjZkQWEvWklsWWxCN3grKzNneFcxa0Z5MlMwMWZ5Sllk?=
- =?utf-8?B?aFo4bU9rcTkvM0dlSHpmd1IxYm9ZKzJCQVJ4a0hDaTRMZ1d1eHZsSVpGdkRC?=
- =?utf-8?B?dzBFSjE0c3AzaDNhRWpPYnQ4L3YwOFg1aTh0dzdNSS9kaTUwbGJHZ2RGbm5t?=
- =?utf-8?B?dlNOZWxTYkM2ZHR5TmR2R0NvU0RMRmptSnFrZlBFSkNMaGRqMDYxbHg1TmdD?=
- =?utf-8?B?K0tnQjRNYnQ1T1dqTGRBZitDd3prWXJ6OHlBaEhreXJEcTNmeENUWXNvcUVB?=
- =?utf-8?B?TlZySlZyai9XeVEzd3VlbnprdVE3MDg4cng5NU9jcmFtQlYxTU1yS1hHN1dz?=
- =?utf-8?B?cERQQXBCQlJrT2xYb2FkcldIazAwc2ZCQ0tRNWNHVU02ZGI5MHVidTJGOTY2?=
- =?utf-8?B?bDdnU2VXNlV1SDZwZVVtMHJnbVo4RUMwMVBpdVYwM3djYitCTVJ1L2g5N3hT?=
- =?utf-8?B?dndEM29YTXJwZjN1VG80U3l0SGl0MWRwRXhKOHRYaEc1YVBtaTFlbE1VUElB?=
- =?utf-8?B?MUxLWGZMV01tWVV5WFFqNDJGa1F3TFlkV3Z3YUJZSDB4ekExc2paemVvWkUz?=
- =?utf-8?B?MTA0cCtlVGtIbzR6dTFialh0TC9pR1k2K1BjY1FuWkRrUmxkTnBRRXpwbVk3?=
- =?utf-8?B?MEsyVXhtSFh3UFRVVCtVS2lRV3BoYUtWWEduUjZMeVAxWHVTSUtONm1mMmJV?=
- =?utf-8?B?cGNzZmZRSlBKdXZCK3NKYWlvZ3pwdFlUbERoM205YjE5TldNeGdsSFFHRnV5?=
- =?utf-8?B?YWpPUUFSNUpIVjZvMEowNTVER3l2R0tKRURpZGFhVUZrbU5yY3Vlbm9iUnZr?=
- =?utf-8?B?ZnpmMTh1cXUrTk80aWx4dGc4VlRtT3J2MXE3YURMMGl1QVUwazI5a01jZzd4?=
- =?utf-8?B?MUxlV0hnc1NxMWtqb1dHMEoxbmhLaE9maVJVMzhDMkZDSUpsTEF2MkM4bWZV?=
- =?utf-8?B?UVJ1TExaVEprcnhZSjlRRUxWY0tSWVgvc2Q0ZDg4dHZnd3ZOU1NrMTRKamxH?=
- =?utf-8?B?THowNlVlOHREYmFNY1V5aWwzalkyUitLazZVclE5dzcreHp0RzVwTkw2Y09L?=
- =?utf-8?B?QVhrVmgyZE9RREVFVmV4MXYrZVRPWWVoTi93WkhGUkRReFVaU0g2Z2tCckFp?=
- =?utf-8?B?c1dwT2dnb3NQYWVVWDFZT0tpVlJEOHRGQit1d2ZXMW5SQU1BMEg3Umw2SElx?=
- =?utf-8?B?L1llMW4zODNmeGtvYTV4R0h0WXgvY094eUF2K3V1SCtRZnRiRmI3VWt6V3NU?=
- =?utf-8?B?NkllbEZMSGlWSTFjbWhld0YwWjZqOHpwTFloYWxjODU0dVhybTJpN0ViaEtG?=
- =?utf-8?B?a2k5WFpSVkQ0akRHNWF2aTl0WHJYcDN2dFd0amFLTlJMNmt0U3I5Q2hQK1Bz?=
- =?utf-8?B?OUg4TTl2SUtWRnhBUTdvYnZzTEF3cmN5b204UjhUV1cwTGwzQlBuU2J6U3Bw?=
- =?utf-8?B?QXg1STNVTUQvZjA3RHltNS9PSlZVbkxlWDk2bzlPWnl5T0tXNXg3eDdtZ2c1?=
- =?utf-8?B?MmM2TjU2Wm1HemxZLyt2WGJwSFdlVE1CVE5ZRnJpVmxYZ0tQLzZ1a3prektp?=
- =?utf-8?Q?jbPT8nGACY8NfnX60AQxU2uRUfc4/cinEsvqbCV?=
-X-OriginatorOrg: amd.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 166746b0-ed8b-4ccb-48f1-08d94bdb4dcd
-X-MS-Exchange-CrossTenant-AuthSource: DM8PR12MB5445.namprd12.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 21 Jul 2021 00:05:52.6279 (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 3dd8961f-e488-4e60-8e11-a82d994e183d
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: /FVysFnm4pW1nKEf1Q8W/3VBalk5gQeDIdALX93zCst1pbyinsMN0f2ZfgDTSvPrY39fLnyLWH+NW2cZxOahDg==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: DM4PR12MB5357
+X-Originating-IP: [10.174.28.241]
+X-ClientProxiedBy: dggems702-chm.china.huawei.com (10.3.19.179) To
+ dggpemm500004.china.huawei.com (7.185.36.219)
+X-CFilter-Loop: Reflected
+Cc: jean-philippe@linaro.org, john.wanghui@huawei.com, weiyongjun1@huawei.com,
+ dingtianhong@huawei.com, guohanjun@huawei.com, cuibixuan@huawei.com,
+ robin.murphy@arm.com, linux-arm-kernel@lists.infradead.org
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -159,67 +83,198 @@ List-Post: <mailto:iommu@lists.linux-foundation.org>
 List-Help: <mailto:iommu-request@lists.linux-foundation.org?subject=help>
 List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
  <mailto:iommu-request@lists.linux-foundation.org?subject=subscribe>
-From: "Suthikulpanit, Suravee via iommu" <iommu@lists.linux-foundation.org>
-Reply-To: "Suthikulpanit, Suravee" <suravee.suthikulpanit@amd.com>
+Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
-Content-Type: text/plain; charset="us-ascii"; Format="flowed"
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-Hi Lennert,
+Add suspend and resume support for arm-smmu-v3 by low-power mode.
 
-On 7/18/2021 7:47 PM, Lennert Buytenhek wrote:
-> On an AMD system, I/O page faults are usually logged like this:
-> ....
-> diff --git a/drivers/iommu/amd/iommu.c b/drivers/iommu/amd/iommu.c
-> index 811a49a95d04..7ae426b092f2 100644
-> --- a/drivers/iommu/amd/iommu.c
-> +++ b/drivers/iommu/amd/iommu.c
-> @@ -483,7 +483,7 @@ static void amd_iommu_report_page_fault(u16 devid, u16 domain_id,
->   	if (dev_data && __ratelimit(&dev_data->rs)) {
->   		pci_err(pdev, "Event logged [IO_PAGE_FAULT domain=0x%04x address=0x%llx flags=0x%04x]\n",
->   			domain_id, address, flags);
-> -	} else if (printk_ratelimit()) {
-> +	} else if (!dev_data && printk_ratelimit()) {
+When the smmu is suspended, it is powered off and the registers are
+cleared. So saves the msi_msg context during msi interrupt initialization
+of smmu. When resume happens it calls arm_smmu_device_reset() to restore
+the registers.
 
-This seems a bit confusing. Also, according to the following comment in include/linux/printk.h:
+Signed-off-by: Bixuan Cui <cuibixuan@huawei.com>
+Reviewed-by: Wei Yongjun <weiyongjun1@huawei.com>
+Reviewed-by: Zhen Lei <thunder.leizhen@huawei.com>
+Reviewed-by: Ding Tianhong <dingtianhong@huawei.com>
+Reviewed-by: Hanjun Guo <guohanjun@huawei.com>
+---
 
-/*
-  * Please don't use printk_ratelimit(), because it shares ratelimiting state
-  * with all other unrelated printk_ratelimit() callsites.  Instead use
-  * printk_ratelimited() or plain old __ratelimit().
-  */
+ drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c | 72 ++++++++++++++++++---
+ 1 file changed, 64 insertions(+), 8 deletions(-)
 
-We probably should move away from using printk_ratelimit() here.
-What about the following change instead?
-
-diff --git a/drivers/iommu/amd/iommu.c b/drivers/iommu/amd/iommu.c
-index 811a49a95d04..8eb5d3519743 100644
---- a/drivers/iommu/amd/iommu.c
-+++ b/drivers/iommu/amd/iommu.c
-@@ -480,11 +480,12 @@ static void amd_iommu_report_page_fault(u16 devid, u16 domain_id,
-         if (pdev)
-                 dev_data = dev_iommu_priv_get(&pdev->dev);
-
--       if (dev_data && __ratelimit(&dev_data->rs)) {
--               pci_err(pdev, "Event logged [IO_PAGE_FAULT domain=0x%04x address=0x%llx flags=0x%04x]\n",
--                       domain_id, address, flags);
--       } else if (printk_ratelimit()) {
--               pr_err("Event logged [IO_PAGE_FAULT device=%02x:%02x.%x domain=0x%04x address=0x%llx flags=0x%04x]\n",
-+       if (dev_data) {
-+               if (__ratelimit(&dev_data->rs))
-+                       pci_err(pdev, "Event logged [IO_PAGE_FAULT domain=0x%04x address=0x%llx flags=0x%04x]\n",
-+                               domain_id, address, flags);
-+       } else {
-+               pr_err_ratelimited("Event logged [IO_PAGE_FAULT device=%02x:%02x.%x domain=0x%04x address=0x%llx flags=0x%04x]\n",
-                         PCI_BUS_NUM(devid), PCI_SLOT(devid), PCI_FUNC(devid),
-                         domain_id, address, flags);
-         }
-
-Note also that there might be other places in this file that would need similar modification as well.
-
-Thanks,
-Suravee
+diff --git a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
+index 235f9bdaeaf2..bf1163acbcb1 100644
+--- a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
++++ b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
+@@ -40,6 +40,7 @@ MODULE_PARM_DESC(disable_bypass,
+ 
+ static bool disable_msipolling;
+ module_param(disable_msipolling, bool, 0444);
++static bool bypass;
+ MODULE_PARM_DESC(disable_msipolling,
+ 	"Disable MSI-based polling for CMD_SYNC completion.");
+ 
+@@ -3129,11 +3130,37 @@ static void arm_smmu_write_msi_msg(struct msi_desc *desc, struct msi_msg *msg)
+ 	doorbell = (((u64)msg->address_hi) << 32) | msg->address_lo;
+ 	doorbell &= MSI_CFG0_ADDR_MASK;
+ 
++	/* Saves the msg context for resume if desc->msg is empty */
++	if (desc->msg.address_lo == 0 && desc->msg.address_hi == 0) {
++		desc->msg.address_lo = msg->address_lo;
++		desc->msg.address_hi = msg->address_hi;
++		desc->msg.data = msg->data;
++	}
++
+ 	writeq_relaxed(doorbell, smmu->base + cfg[0]);
+ 	writel_relaxed(msg->data, smmu->base + cfg[1]);
+ 	writel_relaxed(ARM_SMMU_MEMATTR_DEVICE_nGnRE, smmu->base + cfg[2]);
+ }
+ 
++static void arm_smmu_resume_msis(struct arm_smmu_device *smmu)
++{
++	struct msi_desc *desc;
++	struct device *dev = smmu->dev;
++
++	for_each_msi_entry(desc, dev) {
++		switch (desc->platform.msi_index) {
++		case EVTQ_MSI_INDEX:
++		case GERROR_MSI_INDEX:
++		case PRIQ_MSI_INDEX:
++			arm_smmu_write_msi_msg(desc, &(desc->msg));
++			break;
++		default:
++			continue;
++
++		}
++	}
++}
++
+ static void arm_smmu_setup_msis(struct arm_smmu_device *smmu)
+ {
+ 	struct msi_desc *desc;
+@@ -3184,11 +3211,17 @@ static void arm_smmu_setup_msis(struct arm_smmu_device *smmu)
+ 	devm_add_action(dev, arm_smmu_free_msis, dev);
+ }
+ 
+-static void arm_smmu_setup_unique_irqs(struct arm_smmu_device *smmu)
++static void arm_smmu_setup_unique_irqs(struct arm_smmu_device *smmu, bool resume_mode)
+ {
+ 	int irq, ret;
+ 
+-	arm_smmu_setup_msis(smmu);
++	if (!resume_mode)
++		arm_smmu_setup_msis(smmu);
++	else {
++		/* The irq doesn't need to be re-requested during resume */
++		arm_smmu_resume_msis(smmu);
++		return;
++	}
+ 
+ 	/* Request interrupt lines */
+ 	irq = smmu->evtq.q.irq;
+@@ -3230,7 +3263,7 @@ static void arm_smmu_setup_unique_irqs(struct arm_smmu_device *smmu)
+ 	}
+ }
+ 
+-static int arm_smmu_setup_irqs(struct arm_smmu_device *smmu)
++static int arm_smmu_setup_irqs(struct arm_smmu_device *smmu, bool resume_mode)
+ {
+ 	int ret, irq;
+ 	u32 irqen_flags = IRQ_CTRL_EVTQ_IRQEN | IRQ_CTRL_GERROR_IRQEN;
+@@ -3257,7 +3290,7 @@ static int arm_smmu_setup_irqs(struct arm_smmu_device *smmu)
+ 		if (ret < 0)
+ 			dev_warn(smmu->dev, "failed to enable combined irq\n");
+ 	} else
+-		arm_smmu_setup_unique_irqs(smmu);
++		arm_smmu_setup_unique_irqs(smmu, resume_mode);
+ 
+ 	if (smmu->features & ARM_SMMU_FEAT_PRI)
+ 		irqen_flags |= IRQ_CTRL_PRIQ_IRQEN;
+@@ -3282,7 +3315,7 @@ static int arm_smmu_device_disable(struct arm_smmu_device *smmu)
+ 	return ret;
+ }
+ 
+-static int arm_smmu_device_reset(struct arm_smmu_device *smmu, bool bypass)
++static int arm_smmu_device_reset(struct arm_smmu_device *smmu, bool resume_mode)
+ {
+ 	int ret;
+ 	u32 reg, enables;
+@@ -3392,7 +3425,7 @@ static int arm_smmu_device_reset(struct arm_smmu_device *smmu, bool bypass)
+ 		}
+ 	}
+ 
+-	ret = arm_smmu_setup_irqs(smmu);
++	ret = arm_smmu_setup_irqs(smmu, resume_mode);
+ 	if (ret) {
+ 		dev_err(smmu->dev, "failed to setup irqs\n");
+ 		return ret;
+@@ -3749,6 +3782,24 @@ static void __iomem *arm_smmu_ioremap(struct device *dev, resource_size_t start,
+ 	return devm_ioremap_resource(dev, &res);
+ }
+ 
++static int __maybe_unused arm_smmu_suspend(struct device *dev)
++{
++	/*
++	 * The smmu is powered off and related registers are automatically
++	 * cleared when suspend. No need to do anything.
++	 */
++	return 0;
++}
++
++static int __maybe_unused arm_smmu_resume(struct device *dev)
++{
++	struct arm_smmu_device *smmu = dev_get_drvdata(dev);
++
++	arm_smmu_device_reset(smmu, true);
++
++	return 0;
++}
++
+ static int arm_smmu_device_probe(struct platform_device *pdev)
+ {
+ 	int irq, ret;
+@@ -3756,7 +3807,6 @@ static int arm_smmu_device_probe(struct platform_device *pdev)
+ 	resource_size_t ioaddr;
+ 	struct arm_smmu_device *smmu;
+ 	struct device *dev = &pdev->dev;
+-	bool bypass;
+ 
+ 	smmu = devm_kzalloc(dev, sizeof(*smmu), GFP_KERNEL);
+ 	if (!smmu)
+@@ -3831,7 +3881,7 @@ static int arm_smmu_device_probe(struct platform_device *pdev)
+ 	platform_set_drvdata(pdev, smmu);
+ 
+ 	/* Reset the device */
+-	ret = arm_smmu_device_reset(smmu, bypass);
++	ret = arm_smmu_device_reset(smmu, false);
+ 	if (ret)
+ 		return ret;
+ 
+@@ -3884,6 +3934,11 @@ static const struct of_device_id arm_smmu_of_match[] = {
+ };
+ MODULE_DEVICE_TABLE(of, arm_smmu_of_match);
+ 
++static const struct dev_pm_ops arm_smmu_pm_ops = {
++	.suspend = arm_smmu_suspend,
++	.resume = arm_smmu_resume,
++};
++
+ static void arm_smmu_driver_unregister(struct platform_driver *drv)
+ {
+ 	arm_smmu_sva_notifier_synchronize();
+@@ -3895,6 +3950,7 @@ static struct platform_driver arm_smmu_driver = {
+ 		.name			= "arm-smmu-v3",
+ 		.of_match_table		= arm_smmu_of_match,
+ 		.suppress_bind_attrs	= true,
++		.pm			= &arm_smmu_pm_ops,
+ 	},
+ 	.probe	= arm_smmu_device_probe,
+ 	.remove	= arm_smmu_device_remove,
+-- 
+2.17.1
 
 _______________________________________________
 iommu mailing list
