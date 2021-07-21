@@ -2,118 +2,99 @@ Return-Path: <SRS0=85So=MN=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-2.2 required=3.0 tests=BAYES_00,DKIM_ADSP_CUSTOM_MED,
-	DKIM_INVALID,DKIM_SIGNED,FREEMAIL_FORGED_FROMDOMAIN,FREEMAIL_FROM,
-	HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,NICE_REPLY_A,SPF_HELO_NONE,
-	SPF_PASS,USER_AGENT_SANE_1 autolearn=no autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-13.6 required=3.0 tests=BAYES_00,DKIM_INVALID,
+	DKIM_SIGNED,HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_CR_TRAILER,INCLUDES_PATCH,
+	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS autolearn=unavailable
+	autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 689C8C07E9B
-	for <iommu@archiver.kernel.org>; Wed, 21 Jul 2021 10:29:11 +0000 (UTC)
-Received: from smtp4.osuosl.org (smtp4.osuosl.org [140.211.166.137])
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9CBADC07E9B
+	for <iommu@archiver.kernel.org>; Wed, 21 Jul 2021 10:54:01 +0000 (UTC)
+Received: from smtp1.osuosl.org (smtp1.osuosl.org [140.211.166.138])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 07E4360FF2
-	for <iommu@archiver.kernel.org>; Wed, 21 Jul 2021 10:29:10 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 07E4360FF2
-Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=gmail.com
+	by mail.kernel.org (Postfix) with ESMTPS id 7AA036124C
+	for <iommu@archiver.kernel.org>; Wed, 21 Jul 2021 10:54:00 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 7AA036124C
+Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=chromium.org
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by smtp4.osuosl.org (Postfix) with ESMTP id BFDA9402B9;
-	Wed, 21 Jul 2021 10:29:10 +0000 (UTC)
+	by smtp1.osuosl.org (Postfix) with ESMTP id 3E2FC82F37;
+	Wed, 21 Jul 2021 10:54:00 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from smtp4.osuosl.org ([127.0.0.1])
-	by localhost (smtp4.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id kH1IZnhiqUzl; Wed, 21 Jul 2021 10:29:09 +0000 (UTC)
-Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [IPv6:2605:bc80:3010:104::8cd3:938])
-	by smtp4.osuosl.org (Postfix) with ESMTPS id 222774020A;
-	Wed, 21 Jul 2021 10:29:09 +0000 (UTC)
+Received: from smtp1.osuosl.org ([127.0.0.1])
+	by localhost (smtp1.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+	with ESMTP id ZuqCxy8s0pcE; Wed, 21 Jul 2021 10:53:59 +0000 (UTC)
+Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
+	by smtp1.osuosl.org (Postfix) with ESMTPS id 1771382F06;
+	Wed, 21 Jul 2021 10:53:59 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id D0045C0010;
-	Wed, 21 Jul 2021 10:29:08 +0000 (UTC)
-Received: from smtp3.osuosl.org (smtp3.osuosl.org [IPv6:2605:bc80:3010::136])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 691CDC000E
- for <iommu@lists.linux-foundation.org>; Wed, 21 Jul 2021 10:29:07 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 70A8CC000E;
+	Wed, 21 Jul 2021 10:53:58 +0000 (UTC)
+Received: from smtp4.osuosl.org (smtp4.osuosl.org [IPv6:2605:bc80:3010::137])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 35323C000E
+ for <iommu@lists.linux-foundation.org>; Wed, 21 Jul 2021 10:44:26 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by smtp3.osuosl.org (Postfix) with ESMTP id 56EC6605E2
- for <iommu@lists.linux-foundation.org>; Wed, 21 Jul 2021 10:29:07 +0000 (UTC)
+ by smtp4.osuosl.org (Postfix) with ESMTP id 2296F40237
+ for <iommu@lists.linux-foundation.org>; Wed, 21 Jul 2021 10:44:26 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Authentication-Results: smtp3.osuosl.org (amavisd-new);
- dkim=pass (2048-bit key) header.d=gmail.com
-Received: from smtp3.osuosl.org ([127.0.0.1])
- by localhost (smtp3.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id FPQhwORIlpFo for <iommu@lists.linux-foundation.org>;
- Wed, 21 Jul 2021 10:29:06 +0000 (UTC)
+Authentication-Results: smtp4.osuosl.org (amavisd-new);
+ dkim=pass (1024-bit key) header.d=chromium.org
+Received: from smtp4.osuosl.org ([127.0.0.1])
+ by localhost (smtp4.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+ with ESMTP id Xc5MX53HXhK7 for <iommu@lists.linux-foundation.org>;
+ Wed, 21 Jul 2021 10:44:25 +0000 (UTC)
 X-Greylist: whitelisted by SQLgrey-1.8.0
-Received: from mail-pf1-x42c.google.com (mail-pf1-x42c.google.com
- [IPv6:2607:f8b0:4864:20::42c])
- by smtp3.osuosl.org (Postfix) with ESMTPS id 1C736605A0
- for <iommu@lists.linux-foundation.org>; Wed, 21 Jul 2021 10:29:06 +0000 (UTC)
-Received: by mail-pf1-x42c.google.com with SMTP id d5so310738pfq.12
- for <iommu@lists.linux-foundation.org>; Wed, 21 Jul 2021 03:29:06 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=gmail.com; s=20161025;
- h=from:subject:to:cc:references:message-id:date:user-agent
- :mime-version:in-reply-to:content-language:content-transfer-encoding;
- bh=crPkDkWQEoNERdMjzIoNvDVdZYJX2jUbiteH/e0Of1o=;
- b=dpQF0qK/cZ1PBWjC1lNEtBNPQIY0ndTZOqudg/5nG+laJtg1EvtFbUy2df++wHmiLi
- c6BCC2uROfhvdYwDWYWD1jecOacp6hyTQ93iH+xQCYDh0nO8befGldO1/+g9lnr74Jsv
- CmOUB7aNlqIYBSVTdBy1KAz3fTJhPWw+/jwvvEOOadVZwZ+pWi0tv3SIK/XfCdM4Yw0C
- CMWaIHisnetIQUkh+1i2GqoZdEdpLDithfUWVY4II/1DHvEJRJ2d7y6Gld4xfxrZsKbY
- 6Msig5LVrt5yFu08e+wuLM0X3juclFNnUEU2LztUJ2yenbExU+zvtkxD1pUa0R4LM97z
- RFOw==
+Received: from mail-pf1-x42f.google.com (mail-pf1-x42f.google.com
+ [IPv6:2607:f8b0:4864:20::42f])
+ by smtp4.osuosl.org (Postfix) with ESMTPS id 12BC9401B6
+ for <iommu@lists.linux-foundation.org>; Wed, 21 Jul 2021 10:44:24 +0000 (UTC)
+Received: by mail-pf1-x42f.google.com with SMTP id m83so1965457pfd.0
+ for <iommu@lists.linux-foundation.org>; Wed, 21 Jul 2021 03:44:24 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=chromium.org; s=google;
+ h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+ :cc; bh=GXWcsJDXb1A/72l7a2R8Yfuydt9sw0KVY6gwcccRtzw=;
+ b=HwJuai+igbPwD/LYxLesQ/+WpH5n2+B+lybbPQ2LEXAm0JuXXBDvz2QkL3Zi60jNPF
+ Iz1WTkpHaPPD4gDA1DzM8+gosf00VczPuJVTpssHvQCa486ckwFxLNuyv1D4ngSEZWVv
+ QIidHytZ+Q2tnIPpURlojfRB2zmtoJdrBau4w=
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
  d=1e100.net; s=20161025;
- h=x-gm-message-state:from:subject:to:cc:references:message-id:date
- :user-agent:mime-version:in-reply-to:content-language
- :content-transfer-encoding;
- bh=crPkDkWQEoNERdMjzIoNvDVdZYJX2jUbiteH/e0Of1o=;
- b=J26cJp0HE3OD5hfLUqL4y/giBhwb6w8/kqHorBPOoVASCiBtERMnfgIC2Tdb7cLFOp
- p94XBvws2TFUQjuOe69CyBAVZcvLXQ1eyOB/LoVZZfmzEKNuA7O3Nsh6/G1I4wnOanxc
- pRmmDGdwKgyApFvcq9lMZ7LsUp1XjN78roPfH1GMIT00uNM3YIeTKH422wwx66wGyTj/
- JHmTmzuRUVfWyGnpB/YWfGXjBxR3h362dOL7bzH/D5+IW2W08SccYcwE0DDaQVCyS2mQ
- GFIVQ4GD95i42NAU9UQoTk/qIHvT4lvLaHW13YXtCRQ2UYjwkzAxBSAwU1hjymaQFjvQ
- Ol4Q==
-X-Gm-Message-State: AOAM533bM7IazbBOTztXLLt6+KeUR2mGxb6mj6NI/JVTMunnoAfGciBw
- Lah/PFIg+dwXktZh8kdoanY=
-X-Google-Smtp-Source: ABdhPJwGK1w7GFZui+UX4nxgbHVeI56Iu2D5hjeSldD82+ip3NkTL1jWcNoRnxoO7LnJTjwfoGvugw==
-X-Received: by 2002:a65:6187:: with SMTP id c7mr35068030pgv.349.1626863345481; 
- Wed, 21 Jul 2021 03:29:05 -0700 (PDT)
-Received: from ?IPv6:2404:f801:0:5:8000::4b1? ([2404:f801:9000:18:efec::4b1])
- by smtp.gmail.com with ESMTPSA id
- t37sm26803912pfg.14.2021.07.21.03.28.50
- (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
- Wed, 21 Jul 2021 03:29:05 -0700 (PDT)
-From: Tianyu Lan <ltykernel@gmail.com>
-Subject: Re: [Resend RFC PATCH V4 09/13] x86/Swiotlb/HV: Add Swiotlb bounce
- buffer remap function for HV IVM
-To: Christoph Hellwig <hch@lst.de>
-References: <20210707154629.3977369-1-ltykernel@gmail.com>
- <20210707154629.3977369-10-ltykernel@gmail.com>
- <20210720135437.GA13554@lst.de>
-Message-ID: <8f1a285d-4b67-8041-d326-af565b2756c0@gmail.com>
-Date: Wed, 21 Jul 2021 18:28:48 +0800
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:78.0) Gecko/20100101
- Thunderbird/78.12.0
+ h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+ :message-id:subject:to:cc;
+ bh=GXWcsJDXb1A/72l7a2R8Yfuydt9sw0KVY6gwcccRtzw=;
+ b=BJEnX6qpSoJEY5BVojBPi3ua/2PuQ7I5PbHb8Uw5RmUDR8IbxbZlEnqNayh+yq9RSY
+ 46Qd8I3RiqX1OheTvJevNV9IY7+Om+ivuVBIZEYnEz+rIPAceBWybUlN6uodV+NHxe16
+ euacB+qh7BlRyrE9hkNtq8gPb2rh5JyGJl4Josv+dre5lOkj7PO03ip8LOZ7XZfbuVKW
+ eUFKap9/MP5ndL+PFAKrZF7luZv8iYLsIHn4Xp7TcJQBPHPY+pDH+LREbr/qeJsUVZl9
+ gmJ5tWMaC2I3v7vNfktUPy7zirZ6bvu4mWKx08il7igD3fWBsbYQLlkEEAx4jLhaUO3x
+ xutQ==
+X-Gm-Message-State: AOAM531kAkDks9d4Qjc5wcxXNmp7ah+vO2dvdOV521MG+MJkCiwsxnGy
+ wHs3dTSy2ZQBuPS6bnHPPQ84L8DnXUZFXCSNTaFFJQ==
+X-Google-Smtp-Source: ABdhPJyqyEkC7KsAlOheOaxaV+RUgvQXOkoIrX81SdGZGtmk+ga72QNgvkh/B2ekHAnq9tVQ9sgHLy2LM1SGELsGw6s=
+X-Received: by 2002:a63:8f04:: with SMTP id n4mr34564903pgd.317.1626864264477; 
+ Wed, 21 Jul 2021 03:44:24 -0700 (PDT)
 MIME-Version: 1.0
-In-Reply-To: <20210720135437.GA13554@lst.de>
-Content-Language: en-US
-Cc: linux-hyperv@vger.kernel.org, brijesh.singh@amd.com, david@redhat.com,
- peterz@infradead.org, dave.hansen@linux.intel.com, hpa@zytor.com,
- anparri@microsoft.com, kys@microsoft.com, will@kernel.org,
- boris.ostrovsky@oracle.com, linux-arch@vger.kernel.org, robh@kernel.org,
- wei.liu@kernel.org, sstabellini@kernel.org, sthemmin@microsoft.com,
- xen-devel@lists.xenproject.org, linux-scsi@vger.kernel.org, x86@kernel.org,
- decui@microsoft.com, ardb@kernel.org, michael.h.kelley@microsoft.com,
- nramas@linux.microsoft.com, mingo@redhat.com, pgonda@google.com,
- rientjes@google.com, kuba@kernel.org, jejb@linux.ibm.com,
- martin.b.radev@gmail.com, thomas.lendacky@amd.com, Tianyu.Lan@microsoft.com,
- keescook@chromium.org, arnd@arndb.de, konrad.wilk@oracle.com,
- haiyangz@microsoft.com, bp@alien8.de, luto@kernel.org,
- krish.sadhukhan@oracle.com, tglx@linutronix.de, vkuznets@redhat.com,
- jgross@suse.com, martin.petersen@oracle.com, saravanand@fb.com,
- netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
- iommu@lists.linux-foundation.org, rppt@kernel.org, hannes@cmpxchg.org,
- akpm@linux-foundation.org, robin.murphy@arm.com, davem@davemloft.net,
- kirill.shutemov@linux.intel.com
+References: <20210715121209.31024-1-yong.wu@mediatek.com>
+ <20210715121209.31024-5-yong.wu@mediatek.com>
+In-Reply-To: <20210715121209.31024-5-yong.wu@mediatek.com>
+From: Ikjoon Jang <ikjn@chromium.org>
+Date: Wed, 21 Jul 2021 18:44:13 +0800
+Message-ID: <CAATdQgB9eKCBvxV8R8jgkAa8Hqdbu4=nc9frMA024PvMnWWTaw@mail.gmail.com>
+Subject: Re: [PATCH v2 04/11] memory: mtk-smi: Rename smi_gen to smi_type
+To: Yong Wu <yong.wu@mediatek.com>
+X-Mailman-Approved-At: Wed, 21 Jul 2021 10:53:57 +0000
+Cc: youlin.pei@mediatek.com,
+ "open list:OPEN FIRMWARE AND FLATTENED DEVICE TREE BINDINGS"
+ <devicetree@vger.kernel.org>, yi.kuo@mediatek.com,
+ srv_heupstream <srv_heupstream@mediatek.com>,
+ Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>,
+ Robin Murphy <robin.murphy@arm.com>, open list <linux-kernel@vger.kernel.org>,
+ Krzysztof Kozlowski <krzk@kernel.org>, iommu@lists.linux-foundation.org,
+ Rob Herring <robh+dt@kernel.org>,
+ "moderated list:ARM/Mediatek SoC support" <linux-mediatek@lists.infradead.org>,
+ Matthias Brugger <matthias.bgg@gmail.com>, anthony.huang@mediatek.com,
+ ming-fan.chen@mediatek.com, anan.sun@mediatek.com,
+ Will Deacon <will@kernel.org>, "moderated list:ARM/Mediatek SoC support"
+ <linux-arm-kernel@lists.infradead.org>
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -126,127 +107,111 @@ List-Post: <mailto:iommu@lists.linux-foundation.org>
 List-Help: <mailto:iommu-request@lists.linux-foundation.org?subject=help>
 List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
  <mailto:iommu-request@lists.linux-foundation.org?subject=subscribe>
+Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
-Content-Type: text/plain; charset="us-ascii"; Format="flowed"
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-Thanks for review.
+On Thu, Jul 15, 2021 at 8:14 PM Yong Wu <yong.wu@mediatek.com> wrote:
+>
+> Prepare for adding smi sub common. Only rename from smi_gen to smi_type.
+> No functional change.
+>
+> About the current "smi_gen", we have gen1/gen2 that stand for the
+> generation number for HW. I plan to add a new type(sub_common), then the
+> name "gen" is not prober.
+>
+> Signed-off-by: Yong Wu <yong.wu@mediatek.com>
 
-On 7/20/2021 9:54 PM, Christoph Hellwig wrote:
-> 
-> Please split the swiotlb changes into a separate patch from the
-> consumer.
+Reviewed-by: Ikjoon Jang <ikjn@chromium.org>
 
-OK. Will update.
-
-> 
->>   }
->> +
->> +/*
->> + * hv_map_memory - map memory to extra space in the AMD SEV-SNP Isolation VM.
->> + */
->> +unsigned long hv_map_memory(unsigned long addr, unsigned long size)
->> +{
->> +	unsigned long *pfns = kcalloc(size / HV_HYP_PAGE_SIZE,
->> +				      sizeof(unsigned long),
->> +		       GFP_KERNEL);
->> +	unsigned long vaddr;
->> +	int i;
->> +
->> +	if (!pfns)
->> +		return (unsigned long)NULL;
->> +
->> +	for (i = 0; i < size / HV_HYP_PAGE_SIZE; i++)
->> +		pfns[i] = virt_to_hvpfn((void *)addr + i * HV_HYP_PAGE_SIZE) +
->> +			(ms_hyperv.shared_gpa_boundary >> HV_HYP_PAGE_SHIFT);
->> +
->> +	vaddr = (unsigned long)vmap_pfn(pfns, size / HV_HYP_PAGE_SIZE,
->> +					PAGE_KERNEL_IO);
->> +	kfree(pfns);
->> +
->> +	return vaddr;
-> 
-> This seems to miss a 'select VMAP_PFN'. 
-
-VMAP_PFN has been selected in the previous patch "RFC PATCH V4 08/13]
-HV/Vmbus: Initialize VMbus ring buffer for Isolation VM"
-
-> But more importantly I don't
-> think this actually works.  Various DMA APIs do expect a struct page
-> backing, so how is this going to work with say dma_mmap_attrs or
-> dma_get_sgtable_attrs?
-
-dma_mmap_attrs() and dma_get_sgtable_attrs() get input virtual address
-belonging to backing memory with struct page and returns bounce buffer
-dma physical address which is below shared_gpa_boundary(vTOM) and passed
-to Hyper-V via vmbus protocol.
-
-The new map virtual address is only to access bounce buffer in swiotlb
-code and will not be used other places. It's stored in the mem->vstart.
-So the new API set_memory_decrypted_map() in this series is only called
-in the swiotlb code. Other platforms may replace set_memory_decrypted()
-with set_memory_decrypted_map() as requested.
-
-> 
->> +static unsigned long __map_memory(unsigned long addr, unsigned long size)
->> +{
->> +	if (hv_is_isolation_supported())
->> +		return hv_map_memory(addr, size);
->> +
->> +	return addr;
->> +}
->> +
->> +static void __unmap_memory(unsigned long addr)
->> +{
->> +	if (hv_is_isolation_supported())
->> +		hv_unmap_memory(addr);
->> +}
->> +
->> +unsigned long set_memory_decrypted_map(unsigned long addr, unsigned long size)
->> +{
->> +	if (__set_memory_enc_dec(addr, size / PAGE_SIZE, false))
->> +		return (unsigned long)NULL;
->> +
->> +	return __map_memory(addr, size);
->> +}
->> +
->> +int set_memory_encrypted_unmap(unsigned long addr, unsigned long size)
->> +{
->> +	__unmap_memory(addr);
->> +	return __set_memory_enc_dec(addr, size / PAGE_SIZE, true);
->> +}
-> 
-> Why this obsfucation into all kinds of strange helpers?  Also I think
-> we want an ops vectors (or alternative calls) instead of the random
-> if checks here.
-
-Yes, agree and will add ops for different platforms to map/unmap memory.
-
-> 
->> + * @vstart:	The virtual start address of the swiotlb memory pool. The swiotlb
->> + *		memory pool may be remapped in the memory encrypted case and store
-> 
-> Normall we'd call this vaddr or cpu_addr.
-
-OK. Will update.
-
-> 
->> -	set_memory_decrypted((unsigned long)vaddr, bytes >> PAGE_SHIFT);
->> -	memset(vaddr, 0, bytes);
->> +	mem->vstart = (void *)set_memory_decrypted_map((unsigned long)vaddr, bytes);
-> 
-> Please always pass kernel virtual addresses as pointers.
-> 
-> And I think these APIs might need better names, e.g.
-> 
-> arch_dma_map_decrypted and arch_dma_unmap_decrypted.
-> 
-> Also these will need fallback versions for non-x86 architectures that
-> currently use memory encryption.
-
-Sure. Will update in the next version.
-
+> ---
+>  drivers/memory/mtk-smi.c | 24 ++++++++++++------------
+>  1 file changed, 12 insertions(+), 12 deletions(-)
+>
+> diff --git a/drivers/memory/mtk-smi.c b/drivers/memory/mtk-smi.c
+> index a2213452059d..ff07b14bcd66 100644
+> --- a/drivers/memory/mtk-smi.c
+> +++ b/drivers/memory/mtk-smi.c
+> @@ -55,7 +55,7 @@
+>  /* All are MMU0 defaultly. Only specialize mmu1 here. */
+>  #define F_MMU1_LARB(larbid)            (0x1 << SMI_BUS_LARB_SHIFT(larbid))
+>
+> -enum mtk_smi_gen {
+> +enum mtk_smi_type {
+>         MTK_SMI_GEN1,
+>         MTK_SMI_GEN2
+>  };
+> @@ -68,8 +68,8 @@ static const char * const mtk_smi_common_clks_optional[] = {"gals0", "gals1"};
+>  static const char * const mtk_smi_larb_clks_optional[] = {"gals"};
+>
+>  struct mtk_smi_common_plat {
+> -       enum mtk_smi_gen gen;
+> -       u32              bus_sel; /* Balance some larbs to enter mmu0 or mmu1 */
+> +       enum mtk_smi_type       type;
+> +       u32                     bus_sel; /* Balance some larbs to enter mmu0 or mmu1 */
+>  };
+>
+>  struct mtk_smi_larb_gen {
+> @@ -402,27 +402,27 @@ static struct platform_driver mtk_smi_larb_driver = {
+>  };
+>
+>  static const struct mtk_smi_common_plat mtk_smi_common_gen1 = {
+> -       .gen = MTK_SMI_GEN1,
+> +       .type     = MTK_SMI_GEN1,
+>  };
+>
+>  static const struct mtk_smi_common_plat mtk_smi_common_gen2 = {
+> -       .gen = MTK_SMI_GEN2,
+> +       .type     = MTK_SMI_GEN2,
+>  };
+>
+>  static const struct mtk_smi_common_plat mtk_smi_common_mt6779 = {
+> -       .gen            = MTK_SMI_GEN2,
+> -       .bus_sel        = F_MMU1_LARB(1) | F_MMU1_LARB(2) | F_MMU1_LARB(4) |
+> -                         F_MMU1_LARB(5) | F_MMU1_LARB(6) | F_MMU1_LARB(7),
+> +       .type     = MTK_SMI_GEN2,
+> +       .bus_sel  = F_MMU1_LARB(1) | F_MMU1_LARB(2) | F_MMU1_LARB(4) |
+> +                   F_MMU1_LARB(5) | F_MMU1_LARB(6) | F_MMU1_LARB(7),
+>  };
+>
+>  static const struct mtk_smi_common_plat mtk_smi_common_mt8183 = {
+> -       .gen      = MTK_SMI_GEN2,
+> +       .type     = MTK_SMI_GEN2,
+>         .bus_sel  = F_MMU1_LARB(1) | F_MMU1_LARB(2) | F_MMU1_LARB(5) |
+>                     F_MMU1_LARB(7),
+>  };
+>
+>  static const struct mtk_smi_common_plat mtk_smi_common_mt8192 = {
+> -       .gen      = MTK_SMI_GEN2,
+> +       .type     = MTK_SMI_GEN2,
+>         .bus_sel  = F_MMU1_LARB(1) | F_MMU1_LARB(2) | F_MMU1_LARB(5) |
+>                     F_MMU1_LARB(6),
+>  };
+> @@ -483,7 +483,7 @@ static int mtk_smi_common_probe(struct platform_device *pdev)
+>          * clock into emi clock domain, but for mtk smi gen2, there's no smi ao
+>          * base.
+>          */
+> -       if (common->plat->gen == MTK_SMI_GEN1) {
+> +       if (common->plat->type == MTK_SMI_GEN1) {
+>                 res = platform_get_resource(pdev, IORESOURCE_MEM, 0);
+>                 common->smi_ao_base = devm_ioremap_resource(dev, res);
+>                 if (IS_ERR(common->smi_ao_base))
+> @@ -523,7 +523,7 @@ static int __maybe_unused mtk_smi_common_resume(struct device *dev)
+>         if (ret)
+>                 return ret;
+>
+> -       if (common->plat->gen == MTK_SMI_GEN2 && bus_sel)
+> +       if (common->plat->type == MTK_SMI_GEN2 && bus_sel)
+>                 writel(bus_sel, common->base + SMI_BUS_SEL);
+>         return 0;
+>  }
+> --
+> 2.18.0
+> _______________________________________________
+> Linux-mediatek mailing list
+> Linux-mediatek@lists.infradead.org
+> http://lists.infradead.org/mailman/listinfo/linux-mediatek
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
