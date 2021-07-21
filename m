@@ -2,188 +2,89 @@ Return-Path: <SRS0=85So=MN=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-3.6 required=3.0 tests=BAYES_00,DKIM_INVALID,
-	DKIM_SIGNED,HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,SPF_HELO_NONE,
-	SPF_PASS autolearn=no autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-13.6 required=3.0 tests=BAYES_00,DKIM_INVALID,
+	DKIM_SIGNED,HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_CR_TRAILER,INCLUDES_PATCH,
+	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no
+	version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6C8ABC636C9
-	for <iommu@archiver.kernel.org>; Wed, 21 Jul 2021 02:13:43 +0000 (UTC)
-Received: from smtp2.osuosl.org (smtp2.osuosl.org [140.211.166.133])
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 94EF4C07E9B
+	for <iommu@archiver.kernel.org>; Wed, 21 Jul 2021 04:49:24 +0000 (UTC)
+Received: from smtp4.osuosl.org (smtp4.osuosl.org [140.211.166.137])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 214C360551
-	for <iommu@archiver.kernel.org>; Wed, 21 Jul 2021 02:13:43 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 214C360551
-Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=intel.com
+	by mail.kernel.org (Postfix) with ESMTPS id 2F8BE60FDA
+	for <iommu@archiver.kernel.org>; Wed, 21 Jul 2021 04:49:24 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 2F8BE60FDA
+Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=codeaurora.org
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by smtp2.osuosl.org (Postfix) with ESMTP id DF5D4402DD;
-	Wed, 21 Jul 2021 02:13:42 +0000 (UTC)
+	by smtp4.osuosl.org (Postfix) with ESMTP id D997A40347;
+	Wed, 21 Jul 2021 04:49:23 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from smtp2.osuosl.org ([127.0.0.1])
-	by localhost (smtp2.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id WshJTBMhP4vX; Wed, 21 Jul 2021 02:13:42 +0000 (UTC)
+Received: from smtp4.osuosl.org ([127.0.0.1])
+	by localhost (smtp4.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+	with ESMTP id dHvpKVrTJGiY; Wed, 21 Jul 2021 04:49:22 +0000 (UTC)
 Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [IPv6:2605:bc80:3010:104::8cd3:938])
-	by smtp2.osuosl.org (Postfix) with ESMTPS id AAAAF400E8;
-	Wed, 21 Jul 2021 02:13:41 +0000 (UTC)
+	by smtp4.osuosl.org (Postfix) with ESMTPS id 4904040317;
+	Wed, 21 Jul 2021 04:49:22 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 6DCB7C0010;
-	Wed, 21 Jul 2021 02:13:41 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 1CCF2C001A;
+	Wed, 21 Jul 2021 04:49:22 +0000 (UTC)
 Received: from smtp4.osuosl.org (smtp4.osuosl.org [140.211.166.137])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 7B619C000E
- for <iommu@lists.linux-foundation.org>; Wed, 21 Jul 2021 02:13:40 +0000 (UTC)
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 8BF06C000E
+ for <iommu@lists.linux-foundation.org>; Wed, 21 Jul 2021 04:49:21 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by smtp4.osuosl.org (Postfix) with ESMTP id 5F47640139
- for <iommu@lists.linux-foundation.org>; Wed, 21 Jul 2021 02:13:40 +0000 (UTC)
+ by smtp4.osuosl.org (Postfix) with UTF8SMTP id 6C39B40347
+ for <iommu@lists.linux-foundation.org>; Wed, 21 Jul 2021 04:49:21 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Authentication-Results: smtp4.osuosl.org (amavisd-new);
- dkim=pass (1024-bit key) header.d=intel.onmicrosoft.com
 Received: from smtp4.osuosl.org ([127.0.0.1])
  by localhost (smtp4.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id iv-x3deZ1kkE for <iommu@lists.linux-foundation.org>;
- Wed, 21 Jul 2021 02:13:39 +0000 (UTC)
-X-Greylist: domain auto-whitelisted by SQLgrey-1.8.0
-Received: from mga17.intel.com (mga17.intel.com [192.55.52.151])
- by smtp4.osuosl.org (Postfix) with ESMTPS id 1916640134
- for <iommu@lists.linux-foundation.org>; Wed, 21 Jul 2021 02:13:38 +0000 (UTC)
-X-IronPort-AV: E=McAfee;i="6200,9189,10051"; a="191636388"
-X-IronPort-AV: E=Sophos;i="5.84,256,1620716400"; d="scan'208";a="191636388"
-Received: from fmsmga008.fm.intel.com ([10.253.24.58])
- by fmsmga107.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384;
- 20 Jul 2021 19:13:31 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.84,256,1620716400"; d="scan'208";a="469997269"
-Received: from fmsmsx603.amr.corp.intel.com ([10.18.126.83])
- by fmsmga008.fm.intel.com with ESMTP; 20 Jul 2021 19:13:31 -0700
-Received: from fmsmsx611.amr.corp.intel.com (10.18.126.91) by
- fmsmsx603.amr.corp.intel.com (10.18.126.83) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2242.10; Tue, 20 Jul 2021 19:13:30 -0700
-Received: from fmsmsx611.amr.corp.intel.com (10.18.126.91) by
- fmsmsx611.amr.corp.intel.com (10.18.126.91) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2242.10; Tue, 20 Jul 2021 19:13:30 -0700
-Received: from fmsedg601.ED.cps.intel.com (10.1.192.135) by
- fmsmsx611.amr.corp.intel.com (10.18.126.91) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2242.10 via Frontend Transport; Tue, 20 Jul 2021 19:13:30 -0700
-Received: from NAM11-CO1-obe.outbound.protection.outlook.com (104.47.56.173)
- by edgegateway.intel.com (192.55.55.70) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.1.2242.10; Tue, 20 Jul 2021 19:13:29 -0700
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=lVstmPwKSLgQNWJE/94E8OLQ04VEt3pKh544hFTXOgwgn3dgOsTWnS3UuaIqpK1WFo3o3nZpXi8y7sTpFKamaYZ/5rJsrvXrWsqNFBHOozU8e/xadkBFOW98rniQPWtsmM1yGt2BZb9OC6/Ds9JLuI/A79fix3h+HXQXaTWdaVARKR1nU8/k4TRiJnKsrasxyaHdbZGfiQS7Ix+bE1+VmTFmX49sX4aaUAYLyM/3UyH1+afe4BkAm+rajco43jDtFz7vLPrVOwgGWipwX7hroHXwgMosqw6sL1gRjcOPejLMdsx0h5BjiyJm4JcFUCGP6gRnigF6ClPPVrf8woZrKA==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com; 
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=t2mW7NTubO0Wk3AKDvskvVTz079koITffXfpX19FoAk=;
- b=ixTrm48lpwUzaZ5t//PPH60sJrFMo1HodJOMqPrd21q5HmZPMxw9jfg+KuFDUlM8toJjAlgHw5jhNYGTVTT6n3LRlNTIujEIw43tkDuuEMPpYxDLlDRUwAmAc7FZ0IQs6wbA84XVlijUas2gcVSys6l6XVkrbEAQ3Sdl9A07V3UF7eIGSDwTollvt7Zxh47r9zdtaWYHw98xsGuBjq3dOEpDtPl9gFjiUk9aw/oVC5TLcYtk/MEt3m2hPbtsmPX++gL222ounnPk/l5m0qM1sSRQXvY1hcUzaXbMgxZwn5fjLHy/RFJVBvCkEoDQ86tLYClxagnI3ODcPL7DVYgCeg==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=intel.com; dmarc=pass action=none header.from=intel.com;
- dkim=pass header.d=intel.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=intel.onmicrosoft.com; 
- s=selector2-intel-onmicrosoft-com;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=t2mW7NTubO0Wk3AKDvskvVTz079koITffXfpX19FoAk=;
- b=wDll2Kf/BfHeslzex2QxCu+C6qSBcvH75VwiQPRB1Tm0zbtkYeBmTeYzX94l1EhshzxQuZDXn77mC53JNfea5/7djPMPWUomp3jivE9Y4eYKNH1G+cu98EKwLydifQKb+cHKuGCHkhwhIl5Wn8M5gaP5s0Oezp9CJmlZHMgKO/4=
-Received: from BN9PR11MB5433.namprd11.prod.outlook.com (2603:10b6:408:11e::13)
- by BN6PR1101MB2291.namprd11.prod.outlook.com (2603:10b6:405:53::14)
- with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4331.21; Wed, 21 Jul
- 2021 02:13:23 +0000
-Received: from BN9PR11MB5433.namprd11.prod.outlook.com
- ([fe80::fd4b:cdde:6790:134]) by BN9PR11MB5433.namprd11.prod.outlook.com
- ([fe80::fd4b:cdde:6790:134%9]) with mapi id 15.20.4331.034; Wed, 21 Jul 2021
- 02:13:23 +0000
-From: "Tian, Kevin" <kevin.tian@intel.com>
-To: Shenming Lu <lushenming@huawei.com>
-Subject: RE: [RFC v2] /dev/iommu uAPI proposal
-Thread-Topic: [RFC v2] /dev/iommu uAPI proposal
-Thread-Index: Add0lrMH87IsTsl5Rp6WN1oQU6kGMQEkayMAAADgu8AABbP/AAAAaVlQAAzVHYAAAm93gAAC/CGAAAII8oAAAftjAAABDbYAAAAstAAAAGyhgAAARNiAAAwRJHAAGeRaAADmMRBw
-Date: Wed, 21 Jul 2021 02:13:23 +0000
-Message-ID: <BN9PR11MB54332CA3CF19835A7B2742688CE39@BN9PR11MB5433.namprd11.prod.outlook.com>
-References: <a8edb2c1-9c9c-6204-072c-4f1604b7dace@huawei.com>
- <BN9PR11MB54336D6A8CAE31F951770A428C129@BN9PR11MB5433.namprd11.prod.outlook.com>
- <20210715124813.GC543781@nvidia.com> <20210715135757.GC590891@otc-nc-03>
- <20210715152325.GF543781@nvidia.com> <20210715162141.GA593686@otc-nc-03>
- <20210715171826.GG543781@nvidia.com> <20210715174836.GB593686@otc-nc-03>
- <20210715175336.GH543781@nvidia.com> <20210715180545.GD593686@otc-nc-03>
- <20210715181327.GI543781@nvidia.com>
- <BN9PR11MB543337BAEA86708470AC1E0C8C119@BN9PR11MB5433.namprd11.prod.outlook.com>
- <013e240d-f627-3565-aba1-71b2d6f514b4@huawei.com>
-In-Reply-To: <013e240d-f627-3565-aba1-71b2d6f514b4@huawei.com>
-Accept-Language: en-US
-Content-Language: en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-dlp-version: 11.5.1.3
-dlp-product: dlpe-windows
-dlp-reaction: no-action
-authentication-results: huawei.com; dkim=none (message not signed)
- header.d=none;huawei.com; dmarc=none action=none header.from=intel.com;
-x-ms-publictraffictype: Email
-x-ms-office365-filtering-correlation-id: b6560f60-da2e-4098-1857-08d94bed1e0f
-x-ms-traffictypediagnostic: BN6PR1101MB2291:
-x-ld-processed: 46c98d88-e344-4ed4-8496-4ed7712e255d,ExtAddr
-x-ms-exchange-transport-forked: True
-x-microsoft-antispam-prvs: <BN6PR1101MB22913FFA516875D53B6D24D68CE39@BN6PR1101MB2291.namprd11.prod.outlook.com>
-x-ms-oob-tlc-oobclassifiers: OLM:10000;
-x-ms-exchange-senderadcheck: 1
-x-ms-exchange-antispam-relay: 0
-x-microsoft-antispam: BCL:0;
-x-microsoft-antispam-message-info: 7VKzhULVT9hdpgQAQWj60AIIdNsXkAovXrU7p7XAVE+ixG+eVzGeQPxQ0Eq6v/jPgghcB6c0tGzaGfEtGZZqTVlUtY6qLrmYKubV0shkjFR6qFc7v/PqgA22IWoRbPEE7+YosBkw+mw60ks8V/ajEC3z5YI0w/E0/zUP8TeWy/B7xbkhvUPo5mvbVrb53UarhaX+pxEz0Pfe6GvetlMdyMPRHTysCbitaD4d9Oc0jvnzHx0fG45jQePls+/O5Ae5E9QWal72+yBf/ya/EtqksBllwwGfEBkj/4jYa5rd8D2UE97YrSxp1TeIb/z5iXwpY3JMyw5bvlymNES7vTB4Xd9r3EbO6z2Y4ULu2g9kNoajhPaVDxB8QR97bDogSPhxPMB9A8bjB0iXtS5oSliiM8J9mShamowOYnx+BbXVeXtGdbmZOMWNHY+LLLVyW7nkYlCYGboClFQ76nQ4RGiXS0TSl71X+aYOuAS0xx2flPVuQ6BHFHn4jhjJNgMnjLS0yBSv2l3Jwdm5hHxdN32ZRhh1PqC/pra6mL3gYj1fFYzCEsZkVm9mc2BRys4NMc7NlQDfC5pQLB08midEpE60P5u9yW6Ucd9IXCXjPbA2Jy9wzTRuiX2njd+tJ+/u73yu1+lRMrNRwz25dg1D0F1jToKOtj0+bh697DAI6hPilqItFjVpILTj2oYb4MBywZdgKCIejbWm2lcSqHxHGRHruA==
-x-forefront-antispam-report: CIP:255.255.255.255; CTRY:; LANG:en; SCL:1; SRV:;
- IPV:NLI; SFV:NSPM; H:BN9PR11MB5433.namprd11.prod.outlook.com; PTR:; CAT:NONE;
- SFS:(4636009)(366004)(136003)(376002)(396003)(346002)(39860400002)(33656002)(6916009)(38100700002)(54906003)(26005)(71200400001)(66946007)(66476007)(478600001)(7416002)(186003)(316002)(8676002)(52536014)(76116006)(55016002)(53546011)(83380400001)(6506007)(9686003)(66446008)(64756008)(8936002)(7696005)(4326008)(86362001)(5660300002)(66556008)(122000001)(2906002)(38070700004);
- DIR:OUT; SFP:1102; 
-x-ms-exchange-antispam-messagedata-chunkcount: 1
-x-ms-exchange-antispam-messagedata-0: =?us-ascii?Q?49012AVdhYducYe7s9uGFGgeuettVTQmyGBLjlWrz9JBwQxt664t0WlzKGKH?=
- =?us-ascii?Q?kh6poTWAjqhg5xFIOkPw4VdIt+F0UY4noe7uA0Fms3jilpZJ6zT5xt3eSSZl?=
- =?us-ascii?Q?OHV45NzGzypbrt6geSKTVmPpLrI/a98wIbm/uUw6hSOg9AHF7FmNG98+tUTg?=
- =?us-ascii?Q?7JTbfMJaG+WlVhbjvNe0bnN3gbNMztq2fs879lkmgqGd7kxX7NnVazoK+7iq?=
- =?us-ascii?Q?qeQEzx/R03hMT/ru8wheg+Q32csMjCeeKJPWLesouYB2OKtIflWHroTvChR6?=
- =?us-ascii?Q?AbUYp5Op/AmZODos4AxhWNjscTzjoj0voEPO+c3oF75H4bFdTEj8pJcGhbqN?=
- =?us-ascii?Q?+lIROw3MOxxyQKyr4jusG+R1PVAW00QWn7ykbtVUl6tJ26b63hOw1PF67+z5?=
- =?us-ascii?Q?tkyNbjCJybxH4NeMHnLUM6PuzgfEqd6W+IHz13CHskFepUTBPMnLZPhQGV3E?=
- =?us-ascii?Q?BRCEDRyo3rfxQl66JFQ8wYBS57b+tjpNsi8wVFfZCmZCirzFwEZTf3vLhPCh?=
- =?us-ascii?Q?xTCbLgSvnGCQmBsC3D+xRmS3//pN5eEASiNyjiix8H8tTQ3HjMzQGcmK34BZ?=
- =?us-ascii?Q?0+AiQOhO8TNLGv60cAkp3bJveM1+pW5Z1G8q0FpE3897MuxjY5JSnteqd/uE?=
- =?us-ascii?Q?kS6mYtxfmBQ9d8QbrUyvlNh5lEyWJcK4NafUNlLo7He1cRTDmnICgFsBZvbw?=
- =?us-ascii?Q?RjFP59miqEWVEfKgvDiP+4b0BZ9M4u6hk1+SJ7ml9Jj+WuGK10XyXlxVeNky?=
- =?us-ascii?Q?atz5A3A3YLC367jYa7F/bgI15FCO3xAuesRf3q83PK+PPMgiKYaMnRBy1dRw?=
- =?us-ascii?Q?nMyKcFCMV0kItfsd7Yddo5OqVywlFPcMYECNSB2pKhhTR1UV4h/Ebw/d6rOB?=
- =?us-ascii?Q?y3P2Sudh0hlrkMnO6h8OngKIQHY2ZW055WU+l4IThY5N2ZRA9f5yV5Wq1U3l?=
- =?us-ascii?Q?zv81DIvRdNTXOKLaXZZnf9BwE3x15fTa25tvl6ZHSzSZzjY7+OBVYvDsn75z?=
- =?us-ascii?Q?+Zl5X8Vq4fyIkTQCJiieRQovu+oBrz1ba31kL1t3D0oz3+w8ceAOdbPFQSjC?=
- =?us-ascii?Q?Sq61ZdaHXc9Tc0vH/6NAFIVIIrsuNAD6LHnvt2MXDDAOPdgTQmYy/4XAo6U3?=
- =?us-ascii?Q?TkRC4HQoBQKT3w0LdFAaja+5arFcqZzs5UKmZ1zRBImoYQCBEinb/zAXGcIH?=
- =?us-ascii?Q?Oyr/gaSZijwF1KMSWmt8n6/pefky6BcdIPkIn5IMK3kuMLTZJobshQvCHDj7?=
- =?us-ascii?Q?8iz/l7/9xWomvgeyDId8QKVU3XSG5F8cSnxZEbYZIAB0zADo7FIjxsgDuFP5?=
- =?us-ascii?Q?b4kwzGNUqFEc5PTwlalRoI28?=
+ with UTF8SMTP id WrejiH48M1C3 for <iommu@lists.linux-foundation.org>;
+ Wed, 21 Jul 2021 04:49:20 +0000 (UTC)
+X-Greylist: from auto-whitelisted by SQLgrey-1.8.0
+Received: from m43-7.mailgun.net (m43-7.mailgun.net [69.72.43.7])
+ by smtp4.osuosl.org (Postfix) with UTF8SMTPS id 71EA040317
+ for <iommu@lists.linux-foundation.org>; Wed, 21 Jul 2021 04:49:18 +0000 (UTC)
+DKIM-Signature: a=rsa-sha256; v=1; c=relaxed/relaxed; d=mg.codeaurora.org;
+ q=dns/txt; 
+ s=smtp; t=1626842960; h=Message-ID: References: In-Reply-To: Subject:
+ Cc: To: From: Date: Content-Transfer-Encoding: Content-Type:
+ MIME-Version: Sender; bh=ysfU1fmJUQ+goJDisL4cBXfJ715oyfGSSo4Tjw8BxEE=;
+ b=N80JpU3Z03nMcukQXtK/y4rKgXZRk0Uab+HB1244In8xWkYbd/gb4NRyFaj55VuCEwRYAPu/
+ xJz2bm6wX1+eTRE22Wld18jkXo1fE5YPFR8FCvZPGgtDokR7fV01bJ6AFFTfijtQyCdIkN43
+ hQ7a6RaSwTNBpcCcVXwpF6fzaiI=
+X-Mailgun-Sending-Ip: 69.72.43.7
+X-Mailgun-Sid: WyI3NDkwMCIsICJpb21tdUBsaXN0cy5saW51eC1mb3VuZGF0aW9uLm9yZyIsICJiZTllNGEiXQ==
+Received: from smtp.codeaurora.org
+ (ec2-35-166-182-171.us-west-2.compute.amazonaws.com [35.166.182.171]) by
+ smtp-out-n04.prod.us-west-2.postgun.com with SMTP id
+ 60f7a73ae31d882d181b1a22 (version=TLS1.2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256); Wed, 21 Jul 2021 04:48:58
+ GMT
+Received: by smtp.codeaurora.org (Postfix, from userid 1001)
+ id 90E65C4323A; Wed, 21 Jul 2021 04:48:58 +0000 (UTC)
+Received: from mail.codeaurora.org (localhost.localdomain [127.0.0.1])
+ (using TLSv1 with cipher ECDHE-RSA-AES256-SHA (256/256 bits))
+ (No client certificate requested)
+ (Authenticated sender: saiprakash.ranjan)
+ by smtp.codeaurora.org (Postfix) with ESMTPSA id D0DCEC433F1;
+ Wed, 21 Jul 2021 04:48:56 +0000 (UTC)
 MIME-Version: 1.0
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-AuthSource: BN9PR11MB5433.namprd11.prod.outlook.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: b6560f60-da2e-4098-1857-08d94bed1e0f
-X-MS-Exchange-CrossTenant-originalarrivaltime: 21 Jul 2021 02:13:23.2258 (UTC)
-X-MS-Exchange-CrossTenant-fromentityheader: Hosted
-X-MS-Exchange-CrossTenant-id: 46c98d88-e344-4ed4-8496-4ed7712e255d
-X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: 5/Gw5+Vx3/zU/r9E7hnkFleX4qUjSoQo/pfEVWX5QTFcVlDtrJVV1gFW6PrChjcCOgq0Hd9ZNOo/GC7pXSltmw==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: BN6PR1101MB2291
-X-OriginatorOrg: intel.com
-Cc: Jean-Philippe
- Brucker <jean-philippe@linaro.org>, "Jiang, Dave" <dave.jiang@intel.com>, "Raj,
- Ashok" <ashok.raj@intel.com>, "kvm@vger.kernel.org" <kvm@vger.kernel.org>,
- Jonathan Corbet <corbet@lwn.net>, David Woodhouse <dwmw2@infradead.org>,
- Jason Wang <jasowang@redhat.com>,
- "Alex Williamson \(alex.williamson@redhat.com\)" <alex.williamson@redhat.com>,
- "iommu@lists.linux-foundation.org" <iommu@lists.linux-foundation.org>,
- LKML <linux-kernel@vger.kernel.org>, Kirti Wankhede <kwankhede@nvidia.com>,
- "Enrico Weigelt, metux IT consult" <lkml@metux.net>, Jason
- Gunthorpe <jgg@nvidia.com>, Paolo Bonzini <pbonzini@redhat.com>,
- "wanghaibin.wang@huawei.com" <wanghaibin.wang@huawei.com>,
- David Gibson <david@gibson.dropbear.id.au>,
- Robin Murphy <robin.murphy@arm.com>, "parav@mellanox.com" <parav@mellanox.com>
+Date: Wed, 21 Jul 2021 10:18:56 +0530
+From: Sai Prakash Ranjan <saiprakash.ranjan@codeaurora.org>
+To: Will Deacon <will@kernel.org>, Robin Murphy <robin.murphy@arm.com>,
+ Joerg Roedel <joro@8bytes.org>
+Subject: Re: [PATCHv3] iommu/arm-smmu: Optimize ->tlb_flush_walk() for qcom
+ implementation
+In-Reply-To: <ee8314e4752aa777131dda22c6f4e9ef@codeaurora.org>
+References: <20210623134201.16140-1-saiprakash.ranjan@codeaurora.org>
+ <ee8314e4752aa777131dda22c6f4e9ef@codeaurora.org>
+Message-ID: <bf3f323c66eb8bd701a5f96933a08e11@codeaurora.org>
+X-Sender: saiprakash.ranjan@codeaurora.org
+User-Agent: Roundcube Webmail/1.3.9
+Cc: Doug Anderson <dianders@chromium.org>, linux-arm-msm@vger.kernel.org,
+ linux-kernel@vger.kernel.org, iommu@lists.linux-foundation.org,
+ Thierry Reding <treding@nvidia.com>, linux-arm-kernel@lists.infradead.org
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -196,54 +97,223 @@ List-Post: <mailto:iommu@lists.linux-foundation.org>
 List-Help: <mailto:iommu-request@lists.linux-foundation.org?subject=help>
 List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
  <mailto:iommu-request@lists.linux-foundation.org?subject=subscribe>
-Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset="us-ascii"; Format="flowed"
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-> From: Shenming Lu
-> Sent: Friday, July 16, 2021 8:20 PM
+Hi Robin, Will,
+
+On 2021-07-12 09:39, Sai Prakash Ranjan wrote:
+> Hi Robin,
 > 
-> On 2021/7/16 9:20, Tian, Kevin wrote:
->  > To summarize, for vIOMMU we can work with the spec owner to
-> > define a proper interface to feedback such restriction into the guest
-> > if necessary. For the kernel part, it's clear that IOMMU fd should
-> > disallow two devices attached to a single [RID] or [RID, PASID] slot
-> > in the first place.
-> >
-> > Then the next question is how to communicate such restriction
-> > to the userspace. It sounds like a group, but different in concept.
-> > An iommu group describes the minimal isolation boundary thus all
-> > devices in the group can be only assigned to a single user. But this
-> > case is opposite - the two mdevs (both support ENQCMD submission)
-> > with the same parent have problem when assigned to a single VM
-> > (in this case vPASID is vm-wide translated thus a same pPASID will be
-> > used cross both mdevs) while they instead work pretty well when
-> > assigned to different VMs (completely different vPASID spaces thus
-> > different pPASIDs).
-> >
-> > One thought is to have vfio device driver deal with it. In this proposal
-> > it is the vfio device driver to define the PASID virtualization policy and
-> > report it to userspace via VFIO_DEVICE_GET_INFO. The driver understands
-> > the restriction thus could just hide the vPASID capability when the user
-> > calls GET_INFO on the 2nd mdev in above scenario. In this way the
-> > user even doesn't need to know such restriction at all and both mdevs
-> > can be assigned to a single VM w/o any problem.
-> >
+> On 2021-06-23 19:12, Sai Prakash Ranjan wrote:
+>> Currently for iommu_unmap() of large scatter-gather list with page 
+>> size
+>> elements, the majority of time is spent in flushing of partial walks 
+>> in
+>> __arm_lpae_unmap() which is a VA based TLB invalidation invalidating
+>> page-by-page on iommus like arm-smmu-v2 (TLBIVA).
+>> 
+>> For example: to unmap a 32MB scatter-gather list with page size 
+>> elements
+>> (8192 entries), there are 16->2MB buffer unmaps based on the pgsize 
+>> (2MB
+>> for 4K granule) and each of 2MB will further result in 512 TLBIVAs 
+>> (2MB/4K)
+>> resulting in a total of 8192 TLBIVAs (512*16) for 16->2MB causing a 
+>> huge
+>> overhead.
+>> 
+>> On qcom implementation, there are several performance improvements for
+>> TLB cache invalidations in HW like wait-for-safe (for realtime clients
+>> such as camera and display) and few others to allow for cache
+>> lookups/updates when TLBI is in progress for the same context bank.
+>> So the cost of over-invalidation is less compared to the unmap latency
+>> on several usecases like camera which deals with large buffers. So,
+>> ASID based TLB invalidations (TLBIASID) can be used to invalidate the
+>> entire context for partial walk flush thereby improving the unmap
+>> latency.
+>> 
+>> Non-strict mode can use this by default for all platforms given its
+>> all about over-invalidation saving time on individual unmaps and
+>> non-deterministic generally.
+>> 
+>> For this example of 32MB scatter-gather list unmap, this change 
+>> results
+>> in just 16 ASID based TLB invalidations (TLBIASIDs) as opposed to 8192
+>> TLBIVAs thereby increasing the performance of unmaps drastically.
+>> 
+>> Test on QTI SM8150 SoC for 10 iterations of iommu_{map_sg}/unmap:
+>> (average over 10 iterations)
+>> 
+>> Before this optimization:
+>> 
+>>     size        iommu_map_sg      iommu_unmap
+>>       4K            2.067 us         1.854 us
+>>      64K            9.598 us         8.802 us
+>>       1M          148.890 us       130.718 us
+>>       2M          305.864 us        67.291 us
+>>      12M         1793.604 us       390.838 us
+>>      16M         2386.848 us       518.187 us
+>>      24M         3563.296 us       775.989 us
+>>      32M         4747.171 us      1033.364 us
+>> 
+>> After this optimization:
+>> 
+>>     size        iommu_map_sg      iommu_unmap
+>>       4K            1.723 us         1.765 us
+>>      64K            9.880 us         8.869 us
+>>       1M          155.364 us       135.223 us
+>>       2M          303.906 us         5.385 us
+>>      12M         1786.557 us        21.250 us
+>>      16M         2391.890 us        27.437 us
+>>      24M         3570.895 us        39.937 us
+>>      32M         4755.234 us        51.797 us
+>> 
+>> This is further reduced once the map/unmap_pages() support gets in 
+>> which
+>> will result in just 1 TLBIASID as compared to 16 TLBIASIDs.
+>> 
+>> Real world data also shows big difference in unmap performance as 
+>> below:
+>> 
+>> There were reports of camera frame drops because of high overhead in
+>> iommu unmap without this optimization because of frequent unmaps 
+>> issued
+>> by camera of about 100MB/s taking more than 100ms thereby causing 
+>> frame
+>> drops.
+>> 
+>> Signed-off-by: Sai Prakash Ranjan <saiprakash.ranjan@codeaurora.org>
+>> ---
+>> 
+>> Changes in v3:
+>>  * Move the logic to arm-smmu driver from io-pgtable (Robin)
+>>  * Use a new set of iommu_flush_ops->arm_smmu_s1_tlb_impl_ops and use
+>> it for qcom impl
+>> 
+>> Changes in v2:
+>>  * Add a quirk to choose tlb_flush_all in partial walk flush
+>>  * Set the quirk for QTI SoC implementation
+>> 
+>> ---
+>>  drivers/iommu/arm/arm-smmu/arm-smmu-qcom.c | 13 +++++++++++++
+>>  drivers/iommu/arm/arm-smmu/arm-smmu.c      | 17 ++++++++++++++++-
+>>  2 files changed, 29 insertions(+), 1 deletion(-)
+>> 
+>> diff --git a/drivers/iommu/arm/arm-smmu/arm-smmu-qcom.c
+>> b/drivers/iommu/arm/arm-smmu/arm-smmu-qcom.c
+>> index 7771d40176de..218c71465819 100644
+>> --- a/drivers/iommu/arm/arm-smmu/arm-smmu-qcom.c
+>> +++ b/drivers/iommu/arm/arm-smmu/arm-smmu-qcom.c
+>> @@ -10,6 +10,8 @@
+>> 
+>>  #include "arm-smmu.h"
+>> 
+>> +extern const struct iommu_flush_ops arm_smmu_s1_tlb_impl_ops;
+>> +
+>>  struct qcom_smmu {
+>>  	struct arm_smmu_device smmu;
+>>  	bool bypass_quirk;
+>> @@ -146,6 +148,8 @@ static int qcom_adreno_smmu_init_context(struct
+>> arm_smmu_domain *smmu_domain,
+>>  {
+>>  	struct adreno_smmu_priv *priv;
+>> 
+>> +	pgtbl_cfg->tlb = &arm_smmu_s1_tlb_impl_ops;
+>> +
+>>  	/* Only enable split pagetables for the GPU device (SID 0) */
+>>  	if (!qcom_adreno_smmu_is_gpu_device(dev))
+>>  		return 0;
+>> @@ -185,6 +189,14 @@ static const struct of_device_id
+>> qcom_smmu_client_of_match[] __maybe_unused = {
+>>  	{ }
+>>  };
+>> 
+>> +static int qcom_smmu_init_context(struct arm_smmu_domain 
+>> *smmu_domain,
+>> +		struct io_pgtable_cfg *pgtbl_cfg, struct device *dev)
+>> +{
+>> +	pgtbl_cfg->tlb = &arm_smmu_s1_tlb_impl_ops;
+>> +
+>> +	return 0;
+>> +}
+>> +
+>>  static int qcom_smmu_cfg_probe(struct arm_smmu_device *smmu)
+>>  {
+>>  	unsigned int last_s2cr = ARM_SMMU_GR0_S2CR(smmu->num_mapping_groups 
+>> - 1);
+>> @@ -308,6 +320,7 @@ static int qcom_smmu500_reset(struct 
+>> arm_smmu_device *smmu)
+>>  }
+>> 
+>>  static const struct arm_smmu_impl qcom_smmu_impl = {
+>> +	.init_context = qcom_smmu_init_context,
+>>  	.cfg_probe = qcom_smmu_cfg_probe,
+>>  	.def_domain_type = qcom_smmu_def_domain_type,
+>>  	.reset = qcom_smmu500_reset,
+>> diff --git a/drivers/iommu/arm/arm-smmu/arm-smmu.c
+>> b/drivers/iommu/arm/arm-smmu/arm-smmu.c
+>> index d3c6f54110a5..f3845e822565 100644
+>> --- a/drivers/iommu/arm/arm-smmu/arm-smmu.c
+>> +++ b/drivers/iommu/arm/arm-smmu/arm-smmu.c
+>> @@ -341,6 +341,12 @@ static void arm_smmu_tlb_add_page_s1(struct
+>> iommu_iotlb_gather *gather,
+>>  				  ARM_SMMU_CB_S1_TLBIVAL);
+>>  }
+>> 
+>> +static void arm_smmu_tlb_inv_walk_impl_s1(unsigned long iova, size_t 
+>> size,
+>> +				     size_t granule, void *cookie)
+>> +{
+>> +	arm_smmu_tlb_inv_context_s1(cookie);
+>> +}
+>> +
+>>  static void arm_smmu_tlb_inv_walk_s2(unsigned long iova, size_t size,
+>>  				     size_t granule, void *cookie)
+>>  {
+>> @@ -388,6 +394,12 @@ static const struct iommu_flush_ops 
+>> arm_smmu_s1_tlb_ops = {
+>>  	.tlb_add_page	= arm_smmu_tlb_add_page_s1,
+>>  };
+>> 
+>> +const struct iommu_flush_ops arm_smmu_s1_tlb_impl_ops = {
+>> +	.tlb_flush_all	= arm_smmu_tlb_inv_context_s1,
+>> +	.tlb_flush_walk	= arm_smmu_tlb_inv_walk_impl_s1,
+>> +	.tlb_add_page	= arm_smmu_tlb_add_page_s1,
+>> +};
+>> +
+>>  static const struct iommu_flush_ops arm_smmu_s2_tlb_ops_v2 = {
+>>  	.tlb_flush_all	= arm_smmu_tlb_inv_context_s2,
+>>  	.tlb_flush_walk	= arm_smmu_tlb_inv_walk_s2,
+>> @@ -703,7 +715,10 @@ static int arm_smmu_init_domain_context(struct
+>> iommu_domain *domain,
+>>  			ias = min(ias, 32UL);
+>>  			oas = min(oas, 32UL);
+>>  		}
+>> -		smmu_domain->flush_ops = &arm_smmu_s1_tlb_ops;
+>> +		if (!iommu_get_dma_strict(domain))
+>> +			smmu_domain->flush_ops = &arm_smmu_s1_tlb_impl_ops;
+>> +		else
+>> +			smmu_domain->flush_ops = &arm_smmu_s1_tlb_ops;
+>>  		break;
+>>  	case ARM_SMMU_DOMAIN_NESTED:
+>>  		/*
 > 
-> The restriction only probably happens when two mdevs are assigned to one
-> VM,
-> how could the vfio device driver get to know this info to accurately hide
-> the vPASID capability for the 2nd mdev when VFIO_DEVICE_GET_INFO?
-> There is no
-> need to do this in other cases.
+> Any review comments on this version?
 > 
 
-I suppose the driver can detect it via whether two mdevs are opened by a
-single process.
+Was hoping to get this into 5.15 in case there aren't any concerns here?
+Let me know if there are any concerns.
 
-Thanks
-Kevin
+Thanks,
+Sai
+
+-- 
+QUALCOMM INDIA, on behalf of Qualcomm Innovation Center, Inc. is a 
+member
+of Code Aurora Forum, hosted by The Linux Foundation
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
