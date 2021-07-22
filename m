@@ -7,85 +7,89 @@ X-Spam-Status: No, score=-15.0 required=3.0 tests=BAYES_00,DKIM_INVALID,
 	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,UNPARSEABLE_RELAY,URIBL_BLOCKED,
 	USER_AGENT_SANE_2 autolearn=ham autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 626B0C63793
-	for <iommu@archiver.kernel.org>; Thu, 22 Jul 2021 06:38:39 +0000 (UTC)
-Received: from smtp2.osuosl.org (smtp2.osuosl.org [140.211.166.133])
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A57F9C6377D
+	for <iommu@archiver.kernel.org>; Thu, 22 Jul 2021 06:38:50 +0000 (UTC)
+Received: from smtp3.osuosl.org (smtp3.osuosl.org [140.211.166.136])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 2901F6127C
-	for <iommu@archiver.kernel.org>; Thu, 22 Jul 2021 06:38:39 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 2901F6127C
+	by mail.kernel.org (Postfix) with ESMTPS id 60BFF6127C
+	for <iommu@archiver.kernel.org>; Thu, 22 Jul 2021 06:38:50 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 60BFF6127C
 Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=mediatek.com
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by smtp2.osuosl.org (Postfix) with ESMTP id E9F8140168;
-	Thu, 22 Jul 2021 06:38:38 +0000 (UTC)
+	by smtp3.osuosl.org (Postfix) with ESMTP id 26CDB60633;
+	Thu, 22 Jul 2021 06:38:50 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from smtp2.osuosl.org ([127.0.0.1])
-	by localhost (smtp2.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id etdgfRjIfoE9; Thu, 22 Jul 2021 06:38:38 +0000 (UTC)
+Received: from smtp3.osuosl.org ([127.0.0.1])
+	by localhost (smtp3.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+	with ESMTP id pBlANb3qx9jw; Thu, 22 Jul 2021 06:38:49 +0000 (UTC)
 Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by smtp2.osuosl.org (Postfix) with ESMTPS id D62EB400C2;
-	Thu, 22 Jul 2021 06:38:37 +0000 (UTC)
+	by smtp3.osuosl.org (Postfix) with ESMTPS id 190B960AD3;
+	Thu, 22 Jul 2021 06:38:49 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id AAF3EC001A;
-	Thu, 22 Jul 2021 06:38:37 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id DE748C001A;
+	Thu, 22 Jul 2021 06:38:48 +0000 (UTC)
 Received: from smtp1.osuosl.org (smtp1.osuosl.org [140.211.166.138])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 9F652C000E
- for <iommu@lists.linux-foundation.org>; Thu, 22 Jul 2021 06:38:36 +0000 (UTC)
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 62439C000E
+ for <iommu@lists.linux-foundation.org>; Thu, 22 Jul 2021 06:38:47 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by smtp1.osuosl.org (Postfix) with ESMTP id 8E747828F8
- for <iommu@lists.linux-foundation.org>; Thu, 22 Jul 2021 06:38:36 +0000 (UTC)
+ by smtp1.osuosl.org (Postfix) with ESMTP id 522108294A
+ for <iommu@lists.linux-foundation.org>; Thu, 22 Jul 2021 06:38:47 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
 Authentication-Results: smtp1.osuosl.org (amavisd-new);
  dkim=pass (1024-bit key) header.d=mediatek.com
 Received: from smtp1.osuosl.org ([127.0.0.1])
  by localhost (smtp1.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id GIJtza0ITSwS for <iommu@lists.linux-foundation.org>;
- Thu, 22 Jul 2021 06:38:34 +0000 (UTC)
-X-Greylist: from auto-whitelisted by SQLgrey-1.8.0
-Received: from mailgw02.mediatek.com (unknown [210.61.82.184])
- by smtp1.osuosl.org (Postfix) with ESMTPS id 9F37F82670
- for <iommu@lists.linux-foundation.org>; Thu, 22 Jul 2021 06:38:33 +0000 (UTC)
-X-UUID: ea3b0ad1d7ae491e9e3dbd38de65456e-20210722
+ with ESMTP id YNYDKiKJY5Yh for <iommu@lists.linux-foundation.org>;
+ Thu, 22 Jul 2021 06:38:46 +0000 (UTC)
+X-Greylist: domain auto-whitelisted by SQLgrey-1.8.0
+Received: from mailgw01.mediatek.com (unknown [1.203.163.78])
+ by smtp1.osuosl.org (Postfix) with ESMTP id 0B4AA828F8
+ for <iommu@lists.linux-foundation.org>; Thu, 22 Jul 2021 06:38:44 +0000 (UTC)
+X-UUID: 9c7c97a1869a4b10bdc9567cbf05ab5a-20210722
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=mediatek.com;
  s=dk; 
  h=Content-Transfer-Encoding:MIME-Version:Content-Type:References:In-Reply-To:Date:CC:To:From:Subject:Message-ID;
- bh=E0/21i/rjqYJSvlRFf3hf7vSNWScyQPpeAG8uBlbP3o=; 
- b=AzDdA2JmY3JXcQjf4KRlTgeOVef8J0NRQ3sCNkds955AhMpRPyKxdWAhlLsv2RR1Soao421TCNDa6m/3HxVde2JN8NhwO/j2H6bjU8xgSbLame2sHJLVCQlfJ90zMzYmDqDsl4y9RRKw383zRBumVdSWM6JEaeqUSsvGykRM+To=;
-X-UUID: ea3b0ad1d7ae491e9e3dbd38de65456e-20210722
-Received: from mtkcas10.mediatek.inc [(172.21.101.39)] by mailgw02.mediatek.com
+ bh=W5iu4yn7qNOz8O4L5niY76z7dUrVPoTbT38cQYHyaGE=; 
+ b=BsWI1Hd7SbxRaMAXdov9QsxTyPV6BzFs5VDH04IK0r9b4xYMEQpeb/vN2AmR5j7uxy9TYCKZ9jPCOSnt9uOhcZ98l2E/7n7c5YdAC7OU6A02CyIePAqWmBIbSwimgy3uay0fgp8cINwZA91z3s2kul1rkciS2RWIi7VYlkcitB8=;
+X-UUID: 9c7c97a1869a4b10bdc9567cbf05ab5a-20210722
+Received: from mtkmrs31.mediatek.inc [(172.27.4.253)] by mailgw01.mediatek.com
  (envelope-from <yong.wu@mediatek.com>)
- (Generic MTA with TLSv1.2 ECDHE-RSA-AES256-SHA384 256/256)
- with ESMTP id 715036884; Thu, 22 Jul 2021 14:38:25 +0800
-Received: from MTKCAS36.mediatek.inc (172.27.4.186) by mtkmbs07n1.mediatek.inc
- (172.21.101.16) with Microsoft SMTP Server (TLS) id 15.0.1497.2;
- Thu, 22 Jul 2021 14:38:24 +0800
+ (mailgw01.mediatek.com ESMTP with TLSv1.2 ECDHE-RSA-AES256-SHA384 256/256)
+ with ESMTP id 1951434667; Thu, 22 Jul 2021 14:38:40 +0800
+Received: from MTKCAS36.mediatek.inc (172.27.4.186) by MTKMBS31N1.mediatek.inc
+ (172.27.4.69) with Microsoft SMTP Server (TLS) id 15.0.1497.2;
+ Thu, 22 Jul 2021 14:38:34 +0800
 Received: from [10.17.3.153] (10.17.3.153) by MTKCAS36.mediatek.inc
  (172.27.4.170) with Microsoft SMTP Server id 15.0.1497.2 via Frontend
- Transport; Thu, 22 Jul 2021 14:38:22 +0800
-Message-ID: <1626935902.27875.7.camel@mhfsdcap03>
-Subject: Re: [PATCH v2 11/11] memory: mtk-smi: mt8195: Add initial setting
- for smi-larb
+ Transport; Thu, 22 Jul 2021 14:38:33 +0800
+Message-ID: <1626935913.27875.8.camel@mhfsdcap03>
+Subject: Re: [PATCH v2 10/11] memory: mtk-smi: mt8195: Add initial setting
+ for smi-common
 From: Yong Wu <yong.wu@mediatek.com>
 To: Ikjoon Jang <ikjn@chromium.org>
-Date: Thu, 22 Jul 2021 14:38:22 +0800
-In-Reply-To: <CAATdQgAfo9oNR5=ogEottHajODngi1ahvKUnEOUczzjreYpPcQ@mail.gmail.com>
+Date: Thu, 22 Jul 2021 14:38:33 +0800
+In-Reply-To: <CAATdQgDOGW7nudDoR5UPbax+d3e9omhPstrNd_FCPLd+96ZC9w@mail.gmail.com>
 References: <20210715121209.31024-1-yong.wu@mediatek.com>
- <20210715121209.31024-12-yong.wu@mediatek.com>
- <CAATdQgAfo9oNR5=ogEottHajODngi1ahvKUnEOUczzjreYpPcQ@mail.gmail.com>
+ <20210715121209.31024-11-yong.wu@mediatek.com>
+ <CAATdQgDOGW7nudDoR5UPbax+d3e9omhPstrNd_FCPLd+96ZC9w@mail.gmail.com>
 X-Mailer: Evolution 3.10.4-0ubuntu2 
 MIME-Version: 1.0
+X-TM-SNTS-SMTP: 09C7E65E6584ADFA42B61DD670F9B1049F10F210E285069CFBA433B0E7C4F5862000:8
 X-MTK: N
-Cc: "open list:OPEN FIRMWARE AND FLATTENED DEVICE TREE BINDINGS"
- <devicetree@vger.kernel.org>, srv_heupstream <srv_heupstream@mediatek.com>,
+Cc: youlin.pei@mediatek.com,
+ "open list:OPEN FIRMWARE AND FLATTENED DEVICE TREE BINDINGS"
+ <devicetree@vger.kernel.org>, yi.kuo@mediatek.com,
+ srv_heupstream <srv_heupstream@mediatek.com>,
  Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>,
  Robin Murphy <robin.murphy@arm.com>, open list <linux-kernel@vger.kernel.org>,
  Krzysztof Kozlowski <krzk@kernel.org>, iommu@lists.linux-foundation.org,
  Rob Herring <robh+dt@kernel.org>,
  "moderated list:ARM/Mediatek SoC support" <linux-mediatek@lists.infradead.org>,
- Matthias Brugger <matthias.bgg@gmail.com>, Will Deacon <will@kernel.org>,
- "moderated list:ARM/Mediatek SoC support"
+ Matthias Brugger <matthias.bgg@gmail.com>, anthony.huang@mediatek.com,
+ ming-fan.chen@mediatek.com, anan.sun@mediatek.com,
+ Will Deacon <will@kernel.org>, "moderated list:ARM/Mediatek SoC support"
  <linux-arm-kernel@lists.infradead.org>
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
@@ -104,58 +108,69 @@ Content-Transfer-Encoding: 7bit
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-On Wed, 2021-07-21 at 21:40 +0800, Ikjoon Jang wrote:
-> On Thu, Jul 15, 2021 at 8:23 PM Yong Wu <yong.wu@mediatek.com> wrote:
+On Wed, 2021-07-21 at 20:54 +0800, Ikjoon Jang wrote:
+> On Thu, Jul 15, 2021 at 8:25 PM Yong Wu <yong.wu@mediatek.com> wrote:
 > >
-> > To improve the performance, We add some initial setting for smi larbs.
-> > there are two part:
-> > 1), Each port has the special ostd(outstanding) value in each larb.
-> > 2), Two general setting for each larb.
-> >
-> > In some SoC, this setting maybe changed dynamically for some special case
-> > like 4K, and this initial setting is enough in mt8195.
+> > To improve the performance, add initial setting for smi-common.
+> > some register use some fix setting(suggested from DE).
 > >
 > > Signed-off-by: Yong Wu <yong.wu@mediatek.com>
 > > ---
+> >  drivers/memory/mtk-smi.c | 42 ++++++++++++++++++++++++++++++++++++----
+> >  1 file changed, 38 insertions(+), 4 deletions(-)
+
 [...]
-> >  struct mtk_smi {
-> > @@ -213,12 +228,22 @@ static void mtk_smi_larb_config_port_mt8173(struct device *dev)
-> >  static void mtk_smi_larb_config_port_gen2_general(struct device *dev)
+
+> >  static const struct mtk_smi_common_plat mtk_smi_sub_common_mt8195 = {
+> > @@ -530,15 +558,21 @@ static int mtk_smi_common_remove(struct platform_device *pdev)
+> >  static int __maybe_unused mtk_smi_common_resume(struct device *dev)
 > >  {
-> >         struct mtk_smi_larb *larb = dev_get_drvdata(dev);
-> > -       u32 reg;
-> > +       u32 reg, flags_general = larb->larb_gen->flags_general;
-> > +       const u8 *larbostd = larb->larb_gen->ostd[larb->larbid];
-> >         int i;
+> >         struct mtk_smi *common = dev_get_drvdata(dev);
+> > -       u32 bus_sel = common->plat->bus_sel;
+> > -       int ret;
+> > +       const struct mtk_smi_reg_pair *init = common->plat->init;
+> > +       u32 bus_sel = common->plat->bus_sel; /* default is 0 */
+> > +       int ret, i;
 > >
-> >         if (BIT(larb->larbid) & larb->larb_gen->larb_direct_to_common_mask)
-> >                 return;
+> >         ret = clk_bulk_prepare_enable(common->clk_num, common->clks);
+> >         if (ret)
+> >                 return ret;
 > >
-> > +       if (MTK_SMI_CAPS(flags_general, MTK_SMI_FLAG_LARB_THRT_EN))
-> > +               writel_relaxed(SMI_LARB_THRT_EN, larb->base + SMI_LARB_CMD_THRT_CON);
+> > -       if (common->plat->type == MTK_SMI_GEN2 && bus_sel)
+> > -               writel(bus_sel, common->base + SMI_BUS_SEL);
+> > +       if (common->plat->type != MTK_SMI_GEN2)
+> > +               return 0;
 > > +
-> > +       if (MTK_SMI_CAPS(flags_general, MTK_SMI_FLAG_LARB_SW_FLAG))
-> > +               writel_relaxed(SMI_LARB_SW_FLAG_1, larb->base + SMI_LARB_SW_FLAG);
-> > +
-> > +       for (i = 0; i < SMI_LARB_PORT_NR_MAX && larbostd && !!larbostd[i]; i++)
-> > +               writel_relaxed(larbostd[i], larb->base + SMI_LARB_OSTDL_PORTx(i));
+> > +       for (i = 0; i < SMI_COMMON_INIT_REGS_NR && init && init[i].offset; i++)
+> > +               writel_relaxed(init[i].value, common->base + init[i].offset);
 > 
-> All other mtk platform's larbs have the same format for SMI_LARB_OSTDL_PORTx()
-> registers at the same offset? or is this unique feature for mt8195?
+> I'm not sure this array for register settings could be applied to other
+> platforms in future or only applied to mt8195. If it's only for mt8195,
 
-All the other Platform's larbs have the same format at the same offset.
+The other platforms have the nearly same setting.
 
+> I think taking callback function instead of mtk_smi_reg_pair[] as init member
+> would be better:
+> 
+> if (common->plat->init)
+>     common->plat->init(...);
 > 
 > > +
-> >         for_each_set_bit(i, (unsigned long *)larb->mmu, 32) {
-> >                 reg = readl_relaxed(larb->base + SMI_LARB_NONSEC_CON(i));
-> >                 reg |= F_MMU_EN;
-> > @@ -227,6 +252,51 @@ static void mtk_smi_larb_config_port_gen2_general(struct device *dev)
-> >         }
+> > +       writel(bus_sel, common->base + SMI_BUS_SEL);
+> >         return 0;
 > >  }
 > >
-
-[...]
+> > --
+> > 2.18.0
+> > _______________________________________________
+> > Linux-mediatek mailing list
+> > Linux-mediatek@lists.infradead.org
+> > http://lists.infradead.org/mailman/listinfo/linux-mediatek
+> 
+> _______________________________________________
+> Linux-mediatek mailing list
+> Linux-mediatek@lists.infradead.org
+> http://lists.infradead.org/mailman/listinfo/linux-mediatek
 
 _______________________________________________
 iommu mailing list
