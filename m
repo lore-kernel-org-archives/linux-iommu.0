@@ -2,92 +2,67 @@ Return-Path: <SRS0=8SnF=MO=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-14.0 required=3.0 tests=BAYES_00,INCLUDES_CR_TRAILER,
-	INCLUDES_PATCH,MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED
+X-Spam-Status: No, score=-16.8 required=3.0 tests=BAYES_00,
+	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_CR_TRAILER,INCLUDES_PATCH,
+	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_GIT
 	autolearn=unavailable autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 07A68C6377C
-	for <iommu@archiver.kernel.org>; Thu, 22 Jul 2021 02:53:09 +0000 (UTC)
-Received: from smtp2.osuosl.org (smtp2.osuosl.org [140.211.166.133])
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9EAC1C636C8
+	for <iommu@archiver.kernel.org>; Thu, 22 Jul 2021 04:31:13 +0000 (UTC)
+Received: from smtp4.osuosl.org (smtp4.osuosl.org [140.211.166.137])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id AE6786127C
-	for <iommu@archiver.kernel.org>; Thu, 22 Jul 2021 02:53:08 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org AE6786127C
-Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=kernel.org
+	by mail.kernel.org (Postfix) with ESMTPS id 184D661264
+	for <iommu@archiver.kernel.org>; Thu, 22 Jul 2021 04:31:13 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 184D661264
+Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=intel.com
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by smtp2.osuosl.org (Postfix) with ESMTP id 6A2FF400A8;
-	Thu, 22 Jul 2021 02:53:08 +0000 (UTC)
+	by smtp4.osuosl.org (Postfix) with ESMTP id BFC9A4031E;
+	Thu, 22 Jul 2021 04:31:12 +0000 (UTC)
+X-Virus-Scanned: amavisd-new at osuosl.org
+Received: from smtp4.osuosl.org ([127.0.0.1])
+	by localhost (smtp4.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+	with ESMTP id iBYhba71eicV; Thu, 22 Jul 2021 04:31:11 +0000 (UTC)
+Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
+	by smtp4.osuosl.org (Postfix) with ESMTPS id 43E8C402D8;
+	Thu, 22 Jul 2021 04:31:11 +0000 (UTC)
+Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 128F5C0010;
+	Thu, 22 Jul 2021 04:31:11 +0000 (UTC)
+Received: from smtp2.osuosl.org (smtp2.osuosl.org [IPv6:2605:bc80:3010::133])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 7E7ADC000E
+ for <iommu@lists.linux-foundation.org>; Thu, 22 Jul 2021 04:31:09 +0000 (UTC)
+Received: from localhost (localhost [127.0.0.1])
+ by smtp2.osuosl.org (Postfix) with ESMTP id 63C3D40134
+ for <iommu@lists.linux-foundation.org>; Thu, 22 Jul 2021 04:31:09 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
 Received: from smtp2.osuosl.org ([127.0.0.1])
-	by localhost (smtp2.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id BBVYLFyxf_Y8; Thu, 22 Jul 2021 02:53:07 +0000 (UTC)
-Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by smtp2.osuosl.org (Postfix) with ESMTPS id 61F394010D;
-	Thu, 22 Jul 2021 02:53:07 +0000 (UTC)
-Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 46DE1C0010;
-	Thu, 22 Jul 2021 02:53:07 +0000 (UTC)
-Received: from smtp1.osuosl.org (smtp1.osuosl.org [IPv6:2605:bc80:3010::138])
- by lists.linuxfoundation.org (Postfix) with ESMTP id EC50FC000E
- for <iommu@lists.linux-foundation.org>; Thu, 22 Jul 2021 02:53:05 +0000 (UTC)
-Received: from localhost (localhost [127.0.0.1])
- by smtp1.osuosl.org (Postfix) with ESMTP id E78CD82786
- for <iommu@lists.linux-foundation.org>; Thu, 22 Jul 2021 02:53:05 +0000 (UTC)
-X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from smtp1.osuosl.org ([127.0.0.1])
- by localhost (smtp1.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id bh7NmqvXvugm for <iommu@lists.linux-foundation.org>;
- Thu, 22 Jul 2021 02:53:05 +0000 (UTC)
-X-Greylist: whitelisted by SQLgrey-1.8.0
-Received: from mail-il1-f180.google.com (mail-il1-f180.google.com
- [209.85.166.180])
- by smtp1.osuosl.org (Postfix) with ESMTPS id 5B1B4825BF
- for <iommu@lists.linux-foundation.org>; Thu, 22 Jul 2021 02:53:05 +0000 (UTC)
-Received: by mail-il1-f180.google.com with SMTP id a7so4111214iln.6
- for <iommu@lists.linux-foundation.org>; Wed, 21 Jul 2021 19:53:05 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
- d=1e100.net; s=20161025;
- h=x-gm-message-state:date:from:to:cc:subject:message-id:references
- :mime-version:content-disposition:in-reply-to;
- bh=82O9pxHs2phuaInzl9cox8me6UL28Nm2JehOPgfRTdU=;
- b=tY2oQcVzZMMurlyUVpS7kzyAPTkQOoJI4uh+yEDGFc5sBAafeuIKXi7mmuYwKP8Pzc
- YMIjfmDoAp60YUaNTGvLgbCwHhwsTiJfZxLEvHQss5Aikewd7FZ0N7P5XCs4abOiNORm
- 9JAflxySmMTJ0JEHG97WiJs4fdjfEoD+3OuHeAOHLpCv7kZFVrbWe3VJPGju8L6HCLpl
- 6ZzSrlqinp0+GD5UuttKf9R6smwV4xnI3S9d1TVV/mNyOPncie6wqwnU4qGIEBcR+vUP
- 5BUw5ZOi3KndWE8iweTVy//43D2J5Sf3rJtLiqS5oNjsh5oMUYCjrf1of7D1PZGGVT9y
- yZgA==
-X-Gm-Message-State: AOAM533fI6um9u6CpJha2kRm8gDx1EQB5Z3HW/CoSperfxzGtFZjBlxA
- gwDaReTO84B9lGyFJ0IdUA==
-X-Google-Smtp-Source: ABdhPJyn11/pSzoHtQk9aFg6OthLDc/3e1S3UHr3amy1RP5ecpQGjtAMSWqcQHWLLIfasZwcFAYIZQ==
-X-Received: by 2002:a92:c805:: with SMTP id v5mr24196570iln.293.1626922384270; 
- Wed, 21 Jul 2021 19:53:04 -0700 (PDT)
-Received: from robh.at.kernel.org ([64.188.179.248])
- by smtp.gmail.com with ESMTPSA id i5sm14559011ilc.16.2021.07.21.19.53.02
- (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
- Wed, 21 Jul 2021 19:53:03 -0700 (PDT)
-Received: (nullmailer pid 3205958 invoked by uid 1000);
- Thu, 22 Jul 2021 02:53:01 -0000
-Date: Wed, 21 Jul 2021 20:53:01 -0600
-From: Rob Herring <robh@kernel.org>
-To: Yong Wu <yong.wu@mediatek.com>
-Subject: Re: [PATCH v2 02/11] dt-bindings: memory: mediatek: Add mt8195 smi
- sub common
-Message-ID: <20210722025301.GA3204448@robh.at.kernel.org>
-References: <20210715121209.31024-1-yong.wu@mediatek.com>
- <20210715121209.31024-3-yong.wu@mediatek.com>
-MIME-Version: 1.0
-Content-Disposition: inline
-In-Reply-To: <20210715121209.31024-3-yong.wu@mediatek.com>
-Cc: youlin.pei@mediatek.com, devicetree@vger.kernel.org, yi.kuo@mediatek.com,
- srv_heupstream@mediatek.com,
- Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>,
- Will Deacon <will@kernel.org>, linux-kernel@vger.kernel.org,
- Krzysztof Kozlowski <krzk@kernel.org>, iommu@lists.linux-foundation.org,
- linux-mediatek@lists.infradead.org, Matthias Brugger <matthias.bgg@gmail.com>,
- anthony.huang@mediatek.com, ming-fan.chen@mediatek.com, anan.sun@mediatek.com,
- Robin Murphy <robin.murphy@arm.com>, linux-arm-kernel@lists.infradead.org
+ by localhost (smtp2.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+ with ESMTP id Jb6ctivg4eYd for <iommu@lists.linux-foundation.org>;
+ Thu, 22 Jul 2021 04:31:05 +0000 (UTC)
+X-Greylist: domain auto-whitelisted by SQLgrey-1.8.0
+Received: from mga05.intel.com (mga05.intel.com [192.55.52.43])
+ by smtp2.osuosl.org (Postfix) with ESMTPS id 5A31B400A8
+ for <iommu@lists.linux-foundation.org>; Thu, 22 Jul 2021 04:31:04 +0000 (UTC)
+X-IronPort-AV: E=McAfee;i="6200,9189,10052"; a="297126020"
+X-IronPort-AV: E=Sophos;i="5.84,260,1620716400"; d="scan'208";a="297126020"
+Received: from orsmga007.jf.intel.com ([10.7.209.58])
+ by fmsmga105.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384;
+ 21 Jul 2021 21:30:58 -0700
+X-IronPort-AV: E=Sophos;i="5.84,259,1620716400"; d="scan'208";a="454612687"
+Received: from km-skylake-client-platform.sc.intel.com ([172.25.103.115])
+ by orsmga007-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384;
+ 21 Jul 2021 21:30:57 -0700
+From: Kyung Min Park <kyung.min.park@intel.com>
+To: iommu@lists.linux-foundation.org,
+	linux-kernel@vger.kernel.org
+Subject: [PATCH v2] iommu/vt-d: Dump DMAR translation structure
+Date: Wed, 21 Jul 2021 21:24:53 -0700
+Message-Id: <20210722042453.10579-1-kyung.min.park@intel.com>
+X-Mailer: git-send-email 2.17.1
+Cc: ravi.v.shankar@intel.com, ashok.raj@intel.com, dwmw2@infradead.org,
+ Kyung Min Park <kyung.min.park@intel.com>, will@kernel.org
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -100,106 +75,209 @@ List-Post: <mailto:iommu@lists.linux-foundation.org>
 List-Help: <mailto:iommu-request@lists.linux-foundation.org?subject=help>
 List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
  <mailto:iommu-request@lists.linux-foundation.org?subject=subscribe>
+MIME-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-On Thu, Jul 15, 2021 at 08:12:00PM +0800, Yong Wu wrote:
-> Add the binding for smi-sub-common. The SMI block diagram like this:
-> 
->         IOMMU
->          |  |
->       smi-common
->   ------------------
->   |      ....      |
->  larb0           larb7   <-max is 8
-> 
-> The smi-common connects with smi-larb and IOMMU. The maximum larbs number
-> that connects with a smi-common is 8. If the engines number is over 8,
-> sometimes we use a smi-sub-common which is nearly same with smi-common.
-> It supports up to 8 input and 1 output(smi-common has 2 output)
-> 
-> Something like:
-> 
->         IOMMU
->          |  |
->       smi-common
->   ---------------------
->   |      |          ...
-> larb0  sub-common   ...   <-max is 8
->       -----------
->        |    |    ...   <-max is 8 too.
->      larb2 larb5
-> 
-> We don't need extra SW setting for smi-sub-common, only the sub-common has
-> special clocks need to enable when the engines access dram.
-> 
-> If it is sub-common, it should have a "mediatek,smi" phandle to point to
-> its smi-common. meanwhile, the sub-common only has one gals clock.
-> 
-> Signed-off-by: Yong Wu <yong.wu@mediatek.com>
-> ---
->  .../mediatek,smi-common.yaml                  | 25 +++++++++++++++++++
->  1 file changed, 25 insertions(+)
-> 
-> diff --git a/Documentation/devicetree/bindings/memory-controllers/mediatek,smi-common.yaml b/Documentation/devicetree/bindings/memory-controllers/mediatek,smi-common.yaml
-> index 602592b6c3f5..f79d99ebc440 100644
-> --- a/Documentation/devicetree/bindings/memory-controllers/mediatek,smi-common.yaml
-> +++ b/Documentation/devicetree/bindings/memory-controllers/mediatek,smi-common.yaml
-> @@ -38,6 +38,7 @@ properties:
->            - mediatek,mt8192-smi-common
->            - mediatek,mt8195-smi-common-vdo
->            - mediatek,mt8195-smi-common-vpp
-> +          - mediatek,mt8195-smi-sub-common
->  
->        - description: for mt7623
->          items:
-> @@ -67,6 +68,10 @@ properties:
->      minItems: 2
->      maxItems: 4
->  
-> +  mediatek,smi:
-> +    $ref: /schemas/types.yaml#/definitions/phandle-array
+When the dmar translation fault happens, the kernel prints a single line
+fault reason with corresponding hexadecimal code defined in the Intel VT-d
+specification.
 
-If only a phandle, then s/phandle-array/phandle/
+Currently, when user wants to debug the translation fault in detail,
+debugfs is used for dumping the dmar_translation_struct, which is not
+available when the kernel failed to boot.
 
-> +    description: a phandle to the smi-common node above. Only for sub-common.
-> +
->  required:
->    - compatible
->    - reg
-> @@ -93,6 +98,26 @@ allOf:
->              - const: smi
->              - const: async
->  
-> +  - if:  # only for sub common
-> +      properties:
-> +        compatible:
-> +          contains:
-> +            enum:
-> +              - mediatek,mt8195-smi-sub-common
-> +    then:
-> +      required:
-> +        - mediatek,smi
-> +      properties:
-> +        clock:
-> +          items:
-> +            minItems: 3
-> +            maxItems: 3
-> +        clock-names:
-> +          items:
-> +            - const: apb
-> +            - const: smi
-> +            - const: gals0
-> +
->    - if:  # for gen2 HW that have gals
->        properties:
->          compatible:
-> -- 
-> 2.18.0
-> 
-> 
+Dump the DMAR translation structure, pagewalk the IO page table and print
+the page table entry when the fault happens.
+
+Signed-off-by: Kyung Min Park <kyung.min.park@intel.com>
+---
+ChangeLog:
+- Change from v1 to v2:
+  1. fix compilation issue with different IOMMU config option.
+---
+ drivers/iommu/intel/dmar.c  |   8 ++-
+ drivers/iommu/intel/iommu.c | 107 ++++++++++++++++++++++++++++++++++++
+ include/linux/dmar.h        |   4 ++
+ 3 files changed, 116 insertions(+), 3 deletions(-)
+
+diff --git a/drivers/iommu/intel/dmar.c b/drivers/iommu/intel/dmar.c
+index d66f79acd14d..c74d97c5ec21 100644
+--- a/drivers/iommu/intel/dmar.c
++++ b/drivers/iommu/intel/dmar.c
+@@ -1948,19 +1948,21 @@ static int dmar_fault_do_one(struct intel_iommu *iommu, int type,
+ 		       source_id >> 8, PCI_SLOT(source_id & 0xFF),
+ 		       PCI_FUNC(source_id & 0xFF), addr >> 48,
+ 		       fault_reason, reason);
+-	else if (pasid == INVALID_IOASID)
++	else if (pasid == INVALID_IOASID) {
+ 		pr_err("[%s NO_PASID] Request device [0x%02x:0x%02x.%d] fault addr 0x%llx [fault reason 0x%02x] %s\n",
+ 		       type ? "DMA Read" : "DMA Write",
+ 		       source_id >> 8, PCI_SLOT(source_id & 0xFF),
+ 		       PCI_FUNC(source_id & 0xFF), addr,
+ 		       fault_reason, reason);
+-	else
++		dmar_fault_dump_ptes(iommu, source_id, addr, pasid);
++	} else {
+ 		pr_err("[%s PASID 0x%x] Request device [0x%02x:0x%02x.%d] fault addr 0x%llx [fault reason 0x%02x] %s\n",
+ 		       type ? "DMA Read" : "DMA Write", pasid,
+ 		       source_id >> 8, PCI_SLOT(source_id & 0xFF),
+ 		       PCI_FUNC(source_id & 0xFF), addr,
+ 		       fault_reason, reason);
+-
++		dmar_fault_dump_ptes(iommu, source_id, addr, pasid);
++	}
+ 	return 0;
+ }
+ 
+diff --git a/drivers/iommu/intel/iommu.c b/drivers/iommu/intel/iommu.c
+index a6a07d985709..859ec0832429 100644
+--- a/drivers/iommu/intel/iommu.c
++++ b/drivers/iommu/intel/iommu.c
+@@ -173,6 +173,8 @@ static struct intel_iommu **g_iommus;
+ 
+ static void __init check_tylersburg_isoch(void);
+ static int rwbf_quirk;
++static inline struct device_domain_info *
++dmar_search_domain_by_dev_info(int segment, int bus, int devfn);
+ 
+ /*
+  * set to 1 to panic kernel if can't successfully enable VT-d
+@@ -998,6 +1000,111 @@ static void free_context_table(struct intel_iommu *iommu)
+ 	spin_unlock_irqrestore(&iommu->lock, flags);
+ }
+ 
++static void pgtable_walk(struct intel_iommu *iommu, unsigned long pfn, u8 bus, u8 devfn)
++{
++	struct dma_pte *parent, *pte = NULL;
++	struct device_domain_info *info;
++	struct dmar_domain *domain = NULL;
++	int offset, level;
++
++	info = dmar_search_domain_by_dev_info(iommu->segment, bus, devfn);
++	if (!info) {
++		pr_info("no iommu info for this device.\n");
++		return;
++	}
++
++	domain = info->domain;
++	if (!domain) {
++		pr_info("iommu domain does not exist for this device.\n");
++		return;
++	}
++	level = agaw_to_level(domain->agaw);
++	parent = domain->pgd;
++	if (!parent) {
++		pr_info("NULL pointer of page table entry.\n");
++		return;
++	}
++
++	while (1) {
++		offset = pfn_level_offset(pfn, level);
++		pte = &parent[offset];
++		if (!pte || (dma_pte_superpage(pte) || !dma_pte_present(pte))) {
++			pr_info("pte not present at level %d", level);
++			break;
++		}
++		pr_info("pte level: %d, pte value: %llx\n", level, pte->val);
++
++		if (level == 1)
++			break;
++		parent = phys_to_virt(dma_pte_addr(pte));
++		level--;
++	}
++}
++
++void dmar_fault_dump_ptes(struct intel_iommu *iommu, u16 source_id, unsigned long long addr,
++			  u32 pasid)
++{
++	struct pasid_dir_entry *dir, *pde;
++	struct pasid_entry *entries, *pte;
++	struct context_entry *ctx_entry;
++	struct root_entry *rt_entry;
++	u8 devfn = source_id & 0xff;
++	u8 bus = source_id >> 8;
++	int i, dir_index, index;
++
++	/* root entry dump */
++	rt_entry = &iommu->root_entry[bus];
++	if (!rt_entry) {
++		pr_info("root table entry is not present\n");
++		return;
++	}
++	if (!sm_supported(iommu))
++		pr_info("%s, root_entry[63:0]: %llx", iommu->name, rt_entry->lo);
++	else
++		pr_info("%s, root_entry[127:0]: %llx, %llx\n", iommu->name,
++			rt_entry->hi, rt_entry->lo);
++
++	/* context entry dump */
++	ctx_entry = iommu_context_addr(iommu, bus, devfn, 0);
++	if (!ctx_entry) {
++		pr_info("context table entry is not present\n");
++		return;
++	}
++	pr_info("%s, ctx_entry[127:0]: %llx, %llx\n", iommu->name, ctx_entry->hi, ctx_entry->lo);
++
++	/* legacy mode does not require PASID entries */
++	if (!sm_supported(iommu))
++		goto pgtable_walk;
++
++	/* get the pointer to pasid directory entry */
++	dir = phys_to_virt(ctx_entry->lo & VTD_PAGE_MASK);
++	if (!dir) {
++		pr_info("pasid directory entry is not present\n");
++		return;
++	}
++	/* For request-without-pasid, get the pasid from context entry */
++	if (intel_iommu_sm && pasid == INVALID_IOASID)
++		pasid = PASID_RID2PASID;
++
++	dir_index = pasid >> PASID_PDE_SHIFT;
++	pde = &dir[dir_index];
++	pr_info("%s, pasid_dir_entry: %llx\n", iommu->name, pde->val);
++
++	/* get the pointer to the pasid table entry */
++	entries = get_pasid_table_from_pde(pde);
++	if (!entries) {
++		pr_info("pasid table entry is not present\n");
++		return;
++	}
++	index = pasid & PASID_PTE_MASK;
++	pte = &entries[index];
++	for (i = 0; i < ARRAY_SIZE(pte->val); i++)
++		pr_info("%s, pasid_table_entry[%d]: %llx\n", iommu->name, i, pte->val[i]);
++
++pgtable_walk:
++	pgtable_walk(iommu, addr >> VTD_PAGE_SHIFT, bus, devfn);
++}
++
+ static struct dma_pte *pfn_to_dma_pte(struct dmar_domain *domain,
+ 				      unsigned long pfn, int *target_level)
+ {
+diff --git a/include/linux/dmar.h b/include/linux/dmar.h
+index e04436a7ff27..cdcb1b6d85b9 100644
+--- a/include/linux/dmar.h
++++ b/include/linux/dmar.h
+@@ -142,9 +142,13 @@ extern int dmar_parse_one_satc(struct acpi_dmar_header *hdr, void *arg);
+ extern int dmar_release_one_atsr(struct acpi_dmar_header *hdr, void *arg);
+ extern int dmar_iommu_hotplug(struct dmar_drhd_unit *dmaru, bool insert);
+ extern int dmar_iommu_notify_scope_dev(struct dmar_pci_notify_info *info);
++void dmar_fault_dump_ptes(struct intel_iommu *iommu, u16 source_id,
++			  unsigned long long addr, u32 pasid);
+ #else /* !CONFIG_INTEL_IOMMU: */
+ static inline int intel_iommu_init(void) { return -ENODEV; }
+ static inline void intel_iommu_shutdown(void) { }
++static inline void dmar_fault_dump_ptes(struct intel_iommu *iommu, u16 source_id,
++					unsigned long long addr, u32 pasid) {}
+ 
+ #define	dmar_parse_one_rmrr		dmar_res_noop
+ #define	dmar_parse_one_atsr		dmar_res_noop
+-- 
+2.17.1
+
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
