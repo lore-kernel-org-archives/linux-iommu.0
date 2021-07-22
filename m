@@ -2,81 +2,94 @@ Return-Path: <SRS0=8SnF=MO=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-15.5 required=3.0 tests=BAYES_00,
-	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_CR_TRAILER,INCLUDES_PATCH,
-	MAILING_LIST_MULTI,NICE_REPLY_A,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,
-	USER_AGENT_SANE_1 autolearn=unavailable autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-15.0 required=3.0 tests=BAYES_00,DKIM_INVALID,
+	DKIM_SIGNED,HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_CR_TRAILER,INCLUDES_PATCH,
+	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,UNPARSEABLE_RELAY,URIBL_BLOCKED,
+	USER_AGENT_SANE_2 autolearn=ham autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8C544C6377D
-	for <iommu@archiver.kernel.org>; Thu, 22 Jul 2021 06:34:45 +0000 (UTC)
-Received: from smtp4.osuosl.org (smtp4.osuosl.org [140.211.166.137])
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 85C78C63793
+	for <iommu@archiver.kernel.org>; Thu, 22 Jul 2021 06:38:33 +0000 (UTC)
+Received: from smtp1.osuosl.org (smtp1.osuosl.org [140.211.166.138])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id F21B06024A
-	for <iommu@archiver.kernel.org>; Thu, 22 Jul 2021 06:34:44 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org F21B06024A
-Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=huawei.com
+	by mail.kernel.org (Postfix) with ESMTPS id 31BD261279
+	for <iommu@archiver.kernel.org>; Thu, 22 Jul 2021 06:38:33 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 31BD261279
+Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=mediatek.com
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by smtp4.osuosl.org (Postfix) with ESMTP id AFDB2401CF;
-	Thu, 22 Jul 2021 06:34:44 +0000 (UTC)
+	by smtp1.osuosl.org (Postfix) with ESMTP id F066F828F8;
+	Thu, 22 Jul 2021 06:38:32 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from smtp4.osuosl.org ([127.0.0.1])
-	by localhost (smtp4.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id eJRtTPdgiFF4; Thu, 22 Jul 2021 06:34:43 +0000 (UTC)
-Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by smtp4.osuosl.org (Postfix) with ESMTPS id C51FE40200;
-	Thu, 22 Jul 2021 06:34:42 +0000 (UTC)
+Received: from smtp1.osuosl.org ([127.0.0.1])
+	by localhost (smtp1.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+	with ESMTP id ZMBP4n3-NVp0; Thu, 22 Jul 2021 06:38:32 +0000 (UTC)
+Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [IPv6:2605:bc80:3010:104::8cd3:938])
+	by smtp1.osuosl.org (Postfix) with ESMTPS id B149F82670;
+	Thu, 22 Jul 2021 06:38:31 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 9D5AFC001A;
-	Thu, 22 Jul 2021 06:34:42 +0000 (UTC)
-Received: from smtp2.osuosl.org (smtp2.osuosl.org [IPv6:2605:bc80:3010::133])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 3E825C000E
- for <iommu@lists.linux-foundation.org>; Thu, 22 Jul 2021 06:34:41 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 651B7C001A;
+	Thu, 22 Jul 2021 06:38:31 +0000 (UTC)
+Received: from smtp4.osuosl.org (smtp4.osuosl.org [140.211.166.137])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id AC5EBC000E
+ for <iommu@lists.linux-foundation.org>; Thu, 22 Jul 2021 06:38:29 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by smtp2.osuosl.org (Postfix) with ESMTP id 077A740173
- for <iommu@lists.linux-foundation.org>; Thu, 22 Jul 2021 06:34:41 +0000 (UTC)
+ by smtp4.osuosl.org (Postfix) with ESMTP id 9F86140253
+ for <iommu@lists.linux-foundation.org>; Thu, 22 Jul 2021 06:38:29 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from smtp2.osuosl.org ([127.0.0.1])
- by localhost (smtp2.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id aZezjpbcOHzz for <iommu@lists.linux-foundation.org>;
- Thu, 22 Jul 2021 06:34:39 +0000 (UTC)
-X-Greylist: domain auto-whitelisted by SQLgrey-1.8.0
-Received: from szxga08-in.huawei.com (szxga08-in.huawei.com [45.249.212.255])
- by smtp2.osuosl.org (Postfix) with ESMTPS id A85FB40172
- for <iommu@lists.linux-foundation.org>; Thu, 22 Jul 2021 06:34:38 +0000 (UTC)
-Received: from dggemv703-chm.china.huawei.com (unknown [172.30.72.55])
- by szxga08-in.huawei.com (SkyGuard) with ESMTP id 4GVjFp12yFz1CM75;
- Thu, 22 Jul 2021 14:28:46 +0800 (CST)
-Received: from dggpemm500004.china.huawei.com (7.185.36.219) by
- dggemv703-chm.china.huawei.com (10.3.19.46) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2176.2; Thu, 22 Jul 2021 14:34:33 +0800
-Received: from [10.174.177.91] (10.174.177.91) by
- dggpemm500004.china.huawei.com (7.185.36.219) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2176.2; Thu, 22 Jul 2021 14:34:33 +0800
-Subject: Re: [PATCH -next] iommu/arm-smmu-v3: Add suspend and resume support
-To: Marc Zyngier <maz@kernel.org>, Robin Murphy <robin.murphy@arm.com>
-References: <20210721013350.17664-1-cuibixuan@huawei.com>
- <4e506481-5f6c-9c5e-eda3-300861581080@arm.com> <878s1z3j68.wl-maz@kernel.org>
- <848befb0-7a9a-0b2b-8be9-3dfa02919488@arm.com> <877dhj3e4b.wl-maz@kernel.org>
-From: Bixuan Cui <cuibixuan@huawei.com>
-Message-ID: <5054a5cd-579f-3fe9-1884-5219c8d13531@huawei.com>
-Date: Thu, 22 Jul 2021 14:34:32 +0800
-User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; rv:68.0) Gecko/20100101
- Thunderbird/68.2.2
+Authentication-Results: smtp4.osuosl.org (amavisd-new);
+ dkim=pass (1024-bit key) header.d=mediatek.com
+Received: from smtp4.osuosl.org ([127.0.0.1])
+ by localhost (smtp4.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+ with ESMTP id cBK0TW0Rzww7 for <iommu@lists.linux-foundation.org>;
+ Thu, 22 Jul 2021 06:38:27 +0000 (UTC)
+X-Greylist: from auto-whitelisted by SQLgrey-1.8.0
+Received: from mailgw02.mediatek.com (unknown [1.203.163.81])
+ by smtp4.osuosl.org (Postfix) with ESMTP id 3B0B540221
+ for <iommu@lists.linux-foundation.org>; Thu, 22 Jul 2021 06:38:26 +0000 (UTC)
+X-UUID: a1ef19bdfe614e53811cdbc983ebc4ad-20210722
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=mediatek.com;
+ s=dk; 
+ h=Content-Transfer-Encoding:MIME-Version:Content-Type:References:In-Reply-To:Date:CC:To:From:Subject:Message-ID;
+ bh=oaxYxn3IILWuJbREf8SCmDPb7cFpjJSu+Lb7BiUbx7g=; 
+ b=XysRMbWJ8wjQ0Y3UXTNNFa/3mPg/H/hhOL1RrKpA3cZspA0ZB1jUfflXXqC2ToTCCZBkCoqqieXJFH7o0jkRBYdv14RQpeYSXiknWg1xTAHWWgwESewWoIVZKBADmI8S2Z4jUgVgsOpEeO9rW81EdFw5UbdE0AXRHYcEE37HDnY=;
+X-UUID: a1ef19bdfe614e53811cdbc983ebc4ad-20210722
+Received: from mtkcas34.mediatek.inc [(172.27.4.253)] by mailgw02.mediatek.com
+ (envelope-from <yong.wu@mediatek.com>)
+ (mailgw01.mediatek.com ESMTP with TLSv1.2 ECDHE-RSA-AES256-SHA384 256/256)
+ with ESMTP id 407174073; Thu, 22 Jul 2021 14:38:21 +0800
+Received: from MTKCAS36.mediatek.inc (172.27.4.186) by MTKMBS31N1.mediatek.inc
+ (172.27.4.69) with Microsoft SMTP Server (TLS) id 15.0.1497.2;
+ Thu, 22 Jul 2021 14:38:15 +0800
+Received: from [10.17.3.153] (10.17.3.153) by MTKCAS36.mediatek.inc
+ (172.27.4.170) with Microsoft SMTP Server id 15.0.1497.2 via Frontend
+ Transport; Thu, 22 Jul 2021 14:38:14 +0800
+Message-ID: <1626935894.27875.6.camel@mhfsdcap03>
+Subject: Re: [PATCH v2 07/11] memory: mtk-smi: Add smi sub common support
+From: Yong Wu <yong.wu@mediatek.com>
+To: Ikjoon Jang <ikjn@chromium.org>
+Date: Thu, 22 Jul 2021 14:38:14 +0800
+In-Reply-To: <CAATdQgBDsPHcuPYd=a+fjjTuqwXdJ-1GuSkj47cH1Ju5geqSLg@mail.gmail.com>
+References: <20210715121209.31024-1-yong.wu@mediatek.com>
+ <20210715121209.31024-8-yong.wu@mediatek.com>
+ <CAATdQgBDsPHcuPYd=a+fjjTuqwXdJ-1GuSkj47cH1Ju5geqSLg@mail.gmail.com>
+X-Mailer: Evolution 3.10.4-0ubuntu2 
 MIME-Version: 1.0
-In-Reply-To: <877dhj3e4b.wl-maz@kernel.org>
-Content-Language: en-US
-X-Originating-IP: [10.174.177.91]
-X-ClientProxiedBy: dggems704-chm.china.huawei.com (10.3.19.181) To
- dggpemm500004.china.huawei.com (7.185.36.219)
-X-CFilter-Loop: Reflected
-Cc: jean-philippe@linaro.org, guohanjun@huawei.com,
- linux-kernel@vger.kernel.org, john.wanghui@huawei.com,
- iommu@lists.linux-foundation.org, weiyongjun1@huawei.com,
- dingtianhong@huawei.com, will@kernel.org, linux-arm-kernel@lists.infradead.org
+X-TM-SNTS-SMTP: 8C9462D89BEED59F465508FE8E285B0DAFEB43CE951A7B5CDA310B4B06BC23302000:8
+X-MTK: N
+Cc: youlin.pei@mediatek.com,
+ "open list:OPEN FIRMWARE AND FLATTENED DEVICE TREE BINDINGS"
+ <devicetree@vger.kernel.org>, yi.kuo@mediatek.com,
+ srv_heupstream <srv_heupstream@mediatek.com>,
+ Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>,
+ Robin Murphy <robin.murphy@arm.com>, open list <linux-kernel@vger.kernel.org>,
+ Krzysztof Kozlowski <krzk@kernel.org>, iommu@lists.linux-foundation.org,
+ Rob Herring <robh+dt@kernel.org>,
+ "moderated list:ARM/Mediatek SoC support" <linux-mediatek@lists.infradead.org>,
+ Matthias Brugger <matthias.bgg@gmail.com>, anthony.huang@mediatek.com,
+ ming-fan.chen@mediatek.com, anan.sun@mediatek.com,
+ Will Deacon <will@kernel.org>, "moderated list:ARM/Mediatek SoC support"
+ <linux-arm-kernel@lists.infradead.org>
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -94,115 +107,53 @@ Content-Transfer-Encoding: 7bit
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
+Hi Ikjoon,
 
+Thanks very much for your help reviewing..
 
-On 2021/7/21 23:01, Marc Zyngier wrote:
-> On Wed, 21 Jul 2021 14:59:47 +0100,
-> Robin Murphy <robin.murphy@arm.com> wrote:
->>
->> On 2021-07-21 14:12, Marc Zyngier wrote:
->>> On Wed, 21 Jul 2021 12:42:14 +0100,
->>> Robin Murphy <robin.murphy@arm.com> wrote:
->>>>
->>>> [ +Marc for MSI bits ]
->>>>
->>>> On 2021-07-21 02:33, Bixuan Cui wrote:
->>>>> Add suspend and resume support for arm-smmu-v3 by low-power mode.
->>>>>
->>>>> When the smmu is suspended, it is powered off and the registers are
->>>>> cleared. So saves the msi_msg context during msi interrupt initialization
->>>>> of smmu. When resume happens it calls arm_smmu_device_reset() to restore
->>>>> the registers.
->>>>>
->>>>> Signed-off-by: Bixuan Cui <cuibixuan@huawei.com>
->>>>> Reviewed-by: Wei Yongjun <weiyongjun1@huawei.com>
->>>>> Reviewed-by: Zhen Lei <thunder.leizhen@huawei.com>
->>>>> Reviewed-by: Ding Tianhong <dingtianhong@huawei.com>
->>>>> Reviewed-by: Hanjun Guo <guohanjun@huawei.com>
->>>>> ---
->>>>>
->>>>>    drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c | 72 ++++++++++++++++++---
->>>>>    1 file changed, 64 insertions(+), 8 deletions(-)
->>>>>
->>>>> diff --git a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
->>>>> index 235f9bdaeaf2..bf1163acbcb1 100644
->>>>> --- a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
->>>>> +++ b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
->>>>> @@ -40,6 +40,7 @@ MODULE_PARM_DESC(disable_bypass,
->>>>>      static bool disable_msipolling;
->>>>>    module_param(disable_msipolling, bool, 0444);
->>>>> +static bool bypass;
->>>>>    MODULE_PARM_DESC(disable_msipolling,
->>>>>    	"Disable MSI-based polling for CMD_SYNC completion.");
->>>>>    @@ -3129,11 +3130,37 @@ static void arm_smmu_write_msi_msg(struct
->>>>> msi_desc *desc, struct msi_msg *msg)
->>>>>    	doorbell = (((u64)msg->address_hi) << 32) | msg->address_lo;
->>>>>    	doorbell &= MSI_CFG0_ADDR_MASK;
->>>>>    +	/* Saves the msg context for resume if desc->msg is empty */
->>>>> +	if (desc->msg.address_lo == 0 && desc->msg.address_hi == 0) {
->>>>> +		desc->msg.address_lo = msg->address_lo;
->>>>> +		desc->msg.address_hi = msg->address_hi;
->>>>> +		desc->msg.data = msg->data;
->>>>> +	}
->>>>
->>>> My gut feeling is that this is something a device driver maybe
->>>> shouldn't be poking into, but I'm not entirely familiar with the area
->>>> :/
->>>
->>> Certainly not. If you rely on the message being stored into the
->>> descriptors, then implement this in the core code, like we do for PCI.
->>
->> Ah, so it would be an acceptable compromise to *read* desc->msg (and
->> thus avoid having to store our own copy of the message) if the core
->> was guaranteed to cache it? That's good to know, thanks.
+On Wed, 2021-07-21 at 19:43 +0800, Ikjoon Jang wrote:
+> On Thu, Jul 15, 2021 at 8:25 PM Yong Wu <yong.wu@mediatek.com> wrote:
+> >
+> > In mt8195, there are some larbs connect with the smi-sub-common, then
+> > connect with smi-common.
 > 
-> Yeah, vfio, a couple of other weird drivers and (*surprise!*) ia64 are
-> using this kind of trick. I don't see a reason not to implement that
-> for platform-MSI (although level signalling may be interesting...), or
-> even to move it into the core MSI code.
-Agree. If msg is saved to desc->msg in MSI core, the code here will not need.
-During the initialization of the MSI interrupt of the SMMU, the desc->msg
-is never used. So I save msg to desc->msg for resume use.
+> Not critical but I suggest to describe what is smi-sub-common.
+> e.g. "some larbs are not directly connected to smi-common,
+> they are connected to smi-sub-common which is a bridge(?) interface to..."
 
+OK. I will add some brief description about this sub-common in next
+version.
 
->>
->>>>> +
->>>>>    	writeq_relaxed(doorbell, smmu->base + cfg[0]);
->>>>>    	writel_relaxed(msg->data, smmu->base + cfg[1]);
->>>>>    	writel_relaxed(ARM_SMMU_MEMATTR_DEVICE_nGnRE, smmu->base + cfg[2]);
->>>>>    }
->>>>>    +static void arm_smmu_resume_msis(struct arm_smmu_device *smmu)
->>>>> +{
->>>>> +	struct msi_desc *desc;
->>>>> +	struct device *dev = smmu->dev;
->>>>> +
->>>>> +	for_each_msi_entry(desc, dev) {
->>>>> +		switch (desc->platform.msi_index) {
->>>>> +		case EVTQ_MSI_INDEX:
->>>>> +		case GERROR_MSI_INDEX:
->>>>> +		case PRIQ_MSI_INDEX:
->>>>> +			arm_smmu_write_msi_msg(desc, &(desc->msg));
->>>
->>> Consider using get_cached_msi_msg() instead of using the internals of
->>> the descriptor.
->>
->> Oh, there's even a proper API for it, marvellous! I hadn't managed to
->> dig that far myself :)
 > 
-> It is a bit odd in the sense that it takes a copy of the message
-> instead of returning a pointer, but at least this solves lifetime
-> issues.
-The code of arm_smmu_write_msi_msg() is multiplexed to restore the register. Therefore,
-the parameter must be supplemented. Generally, desc is sufficient as an input parameter..
-:)
+> >
+> > Before we create device link between smi-larb with smi-common. If we have
+> > sub-common, we should use device link the smi-larb and smi-sub-common,
+> > then use device link between the smi-sub-common with smi-common. This is
+> > for enabling clock/power automatically.
+> >
+> > Move the device link code to a new interface for reusing.
+> >
+> > There is no SW extra setting for smi-sub-common.
+> >
+> > Signed-off-by: Yong Wu <yong.wu@mediatek.com>
+> 
+> Reviewed-by: Ikjoon Jang <ikjn@chromium.org>
 
-Thanks,
-Bixuan Cui
+Thanks.
+
 > 
-> Thanks,
-> 
-> 	M.
-> 
+> > ---
+> >  drivers/memory/mtk-smi.c | 75 +++++++++++++++++++++++++++-------------
+> >  1 file changed, 51 insertions(+), 24 deletions(-)
+> >
+> > diff --git a/drivers/memory/mtk-smi.c b/drivers/memory/mtk-smi.c
+> > index e68cbb51dd12..ee49bb50f5f5 100644
+> > --- a/drivers/memory/mtk-smi.c
+> > +++ b/drivers/memory/mtk-smi.c
+> > @@ -60,7 +60,8 @@
+
+[snip..]
+
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
