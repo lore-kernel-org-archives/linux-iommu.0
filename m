@@ -2,67 +2,98 @@ Return-Path: <SRS0=8SnF=MO=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-15.5 required=3.0 tests=BAYES_00,
-	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_CR_TRAILER,INCLUDES_PATCH,
-	MAILING_LIST_MULTI,NICE_REPLY_A,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,
-	USER_AGENT_SANE_1 autolearn=ham autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-13.6 required=3.0 tests=BAYES_00,DKIM_INVALID,
+	DKIM_SIGNED,HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,
+	MENTIONS_GIT_HOSTING,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED autolearn=ham
+	autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4CCC4C6377D
-	for <iommu@archiver.kernel.org>; Thu, 22 Jul 2021 14:59:00 +0000 (UTC)
-Received: from smtp4.osuosl.org (smtp4.osuosl.org [140.211.166.137])
+	by smtp.lore.kernel.org (Postfix) with ESMTP id BF46BC6377D
+	for <iommu@archiver.kernel.org>; Thu, 22 Jul 2021 15:54:34 +0000 (UTC)
+Received: from smtp3.osuosl.org (smtp3.osuosl.org [140.211.166.136])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id D89276128C
-	for <iommu@archiver.kernel.org>; Thu, 22 Jul 2021 14:58:59 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org D89276128C
-Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=arm.com
+	by mail.kernel.org (Postfix) with ESMTPS id 60B7C6127C
+	for <iommu@archiver.kernel.org>; Thu, 22 Jul 2021 15:54:34 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 60B7C6127C
+Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=redhat.com
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=iommu-bounces@lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by smtp4.osuosl.org (Postfix) with ESMTP id 95FDF40253;
-	Thu, 22 Jul 2021 14:58:59 +0000 (UTC)
+	by smtp3.osuosl.org (Postfix) with ESMTP id 280CE605AD;
+	Thu, 22 Jul 2021 15:54:34 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from smtp4.osuosl.org ([127.0.0.1])
-	by localhost (smtp4.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id Gkh14fpFceWU; Thu, 22 Jul 2021 14:58:58 +0000 (UTC)
-Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [IPv6:2605:bc80:3010:104::8cd3:938])
-	by smtp4.osuosl.org (Postfix) with ESMTPS id 40A6640259;
-	Thu, 22 Jul 2021 14:58:58 +0000 (UTC)
+Received: from smtp3.osuosl.org ([127.0.0.1])
+	by localhost (smtp3.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+	with ESMTP id A5ws3OoVmTHu; Thu, 22 Jul 2021 15:54:33 +0000 (UTC)
+Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
+	by smtp3.osuosl.org (Postfix) with ESMTPS id EA173605B7;
+	Thu, 22 Jul 2021 15:54:32 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 1A660C001A;
-	Thu, 22 Jul 2021 14:58:58 +0000 (UTC)
-Received: from smtp4.osuosl.org (smtp4.osuosl.org [IPv6:2605:bc80:3010::137])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 712FCC000E
- for <iommu@lists.linux-foundation.org>; Thu, 22 Jul 2021 14:58:56 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id BB733C0010;
+	Thu, 22 Jul 2021 15:54:32 +0000 (UTC)
+Received: from smtp4.osuosl.org (smtp4.osuosl.org [140.211.166.137])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 4AF51C000E
+ for <iommu@lists.linux-foundation.org>; Thu, 22 Jul 2021 15:54:31 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by smtp4.osuosl.org (Postfix) with ESMTP id 5F1AD40259
- for <iommu@lists.linux-foundation.org>; Thu, 22 Jul 2021 14:58:56 +0000 (UTC)
+ by smtp4.osuosl.org (Postfix) with ESMTP id 234F04021D
+ for <iommu@lists.linux-foundation.org>; Thu, 22 Jul 2021 15:54:31 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
+Authentication-Results: smtp4.osuosl.org (amavisd-new);
+ dkim=pass (1024-bit key) header.d=redhat.com
 Received: from smtp4.osuosl.org ([127.0.0.1])
  by localhost (smtp4.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id cKkL2WynnzdU for <iommu@lists.linux-foundation.org>;
- Thu, 22 Jul 2021 14:58:54 +0000 (UTC)
+ with ESMTP id 2ShZKH0ldS2h for <iommu@lists.linux-foundation.org>;
+ Thu, 22 Jul 2021 15:54:30 +0000 (UTC)
 X-Greylist: domain auto-whitelisted by SQLgrey-1.8.0
-Received: from foss.arm.com (foss.arm.com [217.140.110.172])
- by smtp4.osuosl.org (Postfix) with ESMTP id 50DB840253
- for <iommu@lists.linux-foundation.org>; Thu, 22 Jul 2021 14:58:54 +0000 (UTC)
-Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
- by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 4B620106F;
- Thu, 22 Jul 2021 07:58:53 -0700 (PDT)
-Received: from [10.57.36.146] (unknown [10.57.36.146])
- by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id 5328B3F694;
- Thu, 22 Jul 2021 07:58:52 -0700 (PDT)
-Subject: Re: [PATCH] iommu/iova: kmemleak when disable SRIOV.
-To: Peng Ju Zhou <PengJu.Zhou@amd.com>, iommu@lists.linux-foundation.org
-References: <20210722081629.7863-1-PengJu.Zhou@amd.com>
-From: Robin Murphy <robin.murphy@arm.com>
-Message-ID: <4b59b7ee-5258-a2ca-531c-b1b5d9c064e7@arm.com>
-Date: Thu, 22 Jul 2021 15:58:46 +0100
-User-Agent: Mozilla/5.0 (Windows NT 10.0; rv:78.0) Gecko/20100101
- Thunderbird/78.12.0
+Received: from us-smtp-delivery-124.mimecast.com
+ (us-smtp-delivery-124.mimecast.com [170.10.133.124])
+ by smtp4.osuosl.org (Postfix) with ESMTPS id CFBB94021C
+ for <iommu@lists.linux-foundation.org>; Thu, 22 Jul 2021 15:54:29 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+ s=mimecast20190719; t=1626969268;
+ h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+ to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+ content-transfer-encoding:content-transfer-encoding:
+ in-reply-to:in-reply-to:references:references;
+ bh=qgWRIlTRPrFPSXBUW8Pt0zlG5aAoFdN/NE3i2abB5QA=;
+ b=EeClBSm4kpE4IQtWEy7Jg2KzTIK5JiA+9qnqP64mekgE65i1oLIh2aODbuWPJu+6gMFJdo
+ k80QaSRm9k5RDcPQqThw6xpTLrc1LEl3Ai3XnGOoL1XQ+07sB8n1mn22/x/ywWNLDXFv4S
+ fae8aLm62V7xoTPTAqq+zvtTkEheFjk=
+Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
+ [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-330-jOWvxWLjNiW4zeSswEF1LA-1; Thu, 22 Jul 2021 11:54:25 -0400
+X-MC-Unique: jOWvxWLjNiW4zeSswEF1LA-1
+Received: from smtp.corp.redhat.com (int-mx07.intmail.prod.int.phx2.redhat.com
+ [10.5.11.22])
+ (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+ (No client certificate requested)
+ by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 99ED280BCB1;
+ Thu, 22 Jul 2021 15:54:18 +0000 (UTC)
+Received: from T590 (ovpn-12-57.pek2.redhat.com [10.72.12.57])
+ by smtp.corp.redhat.com (Postfix) with ESMTPS id 4DA0E10016F2;
+ Thu, 22 Jul 2021 15:54:13 +0000 (UTC)
+Date: Thu, 22 Jul 2021 23:54:08 +0800
+From: Ming Lei <ming.lei@redhat.com>
+To: John Garry <john.garry@huawei.com>
+Subject: Re: [bug report] iommu_dma_unmap_sg() is very slow then running IO
+ from remote numa node
+Message-ID: <YPmUoBk9u+tU2rbS@T590>
+References: <YOhcOv1oOwm6fco+@T590>
+ <ad5bc549-d83f-bee0-9a9f-03a5afd7f3d9@huawei.com>
+ <YPd7IGFZrsTRfUxE@T590>
+ <74537f9c-af5f-cd84-60ab-49ca6220310e@huawei.com>
+ <YPfwAN1onpSKoeBj@T590>
+ <a2650064-41cf-cb62-7ab4-d14ef1856966@huawei.com>
+ <YPklDMng1hL3bQ+v@T590>
+ <9c929985-4fcb-e65d-0265-34c820b770ea@huawei.com>
+ <YPlGOOMSdm6Bcyy/@T590>
+ <fc552129-e89d-74ad-9e57-30e3ffe4cf5d@huawei.com>
 MIME-Version: 1.0
-In-Reply-To: <20210722081629.7863-1-PengJu.Zhou@amd.com>
-Content-Language: en-GB
-Cc: Alexander.Deucher@amd.com, Yin.Wang@amd.com, will@kernel.org
+Content-Disposition: inline
+In-Reply-To: <fc552129-e89d-74ad-9e57-30e3ffe4cf5d@huawei.com>
+X-Scanned-By: MIMEDefang 2.84 on 10.5.11.22
+Cc: Robin Murphy <robin.murphy@arm.com>, linux-kernel@vger.kernel.org,
+ linux-nvme@lists.infradead.org, iommu@lists.linux-foundation.org,
+ Will Deacon <will@kernel.org>, linux-arm-kernel@lists.infradead.org
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -75,89 +106,191 @@ List-Post: <mailto:iommu@lists.linux-foundation.org>
 List-Help: <mailto:iommu-request@lists.linux-foundation.org?subject=help>
 List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
  <mailto:iommu-request@lists.linux-foundation.org?subject=subscribe>
-Content-Transfer-Encoding: 7bit
-Content-Type: text/plain; charset="us-ascii"; Format="flowed"
+Content-Type: text/plain; charset="iso-8859-1"
+Content-Transfer-Encoding: quoted-printable
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-On 2021-07-22 09:16, Peng Ju Zhou via iommu wrote:
-> the object iova->head allocated statically when enable SRIOV but
-> freed dynamically when disable SRIOV which causing kmemleak.
-> changing the allocation from statically to dynamically.
+On Thu, Jul 22, 2021 at 12:12:05PM +0100, John Garry wrote:
+> On 22/07/2021 11:19, Ming Lei wrote:
+> > > If you check below, you can see that cpu4 services an NVMe irq. From
+> > > checking htop, during the test that cpu is at 100% load, which I put =
+the
+> > > performance drop (vs cpu0) down to.
+> > nvme.poll_queues is 2 in my test, and no irq is involved. But the irq m=
+ode
+> > fio test is still as bad as io_uring.
+> > =
 
-Thanks for the glimpse into the kind of weird and wonderful things 
-people are doing to the IOVA allocator out-of-tree (the "holes" list 
-sounds like an idea I also thought about a long time ago), but judging 
-by the context this patch is clearly of no use to mainline ;)
+> =
 
-Robin.
+> I tried that:
+> =
 
-> Signed-off-by: Peng Ju Zhou <PengJu.Zhou@amd.com>
-> ---
->   drivers/iommu/iova.c | 15 ++++++++-------
->   include/linux/iova.h |  4 ++--
->   2 files changed, 10 insertions(+), 9 deletions(-)
-> 
-> diff --git a/drivers/iommu/iova.c b/drivers/iommu/iova.c
-> index 2371524796d3..505881d8d97f 100644
-> --- a/drivers/iommu/iova.c
-> +++ b/drivers/iommu/iova.c
-> @@ -26,6 +26,8 @@ static void free_iova_rcaches(struct iova_domain *iovad);
->   static void fq_destroy_all_entries(struct iova_domain *iovad);
->   static void fq_flush_timeout(struct timer_list *t);
->   static void free_global_cached_iovas(struct iova_domain *iovad);
-> +static inline struct iova *alloc_and_init_iova(unsigned long pfn_lo,
-> +					       unsigned long pfn_hi);
->   
->   void
->   init_iova_domain(struct iova_domain *iovad, unsigned long granule,
-> @@ -47,17 +49,16 @@ init_iova_domain(struct iova_domain *iovad, unsigned long granule,
->   
->   	INIT_LIST_HEAD(&iovad->holes);
->   
-> -	iovad->head.pfn_lo = 0;
-> -	iovad->head.pfn_hi = start_pfn;
-> -	rb_link_node(&iovad->head.node, NULL, &iovad->rbroot.rb_node);
-> -	rb_insert_color(&iovad->head.node, &iovad->rbroot);
-> -	list_add(&iovad->head.hole, &iovad->holes);
-> +	iovad->head = alloc_and_init_iova(0, start_pfn);
-> +	rb_link_node(&iovad->head->node, NULL, &iovad->rbroot.rb_node);
-> +	rb_insert_color(&iovad->head->node, &iovad->rbroot);
-> +	list_add(&iovad->head->hole, &iovad->holes);
->   
->   	iovad->tail.pfn_lo = IOVA_ANCHOR;
->   	iovad->tail.pfn_hi = IOVA_ANCHOR;
->   	rb_link_node(&iovad->tail.node,
-> -		     &iovad->head.node,
-> -		     &iovad->head.node.rb_right);
-> +		     &iovad->head->node,
-> +		     &iovad->head->node.rb_right);
->   	rb_insert_color(&iovad->tail.node, &iovad->rbroot);
->   
->   	init_iova_rcaches(iovad);
-> diff --git a/include/linux/iova.h b/include/linux/iova.h
-> index 076eb6cfc613..553905ef41fe 100644
-> --- a/include/linux/iova.h
-> +++ b/include/linux/iova.h
-> @@ -81,7 +81,7 @@ struct iova_domain {
->   						   have been finished */
->   
->   	struct list_head holes;
-> -	struct iova	head, tail;		/* rbtree lookup anchors */
-> +	struct iova	*head, tail;		/* rbtree lookup anchors */
->   	struct iova_rcache rcaches[IOVA_RANGE_CACHE_MAX_SIZE];	/* IOVA range caches */
->   
->   	iova_flush_cb	flush_cb;	/* Call-Back function to flush IOMMU
-> @@ -252,7 +252,7 @@ static inline void free_cpu_cached_iovas(unsigned int cpu,
->   
->   static inline unsigned long iovad_start_pfn(struct iova_domain *iovad)
->   {
-> -	return iovad->head.pfn_hi;
-> +	return iovad->head->pfn_hi;
->   }
->   
->   #endif
-> 
+> dmesg | grep -i nvme
+> [    0.000000] Kernel command line: BOOT_IMAGE=3D/john/Image rdinit=3D/in=
+it
+> crashkernel=3D256M@32M console=3DttyAMA0,115200 earlycon acpi=3Dforce
+> pcie_aspm=3Doff noinitrd root=3D/dev/sda1 rw log_buf_len=3D16M user_debug=
+=3D1
+> iommu.strict=3D1 nvme.use_threaded_interrupts=3D0 irqchip.gicv3_pseudo_nm=
+i=3D1
+> nvme.poll_queues=3D2
+> =
+
+> [   30.531989] megaraid_sas 0000:08:00.0: NVMe passthru support : Yes
+> [   30.615336] megaraid_sas 0000:08:00.0: NVME page size   : (4096)
+> [   52.035895] nvme 0000:81:00.0: Adding to iommu group 5
+> [   52.047732] nvme nvme0: pci function 0000:81:00.0
+> [   52.067216] nvme nvme0: 22/0/2 default/read/poll queues
+> [   52.087318]  nvme0n1: p1
+> =
+
+> So I get these results:
+> cpu0 335K
+> cpu32 346K
+> cpu64 300K
+> cpu96 300K
+> =
+
+> So still not massive changes.
+
+In your last email, the results are the following with irq mode io_uring:
+
+ cpu0  497K
+ cpu4  307K
+ cpu32 566K
+ cpu64 488K
+ cpu96 508K
+
+So looks you get much worse result with real io_polling?
+
+> =
+
+> > > Here's some system info:
+> > > =
+
+> > > HW queue irq affinities:
+> > > PCI name is 81:00.0: nvme0n1
+> > > -eirq 298, cpu list 67, effective list 67
+> > > -eirq 299, cpu list 32-38, effective list 35
+> > > -eirq 300, cpu list 39-45, effective list 39
+> > > -eirq 301, cpu list 46-51, effective list 46
+> > > -eirq 302, cpu list 52-57, effective list 52
+> > > -eirq 303, cpu list 58-63, effective list 60
+> > > -eirq 304, cpu list 64-69, effective list 68
+> > > -eirq 305, cpu list 70-75, effective list 70
+> > > -eirq 306, cpu list 76-80, effective list 76
+> > > -eirq 307, cpu list 81-85, effective list 84
+> > > -eirq 308, cpu list 86-90, effective list 86
+> > > -eirq 309, cpu list 91-95, effective list 92
+> > > -eirq 310, cpu list 96-101, effective list 100
+> > > -eirq 311, cpu list 102-107, effective list 102
+> > > -eirq 312, cpu list 108-112, effective list 108
+> > > -eirq 313, cpu list 113-117, effective list 116
+> > > -eirq 314, cpu list 118-122, effective list 118
+> > > -eirq 315, cpu list 123-127, effective list 124
+> > > -eirq 316, cpu list 0-5, effective list 4
+> > > -eirq 317, cpu list 6-11, effective list 6
+> > > -eirq 318, cpu list 12-16, effective list 12
+> > > -eirq 319, cpu list 17-21, effective list 20
+> > > -eirq 320, cpu list 22-26, effective list 22
+> > > -eirq 321, cpu list 27-31, effective list 28
+> > > =
+
+> > > =
+
+> > > john@ubuntu:~$ lscpu | grep NUMA
+> > > NUMA node(s):  4
+> > > NUMA node0 CPU(s):   0-31
+> > > NUMA node1 CPU(s):   32-63
+> > > NUMA node2 CPU(s):   64-95
+> > > NUMA node3 CPU(s):   96-127
+> > > =
+
+> > > john@ubuntu:~$ lspci | grep -i non
+> > > 81:00.0 Non-Volatile memory controller: Huawei Technologies Co., Ltd.=
+ Device
+> > > 0123 (rev 45)
+> > > =
+
+> > > cat /sys/block/nvme0n1/device/device/numa_node
+> > > 2
+> > BTW, nvme driver doesn't apply the pci numa node, and I guess the
+> > following patch is needed:
+> > =
+
+> > diff --git a/drivers/nvme/host/core.c b/drivers/nvme/host/core.c
+> > index 11779be42186..3c5e10e8b0c2 100644
+> > --- a/drivers/nvme/host/core.c
+> > +++ b/drivers/nvme/host/core.c
+> > @@ -4366,7 +4366,11 @@ int nvme_init_ctrl(struct nvme_ctrl *ctrl, struc=
+t device *dev,
+> >   	ctrl->dev =3D dev;
+> >   	ctrl->ops =3D ops;
+> >   	ctrl->quirks =3D quirks;
+> > +#ifdef CONFIG_NUMA
+> > +	ctrl->numa_node =3D dev->numa_node;
+> > +#else
+> >   	ctrl->numa_node =3D NUMA_NO_NODE;
+> > +#endif
+> =
+
+> From a quick look at the code, is this then later set for the PCI device =
+in
+> nvme_pci_configure_admin_queue()?
+
+Yeah, you are right, the pci numa node has been used.
+
+> =
+
+> >   	INIT_WORK(&ctrl->scan_work, nvme_scan_work);
+> >   	INIT_WORK(&ctrl->async_event_work, nvme_async_event_work);
+> >   	INIT_WORK(&ctrl->fw_act_work, nvme_fw_act_work);
+> > =
+
+> > > [   52.968495] nvme 0000:81:00.0: Adding to iommu group 5
+> > > [   52.980484] nvme nvme0: pci function 0000:81:00.0
+> > > [   52.999881] nvme nvme0: 23/0/0 default/read/poll queues
+> > Looks you didn't enabling polling. In irq mode, it isn't strange
+> > to observe IOPS difference when running fio on different CPUs.
+> =
+
+> If you are still keen to investigate more, then can try either of these:
+> =
+
+> - add iommu.strict=3D0 to the cmdline
+> =
+
+> - use perf record+annotate to find the hotspot
+>   - For this you need to enable psuedo-NMI with 2x steps:
+>     CONFIG_ARM64_PSEUDO_NMI=3Dy in defconfig
+>     Add irqchip.gicv3_pseudo_nmi=3D1
+> =
+
+>     See https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.gi=
+t/tree/arch/arm64/Kconfig#n1745
+>     Your kernel log should show:
+>     [    0.000000] GICv3: Pseudo-NMIs enabled using forced ICC_PMR_EL1
+> synchronisation
+
+OK, will try the above tomorrow.
+
+> =
+
+> But my impression is that this may be a HW implementation issue, consider=
+ing
+> we don't see such a huge drop off on our HW.
+
+Except for mpere-mtjade, we saw bad nvme performance on ThunderX2=AE CN99XX=
+ too,
+but I don't get one CN99XX system to check if the issue is same with
+this one.
+
+
+Thanks,
+Ming
+
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
