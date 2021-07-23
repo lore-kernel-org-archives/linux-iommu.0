@@ -7,83 +7,84 @@ X-Spam-Status: No, score=-16.6 required=3.0 tests=BAYES_00,DKIM_INVALID,
 	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_GIT
 	autolearn=ham autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4C2D5C43214
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B608BC43216
 	for <iommu@archiver.kernel.org>; Fri, 23 Jul 2021 21:40:41 +0000 (UTC)
-Received: from smtp1.osuosl.org (smtp1.osuosl.org [140.211.166.138])
+Received: from smtp3.osuosl.org (smtp3.osuosl.org [140.211.166.136])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id EBC3360F23
-	for <iommu@archiver.kernel.org>; Fri, 23 Jul 2021 21:40:40 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.4.1 mail.kernel.org EBC3360F23
+	by mail.kernel.org (Postfix) with ESMTPS id 7628160F02
+	for <iommu@archiver.kernel.org>; Fri, 23 Jul 2021 21:40:41 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.4.1 mail.kernel.org 7628160F02
 Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=wdc.com
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by smtp1.osuosl.org (Postfix) with ESMTP id ABB1F83AE9;
-	Fri, 23 Jul 2021 21:40:40 +0000 (UTC)
+	by smtp3.osuosl.org (Postfix) with ESMTP id 4261E60715;
+	Fri, 23 Jul 2021 21:40:41 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from smtp1.osuosl.org ([127.0.0.1])
-	by localhost (smtp1.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id 6K1RhRfTMdTP; Fri, 23 Jul 2021 21:40:39 +0000 (UTC)
-Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [IPv6:2605:bc80:3010:104::8cd3:938])
-	by smtp1.osuosl.org (Postfix) with ESMTPS id 84AF582F92;
-	Fri, 23 Jul 2021 21:40:39 +0000 (UTC)
-Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 637E9C0010;
-	Fri, 23 Jul 2021 21:40:39 +0000 (UTC)
-Received: from smtp3.osuosl.org (smtp3.osuosl.org [IPv6:2605:bc80:3010::136])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 98E03C000E
- for <iommu@lists.linux-foundation.org>; Fri, 23 Jul 2021 21:40:38 +0000 (UTC)
-Received: from localhost (localhost [127.0.0.1])
- by smtp3.osuosl.org (Postfix) with ESMTP id 83CE460A3E
- for <iommu@lists.linux-foundation.org>; Fri, 23 Jul 2021 21:40:38 +0000 (UTC)
-X-Virus-Scanned: amavisd-new at osuosl.org
-Authentication-Results: smtp3.osuosl.org (amavisd-new);
- dkim=pass (2048-bit key) header.d=wdc.com
 Received: from smtp3.osuosl.org ([127.0.0.1])
- by localhost (smtp3.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id BvJbtgihEl30 for <iommu@lists.linux-foundation.org>;
- Fri, 23 Jul 2021 21:40:37 +0000 (UTC)
+	by localhost (smtp3.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+	with ESMTP id PiF8i0L7Anxk; Fri, 23 Jul 2021 21:40:40 +0000 (UTC)
+Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
+	by smtp3.osuosl.org (Postfix) with ESMTPS id 24107608E7;
+	Fri, 23 Jul 2021 21:40:40 +0000 (UTC)
+Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 93DCBC000E;
+	Fri, 23 Jul 2021 21:40:39 +0000 (UTC)
+Received: from smtp4.osuosl.org (smtp4.osuosl.org [IPv6:2605:bc80:3010::137])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 31D97C000E
+ for <iommu@lists.linux-foundation.org>; Fri, 23 Jul 2021 21:40:39 +0000 (UTC)
+Received: from localhost (localhost [127.0.0.1])
+ by smtp4.osuosl.org (Postfix) with ESMTP id 127E840676
+ for <iommu@lists.linux-foundation.org>; Fri, 23 Jul 2021 21:40:39 +0000 (UTC)
+X-Virus-Scanned: amavisd-new at osuosl.org
+Authentication-Results: smtp4.osuosl.org (amavisd-new);
+ dkim=pass (2048-bit key) header.d=wdc.com
+Received: from smtp4.osuosl.org ([127.0.0.1])
+ by localhost (smtp4.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+ with ESMTP id nMswp-sTGW-j for <iommu@lists.linux-foundation.org>;
+ Fri, 23 Jul 2021 21:40:38 +0000 (UTC)
 X-Greylist: domain auto-whitelisted by SQLgrey-1.8.0
 Received: from esa2.hgst.iphmx.com (esa2.hgst.iphmx.com [68.232.143.124])
- by smtp3.osuosl.org (Postfix) with ESMTPS id 1573A60720
- for <iommu@lists.linux-foundation.org>; Fri, 23 Jul 2021 21:40:37 +0000 (UTC)
+ by smtp4.osuosl.org (Postfix) with ESMTPS id 45AA3405DE
+ for <iommu@lists.linux-foundation.org>; Fri, 23 Jul 2021 21:40:38 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple;
  d=wdc.com; i=@wdc.com; q=dns/txt; s=dkim.wdc.com;
- t=1627076436; x=1658612436;
+ t=1627076438; x=1658612438;
  h=from:to:cc:subject:date:message-id:in-reply-to:
  references:mime-version:content-transfer-encoding;
- bh=TtAadJ6hGLCmc033TEnWfjUBgRsF/DZxBUrEEIez1Fo=;
- b=f+nu0/CdxWwarErcZi4FgffE9SA7p80eptXiZ/Z1mdzqrCrwKsmi7HMS
- 8Yw8Xrwz/h/bHq82XXP9hUxjjl0JLozLp/WcXMGcL5eDtGCUyoyP4uTAq
- 2pMzWvVKt00TQ7UF6AlcvUHfkUeMvjzZKavIUXr5MVCH9RpNG2gsWCsaY
- /tCDYDc27fjwCuPPglupMUAoNu0J4HAmd2GXcbQNMPM7vJfOqu2ftix+B
- wgFgadYzCD8r1EFR1tqZHf0AK5OkNVc/vsuDv8VE+9Ck8wf6WH4SgLWjU
- L8zGks/8yHE2bqk5SlyhYD7TQByNmQlsoftAgh118OA6G/0YMUxWMi04b A==;
-X-IronPort-AV: E=Sophos;i="5.84,265,1620662400"; d="scan'208";a="279198455"
+ bh=FZmD5JDut8+hqQnxscDF4nA471lKHOPpWVdLU/AZ18o=;
+ b=NzEP6GJ+vTrZoRsYL1+hVW6/+YPNJDfc5n3/6RZW4PS2/rXhDcO+YApS
+ AL5bqTuhZkv7/MMOw0copSp7mjUWFZJ8w/T7we6iCxzJkQudfmG6Izyhb
+ cf0jQzXnpCazii7TWqbIfQGAmjt4wLw2InJmRZ/enzeyzBUqesFqcwLQ1
+ mwu7dcSkXfxAhNGRd9zhgav+wjILac8t66aTwcxW3wYPWqh7FhC2kccl5
+ XVPg7r8LKd+mVRVpoPdshgfaxvTLMT55QzbIR/Vf7B780gprIQD/QrG81
+ Bn2DCWaDvNU5qMMqbxMQz4f7v2DZPMaY7bKvsjTtVQWapRwQeNzE5LNvn A==;
+X-IronPort-AV: E=Sophos;i="5.84,265,1620662400"; d="scan'208";a="279198465"
 Received: from h199-255-45-14.hgst.com (HELO uls-op-cesaep01.wdc.com)
  ([199.255.45.14])
- by ob1.hgst.iphmx.com with ESMTP; 24 Jul 2021 05:40:36 +0800
-IronPort-SDR: MEtxWDUrR7OY2iqDlN2CpqmRA2klWW1vVLyTHp8zwRmlS89ictk3j+ZOa7fgugiwZdy5Xbnj9+
- VGjJV3QDmJhjywKg/e6551Fnfl9B/kZH6AvQp9wdXUGPhj2aLHUhZzl+Ux1rkIwiCnSkutnVTh
- 4e8dEoL7YsjMoDNtaI3VwqDfegf2jDIiyXHfh6mGik2nPAea3/HZ6Ujz74uCpjwYdV5OLxkRdI
- zQKJ+1MblqlDnUtXZijNI8mOT/FFYc3ZNnIapvHknZAoM+hc7Jgbcx28sWDdru3XRbye1CQvmy
- 3fIctP2RxqdkfxffE5/+0oVt
+ by ob1.hgst.iphmx.com with ESMTP; 24 Jul 2021 05:40:37 +0800
+IronPort-SDR: CKyth6h+GJV94USuHn1bOW42ZgtKw0dLRV7tL/18iFvQj2cSXsH46jxwkR32jSkzXH66J/S+AT
+ 2/8wzLvir0UgWKGawGJa5RKNJL/gFVnVX/5hOpFco+CGGn3l/Moq+S5ztY94NpZUcVMjX4dSoe
+ ioQ3m5nxmLvsveZcX9ypIve2r/b9CPwmA1O6zkgUA+n7IIEjeQL9qQ20rq0rvmeQPtRu+UclQz
+ txdttosBoVUkj0c3Q1YHkG9ROExIDf1ITv4p8VibAnwQdm8FNWu55bYmwOGwZhnh4XXU9ImrcW
+ /xe4cKLHX1BTkpnNk7AxFgaO
 Received: from uls-op-cesaip01.wdc.com ([10.248.3.36])
  by uls-op-cesaep01.wdc.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384;
- 23 Jul 2021 14:18:25 -0700
-IronPort-SDR: iht1k14TXaRgYuHcExQMxXDvBJ3lM+d2qFu0HNLMP/m1Lxt3+sb+N39um9cWnSgGv+xK+oULw8
- GD+comDzjiA03Yi/yzbvF1tLI9LK7/uFKDc61+UxJ+unNE4NlgItR+mWHeop/k1FW+LDY1iGkv
- bIRs/GghVxg/KlDKAwSOAE56h8UurPmyEwvBnYOlWDOK8rQ6pIUqNcTdfmUWYQvtbTUB8AstNj
- ybmzgG1fG/v3JWXcN82OQ0gkWAp2DRz2Ef6vAOkDxAxJMNcx1b1yxxQEbRI/2TozKavkbY18h1
- UWw=
+ 23 Jul 2021 14:18:26 -0700
+IronPort-SDR: LjlOnqwO6a/04wGjvbug293m/8qn7cznMgBruMkmo6Tel5ZJMkE6+M7OvZdwEvPubcxMheZERt
+ lQ+sNikSqbrehg8ASur9Vjq9mL3Z4lqGj5A946yoMS6Ts92f/InosBlv1k2y7BMcnZXeI9zPvx
+ mJQEjGWo0n4PPJ7AA4mRZXBBF3gLp53/vEUqb9aWh7AAOyzSZkDvpyEMe1gzV0DokMofyshPSa
+ GwceP5V147VgMQfr8U+sGdKkY+aTpBTNx89lHFjrE172mP1ushHKqjMVO+Y4cL8vURhvNaPxhK
+ Jzc=
 WDCIronportException: Internal
 Received: from ucfbox21.ad.shared (HELO hulk.wdc.com) ([10.225.167.4])
- by uls-op-cesaip01.wdc.com with ESMTP; 23 Jul 2021 14:40:36 -0700
+ by uls-op-cesaip01.wdc.com with ESMTP; 23 Jul 2021 14:40:38 -0700
 From: Atish Patra <atish.patra@wdc.com>
 To: linux-kernel@vger.kernel.org
-Subject: [RFC 2/5] of: Move of_dma_get_range to of_address.h
-Date: Fri, 23 Jul 2021 14:40:28 -0700
-Message-Id: <20210723214031.3251801-3-atish.patra@wdc.com>
+Subject: [RFC 4/5] dma-direct: Allocate dma pages directly if global pool
+ allocation fails
+Date: Fri, 23 Jul 2021 14:40:30 -0700
+Message-Id: <20210723214031.3251801-5-atish.patra@wdc.com>
 X-Mailer: git-send-email 2.31.1
 In-Reply-To: <20210723214031.3251801-1-atish.patra@wdc.com>
 References: <20210723214031.3251801-1-atish.patra@wdc.com>
@@ -112,60 +113,40 @@ Content-Transfer-Encoding: 7bit
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-Currently, of_dma_get_range is kept in of_private.h as it is used by only
-OF support code.
+DMA_GLOBAL_POOL config may be enabled for platforms where global pool is
+not supported because a generic defconfig is expected to boot on different
+platforms. Specifically, some RISC-V platforms may use global pool for
+non-coherent devices while some other platforms are completely coherent.
+However, it is expected that single kernel image must boot on all the
+platforms.
 
-Move it to of_address.h so that it can be used by the code outside OF
-support code.
+Continue the dma direct allocation if a allocation from global pool failed.
+This indicates that the platform is relying on some other method (direct
+remap) or just have coherent devices.
 
 Signed-off-by: Atish Patra <atish.patra@wdc.com>
 ---
- drivers/of/of_private.h    | 10 ----------
- include/linux/of_address.h | 12 ++++++++++++
- 2 files changed, 12 insertions(+), 10 deletions(-)
+ kernel/dma/direct.c | 7 +++++--
+ 1 file changed, 5 insertions(+), 2 deletions(-)
 
-diff --git a/drivers/of/of_private.h b/drivers/of/of_private.h
-index 631489f7f8c0..f65f801e3aae 100644
---- a/drivers/of/of_private.h
-+++ b/drivers/of/of_private.h
-@@ -160,16 +160,6 @@ extern int of_bus_n_addr_cells(struct device_node *np);
- extern int of_bus_n_size_cells(struct device_node *np);
+diff --git a/kernel/dma/direct.c b/kernel/dma/direct.c
+index d1d0258ed6d0..984ea776f099 100644
+--- a/kernel/dma/direct.c
++++ b/kernel/dma/direct.c
+@@ -161,8 +161,11 @@ void *dma_direct_alloc(struct device *dev, size_t size,
+ 		return arch_dma_alloc(dev, size, dma_handle, gfp, attrs);
  
- struct bus_dma_region;
--#if defined(CONFIG_OF_ADDRESS) && defined(CONFIG_HAS_DMA)
--int of_dma_get_range(struct device_node *np,
--		const struct bus_dma_region **map);
--#else
--static inline int of_dma_get_range(struct device_node *np,
--		const struct bus_dma_region **map)
--{
--	return -ENODEV;
--}
--#endif
+ 	if (IS_ENABLED(CONFIG_DMA_GLOBAL_POOL) &&
+-	    !dev_is_dma_coherent(dev))
+-		return dma_alloc_from_global_coherent(dev, size, dma_handle);
++	    !dev_is_dma_coherent(dev)) {
++		ret = dma_alloc_from_global_coherent(dev, size, dma_handle);
++		if (ret)
++			return ret;
++	}
  
- void fdt_init_reserved_mem(void);
- void fdt_reserved_mem_save_node(unsigned long node, const char *uname,
-diff --git a/include/linux/of_address.h b/include/linux/of_address.h
-index 45598dbec269..0e20f85850fc 100644
---- a/include/linux/of_address.h
-+++ b/include/linux/of_address.h
-@@ -154,4 +154,16 @@ static inline const __be32 *of_get_pci_address(struct device_node *dev, int bar_
- 	return __of_get_address(dev, -1, bar_no, size, flags);
- }
- 
-+struct bus_dma_region;
-+#if defined(CONFIG_OF_ADDRESS) && defined(CONFIG_HAS_DMA)
-+int of_dma_get_range(struct device_node *np,
-+		const struct bus_dma_region **map);
-+#else
-+static inline int of_dma_get_range(struct device_node *np,
-+		const struct bus_dma_region **map)
-+{
-+	return -ENODEV;
-+}
-+#endif
-+
- #endif /* __OF_ADDRESS_H */
+ 	/*
+ 	 * Remapping or decrypting memory may block. If either is required and
 -- 
 2.31.1
 
