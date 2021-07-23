@@ -2,179 +2,72 @@ Return-Path: <SRS0=yZZ9=MP=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-3.5 required=3.0 tests=BAYES_00,DKIM_INVALID,
-	DKIM_SIGNED,HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,SPF_HELO_NONE,
-	SPF_PASS,URIBL_BLOCKED autolearn=no autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-5.2 required=3.0 tests=BAYES_00,
+	HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,
+	URIBL_BLOCKED,USER_AGENT_SANE_1 autolearn=no autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 154D0C4338F
-	for <iommu@archiver.kernel.org>; Fri, 23 Jul 2021 05:36:39 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 21F63C432BE
+	for <iommu@archiver.kernel.org>; Fri, 23 Jul 2021 05:41:15 +0000 (UTC)
 Received: from smtp4.osuosl.org (smtp4.osuosl.org [140.211.166.137])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id A4E5460E95
-	for <iommu@archiver.kernel.org>; Fri, 23 Jul 2021 05:36:38 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.4.1 mail.kernel.org A4E5460E95
-Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=intel.com
+	by mail.kernel.org (Postfix) with ESMTPS id 9E72460F02
+	for <iommu@archiver.kernel.org>; Fri, 23 Jul 2021 05:41:14 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.4.1 mail.kernel.org 9E72460F02
+Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=lst.de
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by smtp4.osuosl.org (Postfix) with ESMTP id 66AEC4060C;
-	Fri, 23 Jul 2021 05:36:38 +0000 (UTC)
+	by smtp4.osuosl.org (Postfix) with ESMTP id 601A2401D9;
+	Fri, 23 Jul 2021 05:41:14 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
 Received: from smtp4.osuosl.org ([127.0.0.1])
 	by localhost (smtp4.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id H5ysINW63T1d; Fri, 23 Jul 2021 05:36:34 +0000 (UTC)
+	with ESMTP id JGtkpSp3zaHx; Fri, 23 Jul 2021 05:41:13 +0000 (UTC)
 Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [IPv6:2605:bc80:3010:104::8cd3:938])
-	by smtp4.osuosl.org (Postfix) with ESMTPS id 67F87405F6;
-	Fri, 23 Jul 2021 05:36:34 +0000 (UTC)
+	by smtp4.osuosl.org (Postfix) with ESMTPS id 22B43401BC;
+	Fri, 23 Jul 2021 05:41:13 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 3ADC9C001A;
-	Fri, 23 Jul 2021 05:36:34 +0000 (UTC)
-Received: from smtp1.osuosl.org (smtp1.osuosl.org [140.211.166.138])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 2A342C000E
- for <iommu@lists.linux-foundation.org>; Fri, 23 Jul 2021 05:36:32 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 03AFCC001A;
+	Fri, 23 Jul 2021 05:41:13 +0000 (UTC)
+Received: from smtp2.osuosl.org (smtp2.osuosl.org [IPv6:2605:bc80:3010::133])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id E8991C000E
+ for <iommu@lists.linux-foundation.org>; Fri, 23 Jul 2021 05:41:11 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by smtp1.osuosl.org (Postfix) with ESMTP id 02E0682B5E
- for <iommu@lists.linux-foundation.org>; Fri, 23 Jul 2021 05:36:32 +0000 (UTC)
+ by smtp2.osuosl.org (Postfix) with ESMTP id D061840153
+ for <iommu@lists.linux-foundation.org>; Fri, 23 Jul 2021 05:41:11 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Authentication-Results: smtp1.osuosl.org (amavisd-new);
- dkim=pass (1024-bit key) header.d=intel.onmicrosoft.com
-Received: from smtp1.osuosl.org ([127.0.0.1])
- by localhost (smtp1.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id RFuZ2-XSWxL4 for <iommu@lists.linux-foundation.org>;
- Fri, 23 Jul 2021 05:36:27 +0000 (UTC)
-X-Greylist: domain auto-whitelisted by SQLgrey-1.8.0
-Received: from mga06.intel.com (mga06.intel.com [134.134.136.31])
- by smtp1.osuosl.org (Postfix) with ESMTPS id A17A581C58
- for <iommu@lists.linux-foundation.org>; Fri, 23 Jul 2021 05:36:27 +0000 (UTC)
-X-IronPort-AV: E=McAfee;i="6200,9189,10053"; a="272925064"
-X-IronPort-AV: E=Sophos;i="5.84,263,1620716400"; d="scan'208";a="272925064"
-Received: from fmsmga003.fm.intel.com ([10.253.24.29])
- by orsmga104.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384;
- 22 Jul 2021 22:36:25 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.84,263,1620716400"; d="scan'208";a="502382136"
-Received: from orsmsx601.amr.corp.intel.com ([10.22.229.14])
- by FMSMGA003.fm.intel.com with ESMTP; 22 Jul 2021 22:36:24 -0700
-Received: from orsmsx607.amr.corp.intel.com (10.22.229.20) by
- ORSMSX601.amr.corp.intel.com (10.22.229.14) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2242.10; Thu, 22 Jul 2021 22:36:24 -0700
-Received: from orsmsx603.amr.corp.intel.com (10.22.229.16) by
- ORSMSX607.amr.corp.intel.com (10.22.229.20) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2242.10; Thu, 22 Jul 2021 22:36:23 -0700
-Received: from ORSEDG601.ED.cps.intel.com (10.7.248.6) by
- orsmsx603.amr.corp.intel.com (10.22.229.16) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2242.10 via Frontend Transport; Thu, 22 Jul 2021 22:36:23 -0700
-Received: from NAM10-DM6-obe.outbound.protection.outlook.com (104.47.58.101)
- by edgegateway.intel.com (134.134.137.102) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.1.2242.10; Thu, 22 Jul 2021 22:36:23 -0700
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=J8BqKjpGfusf5QGjUlwnAPhS0Fmpklfsxgx3+mpOWcMn+qZXzdmEcoLbHOxyfKfqzMiNwaDncDvOxAV3KovDgdKfM75eM8YHmft0NGSpHBbJFkbWJX08jdrnRKQtiAi19xhnWTCCXwahOW5K5JLVKahadcUWhGNSP7N0OQrgH9v8HuqoGRjmEZICFX5C60OUm0nBqyeB5ZBRoJr3Ts3FC3NbTmPZHMlBOMrWP8BCRFmDTC5y+K0A1dF6qMFqAQmoEDaNrYuDee2fShNuk2NnKrQ/K0ldzrZjVlP89sVYeRVvd+/qFiph5US4Ap/sN/eBefG04carpprfMAlLStnCcA==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com; 
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=Xdvfr45L4oKLxNIykf2fFQ5qCyeOPfAOTSmDqggWI5w=;
- b=jw3vfi8j/g/AwAWcI54RRY4hEJ6Tb1P4hc9PMsDvDtdQoOUJUdj1CXHX207dngBu3BxZ3FONb2hCrrukilgV3HafS7t+RImaEoQVuJwHXqAIVYdLPU3WmiQJZbtxlBLnvCNUwxaKqWFA0vcsjeOJdfLtwpBq9BWyiHy25PgXZ6rDSv1h0ebSD3H5WW2HSF4EcyjbeydCGcQP8Ej32fxyN7Zw5i0CVGa84OhTye7GAg9uiQZoM2JDhWbfxDCqPfJAviIhaqsXafDYVTJVIIsvWHQFci+Bw+dAR1OP1CAkVq24XFVNXU0FIT2X39l8gJOFbhNx+iKP5N2iuYwEb9avYg==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=intel.com; dmarc=pass action=none header.from=intel.com;
- dkim=pass header.d=intel.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=intel.onmicrosoft.com; 
- s=selector2-intel-onmicrosoft-com;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=Xdvfr45L4oKLxNIykf2fFQ5qCyeOPfAOTSmDqggWI5w=;
- b=Ht0YnspyjNU3xP6Bi6sXnLd38Dpit2DpqyL9qawdqv7nkXw2QITWMAN+ZYlCXhxFpifS3ItrW45euIVn0j1MTvSeaQXvPR7W/NfK1bNbDK9jw2GQmESgFHDo7oqzdanmkS6/JPcQLH/95XD+IsTvfcN/BfdB66theHWCx7aG7ZM=
-Received: from BN9PR11MB5433.namprd11.prod.outlook.com (2603:10b6:408:11e::13)
- by BN6PR11MB1940.namprd11.prod.outlook.com (2603:10b6:404:104::16)
- with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4331.29; Fri, 23 Jul
- 2021 05:36:17 +0000
-Received: from BN9PR11MB5433.namprd11.prod.outlook.com
- ([fe80::fd4b:cdde:6790:134]) by BN9PR11MB5433.namprd11.prod.outlook.com
- ([fe80::fd4b:cdde:6790:134%9]) with mapi id 15.20.4352.026; Fri, 23 Jul 2021
- 05:36:17 +0000
-From: "Tian, Kevin" <kevin.tian@intel.com>
-To: Christoph Hellwig <hch@lst.de>
-Subject: RE: [PATCH 3/6] vfio: remove the unused mdev iommu hook
-Thread-Topic: [PATCH 3/6] vfio: remove the unused mdev iommu hook
-Thread-Index: AQHXRWldX98a1U6w60C1HwYkmNlXK6rc3tAAgAPcBcCAAJmdAIABJmdggAASuMCAAF5dgIAAAFGAgAAT44CABKOLAIAAAkEAgAAGdACAAAupAIAAIZMAgESRwUCAIwZ+AIABCmGQ
-Date: Fri, 23 Jul 2021 05:36:17 +0000
-Message-ID: <BN9PR11MB5433440EED4E291C0DCD44BA8CE59@BN9PR11MB5433.namprd11.prod.outlook.com>
-References: <MWHPR11MB1886B92507ED9015831A0CEA8C509@MWHPR11MB1886.namprd11.prod.outlook.com>
- <20210514121925.GI1096940@ziepe.ca>
- <MWHPR11MB18866205125E566FE05867A78C509@MWHPR11MB1886.namprd11.prod.outlook.com>
+Received: from smtp2.osuosl.org ([127.0.0.1])
+ by localhost (smtp2.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+ with ESMTP id vj8N61rbvi8T for <iommu@lists.linux-foundation.org>;
+ Fri, 23 Jul 2021 05:41:11 +0000 (UTC)
+X-Greylist: from auto-whitelisted by SQLgrey-1.8.0
+Received: from verein.lst.de (verein.lst.de [213.95.11.211])
+ by smtp2.osuosl.org (Postfix) with ESMTPS id 40EF340004
+ for <iommu@lists.linux-foundation.org>; Fri, 23 Jul 2021 05:41:11 +0000 (UTC)
+Received: by verein.lst.de (Postfix, from userid 2407)
+ id E180A67373; Fri, 23 Jul 2021 07:41:06 +0200 (CEST)
+Date: Fri, 23 Jul 2021 07:41:06 +0200
+From: Christoph Hellwig <hch@lst.de>
+To: "Tian, Kevin" <kevin.tian@intel.com>
+Subject: Re: [PATCH 3/6] vfio: remove the unused mdev iommu hook
+Message-ID: <20210723054106.GA31771@lst.de>
+References: <MWHPR11MB18866205125E566FE05867A78C509@MWHPR11MB1886.namprd11.prod.outlook.com>
  <20210514133143.GK1096940@ziepe.ca> <YKJf7mphTHZoi7Qr@8bytes.org>
  <20210517123010.GO1096940@ziepe.ca> <YKJnPGonR+d8rbu/@8bytes.org>
  <20210517133500.GP1096940@ziepe.ca> <YKKNLrdQ4QjhLrKX@8bytes.org>
  <BN9PR11MB54331FC6BB31E8CBF11914A48C019@BN9PR11MB5433.namprd11.prod.outlook.com>
  <20210722133450.GA29155@lst.de>
-In-Reply-To: <20210722133450.GA29155@lst.de>
-Accept-Language: en-US
-Content-Language: en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-dlp-version: 11.5.1.3
-dlp-product: dlpe-windows
-dlp-reaction: no-action
-authentication-results: lst.de; dkim=none (message not signed)
- header.d=none;lst.de; dmarc=none action=none header.from=intel.com;
-x-ms-publictraffictype: Email
-x-ms-office365-filtering-correlation-id: d30a1f1c-1919-4836-f98b-08d94d9bcb2a
-x-ms-traffictypediagnostic: BN6PR11MB1940:
-x-microsoft-antispam-prvs: <BN6PR11MB1940672A274813749F0536F48CE59@BN6PR11MB1940.namprd11.prod.outlook.com>
-x-ms-oob-tlc-oobclassifiers: OLM:5236;
-x-ms-exchange-senderadcheck: 1
-x-ms-exchange-antispam-relay: 0
-x-microsoft-antispam: BCL:0;
-x-microsoft-antispam-message-info: ceWitNytzc4hQP1OFEJILxozJaG1TwjP44veWXPns0TszStkS5PjfGis+9OqLc37w4w8ZmjmaedmcUxIyIiGXA1354bs2cak51soxVzWu6gIyd5ZP2/cuGi3s/yMYwdRv6OU5R7PplwYeQY3DV8uCWA/MIw1t03/FUE0Gz+NWf9L6m+pl++JBebLqRTx1j3yA9TihHLOTybZfCIdTiPPwOVRiSQxYk1fM6rGREkr+PBKcgDSLra0/V6qVs5voFWrxz7yZ98GMd3cO4u9TMVPVrccG3Eq3PeVYHRq2LLgsw9UiDN4ANji84rnV8ggUhC5dIO+VVDKjG0tkrU4i6o8TTAu6t44YO3dAyTlIgvttk8mprzFojdW/yKLbDXCb01gbSXNK1i3ZylSz0G/uQuWnlv/bCsVtGm7kyrZSQia9UdCB3iD5pIBIL28J1mBewjgkq7/uQ1TF9YuIHP0dU+abgBfJYP0Eaw9sBWBL0MBCaQAnutp0hqgaXMugUBRrtQfhjcV59AG+1eP4iNB0nu5ShZPGTUmctVx59knLmqYlsl0FSxBwP/2jOS2ucdbbLeFQt/oG7NAfvZkQNMcp4YyYelhBO8ldKSZZKzx9m+ZrHubHYLMjwIomJ3QC8SMbfQuOtyGQVs+KCY97sPB/mxCMFjcpFGbhVfk+jYGbq4P2kRzaf7vInLxEd4arJgSmAkw24fUOXtBvxsY+RJmWjNMrg==
-x-forefront-antispam-report: CIP:255.255.255.255; CTRY:; LANG:en; SCL:1; SRV:;
- IPV:NLI; SFV:NSPM; H:BN9PR11MB5433.namprd11.prod.outlook.com; PTR:; CAT:NONE;
- SFS:(4636009)(376002)(346002)(366004)(39860400002)(136003)(396003)(26005)(55016002)(5660300002)(8676002)(2906002)(9686003)(7416002)(316002)(33656002)(122000001)(6916009)(8936002)(38100700002)(86362001)(83380400001)(54906003)(4744005)(4326008)(7696005)(66946007)(478600001)(52536014)(64756008)(71200400001)(6506007)(76116006)(66476007)(186003)(66446008)(66556008)(38070700004);
- DIR:OUT; SFP:1102; 
-x-ms-exchange-antispam-messagedata-chunkcount: 1
-x-ms-exchange-antispam-messagedata-0: =?us-ascii?Q?ngAd08Ui9PKcaJ64sAwK6llckwQJD0w9f20gyu15MXK6huiSFye2SwLwDDft?=
- =?us-ascii?Q?dh2WUXfYVEV+mLwr3Nt0kZjjnz9nZiEVKh2ROgXqPptUuwOCzye2JSIsc1qc?=
- =?us-ascii?Q?1Crm2udUpIUBEc19TyP67o/3yMxo1x5MTW44tJWIUxVJEVUrX8jvcSpJ00eZ?=
- =?us-ascii?Q?7NYB+8tTONPiMLEMgGO/U8vT/JcN6CETubFf0WBXmlarSBpSEpYL/EYVWXVh?=
- =?us-ascii?Q?plXGkyAIaBh4CYCl9eMZ5NZu6W3kuEpCipt2bhpJoP6AH6fA1BpifLo13qrg?=
- =?us-ascii?Q?lELhA7eLVnxJQZLVaEFSsmRsqvbI0urilMNeG/oJXIXdb3dWsKex0LAD/kwO?=
- =?us-ascii?Q?Xgruo+mrUZ0Qp6+Ld8qvhhIQWXeO5DRBHyPiGZ8H1QnGYfRs6SWcd12HKxFT?=
- =?us-ascii?Q?+8H7uEVv47ac8cJIQmGkeEbV6RczqmRw6bJ9dOpY6bqhF1mfE1Tc40RFL/0c?=
- =?us-ascii?Q?6Ez2H+g5jdRt8l8jB0SXiIKIs8BUd5Nfq2M0IB73yt9ZyIGE+Oyo6Hqllm8N?=
- =?us-ascii?Q?4a4hxEefaRPf90rj0PMf7XjV+3mFP2K/7hb65QnGuBGbNoeC4R8zhpUdc9Ug?=
- =?us-ascii?Q?9MGb1CtWfgQdyE1ZlKy9V+JghUHhYYHFOFj0i6JTWSi3h7B7BGuy2ZxhQJfx?=
- =?us-ascii?Q?bsnurocQ7sk8iIHGQgQbJ4HIi0V8tN+sNvm6sGRP8qOxm2VuS2umk/nE+9wK?=
- =?us-ascii?Q?6+joI6AAEmOoVOszOwx9ATYAZpy0rQYKuFA8/SIgqtGTzp1+/G5l01GBFd/b?=
- =?us-ascii?Q?qJ3Bypq4QtY4JWWnvWsmDXa8EeBy3ITjLbBia3RCSNvTTc6WIqdEYWtYjeSC?=
- =?us-ascii?Q?cY55jC+N16OPaBZGiw7+7gGXWw0Pzcw9vgvz9FBVV4sxQiPs8z1A4dl0OYkt?=
- =?us-ascii?Q?Wr95tSpuvpVgvsqWrwuuBDjFUFE7fpSa7aBDqIpbvdMp6w/Ci4wPV44MSFO+?=
- =?us-ascii?Q?QYsqn/g9JZxwE9DK7KA/xTGVTp6NNP3qiJcSSwzlKhfvFu+8ucxP4Pw32zgT?=
- =?us-ascii?Q?jR06kSUrXl6nVyYMYHhSZ9Bvx8Z2eUsrkp4jg3WulHNee+6EdoXgOs+fcByf?=
- =?us-ascii?Q?/LvO+we3KI3pcPyT/cSQhSELvTH5nm/fFBs71bhE3Iq2NyV9ZGlSLwrexMSO?=
- =?us-ascii?Q?Cxp9MNBlpqOR47oxBvmakKCRLw7e6XiUZrP/eGtOwvKCQ3mDHJW1On8tgGNf?=
- =?us-ascii?Q?PCmsrzoZLCWmg72Lx7DFOBHkJIPcToOi3ZXYBAX8w3AoPwMBIwbMMo8GKSAJ?=
- =?us-ascii?Q?I7PCtMaewgGk0icjk3QANObF3L20vl4HHLB/AbbIJlTZcSdLrdTiaPbpSNIU?=
- =?us-ascii?Q?SnStu2inyM+142KDpihL7ho1?=
-x-ms-exchange-transport-forked: True
+ <BN9PR11MB5433440EED4E291C0DCD44BA8CE59@BN9PR11MB5433.namprd11.prod.outlook.com>
 MIME-Version: 1.0
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-AuthSource: BN9PR11MB5433.namprd11.prod.outlook.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: d30a1f1c-1919-4836-f98b-08d94d9bcb2a
-X-MS-Exchange-CrossTenant-originalarrivaltime: 23 Jul 2021 05:36:17.2272 (UTC)
-X-MS-Exchange-CrossTenant-fromentityheader: Hosted
-X-MS-Exchange-CrossTenant-id: 46c98d88-e344-4ed4-8496-4ed7712e255d
-X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: Af1p1HMNyXGOB4hxAGkZDFkzFll+9z3SZj9jD0kJo8QZySgFQgN6ksbyZGeJVq/vl4FwgvwjpUd8nxPSwWMT5A==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: BN6PR11MB1940
-X-OriginatorOrg: intel.com
+Content-Disposition: inline
+In-Reply-To: <BN9PR11MB5433440EED4E291C0DCD44BA8CE59@BN9PR11MB5433.namprd11.prod.outlook.com>
+User-Agent: Mutt/1.5.17 (2007-11-01)
 Cc: "kvm@vger.kernel.org" <kvm@vger.kernel.org>, Will Deacon <will@kernel.org>,
  Kirti Wankhede <kwankhede@nvidia.com>,
  "iommu@lists.linux-foundation.org" <iommu@lists.linux-foundation.org>,
- Jason Gunthorpe <jgg@ziepe.ca>, Alex
- Williamson <alex.williamson@redhat.com>, Robin Murphy <robin.murphy@arm.com>,
- David Woodhouse <dwmw2@infradead.org>,
+ Jason Gunthorpe <jgg@ziepe.ca>, Alex Williamson <alex.williamson@redhat.com>,
+ Robin Murphy <robin.murphy@arm.com>, David Woodhouse <dwmw2@infradead.org>,
+ Christoph Hellwig <hch@lst.de>,
  "linux-arm-kernel@lists.infradead.org" <linux-arm-kernel@lists.infradead.org>
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
@@ -193,31 +86,21 @@ Content-Transfer-Encoding: 7bit
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-> From: Christoph Hellwig <hch@lst.de>
-> Sent: Thursday, July 22, 2021 9:35 PM
+On Fri, Jul 23, 2021 at 05:36:17AM +0000, Tian, Kevin wrote:
+> > > And a new set of IOMMU-API:
+> > >
+> > >     - iommu_{un}bind_pgtable(domain, dev, addr);
+> > >     - iommu_{un}bind_pgtable_pasid(domain, dev, addr, pasid);
+> > >     - iommu_cache_invalidate(domain, dev, invalid_info);
+> > 
+> > What caches is this supposed to "invalidate"?
 > 
-> On Wed, Jun 30, 2021 at 09:08:19AM +0000, Tian, Kevin wrote:
-> > The iommu layer should maintain above attaching status per device and
-> per
-> > iommu domain. There is no mdev/subdev concept in the iommu layer. It's
-> > just about RID or PASID.
-> 
-> Yes, I think that makes sense.
-> 
-> > And a new set of IOMMU-API:
-> >
-> >     - iommu_{un}bind_pgtable(domain, dev, addr);
-> >     - iommu_{un}bind_pgtable_pasid(domain, dev, addr, pasid);
-> >     - iommu_cache_invalidate(domain, dev, invalid_info);
-> 
-> What caches is this supposed to "invalidate"?
+> pasid cache, iotlb or dev_iotlb entries that are related to the bound 
+> pgtable. the actual affected cache type and granularity (device-wide,
+> pasid-wide, selected addr-range) are specified by the caller.
 
-pasid cache, iotlb or dev_iotlb entries that are related to the bound 
-pgtable. the actual affected cache type and granularity (device-wide,
-pasid-wide, selected addr-range) are specified by the caller.
-
-Thanks
-Kevin
+Maybe call it pgtable_invalidate or similar?  To avoid confusing it
+with the CPUs dcache.
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
