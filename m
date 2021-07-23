@@ -2,187 +2,125 @@ Return-Path: <SRS0=yZZ9=MP=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-3.5 required=3.0 tests=BAYES_00,DKIM_INVALID,
-	DKIM_SIGNED,HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,SPF_HELO_NONE,
-	SPF_PASS,URIBL_BLOCKED autolearn=no autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-15.3 required=3.0 tests=BAYES_00,DKIM_INVALID,
+	DKIM_SIGNED,HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_CR_TRAILER,INCLUDES_PATCH,
+	MAILING_LIST_MULTI,NICE_REPLY_A,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,
+	USER_AGENT_SANE_1 autolearn=ham autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 59F06C4338F
-	for <iommu@archiver.kernel.org>; Fri, 23 Jul 2021 05:44:26 +0000 (UTC)
-Received: from smtp2.osuosl.org (smtp2.osuosl.org [140.211.166.133])
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B2369C4338F
+	for <iommu@archiver.kernel.org>; Fri, 23 Jul 2021 05:51:39 +0000 (UTC)
+Received: from smtp3.osuosl.org (smtp3.osuosl.org [140.211.166.136])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 1125960EB2
-	for <iommu@archiver.kernel.org>; Fri, 23 Jul 2021 05:44:26 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.4.1 mail.kernel.org 1125960EB2
-Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=intel.com
+	by mail.kernel.org (Postfix) with ESMTPS id 59C7260E52
+	for <iommu@archiver.kernel.org>; Fri, 23 Jul 2021 05:51:39 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.4.1 mail.kernel.org 59C7260E52
+Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=de.ibm.com
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by smtp2.osuosl.org (Postfix) with ESMTP id E07C640153;
-	Fri, 23 Jul 2021 05:44:24 +0000 (UTC)
+	by smtp3.osuosl.org (Postfix) with ESMTP id 2446E60663;
+	Fri, 23 Jul 2021 05:51:39 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from smtp2.osuosl.org ([127.0.0.1])
-	by localhost (smtp2.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id Ipj2oAEPsHc8; Fri, 23 Jul 2021 05:44:24 +0000 (UTC)
+Received: from smtp3.osuosl.org ([127.0.0.1])
+	by localhost (smtp3.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+	with ESMTP id Luo3v2S5es02; Fri, 23 Jul 2021 05:51:38 +0000 (UTC)
 Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by smtp2.osuosl.org (Postfix) with ESMTPS id BFC2240004;
-	Fri, 23 Jul 2021 05:44:23 +0000 (UTC)
+	by smtp3.osuosl.org (Postfix) with ESMTPS id DDEDA6064F;
+	Fri, 23 Jul 2021 05:51:37 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 926DAC001A;
-	Fri, 23 Jul 2021 05:44:23 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id AF139C001A;
+	Fri, 23 Jul 2021 05:51:37 +0000 (UTC)
 Received: from smtp1.osuosl.org (smtp1.osuosl.org [IPv6:2605:bc80:3010::138])
- by lists.linuxfoundation.org (Postfix) with ESMTP id B4ED4C000E
- for <iommu@lists.linux-foundation.org>; Fri, 23 Jul 2021 05:44:21 +0000 (UTC)
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 6F816C000E
+ for <iommu@lists.linux-foundation.org>; Fri, 23 Jul 2021 05:51:36 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by smtp1.osuosl.org (Postfix) with ESMTP id A352D83143
- for <iommu@lists.linux-foundation.org>; Fri, 23 Jul 2021 05:44:21 +0000 (UTC)
+ by smtp1.osuosl.org (Postfix) with ESMTP id 4A99583192
+ for <iommu@lists.linux-foundation.org>; Fri, 23 Jul 2021 05:51:36 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
 Authentication-Results: smtp1.osuosl.org (amavisd-new);
- dkim=pass (1024-bit key) header.d=intel.onmicrosoft.com
+ dkim=pass (2048-bit key) header.d=ibm.com
 Received: from smtp1.osuosl.org ([127.0.0.1])
  by localhost (smtp1.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id Nh4ZqHCTILEK for <iommu@lists.linux-foundation.org>;
- Fri, 23 Jul 2021 05:44:21 +0000 (UTC)
+ with ESMTP id RouYkf0z4S_1 for <iommu@lists.linux-foundation.org>;
+ Fri, 23 Jul 2021 05:51:35 +0000 (UTC)
 X-Greylist: domain auto-whitelisted by SQLgrey-1.8.0
-Received: from mga06.intel.com (mga06.intel.com [134.134.136.31])
- by smtp1.osuosl.org (Postfix) with ESMTPS id C9AAD8290B
- for <iommu@lists.linux-foundation.org>; Fri, 23 Jul 2021 05:44:20 +0000 (UTC)
-X-IronPort-AV: E=McAfee;i="6200,9189,10053"; a="272925885"
-X-IronPort-AV: E=Sophos;i="5.84,263,1620716400"; d="scan'208";a="272925885"
-Received: from orsmga002.jf.intel.com ([10.7.209.21])
- by orsmga104.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384;
- 22 Jul 2021 22:44:20 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.84,263,1620716400"; d="scan'208";a="433552291"
-Received: from orsmsx603.amr.corp.intel.com ([10.22.229.16])
- by orsmga002.jf.intel.com with ESMTP; 22 Jul 2021 22:44:19 -0700
-Received: from orsmsx608.amr.corp.intel.com (10.22.229.21) by
- ORSMSX603.amr.corp.intel.com (10.22.229.16) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2242.10; Thu, 22 Jul 2021 22:44:19 -0700
-Received: from orsmsx609.amr.corp.intel.com (10.22.229.22) by
- ORSMSX608.amr.corp.intel.com (10.22.229.21) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2242.10; Thu, 22 Jul 2021 22:44:19 -0700
-Received: from ORSEDG602.ED.cps.intel.com (10.7.248.7) by
- orsmsx609.amr.corp.intel.com (10.22.229.22) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2242.10 via Frontend Transport; Thu, 22 Jul 2021 22:44:19 -0700
-Received: from NAM11-BN8-obe.outbound.protection.outlook.com (104.47.58.171)
- by edgegateway.intel.com (134.134.137.103) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.1.2242.10; Thu, 22 Jul 2021 22:44:18 -0700
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=FxfvURjewi7XOsbR9GeBmgQyP6Isy4CGL/+WDIdHXpr/Li9aRl99cQBYyLvJAjHxtBoB3XJu6nXrLZEaIkzjq9lvlYOVKn9WGbRxJzyRxSY4wUk037z81IFAj1khlX0QIytrvIkOegTXfiDmLaLxakYfbmCjZVW+4+T+cMS9RNlx5nfMiNgz6P27nHpipq4HzOPbMd03LhOEcMtX/4E36lIhwhjkqRwjikJOamJQGjx6/UPoFakWzTmkHKHkHiodiDHgwYxzgfV+3X2heKA6L7gEYPb+P/bov8FgSSTlOTE4DQhJ7yRhY1QpqC8MAs8pw5XmW3Ez4xL0QUGABhZ8kg==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com; 
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=cW0HF5OJp/y6ZM1qDcbAIUkmyiaidr9IpVI8Un2VTFs=;
- b=cblK3Y64Zzo/M+byQdSpBeCMYbHANp79OGKkOD5L9oDSy9WUwuP4rJU+t5UfqyAD6laZnsXIO7rOmqDt9Lh6nOS1eQ89/l+db3jYZDUPzBZsAsr+zQkNESoG06tMR/KOcDNadK+EI0GJW/3/CKLHiisjRYegBbZU3b2/yVQxU83tpMqYycUxW5vC7WSRv2FilGBYNya0oEwcW2bYhaOGQZEZrSSiGutcK6bDvTGo8hKigvAMDHclOJ3voTJpJskmCW3JfJLhjxkgbDUXKaMFVYOD6uufEm30xhPEQEwHr8vQmpRNY7eXR5GQsE/slI1VaTNuBeT29zFgEut7L4soLA==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=intel.com; dmarc=pass action=none header.from=intel.com;
- dkim=pass header.d=intel.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=intel.onmicrosoft.com; 
- s=selector2-intel-onmicrosoft-com;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=cW0HF5OJp/y6ZM1qDcbAIUkmyiaidr9IpVI8Un2VTFs=;
- b=K6d+aROah+EsjS1v+7t9yYJvirSoPczfThPCpMazqvE5rm463LkMO8k+LUdDy4Q5xIeQBtbZzzV++pyxuSClQ6CRvRD6k9oA8i/mw7gfvGUsYaFeYN2pJuVddK1RRZoIqRNMmx2MVy+iu6ZhlC9ZdYqfrPBTvAfFZh8L4qCA3Zg=
-Received: from BN9PR11MB5433.namprd11.prod.outlook.com (2603:10b6:408:11e::13)
- by BN6PR11MB4099.namprd11.prod.outlook.com (2603:10b6:405:82::10)
- with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4352.25; Fri, 23 Jul
- 2021 05:44:12 +0000
-Received: from BN9PR11MB5433.namprd11.prod.outlook.com
- ([fe80::fd4b:cdde:6790:134]) by BN9PR11MB5433.namprd11.prod.outlook.com
- ([fe80::fd4b:cdde:6790:134%9]) with mapi id 15.20.4352.026; Fri, 23 Jul 2021
- 05:44:12 +0000
-From: "Tian, Kevin" <kevin.tian@intel.com>
-To: Christoph Hellwig <hch@lst.de>
-Subject: RE: [PATCH 3/6] vfio: remove the unused mdev iommu hook
-Thread-Topic: [PATCH 3/6] vfio: remove the unused mdev iommu hook
-Thread-Index: AQHXRWldX98a1U6w60C1HwYkmNlXK6rc3tAAgAPcBcCAAJmdAIABJmdggAASuMCAAF5dgIAAAFGAgAAT44CABKOLAIAAAkEAgAAGdACAAAupAIAAIZMAgESRwUCAIwZ+AIABCmGQgAADmACAAABpcA==
-Date: Fri, 23 Jul 2021 05:44:12 +0000
-Message-ID: <BN9PR11MB543361E060ECE78CEB005AE68CE59@BN9PR11MB5433.namprd11.prod.outlook.com>
-References: <MWHPR11MB18866205125E566FE05867A78C509@MWHPR11MB1886.namprd11.prod.outlook.com>
- <20210514133143.GK1096940@ziepe.ca> <YKJf7mphTHZoi7Qr@8bytes.org>
- <20210517123010.GO1096940@ziepe.ca> <YKJnPGonR+d8rbu/@8bytes.org>
- <20210517133500.GP1096940@ziepe.ca> <YKKNLrdQ4QjhLrKX@8bytes.org>
- <BN9PR11MB54331FC6BB31E8CBF11914A48C019@BN9PR11MB5433.namprd11.prod.outlook.com>
- <20210722133450.GA29155@lst.de>
- <BN9PR11MB5433440EED4E291C0DCD44BA8CE59@BN9PR11MB5433.namprd11.prod.outlook.com>
- <20210723054106.GA31771@lst.de>
-In-Reply-To: <20210723054106.GA31771@lst.de>
-Accept-Language: en-US
+Received: from mx0a-001b2d01.pphosted.com (mx0b-001b2d01.pphosted.com
+ [148.163.158.5])
+ by smtp1.osuosl.org (Postfix) with ESMTPS id 5E35282B1E
+ for <iommu@lists.linux-foundation.org>; Fri, 23 Jul 2021 05:51:35 +0000 (UTC)
+Received: from pps.filterd (m0098416.ppops.net [127.0.0.1])
+ by mx0b-001b2d01.pphosted.com (8.16.0.43/8.16.0.43) with SMTP id
+ 16N5aPQV039717; Fri, 23 Jul 2021 01:51:29 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com;
+ h=subject : to : cc :
+ references : from : message-id : date : in-reply-to : content-type :
+ content-transfer-encoding : mime-version; s=pp1;
+ bh=XkZ3m0PigwT5WyRPg6Lt98un09CnDDNjG2ReWBa7yCQ=;
+ b=AXzBLmP6qNsPlrAwS7I9oGm+TMsdG5ySnXn17dpRUk/xzWPLCT0mJUQEXNELOq6po+ob
+ 183ynsuo1uJKG/f8J8XAJqQDmwniuqpvVHG5eDrvNAIhPSu9YoZZKBHAeOHstIYLnXWd
+ xqvzSmG0ETHzPNnqgHrNtgyKDIxAkEF+UzWXseM3aWtGIaWkEAtwQ4xciTFqg1SekOEy
+ nXB1sUxL78ayCzbuE0Z3SamcCKG5/HLTyDYTsX1uAuYmJ/ikqG5AjDn/FmvqOVOMfOFl
+ x0OWV+3k3dcSaNpggRimUZ4IUG2k7GEH4IHm/A9ok2q1BpjOOmzgpwNU3jHvmUDE5ZG6 Yg== 
+Received: from ppma04ams.nl.ibm.com (63.31.33a9.ip4.static.sl-reverse.com
+ [169.51.49.99])
+ by mx0b-001b2d01.pphosted.com with ESMTP id 39yq0w1cbm-1
+ (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+ Fri, 23 Jul 2021 01:51:29 -0400
+Received: from pps.filterd (ppma04ams.nl.ibm.com [127.0.0.1])
+ by ppma04ams.nl.ibm.com (8.16.1.2/8.16.1.2) with SMTP id 16N5pBV8032258;
+ Fri, 23 Jul 2021 05:51:28 GMT
+Received: from b06cxnps4074.portsmouth.uk.ibm.com
+ (d06relay11.portsmouth.uk.ibm.com [9.149.109.196])
+ by ppma04ams.nl.ibm.com with ESMTP id 39xhx4917w-1
+ (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+ Fri, 23 Jul 2021 05:51:27 +0000
+Received: from d06av24.portsmouth.uk.ibm.com (mk.ibm.com [9.149.105.60])
+ by b06cxnps4074.portsmouth.uk.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id
+ 16N5pO3c17891682
+ (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+ Fri, 23 Jul 2021 05:51:24 GMT
+Received: from d06av24.portsmouth.uk.ibm.com (unknown [127.0.0.1])
+ by IMSVA (Postfix) with ESMTP id CD84542042;
+ Fri, 23 Jul 2021 05:51:24 +0000 (GMT)
+Received: from d06av24.portsmouth.uk.ibm.com (unknown [127.0.0.1])
+ by IMSVA (Postfix) with ESMTP id 5141F4203F;
+ Fri, 23 Jul 2021 05:51:24 +0000 (GMT)
+Received: from oc7455500831.ibm.com (unknown [9.145.25.128])
+ by d06av24.portsmouth.uk.ibm.com (Postfix) with ESMTP;
+ Fri, 23 Jul 2021 05:51:24 +0000 (GMT)
+Subject: Re: [PATCH v2 0/4] Fix restricted DMA vs swiotlb_exit()
+To: Halil Pasic <pasic@linux.ibm.com>
+References: <20210720133826.9075-1-will@kernel.org>
+ <57e37ef9-c055-d6a6-2244-2c7dd243b5c1@de.ibm.com>
+ <20210723031252.655d6a83.pasic@linux.ibm.com>
+From: Christian Borntraeger <borntraeger@de.ibm.com>
+Message-ID: <62da6479-a000-0b1a-d251-c4e27616fbc2@de.ibm.com>
+Date: Fri, 23 Jul 2021 07:51:24 +0200
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
+ Thunderbird/78.11.0
+In-Reply-To: <20210723031252.655d6a83.pasic@linux.ibm.com>
 Content-Language: en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-dlp-version: 11.5.1.3
-dlp-product: dlpe-windows
-dlp-reaction: no-action
-authentication-results: lst.de; dkim=none (message not signed)
- header.d=none;lst.de; dmarc=none action=none header.from=intel.com;
-x-ms-publictraffictype: Email
-x-ms-office365-filtering-correlation-id: 233e47f7-d0a8-4f26-e343-08d94d9ce657
-x-ms-traffictypediagnostic: BN6PR11MB4099:
-x-microsoft-antispam-prvs: <BN6PR11MB4099E925ED1897B592A7B9548CE59@BN6PR11MB4099.namprd11.prod.outlook.com>
-x-ms-oob-tlc-oobclassifiers: OLM:3968;
-x-ms-exchange-senderadcheck: 1
-x-ms-exchange-antispam-relay: 0
-x-microsoft-antispam: BCL:0;
-x-microsoft-antispam-message-info: 9z6/qvN6OXLtzqV5/Gc0W65dQXJpbczfJIOdFAG6K5Vb/WOP7QzcjHP9eQQknacuu52PcxlpYWI4ON4p8F5wUSlA902PVwZ3dqbpItLbU3f0ky0tMqbxeRS9j9geFKCqpOi+FqxQaAJCE4MuS1PWH21jqB5Tdv9j8YzkmWAkxVw/A5GerCSTBXGmJr8OrI3au605G/Dlc6oW0cqKvyCDG7zkcLHGmwzU+b8GkyVt6yt6xov0Vwt3r4ngtc8VjexSg8SQFLf+pL+5V5jgH89kuzVGYb+Yv21JdJ4WB7dSpDnuHBFFQQn2DQJMXqfLqeePCc+PTgkLxvvOKL2Qdr9EYHTZZgNvGS/jfVvpCfbhSltEXD09qougkHipl0aSg366m0/QDk3HOxYa5IFmJ8caYpHZCmN7wZJpnTc+iKZLDpqRkdkNw9E1p0u3RnaY2Y1pMRd4ql5t+orUZhBCVwzxaonvnCT5BrywutB9IDFlECktL/j0sFHKOcg5yVJmmil3Lx3haMeHtS5TVWhSaM7AlLMFj+0ZB7cyIFHgxtn6yHe6H8wMV+4Fx1eGl2IxNKCrf35ABBHFdLqVsmyRaVqg9G5NBAkVteOTwh9C1LhMv2bT/ESb7Yd2hCuoGSHw6XF9o2d7LsMdjBY+/ciQESeoMJLNOZQy2afUCK2PxENoBicaj7SuubzL37s6UmbFlLtW6U/KvmR0hZD31aYlQWaSqQ==
-x-forefront-antispam-report: CIP:255.255.255.255; CTRY:; LANG:en; SCL:1; SRV:;
- IPV:NLI; SFV:NSPM; H:BN9PR11MB5433.namprd11.prod.outlook.com; PTR:; CAT:NONE;
- SFS:(4636009)(39860400002)(376002)(366004)(396003)(346002)(136003)(186003)(83380400001)(26005)(71200400001)(6506007)(33656002)(55016002)(8676002)(7416002)(86362001)(9686003)(122000001)(7696005)(38100700002)(478600001)(4744005)(5660300002)(76116006)(316002)(4326008)(66946007)(6916009)(66446008)(64756008)(66556008)(66476007)(8936002)(52536014)(54906003)(2906002)(38070700004);
- DIR:OUT; SFP:1102; 
-x-ms-exchange-antispam-messagedata-chunkcount: 1
-x-ms-exchange-antispam-messagedata-0: =?utf-8?B?VWwvR1VLQ01zdldoVFFMcDh1ZUZlUlBUMXJFZ0VJanFrOEFkd3l0S0txdFRG?=
- =?utf-8?B?cDkzWmxLSlc0Nk1YU3UxT2VveXozZk1VRmkxdmxDdVlvYUluVmtVaUVmYUxL?=
- =?utf-8?B?QjlDc2w0L3V6N1BqUTZSSUNndmg2WTJPc05pc0Q4bE4rWGJVOFVjNHJ4cExx?=
- =?utf-8?B?aTNudUhObHNRKzgxT28veXlWL0w1ZVY1S0lLajF6S3BSaG5nbEdIZXZIanpl?=
- =?utf-8?B?empoUUpDOW41RDV6L2UzYXBJUzBiS1pYM21YTG9pbkZJZ3gvelVoM3lSWEZS?=
- =?utf-8?B?NHczWWx2MXpBNkI3N2hRNmtJR0ZVT1pSZmRCLzgxUzlXM3RLTmoydFR6d24y?=
- =?utf-8?B?dHd2aFJSWGdaTEtZckh5bnZXZDhkMXJ6OWFwYnJxQnVzSjVjNXJBZFN1VEgw?=
- =?utf-8?B?eFRoOG5FRFMvc0trc1RteXdMWTBtU05pTjJQZDdRUnFrSW1WQ3VGeENpOThD?=
- =?utf-8?B?eUxYcy9LZHRyNkE5cU5xTmhkTzM4RWxvQlZrb1N1SDVBd045VStQeFZ2akFs?=
- =?utf-8?B?NElGWGNXbUhiR1cxU3NyeGV5Q1hwdDdXb0FwaGtWQ0p3YThlM3BReHdFTXVk?=
- =?utf-8?B?SDMrODBXcDloZEtwT1JqTVVZd24vZXZZU0lvd3QyNUJxcHFvODNwdlpseG5M?=
- =?utf-8?B?bVRudzlKMTVSUWdJZ1M1blNxL3YrYm1xaDdsRVlqU0V3SDhUOVZ6S2lqK1lU?=
- =?utf-8?B?V08xd3c5aWMrS0dUMkpjazVra1ZUd05TT0NDWkI4STgvdWVhd1plaU9CMTNx?=
- =?utf-8?B?Smt0S1VrZnh1RjRwK3ZneFgrbU0rQTdOb0U3RGY3OUlFZ3gxQlUyMDFOTm8w?=
- =?utf-8?B?Ni95aDlBNVYxWVJqc1J1ZTVyS2xsTy90Y1pCUzVPZWxJTWpET2EwcFJEczVX?=
- =?utf-8?B?OG1mejFjWUxQMUplbFYzZ0NtclpHdmcxRGt2bmhKeWpiWERGZkdNbGdyL1N3?=
- =?utf-8?B?QkJsWWs3Y3V4ZzhndTZVN3FrWkdodWxnTWxIUUFFK3BLKzR1V3ZhNVN0NGpW?=
- =?utf-8?B?VHBIWldEYWtldWw1dm1HeCs0UHg0MTJnSG9WOGNYdWxaWGNlc0VCa2VNcHNL?=
- =?utf-8?B?RzlHUytSQUh1RFZraWZjNVk2UXh2emE0SmdienlTOFdiVmQ2cFpXVEYyREZ5?=
- =?utf-8?B?R1dWM1piYXRjOFB5dGpxSnhlWFhQMXhKeXBaMkdDRzUyRXhPWUZLd3hRcXpW?=
- =?utf-8?B?MVY5eTVURVFQMjNWamVST29Zc2xvVlFOZmhyaXp0OENJUjY5b00rVVN3WFI5?=
- =?utf-8?B?d2xiMWYwU2xPamlQU0N6Qm5TL0V1SnpaUnlheWJYbG9INE1saldsa0FrSHc2?=
- =?utf-8?B?K1F6V0lDUjRPUUF6NytHNHN1WDgxOUNBblRhRWZ5TmxLTWZtOWdwdU02b3M5?=
- =?utf-8?B?UW9mS3FuSUsrMUxlUE4vUW5VWmNQUnNTR3dLdVQ5d0FIZVpYZFJLd2ZHRVU4?=
- =?utf-8?B?MVNKc3pHdUd2SzFHbGtZT0Q3elVjVjRpOXQyT0haalRBSWpJY3MvVkUzQ2Zx?=
- =?utf-8?B?bzRNMWYrZmhiNDlRbDhqN05BdGpKYXJRWERTY01MSmNYSW1jODdDWkoyOHpH?=
- =?utf-8?B?c0h5TkJXTFkzWG5oTEdmMzhEdktDL2F1ZHBuSW81Vm1VRWVJaHpCdVFtZ3Nm?=
- =?utf-8?B?bUFQcjdiSGIwa25LRXRuRlVrMzhCZEcwcW9iNzFCVHdWWFFjejFLNEhxanRa?=
- =?utf-8?B?eWpMTTRsOUc1NzFQL0lKdytQMnd1ODFSL3VHVm1BaUZib20yZDJScUNCV3Fo?=
- =?utf-8?Q?Z1RK4ZeIkF6+ambh+ps7l8BL5QECG4Av7biBd4T?=
-x-ms-exchange-transport-forked: True
+X-TM-AS-GCONF: 00
+X-Proofpoint-GUID: JDL3fP8eBNYXkkJGbBGOgcZFzzxpE9S3
+X-Proofpoint-ORIG-GUID: JDL3fP8eBNYXkkJGbBGOgcZFzzxpE9S3
+X-Proofpoint-UnRewURL: 0 URL was un-rewritten
 MIME-Version: 1.0
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-AuthSource: BN9PR11MB5433.namprd11.prod.outlook.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 233e47f7-d0a8-4f26-e343-08d94d9ce657
-X-MS-Exchange-CrossTenant-originalarrivaltime: 23 Jul 2021 05:44:12.2530 (UTC)
-X-MS-Exchange-CrossTenant-fromentityheader: Hosted
-X-MS-Exchange-CrossTenant-id: 46c98d88-e344-4ed4-8496-4ed7712e255d
-X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: x5Dpi3eB3YsiKaDVkvHqEG4x+ZGdE0fN1/vJwbgFJFBZfh6YdXbqaQ+dwAgCchIp3cWxIMqRFrFQ2qOXIuJVJg==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: BN6PR11MB4099
-X-OriginatorOrg: intel.com
-Cc: "kvm@vger.kernel.org" <kvm@vger.kernel.org>, Will Deacon <will@kernel.org>,
- Kirti Wankhede <kwankhede@nvidia.com>,
- "iommu@lists.linux-foundation.org" <iommu@lists.linux-foundation.org>,
- Jason Gunthorpe <jgg@ziepe.ca>, Alex
- Williamson <alex.williamson@redhat.com>, Robin Murphy <robin.murphy@arm.com>,
- David Woodhouse <dwmw2@infradead.org>,
- "linux-arm-kernel@lists.infradead.org" <linux-arm-kernel@lists.infradead.org>
+X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.391, 18.0.790
+ definitions=2021-07-22_16:2021-07-22,
+ 2021-07-22 signatures=0
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0
+ impostorscore=0
+ lowpriorityscore=0 mlxlogscore=999 priorityscore=1501 suspectscore=0
+ bulkscore=0 phishscore=0 clxscore=1015 adultscore=0 mlxscore=0
+ malwarescore=0 spamscore=0 classifier=spam adjust=0 reason=mlx scancount=1
+ engine=8.12.0-2104190000 definitions=main-2107230031
+Cc: linux-s390 <linux-s390@vger.kernel.org>, Vasily Gorbik <gor@linux.ibm.com>,
+ Konrad Rzeszutek Wilk <konrad.wilk@oracle.com>,
+ Robin Murphy <robin.murphy@arm.com>,
+ Heiko Carstens <heiko.carstens@de.ibm.com>, linux-kernel@vger.kernel.org,
+ Nathan Chancellor <nathan@kernel.org>, iommu@lists.linux-foundation.org,
+ Claire Chang <tientzu@chromium.org>, Will Deacon <will@kernel.org>,
+ Christoph Hellwig <hch@lst.de>, Guenter Roeck <linux@roeck-us.net>
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -195,27 +133,109 @@ List-Post: <mailto:iommu@lists.linux-foundation.org>
 List-Help: <mailto:iommu-request@lists.linux-foundation.org?subject=help>
 List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
  <mailto:iommu-request@lists.linux-foundation.org?subject=subscribe>
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
+Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset="us-ascii"; Format="flowed"
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-PiBGcm9tOiBDaHJpc3RvcGggSGVsbHdpZyA8aGNoQGxzdC5kZT4NCj4gU2VudDogRnJpZGF5LCBK
-dWx5IDIzLCAyMDIxIDE6NDEgUE0NCj4gDQo+IE9uIEZyaSwgSnVsIDIzLCAyMDIxIGF0IDA1OjM2
-OjE3QU0gKzAwMDAsIFRpYW4sIEtldmluIHdyb3RlOg0KPiA+ID4gPiBBbmQgYSBuZXcgc2V0IG9m
-IElPTU1VLUFQSToNCj4gPiA+ID4NCj4gPiA+ID4gICAgIC0gaW9tbXVfe3VufWJpbmRfcGd0YWJs
-ZShkb21haW4sIGRldiwgYWRkcik7DQo+ID4gPiA+ICAgICAtIGlvbW11X3t1bn1iaW5kX3BndGFi
-bGVfcGFzaWQoZG9tYWluLCBkZXYsIGFkZHIsIHBhc2lkKTsNCj4gPiA+ID4gICAgIC0gaW9tbXVf
-Y2FjaGVfaW52YWxpZGF0ZShkb21haW4sIGRldiwgaW52YWxpZF9pbmZvKTsNCj4gPiA+DQo+ID4g
-PiBXaGF0IGNhY2hlcyBpcyB0aGlzIHN1cHBvc2VkIHRvICJpbnZhbGlkYXRlIj8NCj4gPg0KPiA+
-IHBhc2lkIGNhY2hlLCBpb3RsYiBvciBkZXZfaW90bGIgZW50cmllcyB0aGF0IGFyZSByZWxhdGVk
-IHRvIHRoZSBib3VuZA0KPiA+IHBndGFibGUuIHRoZSBhY3R1YWwgYWZmZWN0ZWQgY2FjaGUgdHlw
-ZSBhbmQgZ3JhbnVsYXJpdHkgKGRldmljZS13aWRlLA0KPiA+IHBhc2lkLXdpZGUsIHNlbGVjdGVk
-IGFkZHItcmFuZ2UpIGFyZSBzcGVjaWZpZWQgYnkgdGhlIGNhbGxlci4NCj4gDQo+IE1heWJlIGNh
-bGwgaXQgcGd0YWJsZV9pbnZhbGlkYXRlIG9yIHNpbWlsYXI/ICBUbyBhdm9pZCBjb25mdXNpbmcg
-aXQNCj4gd2l0aCB0aGUgQ1BVcyBkY2FjaGUuDQoNCnN1cmUuIGJ0dyBhYm92ZSBhcmUganVzdCBw
-bGFjZWhvbGRlcnMuIFdlIGNhbiBjbGVhciB0aGVtIHVwIHdoZW4NCndvcmtpbmcgb24gdGhlIGFj
-dHVhbCBpbXBsZW1lbnRhdGlvbi4g8J+Yig0KDQpUaGFua3MNCktldmluDQpfX19fX19fX19fX19f
-X19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fXwppb21tdSBtYWlsaW5nIGxpc3QKaW9t
-bXVAbGlzdHMubGludXgtZm91bmRhdGlvbi5vcmcKaHR0cHM6Ly9saXN0cy5saW51eGZvdW5kYXRp
-b24ub3JnL21haWxtYW4vbGlzdGluZm8vaW9tbXU=
+
+
+On 23.07.21 03:12, Halil Pasic wrote:
+> On Thu, 22 Jul 2021 21:22:58 +0200
+> Christian Borntraeger <borntraeger@de.ibm.com> wrote:
+> 
+>> On 20.07.21 15:38, Will Deacon wrote:
+>>> Hi again, folks,
+>>>
+>>> This is version two of the patch series I posted yesterday:
+>>>
+>>>     https://lore.kernel.org/r/20210719123054.6844-1-will@kernel.org
+>>>
+>>> The only changes since v1 are:
+>>>
+>>>     * Squash patches 2 and 3, amending the commit message accordingly
+>>>     * Add Reviewed-by and Tested-by tags from Christoph and Claire (thanks!)
+>>>
+>>> I'd usually leave it a bit longer between postings, but since this fixes
+>>> issues with patches in -next I thought I'd spin a new version immediately.
+>>>
+>>> Cheers,
+>>
+>> FWIW, I just bisected virtio-errors with secure execution mode
+>> qemu-system-s390x: virtio-serial-bus: Unexpected port id 4205794771 for device virtio-serial0.0
+>>
+>> to
+>> commit 903cd0f315fe426c6a64c54ed389de0becb663dc
+>> Author: Claire Chang <tientzu@chromium.org>
+>> Date:   Thu Jun 24 23:55:20 2021 +0800
+>>
+>>        swiotlb: Use is_swiotlb_force_bounce for swiotlb data bouncing
+>>
+>> Unfortunately this patch series does NOT fix this issue, so it seems that even more
+>> things are broken.
+>>
+>> Any idea what else might be broken?
+> 
+> I've done some debugging, and I think I know what is going on. Since
+> that commit we need to set force_swiotlb before the swiotlb itself is
+> initialized. So the patch below should fix the problem.
+> 
+> --------------------8<-------------------------------------
+> 
+> From: Halil Pasic <pasic@linux.ibm.com>
+> Date: Fri, 23 Jul 2021 02:57:06 +0200
+> Subject: [PATCH 1/1] s390/pv: fix the forcing of the swiotlb
+> 
+> Since commit 903cd0f315fe ("swiotlb: Use is_swiotlb_force_bounce for
+> swiotlb data bouncing") if code sets swiotlb_force it needs to do so
+> before the swiotlb is initialised. Otherwise
+> io_tlb_default_mem->force_bounce will not get set to true, and devices
+> that use (the default) swiotlb will not bounce  despite switolb_force
+> having the value of SWIOTLB_FORCE.
+> 
+> Let us restore swiotlb functionality for PV by fulfilling this new
+> requirement.
+> 
+I would add:
+Fixes: 903cd0f315fe ("swiotlb: Use is_swiotlb_force_bounce for swiotlb data bouncing")
+as this patch breaks things
+and
+Fixes: 64e1f0c531d1 ("s390/mm: force swiotlb for protected virtualization")
+
+to make the s390 init code more robust in case people start backporting things.
+
+> Signed-off-by: Halil Pasic <pasic@linux.ibm.com>
+
+I can confirm that this fixes the problem. This also makes sense codewise.
+
+Tested-by: Christian Borntraeger <borntraeger@de.ibm.com>
+Reviewed-by: Christian Borntraeger <borntraeger@de.ibm.com>
+
+Konrad, Heiko, Vasily, any preference which tree this goes? I think s390
+would be easiest, but that requires that the patches in the swiotlb tree have
+fixed commit IDs.
+
+> ---
+>   arch/s390/mm/init.c | 2 +-
+>   1 file changed, 1 insertion(+), 1 deletion(-)
+> 
+> diff --git a/arch/s390/mm/init.c b/arch/s390/mm/init.c
+> index 8ac710de1ab1..07bbee9b7320 100644
+> --- a/arch/s390/mm/init.c
+> +++ b/arch/s390/mm/init.c
+> @@ -186,9 +186,9 @@ static void pv_init(void)
+>   		return;
+>   
+>   	/* make sure bounce buffers are shared */
+> +	swiotlb_force = SWIOTLB_FORCE;
+>   	swiotlb_init(1);
+>   	swiotlb_update_mem_attributes();
+> -	swiotlb_force = SWIOTLB_FORCE;
+>   }
+>   
+>   void __init mem_init(void)
+> 
+_______________________________________________
+iommu mailing list
+iommu@lists.linux-foundation.org
+https://lists.linuxfoundation.org/mailman/listinfo/iommu
