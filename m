@@ -2,128 +2,131 @@ Return-Path: <SRS0=yZZ9=MP=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-15.3 required=3.0 tests=BAYES_00,DKIM_INVALID,
-	DKIM_SIGNED,HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_CR_TRAILER,INCLUDES_PATCH,
-	MAILING_LIST_MULTI,NICE_REPLY_A,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,
-	USER_AGENT_SANE_1 autolearn=unavailable autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-11.6 required=3.0 tests=BAYES_00,DKIM_INVALID,
+	DKIM_SIGNED,HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,
+	SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_GIT autolearn=ham
+	autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6911DC4338F
-	for <iommu@archiver.kernel.org>; Fri, 23 Jul 2021 18:04:20 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 49244C432BE
+	for <iommu@archiver.kernel.org>; Fri, 23 Jul 2021 19:32:32 +0000 (UTC)
 Received: from smtp1.osuosl.org (smtp1.osuosl.org [140.211.166.138])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id DC09860EFD
-	for <iommu@archiver.kernel.org>; Fri, 23 Jul 2021 18:04:19 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.4.1 mail.kernel.org DC09860EFD
-Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=de.ibm.com
+	by mail.kernel.org (Postfix) with ESMTPS id E6CD460F22
+	for <iommu@archiver.kernel.org>; Fri, 23 Jul 2021 19:32:31 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.4.1 mail.kernel.org E6CD460F22
+Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=lists.linux-foundation.org
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by smtp1.osuosl.org (Postfix) with ESMTP id A27D883B36;
-	Fri, 23 Jul 2021 18:04:19 +0000 (UTC)
+	by smtp1.osuosl.org (Postfix) with ESMTP id AA87E83521;
+	Fri, 23 Jul 2021 19:32:31 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
 Received: from smtp1.osuosl.org ([127.0.0.1])
 	by localhost (smtp1.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id kpFU2ziymEY1; Fri, 23 Jul 2021 18:04:18 +0000 (UTC)
+	with ESMTP id j1onL2N7c-_I; Fri, 23 Jul 2021 19:32:31 +0000 (UTC)
 Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by smtp1.osuosl.org (Postfix) with ESMTPS id 3575D8289B;
-	Fri, 23 Jul 2021 18:04:18 +0000 (UTC)
+	by smtp1.osuosl.org (Postfix) with ESMTPS id 94AD7834C7;
+	Fri, 23 Jul 2021 19:32:30 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id F330BC0010;
-	Fri, 23 Jul 2021 18:04:17 +0000 (UTC)
-Received: from smtp2.osuosl.org (smtp2.osuosl.org [IPv6:2605:bc80:3010::133])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 1B871C000E
- for <iommu@lists.linux-foundation.org>; Fri, 23 Jul 2021 18:04:17 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 58A15C0010;
+	Fri, 23 Jul 2021 19:32:30 +0000 (UTC)
+Received: from smtp3.osuosl.org (smtp3.osuosl.org [IPv6:2605:bc80:3010::136])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 854EAC000E
+ for <iommu@lists.linux-foundation.org>; Fri, 23 Jul 2021 19:32:29 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by smtp2.osuosl.org (Postfix) with ESMTP id 36A10405CE
- for <iommu@lists.linux-foundation.org>; Fri, 23 Jul 2021 18:04:04 +0000 (UTC)
+ by smtp3.osuosl.org (Postfix) with ESMTP id 6D5F36064C
+ for <iommu@lists.linux-foundation.org>; Fri, 23 Jul 2021 19:32:29 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Authentication-Results: smtp2.osuosl.org (amavisd-new);
- dkim=pass (2048-bit key) header.d=ibm.com
-Received: from smtp2.osuosl.org ([127.0.0.1])
- by localhost (smtp2.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id NFG7DgdMMwQC for <iommu@lists.linux-foundation.org>;
- Fri, 23 Jul 2021 18:04:03 +0000 (UTC)
-X-Greylist: delayed 00:09:50 by SQLgrey-1.8.0
-Received: from mx0a-001b2d01.pphosted.com (mx0a-001b2d01.pphosted.com
- [148.163.156.1])
- by smtp2.osuosl.org (Postfix) with ESMTPS id 4059E401FC
- for <iommu@lists.linux-foundation.org>; Fri, 23 Jul 2021 18:04:03 +0000 (UTC)
-Received: from pps.filterd (m0098410.ppops.net [127.0.0.1])
- by mx0a-001b2d01.pphosted.com (8.16.0.43/8.16.0.43) with SMTP id
- 16NHXjsE010920; Fri, 23 Jul 2021 13:54:06 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com;
- h=subject : to : cc :
- references : from : message-id : date : in-reply-to : content-type :
- content-transfer-encoding : mime-version; s=pp1;
- bh=tAPkpQeFLm7/MzUH5kG/tXZNZdNBdy5KfbESo14Kjvc=;
- b=c6quvI6RJqixGnLflv7xp8GK69x7HbFFN8UrLiLiqJHQ5SHMXp1ksiqgOHqMHuGw1n6u
- 5L1LOSPwckA0bcLpa9iUNs1cG3tI3GxwWYjXji+iRLRMvijyTsMCwViab+frGF5qTuzf
- i15JIsg8uCma1WRABxR9/v8DxdmLcjqAeGoTn7NOnNDMej0ZoQUpAD0eFsFSSMXEY2j3
- Frw0gitAS2hTl0Dgjg3Ibi/8Syvn8GZEVceIXoDnrAL7oq6t291xXuQM2O3IGcQBO0vA
- JOw2RY92samWmhE03Ecm7fCbGZy0CIw5d/URJjAt4tjd3pFK+SXd5FvvNIrKShxh0Qtu UQ== 
-Received: from ppma02fra.de.ibm.com (47.49.7a9f.ip4.static.sl-reverse.com
- [159.122.73.71])
- by mx0a-001b2d01.pphosted.com with ESMTP id 3a0216rvwy-1
- (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
- Fri, 23 Jul 2021 13:54:05 -0400
-Received: from pps.filterd (ppma02fra.de.ibm.com [127.0.0.1])
- by ppma02fra.de.ibm.com (8.16.1.2/8.16.1.2) with SMTP id 16NHljdE009736;
- Fri, 23 Jul 2021 17:54:03 GMT
-Received: from b06avi18878370.portsmouth.uk.ibm.com
- (b06avi18878370.portsmouth.uk.ibm.com [9.149.26.194])
- by ppma02fra.de.ibm.com with ESMTP id 39upu89xuf-1
- (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
- Fri, 23 Jul 2021 17:54:03 +0000
-Received: from d06av24.portsmouth.uk.ibm.com (mk.ibm.com [9.149.105.60])
- by b06avi18878370.portsmouth.uk.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP
- id 16NHpSY931523202
- (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
- Fri, 23 Jul 2021 17:51:28 GMT
-Received: from d06av24.portsmouth.uk.ibm.com (unknown [127.0.0.1])
- by IMSVA (Postfix) with ESMTP id B7B294203F;
- Fri, 23 Jul 2021 17:53:59 +0000 (GMT)
-Received: from d06av24.portsmouth.uk.ibm.com (unknown [127.0.0.1])
- by IMSVA (Postfix) with ESMTP id 3246942042;
- Fri, 23 Jul 2021 17:53:59 +0000 (GMT)
-Received: from oc7455500831.ibm.com (unknown [9.145.25.128])
- by d06av24.portsmouth.uk.ibm.com (Postfix) with ESMTP;
- Fri, 23 Jul 2021 17:53:59 +0000 (GMT)
-Subject: Re: [PATCH v2 0/4] Fix restricted DMA vs swiotlb_exit()
-To: Konrad Rzeszutek Wilk <konrad.wilk@oracle.com>
-References: <20210720133826.9075-1-will@kernel.org>
- <57e37ef9-c055-d6a6-2244-2c7dd243b5c1@de.ibm.com>
- <20210723031252.655d6a83.pasic@linux.ibm.com>
- <b8985c53-a83d-f11f-9fa8-af06d1d4bfd0@de.ibm.com>
- <20210723104701.3f8ac227.pasic@linux.ibm.com>
- <ab29cae0-2c1d-354a-5213-9fe4159570e0@de.ibm.com>
- <YPrLualvV9/lE41j@char.us.oracle.com>
-From: Christian Borntraeger <borntraeger@de.ibm.com>
-Message-ID: <b5eec658-7c15-5eb4-bb17-4d598997b521@de.ibm.com>
-Date: Fri, 23 Jul 2021 19:53:58 +0200
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
- Thunderbird/78.11.0
-In-Reply-To: <YPrLualvV9/lE41j@char.us.oracle.com>
-Content-Language: en-US
-X-TM-AS-GCONF: 00
-X-Proofpoint-ORIG-GUID: 6vBaF-yRpOy8_h-_mo-P5w6Euu-lMiay
-X-Proofpoint-GUID: 6vBaF-yRpOy8_h-_mo-P5w6Euu-lMiay
-X-Proofpoint-UnRewURL: 0 URL was un-rewritten
+Authentication-Results: smtp3.osuosl.org (amavisd-new);
+ dkim=pass (2048-bit key) header.d=nvidia.com
+Received: from smtp3.osuosl.org ([127.0.0.1])
+ by localhost (smtp3.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+ with ESMTP id mGZhg88G4dBL for <iommu@lists.linux-foundation.org>;
+ Fri, 23 Jul 2021 19:32:28 +0000 (UTC)
+X-Greylist: whitelisted by SQLgrey-1.8.0
+Received: from NAM12-BN8-obe.outbound.protection.outlook.com
+ (mail-bn8nam12on2061a.outbound.protection.outlook.com
+ [IPv6:2a01:111:f400:fe5b::61a])
+ by smtp3.osuosl.org (Postfix) with ESMTPS id 0B8BC6063A
+ for <iommu@lists.linux-foundation.org>; Fri, 23 Jul 2021 19:32:27 +0000 (UTC)
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=I9JLZ8tiONWf7O99BVGk4orK6PWeFdtCKp5+h8G2Q+t3nszvyxhX4Z3teVzVGstDskrugpVOlG+oIOCeBWJVWUkBy4gcvWWTzNbf6LG1Q10VVcHQafaK5uXZfhiXytkxTsrsU5pXR1Ri4WeMPoK4Y9ogBM0jQ8S5KkpPUUjEhS6nzNjW9eEkWSraqj6KV9NsZhkLt2aHboKs1xSLoZWZ+fFzF0k1uBMJA/6nfVVi0CZpxl7ImuHtjnNXut/jSys3Bv8YLcJWC+1P4lunvLYIw/Ed481DUbju+XNJr+1T8iF25eQ/ZjqJ6y1SPDGFr8sqzy0/4vjmFtSxAxKltkF6BQ==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com; 
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=CBeoysCfJUKGAGZUktQBlX464uwfFvxKYQMFsO009a4=;
+ b=DstOsl5Ycg+CAXJPSmkAP+XGBYOXCpakjWadvTfQfEN8/92ijjTz1tO1l/JmIgLiMc2HiovySscOBIxmoHBqf15lp17fCgqeG4wo9R4V6iEbLf2vDI2Oh0U3Hajo/JbQPPG/bRE2YLZKWxgXC6lz6gBEIx5eIqE7u4eqr7n0turiu/lyzEXqayBFVU23Dq6LngFUfBoYEwKF4iAvKU4eaCehEP3K3m/9TjJZJjAmf5VIBecDkpWGcaWa6fOy5i6WItQRoYeA8y4He+9sa9cTn/eQd5TvhjkCCguxHZx7r2/JeH2UQCEuLZ+ECTH7eYp1HlOuFRWnYRSZE0m6EW9nXw==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
+ 216.228.112.34) smtp.rcpttodomain=gmail.com smtp.mailfrom=nvidia.com;
+ dmarc=pass (p=quarantine sp=none pct=100) action=none header.from=nvidia.com; 
+ dkim=none (message not signed); arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
+ s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=CBeoysCfJUKGAGZUktQBlX464uwfFvxKYQMFsO009a4=;
+ b=McZYgQJZd2ZiEeV6YOXSyMBcg8H7h0jpVbQMvfvzhDsCw4w2hjiGuBnPc+Ju+NSdPHY3J+t/RMnKT8Tmc7Dal5nd+A1VCpoVVtFhK1B4rUrKLfXoDsoqYPeP9H72Z+c/oxISf7Mj3ssYUn95iNwzHLb/jVbLHBte1hlKk1RDZ3GQJS/CaWkN1il8iNmnOgiWAUB2++l6jpcbwgxarU8uq/woq6JjiaEIx9GeoAhAguligc9ku5p3DS215VMWwUwQm6XnffRuiloph66X1lnd2hpG4+Upd1g5i+2aJMXt4wybRwp8E/qMWpY8lQxojYvPVKPYy2wO8szOyUPF4YQMnA==
+Received: from DM3PR03CA0003.namprd03.prod.outlook.com (2603:10b6:0:50::13) by
+ DM4PR12MB5229.namprd12.prod.outlook.com (2603:10b6:5:398::12) with
+ Microsoft
+ SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.20.4352.26; Fri, 23 Jul 2021 19:32:24 +0000
+Received: from DM6NAM11FT065.eop-nam11.prod.protection.outlook.com
+ (2603:10b6:0:50:cafe::54) by DM3PR03CA0003.outlook.office365.com
+ (2603:10b6:0:50::13) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4352.25 via Frontend
+ Transport; Fri, 23 Jul 2021 19:32:24 +0000
+X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 216.228.112.34)
+ smtp.mailfrom=nvidia.com; gmail.com; dkim=none (message not signed)
+ header.d=none;gmail.com; dmarc=pass action=none header.from=nvidia.com;
+Received-SPF: Pass (protection.outlook.com: domain of nvidia.com designates
+ 216.228.112.34 as permitted sender) receiver=protection.outlook.com;
+ client-ip=216.228.112.34; helo=mail.nvidia.com;
+Received: from mail.nvidia.com (216.228.112.34) by
+ DM6NAM11FT065.mail.protection.outlook.com (10.13.172.109) with Microsoft SMTP
+ Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id
+ 15.20.4352.24 via Frontend Transport; Fri, 23 Jul 2021 19:32:24 +0000
+Received: from HQMAIL105.nvidia.com (172.20.187.12) by HQMAIL107.nvidia.com
+ (172.20.187.13) with Microsoft SMTP Server (TLS) id 15.0.1497.2; Fri, 23 Jul
+ 2021 19:32:24 +0000
+Received: from HQMAIL109.nvidia.com (172.20.187.15) by HQMAIL105.nvidia.com
+ (172.20.187.12) with Microsoft SMTP Server (TLS) id 15.0.1497.2; Fri, 23 Jul
+ 2021 19:32:23 +0000
+Received: from Asurada-Nvidia.nvidia.com (172.20.187.5) by mail.nvidia.com
+ (172.20.187.15) with Microsoft SMTP Server id 15.0.1497.2 via Frontend
+ Transport; Fri, 23 Jul 2021 12:32:23 -0700
+To: <will@kernel.org>, <robin.murphy@arm.com>, <joro@8bytes.org>
+Subject: [RFC][Patch v1 0/2] iommu/arm-smmu-v3: Add NVIDIA implementation
+Date: Fri, 23 Jul 2021 12:31:38 -0700
+Message-ID: <20210723193140.9690-1-nicolinc@nvidia.com>
+X-Mailer: git-send-email 2.17.1
 MIME-Version: 1.0
-X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.391, 18.0.790
- definitions=2021-07-23_09:2021-07-23,
- 2021-07-23 signatures=0
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0
- mlxlogscore=999 adultscore=0
- lowpriorityscore=0 bulkscore=0 priorityscore=1501 phishscore=0
- clxscore=1015 spamscore=0 mlxscore=0 malwarescore=0 impostorscore=0
- suspectscore=0 classifier=spam adjust=0 reason=mlx scancount=1
- engine=8.12.0-2104190000 definitions=main-2107230106
-Cc: Nathan Chancellor <nathan@kernel.org>, Vasily Gorbik <gor@linux.ibm.com>,
- linux-s390 <linux-s390@vger.kernel.org>, Robin Murphy <robin.murphy@arm.com>,
- Heiko Carstens <hca@linux.ibm.com>, linux-kernel@vger.kernel.org,
- Halil Pasic <pasic@linux.ibm.com>, iommu@lists.linux-foundation.org,
- Claire Chang <tientzu@chromium.org>, Will Deacon <will@kernel.org>,
- Christoph Hellwig <hch@lst.de>, Guenter Roeck <linux@roeck-us.net>
+X-EOPAttributedMessage: 0
+X-MS-PublicTrafficType: Email
+X-MS-Office365-Filtering-Correlation-Id: c252ea11-9b8a-4399-a818-08d94e109957
+X-MS-TrafficTypeDiagnostic: DM4PR12MB5229:
+X-Microsoft-Antispam-PRVS: <DM4PR12MB52298F9755C7A5C7D4FB097BABE59@DM4PR12MB5229.namprd12.prod.outlook.com>
+X-MS-Oob-TLC-OOBClassifiers: OLM:9508;
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: y4l6Hr90Hh6a1j0np9RcKF3w4Js9cMGzID0f2af3D6iMeW3NbUKJLp1nHzA4yRksEJt6Bg9vmB1a3UmMeSAmgIhfzbWv0BKOD2yY8X9HVtCLwCGy/eDsSBmmMlwhn/EGr/AVaEmuGbHQ6qK/ew0oq1NKbyYoXdj+0kasftWcN5r0Z3SDBnnkicpQgLJMi1i5/zOLgexpXXAp0p5DqoNm5tucqarq1toZOf0Jcbipt/UG576TVOOs//GdGbO1iupPpCbxjuVTvMPLdSVKZJZgn6oHSWF+ojdT3Ras1jSJ/PccbbTZRc6wjXsMn+IgSNeWFtKtoDQ5faceUbZ8FSuWKWqGc7V5S51lIcL5qqHtqBOJHCNJuf2MjKt2Xq07DQ6RpChzZ2kVHIN9e57lRxzot0mtba2UxbZ7Mp0aYrBlSNAj1yTJjFeEbjrzkfxPkix2Ap/9i9OIzajH6vZvboLDDMX1o1skelZbFqfctaPcnn8QLLWHiOT0oXfnvr2d5i/8DMZHuh1gJllFnW6Add9SS36G4uO6NoCxq+fwjJZbWC+N+/hKjHQ8zo6p5QbhZ01ff65XVJolyDX6MJ3/A6omzWJgXVXlv8F0SChUzTbxtwF4Zwp7zhT+GgBOMtv1G2I/VAGl8cEU+NYzVv+hu0Ght2jpYGOxXdiPBVr94A1Hvfwu7jk0IM0KJXxvpSchgGLf1sqj5f1ozcplkXFWWJXvLQ==
+X-Forefront-Antispam-Report: CIP:216.228.112.34; CTRY:US; LANG:en; SCL:1; SRV:;
+ IPV:NLI; SFV:NSPM; H:mail.nvidia.com; PTR:schybrid03.nvidia.com; CAT:NONE;
+ SFS:(4636009)(396003)(136003)(39860400002)(376002)(346002)(36840700001)(46966006)(426003)(36860700001)(110136005)(36756003)(47076005)(336012)(2906002)(4326008)(186003)(7416002)(478600001)(82310400003)(82740400003)(7636003)(5660300002)(1076003)(86362001)(54906003)(70206006)(316002)(8936002)(6666004)(26005)(36906005)(83380400001)(2616005)(70586007)(356005)(8676002)(7696005);
+ DIR:OUT; SFP:1101; 
+X-OriginatorOrg: Nvidia.com
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 23 Jul 2021 19:32:24.7648 (UTC)
+X-MS-Exchange-CrossTenant-Network-Message-Id: c252ea11-9b8a-4399-a818-08d94e109957
+X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
+X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=43083d15-7273-40c1-b7db-39efd9ccc17a; Ip=[216.228.112.34];
+ Helo=[mail.nvidia.com]
+X-MS-Exchange-CrossTenant-AuthSource: DM6NAM11FT065.eop-nam11.prod.protection.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Anonymous
+X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: DM4PR12MB5229
+Cc: jean-philippe@linaro.org, linux-kernel@vger.kernel.org,
+ iommu@lists.linux-foundation.org, thierry.reding@gmail.com,
+ linux-tegra@vger.kernel.org, linux-arm-kernel@lists.infradead.org
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -136,147 +139,51 @@ List-Post: <mailto:iommu@lists.linux-foundation.org>
 List-Help: <mailto:iommu-request@lists.linux-foundation.org?subject=help>
 List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
  <mailto:iommu-request@lists.linux-foundation.org?subject=subscribe>
+From: Nicolin Chen via iommu <iommu@lists.linux-foundation.org>
+Reply-To: Nicolin Chen <nicolinc@nvidia.com>
+Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
-Content-Type: text/plain; charset="us-ascii"; Format="flowed"
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
+From: Nicolin Chen <nicoleotsuka@gmail.com>
 
+The SMMUv3 devices implemented in the Grace SoC support NVIDIA's custom
+CMDQ-Virtualization (CMDQV) hardware. Like the new ECMDQ feature first
+introduced in the ARM SMMUv3.3 specification, CMDQV adds multiple VCMDQ
+interfaces to supplement the single architected SMMU_CMDQ in an effort
+to reduce contention.
 
-On 23.07.21 16:01, Konrad Rzeszutek Wilk wrote:
-> On Fri, Jul 23, 2021 at 10:50:57AM +0200, Christian Borntraeger wrote:
->>
->>
->> On 23.07.21 10:47, Halil Pasic wrote:
->>> On Fri, 23 Jul 2021 08:14:19 +0200
->>> Christian Borntraeger <borntraeger@de.ibm.com> wrote:
->>>
->>>> Resending with the correct email of Heiko....
->>>>
->>>> On 23.07.21 03:12, Halil Pasic wrote:
->>>>> On Thu, 22 Jul 2021 21:22:58 +0200
->>>>> Christian Borntraeger <borntraeger@de.ibm.com> wrote:
->>>>>> On 20.07.21 15:38, Will Deacon wrote:
->>>>>>> Hi again, folks,
->>>>>>>
->>>>>>> This is version two of the patch series I posted yesterday:
->>>>>>>
->>>>>>>       https://lore.kernel.org/r/20210719123054.6844-1-will@kernel.org
->>>>>>>
->>>>>>> The only changes since v1 are:
->>>>>>>
->>>>>>>       * Squash patches 2 and 3, amending the commit message accordingly
->>>>>>>       * Add Reviewed-by and Tested-by tags from Christoph and Claire (thanks!)
->>>>>>>
->>>>>>> I'd usually leave it a bit longer between postings, but since this fixes
->>>>>>> issues with patches in -next I thought I'd spin a new version immediately.
->>>>>>>
->>>>>>> Cheers,
->>>>>>
->>>>>> FWIW, I just bisected virtio-errors with secure execution mode
->>>>>> qemu-system-s390x: virtio-serial-bus: Unexpected port id 4205794771 for device virtio-serial0.0
->>>>>>
->>>>>> to
->>>>>> commit 903cd0f315fe426c6a64c54ed389de0becb663dc
->>>>>> Author: Claire Chang <tientzu@chromium.org>
->>>>>> Date:   Thu Jun 24 23:55:20 2021 +0800
->>>>>>
->>>>>>          swiotlb: Use is_swiotlb_force_bounce for swiotlb data bouncing
->>>>>>
->>>>>> Unfortunately this patch series does NOT fix this issue, so it seems that even more
->>>>>> things are broken.
->>>>>>
->>>>>> Any idea what else might be broken?
->>>>>
->>>>> I've done some debugging, and I think I know what is going on. Since
->>>>> that commit we need to set force_swiotlb before the swiotlb itself is
->>>>> initialized. So the patch below should fix the problem.
->>>>>
->>>>> --------------------8<-------------------------------------
->>>>>
->>>>> From: Halil Pasic <pasic@linux.ibm.com>
->>>>> Date: Fri, 23 Jul 2021 02:57:06 +0200
->>>>> Subject: [PATCH 1/1] s390/pv: fix the forcing of the swiotlb
->>>>>
->>>>> Since commit 903cd0f315fe ("swiotlb: Use is_swiotlb_force_bounce for
->>>>> swiotlb data bouncing") if code sets swiotlb_force it needs to do so
->>>>> before the swiotlb is initialised. Otherwise
->>>>> io_tlb_default_mem->force_bounce will not get set to true, and devices
->>>>> that use (the default) swiotlb will not bounce  despite switolb_force
->>>>> having the value of SWIOTLB_FORCE.
->>>>>
->>>>> Let us restore swiotlb functionality for PV by fulfilling this new
->>>>> requirement.
->>>> I would add:
->>>> Fixes: 903cd0f315fe ("swiotlb: Use is_swiotlb_force_bounce for swiotlb data bouncing")
->>>> as this patch breaks things
->>>> and
->>>> Fixes: 64e1f0c531d1 ("s390/mm: force swiotlb for protected virtualization")
->>>>
->>>> to make the s390 init code more robust in case people start backporting things.
->>>
->>> I agree. Do we want this backported to the stable releases that have
->>> 64e1f0c531d1  (i.e. do we need a cc stable) or should the fixes tag just
->>> serve as metadata? My guess is, it's the former. In that sense should I
->>> add the tags along with an explanation for the second fixes respin with
->>> cc stable?
->>>
->>> (BTW I don't think this formally qualifies for the stable backports, but
->>> I hope we can make an exception...)
->>
->> I think it makes sense for stable as it is cleaner to set the flags before
->> calling the init function. cc stable would be better and the right way
->> according to process, but the Fixes tag is mostly enough.
-> 
-> But the reaso for fixing this is for code that is not yet in Linus's
-> tree?
-> 
-> I can just pick this patch up and add it in the pile I have for the next
-> merge window?
+This patch series adds CMDQV support to the arm-smmu-v3 driver by first
+borrowing the implementation infrastructure from the arm-smmu driver.
+The NVIDIA implementation is then introduced along with hooks allowing
+implmentations to specify custom issue_cmdlist methods. Additionally,
+the original issue_cmdlist and supporting methods in the arm-smmu-v3
+driver are reworked to support alternative CMDQs. 
 
-That would also work for me. I think Halil wanted to send out and v2.
-In any case
-Acked-by: Christian Borntraeger <borntraeger@de.ibm.com>
+[ nicolinc: this v1 is more of base changes for CMDQV driver; while I
+  am still integrating incremental features based on VFIO mdev, I sent
+  these two out in order to collect comments and suggestions to see if
+  the overall structure is promising. I will add more changes in v2 or
+  later versions for more detailed implementations. Thank you! ]
 
-so that you can take this via the swiotlb tree.
+Nate Watterson (2):
+  iommu/arm-smmu-v3: Add implementation infrastructure
+  iommu/arm-smmu-v3: Add support for NVIDIA CMDQ-Virtualization hw
 
->>
->>>
->>>>
->>>>> Signed-off-by: Halil Pasic <pasic@linux.ibm.com>
->>>>
->>>> I can confirm that this fixes the problem. This also makes sense codewise.
->>>>
->>>> Tested-by: Christian Borntraeger <borntraeger@de.ibm.com>
->>>> Reviewed-by: Christian Borntraeger <borntraeger@de.ibm.com>
->>>
->>> Thanks!
->>>
->>> Regards,
->>> Halil
->>>>
->>>> Konrad, Heiko, Vasily, any preference which tree this goes? I think s390
->>>> would be easiest, but that requires that the patches in the swiotlb tree have
->>>> fixed commit IDs.
->>>>
->>>>> ---
->>>>>     arch/s390/mm/init.c | 2 +-
->>>>>     1 file changed, 1 insertion(+), 1 deletion(-)
->>>>>
->>>>> diff --git a/arch/s390/mm/init.c b/arch/s390/mm/init.c
->>>>> index 8ac710de1ab1..07bbee9b7320 100644
->>>>> --- a/arch/s390/mm/init.c
->>>>> +++ b/arch/s390/mm/init.c
->>>>> @@ -186,9 +186,9 @@ static void pv_init(void)
->>>>>     		return;
->>>>>     	/* make sure bounce buffers are shared */
->>>>> +	swiotlb_force = SWIOTLB_FORCE;
->>>>>     	swiotlb_init(1);
->>>>>     	swiotlb_update_mem_attributes();
->>>>> -	swiotlb_force = SWIOTLB_FORCE;
->>>>>     }
->>>>>     void __init mem_init(void)
->>>
+ MAINTAINERS                                   |   2 +
+ drivers/iommu/arm/arm-smmu-v3/Makefile        |   2 +-
+ .../iommu/arm/arm-smmu-v3/arm-smmu-v3-impl.c  |  15 +
+ drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c   |  71 +--
+ drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.h   |  15 +
+ .../iommu/arm/arm-smmu-v3/nvidia-smmu-v3.c    | 425 ++++++++++++++++++
+ 6 files changed, 503 insertions(+), 27 deletions(-)
+ create mode 100644 drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3-impl.c
+ create mode 100644 drivers/iommu/arm/arm-smmu-v3/nvidia-smmu-v3.c
+
+-- 
+2.17.1
+
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
