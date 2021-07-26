@@ -6,79 +6,82 @@ X-Spam-Status: No, score=-3.5 required=3.0 tests=BAYES_00,DKIM_INVALID,
 	DKIM_SIGNED,HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,SPF_HELO_NONE,
 	SPF_PASS,URIBL_BLOCKED autolearn=no autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 77DADC432BE
-	for <iommu@archiver.kernel.org>; Mon, 26 Jul 2021 21:53:16 +0000 (UTC)
-Received: from smtp2.osuosl.org (smtp2.osuosl.org [140.211.166.133])
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B9A4DC4338F
+	for <iommu@archiver.kernel.org>; Mon, 26 Jul 2021 22:48:10 +0000 (UTC)
+Received: from smtp3.osuosl.org (smtp3.osuosl.org [140.211.166.136])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 07DC260FE4
-	for <iommu@archiver.kernel.org>; Mon, 26 Jul 2021 21:53:15 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.4.1 mail.kernel.org 07DC260FE4
+	by mail.kernel.org (Postfix) with ESMTPS id 45B05603E9
+	for <iommu@archiver.kernel.org>; Mon, 26 Jul 2021 22:48:10 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.4.1 mail.kernel.org 45B05603E9
 Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=atishpatra.org
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by smtp2.osuosl.org (Postfix) with ESMTP id CA1AB400F0;
-	Mon, 26 Jul 2021 21:53:15 +0000 (UTC)
+	by smtp3.osuosl.org (Postfix) with ESMTP id 0C0F8607BF;
+	Mon, 26 Jul 2021 22:48:10 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from smtp2.osuosl.org ([127.0.0.1])
-	by localhost (smtp2.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id 2Ed2ImQylE1L; Mon, 26 Jul 2021 21:53:15 +0000 (UTC)
-Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by smtp2.osuosl.org (Postfix) with ESMTPS id 9957040162;
-	Mon, 26 Jul 2021 21:53:14 +0000 (UTC)
+Received: from smtp3.osuosl.org ([127.0.0.1])
+	by localhost (smtp3.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+	with ESMTP id 0aqYYwNacK7q; Mon, 26 Jul 2021 22:48:08 +0000 (UTC)
+Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [IPv6:2605:bc80:3010:104::8cd3:938])
+	by smtp3.osuosl.org (Postfix) with ESMTPS id 5710560654;
+	Mon, 26 Jul 2021 22:48:08 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 681CFC001A;
-	Mon, 26 Jul 2021 21:53:14 +0000 (UTC)
-Received: from smtp2.osuosl.org (smtp2.osuosl.org [IPv6:2605:bc80:3010::133])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 1C8B9C000E
- for <iommu@lists.linux-foundation.org>; Mon, 26 Jul 2021 21:53:13 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 28F8AC0010;
+	Mon, 26 Jul 2021 22:48:08 +0000 (UTC)
+Received: from smtp1.osuosl.org (smtp1.osuosl.org [IPv6:2605:bc80:3010::138])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 27075C000E
+ for <iommu@lists.linux-foundation.org>; Mon, 26 Jul 2021 22:48:07 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by smtp2.osuosl.org (Postfix) with ESMTP id 036C440162
- for <iommu@lists.linux-foundation.org>; Mon, 26 Jul 2021 21:53:13 +0000 (UTC)
+ by smtp1.osuosl.org (Postfix) with ESMTP id 0E24383474
+ for <iommu@lists.linux-foundation.org>; Mon, 26 Jul 2021 22:48:07 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from smtp2.osuosl.org ([127.0.0.1])
- by localhost (smtp2.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id bMvyQIAUO8dH for <iommu@lists.linux-foundation.org>;
- Mon, 26 Jul 2021 21:53:11 +0000 (UTC)
+Authentication-Results: smtp1.osuosl.org (amavisd-new);
+ dkim=pass (1024-bit key) header.d=atishpatra.org
+Received: from smtp1.osuosl.org ([127.0.0.1])
+ by localhost (smtp1.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+ with ESMTP id nx1j8fkgzpXF for <iommu@lists.linux-foundation.org>;
+ Mon, 26 Jul 2021 22:48:06 +0000 (UTC)
 X-Greylist: whitelisted by SQLgrey-1.8.0
 Received: from mail-yb1-xb35.google.com (mail-yb1-xb35.google.com
  [IPv6:2607:f8b0:4864:20::b35])
- by smtp2.osuosl.org (Postfix) with ESMTPS id AFD7B400F0
- for <iommu@lists.linux-foundation.org>; Mon, 26 Jul 2021 21:53:11 +0000 (UTC)
-Received: by mail-yb1-xb35.google.com with SMTP id z18so17279497ybg.8
- for <iommu@lists.linux-foundation.org>; Mon, 26 Jul 2021 14:53:10 -0700 (PDT)
+ by smtp1.osuosl.org (Postfix) with ESMTPS id 20A9A83438
+ for <iommu@lists.linux-foundation.org>; Mon, 26 Jul 2021 22:48:06 +0000 (UTC)
+Received: by mail-yb1-xb35.google.com with SMTP id d73so17437850ybc.10
+ for <iommu@lists.linux-foundation.org>; Mon, 26 Jul 2021 15:48:05 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
  d=atishpatra.org; s=google;
  h=mime-version:references:in-reply-to:from:date:message-id:subject:to
- :cc; bh=6kBp8vg6yrbqOVIKTerlcVAvXP0g+WzVUYrd5yH/+QE=;
- b=XA6S+wcg4qscUKPhrHfs9id0ov3mJw7DOLhvASuXhtr999Q3C6XmfJvxjMDGwtF5yP
- /ROSFbhTi6Bo2WJ7XqA7thr54ZyRRqBxFGPRUUpQDwu5dtF1UF2mNn2XKy0/k6KPL5HO
- BWQQP5EMcW2boq2BtlUyF+Cwh1u74WAo1zqdI=
+ :cc; bh=BvsqUUy/O01l4CBRzfrPE1Jc7wO/JNGVxsEuCcHSCWw=;
+ b=Oj1mDz93drUb82Y4dwGcG6EgM1Z32HcAKJ4YfgJCNUqNIvF/kV3bQ3NHUCklnTy4SW
+ 1GD2cx3JJGrezXOK+L9wjvpJ96IV67qydn4ANvKcp7SDWJs80YFbIdORNMRlexi21vaX
+ bIzr8ywtm1/QqdYt2jpgnb8HNzTEWOFg+DmXI=
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
  d=1e100.net; s=20161025;
  h=x-gm-message-state:mime-version:references:in-reply-to:from:date
  :message-id:subject:to:cc;
- bh=6kBp8vg6yrbqOVIKTerlcVAvXP0g+WzVUYrd5yH/+QE=;
- b=ZlXwRXhoH6JRFsqay9Mpg2FJUQS9cE7hY1x+fdoXFoEUZR1hPHikp6QmOhH4Irjbf8
- UwyIetQi6aPvVDMEhtZ0MHP3g6XiHdj0Tm+rFIzhA/CvafWabN5Nb3uxm6VInysft2z7
- hqiBlzOgRAOLuQCzWKPWc41YB2UkVd7gZ3riGYOt6Oa9eR1VSiga83edpCIL+IYviT/U
- 5czrp2pus54Z50PPOdPiXee1B0eunOyWHkrbNdvuJiIGDnFOzVjX/c8PqEFMGtLUTB/y
- sz835yblj3kBuOSf/p5P6ncGMDgBKmewjqAI1NmdOBcrMrZ4MIutCzeGC6GebE9+qqW+
- b1YQ==
-X-Gm-Message-State: AOAM531sB0VGaJGVAc5PlyZUtGrgvBNtNC4PUQzU3vz1qxGRJaKule1a
- HJdYKylWR3Hsa7qhsxjMnxxnbRcB5W9B+fdlPNyW
-X-Google-Smtp-Source: ABdhPJw1sNKFekdI1Ln5GFGtrd+fGGKvAqudNs0O/HZL6Z2vY9+JbXh7u0IWSx+tE6iFXOzqgaQ/prFDh7B5VuUxCDI=
-X-Received: by 2002:a25:d015:: with SMTP id h21mr25548749ybg.202.1627336390145; 
- Mon, 26 Jul 2021 14:53:10 -0700 (PDT)
+ bh=BvsqUUy/O01l4CBRzfrPE1Jc7wO/JNGVxsEuCcHSCWw=;
+ b=JyF1fABC+otqwuvNcxw/UHhkp+y/oTUneYmyEgqrqdFQjZLqy99QP7MYBTd+/U+kG8
+ PIWDNUnWxvEnwWnjEiib4xpdvEZL+REp+ffQ9cES3jIKqrxdFRWEhQ2DpAhjqTFfs8Dw
+ f85joi+G4pCv0csI19/eSlVcSesTTNQmZYqm7n2TFMBtbh7PdQ+F/tyabXjzoxFALAJW
+ vvCrpBsHLijlawjSE/S26m5RznTytsSc3ZZN6dleMf5GY6kx9fAoDPmW4HI/6RfUOBIa
+ QQHQBUezs7HcevO/ma9vH8tpzyrNPu3k195OMxXUFiuVGYpsTIjVuHHr5iMo2G6zap+P
+ lAwQ==
+X-Gm-Message-State: AOAM533k2WG7NwUzKIHAL65uW39XnU/RsdZckeXdGCVgO0H7TwsK33sk
+ Drw5o7C8grotm6kCFq20+XLs8QU2gUQFT8VTGL8T
+X-Google-Smtp-Source: ABdhPJz2EUkj2zAeJLmOGn6kDSu8McU02FKdlq3ZbpM5EcX89ffvE35I5g7gwLzw3lEJ0O8h/gzUiEZysEgj2Z7EPDA=
+X-Received: by 2002:a25:3289:: with SMTP id y131mr5835871yby.317.1627339684970; 
+ Mon, 26 Jul 2021 15:48:04 -0700 (PDT)
 MIME-Version: 1.0
 References: <20210723214031.3251801-1-atish.patra@wdc.com>
- <20210723214031.3251801-2-atish.patra@wdc.com>
- <20210726065657.GA9035@lst.de>
-In-Reply-To: <20210726065657.GA9035@lst.de>
+ <20210723214031.3251801-4-atish.patra@wdc.com>
+ <20210726070030.GB9035@lst.de>
+In-Reply-To: <20210726070030.GB9035@lst.de>
 From: Atish Patra <atishp@atishpatra.org>
-Date: Mon, 26 Jul 2021 14:52:59 -0700
-Message-ID: <CAOnJCUJFOZsqC2F9sqJqYw5bLJK0fQS+w=Rp6PeM2ih=75Cxag@mail.gmail.com>
-Subject: Re: [RFC 1/5] RISC-V: Implement arch_sync_dma* functions
+Date: Mon, 26 Jul 2021 15:47:54 -0700
+Message-ID: <CAOnJCU+qRznBTn9Mt6t_DE6UUz6_LuaBBuOmnURS2Yh3pmpjvg@mail.gmail.com>
+Subject: Re: [RFC 3/5] dma-mapping: Enable global non-coherent pool support
+ for RISC-V
 To: Christoph Hellwig <hch@lst.de>
 Cc: devicetree <devicetree@vger.kernel.org>, Albert Ou <aou@eecs.berkeley.edu>,
  Guo Ren <guoren@linux.alibaba.com>, Frank Rowand <frowand.list@gmail.com>,
@@ -106,60 +109,76 @@ Content-Transfer-Encoding: 7bit
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-On Sun, Jul 25, 2021 at 11:57 PM Christoph Hellwig <hch@lst.de> wrote:
+On Mon, Jul 26, 2021 at 12:00 AM Christoph Hellwig <hch@lst.de> wrote:
 >
-> > +#ifdef CONFIG_RISCV_DMA_NONCOHERENT
-> > +struct riscv_dma_cache_sync {
-> > +     void (*cache_invalidate)(phys_addr_t paddr, size_t size);
-> > +     void (*cache_clean)(phys_addr_t paddr, size_t size);
-> > +     void (*cache_flush)(phys_addr_t paddr, size_t size);
-> > +};
-> > +
-> > +void riscv_dma_cache_sync_set(struct riscv_dma_cache_sync *ops);
-> > +#endif
+> On Fri, Jul 23, 2021 at 02:40:29PM -0700, Atish Patra wrote:
+> > Currently, linux,dma-default is used to reserve a global non-coherent pool
+> > to allocate memory for dma operations. This can be useful for RISC-V as
+> > well as the ISA specification doesn't specify a method to modify PMA
+> > attributes or page table entries to define non-cacheable area yet.
+> > A non-cacheable memory window is an alternate options for vendors to
+> > support non-coherent devices.
 >
-> As told a bunch of times before: doing indirect calls here is a
-> performance nightmare.  Use something that actually does perform
-> horribly like alternatives.  Or even delay implementing that until
-> we need it and do a plain direct call for now.
+> Please explain why you do not want to use the simply non-cachable
+> window support using arch_dma_set_uncached as used by mips, niops2 and
+> xtensa.
 >
 
-I was initially planning to replace this with alternatives in the
-future versions. But there is no point in doing it
-until we have CMO spec finalized. We also don't have any other
-platform using these apart from sifive l2
-cache controllers for now.
+arch_dma_set_uncached works as well in this case. However, mips,
+niops2 & xtensa uses a
+fixed (via config) value for the offset. Similar approach can't be
+used here because the platform specific
+offset value has to be determined at runtime so that a single kernel
+image can boot on all platforms.
+That's why we need the following additional changes for RISC-V to make it work.
 
-I will change these to direct for now.
+1. a new DT property so that arch specific code is aware of the
+non-cacheable window offset.
+    - either under /chosen node or a completely separate node with
+multiple non-cacheable window support
+   We also need to define how it is going to referenced from
+individual device if a per-device non-cacheable
+   window support is required in future. As of now, the beagleV memory
+region lies in 0x10_0000_00000 - x17_FFFF_FFFF
+   which is mapped to start of DRAM 0x80000000. All of the
+non-coherent devices can do 32bit DMA only.
 
-> static void __dma_sync(phys_addr_t paddr, size_t size, enum dma_data_direction dir)
-> > +{
-> > +     if ((dir == DMA_FROM_DEVICE) && (dma_cache_sync->cache_invalidate))
-> > +             dma_cache_sync->cache_invalidate(paddr, size);
-> > +     else if ((dir == DMA_TO_DEVICE) && (dma_cache_sync->cache_clean))
-> > +             dma_cache_sync->cache_clean(paddr, size);
-> > +     else if ((dir == DMA_BIDIRECTIONAL) && dma_cache_sync->cache_flush)
-> > +             dma_cache_sync->cache_flush(paddr, size);
-> > +}
+2. Use the dma-ranges and modify the arch_dma_set_uncached function to
+pass the struct device as an argument.
+
+Either way, we will need arch specific hook ups and additional changes
+while the global non-coherent pool
+provides a more elegant solution without any additional arch specific code.
+
+If arch_dma_set_uncached is still preferred way to solve this problem,
+I can revise the patch with either approach 1 or approach 2
+
+> > +static int __dma_init_global_coherent(phys_addr_t phys_addr, dma_addr_t device_addr, size_t size)
 >
-> The seletion of flush types is completely broken.  Take a look at the
-> comment in arch/arc/mm/dma.c above arch_sync_dma_for_device for a good
-> explanation.
 >
-
-Thanks. I will fix it.
-
-> > +void arch_dma_prep_coherent(struct page *page, size_t size)
-> > +{
-> > +     void *flush_addr = page_address(page);
-> > +
-> > +     memset(flush_addr, 0, size);
 >
-> arch_dma_prep_coherent is not supposed to modify the content of
-> the data.
+>
+> >  {
+> >       struct dma_coherent_mem *mem;
+> >
+> > -     mem = dma_init_coherent_memory(phys_addr, phys_addr, size, true);
+> > +     if (phys_addr == device_addr)
+> > +             mem = dma_init_coherent_memory(phys_addr, device_addr, size, true);
+> > +     else
+> > +             mem = dma_init_coherent_memory(phys_addr, device_addr, size, false);
+>
+> Nak.  The phys_addr != device_addr support is goign away.  This needs
 
-Sorry. This was a leftover from some experimental code. It shouldn't
-have been included.
+ok.
+
+> to be filled in using dma-ranges property hanging of the struct device.
+
+struct device is only accessible in rmem_dma_device_init. I couldn't
+find a proper way to access it during
+dma_reserved_default_memory setup under global pool.
+
+Does that mean we should use a per-device memory pool instead of a
+global non-coherent pool ?
 
 > _______________________________________________
 > iommu mailing list
