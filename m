@@ -2,60 +2,69 @@ Return-Path: <SRS0=C8jr=MS=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-3.7 required=3.0 tests=BAYES_00,
-	HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,
-	URIBL_BLOCKED autolearn=no autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-5.7 required=3.0 tests=BAYES_00,
+	HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,NICE_REPLY_A,SPF_HELO_NONE,
+	SPF_PASS,URIBL_BLOCKED,USER_AGENT_SANE_1 autolearn=no autolearn_force=no
+	version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D84B3C4338F
-	for <iommu@archiver.kernel.org>; Mon, 26 Jul 2021 13:02:25 +0000 (UTC)
-Received: from smtp3.osuosl.org (smtp3.osuosl.org [140.211.166.136])
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A0C83C4320E
+	for <iommu@archiver.kernel.org>; Mon, 26 Jul 2021 13:09:12 +0000 (UTC)
+Received: from smtp2.osuosl.org (smtp2.osuosl.org [140.211.166.133])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 7A8C2608FB
-	for <iommu@archiver.kernel.org>; Mon, 26 Jul 2021 13:02:25 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.4.1 mail.kernel.org 7A8C2608FB
-Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=8bytes.org
+	by mail.kernel.org (Postfix) with ESMTPS id 4111E60F37
+	for <iommu@archiver.kernel.org>; Mon, 26 Jul 2021 13:09:12 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.4.1 mail.kernel.org 4111E60F37
+Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=arm.com
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by smtp3.osuosl.org (Postfix) with ESMTP id 33465607A6;
-	Mon, 26 Jul 2021 13:02:25 +0000 (UTC)
+	by smtp2.osuosl.org (Postfix) with ESMTP id 0A2AB4022F;
+	Mon, 26 Jul 2021 13:09:12 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from smtp3.osuosl.org ([127.0.0.1])
-	by localhost (smtp3.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id v3fWVXebi9uO; Mon, 26 Jul 2021 13:02:24 +0000 (UTC)
-Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [IPv6:2605:bc80:3010:104::8cd3:938])
-	by smtp3.osuosl.org (Postfix) with ESMTPS id 11F6F607A5;
-	Mon, 26 Jul 2021 13:02:24 +0000 (UTC)
+Received: from smtp2.osuosl.org ([127.0.0.1])
+	by localhost (smtp2.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+	with ESMTP id fVchvHNBb7fU; Mon, 26 Jul 2021 13:09:11 +0000 (UTC)
+Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
+	by smtp2.osuosl.org (Postfix) with ESMTPS id 08767400C3;
+	Mon, 26 Jul 2021 13:09:11 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id D1A80C0010;
-	Mon, 26 Jul 2021 13:02:23 +0000 (UTC)
-Received: from smtp4.osuosl.org (smtp4.osuosl.org [IPv6:2605:bc80:3010::137])
- by lists.linuxfoundation.org (Postfix) with ESMTP id CC426C000E
- for <iommu@lists.linux-foundation.org>; Mon, 26 Jul 2021 13:02:21 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id B2CBAC001A;
+	Mon, 26 Jul 2021 13:09:10 +0000 (UTC)
+Received: from smtp4.osuosl.org (smtp4.osuosl.org [140.211.166.137])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id E678BC000E
+ for <iommu@lists.linux-foundation.org>; Mon, 26 Jul 2021 13:09:09 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by smtp4.osuosl.org (Postfix) with ESMTP id ADA16403B1
- for <iommu@lists.linux-foundation.org>; Mon, 26 Jul 2021 13:02:21 +0000 (UTC)
+ by smtp4.osuosl.org (Postfix) with ESMTP id C792D401E3
+ for <iommu@lists.linux-foundation.org>; Mon, 26 Jul 2021 13:09:09 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
 Received: from smtp4.osuosl.org ([127.0.0.1])
  by localhost (smtp4.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id dQqUxE-iIRoC for <iommu@lists.linux-foundation.org>;
- Mon, 26 Jul 2021 13:02:21 +0000 (UTC)
-X-Greylist: from auto-whitelisted by SQLgrey-1.8.0
-Received: from theia.8bytes.org (8bytes.org
- [IPv6:2a01:238:4383:600:38bc:a715:4b6d:a889])
- by smtp4.osuosl.org (Postfix) with ESMTPS id 06471403AD
- for <iommu@lists.linux-foundation.org>; Mon, 26 Jul 2021 13:02:20 +0000 (UTC)
-Received: by theia.8bytes.org (Postfix, from userid 1000)
- id B79822B0; Mon, 26 Jul 2021 15:02:18 +0200 (CEST)
-Date: Mon, 26 Jul 2021 15:02:14 +0200
-From: Joerg Roedel <joro@8bytes.org>
-To: Robin Murphy <robin.murphy@arm.com>
-Subject: Re: [PATCH 00/23] iommu: Refactor DMA domain strictness
-Message-ID: <YP6yVtDcCRpp7UWa@8bytes.org>
+ with ESMTP id 60JZLVeXR7Hl for <iommu@lists.linux-foundation.org>;
+ Mon, 26 Jul 2021 13:09:08 +0000 (UTC)
+X-Greylist: domain auto-whitelisted by SQLgrey-1.8.0
+Received: from foss.arm.com (foss.arm.com [217.140.110.172])
+ by smtp4.osuosl.org (Postfix) with ESMTP id BC421401C5
+ for <iommu@lists.linux-foundation.org>; Mon, 26 Jul 2021 13:09:08 +0000 (UTC)
+Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
+ by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id E9D9811B3;
+ Mon, 26 Jul 2021 06:09:07 -0700 (PDT)
+Received: from [10.57.36.146] (unknown [10.57.36.146])
+ by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id 27C2E3F70D;
+ Mon, 26 Jul 2021 06:09:06 -0700 (PDT)
+Subject: Re: [PATCH 16/23] iommu/arm-smmu: Prepare for multiple DMA domain
+ types
+To: Joerg Roedel <joro@8bytes.org>
 References: <cover.1626888444.git.robin.murphy@arm.com>
+ <04220b3420c2c513490450f37de109182364f235.1626888445.git.robin.murphy@arm.com>
+ <YP6ukfewNVjgS/bt@8bytes.org>
+From: Robin Murphy <robin.murphy@arm.com>
+Message-ID: <a0689d30-2214-c92e-8387-8f1d3b22909b@arm.com>
+Date: Mon, 26 Jul 2021 14:09:00 +0100
+User-Agent: Mozilla/5.0 (Windows NT 10.0; rv:78.0) Gecko/20100101
+ Thunderbird/78.12.0
 MIME-Version: 1.0
-Content-Disposition: inline
-In-Reply-To: <cover.1626888444.git.robin.murphy@arm.com>
+In-Reply-To: <YP6ukfewNVjgS/bt@8bytes.org>
+Content-Language: en-GB
 Cc: linux-kernel@vger.kernel.org, dianders@chromium.org,
  iommu@lists.linux-foundation.org, will@kernel.org,
  linux-arm-kernel@lists.infradead.org
@@ -71,46 +80,28 @@ List-Post: <mailto:iommu@lists.linux-foundation.org>
 List-Help: <mailto:iommu-request@lists.linux-foundation.org?subject=help>
 List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
  <mailto:iommu-request@lists.linux-foundation.org?subject=subscribe>
-Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset="us-ascii"; Format="flowed"
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-Hi Robin,
+On 2021-07-26 13:46, Joerg Roedel wrote:
+> On Wed, Jul 21, 2021 at 07:20:27PM +0100, Robin Murphy wrote:
+>> -	if (type == IOMMU_DOMAIN_DMA && using_legacy_binding)
+>> +	if ((type & __IOMMU_DOMAIN_DMA_API) && using_legacy_binding)
+> 
+> Hmm, I wonder whether it is time to introduce helpers for these checks?
+> 
+> Something like iommu_domain_is_dma() is more readable.
 
-On Wed, Jul 21, 2021 at 07:20:11PM +0100, Robin Murphy wrote:
-> Robin Murphy (23):
->   iommu: Pull IOVA cookie management into the core
->   iommu/amd: Drop IOVA cookie management
->   iommu/arm-smmu: Drop IOVA cookie management
->   iommu/vt-d: Drop IOVA cookie management
->   iommu/exynos: Drop IOVA cookie management
->   iommu/ipmmu-vmsa: Drop IOVA cookie management
->   iommu/mtk: Drop IOVA cookie management
->   iommu/rockchip: Drop IOVA cookie management
->   iommu/sprd: Drop IOVA cookie management
->   iommu/sun50i: Drop IOVA cookie management
->   iommu/virtio: Drop IOVA cookie management
->   iommu/dma: Unexport IOVA cookie management
->   iommu/dma: Remove redundant "!dev" checks
->   iommu: Introduce explicit type for non-strict DMA domains
->   iommu/amd: Prepare for multiple DMA domain types
->   iommu/arm-smmu: Prepare for multiple DMA domain types
->   iommu/vt-d: Prepare for multiple DMA domain types
->   iommu: Express DMA strictness via the domain type
->   iommu: Expose DMA domain strictness via sysfs
->   iommu: Allow choosing DMA strictness at build time
->   iommu/dma: Factor out flush queue init
->   iommu: Allow enabling non-strict mode dynamically
->   iommu/arm-smmu: Allow non-strict in pgtable_quirks interface
+Ha, I had exactly that at one point, except I think in the order of 
+iommu_is_dma_domain() :)
 
-I really like this patch-set. It is a nice cleanup and the
-implementation is straightforward. Given no other major objections and
-reviews I think this is material for 5.15.
+The end result didn't seem to give enough extra clarity to justify the 
+header churn for me, but I'm happy to be wrong about that if you prefer.
 
-Thanks,
-
-	Joerg
+Cheers,
+Robin.
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
