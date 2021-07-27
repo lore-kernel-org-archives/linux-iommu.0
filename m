@@ -2,72 +2,93 @@ Return-Path: <SRS0=amFV=MT=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-5.2 required=3.0 tests=BAYES_00,
-	HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,
-	URIBL_BLOCKED,USER_AGENT_SANE_1 autolearn=no autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-16.5 required=3.0 tests=BAYES_00,DKIM_INVALID,
+	DKIM_SIGNED,HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_CR_TRAILER,INCLUDES_PATCH,
+	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_GIT
+	autolearn=ham autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 99E08C4338F
-	for <iommu@archiver.kernel.org>; Tue, 27 Jul 2021 08:52:55 +0000 (UTC)
-Received: from smtp1.osuosl.org (smtp1.osuosl.org [140.211.166.138])
+	by smtp.lore.kernel.org (Postfix) with ESMTP id AE7A2C4338F
+	for <iommu@archiver.kernel.org>; Tue, 27 Jul 2021 09:34:23 +0000 (UTC)
+Received: from smtp3.osuosl.org (smtp3.osuosl.org [140.211.166.136])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 308EE6124E
-	for <iommu@archiver.kernel.org>; Tue, 27 Jul 2021 08:52:55 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.4.1 mail.kernel.org 308EE6124E
-Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=lst.de
+	by mail.kernel.org (Postfix) with ESMTPS id 52D1960E09
+	for <iommu@archiver.kernel.org>; Tue, 27 Jul 2021 09:34:23 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.4.1 mail.kernel.org 52D1960E09
+Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=codeaurora.org
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by smtp1.osuosl.org (Postfix) with ESMTP id F03DE828DD;
-	Tue, 27 Jul 2021 08:52:54 +0000 (UTC)
-X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from smtp1.osuosl.org ([127.0.0.1])
-	by localhost (smtp1.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id NC0EkPFUvu4T; Tue, 27 Jul 2021 08:52:54 +0000 (UTC)
-Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by smtp1.osuosl.org (Postfix) with ESMTPS id DFCEE8295A;
-	Tue, 27 Jul 2021 08:52:53 +0000 (UTC)
-Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id B9906C001A;
-	Tue, 27 Jul 2021 08:52:53 +0000 (UTC)
-Received: from smtp3.osuosl.org (smtp3.osuosl.org [IPv6:2605:bc80:3010::136])
- by lists.linuxfoundation.org (Postfix) with ESMTP id B63E6C000E
- for <iommu@lists.linux-foundation.org>; Tue, 27 Jul 2021 08:52:52 +0000 (UTC)
-Received: from localhost (localhost [127.0.0.1])
- by smtp3.osuosl.org (Postfix) with ESMTP id 986C660798
- for <iommu@lists.linux-foundation.org>; Tue, 27 Jul 2021 08:52:52 +0000 (UTC)
+	by smtp3.osuosl.org (Postfix) with ESMTP id 1CB9360774;
+	Tue, 27 Jul 2021 09:34:23 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
 Received: from smtp3.osuosl.org ([127.0.0.1])
- by localhost (smtp3.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id 3UZfE4vEYPiM for <iommu@lists.linux-foundation.org>;
- Tue, 27 Jul 2021 08:52:50 +0000 (UTC)
+	by localhost (smtp3.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+	with ESMTP id 9ABxQUSS0AWj; Tue, 27 Jul 2021 09:34:22 +0000 (UTC)
+Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [IPv6:2605:bc80:3010:104::8cd3:938])
+	by smtp3.osuosl.org (Postfix) with ESMTPS id F2B8C60654;
+	Tue, 27 Jul 2021 09:34:21 +0000 (UTC)
+Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
+	by lists.linuxfoundation.org (Postfix) with ESMTP id C1DAAC0010;
+	Tue, 27 Jul 2021 09:34:21 +0000 (UTC)
+Received: from smtp2.osuosl.org (smtp2.osuosl.org [IPv6:2605:bc80:3010::133])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id E72CBC000E
+ for <iommu@lists.linux-foundation.org>; Tue, 27 Jul 2021 09:34:20 +0000 (UTC)
+Received: from localhost (localhost [127.0.0.1])
+ by smtp2.osuosl.org (Postfix) with UTF8SMTP id CF3DD4038E
+ for <iommu@lists.linux-foundation.org>; Tue, 27 Jul 2021 09:34:20 +0000 (UTC)
+X-Virus-Scanned: amavisd-new at osuosl.org
+Authentication-Results: smtp2.osuosl.org (amavisd-new);
+ dkim=pass (1024-bit key) header.d=mg.codeaurora.org
+Received: from smtp2.osuosl.org ([127.0.0.1])
+ by localhost (smtp2.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+ with UTF8SMTP id PbrH3LHsuHU1 for <iommu@lists.linux-foundation.org>;
+ Tue, 27 Jul 2021 09:34:19 +0000 (UTC)
 X-Greylist: from auto-whitelisted by SQLgrey-1.8.0
-Received: from verein.lst.de (verein.lst.de [213.95.11.211])
- by smtp3.osuosl.org (Postfix) with ESMTPS id 9E8AD60633
- for <iommu@lists.linux-foundation.org>; Tue, 27 Jul 2021 08:52:50 +0000 (UTC)
-Received: by verein.lst.de (Postfix, from userid 2407)
- id 9A8A16736F; Tue, 27 Jul 2021 10:52:44 +0200 (CEST)
-Date: Tue, 27 Jul 2021 10:52:44 +0200
-From: Christoph Hellwig <hch@lst.de>
-To: Atish Patra <atishp@atishpatra.org>
-Subject: Re: [RFC 3/5] dma-mapping: Enable global non-coherent pool support
- for RISC-V
-Message-ID: <20210727085244.GA20609@lst.de>
-References: <20210723214031.3251801-1-atish.patra@wdc.com>
- <20210723214031.3251801-4-atish.patra@wdc.com> <20210726070030.GB9035@lst.de>
- <CAOnJCU+qRznBTn9Mt6t_DE6UUz6_LuaBBuOmnURS2Yh3pmpjvg@mail.gmail.com>
+Received: from m43-7.mailgun.net (m43-7.mailgun.net [69.72.43.7])
+ by smtp2.osuosl.org (Postfix) with UTF8SMTPS id 952B9401CF
+ for <iommu@lists.linux-foundation.org>; Tue, 27 Jul 2021 09:34:16 +0000 (UTC)
+DKIM-Signature: a=rsa-sha256; v=1; c=relaxed/relaxed; d=mg.codeaurora.org;
+ q=dns/txt; 
+ s=smtp; t=1627378459; h=Content-Transfer-Encoding: MIME-Version:
+ Message-Id: Date: Subject: Cc: To: From: Sender;
+ bh=kagWZe+ixHB1PpOFUHGC8RpKnQRK2ITDmPTtxKqpozo=;
+ b=Qntma9kU/xJMTGkLk5rXqM2R+XkGcQFs/XmgffGh+RcZA6ppqcSptul6ZdkTLn4mAr31kyPI
+ UtT4POjEIrnP1yKLcUNa6tjKiA17suaOpgWLDYr9TJKbjPUECvVfBOLF4bj9U2KJhCEDJHht
+ 4pmy3HVFZXP+PeZhHcBSTygKZvc=
+X-Mailgun-Sending-Ip: 69.72.43.7
+X-Mailgun-Sid: WyI3NDkwMCIsICJpb21tdUBsaXN0cy5saW51eC1mb3VuZGF0aW9uLm9yZyIsICJiZTllNGEiXQ==
+Received: from smtp.codeaurora.org
+ (ec2-35-166-182-171.us-west-2.compute.amazonaws.com [35.166.182.171]) by
+ smtp-out-n07.prod.us-east-1.postgun.com with SMTP id
+ 60ffd31017c2b4047daf4ba7 (version=TLS1.2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256); Tue, 27 Jul 2021 09:34:08
+ GMT
+Received: by smtp.codeaurora.org (Postfix, from userid 1001)
+ id 704F5C43143; Tue, 27 Jul 2021 09:34:07 +0000 (UTC)
+Received: from blr-ubuntu-253.qualcomm.com
+ (blr-bdr-fw-01_GlobalNAT_AllZones-Outside.qualcomm.com [103.229.18.19])
+ (using TLSv1.2 with cipher ECDHE-RSA-AES128-SHA256 (128/128 bits))
+ (No client certificate requested)
+ (Authenticated sender: saiprakash.ranjan)
+ by smtp.codeaurora.org (Postfix) with ESMTPSA id 25EE7C433D3;
+ Tue, 27 Jul 2021 09:34:02 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 smtp.codeaurora.org 25EE7C433D3
+Authentication-Results: aws-us-west-2-caf-mail-1.web.codeaurora.org;
+ dmarc=none (p=none dis=none) header.from=codeaurora.org
+Authentication-Results: aws-us-west-2-caf-mail-1.web.codeaurora.org; spf=fail
+ smtp.mailfrom=saiprakash.ranjan@codeaurora.org
+From: Sai Prakash Ranjan <saiprakash.ranjan@codeaurora.org>
+To: Will Deacon <will@kernel.org>, Robin Murphy <robin.murphy@arm.com>,
+ Joerg Roedel <joro@8bytes.org>, Rajendra Nayak <rnayak@codeaurora.org>,
+ Taniya Das <tdas@codeaurora.org>, srimuc <srimuc@codeaurora.org>
+Subject: [PATCH] iommu/arm-smmu: Add clk_bulk_{prepare/unprepare} to system pm
+ callbacks
+Date: Tue, 27 Jul 2021 15:03:22 +0530
+Message-Id: <20210727093322.13202-1-saiprakash.ranjan@codeaurora.org>
+X-Mailer: git-send-email 2.29.0
 MIME-Version: 1.0
-Content-Disposition: inline
-In-Reply-To: <CAOnJCU+qRznBTn9Mt6t_DE6UUz6_LuaBBuOmnURS2Yh3pmpjvg@mail.gmail.com>
-User-Agent: Mutt/1.5.17 (2007-11-01)
-Cc: devicetree <devicetree@vger.kernel.org>, Albert Ou <aou@eecs.berkeley.edu>,
- Guo Ren <guoren@linux.alibaba.com>, Frank Rowand <frowand.list@gmail.com>,
- "linux-kernel@vger.kernel.org List" <linux-kernel@vger.kernel.org>,
- linux-riscv <linux-riscv@lists.infradead.org>,
- Atish Patra <atish.patra@wdc.com>, iommu@lists.linux-foundation.org,
- Rob Herring <robh+dt@kernel.org>, Palmer Dabbelt <palmer@dabbelt.com>,
- Paul Walmsley <paul.walmsley@sifive.com>, Tobias Klauser <tklauser@distanz.ch>,
- Robin Murphy <robin.murphy@arm.com>, Christoph Hellwig <hch@lst.de>,
- Dmitry Vyukov <dvyukov@google.com>
+Cc: linux-arm-msm@vger.kernel.org, iommu@lists.linux-foundation.org,
+ linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -85,58 +106,74 @@ Content-Transfer-Encoding: 7bit
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-On Mon, Jul 26, 2021 at 03:47:54PM -0700, Atish Patra wrote:
-> arch_dma_set_uncached works as well in this case. However, mips,
-> niops2 & xtensa uses a
-> fixed (via config) value for the offset. Similar approach can't be
-> used here because the platform specific
-> offset value has to be determined at runtime so that a single kernel
-> image can boot on all platforms.
+Some clocks for SMMU can have parent as XO such as gpu_cc_hub_cx_int_clk
+of GPU SMMU in QTI SC7280 SoC and in order to enter deep sleep states in
+such cases, we would need to drop the XO clock vote in unprepare call and
+this unprepare callback for XO is in RPMh (Resource Power Manager-Hardened)
+clock driver which controls RPMh managed clock resources for new QTI SoCs
+and is a blocking call.
 
-Nothing in the interface requires a fixed offset.  And using the offset
-has one enormous advantage in that there is no need to declare a
-statically sized pool - allocations are fully dynamic.  And any kind of
-fixed pool tends to cause huge problems.
+Given we cannot have a sleeping calls such as clk_bulk_prepare() and
+clk_bulk_unprepare() in arm-smmu runtime pm callbacks since the iommu
+operations like map and unmap can be in atomic context and are in fast
+path, add this prepare and unprepare call to drop the XO vote only for
+system pm callbacks since it is not a fast path and we expect the system
+to enter deep sleep states with system pm as opposed to runtime pm.
 
-> 1. a new DT property so that arch specific code is aware of the
-> non-cacheable window offset.
+This is a similar sequence of clock requests (prepare,enable and
+disable,unprepare) in arm-smmu probe and remove.
 
-Yes.
+Signed-off-by: Sai Prakash Ranjan <saiprakash.ranjan@codeaurora.org>
+Co-developed-by: Rajendra Nayak <rnayak@codeaurora.org>
+Signed-off-by: Rajendra Nayak <rnayak@codeaurora.org>
+---
+ drivers/iommu/arm/arm-smmu/arm-smmu.c | 20 ++++++++++++++++++--
+ 1 file changed, 18 insertions(+), 2 deletions(-)
 
-> individual device if a per-device non-cacheable
->    window support is required in future. As of now, the beagleV memory
+diff --git a/drivers/iommu/arm/arm-smmu/arm-smmu.c b/drivers/iommu/arm/arm-smmu/arm-smmu.c
+index d3c6f54110a5..9561ba4c5d39 100644
+--- a/drivers/iommu/arm/arm-smmu/arm-smmu.c
++++ b/drivers/iommu/arm/arm-smmu/arm-smmu.c
+@@ -2277,6 +2277,13 @@ static int __maybe_unused arm_smmu_runtime_suspend(struct device *dev)
+ 
+ static int __maybe_unused arm_smmu_pm_resume(struct device *dev)
+ {
++	int ret;
++	struct arm_smmu_device *smmu = dev_get_drvdata(dev);
++
++	ret = clk_bulk_prepare(smmu->num_clks, smmu->clks);
++	if (ret)
++		return ret;
++
+ 	if (pm_runtime_suspended(dev))
+ 		return 0;
+ 
+@@ -2285,10 +2292,19 @@ static int __maybe_unused arm_smmu_pm_resume(struct device *dev)
+ 
+ static int __maybe_unused arm_smmu_pm_suspend(struct device *dev)
+ {
++	int ret = 0;
++	struct arm_smmu_device *smmu = dev_get_drvdata(dev);
++
+ 	if (pm_runtime_suspended(dev))
+-		return 0;
++		goto clk_unprepare;
+ 
+-	return arm_smmu_runtime_suspend(dev);
++	ret = arm_smmu_runtime_suspend(dev);
++	if (ret)
++		return ret;
++
++clk_unprepare:
++	clk_bulk_unprepare(smmu->num_clks, smmu->clks);
++	return ret;
+ }
+ 
+ static const struct dev_pm_ops arm_smmu_pm_ops = {
+-- 
+QUALCOMM INDIA, on behalf of Qualcomm Innovation Center, Inc. is a member
+of Code Aurora Forum, hosted by The Linux Foundation
 
-If you require a per-device noncachable area you can use the per-device
-coherent pools.  But why would you want that?
-
-> region lies in 0x10_0000_00000 - x17_FFFF_FFFF
->    which is mapped to start of DRAM 0x80000000. All of the
-> non-coherent devices can do 32bit DMA only.
-
-Adjust ZONE_DMA32 so that it takes the uncached offset into account.
-
-> > > -     mem = dma_init_coherent_memory(phys_addr, phys_addr, size, true);
-> > > +     if (phys_addr == device_addr)
-> > > +             mem = dma_init_coherent_memory(phys_addr, device_addr, size, true);
-> > > +     else
-> > > +             mem = dma_init_coherent_memory(phys_addr, device_addr, size, false);
-> >
-> > Nak.  The phys_addr != device_addr support is goign away.  This needs
-> 
-> ok.
-> 
-> > to be filled in using dma-ranges property hanging of the struct device.
-> 
-> struct device is only accessible in rmem_dma_device_init. I couldn't
-> find a proper way to access it during
-> dma_reserved_default_memory setup under global pool.
-> 
-> Does that mean we should use a per-device memory pool instead of a
-> global non-coherent pool ?
-
-Indeed, that would be a problem in this case.  But if we can just
-use the uncached offset directly I think everything will be much
-simpler.
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
