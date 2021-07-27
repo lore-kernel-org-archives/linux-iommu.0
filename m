@@ -2,75 +2,157 @@ Return-Path: <SRS0=amFV=MT=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-10.7 required=3.0 tests=BAYES_00,
-	HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,MENTIONS_GIT_HOSTING,
-	NICE_REPLY_A,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_SANE_1
-	autolearn=ham autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-16.5 required=3.0 tests=BAYES_00,DKIM_INVALID,
+	DKIM_SIGNED,HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,
+	MENTIONS_GIT_HOSTING,MSGID_FROM_MTA_HEADER,SPF_HELO_NONE,SPF_PASS,
+	URIBL_BLOCKED,USER_AGENT_GIT autolearn=unavailable autolearn_force=no
+	version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 94B2CC43214
-	for <iommu@archiver.kernel.org>; Tue, 27 Jul 2021 17:08:17 +0000 (UTC)
-Received: from smtp3.osuosl.org (smtp3.osuosl.org [140.211.166.136])
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 23BF9C4320A
+	for <iommu@archiver.kernel.org>; Tue, 27 Jul 2021 22:26:47 +0000 (UTC)
+Received: from smtp2.osuosl.org (smtp2.osuosl.org [140.211.166.133])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 2942861006
-	for <iommu@archiver.kernel.org>; Tue, 27 Jul 2021 17:08:17 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.4.1 mail.kernel.org 2942861006
-Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=arm.com
+	by mail.kernel.org (Postfix) with ESMTPS id A4E1360F6E
+	for <iommu@archiver.kernel.org>; Tue, 27 Jul 2021 22:26:46 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.4.1 mail.kernel.org A4E1360F6E
+Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=lists.linux-foundation.org
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by smtp3.osuosl.org (Postfix) with ESMTP id D72B560828;
-	Tue, 27 Jul 2021 17:08:16 +0000 (UTC)
+	by smtp2.osuosl.org (Postfix) with ESMTP id 5ACFE40121;
+	Tue, 27 Jul 2021 22:26:46 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from smtp3.osuosl.org ([127.0.0.1])
-	by localhost (smtp3.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id d2KI4Ijv3_TP; Tue, 27 Jul 2021 17:08:15 +0000 (UTC)
-Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [IPv6:2605:bc80:3010:104::8cd3:938])
-	by smtp3.osuosl.org (Postfix) with ESMTPS id 7778E6080D;
-	Tue, 27 Jul 2021 17:08:15 +0000 (UTC)
+Received: from smtp2.osuosl.org ([127.0.0.1])
+	by localhost (smtp2.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+	with ESMTP id PYw1CuwjZnnk; Tue, 27 Jul 2021 22:26:45 +0000 (UTC)
+Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
+	by smtp2.osuosl.org (Postfix) with ESMTPS id 2D86A400E9;
+	Tue, 27 Jul 2021 22:26:45 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 4CA5DC001A;
-	Tue, 27 Jul 2021 17:08:15 +0000 (UTC)
-Received: from smtp1.osuosl.org (smtp1.osuosl.org [IPv6:2605:bc80:3010::138])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 87950C000E
- for <iommu@lists.linux-foundation.org>; Tue, 27 Jul 2021 17:08:14 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 0AB04C001A;
+	Tue, 27 Jul 2021 22:26:45 +0000 (UTC)
+Received: from smtp2.osuosl.org (smtp2.osuosl.org [140.211.166.133])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 443B3C000E
+ for <iommu@lists.linux-foundation.org>; Tue, 27 Jul 2021 22:26:44 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by smtp1.osuosl.org (Postfix) with ESMTP id 7608E82C61
- for <iommu@lists.linux-foundation.org>; Tue, 27 Jul 2021 17:08:14 +0000 (UTC)
+ by smtp2.osuosl.org (Postfix) with ESMTP id 1E57C40121
+ for <iommu@lists.linux-foundation.org>; Tue, 27 Jul 2021 22:26:44 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from smtp1.osuosl.org ([127.0.0.1])
- by localhost (smtp1.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id GE7OwhQbtriD for <iommu@lists.linux-foundation.org>;
- Tue, 27 Jul 2021 17:08:13 +0000 (UTC)
-X-Greylist: domain auto-whitelisted by SQLgrey-1.8.0
-Received: from foss.arm.com (foss.arm.com [217.140.110.172])
- by smtp1.osuosl.org (Postfix) with ESMTP id 1057482A53
- for <iommu@lists.linux-foundation.org>; Tue, 27 Jul 2021 17:08:12 +0000 (UTC)
-Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
- by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id DE7981FB;
- Tue, 27 Jul 2021 10:08:11 -0700 (PDT)
-Received: from [10.57.36.146] (unknown [10.57.36.146])
- by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id A11BF3F70D;
- Tue, 27 Jul 2021 10:08:10 -0700 (PDT)
-Subject: Re: [bug report] iommu_dma_unmap_sg() is very slow then running IO
- from remote numa node
-To: Ming Lei <ming.lei@redhat.com>
-References: <YPd7IGFZrsTRfUxE@T590>
- <74537f9c-af5f-cd84-60ab-49ca6220310e@huawei.com> <YPfwAN1onpSKoeBj@T590>
- <a2650064-41cf-cb62-7ab4-d14ef1856966@huawei.com> <YPklDMng1hL3bQ+v@T590>
- <9c929985-4fcb-e65d-0265-34c820b770ea@huawei.com> <YPlGOOMSdm6Bcyy/@T590>
- <fc552129-e89d-74ad-9e57-30e3ffe4cf5d@huawei.com> <YPmUoBk9u+tU2rbS@T590>
- <0adbe03b-ce26-e4d3-3425-d967bc436ef5@arm.com> <YPqYDY9/VAhfHNfU@T590>
-From: Robin Murphy <robin.murphy@arm.com>
-Message-ID: <b74d7025-c452-049f-f9a9-75ba555d029d@arm.com>
-Date: Tue, 27 Jul 2021 18:08:04 +0100
-User-Agent: Mozilla/5.0 (Windows NT 10.0; rv:78.0) Gecko/20100101
- Thunderbird/78.12.0
+Received: from smtp2.osuosl.org ([127.0.0.1])
+ by localhost (smtp2.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+ with ESMTP id ng1HDwL6i29f for <iommu@lists.linux-foundation.org>;
+ Tue, 27 Jul 2021 22:26:42 +0000 (UTC)
+X-Greylist: whitelisted by SQLgrey-1.8.0
+Received: from NAM12-MW2-obe.outbound.protection.outlook.com
+ (mail-mw2nam12on2068.outbound.protection.outlook.com [40.107.244.68])
+ by smtp2.osuosl.org (Postfix) with ESMTPS id 68C40400E9
+ for <iommu@lists.linux-foundation.org>; Tue, 27 Jul 2021 22:26:42 +0000 (UTC)
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=T9Id0MgxE+d86OU5IRH9zmd43UxECaZ+B5kjhSPCMQydhfr7AKcRTj+vupBwOaPAAtKUT31LnFYhX2WMyXbi6v4zKOS/JDEFLi5mrQQN6Wi18iBDQPmfWx6uQdCcmBEsQGjY+i7E++8oJ+i6sxeux0X+4muPQw2C07FBX0rkByp73ulXOccfbLdApnpWFtm7w6mUJrru6zrxf6zIpF/21iiDdldnmRyZwtzorpUugAr1aPWDfNxU5zRQlbxdEHFFmJAKE4bu0u8Rrcgmpnl6spvXsW+0ZjE7r20KfDT0wGlEvHsuqKHwwhW1h211A9U6A/c+JIJZRQ4vXKKMHp3xiw==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com; 
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=rh9WV4Bi2lUQnfZE/QgCYWFV0BrT697DbKGp9nczLr0=;
+ b=A3C5gfFkOUw50sa4VQJIhHr83BuR+F7vkU2zOTa6HUgjorVejVCHWJ42ue+pAI3som2ESAeLNtE0FddI1+hd4duJ/ycSIfu2Cpv0VJ6XiKl6FMS5FvMSt4xz8NHm1L06r1KzV5sfEJ/g3KrMcNYblHi9dL1NA/U0olosuNCfeB5YDz5GbRFMrjRywCoSrE6ljKcYAD2JDhEMOicr1CqlEUJE7plkgw/ZafslUp0Md8aDT5H8B52ASLzS6TUwoDx9Gqz4+AjkmD45Cc6E5nCYpf2Gb6BcPYZUc/hij8fLI9vYxu+yveM01UbmLz788OIDKTlEd6NGfxxgOppsb6TbGg==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=amd.com; dmarc=pass action=none header.from=amd.com; dkim=pass
+ header.d=amd.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=amd.com; s=selector1; 
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=rh9WV4Bi2lUQnfZE/QgCYWFV0BrT697DbKGp9nczLr0=;
+ b=IMiZo1TudiL9gYAUloUs9Pf7ipEHBGXHLJtHZtM4pKx9RkKvgftSQ3Izw1i4A5+tQcu2j/HfcRrXXIwAxk/rJh4u+yMdKw2jqJLq8RMqU/UmrLNaKLs5vYBPn0TvjauY2af0/2AAZoq5JC6HBpqWgc5EyQK+qkutB8UjA+5ITWw=
+Authentication-Results: vger.kernel.org; dkim=none (message not signed)
+ header.d=none;vger.kernel.org; dmarc=none action=none header.from=amd.com;
+Received: from DM4PR12MB5229.namprd12.prod.outlook.com (2603:10b6:5:398::12)
+ by DM8PR12MB5416.namprd12.prod.outlook.com (2603:10b6:8:28::18) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4352.25; Tue, 27 Jul
+ 2021 22:26:39 +0000
+Received: from DM4PR12MB5229.namprd12.prod.outlook.com
+ ([fe80::73:2581:970b:3208]) by DM4PR12MB5229.namprd12.prod.outlook.com
+ ([fe80::73:2581:970b:3208%3]) with mapi id 15.20.4352.031; Tue, 27 Jul 2021
+ 22:26:39 +0000
+To: linux-kernel@vger.kernel.org, x86@kernel.org,
+ linuxppc-dev@lists.ozlabs.org, linux-s390@vger.kernel.org,
+ iommu@lists.linux-foundation.org, kvm@vger.kernel.org,
+ linux-efi@vger.kernel.org, platform-driver-x86@vger.kernel.org,
+ linux-graphics-maintainer@vmware.com, amd-gfx@lists.freedesktop.org,
+ dri-devel@lists.freedesktop.org, kexec@lists.infradead.org,
+ linux-fsdevel@vger.kernel.org
+Subject: [PATCH 00/11] Implement generic prot_guest_has() helper function
+Date: Tue, 27 Jul 2021 17:26:03 -0500
+Message-Id: <cover.1627424773.git.thomas.lendacky@amd.com>
+X-Mailer: git-send-email 2.32.0
+X-ClientProxiedBy: SA9PR13CA0129.namprd13.prod.outlook.com
+ (2603:10b6:806:27::14) To DM4PR12MB5229.namprd12.prod.outlook.com
+ (2603:10b6:5:398::12)
 MIME-Version: 1.0
-In-Reply-To: <YPqYDY9/VAhfHNfU@T590>
-Content-Language: en-GB
-Cc: linux-kernel@vger.kernel.org, linux-nvme@lists.infradead.org,
- iommu@lists.linux-foundation.org, Will Deacon <will@kernel.org>,
- linux-arm-kernel@lists.infradead.org
+X-MS-Exchange-MessageSentRepresentingType: 1
+Received: from tlendack-t1.amd.com (165.204.77.1) by
+ SA9PR13CA0129.namprd13.prod.outlook.com (2603:10b6:806:27::14) with Microsoft
+ SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.20.4373.11 via Frontend Transport; Tue, 27 Jul 2021 22:26:36 +0000
+X-MS-PublicTrafficType: Email
+X-MS-Office365-Filtering-Correlation-Id: 7dd6f380-a94d-4189-a68f-08d9514d9a5e
+X-MS-TrafficTypeDiagnostic: DM8PR12MB5416:
+X-MS-Exchange-Transport-Forked: True
+X-Microsoft-Antispam-PRVS: <DM8PR12MB541624EC7B23BCC92BBA1C2AECE99@DM8PR12MB5416.namprd12.prod.outlook.com>
+X-MS-Oob-TLC-OOBClassifiers: OLM:1107;
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: ypg0SFNtbzBB0RsnmARVE4LdePcQWM4LVL+7KnUssFPsFUJN+vrCDPIJ6eYPtAMhOjH1zr4NkhdDEDuFXEdB4jfeVUvhbXzJ/qCqbbfkLvHYOr4QS4sXm7/m4cphJaWvwF0mh2Xj+Sub3hmiqHaG6AbZ+cktNeWNnntN4jHIWLjLj/odyglhVQuqb71EEzcr0FQpgzcH/z9dHui/ZayHGKglPRGkW6ynARRrWyjT+lvrH16kNTj8EQEttlJ9E/BJ18DwQQQUdwl0id086c7CGYPtC2hbg6hMCc7lRgOlpVu0mimRU0zqcFsIvGKt1NMLObQdyen8oi/Lh9jJc7VxdrlAwFMhqLPzjvvTeCJMrwmr5qMwQpZreZxzYQhbyC1EIH1znxiYplKIZOS2UBmQKZZ2xId8UA1ApswOmOfSfcx3CzyBKVGm7NzRjav4jy9VxWV1bKUJPmyo2m4CWfX5noP81OHGVdl2Xm13829ULb2dIek3V2dXgJIc11+GC4t0USqV7/kcX9//y8ZJE9dzZ3Q8merXFkOP7eqTO75g4aHu1XYb8UNl16DjfiCcCLEC0bQkoZIvvhIa585mciqZTR4oJ5VBkFkaihas+vE1Cr5n3vgvvT5ForNNUW7D+Nsj2yVZRqLHJPe69BBVZgrvCo4lo90zcuIZECd+fy6KupEK4SlLUGUy5iy6Jf0W5QDwsaWTvWOOiPPCN6ehc4hEBisJrd/y4SxSvUjG4iX6hCEkX+EsdDY3u7Hs/2ylXgSMJ2Imq8O1rMVxvKvjPDeberLewqjt/BesWeCS3fgNztqLWVA2QQD+5CJeF3t+7xPw
+X-Forefront-Antispam-Report: CIP:255.255.255.255; CTRY:; LANG:en; SCL:1; SRV:;
+ IPV:NLI; SFV:NSPM; H:DM4PR12MB5229.namprd12.prod.outlook.com; PTR:; CAT:NONE;
+ SFS:(4636009)(366004)(66476007)(66946007)(66556008)(508600001)(966005)(5660300002)(2906002)(6486002)(83380400001)(7416002)(316002)(54906003)(956004)(2616005)(26005)(7696005)(52116002)(8676002)(7406005)(921005)(36756003)(186003)(86362001)(6666004)(38100700002)(38350700002)(4326008)(8936002)(41533002);
+ DIR:OUT; SFP:1101; 
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?aJnRTpan4y5HRpkYVUnzMWiZ4RxV25R9l2eVHtxCLQyM3DYnzrliquhdbrLj?=
+ =?us-ascii?Q?k1yifCAMe99mX2I3/KEGRuxnquZ/4ru44MV/Rl1ovfUhyCDCFkqzkmiq2umY?=
+ =?us-ascii?Q?UUiD1P4ZZNXEMByxNCu/sMDnDqCBDd9x0DwHn6m38L6bHH/UcrtrmR2MGstE?=
+ =?us-ascii?Q?ciD+SVGn8kuKbcSR3Ag5Hh+AMC+HAcjANDav4++LMsuwu5AkzuSyts2txCOF?=
+ =?us-ascii?Q?vauZ39Gm6jBGqFZ4RwaX11J2SBLbKy2pmZgSEPuw8ORt4XjaEq5qb922BvI8?=
+ =?us-ascii?Q?nlEI5p224WvGG+0whgW3Kl45c8Gklm7goT6aLwr4bp5AKlwWMuSkTwHQEF6+?=
+ =?us-ascii?Q?EWIavbRPP5DcbVxzW2Qzmi2Js4KVPPiU4LyqtBwmKfhk0j1mlM8DQlTT8z8d?=
+ =?us-ascii?Q?+1F0l7ObQDKBvHWvrrpQS3KzWDdyOfF3dqAXoOAB0pgoGoLNEIk986hZB7cH?=
+ =?us-ascii?Q?/r9sI+MjU3BfuWh6kfknRBqPQOmmS+3sQhb/MKhPF0uPAZFo+hfoiWOQk97B?=
+ =?us-ascii?Q?t9FNGuthQXPBIngIduZySMXfhCGuMNqJH+NRZUGnntpP5Kh/xIRkmaENsDaL?=
+ =?us-ascii?Q?XxYf1qPn/iInAt2pdYE3j/tqYfL3M289D1o2UHtiAkbWij68tk+fBXbWxWh2?=
+ =?us-ascii?Q?8wlzGRSUoWrh72xkMpRjb/3wjpPSVyljZTYXcCLR64j5SNnUG0LzB2GOzy1W?=
+ =?us-ascii?Q?DwWDrkWLciLWQHRl/72bSNiWeJJL9c7kWQpFf2QFlY+O8XvIf8ein9qEcd1F?=
+ =?us-ascii?Q?F/vC2l+9jupfr7buDz5ozI9ODuf4vDNDr6k23OdV23D7Gon3jtPivmnVk1NX?=
+ =?us-ascii?Q?Q6OFKaexHuAwuUJKJKpJ01YKrvmTVHU4jJE7V3cU0JwgRPV0ev7h5nh90rbf?=
+ =?us-ascii?Q?6lSR8g5TV3Owdxn5En0x4p5ZxwEGmo7YfJzMp/3O04mMzhVuokOyr9eX5lLe?=
+ =?us-ascii?Q?s4tR2z1v/3+zghl85PMUzIxLlpKitIQDVlXnEdEx/E0Xxv8ssxAQSvp5TzCZ?=
+ =?us-ascii?Q?OVzjJtLQ0B0mWKp9Iwcm2HC1E7f51KTQSI1FZ/ogpQNWR0S64rvykj1ES5OX?=
+ =?us-ascii?Q?BAbquEpO+73c9kjqDdgjWFoOfYpeVWWF9r45TjZRV+LygQqk7uQsMP42858E?=
+ =?us-ascii?Q?7nbhgq1Ui2NEXUAl/QKmLbFweGnhZWo3E15IwTNsLpf5ubxO7vKrSpW8pcVn?=
+ =?us-ascii?Q?0cJ7scFgi7bfHX2JL7l8XRq+7fMPmXn6s4jQ/jV8N+lVrgUgSp8QC3NyOw/m?=
+ =?us-ascii?Q?4HidL1Tz7f09rPhgXrpS7TCn1HNV0UQSejP2CvomnJladVJxskMWYI0PUx+x?=
+ =?us-ascii?Q?h9p4/Zv/sYdDUWImLwoK+L/K?=
+X-OriginatorOrg: amd.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 7dd6f380-a94d-4189-a68f-08d9514d9a5e
+X-MS-Exchange-CrossTenant-AuthSource: DM4PR12MB5229.namprd12.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 27 Jul 2021 22:26:39.6480 (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 3dd8961f-e488-4e60-8e11-a82d994e183d
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: 31LZpPx2OLl8h3x8z4/dqP6dzfZSbFJk98bRtjbtIgeHtv4SPsg04KM72vwoC/bmaKL1Ny770jXOYIABe9+a6w==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: DM8PR12MB5416
+Cc: Brijesh Singh <brijesh.singh@amd.com>, David Airlie <airlied@linux.ie>,
+ Benjamin Herrenschmidt <benh@kernel.crashing.org>,
+ Dave Hansen <dave.hansen@linux.intel.com>, Paul Mackerras <paulus@samba.org>,
+ Will Deacon <will@kernel.org>, Ard Biesheuvel <ardb@kernel.org>,
+ Andi Kleen <ak@linux.intel.com>, Michael Ellerman <mpe@ellerman.id.au>,
+ Christian Borntraeger <borntraeger@de.ibm.com>, Ingo Molnar <mingo@redhat.com>,
+ Dave Young <dyoung@redhat.com>, Tianyu Lan <Tianyu.Lan@microsoft.com>,
+ Thomas Zimmermann <tzimmermann@suse.de>, Vasily Gorbik <gor@linux.ibm.com>,
+ Heiko Carstens <hca@linux.ibm.com>,
+ Maarten Lankhorst <maarten.lankhorst@linux.intel.com>,
+ Maxime Ripard <mripard@kernel.org>, Borislav Petkov <bp@alien8.de>,
+ Andy Lutomirski <luto@kernel.org>, Thomas Gleixner <tglx@linutronix.de>,
+ Peter Zijlstra <peterz@infradead.org>, Daniel Vetter <daniel@ffwll.ch>
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -83,99 +165,116 @@ List-Post: <mailto:iommu@lists.linux-foundation.org>
 List-Help: <mailto:iommu-request@lists.linux-foundation.org?subject=help>
 List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
  <mailto:iommu-request@lists.linux-foundation.org?subject=subscribe>
+From: Tom Lendacky via iommu <iommu@lists.linux-foundation.org>
+Reply-To: Tom Lendacky <thomas.lendacky@amd.com>
+Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
-Content-Type: text/plain; charset="us-ascii"; Format="flowed"
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-On 2021-07-23 11:21, Ming Lei wrote:
-> On Thu, Jul 22, 2021 at 06:40:18PM +0100, Robin Murphy wrote:
->> On 2021-07-22 16:54, Ming Lei wrote:
->> [...]
->>>> If you are still keen to investigate more, then can try either of these:
->>>>
->>>> - add iommu.strict=0 to the cmdline
->>>>
->>>> - use perf record+annotate to find the hotspot
->>>>     - For this you need to enable psuedo-NMI with 2x steps:
->>>>       CONFIG_ARM64_PSEUDO_NMI=y in defconfig
->>>>       Add irqchip.gicv3_pseudo_nmi=1
->>>>
->>>>       See https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/tree/arch/arm64/Kconfig#n1745
->>>>       Your kernel log should show:
->>>>       [    0.000000] GICv3: Pseudo-NMIs enabled using forced ICC_PMR_EL1
->>>> synchronisation
->>>
->>> OK, will try the above tomorrow.
->>
->> Thanks, I was also going to suggest the latter, since it's what
->> arm_smmu_cmdq_issue_cmdlist() does with IRQs masked that should be most
->> indicative of where the slowness most likely stems from.
-> 
-> The improvement from 'iommu.strict=0' is very small:
-> 
-> [root@ampere-mtjade-04 ~]# cat /proc/cmdline
-> BOOT_IMAGE=(hd2,gpt2)/vmlinuz-5.14.0-rc2_linus root=UUID=cff79b49-6661-4347-b366-eb48273fe0c1 ro nvme.poll_queues=2 iommu.strict=0
-> 
-> [root@ampere-mtjade-04 ~]# taskset -c 0 ~/git/tools/test/nvme/io_uring 10 1 /dev/nvme1n1 4k
-> + fio --bs=4k --ioengine=io_uring --fixedbufs --registerfiles --hipri --iodepth=64 --iodepth_batch_submit=16 --iodepth_batch_complete_min=16 --filename=/dev/nvme1n1 --direct=1 --runtime=10 --numjobs=1 --rw=randread --name=test --group_reporting
-> test: (g=0): rw=randread, bs=(R) 4096B-4096B, (W) 4096B-4096B, (T) 4096B-4096B, ioengine=io_uring, iodepth=64
-> fio-3.27
-> Starting 1 process
-> Jobs: 1 (f=1): [r(1)][100.0%][r=1530MiB/s][r=392k IOPS][eta 00m:00s]
-> test: (groupid=0, jobs=1): err= 0: pid=2999: Fri Jul 23 06:05:15 2021
->    read: IOPS=392k, BW=1530MiB/s (1604MB/s)(14.9GiB/10001msec)
-> 
-> [root@ampere-mtjade-04 ~]# taskset -c 80 ~/git/tools/test/nvme/io_uring 20 1 /dev/nvme1n1 4k
-> + fio --bs=4k --ioengine=io_uring --fixedbufs --registerfiles --hipri --iodepth=64 --iodepth_batch_submit=16 --iodepth_batch_complete_min=16 --filename=/dev/nvme1n1 --direct=1 --runtime=20 --numjobs=1 --rw=randread --name=test --group_reporting
-> test: (g=0): rw=randread, bs=(R) 4096B-4096B, (W) 4096B-4096B, (T) 4096B-4096B, ioengine=io_uring, iodepth=64
-> fio-3.27
-> Starting 1 process
-> Jobs: 1 (f=1): [r(1)][100.0%][r=150MiB/s][r=38.4k IOPS][eta 00m:00s]
-> test: (groupid=0, jobs=1): err= 0: pid=3063: Fri Jul 23 06:05:49 2021
->    read: IOPS=38.4k, BW=150MiB/s (157MB/s)(3000MiB/20002msec)
+This patch series provides a generic helper function, prot_guest_has(),
+to replace the sme_active(), sev_active(), sev_es_active() and
+mem_encrypt_active() functions.
 
-OK, that appears to confirm that the invalidation overhead is more of a 
-symptom than the major contributing factor, which also seems to line up 
-fairly well with the other information.
+It is expected that as new protected virtualization technologies are
+added to the kernel, they can all be covered by a single function call
+instead of a collection of specific function calls all called from the
+same locations.
 
->> FWIW I would expect iommu.strict=0 to give a proportional reduction in SMMU
->> overhead for both cases since it should effectively mean only 1/256 as many
->> invalidations are issued.
->>
->> Could you also check whether the SMMU platform devices have "numa_node"
->> properties exposed in sysfs (and if so whether the values look right), and
->> share all the SMMU output from the boot log?
-> 
-> No found numa_node attribute for smmu platform device, and the whole dmesg log is
-> attached.
+The powerpc and s390 patches have been compile tested only. Can the
+folks copied on this series verify that nothing breaks for them.
 
-Thanks, so it seems like the SMMUs have MSI capability and are correctly 
-described as coherent, which means completion polling should be 
-happening in memory and so hopefully not contributing much more than a 
-couple of cross-socket cacheline migrations and/or snoops. Combined with 
-the difference in the perf traces looking a lot smaller than the 
-order-of-magnitude difference in the overall IOPS throughput, I suspect 
-this is overall SMMU overhead exacerbated by the missing NUMA info. If 
-every new 4K block touched by the NVMe means a TLB miss where the SMMU 
-has to walk pagetables from the wrong side of the system, I'm sure 
-that's going to add up.
+Cc: Andi Kleen <ak@linux.intel.com>
+Cc: Andy Lutomirski <luto@kernel.org>
+Cc: Ard Biesheuvel <ardb@kernel.org>
+Cc: Baoquan He <bhe@redhat.com>
+Cc: Benjamin Herrenschmidt <benh@kernel.crashing.org>
+Cc: Borislav Petkov <bp@alien8.de>
+Cc: Christian Borntraeger <borntraeger@de.ibm.com>
+Cc: Daniel Vetter <daniel@ffwll.ch>
+Cc: Dave Hansen <dave.hansen@linux.intel.com>
+Cc: Dave Young <dyoung@redhat.com>
+Cc: David Airlie <airlied@linux.ie>
+Cc: Heiko Carstens <hca@linux.ibm.com>
+Cc: Ingo Molnar <mingo@redhat.com>
+Cc: Joerg Roedel <joro@8bytes.org>
+Cc: Maarten Lankhorst <maarten.lankhorst@linux.intel.com>
+Cc: Maxime Ripard <mripard@kernel.org>
+Cc: Michael Ellerman <mpe@ellerman.id.au>
+Cc: Paul Mackerras <paulus@samba.org>
+Cc: Peter Zijlstra <peterz@infradead.org>
+Cc: Thomas Gleixner <tglx@linutronix.de>
+Cc: Thomas Zimmermann <tzimmermann@suse.de>
+Cc: Vasily Gorbik <gor@linux.ibm.com>
+Cc: VMware Graphics <linux-graphics-maintainer@vmware.com>
+Cc: Will Deacon <will@kernel.org>
 
-I'd suggest following John's suggestion and getting some baseline 
-figures for just the cross-socket overhead between the CPU and NVMe with 
-the SMMU right out of the picture, then have a hack at the firmware (or 
-pester the system vendor) to see how much of the difference you can make 
-back up by having the SMMU proximity domains described correctly such 
-that there's minimal likelihood of the SMMUs having to make non-local 
-accesses to their in-memory data. FWIW I don't think it should be *too* 
-hard to disassemble the IORT, fill in the proximity domain numbers and 
-valid flags on the SMMU nodes, then assemble it again to load as an 
-override (it's anything involving offsets in that table that's a real pain).
+---
 
-Note that you might also need to make sure you have CMA set up and sized 
-appropriately with CONFIG_DMA_PERNUMA_CMA enabled to get the full benefit.
+Patches based on:
+  https://git.kernel.org/pub/scm/linux/kernel/git/tip/tip.git master
+  commit 79e920060fa7 ("Merge branch 'WIP/fixes'")
 
-Robin.
+Tom Lendacky (11):
+  mm: Introduce a function to check for virtualization protection
+    features
+  x86/sev: Add an x86 version of prot_guest_has()
+  powerpc/pseries/svm: Add a powerpc version of prot_guest_has()
+  x86/sme: Replace occurrences of sme_active() with prot_guest_has()
+  x86/sev: Replace occurrences of sev_active() with prot_guest_has()
+  x86/sev: Replace occurrences of sev_es_active() with prot_guest_has()
+  treewide: Replace the use of mem_encrypt_active() with
+    prot_guest_has()
+  mm: Remove the now unused mem_encrypt_active() function
+  x86/sev: Remove the now unused mem_encrypt_active() function
+  powerpc/pseries/svm: Remove the now unused mem_encrypt_active()
+    function
+  s390/mm: Remove the now unused mem_encrypt_active() function
+
+ arch/Kconfig                               |  3 ++
+ arch/powerpc/include/asm/mem_encrypt.h     |  5 --
+ arch/powerpc/include/asm/protected_guest.h | 30 +++++++++++
+ arch/powerpc/platforms/pseries/Kconfig     |  1 +
+ arch/s390/include/asm/mem_encrypt.h        |  2 -
+ arch/x86/Kconfig                           |  1 +
+ arch/x86/include/asm/kexec.h               |  2 +-
+ arch/x86/include/asm/mem_encrypt.h         | 13 +----
+ arch/x86/include/asm/protected_guest.h     | 27 ++++++++++
+ arch/x86/kernel/crash_dump_64.c            |  4 +-
+ arch/x86/kernel/head64.c                   |  4 +-
+ arch/x86/kernel/kvm.c                      |  3 +-
+ arch/x86/kernel/kvmclock.c                 |  4 +-
+ arch/x86/kernel/machine_kexec_64.c         | 19 +++----
+ arch/x86/kernel/pci-swiotlb.c              |  9 ++--
+ arch/x86/kernel/relocate_kernel_64.S       |  2 +-
+ arch/x86/kernel/sev.c                      |  6 +--
+ arch/x86/kvm/svm/svm.c                     |  3 +-
+ arch/x86/mm/ioremap.c                      | 16 +++---
+ arch/x86/mm/mem_encrypt.c                  | 60 +++++++++++++++-------
+ arch/x86/mm/mem_encrypt_identity.c         |  3 +-
+ arch/x86/mm/pat/set_memory.c               |  3 +-
+ arch/x86/platform/efi/efi_64.c             |  9 ++--
+ arch/x86/realmode/init.c                   |  8 +--
+ drivers/gpu/drm/amd/amdgpu/amdgpu_drv.c    |  4 +-
+ drivers/gpu/drm/drm_cache.c                |  4 +-
+ drivers/gpu/drm/vmwgfx/vmwgfx_drv.c        |  4 +-
+ drivers/gpu/drm/vmwgfx/vmwgfx_msg.c        |  6 +--
+ drivers/iommu/amd/init.c                   |  7 +--
+ drivers/iommu/amd/iommu.c                  |  3 +-
+ drivers/iommu/amd/iommu_v2.c               |  3 +-
+ drivers/iommu/iommu.c                      |  3 +-
+ fs/proc/vmcore.c                           |  6 +--
+ include/linux/mem_encrypt.h                |  4 --
+ include/linux/protected_guest.h            | 37 +++++++++++++
+ kernel/dma/swiotlb.c                       |  4 +-
+ 36 files changed, 218 insertions(+), 104 deletions(-)
+ create mode 100644 arch/powerpc/include/asm/protected_guest.h
+ create mode 100644 arch/x86/include/asm/protected_guest.h
+ create mode 100644 include/linux/protected_guest.h
+
+-- 
+2.32.0
+
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
