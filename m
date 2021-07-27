@@ -2,84 +2,126 @@ Return-Path: <SRS0=amFV=MT=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-14.0 required=3.0 tests=BAYES_00,INCLUDES_CR_TRAILER,
-	INCLUDES_PATCH,MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED
-	autolearn=unavailable autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-15.5 required=3.0 tests=BAYES_00,DKIM_INVALID,
+	DKIM_SIGNED,HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_CR_TRAILER,
+	MAILING_LIST_MULTI,MENTIONS_GIT_HOSTING,NICE_REPLY_A,SPF_HELO_NONE,SPF_PASS,
+	URIBL_BLOCKED,USER_AGENT_SANE_1 autolearn=ham autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 859F1C4338F
-	for <iommu@archiver.kernel.org>; Tue, 27 Jul 2021 13:00:11 +0000 (UTC)
-Received: from smtp4.osuosl.org (smtp4.osuosl.org [140.211.166.137])
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5398CC4338F
+	for <iommu@archiver.kernel.org>; Tue, 27 Jul 2021 13:00:40 +0000 (UTC)
+Received: from smtp3.osuosl.org (smtp3.osuosl.org [140.211.166.136])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 34591608FB
-	for <iommu@archiver.kernel.org>; Tue, 27 Jul 2021 13:00:11 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.4.1 mail.kernel.org 34591608FB
-Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=kernel.org
+	by mail.kernel.org (Postfix) with ESMTPS id F403A61A87
+	for <iommu@archiver.kernel.org>; Tue, 27 Jul 2021 13:00:39 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.4.1 mail.kernel.org F403A61A87
+Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=de.ibm.com
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by smtp4.osuosl.org (Postfix) with ESMTP id F0B8740235;
-	Tue, 27 Jul 2021 13:00:10 +0000 (UTC)
+	by smtp3.osuosl.org (Postfix) with ESMTP id CB28F6062A;
+	Tue, 27 Jul 2021 13:00:39 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from smtp4.osuosl.org ([127.0.0.1])
-	by localhost (smtp4.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id XExDDupvqgtr; Tue, 27 Jul 2021 13:00:09 +0000 (UTC)
-Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [IPv6:2605:bc80:3010:104::8cd3:938])
-	by smtp4.osuosl.org (Postfix) with ESMTPS id 8936540167;
-	Tue, 27 Jul 2021 13:00:09 +0000 (UTC)
+Received: from smtp3.osuosl.org ([127.0.0.1])
+	by localhost (smtp3.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+	with ESMTP id fhW9IEVprzTu; Tue, 27 Jul 2021 13:00:39 +0000 (UTC)
+Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
+	by smtp3.osuosl.org (Postfix) with ESMTPS id B049C605F4;
+	Tue, 27 Jul 2021 13:00:38 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 61FC0C001A;
-	Tue, 27 Jul 2021 13:00:09 +0000 (UTC)
-Received: from smtp1.osuosl.org (smtp1.osuosl.org [140.211.166.138])
- by lists.linuxfoundation.org (Postfix) with ESMTP id C0883C000E
- for <iommu@lists.linux-foundation.org>; Tue, 27 Jul 2021 13:00:07 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 9A72CC001A;
+	Tue, 27 Jul 2021 13:00:38 +0000 (UTC)
+Received: from smtp2.osuosl.org (smtp2.osuosl.org [IPv6:2605:bc80:3010::133])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id A28A8C000E
+ for <iommu@lists.linux-foundation.org>; Tue, 27 Jul 2021 13:00:37 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by smtp1.osuosl.org (Postfix) with ESMTP id A25CE83163
- for <iommu@lists.linux-foundation.org>; Tue, 27 Jul 2021 13:00:07 +0000 (UTC)
+ by smtp2.osuosl.org (Postfix) with ESMTP id 7FF2D40156
+ for <iommu@lists.linux-foundation.org>; Tue, 27 Jul 2021 13:00:37 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from smtp1.osuosl.org ([127.0.0.1])
- by localhost (smtp1.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id 8wHoO2wemr8u for <iommu@lists.linux-foundation.org>;
- Tue, 27 Jul 2021 13:00:04 +0000 (UTC)
+Authentication-Results: smtp2.osuosl.org (amavisd-new);
+ dkim=pass (2048-bit key) header.d=ibm.com
+Received: from smtp2.osuosl.org ([127.0.0.1])
+ by localhost (smtp2.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+ with ESMTP id 6Jzwv-atKHIi for <iommu@lists.linux-foundation.org>;
+ Tue, 27 Jul 2021 13:00:36 +0000 (UTC)
 X-Greylist: domain auto-whitelisted by SQLgrey-1.8.0
-Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
- by smtp1.osuosl.org (Postfix) with ESMTPS id 8784983883
- for <iommu@lists.linux-foundation.org>; Tue, 27 Jul 2021 13:00:04 +0000 (UTC)
-Received: from disco-boy.misterjones.org (disco-boy.misterjones.org
- [51.254.78.96])
- (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
- (No client certificate requested)
- by mail.kernel.org (Postfix) with ESMTPSA id 18DA861A87;
- Tue, 27 Jul 2021 13:00:04 +0000 (UTC)
-Received: from sofa.misterjones.org ([185.219.108.64] helo=why.misterjones.org)
- by disco-boy.misterjones.org with esmtpsa (TLS1.3) tls
- TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384 (Exim 4.94.2)
- (envelope-from <maz@kernel.org>)
- id 1m8Mgk-001IlW-01; Tue, 27 Jul 2021 14:00:02 +0100
-Date: Tue, 27 Jul 2021 14:00:01 +0100
-Message-ID: <87czr3ewtq.wl-maz@kernel.org>
-From: Marc Zyngier <maz@kernel.org>
-To: Bixuan Cui <cuibixuan@huawei.com>
-Subject: Re: [PATCH -next v2] iommu/arm-smmu-v3: Add suspend and resume support
-In-Reply-To: <20210727121408.81883-1-cuibixuan@huawei.com>
-References: <20210727121408.81883-1-cuibixuan@huawei.com>
-User-Agent: Wanderlust/2.15.9 (Almost Unreal) SEMI-EPG/1.14.7 (Harue)
- FLIM-LB/1.14.9 (=?UTF-8?B?R29qxY0=?=) APEL-LB/10.8 EasyPG/1.0.0 Emacs/27.1
- (x86_64-pc-linux-gnu) MULE/6.0 (HANACHIRUSATO)
-MIME-Version: 1.0 (generated by SEMI-EPG 1.14.7 - "Harue")
-X-SA-Exim-Connect-IP: 185.219.108.64
-X-SA-Exim-Rcpt-To: cuibixuan@huawei.com, iommu@lists.linux-foundation.org,
- linux-kernel@vger.kernel.org, will@kernel.org, weiyongjun1@huawei.com,
- john.wanghui@huawei.com, dingtianhong@huawei.com, thunder.leizhen@huawei.com,
- guohanjun@huawei.com, robin.murphy@arm.com, joro@8bytes.org,
- jean-philippe@linaro.org, Jonathan.Cameron@huawei.com,
- song.bao.hua@hisilicon.com, linux-arm-kernel@lists.infradead.org
-X-SA-Exim-Mail-From: maz@kernel.org
-X-SA-Exim-Scanned: No (on disco-boy.misterjones.org);
- SAEximRunCond expanded to false
-Cc: jean-philippe@linaro.org, robin.murphy@arm.com, guohanjun@huawei.com,
- linux-kernel@vger.kernel.org, john.wanghui@huawei.com,
- iommu@lists.linux-foundation.org, weiyongjun1@huawei.com,
- dingtianhong@huawei.com, will@kernel.org, linux-arm-kernel@lists.infradead.org
+Received: from mx0a-001b2d01.pphosted.com (mx0b-001b2d01.pphosted.com
+ [148.163.158.5])
+ by smtp2.osuosl.org (Postfix) with ESMTPS id A09F9401E0
+ for <iommu@lists.linux-foundation.org>; Tue, 27 Jul 2021 13:00:36 +0000 (UTC)
+Received: from pps.filterd (m0098419.ppops.net [127.0.0.1])
+ by mx0b-001b2d01.pphosted.com (8.16.0.43/8.16.0.43) with SMTP id
+ 16RCfR5q099613; Tue, 27 Jul 2021 09:00:12 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com;
+ h=subject : to : cc :
+ references : from : message-id : date : in-reply-to : content-type :
+ content-transfer-encoding : mime-version; s=pp1;
+ bh=cYDcRUM0j49OK05u3K73lNmH4W1h16Q4y2YGusMlONY=;
+ b=gtkUjUjXpERWtWpFKAXlFyoooYvlRElADEs3AkrMkz9ZD6W1NsCoU7GR2yTy5kQBND+h
+ algrvCqIJvzYe246NcXONwRgUEZehhv0c9zPqCpqB7XuJXwaovDEGfea1inn8JfoU/V6
+ S/muNmqf3GfdpXdJl3oGECtBH5Vavodf9P5+6r2EkppoRhjpqNSHN+sARoI+GOJBzWhL
+ J3H6QhbV5iBOafjwpxaHQdQDCicvfJgv0jkcPuzIxF2xIA/7YzATBsXLtFM60/I1RLxH
+ 8ddnKJ95d+un32zLDCQSSGZEjFz6Jzhma+Y+6ARdLUhLzRecV0N2SUpS/RvgbfIn8LR5 Dg== 
+Received: from ppma01fra.de.ibm.com (46.49.7a9f.ip4.static.sl-reverse.com
+ [159.122.73.70])
+ by mx0b-001b2d01.pphosted.com with ESMTP id 3a2j2u138h-1
+ (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+ Tue, 27 Jul 2021 09:00:12 -0400
+Received: from pps.filterd (ppma01fra.de.ibm.com [127.0.0.1])
+ by ppma01fra.de.ibm.com (8.16.1.2/8.16.1.2) with SMTP id 16RCuY6N004708;
+ Tue, 27 Jul 2021 13:00:10 GMT
+Received: from b06cxnps4076.portsmouth.uk.ibm.com
+ (d06relay13.portsmouth.uk.ibm.com [9.149.109.198])
+ by ppma01fra.de.ibm.com with ESMTP id 3a235kr976-1
+ (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+ Tue, 27 Jul 2021 13:00:10 +0000
+Received: from d06av24.portsmouth.uk.ibm.com (mk.ibm.com [9.149.105.60])
+ by b06cxnps4076.portsmouth.uk.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id
+ 16RD06c027918742
+ (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+ Tue, 27 Jul 2021 13:00:06 GMT
+Received: from d06av24.portsmouth.uk.ibm.com (unknown [127.0.0.1])
+ by IMSVA (Postfix) with ESMTP id B333542041;
+ Tue, 27 Jul 2021 13:00:06 +0000 (GMT)
+Received: from d06av24.portsmouth.uk.ibm.com (unknown [127.0.0.1])
+ by IMSVA (Postfix) with ESMTP id D59E24203F;
+ Tue, 27 Jul 2021 13:00:05 +0000 (GMT)
+Received: from oc7455500831.ibm.com (unknown [9.145.165.137])
+ by d06av24.portsmouth.uk.ibm.com (Postfix) with ESMTP;
+ Tue, 27 Jul 2021 13:00:05 +0000 (GMT)
+Subject: Re: [PATCH v2 1/1] s390/pv: fix the forcing of the swiotlb
+To: Will Deacon <will@kernel.org>
+References: <20210723231746.3964989-1-pasic@linux.ibm.com>
+ <YPtejB62iu+iNrM+@fedora> <a89f1add-b0fb-1069-cb30-78864e399b19@de.ibm.com>
+ <20210727125755.GA18586@willie-the-truck>
+From: Christian Borntraeger <borntraeger@de.ibm.com>
+Message-ID: <827b1bd3-3245-fe0e-0066-cadf8cab432f@de.ibm.com>
+Date: Tue, 27 Jul 2021 15:00:05 +0200
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
+ Thunderbird/78.11.0
+In-Reply-To: <20210727125755.GA18586@willie-the-truck>
+Content-Language: en-US
+X-TM-AS-GCONF: 00
+X-Proofpoint-GUID: -WU9DE8cYVVqtjJnpLTD-EVwUibAazyR
+X-Proofpoint-ORIG-GUID: -WU9DE8cYVVqtjJnpLTD-EVwUibAazyR
+X-Proofpoint-UnRewURL: 0 URL was un-rewritten
+MIME-Version: 1.0
+X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.391, 18.0.790
+ definitions=2021-07-27_07:2021-07-27,
+ 2021-07-27 signatures=0
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0
+ lowpriorityscore=0
+ bulkscore=0 spamscore=0 clxscore=1015 impostorscore=0 suspectscore=0
+ phishscore=0 mlxlogscore=999 priorityscore=1501 mlxscore=0 malwarescore=0
+ adultscore=0 classifier=spam adjust=0 reason=mlx scancount=1
+ engine=8.12.0-2107140000 definitions=main-2107270073
+Cc: Nathan Chancellor <nathan@kernel.org>, Vasily Gorbik <gor@linux.ibm.com>,
+ Konrad Rzeszutek Wilk <konrad.wilk@oracle.com>,
+ linux-s390 <linux-s390@vger.kernel.org>, Heiko Carstens <hca@linux.ibm.com>,
+ linux-kernel@vger.kernel.org, stable@vger.kernel.org,
+ Halil Pasic <pasic@linux.ibm.com>, iommu@lists.linux-foundation.org,
+ Claire Chang <tientzu@chromium.org>, Konrad Rzeszutek Wilk <konrad@darnok.org>,
+ Robin Murphy <robin.murphy@arm.com>, Christoph Hellwig <hch@lst.de>,
+ Guenter Roeck <linux@roeck-us.net>
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -92,83 +134,56 @@ List-Post: <mailto:iommu@lists.linux-foundation.org>
 List-Help: <mailto:iommu-request@lists.linux-foundation.org?subject=help>
 List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
  <mailto:iommu-request@lists.linux-foundation.org?subject=subscribe>
-Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset="us-ascii"; Format="flowed"
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-On Tue, 27 Jul 2021 13:14:08 +0100,
-Bixuan Cui <cuibixuan@huawei.com> wrote:
-> 
-> Add suspend and resume support for arm-smmu-v3 by low-power mode.
-> 
-> When the smmu is suspended, it is powered off and the registers are
-> cleared. So saves the msi_msg context during msi interrupt initialization
-> of smmu. When resume happens it calls arm_smmu_device_reset() to restore
-> the registers.
-> 
-> Signed-off-by: Bixuan Cui <cuibixuan@huawei.com>
-> Reviewed-by: Wei Yongjun <weiyongjun1@huawei.com>
-> Reviewed-by: Zhen Lei <thunder.leizhen@huawei.com>
-> Reviewed-by: Ding Tianhong <dingtianhong@huawei.com>
-> Reviewed-by: Hanjun Guo <guohanjun@huawei.com>
-> ---
-> Changes in v2:
-> * Using get_cached_msi_msg() instead of the descriptor to resume msi_msg
->   in arm_smmu_resume_msis();
-> 
-> * Move arm_smmu_resume_msis() from arm_smmu_setup_unique_irqs() into
->   arm_smmu_setup_irqs() and rename it to arm_smmu_resume_unique_irqs();
-> 
->   Call arm_smmu_setup_unique_irqs() to configure the IRQ during probe and
->   call arm_smmu_resume_unique_irqs() in resume mode to restore the IRQ
->   registers to make the code more reasonable.
-> 
-> * Call arm_smmu_device_disable() to disable smmu and clear CR0_SMMUEN on
->   suspend. Then the warning about CR0_SMMUEN being enabled can be cleared
->   on resume.
-> 
-> * Using SET_SYSTEM_SLEEP_PM_OPS();
-> 
->  drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c | 69 ++++++++++++++++++---
->  1 file changed, 62 insertions(+), 7 deletions(-)
-> 
-> diff --git a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
-> index 235f9bdaeaf2..66f35d5c7a70 100644
-> --- a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
-> +++ b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
-> @@ -40,6 +40,7 @@ MODULE_PARM_DESC(disable_bypass,
->  
->  static bool disable_msipolling;
->  module_param(disable_msipolling, bool, 0444);
-> +static bool bypass;
 
-As outlined before, this is likely to be wrong if you can have
-per-SMMU bypass control.
 
->  MODULE_PARM_DESC(disable_msipolling,
->  	"Disable MSI-based polling for CMD_SYNC completion.");
->  
-> @@ -3129,11 +3130,38 @@ static void arm_smmu_write_msi_msg(struct msi_desc *desc, struct msi_msg *msg)
->  	doorbell = (((u64)msg->address_hi) << 32) | msg->address_lo;
->  	doorbell &= MSI_CFG0_ADDR_MASK;
->  
-> +	/* Saves the msg context for resume if desc->msg is empty */
-> +	if (desc->msg.address_lo == 0x0 && desc->msg.address_hi == 0x0) {
-> +		desc->msg.address_lo = msg->address_lo;
-> +		desc->msg.address_hi = msg->address_hi;
-> +		desc->msg.data = msg->data;
-> +	}
+On 27.07.21 14:57, Will Deacon wrote:
+> On Tue, Jul 27, 2021 at 02:54:14PM +0200, Christian Borntraeger wrote:
+>>
+>> On 24.07.21 02:27, Konrad Rzeszutek Wilk wrote:
+>>> On Sat, Jul 24, 2021 at 01:17:46AM +0200, Halil Pasic wrote:
+>>>> Since commit 903cd0f315fe ("swiotlb: Use is_swiotlb_force_bounce for
+>>>> swiotlb data bouncing") if code sets swiotlb_force it needs to do so
+>>>> before the swiotlb is initialised. Otherwise
+>>>> io_tlb_default_mem->force_bounce will not get set to true, and devices
+>>>> that use (the default) swiotlb will not bounce despite switolb_force
+>>>> having the value of SWIOTLB_FORCE.
+>>>>
+>>>> Let us restore swiotlb functionality for PV by fulfilling this new
+>>>> requirement.
+>>>>
+>>>> This change addresses what turned out to be a fragility in
+>>>> commit 64e1f0c531d1 ("s390/mm: force swiotlb for protected
+>>>> virtualization"), which ain't exactly broken in its original context,
+>>>> but could give us some more headache if people backport the broken
+>>>> change and forget this fix.
+>>>>
+>>>> Signed-off-by: Halil Pasic <pasic@linux.ibm.com>
+>>>> Tested-by: Christian Borntraeger <borntraeger@de.ibm.com>
+>>>> Reviewed-by: Christian Borntraeger <borntraeger@de.ibm.com>
+>>>> Fixes: 903cd0f315fe ("swiotlb: Use is_swiotlb_force_bounce for swiotlb data bouncing")
+>>>> Fixes: 64e1f0c531d1 ("s390/mm: force swiotlb for protected virtualization")
+>>>> Cc: stable@vger.kernel.org #5.3+
+>>>>
+>>>> ---
+>>>
+>>> Picked it up and stuck it in linux-next with the other set of patches (Will's fixes).
+>>
+>> Can you push out to kernel.org?
+> 
+> It's pushed to the swiotlb tree:
+> 
+> https://git.kernel.org/pub/scm/linux/kernel/git/konrad/swiotlb.git/log/?h=devel/for-linus-5.15
+> 
+> Since none of the restricted DMA series is in mainline yet, I don't think
+> it's needed anywhere else.
 
-I thought I had made it clear that this approach is not acceptable.
-Please fix the generic code to keep track of the latest message.
-
-Thanks,
-
-	M.
-
--- 
-Without deviation from the norm, progress is not possible.
+Ah right. It is not yet in todays next, so it might just be that yesterdays next pulled
+from Konrad too early. Sorry for the noise.
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
