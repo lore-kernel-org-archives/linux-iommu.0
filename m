@@ -7,56 +7,57 @@ X-Spam-Status: No, score=-16.8 required=3.0 tests=BAYES_00,
 	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_GIT
 	autolearn=ham autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 78C77C43214
-	for <iommu@archiver.kernel.org>; Wed, 28 Jul 2021 15:59:49 +0000 (UTC)
-Received: from smtp1.osuosl.org (smtp1.osuosl.org [140.211.166.138])
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B8139C4338F
+	for <iommu@archiver.kernel.org>; Wed, 28 Jul 2021 15:59:51 +0000 (UTC)
+Received: from smtp4.osuosl.org (smtp4.osuosl.org [140.211.166.137])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 4A05B60F93
-	for <iommu@archiver.kernel.org>; Wed, 28 Jul 2021 15:59:49 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.4.1 mail.kernel.org 4A05B60F93
+	by mail.kernel.org (Postfix) with ESMTPS id 8638460D07
+	for <iommu@archiver.kernel.org>; Wed, 28 Jul 2021 15:59:51 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.4.1 mail.kernel.org 8638460D07
 Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=arm.com
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by smtp1.osuosl.org (Postfix) with ESMTP id 29B9283AAA;
-	Wed, 28 Jul 2021 15:59:49 +0000 (UTC)
+	by smtp4.osuosl.org (Postfix) with ESMTP id 66F6940271;
+	Wed, 28 Jul 2021 15:59:51 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from smtp1.osuosl.org ([127.0.0.1])
-	by localhost (smtp1.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id 1HFtU-oIfPll; Wed, 28 Jul 2021 15:59:48 +0000 (UTC)
+Received: from smtp4.osuosl.org ([127.0.0.1])
+	by localhost (smtp4.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+	with ESMTP id el2gMauQikS6; Wed, 28 Jul 2021 15:59:50 +0000 (UTC)
 Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [IPv6:2605:bc80:3010:104::8cd3:938])
-	by smtp1.osuosl.org (Postfix) with ESMTPS id 1409C83AA2;
-	Wed, 28 Jul 2021 15:59:48 +0000 (UTC)
+	by smtp4.osuosl.org (Postfix) with ESMTPS id 59568405FA;
+	Wed, 28 Jul 2021 15:59:50 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id E57DAC001A;
-	Wed, 28 Jul 2021 15:59:47 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 1629AC001A;
+	Wed, 28 Jul 2021 15:59:50 +0000 (UTC)
 Received: from smtp3.osuosl.org (smtp3.osuosl.org [140.211.166.136])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 896E9C0024
- for <iommu@lists.linux-foundation.org>; Wed, 28 Jul 2021 15:59:46 +0000 (UTC)
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 732E4C000E
+ for <iommu@lists.linux-foundation.org>; Wed, 28 Jul 2021 15:59:48 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by smtp3.osuosl.org (Postfix) with ESMTP id 6A832608A1
- for <iommu@lists.linux-foundation.org>; Wed, 28 Jul 2021 15:59:46 +0000 (UTC)
+ by smtp3.osuosl.org (Postfix) with ESMTP id 44D3C608A3
+ for <iommu@lists.linux-foundation.org>; Wed, 28 Jul 2021 15:59:48 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
 Received: from smtp3.osuosl.org ([127.0.0.1])
  by localhost (smtp3.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id t7RaZ9pslNuQ for <iommu@lists.linux-foundation.org>;
- Wed, 28 Jul 2021 15:59:45 +0000 (UTC)
+ with ESMTP id kQ8jB_0ejFEK for <iommu@lists.linux-foundation.org>;
+ Wed, 28 Jul 2021 15:59:47 +0000 (UTC)
 X-Greylist: domain auto-whitelisted by SQLgrey-1.8.0
 Received: from foss.arm.com (foss.arm.com [217.140.110.172])
- by smtp3.osuosl.org (Postfix) with ESMTP id B491A6089C
- for <iommu@lists.linux-foundation.org>; Wed, 28 Jul 2021 15:59:45 +0000 (UTC)
+ by smtp3.osuosl.org (Postfix) with ESMTP id 6E4B66089B
+ for <iommu@lists.linux-foundation.org>; Wed, 28 Jul 2021 15:59:47 +0000 (UTC)
 Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
- by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 330F613D5;
- Wed, 28 Jul 2021 08:59:45 -0700 (PDT)
+ by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 031BE1FB;
+ Wed, 28 Jul 2021 08:59:47 -0700 (PDT)
 Received: from 010265703453.arm.com (unknown [10.57.36.146])
- by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPA id AD6AC3F70D;
- Wed, 28 Jul 2021 08:59:43 -0700 (PDT)
+ by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPA id 862A93F70D;
+ Wed, 28 Jul 2021 08:59:45 -0700 (PDT)
 From: Robin Murphy <robin.murphy@arm.com>
 To: joro@8bytes.org,
 	will@kernel.org
-Subject: [PATCH v2 22/24] iommu: Allow enabling non-strict mode dynamically
-Date: Wed, 28 Jul 2021 16:58:43 +0100
-Message-Id: <de75b36b3b31cd328de3811c0725f3d0af448abc.1627468310.git.robin.murphy@arm.com>
+Subject: [PATCH v2 23/24] iommu/arm-smmu: Allow non-strict in pgtable_quirks
+ interface
+Date: Wed, 28 Jul 2021 16:58:44 +0100
+Message-Id: <0fcd1f5225a6b435cbc697551a6247cd435c04db.1627468310.git.robin.murphy@arm.com>
 X-Mailer: git-send-email 2.25.1
 In-Reply-To: <cover.1627468308.git.robin.murphy@arm.com>
 References: <cover.1627468308.git.robin.murphy@arm.com>
@@ -80,65 +81,93 @@ Content-Transfer-Encoding: 7bit
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-Allocating and enabling a flush queue is in fact something we can
-reasonably do while a DMA domain is active, without having to rebuild it
-from scratch. Thus we can allow a strict -> non-strict transition from
-sysfs without requiring to unbind the device's driver, which is of
-particular interest to users who want to make selective relaxations to
-critical devices like the one serving their root filesystem.
-
-Disabling and draining a queue also seems technically possible to
-achieve without rebuilding the whole domain, but would certainly be more
-involved. Furthermore there's not such a clear use-case for tightening
-up security *after* the device may already have done whatever it is that
-you don't trust it not to do, so we only consider the relaxation case.
+To make io-pgtable aware of a flush queue being dynamically enabled,
+allow IO_PGTABLE_QUIRK_NON_STRICT to be set even after a domain has been
+attached to, and hook up the final piece of the puzzle in iommu-dma.
 
 Signed-off-by: Robin Murphy <robin.murphy@arm.com>
 ---
- drivers/iommu/iommu.c | 16 ++++++++++++----
- 1 file changed, 12 insertions(+), 4 deletions(-)
+ drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c | 15 +++++++++++++++
+ drivers/iommu/arm/arm-smmu/arm-smmu.c       | 11 +++++++++++
+ drivers/iommu/dma-iommu.c                   |  3 +++
+ 3 files changed, 29 insertions(+)
 
-diff --git a/drivers/iommu/iommu.c b/drivers/iommu/iommu.c
-index 25c1adc1ec67..be399d630953 100644
---- a/drivers/iommu/iommu.c
-+++ b/drivers/iommu/iommu.c
-@@ -3200,6 +3200,13 @@ static int iommu_change_dev_def_domain(struct iommu_group *group,
- 		goto out;
- 	}
- 
-+	/* We can bring up a flush queue without tearing down the domain */
-+	if (type == IOMMU_DOMAIN_DMA_FQ && prev_dom->type == IOMMU_DOMAIN_DMA) {
-+		prev_dom->type = IOMMU_DOMAIN_DMA_FQ;
-+		ret = iommu_dma_init_fq(prev_dom);
-+		goto out;
-+	}
-+
- 	/* Sets group->default_domain to the newly allocated domain */
- 	ret = iommu_group_alloc_default_domain(dev->bus, group, type);
- 	if (ret)
-@@ -3240,9 +3247,9 @@ static int iommu_change_dev_def_domain(struct iommu_group *group,
+diff --git a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
+index 19400826eba7..40fa9cb382c3 100644
+--- a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
++++ b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
+@@ -2711,6 +2711,20 @@ static int arm_smmu_enable_nesting(struct iommu_domain *domain)
+ 	return ret;
  }
  
- /*
-- * Changing the default domain through sysfs requires the users to ubind the
-- * drivers from the devices in the iommu group. Return failure if this doesn't
-- * meet.
-+ * Changing the default domain through sysfs requires the users to unbind the
-+ * drivers from the devices in the iommu group, except for a DMA -> DMA-FQ
-+ * transition. Return failure if this isn't met.
-  *
-  * We need to consider the race between this and the device release path.
-  * device_lock(dev) is used here to guarantee that the device release path
-@@ -3318,7 +3325,8 @@ static ssize_t iommu_group_store_type(struct iommu_group *group,
++static int arm_smmu_set_pgtable_quirks(struct iommu_domain *domain,
++		unsigned long quirks)
++{
++	struct arm_smmu_domain *smmu_domain = to_smmu_domain(domain);
++
++	if (quirks == IO_PGTABLE_QUIRK_NON_STRICT && smmu_domain->pgtbl_ops) {
++		struct io_pgtable *iop = io_pgtable_ops_to_pgtable(smmu_domain->pgtbl_ops);
++
++		iop->cfg.quirks |= IO_PGTABLE_QUIRK_NON_STRICT;
++		return 0;
++	}
++	return -EINVAL;
++}
++
+ static int arm_smmu_of_xlate(struct device *dev, struct of_phandle_args *args)
+ {
+ 	return iommu_fwspec_add_ids(dev, args->args, 1);
+@@ -2825,6 +2839,7 @@ static struct iommu_ops arm_smmu_ops = {
+ 	.release_device		= arm_smmu_release_device,
+ 	.device_group		= arm_smmu_device_group,
+ 	.enable_nesting		= arm_smmu_enable_nesting,
++	.set_pgtable_quirks	= arm_smmu_set_pgtable_quirks,
+ 	.of_xlate		= arm_smmu_of_xlate,
+ 	.get_resv_regions	= arm_smmu_get_resv_regions,
+ 	.put_resv_regions	= generic_iommu_put_resv_regions,
+diff --git a/drivers/iommu/arm/arm-smmu/arm-smmu.c b/drivers/iommu/arm/arm-smmu/arm-smmu.c
+index 109e4723f9f5..f18684f308b9 100644
+--- a/drivers/iommu/arm/arm-smmu/arm-smmu.c
++++ b/drivers/iommu/arm/arm-smmu/arm-smmu.c
+@@ -1518,6 +1518,17 @@ static int arm_smmu_set_pgtable_quirks(struct iommu_domain *domain,
+ 	struct arm_smmu_domain *smmu_domain = to_smmu_domain(domain);
+ 	int ret = 0;
  
- 	/* Check if the device in the group still has a driver bound to it */
- 	device_lock(dev);
--	if (device_is_bound(dev)) {
-+	if (device_is_bound(dev) && !(req_type == IOMMU_DOMAIN_DMA_FQ &&
-+	    group->default_domain->type == IOMMU_DOMAIN_DMA)) {
- 		pr_err_ratelimited("Device is still bound to driver\n");
- 		ret = -EBUSY;
- 		goto out;
++	if (quirks == IO_PGTABLE_QUIRK_NON_STRICT) {
++		struct io_pgtable *iop;
++
++		if (!smmu_domain->pgtbl_ops)
++			return -EINVAL;
++
++		iop = io_pgtable_ops_to_pgtable(smmu_domain->pgtbl_ops);
++		iop->cfg.quirks |= IO_PGTABLE_QUIRK_NON_STRICT;
++		return 0;
++	}
++
+ 	mutex_lock(&smmu_domain->init_mutex);
+ 	if (smmu_domain->smmu)
+ 		ret = -EPERM;
+diff --git a/drivers/iommu/dma-iommu.c b/drivers/iommu/dma-iommu.c
+index 304a3ec71223..6e3eca778267 100644
+--- a/drivers/iommu/dma-iommu.c
++++ b/drivers/iommu/dma-iommu.c
+@@ -16,6 +16,7 @@
+ #include <linux/huge_mm.h>
+ #include <linux/iommu.h>
+ #include <linux/iova.h>
++#include <linux/io-pgtable.h>
+ #include <linux/irq.h>
+ #include <linux/mm.h>
+ #include <linux/mutex.h>
+@@ -326,6 +327,8 @@ int iommu_dma_init_fq(struct iommu_domain *domain)
+ 		return -ENODEV;
+ 	}
+ 	cookie->fq_domain = domain;
++	if (domain->ops->set_pgtable_quirks)
++		domain->ops->set_pgtable_quirks(domain, IO_PGTABLE_QUIRK_NON_STRICT);
+ 	return 0;
+ }
+ 
 -- 
 2.25.1
 
