@@ -2,134 +2,74 @@ Return-Path: <SRS0=45t2=MU=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-10.5 required=3.0 tests=BAYES_00,
-	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,NICE_REPLY_A,
-	SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_SANE_1 autolearn=ham
-	autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-8.8 required=3.0 tests=BAYES_00,DKIM_INVALID,
+	DKIM_SIGNED,MAILING_LIST_MULTI,MENTIONS_GIT_HOSTING,SPF_HELO_NONE,SPF_PASS,
+	URIBL_BLOCKED autolearn=unavailable autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 998B4C4338F
-	for <iommu@archiver.kernel.org>; Wed, 28 Jul 2021 17:09:53 +0000 (UTC)
-Received: from smtp2.osuosl.org (smtp2.osuosl.org [140.211.166.133])
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 896ACC4338F
+	for <iommu@archiver.kernel.org>; Wed, 28 Jul 2021 17:35:43 +0000 (UTC)
+Received: from smtp4.osuosl.org (smtp4.osuosl.org [140.211.166.137])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 3C07760F5E
-	for <iommu@archiver.kernel.org>; Wed, 28 Jul 2021 17:09:53 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.4.1 mail.kernel.org 3C07760F5E
-Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=intel.com
+	by mail.kernel.org (Postfix) with ESMTPS id 3F0F36103C
+	for <iommu@archiver.kernel.org>; Wed, 28 Jul 2021 17:35:43 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.4.1 mail.kernel.org 3F0F36103C
+Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=kernel.org
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by smtp2.osuosl.org (Postfix) with ESMTP id EB7F040202;
-	Wed, 28 Jul 2021 17:09:52 +0000 (UTC)
+	by smtp4.osuosl.org (Postfix) with ESMTP id 0B1E1405C5;
+	Wed, 28 Jul 2021 17:35:43 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from smtp2.osuosl.org ([127.0.0.1])
-	by localhost (smtp2.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id vBhPexoOMRvz; Wed, 28 Jul 2021 17:09:51 +0000 (UTC)
+Received: from smtp4.osuosl.org ([127.0.0.1])
+	by localhost (smtp4.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+	with ESMTP id dM9U3Voi1LQS; Wed, 28 Jul 2021 17:35:42 +0000 (UTC)
 Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by smtp2.osuosl.org (Postfix) with ESMTPS id 8100C40022;
-	Wed, 28 Jul 2021 17:09:51 +0000 (UTC)
+	by smtp4.osuosl.org (Postfix) with ESMTPS id CA2634054B;
+	Wed, 28 Jul 2021 17:35:41 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 6379EC001A;
-	Wed, 28 Jul 2021 17:09:51 +0000 (UTC)
-Received: from smtp1.osuosl.org (smtp1.osuosl.org [140.211.166.138])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 97F8FC000E
- for <iommu@lists.linux-foundation.org>; Wed, 28 Jul 2021 17:09:50 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 94674C001A;
+	Wed, 28 Jul 2021 17:35:41 +0000 (UTC)
+Received: from smtp4.osuosl.org (smtp4.osuosl.org [IPv6:2605:bc80:3010::137])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 1509CC001A
+ for <iommu@lists.linux-foundation.org>; Wed, 28 Jul 2021 17:35:40 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by smtp1.osuosl.org (Postfix) with ESMTP id 8613E83979
- for <iommu@lists.linux-foundation.org>; Wed, 28 Jul 2021 17:09:50 +0000 (UTC)
+ by smtp4.osuosl.org (Postfix) with ESMTP id E77BA4054B
+ for <iommu@lists.linux-foundation.org>; Wed, 28 Jul 2021 17:35:39 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from smtp1.osuosl.org ([127.0.0.1])
- by localhost (smtp1.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id PIv4Vde65fUb for <iommu@lists.linux-foundation.org>;
- Wed, 28 Jul 2021 17:09:49 +0000 (UTC)
+Received: from smtp4.osuosl.org ([127.0.0.1])
+ by localhost (smtp4.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+ with ESMTP id YKWZSsp9E-0R for <iommu@lists.linux-foundation.org>;
+ Wed, 28 Jul 2021 17:35:37 +0000 (UTC)
 X-Greylist: domain auto-whitelisted by SQLgrey-1.8.0
-Received: from mga12.intel.com (mga12.intel.com [192.55.52.136])
- by smtp1.osuosl.org (Postfix) with ESMTPS id 7D73F83926
- for <iommu@lists.linux-foundation.org>; Wed, 28 Jul 2021 17:09:49 +0000 (UTC)
-X-IronPort-AV: E=McAfee;i="6200,9189,10059"; a="192304717"
-X-IronPort-AV: E=Sophos;i="5.84,276,1620716400"; d="scan'208";a="192304717"
-Received: from fmsmga002.fm.intel.com ([10.253.24.26])
- by fmsmga106.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384;
- 28 Jul 2021 10:06:51 -0700
-X-IronPort-AV: E=Sophos;i="5.84,276,1620716400"; d="scan'208";a="517613242"
-Received: from sobsiex-desk2.amr.corp.intel.com (HELO [10.212.198.197])
- ([10.212.198.197])
- by fmsmga002-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384;
- 28 Jul 2021 10:06:46 -0700
-Subject: Re: [PATCH 03/13] x86/HV: Add new hvcall guest address host
- visibility support
-To: Tianyu Lan <ltykernel@gmail.com>, kys@microsoft.com,
- haiyangz@microsoft.com, sthemmin@microsoft.com, wei.liu@kernel.org,
- decui@microsoft.com, tglx@linutronix.de, mingo@redhat.com, bp@alien8.de,
- x86@kernel.org, hpa@zytor.com, dave.hansen@linux.intel.com, luto@kernel.org,
- peterz@infradead.org, konrad.wilk@oracle.com, boris.ostrovsky@oracle.com,
- jgross@suse.com, sstabellini@kernel.org, joro@8bytes.org, will@kernel.org,
- davem@davemloft.net, kuba@kernel.org, jejb@linux.ibm.com,
- martin.petersen@oracle.com, arnd@arndb.de, hch@lst.de,
- m.szyprowski@samsung.com, robin.murphy@arm.com, thomas.lendacky@amd.com,
- brijesh.singh@amd.com, ardb@kernel.org, Tianyu.Lan@microsoft.com,
- rientjes@google.com, martin.b.radev@gmail.com, akpm@linux-foundation.org,
- rppt@kernel.org, kirill.shutemov@linux.intel.com,
- aneesh.kumar@linux.ibm.com, krish.sadhukhan@oracle.com, saravanand@fb.com,
- xen-devel@lists.xenproject.org, pgonda@google.com, david@redhat.com,
- keescook@chromium.org, hannes@cmpxchg.org, sfr@canb.auug.org.au,
- michael.h.kelley@microsoft.com
-References: <20210728145232.285861-1-ltykernel@gmail.com>
- <20210728145232.285861-4-ltykernel@gmail.com>
-From: Dave Hansen <dave.hansen@intel.com>
-Autocrypt: addr=dave.hansen@intel.com; keydata=
- xsFNBE6HMP0BEADIMA3XYkQfF3dwHlj58Yjsc4E5y5G67cfbt8dvaUq2fx1lR0K9h1bOI6fC
- oAiUXvGAOxPDsB/P6UEOISPpLl5IuYsSwAeZGkdQ5g6m1xq7AlDJQZddhr/1DC/nMVa/2BoY
- 2UnKuZuSBu7lgOE193+7Uks3416N2hTkyKUSNkduyoZ9F5twiBhxPJwPtn/wnch6n5RsoXsb
- ygOEDxLEsSk/7eyFycjE+btUtAWZtx+HseyaGfqkZK0Z9bT1lsaHecmB203xShwCPT49Blxz
- VOab8668QpaEOdLGhtvrVYVK7x4skyT3nGWcgDCl5/Vp3TWA4K+IofwvXzX2ON/Mj7aQwf5W
- iC+3nWC7q0uxKwwsddJ0Nu+dpA/UORQWa1NiAftEoSpk5+nUUi0WE+5DRm0H+TXKBWMGNCFn
- c6+EKg5zQaa8KqymHcOrSXNPmzJuXvDQ8uj2J8XuzCZfK4uy1+YdIr0yyEMI7mdh4KX50LO1
- pmowEqDh7dLShTOif/7UtQYrzYq9cPnjU2ZW4qd5Qz2joSGTG9eCXLz5PRe5SqHxv6ljk8mb
- ApNuY7bOXO/A7T2j5RwXIlcmssqIjBcxsRRoIbpCwWWGjkYjzYCjgsNFL6rt4OL11OUF37wL
- QcTl7fbCGv53KfKPdYD5hcbguLKi/aCccJK18ZwNjFhqr4MliQARAQABzShEYXZpZCBDaHJp
- c3RvcGhlciBIYW5zZW4gPGRhdmVAc3I3MS5uZXQ+wsF7BBMBAgAlAhsDBgsJCAcDAgYVCAIJ
- CgsEFgIDAQIeAQIXgAUCTo3k0QIZAQAKCRBoNZUwcMmSsMO2D/421Xg8pimb9mPzM5N7khT0
- 2MCnaGssU1T59YPE25kYdx2HntwdO0JA27Wn9xx5zYijOe6B21ufrvsyv42auCO85+oFJWfE
- K2R/IpLle09GDx5tcEmMAHX6KSxpHmGuJmUPibHVbfep2aCh9lKaDqQR07gXXWK5/yU1Dx0r
- VVFRaHTasp9fZ9AmY4K9/BSA3VkQ8v3OrxNty3OdsrmTTzO91YszpdbjjEFZK53zXy6tUD2d
- e1i0kBBS6NLAAsqEtneplz88T/v7MpLmpY30N9gQU3QyRC50jJ7LU9RazMjUQY1WohVsR56d
- ORqFxS8ChhyJs7BI34vQusYHDTp6PnZHUppb9WIzjeWlC7Jc8lSBDlEWodmqQQgp5+6AfhTD
- kDv1a+W5+ncq+Uo63WHRiCPuyt4di4/0zo28RVcjtzlGBZtmz2EIC3vUfmoZbO/Gn6EKbYAn
- rzz3iU/JWV8DwQ+sZSGu0HmvYMt6t5SmqWQo/hyHtA7uF5Wxtu1lCgolSQw4t49ZuOyOnQi5
- f8R3nE7lpVCSF1TT+h8kMvFPv3VG7KunyjHr3sEptYxQs4VRxqeirSuyBv1TyxT+LdTm6j4a
- mulOWf+YtFRAgIYyyN5YOepDEBv4LUM8Tz98lZiNMlFyRMNrsLV6Pv6SxhrMxbT6TNVS5D+6
- UorTLotDZKp5+M7BTQRUY85qARAAsgMW71BIXRgxjYNCYQ3Xs8k3TfAvQRbHccky50h99TUY
- sqdULbsb3KhmY29raw1bgmyM0a4DGS1YKN7qazCDsdQlxIJp9t2YYdBKXVRzPCCsfWe1dK/q
- 66UVhRPP8EGZ4CmFYuPTxqGY+dGRInxCeap/xzbKdvmPm01Iw3YFjAE4PQ4hTMr/H76KoDbD
- cq62U50oKC83ca/PRRh2QqEqACvIH4BR7jueAZSPEDnzwxvVgzyeuhwqHY05QRK/wsKuhq7s
- UuYtmN92Fasbxbw2tbVLZfoidklikvZAmotg0dwcFTjSRGEg0Gr3p/xBzJWNavFZZ95Rj7Et
- db0lCt0HDSY5q4GMR+SrFbH+jzUY/ZqfGdZCBqo0cdPPp58krVgtIGR+ja2Mkva6ah94/oQN
- lnCOw3udS+Eb/aRcM6detZr7XOngvxsWolBrhwTQFT9D2NH6ryAuvKd6yyAFt3/e7r+HHtkU
- kOy27D7IpjngqP+b4EumELI/NxPgIqT69PQmo9IZaI/oRaKorYnDaZrMXViqDrFdD37XELwQ
- gmLoSm2VfbOYY7fap/AhPOgOYOSqg3/Nxcapv71yoBzRRxOc4FxmZ65mn+q3rEM27yRztBW9
- AnCKIc66T2i92HqXCw6AgoBJRjBkI3QnEkPgohQkZdAb8o9WGVKpfmZKbYBo4pEAEQEAAcLB
- XwQYAQIACQUCVGPOagIbDAAKCRBoNZUwcMmSsJeCEACCh7P/aaOLKWQxcnw47p4phIVR6pVL
- e4IEdR7Jf7ZL00s3vKSNT+nRqdl1ugJx9Ymsp8kXKMk9GSfmZpuMQB9c6io1qZc6nW/3TtvK
- pNGz7KPPtaDzvKA4S5tfrWPnDr7n15AU5vsIZvgMjU42gkbemkjJwP0B1RkifIK60yQqAAlT
- YZ14P0dIPdIPIlfEPiAWcg5BtLQU4Wg3cNQdpWrCJ1E3m/RIlXy/2Y3YOVVohfSy+4kvvYU3
- lXUdPb04UPw4VWwjcVZPg7cgR7Izion61bGHqVqURgSALt2yvHl7cr68NYoFkzbNsGsye9ft
- M9ozM23JSgMkRylPSXTeh5JIK9pz2+etco3AfLCKtaRVysjvpysukmWMTrx8QnI5Nn5MOlJj
- 1Ov4/50JY9pXzgIDVSrgy6LYSMc4vKZ3QfCY7ipLRORyalFDF3j5AGCMRENJjHPD6O7bl3Xo
- 4DzMID+8eucbXxKiNEbs21IqBZbbKdY1GkcEGTE7AnkA3Y6YB7I/j9mQ3hCgm5muJuhM/2Fr
- OPsw5tV/LmQ5GXH0JQ/TZXWygyRFyyI2FqNTx4WHqUn3yFj8rwTAU1tluRUYyeLy0ayUlKBH
- ybj0N71vWO936MqP6haFERzuPAIpxj2ezwu0xb1GjTk4ynna6h5GjnKgdfOWoRtoWndMZxbA
- z5cecg==
-Message-ID: <a2444c36-0103-8e1c-7005-d97f77f90e85@intel.com>
-Date: Wed, 28 Jul 2021 10:06:45 -0700
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
- Thunderbird/68.10.0
+Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
+ by smtp4.osuosl.org (Postfix) with ESMTPS id 3C5E24044F
+ for <iommu@lists.linux-foundation.org>; Wed, 28 Jul 2021 17:35:37 +0000 (UTC)
+Received: by mail.kernel.org (Postfix) with ESMTPSA id BFC916103E;
+ Wed, 28 Jul 2021 17:35:35 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+ s=k20201202; t=1627493736;
+ bh=Dd5+s2KkNCc4fOScdHWL03hrtCdA/vqdiUXce7gQov4=;
+ h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+ b=DT4jVR33VjkDxlTcx4mFdRVbMKV0SwbakzDTTSn8m3wG1bNTwGtCw3eAiOBDHk4js
+ gBtZdbFBMA/MQlehtcvUO38qj7sAKD0cQmrNCgX2F7qiPaFhN6VlIBTfX1JEiUUtug
+ D66LjOl8Z6M9snQlNPzd3dWtzE8f8HSL4x0XcYUCj+KSfsXWh6tNK1PchWkUlXDb9j
+ mBDpB5xciM6JTDDirU/EO4XDc48XTWap5NHRhOLeq1QQxOlvh+nYcqT3hgmFOq4w/Y
+ Ssr+t+ndCBw/OlODG9bza0kfb3OT4PLzz84gIVSri3tcEg4866ofDAkFh4tnRtYqYO
+ Be4vpNfkun+3w==
+Date: Wed, 28 Jul 2021 10:35:34 -0700
+From: Nathan Chancellor <nathan@kernel.org>
+To: Sachin Sant <sachinp@linux.vnet.ibm.com>, Will Deacon <will@kernel.org>,
+ Konrad Rzeszutek Wilk <konrad.wilk@oracle.com>
+Subject: Re: [powerpc][next-20210727] Boot failure - kernel BUG at
+ arch/powerpc/kernel/interrupt.c:98!
+Message-ID: <YQGVZnMe9hFieF8D@Ryzen-9-3900X.localdomain>
+References: <1905CD70-7656-42AE-99E2-A31FC3812EAC@linux.vnet.ibm.com>
 MIME-Version: 1.0
-In-Reply-To: <20210728145232.285861-4-ltykernel@gmail.com>
-Content-Language: en-US
-Cc: linux-arch@vger.kernel.org, linux-hyperv@vger.kernel.org,
- linux-scsi@vger.kernel.org, netdev@vger.kernel.org,
- linux-kernel@vger.kernel.org, iommu@lists.linux-foundation.org,
- anparri@microsoft.com, vkuznets@redhat.com
+Content-Disposition: inline
+In-Reply-To: <1905CD70-7656-42AE-99E2-A31FC3812EAC@linux.vnet.ibm.com>
+Cc: Robin Murphy <robin.murphy@arm.com>, iommu@lists.linux-foundation.org,
+ linux-next@vger.kernel.org, Claire Chang <tientzu@chromium.org>,
+ linuxppc-dev@lists.ozlabs.org, Christoph Hellwig <hch@lst.de>
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -147,37 +87,72 @@ Content-Transfer-Encoding: 7bit
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-On 7/28/21 7:52 AM, Tianyu Lan wrote:
-> @@ -1986,7 +1988,9 @@ static int __set_memory_enc_dec(unsigned long addr, int numpages, bool enc)
->  	int ret;
->  
->  	/* Nothing to do if memory encryption is not active */
-> -	if (!mem_encrypt_active())
-> +	if (hv_is_isolation_supported())
-> +		return hv_set_mem_enc(addr, numpages, enc);
-> +	else if (!mem_encrypt_active())
->  		return 0;
+On Wed, Jul 28, 2021 at 01:31:06PM +0530, Sachin Sant wrote:
+> linux-next fails to boot on Power server (POWER8/POWER9). Following traces
+> are seen during boot
+> 
+> [    0.010799] software IO TLB: tearing down default memory pool
+> [    0.010805] ------------[ cut here ]------------
+> [    0.010808] kernel BUG at arch/powerpc/kernel/interrupt.c:98!
+> [    0.010812] Oops: Exception in kernel mode, sig: 5 [#1]
+> [    0.010816] LE PAGE_SIZE=64K MMU=Hash SMP NR_CPUS=2048 NUMA pSeries
+> [    0.010820] Modules linked in:
+> [    0.010824] CPU: 1 PID: 1 Comm: swapper/0 Not tainted 5.14.0-rc3-next-20210727 #1
+> [    0.010830] NIP:  c000000000032cfc LR: c00000000000c764 CTR: c00000000000c670
+> [    0.010834] REGS: c000000003603b10 TRAP: 0700   Not tainted  (5.14.0-rc3-next-20210727)
+> [    0.010838] MSR:  8000000000029033 <SF,EE,ME,IR,DR,RI,LE>  CR: 28000222  XER: 00000002
+> [    0.010848] CFAR: c00000000000c760 IRQMASK: 3 
+> [    0.010848] GPR00: c00000000000c764 c000000003603db0 c0000000029bd000 0000000000000001 
+> [    0.010848] GPR04: 0000000000000a68 0000000000000400 c000000003603868 ffffffffffffffff 
+> [    0.010848] GPR08: 0000000000000000 0000000000000000 0000000000000000 0000000000000003 
+> [    0.010848] GPR12: ffffffffffffffff c00000001ec9ee80 c000000000012a28 0000000000000000 
+> [    0.010848] GPR16: 0000000000000000 0000000000000000 0000000000000000 0000000000000000 
+> [    0.010848] GPR20: 0000000000000000 0000000000000000 0000000000000000 0000000000000000 
+> [    0.010848] GPR24: 000000000000f134 0000000000000000 ffffffffffffffff c000000003603868 
+> [    0.010848] GPR28: 0000000000000400 0000000000000a68 c00000000202e9c0 c000000003603e80 
+> [    0.010896] NIP [c000000000032cfc] system_call_exception+0x8c/0x2e0
+> [    0.010901] LR [c00000000000c764] system_call_common+0xf4/0x258
+> [    0.010907] Call Trace:
+> [    0.010909] [c000000003603db0] [c00000000016a6dc] calculate_sigpending+0x4c/0xe0 (unreliable)
+> [    0.010915] [c000000003603e10] [c00000000000c764] system_call_common+0xf4/0x258
+> [    0.010921] --- interrupt: c00 at kvm_template_end+0x4/0x8
+> [    0.010926] NIP:  c000000000092dec LR: c000000000114fc8 CTR: 0000000000000000
+> [    0.010930] REGS: c000000003603e80 TRAP: 0c00   Not tainted  (5.14.0-rc3-next-20210727)
+> [    0.010934] MSR:  8000000000009033 <SF,EE,ME,IR,DR,RI,LE>  CR: 28000222  XER: 00000000
+> [    0.010943] IRQMASK: 0 
+> [    0.010943] GPR00: c00000000202e9c0 c000000003603b00 c0000000029bd000 000000000000f134 
+> [    0.010943] GPR04: 0000000000000a68 0000000000000400 c000000003603868 ffffffffffffffff 
+> [    0.010943] GPR08: 0000000000000000 0000000000000000 0000000000000000 0000000000000000 
+> [    0.010943] GPR12: 0000000000000000 c00000001ec9ee80 c000000000012a28 0000000000000000 
+> [    0.010943] GPR16: 0000000000000000 0000000000000000 0000000000000000 0000000000000000 
+> [    0.010943] GPR20: 0000000000000000 0000000000000000 0000000000000000 0000000000000000 
+> [    0.010943] GPR24: c0000000020033c4 c00000000110afc0 c000000002081950 c000000003277d40 
+> [    0.010943] GPR28: 0000000000000000 c00000000a680000 0000000004000000 00000000000d0000 
+> [    0.010989] NIP [c000000000092dec] kvm_template_end+0x4/0x8
+> [    0.010993] LR [c000000000114fc8] set_memory_encrypted+0x38/0x60
+> [    0.010999] --- interrupt: c00
+> [    0.011001] [c000000003603b00] [c00000000000c764] system_call_common+0xf4/0x258 (unreliable)
+> [    0.011008] Instruction dump:
+> [    0.011011] 694a0003 312affff 7d495110 0b0a0000 60000000 60000000 e87f0108 68690002 
+> [    0.011019] 7929ffe2 0b090000 68634000 786397e2 <0b030000> e93f0138 792907e0 0b090000 
+> [    0.011029] ---[ end trace a20ad55589efcb10 ]---
+> [    0.012297] 
+> [    1.012304] Kernel panic - not syncing: Fatal exception
+> 
+> next-20210723 was good. The boot failure seems to have been introduced with next-20210726.
+> 
+> I have attached the boot log.
 
-One more thing.  If you're going to be patching generic code, please
-start using feature checks that can get optimized away at runtime.
-hv_is_isolation_supported() doesn't look like the world's cheapest
-check.  It can't be inlined and costs at least a function call.
+I noticed this with OpenSUSE's ppc64le config [1] and my bisect landed on
+commit ad6c00283163 ("swiotlb: Free tbl memory in swiotlb_exit()"). That
+series just keeps on giving... Adding some people from that thread to
+this one. Original thread:
+https://lore.kernel.org/r/1905CD70-7656-42AE-99E2-A31FC3812EAC@linux.vnet.ibm.com/
 
-These checks could, with basically no effort be wrapped in a header like
-this:
+[1]: https://github.com/openSUSE/kernel-source/raw/master/config/ppc64le/default
 
-static inline bool hv_is_isolation_supported(void)
-{
-	if (!cpu_feature_enabled(X86_FEATURE_HYPERVISOR))
-		return 0;
-
-	// out of line function call:
-	return __hv_is_isolation_supported();
-}	
-
-I don't think it would be the end of the world to add an
-X86_FEATURE_HYPERV_GUEST, either.  There are plenty of bits allocated
-for Xen and VMWare.
+Cheers,
+Nathan
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
