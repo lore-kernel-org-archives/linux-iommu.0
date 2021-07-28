@@ -6,83 +6,83 @@ X-Spam-Status: No, score=-13.5 required=3.0 tests=BAYES_00,
 	DKIM_ADSP_CUSTOM_MED,DKIM_INVALID,DKIM_SIGNED,FREEMAIL_FORGED_FROMDOMAIN,
 	FREEMAIL_FROM,HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_CR_TRAILER,
 	INCLUDES_PATCH,MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,
-	USER_AGENT_GIT autolearn=ham autolearn_force=no version=3.4.0
+	USER_AGENT_GIT autolearn=unavailable autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 63B02C4338F
-	for <iommu@archiver.kernel.org>; Wed, 28 Jul 2021 14:53:15 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C143BC4320E
+	for <iommu@archiver.kernel.org>; Wed, 28 Jul 2021 14:53:19 +0000 (UTC)
 Received: from smtp1.osuosl.org (smtp1.osuosl.org [140.211.166.138])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 2B8B161077
-	for <iommu@archiver.kernel.org>; Wed, 28 Jul 2021 14:53:15 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.4.1 mail.kernel.org 2B8B161077
+	by mail.kernel.org (Postfix) with ESMTPS id 7AC3660C3E
+	for <iommu@archiver.kernel.org>; Wed, 28 Jul 2021 14:53:19 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.4.1 mail.kernel.org 7AC3660C3E
 Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=gmail.com
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by smtp1.osuosl.org (Postfix) with ESMTP id EE8E583AE1;
-	Wed, 28 Jul 2021 14:53:14 +0000 (UTC)
+	by smtp1.osuosl.org (Postfix) with ESMTP id 5668F83B1C;
+	Wed, 28 Jul 2021 14:53:19 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
 Received: from smtp1.osuosl.org ([127.0.0.1])
 	by localhost (smtp1.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id wBiMrB-ypVfc; Wed, 28 Jul 2021 14:53:14 +0000 (UTC)
-Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [IPv6:2605:bc80:3010:104::8cd3:938])
-	by smtp1.osuosl.org (Postfix) with ESMTPS id CCD4F83B1C;
-	Wed, 28 Jul 2021 14:53:13 +0000 (UTC)
+	with ESMTP id kSO4fdt6mtnm; Wed, 28 Jul 2021 14:53:18 +0000 (UTC)
+Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
+	by smtp1.osuosl.org (Postfix) with ESMTPS id 2754083AE9;
+	Wed, 28 Jul 2021 14:53:18 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id B5613C0010;
-	Wed, 28 Jul 2021 14:53:13 +0000 (UTC)
-Received: from smtp3.osuosl.org (smtp3.osuosl.org [140.211.166.136])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 7C354C000E
- for <iommu@lists.linux-foundation.org>; Wed, 28 Jul 2021 14:53:12 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id E4FA9C0010;
+	Wed, 28 Jul 2021 14:53:17 +0000 (UTC)
+Received: from smtp2.osuosl.org (smtp2.osuosl.org [140.211.166.133])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 62F0EC000E
+ for <iommu@lists.linux-foundation.org>; Wed, 28 Jul 2021 14:53:16 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by smtp3.osuosl.org (Postfix) with ESMTP id 7827E606C4
- for <iommu@lists.linux-foundation.org>; Wed, 28 Jul 2021 14:53:12 +0000 (UTC)
+ by smtp2.osuosl.org (Postfix) with ESMTP id 395A6401E9
+ for <iommu@lists.linux-foundation.org>; Wed, 28 Jul 2021 14:53:16 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Authentication-Results: smtp3.osuosl.org (amavisd-new);
+Authentication-Results: smtp2.osuosl.org (amavisd-new);
  dkim=pass (2048-bit key) header.d=gmail.com
-Received: from smtp3.osuosl.org ([127.0.0.1])
- by localhost (smtp3.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id JfAV6RAHzAxU for <iommu@lists.linux-foundation.org>;
- Wed, 28 Jul 2021 14:53:11 +0000 (UTC)
+Received: from smtp2.osuosl.org ([127.0.0.1])
+ by localhost (smtp2.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+ with ESMTP id kmy3fkeBLv6g for <iommu@lists.linux-foundation.org>;
+ Wed, 28 Jul 2021 14:53:14 +0000 (UTC)
 X-Greylist: whitelisted by SQLgrey-1.8.0
-Received: from mail-pj1-x102b.google.com (mail-pj1-x102b.google.com
- [IPv6:2607:f8b0:4864:20::102b])
- by smtp3.osuosl.org (Postfix) with ESMTPS id E2BCA60893
- for <iommu@lists.linux-foundation.org>; Wed, 28 Jul 2021 14:53:11 +0000 (UTC)
-Received: by mail-pj1-x102b.google.com with SMTP id
- e2-20020a17090a4a02b029016f3020d867so4493461pjh.3
- for <iommu@lists.linux-foundation.org>; Wed, 28 Jul 2021 07:53:11 -0700 (PDT)
+Received: from mail-pl1-x629.google.com (mail-pl1-x629.google.com
+ [IPv6:2607:f8b0:4864:20::629])
+ by smtp2.osuosl.org (Postfix) with ESMTPS id E453C4023D
+ for <iommu@lists.linux-foundation.org>; Wed, 28 Jul 2021 14:53:14 +0000 (UTC)
+Received: by mail-pl1-x629.google.com with SMTP id e5so2996806pld.6
+ for <iommu@lists.linux-foundation.org>; Wed, 28 Jul 2021 07:53:14 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=gmail.com; s=20161025;
  h=from:to:cc:subject:date:message-id:in-reply-to:references
  :mime-version:content-transfer-encoding;
- bh=4UOe5b2fx3Fh6u6Lqilgce/bFIZGpTYCRKnCgcNYEYs=;
- b=WDKkQI+4pFS1qUeyUk57PY1MjkBYohzBWIb2Shmz+3ikDL79tSqwvQaiBZIwR19VSV
- dtuCv7UwmkIiIpSVydgmRXsq4SXT58K1jkHIDA+Ja2eNYeQ+JfYhBSLGJgIqMWT+bc9u
- jn9DFsvsJFVEm/mT3Qd5QMUaScTC2c6I0EcwfuMOiA09m8OnLuDcKGustBEmOhByCNCb
- UdKibxAfAhQ0GVglWURs6ArttH3DtZw4RGMYEuyymQ5OdshzupJ3JETzCcjFbONxafd0
- wu37AbNCS4KyX/8swZ0UP0x5U0PV56Djw2JcQAFar7BoDTk/eaysFTu3H9fIm7n1xXs5
- FvuA==
+ bh=/79DzCyIHtWmaT+NzmaxtEIMVXl5WnXl2WxqKtTVhJc=;
+ b=hGNxhplSujZA86RagN4zqWeSm8MjGR5wsvAT6oDexvY5ZHXdLk4NaBmTsOL4UfVIs0
+ Fgg8HC7TYWh4fbmWrK9RdUrXoutrRqx258TtIIXYra8pcljEwhXOabhl0XaomgA4aGWn
+ wND/7qeQcDE2tZpWMcyVxz4jpTpz38Y8zzEpeZwN4GDCT2fyAwTnD4bFjIw2GcgaF7ij
+ VoZn1AQgJwULyrZlqzRfue6mnJ6CNT2iwHGMjkFHIugZbut1hzYeU0IIXZ1zixsHIE48
+ X0HkVdO4JHgMLvVpPhNGAV2T7z3SQ/h5Ax416TT0V3MSYhMM8SFYqNP622Niak1n+uJ7
+ jVHA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
  d=1e100.net; s=20161025;
  h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
  :references:mime-version:content-transfer-encoding;
- bh=4UOe5b2fx3Fh6u6Lqilgce/bFIZGpTYCRKnCgcNYEYs=;
- b=Wk9EiLjZbuTtmEqnVv7J7A63p1HG/vBj4D0a0sYALJUGcRPZaglniYIh0+djordWMg
- t8qts2hOW0vTqAHHZZUw8XiEv906mnQfGNq7oe2KIrdZIcbPtt2S9XR/yVgQgce+ueEN
- RnxSYXCJ1jLVbdLs0ldFTU371SOPfS2chvnXlPaw/e9diYdcUA2E8rWFtwVPdVJM9ajC
- Gr6XOj2aGco/AiaInjT1fagzhZw8mgyONfcD0QM+V3VywfNmjdTVj6WOO3j13SLB+/kt
- rNAAVdv6pFyDOmfdyxO8aoHLK/lfmtCSnCbEN6VNpQhrDUpB0KuacwE1UPvGcuwUfOfb
- iS/Q==
-X-Gm-Message-State: AOAM53094KkopByuJ+2MskhgKx6es+s4+WR9F7+ZARQAqbeAyQ1uoUKq
- rP8KTzYCHF2FlNvCw4ON6aM=
-X-Google-Smtp-Source: ABdhPJyc8/U4Ariizb4QvY5nGICIcZLhQ4VEvgrpEwjxD9fWyR7o9OBbxbMiUCjC06cPGD3+3H7lLQ==
-X-Received: by 2002:a65:610c:: with SMTP id z12mr151324pgu.453.1627483991403; 
- Wed, 28 Jul 2021 07:53:11 -0700 (PDT)
+ bh=/79DzCyIHtWmaT+NzmaxtEIMVXl5WnXl2WxqKtTVhJc=;
+ b=gz72Ymy2edxYNzgVAj0dncmqDtCZ9hTchs5ejECAvYLbJGTr0hWz1lI+IETvkgt6nj
+ M91EHcK5PXhn3+GEBFKZKANOkJG79tRCC+HMyfRrULgfZAw9eEgUDBXzv0sj+LyAasCX
+ NQk4H3si0nKNL0Y0Kt24PQm7au3cilPal/sqNL/wtNt6krYth10NaR0OnQoJmMXFu4H+
+ Sqt/LqpPzEeUcIhyqjgO6UER3c89jT0KVsaGB660pzJAsjvGf8Zy+HLfwtRkUYo4qlt9
+ wYlzMdZuYQ6ZDMD21NEIjOIX9n+bnJQhTh7vaxM56HcuoBenChZ4gCYnCPe5XdnhVEaS
+ yHRQ==
+X-Gm-Message-State: AOAM533dNxJ0GoY5CeGi6sBTLiKeicRC3M8KhIeSiV29AExHqcSVDM+o
+ nDM7CBETLeKeTyAjAnf4vy8=
+X-Google-Smtp-Source: ABdhPJxgNPNARBGy7DDQhfhzd75Fkf5dcYm6KNp/rI8FF8zLjPwrqJZeCTVRgpl6JWXIpl/EXBulxQ==
+X-Received: by 2002:a17:90b:1612:: with SMTP id
+ la18mr233349pjb.95.1627483994252; 
+ Wed, 28 Jul 2021 07:53:14 -0700 (PDT)
 Received: from ubuntu-Virtual-Machine.corp.microsoft.com
  ([2001:4898:80e8:0:3823:141e:6d51:f0ad])
- by smtp.gmail.com with ESMTPSA id n134sm277558pfd.89.2021.07.28.07.53.10
+ by smtp.gmail.com with ESMTPSA id n134sm277558pfd.89.2021.07.28.07.53.13
  (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
- Wed, 28 Jul 2021 07:53:11 -0700 (PDT)
+ Wed, 28 Jul 2021 07:53:13 -0700 (PDT)
 From: Tianyu Lan <ltykernel@gmail.com>
 To: kys@microsoft.com, haiyangz@microsoft.com, sthemmin@microsoft.com,
  wei.liu@kernel.org, decui@microsoft.com, tglx@linutronix.de,
@@ -100,10 +100,10 @@ To: kys@microsoft.com, haiyangz@microsoft.com, sthemmin@microsoft.com,
  xen-devel@lists.xenproject.org, pgonda@google.com, david@redhat.com,
  keescook@chromium.org, hannes@cmpxchg.org, sfr@canb.auug.org.au,
  michael.h.kelley@microsoft.com
-Subject: [PATCH 02/13] x86/HV: Initialize shared memory boundary in the
- Isolation VM.
-Date: Wed, 28 Jul 2021 10:52:17 -0400
-Message-Id: <20210728145232.285861-3-ltykernel@gmail.com>
+Subject: [PATCH 03/13] x86/HV: Add new hvcall guest address host visibility
+ support
+Date: Wed, 28 Jul 2021 10:52:18 -0400
+Message-Id: <20210728145232.285861-4-ltykernel@gmail.com>
 X-Mailer: git-send-email 2.25.1
 In-Reply-To: <20210728145232.285861-1-ltykernel@gmail.com>
 References: <20210728145232.285861-1-ltykernel@gmail.com>
@@ -131,54 +131,234 @@ Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
 From: Tianyu Lan <Tianyu.Lan@microsoft.com>
 
-Hyper-V exposes shared memory boundary via cpuid
-HYPERV_CPUID_ISOLATION_CONFIG and store it in the
-shared_gpa_boundary of ms_hyperv struct. This prepares
-to share memory with host for SNP guest.
+Add new hvcall guest address host visibility support to mark
+memory visible to host. Call it inside set_memory_decrypted
+/encrypted().
 
 Signed-off-by: Tianyu Lan <Tianyu.Lan@microsoft.com>
 ---
- arch/x86/kernel/cpu/mshyperv.c |  2 ++
- include/asm-generic/mshyperv.h | 12 +++++++++++-
- 2 files changed, 13 insertions(+), 1 deletion(-)
+ arch/x86/hyperv/Makefile           |   2 +-
+ arch/x86/hyperv/ivm.c              | 112 +++++++++++++++++++++++++++++
+ arch/x86/include/asm/hyperv-tlfs.h |  18 +++++
+ arch/x86/include/asm/mshyperv.h    |   3 +-
+ arch/x86/mm/pat/set_memory.c       |   6 +-
+ include/asm-generic/hyperv-tlfs.h  |   1 +
+ 6 files changed, 139 insertions(+), 3 deletions(-)
+ create mode 100644 arch/x86/hyperv/ivm.c
 
-diff --git a/arch/x86/kernel/cpu/mshyperv.c b/arch/x86/kernel/cpu/mshyperv.c
-index dcfbd2770d7f..773e84e134b3 100644
---- a/arch/x86/kernel/cpu/mshyperv.c
-+++ b/arch/x86/kernel/cpu/mshyperv.c
-@@ -327,6 +327,8 @@ static void __init ms_hyperv_init_platform(void)
- 	if (ms_hyperv.priv_high & HV_ISOLATION) {
- 		ms_hyperv.isolation_config_a = cpuid_eax(HYPERV_CPUID_ISOLATION_CONFIG);
- 		ms_hyperv.isolation_config_b = cpuid_ebx(HYPERV_CPUID_ISOLATION_CONFIG);
-+		ms_hyperv.shared_gpa_boundary =
-+			(u64)1 << ms_hyperv.shared_gpa_boundary_bits;
+diff --git a/arch/x86/hyperv/Makefile b/arch/x86/hyperv/Makefile
+index 48e2c51464e8..5d2de10809ae 100644
+--- a/arch/x86/hyperv/Makefile
++++ b/arch/x86/hyperv/Makefile
+@@ -1,5 +1,5 @@
+ # SPDX-License-Identifier: GPL-2.0-only
+-obj-y			:= hv_init.o mmu.o nested.o irqdomain.o
++obj-y			:= hv_init.o mmu.o nested.o irqdomain.o ivm.o
+ obj-$(CONFIG_X86_64)	+= hv_apic.o hv_proc.o
  
- 		pr_info("Hyper-V: Isolation Config: Group A 0x%x, Group B 0x%x\n",
- 			ms_hyperv.isolation_config_a, ms_hyperv.isolation_config_b);
-diff --git a/include/asm-generic/mshyperv.h b/include/asm-generic/mshyperv.h
-index 4269f3174e58..aa26d24a5ca9 100644
---- a/include/asm-generic/mshyperv.h
-+++ b/include/asm-generic/mshyperv.h
-@@ -35,8 +35,18 @@ struct ms_hyperv_info {
- 	u32 max_vp_index;
- 	u32 max_lp_index;
- 	u32 isolation_config_a;
--	u32 isolation_config_b;
-+	union {
-+		u32 isolation_config_b;
-+		struct {
-+			u32 cvm_type : 4;
-+			u32 Reserved11 : 1;
-+			u32 shared_gpa_boundary_active : 1;
-+			u32 shared_gpa_boundary_bits : 6;
-+			u32 Reserved12 : 20;
-+		};
-+	};
- 	void  __percpu **ghcb_base;
-+	u64 shared_gpa_boundary;
- };
- extern struct ms_hyperv_info ms_hyperv;
+ ifdef CONFIG_X86_64
+diff --git a/arch/x86/hyperv/ivm.c b/arch/x86/hyperv/ivm.c
+new file mode 100644
+index 000000000000..24a58795abd8
+--- /dev/null
++++ b/arch/x86/hyperv/ivm.c
+@@ -0,0 +1,112 @@
++// SPDX-License-Identifier: GPL-2.0
++/*
++ * Hyper-V Isolation VM interface with paravisor and hypervisor
++ *
++ * Author:
++ *  Tianyu Lan <Tianyu.Lan@microsoft.com>
++ */
++
++#include <linux/hyperv.h>
++#include <linux/types.h>
++#include <linux/bitfield.h>
++#include <linux/slab.h>
++#include <asm/io.h>
++#include <asm/mshyperv.h>
++
++/*
++ * hv_mark_gpa_visibility - Set pages visible to host via hvcall.
++ *
++ * In Isolation VM, all guest memory is encripted from host and guest
++ * needs to set memory visible to host via hvcall before sharing memory
++ * with host.
++ */
++int hv_mark_gpa_visibility(u16 count, const u64 pfn[], u32 visibility)
++{
++	struct hv_gpa_range_for_visibility **input_pcpu, *input;
++	u16 pages_processed;
++	u64 hv_status;
++	unsigned long flags;
++
++	/* no-op if partition isolation is not enabled */
++	if (!hv_is_isolation_supported())
++		return 0;
++
++	if (count > HV_MAX_MODIFY_GPA_REP_COUNT) {
++		pr_err("Hyper-V: GPA count:%d exceeds supported:%lu\n", count,
++			HV_MAX_MODIFY_GPA_REP_COUNT);
++		return -EINVAL;
++	}
++
++	local_irq_save(flags);
++	input_pcpu = (struct hv_gpa_range_for_visibility **)
++			this_cpu_ptr(hyperv_pcpu_input_arg);
++	input = *input_pcpu;
++	if (unlikely(!input)) {
++		local_irq_restore(flags);
++		return -EINVAL;
++	}
++
++	input->partition_id = HV_PARTITION_ID_SELF;
++	input->host_visibility = visibility;
++	input->reserved0 = 0;
++	input->reserved1 = 0;
++	memcpy((void *)input->gpa_page_list, pfn, count * sizeof(*pfn));
++	hv_status = hv_do_rep_hypercall(
++			HVCALL_MODIFY_SPARSE_GPA_PAGE_HOST_VISIBILITY, count,
++			0, input, &pages_processed);
++	local_irq_restore(flags);
++
++	if (!(hv_status & HV_HYPERCALL_RESULT_MASK))
++		return 0;
++
++	return hv_status & HV_HYPERCALL_RESULT_MASK;
++}
++EXPORT_SYMBOL(hv_mark_gpa_visibility);
++
++/*
++ * hv_set_mem_host_visibility - Set specified memory visible to host.
++ *
++ * In Isolation VM, all guest memory is encrypted from host and guest
++ * needs to set memory visible to host via hvcall before sharing memory
++ * with host. This function works as wrap of hv_mark_gpa_visibility()
++ * with memory base and size.
++ */
++static int hv_set_mem_host_visibility(void *kbuffer, size_t size, u32 visibility)
++{
++	int pagecount = size >> HV_HYP_PAGE_SHIFT;
++	u64 *pfn_array;
++	int ret = 0;
++	int i, pfn;
++
++	if (!hv_is_isolation_supported() || !ms_hyperv.ghcb_base)
++		return 0;
++
++	pfn_array = kzalloc(HV_HYP_PAGE_SIZE, GFP_KERNEL);
++	if (!pfn_array)
++		return -ENOMEM;
++
++	for (i = 0, pfn = 0; i < pagecount; i++) {
++		pfn_array[pfn] = virt_to_hvpfn(kbuffer + i * HV_HYP_PAGE_SIZE);
++		pfn++;
++
++		if (pfn == HV_MAX_MODIFY_GPA_REP_COUNT || i == pagecount - 1) {
++			ret |= hv_mark_gpa_visibility(pfn, pfn_array, visibility);
++			pfn = 0;
++
++			if (ret)
++				goto err_free_pfn_array;
++		}
++	}
++
++ err_free_pfn_array:
++	kfree(pfn_array);
++	return ret;
++}
++
++int hv_set_mem_enc(unsigned long addr, int numpages, bool enc)
++{
++	return hv_set_mem_host_visibility((void *)addr,
++			numpages * HV_HYP_PAGE_SIZE,
++			enc ? VMBUS_PAGE_NOT_VISIBLE
++			: VMBUS_PAGE_VISIBLE_READ_WRITE);
++}
+diff --git a/arch/x86/include/asm/hyperv-tlfs.h b/arch/x86/include/asm/hyperv-tlfs.h
+index f1366ce609e3..f027b5bf6076 100644
+--- a/arch/x86/include/asm/hyperv-tlfs.h
++++ b/arch/x86/include/asm/hyperv-tlfs.h
+@@ -276,6 +276,11 @@ enum hv_isolation_type {
+ #define HV_X64_MSR_TIME_REF_COUNT	HV_REGISTER_TIME_REF_COUNT
+ #define HV_X64_MSR_REFERENCE_TSC	HV_REGISTER_REFERENCE_TSC
  
++/* Hyper-V GPA map flags */
++#define	VMBUS_PAGE_NOT_VISIBLE		0
++#define	VMBUS_PAGE_VISIBLE_READ_ONLY	1
++#define	VMBUS_PAGE_VISIBLE_READ_WRITE	3
++
+ /*
+  * Declare the MSR used to setup pages used to communicate with the hypervisor.
+  */
+@@ -578,4 +583,17 @@ enum hv_interrupt_type {
+ 
+ #include <asm-generic/hyperv-tlfs.h>
+ 
++/* All input parameters should be in single page. */
++#define HV_MAX_MODIFY_GPA_REP_COUNT		\
++	((PAGE_SIZE / sizeof(u64)) - 2)
++
++/* HvCallModifySparseGpaPageHostVisibility hypercall */
++struct hv_gpa_range_for_visibility {
++	u64 partition_id;
++	u32 host_visibility:2;
++	u32 reserved0:30;
++	u32 reserved1;
++	u64 gpa_page_list[HV_MAX_MODIFY_GPA_REP_COUNT];
++} __packed;
++
+ #endif
+diff --git a/arch/x86/include/asm/mshyperv.h b/arch/x86/include/asm/mshyperv.h
+index 6627cfd2bfba..68dd207c2603 100644
+--- a/arch/x86/include/asm/mshyperv.h
++++ b/arch/x86/include/asm/mshyperv.h
+@@ -190,7 +190,8 @@ struct irq_domain *hv_create_pci_msi_domain(void);
+ int hv_map_ioapic_interrupt(int ioapic_id, bool level, int vcpu, int vector,
+ 		struct hv_interrupt_entry *entry);
+ int hv_unmap_ioapic_interrupt(int ioapic_id, struct hv_interrupt_entry *entry);
+-
++int hv_mark_gpa_visibility(u16 count, const u64 pfn[], u32 visibility);
++int hv_set_mem_enc(unsigned long addr, int numpages, bool enc);
+ #else /* CONFIG_HYPERV */
+ static inline void hyperv_init(void) {}
+ static inline void hyperv_setup_mmu_ops(void) {}
+diff --git a/arch/x86/mm/pat/set_memory.c b/arch/x86/mm/pat/set_memory.c
+index ad8a5c586a35..ba2a22886976 100644
+--- a/arch/x86/mm/pat/set_memory.c
++++ b/arch/x86/mm/pat/set_memory.c
+@@ -29,6 +29,8 @@
+ #include <asm/proto.h>
+ #include <asm/memtype.h>
+ #include <asm/set_memory.h>
++#include <asm/hyperv-tlfs.h>
++#include <asm/mshyperv.h>
+ 
+ #include "../mm_internal.h"
+ 
+@@ -1986,7 +1988,9 @@ static int __set_memory_enc_dec(unsigned long addr, int numpages, bool enc)
+ 	int ret;
+ 
+ 	/* Nothing to do if memory encryption is not active */
+-	if (!mem_encrypt_active())
++	if (hv_is_isolation_supported())
++		return hv_set_mem_enc(addr, numpages, enc);
++	else if (!mem_encrypt_active())
+ 		return 0;
+ 
+ 	/* Should not be working on unaligned addresses */
+diff --git a/include/asm-generic/hyperv-tlfs.h b/include/asm-generic/hyperv-tlfs.h
+index 56348a541c50..8ed6733d5146 100644
+--- a/include/asm-generic/hyperv-tlfs.h
++++ b/include/asm-generic/hyperv-tlfs.h
+@@ -158,6 +158,7 @@ struct ms_hyperv_tsc_page {
+ #define HVCALL_RETARGET_INTERRUPT		0x007e
+ #define HVCALL_FLUSH_GUEST_PHYSICAL_ADDRESS_SPACE 0x00af
+ #define HVCALL_FLUSH_GUEST_PHYSICAL_ADDRESS_LIST 0x00b0
++#define HVCALL_MODIFY_SPARSE_GPA_PAGE_HOST_VISIBILITY 0x00db
+ 
+ /* Extended hypercalls */
+ #define HV_EXT_CALL_QUERY_CAPABILITIES		0x8001
 -- 
 2.25.1
 
