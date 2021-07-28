@@ -7,57 +7,56 @@ X-Spam-Status: No, score=-16.8 required=3.0 tests=BAYES_00,
 	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_GIT
 	autolearn=ham autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B8139C4338F
-	for <iommu@archiver.kernel.org>; Wed, 28 Jul 2021 15:59:51 +0000 (UTC)
-Received: from smtp4.osuosl.org (smtp4.osuosl.org [140.211.166.137])
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 28E7AC432BE
+	for <iommu@archiver.kernel.org>; Wed, 28 Jul 2021 15:59:53 +0000 (UTC)
+Received: from smtp2.osuosl.org (smtp2.osuosl.org [140.211.166.133])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 8638460D07
-	for <iommu@archiver.kernel.org>; Wed, 28 Jul 2021 15:59:51 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.4.1 mail.kernel.org 8638460D07
+	by mail.kernel.org (Postfix) with ESMTPS id E9FD061078
+	for <iommu@archiver.kernel.org>; Wed, 28 Jul 2021 15:59:52 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.4.1 mail.kernel.org E9FD061078
 Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=arm.com
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by smtp4.osuosl.org (Postfix) with ESMTP id 66F6940271;
+	by smtp2.osuosl.org (Postfix) with ESMTP id BAE7840249;
+	Wed, 28 Jul 2021 15:59:52 +0000 (UTC)
+X-Virus-Scanned: amavisd-new at osuosl.org
+Received: from smtp2.osuosl.org ([127.0.0.1])
+	by localhost (smtp2.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+	with ESMTP id kTH-NTYiSy0T; Wed, 28 Jul 2021 15:59:51 +0000 (UTC)
+Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
+	by smtp2.osuosl.org (Postfix) with ESMTPS id 7E7EE40527;
 	Wed, 28 Jul 2021 15:59:51 +0000 (UTC)
-X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from smtp4.osuosl.org ([127.0.0.1])
-	by localhost (smtp4.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id el2gMauQikS6; Wed, 28 Jul 2021 15:59:50 +0000 (UTC)
-Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [IPv6:2605:bc80:3010:104::8cd3:938])
-	by smtp4.osuosl.org (Postfix) with ESMTPS id 59568405FA;
-	Wed, 28 Jul 2021 15:59:50 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 1629AC001A;
-	Wed, 28 Jul 2021 15:59:50 +0000 (UTC)
-Received: from smtp3.osuosl.org (smtp3.osuosl.org [140.211.166.136])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 732E4C000E
- for <iommu@lists.linux-foundation.org>; Wed, 28 Jul 2021 15:59:48 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 4FC9AC001A;
+	Wed, 28 Jul 2021 15:59:51 +0000 (UTC)
+Received: from smtp2.osuosl.org (smtp2.osuosl.org [140.211.166.133])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 38441C0022
+ for <iommu@lists.linux-foundation.org>; Wed, 28 Jul 2021 15:59:50 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by smtp3.osuosl.org (Postfix) with ESMTP id 44D3C608A3
- for <iommu@lists.linux-foundation.org>; Wed, 28 Jul 2021 15:59:48 +0000 (UTC)
+ by smtp2.osuosl.org (Postfix) with ESMTP id 1871840526
+ for <iommu@lists.linux-foundation.org>; Wed, 28 Jul 2021 15:59:50 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from smtp3.osuosl.org ([127.0.0.1])
- by localhost (smtp3.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id kQ8jB_0ejFEK for <iommu@lists.linux-foundation.org>;
- Wed, 28 Jul 2021 15:59:47 +0000 (UTC)
+Received: from smtp2.osuosl.org ([127.0.0.1])
+ by localhost (smtp2.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+ with ESMTP id yNp4CxsoYtpb for <iommu@lists.linux-foundation.org>;
+ Wed, 28 Jul 2021 15:59:49 +0000 (UTC)
 X-Greylist: domain auto-whitelisted by SQLgrey-1.8.0
 Received: from foss.arm.com (foss.arm.com [217.140.110.172])
- by smtp3.osuosl.org (Postfix) with ESMTP id 6E4B66089B
- for <iommu@lists.linux-foundation.org>; Wed, 28 Jul 2021 15:59:47 +0000 (UTC)
+ by smtp2.osuosl.org (Postfix) with ESMTP id 4769840249
+ for <iommu@lists.linux-foundation.org>; Wed, 28 Jul 2021 15:59:49 +0000 (UTC)
 Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
- by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 031BE1FB;
- Wed, 28 Jul 2021 08:59:47 -0700 (PDT)
+ by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id DC1F41424;
+ Wed, 28 Jul 2021 08:59:48 -0700 (PDT)
 Received: from 010265703453.arm.com (unknown [10.57.36.146])
- by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPA id 862A93F70D;
- Wed, 28 Jul 2021 08:59:45 -0700 (PDT)
+ by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPA id 6669C3F70D;
+ Wed, 28 Jul 2021 08:59:47 -0700 (PDT)
 From: Robin Murphy <robin.murphy@arm.com>
 To: joro@8bytes.org,
 	will@kernel.org
-Subject: [PATCH v2 23/24] iommu/arm-smmu: Allow non-strict in pgtable_quirks
- interface
-Date: Wed, 28 Jul 2021 16:58:44 +0100
-Message-Id: <0fcd1f5225a6b435cbc697551a6247cd435c04db.1627468310.git.robin.murphy@arm.com>
+Subject: [PATCH v2 24/24] iommu: Only log strictness for DMA domains
+Date: Wed, 28 Jul 2021 16:58:45 +0100
+Message-Id: <b2da9ba999b54acded9198cf92cf9b7d0fce1b45.1627468310.git.robin.murphy@arm.com>
 X-Mailer: git-send-email 2.25.1
 In-Reply-To: <cover.1627468308.git.robin.murphy@arm.com>
 References: <cover.1627468308.git.robin.murphy@arm.com>
@@ -81,93 +80,36 @@ Content-Transfer-Encoding: 7bit
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-To make io-pgtable aware of a flush queue being dynamically enabled,
-allow IO_PGTABLE_QUIRK_NON_STRICT to be set even after a domain has been
-attached to, and hook up the final piece of the puzzle in iommu-dma.
+When passthrough is enabled, the default strictness policy becomes
+irrelevant, since any subsequent runtime override to a DMA domain type
+now embodies an explicit choice of strictness as well. Save on noise by
+only logging the default policy when it is meaningfully in effect.
 
 Signed-off-by: Robin Murphy <robin.murphy@arm.com>
 ---
- drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c | 15 +++++++++++++++
- drivers/iommu/arm/arm-smmu/arm-smmu.c       | 11 +++++++++++
- drivers/iommu/dma-iommu.c                   |  3 +++
- 3 files changed, 29 insertions(+)
+ drivers/iommu/iommu.c | 9 +++++----
+ 1 file changed, 5 insertions(+), 4 deletions(-)
 
-diff --git a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
-index 19400826eba7..40fa9cb382c3 100644
---- a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
-+++ b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
-@@ -2711,6 +2711,20 @@ static int arm_smmu_enable_nesting(struct iommu_domain *domain)
- 	return ret;
- }
+diff --git a/drivers/iommu/iommu.c b/drivers/iommu/iommu.c
+index be399d630953..87d7b299436e 100644
+--- a/drivers/iommu/iommu.c
++++ b/drivers/iommu/iommu.c
+@@ -144,10 +144,11 @@ static int __init iommu_subsys_init(void)
+ 		(iommu_cmd_line & IOMMU_CMD_LINE_DMA_API) ?
+ 			"(set via kernel command line)" : "");
  
-+static int arm_smmu_set_pgtable_quirks(struct iommu_domain *domain,
-+		unsigned long quirks)
-+{
-+	struct arm_smmu_domain *smmu_domain = to_smmu_domain(domain);
-+
-+	if (quirks == IO_PGTABLE_QUIRK_NON_STRICT && smmu_domain->pgtbl_ops) {
-+		struct io_pgtable *iop = io_pgtable_ops_to_pgtable(smmu_domain->pgtbl_ops);
-+
-+		iop->cfg.quirks |= IO_PGTABLE_QUIRK_NON_STRICT;
-+		return 0;
-+	}
-+	return -EINVAL;
-+}
-+
- static int arm_smmu_of_xlate(struct device *dev, struct of_phandle_args *args)
- {
- 	return iommu_fwspec_add_ids(dev, args->args, 1);
-@@ -2825,6 +2839,7 @@ static struct iommu_ops arm_smmu_ops = {
- 	.release_device		= arm_smmu_release_device,
- 	.device_group		= arm_smmu_device_group,
- 	.enable_nesting		= arm_smmu_enable_nesting,
-+	.set_pgtable_quirks	= arm_smmu_set_pgtable_quirks,
- 	.of_xlate		= arm_smmu_of_xlate,
- 	.get_resv_regions	= arm_smmu_get_resv_regions,
- 	.put_resv_regions	= generic_iommu_put_resv_regions,
-diff --git a/drivers/iommu/arm/arm-smmu/arm-smmu.c b/drivers/iommu/arm/arm-smmu/arm-smmu.c
-index 109e4723f9f5..f18684f308b9 100644
---- a/drivers/iommu/arm/arm-smmu/arm-smmu.c
-+++ b/drivers/iommu/arm/arm-smmu/arm-smmu.c
-@@ -1518,6 +1518,17 @@ static int arm_smmu_set_pgtable_quirks(struct iommu_domain *domain,
- 	struct arm_smmu_domain *smmu_domain = to_smmu_domain(domain);
- 	int ret = 0;
+-	pr_info("DMA domain TLB invalidation policy: %s mode %s\n",
+-		iommu_dma_strict ? "strict" : "lazy",
+-		(iommu_cmd_line & IOMMU_CMD_LINE_STRICT) ?
+-			"(set via kernel command line)" : "");
++	if (!iommu_default_passthrough())
++		pr_info("DMA domain TLB invalidation policy: %s mode %s\n",
++			iommu_dma_strict ? "strict" : "lazy",
++			(iommu_cmd_line & IOMMU_CMD_LINE_STRICT) ?
++				"(set via kernel command line)" : "");
  
-+	if (quirks == IO_PGTABLE_QUIRK_NON_STRICT) {
-+		struct io_pgtable *iop;
-+
-+		if (!smmu_domain->pgtbl_ops)
-+			return -EINVAL;
-+
-+		iop = io_pgtable_ops_to_pgtable(smmu_domain->pgtbl_ops);
-+		iop->cfg.quirks |= IO_PGTABLE_QUIRK_NON_STRICT;
-+		return 0;
-+	}
-+
- 	mutex_lock(&smmu_domain->init_mutex);
- 	if (smmu_domain->smmu)
- 		ret = -EPERM;
-diff --git a/drivers/iommu/dma-iommu.c b/drivers/iommu/dma-iommu.c
-index 304a3ec71223..6e3eca778267 100644
---- a/drivers/iommu/dma-iommu.c
-+++ b/drivers/iommu/dma-iommu.c
-@@ -16,6 +16,7 @@
- #include <linux/huge_mm.h>
- #include <linux/iommu.h>
- #include <linux/iova.h>
-+#include <linux/io-pgtable.h>
- #include <linux/irq.h>
- #include <linux/mm.h>
- #include <linux/mutex.h>
-@@ -326,6 +327,8 @@ int iommu_dma_init_fq(struct iommu_domain *domain)
- 		return -ENODEV;
- 	}
- 	cookie->fq_domain = domain;
-+	if (domain->ops->set_pgtable_quirks)
-+		domain->ops->set_pgtable_quirks(domain, IO_PGTABLE_QUIRK_NON_STRICT);
  	return 0;
  }
- 
 -- 
 2.25.1
 
