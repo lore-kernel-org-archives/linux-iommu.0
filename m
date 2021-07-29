@@ -2,67 +2,70 @@ Return-Path: <SRS0=dGrv=MV=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-8.8 required=3.0 tests=BAYES_00,
-	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,SPF_HELO_NONE,
-	SPF_PASS,URIBL_BLOCKED autolearn=ham autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-15.4 required=3.0 tests=BAYES_00,
+	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_CR_TRAILER,INCLUDES_PATCH,
+	MAILING_LIST_MULTI,NICE_REPLY_A,SPF_HELO_NONE,SPF_PASS,UNPARSEABLE_RELAY,
+	URIBL_BLOCKED,USER_AGENT_SANE_1 autolearn=ham autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 67F71C432BE
-	for <iommu@archiver.kernel.org>; Thu, 29 Jul 2021 15:53:20 +0000 (UTC)
-Received: from smtp4.osuosl.org (smtp4.osuosl.org [140.211.166.137])
+	by smtp.lore.kernel.org (Postfix) with ESMTP id ECCFAC4338F
+	for <iommu@archiver.kernel.org>; Thu, 29 Jul 2021 15:59:37 +0000 (UTC)
+Received: from smtp3.osuosl.org (smtp3.osuosl.org [140.211.166.136])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id A1F2960F46
-	for <iommu@archiver.kernel.org>; Thu, 29 Jul 2021 15:53:19 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.4.1 mail.kernel.org A1F2960F46
-Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=sntech.de
+	by mail.kernel.org (Postfix) with ESMTPS id 96C0D60F42
+	for <iommu@archiver.kernel.org>; Thu, 29 Jul 2021 15:59:37 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.4.1 mail.kernel.org 96C0D60F42
+Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=collabora.com
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by smtp4.osuosl.org (Postfix) with ESMTP id 6234F40576;
-	Thu, 29 Jul 2021 15:53:19 +0000 (UTC)
-X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from smtp4.osuosl.org ([127.0.0.1])
-	by localhost (smtp4.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id SprBdk729CcN; Thu, 29 Jul 2021 15:53:18 +0000 (UTC)
-Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [IPv6:2605:bc80:3010:104::8cd3:938])
-	by smtp4.osuosl.org (Postfix) with ESMTPS id 0F6B240574;
-	Thu, 29 Jul 2021 15:53:17 +0000 (UTC)
-Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id E5D7BC0010;
-	Thu, 29 Jul 2021 15:53:17 +0000 (UTC)
-Received: from smtp3.osuosl.org (smtp3.osuosl.org [IPv6:2605:bc80:3010::136])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 6037AC000E
- for <iommu@lists.linux-foundation.org>; Thu, 29 Jul 2021 15:53:16 +0000 (UTC)
-Received: from localhost (localhost [127.0.0.1])
- by smtp3.osuosl.org (Postfix) with ESMTP id 4235C6063A
- for <iommu@lists.linux-foundation.org>; Thu, 29 Jul 2021 15:53:16 +0000 (UTC)
+	by smtp3.osuosl.org (Postfix) with ESMTP id 69CA0605DA;
+	Thu, 29 Jul 2021 15:59:37 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
 Received: from smtp3.osuosl.org ([127.0.0.1])
- by localhost (smtp3.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id neoMlnn4vtPN for <iommu@lists.linux-foundation.org>;
- Thu, 29 Jul 2021 15:53:15 +0000 (UTC)
-X-Greylist: from auto-whitelisted by SQLgrey-1.8.0
-Received: from gloria.sntech.de (gloria.sntech.de [185.11.138.130])
- by smtp3.osuosl.org (Postfix) with ESMTPS id 262B360607
- for <iommu@lists.linux-foundation.org>; Thu, 29 Jul 2021 15:53:15 +0000 (UTC)
-Received: from ip5f5aa64a.dynamic.kabel-deutschland.de ([95.90.166.74]
- helo=diego.localnet)
- by gloria.sntech.de with esmtpsa (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
- (Exim 4.92) (envelope-from <heiko@sntech.de>)
- id 1m98LI-00044N-5S; Thu, 29 Jul 2021 17:53:04 +0200
-From: Heiko =?ISO-8859-1?Q?St=FCbner?= <heiko@sntech.de>
-To: joro@8bytes.org, will@kernel.org, Robin Murphy <robin.murphy@arm.com>
-Subject: Re: [PATCH v2 00/24] iommu: Refactor DMA domain strictness
-Date: Thu, 29 Jul 2021 17:53:02 +0200
-Message-ID: <2152676.3VsfAaAtOV@diego>
-In-Reply-To: <ade9f10e-836c-f29e-030b-23fe0a3187fb@arm.com>
-References: <cover.1627468308.git.robin.murphy@arm.com>
- <2947762.k3LOHGUjKi@diego> <ade9f10e-836c-f29e-030b-23fe0a3187fb@arm.com>
+	by localhost (smtp3.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+	with ESMTP id 218PQmFUPqQP; Thu, 29 Jul 2021 15:59:36 +0000 (UTC)
+Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [IPv6:2605:bc80:3010:104::8cd3:938])
+	by smtp3.osuosl.org (Postfix) with ESMTPS id F27756063A;
+	Thu, 29 Jul 2021 15:59:35 +0000 (UTC)
+Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
+	by lists.linuxfoundation.org (Postfix) with ESMTP id C634DC0010;
+	Thu, 29 Jul 2021 15:59:35 +0000 (UTC)
+Received: from smtp4.osuosl.org (smtp4.osuosl.org [IPv6:2605:bc80:3010::137])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id AF433C000E
+ for <iommu@lists.linux-foundation.org>; Thu, 29 Jul 2021 15:59:34 +0000 (UTC)
+Received: from localhost (localhost [127.0.0.1])
+ by smtp4.osuosl.org (Postfix) with ESMTP id A482A4028C
+ for <iommu@lists.linux-foundation.org>; Thu, 29 Jul 2021 15:59:34 +0000 (UTC)
+X-Virus-Scanned: amavisd-new at osuosl.org
+Received: from smtp4.osuosl.org ([127.0.0.1])
+ by localhost (smtp4.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+ with ESMTP id 4WjTfxX-bd7Q for <iommu@lists.linux-foundation.org>;
+ Thu, 29 Jul 2021 15:59:31 +0000 (UTC)
+X-Greylist: domain auto-whitelisted by SQLgrey-1.8.0
+Received: from bhuna.collabora.co.uk (bhuna.collabora.co.uk
+ [IPv6:2a00:1098:0:82:1000:25:2eeb:e3e3])
+ by smtp4.osuosl.org (Postfix) with ESMTPS id DFECE40174
+ for <iommu@lists.linux-foundation.org>; Thu, 29 Jul 2021 15:59:30 +0000 (UTC)
+Received: from [127.0.0.1] (localhost [127.0.0.1])
+ (Authenticated sender: dafna) with ESMTPSA id 9F1DE1F43FB6
+Subject: Re: [PATCH v7 3/4] iommu: rockchip: Add internal ops to handle
+ variants
+To: Benjamin Gaignard <benjamin.gaignard@collabora.com>, joro@8bytes.org,
+ will@kernel.org, robh+dt@kernel.org, heiko@sntech.de, xxm@rock-chips.com,
+ robin.murphy@arm.com, Ezequiel Garcia <ezequiel@collabora.com>
+References: <20210525121551.606240-1-benjamin.gaignard@collabora.com>
+ <20210525121551.606240-4-benjamin.gaignard@collabora.com>
+From: Dafna Hirschfeld <dafna.hirschfeld@collabora.com>
+Message-ID: <c6175f3d-a324-9fb5-bd39-cfe0447ee5e7@collabora.com>
+Date: Thu, 29 Jul 2021 17:59:26 +0200
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
+ Thunderbird/78.11.0
 MIME-Version: 1.0
-Cc: Maxime Ripard <mripard@kernel.org>,
- Jean-Philippe Brucker <jean-philippe@linaro.org>,
- Geert Uytterhoeven <geert+renesas@glider.be>, linux-kernel@vger.kernel.org,
- Chunyan Zhang <chunyan.zhang@unisoc.com>, dianders@chromium.org,
- iommu@lists.linux-foundation.org, linux-arm-kernel@lists.infradead.org
+In-Reply-To: <20210525121551.606240-4-benjamin.gaignard@collabora.com>
+Content-Language: en-US
+Cc: devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
+ linux-rockchip@lists.infradead.org, iommu@lists.linux-foundation.org,
+ kernel@collabora.com, linux-arm-kernel@lists.infradead.org
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -75,215 +78,298 @@ List-Post: <mailto:iommu@lists.linux-foundation.org>
 List-Help: <mailto:iommu-request@lists.linux-foundation.org?subject=help>
 List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
  <mailto:iommu-request@lists.linux-foundation.org?subject=subscribe>
-Content-Type: text/plain; charset="iso-8859-1"
-Content-Transfer-Encoding: quoted-printable
+Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset="us-ascii"; Format="flowed"
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-Am Donnerstag, 29. Juli 2021, 17:43:07 CEST schrieb Robin Murphy:
-> On 2021-07-29 16:04, Heiko St=FCbner wrote:
-> > Hi Robin,
-> > =
-
-> > Am Mittwoch, 28. Juli 2021, 17:58:21 CEST schrieb Robin Murphy:
-> >> Hi all,
-> >>
-> >> Here's v2 where things start to look more realistic, hence the expanded
-> >> CC list. The patches are now based on the current iommu/core branch to
-> >> take John's iommu_set_dma_strict() cleanup into account.
-> >>
-> >> The series remiains in two (or possibly 3) logical parts - for people
-> >> CC'd on cookie cleanup patches, the later parts should not affect you
-> >> since your drivers don't implement non-strict mode anyway; the cleanup
-> >> is all pretty straightforward, but please do yell at me if I've managed
-> >> to let a silly mistake slip through and broken your driver.
-> >>
-> >> This time I have also build-tested x86 as well as arm64 :)
-> > =
-
-> > TL;DR: arm64 yay, arm32 nay ;-)
-> =
-
-> Cheers Heiko!
-> =
-
-> > testcase:
-> > 5.14-rc3
-> > + iommu/next
-> > + patches 1+8 (the ones you cc'd me on)
-> >    iommu: Pull IOVA cookie management into the core
-> >    iommu/rockchip: Drop IOVA cookie management
-> > =
-
-> > rk3399+hdmi (puma): boots with graphics
-> > rk3399+edp (kevin): boots with graphics
-> > px30+dsi (minievb): boots with graphics
-> > =
-
-> > rk3288 (arm32, veyron-pinky): hangs when trying to start the rockchip-d=
-rm
-> > at some points the rest of the system recovers and fills the log with
-> > =
-
-> > [   47.193776] [drm:drm_crtc_commit_wait] *ERROR* flip_done timed out
-> > [   47.193867] [drm:drm_atomic_helper_wait_for_dependencies] *ERROR* [P=
-LANE:31:plane-0] commit wait timed out
-> > [   57.433743] [drm:drm_crtc_commit_wait] *ERROR* flip_done timed out
-> > [   57.433828] [drm:drm_atomic_helper_wait_for_dependencies] *ERROR* [P=
-LANE:40:plane-4] commit wait timed out
-> > =
-
-> > spews
-> > =
-
-> > testcase 2:
-> > 5.14-rc3
-> > + iommu/next
-> > =
-
-> > all works fine on both arm32+arm64
-> > =
-
-> > =
-
-> > That whole iommu voodoo is a bit over my head right now, so I'm not sure
-> > what to poke to diagnose this.
-> =
-
-> Dang, this wasn't supposed to affect 32-bit Arm at all, since that =
-
-> doesn't touch any of the default domain stuff either way. I have both my =
-
-> RK3288 box (which IIRC doesn't currently boot) and an Odroid-U3 in the =
-
-> "desk pile" right in front of me, so at worst I'll try bringing one of =
-
-> those to life to see what silly thing I have indeed done to break 32-bit.
-> =
-
-> I have a vague idea forming already, which suggests that it might get =
-
-> better again once patch #12 is applied, but even if so there's no excuse =
-
-> not to be bisectable, so I need to dig in and fix it - many thanks for =
-
-> yelling as requested :D
-
-That vague idea was actually quite correct, applying
-	iommu/dma: Unexport IOVA cookie management
-on top of the the two patches makes my rk3288 boot correctly again
-and the display also works again.
 
 
-Heiko
+On 25.05.21 14:15, Benjamin Gaignard wrote:
+> Add internal ops to be able to handle incoming variant v2.
+> The goal is to keep the overall structure of the framework but
+> to allow to add the evolution of this hardware block.
+> 
+> The ops are global for a SoC because iommu domains are not
+> attached to a specific devices if they are for a virtuel device like
+> drm. Use a global variable shouldn't be since SoC usually doesn't
+> embedded different versions of the iommu hardware block.
+> If that happen one day a WARN_ON will be displayed at probe time.
+> 
+> Signed-off-by: Benjamin Gaignard <benjamin.gaignard@collabora.com>
+> Reviewed-by: Heiko Stuebner <heiko@sntech.de>
+> ---
+> version 7:
+>   - Set DMA mask
+>   - Add function to convert dma address to dte
+> 
+> version 6:
+>   - Remove #include <module.h>
+>   - Remove pt_address_mask field
+>   - Only use once of_device_get_match_data
+>   - Return an error if ops don't match
+> 
+> version 5:
+>   - Use of_device_get_match_data()
+>   - Add internal ops inside the driver
+> 
+>   drivers/iommu/rockchip-iommu.c | 86 +++++++++++++++++++++++++---------
+>   1 file changed, 64 insertions(+), 22 deletions(-)
+> 
+> diff --git a/drivers/iommu/rockchip-iommu.c b/drivers/iommu/rockchip-iommu.c
+> index 7a2932772fdf..bd2cf7f08c71 100644
+> --- a/drivers/iommu/rockchip-iommu.c
+> +++ b/drivers/iommu/rockchip-iommu.c
+> @@ -96,6 +96,15 @@ static const char * const rk_iommu_clocks[] = {
+>   	"aclk", "iface",
+>   };
+>   
+> +struct rk_iommu_ops {
+> +	phys_addr_t (*pt_address)(u32 dte);
+> +	u32 (*mk_dtentries)(dma_addr_t pt_dma);
+> +	u32 (*mk_ptentries)(phys_addr_t page, int prot);
+> +	phys_addr_t (*dte_addr_phys)(u32 addr);
+> +	u32 (*dma_addr_dte)(dma_addr_t dt_dma);
+> +	u64 dma_bit_mask;
+> +};
+> +
+>   struct rk_iommu {
+>   	struct device *dev;
+>   	void __iomem **bases;
+> @@ -116,6 +125,7 @@ struct rk_iommudata {
+>   };
+>   
+>   static struct device *dma_dev;
+> +static const struct rk_iommu_ops *rk_ops;
+>   
+>   static inline void rk_table_flush(struct rk_iommu_domain *dom, dma_addr_t dma,
+>   				  unsigned int count)
+> @@ -215,11 +225,6 @@ static inline u32 rk_mk_dte(dma_addr_t pt_dma)
+>   #define RK_PTE_PAGE_READABLE      BIT(1)
+>   #define RK_PTE_PAGE_VALID         BIT(0)
+>   
+> -static inline phys_addr_t rk_pte_page_address(u32 pte)
+> -{
+> -	return (phys_addr_t)pte & RK_PTE_PAGE_ADDRESS_MASK;
+> -}
+> -
+>   static inline bool rk_pte_is_page_valid(u32 pte)
+>   {
+>   	return pte & RK_PTE_PAGE_VALID;
+> @@ -448,10 +453,10 @@ static int rk_iommu_force_reset(struct rk_iommu *iommu)
+>   	 * and verifying that upper 5 nybbles are read back.
+>   	 */
+>   	for (i = 0; i < iommu->num_mmu; i++) {
+> -		rk_iommu_write(iommu->bases[i], RK_MMU_DTE_ADDR, DTE_ADDR_DUMMY);
+> +		dte_addr = rk_ops->pt_address(DTE_ADDR_DUMMY);
+> +		rk_iommu_write(iommu->bases[i], RK_MMU_DTE_ADDR, dte_addr);
+>   
+> -		dte_addr = rk_iommu_read(iommu->bases[i], RK_MMU_DTE_ADDR);
+> -		if (dte_addr != (DTE_ADDR_DUMMY & RK_DTE_PT_ADDRESS_MASK)) {
+> +		if (dte_addr != rk_iommu_read(iommu->bases[i], RK_MMU_DTE_ADDR)) {
+>   			dev_err(iommu->dev, "Error during raw reset. MMU_DTE_ADDR is not functioning\n");
+>   			return -EFAULT;
+>   		}
+> @@ -470,6 +475,16 @@ static int rk_iommu_force_reset(struct rk_iommu *iommu)
+>   	return 0;
+>   }
+>   
+> +static inline phys_addr_t rk_dte_addr_phys(u32 addr)
+> +{
+> +	return (phys_addr_t)addr;
+> +}
+> +
+> +static inline u32 rk_dma_addr_dte(dma_addr_t dt_dma)
+> +{
+> +	return dt_dma;
+> +}
+> +
+>   static void log_iova(struct rk_iommu *iommu, int index, dma_addr_t iova)
+>   {
+>   	void __iomem *base = iommu->bases[index];
+> @@ -489,7 +504,7 @@ static void log_iova(struct rk_iommu *iommu, int index, dma_addr_t iova)
+>   	page_offset = rk_iova_page_offset(iova);
+>   
+>   	mmu_dte_addr = rk_iommu_read(base, RK_MMU_DTE_ADDR);
+> -	mmu_dte_addr_phys = (phys_addr_t)mmu_dte_addr;
+> +	mmu_dte_addr_phys = rk_ops->dte_addr_phys(mmu_dte_addr);
+>   
+>   	dte_addr_phys = mmu_dte_addr_phys + (4 * dte_index);
+>   	dte_addr = phys_to_virt(dte_addr_phys);
+> @@ -498,14 +513,14 @@ static void log_iova(struct rk_iommu *iommu, int index, dma_addr_t iova)
+>   	if (!rk_dte_is_pt_valid(dte))
+>   		goto print_it;
+>   
+> -	pte_addr_phys = rk_dte_pt_address(dte) + (pte_index * 4);
+> +	pte_addr_phys = rk_ops->pt_address(dte) + (pte_index * 4);
+>   	pte_addr = phys_to_virt(pte_addr_phys);
+>   	pte = *pte_addr;
+>   
+>   	if (!rk_pte_is_page_valid(pte))
+>   		goto print_it;
+>   
+> -	page_addr_phys = rk_pte_page_address(pte) + page_offset;
+> +	page_addr_phys = rk_ops->pt_address(pte) + page_offset;
+>   	page_flags = pte & RK_PTE_PAGE_FLAGS_MASK;
+>   
+>   print_it:
+> @@ -601,13 +616,13 @@ static phys_addr_t rk_iommu_iova_to_phys(struct iommu_domain *domain,
+>   	if (!rk_dte_is_pt_valid(dte))
+>   		goto out;
+>   
+> -	pt_phys = rk_dte_pt_address(dte);
+> +	pt_phys = rk_ops->pt_address(dte);
+>   	page_table = (u32 *)phys_to_virt(pt_phys);
+>   	pte = page_table[rk_iova_pte_index(iova)];
+>   	if (!rk_pte_is_page_valid(pte))
+>   		goto out;
+>   
+> -	phys = rk_pte_page_address(pte) + rk_iova_page_offset(iova);
+> +	phys = rk_ops->pt_address(pte) + rk_iova_page_offset(iova);
+>   out:
+>   	spin_unlock_irqrestore(&rk_domain->dt_lock, flags);
+>   
+> @@ -679,14 +694,14 @@ static u32 *rk_dte_get_page_table(struct rk_iommu_domain *rk_domain,
+>   		return ERR_PTR(-ENOMEM);
+>   	}
+>   
+> -	dte = rk_mk_dte(pt_dma);
+> +	dte = rk_ops->mk_dtentries(pt_dma);
+>   	*dte_addr = dte;
+>   
+>   	rk_table_flush(rk_domain, pt_dma, NUM_PT_ENTRIES);
+>   	rk_table_flush(rk_domain,
+>   		       rk_domain->dt_dma + dte_index * sizeof(u32), 1);
+>   done:
+> -	pt_phys = rk_dte_pt_address(dte);
+> +	pt_phys = rk_ops->pt_address(dte);
+>   	return (u32 *)phys_to_virt(pt_phys);
+>   }
+>   
+> @@ -728,7 +743,7 @@ static int rk_iommu_map_iova(struct rk_iommu_domain *rk_domain, u32 *pte_addr,
+>   		if (rk_pte_is_page_valid(pte))
+>   			goto unwind;
+>   
+> -		pte_addr[pte_count] = rk_mk_pte(paddr, prot);
+> +		pte_addr[pte_count] = rk_ops->mk_ptentries(paddr, prot);
+>   
+>   		paddr += SPAGE_SIZE;
+>   	}
+> @@ -750,7 +765,7 @@ static int rk_iommu_map_iova(struct rk_iommu_domain *rk_domain, u32 *pte_addr,
+>   			    pte_count * SPAGE_SIZE);
+>   
+>   	iova += pte_count * SPAGE_SIZE;
+> -	page_phys = rk_pte_page_address(pte_addr[pte_count]);
+> +	page_phys = rk_ops->pt_address(pte_addr[pte_count]);
+>   	pr_err("iova: %pad already mapped to %pa cannot remap to phys: %pa prot: %#x\n",
+>   	       &iova, &page_phys, &paddr, prot);
+>   
+> @@ -785,7 +800,8 @@ static int rk_iommu_map(struct iommu_domain *domain, unsigned long _iova,
+>   	dte_index = rk_domain->dt[rk_iova_dte_index(iova)];
+>   	pte_index = rk_iova_pte_index(iova);
+>   	pte_addr = &page_table[pte_index];
+> -	pte_dma = rk_dte_pt_address(dte_index) + pte_index * sizeof(u32);
+> +
+> +	pte_dma = rk_ops->pt_address(dte_index) + pte_index * sizeof(u32);
+>   	ret = rk_iommu_map_iova(rk_domain, pte_addr, pte_dma, iova,
+>   				paddr, size, prot);
+>   
+> @@ -821,7 +837,7 @@ static size_t rk_iommu_unmap(struct iommu_domain *domain, unsigned long _iova,
+>   		return 0;
+>   	}
+>   
+> -	pt_phys = rk_dte_pt_address(dte);
+> +	pt_phys = rk_ops->pt_address(dte);
+>   	pte_addr = (u32 *)phys_to_virt(pt_phys) + rk_iova_pte_index(iova);
+>   	pte_dma = pt_phys + rk_iova_pte_index(iova) * sizeof(u32);
+>   	unmap_size = rk_iommu_unmap_iova(rk_domain, pte_addr, pte_dma, size);
+> @@ -879,7 +895,7 @@ static int rk_iommu_enable(struct rk_iommu *iommu)
+>   
+>   	for (i = 0; i < iommu->num_mmu; i++) {
+>   		rk_iommu_write(iommu->bases[i], RK_MMU_DTE_ADDR,
+> -			       rk_domain->dt_dma);
+> +			       rk_ops->dma_addr_dte(rk_domain->dt_dma));
 
-> =
+Hi,
+This is not related to that patch, I was wondring why are all mmu devices initialized
+with the same dt_dma?
+I see for example that the isp0_mmu in rk3399.dtsi has two resources. Can't each resource
+be initialized with different dt_dma and this way there are two dt tables instead of the two mmus pointing
+to the same dt table.
 
-> Robin.
-> =
+Thanks,
+Dafna
 
-> > =
-
-> > =
-
-> > Heiko
-> > =
-
-> > =
-
-> >> Changes in v2:
-> >>
-> >> - Add iommu_is_dma_domain() helper to abstract flag check (and help
-> >>    avoid silly typos like the one in v1).
-> >> - Tweak a few commit messages for spelling and (hopefully) clarity.
-> >> - Move the iommu_create_device_direct_mappings() update to patch #14
-> >>    where it should have been.
-> >> - Rewrite patch #20 as a conversion of the now-existing option.
-> >> - Clean up the ops->flush_iotlb_all check which is also made redundant
-> >>    by the new domain type
-> >> - Add patch #24, which is arguably tangential, but it was something I
-> >>    spotted during the rebase, so...
-> >>
-> >> Once again, the whole lot is available on a branch here:
-> >>
-> >> https://gitlab.arm.com/linux-arm/linux-rm/-/tree/iommu/fq
-> >>
-> >> Thanks,
-> >> Robin.
-> >>
-> >>
-> >> CC: Marek Szyprowski <m.szyprowski@samsung.com>
-> >> CC: Yoshihiro Shimoda <yoshihiro.shimoda.uh@renesas.com>
-> >> CC: Geert Uytterhoeven <geert+renesas@glider.be>
-> >> CC: Yong Wu <yong.wu@mediatek.com>
-> >> CC: Heiko Stuebner <heiko@sntech.de>
-> >> CC: Chunyan Zhang <chunyan.zhang@unisoc.com>
-> >> CC: Chunyan Zhang <chunyan.zhang@unisoc.com>
-> >> CC: Maxime Ripard <mripard@kernel.org>
-> >> CC: Jean-Philippe Brucker <jean-philippe@linaro.org>
-> >>
-> >> Robin Murphy (24):
-> >>    iommu: Pull IOVA cookie management into the core
-> >>    iommu/amd: Drop IOVA cookie management
-> >>    iommu/arm-smmu: Drop IOVA cookie management
-> >>    iommu/vt-d: Drop IOVA cookie management
-> >>    iommu/exynos: Drop IOVA cookie management
-> >>    iommu/ipmmu-vmsa: Drop IOVA cookie management
-> >>    iommu/mtk: Drop IOVA cookie management
-> >>    iommu/rockchip: Drop IOVA cookie management
-> >>    iommu/sprd: Drop IOVA cookie management
-> >>    iommu/sun50i: Drop IOVA cookie management
-> >>    iommu/virtio: Drop IOVA cookie management
-> >>    iommu/dma: Unexport IOVA cookie management
-> >>    iommu/dma: Remove redundant "!dev" checks
-> >>    iommu: Introduce explicit type for non-strict DMA domains
-> >>    iommu/amd: Prepare for multiple DMA domain types
-> >>    iommu/arm-smmu: Prepare for multiple DMA domain types
-> >>    iommu/vt-d: Prepare for multiple DMA domain types
-> >>    iommu: Express DMA strictness via the domain type
-> >>    iommu: Expose DMA domain strictness via sysfs
-> >>    iommu: Merge strictness and domain type configs
-> >>    iommu/dma: Factor out flush queue init
-> >>    iommu: Allow enabling non-strict mode dynamically
-> >>    iommu/arm-smmu: Allow non-strict in pgtable_quirks interface
-> >>    iommu: Only log strictness for DMA domains
-> >>
-> >>   .../ABI/testing/sysfs-kernel-iommu_groups     |  2 +
-> >>   drivers/iommu/Kconfig                         | 80 +++++++++--------=
---
-> >>   drivers/iommu/amd/iommu.c                     | 21 +----
-> >>   drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c   | 25 ++++--
-> >>   drivers/iommu/arm/arm-smmu/arm-smmu.c         | 29 ++++---
-> >>   drivers/iommu/arm/arm-smmu/qcom_iommu.c       |  8 --
-> >>   drivers/iommu/dma-iommu.c                     | 44 +++++-----
-> >>   drivers/iommu/exynos-iommu.c                  | 18 +----
-> >>   drivers/iommu/intel/iommu.c                   | 23 ++----
-> >>   drivers/iommu/iommu.c                         | 53 +++++++-----
-> >>   drivers/iommu/ipmmu-vmsa.c                    | 27 +------
-> >>   drivers/iommu/mtk_iommu.c                     |  6 --
-> >>   drivers/iommu/rockchip-iommu.c                | 11 +--
-> >>   drivers/iommu/sprd-iommu.c                    |  6 --
-> >>   drivers/iommu/sun50i-iommu.c                  | 12 +--
-> >>   drivers/iommu/virtio-iommu.c                  |  8 --
-> >>   include/linux/dma-iommu.h                     |  9 ++-
-> >>   include/linux/iommu.h                         | 15 +++-
-> >>   18 files changed, 171 insertions(+), 226 deletions(-)
-> >>
-> >>
-> > =
-
-> > =
-
-> > =
-
-> > =
-
-> =
-
-
-
-
-
+>   		rk_iommu_base_command(iommu->bases[i], RK_MMU_CMD_ZAP_CACHE);
+>   		rk_iommu_write(iommu->bases[i], RK_MMU_INT_MASK, RK_MMU_IRQ_MASK);
+>   	}
+> @@ -1037,7 +1053,7 @@ static void rk_iommu_domain_free(struct iommu_domain *domain)
+>   	for (i = 0; i < NUM_DT_ENTRIES; i++) {
+>   		u32 dte = rk_domain->dt[i];
+>   		if (rk_dte_is_pt_valid(dte)) {
+> -			phys_addr_t pt_phys = rk_dte_pt_address(dte);
+> +			phys_addr_t pt_phys = rk_ops->pt_address(dte);
+>   			u32 *page_table = phys_to_virt(pt_phys);
+>   			dma_unmap_single(dma_dev, pt_phys,
+>   					 SPAGE_SIZE, DMA_TO_DEVICE);
+> @@ -1127,6 +1143,7 @@ static int rk_iommu_probe(struct platform_device *pdev)
+>   	struct device *dev = &pdev->dev;
+>   	struct rk_iommu *iommu;
+>   	struct resource *res;
+> +	const struct rk_iommu_ops *ops;
+>   	int num_res = pdev->num_resources;
+>   	int err, i;
+>   
+> @@ -1138,6 +1155,17 @@ static int rk_iommu_probe(struct platform_device *pdev)
+>   	iommu->dev = dev;
+>   	iommu->num_mmu = 0;
+>   
+> +	ops = of_device_get_match_data(dev);
+> +	if (!rk_ops)
+> +		rk_ops = ops;
+> +
+> +	/*
+> +	 * That should not happen unless different versions of the
+> +	 * hardware block are embedded the same SoC
+> +	 */
+> +	if (WARN_ON(rk_ops != ops))
+> +		return -EINVAL;
+> +
+>   	iommu->bases = devm_kcalloc(dev, num_res, sizeof(*iommu->bases),
+>   				    GFP_KERNEL);
+>   	if (!iommu->bases)
+> @@ -1226,6 +1254,8 @@ static int rk_iommu_probe(struct platform_device *pdev)
+>   		}
+>   	}
+>   
+> +	dma_set_mask_and_coherent(dev, rk_ops->dma_bit_mask);
+> +
+>   	return 0;
+>   err_remove_sysfs:
+>   	iommu_device_sysfs_remove(&iommu->iommu);
+> @@ -1277,8 +1307,20 @@ static const struct dev_pm_ops rk_iommu_pm_ops = {
+>   				pm_runtime_force_resume)
+>   };
+>   
+> +static struct rk_iommu_ops iommu_data_ops_v1 = {
+> +	.pt_address = &rk_dte_pt_address,
+> +	.mk_dtentries = &rk_mk_dte,
+> +	.mk_ptentries = &rk_mk_pte,
+> +	.dte_addr_phys = &rk_dte_addr_phys,
+> +	.dma_addr_dte = &rk_dma_addr_dte,
+> +	.dma_bit_mask = DMA_BIT_MASK(32),
+> +};
+> +
+> +
+>   static const struct of_device_id rk_iommu_dt_ids[] = {
+> -	{ .compatible = "rockchip,iommu" },
+> +	{	.compatible = "rockchip,iommu",
+> +		.data = &iommu_data_ops_v1,
+> +	},
+>   	{ /* sentinel */ }
+>   };
+>   
+> 
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
