@@ -2,123 +2,107 @@ Return-Path: <SRS0=dGrv=MV=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-8.6 required=3.0 tests=BAYES_00,DKIM_INVALID,
-	DKIM_SIGNED,HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,
-	MENTIONS_GIT_HOSTING,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED autolearn=ham
-	autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-3.6 required=3.0 tests=BAYES_00,DKIM_INVALID,
+	DKIM_SIGNED,HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,SPF_HELO_NONE,
+	SPF_PASS,URIBL_BLOCKED autolearn=no autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7A7AAC4338F
-	for <iommu@archiver.kernel.org>; Thu, 29 Jul 2021 09:51:14 +0000 (UTC)
-Received: from smtp2.osuosl.org (smtp2.osuosl.org [140.211.166.133])
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0EC46C43216
+	for <iommu@archiver.kernel.org>; Thu, 29 Jul 2021 09:57:40 +0000 (UTC)
+Received: from smtp1.osuosl.org (smtp1.osuosl.org [140.211.166.138])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 226D7603E7
-	for <iommu@archiver.kernel.org>; Thu, 29 Jul 2021 09:51:14 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.4.1 mail.kernel.org 226D7603E7
-Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=linux.vnet.ibm.com
+	by mail.kernel.org (Postfix) with ESMTPS id 8D9D860C3F
+	for <iommu@archiver.kernel.org>; Thu, 29 Jul 2021 09:57:39 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.4.1 mail.kernel.org 8D9D860C3F
+Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=bytedance.com
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by smtp2.osuosl.org (Postfix) with ESMTP id A7B21401BD;
-	Thu, 29 Jul 2021 09:51:13 +0000 (UTC)
+	by smtp1.osuosl.org (Postfix) with ESMTP id 548B483AF8;
+	Thu, 29 Jul 2021 09:57:39 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from smtp2.osuosl.org ([127.0.0.1])
-	by localhost (smtp2.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id ssYxcza-1lxS; Thu, 29 Jul 2021 09:51:12 +0000 (UTC)
+Received: from smtp1.osuosl.org ([127.0.0.1])
+	by localhost (smtp1.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+	with ESMTP id SF8X_Vj6q8I8; Thu, 29 Jul 2021 09:57:38 +0000 (UTC)
 Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by smtp2.osuosl.org (Postfix) with ESMTPS id C1E234048D;
-	Thu, 29 Jul 2021 09:51:10 +0000 (UTC)
+	by smtp1.osuosl.org (Postfix) with ESMTPS id 0955F83AEF;
+	Thu, 29 Jul 2021 09:57:38 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id C3819C0027;
-	Thu, 29 Jul 2021 09:51:09 +0000 (UTC)
-Received: from smtp3.osuosl.org (smtp3.osuosl.org [140.211.166.136])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 3CBACC000E
- for <iommu@lists.linux-foundation.org>; Thu, 29 Jul 2021 05:05:57 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id BBBB6C0010;
+	Thu, 29 Jul 2021 09:57:37 +0000 (UTC)
+Received: from smtp4.osuosl.org (smtp4.osuosl.org [140.211.166.137])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 4F53BC000E
+ for <iommu@lists.linux-foundation.org>; Thu, 29 Jul 2021 09:57:36 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by smtp3.osuosl.org (Postfix) with ESMTP id 261FF6068B
- for <iommu@lists.linux-foundation.org>; Thu, 29 Jul 2021 05:05:57 +0000 (UTC)
+ by smtp4.osuosl.org (Postfix) with ESMTP id 4496A40510
+ for <iommu@lists.linux-foundation.org>; Thu, 29 Jul 2021 09:57:36 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Authentication-Results: smtp3.osuosl.org (amavisd-new);
- dkim=pass (2048-bit key) header.d=ibm.com
-Received: from smtp3.osuosl.org ([127.0.0.1])
- by localhost (smtp3.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id kxgx7Zgu7Web for <iommu@lists.linux-foundation.org>;
- Thu, 29 Jul 2021 05:05:56 +0000 (UTC)
-X-Greylist: delayed 00:44:05 by SQLgrey-1.8.0
-Received: from mx0a-001b2d01.pphosted.com (mx0b-001b2d01.pphosted.com
- [148.163.158.5])
- by smtp3.osuosl.org (Postfix) with ESMTPS id D27DA60634
- for <iommu@lists.linux-foundation.org>; Thu, 29 Jul 2021 05:05:55 +0000 (UTC)
-Received: from pps.filterd (m0098416.ppops.net [127.0.0.1])
- by mx0b-001b2d01.pphosted.com (8.16.0.43/8.16.0.43) with SMTP id
- 16T4FEtZ182812; Thu, 29 Jul 2021 00:21:45 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com;
- h=content-type : subject :
- from : in-reply-to : date : cc : message-id : references : to :
- content-transfer-encoding : mime-version; s=pp1;
- bh=lhTVW3t0lTF5kza0RELN9IffV7THs5vCoJtihBxvY3w=;
- b=GJzzg3zwiEa86QHC6SaV8sCDIKmHuyJntUFheqCQd74yNm+fsSZR/BWlUhDB+cUo762t
- GtNvpdTtxsnrgJOvyG0ZXWtim0ub84I3gz1cto8zKp+BhlhQ06tiTty3f62/N7MND2du
- e2RYiTdRV5hVbCwLKCj0gwtxoK04kgXvX/8di0wlf9M8kZ0N2UlymFDyvMo7gFflGjwG
- h6ZthjWZoWP6SxypOGh2A7R6GtgntNemWim28v1WN87cKKnWEBUPZE8gIhgLyTvrfOcS
- bJCUZNzGOC131DlyDGY87vEFWmlqyr2odiemd4bhyK6W4Z2rWp53fcnSQQ5cK+2etZRY Bg== 
-Received: from ppma06ams.nl.ibm.com (66.31.33a9.ip4.static.sl-reverse.com
- [169.51.49.102])
- by mx0b-001b2d01.pphosted.com with ESMTP id 3a3n4y8483-1
- (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
- Thu, 29 Jul 2021 00:21:45 -0400
-Received: from pps.filterd (ppma06ams.nl.ibm.com [127.0.0.1])
- by ppma06ams.nl.ibm.com (8.16.1.2/8.16.1.2) with SMTP id 16T4D5kg007046;
- Thu, 29 Jul 2021 04:21:43 GMT
-Received: from b06cxnps3074.portsmouth.uk.ibm.com
- (d06relay09.portsmouth.uk.ibm.com [9.149.109.194])
- by ppma06ams.nl.ibm.com with ESMTP id 3a235khen5-1
- (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
- Thu, 29 Jul 2021 04:21:43 +0000
-Received: from b06wcsmtp001.portsmouth.uk.ibm.com
- (b06wcsmtp001.portsmouth.uk.ibm.com [9.149.105.160])
- by b06cxnps3074.portsmouth.uk.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id
- 16T4LffY25559496
- (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
- Thu, 29 Jul 2021 04:21:41 GMT
-Received: from b06wcsmtp001.portsmouth.uk.ibm.com (unknown [127.0.0.1])
- by IMSVA (Postfix) with ESMTP id 029BEA405B;
- Thu, 29 Jul 2021 04:21:41 +0000 (GMT)
-Received: from b06wcsmtp001.portsmouth.uk.ibm.com (unknown [127.0.0.1])
- by IMSVA (Postfix) with ESMTP id 22762A4062;
- Thu, 29 Jul 2021 04:21:38 +0000 (GMT)
-Received: from smtpclient.apple (unknown [9.43.126.126])
- by b06wcsmtp001.portsmouth.uk.ibm.com (Postfix) with ESMTP;
- Thu, 29 Jul 2021 04:21:37 +0000 (GMT)
-Subject: Re: [powerpc][next-20210727] Boot failure - kernel BUG at
- arch/powerpc/kernel/interrupt.c:98!
-From: Sachin Sant <sachinp@linux.vnet.ibm.com>
-In-Reply-To: <YQGVZnMe9hFieF8D@Ryzen-9-3900X.localdomain>
-Date: Thu, 29 Jul 2021 09:51:36 +0530
-Message-Id: <63F21E55-B11E-4B30-B436-C063C405D9C5@linux.vnet.ibm.com>
-References: <1905CD70-7656-42AE-99E2-A31FC3812EAC@linux.vnet.ibm.com>
- <YQGVZnMe9hFieF8D@Ryzen-9-3900X.localdomain>
-To: Nathan Chancellor <nathan@kernel.org>
-X-Mailer: Apple Mail (2.3654.100.0.2.22)
-X-TM-AS-GCONF: 00
-X-Proofpoint-GUID: TmBeoEqtp6gufjRfjgGV6pBLwHd7ZQEp
-X-Proofpoint-ORIG-GUID: TmBeoEqtp6gufjRfjgGV6pBLwHd7ZQEp
-X-Proofpoint-UnRewURL: 0 URL was un-rewritten
+Authentication-Results: smtp4.osuosl.org (amavisd-new);
+ dkim=pass (2048-bit key) header.d=bytedance-com.20150623.gappssmtp.com
+Received: from smtp4.osuosl.org ([127.0.0.1])
+ by localhost (smtp4.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+ with ESMTP id BWTulhqn4W4B for <iommu@lists.linux-foundation.org>;
+ Thu, 29 Jul 2021 09:57:35 +0000 (UTC)
+X-Greylist: whitelisted by SQLgrey-1.8.0
+Received: from mail-ej1-x629.google.com (mail-ej1-x629.google.com
+ [IPv6:2a00:1450:4864:20::629])
+ by smtp4.osuosl.org (Postfix) with ESMTPS id A3E6E4050D
+ for <iommu@lists.linux-foundation.org>; Thu, 29 Jul 2021 09:57:34 +0000 (UTC)
+Received: by mail-ej1-x629.google.com with SMTP id x11so8769038ejj.8
+ for <iommu@lists.linux-foundation.org>; Thu, 29 Jul 2021 02:57:34 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+ d=bytedance-com.20150623.gappssmtp.com; s=20150623;
+ h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+ :cc; bh=2/JQLrAj508aGv2jmDnAbPG9EWZtKhvl82UAOMEHPBs=;
+ b=A+Z9/U60T5YbUAEe4jTChA/mBPivVWZ7mluEerjhc+uNDyQEPDnLZTyScfp0foFFQ2
+ U18VzAwhGvf+YG3A92CMDlth4RheryJe/9mb84mBBsVyusD9fil8raZK9KYSHBEVIQ7r
+ vcgONXa7A1dVrBAoc6Wjc9ROTzUfoufjFxzY1y84GJWXb0xjAx7QOsKfGUWr4PyBIG94
+ 013D3fFsLSYeHbqD25Riw7VBjfU+GZRszU7cNcvYRrFg6NmAdqf1dJqiwqQNtWz3re9C
+ R4RmFAoNIVed/GbVrR8D4MVMYsnqS2tzHmemUI5oVH0YIsVRQx81J4BB227Z4lSCF5H9
+ UMpA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+ d=1e100.net; s=20161025;
+ h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+ :message-id:subject:to:cc;
+ bh=2/JQLrAj508aGv2jmDnAbPG9EWZtKhvl82UAOMEHPBs=;
+ b=qbcaud1s3skicZbZGLIRTjBElF7rbyuDXf0JSQ0vlXvqN3xD/wxKEP8lmUB3FAAS4B
+ jiN/xYEIuLtXy8Nnb4cwV4fXaqgH+tGWcEuRWtPsBhQpq25b/AbJz5fJLSSrzn++7zdc
+ l3QOklO49eTw0hwtBqBeNi7R9tYAg0oLhk4MBR8vr2eYZSQ/ExNViL+mg1nA18iHxVCv
+ D5CWfcWinYYw0cJcf48Xo3LIJkwiz95z/9NtgOsaB16Te4CoftvIJoNmRbEBC0TQlJNo
+ U12pXu+WYtCZN2BGKb4pwX0BV1tzxlK7RX7KrYzSEydDdqfI7/TD5kg4py87TuRb/ZGW
+ WOsA==
+X-Gm-Message-State: AOAM530LBKOVfRsbF9LgEHOire1fUQd0IwyOyDYVhjaT1LgLgq1zgGKw
+ sPqRErGdAVCE4JLIKPgpUPyWDMDxGIHsETmYnr2l
+X-Google-Smtp-Source: ABdhPJyPJoh2rrpt21pOJjnB92m0UbkMLG/89N9L25ZMGcj+dxRx+R6yfC6pnUW65INSVyrfW/U8u02y7MhgGoOHpMc=
+X-Received: by 2002:a17:906:58c7:: with SMTP id
+ e7mr3708944ejs.197.1627552652557; 
+ Thu, 29 Jul 2021 02:57:32 -0700 (PDT)
 MIME-Version: 1.0
-X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.391, 18.0.790
- definitions=2021-07-29_03:2021-07-27,
- 2021-07-29 signatures=0
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0
- phishscore=0 adultscore=0
- clxscore=1011 mlxlogscore=768 spamscore=0 bulkscore=0 malwarescore=0
- impostorscore=0 lowpriorityscore=0 priorityscore=1501 mlxscore=0
- suspectscore=0 classifier=spam adjust=0 reason=mlx scancount=1
- engine=8.12.0-2107140000 definitions=main-2107290024
-X-Mailman-Approved-At: Thu, 29 Jul 2021 09:51:07 +0000
-Cc: Konrad Rzeszutek Wilk <konrad.wilk@oracle.com>,
- Will Deacon <will@kernel.org>, Robin Murphy <robin.murphy@arm.com>,
- iommu@lists.linux-foundation.org, linux-next@vger.kernel.org,
- Claire Chang <tientzu@chromium.org>, linuxppc-dev@lists.ozlabs.org,
- Christoph Hellwig <hch@lst.de>
+References: <20210729073503.187-1-xieyongji@bytedance.com>
+ <20210729073503.187-17-xieyongji@bytedance.com>
+ <YQJuG7zrzdWm+ieZ@kroah.com>
+In-Reply-To: <YQJuG7zrzdWm+ieZ@kroah.com>
+From: Yongji Xie <xieyongji@bytedance.com>
+Date: Thu, 29 Jul 2021 17:57:21 +0800
+Message-ID: <CACycT3vDspiXSh=UoK9JXaMpv1+9C61DLy_-bWJV5XRxKs2xRw@mail.gmail.com>
+Subject: Re: [PATCH v10 16/17] vduse: Introduce VDUSE - vDPA Device in
+ Userspace
+To: Greg KH <gregkh@linuxfoundation.org>
+Cc: kvm <kvm@vger.kernel.org>, "Michael S. Tsirkin" <mst@redhat.com>,
+ Jason Wang <jasowang@redhat.com>,
+ virtualization <virtualization@lists.linux-foundation.org>,
+ Christian Brauner <christian.brauner@canonical.com>,
+ Jonathan Corbet <corbet@lwn.net>, Matthew Wilcox <willy@infradead.org>,
+ Christoph Hellwig <hch@infradead.org>,
+ Dan Carpenter <dan.carpenter@oracle.com>,
+ Stefano Garzarella <sgarzare@redhat.com>,
+ Liu Xiaodong <xiaodong.liu@intel.com>, linux-fsdevel@vger.kernel.org,
+ Al Viro <viro@zeniv.linux.org.uk>, Stefan Hajnoczi <stefanha@redhat.com>,
+ songmuchun@bytedance.com, Jens Axboe <axboe@kernel.dk>,
+ He Zhe <zhe.he@windriver.com>, netdev@vger.kernel.org,
+ Randy Dunlap <rdunlap@infradead.org>,
+ linux-kernel <linux-kernel@vger.kernel.org>, iommu@lists.linux-foundation.org,
+ bcrl@kvack.org, Joe Perches <joe@perches.com>,
+ =?UTF-8?Q?Mika_Penttil=C3=A4?= <mika.penttila@nextfour.com>
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -131,30 +115,272 @@ List-Post: <mailto:iommu@lists.linux-foundation.org>
 List-Help: <mailto:iommu-request@lists.linux-foundation.org?subject=help>
 List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
  <mailto:iommu-request@lists.linux-foundation.org?subject=subscribe>
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-Cgo+IE9uIDI4LUp1bC0yMDIxLCBhdCAxMTowNSBQTSwgTmF0aGFuIENoYW5jZWxsb3IgPG5hdGhh
-bkBrZXJuZWwub3JnPiB3cm90ZToKPiAKPiBPbiBXZWQsIEp1bCAyOCwgMjAyMSBhdCAwMTozMTow
-NlBNICswNTMwLCBTYWNoaW4gU2FudCB3cm90ZToKPj4gbGludXgtbmV4dCBmYWlscyB0byBib290
-IG9uIFBvd2VyIHNlcnZlciAoUE9XRVI4L1BPV0VSOSkuIEZvbGxvd2luZyB0cmFjZXMKPj4gYXJl
-IHNlZW4gZHVyaW5nIGJvb3QKPj4gCj4+IFsgICAgMC4wMTA3OTldIHNvZnR3YXJlIElPIFRMQjog
-dGVhcmluZyBkb3duIGRlZmF1bHQgbWVtb3J5IHBvb2wKPj4gWyAgICAwLjAxMDgwNV0gLS0tLS0t
-LS0tLS0tWyBjdXQgaGVyZSBdLS0tLS0tLS0tLS0tCj4+IFsgICAgMC4wMTA4MDhdIGtlcm5lbCBC
-VUcgYXQgYXJjaC9wb3dlcnBjL2tlcm5lbC9pbnRlcnJ1cHQuYzo5OCEKPj4gWyAgICAwLjAxMDgx
-Ml0gT29wczogRXhjZXB0aW9uIGluIGtlcm5lbCBtb2RlLCBzaWc6IDUgWyMxXQrigKbigKYuCj4g
-Cj4gSSBub3RpY2VkIHRoaXMgd2l0aCBPcGVuU1VTRSdzIHBwYzY0bGUgY29uZmlnIFsxXSBhbmQg
-bXkgYmlzZWN0IGxhbmRlZCBvbgo+IGNvbW1pdCBhZDZjMDAyODMxNjMgKCJzd2lvdGxiOiBGcmVl
-IHRibCBtZW1vcnkgaW4gc3dpb3RsYl9leGl0KCkiKS4gVGhhdAoKSW5kZWVkLiBUaGFua3MgTmF0
-aGFuLgpCaXNlY3QgcG9pbnRzIHRvIHRoaXMgY29tbWl0LiAgUmV2ZXJ0aW5nIHRoZSBjb21taXQg
-YWxsb3dzIHRoZSBrZXJuZWwgdG8gYm9vdC4KClRoYW5rcwotU2FjaGluCgo+IHNlcmllcyBqdXN0
-IGtlZXBzIG9uIGdpdmluZy4uLiBBZGRpbmcgc29tZSBwZW9wbGUgZnJvbSB0aGF0IHRocmVhZCB0
-bwo+IHRoaXMgb25lLiBPcmlnaW5hbCB0aHJlYWQ6Cj4gaHR0cHM6Ly9sb3JlLmtlcm5lbC5vcmcv
-ci8xOTA1Q0Q3MC03NjU2LTQyQUUtOTlFMi1BMzFGQzM4MTJFQUNAbGludXgudm5ldC5pYm0uY29t
-Lwo+IAo+IFsxXTogaHR0cHM6Ly9naXRodWIuY29tL29wZW5TVVNFL2tlcm5lbC1zb3VyY2UvcmF3
-L21hc3Rlci9jb25maWcvcHBjNjRsZS9kZWZhdWx0Cj4gCj4gQ2hlZXJzLAo+IE5hdGhhbgoKX19f
-X19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX18KaW9tbXUgbWFpbGlu
-ZyBsaXN0CmlvbW11QGxpc3RzLmxpbnV4LWZvdW5kYXRpb24ub3JnCmh0dHBzOi8vbGlzdHMubGlu
-dXhmb3VuZGF0aW9uLm9yZy9tYWlsbWFuL2xpc3RpbmZvL2lvbW11
+On Thu, Jul 29, 2021 at 5:00 PM Greg KH <gregkh@linuxfoundation.org> wrote:
+>
+> On Thu, Jul 29, 2021 at 03:35:02PM +0800, Xie Yongji wrote:
+> > +/*
+> > + * The basic configuration of a VDUSE device, which is used by
+> > + * VDUSE_CREATE_DEV ioctl to create a VDUSE device.
+> > + */
+> > +struct vduse_dev_config {
+>
+> Please document this structure using kernel doc so we know what all the
+> fields are.
+>
+
+Sure.
+
+> > +#define VDUSE_NAME_MAX       256
+> > +     char name[VDUSE_NAME_MAX]; /* vduse device name, needs to be NUL terminated */
+> > +     __u32 vendor_id; /* virtio vendor id */
+> > +     __u32 device_id; /* virtio device id */
+> > +     __u64 features; /* virtio features */
+> > +     __u32 vq_num; /* the number of virtqueues */
+> > +     __u32 vq_align; /* the allocation alignment of virtqueue's metadata */
+> > +     __u32 reserved[13]; /* for future use */
+>
+> This HAS to be tested to be all 0, otherwise you can never use it in the
+> future.  I did not see the code doing that at all.
+>
+
+Make sense. Will do it in the next version.
+
+> > +     __u32 config_size; /* the size of the configuration space */
+> > +     __u8 config[0]; /* the buffer of the configuration space */
+>
+> config[]; please instead?  I thought we were getting rid of all of the
+> 0-length arrays in the kernel tree.
+>
+
+OK.
+
+> > +};
+> > +
+> > +/* Create a VDUSE device which is represented by a char device (/dev/vduse/$NAME) */
+> > +#define VDUSE_CREATE_DEV     _IOW(VDUSE_BASE, 0x02, struct vduse_dev_config)
+> > +
+> > +/*
+> > + * Destroy a VDUSE device. Make sure there are no more references
+> > + * to the char device (/dev/vduse/$NAME).
+> > + */
+> > +#define VDUSE_DESTROY_DEV    _IOW(VDUSE_BASE, 0x03, char[VDUSE_NAME_MAX])
+> > +
+> > +/* The ioctls for VDUSE device (/dev/vduse/$NAME) */
+> > +
+> > +/*
+> > + * The information of one IOVA region, which is retrieved from
+> > + * VDUSE_IOTLB_GET_FD ioctl.
+> > + */
+> > +struct vduse_iotlb_entry {
+> > +     __u64 offset; /* the mmap offset on returned file descriptor */
+> > +     __u64 start; /* start of the IOVA range: [start, last] */
+> > +     __u64 last; /* last of the IOVA range: [start, last] */
+> > +#define VDUSE_ACCESS_RO 0x1
+> > +#define VDUSE_ACCESS_WO 0x2
+> > +#define VDUSE_ACCESS_RW 0x3
+> > +     __u8 perm; /* access permission of this region */
+> > +};
+> > +
+> > +/*
+> > + * Find the first IOVA region that overlaps with the range [start, last]
+> > + * and return the corresponding file descriptor. Return -EINVAL means the
+> > + * IOVA region doesn't exist. Caller should set start and last fields.
+> > + */
+> > +#define VDUSE_IOTLB_GET_FD   _IOWR(VDUSE_BASE, 0x10, struct vduse_iotlb_entry)
+> > +
+> > +/*
+> > + * Get the negotiated virtio features. It's a subset of the features in
+> > + * struct vduse_dev_config which can be accepted by virtio driver. It's
+> > + * only valid after FEATURES_OK status bit is set.
+> > + */
+> > +#define VDUSE_DEV_GET_FEATURES       _IOR(VDUSE_BASE, 0x11, __u64)
+> > +
+> > +/*
+> > + * The information that is used by VDUSE_DEV_SET_CONFIG ioctl to update
+> > + * device configuration space.
+> > + */
+> > +struct vduse_config_data {
+> > +     __u32 offset; /* offset from the beginning of configuration space */
+> > +     __u32 length; /* the length to write to configuration space */
+> > +     __u8 buffer[0]; /* buffer used to write from */
+>
+> again, buffer[];?
+>
+
+OK.
+
+> > +};
+> > +
+> > +/* Set device configuration space */
+> > +#define VDUSE_DEV_SET_CONFIG _IOW(VDUSE_BASE, 0x12, struct vduse_config_data)
+> > +
+> > +/*
+> > + * Inject a config interrupt. It's usually used to notify virtio driver
+> > + * that device configuration space has changed.
+> > + */
+> > +#define VDUSE_DEV_INJECT_CONFIG_IRQ  _IO(VDUSE_BASE, 0x13)
+> > +
+> > +/*
+> > + * The basic configuration of a virtqueue, which is used by
+> > + * VDUSE_VQ_SETUP ioctl to setup a virtqueue.
+> > + */
+> > +struct vduse_vq_config {
+> > +     __u32 index; /* virtqueue index */
+> > +     __u16 max_size; /* the max size of virtqueue */
+> > +};
+> > +
+> > +/*
+> > + * Setup the specified virtqueue. Make sure all virtqueues have been
+> > + * configured before the device is attached to vDPA bus.
+> > + */
+> > +#define VDUSE_VQ_SETUP               _IOW(VDUSE_BASE, 0x14, struct vduse_vq_config)
+> > +
+> > +struct vduse_vq_state_split {
+> > +     __u16 avail_index; /* available index */
+> > +};
+> > +
+> > +struct vduse_vq_state_packed {
+> > +     __u16 last_avail_counter:1; /* last driver ring wrap counter observed by device */
+> > +     __u16 last_avail_idx:15; /* device available index */
+>
+> Bit fields in a user structure?  Are you sure this is going to work
+> well?  Why not just make this a __u16 and then mask off what you want so
+> that you do not run into endian issues?
+>
+
+Good point! I will use __u16 for each field instead.
+
+> > +     __u16 last_used_counter:1; /* device ring wrap counter */
+> > +     __u16 last_used_idx:15; /* used index */
+> > +};
+> > +
+> > +/*
+> > + * The information of a virtqueue, which is retrieved from
+> > + * VDUSE_VQ_GET_INFO ioctl.
+> > + */
+> > +struct vduse_vq_info {
+> > +     __u32 index; /* virtqueue index */
+> > +     __u32 num; /* the size of virtqueue */
+> > +     __u64 desc_addr; /* address of desc area */
+> > +     __u64 driver_addr; /* address of driver area */
+> > +     __u64 device_addr; /* address of device area */
+> > +     union {
+> > +             struct vduse_vq_state_split split; /* split virtqueue state */
+> > +             struct vduse_vq_state_packed packed; /* packed virtqueue state */
+> > +     };
+> > +     __u8 ready; /* ready status of virtqueue */
+> > +};
+> > +
+> > +/* Get the specified virtqueue's information. Caller should set index field. */
+> > +#define VDUSE_VQ_GET_INFO    _IOWR(VDUSE_BASE, 0x15, struct vduse_vq_info)
+> > +
+> > +/*
+> > + * The eventfd configuration for the specified virtqueue. It's used by
+> > + * VDUSE_VQ_SETUP_KICKFD ioctl to setup kick eventfd.
+> > + */
+> > +struct vduse_vq_eventfd {
+> > +     __u32 index; /* virtqueue index */
+> > +#define VDUSE_EVENTFD_DEASSIGN -1
+> > +     int fd; /* eventfd, -1 means de-assigning the eventfd */
+>
+> Don't we have a file descriptor type?  I could be wrong.
+>
+
+It looks like I did not find it...
+
+> > +};
+> > +
+> > +/*
+> > + * Setup kick eventfd for specified virtqueue. The kick eventfd is used
+> > + * by VDUSE kernel module to notify userspace to consume the avail vring.
+> > + */
+> > +#define VDUSE_VQ_SETUP_KICKFD        _IOW(VDUSE_BASE, 0x16, struct vduse_vq_eventfd)
+> > +
+> > +/*
+> > + * Inject an interrupt for specific virtqueue. It's used to notify virtio driver
+> > + * to consume the used vring.
+> > + */
+> > +#define VDUSE_VQ_INJECT_IRQ  _IOW(VDUSE_BASE, 0x17, __u32)
+> > +
+> > +/* The control messages definition for read/write on /dev/vduse/$NAME */
+> > +
+> > +enum vduse_req_type {
+> > +     /* Get the state for specified virtqueue from userspace */
+> > +     VDUSE_GET_VQ_STATE,
+> > +     /* Set the device status */
+> > +     VDUSE_SET_STATUS,
+> > +     /*
+> > +      * Notify userspace to update the memory mapping for specified
+> > +      * IOVA range via VDUSE_IOTLB_GET_FD ioctl
+> > +      */
+> > +     VDUSE_UPDATE_IOTLB,
+> > +};
+> > +
+> > +struct vduse_vq_state {
+> > +     __u32 index; /* virtqueue index */
+> > +     union {
+> > +             struct vduse_vq_state_split split; /* split virtqueue state */
+> > +             struct vduse_vq_state_packed packed; /* packed virtqueue state */
+> > +     };
+> > +};
+> > +
+> > +struct vduse_dev_status {
+> > +     __u8 status; /* device status */
+> > +};
+> > +
+> > +struct vduse_iova_range {
+> > +     __u64 start; /* start of the IOVA range: [start, end] */
+> > +     __u64 last; /* last of the IOVA range: [start, end] */
+> > +};
+> > +
+> > +struct vduse_dev_request {
+> > +     __u32 type; /* request type */
+> > +     __u32 request_id; /* request id */
+> > +     __u32 reserved[2]; /* for future use */
+>
+> Again, this HAS to be checked to be 0 and aborted if not, otherwise you
+> can never use it in the future.
+>
+
+I see. This has already been done in the current version.
+
+> > +     union {
+> > +             struct vduse_vq_state vq_state; /* virtqueue state, only use index */
+> > +             struct vduse_dev_status s; /* device status */
+> > +             struct vduse_iova_range iova; /* IOVA range for updating */
+> > +             __u32 padding[16]; /* padding */
+> > +     };
+> > +};
+> > +
+> > +struct vduse_dev_response {
+> > +     __u32 request_id; /* corresponding request id */
+> > +#define VDUSE_REQ_RESULT_OK  0x00
+> > +#define VDUSE_REQ_RESULT_FAILED      0x01
+> > +     __u32 result; /* the result of request */
+> > +     __u32 reserved[2]; /* for future use */
+>
+> Same here, you have to check this.
+>
+
+Sure.
+
+> > +     union {
+> > +             struct vduse_vq_state vq_state; /* virtqueue state */
+> > +             __u32 padding[16]; /* padding */
+>
+> Check this padding too.
+>
+
+OK.
+
+Thanks,
+Yongji
+_______________________________________________
+iommu mailing list
+iommu@lists.linux-foundation.org
+https://lists.linuxfoundation.org/mailman/listinfo/iommu
