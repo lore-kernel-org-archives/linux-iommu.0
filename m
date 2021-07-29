@@ -7,82 +7,81 @@ X-Spam-Status: No, score=-16.6 required=3.0 tests=BAYES_00,DKIM_INVALID,
 	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_GIT
 	autolearn=ham autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 00236C4338F
-	for <iommu@archiver.kernel.org>; Thu, 29 Jul 2021 07:36:54 +0000 (UTC)
-Received: from smtp3.osuosl.org (smtp3.osuosl.org [140.211.166.136])
+	by smtp.lore.kernel.org (Postfix) with ESMTP id DFBC7C4338F
+	for <iommu@archiver.kernel.org>; Thu, 29 Jul 2021 07:36:56 +0000 (UTC)
+Received: from smtp4.osuosl.org (smtp4.osuosl.org [140.211.166.137])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id BB08D61054
-	for <iommu@archiver.kernel.org>; Thu, 29 Jul 2021 07:36:53 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.4.1 mail.kernel.org BB08D61054
+	by mail.kernel.org (Postfix) with ESMTPS id AAF9360F02
+	for <iommu@archiver.kernel.org>; Thu, 29 Jul 2021 07:36:56 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.4.1 mail.kernel.org AAF9360F02
 Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=bytedance.com
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by smtp3.osuosl.org (Postfix) with ESMTP id 9EA4960861;
-	Thu, 29 Jul 2021 07:36:53 +0000 (UTC)
+	by smtp4.osuosl.org (Postfix) with ESMTP id 88F34404FC;
+	Thu, 29 Jul 2021 07:36:56 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from smtp3.osuosl.org ([127.0.0.1])
-	by localhost (smtp3.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id YzNA8lZR2Ped; Thu, 29 Jul 2021 07:36:51 +0000 (UTC)
-Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by smtp3.osuosl.org (Postfix) with ESMTPS id 106C56072E;
-	Thu, 29 Jul 2021 07:36:51 +0000 (UTC)
+Received: from smtp4.osuosl.org ([127.0.0.1])
+	by localhost (smtp4.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+	with ESMTP id xkGCpz44P96S; Thu, 29 Jul 2021 07:36:55 +0000 (UTC)
+Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [IPv6:2605:bc80:3010:104::8cd3:938])
+	by smtp4.osuosl.org (Postfix) with ESMTPS id 5B6D64035C;
+	Thu, 29 Jul 2021 07:36:55 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id E0886C0010;
-	Thu, 29 Jul 2021 07:36:50 +0000 (UTC)
-Received: from smtp1.osuosl.org (smtp1.osuosl.org [140.211.166.138])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 55CC6C000E
- for <iommu@lists.linux-foundation.org>; Thu, 29 Jul 2021 07:36:49 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 3DCECC0022;
+	Thu, 29 Jul 2021 07:36:55 +0000 (UTC)
+Received: from smtp3.osuosl.org (smtp3.osuosl.org [IPv6:2605:bc80:3010::136])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 43A77C000E
+ for <iommu@lists.linux-foundation.org>; Thu, 29 Jul 2021 07:36:54 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by smtp1.osuosl.org (Postfix) with ESMTP id 443C683ADF
- for <iommu@lists.linux-foundation.org>; Thu, 29 Jul 2021 07:36:49 +0000 (UTC)
+ by smtp3.osuosl.org (Postfix) with ESMTP id 220A960709
+ for <iommu@lists.linux-foundation.org>; Thu, 29 Jul 2021 07:36:54 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Authentication-Results: smtp1.osuosl.org (amavisd-new);
+Authentication-Results: smtp3.osuosl.org (amavisd-new);
  dkim=pass (2048-bit key) header.d=bytedance-com.20150623.gappssmtp.com
-Received: from smtp1.osuosl.org ([127.0.0.1])
- by localhost (smtp1.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id FZvWA49vrLpf for <iommu@lists.linux-foundation.org>;
- Thu, 29 Jul 2021 07:36:44 +0000 (UTC)
+Received: from smtp3.osuosl.org ([127.0.0.1])
+ by localhost (smtp3.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+ with ESMTP id UspPvsQ1ohJz for <iommu@lists.linux-foundation.org>;
+ Thu, 29 Jul 2021 07:36:51 +0000 (UTC)
 X-Greylist: whitelisted by SQLgrey-1.8.0
-Received: from mail-pj1-x1035.google.com (mail-pj1-x1035.google.com
- [IPv6:2607:f8b0:4864:20::1035])
- by smtp1.osuosl.org (Postfix) with ESMTPS id E771283AEA
- for <iommu@lists.linux-foundation.org>; Thu, 29 Jul 2021 07:36:44 +0000 (UTC)
-Received: by mail-pj1-x1035.google.com with SMTP id
- e2-20020a17090a4a02b029016f3020d867so8000335pjh.3
- for <iommu@lists.linux-foundation.org>; Thu, 29 Jul 2021 00:36:44 -0700 (PDT)
+Received: from mail-pl1-x62f.google.com (mail-pl1-x62f.google.com
+ [IPv6:2607:f8b0:4864:20::62f])
+ by smtp3.osuosl.org (Postfix) with ESMTPS id 4E9B5608BF
+ for <iommu@lists.linux-foundation.org>; Thu, 29 Jul 2021 07:36:51 +0000 (UTC)
+Received: by mail-pl1-x62f.google.com with SMTP id q2so5926486plr.11
+ for <iommu@lists.linux-foundation.org>; Thu, 29 Jul 2021 00:36:51 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
  d=bytedance-com.20150623.gappssmtp.com; s=20150623;
  h=from:to:cc:subject:date:message-id:in-reply-to:references
  :mime-version:content-transfer-encoding;
- bh=79+lwfgqPqTMCDJYOtelsxZhwWsCxwv7dGGvPGe+0Sw=;
- b=pht7EHvBPEmalFMQJxnA5uITGsCuOlxP9Y280Ur4c4Xr3lJdEeqiDYxP7TC7vQPgGd
- I/ZPYxIAF7wX+D7ibW2+QAbkf4ckwDUGvyyRhT83wHCsspVChvqBgO1K/tQZaoBTt9Yp
- Lir6sHtO0AUKIhh8vlXiMiD+sbirh9E/DVJcXMoijXcC4aQJapQYNS+qNggApM9o0DIi
- ZzEoPv6irKFSlf6epkzfwm9d0JWIMWZMQhLEIbRJUy/HXVHCsfR9gQAfB/8EirRwTMsF
- uRKiOnqoMqV2cLI/WjkPsIhOBs4mwx41zQl+qu/lOvaz0BIStwAPZwrefnhImIRH+0MY
- YaFg==
+ bh=LsGekY4BvYvIO5Z8AgcJapYB7A/KQEKxuOgJFJnV+F0=;
+ b=X98+TJ5q20fVVP7OZ9n9veXNRWtBaNyF7u49KUNkAM08u5ecR/X2DKDwo1Z3kXSnog
+ AkIvxsuc6X/gsU10vyjL8G4S48EXGasvxyUvBWTz/n2nYXpvsiABp2BBpcAxzMKlc9JC
+ tZHpDQJRdciKCGBbNBWxs2uv+1TVCUY4XPFmsIqsbkO+YVLO26aR4jONl8t2P20X7aov
+ 2MxYGwbbV4OrGtS6am9b0pJn4afscft59CPUq0kj0zGDJRQnHkTNskX287DpmE2RFfUV
+ TaJlG/0ITl45C5ABu2t/JY8+gPqs+Fpn2oPnqG672GSOWOJqgTtAC/jfy64aWdz90uPG
+ HNQQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
  d=1e100.net; s=20161025;
  h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
  :references:mime-version:content-transfer-encoding;
- bh=79+lwfgqPqTMCDJYOtelsxZhwWsCxwv7dGGvPGe+0Sw=;
- b=dyvNOuYMAyb2mHKdJYNYW0BW6EuhIeIarEnNoAFNJTyug5PYb5TEjdUJ+jJPiAdMBE
- g1p6h4DQWjUDqAST8jxJXdT2AMYv71JUxYDKdpxI7MYxrnQc5ChUjmGQCed1hvxmKslq
- 16cIbHM/NtWQOIg0YGkfnMYhQErQtohNKdxaZZVRZVksBie+fbtafE0S5yNlWahivhqF
- 3tdSzAvq4lQeqsBnmAU5LYuxJuKaYeihXHx3gCPcFu2FMPHVHOXdiKp9PtDwLNrYbiLK
- pRNDz/9HUSkUspUEq9dOJ2VffJbSq3LFF/Dyb1/if0M8SGFomZ6R5c9jZrNPfzMMH0qa
- 8FEg==
-X-Gm-Message-State: AOAM530A2n6ARyO1Mn5imiYGixpbCNiiBOHDYbdaa2fDdEyVArsSQVIk
- Jk5pvuU1yKKin0So1xl4MlFD
-X-Google-Smtp-Source: ABdhPJwd6fqL59b6zB2Y1X6Xa6fhnvr9Evz97aQU4N4q/6V8MSENkC+yj5nWiVm8Rzev8LmszMzr1w==
-X-Received: by 2002:a05:6a00:2:b029:32e:3ef0:770a with SMTP id
- h2-20020a056a000002b029032e3ef0770amr3859510pfk.8.1627544204478; 
- Thu, 29 Jul 2021 00:36:44 -0700 (PDT)
+ bh=LsGekY4BvYvIO5Z8AgcJapYB7A/KQEKxuOgJFJnV+F0=;
+ b=t4OGrmLhxSxwSBWQz8Fgicn7yJkr1XzOtLnGT/th65bzDBsdvqVvRMopJVrFMBonkf
+ PLzs/K15LLX76UcrqC3xLimpOmjLlFX+7tP7rQckpc4Mvj77dJU70SCsccLM6c4aJLi6
+ LDpgxShtpuPrjWc8ikZ2Ud0gNe1LvYyu7CaxefO3lHs4xclDmccKrc5AE3VepOJS5/dX
+ Quiwux3GnV1lu4tebLKnwD0NxQTgqVZqUhCvmD0Gw4+bT+qHEWEn1y1AAwfVhXcZjjV8
+ 2rWxEef8A7sKKz0+Jg4QpsKlgMWzw3genCXuJ+6qDQdbn3zocJ9flT7QYMJrTK9tnguy
+ gp1A==
+X-Gm-Message-State: AOAM530uMaAxMZZagMPg6vZwh/+SUdO4lJkevcSiDzZwblasG1gLoBji
+ D2XfWA7bBhMOHsUKdUGcPlCv
+X-Google-Smtp-Source: ABdhPJwjSVfLNS2GDfIx/eWaUI7/WEDOXCiXXfI318zMm7E6oJfs9FrWN4b/fDb28gHcKZEreTjMkA==
+X-Received: by 2002:a17:90a:5101:: with SMTP id
+ t1mr13696042pjh.107.1627544210785; 
+ Thu, 29 Jul 2021 00:36:50 -0700 (PDT)
 Received: from localhost ([139.177.225.253])
- by smtp.gmail.com with ESMTPSA id ge21sm2237949pjb.55.2021.07.29.00.36.42
+ by smtp.gmail.com with ESMTPSA id s3sm2487674pfk.61.2021.07.29.00.36.49
  (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
- Thu, 29 Jul 2021 00:36:43 -0700 (PDT)
+ Thu, 29 Jul 2021 00:36:50 -0700 (PDT)
 From: Xie Yongji <xieyongji@bytedance.com>
 To: mst@redhat.com, jasowang@redhat.com, stefanha@redhat.com,
  sgarzare@redhat.com, parav@nvidia.com, hch@infradead.org,
@@ -91,9 +90,10 @@ To: mst@redhat.com, jasowang@redhat.com, stefanha@redhat.com,
  bcrl@kvack.org, corbet@lwn.net, mika.penttila@nextfour.com,
  dan.carpenter@oracle.com, joro@8bytes.org, gregkh@linuxfoundation.org,
  zhe.he@windriver.com, xiaodong.liu@intel.com, joe@perches.com
-Subject: [PATCH v10 09/17] virtio-vdpa: Handle the failure of vdpa_reset()
-Date: Thu, 29 Jul 2021 15:34:55 +0800
-Message-Id: <20210729073503.187-10-xieyongji@bytedance.com>
+Subject: [PATCH v10 10/17] virtio: Handle device reset failure in
+ register_virtio_device()
+Date: Thu, 29 Jul 2021 15:34:56 +0800
+Message-Id: <20210729073503.187-11-xieyongji@bytedance.com>
 X-Mailer: git-send-email 2.25.1
 In-Reply-To: <20210729073503.187-1-xieyongji@bytedance.com>
 References: <20210729073503.187-1-xieyongji@bytedance.com>
@@ -118,29 +118,47 @@ Content-Transfer-Encoding: 7bit
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-The vpda_reset() may fail now. This adds check to its return
-value and fail the virtio_vdpa_reset().
+The device reset may fail in virtio-vdpa case now, so add checks to
+its return value and fail the register_virtio_device().
 
 Signed-off-by: Xie Yongji <xieyongji@bytedance.com>
 ---
- drivers/virtio/virtio_vdpa.c | 4 +---
- 1 file changed, 1 insertion(+), 3 deletions(-)
+ drivers/virtio/virtio.c | 15 ++++++++++-----
+ 1 file changed, 10 insertions(+), 5 deletions(-)
 
-diff --git a/drivers/virtio/virtio_vdpa.c b/drivers/virtio/virtio_vdpa.c
-index 3e666f70e829..ebbd8471bbee 100644
---- a/drivers/virtio/virtio_vdpa.c
-+++ b/drivers/virtio/virtio_vdpa.c
-@@ -101,9 +101,7 @@ static int virtio_vdpa_reset(struct virtio_device *vdev)
- {
- 	struct vdpa_device *vdpa = vd_get_vdpa(vdev);
+diff --git a/drivers/virtio/virtio.c b/drivers/virtio/virtio.c
+index a15beb6b593b..8df75425fb43 100644
+--- a/drivers/virtio/virtio.c
++++ b/drivers/virtio/virtio.c
+@@ -349,7 +349,9 @@ int register_virtio_device(struct virtio_device *dev)
  
--	vdpa_reset(vdpa);
--
--	return 0;
-+	return vdpa_reset(vdpa);
+ 	/* We always start by resetting the device, in case a previous
+ 	 * driver messed it up.  This also tests that code path a little. */
+-	dev->config->reset(dev);
++	err = dev->config->reset(dev);
++	if (err)
++		goto err_reset;
+ 
+ 	/* Acknowledge that we've seen the device. */
+ 	virtio_add_status(dev, VIRTIO_CONFIG_S_ACKNOWLEDGE);
+@@ -362,10 +364,13 @@ int register_virtio_device(struct virtio_device *dev)
+ 	 */
+ 	err = device_add(&dev->dev);
+ 	if (err)
+-		ida_simple_remove(&virtio_index_ida, dev->index);
+-out:
+-	if (err)
+-		virtio_add_status(dev, VIRTIO_CONFIG_S_FAILED);
++		goto err_add;
++
++	return 0;
++err_add:
++	virtio_add_status(dev, VIRTIO_CONFIG_S_FAILED);
++err_reset:
++	ida_simple_remove(&virtio_index_ida, dev->index);
+ 	return err;
  }
- 
- static bool virtio_vdpa_notify(struct virtqueue *vq)
+ EXPORT_SYMBOL_GPL(register_virtio_device);
 -- 
 2.11.0
 
