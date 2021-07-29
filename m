@@ -2,82 +2,98 @@ Return-Path: <SRS0=dGrv=MV=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-15.4 required=3.0 tests=BAYES_00,DKIM_INVALID,
-	DKIM_SIGNED,INCLUDES_CR_TRAILER,INCLUDES_PATCH,MAILING_LIST_MULTI,
-	NICE_REPLY_A,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_SANE_1
+X-Spam-Status: No, score=-16.6 required=3.0 tests=BAYES_00,DKIM_INVALID,
+	DKIM_SIGNED,HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_CR_TRAILER,INCLUDES_PATCH,
+	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_GIT
 	autolearn=unavailable autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7467EC4338F
-	for <iommu@archiver.kernel.org>; Thu, 29 Jul 2021 19:05:17 +0000 (UTC)
-Received: from smtp2.osuosl.org (smtp2.osuosl.org [140.211.166.133])
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C1B2EC432BE
+	for <iommu@archiver.kernel.org>; Thu, 29 Jul 2021 20:15:55 +0000 (UTC)
+Received: from smtp1.osuosl.org (smtp1.osuosl.org [140.211.166.138])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 16BD860041
-	for <iommu@archiver.kernel.org>; Thu, 29 Jul 2021 19:05:17 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.4.1 mail.kernel.org 16BD860041
-Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=kernel.org
+	by mail.kernel.org (Postfix) with ESMTPS id 7518260041
+	for <iommu@archiver.kernel.org>; Thu, 29 Jul 2021 20:15:55 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.4.1 mail.kernel.org 7518260041
+Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=deltatee.com
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by smtp2.osuosl.org (Postfix) with ESMTP id C4C4340435;
-	Thu, 29 Jul 2021 19:05:16 +0000 (UTC)
+	by smtp1.osuosl.org (Postfix) with ESMTP id 3A00983A77;
+	Thu, 29 Jul 2021 20:15:55 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from smtp2.osuosl.org ([127.0.0.1])
-	by localhost (smtp2.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id mEZehzPzpL-7; Thu, 29 Jul 2021 19:05:15 +0000 (UTC)
-Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by smtp2.osuosl.org (Postfix) with ESMTPS id E8B28401FA;
-	Thu, 29 Jul 2021 19:05:14 +0000 (UTC)
+Received: from smtp1.osuosl.org ([127.0.0.1])
+	by localhost (smtp1.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+	with ESMTP id CD-NmGgyhhzV; Thu, 29 Jul 2021 20:15:54 +0000 (UTC)
+Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [IPv6:2605:bc80:3010:104::8cd3:938])
+	by smtp1.osuosl.org (Postfix) with ESMTPS id 2308683AA8;
+	Thu, 29 Jul 2021 20:15:54 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id A445EC0010;
-	Thu, 29 Jul 2021 19:05:14 +0000 (UTC)
-Received: from smtp3.osuosl.org (smtp3.osuosl.org [IPv6:2605:bc80:3010::136])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 37DADC000E
- for <iommu@lists.linux-foundation.org>; Thu, 29 Jul 2021 19:05:13 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id ED864C001A;
+	Thu, 29 Jul 2021 20:15:53 +0000 (UTC)
+Received: from smtp2.osuosl.org (smtp2.osuosl.org [140.211.166.133])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 19620C000E
+ for <iommu@lists.linux-foundation.org>; Thu, 29 Jul 2021 20:15:53 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by smtp3.osuosl.org (Postfix) with ESMTP id 1837E60667
- for <iommu@lists.linux-foundation.org>; Thu, 29 Jul 2021 19:05:13 +0000 (UTC)
+ by smtp2.osuosl.org (Postfix) with ESMTP id E3D4740135
+ for <iommu@lists.linux-foundation.org>; Thu, 29 Jul 2021 20:15:52 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Authentication-Results: smtp3.osuosl.org (amavisd-new);
- dkim=pass (2048-bit key) header.d=kernel.org
-Received: from smtp3.osuosl.org ([127.0.0.1])
- by localhost (smtp3.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id WgA0lglvoarF for <iommu@lists.linux-foundation.org>;
- Thu, 29 Jul 2021 19:05:12 +0000 (UTC)
+Authentication-Results: smtp2.osuosl.org (amavisd-new);
+ dkim=pass (2048-bit key) header.d=deltatee.com
+Received: from smtp2.osuosl.org ([127.0.0.1])
+ by localhost (smtp2.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+ with ESMTP id mW-sBINb3srm for <iommu@lists.linux-foundation.org>;
+ Thu, 29 Jul 2021 20:15:51 +0000 (UTC)
 X-Greylist: domain auto-whitelisted by SQLgrey-1.8.0
-Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
- by smtp3.osuosl.org (Postfix) with ESMTPS id 8B5E160603
- for <iommu@lists.linux-foundation.org>; Thu, 29 Jul 2021 19:05:12 +0000 (UTC)
-Received: by mail.kernel.org (Postfix) with ESMTPSA id 4FF2660EC0;
- Thu, 29 Jul 2021 19:05:11 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
- s=k20201202; t=1627585512;
- bh=PyoadivhHXDqsmQj3YmT7k4+9dotZZVfqKpaviYYOck=;
- h=Subject:To:Cc:References:From:Date:In-Reply-To:From;
- b=Dn/OvyNArRhQbbCEd2H4nvwmS581p+a+2JtYmrCXNKEx2O8tYW2gBhr+3CRePInee
- x+CRdLm0qkg6bdKHFXf3JYllMdfwWrUWxC+Vj7dD8BvM5LAt/6xcF460ije8zqiub+
- c+U5JSDEhvey+UK05ve9XitHscev51by0be8C2tAWzOoq7aYiHZEJf+P+WU7jrj1NJ
- 4SMu71SXy4aoqdmHz8FbCBa1xNczweOCky6E+L7pt+Oa/i7Sw8hO0d/45r4HkUGygd
- dRnP868EZJA4rZSJMR8C/b86pWHmWRekTSJGLBtPqQQR1DBJgiOIFyFg2ITox0Q7C9
- V0rVcujxWxKtw==
-Subject: Re: [powerpc][next-20210727] Boot failure - kernel BUG at
- arch/powerpc/kernel/interrupt.c:98!
-To: Konrad Rzeszutek Wilk <konrad.wilk@oracle.com>,
- Will Deacon <will@kernel.org>
-References: <1905CD70-7656-42AE-99E2-A31FC3812EAC@linux.vnet.ibm.com>
- <YQGVZnMe9hFieF8D@Ryzen-9-3900X.localdomain>
- <20210729161335.GA22016@willie-the-truck> <YQLY0RHa/3YgJdmS@fedora>
-From: Nathan Chancellor <nathan@kernel.org>
-Message-ID: <ec7c2fa6-3ad0-d3f6-67a2-b089310eabdf@kernel.org>
-Date: Thu, 29 Jul 2021 12:05:10 -0700
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:78.0) Gecko/20100101
- Thunderbird/78.12.0
+Received: from ale.deltatee.com (ale.deltatee.com [204.191.154.188])
+ by smtp2.osuosl.org (Postfix) with ESMTPS id A24354010F
+ for <iommu@lists.linux-foundation.org>; Thu, 29 Jul 2021 20:15:51 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+ d=deltatee.com; s=20200525; h=Subject:MIME-Version:References:In-Reply-To:
+ Message-Id:Date:Cc:To:From:content-disposition;
+ bh=/XA9bvLAJiET8xClVyx9hB75GctlP2ewYMlZJlt3uAE=; b=FSTBqqnHJ7VntRb/GUL2Z5yKTq
+ JfAogRaPb+WVjHlf1NRCExtt0URwGzF1+pWVjp3v9jELMe1sVylEhpCokcScL/Pik/gQ8D9aVMzvZ
+ uoC9GV1+hK1crdrqvUeKMesCcmmz0glkvNT9qYfOPK6DdOiPOO102aJ534nrKtjvNc2ibTJtuP/TR
+ t6WErOWjGuYieypzGV2PhsY++SnraaQQ4FNRqKtOnq2TNO2E3YBXoBVkHkqc7fK1HwylkFoWZZTI2
+ wNrwlxU476Xj9XD9pqFKs+ZOh16XIR+O62g1eQS8XUIK9YHNwj+UhqtQn/TXl9FaMhBTj2klVY6f4
+ WFu1sJPg==;
+Received: from cgy1-donard.priv.deltatee.com ([172.16.1.31])
+ by ale.deltatee.com with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
+ (Exim 4.92) (envelope-from <gunthorp@deltatee.com>)
+ id 1m9CRX-0008VO-5W; Thu, 29 Jul 2021 14:15:48 -0600
+Received: from gunthorp by cgy1-donard.priv.deltatee.com with local (Exim 4.92)
+ (envelope-from <gunthorp@deltatee.com>)
+ id 1m9CRU-0001Tb-0B; Thu, 29 Jul 2021 14:15:44 -0600
+From: Logan Gunthorpe <logang@deltatee.com>
+To: linux-kernel@vger.kernel.org, linux-alpha@vger.kernel.org,
+ linux-arm-kernel@lists.infradead.org, linux-ia64@vger.kernel.org,
+ linux-mips@vger.kernel.org, linuxppc-dev@lists.ozlabs.org,
+ linux-s390@vger.kernel.org, sparclinux@vger.kernel.org,
+ iommu@lists.linux-foundation.org, linux-parisc@vger.kernel.org,
+ xen-devel@lists.xenproject.org
+Date: Thu, 29 Jul 2021 14:15:22 -0600
+Message-Id: <20210729201539.5602-5-logang@deltatee.com>
+X-Mailer: git-send-email 2.20.1
+In-Reply-To: <20210729201539.5602-1-logang@deltatee.com>
+References: <20210729201539.5602-1-logang@deltatee.com>
 MIME-Version: 1.0
-In-Reply-To: <YQLY0RHa/3YgJdmS@fedora>
-Content-Language: en-US
-Cc: Sachin Sant <sachinp@linux.vnet.ibm.com>,
- Robin Murphy <robin.murphy@arm.com>, iommu@lists.linux-foundation.org,
- linux-next@vger.kernel.org, Claire Chang <tientzu@chromium.org>,
- linuxppc-dev@lists.ozlabs.org, Christoph Hellwig <hch@lst.de>
+X-SA-Exim-Connect-IP: 172.16.1.31
+X-SA-Exim-Rcpt-To: linux-arm-kernel@lists.infradead.org,
+ linuxppc-dev@lists.ozlabs.org, iommu@lists.linux-foundation.org,
+ linux-kernel@vger.kernel.org, linux-alpha@vger.kernel.org,
+ linux-ia64@vger.kernel.org, linux-mips@vger.kernel.org,
+ linux-s390@vger.kernel.org, sparclinux@vger.kernel.org,
+ linux-parisc@vger.kernel.org, xen-devel@lists.xenproject.org, hch@lst.de,
+ m.szyprowski@samsung.com, robin.murphy@arm.com, sbates@raithlin.com,
+ martin.oliveira@eideticom.com, logang@deltatee.com, joro@8bytes.org,
+ will@kernel.org
+X-SA-Exim-Mail-From: gunthorp@deltatee.com
+Subject: [PATCH v3 04/21] dma-iommu: Return error code from iommu_dma_map_sg()
+X-SA-Exim-Version: 4.2.1 (built Wed, 08 May 2019 21:11:16 +0000)
+X-SA-Exim-Scanned: Yes (on ale.deltatee.com)
+Cc: Will Deacon <will@kernel.org>, Robin Murphy <robin.murphy@arm.com>,
+ Martin Oliveira <martin.oliveira@eideticom.com>,
+ Stephen Bates <sbates@raithlin.com>, Logan Gunthorpe <logang@deltatee.com>,
+ Christoph Hellwig <hch@lst.de>
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -90,75 +106,91 @@ List-Post: <mailto:iommu@lists.linux-foundation.org>
 List-Help: <mailto:iommu-request@lists.linux-foundation.org?subject=help>
 List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
  <mailto:iommu-request@lists.linux-foundation.org?subject=subscribe>
+Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
-Content-Type: text/plain; charset="us-ascii"; Format="flowed"
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-On 7/29/2021 9:35 AM, Konrad Rzeszutek Wilk wrote:
-> On Thu, Jul 29, 2021 at 05:13:36PM +0100, Will Deacon wrote:
->> On Wed, Jul 28, 2021 at 10:35:34AM -0700, Nathan Chancellor wrote:
->>> On Wed, Jul 28, 2021 at 01:31:06PM +0530, Sachin Sant wrote:
->>>> next-20210723 was good. The boot failure seems to have been introduced with next-20210726.
->>>>
->>>> I have attached the boot log.
->>>
->>> I noticed this with OpenSUSE's ppc64le config [1] and my bisect landed on
->>> commit ad6c00283163 ("swiotlb: Free tbl memory in swiotlb_exit()"). That
->>> series just keeps on giving...
-> 
-> Low-level across platform do that. And thank you for testing it and
-> finding this bug. Please let me know if the patch works so I can add it
-> in in the patch series.
+Return appropriate error codes EINVAL or ENOMEM from
+iommup_dma_map_sg(). If lower level code returns ENOMEM, then we
+return it, other errors are coalesced into EINVAL.
 
-That was not meant to sound as sarcastic as it did so my apologies for 
-that :(
+iommu_dma_map_sg_swiotlb() returns -EIO as its an unknown error
+from a call that returns DMA_MAPPING_ERROR.
 
-Will's patch looks good to me in QEMU, I do not have a bare metal POWER 
-system to test it on.
+Signed-off-by: Logan Gunthorpe <logang@deltatee.com>
+Cc: Joerg Roedel <joro@8bytes.org>
+Cc: Will Deacon <will@kernel.org>
+---
+ drivers/iommu/dma-iommu.c | 23 ++++++++++++++++-------
+ 1 file changed, 16 insertions(+), 7 deletions(-)
 
-Tested-by: Nathan Chancellor <nathan@kernel.org>
+diff --git a/drivers/iommu/dma-iommu.c b/drivers/iommu/dma-iommu.c
+index 98ba927aee1a..d9aaed080e68 100644
+--- a/drivers/iommu/dma-iommu.c
++++ b/drivers/iommu/dma-iommu.c
+@@ -972,7 +972,7 @@ static int iommu_dma_map_sg_swiotlb(struct device *dev, struct scatterlist *sg,
+ 
+ out_unmap:
+ 	iommu_dma_unmap_sg_swiotlb(dev, sg, i, dir, attrs | DMA_ATTR_SKIP_CPU_SYNC);
+-	return 0;
++	return -EIO;
+ }
+ 
+ /*
+@@ -993,11 +993,13 @@ static int iommu_dma_map_sg(struct device *dev, struct scatterlist *sg,
+ 	dma_addr_t iova;
+ 	size_t iova_len = 0;
+ 	unsigned long mask = dma_get_seg_boundary(dev);
++	ssize_t ret;
+ 	int i;
+ 
+-	if (static_branch_unlikely(&iommu_deferred_attach_enabled) &&
+-	    iommu_deferred_attach(dev, domain))
+-		return 0;
++	if (static_branch_unlikely(&iommu_deferred_attach_enabled)) {
++		ret = iommu_deferred_attach(dev, domain);
++		goto out;
++	}
+ 
+ 	if (!(attrs & DMA_ATTR_SKIP_CPU_SYNC))
+ 		iommu_dma_sync_sg_for_device(dev, sg, nents, dir);
+@@ -1045,14 +1047,17 @@ static int iommu_dma_map_sg(struct device *dev, struct scatterlist *sg,
+ 	}
+ 
+ 	iova = iommu_dma_alloc_iova(domain, iova_len, dma_get_mask(dev), dev);
+-	if (!iova)
++	if (!iova) {
++		ret = -ENOMEM;
+ 		goto out_restore_sg;
++	}
+ 
+ 	/*
+ 	 * We'll leave any physical concatenation to the IOMMU driver's
+ 	 * implementation - it knows better than we do.
+ 	 */
+-	if (iommu_map_sg_atomic(domain, iova, sg, nents, prot) < iova_len)
++	ret = iommu_map_sg_atomic(domain, iova, sg, nents, prot);
++	if (ret < iova_len)
+ 		goto out_free_iova;
+ 
+ 	return __finalise_sg(dev, sg, nents, iova);
+@@ -1061,7 +1066,11 @@ static int iommu_dma_map_sg(struct device *dev, struct scatterlist *sg,
+ 	iommu_dma_free_iova(cookie, iova, iova_len, NULL);
+ out_restore_sg:
+ 	__invalidate_sg(sg, nents);
+-	return 0;
++out:
++	if (ret == -ENOMEM)
++		return ret;
++	else
++		return -EINVAL;
+ }
+ 
+ static void iommu_dma_unmap_sg(struct device *dev, struct scatterlist *sg,
+-- 
+2.20.1
 
->>
->> Yes, but look how handy our new print is!
-> 
-> :)
->>
->> [    0.010799] software IO TLB: tearing down default memory pool
->> [    0.010805] ------------[ cut here ]------------
->> [    0.010808] kernel BUG at arch/powerpc/kernel/interrupt.c:98!
->>
->> Following Nick's suggestion, the diff below should help? I don't have a
->> relevant box on which I can test it though.
->>
->> Will
->>
->> --->8
->>
->> diff --git a/arch/powerpc/platforms/pseries/svm.c b/arch/powerpc/platforms/pseries/svm.c
->> index 1d829e257996..87f001b4c4e4 100644
->> --- a/arch/powerpc/platforms/pseries/svm.c
->> +++ b/arch/powerpc/platforms/pseries/svm.c
->> @@ -63,6 +63,9 @@ void __init svm_swiotlb_init(void)
->>   
->>   int set_memory_encrypted(unsigned long addr, int numpages)
->>   {
->> +       if (!mem_encrypt_active())
->> +               return 0;
->> +
->>          if (!PAGE_ALIGNED(addr))
->>                  return -EINVAL;
->>   
->> @@ -73,6 +76,9 @@ int set_memory_encrypted(unsigned long addr, int numpages)
->>   
->>   int set_memory_decrypted(unsigned long addr, int numpages)
->>   {
->> +       if (!mem_encrypt_active())
->> +               return 0;
->> +
->>          if (!PAGE_ALIGNED(addr))
->>                  return -EINVAL;
->>   
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
