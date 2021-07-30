@@ -7,64 +7,65 @@ X-Spam-Status: No, score=-16.8 required=3.0 tests=BAYES_00,
 	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,UNPARSEABLE_RELAY,URIBL_BLOCKED,
 	USER_AGENT_GIT autolearn=unavailable autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7809FC4338F
-	for <iommu@archiver.kernel.org>; Fri, 30 Jul 2021 02:55:24 +0000 (UTC)
-Received: from smtp2.osuosl.org (smtp2.osuosl.org [140.211.166.133])
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4C4B8C4338F
+	for <iommu@archiver.kernel.org>; Fri, 30 Jul 2021 02:55:34 +0000 (UTC)
+Received: from smtp4.osuosl.org (smtp4.osuosl.org [140.211.166.137])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 404E660FD7
-	for <iommu@archiver.kernel.org>; Fri, 30 Jul 2021 02:55:24 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.4.1 mail.kernel.org 404E660FD7
+	by mail.kernel.org (Postfix) with ESMTPS id 1245C6108E
+	for <iommu@archiver.kernel.org>; Fri, 30 Jul 2021 02:55:34 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.4.1 mail.kernel.org 1245C6108E
 Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=mediatek.com
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by smtp2.osuosl.org (Postfix) with ESMTP id 1E861401B9;
-	Fri, 30 Jul 2021 02:55:24 +0000 (UTC)
+	by smtp4.osuosl.org (Postfix) with ESMTP id DA26A40664;
+	Fri, 30 Jul 2021 02:55:33 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from smtp2.osuosl.org ([127.0.0.1])
-	by localhost (smtp2.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id tHQaxpqNh4xu; Fri, 30 Jul 2021 02:55:23 +0000 (UTC)
-Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [IPv6:2605:bc80:3010:104::8cd3:938])
-	by smtp2.osuosl.org (Postfix) with ESMTPS id 9AE44401F0;
-	Fri, 30 Jul 2021 02:55:22 +0000 (UTC)
+Received: from smtp4.osuosl.org ([127.0.0.1])
+	by localhost (smtp4.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+	with ESMTP id a2OBQPLOeZxN; Fri, 30 Jul 2021 02:55:33 +0000 (UTC)
+Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
+	by smtp4.osuosl.org (Postfix) with ESMTPS id D960E4067C;
+	Fri, 30 Jul 2021 02:55:32 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 83245C001A;
-	Fri, 30 Jul 2021 02:55:22 +0000 (UTC)
-Received: from smtp3.osuosl.org (smtp3.osuosl.org [140.211.166.136])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 95B3EC000E
- for <iommu@lists.linux-foundation.org>; Fri, 30 Jul 2021 02:55:21 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id B7666C001A;
+	Fri, 30 Jul 2021 02:55:32 +0000 (UTC)
+Received: from smtp3.osuosl.org (smtp3.osuosl.org [IPv6:2605:bc80:3010::136])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 9B3F1C000E
+ for <iommu@lists.linux-foundation.org>; Fri, 30 Jul 2021 02:55:31 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by smtp3.osuosl.org (Postfix) with ESMTP id 854C060A5D
- for <iommu@lists.linux-foundation.org>; Fri, 30 Jul 2021 02:55:21 +0000 (UTC)
+ by smtp3.osuosl.org (Postfix) with ESMTP id 8A85960A5D
+ for <iommu@lists.linux-foundation.org>; Fri, 30 Jul 2021 02:55:31 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
 Received: from smtp3.osuosl.org ([127.0.0.1])
  by localhost (smtp3.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id lG2lpxlIq3YD for <iommu@lists.linux-foundation.org>;
- Fri, 30 Jul 2021 02:55:21 +0000 (UTC)
+ with ESMTP id 6_P9ZSUUAFU9 for <iommu@lists.linux-foundation.org>;
+ Fri, 30 Jul 2021 02:55:31 +0000 (UTC)
 X-Greylist: from auto-whitelisted by SQLgrey-1.8.0
 Received: from mailgw01.mediatek.com (unknown [60.244.123.138])
- by smtp3.osuosl.org (Postfix) with ESMTPS id BC00360861
- for <iommu@lists.linux-foundation.org>; Fri, 30 Jul 2021 02:55:20 +0000 (UTC)
-X-UUID: 6d94210d00414fb2a086e6ccc9a6951a-20210730
-X-UUID: 6d94210d00414fb2a086e6ccc9a6951a-20210730
-Received: from mtkmbs10n1.mediatek.inc [(172.21.101.34)] by
+ by smtp3.osuosl.org (Postfix) with ESMTPS id B71DB60861
+ for <iommu@lists.linux-foundation.org>; Fri, 30 Jul 2021 02:55:30 +0000 (UTC)
+X-UUID: 911f4e65bfa74707aecf73c96660a054-20210730
+X-UUID: 911f4e65bfa74707aecf73c96660a054-20210730
+Received: from mtkmbs10n2.mediatek.inc [(172.21.101.183)] by
  mailgw01.mediatek.com (envelope-from <yong.wu@mediatek.com>)
  (Generic MTA with TLSv1.2 ECDHE-RSA-AES256-GCM-SHA384 256/256)
- with ESMTP id 254899857; Fri, 30 Jul 2021 10:55:16 +0800
+ with ESMTP id 646978137; Fri, 30 Jul 2021 10:55:25 +0800
 Received: from MTKCAS06.mediatek.inc (172.21.101.30) by
  mtkmbs07n2.mediatek.inc (172.21.101.141) with Microsoft SMTP Server (TLS) id
- 15.0.1497.2; Fri, 30 Jul 2021 10:55:14 +0800
+ 15.0.1497.2; Fri, 30 Jul 2021 10:55:23 +0800
 Received: from localhost.localdomain (10.17.3.153) by MTKCAS06.mediatek.inc
  (172.21.101.73) with Microsoft SMTP Server id 15.0.1497.2 via Frontend
- Transport; Fri, 30 Jul 2021 10:55:09 +0800
+ Transport; Fri, 30 Jul 2021 10:55:19 +0800
 From: Yong Wu <yong.wu@mediatek.com>
 To: Matthias Brugger <matthias.bgg@gmail.com>, Joerg Roedel <joro@8bytes.org>, 
  Rob Herring <robh+dt@kernel.org>, Krzysztof Kozlowski
  <krzysztof.kozlowski@canonical.com>, David Airlie <airlied@linux.ie>, Mauro
  Carvalho Chehab <mchehab@kernel.org>
-Subject: [PATCH v7 10/12] memory: mtk-smi: Get rid of mtk_smi_larb_get/put
-Date: Fri, 30 Jul 2021 10:52:36 +0800
-Message-ID: <20210730025238.22456-11-yong.wu@mediatek.com>
+Subject: [PATCH v7 11/12] arm: dts: mediatek: Get rid of mediatek,
+ larb for MM nodes
+Date: Fri, 30 Jul 2021 10:52:37 +0800
+Message-ID: <20210730025238.22456-12-yong.wu@mediatek.com>
 X-Mailer: git-send-email 2.18.0
 In-Reply-To: <20210730025238.22456-1-yong.wu@mediatek.com>
 References: <20210730025238.22456-1-yong.wu@mediatek.com>
@@ -102,78 +103,81 @@ Content-Transfer-Encoding: 7bit
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-After adding device_link between the iommu consumer and smi-larb,
-the pm_runtime_get(_sync) of smi-larb and smi-common will be called
-automatically. we can get rid of mtk_smi_larb_get/put.
+After adding device_link between the IOMMU consumer and smi,
+the mediatek,larb is unnecessary now.
 
 CC: Matthias Brugger <matthias.bgg@gmail.com>
 Signed-off-by: Yong Wu <yong.wu@mediatek.com>
 Reviewed-by: Evan Green <evgreen@chromium.org>
-Acked-by: Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>
-Acked-by: Matthias Brugger <matthias.bgg@gmail.com>
-Reviewed-by: Dafna Hirschfeld <dafna.hirschfeld@collabora.com>
-Tested-by: Dafna Hirschfeld <dafna.hirschfeld@collabora.com> # on mt8173
 ---
- drivers/memory/mtk-smi.c   | 14 --------------
- include/soc/mediatek/smi.h | 20 --------------------
- 2 files changed, 34 deletions(-)
+ arch/arm/boot/dts/mt2701.dtsi  | 2 --
+ arch/arm/boot/dts/mt7623n.dtsi | 5 -----
+ 2 files changed, 7 deletions(-)
 
-diff --git a/drivers/memory/mtk-smi.c b/drivers/memory/mtk-smi.c
-index c5fb51f73b34..7c61c924e220 100644
---- a/drivers/memory/mtk-smi.c
-+++ b/drivers/memory/mtk-smi.c
-@@ -134,20 +134,6 @@ static void mtk_smi_clk_disable(const struct mtk_smi *smi)
- 	clk_disable_unprepare(smi->clk_apb);
- }
+diff --git a/arch/arm/boot/dts/mt2701.dtsi b/arch/arm/boot/dts/mt2701.dtsi
+index 4776f85d6d5b..ef583cfd3baf 100644
+--- a/arch/arm/boot/dts/mt2701.dtsi
++++ b/arch/arm/boot/dts/mt2701.dtsi
+@@ -564,7 +564,6 @@
+ 		clock-names = "jpgdec-smi",
+ 			      "jpgdec";
+ 		power-domains = <&scpsys MT2701_POWER_DOMAIN_ISP>;
+-		mediatek,larb = <&larb2>;
+ 		iommus = <&iommu MT2701_M4U_PORT_JPGDEC_WDMA>,
+ 			 <&iommu MT2701_M4U_PORT_JPGDEC_BSDMA>;
+ 	};
+@@ -577,7 +576,6 @@
+ 		clocks =  <&imgsys CLK_IMG_VENC>;
+ 		clock-names = "jpgenc";
+ 		power-domains = <&scpsys MT2701_POWER_DOMAIN_ISP>;
+-		mediatek,larb = <&larb2>;
+ 		iommus = <&iommu MT2701_M4U_PORT_JPGENC_RDMA>,
+ 			 <&iommu MT2701_M4U_PORT_JPGENC_BSDMA>;
+ 	};
+diff --git a/arch/arm/boot/dts/mt7623n.dtsi b/arch/arm/boot/dts/mt7623n.dtsi
+index bcb0846e29fd..3adab5cd1fef 100644
+--- a/arch/arm/boot/dts/mt7623n.dtsi
++++ b/arch/arm/boot/dts/mt7623n.dtsi
+@@ -121,7 +121,6 @@
+ 		clock-names = "jpgdec-smi",
+ 			      "jpgdec";
+ 		power-domains = <&scpsys MT2701_POWER_DOMAIN_ISP>;
+-		mediatek,larb = <&larb2>;
+ 		iommus = <&iommu MT2701_M4U_PORT_JPGDEC_WDMA>,
+ 			 <&iommu MT2701_M4U_PORT_JPGDEC_BSDMA>;
+ 	};
+@@ -144,7 +143,6 @@
+ 		interrupts = <GIC_SPI 153 IRQ_TYPE_LEVEL_LOW>;
+ 		clocks = <&mmsys CLK_MM_DISP_OVL>;
+ 		iommus = <&iommu MT2701_M4U_PORT_DISP_OVL_0>;
+-		mediatek,larb = <&larb0>;
+ 	};
  
--int mtk_smi_larb_get(struct device *larbdev)
--{
--	int ret = pm_runtime_resume_and_get(larbdev);
--
--	return (ret < 0) ? ret : 0;
--}
--EXPORT_SYMBOL_GPL(mtk_smi_larb_get);
--
--void mtk_smi_larb_put(struct device *larbdev)
--{
--	pm_runtime_put_sync(larbdev);
--}
--EXPORT_SYMBOL_GPL(mtk_smi_larb_put);
--
- static int
- mtk_smi_larb_bind(struct device *dev, struct device *master, void *data)
- {
-diff --git a/include/soc/mediatek/smi.h b/include/soc/mediatek/smi.h
-index 15e3397cec58..11f7d6b59642 100644
---- a/include/soc/mediatek/smi.h
-+++ b/include/soc/mediatek/smi.h
-@@ -19,26 +19,6 @@ struct mtk_smi_larb_iommu {
- 	unsigned char  bank[32];
- };
+ 	rdma0: rdma@14008000 {
+@@ -154,7 +152,6 @@
+ 		interrupts = <GIC_SPI 152 IRQ_TYPE_LEVEL_LOW>;
+ 		clocks = <&mmsys CLK_MM_DISP_RDMA>;
+ 		iommus = <&iommu MT2701_M4U_PORT_DISP_RDMA>;
+-		mediatek,larb = <&larb0>;
+ 	};
  
--/*
-- * mtk_smi_larb_get: Enable the power domain and clocks for this local arbiter.
-- *                   It also initialize some basic setting(like iommu).
-- * mtk_smi_larb_put: Disable the power domain and clocks for this local arbiter.
-- * Both should be called in non-atomic context.
-- *
-- * Returns 0 if successful, negative on failure.
-- */
--int mtk_smi_larb_get(struct device *larbdev);
--void mtk_smi_larb_put(struct device *larbdev);
--
--#else
--
--static inline int mtk_smi_larb_get(struct device *larbdev)
--{
--	return 0;
--}
--
--static inline void mtk_smi_larb_put(struct device *larbdev) { }
--
- #endif
+ 	wdma@14009000 {
+@@ -164,7 +161,6 @@
+ 		interrupts = <GIC_SPI 154 IRQ_TYPE_LEVEL_LOW>;
+ 		clocks = <&mmsys CLK_MM_DISP_WDMA>;
+ 		iommus = <&iommu MT2701_M4U_PORT_DISP_WDMA>;
+-		mediatek,larb = <&larb0>;
+ 	};
  
- #endif
+ 	bls: pwm@1400a000 {
+@@ -215,7 +211,6 @@
+ 		interrupts = <GIC_SPI 164 IRQ_TYPE_LEVEL_LOW>;
+ 		clocks = <&mmsys CLK_MM_DISP_RDMA1>;
+ 		iommus = <&iommu MT2701_M4U_PORT_DISP_RDMA1>;
+-		mediatek,larb = <&larb0>;
+ 	};
+ 
+ 	dpi0: dpi@14014000 {
 -- 
 2.18.0
 
