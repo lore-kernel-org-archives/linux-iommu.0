@@ -2,62 +2,125 @@ Return-Path: <SRS0=GV0T=MW=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-13.8 required=3.0 tests=BAYES_00,
-	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_CR_TRAILER,INCLUDES_PATCH,
-	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED autolearn=ham
-	autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-2.2 required=3.0 tests=BAYES_00,DKIM_ADSP_CUSTOM_MED,
+	DKIM_INVALID,DKIM_SIGNED,FREEMAIL_FORGED_FROMDOMAIN,FREEMAIL_FROM,
+	HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,NICE_REPLY_A,SPF_HELO_NONE,
+	SPF_PASS,URIBL_BLOCKED,USER_AGENT_SANE_1 autolearn=no autolearn_force=no
+	version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 00056C4338F
-	for <iommu@archiver.kernel.org>; Fri, 30 Jul 2021 02:32:24 +0000 (UTC)
-Received: from smtp3.osuosl.org (smtp3.osuosl.org [140.211.166.136])
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3D1E5C4338F
+	for <iommu@archiver.kernel.org>; Fri, 30 Jul 2021 02:53:05 +0000 (UTC)
+Received: from smtp2.osuosl.org (smtp2.osuosl.org [140.211.166.133])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 351B26069E
-	for <iommu@archiver.kernel.org>; Fri, 30 Jul 2021 02:32:24 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.4.1 mail.kernel.org 351B26069E
-Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=wantstofly.org
+	by mail.kernel.org (Postfix) with ESMTPS id CE36560FED
+	for <iommu@archiver.kernel.org>; Fri, 30 Jul 2021 02:53:04 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.4.1 mail.kernel.org CE36560FED
+Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=gmail.com
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by smtp3.osuosl.org (Postfix) with ESMTP id E18896063F;
-	Fri, 30 Jul 2021 02:32:23 +0000 (UTC)
+	by smtp2.osuosl.org (Postfix) with ESMTP id 7C90F4022D;
+	Fri, 30 Jul 2021 02:53:04 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from smtp3.osuosl.org ([127.0.0.1])
-	by localhost (smtp3.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id MeqwMlz5gb2i; Fri, 30 Jul 2021 02:32:23 +0000 (UTC)
+Received: from smtp2.osuosl.org ([127.0.0.1])
+	by localhost (smtp2.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+	with ESMTP id psK9uELlH2oB; Fri, 30 Jul 2021 02:53:03 +0000 (UTC)
 Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by smtp3.osuosl.org (Postfix) with ESMTPS id ACDD960650;
-	Fri, 30 Jul 2021 02:32:22 +0000 (UTC)
+	by smtp2.osuosl.org (Postfix) with ESMTPS id 2392B400BE;
+	Fri, 30 Jul 2021 02:53:03 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 90BA0C001A;
-	Fri, 30 Jul 2021 02:32:22 +0000 (UTC)
-Received: from smtp3.osuosl.org (smtp3.osuosl.org [IPv6:2605:bc80:3010::136])
- by lists.linuxfoundation.org (Postfix) with ESMTP id A8198C000E
- for <iommu@lists.linux-foundation.org>; Fri, 30 Jul 2021 02:32:21 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id D3ABCC001A;
+	Fri, 30 Jul 2021 02:53:02 +0000 (UTC)
+Received: from smtp4.osuosl.org (smtp4.osuosl.org [IPv6:2605:bc80:3010::137])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id E1FE6C000E
+ for <iommu@lists.linux-foundation.org>; Fri, 30 Jul 2021 02:53:01 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by smtp3.osuosl.org (Postfix) with ESMTP id 7E31560650
- for <iommu@lists.linux-foundation.org>; Fri, 30 Jul 2021 02:32:21 +0000 (UTC)
+ by smtp4.osuosl.org (Postfix) with ESMTP id C8702406A9
+ for <iommu@lists.linux-foundation.org>; Fri, 30 Jul 2021 02:53:01 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from smtp3.osuosl.org ([127.0.0.1])
- by localhost (smtp3.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id pfF9uekRANel for <iommu@lists.linux-foundation.org>;
- Fri, 30 Jul 2021 02:32:20 +0000 (UTC)
-X-Greylist: from auto-whitelisted by SQLgrey-1.8.0
-Received: from mail.wantstofly.org (hmm.wantstofly.org [213.239.204.108])
- by smtp3.osuosl.org (Postfix) with ESMTPS id 118516063F
- for <iommu@lists.linux-foundation.org>; Fri, 30 Jul 2021 02:32:19 +0000 (UTC)
-Received: by mail.wantstofly.org (Postfix, from userid 1000)
- id 9A5A47F03E; Fri, 30 Jul 2021 05:32:16 +0300 (EEST)
-Date: Fri, 30 Jul 2021 05:32:16 +0300
-From: Lennert Buytenhek <buytenh@wantstofly.org>
-To: "Suthikulpanit, Suravee" <suravee.suthikulpanit@amd.com>
-Subject: Re: [PATCH v2] iommu/amd: Use report_iommu_fault()
-Message-ID: <YQNksD4G1SS/yGM2@wantstofly.org>
-References: <YP7jbfRFxMeFONKl@wantstofly.org>
- <8cc39d3c-6086-cfe3-9743-901c51ad4bab@amd.com>
+Authentication-Results: smtp4.osuosl.org (amavisd-new);
+ dkim=pass (2048-bit key) header.d=gmail.com
+Received: from smtp4.osuosl.org ([127.0.0.1])
+ by localhost (smtp4.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+ with ESMTP id X_hpA7Q1nIyB for <iommu@lists.linux-foundation.org>;
+ Fri, 30 Jul 2021 02:52:59 +0000 (UTC)
+X-Greylist: whitelisted by SQLgrey-1.8.0
+Received: from mail-pj1-x1031.google.com (mail-pj1-x1031.google.com
+ [IPv6:2607:f8b0:4864:20::1031])
+ by smtp4.osuosl.org (Postfix) with ESMTPS id AEE1D4067B
+ for <iommu@lists.linux-foundation.org>; Fri, 30 Jul 2021 02:52:59 +0000 (UTC)
+Received: by mail-pj1-x1031.google.com with SMTP id ca5so12994499pjb.5
+ for <iommu@lists.linux-foundation.org>; Thu, 29 Jul 2021 19:52:59 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=gmail.com; s=20161025;
+ h=subject:to:cc:references:from:message-id:date:user-agent
+ :mime-version:in-reply-to:content-language:content-transfer-encoding;
+ bh=bmL4SQ8GAZJWK3xApvq+PZaab/7COKw/aR8FnJTkZ8A=;
+ b=NAhocIP4f3vAt+HHEuF7oFkro+lh/6vEAuGcefhg6XueHZFW/VgAw1rUNxuPFA9NmR
+ cmXx+ceLZex9nGJ0OyzZaxsYsT8tiRb1jRyPL71vgLtSWLPo0cCqvQ2qriDvy8CpQssj
+ viNqrboexe+B/LVVnnduOrHj946GTrR2N6htuF3Da/GGsbOKkj/XSoD3hUHgJvjwaB5p
+ T3Mh0d9xRtStBYG2xEqHf2hhw7W3QR/YGkGCbpjg9hYVaJSISM4slgqWraPF6pZEHZNm
+ jukHYbtabQpZEinKjbGFHZgXMHh/LOo9XYtuFBdeFaYM0POV1AQF6Po3lzHo4DXqdZqC
+ RNSA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+ d=1e100.net; s=20161025;
+ h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+ :user-agent:mime-version:in-reply-to:content-language
+ :content-transfer-encoding;
+ bh=bmL4SQ8GAZJWK3xApvq+PZaab/7COKw/aR8FnJTkZ8A=;
+ b=nnW0Lmc1uUi76WW63PNoLBx8H6mWVHJBj+pWaj8WUhP2k2DceAjwMiAE0/OyQHVt5S
+ T8xiYwXTMxhiHOUCsejl1qv7vE9fTa6cXbG2fxOoGnWz4GoMDJ1PZBrws/EykXmC1IO+
+ ReKIdudcvMmBI8XFHX/eLd4JsZWq+UMHEG9etY8FmfMf5e2qinYUkQKbvyqmFrec5Wzx
+ T/VWYxiklQRyXmOnWBUSYWF6b3zFz52GsyBkdcbKnKx7kzrfMq063pp8hEdVTs3ctkuq
+ JgBUcidmRyvs1fUEEegVVd0+TWl58IvKQyI8mNPznDSRkP5ew/fg9sz6aTHoFGZL2WsD
+ Up+g==
+X-Gm-Message-State: AOAM530/q/9+libLg4THKnMW5jlIeLhiqE2RGAQlnywR8nSJE9YwU4o8
+ Q6VMkbR51/kI8vPyBNMdglc=
+X-Google-Smtp-Source: ABdhPJyyZoBDWV7ZCj8Ji9VpActKffc9EXcufc2IzXROiuNMi/ja4nm1BshkPIm0WrFthtY+V0e3wQ==
+X-Received: by 2002:a17:90a:1109:: with SMTP id
+ d9mr575516pja.183.1627613579170; 
+ Thu, 29 Jul 2021 19:52:59 -0700 (PDT)
+Received: from ?IPv6:2404:f801:0:5:8000::4b1? ([2404:f801:9000:18:efec::4b1])
+ by smtp.gmail.com with ESMTPSA id
+ l10sm154977pjg.11.2021.07.29.19.52.45
+ (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+ Thu, 29 Jul 2021 19:52:58 -0700 (PDT)
+Subject: Re: [PATCH 03/13] x86/HV: Add new hvcall guest address host
+ visibility support
+To: Dave Hansen <dave.hansen@intel.com>, kys@microsoft.com,
+ haiyangz@microsoft.com, sthemmin@microsoft.com, wei.liu@kernel.org,
+ decui@microsoft.com, tglx@linutronix.de, mingo@redhat.com, bp@alien8.de,
+ x86@kernel.org, hpa@zytor.com, dave.hansen@linux.intel.com, luto@kernel.org,
+ peterz@infradead.org, konrad.wilk@oracle.com, boris.ostrovsky@oracle.com,
+ jgross@suse.com, sstabellini@kernel.org, joro@8bytes.org, will@kernel.org,
+ davem@davemloft.net, kuba@kernel.org, jejb@linux.ibm.com,
+ martin.petersen@oracle.com, arnd@arndb.de, hch@lst.de,
+ m.szyprowski@samsung.com, robin.murphy@arm.com, thomas.lendacky@amd.com,
+ brijesh.singh@amd.com, ardb@kernel.org, Tianyu.Lan@microsoft.com,
+ rientjes@google.com, martin.b.radev@gmail.com, akpm@linux-foundation.org,
+ rppt@kernel.org, kirill.shutemov@linux.intel.com,
+ aneesh.kumar@linux.ibm.com, krish.sadhukhan@oracle.com, saravanand@fb.com,
+ xen-devel@lists.xenproject.org, pgonda@google.com, david@redhat.com,
+ keescook@chromium.org, hannes@cmpxchg.org, sfr@canb.auug.org.au,
+ michael.h.kelley@microsoft.com
+References: <20210728145232.285861-1-ltykernel@gmail.com>
+ <20210728145232.285861-4-ltykernel@gmail.com>
+ <a2444c36-0103-8e1c-7005-d97f77f90e85@intel.com>
+ <0d956a05-7d24-57a0-f4a9-dccc849b52fc@gmail.com>
+ <ec1d4cfd-bbbc-e27a-7589-e85d9f0438f4@intel.com>
+ <8df2845d-ee90-56d0-1228-adebb103ec37@gmail.com>
+ <7a2ddcca-e249-ba63-8709-e355fcef2d41@intel.com>
+From: Tianyu Lan <ltykernel@gmail.com>
+Message-ID: <fa6cf8b6-7da0-dadf-b137-d90ce3513d5e@gmail.com>
+Date: Fri, 30 Jul 2021 10:52:43 +0800
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:78.0) Gecko/20100101
+ Thunderbird/78.12.0
 MIME-Version: 1.0
-Content-Disposition: inline
-In-Reply-To: <8cc39d3c-6086-cfe3-9743-901c51ad4bab@amd.com>
-Cc: iommu@lists.linux-foundation.org
+In-Reply-To: <7a2ddcca-e249-ba63-8709-e355fcef2d41@intel.com>
+Content-Language: en-US
+Cc: linux-arch@vger.kernel.org, linux-hyperv@vger.kernel.org,
+ linux-scsi@vger.kernel.org, netdev@vger.kernel.org,
+ linux-kernel@vger.kernel.org, iommu@lists.linux-foundation.org,
+ anparri@microsoft.com, vkuznets@redhat.com
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -70,193 +133,26 @@ List-Post: <mailto:iommu@lists.linux-foundation.org>
 List-Help: <mailto:iommu-request@lists.linux-foundation.org?subject=help>
 List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
  <mailto:iommu-request@lists.linux-foundation.org?subject=subscribe>
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: base64
+Content-Type: text/plain; charset="utf-8"; Format="flowed"
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-On Wed, Jul 28, 2021 at 04:51:27PM -0500, Suthikulpanit, Suravee wrote:
-
-> Lennert,
-
-Hi Suravee,
-
-
-> > This patch makes iommu/amd call report_iommu_fault() when an I/O page
-> > fault occurs, which has two effects:
-> > 
-> > 1) It allows device drivers to register a callback to be notified of
-> >     I/O page faults, via the iommu_set_fault_handler() API.
-> > 
-> > 2) It triggers the io_page_fault tracepoint in report_iommu_fault()
-> >     when an I/O page fault occurs.
-> > 
-> > I'm mainly interested in (2).  We have a daemon with some rasdaemon-like
-> > functionality for handling platform errors, and being able to be notified
-> > of I/O page faults for initiating corrective action is very useful -- and
-> > receiving such events via event tracing is a lot nicer than having to
-> > scrape them from kmsg.
-> > 
-> > A number of other IOMMU drivers already use report_iommu_fault(), and
-> > I/O page faults on those IOMMUs therefore already seem to trigger this
-> > tracepoint -- but this isn't (yet) the case for AMD-Vi and Intel DMAR.
-> > 
-> > I copied the logic from the other callers of report_iommu_fault(), where
-> > if that function returns zero, the driver will have handled the fault,
-> > in which case we avoid logging information about the fault to the printk
-> > buffer from the IOMMU driver.
-> > 
-> > With this patch I see io_page_fault event tracing entries as expected:
-> > 
-> >     irq/24-AMD-Vi-48    [002] ....   978.554289: io_page_fault: IOMMU:[drvname] 0000:05:00.0 iova=0x0000000091482640 flags=0x0000
-> >     irq/24-AMD-Vi-48    [002] ....   978.554294: io_page_fault: IOMMU:[drvname] 0000:05:00.0 iova=0x0000000091482650 flags=0x0000
-> >     irq/24-AMD-Vi-48    [002] ....   978.554299: io_page_fault: IOMMU:[drvname] 0000:05:00.0 iova=0x0000000091482660 flags=0x0000
-> >     irq/24-AMD-Vi-48    [002] ....   978.554305: io_page_fault: IOMMU:[drvname] 0000:05:00.0 iova=0x0000000091482670 flags=0x0000
-> >     irq/24-AMD-Vi-48    [002] ....   978.554310: io_page_fault: IOMMU:[drvname] 0000:05:00.0 iova=0x0000000091482680 flags=0x0000
-> >     irq/24-AMD-Vi-48    [002] ....   978.554315: io_page_fault: IOMMU:[drvname] 0000:05:00.0 iova=0x00000000914826a0 flags=0x0000
-> > 
-> > For determining IOMMU_FAULT_{READ,WRITE}, I followed the AMD IOMMU
-> > spec, but I haven't tested that bit of the code, as the page faults I
-> > encounter are all to non-present (!EVENT_FLAG_PR) mappings, in which
-> > case EVENT_FLAG_RW doesn't make sense.
-> > 
-> > Signed-off-by: Lennert Buytenhek <buytenh@wantstofly.org>
-> > ---
-> > Changes since v1 RFC:
-> > 
-> > - Don't call report_iommu_fault() for IRQ remapping faults.
-> >    (Suggested by Joerg Roedel.)
-> > 
-> >   drivers/iommu/amd/amd_iommu_types.h |  4 ++++
-> >   drivers/iommu/amd/iommu.c           | 29 +++++++++++++++++++++++++++++
-> >   2 files changed, 33 insertions(+)
-> > 
-> > diff --git a/drivers/iommu/amd/amd_iommu_types.h b/drivers/iommu/amd/amd_iommu_types.h
-> > index 94c1a7a9876d..2f2c6630c24c 100644
-> > --- a/drivers/iommu/amd/amd_iommu_types.h
-> > +++ b/drivers/iommu/amd/amd_iommu_types.h
-> > @@ -138,6 +138,10 @@
-> >   #define EVENT_DOMID_MASK_HI	0xf0000
-> >   #define EVENT_FLAGS_MASK	0xfff
-> >   #define EVENT_FLAGS_SHIFT	0x10
-> > +#define EVENT_FLAG_TR		0x100
-> > +#define EVENT_FLAG_RW		0x020
-> > +#define EVENT_FLAG_PR		0x010
-> > +#define EVENT_FLAG_I		0x008
-> >   /* feature control bits */
-> >   #define CONTROL_IOMMU_EN        0x00ULL
-> > diff --git a/drivers/iommu/amd/iommu.c b/drivers/iommu/amd/iommu.c
-> > index a7d6d78147b7..d9fb2c22d44a 100644
-> > --- a/drivers/iommu/amd/iommu.c
-> > +++ b/drivers/iommu/amd/iommu.c
-> 
-> What if we introduce:
-> 
-> +/*
-> + * AMD I/O Virtualization Technology (IOMMU) Specification,
-> + * revision 3.00, section 2.5.3 ("IO_PAGE_FAULT Event") says
-> + * that the RW ("read-write") bit is only valid if the I/O
-> + * page fault was caused by a memory transaction request
-> + * referencing a page that was marked present.
-> + */
-> +#define IO_PAGE_FAULT_MEM_MASK \
-> +       (EVENT_FLAG_TR | EVENT_FLAG_PR | EVENT_FLAG_I)
-> +#define IS_IOMMU_MEM_TRANSACTION(x)    \
-> +       ((x & IO_PAGE_FAULT_MEM_MASK) == EVENT_FLAG_PR)
-> 
-> Note that this should have already checked w/ EVENT_FLAG_I == 0.
-> 
-> 
-> > @@ -484,6 +484,34 @@ static void amd_iommu_report_page_fault(u16 devid, u16 domain_id,
-> >   	if (pdev)
-> >   		dev_data = dev_iommu_priv_get(&pdev->dev);
-> > +	/*
-> > +	 * If this is a DMA fault (for which the I(nterrupt) bit will
-> > +	 * be unset), allow report_iommu_fault() to prevent logging it.
-> > +	 */
-> > +	if (dev_data && ((flags & EVENT_FLAG_I) == 0)) {
-> > +		int report_flags;
-> > +
-> > +		/*
-> > +		 * AMD I/O Virtualization Technology (IOMMU) Specification,
-> > +		 * revision 3.00, section 2.5.3 ("IO_PAGE_FAULT Event") says
-> > +		 * that the RW ("read-write") bit is only valid if the I/O
-> > +		 * page fault was caused by a memory transaction request
-> > +		 * referencing a page that was marked present.
-> > +		 */
-> > +		report_flags = 0;
-> > +		if ((flags & (EVENT_FLAG_TR | EVENT_FLAG_PR)) ==
-> > +							EVENT_FLAG_PR) {
-> > +			if (flags & EVENT_FLAG_RW)
-> > +				report_flags |= IOMMU_FAULT_WRITE;
-> > +			else
-> > +				report_flags |= IOMMU_FAULT_READ;
-> > +		}
-> > +
-> > +		if (!report_iommu_fault(&dev_data->domain->domain,
-> > +					&pdev->dev, address, report_flags))
-> > +			goto out;
-> > +	}
-> > +
-> >   	if (dev_data) {
-> 
-> Here we do:
-> 
-> +               /*
-> +                * Since report_iommu_fault() only report DMA-remapping related fault,
-> +                * convert AMD IO_PAGE_FAULT flags to IOMMU_FAULT_xx flags.
-> +                */
-> +               if (IS_IOMMU_MEM_TRANSACTION(flags) &&
-> +                   !report_iommu_fault(&dev_data->domain->domain, &pdev->dev,
-> +                                       address,
-> +                                       (flags & EVENT_FLAG_RW) ?
-> +                                       IOMMU_FAULT_WRITE : IOMMU_FAULT_READ))
-> +                       goto out;
-> +
-
-We have three cases to handle:
-
-- EVENT_FLAG_I set: IRQ remapping fault, don't call report_iommu_fault()
-
-- EVENT_FLAG_I unset, but the request was a translation request
-  (EVENT_FLAG_TR set) or the target page was not present (EVENT_FLAG_PR
-  unset): call report_iommu_fault(), but the RW bit will be invalid, so
-  don't try to map it to a IOMMU_FAULT_{READ,WRITE} code
-
-- EVENT_FLAG_I unset, the request is a transaction request (EVENT_FLAG_TR
-  unset) and the target page was present (EVENT_FLAG_PR set): call
-  report_iommu_fault(), and use the RW bit to set IOMMU_FAULT_{READ,WRITE}
-
-So I don't think we can merge the test for EVENT_FLAG_I with the
-test for EVENT_FLAG_TR/EVENT_FLAG_PR.
-
-We could do something like this, if you'd prefer:
-
-	#define IS_IOMMU_MEM_TRANSACTION(flags)	\
-		(((flags) & EVENT_FLAG_I) == 0)
-
-	#define IS_RW_FLAG_VALID(flags)		\
-		(((flags) & (EVENT_FLAG_TR | EVENT_FLAG_PR)) == EVENT_FLAG_PR)
-
-	#define IS_WRITE_REQUEST(flags)		\
-		(IS_RW_FLAG_VALID(flags) && (flags & EVENT_FLAG_RW))
-
-And then do something like:
-
-	if (dev_data && IS_IOMMU_MEM_TRANSACTION(flags)) {
-		if (!report_iommu_fault(&dev_data->domain->domain, &pdev->dev,
-					address,
-					IS_WRITE_REQUEST(flags) ?
-					IOMMU_FAULT_WRITE : IOMMU_FAULT_READ))
-			goto out;
-	}
-
-?
-
-
-Thanks,
-Lennert
-_______________________________________________
-iommu mailing list
-iommu@lists.linux-foundation.org
-https://lists.linuxfoundation.org/mailman/listinfo/iommu
+T24gNy8zMC8yMDIxIDEyOjA1IEFNLCBEYXZlIEhhbnNlbiB3cm90ZToKPiBPbiA3LzI5LzIxIDg6
+MDIgQU0sIFRpYW55dSBMYW4gd3JvdGU6Cj4+Pgo+Pgo+PiBUaGVyZSBpcyB4ODZfaHlwZXJfdHlw
+ZSB0byBpZGVudGlmeSBoeXBlcnZpc29yIHR5cGUgYW5kIHdlIG1heSBjaGVjawo+PiB0aGlzIHZh
+cmlhYmxlIGFmdGVyIGNoZWNraW5nIFg4Nl9GRUFUVVJFX0hZUEVSVklTT1IuCj4+Cj4+IHN0YXRp
+YyBpbmxpbmUgYm9vbCBodl9pc19pc29sYXRpb25fc3VwcG9ydGVkKHZvaWQpCj4+IHsKPj4gIMKg
+wqDCoMKgaWYgKCFjcHVfZmVhdHVyZV9lbmFibGVkKFg4Nl9GRUFUVVJFX0hZUEVSVklTT1IpKQo+
+PiAgwqDCoMKgwqDCoMKgwqAgcmV0dXJuIDA7Cj4+Cj4+ICDCoMKgwqDCoMKgwqDCoCBpZiAoeDg2
+X2h5cGVyX3R5cGUgIT0gWDg2X0hZUEVSX01TX0hZUEVSVikKPj4gIMKgwqDCoMKgwqDCoMKgwqDC
+oMKgwqDCoMKgwqDCoCByZXR1cm4gMDsKPj4KPj4gIMKgwqDCoMKgLy8gb3V0IG9mIGxpbmUgZnVu
+Y3Rpb24gY2FsbDoKPj4gIMKgwqDCoMKgcmV0dXJuIF9faHZfaXNfaXNvbGF0aW9uX3N1cHBvcnRl
+ZCgpOwo+PiB9Cj4gCj4gTG9va3MgZmluZS4gIFlvdSBqdXN0IG1pZ2h0IHdhbnQgdG8gdXNlIHRo
+aXMgZXhpc3RpbmcgaGVscGVyOgo+IAo+IHN0YXRpYyBpbmxpbmUgYm9vbCBoeXBlcnZpc29yX2lz
+X3R5cGUoZW51bSB4ODZfaHlwZXJ2aXNvcl90eXBlIHR5cGUpCj4gewo+ICAgICAgICAgIHJldHVy
+biB4ODZfaHlwZXJfdHlwZSA9PSB0eXBlOwo+IH0KPiAKClllcyx0aGFua3MgZm9yIHN1Z2dlc3Rp
+b24gYW5kIHdpbGwgdXBkYXRlIGluIHRoZSBuZXh0IHZlcnNpb24uCl9fX19fX19fX19fX19fX19f
+X19fX19fX19fX19fX19fX19fX19fX19fX19fX19fCmlvbW11IG1haWxpbmcgbGlzdAppb21tdUBs
+aXN0cy5saW51eC1mb3VuZGF0aW9uLm9yZwpodHRwczovL2xpc3RzLmxpbnV4Zm91bmRhdGlvbi5v
+cmcvbWFpbG1hbi9saXN0aW5mby9pb21tdQ==
