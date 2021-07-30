@@ -2,118 +2,122 @@ Return-Path: <SRS0=GV0T=MW=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-7.2 required=3.0 tests=BAYES_00,DKIM_ADSP_CUSTOM_MED,
-	DKIM_INVALID,DKIM_SIGNED,FREEMAIL_FORGED_FROMDOMAIN,FREEMAIL_FROM,
-	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,NICE_REPLY_A,
-	SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_SANE_1 autolearn=no
+X-Spam-Status: No, score=-13.6 required=3.0 tests=BAYES_00,DKIM_INVALID,
+	DKIM_SIGNED,HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_CR_TRAILER,INCLUDES_PATCH,
+	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED autolearn=ham
 	autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 84582C4338F
-	for <iommu@archiver.kernel.org>; Fri, 30 Jul 2021 04:11:16 +0000 (UTC)
-Received: from smtp2.osuosl.org (smtp2.osuosl.org [140.211.166.133])
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7AA46C4338F
+	for <iommu@archiver.kernel.org>; Fri, 30 Jul 2021 05:18:16 +0000 (UTC)
+Received: from smtp4.osuosl.org (smtp4.osuosl.org [140.211.166.137])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 3112B60E76
-	for <iommu@archiver.kernel.org>; Fri, 30 Jul 2021 04:11:16 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.4.1 mail.kernel.org 3112B60E76
-Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=gmail.com
+	by mail.kernel.org (Postfix) with ESMTPS id BB24660F9B
+	for <iommu@archiver.kernel.org>; Fri, 30 Jul 2021 05:18:15 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.4.1 mail.kernel.org BB24660F9B
+Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=linux.vnet.ibm.com
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by smtp2.osuosl.org (Postfix) with ESMTP id E1852402D5;
-	Fri, 30 Jul 2021 04:11:15 +0000 (UTC)
+	by smtp4.osuosl.org (Postfix) with ESMTP id 4025D4067C;
+	Fri, 30 Jul 2021 05:18:15 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from smtp2.osuosl.org ([127.0.0.1])
-	by localhost (smtp2.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id 8s-s5nsBXPGh; Fri, 30 Jul 2021 04:11:14 +0000 (UTC)
+Received: from smtp4.osuosl.org ([127.0.0.1])
+	by localhost (smtp4.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+	with ESMTP id 6hv03gzEnhKJ; Fri, 30 Jul 2021 05:18:13 +0000 (UTC)
 Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by smtp2.osuosl.org (Postfix) with ESMTPS id 8043E401B9;
-	Fri, 30 Jul 2021 04:11:14 +0000 (UTC)
+	by smtp4.osuosl.org (Postfix) with ESMTPS id 1BF0140675;
+	Fri, 30 Jul 2021 05:18:13 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 3F416C0010;
-	Fri, 30 Jul 2021 04:11:14 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id EC418C001A;
+	Fri, 30 Jul 2021 05:18:12 +0000 (UTC)
 Received: from smtp1.osuosl.org (smtp1.osuosl.org [140.211.166.138])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 8BFFDC000E
- for <iommu@lists.linux-foundation.org>; Fri, 30 Jul 2021 04:11:12 +0000 (UTC)
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 036F2C000E
+ for <iommu@lists.linux-foundation.org>; Fri, 30 Jul 2021 05:18:10 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by smtp1.osuosl.org (Postfix) with ESMTP id 66CE883B2E
- for <iommu@lists.linux-foundation.org>; Fri, 30 Jul 2021 04:11:12 +0000 (UTC)
+ by smtp1.osuosl.org (Postfix) with ESMTP id D2D8183B29
+ for <iommu@lists.linux-foundation.org>; Fri, 30 Jul 2021 05:18:10 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
 Authentication-Results: smtp1.osuosl.org (amavisd-new);
- dkim=pass (2048-bit key) header.d=gmail.com
+ dkim=pass (2048-bit key) header.d=ibm.com
 Received: from smtp1.osuosl.org ([127.0.0.1])
  by localhost (smtp1.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id fLRybOKqEzxa for <iommu@lists.linux-foundation.org>;
- Fri, 30 Jul 2021 04:11:11 +0000 (UTC)
-X-Greylist: whitelisted by SQLgrey-1.8.0
-Received: from mail-pl1-x634.google.com (mail-pl1-x634.google.com
- [IPv6:2607:f8b0:4864:20::634])
- by smtp1.osuosl.org (Postfix) with ESMTPS id 3B4FB83B2A
- for <iommu@lists.linux-foundation.org>; Fri, 30 Jul 2021 04:11:11 +0000 (UTC)
-Received: by mail-pl1-x634.google.com with SMTP id a20so9586443plm.0
- for <iommu@lists.linux-foundation.org>; Thu, 29 Jul 2021 21:11:11 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=gmail.com; s=20161025;
- h=subject:to:cc:references:from:message-id:date:user-agent
- :mime-version:in-reply-to:content-language:content-transfer-encoding;
- bh=qJu6CB2LN4QTrxCEOBdOuFEubSp0osjxUw486lmLCCE=;
- b=ZDBlqPk7rrZwfBnBjR5AX1bDAs/03F78a8y9TTalCyS6aeo4BVkIxfh1ObzxANaAgE
- HW8wbFpOlmHwbaCPm5cRL/enrnPzB27Dnubwd4H3F+8zFrVlyM1Smb2LawbtRzGY3LRC
- Gb93dNjedTrLXFAZ6ab+LBvUZZSxiYikb+dLVy6ty9M5d/daHgOsw8Q+y0rAzywv5rJ1
- 9vUlTT3Rv5WnELmp/i+W4sb7zRlI3Awvh+AERZBSYUZe0JKeGzcixyqH3H8gStqkO4Ji
- /TjYveizM/zetfPUG8Kk34aKNf2XAzZdOlHSD7bm+KS1YwZA/iLQszfwSj+JpCnElXrL
- 5VoQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
- d=1e100.net; s=20161025;
- h=x-gm-message-state:subject:to:cc:references:from:message-id:date
- :user-agent:mime-version:in-reply-to:content-language
- :content-transfer-encoding;
- bh=qJu6CB2LN4QTrxCEOBdOuFEubSp0osjxUw486lmLCCE=;
- b=jvRILOoelc8kZcpvqEyUFuYR8sG3e2X13OnhOfjN6fI6jMzJiA9BT0rmzlYNRBiw+h
- 2gefufITSywESVZ+CSHjTpLCuU58VB+d6y/9UPPK4mO0tXATwpQs8u7ZT8hJ+l2m9Ai8
- rBL6R7XgHNjyCc7ddjNJZ0K7ftv7lop8nWRlzH84eO8MlS01e+Y4JeJxX0aR22i7S2fm
- mGAKUbWK+pf5yL2WoUngG4Dm+96Fw4iaCeq3KGHTPSiVprAuTiOmZibTdul0oeTlAjaV
- L+2WY2hcAoTQv8jZpJ9kSBQjN/SwqdRGeldkEpkBUydyWBzW5E32mf4kw3mAyi2a7g4h
- zzuw==
-X-Gm-Message-State: AOAM530UVChAKLsW/MIk9IjS2tVxi6VKgIwfdXftY9zu23ClFbC8Azo0
- ZPTtGWTx9Y+wMIfiwFbyLoM=
-X-Google-Smtp-Source: ABdhPJz3KIEE78AyymdsWAIZFHiwRfrHYC57wifeuRqjNg3M8sSkO4co7S92ZJfiJ7qm9o4/XVu3Vw==
-X-Received: by 2002:a17:90a:b795:: with SMTP id
- m21mr872416pjr.143.1627618270672; 
- Thu, 29 Jul 2021 21:11:10 -0700 (PDT)
-Received: from ?IPv6:2404:f801:0:5:8000::4b1? ([2404:f801:9000:18:efec::4b1])
- by smtp.gmail.com with ESMTPSA id
- s7sm418969pfk.12.2021.07.29.21.10.56
- (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
- Thu, 29 Jul 2021 21:11:10 -0700 (PDT)
-Subject: Re: [PATCH 10/13] x86/Swiotlb: Add Swiotlb bounce buffer remap
- function for HV IVM
-To: Konrad Rzeszutek Wilk <konrad.wilk@oracle.com>
-References: <20210728145232.285861-1-ltykernel@gmail.com>
- <20210728145232.285861-11-ltykernel@gmail.com> <YQLXYVaWWdBfF7Sm@fedora>
-From: Tianyu Lan <ltykernel@gmail.com>
-Message-ID: <7afbbc7f-8f02-ca6c-0c8c-bbf01fae70ea@gmail.com>
-Date: Fri, 30 Jul 2021 12:10:54 +0800
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:78.0) Gecko/20100101
- Thunderbird/78.12.0
-MIME-Version: 1.0
-In-Reply-To: <YQLXYVaWWdBfF7Sm@fedora>
-Content-Language: en-US
-Cc: linux-hyperv@vger.kernel.org, brijesh.singh@amd.com, david@redhat.com,
- peterz@infradead.org, dave.hansen@linux.intel.com, vkuznets@redhat.com,
- hpa@zytor.com, anparri@microsoft.com, kys@microsoft.com, will@kernel.org,
- boris.ostrovsky@oracle.com, linux-arch@vger.kernel.org, sfr@canb.auug.org.au,
- wei.liu@kernel.org, sstabellini@kernel.org, sthemmin@microsoft.com,
- xen-devel@lists.xenproject.org, linux-scsi@vger.kernel.org,
- aneesh.kumar@linux.ibm.com, x86@kernel.org, decui@microsoft.com, hch@lst.de,
- michael.h.kelley@microsoft.com, mingo@redhat.com, pgonda@google.com,
- rientjes@google.com, kuba@kernel.org, haiyangz@microsoft.com,
- martin.b.radev@gmail.com, thomas.lendacky@amd.com, Tianyu.Lan@microsoft.com,
- keescook@chromium.org, arnd@arndb.de, jejb@linux.ibm.com, bp@alien8.de,
- luto@kernel.org, krish.sadhukhan@oracle.com, tglx@linutronix.de,
- akpm@linux-foundation.org, jgross@suse.com, martin.petersen@oracle.com,
- saravanand@fb.com, netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
- iommu@lists.linux-foundation.org, kirill.shutemov@linux.intel.com,
- hannes@cmpxchg.org, ardb@kernel.org, robin.murphy@arm.com, davem@davemloft.net,
- rppt@kernel.org
+ with ESMTP id q_KIn0eCOiob for <iommu@lists.linux-foundation.org>;
+ Fri, 30 Jul 2021 05:18:10 +0000 (UTC)
+X-Greylist: from auto-whitelisted by SQLgrey-1.8.0
+Received: from mx0a-001b2d01.pphosted.com (mx0b-001b2d01.pphosted.com
+ [148.163.158.5])
+ by smtp1.osuosl.org (Postfix) with ESMTPS id 1F7A483B28
+ for <iommu@lists.linux-foundation.org>; Fri, 30 Jul 2021 05:18:09 +0000 (UTC)
+Received: from pps.filterd (m0098413.ppops.net [127.0.0.1])
+ by mx0b-001b2d01.pphosted.com (8.16.0.43/8.16.0.43) with SMTP id
+ 16U54E77176731; Fri, 30 Jul 2021 01:18:05 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com;
+ h=content-type :
+ mime-version : subject : from : in-reply-to : date : cc :
+ content-transfer-encoding : message-id : references : to; s=pp1;
+ bh=mRMfJDSaBEiYJwtsisL7fiThg4iCN4T1/5czZbY5axI=;
+ b=FvJ6R+IRNlN3XBd8mh75U1wb7IFYE94aLjH21FjdyTNc2ng/V+THg3+abnCVvcN0ULgE
+ leJjIs0OvxXLCDSh5TV45Xq91IKkKOB8vxuq9fnWD2kfHhJvZVsIfPyXKzcK8Fyg5B/Q
+ cmAv66+1vp64SHxEPjxshxAuVKxUAjA+NCTeaFKOjTI5RK51A4FKFO4g1y5fjsvkelJO
+ PZorV9RcMMW+Ltxf9dnoNPqdpgQbpn7CAVGYvHM98EzO4weCS03sZSLj8uQkNJv8KLa9
+ zQEeGWgzS9Vjlb68N9BUcAvJbKEZEYiBK6NdL6Gb078pYx8cXHX/Vl2vj4kKzY8e+9jU Ww== 
+Received: from ppma06fra.de.ibm.com (48.49.7a9f.ip4.static.sl-reverse.com
+ [159.122.73.72])
+ by mx0b-001b2d01.pphosted.com with ESMTP id 3a4abj12rj-1
+ (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+ Fri, 30 Jul 2021 01:18:04 -0400
+Received: from pps.filterd (ppma06fra.de.ibm.com [127.0.0.1])
+ by ppma06fra.de.ibm.com (8.16.1.2/8.16.1.2) with SMTP id 16U5DNNP030427;
+ Fri, 30 Jul 2021 05:18:02 GMT
+Received: from b06cxnps3074.portsmouth.uk.ibm.com
+ (d06relay09.portsmouth.uk.ibm.com [9.149.109.194])
+ by ppma06fra.de.ibm.com with ESMTP id 3a235kjg2n-1
+ (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+ Fri, 30 Jul 2021 05:18:02 +0000
+Received: from d06av25.portsmouth.uk.ibm.com (d06av25.portsmouth.uk.ibm.com
+ [9.149.105.61])
+ by b06cxnps3074.portsmouth.uk.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id
+ 16U5I0pV32702790
+ (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+ Fri, 30 Jul 2021 05:18:00 GMT
+Received: from d06av25.portsmouth.uk.ibm.com (unknown [127.0.0.1])
+ by IMSVA (Postfix) with ESMTP id 37C3B11C05C;
+ Fri, 30 Jul 2021 05:18:00 +0000 (GMT)
+Received: from d06av25.portsmouth.uk.ibm.com (unknown [127.0.0.1])
+ by IMSVA (Postfix) with ESMTP id 493CD11C052;
+ Fri, 30 Jul 2021 05:17:58 +0000 (GMT)
+Received: from smtpclient.apple (unknown [9.43.3.232])
+ by d06av25.portsmouth.uk.ibm.com (Postfix) with ESMTP;
+ Fri, 30 Jul 2021 05:17:58 +0000 (GMT)
+Mime-Version: 1.0 (Mac OS X Mail 14.0 \(3654.100.0.2.22\))
+Subject: Re: [powerpc][next-20210727] Boot failure - kernel BUG at
+ arch/powerpc/kernel/interrupt.c:98!
+From: Sachin Sant <sachinp@linux.vnet.ibm.com>
+In-Reply-To: <20210729161335.GA22016@willie-the-truck>
+Date: Fri, 30 Jul 2021 10:47:56 +0530
+Message-Id: <3123C52D-1345-43E1-905A-FF6754E4453C@linux.vnet.ibm.com>
+References: <1905CD70-7656-42AE-99E2-A31FC3812EAC@linux.vnet.ibm.com>
+ <YQGVZnMe9hFieF8D@Ryzen-9-3900X.localdomain>
+ <20210729161335.GA22016@willie-the-truck>
+To: Will Deacon <will@kernel.org>
+X-Mailer: Apple Mail (2.3654.100.0.2.22)
+X-TM-AS-GCONF: 00
+X-Proofpoint-GUID: DiaWfTeMzTsWBpfNTQmvb1ps_L8keHyd
+X-Proofpoint-ORIG-GUID: DiaWfTeMzTsWBpfNTQmvb1ps_L8keHyd
+X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.391, 18.0.790
+ definitions=2021-07-30_03:2021-07-29,
+ 2021-07-30 signatures=0
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0
+ suspectscore=0 phishscore=0
+ adultscore=0 lowpriorityscore=0 priorityscore=1501 impostorscore=0
+ mlxlogscore=999 spamscore=0 malwarescore=0 clxscore=1015 mlxscore=0
+ bulkscore=0 classifier=spam adjust=0 reason=mlx scancount=1
+ engine=8.12.0-2107140000 definitions=main-2107300030
+Cc: Konrad Rzeszutek Wilk <konrad.wilk@oracle.com>,
+ Robin Murphy <robin.murphy@arm.com>, Nathan Chancellor <nathan@kernel.org>,
+ iommu@lists.linux-foundation.org, linux-next@vger.kernel.org,
+ Claire Chang <tientzu@chromium.org>, linuxppc-dev@lists.ozlabs.org,
+ Christoph Hellwig <hch@lst.de>
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -126,41 +130,69 @@ List-Post: <mailto:iommu@lists.linux-foundation.org>
 List-Help: <mailto:iommu-request@lists.linux-foundation.org?subject=help>
 List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
  <mailto:iommu-request@lists.linux-foundation.org?subject=subscribe>
+Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
-Content-Type: text/plain; charset="us-ascii"; Format="flowed"
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-Hi Konrad:
-      Thanks for your review.
 
-On 7/30/2021 12:29 AM, Konrad Rzeszutek Wilk wrote:
->> diff --git a/kernel/dma/swiotlb.c b/kernel/dma/swiotlb.c
->> index 1fa81c096c1d..6866e5784b53 100644
->> --- a/kernel/dma/swiotlb.c
->> +++ b/kernel/dma/swiotlb.c
->> @@ -194,8 +194,13 @@ static void swiotlb_init_io_tlb_mem(struct io_tlb_mem *mem, phys_addr_t start,
->>   		mem->slots[i].alloc_size = 0;
->>   	}
->>   
->> -	set_memory_decrypted((unsigned long)vaddr, bytes >> PAGE_SHIFT);
->> -	memset(vaddr, 0, bytes);
->> +	mem->vaddr = dma_map_decrypted(vaddr, bytes);
->> +	if (!mem->vaddr) {
->> +		pr_err("Failed to decrypt memory.\n");
-> I am wondering if it would be worth returning an error code in this
-> function instead of just printing an error?
 
-Yes, this is good idea and will update in the next version.
-
+> On 29-Jul-2021, at 9:43 PM, Will Deacon <will@kernel.org> wrote:
 > 
-> For this patch I think it is Ok, but perhaps going forward this would be
-> better done as I am thinking - is there some global guest->hyperv
-> reporting mechanism so that if this fails - it ends up being bubbled up
-> to the HyperV console-ish?
+> On Wed, Jul 28, 2021 at 10:35:34AM -0700, Nathan Chancellor wrote:
+>> On Wed, Jul 28, 2021 at 01:31:06PM +0530, Sachin Sant wrote:
+>>> next-20210723 was good. The boot failure seems to have been introduced with next-20210726.
+>>> 
+>>> I have attached the boot log.
+>> 
+>> I noticed this with OpenSUSE's ppc64le config [1] and my bisect landed on
+>> commit ad6c00283163 ("swiotlb: Free tbl memory in swiotlb_exit()"). That
+>> series just keeps on giving...
+> 
+> Yes, but look how handy our new print is!
+> 
+> [    0.010799] software IO TLB: tearing down default memory pool
+> [    0.010805] ------------[ cut here ]------------
+> [    0.010808] kernel BUG at arch/powerpc/kernel/interrupt.c:98!
+> 
+> Following Nick's suggestion, the diff below should help? I don't have a
+> relevant box on which I can test it though.
+> 
 
-Hyper-V has such panic page report mechanism. Guest can pass one page 
-log to host during crash.
+Thanks for the fix. This fixes the reported problem for me.
+Tested successfully on both PowerVM LPAR as well as bare metal environment.
+
+Reported-by: Sachin Sant <sachinp@linux.vnet.ibm.com>
+Tested-by: Sachin Sant <sachinp@linux.vnet.ibm.com>
+
+> Will
+> 
+> --->8
+> 
+> diff --git a/arch/powerpc/platforms/pseries/svm.c b/arch/powerpc/platforms/pseries/svm.c
+> index 1d829e257996..87f001b4c4e4 100644
+> --- a/arch/powerpc/platforms/pseries/svm.c
+> +++ b/arch/powerpc/platforms/pseries/svm.c
+> @@ -63,6 +63,9 @@ void __init svm_swiotlb_init(void)
+> 
+> int set_memory_encrypted(unsigned long addr, int numpages)
+> {
+> +       if (!mem_encrypt_active())
+> +               return 0;
+> +
+>        if (!PAGE_ALIGNED(addr))
+>                return -EINVAL;
+> 
+> @@ -73,6 +76,9 @@ int set_memory_encrypted(unsigned long addr, int numpages)
+> 
+> int set_memory_decrypted(unsigned long addr, int numpages)
+> {
+> +       if (!mem_encrypt_active())
+> +               return 0;
+> +
+>        if (!PAGE_ALIGNED(addr))
+>                return -EINVAL;
+> 
 
 _______________________________________________
 iommu mailing list
