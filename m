@@ -2,82 +2,76 @@ Return-Path: <SRS0=vo+x=MZ=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-3.7 required=3.0 tests=BAYES_00,
-	HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,
-	URIBL_BLOCKED autolearn=no autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-15.3 required=3.0 tests=BAYES_00,DKIM_INVALID,
+	DKIM_SIGNED,INCLUDES_CR_TRAILER,INCLUDES_PATCH,MAILING_LIST_MULTI,
+	SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_SANE_1 autolearn=unavailable
+	autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0CB20C4338F
-	for <iommu@archiver.kernel.org>; Mon,  2 Aug 2021 13:30:35 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2220AC432BE
+	for <iommu@archiver.kernel.org>; Mon,  2 Aug 2021 13:30:47 +0000 (UTC)
 Received: from smtp2.osuosl.org (smtp2.osuosl.org [140.211.166.133])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id A730D60F11
-	for <iommu@archiver.kernel.org>; Mon,  2 Aug 2021 13:30:34 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.4.1 mail.kernel.org A730D60F11
-Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=8bytes.org
+	by mail.kernel.org (Postfix) with ESMTPS id D1F1360FC1
+	for <iommu@archiver.kernel.org>; Mon,  2 Aug 2021 13:30:46 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.4.1 mail.kernel.org D1F1360FC1
+Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=kernel.org
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by smtp2.osuosl.org (Postfix) with ESMTP id 6BCAF40215;
-	Mon,  2 Aug 2021 13:30:34 +0000 (UTC)
+	by smtp2.osuosl.org (Postfix) with ESMTP id 9D35540215;
+	Mon,  2 Aug 2021 13:30:46 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
 Received: from smtp2.osuosl.org ([127.0.0.1])
 	by localhost (smtp2.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id vdkmYsNaMsR3; Mon,  2 Aug 2021 13:30:33 +0000 (UTC)
-Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [IPv6:2605:bc80:3010:104::8cd3:938])
-	by smtp2.osuosl.org (Postfix) with ESMTPS id 0C6E3401CE;
-	Mon,  2 Aug 2021 13:30:32 +0000 (UTC)
+	with ESMTP id WEvfA8cTh-qG; Mon,  2 Aug 2021 13:30:45 +0000 (UTC)
+Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
+	by smtp2.osuosl.org (Postfix) with ESMTPS id 399BA401CE;
+	Mon,  2 Aug 2021 13:30:45 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id D7856C0010;
-	Mon,  2 Aug 2021 13:30:32 +0000 (UTC)
-Received: from smtp1.osuosl.org (smtp1.osuosl.org [IPv6:2605:bc80:3010::138])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 34568C000E
- for <iommu@lists.linux-foundation.org>; Mon,  2 Aug 2021 13:30:31 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 19E12C001C;
+	Mon,  2 Aug 2021 13:30:45 +0000 (UTC)
+Received: from smtp3.osuosl.org (smtp3.osuosl.org [140.211.166.136])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 0A244C000E
+ for <iommu@lists.linux-foundation.org>; Mon,  2 Aug 2021 13:30:44 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by smtp1.osuosl.org (Postfix) with ESMTP id 23D0A82FF9
- for <iommu@lists.linux-foundation.org>; Mon,  2 Aug 2021 13:30:31 +0000 (UTC)
+ by smtp3.osuosl.org (Postfix) with ESMTP id E1D776080C
+ for <iommu@lists.linux-foundation.org>; Mon,  2 Aug 2021 13:30:43 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from smtp1.osuosl.org ([127.0.0.1])
- by localhost (smtp1.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id BsLXDBmiqm6o for <iommu@lists.linux-foundation.org>;
- Mon,  2 Aug 2021 13:30:30 +0000 (UTC)
-X-Greylist: from auto-whitelisted by SQLgrey-1.8.0
-Received: from theia.8bytes.org (8bytes.org [81.169.241.247])
- by smtp1.osuosl.org (Postfix) with ESMTPS id 92F4E82FEA
- for <iommu@lists.linux-foundation.org>; Mon,  2 Aug 2021 13:30:30 +0000 (UTC)
-Received: by theia.8bytes.org (Postfix, from userid 1000)
- id 0AFF0379; Mon,  2 Aug 2021 15:30:25 +0200 (CEST)
-Date: Mon, 2 Aug 2021 15:30:10 +0200
-From: Joerg Roedel <joro@8bytes.org>
-To: Juergen Gross <jgross@suse.com>
-Subject: Re: [PATCH 03/13] x86/HV: Add new hvcall guest address host
- visibility support
-Message-ID: <YQfzYl5N5iXv4ZFH@8bytes.org>
-References: <20210728145232.285861-1-ltykernel@gmail.com>
- <20210728145232.285861-4-ltykernel@gmail.com>
- <c00e269c-da4c-c703-0182-0221c73a76cc@intel.com>
- <YQfepYTC4n6agq9z@8bytes.org>
- <5badc0cb-3038-2eff-a4bf-022ce8fc51d7@suse.com>
+Authentication-Results: smtp3.osuosl.org (amavisd-new);
+ dkim=pass (2048-bit key) header.d=kernel.org
+Received: from smtp3.osuosl.org ([127.0.0.1])
+ by localhost (smtp3.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+ with ESMTP id exjPdNDxCnWb for <iommu@lists.linux-foundation.org>;
+ Mon,  2 Aug 2021 13:30:42 +0000 (UTC)
+X-Greylist: domain auto-whitelisted by SQLgrey-1.8.0
+Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
+ by smtp3.osuosl.org (Postfix) with ESMTPS id DB6FF60656
+ for <iommu@lists.linux-foundation.org>; Mon,  2 Aug 2021 13:30:42 +0000 (UTC)
+Received: by mail.kernel.org (Postfix) with ESMTPSA id 5381260F6D;
+ Mon,  2 Aug 2021 13:30:41 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+ s=k20201202; t=1627911042;
+ bh=AopIBg3UQuNzGUn6zHPTl2RUpxi1CeIiSyyBhV3W0IU=;
+ h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+ b=nHwL3XngEiLQt4Didk/zSnyxzEHhLvI/h87NYzxgJW8aV9nergHLrRivaMg8Z2AZO
+ 8kuEw4+FZosbZe4uikBvFP1Sml89L/BSeuj5Ff25UAMW6Pcy7EYLRaZp/DGE9vk/Q3
+ xr2oL845xDL4K22oGmVfyU0UzhLgn1e1K8khfY9wEkWXOOG6qbBH+ZnjQ3/qqnk0GR
+ WXPH12PIZS96YbDsPp9MnZp6cvrcg1r/6GlQq0HFHKMI0yyFCqvnI/99FWO93aoC5q
+ +9Um+bb8RbypSIvULxhV0A5kejZrgqd8NNxdC4uS2WUXxGe8MAXKh0p/EIZPA13Hpc
+ EN7cMXB+23UFQ==
+Date: Mon, 2 Aug 2021 14:30:38 +0100
+From: Will Deacon <will@kernel.org>
+To: David Stevens <stevensd@chromium.org>
+Subject: Re: [PATCH v2 1/4] dma-iommu: fix sync_sg with swiotlb
+Message-ID: <20210802133037.GB28547@willie-the-truck>
+References: <20210709033502.3545820-1-stevensd@google.com>
+ <20210709033502.3545820-2-stevensd@google.com>
 MIME-Version: 1.0
 Content-Disposition: inline
-In-Reply-To: <5badc0cb-3038-2eff-a4bf-022ce8fc51d7@suse.com>
-Cc: linux-hyperv@vger.kernel.org, brijesh.singh@amd.com, david@redhat.com,
- peterz@infradead.org, dave.hansen@linux.intel.com,
- Dave Hansen <dave.hansen@intel.com>, hpa@zytor.com, anparri@microsoft.com,
- kys@microsoft.com, will@kernel.org, boris.ostrovsky@oracle.com,
- linux-arch@vger.kernel.org, sfr@canb.auug.org.au, wei.liu@kernel.org,
- sstabellini@kernel.org, sthemmin@microsoft.com, xen-devel@lists.xenproject.org,
- linux-scsi@vger.kernel.org, aneesh.kumar@linux.ibm.com, x86@kernel.org,
- decui@microsoft.com, Tianyu Lan <ltykernel@gmail.com>, hch@lst.de,
- michael.h.kelley@microsoft.com, mingo@redhat.com, pgonda@google.com,
- rientjes@google.com, kuba@kernel.org, jejb@linux.ibm.com,
- martin.b.radev@gmail.com, thomas.lendacky@amd.com, vkuznets@redhat.com,
- Tianyu.Lan@microsoft.com, keescook@chromium.org, arnd@arndb.de,
- konrad.wilk@oracle.com, haiyangz@microsoft.com, bp@alien8.de, luto@kernel.org,
- krish.sadhukhan@oracle.com, tglx@linutronix.de, akpm@linux-foundation.org,
- martin.petersen@oracle.com, saravanand@fb.com, netdev@vger.kernel.org,
- linux-kernel@vger.kernel.org, iommu@lists.linux-foundation.org,
- kirill.shutemov@linux.intel.com, hannes@cmpxchg.org, ardb@kernel.org,
- robin.murphy@arm.com, davem@davemloft.net, rppt@kernel.org
+In-Reply-To: <20210709033502.3545820-2-stevensd@google.com>
+User-Agent: Mutt/1.10.1 (2018-07-13)
+Cc: linux-kernel@vger.kernel.org, Tom Murphy <murphyt7@tcd.ie>,
+ iommu@lists.linux-foundation.org, Robin Murphy <robin.murphy@arm.com>
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -95,11 +89,56 @@ Content-Transfer-Encoding: 7bit
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-On Mon, Aug 02, 2021 at 03:11:40PM +0200, Juergen Gross wrote:
-> As those cases are all mutually exclusive, wouldn't a static_call() be
-> the appropriate solution?
+On Fri, Jul 09, 2021 at 12:34:59PM +0900, David Stevens wrote:
+> From: David Stevens <stevensd@chromium.org>
+> 
+> The is_swiotlb_buffer function takes the physical address of the swiotlb
+> buffer, not the physical address of the original buffer. The sglist
+> contains the physical addresses of the original buffer, so for the
+> sync_sg functions to work properly when a bounce buffer might have been
+> used, we need to use iommu_iova_to_phys to look up the physical address.
+> This is what sync_single does, so call that function on each sglist
+> segment.
+> 
+> The previous code mostly worked because swiotlb does the transfer on map
+> and unmap. However, any callers which use DMA_ATTR_SKIP_CPU_SYNC with
+> sglists or which call sync_sg would not have had anything copied to the
+> bounce buffer.
+> 
+> Fixes: 82612d66d51d ("iommu: Allow the dma-iommu api to use bounce buffers")
+> Signed-off-by: David Stevens <stevensd@chromium.org>
+> ---
+>  drivers/iommu/dma-iommu.c | 26 +++++++++++++-------------
+>  1 file changed, 13 insertions(+), 13 deletions(-)
+> 
+> diff --git a/drivers/iommu/dma-iommu.c b/drivers/iommu/dma-iommu.c
+> index 7bcdd1205535..eac65302439e 100644
+> --- a/drivers/iommu/dma-iommu.c
+> +++ b/drivers/iommu/dma-iommu.c
+> @@ -811,14 +811,14 @@ static void iommu_dma_sync_sg_for_cpu(struct device *dev,
+>  	if (dev_is_dma_coherent(dev) && !dev_is_untrusted(dev))
+>  		return;
+>  
+> -	for_each_sg(sgl, sg, nelems, i) {
+> -		if (!dev_is_dma_coherent(dev))
+> -			arch_sync_dma_for_cpu(sg_phys(sg), sg->length, dir);
+> -
+> -		if (is_swiotlb_buffer(sg_phys(sg)))
+> +	if (dev_is_untrusted(dev))
+> +		for_each_sg(sgl, sg, nelems, i)
+> +			iommu_dma_sync_single_for_cpu(dev, sg_dma_address(sg),
+> +						      sg->length, dir);
+> +	else
+> +		for_each_sg(sgl, sg, nelems, i)
+>  			swiotlb_sync_single_for_cpu(dev, sg_phys(sg),
+>  						    sg->length, dir);
 
-Right, static_call() is even better, thanks.
+Doesn't this skip arch_sync_dma_for_cpu() for non-coherent trusted devices?
+
+Why not skip the extra dev_is_untrusted(dev) call here and just call
+iommu_dma_sync_single_for_cpu() for each entry regardless?
+
+Will
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
