@@ -6,70 +6,70 @@ X-Spam-Status: No, score=-3.7 required=3.0 tests=BAYES_00,
 	HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,
 	URIBL_BLOCKED autolearn=no autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D072EC43214
-	for <iommu@archiver.kernel.org>; Mon,  2 Aug 2021 12:01:51 +0000 (UTC)
-Received: from smtp2.osuosl.org (smtp2.osuosl.org [140.211.166.133])
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D622CC4338F
+	for <iommu@archiver.kernel.org>; Mon,  2 Aug 2021 12:08:11 +0000 (UTC)
+Received: from smtp3.osuosl.org (smtp3.osuosl.org [140.211.166.136])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 8330461029
-	for <iommu@archiver.kernel.org>; Mon,  2 Aug 2021 12:01:51 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.4.1 mail.kernel.org 8330461029
+	by mail.kernel.org (Postfix) with ESMTPS id 6A5F460FA0
+	for <iommu@archiver.kernel.org>; Mon,  2 Aug 2021 12:08:11 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.4.1 mail.kernel.org 6A5F460FA0
 Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=8bytes.org
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by smtp2.osuosl.org (Postfix) with ESMTP id 37D5A40161;
-	Mon,  2 Aug 2021 12:01:51 +0000 (UTC)
+	by smtp3.osuosl.org (Postfix) with ESMTP id 332586080F;
+	Mon,  2 Aug 2021 12:08:11 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from smtp2.osuosl.org ([127.0.0.1])
-	by localhost (smtp2.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id eyt_PZSb1mDt; Mon,  2 Aug 2021 12:01:50 +0000 (UTC)
-Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [IPv6:2605:bc80:3010:104::8cd3:938])
-	by smtp2.osuosl.org (Postfix) with ESMTPS id AA49E400BD;
-	Mon,  2 Aug 2021 12:01:49 +0000 (UTC)
+Received: from smtp3.osuosl.org ([127.0.0.1])
+	by localhost (smtp3.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+	with ESMTP id 3ffQ7fml0rQ0; Mon,  2 Aug 2021 12:08:09 +0000 (UTC)
+Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
+	by smtp3.osuosl.org (Postfix) with ESMTPS id 597E860687;
+	Mon,  2 Aug 2021 12:08:09 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 8AE55C0010;
-	Mon,  2 Aug 2021 12:01:49 +0000 (UTC)
-Received: from smtp2.osuosl.org (smtp2.osuosl.org [140.211.166.133])
- by lists.linuxfoundation.org (Postfix) with ESMTP id B1193C000E
- for <iommu@lists.linux-foundation.org>; Mon,  2 Aug 2021 12:01:48 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 35060C0010;
+	Mon,  2 Aug 2021 12:08:09 +0000 (UTC)
+Received: from smtp1.osuosl.org (smtp1.osuosl.org [IPv6:2605:bc80:3010::138])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 59657C000E
+ for <iommu@lists.linux-foundation.org>; Mon,  2 Aug 2021 12:08:08 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by smtp2.osuosl.org (Postfix) with ESMTP id AA84C40161
- for <iommu@lists.linux-foundation.org>; Mon,  2 Aug 2021 12:01:48 +0000 (UTC)
+ by smtp1.osuosl.org (Postfix) with ESMTP id 3BA7E839BB
+ for <iommu@lists.linux-foundation.org>; Mon,  2 Aug 2021 12:08:08 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from smtp2.osuosl.org ([127.0.0.1])
- by localhost (smtp2.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id raaMqEnCcBvR for <iommu@lists.linux-foundation.org>;
- Mon,  2 Aug 2021 12:01:48 +0000 (UTC)
+Received: from smtp1.osuosl.org ([127.0.0.1])
+ by localhost (smtp1.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+ with ESMTP id pX820Ss0ZgY4 for <iommu@lists.linux-foundation.org>;
+ Mon,  2 Aug 2021 12:08:03 +0000 (UTC)
 X-Greylist: from auto-whitelisted by SQLgrey-1.8.0
-Received: from theia.8bytes.org (8bytes.org [81.169.241.247])
- by smtp2.osuosl.org (Postfix) with ESMTPS id DC7FE400BD
- for <iommu@lists.linux-foundation.org>; Mon,  2 Aug 2021 12:01:47 +0000 (UTC)
+Received: from theia.8bytes.org (8bytes.org
+ [IPv6:2a01:238:4383:600:38bc:a715:4b6d:a889])
+ by smtp1.osuosl.org (Postfix) with ESMTPS id 716B682E19
+ for <iommu@lists.linux-foundation.org>; Mon,  2 Aug 2021 12:08:03 +0000 (UTC)
 Received: by theia.8bytes.org (Postfix, from userid 1000)
- id 2A79D379; Mon,  2 Aug 2021 14:01:45 +0200 (CEST)
-Date: Mon, 2 Aug 2021 14:01:41 +0200
+ id BBD92379; Mon,  2 Aug 2021 14:08:00 +0200 (CEST)
+Date: Mon, 2 Aug 2021 14:07:59 +0200
 From: Joerg Roedel <joro@8bytes.org>
-To: Dave Hansen <dave.hansen@intel.com>
-Subject: Re: [PATCH 03/13] x86/HV: Add new hvcall guest address host
- visibility support
-Message-ID: <YQfepYTC4n6agq9z@8bytes.org>
+To: Tianyu Lan <ltykernel@gmail.com>
+Subject: Re: [PATCH 04/13] HV: Mark vmbus ring buffer visible to host in
+ Isolation VM
+Message-ID: <YQfgH04t2SqacnHn@8bytes.org>
 References: <20210728145232.285861-1-ltykernel@gmail.com>
- <20210728145232.285861-4-ltykernel@gmail.com>
- <c00e269c-da4c-c703-0182-0221c73a76cc@intel.com>
+ <20210728145232.285861-5-ltykernel@gmail.com>
 MIME-Version: 1.0
 Content-Disposition: inline
-In-Reply-To: <c00e269c-da4c-c703-0182-0221c73a76cc@intel.com>
+In-Reply-To: <20210728145232.285861-5-ltykernel@gmail.com>
 Cc: linux-hyperv@vger.kernel.org, brijesh.singh@amd.com, david@redhat.com,
  peterz@infradead.org, dave.hansen@linux.intel.com, vkuznets@redhat.com,
  hpa@zytor.com, anparri@microsoft.com, kys@microsoft.com, will@kernel.org,
  boris.ostrovsky@oracle.com, linux-arch@vger.kernel.org, sfr@canb.auug.org.au,
  wei.liu@kernel.org, sstabellini@kernel.org, sthemmin@microsoft.com,
  xen-devel@lists.xenproject.org, linux-scsi@vger.kernel.org,
- aneesh.kumar@linux.ibm.com, x86@kernel.org, decui@microsoft.com,
- Tianyu Lan <ltykernel@gmail.com>, hch@lst.de, michael.h.kelley@microsoft.com,
- mingo@redhat.com, pgonda@google.com, rientjes@google.com, kuba@kernel.org,
- jejb@linux.ibm.com, martin.b.radev@gmail.com, thomas.lendacky@amd.com,
- Tianyu.Lan@microsoft.com, keescook@chromium.org, arnd@arndb.de,
- konrad.wilk@oracle.com, haiyangz@microsoft.com, bp@alien8.de, luto@kernel.org,
+ aneesh.kumar@linux.ibm.com, x86@kernel.org, decui@microsoft.com, hch@lst.de,
+ michael.h.kelley@microsoft.com, mingo@redhat.com, pgonda@google.com,
+ rientjes@google.com, kuba@kernel.org, jejb@linux.ibm.com,
+ martin.b.radev@gmail.com, thomas.lendacky@amd.com, Tianyu.Lan@microsoft.com,
+ keescook@chromium.org, arnd@arndb.de, konrad.wilk@oracle.com,
+ haiyangz@microsoft.com, bp@alien8.de, luto@kernel.org,
  krish.sadhukhan@oracle.com, tglx@linutronix.de, akpm@linux-foundation.org,
  jgross@suse.com, martin.petersen@oracle.com, saravanand@fb.com,
  netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
@@ -93,19 +93,17 @@ Content-Transfer-Encoding: 7bit
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-On Wed, Jul 28, 2021 at 08:29:41AM -0700, Dave Hansen wrote:
-> __set_memory_enc_dec() is turning into a real mess.  SEV, TDX and now
-> Hyper-V are messing around in here.
+On Wed, Jul 28, 2021 at 10:52:19AM -0400, Tianyu Lan wrote:
+> +	if (type == HV_GPADL_BUFFER)
+> +		index = 0;
+> +	else
+> +		index = channel->gpadl_range[1].gpadlhandle ? 2 : 1;
 
-I was going to suggest a PV_OPS call where the fitting implementation
-for the guest environment can be plugged in at boot. There is TDX and an
-SEV(-SNP) case, a Hyper-V case, and likely more coming up from other
-cloud/hypervisor vendors. Hiding all these behind feature checks is not
-going to make things cleaner.
+Hmm... This doesn't look very robust. Can you set fixed indexes for
+different buffer types? HV_GPADL_BUFFER already has fixed index 0. But
+as it is implemented here you risk that index 2 gets overwritten by
+subsequent calls.
 
-Regards,
-
-	Joerg
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
