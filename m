@@ -7,69 +7,68 @@ X-Spam-Status: No, score=-15.3 required=3.0 tests=BAYES_00,DKIM_INVALID,
 	SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_SANE_1 autolearn=ham
 	autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E25F8C432BE
-	for <iommu@archiver.kernel.org>; Mon,  2 Aug 2021 13:50:45 +0000 (UTC)
-Received: from smtp2.osuosl.org (smtp2.osuosl.org [140.211.166.133])
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 25976C4338F
+	for <iommu@archiver.kernel.org>; Mon,  2 Aug 2021 13:54:55 +0000 (UTC)
+Received: from smtp1.osuosl.org (smtp1.osuosl.org [140.211.166.138])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 9AEB861175
-	for <iommu@archiver.kernel.org>; Mon,  2 Aug 2021 13:50:45 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.4.1 mail.kernel.org 9AEB861175
+	by mail.kernel.org (Postfix) with ESMTPS id BE3AD61165
+	for <iommu@archiver.kernel.org>; Mon,  2 Aug 2021 13:54:54 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.4.1 mail.kernel.org BE3AD61165
 Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=kernel.org
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by smtp2.osuosl.org (Postfix) with ESMTP id 5E439401C3;
-	Mon,  2 Aug 2021 13:50:45 +0000 (UTC)
+	by smtp1.osuosl.org (Postfix) with ESMTP id 93D0C8322E;
+	Mon,  2 Aug 2021 13:54:54 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from smtp2.osuosl.org ([127.0.0.1])
-	by localhost (smtp2.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id aDziChhuGI1m; Mon,  2 Aug 2021 13:50:44 +0000 (UTC)
-Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by smtp2.osuosl.org (Postfix) with ESMTPS id E0CA240004;
-	Mon,  2 Aug 2021 13:50:43 +0000 (UTC)
-Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id B3010C0010;
-	Mon,  2 Aug 2021 13:50:43 +0000 (UTC)
-Received: from smtp1.osuosl.org (smtp1.osuosl.org [IPv6:2605:bc80:3010::138])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 9AE1CC000E
- for <iommu@lists.linux-foundation.org>; Mon,  2 Aug 2021 13:50:42 +0000 (UTC)
-Received: from localhost (localhost [127.0.0.1])
- by smtp1.osuosl.org (Postfix) with ESMTP id 8A95183976
- for <iommu@lists.linux-foundation.org>; Mon,  2 Aug 2021 13:50:42 +0000 (UTC)
-X-Virus-Scanned: amavisd-new at osuosl.org
-Authentication-Results: smtp1.osuosl.org (amavisd-new);
- dkim=pass (2048-bit key) header.d=kernel.org
 Received: from smtp1.osuosl.org ([127.0.0.1])
- by localhost (smtp1.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id zrj8PO4qWPNI for <iommu@lists.linux-foundation.org>;
- Mon,  2 Aug 2021 13:50:42 +0000 (UTC)
+	by localhost (smtp1.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+	with ESMTP id kUatbLoFRfm9; Mon,  2 Aug 2021 13:54:53 +0000 (UTC)
+Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [IPv6:2605:bc80:3010:104::8cd3:938])
+	by smtp1.osuosl.org (Postfix) with ESMTPS id 7F875831F8;
+	Mon,  2 Aug 2021 13:54:53 +0000 (UTC)
+Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 4F559C0010;
+	Mon,  2 Aug 2021 13:54:53 +0000 (UTC)
+Received: from smtp4.osuosl.org (smtp4.osuosl.org [IPv6:2605:bc80:3010::137])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id BC8F9C000E
+ for <iommu@lists.linux-foundation.org>; Mon,  2 Aug 2021 13:54:51 +0000 (UTC)
+Received: from localhost (localhost [127.0.0.1])
+ by smtp4.osuosl.org (Postfix) with ESMTP id AC1FE40249
+ for <iommu@lists.linux-foundation.org>; Mon,  2 Aug 2021 13:54:51 +0000 (UTC)
+X-Virus-Scanned: amavisd-new at osuosl.org
+Authentication-Results: smtp4.osuosl.org (amavisd-new);
+ dkim=pass (2048-bit key) header.d=kernel.org
+Received: from smtp4.osuosl.org ([127.0.0.1])
+ by localhost (smtp4.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+ with ESMTP id 4jezkpRDjrNa for <iommu@lists.linux-foundation.org>;
+ Mon,  2 Aug 2021 13:54:51 +0000 (UTC)
 X-Greylist: domain auto-whitelisted by SQLgrey-1.8.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
- by smtp1.osuosl.org (Postfix) with ESMTPS id 1902F83438
- for <iommu@lists.linux-foundation.org>; Mon,  2 Aug 2021 13:50:41 +0000 (UTC)
-Received: by mail.kernel.org (Postfix) with ESMTPSA id 7F6E160FC2;
- Mon,  2 Aug 2021 13:50:40 +0000 (UTC)
+ by smtp4.osuosl.org (Postfix) with ESMTPS id 3F7774022C
+ for <iommu@lists.linux-foundation.org>; Mon,  2 Aug 2021 13:54:51 +0000 (UTC)
+Received: by mail.kernel.org (Postfix) with ESMTPSA id 9D13161155;
+ Mon,  2 Aug 2021 13:54:49 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
- s=k20201202; t=1627912241;
- bh=GBr6UnZnddvBVtPy1lt2vpJ7l1kGUYvvLsBoTxeVP4w=;
+ s=k20201202; t=1627912490;
+ bh=ffsZcqleS2Msj4hKWIBmJ4DPBk3NI1GngO6NeU0SeTU=;
  h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
- b=WgH17kg3HEe1Wizzqvjcr5kTff4dkEdqHbCHlmRKCvBUGDzuRKo33Qd7IePx1dAl6
- zEFn9XAv1elezGzF2eguzFcH4uB7ngIzCRTjMsfxwLx97WmXQRM0PZkH9twIQmXNcJ
- +K58eKlj4xK/fw8FEO8pJWuYB1tIJuRNCAIRH6UFGDVxzSqWRXsWufdnPGn2/fm4hp
- zbpKwVR+N7kuGmN5sE7jRktdNflfCDv+vaoGKVd2igU4miwM6NyDTEec2pL4CTOdu1
- uKnn+Y+n7JHjTRRL/5uagoaV5XD2s5qMriVQxFCk+FV007RfhqhsH1B+JSUsGaDrq/
- 3SDJPNTUGgsNA==
-Date: Mon, 2 Aug 2021 14:50:37 +0100
+ b=VtSmunYUXbIIrXS3l/nVkmZXkowH6vo/7g7EKVHyGGAP/bs4NpsweEv1bYURFTDYP
+ hPZkudv6Q+a1gVJLvSugGrJCXJGILZJXjQzxFBTiIxO+EwtizHV5Ph4vUtdeyue8i9
+ dkMBvitTmr3l0I5+q7p3nWeLK1b9uacCWjCeefWIm0rWNNa/2bRiT4DpgiNkpZkaKH
+ uAJrliut8ve2C7rQIIMqyP5sSiyd+sOv9LtAQruboXcyd32Tn6PLVeBXRY3Ob2RSc8
+ n/n92HXPgxrkA9a9JptQmeZKFf4CSCofpomOhAAx+xF4xqHHhJZHAVliePCKrTO2Nf
+ 6KwI1rx3CS2ag==
+Date: Mon, 2 Aug 2021 14:54:46 +0100
 From: Will Deacon <will@kernel.org>
 To: David Stevens <stevensd@chromium.org>
-Subject: Re: [PATCH v2 2/4] dma-iommu: fix arch_sync_dma for map with swiotlb
-Message-ID: <20210802135037.GD28547@willie-the-truck>
+Subject: Re: [PATCH v2 3/4] dma-iommu: pass SKIP_CPU_SYNC to swiotlb unmap
+Message-ID: <20210802135446.GE28547@willie-the-truck>
 References: <20210709033502.3545820-1-stevensd@google.com>
- <20210709033502.3545820-3-stevensd@google.com>
- <20210802134059.GC28547@willie-the-truck>
+ <20210709033502.3545820-4-stevensd@google.com>
 MIME-Version: 1.0
 Content-Disposition: inline
-In-Reply-To: <20210802134059.GC28547@willie-the-truck>
+In-Reply-To: <20210709033502.3545820-4-stevensd@google.com>
 User-Agent: Mutt/1.10.1 (2018-07-13)
 Cc: linux-kernel@vger.kernel.org, Tom Murphy <murphyt7@tcd.ie>,
  iommu@lists.linux-foundation.org, Robin Murphy <robin.murphy@arm.com>
@@ -90,44 +89,33 @@ Content-Transfer-Encoding: 7bit
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-On Mon, Aug 02, 2021 at 02:40:59PM +0100, Will Deacon wrote:
-> On Fri, Jul 09, 2021 at 12:35:00PM +0900, David Stevens wrote:
-> > From: David Stevens <stevensd@chromium.org>
-> > 
-> > When calling arch_sync_dma, we need to pass it the memory that's
-> > actually being used for dma. When using swiotlb bounce buffers, this is
-> > the bounce buffer. Move arch_sync_dma into the __iommu_dma_map_swiotlb
-> > helper, so it can use the bounce buffer address if necessary. This also
-> > means it is no longer necessary to call iommu_dma_sync_sg_for_device in
-> > iommu_dma_map_sg for untrusted devices.
-> > 
-> > Fixes: 82612d66d51d ("iommu: Allow the dma-iommu api to use bounce buffers")
-> > Signed-off-by: David Stevens <stevensd@chromium.org>
-> > ---
-> >  drivers/iommu/dma-iommu.c | 16 +++++++---------
-> >  1 file changed, 7 insertions(+), 9 deletions(-)
-> > 
-> > diff --git a/drivers/iommu/dma-iommu.c b/drivers/iommu/dma-iommu.c
-> > index eac65302439e..e79e274d2dc5 100644
-> > --- a/drivers/iommu/dma-iommu.c
-> > +++ b/drivers/iommu/dma-iommu.c
-> > @@ -574,6 +574,9 @@ static dma_addr_t __iommu_dma_map_swiotlb(struct device *dev, phys_addr_t phys,
-> >  		memset(padding_start, 0, padding_size);
-> >  	}
-> >  
-> > +	if (!coherent && !(attrs & DMA_ATTR_SKIP_CPU_SYNC))
-> > +		arch_sync_dma_for_device(phys, org_size, dir);
+On Fri, Jul 09, 2021 at 12:35:01PM +0900, David Stevens wrote:
+> From: David Stevens <stevensd@chromium.org>
 > 
-> I think this relies on the swiotlb buffers residing in the linear mapping
-> (i.e. where phys_to_virt() is reliable), which doesn't look like a safe
-> assumption to me.
+> If SKIP_CPU_SYNC isn't already set, then iommu_dma_unmap_(page|sg) has
+> already called iommu_dma_sync_(single|sg)_for_cpu, so there is no need
+> to copy from the bounce buffer again.
+> 
+> Signed-off-by: David Stevens <stevensd@chromium.org>
+> ---
+>  drivers/iommu/dma-iommu.c | 3 ++-
+>  1 file changed, 2 insertions(+), 1 deletion(-)
+> 
+> diff --git a/drivers/iommu/dma-iommu.c b/drivers/iommu/dma-iommu.c
+> index e79e274d2dc5..0a9a9a343e64 100644
+> --- a/drivers/iommu/dma-iommu.c
+> +++ b/drivers/iommu/dma-iommu.c
+> @@ -505,7 +505,8 @@ static void __iommu_dma_unmap_swiotlb(struct device *dev, dma_addr_t dma_addr,
+>  	__iommu_dma_unmap(dev, dma_addr, size);
+>  
+>  	if (unlikely(is_swiotlb_buffer(phys)))
+> -		swiotlb_tbl_unmap_single(dev, phys, size, dir, attrs);
+> +		swiotlb_tbl_unmap_single(dev, phys, size, dir,
+> +					 attrs | DMA_ATTR_SKIP_CPU_SYNC);
+>  }
 
-No, sorry, ignore me here. I misread swiotlb_bounce(), so I think your
-change is good.
-
-As an aside, it strikes me that we'd probably be better off using
-uncacheable bounce buffers for non-coherent devices so we could avoid all
-this maintenance entirely.
+I think it would be cleaner to drop DMA_ATTR_SKIP_CPU_SYNC in the callers
+once they've called iommu_dma_sync_*_for_cpu().
 
 Will
 _______________________________________________
