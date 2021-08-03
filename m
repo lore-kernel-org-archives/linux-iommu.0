@@ -2,77 +2,85 @@ Return-Path: <SRS0=qwh6=M2=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-15.3 required=3.0 tests=BAYES_00,DKIM_INVALID,
-	DKIM_SIGNED,INCLUDES_CR_TRAILER,INCLUDES_PATCH,MAILING_LIST_MULTI,
-	SPF_HELO_NONE,SPF_PASS,URIBL_RED,USER_AGENT_SANE_1 autolearn=unavailable
-	autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-5.3 required=3.0 tests=BAYES_00,
+	HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,NICE_REPLY_A,SPF_HELO_NONE,
+	SPF_PASS,URIBL_RED,USER_AGENT_SANE_1 autolearn=no autolearn_force=no
+	version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D4F83C432BE
-	for <iommu@archiver.kernel.org>; Tue,  3 Aug 2021 10:36:09 +0000 (UTC)
-Received: from smtp4.osuosl.org (smtp4.osuosl.org [140.211.166.137])
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 288BCC4320E
+	for <iommu@archiver.kernel.org>; Tue,  3 Aug 2021 10:54:32 +0000 (UTC)
+Received: from smtp2.osuosl.org (smtp2.osuosl.org [140.211.166.133])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 895A7610CC
-	for <iommu@archiver.kernel.org>; Tue,  3 Aug 2021 10:36:09 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.4.1 mail.kernel.org 895A7610CC
-Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=kernel.org
+	by mail.kernel.org (Postfix) with ESMTPS id BE33561037
+	for <iommu@archiver.kernel.org>; Tue,  3 Aug 2021 10:54:31 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.4.1 mail.kernel.org BE33561037
+Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=arm.com
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by smtp4.osuosl.org (Postfix) with ESMTP id 5063740390;
-	Tue,  3 Aug 2021 10:36:09 +0000 (UTC)
+	by smtp2.osuosl.org (Postfix) with ESMTP id 7184F402B7;
+	Tue,  3 Aug 2021 10:54:31 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from smtp4.osuosl.org ([127.0.0.1])
-	by localhost (smtp4.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id cjJCVEXeiPWf; Tue,  3 Aug 2021 10:36:08 +0000 (UTC)
-Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [IPv6:2605:bc80:3010:104::8cd3:938])
-	by smtp4.osuosl.org (Postfix) with ESMTPS id 244E24038A;
-	Tue,  3 Aug 2021 10:36:08 +0000 (UTC)
+Received: from smtp2.osuosl.org ([127.0.0.1])
+	by localhost (smtp2.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+	with ESMTP id R6UnRZg05cwX; Tue,  3 Aug 2021 10:54:30 +0000 (UTC)
+Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
+	by smtp2.osuosl.org (Postfix) with ESMTPS id 0325340192;
+	Tue,  3 Aug 2021 10:54:30 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id E5C57C0010;
-	Tue,  3 Aug 2021 10:36:07 +0000 (UTC)
-Received: from smtp4.osuosl.org (smtp4.osuosl.org [140.211.166.137])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 36A87C000E
- for <iommu@lists.linux-foundation.org>; Tue,  3 Aug 2021 10:36:07 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id CC507C0010;
+	Tue,  3 Aug 2021 10:54:29 +0000 (UTC)
+Received: from smtp1.osuosl.org (smtp1.osuosl.org [IPv6:2605:bc80:3010::138])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 1A449C000E;
+ Tue,  3 Aug 2021 10:54:28 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by smtp4.osuosl.org (Postfix) with ESMTP id 18B9A4038A
- for <iommu@lists.linux-foundation.org>; Tue,  3 Aug 2021 10:36:07 +0000 (UTC)
+ by smtp1.osuosl.org (Postfix) with ESMTP id EBABD81DCA;
+ Tue,  3 Aug 2021 10:54:27 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from smtp4.osuosl.org ([127.0.0.1])
- by localhost (smtp4.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id TnkKo1EbScZs for <iommu@lists.linux-foundation.org>;
- Tue,  3 Aug 2021 10:36:05 +0000 (UTC)
+Received: from smtp1.osuosl.org ([127.0.0.1])
+ by localhost (smtp1.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+ with ESMTP id SUnKzj3FMNbG; Tue,  3 Aug 2021 10:54:27 +0000 (UTC)
 X-Greylist: domain auto-whitelisted by SQLgrey-1.8.0
-Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
- by smtp4.osuosl.org (Postfix) with ESMTPS id DD8FA40389
- for <iommu@lists.linux-foundation.org>; Tue,  3 Aug 2021 10:36:05 +0000 (UTC)
-Received: by mail.kernel.org (Postfix) with ESMTPSA id D137160F58;
- Tue,  3 Aug 2021 10:36:03 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
- s=k20201202; t=1627986965;
- bh=OKjeuOM6V0zI7ozBJZBwK2+rpt/Y8fFWQlLVfX7CcCc=;
- h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
- b=TzormALcrksfXm3/ozDNOrUjiK9T4bOuW7LOMOpv+HBrpO2IHzm1VLBOFb1krOuMU
- Lvxew2ej+IRxCVIe1c4fc9U2Hw+rVwqABkfiU7Azk2PYH3PP4gv9Ap32vkTKQPH9/Q
- agWi4w3XGZeHm+uQbqMYUWKc5X5ZIWZoAP4maZJbeBAYoquaz2KWncAkgaLFxXmCXX
- 9gjAH/b/A54MXuDRlXCiro1uFDr69tNmA3ybxzObRCnECbEPNbif5qE7fljuDi5qbJ
- LtQt+4dcn1+QUHWxtAvDiFpbZUDF2J7Rh2C6u0NIbuAQitBoqBrqZ08V4HfB+QdpmI
- FDPspXLllLHkQ==
-Date: Tue, 3 Aug 2021 11:36:00 +0100
-From: Will Deacon <will@kernel.org>
-To: Robin Murphy <robin.murphy@arm.com>
-Subject: Re: [PATCH v2 23/24] iommu/arm-smmu: Allow non-strict in
- pgtable_quirks interface
-Message-ID: <20210803103559.GA30690@willie-the-truck>
-References: <cover.1627468308.git.robin.murphy@arm.com>
- <0fcd1f5225a6b435cbc697551a6247cd435c04db.1627468310.git.robin.murphy@arm.com>
- <20210802130438.GA28547@willie-the-truck>
- <3dd7cdae-7111-6ff2-6350-a0e19fe4ab66@arm.com>
+X-Greylist: domain auto-whitelisted by SQLgrey-1.8.0
+Received: from foss.arm.com (foss.arm.com [217.140.110.172])
+ by smtp1.osuosl.org (Postfix) with ESMTP id 1DF2F81D67;
+ Tue,  3 Aug 2021 10:54:26 +0000 (UTC)
+Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
+ by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 237041396;
+ Tue,  3 Aug 2021 03:54:26 -0700 (PDT)
+Received: from [10.57.36.146] (unknown [10.57.36.146])
+ by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id 805143F40C;
+ Tue,  3 Aug 2021 03:54:22 -0700 (PDT)
+Subject: Re: [PATCH v10 01/17] iova: Export alloc_iova_fast() and
+ free_iova_fast()
+To: Yongji Xie <xieyongji@bytedance.com>, Jason Wang <jasowang@redhat.com>
+References: <20210729073503.187-1-xieyongji@bytedance.com>
+ <20210729073503.187-2-xieyongji@bytedance.com>
+ <43d88942-1cd3-c840-6fec-4155fd544d80@redhat.com>
+ <CACycT3vcpwyA3xjD29f1hGnYALyAd=-XcWp8+wJiwSqpqUu00w@mail.gmail.com>
+From: Robin Murphy <robin.murphy@arm.com>
+Message-ID: <6e05e25e-e569-402e-d81b-8ac2cff1c0e8@arm.com>
+Date: Tue, 3 Aug 2021 11:53:45 +0100
+User-Agent: Mozilla/5.0 (Windows NT 10.0; rv:78.0) Gecko/20100101
+ Thunderbird/78.12.0
 MIME-Version: 1.0
-Content-Disposition: inline
-In-Reply-To: <3dd7cdae-7111-6ff2-6350-a0e19fe4ab66@arm.com>
-User-Agent: Mutt/1.10.1 (2018-07-13)
-Cc: linux-kernel@vger.kernel.org, dianders@chromium.org,
- iommu@lists.linux-foundation.org, linux-arm-kernel@lists.infradead.org
+In-Reply-To: <CACycT3vcpwyA3xjD29f1hGnYALyAd=-XcWp8+wJiwSqpqUu00w@mail.gmail.com>
+Content-Language: en-GB
+Cc: kvm <kvm@vger.kernel.org>, "Michael S. Tsirkin" <mst@redhat.com>,
+ virtualization <virtualization@lists.linux-foundation.org>,
+ Christian Brauner <christian.brauner@canonical.com>,
+ Jonathan Corbet <corbet@lwn.net>, Matthew Wilcox <willy@infradead.org>,
+ Christoph Hellwig <hch@infradead.org>,
+ Dan Carpenter <dan.carpenter@oracle.com>,
+ Stefano Garzarella <sgarzare@redhat.com>,
+ Liu Xiaodong <xiaodong.liu@intel.com>, Joe Perches <joe@perches.com>,
+ Al Viro <viro@zeniv.linux.org.uk>, Stefan Hajnoczi <stefanha@redhat.com>,
+ songmuchun@bytedance.com, Jens Axboe <axboe@kernel.dk>,
+ He Zhe <zhe.he@windriver.com>, Greg KH <gregkh@linuxfoundation.org>,
+ Randy Dunlap <rdunlap@infradead.org>,
+ linux-kernel <linux-kernel@vger.kernel.org>, iommu@lists.linux-foundation.org,
+ bcrl@kvack.org, netdev@vger.kernel.org, linux-fsdevel@vger.kernel.org,
+ =?UTF-8?Q?Mika_Penttil=c3=a4?= <mika.penttila@nextfour.com>
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -85,109 +93,33 @@ List-Post: <mailto:iommu@lists.linux-foundation.org>
 List-Help: <mailto:iommu-request@lists.linux-foundation.org?subject=help>
 List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
  <mailto:iommu-request@lists.linux-foundation.org?subject=subscribe>
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: base64
+Content-Type: text/plain; charset="utf-8"; Format="flowed"
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-On Mon, Aug 02, 2021 at 03:15:50PM +0100, Robin Murphy wrote:
-> On 2021-08-02 14:04, Will Deacon wrote:
-> > On Wed, Jul 28, 2021 at 04:58:44PM +0100, Robin Murphy wrote:
-> > > To make io-pgtable aware of a flush queue being dynamically enabled,
-> > > allow IO_PGTABLE_QUIRK_NON_STRICT to be set even after a domain has been
-> > > attached to, and hook up the final piece of the puzzle in iommu-dma.
-> > > 
-> > > Signed-off-by: Robin Murphy <robin.murphy@arm.com>
-> > > ---
-> > >   drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c | 15 +++++++++++++++
-> > >   drivers/iommu/arm/arm-smmu/arm-smmu.c       | 11 +++++++++++
-> > >   drivers/iommu/dma-iommu.c                   |  3 +++
-> > >   3 files changed, 29 insertions(+)
-> > > 
-> > > diff --git a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
-> > > index 19400826eba7..40fa9cb382c3 100644
-> > > --- a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
-> > > +++ b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
-> > > @@ -2711,6 +2711,20 @@ static int arm_smmu_enable_nesting(struct iommu_domain *domain)
-> > >   	return ret;
-> > >   }
-> > > +static int arm_smmu_set_pgtable_quirks(struct iommu_domain *domain,
-> > > +		unsigned long quirks)
-> > > +{
-> > > +	struct arm_smmu_domain *smmu_domain = to_smmu_domain(domain);
-> > > +
-> > > +	if (quirks == IO_PGTABLE_QUIRK_NON_STRICT && smmu_domain->pgtbl_ops) {
-> > > +		struct io_pgtable *iop = io_pgtable_ops_to_pgtable(smmu_domain->pgtbl_ops);
-> > > +
-> > > +		iop->cfg.quirks |= IO_PGTABLE_QUIRK_NON_STRICT;
-> > > +		return 0;
-> > > +	}
-> > > +	return -EINVAL;
-> > > +}
-> > 
-> > I don't see anything serialising this against a concurrent iommu_unmap(), so
-> > the ordering and atomicity looks quite suspicious to me here. I don't think
-> > it's just the page-table quirks either, but also setting cookie->fq_domain.
-> 
-> Heh, I confess to very much taking the cheeky "let's say nothing and see
-> what Will thinks about concurrency" approach here :)
-
-Damnit, I fell for that didn't I?
-
-Overall, I'm really nervous about the concurrency here and think we'd be
-better off requiring the unbind as we have for the other domain changes.
-
-> The beauty of only allowing relaxation in the strict->non-strict direction
-> is that it shouldn't need serialising as such - it doesn't matter if the
-> update to cookie->fq_domain is observed between iommu_unmap() and
-> iommu_dma_free_iova(), since there's no correctness impact to queueing IOVAs
-> which may already have been invalidated and may or may not have been synced.
-> AFAICS the only condition which matters is that the setting of the
-> io-pgtable quirk must observe fq_domain being set. It feels like there must
-> be enough dependencies on the read side, but we might need an smp_wmb()
-> between the two in iommu_dma_init_fq()?
-> 
-> I've also flip-flopped a bit on whether fq_domain needs to be accessed with
-> READ_ONCE/WRITE_ONCE - by the time of posting I'd convinced myself that it
-> was probably OK, but looking again now I suppose this wacky reordering is
-> theoretically possible:
-> 
-> 
-> 	iommu_dma_unmap() {
-> 		bool free_fq = cookie->fq_domain; // == false
-> 
-> 		iommu_unmap();
-> 
-> 		if (!cookie->fq_domain) // observes new non-NULL value
-> 			iommu_tlb_sync(); // skipped
-> 
-> 		iommu_dma_free_iova { // inlined
-> 			if (free_fq) // false
-> 				queue_iova();
-> 			else
-> 				free_iova_fast(); // Uh-oh!
-> 		}
-> 	}
-> 
-> so although I still can't see atomicity being a problem I guess we do need
-> it for the sake of reordering at least.
-
-With your changes, I think quite a few things can go wrong.
-
-  * cookie->fq_domain may be observed but iovad->fq could be NULL
-  * We can miss the smp_wmb() in the pgtable code but end up deferring the
-    IOVA reclaim
-  * iommu_change_dev_def_domain() only holds the group mutex afaict, so can
-    possibly run concurrently with itself on the same domain?
-  * iommu_dma_init_fq() can flip the domain type back from
-    IOMMU_DOMAIN_DMA_FQ to IOMMU_DOMAIN_DMA on the error path
-  * set_pgtable_quirks() isn't atomic, which probably is ok for now, but the
-    moment we use it anywhere else it's dangerous
-
-and I suspect there are more :/
-
-Will
-_______________________________________________
-iommu mailing list
-iommu@lists.linux-foundation.org
-https://lists.linuxfoundation.org/mailman/listinfo/iommu
+T24gMjAyMS0wOC0wMyAwOTo1NCwgWW9uZ2ppIFhpZSB3cm90ZToKPiBPbiBUdWUsIEF1ZyAzLCAy
+MDIxIGF0IDM6NDEgUE0gSmFzb24gV2FuZyA8amFzb3dhbmdAcmVkaGF0LmNvbT4gd3JvdGU6Cj4+
+Cj4+Cj4+IOWcqCAyMDIxLzcvMjkg5LiL5Y2IMzozNCwgWGllIFlvbmdqaSDlhpnpgZM6Cj4+PiBF
+eHBvcnQgYWxsb2NfaW92YV9mYXN0KCkgYW5kIGZyZWVfaW92YV9mYXN0KCkgc28gdGhhdAo+Pj4g
+c29tZSBtb2R1bGVzIGNhbiB1c2UgaXQgdG8gaW1wcm92ZSBpb3ZhIGFsbG9jYXRpb24gZWZmaWNp
+ZW5jeS4KPj4KPj4KPj4gSXQncyBiZXR0ZXIgdG8gZXhwbGFpbiB3aHkgYWxsb2NfaW92YSgpIGlz
+IG5vdCBzdWZmaWNpZW50IGhlcmUuCj4+Cj4gCj4gRmluZS4KCldoYXQgSSBmYWlsIHRvIHVuZGVy
+c3RhbmQgZnJvbSB0aGUgbGF0ZXIgcGF0Y2hlcyBpcyB3aGF0IHRoZSBJT1ZBIGRvbWFpbiAKYWN0
+dWFsbHkgcmVwcmVzZW50cy4gSWYgdGhlICJkZXZpY2UiIGlzIGEgdXNlcnNwYWNlIHByb2Nlc3Mg
+dGhlbiAKbG9naWNhbGx5IHRoZSAiSU9WQSIgd291bGQgYmUgdGhlIHVzZXJzcGFjZSBhZGRyZXNz
+LCBzbyBwcmVzdW1hYmx5IApzb21ld2hlcmUgeW91J3JlIGhhdmluZyB0byB0cmFuc2xhdGUgYmV0
+d2VlbiB0aGlzIGFyYml0cmFyeSBhZGRyZXNzIApzcGFjZSBhbmQgYWN0dWFsIHVzYWJsZSBhZGRy
+ZXNzZXMgLSBpZiB5b3UncmUgd29ycmllZCBhYm91dCBlZmZpY2llbmN5IApzdXJlbHkgaXQgd291
+bGQgYmUgZXZlbiBiZXR0ZXIgdG8gbm90IGRvIHRoYXQ/CgpQcmVzdW1hYmx5IHVzZXJzcGFjZSBk
+b2Vzbid0IGhhdmUgYW55IGNvbmNlcm4gYWJvdXQgYWxpZ25tZW50IGFuZCB0aGUgCnRoaW5ncyB3
+ZSBoYXZlIHRvIHdvcnJ5IGFib3V0IGZvciB0aGUgRE1BIEFQSSBpbiBnZW5lcmFsLCBzbyBpdCdz
+IHByZXR0eSAKbXVjaCBqdXN0IGFsbG9jYXRpbmcgc2xvdHMgaW4gYSBidWZmZXIsIGFuZCB0aGVy
+ZSBhcmUgZmFyIG1vcmUgZWZmZWN0aXZlIAp3YXlzIHRvIGRvIHRoYXQgdGhhbiBhIGZ1bGwtYmxv
+d24gYWRkcmVzcyBzcGFjZSBtYW5hZ2VyLiBJZiB5b3UncmUgZ29pbmcgCnRvIHJldXNlIGFueSBp
+bmZyYXN0cnVjdHVyZSBJJ2QgaGF2ZSBleHBlY3RlZCBpdCB0byBiZSBTV0lPVExCIHJhdGhlciAK
+dGhhbiB0aGUgSU9WQSBhbGxvY2F0b3IuIEJlY2F1c2UsIHkna25vdywgeW91J3JlICpsaXRlcmFs
+bHkgaW1wbGVtZW50aW5nIAphIHNvZnR3YXJlIEkvTyBUTEIqIDspCgpSb2Jpbi4KX19fX19fX19f
+X19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX18KaW9tbXUgbWFpbGluZyBsaXN0
+CmlvbW11QGxpc3RzLmxpbnV4LWZvdW5kYXRpb24ub3JnCmh0dHBzOi8vbGlzdHMubGludXhmb3Vu
+ZGF0aW9uLm9yZy9tYWlsbWFuL2xpc3RpbmZvL2lvbW11
