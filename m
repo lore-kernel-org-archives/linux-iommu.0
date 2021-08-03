@@ -2,63 +2,87 @@ Return-Path: <SRS0=qwh6=M2=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-13.8 required=3.0 tests=BAYES_00,
-	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_CR_TRAILER,INCLUDES_PATCH,
-	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,URIBL_RED autolearn=ham
+X-Spam-Status: No, score=-5.1 required=3.0 tests=BAYES_00,DKIM_INVALID,
+	DKIM_SIGNED,HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,NICE_REPLY_A,
+	SPF_HELO_NONE,SPF_PASS,URIBL_RED,USER_AGENT_SANE_1 autolearn=no
 	autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 87D2BC4338F
-	for <iommu@archiver.kernel.org>; Tue,  3 Aug 2021 16:20:17 +0000 (UTC)
-Received: from smtp3.osuosl.org (smtp3.osuosl.org [140.211.166.136])
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 41D0AC4338F
+	for <iommu@archiver.kernel.org>; Tue,  3 Aug 2021 18:50:36 +0000 (UTC)
+Received: from smtp1.osuosl.org (smtp1.osuosl.org [140.211.166.138])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 195A761037
-	for <iommu@archiver.kernel.org>; Tue,  3 Aug 2021 16:20:17 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.4.1 mail.kernel.org 195A761037
-Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=wantstofly.org
+	by mail.kernel.org (Postfix) with ESMTPS id CFBC960F58
+	for <iommu@archiver.kernel.org>; Tue,  3 Aug 2021 18:50:35 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.4.1 mail.kernel.org CFBC960F58
+Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=linux.microsoft.com
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by smtp3.osuosl.org (Postfix) with ESMTP id CFA5F608C7;
-	Tue,  3 Aug 2021 16:20:16 +0000 (UTC)
+	by smtp1.osuosl.org (Postfix) with ESMTP id 8C6A583126;
+	Tue,  3 Aug 2021 18:50:35 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from smtp3.osuosl.org ([127.0.0.1])
-	by localhost (smtp3.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id XMQTkhu4RKP4; Tue,  3 Aug 2021 16:20:15 +0000 (UTC)
-Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by smtp3.osuosl.org (Postfix) with ESMTPS id 84A1E6078E;
-	Tue,  3 Aug 2021 16:20:15 +0000 (UTC)
+Received: from smtp1.osuosl.org ([127.0.0.1])
+	by localhost (smtp1.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+	with ESMTP id 4P2pnBWpSair; Tue,  3 Aug 2021 18:50:34 +0000 (UTC)
+Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [IPv6:2605:bc80:3010:104::8cd3:938])
+	by smtp1.osuosl.org (Postfix) with ESMTPS id 39C40829B1;
+	Tue,  3 Aug 2021 18:50:34 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 63436C0010;
-	Tue,  3 Aug 2021 16:20:15 +0000 (UTC)
-Received: from smtp4.osuosl.org (smtp4.osuosl.org [140.211.166.137])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 84641C000E
- for <iommu@lists.linux-foundation.org>; Tue,  3 Aug 2021 16:20:14 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id F163BC0010;
+	Tue,  3 Aug 2021 18:50:33 +0000 (UTC)
+Received: from smtp3.osuosl.org (smtp3.osuosl.org [IPv6:2605:bc80:3010::136])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 4EB40C000E;
+ Tue,  3 Aug 2021 18:40:57 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by smtp4.osuosl.org (Postfix) with ESMTP id 66E4B404F9
- for <iommu@lists.linux-foundation.org>; Tue,  3 Aug 2021 16:20:14 +0000 (UTC)
+ by smtp3.osuosl.org (Postfix) with ESMTP id 3E763608DD;
+ Tue,  3 Aug 2021 18:40:57 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from smtp4.osuosl.org ([127.0.0.1])
- by localhost (smtp4.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id gwXDfDGtLmuR for <iommu@lists.linux-foundation.org>;
- Tue,  3 Aug 2021 16:20:13 +0000 (UTC)
-X-Greylist: from auto-whitelisted by SQLgrey-1.8.0
-Received: from mail.wantstofly.org (hmm.wantstofly.org [213.239.204.108])
- by smtp4.osuosl.org (Postfix) with ESMTPS id 5E6DC40287
- for <iommu@lists.linux-foundation.org>; Tue,  3 Aug 2021 16:20:13 +0000 (UTC)
-Received: by mail.wantstofly.org (Postfix, from userid 1000)
- id 2D42E7F083; Tue,  3 Aug 2021 19:20:11 +0300 (EEST)
-Date: Tue, 3 Aug 2021 19:20:11 +0300
-From: Lennert Buytenhek <buytenh@wantstofly.org>
-To: "Suthikulpanit, Suravee" <suravee.suthikulpanit@amd.com>
-Subject: Re: [PATCH v2] iommu/amd: Use report_iommu_fault()
-Message-ID: <YQlsu22XkMWPsJoz@wantstofly.org>
-References: <YP7jbfRFxMeFONKl@wantstofly.org>
- <8cc39d3c-6086-cfe3-9743-901c51ad4bab@amd.com>
- <YQNksD4G1SS/yGM2@wantstofly.org>
+Authentication-Results: smtp3.osuosl.org (amavisd-new);
+ dkim=pass (1024-bit key) header.d=linux.microsoft.com
+Received: from smtp3.osuosl.org ([127.0.0.1])
+ by localhost (smtp3.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+ with ESMTP id kyV7ZZPWignv; Tue,  3 Aug 2021 18:40:55 +0000 (UTC)
+X-Greylist: domain auto-whitelisted by SQLgrey-1.8.0
+X-Greylist: domain auto-whitelisted by SQLgrey-1.8.0
+Received: from linux.microsoft.com (linux.microsoft.com [13.77.154.182])
+ by smtp3.osuosl.org (Postfix) with ESMTP id 31032608D6;
+ Tue,  3 Aug 2021 18:40:55 +0000 (UTC)
+Received: from [192.168.1.115] (unknown [223.178.56.171])
+ by linux.microsoft.com (Postfix) with ESMTPSA id ED6F4208AB1A;
+ Tue,  3 Aug 2021 11:40:49 -0700 (PDT)
+DKIM-Filter: OpenDKIM Filter v2.11.0 linux.microsoft.com ED6F4208AB1A
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linux.microsoft.com;
+ s=default; t=1628016054;
+ bh=HCe3GshWTF7vPJaEOofUaKnKzeINHIBZgPnnV5jC2+0=;
+ h=Subject:To:Cc:References:From:Date:In-Reply-To:From;
+ b=mHZgfl1Q5lJPQVPX9SoXjFNffyQd154C3GYng+WnVdmQuXOaOWJ+wjQ/17TCrJkBn
+ az9me95RrkjyJ9knQ6lP/rPHR20eA2rCcm05E2fBci6t9URSfPF27JouSoZjYuDWaP
+ IWxiJRtYcxk+787gLGL0VPqkWFJNWb1jw2rIPYh0=
+Subject: Re: [RFC v1 5/8] mshv: add paravirtualized IOMMU support
+To: Wei Liu <wei.liu@kernel.org>,
+ Linux on Hyper-V List <linux-hyperv@vger.kernel.org>
+References: <20210709114339.3467637-1-wei.liu@kernel.org>
+ <20210709114339.3467637-6-wei.liu@kernel.org>
+From: Praveen Kumar <kumarpraveen@linux.microsoft.com>
+Message-ID: <77670985-2a1b-7bbd-2ede-4b7810c3e220@linux.microsoft.com>
+Date: Wed, 4 Aug 2021 00:10:45 +0530
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:78.0) Gecko/20100101
+ Thunderbird/78.12.0
 MIME-Version: 1.0
-Content-Disposition: inline
-In-Reply-To: <YQNksD4G1SS/yGM2@wantstofly.org>
-Cc: iommu@lists.linux-foundation.org
+In-Reply-To: <20210709114339.3467637-6-wei.liu@kernel.org>
+Content-Language: en-US
+X-Mailman-Approved-At: Tue, 03 Aug 2021 18:50:33 +0000
+Cc: "K. Y. Srinivasan" <kys@microsoft.com>,
+ Stephen Hemminger <sthemmin@microsoft.com>, pasha.tatashin@soleen.com,
+ Will Deacon <will@kernel.org>, Dexuan Cui <decui@microsoft.com>,
+ Linux Kernel List <linux-kernel@vger.kernel.org>,
+ Michael Kelley <mikelley@microsoft.com>,
+ "open list:IOMMU DRIVERS" <iommu@lists.linux-foundation.org>,
+ Nuno Das Neves <nunodasneves@linux.microsoft.com>,
+ Sunil Muthuswamy <sunilmut@microsoft.com>,
+ virtualization@lists.linux-foundation.org,
+ Vineeth Pillai <viremana@linux.microsoft.com>,
+ Haiyang Zhang <haiyangz@microsoft.com>
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -76,184 +100,256 @@ Content-Transfer-Encoding: 7bit
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-On Fri, Jul 30, 2021 at 05:32:16AM +0300, Lennert Buytenhek wrote:
+On 09-07-2021 17:13, Wei Liu wrote:
+> +static void hv_iommu_domain_free(struct iommu_domain *d)
+> +{
+> +	struct hv_iommu_domain *domain = to_hv_iommu_domain(d);
+> +	unsigned long flags;
+> +	u64 status;
+> +	struct hv_input_delete_device_domain *input;
+> +
+> +	if (is_identity_domain(domain) || is_null_domain(domain))
+> +		return;
+> +
+> +	local_irq_save(flags);
+> +	input = *this_cpu_ptr(hyperv_pcpu_input_arg);
+> +	memset(input, 0, sizeof(*input));
+> +
+> +	input->device_domain= domain->device_domain;
+> +
+> +	status = hv_do_hypercall(HVCALL_DELETE_DEVICE_DOMAIN, input, NULL);
+> +
+> +	local_irq_restore(flags);
+> +
+> +	if (!hv_result_success(status))
+> +		pr_err("%s: hypercall failed, status %lld\n", __func__, status);
 
-> > > This patch makes iommu/amd call report_iommu_fault() when an I/O page
-> > > fault occurs, which has two effects:
-> > > 
-> > > 1) It allows device drivers to register a callback to be notified of
-> > >     I/O page faults, via the iommu_set_fault_handler() API.
-> > > 
-> > > 2) It triggers the io_page_fault tracepoint in report_iommu_fault()
-> > >     when an I/O page fault occurs.
-> > > 
-> > > I'm mainly interested in (2).  We have a daemon with some rasdaemon-like
-> > > functionality for handling platform errors, and being able to be notified
-> > > of I/O page faults for initiating corrective action is very useful -- and
-> > > receiving such events via event tracing is a lot nicer than having to
-> > > scrape them from kmsg.
-> > > 
-> > > A number of other IOMMU drivers already use report_iommu_fault(), and
-> > > I/O page faults on those IOMMUs therefore already seem to trigger this
-> > > tracepoint -- but this isn't (yet) the case for AMD-Vi and Intel DMAR.
-> > > 
-> > > I copied the logic from the other callers of report_iommu_fault(), where
-> > > if that function returns zero, the driver will have handled the fault,
-> > > in which case we avoid logging information about the fault to the printk
-> > > buffer from the IOMMU driver.
-> > > 
-> > > With this patch I see io_page_fault event tracing entries as expected:
-> > > 
-> > >     irq/24-AMD-Vi-48    [002] ....   978.554289: io_page_fault: IOMMU:[drvname] 0000:05:00.0 iova=0x0000000091482640 flags=0x0000
-> > >     irq/24-AMD-Vi-48    [002] ....   978.554294: io_page_fault: IOMMU:[drvname] 0000:05:00.0 iova=0x0000000091482650 flags=0x0000
-> > >     irq/24-AMD-Vi-48    [002] ....   978.554299: io_page_fault: IOMMU:[drvname] 0000:05:00.0 iova=0x0000000091482660 flags=0x0000
-> > >     irq/24-AMD-Vi-48    [002] ....   978.554305: io_page_fault: IOMMU:[drvname] 0000:05:00.0 iova=0x0000000091482670 flags=0x0000
-> > >     irq/24-AMD-Vi-48    [002] ....   978.554310: io_page_fault: IOMMU:[drvname] 0000:05:00.0 iova=0x0000000091482680 flags=0x0000
-> > >     irq/24-AMD-Vi-48    [002] ....   978.554315: io_page_fault: IOMMU:[drvname] 0000:05:00.0 iova=0x00000000914826a0 flags=0x0000
-> > > 
-> > > For determining IOMMU_FAULT_{READ,WRITE}, I followed the AMD IOMMU
-> > > spec, but I haven't tested that bit of the code, as the page faults I
-> > > encounter are all to non-present (!EVENT_FLAG_PR) mappings, in which
-> > > case EVENT_FLAG_RW doesn't make sense.
-> > > 
-> > > Signed-off-by: Lennert Buytenhek <buytenh@wantstofly.org>
-> > > ---
-> > > Changes since v1 RFC:
-> > > 
-> > > - Don't call report_iommu_fault() for IRQ remapping faults.
-> > >    (Suggested by Joerg Roedel.)
-> > > 
-> > >   drivers/iommu/amd/amd_iommu_types.h |  4 ++++
-> > >   drivers/iommu/amd/iommu.c           | 29 +++++++++++++++++++++++++++++
-> > >   2 files changed, 33 insertions(+)
-> > > 
-> > > diff --git a/drivers/iommu/amd/amd_iommu_types.h b/drivers/iommu/amd/amd_iommu_types.h
-> > > index 94c1a7a9876d..2f2c6630c24c 100644
-> > > --- a/drivers/iommu/amd/amd_iommu_types.h
-> > > +++ b/drivers/iommu/amd/amd_iommu_types.h
-> > > @@ -138,6 +138,10 @@
-> > >   #define EVENT_DOMID_MASK_HI	0xf0000
-> > >   #define EVENT_FLAGS_MASK	0xfff
-> > >   #define EVENT_FLAGS_SHIFT	0x10
-> > > +#define EVENT_FLAG_TR		0x100
-> > > +#define EVENT_FLAG_RW		0x020
-> > > +#define EVENT_FLAG_PR		0x010
-> > > +#define EVENT_FLAG_I		0x008
-> > >   /* feature control bits */
-> > >   #define CONTROL_IOMMU_EN        0x00ULL
-> > > diff --git a/drivers/iommu/amd/iommu.c b/drivers/iommu/amd/iommu.c
-> > > index a7d6d78147b7..d9fb2c22d44a 100644
-> > > --- a/drivers/iommu/amd/iommu.c
-> > > +++ b/drivers/iommu/amd/iommu.c
-> > 
-> > What if we introduce:
-> > 
-> > +/*
-> > + * AMD I/O Virtualization Technology (IOMMU) Specification,
-> > + * revision 3.00, section 2.5.3 ("IO_PAGE_FAULT Event") says
-> > + * that the RW ("read-write") bit is only valid if the I/O
-> > + * page fault was caused by a memory transaction request
-> > + * referencing a page that was marked present.
-> > + */
-> > +#define IO_PAGE_FAULT_MEM_MASK \
-> > +       (EVENT_FLAG_TR | EVENT_FLAG_PR | EVENT_FLAG_I)
-> > +#define IS_IOMMU_MEM_TRANSACTION(x)    \
-> > +       ((x & IO_PAGE_FAULT_MEM_MASK) == EVENT_FLAG_PR)
-> > 
-> > Note that this should have already checked w/ EVENT_FLAG_I == 0.
-> > 
-> > 
-> > > @@ -484,6 +484,34 @@ static void amd_iommu_report_page_fault(u16 devid, u16 domain_id,
-> > >   	if (pdev)
-> > >   		dev_data = dev_iommu_priv_get(&pdev->dev);
-> > > +	/*
-> > > +	 * If this is a DMA fault (for which the I(nterrupt) bit will
-> > > +	 * be unset), allow report_iommu_fault() to prevent logging it.
-> > > +	 */
-> > > +	if (dev_data && ((flags & EVENT_FLAG_I) == 0)) {
-> > > +		int report_flags;
-> > > +
-> > > +		/*
-> > > +		 * AMD I/O Virtualization Technology (IOMMU) Specification,
-> > > +		 * revision 3.00, section 2.5.3 ("IO_PAGE_FAULT Event") says
-> > > +		 * that the RW ("read-write") bit is only valid if the I/O
-> > > +		 * page fault was caused by a memory transaction request
-> > > +		 * referencing a page that was marked present.
-> > > +		 */
-> > > +		report_flags = 0;
-> > > +		if ((flags & (EVENT_FLAG_TR | EVENT_FLAG_PR)) ==
-> > > +							EVENT_FLAG_PR) {
-> > > +			if (flags & EVENT_FLAG_RW)
-> > > +				report_flags |= IOMMU_FAULT_WRITE;
-> > > +			else
-> > > +				report_flags |= IOMMU_FAULT_READ;
-> > > +		}
-> > > +
-> > > +		if (!report_iommu_fault(&dev_data->domain->domain,
-> > > +					&pdev->dev, address, report_flags))
-> > > +			goto out;
-> > > +	}
-> > > +
-> > >   	if (dev_data) {
-> > 
-> > Here we do:
-> > 
-> > +               /*
-> > +                * Since report_iommu_fault() only report DMA-remapping related fault,
-> > +                * convert AMD IO_PAGE_FAULT flags to IOMMU_FAULT_xx flags.
-> > +                */
-> > +               if (IS_IOMMU_MEM_TRANSACTION(flags) &&
-> > +                   !report_iommu_fault(&dev_data->domain->domain, &pdev->dev,
-> > +                                       address,
-> > +                                       (flags & EVENT_FLAG_RW) ?
-> > +                                       IOMMU_FAULT_WRITE : IOMMU_FAULT_READ))
-> > +                       goto out;
-> > +
-> 
-> We have three cases to handle:
-> 
-> - EVENT_FLAG_I set: IRQ remapping fault, don't call report_iommu_fault()
-> 
-> - EVENT_FLAG_I unset, but the request was a translation request
->   (EVENT_FLAG_TR set) or the target page was not present (EVENT_FLAG_PR
->   unset): call report_iommu_fault(), but the RW bit will be invalid, so
->   don't try to map it to a IOMMU_FAULT_{READ,WRITE} code
-> 
-> - EVENT_FLAG_I unset, the request is a transaction request (EVENT_FLAG_TR
->   unset) and the target page was present (EVENT_FLAG_PR set): call
->   report_iommu_fault(), and use the RW bit to set IOMMU_FAULT_{READ,WRITE}
-> 
-> So I don't think we can merge the test for EVENT_FLAG_I with the
-> test for EVENT_FLAG_TR/EVENT_FLAG_PR.
-> 
-> We could do something like this, if you'd prefer:
-> 
-> 	#define IS_IOMMU_MEM_TRANSACTION(flags)	\
-> 		(((flags) & EVENT_FLAG_I) == 0)
-> 
-> 	#define IS_RW_FLAG_VALID(flags)		\
-> 		(((flags) & (EVENT_FLAG_TR | EVENT_FLAG_PR)) == EVENT_FLAG_PR)
-> 
-> 	#define IS_WRITE_REQUEST(flags)		\
-> 		(IS_RW_FLAG_VALID(flags) && (flags & EVENT_FLAG_RW))
-> 
-> And then do something like:
-> 
-> 	if (dev_data && IS_IOMMU_MEM_TRANSACTION(flags)) {
-> 		if (!report_iommu_fault(&dev_data->domain->domain, &pdev->dev,
-> 					address,
-> 					IS_WRITE_REQUEST(flags) ?
-> 					IOMMU_FAULT_WRITE : IOMMU_FAULT_READ))
-> 			goto out;
-> 	}
-> 
-> ?
+Is it OK to deallocate the resources, if hypercall has failed ?
+Do we have any specific error code EBUSY (kind of) which we need to wait upon ?
 
-I sent out a v3 with this change.
+> +
+> +	ida_free(&domain->hv_iommu->domain_ids, domain->device_domain.domain_id.id);
+> +
+> +	iommu_put_dma_cookie(d);
+> +
+> +	kfree(domain);
+> +}
+> +
+> +static int hv_iommu_attach_dev(struct iommu_domain *d, struct device *dev)
+> +{
+> +	struct hv_iommu_domain *domain = to_hv_iommu_domain(d);
+> +	u64 status;
+> +	unsigned long flags;
+> +	struct hv_input_attach_device_domain *input;
+> +	struct pci_dev *pdev;
+> +	struct hv_iommu_endpoint *vdev = dev_iommu_priv_get(dev);
+> +
+> +	/* Only allow PCI devices for now */
+> +	if (!dev_is_pci(dev))
+> +		return -EINVAL;
+> +
+> +	pdev = to_pci_dev(dev);
+> +
+> +	dev_dbg(dev, "Attaching (%strusted) to %d\n", pdev->untrusted ? "un" : "",
+> +		domain->device_domain.domain_id.id);
+> +
+> +	local_irq_save(flags);
+> +	input = *this_cpu_ptr(hyperv_pcpu_input_arg);
+> +	memset(input, 0, sizeof(*input));
+> +
+> +	input->device_domain = domain->device_domain;
+> +	input->device_id = hv_build_pci_dev_id(pdev);
+> +
+> +	status = hv_do_hypercall(HVCALL_ATTACH_DEVICE_DOMAIN, input, NULL);
+> +	local_irq_restore(flags);
+> +
+> +	if (!hv_result_success(status))
+> +		pr_err("%s: hypercall failed, status %lld\n", __func__, status);
 
+Does it make sense to vdev->domain = NULL ?
 
-Thanks,
-Lennert
+> +	else
+> +		vdev->domain = domain;
+> +
+> +	return hv_status_to_errno(status);
+> +}
+> +
+> +static void hv_iommu_detach_dev(struct iommu_domain *d, struct device *dev)
+> +{
+> +	u64 status;
+> +	unsigned long flags;
+> +	struct hv_input_detach_device_domain *input;
+> +	struct pci_dev *pdev;
+> +	struct hv_iommu_domain *domain = to_hv_iommu_domain(d);
+> +	struct hv_iommu_endpoint *vdev = dev_iommu_priv_get(dev);
+> +
+> +	/* See the attach function, only PCI devices for now */
+> +	if (!dev_is_pci(dev))
+> +		return;
+> +
+> +	pdev = to_pci_dev(dev);
+> +
+> +	dev_dbg(dev, "Detaching from %d\n", domain->device_domain.domain_id.id);
+> +
+> +	local_irq_save(flags);
+> +	input = *this_cpu_ptr(hyperv_pcpu_input_arg);
+> +	memset(input, 0, sizeof(*input));
+> +
+> +	input->partition_id = HV_PARTITION_ID_SELF;
+> +	input->device_id = hv_build_pci_dev_id(pdev);
+> +
+> +	status = hv_do_hypercall(HVCALL_DETACH_DEVICE_DOMAIN, input, NULL);
+> +	local_irq_restore(flags);
+> +
+> +	if (!hv_result_success(status))
+> +		pr_err("%s: hypercall failed, status %lld\n", __func__, status);
+> +
+> +	vdev->domain = NULL;
+> +}
+> +
+> +static int hv_iommu_add_mapping(struct hv_iommu_domain *domain, unsigned long iova,
+> +		phys_addr_t paddr, size_t size, u32 flags)
+> +{
+> +	unsigned long irqflags;
+> +	struct hv_iommu_mapping *mapping;
+> +
+> +	mapping = kzalloc(sizeof(*mapping), GFP_ATOMIC);
+> +	if (!mapping)
+> +		return -ENOMEM;
+> +
+> +	mapping->paddr = paddr;
+> +	mapping->iova.start = iova;
+> +	mapping->iova.last = iova + size - 1;
+> +	mapping->flags = flags;
+> +
+> +	spin_lock_irqsave(&domain->mappings_lock, irqflags);
+> +	interval_tree_insert(&mapping->iova, &domain->mappings);
+> +	spin_unlock_irqrestore(&domain->mappings_lock, irqflags);
+> +
+> +	return 0;
+> +}
+> +
+> +static size_t hv_iommu_del_mappings(struct hv_iommu_domain *domain,
+> +		unsigned long iova, size_t size)
+> +{
+> +	unsigned long flags;
+> +	size_t unmapped = 0;
+> +	unsigned long last = iova + size - 1;
+> +	struct hv_iommu_mapping *mapping = NULL;
+> +	struct interval_tree_node *node, *next;
+> +
+> +	spin_lock_irqsave(&domain->mappings_lock, flags);
+> +	next = interval_tree_iter_first(&domain->mappings, iova, last);
+> +	while (next) {
+> +		node = next;
+> +		mapping = container_of(node, struct hv_iommu_mapping, iova);
+> +		next = interval_tree_iter_next(node, iova, last);
+> +
+> +		/* Trying to split a mapping? Not supported for now. */
+> +		if (mapping->iova.start < iova)
+> +			break;
+> +
+> +		unmapped += mapping->iova.last - mapping->iova.start + 1;
+> +
+> +		interval_tree_remove(node, &domain->mappings);
+> +		kfree(mapping);
+> +	}
+> +	spin_unlock_irqrestore(&domain->mappings_lock, flags);
+> +
+> +	return unmapped;
+> +}
+> +
+> +static int hv_iommu_map(struct iommu_domain *d, unsigned long iova,
+> +			phys_addr_t paddr, size_t size, int prot, gfp_t gfp)
+> +{
+> +	u32 map_flags;
+> +	unsigned long flags, pfn, npages;
+> +	int ret, i;
+> +	struct hv_iommu_domain *domain = to_hv_iommu_domain(d);
+> +	struct hv_input_map_device_gpa_pages *input;
+> +	u64 status;
+> +
+> +	/* Reject size that's not a whole page */
+> +	if (size & ~HV_HYP_PAGE_MASK)
+> +		return -EINVAL;
+> +
+> +	map_flags = HV_MAP_GPA_READABLE; /* Always required */
+> +	map_flags |= prot & IOMMU_WRITE ? HV_MAP_GPA_WRITABLE : 0;
+> +
+> +	ret = hv_iommu_add_mapping(domain, iova, paddr, size, flags);
+> +	if (ret)
+> +		return ret;
+> +
+> +	npages = size >> HV_HYP_PAGE_SHIFT;
+> +
+> +	local_irq_save(flags);
+> +	input = *this_cpu_ptr(hyperv_pcpu_input_arg);
+> +	memset(input, 0, sizeof(*input));
+> +
+> +	input->device_domain = domain->device_domain;
+> +	input->map_flags = map_flags;
+> +	input->target_device_va_base = iova;
+> +
+> +	pfn = paddr >> HV_HYP_PAGE_SHIFT;
+> +	for (i = 0; i < npages; i++) {
+> +		input->gpa_page_list[i] = pfn;
+> +		pfn += 1;
+> +	}
+> +
+> +	status = hv_do_rep_hypercall(HVCALL_MAP_DEVICE_GPA_PAGES, npages, 0,
+> +			input, NULL);
+> +
+> +	local_irq_restore(flags);
+> +
+> +	if (!hv_result_success(status)) {
+> +		pr_err("%s: hypercall failed, status %lld\n", __func__, status);
+> +		hv_iommu_del_mappings(domain, iova, size);
+> +	}
+> +
+> +	return hv_status_to_errno(status);
+> +}
+> +
+> +static size_t hv_iommu_unmap(struct iommu_domain *d, unsigned long iova,
+> +			   size_t size, struct iommu_iotlb_gather *gather)
+> +{
+> +	size_t unmapped;
+> +	struct hv_iommu_domain *domain = to_hv_iommu_domain(d);
+> +	unsigned long flags, npages;
+> +	struct hv_input_unmap_device_gpa_pages *input;
+> +	u64 status;
+> +
+> +	unmapped = hv_iommu_del_mappings(domain, iova, size);
+> +	if (unmapped < size)
+> +		return 0;
+
+Is there a case where unmapped > 0 && unmapped < size ?
+
+> +
+> +	npages = size >> HV_HYP_PAGE_SHIFT;
+> +
+> +	local_irq_save(flags);
+> +	input = *this_cpu_ptr(hyperv_pcpu_input_arg);
+> +	memset(input, 0, sizeof(*input));
+> +
+> +	input->device_domain = domain->device_domain;
+> +	input->target_device_va_base = iova;
+> +
+> +	/* Unmap `npages` pages starting from VA base */
+> +	status = hv_do_rep_hypercall(HVCALL_UNMAP_DEVICE_GPA_PAGES, npages,
+> +			0, input, NULL);
+> +
+> +	local_irq_restore(flags);
+> +
+> +	if (!hv_result_success(status))
+> +		pr_err("%s: hypercall failed, status %lld\n", __func__, status);
+> +
+> +	return hv_result_success(status) ? unmapped : 0;
+> +}
+> +
+
+Regards,
+
+~Praveen.
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
