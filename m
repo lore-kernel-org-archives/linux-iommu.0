@@ -2,92 +2,119 @@ Return-Path: <SRS0=qwh6=M2=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-13.6 required=3.0 tests=BAYES_00,DKIM_INVALID,
+X-Spam-Status: No, score=-15.1 required=3.0 tests=BAYES_00,DKIM_INVALID,
 	DKIM_SIGNED,HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_CR_TRAILER,INCLUDES_PATCH,
-	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,URIBL_RED autolearn=ham
-	autolearn_force=no version=3.4.0
+	MAILING_LIST_MULTI,NICE_REPLY_A,SPF_HELO_NONE,SPF_PASS,URIBL_RED,
+	USER_AGENT_SANE_1 autolearn=ham autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C88A2C4338F
-	for <iommu@archiver.kernel.org>; Tue,  3 Aug 2021 06:06:24 +0000 (UTC)
-Received: from smtp1.osuosl.org (smtp1.osuosl.org [140.211.166.138])
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 25BAEC4320A
+	for <iommu@archiver.kernel.org>; Tue,  3 Aug 2021 07:30:32 +0000 (UTC)
+Received: from smtp4.osuosl.org (smtp4.osuosl.org [140.211.166.137])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 797D860F8F
-	for <iommu@archiver.kernel.org>; Tue,  3 Aug 2021 06:06:24 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.4.1 mail.kernel.org 797D860F8F
-Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=codeaurora.org
+	by mail.kernel.org (Postfix) with ESMTPS id C0542610A0
+	for <iommu@archiver.kernel.org>; Tue,  3 Aug 2021 07:30:31 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.4.1 mail.kernel.org C0542610A0
+Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=redhat.com
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by smtp1.osuosl.org (Postfix) with ESMTP id 4130A82F37;
-	Tue,  3 Aug 2021 06:06:24 +0000 (UTC)
+	by smtp4.osuosl.org (Postfix) with ESMTP id 875C140393;
+	Tue,  3 Aug 2021 07:30:31 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from smtp1.osuosl.org ([127.0.0.1])
-	by localhost (smtp1.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id w70VLnNqoDwK; Tue,  3 Aug 2021 06:06:23 +0000 (UTC)
+Received: from smtp4.osuosl.org ([127.0.0.1])
+	by localhost (smtp4.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+	with ESMTP id nFys-eRU-Z7m; Tue,  3 Aug 2021 07:30:30 +0000 (UTC)
 Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by smtp1.osuosl.org (Postfix) with ESMTPS id 23D4582E95;
-	Tue,  3 Aug 2021 06:06:23 +0000 (UTC)
+	by smtp4.osuosl.org (Postfix) with ESMTPS id 4B35440139;
+	Tue,  3 Aug 2021 07:30:30 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 09277C0010;
-	Tue,  3 Aug 2021 06:06:23 +0000 (UTC)
-Received: from smtp2.osuosl.org (smtp2.osuosl.org [IPv6:2605:bc80:3010::133])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 89DD4C000E
- for <iommu@lists.linux-foundation.org>; Tue,  3 Aug 2021 06:06:22 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 2E222C0010;
+	Tue,  3 Aug 2021 07:30:30 +0000 (UTC)
+Received: from smtp4.osuosl.org (smtp4.osuosl.org [IPv6:2605:bc80:3010::137])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 91EE2C000E
+ for <iommu@lists.linux-foundation.org>; Tue,  3 Aug 2021 07:30:28 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by smtp2.osuosl.org (Postfix) with UTF8SMTP id 642A340261
- for <iommu@lists.linux-foundation.org>; Tue,  3 Aug 2021 06:06:22 +0000 (UTC)
+ by smtp4.osuosl.org (Postfix) with ESMTP id 72FC5403AF
+ for <iommu@lists.linux-foundation.org>; Tue,  3 Aug 2021 07:30:28 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Authentication-Results: smtp2.osuosl.org (amavisd-new);
- dkim=pass (1024-bit key) header.d=mg.codeaurora.org
-Received: from smtp2.osuosl.org ([127.0.0.1])
- by localhost (smtp2.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with UTF8SMTP id 8T8ogTFSLMDc for <iommu@lists.linux-foundation.org>;
- Tue,  3 Aug 2021 06:06:21 +0000 (UTC)
-X-Greylist: from auto-whitelisted by SQLgrey-1.8.0
-Received: from so254-9.mailgun.net (so254-9.mailgun.net [198.61.254.9])
- by smtp2.osuosl.org (Postfix) with UTF8SMTPS id D9F804016F
- for <iommu@lists.linux-foundation.org>; Tue,  3 Aug 2021 06:06:18 +0000 (UTC)
-DKIM-Signature: a=rsa-sha256; v=1; c=relaxed/relaxed; d=mg.codeaurora.org;
- q=dns/txt; 
- s=smtp; t=1627970781; h=Message-ID: References: In-Reply-To: Subject:
- Cc: To: From: Date: Content-Transfer-Encoding: Content-Type:
- MIME-Version: Sender; bh=2cVRR6X0LJPFMsvW7MYfIuMqP7lLF7KckuG7UikunoI=;
- b=KlLLkjjbhzIgAxq8DJfoaCRIJS3HeMvBLevQrkQ9hBYUoSZ/nh6F0nMk/f0JhqWw2YA4DQst
- HxOvLzKBicyXLnKWeKydXD76h8XqokuntgrLLZ+teL0veJV8FdLrhMPKIn+9x+CO/6GOawmn
- 3RDuxaQ1ZQVgTvcnif2PuwRHLrg=
-X-Mailgun-Sending-Ip: 198.61.254.9
-X-Mailgun-Sid: WyI3NDkwMCIsICJpb21tdUBsaXN0cy5saW51eC1mb3VuZGF0aW9uLm9yZyIsICJiZTllNGEiXQ==
-Received: from smtp.codeaurora.org
- (ec2-35-166-182-171.us-west-2.compute.amazonaws.com [35.166.182.171]) by
- smtp-out-n07.prod.us-west-2.postgun.com with SMTP id
- 6108dcd59771b05b243088ee (version=TLS1.2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256); Tue, 03 Aug 2021 06:06:13
- GMT
-Received: by smtp.codeaurora.org (Postfix, from userid 1001)
- id 2443EC4338A; Tue,  3 Aug 2021 06:06:13 +0000 (UTC)
-Received: from mail.codeaurora.org (localhost.localdomain [127.0.0.1])
- (using TLSv1 with cipher ECDHE-RSA-AES256-SHA (256/256 bits))
- (No client certificate requested)
- (Authenticated sender: saiprakash.ranjan)
- by smtp.codeaurora.org (Postfix) with ESMTPSA id 296A2C433D3;
- Tue,  3 Aug 2021 06:06:12 +0000 (UTC)
+Received: from smtp4.osuosl.org ([127.0.0.1])
+ by localhost (smtp4.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+ with ESMTP id LTT43jnIvCWt for <iommu@lists.linux-foundation.org>;
+ Tue,  3 Aug 2021 07:30:27 +0000 (UTC)
+X-Greylist: domain auto-whitelisted by SQLgrey-1.8.0
+Received: from us-smtp-delivery-124.mimecast.com
+ (us-smtp-delivery-124.mimecast.com [216.205.24.124])
+ by smtp4.osuosl.org (Postfix) with ESMTPS id 173E140393
+ for <iommu@lists.linux-foundation.org>; Tue,  3 Aug 2021 07:30:26 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+ s=mimecast20190719; t=1627975825;
+ h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+ to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+ content-transfer-encoding:content-transfer-encoding:
+ in-reply-to:in-reply-to:references:references;
+ bh=2q5cKVt8HkdvWLVDPoAENZkOV4GLcj8mh5u4LwwqXQg=;
+ b=NhQgdrvVrlJoU9lC1ntcW+R8P/deCNvTEs5OqstbA5nO98NEzEPJVYxqF22l8xyT5bgbPb
+ OAzOBfQHDBSlWXL/rjS+clDm3y5yDXOKffgrOnQkdKHq5YCX4LA2GEBsk6RYrrdpojnaec
+ jCFr++Vx824IT93aBwbqtJADPptlT98=
+Received: from mail-pj1-f72.google.com (mail-pj1-f72.google.com
+ [209.85.216.72]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-479-aGDr2TYNNomvXkieKlUEhQ-1; Tue, 03 Aug 2021 03:30:24 -0400
+X-MC-Unique: aGDr2TYNNomvXkieKlUEhQ-1
+Received: by mail-pj1-f72.google.com with SMTP id
+ k1-20020a17090a39c1b0290176898bbb9cso2689346pjf.8
+ for <iommu@lists.linux-foundation.org>; Tue, 03 Aug 2021 00:30:24 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+ d=1e100.net; s=20161025;
+ h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+ :user-agent:mime-version:in-reply-to:content-transfer-encoding
+ :content-language;
+ bh=2q5cKVt8HkdvWLVDPoAENZkOV4GLcj8mh5u4LwwqXQg=;
+ b=M3qb6qhi8LEO0Ffw61HQTsx3Sok0q3uG3nkXIUe//KoYmrhjdq9aN2/03soY8vtwbh
+ htI/6QZoXfq/PnFr7kXxyLdSarPQWBjVZ5XqbJcZm4FMJ1OSDQqsCK6r9/dUHHKan8xx
+ ICMXRxIEwY2nG6MYjuIdsQl4uX3Ed0vMOuUy9USggTV4NlEA5RFv71hhIFcSDoYlkUTu
+ VL4DfCay2vluFwMW24+QEpLWj7MgQwV8bGsSPK4wb39oPbYAE9xuotIQ91mnpEI09not
+ BdLysgALYEk68f/stD4O3OGBGd/wZr+8+DooZD4NxBlTyGRgloVW9BDiP754pA2CPQ2J
+ oVAQ==
+X-Gm-Message-State: AOAM530TKmhwbZUKdRo017s/1Q2DMiFDrEaIdihIAQTw/IALoMkYwGuY
+ uZYI6xd8zr7K74UJHjdhWC3Me7VjictbShX9CDZOPQ5uh3GxfvbflfLP13h/35e1KIZIBn7iK72
+ 5U2Fpsa/3r5EK8oGm8vVlAFeEEe/ucw==
+X-Received: by 2002:a17:902:7c87:b029:12c:8f2d:4238 with SMTP id
+ y7-20020a1709027c87b029012c8f2d4238mr2334690pll.50.1627975823463; 
+ Tue, 03 Aug 2021 00:30:23 -0700 (PDT)
+X-Google-Smtp-Source: ABdhPJyxQbskpfqVraXEkI1LzhRrk+KradYU967AMB1od8U2sh7UOY8/HP+aNVn3ptEFADzrVm8jMg==
+X-Received: by 2002:a17:902:7c87:b029:12c:8f2d:4238 with SMTP id
+ y7-20020a1709027c87b029012c8f2d4238mr2334670pll.50.1627975823183; 
+ Tue, 03 Aug 2021 00:30:23 -0700 (PDT)
+Received: from wangxiaodeMacBook-Air.local ([209.132.188.80])
+ by smtp.gmail.com with ESMTPSA id u3sm1749726pjn.18.2021.08.03.00.30.15
+ (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+ Tue, 03 Aug 2021 00:30:22 -0700 (PDT)
+Subject: Re: [PATCH v10 16/17] vduse: Introduce VDUSE - vDPA Device in
+ Userspace
+To: Xie Yongji <xieyongji@bytedance.com>, mst@redhat.com,
+ stefanha@redhat.com, sgarzare@redhat.com, parav@nvidia.com,
+ hch@infradead.org, christian.brauner@canonical.com, rdunlap@infradead.org,
+ willy@infradead.org, viro@zeniv.linux.org.uk, axboe@kernel.dk,
+ bcrl@kvack.org, corbet@lwn.net, mika.penttila@nextfour.com,
+ dan.carpenter@oracle.com, joro@8bytes.org, gregkh@linuxfoundation.org,
+ zhe.he@windriver.com, xiaodong.liu@intel.com, joe@perches.com
+References: <20210729073503.187-1-xieyongji@bytedance.com>
+ <20210729073503.187-17-xieyongji@bytedance.com>
+From: Jason Wang <jasowang@redhat.com>
+Message-ID: <eab9e694-42a5-9382-b829-1b7fade8a5ab@redhat.com>
+Date: Tue, 3 Aug 2021 15:30:13 +0800
+User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:78.0)
+ Gecko/20100101 Thunderbird/78.12.0
 MIME-Version: 1.0
-Date: Tue, 03 Aug 2021 11:36:12 +0530
-From: Sai Prakash Ranjan <saiprakash.ranjan@codeaurora.org>
-To: Will Deacon <will@kernel.org>
-Subject: Re: [PATCH] iommu/arm-smmu: Add clk_bulk_{prepare/unprepare} to
- system pm callbacks
-In-Reply-To: <20210802161206.GA29168@willie-the-truck>
-References: <20210727093322.13202-1-saiprakash.ranjan@codeaurora.org>
- <20210802161206.GA29168@willie-the-truck>
-Message-ID: <5aefcc8950ec8ced0a67815c92e985df@codeaurora.org>
-X-Sender: saiprakash.ranjan@codeaurora.org
-User-Agent: Roundcube Webmail/1.3.9
-Cc: Taniya Das <tdas@codeaurora.org>, robdclark@chromium.org,
- Rajendra Nayak <rnayak@codeaurora.org>, linux-arm-msm@vger.kernel.org,
- linux-kernel@vger.kernel.org, iommu@lists.linux-foundation.org,
- Robin Murphy <robin.murphy@arm.com>, srimuc <srimuc@codeaurora.org>,
- linux-arm-kernel@lists.infradead.org
+In-Reply-To: <20210729073503.187-17-xieyongji@bytedance.com>
+Authentication-Results: relay.mimecast.com;
+ auth=pass smtp.auth=CUSA124A263 smtp.mailfrom=jasowang@redhat.com
+X-Mimecast-Spam-Score: 0
+X-Mimecast-Originator: redhat.com
+Content-Language: en-US
+Cc: kvm@vger.kernel.org, netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+ virtualization@lists.linux-foundation.org, iommu@lists.linux-foundation.org,
+ songmuchun@bytedance.com, linux-fsdevel@vger.kernel.org
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -100,128 +127,109 @@ List-Post: <mailto:iommu@lists.linux-foundation.org>
 List-Help: <mailto:iommu-request@lists.linux-foundation.org?subject=help>
 List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
  <mailto:iommu-request@lists.linux-foundation.org?subject=subscribe>
-Content-Transfer-Encoding: 7bit
-Content-Type: text/plain; charset="us-ascii"; Format="flowed"
+Content-Transfer-Encoding: base64
+Content-Type: text/plain; charset="gbk"; Format="flowed"
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-On 2021-08-02 21:42, Will Deacon wrote:
-> On Tue, Jul 27, 2021 at 03:03:22PM +0530, Sai Prakash Ranjan wrote:
->> Some clocks for SMMU can have parent as XO such as 
->> gpu_cc_hub_cx_int_clk
->> of GPU SMMU in QTI SC7280 SoC and in order to enter deep sleep states 
->> in
->> such cases, we would need to drop the XO clock vote in unprepare call 
->> and
->> this unprepare callback for XO is in RPMh (Resource Power 
->> Manager-Hardened)
->> clock driver which controls RPMh managed clock resources for new QTI 
->> SoCs
->> and is a blocking call.
->> 
->> Given we cannot have a sleeping calls such as clk_bulk_prepare() and
->> clk_bulk_unprepare() in arm-smmu runtime pm callbacks since the iommu
->> operations like map and unmap can be in atomic context and are in fast
->> path, add this prepare and unprepare call to drop the XO vote only for
->> system pm callbacks since it is not a fast path and we expect the 
->> system
->> to enter deep sleep states with system pm as opposed to runtime pm.
->> 
->> This is a similar sequence of clock requests (prepare,enable and
->> disable,unprepare) in arm-smmu probe and remove.
->> 
->> Signed-off-by: Sai Prakash Ranjan <saiprakash.ranjan@codeaurora.org>
->> Co-developed-by: Rajendra Nayak <rnayak@codeaurora.org>
->> Signed-off-by: Rajendra Nayak <rnayak@codeaurora.org>
->> ---
->>  drivers/iommu/arm/arm-smmu/arm-smmu.c | 20 ++++++++++++++++++--
->>  1 file changed, 18 insertions(+), 2 deletions(-)
-> 
-> [+Rob]
-> 
-> How does this work with that funny GPU which writes to the SMMU 
-> registers
-> directly? Does the SMMU need to remain independently clocked for that 
-> to
-> work or is it all in the same clock domain?
-> 
-
-As Rob mentioned, device link should take care of all the dependencies 
-between
-SMMU and its consumers. But not sure how the question relates to this 
-patch as this
-change is for system pm and not runtime pm, so it is exactly the 
-sequence of
-SMMU probe/remove which if works currently for that GPU SMMU, then it 
-should work
-just fine for system suspend and resume as well.
-
->> diff --git a/drivers/iommu/arm/arm-smmu/arm-smmu.c 
->> b/drivers/iommu/arm/arm-smmu/arm-smmu.c
->> index d3c6f54110a5..9561ba4c5d39 100644
->> --- a/drivers/iommu/arm/arm-smmu/arm-smmu.c
->> +++ b/drivers/iommu/arm/arm-smmu/arm-smmu.c
->> @@ -2277,6 +2277,13 @@ static int __maybe_unused 
->> arm_smmu_runtime_suspend(struct device *dev)
->> 
->>  static int __maybe_unused arm_smmu_pm_resume(struct device *dev)
->>  {
->> +	int ret;
->> +	struct arm_smmu_device *smmu = dev_get_drvdata(dev);
->> +
->> +	ret = clk_bulk_prepare(smmu->num_clks, smmu->clks);
->> +	if (ret)
->> +		return ret;
->> +
->>  	if (pm_runtime_suspended(dev))
->>  		return 0;
-> 
-> If we subsequently fail to enable the clks in arm_smmu_runtime_resume()
-> should we unprepare them again?
-> 
-
-If we are unable to turn on the clks then its fatal and we will not live 
-for long.
-
-Thanks,
-Sai
-
-> Will
-> 
->> @@ -2285,10 +2292,19 @@ static int __maybe_unused 
->> arm_smmu_pm_resume(struct device *dev)
->> 
->>  static int __maybe_unused arm_smmu_pm_suspend(struct device *dev)
->>  {
->> +	int ret = 0;
->> +	struct arm_smmu_device *smmu = dev_get_drvdata(dev);
->> +
->>  	if (pm_runtime_suspended(dev))
->> -		return 0;
->> +		goto clk_unprepare;
->> 
->> -	return arm_smmu_runtime_suspend(dev);
->> +	ret = arm_smmu_runtime_suspend(dev);
->> +	if (ret)
->> +		return ret;
->> +
->> +clk_unprepare:
->> +	clk_bulk_unprepare(smmu->num_clks, smmu->clks);
->> +	return ret;
->>  }
->> 
->>  static const struct dev_pm_ops arm_smmu_pm_ops = {
->> --
->> QUALCOMM INDIA, on behalf of Qualcomm Innovation Center, Inc. is a 
->> member
->> of Code Aurora Forum, hosted by The Linux Foundation
->> 
-
--- 
-QUALCOMM INDIA, on behalf of Qualcomm Innovation Center, Inc. is a 
-member
-of Code Aurora Forum, hosted by The Linux Foundation
-_______________________________________________
-iommu mailing list
-iommu@lists.linux-foundation.org
-https://lists.linuxfoundation.org/mailman/listinfo/iommu
+CtTaIDIwMjEvNy8yOSDPws7nMzozNSwgWGllIFlvbmdqaSDQtLXAOgo+IFRoaXMgVkRVU0UgZHJp
+dmVyIGVuYWJsZXMgaW1wbGVtZW50aW5nIHNvZnR3YXJlLWVtdWxhdGVkIHZEUEEKPiBkZXZpY2Vz
+IGluIHVzZXJzcGFjZS4gVGhlIHZEUEEgZGV2aWNlIGlzIGNyZWF0ZWQgYnkKPiBpb2N0bChWRFVT
+RV9DUkVBVEVfREVWKSBvbiAvZGV2L3ZkdXNlL2NvbnRyb2wuIFRoZW4gYSBjaGFyIGRldmljZQo+
+IGludGVyZmFjZSAoL2Rldi92ZHVzZS8kTkFNRSkgaXMgZXhwb3J0ZWQgdG8gdXNlcnNwYWNlIGZv
+ciBkZXZpY2UKPiBlbXVsYXRpb24uCj4KPiBJbiBvcmRlciB0byBtYWtlIHRoZSBkZXZpY2UgZW11
+bGF0aW9uIG1vcmUgc2VjdXJlLCB0aGUgZGV2aWNlJ3MKPiBjb250cm9sIHBhdGggaXMgaGFuZGxl
+ZCBpbiBrZXJuZWwuIEEgbWVzc2FnZSBtZWNobmlzbSBpcyBpbnRyb2R1Y2VkCj4gdG8gZm9yd2Fy
+ZCBzb21lIGRhdGFwbGFuZSByZWxhdGVkIGNvbnRyb2wgbWVzc2FnZXMgdG8gdXNlcnNwYWNlLgo+
+Cj4gQW5kIGluIHRoZSBkYXRhIHBhdGgsIHRoZSBETUEgYnVmZmVyIHdpbGwgYmUgbWFwcGVkIGlu
+dG8gdXNlcnNwYWNlCj4gYWRkcmVzcyBzcGFjZSB0aHJvdWdoIGRpZmZlcmVudCB3YXlzIGRlcGVu
+ZGluZyBvbiB0aGUgdkRQQSBidXMgdG8KPiB3aGljaCB0aGUgdkRQQSBkZXZpY2UgaXMgYXR0YWNo
+ZWQuIEluIHZpcnRpby12ZHBhIGNhc2UsIHRoZSBNTVUtYmFzZWQKPiBzb2Z0d2FyZSBJT1RMQiBp
+cyB1c2VkIHRvIGFjaGlldmUgdGhhdC4gQW5kIGluIHZob3N0LXZkcGEgY2FzZSwgdGhlCj4gRE1B
+IGJ1ZmZlciBpcyByZXNpZGUgaW4gYSB1c2Vyc3BhY2UgbWVtb3J5IHJlZ2lvbiB3aGljaCBjYW4g
+YmUgc2hhcmVkCj4gdG8gdGhlIFZEVVNFIHVzZXJzcGFjZSBwcm9jZXNzcyB2aWEgdHJhbnNmZXJy
+aW5nIHRoZSBzaG1mZC4KPgo+IEZvciBtb3JlIGRldGFpbHMgb24gVkRVU0UgZGVzaWduIGFuZCB1
+c2FnZSwgcGxlYXNlIHNlZSB0aGUgZm9sbG93LW9uCj4gRG9jdW1lbnRhdGlvbiBjb21taXQuCj4K
+PiBTaWduZWQtb2ZmLWJ5OiBYaWUgWW9uZ2ppIDx4aWV5b25namlAYnl0ZWRhbmNlLmNvbT4KPiAt
+LS0KPiAgIERvY3VtZW50YXRpb24vdXNlcnNwYWNlLWFwaS9pb2N0bC9pb2N0bC1udW1iZXIucnN0
+IHwgICAgMSArCj4gICBkcml2ZXJzL3ZkcGEvS2NvbmZpZyAgICAgICAgICAgICAgICAgICAgICAg
+ICAgICAgICB8ICAgMTAgKwo+ICAgZHJpdmVycy92ZHBhL01ha2VmaWxlICAgICAgICAgICAgICAg
+ICAgICAgICAgICAgICAgfCAgICAxICsKPiAgIGRyaXZlcnMvdmRwYS92ZHBhX3VzZXIvTWFrZWZp
+bGUgICAgICAgICAgICAgICAgICAgIHwgICAgNSArCj4gICBkcml2ZXJzL3ZkcGEvdmRwYV91c2Vy
+L3ZkdXNlX2Rldi5jICAgICAgICAgICAgICAgICB8IDE1NDEgKysrKysrKysrKysrKysrKysrKysK
+PiAgIGluY2x1ZGUvdWFwaS9saW51eC92ZHVzZS5oICAgICAgICAgICAgICAgICAgICAgICAgIHwg
+IDIyMCArKysKPiAgIDYgZmlsZXMgY2hhbmdlZCwgMTc3OCBpbnNlcnRpb25zKCspCj4gICBjcmVh
+dGUgbW9kZSAxMDA2NDQgZHJpdmVycy92ZHBhL3ZkcGFfdXNlci9NYWtlZmlsZQo+ICAgY3JlYXRl
+IG1vZGUgMTAwNjQ0IGRyaXZlcnMvdmRwYS92ZHBhX3VzZXIvdmR1c2VfZGV2LmMKPiAgIGNyZWF0
+ZSBtb2RlIDEwMDY0NCBpbmNsdWRlL3VhcGkvbGludXgvdmR1c2UuaAo+Cj4gZGlmZiAtLWdpdCBh
+L0RvY3VtZW50YXRpb24vdXNlcnNwYWNlLWFwaS9pb2N0bC9pb2N0bC1udW1iZXIucnN0IGIvRG9j
+dW1lbnRhdGlvbi91c2Vyc3BhY2UtYXBpL2lvY3RsL2lvY3RsLW51bWJlci5yc3QKPiBpbmRleCAx
+NDA5ZTQwZTYzNDUuLjI5M2NhM2FlZjM1OCAxMDA2NDQKPiAtLS0gYS9Eb2N1bWVudGF0aW9uL3Vz
+ZXJzcGFjZS1hcGkvaW9jdGwvaW9jdGwtbnVtYmVyLnJzdAo+ICsrKyBiL0RvY3VtZW50YXRpb24v
+dXNlcnNwYWNlLWFwaS9pb2N0bC9pb2N0bC1udW1iZXIucnN0Cj4gQEAgLTMwMCw2ICszMDAsNyBA
+QCBDb2RlICBTZXEjICAgIEluY2x1ZGUgRmlsZSAgICAgICAgICAgICAgICAgICAgICAgICAgICAg
+ICAgICAgICAgICAgICBDb21tZW50cwo+ICAgJ3onICAgMTAtNEYgIGRyaXZlcnMvczM5MC9jcnlw
+dG8vemNyeXB0X2FwaS5oICAgICAgICAgICAgICAgICAgICAgICAgY29uZmxpY3QhCj4gICAnfCcg
+ICAwMC03RiAgbGludXgvbWVkaWEuaAo+ICAgMHg4MCAgMDAtMUYgIGxpbnV4L2ZiLmgKPiArMHg4
+MSAgMDAtMUYgIGxpbnV4L3ZkdXNlLmgKPiAgIDB4ODkgIDAwLTA2ICBhcmNoL3g4Ni9pbmNsdWRl
+L2FzbS9zb2NraW9zLmgKPiAgIDB4ODkgIDBCLURGICBsaW51eC9zb2NraW9zLmgKPiAgIDB4ODkg
+IEUwLUVGICBsaW51eC9zb2NraW9zLmggICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAg
+ICAgICAgIFNJT0NQUk9UT1BSSVZBVEUgcmFuZ2UKPiBkaWZmIC0tZ2l0IGEvZHJpdmVycy92ZHBh
+L0tjb25maWcgYi9kcml2ZXJzL3ZkcGEvS2NvbmZpZwo+IGluZGV4IGE1MDNjMWIyYmZkOS4uNmUy
+M2JjZTY0MzNhIDEwMDY0NAo+IC0tLSBhL2RyaXZlcnMvdmRwYS9LY29uZmlnCj4gKysrIGIvZHJp
+dmVycy92ZHBhL0tjb25maWcKPiBAQCAtMzMsNiArMzMsMTYgQEAgY29uZmlnIFZEUEFfU0lNX0JM
+T0NLCj4gICAJICB2RFBBIGJsb2NrIGRldmljZSBzaW11bGF0b3Igd2hpY2ggdGVybWluYXRlcyBJ
+TyByZXF1ZXN0IGluIGEKPiAgIAkgIG1lbW9yeSBidWZmZXIuCj4gICAKPiArY29uZmlnIFZEUEFf
+VVNFUgo+ICsJdHJpc3RhdGUgIlZEVVNFICh2RFBBIERldmljZSBpbiBVc2Vyc3BhY2UpIHN1cHBv
+cnQiCj4gKwlkZXBlbmRzIG9uIEVWRU5URkQgJiYgTU1VICYmIEhBU19ETUEKPiArCXNlbGVjdCBE
+TUFfT1BTCj4gKwlzZWxlY3QgVkhPU1RfSU9UTEIKPiArCXNlbGVjdCBJT01NVV9JT1ZBCj4gKwlo
+ZWxwCj4gKwkgIFdpdGggVkRVU0UgaXQgaXMgcG9zc2libGUgdG8gZW11bGF0ZSBhIHZEUEEgRGV2
+aWNlCj4gKwkgIGluIGEgdXNlcnNwYWNlIHByb2dyYW0uCj4gKwo+ICAgY29uZmlnIElGQ1ZGCj4g
+ICAJdHJpc3RhdGUgIkludGVsIElGQyBWRiB2RFBBIGRyaXZlciIKPiAgIAlkZXBlbmRzIG9uIFBD
+SV9NU0kKPiBkaWZmIC0tZ2l0IGEvZHJpdmVycy92ZHBhL01ha2VmaWxlIGIvZHJpdmVycy92ZHBh
+L01ha2VmaWxlCj4gaW5kZXggNjdmZTdmM2Q2OTQzLi5mMDJlYmVkMzNmMTkgMTAwNjQ0Cj4gLS0t
+IGEvZHJpdmVycy92ZHBhL01ha2VmaWxlCj4gKysrIGIvZHJpdmVycy92ZHBhL01ha2VmaWxlCj4g
+QEAgLTEsNiArMSw3IEBACj4gICAjIFNQRFgtTGljZW5zZS1JZGVudGlmaWVyOiBHUEwtMi4wCj4g
+ICBvYmotJChDT05GSUdfVkRQQSkgKz0gdmRwYS5vCj4gICBvYmotJChDT05GSUdfVkRQQV9TSU0p
+ICs9IHZkcGFfc2ltLwo+ICtvYmotJChDT05GSUdfVkRQQV9VU0VSKSArPSB2ZHBhX3VzZXIvCj4g
+ICBvYmotJChDT05GSUdfSUZDVkYpICAgICs9IGlmY3ZmLwo+ICAgb2JqLSQoQ09ORklHX01MWDVf
+VkRQQSkgKz0gbWx4NS8KPiAgIG9iai0kKENPTkZJR19WUF9WRFBBKSAgICArPSB2aXJ0aW9fcGNp
+Lwo+IGRpZmYgLS1naXQgYS9kcml2ZXJzL3ZkcGEvdmRwYV91c2VyL01ha2VmaWxlIGIvZHJpdmVy
+cy92ZHBhL3ZkcGFfdXNlci9NYWtlZmlsZQo+IG5ldyBmaWxlIG1vZGUgMTAwNjQ0Cj4gaW5kZXgg
+MDAwMDAwMDAwMDAwLi4yNjBlMGIyNmFmOTkKPiAtLS0gL2Rldi9udWxsCj4gKysrIGIvZHJpdmVy
+cy92ZHBhL3ZkcGFfdXNlci9NYWtlZmlsZQo+IEBAIC0wLDAgKzEsNSBAQAo+ICsjIFNQRFgtTGlj
+ZW5zZS1JZGVudGlmaWVyOiBHUEwtMi4wCj4gKwo+ICt2ZHVzZS15IDo9IHZkdXNlX2Rldi5vIGlv
+dmFfZG9tYWluLm8KPiArCj4gK29iai0kKENPTkZJR19WRFBBX1VTRVIpICs9IHZkdXNlLm8KPiBk
+aWZmIC0tZ2l0IGEvZHJpdmVycy92ZHBhL3ZkcGFfdXNlci92ZHVzZV9kZXYuYyBiL2RyaXZlcnMv
+dmRwYS92ZHBhX3VzZXIvdmR1c2VfZGV2LmMKPiBuZXcgZmlsZSBtb2RlIDEwMDY0NAo+IGluZGV4
+IDAwMDAwMDAwMDAwMC4uNmFkZGM2MmU3ZGU2Cj4gLS0tIC9kZXYvbnVsbAo+ICsrKyBiL2RyaXZl
+cnMvdmRwYS92ZHBhX3VzZXIvdmR1c2VfZGV2LmMKPiBAQCAtMCwwICsxLDE1NDEgQEAKPiArLy8g
+U1BEWC1MaWNlbnNlLUlkZW50aWZpZXI6IEdQTC0yLjAtb25seQo+ICsvKgo+ICsgKiBWRFVTRTog
+dkRQQSBEZXZpY2UgaW4gVXNlcnNwYWNlCj4gKyAqCj4gKyAqIENvcHlyaWdodCAoQykgMjAyMC0y
+MDIxIEJ5dGVkYW5jZSBJbmMuIGFuZC9vciBpdHMgYWZmaWxpYXRlcy4gQWxsIHJpZ2h0cyByZXNl
+cnZlZC4KPiArICoKPiArICogQXV0aG9yOiBYaWUgWW9uZ2ppIDx4aWV5b25namlAYnl0ZWRhbmNl
+LmNvbT4KPiArICoKPiArICovCj4gKwo+ICsjaW5jbHVkZSA8bGludXgvaW5pdC5oPgo+ICsjaW5j
+bHVkZSA8bGludXgvbW9kdWxlLmg+Cj4gKyNpbmNsdWRlIDxsaW51eC9jZGV2Lmg+Cj4gKyNpbmNs
+dWRlIDxsaW51eC9kZXZpY2UuaD4KPiArI2luY2x1ZGUgPGxpbnV4L2V2ZW50ZmQuaD4KPiArI2lu
+Y2x1ZGUgPGxpbnV4L3NsYWIuaD4KPiArI2luY2x1ZGUgPGxpbnV4L3dhaXQuaD4KPiArI2luY2x1
+ZGUgPGxpbnV4L2RtYS1tYXAtb3BzLmg+Cj4gKyNpbmNsdWRlIDxsaW51eC9wb2xsLmg+Cj4gKyNp
+bmNsdWRlIDxsaW51eC9maWxlLmg+Cj4gKyNpbmNsdWRlIDxsaW51eC91aW8uaD4KPiArI2luY2x1
+ZGUgPGxpbnV4L3ZkcGEuaD4KPiArI2luY2x1ZGUgPGxpbnV4L25vc3BlYy5oPgo+ICsjaW5jbHVk
+ZSA8dWFwaS9saW51eC92ZHVzZS5oPgo+ICsjaW5jbHVkZSA8dWFwaS9saW51eC92ZHBhLmg+Cj4g
+KyNpbmNsdWRlIDx1YXBpL2xpbnV4L3ZpcnRpb19jb25maWcuaD4KPiArI2luY2x1ZGUgPHVhcGkv
+bGludXgvdmlydGlvX2lkcy5oPgo+ICsjaW5jbHVkZSA8dWFwaS9saW51eC92aXJ0aW9fYmxrLmg+
+Cj4gKyNpbmNsdWRlIDxsaW51eC9tb2RfZGV2aWNldGFibGUuaD4KPiArCj4gKyNpbmNsdWRlICJp
+b3ZhX2RvbWFpbi5oIgo+ICsKPiArI2RlZmluZSBEUlZfQVVUSE9SICAgIllvbmdqaSBYaWUgPHhp
+ZXlvbmdqaUBieXRlZGFuY2UuY29tPiIKPiArI2RlZmluZSBEUlZfREVTQyAgICAgInZEUEEgRGV2
+aWNlIGluIFVzZXJzcGFjZSIKPiArI2RlZmluZSBEUlZfTElDRU5TRSAgIkdQTCB2MiIKPiArCj4g
+KyNkZWZpbmUgVkRVU0VfREVWX01BWCAoMVUgPDwgTUlOT1JCSVRTKQo+ICsjZGVmaW5lIFZEVVNF
+X0JPVU5DRV9TSVpFICg2NCAqIDEwMjQgKiAxMDI0KQo+ICsjZGVmaW5lIFZEVVNFX0lPVkFfU0la
+RSAoMTI4ICogMTAyNCAqIDEwMjQpCj4gKyNkZWZpbmUgVkRVU0VfUkVRVUVTVF9USU1FT1VUIDMw
+CgoKSSB0aGluayB3ZSBuZWVkIG1ha2UgdGhpcyBhcyBhIG1vZHVsZSBwYXJhbWV0ZXIuIDAgcHJv
+YmFibHkgbWVhbnMgd2UgCm5lZWQgdG8gd2FpdCBmb3IgZXZlci4KClRoaXMgY2FuIGhlbHAgaW4g
+dGhlIGNhc2Ugd2hlbiB0aGUgdXNlcnNwYWNlIGlzIGF0dGFjaGVkIGJ5IEdEQi4gSWYgCk1pY2hh
+ZWwgaXMgc3RpbGwgbm90IGhhcHB5LCB3ZSBjYW4gZmluZCBvdGhlciBzb2x1dGlvbiAoZS5nIG9u
+bHkgb2ZmbG9hZCAKdGhlIGRhdGFwYXRoKS4KCk90aGVyIGxvb2tzIGdvb2QuCgpUaGFua3MKCgpf
+X19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fXwppb21tdSBtYWls
+aW5nIGxpc3QKaW9tbXVAbGlzdHMubGludXgtZm91bmRhdGlvbi5vcmcKaHR0cHM6Ly9saXN0cy5s
+aW51eGZvdW5kYXRpb24ub3JnL21haWxtYW4vbGlzdGluZm8vaW9tbXU=
