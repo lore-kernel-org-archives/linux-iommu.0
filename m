@@ -2,117 +2,69 @@ Return-Path: <SRS0=FZ/Z=M3=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-13.5 required=3.0 tests=BAYES_00,
-	DKIM_ADSP_CUSTOM_MED,DKIM_INVALID,DKIM_SIGNED,FREEMAIL_FORGED_FROMDOMAIN,
-	FREEMAIL_FROM,HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_CR_TRAILER,
-	INCLUDES_PATCH,MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,
-	USER_AGENT_GIT autolearn=ham autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-13.8 required=3.0 tests=BAYES_00,
+	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_CR_TRAILER,INCLUDES_PATCH,
+	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED autolearn=unavailable
+	autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 80FE5C4338F
-	for <iommu@archiver.kernel.org>; Wed,  4 Aug 2021 18:46:03 +0000 (UTC)
-Received: from smtp2.osuosl.org (smtp2.osuosl.org [140.211.166.133])
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2D13AC432BE
+	for <iommu@archiver.kernel.org>; Wed,  4 Aug 2021 18:53:00 +0000 (UTC)
+Received: from smtp3.osuosl.org (smtp3.osuosl.org [140.211.166.136])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 47BC360F13
-	for <iommu@archiver.kernel.org>; Wed,  4 Aug 2021 18:46:03 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.4.1 mail.kernel.org 47BC360F13
-Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=gmail.com
+	by mail.kernel.org (Postfix) with ESMTPS id 0B17C60F10
+	for <iommu@archiver.kernel.org>; Wed,  4 Aug 2021 18:52:58 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.4.1 mail.kernel.org 0B17C60F10
+Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=sntech.de
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by smtp2.osuosl.org (Postfix) with ESMTP id 191304055C;
-	Wed,  4 Aug 2021 18:46:03 +0000 (UTC)
+	by smtp3.osuosl.org (Postfix) with ESMTP id BA77F6063A;
+	Wed,  4 Aug 2021 18:52:58 +0000 (UTC)
+X-Virus-Scanned: amavisd-new at osuosl.org
+Received: from smtp3.osuosl.org ([127.0.0.1])
+	by localhost (smtp3.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+	with ESMTP id yTSOQbJY6pnM; Wed,  4 Aug 2021 18:52:57 +0000 (UTC)
+Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [IPv6:2605:bc80:3010:104::8cd3:938])
+	by smtp3.osuosl.org (Postfix) with ESMTPS id 6E510605B2;
+	Wed,  4 Aug 2021 18:52:57 +0000 (UTC)
+Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 2144AC001A;
+	Wed,  4 Aug 2021 18:52:57 +0000 (UTC)
+Received: from smtp2.osuosl.org (smtp2.osuosl.org [IPv6:2605:bc80:3010::133])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id BD995C000E
+ for <iommu@lists.linux-foundation.org>; Wed,  4 Aug 2021 18:52:55 +0000 (UTC)
+Received: from localhost (localhost [127.0.0.1])
+ by smtp2.osuosl.org (Postfix) with ESMTP id B2F8B404FF
+ for <iommu@lists.linux-foundation.org>; Wed,  4 Aug 2021 18:52:55 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
 Received: from smtp2.osuosl.org ([127.0.0.1])
-	by localhost (smtp2.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id lSvVYqJuUPiv; Wed,  4 Aug 2021 18:46:01 +0000 (UTC)
-Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [IPv6:2605:bc80:3010:104::8cd3:938])
-	by smtp2.osuosl.org (Postfix) with ESMTPS id 6CC7D4055B;
-	Wed,  4 Aug 2021 18:46:01 +0000 (UTC)
-Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 53113C001A;
-	Wed,  4 Aug 2021 18:46:01 +0000 (UTC)
-Received: from smtp4.osuosl.org (smtp4.osuosl.org [140.211.166.137])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 79F07C0022
- for <iommu@lists.linux-foundation.org>; Wed,  4 Aug 2021 18:45:59 +0000 (UTC)
-Received: from localhost (localhost [127.0.0.1])
- by smtp4.osuosl.org (Postfix) with ESMTP id 5BB4F4069A
- for <iommu@lists.linux-foundation.org>; Wed,  4 Aug 2021 18:45:59 +0000 (UTC)
-X-Virus-Scanned: amavisd-new at osuosl.org
-Authentication-Results: smtp4.osuosl.org (amavisd-new);
- dkim=pass (2048-bit key) header.d=gmail.com
-Received: from smtp4.osuosl.org ([127.0.0.1])
- by localhost (smtp4.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id wK8N-ai7SSNy for <iommu@lists.linux-foundation.org>;
- Wed,  4 Aug 2021 18:45:58 +0000 (UTC)
-X-Greylist: whitelisted by SQLgrey-1.8.0
-Received: from mail-pj1-x1029.google.com (mail-pj1-x1029.google.com
- [IPv6:2607:f8b0:4864:20::1029])
- by smtp4.osuosl.org (Postfix) with ESMTPS id A405240686
- for <iommu@lists.linux-foundation.org>; Wed,  4 Aug 2021 18:45:58 +0000 (UTC)
-Received: by mail-pj1-x1029.google.com with SMTP id
- mz5-20020a17090b3785b0290176ecf64922so10072074pjb.3
- for <iommu@lists.linux-foundation.org>; Wed, 04 Aug 2021 11:45:58 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=gmail.com; s=20161025;
- h=from:to:cc:subject:date:message-id:in-reply-to:references
- :mime-version:content-transfer-encoding;
- bh=29igml5xJQT7NZ/zHELD608zwBtMw+CBZNUu6aD3TXw=;
- b=YYV/m/LMm9LueSaFvS1QqjEzusaN78zRUrtnhZOuMU1heWUA9GqVjn0EIfdioy78dO
- pqyQr1mh3jD0fZRJ227Vtm1Yr/MBIZJfqPV9t2r5oVj/djtM4H34a0d2hv9nWJlmMMMc
- C0ZzKol4Vgsz/Q9xqcn/U6GmtuToaeHJ1NsP9ZfEz7Fm5ahWkDMW7GGoANygL8DZ1y+9
- uQ94GlUlEs4n5qTeavI4gSb/EIbS1zykqnrzZoZRj6oHARuYcWdHel7RiRpwWfqTur7t
- +RFWBknyfar4zEtojp765cEWGfOex77YKgaagkx/IKKYP556Mlmva4L/VpYkV17KUMj1
- QvGg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
- d=1e100.net; s=20161025;
- h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
- :references:mime-version:content-transfer-encoding;
- bh=29igml5xJQT7NZ/zHELD608zwBtMw+CBZNUu6aD3TXw=;
- b=jay2wgcVuWAIM9JndHP17Fmzfo58f48ozjZvTVvH4wRJGW1icbW7QCuzVhN2Tdxu9m
- xuRA+RXXknNj/R3C863x+movnZXFXoAwSUDPUZc0dMq56bnnQ+4ZZh/AkBKEpLti1ufB
- mmj5Ww1ieL7Ozo70J6D3xNTrTYugY7/ivs/txBwlFrM+vQ28VUAWwi7xBYY6yOSHtcTp
- oBX1GWeEHY/5CrLeGI7IepGXrO4eMZTzWD00rMBX0JriY4hc3OtUMAxGrNYE8DBtqjfG
- Ihf59sWH6oLbpMtEuo9Ywm8TVJWvwas1HLV3HpBvQdn5gOqxoX8NZvYY3iRKdGzmUkgk
- t9jw==
-X-Gm-Message-State: AOAM532waATQwRyQi+jzGoPrXDREqZOqi5y9kxAXYnbP0ffPe+UgDr4A
- CKyo+meT+GtqMQk0ewaM+HU=
-X-Google-Smtp-Source: ABdhPJys+uUC+8R4d08qbIFnIv7LBHGpTM/c9FmBOlVHRSO99KZWQKeZJC0uWF82I4cQhSNYNbC05Q==
-X-Received: by 2002:a17:902:8b83:b029:12c:cbce:a52f with SMTP id
- ay3-20020a1709028b83b029012ccbcea52fmr546876plb.9.1628102758109; 
- Wed, 04 Aug 2021 11:45:58 -0700 (PDT)
-Received: from ubuntu-Virtual-Machine.corp.microsoft.com
- ([2001:4898:80e8:f:1947:6842:b8a8:6f83])
- by smtp.gmail.com with ESMTPSA id f5sm3325647pjo.23.2021.08.04.11.45.57
- (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
- Wed, 04 Aug 2021 11:45:57 -0700 (PDT)
-From: Tianyu Lan <ltykernel@gmail.com>
-To: kys@microsoft.com, haiyangz@microsoft.com, sthemmin@microsoft.com,
- wei.liu@kernel.org, decui@microsoft.com, tglx@linutronix.de,
- mingo@redhat.com, bp@alien8.de, x86@kernel.org, hpa@zytor.com,
- dave.hansen@linux.intel.com, luto@kernel.org, peterz@infradead.org,
- konrad.wilk@oracle.com, boris.ostrovsky@oracle.com, jgross@suse.com,
- sstabellini@kernel.org, joro@8bytes.org, will@kernel.org,
- davem@davemloft.net, kuba@kernel.org, jejb@linux.ibm.com,
- martin.petersen@oracle.com, arnd@arndb.de, hch@lst.de,
- m.szyprowski@samsung.com, robin.murphy@arm.com, Tianyu.Lan@microsoft.com,
- rppt@kernel.org, kirill.shutemov@linux.intel.com,
- akpm@linux-foundation.org, brijesh.singh@amd.com, thomas.lendacky@amd.com,
- pgonda@google.com, david@redhat.com, krish.sadhukhan@oracle.com,
- saravanand@fb.com, aneesh.kumar@linux.ibm.com,
- xen-devel@lists.xenproject.org, martin.b.radev@gmail.com, ardb@kernel.org,
- rientjes@google.com, tj@kernel.org, keescook@chromium.org,
- michael.h.kelley@microsoft.com
-Subject: [PATCH V2 14/14] HV/Storvsc: Add Isolation VM support for storvsc
- driver
-Date: Wed,  4 Aug 2021 14:45:10 -0400
-Message-Id: <20210804184513.512888-15-ltykernel@gmail.com>
-X-Mailer: git-send-email 2.25.1
-In-Reply-To: <20210804184513.512888-1-ltykernel@gmail.com>
-References: <20210804184513.512888-1-ltykernel@gmail.com>
+ by localhost (smtp2.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+ with ESMTP id OZ5YA04h21qf for <iommu@lists.linux-foundation.org>;
+ Wed,  4 Aug 2021 18:52:54 +0000 (UTC)
+X-Greylist: from auto-whitelisted by SQLgrey-1.8.0
+Received: from gloria.sntech.de (gloria.sntech.de [185.11.138.130])
+ by smtp2.osuosl.org (Postfix) with ESMTPS id A378B401D2
+ for <iommu@lists.linux-foundation.org>; Wed,  4 Aug 2021 18:52:54 +0000 (UTC)
+Received: from ip5f5aa64a.dynamic.kabel-deutschland.de ([95.90.166.74]
+ helo=diego.localnet)
+ by gloria.sntech.de with esmtpsa (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
+ (Exim 4.92) (envelope-from <heiko@sntech.de>)
+ id 1mBM0O-0002bp-FX; Wed, 04 Aug 2021 20:52:40 +0200
+From: Heiko =?ISO-8859-1?Q?St=FCbner?= <heiko@sntech.de>
+To: joro@8bytes.org, will@kernel.org, Robin Murphy <robin.murphy@arm.com>
+Subject: Re: [PATCH v3 01/25] iommu: Pull IOVA cookie management into the core
+Date: Wed, 04 Aug 2021 20:52:39 +0200
+Message-ID: <2535689.1BCLMh4Saa@diego>
+In-Reply-To: <46f4cda8215bd5f8a9f9fd5a4a6451805f75efa3.1628094600.git.robin.murphy@arm.com>
+References: <cover.1628094600.git.robin.murphy@arm.com>
+ <46f4cda8215bd5f8a9f9fd5a4a6451805f75efa3.1628094600.git.robin.murphy@arm.com>
 MIME-Version: 1.0
-Cc: linux-arch@vger.kernel.org, parri.andrea@gmail.com,
- linux-hyperv@vger.kernel.org, linux-scsi@vger.kernel.org,
- netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
- iommu@lists.linux-foundation.org, vkuznets@redhat.com
+Cc: Maxime Ripard <mripard@kernel.org>,
+ Jean-Philippe Brucker <jean-philippe@linaro.org>,
+ Geert Uytterhoeven <geert+renesas@glider.be>, linux-kernel@vger.kernel.org,
+ Chunyan Zhang <chunyan.zhang@unisoc.com>, dianders@chromium.org,
+ iommu@lists.linux-foundation.org, rajatja@google.com,
+ linux-arm-kernel@lists.infradead.org
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -130,164 +82,97 @@ Content-Transfer-Encoding: 7bit
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-From: Tianyu Lan <Tianyu.Lan@microsoft.com>
+Am Mittwoch, 4. August 2021, 19:15:29 CEST schrieb Robin Murphy:
+> Now that everyone has converged on iommu-dma for IOMMU_DOMAIN_DMA
+> support, we can abandon the notion of drivers being responsible for the
+> cookie type, and consolidate all the management into the core code.
+> 
+> CC: Marek Szyprowski <m.szyprowski@samsung.com>
+> CC: Yoshihiro Shimoda <yoshihiro.shimoda.uh@renesas.com>
+> CC: Geert Uytterhoeven <geert+renesas@glider.be>
+> CC: Yong Wu <yong.wu@mediatek.com>
+> CC: Heiko Stuebner <heiko@sntech.de>
+> CC: Chunyan Zhang <chunyan.zhang@unisoc.com>
+> CC: Maxime Ripard <mripard@kernel.org>
+> Reviewed-by: Jean-Philippe Brucker <jean-philippe@linaro.org>
+> Reviewed-by: Lu Baolu <baolu.lu@linux.intel.com>
+> Signed-off-by: Robin Murphy <robin.murphy@arm.com>
 
-In Isolation VM, all shared memory with host needs to mark visible
-to host via hvcall. vmbus_establish_gpadl() has already done it for
-storvsc rx/tx ring buffer. The page buffer used by vmbus_sendpacket_
-mpb_desc() still need to handle. Use DMA API to map/umap these
-memory during sending/receiving packet and Hyper-V DMA ops callback
-will use swiotlb function to allocate bounce buffer and copy data
-from/to bounce buffer.
+On a Rockchip rk3288 (arm32), rk3399 (arm64) and px30 (arm64)
+with the graphics pipeline using the iommu
 
-Signed-off-by: Tianyu Lan <Tianyu.Lan@microsoft.com>
----
- drivers/scsi/storvsc_drv.c | 68 +++++++++++++++++++++++++++++++++++---
- 1 file changed, 63 insertions(+), 5 deletions(-)
+Tested-by: Heiko Stuebner <heiko@sntech.de>
 
-diff --git a/drivers/scsi/storvsc_drv.c b/drivers/scsi/storvsc_drv.c
-index 328bb961c281..78320719bdd8 100644
---- a/drivers/scsi/storvsc_drv.c
-+++ b/drivers/scsi/storvsc_drv.c
-@@ -21,6 +21,8 @@
- #include <linux/device.h>
- #include <linux/hyperv.h>
- #include <linux/blkdev.h>
-+#include <linux/io.h>
-+#include <linux/dma-mapping.h>
- #include <scsi/scsi.h>
- #include <scsi/scsi_cmnd.h>
- #include <scsi/scsi_host.h>
-@@ -427,6 +429,8 @@ struct storvsc_cmd_request {
- 	u32 payload_sz;
- 
- 	struct vstor_packet vstor_packet;
-+	u32 hvpg_count;
-+	struct hv_dma_range *dma_range;
- };
- 
- 
-@@ -509,6 +513,14 @@ struct storvsc_scan_work {
- 	u8 tgt_id;
- };
- 
-+#define storvsc_dma_map(dev, page, offset, size, dir) \
-+	dma_map_page(dev, page, offset, size, dir)
-+
-+#define storvsc_dma_unmap(dev, dma_range, dir)		\
-+		dma_unmap_page(dev, dma_range.dma,	\
-+			       dma_range.mapping_size,	\
-+			       dir ? DMA_FROM_DEVICE : DMA_TO_DEVICE)
-+
- static void storvsc_device_scan(struct work_struct *work)
- {
- 	struct storvsc_scan_work *wrk;
-@@ -1260,6 +1272,7 @@ static void storvsc_on_channel_callback(void *context)
- 	struct hv_device *device;
- 	struct storvsc_device *stor_device;
- 	struct Scsi_Host *shost;
-+	int i;
- 
- 	if (channel->primary_channel != NULL)
- 		device = channel->primary_channel->device_obj;
-@@ -1314,6 +1327,15 @@ static void storvsc_on_channel_callback(void *context)
- 				request = (struct storvsc_cmd_request *)scsi_cmd_priv(scmnd);
- 			}
- 
-+			if (request->dma_range) {
-+				for (i = 0; i < request->hvpg_count; i++)
-+					storvsc_dma_unmap(&device->device,
-+						request->dma_range[i],
-+						request->vstor_packet.vm_srb.data_in == READ_TYPE);
-+
-+				kfree(request->dma_range);
-+			}
-+
- 			storvsc_on_receive(stor_device, packet, request);
- 			continue;
- 		}
-@@ -1810,7 +1832,9 @@ static int storvsc_queuecommand(struct Scsi_Host *host, struct scsi_cmnd *scmnd)
- 		unsigned int hvpgoff, hvpfns_to_add;
- 		unsigned long offset_in_hvpg = offset_in_hvpage(sgl->offset);
- 		unsigned int hvpg_count = HVPFN_UP(offset_in_hvpg + length);
-+		dma_addr_t dma;
- 		u64 hvpfn;
-+		u32 size;
- 
- 		if (hvpg_count > MAX_PAGE_BUFFER_COUNT) {
- 
-@@ -1824,6 +1848,13 @@ static int storvsc_queuecommand(struct Scsi_Host *host, struct scsi_cmnd *scmnd)
- 		payload->range.len = length;
- 		payload->range.offset = offset_in_hvpg;
- 
-+		cmd_request->dma_range = kcalloc(hvpg_count,
-+				 sizeof(*cmd_request->dma_range),
-+				 GFP_ATOMIC);
-+		if (!cmd_request->dma_range) {
-+			ret = -ENOMEM;
-+			goto free_payload;
-+		}
- 
- 		for (i = 0; sgl != NULL; sgl = sg_next(sgl)) {
- 			/*
-@@ -1847,9 +1878,29 @@ static int storvsc_queuecommand(struct Scsi_Host *host, struct scsi_cmnd *scmnd)
- 			 * last sgl should be reached at the same time that
- 			 * the PFN array is filled.
- 			 */
--			while (hvpfns_to_add--)
--				payload->range.pfn_array[i++] =	hvpfn++;
-+			while (hvpfns_to_add--) {
-+				size = min(HV_HYP_PAGE_SIZE - offset_in_hvpg,
-+					   (unsigned long)length);
-+				dma = storvsc_dma_map(&dev->device, pfn_to_page(hvpfn++),
-+						      offset_in_hvpg, size,
-+						      scmnd->sc_data_direction);
-+				if (dma_mapping_error(&dev->device, dma)) {
-+					ret = -ENOMEM;
-+					goto free_dma_range;
-+				}
-+
-+				if (offset_in_hvpg) {
-+					payload->range.offset = dma & ~HV_HYP_PAGE_MASK;
-+					offset_in_hvpg = 0;
-+				}
-+
-+				cmd_request->dma_range[i].dma = dma;
-+				cmd_request->dma_range[i].mapping_size = size;
-+				payload->range.pfn_array[i++] = dma >> HV_HYP_PAGE_SHIFT;
-+				length -= size;
-+			}
- 		}
-+		cmd_request->hvpg_count = hvpg_count;
- 	}
- 
- 	cmd_request->payload = payload;
-@@ -1860,13 +1911,20 @@ static int storvsc_queuecommand(struct Scsi_Host *host, struct scsi_cmnd *scmnd)
- 	put_cpu();
- 
- 	if (ret == -EAGAIN) {
--		if (payload_sz > sizeof(cmd_request->mpb))
--			kfree(payload);
- 		/* no more space */
--		return SCSI_MLQUEUE_DEVICE_BUSY;
-+		ret = SCSI_MLQUEUE_DEVICE_BUSY;
-+		goto free_dma_range;
- 	}
- 
- 	return 0;
-+
-+free_dma_range:
-+	kfree(cmd_request->dma_range);
-+
-+free_payload:
-+	if (payload_sz > sizeof(cmd_request->mpb))
-+		kfree(payload);
-+	return ret;
- }
- 
- static struct scsi_host_template scsi_driver = {
--- 
-2.25.1
+
+Heiko
+
+> 
+> ---
+> 
+> v3: Use a simpler temporary check instead of trying to be clever with
+>     the error code
+> ---
+>  drivers/iommu/iommu.c | 7 +++++++
+>  include/linux/iommu.h | 3 ++-
+>  2 files changed, 9 insertions(+), 1 deletion(-)
+> 
+> diff --git a/drivers/iommu/iommu.c b/drivers/iommu/iommu.c
+> index f2cda9950bd5..b65fcc66ffa4 100644
+> --- a/drivers/iommu/iommu.c
+> +++ b/drivers/iommu/iommu.c
+> @@ -7,6 +7,7 @@
+>  #define pr_fmt(fmt)    "iommu: " fmt
+>  
+>  #include <linux/device.h>
+> +#include <linux/dma-iommu.h>
+>  #include <linux/kernel.h>
+>  #include <linux/bits.h>
+>  #include <linux/bug.h>
+> @@ -1946,6 +1947,11 @@ static struct iommu_domain *__iommu_domain_alloc(struct bus_type *bus,
+>  	/* Assume all sizes by default; the driver may override this later */
+>  	domain->pgsize_bitmap  = bus->iommu_ops->pgsize_bitmap;
+>  
+> +	/* Temporarily avoid -EEXIST while drivers still get their own cookies */
+> +	if (type == IOMMU_DOMAIN_DMA && !domain->iova_cookie && iommu_get_dma_cookie(domain)) {
+> +		iommu_domain_free(domain);
+> +		domain = NULL;
+> +	}
+>  	return domain;
+>  }
+>  
+> @@ -1957,6 +1963,7 @@ EXPORT_SYMBOL_GPL(iommu_domain_alloc);
+>  
+>  void iommu_domain_free(struct iommu_domain *domain)
+>  {
+> +	iommu_put_dma_cookie(domain);
+>  	domain->ops->domain_free(domain);
+>  }
+>  EXPORT_SYMBOL_GPL(iommu_domain_free);
+> diff --git a/include/linux/iommu.h b/include/linux/iommu.h
+> index 4997c78e2670..141779d76035 100644
+> --- a/include/linux/iommu.h
+> +++ b/include/linux/iommu.h
+> @@ -40,6 +40,7 @@ struct iommu_domain;
+>  struct notifier_block;
+>  struct iommu_sva;
+>  struct iommu_fault_event;
+> +struct iommu_dma_cookie;
+>  
+>  /* iommu fault flags */
+>  #define IOMMU_FAULT_READ	0x0
+> @@ -86,7 +87,7 @@ struct iommu_domain {
+>  	iommu_fault_handler_t handler;
+>  	void *handler_token;
+>  	struct iommu_domain_geometry geometry;
+> -	void *iova_cookie;
+> +	struct iommu_dma_cookie *iova_cookie;
+>  };
+>  
+>  enum iommu_cap {
+> 
+
+
+
 
 _______________________________________________
 iommu mailing list
