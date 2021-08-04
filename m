@@ -8,81 +8,78 @@ X-Spam-Status: No, score=-13.5 required=3.0 tests=BAYES_00,
 	INCLUDES_PATCH,MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,
 	USER_AGENT_GIT autolearn=ham autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id EC950C4338F
-	for <iommu@archiver.kernel.org>; Wed,  4 Aug 2021 18:45:51 +0000 (UTC)
-Received: from smtp3.osuosl.org (smtp3.osuosl.org [140.211.166.136])
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 00E37C19F3C
+	for <iommu@archiver.kernel.org>; Wed,  4 Aug 2021 18:45:49 +0000 (UTC)
+Received: from smtp4.osuosl.org (smtp4.osuosl.org [140.211.166.137])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id B477760F58
-	for <iommu@archiver.kernel.org>; Wed,  4 Aug 2021 18:45:51 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.4.1 mail.kernel.org B477760F58
+	by mail.kernel.org (Postfix) with ESMTPS id B7084610FE
+	for <iommu@archiver.kernel.org>; Wed,  4 Aug 2021 18:45:49 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.4.1 mail.kernel.org B7084610FE
 Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=gmail.com
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by smtp3.osuosl.org (Postfix) with ESMTP id 958E060612;
-	Wed,  4 Aug 2021 18:45:51 +0000 (UTC)
+	by smtp4.osuosl.org (Postfix) with ESMTP id 87DAA40679;
+	Wed,  4 Aug 2021 18:45:49 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from smtp3.osuosl.org ([127.0.0.1])
-	by localhost (smtp3.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id jGWveo5l9RTC; Wed,  4 Aug 2021 18:45:50 +0000 (UTC)
-Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [IPv6:2605:bc80:3010:104::8cd3:938])
-	by smtp3.osuosl.org (Postfix) with ESMTPS id 779B560A50;
-	Wed,  4 Aug 2021 18:45:50 +0000 (UTC)
+Received: from smtp4.osuosl.org ([127.0.0.1])
+	by localhost (smtp4.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+	with ESMTP id KGpf9Q9SphEr; Wed,  4 Aug 2021 18:45:48 +0000 (UTC)
+Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
+	by smtp4.osuosl.org (Postfix) with ESMTPS id 50FAC40686;
+	Wed,  4 Aug 2021 18:45:48 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 584EEC001A;
-	Wed,  4 Aug 2021 18:45:50 +0000 (UTC)
-Received: from smtp1.osuosl.org (smtp1.osuosl.org [140.211.166.138])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 00F7AC000E
- for <iommu@lists.linux-foundation.org>; Wed,  4 Aug 2021 18:45:50 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 2ECD0C001A;
+	Wed,  4 Aug 2021 18:45:48 +0000 (UTC)
+Received: from smtp4.osuosl.org (smtp4.osuosl.org [140.211.166.137])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id F1E31C000E
+ for <iommu@lists.linux-foundation.org>; Wed,  4 Aug 2021 18:45:47 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by smtp1.osuosl.org (Postfix) with ESMTP id D712983C6F
- for <iommu@lists.linux-foundation.org>; Wed,  4 Aug 2021 18:45:49 +0000 (UTC)
+ by smtp4.osuosl.org (Postfix) with ESMTP id DF96240673
+ for <iommu@lists.linux-foundation.org>; Wed,  4 Aug 2021 18:45:47 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Authentication-Results: smtp1.osuosl.org (amavisd-new);
- dkim=pass (2048-bit key) header.d=gmail.com
-Received: from smtp1.osuosl.org ([127.0.0.1])
- by localhost (smtp1.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id hmAFm19cfO1R for <iommu@lists.linux-foundation.org>;
- Wed,  4 Aug 2021 18:45:49 +0000 (UTC)
+Received: from smtp4.osuosl.org ([127.0.0.1])
+ by localhost (smtp4.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+ with ESMTP id Fo7PaksvDUfB for <iommu@lists.linux-foundation.org>;
+ Wed,  4 Aug 2021 18:45:47 +0000 (UTC)
 X-Greylist: whitelisted by SQLgrey-1.8.0
-Received: from mail-pj1-x1031.google.com (mail-pj1-x1031.google.com
- [IPv6:2607:f8b0:4864:20::1031])
- by smtp1.osuosl.org (Postfix) with ESMTPS id 4BFA983BEA
- for <iommu@lists.linux-foundation.org>; Wed,  4 Aug 2021 18:45:49 +0000 (UTC)
-Received: by mail-pj1-x1031.google.com with SMTP id mt6so4362398pjb.1
- for <iommu@lists.linux-foundation.org>; Wed, 04 Aug 2021 11:45:49 -0700 (PDT)
+Received: from mail-pl1-x62b.google.com (mail-pl1-x62b.google.com
+ [IPv6:2607:f8b0:4864:20::62b])
+ by smtp4.osuosl.org (Postfix) with ESMTPS id 32B6A40679
+ for <iommu@lists.linux-foundation.org>; Wed,  4 Aug 2021 18:45:47 +0000 (UTC)
+Received: by mail-pl1-x62b.google.com with SMTP id q2so3976138plr.11
+ for <iommu@lists.linux-foundation.org>; Wed, 04 Aug 2021 11:45:47 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=gmail.com; s=20161025;
  h=from:to:cc:subject:date:message-id:in-reply-to:references
  :mime-version:content-transfer-encoding;
- bh=fRYEBTeqaJZ2nuhpRxylpNXV0HYL+RYR+rak5A96Ekw=;
- b=HTvCf728VbK4Su+bqKQH5oArAC9CXG5wpGLFMSbncBntCgAQZWEvfSseixDyYpT0AX
- k9LEBLAGDciL3AkfAFjP2TMACFh9KnhSAvgcNxNSbCla6/IOSYzNFr/e7x8x1dA8GKM1
- syxdGLXhzA7Yrkb5n60T/FhE0Ane5iRjsMioCojKjFQvuLjDHt/kh4Ojc+dT+/hZ62hQ
- eajl/gHvZ4PkjPMxeIMhGfhbbVS0oRkzVNysDwpDt55LL/DMHpDe8IHdrR6x1E046GaX
- csC0M9+AoIdiTpE1PkZmn5vuYvjCxfjcjVChflIVOTKbc5qRk+l2hywKeYO/CovBlFqm
- Ha8Q==
+ bh=X/FF6IBH0iDucy7fFb53vXAVZJZGw+kDZnNdV+cRcX4=;
+ b=nbfSc3WWTmlyhJWBau6jlhMtetGCpWCMIMIt6dnUfkuMu4BYLdh/LGCyzU2IAB+H/R
+ 5DlfUB34I1HtalUYR0dWkXNEbfqYIfDcJPW9CGPUl7lgRMc+SkCTRxtBoBX+iH5g1IJz
+ JfXT4DiEzigmUnD/oJm8GTIidzjWEQbgD3ANS4b/8vlU/mo1rBMJMn0shnYuXDuarjDz
+ OiHchOI6rdLJ/Kl1u/kbD6SW02EJ7vf6K8usO4VwWtaH7PvwjxMiCqoL8heS4oMTkQUO
+ 8Rr4YPXj7xmREGXtO5SzoI+QcTEhISbE5uqksbkpHkW6Nv3ZKehaiVVucBEeoOp+nibW
+ z6+g==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
  d=1e100.net; s=20161025;
  h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
  :references:mime-version:content-transfer-encoding;
- bh=fRYEBTeqaJZ2nuhpRxylpNXV0HYL+RYR+rak5A96Ekw=;
- b=VVMKkY92H8zgBXQSMxYIxdcyZuj0k7RG9TEHC/iyNarkd9jApeHoHwFPneHO9yLYSl
- Tn2TG1+ezqrZYJDIkcczQXp9gIzpWrHijs91WwaW0WFq6azZ3n2b+4DEI7+anylWdfjb
- XDp2SQT55FQVZTk+5eUdF4r8zuGbjoSG5IDuQLmhofiFm1h9IprdC8S4mpD+xtQYKosx
- dxtgmr/sq/wjeN6BT/JqWUG3DgvU6lJyyxxKiYOLhSy+2iIW+9zN/zWQ/elRjrzdt+uN
- z8sFVoZft8+KxORDtIIkJLxa2Kk2HL9jSR6EVjcbuCR1DJxFvoyOPqfYW/Gm1PeSWYxz
- 21Iw==
-X-Gm-Message-State: AOAM531OhISsc9zEVp2F7MocWagLh/xqIvTU/6c/1ABsuOlpSdgg7zPD
- mlvodMUiOQUuibyQo3nQ1Lw=
-X-Google-Smtp-Source: ABdhPJwzrx3Ky34YWQf0IrpQZJYUXOTY9aTHTgMpl2ZF/5vkCRfVy6oUSbAdimtL8DDIxrPWPusxTg==
-X-Received: by 2002:a17:90a:2fc2:: with SMTP id
- n2mr513781pjm.112.1628102748897; 
- Wed, 04 Aug 2021 11:45:48 -0700 (PDT)
+ bh=X/FF6IBH0iDucy7fFb53vXAVZJZGw+kDZnNdV+cRcX4=;
+ b=NejXNhiK3qX8S2Fx1CryTLqyN9dQTZmixoA7luTaRJ8sRO8XbgChZ/fcn1ZonSwLke
+ nxLNyQ6EW0emsDIiNvCe8dbRwp/Lapl+TLEf+hNxTz+vtvabKAavYZ7iAdPm55/1BJbi
+ ep+UwljGd9sgqGyLP5+0B7jsLxXPwIkxlobJZpmIQbV9epZ/N050TZpM1hqY91JVYqKf
+ ajigTOYGz0WlvnnmAE2yZVapq3YJglTNCoMKX9o5bTv4cHwn4XUTp+RxPpboSF6V7ZOS
+ 2JiOblsDPA2Q7YjJIC/DXortx4zMGorI3E9jo7bGxKNfl1NL9DqtpGV0qWqjltR9XXQn
+ 2vjg==
+X-Gm-Message-State: AOAM533L4jwKqPYJpztPHEuRf9kSZa3RmWN6Flre/Szy11TWcAtjT223
+ IYVUgkkfbIplRCzQH5W4qcU=
+X-Google-Smtp-Source: ABdhPJyijHhiHC6ZPRqEWrxy/BZ8YZr4h+pTK5pZlYtlGaCrTdCCEixqAygkAVFceUDUgDiXmk86bg==
+X-Received: by 2002:a65:63cf:: with SMTP id n15mr525280pgv.392.1628102746706; 
+ Wed, 04 Aug 2021 11:45:46 -0700 (PDT)
 Received: from ubuntu-Virtual-Machine.corp.microsoft.com
  ([2001:4898:80e8:f:1947:6842:b8a8:6f83])
- by smtp.gmail.com with ESMTPSA id f5sm3325647pjo.23.2021.08.04.11.45.48
+ by smtp.gmail.com with ESMTPSA id f5sm3325647pjo.23.2021.08.04.11.45.45
  (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
- Wed, 04 Aug 2021 11:45:48 -0700 (PDT)
+ Wed, 04 Aug 2021 11:45:46 -0700 (PDT)
 From: Tianyu Lan <ltykernel@gmail.com>
 To: kys@microsoft.com, haiyangz@microsoft.com, sthemmin@microsoft.com,
  wei.liu@kernel.org, decui@microsoft.com, tglx@linutronix.de,
@@ -100,10 +97,10 @@ To: kys@microsoft.com, haiyangz@microsoft.com, sthemmin@microsoft.com,
  xen-devel@lists.xenproject.org, martin.b.radev@gmail.com, ardb@kernel.org,
  rientjes@google.com, tj@kernel.org, keescook@chromium.org,
  michael.h.kelley@microsoft.com
-Subject: [PATCH V2 10/14] DMA: Add dma_map_decrypted/dma_unmap_encrypted()
- function
-Date: Wed,  4 Aug 2021 14:45:06 -0400
-Message-Id: <20210804184513.512888-11-ltykernel@gmail.com>
+Subject: [PATCH V2 09/14] HV/Vmbus: Initialize VMbus ring buffer for Isolation
+ VM
+Date: Wed,  4 Aug 2021 14:45:05 -0400
+Message-Id: <20210804184513.512888-10-ltykernel@gmail.com>
 X-Mailer: git-send-email 2.25.1
 In-Reply-To: <20210804184513.512888-1-ltykernel@gmail.com>
 References: <20210804184513.512888-1-ltykernel@gmail.com>
@@ -131,87 +128,189 @@ Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
 From: Tianyu Lan <Tianyu.Lan@microsoft.com>
 
-In Hyper-V Isolation VM with AMD SEV, swiotlb boucne buffer
-needs to be mapped into address space above vTOM and so
-introduce dma_map_decrypted/dma_unmap_encrypted() to map/unmap
-bounce buffer memory. The platform can populate man/unmap callback
-in the dma memory decrypted ops.
+VMbus ring buffer are shared with host and it's need to
+be accessed via extra address space of Isolation VM with
+SNP support. This patch is to map the ring buffer
+address in extra address space via ioremap(). HV host
+visibility hvcall smears data in the ring buffer and
+so reset the ring buffer memory to zero after calling
+visibility hvcall.
 
 Signed-off-by: Tianyu Lan <Tianyu.Lan@microsoft.com>
 ---
- include/linux/dma-map-ops.h |  9 +++++++++
- kernel/dma/mapping.c        | 22 ++++++++++++++++++++++
- 2 files changed, 31 insertions(+)
+ drivers/hv/Kconfig        |  1 +
+ drivers/hv/channel.c      | 10 +++++
+ drivers/hv/hyperv_vmbus.h |  2 +
+ drivers/hv/ring_buffer.c  | 84 ++++++++++++++++++++++++++++++---------
+ 4 files changed, 79 insertions(+), 18 deletions(-)
 
-diff --git a/include/linux/dma-map-ops.h b/include/linux/dma-map-ops.h
-index 0d53a96a3d64..01d60a024e45 100644
---- a/include/linux/dma-map-ops.h
-+++ b/include/linux/dma-map-ops.h
-@@ -71,6 +71,11 @@ struct dma_map_ops {
- 	unsigned long (*get_merge_boundary)(struct device *dev);
- };
+diff --git a/drivers/hv/Kconfig b/drivers/hv/Kconfig
+index 66c794d92391..a8386998be40 100644
+--- a/drivers/hv/Kconfig
++++ b/drivers/hv/Kconfig
+@@ -7,6 +7,7 @@ config HYPERV
+ 	depends on X86 && ACPI && X86_LOCAL_APIC && HYPERVISOR_GUEST
+ 	select PARAVIRT
+ 	select X86_HV_CALLBACK_VECTOR
++	select VMAP_PFN
+ 	help
+ 	  Select this option to run Linux as a Hyper-V client operating
+ 	  system.
+diff --git a/drivers/hv/channel.c b/drivers/hv/channel.c
+index 4c4717c26240..60ef881a700c 100644
+--- a/drivers/hv/channel.c
++++ b/drivers/hv/channel.c
+@@ -712,6 +712,16 @@ static int __vmbus_open(struct vmbus_channel *newchannel,
+ 	if (err)
+ 		goto error_clean_ring;
  
-+struct dma_memory_decrypted_ops {
-+	void *(*map)(void *addr, unsigned long size);
-+	void (*unmap)(void *addr);
-+};
++	err = hv_ringbuffer_post_init(&newchannel->outbound,
++				      page, send_pages);
++	if (err)
++		goto error_free_gpadl;
 +
- #ifdef CONFIG_DMA_OPS
- #include <asm/dma-mapping.h>
- 
-@@ -374,6 +379,10 @@ static inline void debug_dma_dump_mappings(struct device *dev)
- }
- #endif /* CONFIG_DMA_API_DEBUG */
- 
-+void *dma_map_decrypted(void *addr, unsigned long size);
-+int dma_unmap_decrypted(void *addr, unsigned long size);
++	err = hv_ringbuffer_post_init(&newchannel->inbound,
++				      &page[send_pages], recv_pages);
++	if (err)
++		goto error_free_gpadl;
 +
- extern const struct dma_map_ops dma_dummy_ops;
-+extern struct dma_memory_decrypted_ops dma_memory_generic_decrypted_ops;
+ 	/* Create and init the channel open message */
+ 	open_info = kzalloc(sizeof(*open_info) +
+ 			   sizeof(struct vmbus_channel_open_channel),
+diff --git a/drivers/hv/hyperv_vmbus.h b/drivers/hv/hyperv_vmbus.h
+index 40bc0eff6665..15cd23a561f3 100644
+--- a/drivers/hv/hyperv_vmbus.h
++++ b/drivers/hv/hyperv_vmbus.h
+@@ -172,6 +172,8 @@ extern int hv_synic_cleanup(unsigned int cpu);
+ /* Interface */
  
- #endif /* _LINUX_DMA_MAP_OPS_H */
-diff --git a/kernel/dma/mapping.c b/kernel/dma/mapping.c
-index 2b06a809d0b9..6fb150dc1750 100644
---- a/kernel/dma/mapping.c
-+++ b/kernel/dma/mapping.c
-@@ -13,11 +13,13 @@
- #include <linux/of_device.h>
- #include <linux/slab.h>
+ void hv_ringbuffer_pre_init(struct vmbus_channel *channel);
++int hv_ringbuffer_post_init(struct hv_ring_buffer_info *ring_info,
++		struct page *pages, u32 page_cnt);
+ 
+ int hv_ringbuffer_init(struct hv_ring_buffer_info *ring_info,
+ 		       struct page *pages, u32 pagecnt, u32 max_pkt_size);
+diff --git a/drivers/hv/ring_buffer.c b/drivers/hv/ring_buffer.c
+index 2aee356840a2..d4f93fca1108 100644
+--- a/drivers/hv/ring_buffer.c
++++ b/drivers/hv/ring_buffer.c
+@@ -17,6 +17,8 @@
  #include <linux/vmalloc.h>
-+#include <asm/set_memory.h>
- #include "debug.h"
- #include "direct.h"
+ #include <linux/slab.h>
+ #include <linux/prefetch.h>
++#include <linux/io.h>
++#include <asm/mshyperv.h>
  
- bool dma_default_coherent;
+ #include "hyperv_vmbus.h"
  
-+struct dma_memory_decrypted_ops dma_memory_generic_decrypted_ops;
- /*
-  * Managed DMA API
-  */
-@@ -736,3 +738,23 @@ unsigned long dma_get_merge_boundary(struct device *dev)
- 	return ops->get_merge_boundary(dev);
+@@ -179,43 +181,89 @@ void hv_ringbuffer_pre_init(struct vmbus_channel *channel)
+ 	mutex_init(&channel->outbound.ring_buffer_mutex);
  }
- EXPORT_SYMBOL_GPL(dma_get_merge_boundary);
+ 
+-/* Initialize the ring buffer. */
+-int hv_ringbuffer_init(struct hv_ring_buffer_info *ring_info,
+-		       struct page *pages, u32 page_cnt, u32 max_pkt_size)
++int hv_ringbuffer_post_init(struct hv_ring_buffer_info *ring_info,
++		       struct page *pages, u32 page_cnt)
+ {
++	u64 physic_addr = page_to_pfn(pages) << PAGE_SHIFT;
++	unsigned long *pfns_wraparound;
++	void *vaddr;
+ 	int i;
+-	struct page **pages_wraparound;
+ 
+-	BUILD_BUG_ON((sizeof(struct hv_ring_buffer) != PAGE_SIZE));
++	if (!hv_isolation_type_snp())
++		return 0;
 +
-+void *dma_map_decrypted(void *addr, unsigned long size)
-+{
-+	if (set_memory_decrypted((unsigned long)addr,
-+				 size / PAGE_SIZE))
-+		return NULL;
++	physic_addr += ms_hyperv.shared_gpa_boundary;
+ 
+ 	/*
+ 	 * First page holds struct hv_ring_buffer, do wraparound mapping for
+ 	 * the rest.
+ 	 */
+-	pages_wraparound = kcalloc(page_cnt * 2 - 1, sizeof(struct page *),
++	pfns_wraparound = kcalloc(page_cnt * 2 - 1, sizeof(unsigned long),
+ 				   GFP_KERNEL);
+-	if (!pages_wraparound)
++	if (!pfns_wraparound)
+ 		return -ENOMEM;
+ 
+-	pages_wraparound[0] = pages;
++	pfns_wraparound[0] = physic_addr >> PAGE_SHIFT;
+ 	for (i = 0; i < 2 * (page_cnt - 1); i++)
+-		pages_wraparound[i + 1] = &pages[i % (page_cnt - 1) + 1];
+-
+-	ring_info->ring_buffer = (struct hv_ring_buffer *)
+-		vmap(pages_wraparound, page_cnt * 2 - 1, VM_MAP, PAGE_KERNEL);
+-
+-	kfree(pages_wraparound);
++		pfns_wraparound[i + 1] = (physic_addr >> PAGE_SHIFT) +
++			i % (page_cnt - 1) + 1;
+ 
+-
+-	if (!ring_info->ring_buffer)
++	vaddr = vmap_pfn(pfns_wraparound, page_cnt * 2 - 1, PAGE_KERNEL_IO);
++	kfree(pfns_wraparound);
++	if (!vaddr)
+ 		return -ENOMEM;
+ 
+-	ring_info->ring_buffer->read_index =
+-		ring_info->ring_buffer->write_index = 0;
++	/* Clean memory after setting host visibility. */
++	memset((void *)vaddr, 0x00, page_cnt * PAGE_SIZE);
 +
-+	if (dma_memory_generic_decrypted_ops.map)
-+		return dma_memory_generic_decrypted_ops.map(addr, size);
-+	else
-+		return addr;
++	ring_info->ring_buffer = (struct hv_ring_buffer *)vaddr;
++	ring_info->ring_buffer->read_index = 0;
++	ring_info->ring_buffer->write_index = 0;
+ 
+ 	/* Set the feature bit for enabling flow control. */
+ 	ring_info->ring_buffer->feature_bits.value = 1;
+ 
++	return 0;
 +}
 +
-+int dma_unmap_encrypted(void *addr, unsigned long size)
++/* Initialize the ring buffer. */
++int hv_ringbuffer_init(struct hv_ring_buffer_info *ring_info,
++		       struct page *pages, u32 page_cnt, u32 max_pkt_size)
 +{
-+	if (dma_memory_generic_decrypted_ops.unmap)
-+		dma_memory_generic_decrypted_ops.unmap(addr);
++	int i;
++	struct page **pages_wraparound;
 +
-+	return set_memory_encrypted((unsigned long)addr, size / PAGE_SIZE);
-+}
++	BUILD_BUG_ON((sizeof(struct hv_ring_buffer) != PAGE_SIZE));
++
++	if (!hv_isolation_type_snp()) {
++		/*
++		 * First page holds struct hv_ring_buffer, do wraparound mapping for
++		 * the rest.
++		 */
++		pages_wraparound = kcalloc(page_cnt * 2 - 1, sizeof(struct page *),
++					   GFP_KERNEL);
++		if (!pages_wraparound)
++			return -ENOMEM;
++
++		pages_wraparound[0] = pages;
++		for (i = 0; i < 2 * (page_cnt - 1); i++)
++			pages_wraparound[i + 1] = &pages[i % (page_cnt - 1) + 1];
++
++		ring_info->ring_buffer = (struct hv_ring_buffer *)
++			vmap(pages_wraparound, page_cnt * 2 - 1, VM_MAP, PAGE_KERNEL);
++
++		kfree(pages_wraparound);
++
++		if (!ring_info->ring_buffer)
++			return -ENOMEM;
++
++		ring_info->ring_buffer->read_index =
++			ring_info->ring_buffer->write_index = 0;
++
++		/* Set the feature bit for enabling flow control. */
++		ring_info->ring_buffer->feature_bits.value = 1;
++	}
++
+ 	ring_info->ring_size = page_cnt << PAGE_SHIFT;
+ 	ring_info->ring_size_div10_reciprocal =
+ 		reciprocal_value(ring_info->ring_size / 10);
 -- 
 2.25.1
 
