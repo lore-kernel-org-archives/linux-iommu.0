@@ -2,102 +2,109 @@ Return-Path: <SRS0=FZ/Z=M3=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-10.1 required=3.0 tests=BAYES_00,DKIM_INVALID,
-	DKIM_SIGNED,HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,
-	NICE_REPLY_A,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_SANE_1
-	autolearn=ham autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-3.5 required=3.0 tests=BAYES_00,DKIM_INVALID,
+	DKIM_SIGNED,HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,SPF_HELO_NONE,
+	SPF_PASS,URIBL_BLOCKED autolearn=no autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0316FC4338F
-	for <iommu@archiver.kernel.org>; Wed,  4 Aug 2021 03:22:36 +0000 (UTC)
-Received: from smtp2.osuosl.org (smtp2.osuosl.org [140.211.166.133])
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7890AC43216
+	for <iommu@archiver.kernel.org>; Wed,  4 Aug 2021 05:02:19 +0000 (UTC)
+Received: from smtp4.osuosl.org (smtp4.osuosl.org [140.211.166.137])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 5FFD360295
-	for <iommu@archiver.kernel.org>; Wed,  4 Aug 2021 03:22:35 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.4.1 mail.kernel.org 5FFD360295
-Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=apertussolutions.com
+	by mail.kernel.org (Postfix) with ESMTPS id F39AD60F14
+	for <iommu@archiver.kernel.org>; Wed,  4 Aug 2021 05:02:18 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.4.1 mail.kernel.org F39AD60F14
+Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=bytedance.com
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by smtp2.osuosl.org (Postfix) with ESMTP id 0D500400EA;
-	Wed,  4 Aug 2021 03:22:35 +0000 (UTC)
+	by smtp4.osuosl.org (Postfix) with ESMTP id A4D31415EB;
+	Wed,  4 Aug 2021 05:02:18 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from smtp2.osuosl.org ([127.0.0.1])
-	by localhost (smtp2.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id 5bIeN6OCPjym; Wed,  4 Aug 2021 03:22:33 +0000 (UTC)
+Received: from smtp4.osuosl.org ([127.0.0.1])
+	by localhost (smtp4.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+	with ESMTP id PutS7XIwdjp3; Wed,  4 Aug 2021 05:02:18 +0000 (UTC)
 Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by smtp2.osuosl.org (Postfix) with ESMTPS id 6E1AB40001;
-	Wed,  4 Aug 2021 03:22:33 +0000 (UTC)
+	by smtp4.osuosl.org (Postfix) with ESMTPS id 8D7CA415BC;
+	Wed,  4 Aug 2021 05:02:17 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 40D17C001A;
-	Wed,  4 Aug 2021 03:22:33 +0000 (UTC)
-Received: from smtp1.osuosl.org (smtp1.osuosl.org [IPv6:2605:bc80:3010::138])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 24FA4C000E
- for <iommu@lists.linux-foundation.org>; Wed,  4 Aug 2021 03:22:32 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 5F7CAC0010;
+	Wed,  4 Aug 2021 05:02:17 +0000 (UTC)
+Received: from smtp1.osuosl.org (smtp1.osuosl.org [140.211.166.138])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 15554C000E
+ for <iommu@lists.linux-foundation.org>; Wed,  4 Aug 2021 05:02:16 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by smtp1.osuosl.org (Postfix) with ESMTP id 0168783E09
- for <iommu@lists.linux-foundation.org>; Wed,  4 Aug 2021 03:22:32 +0000 (UTC)
+ by smtp1.osuosl.org (Postfix) with ESMTP id 03C9A83CBD
+ for <iommu@lists.linux-foundation.org>; Wed,  4 Aug 2021 05:02:16 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
 Authentication-Results: smtp1.osuosl.org (amavisd-new);
- dkim=pass (1024-bit key) header.d=apertussolutions.com
+ dkim=pass (2048-bit key) header.d=bytedance-com.20150623.gappssmtp.com
 Received: from smtp1.osuosl.org ([127.0.0.1])
  by localhost (smtp1.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id pXNLcpz2v9DQ for <iommu@lists.linux-foundation.org>;
- Wed,  4 Aug 2021 03:22:30 +0000 (UTC)
-X-Greylist: delayed 00:15:02 by SQLgrey-1.8.0
-Received: from sender4-of-o51.zoho.com (sender4-of-o51.zoho.com
- [136.143.188.51])
- by smtp1.osuosl.org (Postfix) with ESMTPS id D969B83E04
- for <iommu@lists.linux-foundation.org>; Wed,  4 Aug 2021 03:22:30 +0000 (UTC)
-ARC-Seal: i=1; a=rsa-sha256; t=1628046428; cv=none; 
- d=zohomail.com; s=zohoarc; 
- b=Vuage8/C+0ND4RkBkK9rjTzEw0c+3+844ZAbeU86DOUv3Orm2ug5KyKzUNjU3ikQPuapyQNTEDLC8jivur82DRMJKrVcjIqrrLzhgfdYbgGkVB/mVsP4XdwjTJADWWKtkfIZhCXvuUgMCJsPPnbrBskGf3NPHZnCk6r1cVHXpoE=
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=zohomail.com;
- s=zohoarc; t=1628046428;
- h=Content-Type:Content-Transfer-Encoding:Cc:Date:From:In-Reply-To:MIME-Version:Message-ID:References:Subject:To;
- bh=NqBoRvAywN9Gro5Luow8D32ZnnwnjQtyZoS2PTsrkg8=; 
- b=IRUeiSYoa0vgA7aLs5iuh+apYPA0fAZxVphemSvUTFgCuEK7qxsfvhGyvzKqvsE0RFw9qr3Dvwr7XTsuCuSbgLEp52SUQfClX8enQaIhZmOgXsNj4ohQxDwGu6oV0Ar8a5xJ7pjwf7FgTTQ+MYExgCZJOebzipcFA6o0Khro2/o=
-ARC-Authentication-Results: i=1; mx.zohomail.com;
- dkim=pass  header.i=apertussolutions.com;
- spf=pass  smtp.mailfrom=dpsmith@apertussolutions.com;
- dmarc=pass header.from=<dpsmith@apertussolutions.com>
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; t=1628046428; 
- s=zoho; d=apertussolutions.com; i=dpsmith@apertussolutions.com;
- h=Subject:To:Cc:References:From:Message-ID:Date:MIME-Version:In-Reply-To:Content-Type:Content-Transfer-Encoding;
- bh=NqBoRvAywN9Gro5Luow8D32ZnnwnjQtyZoS2PTsrkg8=;
- b=dGHgOyjB0tncSAk5AgH6KZewkMuP+lGQpyH/cgkWCQsKowieQE0s6iHIeYy1IoMd
- 2EKcnFuCn7an+PgXLD25TrZg8/WKRH7gjjRYNwBXGnB98O10jtanBzYc2dx6841yEZK
- vdvyoUNze6sJz7CvUY6QbLe3sJ9NKE142agJGoW0=
-Received: from [10.10.1.171] (static-72-81-132-2.bltmmd.fios.verizon.net
- [72.81.132.2]) by mx.zohomail.com
- with SMTPS id 1628046423716382.0922528096655;
- Tue, 3 Aug 2021 20:07:03 -0700 (PDT)
-Subject: Re: [PATCH v2 12/12] iommu: Do not allow IOMMU passthrough with
- Secure Launch
-To: Andy Lutomirski <luto@kernel.org>,
- Ross Philipson <ross.philipson@oracle.com>, Andi Kleen <ak@linux.intel.com>,
- Joerg Roedel <jroedel@suse.de>, Thomas Gleixner <tglx@linutronix.de>,
- Jason Wang <jasowang@redhat.com>, Andrew Cooper <andrew.cooper3@citrix.com>
-References: <1624032777-7013-1-git-send-email-ross.philipson@oracle.com>
- <1624032777-7013-13-git-send-email-ross.philipson@oracle.com>
- <53edcf0e-c094-876c-ac3d-7c9752e9ea99@arm.com>
- <34d05f0e-b24c-b8cf-c521-8b30cc1df532@oracle.com>
- <CALCETrUdEvLFKuvU7z_ut6cEfAgJogNp3oBXL-EdDLU=W+VeKA@mail.gmail.com>
-From: "Daniel P. Smith" <dpsmith@apertussolutions.com>
-Message-ID: <7fd6733d-ad0b-90d8-7579-5d5a282964a5@apertussolutions.com>
-Date: Tue, 3 Aug 2021 23:05:28 -0400
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
- Thunderbird/78.11.0
+ with ESMTP id VMlRPzioraqs for <iommu@lists.linux-foundation.org>;
+ Wed,  4 Aug 2021 05:02:15 +0000 (UTC)
+X-Greylist: whitelisted by SQLgrey-1.8.0
+Received: from mail-ed1-x535.google.com (mail-ed1-x535.google.com
+ [IPv6:2a00:1450:4864:20::535])
+ by smtp1.osuosl.org (Postfix) with ESMTPS id F41BD83CBC
+ for <iommu@lists.linux-foundation.org>; Wed,  4 Aug 2021 05:02:14 +0000 (UTC)
+Received: by mail-ed1-x535.google.com with SMTP id i6so1937993edu.1
+ for <iommu@lists.linux-foundation.org>; Tue, 03 Aug 2021 22:02:14 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+ d=bytedance-com.20150623.gappssmtp.com; s=20150623;
+ h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+ :cc:content-transfer-encoding;
+ bh=N+beALY95MrjF7EQlWQ+7qrLEnnewleV96sjHNxuEQs=;
+ b=1rLCLS4VnBkloqKEKCZnZytWQey60VsL3htB4tjjDdGtlLAiqoh4sNKJRTSD6PwHMR
+ 9vnNHw1iSS/Fx6i0RCE4RQQ4vyqq5rtIc36Im9QY2RqHEKf/w7Ug3oZhwlGcXQQVWu+G
+ DaqQtL3jX0bh/ha8PFkv/P+nkTaCYS0lRvDdZ7eTBoSHDgR6igcI7RQpNA/OnHviNAOp
+ B3a2lMoBgB2yx2PIRIb70LzX8dilNPja4adYWApEFw1rdfLmQVuZMJXeYvIXWxCdUk2b
+ bPhkn+mywOFmHQT2BPGuByMD4SU6R+J4yLdJWCNVm7lh1t2vV6tsAG7vZpgywjnOueBE
+ IJ+g==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+ d=1e100.net; s=20161025;
+ h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+ :message-id:subject:to:cc:content-transfer-encoding;
+ bh=N+beALY95MrjF7EQlWQ+7qrLEnnewleV96sjHNxuEQs=;
+ b=P875TQ/9xegIPYrQJUWaG+j3A60c805mmhbS8rPkg3ZWNFaux7WTFM8UuRL7AnkQSe
+ mxnCOoytMdTIczMpKYF4dBXNVUbc1y0e2OkTEa07sLRJKWKfSIVsNPcCa1Mz2mI6Cp9E
+ hJsJqfK0IBKn1jbV+5SVK/8p6XJ4JTdeCww9JdQOmNpY0ALmuL2iO7vYc3uG4yraF9AB
+ DuzdVIkswNJDAffI4SVtvsic+cSW4tj1ckHqWBP4cNt/0E3YJblLywrVeNbtNLsXdX2N
+ 8Dw4G/q3d4Q+rdoDOTHivso0SoNymOC4hF1fCQ3i5GerUT7kRRGgId8ZcivTMpaxsTf6
+ pOpg==
+X-Gm-Message-State: AOAM531M9ZOX4XX3z1t6OJLtoCxojqKiWaCi7gZwSuEKzW8PWwiGroZD
+ aKKm3JrwkplBz/hkg11H8OTCg+kRr4pSQUV+VsZA
+X-Google-Smtp-Source: ABdhPJyt1k/RSWy83+1+OmhkaAmWeFnxG6MZmwR66lsbk5H/EN4omlE0NKvZ4kUYOjDCLtkcwCUQ7smkV99GEEOO3As=
+X-Received: by 2002:aa7:c50a:: with SMTP id o10mr29218603edq.118.1628053332808; 
+ Tue, 03 Aug 2021 22:02:12 -0700 (PDT)
 MIME-Version: 1.0
-In-Reply-To: <CALCETrUdEvLFKuvU7z_ut6cEfAgJogNp3oBXL-EdDLU=W+VeKA@mail.gmail.com>
-Content-Language: en-US
-X-ZohoMailClient: External
-Cc: "open list:DOCUMENTATION" <linux-doc@vger.kernel.org>,
- trenchboot-devel@googlegroups.com, X86 ML <x86@kernel.org>,
- LKML <linux-kernel@vger.kernel.org>, iommu <iommu@lists.linux-foundation.org>,
- Ingo Molnar <mingo@redhat.com>, Borislav Petkov <bp@alien8.de>,
- "H. Peter Anvin" <hpa@zytor.com>,
- linux-integrity <linux-integrity@vger.kernel.org>,
- Robin Murphy <robin.murphy@arm.com>
+References: <20210729073503.187-1-xieyongji@bytedance.com>
+ <20210729073503.187-2-xieyongji@bytedance.com>
+ <43d88942-1cd3-c840-6fec-4155fd544d80@redhat.com>
+ <CACycT3vcpwyA3xjD29f1hGnYALyAd=-XcWp8+wJiwSqpqUu00w@mail.gmail.com>
+ <6e05e25e-e569-402e-d81b-8ac2cff1c0e8@arm.com>
+In-Reply-To: <6e05e25e-e569-402e-d81b-8ac2cff1c0e8@arm.com>
+From: Yongji Xie <xieyongji@bytedance.com>
+Date: Wed, 4 Aug 2021 13:02:01 +0800
+Message-ID: <CACycT3sm2r8NMMUPy1k1PuSZZ3nM9aic-O4AhdmRRCwgmwGj4Q@mail.gmail.com>
+Subject: Re: [PATCH v10 01/17] iova: Export alloc_iova_fast() and
+ free_iova_fast()
+To: Robin Murphy <robin.murphy@arm.com>
+Cc: kvm <kvm@vger.kernel.org>, "Michael S. Tsirkin" <mst@redhat.com>,
+ Jason Wang <jasowang@redhat.com>,
+ virtualization <virtualization@lists.linux-foundation.org>,
+ Christian Brauner <christian.brauner@canonical.com>,
+ Jonathan Corbet <corbet@lwn.net>, Matthew Wilcox <willy@infradead.org>,
+ Christoph Hellwig <hch@infradead.org>,
+ Dan Carpenter <dan.carpenter@oracle.com>,
+ Stefano Garzarella <sgarzare@redhat.com>,
+ Liu Xiaodong <xiaodong.liu@intel.com>, Joe Perches <joe@perches.com>,
+ Al Viro <viro@zeniv.linux.org.uk>, Stefan Hajnoczi <stefanha@redhat.com>,
+ songmuchun@bytedance.com, Jens Axboe <axboe@kernel.dk>,
+ He Zhe <zhe.he@windriver.com>, Greg KH <gregkh@linuxfoundation.org>,
+ Randy Dunlap <rdunlap@infradead.org>,
+ linux-kernel <linux-kernel@vger.kernel.org>, iommu@lists.linux-foundation.org,
+ bcrl@kvack.org, netdev@vger.kernel.org, linux-fsdevel@vger.kernel.org,
+ =?UTF-8?Q?Mika_Penttil=C3=A4?= <mika.penttila@nextfour.com>
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -110,90 +117,51 @@ List-Post: <mailto:iommu@lists.linux-foundation.org>
 List-Help: <mailto:iommu-request@lists.linux-foundation.org?subject=help>
 List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
  <mailto:iommu-request@lists.linux-foundation.org?subject=subscribe>
-Content-Transfer-Encoding: 7bit
-Content-Type: text/plain; charset="us-ascii"; Format="flowed"
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-On 6/21/21 5:15 PM, Andy Lutomirski wrote:
-> On Mon, Jun 21, 2021 at 10:51 AM Ross Philipson
-> <ross.philipson@oracle.com> wrote:
->>
->> On 6/18/21 2:32 PM, Robin Murphy wrote:
->>> On 2021-06-18 17:12, Ross Philipson wrote:
->>>> @@ -2761,7 +2762,10 @@ void iommu_set_default_passthrough(bool cmd_line)
->>>>    {
->>>>        if (cmd_line)
->>>>            iommu_cmd_line |= IOMMU_CMD_LINE_DMA_API;
->>>> -    iommu_def_domain_type = IOMMU_DOMAIN_IDENTITY;
->>>> +
->>>> +    /* Do not allow identity domain when Secure Launch is configured */
->>>> +    if (!(slaunch_get_flags() & SL_FLAG_ACTIVE))
->>>> +        iommu_def_domain_type = IOMMU_DOMAIN_IDENTITY;
->>>
->>> Quietly ignoring the setting and possibly leaving iommu_def_domain_type
->>> uninitialised (note that 0 is not actually a usable type) doesn't seem
->>> great. AFAICS this probably warrants similar treatment to the
->>
->> Ok so I guess it would be better to set it to IOMMU_DOMAIN_DMA event
->> though passthrough was requested. Or perhaps something more is needed here?
->>
->>> mem_encrypt_active() case - there doesn't seem a great deal of value in
->>> trying to save users from themselves if they care about measured boot
->>> yet explicitly pass options which may compromise measured boot. If you
->>> really want to go down that route there's at least the sysfs interface
->>> you'd need to nobble as well, not to mention the various ways of
->>> completely disabling IOMMUs...
->>
->> Doing a secure launch with the kernel is not a general purpose user use
->> case. A lot of work is done to secure the environment. Allowing
->> passthrough mode would leave the secure launch kernel exposed to DMA. I
->> think what we are trying to do here is what we intend though there may
->> be a better way or perhaps it is incomplete as you suggest.
->>
-> 
-> I don't really like all these special cases.  Generically, what you're
-> trying to do is (AFAICT) to get the kernel to run in a mode in which
-> it does its best not to trust attached devices.  Nothing about this is
-> specific to Secure Launch.  There are plenty of scenarios in which
-> this the case:
-> 
->   - Virtual devices in a VM host outside the TCB, e.g. VDUSE, Xen
-> device domains (did I get the name right), whatever tricks QEMU has,
-> etc.
->   - SRTM / DRTM technologies (including but not limited to Secure
-> Launch -- plain old Secure Boot can work like this too).
->   - Secure guest technologies, including but not limited to TDX and SEV.
->   - Any computer with a USB-C port or other external DMA-capable port.
->   - Regular computers in which the admin wants to enable this mode for
-> whatever reason.
-> 
-> Can you folks all please agree on a coordinated way for a Linux kernel
-> to configure itself appropriately?  Or to be configured via initramfs,
-> boot option, or some other trusted source of configuration supplied at
-> boot time?  We don't need a whole bunch of if (TDX), if (SEV), if
-> (secure launch), if (I have a USB-C port with PCIe exposed), if
-> (running on Xen), and similar checks all over the place.
-
-Hey Andy,
-
-On behalf of Ross and myself I wanted to follow up on the points raised 
-here. While there is an interest to ensure a system is properly 
-configured we should not be blocking the user from configuring the 
-system as they desire. Instead we are taking the approach to document 
-the SecureLaunch capability, in particular the recommend way to 
-configure the kernel to appropriately use the capability using the 
-already existing methods such as using kernel parameters. Hopefully that 
-will address the concerns in the short term. Looking forward, we do have 
-a vested interest in ensuring there is an ability to configure access 
-control for security and safety critical solutions and would be grateful 
-if we would be included in any discussions or working groups that might 
-be looking into unifying how all these security technologies should be 
-configuring the Linux kernel.
-
-V/r,
-Daniel P. Smith
-_______________________________________________
-iommu mailing list
-iommu@lists.linux-foundation.org
-https://lists.linuxfoundation.org/mailman/listinfo/iommu
+T24gVHVlLCBBdWcgMywgMjAyMSBhdCA2OjU0IFBNIFJvYmluIE11cnBoeSA8cm9iaW4ubXVycGh5
+QGFybS5jb20+IHdyb3RlOgo+Cj4gT24gMjAyMS0wOC0wMyAwOTo1NCwgWW9uZ2ppIFhpZSB3cm90
+ZToKPiA+IE9uIFR1ZSwgQXVnIDMsIDIwMjEgYXQgMzo0MSBQTSBKYXNvbiBXYW5nIDxqYXNvd2Fu
+Z0ByZWRoYXQuY29tPiB3cm90ZToKPiA+Pgo+ID4+Cj4gPj4g5ZyoIDIwMjEvNy8yOSDkuIvljYgz
+OjM0LCBYaWUgWW9uZ2ppIOWGmemBkzoKPiA+Pj4gRXhwb3J0IGFsbG9jX2lvdmFfZmFzdCgpIGFu
+ZCBmcmVlX2lvdmFfZmFzdCgpIHNvIHRoYXQKPiA+Pj4gc29tZSBtb2R1bGVzIGNhbiB1c2UgaXQg
+dG8gaW1wcm92ZSBpb3ZhIGFsbG9jYXRpb24gZWZmaWNpZW5jeS4KPiA+Pgo+ID4+Cj4gPj4gSXQn
+cyBiZXR0ZXIgdG8gZXhwbGFpbiB3aHkgYWxsb2NfaW92YSgpIGlzIG5vdCBzdWZmaWNpZW50IGhl
+cmUuCj4gPj4KPiA+Cj4gPiBGaW5lLgo+Cj4gV2hhdCBJIGZhaWwgdG8gdW5kZXJzdGFuZCBmcm9t
+IHRoZSBsYXRlciBwYXRjaGVzIGlzIHdoYXQgdGhlIElPVkEgZG9tYWluCj4gYWN0dWFsbHkgcmVw
+cmVzZW50cy4gSWYgdGhlICJkZXZpY2UiIGlzIGEgdXNlcnNwYWNlIHByb2Nlc3MgdGhlbgo+IGxv
+Z2ljYWxseSB0aGUgIklPVkEiIHdvdWxkIGJlIHRoZSB1c2Vyc3BhY2UgYWRkcmVzcywgc28gcHJl
+c3VtYWJseQo+IHNvbWV3aGVyZSB5b3UncmUgaGF2aW5nIHRvIHRyYW5zbGF0ZSBiZXR3ZWVuIHRo
+aXMgYXJiaXRyYXJ5IGFkZHJlc3MKPiBzcGFjZSBhbmQgYWN0dWFsIHVzYWJsZSBhZGRyZXNzZXMg
+LSBpZiB5b3UncmUgd29ycmllZCBhYm91dCBlZmZpY2llbmN5Cj4gc3VyZWx5IGl0IHdvdWxkIGJl
+IGV2ZW4gYmV0dGVyIHRvIG5vdCBkbyB0aGF0Pwo+CgpZZXMsIHVzZXJzcGFjZSBkYWVtb24gbmVl
+ZHMgdG8gdHJhbnNsYXRlIHRoZSAiSU9WQSIgaW4gYSBETUEKZGVzY3JpcHRvciB0byB0aGUgVkEg
+KGZyb20gbW1hcCgyKSkuIEJ1dCB0aGlzIGFjdHVhbGx5IGRvZXNuJ3QgYWZmZWN0CnBlcmZvcm1h
+bmNlIHNpbmNlIGl0J3MgYW4gaWRlbnRpY2FsIG1hcHBpbmcgaW4gbW9zdCBjYXNlcy4KCj4gUHJl
+c3VtYWJseSB1c2Vyc3BhY2UgZG9lc24ndCBoYXZlIGFueSBjb25jZXJuIGFib3V0IGFsaWdubWVu
+dCBhbmQgdGhlCj4gdGhpbmdzIHdlIGhhdmUgdG8gd29ycnkgYWJvdXQgZm9yIHRoZSBETUEgQVBJ
+IGluIGdlbmVyYWwsIHNvIGl0J3MgcHJldHR5Cj4gbXVjaCBqdXN0IGFsbG9jYXRpbmcgc2xvdHMg
+aW4gYSBidWZmZXIsIGFuZCB0aGVyZSBhcmUgZmFyIG1vcmUgZWZmZWN0aXZlCj4gd2F5cyB0byBk
+byB0aGF0IHRoYW4gYSBmdWxsLWJsb3duIGFkZHJlc3Mgc3BhY2UgbWFuYWdlci4KCkNvbnNpZGVy
+aW5nIGlvdmEgYWxsb2NhdGlvbiBlZmZpY2llbmN5LCBJIHRoaW5rIHRoZSBpb3ZhIGFsbG9jYXRv
+ciBpcwpiZXR0ZXIgaGVyZS4gSW4gbW9zdCBjYXNlcywgd2UgZG9uJ3QgZXZlbiBuZWVkIHRvIGhv
+bGQgYSBzcGluIGxvY2sKZHVyaW5nIGlvdmEgYWxsb2NhdGlvbi4KCj4gSWYgeW91J3JlIGdvaW5n
+Cj4gdG8gcmV1c2UgYW55IGluZnJhc3RydWN0dXJlIEknZCBoYXZlIGV4cGVjdGVkIGl0IHRvIGJl
+IFNXSU9UTEIgcmF0aGVyCj4gdGhhbiB0aGUgSU9WQSBhbGxvY2F0b3IuIEJlY2F1c2UsIHkna25v
+dywgeW91J3JlICpsaXRlcmFsbHkgaW1wbGVtZW50aW5nCj4gYSBzb2Z0d2FyZSBJL08gVExCKiA7
+KQo+CgpCdXQgYWN0dWFsbHkgd2hhdCB3ZSBjYW4gcmV1c2UgaW4gU1dJT1RMQiBpcyB0aGUgSU9W
+QSBhbGxvY2F0b3IuIEFuZAp0aGUgSU9WQSBtYW5hZ2VtZW50IGluIFNXSU9UTEIgaXMgbm90IHdo
+YXQgd2Ugd2FudC4gRm9yIGV4YW1wbGUsClNXSU9UTEIgYWxsb2NhdGVzIGFuZCB1c2VzIGNvbnRp
+Z3VvdXMgbWVtb3J5IGZvciBib3VuY2luZywgd2hpY2ggaXMKbm90IG5lY2Vzc2FyeSBpbiBWRFVT
+RSBjYXNlLiBBbmQgVkRVU0UgbmVlZHMgY29oZXJlbnQgbWFwcGluZyB3aGljaCBpcwpub3Qgc3Vw
+cG9ydGVkIGJ5IHRoZSBTV0lPVExCLiBCZXNpZGVzLCB0aGUgU1dJT1RMQiB3b3JrcyBpbiBzaW5n
+bGV0b24KbW9kZSAoZGVzaWduZWQgZm9yIHBsYXRmb3JtIElPTU1VKSAsIGJ1dCBWRFVTRSBpcyBi
+YXNlZCBvbiBvbi1jaGlwCklPTU1VIChzdXBwb3J0cyBtdWx0aXBsZSBpbnN0YW5jZXMpLiBTbyBJ
+IHN0aWxsIHByZWZlciB0byByZXVzZSB0aGUKSU9WQSBhbGxvY2F0b3IgdG8gaW1wbGVtZW50IGEg
+TU1VLWJhc2VkIHNvZnR3YXJlIElPVExCLgoKVGhhbmtzLApZb25namkKX19fX19fX19fX19fX19f
+X19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX18KaW9tbXUgbWFpbGluZyBsaXN0CmlvbW11
+QGxpc3RzLmxpbnV4LWZvdW5kYXRpb24ub3JnCmh0dHBzOi8vbGlzdHMubGludXhmb3VuZGF0aW9u
+Lm9yZy9tYWlsbWFuL2xpc3RpbmZvL2lvbW11
