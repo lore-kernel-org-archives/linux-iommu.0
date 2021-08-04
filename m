@@ -7,56 +7,56 @@ X-Spam-Status: No, score=-16.8 required=3.0 tests=BAYES_00,
 	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_GIT
 	autolearn=ham autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E490CC4338F
-	for <iommu@archiver.kernel.org>; Wed,  4 Aug 2021 17:16:50 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1819BC4338F
+	for <iommu@archiver.kernel.org>; Wed,  4 Aug 2021 17:16:53 +0000 (UTC)
 Received: from smtp1.osuosl.org (smtp1.osuosl.org [140.211.166.138])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id B40B760FC3
-	for <iommu@archiver.kernel.org>; Wed,  4 Aug 2021 17:16:50 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.4.1 mail.kernel.org B40B760FC3
+	by mail.kernel.org (Postfix) with ESMTPS id D692860FC3
+	for <iommu@archiver.kernel.org>; Wed,  4 Aug 2021 17:16:52 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.4.1 mail.kernel.org D692860FC3
 Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=arm.com
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by smtp1.osuosl.org (Postfix) with ESMTP id 93D5683C11;
-	Wed,  4 Aug 2021 17:16:50 +0000 (UTC)
+	by smtp1.osuosl.org (Postfix) with ESMTP id B8FC083C07;
+	Wed,  4 Aug 2021 17:16:52 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
 Received: from smtp1.osuosl.org ([127.0.0.1])
 	by localhost (smtp1.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id bllRmSCJlrWF; Wed,  4 Aug 2021 17:16:49 +0000 (UTC)
+	with ESMTP id pbKyE0bbaKqW; Wed,  4 Aug 2021 17:16:52 +0000 (UTC)
 Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by smtp1.osuosl.org (Postfix) with ESMTPS id 92C0183BEA;
-	Wed,  4 Aug 2021 17:16:49 +0000 (UTC)
+	by smtp1.osuosl.org (Postfix) with ESMTPS id B6E1C83BD5;
+	Wed,  4 Aug 2021 17:16:51 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 72266C000E;
-	Wed,  4 Aug 2021 17:16:49 +0000 (UTC)
-Received: from smtp2.osuosl.org (smtp2.osuosl.org [IPv6:2605:bc80:3010::133])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 6244AC000E
- for <iommu@lists.linux-foundation.org>; Wed,  4 Aug 2021 17:16:48 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 95DF2C0010;
+	Wed,  4 Aug 2021 17:16:51 +0000 (UTC)
+Received: from smtp3.osuosl.org (smtp3.osuosl.org [140.211.166.136])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 534DDC000E
+ for <iommu@lists.linux-foundation.org>; Wed,  4 Aug 2021 17:16:49 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by smtp2.osuosl.org (Postfix) with ESMTP id 48431404E9
- for <iommu@lists.linux-foundation.org>; Wed,  4 Aug 2021 17:16:47 +0000 (UTC)
+ by smtp3.osuosl.org (Postfix) with ESMTP id 3D09D60A49
+ for <iommu@lists.linux-foundation.org>; Wed,  4 Aug 2021 17:16:49 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from smtp2.osuosl.org ([127.0.0.1])
- by localhost (smtp2.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id dDo9By_XegTP for <iommu@lists.linux-foundation.org>;
- Wed,  4 Aug 2021 17:16:46 +0000 (UTC)
+Received: from smtp3.osuosl.org ([127.0.0.1])
+ by localhost (smtp3.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+ with ESMTP id 4QG3J0smZFZD for <iommu@lists.linux-foundation.org>;
+ Wed,  4 Aug 2021 17:16:48 +0000 (UTC)
 X-Greylist: domain auto-whitelisted by SQLgrey-1.8.0
 Received: from foss.arm.com (foss.arm.com [217.140.110.172])
- by smtp2.osuosl.org (Postfix) with ESMTP id 7EAD9401AE
- for <iommu@lists.linux-foundation.org>; Wed,  4 Aug 2021 17:16:46 +0000 (UTC)
+ by smtp3.osuosl.org (Postfix) with ESMTP id 7E1C960A41
+ for <iommu@lists.linux-foundation.org>; Wed,  4 Aug 2021 17:16:48 +0000 (UTC)
 Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
- by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 022A912FC;
- Wed,  4 Aug 2021 10:16:46 -0700 (PDT)
+ by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id E8C011424;
+ Wed,  4 Aug 2021 10:16:47 -0700 (PDT)
 Received: from 010265703453.arm.com (unknown [10.57.36.146])
- by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPA id 46E9C3F66F;
- Wed,  4 Aug 2021 10:16:44 -0700 (PDT)
+ by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPA id 3DF393F66F;
+ Wed,  4 Aug 2021 10:16:46 -0700 (PDT)
 From: Robin Murphy <robin.murphy@arm.com>
 To: joro@8bytes.org,
 	will@kernel.org
-Subject: [PATCH v3 18/25] iommu/arm-smmu: Prepare for multiple DMA domain types
-Date: Wed,  4 Aug 2021 18:15:46 +0100
-Message-Id: <f1f8134b2f26eeff9fb9498551e254407be358db.1628094601.git.robin.murphy@arm.com>
+Subject: [PATCH v3 19/25] iommu/vt-d: Prepare for multiple DMA domain types
+Date: Wed,  4 Aug 2021 18:15:47 +0100
+Message-Id: <ec4e111fe28db8232ae74e0aaf07999427f98fc7.1628094601.git.robin.murphy@arm.com>
 X-Mailer: git-send-email 2.25.1
 In-Reply-To: <cover.1628094600.git.robin.murphy@arm.com>
 References: <cover.1628094600.git.robin.murphy@arm.com>
@@ -81,42 +81,73 @@ Content-Transfer-Encoding: 7bit
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-In preparation for the strict vs. non-strict decision for DMA domains to
-be expressed in the domain type, make sure we expose our flush queue
-awareness by accepting the new domain type.
+In preparation for the strict vs. non-strict decision for DMA domains
+to be expressed in the domain type, make sure we expose our flush queue
+awareness by accepting the new domain type, and test the specific
+feature flag where we want to identify DMA domains in general. The DMA
+ops reset/setup can simply be made unconditional, since iommu-dma
+already knows only to touch DMA domains.
 
+Reviewed-by: Lu Baolu <baolu.lu@linux.intel.com>
 Signed-off-by: Robin Murphy <robin.murphy@arm.com>
 ---
- drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c | 1 +
- drivers/iommu/arm/arm-smmu/arm-smmu.c       | 3 ++-
- 2 files changed, 3 insertions(+), 1 deletion(-)
+ drivers/iommu/intel/iommu.c | 15 ++++++---------
+ 1 file changed, 6 insertions(+), 9 deletions(-)
 
-diff --git a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
-index d9c93d8d193d..883a99cb10c1 100644
---- a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
-+++ b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
-@@ -1972,6 +1972,7 @@ static struct iommu_domain *arm_smmu_domain_alloc(unsigned type)
+diff --git a/drivers/iommu/intel/iommu.c b/drivers/iommu/intel/iommu.c
+index 7e168634c433..8fc46c9d6b96 100644
+--- a/drivers/iommu/intel/iommu.c
++++ b/drivers/iommu/intel/iommu.c
+@@ -582,7 +582,7 @@ struct intel_iommu *domain_get_iommu(struct dmar_domain *domain)
+ 	int iommu_id;
  
- 	if (type != IOMMU_DOMAIN_UNMANAGED &&
- 	    type != IOMMU_DOMAIN_DMA &&
-+	    type != IOMMU_DOMAIN_DMA_FQ &&
- 	    type != IOMMU_DOMAIN_IDENTITY)
+ 	/* si_domain and vm domain should not get here. */
+-	if (WARN_ON(domain->domain.type != IOMMU_DOMAIN_DMA))
++	if (WARN_ON(!iommu_is_dma_domain(&domain->domain)))
  		return NULL;
  
-diff --git a/drivers/iommu/arm/arm-smmu/arm-smmu.c b/drivers/iommu/arm/arm-smmu/arm-smmu.c
-index a325d4769c17..1d013b1d7bb2 100644
---- a/drivers/iommu/arm/arm-smmu/arm-smmu.c
-+++ b/drivers/iommu/arm/arm-smmu/arm-smmu.c
-@@ -866,7 +866,8 @@ static struct iommu_domain *arm_smmu_domain_alloc(unsigned type)
- 	struct arm_smmu_domain *smmu_domain;
+ 	for_each_domain_iommu(iommu_id, domain)
+@@ -1034,7 +1034,7 @@ static struct dma_pte *pfn_to_dma_pte(struct dmar_domain *domain,
+ 			pteval = ((uint64_t)virt_to_dma_pfn(tmp_page) << VTD_PAGE_SHIFT) | DMA_PTE_READ | DMA_PTE_WRITE;
+ 			if (domain_use_first_level(domain)) {
+ 				pteval |= DMA_FL_PTE_XD | DMA_FL_PTE_US;
+-				if (domain->domain.type == IOMMU_DOMAIN_DMA)
++				if (iommu_is_dma_domain(&domain->domain))
+ 					pteval |= DMA_FL_PTE_ACCESS;
+ 			}
+ 			if (cmpxchg64(&pte->val, 0ULL, pteval))
+@@ -2345,7 +2345,7 @@ __domain_mapping(struct dmar_domain *domain, unsigned long iov_pfn,
+ 	if (domain_use_first_level(domain)) {
+ 		attr |= DMA_FL_PTE_XD | DMA_FL_PTE_US;
  
- 	if (type != IOMMU_DOMAIN_UNMANAGED && type != IOMMU_DOMAIN_IDENTITY) {
--		if (using_legacy_binding || type != IOMMU_DOMAIN_DMA)
-+		if (using_legacy_binding ||
-+		    (type != IOMMU_DOMAIN_DMA && type != IOMMU_DOMAIN_DMA_FQ))
- 			return NULL;
- 	}
- 	/*
+-		if (domain->domain.type == IOMMU_DOMAIN_DMA) {
++		if (iommu_is_dma_domain(&domain->domain)) {
+ 			attr |= DMA_FL_PTE_ACCESS;
+ 			if (prot & DMA_PTE_WRITE)
+ 				attr |= DMA_FL_PTE_DIRTY;
+@@ -4528,6 +4528,7 @@ static struct iommu_domain *intel_iommu_domain_alloc(unsigned type)
+ 
+ 	switch (type) {
+ 	case IOMMU_DOMAIN_DMA:
++	case IOMMU_DOMAIN_DMA_FQ:
+ 	case IOMMU_DOMAIN_UNMANAGED:
+ 		dmar_domain = alloc_domain(0);
+ 		if (!dmar_domain) {
+@@ -5197,12 +5198,8 @@ static void intel_iommu_release_device(struct device *dev)
+ 
+ static void intel_iommu_probe_finalize(struct device *dev)
+ {
+-	struct iommu_domain *domain = iommu_get_domain_for_dev(dev);
+-
+-	if (domain && domain->type == IOMMU_DOMAIN_DMA)
+-		iommu_setup_dma_ops(dev, 0, U64_MAX);
+-	else
+-		set_dma_ops(dev, NULL);
++	set_dma_ops(dev, NULL);
++	iommu_setup_dma_ops(dev, 0, U64_MAX);
+ }
+ 
+ static void intel_iommu_get_resv_regions(struct device *device,
 -- 
 2.25.1
 
