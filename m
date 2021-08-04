@@ -8,82 +8,81 @@ X-Spam-Status: No, score=-13.5 required=3.0 tests=BAYES_00,
 	INCLUDES_PATCH,MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,
 	USER_AGENT_GIT autolearn=ham autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A2276C19F38
-	for <iommu@archiver.kernel.org>; Wed,  4 Aug 2021 18:45:48 +0000 (UTC)
-Received: from smtp1.osuosl.org (smtp1.osuosl.org [140.211.166.138])
+	by smtp.lore.kernel.org (Postfix) with ESMTP id EC950C4338F
+	for <iommu@archiver.kernel.org>; Wed,  4 Aug 2021 18:45:51 +0000 (UTC)
+Received: from smtp3.osuosl.org (smtp3.osuosl.org [140.211.166.136])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 5DEBC61040
-	for <iommu@archiver.kernel.org>; Wed,  4 Aug 2021 18:45:48 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.4.1 mail.kernel.org 5DEBC61040
+	by mail.kernel.org (Postfix) with ESMTPS id B477760F58
+	for <iommu@archiver.kernel.org>; Wed,  4 Aug 2021 18:45:51 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.4.1 mail.kernel.org B477760F58
 Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=gmail.com
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by smtp1.osuosl.org (Postfix) with ESMTP id 3D69483BE5;
-	Wed,  4 Aug 2021 18:45:48 +0000 (UTC)
+	by smtp3.osuosl.org (Postfix) with ESMTP id 958E060612;
+	Wed,  4 Aug 2021 18:45:51 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from smtp1.osuosl.org ([127.0.0.1])
-	by localhost (smtp1.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id 2gayGrmwFZTF; Wed,  4 Aug 2021 18:45:47 +0000 (UTC)
-Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by smtp1.osuosl.org (Postfix) with ESMTPS id 195AB83C5F;
-	Wed,  4 Aug 2021 18:45:47 +0000 (UTC)
+Received: from smtp3.osuosl.org ([127.0.0.1])
+	by localhost (smtp3.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+	with ESMTP id jGWveo5l9RTC; Wed,  4 Aug 2021 18:45:50 +0000 (UTC)
+Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [IPv6:2605:bc80:3010:104::8cd3:938])
+	by smtp3.osuosl.org (Postfix) with ESMTPS id 779B560A50;
+	Wed,  4 Aug 2021 18:45:50 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 04237C001A;
-	Wed,  4 Aug 2021 18:45:47 +0000 (UTC)
-Received: from smtp2.osuosl.org (smtp2.osuosl.org [IPv6:2605:bc80:3010::133])
- by lists.linuxfoundation.org (Postfix) with ESMTP id CEEB2C001A
- for <iommu@lists.linux-foundation.org>; Wed,  4 Aug 2021 18:45:45 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 584EEC001A;
+	Wed,  4 Aug 2021 18:45:50 +0000 (UTC)
+Received: from smtp1.osuosl.org (smtp1.osuosl.org [140.211.166.138])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 00F7AC000E
+ for <iommu@lists.linux-foundation.org>; Wed,  4 Aug 2021 18:45:50 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by smtp2.osuosl.org (Postfix) with ESMTP id A905240546
- for <iommu@lists.linux-foundation.org>; Wed,  4 Aug 2021 18:45:45 +0000 (UTC)
+ by smtp1.osuosl.org (Postfix) with ESMTP id D712983C6F
+ for <iommu@lists.linux-foundation.org>; Wed,  4 Aug 2021 18:45:49 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Authentication-Results: smtp2.osuosl.org (amavisd-new);
+Authentication-Results: smtp1.osuosl.org (amavisd-new);
  dkim=pass (2048-bit key) header.d=gmail.com
-Received: from smtp2.osuosl.org ([127.0.0.1])
- by localhost (smtp2.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id Of_NXQ7JB514 for <iommu@lists.linux-foundation.org>;
- Wed,  4 Aug 2021 18:45:44 +0000 (UTC)
+Received: from smtp1.osuosl.org ([127.0.0.1])
+ by localhost (smtp1.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+ with ESMTP id hmAFm19cfO1R for <iommu@lists.linux-foundation.org>;
+ Wed,  4 Aug 2021 18:45:49 +0000 (UTC)
 X-Greylist: whitelisted by SQLgrey-1.8.0
-Received: from mail-pj1-x102c.google.com (mail-pj1-x102c.google.com
- [IPv6:2607:f8b0:4864:20::102c])
- by smtp2.osuosl.org (Postfix) with ESMTPS id AE34240538
- for <iommu@lists.linux-foundation.org>; Wed,  4 Aug 2021 18:45:44 +0000 (UTC)
-Received: by mail-pj1-x102c.google.com with SMTP id
- cl16-20020a17090af690b02901782c35c4ccso1107909pjb.5
- for <iommu@lists.linux-foundation.org>; Wed, 04 Aug 2021 11:45:44 -0700 (PDT)
+Received: from mail-pj1-x1031.google.com (mail-pj1-x1031.google.com
+ [IPv6:2607:f8b0:4864:20::1031])
+ by smtp1.osuosl.org (Postfix) with ESMTPS id 4BFA983BEA
+ for <iommu@lists.linux-foundation.org>; Wed,  4 Aug 2021 18:45:49 +0000 (UTC)
+Received: by mail-pj1-x1031.google.com with SMTP id mt6so4362398pjb.1
+ for <iommu@lists.linux-foundation.org>; Wed, 04 Aug 2021 11:45:49 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=gmail.com; s=20161025;
  h=from:to:cc:subject:date:message-id:in-reply-to:references
  :mime-version:content-transfer-encoding;
- bh=xXQzWRnOQGUWqB+ZM33hvekRvxcc1wpDyoNFD4aToCk=;
- b=FiUdj+gW80nlBadNvGa224FgdJrnH3XD2czve78TSUuKoGj+SH7xEZI8dzU5uoecQG
- 3qjwoAep1EGHHUlfujdGoM5ykU2ex99D0zrJ/DYS3B+tzaMfBQbcdjnMLbd3Y80gcc6K
- hJA6jwqY26g0ucBTZ4K9voDWw/5cntNwM8Jgxqp8qZ5elg6Zo3SC5QxHbwaRrqnW5Xg3
- etfk/Cc+8WjmA0R+np/cg2B2gSMdMn/0CQFfX3uW6pSok3A/mdKu0clpcXJNZ8Ru+3Oy
- AZRKNtJB1F7XzA6APSv+bDDtnudlTvPGa+0xEYbbs4c0CgGnlMIs7746PwKJns3xk2eg
- MPKg==
+ bh=fRYEBTeqaJZ2nuhpRxylpNXV0HYL+RYR+rak5A96Ekw=;
+ b=HTvCf728VbK4Su+bqKQH5oArAC9CXG5wpGLFMSbncBntCgAQZWEvfSseixDyYpT0AX
+ k9LEBLAGDciL3AkfAFjP2TMACFh9KnhSAvgcNxNSbCla6/IOSYzNFr/e7x8x1dA8GKM1
+ syxdGLXhzA7Yrkb5n60T/FhE0Ane5iRjsMioCojKjFQvuLjDHt/kh4Ojc+dT+/hZ62hQ
+ eajl/gHvZ4PkjPMxeIMhGfhbbVS0oRkzVNysDwpDt55LL/DMHpDe8IHdrR6x1E046GaX
+ csC0M9+AoIdiTpE1PkZmn5vuYvjCxfjcjVChflIVOTKbc5qRk+l2hywKeYO/CovBlFqm
+ Ha8Q==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
  d=1e100.net; s=20161025;
  h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
  :references:mime-version:content-transfer-encoding;
- bh=xXQzWRnOQGUWqB+ZM33hvekRvxcc1wpDyoNFD4aToCk=;
- b=HV21vBhZz5CUldDD1FPRb6zPRVHIXp/Urj3KXuz9I1AT3tOuWMqHDhwiq/Nuq6DmC4
- uqSEWM/3VmxCxWhjWnGtXTEvfnRffUXK9E2pLSeGbYmv2gyr4gZUvLQdPu5AAoCyJzy2
- vWsG6jYOVLcx/Y8VRvVUCNwQs0tXShyea7qY2Gg+LjjsIuh4MZGabFGtZrXdYpAGnt5V
- OS/CDy7UnP2Y1n3BqE7yI0q//NXKe9LTBkL9DFke2MQ8IlernXUeYrHaZlYZ3QBZNqqB
- sgZP+Rz5zm1gMt3qhICVz7H/dQOLbZdb/v0pJtxN5CgNgIk8nbd7cnZpPBPOHSkh9MIP
- DUYw==
-X-Gm-Message-State: AOAM533+VClw6VTgKIy/mRVOi/idHbxtjYTpQMNB0bhgfMFJt+JioMoI
- p4LI6ltkxLP0xn4DlP0XsTI=
-X-Google-Smtp-Source: ABdhPJz+hluDYc09sNWmf5pqVmvxzgE7rDibc4Msp9gaLPNInBQUAXxAq7mQp2H3cn83sH8kLQzpWg==
-X-Received: by 2002:a17:90b:60c:: with SMTP id
- gb12mr11265442pjb.101.1628102744183; 
- Wed, 04 Aug 2021 11:45:44 -0700 (PDT)
+ bh=fRYEBTeqaJZ2nuhpRxylpNXV0HYL+RYR+rak5A96Ekw=;
+ b=VVMKkY92H8zgBXQSMxYIxdcyZuj0k7RG9TEHC/iyNarkd9jApeHoHwFPneHO9yLYSl
+ Tn2TG1+ezqrZYJDIkcczQXp9gIzpWrHijs91WwaW0WFq6azZ3n2b+4DEI7+anylWdfjb
+ XDp2SQT55FQVZTk+5eUdF4r8zuGbjoSG5IDuQLmhofiFm1h9IprdC8S4mpD+xtQYKosx
+ dxtgmr/sq/wjeN6BT/JqWUG3DgvU6lJyyxxKiYOLhSy+2iIW+9zN/zWQ/elRjrzdt+uN
+ z8sFVoZft8+KxORDtIIkJLxa2Kk2HL9jSR6EVjcbuCR1DJxFvoyOPqfYW/Gm1PeSWYxz
+ 21Iw==
+X-Gm-Message-State: AOAM531OhISsc9zEVp2F7MocWagLh/xqIvTU/6c/1ABsuOlpSdgg7zPD
+ mlvodMUiOQUuibyQo3nQ1Lw=
+X-Google-Smtp-Source: ABdhPJwzrx3Ky34YWQf0IrpQZJYUXOTY9aTHTgMpl2ZF/5vkCRfVy6oUSbAdimtL8DDIxrPWPusxTg==
+X-Received: by 2002:a17:90a:2fc2:: with SMTP id
+ n2mr513781pjm.112.1628102748897; 
+ Wed, 04 Aug 2021 11:45:48 -0700 (PDT)
 Received: from ubuntu-Virtual-Machine.corp.microsoft.com
  ([2001:4898:80e8:f:1947:6842:b8a8:6f83])
- by smtp.gmail.com with ESMTPSA id f5sm3325647pjo.23.2021.08.04.11.45.43
+ by smtp.gmail.com with ESMTPSA id f5sm3325647pjo.23.2021.08.04.11.45.48
  (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
- Wed, 04 Aug 2021 11:45:43 -0700 (PDT)
+ Wed, 04 Aug 2021 11:45:48 -0700 (PDT)
 From: Tianyu Lan <ltykernel@gmail.com>
 To: kys@microsoft.com, haiyangz@microsoft.com, sthemmin@microsoft.com,
  wei.liu@kernel.org, decui@microsoft.com, tglx@linutronix.de,
@@ -101,10 +100,10 @@ To: kys@microsoft.com, haiyangz@microsoft.com, sthemmin@microsoft.com,
  xen-devel@lists.xenproject.org, martin.b.radev@gmail.com, ardb@kernel.org,
  rientjes@google.com, tj@kernel.org, keescook@chromium.org,
  michael.h.kelley@microsoft.com
-Subject: [PATCH V2 08/14] HV/Vmbus: Add SNP support for VMbus channel initiate
- message
-Date: Wed,  4 Aug 2021 14:45:04 -0400
-Message-Id: <20210804184513.512888-9-ltykernel@gmail.com>
+Subject: [PATCH V2 10/14] DMA: Add dma_map_decrypted/dma_unmap_encrypted()
+ function
+Date: Wed,  4 Aug 2021 14:45:06 -0400
+Message-Id: <20210804184513.512888-11-ltykernel@gmail.com>
 X-Mailer: git-send-email 2.25.1
 In-Reply-To: <20210804184513.512888-1-ltykernel@gmail.com>
 References: <20210804184513.512888-1-ltykernel@gmail.com>
@@ -132,153 +131,87 @@ Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
 From: Tianyu Lan <Tianyu.Lan@microsoft.com>
 
-The monitor pages in the CHANNELMSG_INITIATE_CONTACT msg are shared
-with host in Isolation VM and so it's necessary to use hvcall to set
-them visible to host. In Isolation VM with AMD SEV SNP, the access
-address should be in the extra space which is above shared gpa
-boundary. So remap these pages into the extra address(pa +
-shared_gpa_boundary). Introduce monitor_pages_va to store
-the remap address and unmap these va when disconnect vmbus.
+In Hyper-V Isolation VM with AMD SEV, swiotlb boucne buffer
+needs to be mapped into address space above vTOM and so
+introduce dma_map_decrypted/dma_unmap_encrypted() to map/unmap
+bounce buffer memory. The platform can populate man/unmap callback
+in the dma memory decrypted ops.
 
 Signed-off-by: Tianyu Lan <Tianyu.Lan@microsoft.com>
 ---
-Change since v1:
-        * Not remap monitor pages in the non-SNP isolation VM.
----
- drivers/hv/connection.c   | 65 +++++++++++++++++++++++++++++++++++++++
- drivers/hv/hyperv_vmbus.h |  1 +
- 2 files changed, 66 insertions(+)
+ include/linux/dma-map-ops.h |  9 +++++++++
+ kernel/dma/mapping.c        | 22 ++++++++++++++++++++++
+ 2 files changed, 31 insertions(+)
 
-diff --git a/drivers/hv/connection.c b/drivers/hv/connection.c
-index 6d315c1465e0..bf0ac3167bd2 100644
---- a/drivers/hv/connection.c
-+++ b/drivers/hv/connection.c
-@@ -19,6 +19,7 @@
- #include <linux/vmalloc.h>
- #include <linux/hyperv.h>
- #include <linux/export.h>
-+#include <linux/io.h>
- #include <asm/mshyperv.h>
+diff --git a/include/linux/dma-map-ops.h b/include/linux/dma-map-ops.h
+index 0d53a96a3d64..01d60a024e45 100644
+--- a/include/linux/dma-map-ops.h
++++ b/include/linux/dma-map-ops.h
+@@ -71,6 +71,11 @@ struct dma_map_ops {
+ 	unsigned long (*get_merge_boundary)(struct device *dev);
+ };
  
- #include "hyperv_vmbus.h"
-@@ -104,6 +105,12 @@ int vmbus_negotiate_version(struct vmbus_channel_msginfo *msginfo, u32 version)
++struct dma_memory_decrypted_ops {
++	void *(*map)(void *addr, unsigned long size);
++	void (*unmap)(void *addr);
++};
++
+ #ifdef CONFIG_DMA_OPS
+ #include <asm/dma-mapping.h>
  
- 	msg->monitor_page1 = virt_to_phys(vmbus_connection.monitor_pages[0]);
- 	msg->monitor_page2 = virt_to_phys(vmbus_connection.monitor_pages[1]);
-+
-+	if (hv_isolation_type_snp()) {
-+		msg->monitor_page1 += ms_hyperv.shared_gpa_boundary;
-+		msg->monitor_page2 += ms_hyperv.shared_gpa_boundary;
-+	}
-+
- 	msg->target_vcpu = hv_cpu_number_to_vp_number(VMBUS_CONNECT_CPU);
- 
- 	/*
-@@ -148,6 +155,31 @@ int vmbus_negotiate_version(struct vmbus_channel_msginfo *msginfo, u32 version)
- 		return -ECONNREFUSED;
- 	}
- 
-+	if (hv_isolation_type_snp()) {
-+		vmbus_connection.monitor_pages_va[0]
-+			= vmbus_connection.monitor_pages[0];
-+		vmbus_connection.monitor_pages[0]
-+			= memremap(msg->monitor_page1, HV_HYP_PAGE_SIZE,
-+				   MEMREMAP_WB);
-+		if (!vmbus_connection.monitor_pages[0])
-+			return -ENOMEM;
-+
-+		vmbus_connection.monitor_pages_va[1]
-+			= vmbus_connection.monitor_pages[1];
-+		vmbus_connection.monitor_pages[1]
-+			= memremap(msg->monitor_page2, HV_HYP_PAGE_SIZE,
-+				   MEMREMAP_WB);
-+		if (!vmbus_connection.monitor_pages[1]) {
-+			memunmap(vmbus_connection.monitor_pages[0]);
-+			return -ENOMEM;
-+		}
-+
-+		memset(vmbus_connection.monitor_pages[0], 0x00,
-+		       HV_HYP_PAGE_SIZE);
-+		memset(vmbus_connection.monitor_pages[1], 0x00,
-+		       HV_HYP_PAGE_SIZE);
-+	}
-+
- 	return ret;
+@@ -374,6 +379,10 @@ static inline void debug_dma_dump_mappings(struct device *dev)
  }
+ #endif /* CONFIG_DMA_API_DEBUG */
  
-@@ -159,6 +191,7 @@ int vmbus_connect(void)
- 	struct vmbus_channel_msginfo *msginfo = NULL;
- 	int i, ret = 0;
- 	__u32 version;
-+	u64 pfn[2];
- 
- 	/* Initialize the vmbus connection */
- 	vmbus_connection.conn_state = CONNECTING;
-@@ -216,6 +249,16 @@ int vmbus_connect(void)
- 		goto cleanup;
- 	}
- 
-+	if (hv_is_isolation_supported()) {
-+		pfn[0] = virt_to_hvpfn(vmbus_connection.monitor_pages[0]);
-+		pfn[1] = virt_to_hvpfn(vmbus_connection.monitor_pages[1]);
-+		if (hv_mark_gpa_visibility(2, pfn,
-+				VMBUS_PAGE_VISIBLE_READ_WRITE)) {
-+			ret = -EFAULT;
-+			goto cleanup;
-+		}
-+	}
++void *dma_map_decrypted(void *addr, unsigned long size);
++int dma_unmap_decrypted(void *addr, unsigned long size);
 +
- 	msginfo = kzalloc(sizeof(*msginfo) +
- 			  sizeof(struct vmbus_channel_initiate_contact),
- 			  GFP_KERNEL);
-@@ -284,6 +327,8 @@ int vmbus_connect(void)
+ extern const struct dma_map_ops dma_dummy_ops;
++extern struct dma_memory_decrypted_ops dma_memory_generic_decrypted_ops;
  
- void vmbus_disconnect(void)
- {
-+	u64 pfn[2];
-+
- 	/*
- 	 * First send the unload request to the host.
- 	 */
-@@ -303,6 +348,26 @@ void vmbus_disconnect(void)
- 		vmbus_connection.int_page = NULL;
- 	}
+ #endif /* _LINUX_DMA_MAP_OPS_H */
+diff --git a/kernel/dma/mapping.c b/kernel/dma/mapping.c
+index 2b06a809d0b9..6fb150dc1750 100644
+--- a/kernel/dma/mapping.c
++++ b/kernel/dma/mapping.c
+@@ -13,11 +13,13 @@
+ #include <linux/of_device.h>
+ #include <linux/slab.h>
+ #include <linux/vmalloc.h>
++#include <asm/set_memory.h>
+ #include "debug.h"
+ #include "direct.h"
  
-+	if (hv_is_isolation_supported()) {
-+		if (vmbus_connection.monitor_pages_va[0]) {
-+			memunmap(vmbus_connection.monitor_pages[0]);
-+			vmbus_connection.monitor_pages[0]
-+				= vmbus_connection.monitor_pages_va[0];
-+			vmbus_connection.monitor_pages_va[0] = NULL;
-+		}
-+
-+		if (vmbus_connection.monitor_pages_va[1]) {
-+			memunmap(vmbus_connection.monitor_pages[1]);
-+			vmbus_connection.monitor_pages[1]
-+				= vmbus_connection.monitor_pages_va[1];
-+			vmbus_connection.monitor_pages_va[1] = NULL;
-+		}
-+
-+		pfn[0] = virt_to_hvpfn(vmbus_connection.monitor_pages[0]);
-+		pfn[1] = virt_to_hvpfn(vmbus_connection.monitor_pages[1]);
-+		hv_mark_gpa_visibility(2, pfn, VMBUS_PAGE_NOT_VISIBLE);
-+	}
-+
- 	hv_free_hyperv_page((unsigned long)vmbus_connection.monitor_pages[0]);
- 	hv_free_hyperv_page((unsigned long)vmbus_connection.monitor_pages[1]);
- 	vmbus_connection.monitor_pages[0] = NULL;
-diff --git a/drivers/hv/hyperv_vmbus.h b/drivers/hv/hyperv_vmbus.h
-index 42f3d9d123a1..40bc0eff6665 100644
---- a/drivers/hv/hyperv_vmbus.h
-+++ b/drivers/hv/hyperv_vmbus.h
-@@ -240,6 +240,7 @@ struct vmbus_connection {
- 	 * is child->parent notification
- 	 */
- 	struct hv_monitor_page *monitor_pages[2];
-+	void *monitor_pages_va[2];
- 	struct list_head chn_msg_list;
- 	spinlock_t channelmsg_lock;
+ bool dma_default_coherent;
  
++struct dma_memory_decrypted_ops dma_memory_generic_decrypted_ops;
+ /*
+  * Managed DMA API
+  */
+@@ -736,3 +738,23 @@ unsigned long dma_get_merge_boundary(struct device *dev)
+ 	return ops->get_merge_boundary(dev);
+ }
+ EXPORT_SYMBOL_GPL(dma_get_merge_boundary);
++
++void *dma_map_decrypted(void *addr, unsigned long size)
++{
++	if (set_memory_decrypted((unsigned long)addr,
++				 size / PAGE_SIZE))
++		return NULL;
++
++	if (dma_memory_generic_decrypted_ops.map)
++		return dma_memory_generic_decrypted_ops.map(addr, size);
++	else
++		return addr;
++}
++
++int dma_unmap_encrypted(void *addr, unsigned long size)
++{
++	if (dma_memory_generic_decrypted_ops.unmap)
++		dma_memory_generic_decrypted_ops.unmap(addr);
++
++	return set_memory_encrypted((unsigned long)addr, size / PAGE_SIZE);
++}
 -- 
 2.25.1
 
