@@ -7,56 +7,56 @@ X-Spam-Status: No, score=-16.8 required=3.0 tests=BAYES_00,
 	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_GIT
 	autolearn=ham autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A225CC432BE
-	for <iommu@archiver.kernel.org>; Wed,  4 Aug 2021 17:16:42 +0000 (UTC)
-Received: from smtp2.osuosl.org (smtp2.osuosl.org [140.211.166.133])
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9455FC4320A
+	for <iommu@archiver.kernel.org>; Wed,  4 Aug 2021 17:16:43 +0000 (UTC)
+Received: from smtp1.osuosl.org (smtp1.osuosl.org [140.211.166.138])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 6CD3C60FC4
-	for <iommu@archiver.kernel.org>; Wed,  4 Aug 2021 17:16:42 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.4.1 mail.kernel.org 6CD3C60FC4
+	by mail.kernel.org (Postfix) with ESMTPS id 6544460EBB
+	for <iommu@archiver.kernel.org>; Wed,  4 Aug 2021 17:16:43 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.4.1 mail.kernel.org 6544460EBB
 Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=arm.com
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by smtp2.osuosl.org (Postfix) with ESMTP id 4AAAD404F9;
-	Wed,  4 Aug 2021 17:16:42 +0000 (UTC)
+	by smtp1.osuosl.org (Postfix) with ESMTP id 3845883B58;
+	Wed,  4 Aug 2021 17:16:43 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from smtp2.osuosl.org ([127.0.0.1])
-	by localhost (smtp2.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id qP0LZC2Mfnvm; Wed,  4 Aug 2021 17:16:41 +0000 (UTC)
+Received: from smtp1.osuosl.org ([127.0.0.1])
+	by localhost (smtp1.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+	with ESMTP id cctfRvjt02AR; Wed,  4 Aug 2021 17:16:42 +0000 (UTC)
 Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by smtp2.osuosl.org (Postfix) with ESMTPS id E00D6401AE;
-	Wed,  4 Aug 2021 17:16:40 +0000 (UTC)
+	by smtp1.osuosl.org (Postfix) with ESMTPS id 02D2D83BAB;
+	Wed,  4 Aug 2021 17:16:42 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id BC3C3C0010;
-	Wed,  4 Aug 2021 17:16:40 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id E0FFDC0010;
+	Wed,  4 Aug 2021 17:16:41 +0000 (UTC)
 Received: from smtp1.osuosl.org (smtp1.osuosl.org [IPv6:2605:bc80:3010::138])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 4F36FC000E
- for <iommu@lists.linux-foundation.org>; Wed,  4 Aug 2021 17:16:39 +0000 (UTC)
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 6BB41C000E
+ for <iommu@lists.linux-foundation.org>; Wed,  4 Aug 2021 17:16:41 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by smtp1.osuosl.org (Postfix) with ESMTP id 3134483BA7
- for <iommu@lists.linux-foundation.org>; Wed,  4 Aug 2021 17:16:39 +0000 (UTC)
+ by smtp1.osuosl.org (Postfix) with ESMTP id 5C76083BAB
+ for <iommu@lists.linux-foundation.org>; Wed,  4 Aug 2021 17:16:41 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
 Received: from smtp1.osuosl.org ([127.0.0.1])
  by localhost (smtp1.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id uc9ah5cGGeNl for <iommu@lists.linux-foundation.org>;
- Wed,  4 Aug 2021 17:16:38 +0000 (UTC)
+ with ESMTP id MAB_9Y3TiaTp for <iommu@lists.linux-foundation.org>;
+ Wed,  4 Aug 2021 17:16:40 +0000 (UTC)
 X-Greylist: domain auto-whitelisted by SQLgrey-1.8.0
 Received: from foss.arm.com (foss.arm.com [217.140.110.172])
- by smtp1.osuosl.org (Postfix) with ESMTP id 6BC7683B58
- for <iommu@lists.linux-foundation.org>; Wed,  4 Aug 2021 17:16:38 +0000 (UTC)
+ by smtp1.osuosl.org (Postfix) with ESMTP id 8E37983B58
+ for <iommu@lists.linux-foundation.org>; Wed,  4 Aug 2021 17:16:40 +0000 (UTC)
 Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
- by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 00BED1424;
- Wed,  4 Aug 2021 10:16:38 -0700 (PDT)
+ by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id EEE191042;
+ Wed,  4 Aug 2021 10:16:39 -0700 (PDT)
 Received: from 010265703453.arm.com (unknown [10.57.36.146])
- by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPA id 48A5A3F66F;
- Wed,  4 Aug 2021 10:16:36 -0700 (PDT)
+ by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPA id 3FE793F66F;
+ Wed,  4 Aug 2021 10:16:38 -0700 (PDT)
 From: Robin Murphy <robin.murphy@arm.com>
 To: joro@8bytes.org,
 	will@kernel.org
-Subject: [PATCH v3 14/25] iommu: Indicate queued flushes via gather data
-Date: Wed,  4 Aug 2021 18:15:42 +0100
-Message-Id: <8f7cd9a8114e3b3f44231849a3b46e7c75cec25e.1628094601.git.robin.murphy@arm.com>
+Subject: [PATCH v3 15/25] iommu/io-pgtable: Remove non-strict quirk
+Date: Wed,  4 Aug 2021 18:15:43 +0100
+Message-Id: <5de2e87b4aa4ce499071f2f5660b24761f9c1768.1628094601.git.robin.murphy@arm.com>
 X-Mailer: git-send-email 2.25.1
 In-Reply-To: <cover.1628094600.git.robin.murphy@arm.com>
 References: <cover.1628094600.git.robin.murphy@arm.com>
@@ -81,17 +81,11 @@ Content-Transfer-Encoding: 7bit
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-Since iommu_iotlb_gather exists to help drivers optimise flushing for a
-given unmap request, it is also the logical place to indicate whether
-the unmap is strict or not, and thus help them further optimise for
-whether to expect a sync or a flush_all subsequently. As part of that,
-it also seems fair to make the flush queue code take responsibility for
-enforcing the really subtle ordering requirement it brings, so that we
-don't need to worry about forgetting that if new drivers want to add
-flush queue support, and can consolidate the existing versions.
-
-While we're adding to the kerneldoc, also fill in some info for
-@freelist which was overlooked previously.
+IO_PGTABLE_QUIRK_NON_STRICT was never a very comfortable fit, since it's
+not a quirk of the pagetable format itself. Now that we have a more
+appropriate way to convey non-strict unmaps, though, this last of the
+non-quirk quirks can also go, and with the flush queue code also now
+enforcing its own ordering we can have a lovely cleanup all round.
 
 Signed-off-by: Robin Murphy <robin.murphy@arm.com>
 
@@ -99,69 +93,131 @@ Signed-off-by: Robin Murphy <robin.murphy@arm.com>
 
 v3: New
 ---
- drivers/iommu/dma-iommu.c | 1 +
- drivers/iommu/iova.c      | 7 +++++++
- include/linux/iommu.h     | 8 +++++++-
- 3 files changed, 15 insertions(+), 1 deletion(-)
+ drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c |  3 ---
+ drivers/iommu/arm/arm-smmu/arm-smmu.c       |  3 ---
+ drivers/iommu/io-pgtable-arm-v7s.c          | 12 ++----------
+ drivers/iommu/io-pgtable-arm.c              | 12 ++----------
+ include/linux/io-pgtable.h                  |  5 -----
+ 5 files changed, 4 insertions(+), 31 deletions(-)
 
-diff --git a/drivers/iommu/dma-iommu.c b/drivers/iommu/dma-iommu.c
-index e28396cea6eb..d63b30a7dc82 100644
---- a/drivers/iommu/dma-iommu.c
-+++ b/drivers/iommu/dma-iommu.c
-@@ -474,6 +474,7 @@ static void __iommu_dma_unmap(struct device *dev, dma_addr_t dma_addr,
- 	dma_addr -= iova_off;
- 	size = iova_align(iovad, size + iova_off);
- 	iommu_iotlb_gather_init(&iotlb_gather);
-+	iotlb_gather.queued = cookie->fq_domain;
+diff --git a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
+index 4c648da447bf..d9c93d8d193d 100644
+--- a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
++++ b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
+@@ -2174,9 +2174,6 @@ static int arm_smmu_domain_finalise(struct iommu_domain *domain,
+ 		.iommu_dev	= smmu->dev,
+ 	};
  
- 	unmapped = iommu_unmap_fast(domain, dma_addr, size, &iotlb_gather);
- 	WARN_ON(unmapped != size);
-diff --git a/drivers/iommu/iova.c b/drivers/iommu/iova.c
-index b6cf5f16123b..2ad73fb2e94e 100644
---- a/drivers/iommu/iova.c
-+++ b/drivers/iommu/iova.c
-@@ -637,6 +637,13 @@ void queue_iova(struct iova_domain *iovad,
- 	unsigned long flags;
- 	unsigned idx;
+-	if (!iommu_get_dma_strict(domain))
+-		pgtbl_cfg.quirks |= IO_PGTABLE_QUIRK_NON_STRICT;
+-
+ 	pgtbl_ops = alloc_io_pgtable_ops(fmt, &pgtbl_cfg, smmu_domain);
+ 	if (!pgtbl_ops)
+ 		return -ENOMEM;
+diff --git a/drivers/iommu/arm/arm-smmu/arm-smmu.c b/drivers/iommu/arm/arm-smmu/arm-smmu.c
+index 970d9e4dcd69..a325d4769c17 100644
+--- a/drivers/iommu/arm/arm-smmu/arm-smmu.c
++++ b/drivers/iommu/arm/arm-smmu/arm-smmu.c
+@@ -765,9 +765,6 @@ static int arm_smmu_init_domain_context(struct iommu_domain *domain,
+ 		.iommu_dev	= smmu->dev,
+ 	};
  
-+	/*
-+	 * Order against the IOMMU driver's pagetable update from unmapping
-+	 * @pte, to guarantee that iova_domain_flush() observes that if called
-+	 * from a different CPU before we release the lock below.
-+	 */
-+	smp_wmb();
-+
- 	spin_lock_irqsave(&fq->lock, flags);
+-	if (!iommu_get_dma_strict(domain))
+-		pgtbl_cfg.quirks |= IO_PGTABLE_QUIRK_NON_STRICT;
+-
+ 	if (smmu->impl && smmu->impl->init_context) {
+ 		ret = smmu->impl->init_context(smmu_domain, &pgtbl_cfg, dev);
+ 		if (ret)
+diff --git a/drivers/iommu/io-pgtable-arm-v7s.c b/drivers/iommu/io-pgtable-arm-v7s.c
+index 5db90d7ce2ec..e84478d39705 100644
+--- a/drivers/iommu/io-pgtable-arm-v7s.c
++++ b/drivers/iommu/io-pgtable-arm-v7s.c
+@@ -700,14 +700,7 @@ static size_t __arm_v7s_unmap(struct arm_v7s_io_pgtable *data,
+ 						ARM_V7S_BLOCK_SIZE(lvl + 1));
+ 				ptep = iopte_deref(pte[i], lvl, data);
+ 				__arm_v7s_free_table(ptep, lvl + 1, data);
+-			} else if (iop->cfg.quirks & IO_PGTABLE_QUIRK_NON_STRICT) {
+-				/*
+-				 * Order the PTE update against queueing the IOVA, to
+-				 * guarantee that a flush callback from a different CPU
+-				 * has observed it before the TLBIALL can be issued.
+-				 */
+-				smp_wmb();
+-			} else {
++			} else if (!gather->queued) {
+ 				io_pgtable_tlb_add_page(iop, gather, iova, blk_size);
+ 			}
+ 			iova += blk_size;
+@@ -791,8 +784,7 @@ static struct io_pgtable *arm_v7s_alloc_pgtable(struct io_pgtable_cfg *cfg,
  
- 	/*
-diff --git a/include/linux/iommu.h b/include/linux/iommu.h
-index 141779d76035..f7679f6684b1 100644
---- a/include/linux/iommu.h
-+++ b/include/linux/iommu.h
-@@ -161,16 +161,22 @@ enum iommu_dev_features {
-  * @start: IOVA representing the start of the range to be flushed
-  * @end: IOVA representing the end of the range to be flushed (inclusive)
-  * @pgsize: The interval at which to perform the flush
-+ * @freelist: Removed pages to free after sync
-+ * @queued: Indicates that the flush will be queued
-  *
-  * This structure is intended to be updated by multiple calls to the
-  * ->unmap() function in struct iommu_ops before eventually being passed
-- * into ->iotlb_sync().
-+ * into ->iotlb_sync(). Drivers can add pages to @freelist to be freed after
-+ * ->iotlb_sync() or ->iotlb_flush_all() have cleared all cached references to
-+ * them. @queued is set to indicate when ->iotlb_flush_all() will be called
-+ * later instead of ->iotlb_sync(), so drivers may optimise accordingly.
-  */
- struct iommu_iotlb_gather {
- 	unsigned long		start;
- 	unsigned long		end;
- 	size_t			pgsize;
- 	struct page		*freelist;
-+	bool			queued;
- };
+ 	if (cfg->quirks & ~(IO_PGTABLE_QUIRK_ARM_NS |
+ 			    IO_PGTABLE_QUIRK_NO_PERMS |
+-			    IO_PGTABLE_QUIRK_ARM_MTK_EXT |
+-			    IO_PGTABLE_QUIRK_NON_STRICT))
++			    IO_PGTABLE_QUIRK_ARM_MTK_EXT))
+ 		return NULL;
  
- /**
+ 	/* If ARM_MTK_4GB is enabled, the NO_PERMS is also expected. */
+diff --git a/drivers/iommu/io-pgtable-arm.c b/drivers/iommu/io-pgtable-arm.c
+index 053df4048a29..48a5bd8f571d 100644
+--- a/drivers/iommu/io-pgtable-arm.c
++++ b/drivers/iommu/io-pgtable-arm.c
+@@ -638,14 +638,7 @@ static size_t __arm_lpae_unmap(struct arm_lpae_io_pgtable *data,
+ 				io_pgtable_tlb_flush_walk(iop, iova + i * size, size,
+ 							  ARM_LPAE_GRANULE(data));
+ 				__arm_lpae_free_pgtable(data, lvl + 1, iopte_deref(pte, data));
+-			} else if (iop->cfg.quirks & IO_PGTABLE_QUIRK_NON_STRICT) {
+-				/*
+-				 * Order the PTE update against queueing the IOVA, to
+-				 * guarantee that a flush callback from a different CPU
+-				 * has observed it before the TLBIALL can be issued.
+-				 */
+-				smp_wmb();
+-			} else {
++			} else if (!gather->queued) {
+ 				io_pgtable_tlb_add_page(iop, gather, iova + i * size, size);
+ 			}
+ 
+@@ -825,7 +818,6 @@ arm_64_lpae_alloc_pgtable_s1(struct io_pgtable_cfg *cfg, void *cookie)
+ 	bool tg1;
+ 
+ 	if (cfg->quirks & ~(IO_PGTABLE_QUIRK_ARM_NS |
+-			    IO_PGTABLE_QUIRK_NON_STRICT |
+ 			    IO_PGTABLE_QUIRK_ARM_TTBR1 |
+ 			    IO_PGTABLE_QUIRK_ARM_OUTER_WBWA))
+ 		return NULL;
+@@ -929,7 +921,7 @@ arm_64_lpae_alloc_pgtable_s2(struct io_pgtable_cfg *cfg, void *cookie)
+ 	typeof(&cfg->arm_lpae_s2_cfg.vtcr) vtcr = &cfg->arm_lpae_s2_cfg.vtcr;
+ 
+ 	/* The NS quirk doesn't apply at stage 2 */
+-	if (cfg->quirks & ~(IO_PGTABLE_QUIRK_NON_STRICT))
++	if (cfg->quirks)
+ 		return NULL;
+ 
+ 	data = arm_lpae_alloc_pgtable(cfg);
+diff --git a/include/linux/io-pgtable.h b/include/linux/io-pgtable.h
+index c43f3b899d2a..9ba6d9ea316e 100644
+--- a/include/linux/io-pgtable.h
++++ b/include/linux/io-pgtable.h
+@@ -73,10 +73,6 @@ struct io_pgtable_cfg {
+ 	 *	to support up to 35 bits PA where the bit32, bit33 and bit34 are
+ 	 *	encoded in the bit9, bit4 and bit5 of the PTE respectively.
+ 	 *
+-	 * IO_PGTABLE_QUIRK_NON_STRICT: Skip issuing synchronous leaf TLBIs
+-	 *	on unmap, for DMA domains using the flush queue mechanism for
+-	 *	delayed invalidation.
+-	 *
+ 	 * IO_PGTABLE_QUIRK_ARM_TTBR1: (ARM LPAE format) Configure the table
+ 	 *	for use in the upper half of a split address space.
+ 	 *
+@@ -86,7 +82,6 @@ struct io_pgtable_cfg {
+ 	#define IO_PGTABLE_QUIRK_ARM_NS		BIT(0)
+ 	#define IO_PGTABLE_QUIRK_NO_PERMS	BIT(1)
+ 	#define IO_PGTABLE_QUIRK_ARM_MTK_EXT	BIT(3)
+-	#define IO_PGTABLE_QUIRK_NON_STRICT	BIT(4)
+ 	#define IO_PGTABLE_QUIRK_ARM_TTBR1	BIT(5)
+ 	#define IO_PGTABLE_QUIRK_ARM_OUTER_WBWA	BIT(6)
+ 	unsigned long			quirks;
 -- 
 2.25.1
 
