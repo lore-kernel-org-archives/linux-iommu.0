@@ -2,110 +2,89 @@ Return-Path: <SRS0=+AsR=M4=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-3.5 required=3.0 tests=BAYES_00,DKIM_INVALID,
-	DKIM_SIGNED,HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,SPF_HELO_NONE,
-	SPF_PASS,URIBL_BLOCKED autolearn=no autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-15.4 required=3.0 tests=BAYES_00,
+	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_CR_TRAILER,INCLUDES_PATCH,
+	MAILING_LIST_MULTI,NICE_REPLY_A,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,
+	URIBL_RED,USER_AGENT_SANE_1 autolearn=unavailable autolearn_force=no
+	version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D4429C4338F
-	for <iommu@archiver.kernel.org>; Thu,  5 Aug 2021 12:34:19 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3B2E1C4338F
+	for <iommu@archiver.kernel.org>; Thu,  5 Aug 2021 13:22:15 +0000 (UTC)
 Received: from smtp4.osuosl.org (smtp4.osuosl.org [140.211.166.137])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 593B561131
-	for <iommu@archiver.kernel.org>; Thu,  5 Aug 2021 12:34:19 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.4.1 mail.kernel.org 593B561131
-Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=bytedance.com
+	by mail.kernel.org (Postfix) with ESMTPS id BBFDC6113B
+	for <iommu@archiver.kernel.org>; Thu,  5 Aug 2021 13:22:14 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.4.1 mail.kernel.org BBFDC6113B
+Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=collabora.com
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by smtp4.osuosl.org (Postfix) with ESMTP id 080124047D;
-	Thu,  5 Aug 2021 12:34:19 +0000 (UTC)
+	by smtp4.osuosl.org (Postfix) with ESMTP id 8294D40336;
+	Thu,  5 Aug 2021 13:22:14 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
 Received: from smtp4.osuosl.org ([127.0.0.1])
 	by localhost (smtp4.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id AKGhkvGvs1kt; Thu,  5 Aug 2021 12:34:18 +0000 (UTC)
+	with ESMTP id 2hFGaukHTfuq; Thu,  5 Aug 2021 13:22:13 +0000 (UTC)
 Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by smtp4.osuosl.org (Postfix) with ESMTPS id A585F403E2;
-	Thu,  5 Aug 2021 12:34:17 +0000 (UTC)
+	by smtp4.osuosl.org (Postfix) with ESMTPS id 311FC40489;
+	Thu,  5 Aug 2021 13:22:13 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 7A0EBC0010;
-	Thu,  5 Aug 2021 12:34:17 +0000 (UTC)
-Received: from smtp4.osuosl.org (smtp4.osuosl.org [IPv6:2605:bc80:3010::137])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 7B0E3C0010
- for <iommu@lists.linux-foundation.org>; Thu,  5 Aug 2021 12:34:15 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 0E4ACC001A;
+	Thu,  5 Aug 2021 13:22:13 +0000 (UTC)
+Received: from smtp1.osuosl.org (smtp1.osuosl.org [140.211.166.138])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 6EB30C000E
+ for <iommu@lists.linux-foundation.org>; Thu,  5 Aug 2021 13:22:12 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by smtp4.osuosl.org (Postfix) with ESMTP id 56990403E2
- for <iommu@lists.linux-foundation.org>; Thu,  5 Aug 2021 12:34:15 +0000 (UTC)
+ by smtp1.osuosl.org (Postfix) with ESMTP id 5E2B0831B0
+ for <iommu@lists.linux-foundation.org>; Thu,  5 Aug 2021 13:22:12 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from smtp4.osuosl.org ([127.0.0.1])
- by localhost (smtp4.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id PhrpeqUpJX8k for <iommu@lists.linux-foundation.org>;
- Thu,  5 Aug 2021 12:34:14 +0000 (UTC)
-X-Greylist: whitelisted by SQLgrey-1.8.0
-Received: from mail-ed1-x52e.google.com (mail-ed1-x52e.google.com
- [IPv6:2a00:1450:4864:20::52e])
- by smtp4.osuosl.org (Postfix) with ESMTPS id 04FFD4036B
- for <iommu@lists.linux-foundation.org>; Thu,  5 Aug 2021 12:34:13 +0000 (UTC)
-Received: by mail-ed1-x52e.google.com with SMTP id cf5so8156141edb.2
- for <iommu@lists.linux-foundation.org>; Thu, 05 Aug 2021 05:34:13 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
- d=bytedance-com.20150623.gappssmtp.com; s=20150623;
- h=mime-version:references:in-reply-to:from:date:message-id:subject:to
- :cc:content-transfer-encoding;
- bh=GRecJWHpf0gjvXsYNJwzmmW+nOAqDS98ZsWB4Lu3HTk=;
- b=S6f8tdmaaPakzb2Xs58u/YwvnIh9rekjN/u2Vg+M56f15y23TmCewo4lbHT11uACan
- R+0Eu0cRgugPW124XxHQqGp3wx/RovVoqc9g/5nLnXaB61Z52UKlJ4PHE0l2y75vPNYN
- ZN3eBziwB8y1VUGOe2n0Cfa5D1KbaHg1q6wsiTnO5N9jY6j1pR4h2h+zXNzjloGGJxcc
- JozAJrUYNwvab7kealUfpLrbQQgvGROl4OvFrT1C6e1DBRJy0NHbCY5LUedUjTqVYfLJ
- K3XRVYc1Xi2ItkoU/5e6Bxz4uSapyv4cN401EkNa/+XGqNXSxwJLROZJrA4Iwpix9s/8
- pOvA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
- d=1e100.net; s=20161025;
- h=x-gm-message-state:mime-version:references:in-reply-to:from:date
- :message-id:subject:to:cc:content-transfer-encoding;
- bh=GRecJWHpf0gjvXsYNJwzmmW+nOAqDS98ZsWB4Lu3HTk=;
- b=spMN7TasOv8iPeiCQVDCt4IIuOYqpfOXCpZ+AxORv+b4qDM8k15DbuMoyHqYJn9FVr
- 9XMgVjaD3sP0GhjXjr9u3dyEuYahS+01jd1MAVoQjvHV915E+gu1DVAdth958zNnrL2J
- DtwrJ/FoXRsKKPe7Q5LxrnY5XMAaJQjBIgmYnRwBp+pJZkrJ2njddSWQPtlV2UEOXjyr
- 7HCwln60ZhR2EAVNaSyCEmnz6D3cNfajdquuBwGAbg//GlcVknDiIL0mhkdZsV4WSOqH
- ELb7wVqiUPa0vu3F+gInpuxi/uvZx3McIy2i90ic0uvI3CfLb889t56r0vM27xPW9q42
- +Cww==
-X-Gm-Message-State: AOAM532RDyAnp86TU+RMb9oMbYQz85+1VIkJ8IGf7aVEI+Z+A+C0IFJf
- J0v87+zE1XfkqbSr1s7toSLBR86TH+Y7Amw/+nja
-X-Google-Smtp-Source: ABdhPJychbjmynLh9/Ea3o5hkpZtU2SNp1dmaj9zAcG470ZYKrb0D+35OhxBNRLSqHVcxZBaICqILCn+TZG+ukzKlGk=
-X-Received: by 2002:a05:6402:74f:: with SMTP id
- p15mr6132819edy.195.1628166852249; 
- Thu, 05 Aug 2021 05:34:12 -0700 (PDT)
+Received: from smtp1.osuosl.org ([127.0.0.1])
+ by localhost (smtp1.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+ with ESMTP id NOgthNCDzfjV for <iommu@lists.linux-foundation.org>;
+ Thu,  5 Aug 2021 13:22:11 +0000 (UTC)
+X-Greylist: domain auto-whitelisted by SQLgrey-1.8.0
+Received: from bhuna.collabora.co.uk (bhuna.collabora.co.uk [46.235.227.227])
+ by smtp1.osuosl.org (Postfix) with ESMTPS id EC9FB83560
+ for <iommu@lists.linux-foundation.org>; Thu,  5 Aug 2021 13:22:10 +0000 (UTC)
+Received: from [IPv6:2a02:810a:880:f54:e5eb:348e:79df:e71f] (unknown
+ [IPv6:2a02:810a:880:f54:e5eb:348e:79df:e71f])
+ (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+ (No client certificate requested) (Authenticated sender: dafna)
+ by bhuna.collabora.co.uk (Postfix) with ESMTPSA id 68C5F1F43E6D;
+ Thu,  5 Aug 2021 14:22:06 +0100 (BST)
+Subject: Re: [PATCH v7 04/12] iommu/mediatek: Add device_link between the
+ consumer and the larb devices
+To: Yong Wu <yong.wu@mediatek.com>, Matthias Brugger
+ <matthias.bgg@gmail.com>, Joerg Roedel <joro@8bytes.org>,
+ Rob Herring <robh+dt@kernel.org>,
+ Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>,
+ David Airlie <airlied@linux.ie>, Mauro Carvalho Chehab <mchehab@kernel.org>
+References: <20210730025238.22456-1-yong.wu@mediatek.com>
+ <20210730025238.22456-5-yong.wu@mediatek.com>
+From: Dafna Hirschfeld <dafna.hirschfeld@collabora.com>
+Message-ID: <3f359c03-df44-2410-3172-2f17e620cada@collabora.com>
+Date: Thu, 5 Aug 2021 15:22:03 +0200
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
+ Thunderbird/78.11.0
 MIME-Version: 1.0
-References: <20210729073503.187-1-xieyongji@bytedance.com>
- <20210729073503.187-2-xieyongji@bytedance.com>
- <43d88942-1cd3-c840-6fec-4155fd544d80@redhat.com>
- <CACycT3vcpwyA3xjD29f1hGnYALyAd=-XcWp8+wJiwSqpqUu00w@mail.gmail.com>
- <6e05e25e-e569-402e-d81b-8ac2cff1c0e8@arm.com>
- <CACycT3sm2r8NMMUPy1k1PuSZZ3nM9aic-O4AhdmRRCwgmwGj4Q@mail.gmail.com>
- <417ce5af-4deb-5319-78ce-b74fb4dd0582@arm.com>
-In-Reply-To: <417ce5af-4deb-5319-78ce-b74fb4dd0582@arm.com>
-From: Yongji Xie <xieyongji@bytedance.com>
-Date: Thu, 5 Aug 2021 20:34:01 +0800
-Message-ID: <CACycT3vARzvd4-dkZhDHqUkeYoSxTa2ty0z0ivE1znGti+n1-g@mail.gmail.com>
-Subject: Re: [PATCH v10 01/17] iova: Export alloc_iova_fast() and
- free_iova_fast()
-To: Robin Murphy <robin.murphy@arm.com>
-Cc: kvm <kvm@vger.kernel.org>, "Michael S. Tsirkin" <mst@redhat.com>,
- Jason Wang <jasowang@redhat.com>,
- virtualization <virtualization@lists.linux-foundation.org>,
- Christian Brauner <christian.brauner@canonical.com>,
- Jonathan Corbet <corbet@lwn.net>, Matthew Wilcox <willy@infradead.org>,
- Christoph Hellwig <hch@infradead.org>,
- Dan Carpenter <dan.carpenter@oracle.com>,
- Stefano Garzarella <sgarzare@redhat.com>,
- Liu Xiaodong <xiaodong.liu@intel.com>, linux-fsdevel@vger.kernel.org,
- Al Viro <viro@zeniv.linux.org.uk>, Stefan Hajnoczi <stefanha@redhat.com>,
- songmuchun@bytedance.com, Jens Axboe <axboe@kernel.dk>,
- He Zhe <zhe.he@windriver.com>, Greg KH <gregkh@linuxfoundation.org>,
- Randy Dunlap <rdunlap@infradead.org>,
- linux-kernel <linux-kernel@vger.kernel.org>, iommu@lists.linux-foundation.org,
- bcrl@kvack.org, netdev@vger.kernel.org, Joe Perches <joe@perches.com>,
- =?UTF-8?Q?Mika_Penttil=C3=A4?= <mika.penttila@nextfour.com>
+In-Reply-To: <20210730025238.22456-5-yong.wu@mediatek.com>
+Content-Language: en-US
+Cc: Xia Jiang <xia.jiang@mediatek.com>, Chun-Kuang Hu <chunkuang.hu@kernel.org>,
+ Will Deacon <will.deacon@arm.com>, dri-devel@lists.freedesktop.org,
+ anthony.huang@mediatek.com, Collabora Kernel ML <kernel@collabora.com>,
+ youlin.pei@mediatek.com, Nicolas Boichat <drinkcat@chromium.org>,
+ Evan Green <evgreen@chromium.org>, Eizan Miyamoto <eizan@chromium.org>,
+ Matthias Kaehlcke <mka@chromium.org>, linux-media@vger.kernel.org,
+ devicetree@vger.kernel.org, Philipp Zabel <p.zabel@pengutronix.de>,
+ Frank Wunderlich <frank-w@public-files.de>, yi.kuo@mediatek.com,
+ linux-mediatek@lists.infradead.org, Hsin-Yi Wang <hsinyi@chromium.org>,
+ ming-fan.chen@mediatek.com, Tiffany Lin <tiffany.lin@mediatek.com>,
+ linux-arm-kernel@lists.infradead.org, anan.sun@mediatek.com,
+ srv_heupstream@mediatek.com, acourbot@chromium.org,
+ linux-kernel@vger.kernel.org, iommu@lists.linux-foundation.org,
+ Daniel Vetter <daniel@ffwll.ch>,
+ Enric Balletbo i Serra <enric.balletbo@collabora.com>,
+ Robin Murphy <robin.murphy@arm.com>
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -118,141 +97,199 @@ List-Post: <mailto:iommu@lists.linux-foundation.org>
 List-Help: <mailto:iommu-request@lists.linux-foundation.org?subject=help>
 List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
  <mailto:iommu-request@lists.linux-foundation.org?subject=subscribe>
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
+Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset="us-ascii"; Format="flowed"
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-T24gV2VkLCBBdWcgNCwgMjAyMSBhdCAxMTo0MyBQTSBSb2JpbiBNdXJwaHkgPHJvYmluLm11cnBo
-eUBhcm0uY29tPiB3cm90ZToKPgo+IE9uIDIwMjEtMDgtMDQgMDY6MDIsIFlvbmdqaSBYaWUgd3Jv
-dGU6Cj4gPiBPbiBUdWUsIEF1ZyAzLCAyMDIxIGF0IDY6NTQgUE0gUm9iaW4gTXVycGh5IDxyb2Jp
-bi5tdXJwaHlAYXJtLmNvbT4gd3JvdGU6Cj4gPj4KPiA+PiBPbiAyMDIxLTA4LTAzIDA5OjU0LCBZ
-b25namkgWGllIHdyb3RlOgo+ID4+PiBPbiBUdWUsIEF1ZyAzLCAyMDIxIGF0IDM6NDEgUE0gSmFz
-b24gV2FuZyA8amFzb3dhbmdAcmVkaGF0LmNvbT4gd3JvdGU6Cj4gPj4+Pgo+ID4+Pj4KPiA+Pj4+
-IOWcqCAyMDIxLzcvMjkg5LiL5Y2IMzozNCwgWGllIFlvbmdqaSDlhpnpgZM6Cj4gPj4+Pj4gRXhw
-b3J0IGFsbG9jX2lvdmFfZmFzdCgpIGFuZCBmcmVlX2lvdmFfZmFzdCgpIHNvIHRoYXQKPiA+Pj4+
-PiBzb21lIG1vZHVsZXMgY2FuIHVzZSBpdCB0byBpbXByb3ZlIGlvdmEgYWxsb2NhdGlvbiBlZmZp
-Y2llbmN5Lgo+ID4+Pj4KPiA+Pj4+Cj4gPj4+PiBJdCdzIGJldHRlciB0byBleHBsYWluIHdoeSBh
-bGxvY19pb3ZhKCkgaXMgbm90IHN1ZmZpY2llbnQgaGVyZS4KPiA+Pj4+Cj4gPj4+Cj4gPj4+IEZp
-bmUuCj4gPj4KPiA+PiBXaGF0IEkgZmFpbCB0byB1bmRlcnN0YW5kIGZyb20gdGhlIGxhdGVyIHBh
-dGNoZXMgaXMgd2hhdCB0aGUgSU9WQSBkb21haW4KPiA+PiBhY3R1YWxseSByZXByZXNlbnRzLiBJ
-ZiB0aGUgImRldmljZSIgaXMgYSB1c2Vyc3BhY2UgcHJvY2VzcyB0aGVuCj4gPj4gbG9naWNhbGx5
-IHRoZSAiSU9WQSIgd291bGQgYmUgdGhlIHVzZXJzcGFjZSBhZGRyZXNzLCBzbyBwcmVzdW1hYmx5
-Cj4gPj4gc29tZXdoZXJlIHlvdSdyZSBoYXZpbmcgdG8gdHJhbnNsYXRlIGJldHdlZW4gdGhpcyBh
-cmJpdHJhcnkgYWRkcmVzcwo+ID4+IHNwYWNlIGFuZCBhY3R1YWwgdXNhYmxlIGFkZHJlc3NlcyAt
-IGlmIHlvdSdyZSB3b3JyaWVkIGFib3V0IGVmZmljaWVuY3kKPiA+PiBzdXJlbHkgaXQgd291bGQg
-YmUgZXZlbiBiZXR0ZXIgdG8gbm90IGRvIHRoYXQ/Cj4gPj4KPiA+Cj4gPiBZZXMsIHVzZXJzcGFj
-ZSBkYWVtb24gbmVlZHMgdG8gdHJhbnNsYXRlIHRoZSAiSU9WQSIgaW4gYSBETUEKPiA+IGRlc2Ny
-aXB0b3IgdG8gdGhlIFZBIChmcm9tIG1tYXAoMikpLiBCdXQgdGhpcyBhY3R1YWxseSBkb2Vzbid0
-IGFmZmVjdAo+ID4gcGVyZm9ybWFuY2Ugc2luY2UgaXQncyBhbiBpZGVudGljYWwgbWFwcGluZyBp
-biBtb3N0IGNhc2VzLgo+Cj4gSSdtIG5vdCBmYW1pbGlhciB3aXRoIHRoZSB2aG9zdF9pb3RsYiBz
-dHVmZiwgYnV0IGl0IGxvb2tzIHN1c3BpY2lvdXNseQo+IGxpa2UgeW91J3JlIHdhbGtpbmcgeWV0
-IGFub3RoZXIgdHJlZSB0byBtYWtlIHRob3NlIHRyYW5zbGF0aW9ucy4gRXZlbiBpZgo+IHRoZSBi
-dWZmZXIgY2FuIGJlIG1hcHBlZCBhbGwgYXQgb25jZSB3aXRoIGEgZml4ZWQgb2Zmc2V0IHN1Y2gg
-dGhhdCBlYWNoCj4gRE1BIG1hcHBpbmcgY2FsbCBkb2Vzbid0IG5lZWQgYSBsb29rdXAgZm9yIGVh
-Y2ggaW5kaXZpZHVhbCAiSU9WQSIgLSB0aGF0Cj4gbWlnaHQgYmUgd2hhdCdzIGhhcHBlbmluZyBh
-bHJlYWR5LCBidXQgaXQncyBhIGJpdCBoYXJkIHRvIGZvbGxvdyBqdXN0Cj4gcmVhZGluZyB0aGUg
-cGF0Y2hlcyBpbiBteSBtYWlsIGNsaWVudCAtIHZob3N0X2lvdGxiX2FkZF9yYW5nZSgpIGRvZXNu
-J3QKPiBsb29rIGxpa2UgaXQncyBzdXBlci1jaGVhcCB0byBjYWxsLCBhbmQgeW91J3JlIHNlcmlh
-bGlzaW5nIG9uIGEgbG9jayBmb3IKPiB0aGF0Lgo+CgpZZXMsIHRoYXQncyB0cnVlLiBTaW5jZSB0
-aGUgc29mdHdhcmUgSU9UTEIgaXMgbm90IHVzZWQgaW4gdGhlIFZNIGNhc2UsCndlIG5lZWQgYSB1
-bmlmaWVkIHdheSAodmhvc3RfaW90bGIpIHRvIG1hbmFnZSB0aGUgSU9WQSBtYXBwaW5nIGZvcgpi
-b3RoIFZNIGFuZCBDb250YWluZXIgY2FzZXMuCgo+IE15IG1haW4gcG9pbnQsIHRob3VnaCwgaXMg
-dGhhdCBpZiB5b3UndmUgYWxyZWFkeSBnb3Qgc29tZXRoaW5nIGVsc2UKPiBrZWVwaW5nIHRyYWNr
-IG9mIHRoZSBhY3R1YWwgYWRkcmVzc2VzLCB0aGVuIHRoZSB3YXkgeW91J3JlIHVzaW5nIGFuCj4g
-aW92YV9kb21haW4gYXBwZWFycyB0byBiZSBzb21ldGhpbmcgeW91IGNvdWxkIGRvIHdpdGggYSB0
-cml2aWFsIGJpdG1hcAo+IGFsbG9jYXRvci4gVGhhdCdzIHdoeSBJIGRvbid0IGJ1eSB0aGUgZWZm
-aWNpZW5jeSBhcmd1bWVudC4gVGhlIG1haW4KPiBkZXNpZ24gcG9pbnRzIG9mIHRoZSBJT1ZBIGFs
-bG9jYXRvciBhcmUgdG8gbWFuYWdlIGxhcmdlIGFkZHJlc3Mgc3BhY2VzCj4gd2hpbGUgdHJ5aW5n
-IHRvIG1heGltaXNlIHNwYXRpYWwgbG9jYWxpdHkgdG8gbWluaW1pc2UgdGhlIHVuZGVybHlpbmcK
-PiBwYWdldGFibGUgdXNhZ2UsIGFuZCBhbGxvY2F0aW5nIHdpdGggYSBmbGV4aWJsZSBsaW1pdCB0
-byBzdXBwb3J0Cj4gbXVsdGlwbGUgZGV2aWNlcyB3aXRoIGRpZmZlcmVudCBhZGRyZXNzaW5nIGNh
-cGFiaWxpdGllcyBpbiB0aGUgc2FtZQo+IGFkZHJlc3Mgc3BhY2UuIElmIG5vbmUgb2YgdGhvc2Ug
-YXNwZWN0cyBhcmUgcmVsZXZhbnQgdG8gdGhlIHVzZS1jYXNlIC0KPiB3aGljaCBBRkFJQ1MgYXBw
-ZWFycyB0byBiZSB0cnVlIGhlcmUgLSB0aGVuIGFzIGEgZ2VuZXJhbC1wdXJwb3NlCj4gcmVzb3Vy
-Y2UgYWxsb2NhdG9yIGl0J3MgcnViYmlzaCBhbmQgaGFzIGFuIHVucmVhc29uYWJseSBtYXNzaXZl
-IG1lbW9yeQo+IG92ZXJoZWFkIGFuZCB0aGVyZSBhcmUgbWFueSwgbWFueSBiZXR0ZXIgY2hvaWNl
-cy4KPgoKT0ssIEkgZ2V0IHlvdXIgcG9pbnQuIEFjdHVhbGx5IHdlIHVzZWQgdGhlIGdlbnBvb2wg
-YWxsb2NhdG9yIGluIHRoZQplYXJseSB2ZXJzaW9uLiBNYXliZSB3ZSBjYW4gZmFsbCBiYWNrIHRv
-IHVzaW5nIGl0LgoKPiBGV0lXIEkndmUgcmVjZW50bHkgc3RhcnRlZCB0aGlua2luZyBhYm91dCBt
-b3ZpbmcgYWxsIHRoZSBjYWNoaW5nIHN0dWZmCj4gb3V0IG9mIGlvdmFfZG9tYWluIGFuZCBpbnRv
-IHRoZSBpb21tdS1kbWEgbGF5ZXIgc2luY2UgaXQncyBub3cgYSBnaWFudAo+IHdhc3RlIG9mIHNw
-YWNlIGZvciBhbGwgdGhlIG90aGVyIGN1cnJlbnQgSU9WQSB1c2Vycy4KPgo+ID4+IFByZXN1bWFi
-bHkgdXNlcnNwYWNlIGRvZXNuJ3QgaGF2ZSBhbnkgY29uY2VybiBhYm91dCBhbGlnbm1lbnQgYW5k
-IHRoZQo+ID4+IHRoaW5ncyB3ZSBoYXZlIHRvIHdvcnJ5IGFib3V0IGZvciB0aGUgRE1BIEFQSSBp
-biBnZW5lcmFsLCBzbyBpdCdzIHByZXR0eQo+ID4+IG11Y2gganVzdCBhbGxvY2F0aW5nIHNsb3Rz
-IGluIGEgYnVmZmVyLCBhbmQgdGhlcmUgYXJlIGZhciBtb3JlIGVmZmVjdGl2ZQo+ID4+IHdheXMg
-dG8gZG8gdGhhdCB0aGFuIGEgZnVsbC1ibG93biBhZGRyZXNzIHNwYWNlIG1hbmFnZXIuCj4gPgo+
-ID4gQ29uc2lkZXJpbmcgaW92YSBhbGxvY2F0aW9uIGVmZmljaWVuY3ksIEkgdGhpbmsgdGhlIGlv
-dmEgYWxsb2NhdG9yIGlzCj4gPiBiZXR0ZXIgaGVyZS4gSW4gbW9zdCBjYXNlcywgd2UgZG9uJ3Qg
-ZXZlbiBuZWVkIHRvIGhvbGQgYSBzcGluIGxvY2sKPiA+IGR1cmluZyBpb3ZhIGFsbG9jYXRpb24u
-Cj4gPgo+ID4+IElmIHlvdSdyZSBnb2luZwo+ID4+IHRvIHJldXNlIGFueSBpbmZyYXN0cnVjdHVy
-ZSBJJ2QgaGF2ZSBleHBlY3RlZCBpdCB0byBiZSBTV0lPVExCIHJhdGhlcgo+ID4+IHRoYW4gdGhl
-IElPVkEgYWxsb2NhdG9yLiBCZWNhdXNlLCB5J2tub3csIHlvdSdyZSAqbGl0ZXJhbGx5IGltcGxl
-bWVudGluZwo+ID4+IGEgc29mdHdhcmUgSS9PIFRMQiogOykKPiA+Pgo+ID4KPiA+IEJ1dCBhY3R1
-YWxseSB3aGF0IHdlIGNhbiByZXVzZSBpbiBTV0lPVExCIGlzIHRoZSBJT1ZBIGFsbG9jYXRvci4K
-Pgo+IEh1aD8gVGhvc2UgYXJlIGNvbXBsZXRlbHkgdW5yZWxhdGVkIGFuZCBvcnRob2dvbmFsIHRo
-aW5ncyAtIFNXSU9UTEIgZG9lcwo+IG5vdCB1c2UgYW4gZXh0ZXJuYWwgYWxsb2NhdG9yIChzZWUg
-ZmluZF9zbG90cygpKS4gQnkgU1dJT1RMQiBJIG1lYW4KPiBzcGVjaWZpY2FsbHkgdGhlIGxpYnJh
-cnkgaXRzZWxmLCBub3QgZG1hLWRpcmVjdCBvciBhbnkgb2YgdGhlIG90aGVyCj4gdXNlcnMgYnVp
-bHQgYXJvdW5kIGl0LiBUaGUgZnVuY3Rpb25hbGl0eSBmb3IgbWFuYWdpbmcgc2xvdHMgaW4gYSBi
-dWZmZXIKPiBhbmQgYm91bmNpbmcgZGF0YSBpbiBhbmQgb3V0IGNhbiBhYnNvbHV0ZWx5IGJlIHJl
-dXNlZCAtIHRoYXQncyB3aHkgdXNlcnMKPiBsaWtlIHRoZSBYZW4gYW5kIGlvbW11LWRtYSBjb2Rl
-ICphcmUqIHJldXNpbmcgaXQgaW5zdGVhZCBvZiBvcGVuLWNvZGluZwo+IHRoZWlyIG93biB2ZXJz
-aW9ucy4KPgoKSSBzZWUuIEFjdHVhbGx5IHRoZSBzbG90cyBtYW5hZ2VtZW50IGluIFNXSU9UTEIg
-aXMgd2hhdCBJIG1lYW4gYnkgSU9WQQphbGxvY2F0b3IuCgo+ID4gQW5kCj4gPiB0aGUgSU9WQSBt
-YW5hZ2VtZW50IGluIFNXSU9UTEIgaXMgbm90IHdoYXQgd2Ugd2FudC4gRm9yIGV4YW1wbGUsCj4g
-PiBTV0lPVExCIGFsbG9jYXRlcyBhbmQgdXNlcyBjb250aWd1b3VzIG1lbW9yeSBmb3IgYm91bmNp
-bmcsIHdoaWNoIGlzCj4gPiBub3QgbmVjZXNzYXJ5IGluIFZEVVNFIGNhc2UuCj4KPiBhbGxvY19p
-b3ZhKCkgYWxsb2NhdGVzIGEgY29udGlndW91cyAoaW4gSU9WQSBhZGRyZXNzKSByZWdpb24gb2Yg
-c3BhY2UuCj4gSW4gdmR1c2VfZG9tYWluX21hcF9wYWdlKCkgeW91IHVzZSBpdCB0byBhbGxvY2F0
-ZSBhIGNvbnRpZ3VvdXMgcmVnaW9uIG9mCj4gc3BhY2UgZnJvbSB5b3VyIGJvdW5jZSBidWZmZXIu
-IENhbiB5b3UgY2xhcmlmeSBob3cgdGhhdCBpcyBmdW5kYW1lbnRhbGx5Cj4gZGlmZmVyZW50IGZy
-b20gYWxsb2NhdGluZyBhIGNvbnRpZ3VvdXMgcmVnaW9uIG9mIHNwYWNlIGZyb20gYSBib3VuY2UK
-PiBidWZmZXI/IE5vYm9keSdzIHNheWluZyB0aGUgdW5kZXJseWluZyBpbXBsZW1lbnRhdGlvbiBk
-ZXRhaWxzIG9mIHdoZXJlCj4gdGhlIGJ1ZmZlciBpdHNlbGYgY29tZXMgZnJvbSBjYW4ndCBiZSB0
-d2Vha2VkLgo+CgpJIG1lYW4gcGh5c2ljYWxseSBjb250aWd1b3VzIG1lbW9yeSBoZXJlLiBXZSBj
-YW4gY3VycmVudGx5IGFsbG9jYXRlCnRoZSBib3VuY2UgcGFnZXMgb25lIGJ5IG9uZSByYXRoZXIg
-dGhhbiBhbGxvY2F0aW5nIGEgYnVuY2ggb2YKcGh5c2ljYWxseSBjb250aWd1b3VzIG1lbW9yeSBh
-dCBvbmNlIHdoaWNoIGlzIG5vdCBmcmllbmRseSB0byBhCnVzZXJzcGFjZSBkZXZpY2UuCgo+ID4g
-QW5kIFZEVVNFIG5lZWRzIGNvaGVyZW50IG1hcHBpbmcgd2hpY2ggaXMKPiA+IG5vdCBzdXBwb3J0
-ZWQgYnkgdGhlIFNXSU9UTEIuIEJlc2lkZXMsIHRoZSBTV0lPVExCIHdvcmtzIGluIHNpbmdsZXRv
-bgo+ID4gbW9kZSAoZGVzaWduZWQgZm9yIHBsYXRmb3JtIElPTU1VKSAsIGJ1dCBWRFVTRSBpcyBi
-YXNlZCBvbiBvbi1jaGlwCj4gPiBJT01NVSAoc3VwcG9ydHMgbXVsdGlwbGUgaW5zdGFuY2VzKS4K
-PiBUaGF0J3Mgbm90IGVudGlyZWx5IHRydWUgLSB0aGUgSU9NTVUgYm91bmNlIGJ1ZmZlcmluZyBz
-Y2hlbWUgaW50cm9kdWNlZAo+IGluIGludGVsLWlvbW11IGFuZCBub3cgbW92ZWQgaW50byB0aGUg
-aW9tbXUtZG1hIGxheWVyIHdhcyBhbHJlYWR5IGEgc3RlcAo+IHRvd2FyZHMgc29tZXRoaW5nIGNv
-bmNlcHR1YWxseSBzaW1pbGFyLiBJdCBkb2VzIHN0aWxsIHJlbHkgb24gc3RlYWxpbmcKPiB0aGUg
-dW5kZXJseWluZyBwYWdlcyBmcm9tIHRoZSBnbG9iYWwgU1dJT1RMQiBwb29sIGF0IHRoZSBtb21l
-bnQsIGJ1dCB0aGUKPiBib3VuY2luZyBpcyBlZmZlY3RpdmVseSBkb25lIGluIGEgcGVyLUlPTU1V
-LWRvbWFpbiBjb250ZXh0Lgo+Cj4gVGhlIG5leHQgc3RlcCBpcyBjdXJyZW50bHkgcXVldWVkIGlu
-IGxpbnV4LW5leHQsIHdoZXJlaW4gd2UgY2FuIG5vdyBoYXZlCj4gaW5kaXZpZHVhbCBwZXItZGV2
-aWNlIFNXSU9UTEIgcG9vbHMuIEluIGZhY3QgYXQgdGhhdCBwb2ludCBJIHRoaW5rIHlvdQo+IG1p
-Z2h0IGFjdHVhbGx5IGJlIGFibGUgdG8gZG8geW91ciB0aGluZyB3aXRob3V0IGltcGxlbWVudGlu
-ZyBhbnkgc3BlY2lhbAo+IERNQSBvcHMgYXQgYWxsIC0geW91J2QgbmVlZCB0byBzZXQgdXAgYSBw
-b29sIGZvciB5b3VyICJkZXZpY2UiIHdpdGgKPiBmb3JjZV9ib3VuY2Ugc2V0LCB0aGVuIHdoZW4g
-eW91IG1tYXAoKSB0aGF0IHRvIHVzZXJzcGFjZSwgc2V0IHVwCj4gZGV2LT5kbWFfcmFuZ2VfbWFw
-IHRvIGRlc2NyaWJlIGFuIG9mZnNldCBmcm9tIHRoZSBwaHlzaWNhbCBhZGRyZXNzIG9mCj4gdGhl
-IGJ1ZmZlciB0byB0aGUgdXNlcnNwYWNlIGFkZHJlc3MsIGFuZCBJIHRoaW5rIGRtYS1kaXJlY3Qg
-d291bGQgYmUKPiB0cmlja2VkIGludG8gZG9pbmcgdGhlIHJpZ2h0IHRoaW5nLiBJdCdzIGEgYml0
-IHdhY2t5LCBidXQgaXQgY291bGQgc3RhbmQKPiB0byBzYXZlIGEgaGVsbCBvZiBhIGxvdCBvZiBi
-b3RoZXIuCj4KCkNvb2whIEkgbWlzc2VkIHRoaXMgd29yaywgc29ycnkuIEJ1dCBpdCBsb29rcyBs
-aWtlIGl0cyBjdXJyZW50IHZlcnNpb24KY2FuJ3QgbWVldCBvdXIgbmVlZHMgKGUuZy4gYXZvaWQg
-dXNpbmcgcGh5c2ljYWxseSBjb250aWd1b3VzIG1lbW9yeSkuClNvIEknZCBsaWtlIHRvIGNvbnNp
-ZGVyIGl0IGFzIGEgZm9sbG93LXVwIG9wdGltaXphdGlvbiBhbmQgdXNlIGEKZ2VuZXJhbCBJT1ZB
-IGFsbG9jYXRvciBpbiB0aGlzIGluaXRpYWwgdmVyc2lvbi4gVGhlIElPVkEgYWxsb2NhdG9yCndv
-dWxkIGJlIHN0aWxsIG5lZWRlZCBmb3IgY29oZXJlbnQgbWFwcGluZwoodmR1c2VfZG9tYWluX2Fs
-bG9jX2NvaGVyZW50KCkgYW5kIHZkdXNlX2RvbWFpbl9mcmVlX2NvaGVyZW50KCkpIGFmdGVyCndl
-IHJldXNlIHRoZSBTV0lPVExCLgoKPiBGaW5hbGx5LCBlbmhhbmNpbmcgU1dJT1RMQiB0byBjb3Bl
-IHdpdGggdmlydHVhbGx5LW1hcHBlZCBidWZmZXJzIHRoYXQKPiBkb24ndCBoYXZlIHRvIGJlIHBo
-eXNpY2FsbHkgY29udGlndW91cyBpcyBhIGZ1dHVyZSBpbXByb3ZlbWVudCB3aGljaCBJCj4gdGhp
-bmsgY291bGQgYmVuZWZpdCB2YXJpb3VzIHVzZS1jYXNlcyAtIGluZGVlZCBpdCdzIHBvc3NpYmx5
-IGFscmVhZHkgb24KPiB0aGUgdGFibGUgZm9yIElPTU1VIGJvdW5jZSBwYWdlcyAtIHNvIHdvdWxk
-IHByb2JhYmx5IGJlIHdlbGNvbWUgaW4gZ2VuZXJhbC4KPgoKWWVzLCBpdCdzIGluZGVlZCBuZWVk
-ZWQgYnkgVkRVU0UuIEJ1dCBJJ20gbm90IHN1cmUgaWYgaXQgd291bGQgYmUKbmVlZGVkIGJ5IG90
-aGVyIGRyaXZlcnMuIExvb2tzIGxpa2Ugd2UgbmVlZCBzd2lvdGxiX3RibF9tYXBfc2luZ2xlKCkK
-dG8gcmV0dXJuIGEgdmlydHVhbCBhZGRyZXNzIGFuZCBpbnRyb2R1Y2Ugc29tZSB3YXkgdG8gbGV0
-IHRoZSBjYWxsZXIKZG8gc29tZSB0cmFuc2xhdGlvbiBiZXR3ZWVuIFZBIHRvIFBBLgoKVGhhbmtz
-LApZb25namkKX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX18K
-aW9tbXUgbWFpbGluZyBsaXN0CmlvbW11QGxpc3RzLmxpbnV4LWZvdW5kYXRpb24ub3JnCmh0dHBz
-Oi8vbGlzdHMubGludXhmb3VuZGF0aW9uLm9yZy9tYWlsbWFuL2xpc3RpbmZvL2lvbW11
+
+
+On 30.07.21 04:52, Yong Wu wrote:
+> MediaTek IOMMU-SMI diagram is like below. all the consumer connect with
+> smi-larb, then connect with smi-common.
+> 
+>          M4U
+>           |
+>      smi-common
+>           |
+>    -------------
+>    |         |    ...
+>    |         |
+> larb1     larb2
+>    |         |
+> vdec       venc
+> 
+> When the consumer works, it should enable the smi-larb's power which
+> also need enable the smi-common's power firstly.
+> 
+> Thus, First of all, use the device link connect the consumer and the
+> smi-larbs. then add device link between the smi-larb and smi-common.
+> 
+> This patch adds device_link between the consumer and the larbs.
+> 
+> When device_link_add, I add the flag DL_FLAG_STATELESS to avoid calling
+> pm_runtime_xx to keep the original status of clocks. It can avoid two
+> issues:
+> 1) Display HW show fastlogo abnormally reported in [1]. At the beggining,
+> all the clocks are enabled before entering kernel, but the clocks for
+> display HW(always in larb0) will be gated after clk_enable and clk_disable
+> called from device_link_add(->pm_runtime_resume) and rpm_idle. The clock
+> operation happened before display driver probe. At that time, the display
+> HW will be abnormal.
+> 
+> 2) A deadlock issue reported in [2]. Use DL_FLAG_STATELESS to skip
+> pm_runtime_xx to avoid the deadlock.
+> 
+> Corresponding, DL_FLAG_AUTOREMOVE_CONSUMER can't be added, then
+> device_link_removed should be added explicitly.
+> 
+> [1] https://lore.kernel.org/linux-mediatek/1564213888.22908.4.camel@mhfsdcap03/
+> [2] https://lore.kernel.org/patchwork/patch/1086569/
+> 
+> Suggested-by: Tomasz Figa <tfiga@chromium.org>
+> Signed-off-by: Yong Wu <yong.wu@mediatek.com>
+> Tested-by: Dafna Hirschfeld <dafna.hirschfeld@collabora.com> # on mt8173
+
+Hi, unfortunately, I have to take back the Tested-by tag.
+I am now testing the mtk-vcodec with latest kernel + patches sent from the mailing list:
+https://gitlab.collabora.com/eballetbo/linux/-/commits/topic/chromeos/chromeos-5.14
+which includes this patchset.
+
+On chromeos I open a video conference with googl-meet which cause the mtk-vcodec vp8 encoder to run.
+If I kill it with `killall -9 chrome` I get some page fault messages from the iommu:
+
+[  837.255952] mtk-iommu 10205000.iommu: fault type=0x5 iova=0xfcff0001 pa=0x0 larb=0 port=0 layer=1 read
+[  837.265696] mtk-iommu 10205000.iommu: fault type=0x5 iova=0xfcff0001 pa=0x0 larb=0 port=0 layer=1 read
+[  837.282367] mtk-iommu 10205000.iommu: fault type=0x5 iova=0xfcff0001 pa=0x0 larb=0 port=0 layer=1 read
+[  837.299028] mtk-iommu 10205000.iommu: fault type=0x5 iova=0xfcff0001 pa=0x0 larb=0 port=0 layer=1 read
+[  837.315683] mtk-iommu 10205000.iommu: fault type=0x5 iova=0xfcff0001 pa=0x0 larb=0 port=0 layer=1 read
+[  837.332345] mtk-iommu 10205000.iommu: fault type=0x5 iova=0xfcff0001 pa=0x0 larb=0 port=0 layer=1 read
+[  837.349004] mtk-iommu 10205000.iommu: fault type=0x5 iova=0xfcff0001 pa=0x0 larb=0 port=0 layer=1 read
+[  837.365665] mtk-iommu 10205000.iommu: fault type=0x5 iova=0xfcff0001 pa=0x0 larb=0 port=0 layer=1 read
+[  837.382329] mtk-iommu 10205000.iommu: fault type=0x5 iova=0xfcff0001 pa=0x0 larb=0 port=0 layer=1 read
+[  837.400002] mtk-iommu 10205000.iommu: fault type=0x5 iova=0xfcff0001 pa=0x0 larb=0 port=0 layer=1 read
+
+In addition, running the encoder tests from the shell:
+
+sudo --user=#1000 /usr/local/libexec/chrome-binary-tests/video_encode_accelerator_tests --gtest_filter=VideoEncoderTest.FlushAtEndOfStream_Multiple*  --codec=vp8 /usr/local/share/tast/data/chromiumos/tast/local/bundles/cros/video/data/tulip2-320x180.yuv --disable_validator
+
+At some point it fails with the error
+
+[ 5472.161821] [MTK_V4L2][ERROR] mtk_vcodec_wait_for_done_ctx:32: [290] ctx->type=1, cmd=1, wait_event_interruptible_timeout time=1000ms out 0 0!
+[ 5472.174678] [MTK_VCODEC][ERROR][290]: vp8_enc_encode_frame() irq_status=0 failed
+[ 5472.182687] [MTK_V4L2][ERROR] mtk_venc_worker:1239: venc_if_encode failed=-5
+
+
+If you have any idea of what might be the problem or how to debug?
+
+Thanks,
+Dafna
+
+> ---
+>   drivers/iommu/mtk_iommu.c    | 22 ++++++++++++++++++++++
+>   drivers/iommu/mtk_iommu_v1.c | 20 +++++++++++++++++++-
+>   2 files changed, 41 insertions(+), 1 deletion(-)
+> 
+> diff --git a/drivers/iommu/mtk_iommu.c b/drivers/iommu/mtk_iommu.c
+> index a02dde094788..ee742900cf4b 100644
+> --- a/drivers/iommu/mtk_iommu.c
+> +++ b/drivers/iommu/mtk_iommu.c
+> @@ -571,22 +571,44 @@ static struct iommu_device *mtk_iommu_probe_device(struct device *dev)
+>   {
+>   	struct iommu_fwspec *fwspec = dev_iommu_fwspec_get(dev);
+>   	struct mtk_iommu_data *data;
+> +	struct device_link *link;
+> +	struct device *larbdev;
+> +	unsigned int larbid;
+>   
+>   	if (!fwspec || fwspec->ops != &mtk_iommu_ops)
+>   		return ERR_PTR(-ENODEV); /* Not a iommu client device */
+>   
+>   	data = dev_iommu_priv_get(dev);
+>   
+> +	/*
+> +	 * Link the consumer device with the smi-larb device(supplier)
+> +	 * The device in each a larb is a independent HW. thus only link
+> +	 * one larb here.
+> +	 */
+> +	larbid = MTK_M4U_TO_LARB(fwspec->ids[0]);
+> +	larbdev = data->larb_imu[larbid].dev;
+> +	link = device_link_add(dev, larbdev,
+> +			       DL_FLAG_PM_RUNTIME | DL_FLAG_STATELESS);
+> +	if (!link)
+> +		dev_err(dev, "Unable to link %s\n", dev_name(larbdev));
+>   	return &data->iommu;
+>   }
+>   
+>   static void mtk_iommu_release_device(struct device *dev)
+>   {
+>   	struct iommu_fwspec *fwspec = dev_iommu_fwspec_get(dev);
+> +	struct mtk_iommu_data *data;
+> +	struct device *larbdev;
+> +	unsigned int larbid;
+>   
+>   	if (!fwspec || fwspec->ops != &mtk_iommu_ops)
+>   		return;
+>   
+> +	data = dev_iommu_priv_get(dev);
+> +	larbid = MTK_M4U_TO_LARB(fwspec->ids[0]);
+> +	larbdev = data->larb_imu[larbid].dev;
+> +	device_link_remove(dev, larbdev);
+> +
+>   	iommu_fwspec_free(dev);
+>   }
+>   
+> diff --git a/drivers/iommu/mtk_iommu_v1.c b/drivers/iommu/mtk_iommu_v1.c
+> index c259433f1130..806d4200665b 100644
+> --- a/drivers/iommu/mtk_iommu_v1.c
+> +++ b/drivers/iommu/mtk_iommu_v1.c
+> @@ -424,7 +424,9 @@ static struct iommu_device *mtk_iommu_probe_device(struct device *dev)
+>   	struct iommu_fwspec *fwspec = dev_iommu_fwspec_get(dev);
+>   	struct of_phandle_args iommu_spec;
+>   	struct mtk_iommu_data *data;
+> -	int err, idx = 0;
+> +	int err, idx = 0, larbid;
+> +	struct device_link *link;
+> +	struct device *larbdev;
+>   
+>   	/*
+>   	 * In the deferred case, free the existed fwspec if the dev already has,
+> @@ -454,6 +456,14 @@ static struct iommu_device *mtk_iommu_probe_device(struct device *dev)
+>   
+>   	data = dev_iommu_priv_get(dev);
+>   
+> +	/* Link the consumer device with the smi-larb device(supplier) */
+> +	larbid = mt2701_m4u_to_larb(fwspec->ids[0]);
+> +	larbdev = data->larb_imu[larbid].dev;
+> +	link = device_link_add(dev, larbdev,
+> +			       DL_FLAG_PM_RUNTIME | DL_FLAG_STATELESS);
+> +	if (!link)
+> +		dev_err(dev, "Unable to link %s\n", dev_name(larbdev));
+> +
+>   	return &data->iommu;
+>   }
+>   
+> @@ -474,10 +484,18 @@ static void mtk_iommu_probe_finalize(struct device *dev)
+>   static void mtk_iommu_release_device(struct device *dev)
+>   {
+>   	struct iommu_fwspec *fwspec = dev_iommu_fwspec_get(dev);
+> +	struct mtk_iommu_data *data;
+> +	struct device *larbdev;
+> +	unsigned int larbid;
+>   
+>   	if (!fwspec || fwspec->ops != &mtk_iommu_ops)
+>   		return;
+>   
+> +	data = dev_iommu_priv_get(dev);
+> +	larbid = mt2701_m4u_to_larb(fwspec->ids[0]);
+> +	larbdev = data->larb_imu[larbid].dev;
+> +	device_link_remove(dev, larbdev);
+> +
+>   	iommu_fwspec_free(dev);
+>   }
+>   
+> 
+_______________________________________________
+iommu mailing list
+iommu@lists.linux-foundation.org
+https://lists.linuxfoundation.org/mailman/listinfo/iommu
