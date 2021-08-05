@@ -2,70 +2,160 @@ Return-Path: <SRS0=+AsR=M4=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-15.4 required=3.0 tests=BAYES_00,
-	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_CR_TRAILER,INCLUDES_PATCH,
-	MAILING_LIST_MULTI,NICE_REPLY_A,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,
-	URIBL_RED,USER_AGENT_SANE_1 autolearn=unavailable autolearn_force=no
-	version=3.4.0
+X-Spam-Status: No, score=-3.5 required=3.0 tests=BAYES_00,DKIM_INVALID,
+	DKIM_SIGNED,HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,
+	MSGID_FROM_MTA_HEADER,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,URIBL_RED
+	autolearn=no autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A5547C4338F
-	for <iommu@archiver.kernel.org>; Thu,  5 Aug 2021 11:24:46 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 65B52C4338F
+	for <iommu@archiver.kernel.org>; Thu,  5 Aug 2021 11:27:24 +0000 (UTC)
 Received: from smtp1.osuosl.org (smtp1.osuosl.org [140.211.166.138])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 4A1D76112D
-	for <iommu@archiver.kernel.org>; Thu,  5 Aug 2021 11:24:46 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.4.1 mail.kernel.org 4A1D76112D
-Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=arm.com
+	by mail.kernel.org (Postfix) with ESMTPS id 0E20661108
+	for <iommu@archiver.kernel.org>; Thu,  5 Aug 2021 11:27:24 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.4.1 mail.kernel.org 0E20661108
+Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=lists.linux-foundation.org
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by smtp1.osuosl.org (Postfix) with ESMTP id 18D048350A;
-	Thu,  5 Aug 2021 11:24:46 +0000 (UTC)
+	by smtp1.osuosl.org (Postfix) with ESMTP id D916C83A72;
+	Thu,  5 Aug 2021 11:27:23 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
 Received: from smtp1.osuosl.org ([127.0.0.1])
 	by localhost (smtp1.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id Iycn3iGZ3vrb; Thu,  5 Aug 2021 11:24:44 +0000 (UTC)
+	with ESMTP id 0dyNTYe-LI1f; Thu,  5 Aug 2021 11:27:23 +0000 (UTC)
 Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by smtp1.osuosl.org (Postfix) with ESMTPS id 2CE4382B81;
-	Thu,  5 Aug 2021 11:24:44 +0000 (UTC)
+	by smtp1.osuosl.org (Postfix) with ESMTPS id C6EEC835A6;
+	Thu,  5 Aug 2021 11:27:22 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 0EC32C001A;
-	Thu,  5 Aug 2021 11:24:44 +0000 (UTC)
-Received: from smtp2.osuosl.org (smtp2.osuosl.org [140.211.166.133])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 3E076C000E
- for <iommu@lists.linux-foundation.org>; Thu,  5 Aug 2021 11:24:42 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id AD4BAC001A;
+	Thu,  5 Aug 2021 11:27:22 +0000 (UTC)
+Received: from smtp3.osuosl.org (smtp3.osuosl.org [140.211.166.136])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 35DDFC000E
+ for <iommu@lists.linux-foundation.org>; Thu,  5 Aug 2021 11:27:22 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by smtp2.osuosl.org (Postfix) with ESMTP id 267A34028F
- for <iommu@lists.linux-foundation.org>; Thu,  5 Aug 2021 11:24:42 +0000 (UTC)
+ by smtp3.osuosl.org (Postfix) with ESMTP id 180CA60A7C
+ for <iommu@lists.linux-foundation.org>; Thu,  5 Aug 2021 11:27:22 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from smtp2.osuosl.org ([127.0.0.1])
- by localhost (smtp2.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id NVKxArySKa-X for <iommu@lists.linux-foundation.org>;
- Thu,  5 Aug 2021 11:24:40 +0000 (UTC)
-X-Greylist: domain auto-whitelisted by SQLgrey-1.8.0
-Received: from foss.arm.com (foss.arm.com [217.140.110.172])
- by smtp2.osuosl.org (Postfix) with ESMTP id D160040138
- for <iommu@lists.linux-foundation.org>; Thu,  5 Aug 2021 11:24:40 +0000 (UTC)
-Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
- by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id C67151FB;
- Thu,  5 Aug 2021 04:24:39 -0700 (PDT)
-Received: from [10.57.36.146] (unknown [10.57.36.146])
- by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id A99A63F719;
- Thu,  5 Aug 2021 04:24:38 -0700 (PDT)
-Subject: Re: [PATCH] iommu/arm-smmu-v3: Remove some unneeded init in
- arm_smmu_cmdq_issue_cmdlist()
-To: John Garry <john.garry@huawei.com>, will@kernel.org
-References: <1624293394-202509-1-git-send-email-john.garry@huawei.com>
-From: Robin Murphy <robin.murphy@arm.com>
-Message-ID: <ee1f3ab5-3acc-f442-f2d2-898cf88bc447@arm.com>
-Date: Thu, 5 Aug 2021 12:24:33 +0100
-User-Agent: Mozilla/5.0 (Windows NT 10.0; rv:78.0) Gecko/20100101
- Thunderbird/78.12.0
+Authentication-Results: smtp3.osuosl.org (amavisd-new);
+ dkim=pass (2048-bit key) header.d=nvidia.com
+Received: from smtp3.osuosl.org ([127.0.0.1])
+ by localhost (smtp3.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+ with ESMTP id BWeyJQWR5Udx for <iommu@lists.linux-foundation.org>;
+ Thu,  5 Aug 2021 11:27:18 +0000 (UTC)
+X-Greylist: whitelisted by SQLgrey-1.8.0
+Received: from NAM10-BN7-obe.outbound.protection.outlook.com
+ (mail-bn7nam10on2077.outbound.protection.outlook.com [40.107.92.77])
+ by smtp3.osuosl.org (Postfix) with ESMTPS id 9E98A60A8A
+ for <iommu@lists.linux-foundation.org>; Thu,  5 Aug 2021 11:27:18 +0000 (UTC)
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=Xdq8JHUG9KU7c3qn0WP24uYxcoshQjuXWe+rSsr/EDLfSrUf07ZUOcEsPM9G72vi7sucdQu8GKQmVFwUIHC753+tIZ/+a/HI+ADN0wdxmS2alDIIAbqSjjqGxSWTwIVwdORqQbVaig1wPBapR7+IxlRuS4lWLNgtqSDH2nK7ugkp/+nGN33gqv/amfPVdSlQ3J+7v4pyBr751rN7RgfPmhtZUxjgjmb93a1xeHS/eyXStnJQ+tyIz6vc2+O7ciq4WFAS6EOeZRD5TLRpu00WwC0nAmwwgLharTPVIAeipDY66FjUR5o9WNbROfLq9wO+EvLBsjzFLBNLATIc5+JTIA==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com; 
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=/ABRnOqvn6Pyo06AlJXTr47rHRrubGpQns2+C1Oqcyw=;
+ b=lGublZaKZUDukJFGyxFN38LBU7SqZGr4wOwDmxqe0cI5rTBDV4iqEEmXrlwMeM+fJ2IUfy5EaxMpK5mTRto1bJRwq+mCgS9XeEBFRy3mXUw6QVeUn6E5/m9DRx+T1usaUDqWfUSn6EemsuB1p/EFmqJWWfrs7ixhoDnon/FCTpovG0xxYd4MWvk6HIliZAHadEVk2zIAXJtD8vOEyH/7bO6Wta8PD1NbRl9+7VsB1yjDxVcE3+JPmPVA8ZzRyfv7QtihckeGPAW01kPzZTKE9ELFcJnz+WOdVfEab7mq0m02tD6sTe4iKbN03gQEt1IVmP9PUd7BUJDs4bAlBVoPTw==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=nvidia.com; dmarc=pass action=none header.from=nvidia.com;
+ dkim=pass header.d=nvidia.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
+ s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=/ABRnOqvn6Pyo06AlJXTr47rHRrubGpQns2+C1Oqcyw=;
+ b=jfQfSSo7Devzo9CRUyeJDX2gsn9Sy2IWO8pzuOC4hQqzLvkI1fECQeaRnkqY4drZxocBZKAQCHsg8xBYmBD+xp45YyeeanoQ/5K4rNOr+qEwSkEQI8n383iawmMaAVEnhB8WUV35nY38HFi+9qvxjTkZwxPxmcRYs7kZuJrAsXcZ0e7yUGQg9F1W2fVqdyn9ZYbMrpPSV/+a6EL3BMub0iKehB5zsnZ2pTL6Qt27OXQ6U1kIQWUqIbp3K2A8OiT2eAdxknlPVRLfCqWHTE8ZgKvgKfcUKkK8B/CEOnb3J/wq/Rnxly/rk6HTBOl/vR4tdjrI+xTNCL4hKrTONedk7g==
+Authentication-Results: intel.com; dkim=none (message not signed)
+ header.d=none;intel.com; dmarc=none action=none header.from=nvidia.com;
+Received: from BL0PR12MB5506.namprd12.prod.outlook.com (2603:10b6:208:1cb::22)
+ by BL1PR12MB5222.namprd12.prod.outlook.com (2603:10b6:208:31e::19)
+ with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4373.25; Thu, 5 Aug
+ 2021 11:27:15 +0000
+Received: from BL0PR12MB5506.namprd12.prod.outlook.com
+ ([fe80::1de1:52a9:cf66:f336]) by BL0PR12MB5506.namprd12.prod.outlook.com
+ ([fe80::1de1:52a9:cf66:f336%7]) with mapi id 15.20.4394.018; Thu, 5 Aug 2021
+ 11:27:15 +0000
+Date: Thu, 5 Aug 2021 08:27:13 -0300
+To: "Tian, Kevin" <kevin.tian@intel.com>
+Subject: Re: [RFC v2] /dev/iommu uAPI proposal
+Message-ID: <20210805112713.GN1721383@nvidia.com>
+References: <BN9PR11MB5433B1E4AE5B0480369F97178C189@BN9PR11MB5433.namprd11.prod.outlook.com>
+ <YP4/KJoYfbaf5U94@yekko> <20210730145123.GW1721383@nvidia.com>
+ <BN9PR11MB5433C34222B3E727B3D0E5638CEF9@BN9PR11MB5433.namprd11.prod.outlook.com>
+ <20210804140447.GH1721383@nvidia.com>
+ <BN9PR11MB54330D97D0935F1C1E0E346C8CF19@BN9PR11MB5433.namprd11.prod.outlook.com>
+Content-Disposition: inline
+In-Reply-To: <BN9PR11MB54330D97D0935F1C1E0E346C8CF19@BN9PR11MB5433.namprd11.prod.outlook.com>
+X-ClientProxiedBy: CH2PR11CA0025.namprd11.prod.outlook.com
+ (2603:10b6:610:54::35) To BL0PR12MB5506.namprd12.prod.outlook.com
+ (2603:10b6:208:1cb::22)
 MIME-Version: 1.0
-In-Reply-To: <1624293394-202509-1-git-send-email-john.garry@huawei.com>
-Content-Language: en-GB
-Cc: linuxarm@huawei.com, iommu@lists.linux-foundation.org,
- linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org
+X-MS-Exchange-MessageSentRepresentingType: 1
+Received: from mlx.ziepe.ca (206.223.160.26) by
+ CH2PR11CA0025.namprd11.prod.outlook.com (2603:10b6:610:54::35) with Microsoft
+ SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.20.4394.15 via Frontend Transport; Thu, 5 Aug 2021 11:27:15 +0000
+Received: from jgg by mlx with local (Exim 4.94)	(envelope-from
+ <jgg@nvidia.com>)	id 1mBbWr-00DDeR-DN; Thu, 05 Aug 2021 08:27:13 -0300
+X-MS-PublicTrafficType: Email
+X-MS-Office365-Filtering-Correlation-Id: 9f356322-5653-4d21-0c94-08d95803fa06
+X-MS-TrafficTypeDiagnostic: BL1PR12MB5222:
+X-MS-Exchange-Transport-Forked: True
+X-Microsoft-Antispam-PRVS: <BL1PR12MB52223122FD3CB2D6282DF3DDC2F29@BL1PR12MB5222.namprd12.prod.outlook.com>
+X-MS-Oob-TLC-OOBClassifiers: OLM:8273;
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: xHSf+ufjFjS+4SectuZQg9MnQ2HtFg0OoFovC7s2xyrOZRdv/mvCkJR0izLwM9OyTNNuKt+H+Rm3JTyglfdjRxyBv4zrW5mYz/uT7qD9WuV4Z/DQRSfbPyB6Xw3uvDkEiKxn/gbO4DpMTpnw5e7KH0nRXxpj6Au9nbilkMzn7InU7pEUBdodSehYEVwQJPEscNyOS/B+KxGQB6q0gTEugA0iZw2RbNMZEI+bnwpegeHrDKk2rQcAU8BJ9c8TgHW89bjnOU5o1WBhb8LmDFnUJDPmsYkOJapVYZLFnAeHq49NU67UWc/jZF5CKV9QIqOZ4T+8vMmQ1eNhgXOcoGJxg6JIq1Zc7KnTAC6KOV5ryeZDjmpBHe2AwSPPZxkh+IMbxlpLoqMt086AFoSWCsgffFeoT08KlQ6JEWSZkxmFx7Qd7lUPtYJVxu09aFHP0C+vfW6Ios0AruIAK7rYCug4psVAvNBwkwsdSciduUa+XIY+xN+BRWquvXNPYjKvLKkLkMvwZOdy6noD46elnFR45ZBRkgRRv8BQLAexuf1SNUdmhMRGPbbTeL52PRRpnZ4q7Mu2tBLn4jvcWP3gYqeks3b5cThlEf2wmMo3xNlAMairmWnOxm9Llk5PD7po/kKtd4WaOK9z32NbFXwWlfRnsQ==
+X-Forefront-Antispam-Report: CIP:255.255.255.255; CTRY:; LANG:en; SCL:1; SRV:;
+ IPV:NLI; SFV:NSPM; H:BL0PR12MB5506.namprd12.prod.outlook.com; PTR:; CAT:NONE;
+ SFS:(4636009)(376002)(39860400002)(346002)(366004)(396003)(136003)(9786002)(36756003)(478600001)(9746002)(316002)(5660300002)(66946007)(7416002)(33656002)(66556008)(66476007)(86362001)(38100700002)(6916009)(2616005)(54906003)(426003)(2906002)(186003)(4326008)(26005)(1076003)(8936002)(8676002);
+ DIR:OUT; SFP:1101; 
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?6+GvoW2Gy4+xr5HRNHFTdO+JHL6kSYKN7scCRIq/+GfnhH5yL+mFcwgCaba1?=
+ =?us-ascii?Q?jtDyl5C2h5KsahOxMAmiRAe7WZstNGkbJRjGBVBKYeYZHv/CWxR1r8HgXOxK?=
+ =?us-ascii?Q?rm9DrWxUIDWD2P4Hv83rimjAzQAjr6uouuxlzN9kXOjwoGOx5IiEPGesLZ6v?=
+ =?us-ascii?Q?8fLQlBiyEgPEUNUWryw/kQpe6liH/E21OFYOMYZIZHup9h5Rhn+s+Jn0i0j1?=
+ =?us-ascii?Q?IF2Hfp4yaVwBv1jG23kcgoAjGcuyD5ymuPRYt4jUSn74xhfG4+ZUUD8vXkw6?=
+ =?us-ascii?Q?6ndLxsGnivFBCmnj2Fr/REp6mJLFqrhnFz/ao6c8L5Q3QvP9fQvVKbkws4Z2?=
+ =?us-ascii?Q?wgOGDMA6uqSWaWzS2C3Zt+l/d3WwzNM5BURkv2AaznrY90NKEFimqnqP5e+y?=
+ =?us-ascii?Q?iWABYnjFG0JxpNvao2arPzBEcGR1hJnwFxBH0E1TgOlhFdlaCQ48mOyKQD5i?=
+ =?us-ascii?Q?GatkQacuwqnoltyIIBODrU/P2Q/iANvzDD7/f/lb7w4h6omnIUdLexHyAoDs?=
+ =?us-ascii?Q?JfhBlGGdysNKfqfR7G30ZZ1FmfDhEDV0ogpgslYCWjhHwU1ee3chxD7+YZlI?=
+ =?us-ascii?Q?v42OwKRRJEQAuEVuu7ZkMdTDQkkepJ41+sLGhYyM3fdydirqu9xwZrAhyqp5?=
+ =?us-ascii?Q?EH3krMdqZ4T32fvB+nqVWg5HMtbmBeU6Cc+XwfYJQmXRC+4GtcuAnfMg+PTD?=
+ =?us-ascii?Q?RFLlnNvKy5zdsNG4MYGGu6K8wNrbbuk+4KcJXg8dDVqadULhtoN3oCaZlhLB?=
+ =?us-ascii?Q?dk5xHC3LfNmuml+xBM5AEbzR1EzXeaUxam7BvjluBTwS0l3s22ztKqbOdLsK?=
+ =?us-ascii?Q?+uJL4UJv+4H37UFBWFuCYOMQg0XuWeyB5erLJhbgO2Wc126PkPOavSOxZX0b?=
+ =?us-ascii?Q?TruoBXGc9+vBzqB6s4NpohFH71xPe9s7ZCy3hTQkBM+GNNkCFEKhWmx4PX1p?=
+ =?us-ascii?Q?YhkU3avswLPWAMPZC01ujLwowsVxeus6xI0hJ9ReRAMrYGrEyTKBx3+CV1rU?=
+ =?us-ascii?Q?ovoyG3GCvBsBe6LsyhE9zGJ+jr9mzw45YYFjRlCVqq+SWvUjl18OIcjC+bhV?=
+ =?us-ascii?Q?dorH3fBw9sowlrEotnNXItuSa7j1SFlw5Ss4eTmKBDVzicbreQHFelkRcDZJ?=
+ =?us-ascii?Q?wc62+v4wQXJJk8DDl9oECF1KxHNIw/U1Y9SGW1b7CCYK4XEoon96hyxN452B?=
+ =?us-ascii?Q?gBzKkT//t2ZVYQ2D08L39OVZCMm2xdLDnNc4IRCg0KISGTD+UCEXjGKhA+rX?=
+ =?us-ascii?Q?dXngHW5afQpn+95WMGgGoRUhiiZLZytlVhs9UCOX8flVqgej30Jer4SfICgS?=
+ =?us-ascii?Q?zVxrdu6MFL9N1d6Uo2OOM1tx?=
+X-OriginatorOrg: Nvidia.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 9f356322-5653-4d21-0c94-08d95803fa06
+X-MS-Exchange-CrossTenant-AuthSource: BL0PR12MB5506.namprd12.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 05 Aug 2021 11:27:15.5180 (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: 5qOLVmToY+/se2ulBewv84zqtYYPzvdX0zsoeGivaVv0du+vmLuQFzkb7MNUpkvx
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: BL1PR12MB5222
+Cc: "kvm@vger.kernel.org" <kvm@vger.kernel.org>,
+ Jason Wang <jasowang@redhat.com>, Kirti Wankhede <kwankhede@nvidia.com>,
+ Jean-Philippe Brucker <jean-philippe@linaro.org>, "Jiang,
+ Dave" <dave.jiang@intel.com>, "Raj, Ashok" <ashok.raj@intel.com>,
+ Jonathan Corbet <corbet@lwn.net>, "parav@mellanox.com" <parav@mellanox.com>,
+ "Alex Williamson \(alex.williamson@redhat.com\)" <alex.williamson@redhat.com>,
+ "Enrico Weigelt, metux IT consult" <lkml@metux.net>,
+ David Gibson <david@gibson.dropbear.id.au>,
+ Robin Murphy <robin.murphy@arm.com>, LKML <linux-kernel@vger.kernel.org>,
+ Shenming Lu <lushenming@huawei.com>,
+ "iommu@lists.linux-foundation.org" <iommu@lists.linux-foundation.org>,
+ Paolo Bonzini <pbonzini@redhat.com>, David Woodhouse <dwmw2@infradead.org>
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -78,66 +168,43 @@ List-Post: <mailto:iommu@lists.linux-foundation.org>
 List-Help: <mailto:iommu-request@lists.linux-foundation.org?subject=help>
 List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
  <mailto:iommu-request@lists.linux-foundation.org?subject=subscribe>
+From: Jason Gunthorpe via iommu <iommu@lists.linux-foundation.org>
+Reply-To: Jason Gunthorpe <jgg@nvidia.com>
+Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
-Content-Type: text/plain; charset="us-ascii"; Format="flowed"
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-On 2021-06-21 17:36, John Garry wrote:
-> Members of struct "llq" will be zero-inited, apart from member max_n_shift.
-> But we write llq.val straight after the init, so it was pointless to zero
-> init those other members. As such, separately init member max_n_shift
-> only.
+On Wed, Aug 04, 2021 at 10:59:21PM +0000, Tian, Kevin wrote:
+> > From: Jason Gunthorpe <jgg@nvidia.com>
+> > Sent: Wednesday, August 4, 2021 10:05 PM
+> > 
+> > On Mon, Aug 02, 2021 at 02:49:44AM +0000, Tian, Kevin wrote:
+> > 
+> > > Can you elaborate? IMO the user only cares about the label (device cookie
+> > > plus optional vPASID) which is generated by itself when doing the attaching
+> > > call, and expects this virtual label being used in various spots (invalidation,
+> > > page fault, etc.). How the system labels the traffic (the physical RID or RID+
+> > > PASID) should be completely invisible to userspace.
+> > 
+> > I don't think that is true if the vIOMMU driver is also emulating
+> > PASID. Presumably the same is true for other PASID-like schemes.
+> > 
 > 
-> In addition, struct "head" is initialised to "llq" only so that member
-> max_n_shift is set. But that member is never referenced for "head", so
-> remove any init there.
-> 
-> Removing these initializations is seen as a small performance optimisation,
-> as this code is (very) hot path.
+> I'm getting even more confused with this comment. Isn't it the
+> consensus from day one that physical PASID should not be exposed
+> to userspace as doing so breaks live migration? 
 
-I looked at this and immediately thought "surely the compiler can see 
-that all the prod/cons/val fields are written anyway and elide the 
-initialisation?", so I dumped the before and after disassembly, and... oh.
+Uh, no?
 
-You should probably clarify that it's zero-initialising all the 
-cacheline padding which is both pointless and painful. With that,
+> with PASID emulation vIOMMU only cares about vPASID instead of
+> pPASID, and the uAPI only requires user to register vPASID instead
+> of reporting pPASID back to userspace...
 
-Reviewed-by: Robin Murphy <robin.murphy@arm.com>
+vPASID is only a feature of one device in existance, so we can't make
+vPASID mandatory.
 
-However, having looked this closely I'm now tangentially wondering why 
-max_n_shift isn't inside the padded union? It's read at the same time as 
-both prod and cons by queue_has_space(), and never updated, so there 
-doesn't appear to be any benefit to it being in a separate cacheline all 
-by itself, and llq is already twice as big as it needs to be. Sorting 
-that would also be a good opportunity to store the value of interest in 
-its appropriate form so we're not needlessly recalculating 1 << shift 
-every flippin' time...
-
-Robin.
-
-> Signed-off-by: John Garry <john.garry@huawei.com>
-> 
-> diff --git a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
-> index 54b2f27b81d4..8a8ad49bb7fd 100644
-> --- a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
-> +++ b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
-> @@ -727,11 +727,11 @@ static int arm_smmu_cmdq_issue_cmdlist(struct arm_smmu_device *smmu,
->   	unsigned long flags;
->   	bool owner;
->   	struct arm_smmu_cmdq *cmdq = &smmu->cmdq;
-> -	struct arm_smmu_ll_queue llq = {
-> -		.max_n_shift = cmdq->q.llq.max_n_shift,
-> -	}, head = llq;
-> +	struct arm_smmu_ll_queue llq, head;
->   	int ret = 0;
->   
-> +	llq.max_n_shift = cmdq->q.llq.max_n_shift;
-> +
->   	/* 1. Allocate some space in the queue */
->   	local_irq_save(flags);
->   	llq.val = READ_ONCE(cmdq->q.llq.val);
-> 
+Jason
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
