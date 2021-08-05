@@ -2,80 +2,122 @@ Return-Path: <SRS0=+AsR=M4=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-15.4 required=3.0 tests=BAYES_00,
-	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_CR_TRAILER,INCLUDES_PATCH,
-	MAILING_LIST_MULTI,NICE_REPLY_A,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,
-	URIBL_RED,USER_AGENT_SANE_1 autolearn=ham autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-7.2 required=3.0 tests=BAYES_00,DKIM_ADSP_CUSTOM_MED,
+	DKIM_INVALID,DKIM_SIGNED,FREEMAIL_FORGED_FROMDOMAIN,FREEMAIL_FROM,
+	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,NICE_REPLY_A,
+	SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,URIBL_RED,USER_AGENT_SANE_1 autolearn=no
+	autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8447BC4338F
-	for <iommu@archiver.kernel.org>; Thu,  5 Aug 2021 13:40:46 +0000 (UTC)
-Received: from smtp4.osuosl.org (smtp4.osuosl.org [140.211.166.137])
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D398FC4338F
+	for <iommu@archiver.kernel.org>; Thu,  5 Aug 2021 14:05:37 +0000 (UTC)
+Received: from smtp1.osuosl.org (smtp1.osuosl.org [140.211.166.138])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 099E161156
-	for <iommu@archiver.kernel.org>; Thu,  5 Aug 2021 13:40:45 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.4.1 mail.kernel.org 099E161156
-Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=huawei.com
+	by mail.kernel.org (Postfix) with ESMTPS id 7EB5E60E97
+	for <iommu@archiver.kernel.org>; Thu,  5 Aug 2021 14:05:37 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.4.1 mail.kernel.org 7EB5E60E97
+Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=gmail.com
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by smtp4.osuosl.org (Postfix) with ESMTP id C8B9D403C8;
-	Thu,  5 Aug 2021 13:40:45 +0000 (UTC)
+	by smtp1.osuosl.org (Postfix) with ESMTP id 4F81F82998;
+	Thu,  5 Aug 2021 14:05:37 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from smtp4.osuosl.org ([127.0.0.1])
-	by localhost (smtp4.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id 0fUrkhF_De-8; Thu,  5 Aug 2021 13:40:44 +0000 (UTC)
-Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [IPv6:2605:bc80:3010:104::8cd3:938])
-	by smtp4.osuosl.org (Postfix) with ESMTPS id 85BC74035C;
-	Thu,  5 Aug 2021 13:40:44 +0000 (UTC)
+Received: from smtp1.osuosl.org ([127.0.0.1])
+	by localhost (smtp1.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+	with ESMTP id U7tXpbYWAsmx; Thu,  5 Aug 2021 14:05:36 +0000 (UTC)
+Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
+	by smtp1.osuosl.org (Postfix) with ESMTPS id E8D0082881;
+	Thu,  5 Aug 2021 14:05:35 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 5ED94C001A;
-	Thu,  5 Aug 2021 13:40:44 +0000 (UTC)
-Received: from smtp3.osuosl.org (smtp3.osuosl.org [IPv6:2605:bc80:3010::136])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 6A428C000E
- for <iommu@lists.linux-foundation.org>; Thu,  5 Aug 2021 13:40:42 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id C9FFBC001A;
+	Thu,  5 Aug 2021 14:05:35 +0000 (UTC)
+Received: from smtp2.osuosl.org (smtp2.osuosl.org [140.211.166.133])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id D5371C000E
+ for <iommu@lists.linux-foundation.org>; Thu,  5 Aug 2021 14:05:34 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by smtp3.osuosl.org (Postfix) with ESMTP id 5A472606B4
- for <iommu@lists.linux-foundation.org>; Thu,  5 Aug 2021 13:40:42 +0000 (UTC)
+ by smtp2.osuosl.org (Postfix) with ESMTP id C1671402AE
+ for <iommu@lists.linux-foundation.org>; Thu,  5 Aug 2021 14:05:34 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from smtp3.osuosl.org ([127.0.0.1])
- by localhost (smtp3.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id WKys3nCun5AP for <iommu@lists.linux-foundation.org>;
- Thu,  5 Aug 2021 13:40:41 +0000 (UTC)
-X-Greylist: domain auto-whitelisted by SQLgrey-1.8.0
-Received: from frasgout.his.huawei.com (frasgout.his.huawei.com
- [185.176.79.56])
- by smtp3.osuosl.org (Postfix) with ESMTPS id E351560609
- for <iommu@lists.linux-foundation.org>; Thu,  5 Aug 2021 13:40:40 +0000 (UTC)
-Received: from fraeml710-chm.china.huawei.com (unknown [172.18.147.200])
- by frasgout.his.huawei.com (SkyGuard) with ESMTP id 4GgV9H5QV2z6F8WF;
- Thu,  5 Aug 2021 21:40:19 +0800 (CST)
-Received: from lhreml724-chm.china.huawei.com (10.201.108.75) by
- fraeml710-chm.china.huawei.com (10.206.15.59) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2176.2; Thu, 5 Aug 2021 15:40:37 +0200
-Received: from [10.47.24.8] (10.47.24.8) by lhreml724-chm.china.huawei.com
- (10.201.108.75) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256) id 15.1.2176.2; Thu, 5 Aug 2021
- 14:40:36 +0100
-Subject: Re: [PATCH] iommu/arm-smmu-v3: Remove some unneeded init in
- arm_smmu_cmdq_issue_cmdlist()
-To: Robin Murphy <robin.murphy@arm.com>, <will@kernel.org>
-References: <1624293394-202509-1-git-send-email-john.garry@huawei.com>
- <ee1f3ab5-3acc-f442-f2d2-898cf88bc447@arm.com>
-From: John Garry <john.garry@huawei.com>
-Message-ID: <45a8af4f-4202-ecd8-0882-507acf9b2eb2@huawei.com>
-Date: Thu, 5 Aug 2021 14:40:05 +0100
-User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; rv:68.0) Gecko/20100101
- Thunderbird/68.12.1
+Authentication-Results: smtp2.osuosl.org (amavisd-new);
+ dkim=pass (2048-bit key) header.d=gmail.com
+Received: from smtp2.osuosl.org ([127.0.0.1])
+ by localhost (smtp2.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+ with ESMTP id 3JmN4j5-e--g for <iommu@lists.linux-foundation.org>;
+ Thu,  5 Aug 2021 14:05:33 +0000 (UTC)
+X-Greylist: whitelisted by SQLgrey-1.8.0
+Received: from mail-pj1-x102d.google.com (mail-pj1-x102d.google.com
+ [IPv6:2607:f8b0:4864:20::102d])
+ by smtp2.osuosl.org (Postfix) with ESMTPS id 6FE2E4013C
+ for <iommu@lists.linux-foundation.org>; Thu,  5 Aug 2021 14:05:33 +0000 (UTC)
+Received: by mail-pj1-x102d.google.com with SMTP id
+ u21-20020a17090a8915b02901782c36f543so6138544pjn.4
+ for <iommu@lists.linux-foundation.org>; Thu, 05 Aug 2021 07:05:33 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=gmail.com; s=20161025;
+ h=subject:to:cc:references:from:message-id:date:user-agent
+ :mime-version:in-reply-to:content-language:content-transfer-encoding;
+ bh=F8VMrdCyOywJRypSYr/zNvHCgQ+meFAot/YAU98HWWE=;
+ b=ECF3X5iUC+sX/vDMJPtan9DyiKntE4JTT1Af+ZUPGy2bBqryLNVeJ3gR5+CS3fJHFH
+ +BGde9+tFxN33KSJ0vdmOJMD6p8xehdYyALwQFZ6G3NzehgjZywkm09J/HtwwfaTXzBP
+ S1WS2pWntdKte5+ILpRc2l734SfMuogBUrcU4GO/fIwTACeWEGst0D8KKq7Hp2ykipoA
+ QyhNf7ug3UEf8Ogx6Kd+jbFj4xFPVdasYhyQWntvhxI1wBJbaTa3jT5pkrkRsaek/UAd
+ NLLA6VCbXzd2NA0YhNwAwyGzJ7MPCd9oBnOdf+3gO1asduizzv+vye87H8v2E/Sqy61q
+ QusA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+ d=1e100.net; s=20161025;
+ h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+ :user-agent:mime-version:in-reply-to:content-language
+ :content-transfer-encoding;
+ bh=F8VMrdCyOywJRypSYr/zNvHCgQ+meFAot/YAU98HWWE=;
+ b=BpYmC58UiHzoQtzTOT3lo/dKKucdZdGMrCZT+3hP0FnyHBSEvISd0NEKBNzSVIeBfM
+ FzKu1tt2nFthfx7evx8II+VjB/hCpw2qKLk4FqKk+ykf/K2fkhhQiOOuSnxV9/cRhdrp
+ Yb/Y2F6rs0SEF0Ac2mstGEpZDnMTsIgk+r1D/0MRg80adnPGZJFUmFmFLh0m01X5A9N9
+ lftIgXFnr2YJkius0fvTaBVPyrS+ZkmLWxZNPSuKGrVCBMRLRQr1vLAv7KK+KcZPkPzm
+ 46W2DfRhcYN6FoVd1AWutKAYR+pde+ej26K0mqP5NG2FSiAnpAwa0hDlzj4r6Yi/3rHJ
+ arlg==
+X-Gm-Message-State: AOAM530yirw1WNSkvXCcfmUPFiOQYDarvX1Qta6hB96WzeIZLJGKFWTY
+ eldznCZjQ9OQan43QCvTUFs=
+X-Google-Smtp-Source: ABdhPJwBb/TGQHg7Q/TCL0bQgwmOAloOQN4ZDR0PVYFzozUh9xJAeBD4+y2vpy2azMRYRouhtcDM2Q==
+X-Received: by 2002:aa7:9719:0:b029:3b7:6965:c9b0 with SMTP id
+ a25-20020aa797190000b02903b76965c9b0mr5413104pfg.50.1628172332669; 
+ Thu, 05 Aug 2021 07:05:32 -0700 (PDT)
+Received: from ?IPv6:2404:f801:0:5:8000::4b1? ([2404:f801:9000:1a:efea::4b1])
+ by smtp.gmail.com with ESMTPSA id
+ w11sm8331978pgk.34.2021.08.05.07.05.17
+ (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+ Thu, 05 Aug 2021 07:05:31 -0700 (PDT)
+Subject: Re: [PATCH V2 03/14] x86/set_memory: Add x86_set_memory_enc static
+ call support
+To: Dave Hansen <dave.hansen@intel.com>, kys@microsoft.com,
+ haiyangz@microsoft.com, sthemmin@microsoft.com, wei.liu@kernel.org,
+ decui@microsoft.com, tglx@linutronix.de, mingo@redhat.com, bp@alien8.de,
+ x86@kernel.org, hpa@zytor.com, dave.hansen@linux.intel.com, luto@kernel.org,
+ peterz@infradead.org, konrad.wilk@oracle.com, boris.ostrovsky@oracle.com,
+ jgross@suse.com, sstabellini@kernel.org, joro@8bytes.org, will@kernel.org,
+ davem@davemloft.net, kuba@kernel.org, jejb@linux.ibm.com,
+ martin.petersen@oracle.com, arnd@arndb.de, hch@lst.de,
+ m.szyprowski@samsung.com, robin.murphy@arm.com, Tianyu.Lan@microsoft.com,
+ rppt@kernel.org, kirill.shutemov@linux.intel.com, akpm@linux-foundation.org,
+ brijesh.singh@amd.com, thomas.lendacky@amd.com, pgonda@google.com,
+ david@redhat.com, krish.sadhukhan@oracle.com, saravanand@fb.com,
+ aneesh.kumar@linux.ibm.com, xen-devel@lists.xenproject.org,
+ martin.b.radev@gmail.com, ardb@kernel.org, rientjes@google.com,
+ tj@kernel.org, keescook@chromium.org, michael.h.kelley@microsoft.com,
+ Joerg Roedel <joro@8bytes.org>, Tom Lendacky <thomas.lendacky@amd.com>
+References: <20210804184513.512888-1-ltykernel@gmail.com>
+ <20210804184513.512888-4-ltykernel@gmail.com>
+ <5823af8a-7dbb-dbb0-5ea2-d9846aa2a36a@intel.com>
+From: Tianyu Lan <ltykernel@gmail.com>
+Message-ID: <942e6fcb-3bdf-9294-d3db-ca311db440d3@gmail.com>
+Date: Thu, 5 Aug 2021 22:05:17 +0800
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:78.0) Gecko/20100101
+ Thunderbird/78.12.0
 MIME-Version: 1.0
-In-Reply-To: <ee1f3ab5-3acc-f442-f2d2-898cf88bc447@arm.com>
+In-Reply-To: <5823af8a-7dbb-dbb0-5ea2-d9846aa2a36a@intel.com>
 Content-Language: en-US
-X-Originating-IP: [10.47.24.8]
-X-ClientProxiedBy: lhreml706-chm.china.huawei.com (10.201.108.55) To
- lhreml724-chm.china.huawei.com (10.201.108.75)
-X-CFilter-Loop: Reflected
-Cc: linuxarm@huawei.com, iommu@lists.linux-foundation.org,
- linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org
+Cc: linux-arch@vger.kernel.org, parri.andrea@gmail.com,
+ linux-hyperv@vger.kernel.org, linux-scsi@vger.kernel.org,
+ netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+ iommu@lists.linux-foundation.org, vkuznets@redhat.com
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -88,72 +130,304 @@ List-Post: <mailto:iommu@lists.linux-foundation.org>
 List-Help: <mailto:iommu-request@lists.linux-foundation.org?subject=help>
 List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
  <mailto:iommu-request@lists.linux-foundation.org?subject=subscribe>
-Content-Transfer-Encoding: base64
-Content-Type: text/plain; charset="utf-8"; Format="flowed"
+Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset="us-ascii"; Format="flowed"
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-T24gMDUvMDgvMjAyMSAxMjoyNCwgUm9iaW4gTXVycGh5IHdyb3RlOgo+IE9uIDIwMjEtMDYtMjEg
-MTc6MzYsIEpvaG4gR2Fycnkgd3JvdGU6Cj4+IE1lbWJlcnMgb2Ygc3RydWN0ICJsbHEiIHdpbGwg
-YmUgemVyby1pbml0ZWQsIGFwYXJ0IGZyb20gbWVtYmVyIAo+PiBtYXhfbl9zaGlmdC4KPj4gQnV0
-IHdlIHdyaXRlIGxscS52YWwgc3RyYWlnaHQgYWZ0ZXIgdGhlIGluaXQsIHNvIGl0IHdhcyBwb2lu
-dGxlc3MgdG8gemVybwo+PiBpbml0IHRob3NlIG90aGVyIG1lbWJlcnMuIEFzIHN1Y2gsIHNlcGFy
-YXRlbHkgaW5pdCBtZW1iZXIgbWF4X25fc2hpZnQKPj4gb25seS4KPj4KPj4gSW4gYWRkaXRpb24s
-IHN0cnVjdCAiaGVhZCIgaXMgaW5pdGlhbGlzZWQgdG8gImxscSIgb25seSBzbyB0aGF0IG1lbWJl
-cgo+PiBtYXhfbl9zaGlmdCBpcyBzZXQuIEJ1dCB0aGF0IG1lbWJlciBpcyBuZXZlciByZWZlcmVu
-Y2VkIGZvciAiaGVhZCIsIHNvCj4+IHJlbW92ZSBhbnkgaW5pdCB0aGVyZS4KPj4KPj4gUmVtb3Zp
-bmcgdGhlc2UgaW5pdGlhbGl6YXRpb25zIGlzIHNlZW4gYXMgYSBzbWFsbCBwZXJmb3JtYW5jZSAK
-Pj4gb3B0aW1pc2F0aW9uLAo+PiBhcyB0aGlzIGNvZGUgaXMgKHZlcnkpIGhvdCBwYXRoLgo+IAo+
-IEkgbG9va2VkIGF0IHRoaXMgYW5kIGltbWVkaWF0ZWx5IHRob3VnaHQgInN1cmVseSB0aGUgY29t
-cGlsZXIgY2FuIHNlZSAKPiB0aGF0IGFsbCB0aGUgcHJvZC9jb25zL3ZhbCBmaWVsZHMgYXJlIHdy
-aXR0ZW4gYW55d2F5IGFuZCBlbGlkZSB0aGUgCj4gaW5pdGlhbGlzYXRpb24/Iiwgc28gSSBkdW1w
-ZWQgdGhlIGJlZm9yZSBhbmQgYWZ0ZXIgZGlzYXNzZW1ibHksIGFuZC4uLiBvaC4KPiAKPiBZb3Ug
-c2hvdWxkIHByb2JhYmx5IGNsYXJpZnkgdGhhdCBpdCdzIHplcm8taW5pdGlhbGlzaW5nIGFsbCB0
-aGUgCj4gY2FjaGVsaW5lIHBhZGRpbmcgd2hpY2ggaXMgYm90aCBwb2ludGxlc3MgYW5kIHBhaW5m
-dWwuIFdpdGggdGhhdCwKPiAKPiBSZXZpZXdlZC1ieTogUm9iaW4gTXVycGh5IDxyb2Jpbi5tdXJw
-aHlAYXJtLmNvbT4KPiAKPiBIb3dldmVyLCBoYXZpbmcgbG9va2VkIHRoaXMgY2xvc2VseSBJJ20g
-bm93IHRhbmdlbnRpYWxseSB3b25kZXJpbmcgd2h5IAo+IG1heF9uX3NoaWZ0IGlzbid0IGluc2lk
-ZSB0aGUgcGFkZGVkIHVuaW9uPyBJdCdzIHJlYWQgYXQgdGhlIHNhbWUgdGltZSBhcyAKPiBib3Ro
-IHByb2QgYW5kIGNvbnMgYnkgcXVldWVfaGFzX3NwYWNlKCksIGFuZCBuZXZlciB1cGRhdGVkLCBz
-byB0aGVyZSAKPiBkb2Vzbid0IGFwcGVhciB0byBiZSBhbnkgYmVuZWZpdCB0byBpdCBiZWluZyBp
-biBhIHNlcGFyYXRlIGNhY2hlbGluZSBhbGwgCj4gYnkgaXRzZWxmLCBhbmQgbGxxIGlzIGFscmVh
-ZHkgdHdpY2UgYXMgYmlnIGFzIGl0IG5lZWRzIHRvIGJlLgoKSSB0aGluayB0aGF0IHRoZSBwcm9i
-bGVtIGlzIGlmIHRoZSBwcm9kK2NvbnMgNjRiIHZhbHVlIGFuZCB0aGUgc2hpZnQgYXJlIApvbiB0
-aGUgc2FtZSBjYWNoZWxpbmUsIHRoZW4gd2UgaGF2ZSBhIGNoYW5jZSBvZiBhY2Nlc3NpbmcgYSBz
-dGFsZSAKY2FjaGVsaW5lIHR3aWNlOgoKc3RhdGljIGludCBhcm1fc21tdV9jbWRxX2lzc3VlX2Nt
-ZGxpc3Qoc3RydWN0IGFybV9zbW11X2RldmljZSAqc21tdSwKCQkJCSAgICAgICB1NjQgKmNtZHMs
-IGludCBuLCBib29sIHN5bmMpCnsKCXU2NCBjbWRfc3luY1tDTURRX0VOVF9EV09SRFNdOwoJdTMy
-IHByb2Q7Cgl1bnNpZ25lZCBsb25nIGZsYWdzOwoJYm9vbCBvd25lcjsKCXN0cnVjdCBhcm1fc21t
-dV9jbWRxICpjbWRxID0gJnNtbXUtPmNtZHE7CglzdHJ1Y3QgYXJtX3NtbXVfbGxfcXVldWUgbGxx
-ID0gewoJCS5tYXhfbl9zaGlmdCA9IGNtZHEtPnEubGxxLm1heF9uX3NoaWZ0LAkvLyBoZXJlCgl9
-LCBoZWFkID0gbGxxOwoJaW50IHJldCA9IDA7CgoJLyogMS4gQWxsb2NhdGUgc29tZSBzcGFjZSBp
-biB0aGUgcXVldWUgKi8KCWxvY2FsX2lycV9zYXZlKGZsYWdzKTsKCWxscS52YWwgPSBSRUFEX09O
-Q0UoY21kcS0+cS5sbHEudmFsKTsJLy8gYW5kIGFnYWluIGhlcmUKCgpzaW5jZSBjbWRxLT5xLmxs
-cSBpcyBwZXItU01NVS4gSWYgbWF4X25fc2hpZnQgaXMgb24gYSBzZXBhcmF0ZSAKY2FjaGVsaW5l
-LCB0aGVuIGl0IHNob3VsZCBuZXZlciBiZSBzdGFsZS4KCkkgc3VwcG9zZSB0aGV5IGNvdWxkIGJl
-IGNvbWJpbmVkIGludG8gYSBzbWFsbGVyIHN1Yi1zdHJ1Y3QgYW5kIGxvYWRlZCBpbiAKYSBzaW5n
-bGUgb3BlcmF0aW9uLCBidXQgaXQgbG9va3MgbWVzc3ksIGFuZCBwcm9iIHdpdGhvdXQgbXVjaCBn
-YWluLgoKVGhhbmtzLApKb2huCgo+IFNvcnRpbmcgCj4gdGhhdCB3b3VsZCBhbHNvIGJlIGEgZ29v
-ZCBvcHBvcnR1bml0eSB0byBzdG9yZSB0aGUgdmFsdWUgb2YgaW50ZXJlc3QgaW4gCj4gaXRzIGFw
-cHJvcHJpYXRlIGZvcm0gc28gd2UncmUgbm90IG5lZWRsZXNzbHkgcmVjYWxjdWxhdGluZyAxIDw8
-IHNoaWZ0IAo+IGV2ZXJ5IGZsaXBwaW4nIHRpbWUuLi4KPiAKPiBSb2Jpbi4KPiAKPj4gU2lnbmVk
-LW9mZi1ieTogSm9obiBHYXJyeSA8am9obi5nYXJyeUBodWF3ZWkuY29tPgo+Pgo+PiBkaWZmIC0t
-Z2l0IGEvZHJpdmVycy9pb21tdS9hcm0vYXJtLXNtbXUtdjMvYXJtLXNtbXUtdjMuYyAKPj4gYi9k
-cml2ZXJzL2lvbW11L2FybS9hcm0tc21tdS12My9hcm0tc21tdS12My5jCj4+IGluZGV4IDU0YjJm
-MjdiODFkNC4uOGE4YWQ0OWJiN2ZkIDEwMDY0NAo+PiAtLS0gYS9kcml2ZXJzL2lvbW11L2FybS9h
-cm0tc21tdS12My9hcm0tc21tdS12My5jCj4+ICsrKyBiL2RyaXZlcnMvaW9tbXUvYXJtL2FybS1z
-bW11LXYzL2FybS1zbW11LXYzLmMKPj4gQEAgLTcyNywxMSArNzI3LDExIEBAIHN0YXRpYyBpbnQg
-YXJtX3NtbXVfY21kcV9pc3N1ZV9jbWRsaXN0KHN0cnVjdCAKPj4gYXJtX3NtbXVfZGV2aWNlICpz
-bW11LAo+PiDCoMKgwqDCoMKgIHVuc2lnbmVkIGxvbmcgZmxhZ3M7Cj4+IMKgwqDCoMKgwqAgYm9v
-bCBvd25lcjsKPj4gwqDCoMKgwqDCoCBzdHJ1Y3QgYXJtX3NtbXVfY21kcSAqY21kcSA9ICZzbW11
-LT5jbWRxOwo+PiAtwqDCoMKgIHN0cnVjdCBhcm1fc21tdV9sbF9xdWV1ZSBsbHEgPSB7Cj4+IC3C
-oMKgwqDCoMKgwqDCoCAubWF4X25fc2hpZnQgPSBjbWRxLT5xLmxscS5tYXhfbl9zaGlmdCwKPj4g
-LcKgwqDCoCB9LCBoZWFkID0gbGxxOwo+PiArwqDCoMKgIHN0cnVjdCBhcm1fc21tdV9sbF9xdWV1
-ZSBsbHEsIGhlYWQ7Cj4+IMKgwqDCoMKgwqAgaW50IHJldCA9IDA7Cj4+ICvCoMKgwqAgbGxxLm1h
-eF9uX3NoaWZ0ID0gY21kcS0+cS5sbHEubWF4X25fc2hpZnQ7Cj4+ICsKPj4gwqDCoMKgwqDCoCAv
-KiAxLiBBbGxvY2F0ZSBzb21lIHNwYWNlIGluIHRoZSBxdWV1ZSAqLwo+PiDCoMKgwqDCoMKgIGxv
-Y2FsX2lycV9zYXZlKGZsYWdzKTsKPj4gwqDCoMKgwqDCoCBsbHEudmFsID0gUkVBRF9PTkNFKGNt
-ZHEtPnEubGxxLnZhbCk7Cj4+Cj4gLgoKX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19f
-X19fX19fX19fX19fX18KaW9tbXUgbWFpbGluZyBsaXN0CmlvbW11QGxpc3RzLmxpbnV4LWZvdW5k
-YXRpb24ub3JnCmh0dHBzOi8vbGlzdHMubGludXhmb3VuZGF0aW9uLm9yZy9tYWlsbWFuL2xpc3Rp
-bmZvL2lvbW11
+Hi Dave:
+	Thanks for review.
+
+On 8/5/2021 3:27 AM, Dave Hansen wrote:
+> On 8/4/21 11:44 AM, Tianyu Lan wrote:
+>> +static int default_set_memory_enc(unsigned long addr, int numpages, bool enc);
+>> +DEFINE_STATIC_CALL(x86_set_memory_enc, default_set_memory_enc);
+>> +
+>>   #define CPA_FLUSHTLB 1
+>>   #define CPA_ARRAY 2
+>>   #define CPA_PAGES_ARRAY 4
+>> @@ -1981,6 +1985,11 @@ int set_memory_global(unsigned long addr, int numpages)
+>>   }
+>>   
+>>   static int __set_memory_enc_dec(unsigned long addr, int numpages, bool enc)
+>> +{
+>> +	return static_call(x86_set_memory_enc)(addr, numpages, enc);
+>> +}
+>> +
+>> +static int default_set_memory_enc(unsigned long addr, int numpages, bool enc)
+>>   {
+>>   	struct cpa_data cpa;
+>>   	int ret;
+> 
+> It doesn't make a lot of difference to add this infrastructure and then
+> ignore it for the existing in-tree user:
+> 
+>> static int __set_memory_enc_dec(unsigned long addr, int numpages, bool enc)
+>> {
+>>          struct cpa_data cpa;
+>>          int ret;
+>>
+>>          /* Nothing to do if memory encryption is not active */
+>>          if (!mem_encrypt_active())
+>>                  return 0;
+> 
+> Shouldn't the default be to just "return 0"?  Then on
+> mem_encrypt_active() systems, do the bulk of what is in
+> __set_memory_enc_dec() today.
+> 
+
+OK. I try moving code in __set_memory_enc_dec() to sev file 
+mem_encrypt.c and this requires to expose cpa functions and structure.
+Please have a look.
+
+Tom, Joerg and Brijesh, Could you review at sev code change?
+Thanks.
+
+
+
+diff --git a/arch/x86/include/asm/set_memory.h 
+b/arch/x86/include/asm/set_memory.h
+index 43fa081a1adb..991366612deb 100644
+--- a/arch/x86/include/asm/set_memory.h
++++ b/arch/x86/include/asm/set_memory.h
+@@ -4,6 +4,25 @@
+
+  #include <asm/page.h>
+  #include <asm-generic/set_memory.h>
++#include <linux/static_call.h>
++
++/*
++ * The current flushing context - we pass it instead of 5 arguments:
++ */
++struct cpa_data {
++	unsigned long	*vaddr;
++	pgd_t		*pgd;
++	pgprot_t	mask_set;
++	pgprot_t	mask_clr;
++	unsigned long	numpages;
++	unsigned long	curpage;
++	unsigned long	pfn;
++	unsigned int	flags;
++	unsigned int	force_split		: 1,
++			force_static_prot	: 1,
++			force_flush_all		: 1;
++	struct page	**pages;
++};
+
+  /*
+   * The set_memory_* API can be used to change various attributes of a 
+virtual
+@@ -83,6 +102,11 @@ int set_pages_rw(struct page *page, int numpages);
+  int set_direct_map_invalid_noflush(struct page *page);
+  int set_direct_map_default_noflush(struct page *page);
+  bool kernel_page_present(struct page *page);
++int __change_page_attr_set_clr(struct cpa_data *cpa, int checkalias);
++void cpa_flush(struct cpa_data *data, int cache);
++
++int dummy_set_memory_enc(unsigned long addr, int numpages, bool enc);
++DECLARE_STATIC_CALL(x86_set_memory_enc, dummy_set_memory_enc);
+
+  extern int kernel_set_to_readonly;
+
+diff --git a/arch/x86/mm/mem_encrypt.c b/arch/x86/mm/mem_encrypt.c
+index ff08dc463634..49e957c4191f 100644
+--- a/arch/x86/mm/mem_encrypt.c
++++ b/arch/x86/mm/mem_encrypt.c
+@@ -20,6 +20,8 @@
+  #include <linux/bitops.h>
+  #include <linux/dma-mapping.h>
+  #include <linux/virtio_config.h>
++#include <linux/highmem.h>
++#include <linux/static_call.h>
+
+  #include <asm/tlbflush.h>
+  #include <asm/fixmap.h>
+@@ -178,6 +180,45 @@ void __init sme_map_bootdata(char *real_mode_data)
+  	__sme_early_map_unmap_mem(__va(cmdline_paddr), COMMAND_LINE_SIZE, true);
+  }
+
++static int sev_set_memory_enc(unsigned long addr, int numpages, bool enc)
++{
++	struct cpa_data cpa;
++	int ret;
++
++	/* Should not be working on unaligned addresses */
++	if (WARN_ONCE(addr & ~PAGE_MASK, "misaligned address: %#lx\n", addr))
++		addr &= PAGE_MASK;
++
++	memset(&cpa, 0, sizeof(cpa));
++	cpa.vaddr = &addr;
++	cpa.numpages = numpages;
++	cpa.mask_set = enc ? __pgprot(_PAGE_ENC) : __pgprot(0);
++	cpa.mask_clr = enc ? __pgprot(0) : __pgprot(_PAGE_ENC);
++	cpa.pgd = init_mm.pgd;
++
++	/* Must avoid aliasing mappings in the highmem code */
++	kmap_flush_unused();
++	vm_unmap_aliases();
++
++	/*
++	 * Before changing the encryption attribute, we need to flush caches.
++	 */
++	cpa_flush(&cpa, !this_cpu_has(X86_FEATURE_SME_COHERENT));
++
++	ret = __change_page_attr_set_clr(&cpa, 1);
++
++	/*
++	 * After changing the encryption attribute, we need to flush TLBs again
++	 * in case any speculative TLB caching occurred (but no need to flush
++	 * caches again).  We could just use cpa_flush_all(), but in case TLB
++	 * flushing gets optimized in the cpa_flush() path use the same logic
++	 * as above.
++	 */
++	cpa_flush(&cpa, 0);
++
++	return ret;
++}
++
+  void __init sme_early_init(void)
+  {
+  	unsigned int i;
+@@ -185,6 +226,8 @@ void __init sme_early_init(void)
+  	if (!sme_me_mask)
+  		return;
+
++	static_call_update(x86_set_memory_enc, sev_set_memory_enc);
++
+  	early_pmd_flags = __sme_set(early_pmd_flags);
+
+  	__supported_pte_mask = __sme_set(__supported_pte_mask);
+diff --git a/arch/x86/mm/pat/set_memory.c b/arch/x86/mm/pat/set_memory.c
+index ad8a5c586a35..4f15f7c89dbc 100644
+--- a/arch/x86/mm/pat/set_memory.c
++++ b/arch/x86/mm/pat/set_memory.c
+@@ -18,6 +18,7 @@
+  #include <linux/libnvdimm.h>
+  #include <linux/vmstat.h>
+  #include <linux/kernel.h>
++#include <linux/static_call.h>
+
+  #include <asm/e820/api.h>
+  #include <asm/processor.h>
+@@ -32,24 +33,6 @@
+
+  #include "../mm_internal.h"
+
+-/*
+- * The current flushing context - we pass it instead of 5 arguments:
+- */
+-struct cpa_data {
+-	unsigned long	*vaddr;
+-	pgd_t		*pgd;
+-	pgprot_t	mask_set;
+-	pgprot_t	mask_clr;
+-	unsigned long	numpages;
+-	unsigned long	curpage;
+-	unsigned long	pfn;
+-	unsigned int	flags;
+-	unsigned int	force_split		: 1,
+-			force_static_prot	: 1,
+-			force_flush_all		: 1;
+-	struct page	**pages;
+-};
+-
+  enum cpa_warn {
+  	CPA_CONFLICT,
+  	CPA_PROTECT,
+@@ -66,6 +49,13 @@ static const int cpa_warn_level = CPA_PROTECT;
+   */
+  static DEFINE_SPINLOCK(cpa_lock);
+
++static int default_set_memory_enc(unsigned long addr, int numpages, 
+bool enc)
++{
++	return 0;
++}
++
++DEFINE_STATIC_CALL(x86_set_memory_enc, default_set_memory_enc);
++
+  #define CPA_FLUSHTLB 1
+  #define CPA_ARRAY 2
+  #define CPA_PAGES_ARRAY 4
+@@ -357,7 +347,7 @@ static void __cpa_flush_tlb(void *data)
+  		flush_tlb_one_kernel(fix_addr(__cpa_addr(cpa, i)));
+  }
+
+-static void cpa_flush(struct cpa_data *data, int cache)
++void cpa_flush(struct cpa_data *data, int cache)
+  {
+  	struct cpa_data *cpa = data;
+  	unsigned int i;
+@@ -1587,8 +1577,6 @@ static int __change_page_attr(struct cpa_data 
+*cpa, int primary)
+  	return err;
+  }
+
+-static int __change_page_attr_set_clr(struct cpa_data *cpa, int 
+checkalias);
+-
+  static int cpa_process_alias(struct cpa_data *cpa)
+  {
+  	struct cpa_data alias_cpa;
+@@ -1646,7 +1634,7 @@ static int cpa_process_alias(struct cpa_data *cpa)
+  	return 0;
+  }
+
+-static int __change_page_attr_set_clr(struct cpa_data *cpa, int checkalias)
++int __change_page_attr_set_clr(struct cpa_data *cpa, int checkalias)
+  {
+  	unsigned long numpages = cpa->numpages;
+  	unsigned long rempages = numpages;
+@@ -1982,45 +1970,7 @@ int set_memory_global(unsigned long addr, int 
+numpages)
+
+  static int __set_memory_enc_dec(unsigned long addr, int numpages, bool 
+enc)
+  {
+-	struct cpa_data cpa;
+-	int ret;
+-
+-	/* Nothing to do if memory encryption is not active */
+-	if (!mem_encrypt_active())
+-		return 0;
+-
+-	/* Should not be working on unaligned addresses */
+-	if (WARN_ONCE(addr & ~PAGE_MASK, "misaligned address: %#lx\n", addr))
+-		addr &= PAGE_MASK;
+-
+-	memset(&cpa, 0, sizeof(cpa));
+-	cpa.vaddr = &addr;
+-	cpa.numpages = numpages;
+-	cpa.mask_set = enc ? __pgprot(_PAGE_ENC) : __pgprot(0);
+-	cpa.mask_clr = enc ? __pgprot(0) : __pgprot(_PAGE_ENC);
+-	cpa.pgd = init_mm.pgd;
+-
+-	/* Must avoid aliasing mappings in the highmem code */
+-	kmap_flush_unused();
+-	vm_unmap_aliases();
+-
+-	/*
+-	 * Before changing the encryption attribute, we need to flush caches.
+-	 */
+-	cpa_flush(&cpa, !this_cpu_has(X86_FEATURE_SME_COHERENT));
+-
+-	ret = __change_page_attr_set_clr(&cpa, 1);
+-
+-	/*
+-	 * After changing the encryption attribute, we need to flush TLBs again
+-	 * in case any speculative TLB caching occurred (but no need to flush
+-	 * caches again).  We could just use cpa_flush_all(), but in case TLB
+-	 * flushing gets optimized in the cpa_flush() path use the same logic
+-	 * as above.
+-	 */
+-	cpa_flush(&cpa, 0);
+-
+-	return ret;
++	return static_call(x86_set_memory_enc)(addr, numpages, enc);
+  }
+
+  int set_memory_encrypted(unsigned long addr, int numpages)
+_______________________________________________
+iommu mailing list
+iommu@lists.linux-foundation.org
+https://lists.linuxfoundation.org/mailman/listinfo/iommu
