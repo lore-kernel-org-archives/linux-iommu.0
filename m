@@ -2,98 +2,73 @@ Return-Path: <SRS0=+AsR=M4=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-8.6 required=3.0 tests=BAYES_00,DKIM_INVALID,
-	DKIM_SIGNED,HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,
-	SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED autolearn=unavailable autolearn_force=no
+X-Spam-Status: No, score=-5.4 required=3.0 tests=BAYES_00,
+	HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,NICE_REPLY_A,SPF_HELO_NONE,
+	SPF_PASS,URIBL_RED,USER_AGENT_SANE_1 autolearn=no autolearn_force=no
 	version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 37417C4338F
-	for <iommu@archiver.kernel.org>; Thu,  5 Aug 2021 16:32:32 +0000 (UTC)
-Received: from smtp1.osuosl.org (smtp1.osuosl.org [140.211.166.138])
+	by smtp.lore.kernel.org (Postfix) with ESMTP id BB2F2C4338F
+	for <iommu@archiver.kernel.org>; Thu,  5 Aug 2021 17:15:04 +0000 (UTC)
+Received: from smtp2.osuosl.org (smtp2.osuosl.org [140.211.166.133])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id E3A3A610FF
-	for <iommu@archiver.kernel.org>; Thu,  5 Aug 2021 16:32:31 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.4.1 mail.kernel.org E3A3A610FF
-Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=solid-run.com
+	by mail.kernel.org (Postfix) with ESMTPS id 5EC51610FD
+	for <iommu@archiver.kernel.org>; Thu,  5 Aug 2021 17:15:04 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.4.1 mail.kernel.org 5EC51610FD
+Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=arm.com
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by smtp1.osuosl.org (Postfix) with ESMTP id A58D683B20;
-	Thu,  5 Aug 2021 16:32:31 +0000 (UTC)
+	by smtp2.osuosl.org (Postfix) with ESMTP id 27DD1404F2;
+	Thu,  5 Aug 2021 17:15:04 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from smtp1.osuosl.org ([127.0.0.1])
-	by localhost (smtp1.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id LR9ubNaSMHk2; Thu,  5 Aug 2021 16:32:30 +0000 (UTC)
+Received: from smtp2.osuosl.org ([127.0.0.1])
+	by localhost (smtp2.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+	with ESMTP id T5gxdKqRts2L; Thu,  5 Aug 2021 17:15:02 +0000 (UTC)
 Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [IPv6:2605:bc80:3010:104::8cd3:938])
-	by smtp1.osuosl.org (Postfix) with ESMTPS id 6109283AA7;
-	Thu,  5 Aug 2021 16:32:30 +0000 (UTC)
+	by smtp2.osuosl.org (Postfix) with ESMTPS id 31CC8400D0;
+	Thu,  5 Aug 2021 17:15:02 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 3AB09C0010;
-	Thu,  5 Aug 2021 16:32:30 +0000 (UTC)
-Received: from smtp2.osuosl.org (smtp2.osuosl.org [IPv6:2605:bc80:3010::133])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 55182C000E
- for <iommu@lists.linux-foundation.org>; Thu,  5 Aug 2021 16:32:28 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id F3731C001A;
+	Thu,  5 Aug 2021 17:15:01 +0000 (UTC)
+Received: from smtp2.osuosl.org (smtp2.osuosl.org [140.211.166.133])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id EBA50C000E
+ for <iommu@lists.linux-foundation.org>; Thu,  5 Aug 2021 17:15:00 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by smtp2.osuosl.org (Postfix) with ESMTP id 4301640003
- for <iommu@lists.linux-foundation.org>; Thu,  5 Aug 2021 16:32:28 +0000 (UTC)
+ by smtp2.osuosl.org (Postfix) with ESMTP id D9345400D0
+ for <iommu@lists.linux-foundation.org>; Thu,  5 Aug 2021 17:15:00 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Authentication-Results: smtp2.osuosl.org (amavisd-new);
- dkim=pass (2048-bit key) header.d=solid-run-com.20150623.gappssmtp.com
 Received: from smtp2.osuosl.org ([127.0.0.1])
  by localhost (smtp2.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id e2LTenACq3v6 for <iommu@lists.linux-foundation.org>;
- Thu,  5 Aug 2021 16:32:27 +0000 (UTC)
-X-Greylist: whitelisted by SQLgrey-1.8.0
-Received: from mail-ej1-x629.google.com (mail-ej1-x629.google.com
- [IPv6:2a00:1450:4864:20::629])
- by smtp2.osuosl.org (Postfix) with ESMTPS id BE9F9404B4
- for <iommu@lists.linux-foundation.org>; Thu,  5 Aug 2021 16:32:26 +0000 (UTC)
-Received: by mail-ej1-x629.google.com with SMTP id c25so10589173ejb.3
- for <iommu@lists.linux-foundation.org>; Thu, 05 Aug 2021 09:32:26 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
- d=solid-run-com.20150623.gappssmtp.com; s=20150623;
- h=mime-version:references:in-reply-to:from:date:message-id:subject:to
- :cc; bh=ZQCg6OI1PKRykWCoTFREjwe6qvftl+/s1qj9qRWwyWs=;
- b=yQz1nbjdvUX/NC0VNo5bOXvWG6OQQMtlTTRJHeQaXh4N3GNGJybnReORBTmvyg2Kxe
- xqQt9aK5vBbhZW/lfOqvYT+4TCISWd1BxMNbA1Rus+Ak979zB63Wpl6sVIvdmLytHZs2
- 3ATNZXMm703d+ek8PWeokRc/FyGccA0Z1jtDENHkCPzxAO8JdE6RMQBhxHJAcnI8uZWW
- FXXVdOT2BJgrFnuZk0wMDdjeUiBp0uB8iYye/qvIW4H9R9/PwDyS4+zu4/aCMFBUX17n
- 1rz4oqbmqG+BONTQgiyZoAn23DgYHSt509y9D0zZ5YM8wbucwklK31FjZUf6GXDm12QS
- kqXg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
- d=1e100.net; s=20161025;
- h=x-gm-message-state:mime-version:references:in-reply-to:from:date
- :message-id:subject:to:cc;
- bh=ZQCg6OI1PKRykWCoTFREjwe6qvftl+/s1qj9qRWwyWs=;
- b=kCakP+UT393856VKrR8k547mOueQ4C5KEqmTG4n7TEF/fkAHapcNkBodw5EgVcaOwi
- D3UpxK8ayr2d8jrnrUXscTt7MT062jZfNGGMFwF98aDsTbVEKmxaLP7KJYnLoSUJqf7b
- jgm1TcwZD2s9CnlVX1UrerRRd1vxd8ln5ISp3h5VUOc83pflyxwMqLiYqWMzCHwFpVLg
- G1mtot8HXB4hBQGap6OcPK2oK4mCYMFFzKyHCTEfY3mw3kC4rCNBQxlo5eHFSJ0DU4nJ
- 8A+iD1g3fnQPOgwjd75hvaZMPfxtGJC2gM16kmw3uKICRDyIGMS65oBfroKpb0Pu2C9x
- yAVQ==
-X-Gm-Message-State: AOAM5323eJ4S1s3/HbzsztB7+Jg6QoO1qPsGTqS1J/wb87yvm/wx+SdW
- FdpL5sQPTURU4/rC6l6nGPdyUyVqXEWN3/tZurF73w==
-X-Google-Smtp-Source: ABdhPJxb1qaMZTi4dyT6LMxLcXJPZSpel7n23A9sy9aHK/FcPT3m4u095ddlSk+SVEveBE+l8doNfLvgs5DkSu1zEA0=
-X-Received: by 2002:a17:906:abc2:: with SMTP id
- kq2mr5764176ejb.342.1628181144845; 
- Thu, 05 Aug 2021 09:32:24 -0700 (PDT)
+ with ESMTP id ObFrChy2L8wi for <iommu@lists.linux-foundation.org>;
+ Thu,  5 Aug 2021 17:14:59 +0000 (UTC)
+X-Greylist: domain auto-whitelisted by SQLgrey-1.8.0
+Received: from foss.arm.com (foss.arm.com [217.140.110.172])
+ by smtp2.osuosl.org (Postfix) with ESMTP id 8A04740003
+ for <iommu@lists.linux-foundation.org>; Thu,  5 Aug 2021 17:14:59 +0000 (UTC)
+Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
+ by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id C1D4D1042;
+ Thu,  5 Aug 2021 10:14:58 -0700 (PDT)
+Received: from [10.57.36.146] (unknown [10.57.36.146])
+ by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id 8EEA13F66F;
+ Thu,  5 Aug 2021 10:14:57 -0700 (PDT)
+Subject: Re: [PATCH] iommu/arm-smmu-v3: Remove some unneeded init in
+ arm_smmu_cmdq_issue_cmdlist()
+To: John Garry <john.garry@huawei.com>, will@kernel.org
+References: <1624293394-202509-1-git-send-email-john.garry@huawei.com>
+ <ee1f3ab5-3acc-f442-f2d2-898cf88bc447@arm.com>
+ <45a8af4f-4202-ecd8-0882-507acf9b2eb2@huawei.com>
+ <577a625a-4fc5-7402-8e4f-4e0e5be93144@arm.com>
+ <44c5e07b-e663-5b96-a142-ec25666e2a14@huawei.com>
+From: Robin Murphy <robin.murphy@arm.com>
+Message-ID: <2af4315a-c02a-2185-93a2-b07a891314a6@arm.com>
+Date: Thu, 5 Aug 2021 18:14:52 +0100
+User-Agent: Mozilla/5.0 (Windows NT 10.0; rv:78.0) Gecko/20100101
+ Thunderbird/78.12.0
 MIME-Version: 1.0
-References: <20210805080724.480-1-shameerali.kolothum.thodi@huawei.com>
- <20210805080724.480-3-shameerali.kolothum.thodi@huawei.com>
- <20210805160319.GB23085@lpieralisi>
-In-Reply-To: <20210805160319.GB23085@lpieralisi>
-From: Jon Nettleton <jon@solid-run.com>
-Date: Thu, 5 Aug 2021 18:31:47 +0200
-Message-ID: <CABdtJHuhpnASw8NQb7dRo42Z5NqOzvtvjoyndsJ2jd+Qvsq7vQ@mail.gmail.com>
-Subject: Re: [PATCH v7 2/9] ACPI/IORT: Add support for RMR node parsing
-To: Lorenzo Pieralisi <lorenzo.pieralisi@arm.com>
-Cc: Will Deacon <will@kernel.org>, Linuxarm <linuxarm@huawei.com>,
- Steven Price <steven.price@arm.com>,
- ACPI Devel Maling List <linux-acpi@vger.kernel.org>,
- iommu@lists.linux-foundation.org, wanghuiqiang <wanghuiqiang@huawei.com>,
- Hanjun Guo <guohanjun@huawei.com>, yangyicong <yangyicong@huawei.com>,
- Sami Mujawar <Sami.Mujawar@arm.com>, Robin Murphy <robin.murphy@arm.com>,
- linux-arm-kernel <linux-arm-kernel@lists.infradead.org>
+In-Reply-To: <44c5e07b-e663-5b96-a142-ec25666e2a14@huawei.com>
+Content-Language: en-GB
+Cc: linuxarm@huawei.com, iommu@lists.linux-foundation.org,
+ linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -106,162 +81,88 @@ List-Post: <mailto:iommu@lists.linux-foundation.org>
 List-Help: <mailto:iommu-request@lists.linux-foundation.org?subject=help>
 List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
  <mailto:iommu-request@lists.linux-foundation.org?subject=subscribe>
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: base64
+Content-Type: text/plain; charset="utf-8"; Format="flowed"
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-On Thu, Aug 5, 2021 at 6:03 PM Lorenzo Pieralisi
-<lorenzo.pieralisi@arm.com> wrote:
->
-> On Thu, Aug 05, 2021 at 09:07:17AM +0100, Shameer Kolothum wrote:
->
-> [...]
->
-> > +static void __init iort_node_get_rmr_info(struct acpi_iort_node *iort_node)
-> > +{
-> > +     struct acpi_iort_node *smmu;
-> > +     struct acpi_iort_rmr *rmr;
-> > +     struct acpi_iort_rmr_desc *rmr_desc;
-> > +     u32 map_count = iort_node->mapping_count;
-> > +     u32 sid;
-> > +     int i;
-> > +
-> > +     if (!iort_node->mapping_offset || map_count != 1) {
-> > +             pr_err(FW_BUG "Invalid ID mapping, skipping RMR node %p\n",
-> > +                    iort_node);
-> > +             return;
-> > +     }
-> > +
-> > +     /* Retrieve associated smmu and stream id */
-> > +     smmu = iort_node_get_id(iort_node, &sid, 0);
-> > +     if (!smmu) {
-> > +             pr_err(FW_BUG "Invalid SMMU reference, skipping RMR node %p\n",
-> > +                    iort_node);
-> > +             return;
-> > +     }
-> > +
-> > +     /* Retrieve RMR data */
-> > +     rmr = (struct acpi_iort_rmr *)iort_node->node_data;
-> > +     if (!rmr->rmr_offset || !rmr->rmr_count) {
-> > +             pr_err(FW_BUG "Invalid RMR descriptor array, skipping RMR node %p\n",
-> > +                    iort_node);
-> > +             return;
-> > +     }
-> > +
-> > +     rmr_desc = ACPI_ADD_PTR(struct acpi_iort_rmr_desc, iort_node,
-> > +                             rmr->rmr_offset);
-> > +
-> > +     iort_rmr_desc_check_overlap(rmr_desc, rmr->rmr_count);
-> > +
-> > +     for (i = 0; i < rmr->rmr_count; i++, rmr_desc++) {
-> > +             struct iommu_resv_region *region;
-> > +             enum iommu_resv_type type;
-> > +             int prot = IOMMU_READ | IOMMU_WRITE;
-> > +             u64 addr = rmr_desc->base_address, size = rmr_desc->length;
-> > +
-> > +             if (!IS_ALIGNED(addr, SZ_64K) || !IS_ALIGNED(size, SZ_64K)) {
-> > +                     /* PAGE align base addr and size */
-> > +                     addr &= PAGE_MASK;
-> > +                     size = PAGE_ALIGN(size + offset_in_page(rmr_desc->base_address));
-> > +
-> > +                     pr_err(FW_BUG "RMR descriptor[0x%llx - 0x%llx] not aligned to 64K, continue with [0x%llx - 0x%llx]\n",
-> > +                            rmr_desc->base_address,
-> > +                            rmr_desc->base_address + rmr_desc->length - 1,
-> > +                            addr, addr + size - 1);
-> > +             }
-> > +             if (rmr->flags & IOMMU_RMR_REMAP_PERMITTED) {
-> > +                     type = IOMMU_RESV_DIRECT_RELAXABLE;
-> > +                     /*
-> > +                      * Set IOMMU_CACHE as IOMMU_RESV_DIRECT_RELAXABLE is
-> > +                      * normally used for allocated system memory that is
-> > +                      * then used for device specific reserved regions.
-> > +                      */
-> > +                     prot |= IOMMU_CACHE;
-> > +             } else {
-> > +                     type = IOMMU_RESV_DIRECT;
-> > +                     /*
-> > +                      * Set IOMMU_MMIO as IOMMU_RESV_DIRECT is normally used
-> > +                      * for device memory like MSI doorbell.
-> > +                      */
-> > +                     prot |= IOMMU_MMIO;
-> > +             }
->
-> On the prot value assignment based on the remapping flag, I'd like to
-> hear Robin/Joerg's opinion, I'd avoid being in a situation where
-> "normally" this would work but then we have to quirk it.
->
-> Is this a valid assumption _always_ ?
-
-These assumptions were made based on the historic use cases I could
-find reading the history.  There aren't many known examples "in the wild"
-because so far we haven't had a mechanism other than quirks based
-around device-tree implementations.
-
-Ultimately I believe the proper solution will need to be another flag
-in the RMR table that specifies the type of memory an RMR Node
-describes, not just the base and length.
-
--Jon
-
->
-> Thanks,
-> Lorenzo
->
-> > +
-> > +             region = iommu_alloc_resv_region(addr, size, prot, type);
-> > +             if (region) {
-> > +                     region->fw_data.rmr.flags = rmr->flags;
-> > +                     region->fw_data.rmr.sid = sid;
-> > +                     region->fw_data.rmr.smmu = smmu;
-> > +                     list_add_tail(&region->list, &iort_rmr_list);
-> > +             }
-> > +     }
-> > +}
-> > +
-> > +static void __init iort_parse_rmr(void)
-> > +{
-> > +     struct acpi_iort_node *iort_node, *iort_end;
-> > +     struct acpi_table_iort *iort;
-> > +     int i;
-> > +
-> > +     if (iort_table->revision < 3)
-> > +             return;
-> > +
-> > +     iort = (struct acpi_table_iort *)iort_table;
-> > +
-> > +     iort_node = ACPI_ADD_PTR(struct acpi_iort_node, iort,
-> > +                              iort->node_offset);
-> > +     iort_end = ACPI_ADD_PTR(struct acpi_iort_node, iort,
-> > +                             iort_table->length);
-> > +
-> > +     for (i = 0; i < iort->node_count; i++) {
-> > +             if (WARN_TAINT(iort_node >= iort_end, TAINT_FIRMWARE_WORKAROUND,
-> > +                            "IORT node pointer overflows, bad table!\n"))
-> > +                     return;
-> > +
-> > +             if (iort_node->type == ACPI_IORT_NODE_RMR)
-> > +                     iort_node_get_rmr_info(iort_node);
-> > +
-> > +             iort_node = ACPI_ADD_PTR(struct acpi_iort_node, iort_node,
-> > +                                      iort_node->length);
-> > +     }
-> > +}
-> >
-> >  static void __init iort_init_platform_devices(void)
-> >  {
-> > @@ -1636,6 +1767,7 @@ void __init acpi_iort_init(void)
-> >       }
-> >
-> >       iort_init_platform_devices();
-> > +     iort_parse_rmr();
-> >  }
-> >
-> >  #ifdef CONFIG_ZONE_DMA
-> > --
-> > 2.17.1
-> >
-_______________________________________________
-iommu mailing list
-iommu@lists.linux-foundation.org
-https://lists.linuxfoundation.org/mailman/listinfo/iommu
+T24gMjAyMS0wOC0wNSAxNjoxNiwgSm9obiBHYXJyeSB3cm90ZToKPiBPbiAwNS8wOC8yMDIxIDE1
+OjQxLCBSb2JpbiBNdXJwaHkgd3JvdGU6Cj4+PiBJIHN1cHBvc2UgdGhleSBjb3VsZCBiZSBjb21i
+aW5lZCBpbnRvIGEgc21hbGxlciBzdWItc3RydWN0IGFuZCBsb2FkZWQgCj4+PiBpbiBhIHNpbmds
+ZSBvcGVyYXRpb24sIGJ1dCBpdCBsb29rcyBtZXNzeSwgYW5kIHByb2Igd2l0aG91dCBtdWNoIGdh
+aW4uCj4+Cj4+IEluZGVlZCBJIHdvdWxkbid0IHNheSB0aGF0IHNhdmluZyBtZW1vcnkgaXMgdGhl
+IHByaW1hcnkgY29uY2VybiBoZXJlLCAKPj4gYW5kIGFueSBtb3JlIGNvbnZvbHV0ZWQgY29kZSBp
+cyBoYXJkbHkgZ29pbmcgdG8gaGVscCBwZXJmb3JtYW5jZS4gUGx1cyAKPj4gaXQgc3RpbGwgd291
+bGRuJ3QgaGVscCB0aGUgb3RoZXIgY2FzZXMgd2hlcmUgd2UncmUganVzdCBjb3B5aW5nIHRoZSAK
+Pj4gc2l6ZSBpbnRvIGEgZmFrZSBxdWV1ZSB0byBkbyBzb21lIHByb2QgYXJpdGhtZXRpYyAtIEkg
+aGFkbid0IGZ1bGx5IAo+PiBjbG9ja2VkIHdoYXQgd2FzIGdvaW5nIG9uIHRoZXJlIHdoZW4gSSBz
+a2ltbWVkIHRocm91Z2ggdGhpbmdzIGVhcmxpZXIuCj4+Cj4+IERpc3JlZ2FyZGluZyB0aGUgYm9n
+dXMgbGF5b3V0IGNoYW5nZSwgdGhvdWdoLCBkbyB5b3UgcmVja29uIHRoZSByZXN0IAo+PiBvZiBt
+eSBpZGVhIG1ha2VzIHNlbnNlPwo+IAo+IEkgdHJpZWQgdGhlIHNpbWlsYXIgY2hhbmdlIHRvIGF2
+b2lkIHplcm8taW5pdCB0aGUgcGFkZGluZyBpbiAKPiBhcm1fc21tdV9jbWRxX3dyaXRlX2VudHJp
+ZXMoKSBhbmQgdGhlIAo+IF9hcm1fc21tdV9jbWRxX3BvbGxfc2V0X3ZhbGlkX21hcCgpLCBidXQg
+dGhlIGRpc2Fzc2VtYmx5IHdhcyB0aGUgc2FtZS4gCj4gU28gdGhlIGNvbXBpbGVyIG11c3QgaGF2
+ZSBnb3Qgc21hcnQgdGhlcmUuCgpZZWFoLCBpbiBteSBidWlsZCBfX2FybV9zbW11X2NtZHFfcG9s
+bF9zZXRfdmFsaWRfbWFwKCkgb25seSB1c2VzIDMyIApieXRlcyBvZiBzdGFjaywgc28gY2xlYXJs
+eSBpdCdzIG1hbmFnZWQgdG8gc2VlIHRocm91Z2ggdGhlIG1hY3JvIG1hZ2ljIApvbmNlIHF1ZXVl
+X2luY19wcm9kX24oKSBpcyBpbmxpbmVkIGFuZCBlbGlkZSB0aGUgd2hvbGUgc3RydWN0LiAKYXJt
+X3NtbXVfY21kcV93cml0ZV9lbnRyaWVzKCkgaXMgaW5saW5lZCBhbHJlYWR5LCBidXQgbG9naWNh
+bGx5IG11c3QgYmUgCnRoZSBzYW1lIGRlYWwgc2luY2UgaXQncyBhIHNpbWlsYXJseSBpbmxpbmVk
+IHF1ZXVlX2luY19wcm9kX24oKS4KCkhvd2V2ZXIsIHRoYXQgbWF5IGFsbCBjaGFuZ2UgaWYgZGlm
+ZmVyZW50IGNvbXBpbGVyIGZsYWdzIG9yIGEgZGlmZmVyZW50IApjb21waWxlciBsZWFkIHRvIGRp
+ZmZlcmVudCBpbmxpbmluZyBkZWNpc2lvbnMsIHNvIEknZCBhcmd1ZSB0aGF0IGlmIHRoaXMgCmNh
+biBtYXR0ZXIgYW55d2hlcmUgdGhlbiBpdCdzIHdvcnRoIHRyZWF0aW5nIGNvbnNpc3RlbnRseSBl
+dmVyeXdoZXJlLgoKPiBCdXQgZm9yIHRoZSBvcmlnaW5hbCBjaGFuZ2UgaW4gdGhpcyBwYXRjaCwg
+aXQgZGlkIG1ha2UgYSBkaWZmZXJlbmNlLiAKPiBJdCdzIG5pY2UgdG8gcmVtb3ZlIHdoYXQgd2Fz
+IGEgbWVtY3B5Ogo+IAo+ICDCoMKgwqAgMTc3MDogYTkwNzdlZmYgc3RwIHh6ciwgeHpyLCBbeDIz
+LCAjMTEyXQo+IH0sIGhlYWQgPSBsbHE7Cj4gIMKgwqDCoCAxNzc0OiA5NDAwMDAwMCBibCAwIDxt
+ZW1jcHk+Cj4gCj4gQW5kIHBlcmZvcm1hbmNlIHdhcyB2ZXJ5IGZyYWN0aW9uYWxseSBiZXR0ZXIu
+CgpIZWgsIG1pbmUgd2FzIHRoaXMgYmVhdXR5OgoKICAgICAgICAgc3RydWN0IGFybV9zbW11X2xs
+X3F1ZXVlIGxscSA9IHsKICAgICAxN2Q0OiAgICAgICBhOTAxN2Y3ZiAgICAgICAgc3RwICAgICB4
+enIsIHh6ciwgW3gyNywgIzE2XQogICAgIDE3ZDg6ICAgICAgIGE5MDI3ZjdmICAgICAgICBzdHAg
+ICAgIHh6ciwgeHpyLCBbeDI3LCAjMzJdCiAgICAgMTdkYzogICAgICAgYTkwMzdmN2YgICAgICAg
+IHN0cCAgICAgeHpyLCB4enIsIFt4MjcsICM0OF0KICAgICAxN2UwOiAgICAgICBhOTA0N2Y3ZiAg
+ICAgICAgc3RwICAgICB4enIsIHh6ciwgW3gyNywgIzY0XQogICAgICAgICB9LCBoZWFkID0gbGxx
+OwogICAgIDE3ZTQ6ICAgICAgIGI5MDBjMzQwICAgICAgICBzdHIgICAgIHcwLCBbeDI2LCAjMTky
+XQp7CiAgICAgMTdlODogICAgICAgMjkwZDBiZTEgICAgICAgIHN0cCAgICAgdzEsIHcyLCBbc3As
+ICMxMDRdCiAgICAgICAgIH0sIGhlYWQgPSBsbHE7CiAgICAgMTdlYzogICAgICAgYTk0NDBmNjIg
+ICAgICAgIGxkcCAgICAgeDIsIHgzLCBbeDI3LCAjNjRdCiAgICAgMTdmMDogICAgICAgYTkwMDdm
+NWYgICAgICAgIHN0cCAgICAgeHpyLCB4enIsIFt4MjZdCiAgICAgMTdmNDogICAgICAgYTkwMTdm
+NWYgICAgICAgIHN0cCAgICAgeHpyLCB4enIsIFt4MjYsICMxNl0KICAgICAxN2Y4OiAgICAgICBh
+OTAyN2Y1ZiAgICAgICAgc3RwICAgICB4enIsIHh6ciwgW3gyNiwgIzMyXQogICAgIDE3ZmM6ICAg
+ICAgIGE5MDM3ZjVmICAgICAgICBzdHAgICAgIHh6ciwgeHpyLCBbeDI2LCAjNDhdCiAgICAgMTgw
+MDogICAgICAgYTkwNDBmNDIgICAgICAgIHN0cCAgICAgeDIsIHgzLCBbeDI2LCAjNjRdCiAgICAg
+ICAgIHN0cnVjdCBhcm1fc21tdV9sbF9xdWV1ZSBsbHEgPSB7CiAgICAgMTgwNDogICAgICAgYTkw
+NTdmN2YgICAgICAgIHN0cCAgICAgeHpyLCB4enIsIFt4MjcsICM4MF0KICAgICAgICAgfSwgaGVh
+ZCA9IGxscTsKICAgICAxODA4OiAgICAgICBhOTA1N2Y1ZiAgICAgICAgc3RwICAgICB4enIsIHh6
+ciwgW3gyNiwgIzgwXQogICAgICAgICBzdHJ1Y3QgYXJtX3NtbXVfbGxfcXVldWUgbGxxID0gewog
+ICAgIDE4MGM6ICAgICAgIGE5MDY3ZjdmICAgICAgICBzdHAgICAgIHh6ciwgeHpyLCBbeDI3LCAj
+OTZdCiAgICAgICAgIH0sIGhlYWQgPSBsbHE7CiAgICAgMTgxMDogICAgICAgYTkwNjdmNWYgICAg
+ICAgIHN0cCAgICAgeHpyLCB4enIsIFt4MjYsICM5Nl0KICAgICAgICAgc3RydWN0IGFybV9zbW11
+X2xsX3F1ZXVlIGxscSA9IHsKICAgICAxODE0OiAgICAgICBhOTA3N2Y3ZiAgICAgICAgc3RwICAg
+ICB4enIsIHh6ciwgW3gyNywgIzExMl0KICAgICAgICAgfSwgaGVhZCA9IGxscTsKICAgICAxODE4
+OiAgICAgICBhOTA3N2Y1ZiAgICAgICAgc3RwICAgICB4enIsIHh6ciwgW3gyNiwgIzExMl0KICAg
+ICAgICAgc3RydWN0IGFybV9zbW11X2xsX3F1ZXVlIGxscSA9IHsKICAgICAxODFjOiAgICAgICBh
+OTA4N2Y1ZiAgICAgICAgc3RwICAgICB4enIsIHh6ciwgW3gyNiwgIzEyOF0KCj4gQXMgZm9yIHBy
+ZS1ldmFsdWF0aW5nICJuZW50cyIsIEknbSBub3Qgc3VyZSBob3cgbXVjaCB0aGF0IGNhbiBoZWxw
+LCBidXQgCj4gSSBhbSBub3QgdG9vIG9wdGltaXN0aWMuIEkgY2FuIHRyeSBzb21lIHRlc3Rpbmcg
+d2hlbiBJIGdldCBhIGNoYW5jZS4gCj4gSGF2aW5nIHNhaWQgdGhhdCwgSSB3b3VsZCBuZWVkIHRv
+IGNoZWNrIHRoZSBkaXNhc3NlbWJseSBhbHNvLgoKSXQnbGwganVzdCB0dXJuIE1PVixMRFIsTFNM
+IHNlcXVlbmNlcyBpbnRvIHBsYWluIExEUnMgLSBhIHNtYWxsIHNhdmluZyAKYnV0IHdpdGggbm8g
+cmVhbCBkb3duc2lkZSwgYW5kIGEgdGhpcmQgb2YgaXQgaXMgaW4gdGhlIHBsYWNlIHdoZXJlIGRv
+aW5nIApsZXNzIHdvcmsgbWF0dGVycyBtb3N0OgoKYWRkL3JlbW92ZTogMC8wIGdyb3cvc2hyaW5r
+OiAwLzggdXAvZG93bjogMC8tMTAwICgtMTAwKQpGdW5jdGlvbiAgICAgICAgICAgICAgICAgICAg
+ICAgICAgICAgICAgICAgICBvbGQgICAgIG5ldyAgIGRlbHRhCmFybV9zbW11X3ByaXFfdGhyZWFk
+ICAgICAgICAgICAgICAgICAgICAgICAgIDUzMiAgICAgNTI4ICAgICAgLTQKYXJtX3NtbXVfZXZ0
+cV90aHJlYWQgICAgICAgICAgICAgICAgICAgICAgICAgMzY4ICAgICAzNjQgICAgICAtNAphcm1f
+c21tdV9kZXZpY2VfcHJvYmUgICAgICAgICAgICAgICAgICAgICAgIDQ1NjQgICAgNDU1NiAgICAg
+IC04Cl9fYXJtX3NtbXVfY21kcV9wb2xsX3NldF92YWxpZF9tYXAuaXNyYSAgICAgIDMxNiAgICAg
+MzA4ICAgICAgLTgKYXJtX3NtbXVfaW5pdF9vbmVfcXVldWUuaXNyYSAgICAgICAgICAgICAgICAg
+MzIwICAgICAzMDggICAgIC0xMgpxdWV1ZV9yZW1vdmVfcmF3ICAgICAgICAgICAgICAgICAgICAg
+ICAgICAgICAxOTIgICAgIDE3NiAgICAgLTE2CmFybV9zbW11X2dlcnJvcl9oYW5kbGVyICAgICAg
+ICAgICAgICAgICAgICAgIDc1MiAgICAgNzM2ICAgICAtMTYKYXJtX3NtbXVfY21kcV9pc3N1ZV9j
+bWRsaXN0ICAgICAgICAgICAgICAgICAxODEyICAgIDE3ODAgICAgIC0zMgpUb3RhbDogQmVmb3Jl
+PTIzNzc2LCBBZnRlcj0yMzY3NiwgY2hnIC0wLjQyJQoKClJvYmluLgpfX19fX19fX19fX19fX19f
+X19fX19fX19fX19fX19fX19fX19fX19fX19fX19fXwppb21tdSBtYWlsaW5nIGxpc3QKaW9tbXVA
+bGlzdHMubGludXgtZm91bmRhdGlvbi5vcmcKaHR0cHM6Ly9saXN0cy5saW51eGZvdW5kYXRpb24u
+b3JnL21haWxtYW4vbGlzdGluZm8vaW9tbXU=
