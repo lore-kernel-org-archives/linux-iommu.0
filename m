@@ -6,115 +6,113 @@ X-Spam-Status: No, score=-12.2 required=3.0 tests=BAYES_00,
 	DKIM_ADSP_CUSTOM_MED,DKIM_INVALID,DKIM_SIGNED,FREEMAIL_FORGED_FROMDOMAIN,
 	FREEMAIL_FROM,HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_CR_TRAILER,
 	INCLUDES_PATCH,MAILING_LIST_MULTI,NICE_REPLY_A,SPF_HELO_NONE,SPF_PASS,
-	URIBL_BLOCKED,USER_AGENT_SANE_1 autolearn=ham autolearn_force=no version=3.4.0
+	URIBL_RED,USER_AGENT_SANE_1 autolearn=ham autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 89619C4338F
-	for <iommu@archiver.kernel.org>; Thu,  5 Aug 2021 15:56:51 +0000 (UTC)
-Received: from smtp2.osuosl.org (smtp2.osuosl.org [140.211.166.133])
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 28105C4338F
+	for <iommu@archiver.kernel.org>; Thu,  5 Aug 2021 16:01:37 +0000 (UTC)
+Received: from smtp4.osuosl.org (smtp4.osuosl.org [140.211.166.137])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 3CB49610FE
-	for <iommu@archiver.kernel.org>; Thu,  5 Aug 2021 15:56:51 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.4.1 mail.kernel.org 3CB49610FE
+	by mail.kernel.org (Postfix) with ESMTPS id ACC5D6113E
+	for <iommu@archiver.kernel.org>; Thu,  5 Aug 2021 16:01:36 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.4.1 mail.kernel.org ACC5D6113E
 Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=gmail.com
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by smtp2.osuosl.org (Postfix) with ESMTP id E916B404B4;
-	Thu,  5 Aug 2021 15:56:50 +0000 (UTC)
+	by smtp4.osuosl.org (Postfix) with ESMTP id 5F449405D6;
+	Thu,  5 Aug 2021 16:01:36 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from smtp2.osuosl.org ([127.0.0.1])
-	by localhost (smtp2.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id tdb8vZvUtZqC; Thu,  5 Aug 2021 15:56:50 +0000 (UTC)
-Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by smtp2.osuosl.org (Postfix) with ESMTPS id 883F24012F;
-	Thu,  5 Aug 2021 15:56:49 +0000 (UTC)
+Received: from smtp4.osuosl.org ([127.0.0.1])
+	by localhost (smtp4.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+	with ESMTP id dJFEl_jz883s; Thu,  5 Aug 2021 16:01:35 +0000 (UTC)
+Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [IPv6:2605:bc80:3010:104::8cd3:938])
+	by smtp4.osuosl.org (Postfix) with ESMTPS id 0FF8F405CB;
+	Thu,  5 Aug 2021 16:01:35 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 5A05DC001A;
-	Thu,  5 Aug 2021 15:56:49 +0000 (UTC)
-Received: from smtp1.osuosl.org (smtp1.osuosl.org [140.211.166.138])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 05E10C000E
- for <iommu@lists.linux-foundation.org>; Thu,  5 Aug 2021 15:56:48 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id E15ADC001A;
+	Thu,  5 Aug 2021 16:01:34 +0000 (UTC)
+Received: from smtp2.osuosl.org (smtp2.osuosl.org [140.211.166.133])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id C8807C000E
+ for <iommu@lists.linux-foundation.org>; Thu,  5 Aug 2021 16:01:33 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by smtp1.osuosl.org (Postfix) with ESMTP id E8F3D83B21
- for <iommu@lists.linux-foundation.org>; Thu,  5 Aug 2021 15:56:47 +0000 (UTC)
+ by smtp2.osuosl.org (Postfix) with ESMTP id B54EA404B4
+ for <iommu@lists.linux-foundation.org>; Thu,  5 Aug 2021 16:01:33 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Authentication-Results: smtp1.osuosl.org (amavisd-new);
+Authentication-Results: smtp2.osuosl.org (amavisd-new);
  dkim=pass (2048-bit key) header.d=gmail.com
-Received: from smtp1.osuosl.org ([127.0.0.1])
- by localhost (smtp1.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id e8O2AFR2LAeK for <iommu@lists.linux-foundation.org>;
- Thu,  5 Aug 2021 15:56:46 +0000 (UTC)
+Received: from smtp2.osuosl.org ([127.0.0.1])
+ by localhost (smtp2.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+ with ESMTP id CenkIPSJGwaf for <iommu@lists.linux-foundation.org>;
+ Thu,  5 Aug 2021 16:01:32 +0000 (UTC)
 X-Greylist: whitelisted by SQLgrey-1.8.0
-Received: from mail-pj1-x102b.google.com (mail-pj1-x102b.google.com
- [IPv6:2607:f8b0:4864:20::102b])
- by smtp1.osuosl.org (Postfix) with ESMTPS id F1DBC83B1F
- for <iommu@lists.linux-foundation.org>; Thu,  5 Aug 2021 15:56:45 +0000 (UTC)
-Received: by mail-pj1-x102b.google.com with SMTP id
- s22-20020a17090a1c16b0290177caeba067so15936505pjs.0
- for <iommu@lists.linux-foundation.org>; Thu, 05 Aug 2021 08:56:45 -0700 (PDT)
+Received: from mail-pj1-x102e.google.com (mail-pj1-x102e.google.com
+ [IPv6:2607:f8b0:4864:20::102e])
+ by smtp2.osuosl.org (Postfix) with ESMTPS id 90E2B4012F
+ for <iommu@lists.linux-foundation.org>; Thu,  5 Aug 2021 16:01:32 +0000 (UTC)
+Received: by mail-pj1-x102e.google.com with SMTP id l19so10008205pjz.0
+ for <iommu@lists.linux-foundation.org>; Thu, 05 Aug 2021 09:01:32 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=gmail.com; s=20161025;
  h=subject:from:to:cc:references:message-id:date:user-agent
  :mime-version:in-reply-to:content-language:content-transfer-encoding;
- bh=RCTsDCtEUr9crU7FdVukkrAFOZDkX3iu2puUZlCshpI=;
- b=QLTD+I4si6TRStW3i+byEh+1Irtr6ILej9vo4oW1Nn2U3wtKPus5Q6l0kyCkqfLQ+P
- hZ8yjDAd0Nuc6MtizkDbmXNItH98ZjFBLjtXtMxv39zNJnaZWCHW2ngj5q4Pu9jNvfq8
- bzNSavZ4ty6c8S6Sfv/hFxaTSSnUMx90F8xfVWQm9z5xV1zhBRpVu10ETufiRpOiQTD9
- RzE6mO6mQczpUPW+Q+r00eX58g42C1HasWKWfZ2UVeAFyJj+HwJU606hzf87gKJ/+ooV
- BuwmRJ98aX+tfm7YNSXUbt4iN34dCtoubVxnaF1USweLp+Vjbulgjcf9sDEiBTuejvtR
- 5IZA==
+ bh=WRaE9XH9PPGoXiSu1dW4fjpmpf14LbZ6tQkVM+U7n10=;
+ b=GSFXT25Y8QFtHBJ7Qb7q4VAwsUY5K+kxxL51Vu7CUSo5Qr1zNOx1q3QBVMAXPj3OPQ
+ nRzVQ/kqGDl0c3sX8BA4DeG6jz2z6/KdrVccWpUVxhYmIvAzsnIFt1YmISLVMXqFIu91
+ dAtETqrNQzV7k0/ax431VOxHYRC135stzFHs6xKJXt0iHtd61HjXiMV+1RfNH9dz3DeD
+ w9sm9eSvfkn60dEVJBG7O7kJfoVZgFZTqzV/wvTe5KFCplBsPqryD0Xx9PW7GhBoU1Mb
+ kWugm3Jdhw3Swvy6AN/blHN6qhz7yNnjqVCRHrf0cSvt4KeuXGIyjoBEYwPv3aLNvNvX
+ tRTw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
  d=1e100.net; s=20161025;
  h=x-gm-message-state:subject:from:to:cc:references:message-id:date
  :user-agent:mime-version:in-reply-to:content-language
  :content-transfer-encoding;
- bh=RCTsDCtEUr9crU7FdVukkrAFOZDkX3iu2puUZlCshpI=;
- b=EhnZxqwbnGICx29sELom05KnudCHrr9/ODQuItads9BzrhVZFk3wjjJWhCqzFnL0W7
- s3OK9gtJ5jOK6caIQsGU4gt/9spBLR6h2KJeZp1BJL9z2ggeQAa33ap9kUQ6932WRO8g
- fqJ+zVZh5Q2zYv5n72zmCe9Iimz6k+rBRwZJVLBxejxSdoVuLJTyQzSHT2/LuIhI+YN1
- NSIZs+CbJrBF2BQYHTyTh1CHbTCUHE/O9/o6IoETsM6ivQrK+U+x3TAuwOFpWnnVrsVJ
- U7zv2sjH4dP6rWQ9+Y0B2Re/gZyGear0G+z2KqV51zMtSB1dY6XHKz5KCEg6FYbASAUM
- jQbg==
-X-Gm-Message-State: AOAM533rTIHBTBozG89oRRpIoZMK3hqdx3mgoZzJAL+rWRvo7zNl4uYS
- B4n4ypHR0UmvI7ck2qb5kHk=
-X-Google-Smtp-Source: ABdhPJx2CcJ9YMvvKydKzMmm/L2XWhlBqcisHtQ6BBUyv1YcZ1T2Ns9MTQ4Jit08qy2zQW953vHgXw==
-X-Received: by 2002:a17:902:9a46:b029:12c:9aae:daac with SMTP id
- x6-20020a1709029a46b029012c9aaedaacmr4504908plv.78.1628179005359; 
- Thu, 05 Aug 2021 08:56:45 -0700 (PDT)
+ bh=WRaE9XH9PPGoXiSu1dW4fjpmpf14LbZ6tQkVM+U7n10=;
+ b=RR97+LLdSWtiOktfImMpSqpvZad1P7YD7fRGuRDWarrDn+rITpTTr/f9qMzsak6aCY
+ AMTpmcpP+duCqGc7U4vi420tsCpALY7AQLipRFRMLs192ujMo7lqgJTMAkxiCAkyJSDA
+ 3CqT4flIC4elFTEGgTi7V12nqOOSQdE5LVuMBkC3IAegF1wb2g1TjVdJ9S9D/0pAGf7K
+ 8rvYUoH+R5fzs1wa/5pvN0CY2muZmCBfGFDa83/+0PZAMDjZNjv0YcUHkUvSc63O6a88
+ hp47SSkvHy+ixx+GxZjejJZ5INUJTK2fxYSg4oIW8/Xy9AOt5YEx0G5Jx0CNy8/crUp7
+ TWjg==
+X-Gm-Message-State: AOAM530ZXMu3Enzu3Yk/LNtfjU21bqvrlhRd9q56GzMTzBTuHpjJMrcw
+ zaco/Qg7vt8hld9ldyFJW6M=
+X-Google-Smtp-Source: ABdhPJwoNGkEzz3DrJnTKb2SFzGjUTk2Tk5DdSuGsTxsp/IyxTQK1MeB89eXdy5AjPBJiBI0XRW7Ag==
+X-Received: by 2002:a63:d458:: with SMTP id i24mr1081624pgj.289.1628179292003; 
+ Thu, 05 Aug 2021 09:01:32 -0700 (PDT)
 Received: from ?IPv6:2404:f801:0:5:8000::4b1? ([2404:f801:9000:1a:efea::4b1])
  by smtp.gmail.com with ESMTPSA id
- m1sm4685977pfk.84.2021.08.05.08.56.31
+ gw4sm6494737pjb.1.2021.08.05.09.01.18
  (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
- Thu, 05 Aug 2021 08:56:45 -0700 (PDT)
-Subject: Re: [PATCH V2 10/14] DMA: Add dma_map_decrypted/dma_unmap_encrypted()
- function
+ Thu, 05 Aug 2021 09:01:31 -0700 (PDT)
+Subject: Re: [PATCH V2 11/14] x86/Swiotlb: Add Swiotlb bounce buffer remap
+ function for HV IVM
 From: Tianyu Lan <ltykernel@gmail.com>
-To: Christoph Hellwig <hch@lst.de>
+To: Konrad Rzeszutek Wilk <konrad.wilk@oracle.com>
 References: <20210804184513.512888-1-ltykernel@gmail.com>
- <20210804184513.512888-11-ltykernel@gmail.com>
-Message-ID: <fc36c85f-cc34-5ad2-8f9c-06dbe85ca165@gmail.com>
-Date: Thu, 5 Aug 2021 23:56:29 +0800
+ <20210804184513.512888-12-ltykernel@gmail.com>
+Message-ID: <9b1815bd-9019-360f-f648-5c99211a3474@gmail.com>
+Date: Fri, 6 Aug 2021 00:01:15 +0800
 User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:78.0) Gecko/20100101
  Thunderbird/78.12.0
 MIME-Version: 1.0
-In-Reply-To: <20210804184513.512888-11-ltykernel@gmail.com>
+In-Reply-To: <20210804184513.512888-12-ltykernel@gmail.com>
 Content-Language: en-US
 Cc: martin.b.radev@gmail.com, linux-hyperv@vger.kernel.org,
  brijesh.singh@amd.com, david@redhat.com, peterz@infradead.org,
  dave.hansen@linux.intel.com, hpa@zytor.com, kys@microsoft.com, will@kernel.org,
- boris.ostrovsky@oracle.com, linux-arch@vger.kernel.org, wei.liu@kernel.org,
+ tglx@linutronix.de, linux-arch@vger.kernel.org, wei.liu@kernel.org,
  sstabellini@kernel.org, sthemmin@microsoft.com, xen-devel@lists.xenproject.org,
  linux-scsi@vger.kernel.org, aneesh.kumar@linux.ibm.com, x86@kernel.org,
- decui@microsoft.com, ardb@kernel.org, michael.h.kelley@microsoft.com,
+ decui@microsoft.com, hch@lst.de, michael.h.kelley@microsoft.com,
  mingo@redhat.com, pgonda@google.com, rientjes@google.com, kuba@kernel.org,
  jejb@linux.ibm.com, parri.andrea@gmail.com, thomas.lendacky@amd.com,
  Tianyu.Lan@microsoft.com, keescook@chromium.org, arnd@arndb.de,
- konrad.wilk@oracle.com, haiyangz@microsoft.com, bp@alien8.de, luto@kernel.org,
- krish.sadhukhan@oracle.com, tglx@linutronix.de, akpm@linux-foundation.org,
- jgross@suse.com, martin.petersen@oracle.com, saravanand@fb.com,
- netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+ haiyangz@microsoft.com, tj@kernel.org, bp@alien8.de, luto@kernel.org,
+ krish.sadhukhan@oracle.com, boris.ostrovsky@oracle.com,
+ akpm@linux-foundation.org, jgross@suse.com, martin.petersen@oracle.com,
+ saravanand@fb.com, netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
  iommu@lists.linux-foundation.org, kirill.shutemov@linux.intel.com,
- tj@kernel.org, vkuznets@redhat.com, robin.murphy@arm.com, davem@davemloft.net,
- rppt@kernel.org
+ ardb@kernel.org, vkuznets@redhat.com, robin.murphy@arm.com,
+ davem@davemloft.net, rppt@kernel.org
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -132,97 +130,151 @@ Content-Type: text/plain; charset="us-ascii"; Format="flowed"
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-Hi Christoph:
-      Could you have a look at this patch? It adds new API 
-dma_map_decrypted() to do memory decrypted and remap. It will
-be used in the swiotlb code.
+Hi Konrad:
+      Could you have a look at this new version? The change since v1 is 
+make swiotlb_init_io_tlb_mem() return error code when 
+dma_map_decrypted() fails according your previous comment. If this 
+change is ok, could you give your ack and this series needs to be merged 
+via Hyper-V next tree.
 
 Thanks.
 
 On 8/5/2021 2:45 AM, Tianyu Lan wrote:
 > From: Tianyu Lan <Tianyu.Lan@microsoft.com>
 > 
-> In Hyper-V Isolation VM with AMD SEV, swiotlb boucne buffer
-> needs to be mapped into address space above vTOM and so
-> introduce dma_map_decrypted/dma_unmap_encrypted() to map/unmap
-> bounce buffer memory. The platform can populate man/unmap callback
-> in the dma memory decrypted ops.
+> In Isolation VM with AMD SEV, bounce buffer needs to be accessed via
+> extra address space which is above shared_gpa_boundary
+> (E.G 39 bit address line) reported by Hyper-V CPUID ISOLATION_CONFIG.
+> The access physical address will be original physical address +
+> shared_gpa_boundary. The shared_gpa_boundary in the AMD SEV SNP
+> spec is called virtual top of memory(vTOM). Memory addresses below
+> vTOM are automatically treated as private while memory above
+> vTOM is treated as shared.
+> 
+> Use dma_map_decrypted() in the swiotlb code, store remap address returned
+> and use the remap address to copy data from/to swiotlb bounce buffer.
 > 
 > Signed-off-by: Tianyu Lan <Tianyu.Lan@microsoft.com>
 > ---
->   include/linux/dma-map-ops.h |  9 +++++++++
->   kernel/dma/mapping.c        | 22 ++++++++++++++++++++++
->   2 files changed, 31 insertions(+)
+> Change since v1:
+>         * Make swiotlb_init_io_tlb_mem() return error code and return
+>           error when dma_map_decrypted() fails.
 > 
-> diff --git a/include/linux/dma-map-ops.h b/include/linux/dma-map-ops.h
-> index 0d53a96a3d64..01d60a024e45 100644
-> --- a/include/linux/dma-map-ops.h
-> +++ b/include/linux/dma-map-ops.h
-> @@ -71,6 +71,11 @@ struct dma_map_ops {
->   	unsigned long (*get_merge_boundary)(struct device *dev);
->   };
->   
-> +struct dma_memory_decrypted_ops {
-> +	void *(*map)(void *addr, unsigned long size);
-> +	void (*unmap)(void *addr);
-> +};
-> +
->   #ifdef CONFIG_DMA_OPS
->   #include <asm/dma-mapping.h>
->   
-> @@ -374,6 +379,10 @@ static inline void debug_dma_dump_mappings(struct device *dev)
+> Signed-off-by: Tianyu Lan <Tianyu.Lan@microsoft.com>
+> ---
+>   include/linux/swiotlb.h |  4 ++++
+>   kernel/dma/swiotlb.c    | 32 ++++++++++++++++++++++++--------
+>   2 files changed, 28 insertions(+), 8 deletions(-)
+> 
+> diff --git a/include/linux/swiotlb.h b/include/linux/swiotlb.h
+> index f507e3eacbea..584560ecaa8e 100644
+> --- a/include/linux/swiotlb.h
+> +++ b/include/linux/swiotlb.h
+> @@ -72,6 +72,9 @@ extern enum swiotlb_force swiotlb_force;
+>    * @end:	The end address of the swiotlb memory pool. Used to do a quick
+>    *		range check to see if the memory was in fact allocated by this
+>    *		API.
+> + * @vaddr:	The vaddr of the swiotlb memory pool. The swiotlb
+> + *		memory pool may be remapped in the memory encrypted case and store
+> + *		virtual address for bounce buffer operation.
+>    * @nslabs:	The number of IO TLB blocks (in groups of 64) between @start and
+>    *		@end. For default swiotlb, this is command line adjustable via
+>    *		setup_io_tlb_npages.
+> @@ -89,6 +92,7 @@ extern enum swiotlb_force swiotlb_force;
+>   struct io_tlb_mem {
+>   	phys_addr_t start;
+>   	phys_addr_t end;
+> +	void *vaddr;
+>   	unsigned long nslabs;
+>   	unsigned long used;
+>   	unsigned int index;
+> diff --git a/kernel/dma/swiotlb.c b/kernel/dma/swiotlb.c
+> index 1fa81c096c1d..29b6d888ef3b 100644
+> --- a/kernel/dma/swiotlb.c
+> +++ b/kernel/dma/swiotlb.c
+> @@ -176,7 +176,7 @@ void __init swiotlb_update_mem_attributes(void)
+>   	memset(vaddr, 0, bytes);
 >   }
->   #endif /* CONFIG_DMA_API_DEBUG */
 >   
-> +void *dma_map_decrypted(void *addr, unsigned long size);
-> +int dma_unmap_decrypted(void *addr, unsigned long size);
+> -static void swiotlb_init_io_tlb_mem(struct io_tlb_mem *mem, phys_addr_t start,
+> +static int swiotlb_init_io_tlb_mem(struct io_tlb_mem *mem, phys_addr_t start,
+>   				    unsigned long nslabs, bool late_alloc)
+>   {
+>   	void *vaddr = phys_to_virt(start);
+> @@ -194,14 +194,21 @@ static void swiotlb_init_io_tlb_mem(struct io_tlb_mem *mem, phys_addr_t start,
+>   		mem->slots[i].alloc_size = 0;
+>   	}
+>   
+> -	set_memory_decrypted((unsigned long)vaddr, bytes >> PAGE_SHIFT);
+> -	memset(vaddr, 0, bytes);
+> +	mem->vaddr = dma_map_decrypted(vaddr, bytes);
+> +	if (!mem->vaddr) {
+> +		pr_err("Failed to decrypt memory.\n");
+> +		return -ENOMEM;
+> +	}
 > +
->   extern const struct dma_map_ops dma_dummy_ops;
-> +extern struct dma_memory_decrypted_ops dma_memory_generic_decrypted_ops;
->   
->   #endif /* _LINUX_DMA_MAP_OPS_H */
-> diff --git a/kernel/dma/mapping.c b/kernel/dma/mapping.c
-> index 2b06a809d0b9..6fb150dc1750 100644
-> --- a/kernel/dma/mapping.c
-> +++ b/kernel/dma/mapping.c
-> @@ -13,11 +13,13 @@
->   #include <linux/of_device.h>
->   #include <linux/slab.h>
->   #include <linux/vmalloc.h>
-> +#include <asm/set_memory.h>
->   #include "debug.h"
->   #include "direct.h"
->   
->   bool dma_default_coherent;
->   
-> +struct dma_memory_decrypted_ops dma_memory_generic_decrypted_ops;
->   /*
->    * Managed DMA API
->    */
-> @@ -736,3 +738,23 @@ unsigned long dma_get_merge_boundary(struct device *dev)
->   	return ops->get_merge_boundary(dev);
+> +	memset(mem->vaddr, 0, bytes);
+> +	return 0;
 >   }
->   EXPORT_SYMBOL_GPL(dma_get_merge_boundary);
-> +
-> +void *dma_map_decrypted(void *addr, unsigned long size)
-> +{
-> +	if (set_memory_decrypted((unsigned long)addr,
-> +				 size / PAGE_SIZE))
-> +		return NULL;
-> +
-> +	if (dma_memory_generic_decrypted_ops.map)
-> +		return dma_memory_generic_decrypted_ops.map(addr, size);
-> +	else
-> +		return addr;
-> +}
-> +
-> +int dma_unmap_encrypted(void *addr, unsigned long size)
-> +{
-> +	if (dma_memory_generic_decrypted_ops.unmap)
-> +		dma_memory_generic_decrypted_ops.unmap(addr);
-> +
-> +	return set_memory_encrypted((unsigned long)addr, size / PAGE_SIZE);
-> +}
+>   
+>   int __init swiotlb_init_with_tbl(char *tlb, unsigned long nslabs, int verbose)
+>   {
+>   	struct io_tlb_mem *mem;
+>   	size_t alloc_size;
+> +	int ret;
+>   
+>   	if (swiotlb_force == SWIOTLB_NO_FORCE)
+>   		return 0;
+> @@ -216,7 +223,11 @@ int __init swiotlb_init_with_tbl(char *tlb, unsigned long nslabs, int verbose)
+>   		panic("%s: Failed to allocate %zu bytes align=0x%lx\n",
+>   		      __func__, alloc_size, PAGE_SIZE);
+>   
+> -	swiotlb_init_io_tlb_mem(mem, __pa(tlb), nslabs, false);
+> +	ret = swiotlb_init_io_tlb_mem(mem, __pa(tlb), nslabs, false);
+> +	if (ret) {
+> +		memblock_free(__pa(mem), alloc_size);
+> +		return ret;
+> +	}
+>   
+>   	io_tlb_default_mem = mem;
+>   	if (verbose)
+> @@ -304,6 +315,8 @@ int
+>   swiotlb_late_init_with_tbl(char *tlb, unsigned long nslabs)
+>   {
+>   	struct io_tlb_mem *mem;
+> +	int size = get_order(struct_size(mem, slots, nslabs));
+> +	int ret;
+>   
+>   	if (swiotlb_force == SWIOTLB_NO_FORCE)
+>   		return 0;
+> @@ -312,12 +325,15 @@ swiotlb_late_init_with_tbl(char *tlb, unsigned long nslabs)
+>   	if (WARN_ON_ONCE(io_tlb_default_mem))
+>   		return -ENOMEM;
+>   
+> -	mem = (void *)__get_free_pages(GFP_KERNEL,
+> -		get_order(struct_size(mem, slots, nslabs)));
+> +	mem = (void *)__get_free_pages(GFP_KERNEL, size);
+>   	if (!mem)
+>   		return -ENOMEM;
+>   
+> -	swiotlb_init_io_tlb_mem(mem, virt_to_phys(tlb), nslabs, true);
+> +	ret = swiotlb_init_io_tlb_mem(mem, virt_to_phys(tlb), nslabs, true);
+> +	if (ret) {
+> +		free_pages((unsigned long)mem, size);
+> +		return ret;
+> +	}
+>   
+>   	io_tlb_default_mem = mem;
+>   	swiotlb_print_info();
+> @@ -360,7 +376,7 @@ static void swiotlb_bounce(struct device *dev, phys_addr_t tlb_addr, size_t size
+>   	phys_addr_t orig_addr = mem->slots[index].orig_addr;
+>   	size_t alloc_size = mem->slots[index].alloc_size;
+>   	unsigned long pfn = PFN_DOWN(orig_addr);
+> -	unsigned char *vaddr = phys_to_virt(tlb_addr);
+> +	unsigned char *vaddr = mem->vaddr + tlb_addr - mem->start;
+>   	unsigned int tlb_offset;
+>   
+>   	if (orig_addr == INVALID_PHYS_ADDR)
 > 
 _______________________________________________
 iommu mailing list
