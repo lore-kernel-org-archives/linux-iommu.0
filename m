@@ -2,87 +2,91 @@ Return-Path: <SRS0=+AsR=M4=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-13.5 required=3.0 tests=BAYES_00,DKIM_INVALID,
-	DKIM_SIGNED,HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_CR_TRAILER,INCLUDES_PATCH,
-	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,URIBL_RED
-	autolearn=ham autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-5.0 required=3.0 tests=BAYES_00,DKIM_INVALID,
+	DKIM_SIGNED,HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,SPF_HELO_NONE,
+	SPF_PASS,URIBL_BLOCKED,URIBL_RED,USER_AGENT_SANE_1 autolearn=no
+	autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2623FC4338F
-	for <iommu@archiver.kernel.org>; Thu,  5 Aug 2021 05:26:27 +0000 (UTC)
-Received: from smtp4.osuosl.org (smtp4.osuosl.org [140.211.166.137])
+	by smtp.lore.kernel.org (Postfix) with ESMTP id F3AABC4338F
+	for <iommu@archiver.kernel.org>; Thu,  5 Aug 2021 06:54:23 +0000 (UTC)
+Received: from smtp3.osuosl.org (smtp3.osuosl.org [140.211.166.136])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 8F63060F58
-	for <iommu@archiver.kernel.org>; Thu,  5 Aug 2021 05:26:26 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.4.1 mail.kernel.org 8F63060F58
-Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=chromium.org
+	by mail.kernel.org (Postfix) with ESMTPS id 7221D6105A
+	for <iommu@archiver.kernel.org>; Thu,  5 Aug 2021 06:54:23 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.4.1 mail.kernel.org 7221D6105A
+Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=redhat.com
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by smtp4.osuosl.org (Postfix) with ESMTP id 4B9344038A;
-	Thu,  5 Aug 2021 05:26:26 +0000 (UTC)
+	by smtp3.osuosl.org (Postfix) with ESMTP id 34E5E605FB;
+	Thu,  5 Aug 2021 06:54:23 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from smtp4.osuosl.org ([127.0.0.1])
-	by localhost (smtp4.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id 2W9VDEtPDpbD; Thu,  5 Aug 2021 05:26:25 +0000 (UTC)
-Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [IPv6:2605:bc80:3010:104::8cd3:938])
-	by smtp4.osuosl.org (Postfix) with ESMTPS id 2CCB740266;
-	Thu,  5 Aug 2021 05:26:25 +0000 (UTC)
+Received: from smtp3.osuosl.org ([127.0.0.1])
+	by localhost (smtp3.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+	with ESMTP id MxXabWNkvHrr; Thu,  5 Aug 2021 06:54:22 +0000 (UTC)
+Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
+	by smtp3.osuosl.org (Postfix) with ESMTPS id 0AA0B60597;
+	Thu,  5 Aug 2021 06:54:21 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 09371C0010;
-	Thu,  5 Aug 2021 05:26:25 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id B9768C001A;
+	Thu,  5 Aug 2021 06:54:21 +0000 (UTC)
 Received: from smtp4.osuosl.org (smtp4.osuosl.org [140.211.166.137])
- by lists.linuxfoundation.org (Postfix) with ESMTP id B3F7FC000E
- for <iommu@lists.linux-foundation.org>; Thu,  5 Aug 2021 05:26:23 +0000 (UTC)
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 42271C000E
+ for <iommu@lists.linux-foundation.org>; Thu,  5 Aug 2021 06:54:20 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by smtp4.osuosl.org (Postfix) with ESMTP id A8C35402EA
- for <iommu@lists.linux-foundation.org>; Thu,  5 Aug 2021 05:26:23 +0000 (UTC)
+ by smtp4.osuosl.org (Postfix) with ESMTP id 38B82403A0
+ for <iommu@lists.linux-foundation.org>; Thu,  5 Aug 2021 06:54:20 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
+Authentication-Results: smtp4.osuosl.org (amavisd-new);
+ dkim=pass (1024-bit key) header.d=redhat.com
 Received: from smtp4.osuosl.org ([127.0.0.1])
  by localhost (smtp4.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id NbHw7FyS-NWd for <iommu@lists.linux-foundation.org>;
- Thu,  5 Aug 2021 05:26:23 +0000 (UTC)
-X-Greylist: whitelisted by SQLgrey-1.8.0
-Received: from mail-qv1-xf29.google.com (mail-qv1-xf29.google.com
- [IPv6:2607:f8b0:4864:20::f29])
- by smtp4.osuosl.org (Postfix) with ESMTPS id E75B140266
- for <iommu@lists.linux-foundation.org>; Thu,  5 Aug 2021 05:26:22 +0000 (UTC)
-Received: by mail-qv1-xf29.google.com with SMTP id s11so2366554qvz.7
- for <iommu@lists.linux-foundation.org>; Wed, 04 Aug 2021 22:26:22 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=chromium.org; s=google;
- h=mime-version:references:in-reply-to:from:date:message-id:subject:to
- :cc; bh=SAWYlvs5XtqLwUaEqS2qwqUPDupygtRRMcwg/DOIhsg=;
- b=nPobvWYZhXvZVrEvTwMU2dN2uActZpK/cmTowjhr6t4tZ/uQJTV2sYljb33SV3+52s
- RaEEuEtlXJg0GNli7EjvCKg1OdX457q6ggegb6fm0jHB0hquE0l21h7u4prEoW3YJUIZ
- +vSH8yX8Y0CNRYy1NI4biFTXdCLBLa5M10cBw=
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
- d=1e100.net; s=20161025;
- h=x-gm-message-state:mime-version:references:in-reply-to:from:date
- :message-id:subject:to:cc;
- bh=SAWYlvs5XtqLwUaEqS2qwqUPDupygtRRMcwg/DOIhsg=;
- b=SjZqpR73+Hq7FaJeDbhxqod8tGXONvvHXLFYNP4OFp0yiZcqqSVCKUrgJRfhYtgVRp
- vPmIiFBZv4H9871GNy1dNKmQHn7c5s2IXMp97UO77U+PWDuGj4RR+Mut3F8aHKhxtYcl
- ZJJ0WFFh0f9xSOp8ktBy6kmo/AqI8xbPKAfkopjBnMDZeMKQXu4JyEh84u5sFKx98Sbf
- wsOB1ieY4yTB9ooim2552nkF0D9WDzmlsSYYZnLge128nvuUjrKsaPby0taKQ+LR1oFJ
- y1MxKxYny/b8rYU5HIHr2FZt75b4g8ImcPvlxEoMEHpeArA/5NXrEOhs6wjehCIsyMig
- 9v8Q==
-X-Gm-Message-State: AOAM532V+m6C2MSB6bVqoJzUO7zYFlAqUOlzojIpVpLOKlpQ4hIpc6xg
- usYvpyzBTPtIfBM/2hOe634lnuqc8cWO+YOlVoYOTA==
-X-Google-Smtp-Source: ABdhPJwliKWoxLiTKjhaiCktAIkaJ/XWbOQ6RdbyHxj8/NjoJYsYviXy+qLt7OPWwt6dfpKxWyMiB9EhxZZyd+mymtc=
-X-Received: by 2002:a05:6214:e4e:: with SMTP id
- o14mr3391377qvc.55.1628141181770; 
- Wed, 04 Aug 2021 22:26:21 -0700 (PDT)
+ with ESMTP id ETey0Ta228Zf for <iommu@lists.linux-foundation.org>;
+ Thu,  5 Aug 2021 06:54:19 +0000 (UTC)
+X-Greylist: domain auto-whitelisted by SQLgrey-1.8.0
+Received: from us-smtp-delivery-124.mimecast.com
+ (us-smtp-delivery-124.mimecast.com [170.10.133.124])
+ by smtp4.osuosl.org (Postfix) with ESMTPS id 5E35A401EE
+ for <iommu@lists.linux-foundation.org>; Thu,  5 Aug 2021 06:54:19 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+ s=mimecast20190719; t=1628146458;
+ h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+ to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+ in-reply-to:in-reply-to:references:references;
+ bh=j85DEN/GjXBt17nWPtFfA65KJvlMB121aW2wNcv0HLM=;
+ b=bmvu6KQ2W+jWG7BMsCJtCFfmDVJ+A2XIWnL9H9Tn5lzS5mn842S6Iufn1g0hkHbQYsEjW2
+ U5/L+1bxdYTOsx88pvBj4cJUP3sLBzv1e4R3uEi6737K58JKUaa2RkzzuJ95wy/u3fnb/X
+ nrlaN83VZ4If9dM/c+KZVDmy83fiVP8=
+Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
+ [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-260-agHRmAA1PeKyjzdK13dT9A-1; Thu, 05 Aug 2021 02:54:16 -0400
+X-MC-Unique: agHRmAA1PeKyjzdK13dT9A-1
+Received: from smtp.corp.redhat.com (int-mx05.intmail.prod.int.phx2.redhat.com
+ [10.5.11.15])
+ (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+ (No client certificate requested)
+ by mimecast-mx01.redhat.com (Postfix) with ESMTPS id F3FB8100CF79;
+ Thu,  5 Aug 2021 06:54:14 +0000 (UTC)
+Received: from localhost (ovpn-12-115.pek2.redhat.com [10.72.12.115])
+ by smtp.corp.redhat.com (Postfix) with ESMTPS id D23A751C63;
+ Thu,  5 Aug 2021 06:54:13 +0000 (UTC)
+Date: Thu, 5 Aug 2021 14:54:10 +0800
+From: Baoquan He <bhe@redhat.com>
+To: Robin Murphy <robin.murphy@arm.com>, Christoph Hellwig <hch@infradead.org>
+Subject: Re: [PATCH RFC 0/2] dma-pool: allow user to disable atomic pool
+Message-ID: <20210805065410.GA2051@MiWiFi-R3L-srv>
+References: <20210624052010.5676-1-bhe@redhat.com>
+ <YNQ258KHlzlajqo/@infradead.org>
+ <20210624092930.GA802261@MiWiFi-R3L-srv>
+ <8b3d4e02-6e94-ad59-a480-fed8e55c009a@arm.com>
 MIME-Version: 1.0
-References: <20210709033502.3545820-1-stevensd@google.com>
- <20210709033502.3545820-4-stevensd@google.com>
- <20210802135446.GE28547@willie-the-truck>
-In-Reply-To: <20210802135446.GE28547@willie-the-truck>
-From: David Stevens <stevensd@chromium.org>
-Date: Thu, 5 Aug 2021 14:26:10 +0900
-Message-ID: <CAD=HUj4+62dYZTWfbPjh8eLRY6FQak8nBS8OD85t0xk_+JvDpA@mail.gmail.com>
-Subject: Re: [PATCH v2 3/4] dma-iommu: pass SKIP_CPU_SYNC to swiotlb unmap
-To: Will Deacon <will@kernel.org>
-Cc: open list <linux-kernel@vger.kernel.org>, Tom Murphy <murphyt7@tcd.ie>,
- iommu@lists.linux-foundation.org, Robin Murphy <robin.murphy@arm.com>
+Content-Disposition: inline
+In-Reply-To: <8b3d4e02-6e94-ad59-a480-fed8e55c009a@arm.com>
+User-Agent: Mutt/1.10.1 (2018-07-13)
+X-Scanned-By: MIMEDefang 2.79 on 10.5.11.15
+Cc: thomas.lendacky@amd.com, brijesh.singh@amd.com, x86@kernel.org,
+ kexec@lists.infradead.org, linux-kernel@vger.kernel.org, rppt@linux.ibm.com,
+ linux-mm@kvack.org, iommu@lists.linux-foundation.org, rientjes@google.com
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -100,50 +104,64 @@ Content-Transfer-Encoding: 7bit
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-On Mon, Aug 2, 2021 at 10:54 PM Will Deacon <will@kernel.org> wrote:
->
-> On Fri, Jul 09, 2021 at 12:35:01PM +0900, David Stevens wrote:
-> > From: David Stevens <stevensd@chromium.org>
-> >
-> > If SKIP_CPU_SYNC isn't already set, then iommu_dma_unmap_(page|sg) has
-> > already called iommu_dma_sync_(single|sg)_for_cpu, so there is no need
-> > to copy from the bounce buffer again.
-> >
-> > Signed-off-by: David Stevens <stevensd@chromium.org>
-> > ---
-> >  drivers/iommu/dma-iommu.c | 3 ++-
-> >  1 file changed, 2 insertions(+), 1 deletion(-)
-> >
-> > diff --git a/drivers/iommu/dma-iommu.c b/drivers/iommu/dma-iommu.c
-> > index e79e274d2dc5..0a9a9a343e64 100644
-> > --- a/drivers/iommu/dma-iommu.c
-> > +++ b/drivers/iommu/dma-iommu.c
-> > @@ -505,7 +505,8 @@ static void __iommu_dma_unmap_swiotlb(struct device *dev, dma_addr_t dma_addr,
-> >       __iommu_dma_unmap(dev, dma_addr, size);
-> >
-> >       if (unlikely(is_swiotlb_buffer(phys)))
-> > -             swiotlb_tbl_unmap_single(dev, phys, size, dir, attrs);
-> > +             swiotlb_tbl_unmap_single(dev, phys, size, dir,
-> > +                                      attrs | DMA_ATTR_SKIP_CPU_SYNC);
-> >  }
->
-> I think it would be cleaner to drop DMA_ATTR_SKIP_CPU_SYNC in the callers
-> once they've called iommu_dma_sync_*_for_cpu().
+On 06/24/21 at 11:47am, Robin Murphy wrote:
+> On 2021-06-24 10:29, Baoquan He wrote:
+> > On 06/24/21 at 08:40am, Christoph Hellwig wrote:
+> > > So reduce the amount allocated.  But the pool is needed for proper
+> > > operation on systems with memory encryption.  And please add the right
+> > > maintainer or at least mailing list for the code you're touching next
+> > > time.
+> > 
+> > Oh, I thoutht it's memory issue only, should have run
+> > ./scripts/get_maintainer.pl. sorry.
+> > 
+> > About reducing the amount allocated, it may not help. Because on x86_64,
+> > kdump kernel doesn't put any page of memory into buddy allocator of DMA
+> > zone. Means it will defenitely OOM for atomic_pool_dma initialization.
+> > 
+> > Wondering in which case or on which device the atomic pool is needed on
+> > AMD system with mem encrytion enabled. As we can see, the OOM will
+> > happen too in kdump kernel on Intel system, even though it's not
+> > necessary.
 
-Dropping that flag in iommu_dma_unmap_* would result in always copying
-from the swiotlb here, which is the opposite direction of what this
-patch is trying to do.
+Sorry for very late response, and thank both for your comments.
 
-This change is aiming to address the case where DMA_ATTR_SKIP_CPU_SYNC
-isn't passed to dma_unmap_*. In that case, there are calls to
-swiotlb_sync_single_for_cpu from iommu_dma_sync_*_for_cpu, and calls
-to swiotlb_tlb_unmap_single here. That means we copy from the swiotlb
-twice. Adding the DMA_ATTR_SKIP_CPU_SYNC flag here skips the second
-copy.
+> 
+> Hmm, I think the Kconfig reshuffle has actually left a slight wrinkle here.
+> For DMA_DIRECT_REMAP=y we can assume an atomic pool is always needed, since
+> that was the original behaviour anyway. However the implications of
+> AMD_MEM_ENCRYPT=y are different - even if support is enabled, it still
+> should only be relevant if mem_encrypt_active(), so it probably does make
+> sense to have an additional runtime gate on that.
 
--David
+> 
+> From a quick scan, use of dma_alloc_from_pool() already depends on
+> force_dma_unencrypted() so that's probably fine already, but I think we'd
+> need a bit of extra protection around dma_free_from_pool() to prevent
+> gen_pool_has_addr() dereferencing NULL if the pools are uninitialised, even
+> with your proposed patch as it is. Presumably nothing actually called
+> dma_direct_free() when you tested this?
 
-> Will
+Yes, enforcing the conditional check of force_dma_unencrypted() around
+dma_free_from_pool sounds reasonable, just as we have done in
+dma_alloc_from_pool().
+
+I have tested this patchset on normal x86_64 systems and one amd system
+with SME support, disabling atomic pool can fix the issue that there's no
+managed pages in dma zone then requesting page from dma zone will cause
+allocation failure. And even disabling atomic pool in 1st kernel didn't
+cause any problem on one AMD EPYC system which supports SME. I am not
+expert of DMA area, wondering how atomic pool is supposed to do in
+SME/SEV system. 
+
+Besides, even though atomic pool is disabled, slub page for allocation
+of dma-kmalloc also triggers page allocation failure. So I change to
+take another way to fix them, please check v2 post. The atomic pool
+disabling an be a good to have change.
+
+Thanks
+Baoquan
+
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
