@@ -2,82 +2,72 @@ Return-Path: <SRS0=+AsR=M4=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-5.4 required=3.0 tests=BAYES_00,
-	HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,NICE_REPLY_A,SPF_HELO_NONE,
-	SPF_PASS,URIBL_BLOCKED,URIBL_RED,USER_AGENT_SANE_1 autolearn=no
-	autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-15.2 required=3.0 tests=BAYES_00,
+	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_CR_TRAILER,INCLUDES_PATCH,
+	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,URIBL_RED,
+	USER_AGENT_SANE_1 autolearn=ham autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id AA217C4338F
-	for <iommu@archiver.kernel.org>; Thu,  5 Aug 2021 15:16:41 +0000 (UTC)
-Received: from smtp3.osuosl.org (smtp3.osuosl.org [140.211.166.136])
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 73ABCC4338F
+	for <iommu@archiver.kernel.org>; Thu,  5 Aug 2021 15:44:01 +0000 (UTC)
+Received: from smtp1.osuosl.org (smtp1.osuosl.org [140.211.166.138])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 4B490610FF
-	for <iommu@archiver.kernel.org>; Thu,  5 Aug 2021 15:16:41 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.4.1 mail.kernel.org 4B490610FF
-Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=huawei.com
+	by mail.kernel.org (Postfix) with ESMTPS id 1C8516113B
+	for <iommu@archiver.kernel.org>; Thu,  5 Aug 2021 15:44:01 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.4.1 mail.kernel.org 1C8516113B
+Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=arm.com
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by smtp3.osuosl.org (Postfix) with ESMTP id 148F46077E;
-	Thu,  5 Aug 2021 15:16:41 +0000 (UTC)
+	by smtp1.osuosl.org (Postfix) with ESMTP id D9A3D83A5D;
+	Thu,  5 Aug 2021 15:44:00 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from smtp3.osuosl.org ([127.0.0.1])
-	by localhost (smtp3.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id xMrRFdBMuXQ0; Thu,  5 Aug 2021 15:16:40 +0000 (UTC)
-Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [IPv6:2605:bc80:3010:104::8cd3:938])
-	by smtp3.osuosl.org (Postfix) with ESMTPS id ED4096067A;
-	Thu,  5 Aug 2021 15:16:39 +0000 (UTC)
+Received: from smtp1.osuosl.org ([127.0.0.1])
+	by localhost (smtp1.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+	with ESMTP id TfVnrQxj4awz; Thu,  5 Aug 2021 15:44:00 +0000 (UTC)
+Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
+	by smtp1.osuosl.org (Postfix) with ESMTPS id B323683AFC;
+	Thu,  5 Aug 2021 15:43:59 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 9C38EC001A;
-	Thu,  5 Aug 2021 15:16:39 +0000 (UTC)
-Received: from smtp3.osuosl.org (smtp3.osuosl.org [140.211.166.136])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 4FF79C000E
- for <iommu@lists.linux-foundation.org>; Thu,  5 Aug 2021 15:16:38 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 8608BC001A;
+	Thu,  5 Aug 2021 15:43:59 +0000 (UTC)
+Received: from smtp2.osuosl.org (smtp2.osuosl.org [140.211.166.133])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 8B098C000E
+ for <iommu@lists.linux-foundation.org>; Thu,  5 Aug 2021 15:43:58 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by smtp3.osuosl.org (Postfix) with ESMTP id 321CD6077E
- for <iommu@lists.linux-foundation.org>; Thu,  5 Aug 2021 15:16:38 +0000 (UTC)
+ by smtp2.osuosl.org (Postfix) with ESMTP id 747774012F
+ for <iommu@lists.linux-foundation.org>; Thu,  5 Aug 2021 15:43:58 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from smtp3.osuosl.org ([127.0.0.1])
- by localhost (smtp3.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id ZY9lAnB38Rrh for <iommu@lists.linux-foundation.org>;
- Thu,  5 Aug 2021 15:16:37 +0000 (UTC)
+Received: from smtp2.osuosl.org ([127.0.0.1])
+ by localhost (smtp2.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+ with ESMTP id iOFOtqV9lqTp for <iommu@lists.linux-foundation.org>;
+ Thu,  5 Aug 2021 15:43:57 +0000 (UTC)
 X-Greylist: domain auto-whitelisted by SQLgrey-1.8.0
-Received: from frasgout.his.huawei.com (frasgout.his.huawei.com
- [185.176.79.56])
- by smtp3.osuosl.org (Postfix) with ESMTPS id 337676067A
- for <iommu@lists.linux-foundation.org>; Thu,  5 Aug 2021 15:16:37 +0000 (UTC)
-Received: from fraeml734-chm.china.huawei.com (unknown [172.18.147.200])
- by frasgout.his.huawei.com (SkyGuard) with ESMTP id 4GgXJ01DVKz6F8Wk;
- Thu,  5 Aug 2021 23:16:16 +0800 (CST)
-Received: from lhreml724-chm.china.huawei.com (10.201.108.75) by
- fraeml734-chm.china.huawei.com (10.206.15.215) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2176.2; Thu, 5 Aug 2021 17:16:34 +0200
-Received: from [10.47.24.8] (10.47.24.8) by lhreml724-chm.china.huawei.com
- (10.201.108.75) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256) id 15.1.2176.2; Thu, 5 Aug 2021
- 16:16:33 +0100
-Subject: Re: [PATCH] iommu/arm-smmu-v3: Remove some unneeded init in
- arm_smmu_cmdq_issue_cmdlist()
-To: Robin Murphy <robin.murphy@arm.com>, <will@kernel.org>
-References: <1624293394-202509-1-git-send-email-john.garry@huawei.com>
- <ee1f3ab5-3acc-f442-f2d2-898cf88bc447@arm.com>
- <45a8af4f-4202-ecd8-0882-507acf9b2eb2@huawei.com>
- <577a625a-4fc5-7402-8e4f-4e0e5be93144@arm.com>
-From: John Garry <john.garry@huawei.com>
-Message-ID: <44c5e07b-e663-5b96-a142-ec25666e2a14@huawei.com>
-Date: Thu, 5 Aug 2021 16:16:02 +0100
-User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; rv:68.0) Gecko/20100101
- Thunderbird/68.12.1
+Received: from foss.arm.com (foss.arm.com [217.140.110.172])
+ by smtp2.osuosl.org (Postfix) with ESMTP id 22B5E400F7
+ for <iommu@lists.linux-foundation.org>; Thu,  5 Aug 2021 15:43:57 +0000 (UTC)
+Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
+ by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 6447731B;
+ Thu,  5 Aug 2021 08:43:56 -0700 (PDT)
+Received: from lpieralisi (e121166-lin.cambridge.arm.com [10.1.196.255])
+ by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id 75C6E3F66F;
+ Thu,  5 Aug 2021 08:43:54 -0700 (PDT)
+Date: Thu, 5 Aug 2021 16:43:49 +0100
+From: Lorenzo Pieralisi <lorenzo.pieralisi@arm.com>
+To: Shameer Kolothum <shameerali.kolothum.thodi@huawei.com>
+Subject: Re: [PATCH v7 4/9] ACPI/IORT: Add a helper to retrieve RMR memory
+ regions
+Message-ID: <20210805154349.GA23085@lpieralisi>
+References: <20210805080724.480-1-shameerali.kolothum.thodi@huawei.com>
+ <20210805080724.480-5-shameerali.kolothum.thodi@huawei.com>
 MIME-Version: 1.0
-In-Reply-To: <577a625a-4fc5-7402-8e4f-4e0e5be93144@arm.com>
-Content-Language: en-US
-X-Originating-IP: [10.47.24.8]
-X-ClientProxiedBy: lhreml706-chm.china.huawei.com (10.201.108.55) To
- lhreml724-chm.china.huawei.com (10.201.108.75)
-X-CFilter-Loop: Reflected
-Cc: linuxarm@huawei.com, iommu@lists.linux-foundation.org,
- linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org
+Content-Disposition: inline
+In-Reply-To: <20210805080724.480-5-shameerali.kolothum.thodi@huawei.com>
+User-Agent: Mutt/1.9.4 (2018-02-28)
+Cc: will@kernel.org, jon@solid-run.com, linuxarm@huawei.com,
+ steven.price@arm.com, linux-acpi@vger.kernel.org,
+ iommu@lists.linux-foundation.org, wanghuiqiang@huawei.com,
+ guohanjun@huawei.com, yangyicong@huawei.com, Sami.Mujawar@arm.com,
+ robin.murphy@arm.com, linux-arm-kernel@lists.infradead.org
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -90,44 +80,133 @@ List-Post: <mailto:iommu@lists.linux-foundation.org>
 List-Help: <mailto:iommu-request@lists.linux-foundation.org?subject=help>
 List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
  <mailto:iommu-request@lists.linux-foundation.org?subject=subscribe>
+Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
-Content-Type: text/plain; charset="us-ascii"; Format="flowed"
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-On 05/08/2021 15:41, Robin Murphy wrote:
->> I suppose they could be combined into a smaller sub-struct and loaded 
->> in a single operation, but it looks messy, and prob without much gain.
+On Thu, Aug 05, 2021 at 09:07:19AM +0100, Shameer Kolothum wrote:
+> Add a helper function (iort_iommu_get_rmrs()) that retrieves RMR
+> memory descriptors associated with a given IOMMU. This will be used
+> by IOMMU drivers to setup necessary mappings.
 > 
-> Indeed I wouldn't say that saving memory is the primary concern here, 
-> and any more convoluted code is hardly going to help performance. Plus 
-> it still wouldn't help the other cases where we're just copying the size 
-> into a fake queue to do some prod arithmetic - I hadn't fully clocked 
-> what was going on there when I skimmed through things earlier.
+> Invoke it from the generic helper iommu_dma_get_rmrs().
 > 
-> Disregarding the bogus layout change, though, do you reckon the rest of 
-> my idea makes sense?
+> Signed-off-by: Shameer Kolothum <shameerali.kolothum.thodi@huawei.com>
+> ---
+>  drivers/acpi/arm64/iort.c | 38 ++++++++++++++++++++++++++++++++++++++
+>  drivers/iommu/dma-iommu.c |  4 ++++
+>  include/linux/acpi_iort.h |  7 +++++++
+>  3 files changed, 49 insertions(+)
 
-I tried the similar change to avoid zero-init the padding in 
-arm_smmu_cmdq_write_entries() and the 
-_arm_smmu_cmdq_poll_set_valid_map(), but the disassembly was the same. 
-So the compiler must have got smart there.
+Reviewed-by: Lorenzo Pieralisi <lorenzo.pieralisi@arm.com>
 
-But for the original change in this patch, it did make a difference. 
-It's nice to remove what was a memcpy:
-
-     1770: a9077eff stp xzr, xzr, [x23, #112]
-}, head = llq;
-     1774: 94000000 bl 0 <memcpy>
-
-And performance was very fractionally better.
-
-As for pre-evaluating "nents", I'm not sure how much that can help, but 
-I am not too optimistic. I can try some testing when I get a chance. 
-Having said that, I would need to check the disassembly also.
-
-Thanks,
-John
+> diff --git a/drivers/acpi/arm64/iort.c b/drivers/acpi/arm64/iort.c
+> index d76ba46ebe67..3c32d62e63b6 100644
+> --- a/drivers/acpi/arm64/iort.c
+> +++ b/drivers/acpi/arm64/iort.c
+> @@ -809,6 +809,42 @@ static struct acpi_iort_node *iort_get_msi_resv_iommu(struct device *dev)
+>  	return NULL;
+>  }
+>  
+> +/**
+> + * iort_iommu_get_rmrs() - Helper to retrieve RMR info associated with IOMMU
+> + * @iommu_fwnode: fwnode for the IOMMU
+> + * @head: RMR list head to be populated
+> + *
+> + * Returns: 0 on success, <0 failure. Please note, we will keep the already
+> + *          allocated RMR reserve regions in case of a kmemdup()
+> + *          failure.
+> + */
+> +int iort_iommu_get_rmrs(struct fwnode_handle *iommu_fwnode,
+> +			struct list_head *head)
+> +{
+> +	struct iommu_resv_region *e;
+> +	struct acpi_iort_node *iommu;
+> +	int rmrs = 0;
+> +
+> +	iommu = iort_get_iort_node(iommu_fwnode);
+> +	if (!iommu || list_empty(&iort_rmr_list))
+> +		return -ENODEV;
+> +
+> +	list_for_each_entry(e, &iort_rmr_list, list) {
+> +		struct iommu_resv_region *region;
+> +
+> +		if (e->fw_data.rmr.smmu != iommu)
+> +			continue;
+> +
+> +		region = kmemdup(e, sizeof(*region), GFP_KERNEL);
+> +		if (region) {
+> +			list_add_tail(&region->list, head);
+> +			rmrs++;
+> +		}
+> +	}
+> +
+> +	return (rmrs == 0) ? -ENODEV : 0;
+> +}
+> +
+>  /**
+>   * iort_iommu_msi_get_resv_regions - Reserved region driver helper
+>   * @dev: Device from iommu_get_resv_regions()
+> @@ -1041,6 +1077,8 @@ int iort_iommu_msi_get_resv_regions(struct device *dev, struct list_head *head)
+>  { return 0; }
+>  int iort_iommu_configure_id(struct device *dev, const u32 *input_id)
+>  { return -ENODEV; }
+> +int iort_iommu_get_rmrs(struct fwnode_handle *fwnode, struct list_head *head)
+> +{ return -ENODEV; }
+>  #endif
+>  
+>  static int nc_dma_get_range(struct device *dev, u64 *size)
+> diff --git a/drivers/iommu/dma-iommu.c b/drivers/iommu/dma-iommu.c
+> index 2fa2445e9070..1b6e27475279 100644
+> --- a/drivers/iommu/dma-iommu.c
+> +++ b/drivers/iommu/dma-iommu.c
+> @@ -185,6 +185,9 @@ EXPORT_SYMBOL(iommu_put_dma_cookie);
+>  int iommu_dma_get_rmrs(struct fwnode_handle *iommu_fwnode,
+>  		       struct list_head *list)
+>  {
+> +	if (!is_of_node(iommu_fwnode))
+> +		return iort_iommu_get_rmrs(iommu_fwnode, list);
+> +
+>  	return -EINVAL;
+>  }
+>  EXPORT_SYMBOL(iommu_dma_get_rmrs);
+> @@ -200,6 +203,7 @@ EXPORT_SYMBOL(iommu_dma_get_rmrs);
+>  void iommu_dma_put_rmrs(struct fwnode_handle *iommu_fwnode,
+>  			struct list_head *list)
+>  {
+> +	generic_iommu_put_resv_regions(iommu_fwnode->dev, list);
+>  }
+>  EXPORT_SYMBOL(iommu_dma_put_rmrs);
+>  
+> diff --git a/include/linux/acpi_iort.h b/include/linux/acpi_iort.h
+> index f1f0842a2cb2..d8c030c103f5 100644
+> --- a/include/linux/acpi_iort.h
+> +++ b/include/linux/acpi_iort.h
+> @@ -38,6 +38,8 @@ int iort_dma_get_ranges(struct device *dev, u64 *size);
+>  int iort_iommu_configure_id(struct device *dev, const u32 *id_in);
+>  int iort_iommu_msi_get_resv_regions(struct device *dev, struct list_head *head);
+>  phys_addr_t acpi_iort_dma_get_max_cpu_address(void);
+> +int iort_iommu_get_rmrs(struct fwnode_handle *iommu_fwnode,
+> +			struct list_head *list);
+>  #else
+>  static inline void acpi_iort_init(void) { }
+>  static inline u32 iort_msi_map_id(struct device *dev, u32 id)
+> @@ -57,6 +59,11 @@ int iort_iommu_msi_get_resv_regions(struct device *dev, struct list_head *head)
+>  
+>  static inline phys_addr_t acpi_iort_dma_get_max_cpu_address(void)
+>  { return PHYS_ADDR_MAX; }
+> +
+> +static inline
+> +int iort_iommu_get_rmrs(struct fwnode_handle *iommu_fwnode,
+> +			struct list_head *list)
+> +{ return -ENODEV; }
+>  #endif
+>  
+>  #endif /* __ACPI_IORT_H__ */
+> -- 
+> 2.17.1
+> 
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
