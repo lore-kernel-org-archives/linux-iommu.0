@@ -2,131 +2,146 @@ Return-Path: <SRS0=+AsR=M4=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-5.2 required=3.0 tests=BAYES_00,DKIM_INVALID,
-	DKIM_SIGNED,HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,NICE_REPLY_A,
-	SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_SANE_1 autolearn=no
-	autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-15.2 required=3.0 tests=BAYES_00,DKIM_INVALID,
+	DKIM_SIGNED,HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_CR_TRAILER,INCLUDES_PATCH,
+	MAILING_LIST_MULTI,NICE_REPLY_A,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,
+	URIBL_RED,USER_AGENT_SANE_1 autolearn=ham autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 03F5DC4320A
-	for <iommu@archiver.kernel.org>; Thu,  5 Aug 2021 07:12:56 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id EFAD3C4338F
+	for <iommu@archiver.kernel.org>; Thu,  5 Aug 2021 07:19:00 +0000 (UTC)
 Received: from smtp3.osuosl.org (smtp3.osuosl.org [140.211.166.136])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 9B7B260F41
-	for <iommu@archiver.kernel.org>; Thu,  5 Aug 2021 07:12:55 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.4.1 mail.kernel.org 9B7B260F41
-Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=redhat.com
+	by mail.kernel.org (Postfix) with ESMTPS id 6CC2E61008
+	for <iommu@archiver.kernel.org>; Thu,  5 Aug 2021 07:19:00 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.4.1 mail.kernel.org 6CC2E61008
+Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=samsung.com
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by smtp3.osuosl.org (Postfix) with ESMTP id 2FCB26073B;
-	Thu,  5 Aug 2021 07:12:55 +0000 (UTC)
+	by smtp3.osuosl.org (Postfix) with ESMTP id 38F256073B;
+	Thu,  5 Aug 2021 07:19:00 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
 Received: from smtp3.osuosl.org ([127.0.0.1])
 	by localhost (smtp3.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id PNu9ffvx92DR; Thu,  5 Aug 2021 07:12:54 +0000 (UTC)
+	with ESMTP id TQ5f0FhSDG3p; Thu,  5 Aug 2021 07:18:59 +0000 (UTC)
 Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by smtp3.osuosl.org (Postfix) with ESMTPS id 11409605D8;
-	Thu,  5 Aug 2021 07:12:53 +0000 (UTC)
+	by smtp3.osuosl.org (Postfix) with ESMTPS id F187C605D8;
+	Thu,  5 Aug 2021 07:18:58 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id E3B29C0010;
-	Thu,  5 Aug 2021 07:12:53 +0000 (UTC)
-Received: from smtp1.osuosl.org (smtp1.osuosl.org [IPv6:2605:bc80:3010::138])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 756D6C000E
- for <iommu@lists.linux-foundation.org>; Thu,  5 Aug 2021 07:12:53 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id D413CC001A;
+	Thu,  5 Aug 2021 07:18:58 +0000 (UTC)
+Received: from smtp3.osuosl.org (smtp3.osuosl.org [140.211.166.136])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id AA5C4C000E
+ for <iommu@lists.linux-foundation.org>; Thu,  5 Aug 2021 07:18:57 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by smtp1.osuosl.org (Postfix) with ESMTP id 5DFDF83268
- for <iommu@lists.linux-foundation.org>; Thu,  5 Aug 2021 07:12:53 +0000 (UTC)
+ by smtp3.osuosl.org (Postfix) with ESMTP id A056F605DB
+ for <iommu@lists.linux-foundation.org>; Thu,  5 Aug 2021 07:18:57 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Authentication-Results: smtp1.osuosl.org (amavisd-new);
- dkim=pass (1024-bit key) header.d=redhat.com
-Received: from smtp1.osuosl.org ([127.0.0.1])
- by localhost (smtp1.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id 83sGDfhVP6qv for <iommu@lists.linux-foundation.org>;
- Thu,  5 Aug 2021 07:12:52 +0000 (UTC)
+Received: from smtp3.osuosl.org ([127.0.0.1])
+ by localhost (smtp3.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+ with ESMTP id oKtF-0UzJb1U for <iommu@lists.linux-foundation.org>;
+ Thu,  5 Aug 2021 07:18:56 +0000 (UTC)
 X-Greylist: domain auto-whitelisted by SQLgrey-1.8.0
-Received: from us-smtp-delivery-124.mimecast.com
- (us-smtp-delivery-124.mimecast.com [170.10.133.124])
- by smtp1.osuosl.org (Postfix) with ESMTPS id 376A283267
- for <iommu@lists.linux-foundation.org>; Thu,  5 Aug 2021 07:12:52 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
- s=mimecast20190719; t=1628147571;
- h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
- to:to:cc:cc:mime-version:mime-version:content-type:content-type:
- content-transfer-encoding:content-transfer-encoding:
- in-reply-to:in-reply-to:references:references;
- bh=n0VxlG+I9DtspBlzYcgwvjsV5zD4hYtPEcF5uDUSb8k=;
- b=WnKShFfOo6rJV5EhQ9lb/uy7ktJQ7UGiYB787gx3g1QbQjDkMN2WZaPNV3i6eIIRfd7lWW
- xpPS6on/6Pslm66W77lCqGMyNUHz/W8xC7Pt8oXhPyihmDUVYm0crXhsdApFNo91BKeQti
- nD3m68uyx3SX8yz1rQkutZ6tX+65Omw=
-Received: from mail-pj1-f71.google.com (mail-pj1-f71.google.com
- [209.85.216.71]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-214-gR6EfAgNOkCZGO2TheDNhw-1; Thu, 05 Aug 2021 03:12:49 -0400
-X-MC-Unique: gR6EfAgNOkCZGO2TheDNhw-1
-Received: by mail-pj1-f71.google.com with SMTP id
- s2-20020a17090a0742b0290177b02e795eso4440819pje.7
- for <iommu@lists.linux-foundation.org>; Thu, 05 Aug 2021 00:12:49 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
- d=1e100.net; s=20161025;
- h=x-gm-message-state:subject:to:cc:references:from:message-id:date
- :user-agent:mime-version:in-reply-to:content-transfer-encoding
- :content-language;
- bh=n0VxlG+I9DtspBlzYcgwvjsV5zD4hYtPEcF5uDUSb8k=;
- b=oMTnGD/rrIJ63InbvbzgQ98Whwm222GSzzfJgYRAhOuzGtZqwXnrTaNuZvcB9Bxou1
- 7U5jt3MnkgirI6trlCbpxiPC0KRPS3abuRuTDTcTHJ2cnfEQ75NHdnH4XWrhP3FcTdec
- Wmp502OHy0kUnKfK41ew9TQKSZk9LNLhcBryOyKhAXX4DkjMP/GhWQtn8sgV4KjEpAOL
- Ha4p7oLTWiqhWWU1ljgpaRyxNVQiIhvET87IhVEPNf1s3DXfrqWxj6ENFJM8NtS/En/j
- VxQGZ9l7eR3xn9ppkzU7i5FqiU+54f1utRS6k+7XMDXQwCpr20Dc1qBMMEzljwurEEC5
- OwAg==
-X-Gm-Message-State: AOAM532+3qF4GVqXNdl0ZAV5Qbhk/ZUUkUb21UOTSoY1pcDoxl6zDbBT
- 2mK5+vXRIy8e7YUs0mIZQzlb2N87yDPLk+ElTdte++Dr42gfzJDnn07PAio1ilja9gD+/XCpNox
- coXo2EVDPAuOGGt3k6vjUFSpmb+adwA==
-X-Received: by 2002:a63:190b:: with SMTP id z11mr654560pgl.320.1628147568773; 
- Thu, 05 Aug 2021 00:12:48 -0700 (PDT)
-X-Google-Smtp-Source: ABdhPJxUfHRxG/dXx9YH24cRrMopBNWNIkigiB28PNmXNoiyFNr8yDY8zBJY64Y2tGLqmxO/3wI2WA==
-X-Received: by 2002:a63:190b:: with SMTP id z11mr654537pgl.320.1628147568588; 
- Thu, 05 Aug 2021 00:12:48 -0700 (PDT)
-Received: from wangxiaodeMacBook-Air.local ([209.132.188.80])
- by smtp.gmail.com with ESMTPSA id k8sm5028086pfu.116.2021.08.05.00.12.40
- (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
- Thu, 05 Aug 2021 00:12:48 -0700 (PDT)
-Subject: Re: [PATCH v10 10/17] virtio: Handle device reset failure in
- register_virtio_device()
-To: Yongji Xie <xieyongji@bytedance.com>
-References: <20210729073503.187-1-xieyongji@bytedance.com>
- <20210729073503.187-11-xieyongji@bytedance.com>
- <6bb6c689-e6dd-cfa2-094b-a0ca4258aded@redhat.com>
- <CACycT3v7BHxYY0OFYJRFU41Bz1=_v8iMRwzYKgX6cJM-SiNH+A@mail.gmail.com>
- <fdcb0224-11f9-caf2-a44e-e6406087fd50@redhat.com>
- <CACycT3v0EQVrv_A1K1bKmiYu0q5aFE=t+0yRaWKC7T3_H3oB-Q@mail.gmail.com>
- <bd48ec76-0d5c-2efb-8406-894286b28f6b@redhat.com>
- <CACycT3tUwJXUV24PK7OvzPrHYYeQ5Q3qUW_vbuFMjwig0dBw2g@mail.gmail.com>
-From: Jason Wang <jasowang@redhat.com>
-Message-ID: <ae529e8a-67a2-b235-1404-4623d57031d6@redhat.com>
-Date: Thu, 5 Aug 2021 15:12:39 +0800
-User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:78.0)
+Received: from mailout1.w1.samsung.com (mailout1.w1.samsung.com
+ [210.118.77.11])
+ by smtp3.osuosl.org (Postfix) with ESMTPS id EABE5605D8
+ for <iommu@lists.linux-foundation.org>; Thu,  5 Aug 2021 07:18:55 +0000 (UTC)
+Received: from eucas1p2.samsung.com (unknown [182.198.249.207])
+ by mailout1.w1.samsung.com (KnoxPortal) with ESMTP id
+ 20210805071853euoutp01dcd3f186c774c69e7dc02962c459e778~YV_s_g15F2570325703euoutp01U
+ for <iommu@lists.linux-foundation.org>; Thu,  5 Aug 2021 07:18:53 +0000 (GMT)
+DKIM-Filter: OpenDKIM Filter v2.11.0 mailout1.w1.samsung.com
+ 20210805071853euoutp01dcd3f186c774c69e7dc02962c459e778~YV_s_g15F2570325703euoutp01U
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=samsung.com;
+ s=mail20170921; t=1628147933;
+ bh=/7/dB7i3HbiH5ZOX3GUioiB5FGehO2PLdS0nLTB5L4Q=;
+ h=Subject:To:Cc:From:Date:In-Reply-To:References:From;
+ b=B7O3aB40HAN7k9T5APOpfuTwesw2DPH0CCJ3JY+O7IEZk+iZNw3ONodlF848kbsyT
+ wPKsh+5DWd3eRvLcpYvxEDi3JZvWnyDpkagrNFZujal7xQ/zeY/ObHU2VARACE5FgN
+ /QvsKoS1vTac7DuG1bOimn3y1KDTHupnKR6nAxsY=
+Received: from eusmges2new.samsung.com (unknown [203.254.199.244]) by
+ eucas1p2.samsung.com (KnoxPortal) with ESMTP id
+ 20210805071852eucas1p285687f988e51d39dadf43dd07cbae24a~YV_soh8PL2475224752eucas1p2O;
+ Thu,  5 Aug 2021 07:18:52 +0000 (GMT)
+Received: from eucas1p2.samsung.com ( [182.198.249.207]) by
+ eusmges2new.samsung.com (EUCPMTA) with SMTP id A2.CB.42068.CD09B016; Thu,  5
+ Aug 2021 08:18:52 +0100 (BST)
+Received: from eusmtrp1.samsung.com (unknown [182.198.249.138]) by
+ eucas1p2.samsung.com (KnoxPortal) with ESMTPA id
+ 20210805071852eucas1p248ba2fc11f29b05d4cb4ed154c0915a4~YV_sDg9xs2479024790eucas1p2B;
+ Thu,  5 Aug 2021 07:18:52 +0000 (GMT)
+Received: from eusmgms2.samsung.com (unknown [182.198.249.180]) by
+ eusmtrp1.samsung.com (KnoxPortal) with ESMTP id
+ 20210805071852eusmtrp187e5b91d8d2f4a9c9d9dccb63beefb77~YV_sBeGIw2998329983eusmtrp1k;
+ Thu,  5 Aug 2021 07:18:52 +0000 (GMT)
+X-AuditID: cbfec7f4-c71ff7000002a454-f1-610b90dc6fdc
+Received: from eusmtip2.samsung.com ( [203.254.199.222]) by
+ eusmgms2.samsung.com (EUCPMTA) with SMTP id EB.1D.20981.CD09B016; Thu,  5
+ Aug 2021 08:18:52 +0100 (BST)
+Received: from [106.210.134.192] (unknown [106.210.134.192]) by
+ eusmtip2.samsung.com (KnoxPortal) with ESMTPA id
+ 20210805071851eusmtip27cdf6abb678f285692fa22219002662a~YV_q_BtTi2022320223eusmtip2L;
+ Thu,  5 Aug 2021 07:18:50 +0000 (GMT)
+Subject: Re: [PATCH v3 01/25] iommu: Pull IOVA cookie management into the core
+To: Robin Murphy <robin.murphy@arm.com>, joro@8bytes.org, will@kernel.org
+From: Marek Szyprowski <m.szyprowski@samsung.com>
+Message-ID: <6bfafe1c-fc8f-8836-fb80-c6a61788ddc8@samsung.com>
+Date: Thu, 5 Aug 2021 09:18:50 +0200
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:78.0)
  Gecko/20100101 Thunderbird/78.12.0
 MIME-Version: 1.0
-In-Reply-To: <CACycT3tUwJXUV24PK7OvzPrHYYeQ5Q3qUW_vbuFMjwig0dBw2g@mail.gmail.com>
-Authentication-Results: relay.mimecast.com;
- auth=pass smtp.auth=CUSA124A263 smtp.mailfrom=jasowang@redhat.com
-X-Mimecast-Spam-Score: 0
-X-Mimecast-Originator: redhat.com
+In-Reply-To: <46f4cda8215bd5f8a9f9fd5a4a6451805f75efa3.1628094600.git.robin.murphy@arm.com>
 Content-Language: en-US
-Cc: kvm <kvm@vger.kernel.org>, "Michael S. Tsirkin" <mst@redhat.com>,
- virtualization <virtualization@lists.linux-foundation.org>,
- Christian Brauner <christian.brauner@canonical.com>,
- Jonathan Corbet <corbet@lwn.net>, Matthew Wilcox <willy@infradead.org>,
- Christoph Hellwig <hch@infradead.org>,
- Dan Carpenter <dan.carpenter@oracle.com>,
- Stefano Garzarella <sgarzare@redhat.com>,
- Liu Xiaodong <xiaodong.liu@intel.com>, linux-fsdevel@vger.kernel.org,
- Al Viro <viro@zeniv.linux.org.uk>, Stefan Hajnoczi <stefanha@redhat.com>,
- songmuchun@bytedance.com, Jens Axboe <axboe@kernel.dk>,
- He Zhe <zhe.he@windriver.com>, Greg KH <gregkh@linuxfoundation.org>,
- Randy Dunlap <rdunlap@infradead.org>,
- linux-kernel <linux-kernel@vger.kernel.org>, iommu@lists.linux-foundation.org,
- bcrl@kvack.org, netdev@vger.kernel.org, Joe Perches <joe@perches.com>,
- =?UTF-8?Q?Mika_Penttil=c3=a4?= <mika.penttila@nextfour.com>
+X-Brightmail-Tracker: H4sIAAAAAAAAA+NgFupjk+LIzCtJLcpLzFFi42LZduzned07E7gTDa7e17HYPHErm8X1a1cY
+ LR62H2SyOLvsIJvF3NmTGC3+P3rNarFgv7VFw+oLrBab9jexWnTO3sBusenxNVaLy7vmsFm0
+ dS5jtVixagajxcEPT1gtJv5YwGjRcsfU4v6kzSwWX/d+ZnMQ9nhycB6TR+ulv2wea+atYfSY
+ 3XCRxWPiWV2PBZtKPR7P3cju0XLkLavHplWdbB53ru1h85h3MtBj85J6j8k3ljN6tJzcz+Lx
+ 7cxEFo/t1+YxBwhFcdmkpOZklqUW6dslcGXsWLaSpeCnWMXFCSuYGxhvCXUxcnJICJhIHOrs
+ Yuti5OIQEljBKHF4SjMjhPOFUeLJ2kdQzmdGief9l1hgWq7u6GWHSCxnlGjunMgE4XxklPj3
+ 7A8rSJWwQIDEx32dYB0iAp4SZ3t3sIIUMQtsYpHYcPwXE0iCTcBQoustyHZODl4BO4nz83aA
+ NbAIqEic+LYZzBYVSJa4c/o9VI2gxMmZT8DinALREnPuz2EEsZkF5CW2v53DDGGLS9x6Mh/s
+ IgmBX5wS3162QN3tIrH6/UI2CFtY4tXxLewQtozE6ck9LBANzYwSD8+tZYdwehglLjfNYISo
+ spa4c+4XUDcH0ApNifW79CHCjhI9y1vBwhICfBI33gpCHMEnMWnbdGaIMK9ERxs0tNUkZh1f
+ B7f24IVLzBMYlWYheW0WkndmIXlnFsLeBYwsqxjFU0uLc9NTi43yUsv1ihNzi0vz0vWS83M3
+ MQKT7Ol/x7/sYFz+6qPeIUYmDsZDjBIczEoivMmLuRKFeFMSK6tSi/Lji0pzUosPMUpzsCiJ
+ 8yZtWRMvJJCeWJKanZpakFoEk2Xi4JRqYErZlG9id0vbm3deYPJrWaMVT/bxWRnIXv4q8aMt
+ flZeUlDHK4azEcZRO7/3hvi+eHkwnL2BY1/6RfH95XK3ll7QTZ1x8P7XO1rapunf19XNMox0
+ YxJ31Z6rGNlxpHJ5HK/z6Z38D3qCzpWvX/Lh2sWeh/ZOhRlq0z/5rzPwPtR9SvDgm52zbzP1
+ sm1aWfCzSmm9ToCzx1kXxdNG/jeny1m2LP4qWR0+/dOrqcsCt3Vk2D4vPh+vvJ5308rFGb+W
+ SXVqb56iwLz0rQPfD8Gq64duqIfU5j1wFaiwrb3a31ql5rh+fVRo5/SZMblfutx+9FqcFTBc
+ 1Pl/0xferPt/rslsyl+49V+awA5B3dJ9gkosxRmJhlrMRcWJAPesTdMhBAAA
+X-Brightmail-Tracker: H4sIAAAAAAAAA+NgFprPKsWRmVeSWpSXmKPExsVy+t/xe7p3JnAnGkzaxWyxeeJWNovr164w
+ WjxsP8hkcXbZQTaLubMnMVr8f/Sa1WLBfmuLhtUXWC027W9iteicvYHdYtPja6wWl3fNYbNo
+ 61zGarFi1QxGi4MfnrBaTPyxgNGi5Y6pxf1Jm1ksvu79zOYg7PHk4Dwmj9ZLf9k81sxbw+gx
+ u+Eii8fEs7oeCzaVejyeu5Hdo+XIW1aPTas62TzuXNvD5jHvZKDH5iX1HpNvLGf0aDm5n8Xj
+ 25mJLB7br81jDhCK0rMpyi8tSVXIyC8usVWKNrQw0jO0tNAzMrHUMzQ2j7UyMlXSt7NJSc3J
+ LEst0rdL0MvYsWwlS8FPsYqLE1YwNzDeEupi5OSQEDCRuLqjl72LkYtDSGApo8S0s+9ZIRIy
+ EienNUDZwhJ/rnWxQRS9Z5SYteAWM0hCWMBP4sjD/WwgtoiAp8TZ3h1gDcwCW1gkdl+Lgmi4
+ wyjx/OQLdpAEm4ChRNfbLrAGXgE7ifPzdrCA2CwCKhInvm0Gs0UFkiX6vkxghKgRlDg58wlY
+ nFMgWmLO/TmMEAvMJOZtfsgMYctLbH87B8oWl7j1ZD7TBEahWUjaZyFpmYWkZRaSlgWMLKsY
+ RVJLi3PTc4uN9IoTc4tL89L1kvNzNzECU8q2Yz+37GBc+eqj3iFGJg7GQ4wSHMxKIrzJi7kS
+ hXhTEiurUovy44tKc1KLDzGaAv0zkVlKNDkfmNTySuINzQxMDU3MLA1MLc2MlcR5TY6siRcS
+ SE8sSc1OTS1ILYLpY+LglGpgihO4tP4q96Wnns+qBALmTLvbNztS8sY0hRv3404d1vKX9nn6
+ WvIB63+Nv+Uz13MLHfZ58fvSIQ638hty8u9vqrNJTFqiFjR9DcOGPKP/Wk25Po5Vl8q+V56c
+ EmyZurh7ZSer0gvTRjuNJk3L2QfzrOu6GIW/nmIrt8+19fPvbN8cNEfcqrTw37teO5tr0ouf
+ RSVU/zhRbmiqxbqgduFpwd2blTV0td32dR0QNnzLvbLgkHVxQX5w13x/L9eQOPPuHTOirk5t
+ yI97vMdZv2zvB2GVc6WafqI/r33p1DT7+GHV5afGe6/+ljqfviDCxe2lheXMBzrG8wWr6xfu
+ zJ/5dufTR4EG/mtFr2bMCvirxFKckWioxVxUnAgAAlB8ZrIDAAA=
+X-CMS-MailID: 20210805071852eucas1p248ba2fc11f29b05d4cb4ed154c0915a4
+X-Msg-Generator: CA
+X-RootMTR: 20210804171613eucas1p2a1884dfd6436605d8aa58ca106a59804
+X-EPHeader: CA
+CMS-TYPE: 201P
+X-CMS-RootMailID: 20210804171613eucas1p2a1884dfd6436605d8aa58ca106a59804
+References: <cover.1628094600.git.robin.murphy@arm.com>
+ <CGME20210804171613eucas1p2a1884dfd6436605d8aa58ca106a59804@eucas1p2.samsung.com>
+ <46f4cda8215bd5f8a9f9fd5a4a6451805f75efa3.1628094600.git.robin.murphy@arm.com>
+Cc: Maxime Ripard <mripard@kernel.org>,
+ Jean-Philippe Brucker <jean-philippe@linaro.org>,
+ Heiko Stuebner <heiko@sntech.de>, Geert Uytterhoeven <geert+renesas@glider.be>,
+ linux-kernel@vger.kernel.org, Chunyan Zhang <chunyan.zhang@unisoc.com>,
+ dianders@chromium.org, iommu@lists.linux-foundation.org, rajatja@google.com,
+ linux-arm-kernel@lists.infradead.org
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -139,39 +154,98 @@ List-Post: <mailto:iommu@lists.linux-foundation.org>
 List-Help: <mailto:iommu-request@lists.linux-foundation.org?subject=help>
 List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
  <mailto:iommu-request@lists.linux-foundation.org?subject=subscribe>
-Content-Transfer-Encoding: base64
-Content-Type: text/plain; charset="utf-8"; Format="flowed"
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-CuWcqCAyMDIxLzgvNCDkuIvljYg1OjA3LCBZb25namkgWGllIOWGmemBkzoKPiBPbiBXZWQsIEF1
-ZyA0LCAyMDIxIGF0IDQ6NTQgUE0gSmFzb24gV2FuZyA8amFzb3dhbmdAcmVkaGF0LmNvbT4gd3Jv
-dGU6Cj4+Cj4+IOWcqCAyMDIxLzgvNCDkuIvljYg0OjUwLCBZb25namkgWGllIOWGmemBkzoKPj4+
-IE9uIFdlZCwgQXVnIDQsIDIwMjEgYXQgNDozMiBQTSBKYXNvbiBXYW5nIDxqYXNvd2FuZ0ByZWRo
-YXQuY29tPiB3cm90ZToKPj4+PiDlnKggMjAyMS84LzMg5LiL5Y2INTozOCwgWW9uZ2ppIFhpZSDl
-hpnpgZM6Cj4+Pj4+IE9uIFR1ZSwgQXVnIDMsIDIwMjEgYXQgNDowOSBQTSBKYXNvbiBXYW5nIDxq
-YXNvd2FuZ0ByZWRoYXQuY29tPiB3cm90ZToKPj4+Pj4+IOWcqCAyMDIxLzcvMjkg5LiL5Y2IMzoz
-NCwgWGllIFlvbmdqaSDlhpnpgZM6Cj4+Pj4+Pj4gVGhlIGRldmljZSByZXNldCBtYXkgZmFpbCBp
-biB2aXJ0aW8tdmRwYSBjYXNlIG5vdywgc28gYWRkIGNoZWNrcyB0bwo+Pj4+Pj4+IGl0cyByZXR1
-cm4gdmFsdWUgYW5kIGZhaWwgdGhlIHJlZ2lzdGVyX3ZpcnRpb19kZXZpY2UoKS4KPj4+Pj4+IFNv
-IHRoZSByZXNldCgpIHdvdWxkIGJlIGNhbGxlZCBieSB0aGUgZHJpdmVyIGR1cmluZyByZW1vdmUg
-YXMgd2VsbCwgb3IKPj4+Pj4+IGlzIGl0IHN1ZmZpY2llbnQgdG8gZGVhbCBvbmx5IHdpdGggdGhl
-IHJlc2V0IGR1cmluZyBwcm9iZT8KPj4+Pj4+Cj4+Pj4+IEFjdHVhbGx5IHRoZXJlIGlzIG5vIHdh
-eSB0byBoYW5kbGUgZmFpbHVyZSBkdXJpbmcgcmVtb3ZhbC4gQW5kIGl0Cj4+Pj4+IHNob3VsZCBi
-ZSBzYWZlIHdpdGggdGhlIHByb3RlY3Rpb24gb2Ygc29mdHdhcmUgSU9UTEIgZXZlbiBpZiB0aGUK
-Pj4+Pj4gcmVzZXQoKSBmYWlscy4KPj4+Pj4KPj4+Pj4gVGhhbmtzLAo+Pj4+PiBZb25namkKPj4+
-PiBJZiB0aGlzIGlzIHRydWUsIGRvZXMgaXQgbWVhbiB3ZSBkb24ndCBldmVuIG5lZWQgdG8gY2Fy
-ZSBhYm91dCByZXNldAo+Pj4+IGZhaWx1cmU/Cj4+Pj4KPj4+IEJ1dCB3ZSBuZWVkIHRvIGhhbmRs
-ZSB0aGUgZmFpbHVyZSBpbiB0aGUgdmhvc3QtdmRwYSBjYXNlLCBpc24ndCBpdD8KPj4KPj4gWWVz
-LCBidXQ6Cj4+Cj4+IC0gVGhpcyBwYXRjaCBpcyBmb3IgdmlydGlvIG5vdCBmb3Igdmhvc3QsIGlm
-IHdlIGRvbid0IGNhcmUgdmlydGlvLCB3ZQo+PiBjYW4gYXZvaWQgdGhlIGNoYW5nZXMKPj4gLSBG
-b3Igdmhvc3QsIHRoZXJlIGNvdWxkIGJlIHR3byB3YXlzIHByb2JhYmx5Ogo+Pgo+PiAxKSBsZXQg
-dGhlIHNldF9zdGF0dXMgdG8gcmVwb3J0IGVycm9yCj4+IDIpIHJlcXVpcmUgdXNlcnNwYWNlIHRv
-IHJlLXJlYWQgZm9yIHN0YXR1cwo+Pgo+PiBJdCBsb29rcyB0byBtZSB5b3Ugd2FudCB0byBnbyB3
-aXRoIDEpIGFuZCBJJ20gbm90IHN1cmUgd2hldGhlciBvciBub3QKPj4gaXQncyB0b28gbGF0ZSB0
-byBnbyB3aXRoIDIpLgo+Pgo+IExvb2tzIGxpa2UgMikgY2FuJ3Qgd29yayBpZiByZXNldCBmYWls
-dXJlIGhhcHBlbnMgaW4KPiB2aG9zdF92ZHBhX3JlbGVhc2UoKSBhbmQgdmhvc3RfdmRwYV9vcGVu
-KCkuCgoKWWVzLCB5b3UncmUgcmlnaHQuCgpUaGFua3MKCgo+Cj4gVGhhbmtzLAo+IFlvbmdqaQo+
-CgpfX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fXwppb21tdSBt
-YWlsaW5nIGxpc3QKaW9tbXVAbGlzdHMubGludXgtZm91bmRhdGlvbi5vcmcKaHR0cHM6Ly9saXN0
-cy5saW51eGZvdW5kYXRpb24ub3JnL21haWxtYW4vbGlzdGluZm8vaW9tbXU=
+
+On 04.08.2021 19:15, Robin Murphy wrote:
+> Now that everyone has converged on iommu-dma for IOMMU_DOMAIN_DMA
+> support, we can abandon the notion of drivers being responsible for the
+> cookie type, and consolidate all the management into the core code.
+>
+> CC: Marek Szyprowski <m.szyprowski@samsung.com>
+> CC: Yoshihiro Shimoda <yoshihiro.shimoda.uh@renesas.com>
+> CC: Geert Uytterhoeven <geert+renesas@glider.be>
+> CC: Yong Wu <yong.wu@mediatek.com>
+> CC: Heiko Stuebner <heiko@sntech.de>
+> CC: Chunyan Zhang <chunyan.zhang@unisoc.com>
+> CC: Maxime Ripard <mripard@kernel.org>
+> Reviewed-by: Jean-Philippe Brucker <jean-philippe@linaro.org>
+> Reviewed-by: Lu Baolu <baolu.lu@linux.intel.com>
+> Signed-off-by: Robin Murphy <robin.murphy@arm.com>
+Tested-by: Marek Szyprowski <m.szyprowski@samsung.com>
+>
+> ---
+>
+> v3: Use a simpler temporary check instead of trying to be clever with
+>      the error code
+> ---
+>   drivers/iommu/iommu.c | 7 +++++++
+>   include/linux/iommu.h | 3 ++-
+>   2 files changed, 9 insertions(+), 1 deletion(-)
+>
+> diff --git a/drivers/iommu/iommu.c b/drivers/iommu/iommu.c
+> index f2cda9950bd5..b65fcc66ffa4 100644
+> --- a/drivers/iommu/iommu.c
+> +++ b/drivers/iommu/iommu.c
+> @@ -7,6 +7,7 @@
+>   #define pr_fmt(fmt)    "iommu: " fmt
+>   
+>   #include <linux/device.h>
+> +#include <linux/dma-iommu.h>
+>   #include <linux/kernel.h>
+>   #include <linux/bits.h>
+>   #include <linux/bug.h>
+> @@ -1946,6 +1947,11 @@ static struct iommu_domain *__iommu_domain_alloc(struct bus_type *bus,
+>   	/* Assume all sizes by default; the driver may override this later */
+>   	domain->pgsize_bitmap  = bus->iommu_ops->pgsize_bitmap;
+>   
+> +	/* Temporarily avoid -EEXIST while drivers still get their own cookies */
+> +	if (type == IOMMU_DOMAIN_DMA && !domain->iova_cookie && iommu_get_dma_cookie(domain)) {
+> +		iommu_domain_free(domain);
+> +		domain = NULL;
+> +	}
+>   	return domain;
+>   }
+>   
+> @@ -1957,6 +1963,7 @@ EXPORT_SYMBOL_GPL(iommu_domain_alloc);
+>   
+>   void iommu_domain_free(struct iommu_domain *domain)
+>   {
+> +	iommu_put_dma_cookie(domain);
+>   	domain->ops->domain_free(domain);
+>   }
+>   EXPORT_SYMBOL_GPL(iommu_domain_free);
+> diff --git a/include/linux/iommu.h b/include/linux/iommu.h
+> index 4997c78e2670..141779d76035 100644
+> --- a/include/linux/iommu.h
+> +++ b/include/linux/iommu.h
+> @@ -40,6 +40,7 @@ struct iommu_domain;
+>   struct notifier_block;
+>   struct iommu_sva;
+>   struct iommu_fault_event;
+> +struct iommu_dma_cookie;
+>   
+>   /* iommu fault flags */
+>   #define IOMMU_FAULT_READ	0x0
+> @@ -86,7 +87,7 @@ struct iommu_domain {
+>   	iommu_fault_handler_t handler;
+>   	void *handler_token;
+>   	struct iommu_domain_geometry geometry;
+> -	void *iova_cookie;
+> +	struct iommu_dma_cookie *iova_cookie;
+>   };
+>   
+>   enum iommu_cap {
+
+Best regards
+-- 
+Marek Szyprowski, PhD
+Samsung R&D Institute Poland
+
+_______________________________________________
+iommu mailing list
+iommu@lists.linux-foundation.org
+https://lists.linuxfoundation.org/mailman/listinfo/iommu
