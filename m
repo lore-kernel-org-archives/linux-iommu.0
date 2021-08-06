@@ -7,84 +7,83 @@ X-Spam-Status: No, score=-16.6 required=3.0 tests=BAYES_00,DKIM_INVALID,
 	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_GIT
 	autolearn=ham autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 21BBAC4338F
-	for <iommu@archiver.kernel.org>; Fri,  6 Aug 2021 10:35:30 +0000 (UTC)
-Received: from smtp2.osuosl.org (smtp2.osuosl.org [140.211.166.133])
+	by smtp.lore.kernel.org (Postfix) with ESMTP id DF942C4338F
+	for <iommu@archiver.kernel.org>; Fri,  6 Aug 2021 10:35:33 +0000 (UTC)
+Received: from smtp4.osuosl.org (smtp4.osuosl.org [140.211.166.137])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id CFBDB611C3
-	for <iommu@archiver.kernel.org>; Fri,  6 Aug 2021 10:35:29 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.4.1 mail.kernel.org CFBDB611C3
+	by mail.kernel.org (Postfix) with ESMTPS id A191661167
+	for <iommu@archiver.kernel.org>; Fri,  6 Aug 2021 10:35:33 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.4.1 mail.kernel.org A191661167
 Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=chromium.org
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by smtp2.osuosl.org (Postfix) with ESMTP id 9F4CA402F1;
-	Fri,  6 Aug 2021 10:35:29 +0000 (UTC)
+	by smtp4.osuosl.org (Postfix) with ESMTP id 7752A40555;
+	Fri,  6 Aug 2021 10:35:33 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from smtp2.osuosl.org ([127.0.0.1])
-	by localhost (smtp2.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id UP_ODrlyvggx; Fri,  6 Aug 2021 10:35:28 +0000 (UTC)
-Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by smtp2.osuosl.org (Postfix) with ESMTPS id 3237B4010A;
-	Fri,  6 Aug 2021 10:35:28 +0000 (UTC)
-Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 10B78C001A;
-	Fri,  6 Aug 2021 10:35:28 +0000 (UTC)
-Received: from smtp4.osuosl.org (smtp4.osuosl.org [IPv6:2605:bc80:3010::137])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 5303EC000E
- for <iommu@lists.linux-foundation.org>; Fri,  6 Aug 2021 10:35:27 +0000 (UTC)
-Received: from localhost (localhost [127.0.0.1])
- by smtp4.osuosl.org (Postfix) with ESMTP id 41D8F4035E
- for <iommu@lists.linux-foundation.org>; Fri,  6 Aug 2021 10:35:27 +0000 (UTC)
-X-Virus-Scanned: amavisd-new at osuosl.org
-Authentication-Results: smtp4.osuosl.org (amavisd-new);
- dkim=pass (1024-bit key) header.d=chromium.org
 Received: from smtp4.osuosl.org ([127.0.0.1])
- by localhost (smtp4.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id dliUH9iaobm6 for <iommu@lists.linux-foundation.org>;
- Fri,  6 Aug 2021 10:35:26 +0000 (UTC)
+	by localhost (smtp4.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+	with ESMTP id 8g-NT4SE3c4B; Fri,  6 Aug 2021 10:35:32 +0000 (UTC)
+Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
+	by smtp4.osuosl.org (Postfix) with ESMTPS id 63ED340235;
+	Fri,  6 Aug 2021 10:35:32 +0000 (UTC)
+Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 408F5C001A;
+	Fri,  6 Aug 2021 10:35:32 +0000 (UTC)
+Received: from smtp1.osuosl.org (smtp1.osuosl.org [IPv6:2605:bc80:3010::138])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 52E9FC000E
+ for <iommu@lists.linux-foundation.org>; Fri,  6 Aug 2021 10:35:31 +0000 (UTC)
+Received: from localhost (localhost [127.0.0.1])
+ by smtp1.osuosl.org (Postfix) with ESMTP id 4218082E95
+ for <iommu@lists.linux-foundation.org>; Fri,  6 Aug 2021 10:35:31 +0000 (UTC)
+X-Virus-Scanned: amavisd-new at osuosl.org
+Authentication-Results: smtp1.osuosl.org (amavisd-new);
+ dkim=pass (1024-bit key) header.d=chromium.org
+Received: from smtp1.osuosl.org ([127.0.0.1])
+ by localhost (smtp1.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+ with ESMTP id Oyrg7PvP1osk for <iommu@lists.linux-foundation.org>;
+ Fri,  6 Aug 2021 10:35:30 +0000 (UTC)
 X-Greylist: whitelisted by SQLgrey-1.8.0
-Received: from mail-pj1-x102b.google.com (mail-pj1-x102b.google.com
- [IPv6:2607:f8b0:4864:20::102b])
- by smtp4.osuosl.org (Postfix) with ESMTPS id 95CAE4027D
- for <iommu@lists.linux-foundation.org>; Fri,  6 Aug 2021 10:35:26 +0000 (UTC)
-Received: by mail-pj1-x102b.google.com with SMTP id
- u21-20020a17090a8915b02901782c36f543so13190927pjn.4
- for <iommu@lists.linux-foundation.org>; Fri, 06 Aug 2021 03:35:26 -0700 (PDT)
+Received: from mail-pj1-x1034.google.com (mail-pj1-x1034.google.com
+ [IPv6:2607:f8b0:4864:20::1034])
+ by smtp1.osuosl.org (Postfix) with ESMTPS id BE7E082505
+ for <iommu@lists.linux-foundation.org>; Fri,  6 Aug 2021 10:35:30 +0000 (UTC)
+Received: by mail-pj1-x1034.google.com with SMTP id ca5so15927273pjb.5
+ for <iommu@lists.linux-foundation.org>; Fri, 06 Aug 2021 03:35:30 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=chromium.org; s=google;
  h=from:to:cc:subject:date:message-id:in-reply-to:references
  :mime-version:content-transfer-encoding;
- bh=Q1mq8OVdPA80W1OExBfSV/W93H3mior+3W3/MDGRcPA=;
- b=WiK7nCyqlQFTBMZR9JJTdkj1kZjISOnsxD0sZZqZRttMOKdD7tNOx7SohDYrRPB/vS
- jVshrw+ma253776vxv7OuO7qNXWcABcU9y+C+lqyPYQa0LhHzQS7sqOiH4iyzJSxuHLw
- zBNXvOo7bxz4tkV1givX47JWukXhflrU29vCc=
+ bh=NBP1mI1eJEmFrRBUj3/dx1CqWPqkwlbz29Jcl4m2xAk=;
+ b=JdKNJSBvRopa3Urrf3WhX/uKXIwQujM9Ti8EciOTg67ZJ1j0meWMTB7/EibJ6XLLqC
+ dD+TEpkqMPtcqpcMHgpUGRGGUky93D3Yq8qYpfiQjSzT/wXJfKOP6ZkUmJDGlj3cxO4t
+ zJEiyJGmpXj/MnrRj0JdCX6l4yFXHk/TOLsgo=
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
  d=1e100.net; s=20161025;
  h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
  :references:mime-version:content-transfer-encoding;
- bh=Q1mq8OVdPA80W1OExBfSV/W93H3mior+3W3/MDGRcPA=;
- b=hBHutoG8xavC3o6j8c2/IawtIVayTu9UVcEp2tzGwZIgRV2PaLkYrVsbZjVauQFlk3
- L5+45qtWwge2nHgsSbC34HEUlN0jU5pwg1zef986GNJAC+Gv6FgUE6zw6mJtwVfneGvv
- bYhftMMWF+UuLuHxvlUUdx7s8SA+/7uDyi1Q5+qUWAC8t1qaX2cU9i7nl7+ZKJxOeVgI
- 552HTRkTj0hjaq9fc1NXiAvs8CgNMLtsEBflECo8zND1cfDPWmFlmeVw8pxtwFK2R5MH
- pEaJ/++m395CrNovdgg1VuykF/B7Mj4Ikt/2hXKwlSiYml3frHjUMaIDU+BECx+NIxNK
- IbtQ==
-X-Gm-Message-State: AOAM530hUXri1wHAsZuZXzK9YM0EE2n2BGNedlktybRAgoWU8ETy0aLG
- NIwTejcyhrXVQZLcS5FaLS5vQA==
-X-Google-Smtp-Source: ABdhPJxXz1rKwjtjRyr6RAhIU4x/csYMr6Flkwf754fyqLMJNih4b/f9Y7xhRTLzhRZpZaHngGi3BA==
-X-Received: by 2002:a17:90a:138f:: with SMTP id
- i15mr9796044pja.173.1628246126098; 
- Fri, 06 Aug 2021 03:35:26 -0700 (PDT)
+ bh=NBP1mI1eJEmFrRBUj3/dx1CqWPqkwlbz29Jcl4m2xAk=;
+ b=pBhfASH8zx/0Tc2F70JqEspCp4WFGv3ng+8UdT0lMgrI/QhK02uLQop6hpEAwiB58z
+ y7BBFCELQ+/UKlnZTOhdJ38APf4wrffwFwnUihpENBV1AD0M/+WqWS7P2cbA0F2EeN8R
+ BskOfB+f5u7NwHcO5L2ncpOilMP5iWEZW9o2LfBBc5P/9fja4teCgEnBte8y/6R8Q/wv
+ zDsDh9k8dJS5RlqIKT/OwB9ivpavVyl2SPPV/oN3ZfHpCKzAn0KTAR2J4ajv1vbZ9NQQ
+ WDwUop4pMs5P8qlh+31UivdoEJ5B1Vi7ltEIiTSK0rgZ0uwOP6G+RZUhykoQWafMl3WI
+ yBFw==
+X-Gm-Message-State: AOAM531iiyGfVouGPO05pkVnUvmyes3NmnhhtxIcOg6nOXI5sdvYQqzb
+ g62t5NrLFAew8BU62IZOP/9RCw==
+X-Google-Smtp-Source: ABdhPJyYJf8IZc/UBHsRMF484qyLGnbbn2jXQbe+CyHk6yZx9o4TB97jhd9dHES8sNQ5E1cwkJ1NBg==
+X-Received: by 2002:a17:90a:d190:: with SMTP id
+ fu16mr20709870pjb.157.1628246130284; 
+ Fri, 06 Aug 2021 03:35:30 -0700 (PDT)
 Received: from localhost ([2401:fa00:8f:203:6f20:cf00:347a:afc2])
- by smtp.gmail.com with UTF8SMTPSA id x24sm12172935pjk.43.2021.08.06.03.35.24
+ by smtp.gmail.com with UTF8SMTPSA id 6sm12821707pjk.1.2021.08.06.03.35.28
  (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
- Fri, 06 Aug 2021 03:35:25 -0700 (PDT)
+ Fri, 06 Aug 2021 03:35:30 -0700 (PDT)
 From: David Stevens <stevensd@chromium.org>
 X-Google-Original-From: David Stevens <stevensd@google.com>
 To: Robin Murphy <robin.murphy@arm.com>
-Subject: [PATCH v2 8/9] dma-mapping: add persistent streaming mapping flag
-Date: Fri,  6 Aug 2021 19:34:22 +0900
-Message-Id: <20210806103423.3341285-9-stevensd@google.com>
+Subject: [PATCH v2 9/9] drm/i915: use DMA_ATTR_PERSISTENT_STREAMING flag
+Date: Fri,  6 Aug 2021 19:34:23 +0900
+Message-Id: <20210806103423.3341285-10-stevensd@google.com>
 X-Mailer: git-send-email 2.32.0.605.g8dce9f2422-goog
 In-Reply-To: <20210806103423.3341285-1-stevensd@google.com>
 References: <20210806103423.3341285-1-stevensd@google.com>
@@ -111,87 +110,44 @@ Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
 From: David Stevens <stevensd@chromium.org>
 
-Add a DMA_ATTR_PERSISTENT_STREAMING flag which indicates that the
-streaming mapping is long lived and that the caller will manage
-coherency either through the dma_sync_* functions or via some other
-use-case specific mechanism. This flag indicates to the platform that
-it should optimize for more efficient syncing at the cost of more
-expensive mapping and unmapping.
-
-This flag is used to skip optional bounce buffers when
-CONFIG_IOMMU_BOUNCE_BUFFERS is enabled. With respect to these bounce
-buffers, in most cases the flag is an optimization. However, callers
-which do not use the dma_sync_* calls to manage coherency must use this
-flag to work properly when CONFIG_IOMMU_BOUNCE_BUFFERS is enabled.
+Use the new DMA_ATTR_PERSISTENT_STREAMING for long lived dma mappings
+which directly handle CPU cache coherency instead of using dma_sync_*.
 
 Signed-off-by: David Stevens <stevensd@chromium.org>
 ---
- drivers/iommu/io-bounce-buffers.c | 14 +++++++++++---
- include/linux/dma-mapping.h       | 11 +++++++++++
- 2 files changed, 22 insertions(+), 3 deletions(-)
+ drivers/gpu/drm/i915/gem/i915_gem_dmabuf.c | 4 +++-
+ drivers/gpu/drm/i915/i915_gem_gtt.c        | 3 ++-
+ 2 files changed, 5 insertions(+), 2 deletions(-)
 
-diff --git a/drivers/iommu/io-bounce-buffers.c b/drivers/iommu/io-bounce-buffers.c
-index af8c2a51eeed..3a0071d5a9ea 100644
---- a/drivers/iommu/io-bounce-buffers.c
-+++ b/drivers/iommu/io-bounce-buffers.c
-@@ -409,8 +409,16 @@ static bool io_bounce_buffers_map_buffer(struct io_bounce_buffers *buffers,
- 	return mapped >= info->size;
- }
- 
--static bool use_bounce_buffer(bool force_bounce, size_t size)
-+static bool use_bounce_buffer(struct device *dev, unsigned long attrs,
-+			      bool force_bounce, size_t size)
- {
-+	if (attrs & DMA_ATTR_PERSISTENT_STREAMING) {
-+		WARN_ONCE(force_bounce,
-+			  "Skipping bounce buffer for untrusted mapping %s\n",
-+			  dev_name(dev));
-+		return false;
-+	}
-+
- 	if (IS_ENABLED(CONFIG_IOMMU_BOUNCE_BUFFERS) &&
- 	    size <= always_bounce_limit)
- 		return true;
-@@ -429,7 +437,7 @@ bool io_bounce_buffers_map_page(struct io_bounce_buffers *buffers,
- 	bool force_bounce = buffers->untrusted &&
- 			    iova_offset(buffers->iovad, offset | size);
- 
--	if (!use_bounce_buffer(force_bounce, size))
-+	if (!use_bounce_buffer(dev, attrs, force_bounce, size))
- 		return false;
- 
- 	*handle = DMA_MAPPING_ERROR;
-@@ -476,7 +484,7 @@ bool io_bounce_buffers_map_sg(struct io_bounce_buffers *buffers,
- 				buffers->iovad, iter->offset | iter->length);
+diff --git a/drivers/gpu/drm/i915/gem/i915_gem_dmabuf.c b/drivers/gpu/drm/i915/gem/i915_gem_dmabuf.c
+index 616c3a2f1baf..df982cfb4f34 100644
+--- a/drivers/gpu/drm/i915/gem/i915_gem_dmabuf.c
++++ b/drivers/gpu/drm/i915/gem/i915_gem_dmabuf.c
+@@ -48,7 +48,9 @@ static struct sg_table *i915_gem_map_dma_buf(struct dma_buf_attachment *attachme
+ 		src = sg_next(src);
  	}
  
--	if (!use_bounce_buffer(force_bounce, size))
-+	if (!use_bounce_buffer(dev, attrs, force_bounce, size))
- 		return false;
+-	ret = dma_map_sgtable(attachment->dev, st, dir, DMA_ATTR_SKIP_CPU_SYNC);
++	ret = dma_map_sgtable(attachment->dev, st, dir,
++			      DMA_ATTR_SKIP_CPU_SYNC |
++			      DMA_ATTR_PERSISTENT_STREAMING);
+ 	if (ret)
+ 		goto err_free_sg;
  
- 	*out_nents = 0;
-diff --git a/include/linux/dma-mapping.h b/include/linux/dma-mapping.h
-index 183e7103a66d..5d318753bb79 100644
---- a/include/linux/dma-mapping.h
-+++ b/include/linux/dma-mapping.h
-@@ -61,6 +61,17 @@
-  */
- #define DMA_ATTR_PRIVILEGED		(1UL << 9)
+diff --git a/drivers/gpu/drm/i915/i915_gem_gtt.c b/drivers/gpu/drm/i915/i915_gem_gtt.c
+index 36489be4896b..f27a849631f7 100644
+--- a/drivers/gpu/drm/i915/i915_gem_gtt.c
++++ b/drivers/gpu/drm/i915/i915_gem_gtt.c
+@@ -33,7 +33,8 @@ int i915_gem_gtt_prepare_pages(struct drm_i915_gem_object *obj,
+ 				     PCI_DMA_BIDIRECTIONAL,
+ 				     DMA_ATTR_SKIP_CPU_SYNC |
+ 				     DMA_ATTR_NO_KERNEL_MAPPING |
+-				     DMA_ATTR_NO_WARN))
++				     DMA_ATTR_NO_WARN |
++				     DMA_ATTR_PERSISTENT_STREAMING))
+ 			return 0;
  
-+/*
-+ * DMA_ATTR_PERSISTENT_STREAMING: Indicates that the streaming mapping is long
-+ * lived, so syncing performance should be prioritized over mapping/unmapping
-+ * performance. Platform code will establish a mapping which only requires CPU
-+ * cache synchronization.
-+ *
-+ * Callers that create long lived mappings and directly handle CPU cache
-+ * management without calling using dma_sync_* functions must set this flag.
-+ */
-+#define DMA_ATTR_PERSISTENT_STREAMING	(1UL << 10)
-+
- /*
-  * A dma_addr_t can hold any valid DMA or bus address for the platform.  It can
-  * be given to a device to use as a DMA source or target.  It is specific to a
+ 		/*
 -- 
 2.32.0.605.g8dce9f2422-goog
 
