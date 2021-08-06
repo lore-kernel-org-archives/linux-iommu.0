@@ -6,66 +6,65 @@ X-Spam-Status: No, score=-3.5 required=3.0 tests=BAYES_00,DKIM_INVALID,
 	DKIM_SIGNED,HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,SPF_HELO_NONE,
 	SPF_PASS,URIBL_BLOCKED autolearn=no autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3B175C4338F
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3CA8BC432BE
 	for <iommu@archiver.kernel.org>; Fri,  6 Aug 2021 05:33:08 +0000 (UTC)
-Received: from smtp3.osuosl.org (smtp3.osuosl.org [140.211.166.136])
+Received: from smtp1.osuosl.org (smtp1.osuosl.org [140.211.166.138])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id AAC0D611C9
+	by mail.kernel.org (Postfix) with ESMTPS id A7DAA60E52
 	for <iommu@archiver.kernel.org>; Fri,  6 Aug 2021 05:33:07 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.4.1 mail.kernel.org AAC0D611C9
+DMARC-Filter: OpenDMARC Filter v1.4.1 mail.kernel.org A7DAA60E52
 Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=gibson.dropbear.id.au
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by smtp3.osuosl.org (Postfix) with ESMTP id 408A46FB13;
+	by smtp1.osuosl.org (Postfix) with ESMTP id 45F4E82FCE;
 	Fri,  6 Aug 2021 05:33:07 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from smtp3.osuosl.org ([127.0.0.1])
-	by localhost (smtp3.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id mbWgDn9S8zLA; Fri,  6 Aug 2021 05:33:06 +0000 (UTC)
-Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by smtp3.osuosl.org (Postfix) with ESMTPS id 105686FB16;
-	Fri,  6 Aug 2021 05:33:06 +0000 (UTC)
-Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 7EB6CC0020;
+Received: from smtp1.osuosl.org ([127.0.0.1])
+	by localhost (smtp1.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+	with ESMTP id XJcv_on40jsz; Fri,  6 Aug 2021 05:33:05 +0000 (UTC)
+Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [IPv6:2605:bc80:3010:104::8cd3:938])
+	by smtp1.osuosl.org (Postfix) with ESMTPS id 6A34B82F03;
 	Fri,  6 Aug 2021 05:33:05 +0000 (UTC)
-Received: from smtp1.osuosl.org (smtp1.osuosl.org [140.211.166.138])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 20C1DC000E
+Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 2892DC001A;
+	Fri,  6 Aug 2021 05:33:05 +0000 (UTC)
+Received: from smtp2.osuosl.org (smtp2.osuosl.org [IPv6:2605:bc80:3010::133])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 25225C001A
  for <iommu@lists.linux-foundation.org>; Fri,  6 Aug 2021 05:33:03 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by smtp1.osuosl.org (Postfix) with ESMTP id E398E82FCE
+ by smtp2.osuosl.org (Postfix) with ESMTP id E77F5402AA
  for <iommu@lists.linux-foundation.org>; Fri,  6 Aug 2021 05:33:02 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Authentication-Results: smtp1.osuosl.org (amavisd-new);
+Authentication-Results: smtp2.osuosl.org (amavisd-new);
  dkim=pass (1024-bit key) header.d=gibson.dropbear.id.au
-Received: from smtp1.osuosl.org ([127.0.0.1])
- by localhost (smtp1.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id eQdkYQ_Xw5z5 for <iommu@lists.linux-foundation.org>;
- Fri,  6 Aug 2021 05:33:01 +0000 (UTC)
+Received: from smtp2.osuosl.org ([127.0.0.1])
+ by localhost (smtp2.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+ with ESMTP id t0MY-eZgACNF for <iommu@lists.linux-foundation.org>;
+ Fri,  6 Aug 2021 05:33:02 +0000 (UTC)
 X-Greylist: domain auto-whitelisted by SQLgrey-1.8.0
 Received: from ozlabs.org (ozlabs.org [IPv6:2401:3900:2:1::2])
- by smtp1.osuosl.org (Postfix) with ESMTPS id ACEA782F03
+ by smtp2.osuosl.org (Postfix) with ESMTPS id C7E79402DD
  for <iommu@lists.linux-foundation.org>; Fri,  6 Aug 2021 05:33:01 +0000 (UTC)
 Received: by ozlabs.org (Postfix, from userid 1007)
- id 4GgvJT5j2qz9sW5; Fri,  6 Aug 2021 15:32:57 +1000 (AEST)
+ id 4GgvJT5CmJz9sWl; Fri,  6 Aug 2021 15:32:57 +1000 (AEST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
  d=gibson.dropbear.id.au; s=201602; t=1628227977;
- bh=VgP74InI3Uz0qZ2/LQM1R3Ud9iWaj+wk/xGRWtN/6yY=;
+ bh=H07A1vmsG7/hmEZvTTKfG6W1Nqbvj1job+oTNmVUUFA=;
  h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
- b=Xi+yKoqfW0FkYj+E2G8mVLF6aPdhG3HhV0yIOwgUkVBn7p4NzF/iYNdpUE7HHitZk
- j5qfp4AdzdTAt4sE4Hivsc3v1s7U/ZIalR03kQxlOAms683p6OpZ61PFOoYxGwQzQD
- Bgsf0Sx0ROMhpcJNioWxawsw9nT/kGNH5IKSmLtk=
-Date: Fri, 6 Aug 2021 14:47:50 +1000
+ b=PwL5ZJgISfrA9Ti81rxOUK7eS71N98wp2QENeeQcD3uBMmUdAWCKV3aqowF6NZOXh
+ XI8W9HWfT1skRy4PZRx6ZQAUDg0g2DIbGv5UrWp94sJS7NqcsU7UAViaxcPyoHHi0b
+ L+XALLz8KF0a+k3IWu0mPt0P9+s9QVX4yrejWGZE=
+Date: Fri, 6 Aug 2021 14:24:28 +1000
 From: David Gibson <david@gibson.dropbear.id.au>
 To: Jason Gunthorpe <jgg@nvidia.com>
 Subject: Re: [RFC v2] /dev/iommu uAPI proposal
-Message-ID: <YQy+9mSSzban+t/X@yekko>
+Message-ID: <YQy5fBJkKHhuNUuP@yekko>
 References: <BN9PR11MB5433B1E4AE5B0480369F97178C189@BN9PR11MB5433.namprd11.prod.outlook.com>
  <YP4/KJoYfbaf5U94@yekko> <20210730145123.GW1721383@nvidia.com>
- <BN9PR11MB5433C34222B3E727B3D0E5638CEF9@BN9PR11MB5433.namprd11.prod.outlook.com>
- <20210804140447.GH1721383@nvidia.com>
+ <YQii3g3plte4gT5Z@yekko> <20210804140742.GI1721383@nvidia.com>
 MIME-Version: 1.0
-In-Reply-To: <20210804140447.GH1721383@nvidia.com>
+In-Reply-To: <20210804140742.GI1721383@nvidia.com>
 Cc: "kvm@vger.kernel.org" <kvm@vger.kernel.org>,
  Jason Wang <jasowang@redhat.com>, Kirti Wankhede <kwankhede@nvidia.com>,
  Jean-Philippe Brucker <jean-philippe@linaro.org>, "Jiang,
@@ -90,43 +89,49 @@ List-Post: <mailto:iommu@lists.linux-foundation.org>
 List-Help: <mailto:iommu-request@lists.linux-foundation.org?subject=help>
 List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
  <mailto:iommu-request@lists.linux-foundation.org?subject=subscribe>
-Content-Type: multipart/mixed; boundary="===============2477276390049928552=="
+Content-Type: multipart/mixed; boundary="===============7289955539523923673=="
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
 
---===============2477276390049928552==
+--===============7289955539523923673==
 Content-Type: multipart/signed; micalg=pgp-sha256;
-	protocol="application/pgp-signature"; boundary="xtXF0LkKM6+DEdEM"
+	protocol="application/pgp-signature"; boundary="waHxV1qIfKEUr127"
 Content-Disposition: inline
 
 
---xtXF0LkKM6+DEdEM
+--waHxV1qIfKEUr127
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
 Content-Transfer-Encoding: quoted-printable
 
-On Wed, Aug 04, 2021 at 11:04:47AM -0300, Jason Gunthorpe wrote:
-> On Mon, Aug 02, 2021 at 02:49:44AM +0000, Tian, Kevin wrote:
+On Wed, Aug 04, 2021 at 11:07:42AM -0300, Jason Gunthorpe wrote:
+> On Tue, Aug 03, 2021 at 11:58:54AM +1000, David Gibson wrote:
+> > > I'd rather deduce the endpoint from a collection of devices than the
+> > > other way around...
+> >=20
+> > Which I think is confusing, and in any case doesn't cover the case of
+> > one "device" with multiple endpoints.
 >=20
-> > Can you elaborate? IMO the user only cares about the label (device cook=
-ie=20
-> > plus optional vPASID) which is generated by itself when doing the attac=
-hing
-> > call, and expects this virtual label being used in various spots (inval=
-idation,
-> > page fault, etc.). How the system labels the traffic (the physical RID =
-or RID+
-> > PASID) should be completely invisible to userspace.
+> Well they are both confusing, and I'd prefer to focus on the common
+> case without extra mandatory steps. Exposing optional endpoint sharing
+> information seems more in line with where everything is going than
+> making endpoint sharing a first class object.
 >=20
-> I don't think that is true if the vIOMMU driver is also emulating
-> PASID. Presumably the same is true for other PASID-like schemes.
+> AFAIK a device with multiple endpoints where those endpoints are
+> shared with other devices doesn't really exist/or is useful? Eg PASID
+> has multiple RIDs by they are not shared.
 
-Right.  The idea for an SVA capable vIOMMU in my scheme is that the
-hypervisor would set up an IOAS of address type "PASID+address" with
-the mappings made by the guest according to its vIOMMU semantics.
-Then SVA capable devices would be plugged into that IOAS by using
-"PASID+address" type endpoints from those devices.
+No, I can't think of a (non-contrived) example where a device would
+have *both* multiple endpoints and those endpoints are shared amongst
+multiple devices.  I can easily think of examples where a device has
+multiple (non shared) endpoints and where multiple devices share a
+single endpoint.
+
+The point is that making endpoints explicit separates the various
+options here from the logic of the IOMMU layer itself.  New device
+types with new possibilities here means new interfaces *on those
+devices*, but not new interfaces on /dev/iommu.
 
 --=20
 David Gibson			| I'll have my music baroque, and my code
@@ -134,29 +139,29 @@ david AT gibson.dropbear.id.au	| minimalist, thank you.  NOT _the_ _other_
 				| _way_ _around_!
 http://www.ozlabs.org/~dgibson
 
---xtXF0LkKM6+DEdEM
+--waHxV1qIfKEUr127
 Content-Type: application/pgp-signature; name="signature.asc"
 
 -----BEGIN PGP SIGNATURE-----
 
-iQIzBAEBCAAdFiEEdfRlhq5hpmzETofcbDjKyiDZs5IFAmEMvvYACgkQbDjKyiDZ
-s5J7OhAAt80UyM01hO9UcB2WUWkDFXZd5ryLChQk4nBBHH6AolfinitcVmNoHb6l
-+WQQGubNPMHJa5bzSpa28cViR8hcc1frjPwqcHbUb8YS4h7ILXpk3BiEt5jIZ4Oc
-xUP6lKK8G14ZltBQvNNzjrd031aA+XHEx80bpU1q4xKMCLqJt2CFyd5bTw7aOabh
-+qGukHkhcotpFTroiAkuJrHRTOy8nvbl8nAw/ult+59c0DnTao+yfdFBjf3+h9a0
-iPcnxEWS8HJ80/Fv9KpLnQ0tNtXoTY2Q/dBfS4FolPwYg9bfNqm8Xdk8t4owCfeF
-M9m0fDBDekxaM2Lsr+fGMZ2A9CdrXs8NBAaNWvU92H3EnIZBmxb95VoaJsryN7gj
-IbZVLLz4zY7BQos7pc7EJKB3uYzAOpNpvrTZKPTOb5+oTwFrr60fFbzlIe4lyg/z
-XOZ4tHtlzsYxhaFZmVRrW0taJ30aR9vHGiJSbcQlrs1W1cK8nAjO0QRkeYmVyRqA
-o0TFw1SBNIIieNzPUxHa56cNQm0M3Hi9w+RkcSmsK2aDhaovrM7l5xgSs5/HxIqI
-qT6VBd/+bqhK+y0iA2SFd3d/521yGKu41XcEvkya0k0dv2sCUwDydNC4knVGoAUc
-nlRowbhm5r9RbcHcsCcduvboA7JAEMhU2aESrQGrHwTAXn2cS+E=
-=rCVy
+iQIzBAEBCAAdFiEEdfRlhq5hpmzETofcbDjKyiDZs5IFAmEMuXoACgkQbDjKyiDZ
+s5Ll7RAAw19Bgqx4KAD/OEJN+VYXQEI6yg6Y78rk14ks5bjzQJ9Asq3t+HhsxCyx
+EddzGgfqFGfkql9wXDEDbYFBVRMEZdcD0Zf0zFWVDqmoexXPQxCHQGTK87T1hb0f
+qKbD3EP2dSv4cGNDejyHGghBcPK4PB+1DbRccJ0WV2a5FHeJ1dP4T3PF7ybRQps5
+fHidQxDNkkv1b9AocsxpjXJ2c3LxXDbWGBN+5s/MmCP3ueYoH64MZEbM5EGZEo/g
+8/XIDlrrCe3CXYvAxCjjafAw8+3dgrdLvkqmvtUVGb2vDWJgnFRrYP+KU89yT7H1
+vZPKxV52nVaO7aM9EuN5bLatSQNgyiQwa02hXz6RbFPTQf5XOpja0Nm/TyNb1aol
+7YxUWQpfiCydQdW+lzfa/7Em7rXZldwihDD/69VpKkinppathe2DoqzAr8hVkTFl
+rwJyEWU5220p5tby5N9QHIQkajx7PvigbhmtLx/t7l3sgGb4wB3Lw2zSd0f739Kh
+m6Qru1FOEVAW7ELEyD8b75upcT4tRnlDZfjbl5eHu/AyWt/lZoCVT8l9Syblrrl6
+nYuzjCbzKGvkeD2wRfAuro7j3dh9VE+PIfUbGDvqmoKH27lJtWMLS2ek3zTEh95k
+pvi1vc27W18oJ8bUdlpe9G5d6au5U/AhKuRFKkgNqltYjuTHwvU=
+=o8eD
 -----END PGP SIGNATURE-----
 
---xtXF0LkKM6+DEdEM--
+--waHxV1qIfKEUr127--
 
---===============2477276390049928552==
+--===============7289955539523923673==
 Content-Type: text/plain; charset="us-ascii"
 MIME-Version: 1.0
 Content-Transfer-Encoding: 7bit
@@ -166,4 +171,4 @@ _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
 https://lists.linuxfoundation.org/mailman/listinfo/iommu
---===============2477276390049928552==--
+--===============7289955539523923673==--
