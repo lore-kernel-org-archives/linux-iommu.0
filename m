@@ -2,116 +2,112 @@ Return-Path: <SRS0=YfIy=NA=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-13.5 required=3.0 tests=BAYES_00,
-	DKIM_ADSP_CUSTOM_MED,DKIM_INVALID,DKIM_SIGNED,FREEMAIL_FORGED_FROMDOMAIN,
-	FREEMAIL_FROM,HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_CR_TRAILER,
-	INCLUDES_PATCH,MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,
-	USER_AGENT_GIT autolearn=ham autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-0.5 required=3.0 tests=BAYES_00,DKIM_ADSP_CUSTOM_MED,
+	DKIM_INVALID,DKIM_SIGNED,FREEMAIL_FORGED_FROMDOMAIN,FREEMAIL_FROM,
+	HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,
+	URIBL_BLOCKED autolearn=no autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6A995C43214
-	for <iommu@archiver.kernel.org>; Mon,  9 Aug 2021 17:57:01 +0000 (UTC)
-Received: from smtp2.osuosl.org (smtp2.osuosl.org [140.211.166.133])
+	by smtp.lore.kernel.org (Postfix) with ESMTP id AC35FC432BE
+	for <iommu@archiver.kernel.org>; Mon,  9 Aug 2021 18:03:16 +0000 (UTC)
+Received: from smtp1.osuosl.org (smtp1.osuosl.org [140.211.166.138])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 29D4061153
-	for <iommu@archiver.kernel.org>; Mon,  9 Aug 2021 17:57:01 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.4.1 mail.kernel.org 29D4061153
+	by mail.kernel.org (Postfix) with ESMTPS id 530B9610EA
+	for <iommu@archiver.kernel.org>; Mon,  9 Aug 2021 18:03:16 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.4.1 mail.kernel.org 530B9610EA
 Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=gmail.com
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by smtp2.osuosl.org (Postfix) with ESMTP id 4E7DE40350;
-	Mon,  9 Aug 2021 17:57:00 +0000 (UTC)
+	by smtp1.osuosl.org (Postfix) with ESMTP id 10E6A82A2D;
+	Mon,  9 Aug 2021 18:03:16 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from smtp2.osuosl.org ([127.0.0.1])
-	by localhost (smtp2.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id 5Q-QnDmrzDDa; Mon,  9 Aug 2021 17:56:58 +0000 (UTC)
+Received: from smtp1.osuosl.org ([127.0.0.1])
+	by localhost (smtp1.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+	with ESMTP id m4doppA3JkPZ; Mon,  9 Aug 2021 18:03:12 +0000 (UTC)
 Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by smtp2.osuosl.org (Postfix) with ESMTPS id 065F5402C3;
-	Mon,  9 Aug 2021 17:56:58 +0000 (UTC)
+	by smtp1.osuosl.org (Postfix) with ESMTPS id D431482A6C;
+	Mon,  9 Aug 2021 18:03:11 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id D6328C001A;
-	Mon,  9 Aug 2021 17:56:57 +0000 (UTC)
-Received: from smtp4.osuosl.org (smtp4.osuosl.org [IPv6:2605:bc80:3010::137])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 23979C000E
- for <iommu@lists.linux-foundation.org>; Mon,  9 Aug 2021 17:56:57 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id AD054C001A;
+	Mon,  9 Aug 2021 18:03:11 +0000 (UTC)
+Received: from smtp3.osuosl.org (smtp3.osuosl.org [140.211.166.136])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 79ED7C000E
+ for <iommu@lists.linux-foundation.org>; Mon,  9 Aug 2021 18:03:10 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by smtp4.osuosl.org (Postfix) with ESMTP id 054E64044A
- for <iommu@lists.linux-foundation.org>; Mon,  9 Aug 2021 17:56:57 +0000 (UTC)
+ by smtp3.osuosl.org (Postfix) with ESMTP id 5A55B6FAC8
+ for <iommu@lists.linux-foundation.org>; Mon,  9 Aug 2021 18:03:10 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Authentication-Results: smtp4.osuosl.org (amavisd-new);
+Authentication-Results: smtp3.osuosl.org (amavisd-new);
  dkim=pass (2048-bit key) header.d=gmail.com
-Received: from smtp4.osuosl.org ([127.0.0.1])
- by localhost (smtp4.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id 8nFvnAtErFHx for <iommu@lists.linux-foundation.org>;
- Mon,  9 Aug 2021 17:56:56 +0000 (UTC)
+Received: from smtp3.osuosl.org ([127.0.0.1])
+ by localhost (smtp3.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+ with ESMTP id sFW4Bu3OLP0d for <iommu@lists.linux-foundation.org>;
+ Mon,  9 Aug 2021 18:03:09 +0000 (UTC)
 X-Greylist: whitelisted by SQLgrey-1.8.0
-Received: from mail-pj1-x1036.google.com (mail-pj1-x1036.google.com
- [IPv6:2607:f8b0:4864:20::1036])
- by smtp4.osuosl.org (Postfix) with ESMTPS id 5368B40446
- for <iommu@lists.linux-foundation.org>; Mon,  9 Aug 2021 17:56:56 +0000 (UTC)
-Received: by mail-pj1-x1036.google.com with SMTP id
- u13-20020a17090abb0db0290177e1d9b3f7so96773pjr.1
- for <iommu@lists.linux-foundation.org>; Mon, 09 Aug 2021 10:56:56 -0700 (PDT)
+Received: from mail-wm1-x333.google.com (mail-wm1-x333.google.com
+ [IPv6:2a00:1450:4864:20::333])
+ by smtp3.osuosl.org (Postfix) with ESMTPS id 651116062F
+ for <iommu@lists.linux-foundation.org>; Mon,  9 Aug 2021 18:03:09 +0000 (UTC)
+Received: by mail-wm1-x333.google.com with SMTP id
+ w21-20020a7bc1150000b02902e69ba66ce6so621325wmi.1
+ for <iommu@lists.linux-foundation.org>; Mon, 09 Aug 2021 11:03:09 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=gmail.com; s=20161025;
- h=from:to:cc:subject:date:message-id:in-reply-to:references
- :mime-version:content-transfer-encoding;
- bh=29igml5xJQT7NZ/zHELD608zwBtMw+CBZNUu6aD3TXw=;
- b=ZCoB9o0cvriAk3/PPGeEVPrIAnIqymJpX+yMC18ujzQkba5lyQWncuyzod11hNntU1
- 1bk6U1EvfSLpZGhLCGAu8NGIa9wsSZRoZ9K8ij4t9yrTzMssHz4c12UmzGHuYx3Qqwqe
- 5euceZzMuwpmGsvwlu4n571z1nUyoA5EMVamLrK2Fv4kQgex9w+3kQMyU5XErr3GN4CH
- 2w3uSc7qIzutfvO/NUn4XoFUmpELqTdpw+eF5ttK+V/67fPZ9sLruj8gW2s9Uld8o0/F
- kbW1vumljR+S/wuC/e/qZtU3IDoreR6eEJ755vt4a2DdwykGjIka2gxZnJUQ0sS84g+E
- rg5w==
+ h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+ :cc; bh=AottaItdNpwEGaBVEcs2HSf4MSRq1/DJ2ThJuxRDL0Y=;
+ b=t3NjC6Wc6R/U+WyQTTgjVH/rdU4MqhTP0Ldt3iBZ+QpVu9bL/uGwFDnkHE9hVifDCw
+ 3IHL95I8zaBeiaRjAM8US5bFNnCjxRac/VGFA+Geg17X9YiMzbnumQpHDImztVOSJ7zm
+ pyRaYK6D8iHhJZyQf177eCA5HEiqiDgZx1cwGEq3jiyTFf0a3HaF4WT3h2XDMC9JveI8
+ 25FJk7rWKgpQTmPm+7RSUs+LWiOVzjwOm6CljybSU6PCzUweeQn5O2mir8+//cpT9hE3
+ jh0ItWDJiXwm4P60mG+2u9z+n9u2Ajd1YDkL5rO3eq0Xr1w8yOfy8tu3aDGGz69D8y9B
+ sZbw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
  d=1e100.net; s=20161025;
- h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
- :references:mime-version:content-transfer-encoding;
- bh=29igml5xJQT7NZ/zHELD608zwBtMw+CBZNUu6aD3TXw=;
- b=JY16biNN5O7X569vlsNfC31jqHNLaZ72B3nJ2Amw9qqw3Forv7vFZawR2iIva+Xmej
- ql/IEf1lYaDtGv0Qcv0LQjX8TOrNCwKx2/snzTlqsutsQrbC6+sLQJb2nAF+ookJu317
- VwOCYJzibeV/1zKECHOmysjclk9348iEC5mj+Wpq3kmqtzHrphbGZE4NNy3oFjeoG/AR
- rIHfW3zexu439S98+UxW2kvLQRoQ4NBCbzL12YjYhbe9B4h8HTbQabUXt/0tbdB8FCS0
- 7TWNAacm/bJDLuQ1h+UyQVAu+UGvCX8bvB+x29hE2JSHnIcinZw3wXFff1bKR3kny9d1
- 4xBw==
-X-Gm-Message-State: AOAM5333rcvA8PQJmhQ06800qPC/HznnqhA7MJ53P3HxWd8xkIr6ADBy
- TcwJt4WEbgkuhCtx2p8xcsI=
-X-Google-Smtp-Source: ABdhPJyrAc9rzm4dB2lw3/nEgFaiXcijpmPD2rziJMns8K4uV1C97emxRFnkmN6KdkTyhlwj4rqtkA==
-X-Received: by 2002:a17:90a:a112:: with SMTP id
- s18mr323042pjp.27.1628531815828; 
- Mon, 09 Aug 2021 10:56:55 -0700 (PDT)
-Received: from ubuntu-Virtual-Machine.corp.microsoft.com
- ([2001:4898:80e8:2:106e:6ed1:5da1:2ac4])
- by smtp.gmail.com with ESMTPSA id x14sm20589708pfa.127.2021.08.09.10.56.54
- (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
- Mon, 09 Aug 2021 10:56:55 -0700 (PDT)
-From: Tianyu Lan <ltykernel@gmail.com>
-To: kys@microsoft.com, haiyangz@microsoft.com, sthemmin@microsoft.com,
- wei.liu@kernel.org, decui@microsoft.com, tglx@linutronix.de,
- mingo@redhat.com, bp@alien8.de, x86@kernel.org, hpa@zytor.com,
- dave.hansen@linux.intel.com, luto@kernel.org, peterz@infradead.org,
- konrad.wilk@oracle.com, boris.ostrovsky@oracle.com, jgross@suse.com,
- sstabellini@kernel.org, joro@8bytes.org, will@kernel.org,
- davem@davemloft.net, kuba@kernel.org, jejb@linux.ibm.com,
- martin.petersen@oracle.com, arnd@arndb.de, hch@lst.de,
- m.szyprowski@samsung.com, robin.murphy@arm.com, thomas.lendacky@amd.com,
- brijesh.singh@amd.com, ardb@kernel.org, Tianyu.Lan@microsoft.com,
- pgonda@google.com, martin.b.radev@gmail.com, akpm@linux-foundation.org,
- kirill.shutemov@linux.intel.com, rppt@kernel.org, sfr@canb.auug.org.au,
- saravanand@fb.com, krish.sadhukhan@oracle.com, aneesh.kumar@linux.ibm.com,
- xen-devel@lists.xenproject.org, rientjes@google.com, hannes@cmpxchg.org,
- tj@kernel.org, michael.h.kelley@microsoft.com
-Subject: [PATCH V3 13/13] HV/Storvsc: Add Isolation VM support for storvsc
- driver
-Date: Mon,  9 Aug 2021 13:56:17 -0400
-Message-Id: <20210809175620.720923-14-ltykernel@gmail.com>
-X-Mailer: git-send-email 2.25.1
-In-Reply-To: <20210809175620.720923-1-ltykernel@gmail.com>
-References: <20210809175620.720923-1-ltykernel@gmail.com>
+ h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+ :message-id:subject:to:cc;
+ bh=AottaItdNpwEGaBVEcs2HSf4MSRq1/DJ2ThJuxRDL0Y=;
+ b=cVNy1Zltxtcs7nynD05KaTJ9hqprNwQCbyJcMIeTfn9HPPhERWq6H+y5oUgm0fbgIA
+ ojCQS/80VGThpdr4o8aP+VVc2nm0IWH5whTnO+IMKvUkv6kiVTvhLN2HJPcZRduuGocj
+ 5rXaW5d8xIjYiSCcP+cPtZC+h3mN2D83lIqgbGupn5PCMWJlb9DtZiPU3lw9XhEblFD/
+ gaWxgJcAorDcUR76g4VtnmVhLWTYrGWVpoTcZhTbOFl+/5aeJbQ8uC70jpMXUBW0GvG1
+ HmxGOWa4oQjiijjeABUG3eFPWJTdPf5g5Y8SBWIvOFeBoH2mWfcHFNnCnZJ1GDQSg16N
+ e3dA==
+X-Gm-Message-State: AOAM532qz6/6b+hb03DAGPvuXcF8Slgcu3jQL4EegYJqSZh4ySl+pBxg
+ 2DO0RiCpNvTciBgj5FkLVbdyN8bW27GVf8aGkos=
+X-Google-Smtp-Source: ABdhPJwPQuU1umbzHs0AJtjSZtlKt3cKEhS0AjOuobmEY6ysunNkpvrb+zdwqw/9Gv8yOZQu0gTllxVLx8C+clsD3c0=
+X-Received: by 2002:a1c:f414:: with SMTP id z20mr398052wma.94.1628532187414;
+ Mon, 09 Aug 2021 11:03:07 -0700 (PDT)
 MIME-Version: 1.0
-Cc: linux-arch@vger.kernel.org, parri.andrea@gmail.com,
- linux-hyperv@vger.kernel.org, linux-scsi@vger.kernel.org,
- netdev@vger.kernel.org, linux-kernel@vger.kernel.org, dave.hansen@intel.com,
- iommu@lists.linux-foundation.org, vkuznets@redhat.com
+References: <20210728140052.GB22887@mms-0441>
+ <8b2742c8891abe4fec3664730717a089@codeaurora.org>
+ <20210802105544.GA27657@willie-the-truck>
+ <CAF6AEGvtpFu8st=ZFNoKjP9YsAenciLxL1zMFi_iqMCvdby73w@mail.gmail.com>
+ <20210802151409.GE28735@willie-the-truck>
+ <CAF6AEGtzvyEUm0Fc8QT5t9KNK7i0FbFyi7zDM2_PMCzZBp7qbw@mail.gmail.com>
+ <20210809145651.GC1458@willie-the-truck>
+ <CAF6AEGsSUojA=V0n2iRWTCn++buqN=Eoxo0r3=+=PBu1O=H-AQ@mail.gmail.com>
+ <20210809170508.GB1589@willie-the-truck>
+ <CAF6AEGtmZ3LzAJdtnKDQDbEN-a6_JgdN-fZ96pkU3dZqkiW91g@mail.gmail.com>
+ <20210809174022.GA1840@willie-the-truck>
+ <76bfd0b4248148dfbf9d174ddcb4c2a2@codeaurora.org>
+In-Reply-To: <76bfd0b4248148dfbf9d174ddcb4c2a2@codeaurora.org>
+From: Rob Clark <robdclark@gmail.com>
+Date: Mon, 9 Aug 2021 11:07:22 -0700
+Message-ID: <CAF6AEGtiVgHc7rcfzOpBmtVGQBvGPCBmtKJ3AJx887NSMj0EzQ@mail.gmail.com>
+Subject: Re: [Freedreno] [PATCH 0/3] iommu/drm/msm: Allow non-coherent masters
+ to use system cache
+To: Sai Prakash Ranjan <saiprakash.ranjan@codeaurora.org>
+Cc: "Isaac J. Manjarres" <isaacm@codeaurora.org>,
+ freedreno <freedreno@lists.freedesktop.org>,
+ Jordan Crouse <jcrouse@codeaurora.org>, David Airlie <airlied@linux.ie>,
+ Sean Paul <sean@poorly.run>, Akhil P Oommen <akhilpo@codeaurora.org>,
+ dri-devel <dri-devel@lists.freedesktop.org>,
+ Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+ "list@263.net:IOMMU DRIVERS , Joerg Roedel <joro@8bytes.org>,
+ " <iommu@lists.linux-foundation.org>,
+ Kristian H Kristensen <hoegsberg@google.com>, Daniel Vetter <daniel@ffwll.ch>,
+ linux-arm-msm <linux-arm-msm@vger.kernel.org>, Will Deacon <will@kernel.org>,
+ "moderated list:ARM/FREESCALE IMX / MXC ARM ARCHITECTURE"
+ <linux-arm-kernel@lists.infradead.org>, Robin Murphy <robin.murphy@arm.com>
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -129,165 +125,124 @@ Content-Transfer-Encoding: 7bit
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-From: Tianyu Lan <Tianyu.Lan@microsoft.com>
+On Mon, Aug 9, 2021 at 10:47 AM Sai Prakash Ranjan
+<saiprakash.ranjan@codeaurora.org> wrote:
+>
+> On 2021-08-09 23:10, Will Deacon wrote:
+> > On Mon, Aug 09, 2021 at 10:18:21AM -0700, Rob Clark wrote:
+> >> On Mon, Aug 9, 2021 at 10:05 AM Will Deacon <will@kernel.org> wrote:
+> >> >
+> >> > On Mon, Aug 09, 2021 at 09:57:08AM -0700, Rob Clark wrote:
+> >> > > On Mon, Aug 9, 2021 at 7:56 AM Will Deacon <will@kernel.org> wrote:
+> >> > > > On Mon, Aug 02, 2021 at 06:36:04PM -0700, Rob Clark wrote:
+> >> > > > > On Mon, Aug 2, 2021 at 8:14 AM Will Deacon <will@kernel.org> wrote:
+> >> > > > > > On Mon, Aug 02, 2021 at 08:08:07AM -0700, Rob Clark wrote:
+> >> > > > > > > On Mon, Aug 2, 2021 at 3:55 AM Will Deacon <will@kernel.org> wrote:
+> >> > > > > > > > On Thu, Jul 29, 2021 at 10:08:22AM +0530, Sai Prakash Ranjan wrote:
+> >> > > > > > > > > On 2021-07-28 19:30, Georgi Djakov wrote:
+> >> > > > > > > > > > On Mon, Jan 11, 2021 at 07:45:02PM +0530, Sai Prakash Ranjan wrote:
+> >> > > > > > > > > > > commit ecd7274fb4cd ("iommu: Remove unused IOMMU_SYS_CACHE_ONLY flag")
+> >> > > > > > > > > > > removed unused IOMMU_SYS_CACHE_ONLY prot flag and along with it went
+> >> > > > > > > > > > > the memory type setting required for the non-coherent masters to use
+> >> > > > > > > > > > > system cache. Now that system cache support for GPU is added, we will
+> >> > > > > > > > > > > need to set the right PTE attribute for GPU buffers to be sys cached.
+> >> > > > > > > > > > > Without this, the system cache lines are not allocated for GPU.
+> >> > > > > > > > > > >
+> >> > > > > > > > > > > So the patches in this series introduces a new prot flag IOMMU_LLC,
+> >> > > > > > > > > > > renames IO_PGTABLE_QUIRK_ARM_OUTER_WBWA to IO_PGTABLE_QUIRK_PTW_LLC
+> >> > > > > > > > > > > and makes GPU the user of this protection flag.
+> >> > > > > > > > > >
+> >> > > > > > > > > > Thank you for the patchset! Are you planning to refresh it, as it does
+> >> > > > > > > > > > not apply anymore?
+> >> > > > > > > > > >
+> >> > > > > > > > >
+> >> > > > > > > > > I was waiting on Will's reply [1]. If there are no changes needed, then
+> >> > > > > > > > > I can repost the patch.
+> >> > > > > > > >
+> >> > > > > > > > I still think you need to handle the mismatched alias, no? You're adding
+> >> > > > > > > > a new memory type to the SMMU which doesn't exist on the CPU side. That
+> >> > > > > > > > can't be right.
+> >> > > > > > > >
+> >> > > > > > >
+> >> > > > > > > Just curious, and maybe this is a dumb question, but what is your
+> >> > > > > > > concern about mismatched aliases?  I mean the cache hierarchy on the
+> >> > > > > > > GPU device side (anything beyond the LLC) is pretty different and
+> >> > > > > > > doesn't really care about the smmu pgtable attributes..
+> >> > > > > >
+> >> > > > > > If the CPU accesses a shared buffer with different attributes to those which
+> >> > > > > > the device is using then you fall into the "mismatched memory attributes"
+> >> > > > > > part of the Arm architecture. It's reasonably unforgiving (you should go and
+> >> > > > > > read it) and in some cases can apply to speculative accesses as well, but
+> >> > > > > > the end result is typically loss of coherency.
+> >> > > > >
+> >> > > > > Ok, I might have a few other sections to read first to decipher the
+> >> > > > > terminology..
+> >> > > > >
+> >> > > > > But my understanding of LLC is that it looks just like system memory
+> >> > > > > to the CPU and GPU (I think that would make it "the point of
+> >> > > > > coherence" between the GPU and CPU?)  If that is true, shouldn't it be
+> >> > > > > invisible from the point of view of different CPU mapping options?
+> >> > > >
+> >> > > > You could certainly build a system where mismatched attributes don't cause
+> >> > > > loss of coherence, but as it's not guaranteed by the architecture and the
+> >> > > > changes proposed here affect APIs which are exposed across SoCs, then I
+> >> > > > don't think it helps much.
+> >> > > >
+> >> > >
+> >> > > Hmm, the description of the new mapping flag is that it applies only
+> >> > > to transparent outer level cache:
+> >> > >
+> >> > > +/*
+> >> > > + * Non-coherent masters can use this page protection flag to set cacheable
+> >> > > + * memory attributes for only a transparent outer level of cache, also known as
+> >> > > + * the last-level or system cache.
+> >> > > + */
+> >> > > +#define IOMMU_LLC      (1 << 6)
+> >> > >
+> >> > > But I suppose we could call it instead IOMMU_QCOM_LLC or something
+> >> > > like that to make it more clear that it is not necessarily something
+> >> > > that would work with a different outer level cache implementation?
+> >> >
+> >> > ... or we could just deal with the problem so that other people can reuse
+> >> > the code. I haven't really understood the reluctance to solve this properly.
+> >> >
+> >> > Am I missing some reason this isn't solvable?
+> >>
+> >> Oh, was there another way to solve it (other than foregoing setting
+> >> INC_OCACHE in the pgtables)?  Maybe I misunderstood, is there a
+> >> corresponding setting on the MMU pgtables side of things?
+> >
+> > Right -- we just need to program the CPU's MMU with the matching memory
+> > attributes! It's a bit more fiddly if you're just using ioremap_wc()
+> > though, as it's usually the DMA API which handles the attributes under
+> > the
+> > hood.
+> >
+> > Anyway, sorry, I should've said that explicitly earlier on. We've done
+> > this
+> > sort of thing in the Android tree so I assumed Sai knew what needed to
+> > be
+> > done and then I didn't think to explain to you :(
+> >
+>
+> Right I was aware of that but even in the android tree there is no user
+> :)
+> I think we can't have a new memory type without any user right in
+> upstream
+> like android tree?
+>
+> @Rob, I think you  already tried adding a new MT and used
+> pgprot_syscached()
+> in GPU driver but it was crashing?
 
-In Isolation VM, all shared memory with host needs to mark visible
-to host via hvcall. vmbus_establish_gpadl() has already done it for
-storvsc rx/tx ring buffer. The page buffer used by vmbus_sendpacket_
-mpb_desc() still need to handle. Use DMA API to map/umap these
-memory during sending/receiving packet and Hyper-V DMA ops callback
-will use swiotlb function to allocate bounce buffer and copy data
-from/to bounce buffer.
+Correct, but IIRC there were some differences in the code for memory
+types compared to the android tree.. I couldn't figure out the
+necessary patches to cherry-pick to get the android patch to apply
+cleanly, so I tried re-implementing it without having much of a clue
+about how that code works (which was probably the issue) ;-)
 
-Signed-off-by: Tianyu Lan <Tianyu.Lan@microsoft.com>
----
- drivers/scsi/storvsc_drv.c | 68 +++++++++++++++++++++++++++++++++++---
- 1 file changed, 63 insertions(+), 5 deletions(-)
-
-diff --git a/drivers/scsi/storvsc_drv.c b/drivers/scsi/storvsc_drv.c
-index 328bb961c281..78320719bdd8 100644
---- a/drivers/scsi/storvsc_drv.c
-+++ b/drivers/scsi/storvsc_drv.c
-@@ -21,6 +21,8 @@
- #include <linux/device.h>
- #include <linux/hyperv.h>
- #include <linux/blkdev.h>
-+#include <linux/io.h>
-+#include <linux/dma-mapping.h>
- #include <scsi/scsi.h>
- #include <scsi/scsi_cmnd.h>
- #include <scsi/scsi_host.h>
-@@ -427,6 +429,8 @@ struct storvsc_cmd_request {
- 	u32 payload_sz;
- 
- 	struct vstor_packet vstor_packet;
-+	u32 hvpg_count;
-+	struct hv_dma_range *dma_range;
- };
- 
- 
-@@ -509,6 +513,14 @@ struct storvsc_scan_work {
- 	u8 tgt_id;
- };
- 
-+#define storvsc_dma_map(dev, page, offset, size, dir) \
-+	dma_map_page(dev, page, offset, size, dir)
-+
-+#define storvsc_dma_unmap(dev, dma_range, dir)		\
-+		dma_unmap_page(dev, dma_range.dma,	\
-+			       dma_range.mapping_size,	\
-+			       dir ? DMA_FROM_DEVICE : DMA_TO_DEVICE)
-+
- static void storvsc_device_scan(struct work_struct *work)
- {
- 	struct storvsc_scan_work *wrk;
-@@ -1260,6 +1272,7 @@ static void storvsc_on_channel_callback(void *context)
- 	struct hv_device *device;
- 	struct storvsc_device *stor_device;
- 	struct Scsi_Host *shost;
-+	int i;
- 
- 	if (channel->primary_channel != NULL)
- 		device = channel->primary_channel->device_obj;
-@@ -1314,6 +1327,15 @@ static void storvsc_on_channel_callback(void *context)
- 				request = (struct storvsc_cmd_request *)scsi_cmd_priv(scmnd);
- 			}
- 
-+			if (request->dma_range) {
-+				for (i = 0; i < request->hvpg_count; i++)
-+					storvsc_dma_unmap(&device->device,
-+						request->dma_range[i],
-+						request->vstor_packet.vm_srb.data_in == READ_TYPE);
-+
-+				kfree(request->dma_range);
-+			}
-+
- 			storvsc_on_receive(stor_device, packet, request);
- 			continue;
- 		}
-@@ -1810,7 +1832,9 @@ static int storvsc_queuecommand(struct Scsi_Host *host, struct scsi_cmnd *scmnd)
- 		unsigned int hvpgoff, hvpfns_to_add;
- 		unsigned long offset_in_hvpg = offset_in_hvpage(sgl->offset);
- 		unsigned int hvpg_count = HVPFN_UP(offset_in_hvpg + length);
-+		dma_addr_t dma;
- 		u64 hvpfn;
-+		u32 size;
- 
- 		if (hvpg_count > MAX_PAGE_BUFFER_COUNT) {
- 
-@@ -1824,6 +1848,13 @@ static int storvsc_queuecommand(struct Scsi_Host *host, struct scsi_cmnd *scmnd)
- 		payload->range.len = length;
- 		payload->range.offset = offset_in_hvpg;
- 
-+		cmd_request->dma_range = kcalloc(hvpg_count,
-+				 sizeof(*cmd_request->dma_range),
-+				 GFP_ATOMIC);
-+		if (!cmd_request->dma_range) {
-+			ret = -ENOMEM;
-+			goto free_payload;
-+		}
- 
- 		for (i = 0; sgl != NULL; sgl = sg_next(sgl)) {
- 			/*
-@@ -1847,9 +1878,29 @@ static int storvsc_queuecommand(struct Scsi_Host *host, struct scsi_cmnd *scmnd)
- 			 * last sgl should be reached at the same time that
- 			 * the PFN array is filled.
- 			 */
--			while (hvpfns_to_add--)
--				payload->range.pfn_array[i++] =	hvpfn++;
-+			while (hvpfns_to_add--) {
-+				size = min(HV_HYP_PAGE_SIZE - offset_in_hvpg,
-+					   (unsigned long)length);
-+				dma = storvsc_dma_map(&dev->device, pfn_to_page(hvpfn++),
-+						      offset_in_hvpg, size,
-+						      scmnd->sc_data_direction);
-+				if (dma_mapping_error(&dev->device, dma)) {
-+					ret = -ENOMEM;
-+					goto free_dma_range;
-+				}
-+
-+				if (offset_in_hvpg) {
-+					payload->range.offset = dma & ~HV_HYP_PAGE_MASK;
-+					offset_in_hvpg = 0;
-+				}
-+
-+				cmd_request->dma_range[i].dma = dma;
-+				cmd_request->dma_range[i].mapping_size = size;
-+				payload->range.pfn_array[i++] = dma >> HV_HYP_PAGE_SHIFT;
-+				length -= size;
-+			}
- 		}
-+		cmd_request->hvpg_count = hvpg_count;
- 	}
- 
- 	cmd_request->payload = payload;
-@@ -1860,13 +1911,20 @@ static int storvsc_queuecommand(struct Scsi_Host *host, struct scsi_cmnd *scmnd)
- 	put_cpu();
- 
- 	if (ret == -EAGAIN) {
--		if (payload_sz > sizeof(cmd_request->mpb))
--			kfree(payload);
- 		/* no more space */
--		return SCSI_MLQUEUE_DEVICE_BUSY;
-+		ret = SCSI_MLQUEUE_DEVICE_BUSY;
-+		goto free_dma_range;
- 	}
- 
- 	return 0;
-+
-+free_dma_range:
-+	kfree(cmd_request->dma_range);
-+
-+free_payload:
-+	if (payload_sz > sizeof(cmd_request->mpb))
-+		kfree(payload);
-+	return ret;
- }
- 
- static struct scsi_host_template scsi_driver = {
--- 
-2.25.1
-
+BR,
+-R
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
