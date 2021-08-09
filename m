@@ -2,87 +2,87 @@ Return-Path: <SRS0=YfIy=NA=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-8.5 required=3.0 tests=BAYES_00,DKIM_ADSP_CUSTOM_MED,
-	DKIM_INVALID,DKIM_SIGNED,FREEMAIL_FORGED_FROMDOMAIN,FREEMAIL_FROM,
-	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,SPF_HELO_NONE,
-	SPF_PASS,URIBL_BLOCKED,USER_AGENT_GIT autolearn=unavailable
-	autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-13.5 required=3.0 tests=BAYES_00,
+	DKIM_ADSP_CUSTOM_MED,DKIM_INVALID,DKIM_SIGNED,FREEMAIL_FORGED_FROMDOMAIN,
+	FREEMAIL_FROM,HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_CR_TRAILER,
+	INCLUDES_PATCH,MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,
+	USER_AGENT_GIT autolearn=unavailable autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E9456C432BE
-	for <iommu@archiver.kernel.org>; Mon,  9 Aug 2021 17:56:32 +0000 (UTC)
-Received: from smtp2.osuosl.org (smtp2.osuosl.org [140.211.166.133])
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1097BC43214
+	for <iommu@archiver.kernel.org>; Mon,  9 Aug 2021 17:56:34 +0000 (UTC)
+Received: from smtp3.osuosl.org (smtp3.osuosl.org [140.211.166.136])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 9858C6101E
-	for <iommu@archiver.kernel.org>; Mon,  9 Aug 2021 17:56:32 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.4.1 mail.kernel.org 9858C6101E
+	by mail.kernel.org (Postfix) with ESMTPS id BC24A61051
+	for <iommu@archiver.kernel.org>; Mon,  9 Aug 2021 17:56:33 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.4.1 mail.kernel.org BC24A61051
 Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=gmail.com
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by smtp2.osuosl.org (Postfix) with ESMTP id 58B6A40231;
-	Mon,  9 Aug 2021 17:56:32 +0000 (UTC)
+	by smtp3.osuosl.org (Postfix) with ESMTP id 80C926061A;
+	Mon,  9 Aug 2021 17:56:33 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from smtp2.osuosl.org ([127.0.0.1])
-	by localhost (smtp2.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id K52yVMc99uZI; Mon,  9 Aug 2021 17:56:28 +0000 (UTC)
+Received: from smtp3.osuosl.org ([127.0.0.1])
+	by localhost (smtp3.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+	with ESMTP id piT94fa34HVq; Mon,  9 Aug 2021 17:56:29 +0000 (UTC)
 Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by smtp2.osuosl.org (Postfix) with ESMTPS id 180EC40169;
-	Mon,  9 Aug 2021 17:56:28 +0000 (UTC)
+	by smtp3.osuosl.org (Postfix) with ESMTPS id 48FCC6062F;
+	Mon,  9 Aug 2021 17:56:29 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id CB991C001A;
-	Mon,  9 Aug 2021 17:56:27 +0000 (UTC)
-Received: from smtp4.osuosl.org (smtp4.osuosl.org [140.211.166.137])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 8A818C000E
- for <iommu@lists.linux-foundation.org>; Mon,  9 Aug 2021 17:56:26 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 331D9C001A;
+	Mon,  9 Aug 2021 17:56:29 +0000 (UTC)
+Received: from smtp2.osuosl.org (smtp2.osuosl.org [140.211.166.133])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 519BDC001F
+ for <iommu@lists.linux-foundation.org>; Mon,  9 Aug 2021 17:56:28 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by smtp4.osuosl.org (Postfix) with ESMTP id 65D82402BA
- for <iommu@lists.linux-foundation.org>; Mon,  9 Aug 2021 17:56:26 +0000 (UTC)
+ by smtp2.osuosl.org (Postfix) with ESMTP id 31AF640221
+ for <iommu@lists.linux-foundation.org>; Mon,  9 Aug 2021 17:56:28 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Authentication-Results: smtp4.osuosl.org (amavisd-new);
+Authentication-Results: smtp2.osuosl.org (amavisd-new);
  dkim=pass (2048-bit key) header.d=gmail.com
-Received: from smtp4.osuosl.org ([127.0.0.1])
- by localhost (smtp4.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id SjcHcFiZ_Ps8 for <iommu@lists.linux-foundation.org>;
- Mon,  9 Aug 2021 17:56:24 +0000 (UTC)
+Received: from smtp2.osuosl.org ([127.0.0.1])
+ by localhost (smtp2.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+ with ESMTP id pbmlDQDqhsD4 for <iommu@lists.linux-foundation.org>;
+ Mon,  9 Aug 2021 17:56:27 +0000 (UTC)
 X-Greylist: whitelisted by SQLgrey-1.8.0
 Received: from mail-pj1-x1031.google.com (mail-pj1-x1031.google.com
  [IPv6:2607:f8b0:4864:20::1031])
- by smtp4.osuosl.org (Postfix) with ESMTPS id 7C8DE40298
- for <iommu@lists.linux-foundation.org>; Mon,  9 Aug 2021 17:56:24 +0000 (UTC)
-Received: by mail-pj1-x1031.google.com with SMTP id a8so29207744pjk.4
- for <iommu@lists.linux-foundation.org>; Mon, 09 Aug 2021 10:56:24 -0700 (PDT)
+ by smtp2.osuosl.org (Postfix) with ESMTPS id 4CB25400E5
+ for <iommu@lists.linux-foundation.org>; Mon,  9 Aug 2021 17:56:27 +0000 (UTC)
+Received: by mail-pj1-x1031.google.com with SMTP id nt11so6030243pjb.2
+ for <iommu@lists.linux-foundation.org>; Mon, 09 Aug 2021 10:56:27 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=gmail.com; s=20161025;
- h=from:to:cc:subject:date:message-id:mime-version
- :content-transfer-encoding;
- bh=iMjG88RfqbH3GsgcXA5mv3GuI6oCcG41dDNUrFFXLAQ=;
- b=EViVv89zPeRqrGYf9LSDfx7ltGQyAh4Avv1iqGXrZVN8IJuT63NhOIxiCyk8Rx6sFQ
- MnHutJOGM4qObGTB3+2cDbzN4XBxMdUdYKKb4gdQgVYXZpLOwn/LJTBX3yu2AGv1TQf3
- gHD7PNproN/353NWNPLbKsHhp8I5TfXCuEG8GTgqdzoTROjdYr7R+QVuJWXGMX3O1nKM
- RVW2Isxs0xuZHcR/6YqF12JGhSFNL7twyZAqbDPV4zDkbkQQ1mDpob6v3yKEJ83Wgmje
- DnZ5wIak32lAhxG4fYr8PeZhzjGZR40FVtp2z4KdVrsEgpAFr/Ky4zrJzy/tHZhuJrQU
- 8oJw==
+ h=from:to:cc:subject:date:message-id:in-reply-to:references
+ :mime-version:content-transfer-encoding;
+ bh=+SXmZnVGaWXOY/RYkmLfCtWMULRdMkbPmQ9ViuTHD4g=;
+ b=vEiVBsmsjWFoq4H9xIe2JkVBV6ZRxO8oTc1d0POF8FBUFnHfygUIcXu1Q6lIUO6G8V
+ OZ0eKnK8b2FYfXzWwIFzo7hO/SDSbktZBgBA9q5MzDM2tSVD+lUqIOyamzBgk9mM4sd7
+ +/ChsJIEW5dMQMfRN0VzltH1RuxxvHykERIWU2rB7pLq/8xj0nq7SVaiK3ZsuHFQ8FoW
+ D9nA4u0vEJoYCDwR5KWdept1EbyGZC9nhnkSNJdwsfiss59YjCsICZPyWMfbNLKZ4vZL
+ o6/PPIdsLDr6vZuwTGl4jdGx8871bBC+zvCYBedAkrhQuufnqjjdtdNfQqXrkOuRK22k
+ 4L9g==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
  d=1e100.net; s=20161025;
- h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
- :content-transfer-encoding;
- bh=iMjG88RfqbH3GsgcXA5mv3GuI6oCcG41dDNUrFFXLAQ=;
- b=RqhAF5oLCr6JWsaeFq11DVENysNmuZ0ZJe9eFyC+d5sUycFFWdegbUS5Vq1DikcXMZ
- x0LcurFjok4JSHcCClHp5kcYh84jtBXMId2bR1V4i+3qS6D3gyUfi8k5zuvTBDiSjT3a
- 3PVFLaaZPTX+m931HiYQXcUWJyar5vWxhTHjyEewdrbg7HPlP+5oDAmQWg61Zx6vWpRB
- 7nOlMyG8pxTbB05A0tLzCSikeIvDolDCFNg4XzIMnLeYqqVTm7r422Dh2KG4u/sW5j+K
- cdmkfy/dG4NHTvHaARxXtRE9n+w3mN6l53Hp5I9o8a5HxyAj/aXpwdfpIxNlnHUFa2zB
- qg5A==
-X-Gm-Message-State: AOAM531b8pdWZwBDFq/UYlIC+mJZt0suXCUIfia90TNb2HEaNp5fOgqV
- CZbznb4JURhtv77R5kG3rSk=
-X-Google-Smtp-Source: ABdhPJxHfYqFvwoB8xKnP4oxRsbZ9Lzyar+mwb4Rea7hgUEL0NvwGLrtk99GSAXFKwmlrj/fCUWr6A==
-X-Received: by 2002:a17:90a:e018:: with SMTP id
- u24mr4349253pjy.126.1628531783941; 
- Mon, 09 Aug 2021 10:56:23 -0700 (PDT)
+ h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
+ :references:mime-version:content-transfer-encoding;
+ bh=+SXmZnVGaWXOY/RYkmLfCtWMULRdMkbPmQ9ViuTHD4g=;
+ b=WmYko25hxt/epFTa4E3QboO+Y3hB3Q3tfjQppeXgKbPe3V6kv00086wwUZ1vnhNAq6
+ Kg05n9X4i6SY3JxZxG9DPfDAdvJvwH23BjKexQtU5O1nTzt3SrJPKK/mAxb1LP88Uk+4
+ gTgqjnXOW9gxnPmnZuCfdnDDNyxO20EkJAhUwvMMvWXRx5UVo0qb7po2ZHg2Z12HT5gA
+ d2Un8XKgMJqCuoX+s5XVW1mSkORqOQYlILetbwbznvrJFVPKBghggFR2FxoozmWLnYKt
+ a4K2z6dRfzY9O5XkUdIG6UvR2NuFubc2DL2ivPRXou0U44rv5TbdhPoKOG+4uLS+UT1B
+ 2f2A==
+X-Gm-Message-State: AOAM5328lw3oMa5nhFgXDr37EqlZc00+s1O+0OanIsZnDRINB8LdBpcp
+ mNy20fHcdz/I0BsgyWoromM=
+X-Google-Smtp-Source: ABdhPJw/Bw/9aycFrRX8qJNE8oCpvKM3rGElUB7qQ9nDgVBBQ7qhpDJqT8kHjxicHZLhAf9ipjwyRA==
+X-Received: by 2002:a62:f244:0:b029:3c3:100f:c302 with SMTP id
+ y4-20020a62f2440000b02903c3100fc302mr25175993pfl.37.1628531786781; 
+ Mon, 09 Aug 2021 10:56:26 -0700 (PDT)
 Received: from ubuntu-Virtual-Machine.corp.microsoft.com
  ([2001:4898:80e8:2:106e:6ed1:5da1:2ac4])
- by smtp.gmail.com with ESMTPSA id x14sm20589708pfa.127.2021.08.09.10.56.22
+ by smtp.gmail.com with ESMTPSA id x14sm20589708pfa.127.2021.08.09.10.56.25
  (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
- Mon, 09 Aug 2021 10:56:23 -0700 (PDT)
+ Mon, 09 Aug 2021 10:56:26 -0700 (PDT)
 From: Tianyu Lan <ltykernel@gmail.com>
 To: kys@microsoft.com, haiyangz@microsoft.com, sthemmin@microsoft.com,
  wei.liu@kernel.org, decui@microsoft.com, tglx@linutronix.de,
@@ -99,10 +99,12 @@ To: kys@microsoft.com, haiyangz@microsoft.com, sthemmin@microsoft.com,
  saravanand@fb.com, krish.sadhukhan@oracle.com, aneesh.kumar@linux.ibm.com,
  xen-devel@lists.xenproject.org, rientjes@google.com, hannes@cmpxchg.org,
  tj@kernel.org, michael.h.kelley@microsoft.com
-Subject: [PATCH V3 00/13] x86/Hyper-V: Add Hyper-V Isolation VM support
-Date: Mon,  9 Aug 2021 13:56:04 -0400
-Message-Id: <20210809175620.720923-1-ltykernel@gmail.com>
+Subject: [PATCH V3 01/13] x86/HV: Initialize GHCB page in Isolation VM
+Date: Mon,  9 Aug 2021 13:56:05 -0400
+Message-Id: <20210809175620.720923-2-ltykernel@gmail.com>
 X-Mailer: git-send-email 2.25.1
+In-Reply-To: <20210809175620.720923-1-ltykernel@gmail.com>
+References: <20210809175620.720923-1-ltykernel@gmail.com>
 MIME-Version: 1.0
 Cc: linux-arch@vger.kernel.org, parri.andrea@gmail.com,
  linux-hyperv@vger.kernel.org, linux-scsi@vger.kernel.org,
@@ -127,117 +129,174 @@ Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
 From: Tianyu Lan <Tianyu.Lan@microsoft.com>
 
-Hyper-V provides two kinds of Isolation VMs. VBS(Virtualization-based
-security) and AMD SEV-SNP unenlightened Isolation VMs. This patchset
-is to add support for these Isolation VM support in Linux.
+Hyper-V exposes GHCB page via SEV ES GHCB MSR for SNP guest
+to communicate with hypervisor. Map GHCB page for all
+cpus to read/write MSR register and submit hvcall request
+via GHCB.
 
-The memory of these vms are encrypted and host can't access guest
-memory directly. Hyper-V provides new host visibility hvcall and
-the guest needs to call new hvcall to mark memory visible to host
-before sharing memory with host. For security, all network/storage
-stack memory should not be shared with host and so there is bounce
-buffer requests.
+Signed-off-by: Tianyu Lan <Tianyu.Lan@microsoft.com>
+---
+ arch/x86/hyperv/hv_init.c       | 66 +++++++++++++++++++++++++++++++--
+ arch/x86/include/asm/mshyperv.h |  2 +
+ include/asm-generic/mshyperv.h  |  2 +
+ 3 files changed, 66 insertions(+), 4 deletions(-)
 
-Vmbus channel ring buffer already plays bounce buffer role because
-all data from/to host needs to copy from/to between the ring buffer
-and IO stack memory. So mark vmbus channel ring buffer visible.
-
-There are two exceptions - packets sent by vmbus_sendpacket_
-pagebuffer() and vmbus_sendpacket_mpb_desc(). These packets
-contains IO stack memory address and host will access these memory.
-So add allocation bounce buffer support in vmbus for these packets.
-
-For SNP isolation VM, guest needs to access the shared memory via
-extra address space which is specified by Hyper-V CPUID HYPERV_CPUID_
-ISOLATION_CONFIG. The access physical address of the shared memory
-should be bounce buffer memory GPA plus with shared_gpa_boundary
-reported by CPUID.
-
-
-Change since V2:
-       - Drop x86_set_memory_enc static call and use platform check
-         in the __set_memory_enc_dec() to run platform callback of
-	 set memory encrypted or decrypted.
-
-Change since V1:
-       - Introduce x86_set_memory_enc static call and so platforms can
-         override __set_memory_enc_dec() with their implementation
-       - Introduce sev_es_ghcb_hv_call_simple() and share code
-         between SEV and Hyper-V code.
-       - Not remap monitor pages in the non-SNP isolation VM
-       - Make swiotlb_init_io_tlb_mem() return error code and return
-         error when dma_map_decrypted() fails.
-
-Change since RFC V4:
-       - Introduce dma map decrypted function to remap bounce buffer
-          and provide dma map decrypted ops for platform to hook callback.        
-       - Split swiotlb and dma map decrypted change into two patches
-       - Replace vstart with vaddr in swiotlb changes.
-
-Change since RFC v3:
-       - Add interface set_memory_decrypted_map() to decrypt memory and
-         map bounce buffer in extra address space
-       - Remove swiotlb remap function and store the remap address
-         returned by set_memory_decrypted_map() in swiotlb mem data structure.
-       - Introduce hv_set_mem_enc() to make code more readable in the __set_memory_enc_dec().
-
-Change since RFC v2:
-       - Remove not UIO driver in Isolation VM patch
-       - Use vmap_pfn() to replace ioremap_page_range function in
-       order to avoid exposing symbol ioremap_page_range() and
-       ioremap_page_range()
-       - Call hv set mem host visibility hvcall in set_memory_encrypted/decrypted()
-       - Enable swiotlb force mode instead of adding Hyper-V dma map/unmap hook
-       - Fix code style
-
-
-Tianyu Lan (13):
-  x86/HV: Initialize GHCB page in Isolation VM
-  x86/HV: Initialize shared memory boundary in the Isolation VM.
-  x86/HV: Add new hvcall guest address host visibility support
-  HV: Mark vmbus ring buffer visible to host in Isolation VM
-  HV: Add Write/Read MSR registers via ghcb page
-  HV: Add ghcb hvcall support for SNP VM
-  HV/Vmbus: Add SNP support for VMbus channel initiate message
-  HV/Vmbus: Initialize VMbus ring buffer for Isolation VM
-  DMA: Add dma_map_decrypted/dma_unmap_encrypted() function
-  x86/Swiotlb: Add Swiotlb bounce buffer remap function for HV IVM
-  HV/IOMMU: Enable swiotlb bounce buffer for Isolation VM
-  HV/Netvsc: Add Isolation VM support for netvsc driver
-  HV/Storvsc: Add Isolation VM support for storvsc driver
-
- arch/x86/hyperv/Makefile           |   2 +-
- arch/x86/hyperv/hv_init.c          |  75 ++++++--
- arch/x86/hyperv/ivm.c              | 295 +++++++++++++++++++++++++++++
- arch/x86/include/asm/hyperv-tlfs.h |  20 ++
- arch/x86/include/asm/mshyperv.h    |  87 ++++++++-
- arch/x86/include/asm/sev.h         |   3 +
- arch/x86/kernel/cpu/mshyperv.c     |   5 +
- arch/x86/kernel/sev-shared.c       |  63 +++---
- arch/x86/mm/pat/set_memory.c       |  19 +-
- arch/x86/xen/pci-swiotlb-xen.c     |   3 +-
- drivers/hv/Kconfig                 |   1 +
- drivers/hv/channel.c               |  54 +++++-
- drivers/hv/connection.c            |  71 ++++++-
- drivers/hv/hv.c                    | 129 +++++++++----
- drivers/hv/hyperv_vmbus.h          |   3 +
- drivers/hv/ring_buffer.c           |  84 ++++++--
- drivers/hv/vmbus_drv.c             |   3 +
- drivers/iommu/hyperv-iommu.c       |  65 +++++++
- drivers/net/hyperv/hyperv_net.h    |   6 +
- drivers/net/hyperv/netvsc.c        | 144 +++++++++++++-
- drivers/net/hyperv/rndis_filter.c  |   2 +
- drivers/scsi/storvsc_drv.c         |  68 ++++++-
- include/asm-generic/hyperv-tlfs.h  |   1 +
- include/asm-generic/mshyperv.h     |  54 +++++-
- include/linux/dma-map-ops.h        |   9 +
- include/linux/hyperv.h             |  17 ++
- include/linux/swiotlb.h            |   4 +
- kernel/dma/mapping.c               |  22 +++
- kernel/dma/swiotlb.c               |  32 +++-
- 29 files changed, 1212 insertions(+), 129 deletions(-)
- create mode 100644 arch/x86/hyperv/ivm.c
-
+diff --git a/arch/x86/hyperv/hv_init.c b/arch/x86/hyperv/hv_init.c
+index 708a2712a516..0bb4d9ca7a55 100644
+--- a/arch/x86/hyperv/hv_init.c
++++ b/arch/x86/hyperv/hv_init.c
+@@ -20,6 +20,7 @@
+ #include <linux/kexec.h>
+ #include <linux/version.h>
+ #include <linux/vmalloc.h>
++#include <linux/io.h>
+ #include <linux/mm.h>
+ #include <linux/hyperv.h>
+ #include <linux/slab.h>
+@@ -42,6 +43,31 @@ static void *hv_hypercall_pg_saved;
+ struct hv_vp_assist_page **hv_vp_assist_page;
+ EXPORT_SYMBOL_GPL(hv_vp_assist_page);
+ 
++static int hyperv_init_ghcb(void)
++{
++	u64 ghcb_gpa;
++	void *ghcb_va;
++	void **ghcb_base;
++
++	if (!ms_hyperv.ghcb_base)
++		return -EINVAL;
++
++	/*
++	 * GHCB page is allocated by paravisor. The address
++	 * returned by MSR_AMD64_SEV_ES_GHCB is above shared
++	 * ghcb boundary and map it here.
++	 */
++	rdmsrl(MSR_AMD64_SEV_ES_GHCB, ghcb_gpa);
++	ghcb_va = memremap(ghcb_gpa, HV_HYP_PAGE_SIZE, MEMREMAP_WB);
++	if (!ghcb_va)
++		return -ENOMEM;
++
++	ghcb_base = (void **)this_cpu_ptr(ms_hyperv.ghcb_base);
++	*ghcb_base = ghcb_va;
++
++	return 0;
++}
++
+ static int hv_cpu_init(unsigned int cpu)
+ {
+ 	union hv_vp_assist_msr_contents msr = { 0 };
+@@ -85,6 +111,8 @@ static int hv_cpu_init(unsigned int cpu)
+ 		}
+ 	}
+ 
++	hyperv_init_ghcb();
++
+ 	return 0;
+ }
+ 
+@@ -177,6 +205,14 @@ static int hv_cpu_die(unsigned int cpu)
+ {
+ 	struct hv_reenlightenment_control re_ctrl;
+ 	unsigned int new_cpu;
++	void **ghcb_va = NULL;
++
++	if (ms_hyperv.ghcb_base) {
++		ghcb_va = (void **)this_cpu_ptr(ms_hyperv.ghcb_base);
++		if (*ghcb_va)
++			memunmap(*ghcb_va);
++		*ghcb_va = NULL;
++	}
+ 
+ 	hv_common_cpu_die(cpu);
+ 
+@@ -383,9 +419,19 @@ void __init hyperv_init(void)
+ 			VMALLOC_END, GFP_KERNEL, PAGE_KERNEL_ROX,
+ 			VM_FLUSH_RESET_PERMS, NUMA_NO_NODE,
+ 			__builtin_return_address(0));
+-	if (hv_hypercall_pg == NULL) {
+-		wrmsrl(HV_X64_MSR_GUEST_OS_ID, 0);
+-		goto remove_cpuhp_state;
++	if (hv_hypercall_pg == NULL)
++		goto clean_guest_os_id;
++
++	if (hv_isolation_type_snp()) {
++		ms_hyperv.ghcb_base = alloc_percpu(void *);
++		if (!ms_hyperv.ghcb_base)
++			goto clean_guest_os_id;
++
++		if (hyperv_init_ghcb()) {
++			free_percpu(ms_hyperv.ghcb_base);
++			ms_hyperv.ghcb_base = NULL;
++			goto clean_guest_os_id;
++		}
+ 	}
+ 
+ 	rdmsrl(HV_X64_MSR_HYPERCALL, hypercall_msr.as_uint64);
+@@ -456,7 +502,8 @@ void __init hyperv_init(void)
+ 	hv_query_ext_cap(0);
+ 	return;
+ 
+-remove_cpuhp_state:
++clean_guest_os_id:
++	wrmsrl(HV_X64_MSR_GUEST_OS_ID, 0);
+ 	cpuhp_remove_state(cpuhp);
+ free_vp_assist_page:
+ 	kfree(hv_vp_assist_page);
+@@ -484,6 +531,9 @@ void hyperv_cleanup(void)
+ 	 */
+ 	hv_hypercall_pg = NULL;
+ 
++	if (ms_hyperv.ghcb_base)
++		free_percpu(ms_hyperv.ghcb_base);
++
+ 	/* Reset the hypercall page */
+ 	hypercall_msr.as_uint64 = 0;
+ 	wrmsrl(HV_X64_MSR_HYPERCALL, hypercall_msr.as_uint64);
+@@ -559,3 +609,11 @@ bool hv_is_isolation_supported(void)
+ {
+ 	return hv_get_isolation_type() != HV_ISOLATION_TYPE_NONE;
+ }
++
++DEFINE_STATIC_KEY_FALSE(isolation_type_snp);
++
++bool hv_isolation_type_snp(void)
++{
++	return static_branch_unlikely(&isolation_type_snp);
++}
++EXPORT_SYMBOL_GPL(hv_isolation_type_snp);
+diff --git a/arch/x86/include/asm/mshyperv.h b/arch/x86/include/asm/mshyperv.h
+index adccbc209169..6627cfd2bfba 100644
+--- a/arch/x86/include/asm/mshyperv.h
++++ b/arch/x86/include/asm/mshyperv.h
+@@ -11,6 +11,8 @@
+ #include <asm/paravirt.h>
+ #include <asm/mshyperv.h>
+ 
++DECLARE_STATIC_KEY_FALSE(isolation_type_snp);
++
+ typedef int (*hyperv_fill_flush_list_func)(
+ 		struct hv_guest_mapping_flush_list *flush,
+ 		void *data);
+diff --git a/include/asm-generic/mshyperv.h b/include/asm-generic/mshyperv.h
+index c1ab6a6e72b5..4269f3174e58 100644
+--- a/include/asm-generic/mshyperv.h
++++ b/include/asm-generic/mshyperv.h
+@@ -36,6 +36,7 @@ struct ms_hyperv_info {
+ 	u32 max_lp_index;
+ 	u32 isolation_config_a;
+ 	u32 isolation_config_b;
++	void  __percpu **ghcb_base;
+ };
+ extern struct ms_hyperv_info ms_hyperv;
+ 
+@@ -237,6 +238,7 @@ bool hv_is_hyperv_initialized(void);
+ bool hv_is_hibernation_supported(void);
+ enum hv_isolation_type hv_get_isolation_type(void);
+ bool hv_is_isolation_supported(void);
++bool hv_isolation_type_snp(void);
+ void hyperv_cleanup(void);
+ bool hv_query_ext_cap(u64 cap_query);
+ #else /* CONFIG_HYPERV */
 -- 
 2.25.1
 
