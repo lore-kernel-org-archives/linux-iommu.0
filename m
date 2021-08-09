@@ -1,110 +1,91 @@
-Return-Path: <SRS0=cYM7=M6=lists.linux-foundation.org=iommu-bounces@kernel.org>
+Return-Path: <SRS0=YfIy=NA=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-8.6 required=3.0 tests=BAYES_00,DKIM_INVALID,
-	DKIM_SIGNED,HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,
-	SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED autolearn=ham autolearn_force=no
-	version=3.4.0
+X-Spam-Status: No, score=-15.3 required=3.0 tests=BAYES_00,
+	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,
+	MENTIONS_GIT_HOSTING,NICE_REPLY_A,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,
+	USER_AGENT_SANE_1 autolearn=unavailable autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 626BBC4338F
-	for <iommu@archiver.kernel.org>; Sat,  7 Aug 2021 11:47:50 +0000 (UTC)
-Received: from smtp1.osuosl.org (smtp1.osuosl.org [140.211.166.138])
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1F5E9C4338F
+	for <iommu@archiver.kernel.org>; Mon,  9 Aug 2021 01:42:07 +0000 (UTC)
+Received: from smtp4.osuosl.org (smtp4.osuosl.org [140.211.166.137])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id C30F5610E7
-	for <iommu@archiver.kernel.org>; Sat,  7 Aug 2021 11:47:49 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.4.1 mail.kernel.org C30F5610E7
-Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=lists.linux-foundation.org
+	by mail.kernel.org (Postfix) with ESMTPS id 8792D60FC1
+	for <iommu@archiver.kernel.org>; Mon,  9 Aug 2021 01:42:06 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.4.1 mail.kernel.org 8792D60FC1
+Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=linux.intel.com
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by smtp1.osuosl.org (Postfix) with ESMTP id 7B11083BA0;
-	Sat,  7 Aug 2021 11:47:49 +0000 (UTC)
+	by smtp4.osuosl.org (Postfix) with ESMTP id 3E8BA402A6;
+	Mon,  9 Aug 2021 01:42:06 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from smtp1.osuosl.org ([127.0.0.1])
-	by localhost (smtp1.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id OA5lGTLps45u; Sat,  7 Aug 2021 11:47:48 +0000 (UTC)
+Received: from smtp4.osuosl.org ([127.0.0.1])
+	by localhost (smtp4.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+	with ESMTP id ef2gLpER1kgf; Mon,  9 Aug 2021 01:42:04 +0000 (UTC)
 Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by smtp1.osuosl.org (Postfix) with ESMTPS id 66AA4837C4;
-	Sat,  7 Aug 2021 11:47:48 +0000 (UTC)
+	by smtp4.osuosl.org (Postfix) with ESMTPS id 63F7F402A4;
+	Mon,  9 Aug 2021 01:42:04 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 1D52CC001A;
-	Sat,  7 Aug 2021 11:47:48 +0000 (UTC)
-Received: from smtp1.osuosl.org (smtp1.osuosl.org [140.211.166.138])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 8B9BAC000E
- for <iommu@lists.linux-foundation.org>; Sat,  7 Aug 2021 11:47:47 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 45D2FC0010;
+	Mon,  9 Aug 2021 01:42:04 +0000 (UTC)
+Received: from smtp2.osuosl.org (smtp2.osuosl.org [140.211.166.133])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id B1352C000E
+ for <iommu@lists.linux-foundation.org>; Mon,  9 Aug 2021 01:42:03 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by smtp1.osuosl.org (Postfix) with ESMTP id 74AB2838ED
- for <iommu@lists.linux-foundation.org>; Sat,  7 Aug 2021 11:47:47 +0000 (UTC)
+ by smtp2.osuosl.org (Postfix) with ESMTP id 9650D4013F
+ for <iommu@lists.linux-foundation.org>; Mon,  9 Aug 2021 01:42:03 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from smtp1.osuosl.org ([127.0.0.1])
- by localhost (smtp1.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id 2ab7jucTcoxv for <iommu@lists.linux-foundation.org>;
- Sat,  7 Aug 2021 11:47:46 +0000 (UTC)
-X-Greylist: from auto-whitelisted by SQLgrey-1.8.0
-Received: from out3-smtp.messagingengine.com (out3-smtp.messagingengine.com
- [66.111.4.27])
- by smtp1.osuosl.org (Postfix) with ESMTPS id 7AE72837C4
- for <iommu@lists.linux-foundation.org>; Sat,  7 Aug 2021 11:47:46 +0000 (UTC)
-Received: from compute1.internal (compute1.nyi.internal [10.202.2.41])
- by mailout.nyi.internal (Postfix) with ESMTP id 838265C0091;
- Sat,  7 Aug 2021 07:47:43 -0400 (EDT)
-Received: from imap21 ([10.202.2.71])
- by compute1.internal (MEProxy); Sat, 07 Aug 2021 07:47:43 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=svenpeter.dev;
- h=mime-version:message-id:in-reply-to:references:date:from:to
- :cc:subject:content-type; s=fm2; bh=fncGE/jKcnIvD//YI2Vm09vsvIlS
- YjnkVB8PpClLEPw=; b=gMk07UHoNUvfJMHru4HWm+9da7Pv3lETc88hDNtUmkSH
- WdcuslNF4DAWkco0dBjeb/hfBgb8bWCkJk+sdcgsHOaCZfWPp4BsuJ2IV9EHASOY
- LdM/P8AmloUs3wDaoal9WtIA6jlyA/xhPgNzNcn6KgSySXFbmYDE1kscKqd2hiPy
- ZBJsBVZymlrPzy8E0zVCAa59lpUuLi2GKlca4+hX40cLkFu4bFBPJZUIKZzSw/G5
- 3jHYEu0H0pv5bbNjMeo161WGqHWFrtsayRnSOgKhA9B78dPuQfbNJAtjr6CrN7YB
- WCOY5ggJ4L0cfwWPYDVp+0SMaro4AcX7R1YiI0F4xw==
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
- messagingengine.com; h=cc:content-type:date:from:in-reply-to
- :message-id:mime-version:references:subject:to:x-me-proxy
- :x-me-proxy:x-me-sender:x-me-sender:x-sasl-enc; s=fm3; bh=fncGE/
- jKcnIvD//YI2Vm09vsvIlSYjnkVB8PpClLEPw=; b=VviLQjtmqZXNPKscQL7Maa
- PkQC3LR+vXF1CarCQEmY8SHTbwL2bIjbMN2lVJg5g1zij9sk3LBVG4bOBV+fm+Ai
- oIrQvtrpKNC8zYvnHdgTu0MtFUnV4/mQXCkXc/ju54YygSHmzo7c8EbqAEvtumhx
- mtRFDlKfJMdjbnCtgnqBMECnRo8CI+fj2ohgqFHuevuMLpvxI1Eg9a7JpuvkmEw/
- Vscqfl4EzgFXgcR4+d7r5ck4yMp4zErSPRYdzsouIW500hKbe1gUHbx+xYP+kUa3
- rJmCQ+R0w5XL9dHltM0HnIQuSrwF/AANE+bw5bQeli3yAM9g7vMv2h8XfSdUODeg
- ==
-X-ME-Sender: <xms:3nIOYVdAr-2ggG7DyzEyWjrhHqNAz71JlZ0eKdqNqDdYDIN566-3uw>
- <xme:3nIOYTOrlrF7KGmYqnPP6IhQ14fog6YWkWVKFExodPIbnmf5IuWvOT16hTRVyBTVT
- _R_opBMiEOaKT31SZ0>
-X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgedvtddrjeefgdeggecutefuodetggdotefrodftvf
- curfhrohhfihhlvgemucfhrghsthforghilhdpqfgfvfdpuffrtefokffrpgfnqfghnecu
- uegrihhlohhuthemuceftddtnecusecvtfgvtghiphhivghnthhsucdlqddutddtmdenuc
- fjughrpefofgggkfgjfhffhffvufgtsehttdertderreejnecuhfhrohhmpedfufhvvghn
- ucfrvghtvghrfdcuoehsvhgvnhesshhvvghnphgvthgvrhdruggvvheqnecuggftrfgrth
- htvghrnhepheejgfdttdefleefteejieefudeuheelkedtgedtjeehieetueelheeuhfeg
- heegnecuvehluhhsthgvrhfuihiivgeptdenucfrrghrrghmpehmrghilhhfrhhomhepsh
- hvvghnsehsvhgvnhhpvghtvghrrdguvghv
-X-ME-Proxy: <xmx:3nIOYegOW_8hdHquGep4k1vxFI2tlddXqKcmtGUlH7cBeCncWeSMow>
- <xmx:3nIOYe807bstWQO-YgerHiZuZXDm7WXFaF9AQMgDHqMAUgIJkgEcLg>
- <xmx:3nIOYRsIJmy7xeLHTmbP560CsRzvZghcE6SHkLj2a2OB6q2pFTu70w>
- <xmx:33IOYfXCSIkr908gpcYCbC5Xm-NoORAubxt8W8CNE2LvN-a14eEwIw>
-Received: by mailuser.nyi.internal (Postfix, from userid 501)
- id 378E151C04D7; Sat,  7 Aug 2021 07:47:42 -0400 (EDT)
-X-Mailer: MessagingEngine.com Webmail Interface
-User-Agent: Cyrus-JMAP/3.5.0-alpha0-552-g2afffd2709-fm-20210805.001-g2afffd27
-Mime-Version: 1.0
-Message-Id: <dadbd8b0-171a-4008-8a2e-f68abfed9285@www.fastmail.com>
-In-Reply-To: <d289a555-9e3b-b948-1883-2ee4c915da4c@arm.com>
-References: <20210806155523.50429-1-sven@svenpeter.dev>
- <20210806155523.50429-3-sven@svenpeter.dev>
- <d289a555-9e3b-b948-1883-2ee4c915da4c@arm.com>
-Date: Sat, 07 Aug 2021 13:47:21 +0200
-To: "Robin Murphy" <robin.murphy@arm.com>,
- "Sven Peter" <iommu@lists.linux-foundation.org>
-Subject: =?UTF-8?Q?Re:_[RFC_PATCH_2/3]_iommu/dma-iommu:_Support_iovad->granule_>_?=
- =?UTF-8?Q?PAGE=5FSIZE?=
-Cc: Arnd Bergmann <arnd@kernel.org>, Hector Martin <marcan@marcan.st>,
- linux-kernel@vger.kernel.org, Alexander Graf <graf@amazon.com>,
- Mohamed Mediouni <mohamed.mediouni@caramail.com>,
- Will Deacon <will@kernel.org>
+Received: from smtp2.osuosl.org ([127.0.0.1])
+ by localhost (smtp2.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+ with ESMTP id SXDuSpXmk384 for <iommu@lists.linux-foundation.org>;
+ Mon,  9 Aug 2021 01:42:01 +0000 (UTC)
+X-Greylist: domain auto-whitelisted by SQLgrey-1.8.0
+Received: from mga11.intel.com (mga11.intel.com [192.55.52.93])
+ by smtp2.osuosl.org (Postfix) with ESMTPS id 9AEDF400AE
+ for <iommu@lists.linux-foundation.org>; Mon,  9 Aug 2021 01:42:01 +0000 (UTC)
+X-IronPort-AV: E=McAfee;i="6200,9189,10070"; a="211503682"
+X-IronPort-AV: E=Sophos;i="5.84,305,1620716400"; d="scan'208";a="211503682"
+Received: from fmsmga006.fm.intel.com ([10.253.24.20])
+ by fmsmga102.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384;
+ 08 Aug 2021 18:41:59 -0700
+X-IronPort-AV: E=Sophos;i="5.84,305,1620716400"; d="scan'208";a="670624711"
+Received: from ctrondse-mobl.amr.corp.intel.com (HELO
+ skuppusw-mobl5.amr.corp.intel.com) ([10.212.77.4])
+ by fmsmga006-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384;
+ 08 Aug 2021 18:41:57 -0700
+Subject: Re: [PATCH 00/11] Implement generic prot_guest_has() helper function
+To: Tom Lendacky <thomas.lendacky@amd.com>, linux-kernel@vger.kernel.org,
+ x86@kernel.org, linuxppc-dev@lists.ozlabs.org, linux-s390@vger.kernel.org,
+ iommu@lists.linux-foundation.org, kvm@vger.kernel.org,
+ linux-efi@vger.kernel.org, platform-driver-x86@vger.kernel.org,
+ linux-graphics-maintainer@vmware.com, amd-gfx@lists.freedesktop.org,
+ dri-devel@lists.freedesktop.org, kexec@lists.infradead.org,
+ linux-fsdevel@vger.kernel.org
+References: <cover.1627424773.git.thomas.lendacky@amd.com>
+From: "Kuppuswamy, Sathyanarayanan"
+ <sathyanarayanan.kuppuswamy@linux.intel.com>
+Message-ID: <0d75f283-50b7-460d-3165-185cb955bd70@linux.intel.com>
+Date: Sun, 8 Aug 2021 18:41:54 -0700
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
+ Firefox/78.0 Thunderbird/78.11.0
+MIME-Version: 1.0
+In-Reply-To: <cover.1627424773.git.thomas.lendacky@amd.com>
+Content-Language: en-US
+Cc: Brijesh Singh <brijesh.singh@amd.com>, David Airlie <airlied@linux.ie>,
+ Benjamin Herrenschmidt <benh@kernel.crashing.org>,
+ Dave Hansen <dave.hansen@linux.intel.com>, Paul Mackerras <paulus@samba.org>,
+ Will Deacon <will@kernel.org>, Ard Biesheuvel <ardb@kernel.org>,
+ Andi Kleen <ak@linux.intel.com>, Michael Ellerman <mpe@ellerman.id.au>,
+ Christian Borntraeger <borntraeger@de.ibm.com>, Ingo Molnar <mingo@redhat.com>,
+ Dave Young <dyoung@redhat.com>, Tianyu Lan <Tianyu.Lan@microsoft.com>,
+ Thomas Zimmermann <tzimmermann@suse.de>, Vasily Gorbik <gor@linux.ibm.com>,
+ Heiko Carstens <hca@linux.ibm.com>,
+ Maarten Lankhorst <maarten.lankhorst@linux.intel.com>,
+ Maxime Ripard <mripard@kernel.org>, Borislav Petkov <bp@alien8.de>,
+ Andy Lutomirski <luto@kernel.org>, Thomas Gleixner <tglx@linutronix.de>,
+ Peter Zijlstra <peterz@infradead.org>, Daniel Vetter <daniel@ffwll.ch>
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -117,59 +98,129 @@ List-Post: <mailto:iommu@lists.linux-foundation.org>
 List-Help: <mailto:iommu-request@lists.linux-foundation.org?subject=help>
 List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
  <mailto:iommu-request@lists.linux-foundation.org?subject=subscribe>
-From: Sven Peter via iommu <iommu@lists.linux-foundation.org>
-Reply-To: Sven Peter <sven@svenpeter.dev>
-Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset="us-ascii"; Format="flowed"
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
+Hi Tom,
 
-
-On Fri, Aug 6, 2021, at 20:04, Robin Murphy wrote:
-> On 2021-08-06 16:55, Sven Peter via iommu wrote:
-> > @@ -1006,6 +1019,31 @@ static int iommu_dma_map_sg(struct device *dev, struct scatterlist *sg,
-> >   	if (dev_is_untrusted(dev))
-> >   		return iommu_dma_map_sg_swiotlb(dev, sg, nents, dir, attrs);
-> >   
-> > +	/*
-> > +	 * If the IOMMU pagesize is larger than the CPU pagesize we will
-> > +	 * very likely run into sgs with a physical address that is not aligned
-> > +	 * to an IOMMU page boundary. Fall back to just mapping every entry
-> > +	 * independently with __iommu_dma_map then.
+On 7/27/21 3:26 PM, Tom Lendacky wrote:
+> This patch series provides a generic helper function, prot_guest_has(),
+> to replace the sme_active(), sev_active(), sev_es_active() and
+> mem_encrypt_active() functions.
 > 
-> Scatterlist segments often don't have nicely aligned ends, which is why 
-> we already align things to IOVA granules in main loop here. I think in 
-> principle we'd just need to move the non-IOVA-aligned part of the 
-> address from sg->page to sg->offset in the temporary transformation for 
-> the rest of the assumptions to hold. I don't blame you for being timid 
-> about touching that, though - it took me 3 tries to get right when I 
-> first wrote it...
+> It is expected that as new protected virtualization technologies are
+> added to the kernel, they can all be covered by a single function call
+> instead of a collection of specific function calls all called from the
+> same locations.
+> 
+> The powerpc and s390 patches have been compile tested only. Can the
+> folks copied on this series verify that nothing breaks for them.
+
+With this patch set, select ARCH_HAS_PROTECTED_GUEST and set
+CONFIG_AMD_MEM_ENCRYPT=n, creates following error.
+
+ld: arch/x86/mm/ioremap.o: in function `early_memremap_is_setup_data':
+arch/x86/mm/ioremap.c:672: undefined reference to `early_memremap_decrypted'
+
+It looks like early_memremap_is_setup_data() is not protected with
+appropriate config.
+
+
+> 
+> Cc: Andi Kleen <ak@linux.intel.com>
+> Cc: Andy Lutomirski <luto@kernel.org>
+> Cc: Ard Biesheuvel <ardb@kernel.org>
+> Cc: Baoquan He <bhe@redhat.com>
+> Cc: Benjamin Herrenschmidt <benh@kernel.crashing.org>
+> Cc: Borislav Petkov <bp@alien8.de>
+> Cc: Christian Borntraeger <borntraeger@de.ibm.com>
+> Cc: Daniel Vetter <daniel@ffwll.ch>
+> Cc: Dave Hansen <dave.hansen@linux.intel.com>
+> Cc: Dave Young <dyoung@redhat.com>
+> Cc: David Airlie <airlied@linux.ie>
+> Cc: Heiko Carstens <hca@linux.ibm.com>
+> Cc: Ingo Molnar <mingo@redhat.com>
+> Cc: Joerg Roedel <joro@8bytes.org>
+> Cc: Maarten Lankhorst <maarten.lankhorst@linux.intel.com>
+> Cc: Maxime Ripard <mripard@kernel.org>
+> Cc: Michael Ellerman <mpe@ellerman.id.au>
+> Cc: Paul Mackerras <paulus@samba.org>
+> Cc: Peter Zijlstra <peterz@infradead.org>
+> Cc: Thomas Gleixner <tglx@linutronix.de>
+> Cc: Thomas Zimmermann <tzimmermann@suse.de>
+> Cc: Vasily Gorbik <gor@linux.ibm.com>
+> Cc: VMware Graphics <linux-graphics-maintainer@vmware.com>
+> Cc: Will Deacon <will@kernel.org>
+> 
+> ---
+> 
+> Patches based on:
+>    https://git.kernel.org/pub/scm/linux/kernel/git/tip/tip.git master
+>    commit 79e920060fa7 ("Merge branch 'WIP/fixes'")
+> 
+> Tom Lendacky (11):
+>    mm: Introduce a function to check for virtualization protection
+>      features
+>    x86/sev: Add an x86 version of prot_guest_has()
+>    powerpc/pseries/svm: Add a powerpc version of prot_guest_has()
+>    x86/sme: Replace occurrences of sme_active() with prot_guest_has()
+>    x86/sev: Replace occurrences of sev_active() with prot_guest_has()
+>    x86/sev: Replace occurrences of sev_es_active() with prot_guest_has()
+>    treewide: Replace the use of mem_encrypt_active() with
+>      prot_guest_has()
+>    mm: Remove the now unused mem_encrypt_active() function
+>    x86/sev: Remove the now unused mem_encrypt_active() function
+>    powerpc/pseries/svm: Remove the now unused mem_encrypt_active()
+>      function
+>    s390/mm: Remove the now unused mem_encrypt_active() function
+> 
+>   arch/Kconfig                               |  3 ++
+>   arch/powerpc/include/asm/mem_encrypt.h     |  5 --
+>   arch/powerpc/include/asm/protected_guest.h | 30 +++++++++++
+>   arch/powerpc/platforms/pseries/Kconfig     |  1 +
+>   arch/s390/include/asm/mem_encrypt.h        |  2 -
+>   arch/x86/Kconfig                           |  1 +
+>   arch/x86/include/asm/kexec.h               |  2 +-
+>   arch/x86/include/asm/mem_encrypt.h         | 13 +----
+>   arch/x86/include/asm/protected_guest.h     | 27 ++++++++++
+>   arch/x86/kernel/crash_dump_64.c            |  4 +-
+>   arch/x86/kernel/head64.c                   |  4 +-
+>   arch/x86/kernel/kvm.c                      |  3 +-
+>   arch/x86/kernel/kvmclock.c                 |  4 +-
+>   arch/x86/kernel/machine_kexec_64.c         | 19 +++----
+>   arch/x86/kernel/pci-swiotlb.c              |  9 ++--
+>   arch/x86/kernel/relocate_kernel_64.S       |  2 +-
+>   arch/x86/kernel/sev.c                      |  6 +--
+>   arch/x86/kvm/svm/svm.c                     |  3 +-
+>   arch/x86/mm/ioremap.c                      | 16 +++---
+>   arch/x86/mm/mem_encrypt.c                  | 60 +++++++++++++++-------
+>   arch/x86/mm/mem_encrypt_identity.c         |  3 +-
+>   arch/x86/mm/pat/set_memory.c               |  3 +-
+>   arch/x86/platform/efi/efi_64.c             |  9 ++--
+>   arch/x86/realmode/init.c                   |  8 +--
+>   drivers/gpu/drm/amd/amdgpu/amdgpu_drv.c    |  4 +-
+>   drivers/gpu/drm/drm_cache.c                |  4 +-
+>   drivers/gpu/drm/vmwgfx/vmwgfx_drv.c        |  4 +-
+>   drivers/gpu/drm/vmwgfx/vmwgfx_msg.c        |  6 +--
+>   drivers/iommu/amd/init.c                   |  7 +--
+>   drivers/iommu/amd/iommu.c                  |  3 +-
+>   drivers/iommu/amd/iommu_v2.c               |  3 +-
+>   drivers/iommu/iommu.c                      |  3 +-
+>   fs/proc/vmcore.c                           |  6 +--
+>   include/linux/mem_encrypt.h                |  4 --
+>   include/linux/protected_guest.h            | 37 +++++++++++++
+>   kernel/dma/swiotlb.c                       |  4 +-
+>   36 files changed, 218 insertions(+), 104 deletions(-)
+>   create mode 100644 arch/powerpc/include/asm/protected_guest.h
+>   create mode 100644 arch/x86/include/asm/protected_guest.h
+>   create mode 100644 include/linux/protected_guest.h
 > 
 
-
-I've spent some time with that code now and I think we cannot use it
-but have to fall back to iommu_dma_map_sg_swiotlb (even though that swiotlb
-part is a lie then):
-
-When we have sg_phys(s) = 0x802e65000 with s->offset = 0 the paddr
-is aligned to PAGE_SIZE but has an offset of 0x1000 from something
-the IOMMU can map.
-Now this would result in s->offset = -0x1000 which is already weird
-enough.
-Offset is unsigned (and 32bit) so this will actually look like
-s->offset = 0xfffff000 then, which isn't much better.
-And then sg_phys(s) = 0x902e64000 (instead of 0x802e64000) and
-we'll map some random memory in iommu_map_sg_atomic and a little bit later
-everything explodes.
-
-Now I could probably adjust the phys addr backwards and make sure offset is
-always positive (and possibly larger than PAGE_SIZE) and later restore it
-in __finalise_sg then but I feel like that's pushing this a little bit too far.
-
-
-
-Sven
+-- 
+Sathyanarayanan Kuppuswamy
+Linux Kernel Developer
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
