@@ -2,108 +2,112 @@ Return-Path: <SRS0=YfIy=NA=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-3.6 required=3.0 tests=BAYES_00,DKIM_INVALID,
-	DKIM_SIGNED,HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,SPF_HELO_NONE,
-	SPF_PASS,URIBL_BLOCKED autolearn=no autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-8.5 required=3.0 tests=BAYES_00,DKIM_ADSP_CUSTOM_MED,
+	DKIM_INVALID,DKIM_SIGNED,FREEMAIL_FORGED_FROMDOMAIN,FREEMAIL_FROM,
+	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,SPF_HELO_NONE,
+	SPF_PASS,URIBL_BLOCKED,USER_AGENT_GIT autolearn=unavailable
+	autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id BD03DC4338F
-	for <iommu@archiver.kernel.org>; Mon,  9 Aug 2021 17:48:04 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E9456C432BE
+	for <iommu@archiver.kernel.org>; Mon,  9 Aug 2021 17:56:32 +0000 (UTC)
 Received: from smtp2.osuosl.org (smtp2.osuosl.org [140.211.166.133])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 5AB446023F
-	for <iommu@archiver.kernel.org>; Mon,  9 Aug 2021 17:48:04 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.4.1 mail.kernel.org 5AB446023F
-Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=codeaurora.org
+	by mail.kernel.org (Postfix) with ESMTPS id 9858C6101E
+	for <iommu@archiver.kernel.org>; Mon,  9 Aug 2021 17:56:32 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.4.1 mail.kernel.org 9858C6101E
+Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=gmail.com
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by smtp2.osuosl.org (Postfix) with ESMTP id 1EC9340232;
-	Mon,  9 Aug 2021 17:48:04 +0000 (UTC)
+	by smtp2.osuosl.org (Postfix) with ESMTP id 58B6A40231;
+	Mon,  9 Aug 2021 17:56:32 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
 Received: from smtp2.osuosl.org ([127.0.0.1])
 	by localhost (smtp2.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id Bx84m-ns4lci; Mon,  9 Aug 2021 17:48:00 +0000 (UTC)
-Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [IPv6:2605:bc80:3010:104::8cd3:938])
-	by smtp2.osuosl.org (Postfix) with ESMTPS id DDBB640221;
-	Mon,  9 Aug 2021 17:47:59 +0000 (UTC)
+	with ESMTP id K52yVMc99uZI; Mon,  9 Aug 2021 17:56:28 +0000 (UTC)
+Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
+	by smtp2.osuosl.org (Postfix) with ESMTPS id 180EC40169;
+	Mon,  9 Aug 2021 17:56:28 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 967AEC001A;
-	Mon,  9 Aug 2021 17:47:59 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id CB991C001A;
+	Mon,  9 Aug 2021 17:56:27 +0000 (UTC)
 Received: from smtp4.osuosl.org (smtp4.osuosl.org [140.211.166.137])
- by lists.linuxfoundation.org (Postfix) with ESMTP id CEE1EC000E
- for <iommu@lists.linux-foundation.org>; Mon,  9 Aug 2021 17:47:57 +0000 (UTC)
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 8A818C000E
+ for <iommu@lists.linux-foundation.org>; Mon,  9 Aug 2021 17:56:26 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by smtp4.osuosl.org (Postfix) with UTF8SMTP id AAF3640400
- for <iommu@lists.linux-foundation.org>; Mon,  9 Aug 2021 17:47:57 +0000 (UTC)
+ by smtp4.osuosl.org (Postfix) with ESMTP id 65D82402BA
+ for <iommu@lists.linux-foundation.org>; Mon,  9 Aug 2021 17:56:26 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
 Authentication-Results: smtp4.osuosl.org (amavisd-new);
- dkim=pass (1024-bit key) header.d=mg.codeaurora.org
+ dkim=pass (2048-bit key) header.d=gmail.com
 Received: from smtp4.osuosl.org ([127.0.0.1])
  by localhost (smtp4.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with UTF8SMTP id beLewg-ref_q for <iommu@lists.linux-foundation.org>;
- Mon,  9 Aug 2021 17:47:53 +0000 (UTC)
-X-Greylist: from auto-whitelisted by SQLgrey-1.8.0
-Received: from m43-7.mailgun.net (m43-7.mailgun.net [69.72.43.7])
- by smtp4.osuosl.org (Postfix) with UTF8SMTPS id A86EA40261
- for <iommu@lists.linux-foundation.org>; Mon,  9 Aug 2021 17:47:51 +0000 (UTC)
-DKIM-Signature: a=rsa-sha256; v=1; c=relaxed/relaxed; d=mg.codeaurora.org;
- q=dns/txt; 
- s=smtp; t=1628531273; h=Message-ID: References: In-Reply-To: Subject:
- Cc: To: From: Date: Content-Transfer-Encoding: Content-Type:
- MIME-Version: Sender; bh=8guuvupjL6NqII3stb55gN3OwOOwh2DbzAjTfValqJY=;
- b=AeWQs4j8TlPCklaTH3V8Z+ALtPJ5LwjHDg/GWx28p51/BkhXtSwK5nlgSMsWejwlIgJLbAmg
- eOrg9xHnhUB6h6qrvWV64SUN4TgRCtnfGavqDONEkHBl7lbYM/o9uRnCk5YLQQOwJzd3B6Ri
- eAwWostoNKRbyO0/STg3UTXt9ds=
-X-Mailgun-Sending-Ip: 69.72.43.7
-X-Mailgun-Sid: WyI3NDkwMCIsICJpb21tdUBsaXN0cy5saW51eC1mb3VuZGF0aW9uLm9yZyIsICJiZTllNGEiXQ==
-Received: from smtp.codeaurora.org
- (ec2-35-166-182-171.us-west-2.compute.amazonaws.com [35.166.182.171]) by
- smtp-out-n03.prod.us-east-1.postgun.com with SMTP id
- 61116a3e91487ad520648713 (version=TLS1.2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256); Mon, 09 Aug 2021 17:47:42
- GMT
-Received: by smtp.codeaurora.org (Postfix, from userid 1001)
- id 032D5C43144; Mon,  9 Aug 2021 17:47:41 +0000 (UTC)
-Received: from mail.codeaurora.org (localhost.localdomain [127.0.0.1])
- (using TLSv1 with cipher ECDHE-RSA-AES256-SHA (256/256 bits))
- (No client certificate requested)
- (Authenticated sender: saiprakash.ranjan)
- by smtp.codeaurora.org (Postfix) with ESMTPSA id 33FD9C433F1;
- Mon,  9 Aug 2021 17:47:40 +0000 (UTC)
+ with ESMTP id SjcHcFiZ_Ps8 for <iommu@lists.linux-foundation.org>;
+ Mon,  9 Aug 2021 17:56:24 +0000 (UTC)
+X-Greylist: whitelisted by SQLgrey-1.8.0
+Received: from mail-pj1-x1031.google.com (mail-pj1-x1031.google.com
+ [IPv6:2607:f8b0:4864:20::1031])
+ by smtp4.osuosl.org (Postfix) with ESMTPS id 7C8DE40298
+ for <iommu@lists.linux-foundation.org>; Mon,  9 Aug 2021 17:56:24 +0000 (UTC)
+Received: by mail-pj1-x1031.google.com with SMTP id a8so29207744pjk.4
+ for <iommu@lists.linux-foundation.org>; Mon, 09 Aug 2021 10:56:24 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=gmail.com; s=20161025;
+ h=from:to:cc:subject:date:message-id:mime-version
+ :content-transfer-encoding;
+ bh=iMjG88RfqbH3GsgcXA5mv3GuI6oCcG41dDNUrFFXLAQ=;
+ b=EViVv89zPeRqrGYf9LSDfx7ltGQyAh4Avv1iqGXrZVN8IJuT63NhOIxiCyk8Rx6sFQ
+ MnHutJOGM4qObGTB3+2cDbzN4XBxMdUdYKKb4gdQgVYXZpLOwn/LJTBX3yu2AGv1TQf3
+ gHD7PNproN/353NWNPLbKsHhp8I5TfXCuEG8GTgqdzoTROjdYr7R+QVuJWXGMX3O1nKM
+ RVW2Isxs0xuZHcR/6YqF12JGhSFNL7twyZAqbDPV4zDkbkQQ1mDpob6v3yKEJ83Wgmje
+ DnZ5wIak32lAhxG4fYr8PeZhzjGZR40FVtp2z4KdVrsEgpAFr/Ky4zrJzy/tHZhuJrQU
+ 8oJw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+ d=1e100.net; s=20161025;
+ h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+ :content-transfer-encoding;
+ bh=iMjG88RfqbH3GsgcXA5mv3GuI6oCcG41dDNUrFFXLAQ=;
+ b=RqhAF5oLCr6JWsaeFq11DVENysNmuZ0ZJe9eFyC+d5sUycFFWdegbUS5Vq1DikcXMZ
+ x0LcurFjok4JSHcCClHp5kcYh84jtBXMId2bR1V4i+3qS6D3gyUfi8k5zuvTBDiSjT3a
+ 3PVFLaaZPTX+m931HiYQXcUWJyar5vWxhTHjyEewdrbg7HPlP+5oDAmQWg61Zx6vWpRB
+ 7nOlMyG8pxTbB05A0tLzCSikeIvDolDCFNg4XzIMnLeYqqVTm7r422Dh2KG4u/sW5j+K
+ cdmkfy/dG4NHTvHaARxXtRE9n+w3mN6l53Hp5I9o8a5HxyAj/aXpwdfpIxNlnHUFa2zB
+ qg5A==
+X-Gm-Message-State: AOAM531b8pdWZwBDFq/UYlIC+mJZt0suXCUIfia90TNb2HEaNp5fOgqV
+ CZbznb4JURhtv77R5kG3rSk=
+X-Google-Smtp-Source: ABdhPJxHfYqFvwoB8xKnP4oxRsbZ9Lzyar+mwb4Rea7hgUEL0NvwGLrtk99GSAXFKwmlrj/fCUWr6A==
+X-Received: by 2002:a17:90a:e018:: with SMTP id
+ u24mr4349253pjy.126.1628531783941; 
+ Mon, 09 Aug 2021 10:56:23 -0700 (PDT)
+Received: from ubuntu-Virtual-Machine.corp.microsoft.com
+ ([2001:4898:80e8:2:106e:6ed1:5da1:2ac4])
+ by smtp.gmail.com with ESMTPSA id x14sm20589708pfa.127.2021.08.09.10.56.22
+ (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+ Mon, 09 Aug 2021 10:56:23 -0700 (PDT)
+From: Tianyu Lan <ltykernel@gmail.com>
+To: kys@microsoft.com, haiyangz@microsoft.com, sthemmin@microsoft.com,
+ wei.liu@kernel.org, decui@microsoft.com, tglx@linutronix.de,
+ mingo@redhat.com, bp@alien8.de, x86@kernel.org, hpa@zytor.com,
+ dave.hansen@linux.intel.com, luto@kernel.org, peterz@infradead.org,
+ konrad.wilk@oracle.com, boris.ostrovsky@oracle.com, jgross@suse.com,
+ sstabellini@kernel.org, joro@8bytes.org, will@kernel.org,
+ davem@davemloft.net, kuba@kernel.org, jejb@linux.ibm.com,
+ martin.petersen@oracle.com, arnd@arndb.de, hch@lst.de,
+ m.szyprowski@samsung.com, robin.murphy@arm.com, thomas.lendacky@amd.com,
+ brijesh.singh@amd.com, ardb@kernel.org, Tianyu.Lan@microsoft.com,
+ pgonda@google.com, martin.b.radev@gmail.com, akpm@linux-foundation.org,
+ kirill.shutemov@linux.intel.com, rppt@kernel.org, sfr@canb.auug.org.au,
+ saravanand@fb.com, krish.sadhukhan@oracle.com, aneesh.kumar@linux.ibm.com,
+ xen-devel@lists.xenproject.org, rientjes@google.com, hannes@cmpxchg.org,
+ tj@kernel.org, michael.h.kelley@microsoft.com
+Subject: [PATCH V3 00/13] x86/Hyper-V: Add Hyper-V Isolation VM support
+Date: Mon,  9 Aug 2021 13:56:04 -0400
+Message-Id: <20210809175620.720923-1-ltykernel@gmail.com>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
-Date: Mon, 09 Aug 2021 23:17:40 +0530
-From: Sai Prakash Ranjan <saiprakash.ranjan@codeaurora.org>
-To: Will Deacon <will@kernel.org>, Rob Clark <robdclark@gmail.com>
-Subject: Re: [Freedreno] [PATCH 0/3] iommu/drm/msm: Allow non-coherent masters
- to use system cache
-In-Reply-To: <20210809174022.GA1840@willie-the-truck>
-References: <20210728140052.GB22887@mms-0441>
- <8b2742c8891abe4fec3664730717a089@codeaurora.org>
- <20210802105544.GA27657@willie-the-truck>
- <CAF6AEGvtpFu8st=ZFNoKjP9YsAenciLxL1zMFi_iqMCvdby73w@mail.gmail.com>
- <20210802151409.GE28735@willie-the-truck>
- <CAF6AEGtzvyEUm0Fc8QT5t9KNK7i0FbFyi7zDM2_PMCzZBp7qbw@mail.gmail.com>
- <20210809145651.GC1458@willie-the-truck>
- <CAF6AEGsSUojA=V0n2iRWTCn++buqN=Eoxo0r3=+=PBu1O=H-AQ@mail.gmail.com>
- <20210809170508.GB1589@willie-the-truck>
- <CAF6AEGtmZ3LzAJdtnKDQDbEN-a6_JgdN-fZ96pkU3dZqkiW91g@mail.gmail.com>
- <20210809174022.GA1840@willie-the-truck>
-Message-ID: <76bfd0b4248148dfbf9d174ddcb4c2a2@codeaurora.org>
-X-Sender: saiprakash.ranjan@codeaurora.org
-User-Agent: Roundcube Webmail/1.3.9
-Cc: "Isaac J. Manjarres" <isaacm@codeaurora.org>,
- freedreno <freedreno@lists.freedesktop.org>,
- Jordan Crouse <jcrouse@codeaurora.org>, David Airlie <airlied@linux.ie>,
- linux-arm-msm <linux-arm-msm@vger.kernel.org>,
- Akhil P Oommen <akhilpo@codeaurora.org>,
- dri-devel <dri-devel@lists.freedesktop.org>,
- Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
- "list@263.net:IOMMU DRIVERS , Joerg Roedel
- <joro@8bytes.org>, " <iommu@lists.linux-foundation.org>,
- Kristian H Kristensen <hoegsberg@google.com>, Daniel Vetter <daniel@ffwll.ch>,
- Sean Paul <sean@poorly.run>, "moderated list:ARM/FREESCALE IMX / MXC ARM
- ARCHITECTURE" <linux-arm-kernel@lists.infradead.org>,
- Robin Murphy <robin.murphy@arm.com>
+Cc: linux-arch@vger.kernel.org, parri.andrea@gmail.com,
+ linux-hyperv@vger.kernel.org, linux-scsi@vger.kernel.org,
+ netdev@vger.kernel.org, linux-kernel@vger.kernel.org, dave.hansen@intel.com,
+ iommu@lists.linux-foundation.org, vkuznets@redhat.com
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -116,125 +120,127 @@ List-Post: <mailto:iommu@lists.linux-foundation.org>
 List-Help: <mailto:iommu-request@lists.linux-foundation.org?subject=help>
 List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
  <mailto:iommu-request@lists.linux-foundation.org?subject=subscribe>
+Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
-Content-Type: text/plain; charset="us-ascii"; Format="flowed"
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-On 2021-08-09 23:10, Will Deacon wrote:
-> On Mon, Aug 09, 2021 at 10:18:21AM -0700, Rob Clark wrote:
->> On Mon, Aug 9, 2021 at 10:05 AM Will Deacon <will@kernel.org> wrote:
->> >
->> > On Mon, Aug 09, 2021 at 09:57:08AM -0700, Rob Clark wrote:
->> > > On Mon, Aug 9, 2021 at 7:56 AM Will Deacon <will@kernel.org> wrote:
->> > > > On Mon, Aug 02, 2021 at 06:36:04PM -0700, Rob Clark wrote:
->> > > > > On Mon, Aug 2, 2021 at 8:14 AM Will Deacon <will@kernel.org> wrote:
->> > > > > > On Mon, Aug 02, 2021 at 08:08:07AM -0700, Rob Clark wrote:
->> > > > > > > On Mon, Aug 2, 2021 at 3:55 AM Will Deacon <will@kernel.org> wrote:
->> > > > > > > > On Thu, Jul 29, 2021 at 10:08:22AM +0530, Sai Prakash Ranjan wrote:
->> > > > > > > > > On 2021-07-28 19:30, Georgi Djakov wrote:
->> > > > > > > > > > On Mon, Jan 11, 2021 at 07:45:02PM +0530, Sai Prakash Ranjan wrote:
->> > > > > > > > > > > commit ecd7274fb4cd ("iommu: Remove unused IOMMU_SYS_CACHE_ONLY flag")
->> > > > > > > > > > > removed unused IOMMU_SYS_CACHE_ONLY prot flag and along with it went
->> > > > > > > > > > > the memory type setting required for the non-coherent masters to use
->> > > > > > > > > > > system cache. Now that system cache support for GPU is added, we will
->> > > > > > > > > > > need to set the right PTE attribute for GPU buffers to be sys cached.
->> > > > > > > > > > > Without this, the system cache lines are not allocated for GPU.
->> > > > > > > > > > >
->> > > > > > > > > > > So the patches in this series introduces a new prot flag IOMMU_LLC,
->> > > > > > > > > > > renames IO_PGTABLE_QUIRK_ARM_OUTER_WBWA to IO_PGTABLE_QUIRK_PTW_LLC
->> > > > > > > > > > > and makes GPU the user of this protection flag.
->> > > > > > > > > >
->> > > > > > > > > > Thank you for the patchset! Are you planning to refresh it, as it does
->> > > > > > > > > > not apply anymore?
->> > > > > > > > > >
->> > > > > > > > >
->> > > > > > > > > I was waiting on Will's reply [1]. If there are no changes needed, then
->> > > > > > > > > I can repost the patch.
->> > > > > > > >
->> > > > > > > > I still think you need to handle the mismatched alias, no? You're adding
->> > > > > > > > a new memory type to the SMMU which doesn't exist on the CPU side. That
->> > > > > > > > can't be right.
->> > > > > > > >
->> > > > > > >
->> > > > > > > Just curious, and maybe this is a dumb question, but what is your
->> > > > > > > concern about mismatched aliases?  I mean the cache hierarchy on the
->> > > > > > > GPU device side (anything beyond the LLC) is pretty different and
->> > > > > > > doesn't really care about the smmu pgtable attributes..
->> > > > > >
->> > > > > > If the CPU accesses a shared buffer with different attributes to those which
->> > > > > > the device is using then you fall into the "mismatched memory attributes"
->> > > > > > part of the Arm architecture. It's reasonably unforgiving (you should go and
->> > > > > > read it) and in some cases can apply to speculative accesses as well, but
->> > > > > > the end result is typically loss of coherency.
->> > > > >
->> > > > > Ok, I might have a few other sections to read first to decipher the
->> > > > > terminology..
->> > > > >
->> > > > > But my understanding of LLC is that it looks just like system memory
->> > > > > to the CPU and GPU (I think that would make it "the point of
->> > > > > coherence" between the GPU and CPU?)  If that is true, shouldn't it be
->> > > > > invisible from the point of view of different CPU mapping options?
->> > > >
->> > > > You could certainly build a system where mismatched attributes don't cause
->> > > > loss of coherence, but as it's not guaranteed by the architecture and the
->> > > > changes proposed here affect APIs which are exposed across SoCs, then I
->> > > > don't think it helps much.
->> > > >
->> > >
->> > > Hmm, the description of the new mapping flag is that it applies only
->> > > to transparent outer level cache:
->> > >
->> > > +/*
->> > > + * Non-coherent masters can use this page protection flag to set cacheable
->> > > + * memory attributes for only a transparent outer level of cache, also known as
->> > > + * the last-level or system cache.
->> > > + */
->> > > +#define IOMMU_LLC      (1 << 6)
->> > >
->> > > But I suppose we could call it instead IOMMU_QCOM_LLC or something
->> > > like that to make it more clear that it is not necessarily something
->> > > that would work with a different outer level cache implementation?
->> >
->> > ... or we could just deal with the problem so that other people can reuse
->> > the code. I haven't really understood the reluctance to solve this properly.
->> >
->> > Am I missing some reason this isn't solvable?
->> 
->> Oh, was there another way to solve it (other than foregoing setting
->> INC_OCACHE in the pgtables)?  Maybe I misunderstood, is there a
->> corresponding setting on the MMU pgtables side of things?
-> 
-> Right -- we just need to program the CPU's MMU with the matching memory
-> attributes! It's a bit more fiddly if you're just using ioremap_wc()
-> though, as it's usually the DMA API which handles the attributes under 
-> the
-> hood.
-> 
-> Anyway, sorry, I should've said that explicitly earlier on. We've done 
-> this
-> sort of thing in the Android tree so I assumed Sai knew what needed to 
-> be
-> done and then I didn't think to explain to you :(
-> 
+From: Tianyu Lan <Tianyu.Lan@microsoft.com>
 
-Right I was aware of that but even in the android tree there is no user 
-:)
-I think we can't have a new memory type without any user right in 
-upstream
-like android tree?
+Hyper-V provides two kinds of Isolation VMs. VBS(Virtualization-based
+security) and AMD SEV-SNP unenlightened Isolation VMs. This patchset
+is to add support for these Isolation VM support in Linux.
 
-@Rob, I think you  already tried adding a new MT and used 
-pgprot_syscached()
-in GPU driver but it was crashing?
+The memory of these vms are encrypted and host can't access guest
+memory directly. Hyper-V provides new host visibility hvcall and
+the guest needs to call new hvcall to mark memory visible to host
+before sharing memory with host. For security, all network/storage
+stack memory should not be shared with host and so there is bounce
+buffer requests.
 
-Thanks,
-Sai
+Vmbus channel ring buffer already plays bounce buffer role because
+all data from/to host needs to copy from/to between the ring buffer
+and IO stack memory. So mark vmbus channel ring buffer visible.
+
+There are two exceptions - packets sent by vmbus_sendpacket_
+pagebuffer() and vmbus_sendpacket_mpb_desc(). These packets
+contains IO stack memory address and host will access these memory.
+So add allocation bounce buffer support in vmbus for these packets.
+
+For SNP isolation VM, guest needs to access the shared memory via
+extra address space which is specified by Hyper-V CPUID HYPERV_CPUID_
+ISOLATION_CONFIG. The access physical address of the shared memory
+should be bounce buffer memory GPA plus with shared_gpa_boundary
+reported by CPUID.
+
+
+Change since V2:
+       - Drop x86_set_memory_enc static call and use platform check
+         in the __set_memory_enc_dec() to run platform callback of
+	 set memory encrypted or decrypted.
+
+Change since V1:
+       - Introduce x86_set_memory_enc static call and so platforms can
+         override __set_memory_enc_dec() with their implementation
+       - Introduce sev_es_ghcb_hv_call_simple() and share code
+         between SEV and Hyper-V code.
+       - Not remap monitor pages in the non-SNP isolation VM
+       - Make swiotlb_init_io_tlb_mem() return error code and return
+         error when dma_map_decrypted() fails.
+
+Change since RFC V4:
+       - Introduce dma map decrypted function to remap bounce buffer
+          and provide dma map decrypted ops for platform to hook callback.        
+       - Split swiotlb and dma map decrypted change into two patches
+       - Replace vstart with vaddr in swiotlb changes.
+
+Change since RFC v3:
+       - Add interface set_memory_decrypted_map() to decrypt memory and
+         map bounce buffer in extra address space
+       - Remove swiotlb remap function and store the remap address
+         returned by set_memory_decrypted_map() in swiotlb mem data structure.
+       - Introduce hv_set_mem_enc() to make code more readable in the __set_memory_enc_dec().
+
+Change since RFC v2:
+       - Remove not UIO driver in Isolation VM patch
+       - Use vmap_pfn() to replace ioremap_page_range function in
+       order to avoid exposing symbol ioremap_page_range() and
+       ioremap_page_range()
+       - Call hv set mem host visibility hvcall in set_memory_encrypted/decrypted()
+       - Enable swiotlb force mode instead of adding Hyper-V dma map/unmap hook
+       - Fix code style
+
+
+Tianyu Lan (13):
+  x86/HV: Initialize GHCB page in Isolation VM
+  x86/HV: Initialize shared memory boundary in the Isolation VM.
+  x86/HV: Add new hvcall guest address host visibility support
+  HV: Mark vmbus ring buffer visible to host in Isolation VM
+  HV: Add Write/Read MSR registers via ghcb page
+  HV: Add ghcb hvcall support for SNP VM
+  HV/Vmbus: Add SNP support for VMbus channel initiate message
+  HV/Vmbus: Initialize VMbus ring buffer for Isolation VM
+  DMA: Add dma_map_decrypted/dma_unmap_encrypted() function
+  x86/Swiotlb: Add Swiotlb bounce buffer remap function for HV IVM
+  HV/IOMMU: Enable swiotlb bounce buffer for Isolation VM
+  HV/Netvsc: Add Isolation VM support for netvsc driver
+  HV/Storvsc: Add Isolation VM support for storvsc driver
+
+ arch/x86/hyperv/Makefile           |   2 +-
+ arch/x86/hyperv/hv_init.c          |  75 ++++++--
+ arch/x86/hyperv/ivm.c              | 295 +++++++++++++++++++++++++++++
+ arch/x86/include/asm/hyperv-tlfs.h |  20 ++
+ arch/x86/include/asm/mshyperv.h    |  87 ++++++++-
+ arch/x86/include/asm/sev.h         |   3 +
+ arch/x86/kernel/cpu/mshyperv.c     |   5 +
+ arch/x86/kernel/sev-shared.c       |  63 +++---
+ arch/x86/mm/pat/set_memory.c       |  19 +-
+ arch/x86/xen/pci-swiotlb-xen.c     |   3 +-
+ drivers/hv/Kconfig                 |   1 +
+ drivers/hv/channel.c               |  54 +++++-
+ drivers/hv/connection.c            |  71 ++++++-
+ drivers/hv/hv.c                    | 129 +++++++++----
+ drivers/hv/hyperv_vmbus.h          |   3 +
+ drivers/hv/ring_buffer.c           |  84 ++++++--
+ drivers/hv/vmbus_drv.c             |   3 +
+ drivers/iommu/hyperv-iommu.c       |  65 +++++++
+ drivers/net/hyperv/hyperv_net.h    |   6 +
+ drivers/net/hyperv/netvsc.c        | 144 +++++++++++++-
+ drivers/net/hyperv/rndis_filter.c  |   2 +
+ drivers/scsi/storvsc_drv.c         |  68 ++++++-
+ include/asm-generic/hyperv-tlfs.h  |   1 +
+ include/asm-generic/mshyperv.h     |  54 +++++-
+ include/linux/dma-map-ops.h        |   9 +
+ include/linux/hyperv.h             |  17 ++
+ include/linux/swiotlb.h            |   4 +
+ kernel/dma/mapping.c               |  22 +++
+ kernel/dma/swiotlb.c               |  32 +++-
+ 29 files changed, 1212 insertions(+), 129 deletions(-)
+ create mode 100644 arch/x86/hyperv/ivm.c
 
 -- 
-QUALCOMM INDIA, on behalf of Qualcomm Innovation Center, Inc. is a 
-member
-of Code Aurora Forum, hosted by The Linux Foundation
+2.25.1
+
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
