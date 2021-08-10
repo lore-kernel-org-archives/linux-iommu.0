@@ -2,77 +2,108 @@ Return-Path: <SRS0=o4oj=NB=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-10.3 required=3.0 tests=BAYES_00,
-	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,NICE_REPLY_A,
-	SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_SANE_1 autolearn=unavailable
-	autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-3.5 required=3.0 tests=BAYES_00,DKIM_INVALID,
+	DKIM_SIGNED,HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,SPF_HELO_NONE,
+	SPF_PASS,URIBL_BLOCKED autolearn=no autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 24CDEC4338F
-	for <iommu@archiver.kernel.org>; Tue, 10 Aug 2021 09:52:08 +0000 (UTC)
-Received: from smtp2.osuosl.org (smtp2.osuosl.org [140.211.166.133])
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 34443C4338F
+	for <iommu@archiver.kernel.org>; Tue, 10 Aug 2021 09:54:58 +0000 (UTC)
+Received: from smtp3.osuosl.org (smtp3.osuosl.org [140.211.166.136])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id BB7996056C
-	for <iommu@archiver.kernel.org>; Tue, 10 Aug 2021 09:52:07 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.4.1 mail.kernel.org BB7996056C
-Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=arm.com
+	by mail.kernel.org (Postfix) with ESMTPS id C88F561051
+	for <iommu@archiver.kernel.org>; Tue, 10 Aug 2021 09:54:57 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.4.1 mail.kernel.org C88F561051
+Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=codeaurora.org
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by smtp2.osuosl.org (Postfix) with ESMTP id 41BAF40347;
-	Tue, 10 Aug 2021 09:52:07 +0000 (UTC)
+	by smtp3.osuosl.org (Postfix) with ESMTP id 92A2D60670;
+	Tue, 10 Aug 2021 09:54:57 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from smtp2.osuosl.org ([127.0.0.1])
-	by localhost (smtp2.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id wdNP4-beqzbL; Tue, 10 Aug 2021 09:52:03 +0000 (UTC)
-Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by smtp2.osuosl.org (Postfix) with ESMTPS id E6DD14028A;
-	Tue, 10 Aug 2021 09:52:02 +0000 (UTC)
+Received: from smtp3.osuosl.org ([127.0.0.1])
+	by localhost (smtp3.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+	with ESMTP id WTntDEOtj0TW; Tue, 10 Aug 2021 09:54:53 +0000 (UTC)
+Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [IPv6:2605:bc80:3010:104::8cd3:938])
+	by smtp3.osuosl.org (Postfix) with ESMTPS id 6B7C960777;
+	Tue, 10 Aug 2021 09:54:53 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id B4275C0010;
-	Tue, 10 Aug 2021 09:52:02 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 401BCC0010;
+	Tue, 10 Aug 2021 09:54:53 +0000 (UTC)
 Received: from smtp4.osuosl.org (smtp4.osuosl.org [140.211.166.137])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 97E83C000E
- for <iommu@lists.linux-foundation.org>; Tue, 10 Aug 2021 09:52:01 +0000 (UTC)
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 5F3BCC000E
+ for <iommu@lists.linux-foundation.org>; Tue, 10 Aug 2021 09:54:51 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by smtp4.osuosl.org (Postfix) with ESMTP id 72B13404E9
- for <iommu@lists.linux-foundation.org>; Tue, 10 Aug 2021 09:52:01 +0000 (UTC)
+ by smtp4.osuosl.org (Postfix) with UTF8SMTP id 416C040273
+ for <iommu@lists.linux-foundation.org>; Tue, 10 Aug 2021 09:54:51 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
+Authentication-Results: smtp4.osuosl.org (amavisd-new);
+ dkim=pass (1024-bit key) header.d=mg.codeaurora.org
 Received: from smtp4.osuosl.org ([127.0.0.1])
  by localhost (smtp4.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id DAZ-70RVGAdt for <iommu@lists.linux-foundation.org>;
- Tue, 10 Aug 2021 09:52:00 +0000 (UTC)
-X-Greylist: domain auto-whitelisted by SQLgrey-1.8.0
-Received: from foss.arm.com (foss.arm.com [217.140.110.172])
- by smtp4.osuosl.org (Postfix) with ESMTP id 8E713404C7
- for <iommu@lists.linux-foundation.org>; Tue, 10 Aug 2021 09:52:00 +0000 (UTC)
-Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
- by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id D7BEF1063;
- Tue, 10 Aug 2021 02:51:59 -0700 (PDT)
-Received: from [10.57.36.146] (unknown [10.57.36.146])
- by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id 920723F70D;
- Tue, 10 Aug 2021 02:51:58 -0700 (PDT)
-Subject: Re: [RFC PATCH 2/3] iommu/dma-iommu: Support iovad->granule >
- PAGE_SIZE
-To: Sven Peter <sven@svenpeter.dev>,
- Sven Peter <iommu@lists.linux-foundation.org>
-References: <20210806155523.50429-1-sven@svenpeter.dev>
- <20210806155523.50429-3-sven@svenpeter.dev>
- <d289a555-9e3b-b948-1883-2ee4c915da4c@arm.com>
- <dadbd8b0-171a-4008-8a2e-f68abfed9285@www.fastmail.com>
- <5002ed91-416c-d7ee-b1ab-a50c590749c2@arm.com>
- <cf78f795-1e75-45c9-a759-018f17cfaed9@www.fastmail.com>
-From: Robin Murphy <robin.murphy@arm.com>
-Message-ID: <a721f8e3-4c1d-afb2-3ae2-eb1360e1eaca@arm.com>
-Date: Tue, 10 Aug 2021 10:51:52 +0100
-User-Agent: Mozilla/5.0 (Windows NT 10.0; rv:78.0) Gecko/20100101
- Thunderbird/78.12.0
+ with UTF8SMTP id TeVcvAnaf_Cp for <iommu@lists.linux-foundation.org>;
+ Tue, 10 Aug 2021 09:54:47 +0000 (UTC)
+X-Greylist: from auto-whitelisted by SQLgrey-1.8.0
+Received: from m43-7.mailgun.net (m43-7.mailgun.net [69.72.43.7])
+ by smtp4.osuosl.org (Postfix) with UTF8SMTPS id D3C364024B
+ for <iommu@lists.linux-foundation.org>; Tue, 10 Aug 2021 09:54:46 +0000 (UTC)
+DKIM-Signature: a=rsa-sha256; v=1; c=relaxed/relaxed; d=mg.codeaurora.org;
+ q=dns/txt; 
+ s=smtp; t=1628589287; h=Message-ID: References: In-Reply-To: Subject:
+ Cc: To: From: Date: Content-Transfer-Encoding: Content-Type:
+ MIME-Version: Sender; bh=60vq8IZG6c8Gs1cuSWU7oo0+DBbyu3c+ZH4aBblmawM=;
+ b=CvyviI5asBDsXg2RpLuNXKTOWz1Hye+NJH6jJgCI5hgVKNHf6qn5dcFWpfLzx5HSPyKGsJu9
+ 8dBPS5OTohj4TdctArNDTUo0biBq4dYA0QfncolO5+E3wxSQJVT8HEhfqc2NJt3zxVpTaLHa
+ Rxf0a/gO7LeFkY7O8UcUqmaTKKA=
+X-Mailgun-Sending-Ip: 69.72.43.7
+X-Mailgun-Sid: WyI3NDkwMCIsICJpb21tdUBsaXN0cy5saW51eC1mb3VuZGF0aW9uLm9yZyIsICJiZTllNGEiXQ==
+Received: from smtp.codeaurora.org
+ (ec2-35-166-182-171.us-west-2.compute.amazonaws.com [35.166.182.171]) by
+ smtp-out-n03.prod.us-east-1.postgun.com with SMTP id
+ 61124ce491487ad52093f4db (version=TLS1.2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256); Tue, 10 Aug 2021 09:54:44
+ GMT
+Received: by smtp.codeaurora.org (Postfix, from userid 1001)
+ id 5146DC43147; Tue, 10 Aug 2021 09:54:43 +0000 (UTC)
+Received: from mail.codeaurora.org (localhost.localdomain [127.0.0.1])
+ (using TLSv1 with cipher ECDHE-RSA-AES256-SHA (256/256 bits))
+ (No client certificate requested)
+ (Authenticated sender: saiprakash.ranjan)
+ by smtp.codeaurora.org (Postfix) with ESMTPSA id 05E71C4338A;
+ Tue, 10 Aug 2021 09:54:41 +0000 (UTC)
 MIME-Version: 1.0
-In-Reply-To: <cf78f795-1e75-45c9-a759-018f17cfaed9@www.fastmail.com>
-Content-Language: en-GB
-Cc: Arnd Bergmann <arnd@kernel.org>, Hector Martin <marcan@marcan.st>,
- linux-kernel@vger.kernel.org, Alexander Graf <graf@amazon.com>,
- Mohamed Mediouni <mohamed.mediouni@caramail.com>,
- Will Deacon <will@kernel.org>
+Date: Tue, 10 Aug 2021 15:24:41 +0530
+From: Sai Prakash Ranjan <saiprakash.ranjan@codeaurora.org>
+To: Will Deacon <will@kernel.org>
+Subject: Re: [Freedreno] [PATCH 0/3] iommu/drm/msm: Allow non-coherent masters
+ to use system cache
+In-Reply-To: <20210810091619.GA2494@willie-the-truck>
+References: <20210802105544.GA27657@willie-the-truck>
+ <CAF6AEGvtpFu8st=ZFNoKjP9YsAenciLxL1zMFi_iqMCvdby73w@mail.gmail.com>
+ <20210802151409.GE28735@willie-the-truck>
+ <CAF6AEGtzvyEUm0Fc8QT5t9KNK7i0FbFyi7zDM2_PMCzZBp7qbw@mail.gmail.com>
+ <20210809145651.GC1458@willie-the-truck>
+ <CAF6AEGsSUojA=V0n2iRWTCn++buqN=Eoxo0r3=+=PBu1O=H-AQ@mail.gmail.com>
+ <20210809170508.GB1589@willie-the-truck>
+ <CAF6AEGtmZ3LzAJdtnKDQDbEN-a6_JgdN-fZ96pkU3dZqkiW91g@mail.gmail.com>
+ <20210809174022.GA1840@willie-the-truck>
+ <76bfd0b4248148dfbf9d174ddcb4c2a2@codeaurora.org>
+ <20210810091619.GA2494@willie-the-truck>
+Message-ID: <5b6953c5afdf566c248a2da59f91d9de@codeaurora.org>
+X-Sender: saiprakash.ranjan@codeaurora.org
+User-Agent: Roundcube Webmail/1.3.9
+Cc: "Isaac J. Manjarres" <isaacm@codeaurora.org>,
+ David Airlie <airlied@linux.ie>, linux-arm-msm <linux-arm-msm@vger.kernel.org>,
+ Jordan Crouse <jcrouse@codeaurora.org>,
+ dri-devel <dri-devel@lists.freedesktop.org>,
+ Akhil P Oommen <akhilpo@codeaurora.org>, Sean Paul <sean@poorly.run>,
+ "list@263.net:IOMMU
+ DRIVERS , Joerg Roedel <joro@8bytes.org>, " <iommu@lists.linux-foundation.org>,
+ Kristian H Kristensen <hoegsberg@google.com>,
+ "moderated list:ARM/FREESCALE IMX / MXC ARM ARCHITECTURE"
+ <linux-arm-kernel@lists.infradead.org>, Daniel Vetter <daniel@ffwll.ch>,
+ freedreno <freedreno@lists.freedesktop.org>,
+ Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+ Robin Murphy <robin.murphy@arm.com>
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -90,93 +121,70 @@ Content-Type: text/plain; charset="us-ascii"; Format="flowed"
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-On 2021-08-09 21:45, Sven Peter wrote:
+On 2021-08-10 14:46, Will Deacon wrote:
+> On Mon, Aug 09, 2021 at 11:17:40PM +0530, Sai Prakash Ranjan wrote:
+>> On 2021-08-09 23:10, Will Deacon wrote:
+>> > On Mon, Aug 09, 2021 at 10:18:21AM -0700, Rob Clark wrote:
+>> > > On Mon, Aug 9, 2021 at 10:05 AM Will Deacon <will@kernel.org> wrote:
+>> > > > On Mon, Aug 09, 2021 at 09:57:08AM -0700, Rob Clark wrote:
+>> > > > > But I suppose we could call it instead IOMMU_QCOM_LLC or something
+>> > > > > like that to make it more clear that it is not necessarily something
+>> > > > > that would work with a different outer level cache implementation?
+>> > > >
+>> > > > ... or we could just deal with the problem so that other people can reuse
+>> > > > the code. I haven't really understood the reluctance to solve this properly.
+>> > > >
+>> > > > Am I missing some reason this isn't solvable?
+>> > >
+>> > > Oh, was there another way to solve it (other than foregoing setting
+>> > > INC_OCACHE in the pgtables)?  Maybe I misunderstood, is there a
+>> > > corresponding setting on the MMU pgtables side of things?
+>> >
+>> > Right -- we just need to program the CPU's MMU with the matching memory
+>> > attributes! It's a bit more fiddly if you're just using ioremap_wc()
+>> > though, as it's usually the DMA API which handles the attributes under
+>> > the
+>> > hood.
+>> >
+>> > Anyway, sorry, I should've said that explicitly earlier on. We've done
+>> > this
+>> > sort of thing in the Android tree so I assumed Sai knew what needed to
+>> > be
+>> > done and then I didn't think to explain to you :(
+>> >
+>> 
+>> Right I was aware of that but even in the android tree there is no 
+>> user :)
 > 
+> I'm assuming there are vendor modules using it there, otherwise we 
+> wouldn't
+> have been asked to put it in. Since you work at Qualcomm, maybe you 
+> could
+> talk to your colleagues (Isaac and Patrick) directly?
 > 
-> On Mon, Aug 9, 2021, at 19:41, Robin Murphy wrote:
->> On 2021-08-07 12:47, Sven Peter via iommu wrote:
->>>
->>>
->>> On Fri, Aug 6, 2021, at 20:04, Robin Murphy wrote:
->>>> On 2021-08-06 16:55, Sven Peter via iommu wrote:
->>>>> @@ -1006,6 +1019,31 @@ static int iommu_dma_map_sg(struct device *dev, struct scatterlist *sg,
->>>>>     	if (dev_is_untrusted(dev))
->>>>>     		return iommu_dma_map_sg_swiotlb(dev, sg, nents, dir, attrs);
->>>>>     
->>>>> +	/*
->>>>> +	 * If the IOMMU pagesize is larger than the CPU pagesize we will
->>>>> +	 * very likely run into sgs with a physical address that is not aligned
->>>>> +	 * to an IOMMU page boundary. Fall back to just mapping every entry
->>>>> +	 * independently with __iommu_dma_map then.
->>>>
->>>> Scatterlist segments often don't have nicely aligned ends, which is why
->>>> we already align things to IOVA granules in main loop here. I think in
->>>> principle we'd just need to move the non-IOVA-aligned part of the
->>>> address from sg->page to sg->offset in the temporary transformation for
->>>> the rest of the assumptions to hold. I don't blame you for being timid
->>>> about touching that, though - it took me 3 tries to get right when I
->>>> first wrote it...
->>>>
->>>
->>>
->>> I've spent some time with that code now and I think we cannot use it
->>> but have to fall back to iommu_dma_map_sg_swiotlb (even though that swiotlb
->>> part is a lie then):
->>>
->>> When we have sg_phys(s) = 0x802e65000 with s->offset = 0 the paddr
->>> is aligned to PAGE_SIZE but has an offset of 0x1000 from something
->>> the IOMMU can map.
->>> Now this would result in s->offset = -0x1000 which is already weird
->>> enough.
->>> Offset is unsigned (and 32bit) so this will actually look like
->>> s->offset = 0xfffff000 then, which isn't much better.
->>> And then sg_phys(s) = 0x902e64000 (instead of 0x802e64000) and
->>> we'll map some random memory in iommu_map_sg_atomic and a little bit later
->>> everything explodes.
->>>
->>> Now I could probably adjust the phys addr backwards and make sure offset is
->>> always positive (and possibly larger than PAGE_SIZE) and later restore it
->>> in __finalise_sg then but I feel like that's pushing this a little bit too far.
->>
->> Yes, that's what I meant. At a quick guess, something like the
->> completely untested diff below.
-> 
-> That unfortunately results in unaligned mappings
 
-You mean it even compiles!? :D
+Right I will check with them regarding the vendor modules in android.
 
-> [    9.630334] iommu: unaligned: iova 0xbff40000 pa 0x0000000801a3b000 size 0x4000 min_pagesz 0x4000
+>> I think we can't have a new memory type without any user right in 
+>> upstream
+>> like android tree?
 > 
-> I'll take a closer look later this week and see if I can fix it.
+> Correct. But I don't think we should be adding IOMMU_* anything 
+> upstream
+> if we don't have a user.
+> 
 
-On reflection, "s->offset ^ s_iova_off" is definitely wrong, that more 
-likely wants to be "s->offset & ~s_iova_off".
+Agreed, once we have the fix for GPU crash I can continue further on 
+using
+this properly.
 
-Robin.
+Thanks,
+Sai
 
->> It really comes down to what we want to
->> achieve here - if it's just to make this thing work at all, then I'd
->> favour bolting on the absolute minimum changes, possibly even cheating
->> by tainting the kernel and saying all bets are off instead of trying to
->> handle the more involved corners really properly. However if you want to
->> work towards this being a properly-supported thing, then I think it's
->> worth generalising the existing assumptions of page alignment from the
->> beginning.
-> 
-> I'd like to try and see if we can make this a properly-supported thing.
-> 
-> That will likely take a few iterations but realistically the rest of the drivers
-> required to make this platform actually useful (and especially the display controller
-> and GPU drivers) won't be ready for a few more months anyway. And even on 4KB PAGE_SIZE
-> kernels half the USB ports and NVMe will work fine, which should be enough to install
-> a distro and some third-party package that just ships the distro kernel with 16KB
-> pages.
-> 
-> 
-> 
-> 
-> Sven
-> 
+-- 
+QUALCOMM INDIA, on behalf of Qualcomm Innovation Center, Inc. is a 
+member
+of Code Aurora Forum, hosted by The Linux Foundation
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
