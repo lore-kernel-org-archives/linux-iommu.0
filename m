@@ -2,108 +2,98 @@ Return-Path: <SRS0=o4oj=NB=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-3.5 required=3.0 tests=BAYES_00,DKIM_INVALID,
-	DKIM_SIGNED,HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,SPF_HELO_NONE,
-	SPF_PASS,URIBL_BLOCKED autolearn=no autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-9.0 required=3.0 tests=BAYES_00,INCLUDES_PATCH,
+	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED autolearn=unavailable
+	autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 34443C4338F
-	for <iommu@archiver.kernel.org>; Tue, 10 Aug 2021 09:54:58 +0000 (UTC)
-Received: from smtp3.osuosl.org (smtp3.osuosl.org [140.211.166.136])
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 03FAFC4338F
+	for <iommu@archiver.kernel.org>; Tue, 10 Aug 2021 10:04:33 +0000 (UTC)
+Received: from smtp2.osuosl.org (smtp2.osuosl.org [140.211.166.133])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id C88F561051
-	for <iommu@archiver.kernel.org>; Tue, 10 Aug 2021 09:54:57 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.4.1 mail.kernel.org C88F561051
-Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=codeaurora.org
+	by mail.kernel.org (Postfix) with ESMTPS id A135160F25
+	for <iommu@archiver.kernel.org>; Tue, 10 Aug 2021 10:04:32 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.4.1 mail.kernel.org A135160F25
+Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=kernel.org
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by smtp3.osuosl.org (Postfix) with ESMTP id 92A2D60670;
-	Tue, 10 Aug 2021 09:54:57 +0000 (UTC)
+	by smtp2.osuosl.org (Postfix) with ESMTP id 62FF1401B0;
+	Tue, 10 Aug 2021 10:04:32 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from smtp3.osuosl.org ([127.0.0.1])
-	by localhost (smtp3.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id WTntDEOtj0TW; Tue, 10 Aug 2021 09:54:53 +0000 (UTC)
+Received: from smtp2.osuosl.org ([127.0.0.1])
+	by localhost (smtp2.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+	with ESMTP id bmoRcg4OFbpU; Tue, 10 Aug 2021 10:04:27 +0000 (UTC)
 Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [IPv6:2605:bc80:3010:104::8cd3:938])
-	by smtp3.osuosl.org (Postfix) with ESMTPS id 6B7C960777;
-	Tue, 10 Aug 2021 09:54:53 +0000 (UTC)
+	by smtp2.osuosl.org (Postfix) with ESMTPS id DB437400EC;
+	Tue, 10 Aug 2021 10:04:26 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 401BCC0010;
-	Tue, 10 Aug 2021 09:54:53 +0000 (UTC)
-Received: from smtp4.osuosl.org (smtp4.osuosl.org [140.211.166.137])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 5F3BCC000E
- for <iommu@lists.linux-foundation.org>; Tue, 10 Aug 2021 09:54:51 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 9E215C001A;
+	Tue, 10 Aug 2021 10:04:26 +0000 (UTC)
+Received: from smtp1.osuosl.org (smtp1.osuosl.org [140.211.166.138])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 153D5C000E;
+ Tue, 10 Aug 2021 10:04:25 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by smtp4.osuosl.org (Postfix) with UTF8SMTP id 416C040273
- for <iommu@lists.linux-foundation.org>; Tue, 10 Aug 2021 09:54:51 +0000 (UTC)
+ by smtp1.osuosl.org (Postfix) with ESMTP id E542681CA7;
+ Tue, 10 Aug 2021 10:04:24 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Authentication-Results: smtp4.osuosl.org (amavisd-new);
- dkim=pass (1024-bit key) header.d=mg.codeaurora.org
-Received: from smtp4.osuosl.org ([127.0.0.1])
- by localhost (smtp4.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with UTF8SMTP id TeVcvAnaf_Cp for <iommu@lists.linux-foundation.org>;
- Tue, 10 Aug 2021 09:54:47 +0000 (UTC)
-X-Greylist: from auto-whitelisted by SQLgrey-1.8.0
-Received: from m43-7.mailgun.net (m43-7.mailgun.net [69.72.43.7])
- by smtp4.osuosl.org (Postfix) with UTF8SMTPS id D3C364024B
- for <iommu@lists.linux-foundation.org>; Tue, 10 Aug 2021 09:54:46 +0000 (UTC)
-DKIM-Signature: a=rsa-sha256; v=1; c=relaxed/relaxed; d=mg.codeaurora.org;
- q=dns/txt; 
- s=smtp; t=1628589287; h=Message-ID: References: In-Reply-To: Subject:
- Cc: To: From: Date: Content-Transfer-Encoding: Content-Type:
- MIME-Version: Sender; bh=60vq8IZG6c8Gs1cuSWU7oo0+DBbyu3c+ZH4aBblmawM=;
- b=CvyviI5asBDsXg2RpLuNXKTOWz1Hye+NJH6jJgCI5hgVKNHf6qn5dcFWpfLzx5HSPyKGsJu9
- 8dBPS5OTohj4TdctArNDTUo0biBq4dYA0QfncolO5+E3wxSQJVT8HEhfqc2NJt3zxVpTaLHa
- Rxf0a/gO7LeFkY7O8UcUqmaTKKA=
-X-Mailgun-Sending-Ip: 69.72.43.7
-X-Mailgun-Sid: WyI3NDkwMCIsICJpb21tdUBsaXN0cy5saW51eC1mb3VuZGF0aW9uLm9yZyIsICJiZTllNGEiXQ==
-Received: from smtp.codeaurora.org
- (ec2-35-166-182-171.us-west-2.compute.amazonaws.com [35.166.182.171]) by
- smtp-out-n03.prod.us-east-1.postgun.com with SMTP id
- 61124ce491487ad52093f4db (version=TLS1.2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256); Tue, 10 Aug 2021 09:54:44
- GMT
-Received: by smtp.codeaurora.org (Postfix, from userid 1001)
- id 5146DC43147; Tue, 10 Aug 2021 09:54:43 +0000 (UTC)
-Received: from mail.codeaurora.org (localhost.localdomain [127.0.0.1])
- (using TLSv1 with cipher ECDHE-RSA-AES256-SHA (256/256 bits))
- (No client certificate requested)
- (Authenticated sender: saiprakash.ranjan)
- by smtp.codeaurora.org (Postfix) with ESMTPSA id 05E71C4338A;
- Tue, 10 Aug 2021 09:54:41 +0000 (UTC)
+Received: from smtp1.osuosl.org ([127.0.0.1])
+ by localhost (smtp1.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+ with ESMTP id wM6BH4kJbSSX; Tue, 10 Aug 2021 10:04:24 +0000 (UTC)
+X-Greylist: whitelisted by SQLgrey-1.8.0
+X-Greylist: whitelisted by SQLgrey-1.8.0
+Received: from mail-wm1-f44.google.com (mail-wm1-f44.google.com
+ [209.85.128.44])
+ by smtp1.osuosl.org (Postfix) with ESMTPS id 2D16081B17;
+ Tue, 10 Aug 2021 10:04:24 +0000 (UTC)
+Received: by mail-wm1-f44.google.com with SMTP id
+ m36-20020a05600c3b24b02902e67543e17aso1506861wms.0; 
+ Tue, 10 Aug 2021 03:04:24 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+ d=1e100.net; s=20161025;
+ h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+ :mime-version:content-disposition:in-reply-to;
+ bh=nNPyEQUv6Ji6aWmVMQgSNl5jQ96sNm9i4LSvAWR0eaA=;
+ b=q2gbUw9U5RtXDLYisdSeQSgCrPFXvSu38/Nc8e2OtpE6cCuDTC/Rup5pd6D7I3GphR
+ wr7FNqUbH0b/vddvNEjoyl/Iu1esfKxdseTtw3MrVUENz/DZBisiwI6dbSE3CSAtwEDG
+ jPEyDtmp9zi0ZY38Dj+7BCNz5TAysF3z0XOnCSsIEKP73HSZq5LNvW3Ui0dyLUYYtCji
+ loJD6PFV16PJdB4607ccaCuBgzDpAdxi/tlXQofuQf2CZktqhSp38YBqiOCZ/B6AjLtp
+ cyczg3ABjA43CEQFbUA3Nrsh5tchELIl3wkx86Kf8Chox7fLdzZiPOjXw77Ijj1ExgVk
+ nGwQ==
+X-Gm-Message-State: AOAM530qp5gTvBfBtwnflrBxxsjdgQ2YLQRR0fFcbm5DyfXfF9rBUasB
+ c2+vibIoO0nqb9z6cKPNlUo=
+X-Google-Smtp-Source: ABdhPJxqwuyMnHbZRg1qBZctOdB5h6Kf4V8NZCJ8ord6bBrxy7xEi7XisJdq+Xmsrl1aGAMEv6+vWg==
+X-Received: by 2002:a05:600c:1c11:: with SMTP id
+ j17mr21277438wms.35.1628589862198; 
+ Tue, 10 Aug 2021 03:04:22 -0700 (PDT)
+Received: from liuwe-devbox-debian-v2 ([51.145.34.42])
+ by smtp.gmail.com with ESMTPSA id e3sm9074443wro.15.2021.08.10.03.04.21
+ (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+ Tue, 10 Aug 2021 03:04:21 -0700 (PDT)
+Date: Tue, 10 Aug 2021 10:04:19 +0000
+From: Wei Liu <wei.liu@kernel.org>
+To: Praveen Kumar <kumarpraveen@linux.microsoft.com>
+Subject: Re: [RFC v1 6/8] mshv: command line option to skip devices in PV-IOMMU
+Message-ID: <20210810100419.g3rjj3xegydalyz3@liuwe-devbox-debian-v2>
+References: <20210709114339.3467637-1-wei.liu@kernel.org>
+ <20210709114339.3467637-7-wei.liu@kernel.org>
+ <4a6918ea-e3e5-55c9-a12d-bee7261301fd@linux.microsoft.com>
+ <20210803215617.fzx2vrzhsabrrolc@liuwe-devbox-debian-v2>
+ <8d9b6b9a-62b1-95ea-1bb6-258e72c1800d@linux.microsoft.com>
 MIME-Version: 1.0
-Date: Tue, 10 Aug 2021 15:24:41 +0530
-From: Sai Prakash Ranjan <saiprakash.ranjan@codeaurora.org>
-To: Will Deacon <will@kernel.org>
-Subject: Re: [Freedreno] [PATCH 0/3] iommu/drm/msm: Allow non-coherent masters
- to use system cache
-In-Reply-To: <20210810091619.GA2494@willie-the-truck>
-References: <20210802105544.GA27657@willie-the-truck>
- <CAF6AEGvtpFu8st=ZFNoKjP9YsAenciLxL1zMFi_iqMCvdby73w@mail.gmail.com>
- <20210802151409.GE28735@willie-the-truck>
- <CAF6AEGtzvyEUm0Fc8QT5t9KNK7i0FbFyi7zDM2_PMCzZBp7qbw@mail.gmail.com>
- <20210809145651.GC1458@willie-the-truck>
- <CAF6AEGsSUojA=V0n2iRWTCn++buqN=Eoxo0r3=+=PBu1O=H-AQ@mail.gmail.com>
- <20210809170508.GB1589@willie-the-truck>
- <CAF6AEGtmZ3LzAJdtnKDQDbEN-a6_JgdN-fZ96pkU3dZqkiW91g@mail.gmail.com>
- <20210809174022.GA1840@willie-the-truck>
- <76bfd0b4248148dfbf9d174ddcb4c2a2@codeaurora.org>
- <20210810091619.GA2494@willie-the-truck>
-Message-ID: <5b6953c5afdf566c248a2da59f91d9de@codeaurora.org>
-X-Sender: saiprakash.ranjan@codeaurora.org
-User-Agent: Roundcube Webmail/1.3.9
-Cc: "Isaac J. Manjarres" <isaacm@codeaurora.org>,
- David Airlie <airlied@linux.ie>, linux-arm-msm <linux-arm-msm@vger.kernel.org>,
- Jordan Crouse <jcrouse@codeaurora.org>,
- dri-devel <dri-devel@lists.freedesktop.org>,
- Akhil P Oommen <akhilpo@codeaurora.org>, Sean Paul <sean@poorly.run>,
- "list@263.net:IOMMU
- DRIVERS , Joerg Roedel <joro@8bytes.org>, " <iommu@lists.linux-foundation.org>,
- Kristian H Kristensen <hoegsberg@google.com>,
- "moderated list:ARM/FREESCALE IMX / MXC ARM ARCHITECTURE"
- <linux-arm-kernel@lists.infradead.org>, Daniel Vetter <daniel@ffwll.ch>,
- freedreno <freedreno@lists.freedesktop.org>,
- Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
- Robin Murphy <robin.murphy@arm.com>
+Content-Disposition: inline
+In-Reply-To: <8d9b6b9a-62b1-95ea-1bb6-258e72c1800d@linux.microsoft.com>
+Cc: Wei Liu <wei.liu@kernel.org>, "K. Y. Srinivasan" <kys@microsoft.com>,
+ Stephen Hemminger <sthemmin@microsoft.com>, pasha.tatashin@soleen.com,
+ Linux on Hyper-V List <linux-hyperv@vger.kernel.org>,
+ Will Deacon <will@kernel.org>, Haiyang Zhang <haiyangz@microsoft.com>,
+ Dexuan Cui <decui@microsoft.com>,
+ Linux Kernel List <linux-kernel@vger.kernel.org>,
+ Michael Kelley <mikelley@microsoft.com>,
+ "open list:IOMMU DRIVERS" <iommu@lists.linux-foundation.org>,
+ Nuno Das Neves <nunodasneves@linux.microsoft.com>,
+ Sunil Muthuswamy <sunilmut@microsoft.com>,
+ virtualization@lists.linux-foundation.org,
+ Vineeth Pillai <viremana@linux.microsoft.com>
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -116,75 +106,112 @@ List-Post: <mailto:iommu@lists.linux-foundation.org>
 List-Help: <mailto:iommu-request@lists.linux-foundation.org?subject=help>
 List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
  <mailto:iommu-request@lists.linux-foundation.org?subject=subscribe>
+Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
-Content-Type: text/plain; charset="us-ascii"; Format="flowed"
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-On 2021-08-10 14:46, Will Deacon wrote:
-> On Mon, Aug 09, 2021 at 11:17:40PM +0530, Sai Prakash Ranjan wrote:
->> On 2021-08-09 23:10, Will Deacon wrote:
->> > On Mon, Aug 09, 2021 at 10:18:21AM -0700, Rob Clark wrote:
->> > > On Mon, Aug 9, 2021 at 10:05 AM Will Deacon <will@kernel.org> wrote:
->> > > > On Mon, Aug 09, 2021 at 09:57:08AM -0700, Rob Clark wrote:
->> > > > > But I suppose we could call it instead IOMMU_QCOM_LLC or something
->> > > > > like that to make it more clear that it is not necessarily something
->> > > > > that would work with a different outer level cache implementation?
->> > > >
->> > > > ... or we could just deal with the problem so that other people can reuse
->> > > > the code. I haven't really understood the reluctance to solve this properly.
->> > > >
->> > > > Am I missing some reason this isn't solvable?
->> > >
->> > > Oh, was there another way to solve it (other than foregoing setting
->> > > INC_OCACHE in the pgtables)?  Maybe I misunderstood, is there a
->> > > corresponding setting on the MMU pgtables side of things?
->> >
->> > Right -- we just need to program the CPU's MMU with the matching memory
->> > attributes! It's a bit more fiddly if you're just using ioremap_wc()
->> > though, as it's usually the DMA API which handles the attributes under
->> > the
->> > hood.
->> >
->> > Anyway, sorry, I should've said that explicitly earlier on. We've done
->> > this
->> > sort of thing in the Android tree so I assumed Sai knew what needed to
->> > be
->> > done and then I didn't think to explain to you :(
->> >
->> 
->> Right I was aware of that but even in the android tree there is no 
->> user :)
+On Wed, Aug 04, 2021 at 12:33:54PM +0530, Praveen Kumar wrote:
+> On 04-08-2021 03:26, Wei Liu wrote:
+> >>>  	struct iommu_domain domain;
+> >>> @@ -774,6 +784,41 @@ static struct iommu_device *hv_iommu_probe_device(struct device *dev)
+> >>>  	if (!dev_is_pci(dev))
+> >>>  		return ERR_PTR(-ENODEV);
+> >>>  
+> >>> +	/*
+> >>> +	 * Skip the PCI device specified in `pci_devs_to_skip`. This is a
+> >>> +	 * temporary solution until we figure out a way to extract information
+> >>> +	 * from the hypervisor what devices it is already using.
+> >>> +	 */
+> >>> +	if (pci_devs_to_skip && *pci_devs_to_skip) {
+> >>> +		int pos = 0;
+> >>> +		int parsed;
+> >>> +		int segment, bus, slot, func;
+> >>> +		struct pci_dev *pdev = to_pci_dev(dev);
+> >>> +
+> >>> +		do {
+> >>> +			parsed = 0;
+> >>> +
+> >>> +			sscanf(pci_devs_to_skip + pos,
+> >>> +				" (%x:%x:%x.%x) %n",
+> >>> +				&segment, &bus, &slot, &func, &parsed);
+> >>> +
+> >>> +			if (parsed <= 0)
+> >>> +				break;
+> >>> +
+> >>> +			if (pci_domain_nr(pdev->bus) == segment &&
+> >>> +				pdev->bus->number == bus &&
+> >>> +				PCI_SLOT(pdev->devfn) == slot &&
+> >>> +				PCI_FUNC(pdev->devfn) == func)
+> >>> +			{
+> >>> +				dev_info(dev, "skipped by MSHV IOMMU\n");
+> >>> +				return ERR_PTR(-ENODEV);
+> >>> +			}
+> >>> +
+> >>> +			pos += parsed;
+> >>> +
+> >>> +		} while (pci_devs_to_skip[pos]);
+> >>
+> >> Is there a possibility of pci_devs_to_skip + pos > sizeof(pci_devs_to_skip)
+> >> and also a valid memory ?
+> > 
+> > pos should point to the last parsed position. If parsing fails pos does
+> > not get updated and the code breaks out of the loop. If parsing is
+> > success pos should point to either the start of next element of '\0'
+> > (end of string). To me this is good enough.
 > 
-> I'm assuming there are vendor modules using it there, otherwise we 
-> wouldn't
-> have been asked to put it in. Since you work at Qualcomm, maybe you 
-> could
-> talk to your colleagues (Isaac and Patrick) directly?
+> The point is, hypothetically the address to pci_devs_to_skip + pos can
+> be valid address (later to '\0'), and thus there is a possibility,
+> that parsing may not fail.
+
+Have you found an example how at any given point in time
+pci_devs_to_skip + pos can point outside of user provided string?
+
+> Another, there is also a possibility of sscanf faulting accessing the
+> illegal address, if pci_devs_to_skip[pos] turns out to be not NULL or
+> valid address.
+
+That depends on pci_devs_to_skip + pos can point to an invalid address
+in the first place, so that goes back to the question above.
+
 > 
-
-Right I will check with them regarding the vendor modules in android.
-
->> I think we can't have a new memory type without any user right in 
->> upstream
->> like android tree?
+> > 
+> >> I would recommend to have a check of size as well before accessing the
+> >> array content, just to be safer accessing any memory.
+> >>
+> > 
+> > What check do you have in mind?
 > 
-> Correct. But I don't think we should be adding IOMMU_* anything 
-> upstream
-> if we don't have a user.
+> Something like,
+> size_t len = strlen(pci_devs_to_skip);
+> do {
 > 
+> 	len -= parsed;
+> } while (len);
+> 
+> OR
+> 
+> do {
+> ...
+> 	pos += parsed;
+> } while (pos < len);
+> 
+> Further, I'm also fine with the existing code, if you think this won't
+> break and already been taken care. Thanks.
 
-Agreed, once we have the fix for GPU crash I can continue further on 
-using
-this properly.
+But in the loop somewhere you will still need to parse pci_devs_to_skip
++ some_offset. The new code structure does not remove that, right?
 
-Thanks,
-Sai
+Given this is for debugging and is supposed to be temporary, I think the
+code is good enough. But I want to make sure if there is anything I
+missed.
 
--- 
-QUALCOMM INDIA, on behalf of Qualcomm Innovation Center, Inc. is a 
-member
-of Code Aurora Forum, hosted by The Linux Foundation
+Wei.
+
+> 
+> Regards,
+> 
+> ~Praveen.
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
