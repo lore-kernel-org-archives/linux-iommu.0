@@ -2,85 +2,96 @@ Return-Path: <SRS0=o4oj=NB=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-2.0 required=3.0 tests=BAYES_00,DATE_IN_PAST_03_06,
-	DKIM_INVALID,DKIM_SIGNED,HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,
-	SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED autolearn=no autolearn_force=no
-	version=3.4.0
+X-Spam-Status: No, score=-3.5 required=3.0 tests=BAYES_00,DKIM_INVALID,
+	DKIM_SIGNED,HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,SPF_HELO_NONE,
+	SPF_PASS,URIBL_BLOCKED autolearn=no autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5712AC4338F
-	for <iommu@archiver.kernel.org>; Tue, 10 Aug 2021 10:19:04 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 33323C4338F
+	for <iommu@archiver.kernel.org>; Tue, 10 Aug 2021 10:36:16 +0000 (UTC)
 Received: from smtp1.osuosl.org (smtp1.osuosl.org [140.211.166.138])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id C45A86109E
-	for <iommu@archiver.kernel.org>; Tue, 10 Aug 2021 10:19:03 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.4.1 mail.kernel.org C45A86109E
-Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=gibson.dropbear.id.au
+	by mail.kernel.org (Postfix) with ESMTPS id D43E860720
+	for <iommu@archiver.kernel.org>; Tue, 10 Aug 2021 10:36:15 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.4.1 mail.kernel.org D43E860720
+Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=redhat.com
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by smtp1.osuosl.org (Postfix) with ESMTP id 88030831B0;
-	Tue, 10 Aug 2021 10:19:03 +0000 (UTC)
+	by smtp1.osuosl.org (Postfix) with ESMTP id 9CFB283051;
+	Tue, 10 Aug 2021 10:36:15 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
 Received: from smtp1.osuosl.org ([127.0.0.1])
 	by localhost (smtp1.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id zk4nrQZbYbwd; Tue, 10 Aug 2021 10:18:59 +0000 (UTC)
+	with ESMTP id hqXUoYUvuN6C; Tue, 10 Aug 2021 10:36:11 +0000 (UTC)
 Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [IPv6:2605:bc80:3010:104::8cd3:938])
-	by smtp1.osuosl.org (Postfix) with ESMTPS id 3007E827FB;
-	Tue, 10 Aug 2021 10:18:59 +0000 (UTC)
+	by smtp1.osuosl.org (Postfix) with ESMTPS id 221088355F;
+	Tue, 10 Aug 2021 10:36:06 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 1443AC001A;
-	Tue, 10 Aug 2021 10:18:59 +0000 (UTC)
-Received: from smtp4.osuosl.org (smtp4.osuosl.org [140.211.166.137])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 20BDDC000E
- for <iommu@lists.linux-foundation.org>; Tue, 10 Aug 2021 10:18:58 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id EEFE4C001A;
+	Tue, 10 Aug 2021 10:36:05 +0000 (UTC)
+Received: from smtp3.osuosl.org (smtp3.osuosl.org [140.211.166.136])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 2B739C000E
+ for <iommu@lists.linux-foundation.org>; Tue, 10 Aug 2021 10:36:04 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by smtp4.osuosl.org (Postfix) with ESMTP id 0C3B440261
- for <iommu@lists.linux-foundation.org>; Tue, 10 Aug 2021 10:18:58 +0000 (UTC)
+ by smtp3.osuosl.org (Postfix) with ESMTP id 1B4106087E
+ for <iommu@lists.linux-foundation.org>; Tue, 10 Aug 2021 10:36:04 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Authentication-Results: smtp4.osuosl.org (amavisd-new);
- dkim=pass (1024-bit key) header.d=gibson.dropbear.id.au
-Received: from smtp4.osuosl.org ([127.0.0.1])
- by localhost (smtp4.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id k0criMaIZdEM for <iommu@lists.linux-foundation.org>;
- Tue, 10 Aug 2021 10:18:53 +0000 (UTC)
+Authentication-Results: smtp3.osuosl.org (amavisd-new);
+ dkim=pass (1024-bit key) header.d=redhat.com
+Received: from smtp3.osuosl.org ([127.0.0.1])
+ by localhost (smtp3.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+ with ESMTP id fjBuhfyHpX6Z for <iommu@lists.linux-foundation.org>;
+ Tue, 10 Aug 2021 10:36:03 +0000 (UTC)
 X-Greylist: domain auto-whitelisted by SQLgrey-1.8.0
-Received: from ozlabs.org (ozlabs.org [203.11.71.1])
- by smtp4.osuosl.org (Postfix) with ESMTPS id 2B0A34020A
- for <iommu@lists.linux-foundation.org>; Tue, 10 Aug 2021 10:18:52 +0000 (UTC)
-Received: by ozlabs.org (Postfix, from userid 1007)
- id 4GkTSS0p5Qz9sRf; Tue, 10 Aug 2021 20:18:48 +1000 (AEST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
- d=gibson.dropbear.id.au; s=201602; t=1628590728;
- bh=sLzUle4HNjbt2dpuzLJ/SCgyEaG1KNFjSdG9/ykRLYo=;
- h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
- b=bE7CtES05Gb33ZZWvfgfzvroh0FvJfb8WbKwzViGUD5LeQNvpQdpBjLHr3/24sjKE
- idwd62N3gx53z8IIFvjSpMJmdpG2PsCBaDejyPRTtyHSVN+DF6VILSwEauB+I9+dYU
- MP3gbRCUPVOCSQu2vvetmvzqO+jHEvU6RMZhlms8=
-Date: Tue, 10 Aug 2021 16:10:12 +1000
-From: David Gibson <david@gibson.dropbear.id.au>
-To: Jason Gunthorpe <jgg@nvidia.com>
-Subject: Re: [RFC v2] /dev/iommu uAPI proposal
-Message-ID: <YRIYRI+2qSvX/e2d@yekko>
-References: <BN9PR11MB5433B1E4AE5B0480369F97178C189@BN9PR11MB5433.namprd11.prod.outlook.com>
- <YP4/KJoYfbaf5U94@yekko>
- <BN9PR11MB54332594B1B4003AE4B9238C8CEA9@BN9PR11MB5433.namprd11.prod.outlook.com>
- <YQig7EIVMAuzSgH4@yekko>
- <BN9PR11MB54338C2863EA94145710A1BA8CF09@BN9PR11MB5433.namprd11.prod.outlook.com>
- <YQy+ZsCab6Ni/sN7@yekko> <20210806123211.GR1721383@nvidia.com>
+Received: from us-smtp-delivery-124.mimecast.com
+ (us-smtp-delivery-124.mimecast.com [170.10.133.124])
+ by smtp3.osuosl.org (Postfix) with ESMTPS id 30E0760645
+ for <iommu@lists.linux-foundation.org>; Tue, 10 Aug 2021 10:36:02 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+ s=mimecast20190719; t=1628591761;
+ h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+ to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+ in-reply-to:in-reply-to:references:references;
+ bh=8MKdVxhmWHkSF7Qc4zBZXEqJWUbfI37hUIq+4sHXK5w=;
+ b=e8zqrthseXpaRUVLS4s2wHOlkI0YdLsuDLzzZdnTeumgjvt1wYkrfaROcfsW4KCtC6v56Y
+ XvSZhMT2rjG6ncxWTY2/oBcWAqTb3SBPBh/eeb8gU49qrJ8Wh6Ip/SN1HtUA+mJtq+MfMH
+ JRUT6qhIT6kpJ2LUMh6AiF3g3F/B+ek=
+Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
+ [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-504-SLez8Vj3PA270oq6Eepj1A-1; Tue, 10 Aug 2021 06:35:58 -0400
+X-MC-Unique: SLez8Vj3PA270oq6Eepj1A-1
+Received: from smtp.corp.redhat.com (int-mx06.intmail.prod.int.phx2.redhat.com
+ [10.5.11.16])
+ (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+ (No client certificate requested)
+ by mimecast-mx01.redhat.com (Postfix) with ESMTPS id A4B591008060;
+ Tue, 10 Aug 2021 10:35:56 +0000 (UTC)
+Received: from T590 (ovpn-13-190.pek2.redhat.com [10.72.13.190])
+ by smtp.corp.redhat.com (Postfix) with ESMTPS id CC8415C232;
+ Tue, 10 Aug 2021 10:35:50 +0000 (UTC)
+Date: Tue, 10 Aug 2021 18:35:45 +0800
+From: Ming Lei <ming.lei@redhat.com>
+To: John Garry <john.garry@huawei.com>
+Subject: Re: [bug report] iommu_dma_unmap_sg() is very slow then running IO
+ from remote numa node
+Message-ID: <YRJWgU5VhzBe1JP4@T590>
+References: <YPlGOOMSdm6Bcyy/@T590>
+ <fc552129-e89d-74ad-9e57-30e3ffe4cf5d@huawei.com>
+ <YPmUoBk9u+tU2rbS@T590>
+ <0adbe03b-ce26-e4d3-3425-d967bc436ef5@arm.com>
+ <YPqYDY9/VAhfHNfU@T590>
+ <6ceab844-465f-3bf3-1809-5df1f1dbbc5c@huawei.com>
+ <CAFj5m9J+9vO=CK3uPP+va5EoWffZj9ruSRe2fDDLXn+AE971CQ@mail.gmail.com>
+ <ead87bf2-ddfa-eb67-db44-9619c6cdb714@huawei.com>
+ <YQF1AKS6Y14dLU/A@T590>
+ <dfdd16e8-278f-3bc9-da97-a91264aec909@huawei.com>
 MIME-Version: 1.0
-In-Reply-To: <20210806123211.GR1721383@nvidia.com>
-Cc: "kvm@vger.kernel.org" <kvm@vger.kernel.org>,
- Jason Wang <jasowang@redhat.com>, Kirti Wankhede <kwankhede@nvidia.com>,
- Jean-Philippe Brucker <jean-philippe@linaro.org>, "Jiang,
- Dave" <dave.jiang@intel.com>, "Raj, Ashok" <ashok.raj@intel.com>,
- Jonathan Corbet <corbet@lwn.net>, "Tian, Kevin" <kevin.tian@intel.com>,
- "parav@mellanox.com" <parav@mellanox.com>,
- "Alex Williamson \(alex.williamson@redhat.com\)" <alex.williamson@redhat.com>,
- "Enrico Weigelt, metux IT consult" <lkml@metux.net>,
- Robin Murphy <robin.murphy@arm.com>, LKML <linux-kernel@vger.kernel.org>,
- Shenming Lu <lushenming@huawei.com>,
- "iommu@lists.linux-foundation.org" <iommu@lists.linux-foundation.org>,
- Paolo Bonzini <pbonzini@redhat.com>, David Woodhouse <dwmw2@infradead.org>
+Content-Disposition: inline
+In-Reply-To: <dfdd16e8-278f-3bc9-da97-a91264aec909@huawei.com>
+X-Scanned-By: MIMEDefang 2.79 on 10.5.11.16
+Cc: Robin Murphy <robin.murphy@arm.com>, linux-kernel@vger.kernel.org,
+ linux-nvme@lists.infradead.org, iommu@lists.linux-foundation.org,
+ Will Deacon <will@kernel.org>, linux-arm-kernel@lists.infradead.org
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -93,107 +104,85 @@ List-Post: <mailto:iommu@lists.linux-foundation.org>
 List-Help: <mailto:iommu-request@lists.linux-foundation.org?subject=help>
 List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
  <mailto:iommu-request@lists.linux-foundation.org?subject=subscribe>
-Content-Type: multipart/mixed; boundary="===============1431197244878920735=="
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
+On Tue, Aug 10, 2021 at 10:36:47AM +0100, John Garry wrote:
+> On 28/07/2021 16:17, Ming Lei wrote:
+> > > > > Have you tried turning off the IOMMU to ensure that this is really just
+> > > > > an IOMMU problem?
+> > > > > 
+> > > > > You can try setting CONFIG_ARM_SMMU_V3=n in the defconfig or passing
+> > > > > cmdline param iommu.passthrough=1 to bypass the the SMMU (equivalent to
+> > > > > disabling for kernel drivers).
+> > > > Bypassing SMMU via iommu.passthrough=1 basically doesn't make a difference
+> > > > on this issue.
+> > > A ~90% throughput drop still seems to me to be too high to be a software
+> > > issue. More so since I don't see similar on my system. And that throughput
+> > > drop does not lead to a total CPU usage drop, from the fio log.
+> > > 
+> > > Do you know if anyone has run memory benchmark tests on this board to find
+> > > out NUMA effect? I think lmbench or stream could be used for this.
+> > https://lore.kernel.org/lkml/YOhbc5C47IzC893B@T590/
+> 
+> Hi Ming,
+> 
+> Out of curiosity, did you investigate this topic any further?
 
---===============1431197244878920735==
-Content-Type: multipart/signed; micalg=pgp-sha256;
-	protocol="application/pgp-signature"; boundary="odEeZa7MqmWAODkt"
-Content-Disposition: inline
+IMO, the issue is probably in device/system side, since completion latency is
+increased a lot, meantime submission latency isn't changed.
+
+Either the submission isn't committed to hardware in time, or the
+completion status isn't updated to HW in time from viewpoint of CPU.
+
+We have tried to update to new FW, but not see difference made.
+
+> 
+> And you also asked about my results earlier:
+> 
+> On 22/07/2021 16:54, Ming Lei wrote:
+> >> [   52.035895] nvme 0000:81:00.0: Adding to iommu group 5
+> >> [   52.047732] nvme nvme0: pci function 0000:81:00.0
+> >> [   52.067216] nvme nvme0: 22/0/2 default/read/poll queues
+> >> [   52.087318]  nvme0n1: p1
+> >>
+> >> So I get these results:
+> >> cpu0 335K
+> >> cpu32 346K
+> >> cpu64 300K
+> >> cpu96 300K
+> >>
+> >> So still not massive changes.
+> > In your last email, the results are the following with irq mode io_uring:
+> >
+> >   cpu0  497K
+> >   cpu4  307K
+> >   cpu32 566K
+> >   cpu64 488K
+> >   cpu96 508K
+> >
+> > So looks you get much worse result with real io_polling?
+> >
+> 
+> Would the expectation be that at least I get the same performance with
+> io_polling here?
+
+io_polling is supposed to improve IO latency a lot compared with irq
+mode, and the perf data shows that clearly on x86_64.
+
+> Anything else to try which you can suggest to investigate
+> this lower performance?
+
+You may try to compare irq mode and polling and narrow down the possible
+reasons, no exact suggestion on how to investigate it, :-(
 
 
---odEeZa7MqmWAODkt
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
-
-On Fri, Aug 06, 2021 at 09:32:11AM -0300, Jason Gunthorpe wrote:
-> On Fri, Aug 06, 2021 at 02:45:26PM +1000, David Gibson wrote:
->=20
-> > Well, that's kind of what I'm doing.  PCI currently has the notion of
-> > "default" address space for a RID, but there's no guarantee that other
-> > buses (or even future PCI extensions) will.  The idea is that
-> > "endpoint" means exactly the (RID, PASID) or (SID, SSID) or whatever
-> > future variations are on that.
->=20
-> This is already happening in this proposal, it is why I insisted that
-> the driver facing API has to be very explicit. That API specifies
-> exactly what the device silicon is doing.
->=20
-> However, that is placed at the IOASID level. There is no reason to
-> create endpoint objects that are 1:1 with IOASID objects, eg for
-> PASID.
-
-They're not 1:1 though.  You can have multiple endpoints in the same
-IOAS, that's the whole point.
-
-> We need to have clear software layers and responsibilities, I think
-> this is where the VFIO container design has fallen behind.
->=20
-> The device driver is responsible to delcare what TLPs the device it
-> controls will issue
-
-Right.. and I'm envisaging an endpoint as a abstraction to represent a
-single TLP.
-
-> The system layer is responsible to determine how those TLPs can be
-> matched to IO page tables, if at all
->=20
-> The IO page table layer is responsible to map the TLPs to physical
-> memory.
->=20
-> Each must stay in its box and we should not create objects that smush
-> together, say, the device and system layers because it will only make
-> a mess of the software design.
-
-I agree... and endpoints are explicitly an attempt to do that.  I
-don't see how you think they're smushing things together.
-
-> Since the system layer doesn't have any concrete objects in our
-> environment (which is based on devices and IO page tables) it has to
-> exist as metadata attached to the other two objects.
-
-Whereas I'm suggesting clarifying this by *creating* concrete objects
-to represent the concept we need.
-
---=20
-David Gibson			| I'll have my music baroque, and my code
-david AT gibson.dropbear.id.au	| minimalist, thank you.  NOT _the_ _other_
-				| _way_ _around_!
-http://www.ozlabs.org/~dgibson
-
---odEeZa7MqmWAODkt
-Content-Type: application/pgp-signature; name="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-
-iQIzBAEBCAAdFiEEdfRlhq5hpmzETofcbDjKyiDZs5IFAmESGEQACgkQbDjKyiDZ
-s5Ktrg/+MU/OVbhaG0pM1dSjmK1fu9a3jQ3S7egfXHqBCHsGei0mCcWonB4WX71t
-JghxefYDxyliljq9AQuZuOG6LmHAr02cy0bPhHlZwnjXnDvHjZcOkcfBMNLdwtAQ
-uhUCXkPBq1nH9liPYMPKBsk6skgKuT5kiO4IiQgmptD3qMDUumzdFWU4FlwFtEeJ
-izG3YYaqr0v1C8I4zCT5kBibk5EFTWwE/ZvHtaYK9yDjOi4b1X79F2EBR/arNcY3
-/Vdq0sdCqKstC3g3az+K5Akdti53oNltLWTnqvFbbpZmPvIhOZ37zScMc1bmjrxf
-5icEraXNHQW0dEmi29qZLeqr0cmYXhcrfXnneRCprubUMxdfkMVRA5LxqS0vqBOU
-wSoGH1d/3D5BKm6lTpvZCc/QsAyxgwYgX0gxURGKt/CrWOkC+XXXgCO3x1j+xG3V
-04k0yMEk+9K9+YT3oxjsdOGThJW0ZNA5fhmBf4I/NxRCtPwldXdIVOC1DdB0iTW1
-0XHE3Wvp9yjMpVt6bt1NOt8lfn74aVkWqjDjpEIdyWtGqaJQVgynAozorT/SBIUI
-awVwsTosKBG9Paf3L82ZETY8rIPvqJCFu+KgFumeaS5Xyl0z4eUDrnEgNdH9B3mh
-QEEffkuuuV9L5zxyp+Ir4OWtE4lNkjkcylCpEpklCV2oVLBKVFI=
-=LOUq
------END PGP SIGNATURE-----
-
---odEeZa7MqmWAODkt--
-
---===============1431197244878920735==
-Content-Type: text/plain; charset="us-ascii"
-MIME-Version: 1.0
-Content-Transfer-Encoding: 7bit
-Content-Disposition: inline
+Thanks,
+Ming
 
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
 https://lists.linuxfoundation.org/mailman/listinfo/iommu
---===============1431197244878920735==--
