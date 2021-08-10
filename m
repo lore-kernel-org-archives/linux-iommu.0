@@ -2,86 +2,87 @@ Return-Path: <SRS0=o4oj=NB=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-5.3 required=3.0 tests=BAYES_00,
-	HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,NICE_REPLY_A,SPF_HELO_NONE,
-	SPF_PASS,URIBL_BLOCKED,USER_AGENT_SANE_1 autolearn=no autolearn_force=no
-	version=3.4.0
+X-Spam-Status: No, score=-13.6 required=3.0 tests=BAYES_00,DKIM_INVALID,
+	DKIM_SIGNED,HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_CR_TRAILER,INCLUDES_PATCH,
+	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED autolearn=unavailable
+	autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C2B74C432BE
-	for <iommu@archiver.kernel.org>; Tue, 10 Aug 2021 09:37:35 +0000 (UTC)
-Received: from smtp4.osuosl.org (smtp4.osuosl.org [140.211.166.137])
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5017DC4338F
+	for <iommu@archiver.kernel.org>; Tue, 10 Aug 2021 09:49:21 +0000 (UTC)
+Received: from smtp3.osuosl.org (smtp3.osuosl.org [140.211.166.136])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 748A961073
-	for <iommu@archiver.kernel.org>; Tue, 10 Aug 2021 09:37:35 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.4.1 mail.kernel.org 748A961073
-Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=huawei.com
+	by mail.kernel.org (Postfix) with ESMTPS id EFF7961076
+	for <iommu@archiver.kernel.org>; Tue, 10 Aug 2021 09:49:20 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.4.1 mail.kernel.org EFF7961076
+Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=redhat.com
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by smtp4.osuosl.org (Postfix) with ESMTP id 37B5D404C7;
-	Tue, 10 Aug 2021 09:37:35 +0000 (UTC)
+	by smtp3.osuosl.org (Postfix) with ESMTP id A4B5B60670;
+	Tue, 10 Aug 2021 09:49:19 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from smtp4.osuosl.org ([127.0.0.1])
-	by localhost (smtp4.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id cKkmdCKKc3ri; Tue, 10 Aug 2021 09:37:31 +0000 (UTC)
-Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by smtp4.osuosl.org (Postfix) with ESMTPS id 081F3404B8;
-	Tue, 10 Aug 2021 09:37:30 +0000 (UTC)
+Received: from smtp3.osuosl.org ([127.0.0.1])
+	by localhost (smtp3.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+	with ESMTP id MZMz929rI7OE; Tue, 10 Aug 2021 09:49:15 +0000 (UTC)
+Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [IPv6:2605:bc80:3010:104::8cd3:938])
+	by smtp3.osuosl.org (Postfix) with ESMTPS id 65636605ED;
+	Tue, 10 Aug 2021 09:49:15 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id D30A3C0010;
-	Tue, 10 Aug 2021 09:37:30 +0000 (UTC)
-Received: from smtp1.osuosl.org (smtp1.osuosl.org [140.211.166.138])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 66C2FC000E
- for <iommu@lists.linux-foundation.org>; Tue, 10 Aug 2021 09:37:29 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 46949C0010;
+	Tue, 10 Aug 2021 09:49:15 +0000 (UTC)
+Received: from smtp2.osuosl.org (smtp2.osuosl.org [140.211.166.133])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 85E7AC000E
+ for <iommu@lists.linux-foundation.org>; Tue, 10 Aug 2021 09:49:13 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by smtp1.osuosl.org (Postfix) with ESMTP id 4F86B834F1
- for <iommu@lists.linux-foundation.org>; Tue, 10 Aug 2021 09:37:29 +0000 (UTC)
+ by smtp2.osuosl.org (Postfix) with ESMTP id 6D66440263
+ for <iommu@lists.linux-foundation.org>; Tue, 10 Aug 2021 09:49:13 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from smtp1.osuosl.org ([127.0.0.1])
- by localhost (smtp1.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id tP4rjwJkfHql for <iommu@lists.linux-foundation.org>;
- Tue, 10 Aug 2021 09:37:28 +0000 (UTC)
+Authentication-Results: smtp2.osuosl.org (amavisd-new);
+ dkim=pass (1024-bit key) header.d=redhat.com
+Received: from smtp2.osuosl.org ([127.0.0.1])
+ by localhost (smtp2.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+ with ESMTP id FMLo6zn787Hl for <iommu@lists.linux-foundation.org>;
+ Tue, 10 Aug 2021 09:49:12 +0000 (UTC)
 X-Greylist: domain auto-whitelisted by SQLgrey-1.8.0
-Received: from frasgout.his.huawei.com (frasgout.his.huawei.com
- [185.176.79.56])
- by smtp1.osuosl.org (Postfix) with ESMTPS id 09F68834EF
- for <iommu@lists.linux-foundation.org>; Tue, 10 Aug 2021 09:37:27 +0000 (UTC)
-Received: from fraeml740-chm.china.huawei.com (unknown [172.18.147.201])
- by frasgout.his.huawei.com (SkyGuard) with ESMTP id 4GkSX12Jrkz6C9JD;
- Tue, 10 Aug 2021 17:36:49 +0800 (CST)
-Received: from lhreml724-chm.china.huawei.com (10.201.108.75) by
- fraeml740-chm.china.huawei.com (10.206.15.221) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2308.8; Tue, 10 Aug 2021 11:37:22 +0200
-Received: from [10.47.80.4] (10.47.80.4) by lhreml724-chm.china.huawei.com
- (10.201.108.75) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2176.2; Tue, 10 Aug
- 2021 10:37:21 +0100
-Subject: Re: [bug report] iommu_dma_unmap_sg() is very slow then running IO
- from remote numa node
-To: Ming Lei <ming.lei@redhat.com>
-References: <YPklDMng1hL3bQ+v@T590>
- <9c929985-4fcb-e65d-0265-34c820b770ea@huawei.com> <YPlGOOMSdm6Bcyy/@T590>
- <fc552129-e89d-74ad-9e57-30e3ffe4cf5d@huawei.com> <YPmUoBk9u+tU2rbS@T590>
- <0adbe03b-ce26-e4d3-3425-d967bc436ef5@arm.com> <YPqYDY9/VAhfHNfU@T590>
- <6ceab844-465f-3bf3-1809-5df1f1dbbc5c@huawei.com>
- <CAFj5m9J+9vO=CK3uPP+va5EoWffZj9ruSRe2fDDLXn+AE971CQ@mail.gmail.com>
- <ead87bf2-ddfa-eb67-db44-9619c6cdb714@huawei.com> <YQF1AKS6Y14dLU/A@T590>
-From: John Garry <john.garry@huawei.com>
-Message-ID: <dfdd16e8-278f-3bc9-da97-a91264aec909@huawei.com>
-Date: Tue, 10 Aug 2021 10:36:47 +0100
-User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; rv:68.0) Gecko/20100101
- Thunderbird/68.12.1
-MIME-Version: 1.0
-In-Reply-To: <YQF1AKS6Y14dLU/A@T590>
-Content-Language: en-US
-X-Originating-IP: [10.47.80.4]
-X-ClientProxiedBy: lhreml712-chm.china.huawei.com (10.201.108.63) To
- lhreml724-chm.china.huawei.com (10.201.108.75)
-X-CFilter-Loop: Reflected
-Cc: Robin Murphy <robin.murphy@arm.com>, linux-kernel@vger.kernel.org,
- linux-nvme@lists.infradead.org, iommu@lists.linux-foundation.org, Will
- Deacon <will@kernel.org>, linux-arm-kernel@lists.infradead.org
+Received: from us-smtp-delivery-124.mimecast.com
+ (us-smtp-delivery-124.mimecast.com [216.205.24.124])
+ by smtp2.osuosl.org (Postfix) with ESMTPS id 5BBCD4022A
+ for <iommu@lists.linux-foundation.org>; Tue, 10 Aug 2021 09:49:11 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+ s=mimecast20190719; t=1628588950;
+ h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+ to:to:cc:cc:in-reply-to:in-reply-to:references:references;
+ bh=/aC5i+VtNgDwxqN/egwfoCAzlz9LaELVpAqdunfQbhM=;
+ b=a7KHbsrDKuJ2xsFBsDrRnWWwRgyRO3fRX2m2/fjaRuIun3/GKc3+EDC0UsnHTXf8eA/yxU
+ p/5nW9kC6tDQXNehd4Koqi9AZ/MjruSdf13FWDIPK4dNLo74nTqbYsAZ7l3myGD0WpAcJu
+ AYQZeQT4/SYytKZRJLZs5+y6CC+6p5A=
+Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
+ [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-265-Bg5aFaClPqeApzLR3tQNPg-1; Tue, 10 Aug 2021 05:49:07 -0400
+X-MC-Unique: Bg5aFaClPqeApzLR3tQNPg-1
+Received: from smtp.corp.redhat.com (int-mx07.intmail.prod.int.phx2.redhat.com
+ [10.5.11.22])
+ (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+ (No client certificate requested)
+ by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 89C53875048;
+ Tue, 10 Aug 2021 09:49:05 +0000 (UTC)
+Received: from MiWiFi-R3L-srv.redhat.com (ovpn-12-79.pek2.redhat.com
+ [10.72.12.79])
+ by smtp.corp.redhat.com (Postfix) with ESMTP id D07AB1000186;
+ Tue, 10 Aug 2021 09:49:00 +0000 (UTC)
+From: Baoquan He <bhe@redhat.com>
+To: linux-kernel@vger.kernel.org
+Subject: [RFC PATCH v2 4/5] dma/pool: create dma atomic pool only if dma zone
+ has mamaged pages
+Date: Tue, 10 Aug 2021 17:48:34 +0800
+Message-Id: <20210810094835.13402-5-bhe@redhat.com>
+In-Reply-To: <20210810094835.13402-1-bhe@redhat.com>
+References: <20210810094835.13402-1-bhe@redhat.com>
+X-Scanned-By: MIMEDefang 2.84 on 10.5.11.22
+Cc: hch@lst.de, penberg@kernel.org, linux-mm@kvack.org,
+ iommu@lists.linux-foundation.org, rientjes@google.com, iamjoonsoo.kim@lge.com,
+ cl@linux.com, rppt@linux.ibm.com, robin.murphy@arm.com,
+ akpm@linux-foundation.org, vbabka@suse.cz
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -94,64 +95,89 @@ List-Post: <mailto:iommu@lists.linux-foundation.org>
 List-Help: <mailto:iommu-request@lists.linux-foundation.org?subject=help>
 List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
  <mailto:iommu-request@lists.linux-foundation.org?subject=subscribe>
+MIME-Version: 1.0
+Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
-Content-Type: text/plain; charset="us-ascii"; Format="flowed"
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-On 28/07/2021 16:17, Ming Lei wrote:
->>>> Have you tried turning off the IOMMU to ensure that this is really just
->>>> an IOMMU problem?
->>>>
->>>> You can try setting CONFIG_ARM_SMMU_V3=n in the defconfig or passing
->>>> cmdline param iommu.passthrough=1 to bypass the the SMMU (equivalent to
->>>> disabling for kernel drivers).
->>> Bypassing SMMU via iommu.passthrough=1 basically doesn't make a difference
->>> on this issue.
->> A ~90% throughput drop still seems to me to be too high to be a software
->> issue. More so since I don't see similar on my system. And that throughput
->> drop does not lead to a total CPU usage drop, from the fio log.
->>
->> Do you know if anyone has run memory benchmark tests on this board to find
->> out NUMA effect? I think lmbench or stream could be used for this.
-> https://lore.kernel.org/lkml/YOhbc5C47IzC893B@T590/
+Currently three dma atomic pools are initialized as long as the relevant
+kernel codes are built in. While in kdump kernel of x86_64, this is not
+right when trying to create atomic_pool_dma, because there's no managed
+pages in DMA zone. In the case, DMA zone only has low 1M memory presented
+and locked down by memblock allocator. So no pages are added into buddy
+of DMA zone. Please check commit f1d4d47c5851 ("x86/setup: Always reserve
+the first 1M of RAM").
 
-Hi Ming,
+Then in kdump kernel of x86_64, it always prints below failure message:
 
-Out of curiosity, did you investigate this topic any further?
+ DMA: preallocated 128 KiB GFP_KERNEL pool for atomic allocations
+ swapper/0: page allocation failure: order:5, mode:0xcc1(GFP_KERNEL|GFP_DMA), nodemask=(null),cpuset=/,mems_allowed=0
+ CPU: 0 PID: 1 Comm: swapper/0 Not tainted 5.13.0-0.rc5.20210611git929d931f2b40.42.fc35.x86_64 #1
+ Hardware name: Dell Inc. PowerEdge R910/0P658H, BIOS 2.12.0 06/04/2018
+ Call Trace:
+  dump_stack+0x7f/0xa1
+  warn_alloc.cold+0x72/0xd6
+  ? _raw_spin_unlock_irq+0x24/0x40
+  ? __alloc_pages_direct_compact+0x90/0x1b0
+  __alloc_pages_slowpath.constprop.0+0xf29/0xf50
+  ? __cond_resched+0x16/0x50
+  ? prepare_alloc_pages.constprop.0+0x19d/0x1b0
+  __alloc_pages+0x24d/0x2c0
+  ? __dma_atomic_pool_init+0x93/0x93
+  alloc_page_interleave+0x13/0xb0
+  atomic_pool_expand+0x118/0x210
+  ? __dma_atomic_pool_init+0x93/0x93
+  __dma_atomic_pool_init+0x45/0x93
+  dma_atomic_pool_init+0xdb/0x176
+  do_one_initcall+0x67/0x320
+  ? rcu_read_lock_sched_held+0x3f/0x80
+  kernel_init_freeable+0x290/0x2dc
+  ? rest_init+0x24f/0x24f
+  kernel_init+0xa/0x111
+  ret_from_fork+0x22/0x30
+ Mem-Info:
+ ......
+ DMA: failed to allocate 128 KiB GFP_KERNEL|GFP_DMA pool for atomic allocation
+ DMA: preallocated 128 KiB GFP_KERNEL|GFP_DMA32 pool for atomic allocations
 
-And you also asked about my results earlier:
+Here, let's check if DMA zone has managed pages, then create atomic_pool_dma
+if yes. Otherwise just skip it.
 
-On 22/07/2021 16:54, Ming Lei wrote:
- >> [   52.035895] nvme 0000:81:00.0: Adding to iommu group 5
- >> [   52.047732] nvme nvme0: pci function 0000:81:00.0
- >> [   52.067216] nvme nvme0: 22/0/2 default/read/poll queues
- >> [   52.087318]  nvme0n1: p1
- >>
- >> So I get these results:
- >> cpu0 335K
- >> cpu32 346K
- >> cpu64 300K
- >> cpu96 300K
- >>
- >> So still not massive changes.
- > In your last email, the results are the following with irq mode io_uring:
- >
- >   cpu0  497K
- >   cpu4  307K
- >   cpu32 566K
- >   cpu64 488K
- >   cpu96 508K
- >
- > So looks you get much worse result with real io_polling?
- >
+Signed-off-by: Baoquan He <bhe@redhat.com>
+Cc: Christoph Hellwig <hch@lst.de>
+Cc: Marek Szyprowski <m.szyprowski@samsung.com>
+Cc: Robin Murphy <robin.murphy@arm.com>
+Cc: iommu@lists.linux-foundation.org
+---
+ kernel/dma/pool.c | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
-Would the expectation be that at least I get the same performance with 
-io_polling here? Anything else to try which you can suggest to 
-investigate this lower performance?
+diff --git a/kernel/dma/pool.c b/kernel/dma/pool.c
+index 5a85804b5beb..00df3edd6c5d 100644
+--- a/kernel/dma/pool.c
++++ b/kernel/dma/pool.c
+@@ -206,7 +206,7 @@ static int __init dma_atomic_pool_init(void)
+ 						    GFP_KERNEL);
+ 	if (!atomic_pool_kernel)
+ 		ret = -ENOMEM;
+-	if (IS_ENABLED(CONFIG_ZONE_DMA)) {
++	if (has_managed_dma()) {
+ 		atomic_pool_dma = __dma_atomic_pool_init(atomic_pool_size,
+ 						GFP_KERNEL | GFP_DMA);
+ 		if (!atomic_pool_dma)
+@@ -229,7 +229,7 @@ static inline struct gen_pool *dma_guess_pool(struct gen_pool *prev, gfp_t gfp)
+ 	if (prev == NULL) {
+ 		if (IS_ENABLED(CONFIG_ZONE_DMA32) && (gfp & GFP_DMA32))
+ 			return atomic_pool_dma32;
+-		if (IS_ENABLED(CONFIG_ZONE_DMA) && (gfp & GFP_DMA))
++		if (atomic_pool_dma && (gfp & GFP_DMA))
+ 			return atomic_pool_dma;
+ 		return atomic_pool_kernel;
+ 	}
+-- 
+2.17.2
 
-Thanks,
-John
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
