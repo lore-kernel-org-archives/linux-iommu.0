@@ -2,93 +2,125 @@ Return-Path: <SRS0=o4oj=NB=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-13.6 required=3.0 tests=BAYES_00,DKIM_INVALID,
-	DKIM_SIGNED,HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_CR_TRAILER,INCLUDES_PATCH,
-	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED autolearn=unavailable
+X-Spam-Status: No, score=-5.1 required=3.0 tests=BAYES_00,DKIM_INVALID,
+	DKIM_SIGNED,HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,NICE_REPLY_A,
+	SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_SANE_1 autolearn=no
 	autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 70218C4338F
-	for <iommu@archiver.kernel.org>; Tue, 10 Aug 2021 06:51:34 +0000 (UTC)
-Received: from smtp4.osuosl.org (smtp4.osuosl.org [140.211.166.137])
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 61FD2C4338F
+	for <iommu@archiver.kernel.org>; Tue, 10 Aug 2021 07:17:26 +0000 (UTC)
+Received: from smtp3.osuosl.org (smtp3.osuosl.org [140.211.166.136])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 180C161052
-	for <iommu@archiver.kernel.org>; Tue, 10 Aug 2021 06:51:34 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.4.1 mail.kernel.org 180C161052
-Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=codeaurora.org
+	by mail.kernel.org (Postfix) with ESMTPS id DDB596101E
+	for <iommu@archiver.kernel.org>; Tue, 10 Aug 2021 07:17:25 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.4.1 mail.kernel.org DDB596101E
+Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=redhat.com
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by smtp4.osuosl.org (Postfix) with ESMTP id CD9114048B;
-	Tue, 10 Aug 2021 06:51:33 +0000 (UTC)
+	by smtp3.osuosl.org (Postfix) with ESMTP id A5981607F8;
+	Tue, 10 Aug 2021 07:17:25 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from smtp4.osuosl.org ([127.0.0.1])
-	by localhost (smtp4.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id Wy9RSxjn5qaN; Tue, 10 Aug 2021 06:51:29 +0000 (UTC)
-Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [IPv6:2605:bc80:3010:104::8cd3:938])
-	by smtp4.osuosl.org (Postfix) with ESMTPS id 60ED140443;
-	Tue, 10 Aug 2021 06:51:29 +0000 (UTC)
+Received: from smtp3.osuosl.org ([127.0.0.1])
+	by localhost (smtp3.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+	with ESMTP id ZvhHVqiCKA31; Tue, 10 Aug 2021 07:17:21 +0000 (UTC)
+Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
+	by smtp3.osuosl.org (Postfix) with ESMTPS id 8BF5B608E3;
+	Tue, 10 Aug 2021 07:17:21 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 3763FC0010;
-	Tue, 10 Aug 2021 06:51:29 +0000 (UTC)
-Received: from smtp2.osuosl.org (smtp2.osuosl.org [140.211.166.133])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 5570FC000E
- for <iommu@lists.linux-foundation.org>; Tue, 10 Aug 2021 06:51:28 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 63ED9C001A;
+	Tue, 10 Aug 2021 07:17:21 +0000 (UTC)
+Received: from smtp1.osuosl.org (smtp1.osuosl.org [IPv6:2605:bc80:3010::138])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 57011C000E
+ for <iommu@lists.linux-foundation.org>; Tue, 10 Aug 2021 07:17:20 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by smtp2.osuosl.org (Postfix) with UTF8SMTP id 400324011C
- for <iommu@lists.linux-foundation.org>; Tue, 10 Aug 2021 06:51:28 +0000 (UTC)
+ by smtp1.osuosl.org (Postfix) with ESMTP id 31F6F8349A
+ for <iommu@lists.linux-foundation.org>; Tue, 10 Aug 2021 07:17:20 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Authentication-Results: smtp2.osuosl.org (amavisd-new);
- dkim=pass (1024-bit key) header.d=mg.codeaurora.org
-Received: from smtp2.osuosl.org ([127.0.0.1])
- by localhost (smtp2.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with UTF8SMTP id 0ougcibUT3N6 for <iommu@lists.linux-foundation.org>;
- Tue, 10 Aug 2021 06:51:24 +0000 (UTC)
-X-Greylist: from auto-whitelisted by SQLgrey-1.8.0
-Received: from m43-7.mailgun.net (m43-7.mailgun.net [69.72.43.7])
- by smtp2.osuosl.org (Postfix) with UTF8SMTPS id D493840012
- for <iommu@lists.linux-foundation.org>; Tue, 10 Aug 2021 06:51:21 +0000 (UTC)
-DKIM-Signature: a=rsa-sha256; v=1; c=relaxed/relaxed; d=mg.codeaurora.org;
- q=dns/txt; 
- s=smtp; t=1628578284; h=Message-ID: References: In-Reply-To: Subject:
- Cc: To: From: Date: Content-Transfer-Encoding: Content-Type:
- MIME-Version: Sender; bh=8oRIj7t0naG4PykQRt1+vreUOu6CouCHfSgpFKLfPUw=;
- b=HkT+UAt/MkEPIy1T1kMnTswsnzFTv7wjeAOrEfyYSXljYKA2gDWY/Z9XUf47oOalj613uyAe
- 85YPq6iHCulr5U8AScaZRxzdExgCCGCM3FEK+ZI0FS6apVwKLJ7Pk8XM8NOmv6EW7wPpKr/n
- tK4pPz4sJpT+tZ01atbcMAgVUwE=
-X-Mailgun-Sending-Ip: 69.72.43.7
-X-Mailgun-Sid: WyI3NDkwMCIsICJpb21tdUBsaXN0cy5saW51eC1mb3VuZGF0aW9uLm9yZyIsICJiZTllNGEiXQ==
-Received: from smtp.codeaurora.org
- (ec2-35-166-182-171.us-west-2.compute.amazonaws.com [35.166.182.171]) by
- smtp-out-n06.prod.us-west-2.postgun.com with SMTP id
- 611221dab14e7e2ecb50a1a9 (version=TLS1.2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256); Tue, 10 Aug 2021 06:51:06
- GMT
-Received: by smtp.codeaurora.org (Postfix, from userid 1001)
- id 614F0C4323A; Tue, 10 Aug 2021 06:51:06 +0000 (UTC)
-Received: from mail.codeaurora.org (localhost.localdomain [127.0.0.1])
- (using TLSv1 with cipher ECDHE-RSA-AES256-SHA (256/256 bits))
- (No client certificate requested)
- (Authenticated sender: saiprakash.ranjan)
- by smtp.codeaurora.org (Postfix) with ESMTPSA id 02DB3C433D3;
- Tue, 10 Aug 2021 06:51:00 +0000 (UTC)
+Authentication-Results: smtp1.osuosl.org (amavisd-new);
+ dkim=pass (1024-bit key) header.d=redhat.com
+Received: from smtp1.osuosl.org ([127.0.0.1])
+ by localhost (smtp1.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+ with ESMTP id YReSEUlmW1CX for <iommu@lists.linux-foundation.org>;
+ Tue, 10 Aug 2021 07:17:19 +0000 (UTC)
+X-Greylist: domain auto-whitelisted by SQLgrey-1.8.0
+Received: from us-smtp-delivery-124.mimecast.com
+ (us-smtp-delivery-124.mimecast.com [170.10.133.124])
+ by smtp1.osuosl.org (Postfix) with ESMTPS id 466A983546
+ for <iommu@lists.linux-foundation.org>; Tue, 10 Aug 2021 07:17:19 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+ s=mimecast20190719; t=1628579838;
+ h=from:from:reply-to:reply-to:subject:subject:date:date:
+ message-id:message-id:to:to:cc:cc:mime-version:mime-version:
+ content-type:content-type:
+ content-transfer-encoding:content-transfer-encoding:
+ in-reply-to:in-reply-to:references:references;
+ bh=MiJQ0VtQH9ot0EVFN/FpusLl8DGmShMhIr9rUyrSbi8=;
+ b=caNOgj5j04dkvInUuMfLxJW0leZ3lgt/4jVBEZ5NYeOFdOAg0YtoF9zjWfCqisTlHhFcTj
+ pvehX3wCM69xjrQLgjAfyUIYVHrecCLluhAqAhwcW4SeAjsAOdrJQEjYrAGSSMxmMi++nP
+ 3OQhjL+gTjpj1QFft7tbbQ8eIaSXbY8=
+Received: from mail-wm1-f72.google.com (mail-wm1-f72.google.com
+ [209.85.128.72]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-560-IRRGJ2GwPAq3AQ8iVrsvRA-1; Tue, 10 Aug 2021 03:17:15 -0400
+X-MC-Unique: IRRGJ2GwPAq3AQ8iVrsvRA-1
+Received: by mail-wm1-f72.google.com with SMTP id
+ g70-20020a1c20490000b02902e6753bf473so720593wmg.0
+ for <iommu@lists.linux-foundation.org>; Tue, 10 Aug 2021 00:17:14 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+ d=1e100.net; s=20161025;
+ h=x-gm-message-state:reply-to:subject:to:cc:references:from
+ :message-id:date:user-agent:mime-version:in-reply-to
+ :content-transfer-encoding:content-language;
+ bh=MiJQ0VtQH9ot0EVFN/FpusLl8DGmShMhIr9rUyrSbi8=;
+ b=dUN9qEsDnN2x1f1IvFKnvVBqKhdoe0TSflVgVq6f0wVxRxczQdMdWKQkTSyQlhnGAz
+ kS29gkIYWVsyxGV7vHQoAC1SVcZAiwpzNKa2OqhI3X9oePQV+00uJXgFwppwub4LH52U
+ aOMl2mYcQNm/nwNwr/iV1bF97plGU8aSdXcO5AWmueMvuHFG99un8Y5hBpE1vgF/cybe
+ 0RcRU1ij86LTESAWVaTYJHKltZeuys1JsC1kvT1ZfOmuvxMgo3ytvX/kzl9IK7vdOXJ8
+ dSK4WGGtI9L4HaUYmPIJtsG5tCNXaMNtHN6SuDU+DDuLu8b/bADUGj7UjR/CAbfS72BC
+ yUQg==
+X-Gm-Message-State: AOAM533rl6CqG3LpRDoXwfoduB2NkK0k6zFY0TIkTYOp+dQpbMSYDT8z
+ 4Vxul0fp/Gpp8fGqJtR9p5OBTpjxUYNQXiRQ3VtgOYdHSUObSMayfxwj3HDTTOr2wUzMbLWb4ch
+ UuOv7g9Jn9Tr901oPDi1Ab3qwzCO9kA==
+X-Received: by 2002:adf:d1e4:: with SMTP id g4mr28689959wrd.371.1628579833737; 
+ Tue, 10 Aug 2021 00:17:13 -0700 (PDT)
+X-Google-Smtp-Source: ABdhPJw2sXBFQLPATOSL8T+i3nnZsUZlnH9PbhvTEdK3n2egew9pjkW+nMrccCqe/ExhSXeo0tjD2w==
+X-Received: by 2002:adf:d1e4:: with SMTP id g4mr28689919wrd.371.1628579833497; 
+ Tue, 10 Aug 2021 00:17:13 -0700 (PDT)
+Received: from ?IPv6:2a01:e0a:59e:9d80:527b:9dff:feef:3874?
+ ([2a01:e0a:59e:9d80:527b:9dff:feef:3874])
+ by smtp.gmail.com with ESMTPSA id z17sm22634714wrt.47.2021.08.10.00.17.11
+ (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+ Tue, 10 Aug 2021 00:17:12 -0700 (PDT)
+Subject: Re: [RFC v2] /dev/iommu uAPI proposal
+To: "Tian, Kevin" <kevin.tian@intel.com>, Jason Gunthorpe <jgg@nvidia.com>,
+ "Alex Williamson (alex.williamson@redhat.com)" <alex.williamson@redhat.com>,
+ Jean-Philippe Brucker <jean-philippe@linaro.org>,
+ David Gibson <david@gibson.dropbear.id.au>, Jason Wang
+ <jasowang@redhat.com>, "parav@mellanox.com" <parav@mellanox.com>,
+ "Enrico Weigelt, metux IT consult" <lkml@metux.net>,
+ Paolo Bonzini <pbonzini@redhat.com>, Shenming Lu <lushenming@huawei.com>,
+ Joerg Roedel <joro@8bytes.org>
+References: <BN9PR11MB5433B1E4AE5B0480369F97178C189@BN9PR11MB5433.namprd11.prod.outlook.com>
+ <b83a25de-7c32-42c4-d99d-f7242cc9e2da@redhat.com>
+ <BN9PR11MB5433453DED3546F5011C3BDD8CF29@BN9PR11MB5433.namprd11.prod.outlook.com>
+From: Eric Auger <eric.auger@redhat.com>
+Message-ID: <cec41751-c300-40f2-a8d6-f4916fb4a34e@redhat.com>
+Date: Tue, 10 Aug 2021 09:17:10 +0200
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
+ Thunderbird/78.10.1
 MIME-Version: 1.0
-Date: Tue, 10 Aug 2021 12:21:00 +0530
-From: Sai Prakash Ranjan <saiprakash.ranjan@codeaurora.org>
-To: Will Deacon <will@kernel.org>
-Subject: Re: [PATCH] iommu/arm-smmu: Add clk_bulk_{prepare/unprepare} to
- system pm callbacks
-In-Reply-To: <5aefcc8950ec8ced0a67815c92e985df@codeaurora.org>
-References: <20210727093322.13202-1-saiprakash.ranjan@codeaurora.org>
- <20210802161206.GA29168@willie-the-truck>
- <5aefcc8950ec8ced0a67815c92e985df@codeaurora.org>
-Message-ID: <8fd84f2580ea0e67c9143ee97e54dbaa@codeaurora.org>
-X-Sender: saiprakash.ranjan@codeaurora.org
-User-Agent: Roundcube Webmail/1.3.9
-Cc: Taniya Das <tdas@codeaurora.org>, robdclark@chromium.org,
- Rajendra Nayak <rnayak@codeaurora.org>, linux-arm-msm@vger.kernel.org,
- linux-kernel@vger.kernel.org, iommu@lists.linux-foundation.org,
- Robin Murphy <robin.murphy@arm.com>, srimuc <srimuc@codeaurora.org>,
- linux-arm-kernel@lists.infradead.org
+In-Reply-To: <BN9PR11MB5433453DED3546F5011C3BDD8CF29@BN9PR11MB5433.namprd11.prod.outlook.com>
+Authentication-Results: relay.mimecast.com;
+ auth=pass smtp.auth=CUSA124A263 smtp.mailfrom=eric.auger@redhat.com
+X-Mimecast-Spam-Score: 0
+X-Mimecast-Originator: redhat.com
+Content-Language: en-US
+Cc: "Jiang, Dave" <dave.jiang@intel.com>, "Raj, Ashok" <ashok.raj@intel.com>,
+ "kvm@vger.kernel.org" <kvm@vger.kernel.org>, Jonathan Corbet <corbet@lwn.net>,
+ David Woodhouse <dwmw2@infradead.org>,
+ "iommu@lists.linux-foundation.org" <iommu@lists.linux-foundation.org>,
+ LKML <linux-kernel@vger.kernel.org>, Kirti Wankhede <kwankhede@nvidia.com>,
+ Robin Murphy <robin.murphy@arm.com>
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -101,136 +133,177 @@ List-Post: <mailto:iommu@lists.linux-foundation.org>
 List-Help: <mailto:iommu-request@lists.linux-foundation.org?subject=help>
 List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
  <mailto:iommu-request@lists.linux-foundation.org?subject=subscribe>
+Reply-To: eric.auger@redhat.com
+Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
-Content-Type: text/plain; charset="us-ascii"; Format="flowed"
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-On 2021-08-03 11:36, Sai Prakash Ranjan wrote:
-> On 2021-08-02 21:42, Will Deacon wrote:
->> On Tue, Jul 27, 2021 at 03:03:22PM +0530, Sai Prakash Ranjan wrote:
->>> Some clocks for SMMU can have parent as XO such as 
->>> gpu_cc_hub_cx_int_clk
->>> of GPU SMMU in QTI SC7280 SoC and in order to enter deep sleep states 
->>> in
->>> such cases, we would need to drop the XO clock vote in unprepare call 
->>> and
->>> this unprepare callback for XO is in RPMh (Resource Power 
->>> Manager-Hardened)
->>> clock driver which controls RPMh managed clock resources for new QTI 
->>> SoCs
->>> and is a blocking call.
->>> 
->>> Given we cannot have a sleeping calls such as clk_bulk_prepare() and
->>> clk_bulk_unprepare() in arm-smmu runtime pm callbacks since the iommu
->>> operations like map and unmap can be in atomic context and are in 
->>> fast
->>> path, add this prepare and unprepare call to drop the XO vote only 
->>> for
->>> system pm callbacks since it is not a fast path and we expect the 
->>> system
->>> to enter deep sleep states with system pm as opposed to runtime pm.
->>> 
->>> This is a similar sequence of clock requests (prepare,enable and
->>> disable,unprepare) in arm-smmu probe and remove.
->>> 
->>> Signed-off-by: Sai Prakash Ranjan <saiprakash.ranjan@codeaurora.org>
->>> Co-developed-by: Rajendra Nayak <rnayak@codeaurora.org>
->>> Signed-off-by: Rajendra Nayak <rnayak@codeaurora.org>
->>> ---
->>>  drivers/iommu/arm/arm-smmu/arm-smmu.c | 20 ++++++++++++++++++--
->>>  1 file changed, 18 insertions(+), 2 deletions(-)
->> 
->> [+Rob]
->> 
->> How does this work with that funny GPU which writes to the SMMU 
->> registers
->> directly? Does the SMMU need to remain independently clocked for that 
->> to
->> work or is it all in the same clock domain?
->> 
-> 
-> As Rob mentioned, device link should take care of all the dependencies 
-> between
-> SMMU and its consumers. But not sure how the question relates to this
-> patch as this
-> change is for system pm and not runtime pm, so it is exactly the 
-> sequence of
-> SMMU probe/remove which if works currently for that GPU SMMU, then it
-> should work
-> just fine for system suspend and resume as well.
-> 
->>> diff --git a/drivers/iommu/arm/arm-smmu/arm-smmu.c 
->>> b/drivers/iommu/arm/arm-smmu/arm-smmu.c
->>> index d3c6f54110a5..9561ba4c5d39 100644
->>> --- a/drivers/iommu/arm/arm-smmu/arm-smmu.c
->>> +++ b/drivers/iommu/arm/arm-smmu/arm-smmu.c
->>> @@ -2277,6 +2277,13 @@ static int __maybe_unused 
->>> arm_smmu_runtime_suspend(struct device *dev)
->>> 
->>>  static int __maybe_unused arm_smmu_pm_resume(struct device *dev)
->>>  {
->>> +	int ret;
->>> +	struct arm_smmu_device *smmu = dev_get_drvdata(dev);
->>> +
->>> +	ret = clk_bulk_prepare(smmu->num_clks, smmu->clks);
->>> +	if (ret)
->>> +		return ret;
->>> +
->>>  	if (pm_runtime_suspended(dev))
->>>  		return 0;
->> 
->> If we subsequently fail to enable the clks in 
->> arm_smmu_runtime_resume()
->> should we unprepare them again?
->> 
-> 
-> If we are unable to turn on the clks then its fatal and we will not
-> live for long.
-> 
+Hi Kevin,
 
-Nonetheless, it won't hurt to unprepare if clk enable fails as that is
-the correct thing anyway, so I have added it and sent a v2.
+On 8/5/21 2:36 AM, Tian, Kevin wrote:
+>> From: Eric Auger <eric.auger@redhat.com>
+>> Sent: Wednesday, August 4, 2021 11:59 PM
+>>
+> [...] 
+>>> 1.2. Attach Device to I/O address space
+>>> +++++++++++++++++++++++++++++++++++++++
+>>>
+>>> Device attach/bind is initiated through passthrough framework uAPI.
+>>>
+>>> Device attaching is allowed only after a device is successfully bound to
+>>> the IOMMU fd. User should provide a device cookie when binding the
+>>> device through VFIO uAPI. This cookie is used when the user queries
+>>> device capability/format, issues per-device iotlb invalidation and
+>>> receives per-device I/O page fault data via IOMMU fd.
+>>>
+>>> Successful binding puts the device into a security context which isolates
+>>> its DMA from the rest system. VFIO should not allow user to access the
+>> s/from the rest system/from the rest of the system
+>>> device before binding is completed. Similarly, VFIO should prevent the
+>>> user from unbinding the device before user access is withdrawn.
+>> With Intel scalable IOV, I understand you could assign an RID/PASID to
+>> one VM and another one to another VM (which is not the case for ARM). Is
+>> it a targetted use case?How would it be handled? Is it related to the
+>> sub-groups evoked hereafter?
+> Not related to sub-group. Each mdev is bound to the IOMMU fd respectively
+> with the defPASID which represents the mdev.
+But how does it work in term of security. The device (RID) is bound to
+an IOMMU fd. But then each SID/PASID may be working for a different VM.
+How do you detect this is safe as each SID can work safely for a
+different VM versus the ARM case where it is not possible.
 
-Thanks,
-Sai
+1.3 says
+"
 
-> 
->> Will
->> 
->>> @@ -2285,10 +2292,19 @@ static int __maybe_unused 
->>> arm_smmu_pm_resume(struct device *dev)
->>> 
->>>  static int __maybe_unused arm_smmu_pm_suspend(struct device *dev)
->>>  {
->>> +	int ret = 0;
->>> +	struct arm_smmu_device *smmu = dev_get_drvdata(dev);
->>> +
->>>  	if (pm_runtime_suspended(dev))
->>> -		return 0;
->>> +		goto clk_unprepare;
->>> 
->>> -	return arm_smmu_runtime_suspend(dev);
->>> +	ret = arm_smmu_runtime_suspend(dev);
->>> +	if (ret)
->>> +		return ret;
->>> +
->>> +clk_unprepare:
->>> +	clk_bulk_unprepare(smmu->num_clks, smmu->clks);
->>> +	return ret;
->>>  }
->>> 
->>>  static const struct dev_pm_ops arm_smmu_pm_ops = {
->>> --
->>> QUALCOMM INDIA, on behalf of Qualcomm Innovation Center, Inc. is a 
->>> member
->>> of Code Aurora Forum, hosted by The Linux Foundation
->>> 
+1)  A successful binding call for the first device in the group creates
+    the security context for the entire group, by:
+"
+What does it mean for above scalable IOV use case?
 
--- 
-QUALCOMM INDIA, on behalf of Qualcomm Innovation Center, Inc. is a 
-member
-of Code Aurora Forum, hosted by The Linux Foundation
+>
+>> Actually all devices bound to an IOMMU fd should have the same parent
+>> I/O address space or root address space, am I correct? If so, maybe add
+>> this comment explicitly?
+> in most cases yes but it's not mandatory. multiple roots are allowed
+> (e.g. with vIOMMU but no nesting).
+OK, right, this corresponds to example 4.2 for example. I misinterpreted
+the notion of security context. The security context does not match the
+IOMMU fd but is something implicit created on 1st device binding.
+>
+> [...]
+>>> The device in the /dev/iommu context always refers to a physical one
+>>> (pdev) which is identifiable via RID. Physically each pdev can support
+>>> one default I/O address space (routed via RID) and optionally multiple
+>>> non-default I/O address spaces (via RID+PASID).
+>>>
+>>> The device in VFIO context is a logic concept, being either a physical
+>>> device (pdev) or mediated device (mdev or subdev). Each vfio device
+>>> is represented by RID+cookie in IOMMU fd. User is allowed to create
+>>> one default I/O address space (routed by vRID from user p.o.v) per
+>>> each vfio_device.
+>> The concept of default address space is not fully clear for me. I
+>> currently understand this is a
+>> root address space (not nesting). Is that coorect.This may need
+>> clarification.
+> w/o PASID there is only one address space (either GPA or GIOVA)
+> per device. This one is called default. whether it's root is orthogonal
+> (e.g. GIOVA could be also nested) to the device view of this space.
+>
+> w/ PASID additional address spaces can be targeted by the device.
+> those are called non-default.
+>
+> I could also rename default to RID address space and non-default to 
+> RID+PASID address space if doing so makes it clearer.
+Yes I think it is worth having a kind of glossary and defining root as,
+default as as you clearly defined child/parent.
+>
+>>> VFIO decides the routing information for this default
+>>> space based on device type:
+>>>
+>>> 1)  pdev, routed via RID;
+>>>
+>>> 2)  mdev/subdev with IOMMU-enforced DMA isolation, routed via
+>>>     the parent's RID plus the PASID marking this mdev;
+>>>
+>>> 3)  a purely sw-mediated device (sw mdev), no routing required i.e. no
+>>>     need to install the I/O page table in the IOMMU. sw mdev just uses
+>>>     the metadata to assist its internal DMA isolation logic on top of
+>>>     the parent's IOMMU page table;
+>> Maybe you should introduce this concept of SW mediated device earlier
+>> because it seems to special case the way the attach behaves. I am
+>> especially refering to
+>>
+>> "Successful attaching activates an I/O address space in the IOMMU, if the
+>> device is not purely software mediated"
+> makes sense.
+>
+>>> In addition, VFIO may allow user to create additional I/O address spaces
+>>> on a vfio_device based on the hardware capability. In such case the user
+>>> has its own view of the virtual routing information (vPASID) when marking
+>>> these non-default address spaces.
+>> I do not catch what does mean "marking these non default address space".
+> as explained above, those non-default address spaces are identified/routed
+> via PASID. 
+>
+>>> 1.3. Group isolation
+>>> ++++++++++++++++++++
+> [...]
+>>> 1)  A successful binding call for the first device in the group creates
+>>>     the security context for the entire group, by:
+>>>
+>>>     * Verifying group viability in a similar way as VFIO does;
+>>>
+>>>     * Calling IOMMU-API to move the group into a block-dma state,
+>>>       which makes all devices in the group attached to an block-dma
+>>>       domain with an empty I/O page table;
+>> this block-dma state/domain would deserve to be better defined (I know
+>> you already evoked it in 1.1 with the dma mapping protocol though)
+>> activates an empty I/O page table in the IOMMU (if the device is not
+>> purely SW mediated)?
+> sure. some explanations are scattered in following paragraph, but I
+> can consider to further clarify it.
+>
+>> How does that relate to the default address space? Is it the same?
+> different. this block-dma domain doesn't hold any valid mapping. The
+> default address space is represented by a normal unmanaged domain.
+> the ioasid attaching operation will detach the device from the block-dma
+> domain and then attach it to the target ioasid.
+OK
+
+Thanks
+
+Eric
+>
+>>> 2. uAPI Proposal
+>>> ----------------------
+> [...]
+>>> /*
+>>>   * Allocate an IOASID.
+>>>   *
+>>>   * IOASID is the FD-local software handle representing an I/O address
+>>>   * space. Each IOASID is associated with a single I/O page table. User
+>>>   * must call this ioctl to get an IOASID for every I/O address space that is
+>>>   * intended to be tracked by the kernel.
+>>>   *
+>>>   * User needs to specify the attributes of the IOASID and associated
+>>>   * I/O page table format information according to one or multiple devices
+>>>   * which will be attached to this IOASID right after. The I/O page table
+>>>   * is activated in the IOMMU when it's attached by a device. Incompatible
+>> .. if not SW mediated
+>>>   * format between device and IOASID will lead to attaching failure.
+>>>   *
+>>>   * The root IOASID should always have a kernel-managed I/O page
+>>>   * table for safety. Locked page accounting is also conducted on the root.
+>> The definition of root IOASID is not easily found in this spec. Maybe
+>> this would deserve some clarification.
+> make sense.
+>
+> and thanks for other typo-related comments.
+>
+> Thanks
+> Kevin
+
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
