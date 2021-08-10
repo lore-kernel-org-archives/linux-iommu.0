@@ -2,88 +2,106 @@ Return-Path: <SRS0=o4oj=NB=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-14.0 required=3.0 tests=BAYES_00,INCLUDES_CR_TRAILER,
-	INCLUDES_PATCH,MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED
-	autolearn=unavailable autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-7.0 required=3.0 tests=BAYES_00,DKIM_ADSP_CUSTOM_MED,
+	DKIM_INVALID,DKIM_SIGNED,FREEMAIL_FORGED_FROMDOMAIN,FREEMAIL_FROM,
+	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,NICE_REPLY_A,
+	SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_SANE_1 autolearn=no
+	autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id CB052C4320A
-	for <iommu@archiver.kernel.org>; Tue, 10 Aug 2021 11:04:10 +0000 (UTC)
-Received: from smtp4.osuosl.org (smtp4.osuosl.org [140.211.166.137])
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 431DCC4338F
+	for <iommu@archiver.kernel.org>; Tue, 10 Aug 2021 12:18:03 +0000 (UTC)
+Received: from smtp1.osuosl.org (smtp1.osuosl.org [140.211.166.138])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 6C73960F25
-	for <iommu@archiver.kernel.org>; Tue, 10 Aug 2021 11:04:10 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.4.1 mail.kernel.org 6C73960F25
-Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=kernel.org
+	by mail.kernel.org (Postfix) with ESMTPS id E47E260FC4
+	for <iommu@archiver.kernel.org>; Tue, 10 Aug 2021 12:18:02 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.4.1 mail.kernel.org E47E260FC4
+Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=gmail.com
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by smtp4.osuosl.org (Postfix) with ESMTP id 2B16140486;
-	Tue, 10 Aug 2021 11:04:10 +0000 (UTC)
+	by smtp1.osuosl.org (Postfix) with ESMTP id AF3B3837DA;
+	Tue, 10 Aug 2021 12:18:02 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from smtp4.osuosl.org ([127.0.0.1])
-	by localhost (smtp4.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id D2syPx9oHdEr; Tue, 10 Aug 2021 11:04:06 +0000 (UTC)
-Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [IPv6:2605:bc80:3010:104::8cd3:938])
-	by smtp4.osuosl.org (Postfix) with ESMTPS id D4DC340435;
-	Tue, 10 Aug 2021 11:04:05 +0000 (UTC)
+Received: from smtp1.osuosl.org ([127.0.0.1])
+	by localhost (smtp1.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+	with ESMTP id BlbxxQE1HEOh; Tue, 10 Aug 2021 12:17:58 +0000 (UTC)
+Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
+	by smtp1.osuosl.org (Postfix) with ESMTPS id 8F09183459;
+	Tue, 10 Aug 2021 12:17:58 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id A981BC001A;
-	Tue, 10 Aug 2021 11:04:05 +0000 (UTC)
-Received: from smtp2.osuosl.org (smtp2.osuosl.org [140.211.166.133])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 70CCBC000E
- for <iommu@lists.linux-foundation.org>; Tue, 10 Aug 2021 11:04:04 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 6A9F2C001A;
+	Tue, 10 Aug 2021 12:17:58 +0000 (UTC)
+Received: from smtp4.osuosl.org (smtp4.osuosl.org [140.211.166.137])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 05C15C000E
+ for <iommu@lists.linux-foundation.org>; Tue, 10 Aug 2021 12:17:57 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by smtp2.osuosl.org (Postfix) with ESMTP id 59D23402A8
- for <iommu@lists.linux-foundation.org>; Tue, 10 Aug 2021 11:04:04 +0000 (UTC)
+ by smtp4.osuosl.org (Postfix) with ESMTP id 0133E40522
+ for <iommu@lists.linux-foundation.org>; Tue, 10 Aug 2021 12:17:57 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from smtp2.osuosl.org ([127.0.0.1])
- by localhost (smtp2.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id nQuAzMw6rppu for <iommu@lists.linux-foundation.org>;
- Tue, 10 Aug 2021 11:04:03 +0000 (UTC)
+Authentication-Results: smtp4.osuosl.org (amavisd-new);
+ dkim=pass (2048-bit key) header.d=gmail.com
+Received: from smtp4.osuosl.org ([127.0.0.1])
+ by localhost (smtp4.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+ with ESMTP id p7WVUrewWVr4 for <iommu@lists.linux-foundation.org>;
+ Tue, 10 Aug 2021 12:17:55 +0000 (UTC)
 X-Greylist: whitelisted by SQLgrey-1.8.0
-Received: from mail-wm1-f42.google.com (mail-wm1-f42.google.com
- [209.85.128.42])
- by smtp2.osuosl.org (Postfix) with ESMTPS id 5F48D402A3
- for <iommu@lists.linux-foundation.org>; Tue, 10 Aug 2021 11:04:03 +0000 (UTC)
-Received: by mail-wm1-f42.google.com with SMTP id u15so12743486wmj.1
- for <iommu@lists.linux-foundation.org>; Tue, 10 Aug 2021 04:04:03 -0700 (PDT)
+Received: from mail-pj1-x1031.google.com (mail-pj1-x1031.google.com
+ [IPv6:2607:f8b0:4864:20::1031])
+ by smtp4.osuosl.org (Postfix) with ESMTPS id CD8D34051A
+ for <iommu@lists.linux-foundation.org>; Tue, 10 Aug 2021 12:17:55 +0000 (UTC)
+Received: by mail-pj1-x1031.google.com with SMTP id
+ gz13-20020a17090b0ecdb0290178c0e0ce8bso2765317pjb.1
+ for <iommu@lists.linux-foundation.org>; Tue, 10 Aug 2021 05:17:55 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=gmail.com; s=20161025;
+ h=subject:to:cc:references:from:message-id:date:user-agent
+ :mime-version:in-reply-to:content-language:content-transfer-encoding;
+ bh=nvD6+M9t7qTrvrmcvKckt/OKOvl8Bvz01WtaH3hiQrw=;
+ b=W8VJHgJYz2WQSwNj+l2V4hKZLutN1MT1dVCGeD6amKZrIf5ru9mj7Kr5RPC5btWdWX
+ RcBrITr2iOAHNEFyRwZNQK2DWBs/jeslabKlgJrh6HL+/vTklPVAPdNaLnbz89wRnuqp
+ vInDusDjinU1k1tXuSrvNl+arW4OUoLjK4+N1kssywggZW7Jvt3yFTBcvkkKO5md3u7e
+ bBYY198+1xHTBLt8BAqooipJ4q/UaotaCIigVxqnzz3L1RWNDBQzAY5XUbKRG2hYDfQr
+ DyJeQjfUNmnEVrq8buf0/t08+AhEw6uB7PdFS6dLDgmOJUh/gxis1n7pHXyKAOel03W2
+ Aoig==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
  d=1e100.net; s=20161025;
- h=x-gm-message-state:date:from:to:cc:subject:message-id:references
- :mime-version:content-disposition:in-reply-to;
- bh=h9AyImD9UvKdyZgMt8rSQ3Uk0c9+Og7qG6N7oOE6PXA=;
- b=r/Jad4T0ZVJnfuwXsl/SNuEXYPHwt4mc2p+uC2fUYQiR300ci0a25mpWqbSQbfIH02
- WKwqpHWrPfXCcThsRncsJFXSZYr63TSwT+wmJ0Pd0ELEsqaI67/AltiBG/v4CwdW1utg
- KA4uWYSHtmhUs8Ny8A+R8DuqqJc/rID1JgIFMILHm8VOrq5ouQFTl71ZluTex4bV6DQp
- eRuYkLDspi1/n2lWFDx0VeW2NQiujG13fNNMZ9hB9iqPsPOyUycwx8FSMoqvxVifEYHX
- b5EfRx+zlgE0yakA0I3u9abQCAGDoE6l6hPvAJlzEayARJClkXHmTyo0Q8Lwazxb1d0F
- My8w==
-X-Gm-Message-State: AOAM531xVO8H0GT3uTlHtbiicMVkm6gVIRNcNAybfKtpNzIXFyijhxxg
- yDhyUDDAW2a10fybDjKchZU=
-X-Google-Smtp-Source: ABdhPJyrk1wBfHB9MekkHvpHW9x6fYmFebxaC/tx0zZS+XISdOGMjx9hLm+CPvA9MFZ9+dQ3n/YQhA==
-X-Received: by 2002:a05:600c:3798:: with SMTP id
- o24mr4061437wmr.18.1628593441621; 
- Tue, 10 Aug 2021 04:04:01 -0700 (PDT)
-Received: from liuwe-devbox-debian-v2 ([51.145.34.42])
- by smtp.gmail.com with ESMTPSA id q3sm3504575wmf.37.2021.08.10.04.04.00
- (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
- Tue, 10 Aug 2021 04:04:01 -0700 (PDT)
-Date: Tue, 10 Aug 2021 11:03:59 +0000
-From: Wei Liu <wei.liu@kernel.org>
-To: Tianyu Lan <ltykernel@gmail.com>
-Subject: Re: [PATCH V3 03/13] x86/HV: Add new hvcall guest address host
- visibility support
-Message-ID: <20210810110359.i4qodw7h36zrsicp@liuwe-devbox-debian-v2>
+ h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+ :user-agent:mime-version:in-reply-to:content-language
+ :content-transfer-encoding;
+ bh=nvD6+M9t7qTrvrmcvKckt/OKOvl8Bvz01WtaH3hiQrw=;
+ b=qQlsaEOFW619SWMUq2n5eL8JLBQuKrkNgXf+Oga3PNevwihHhoQ7uIaKROWrDubDc4
+ fzW+U68WUXwpHoL3ZBBX5m4aMhq3Hw9oimsOIrHNTIeIfqsV7vx0q+laYBoAd+2RGqCR
+ 74U6vsCP8JVnEcsC70veFnom0mHAV60Vu7ezAHYP7Ev+XyikhIACZ8k0A8nuKZxdgA7i
+ g73SN/5VM6M/aWA5gRRsTh3D/1OfV3QKjfB6qqdOGlI+BlPciQi9QZRwqE5fgmqbzaaR
+ P/mzIrFH1SZz01z3ZKzdG8DE4qQBBrKU1g/VhUNtUv2tOLpWYcHhQjn7KbWMbvJr54r/
+ 3yNA==
+X-Gm-Message-State: AOAM531MoLlx7QO28dYG32Qmat8DqgbuYSSGnMUsLpsRmOtZ7PvDLw/m
+ 5DVqS7pG2ZjGJA8xa7cmTBU=
+X-Google-Smtp-Source: ABdhPJzf0LwxUC1SEDmEJ4+woyBt3uEtabjBKjNM9eN5IQM2eh4nYHReWO5vIVqWyXP8Bs1frIDsoA==
+X-Received: by 2002:a63:131f:: with SMTP id i31mr348459pgl.207.1628597875367; 
+ Tue, 10 Aug 2021 05:17:55 -0700 (PDT)
+Received: from ?IPv6:2404:f801:0:5:8000::4b1? ([2404:f801:9000:18:efec::4b1])
+ by smtp.gmail.com with ESMTPSA id
+ ls16sm22103844pjb.49.2021.08.10.05.17.41
+ (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+ Tue, 10 Aug 2021 05:17:54 -0700 (PDT)
+Subject: Re: [PATCH V3 01/13] x86/HV: Initialize GHCB page in Isolation VM
+To: Wei Liu <wei.liu@kernel.org>
 References: <20210809175620.720923-1-ltykernel@gmail.com>
- <20210809175620.720923-4-ltykernel@gmail.com>
+ <20210809175620.720923-2-ltykernel@gmail.com>
+ <20210810105609.soi67eg2us5w7yuq@liuwe-devbox-debian-v2>
+From: Tianyu Lan <ltykernel@gmail.com>
+Message-ID: <93f3b1c6-feec-9c3b-c2d0-6fceffd00ae9@gmail.com>
+Date: Tue, 10 Aug 2021 20:17:41 +0800
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:78.0) Gecko/20100101
+ Thunderbird/78.12.0
 MIME-Version: 1.0
-Content-Disposition: inline
-In-Reply-To: <20210809175620.720923-4-ltykernel@gmail.com>
+In-Reply-To: <20210810105609.soi67eg2us5w7yuq@liuwe-devbox-debian-v2>
+Content-Language: en-US
 Cc: parri.andrea@gmail.com, linux-hyperv@vger.kernel.org, brijesh.singh@amd.com,
  peterz@infradead.org, dave.hansen@linux.intel.com, vkuznets@redhat.com,
  hpa@zytor.com, kys@microsoft.com, will@kernel.org, boris.ostrovsky@oracle.com,
- linux-arch@vger.kernel.org, sfr@canb.auug.org.au, wei.liu@kernel.org,
- sstabellini@kernel.org, sthemmin@microsoft.com, xen-devel@lists.xenproject.org,
+ linux-arch@vger.kernel.org, sfr@canb.auug.org.au, sstabellini@kernel.org,
+ sthemmin@microsoft.com, xen-devel@lists.xenproject.org,
  linux-scsi@vger.kernel.org, aneesh.kumar@linux.ibm.com, x86@kernel.org,
  decui@microsoft.com, hch@lst.de, michael.h.kelley@microsoft.com,
  mingo@redhat.com, pgonda@google.com, rientjes@google.com, kuba@kernel.org,
@@ -108,119 +126,34 @@ List-Post: <mailto:iommu@lists.linux-foundation.org>
 List-Help: <mailto:iommu-request@lists.linux-foundation.org?subject=help>
 List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
  <mailto:iommu-request@lists.linux-foundation.org?subject=subscribe>
-Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset="us-ascii"; Format="flowed"
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-On Mon, Aug 09, 2021 at 01:56:07PM -0400, Tianyu Lan wrote:
-> From: Tianyu Lan <Tianyu.Lan@microsoft.com>
-> 
-> Add new hvcall guest address host visibility support to mark
-> memory visible to host. Call it inside set_memory_decrypted
-> /encrypted(). Add HYPERVISOR feature check in the
-> hv_is_isolation_supported() to optimize in non-virtualization
-> environment.
-> 
-> Signed-off-by: Tianyu Lan <Tianyu.Lan@microsoft.com>
-> ---
-> Change since v2:
->        * Rework __set_memory_enc_dec() and call Hyper-V and AMD function
->          according to platform check.
-> 
-> Change since v1:
->        * Use new staic call x86_set_memory_enc to avoid add Hyper-V
->          specific check in the set_memory code.
-> ---
->  arch/x86/hyperv/Makefile           |   2 +-
->  arch/x86/hyperv/hv_init.c          |   6 ++
->  arch/x86/hyperv/ivm.c              | 114 +++++++++++++++++++++++++++++
->  arch/x86/include/asm/hyperv-tlfs.h |  20 +++++
->  arch/x86/include/asm/mshyperv.h    |   4 +-
->  arch/x86/mm/pat/set_memory.c       |  19 +++--
->  include/asm-generic/hyperv-tlfs.h  |   1 +
->  include/asm-generic/mshyperv.h     |   1 +
->  8 files changed, 160 insertions(+), 7 deletions(-)
->  create mode 100644 arch/x86/hyperv/ivm.c
-> 
-> diff --git a/arch/x86/hyperv/Makefile b/arch/x86/hyperv/Makefile
-> index 48e2c51464e8..5d2de10809ae 100644
-> --- a/arch/x86/hyperv/Makefile
-> +++ b/arch/x86/hyperv/Makefile
-> @@ -1,5 +1,5 @@
->  # SPDX-License-Identifier: GPL-2.0-only
-> -obj-y			:= hv_init.o mmu.o nested.o irqdomain.o
-> +obj-y			:= hv_init.o mmu.o nested.o irqdomain.o ivm.o
->  obj-$(CONFIG_X86_64)	+= hv_apic.o hv_proc.o
->  
->  ifdef CONFIG_X86_64
-> diff --git a/arch/x86/hyperv/hv_init.c b/arch/x86/hyperv/hv_init.c
-> index 0bb4d9ca7a55..b3683083208a 100644
-> --- a/arch/x86/hyperv/hv_init.c
-> +++ b/arch/x86/hyperv/hv_init.c
-> @@ -607,6 +607,12 @@ EXPORT_SYMBOL_GPL(hv_get_isolation_type);
->  
->  bool hv_is_isolation_supported(void)
->  {
-> +	if (!cpu_feature_enabled(X86_FEATURE_HYPERVISOR))
-> +		return 0;
+Hi Wei:
+       Thanks for review.
 
-Nit: false instead of 0.
+On 8/10/2021 6:56 PM, Wei Liu wrote:
+> On Mon, Aug 09, 2021 at 01:56:05PM -0400, Tianyu Lan wrote:
+> [...]
+>>   static int hv_cpu_init(unsigned int cpu)
+>>   {
+>>   	union hv_vp_assist_msr_contents msr = { 0 };
+>> @@ -85,6 +111,8 @@ static int hv_cpu_init(unsigned int cpu)
+>>   		}
+>>   	}
+>>   
+>> +	hyperv_init_ghcb();
+>> +
+> 
+> Why is the return value not checked here? If that's not required, can
+> you leave a comment?
+> 
 
-> +
-> +	if (!hypervisor_is_type(X86_HYPER_MS_HYPERV))
-> +		return 0;
-> +
->  	return hv_get_isolation_type() != HV_ISOLATION_TYPE_NONE;
->  }
->  
-[...]
-> +int hv_mark_gpa_visibility(u16 count, const u64 pfn[],
-> +			   enum hv_mem_host_visibility visibility)
-> +{
-> +	struct hv_gpa_range_for_visibility **input_pcpu, *input;
-> +	u16 pages_processed;
-> +	u64 hv_status;
-> +	unsigned long flags;
-> +
-> +	/* no-op if partition isolation is not enabled */
-> +	if (!hv_is_isolation_supported())
-> +		return 0;
-> +
-> +	if (count > HV_MAX_MODIFY_GPA_REP_COUNT) {
-> +		pr_err("Hyper-V: GPA count:%d exceeds supported:%lu\n", count,
-> +			HV_MAX_MODIFY_GPA_REP_COUNT);
-> +		return -EINVAL;
-> +	}
-> +
-> +	local_irq_save(flags);
-> +	input_pcpu = (struct hv_gpa_range_for_visibility **)
-> +			this_cpu_ptr(hyperv_pcpu_input_arg);
-> +	input = *input_pcpu;
-> +	if (unlikely(!input)) {
-> +		local_irq_restore(flags);
-> +		return -EINVAL;
-> +	}
-> +
-> +	input->partition_id = HV_PARTITION_ID_SELF;
-> +	input->host_visibility = visibility;
-> +	input->reserved0 = 0;
-> +	input->reserved1 = 0;
-> +	memcpy((void *)input->gpa_page_list, pfn, count * sizeof(*pfn));
-> +	hv_status = hv_do_rep_hypercall(
-> +			HVCALL_MODIFY_SPARSE_GPA_PAGE_HOST_VISIBILITY, count,
-> +			0, input, &pages_processed);
-> +	local_irq_restore(flags);
-> +
-> +	if (!(hv_status & HV_HYPERCALL_RESULT_MASK))
-> +		return 0;
-> +
-> +	return hv_status & HV_HYPERCALL_RESULT_MASK;
+The check is necessary here. Will update in the next version.
 
-Joseph introduced a few helper functions in 753ed9c95c37d. They will
-make the code simpler.
-
-Wei.
+Thanks.
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
