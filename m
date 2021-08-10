@@ -2,98 +2,85 @@ Return-Path: <SRS0=o4oj=NB=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-9.0 required=3.0 tests=BAYES_00,INCLUDES_PATCH,
-	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED autolearn=unavailable
-	autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-2.0 required=3.0 tests=BAYES_00,DATE_IN_PAST_03_06,
+	DKIM_INVALID,DKIM_SIGNED,HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,
+	SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED autolearn=no autolearn_force=no
+	version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 03FAFC4338F
-	for <iommu@archiver.kernel.org>; Tue, 10 Aug 2021 10:04:33 +0000 (UTC)
-Received: from smtp2.osuosl.org (smtp2.osuosl.org [140.211.166.133])
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5712AC4338F
+	for <iommu@archiver.kernel.org>; Tue, 10 Aug 2021 10:19:04 +0000 (UTC)
+Received: from smtp1.osuosl.org (smtp1.osuosl.org [140.211.166.138])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id A135160F25
-	for <iommu@archiver.kernel.org>; Tue, 10 Aug 2021 10:04:32 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.4.1 mail.kernel.org A135160F25
-Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=kernel.org
+	by mail.kernel.org (Postfix) with ESMTPS id C45A86109E
+	for <iommu@archiver.kernel.org>; Tue, 10 Aug 2021 10:19:03 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.4.1 mail.kernel.org C45A86109E
+Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=gibson.dropbear.id.au
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by smtp2.osuosl.org (Postfix) with ESMTP id 62FF1401B0;
-	Tue, 10 Aug 2021 10:04:32 +0000 (UTC)
-X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from smtp2.osuosl.org ([127.0.0.1])
-	by localhost (smtp2.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id bmoRcg4OFbpU; Tue, 10 Aug 2021 10:04:27 +0000 (UTC)
-Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [IPv6:2605:bc80:3010:104::8cd3:938])
-	by smtp2.osuosl.org (Postfix) with ESMTPS id DB437400EC;
-	Tue, 10 Aug 2021 10:04:26 +0000 (UTC)
-Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 9E215C001A;
-	Tue, 10 Aug 2021 10:04:26 +0000 (UTC)
-Received: from smtp1.osuosl.org (smtp1.osuosl.org [140.211.166.138])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 153D5C000E;
- Tue, 10 Aug 2021 10:04:25 +0000 (UTC)
-Received: from localhost (localhost [127.0.0.1])
- by smtp1.osuosl.org (Postfix) with ESMTP id E542681CA7;
- Tue, 10 Aug 2021 10:04:24 +0000 (UTC)
+	by smtp1.osuosl.org (Postfix) with ESMTP id 88030831B0;
+	Tue, 10 Aug 2021 10:19:03 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
 Received: from smtp1.osuosl.org ([127.0.0.1])
- by localhost (smtp1.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id wM6BH4kJbSSX; Tue, 10 Aug 2021 10:04:24 +0000 (UTC)
-X-Greylist: whitelisted by SQLgrey-1.8.0
-X-Greylist: whitelisted by SQLgrey-1.8.0
-Received: from mail-wm1-f44.google.com (mail-wm1-f44.google.com
- [209.85.128.44])
- by smtp1.osuosl.org (Postfix) with ESMTPS id 2D16081B17;
- Tue, 10 Aug 2021 10:04:24 +0000 (UTC)
-Received: by mail-wm1-f44.google.com with SMTP id
- m36-20020a05600c3b24b02902e67543e17aso1506861wms.0; 
- Tue, 10 Aug 2021 03:04:24 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
- d=1e100.net; s=20161025;
- h=x-gm-message-state:date:from:to:cc:subject:message-id:references
- :mime-version:content-disposition:in-reply-to;
- bh=nNPyEQUv6Ji6aWmVMQgSNl5jQ96sNm9i4LSvAWR0eaA=;
- b=q2gbUw9U5RtXDLYisdSeQSgCrPFXvSu38/Nc8e2OtpE6cCuDTC/Rup5pd6D7I3GphR
- wr7FNqUbH0b/vddvNEjoyl/Iu1esfKxdseTtw3MrVUENz/DZBisiwI6dbSE3CSAtwEDG
- jPEyDtmp9zi0ZY38Dj+7BCNz5TAysF3z0XOnCSsIEKP73HSZq5LNvW3Ui0dyLUYYtCji
- loJD6PFV16PJdB4607ccaCuBgzDpAdxi/tlXQofuQf2CZktqhSp38YBqiOCZ/B6AjLtp
- cyczg3ABjA43CEQFbUA3Nrsh5tchELIl3wkx86Kf8Chox7fLdzZiPOjXw77Ijj1ExgVk
- nGwQ==
-X-Gm-Message-State: AOAM530qp5gTvBfBtwnflrBxxsjdgQ2YLQRR0fFcbm5DyfXfF9rBUasB
- c2+vibIoO0nqb9z6cKPNlUo=
-X-Google-Smtp-Source: ABdhPJxqwuyMnHbZRg1qBZctOdB5h6Kf4V8NZCJ8ord6bBrxy7xEi7XisJdq+Xmsrl1aGAMEv6+vWg==
-X-Received: by 2002:a05:600c:1c11:: with SMTP id
- j17mr21277438wms.35.1628589862198; 
- Tue, 10 Aug 2021 03:04:22 -0700 (PDT)
-Received: from liuwe-devbox-debian-v2 ([51.145.34.42])
- by smtp.gmail.com with ESMTPSA id e3sm9074443wro.15.2021.08.10.03.04.21
- (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
- Tue, 10 Aug 2021 03:04:21 -0700 (PDT)
-Date: Tue, 10 Aug 2021 10:04:19 +0000
-From: Wei Liu <wei.liu@kernel.org>
-To: Praveen Kumar <kumarpraveen@linux.microsoft.com>
-Subject: Re: [RFC v1 6/8] mshv: command line option to skip devices in PV-IOMMU
-Message-ID: <20210810100419.g3rjj3xegydalyz3@liuwe-devbox-debian-v2>
-References: <20210709114339.3467637-1-wei.liu@kernel.org>
- <20210709114339.3467637-7-wei.liu@kernel.org>
- <4a6918ea-e3e5-55c9-a12d-bee7261301fd@linux.microsoft.com>
- <20210803215617.fzx2vrzhsabrrolc@liuwe-devbox-debian-v2>
- <8d9b6b9a-62b1-95ea-1bb6-258e72c1800d@linux.microsoft.com>
+	by localhost (smtp1.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+	with ESMTP id zk4nrQZbYbwd; Tue, 10 Aug 2021 10:18:59 +0000 (UTC)
+Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [IPv6:2605:bc80:3010:104::8cd3:938])
+	by smtp1.osuosl.org (Postfix) with ESMTPS id 3007E827FB;
+	Tue, 10 Aug 2021 10:18:59 +0000 (UTC)
+Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 1443AC001A;
+	Tue, 10 Aug 2021 10:18:59 +0000 (UTC)
+Received: from smtp4.osuosl.org (smtp4.osuosl.org [140.211.166.137])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 20BDDC000E
+ for <iommu@lists.linux-foundation.org>; Tue, 10 Aug 2021 10:18:58 +0000 (UTC)
+Received: from localhost (localhost [127.0.0.1])
+ by smtp4.osuosl.org (Postfix) with ESMTP id 0C3B440261
+ for <iommu@lists.linux-foundation.org>; Tue, 10 Aug 2021 10:18:58 +0000 (UTC)
+X-Virus-Scanned: amavisd-new at osuosl.org
+Authentication-Results: smtp4.osuosl.org (amavisd-new);
+ dkim=pass (1024-bit key) header.d=gibson.dropbear.id.au
+Received: from smtp4.osuosl.org ([127.0.0.1])
+ by localhost (smtp4.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+ with ESMTP id k0criMaIZdEM for <iommu@lists.linux-foundation.org>;
+ Tue, 10 Aug 2021 10:18:53 +0000 (UTC)
+X-Greylist: domain auto-whitelisted by SQLgrey-1.8.0
+Received: from ozlabs.org (ozlabs.org [203.11.71.1])
+ by smtp4.osuosl.org (Postfix) with ESMTPS id 2B0A34020A
+ for <iommu@lists.linux-foundation.org>; Tue, 10 Aug 2021 10:18:52 +0000 (UTC)
+Received: by ozlabs.org (Postfix, from userid 1007)
+ id 4GkTSS0p5Qz9sRf; Tue, 10 Aug 2021 20:18:48 +1000 (AEST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+ d=gibson.dropbear.id.au; s=201602; t=1628590728;
+ bh=sLzUle4HNjbt2dpuzLJ/SCgyEaG1KNFjSdG9/ykRLYo=;
+ h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+ b=bE7CtES05Gb33ZZWvfgfzvroh0FvJfb8WbKwzViGUD5LeQNvpQdpBjLHr3/24sjKE
+ idwd62N3gx53z8IIFvjSpMJmdpG2PsCBaDejyPRTtyHSVN+DF6VILSwEauB+I9+dYU
+ MP3gbRCUPVOCSQu2vvetmvzqO+jHEvU6RMZhlms8=
+Date: Tue, 10 Aug 2021 16:10:12 +1000
+From: David Gibson <david@gibson.dropbear.id.au>
+To: Jason Gunthorpe <jgg@nvidia.com>
+Subject: Re: [RFC v2] /dev/iommu uAPI proposal
+Message-ID: <YRIYRI+2qSvX/e2d@yekko>
+References: <BN9PR11MB5433B1E4AE5B0480369F97178C189@BN9PR11MB5433.namprd11.prod.outlook.com>
+ <YP4/KJoYfbaf5U94@yekko>
+ <BN9PR11MB54332594B1B4003AE4B9238C8CEA9@BN9PR11MB5433.namprd11.prod.outlook.com>
+ <YQig7EIVMAuzSgH4@yekko>
+ <BN9PR11MB54338C2863EA94145710A1BA8CF09@BN9PR11MB5433.namprd11.prod.outlook.com>
+ <YQy+ZsCab6Ni/sN7@yekko> <20210806123211.GR1721383@nvidia.com>
 MIME-Version: 1.0
-Content-Disposition: inline
-In-Reply-To: <8d9b6b9a-62b1-95ea-1bb6-258e72c1800d@linux.microsoft.com>
-Cc: Wei Liu <wei.liu@kernel.org>, "K. Y. Srinivasan" <kys@microsoft.com>,
- Stephen Hemminger <sthemmin@microsoft.com>, pasha.tatashin@soleen.com,
- Linux on Hyper-V List <linux-hyperv@vger.kernel.org>,
- Will Deacon <will@kernel.org>, Haiyang Zhang <haiyangz@microsoft.com>,
- Dexuan Cui <decui@microsoft.com>,
- Linux Kernel List <linux-kernel@vger.kernel.org>,
- Michael Kelley <mikelley@microsoft.com>,
- "open list:IOMMU DRIVERS" <iommu@lists.linux-foundation.org>,
- Nuno Das Neves <nunodasneves@linux.microsoft.com>,
- Sunil Muthuswamy <sunilmut@microsoft.com>,
- virtualization@lists.linux-foundation.org,
- Vineeth Pillai <viremana@linux.microsoft.com>
+In-Reply-To: <20210806123211.GR1721383@nvidia.com>
+Cc: "kvm@vger.kernel.org" <kvm@vger.kernel.org>,
+ Jason Wang <jasowang@redhat.com>, Kirti Wankhede <kwankhede@nvidia.com>,
+ Jean-Philippe Brucker <jean-philippe@linaro.org>, "Jiang,
+ Dave" <dave.jiang@intel.com>, "Raj, Ashok" <ashok.raj@intel.com>,
+ Jonathan Corbet <corbet@lwn.net>, "Tian, Kevin" <kevin.tian@intel.com>,
+ "parav@mellanox.com" <parav@mellanox.com>,
+ "Alex Williamson \(alex.williamson@redhat.com\)" <alex.williamson@redhat.com>,
+ "Enrico Weigelt, metux IT consult" <lkml@metux.net>,
+ Robin Murphy <robin.murphy@arm.com>, LKML <linux-kernel@vger.kernel.org>,
+ Shenming Lu <lushenming@huawei.com>,
+ "iommu@lists.linux-foundation.org" <iommu@lists.linux-foundation.org>,
+ Paolo Bonzini <pbonzini@redhat.com>, David Woodhouse <dwmw2@infradead.org>
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -106,113 +93,107 @@ List-Post: <mailto:iommu@lists.linux-foundation.org>
 List-Help: <mailto:iommu-request@lists.linux-foundation.org?subject=help>
 List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
  <mailto:iommu-request@lists.linux-foundation.org?subject=subscribe>
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
+Content-Type: multipart/mixed; boundary="===============1431197244878920735=="
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-On Wed, Aug 04, 2021 at 12:33:54PM +0530, Praveen Kumar wrote:
-> On 04-08-2021 03:26, Wei Liu wrote:
-> >>>  	struct iommu_domain domain;
-> >>> @@ -774,6 +784,41 @@ static struct iommu_device *hv_iommu_probe_device(struct device *dev)
-> >>>  	if (!dev_is_pci(dev))
-> >>>  		return ERR_PTR(-ENODEV);
-> >>>  
-> >>> +	/*
-> >>> +	 * Skip the PCI device specified in `pci_devs_to_skip`. This is a
-> >>> +	 * temporary solution until we figure out a way to extract information
-> >>> +	 * from the hypervisor what devices it is already using.
-> >>> +	 */
-> >>> +	if (pci_devs_to_skip && *pci_devs_to_skip) {
-> >>> +		int pos = 0;
-> >>> +		int parsed;
-> >>> +		int segment, bus, slot, func;
-> >>> +		struct pci_dev *pdev = to_pci_dev(dev);
-> >>> +
-> >>> +		do {
-> >>> +			parsed = 0;
-> >>> +
-> >>> +			sscanf(pci_devs_to_skip + pos,
-> >>> +				" (%x:%x:%x.%x) %n",
-> >>> +				&segment, &bus, &slot, &func, &parsed);
-> >>> +
-> >>> +			if (parsed <= 0)
-> >>> +				break;
-> >>> +
-> >>> +			if (pci_domain_nr(pdev->bus) == segment &&
-> >>> +				pdev->bus->number == bus &&
-> >>> +				PCI_SLOT(pdev->devfn) == slot &&
-> >>> +				PCI_FUNC(pdev->devfn) == func)
-> >>> +			{
-> >>> +				dev_info(dev, "skipped by MSHV IOMMU\n");
-> >>> +				return ERR_PTR(-ENODEV);
-> >>> +			}
-> >>> +
-> >>> +			pos += parsed;
-> >>> +
-> >>> +		} while (pci_devs_to_skip[pos]);
-> >>
-> >> Is there a possibility of pci_devs_to_skip + pos > sizeof(pci_devs_to_skip)
-> >> and also a valid memory ?
-> > 
-> > pos should point to the last parsed position. If parsing fails pos does
-> > not get updated and the code breaks out of the loop. If parsing is
-> > success pos should point to either the start of next element of '\0'
-> > (end of string). To me this is good enough.
-> 
-> The point is, hypothetically the address to pci_devs_to_skip + pos can
-> be valid address (later to '\0'), and thus there is a possibility,
-> that parsing may not fail.
 
-Have you found an example how at any given point in time
-pci_devs_to_skip + pos can point outside of user provided string?
+--===============1431197244878920735==
+Content-Type: multipart/signed; micalg=pgp-sha256;
+	protocol="application/pgp-signature"; boundary="odEeZa7MqmWAODkt"
+Content-Disposition: inline
 
-> Another, there is also a possibility of sscanf faulting accessing the
-> illegal address, if pci_devs_to_skip[pos] turns out to be not NULL or
-> valid address.
 
-That depends on pci_devs_to_skip + pos can point to an invalid address
-in the first place, so that goes back to the question above.
+--odEeZa7MqmWAODkt
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
 
-> 
-> > 
-> >> I would recommend to have a check of size as well before accessing the
-> >> array content, just to be safer accessing any memory.
-> >>
-> > 
-> > What check do you have in mind?
-> 
-> Something like,
-> size_t len = strlen(pci_devs_to_skip);
-> do {
-> 
-> 	len -= parsed;
-> } while (len);
-> 
-> OR
-> 
-> do {
-> ...
-> 	pos += parsed;
-> } while (pos < len);
-> 
-> Further, I'm also fine with the existing code, if you think this won't
-> break and already been taken care. Thanks.
+On Fri, Aug 06, 2021 at 09:32:11AM -0300, Jason Gunthorpe wrote:
+> On Fri, Aug 06, 2021 at 02:45:26PM +1000, David Gibson wrote:
+>=20
+> > Well, that's kind of what I'm doing.  PCI currently has the notion of
+> > "default" address space for a RID, but there's no guarantee that other
+> > buses (or even future PCI extensions) will.  The idea is that
+> > "endpoint" means exactly the (RID, PASID) or (SID, SSID) or whatever
+> > future variations are on that.
+>=20
+> This is already happening in this proposal, it is why I insisted that
+> the driver facing API has to be very explicit. That API specifies
+> exactly what the device silicon is doing.
+>=20
+> However, that is placed at the IOASID level. There is no reason to
+> create endpoint objects that are 1:1 with IOASID objects, eg for
+> PASID.
 
-But in the loop somewhere you will still need to parse pci_devs_to_skip
-+ some_offset. The new code structure does not remove that, right?
+They're not 1:1 though.  You can have multiple endpoints in the same
+IOAS, that's the whole point.
 
-Given this is for debugging and is supposed to be temporary, I think the
-code is good enough. But I want to make sure if there is anything I
-missed.
+> We need to have clear software layers and responsibilities, I think
+> this is where the VFIO container design has fallen behind.
+>=20
+> The device driver is responsible to delcare what TLPs the device it
+> controls will issue
 
-Wei.
+Right.. and I'm envisaging an endpoint as a abstraction to represent a
+single TLP.
 
-> 
-> Regards,
-> 
-> ~Praveen.
+> The system layer is responsible to determine how those TLPs can be
+> matched to IO page tables, if at all
+>=20
+> The IO page table layer is responsible to map the TLPs to physical
+> memory.
+>=20
+> Each must stay in its box and we should not create objects that smush
+> together, say, the device and system layers because it will only make
+> a mess of the software design.
+
+I agree... and endpoints are explicitly an attempt to do that.  I
+don't see how you think they're smushing things together.
+
+> Since the system layer doesn't have any concrete objects in our
+> environment (which is based on devices and IO page tables) it has to
+> exist as metadata attached to the other two objects.
+
+Whereas I'm suggesting clarifying this by *creating* concrete objects
+to represent the concept we need.
+
+--=20
+David Gibson			| I'll have my music baroque, and my code
+david AT gibson.dropbear.id.au	| minimalist, thank you.  NOT _the_ _other_
+				| _way_ _around_!
+http://www.ozlabs.org/~dgibson
+
+--odEeZa7MqmWAODkt
+Content-Type: application/pgp-signature; name="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+
+iQIzBAEBCAAdFiEEdfRlhq5hpmzETofcbDjKyiDZs5IFAmESGEQACgkQbDjKyiDZ
+s5Ktrg/+MU/OVbhaG0pM1dSjmK1fu9a3jQ3S7egfXHqBCHsGei0mCcWonB4WX71t
+JghxefYDxyliljq9AQuZuOG6LmHAr02cy0bPhHlZwnjXnDvHjZcOkcfBMNLdwtAQ
+uhUCXkPBq1nH9liPYMPKBsk6skgKuT5kiO4IiQgmptD3qMDUumzdFWU4FlwFtEeJ
+izG3YYaqr0v1C8I4zCT5kBibk5EFTWwE/ZvHtaYK9yDjOi4b1X79F2EBR/arNcY3
+/Vdq0sdCqKstC3g3az+K5Akdti53oNltLWTnqvFbbpZmPvIhOZ37zScMc1bmjrxf
+5icEraXNHQW0dEmi29qZLeqr0cmYXhcrfXnneRCprubUMxdfkMVRA5LxqS0vqBOU
+wSoGH1d/3D5BKm6lTpvZCc/QsAyxgwYgX0gxURGKt/CrWOkC+XXXgCO3x1j+xG3V
+04k0yMEk+9K9+YT3oxjsdOGThJW0ZNA5fhmBf4I/NxRCtPwldXdIVOC1DdB0iTW1
+0XHE3Wvp9yjMpVt6bt1NOt8lfn74aVkWqjDjpEIdyWtGqaJQVgynAozorT/SBIUI
+awVwsTosKBG9Paf3L82ZETY8rIPvqJCFu+KgFumeaS5Xyl0z4eUDrnEgNdH9B3mh
+QEEffkuuuV9L5zxyp+Ir4OWtE4lNkjkcylCpEpklCV2oVLBKVFI=
+=LOUq
+-----END PGP SIGNATURE-----
+
+--odEeZa7MqmWAODkt--
+
+--===============1431197244878920735==
+Content-Type: text/plain; charset="us-ascii"
+MIME-Version: 1.0
+Content-Transfer-Encoding: 7bit
+Content-Disposition: inline
+
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
 https://lists.linuxfoundation.org/mailman/listinfo/iommu
+--===============1431197244878920735==--
