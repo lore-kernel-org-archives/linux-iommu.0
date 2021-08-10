@@ -2,125 +2,115 @@ Return-Path: <SRS0=o4oj=NB=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-5.1 required=3.0 tests=BAYES_00,DKIM_INVALID,
-	DKIM_SIGNED,HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,NICE_REPLY_A,
-	SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_SANE_1 autolearn=no
-	autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-3.5 required=3.0 tests=BAYES_00,DKIM_INVALID,
+	DKIM_SIGNED,HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,SPF_HELO_NONE,
+	SPF_PASS,URIBL_BLOCKED autolearn=no autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 61FD2C4338F
-	for <iommu@archiver.kernel.org>; Tue, 10 Aug 2021 07:17:26 +0000 (UTC)
-Received: from smtp3.osuosl.org (smtp3.osuosl.org [140.211.166.136])
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4F863C4338F
+	for <iommu@archiver.kernel.org>; Tue, 10 Aug 2021 07:44:19 +0000 (UTC)
+Received: from smtp2.osuosl.org (smtp2.osuosl.org [140.211.166.133])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id DDB596101E
-	for <iommu@archiver.kernel.org>; Tue, 10 Aug 2021 07:17:25 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.4.1 mail.kernel.org DDB596101E
-Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=redhat.com
+	by mail.kernel.org (Postfix) with ESMTPS id E674660F38
+	for <iommu@archiver.kernel.org>; Tue, 10 Aug 2021 07:44:18 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.4.1 mail.kernel.org E674660F38
+Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=bytedance.com
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by smtp3.osuosl.org (Postfix) with ESMTP id A5981607F8;
-	Tue, 10 Aug 2021 07:17:25 +0000 (UTC)
+	by smtp2.osuosl.org (Postfix) with ESMTP id A878D401B4;
+	Tue, 10 Aug 2021 07:44:18 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from smtp3.osuosl.org ([127.0.0.1])
-	by localhost (smtp3.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id ZvhHVqiCKA31; Tue, 10 Aug 2021 07:17:21 +0000 (UTC)
-Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by smtp3.osuosl.org (Postfix) with ESMTPS id 8BF5B608E3;
-	Tue, 10 Aug 2021 07:17:21 +0000 (UTC)
+Received: from smtp2.osuosl.org ([127.0.0.1])
+	by localhost (smtp2.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+	with ESMTP id 78TLXfFVHFii; Tue, 10 Aug 2021 07:44:14 +0000 (UTC)
+Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [IPv6:2605:bc80:3010:104::8cd3:938])
+	by smtp2.osuosl.org (Postfix) with ESMTPS id 427A84011C;
+	Tue, 10 Aug 2021 07:44:14 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 63ED9C001A;
-	Tue, 10 Aug 2021 07:17:21 +0000 (UTC)
-Received: from smtp1.osuosl.org (smtp1.osuosl.org [IPv6:2605:bc80:3010::138])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 57011C000E
- for <iommu@lists.linux-foundation.org>; Tue, 10 Aug 2021 07:17:20 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 17EDEC001A;
+	Tue, 10 Aug 2021 07:44:14 +0000 (UTC)
+Received: from smtp4.osuosl.org (smtp4.osuosl.org [IPv6:2605:bc80:3010::137])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 1B30EC000E
+ for <iommu@lists.linux-foundation.org>; Tue, 10 Aug 2021 07:44:12 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by smtp1.osuosl.org (Postfix) with ESMTP id 31F6F8349A
- for <iommu@lists.linux-foundation.org>; Tue, 10 Aug 2021 07:17:20 +0000 (UTC)
+ by smtp4.osuosl.org (Postfix) with ESMTP id EA6F6404F2
+ for <iommu@lists.linux-foundation.org>; Tue, 10 Aug 2021 07:44:11 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Authentication-Results: smtp1.osuosl.org (amavisd-new);
- dkim=pass (1024-bit key) header.d=redhat.com
-Received: from smtp1.osuosl.org ([127.0.0.1])
- by localhost (smtp1.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id YReSEUlmW1CX for <iommu@lists.linux-foundation.org>;
- Tue, 10 Aug 2021 07:17:19 +0000 (UTC)
-X-Greylist: domain auto-whitelisted by SQLgrey-1.8.0
-Received: from us-smtp-delivery-124.mimecast.com
- (us-smtp-delivery-124.mimecast.com [170.10.133.124])
- by smtp1.osuosl.org (Postfix) with ESMTPS id 466A983546
- for <iommu@lists.linux-foundation.org>; Tue, 10 Aug 2021 07:17:19 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
- s=mimecast20190719; t=1628579838;
- h=from:from:reply-to:reply-to:subject:subject:date:date:
- message-id:message-id:to:to:cc:cc:mime-version:mime-version:
- content-type:content-type:
- content-transfer-encoding:content-transfer-encoding:
- in-reply-to:in-reply-to:references:references;
- bh=MiJQ0VtQH9ot0EVFN/FpusLl8DGmShMhIr9rUyrSbi8=;
- b=caNOgj5j04dkvInUuMfLxJW0leZ3lgt/4jVBEZ5NYeOFdOAg0YtoF9zjWfCqisTlHhFcTj
- pvehX3wCM69xjrQLgjAfyUIYVHrecCLluhAqAhwcW4SeAjsAOdrJQEjYrAGSSMxmMi++nP
- 3OQhjL+gTjpj1QFft7tbbQ8eIaSXbY8=
-Received: from mail-wm1-f72.google.com (mail-wm1-f72.google.com
- [209.85.128.72]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-560-IRRGJ2GwPAq3AQ8iVrsvRA-1; Tue, 10 Aug 2021 03:17:15 -0400
-X-MC-Unique: IRRGJ2GwPAq3AQ8iVrsvRA-1
-Received: by mail-wm1-f72.google.com with SMTP id
- g70-20020a1c20490000b02902e6753bf473so720593wmg.0
- for <iommu@lists.linux-foundation.org>; Tue, 10 Aug 2021 00:17:14 -0700 (PDT)
+Authentication-Results: smtp4.osuosl.org (amavisd-new);
+ dkim=pass (2048-bit key) header.d=bytedance-com.20150623.gappssmtp.com
+Received: from smtp4.osuosl.org ([127.0.0.1])
+ by localhost (smtp4.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+ with ESMTP id uzm7kjndiIo6 for <iommu@lists.linux-foundation.org>;
+ Tue, 10 Aug 2021 07:44:09 +0000 (UTC)
+X-Greylist: whitelisted by SQLgrey-1.8.0
+Received: from mail-ej1-x635.google.com (mail-ej1-x635.google.com
+ [IPv6:2a00:1450:4864:20::635])
+ by smtp4.osuosl.org (Postfix) with ESMTPS id 2CEB5404F5
+ for <iommu@lists.linux-foundation.org>; Tue, 10 Aug 2021 07:44:09 +0000 (UTC)
+Received: by mail-ej1-x635.google.com with SMTP id go31so33767674ejc.6
+ for <iommu@lists.linux-foundation.org>; Tue, 10 Aug 2021 00:44:08 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+ d=bytedance-com.20150623.gappssmtp.com; s=20150623;
+ h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+ :cc:content-transfer-encoding;
+ bh=elqUT9stw2J3iR2l4RxHnGypplqsV8TkYIJkIMW8hsY=;
+ b=Dw2anpOlrs9rV2RbKN404Zn18rw9HV6mvfkE8M1kGMV2Ah+OI2rfEhpzsA9qdOawIF
+ k8THbB9AABfuNY1MbNdd0AcLrxpPD246ArW/bPUC+pr03hqytJJD7OFvzo3N0q/tpZGO
+ tH48kCvdWiYFfAcIV1f5yS5oQiNePxkq4fi3pXrnB2oNtBTWdXNxRQpFSbu0OmyXCusR
+ +W05Ly+4a2nE2bv8/HwAQbH8fmJcv8+1juWLj995sdhCvh4wbwIAVnm3NRBqnxRlLOyy
+ KEmSTLyK4NbrCSV7j939f/4v7zlRHpFqgOALTvOj2N1xjrfa63r8X64WZ/4zirZ1FwSG
+ ug5Q==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
  d=1e100.net; s=20161025;
- h=x-gm-message-state:reply-to:subject:to:cc:references:from
- :message-id:date:user-agent:mime-version:in-reply-to
- :content-transfer-encoding:content-language;
- bh=MiJQ0VtQH9ot0EVFN/FpusLl8DGmShMhIr9rUyrSbi8=;
- b=dUN9qEsDnN2x1f1IvFKnvVBqKhdoe0TSflVgVq6f0wVxRxczQdMdWKQkTSyQlhnGAz
- kS29gkIYWVsyxGV7vHQoAC1SVcZAiwpzNKa2OqhI3X9oePQV+00uJXgFwppwub4LH52U
- aOMl2mYcQNm/nwNwr/iV1bF97plGU8aSdXcO5AWmueMvuHFG99un8Y5hBpE1vgF/cybe
- 0RcRU1ij86LTESAWVaTYJHKltZeuys1JsC1kvT1ZfOmuvxMgo3ytvX/kzl9IK7vdOXJ8
- dSK4WGGtI9L4HaUYmPIJtsG5tCNXaMNtHN6SuDU+DDuLu8b/bADUGj7UjR/CAbfS72BC
- yUQg==
-X-Gm-Message-State: AOAM533rl6CqG3LpRDoXwfoduB2NkK0k6zFY0TIkTYOp+dQpbMSYDT8z
- 4Vxul0fp/Gpp8fGqJtR9p5OBTpjxUYNQXiRQ3VtgOYdHSUObSMayfxwj3HDTTOr2wUzMbLWb4ch
- UuOv7g9Jn9Tr901oPDi1Ab3qwzCO9kA==
-X-Received: by 2002:adf:d1e4:: with SMTP id g4mr28689959wrd.371.1628579833737; 
- Tue, 10 Aug 2021 00:17:13 -0700 (PDT)
-X-Google-Smtp-Source: ABdhPJw2sXBFQLPATOSL8T+i3nnZsUZlnH9PbhvTEdK3n2egew9pjkW+nMrccCqe/ExhSXeo0tjD2w==
-X-Received: by 2002:adf:d1e4:: with SMTP id g4mr28689919wrd.371.1628579833497; 
- Tue, 10 Aug 2021 00:17:13 -0700 (PDT)
-Received: from ?IPv6:2a01:e0a:59e:9d80:527b:9dff:feef:3874?
- ([2a01:e0a:59e:9d80:527b:9dff:feef:3874])
- by smtp.gmail.com with ESMTPSA id z17sm22634714wrt.47.2021.08.10.00.17.11
- (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
- Tue, 10 Aug 2021 00:17:12 -0700 (PDT)
-Subject: Re: [RFC v2] /dev/iommu uAPI proposal
-To: "Tian, Kevin" <kevin.tian@intel.com>, Jason Gunthorpe <jgg@nvidia.com>,
- "Alex Williamson (alex.williamson@redhat.com)" <alex.williamson@redhat.com>,
- Jean-Philippe Brucker <jean-philippe@linaro.org>,
- David Gibson <david@gibson.dropbear.id.au>, Jason Wang
- <jasowang@redhat.com>, "parav@mellanox.com" <parav@mellanox.com>,
- "Enrico Weigelt, metux IT consult" <lkml@metux.net>,
- Paolo Bonzini <pbonzini@redhat.com>, Shenming Lu <lushenming@huawei.com>,
- Joerg Roedel <joro@8bytes.org>
-References: <BN9PR11MB5433B1E4AE5B0480369F97178C189@BN9PR11MB5433.namprd11.prod.outlook.com>
- <b83a25de-7c32-42c4-d99d-f7242cc9e2da@redhat.com>
- <BN9PR11MB5433453DED3546F5011C3BDD8CF29@BN9PR11MB5433.namprd11.prod.outlook.com>
-From: Eric Auger <eric.auger@redhat.com>
-Message-ID: <cec41751-c300-40f2-a8d6-f4916fb4a34e@redhat.com>
-Date: Tue, 10 Aug 2021 09:17:10 +0200
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
- Thunderbird/78.10.1
+ h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+ :message-id:subject:to:cc:content-transfer-encoding;
+ bh=elqUT9stw2J3iR2l4RxHnGypplqsV8TkYIJkIMW8hsY=;
+ b=SdPPAFzqLa0NqKyO2k+OZdrzGSkp2OPTlJ8mhFqjKN/BjpDDaOn8a4G3AiK/UjpS4g
+ jo/oU39V9E/Ch1//F0yTN/ED1IRQGPf9O2vKtZxhqxtAlXnr+eylEAGhuNU6ZDwOpwo7
+ nWpdc2wZe/sNr7/zX15cmeaWDX5/oi1JT71sTQ13UPLQRpyR9exruMLHhX0PkAoOm7MH
+ Isv9Yv4v5G12UmztBAYCDG+fwRNkSiwoQKFYNjXs2rzh8+qytXkFOG1t0oucXTSOsLW0
+ shloZVHzsRCbU9go/QOOnFaP0XeE2vfEkbMb9iTvJiXu3QI+mQBcsrulu8GBSqH+b5Lp
+ /bnA==
+X-Gm-Message-State: AOAM530KkoxjV57hHNbnglWEAZPRmSABJtkP/RZyjNqY7XcITJxtRD50
+ j2Er2gsNokbv+paJLv3tEaHRRRGDJ70F9kH/nva7
+X-Google-Smtp-Source: ABdhPJx/TbMGjhieQzq1YqRjJBN7a9WTaXbFyhJM7EzEX+MXvLMAXR31L8+X5gM3dqLz8GqZFLUy0w3uIoYuvmPOUqE=
+X-Received: by 2002:a17:906:8606:: with SMTP id
+ o6mr26642389ejx.247.1628581447154; 
+ Tue, 10 Aug 2021 00:44:07 -0700 (PDT)
 MIME-Version: 1.0
-In-Reply-To: <BN9PR11MB5433453DED3546F5011C3BDD8CF29@BN9PR11MB5433.namprd11.prod.outlook.com>
-Authentication-Results: relay.mimecast.com;
- auth=pass smtp.auth=CUSA124A263 smtp.mailfrom=eric.auger@redhat.com
-X-Mimecast-Spam-Score: 0
-X-Mimecast-Originator: redhat.com
-Content-Language: en-US
-Cc: "Jiang, Dave" <dave.jiang@intel.com>, "Raj, Ashok" <ashok.raj@intel.com>,
- "kvm@vger.kernel.org" <kvm@vger.kernel.org>, Jonathan Corbet <corbet@lwn.net>,
- David Woodhouse <dwmw2@infradead.org>,
- "iommu@lists.linux-foundation.org" <iommu@lists.linux-foundation.org>,
- LKML <linux-kernel@vger.kernel.org>, Kirti Wankhede <kwankhede@nvidia.com>,
- Robin Murphy <robin.murphy@arm.com>
+References: <20210729073503.187-1-xieyongji@bytedance.com>
+ <20210729073503.187-2-xieyongji@bytedance.com>
+ <43d88942-1cd3-c840-6fec-4155fd544d80@redhat.com>
+ <CACycT3vcpwyA3xjD29f1hGnYALyAd=-XcWp8+wJiwSqpqUu00w@mail.gmail.com>
+ <6e05e25e-e569-402e-d81b-8ac2cff1c0e8@arm.com>
+ <CACycT3sm2r8NMMUPy1k1PuSZZ3nM9aic-O4AhdmRRCwgmwGj4Q@mail.gmail.com>
+ <417ce5af-4deb-5319-78ce-b74fb4dd0582@arm.com>
+ <CACycT3vARzvd4-dkZhDHqUkeYoSxTa2ty0z0ivE1znGti+n1-g@mail.gmail.com>
+ <8c381d3d-9bbd-73d6-9733-0f0b15c40820@redhat.com>
+ <CACycT3steXFeg7NRbWpo2J59dpYcumzcvM2zcPJAVe40-EvvEg@mail.gmail.com>
+ <b427cf12-2ff6-e5cd-fe6a-3874d8622a29@redhat.com>
+In-Reply-To: <b427cf12-2ff6-e5cd-fe6a-3874d8622a29@redhat.com>
+From: Yongji Xie <xieyongji@bytedance.com>
+Date: Tue, 10 Aug 2021 15:43:56 +0800
+Message-ID: <CACycT3vuBdmWdu4X9wjCO0hm+O0xH2Uf0S2ZTk4O_pL2jX6Y5g@mail.gmail.com>
+Subject: Re: [PATCH v10 01/17] iova: Export alloc_iova_fast() and
+ free_iova_fast()
+To: Jason Wang <jasowang@redhat.com>, Robin Murphy <robin.murphy@arm.com>
+Cc: kvm <kvm@vger.kernel.org>, "Michael S. Tsirkin" <mst@redhat.com>,
+ virtualization <virtualization@lists.linux-foundation.org>,
+ Christian Brauner <christian.brauner@canonical.com>,
+ Jonathan Corbet <corbet@lwn.net>, Matthew Wilcox <willy@infradead.org>,
+ Christoph Hellwig <hch@infradead.org>,
+ Dan Carpenter <dan.carpenter@oracle.com>,
+ Stefano Garzarella <sgarzare@redhat.com>,
+ Liu Xiaodong <xiaodong.liu@intel.com>, linux-fsdevel@vger.kernel.org,
+ Al Viro <viro@zeniv.linux.org.uk>, Stefan Hajnoczi <stefanha@redhat.com>,
+ songmuchun@bytedance.com, Jens Axboe <axboe@kernel.dk>,
+ He Zhe <zhe.he@windriver.com>, Greg KH <gregkh@linuxfoundation.org>,
+ Randy Dunlap <rdunlap@infradead.org>,
+ linux-kernel <linux-kernel@vger.kernel.org>, iommu@lists.linux-foundation.org,
+ bcrl@kvack.org, netdev@vger.kernel.org, Joe Perches <joe@perches.com>,
+ =?UTF-8?Q?Mika_Penttil=C3=A4?= <mika.penttila@nextfour.com>
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -133,178 +123,51 @@ List-Post: <mailto:iommu@lists.linux-foundation.org>
 List-Help: <mailto:iommu-request@lists.linux-foundation.org?subject=help>
 List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
  <mailto:iommu-request@lists.linux-foundation.org?subject=subscribe>
-Reply-To: eric.auger@redhat.com
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-Hi Kevin,
-
-On 8/5/21 2:36 AM, Tian, Kevin wrote:
->> From: Eric Auger <eric.auger@redhat.com>
->> Sent: Wednesday, August 4, 2021 11:59 PM
->>
-> [...] 
->>> 1.2. Attach Device to I/O address space
->>> +++++++++++++++++++++++++++++++++++++++
->>>
->>> Device attach/bind is initiated through passthrough framework uAPI.
->>>
->>> Device attaching is allowed only after a device is successfully bound to
->>> the IOMMU fd. User should provide a device cookie when binding the
->>> device through VFIO uAPI. This cookie is used when the user queries
->>> device capability/format, issues per-device iotlb invalidation and
->>> receives per-device I/O page fault data via IOMMU fd.
->>>
->>> Successful binding puts the device into a security context which isolates
->>> its DMA from the rest system. VFIO should not allow user to access the
->> s/from the rest system/from the rest of the system
->>> device before binding is completed. Similarly, VFIO should prevent the
->>> user from unbinding the device before user access is withdrawn.
->> With Intel scalable IOV, I understand you could assign an RID/PASID to
->> one VM and another one to another VM (which is not the case for ARM). Is
->> it a targetted use case?How would it be handled? Is it related to the
->> sub-groups evoked hereafter?
-> Not related to sub-group. Each mdev is bound to the IOMMU fd respectively
-> with the defPASID which represents the mdev.
-But how does it work in term of security. The device (RID) is bound to
-an IOMMU fd. But then each SID/PASID may be working for a different VM.
-How do you detect this is safe as each SID can work safely for a
-different VM versus the ARM case where it is not possible.
-
-1.3 says
-"
-
-1)  A successful binding call for the first device in the group creates
-    the security context for the entire group, by:
-"
-What does it mean for above scalable IOV use case?
-
->
->> Actually all devices bound to an IOMMU fd should have the same parent
->> I/O address space or root address space, am I correct? If so, maybe add
->> this comment explicitly?
-> in most cases yes but it's not mandatory. multiple roots are allowed
-> (e.g. with vIOMMU but no nesting).
-OK, right, this corresponds to example 4.2 for example. I misinterpreted
-the notion of security context. The security context does not match the
-IOMMU fd but is something implicit created on 1st device binding.
->
-> [...]
->>> The device in the /dev/iommu context always refers to a physical one
->>> (pdev) which is identifiable via RID. Physically each pdev can support
->>> one default I/O address space (routed via RID) and optionally multiple
->>> non-default I/O address spaces (via RID+PASID).
->>>
->>> The device in VFIO context is a logic concept, being either a physical
->>> device (pdev) or mediated device (mdev or subdev). Each vfio device
->>> is represented by RID+cookie in IOMMU fd. User is allowed to create
->>> one default I/O address space (routed by vRID from user p.o.v) per
->>> each vfio_device.
->> The concept of default address space is not fully clear for me. I
->> currently understand this is a
->> root address space (not nesting). Is that coorect.This may need
->> clarification.
-> w/o PASID there is only one address space (either GPA or GIOVA)
-> per device. This one is called default. whether it's root is orthogonal
-> (e.g. GIOVA could be also nested) to the device view of this space.
->
-> w/ PASID additional address spaces can be targeted by the device.
-> those are called non-default.
->
-> I could also rename default to RID address space and non-default to 
-> RID+PASID address space if doing so makes it clearer.
-Yes I think it is worth having a kind of glossary and defining root as,
-default as as you clearly defined child/parent.
->
->>> VFIO decides the routing information for this default
->>> space based on device type:
->>>
->>> 1)  pdev, routed via RID;
->>>
->>> 2)  mdev/subdev with IOMMU-enforced DMA isolation, routed via
->>>     the parent's RID plus the PASID marking this mdev;
->>>
->>> 3)  a purely sw-mediated device (sw mdev), no routing required i.e. no
->>>     need to install the I/O page table in the IOMMU. sw mdev just uses
->>>     the metadata to assist its internal DMA isolation logic on top of
->>>     the parent's IOMMU page table;
->> Maybe you should introduce this concept of SW mediated device earlier
->> because it seems to special case the way the attach behaves. I am
->> especially refering to
->>
->> "Successful attaching activates an I/O address space in the IOMMU, if the
->> device is not purely software mediated"
-> makes sense.
->
->>> In addition, VFIO may allow user to create additional I/O address spaces
->>> on a vfio_device based on the hardware capability. In such case the user
->>> has its own view of the virtual routing information (vPASID) when marking
->>> these non-default address spaces.
->> I do not catch what does mean "marking these non default address space".
-> as explained above, those non-default address spaces are identified/routed
-> via PASID. 
->
->>> 1.3. Group isolation
->>> ++++++++++++++++++++
-> [...]
->>> 1)  A successful binding call for the first device in the group creates
->>>     the security context for the entire group, by:
->>>
->>>     * Verifying group viability in a similar way as VFIO does;
->>>
->>>     * Calling IOMMU-API to move the group into a block-dma state,
->>>       which makes all devices in the group attached to an block-dma
->>>       domain with an empty I/O page table;
->> this block-dma state/domain would deserve to be better defined (I know
->> you already evoked it in 1.1 with the dma mapping protocol though)
->> activates an empty I/O page table in the IOMMU (if the device is not
->> purely SW mediated)?
-> sure. some explanations are scattered in following paragraph, but I
-> can consider to further clarify it.
->
->> How does that relate to the default address space? Is it the same?
-> different. this block-dma domain doesn't hold any valid mapping. The
-> default address space is represented by a normal unmanaged domain.
-> the ioasid attaching operation will detach the device from the block-dma
-> domain and then attach it to the target ioasid.
-OK
-
-Thanks
-
-Eric
->
->>> 2. uAPI Proposal
->>> ----------------------
-> [...]
->>> /*
->>>   * Allocate an IOASID.
->>>   *
->>>   * IOASID is the FD-local software handle representing an I/O address
->>>   * space. Each IOASID is associated with a single I/O page table. User
->>>   * must call this ioctl to get an IOASID for every I/O address space that is
->>>   * intended to be tracked by the kernel.
->>>   *
->>>   * User needs to specify the attributes of the IOASID and associated
->>>   * I/O page table format information according to one or multiple devices
->>>   * which will be attached to this IOASID right after. The I/O page table
->>>   * is activated in the IOMMU when it's attached by a device. Incompatible
->> .. if not SW mediated
->>>   * format between device and IOASID will lead to attaching failure.
->>>   *
->>>   * The root IOASID should always have a kernel-managed I/O page
->>>   * table for safety. Locked page accounting is also conducted on the root.
->> The definition of root IOASID is not easily found in this spec. Maybe
->> this would deserve some clarification.
-> make sense.
->
-> and thanks for other typo-related comments.
->
-> Thanks
-> Kevin
-
-_______________________________________________
-iommu mailing list
-iommu@lists.linux-foundation.org
-https://lists.linuxfoundation.org/mailman/listinfo/iommu
+T24gVHVlLCBBdWcgMTAsIDIwMjEgYXQgMTE6MDIgQU0gSmFzb24gV2FuZyA8amFzb3dhbmdAcmVk
+aGF0LmNvbT4gd3JvdGU6Cj4KPgo+IOWcqCAyMDIxLzgvOSDkuIvljYgxOjU2LCBZb25namkgWGll
+IOWGmemBkzoKPiA+IE9uIFRodSwgQXVnIDUsIDIwMjEgYXQgOTozMSBQTSBKYXNvbiBXYW5nIDxq
+YXNvd2FuZ0ByZWRoYXQuY29tPiB3cm90ZToKPiA+Pgo+ID4+IOWcqCAyMDIxLzgvNSDkuIvljYg4
+OjM0LCBZb25namkgWGllIOWGmemBkzoKPiA+Pj4+IE15IG1haW4gcG9pbnQsIHRob3VnaCwgaXMg
+dGhhdCBpZiB5b3UndmUgYWxyZWFkeSBnb3Qgc29tZXRoaW5nIGVsc2UKPiA+Pj4+IGtlZXBpbmcg
+dHJhY2sgb2YgdGhlIGFjdHVhbCBhZGRyZXNzZXMsIHRoZW4gdGhlIHdheSB5b3UncmUgdXNpbmcg
+YW4KPiA+Pj4+IGlvdmFfZG9tYWluIGFwcGVhcnMgdG8gYmUgc29tZXRoaW5nIHlvdSBjb3VsZCBk
+byB3aXRoIGEgdHJpdmlhbCBiaXRtYXAKPiA+Pj4+IGFsbG9jYXRvci4gVGhhdCdzIHdoeSBJIGRv
+bid0IGJ1eSB0aGUgZWZmaWNpZW5jeSBhcmd1bWVudC4gVGhlIG1haW4KPiA+Pj4+IGRlc2lnbiBw
+b2ludHMgb2YgdGhlIElPVkEgYWxsb2NhdG9yIGFyZSB0byBtYW5hZ2UgbGFyZ2UgYWRkcmVzcyBz
+cGFjZXMKPiA+Pj4+IHdoaWxlIHRyeWluZyB0byBtYXhpbWlzZSBzcGF0aWFsIGxvY2FsaXR5IHRv
+IG1pbmltaXNlIHRoZSB1bmRlcmx5aW5nCj4gPj4+PiBwYWdldGFibGUgdXNhZ2UsIGFuZCBhbGxv
+Y2F0aW5nIHdpdGggYSBmbGV4aWJsZSBsaW1pdCB0byBzdXBwb3J0Cj4gPj4+PiBtdWx0aXBsZSBk
+ZXZpY2VzIHdpdGggZGlmZmVyZW50IGFkZHJlc3NpbmcgY2FwYWJpbGl0aWVzIGluIHRoZSBzYW1l
+Cj4gPj4+PiBhZGRyZXNzIHNwYWNlLiBJZiBub25lIG9mIHRob3NlIGFzcGVjdHMgYXJlIHJlbGV2
+YW50IHRvIHRoZSB1c2UtY2FzZSAtCj4gPj4+PiB3aGljaCBBRkFJQ1MgYXBwZWFycyB0byBiZSB0
+cnVlIGhlcmUgLSB0aGVuIGFzIGEgZ2VuZXJhbC1wdXJwb3NlCj4gPj4+PiByZXNvdXJjZSBhbGxv
+Y2F0b3IgaXQncyBydWJiaXNoIGFuZCBoYXMgYW4gdW5yZWFzb25hYmx5IG1hc3NpdmUgbWVtb3J5
+Cj4gPj4+PiBvdmVyaGVhZCBhbmQgdGhlcmUgYXJlIG1hbnksIG1hbnkgYmV0dGVyIGNob2ljZXMu
+Cj4gPj4+Pgo+ID4+PiBPSywgSSBnZXQgeW91ciBwb2ludC4gQWN0dWFsbHkgd2UgdXNlZCB0aGUg
+Z2VucG9vbCBhbGxvY2F0b3IgaW4gdGhlCj4gPj4+IGVhcmx5IHZlcnNpb24uIE1heWJlIHdlIGNh
+biBmYWxsIGJhY2sgdG8gdXNpbmcgaXQuCj4gPj4KPiA+PiBJIHRoaW5rIG1heWJlIHlvdSBjYW4g
+c2hhcmUgc29tZSBwZXJmIG51bWJlcnMgdG8gc2VlIGhvdyBtdWNoCj4gPj4gYWxsb2NfaW92YV9m
+YXN0KCkgY2FuIGhlbHAuCj4gPj4KPiA+IEkgZGlkIHNvbWUgZmlvIHRlc3RzWzFdIHdpdGggYSBy
+YW0tYmFja2VuZCB2ZHVzZSBibG9jayBkZXZpY2VbMl0uCj4gPgo+ID4gRm9sbG93aW5nIGFyZSBz
+b21lIHBlcmZvcm1hbmNlIGRhdGE6Cj4gPgo+ID4gICAgICAgICAgICAgICAgICAgICAgICAgICAg
+ICBudW1qb2JzPTEgICBudW1qb2JzPTIgICAgbnVtam9icz00ICAgbnVtam9icz04Cj4gPiBpb3Zh
+X2FsbG9jX2Zhc3QgICAgMTQ1ayBpb3BzICAgICAgMjY1ayBpb3BzICAgICAgNTE0ayBpb3BzICAg
+ICAgNzU4ayBpb3BzCj4gPgo+ID4gaW92YV9hbGxvYyAgICAgICAgICAgIDEzN2sgaW9wcyAgICAg
+MTcwayBpb3BzICAgICAgMTI4ayBpb3BzICAgICAgMTEzayBpb3BzCj4gPgo+ID4gZ2VuX3Bvb2xf
+YWxsb2MgICAxNDNrIGlvcHMgICAgICAyNzBrIGlvcHMgICAgICA0NThrIGlvcHMgICAgICA1MjFr
+IGlvcHMKPiA+Cj4gPiBUaGUgaW92YV9hbGxvY19mYXN0KCkgaGFzIHRoZSBiZXN0IHBlcmZvcm1h
+bmNlIHNpbmNlIHdlIGFsd2F5cyBoaXQgdGhlCj4gPiBwZXItY3B1IGNhY2hlLiBSZWdhcmRsZXNz
+IG9mIHRoZSBwZXItY3B1IGNhY2hlLCB0aGUgZ2VucG9vbCBhbGxvY2F0b3IKPiA+IHNob3VsZCBi
+ZSBiZXR0ZXIgdGhhbiB0aGUgaW92YSBhbGxvY2F0b3IuCj4KPgo+IEkgdGhpbmsgd2Ugc2VlIGNv
+bnZpbmNpbmcgbnVtYmVycyBmb3IgdXNpbmcgaW92YV9hbGxvY19mYXN0KCkgdGhhbiB0aGUKPiBn
+ZW5fcG9sbF9hbGxvYygpICg0NSUgaW1wcm92ZW1lbnQgb24gam9iPTgpLgo+CgpZZXMsIHNvIGFs
+bG9jX2lvdmFfZmFzdCgpIHN0aWxsIHNlZW1zIHRvIGJlIHRoZSBiZXN0IGNob2ljZSBiYXNlZCBv
+bgpwZXJmb3JtYW5jZSBjb25zaWRlcmF0aW9ucy4KCkhpIFJvYmluLCBhbnkgY29tbWVudHM/CgpU
+aGFua3MsCllvbmdqaQpfX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19f
+X19fXwppb21tdSBtYWlsaW5nIGxpc3QKaW9tbXVAbGlzdHMubGludXgtZm91bmRhdGlvbi5vcmcK
+aHR0cHM6Ly9saXN0cy5saW51eGZvdW5kYXRpb24ub3JnL21haWxtYW4vbGlzdGluZm8vaW9tbXU=
