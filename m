@@ -7,56 +7,56 @@ X-Spam-Status: No, score=-16.8 required=3.0 tests=BAYES_00,
 	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_GIT
 	autolearn=ham autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 10153C432BE
-	for <iommu@archiver.kernel.org>; Wed, 11 Aug 2021 12:22:07 +0000 (UTC)
-Received: from smtp2.osuosl.org (smtp2.osuosl.org [140.211.166.133])
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2AA15C432BE
+	for <iommu@archiver.kernel.org>; Wed, 11 Aug 2021 12:22:10 +0000 (UTC)
+Received: from smtp4.osuosl.org (smtp4.osuosl.org [140.211.166.137])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id C93F560FC4
-	for <iommu@archiver.kernel.org>; Wed, 11 Aug 2021 12:22:06 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.4.1 mail.kernel.org C93F560FC4
+	by mail.kernel.org (Postfix) with ESMTPS id CFB2A60FC3
+	for <iommu@archiver.kernel.org>; Wed, 11 Aug 2021 12:22:09 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.4.1 mail.kernel.org CFB2A60FC3
 Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=arm.com
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by smtp2.osuosl.org (Postfix) with ESMTP id 9AE3E404C5;
-	Wed, 11 Aug 2021 12:22:06 +0000 (UTC)
+	by smtp4.osuosl.org (Postfix) with ESMTP id A5F6340562;
+	Wed, 11 Aug 2021 12:22:09 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from smtp2.osuosl.org ([127.0.0.1])
-	by localhost (smtp2.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id H5emnHuFBmuO; Wed, 11 Aug 2021 12:22:02 +0000 (UTC)
+Received: from smtp4.osuosl.org ([127.0.0.1])
+	by localhost (smtp4.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+	with ESMTP id N6CHxDi-xwQn; Wed, 11 Aug 2021 12:22:05 +0000 (UTC)
 Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by smtp2.osuosl.org (Postfix) with ESMTPS id 5D98A404A6;
-	Wed, 11 Aug 2021 12:22:02 +0000 (UTC)
+	by smtp4.osuosl.org (Postfix) with ESMTPS id 817364056C;
+	Wed, 11 Aug 2021 12:22:05 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 38B4DC001A;
-	Wed, 11 Aug 2021 12:22:02 +0000 (UTC)
-Received: from smtp4.osuosl.org (smtp4.osuosl.org [IPv6:2605:bc80:3010::137])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 1B597C000E
- for <iommu@lists.linux-foundation.org>; Wed, 11 Aug 2021 12:22:01 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 604A0C001A;
+	Wed, 11 Aug 2021 12:22:05 +0000 (UTC)
+Received: from smtp4.osuosl.org (smtp4.osuosl.org [140.211.166.137])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 77A8EC000E
+ for <iommu@lists.linux-foundation.org>; Wed, 11 Aug 2021 12:22:03 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by smtp4.osuosl.org (Postfix) with ESMTP id F1B4740562
- for <iommu@lists.linux-foundation.org>; Wed, 11 Aug 2021 12:22:00 +0000 (UTC)
+ by smtp4.osuosl.org (Postfix) with ESMTP id 6377D40552
+ for <iommu@lists.linux-foundation.org>; Wed, 11 Aug 2021 12:22:03 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
 Received: from smtp4.osuosl.org ([127.0.0.1])
  by localhost (smtp4.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id c_ra9xLiWZRc for <iommu@lists.linux-foundation.org>;
- Wed, 11 Aug 2021 12:22:00 +0000 (UTC)
+ with ESMTP id odOym9HFFte7 for <iommu@lists.linux-foundation.org>;
+ Wed, 11 Aug 2021 12:22:02 +0000 (UTC)
 X-Greylist: domain auto-whitelisted by SQLgrey-1.8.0
 Received: from foss.arm.com (foss.arm.com [217.140.110.172])
- by smtp4.osuosl.org (Postfix) with ESMTP id 5909E4055A
- for <iommu@lists.linux-foundation.org>; Wed, 11 Aug 2021 12:22:00 +0000 (UTC)
+ by smtp4.osuosl.org (Postfix) with ESMTP id B6BF440564
+ for <iommu@lists.linux-foundation.org>; Wed, 11 Aug 2021 12:22:02 +0000 (UTC)
 Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
- by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id EB72E106F;
- Wed, 11 Aug 2021 05:21:59 -0700 (PDT)
+ by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 31A33113E;
+ Wed, 11 Aug 2021 05:22:02 -0700 (PDT)
 Received: from 010265703453.arm.com (unknown [10.57.36.146])
- by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPA id 1C5DD3F718;
- Wed, 11 Aug 2021 05:21:57 -0700 (PDT)
+ by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPA id 53E033F718;
+ Wed, 11 Aug 2021 05:22:00 -0700 (PDT)
 From: Robin Murphy <robin.murphy@arm.com>
 To: joro@8bytes.org,
 	will@kernel.org
-Subject: [PATCH v4 05/24] iommu/exynos: Drop IOVA cookie management
-Date: Wed, 11 Aug 2021 13:21:19 +0100
-Message-Id: <12d88cbf44e57faa4f0512760e7ed3a9cba05ca8.1628682048.git.robin.murphy@arm.com>
+Subject: [PATCH v4 06/24] iommu/ipmmu-vmsa: Drop IOVA cookie management
+Date: Wed, 11 Aug 2021 13:21:20 +0100
+Message-Id: <dc5513293942d81f84edf61b354b236e5ac51dc2.1628682048.git.robin.murphy@arm.com>
 X-Mailer: git-send-email 2.25.1
 In-Reply-To: <cover.1628682048.git.robin.murphy@arm.com>
 References: <cover.1628682048.git.robin.murphy@arm.com>
@@ -83,74 +83,80 @@ Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
 The core code bakes its own cookies now.
 
-Acked-by: Marek Szyprowski <m.szyprowski@samsung.com>
-Tested-by: Marek Szyprowski <m.szyprowski@samsung.com>
+Reviewed-by: Yoshihiro Shimoda <yoshihiro.shimoda.uh@renesas.com>
+Tested-by: Yoshihiro Shimoda <yoshihiro.shimoda.uh@renesas.com>
 Signed-off-by: Robin Murphy <robin.murphy@arm.com>
 
 ---
 
 v3: Also remove unneeded include
 ---
- drivers/iommu/exynos-iommu.c | 19 ++++---------------
- 1 file changed, 4 insertions(+), 15 deletions(-)
+ drivers/iommu/ipmmu-vmsa.c | 28 ++++------------------------
+ 1 file changed, 4 insertions(+), 24 deletions(-)
 
-diff --git a/drivers/iommu/exynos-iommu.c b/drivers/iommu/exynos-iommu.c
-index d0fbf1d10e18..939ffa768986 100644
---- a/drivers/iommu/exynos-iommu.c
-+++ b/drivers/iommu/exynos-iommu.c
-@@ -21,7 +21,6 @@
- #include <linux/platform_device.h>
- #include <linux/pm_runtime.h>
- #include <linux/slab.h>
+diff --git a/drivers/iommu/ipmmu-vmsa.c b/drivers/iommu/ipmmu-vmsa.c
+index 51ea6f00db2f..d38ff29a76e8 100644
+--- a/drivers/iommu/ipmmu-vmsa.c
++++ b/drivers/iommu/ipmmu-vmsa.c
+@@ -8,7 +8,6 @@
+ 
+ #include <linux/bitmap.h>
+ #include <linux/delay.h>
 -#include <linux/dma-iommu.h>
+ #include <linux/dma-mapping.h>
+ #include <linux/err.h>
+ #include <linux/export.h>
+@@ -564,10 +563,13 @@ static irqreturn_t ipmmu_irq(int irq, void *dev)
+  * IOMMU Operations
+  */
  
- typedef u32 sysmmu_iova_t;
- typedef u32 sysmmu_pte_t;
-@@ -735,20 +734,16 @@ static struct iommu_domain *exynos_iommu_domain_alloc(unsigned type)
- 	/* Check if correct PTE offsets are initialized */
- 	BUG_ON(PG_ENT_SHIFT < 0 || !dma_dev);
+-static struct iommu_domain *__ipmmu_domain_alloc(unsigned type)
++static struct iommu_domain *ipmmu_domain_alloc(unsigned type)
+ {
+ 	struct ipmmu_vmsa_domain *domain;
  
-+	if (type != IOMMU_DOMAIN_DMA && type != IOMMU_DOMAIN_UNMANAGED)
++	if (type != IOMMU_DOMAIN_UNMANAGED && type != IOMMU_DOMAIN_DMA)
 +		return NULL;
 +
  	domain = kzalloc(sizeof(*domain), GFP_KERNEL);
  	if (!domain)
  		return NULL;
+@@ -577,27 +579,6 @@ static struct iommu_domain *__ipmmu_domain_alloc(unsigned type)
+ 	return &domain->io_domain;
+ }
  
--	if (type == IOMMU_DOMAIN_DMA) {
--		if (iommu_get_dma_cookie(&domain->domain) != 0)
--			goto err_pgtable;
--	} else if (type != IOMMU_DOMAIN_UNMANAGED) {
--		goto err_pgtable;
+-static struct iommu_domain *ipmmu_domain_alloc(unsigned type)
+-{
+-	struct iommu_domain *io_domain = NULL;
+-
+-	switch (type) {
+-	case IOMMU_DOMAIN_UNMANAGED:
+-		io_domain = __ipmmu_domain_alloc(type);
+-		break;
+-
+-	case IOMMU_DOMAIN_DMA:
+-		io_domain = __ipmmu_domain_alloc(type);
+-		if (io_domain && iommu_get_dma_cookie(io_domain)) {
+-			kfree(io_domain);
+-			io_domain = NULL;
+-		}
+-		break;
 -	}
 -
- 	domain->pgtable = (sysmmu_pte_t *)__get_free_pages(GFP_KERNEL, 2);
- 	if (!domain->pgtable)
--		goto err_dma_cookie;
-+		goto err_pgtable;
- 
- 	domain->lv2entcnt = (short *)__get_free_pages(GFP_KERNEL | __GFP_ZERO, 1);
- 	if (!domain->lv2entcnt)
-@@ -779,9 +774,6 @@ static struct iommu_domain *exynos_iommu_domain_alloc(unsigned type)
- 	free_pages((unsigned long)domain->lv2entcnt, 1);
- err_counter:
- 	free_pages((unsigned long)domain->pgtable, 2);
--err_dma_cookie:
--	if (type == IOMMU_DOMAIN_DMA)
--		iommu_put_dma_cookie(&domain->domain);
- err_pgtable:
- 	kfree(domain);
- 	return NULL;
-@@ -809,9 +801,6 @@ static void exynos_iommu_domain_free(struct iommu_domain *iommu_domain)
- 
- 	spin_unlock_irqrestore(&domain->lock, flags);
- 
--	if (iommu_domain->type == IOMMU_DOMAIN_DMA)
--		iommu_put_dma_cookie(iommu_domain);
+-	return io_domain;
+-}
 -
- 	dma_unmap_single(dma_dev, virt_to_phys(domain->pgtable), LV1TABLE_SIZE,
- 			 DMA_TO_DEVICE);
- 
+ static void ipmmu_domain_free(struct iommu_domain *io_domain)
+ {
+ 	struct ipmmu_vmsa_domain *domain = to_vmsa_domain(io_domain);
+@@ -606,7 +587,6 @@ static void ipmmu_domain_free(struct iommu_domain *io_domain)
+ 	 * Free the domain resources. We assume that all devices have already
+ 	 * been detached.
+ 	 */
+-	iommu_put_dma_cookie(io_domain);
+ 	ipmmu_domain_destroy_context(domain);
+ 	free_io_pgtable_ops(domain->iop);
+ 	kfree(domain);
 -- 
 2.25.1
 
