@@ -7,62 +7,63 @@ X-Spam-Status: No, score=-16.8 required=3.0 tests=BAYES_00,
 	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_GIT
 	autolearn=ham autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 23825C43216
-	for <iommu@archiver.kernel.org>; Wed, 11 Aug 2021 12:22:18 +0000 (UTC)
-Received: from smtp2.osuosl.org (smtp2.osuosl.org [140.211.166.133])
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 762F7C4338F
+	for <iommu@archiver.kernel.org>; Wed, 11 Aug 2021 12:22:22 +0000 (UTC)
+Received: from smtp4.osuosl.org (smtp4.osuosl.org [140.211.166.137])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id D06E860FC3
-	for <iommu@archiver.kernel.org>; Wed, 11 Aug 2021 12:22:17 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.4.1 mail.kernel.org D06E860FC3
+	by mail.kernel.org (Postfix) with ESMTPS id 32A826101D
+	for <iommu@archiver.kernel.org>; Wed, 11 Aug 2021 12:22:22 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.4.1 mail.kernel.org 32A826101D
 Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=arm.com
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by smtp2.osuosl.org (Postfix) with ESMTP id A09A3404C5;
-	Wed, 11 Aug 2021 12:22:17 +0000 (UTC)
+	by smtp4.osuosl.org (Postfix) with ESMTP id 0213C4057A;
+	Wed, 11 Aug 2021 12:22:22 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from smtp2.osuosl.org ([127.0.0.1])
-	by localhost (smtp2.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id 3zlkbe2VbNAu; Wed, 11 Aug 2021 12:22:13 +0000 (UTC)
+Received: from smtp4.osuosl.org ([127.0.0.1])
+	by localhost (smtp4.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+	with ESMTP id 1_dqLah6lced; Wed, 11 Aug 2021 12:22:18 +0000 (UTC)
 Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by smtp2.osuosl.org (Postfix) with ESMTPS id 65823404B0;
-	Wed, 11 Aug 2021 12:22:13 +0000 (UTC)
+	by smtp4.osuosl.org (Postfix) with ESMTPS id CCB7F40569;
+	Wed, 11 Aug 2021 12:22:17 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 4AD67C001A;
-	Wed, 11 Aug 2021 12:22:13 +0000 (UTC)
-Received: from smtp4.osuosl.org (smtp4.osuosl.org [140.211.166.137])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 28F88C001F
- for <iommu@lists.linux-foundation.org>; Wed, 11 Aug 2021 12:22:12 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id AB881C001A;
+	Wed, 11 Aug 2021 12:22:17 +0000 (UTC)
+Received: from smtp4.osuosl.org (smtp4.osuosl.org [IPv6:2605:bc80:3010::137])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 35635C000E
+ for <iommu@lists.linux-foundation.org>; Wed, 11 Aug 2021 12:22:16 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by smtp4.osuosl.org (Postfix) with ESMTP id 08FD54056C
- for <iommu@lists.linux-foundation.org>; Wed, 11 Aug 2021 12:22:12 +0000 (UTC)
+ by smtp4.osuosl.org (Postfix) with ESMTP id 17CC440573
+ for <iommu@lists.linux-foundation.org>; Wed, 11 Aug 2021 12:22:16 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
 Received: from smtp4.osuosl.org ([127.0.0.1])
  by localhost (smtp4.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id w6XopbYHPSPo for <iommu@lists.linux-foundation.org>;
- Wed, 11 Aug 2021 12:22:11 +0000 (UTC)
+ with ESMTP id FlI6i-zNpA5p for <iommu@lists.linux-foundation.org>;
+ Wed, 11 Aug 2021 12:22:15 +0000 (UTC)
 X-Greylist: domain auto-whitelisted by SQLgrey-1.8.0
 Received: from foss.arm.com (foss.arm.com [217.140.110.172])
- by smtp4.osuosl.org (Postfix) with ESMTP id 5980E40569
- for <iommu@lists.linux-foundation.org>; Wed, 11 Aug 2021 12:22:11 +0000 (UTC)
+ by smtp4.osuosl.org (Postfix) with ESMTP id 7785A40562
+ for <iommu@lists.linux-foundation.org>; Wed, 11 Aug 2021 12:22:15 +0000 (UTC)
 Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
- by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id CBD221396;
- Wed, 11 Aug 2021 05:22:10 -0700 (PDT)
+ by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 1A051113E;
+ Wed, 11 Aug 2021 05:22:15 -0700 (PDT)
 Received: from 010265703453.arm.com (unknown [10.57.36.146])
- by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPA id F12633F718;
- Wed, 11 Aug 2021 05:22:08 -0700 (PDT)
+ by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPA id 3D6083F718;
+ Wed, 11 Aug 2021 05:22:13 -0700 (PDT)
 From: Robin Murphy <robin.murphy@arm.com>
 To: joro@8bytes.org,
 	will@kernel.org
-Subject: [PATCH v4 10/24] iommu/sun50i: Drop IOVA cookie management
-Date: Wed, 11 Aug 2021 13:21:24 +0100
-Message-Id: <147edb0ba59be563df19cec3e63e621aa65b7b68.1628682048.git.robin.murphy@arm.com>
+Subject: [PATCH v4 12/24] iommu/dma: Unexport IOVA cookie management
+Date: Wed, 11 Aug 2021 13:21:26 +0100
+Message-Id: <c7bb7e336be13933ed7e44bad97dd885eec88ace.1628682049.git.robin.murphy@arm.com>
 X-Mailer: git-send-email 2.25.1
 In-Reply-To: <cover.1628682048.git.robin.murphy@arm.com>
 References: <cover.1628682048.git.robin.murphy@arm.com>
 MIME-Version: 1.0
-Cc: linux-kernel@vger.kernel.org, Maxime Ripard <mripard@kernel.org>,
- dianders@chromium.org, iommu@lists.linux-foundation.org, rajatja@google.com,
+Cc: Jean-Philippe Brucker <jean-philippe@linaro.org>,
+ linux-kernel@vger.kernel.org, dianders@chromium.org,
+ iommu@lists.linux-foundation.org, rajatja@google.com,
  linux-arm-kernel@lists.infradead.org
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
@@ -81,66 +82,72 @@ Content-Transfer-Encoding: 7bit
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-The core code bakes its own cookies now.
+IOVA cookies are now got and put by core code, so we no longer need to
+export these to modular drivers. The export for getting MSI cookies
+stays, since VFIO can still be a module, but it was already relying on
+someone else putting them, so that aspect is unaffected.
 
-CC: Maxime Ripard <mripard@kernel.org>
+Reviewed-by: Lu Baolu <baolu.lu@linux.intel.com>
+Reviewed-by: Jean-Philippe Brucker <jean-philippe@linaro.org>
 Signed-off-by: Robin Murphy <robin.murphy@arm.com>
-
 ---
+ drivers/iommu/dma-iommu.c | 7 -------
+ drivers/iommu/iommu.c     | 3 +--
+ 2 files changed, 1 insertion(+), 9 deletions(-)
 
-v3: Also remove unneeded include
----
- drivers/iommu/sun50i-iommu.c | 13 +------------
- 1 file changed, 1 insertion(+), 12 deletions(-)
-
-diff --git a/drivers/iommu/sun50i-iommu.c b/drivers/iommu/sun50i-iommu.c
-index 181bb1c3437c..92997021e188 100644
---- a/drivers/iommu/sun50i-iommu.c
-+++ b/drivers/iommu/sun50i-iommu.c
-@@ -7,7 +7,6 @@
- #include <linux/clk.h>
- #include <linux/device.h>
- #include <linux/dma-direction.h>
--#include <linux/dma-iommu.h>
- #include <linux/dma-mapping.h>
- #include <linux/err.h>
- #include <linux/errno.h>
-@@ -610,14 +609,10 @@ static struct iommu_domain *sun50i_iommu_domain_alloc(unsigned type)
- 	if (!sun50i_domain)
- 		return NULL;
+diff --git a/drivers/iommu/dma-iommu.c b/drivers/iommu/dma-iommu.c
+index 98ba927aee1a..10067fbc4309 100644
+--- a/drivers/iommu/dma-iommu.c
++++ b/drivers/iommu/dma-iommu.c
+@@ -98,9 +98,6 @@ static struct iommu_dma_cookie *cookie_alloc(enum iommu_dma_cookie_type type)
+ /**
+  * iommu_get_dma_cookie - Acquire DMA-API resources for a domain
+  * @domain: IOMMU domain to prepare for DMA-API usage
+- *
+- * IOMMU drivers should normally call this from their domain_alloc
+- * callback when domain->type == IOMMU_DOMAIN_DMA.
+  */
+ int iommu_get_dma_cookie(struct iommu_domain *domain)
+ {
+@@ -113,7 +110,6 @@ int iommu_get_dma_cookie(struct iommu_domain *domain)
  
--	if (type == IOMMU_DOMAIN_DMA &&
--	    iommu_get_dma_cookie(&sun50i_domain->domain))
--		goto err_free_domain;
--
- 	sun50i_domain->dt = (u32 *)__get_free_pages(GFP_KERNEL | __GFP_ZERO,
- 						    get_order(DT_SIZE));
- 	if (!sun50i_domain->dt)
--		goto err_put_cookie;
-+		goto err_free_domain;
- 
- 	refcount_set(&sun50i_domain->refcnt, 1);
- 
-@@ -627,10 +622,6 @@ static struct iommu_domain *sun50i_iommu_domain_alloc(unsigned type)
- 
- 	return &sun50i_domain->domain;
- 
--err_put_cookie:
--	if (type == IOMMU_DOMAIN_DMA)
--		iommu_put_dma_cookie(&sun50i_domain->domain);
--
- err_free_domain:
- 	kfree(sun50i_domain);
- 
-@@ -644,8 +635,6 @@ static void sun50i_iommu_domain_free(struct iommu_domain *domain)
- 	free_pages((unsigned long)sun50i_domain->dt, get_order(DT_SIZE));
- 	sun50i_domain->dt = NULL;
- 
--	iommu_put_dma_cookie(domain);
--
- 	kfree(sun50i_domain);
+ 	return 0;
  }
+-EXPORT_SYMBOL(iommu_get_dma_cookie);
  
+ /**
+  * iommu_get_msi_cookie - Acquire just MSI remapping resources
+@@ -151,8 +147,6 @@ EXPORT_SYMBOL(iommu_get_msi_cookie);
+  * iommu_put_dma_cookie - Release a domain's DMA mapping resources
+  * @domain: IOMMU domain previously prepared by iommu_get_dma_cookie() or
+  *          iommu_get_msi_cookie()
+- *
+- * IOMMU drivers should normally call this from their domain_free callback.
+  */
+ void iommu_put_dma_cookie(struct iommu_domain *domain)
+ {
+@@ -172,7 +166,6 @@ void iommu_put_dma_cookie(struct iommu_domain *domain)
+ 	kfree(cookie);
+ 	domain->iova_cookie = NULL;
+ }
+-EXPORT_SYMBOL(iommu_put_dma_cookie);
+ 
+ /**
+  * iommu_dma_get_resv_regions - Reserved region driver helper
+diff --git a/drivers/iommu/iommu.c b/drivers/iommu/iommu.c
+index b65fcc66ffa4..fa8109369f74 100644
+--- a/drivers/iommu/iommu.c
++++ b/drivers/iommu/iommu.c
+@@ -1947,8 +1947,7 @@ static struct iommu_domain *__iommu_domain_alloc(struct bus_type *bus,
+ 	/* Assume all sizes by default; the driver may override this later */
+ 	domain->pgsize_bitmap  = bus->iommu_ops->pgsize_bitmap;
+ 
+-	/* Temporarily avoid -EEXIST while drivers still get their own cookies */
+-	if (type == IOMMU_DOMAIN_DMA && !domain->iova_cookie && iommu_get_dma_cookie(domain)) {
++	if (type == IOMMU_DOMAIN_DMA && iommu_get_dma_cookie(domain)) {
+ 		iommu_domain_free(domain);
+ 		domain = NULL;
+ 	}
 -- 
 2.25.1
 
