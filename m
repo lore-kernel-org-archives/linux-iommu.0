@@ -1,116 +1,89 @@
-Return-Path: <SRS0=mUms=NC=lists.linux-foundation.org=iommu-bounces@kernel.org>
+Return-Path: <SRS0=jPbF=ND=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-8.6 required=3.0 tests=BAYES_00,DKIM_INVALID,
-	DKIM_SIGNED,HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,
-	SPF_HELO_NONE,SPF_PASS autolearn=unavailable autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-13.6 required=3.0 tests=BAYES_00,DKIM_INVALID,
+	DKIM_SIGNED,HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_CR_TRAILER,INCLUDES_PATCH,
+	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED autolearn=unavailable
+	autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4F062C4338F
-	for <iommu@archiver.kernel.org>; Wed, 11 Aug 2021 20:20:59 +0000 (UTC)
-Received: from smtp3.osuosl.org (smtp3.osuosl.org [140.211.166.136])
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9DF67C4338F
+	for <iommu@archiver.kernel.org>; Thu, 12 Aug 2021 01:45:49 +0000 (UTC)
+Received: from smtp4.osuosl.org (smtp4.osuosl.org [140.211.166.137])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id CC1C36104F
-	for <iommu@archiver.kernel.org>; Wed, 11 Aug 2021 20:20:58 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.4.1 mail.kernel.org CC1C36104F
-Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=lists.linux-foundation.org
+	by mail.kernel.org (Postfix) with ESMTPS id 2B78960231
+	for <iommu@archiver.kernel.org>; Thu, 12 Aug 2021 01:45:49 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.4.1 mail.kernel.org 2B78960231
+Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=chromium.org
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by smtp3.osuosl.org (Postfix) with ESMTP id 92DA060798;
-	Wed, 11 Aug 2021 20:20:58 +0000 (UTC)
+	by smtp4.osuosl.org (Postfix) with ESMTP id D57F4405FB;
+	Thu, 12 Aug 2021 01:45:48 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from smtp3.osuosl.org ([127.0.0.1])
-	by localhost (smtp3.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id pzmmkOcU1HnS; Wed, 11 Aug 2021 20:20:54 +0000 (UTC)
-Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by smtp3.osuosl.org (Postfix) with ESMTPS id 33F0F6072F;
-	Wed, 11 Aug 2021 20:20:54 +0000 (UTC)
-Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 0C23AC001A;
-	Wed, 11 Aug 2021 20:20:54 +0000 (UTC)
-Received: from smtp4.osuosl.org (smtp4.osuosl.org [IPv6:2605:bc80:3010::137])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 002C2C000E
- for <iommu@lists.linux-foundation.org>; Wed, 11 Aug 2021 20:20:52 +0000 (UTC)
-Received: from localhost (localhost [127.0.0.1])
- by smtp4.osuosl.org (Postfix) with ESMTP id D038140502
- for <iommu@lists.linux-foundation.org>; Wed, 11 Aug 2021 20:20:52 +0000 (UTC)
-X-Virus-Scanned: amavisd-new at osuosl.org
-Authentication-Results: smtp4.osuosl.org (amavisd-new);
- dkim=pass (2048-bit key) header.d=svenpeter.dev header.b="b64xL5cJ";
- dkim=pass (2048-bit key) header.d=messagingengine.com
- header.b="FF5wqQcI"
 Received: from smtp4.osuosl.org ([127.0.0.1])
- by localhost (smtp4.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id Wt47LmLCJzoy for <iommu@lists.linux-foundation.org>;
- Wed, 11 Aug 2021 20:20:48 +0000 (UTC)
-X-Greylist: from auto-whitelisted by SQLgrey-1.8.0
-Received: from out1-smtp.messagingengine.com (out1-smtp.messagingengine.com
- [66.111.4.25])
- by smtp4.osuosl.org (Postfix) with ESMTPS id 558F54048C
- for <iommu@lists.linux-foundation.org>; Wed, 11 Aug 2021 20:20:48 +0000 (UTC)
-Received: from compute1.internal (compute1.nyi.internal [10.202.2.41])
- by mailout.nyi.internal (Postfix) with ESMTP id 2154C5C010B;
- Wed, 11 Aug 2021 16:20:47 -0400 (EDT)
-Received: from imap21 ([10.202.2.71])
- by compute1.internal (MEProxy); Wed, 11 Aug 2021 16:20:47 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=svenpeter.dev;
- h=mime-version:message-id:in-reply-to:references:date:from:to
- :cc:subject:content-type; s=fm2; bh=7fkPLfKbxa0wqLdybdh/2UwMGYWz
- xlG6ejMw/dsNXA8=; b=b64xL5cJEbMyETJPKEuIv/c0I5VUqYrLOWWxhOB7Y50d
- 0nWdjRvYWPmmB0fQzjZvZLYsMMIPa8znN950HlcZ8B5pi1XmRaN/zE+tFAdmHMyU
- Xq3Ux/Bx5gRvdzOksoDaZuM8BwfWIPhY2GFtiVgFW7xh89vqB/xS4fy5D3kgnfTC
- UWAK9WlfeGqGU2XNnwVHk1HD9T6OBFizl9Qv7bFDXx9e5sV/wYuT7JQDy+YHptbE
- X/lR0S1gJAX+RXajd6VyrRLhzP79jCcsUJ1YMb6LAQqmP5cG7v7WtxDz94MqoaFS
- L1r+NIUYqc4fII1LewIMFuMe2bBz8/vAdOCQuSlRqg==
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
- messagingengine.com; h=cc:content-type:date:from:in-reply-to
- :message-id:mime-version:references:subject:to:x-me-proxy
- :x-me-proxy:x-me-sender:x-me-sender:x-sasl-enc; s=fm3; bh=7fkPLf
- Kbxa0wqLdybdh/2UwMGYWzxlG6ejMw/dsNXA8=; b=FF5wqQcIrKApBju5rQgaU7
- 0edML8se30kYJsySEZZ87j46ObiGFnRzygXNRLP6gVA90f7lZg3GVOmwLSOIQlRu
- jvoIlznlI03ytfK/kCAQbB5AgZ+elfFHb+QymbpmUqdIXlM341Vu0+meyYK+Rlq3
- rFK9z/YivuT4hriAJv5+4Me9/lMtPdHp9cETzbVdT+1rJGWioGQmkD3BbaMezJT0
- 8PMkh8ONSLCJQBLXD602XzG22wpnY72vvL92HkCo+sW1rFT7duWgSzbYlpVhNfnH
- UIJzqnzBIhvPJS4JN4x2uGuhDNapBbHuaOnyxQmxb8CvdZsKIEI6gGM9yBcN1Lnw
- ==
-X-ME-Sender: <xms:HTEUYYlsll1W9rHzc5NNLoPtmatzsTRwQF1nYOzA7wmbzvMQ6WQBng>
- <xme:HTEUYX1o0SIK22yEjgmtOUGDviHZ_3e3fBRCNiz1pwr4cAaFpLmh7cX3aD5qQQ5rw
- LTD4vQO965qla9nNNk>
-X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgedvtddrkedugddugeejucetufdoteggodetrfdotf
- fvucfrrhhofhhilhgvmecuhfgrshhtofgrihhlpdfqfgfvpdfurfetoffkrfgpnffqhgen
- uceurghilhhouhhtmecufedttdenucesvcftvggtihhpihgvnhhtshculddquddttddmne
- cujfgurhepofgfggfkjghffffhvffutgesthdtredtreerjeenucfhrhhomhepfdfuvhgv
- nhcurfgvthgvrhdfuceoshhvvghnsehsvhgvnhhpvghtvghrrdguvghvqeenucggtffrrg
- htthgvrhhnpeehjefgtddtfeelfeetjeeifeduueehleektdegtdejheeiteeuleehuefh
- geehgeenucevlhhushhtvghrufhiiigvpedtnecurfgrrhgrmhepmhgrihhlfhhrohhmpe
- hsvhgvnhesshhvvghnphgvthgvrhdruggvvh
-X-ME-Proxy: <xmx:HTEUYWojpqdY3hOcCqlqIx00enxUGVM2LWUmdR9VkRhRwNnnFlih3A>
- <xmx:HTEUYUm8KXyp7cc4Qxup3rG-4YxNA7YLH7tSnlrQzCwGNxo44P_j6Q>
- <xmx:HTEUYW2FfnoT0iAaz4pwZdUQOUjEsy0HNs8586MYvsF1mCwwjkq7tg>
- <xmx:HzEUYS_Lh86PqaZHvI5j6HmZp-OYmdhdzDvJW0JMJ7olK2FiTSoMIw>
-Received: by mailuser.nyi.internal (Postfix, from userid 501)
- id 3A46251C0060; Wed, 11 Aug 2021 16:20:45 -0400 (EDT)
-X-Mailer: MessagingEngine.com Webmail Interface
-User-Agent: Cyrus-JMAP/3.5.0-alpha0-554-g53a5f93b7d-fm-20210809.002-g53a5f93b
-Mime-Version: 1.0
-Message-Id: <7b6cf00c-86ea-43c4-861f-f1cc32d5852d@www.fastmail.com>
-In-Reply-To: <a721f8e3-4c1d-afb2-3ae2-eb1360e1eaca@arm.com>
-References: <20210806155523.50429-1-sven@svenpeter.dev>
- <20210806155523.50429-3-sven@svenpeter.dev>
- <d289a555-9e3b-b948-1883-2ee4c915da4c@arm.com>
- <dadbd8b0-171a-4008-8a2e-f68abfed9285@www.fastmail.com>
- <5002ed91-416c-d7ee-b1ab-a50c590749c2@arm.com>
- <cf78f795-1e75-45c9-a759-018f17cfaed9@www.fastmail.com>
- <a721f8e3-4c1d-afb2-3ae2-eb1360e1eaca@arm.com>
-Date: Wed, 11 Aug 2021 22:18:32 +0200
-To: "Robin Murphy" <robin.murphy@arm.com>, iommu@lists.linux-foundation.org
-Subject: =?UTF-8?Q?Re:_[RFC_PATCH_2/3]_iommu/dma-iommu:_Support_iovad->granule_>_?=
- =?UTF-8?Q?PAGE=5FSIZE?=
-Cc: Arnd Bergmann <arnd@kernel.org>, Hector Martin <marcan@marcan.st>,
- linux-kernel@vger.kernel.org, Alexander Graf <graf@amazon.com>,
- Mohamed Mediouni <mohamed.mediouni@caramail.com>,
- Will Deacon <will@kernel.org>
+	by localhost (smtp4.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+	with ESMTP id 7W0tIherYRE9; Thu, 12 Aug 2021 01:45:44 +0000 (UTC)
+Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
+	by smtp4.osuosl.org (Postfix) with ESMTPS id 677D9405F7;
+	Thu, 12 Aug 2021 01:45:44 +0000 (UTC)
+Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 252C5C0010;
+	Thu, 12 Aug 2021 01:45:44 +0000 (UTC)
+Received: from smtp3.osuosl.org (smtp3.osuosl.org [140.211.166.136])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id D5A92C000E
+ for <iommu@lists.linux-foundation.org>; Thu, 12 Aug 2021 01:45:42 +0000 (UTC)
+Received: from localhost (localhost [127.0.0.1])
+ by smtp3.osuosl.org (Postfix) with ESMTP id B1DF160A48
+ for <iommu@lists.linux-foundation.org>; Thu, 12 Aug 2021 01:45:42 +0000 (UTC)
+X-Virus-Scanned: amavisd-new at osuosl.org
+Authentication-Results: smtp3.osuosl.org (amavisd-new);
+ dkim=pass (1024-bit key) header.d=chromium.org
+Received: from smtp3.osuosl.org ([127.0.0.1])
+ by localhost (smtp3.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+ with ESMTP id K3i6t-lfF0s7 for <iommu@lists.linux-foundation.org>;
+ Thu, 12 Aug 2021 01:45:38 +0000 (UTC)
+X-Greylist: whitelisted by SQLgrey-1.8.0
+Received: from mail-qk1-x735.google.com (mail-qk1-x735.google.com
+ [IPv6:2607:f8b0:4864:20::735])
+ by smtp3.osuosl.org (Postfix) with ESMTPS id 94D0B608AA
+ for <iommu@lists.linux-foundation.org>; Thu, 12 Aug 2021 01:45:38 +0000 (UTC)
+Received: by mail-qk1-x735.google.com with SMTP id az7so4755507qkb.5
+ for <iommu@lists.linux-foundation.org>; Wed, 11 Aug 2021 18:45:38 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=chromium.org; s=google;
+ h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+ :cc; bh=sVlaR7t/R94hd0zmYZq3g+CzewEHmfZEE8FNG6b25iA=;
+ b=nTPBIgSR1+DYRuTz126NpJG3MGlML74YM1Le2P962yisyrtzCnff17kwv/c5kyI7i5
+ k83aktakoC1RDga4lJ6tpulebc9ZSC51LDDl2Zq3S3sHSaqssdBI/jblrsHMO7MDGXNF
+ /nSk5dmIM+FwBtSIrNcRk0EI7SZSD1NCSYxz4=
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+ d=1e100.net; s=20161025;
+ h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+ :message-id:subject:to:cc;
+ bh=sVlaR7t/R94hd0zmYZq3g+CzewEHmfZEE8FNG6b25iA=;
+ b=skWODZsKXxwu+irUz69byBLyRMbeMR0KVSqsEnEOScBc7OU+f25QBAy8YON4kcKYLF
+ S3r5eo07FUd0GKTmr8lqNq0JDXZCTIEQ6U8B3d6BDMWE98/nPFk/Dx8wd4xWhoOE+8/T
+ vaatb2SS4pGldOUl1rwz1Ee5TRsuS9lupmdtYyFmrF1tzaJyRDCO1hd4jOPyg9S1Jl6A
+ rYmICdX3fWVz1vUmcZ7tbPNmLMOnNSLCD8WRWamYuiuEa7vlzVIrcfjOz/ZiNXiqOCrn
+ CEWRempTfzX61JsMmgHXX++tw6O1pm3wC2LUrMJRdEg3MAR9pcFO/FjniHjWZzwgeiWF
+ FPnQ==
+X-Gm-Message-State: AOAM533e2BfFM8mv8CyGz/7Lyw7OVIixBi1paOyTuQDTClk/VsHzOuqw
+ MX3+qXz+agfeQ/Tg2sAzHsfdtrFGUq7A+gzmLpyL6Q==
+X-Google-Smtp-Source: ABdhPJwC6Y9w83pWVs6KCrJupE+hkSFvjIO2mfTRLAyBQ2KctEfzgqHFI5pSOZvgZ0DFQfcOgMhPzyLR0BQnU31+3lE=
+X-Received: by 2002:a37:8505:: with SMTP id h5mr2116592qkd.241.1628732737520; 
+ Wed, 11 Aug 2021 18:45:37 -0700 (PDT)
+MIME-Version: 1.0
+References: <20210811024247.1144246-1-stevensd@google.com>
+ <20210811024247.1144246-6-stevensd@google.com>
+ <b5fff839-3242-7080-13f7-61c0e40af304@arm.com>
+In-Reply-To: <b5fff839-3242-7080-13f7-61c0e40af304@arm.com>
+From: David Stevens <stevensd@chromium.org>
+Date: Thu, 12 Aug 2021 10:45:26 +0900
+Message-ID: <CAD=HUj7u71cdPfJ5t2tC8A26YOgwDe8H7i-h78f_MeRmuNUySQ@mail.gmail.com>
+Subject: Re: [PATCH v3 5/5] dma-iommu: account for min_align_mask
+To: Robin Murphy <robin.murphy@arm.com>
+Cc: open list <linux-kernel@vger.kernel.org>, Tom Murphy <murphyt7@tcd.ie>,
+ iommu@lists.linux-foundation.org, Will Deacon <will@kernel.org>
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -123,163 +96,115 @@ List-Post: <mailto:iommu@lists.linux-foundation.org>
 List-Help: <mailto:iommu-request@lists.linux-foundation.org?subject=help>
 List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
  <mailto:iommu-request@lists.linux-foundation.org?subject=subscribe>
-From: Sven Peter via iommu <iommu@lists.linux-foundation.org>
-Reply-To: Sven Peter <sven@svenpeter.dev>
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
+On Thu, Aug 12, 2021 at 4:12 AM Robin Murphy <robin.murphy@arm.com> wrote:
+>
+> On 2021-08-11 03:42, David Stevens wrote:
+> > From: David Stevens <stevensd@chromium.org>
+> >
+> > For devices which set min_align_mask, swiotlb preserves the offset of
+> > the original physical address within that mask. Since __iommu_dma_map
+> > accounts for non-aligned addresses, passing a non-aligned swiotlb
+> > address with the swiotlb aligned size results in the offset being
+> > accounted for twice in the size passed to iommu_map_atomic. The extra
+> > page exposed to DMA is also not cleaned up by __iommu_dma_unmap, since
+> > tht at function unmaps with the correct size. This causes mapping failures
+> > if the iova gets reused, due to collisions in the iommu page tables.
+> >
+> > To fix this, pass the original size to __iommu_dma_map, since that
+> > function already handles alignment.
+> >
+> > Additionally, when swiotlb returns non-aligned addresses, there is
+> > padding at the start of the bounce buffer that needs to be cleared.
+> >
+> > Fixes: 1f221a0d0dbf ("swiotlb: respect min_align_mask")
+> > Signed-off-by: David Stevens <stevensd@chromium.org>
+> > ---
+> >   drivers/iommu/dma-iommu.c | 23 ++++++++++++-----------
+> >   1 file changed, 12 insertions(+), 11 deletions(-)
+> >
+> > diff --git a/drivers/iommu/dma-iommu.c b/drivers/iommu/dma-iommu.c
+> > index 89b689bf801f..ffa7e8ef5db4 100644
+> > --- a/drivers/iommu/dma-iommu.c
+> > +++ b/drivers/iommu/dma-iommu.c
+> > @@ -549,9 +549,8 @@ static dma_addr_t __iommu_dma_map_swiotlb(struct device *dev, phys_addr_t phys,
+> >       struct iommu_domain *domain = iommu_get_dma_domain(dev);
+> >       struct iommu_dma_cookie *cookie = domain->iova_cookie;
+> >       struct iova_domain *iovad = &cookie->iovad;
+> > -     size_t aligned_size = org_size;
+> > -     void *padding_start;
+> > -     size_t padding_size;
+> > +     void *tlb_start;
+> > +     size_t aligned_size, iova_off, mapping_end_off;
+> >       dma_addr_t iova;
+> >
+> >       /*
+> > @@ -566,24 +565,26 @@ static dma_addr_t __iommu_dma_map_swiotlb(struct device *dev, phys_addr_t phys,
+> >               if (phys == DMA_MAPPING_ERROR)
+> >                       return DMA_MAPPING_ERROR;
+> >
+> > -             /* Cleanup the padding area. */
+> > -             padding_start = phys_to_virt(phys);
+> > -             padding_size = aligned_size;
+> > +             iova_off = iova_offset(iovad, phys);
+> > +             tlb_start = phys_to_virt(phys - iova_off);
+> >
+> > +             /* Cleanup the padding area. */
+> >               if (!(attrs & DMA_ATTR_SKIP_CPU_SYNC) &&
+> >                   (dir == DMA_TO_DEVICE ||
+> >                    dir == DMA_BIDIRECTIONAL)) {
+> > -                     padding_start += org_size;
+> > -                     padding_size -= org_size;
+> > +                     mapping_end_off = iova_off + org_size;
+> > +                     memset(tlb_start, 0, iova_off);
+> > +                     memset(tlb_start + mapping_end_off, 0,
+> > +                            aligned_size - mapping_end_off);
+> > +             } else {
+> > +                     memset(tlb_start, 0, aligned_size);
+> >               }
+> > -
+> > -             memset(padding_start, 0, padding_size);
+> >       }
+> >
+> >       if (!coherent && !(attrs & DMA_ATTR_SKIP_CPU_SYNC))
+> >               arch_sync_dma_for_device(phys, org_size, dir);
+> >
+> > -     iova = __iommu_dma_map(dev, phys, aligned_size, prot, dma_mask);
+> > +     iova = __iommu_dma_map(dev, phys, org_size, prot, dma_mask);
+>
+> This doesn't feel right - what if the IOVA granule was equal to or
+> smaller than min_align_mask, wouldn't you potentially end up mapping the
+> padding rather than the data?
 
+The phys value returned by swiotlb_tbl_map_single is the address of
+the start of the data in the swiotlb buffer, so the range that needs
+to be mapped is [phys, phys + org_size). __iommu_dma_map will handle
+this the same as it handles a misaligned mapping in the non-swiotlb
+case. It might map memory before/after the desired range, but it will
+map the entire range and iova will be the mapped address of phys. Is
+there something I'm missing there?
 
-On Tue, Aug 10, 2021, at 11:51, Robin Murphy wrote:
-> On 2021-08-09 21:45, Sven Peter wrote:
-> > 
-> > 
-> > On Mon, Aug 9, 2021, at 19:41, Robin Murphy wrote:
-> >> On 2021-08-07 12:47, Sven Peter via iommu wrote:
-> >>>
-> >>>
-> >>> On Fri, Aug 6, 2021, at 20:04, Robin Murphy wrote:
-> >>>> On 2021-08-06 16:55, Sven Peter via iommu wrote:
-> >>>>> @@ -1006,6 +1019,31 @@ static int iommu_dma_map_sg(struct device *dev, struct scatterlist *sg,
-> >>>>>     	if (dev_is_untrusted(dev))
-> >>>>>     		return iommu_dma_map_sg_swiotlb(dev, sg, nents, dir, attrs);
-> >>>>>     
-> >>>>> +	/*
-> >>>>> +	 * If the IOMMU pagesize is larger than the CPU pagesize we will
-> >>>>> +	 * very likely run into sgs with a physical address that is not aligned
-> >>>>> +	 * to an IOMMU page boundary. Fall back to just mapping every entry
-> >>>>> +	 * independently with __iommu_dma_map then.
-> >>>>
-> >>>> Scatterlist segments often don't have nicely aligned ends, which is why
-> >>>> we already align things to IOVA granules in main loop here. I think in
-> >>>> principle we'd just need to move the non-IOVA-aligned part of the
-> >>>> address from sg->page to sg->offset in the temporary transformation for
-> >>>> the rest of the assumptions to hold. I don't blame you for being timid
-> >>>> about touching that, though - it took me 3 tries to get right when I
-> >>>> first wrote it...
-> >>>>
-> >>>
-> >>>
-> >>> I've spent some time with that code now and I think we cannot use it
-> >>> but have to fall back to iommu_dma_map_sg_swiotlb (even though that swiotlb
-> >>> part is a lie then):
-> >>>
-> >>> When we have sg_phys(s) = 0x802e65000 with s->offset = 0 the paddr
-> >>> is aligned to PAGE_SIZE but has an offset of 0x1000 from something
-> >>> the IOMMU can map.
-> >>> Now this would result in s->offset = -0x1000 which is already weird
-> >>> enough.
-> >>> Offset is unsigned (and 32bit) so this will actually look like
-> >>> s->offset = 0xfffff000 then, which isn't much better.
-> >>> And then sg_phys(s) = 0x902e64000 (instead of 0x802e64000) and
-> >>> we'll map some random memory in iommu_map_sg_atomic and a little bit later
-> >>> everything explodes.
-> >>>
-> >>> Now I could probably adjust the phys addr backwards and make sure offset is
-> >>> always positive (and possibly larger than PAGE_SIZE) and later restore it
-> >>> in __finalise_sg then but I feel like that's pushing this a little bit too far.
-> >>
-> >> Yes, that's what I meant. At a quick guess, something like the
-> >> completely untested diff below.
-> > 
-> > That unfortunately results in unaligned mappings
-> 
-> You mean it even compiles!? :D
+That said, considering that memory before phys might be mapped, I
+think there is actually still a bug. The buffer allocated by swiotlb
+needs to be aligned to the granule size to ensure that preceding
+swiotlb slots aren't mapped. The swiotlb does align allocations larger
+than a page to PAGE_SIZE, but if IO_TLB_SIZE < IOVA granule <
+PAGE_SIZE, then there can be problems. That can't happen if PAGE_SIZE
+is 4k, but it can for larger page sizes. I'll add a fix for that to
+the next version of this series.
 
-I was more impressed that it already almost worked correctly :)
+-David
 
-> 
-> > [    9.630334] iommu: unaligned: iova 0xbff40000 pa 0x0000000801a3b000 size 0x4000 min_pagesz 0x4000
-> > 
-> > I'll take a closer look later this week and see if I can fix it.
-> 
-> On reflection, "s->offset ^ s_iova_off" is definitely wrong, that more 
-> likely wants to be "s->offset & ~s_iova_off".
-> 
 > Robin.
-> 
-
-
-If I change
-
-		sg_set_page(s, phys_to_page(sg_phys(s)), s_length,
-			    s_iova_off & ~PAGE_MASK);
-
-in __finalise_sg (and the same thing in __invalidate_sg) to
-
-		sg_set_page(s, phys_to_page(sg_phys(s) + s_iova_off), s_length,
-			    s_iova_off & ~PAGE_MASK);
-
-then it also restores the original fields correctly.
-
-
-What is the proper way to credit you for coming up with this?
-Do you create the commit and I apply it to my local tree and
-include it in my submission once I have fixed the other
-issues? Or do I create the commit and put a Suggested-by
-in the message?
-
-
-Either way, here's the patch that I have right now:
-
-diff --git a/drivers/iommu/dma-iommu.c b/drivers/iommu/dma-iommu.c
-index 7ce74476699d..ba31dc59566d 100644
---- a/drivers/iommu/dma-iommu.c
-+++ b/drivers/iommu/dma-iommu.c
-@@ -907,8 +907,8 @@ static int __finalise_sg(struct device *dev, struct scatterlist *sg, int nents,
- 		unsigned int s_length = sg_dma_len(s);
- 		unsigned int s_iova_len = s->length;
-
--		s->offset += s_iova_off;
--		s->length = s_length;
-+		sg_set_page(s, phys_to_page(sg_phys(s) + s_iova_off), s_length,
-+			    s_iova_off & ~PAGE_MASK);
- 		sg_dma_address(s) = DMA_MAPPING_ERROR;
- 		sg_dma_len(s) = 0;
-
-@@ -952,10 +952,11 @@ static void __invalidate_sg(struct scatterlist *sg, int nents)
- 	int i;
-
- 	for_each_sg(sg, s, nents, i) {
--		if (sg_dma_address(s) != DMA_MAPPING_ERROR)
--			s->offset += sg_dma_address(s);
- 		if (sg_dma_len(s))
--			s->length = sg_dma_len(s);
-+			sg_set_page(s,
-+				    phys_to_page(sg_phys(s) + sg_dma_address(s)),
-+				    sg_dma_len(s),
-+				    sg_dma_address(s) & ~PAGE_MASK);
- 		sg_dma_address(s) = DMA_MAPPING_ERROR;
- 		sg_dma_len(s) = 0;
- 	}
-@@ -1031,15 +1032,16 @@ static int iommu_dma_map_sg(struct device *dev, struct scatterlist *sg,
- 	 * stashing the unaligned parts in the as-yet-unused DMA fields.
- 	 */
- 	for_each_sg(sg, s, nents, i) {
--		size_t s_iova_off = iova_offset(iovad, s->offset);
-+		phys_addr_t s_phys = sg_phys(s);
-+		size_t s_iova_off = iova_offset(iovad, s_phys);
- 		size_t s_length = s->length;
- 		size_t pad_len = (mask - iova_len + 1) & mask;
-
- 		sg_dma_address(s) = s_iova_off;
- 		sg_dma_len(s) = s_length;
--		s->offset -= s_iova_off;
- 		s_length = iova_align(iovad, s_length + s_iova_off);
--		s->length = s_length;
-+		sg_set_page(s, phys_to_page(s_phys - s_iova_off),
-+			    s_length, s->offset & ~s_iova_off);
-
- 		/*
- 		 * Due to the alignment of our single IOVA allocation, we can
-
-
-
-
-
-Sven
+>
+> >       if (iova == DMA_MAPPING_ERROR && is_swiotlb_buffer(phys))
+> >               swiotlb_tbl_unmap_single(dev, phys, org_size, dir, attrs);
+> >       return iova;
+> >
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
