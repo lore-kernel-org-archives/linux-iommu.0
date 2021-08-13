@@ -6,69 +6,74 @@ X-Spam-Status: No, score=-11.8 required=3.0 tests=BAYES_00,DKIM_INVALID,
 	DKIM_SIGNED,MAILING_LIST_MULTI,MENTIONS_GIT_HOSTING,SPF_HELO_NONE,SPF_PASS,
 	URIBL_BLOCKED,USER_AGENT_GIT autolearn=ham autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 10A70C432BE
-	for <iommu@archiver.kernel.org>; Fri, 13 Aug 2021 14:34:06 +0000 (UTC)
-Received: from smtp1.osuosl.org (smtp1.osuosl.org [140.211.166.138])
+	by smtp.lore.kernel.org (Postfix) with ESMTP id DDDCDC4338F
+	for <iommu@archiver.kernel.org>; Fri, 13 Aug 2021 14:34:12 +0000 (UTC)
+Received: from smtp3.osuosl.org (smtp3.osuosl.org [140.211.166.136])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id A9255610E9
-	for <iommu@archiver.kernel.org>; Fri, 13 Aug 2021 14:34:05 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.4.1 mail.kernel.org A9255610E9
+	by mail.kernel.org (Postfix) with ESMTPS id 86EDB610A5
+	for <iommu@archiver.kernel.org>; Fri, 13 Aug 2021 14:34:12 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.4.1 mail.kernel.org 86EDB610A5
 Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=kernel.org
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by smtp1.osuosl.org (Postfix) with ESMTP id 6CE8F80ED5;
-	Fri, 13 Aug 2021 14:34:05 +0000 (UTC)
+	by smtp3.osuosl.org (Postfix) with ESMTP id 5270D60BCE;
+	Fri, 13 Aug 2021 14:34:12 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from smtp1.osuosl.org ([127.0.0.1])
-	by localhost (smtp1.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id IPpCyP0Y4piJ; Fri, 13 Aug 2021 14:34:02 +0000 (UTC)
+Received: from smtp3.osuosl.org ([127.0.0.1])
+	by localhost (smtp3.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+	with ESMTP id ibp-iRnhHetz; Fri, 13 Aug 2021 14:34:08 +0000 (UTC)
 Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by smtp1.osuosl.org (Postfix) with ESMTPS id 5AC7180ED4;
-	Fri, 13 Aug 2021 14:34:02 +0000 (UTC)
+	by smtp3.osuosl.org (Postfix) with ESMTPS id E8F8660B85;
+	Fri, 13 Aug 2021 14:34:07 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 2F3EAC001D;
-	Fri, 13 Aug 2021 14:34:02 +0000 (UTC)
-Received: from smtp1.osuosl.org (smtp1.osuosl.org [IPv6:2605:bc80:3010::138])
- by lists.linuxfoundation.org (Postfix) with ESMTP id E2BC8C000E
- for <iommu@lists.linux-foundation.org>; Fri, 13 Aug 2021 14:34:00 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 7A4E5C001A;
+	Fri, 13 Aug 2021 14:34:07 +0000 (UTC)
+Received: from smtp2.osuosl.org (smtp2.osuosl.org [140.211.166.133])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 3C15EC000E
+ for <iommu@lists.linux-foundation.org>; Fri, 13 Aug 2021 14:34:06 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by smtp1.osuosl.org (Postfix) with ESMTP id 2BA0680ED5
- for <iommu@lists.linux-foundation.org>; Fri, 13 Aug 2021 14:33:59 +0000 (UTC)
+ by smtp2.osuosl.org (Postfix) with ESMTP id 178874022C
+ for <iommu@lists.linux-foundation.org>; Fri, 13 Aug 2021 14:34:02 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from smtp1.osuosl.org ([127.0.0.1])
- by localhost (smtp1.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id AwmgyjCFTITC for <iommu@lists.linux-foundation.org>;
- Fri, 13 Aug 2021 14:33:55 +0000 (UTC)
+Authentication-Results: smtp2.osuosl.org (amavisd-new);
+ dkim=pass (2048-bit key) header.d=kernel.org
+Received: from smtp2.osuosl.org ([127.0.0.1])
+ by localhost (smtp2.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+ with ESMTP id 9QqtUEnl40K3 for <iommu@lists.linux-foundation.org>;
+ Fri, 13 Aug 2021 14:33:58 +0000 (UTC)
 X-Greylist: domain auto-whitelisted by SQLgrey-1.8.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
- by smtp1.osuosl.org (Postfix) with ESMTPS id 491E380ED4
- for <iommu@lists.linux-foundation.org>; Fri, 13 Aug 2021 14:33:55 +0000 (UTC)
-Received: by mail.kernel.org (Postfix) with ESMTPSA id 07B9E6103A;
- Fri, 13 Aug 2021 14:33:52 +0000 (UTC)
+ by smtp2.osuosl.org (Postfix) with ESMTPS id 2040140FD7
+ for <iommu@lists.linux-foundation.org>; Fri, 13 Aug 2021 14:33:58 +0000 (UTC)
+Received: by mail.kernel.org (Postfix) with ESMTPSA id 55089610A4;
+ Fri, 13 Aug 2021 14:33:55 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
- s=k20201202; t=1628865234;
- bh=d0BeRz2Oi17JZJ39SH5fmnNP/U0hTjWRV5pfhm+LWBQ=;
+ s=k20201202; t=1628865237;
+ bh=ta8Xk+nMxYGH0aHGwqur4BcQECkIcU85CR4uMIR+1pc=;
  h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
- b=XkwS8opmptLBwTpvdVUX6Ijyab8gX6A0LxK/5hNHqEGkP0pi1uxRXtVzDS2JwVmzm
- A3tr0cMkJJW8BEr6GPEydxX+z52qoJyYxahcF4lel1vBUfJUrfKvBe4S/fd6INAIX3
- YreruVZt8SqimHw2UMUkXqO8tq3wlCqtZtDosybi0rmU8RZb4D2dzd6aeF9+xP7bix
- U0q0y7NV9A+GrirhXoMlAPhqksYjzPjELzZS/rNtmi4W2I+ohx30EisbFgGQr4l3dE
- 0QHliUBIzMNTX/saBqeYAKNBtEaNi28oInJNOke32t7D7sUs5CW4SuC0rbB1HFfMLc
- mZ5bjW/5xpXiA==
+ b=V71wdBIdMy4DFh8y6KkFUnIHxYrs6ERK3+SNWp3pZqZCaMUoj//bnkta+lzG8/MPT
+ IuTVrku1jE7a92RzUJ3mrMen7NZWUxp5klnZCOdhdQ6GjsIzG/mZxZvoxo359APOOd
+ R8avxgbnPIHRG1enDH7M+9tgFZ4OrArHVHQm0mUYBpqj5CTHuHoa/vJeD/E4uA/XQd
+ hd9NTYHg1iBNsyYATFHz6LbKczAlUCmgZxBb2Z8jVpUlVFUypHfRjbvIWAj1Gc2t21
+ mkEBsvyxc/qcWSMFjiPMFPDg535ifpaIn7GDKHB22kEffYrQ7fAHBADeZKMp9QSGPk
+ rE3amI/COsAMw==
 From: Will Deacon <will@kernel.org>
-To: robin.murphy@arm.com,
-	John Garry <john.garry@huawei.com>
-Subject: Re: [PATCH] iommu/arm-smmu-v3: Stop pre-zeroing batch commands
-Date: Fri, 13 Aug 2021 15:33:47 +0100
-Message-Id: <162886116698.2824022.16783624022186581694.b4-ty@kernel.org>
+To: Sai Prakash Ranjan <saiprakash.ranjan@codeaurora.org>,
+ Joerg Roedel <joro@8bytes.org>, Robin Murphy <robin.murphy@arm.com>
+Subject: Re: [PATCHv5] iommu/arm-smmu: Optimize ->tlb_flush_walk() for qcom
+ implementation
+Date: Fri, 13 Aug 2021 15:33:48 +0100
+Message-Id: <162886044327.2821414.7990736519109651727.b4-ty@kernel.org>
 X-Mailer: git-send-email 2.20.1
-In-Reply-To: <1628696966-88386-1-git-send-email-john.garry@huawei.com>
-References: <1628696966-88386-1-git-send-email-john.garry@huawei.com>
+In-Reply-To: <20210811160426.10312-1-saiprakash.ranjan@codeaurora.org>
+References: <20210811160426.10312-1-saiprakash.ranjan@codeaurora.org>
 MIME-Version: 1.0
-Cc: Will Deacon <will@kernel.org>, catalin.marinas@arm.com, linuxarm@huawei.com,
+Cc: Thierry Reding <treding@nvidia.com>, Doug Anderson <dianders@chromium.org>,
+ Will Deacon <will@kernel.org>, catalin.marinas@arm.com,
  linux-kernel@vger.kernel.org, iommu@lists.linux-foundation.org,
- kernel-team@android.com, linux-arm-kernel@lists.infradead.org
+ linux-arm-msm@vger.kernel.org, kernel-team@android.com,
+ linux-arm-kernel@lists.infradead.org
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -86,23 +91,24 @@ Content-Transfer-Encoding: 7bit
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-On Wed, 11 Aug 2021 23:49:26 +0800, John Garry wrote:
-> Pre-zeroing the batched commands structure is inefficient, as individual
-> commands are zeroed later in arm_smmu_cmdq_build_cmd(). The size is quite
-> large and commonly most commands won't even be used:
+On Wed, 11 Aug 2021 21:34:26 +0530, Sai Prakash Ranjan wrote:
+> Currently for iommu_unmap() of large scatter-gather list with page size
+> elements, the majority of time is spent in flushing of partial walks in
+> __arm_lpae_unmap() which is a VA based TLB invalidation invalidating
+> page-by-page on iommus like arm-smmu-v2 (TLBIVA).
 > 
-> 	struct arm_smmu_cmdq_batch cmds = {};
-> 345c:	52800001 	mov	w1, #0x0                   	// #0
-> 3460:	d2808102 	mov	x2, #0x408                 	// #1032
-> 3464:	910143a0 	add	x0, x29, #0x50
-> 3468:	94000000 	bl	0 <memset>
+> For example: to unmap a 32MB scatter-gather list with page size elements
+> (8192 entries), there are 16->2MB buffer unmaps based on the pgsize (2MB
+> for 4K granule) and each of 2MB will further result in 512 TLBIVAs (2MB/4K)
+> resulting in a total of 8192 TLBIVAs (512*16) for 16->2MB causing a huge
+> overhead.
 > 
 > [...]
 
 Applied to will (for-joerg/arm-smmu/updates), thanks!
 
-[1/1] iommu/arm-smmu-v3: Stop pre-zeroing batch commands
-      https://git.kernel.org/will/c/fac956710ab0
+[1/1] iommu/arm-smmu: Optimize ->tlb_flush_walk() for qcom implementation
+      https://git.kernel.org/will/c/ef75702d6d65
 
 Cheers,
 -- 
