@@ -2,186 +2,173 @@ Return-Path: <SRS0=SLGw=NE=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-13.5 required=3.0 tests=BAYES_00,DKIM_INVALID,
-	DKIM_SIGNED,HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_CR_TRAILER,INCLUDES_PATCH,
-	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED autolearn=ham
-	autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-5.0 required=3.0 tests=BAYES_00,DKIM_INVALID,
+	DKIM_SIGNED,HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,
+	MSGID_FROM_MTA_HEADER,NICE_REPLY_A,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,
+	USER_AGENT_SANE_1 autolearn=no autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 440C0C432BE
-	for <iommu@archiver.kernel.org>; Fri, 13 Aug 2021 19:31:24 +0000 (UTC)
-Received: from smtp3.osuosl.org (smtp3.osuosl.org [140.211.166.136])
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B6643C4338F
+	for <iommu@archiver.kernel.org>; Fri, 13 Aug 2021 20:17:31 +0000 (UTC)
+Received: from smtp2.osuosl.org (smtp2.osuosl.org [140.211.166.133])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id D24F261038
-	for <iommu@archiver.kernel.org>; Fri, 13 Aug 2021 19:31:23 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.4.1 mail.kernel.org D24F261038
+	by mail.kernel.org (Postfix) with ESMTPS id 53B60610EA
+	for <iommu@archiver.kernel.org>; Fri, 13 Aug 2021 20:17:31 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.4.1 mail.kernel.org 53B60610EA
 Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=lists.linux-foundation.org
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by smtp3.osuosl.org (Postfix) with ESMTP id 9370560611;
-	Fri, 13 Aug 2021 19:31:23 +0000 (UTC)
+	by smtp2.osuosl.org (Postfix) with ESMTP id E1CF840377;
+	Fri, 13 Aug 2021 20:17:30 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from smtp3.osuosl.org ([127.0.0.1])
-	by localhost (smtp3.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id N6ov63NrJzFj; Fri, 13 Aug 2021 19:31:19 +0000 (UTC)
-Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [IPv6:2605:bc80:3010:104::8cd3:938])
-	by smtp3.osuosl.org (Postfix) with ESMTPS id 670BC60605;
-	Fri, 13 Aug 2021 19:31:19 +0000 (UTC)
-Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 41644C0010;
-	Fri, 13 Aug 2021 19:31:19 +0000 (UTC)
-Received: from smtp2.osuosl.org (smtp2.osuosl.org [IPv6:2605:bc80:3010::133])
- by lists.linuxfoundation.org (Postfix) with ESMTP id C9BA6C000E
- for <iommu@lists.linux-foundation.org>; Fri, 13 Aug 2021 19:31:17 +0000 (UTC)
-Received: from localhost (localhost [127.0.0.1])
- by smtp2.osuosl.org (Postfix) with ESMTP id B5DC9401FE
- for <iommu@lists.linux-foundation.org>; Fri, 13 Aug 2021 19:31:17 +0000 (UTC)
-X-Virus-Scanned: amavisd-new at osuosl.org
-Authentication-Results: smtp2.osuosl.org (amavisd-new);
- dkim=pass (1024-bit key) header.d=microsoft.com
 Received: from smtp2.osuosl.org ([127.0.0.1])
- by localhost (smtp2.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id dMjmHGBLIQGo for <iommu@lists.linux-foundation.org>;
- Fri, 13 Aug 2021 19:31:15 +0000 (UTC)
+	by localhost (smtp2.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+	with ESMTP id nCAYXNgEc2bg; Fri, 13 Aug 2021 20:17:26 +0000 (UTC)
+Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [IPv6:2605:bc80:3010:104::8cd3:938])
+	by smtp2.osuosl.org (Postfix) with ESMTPS id 75876400FF;
+	Fri, 13 Aug 2021 20:17:26 +0000 (UTC)
+Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 4A515C001A;
+	Fri, 13 Aug 2021 20:17:26 +0000 (UTC)
+Received: from smtp4.osuosl.org (smtp4.osuosl.org [140.211.166.137])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id BCC7CC000E
+ for <iommu@lists.linux-foundation.org>; Fri, 13 Aug 2021 20:17:24 +0000 (UTC)
+Received: from localhost (localhost [127.0.0.1])
+ by smtp4.osuosl.org (Postfix) with ESMTP id ABC084074C
+ for <iommu@lists.linux-foundation.org>; Fri, 13 Aug 2021 20:17:24 +0000 (UTC)
+X-Virus-Scanned: amavisd-new at osuosl.org
+Authentication-Results: smtp4.osuosl.org (amavisd-new);
+ dkim=pass (1024-bit key) header.d=amd.com
+Received: from smtp4.osuosl.org ([127.0.0.1])
+ by localhost (smtp4.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+ with ESMTP id mbrNH5nsLd1E for <iommu@lists.linux-foundation.org>;
+ Fri, 13 Aug 2021 20:17:20 +0000 (UTC)
 X-Greylist: whitelisted by SQLgrey-1.8.0
-Received: from NAM12-BN8-obe.outbound.protection.outlook.com
- (mail-bn8nam12on2098.outbound.protection.outlook.com [40.107.237.98])
- by smtp2.osuosl.org (Postfix) with ESMTPS id B0DA94039A
- for <iommu@lists.linux-foundation.org>; Fri, 13 Aug 2021 19:31:13 +0000 (UTC)
+Received: from NAM12-MW2-obe.outbound.protection.outlook.com
+ (mail-mw2nam12on2088.outbound.protection.outlook.com [40.107.244.88])
+ by smtp4.osuosl.org (Postfix) with ESMTPS id 9FBCC40745
+ for <iommu@lists.linux-foundation.org>; Fri, 13 Aug 2021 20:17:20 +0000 (UTC)
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=AWJaxu7GN/aPdLTUyfcdv0QLmIrTYqv+39q25mOaftFC871Uw5hfnAhJ73nmycc9XgqmfWTT6hBlowNq0hXI1mFSx3BpAybLzcNlsJ9fLY0o4FcguiHex29ThrsbyBsGyTVhAwTi0dhgxFAlLsl+N2ctElm1hURE7icy0LmLdubOSoElRKlM2FkhYps4sn24b9soLm9oSTp4tA2rGjDEaxRMSp5fg/C3pRUCaOpduiaUzO8zPdfe4vHEYPIAGl9xA72dt14MV4VphItHg8tpGpTmTR54Y9oByrMj6lR9r8zp+lBmsuZu/3+5b4VsDpuM9nbIOaVptIyoKvPRlwkTvg==
+ b=WGw0U9FkgKp4hxsvcFdS+Z7DUF2Um0cW04RoIpgi//zy5IZ39Kz1fCX2rVhK9AfVPCzIZx/VN+/c0vKLjcELXtCeqlZEkPZhhS2XiAfPgWhgMPuEdvIhHN7rBVvbCQams9QlvgTp5FsR8jCKuu39Gtbgm0OZ+Qn86bPCokiEi4UDBO+eeCQ7XyeWjdlfMm4hv3airl6E+yaPDId+2s512TtyQbjafNM0Gx3IYB4zzGH0ejWseKFeD1hF5InIjfRLO3d/akqNGHR0KClTwfFZljax2IYs8nKrhO2BbTW5mosq8j6ZERwGi2ni9faElRKE+XquZXbgcBbdvP+h87A36Q==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com; 
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=N0OFrDlirRTgp9grW+dRUWAvCttNe5zyD+0jp89Tm7Q=;
- b=N2FNKod0G56kPAkXBdf1a3Lv3VUDRLEv/kCEjxJCTnES3Kie3PGV0+sj1wcFEo+928Me2WLQxvnl/XF90nP0x78Oh+bDdmLgOM4Wr6iPtj6ZuMi+PKnrOJhZCkic5VI5ALkJN/SLAlrar1khW+fVpWVneDKn5lXmBmecNp+0BlwR+gF8o66CA3f7XG0AiNVy9/spwIfQBUdl94JdQwhXJMCNEyYf6NVuO0XJ0z2WBMb+6DkLIJ6dE0w0Cu0Cdto8wkgoSvUGTHztl/pTa11NyzOgSYEbZllEu30JPAu0HGbERqppH3low+B/DOFG6cQCAk7CVFNypCjvFab6JJybxQ==
+ bh=DpwOvDM3GnwNTNcL815T+RSOydEG+h+3oDIg9dnFcc8=;
+ b=EMLZ5P4NMpgY2QIUrBxnmxGsz5hDMG67hy4Mog8GvtOJgYyqUItuz59aeYyBFPlRSns5aRKJYaYuB3r4WULP65T9OWtOv0RdVSGJu0Icg+VGxcNNUCgbMZFTV5Uairek2h2CXjpfoW01HVKZlpw3q+v1wM6g42M2n7dbFRJFxyWX+84zq9k25c7lFC0po7sv/rVgzcUxwaLNRYDAgcB61bcpPj46NVIOv6g5OLvE+va68vyZ8p1ex93HYhmoQhFd2O3SSzsJQZf/jjzLOe85x3iisIzBrCByNHjGXWr4CYrcpUHLMJmnaVZvTfqUucinEUcYywOo3H00deM7niXn4w==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=microsoft.com; dmarc=pass action=none
- header.from=microsoft.com; dkim=pass header.d=microsoft.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=selector2;
+ smtp.mailfrom=amd.com; dmarc=pass action=none header.from=amd.com; dkim=pass
+ header.d=amd.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=amd.com; s=selector1; 
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=N0OFrDlirRTgp9grW+dRUWAvCttNe5zyD+0jp89Tm7Q=;
- b=KwbGXdQwTCOmZxRDGn7Gow/4xF+KmYW2DShhUuxCbSmbYydr7gUnLrN7/4lp+khyPcHKiaUVg4h+0QL5MNh1v9PwXgD3tdYFt7eh6RLFzhxoWZgPvW+CNh/e6J+QiV4ZBexdSov4LHs6MzNlwrPtjeI1waSl/ul+bbZuwkkyI2A=
-Received: from MWHPR21MB1593.namprd21.prod.outlook.com (2603:10b6:301:7c::11)
- by MW4PR21MB1953.namprd21.prod.outlook.com (2603:10b6:303:74::9) with
+ bh=DpwOvDM3GnwNTNcL815T+RSOydEG+h+3oDIg9dnFcc8=;
+ b=MyTmwlzgKeBu9Kr9AdaSE1zoak8QxWlRT/g45sd8A3BxVuycfnUWDTtSlbv7kbm+wPD+NOE8KuxfMaVbm1BHq28hmB5OTiCq1m8BAT98u8NbbFWus7koWMgW2ellOLwPUjgB57RbR3+znK3BrbrvmdTSLWxPBzjHKCg3KahE5E4=
+Authentication-Results: redhat.com; dkim=none (message not signed)
+ header.d=none;redhat.com; dmarc=none action=none header.from=amd.com;
+Received: from DM4PR12MB5229.namprd12.prod.outlook.com (2603:10b6:5:398::12)
+ by DM4PR12MB5056.namprd12.prod.outlook.com (2603:10b6:5:38b::15) with
  Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4415.5; Fri, 13 Aug
- 2021 19:31:08 +0000
-Received: from MWHPR21MB1593.namprd21.prod.outlook.com
- ([fe80::e8f7:b582:9e2d:ba55]) by MWHPR21MB1593.namprd21.prod.outlook.com
- ([fe80::e8f7:b582:9e2d:ba55%2]) with mapi id 15.20.4436.012; Fri, 13 Aug 2021
- 19:31:08 +0000
-To: Tianyu Lan <ltykernel@gmail.com>, KY Srinivasan <kys@microsoft.com>,
- Haiyang Zhang <haiyangz@microsoft.com>, Stephen Hemminger
- <sthemmin@microsoft.com>, "wei.liu@kernel.org" <wei.liu@kernel.org>, Dexuan
- Cui <decui@microsoft.com>, "tglx@linutronix.de" <tglx@linutronix.de>,
- "mingo@redhat.com" <mingo@redhat.com>, "bp@alien8.de" <bp@alien8.de>,
- "x86@kernel.org" <x86@kernel.org>, "hpa@zytor.com" <hpa@zytor.com>,
- "dave.hansen@linux.intel.com" <dave.hansen@linux.intel.com>,
- "luto@kernel.org" <luto@kernel.org>, "peterz@infradead.org"
- <peterz@infradead.org>, "konrad.wilk@oracle.com" <konrad.wilk@oracle.com>,
- "boris.ostrovsky@oracle.com" <boris.ostrovsky@oracle.com>, "jgross@suse.com"
- <jgross@suse.com>, "sstabellini@kernel.org" <sstabellini@kernel.org>,
- "joro@8bytes.org" <joro@8bytes.org>, "will@kernel.org" <will@kernel.org>,
- "davem@davemloft.net" <davem@davemloft.net>, "kuba@kernel.org"
- <kuba@kernel.org>, "jejb@linux.ibm.com" <jejb@linux.ibm.com>,
- "martin.petersen@oracle.com" <martin.petersen@oracle.com>, "arnd@arndb.de"
- <arnd@arndb.de>, "hch@lst.de" <hch@lst.de>, "m.szyprowski@samsung.com"
- <m.szyprowski@samsung.com>, "robin.murphy@arm.com" <robin.murphy@arm.com>,
- "thomas.lendacky@amd.com" <thomas.lendacky@amd.com>, "brijesh.singh@amd.com"
- <brijesh.singh@amd.com>, "ardb@kernel.org" <ardb@kernel.org>, Tianyu Lan
- <Tianyu.Lan@microsoft.com>, "pgonda@google.com" <pgonda@google.com>,
- "martin.b.radev@gmail.com" <martin.b.radev@gmail.com>,
- "akpm@linux-foundation.org" <akpm@linux-foundation.org>,
- "kirill.shutemov@linux.intel.com" <kirill.shutemov@linux.intel.com>,
- "rppt@kernel.org" <rppt@kernel.org>, "sfr@canb.auug.org.au"
- <sfr@canb.auug.org.au>, "saravanand@fb.com" <saravanand@fb.com>,
- "krish.sadhukhan@oracle.com" <krish.sadhukhan@oracle.com>,
- "aneesh.kumar@linux.ibm.com" <aneesh.kumar@linux.ibm.com>,
- "xen-devel@lists.xenproject.org" <xen-devel@lists.xenproject.org>,
- "rientjes@google.com" <rientjes@google.com>, "hannes@cmpxchg.org"
- <hannes@cmpxchg.org>, "tj@kernel.org" <tj@kernel.org>
-Subject: RE: [PATCH V3 05/13] HV: Add Write/Read MSR registers via ghcb page
-Thread-Topic: [PATCH V3 05/13] HV: Add Write/Read MSR registers via ghcb page
-Thread-Index: AQHXjUfuQqXPk5/9iUqTH41i8so9wqtxzWQQ
-Date: Fri, 13 Aug 2021 19:31:08 +0000
-Message-ID: <MWHPR21MB15931FEC5CE9383B385C263CD7FA9@MWHPR21MB1593.namprd21.prod.outlook.com>
-References: <20210809175620.720923-1-ltykernel@gmail.com>
- <20210809175620.720923-6-ltykernel@gmail.com>
-In-Reply-To: <20210809175620.720923-6-ltykernel@gmail.com>
-Accept-Language: en-US
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4415.16; Fri, 13 Aug
+ 2021 20:17:17 +0000
+Received: from DM4PR12MB5229.namprd12.prod.outlook.com
+ ([fe80::d560:d21:cd59:9418]) by DM4PR12MB5229.namprd12.prod.outlook.com
+ ([fe80::d560:d21:cd59:9418%6]) with mapi id 15.20.4415.019; Fri, 13 Aug 2021
+ 20:17:17 +0000
+Subject: Re: [PATCH 07/11] treewide: Replace the use of mem_encrypt_active()
+ with prot_guest_has()
+To: "Kirill A. Shutemov" <kirill@shutemov.name>
+References: <cover.1627424773.git.thomas.lendacky@amd.com>
+ <029791b24c6412f9427cfe6ec598156c64395964.1627424774.git.thomas.lendacky@amd.com>
+ <166f30d8-9abb-02de-70d8-6e97f44f85df@linux.intel.com>
+ <4b885c52-f70a-147e-86bd-c71a8f4ef564@amd.com>
+ <20210811121917.ghxi7g4mctuybhbk@box.shutemov.name>
+ <0a819549-e481-c004-7da8-82ba427b13ce@amd.com>
+ <20210812100724.t4cdh7xbkuqgnsc3@box.shutemov.name>
+ <943223d5-5949-6aba-8a49-0b07078d68e1@amd.com>
+Message-ID: <f6399958-d161-fd58-fac7-9b849bc4f05e@amd.com>
+Date: Fri, 13 Aug 2021 15:17:12 -0500
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
+ Thunderbird/78.11.0
+In-Reply-To: <943223d5-5949-6aba-8a49-0b07078d68e1@amd.com>
 Content-Language: en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-msip_labels: MSIP_Label_f42aa342-8706-4288-bd11-ebb85995028c_ActionId=d2377fda-39f2-4403-a606-910723ff0f1f;
- MSIP_Label_f42aa342-8706-4288-bd11-ebb85995028c_ContentBits=0;
- MSIP_Label_f42aa342-8706-4288-bd11-ebb85995028c_Enabled=true;
- MSIP_Label_f42aa342-8706-4288-bd11-ebb85995028c_Method=Standard;
- MSIP_Label_f42aa342-8706-4288-bd11-ebb85995028c_Name=Internal;
- MSIP_Label_f42aa342-8706-4288-bd11-ebb85995028c_SetDate=2021-08-13T18:49:42Z;
- MSIP_Label_f42aa342-8706-4288-bd11-ebb85995028c_SiteId=72f988bf-86f1-41af-91ab-2d7cd011db47;
-authentication-results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=microsoft.com;
-x-ms-publictraffictype: Email
-x-ms-office365-filtering-correlation-id: 97c79cf5-55d5-4806-cd45-08d95e90e664
-x-ms-traffictypediagnostic: MW4PR21MB1953:
-x-ms-exchange-transport-forked: True
-x-ld-processed: 72f988bf-86f1-41af-91ab-2d7cd011db47,ExtAddr
-x-microsoft-antispam-prvs: <MW4PR21MB19538DE1BA94379EA16F46EDD7FA9@MW4PR21MB1953.namprd21.prod.outlook.com>
-x-ms-oob-tlc-oobclassifiers: OLM:178;
-x-ms-exchange-senderadcheck: 1
-x-ms-exchange-antispam-relay: 0
-x-microsoft-antispam: BCL:0;
-x-microsoft-antispam-message-info: au52+EnZex4BLaEiMHMz8gya0QDg6AFZdlPDEkEzVIO8FzH2G4fo0Hna6OO6LC3DcejPIsYTdr/99E0r3nXTlDCXAWhD96eNapCkaYQxklMDIi0035FEB8liUBQwNXzLwwOxlUO4mICsoY/Sq/h6u9XuGYaCG9ff3WAu4SOxS8c5YIiof/T9jc/7BZObsDvlmig5D/r9ek8fHbZk8JlGgSrYtF6jm5N13KM9TMz/PVjV18g/xmgs4UF/gccjSK3Y9Fcz4pPtX8MeYYWgfwoR9jSxPQAzyu0HUmCxXKnZ8okh3n1zkEM3YFL0Ry5BHTEmqce1NfHK/8rg8pKEVeB5oi/1W9Lvr8/JRe6VktUSK8arhCmubs+WUJZpihqHbPND54lAg/x5mBKA12wsHAmi9nqs5HHS6YJ0XXl6IWmB/PY+DMgPEasQterTtWqQz3nnPCmQaubzA2OlmRjoFeR7u8LT+BAv6tl6jTxTWCDhIsDRINVibP/A657f/RH/tq89DnosZwM/iWmnCLJqxcQi3IPNDM3W94zmet9KAedAIaepKXHOWbw2yTw3DW7dZPlfmisT74oc+DRba91Cq7FBJK3rIGqQlVqeO41lCJXG1Wy6Bm3+Miu/uBXrbsnMYLvmSYF6cGTGqWtPYOAOXMLLRyqv+vKO/Yqm9C/rERXdQae0xxYUoiYYpGZ7Qz0GY1hWkzQMj/rGeouNCXNlkBgbH6r77NpVlD5Z//AkdUVfETQ=
-x-forefront-antispam-report: CIP:255.255.255.255; CTRY:; LANG:en; SCL:1; SRV:;
- IPV:NLI; SFV:NSPM; H:MWHPR21MB1593.namprd21.prod.outlook.com; PTR:; CAT:NONE;
- SFS:(4636009)(366004)(2906002)(66476007)(52536014)(8676002)(76116006)(26005)(38100700002)(66556008)(186003)(55016002)(921005)(64756008)(66446008)(53546011)(7696005)(9686003)(38070700005)(6506007)(122000001)(7416002)(83380400001)(33656002)(54906003)(5660300002)(7406005)(316002)(110136005)(4326008)(8990500004)(8936002)(71200400001)(66946007)(10290500003)(508600001)(82950400001)(82960400001)(86362001)(30864003)(559001)(579004);
- DIR:OUT; SFP:1102; 
-x-ms-exchange-antispam-messagedata-chunkcount: 1
-x-ms-exchange-antispam-messagedata-0: =?us-ascii?Q?KgmMrBmhTIw7tuG8WTTrU2Djnik1N5qdqROFwWn5B+iHe752lBv+yoKtVIPb?=
- =?us-ascii?Q?j+EmofG2ZOpTWI7kFZmcVs+liJuFkBeWiyXYMYYXdzluzfOCKlRMF7dh9jQg?=
- =?us-ascii?Q?bZMQR453XTNGkWk4SKdo6D+ad5FTUQkDDYuHpLd6CZBVASX6tKIdlhmwEMwF?=
- =?us-ascii?Q?kgru1mZfXN3P6tiyq5faVMZn+JwtwGAviknvZp1on7A/aCU0FQXOobdz3HS3?=
- =?us-ascii?Q?rBl2PAp2L0ZBfrQqdfNCe0NbQUOCI39HhB4zkZWEVggK2Rrl2vcnaiRf8WL2?=
- =?us-ascii?Q?03qcnwI1xVW2FaoWgQa414wc7HzItC4zn0anR0RhdgHRjIClFyBKLNy9ufBA?=
- =?us-ascii?Q?kS/Lf1xC1huHDwd8ZgVxXOOUnedchRsDk6cww/74C67hyPMsKD6g08VIzOHn?=
- =?us-ascii?Q?PX5H6o2TpcvremviXYB39MieEQ9VyM8o7qLPnbSPnIE9aO5Z57JalJ6WNyDf?=
- =?us-ascii?Q?AVejdzN7ki+I0ZHfuQpeN3L53sI+FJnU4mvJnc8J9h6FG1m5N2Bk8Fvh6m8j?=
- =?us-ascii?Q?mSfQF4Vj35M1vgYsDdx42mEugEVrQ0N6cSbBMcTs5bEc21K25cTlkP7im8dA?=
- =?us-ascii?Q?HSXoOYtcCAVeyZS7X0MTsvXk+TP0BiyqXLsPCua1QEzxYpxML16nQIYo7XZv?=
- =?us-ascii?Q?az1od99pZtEbPSIKmsOL2KDKOmw09oW9+QdG6NrONK9uU0C9MFdHdwPkzaqe?=
- =?us-ascii?Q?M+I+33LneXPKftOvGlUMTbJ5lXqf4t96y2JeBVbnMo9joePORoglBzj4VSNj?=
- =?us-ascii?Q?RuQEuu2sduaFsbDS3EdeQhICKwqS4dgcEtGKkspbvB63gV5/KGYRLtWHiS83?=
- =?us-ascii?Q?lILCG/E+YJli/nvSLrc3uh7AGlDaXgUBNU+Vv07uGKEgLamGK1quiTp4xx40?=
- =?us-ascii?Q?0vqOg/S8UC2k23n7Jmxyt82V/YvUz4Hc7FRvf+fsPm23ze1gUqW0/bsC2A/t?=
- =?us-ascii?Q?n8vJHUTxn3aixOnmhE5lJJPFg3+wuhad5z3O2lHammMFm6AeUW00vbHMKj5G?=
- =?us-ascii?Q?v93OhhSJDjdae3Rrw5odsCI6NP23AyzScZCoOamfultTRgnfbYPfpLrlMeXT?=
- =?us-ascii?Q?zw7p56ZPa4ojpePwKEk5k49U56WXSITK0xFQU0qaeGhPhMW7RzfyyK6jpgUZ?=
- =?us-ascii?Q?jq24RP9XXnsuqiAs2nQKhbQbNzDycTrCnOovRmuWVOz9gEWOsMobzgAIClrW?=
- =?us-ascii?Q?IMvv2r+rZ91ryqnrtwSDSbm2Bq0cvBk+ih/mLQED12ugMF2IKrKp19ib19U0?=
- =?us-ascii?Q?1MfiZ0Lw4J3UIf7q6WhPmtuuyFv5Mkfc8GERjGctOnfrVbpVOxoaJA50w+6j?=
- =?us-ascii?Q?a1fsOLYUoyL4Zn44P2Y0Qg26?=
+X-ClientProxiedBy: SA9PR13CA0015.namprd13.prod.outlook.com
+ (2603:10b6:806:21::20) To DM4PR12MB5229.namprd12.prod.outlook.com
+ (2603:10b6:5:398::12)
 MIME-Version: 1.0
-X-OriginatorOrg: microsoft.com
+X-MS-Exchange-MessageSentRepresentingType: 1
+Received: from office-ryzen.texastahm.com (67.79.209.213) by
+ SA9PR13CA0015.namprd13.prod.outlook.com (2603:10b6:806:21::20) with Microsoft
+ SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.20.4436.9 via Frontend Transport; Fri, 13 Aug 2021 20:17:14 +0000
+X-MS-PublicTrafficType: Email
+X-MS-Office365-Filtering-Correlation-Id: fb04504a-2bc8-4b11-096f-08d95e97582d
+X-MS-TrafficTypeDiagnostic: DM4PR12MB5056:
+X-MS-Exchange-Transport-Forked: True
+X-Microsoft-Antispam-PRVS: <DM4PR12MB5056CC972FC97575617C9C45ECFA9@DM4PR12MB5056.namprd12.prod.outlook.com>
+X-MS-Oob-TLC-OOBClassifiers: OLM:8882;
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: HeKYrRV7+y6fb+GcsgwZgLn6m+17BeFDzSYIRsWs+5gk/EvKWEu2gSmv8RvTO/nfbvLfTRsKb1Rmu/IiexH4OmM5yzL1S1M0b1KCFnlSqI8q07PgcARl23shuBOwuXMPNwYrnU2x5cFzlC5kpomANRa9DYwDAdniG9jn0sUdyUssSht9Fj45WNk5kKyCNOwzQkl4Uwfx4ThxvNPm/2ZDWUUaD9h4KXaJfbXl7FOnHluKIb2zyecyHHGHT9LymYEJz5S7RJOMqqWviTNVR18VwG2DXy3EdmYfOUSweCmgr1F5+YNeYL0xuLozBRA3iCSoJ8z186DXgEqoQzPLgGIGWaJStbn3sjliQijGiQArX8StUtsSdv7beBuRfFRJgjp+PMjE74m12pIzia7y7ArUN+9FQfFGXdeMHBWOuZEkY7sXKBpAYhVZL+IzHjCsiTDaKb1dI/aEvOT+HEP3+0pFhWM+gj7aw1TS6rvljuEKICCuVKQxw/iZMHPFqMACRshww9+CkZF74+BBgpYEEwnfE4ZD2OYbNPPAX6HfzpgGABkpn12jKR5rTpzx/1EipOB3U2sOxGm7Mj13MUhqX7AkZsVTyrgswRhjfQpHB54uounI8FMHqOtfgpkX9CKnV73XHRj3NzUtA9k4wwtBs2k808QhRQvjOOhAoq+3kMA1KWhfE7oPISSKTsZBbqCFcKnt8I9jsZEFVs34Lo4rTbbD3u/3KCSJ0GktcSNcge0JTXo=
+X-Forefront-Antispam-Report: CIP:255.255.255.255; CTRY:; LANG:en; SCL:1; SRV:;
+ IPV:NLI; SFV:NSPM; H:DM4PR12MB5229.namprd12.prod.outlook.com; PTR:; CAT:NONE;
+ SFS:(4636009)(396003)(346002)(376002)(39860400002)(136003)(366004)(8936002)(7416002)(86362001)(31696002)(6506007)(83380400001)(36756003)(6486002)(7406005)(66476007)(66556008)(53546011)(6512007)(31686004)(478600001)(316002)(2616005)(38100700002)(956004)(8676002)(66946007)(26005)(6916009)(2906002)(5660300002)(4326008)(186003)(54906003)(43740500002)(45980500001);
+ DIR:OUT; SFP:1101; 
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0: =?utf-8?B?QTZOV216SVRjR2pvTmN0RGhmT3VtRnJiQzVwZ1JSSTNSZXpET1RESUUzYVNY?=
+ =?utf-8?B?L1lpY2EreHNqWE1JTUpwRDhRckxnWmJSNHlqdmxva21GRXFTM2o4Q2tPeVlK?=
+ =?utf-8?B?N3UrZkNkcGhLc210WFlYTmtVL3FYcWVqamloTC9PWDVVSE5ySjQ0R2RyMHc4?=
+ =?utf-8?B?dFE4SmZDSFJUWnl4VldYNlFIbld2RTBCUVF2dVhuYm5UVnUwOVBRWHEyUGQ4?=
+ =?utf-8?B?amdPNGxtNkxBNkRsSXJhK0lPT2lIMUdNVlBaV1FwTWNNeE95c0hYZjQ0RlpZ?=
+ =?utf-8?B?YTJ5aEVHeE9VeXB0bWs0MVY4cVdqRzAyYUZLK21ScE9rbXdDNWh5a0lnZFlT?=
+ =?utf-8?B?aFVTaWlGUXBrYnNhcVExR1N6V1h2K01IU0JramhHeWZvV3M0RkZERkQ1M3NK?=
+ =?utf-8?B?TW5iaU1EcGEzS2hYUklXUkdLR3FmYTg0NmFPWTdmKzI4RzBUcGNnTzcxeElw?=
+ =?utf-8?B?NTVTeUJwcUVvWWFMWHp2ZjYvTEtuc09wQWF1MVErdHBodGlFQVZxRWVQMVNZ?=
+ =?utf-8?B?N01IbmEyQjRkUFZxcDFCOVc3SG9ERVJETnViSFBCQW1obzdUQS9ENmZ0aG9n?=
+ =?utf-8?B?OHhVamdFRXRWRnJNYWlJRTVIenVoK0Y2NE42V3FBS3R6Z0dEeFpRWVRSZXps?=
+ =?utf-8?B?WTNmZUNtYm5sRG8yL3RZa2FkNjQvVklLT2owWmNzUHd0K3NIQ1NZYXdIdjUr?=
+ =?utf-8?B?Wi92VG9pMG5NamNVeDF5YUpkaW9rUkRGM05EdXZUcTlDQk10ZjRpMVQrb3hr?=
+ =?utf-8?B?NDdjZzVZKy9XYUp1VmZSa3Rveng3RG9SOFhGWmtHVlBRVEdoV3orajVsRVlt?=
+ =?utf-8?B?bFJSNnJNMWV5WmRCbkFDYm5JQXF4cEtJZ2VRR1VPZ0NiOWdyUENHUUdqTERn?=
+ =?utf-8?B?NmxKM2tja0tDc2JPYUxsVFdMNXZQai96Z1c0VlgzTWxsdGFNaHFTRmI2cDNZ?=
+ =?utf-8?B?VTVMV0VBaUZBVjZlZVJ0aFhKWVBvZjZCZVhzb1NneG1wMlZtK0dTRTAveWsw?=
+ =?utf-8?B?V0lVYmxuNzBENlhibkV2bVVTdEZZSVhXK3B0TEozZGpZYzd4c2ZRNjE5cVhw?=
+ =?utf-8?B?RjB1Tk1DbkFDUXJycElqK0t5NGVaM3B6cTcvNVlReUxiR29jVnpVK0VOcFQy?=
+ =?utf-8?B?Q2xYR1JoYlJFYXlvZlJxUCtQeERlTCt5ZEl1WEsxQ3R1eVhuSUNpVEVaaE9o?=
+ =?utf-8?B?VHFwNnVzU0FPOHRQaUhFUWtLU1lBNlBtZ3RsNDBIMW5EMVhQYXVSZVpKREVN?=
+ =?utf-8?B?c21HQjV2RHVTK3hsazFzVEJPSzhVM1BWeEgyajZRcjk3Y0FWbG9NTWV2OXNQ?=
+ =?utf-8?B?WGQweHhuMURwc00xK0UvTVB1ek9VL2ZPcVNCdFNncWRzWm9ybFlvU2V2VnNB?=
+ =?utf-8?B?MlhiaThjc2FYbTdGNENXM3dRby83cTUvYWtJTmpMdjdUVlliL251QVh3QVNH?=
+ =?utf-8?B?MjBoTVpQOTMraUpGcnUvY1Z1aFJDQm5pQk9vY3JmaDJqYXY1QUtqQ1BIamo4?=
+ =?utf-8?B?MzRCVjJqYmdUbXRJUEN5cWJWdi8yNUZBejlPdkZVdjFwQjJoWDJtVFdGS0Q0?=
+ =?utf-8?B?d0MvU1JpZm4xKzNoejhlRlhaMUVEaUN3anJHdFJhdjcxUFh5OXlRd011R3RC?=
+ =?utf-8?B?NFFlVzhUcmFJcm1rL2xCY1hwK0YvVVdua0ZNSi9TaTg0cjl5YTFjbjJ4UTJ1?=
+ =?utf-8?B?TnQvbnVIS2Vvb2dsMWtQTFBPRFRmNFNDc0Q4dU1oLzNPYUZXTTJ0L0Z4aTdV?=
+ =?utf-8?Q?X4j/QZYAY5VhEB8ISJ7ENzxDr6z08b94zP1ag1f?=
+X-OriginatorOrg: amd.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: fb04504a-2bc8-4b11-096f-08d95e97582d
+X-MS-Exchange-CrossTenant-AuthSource: DM4PR12MB5229.namprd12.prod.outlook.com
 X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-AuthSource: MWHPR21MB1593.namprd21.prod.outlook.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 97c79cf5-55d5-4806-cd45-08d95e90e664
-X-MS-Exchange-CrossTenant-originalarrivaltime: 13 Aug 2021 19:31:08.0344 (UTC)
-X-MS-Exchange-CrossTenant-fromentityheader: Hosted
-X-MS-Exchange-CrossTenant-id: 72f988bf-86f1-41af-91ab-2d7cd011db47
-X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: ESTBDW2syx1QGsd4Vbii4VFaFQ1+pPdtm3iH5SJclBYZcc3l/Tss08Jtd8NALjweW9OeDGULNraQFsk5WBR766Q2w66Qs5m/Cb3HEpaUKAc=
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: MW4PR21MB1953
-Cc: "linux-arch@vger.kernel.org" <linux-arch@vger.kernel.org>,
- "parri.andrea@gmail.com" <parri.andrea@gmail.com>,
- "linux-hyperv@vger.kernel.org" <linux-hyperv@vger.kernel.org>,
- "linux-scsi@vger.kernel.org" <linux-scsi@vger.kernel.org>,
- "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
- "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
- "dave.hansen@intel.com" <dave.hansen@intel.com>,
- "iommu@lists.linux-foundation.org" <iommu@lists.linux-foundation.org>,
- vkuznets <vkuznets@redhat.com>
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 13 Aug 2021 20:17:17.8323 (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 3dd8961f-e488-4e60-8e11-a82d994e183d
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: 5rYKyb1eg9llUGfYKNWymW6AFqmswxWINdi5GxJCtmBK1fz+zhjdQgfi1wjlNeI3FFBkBzHHXR4HqtkxkzDSzw==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: DM4PR12MB5056
+Cc: linux-efi@vger.kernel.org, Brijesh Singh <brijesh.singh@amd.com>,
+ kvm@vger.kernel.org, Peter Zijlstra <peterz@infradead.org>,
+ Dave Hansen <dave.hansen@linux.intel.com>, dri-devel@lists.freedesktop.org,
+ platform-driver-x86@vger.kernel.org, Will Deacon <will@kernel.org>,
+ linux-s390@vger.kernel.org, Andi Kleen <ak@linux.intel.com>, x86@kernel.org,
+ amd-gfx@lists.freedesktop.org, David Airlie <airlied@linux.ie>,
+ Ingo Molnar <mingo@redhat.com>, linux-graphics-maintainer@vmware.com,
+ Dave Young <dyoung@redhat.com>, Tianyu Lan <Tianyu.Lan@microsoft.com>,
+ Thomas Zimmermann <tzimmermann@suse.de>,
+ Maarten Lankhorst <maarten.lankhorst@linux.intel.com>,
+ Maxime Ripard <mripard@kernel.org>, Borislav Petkov <bp@alien8.de>,
+ Andy Lutomirski <luto@kernel.org>, Thomas Gleixner <tglx@linutronix.de>,
+ kexec@lists.infradead.org, linux-kernel@vger.kernel.org,
+ iommu@lists.linux-foundation.org, Daniel Vetter <daniel@ffwll.ch>,
+ linux-fsdevel@vger.kernel.org, linuxppc-dev@lists.ozlabs.org
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -194,758 +181,55 @@ List-Post: <mailto:iommu@lists.linux-foundation.org>
 List-Help: <mailto:iommu-request@lists.linux-foundation.org?subject=help>
 List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
  <mailto:iommu-request@lists.linux-foundation.org?subject=subscribe>
-From: Michael Kelley via iommu <iommu@lists.linux-foundation.org>
-Reply-To: Michael Kelley <mikelley@microsoft.com>
-Content-Type: text/plain; charset="us-ascii"
+From: Tom Lendacky via iommu <iommu@lists.linux-foundation.org>
+Reply-To: Tom Lendacky <thomas.lendacky@amd.com>
 Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset="us-ascii"; Format="flowed"
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-From: Tianyu Lan <ltykernel@gmail.com> Sent: Monday, August 9, 2021 10:56 AM
-> Subject: [PATCH V3 05/13] HV: Add Write/Read MSR registers via ghcb page
+On 8/13/21 12:08 PM, Tom Lendacky wrote:
+> On 8/12/21 5:07 AM, Kirill A. Shutemov wrote:
+>> On Wed, Aug 11, 2021 at 10:52:55AM -0500, Tom Lendacky wrote:
+>>> On 8/11/21 7:19 AM, Kirill A. Shutemov wrote:
+>>>> On Tue, Aug 10, 2021 at 02:48:54PM -0500, Tom Lendacky wrote:
+>>>>> On 8/10/21 1:45 PM, Kuppuswamy, Sathyanarayanan wrote:
+> ...
+>>>> Looking at code agains, now I *think* the reason is accessing a global
+>>>> variable from __startup_64() inside TDX version of prot_guest_has().
+>>>>
+>>>> __startup_64() is special. If you access any global variable you need to
+>>>> use fixup_pointer(). See comment before __startup_64().
+>>>>
+>>>> I'm not sure how you get away with accessing sme_me_mask directly from
+>>>> there. Any clues? Maybe just a luck and complier generates code just 
+>>>> right
+>>>> for your case, I donno.
+>>>
+>>> Hmm... yeah, could be that the compiler is using rip-relative addressing
+>>> for it because it lives in the .data section?
+>>
+>> I guess. It has to be fixed. It may break with complier upgrade or any
+>> random change around the code.
+> 
+> I'll look at doing that separate from this series.
+> 
+>>
+>> BTW, does it work with clang for you?
+> 
+> I haven't tried with clang, I'll check on that.
 
-See previous comments about tag in the Subject line.
+Just as an fyi, clang also uses rip relative addressing for those 
+variables. No issues booting SME and SEV guests built with clang.
 
-> Hyper-V provides GHCB protocol to write Synthetic Interrupt
-> Controller MSR registers in Isolation VM with AMD SEV SNP
-> and these registers are emulated by hypervisor directly.
-> Hyper-V requires to write SINTx MSR registers twice. First
-> writes MSR via GHCB page to communicate with hypervisor
-> and then writes wrmsr instruction to talk with paravisor
-> which runs in VMPL0. Guest OS ID MSR also needs to be set
-> via GHCB.
-> 
-> Signed-off-by: Tianyu Lan <Tianyu.Lan@microsoft.com>
-> ---
-> Change since v1:
->          * Introduce sev_es_ghcb_hv_call_simple() and share code
->            between SEV and Hyper-V code.
-> ---
->  arch/x86/hyperv/hv_init.c       |  33 ++-------
->  arch/x86/hyperv/ivm.c           | 110 +++++++++++++++++++++++++++++
->  arch/x86/include/asm/mshyperv.h |  78 +++++++++++++++++++-
->  arch/x86/include/asm/sev.h      |   3 +
->  arch/x86/kernel/cpu/mshyperv.c  |   3 +
->  arch/x86/kernel/sev-shared.c    |  63 ++++++++++-------
->  drivers/hv/hv.c                 | 121 ++++++++++++++++++++++----------
->  include/asm-generic/mshyperv.h  |  12 +++-
->  8 files changed, 329 insertions(+), 94 deletions(-)
-> 
-> diff --git a/arch/x86/hyperv/hv_init.c b/arch/x86/hyperv/hv_init.c
-> index b3683083208a..ab0b33f621e7 100644
-> --- a/arch/x86/hyperv/hv_init.c
-> +++ b/arch/x86/hyperv/hv_init.c
-> @@ -423,7 +423,7 @@ void __init hyperv_init(void)
->  		goto clean_guest_os_id;
-> 
->  	if (hv_isolation_type_snp()) {
-> -		ms_hyperv.ghcb_base = alloc_percpu(void *);
-> +		ms_hyperv.ghcb_base = alloc_percpu(union hv_ghcb __percpu *);
+Thanks,
+Tom
 
-union hv_ghcb isn't defined.  It is not added until patch 6 of the series.
-
->  		if (!ms_hyperv.ghcb_base)
->  			goto clean_guest_os_id;
 > 
-> @@ -432,6 +432,9 @@ void __init hyperv_init(void)
->  			ms_hyperv.ghcb_base = NULL;
->  			goto clean_guest_os_id;
->  		}
-> +
-> +		/* Hyper-V requires to write guest os id via ghcb in SNP IVM. */
-> +		hv_ghcb_msr_write(HV_X64_MSR_GUEST_OS_ID, guest_id);
->  	}
+> Thanks,
+> Tom
 > 
->  	rdmsrl(HV_X64_MSR_HYPERCALL, hypercall_msr.as_uint64);
-> @@ -523,6 +526,7 @@ void hyperv_cleanup(void)
-> 
->  	/* Reset our OS id */
->  	wrmsrl(HV_X64_MSR_GUEST_OS_ID, 0);
-> +	hv_ghcb_msr_write(HV_X64_MSR_GUEST_OS_ID, 0);
-> 
->  	/*
->  	 * Reset hypercall page reference before reset the page,
-> @@ -596,30 +600,3 @@ bool hv_is_hyperv_initialized(void)
->  	return hypercall_msr.enable;
->  }
->  EXPORT_SYMBOL_GPL(hv_is_hyperv_initialized);
-> -
-> -enum hv_isolation_type hv_get_isolation_type(void)
-> -{
-> -	if (!(ms_hyperv.priv_high & HV_ISOLATION))
-> -		return HV_ISOLATION_TYPE_NONE;
-> -	return FIELD_GET(HV_ISOLATION_TYPE, ms_hyperv.isolation_config_b);
-> -}
-> -EXPORT_SYMBOL_GPL(hv_get_isolation_type);
-> -
-> -bool hv_is_isolation_supported(void)
-> -{
-> -	if (!cpu_feature_enabled(X86_FEATURE_HYPERVISOR))
-> -		return 0;
-> -
-> -	if (!hypervisor_is_type(X86_HYPER_MS_HYPERV))
-> -		return 0;
-> -
-> -	return hv_get_isolation_type() != HV_ISOLATION_TYPE_NONE;
-> -}
-> -
-> -DEFINE_STATIC_KEY_FALSE(isolation_type_snp);
-> -
-> -bool hv_isolation_type_snp(void)
-> -{
-> -	return static_branch_unlikely(&isolation_type_snp);
-> -}
-> -EXPORT_SYMBOL_GPL(hv_isolation_type_snp);
-> diff --git a/arch/x86/hyperv/ivm.c b/arch/x86/hyperv/ivm.c
-> index 8c905ffdba7f..ec0e5c259740 100644
-> --- a/arch/x86/hyperv/ivm.c
-> +++ b/arch/x86/hyperv/ivm.c
-> @@ -6,6 +6,8 @@
->   *  Tianyu Lan <Tianyu.Lan@microsoft.com>
->   */
-> 
-> +#include <linux/types.h>
-> +#include <linux/bitfield.h>
->  #include <linux/hyperv.h>
->  #include <linux/types.h>
->  #include <linux/bitfield.h>
-> @@ -13,6 +15,114 @@
->  #include <asm/io.h>
->  #include <asm/mshyperv.h>
-> 
-> +void hv_ghcb_msr_write(u64 msr, u64 value)
-> +{
-> +	union hv_ghcb *hv_ghcb;
-> +	void **ghcb_base;
-> +	unsigned long flags;
-> +
-> +	if (!ms_hyperv.ghcb_base)
-> +		return;
-> +
-> +	WARN_ON(in_nmi());
-> +
-> +	local_irq_save(flags);
-> +	ghcb_base = (void **)this_cpu_ptr(ms_hyperv.ghcb_base);
-> +	hv_ghcb = (union hv_ghcb *)*ghcb_base;
-> +	if (!hv_ghcb) {
-> +		local_irq_restore(flags);
-> +		return;
-> +	}
-> +
-> +	ghcb_set_rcx(&hv_ghcb->ghcb, msr);
-> +	ghcb_set_rax(&hv_ghcb->ghcb, lower_32_bits(value));
-> +	ghcb_set_rdx(&hv_ghcb->ghcb, value >> 32);
-
-Having used lower_32_bits() in the previous line, perhaps use
-upper_32_bits() here?
-
-> +
-> +	if (sev_es_ghcb_hv_call_simple(&hv_ghcb->ghcb, SVM_EXIT_MSR, 1, 0))
-> +		pr_warn("Fail to write msr via ghcb %llx.\n", msr);
-> +
-> +	local_irq_restore(flags);
-> +}
-> +
-> +void hv_ghcb_msr_read(u64 msr, u64 *value)
-> +{
-> +	union hv_ghcb *hv_ghcb;
-> +	void **ghcb_base;
-> +	unsigned long flags;
-> +
-> +	if (!ms_hyperv.ghcb_base)
-> +		return;
-> +
-> +	WARN_ON(in_nmi());
-> +
-> +	local_irq_save(flags);
-> +	ghcb_base = (void **)this_cpu_ptr(ms_hyperv.ghcb_base);
-> +	hv_ghcb = (union hv_ghcb *)*ghcb_base;
-> +	if (!hv_ghcb) {
-> +		local_irq_restore(flags);
-> +		return;
-> +	}
-> +
-> +	ghcb_set_rcx(&hv_ghcb->ghcb, msr);
-> +	if (sev_es_ghcb_hv_call_simple(&hv_ghcb->ghcb, SVM_EXIT_MSR, 0, 0))
-> +		pr_warn("Fail to read msr via ghcb %llx.\n", msr);
-> +	else
-> +		*value = (u64)lower_32_bits(hv_ghcb->ghcb.save.rax)
-> +			| ((u64)lower_32_bits(hv_ghcb->ghcb.save.rdx) << 32);
-> +	local_irq_restore(flags);
-> +}
-> +
-> +void hv_sint_rdmsrl_ghcb(u64 msr, u64 *value)
-> +{
-> +	hv_ghcb_msr_read(msr, value);
-> +}
-> +EXPORT_SYMBOL_GPL(hv_sint_rdmsrl_ghcb);
-> +
-> +void hv_sint_wrmsrl_ghcb(u64 msr, u64 value)
-> +{
-> +	hv_ghcb_msr_write(msr, value);
-> +
-> +	/* Write proxy bit vua wrmsrl instruction. */
-
-s/vua/via/
-
-> +	if (msr >= HV_X64_MSR_SINT0 && msr <= HV_X64_MSR_SINT15)
-> +		wrmsrl(msr, value | 1 << 20);
-> +}
-> +EXPORT_SYMBOL_GPL(hv_sint_wrmsrl_ghcb);
-> +
-> +void hv_signal_eom_ghcb(void)
-> +{
-> +	hv_sint_wrmsrl_ghcb(HV_X64_MSR_EOM, 0);
-> +}
-> +EXPORT_SYMBOL_GPL(hv_signal_eom_ghcb);
-
-Is there a reason for this to be a function instead of a #define?
-Seemingly parallel calls such as  hv_set_synic_state_ghcb()
-are #defines.
-
-> +
-> +enum hv_isolation_type hv_get_isolation_type(void)
-> +{
-> +	if (!(ms_hyperv.priv_high & HV_ISOLATION))
-> +		return HV_ISOLATION_TYPE_NONE;
-> +	return FIELD_GET(HV_ISOLATION_TYPE, ms_hyperv.isolation_config_b);
-> +}
-> +EXPORT_SYMBOL_GPL(hv_get_isolation_type);
-> +
-> +/*
-> + * hv_is_isolation_supported - Check system runs in the Hyper-V
-> + * isolation VM.
-> + */
-> +bool hv_is_isolation_supported(void)
-> +{
-> +	return hv_get_isolation_type() != HV_ISOLATION_TYPE_NONE;
-> +}
-> +
-> +DEFINE_STATIC_KEY_FALSE(isolation_type_snp);
-> +
-> +/*
-> + * hv_isolation_type_snp - Check system runs in the AMD SEV-SNP based
-> + * isolation VM.
-> + */
-> +bool hv_isolation_type_snp(void)
-> +{
-> +	return static_branch_unlikely(&isolation_type_snp);
-> +}
-> +EXPORT_SYMBOL_GPL(hv_isolation_type_snp);
-> +
-
-hv_isolation_type_snp() is implemented here in a file under arch/x86,
-but it is called from architecture independent code in drivers/hv, so it
-needs to do the right thing on ARM64 as well as x86.  For an example,
-see the handling of hv_is_isolation_supported() in the latest linux-next
-tree.
-
->  /*
->   * hv_mark_gpa_visibility - Set pages visible to host via hvcall.
->   *
-> diff --git a/arch/x86/include/asm/mshyperv.h b/arch/x86/include/asm/mshyperv.h
-> index 87a386fa97f7..730985676ea3 100644
-> --- a/arch/x86/include/asm/mshyperv.h
-> +++ b/arch/x86/include/asm/mshyperv.h
-> @@ -30,6 +30,63 @@ static inline u64 hv_get_register(unsigned int reg)
->  	return value;
->  }
-> 
-> +#define hv_get_sint_reg(val, reg) {		\
-> +	if (hv_isolation_type_snp())		\
-> +		hv_get_##reg##_ghcb(&val);	\
-> +	else					\
-> +		rdmsrl(HV_X64_MSR_##reg, val);	\
-> +	}
-> +
-> +#define hv_set_sint_reg(val, reg) {		\
-> +	if (hv_isolation_type_snp())		\
-> +		hv_set_##reg##_ghcb(val);	\
-> +	else					\
-> +		wrmsrl(HV_X64_MSR_##reg, val);	\
-> +	}
-> +
-> +
-> +#define hv_get_simp(val) hv_get_sint_reg(val, SIMP)
-> +#define hv_get_siefp(val) hv_get_sint_reg(val, SIEFP)
-> +
-> +#define hv_set_simp(val) hv_set_sint_reg(val, SIMP)
-> +#define hv_set_siefp(val) hv_set_sint_reg(val, SIEFP)
-> +
-> +#define hv_get_synic_state(val) {			\
-> +	if (hv_isolation_type_snp())			\
-> +		hv_get_synic_state_ghcb(&val);		\
-> +	else						\
-> +		rdmsrl(HV_X64_MSR_SCONTROL, val);	\
-
-Many of these registers that exist on x86 and ARM64 architectures
-have new names without the "X64_MSR" portion.  For
-example, include/asm-generic/hyperv-tlfs.h defines
-HV_REGISTER_SCONTROL.  The x86-specific version of 
-hyperv-tlfs.h currently has a #define for HV_X64_MSR_SCONTROL,
-but we would like to get rid of these temporary aliases.
-So prefer to use HV_REGISTER_SCONTROL.
-
-Same comment applies several places in this code for other
-similar registers.
-
-> +	}
-> +#define hv_set_synic_state(val) {			\
-> +	if (hv_isolation_type_snp())			\
-> +		hv_set_synic_state_ghcb(val);		\
-> +	else						\
-> +		wrmsrl(HV_X64_MSR_SCONTROL, val);	\
-> +	}
-> +
-> +#define hv_get_vp_index(index) rdmsrl(HV_X64_MSR_VP_INDEX, index)
-> +
-> +#define hv_signal_eom() {			 \
-> +	if (hv_isolation_type_snp() &&		 \
-> +	    old_msg_type != HVMSG_TIMER_EXPIRED) \
-
-Why is a test of the old_msg_type embedded in this macro?
-And given that old_msg_type isn't a parameter of the
-macro, its use is really weird.
-
-> +		hv_signal_eom_ghcb();		 \
-> +	else					 \
-> +		wrmsrl(HV_X64_MSR_EOM, 0);	 \
-> +	}
-> +
-> +#define hv_get_synint_state(int_num, val) {		\
-> +	if (hv_isolation_type_snp())			\0
-> +		hv_get_synint_state_ghcb(int_num, &val);\
-> +	else						\
-> +		rdmsrl(HV_X64_MSR_SINT0 + int_num, val);\
-> +	}
-> +#define hv_set_synint_state(int_num, val) {		\
-> +	if (hv_isolation_type_snp())			\
-> +		hv_set_synint_state_ghcb(int_num, val);	\
-> +	else						\
-> +		wrmsrl(HV_X64_MSR_SINT0 + int_num, val);\
-> +	}
-> +
->  #define hv_get_raw_timer() rdtsc_ordered()
-> 
->  void hyperv_vector_handler(struct pt_regs *regs);
-> @@ -193,6 +250,25 @@ int hv_unmap_ioapic_interrupt(int ioapic_id, struct hv_interrupt_entry *entry);
->  int hv_mark_gpa_visibility(u16 count, const u64 pfn[],
->  			   enum hv_mem_host_visibility visibility);
->  int hv_set_mem_host_visibility(unsigned long addr, int numpages, bool visible);
-> +void hv_sint_wrmsrl_ghcb(u64 msr, u64 value);
-> +void hv_sint_rdmsrl_ghcb(u64 msr, u64 *value);
-> +void hv_signal_eom_ghcb(void);
-> +void hv_ghcb_msr_write(u64 msr, u64 value);
-> +void hv_ghcb_msr_read(u64 msr, u64 *value);
-> +
-> +#define hv_get_synint_state_ghcb(int_num, val)			\
-> +	hv_sint_rdmsrl_ghcb(HV_X64_MSR_SINT0 + int_num, val)
-> +#define hv_set_synint_state_ghcb(int_num, val) \
-> +	hv_sint_wrmsrl_ghcb(HV_X64_MSR_SINT0 + int_num, val)
-> +
-> +#define hv_get_SIMP_ghcb(val) hv_sint_rdmsrl_ghcb(HV_X64_MSR_SIMP, val)
-> +#define hv_set_SIMP_ghcb(val) hv_sint_wrmsrl_ghcb(HV_X64_MSR_SIMP, val)
-> +
-> +#define hv_get_SIEFP_ghcb(val) hv_sint_rdmsrl_ghcb(HV_X64_MSR_SIEFP, val)
-> +#define hv_set_SIEFP_ghcb(val) hv_sint_wrmsrl_ghcb(HV_X64_MSR_SIEFP, val)
-> +
-> +#define hv_get_synic_state_ghcb(val) hv_sint_rdmsrl_ghcb(HV_X64_MSR_SCONTROL, val)
-> +#define hv_set_synic_state_ghcb(val) hv_sint_wrmsrl_ghcb(HV_X64_MSR_SCONTROL, val)
->  #else /* CONFIG_HYPERV */
->  static inline void hyperv_init(void) {}
->  static inline void hyperv_setup_mmu_ops(void) {}
-> @@ -209,9 +285,9 @@ static inline int hyperv_flush_guest_mapping_range(u64 as,
->  {
->  	return -1;
->  }
-> +static inline void hv_signal_eom_ghcb(void) { };
->  #endif /* CONFIG_HYPERV */
-> 
-> -
->  #include <asm-generic/mshyperv.h>
-> 
->  #endif
-> diff --git a/arch/x86/include/asm/sev.h b/arch/x86/include/asm/sev.h
-> index fa5cd05d3b5b..81beb2a8031b 100644
-> --- a/arch/x86/include/asm/sev.h
-> +++ b/arch/x86/include/asm/sev.h
-> @@ -81,6 +81,9 @@ static __always_inline void sev_es_nmi_complete(void)
->  		__sev_es_nmi_complete();
->  }
->  extern int __init sev_es_efi_map_ghcbs(pgd_t *pgd);
-> +extern enum es_result sev_es_ghcb_hv_call_simple(struct ghcb *ghcb,
-> +				   u64 exit_code, u64 exit_info_1,
-> +				   u64 exit_info_2);
->  #else
->  static inline void sev_es_ist_enter(struct pt_regs *regs) { }
->  static inline void sev_es_ist_exit(void) { }
-> diff --git a/arch/x86/kernel/cpu/mshyperv.c b/arch/x86/kernel/cpu/mshyperv.c
-> index 2b7f396ef1a5..3633f871ac1e 100644
-> --- a/arch/x86/kernel/cpu/mshyperv.c
-> +++ b/arch/x86/kernel/cpu/mshyperv.c
-> @@ -318,6 +318,9 @@ static void __init ms_hyperv_init_platform(void)
-> 
->  		pr_info("Hyper-V: Isolation Config: Group A 0x%x, Group B 0x%x\n",
->  			ms_hyperv.isolation_config_a, ms_hyperv.isolation_config_b);
-> +
-> +		if (hv_get_isolation_type() == HV_ISOLATION_TYPE_SNP)
-> +			static_branch_enable(&isolation_type_snp);
->  	}
-> 
->  	if (hv_max_functions_eax >= HYPERV_CPUID_NESTED_FEATURES) {
-> diff --git a/arch/x86/kernel/sev-shared.c b/arch/x86/kernel/sev-shared.c
-> index 9f90f460a28c..dd7f37de640b 100644
-> --- a/arch/x86/kernel/sev-shared.c
-> +++ b/arch/x86/kernel/sev-shared.c
-> @@ -94,10 +94,9 @@ static void vc_finish_insn(struct es_em_ctxt *ctxt)
->  	ctxt->regs->ip += ctxt->insn.length;
->  }
-> 
-> -static enum es_result sev_es_ghcb_hv_call(struct ghcb *ghcb,
-> -					  struct es_em_ctxt *ctxt,
-> -					  u64 exit_code, u64 exit_info_1,
-> -					  u64 exit_info_2)
-> +enum es_result sev_es_ghcb_hv_call_simple(struct ghcb *ghcb,
-> +				   u64 exit_code, u64 exit_info_1,
-> +				   u64 exit_info_2)
->  {
->  	enum es_result ret;
-> 
-> @@ -109,29 +108,45 @@ static enum es_result sev_es_ghcb_hv_call(struct ghcb *ghcb,
->  	ghcb_set_sw_exit_info_1(ghcb, exit_info_1);
->  	ghcb_set_sw_exit_info_2(ghcb, exit_info_2);
-> 
-> -	sev_es_wr_ghcb_msr(__pa(ghcb));
->  	VMGEXIT();
-> 
-> -	if ((ghcb->save.sw_exit_info_1 & 0xffffffff) == 1) {
-> -		u64 info = ghcb->save.sw_exit_info_2;
-> -		unsigned long v;
-> -
-> -		info = ghcb->save.sw_exit_info_2;
-> -		v = info & SVM_EVTINJ_VEC_MASK;
-> -
-> -		/* Check if exception information from hypervisor is sane. */
-> -		if ((info & SVM_EVTINJ_VALID) &&
-> -		    ((v == X86_TRAP_GP) || (v == X86_TRAP_UD)) &&
-> -		    ((info & SVM_EVTINJ_TYPE_MASK) == SVM_EVTINJ_TYPE_EXEPT)) {
-> -			ctxt->fi.vector = v;
-> -			if (info & SVM_EVTINJ_VALID_ERR)
-> -				ctxt->fi.error_code = info >> 32;
-> -			ret = ES_EXCEPTION;
-> -		} else {
-> -			ret = ES_VMM_ERROR;
-> -		}
-> -	} else {
-> +	if ((ghcb->save.sw_exit_info_1 & 0xffffffff) == 1)
-> +		ret = ES_VMM_ERROR;
-> +	else
->  		ret = ES_OK;
-> +
-> +	return ret;
-> +}
-> +
-> +static enum es_result sev_es_ghcb_hv_call(struct ghcb *ghcb,
-> +				   struct es_em_ctxt *ctxt,
-> +				   u64 exit_code, u64 exit_info_1,
-> +				   u64 exit_info_2)
-> +{
-> +	unsigned long v;
-> +	enum es_result ret;
-> +	u64 info;
-> +
-> +	sev_es_wr_ghcb_msr(__pa(ghcb));
-> +
-> +	ret = sev_es_ghcb_hv_call_simple(ghcb, exit_code, exit_info_1,
-> +					 exit_info_2);
-> +	if (ret == ES_OK)
-> +		return ret;
-> +
-> +	info = ghcb->save.sw_exit_info_2;
-> +	v = info & SVM_EVTINJ_VEC_MASK;
-> +
-> +	/* Check if exception information from hypervisor is sane. */
-> +	if ((info & SVM_EVTINJ_VALID) &&
-> +	    ((v == X86_TRAP_GP) || (v == X86_TRAP_UD)) &&
-> +	    ((info & SVM_EVTINJ_TYPE_MASK) == SVM_EVTINJ_TYPE_EXEPT)) {
-> +		ctxt->fi.vector = v;
-> +		if (info & SVM_EVTINJ_VALID_ERR)
-> +			ctxt->fi.error_code = info >> 32;
-> +		ret = ES_EXCEPTION;
-> +	} else {
-> +		ret = ES_VMM_ERROR;
->  	}
-> 
->  	return ret;
-> diff --git a/drivers/hv/hv.c b/drivers/hv/hv.c
-> index e83507f49676..59f7173c4d9f 100644
-> --- a/drivers/hv/hv.c
-> +++ b/drivers/hv/hv.c
-> @@ -8,6 +8,7 @@
->   */
->  #define pr_fmt(fmt) KBUILD_MODNAME ": " fmt
-> 
-> +#include <linux/io.h>
->  #include <linux/kernel.h>
->  #include <linux/mm.h>
->  #include <linux/slab.h>
-> @@ -136,17 +137,24 @@ int hv_synic_alloc(void)
->  		tasklet_init(&hv_cpu->msg_dpc,
->  			     vmbus_on_msg_dpc, (unsigned long) hv_cpu);
-> 
-> -		hv_cpu->synic_message_page =
-> -			(void *)get_zeroed_page(GFP_ATOMIC);
-> -		if (hv_cpu->synic_message_page == NULL) {
-> -			pr_err("Unable to allocate SYNIC message page\n");
-> -			goto err;
-> -		}
-> +		/*
-> +		 * Synic message and event pages are allocated by paravisor.
-> +		 * Skip these pages allocation here.
-> +		 */
-> +		if (!hv_isolation_type_snp()) {
-> +			hv_cpu->synic_message_page =
-> +				(void *)get_zeroed_page(GFP_ATOMIC);
-> +			if (hv_cpu->synic_message_page == NULL) {
-> +				pr_err("Unable to allocate SYNIC message page\n");
-> +				goto err;
-> +			}
-> 
-> -		hv_cpu->synic_event_page = (void *)get_zeroed_page(GFP_ATOMIC);
-> -		if (hv_cpu->synic_event_page == NULL) {
-> -			pr_err("Unable to allocate SYNIC event page\n");
-> -			goto err;
-> +			hv_cpu->synic_event_page =
-> +				(void *)get_zeroed_page(GFP_ATOMIC);
-> +			if (hv_cpu->synic_event_page == NULL) {
-> +				pr_err("Unable to allocate SYNIC event page\n");
-> +				goto err;
-> +			}
->  		}
-> 
->  		hv_cpu->post_msg_page = (void *)get_zeroed_page(GFP_ATOMIC);
-> @@ -173,10 +181,17 @@ void hv_synic_free(void)
->  	for_each_present_cpu(cpu) {
->  		struct hv_per_cpu_context *hv_cpu
->  			= per_cpu_ptr(hv_context.cpu_context, cpu);
-> +		free_page((unsigned long)hv_cpu->post_msg_page);
-> +
-> +		/*
-> +		 * Synic message and event pages are allocated by paravisor.
-> +		 * Skip free these pages here.
-> +		 */
-> +		if (hv_isolation_type_snp())
-> +			continue;
-> 
->  		free_page((unsigned long)hv_cpu->synic_event_page);
->  		free_page((unsigned long)hv_cpu->synic_message_page);
-> -		free_page((unsigned long)hv_cpu->post_msg_page);
-
-You could skip making these changes to hv_synic_free().  If the message
-and event pages aren't allocated, the pointers will be NULL and
-free_page() will happily do nothing.
-
->  	}
-> 
->  	kfree(hv_context.hv_numa_map);
-> @@ -199,26 +214,43 @@ void hv_synic_enable_regs(unsigned int cpu)
->  	union hv_synic_scontrol sctrl;
-> 
->  	/* Setup the Synic's message page */
-> -	simp.as_uint64 = hv_get_register(HV_REGISTER_SIMP);
-> +	hv_get_simp(simp.as_uint64);
-
-This code is intended to be architecture independent and builds for
-x86 and for ARM64.  Changing the use of hv_get_register() and hv_set_register()
-will fail badly when built for ARM64.   I haven't completely thought through
-what the best solution might be, but the current set of mappings from
-hv_get_simp() down to hv_ghcb_msr_read() isn't going to work on ARM64.
-
-Is it possible to hide all the x86-side complexity in the implementation of
-hv_get_register()?   Certain MSRs would have to be special-cased when
-SNP isolation is enabled, but that might be easier than trying to no-op out
-the ghcb machinery on the ARM64 side. 
-
->  	simp.simp_enabled = 1;
-> -	simp.base_simp_gpa = virt_to_phys(hv_cpu->synic_message_page)
-> -		>> HV_HYP_PAGE_SHIFT;
-> 
-> -	hv_set_register(HV_REGISTER_SIMP, simp.as_uint64);
-> +	if (hv_isolation_type_snp()) {
-> +		hv_cpu->synic_message_page
-> +			= memremap(simp.base_simp_gpa << HV_HYP_PAGE_SHIFT,
-> +				   HV_HYP_PAGE_SIZE, MEMREMAP_WB);
-> +		if (!hv_cpu->synic_message_page)
-> +			pr_err("Fail to map syinc message page.\n");
-> +	} else {
-> +		simp.base_simp_gpa = virt_to_phys(hv_cpu->synic_message_page)
-> +			>> HV_HYP_PAGE_SHIFT;
-> +	}
-> +
-> +	hv_set_simp(simp.as_uint64);
-> 
->  	/* Setup the Synic's event page */
-> -	siefp.as_uint64 = hv_get_register(HV_REGISTER_SIEFP);
-> +	hv_get_siefp(siefp.as_uint64);
->  	siefp.siefp_enabled = 1;
-> -	siefp.base_siefp_gpa = virt_to_phys(hv_cpu->synic_event_page)
-> -		>> HV_HYP_PAGE_SHIFT;
-> 
-> -	hv_set_register(HV_REGISTER_SIEFP, siefp.as_uint64);
-> +	if (hv_isolation_type_snp()) {
-> +		hv_cpu->synic_event_page =
-> +			memremap(siefp.base_siefp_gpa << HV_HYP_PAGE_SHIFT,
-> +				 HV_HYP_PAGE_SIZE, MEMREMAP_WB);
-> +
-> +		if (!hv_cpu->synic_event_page)
-> +			pr_err("Fail to map syinc event page.\n");
-> +	} else {
-> +		siefp.base_siefp_gpa = virt_to_phys(hv_cpu->synic_event_page)
-> +			>> HV_HYP_PAGE_SHIFT;
-> +	}
-> +	hv_set_siefp(siefp.as_uint64);
-> 
->  	/* Setup the shared SINT. */
->  	if (vmbus_irq != -1)
->  		enable_percpu_irq(vmbus_irq, 0);
-> -	shared_sint.as_uint64 = hv_get_register(HV_REGISTER_SINT0 +
-> -					VMBUS_MESSAGE_SINT);
-> +	hv_get_synint_state(VMBUS_MESSAGE_SINT, shared_sint.as_uint64);
-> 
->  	shared_sint.vector = vmbus_interrupt;
->  	shared_sint.masked = false;
-> @@ -233,14 +265,12 @@ void hv_synic_enable_regs(unsigned int cpu)
->  #else
->  	shared_sint.auto_eoi = 0;
->  #endif
-> -	hv_set_register(HV_REGISTER_SINT0 + VMBUS_MESSAGE_SINT,
-> -				shared_sint.as_uint64);
-> +	hv_set_synint_state(VMBUS_MESSAGE_SINT, shared_sint.as_uint64);
-> 
->  	/* Enable the global synic bit */
-> -	sctrl.as_uint64 = hv_get_register(HV_REGISTER_SCONTROL);
-> +	hv_get_synic_state(sctrl.as_uint64);
->  	sctrl.enable = 1;
-> -
-> -	hv_set_register(HV_REGISTER_SCONTROL, sctrl.as_uint64);
-> +	hv_set_synic_state(sctrl.as_uint64);
->  }
-> 
->  int hv_synic_init(unsigned int cpu)
-> @@ -257,37 +287,50 @@ int hv_synic_init(unsigned int cpu)
->   */
->  void hv_synic_disable_regs(unsigned int cpu)
->  {
-> +	struct hv_per_cpu_context *hv_cpu
-> +		= per_cpu_ptr(hv_context.cpu_context, cpu);
->  	union hv_synic_sint shared_sint;
->  	union hv_synic_simp simp;
->  	union hv_synic_siefp siefp;
->  	union hv_synic_scontrol sctrl;
-> 
-> -	shared_sint.as_uint64 = hv_get_register(HV_REGISTER_SINT0 +
-> -					VMBUS_MESSAGE_SINT);
-> -
-> +	hv_get_synint_state(VMBUS_MESSAGE_SINT, shared_sint.as_uint64);
->  	shared_sint.masked = 1;
-> +	hv_set_synint_state(VMBUS_MESSAGE_SINT, shared_sint.as_uint64);
-> +
-> 
->  	/* Need to correctly cleanup in the case of SMP!!! */
->  	/* Disable the interrupt */
-> -	hv_set_register(HV_REGISTER_SINT0 + VMBUS_MESSAGE_SINT,
-> -				shared_sint.as_uint64);
-> +	hv_get_simp(simp.as_uint64);
-> 
-> -	simp.as_uint64 = hv_get_register(HV_REGISTER_SIMP);
-> +	/*
-> +	 * In Isolation VM, sim and sief pages are allocated by
-> +	 * paravisor. These pages also will be used by kdump
-> +	 * kernel. So just reset enable bit here and keep page
-> +	 * addresses.
-> +	 */
->  	simp.simp_enabled = 0;
-> -	simp.base_simp_gpa = 0;
-> +	if (hv_isolation_type_snp())
-> +		memunmap(hv_cpu->synic_message_page);
-> +	else
-> +		simp.base_simp_gpa = 0;
-> 
-> -	hv_set_register(HV_REGISTER_SIMP, simp.as_uint64);
-> +	hv_set_simp(simp.as_uint64);
-> 
-> -	siefp.as_uint64 = hv_get_register(HV_REGISTER_SIEFP);
-> +	hv_get_siefp(siefp.as_uint64);
->  	siefp.siefp_enabled = 0;
-> -	siefp.base_siefp_gpa = 0;
-> 
-> -	hv_set_register(HV_REGISTER_SIEFP, siefp.as_uint64);
-> +	if (hv_isolation_type_snp())
-> +		memunmap(hv_cpu->synic_event_page);
-> +	else
-> +		siefp.base_siefp_gpa = 0;
-> +
-> +	hv_set_siefp(siefp.as_uint64);
-> 
->  	/* Disable the global synic bit */
-> -	sctrl.as_uint64 = hv_get_register(HV_REGISTER_SCONTROL);
-> +	hv_get_synic_state(sctrl.as_uint64);
->  	sctrl.enable = 0;
-> -	hv_set_register(HV_REGISTER_SCONTROL, sctrl.as_uint64);
-> +	hv_set_synic_state(sctrl.as_uint64);
-> 
->  	if (vmbus_irq != -1)
->  		disable_percpu_irq(vmbus_irq);
-> diff --git a/include/asm-generic/mshyperv.h b/include/asm-generic/mshyperv.h
-> index 079988ed45b9..90dac369a2dc 100644
-> --- a/include/asm-generic/mshyperv.h
-> +++ b/include/asm-generic/mshyperv.h
-> @@ -23,9 +23,16 @@
->  #include <linux/bitops.h>
->  #include <linux/cpumask.h>
->  #include <linux/nmi.h>
-> +#include <asm/svm.h>
-> +#include <asm/sev.h>
->  #include <asm/ptrace.h>
-> +#include <asm/mshyperv.h>
->  #include <asm/hyperv-tlfs.h>
-> 
-> +union hv_ghcb {
-> +	struct ghcb ghcb;
-> +} __packed __aligned(PAGE_SIZE);
-> +
->  struct ms_hyperv_info {
->  	u32 features;
->  	u32 priv_high;
-> @@ -45,7 +52,7 @@ struct ms_hyperv_info {
->  			u32 Reserved12 : 20;
->  		};
->  	};
-> -	void  __percpu **ghcb_base;
-> +	union hv_ghcb __percpu **ghcb_base;
->  	u64 shared_gpa_boundary;
->  };
->  extern struct ms_hyperv_info ms_hyperv;
-> @@ -55,6 +62,7 @@ extern void  __percpu  **hyperv_pcpu_output_arg;
-> 
->  extern u64 hv_do_hypercall(u64 control, void *inputaddr, void *outputaddr);
->  extern u64 hv_do_fast_hypercall8(u16 control, u64 input8);
-> +extern bool hv_isolation_type_snp(void);
-> 
->  /* Helper functions that provide a consistent pattern for checking Hyper-V hypercall status. */
->  static inline int hv_result(u64 status)
-> @@ -149,7 +157,7 @@ static inline void vmbus_signal_eom(struct hv_message *msg, u32 old_msg_type)
->  		 * possibly deliver another msg from the
->  		 * hypervisor
->  		 */
-> -		hv_set_register(HV_REGISTER_EOM, 0);
-> +		hv_signal_eom();
->  	}
->  }
-> 
-> --
-> 2.25.1
-
+>>
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
