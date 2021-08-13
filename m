@@ -7,63 +7,63 @@ X-Spam-Status: No, score=-16.7 required=3.0 tests=BAYES_00,
 	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,UNPARSEABLE_RELAY,URIBL_BLOCKED,
 	USER_AGENT_GIT autolearn=unavailable autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7227AC4338F
-	for <iommu@archiver.kernel.org>; Fri, 13 Aug 2021 06:56:23 +0000 (UTC)
-Received: from smtp2.osuosl.org (smtp2.osuosl.org [140.211.166.133])
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 81AC1C4338F
+	for <iommu@archiver.kernel.org>; Fri, 13 Aug 2021 06:56:30 +0000 (UTC)
+Received: from smtp1.osuosl.org (smtp1.osuosl.org [140.211.166.138])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 3DCCF60C3E
-	for <iommu@archiver.kernel.org>; Fri, 13 Aug 2021 06:56:23 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.4.1 mail.kernel.org 3DCCF60C3E
+	by mail.kernel.org (Postfix) with ESMTPS id 4DB8760FC4
+	for <iommu@archiver.kernel.org>; Fri, 13 Aug 2021 06:56:30 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.4.1 mail.kernel.org 4DB8760FC4
 Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=mediatek.com
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by smtp2.osuosl.org (Postfix) with ESMTP id 06A93401CD;
-	Fri, 13 Aug 2021 06:56:23 +0000 (UTC)
+	by smtp1.osuosl.org (Postfix) with ESMTP id 2653D80E73;
+	Fri, 13 Aug 2021 06:56:30 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from smtp2.osuosl.org ([127.0.0.1])
-	by localhost (smtp2.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id wEmPf1dYVyJM; Fri, 13 Aug 2021 06:56:19 +0000 (UTC)
-Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by smtp2.osuosl.org (Postfix) with ESMTPS id C8222402C1;
-	Fri, 13 Aug 2021 06:56:18 +0000 (UTC)
+Received: from smtp1.osuosl.org ([127.0.0.1])
+	by localhost (smtp1.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+	with ESMTP id xgj8c7_UQFm9; Fri, 13 Aug 2021 06:56:29 +0000 (UTC)
+Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [IPv6:2605:bc80:3010:104::8cd3:938])
+	by smtp1.osuosl.org (Postfix) with ESMTPS id E58B080E71;
+	Fri, 13 Aug 2021 06:56:28 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id A3B28C0010;
-	Fri, 13 Aug 2021 06:56:18 +0000 (UTC)
-Received: from smtp3.osuosl.org (smtp3.osuosl.org [140.211.166.136])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 2F957C000E
- for <iommu@lists.linux-foundation.org>; Fri, 13 Aug 2021 06:56:17 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id D00F8C0010;
+	Fri, 13 Aug 2021 06:56:28 +0000 (UTC)
+Received: from smtp4.osuosl.org (smtp4.osuosl.org [140.211.166.137])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id E41CBC000E
+ for <iommu@lists.linux-foundation.org>; Fri, 13 Aug 2021 06:56:27 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by smtp3.osuosl.org (Postfix) with ESMTP id 11C8A60BAD
- for <iommu@lists.linux-foundation.org>; Fri, 13 Aug 2021 06:56:17 +0000 (UTC)
+ by smtp4.osuosl.org (Postfix) with ESMTP id E123A407AB
+ for <iommu@lists.linux-foundation.org>; Fri, 13 Aug 2021 06:56:27 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from smtp3.osuosl.org ([127.0.0.1])
- by localhost (smtp3.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id ZhFHBQ0R9L-A for <iommu@lists.linux-foundation.org>;
- Fri, 13 Aug 2021 06:56:16 +0000 (UTC)
+Received: from smtp4.osuosl.org ([127.0.0.1])
+ by localhost (smtp4.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+ with ESMTP id WAET-UuKrVSL for <iommu@lists.linux-foundation.org>;
+ Fri, 13 Aug 2021 06:56:27 +0000 (UTC)
 X-Greylist: from auto-whitelisted by SQLgrey-1.8.0
-Received: from mailgw01.mediatek.com (unknown [60.244.123.138])
- by smtp3.osuosl.org (Postfix) with ESMTPS id 1B8996078F
- for <iommu@lists.linux-foundation.org>; Fri, 13 Aug 2021 06:56:15 +0000 (UTC)
-X-UUID: 1691ceafd79f4bf59a68f1d66e8be64c-20210813
-X-UUID: 1691ceafd79f4bf59a68f1d66e8be64c-20210813
-Received: from mtkexhb01.mediatek.inc [(172.21.101.102)] by
- mailgw01.mediatek.com (envelope-from <yong.wu@mediatek.com>)
+Received: from mailgw02.mediatek.com (unknown [210.61.82.184])
+ by smtp4.osuosl.org (Postfix) with ESMTPS id 016A6407A3
+ for <iommu@lists.linux-foundation.org>; Fri, 13 Aug 2021 06:56:26 +0000 (UTC)
+X-UUID: 126f1ae995ab49f8a190eec1bd467df8-20210813
+X-UUID: 126f1ae995ab49f8a190eec1bd467df8-20210813
+Received: from mtkcas07.mediatek.inc [(172.21.101.84)] by mailgw02.mediatek.com
+ (envelope-from <yong.wu@mediatek.com>)
  (Generic MTA with TLSv1.2 ECDHE-RSA-AES256-SHA384 256/256)
- with ESMTP id 656944775; Fri, 13 Aug 2021 14:56:10 +0800
+ with ESMTP id 1375040260; Fri, 13 Aug 2021 14:56:21 +0800
 Received: from mtkcas11.mediatek.inc (172.21.101.40) by
- mtkmbs07n2.mediatek.inc (172.21.101.141) with Microsoft SMTP Server (TLS) id
- 15.0.1497.2; Fri, 13 Aug 2021 14:56:08 +0800
+ mtkmbs07n1.mediatek.inc (172.21.101.16) with Microsoft SMTP Server (TLS) id
+ 15.0.1497.2; Fri, 13 Aug 2021 14:56:20 +0800
 Received: from localhost.localdomain (10.17.3.154) by mtkcas11.mediatek.inc
  (172.21.101.73) with Microsoft SMTP Server id 15.0.1497.2 via Frontend
- Transport; Fri, 13 Aug 2021 14:56:07 +0800
+ Transport; Fri, 13 Aug 2021 14:56:18 +0800
 From: Yong Wu <yong.wu@mediatek.com>
 To: Joerg Roedel <joro@8bytes.org>, Rob Herring <robh+dt@kernel.org>, Matthias
  Brugger <matthias.bgg@gmail.com>, Will Deacon <will@kernel.org>,
  Robin Murphy <robin.murphy@arm.com>
-Subject: [PATCH v2 19/29] iommu/mediatek: Add mt8195 support
-Date: Fri, 13 Aug 2021 14:53:14 +0800
-Message-ID: <20210813065324.29220-20-yong.wu@mediatek.com>
+Subject: [PATCH v2 20/29] iommu/mediatek: Only adjust code about register base
+Date: Fri, 13 Aug 2021 14:53:15 +0800
+Message-ID: <20210813065324.29220-21-yong.wu@mediatek.com>
 X-Mailer: git-send-email 2.18.0
 In-Reply-To: <20210813065324.29220-1-yong.wu@mediatek.com>
 References: <20210813065324.29220-1-yong.wu@mediatek.com>
@@ -93,87 +93,124 @@ Content-Transfer-Encoding: 7bit
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-mt8195 has 3 IOMMU, containing 2 MM IOMMUs, one is for vdo, the other
-is for vpp. and 1 INFRA IOMMU.
+No functional change. Use "base" instead of the data->base. This is
+avoid to touch too many lines in the next patches.
 
 Signed-off-by: Yong Wu <yong.wu@mediatek.com>
 ---
- drivers/iommu/mtk_iommu.c | 42 +++++++++++++++++++++++++++++++++++++++
- drivers/iommu/mtk_iommu.h |  1 +
- 2 files changed, 43 insertions(+)
+ drivers/iommu/mtk_iommu.c | 45 +++++++++++++++++++++------------------
+ 1 file changed, 24 insertions(+), 21 deletions(-)
 
 diff --git a/drivers/iommu/mtk_iommu.c b/drivers/iommu/mtk_iommu.c
-index b7a31f3a1bcf..d7eec20f0476 100644
+index d7eec20f0476..48162e156486 100644
 --- a/drivers/iommu/mtk_iommu.c
 +++ b/drivers/iommu/mtk_iommu.c
-@@ -1168,6 +1168,45 @@ static const struct mtk_iommu_plat_data mt8192_data = {
- 			   {0, 14, 16}, {0, 13, 18, 17}},
- };
+@@ -248,6 +248,7 @@ static void mtk_iommu_tlb_flush_range_sync(unsigned long iova, size_t size,
+ 	struct list_head *head = data->hw_list;
+ 	bool has_pm = !!data->dev->pm_domain;
+ 	unsigned long flags;
++	void __iomem *base;
+ 	int ret;
+ 	u32 tmp;
  
-+static const struct mtk_iommu_plat_data mt8195_data_infra = {
-+	.m4u_plat	  = M4U_MT8195,
-+	.flags            = WR_THROT_EN | DCM_DISABLE |
-+			    MTK_IOMMU_TYPE_INFRA | IFA_IOMMU_PCIe_SUPPORT,
-+	.pericfg_comp_str = "mediatek,mt8195-pericfg_ao",
-+	.inv_sel_reg      = REG_MMU_INV_SEL_GEN2,
-+	.iova_region      = single_domain,
-+	.iova_region_nr   = ARRAY_SIZE(single_domain),
-+};
-+
-+static const struct mtk_iommu_plat_data mt8195_data_vdo = {
-+	.m4u_plat	= M4U_MT8195,
-+	.flags          = HAS_BCLK | HAS_SUB_COMM_2BITS | OUT_ORDER_WR_EN |
-+			  WR_THROT_EN | NOT_STD_AXI_MODE | IOVA_34_EN |
-+			  SHARE_PGTABLE | MTK_IOMMU_TYPE_MM,
-+	.hw_list        = &m4ulist,
-+	.inv_sel_reg    = REG_MMU_INV_SEL_GEN2,
-+	.iova_region	= mt8192_multi_dom,
-+	.iova_region_nr	= ARRAY_SIZE(mt8192_multi_dom),
-+	.larbid_remap   = {{2, 0}, {21}, {24}, {7}, {19}, {9, 10, 11},
-+			   {13, 17, 15/* 17b */, 25}, {5}},
-+};
-+
-+static const struct mtk_iommu_plat_data mt8195_data_vpp = {
-+	.m4u_plat	= M4U_MT8195,
-+	.flags          = HAS_BCLK | HAS_SUB_COMM_3BITS | OUT_ORDER_WR_EN |
-+			  WR_THROT_EN | NOT_STD_AXI_MODE | IOVA_34_EN |
-+			  SHARE_PGTABLE | MTK_IOMMU_TYPE_MM,
-+	.hw_list        = &m4ulist,
-+	.inv_sel_reg    = REG_MMU_INV_SEL_GEN2,
-+	.iova_region	= mt8192_multi_dom,
-+	.iova_region_nr	= ARRAY_SIZE(mt8192_multi_dom),
-+	.larbid_remap   = {{1}, {3}, {22, 0, 0, 0, 23}, {8},
-+			   {20}, {12},
-+			   /* 16: 16a; 29: 16b; 30: CCUtop0; 31: CCUtop1 */
-+			   {14, 16, 29, 26, 30, 31, 18},
-+			   {4, 0, 0, 0, 6}},
-+};
-+
- static const struct of_device_id mtk_iommu_of_ids[] = {
- 	{ .compatible = "mediatek,mt2712-m4u", .data = &mt2712_data},
- 	{ .compatible = "mediatek,mt6779-m4u", .data = &mt6779_data},
-@@ -1175,6 +1214,9 @@ static const struct of_device_id mtk_iommu_of_ids[] = {
- 	{ .compatible = "mediatek,mt8173-m4u", .data = &mt8173_data},
- 	{ .compatible = "mediatek,mt8183-m4u", .data = &mt8183_data},
- 	{ .compatible = "mediatek,mt8192-m4u", .data = &mt8192_data},
-+	{ .compatible = "mediatek,mt8195-iommu-infra", .data = &mt8195_data_infra},
-+	{ .compatible = "mediatek,mt8195-iommu-vdo",   .data = &mt8195_data_vdo},
-+	{ .compatible = "mediatek,mt8195-iommu-vpp",   .data = &mt8195_data_vpp},
- 	{}
- };
+@@ -260,19 +261,19 @@ static void mtk_iommu_tlb_flush_range_sync(unsigned long iova, size_t size,
+ 			}
+ 		}
  
-diff --git a/drivers/iommu/mtk_iommu.h b/drivers/iommu/mtk_iommu.h
-index 676d306af046..e7ede1123624 100644
---- a/drivers/iommu/mtk_iommu.h
-+++ b/drivers/iommu/mtk_iommu.h
-@@ -46,6 +46,7 @@ enum mtk_iommu_plat {
- 	M4U_MT8173,
- 	M4U_MT8183,
- 	M4U_MT8192,
-+	M4U_MT8195,
- };
++		base = data->base;
++
+ 		spin_lock_irqsave(&data->tlb_lock, flags);
+ 		writel_relaxed(F_INVLD_EN1 | F_INVLD_EN0,
+-			       data->base + data->plat_data->inv_sel_reg);
++			       base + data->plat_data->inv_sel_reg);
  
- struct mtk_iommu_iova_region;
+-		writel_relaxed(MTK_IOMMU_TLB_ADDR(iova),
+-			       data->base + REG_MMU_INVLD_START_A);
++		writel_relaxed(MTK_IOMMU_TLB_ADDR(iova), base + REG_MMU_INVLD_START_A);
+ 		writel_relaxed(MTK_IOMMU_TLB_ADDR(iova + size - 1),
+-			       data->base + REG_MMU_INVLD_END_A);
+-		writel_relaxed(F_MMU_INV_RANGE,
+-			       data->base + REG_MMU_INVALIDATE);
++			       base + REG_MMU_INVLD_END_A);
++		writel_relaxed(F_MMU_INV_RANGE, base + REG_MMU_INVALIDATE);
+ 
+ 		/* tlb sync */
+-		ret = readl_poll_timeout_atomic(data->base + REG_MMU_CPE_DONE,
++		ret = readl_poll_timeout_atomic(base + REG_MMU_CPE_DONE,
+ 						tmp, tmp != 0, 10, 1000);
+ 		if (ret) {
+ 			dev_warn(data->dev,
+@@ -280,7 +281,7 @@ static void mtk_iommu_tlb_flush_range_sync(unsigned long iova, size_t size,
+ 			__mtk_iommu_tlb_flush_all(data);
+ 		}
+ 		/* Clear the CPE status */
+-		writel_relaxed(0, data->base + REG_MMU_CPE_DONE);
++		writel_relaxed(0, base + REG_MMU_CPE_DONE);
+ 		spin_unlock_irqrestore(&data->tlb_lock, flags);
+ 
+ 		if (has_pm)
+@@ -294,23 +295,25 @@ static irqreturn_t mtk_iommu_isr(int irq, void *dev_id)
+ 	struct mtk_iommu_domain *dom = data->m4u_dom;
+ 	unsigned int fault_larb = 0, fault_port = 0, sub_comm = 0;
+ 	u32 int_state, regval, va34_32, pa34_32;
++	const struct mtk_iommu_plat_data *plat_data = data->plat_data;
++	void __iomem *base = data->base;
+ 	u64 fault_iova, fault_pa;
+ 	bool layer, write;
+ 
+ 	/* Read error info from registers */
+-	int_state = readl_relaxed(data->base + REG_MMU_FAULT_ST1);
++	int_state = readl_relaxed(base + REG_MMU_FAULT_ST1);
+ 	if (int_state & F_REG_MMU0_FAULT_MASK) {
+-		regval = readl_relaxed(data->base + REG_MMU0_INT_ID);
+-		fault_iova = readl_relaxed(data->base + REG_MMU0_FAULT_VA);
+-		fault_pa = readl_relaxed(data->base + REG_MMU0_INVLD_PA);
++		regval = readl_relaxed(base + REG_MMU0_INT_ID);
++		fault_iova = readl_relaxed(base + REG_MMU0_FAULT_VA);
++		fault_pa = readl_relaxed(base + REG_MMU0_INVLD_PA);
+ 	} else {
+-		regval = readl_relaxed(data->base + REG_MMU1_INT_ID);
+-		fault_iova = readl_relaxed(data->base + REG_MMU1_FAULT_VA);
+-		fault_pa = readl_relaxed(data->base + REG_MMU1_INVLD_PA);
++		regval = readl_relaxed(base + REG_MMU1_INT_ID);
++		fault_iova = readl_relaxed(base + REG_MMU1_FAULT_VA);
++		fault_pa = readl_relaxed(base + REG_MMU1_INVLD_PA);
+ 	}
+ 	layer = fault_iova & F_MMU_FAULT_VA_LAYER_BIT;
+ 	write = fault_iova & F_MMU_FAULT_VA_WRITE_BIT;
+-	if (MTK_IOMMU_HAS_FLAG(data->plat_data, IOVA_34_EN)) {
++	if (MTK_IOMMU_HAS_FLAG(plat_data, IOVA_34_EN)) {
+ 		va34_32 = FIELD_GET(F_MMU_INVAL_VA_34_32_MASK, fault_iova);
+ 		fault_iova = fault_iova & F_MMU_INVAL_VA_31_12_MASK;
+ 		fault_iova |= (u64)va34_32 << 32;
+@@ -318,12 +321,12 @@ static irqreturn_t mtk_iommu_isr(int irq, void *dev_id)
+ 	pa34_32 = FIELD_GET(F_MMU_INVAL_PA_34_32_MASK, fault_iova);
+ 	fault_pa |= (u64)pa34_32 << 32;
+ 
+-	if (MTK_IOMMU_IS_TYPE(data->plat_data, MTK_IOMMU_TYPE_MM)) {
++	if (MTK_IOMMU_IS_TYPE(plat_data, MTK_IOMMU_TYPE_MM)) {
+ 		fault_port = F_MMU_INT_ID_PORT_ID(regval);
+-		if (MTK_IOMMU_HAS_FLAG(data->plat_data, HAS_SUB_COMM_2BITS)) {
++		if (MTK_IOMMU_HAS_FLAG(plat_data, HAS_SUB_COMM_2BITS)) {
+ 			fault_larb = F_MMU_INT_ID_COMM_ID(regval);
+ 			sub_comm = F_MMU_INT_ID_SUB_COMM_ID(regval);
+-		} else if (MTK_IOMMU_HAS_FLAG(data->plat_data, HAS_SUB_COMM_3BITS)) {
++		} else if (MTK_IOMMU_HAS_FLAG(plat_data, HAS_SUB_COMM_3BITS)) {
+ 			fault_larb = F_MMU_INT_ID_COMM_ID_EXT(regval);
+ 			sub_comm = F_MMU_INT_ID_SUB_COMM_ID_EXT(regval);
+ 		} else {
+@@ -342,9 +345,9 @@ static irqreturn_t mtk_iommu_isr(int irq, void *dev_id)
+ 	}
+ 
+ 	/* Interrupt clear */
+-	regval = readl_relaxed(data->base + REG_MMU_INT_CONTROL0);
++	regval = readl_relaxed(base + REG_MMU_INT_CONTROL0);
+ 	regval |= F_INT_CLR_BIT;
+-	writel_relaxed(regval, data->base + REG_MMU_INT_CONTROL0);
++	writel_relaxed(regval, base + REG_MMU_INT_CONTROL0);
+ 
+ 	mtk_iommu_tlb_flush_all(data);
+ 
 -- 
 2.18.0
 
