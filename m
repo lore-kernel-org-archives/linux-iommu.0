@@ -2,117 +2,82 @@ Return-Path: <SRS0=SLGw=NE=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-2.0 required=3.0 tests=BAYES_00,DKIM_ADSP_CUSTOM_MED,
-	DKIM_INVALID,DKIM_SIGNED,FREEMAIL_FORGED_FROMDOMAIN,FREEMAIL_FROM,
-	HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,NICE_REPLY_A,SPF_HELO_NONE,
-	SPF_PASS,URIBL_BLOCKED,USER_AGENT_SANE_1 autolearn=no autolearn_force=no
-	version=3.4.0
+X-Spam-Status: No, score=-10.2 required=3.0 tests=BAYES_00,
+	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,NICE_REPLY_A,
+	SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_SANE_1 autolearn=ham
+	autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id DF8E7C4338F
-	for <iommu@archiver.kernel.org>; Fri, 13 Aug 2021 16:43:43 +0000 (UTC)
-Received: from smtp3.osuosl.org (smtp3.osuosl.org [140.211.166.136])
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 422F5C4338F
+	for <iommu@archiver.kernel.org>; Fri, 13 Aug 2021 16:46:19 +0000 (UTC)
+Received: from smtp1.osuosl.org (smtp1.osuosl.org [140.211.166.138])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 7C4C0610A4
-	for <iommu@archiver.kernel.org>; Fri, 13 Aug 2021 16:43:43 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.4.1 mail.kernel.org 7C4C0610A4
-Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=gmail.com
+	by mail.kernel.org (Postfix) with ESMTPS id D2842610A4
+	for <iommu@archiver.kernel.org>; Fri, 13 Aug 2021 16:46:18 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.4.1 mail.kernel.org D2842610A4
+Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=huawei.com
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by smtp3.osuosl.org (Postfix) with ESMTP id 422C5605C4;
-	Fri, 13 Aug 2021 16:43:43 +0000 (UTC)
+	by smtp1.osuosl.org (Postfix) with ESMTP id 9F46F80F04;
+	Fri, 13 Aug 2021 16:46:18 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from smtp3.osuosl.org ([127.0.0.1])
-	by localhost (smtp3.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id nmakZntobXUY; Fri, 13 Aug 2021 16:43:39 +0000 (UTC)
-Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by smtp3.osuosl.org (Postfix) with ESMTPS id D39CA605BF;
-	Fri, 13 Aug 2021 16:43:38 +0000 (UTC)
+Received: from smtp1.osuosl.org ([127.0.0.1])
+	by localhost (smtp1.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+	with ESMTP id UZnOzAy7r0mh; Fri, 13 Aug 2021 16:46:14 +0000 (UTC)
+Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [IPv6:2605:bc80:3010:104::8cd3:938])
+	by smtp1.osuosl.org (Postfix) with ESMTPS id 5971B80E7F;
+	Fri, 13 Aug 2021 16:46:14 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id B5EBEC001A;
-	Fri, 13 Aug 2021 16:43:38 +0000 (UTC)
-Received: from smtp3.osuosl.org (smtp3.osuosl.org [140.211.166.136])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 1F247C000E
- for <iommu@lists.linux-foundation.org>; Fri, 13 Aug 2021 16:43:37 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 27D58C001A;
+	Fri, 13 Aug 2021 16:46:14 +0000 (UTC)
+Received: from smtp1.osuosl.org (smtp1.osuosl.org [IPv6:2605:bc80:3010::138])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id A00B1C000E
+ for <iommu@lists.linux-foundation.org>; Fri, 13 Aug 2021 16:46:12 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by smtp3.osuosl.org (Postfix) with ESMTP id 08E81605BF
- for <iommu@lists.linux-foundation.org>; Fri, 13 Aug 2021 16:43:37 +0000 (UTC)
+ by smtp1.osuosl.org (Postfix) with ESMTP id 89FE480E91
+ for <iommu@lists.linux-foundation.org>; Fri, 13 Aug 2021 16:46:12 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from smtp3.osuosl.org ([127.0.0.1])
- by localhost (smtp3.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id UkVSjtPCosF5 for <iommu@lists.linux-foundation.org>;
- Fri, 13 Aug 2021 16:43:33 +0000 (UTC)
-X-Greylist: whitelisted by SQLgrey-1.8.0
-Received: from mail-pl1-x633.google.com (mail-pl1-x633.google.com
- [IPv6:2607:f8b0:4864:20::633])
- by smtp3.osuosl.org (Postfix) with ESMTPS id 1CC51605E1
- for <iommu@lists.linux-foundation.org>; Fri, 13 Aug 2021 16:43:32 +0000 (UTC)
-Received: by mail-pl1-x633.google.com with SMTP id b7so12717349plh.7
- for <iommu@lists.linux-foundation.org>; Fri, 13 Aug 2021 09:43:32 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=gmail.com; s=20161025;
- h=subject:to:cc:references:from:message-id:date:user-agent
- :mime-version:in-reply-to:content-language:content-transfer-encoding;
- bh=Br8kWTJBYxAsDNXsgBmQPMZlHU8mozxNfYo/9WDsR4I=;
- b=aoTndkeVaHx+xBp7rqX3zmRgkXAUaeWNU6g1W5l6j2h14KXWDt/4KR1/vs8KQLuFc+
- 34iHxz0QkWtvArbfHie0V+3SpbV3Etyaux0TSLQVrp+6lyKitKxYLcmpKDuBa3hKgs1Q
- L+HBlJsf1N4PmA7Lhrcv6XYigXfGievs/en9zESUnFG4qu4IHQbnz7Fh+vazW6arL56N
- dGeRpy35Kd27RqG5JRWguH9nICCCpQJez7lwxLr0P4Fr+rJHgUPVJfNeUcfFFOMN0Pib
- ad4dksepULIsumOQAu+X2SAOKzn90wqArATLcQxfXs2NZOHu8wo377ndiUdyqLv8zpwd
- Rq0A==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
- d=1e100.net; s=20161025;
- h=x-gm-message-state:subject:to:cc:references:from:message-id:date
- :user-agent:mime-version:in-reply-to:content-language
- :content-transfer-encoding;
- bh=Br8kWTJBYxAsDNXsgBmQPMZlHU8mozxNfYo/9WDsR4I=;
- b=m9y98hj9deMTJJ3N8FG6Vs70XnqltpOrhNMSN1K034I7ErxmgUf6PrCnncSkQ3mFBu
- jTn27AOt9m1XQ0Gg/p5iJHyPmnYvLrHKkHv+IJFIH8C5W1NZom2U5HQHx+gkdLXR6rYR
- T59lTBphMAfSFv1YJF7/54SHnDUtjID38m9ADjurxwHWR7mMi9F+36UAGU/8TnaWBf82
- Ke3D+CWdl/7A1gjvv0Iya6bFSyfQR6M9+gV+IA1Pq43qrq5qo41NPDh6ehdNbK0dUE0s
- 17f1ZZ5s4g9+pPxJf+rTpE/E+/XOI8vypzb8fiXlhlZAV4Mgz550nah2a4CVkJjYGMY3
- Jstg==
-X-Gm-Message-State: AOAM530Qbds2Q4Kpr8SHn8JTn2XwMWTBvRGhtyC9ElGH1lzUK36XlFra
- P7pjJbfvfpqpI1MUB6pZtYM=
-X-Google-Smtp-Source: ABdhPJzF5OxYFo7ub8a8o5Dc0QIjyn2ULZzeCAc9wcqXWRPO4wbeX7mR+yOK6dhKrmTMKf5MwdVa8w==
-X-Received: by 2002:a17:90a:c2:: with SMTP id v2mr3374490pjd.96.1628873012452; 
- Fri, 13 Aug 2021 09:43:32 -0700 (PDT)
-Received: from ?IPv6:2404:f801:0:5:8000::50b? ([2404:f801:9000:1a:efea::50b])
- by smtp.gmail.com with ESMTPSA id
- q5sm2573972pfu.185.2021.08.13.09.43.18
- (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
- Fri, 13 Aug 2021 09:43:32 -0700 (PDT)
-Subject: Re: [Resend RFC PATCH V4 09/13] x86/Swiotlb/HV: Add Swiotlb bounce
- buffer remap function for HV IVM
-To: Christoph Hellwig <hch@lst.de>
-References: <20210707154629.3977369-1-ltykernel@gmail.com>
- <20210707154629.3977369-10-ltykernel@gmail.com>
- <20210720135437.GA13554@lst.de>
-From: Tianyu Lan <ltykernel@gmail.com>
-Message-ID: <20926467-6f67-9549-1c34-1841f597b977@gmail.com>
-Date: Sat, 14 Aug 2021 00:43:16 +0800
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:78.0) Gecko/20100101
- Thunderbird/78.13.0
+Received: from smtp1.osuosl.org ([127.0.0.1])
+ by localhost (smtp1.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+ with ESMTP id 0Euqhq2BBKao for <iommu@lists.linux-foundation.org>;
+ Fri, 13 Aug 2021 16:46:11 +0000 (UTC)
+X-Greylist: domain auto-whitelisted by SQLgrey-1.8.0
+Received: from frasgout.his.huawei.com (frasgout.his.huawei.com
+ [185.176.79.56])
+ by smtp1.osuosl.org (Postfix) with ESMTPS id 4805B80E7F
+ for <iommu@lists.linux-foundation.org>; Fri, 13 Aug 2021 16:46:11 +0000 (UTC)
+Received: from fraeml714-chm.china.huawei.com (unknown [172.18.147.200])
+ by frasgout.his.huawei.com (SkyGuard) with ESMTP id 4GmTv86sfxz6FBPV;
+ Sat, 14 Aug 2021 00:45:24 +0800 (CST)
+Received: from lhreml724-chm.china.huawei.com (10.201.108.75) by
+ fraeml714-chm.china.huawei.com (10.206.15.33) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2308.8; Fri, 13 Aug 2021 18:46:08 +0200
+Received: from [10.47.94.64] (10.47.94.64) by lhreml724-chm.china.huawei.com
+ (10.201.108.75) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2176.2; Fri, 13 Aug
+ 2021 17:46:07 +0100
+Subject: Re: [PATCH 1/4] iommu/arm-smmu-v3: Use command queue batching helpers
+ to improve performance
+To: Robin Murphy <robin.murphy@arm.com>, Zhen Lei
+ <thunder.leizhen@huawei.com>, Will Deacon <will@kernel.org>, Joerg Roedel
+ <joro@8bytes.org>, linux-arm-kernel <linux-arm-kernel@lists.infradead.org>,
+ iommu <iommu@lists.linux-foundation.org>, <linux-kernel@vger.kernel.org>
+References: <20210811114852.2429-1-thunder.leizhen@huawei.com>
+ <20210811114852.2429-2-thunder.leizhen@huawei.com>
+ <81258eb7-eb73-8a32-0983-3487daba1167@arm.com>
+From: John Garry <john.garry@huawei.com>
+Message-ID: <4e741216-d6e7-c40c-f257-242cd2fea302@huawei.com>
+Date: Fri, 13 Aug 2021 17:45:23 +0100
+User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; rv:68.0) Gecko/20100101
+ Thunderbird/68.12.1
 MIME-Version: 1.0
-In-Reply-To: <20210720135437.GA13554@lst.de>
+In-Reply-To: <81258eb7-eb73-8a32-0983-3487daba1167@arm.com>
 Content-Language: en-US
-Cc: linux-hyperv@vger.kernel.org, brijesh.singh@amd.com, david@redhat.com,
- peterz@infradead.org, dave.hansen@linux.intel.com, hpa@zytor.com,
- anparri@microsoft.com, kys@microsoft.com, will@kernel.org,
- boris.ostrovsky@oracle.com, linux-arch@vger.kernel.org, robh@kernel.org,
- wei.liu@kernel.org, sstabellini@kernel.org, sthemmin@microsoft.com,
- xen-devel@lists.xenproject.org, linux-scsi@vger.kernel.org, x86@kernel.org,
- decui@microsoft.com, ardb@kernel.org, michael.h.kelley@microsoft.com,
- nramas@linux.microsoft.com, mingo@redhat.com, pgonda@google.com,
- rientjes@google.com, kuba@kernel.org, jejb@linux.ibm.com,
- martin.b.radev@gmail.com, thomas.lendacky@amd.com, Tianyu.Lan@microsoft.com,
- keescook@chromium.org, arnd@arndb.de, konrad.wilk@oracle.com,
- haiyangz@microsoft.com, bp@alien8.de, luto@kernel.org,
- krish.sadhukhan@oracle.com, tglx@linutronix.de, vkuznets@redhat.com,
- jgross@suse.com, martin.petersen@oracle.com, saravanand@fb.com,
- netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
- iommu@lists.linux-foundation.org, rppt@kernel.org, hannes@cmpxchg.org,
- akpm@linux-foundation.org, robin.murphy@arm.com, davem@davemloft.net,
- kirill.shutemov@linux.intel.com
+X-Originating-IP: [10.47.94.64]
+X-ClientProxiedBy: lhreml730-chm.china.huawei.com (10.201.108.81) To
+ lhreml724-chm.china.huawei.com (10.201.108.75)
+X-CFilter-Loop: Reflected
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -125,36 +90,25 @@ List-Post: <mailto:iommu@lists.linux-foundation.org>
 List-Help: <mailto:iommu-request@lists.linux-foundation.org?subject=help>
 List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
  <mailto:iommu-request@lists.linux-foundation.org?subject=subscribe>
-Content-Transfer-Encoding: 7bit
-Content-Type: text/plain; charset="us-ascii"; Format="flowed"
+Content-Transfer-Encoding: base64
+Content-Type: text/plain; charset="utf-8"; Format="flowed"
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-Hi Christoph:
-       I followed your this suggestion to rework the latest
-version(https://lkml.org/lkml/2021/8/9/805). I just remove the arch
-prefix from your suggested name arch_dma_map_decrypted because the 
-platform may populate their map/umap callback in the ops. But from your 
-latest comment(https://lkml.org/lkml/2021/8/12/149), these names confuse 
-vs the actual dma_map_* calls... Could you help to give the right 
-function name? The new map function is to map bounce buffer in the 
-trust/Isolation VM and these buffers are DMA memory.
-
-
-
-On 7/20/2021 9:54 PM, Christoph Hellwig wrote:
->> -	set_memory_decrypted((unsigned long)vaddr, bytes >> PAGE_SHIFT);
->> -	memset(vaddr, 0, bytes);
->> +	mem->vstart = (void *)set_memory_decrypted_map((unsigned long)vaddr, bytes);
-> Please always pass kernel virtual addresses as pointers.
-> 
-> And I think these APIs might need better names, e.g.
-> 
-> arch_dma_map_decrypted and arch_dma_unmap_decrypted.
-> 
-> Also these will need fallback versions for non-x86 architectures that
-> currently use memory encryption.
-_______________________________________________
-iommu mailing list
-iommu@lists.linux-foundation.org
-https://lists.linuxfoundation.org/mailman/listinfo/iommu
+T24gMTMvMDgvMjAyMSAxNzowMSwgUm9iaW4gTXVycGh5IHdyb3RlOgo+Pgo+PiBkaWZmIC0tZ2l0
+IGEvZHJpdmVycy9pb21tdS9hcm0vYXJtLXNtbXUtdjMvYXJtLXNtbXUtdjMuYyAKPj4gYi9kcml2
+ZXJzL2lvbW11L2FybS9hcm0tc21tdS12My9hcm0tc21tdS12My5jCj4+IGluZGV4IDIzNWY5YmRh
+ZWFmMjIzYi4uYzgxY2Q5MjkwNDdmNTczIDEwMDY0NAo+PiAtLS0gYS9kcml2ZXJzL2lvbW11L2Fy
+bS9hcm0tc21tdS12My9hcm0tc21tdS12My5jCj4+ICsrKyBiL2RyaXZlcnMvaW9tbXUvYXJtL2Fy
+bS1zbW11LXYzL2FybS1zbW11LXYzLmMKPj4gQEAgLTE3NDcsMTUgKzE3NDcsMTYgQEAgc3RhdGlj
+IGludCBhcm1fc21tdV9hdGNfaW52X21hc3RlcihzdHJ1Y3QgCj4+IGFybV9zbW11X21hc3RlciAq
+bWFzdGVyKQo+PiDCoCB7Cj4+IMKgwqDCoMKgwqAgaW50IGk7Cj4+IMKgwqDCoMKgwqAgc3RydWN0
+IGFybV9zbW11X2NtZHFfZW50IGNtZDsKPj4gK8KgwqDCoCBzdHJ1Y3QgYXJtX3NtbXVfY21kcV9i
+YXRjaCBjbWRzID0ge307Cj4gCj4gQlRXLCBpdCBsb29rcyBsaWtlIHRoaXMgaGFzIGNyb3NzZWQg
+b3ZlciB3aXRoIEpvaG4ncyBwYXRjaCByZW1vdmluZyB0aGVzZS4KCkl0IGlzIG9ubHkgY2FsbGVk
+IGZyb20gYXJtX3NtbXVfZGlzYWJsZV9hdHMoKSwgc28gbm90IGhvdC1wYXRoIGJ5IHRoZSAKbG9v
+ayBmb3IgaXQuIE9yIHdobyBldmVuIGhhcyBhdHMgSFcgLi4uPwoKQnV0IGl0IHNob3VsZCBiZSBh
+dCBsZWFzdCBjbGVhbmVkLXVwIGZvciBjb25zaXN0ZW5jeS4gTGVpemhlbj8KClRoYW5rcywKSm9o
+bgpfX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fXwppb21tdSBt
+YWlsaW5nIGxpc3QKaW9tbXVAbGlzdHMubGludXgtZm91bmRhdGlvbi5vcmcKaHR0cHM6Ly9saXN0
+cy5saW51eGZvdW5kYXRpb24ub3JnL21haWxtYW4vbGlzdGluZm8vaW9tbXU=
