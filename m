@@ -7,63 +7,64 @@ X-Spam-Status: No, score=-16.7 required=3.0 tests=BAYES_00,
 	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,UNPARSEABLE_RELAY,URIBL_BLOCKED,
 	USER_AGENT_GIT autolearn=unavailable autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id CD799C4338F
-	for <iommu@archiver.kernel.org>; Fri, 13 Aug 2021 06:57:37 +0000 (UTC)
-Received: from smtp3.osuosl.org (smtp3.osuosl.org [140.211.166.136])
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 367FFC4320A
+	for <iommu@archiver.kernel.org>; Fri, 13 Aug 2021 06:57:44 +0000 (UTC)
+Received: from smtp1.osuosl.org (smtp1.osuosl.org [140.211.166.138])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 9290B6103E
-	for <iommu@archiver.kernel.org>; Fri, 13 Aug 2021 06:57:37 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.4.1 mail.kernel.org 9290B6103E
+	by mail.kernel.org (Postfix) with ESMTPS id 03BEC60C3E
+	for <iommu@archiver.kernel.org>; Fri, 13 Aug 2021 06:57:44 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.4.1 mail.kernel.org 03BEC60C3E
 Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=mediatek.com
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by smtp3.osuosl.org (Postfix) with ESMTP id 6709D60B85;
-	Fri, 13 Aug 2021 06:57:37 +0000 (UTC)
+	by smtp1.osuosl.org (Postfix) with ESMTP id D7B4980E77;
+	Fri, 13 Aug 2021 06:57:43 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from smtp3.osuosl.org ([127.0.0.1])
-	by localhost (smtp3.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id dIS3B-c4JQT2; Fri, 13 Aug 2021 06:57:33 +0000 (UTC)
+Received: from smtp1.osuosl.org ([127.0.0.1])
+	by localhost (smtp1.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+	with ESMTP id ay13Dsm79Ka1; Fri, 13 Aug 2021 06:57:40 +0000 (UTC)
 Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by smtp3.osuosl.org (Postfix) with ESMTPS id 7ED43606EC;
-	Fri, 13 Aug 2021 06:57:33 +0000 (UTC)
+	by smtp1.osuosl.org (Postfix) with ESMTPS id B75BC80E79;
+	Fri, 13 Aug 2021 06:57:39 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 60A0AC0010;
-	Fri, 13 Aug 2021 06:57:33 +0000 (UTC)
-Received: from smtp3.osuosl.org (smtp3.osuosl.org [140.211.166.136])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 026C6C000E
- for <iommu@lists.linux-foundation.org>; Fri, 13 Aug 2021 06:57:32 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 96359C0010;
+	Fri, 13 Aug 2021 06:57:39 +0000 (UTC)
+Received: from smtp4.osuosl.org (smtp4.osuosl.org [140.211.166.137])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 01512C000E
+ for <iommu@lists.linux-foundation.org>; Fri, 13 Aug 2021 06:57:39 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by smtp3.osuosl.org (Postfix) with ESMTP id F3C296070A
- for <iommu@lists.linux-foundation.org>; Fri, 13 Aug 2021 06:57:31 +0000 (UTC)
+ by smtp4.osuosl.org (Postfix) with ESMTP id E4AC1407B2
+ for <iommu@lists.linux-foundation.org>; Fri, 13 Aug 2021 06:57:38 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from smtp3.osuosl.org ([127.0.0.1])
- by localhost (smtp3.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id fTCgVPh2Krzw for <iommu@lists.linux-foundation.org>;
- Fri, 13 Aug 2021 06:57:31 +0000 (UTC)
+Received: from smtp4.osuosl.org ([127.0.0.1])
+ by localhost (smtp4.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+ with ESMTP id ykzeF8oLL211 for <iommu@lists.linux-foundation.org>;
+ Fri, 13 Aug 2021 06:57:38 +0000 (UTC)
 X-Greylist: from auto-whitelisted by SQLgrey-1.8.0
-Received: from mailgw01.mediatek.com (unknown [60.244.123.138])
- by smtp3.osuosl.org (Postfix) with ESMTPS id F2AFD606EC
- for <iommu@lists.linux-foundation.org>; Fri, 13 Aug 2021 06:57:30 +0000 (UTC)
-X-UUID: 710e9d7bdf484ed5bd2daa8959c41652-20210813
-X-UUID: 710e9d7bdf484ed5bd2daa8959c41652-20210813
-Received: from mtkcas06.mediatek.inc [(172.21.101.30)] by mailgw01.mediatek.com
+Received: from mailgw02.mediatek.com (unknown [210.61.82.184])
+ by smtp4.osuosl.org (Postfix) with ESMTPS id EF1774043F
+ for <iommu@lists.linux-foundation.org>; Fri, 13 Aug 2021 06:57:37 +0000 (UTC)
+X-UUID: a61dd92be5ee4924abbeba70fe224256-20210813
+X-UUID: a61dd92be5ee4924abbeba70fe224256-20210813
+Received: from mtkcas06.mediatek.inc [(172.21.101.30)] by mailgw02.mediatek.com
  (envelope-from <yong.wu@mediatek.com>)
  (Generic MTA with TLSv1.2 ECDHE-RSA-AES256-SHA384 256/256)
- with ESMTP id 1997915322; Fri, 13 Aug 2021 14:57:27 +0800
+ with ESMTP id 107314599; Fri, 13 Aug 2021 14:57:33 +0800
 Received: from mtkcas11.mediatek.inc (172.21.101.40) by
- mtkmbs07n2.mediatek.inc (172.21.101.141) with Microsoft SMTP Server (TLS) id
- 15.0.1497.2; Fri, 13 Aug 2021 14:57:26 +0800
+ mtkmbs07n1.mediatek.inc (172.21.101.16) with Microsoft SMTP Server (TLS) id
+ 15.0.1497.2; Fri, 13 Aug 2021 14:57:31 +0800
 Received: from localhost.localdomain (10.17.3.154) by mtkcas11.mediatek.inc
  (172.21.101.73) with Microsoft SMTP Server id 15.0.1497.2 via Frontend
- Transport; Fri, 13 Aug 2021 14:57:25 +0800
+ Transport; Fri, 13 Aug 2021 14:57:30 +0800
 From: Yong Wu <yong.wu@mediatek.com>
 To: Joerg Roedel <joro@8bytes.org>, Rob Herring <robh+dt@kernel.org>, Matthias
  Brugger <matthias.bgg@gmail.com>, Will Deacon <will@kernel.org>,
  Robin Murphy <robin.murphy@arm.com>
-Subject: [PATCH v2 27/29] iommu/mediatek: Initialise/Remove for multi bank dev
-Date: Fri, 13 Aug 2021 14:53:22 +0800
-Message-ID: <20210813065324.29220-28-yong.wu@mediatek.com>
+Subject: [PATCH v2 28/29] iommu/mediatek: Backup/restore regsiters for multi
+ banks
+Date: Fri, 13 Aug 2021 14:53:23 +0800
+Message-ID: <20210813065324.29220-29-yong.wu@mediatek.com>
 X-Mailer: git-send-email 2.18.0
 In-Reply-To: <20210813065324.29220-1-yong.wu@mediatek.com>
 References: <20210813065324.29220-1-yong.wu@mediatek.com>
@@ -93,119 +94,119 @@ Content-Transfer-Encoding: 7bit
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-The registers for each bank of the IOMMU base are in order, delta is
-0x1000. Initialise the base for each bank.
-
-For all the previous SoC, we only have bank0. thus use "do {} while()"
-to allow bank0 always go.
-
-When removing the device, Not always all the banks are initialised, it
-depend on if there is masters for some banks. thus, use a register to
-confirm this.
+Each bank has some independent registers. thus backup/restore them for
+each a bank when suspend and resume.
 
 Signed-off-by: Yong Wu <yong.wu@mediatek.com>
 ---
- drivers/iommu/mtk_iommu.c | 51 +++++++++++++++++++++++++++++----------
- 1 file changed, 38 insertions(+), 13 deletions(-)
+ drivers/iommu/mtk_iommu.c | 39 +++++++++++++++++++++++++++------------
+ drivers/iommu/mtk_iommu.h | 14 +++++++++++---
+ 2 files changed, 38 insertions(+), 15 deletions(-)
 
 diff --git a/drivers/iommu/mtk_iommu.c b/drivers/iommu/mtk_iommu.c
-index ce83569eec21..142ee8f3a560 100644
+index 142ee8f3a560..3d474eedce3e 100644
 --- a/drivers/iommu/mtk_iommu.c
 +++ b/drivers/iommu/mtk_iommu.c
-@@ -113,6 +113,7 @@
- #define F_MMU_INT_ID_PORT_ID(a)			(((a) >> 2) & 0x1f)
+@@ -1135,16 +1135,23 @@ static int __maybe_unused mtk_iommu_runtime_suspend(struct device *dev)
+ {
+ 	struct mtk_iommu_data *data = dev_get_drvdata(dev);
+ 	struct mtk_iommu_suspend_reg *reg = &data->reg;
+-	void __iomem *base = data->bank[0].base;
++	void __iomem *base;
++	int i = 0;
  
- #define MTK_PROTECT_PA_ALIGN			256
-+#define MTK_IOMMU_BANK_SZ			0x1000
- 
- #define PERICFG_IOMMU_1				0x714
- 
-@@ -945,11 +946,11 @@ static int mtk_iommu_probe(struct platform_device *pdev)
- 	struct mtk_iommu_data   *data;
- 	struct device           *dev = &pdev->dev;
- 	struct resource         *res;
--	resource_size_t		ioaddr;
-+	resource_size_t		ioaddr, size;
- 	struct component_match  *match = NULL;
- 	struct regmap		*infracfg;
- 	void                    *protect;
--	int                     ret;
-+	int                     ret, i = 0;
- 	u32			val;
- 	char                    *p;
- 	struct mtk_iommu_bank_data *bank;
-@@ -991,20 +992,31 @@ static int mtk_iommu_probe(struct platform_device *pdev)
- 	}
- 
- 	res = platform_get_resource(pdev, IORESOURCE_MEM, 0);
-+	size = resource_size(res);
-+	if (size < data->plat_data->bank_nr * MTK_IOMMU_BANK_SZ) {
-+		dev_err(dev, "banknr %d. res %pR is not enough.\n",
-+			data->plat_data->bank_nr, res);
-+		return -EINVAL;
-+	}
- 	base = devm_ioremap_resource(dev, res);
- 	if (IS_ERR(base))
- 		return PTR_ERR(base);
- 	ioaddr = res->start;
- 
--	bank = &data->bank[0];
--	bank->id = 0;
--	bank->base = base;
--	bank->irq = platform_get_irq(pdev, 0);
--	if (bank->irq < 0)
--		return bank->irq;
--	bank->pdev = dev;
--	bank->pdata = data;
--	spin_lock_init(&bank->tlb_lock);
++	base = data->bank[i].base;
+ 	reg->wr_len_ctrl = readl_relaxed(base + REG_MMU_WR_LEN_CTRL);
+ 	reg->misc_ctrl = readl_relaxed(base + REG_MMU_MISC_CTRL);
+ 	reg->dcm_dis = readl_relaxed(base + REG_MMU_DCM_DIS);
+ 	reg->ctrl_reg = readl_relaxed(base + REG_MMU_CTRL_REG);
+-	reg->int_control0 = readl_relaxed(base + REG_MMU_INT_CONTROL0);
+-	reg->int_main_control = readl_relaxed(base + REG_MMU_INT_MAIN_CONTROL);
+-	reg->ivrp_paddr = readl_relaxed(base + REG_MMU_IVRP_PADDR);
+ 	reg->vld_pa_rng = readl_relaxed(base + REG_MMU_VLD_PA_RNG);
 +	do {
 +		if (!data->plat_data->bank_enable[i])
 +			continue;
-+		bank = &data->bank[i];
-+		bank->id = i;
-+		bank->base = base + i * MTK_IOMMU_BANK_SZ;
-+
-+		bank->irq = platform_get_irq(pdev, i);
-+		if (bank->irq < 0)
-+			return bank->irq;
-+		bank->pdev = dev;
-+		bank->pdata = data;
-+		spin_lock_init(&bank->tlb_lock);
++		base = data->bank[i].base;
++		reg->int_control[i] = readl_relaxed(base + REG_MMU_INT_CONTROL0);
++		reg->int_main_control[i] = readl_relaxed(base + REG_MMU_INT_MAIN_CONTROL);
++		reg->ivrp_paddr[i] = readl_relaxed(base + REG_MMU_IVRP_PADDR);
 +	} while (++i < data->plat_data->bank_nr);
- 
- 	if (MTK_IOMMU_HAS_FLAG(data->plat_data, HAS_BCLK)) {
- 		data->bclk = devm_clk_get(dev, "bclk");
-@@ -1089,7 +1101,9 @@ static int mtk_iommu_probe(struct platform_device *pdev)
- static int mtk_iommu_remove(struct platform_device *pdev)
- {
- 	struct mtk_iommu_data *data = platform_get_drvdata(pdev);
--	struct mtk_iommu_bank_data *bank = &data->bank[0];
-+	struct mtk_iommu_bank_data *bank;
-+	bool bank_hwinit;
-+	int i;
- 
- 	iommu_device_sysfs_remove(&data->iommu);
- 	iommu_device_unregister(&data->iommu);
-@@ -1101,7 +1115,18 @@ static int mtk_iommu_remove(struct platform_device *pdev)
- 	if (MTK_IOMMU_IS_TYPE(data->plat_data, MTK_IOMMU_TYPE_MM))
- 		device_link_remove(data->smicomm_dev, &pdev->dev);
- 	pm_runtime_disable(&pdev->dev);
--	devm_free_irq(&pdev->dev, bank->irq, bank);
-+	for (i = 0; i < data->plat_data->bank_nr; i++) {
-+		bank = &data->bank[i];
-+		/*
-+		 * Use a register value to confirm if this bank HW is initialised.
-+		 * If the bank has no consumer, the bank HW still won't be
-+		 * initialised even though bank_enable is true.
-+		 */
-+		bank_hwinit = !!readl_relaxed(bank->base + REG_MMU_PT_BASE_ADDR);
-+		if (!bank_hwinit)
-+			continue;
-+		devm_free_irq(&pdev->dev, bank->irq, bank);
-+	}
- 	component_master_del(&pdev->dev, &mtk_iommu_com_ops);
+ 	clk_disable_unprepare(data->bclk);
  	return 0;
  }
+@@ -1153,9 +1160,9 @@ static int __maybe_unused mtk_iommu_runtime_resume(struct device *dev)
+ {
+ 	struct mtk_iommu_data *data = dev_get_drvdata(dev);
+ 	struct mtk_iommu_suspend_reg *reg = &data->reg;
+-	struct mtk_iommu_domain *m4u_dom = data->bank[0].m4u_dom;
+-	void __iomem *base = data->bank[0].base;
+-	int ret;
++	struct mtk_iommu_domain *m4u_dom;
++	void __iomem *base;
++	int ret, i = 0;
+ 
+ 	ret = clk_prepare_enable(data->bclk);
+ 	if (ret) {
+@@ -1167,18 +1174,26 @@ static int __maybe_unused mtk_iommu_runtime_resume(struct device *dev)
+ 	 * Uppon first resume, only enable the clk and return, since the values of the
+ 	 * registers are not yet set.
+ 	 */
+-	if (!m4u_dom)
++	if (!reg->wr_len_ctrl)
+ 		return 0;
+ 
++	base = data->bank[i].base;
+ 	writel_relaxed(reg->wr_len_ctrl, base + REG_MMU_WR_LEN_CTRL);
+ 	writel_relaxed(reg->misc_ctrl, base + REG_MMU_MISC_CTRL);
+ 	writel_relaxed(reg->dcm_dis, base + REG_MMU_DCM_DIS);
+ 	writel_relaxed(reg->ctrl_reg, base + REG_MMU_CTRL_REG);
+-	writel_relaxed(reg->int_control0, base + REG_MMU_INT_CONTROL0);
+-	writel_relaxed(reg->int_main_control, base + REG_MMU_INT_MAIN_CONTROL);
+-	writel_relaxed(reg->ivrp_paddr, base + REG_MMU_IVRP_PADDR);
+ 	writel_relaxed(reg->vld_pa_rng, base + REG_MMU_VLD_PA_RNG);
+-	writel(m4u_dom->cfg.arm_v7s_cfg.ttbr & MMU_PT_ADDR_MASK, base + REG_MMU_PT_BASE_ADDR);
++	do {
++		m4u_dom = data->bank[i].m4u_dom;
++		if (!data->plat_data->bank_enable[i] || !m4u_dom)
++			continue;
++		base = data->bank[i].base;
++		writel_relaxed(reg->int_control[i], base + REG_MMU_INT_CONTROL0);
++		writel_relaxed(reg->int_main_control[i], base + REG_MMU_INT_MAIN_CONTROL);
++		writel_relaxed(reg->ivrp_paddr[i], base + REG_MMU_IVRP_PADDR);
++		writel(m4u_dom->cfg.arm_v7s_cfg.ttbr & MMU_PT_ADDR_MASK,
++		       base + REG_MMU_PT_BASE_ADDR);
++	} while (++i < data->plat_data->bank_nr);
+ 	return 0;
+ }
+ 
+diff --git a/drivers/iommu/mtk_iommu.h b/drivers/iommu/mtk_iommu.h
+index 905d8740dbcf..279c6c3ee56f 100644
+--- a/drivers/iommu/mtk_iommu.h
++++ b/drivers/iommu/mtk_iommu.h
+@@ -33,11 +33,19 @@ struct mtk_iommu_suspend_reg {
+ 	};
+ 	u32				dcm_dis;
+ 	u32				ctrl_reg;
+-	u32				int_control0;
+-	u32				int_main_control;
+-	u32				ivrp_paddr;
+ 	u32				vld_pa_rng;
+ 	u32				wr_len_ctrl;
++	union {
++		struct { /* only for gen1 */
++			u32		int_control0;
++		};
++
++		struct { /* only for gen2 that support multi-banks */
++			u32		int_control[MTK_IOMMU_BANK_MAX];
++			u32		int_main_control[MTK_IOMMU_BANK_MAX];
++			u32		ivrp_paddr[MTK_IOMMU_BANK_MAX];
++		};
++	};
+ };
+ 
+ enum mtk_iommu_plat {
 -- 
 2.18.0
 
