@@ -2,173 +2,187 @@ Return-Path: <SRS0=SLGw=NE=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-5.0 required=3.0 tests=BAYES_00,DKIM_INVALID,
-	DKIM_SIGNED,HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,
-	MSGID_FROM_MTA_HEADER,NICE_REPLY_A,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,
-	USER_AGENT_SANE_1 autolearn=no autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-13.5 required=3.0 tests=BAYES_00,DKIM_INVALID,
+	DKIM_SIGNED,HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_CR_TRAILER,INCLUDES_PATCH,
+	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED autolearn=ham
+	autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B6643C4338F
-	for <iommu@archiver.kernel.org>; Fri, 13 Aug 2021 20:17:31 +0000 (UTC)
-Received: from smtp2.osuosl.org (smtp2.osuosl.org [140.211.166.133])
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 767B1C4338F
+	for <iommu@archiver.kernel.org>; Fri, 13 Aug 2021 20:26:35 +0000 (UTC)
+Received: from smtp4.osuosl.org (smtp4.osuosl.org [140.211.166.137])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 53B60610EA
-	for <iommu@archiver.kernel.org>; Fri, 13 Aug 2021 20:17:31 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.4.1 mail.kernel.org 53B60610EA
+	by mail.kernel.org (Postfix) with ESMTPS id 0C30460560
+	for <iommu@archiver.kernel.org>; Fri, 13 Aug 2021 20:26:35 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.4.1 mail.kernel.org 0C30460560
 Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=lists.linux-foundation.org
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by smtp2.osuosl.org (Postfix) with ESMTP id E1CF840377;
-	Fri, 13 Aug 2021 20:17:30 +0000 (UTC)
+	by smtp4.osuosl.org (Postfix) with ESMTP id C540A407B7;
+	Fri, 13 Aug 2021 20:26:34 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from smtp2.osuosl.org ([127.0.0.1])
-	by localhost (smtp2.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id nCAYXNgEc2bg; Fri, 13 Aug 2021 20:17:26 +0000 (UTC)
-Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [IPv6:2605:bc80:3010:104::8cd3:938])
-	by smtp2.osuosl.org (Postfix) with ESMTPS id 75876400FF;
-	Fri, 13 Aug 2021 20:17:26 +0000 (UTC)
-Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 4A515C001A;
-	Fri, 13 Aug 2021 20:17:26 +0000 (UTC)
-Received: from smtp4.osuosl.org (smtp4.osuosl.org [140.211.166.137])
- by lists.linuxfoundation.org (Postfix) with ESMTP id BCC7CC000E
- for <iommu@lists.linux-foundation.org>; Fri, 13 Aug 2021 20:17:24 +0000 (UTC)
-Received: from localhost (localhost [127.0.0.1])
- by smtp4.osuosl.org (Postfix) with ESMTP id ABC084074C
- for <iommu@lists.linux-foundation.org>; Fri, 13 Aug 2021 20:17:24 +0000 (UTC)
-X-Virus-Scanned: amavisd-new at osuosl.org
-Authentication-Results: smtp4.osuosl.org (amavisd-new);
- dkim=pass (1024-bit key) header.d=amd.com
 Received: from smtp4.osuosl.org ([127.0.0.1])
- by localhost (smtp4.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id mbrNH5nsLd1E for <iommu@lists.linux-foundation.org>;
- Fri, 13 Aug 2021 20:17:20 +0000 (UTC)
+	by localhost (smtp4.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+	with ESMTP id D7n2v08TWIBn; Fri, 13 Aug 2021 20:26:30 +0000 (UTC)
+Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [IPv6:2605:bc80:3010:104::8cd3:938])
+	by smtp4.osuosl.org (Postfix) with ESMTPS id 82880407B4;
+	Fri, 13 Aug 2021 20:26:30 +0000 (UTC)
+Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 445DCC001A;
+	Fri, 13 Aug 2021 20:26:30 +0000 (UTC)
+Received: from smtp2.osuosl.org (smtp2.osuosl.org [IPv6:2605:bc80:3010::133])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 9AFB8C000E
+ for <iommu@lists.linux-foundation.org>; Fri, 13 Aug 2021 20:26:28 +0000 (UTC)
+Received: from localhost (localhost [127.0.0.1])
+ by smtp2.osuosl.org (Postfix) with ESMTP id 8052740171
+ for <iommu@lists.linux-foundation.org>; Fri, 13 Aug 2021 20:26:28 +0000 (UTC)
+X-Virus-Scanned: amavisd-new at osuosl.org
+Authentication-Results: smtp2.osuosl.org (amavisd-new);
+ dkim=pass (1024-bit key) header.d=microsoft.com
+Received: from smtp2.osuosl.org ([127.0.0.1])
+ by localhost (smtp2.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+ with ESMTP id JvTOQSKoTc8j for <iommu@lists.linux-foundation.org>;
+ Fri, 13 Aug 2021 20:26:27 +0000 (UTC)
 X-Greylist: whitelisted by SQLgrey-1.8.0
-Received: from NAM12-MW2-obe.outbound.protection.outlook.com
- (mail-mw2nam12on2088.outbound.protection.outlook.com [40.107.244.88])
- by smtp4.osuosl.org (Postfix) with ESMTPS id 9FBCC40745
- for <iommu@lists.linux-foundation.org>; Fri, 13 Aug 2021 20:17:20 +0000 (UTC)
+Received: from NAM02-DM3-obe.outbound.protection.outlook.com
+ (mail-dm3nam07on2123.outbound.protection.outlook.com [40.107.95.123])
+ by smtp2.osuosl.org (Postfix) with ESMTPS id 54253400FF
+ for <iommu@lists.linux-foundation.org>; Fri, 13 Aug 2021 20:26:27 +0000 (UTC)
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=WGw0U9FkgKp4hxsvcFdS+Z7DUF2Um0cW04RoIpgi//zy5IZ39Kz1fCX2rVhK9AfVPCzIZx/VN+/c0vKLjcELXtCeqlZEkPZhhS2XiAfPgWhgMPuEdvIhHN7rBVvbCQams9QlvgTp5FsR8jCKuu39Gtbgm0OZ+Qn86bPCokiEi4UDBO+eeCQ7XyeWjdlfMm4hv3airl6E+yaPDId+2s512TtyQbjafNM0Gx3IYB4zzGH0ejWseKFeD1hF5InIjfRLO3d/akqNGHR0KClTwfFZljax2IYs8nKrhO2BbTW5mosq8j6ZERwGi2ni9faElRKE+XquZXbgcBbdvP+h87A36Q==
+ b=A6g6l9cYis25WihgKlGKU/RZDzLQjOKNlvRAHPr3qeWLroP+nVKXkTefKHtCJYvIKHnQmTMlaBXOQ3GRPa6EXXTGKP9Eh1Y7VaMjMsfrY7Acj0/7MMaX2tKAF0EndebJNjhNBk8dIITXIsrtXjz0CbhbSMYhZASakOTK4C3mZ4VOyMl6ldknmeFgY+z6uIqxTCgmY560r3aUrChk0p9AuD1y0rzLFwHqse4WR/OLP5ZYxdqhFlQe54yw/7HvaSpFoGHrzf/MyNZD7SRvKTg2Ao6tJpuh+vNPV1+HFahiTvRUywNJ0SNb5LiWRap7V7sYPKzgm9fzJeUGOj6N3q+PFA==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com; 
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=DpwOvDM3GnwNTNcL815T+RSOydEG+h+3oDIg9dnFcc8=;
- b=EMLZ5P4NMpgY2QIUrBxnmxGsz5hDMG67hy4Mog8GvtOJgYyqUItuz59aeYyBFPlRSns5aRKJYaYuB3r4WULP65T9OWtOv0RdVSGJu0Icg+VGxcNNUCgbMZFTV5Uairek2h2CXjpfoW01HVKZlpw3q+v1wM6g42M2n7dbFRJFxyWX+84zq9k25c7lFC0po7sv/rVgzcUxwaLNRYDAgcB61bcpPj46NVIOv6g5OLvE+va68vyZ8p1ex93HYhmoQhFd2O3SSzsJQZf/jjzLOe85x3iisIzBrCByNHjGXWr4CYrcpUHLMJmnaVZvTfqUucinEUcYywOo3H00deM7niXn4w==
+ bh=uSjZFw4IYdkuV55KvpmYCB+d8Z/zYCy0L7lVeoa3LBM=;
+ b=K947ukP0YWv+I2nRFEcIidwNXTLXNVTGv5Z96kLDRrmBSJQJB+pwI7NF4drCuTLNN0Pr61OAhRGh0vR9x5wQBd8fJayjMT4FyNUjfAjvC5spVhH8TyRL8Adr35FZKB5FY4l1U3tkERSWMmJxmOwWzbHEfj6YQbhN6arVypA0PWxCeehLOfMaSAvLCUIxB/KkiUfR+M2APQElmRzCq+0N1VeI7Af9/kQz/tMu7M/QBIHFyfvnTumQV7WBpzVgeNcVj1gCCNeJLx82gnltOaQUa+HU675I+Ig0zV6crusNPtGjcysAULQt5awd8WMavZvY8BTcKcJ/atkjX8XdmtBGag==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=amd.com; dmarc=pass action=none header.from=amd.com; dkim=pass
- header.d=amd.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=amd.com; s=selector1; 
+ smtp.mailfrom=microsoft.com; dmarc=pass action=none
+ header.from=microsoft.com; dkim=pass header.d=microsoft.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=selector2;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=DpwOvDM3GnwNTNcL815T+RSOydEG+h+3oDIg9dnFcc8=;
- b=MyTmwlzgKeBu9Kr9AdaSE1zoak8QxWlRT/g45sd8A3BxVuycfnUWDTtSlbv7kbm+wPD+NOE8KuxfMaVbm1BHq28hmB5OTiCq1m8BAT98u8NbbFWus7koWMgW2ellOLwPUjgB57RbR3+znK3BrbrvmdTSLWxPBzjHKCg3KahE5E4=
-Authentication-Results: redhat.com; dkim=none (message not signed)
- header.d=none;redhat.com; dmarc=none action=none header.from=amd.com;
-Received: from DM4PR12MB5229.namprd12.prod.outlook.com (2603:10b6:5:398::12)
- by DM4PR12MB5056.namprd12.prod.outlook.com (2603:10b6:5:38b::15) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4415.16; Fri, 13 Aug
- 2021 20:17:17 +0000
-Received: from DM4PR12MB5229.namprd12.prod.outlook.com
- ([fe80::d560:d21:cd59:9418]) by DM4PR12MB5229.namprd12.prod.outlook.com
- ([fe80::d560:d21:cd59:9418%6]) with mapi id 15.20.4415.019; Fri, 13 Aug 2021
- 20:17:17 +0000
-Subject: Re: [PATCH 07/11] treewide: Replace the use of mem_encrypt_active()
- with prot_guest_has()
-To: "Kirill A. Shutemov" <kirill@shutemov.name>
-References: <cover.1627424773.git.thomas.lendacky@amd.com>
- <029791b24c6412f9427cfe6ec598156c64395964.1627424774.git.thomas.lendacky@amd.com>
- <166f30d8-9abb-02de-70d8-6e97f44f85df@linux.intel.com>
- <4b885c52-f70a-147e-86bd-c71a8f4ef564@amd.com>
- <20210811121917.ghxi7g4mctuybhbk@box.shutemov.name>
- <0a819549-e481-c004-7da8-82ba427b13ce@amd.com>
- <20210812100724.t4cdh7xbkuqgnsc3@box.shutemov.name>
- <943223d5-5949-6aba-8a49-0b07078d68e1@amd.com>
-Message-ID: <f6399958-d161-fd58-fac7-9b849bc4f05e@amd.com>
-Date: Fri, 13 Aug 2021 15:17:12 -0500
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
- Thunderbird/78.11.0
-In-Reply-To: <943223d5-5949-6aba-8a49-0b07078d68e1@amd.com>
+ bh=uSjZFw4IYdkuV55KvpmYCB+d8Z/zYCy0L7lVeoa3LBM=;
+ b=YuF1pqVifVtgz4pRoMPWPtGqUXVt56tmGUa6QHC62OZv/io67f30CvM1oct8P+C9HuodCsF4xqRldBii0gl4lFqJR77IVGToFHvGg9mavvJWDuVktIYy+2yexJ5VMqQdkROw6NZj5gLXpNd8ELUoLbDIEUvZ0jg7xSRC6DScYdU=
+Received: from MWHPR21MB1593.namprd21.prod.outlook.com (2603:10b6:301:7c::11)
+ by MW4PR21MB1972.namprd21.prod.outlook.com (2603:10b6:303:7a::11)
+ with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4436.4; Fri, 13 Aug
+ 2021 20:26:22 +0000
+Received: from MWHPR21MB1593.namprd21.prod.outlook.com
+ ([fe80::e8f7:b582:9e2d:ba55]) by MWHPR21MB1593.namprd21.prod.outlook.com
+ ([fe80::e8f7:b582:9e2d:ba55%2]) with mapi id 15.20.4436.012; Fri, 13 Aug 2021
+ 20:26:22 +0000
+To: Tianyu Lan <ltykernel@gmail.com>, KY Srinivasan <kys@microsoft.com>,
+ Haiyang Zhang <haiyangz@microsoft.com>, Stephen Hemminger
+ <sthemmin@microsoft.com>, "wei.liu@kernel.org" <wei.liu@kernel.org>, Dexuan
+ Cui <decui@microsoft.com>, "tglx@linutronix.de" <tglx@linutronix.de>,
+ "mingo@redhat.com" <mingo@redhat.com>, "bp@alien8.de" <bp@alien8.de>,
+ "x86@kernel.org" <x86@kernel.org>, "hpa@zytor.com" <hpa@zytor.com>,
+ "dave.hansen@linux.intel.com" <dave.hansen@linux.intel.com>,
+ "luto@kernel.org" <luto@kernel.org>, "peterz@infradead.org"
+ <peterz@infradead.org>, "konrad.wilk@oracle.com" <konrad.wilk@oracle.com>,
+ "boris.ostrovsky@oracle.com" <boris.ostrovsky@oracle.com>, "jgross@suse.com"
+ <jgross@suse.com>, "sstabellini@kernel.org" <sstabellini@kernel.org>,
+ "joro@8bytes.org" <joro@8bytes.org>, "will@kernel.org" <will@kernel.org>,
+ "davem@davemloft.net" <davem@davemloft.net>, "kuba@kernel.org"
+ <kuba@kernel.org>, "jejb@linux.ibm.com" <jejb@linux.ibm.com>,
+ "martin.petersen@oracle.com" <martin.petersen@oracle.com>, "arnd@arndb.de"
+ <arnd@arndb.de>, "hch@lst.de" <hch@lst.de>, "m.szyprowski@samsung.com"
+ <m.szyprowski@samsung.com>, "robin.murphy@arm.com" <robin.murphy@arm.com>,
+ "thomas.lendacky@amd.com" <thomas.lendacky@amd.com>, "brijesh.singh@amd.com"
+ <brijesh.singh@amd.com>, "ardb@kernel.org" <ardb@kernel.org>, Tianyu Lan
+ <Tianyu.Lan@microsoft.com>, "pgonda@google.com" <pgonda@google.com>,
+ "martin.b.radev@gmail.com" <martin.b.radev@gmail.com>,
+ "akpm@linux-foundation.org" <akpm@linux-foundation.org>,
+ "kirill.shutemov@linux.intel.com" <kirill.shutemov@linux.intel.com>,
+ "rppt@kernel.org" <rppt@kernel.org>, "sfr@canb.auug.org.au"
+ <sfr@canb.auug.org.au>, "saravanand@fb.com" <saravanand@fb.com>,
+ "krish.sadhukhan@oracle.com" <krish.sadhukhan@oracle.com>,
+ "aneesh.kumar@linux.ibm.com" <aneesh.kumar@linux.ibm.com>,
+ "xen-devel@lists.xenproject.org" <xen-devel@lists.xenproject.org>,
+ "rientjes@google.com" <rientjes@google.com>, "hannes@cmpxchg.org"
+ <hannes@cmpxchg.org>, "tj@kernel.org" <tj@kernel.org>
+Subject: RE: [PATCH V3 05/13] HV: Add Write/Read MSR registers via ghcb page
+Thread-Topic: [PATCH V3 05/13] HV: Add Write/Read MSR registers via ghcb page
+Thread-Index: AQHXjUfuQqXPk5/9iUqTH41i8so9wqtxzWQQgAAaltA=
+Date: Fri, 13 Aug 2021 20:26:21 +0000
+Message-ID: <MWHPR21MB1593964D1B17870038EC2D2CD7FA9@MWHPR21MB1593.namprd21.prod.outlook.com>
+References: <20210809175620.720923-1-ltykernel@gmail.com>
+ <20210809175620.720923-6-ltykernel@gmail.com>
+ <MWHPR21MB15931FEC5CE9383B385C263CD7FA9@MWHPR21MB1593.namprd21.prod.outlook.com>
+In-Reply-To: <MWHPR21MB15931FEC5CE9383B385C263CD7FA9@MWHPR21MB1593.namprd21.prod.outlook.com>
+Accept-Language: en-US
 Content-Language: en-US
-X-ClientProxiedBy: SA9PR13CA0015.namprd13.prod.outlook.com
- (2603:10b6:806:21::20) To DM4PR12MB5229.namprd12.prod.outlook.com
- (2603:10b6:5:398::12)
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+msip_labels: MSIP_Label_f42aa342-8706-4288-bd11-ebb85995028c_ActionId=d2377fda-39f2-4403-a606-910723ff0f1f;
+ MSIP_Label_f42aa342-8706-4288-bd11-ebb85995028c_ContentBits=0;
+ MSIP_Label_f42aa342-8706-4288-bd11-ebb85995028c_Enabled=true;
+ MSIP_Label_f42aa342-8706-4288-bd11-ebb85995028c_Method=Standard;
+ MSIP_Label_f42aa342-8706-4288-bd11-ebb85995028c_Name=Internal;
+ MSIP_Label_f42aa342-8706-4288-bd11-ebb85995028c_SetDate=2021-08-13T18:49:42Z;
+ MSIP_Label_f42aa342-8706-4288-bd11-ebb85995028c_SiteId=72f988bf-86f1-41af-91ab-2d7cd011db47;
+authentication-results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=microsoft.com;
+x-ms-publictraffictype: Email
+x-ms-office365-filtering-correlation-id: 4c56698d-081e-41c7-2bc6-08d95e989d80
+x-ms-traffictypediagnostic: MW4PR21MB1972:
+x-ms-exchange-transport-forked: True
+x-ld-processed: 72f988bf-86f1-41af-91ab-2d7cd011db47,ExtAddr
+x-microsoft-antispam-prvs: <MW4PR21MB197224FE64D6649E7A5940ECD7FA9@MW4PR21MB1972.namprd21.prod.outlook.com>
+x-ms-oob-tlc-oobclassifiers: OLM:3826;
+x-ms-exchange-senderadcheck: 1
+x-ms-exchange-antispam-relay: 0
+x-microsoft-antispam: BCL:0;
+x-microsoft-antispam-message-info: w21FqFgu2tAmBXktQZxkbrfccvEy0zOvJN6YSvT1ju7DfH7QkE22lowUbmO4XT2d7T3RLyS7ilggytk6Z1jqEz+VQadXgJm/pA3aNRLVuiV7YKYxf9WbUSgg8VXg9tGX2ccVERe8DE9rM4bIIYzT74X0R+AowG3j7aVCZg1izm9WGwdGY4EH6ItLcJ9h9X+417kzb4tE4lgPkamjzzgfVpT/eEZr/81TaXYiJwbIPXND0yR4magal+2uqWw9gv/MOH6aLo6O6vGGu1N2CTFX3+U5/ZG4c6YHcgVBoA8VMzaWrx2weJcnXwK7OKwQwlI9DSWT2Rwa0ZuqE5D9rWTRNbiFz+7x7+Vz8XSkBW0o1pwmPff3yFoIdR7YMlU+PAMGECfTwJZvorClzv6jV5+gb22Eblc2aRhwQkOaaZwWYq1nYDQ6yspWzxLxZQjDWA/rxhiEMNdC0gUnBsLG6ucebJ96jDhf3ep2tI6Md5CkcLhUN4XIwMIDrUTgRy2lCe2ORlAHvE/lskHzQJC9tX4LmspUEfT1wxtPSL/SQVp72Ylxha5Ac2v6OtkV+Jh6woAqBQtSDQcUUn9ANRfGTTKjjRSGECQUDyDZ7gYUv7WcDHQNC/KYwPDgI8J7qGSnYYv+yPbbh33tm+L4kZ7JH+oTnmg3e247z1rFItDnjSOxV5td3dc3vnnzO84cq2w9kq8aa/sIJb67OhrUHkJvWofW7n4Iad2CGNVf+dddUKh4bx8=
+x-forefront-antispam-report: CIP:255.255.255.255; CTRY:; LANG:en; SCL:1; SRV:;
+ IPV:NLI; SFV:NSPM; H:MWHPR21MB1593.namprd21.prod.outlook.com; PTR:; CAT:NONE;
+ SFS:(4636009)(366004)(921005)(8990500004)(4326008)(122000001)(8936002)(66946007)(7696005)(52536014)(8676002)(53546011)(7406005)(38100700002)(2940100002)(5660300002)(2906002)(33656002)(6506007)(7416002)(86362001)(316002)(83380400001)(10290500003)(508600001)(9686003)(38070700005)(66446008)(76116006)(186003)(82950400001)(110136005)(55016002)(71200400001)(64756008)(66556008)(26005)(66476007)(82960400001)(54906003);
+ DIR:OUT; SFP:1102; 
+x-ms-exchange-antispam-messagedata-chunkcount: 1
+x-ms-exchange-antispam-messagedata-0: =?us-ascii?Q?HHnguf8k2A0ke1C/g43w8Bu1Ts6Hdd2fq+nZyXM2Vlyi6iYPhCNPJdZ1Q/Uf?=
+ =?us-ascii?Q?M7OqArgQBB8UR0o6XdwdodOF7zMgx7z/7jvA98B2OgTJwKCx/lHgcqJLOOVn?=
+ =?us-ascii?Q?RBKnuGZx/E1lp4OzQVoueFJ+5ntLf5oUGdytGG6Su+qy14KLL+7TSyIimCsO?=
+ =?us-ascii?Q?Dc0nd44cU9NeOaE0Q66lZma+ShGkLA48A5EVkWpPsuaXCM912tYb5+QkahF8?=
+ =?us-ascii?Q?zZYN+b4S71rtrj0yRYKpupMa3GSE5S6er3rX88RBRLKOWyq/Tbmk3B6X4PGh?=
+ =?us-ascii?Q?ASYEwimno/wWrvw01ZYctpOut8yEKcP+Z1yuygM6shEo0c0uUeZgn2+rf2xG?=
+ =?us-ascii?Q?8zTCBTM7YMT4PL9uyThSLrpoq7lhBSujoZr2uB/s8IstgDBilTT5QCE2TClT?=
+ =?us-ascii?Q?jEpRlnVG/bmoWLyrYVzn11T/KQJOg1RmbuEN5X+q4TKz/rvmLYB3+aI43Ybb?=
+ =?us-ascii?Q?NzjG+QxU+QZFWBe/st7opXSb5lXVy/DAqWZhjVTFozwNNi14kRWCvZS6s60f?=
+ =?us-ascii?Q?gQ7DDuZCyTP45Kb61VTsWTMfJMfeX8SIlueXnAjKpUzF/3jjhzqfvNcIUQjP?=
+ =?us-ascii?Q?hYNLXf9Lp68p4UfV3W4Zk3gA+EDZ1twkthiCeikHrX0A8zbLOlO+Gx+ib4u2?=
+ =?us-ascii?Q?k1g/+vREUkO6u5gPSErkSYbMuhOyqRSulL8+vOD2JwwobIrFsZlf6dHeGKyW?=
+ =?us-ascii?Q?KE/eDArLWCqKVJgQourBtgdmIBkhdj7t2BMejVSXrueAh50B+hbSr8gZpgvX?=
+ =?us-ascii?Q?tOF+YxFrQ1WFahpo8vBajPAoBNsSKHTMKsGDmx6zvMIB2QYG6UDG2gTFVrC8?=
+ =?us-ascii?Q?GhqhnmeINuvFwbp4vltyTua94yXxQvtRMeJOH82izjCW3mbFhFug2L0rRPEG?=
+ =?us-ascii?Q?gfPji9aAsEUvlOSEIT5zUoRbaZiDUl7xb9Hn9haAoigcdr3SEnimFxQgfZoy?=
+ =?us-ascii?Q?iPRJB0hY1Vds4TI3Mxd7CT1ySfKGGHL3lAjslHbpRcs0LD4rIf+vz7xtJ3L/?=
+ =?us-ascii?Q?xcJlkhRcW9Hw3f7L3XzXFAqA4gS4NZEHAS7oEu2ctO/BoNT8ETdafjMox+S7?=
+ =?us-ascii?Q?MADAs+wgwCVYJJLvmkkrY/W2Wx5TGH2zxBt+t/PkldZI+sjy2+359PLPgoWC?=
+ =?us-ascii?Q?6StwsXBi5D3gdgiM9qQiiGCU+0WxuSMPoRRjX67KvBFf7UgfGkdfrMYfY1kx?=
+ =?us-ascii?Q?MeMdq6Gg24tMu25K7HpB3D6MZrFgF/P+BybXaG7joub9Nmbr6YNzysjwQSd4?=
+ =?us-ascii?Q?OnqrceeUQ5xTAeFtIGsE5ubJ+aYx/S3ngKD9AkK6qOZOL+Igy/NE1z3DQs+U?=
+ =?us-ascii?Q?EbRyAa4Ct1E4YrOoD6q+8ax4?=
 MIME-Version: 1.0
-X-MS-Exchange-MessageSentRepresentingType: 1
-Received: from office-ryzen.texastahm.com (67.79.209.213) by
- SA9PR13CA0015.namprd13.prod.outlook.com (2603:10b6:806:21::20) with Microsoft
- SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.20.4436.9 via Frontend Transport; Fri, 13 Aug 2021 20:17:14 +0000
-X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: fb04504a-2bc8-4b11-096f-08d95e97582d
-X-MS-TrafficTypeDiagnostic: DM4PR12MB5056:
-X-MS-Exchange-Transport-Forked: True
-X-Microsoft-Antispam-PRVS: <DM4PR12MB5056CC972FC97575617C9C45ECFA9@DM4PR12MB5056.namprd12.prod.outlook.com>
-X-MS-Oob-TLC-OOBClassifiers: OLM:8882;
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: HeKYrRV7+y6fb+GcsgwZgLn6m+17BeFDzSYIRsWs+5gk/EvKWEu2gSmv8RvTO/nfbvLfTRsKb1Rmu/IiexH4OmM5yzL1S1M0b1KCFnlSqI8q07PgcARl23shuBOwuXMPNwYrnU2x5cFzlC5kpomANRa9DYwDAdniG9jn0sUdyUssSht9Fj45WNk5kKyCNOwzQkl4Uwfx4ThxvNPm/2ZDWUUaD9h4KXaJfbXl7FOnHluKIb2zyecyHHGHT9LymYEJz5S7RJOMqqWviTNVR18VwG2DXy3EdmYfOUSweCmgr1F5+YNeYL0xuLozBRA3iCSoJ8z186DXgEqoQzPLgGIGWaJStbn3sjliQijGiQArX8StUtsSdv7beBuRfFRJgjp+PMjE74m12pIzia7y7ArUN+9FQfFGXdeMHBWOuZEkY7sXKBpAYhVZL+IzHjCsiTDaKb1dI/aEvOT+HEP3+0pFhWM+gj7aw1TS6rvljuEKICCuVKQxw/iZMHPFqMACRshww9+CkZF74+BBgpYEEwnfE4ZD2OYbNPPAX6HfzpgGABkpn12jKR5rTpzx/1EipOB3U2sOxGm7Mj13MUhqX7AkZsVTyrgswRhjfQpHB54uounI8FMHqOtfgpkX9CKnV73XHRj3NzUtA9k4wwtBs2k808QhRQvjOOhAoq+3kMA1KWhfE7oPISSKTsZBbqCFcKnt8I9jsZEFVs34Lo4rTbbD3u/3KCSJ0GktcSNcge0JTXo=
-X-Forefront-Antispam-Report: CIP:255.255.255.255; CTRY:; LANG:en; SCL:1; SRV:;
- IPV:NLI; SFV:NSPM; H:DM4PR12MB5229.namprd12.prod.outlook.com; PTR:; CAT:NONE;
- SFS:(4636009)(396003)(346002)(376002)(39860400002)(136003)(366004)(8936002)(7416002)(86362001)(31696002)(6506007)(83380400001)(36756003)(6486002)(7406005)(66476007)(66556008)(53546011)(6512007)(31686004)(478600001)(316002)(2616005)(38100700002)(956004)(8676002)(66946007)(26005)(6916009)(2906002)(5660300002)(4326008)(186003)(54906003)(43740500002)(45980500001);
- DIR:OUT; SFP:1101; 
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?utf-8?B?QTZOV216SVRjR2pvTmN0RGhmT3VtRnJiQzVwZ1JSSTNSZXpET1RESUUzYVNY?=
- =?utf-8?B?L1lpY2EreHNqWE1JTUpwRDhRckxnWmJSNHlqdmxva21GRXFTM2o4Q2tPeVlK?=
- =?utf-8?B?N3UrZkNkcGhLc210WFlYTmtVL3FYcWVqamloTC9PWDVVSE5ySjQ0R2RyMHc4?=
- =?utf-8?B?dFE4SmZDSFJUWnl4VldYNlFIbld2RTBCUVF2dVhuYm5UVnUwOVBRWHEyUGQ4?=
- =?utf-8?B?amdPNGxtNkxBNkRsSXJhK0lPT2lIMUdNVlBaV1FwTWNNeE95c0hYZjQ0RlpZ?=
- =?utf-8?B?YTJ5aEVHeE9VeXB0bWs0MVY4cVdqRzAyYUZLK21ScE9rbXdDNWh5a0lnZFlT?=
- =?utf-8?B?aFVTaWlGUXBrYnNhcVExR1N6V1h2K01IU0JramhHeWZvV3M0RkZERkQ1M3NK?=
- =?utf-8?B?TW5iaU1EcGEzS2hYUklXUkdLR3FmYTg0NmFPWTdmKzI4RzBUcGNnTzcxeElw?=
- =?utf-8?B?NTVTeUJwcUVvWWFMWHp2ZjYvTEtuc09wQWF1MVErdHBodGlFQVZxRWVQMVNZ?=
- =?utf-8?B?N01IbmEyQjRkUFZxcDFCOVc3SG9ERVJETnViSFBCQW1obzdUQS9ENmZ0aG9n?=
- =?utf-8?B?OHhVamdFRXRWRnJNYWlJRTVIenVoK0Y2NE42V3FBS3R6Z0dEeFpRWVRSZXps?=
- =?utf-8?B?WTNmZUNtYm5sRG8yL3RZa2FkNjQvVklLT2owWmNzUHd0K3NIQ1NZYXdIdjUr?=
- =?utf-8?B?Wi92VG9pMG5NamNVeDF5YUpkaW9rUkRGM05EdXZUcTlDQk10ZjRpMVQrb3hr?=
- =?utf-8?B?NDdjZzVZKy9XYUp1VmZSa3Rveng3RG9SOFhGWmtHVlBRVEdoV3orajVsRVlt?=
- =?utf-8?B?bFJSNnJNMWV5WmRCbkFDYm5JQXF4cEtJZ2VRR1VPZ0NiOWdyUENHUUdqTERn?=
- =?utf-8?B?NmxKM2tja0tDc2JPYUxsVFdMNXZQai96Z1c0VlgzTWxsdGFNaHFTRmI2cDNZ?=
- =?utf-8?B?VTVMV0VBaUZBVjZlZVJ0aFhKWVBvZjZCZVhzb1NneG1wMlZtK0dTRTAveWsw?=
- =?utf-8?B?V0lVYmxuNzBENlhibkV2bVVTdEZZSVhXK3B0TEozZGpZYzd4c2ZRNjE5cVhw?=
- =?utf-8?B?RjB1Tk1DbkFDUXJycElqK0t5NGVaM3B6cTcvNVlReUxiR29jVnpVK0VOcFQy?=
- =?utf-8?B?Q2xYR1JoYlJFYXlvZlJxUCtQeERlTCt5ZEl1WEsxQ3R1eVhuSUNpVEVaaE9o?=
- =?utf-8?B?VHFwNnVzU0FPOHRQaUhFUWtLU1lBNlBtZ3RsNDBIMW5EMVhQYXVSZVpKREVN?=
- =?utf-8?B?c21HQjV2RHVTK3hsazFzVEJPSzhVM1BWeEgyajZRcjk3Y0FWbG9NTWV2OXNQ?=
- =?utf-8?B?WGQweHhuMURwc00xK0UvTVB1ek9VL2ZPcVNCdFNncWRzWm9ybFlvU2V2VnNB?=
- =?utf-8?B?MlhiaThjc2FYbTdGNENXM3dRby83cTUvYWtJTmpMdjdUVlliL251QVh3QVNH?=
- =?utf-8?B?MjBoTVpQOTMraUpGcnUvY1Z1aFJDQm5pQk9vY3JmaDJqYXY1QUtqQ1BIamo4?=
- =?utf-8?B?MzRCVjJqYmdUbXRJUEN5cWJWdi8yNUZBejlPdkZVdjFwQjJoWDJtVFdGS0Q0?=
- =?utf-8?B?d0MvU1JpZm4xKzNoejhlRlhaMUVEaUN3anJHdFJhdjcxUFh5OXlRd011R3RC?=
- =?utf-8?B?NFFlVzhUcmFJcm1rL2xCY1hwK0YvVVdua0ZNSi9TaTg0cjl5YTFjbjJ4UTJ1?=
- =?utf-8?B?TnQvbnVIS2Vvb2dsMWtQTFBPRFRmNFNDc0Q4dU1oLzNPYUZXTTJ0L0Z4aTdV?=
- =?utf-8?Q?X4j/QZYAY5VhEB8ISJ7ENzxDr6z08b94zP1ag1f?=
-X-OriginatorOrg: amd.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: fb04504a-2bc8-4b11-096f-08d95e97582d
-X-MS-Exchange-CrossTenant-AuthSource: DM4PR12MB5229.namprd12.prod.outlook.com
+X-OriginatorOrg: microsoft.com
 X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 13 Aug 2021 20:17:17.8323 (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 3dd8961f-e488-4e60-8e11-a82d994e183d
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: 5rYKyb1eg9llUGfYKNWymW6AFqmswxWINdi5GxJCtmBK1fz+zhjdQgfi1wjlNeI3FFBkBzHHXR4HqtkxkzDSzw==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: DM4PR12MB5056
-Cc: linux-efi@vger.kernel.org, Brijesh Singh <brijesh.singh@amd.com>,
- kvm@vger.kernel.org, Peter Zijlstra <peterz@infradead.org>,
- Dave Hansen <dave.hansen@linux.intel.com>, dri-devel@lists.freedesktop.org,
- platform-driver-x86@vger.kernel.org, Will Deacon <will@kernel.org>,
- linux-s390@vger.kernel.org, Andi Kleen <ak@linux.intel.com>, x86@kernel.org,
- amd-gfx@lists.freedesktop.org, David Airlie <airlied@linux.ie>,
- Ingo Molnar <mingo@redhat.com>, linux-graphics-maintainer@vmware.com,
- Dave Young <dyoung@redhat.com>, Tianyu Lan <Tianyu.Lan@microsoft.com>,
- Thomas Zimmermann <tzimmermann@suse.de>,
- Maarten Lankhorst <maarten.lankhorst@linux.intel.com>,
- Maxime Ripard <mripard@kernel.org>, Borislav Petkov <bp@alien8.de>,
- Andy Lutomirski <luto@kernel.org>, Thomas Gleixner <tglx@linutronix.de>,
- kexec@lists.infradead.org, linux-kernel@vger.kernel.org,
- iommu@lists.linux-foundation.org, Daniel Vetter <daniel@ffwll.ch>,
- linux-fsdevel@vger.kernel.org, linuxppc-dev@lists.ozlabs.org
+X-MS-Exchange-CrossTenant-AuthSource: MWHPR21MB1593.namprd21.prod.outlook.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 4c56698d-081e-41c7-2bc6-08d95e989d80
+X-MS-Exchange-CrossTenant-originalarrivaltime: 13 Aug 2021 20:26:21.8499 (UTC)
+X-MS-Exchange-CrossTenant-fromentityheader: Hosted
+X-MS-Exchange-CrossTenant-id: 72f988bf-86f1-41af-91ab-2d7cd011db47
+X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
+X-MS-Exchange-CrossTenant-userprincipalname: xzWN79PcQkKD4LoVtmx3Si4TxYUrZymDvPd+0ZpDE3+bJuoVwR5oWB8lLB4IMuKobBU2cozGDSwdWjXw577Uj4mz9rpJqZsucZrCN72tcnk=
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: MW4PR21MB1972
+Cc: "linux-arch@vger.kernel.org" <linux-arch@vger.kernel.org>,
+ "parri.andrea@gmail.com" <parri.andrea@gmail.com>,
+ "linux-hyperv@vger.kernel.org" <linux-hyperv@vger.kernel.org>,
+ "linux-scsi@vger.kernel.org" <linux-scsi@vger.kernel.org>,
+ "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+ "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+ "dave.hansen@intel.com" <dave.hansen@intel.com>,
+ "iommu@lists.linux-foundation.org" <iommu@lists.linux-foundation.org>,
+ vkuznets <vkuznets@redhat.com>
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -181,55 +195,77 @@ List-Post: <mailto:iommu@lists.linux-foundation.org>
 List-Help: <mailto:iommu-request@lists.linux-foundation.org?subject=help>
 List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
  <mailto:iommu-request@lists.linux-foundation.org?subject=subscribe>
-From: Tom Lendacky via iommu <iommu@lists.linux-foundation.org>
-Reply-To: Tom Lendacky <thomas.lendacky@amd.com>
+From: Michael Kelley via iommu <iommu@lists.linux-foundation.org>
+Reply-To: Michael Kelley <mikelley@microsoft.com>
+Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
-Content-Type: text/plain; charset="us-ascii"; Format="flowed"
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-On 8/13/21 12:08 PM, Tom Lendacky wrote:
-> On 8/12/21 5:07 AM, Kirill A. Shutemov wrote:
->> On Wed, Aug 11, 2021 at 10:52:55AM -0500, Tom Lendacky wrote:
->>> On 8/11/21 7:19 AM, Kirill A. Shutemov wrote:
->>>> On Tue, Aug 10, 2021 at 02:48:54PM -0500, Tom Lendacky wrote:
->>>>> On 8/10/21 1:45 PM, Kuppuswamy, Sathyanarayanan wrote:
-> ...
->>>> Looking at code agains, now I *think* the reason is accessing a global
->>>> variable from __startup_64() inside TDX version of prot_guest_has().
->>>>
->>>> __startup_64() is special. If you access any global variable you need to
->>>> use fixup_pointer(). See comment before __startup_64().
->>>>
->>>> I'm not sure how you get away with accessing sme_me_mask directly from
->>>> there. Any clues? Maybe just a luck and complier generates code just 
->>>> right
->>>> for your case, I donno.
->>>
->>> Hmm... yeah, could be that the compiler is using rip-relative addressing
->>> for it because it lives in the .data section?
->>
->> I guess. It has to be fixed. It may break with complier upgrade or any
->> random change around the code.
+From: Michael Kelley <mikelley@microsoft.com> Sent: Friday, August 13, 2021 12:31 PM
+> To: Tianyu Lan <ltykernel@gmail.com>; KY Srinivasan <kys@microsoft.com>; Haiyang Zhang <haiyangz@microsoft.com>;
+> Stephen Hemminger <sthemmin@microsoft.com>; wei.liu@kernel.org; Dexuan Cui <decui@microsoft.com>;
+> tglx@linutronix.de; mingo@redhat.com; bp@alien8.de; x86@kernel.org; hpa@zytor.com; dave.hansen@linux.intel.com;
+> luto@kernel.org; peterz@infradead.org; konrad.wilk@oracle.com; boris.ostrovsky@oracle.com; jgross@suse.com;
+> sstabellini@kernel.org; joro@8bytes.org; will@kernel.org; davem@davemloft.net; kuba@kernel.org; jejb@linux.ibm.com;
+> martin.petersen@oracle.com; arnd@arndb.de; hch@lst.de; m.szyprowski@samsung.com; robin.murphy@arm.com;
+> thomas.lendacky@amd.com; brijesh.singh@amd.com; ardb@kernel.org; Tianyu Lan <Tianyu.Lan@microsoft.com>;
+> pgonda@google.com; martin.b.radev@gmail.com; akpm@linux-foundation.org; kirill.shutemov@linux.intel.com;
+> rppt@kernel.org; sfr@canb.auug.org.au; saravanand@fb.com; krish.sadhukhan@oracle.com;
+> aneesh.kumar@linux.ibm.com; xen-devel@lists.xenproject.org; rientjes@google.com; hannes@cmpxchg.org;
+> tj@kernel.org
+> Cc: iommu@lists.linux-foundation.org; linux-arch@vger.kernel.org; linux-hyperv@vger.kernel.org; linux-
+> kernel@vger.kernel.org; linux-scsi@vger.kernel.org; netdev@vger.kernel.org; vkuznets <vkuznets@redhat.com>;
+> parri.andrea@gmail.com; dave.hansen@intel.com
+> Subject: RE: [PATCH V3 05/13] HV: Add Write/Read MSR registers via ghcb page
 > 
-> I'll look at doing that separate from this series.
+> From: Tianyu Lan <ltykernel@gmail.com> Sent: Monday, August 9, 2021 10:56 AM
+> > Subject: [PATCH V3 05/13] HV: Add Write/Read MSR registers via ghcb page
 > 
->>
->> BTW, does it work with clang for you?
+> See previous comments about tag in the Subject line.
 > 
-> I haven't tried with clang, I'll check on that.
+> > Hyper-V provides GHCB protocol to write Synthetic Interrupt
+> > Controller MSR registers in Isolation VM with AMD SEV SNP
+> > and these registers are emulated by hypervisor directly.
+> > Hyper-V requires to write SINTx MSR registers twice. First
+> > writes MSR via GHCB page to communicate with hypervisor
+> > and then writes wrmsr instruction to talk with paravisor
+> > which runs in VMPL0. Guest OS ID MSR also needs to be set
+> > via GHCB.
+> >
+> > Signed-off-by: Tianyu Lan <Tianyu.Lan@microsoft.com>
+> > ---
+> > Change since v1:
+> >          * Introduce sev_es_ghcb_hv_call_simple() and share code
+> >            between SEV and Hyper-V code.
+> > ---
+> >  arch/x86/hyperv/hv_init.c       |  33 ++-------
+> >  arch/x86/hyperv/ivm.c           | 110 +++++++++++++++++++++++++++++
+> >  arch/x86/include/asm/mshyperv.h |  78 +++++++++++++++++++-
+> >  arch/x86/include/asm/sev.h      |   3 +
+> >  arch/x86/kernel/cpu/mshyperv.c  |   3 +
+> >  arch/x86/kernel/sev-shared.c    |  63 ++++++++++-------
+> >  drivers/hv/hv.c                 | 121 ++++++++++++++++++++++----------
+> >  include/asm-generic/mshyperv.h  |  12 +++-
+> >  8 files changed, 329 insertions(+), 94 deletions(-)
+> >
+> > diff --git a/arch/x86/hyperv/hv_init.c b/arch/x86/hyperv/hv_init.c
+> > index b3683083208a..ab0b33f621e7 100644
+> > --- a/arch/x86/hyperv/hv_init.c
+> > +++ b/arch/x86/hyperv/hv_init.c
+> > @@ -423,7 +423,7 @@ void __init hyperv_init(void)
+> >  		goto clean_guest_os_id;
+> >
+> >  	if (hv_isolation_type_snp()) {
+> > -		ms_hyperv.ghcb_base = alloc_percpu(void *);
+> > +		ms_hyperv.ghcb_base = alloc_percpu(union hv_ghcb __percpu *);
+> 
+> union hv_ghcb isn't defined.  It is not added until patch 6 of the series.
+> 
 
-Just as an fyi, clang also uses rip relative addressing for those 
-variables. No issues booting SME and SEV guests built with clang.
+Ignore this comment.  My mistake.
 
-Thanks,
-Tom
-
-> 
-> Thanks,
-> Tom
-> 
->>
+Michael
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
