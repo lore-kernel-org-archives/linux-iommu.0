@@ -1,189 +1,99 @@
-Return-Path: <SRS0=SLGw=NE=lists.linux-foundation.org=iommu-bounces@kernel.org>
+Return-Path: <SRS0=e2ZE=NF=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-13.5 required=3.0 tests=BAYES_00,DKIM_INVALID,
-	DKIM_SIGNED,HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_CR_TRAILER,INCLUDES_PATCH,
+X-Spam-Status: No, score=-8.5 required=3.0 tests=BAYES_00,DKIM_INVALID,
+	DKIM_SIGNED,HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_CR_TRAILER,
 	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED autolearn=ham
 	autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9796DC432BE
-	for <iommu@archiver.kernel.org>; Fri, 13 Aug 2021 21:28:57 +0000 (UTC)
-Received: from smtp4.osuosl.org (smtp4.osuosl.org [140.211.166.137])
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4761CC4338F
+	for <iommu@archiver.kernel.org>; Sat, 14 Aug 2021 01:57:54 +0000 (UTC)
+Received: from smtp2.osuosl.org (smtp2.osuosl.org [140.211.166.133])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 2F297610E9
-	for <iommu@archiver.kernel.org>; Fri, 13 Aug 2021 21:28:57 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.4.1 mail.kernel.org 2F297610E9
-Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=lists.linux-foundation.org
+	by mail.kernel.org (Postfix) with ESMTPS id DCB11610FD
+	for <iommu@archiver.kernel.org>; Sat, 14 Aug 2021 01:57:53 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.4.1 mail.kernel.org DCB11610FD
+Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=codeaurora.org
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by smtp4.osuosl.org (Postfix) with ESMTP id 05DE4407BF;
-	Fri, 13 Aug 2021 21:28:57 +0000 (UTC)
+	by smtp2.osuosl.org (Postfix) with ESMTP id 98847402CB;
+	Sat, 14 Aug 2021 01:57:53 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from smtp4.osuosl.org ([127.0.0.1])
-	by localhost (smtp4.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id fFWxs7n0_2iM; Fri, 13 Aug 2021 21:28:53 +0000 (UTC)
+Received: from smtp2.osuosl.org ([127.0.0.1])
+	by localhost (smtp2.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+	with ESMTP id vT801JIv6jXO; Sat, 14 Aug 2021 01:57:49 +0000 (UTC)
 Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by smtp4.osuosl.org (Postfix) with ESMTPS id D94814073F;
-	Fri, 13 Aug 2021 21:28:52 +0000 (UTC)
+	by smtp2.osuosl.org (Postfix) with ESMTPS id 261A0400E7;
+	Sat, 14 Aug 2021 01:57:49 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id BB499C0010;
-	Fri, 13 Aug 2021 21:28:52 +0000 (UTC)
-Received: from smtp1.osuosl.org (smtp1.osuosl.org [140.211.166.138])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 5A085C000E
- for <iommu@lists.linux-foundation.org>; Fri, 13 Aug 2021 21:28:51 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id ECDBDC0010;
+	Sat, 14 Aug 2021 01:57:48 +0000 (UTC)
+Received: from smtp3.osuosl.org (smtp3.osuosl.org [140.211.166.136])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id ABC48C000E
+ for <iommu@lists.linux-foundation.org>; Sat, 14 Aug 2021 01:57:47 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by smtp1.osuosl.org (Postfix) with ESMTP id 3C10F80EAD
- for <iommu@lists.linux-foundation.org>; Fri, 13 Aug 2021 21:28:51 +0000 (UTC)
+ by smtp3.osuosl.org (Postfix) with UTF8SMTP id 88E2E60662
+ for <iommu@lists.linux-foundation.org>; Sat, 14 Aug 2021 01:57:47 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Authentication-Results: smtp1.osuosl.org (amavisd-new);
- dkim=pass (1024-bit key) header.d=microsoft.com
-Received: from smtp1.osuosl.org ([127.0.0.1])
- by localhost (smtp1.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id 1axcjzzt_3PR for <iommu@lists.linux-foundation.org>;
- Fri, 13 Aug 2021 21:28:47 +0000 (UTC)
-X-Greylist: whitelisted by SQLgrey-1.8.0
-Received: from NAM11-CO1-obe.outbound.protection.outlook.com
- (mail-co1nam11on2093.outbound.protection.outlook.com [40.107.220.93])
- by smtp1.osuosl.org (Postfix) with ESMTPS id 90E9C80EB5
- for <iommu@lists.linux-foundation.org>; Fri, 13 Aug 2021 21:28:47 +0000 (UTC)
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=lM9GMkQ0CZSF6GcW8MmJykNorU4W3vROSFp9OpMWUpORxqWGY2xKiKRyW/DYdbXHcp+hv75N6vxrYIwD0+BXgRasvE/lCKf8xBHZz0JGe48Pgv+uM2M7PWqgGDtwAJ4z68HVLgk2ltpRiSpTNxY94o/Oqir1sBCVHozLuB4chZMsbFvFpcMfqX82Z3pIrSTvXg9xG07vu4Supnd0kpTwivtQITp6oJRbgAUfJnmoI8P59Hncx8mbGRdWyO2ftnuKaT6ndR2PldfI0tzBOMdJS51Ed8D/VSuaBg5aM/gF13cdikt/R7SoT6Voc4kXudJZy7780fJS9DJUrFgk/QPytA==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com; 
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=vFr/KaTPD182VDnGFw4G1DU5W3PZzQMKCsybADs7tdw=;
- b=IGlght9cNCY9OCkHeWUQmBMXCJPDJsKmWdD14PA/LMEFBjfqLMK7AIARIjWcinqwpCEgfZLyRzHtqf7D24HJM14+tjDlh6SmBVsGaoCSO6cHxh6GXXQJN8djcGIk3OBHp8L3djn29E4+WSu8ct2TqPPEc96Axm9jqpPMrWEvbzPCgqJm5N0kb1Unf0YHdGXzSxV+SMnvxEZkzCKcAEp+fgcQvqrz/sOSWkZDpBSWU/GBUbmAuLxI5KbRnqRHn/o3Afd5Gsj0WQeZiDSEgAikLeq5/mtUzRxe0PD0d+GdvPNmNolKxg04W47U9sSfP8J6y5F4kmJqI9mu6Hj/qb8gVg==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=microsoft.com; dmarc=pass action=none
- header.from=microsoft.com; dkim=pass header.d=microsoft.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=vFr/KaTPD182VDnGFw4G1DU5W3PZzQMKCsybADs7tdw=;
- b=Ma8Sdr4yWNsaxQT5BfRvtkuXHY1ZDOPqnYs9FecMsAq5GAnUJPdmim7Inid47cWpOzoKKKFZTar/y+BhP4a14UReRxWJkfkgPzrBVyHAJobC79WQ6GP1mZ4hk2vWHs8C/q7w0eTeF1uO0sDKmf4jmXLs6rhirn/TbTq7jCoSzzk=
-Received: from MWHPR21MB1593.namprd21.prod.outlook.com (2603:10b6:301:7c::11)
- by CO1PR21MB1297.namprd21.prod.outlook.com (2603:10b6:303:160::6)
- with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4436.4; Fri, 13 Aug
- 2021 21:28:42 +0000
-Received: from MWHPR21MB1593.namprd21.prod.outlook.com
- ([fe80::e8f7:b582:9e2d:ba55]) by MWHPR21MB1593.namprd21.prod.outlook.com
- ([fe80::e8f7:b582:9e2d:ba55%2]) with mapi id 15.20.4436.012; Fri, 13 Aug 2021
- 21:28:42 +0000
-To: Tianyu Lan <ltykernel@gmail.com>, KY Srinivasan <kys@microsoft.com>,
- Haiyang Zhang <haiyangz@microsoft.com>, Stephen Hemminger
- <sthemmin@microsoft.com>, "wei.liu@kernel.org" <wei.liu@kernel.org>, Dexuan
- Cui <decui@microsoft.com>, "tglx@linutronix.de" <tglx@linutronix.de>,
- "mingo@redhat.com" <mingo@redhat.com>, "bp@alien8.de" <bp@alien8.de>,
- "x86@kernel.org" <x86@kernel.org>, "hpa@zytor.com" <hpa@zytor.com>,
- "dave.hansen@linux.intel.com" <dave.hansen@linux.intel.com>,
- "luto@kernel.org" <luto@kernel.org>, "peterz@infradead.org"
- <peterz@infradead.org>, "konrad.wilk@oracle.com" <konrad.wilk@oracle.com>,
- "boris.ostrovsky@oracle.com" <boris.ostrovsky@oracle.com>, "jgross@suse.com"
- <jgross@suse.com>, "sstabellini@kernel.org" <sstabellini@kernel.org>,
- "joro@8bytes.org" <joro@8bytes.org>, "will@kernel.org" <will@kernel.org>,
- "davem@davemloft.net" <davem@davemloft.net>, "kuba@kernel.org"
- <kuba@kernel.org>, "jejb@linux.ibm.com" <jejb@linux.ibm.com>,
- "martin.petersen@oracle.com" <martin.petersen@oracle.com>, "arnd@arndb.de"
- <arnd@arndb.de>, "hch@lst.de" <hch@lst.de>, "m.szyprowski@samsung.com"
- <m.szyprowski@samsung.com>, "robin.murphy@arm.com" <robin.murphy@arm.com>,
- "thomas.lendacky@amd.com" <thomas.lendacky@amd.com>, "brijesh.singh@amd.com"
- <brijesh.singh@amd.com>, "ardb@kernel.org" <ardb@kernel.org>, Tianyu Lan
- <Tianyu.Lan@microsoft.com>, "pgonda@google.com" <pgonda@google.com>,
- "martin.b.radev@gmail.com" <martin.b.radev@gmail.com>,
- "akpm@linux-foundation.org" <akpm@linux-foundation.org>,
- "kirill.shutemov@linux.intel.com" <kirill.shutemov@linux.intel.com>,
- "rppt@kernel.org" <rppt@kernel.org>, "sfr@canb.auug.org.au"
- <sfr@canb.auug.org.au>, "saravanand@fb.com" <saravanand@fb.com>,
- "krish.sadhukhan@oracle.com" <krish.sadhukhan@oracle.com>,
- "aneesh.kumar@linux.ibm.com" <aneesh.kumar@linux.ibm.com>,
- "xen-devel@lists.xenproject.org" <xen-devel@lists.xenproject.org>,
- "rientjes@google.com" <rientjes@google.com>, "hannes@cmpxchg.org"
- <hannes@cmpxchg.org>, "tj@kernel.org" <tj@kernel.org>
-Subject: RE: [PATCH V3 07/13] HV/Vmbus: Add SNP support for VMbus channel
- initiate message
-Thread-Topic: [PATCH V3 07/13] HV/Vmbus: Add SNP support for VMbus channel
- initiate message
-Thread-Index: AQHXjUfv24BSqXdZjUClmJbxPo3yw6tx7wUg
-Date: Fri, 13 Aug 2021 21:28:42 +0000
-Message-ID: <MWHPR21MB15934F9D5617224608073CE7D7FA9@MWHPR21MB1593.namprd21.prod.outlook.com>
-References: <20210809175620.720923-1-ltykernel@gmail.com>
- <20210809175620.720923-8-ltykernel@gmail.com>
-In-Reply-To: <20210809175620.720923-8-ltykernel@gmail.com>
-Accept-Language: en-US
-Content-Language: en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-msip_labels: MSIP_Label_f42aa342-8706-4288-bd11-ebb85995028c_ActionId=4db12a68-da5e-4335-95dc-8738a43aac1e;
- MSIP_Label_f42aa342-8706-4288-bd11-ebb85995028c_ContentBits=0;
- MSIP_Label_f42aa342-8706-4288-bd11-ebb85995028c_Enabled=true;
- MSIP_Label_f42aa342-8706-4288-bd11-ebb85995028c_Method=Standard;
- MSIP_Label_f42aa342-8706-4288-bd11-ebb85995028c_Name=Internal;
- MSIP_Label_f42aa342-8706-4288-bd11-ebb85995028c_SetDate=2021-08-13T20:50:04Z;
- MSIP_Label_f42aa342-8706-4288-bd11-ebb85995028c_SiteId=72f988bf-86f1-41af-91ab-2d7cd011db47;
-authentication-results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=microsoft.com;
-x-ms-publictraffictype: Email
-x-ms-office365-filtering-correlation-id: 98b0b9a1-c51b-4bba-9ca6-08d95ea15337
-x-ms-traffictypediagnostic: CO1PR21MB1297:
-x-ms-exchange-transport-forked: True
-x-ld-processed: 72f988bf-86f1-41af-91ab-2d7cd011db47,ExtAddr
-x-microsoft-antispam-prvs: <CO1PR21MB12972358D5949C41735B40B8D7FA9@CO1PR21MB1297.namprd21.prod.outlook.com>
-x-ms-oob-tlc-oobclassifiers: OLM:6430;
-x-ms-exchange-senderadcheck: 1
-x-ms-exchange-antispam-relay: 0
-x-microsoft-antispam: BCL:0;
-x-microsoft-antispam-message-info: 3gdBQr+uaC/cH62f4x1FyA31Ggv7YkIy0azhogOJsnsNNDB0j3b+JRim3OKb74MQFbxb7RlIeQm5EhnB9Y1281XA0XpgSxvH3VYFNQgMqB92WaodbZ3GFqUZ53OLqJ0xz65i9EmvfRt3EKohriAnKNoPUn/MTKUjfylwHBI4oESuB41+4nU+Ebv/EP/R6XluxyOWw5zEqbbWD4h2b0s3cdtfVOC/38xJUUM9X0itbiC2i3mkmg+BDaAH9MYOMGZxYyIyz2cfaAYQYIZhSOs2qB6RPi8JFxFAJrrC8nG/zM6nTVhQgi4GLr933+wKrisfTfJrFG+a+3G0+J159C903tLRgQInrG3dgi3F6Ly12DvBbSukuA0fHL+ppjgU6QPEMRKAq9wlK5BB53/iJzlMLbEsg5WDyDkIpB3sdcOARlnnFHAyG41tGpkWvve7gzcTV4EAE2BAj740v1Sfbj1Aln9CYYQ34qEtJOp/KUzDxcEEV8NtLXp1FLWh/nU27fm7oakeF0Q4ZMgHZA1qxlU/MzYtMm42x45MRq5xM3ZEBI5TXxA4AW5SNfiMjqh7wrGpaFPc55H6aQsTxs7SPA6g7LRHt+SSaxUlz2m5MGGQMnNA7qvk4It/Jt+JxSECGZYk7ohCeeWIJ0JGFxSWFv1endAKgcvNdzfW2IZBzoOvsZiBtGMomHpdrDroGf2yxmzxsUu54WcqBpRyo5PL2UNsPJxz4KOJB1n97Tsr1roDYxI=
-x-forefront-antispam-report: CIP:255.255.255.255; CTRY:; LANG:en; SCL:1; SRV:;
- IPV:NLI; SFV:NSPM; H:MWHPR21MB1593.namprd21.prod.outlook.com; PTR:; CAT:NONE;
- SFS:(4636009)(366004)(508600001)(55016002)(6506007)(10290500003)(5660300002)(9686003)(76116006)(82950400001)(8936002)(122000001)(38100700002)(66556008)(8676002)(64756008)(66946007)(66446008)(110136005)(52536014)(71200400001)(33656002)(38070700005)(86362001)(316002)(15650500001)(66476007)(54906003)(82960400001)(7696005)(921005)(8990500004)(83380400001)(2906002)(7416002)(186003)(4326008)(26005)(7406005);
- DIR:OUT; SFP:1102; 
-x-ms-exchange-antispam-messagedata-chunkcount: 1
-x-ms-exchange-antispam-messagedata-0: =?us-ascii?Q?PI8niaD816S/UGWfeiG2CzBZYApmgTd1MXNm3ntN3Gu/tVDMXv9DoBc6+t1v?=
- =?us-ascii?Q?R1kfPCnSRpSiG57uJJOrntPgM7HcfVpJ15sGD4RZP7Fl13UwITUC3LDcQeit?=
- =?us-ascii?Q?97+PbvTZElm1FDv8E75dOPhheZYTiRuBLRv9JG2spF6cK5kTvSCIDtKB6Au2?=
- =?us-ascii?Q?RRj6soRUmFkOEn9F2N9mEvtqkhwRBh3XvY+yx0SwL6dW1MjDkGUWtX45EmuD?=
- =?us-ascii?Q?YEeHqwijiNdTjSVjMVwURfHFaudSSssyG5KJi/8fY0ydY+iRErRjyboWBHnN?=
- =?us-ascii?Q?2DLoMWjTiUmGx/lxb9SY8OfMN+tDOjF+msaMXnlYdOsARNh69o4PKIz4QrIw?=
- =?us-ascii?Q?itAAUiygWh6JD1TvLmoAF7F1DPmgNmao3GaGcBpATHo+EM1SrklyJvClAjKp?=
- =?us-ascii?Q?ob3uM/+LqaQrfGWy//1SGK0lQ8dzrMcn6TxH7Ug4DqjF6Y06kF6uWDGoPk9f?=
- =?us-ascii?Q?sUmQA0Q+vjGWTHiYgwl7aybYPwOGPYTbcocwhC5waln4I6D0ip0F5tX1qFpr?=
- =?us-ascii?Q?uewC/TURDW3EZ/DdCuCTTzi4GzAOu4Xpvt0o9DSKh7/lUqTRFqLHGmAgoUPe?=
- =?us-ascii?Q?7E3WYvb3NoWDlp8k8gcavnkouazT1YJat1RtRVY5jppHM1+Wc/kHoXjoyxTg?=
- =?us-ascii?Q?ai7VTSFmbjH1sc64jwChCcQwFblmuo52S9XfHVzzpT9d1jL5kM5QV+afLoyA?=
- =?us-ascii?Q?B4UeuadKypZ9ExzPw44217pZ33mCl145cfk+P02hWcp8p0GP2iJ9wpaGXz/w?=
- =?us-ascii?Q?uZ8s68l+l8TKzUbq88JEmtJScpmu9izs3M5EUwxrM4PNp9ti9WGyg/WWkYW3?=
- =?us-ascii?Q?7DKhptunUpT+JWb648aYcswGLLaQa8hLXe9+dBFx3ngkZU2miH46UlrPvrV6?=
- =?us-ascii?Q?871GN4VB5cdv1R2owKu4y8l6MZIj/qtMOMulHLkaxbPYHCee5II++OUAyual?=
- =?us-ascii?Q?Rvs4bCeQT8s6Ezm7dmkAz+DNit6XiMZncUU3W7JuR7JTNpflcZUXOn+sR+CX?=
- =?us-ascii?Q?ax737yG6smY4+c9Aa1mOBdA2hX0t3Cbg4tiP2SOBzJyq3K57KDAamcXagxk/?=
- =?us-ascii?Q?BKOmQzAtHPZZj6Bi73t8evdDVGfhp0ne5dfAQ0dtbUqSxjIZ9bsHuAzcV5tP?=
- =?us-ascii?Q?njY1LDSOJEO1lm/z9DBQz4b+leOi7XznGhOMEU0wyYKoldN6MVe32msRcCFX?=
- =?us-ascii?Q?BtM+vIoFISIURMxKFe7zoHXm7goQTXm0ozp96edgQ6R30AgPkpncsUNDYg5T?=
- =?us-ascii?Q?8nWrRLZYOCEsTMWzJdBUywik7C3XWpNtXEdNgwRqLdSyEfQiEPuD3sGnMbQL?=
- =?us-ascii?Q?97gmhx77iDT7wLoRxXQLJG7W?=
+Authentication-Results: smtp3.osuosl.org (amavisd-new);
+ dkim=pass (1024-bit key) header.d=mg.codeaurora.org
+Received: from smtp3.osuosl.org ([127.0.0.1])
+ by localhost (smtp3.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+ with UTF8SMTP id BeGoCphzUdTP for <iommu@lists.linux-foundation.org>;
+ Sat, 14 Aug 2021 01:57:43 +0000 (UTC)
+X-Greylist: from auto-whitelisted by SQLgrey-1.8.0
+Received: from m43-7.mailgun.net (m43-7.mailgun.net [69.72.43.7])
+ by smtp3.osuosl.org (Postfix) with UTF8SMTPS id EF5106063C
+ for <iommu@lists.linux-foundation.org>; Sat, 14 Aug 2021 01:57:41 +0000 (UTC)
+DKIM-Signature: a=rsa-sha256; v=1; c=relaxed/relaxed; d=mg.codeaurora.org;
+ q=dns/txt; 
+ s=smtp; t=1628906263; h=Content-Transfer-Encoding: Content-Type:
+ MIME-Version: Message-ID: Date: Subject: In-Reply-To: References: Cc:
+ To: From: Reply-To: Sender;
+ bh=C+qezgIh0rDWivT4rvbZT5YmyvAyYRUfpE+phtBAAaw=;
+ b=MMuTbGNQbe+e0avJ63I094Au9wy28icDWbv8p5KHniIPyxpOvht6d3cFodHwr7wvcYqsfvdn
+ tymdQ5mlbEUMiuHSlv4hlxQivZ7zXLEJjJPNip7IZYi5566wogjC/nCp2f86colkPJR394S1
+ MyxdfOJGdhHAcdJEm0qKZjczdP4=
+X-Mailgun-Sending-Ip: 69.72.43.7
+X-Mailgun-Sid: WyI3NDkwMCIsICJpb21tdUBsaXN0cy5saW51eC1mb3VuZGF0aW9uLm9yZyIsICJiZTllNGEiXQ==
+Received: from smtp.codeaurora.org
+ (ec2-35-166-182-171.us-west-2.compute.amazonaws.com [35.166.182.171]) by
+ smtp-out-n02.prod.us-west-2.postgun.com with SMTP id
+ 611722f9b14e7e2ecbb6b8f7 (version=TLS1.2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256); Sat, 14 Aug 2021 01:57:13
+ GMT
+Received: by smtp.codeaurora.org (Postfix, from userid 1001)
+ id EE11BC43460; Sat, 14 Aug 2021 01:57:12 +0000 (UTC)
+Received: from BCAIN (104-54-226-75.lightspeed.austtx.sbcglobal.net
+ [104.54.226.75])
+ (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+ (No client certificate requested) (Authenticated sender: bcain)
+ by smtp.codeaurora.org (Postfix) with ESMTPSA id 9AF9DC433F1;
+ Sat, 14 Aug 2021 01:57:07 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 smtp.codeaurora.org 9AF9DC433F1
+Authentication-Results: aws-us-west-2-caf-mail-1.web.codeaurora.org;
+ dmarc=none (p=none dis=none) header.from=codeaurora.org
+Authentication-Results: aws-us-west-2-caf-mail-1.web.codeaurora.org;
+ spf=fail smtp.mailfrom=bcain@codeaurora.org
+From: "Brian Cain" <bcain@codeaurora.org>
+To: "'Christoph Hellwig'" <hch@lst.de>, <iommu@lists.linux-foundation.org>,
+ "'Russell King'" <linux@armlinux.org.uk>
+References: <20210712061704.4162464-1-hch@lst.de>
+ <20210712061704.4162464-8-hch@lst.de>
+In-Reply-To: <20210712061704.4162464-8-hch@lst.de>
+Subject: RE: [PATCH 7/7] hexagon: use the generic global coherent pool
+Date: Fri, 13 Aug 2021 20:57:06 -0500
+Message-ID: <00a901d790af$b05165c0$10f43140$@codeaurora.org>
 MIME-Version: 1.0
-X-OriginatorOrg: microsoft.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-AuthSource: MWHPR21MB1593.namprd21.prod.outlook.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 98b0b9a1-c51b-4bba-9ca6-08d95ea15337
-X-MS-Exchange-CrossTenant-originalarrivaltime: 13 Aug 2021 21:28:42.5526 (UTC)
-X-MS-Exchange-CrossTenant-fromentityheader: Hosted
-X-MS-Exchange-CrossTenant-id: 72f988bf-86f1-41af-91ab-2d7cd011db47
-X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: 2GlRry51dOGFLEy7qqNRQefh0YZsixtx9+RUI/RWWHP4M+m1dHGK/+j6WV1ge08uWzwqfz1rLzM7tiftV89eEyF/cN1aHAL+veCkNvjH/Wo=
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: CO1PR21MB1297
-Cc: "linux-arch@vger.kernel.org" <linux-arch@vger.kernel.org>,
- "parri.andrea@gmail.com" <parri.andrea@gmail.com>,
- "linux-hyperv@vger.kernel.org" <linux-hyperv@vger.kernel.org>,
- "linux-scsi@vger.kernel.org" <linux-scsi@vger.kernel.org>,
- "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
- "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
- "dave.hansen@intel.com" <dave.hansen@intel.com>,
- "iommu@lists.linux-foundation.org" <iommu@lists.linux-foundation.org>,
- vkuznets <vkuznets@redhat.com>
+X-Mailer: Microsoft Outlook 16.0
+Content-Language: en-us
+Thread-Index: AQGLBLs9KUWyWP2l5ibPYuIecai1XAJ58qmhq/eGB5A=
+Cc: 'Vladimir Murzin' <vladimir.murzin@arm.com>, "'Manning,
+ Sid'" <sidneym@quicinc.com>, linux-hexagon@vger.kernel.org,
+ linux-kernel@vger.kernel.org, 'Dillon Min' <dillon.minfei@gmail.com>,
+ linux-arm-kernel@lists.infradead.org
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -196,205 +106,23 @@ List-Post: <mailto:iommu@lists.linux-foundation.org>
 List-Help: <mailto:iommu-request@lists.linux-foundation.org?subject=help>
 List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
  <mailto:iommu-request@lists.linux-foundation.org?subject=subscribe>
-From: Michael Kelley via iommu <iommu@lists.linux-foundation.org>
-Reply-To: Michael Kelley <mikelley@microsoft.com>
+Reply-To: bcain@codeaurora.org
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-From: Tianyu Lan <ltykernel@gmail.com> Sent: Monday, August 9, 2021 10:56 AM
-> 
-> The monitor pages in the CHANNELMSG_INITIATE_CONTACT msg are shared
-> with host in Isolation VM and so it's necessary to use hvcall to set
-> them visible to host. In Isolation VM with AMD SEV SNP, the access
-> address should be in the extra space which is above shared gpa
-> boundary. So remap these pages into the extra address(pa +
-> shared_gpa_boundary). Introduce monitor_pages_va to store
-> the remap address and unmap these va when disconnect vmbus.
-> 
-> Signed-off-by: Tianyu Lan <Tianyu.Lan@microsoft.com>
-> ---
-> Change since v1:
->         * Not remap monitor pages in the non-SNP isolation VM.
-> ---
->  drivers/hv/connection.c   | 65 +++++++++++++++++++++++++++++++++++++++
->  drivers/hv/hyperv_vmbus.h |  1 +
->  2 files changed, 66 insertions(+)
-> 
-> diff --git a/drivers/hv/connection.c b/drivers/hv/connection.c
-> index 6d315c1465e0..bf0ac3167bd2 100644
-> --- a/drivers/hv/connection.c
-> +++ b/drivers/hv/connection.c
-> @@ -19,6 +19,7 @@
->  #include <linux/vmalloc.h>
->  #include <linux/hyperv.h>
->  #include <linux/export.h>
-> +#include <linux/io.h>
->  #include <asm/mshyperv.h>
-> 
->  #include "hyperv_vmbus.h"
-> @@ -104,6 +105,12 @@ int vmbus_negotiate_version(struct vmbus_channel_msginfo *msginfo, u32 version)
-> 
->  	msg->monitor_page1 = virt_to_phys(vmbus_connection.monitor_pages[0]);
->  	msg->monitor_page2 = virt_to_phys(vmbus_connection.monitor_pages[1]);
-> +
-> +	if (hv_isolation_type_snp()) {
-> +		msg->monitor_page1 += ms_hyperv.shared_gpa_boundary;
-> +		msg->monitor_page2 += ms_hyperv.shared_gpa_boundary;
-> +	}
-> +
->  	msg->target_vcpu = hv_cpu_number_to_vp_number(VMBUS_CONNECT_CPU);
-> 
->  	/*
-> @@ -148,6 +155,31 @@ int vmbus_negotiate_version(struct vmbus_channel_msginfo *msginfo, u32 version)
->  		return -ECONNREFUSED;
->  	}
-> 
-> +	if (hv_isolation_type_snp()) {
-> +		vmbus_connection.monitor_pages_va[0]
-> +			= vmbus_connection.monitor_pages[0];
-> +		vmbus_connection.monitor_pages[0]
-> +			= memremap(msg->monitor_page1, HV_HYP_PAGE_SIZE,
-> +				   MEMREMAP_WB);
-> +		if (!vmbus_connection.monitor_pages[0])
-> +			return -ENOMEM;
 
-This error case causes vmbus_negotiate_version() to return with
-vmbus_connection.con_state set to CONNECTED.  But the caller never checks the
-returned error code except for ETIMEDOUT.  So the caller will think that
-vmbus_negotiate_version() succeeded when it didn't.  There may be some
-existing bugs in that error handling code. :-(
 
-> +
-> +		vmbus_connection.monitor_pages_va[1]
-> +			= vmbus_connection.monitor_pages[1];
-> +		vmbus_connection.monitor_pages[1]
-> +			= memremap(msg->monitor_page2, HV_HYP_PAGE_SIZE,
-> +				   MEMREMAP_WB);
-> +		if (!vmbus_connection.monitor_pages[1]) {
-> +			memunmap(vmbus_connection.monitor_pages[0]);
-> +			return -ENOMEM;
-> +		}
-> +
-> +		memset(vmbus_connection.monitor_pages[0], 0x00,
-> +		       HV_HYP_PAGE_SIZE);
-> +		memset(vmbus_connection.monitor_pages[1], 0x00,
-> +		       HV_HYP_PAGE_SIZE);
-> +	}
-> +
-
-I don't think the memset() calls are needed.  The memory was originally
-allocated with hv_alloc_hyperv_zeroed_page(), so it should already be zeroed.
-
->  	return ret;
->  }
+> -----Original Message-----
+> From: Christoph Hellwig <hch@lst.de>
+...
+> Switch hexagon to use the generic code for dma_alloc_coherent from
+> a global pre-filled pool.
 > 
-> @@ -159,6 +191,7 @@ int vmbus_connect(void)
->  	struct vmbus_channel_msginfo *msginfo = NULL;
->  	int i, ret = 0;
->  	__u32 version;
-> +	u64 pfn[2];
-> 
->  	/* Initialize the vmbus connection */
->  	vmbus_connection.conn_state = CONNECTING;
-> @@ -216,6 +249,16 @@ int vmbus_connect(void)
->  		goto cleanup;
->  	}
-> 
-> +	if (hv_is_isolation_supported()) {
-> +		pfn[0] = virt_to_hvpfn(vmbus_connection.monitor_pages[0]);
-> +		pfn[1] = virt_to_hvpfn(vmbus_connection.monitor_pages[1]);
-> +		if (hv_mark_gpa_visibility(2, pfn,
-> +				VMBUS_PAGE_VISIBLE_READ_WRITE)) {
+> Signed-off-by: Christoph Hellwig <hch@lst.de>
 
-Note that hv_mark_gpa_visibility() will need an appropriate no-op stub so
-that this architecture independent code will compile for ARM64.
-
-> +			ret = -EFAULT;
-> +			goto cleanup;
-> +		}
-> +	}
-> +
->  	msginfo = kzalloc(sizeof(*msginfo) +
->  			  sizeof(struct vmbus_channel_initiate_contact),
->  			  GFP_KERNEL);
-> @@ -284,6 +327,8 @@ int vmbus_connect(void)
-> 
->  void vmbus_disconnect(void)
->  {
-> +	u64 pfn[2];
-> +
->  	/*
->  	 * First send the unload request to the host.
->  	 */
-> @@ -303,6 +348,26 @@ void vmbus_disconnect(void)
->  		vmbus_connection.int_page = NULL;
->  	}
-> 
-> +	if (hv_is_isolation_supported()) {
-> +		if (vmbus_connection.monitor_pages_va[0]) {
-> +			memunmap(vmbus_connection.monitor_pages[0]);
-> +			vmbus_connection.monitor_pages[0]
-> +				= vmbus_connection.monitor_pages_va[0];
-> +			vmbus_connection.monitor_pages_va[0] = NULL;
-> +		}
-> +
-> +		if (vmbus_connection.monitor_pages_va[1]) {
-> +			memunmap(vmbus_connection.monitor_pages[1]);
-> +			vmbus_connection.monitor_pages[1]
-> +				= vmbus_connection.monitor_pages_va[1];
-> +			vmbus_connection.monitor_pages_va[1] = NULL;
-> +		}
-> +
-> +		pfn[0] = virt_to_hvpfn(vmbus_connection.monitor_pages[0]);
-> +		pfn[1] = virt_to_hvpfn(vmbus_connection.monitor_pages[1]);
-> +		hv_mark_gpa_visibility(2, pfn, VMBUS_PAGE_NOT_VISIBLE);
-> +	}
-> +
-
-The code in this patch feels a bit more complicated than it needs to be.  Altogether,
-there are two different virtual addresses and one physical address for each monitor
-page.  The two virtual addresses are the one obtained from the original memory
-allocation, and which will be used to free the memory.  The second virtual address
-is the one used to actually access the data, which is the same as the first virtual
-address for a non-isolated VM.  The second VA is the result of memremap() call for an
-isolated VM.  The vmbus_connection data structure should save all three values for
-each monitor page so they don't need to recomputed or moved around.  Then:
-
-1) For isolated and for non-isolated VMs, setup the virtual and physical addresses
-of the monitor pages in vmbus_connect(), and store them in the vmbus_connection
-data structure.  The physical address should include the shared_gpa_boundary offset
-in the case of an isolated VM.  At this point the two virtual addresses are the same.
-
-2) vmbus_negotiate_version() just grabs the physical address from the
-vmbus_connection data structure.  It doesn't make any changes to the virtual
-or physical addresses, which keeps it focused just on version negotiation.
-
-3) Once vmbus_negotiate_version() is done, vmbus_connect() can determine
-the remapped virtual address, and store that.  It can also change the visibility
-of the two pages using the previously stored physical address.
-
-4) vmbus_disconnect() can do the memunmaps() and change the visibility if needed,
-and then free the memory using the address from the original allocation in Step 1.
-
->  	hv_free_hyperv_page((unsigned long)vmbus_connection.monitor_pages[0]);
->  	hv_free_hyperv_page((unsigned long)vmbus_connection.monitor_pages[1]);
->  	vmbus_connection.monitor_pages[0] = NULL;
-> diff --git a/drivers/hv/hyperv_vmbus.h b/drivers/hv/hyperv_vmbus.h
-> index 42f3d9d123a1..40bc0eff6665 100644
-> --- a/drivers/hv/hyperv_vmbus.h
-> +++ b/drivers/hv/hyperv_vmbus.h
-> @@ -240,6 +240,7 @@ struct vmbus_connection {
->  	 * is child->parent notification
->  	 */
->  	struct hv_monitor_page *monitor_pages[2];
-> +	void *monitor_pages_va[2];
->  	struct list_head chn_msg_list;
->  	spinlock_t channelmsg_lock;
-> 
-> --
-> 2.25.1
+Reviewed-by: Brian Cain <bcain@codeaurora.org>
 
 _______________________________________________
 iommu mailing list
