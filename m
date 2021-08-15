@@ -2,144 +2,67 @@ Return-Path: <SRS0=nnIB=NG=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-9.2 required=3.0 tests=BAYES_00,DKIM_ADSP_CUSTOM_MED,
-	DKIM_INVALID,DKIM_SIGNED,FREEMAIL_FORGED_FROMDOMAIN,FREEMAIL_FROM,
-	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,NICE_REPLY_A,
-	SPF_HELO_NONE,SPF_PASS,USER_AGENT_SANE_1 autolearn=unavailable
+X-Spam-Status: No, score=-16.8 required=3.0 tests=BAYES_00,
+	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_CR_TRAILER,INCLUDES_PATCH,
+	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,USER_AGENT_GIT autolearn=ham
 	autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C82C4C4338F
-	for <iommu@archiver.kernel.org>; Sun, 15 Aug 2021 15:21:36 +0000 (UTC)
-Received: from smtp1.osuosl.org (smtp1.osuosl.org [140.211.166.138])
+	by smtp.lore.kernel.org (Postfix) with ESMTP id DA769C4338F
+	for <iommu@archiver.kernel.org>; Sun, 15 Aug 2021 20:45:45 +0000 (UTC)
+Received: from smtp4.osuosl.org (smtp4.osuosl.org [140.211.166.137])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 7AE9261208
-	for <iommu@archiver.kernel.org>; Sun, 15 Aug 2021 15:21:36 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.4.1 mail.kernel.org 7AE9261208
-Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=gmail.com
+	by mail.kernel.org (Postfix) with ESMTPS id 551D061373
+	for <iommu@archiver.kernel.org>; Sun, 15 Aug 2021 20:45:45 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.4.1 mail.kernel.org 551D061373
+Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=intel.com
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by smtp1.osuosl.org (Postfix) with ESMTP id 43C45833C6;
-	Sun, 15 Aug 2021 15:21:36 +0000 (UTC)
+	by smtp4.osuosl.org (Postfix) with ESMTP id 0F107402FD;
+	Sun, 15 Aug 2021 20:45:45 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from smtp1.osuosl.org ([127.0.0.1])
-	by localhost (smtp1.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id C58tmiNheQlC; Sun, 15 Aug 2021 15:21:32 +0000 (UTC)
-Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [IPv6:2605:bc80:3010:104::8cd3:938])
-	by smtp1.osuosl.org (Postfix) with ESMTPS id 1DA1F833AF;
-	Sun, 15 Aug 2021 15:21:32 +0000 (UTC)
+Received: from smtp4.osuosl.org ([127.0.0.1])
+	by localhost (smtp4.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+	with ESMTP id 65gZx7sA9RVY; Sun, 15 Aug 2021 20:45:41 +0000 (UTC)
+Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
+	by smtp4.osuosl.org (Postfix) with ESMTPS id B6F5D402A6;
+	Sun, 15 Aug 2021 20:45:40 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id CF2F2C0010;
-	Sun, 15 Aug 2021 15:21:31 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 8A3EFC001A;
+	Sun, 15 Aug 2021 20:45:40 +0000 (UTC)
 Received: from smtp1.osuosl.org (smtp1.osuosl.org [140.211.166.138])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 6B0DEC000E
- for <iommu@lists.linux-foundation.org>; Sun, 15 Aug 2021 15:21:30 +0000 (UTC)
+ by lists.linuxfoundation.org (Postfix) with ESMTP id C9E08C000E
+ for <iommu@lists.linux-foundation.org>; Sun, 15 Aug 2021 20:45:38 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by smtp1.osuosl.org (Postfix) with ESMTP id 54266833B7
- for <iommu@lists.linux-foundation.org>; Sun, 15 Aug 2021 15:21:30 +0000 (UTC)
+ by smtp1.osuosl.org (Postfix) with ESMTP id ABC6980D02
+ for <iommu@lists.linux-foundation.org>; Sun, 15 Aug 2021 20:45:38 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
 Received: from smtp1.osuosl.org ([127.0.0.1])
  by localhost (smtp1.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id YyYu3rSZQRkD for <iommu@lists.linux-foundation.org>;
- Sun, 15 Aug 2021 15:21:29 +0000 (UTC)
-X-Greylist: whitelisted by SQLgrey-1.8.0
-Received: from mail-pl1-x633.google.com (mail-pl1-x633.google.com
- [IPv6:2607:f8b0:4864:20::633])
- by smtp1.osuosl.org (Postfix) with ESMTPS id AC5B9833AF
- for <iommu@lists.linux-foundation.org>; Sun, 15 Aug 2021 15:21:29 +0000 (UTC)
-Received: by mail-pl1-x633.google.com with SMTP id a20so18066117plm.0
- for <iommu@lists.linux-foundation.org>; Sun, 15 Aug 2021 08:21:29 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=gmail.com; s=20161025;
- h=from:subject:to:cc:references:message-id:date:user-agent
- :mime-version:in-reply-to:content-language:content-transfer-encoding;
- bh=lqJuD6ruM5b7S82+pL+Pgu4dT3Aqj2AS9hae1tFkdRo=;
- b=UDo6cP9FMCJZ7xCJSIXhjRcP0ErAenE3P03nucshW6LzGwza1JB05cdoyvyJEbpJya
- 8aLc4Djx0DAWFPSijwKCksggpzGOsA8NJq7xgbAAE0ffHXqq0QXSiy6tfbcSn5jEQof6
- 2ma3PA51qPRAxAYmuW2j7KtkKsDVNuEpegmAaBxh1f/jI4N5cAWqPcx4oFXN2pO1Ashc
- 87gLBUkKiBVoGeCUHLrBIQIIXvlCZHYUAOsOdCOfo4PAkq83QiSfgI8TAI23zhfr8YUr
- vMCV/udIh/MHgkHngzhYrcPnpUZMQSk6GK/ENzO0mZC8nGBR7d73iCxBtmg3WUTr+cQr
- /F0g==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
- d=1e100.net; s=20161025;
- h=x-gm-message-state:from:subject:to:cc:references:message-id:date
- :user-agent:mime-version:in-reply-to:content-language
- :content-transfer-encoding;
- bh=lqJuD6ruM5b7S82+pL+Pgu4dT3Aqj2AS9hae1tFkdRo=;
- b=U6l0X1xEvy9GqjkOHVKlyQx8j7cZpdLIGOwTCCaO5cwC2WfC8TCvVeU/LumTdzvhRS
- NRwVO9kcZzpN+0K4YHw69Zg34+wj4JUFNVv2FLDysP/Q+Vmx+VZ4d+NCD91usieEPntX
- USYzDCdWTxNkR74F9Q7IBW1IOI5rqPfq8+HYUolHr3bo6GeN1ChzHgVfk5j5yGqtA0WT
- +KOUAQjKtbEgNoYa8abo9QLJTRJhFSldJF1FEHabHYHQAIWDygr83hEvXFIKGUlmaOrU
- YlCVhrBaGD+J+MgplproU6OJt2GQEOqCN0va5i89Zr9lYIln51gBGgkPFz2duXS7d7mZ
- RHeA==
-X-Gm-Message-State: AOAM533Ro9K9xDoJNv6A1Zgrw8RCoL0ssC1BnfafzqMX0Cv10jwJ2WmN
- 8kYGYnKSarQpcfMrWdEZO10=
-X-Google-Smtp-Source: ABdhPJxpcs+C9yGRhB/oJwUav2sPEXUGNBEjk6Xqpn3/4lgsrB3QPLQ97I5YOwA+8w9+RuIKBCv5Rw==
-X-Received: by 2002:a63:770f:: with SMTP id s15mr11711033pgc.137.1629040889118; 
- Sun, 15 Aug 2021 08:21:29 -0700 (PDT)
-Received: from ?IPv6:2404:f801:0:5:8000::50b? ([2404:f801:9000:18:efec::50b])
- by smtp.gmail.com with ESMTPSA id
- nn18sm6289319pjb.21.2021.08.15.08.21.15
- (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
- Sun, 15 Aug 2021 08:21:28 -0700 (PDT)
-From: Tianyu Lan <ltykernel@gmail.com>
-Subject: Re: [PATCH V3 04/13] HV: Mark vmbus ring buffer visible to host in
- Isolation VM
-To: Michael Kelley <mikelley@microsoft.com>, KY Srinivasan
- <kys@microsoft.com>, Haiyang Zhang <haiyangz@microsoft.com>,
- Stephen Hemminger <sthemmin@microsoft.com>,
- "wei.liu@kernel.org" <wei.liu@kernel.org>, Dexuan Cui <decui@microsoft.com>,
- "tglx@linutronix.de" <tglx@linutronix.de>,
- "mingo@redhat.com" <mingo@redhat.com>, "bp@alien8.de" <bp@alien8.de>,
- "x86@kernel.org" <x86@kernel.org>, "hpa@zytor.com" <hpa@zytor.com>,
- "dave.hansen@linux.intel.com" <dave.hansen@linux.intel.com>,
- "luto@kernel.org" <luto@kernel.org>,
- "peterz@infradead.org" <peterz@infradead.org>,
- "konrad.wilk@oracle.com" <konrad.wilk@oracle.com>,
- "boris.ostrovsky@oracle.com" <boris.ostrovsky@oracle.com>,
- "jgross@suse.com" <jgross@suse.com>,
- "sstabellini@kernel.org" <sstabellini@kernel.org>,
- "joro@8bytes.org" <joro@8bytes.org>, "will@kernel.org" <will@kernel.org>,
- "davem@davemloft.net" <davem@davemloft.net>,
- "kuba@kernel.org" <kuba@kernel.org>, "jejb@linux.ibm.com"
- <jejb@linux.ibm.com>, "martin.petersen@oracle.com"
- <martin.petersen@oracle.com>, "arnd@arndb.de" <arnd@arndb.de>,
- "hch@lst.de" <hch@lst.de>,
- "m.szyprowski@samsung.com" <m.szyprowski@samsung.com>,
- "robin.murphy@arm.com" <robin.murphy@arm.com>,
- "thomas.lendacky@amd.com" <thomas.lendacky@amd.com>,
- "brijesh.singh@amd.com" <brijesh.singh@amd.com>,
- "ardb@kernel.org" <ardb@kernel.org>, Tianyu Lan <Tianyu.Lan@microsoft.com>,
- "pgonda@google.com" <pgonda@google.com>,
- "martin.b.radev@gmail.com" <martin.b.radev@gmail.com>,
- "akpm@linux-foundation.org" <akpm@linux-foundation.org>,
- "kirill.shutemov@linux.intel.com" <kirill.shutemov@linux.intel.com>,
- "rppt@kernel.org" <rppt@kernel.org>,
- "sfr@canb.auug.org.au" <sfr@canb.auug.org.au>,
- "saravanand@fb.com" <saravanand@fb.com>,
- "krish.sadhukhan@oracle.com" <krish.sadhukhan@oracle.com>,
- "aneesh.kumar@linux.ibm.com" <aneesh.kumar@linux.ibm.com>,
- "xen-devel@lists.xenproject.org" <xen-devel@lists.xenproject.org>,
- "rientjes@google.com" <rientjes@google.com>,
- "hannes@cmpxchg.org" <hannes@cmpxchg.org>, "tj@kernel.org" <tj@kernel.org>
-References: <20210809175620.720923-1-ltykernel@gmail.com>
- <20210809175620.720923-5-ltykernel@gmail.com>
- <MWHPR21MB1593CCBBBB83E721F8FDACD3D7F99@MWHPR21MB1593.namprd21.prod.outlook.com>
-Message-ID: <43d4cb59-5ddd-516d-1f5c-4a1a799a9f2d@gmail.com>
-Date: Sun, 15 Aug 2021 23:21:14 +0800
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:78.0) Gecko/20100101
- Thunderbird/78.13.0
-MIME-Version: 1.0
-In-Reply-To: <MWHPR21MB1593CCBBBB83E721F8FDACD3D7F99@MWHPR21MB1593.namprd21.prod.outlook.com>
-Content-Language: en-US
-Cc: "linux-arch@vger.kernel.org" <linux-arch@vger.kernel.org>,
- "parri.andrea@gmail.com" <parri.andrea@gmail.com>,
- "linux-hyperv@vger.kernel.org" <linux-hyperv@vger.kernel.org>,
- "linux-scsi@vger.kernel.org" <linux-scsi@vger.kernel.org>,
- "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
- "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
- "dave.hansen@intel.com" <dave.hansen@intel.com>,
- "iommu@lists.linux-foundation.org" <iommu@lists.linux-foundation.org>,
- vkuznets <vkuznets@redhat.com>
+ with ESMTP id BmyD0UHqstFr for <iommu@lists.linux-foundation.org>;
+ Sun, 15 Aug 2021 20:45:36 +0000 (UTC)
+X-Greylist: domain auto-whitelisted by SQLgrey-1.8.0
+Received: from mga04.intel.com (mga04.intel.com [192.55.52.120])
+ by smtp1.osuosl.org (Postfix) with ESMTPS id 07F4D80CF4
+ for <iommu@lists.linux-foundation.org>; Sun, 15 Aug 2021 20:45:35 +0000 (UTC)
+X-IronPort-AV: E=McAfee;i="6200,9189,10077"; a="213914678"
+X-IronPort-AV: E=Sophos;i="5.84,324,1620716400"; d="scan'208";a="213914678"
+Received: from orsmga007.jf.intel.com ([10.7.209.58])
+ by fmsmga104.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384;
+ 15 Aug 2021 13:45:35 -0700
+X-IronPort-AV: E=Sophos;i="5.84,324,1620716400"; d="scan'208";a="461851824"
+Received: from km-skylake-client-platform.sc.intel.com ([172.25.103.109])
+ by orsmga007-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384;
+ 15 Aug 2021 13:45:34 -0700
+From: Kyung Min Park <kyung.min.park@intel.com>
+To: iommu@lists.linux-foundation.org,
+	linux-kernel@vger.kernel.org
+Subject: [PATCH v3] iommu/vt-d: Dump DMAR translation structure
+Date: Sun, 15 Aug 2021 13:38:45 -0700
+Message-Id: <20210815203845.31287-1-kyung.min.park@intel.com>
+X-Mailer: git-send-email 2.17.1
+Cc: ravi.v.shankar@intel.com, baolu.lu@intel.com, dwmw2@infradead.org,
+ kyung.min.park@intel.com, will@kernel.org
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -152,74 +75,242 @@ List-Post: <mailto:iommu@lists.linux-foundation.org>
 List-Help: <mailto:iommu-request@lists.linux-foundation.org?subject=help>
 List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
  <mailto:iommu-request@lists.linux-foundation.org?subject=subscribe>
+MIME-Version: 1.0
+Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
-Content-Type: text/plain; charset="us-ascii"; Format="flowed"
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
+When the dmar translation fault happens, the kernel prints a single line
+fault reason with corresponding hexadecimal code defined in the Intel VT-d
+specification.
 
+Currently, when user wants to debug the translation fault in detail,
+debugfs is used for dumping the dmar_translation_struct, which is not
+available when the kernel failed to boot.
 
-On 8/13/2021 6:20 AM, Michael Kelley wrote:
->> @@ -474,6 +482,13 @@ static int __vmbus_establish_gpadl(struct vmbus_channel *channel,
->>   	if (ret)
->>   		return ret;
->>
->> +	ret = set_memory_decrypted((unsigned long)kbuffer,
->> +				   HVPFN_UP(size));
->> +	if (ret) {
->> +		pr_warn("Failed to set host visibility.\n");
-> Enhance this message a bit.  "Failed to set host visibility for new GPADL\n"
-> and also output the value of ret.
+Dump the DMAR translation structure, pagewalk the IO page table and print
+the page table entry when the fault happens.
 
-OK. This looks better. Thanks.
+This is enabled by CONFIG_IOMMU_DEBUGFS.
 
-> 
->> @@ -539,6 +554,10 @@ static int __vmbus_establish_gpadl(struct vmbus_channel *channel,
->>   	/* At this point, we received the gpadl created msg */
->>   	*gpadl_handle = gpadlmsg->gpadl;
->>
->> +	channel->gpadl_array[index].size = size;
->> +	channel->gpadl_array[index].buffer = kbuffer;
->> +	channel->gpadl_array[index].gpadlhandle = *gpadl_handle;
->> +
-> I can see the merits of transparently stashing the memory address and size
-> that will be needed by vmbus_teardown_gpadl(), so that the callers of
-> __vmbus_establish_gpadl() don't have to worry about it.  But doing the
-> stashing transparently is somewhat messy.
-> 
-> Given that the callers are already have memory allocated to save the
-> GPADL handle, a little refactoring would make for a much cleaner solution.
-> Instead of having memory allocated for the 32-bit GPADL handle, callers
-> should allocate the slightly larger struct vmbus_gpadl that you've
-> defined below.  The calling interfaces can be updated to take a pointer
-> to this structure instead of a pointer to the 32-bit GPADL handle, and
-> you can save the memory address and size right along with the GPADL
-> handle.  This approach touches a few more files, but I think there are
-> only two callers outside of the channel management code -- netvsc
-> and hv_uio -- so it's not a big change.
+Signed-off-by: Kyung Min Park <kyung.min.park@intel.com>
+---
+ChangeLog:
+- Change from v2 to v3:
+  1. Add config option for dmar_fault_dump_ptes for debug.
+- Change from v1 to v2:
+  1. fix compilation issue with different IOMMU config option.
+---
+ drivers/iommu/intel/Kconfig |   4 ++
+ drivers/iommu/intel/dmar.c  |  10 +++-
+ drivers/iommu/intel/iommu.c | 109 ++++++++++++++++++++++++++++++++++++
+ include/linux/dmar.h        |   8 +++
+ 4 files changed, 129 insertions(+), 2 deletions(-)
 
-Yes, this is a good suggestion and Will update in the next version.
+diff --git a/drivers/iommu/intel/Kconfig b/drivers/iommu/intel/Kconfig
+index 43ebd8af11c5..cd209f051833 100644
+--- a/drivers/iommu/intel/Kconfig
++++ b/drivers/iommu/intel/Kconfig
+@@ -6,6 +6,9 @@ config DMAR_TABLE
+ config DMAR_PERF
+ 	bool
+ 
++config DMAR_DEBUG
++	bool
++
+ config INTEL_IOMMU
+ 	bool "Support for Intel IOMMU using DMA Remapping Devices"
+ 	depends on PCI_MSI && ACPI && (X86 || IA64)
+@@ -29,6 +32,7 @@ config INTEL_IOMMU_DEBUGFS
+ 	bool "Export Intel IOMMU internals in Debugfs"
+ 	depends on INTEL_IOMMU && IOMMU_DEBUGFS
+ 	select DMAR_PERF
++	select DMAR_DEBUG
+ 	help
+ 	  !!!WARNING!!!
+ 
+diff --git a/drivers/iommu/intel/dmar.c b/drivers/iommu/intel/dmar.c
+index d66f79acd14d..b632336902e3 100644
+--- a/drivers/iommu/intel/dmar.c
++++ b/drivers/iommu/intel/dmar.c
+@@ -1943,12 +1943,16 @@ static int dmar_fault_do_one(struct intel_iommu *iommu, int type,
+ 
+ 	reason = dmar_get_fault_reason(fault_reason, &fault_type);
+ 
+-	if (fault_type == INTR_REMAP)
++	if (fault_type == INTR_REMAP) {
+ 		pr_err("[INTR-REMAP] Request device [0x%02x:0x%02x.%d] fault index 0x%llx [fault reason 0x%02x] %s\n",
+ 		       source_id >> 8, PCI_SLOT(source_id & 0xFF),
+ 		       PCI_FUNC(source_id & 0xFF), addr >> 48,
+ 		       fault_reason, reason);
+-	else if (pasid == INVALID_IOASID)
++
++		return 0;
++	}
++
++	if (pasid == INVALID_IOASID)
+ 		pr_err("[%s NO_PASID] Request device [0x%02x:0x%02x.%d] fault addr 0x%llx [fault reason 0x%02x] %s\n",
+ 		       type ? "DMA Read" : "DMA Write",
+ 		       source_id >> 8, PCI_SLOT(source_id & 0xFF),
+@@ -1961,6 +1965,8 @@ static int dmar_fault_do_one(struct intel_iommu *iommu, int type,
+ 		       PCI_FUNC(source_id & 0xFF), addr,
+ 		       fault_reason, reason);
+ 
++	dmar_fault_dump_ptes(iommu, source_id, addr, pasid);
++
+ 	return 0;
+ }
+ 
+diff --git a/drivers/iommu/intel/iommu.c b/drivers/iommu/intel/iommu.c
+index a6a07d985709..f82ae18f3915 100644
+--- a/drivers/iommu/intel/iommu.c
++++ b/drivers/iommu/intel/iommu.c
+@@ -173,6 +173,8 @@ static struct intel_iommu **g_iommus;
+ 
+ static void __init check_tylersburg_isoch(void);
+ static int rwbf_quirk;
++static inline struct device_domain_info *
++dmar_search_domain_by_dev_info(int segment, int bus, int devfn);
+ 
+ /*
+  * set to 1 to panic kernel if can't successfully enable VT-d
+@@ -998,6 +1000,113 @@ static void free_context_table(struct intel_iommu *iommu)
+ 	spin_unlock_irqrestore(&iommu->lock, flags);
+ }
+ 
++#ifdef CONFIG_DMAR_DEBUG
++static void pgtable_walk(struct intel_iommu *iommu, unsigned long pfn, u8 bus, u8 devfn)
++{
++	struct dma_pte *parent, *pte = NULL;
++	struct device_domain_info *info;
++	struct dmar_domain *domain = NULL;
++	int offset, level;
++
++	info = dmar_search_domain_by_dev_info(iommu->segment, bus, devfn);
++	if (!info) {
++		pr_info("no iommu info for this device.\n");
++		return;
++	}
++
++	domain = info->domain;
++	if (!domain) {
++		pr_info("iommu domain does not exist for this device.\n");
++		return;
++	}
++	level = agaw_to_level(domain->agaw);
++	parent = domain->pgd;
++	if (!parent) {
++		pr_info("NULL pointer of page table entry.\n");
++		return;
++	}
++
++	while (1) {
++		offset = pfn_level_offset(pfn, level);
++		pte = &parent[offset];
++		if (!pte || (dma_pte_superpage(pte) || !dma_pte_present(pte))) {
++			pr_info("pte not present at level %d", level);
++			break;
++		}
++		pr_info("pte level: %d, pte value: %llx\n", level, pte->val);
++
++		if (level == 1)
++			break;
++		parent = phys_to_virt(dma_pte_addr(pte));
++		level--;
++	}
++}
++
++void dmar_fault_dump_ptes(struct intel_iommu *iommu, u16 source_id, unsigned long long addr,
++			  u32 pasid)
++{
++	struct pasid_dir_entry *dir, *pde;
++	struct pasid_entry *entries, *pte;
++	struct context_entry *ctx_entry;
++	struct root_entry *rt_entry;
++	u8 devfn = source_id & 0xff;
++	u8 bus = source_id >> 8;
++	int i, dir_index, index;
++
++	/* root entry dump */
++	rt_entry = &iommu->root_entry[bus];
++	if (!rt_entry) {
++		pr_info("root table entry is not present\n");
++		return;
++	}
++	if (!sm_supported(iommu))
++		pr_info("%s, root_entry[63:0]: %llx", iommu->name, rt_entry->lo);
++	else
++		pr_info("%s, root_entry[127:0]: %llx, %llx\n", iommu->name,
++			rt_entry->hi, rt_entry->lo);
++
++	/* context entry dump */
++	ctx_entry = iommu_context_addr(iommu, bus, devfn, 0);
++	if (!ctx_entry) {
++		pr_info("context table entry is not present\n");
++		return;
++	}
++	pr_info("%s, ctx_entry[127:0]: %llx, %llx\n", iommu->name, ctx_entry->hi, ctx_entry->lo);
++
++	/* legacy mode does not require PASID entries */
++	if (!sm_supported(iommu))
++		goto pgtable_walk;
++
++	/* get the pointer to pasid directory entry */
++	dir = phys_to_virt(ctx_entry->lo & VTD_PAGE_MASK);
++	if (!dir) {
++		pr_info("pasid directory entry is not present\n");
++		return;
++	}
++	/* For request-without-pasid, get the pasid from context entry */
++	if (intel_iommu_sm && pasid == INVALID_IOASID)
++		pasid = PASID_RID2PASID;
++
++	dir_index = pasid >> PASID_PDE_SHIFT;
++	pde = &dir[dir_index];
++	pr_info("%s, pasid_dir_entry: %llx\n", iommu->name, pde->val);
++
++	/* get the pointer to the pasid table entry */
++	entries = get_pasid_table_from_pde(pde);
++	if (!entries) {
++		pr_info("pasid table entry is not present\n");
++		return;
++	}
++	index = pasid & PASID_PTE_MASK;
++	pte = &entries[index];
++	for (i = 0; i < ARRAY_SIZE(pte->val); i++)
++		pr_info("%s, pasid_table_entry[%d]: %llx\n", iommu->name, i, pte->val[i]);
++
++pgtable_walk:
++	pgtable_walk(iommu, addr >> VTD_PAGE_SHIFT, bus, devfn);
++}
++#endif
++
+ static struct dma_pte *pfn_to_dma_pte(struct dmar_domain *domain,
+ 				      unsigned long pfn, int *target_level)
+ {
+diff --git a/include/linux/dmar.h b/include/linux/dmar.h
+index e04436a7ff27..45e903d84733 100644
+--- a/include/linux/dmar.h
++++ b/include/linux/dmar.h
+@@ -131,6 +131,14 @@ static inline int dmar_res_noop(struct acpi_dmar_header *hdr, void *arg)
+ 	return 0;
+ }
+ 
++#ifdef CONFIG_DMAR_DEBUG
++void dmar_fault_dump_ptes(struct intel_iommu *iommu, u16 source_id,
++			  unsigned long long addr, u32 pasid);
++#else
++static inline void dmar_fault_dump_ptes(struct intel_iommu *iommu, u16 source_id,
++					unsigned long long addr, u32 pasid) {}
++#endif
++
+ #ifdef CONFIG_INTEL_IOMMU
+ extern int iommu_detected, no_iommu;
+ extern int intel_iommu_init(void);
+-- 
+2.17.1
 
-> 
->> @@ -859,6 +886,19 @@ int vmbus_teardown_gpadl(struct vmbus_channel *channel, u32 gpadl_handle)
->>   	spin_unlock_irqrestore(&vmbus_connection.channelmsg_lock, flags);
->>
->>   	kfree(info);
->> +
->> +	/* Find gpadl buffer virtual address and size. */
->> +	for (i = 0; i < VMBUS_GPADL_RANGE_COUNT; i++)
->> +		if (channel->gpadl_array[i].gpadlhandle == gpadl_handle)
->> +			break;
->> +
->> +	if (set_memory_encrypted((unsigned long)channel->gpadl_array[i].buffer,
->> +			HVPFN_UP(channel->gpadl_array[i].size)))
->> +		pr_warn("Fail to set mem host visibility.\n");
-> Enhance this message a bit: "Failed to set host visibility in GPADL teardown\n".
-> Also output the returned error code to help in debugging any occurrences of
-> a failure
-Yes, agree. Will update.
-
-Thanks.
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
