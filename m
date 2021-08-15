@@ -2,74 +2,163 @@ Return-Path: <SRS0=nnIB=NG=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-15.3 required=3.0 tests=BAYES_00,
-	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_CR_TRAILER,INCLUDES_PATCH,
-	MAILING_LIST_MULTI,NICE_REPLY_A,SPF_HELO_NONE,SPF_PASS,USER_AGENT_SANE_1
-	autolearn=ham autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-12.2 required=3.0 tests=BAYES_00,DKIM_INVALID,
+	DKIM_SIGNED,HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,
+	MSGID_FROM_MTA_HEADER,NICE_REPLY_A,SPF_HELO_NONE,SPF_PASS,USER_AGENT_SANE_1
+	autolearn=unavailable autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id EEF4FC4338F
-	for <iommu@archiver.kernel.org>; Sun, 15 Aug 2021 05:00:26 +0000 (UTC)
-Received: from smtp1.osuosl.org (smtp1.osuosl.org [140.211.166.138])
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 02DE7C4338F
+	for <iommu@archiver.kernel.org>; Sun, 15 Aug 2021 13:53:50 +0000 (UTC)
+Received: from smtp3.osuosl.org (smtp3.osuosl.org [140.211.166.136])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 803B361040
-	for <iommu@archiver.kernel.org>; Sun, 15 Aug 2021 05:00:26 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.4.1 mail.kernel.org 803B361040
-Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=linux.intel.com
+	by mail.kernel.org (Postfix) with ESMTPS id 8AF92610FE
+	for <iommu@archiver.kernel.org>; Sun, 15 Aug 2021 13:53:49 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.4.1 mail.kernel.org 8AF92610FE
+Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=lists.linux-foundation.org
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by smtp1.osuosl.org (Postfix) with ESMTP id 2D0AF80D43;
-	Sun, 15 Aug 2021 05:00:26 +0000 (UTC)
+	by smtp3.osuosl.org (Postfix) with ESMTP id 4D24A605C3;
+	Sun, 15 Aug 2021 13:53:49 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from smtp1.osuosl.org ([127.0.0.1])
-	by localhost (smtp1.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id jdkwV4Ssyy6O; Sun, 15 Aug 2021 05:00:21 +0000 (UTC)
-Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [IPv6:2605:bc80:3010:104::8cd3:938])
-	by smtp1.osuosl.org (Postfix) with ESMTPS id 19A8180D3F;
-	Sun, 15 Aug 2021 05:00:21 +0000 (UTC)
+Received: from smtp3.osuosl.org ([127.0.0.1])
+	by localhost (smtp3.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+	with ESMTP id Spx7md_R3XA4; Sun, 15 Aug 2021 13:53:45 +0000 (UTC)
+Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
+	by smtp3.osuosl.org (Postfix) with ESMTPS id DBD8A605C0;
+	Sun, 15 Aug 2021 13:53:44 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id DCF73C0010;
-	Sun, 15 Aug 2021 05:00:20 +0000 (UTC)
-Received: from smtp1.osuosl.org (smtp1.osuosl.org [IPv6:2605:bc80:3010::138])
- by lists.linuxfoundation.org (Postfix) with ESMTP id E9531C000E
- for <iommu@lists.linux-foundation.org>; Sun, 15 Aug 2021 05:00:19 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 97A66C0010;
+	Sun, 15 Aug 2021 13:53:44 +0000 (UTC)
+Received: from smtp4.osuosl.org (smtp4.osuosl.org [IPv6:2605:bc80:3010::137])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 60A54C000E
+ for <iommu@lists.linux-foundation.org>; Sun, 15 Aug 2021 13:53:43 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by smtp1.osuosl.org (Postfix) with ESMTP id C471280D43
- for <iommu@lists.linux-foundation.org>; Sun, 15 Aug 2021 05:00:19 +0000 (UTC)
+ by smtp4.osuosl.org (Postfix) with ESMTP id 420E7402E9
+ for <iommu@lists.linux-foundation.org>; Sun, 15 Aug 2021 13:53:43 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from smtp1.osuosl.org ([127.0.0.1])
- by localhost (smtp1.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id dPbUxR0e-aJI for <iommu@lists.linux-foundation.org>;
- Sun, 15 Aug 2021 05:00:19 +0000 (UTC)
-X-Greylist: domain auto-whitelisted by SQLgrey-1.8.0
-Received: from mga06.intel.com (mga06.intel.com [134.134.136.31])
- by smtp1.osuosl.org (Postfix) with ESMTPS id 2E2CE80D3F
- for <iommu@lists.linux-foundation.org>; Sun, 15 Aug 2021 05:00:18 +0000 (UTC)
-X-IronPort-AV: E=McAfee;i="6200,9189,10076"; a="276746561"
-X-IronPort-AV: E=Sophos;i="5.84,322,1620716400"; d="scan'208";a="276746561"
-Received: from fmsmga003.fm.intel.com ([10.253.24.29])
- by orsmga104.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384;
- 14 Aug 2021 22:00:17 -0700
-X-IronPort-AV: E=Sophos;i="5.84,322,1620716400"; d="scan'208";a="518804598"
-Received: from jifangxi-mobl2.ccr.corp.intel.com (HELO [10.254.214.216])
- ([10.254.214.216])
- by fmsmga003-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384;
- 14 Aug 2021 22:00:15 -0700
-Subject: Re: [PATCH] iommu/vt-d: Fix PASID reference leak
-To: Fenghua Yu <fenghua.yu@intel.com>, Joerg Roedel <joro@8bytes.org>,
- David Woodhouse <dwmw2@infradead.org>, Ashok Raj <ashok.raj@intel.com>,
- Dave Hansen <dave.hansen@intel.com>, Jacob Jun Pan
- <jacob.jun.pan@intel.com>, Ravi V Shankar <ravi.v.shankar@intel.com>
-References: <20210813181345.1870742-1-fenghua.yu@intel.com>
-From: Lu Baolu <baolu.lu@linux.intel.com>
-Message-ID: <51d97b07-5d72-771b-f437-c04e2596c4b0@linux.intel.com>
-Date: Sun, 15 Aug 2021 13:00:12 +0800
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:78.0) Gecko/20100101
- Thunderbird/78.13.0
-MIME-Version: 1.0
-In-Reply-To: <20210813181345.1870742-1-fenghua.yu@intel.com>
+Authentication-Results: smtp4.osuosl.org (amavisd-new);
+ dkim=pass (1024-bit key) header.d=amd.com
+Received: from smtp4.osuosl.org ([127.0.0.1])
+ by localhost (smtp4.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+ with ESMTP id OMBvJn03GB0T for <iommu@lists.linux-foundation.org>;
+ Sun, 15 Aug 2021 13:53:39 +0000 (UTC)
+X-Greylist: whitelisted by SQLgrey-1.8.0
+Received: from NAM04-MW2-obe.outbound.protection.outlook.com
+ (mail-mw2nam08on2055.outbound.protection.outlook.com [40.107.101.55])
+ by smtp4.osuosl.org (Postfix) with ESMTPS id 40D62402A9
+ for <iommu@lists.linux-foundation.org>; Sun, 15 Aug 2021 13:53:39 +0000 (UTC)
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=oD09H7ACZLLW4Ya1hw76VxrjSHKf3UidL7/Y8AiiP2imj5pK8f0IQ5LNfOQyps2VuNNqRAp+iidaU30foPeMNZFTOcDP3xIGBG55BzyiJxK+BWKwtFyEWCgMKroWef7ZMEcexOltTaiFjzrtoAnPSqZDkgAwOxMMqGanjqh2qjDO2c05hQws+6biedzI2mE+/JwKR2kYje2+F9ymgT1YlebAwMXDLGCPKfJ+grebOrPUplrinLBDWUWpINxEprqS93OeSa1/fVzOKzCZv1z1/0ZJkfjwZuiGs/PniVUCqOfLJCh5FMFcp0jQr2foIES/jerBQzDSgc43K3lkKaBzXw==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com; 
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=IgBzeP767FfdAsUtTu1keXcR8NHIOMRf8WfHH15zwJg=;
+ b=DlIFlLYIsHlmBLIDkYk8Pq5LYLZVmE4Bdgb2/HQPRNb0WQyBIp2PNI1aUs2TGl5r/2ioXqe2yH9ocLehf6dxK+wuTjYaXP/Bo4YIOZ+VpEEgRxLNFP2YiX3lNQr9om8x/m0uom6TXZ5yEfiPj0yY/LYhY1eFlqLGbvb2mwSRIE5VRmmBl4tdNcRzkJ5R0gEUNVtwcdR5NHhrzTEPpnT9Dj1/WnGKCTBD+RXGxEv8Jwvo+1zDuaIKBHPi/Xnl2Rht5Jajkeum+EC3lgjy63m1fq84XHD+jeshMWf+leWWFrQQ8ak+1iZUnFhlu5pO2cTC9jgUdYB67p93SxcjOLGUIg==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=amd.com; dmarc=pass action=none header.from=amd.com; dkim=pass
+ header.d=amd.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=amd.com; s=selector1; 
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=IgBzeP767FfdAsUtTu1keXcR8NHIOMRf8WfHH15zwJg=;
+ b=JKQSZG4rVXYLwXNe0kMuPA0I7Ql+p06XpYc9irhmBuMitbhI+9wXKlYJi/7kLv6TAphRauDFD3tp92QoNTw2Wbe6s5LjKwFYkeedQvkWF9InehRgstvkwLtTxbS0DVnyUKn+R6Xp7qLwsF/QU+OPwVTH3edP4DDz4e7p1H+vXOs=
+Authentication-Results: suse.de; dkim=none (message not signed)
+ header.d=none;suse.de; dmarc=none action=none header.from=amd.com;
+Received: from DM4PR12MB5229.namprd12.prod.outlook.com (2603:10b6:5:398::12)
+ by DM4PR12MB5088.namprd12.prod.outlook.com (2603:10b6:5:38b::9) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4415.14; Sun, 15 Aug
+ 2021 13:53:35 +0000
+Received: from DM4PR12MB5229.namprd12.prod.outlook.com
+ ([fe80::d560:d21:cd59:9418]) by DM4PR12MB5229.namprd12.prod.outlook.com
+ ([fe80::d560:d21:cd59:9418%6]) with mapi id 15.20.4415.022; Sun, 15 Aug 2021
+ 13:53:35 +0000
+Subject: Re: [PATCH v2 03/12] x86/sev: Add an x86 version of prot_guest_has()
+To: Borislav Petkov <bp@alien8.de>
+References: <cover.1628873970.git.thomas.lendacky@amd.com>
+ <7d55bac0cf2e73f53816bce3a3097877ed9663f3.1628873970.git.thomas.lendacky@amd.com>
+ <YRgUxyhoqVJ0Kxvt@zn.tnic>
+Message-ID: <4710eb91-d054-7b31-5106-09e3e54bba9e@amd.com>
+Date: Sun, 15 Aug 2021 08:53:31 -0500
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
+ Thunderbird/78.11.0
+In-Reply-To: <YRgUxyhoqVJ0Kxvt@zn.tnic>
 Content-Language: en-US
-Cc: iommu@lists.linux-foundation.org
+X-ClientProxiedBy: SN6PR05CA0018.namprd05.prod.outlook.com
+ (2603:10b6:805:de::31) To DM4PR12MB5229.namprd12.prod.outlook.com
+ (2603:10b6:5:398::12)
+MIME-Version: 1.0
+X-MS-Exchange-MessageSentRepresentingType: 1
+Received: from office-ryzen.texastahm.com (67.79.209.213) by
+ SN6PR05CA0018.namprd05.prod.outlook.com (2603:10b6:805:de::31) with Microsoft
+ SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.20.4436.8 via Frontend Transport; Sun, 15 Aug 2021 13:53:33 +0000
+X-MS-PublicTrafficType: Email
+X-MS-Office365-Filtering-Correlation-Id: 8eb6287c-128e-4f7c-ec57-08d95ff4133a
+X-MS-TrafficTypeDiagnostic: DM4PR12MB5088:
+X-MS-Exchange-Transport-Forked: True
+X-Microsoft-Antispam-PRVS: <DM4PR12MB5088337C3B2E37D0E09FB26BECFC9@DM4PR12MB5088.namprd12.prod.outlook.com>
+X-MS-Oob-TLC-OOBClassifiers: OLM:8273;
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: GyeFxy9hJwWytssLtxoeotOKS3TPFc7oNX+3W5BhC94AwynH9sUjWNo9IWW7AblQYEjNbeNLFTymYluQDdtE47RMGCS3Kktz+I134Jr9TymdiUQaDbnlgo1dfovTXjocXPa8luVX66ySJd5bEMzKh/DIdbRxwEwu3wnIMm2Zux+x2fNP/KT8K6TTNjpUd1XemTKagY9miFSrGkb5rrsKofHVr4J7nHssqZF7MTf+W/C1Y6t2OknfuDWAEDOM4jHybV70FTRvCDV9/OKO46DSIjjc3/yBfGtUGWWFag26UFZ5s8uYn3pkHsTv8zVk8IqALoERrfjLTQlNnr/TXjyKhpdRQSpIPOVUvfSkkJySaHXyvF7ICPMuMkSev8CNmprZI/S3Ttl+McUZwUAOeK16fRSrgyE+02Afkbvwr626oZgThYXSLxXXJOBnGZb4alzMQBI/Q4E2uEx9xYyXkaxhSHFpdtxgV755ck22GBVEhLiCgKxEbdN2IWwJloQhyVUQ3Evb5w3dhRLc+tZYP+dQHM158dpGbUFEtDN+xVUrFIs97vBNmDNhuIvDUjhhFFiGM+w9veZlLmejrPYQyi+G/WS0qeps1P6+3eyZvhtz6hRwcvo3o3RaDEEPqhjTLQRHzYO702QzQgmYBW0QTntojkLbgadtNskJfY2z2gPuwIQdksjyIR0tKm3374L03UU/Z5LTvBR3KXNHRefGOjVKecjZ1w2AlUiiyz8/BPbhGUg=
+X-Forefront-Antispam-Report: CIP:255.255.255.255; CTRY:; LANG:en; SCL:1; SRV:;
+ IPV:NLI; SFV:NSPM; H:DM4PR12MB5229.namprd12.prod.outlook.com; PTR:; CAT:NONE;
+ SFS:(4636009)(376002)(39860400002)(346002)(366004)(136003)(396003)(53546011)(8676002)(5660300002)(38100700002)(66946007)(36756003)(31686004)(7416002)(2906002)(31696002)(26005)(66556008)(186003)(66476007)(86362001)(478600001)(6506007)(316002)(6512007)(6916009)(956004)(2616005)(8936002)(4326008)(54906003)(6486002)(45980500001)(43740500002);
+ DIR:OUT; SFP:1101; 
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0: =?utf-8?B?SXlYRXVUWWtyTGF4dHlESVUvRmJKWCtuc05BbDJKa3lNQmx6UWExTVBaWGJx?=
+ =?utf-8?B?RU1rbUNpUWNZOFc1N1puWmlJTXY0LysxWXdxZ1RnaHgxbjZxMWszVTVoL0dr?=
+ =?utf-8?B?YStzazBuV1I1NThGNzh3VThRQ2dxOEhhZCtlK0xsLzE3ajBDQThGYlVZb0dN?=
+ =?utf-8?B?SjlxVGQ1NGhqZ0hUaHQ5YkxjdzV6YVphZWJFV0w4R1dyem11WVk4VHAxQTBY?=
+ =?utf-8?B?QTVKQW9hOGdUWExEL0hXWjhPdm1mMlEvY0FieHZDM2xnWWJsRjY2ZzYzRUZ0?=
+ =?utf-8?B?a2lWdkdoaGpJS0dBK2N4S2I3UGNoQXNuSEVGV0tGb0VDYjJhclNVZDRXUVY1?=
+ =?utf-8?B?WUZ1K2tNN1VGS212Y2JDa0NOS1ozOGNVTlZQSW9YNXEzR1NQaEw5a29wR1hj?=
+ =?utf-8?B?QzBrMFpNWVhDOXZwcGZMRGFMdEJvZStnQmFmNlRzd0xJSzh4aDJGRFlWbFlk?=
+ =?utf-8?B?bFZiMkZuZzhJUWZHeXAyaG5ScDdsbXgxbjhrcW01dHpxd29sQ1FYSXV5S3RJ?=
+ =?utf-8?B?bnBzVzh5bERVNE5HdHdHOVFUQnh0N3VTeWZkcm5nY2lsYmpIMzlIcU4rT0Ji?=
+ =?utf-8?B?dGh4dVhBZXRGRVBRWUs1cnlQcnlhYkVOcFFiKzVRbUw4Y2JvRWJab05Eamxy?=
+ =?utf-8?B?emhTZllacU9hZkRjMG56SmFRN1NkampEazZlcFY4SndxZWkrdE9waXNMSWYy?=
+ =?utf-8?B?TjZKTVRmdHkybEZmZWN5T2MxbmVrZzdoRDN6aVF0aStqVDM1aXc2RlNldGNF?=
+ =?utf-8?B?TjJ4ckwxNUQyUTIyZjlDZVJjUTY3UytJalovWGVoZG5RZUNQSjhOdnRoUTVL?=
+ =?utf-8?B?aTJFeVdETzNzcTkwSkd0MmxHOVE3YndrRmM1d2pLNisvOVlqNjV2WFVIb2Fa?=
+ =?utf-8?B?UUpUSVJXZms4SWJmYkp6dk1JTHpNWTlFelBaNFByRFZjNUZYU0F0anJ5TzRv?=
+ =?utf-8?B?N0x3ak8yd3FqbGw1N1hPeU1oRkVuR1QvWUptVFlmVkpQZTZzdzN5U3dhaERE?=
+ =?utf-8?B?WlNqTG9HZ3k4ZjZOSWlHVnBpUmJhb2JOTWx6bURWQlBiTnh5RkdhSEpBMW1K?=
+ =?utf-8?B?RkhXamZoWHBDck5FalBERnlINXpJZGRaY29tOEllTG43RGEvU1lJc0NoNEdn?=
+ =?utf-8?B?SVFSNmltSGY0TWtOb3pxay9vOXBOUkJBMmZDTDBiZ3lVczNUdnIza2tpTnd6?=
+ =?utf-8?B?dzROYUE5QndnRTJOVkNFZU95YTFDU1ZZQU9rY3JXQkozQWlUQm96dVZkNldW?=
+ =?utf-8?B?OTk4Zll6T2dRemFWRE5NakVGWWhyQ2NJVElvS2Yrc2h3SStud2RkRW5qKzJX?=
+ =?utf-8?B?VGpZNTRuMUlGZVM5VHhldTQyaS9veFZ1SDlGc1BqdFlOZERhcDhxMHFjRDdk?=
+ =?utf-8?B?VzJIM21iSzlNak8yYnZMRW9DOExvVXhFM0h6SkRZY2d4T0xZYlFhS0FDbERP?=
+ =?utf-8?B?RWdSaUtuN0tpck40djdzdlUvQ0RpaDZ3Nmx2YW84MFY1RUpjNWtaMEpTMEVq?=
+ =?utf-8?B?azZLTG1NelJFNnpZTGlwY1I0VjJFdjJvY1lXcFZ2aHQvSU52UEFKNkNWbzBJ?=
+ =?utf-8?B?Z0ZSOGdTUVdxWWdxamtvblZPZFdjaG9LNkhHcU9LbitZTDhlV09oUFhCVWJx?=
+ =?utf-8?B?ZlFic1pkdGFrVGJJVTE3S0tHdEtxbFhtb3BzaDgyam9VNFNhendVbjVicGJM?=
+ =?utf-8?B?OUQ0OTMyS1BGOHFiY244bGVMWWkraVo3Und6S01FWHA3WWcrc2d6R1FCQkw2?=
+ =?utf-8?Q?lVdyHazwSPxRB5vwZICGA/LnrghO83oJZ28fR3D?=
+X-OriginatorOrg: amd.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 8eb6287c-128e-4f7c-ec57-08d95ff4133a
+X-MS-Exchange-CrossTenant-AuthSource: DM4PR12MB5229.namprd12.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 15 Aug 2021 13:53:35.3234 (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 3dd8961f-e488-4e60-8e11-a82d994e183d
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: 6b8qCAbrTrcSra3Y+hjtE9hXq34FkLJYPFHYwX1daMbk3M//EPUEldqIG3u0VR+4ZofGl+TZN2c0lHECwVH/7w==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: DM4PR12MB5088
+Cc: linux-efi@vger.kernel.org, Brijesh Singh <brijesh.singh@amd.com>,
+ kvm@vger.kernel.org, Peter Zijlstra <peterz@infradead.org>,
+ Dave Hansen <dave.hansen@linux.intel.com>, dri-devel@lists.freedesktop.org,
+ platform-driver-x86@vger.kernel.org, linux-s390@vger.kernel.org,
+ Andi Kleen <ak@linux.intel.com>, x86@kernel.org, amd-gfx@lists.freedesktop.org,
+ Ingo Molnar <mingo@redhat.com>, linux-graphics-maintainer@vmware.com,
+ Joerg Roedel <jroedel@suse.de>, Tianyu Lan <Tianyu.Lan@microsoft.com>,
+ Andy Lutomirski <luto@kernel.org>, Thomas Gleixner <tglx@linutronix.de>,
+ kexec@lists.infradead.org, linux-kernel@vger.kernel.org,
+ iommu@lists.linux-foundation.org, linux-fsdevel@vger.kernel.org,
+ linuxppc-dev@lists.ozlabs.org
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -82,60 +171,114 @@ List-Post: <mailto:iommu@lists.linux-foundation.org>
 List-Help: <mailto:iommu-request@lists.linux-foundation.org?subject=help>
 List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
  <mailto:iommu-request@lists.linux-foundation.org?subject=subscribe>
+From: Tom Lendacky via iommu <iommu@lists.linux-foundation.org>
+Reply-To: Tom Lendacky <thomas.lendacky@amd.com>
 Content-Transfer-Encoding: 7bit
 Content-Type: text/plain; charset="us-ascii"; Format="flowed"
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-On 2021/8/14 2:13, Fenghua Yu wrote:
-> A PASID reference is increased whenever a device is bound to an mm (and
-> its PASID) successfully (i.e. the device's sdev user count is increased).
-> But the reference is not dropped every time the device is unbound
-> successfully from the mm (i.e. the device's sdev user count is decreased).
-> The reference is dropped only once by calling intel_svm_free_pasid() when
-> there isn't any device bound to the mm. intel_svm_free_pasid() drops the
-> reference and only frees the PASID on zero reference.
+On 8/14/21 2:08 PM, Borislav Petkov wrote:
+> On Fri, Aug 13, 2021 at 11:59:22AM -0500, Tom Lendacky wrote:
+>> diff --git a/arch/x86/include/asm/protected_guest.h b/arch/x86/include/asm/protected_guest.h
+>> new file mode 100644
+>> index 000000000000..51e4eefd9542
+>> --- /dev/null
+>> +++ b/arch/x86/include/asm/protected_guest.h
+>> @@ -0,0 +1,29 @@
+>> +/* SPDX-License-Identifier: GPL-2.0-only */
+>> +/*
+>> + * Protected Guest (and Host) Capability checks
+>> + *
+>> + * Copyright (C) 2021 Advanced Micro Devices, Inc.
+>> + *
+>> + * Author: Tom Lendacky <thomas.lendacky@amd.com>
+>> + */
+>> +
+>> +#ifndef _X86_PROTECTED_GUEST_H
+>> +#define _X86_PROTECTED_GUEST_H
+>> +
+>> +#include <linux/mem_encrypt.h>
+>> +
+>> +#ifndef __ASSEMBLY__
+>> +
+>> +static inline bool prot_guest_has(unsigned int attr)
+>> +{
+>> +#ifdef CONFIG_AMD_MEM_ENCRYPT
+>> +	if (sme_me_mask)
+>> +		return amd_prot_guest_has(attr);
+>> +#endif
+>> +
+>> +	return false;
+>> +}
+>> +
+>> +#endif	/* __ASSEMBLY__ */
+>> +
+>> +#endif	/* _X86_PROTECTED_GUEST_H */
 > 
-> Fix the issue by dropping the PASID reference and freeing the PASID when
-> no reference on successful unbinding the device by calling
-> intel_svm_free_pasid() .
+> I think this can be simplified more, diff ontop below:
 > 
-> Signed-off-by: Fenghua Yu <fenghua.yu@intel.com>
+> - no need for the ifdeffery as amd_prot_guest_has() has versions for
+> both when CONFIG_AMD_MEM_ENCRYPT is set or not.
 
-Nice catch! Thanks!
+Ugh, yeah, not sure why I put that in for this version since I have the 
+static inline for when CONFIG_AMD_MEM_ENCRYPT is not set.
 
-Fixes: 4048377414162 ("iommu/vt-d: Use iommu_sva_alloc(free)_pasid() 
-helpers")
-Acked-by: Lu Baolu <baolu.lu@linux.intel.com>
+> 
+> - the sme_me_mask check is pushed there too.
+> 
+> - and since this is vendor-specific, I'm checking the vendor bit. Yeah,
+> yeah, cross-vendor but I don't really believe that.
 
-Best regards,
-baolu
+It's not a cross-vendor thing as opposed to a KVM or other hypervisor 
+thing where the family doesn't have to be reported as AMD or HYGON. That's 
+why I made the if check be for sme_me_mask. I think that is the safer way 
+to go.
 
+Thanks,
+Tom
+
+> 
 > ---
->   drivers/iommu/intel/svm.c | 3 ++-
->   1 file changed, 2 insertions(+), 1 deletion(-)
-> 
-> diff --git a/drivers/iommu/intel/svm.c b/drivers/iommu/intel/svm.c
-> index 9b0f22bc0514..4b9b3f35ba0e 100644
-> --- a/drivers/iommu/intel/svm.c
-> +++ b/drivers/iommu/intel/svm.c
-> @@ -675,7 +675,6 @@ static int intel_svm_unbind_mm(struct device *dev, u32 pasid)
->   			kfree_rcu(sdev, rcu);
+> diff --git a/arch/x86/include/asm/protected_guest.h b/arch/x86/include/asm/protected_guest.h
+> index 51e4eefd9542..8541c76d5da4 100644
+> --- a/arch/x86/include/asm/protected_guest.h
+> +++ b/arch/x86/include/asm/protected_guest.h
+> @@ -12,18 +12,13 @@
 >   
->   			if (list_empty(&svm->devs)) {
-> -				intel_svm_free_pasid(mm);
->   				if (svm->notifier.ops) {
->   					mmu_notifier_unregister(&svm->notifier, mm);
->   					/* Clear mm's pasid. */
-> @@ -690,6 +689,8 @@ static int intel_svm_unbind_mm(struct device *dev, u32 pasid)
->   				kfree(svm);
->   			}
->   		}
-> +		/* Drop a PASID reference and free it if no reference. */
-> +		intel_svm_free_pasid(mm);
->   	}
->   out:
->   	return ret;
+>   #include <linux/mem_encrypt.h>
+>   
+> -#ifndef __ASSEMBLY__
+> -
+>   static inline bool prot_guest_has(unsigned int attr)
+>   {
+> -#ifdef CONFIG_AMD_MEM_ENCRYPT
+> -	if (sme_me_mask)
+> +	if (boot_cpu_data.x86_vendor == X86_VENDOR_AMD ||
+> +	    boot_cpu_data.x86_vendor == X86_VENDOR_HYGON)
+>   		return amd_prot_guest_has(attr);
+> -#endif
+>   
+>   	return false;
+>   }
+>   
+> -#endif	/* __ASSEMBLY__ */
+> -
+>   #endif	/* _X86_PROTECTED_GUEST_H */
+> diff --git a/arch/x86/mm/mem_encrypt.c b/arch/x86/mm/mem_encrypt.c
+> index edc67ddf065d..5a0442a6f072 100644
+> --- a/arch/x86/mm/mem_encrypt.c
+> +++ b/arch/x86/mm/mem_encrypt.c
+> @@ -392,6 +392,9 @@ bool noinstr sev_es_active(void)
+>   
+>   bool amd_prot_guest_has(unsigned int attr)
+>   {
+> +	if (!sme_me_mask)
+> +		return false;
+> +
+>   	switch (attr) {
+>   	case PATTR_MEM_ENCRYPT:
+>   		return sme_me_mask != 0;
 > 
 _______________________________________________
 iommu mailing list
