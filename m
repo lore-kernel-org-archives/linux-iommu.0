@@ -7,56 +7,56 @@ X-Spam-Status: No, score=-10.3 required=3.0 tests=BAYES_00,
 	SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_SANE_1 autolearn=ham
 	autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 53D76C432BE
-	for <iommu@archiver.kernel.org>; Mon, 16 Aug 2021 12:05:21 +0000 (UTC)
-Received: from smtp4.osuosl.org (smtp4.osuosl.org [140.211.166.137])
+	by smtp.lore.kernel.org (Postfix) with ESMTP id DBF74C4338F
+	for <iommu@archiver.kernel.org>; Mon, 16 Aug 2021 12:05:57 +0000 (UTC)
+Received: from smtp3.osuosl.org (smtp3.osuosl.org [140.211.166.136])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 903E963244
-	for <iommu@archiver.kernel.org>; Mon, 16 Aug 2021 12:05:20 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.4.1 mail.kernel.org 903E963244
+	by mail.kernel.org (Postfix) with ESMTPS id 7CC5F630EF
+	for <iommu@archiver.kernel.org>; Mon, 16 Aug 2021 12:05:57 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.4.1 mail.kernel.org 7CC5F630EF
 Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=lst.de
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by smtp4.osuosl.org (Postfix) with ESMTP id 8EBB640294;
-	Mon, 16 Aug 2021 12:05:18 +0000 (UTC)
-X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from smtp4.osuosl.org ([127.0.0.1])
-	by localhost (smtp4.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id csJ6g1XrqlZF; Mon, 16 Aug 2021 12:05:14 +0000 (UTC)
-Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [IPv6:2605:bc80:3010:104::8cd3:938])
-	by smtp4.osuosl.org (Postfix) with ESMTPS id F335F4028B;
-	Mon, 16 Aug 2021 12:05:12 +0000 (UTC)
-Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id BE1F3C001A;
-	Mon, 16 Aug 2021 12:05:12 +0000 (UTC)
-Received: from smtp3.osuosl.org (smtp3.osuosl.org [140.211.166.136])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 16009C000E
- for <iommu@lists.linux-foundation.org>; Mon, 16 Aug 2021 12:05:12 +0000 (UTC)
-Received: from localhost (localhost [127.0.0.1])
- by smtp3.osuosl.org (Postfix) with ESMTP id EC869606F0
- for <iommu@lists.linux-foundation.org>; Mon, 16 Aug 2021 12:05:11 +0000 (UTC)
+	by smtp3.osuosl.org (Postfix) with ESMTP id 56EB5605A7;
+	Mon, 16 Aug 2021 12:05:57 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
 Received: from smtp3.osuosl.org ([127.0.0.1])
- by localhost (smtp3.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id FUEdsTnY066g for <iommu@lists.linux-foundation.org>;
- Mon, 16 Aug 2021 12:05:11 +0000 (UTC)
+	by localhost (smtp3.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+	with ESMTP id D0HzzO2RBYSx; Mon, 16 Aug 2021 12:05:53 +0000 (UTC)
+Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [IPv6:2605:bc80:3010:104::8cd3:938])
+	by smtp3.osuosl.org (Postfix) with ESMTPS id 310E1606F0;
+	Mon, 16 Aug 2021 12:05:53 +0000 (UTC)
+Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 0F13CC001A;
+	Mon, 16 Aug 2021 12:05:53 +0000 (UTC)
+Received: from smtp4.osuosl.org (smtp4.osuosl.org [140.211.166.137])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id A00F9C000E
+ for <iommu@lists.linux-foundation.org>; Mon, 16 Aug 2021 12:05:51 +0000 (UTC)
+Received: from localhost (localhost [127.0.0.1])
+ by smtp4.osuosl.org (Postfix) with ESMTP id 828AA40294
+ for <iommu@lists.linux-foundation.org>; Mon, 16 Aug 2021 12:05:51 +0000 (UTC)
+X-Virus-Scanned: amavisd-new at osuosl.org
+Received: from smtp4.osuosl.org ([127.0.0.1])
+ by localhost (smtp4.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+ with ESMTP id daliTOvqW_iw for <iommu@lists.linux-foundation.org>;
+ Mon, 16 Aug 2021 12:05:51 +0000 (UTC)
 X-Greylist: from auto-whitelisted by SQLgrey-1.8.0
 Received: from verein.lst.de (verein.lst.de [213.95.11.211])
- by smtp3.osuosl.org (Postfix) with ESMTPS id 27319606C9
- for <iommu@lists.linux-foundation.org>; Mon, 16 Aug 2021 12:05:11 +0000 (UTC)
+ by smtp4.osuosl.org (Postfix) with ESMTPS id 06AFB40232
+ for <iommu@lists.linux-foundation.org>; Mon, 16 Aug 2021 12:05:50 +0000 (UTC)
 Received: by verein.lst.de (Postfix, from userid 2407)
- id 5D0FC6736F; Mon, 16 Aug 2021 14:05:05 +0200 (CEST)
-Date: Mon, 16 Aug 2021 14:05:05 +0200
+ id BA1FF6736F; Mon, 16 Aug 2021 14:05:47 +0200 (CEST)
+Date: Mon, 16 Aug 2021 14:05:47 +0200
 From: Christoph Hellwig <hch@lst.de>
 To: David Stevens <stevensd@chromium.org>
-Subject: Re: [PATCH v5 2/7] dma-iommu: fix arch_sync_dma for map
-Message-ID: <20210816120504.GA15860@lst.de>
+Subject: Re: [PATCH v5 3/7] dma-iommu: skip extra sync during unmap w/swiotlb
+Message-ID: <20210816120547.GB15860@lst.de>
 References: <20210816025755.2906695-1-stevensd@google.com>
- <20210816025755.2906695-3-stevensd@google.com>
+ <20210816025755.2906695-4-stevensd@google.com>
 MIME-Version: 1.0
 Content-Disposition: inline
-In-Reply-To: <20210816025755.2906695-3-stevensd@google.com>
+In-Reply-To: <20210816025755.2906695-4-stevensd@google.com>
 User-Agent: Mutt/1.5.17 (2007-11-01)
 Cc: Robin Murphy <robin.murphy@arm.com>, linux-kernel@vger.kernel.org,
  Tom Murphy <murphyt7@tcd.ie>, iommu@lists.linux-foundation.org,
