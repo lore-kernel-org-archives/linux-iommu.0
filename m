@@ -2,184 +2,74 @@ Return-Path: <SRS0=tZpB=NH=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-3.6 required=3.0 tests=BAYES_00,DKIM_INVALID,
-	DKIM_SIGNED,HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,SPF_HELO_NONE,
-	SPF_PASS,URIBL_BLOCKED autolearn=no autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-9.0 required=3.0 tests=BAYES_00,
+	HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,NICE_REPLY_A,SPF_HELO_NONE,
+	SPF_PASS,URIBL_BLOCKED,USER_AGENT_SANE_1 autolearn=ham autolearn_force=no
+	version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id CB5B4C4338F
-	for <iommu@archiver.kernel.org>; Mon, 16 Aug 2021 14:55:42 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 01F20C4338F
+	for <iommu@archiver.kernel.org>; Mon, 16 Aug 2021 16:23:43 +0000 (UTC)
 Received: from smtp4.osuosl.org (smtp4.osuosl.org [140.211.166.137])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 741CB6056B
-	for <iommu@archiver.kernel.org>; Mon, 16 Aug 2021 14:55:42 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.4.1 mail.kernel.org 741CB6056B
-Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=lists.linux-foundation.org
+	by mail.kernel.org (Postfix) with ESMTPS id 87CB360FC3
+	for <iommu@archiver.kernel.org>; Mon, 16 Aug 2021 16:23:42 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.4.1 mail.kernel.org 87CB360FC3
+Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=arm.com
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by smtp4.osuosl.org (Postfix) with ESMTP id 3A19C4029B;
-	Mon, 16 Aug 2021 14:55:42 +0000 (UTC)
+	by smtp4.osuosl.org (Postfix) with ESMTP id 4F78E4042F;
+	Mon, 16 Aug 2021 16:23:42 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
 Received: from smtp4.osuosl.org ([127.0.0.1])
 	by localhost (smtp4.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id SkEszkqYGthq; Mon, 16 Aug 2021 14:55:38 +0000 (UTC)
-Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [IPv6:2605:bc80:3010:104::8cd3:938])
-	by smtp4.osuosl.org (Postfix) with ESMTPS id 0315840240;
-	Mon, 16 Aug 2021 14:55:38 +0000 (UTC)
+	with ESMTP id ui8Jxn0plfJo; Mon, 16 Aug 2021 16:23:38 +0000 (UTC)
+Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
+	by smtp4.osuosl.org (Postfix) with ESMTPS id 23382403EB;
+	Mon, 16 Aug 2021 16:23:38 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id CBA17C0010;
-	Mon, 16 Aug 2021 14:55:37 +0000 (UTC)
-Received: from smtp3.osuosl.org (smtp3.osuosl.org [IPv6:2605:bc80:3010::136])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 1E3CEC000E
- for <iommu@lists.linux-foundation.org>; Mon, 16 Aug 2021 14:55:36 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id E05F9C0010;
+	Mon, 16 Aug 2021 16:23:37 +0000 (UTC)
+Received: from smtp2.osuosl.org (smtp2.osuosl.org [IPv6:2605:bc80:3010::133])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 6A5FDC000E
+ for <iommu@lists.linux-foundation.org>; Mon, 16 Aug 2021 16:23:36 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by smtp3.osuosl.org (Postfix) with ESMTP id 06E506067A
- for <iommu@lists.linux-foundation.org>; Mon, 16 Aug 2021 14:55:36 +0000 (UTC)
+ by smtp2.osuosl.org (Postfix) with ESMTP id 58B3440283
+ for <iommu@lists.linux-foundation.org>; Mon, 16 Aug 2021 16:23:36 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Authentication-Results: smtp3.osuosl.org (amavisd-new);
- dkim=pass (1024-bit key) header.d=microsoft.com
-Received: from smtp3.osuosl.org ([127.0.0.1])
- by localhost (smtp3.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id 3ZJQwuJYtJQM for <iommu@lists.linux-foundation.org>;
- Mon, 16 Aug 2021 14:55:35 +0000 (UTC)
-X-Greylist: whitelisted by SQLgrey-1.8.0
-Received: from NAM11-DM6-obe.outbound.protection.outlook.com
- (mail-dm6nam11on2135.outbound.protection.outlook.com [40.107.223.135])
- by smtp3.osuosl.org (Postfix) with ESMTPS id 36C9460073
- for <iommu@lists.linux-foundation.org>; Mon, 16 Aug 2021 14:55:35 +0000 (UTC)
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=cYPZPBrdoT8R74rquah5lgauhnvLokIe1ecH3IW6S3uPQ7n52fbAAJWhapP8+ma3nufYH/vlSCQumPCHEkpB/nzS/63UiVvh5SzzhRTYZ7KMqA94/GZ826qjWBZs8y1wpokliXyyXQRmzBFmEdsoZtnfVNFw1ekFCVTSJQg4UFdmNia2jKW460YHk+MzxZCG2KfPGWvPxF9Dl+t4v4b4kNu1YfEEksuAhX7+97dB5JFJ9N6/Cg1Qib19kkJc1ZLOyCw4R8ITvTCjguAAAIBy/pyuH085twdARrHuWoGgqliQv8SMYwzdWSJdYnX8f73Zwv9l45FKtNP4CzybOheAtw==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com; 
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=nKzz6N353kemN5JnE9uEYBWK6Hu8GEiFzCv6Noxw+q0=;
- b=akUcDZ6JABkJw9sdzpfnYA2FpUiLGIYRBdlkWit/+cUVYR8hQLOiWYy1onjBdVpK1fRzl+2XtN2Q9SJ0WP6ElZ7iGXgOW4VoPS26JFF746HRRpbgDeqJ3CO8Ua66iPENOzeu7dGP9KX/B129//OShLXJh8VH2JfIBUVfo/gGH9dFfO14crQGetxaeD4anGOIxRlqNvIxIi1zljP7CiJrsQ3wTnFV9bLvgFiXQZMvuyhrGPqjbMgnbQZD4LKxJ7ZfsMZz9kyKl8RrmB8JSkIT8FT2lqFiXD9U6LY3YxExdbxDuQ2GOK+F0+wkWhlYFfnPu1aHiX5Aq1I+lBrh2R5BIA==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=microsoft.com; dmarc=pass action=none
- header.from=microsoft.com; dkim=pass header.d=microsoft.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=nKzz6N353kemN5JnE9uEYBWK6Hu8GEiFzCv6Noxw+q0=;
- b=HcdiBg9E3fV94D/anNUZhTlbtIU9eQJ0+IDKiTZCDbyImD183D1Y5vCKfkOwuulkvcPGF+BK/zIna05Hkdr64cFYPjlZ4+macxrAfuX6PmsIQqWSlE+91rJs9SBzEJge9HJsCwHZbfsoyKpG0OIL5OSaN57rPIdrnkhpertJlog=
-Received: from MWHPR21MB1593.namprd21.prod.outlook.com (2603:10b6:301:7c::11)
- by MW4PR21MB1985.namprd21.prod.outlook.com (2603:10b6:303:7a::6) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4457.1; Mon, 16 Aug
- 2021 14:55:31 +0000
-Received: from MWHPR21MB1593.namprd21.prod.outlook.com
- ([fe80::e8f7:b582:9e2d:ba55]) by MWHPR21MB1593.namprd21.prod.outlook.com
- ([fe80::e8f7:b582:9e2d:ba55%2]) with mapi id 15.20.4436.012; Mon, 16 Aug 2021
- 14:55:31 +0000
-To: Tianyu Lan <ltykernel@gmail.com>, KY Srinivasan <kys@microsoft.com>,
- Haiyang Zhang <haiyangz@microsoft.com>, Stephen Hemminger
- <sthemmin@microsoft.com>, "wei.liu@kernel.org" <wei.liu@kernel.org>, Dexuan
- Cui <decui@microsoft.com>, "tglx@linutronix.de" <tglx@linutronix.de>,
- "mingo@redhat.com" <mingo@redhat.com>, "bp@alien8.de" <bp@alien8.de>,
- "x86@kernel.org" <x86@kernel.org>, "hpa@zytor.com" <hpa@zytor.com>,
- "dave.hansen@linux.intel.com" <dave.hansen@linux.intel.com>,
- "luto@kernel.org" <luto@kernel.org>, "peterz@infradead.org"
- <peterz@infradead.org>, "konrad.wilk@oracle.com" <konrad.wilk@oracle.com>,
- "boris.ostrovsky@oracle.com" <boris.ostrovsky@oracle.com>, "jgross@suse.com"
- <jgross@suse.com>, "sstabellini@kernel.org" <sstabellini@kernel.org>,
- "joro@8bytes.org" <joro@8bytes.org>, "will@kernel.org" <will@kernel.org>,
- "davem@davemloft.net" <davem@davemloft.net>, "kuba@kernel.org"
- <kuba@kernel.org>, "jejb@linux.ibm.com" <jejb@linux.ibm.com>,
- "martin.petersen@oracle.com" <martin.petersen@oracle.com>, "arnd@arndb.de"
- <arnd@arndb.de>, "hch@lst.de" <hch@lst.de>, "m.szyprowski@samsung.com"
- <m.szyprowski@samsung.com>, "robin.murphy@arm.com" <robin.murphy@arm.com>,
- "thomas.lendacky@amd.com" <thomas.lendacky@amd.com>, "brijesh.singh@amd.com"
- <brijesh.singh@amd.com>, "ardb@kernel.org" <ardb@kernel.org>, Tianyu Lan
- <Tianyu.Lan@microsoft.com>, "pgonda@google.com" <pgonda@google.com>,
- "martin.b.radev@gmail.com" <martin.b.radev@gmail.com>,
- "akpm@linux-foundation.org" <akpm@linux-foundation.org>,
- "kirill.shutemov@linux.intel.com" <kirill.shutemov@linux.intel.com>,
- "rppt@kernel.org" <rppt@kernel.org>, "sfr@canb.auug.org.au"
- <sfr@canb.auug.org.au>, "saravanand@fb.com" <saravanand@fb.com>,
- "krish.sadhukhan@oracle.com" <krish.sadhukhan@oracle.com>,
- "aneesh.kumar@linux.ibm.com" <aneesh.kumar@linux.ibm.com>,
- "xen-devel@lists.xenproject.org" <xen-devel@lists.xenproject.org>,
- "rientjes@google.com" <rientjes@google.com>, "hannes@cmpxchg.org"
- <hannes@cmpxchg.org>, "tj@kernel.org" <tj@kernel.org>
-Subject: RE: [PATCH V3 00/13] x86/Hyper-V: Add Hyper-V Isolation VM support
-Thread-Topic: [PATCH V3 00/13] x86/Hyper-V: Add Hyper-V Isolation VM support
-Thread-Index: AQHXjUfkLHG5EyKjREma0XuJC95pyqt2O57g
-Date: Mon, 16 Aug 2021 14:55:31 +0000
-Message-ID: <MWHPR21MB1593FFA5FD713BF42D4197F3D7FD9@MWHPR21MB1593.namprd21.prod.outlook.com>
-References: <20210809175620.720923-1-ltykernel@gmail.com>
-In-Reply-To: <20210809175620.720923-1-ltykernel@gmail.com>
-Accept-Language: en-US
-Content-Language: en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-msip_labels: MSIP_Label_f42aa342-8706-4288-bd11-ebb85995028c_ActionId=e5108425-7e30-462e-9c4f-9a4d55c1d719;
- MSIP_Label_f42aa342-8706-4288-bd11-ebb85995028c_ContentBits=0;
- MSIP_Label_f42aa342-8706-4288-bd11-ebb85995028c_Enabled=true;
- MSIP_Label_f42aa342-8706-4288-bd11-ebb85995028c_Method=Standard;
- MSIP_Label_f42aa342-8706-4288-bd11-ebb85995028c_Name=Internal;
- MSIP_Label_f42aa342-8706-4288-bd11-ebb85995028c_SetDate=2021-08-16T14:29:15Z;
- MSIP_Label_f42aa342-8706-4288-bd11-ebb85995028c_SiteId=72f988bf-86f1-41af-91ab-2d7cd011db47;
-authentication-results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=microsoft.com;
-x-ms-publictraffictype: Email
-x-ms-office365-filtering-correlation-id: 5cb51cd8-4e1a-41ad-3182-08d960c5e4da
-x-ms-traffictypediagnostic: MW4PR21MB1985:
-x-ms-exchange-transport-forked: True
-x-ld-processed: 72f988bf-86f1-41af-91ab-2d7cd011db47,ExtAddr
-x-microsoft-antispam-prvs: <MW4PR21MB19850244BC52090E5955B0BDD7FD9@MW4PR21MB1985.namprd21.prod.outlook.com>
-x-ms-oob-tlc-oobclassifiers: OLM:8273;
-x-ms-exchange-senderadcheck: 1
-x-ms-exchange-antispam-relay: 0
-x-microsoft-antispam: BCL:0;
-x-microsoft-antispam-message-info: LXdGonL+GQ7wkn9qSGEuLb/pD/790fWt7wYOmALo37wzWnjOcZ/Xc3ZLgvqLlueIWCUOvJ/Rj9RwG5baXYuboLTBAiTq9VN0YmcQohZu/hFb6LWPaPmjxZ3YwNbov78fJn+3BYDWUWHHQbkDPBYY/crte26xqnDFgZw10P71Lb1QHCICOr6xJSELER8qs2n/us2UWUeBy9BSESAOnFLP44sQD1L5PMXNXbap4Ur3mRezoa4GxemwECKudpcuq09Gm4xxZUWdnF9+29xNyqgxF1c1rb90CSpCYxZTprDn9X63Kc16iKNi7k/STajc6QQJZsmRXjn1qwDQCuNMAebIBcaR7wpg5TwESXe+IxE6HBD6JN1RPsIuUYh9b4M4KHuIIKoXhY445PkBPooMOGf61QO6Ph3mQ2vC55sWd74VMpWP79v9grwbm7qRQtGitrP4QkVwlAP8pQSRl2CXefZGgdbnk6St7w+gtS2Fl3peUXTVenTr6EB71e14EY5htt4F43p4tdi81OASxYKn9mWcx5xgiSYGI+M3bxXVCPmcr3mlzqOHZmXp2SvGTG91bmQY86srDiJqQ7uTxC2Vhy0qzPxVjJ0ALnIe9dyz04rLwwFxTEUTASgx7xRY4meCoNI3/PYrg73UVn9+5C2cw3PXCX8akPu9HEqWvnLtkdv83LFpxianauK8ldEx4BY6dE0eJLhU5wIAg3q0KPbdGvVSDu5ZLtDl0KiILMD6vya/RTI=
-x-forefront-antispam-report: CIP:255.255.255.255; CTRY:; LANG:en; SCL:1; SRV:;
- IPV:NLI; SFV:NSPM; H:MWHPR21MB1593.namprd21.prod.outlook.com; PTR:; CAT:NONE;
- SFS:(4636009)(366004)(508600001)(8676002)(8936002)(186003)(86362001)(7696005)(2906002)(26005)(6506007)(9686003)(38100700002)(122000001)(55016002)(71200400001)(82950400001)(10290500003)(82960400001)(33656002)(52536014)(7406005)(83380400001)(66946007)(5660300002)(76116006)(54906003)(316002)(4326008)(7416002)(110136005)(921005)(38070700005)(66446008)(64756008)(66556008)(66476007)(8990500004);
- DIR:OUT; SFP:1102; 
-x-ms-exchange-antispam-messagedata-chunkcount: 1
-x-ms-exchange-antispam-messagedata-0: =?us-ascii?Q?YkqcmjMKPb3HT/QrqCP4mnZgrNiTeEOLvYLS23s/yWEIohQd7vhVvJ03xobV?=
- =?us-ascii?Q?DKTG56hOOAlWa63ymtq2rDk05ToSdxbDZMYouS2yvIAnRnthmBikcVWfBr98?=
- =?us-ascii?Q?2veinR9pm+ofHLqP8xJeL4+QW6y7fQ4iB68wM/K7DdQ0MRPXUQh78Sth4cai?=
- =?us-ascii?Q?36iqIwM+Q5viDsH9Fu8Snc+IHZSnqiXnNEcEWXbxF0vNN+3Zb7ojwLElTsW8?=
- =?us-ascii?Q?8jIr3iFEMX29vauhDKff+P/cRiDT9YMsIEk4D3YxPp0KA16svmW5dNZoEPdf?=
- =?us-ascii?Q?zrETSvhrgKjcS/U6jZCt1b+VoIo3PIlRoU2wAGbI5bVwmISAgYcmqJzzYCP3?=
- =?us-ascii?Q?pOjjqLKr3LlT4xRk4XYID5gyuKIpjLJXZ0GV+O2bWCsCA9qV1qz275FsAb52?=
- =?us-ascii?Q?FKHQlr5KA0ME82dyG1phfAukrpY1ZwA2AVsewLqqC+fDu6G/55PQeTzzgor8?=
- =?us-ascii?Q?7N1mXV+qYHwdzFCQBDH2Bad/4H7WVt24C6oroHjdAangjC1qKltZEMhjOnHL?=
- =?us-ascii?Q?8/HzWNaRtCCvV187DrMRqvjwYTYPVqveayp3LGU4/tb+A6NBy2DN06oPlmOI?=
- =?us-ascii?Q?onLsduZx2HmMOJJxA+uGMGERqIvrKlYuHrBqf7vnAQx1eLJ8Ku7yc4gZCqqI?=
- =?us-ascii?Q?BICj4bMjGS28A9fKQW9/ifwIfpNUa5PqQkKsWC7fwCn1IS5Jv0Rfshv0w7mk?=
- =?us-ascii?Q?uWqYUc0xUEAhch4TnRDuxCYvDEBKji/TpvziimW/TA8eDRwp8tLA4kRzEdJ/?=
- =?us-ascii?Q?25XH+ebiDDKC56cm4NITU1AkvAAEF03u+yfsJmHv+957Rk7Hc1JEh3ocwCIm?=
- =?us-ascii?Q?UyVg2t80I+vIa1v4mzPRJgi4vO3tvc5j6FISY75d/ByjbvfAB4T58nrV0IqA?=
- =?us-ascii?Q?jFMmhLnJw8iJNky8gzeJKIziWxRGlLLJbq3pE9pe7IjyWZl6Pc4322ZM+S5H?=
- =?us-ascii?Q?o2zSIsM6KBNBjKR6EX+ZkBJ/NqVEdc+kBfdp2HuOrhhgVE+9nF836hvX6Hb2?=
- =?us-ascii?Q?czHqpzm26M+r/J/Hk32Asg+TYNVfh6eilGR/jjTFKy78rs61UttZLTYWUu/P?=
- =?us-ascii?Q?+vuudZFW32MewTRkSgukyZGY0n5if4Di5WuqaLCSdOhI2fpxZHQDg9YiegMr?=
- =?us-ascii?Q?Hrbw9JAo/k5uiUfOckSeV4qt9XpgeA8Cb7CG85NcqsyqoRAiscRWuyOC2g5v?=
- =?us-ascii?Q?RfQjq/5HIoh6WG+ex+wqUQ9dGqFsVKzMuxoUxhzSUG2RLATtYnLFc6U/rPHW?=
- =?us-ascii?Q?B7wJQH4mMHEKj/td+ZupRNwCXEDjy4yX8l/Ap0UZQHcksnbMnXhORIMRqnVI?=
- =?us-ascii?Q?uwEneH54fAvzvEtP7wrzth2/?=
+Received: from smtp2.osuosl.org ([127.0.0.1])
+ by localhost (smtp2.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+ with ESMTP id uqLcJSevtVcX for <iommu@lists.linux-foundation.org>;
+ Mon, 16 Aug 2021 16:23:35 +0000 (UTC)
+X-Greylist: domain auto-whitelisted by SQLgrey-1.8.0
+Received: from foss.arm.com (foss.arm.com [217.140.110.172])
+ by smtp2.osuosl.org (Postfix) with ESMTP id 52ECF40163
+ for <iommu@lists.linux-foundation.org>; Mon, 16 Aug 2021 16:23:35 +0000 (UTC)
+Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
+ by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 779266D;
+ Mon, 16 Aug 2021 09:23:34 -0700 (PDT)
+Received: from [10.57.36.146] (unknown [10.57.36.146])
+ by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id 8D8293F66F;
+ Mon, 16 Aug 2021 09:23:33 -0700 (PDT)
+Subject: Re: [iommu:apple/dart 3/3] drivers/iommu/apple-dart.c:730:17: error:
+ initialization of 'size_t (*)(struct iommu_domain *, long unsigned int,
+ size_t, struct iommu_iotlb_gather *)' {aka 'long unsigned int (*)(struct
+ iommu_domain *, long unsigned int, long unsigned int, struct iom...
+To: Sven Peter <sven@svenpeter.dev>, Joerg Roedel <jroedel@suse.de>
+References: <202108100801.aYU4IXvh-lkp@intel.com>
+ <0589c725-401b-482f-ba2b-0707c02ea40a@www.fastmail.com>
+ <YRUF/JNi5tclQo6L@suse.de>
+ <3c71050b-950f-4dbc-902b-c7e64dd3d0bc@www.fastmail.com>
+From: Robin Murphy <robin.murphy@arm.com>
+Message-ID: <7a10c384-d5e1-a86a-118e-981dd485d4f6@arm.com>
+Date: Mon, 16 Aug 2021 17:23:28 +0100
+User-Agent: Mozilla/5.0 (Windows NT 10.0; rv:78.0) Gecko/20100101
+ Thunderbird/78.13.0
 MIME-Version: 1.0
-X-OriginatorOrg: microsoft.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-AuthSource: MWHPR21MB1593.namprd21.prod.outlook.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 5cb51cd8-4e1a-41ad-3182-08d960c5e4da
-X-MS-Exchange-CrossTenant-originalarrivaltime: 16 Aug 2021 14:55:31.1315 (UTC)
-X-MS-Exchange-CrossTenant-fromentityheader: Hosted
-X-MS-Exchange-CrossTenant-id: 72f988bf-86f1-41af-91ab-2d7cd011db47
-X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: mNMDXffLalYM6/VJnYA1mgeiJVxoSvIRZZJOCsjpNwoRTVAC8hlzNEeA3ZwUw1FIB7SuPQJ5Hve6JAKWWDXpfGDppi9IMIpgHtJ4BFsCcR4=
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: MW4PR21MB1985
-Cc: "linux-arch@vger.kernel.org" <linux-arch@vger.kernel.org>,
- "parri.andrea@gmail.com" <parri.andrea@gmail.com>,
- "linux-hyperv@vger.kernel.org" <linux-hyperv@vger.kernel.org>,
- "linux-scsi@vger.kernel.org" <linux-scsi@vger.kernel.org>,
- "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
- "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
- "dave.hansen@intel.com" <dave.hansen@intel.com>,
- "iommu@lists.linux-foundation.org" <iommu@lists.linux-foundation.org>,
- vkuznets <vkuznets@redhat.com>
+In-Reply-To: <3c71050b-950f-4dbc-902b-c7e64dd3d0bc@www.fastmail.com>
+Content-Language: en-GB
+Cc: iommu@lists.linux-foundation.org, kbuild-all@lists.01.org,
+ kernel test robot <lkp@intel.com>
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -192,46 +82,62 @@ List-Post: <mailto:iommu@lists.linux-foundation.org>
 List-Help: <mailto:iommu-request@lists.linux-foundation.org?subject=help>
 List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
  <mailto:iommu-request@lists.linux-foundation.org?subject=subscribe>
-From: Michael Kelley via iommu <iommu@lists.linux-foundation.org>
-Reply-To: Michael Kelley <mikelley@microsoft.com>
-Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset="us-ascii"; Format="flowed"
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-From: Tianyu Lan <ltykernel@gmail.com> Sent: Monday, August 9, 2021 10:56 AM
+On 2021-08-16 07:48, Sven Peter wrote:
 > 
-> Hyper-V provides two kinds of Isolation VMs. VBS(Virtualization-based
-> security) and AMD SEV-SNP unenlightened Isolation VMs. This patchset
-> is to add support for these Isolation VM support in Linux.
 > 
+> On Thu, Aug 12, 2021, at 13:29, Joerg Roedel wrote:
+>> Hi Sven,
+>>
+>> On Tue, Aug 10, 2021 at 08:09:53AM +0200, Sven Peter wrote:
+>>> This happens because apple/dart is missing the "Optimizing iommu_[map/unmap] performance"
+>>> series which is already in the core branch [1].
+>>> The same commit works fine in iommu/next since that branch merges both iommu/core and
+>>> apple/dart.
+>>
+>> Okay, thanks. I re-based the DART patches on-top of my core branch,
+>> which contains the changes for iommu_[map/unmap] performance. I
+>> generally don't like rebasing topic branches, but made an exception here
+>> to not break bisectability.
+>>
+>> Thanks,
+>>
+>> 	Joerg
+>>
+> 
+> Hi Joerg,
+> 
+> Thanks, and sorry about that! I'll try to make it more clear if anything depends
+> on another series in the future or just try to avoid it altogether if possible.
+> 
+> 
+> Just a heads up about a similar situation you may already be aware of: Once Robin's
+> DMA domain strictness refactoring [1] is merged, the current DART driver will fail due
+> to patch 12 there, which unexports iommu_get_dma_cookie. It'll need a small
+> adjustment just like all the other drivers (which will also fix two small bugs
+> it just made me notice: I never use iommu_put_dma_cookie and also unconditionally
+> grab a DMA cookie for all domain types).
+> 
+> Unless I'm mistaken I can't make that adjustment before the first patch of
+> that series has been merged, and Robin can't make that adjustment in his series
+> because it'll presumably go through another topic branch.
 
-A general comment about this series:  I have not seen any statements
-made about whether either type of Isolated VM is supported for 32-bit
-Linux guests.   arch/x86/Kconfig has CONFIG_AMD_MEM_ENCRYPT as
-64-bit only, so evidently SEV-SNP Isolated VMs would be 64-bit only.
-But I don't know if VBS VMs are any different.
+Hmm, the exports only affect modules though - the cookie functions are 
+still public so that the core code can call them - so it should only 
+break certain configs. Possibly the most self-contained way to avoid 
+issues in -next would be to switch APPLE_DART from tristate to bool for 
+now, then flip it back along with cleaning up the iommu-dma remnants at 
+rc1. That should avoid any more rebasing at least.
 
-I didn't track down what happens if a 32-bit Linux is booted in
-a VM that supports SEV-SNP.  Presumably some kind of message
-is output that no encryption is being done.  But at a slightly
-higher level, the Hyper-V initialization path should probably
-also check for 32-bit and output a clear message that no isolation
-is being provided.  At that point, I don't know if it is possible to
-continue in non-isolated mode or whether the only choice is to
-panic.  Continuing in non-isolated mode might be a bad idea
-anyway since presumably the user has explicitly requested an
-Isolated VM.
+At worst, my patch #12 could in principle be held back and applied at 
+rc1 alongside the DART fixup - functionally it shouldn't be an issue, 
+but patch #16 would need fixing up to apply without the context change.
 
-Related, I noticed usage of "unsigned long" for holding physical
-addresses, which works when running 64-bit, but not when running
-32-bit.  But even if Isolated VMs are always 64-bit, it would be still be
-better to clean this up and use phys_addr_t instead.  Unfortunately,
-more generic functions like set_memory_encrypted() and
-set_memory_decrypted() have physical address arguments that
-are of type unsigned long.
-
-Michael
+Robin.
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
