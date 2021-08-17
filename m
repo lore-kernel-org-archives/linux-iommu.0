@@ -2,70 +2,163 @@ Return-Path: <SRS0=VUzA=NI=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-17.2 required=3.0 tests=BAYES_00,
-	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_CR_TRAILER,INCLUDES_PATCH,
-	MAILING_LIST_MULTI,NICE_REPLY_A,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,
-	USER_AGENT_SANE_1 autolearn=unavailable autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-17.0 required=3.0 tests=BAYES_00,DKIM_INVALID,
+	DKIM_SIGNED,HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_CR_TRAILER,INCLUDES_PATCH,
+	MAILING_LIST_MULTI,MSGID_FROM_MTA_HEADER,NICE_REPLY_A,SPF_HELO_NONE,SPF_PASS,
+	URIBL_BLOCKED,USER_AGENT_SANE_1 autolearn=ham autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2BD46C4338F
-	for <iommu@archiver.kernel.org>; Tue, 17 Aug 2021 13:24:31 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D1667C4338F
+	for <iommu@archiver.kernel.org>; Tue, 17 Aug 2021 14:12:14 +0000 (UTC)
 Received: from smtp4.osuosl.org (smtp4.osuosl.org [140.211.166.137])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id B8C1160238
-	for <iommu@archiver.kernel.org>; Tue, 17 Aug 2021 13:24:30 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.4.1 mail.kernel.org B8C1160238
-Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=arm.com
+	by mail.kernel.org (Postfix) with ESMTPS id 62B7860F14
+	for <iommu@archiver.kernel.org>; Tue, 17 Aug 2021 14:12:14 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.4.1 mail.kernel.org 62B7860F14
+Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=lists.linux-foundation.org
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by smtp4.osuosl.org (Postfix) with ESMTP id 7DC61401D6;
-	Tue, 17 Aug 2021 13:24:30 +0000 (UTC)
+	by smtp4.osuosl.org (Postfix) with ESMTP id 2E5824048B;
+	Tue, 17 Aug 2021 14:12:14 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
 Received: from smtp4.osuosl.org ([127.0.0.1])
 	by localhost (smtp4.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id nXuJIRMaQVkU; Tue, 17 Aug 2021 13:24:26 +0000 (UTC)
+	with ESMTP id iF6nu_lzwPdu; Tue, 17 Aug 2021 14:12:10 +0000 (UTC)
 Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by smtp4.osuosl.org (Postfix) with ESMTPS id 546B640525;
-	Tue, 17 Aug 2021 13:24:26 +0000 (UTC)
+	by smtp4.osuosl.org (Postfix) with ESMTPS id DDF2040461;
+	Tue, 17 Aug 2021 14:12:09 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 31582C0010;
-	Tue, 17 Aug 2021 13:24:26 +0000 (UTC)
-Received: from smtp4.osuosl.org (smtp4.osuosl.org [IPv6:2605:bc80:3010::137])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 678C6C000E
- for <iommu@lists.linux-foundation.org>; Tue, 17 Aug 2021 13:24:25 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id C46A6C0010;
+	Tue, 17 Aug 2021 14:12:09 +0000 (UTC)
+Received: from smtp2.osuosl.org (smtp2.osuosl.org [IPv6:2605:bc80:3010::133])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 9EF62C000E
+ for <iommu@lists.linux-foundation.org>; Tue, 17 Aug 2021 14:12:08 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by smtp4.osuosl.org (Postfix) with ESMTP id 63C1B4053A
- for <iommu@lists.linux-foundation.org>; Tue, 17 Aug 2021 13:24:25 +0000 (UTC)
+ by smtp2.osuosl.org (Postfix) with ESMTP id 8B7F8401BF
+ for <iommu@lists.linux-foundation.org>; Tue, 17 Aug 2021 14:12:08 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from smtp4.osuosl.org ([127.0.0.1])
- by localhost (smtp4.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id vfwxhwRWi8Y6 for <iommu@lists.linux-foundation.org>;
- Tue, 17 Aug 2021 13:24:24 +0000 (UTC)
-X-Greylist: domain auto-whitelisted by SQLgrey-1.8.0
-Received: from foss.arm.com (foss.arm.com [217.140.110.172])
- by smtp4.osuosl.org (Postfix) with ESMTP id 6679540525
- for <iommu@lists.linux-foundation.org>; Tue, 17 Aug 2021 13:24:24 +0000 (UTC)
-Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
- by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 7862C101E;
- Tue, 17 Aug 2021 06:24:23 -0700 (PDT)
-Received: from [10.57.36.146] (unknown [10.57.36.146])
- by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id 54B0F3F70D;
- Tue, 17 Aug 2021 06:24:22 -0700 (PDT)
-Subject: Re: [PATCH] iommu/arm-smmu-v3: Simplify useless instructions in
- arm_smmu_cmdq_build_cmd()
-To: Zhen Lei <thunder.leizhen@huawei.com>, Will Deacon <will@kernel.org>,
- Joerg Roedel <joro@8bytes.org>,
- linux-arm-kernel <linux-arm-kernel@lists.infradead.org>,
- iommu <iommu@lists.linux-foundation.org>, linux-kernel@vger.kernel.org
-References: <20210817113450.2026-1-thunder.leizhen@huawei.com>
-From: Robin Murphy <robin.murphy@arm.com>
-Message-ID: <6fea9ce0-7b8d-bd46-6b85-f3f9ba3ddd48@arm.com>
-Date: Tue, 17 Aug 2021 14:23:53 +0100
-User-Agent: Mozilla/5.0 (Windows NT 10.0; rv:78.0) Gecko/20100101
- Thunderbird/78.13.0
+Authentication-Results: smtp2.osuosl.org (amavisd-new);
+ dkim=pass (1024-bit key) header.d=amd.com
+Received: from smtp2.osuosl.org ([127.0.0.1])
+ by localhost (smtp2.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+ with ESMTP id 2rBJGw9TYFbd for <iommu@lists.linux-foundation.org>;
+ Tue, 17 Aug 2021 14:12:04 +0000 (UTC)
+X-Greylist: whitelisted by SQLgrey-1.8.0
+Received: from NAM12-DM6-obe.outbound.protection.outlook.com
+ (mail-dm6nam12on2055.outbound.protection.outlook.com [40.107.243.55])
+ by smtp2.osuosl.org (Postfix) with ESMTPS id A249240161
+ for <iommu@lists.linux-foundation.org>; Tue, 17 Aug 2021 14:12:04 +0000 (UTC)
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=Uk+YiVt19MCvUAVXgfk+LEih8nCIgACOeLb8VKEMJALdmRhucJJhMwX2QxwVqybJomkki/C2ToDtQdzw/GG82igxOhTNO2VP6s1jmS0ljzNEJL5GM68qSDz/ddS6e+m/Rl6Y5It2WrGNI/4mzLDdVxAqfKG5WSZwh+/FtPEcGPB+taMISr6WyUwf2euKsC1xz/pNSd/a7pLKEiDC5B16N1vg04eOQf0s0q8Quon8ic/9h29SPZSiedeqPofCJ0gJmGqpUtmq0ipCVR3uywjTECU8PdLqi2R8thleIcae4AAsqMLUhzJBXWE8qmVeezzUnNtOxs89cZG8oiSfm3fHlg==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com; 
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=3lqvgc3MxYbKsVgklPeW3fUTtOlNjtFWBUt/iYNTeZs=;
+ b=E3c2cxByPFxbYJrkXzxkYrVgak61ZuGjtV2CcwC5RDyzjICSLcscIlqQGz6zgm3Z1SzJkeovMYst99oOh2dqxRFZFBhsR6y+9VUPulmv/BJfW1x8UXkxddWN29uT9lC4UjBzw4zSU4JoeOWjF9/V6tRotV7fIRyyRL6Cxnu7z1qXkItQ3aArhDG8nroi+/4ZGsvbvrbXfdTtLT7h5DN9SI/qYKd4G129b8V+ZS0r0saQyzWFzs2rZZ+GdrNDNxvLewIHPBV3I8u2Q3FnzWcq2Qxv2O4jthbAt8cMN3dd16ZBqjOKuyehc04XfdEYykL1LZAjBx1Gn9RzRHoGS7A+gQ==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=amd.com; dmarc=pass action=none header.from=amd.com; dkim=pass
+ header.d=amd.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=amd.com; s=selector1; 
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=3lqvgc3MxYbKsVgklPeW3fUTtOlNjtFWBUt/iYNTeZs=;
+ b=tJdl7wZFPiKTu9TlRhgC2Tdewc7IGJNWF30PDKfIVqkLR+PcyrU8pRITXcjd8RE3C2RaELqSaI1DmqWiDHJwlnaVQqxF1Q0fO7R68r+K0cOaBE/5n0y/hfsaOPhCSQxAs9hASEJlqolSLmeB5Zj5KLPfvtJ2UekWUSb4XyH7ROg=
+Authentication-Results: samba.org; dkim=none (message not signed)
+ header.d=none;samba.org; dmarc=none action=none header.from=amd.com;
+Received: from DM4PR12MB5229.namprd12.prod.outlook.com (2603:10b6:5:398::12)
+ by DM6PR12MB5533.namprd12.prod.outlook.com (2603:10b6:5:1bc::16) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4415.14; Tue, 17 Aug
+ 2021 14:12:01 +0000
+Received: from DM4PR12MB5229.namprd12.prod.outlook.com
+ ([fe80::d560:d21:cd59:9418]) by DM4PR12MB5229.namprd12.prod.outlook.com
+ ([fe80::d560:d21:cd59:9418%6]) with mapi id 15.20.4415.024; Tue, 17 Aug 2021
+ 14:12:01 +0000
+Subject: Re: [PATCH v2 04/12] powerpc/pseries/svm: Add a powerpc version of
+ prot_guest_has()
+To: Borislav Petkov <bp@alien8.de>
+References: <cover.1628873970.git.thomas.lendacky@amd.com>
+ <000f627ce20c6504dd8d118d85bd69e7717b752f.1628873970.git.thomas.lendacky@amd.com>
+ <YRt01F6Mw6sB+hF8@zn.tnic>
+Message-ID: <66b3b6f1-2ffc-9eca-f7a4-6db7532a2983@amd.com>
+Date: Tue, 17 Aug 2021 09:11:58 -0500
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
+ Thunderbird/78.11.0
+In-Reply-To: <YRt01F6Mw6sB+hF8@zn.tnic>
+Content-Language: en-US
+X-ClientProxiedBy: SA9PR13CA0149.namprd13.prod.outlook.com
+ (2603:10b6:806:27::34) To DM4PR12MB5229.namprd12.prod.outlook.com
+ (2603:10b6:5:398::12)
 MIME-Version: 1.0
-In-Reply-To: <20210817113450.2026-1-thunder.leizhen@huawei.com>
-Content-Language: en-GB
+X-MS-Exchange-MessageSentRepresentingType: 1
+Received: from [10.236.30.241] (165.204.77.1) by
+ SA9PR13CA0149.namprd13.prod.outlook.com (2603:10b6:806:27::34) with Microsoft
+ SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.20.4436.9 via Frontend Transport; Tue, 17 Aug 2021 14:12:00 +0000
+X-MS-PublicTrafficType: Email
+X-MS-Office365-Filtering-Correlation-Id: b50b3f8a-2121-4dfe-4d6e-08d96188fb94
+X-MS-TrafficTypeDiagnostic: DM6PR12MB5533:
+X-MS-Exchange-Transport-Forked: True
+X-Microsoft-Antispam-PRVS: <DM6PR12MB5533EABFFF3A869022838DB7ECFE9@DM6PR12MB5533.namprd12.prod.outlook.com>
+X-MS-Oob-TLC-OOBClassifiers: OLM:1775;
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: TdP1pPBBx/GUlSL3nrSNLZmoKlbeElJ3GHxsgSowo9ZL71e403aUX1OQKQM1GDj5G9mCMpKu17MoxUy1u12cM2v88yzHIjoWDnBhN6jRovgSbF+vJYTkOLbhY5b3vI3TA0PJd07ka/rkZxTIF5jDmk6g4hhFR/j4Z9LXUT0zdC3NEUIGoQ19yfqBTGRwReFMjS2vzjeSXZFe3IluFJ3yZRrbDfAoyOENwpnyk22hyK9lKp1dgkyPJw1lCavSDmjZvTBmRTXcBIC3uJY60G/57sDjWR3ns2Asev2Z7s3BnhifhMtSkSS/UwiaB8aXMrmoVo/iK85UyitoVpDj6rv67cRLVGllNYeYRMLDeJYD4zMs19/8O5n0+yKvvBe8qlu835PHVhk7lJepIvORp62Dobzqnt/MrbzpKkYEGmZglpKmN67mO70d6F6LbjIwwq5RxFOOyP22J7Yg+DJZ6sfiFsTJdukLF6JD1evnsukcT7VKGdFAQB223olOOfEIsMNqaPUeaV/7HYS9AYtCtrjBx5YGo4H6cnawwcorxJCjqJ0C7Rbs9FpbN7c1ut5vUofrqFwGZLot7e1iJInijdbdyx2lEERORfQ2iKTg6Dz5Rtssln7C+bGcgr2jE65OEqg0dx15BuqsFrdbnGf7RirOiVFwY90byogAdJHpGyUMdrzgIgD+NPtOse2Wr8ZyaWMtp8DatPEzpB317olfrStrbRnIaKRLe55k62aSNLtgRHA=
+X-Forefront-Antispam-Report: CIP:255.255.255.255; CTRY:; LANG:en; SCL:1; SRV:;
+ IPV:NLI; SFV:NSPM; H:DM4PR12MB5229.namprd12.prod.outlook.com; PTR:; CAT:NONE;
+ SFS:(4636009)(366004)(376002)(346002)(136003)(396003)(39860400002)(4326008)(5660300002)(53546011)(316002)(6486002)(186003)(38100700002)(956004)(8676002)(16576012)(31686004)(66946007)(31696002)(36756003)(6916009)(8936002)(2906002)(54906003)(26005)(66556008)(66476007)(86362001)(2616005)(7416002)(478600001)(45980500001)(43740500002);
+ DIR:OUT; SFP:1101; 
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0: =?utf-8?B?T1ArdE5TVFZyUllyUHRhNG02REVQbjk0VzlGd0lJc1NyZk1nNTF0NE8zM2dB?=
+ =?utf-8?B?QmQrenI3c1NhMFIwR09iNFFEaHhLd1ZEL2ZmMDRMeFRQZWljeWMxVS82a0I3?=
+ =?utf-8?B?SlljMkFsUTBncUNEWXJhdkhuVExiWG5xL1luSmlHTjc0ZlE5NGorS1dVMUdS?=
+ =?utf-8?B?Y29kUVozYW1BTXNZNXp3WnZXYWh3dlVqcVJnUU42UW9UbVRFOGE5L21FcjFy?=
+ =?utf-8?B?MWJhTE1mdGw1RzNNME5wNC83SHlXMTVPQ1I0c3BPRVowRE5mVUNJTU13MG4r?=
+ =?utf-8?B?bEk5Nm9LUWlWdXlUZytCM3V6dHBacDNuN2RqVUYrYXZlemVTRnpuRnlkK3lZ?=
+ =?utf-8?B?eHg5bXBBNkVFdzBFdXNLUkZRSVNacks1MDI1bzNKeWZCQ05jUXNZQlVEbTI4?=
+ =?utf-8?B?cEloNzhYY3NHLzFISXlOVXAwVld4eU0xMnV3SUtoVEMzVUtCdjAxbkxWdktr?=
+ =?utf-8?B?TVZQc2RFY05RTDRQZDlOYWcxOHZKOHdacTVxd1pMUDFZLzlHVjd2cVRNdU8r?=
+ =?utf-8?B?MnNGM2VxcTVyYUtkWmJweGxGeitxUWlqT1VkRXk2eE5Sd3N4ZGxQQkNJQTFs?=
+ =?utf-8?B?a3ZuUTNGMnVBb09GNmc4N0Q1K01nVmhKaitDY1JMN1l0SGM0NG1oMWEvajBK?=
+ =?utf-8?B?TC9lNFYyeEhNeVlwR0d5T1NadFZIUzRkZVNjQUtJdVdRdUxRZWZNamRqWml2?=
+ =?utf-8?B?aXFsdWJQREpOYnRTQzZXd1NxcFpHbTBtOUtlSVRiNEswaXVxc1RBMVAyR0JX?=
+ =?utf-8?B?UEpFekNMSnppbnNVUEdab21MMzVkeGljVEtNZzM5NGdpbFF3cDNFRktJYTdO?=
+ =?utf-8?B?YXphU1dKR0N5MnhsNUF5OGNzbjNzYlhTNG5FZU52eDJRUE0wQW0yZHBJZFVn?=
+ =?utf-8?B?ZHgxeUxlVTNnVVJFaE93MWh5R0tGY2k3VXlGREVpaFc0VzNRVGN5ZXlpdEJQ?=
+ =?utf-8?B?Wlp2N3llTFJpdGNvd05pb2d5UXpSbUhFZWFvdHV3Q2ZCVCsyQUljeWVicEZz?=
+ =?utf-8?B?SFR5cktNOVM2dzZ0NGQ2WkJIdU50OHRpdWMzZUluZGdaV25ad3cwMVBleno4?=
+ =?utf-8?B?cGlXT3ZHQWdvcHlsdk5RSi95OEtXeEh4ekx6dWZONGhJNkdiWkU5QVlpbThS?=
+ =?utf-8?B?bFRhc2FZVTRTZXp5ZjFFSUQ3bnd3TmNPS2FBQ01VcllHZ3p6ajN1cDQxaWtj?=
+ =?utf-8?B?Zm5oZGdZTTIrNFhKazNEeTBGZHNmalRkRWxuMWtDcTlBODRzWktEeUNPRVN4?=
+ =?utf-8?B?TUZJQXhtQlE2bDQvK3NDMnVvVEhSSk5DcDZKR3RJQkV0dit2c2x6NzA3aCtt?=
+ =?utf-8?B?M0dYSlRTVHdlOTA5RWdEMU0rb1lJZk9KdXgxZllNVG5nQTUxNjNlR3k0dkZv?=
+ =?utf-8?B?b1pGbVV1ZkpUZkxiNG16dlh5RGpvcWdRV0lyRCtyKyt4RkZ4NUFqTGNLMjR2?=
+ =?utf-8?B?YzZSYUtBaXQ1NVpKUUdjWERhRGhtZ3VpRUxQRnNCYWllY1hya3hJamlGUlhC?=
+ =?utf-8?B?RE1aeFR3NTRHQlJyNVZEZkVyTkpBVjgwZmdpQm5nREE1bmhVeWczQTVBSXRL?=
+ =?utf-8?B?emhTMHdUR1BuMlhuRDB6Tm9yY3Fub0hnTm10ZC9Hc3hmZWJVeW9XU1luNXQ4?=
+ =?utf-8?B?Y04vNEltUUdaZ0JFc2piSXNTa015SGlMS3BsRS9UR250cUh6RGkxbE5sSVhq?=
+ =?utf-8?B?Z1B1T0ZtY2l2M3Rsb1R5NGZ1bWdFWGxDNGN3QS9uNXQvUkU2K1BYUzNnZXI5?=
+ =?utf-8?Q?wl6XMcPSZgNp+5Nu1IfXwDZ5sm/3rjd1QCvbLdQ?=
+X-OriginatorOrg: amd.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: b50b3f8a-2121-4dfe-4d6e-08d96188fb94
+X-MS-Exchange-CrossTenant-AuthSource: DM4PR12MB5229.namprd12.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 17 Aug 2021 14:12:01.7367 (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 3dd8961f-e488-4e60-8e11-a82d994e183d
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: V2CFQkDa7LnYaT8s9+R3zdkwp2Am9q+i+mGYHP+N7ZDllAaICN9I3Aie0LiX9vFIxI4RMBMeg7Ckkleqp5Qtrw==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: DM6PR12MB5533
+Cc: linux-s390@vger.kernel.org, linux-efi@vger.kernel.org,
+ Brijesh Singh <brijesh.singh@amd.com>, kvm@vger.kernel.org,
+ Michael Ellerman <mpe@ellerman.id.au>, x86@kernel.org,
+ kexec@lists.infradead.org, linux-kernel@vger.kernel.org,
+ amd-gfx@lists.freedesktop.org, platform-driver-x86@vger.kernel.org,
+ iommu@lists.linux-foundation.org, Andi Kleen <ak@linux.intel.com>,
+ linux-graphics-maintainer@vmware.com, dri-devel@lists.freedesktop.org,
+ Benjamin Herrenschmidt <benh@kernel.crashing.org>,
+ linux-fsdevel@vger.kernel.org, Tianyu Lan <Tianyu.Lan@microsoft.com>,
+ linuxppc-dev@lists.ozlabs.org, Paul Mackerras <paulus@samba.org>
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -78,112 +171,62 @@ List-Post: <mailto:iommu@lists.linux-foundation.org>
 List-Help: <mailto:iommu-request@lists.linux-foundation.org?subject=help>
 List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
  <mailto:iommu-request@lists.linux-foundation.org?subject=subscribe>
+From: Tom Lendacky via iommu <iommu@lists.linux-foundation.org>
+Reply-To: Tom Lendacky <thomas.lendacky@amd.com>
+Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
-Content-Type: text/plain; charset="us-ascii"; Format="flowed"
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-On 2021-08-17 12:34, Zhen Lei wrote:
-> Although the parameter 'cmd' is always passed by a local array variable,
-> and only this function modifies it, the compiler does not know this. The
-> compiler almost always reads the value of cmd[i] from memory rather than
-> directly using the value cached in the register. This generates many
-> useless instruction operations and affects the performance to some extent.
-
-Which compiler? GCC 4.9 does not make the same codegen decisions that 
-GCC 10 does; Clang is different again. There are also various config 
-options which affect a compiler's inlining/optimisation choices either 
-directly or indirectly.
-
-If it's something that newer compilers can get right anyway, then 
-micro-optimising just for older ones might warrant a bit more justification.
-
-> To guide the compiler for proper optimization, 'cmd' is defined as a local
-> array variable, marked as register, and copied to the output parameter at
-> a time when the function is returned.
+On 8/17/21 3:35 AM, Borislav Petkov wrote:
+> On Fri, Aug 13, 2021 at 11:59:23AM -0500, Tom Lendacky wrote:
+>> Introduce a powerpc version of the prot_guest_has() function. This will
+>> be used to replace the powerpc mem_encrypt_active() implementation, so
+>> the implementation will initially only support the PATTR_MEM_ENCRYPT
+>> attribute.
+>>
+>> Cc: Michael Ellerman <mpe@ellerman.id.au>
+>> Cc: Benjamin Herrenschmidt <benh@kernel.crashing.org>
+>> Cc: Paul Mackerras <paulus@samba.org>
+>> Signed-off-by: Tom Lendacky <thomas.lendacky@amd.com>
+>> ---
+>>  arch/powerpc/include/asm/protected_guest.h | 30 ++++++++++++++++++++++
+>>  arch/powerpc/platforms/pseries/Kconfig     |  1 +
+>>  2 files changed, 31 insertions(+)
+>>  create mode 100644 arch/powerpc/include/asm/protected_guest.h
+>>
+>> diff --git a/arch/powerpc/include/asm/protected_guest.h b/arch/powerpc/include/asm/protected_guest.h
+>> new file mode 100644
+>> index 000000000000..ce55c2c7e534
+>> --- /dev/null
+>> +++ b/arch/powerpc/include/asm/protected_guest.h
+>> @@ -0,0 +1,30 @@
+>> +/* SPDX-License-Identifier: GPL-2.0-only */
+>> +/*
+>> + * Protected Guest (and Host) Capability checks
+>> + *
+>> + * Copyright (C) 2021 Advanced Micro Devices, Inc.
+>> + *
+>> + * Author: Tom Lendacky <thomas.lendacky@amd.com>
+>> + */
+>> +
+>> +#ifndef _POWERPC_PROTECTED_GUEST_H
+>> +#define _POWERPC_PROTECTED_GUEST_H
+>> +
+>> +#include <asm/svm.h>
+>> +
+>> +#ifndef __ASSEMBLY__
 > 
-> The optimization effect can be viewed by running the "size arm-smmu-v3.o"
-> command.
+> Same thing here. Pls audit the whole set whether those __ASSEMBLY__
+> guards are really needed and remove them if not.
+
+Will do.
+
+Thanks,
+Tom
+
 > 
-> Before:
->     text    data     bss     dec     hex
->    27602    1348      56   29006    714e
-> 
-> After:
->     text    data     bss     dec     hex
->    27402    1348      56   28806    7086
-> 
-> Signed-off-by: Zhen Lei <thunder.leizhen@huawei.com>
-> ---
->   drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c | 18 +++++++++++++++---
->   1 file changed, 15 insertions(+), 3 deletions(-)
-> 
-> diff --git a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
-> index d76bbbde558b776..50a9db5bac466c7 100644
-> --- a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
-> +++ b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
-> @@ -233,11 +233,19 @@ static int queue_remove_raw(struct arm_smmu_queue *q, u64 *ent)
->   	return 0;
->   }
->   
-> +#define arm_smmu_cmdq_copy_cmd(dst, src)	\
-> +	do {					\
-> +		dst[0] = src[0];		\
-> +		dst[1] = src[1];		\
-> +	} while (0)
-> +
->   /* High-level queue accessors */
-> -static int arm_smmu_cmdq_build_cmd(u64 *cmd, struct arm_smmu_cmdq_ent *ent)
-> +static int arm_smmu_cmdq_build_cmd(u64 *out_cmd, struct arm_smmu_cmdq_ent *ent)
->   {
-> -	memset(cmd, 0, 1 << CMDQ_ENT_SZ_SHIFT);
-> -	cmd[0] |= FIELD_PREP(CMDQ_0_OP, ent->opcode);
-> +	register u64 cmd[CMDQ_ENT_DWORDS];
-> +
-> +	cmd[0] = FIELD_PREP(CMDQ_0_OP, ent->opcode);
-> +	cmd[1] = 0;
->   
->   	switch (ent->opcode) {
->   	case CMDQ_OP_TLBI_EL2_ALL:
-> @@ -309,6 +317,7 @@ static int arm_smmu_cmdq_build_cmd(u64 *cmd, struct arm_smmu_cmdq_ent *ent)
->   		case PRI_RESP_SUCC:
->   			break;
->   		default:
-> +			arm_smmu_cmdq_copy_cmd(out_cmd, cmd);
-
-Why bother writing back a partial command when we're telling the caller 
-it's invalid anyway?
-
->   			return -EINVAL;
->   		}
->   		cmd[1] |= FIELD_PREP(CMDQ_PRI_1_RESP, ent->pri.resp);
-> @@ -329,9 +338,12 @@ static int arm_smmu_cmdq_build_cmd(u64 *cmd, struct arm_smmu_cmdq_ent *ent)
->   		cmd[0] |= FIELD_PREP(CMDQ_SYNC_0_MSIATTR, ARM_SMMU_MEMATTR_OIWB);
->   		break;
->   	default:
-> +		arm_smmu_cmdq_copy_cmd(out_cmd, cmd);
-
-Ditto.
-
->   		return -ENOENT;
->   	}
->   
-> +	arm_smmu_cmdq_copy_cmd(out_cmd, cmd);
-
-...and then it would be simpler to open-code the assignment here.
-
-I guess if you're really concerned with avoiding temporary commands 
-being written back to the stack and reloaded, it might be worth 
-experimenting with wrapping them in a struct which can be passed around 
-by value - AAPCS64 allows passing a 16-byte composite type purely in 
-registers.
-
-Robin.
-
-> +
->   	return 0;
->   }
->   
+> Thx.
 > 
 _______________________________________________
 iommu mailing list
