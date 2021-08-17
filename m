@@ -7,61 +7,61 @@ X-Spam-Status: No, score=-16.8 required=3.0 tests=BAYES_00,
 	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_GIT
 	autolearn=ham autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C331DC432BE
-	for <iommu@archiver.kernel.org>; Tue, 17 Aug 2021 04:26:44 +0000 (UTC)
-Received: from smtp2.osuosl.org (smtp2.osuosl.org [140.211.166.133])
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2735EC4338F
+	for <iommu@archiver.kernel.org>; Tue, 17 Aug 2021 04:26:46 +0000 (UTC)
+Received: from smtp4.osuosl.org (smtp4.osuosl.org [140.211.166.137])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 7A60A60F38
-	for <iommu@archiver.kernel.org>; Tue, 17 Aug 2021 04:26:44 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.4.1 mail.kernel.org 7A60A60F38
+	by mail.kernel.org (Postfix) with ESMTPS id D2CE56054E
+	for <iommu@archiver.kernel.org>; Tue, 17 Aug 2021 04:26:45 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.4.1 mail.kernel.org D2CE56054E
 Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=intel.com
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by smtp2.osuosl.org (Postfix) with ESMTP id 494B740256;
-	Tue, 17 Aug 2021 04:26:44 +0000 (UTC)
+	by smtp4.osuosl.org (Postfix) with ESMTP id AB0AE404BB;
+	Tue, 17 Aug 2021 04:26:45 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from smtp2.osuosl.org ([127.0.0.1])
-	by localhost (smtp2.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id eLsm_yw1CANE; Tue, 17 Aug 2021 04:26:40 +0000 (UTC)
+Received: from smtp4.osuosl.org ([127.0.0.1])
+	by localhost (smtp4.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+	with ESMTP id S0v8IfAjjGV7; Tue, 17 Aug 2021 04:26:41 +0000 (UTC)
 Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by smtp2.osuosl.org (Postfix) with ESMTPS id 04A28402C9;
-	Tue, 17 Aug 2021 04:26:40 +0000 (UTC)
+	by smtp4.osuosl.org (Postfix) with ESMTPS id 86A4A404C8;
+	Tue, 17 Aug 2021 04:26:41 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id D3927C0010;
-	Tue, 17 Aug 2021 04:26:39 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 4F4CEC0023;
+	Tue, 17 Aug 2021 04:26:41 +0000 (UTC)
 Received: from smtp1.osuosl.org (smtp1.osuosl.org [IPv6:2605:bc80:3010::138])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 66B9DC000E
- for <iommu@lists.linux-foundation.org>; Tue, 17 Aug 2021 04:26:38 +0000 (UTC)
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 602A9C000E
+ for <iommu@lists.linux-foundation.org>; Tue, 17 Aug 2021 04:26:40 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by smtp1.osuosl.org (Postfix) with ESMTP id 5D77E835FB
- for <iommu@lists.linux-foundation.org>; Tue, 17 Aug 2021 04:26:37 +0000 (UTC)
+ by smtp1.osuosl.org (Postfix) with ESMTP id 66C3A83613
+ for <iommu@lists.linux-foundation.org>; Tue, 17 Aug 2021 04:26:38 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
 Received: from smtp1.osuosl.org ([127.0.0.1])
  by localhost (smtp1.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id 6_MTOBhtsDun for <iommu@lists.linux-foundation.org>;
+ with ESMTP id 4SwjQJKFgR1u for <iommu@lists.linux-foundation.org>;
  Tue, 17 Aug 2021 04:26:36 +0000 (UTC)
 X-Greylist: domain auto-whitelisted by SQLgrey-1.8.0
 Received: from mga14.intel.com (mga14.intel.com [192.55.52.115])
- by smtp1.osuosl.org (Postfix) with ESMTPS id CFE8B83638
+ by smtp1.osuosl.org (Postfix) with ESMTPS id AC86883626
  for <iommu@lists.linux-foundation.org>; Tue, 17 Aug 2021 04:26:36 +0000 (UTC)
-X-IronPort-AV: E=McAfee;i="6200,9189,10078"; a="215717244"
-X-IronPort-AV: E=Sophos;i="5.84,327,1620716400"; d="scan'208";a="215717244"
+X-IronPort-AV: E=McAfee;i="6200,9189,10078"; a="215717242"
+X-IronPort-AV: E=Sophos;i="5.84,327,1620716400"; d="scan'208";a="215717242"
 Received: from fmsmga007.fm.intel.com ([10.253.24.52])
  by fmsmga103.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384;
- 16 Aug 2021 21:26:33 -0700
+ 16 Aug 2021 21:26:31 -0700
 X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.84,327,1620716400"; d="scan'208";a="449126360"
+X-IronPort-AV: E=Sophos;i="5.84,327,1620716400"; d="scan'208";a="449126352"
 Received: from yiliu-dev.bj.intel.com (HELO iov-dual.bj.intel.com)
  ([10.238.156.135])
- by fmsmga007.fm.intel.com with ESMTP; 16 Aug 2021 21:26:31 -0700
+ by fmsmga007.fm.intel.com with ESMTP; 16 Aug 2021 21:26:29 -0700
 From: Liu Yi L <yi.l.liu@intel.com>
 To: iommu@lists.linux-foundation.org,
 	baolu.lu@linux.intel.com
-Subject: [PATCH v1 3/3] iommu/vt-d: Fix Unexpected page request in Privilege
- Mode
-Date: Tue, 17 Aug 2021 12:24:25 +0800
-Message-Id: <20210817042425.1784279-4-yi.l.liu@intel.com>
+Subject: [PATCH v1 2/3] iommu/vt-d: Add present bit check in pasid entry setup
+ helper functions
+Date: Tue, 17 Aug 2021 12:24:24 +0800
+Message-Id: <20210817042425.1784279-3-yi.l.liu@intel.com>
 X-Mailer: git-send-email 2.25.1
 In-Reply-To: <20210817042425.1784279-1-yi.l.liu@intel.com>
 References: <20210817042425.1784279-1-yi.l.liu@intel.com>
@@ -84,79 +84,63 @@ Content-Transfer-Encoding: 7bit
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-This patch fixes the below error. This is due to improper iotlb invalidation
-in intel_pasid_tear_down_entry().
+The helper functions is not capable to modify the pasid entries which
+are still in use. So should have a check against present bit.
 
-[  180.187556] Unexpected page request in Privilege Mode
-[  180.187565] Unexpected page request in Privilege Mode
-[  180.279933] Unexpected page request in Privilege Mode
-[  180.279937] Unexpected page request in Privilege Mode
-
-Per chapter 6.5.3.3 of VT-d spec 3.3, when tear down a pasid entry, software
-should use Domain selective IOTLB flush if the PGTT of the pasid entry is
-SL only or Nested, while for the pasid entries whose PGTT is FL only or PT
-using PASID-based IOTLB flush is enough.
-
-Fixes: 1c4f88b7f1f9 ("iommu/vt-d: Shared virtual address in scalable mode")
 Cc: Lu Baolu <baolu.lu@linux.intel.com>
-Signed-off-by: Kumar Sanjay K <sanjay.k.kumar@intel.com>
 Signed-off-by: Liu Yi L <yi.l.liu@intel.com>
-Tested-by: Yi Sun <yi.y.sun@intel.com>
 ---
- drivers/iommu/intel/pasid.c | 10 ++++++++--
- drivers/iommu/intel/pasid.h |  5 +++++
- 2 files changed, 13 insertions(+), 2 deletions(-)
+ drivers/iommu/intel/pasid.c | 16 ++++++++++++++++
+ 1 file changed, 16 insertions(+)
 
 diff --git a/drivers/iommu/intel/pasid.c b/drivers/iommu/intel/pasid.c
-index b1d0c2945c9a..07c390aed1fe 100644
+index 02e10491184b..b1d0c2945c9a 100644
 --- a/drivers/iommu/intel/pasid.c
 +++ b/drivers/iommu/intel/pasid.c
-@@ -511,7 +511,7 @@ void intel_pasid_tear_down_entry(struct intel_iommu *iommu, struct device *dev,
- 				 u32 pasid, bool fault_ignore)
- {
- 	struct pasid_entry *pte;
--	u16 did;
-+	u16 did, pgtt;
- 
- 	pte = intel_pasid_get_entry(dev, pasid);
- 	if (WARN_ON(!pte))
-@@ -521,13 +521,19 @@ void intel_pasid_tear_down_entry(struct intel_iommu *iommu, struct device *dev,
- 		return;
- 
- 	did = pasid_get_domain_id(pte);
-+	pgtt = pasid_pte_get_pgtt(pte);
-+
- 	intel_pasid_clear_entry(dev, pasid, fault_ignore);
- 
- 	if (!ecap_coherent(iommu->ecap))
- 		clflush_cache_range(pte, sizeof(*pte));
- 
- 	pasid_cache_invalidation_with_pasid(iommu, did, pasid);
--	qi_flush_piotlb(iommu, did, pasid, 0, -1, 0);
-+
-+	if (pgtt == PASID_ENTRY_PGTT_PT || pgtt == PASID_ENTRY_PGTT_FL_ONLY)
-+		qi_flush_piotlb(iommu, did, pasid, 0, -1, 0);
-+	else
-+		iommu->flush.flush_iotlb(iommu, did, 0, 0, DMA_TLB_DSI_FLUSH);
- 
- 	/* Device IOTLB doesn't need to be flushed in caching mode. */
- 	if (!cap_caching_mode(iommu->cap))
-diff --git a/drivers/iommu/intel/pasid.h b/drivers/iommu/intel/pasid.h
-index 5ff61c3d401f..637141d71092 100644
---- a/drivers/iommu/intel/pasid.h
-+++ b/drivers/iommu/intel/pasid.h
-@@ -99,6 +99,11 @@ static inline bool pasid_pte_is_present(struct pasid_entry *pte)
- 	return READ_ONCE(pte->val[0]) & PASID_PTE_PRESENT;
+@@ -534,6 +534,10 @@ void intel_pasid_tear_down_entry(struct intel_iommu *iommu, struct device *dev,
+ 		devtlb_invalidation_with_pasid(iommu, dev, pasid);
  }
  
-+static inline u16 pasid_pte_get_pgtt(struct pasid_entry *pte)
-+{
-+	return (READ_ONCE(pte->val[0]) >> 6) & 0x7;
-+}
++/*
++ * This function flushes cache for a newly setup pasid table entry.
++ * Caller of it should not modify the in-use pasid table entries.
++ */
+ static void pasid_flush_caches(struct intel_iommu *iommu,
+ 				struct pasid_entry *pte,
+ 			       u32 pasid, u16 did)
+@@ -585,6 +589,10 @@ int intel_pasid_setup_first_level(struct intel_iommu *iommu,
+ 	if (WARN_ON(!pte))
+ 		return -EINVAL;
+ 
++	/* Caller must ensure PASID entry is not in use. */
++	if (pasid_pte_is_present(pte))
++		return -EBUSY;
 +
- extern unsigned int intel_pasid_max_id;
- int intel_pasid_alloc_table(struct device *dev);
- void intel_pasid_free_table(struct device *dev);
+ 	pasid_clear_entry(pte);
+ 
+ 	/* Setup the first level page table pointer: */
+@@ -684,6 +692,10 @@ int intel_pasid_setup_second_level(struct intel_iommu *iommu,
+ 		return -ENODEV;
+ 	}
+ 
++	/* Caller must ensure PASID entry is not in use. */
++	if (pasid_pte_is_present(pte))
++		return -EBUSY;
++
+ 	pasid_clear_entry(pte);
+ 	pasid_set_domain_id(pte, did);
+ 	pasid_set_slptr(pte, pgd_val);
+@@ -723,6 +735,10 @@ int intel_pasid_setup_pass_through(struct intel_iommu *iommu,
+ 		return -ENODEV;
+ 	}
+ 
++	/* Caller must ensure PASID entry is not in use. */
++	if (pasid_pte_is_present(pte))
++		return -EBUSY;
++
+ 	pasid_clear_entry(pte);
+ 	pasid_set_domain_id(pte, did);
+ 	pasid_set_address_width(pte, iommu->agaw);
 -- 
 2.25.1
 
