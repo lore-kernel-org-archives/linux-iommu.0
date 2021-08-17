@@ -2,163 +2,147 @@ Return-Path: <SRS0=VUzA=NI=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-7.0 required=3.0 tests=BAYES_00,DKIM_INVALID,
-	DKIM_SIGNED,HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,
-	MSGID_FROM_MTA_HEADER,NICE_REPLY_A,SPF_HELO_NONE,SPF_PASS,USER_AGENT_SANE_1
-	autolearn=no autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-4.0 required=3.0 tests=BAYES_00,DKIM_ADSP_CUSTOM_MED,
+	DKIM_INVALID,DKIM_SIGNED,FREEMAIL_FORGED_FROMDOMAIN,FREEMAIL_FROM,
+	HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,NICE_REPLY_A,SPF_HELO_NONE,
+	SPF_PASS,URIBL_BLOCKED,USER_AGENT_SANE_1 autolearn=no autolearn_force=no
+	version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 53546C4338F
-	for <iommu@archiver.kernel.org>; Tue, 17 Aug 2021 15:30:25 +0000 (UTC)
-Received: from smtp1.osuosl.org (smtp1.osuosl.org [140.211.166.138])
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6A6C6C432BE
+	for <iommu@archiver.kernel.org>; Tue, 17 Aug 2021 15:36:45 +0000 (UTC)
+Received: from smtp3.osuosl.org (smtp3.osuosl.org [140.211.166.136])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 0118A6103A
-	for <iommu@archiver.kernel.org>; Tue, 17 Aug 2021 15:30:24 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.4.1 mail.kernel.org 0118A6103A
-Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=lists.linux-foundation.org
+	by mail.kernel.org (Postfix) with ESMTPS id 0E7C46102A
+	for <iommu@archiver.kernel.org>; Tue, 17 Aug 2021 15:36:45 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.4.1 mail.kernel.org 0E7C46102A
+Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=gmail.com
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by smtp1.osuosl.org (Postfix) with ESMTP id BE72A80D96;
-	Tue, 17 Aug 2021 15:30:24 +0000 (UTC)
+	by smtp3.osuosl.org (Postfix) with ESMTP id BF88860B61;
+	Tue, 17 Aug 2021 15:36:44 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from smtp1.osuosl.org ([127.0.0.1])
-	by localhost (smtp1.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id Gg6lBPw5Bz1x; Tue, 17 Aug 2021 15:30:20 +0000 (UTC)
+Received: from smtp3.osuosl.org ([127.0.0.1])
+	by localhost (smtp3.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+	with ESMTP id VCmI3xlJe2Du; Tue, 17 Aug 2021 15:36:41 +0000 (UTC)
 Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by smtp1.osuosl.org (Postfix) with ESMTPS id 722DB80D50;
-	Tue, 17 Aug 2021 15:30:20 +0000 (UTC)
+	by smtp3.osuosl.org (Postfix) with ESMTPS id 93D87606A6;
+	Tue, 17 Aug 2021 15:36:40 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 41652C0010;
-	Tue, 17 Aug 2021 15:30:20 +0000 (UTC)
-Received: from smtp4.osuosl.org (smtp4.osuosl.org [IPv6:2605:bc80:3010::137])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 8D0FBC000E
- for <iommu@lists.linux-foundation.org>; Tue, 17 Aug 2021 15:30:19 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 5F29FC0010;
+	Tue, 17 Aug 2021 15:36:40 +0000 (UTC)
+Received: from smtp1.osuosl.org (smtp1.osuosl.org [140.211.166.138])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 62AD0C000E
+ for <iommu@lists.linux-foundation.org>; Tue, 17 Aug 2021 15:36:39 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by smtp4.osuosl.org (Postfix) with ESMTP id 7B7F9402D8
- for <iommu@lists.linux-foundation.org>; Tue, 17 Aug 2021 15:30:19 +0000 (UTC)
+ by smtp1.osuosl.org (Postfix) with ESMTP id 3EB0F80DD5
+ for <iommu@lists.linux-foundation.org>; Tue, 17 Aug 2021 15:36:39 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Authentication-Results: smtp4.osuosl.org (amavisd-new);
- dkim=pass (1024-bit key) header.d=amd.com
-Received: from smtp4.osuosl.org ([127.0.0.1])
- by localhost (smtp4.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id 2RF9eWyb3Bsv for <iommu@lists.linux-foundation.org>;
- Tue, 17 Aug 2021 15:30:15 +0000 (UTC)
+Authentication-Results: smtp1.osuosl.org (amavisd-new);
+ dkim=pass (2048-bit key) header.d=gmail.com
+Received: from smtp1.osuosl.org ([127.0.0.1])
+ by localhost (smtp1.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+ with ESMTP id RfWtSjcM_Gt2 for <iommu@lists.linux-foundation.org>;
+ Tue, 17 Aug 2021 15:36:38 +0000 (UTC)
 X-Greylist: whitelisted by SQLgrey-1.8.0
-Received: from NAM10-DM6-obe.outbound.protection.outlook.com
- (mail-dm6nam10on20623.outbound.protection.outlook.com
- [IPv6:2a01:111:f400:7e88::623])
- by smtp4.osuosl.org (Postfix) with ESMTPS id A6ACF40289
- for <iommu@lists.linux-foundation.org>; Tue, 17 Aug 2021 15:30:15 +0000 (UTC)
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=P8p0/s1v66UCU8cRIvd1PLOMTFgVmheXEBzNV7tUXHzyAXOn23a85CeUo0SP9vvABPbjMHuEGc88nRKLYXwOX4WiF/6ZT5pHpmdOLGEtfSfav9cYqbAXspgwRXp2qVSZ768FRzdNuYuQfPUEPD+wenuK8HwR3KnOgzkTwthxMLn60NWjNOf6OQZ6JnpzcNLyFHvbPcsQene17UXpZOw8M2nmIYvCUYO8XFUzC3Fos/xq+9iqwz8b/7O4t6Z78Qhx1ojRYHR0zwG3bgmft9Eb5jR53pyTJ8q2k5qBciILdwtdBI4yCdSnK54EFu72vqfbfv1t2BJzt4XNNr0uF3qSxA==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com; 
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=A66rRV3c7W0mgNwkPHoKIUOpI9iw2GqGRRXgd8YBe7g=;
- b=ExcmHKOn4vBGyLhhXIPsRuJwgHSMgtCxXG8u6W4pzx/02FwoxGVNHEFxLdj7DUf1Mj8Zfr1CpSLk3oeN0DtaQRzN9IL8vMuCqwxI0sV0Oi4rBYUzRm0/53++nj/pm0rfp2p/FHBUDr13WOQ19cFXCxMGgxdhMfk/QLTxh6z25Mj4S0JAginZLSdTtF0PfLR2AuYXfxSHRhA4kdGa89Zzud5TVZwu2t0r/19F5PtAlLRT9MzaODEYTNAdp1qG2s22GdbhwGCSrlyIVHVE6Ekk6qqxDT5SoPp9eb1lvvD38tOEVPZn/nzjpGU8XcDGUQeEoLC3o5+Bj1pR4JAAC1XQYA==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=amd.com; dmarc=pass action=none header.from=amd.com; dkim=pass
- header.d=amd.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=amd.com; s=selector1; 
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=A66rRV3c7W0mgNwkPHoKIUOpI9iw2GqGRRXgd8YBe7g=;
- b=kVjY4i4nvtXGqBiMEHMg4PmEfi0qyN4/zMiUWaJWA/aFLBbhBYcGYOqX5RIm5LOCaJ3gPH7IK/S41bsJahUp/lL2bY4aCtU6iEPj8zFsTqrux61E1VWMmNyAJXh4bHHYHP4qoyqPemdxPCN2u5Ne5CMbZLGPu9CrCUMZzjSKFy0=
-Authentication-Results: suse.de; dkim=none (message not signed)
- header.d=none;suse.de; dmarc=none action=none header.from=amd.com;
-Received: from DM4PR12MB5229.namprd12.prod.outlook.com (2603:10b6:5:398::12)
- by DM4PR12MB5104.namprd12.prod.outlook.com (2603:10b6:5:393::24) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4415.13; Tue, 17 Aug
- 2021 15:30:12 +0000
-Received: from DM4PR12MB5229.namprd12.prod.outlook.com
- ([fe80::d560:d21:cd59:9418]) by DM4PR12MB5229.namprd12.prod.outlook.com
- ([fe80::d560:d21:cd59:9418%6]) with mapi id 15.20.4415.024; Tue, 17 Aug 2021
- 15:30:11 +0000
-Subject: Re: [PATCH v2 09/12] mm: Remove the now unused mem_encrypt_active()
- function
-To: Borislav Petkov <bp@alien8.de>
-References: <cover.1628873970.git.thomas.lendacky@amd.com>
- <83e4a62108eec470ac0b3f2510b982794d2b7989.1628873970.git.thomas.lendacky@amd.com>
- <YRuN6QhdIQtlluUh@zn.tnic> <YRuOVOdxOZm0S86j@zn.tnic>
-Message-ID: <6531f108-7afa-360d-fb2b-02a0dafa0a4c@amd.com>
-Date: Tue, 17 Aug 2021 10:30:08 -0500
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
- Thunderbird/78.11.0
-In-Reply-To: <YRuOVOdxOZm0S86j@zn.tnic>
-Content-Language: en-US
-X-ClientProxiedBy: SA0PR11CA0146.namprd11.prod.outlook.com
- (2603:10b6:806:131::31) To DM4PR12MB5229.namprd12.prod.outlook.com
- (2603:10b6:5:398::12)
+Received: from mail-pl1-x632.google.com (mail-pl1-x632.google.com
+ [IPv6:2607:f8b0:4864:20::632])
+ by smtp1.osuosl.org (Postfix) with ESMTPS id A815980DC7
+ for <iommu@lists.linux-foundation.org>; Tue, 17 Aug 2021 15:36:38 +0000 (UTC)
+Received: by mail-pl1-x632.google.com with SMTP id o10so874339plg.0
+ for <iommu@lists.linux-foundation.org>; Tue, 17 Aug 2021 08:36:38 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=gmail.com; s=20161025;
+ h=subject:to:cc:references:from:message-id:date:user-agent
+ :mime-version:in-reply-to:content-language:content-transfer-encoding;
+ bh=jBb72hVOoT632QaKCIWdx6/CC01Jwh36ZqbBo7qR29w=;
+ b=MZ87ScQaeTXUx2zc3QJX8paFfZdkSVdSMUYc0v0LY2+hc8AhlF3aqwldmB/BXXfh/z
+ xVUkX3EuT93f+Ekid/9wOV8vd4VGMuUzHWRKeiBzsSym+hW8V3hELzVo+u+KhQB9PaFI
+ yKaN6w7ws4iHi95okxDvcvyCJdiEqWiExOJPn7Rtxomj/p9ErurP79QsKnpF40UWedHY
+ wXhiv+BXDH0p6Ybpa+matnVITHtpuG4LstcJLEA+MFTvG9pqsO1LvATqA0RHijA20GDK
+ RCmlz/5mC+apSlI/jvD+4R9BoBCU6SvqrbqxGY696R6zje19Bg6nqx+tPpa86481eswl
+ CE+w==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+ d=1e100.net; s=20161025;
+ h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+ :user-agent:mime-version:in-reply-to:content-language
+ :content-transfer-encoding;
+ bh=jBb72hVOoT632QaKCIWdx6/CC01Jwh36ZqbBo7qR29w=;
+ b=Z7aU/7afbyblRj32Q7+ABZtn8n+LcNcpdMCR1VGiSD2MnnEpCB+GXNU/TmBxracfYy
+ SsdgJRYuUsIspY9G3fbpUQn90D4ZfAtFgQ3vY7K3OfVFdaWQiFTR5+7V+WARyPriMH2L
+ rzYavULmFWyqa2rEtK8oSxM8PMAOLchelTmIvtyUcDyLcYTxocuZuiKfau+a9zRck3uh
+ HHTIb2XrP+bqRgKXTsaK0q5YO4Siw4sl6m9CFpLSKEte/xueqLau1fB0EK3HqaZvyENV
+ 3v9bRPLL5jLn8fqqtfj6MZeAZ8fATFgFt+lWP+zdgkLqcud8DM7W7hGUiH/Vqi8dPRxZ
+ Ehng==
+X-Gm-Message-State: AOAM530ZE7g07u5tMrdn41z3UZObGujQI0VBvlAzfA3qD9Tl67v0pqsa
+ uWcGdGxRiGEfbM3Teu10YOA=
+X-Google-Smtp-Source: ABdhPJyI43P3qYYJRg0q+cd32Cif7a9Xl5o4vVONB3bqiCMyd2bKoq7nZrIha1ZM+VxRpd1t2YLiqw==
+X-Received: by 2002:a17:903:31c3:b029:ed:6f74:49c7 with SMTP id
+ v3-20020a17090331c3b02900ed6f7449c7mr3321877ple.12.1629214598127; 
+ Tue, 17 Aug 2021 08:36:38 -0700 (PDT)
+Received: from ?IPv6:2404:f801:0:5:8000::50b? ([2404:f801:9000:18:efec::50b])
+ by smtp.gmail.com with ESMTPSA id
+ q68sm3828407pgq.5.2021.08.17.08.36.24
+ (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+ Tue, 17 Aug 2021 08:36:37 -0700 (PDT)
+Subject: Re: [PATCH V3 08/13] HV/Vmbus: Initialize VMbus ring buffer for
+ Isolation VM
+To: Michael Kelley <mikelley@microsoft.com>, KY Srinivasan
+ <kys@microsoft.com>, Haiyang Zhang <haiyangz@microsoft.com>,
+ Stephen Hemminger <sthemmin@microsoft.com>,
+ "wei.liu@kernel.org" <wei.liu@kernel.org>, Dexuan Cui <decui@microsoft.com>,
+ "tglx@linutronix.de" <tglx@linutronix.de>,
+ "mingo@redhat.com" <mingo@redhat.com>, "bp@alien8.de" <bp@alien8.de>,
+ "x86@kernel.org" <x86@kernel.org>, "hpa@zytor.com" <hpa@zytor.com>,
+ "dave.hansen@linux.intel.com" <dave.hansen@linux.intel.com>,
+ "luto@kernel.org" <luto@kernel.org>,
+ "peterz@infradead.org" <peterz@infradead.org>,
+ "konrad.wilk@oracle.com" <konrad.wilk@oracle.com>,
+ "boris.ostrovsky@oracle.com" <boris.ostrovsky@oracle.com>,
+ "jgross@suse.com" <jgross@suse.com>,
+ "sstabellini@kernel.org" <sstabellini@kernel.org>,
+ "joro@8bytes.org" <joro@8bytes.org>, "will@kernel.org" <will@kernel.org>,
+ "davem@davemloft.net" <davem@davemloft.net>,
+ "kuba@kernel.org" <kuba@kernel.org>, "jejb@linux.ibm.com"
+ <jejb@linux.ibm.com>, "martin.petersen@oracle.com"
+ <martin.petersen@oracle.com>, "arnd@arndb.de" <arnd@arndb.de>,
+ "hch@lst.de" <hch@lst.de>,
+ "m.szyprowski@samsung.com" <m.szyprowski@samsung.com>,
+ "robin.murphy@arm.com" <robin.murphy@arm.com>,
+ "thomas.lendacky@amd.com" <thomas.lendacky@amd.com>,
+ "brijesh.singh@amd.com" <brijesh.singh@amd.com>,
+ "ardb@kernel.org" <ardb@kernel.org>, Tianyu Lan <Tianyu.Lan@microsoft.com>,
+ "pgonda@google.com" <pgonda@google.com>,
+ "martin.b.radev@gmail.com" <martin.b.radev@gmail.com>,
+ "akpm@linux-foundation.org" <akpm@linux-foundation.org>,
+ "kirill.shutemov@linux.intel.com" <kirill.shutemov@linux.intel.com>,
+ "rppt@kernel.org" <rppt@kernel.org>,
+ "sfr@canb.auug.org.au" <sfr@canb.auug.org.au>,
+ "saravanand@fb.com" <saravanand@fb.com>,
+ "krish.sadhukhan@oracle.com" <krish.sadhukhan@oracle.com>,
+ "aneesh.kumar@linux.ibm.com" <aneesh.kumar@linux.ibm.com>,
+ "xen-devel@lists.xenproject.org" <xen-devel@lists.xenproject.org>,
+ "rientjes@google.com" <rientjes@google.com>,
+ "hannes@cmpxchg.org" <hannes@cmpxchg.org>, "tj@kernel.org" <tj@kernel.org>
+References: <20210809175620.720923-1-ltykernel@gmail.com>
+ <20210809175620.720923-9-ltykernel@gmail.com>
+ <MWHPR21MB1593FFD7F3402753751F433CD7FD9@MWHPR21MB1593.namprd21.prod.outlook.com>
+From: Tianyu Lan <ltykernel@gmail.com>
+Message-ID: <9de7c3ae-8f3f-3fc4-0491-b9df24f03cb6@gmail.com>
+Date: Tue, 17 Aug 2021 23:36:22 +0800
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:78.0) Gecko/20100101
+ Thunderbird/78.13.0
 MIME-Version: 1.0
-X-MS-Exchange-MessageSentRepresentingType: 1
-Received: from [10.236.30.241] (165.204.77.1) by
- SA0PR11CA0146.namprd11.prod.outlook.com (2603:10b6:806:131::31) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4436.18 via Frontend
- Transport; Tue, 17 Aug 2021 15:30:10 +0000
-X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: a2a7d1be-5f3a-4003-ccf6-08d96193e6ea
-X-MS-TrafficTypeDiagnostic: DM4PR12MB5104:
-X-MS-Exchange-Transport-Forked: True
-X-Microsoft-Antispam-PRVS: <DM4PR12MB5104599F6732CA17434C0255ECFE9@DM4PR12MB5104.namprd12.prod.outlook.com>
-X-MS-Oob-TLC-OOBClassifiers: OLM:4303;
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: +hkfPEdX0PljAjCQNrcSjFSlWaa31w7KCtq5qjS0781UV8+QKDe06H7UinW151bFGyj1ReY1Yfbe+EVSdFj2LUNZlFW0x3ck7i5y2QiBhd9bzAOyGDv1MfHPOC8HPN3Gu/Tr0bLKIdw2SHQTQzpAXCGp7K0I9IF/xEefUJVgULmRBMr6IIqyShNR3PThHVrbxNFgYZ1ekL0UU3df1Rqy8RiliSAWD8pY22hKKpETvniuOHQNkyl+uV1vJ3hdar6MOmmytRKi+nLI7RDO3dvPRncWKnvJ+ZFWXALTcpYezULD/5+rJvAo12Ed64xzg15uqtejE6Z9RkgbGOk7TuMllSvyOEsLpiUFI5O2Ms8NAYm9e2SGPSZTRZSw+XrpPGGU3I2hgWgWadsrT1l0hEiVnAAcQIhUob6m47HKWSm6nUcNqa6UlyUZiymeIrw+m791/RpZbdXT3qp6uLOhJaE76GfqlNJy82A7LWu+Gty1zWahnx6rUs8vrVi/lfSoaVVZtNMpj5kMTDz/nzMhEKKAZEM0zDuvUbJJQ2UkROcq4BhWuztYdttSNwSSd40Jsvh4AWhcxssDT/fByv/rd3oX+AR/jSB4p3FMGOhwht/bzO5kbDTO7d1L2x3EmYqoLZyhvaElQsonPBXiEnlLp0iICa/vUrEjJre2Le2PCnLFMimSK8xZfw+Yd7WEK3Mvdob2d0gtIPt5IXzVI6RNxidpHEyMiZIgAwJg4ZR7HUtFVdw=
-X-Forefront-Antispam-Report: CIP:255.255.255.255; CTRY:; LANG:en; SCL:1; SRV:;
- IPV:NLI; SFV:NSPM; H:DM4PR12MB5229.namprd12.prod.outlook.com; PTR:; CAT:NONE;
- SFS:(4636009)(366004)(186003)(5660300002)(66556008)(36756003)(8676002)(2616005)(86362001)(31686004)(26005)(4326008)(38100700002)(8936002)(66476007)(2906002)(7416002)(16576012)(54906003)(31696002)(956004)(316002)(508600001)(6486002)(4744005)(53546011)(6916009)(66946007)(43740500002)(45980500001);
- DIR:OUT; SFP:1101; 
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?utf-8?B?Rkl6cjBqOXkybWVLNXYyRmdYYVFTaHNBczlKOWxtbUZkV1RrZW56azNaUEp1?=
- =?utf-8?B?ZW9IWlFhSGo1K0JoVTVRcVM5Ymlac1NOd0ZPdVN2N2I1dnU4L20yVk43RXFO?=
- =?utf-8?B?VFdjbGtzN01zTjRGRCtlejBQQXZyMHBaL0RlT2krZ0ZVOFkwRXZBb0JXSmVM?=
- =?utf-8?B?VVpBd2x5M3IwQkY3eHRrMVVtTWk4MjhRY1FZWWZERVY1U1Q4MFdCNExWazk4?=
- =?utf-8?B?L05DKzV2UUJRTFlUbDUzRS9qMWtOVFlxSXR0aGVxSWdFYklDQk5LWGd6b2po?=
- =?utf-8?B?WUhGTUZ1Mjc1cm1xL3FlUlB6UUZ3b1ZYK3lESXY1Z0ZhUFF3dXErc0lOTy94?=
- =?utf-8?B?MkdJd0N3eDMweThOR2UrK1pTTU5mUW5vYnZHbUFmNGo1dkRrVk5OOGJLbE03?=
- =?utf-8?B?WEJrcTJGN25XdFFCdlhWQmtPQ3NwcGN2ZXkweW42b1pyNWc2N1o2OFpteFFF?=
- =?utf-8?B?VS9Pbnh4bDlsdEE4YmorY05hQXlIOUFBV0o5dGJycC8xNmMzdmdhMkowNWFT?=
- =?utf-8?B?Zlg5ek03S3BrRHZUakdSZVFib0xESSt0b3RXcTd6MnNIVGpTQzZPcUxYWWhv?=
- =?utf-8?B?YkErbUVucUJDaCs3WVF3ek1GMk0yMVJxcmxwakEyQzNHTllwcm1hT3g5d3J6?=
- =?utf-8?B?cHZsVHBRaldCNGN1SlpYQjl5dlVvZlhmRXhYeksvdFhvUU1saExsdTFHbmVX?=
- =?utf-8?B?SnJBNmJ4ZXpZOVhSaGwxN0I4MlJvSHU0QzV6SlZuaFZmNkJxSFRnSk9PbGIz?=
- =?utf-8?B?RTdnVHBVUnJyRHExRzYyV2kwdlFPckJXM2RsbDNQcEptSThPQjBHSzZuanVW?=
- =?utf-8?B?VEdxVWRJVWZZb1pXODdoSy9VckczWk56N3JvQlpsT2QvYnJKdTU3M3h3RVlF?=
- =?utf-8?B?d3RGOXRmcG1nQldlSks3MEFPVGlKQWp5NktsTDBXTTQwaUJ4cUJydTlYQ0pl?=
- =?utf-8?B?N29jWHk5bXdVWEsxZE9PQktzQzkybXVCWGw1aWs3czRMSThpU0tuREtHemNO?=
- =?utf-8?B?bmF5MVA3eVZtUkRMUmhUS2ppMk5RL1NHZDVxRzRET0N5RU83anZxRStHZ2Jp?=
- =?utf-8?B?TkVoTDBwT2dnK1VIa1pOTXJ6VGw0bS9wWGpSaEQ3NElreUxqVEZtQmM4cjhE?=
- =?utf-8?B?V3lFUkJXT2NVSzVQZFkvRENyaXdBcEpDMEVocUFQS3haQmRzMStHTlJtQVVN?=
- =?utf-8?B?T294VXVCV0dzZW81MmlFM0ZBa3k1R05TNXBOTERYcG9FRzcyZktmck5XVkYz?=
- =?utf-8?B?b241N3B0cFprN0lyY0xqeExLcDFtUW9QOTlZOHlBc24zcjFZU0xqUkt2Tllt?=
- =?utf-8?B?aXY2SzdJbE8yVXkvUkJNVCtpNVc4Qy9uZ1VXMXJKU1E0aWR4TXpHL1YvUlRk?=
- =?utf-8?B?RW9leHFCTU5VLy9IaWVPVnVQcmRpY0p2eXEzK3MvN0psR2l2WHFmTXVBTnhK?=
- =?utf-8?B?RlRnQ0kydnJFK25INnJBL0NQaExDSW5hb04wS2x0QS9SNmUwcndOS1E3SXo1?=
- =?utf-8?B?YmNaSkFBZS82VGVzeTY5anRTM0ZjbGx4VWZVQWRicVVLZmV6TWRpcTdRekVE?=
- =?utf-8?B?clAvRjVPTHU0b2hHZ25PclRmS1V5TEY0SnhhdW9YS2VPeFpwMTBkN013SFNr?=
- =?utf-8?B?bWFxRmJpQ0RNV0VkMWNKQnRHSEtJY3JOc1JlWmlIQ2lmWTJFS2Voem5keXRx?=
- =?utf-8?B?WHp1d0VQOVpVY3B1VnRBbDVwcUJtdDFJejFET1c5cnoyeUZ4N1gxMjRwcFMw?=
- =?utf-8?Q?oxLqmU7x+PbaSPc1+fBIAZ0TWicHWq0E/2Aru0U?=
-X-OriginatorOrg: amd.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: a2a7d1be-5f3a-4003-ccf6-08d96193e6ea
-X-MS-Exchange-CrossTenant-AuthSource: DM4PR12MB5229.namprd12.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 17 Aug 2021 15:30:11.8192 (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 3dd8961f-e488-4e60-8e11-a82d994e183d
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: EIDucLRCuxZk3nH/PncpEK7YaB1gSflLFg+M3VvzPKfWWuYrdH20xOVefFcw79J3SssDsog17Vc2+vOWHUYJDw==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: DM4PR12MB5104
-Cc: linux-s390@vger.kernel.org, linux-efi@vger.kernel.org,
- Brijesh Singh <brijesh.singh@amd.com>, kvm@vger.kernel.org, x86@kernel.org,
- kexec@lists.infradead.org, linux-kernel@vger.kernel.org,
- amd-gfx@lists.freedesktop.org, platform-driver-x86@vger.kernel.org,
- iommu@lists.linux-foundation.org, Andi Kleen <ak@linux.intel.com>,
- linux-graphics-maintainer@vmware.com, dri-devel@lists.freedesktop.org,
- Joerg Roedel <jroedel@suse.de>, linux-fsdevel@vger.kernel.org,
- Tianyu Lan <Tianyu.Lan@microsoft.com>, linuxppc-dev@lists.ozlabs.org
+In-Reply-To: <MWHPR21MB1593FFD7F3402753751F433CD7FD9@MWHPR21MB1593.namprd21.prod.outlook.com>
+Content-Language: en-US
+Cc: "linux-arch@vger.kernel.org" <linux-arch@vger.kernel.org>,
+ "parri.andrea@gmail.com" <parri.andrea@gmail.com>,
+ "linux-hyperv@vger.kernel.org" <linux-hyperv@vger.kernel.org>,
+ "linux-scsi@vger.kernel.org" <linux-scsi@vger.kernel.org>,
+ "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+ "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+ "dave.hansen@intel.com" <dave.hansen@intel.com>,
+ "iommu@lists.linux-foundation.org" <iommu@lists.linux-foundation.org>,
+ vkuznets <vkuznets@redhat.com>
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -171,26 +155,50 @@ List-Post: <mailto:iommu@lists.linux-foundation.org>
 List-Help: <mailto:iommu-request@lists.linux-foundation.org?subject=help>
 List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
  <mailto:iommu-request@lists.linux-foundation.org?subject=subscribe>
-From: Tom Lendacky via iommu <iommu@lists.linux-foundation.org>
-Reply-To: Tom Lendacky <thomas.lendacky@amd.com>
-Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset="us-ascii"; Format="flowed"
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-On 8/17/21 5:24 AM, Borislav Petkov wrote:
-> On Tue, Aug 17, 2021 at 12:22:33PM +0200, Borislav Petkov wrote:
->> This one wants to be part of the previous patch.
+
+
+On 8/17/2021 1:28 AM, Michael Kelley wrote:
+> This patch does the following:
 > 
-> ... and the three following patches too - the treewide patch does a
-> single atomic :) replacement and that's it.
-
-Ok, I'll squash those all together.
-
-Thanks,
-Tom
-
+> 1) The existing ring buffer wrap-around mapping functionality is still
+> executed in hv_ringbuffer_init() when not doing SNP isolation.
+> This mapping is based on an array of struct page's that describe the
+> contiguous physical memory.
 > 
+> 2) New ring buffer wrap-around mapping functionality is added in
+> hv_ringbuffer_post_init() for the SNP isolation case.  The case is
+> handled in hv_ringbuffer_post_init() because it must be done after
+> the GPADL is established, since that's where the host visibility
+> is set.  What's interesting is that this case is exactly the same
+> as #1 above, except that the mapping is based on physical
+> memory addresses instead of struct page's.  We have to use physical
+> addresses because of applying the GPA boundary, and there are no
+> struct page's for those physical addresses.
+> 
+> Unfortunately, this duplicates a lot of logic in #1 and #2, except
+> for the struct page vs. physical address difference.
+> 
+> Proposal:  Couldn't we always do #2, even for the normal case
+> where SNP isolation is not being used?   The difference would
+> only be in whether the GPA boundary is added.  And it looks like
+> the normal case could be done after the GPADL is established,
+> as setting up the GPADL doesn't have any dependencies on
+> having the ring buffer mapped.  This approach would remove
+> a lot of duplication.  Just move the calls to hv_ringbuffer_init()
+> to after the GPADL is established, and do all the work there for
+> both cases.
+> 
+
+Hi Michael:
+     Thanks for suggestion. I just keep the original logic in current
+code. I will try combining these two functions and report back.
+
+Thanks.
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
