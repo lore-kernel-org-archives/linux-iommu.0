@@ -7,81 +7,81 @@ X-Spam-Status: No, score=-16.6 required=3.0 tests=BAYES_00,DKIM_INVALID,
 	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_GIT
 	autolearn=ham autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id ECF50C432BE
-	for <iommu@archiver.kernel.org>; Wed, 18 Aug 2021 12:08:07 +0000 (UTC)
-Received: from smtp1.osuosl.org (smtp1.osuosl.org [140.211.166.138])
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A0169C4338F
+	for <iommu@archiver.kernel.org>; Wed, 18 Aug 2021 12:08:19 +0000 (UTC)
+Received: from smtp4.osuosl.org (smtp4.osuosl.org [140.211.166.137])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id A1898610E7
-	for <iommu@archiver.kernel.org>; Wed, 18 Aug 2021 12:08:07 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.4.1 mail.kernel.org A1898610E7
+	by mail.kernel.org (Postfix) with ESMTPS id 4BC966108B
+	for <iommu@archiver.kernel.org>; Wed, 18 Aug 2021 12:08:19 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.4.1 mail.kernel.org 4BC966108B
 Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=bytedance.com
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by smtp1.osuosl.org (Postfix) with ESMTP id 756A780DB6;
-	Wed, 18 Aug 2021 12:08:07 +0000 (UTC)
+	by smtp4.osuosl.org (Postfix) with ESMTP id 2B64140599;
+	Wed, 18 Aug 2021 12:08:19 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from smtp1.osuosl.org ([127.0.0.1])
-	by localhost (smtp1.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id wXu3NH0_9_xy; Wed, 18 Aug 2021 12:08:03 +0000 (UTC)
-Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by smtp1.osuosl.org (Postfix) with ESMTPS id 5CA2F80DB4;
-	Wed, 18 Aug 2021 12:08:03 +0000 (UTC)
+Received: from smtp4.osuosl.org ([127.0.0.1])
+	by localhost (smtp4.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+	with ESMTP id Emz7CZN_X2F4; Wed, 18 Aug 2021 12:08:15 +0000 (UTC)
+Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [IPv6:2605:bc80:3010:104::8cd3:938])
+	by smtp4.osuosl.org (Postfix) with ESMTPS id EBDA440746;
+	Wed, 18 Aug 2021 12:08:14 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 39981C001D;
-	Wed, 18 Aug 2021 12:08:03 +0000 (UTC)
-Received: from smtp2.osuosl.org (smtp2.osuosl.org [140.211.166.133])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 2B26BC000E
- for <iommu@lists.linux-foundation.org>; Wed, 18 Aug 2021 12:08:02 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id C65A7C001A;
+	Wed, 18 Aug 2021 12:08:14 +0000 (UTC)
+Received: from smtp3.osuosl.org (smtp3.osuosl.org [140.211.166.136])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id F16CFC0024
+ for <iommu@lists.linux-foundation.org>; Wed, 18 Aug 2021 12:08:12 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by smtp2.osuosl.org (Postfix) with ESMTP id 09EC640249
- for <iommu@lists.linux-foundation.org>; Wed, 18 Aug 2021 12:08:02 +0000 (UTC)
+ by smtp3.osuosl.org (Postfix) with ESMTP id D3CE560B92
+ for <iommu@lists.linux-foundation.org>; Wed, 18 Aug 2021 12:08:12 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Authentication-Results: smtp2.osuosl.org (amavisd-new);
+Authentication-Results: smtp3.osuosl.org (amavisd-new);
  dkim=pass (2048-bit key) header.d=bytedance-com.20150623.gappssmtp.com
-Received: from smtp2.osuosl.org ([127.0.0.1])
- by localhost (smtp2.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id 6SIFfKmjr2mQ for <iommu@lists.linux-foundation.org>;
- Wed, 18 Aug 2021 12:08:00 +0000 (UTC)
+Received: from smtp3.osuosl.org ([127.0.0.1])
+ by localhost (smtp3.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+ with ESMTP id Rd0TJeuRgPTg for <iommu@lists.linux-foundation.org>;
+ Wed, 18 Aug 2021 12:08:07 +0000 (UTC)
 X-Greylist: whitelisted by SQLgrey-1.8.0
-Received: from mail-pg1-x536.google.com (mail-pg1-x536.google.com
- [IPv6:2607:f8b0:4864:20::536])
- by smtp2.osuosl.org (Postfix) with ESMTPS id D8E36401C7
- for <iommu@lists.linux-foundation.org>; Wed, 18 Aug 2021 12:08:00 +0000 (UTC)
-Received: by mail-pg1-x536.google.com with SMTP id x4so2011540pgh.1
- for <iommu@lists.linux-foundation.org>; Wed, 18 Aug 2021 05:08:00 -0700 (PDT)
+Received: from mail-pj1-x102f.google.com (mail-pj1-x102f.google.com
+ [IPv6:2607:f8b0:4864:20::102f])
+ by smtp3.osuosl.org (Postfix) with ESMTPS id C16CA607E1
+ for <iommu@lists.linux-foundation.org>; Wed, 18 Aug 2021 12:08:04 +0000 (UTC)
+Received: by mail-pj1-x102f.google.com with SMTP id
+ w13-20020a17090aea0db029017897a5f7bcso2153576pjy.5
+ for <iommu@lists.linux-foundation.org>; Wed, 18 Aug 2021 05:08:04 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
  d=bytedance-com.20150623.gappssmtp.com; s=20150623;
  h=from:to:cc:subject:date:message-id:in-reply-to:references
  :mime-version:content-transfer-encoding;
- bh=h3cBaHMfU52s7B4IKQZfv/Mv4AwRAWrj25gFgUhSo0U=;
- b=BSEezFXK8s9mIq1KmFaXULVeK3aSeyUogMR5eD4dSvtorIgyvtWBSxykWIDi2Mf8pr
- X5b162/G8WPmPUAGFLqIwL0ckm9Ys6EESEOmKMZOP0yUwunUWxu3972h2sop/3olzLJy
- +IddzNhjRBi9dNG9AR0ALhnxsPULvsgdBtWjeyQNb90yCiAG9ofU/B/rl//+ZPKJ4xvC
- +dt5yiC6AAS7EhGnuWJ7Q9BYkTy7pDDvx8baBuxDEgJnKxcO7qGyGDW7avh8GUwYddOo
- 33vORXAaeWGUY3lf7K8R+UkAVom11YqRB/1UwDF/3jh8VGWc6YZBRKuzp3zS4SAgt24N
- IbFQ==
+ bh=Upxg8K2RjM27bp0rNDyYgc14eCE3NIhEIdC+t18pOCs=;
+ b=lygAyD3Keugif/7sVDBS0Q0WByJtqD55lFbxdT5snDeED0JPyahQ3wtT1oTmd/nNab
+ YI0+3N8u2CnAhouYjLrt5FI/zRDPh+xjkeiBRbuBaw4yBwZcdpS5c+n+kJsgc+cZ59YU
+ u2oOzgjEWW5Mpxf4M8OXllJPqNvTAuUYwxr9efXDrsvtc2zMeb2R4jci5Q8LkpOkAGVo
+ nBYBnmI5yCDv9ZFIP+4XR0Cc3hWps8F6T+lqRcTYBnCHbMgTRfSATpE+zVZrOIiUH/c2
+ ZOw4QXOAhQ7R3EWtb2d6awNdUcI8Gp3/S07gCrocQRhZuxHdS/QRSYuMchNsJXeIysoW
+ gwvA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
  d=1e100.net; s=20161025;
  h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
  :references:mime-version:content-transfer-encoding;
- bh=h3cBaHMfU52s7B4IKQZfv/Mv4AwRAWrj25gFgUhSo0U=;
- b=jMQ8VSRWFfnITNCf90hBqlOgRkCKcaNTIaWgmRoqAc9NHsQmk5pwnzB4XvQ6uMSYBW
- vSqBnRw4gSvO4fUsYro5bh6+q/VJIE8/d+ibTzMj1qCB2v/wvd9l22bYkrC+ZjEepALf
- 74P6+i6Qyh9UHiJgVUA5FWxzzkmF4edbDjWG1dW86Sih4S7MHHG2SboqXSpCO/7MiqEr
- Q9gyOLF9svw8FCwKmip/Eb+hSnUQlYRLQDdOlFnxjgbGRZUIkYUPfjSECGlVpp3+Ejo2
- J+W60qF/oacP2QGl+e6eIn+Ws8ZBycMldrtfAo1tVOeNrkOHro8I5q2AcMO6x42thqAR
- 9fAg==
-X-Gm-Message-State: AOAM531QaQ1npGBbdNbQhM83CSm3A8T4XgrPOQ9W9kgZ1ymfvgvyW6fZ
- elPWHuNvlJFv4XwfQDV0KFiI
-X-Google-Smtp-Source: ABdhPJylpJBebPvrUUXvngWerpOz2/KsXpZmy7xMNWLgfzpdybMKiIoAmHmo7Y5tBNvbw/zln+2/Kg==
-X-Received: by 2002:a62:e90b:0:b029:30e:4530:8dca with SMTP id
- j11-20020a62e90b0000b029030e45308dcamr9110885pfh.17.1629288480323; 
- Wed, 18 Aug 2021 05:08:00 -0700 (PDT)
+ bh=Upxg8K2RjM27bp0rNDyYgc14eCE3NIhEIdC+t18pOCs=;
+ b=V5AxFEgctYbtqMuOT+ciYeHVPfNaFnv4xC1SajcCgbZ6McZDW8bApgHQgPL4hLNY8R
+ IZy8hzm9HvmYfOPUkVBGhF5JXZB0/ES5Zl41J9HJCM83Z7fExVkcafZ34CPf9wEgiJRt
+ BuWqeqY5vuepv/nghwfgQL9uW3h9jH7e28UBgef2JE9E433HZoAIEZkQRhAmJq2ldGN/
+ 98jk0qrVZS6Z/jBHGxw9a8l9zbbW9gESzxmrNXg8BmOpMkieu8HRGf0jOOcsB1CzP6k+
+ zDm9tXxLM7FA1SrrFZLPdA66WSnWFpXbAIlbDrw6Ytavqs4MIWFrUWgPay+cJ1L712AN
+ WiBA==
+X-Gm-Message-State: AOAM532wxKDVTnhCmvJOXOnvQ1Tc/x2koYXU+EJebN+mc2rfW86ayQg9
+ tgtjzNDnZXND12J7mYwc4O15
+X-Google-Smtp-Source: ABdhPJx2zpHHk/rm1pUU6+vYW29Qy78558N3aIjYPaB+DOhvx26kSUU8EJK1qwKqbMvnWiWPs1Xy+g==
+X-Received: by 2002:a17:90a:d149:: with SMTP id t9mr8962859pjw.0.1629288484275; 
+ Wed, 18 Aug 2021 05:08:04 -0700 (PDT)
 Received: from localhost ([139.177.225.253])
- by smtp.gmail.com with ESMTPSA id 73sm6785078pfz.73.2021.08.18.05.07.59
+ by smtp.gmail.com with ESMTPSA id y62sm6138669pfy.183.2021.08.18.05.08.03
  (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
- Wed, 18 Aug 2021 05:07:59 -0700 (PDT)
+ Wed, 18 Aug 2021 05:08:03 -0700 (PDT)
 From: Xie Yongji <xieyongji@bytedance.com>
 To: mst@redhat.com, jasowang@redhat.com, stefanha@redhat.com,
  sgarzare@redhat.com, parav@nvidia.com, hch@infradead.org,
@@ -91,9 +91,9 @@ To: mst@redhat.com, jasowang@redhat.com, stefanha@redhat.com,
  dan.carpenter@oracle.com, joro@8bytes.org, gregkh@linuxfoundation.org,
  zhe.he@windriver.com, xiaodong.liu@intel.com, joe@perches.com,
  robin.murphy@arm.com
-Subject: [PATCH v11 04/12] vdpa: Add reset callback in vdpa_config_ops
-Date: Wed, 18 Aug 2021 20:06:34 +0800
-Message-Id: <20210818120642.165-5-xieyongji@bytedance.com>
+Subject: [PATCH v11 05/12] vhost-vdpa: Handle the failure of vdpa_reset()
+Date: Wed, 18 Aug 2021 20:06:35 +0800
+Message-Id: <20210818120642.165-6-xieyongji@bytedance.com>
 X-Mailer: git-send-email 2.25.1
 In-Reply-To: <20210818120642.165-1-xieyongji@bytedance.com>
 References: <20210818120642.165-1-xieyongji@bytedance.com>
@@ -118,85 +118,45 @@ Content-Transfer-Encoding: 7bit
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-This adds a new callback to support device specific reset
-behavior. The vdpa bus driver will call the reset function
-instead of setting status to zero during resetting if device
-driver supports the new callback.
+The vdpa_reset() may fail now. This adds check to its return
+value and fail the vhost_vdpa_open().
 
 Signed-off-by: Xie Yongji <xieyongji@bytedance.com>
 ---
- drivers/vhost/vdpa.c |  9 +++++++--
- include/linux/vdpa.h | 11 ++++++++++-
- 2 files changed, 17 insertions(+), 3 deletions(-)
+ drivers/vhost/vdpa.c | 9 ++++++---
+ 1 file changed, 6 insertions(+), 3 deletions(-)
 
 diff --git a/drivers/vhost/vdpa.c b/drivers/vhost/vdpa.c
-index b07aa161f7ad..b1c91b4db0ba 100644
+index b1c91b4db0ba..d99d75ad30cc 100644
 --- a/drivers/vhost/vdpa.c
 +++ b/drivers/vhost/vdpa.c
-@@ -157,7 +157,7 @@ static long vhost_vdpa_set_status(struct vhost_vdpa *v, u8 __user *statusp)
- 	struct vdpa_device *vdpa = v->vdpa;
- 	const struct vdpa_config_ops *ops = vdpa->config;
- 	u8 status, status_old;
--	int nvqs = v->nvqs;
-+	int ret, nvqs = v->nvqs;
- 	u16 i;
- 
- 	if (copy_from_user(&status, statusp, sizeof(status)))
-@@ -172,7 +172,12 @@ static long vhost_vdpa_set_status(struct vhost_vdpa *v, u8 __user *statusp)
- 	if (status != 0 && (ops->get_status(vdpa) & ~status) != 0)
- 		return -EINVAL;
- 
--	ops->set_status(vdpa, status);
-+	if (status == 0 && ops->reset) {
-+		ret = ops->reset(vdpa);
-+		if (ret)
-+			return ret;
-+	} else
-+		ops->set_status(vdpa, status);
- 
- 	if ((status & VIRTIO_CONFIG_S_DRIVER_OK) && !(status_old & VIRTIO_CONFIG_S_DRIVER_OK))
- 		for (i = 0; i < nvqs; i++)
-diff --git a/include/linux/vdpa.h b/include/linux/vdpa.h
-index 8a645f8f4476..af7ea5ad795f 100644
---- a/include/linux/vdpa.h
-+++ b/include/linux/vdpa.h
-@@ -196,6 +196,9 @@ struct vdpa_iova_range {
-  *				@vdev: vdpa device
-  *				Returns the iova range supported by
-  *				the device.
-+ * @reset:			Reset device (optional)
-+ *				@vdev: vdpa device
-+ *				Returns integer: success (0) or error (< 0)
-  * @set_map:			Set device memory mapping (optional)
-  *				Needed for device that using device
-  *				specific DMA translation (on-chip IOMMU)
-@@ -263,6 +266,7 @@ struct vdpa_config_ops {
- 			   const void *buf, unsigned int len);
- 	u32 (*get_generation)(struct vdpa_device *vdev);
- 	struct vdpa_iova_range (*get_iova_range)(struct vdpa_device *vdev);
-+	int (*reset)(struct vdpa_device *vdev);
- 
- 	/* DMA ops */
- 	int (*set_map)(struct vdpa_device *vdev, struct vhost_iotlb *iotlb);
-@@ -351,12 +355,17 @@ static inline struct device *vdpa_get_dma_dev(struct vdpa_device *vdev)
- 	return vdev->dma_dev;
+@@ -116,12 +116,13 @@ static void vhost_vdpa_unsetup_vq_irq(struct vhost_vdpa *v, u16 qid)
+ 	irq_bypass_unregister_producer(&vq->call_ctx.producer);
  }
  
--static inline void vdpa_reset(struct vdpa_device *vdev)
-+static inline int vdpa_reset(struct vdpa_device *vdev)
+-static void vhost_vdpa_reset(struct vhost_vdpa *v)
++static int vhost_vdpa_reset(struct vhost_vdpa *v)
  {
- 	const struct vdpa_config_ops *ops = vdev->config;
+ 	struct vdpa_device *vdpa = v->vdpa;
  
- 	vdev->features_valid = false;
-+	if (ops->reset)
-+		return ops->reset(vdev);
+-	vdpa_reset(vdpa);
+ 	v->in_batch = 0;
 +
- 	ops->set_status(vdev, 0);
-+
-+	return 0;
++	return vdpa_reset(vdpa);
  }
  
- static inline int vdpa_set_features(struct vdpa_device *vdev, u64 features)
+ static long vhost_vdpa_get_device_id(struct vhost_vdpa *v, u8 __user *argp)
+@@ -868,7 +869,9 @@ static int vhost_vdpa_open(struct inode *inode, struct file *filep)
+ 		return -EBUSY;
+ 
+ 	nvqs = v->nvqs;
+-	vhost_vdpa_reset(v);
++	r = vhost_vdpa_reset(v);
++	if (r)
++		goto err;
+ 
+ 	vqs = kmalloc_array(nvqs, sizeof(*vqs), GFP_KERNEL);
+ 	if (!vqs) {
 -- 
 2.11.0
 
