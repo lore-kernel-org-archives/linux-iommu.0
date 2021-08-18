@@ -7,81 +7,81 @@ X-Spam-Status: No, score=-16.6 required=3.0 tests=BAYES_00,DKIM_INVALID,
 	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_GIT
 	autolearn=ham autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A0169C4338F
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D7C5CC4320E
 	for <iommu@archiver.kernel.org>; Wed, 18 Aug 2021 12:08:19 +0000 (UTC)
-Received: from smtp4.osuosl.org (smtp4.osuosl.org [140.211.166.137])
+Received: from smtp3.osuosl.org (smtp3.osuosl.org [140.211.166.136])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 4BC966108B
+	by mail.kernel.org (Postfix) with ESMTPS id 9B0A960F58
 	for <iommu@archiver.kernel.org>; Wed, 18 Aug 2021 12:08:19 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.4.1 mail.kernel.org 4BC966108B
+DMARC-Filter: OpenDMARC Filter v1.4.1 mail.kernel.org 9B0A960F58
 Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=bytedance.com
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by smtp4.osuosl.org (Postfix) with ESMTP id 2B64140599;
+	by smtp3.osuosl.org (Postfix) with ESMTP id 795A060751;
 	Wed, 18 Aug 2021 12:08:19 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from smtp4.osuosl.org ([127.0.0.1])
-	by localhost (smtp4.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id Emz7CZN_X2F4; Wed, 18 Aug 2021 12:08:15 +0000 (UTC)
-Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [IPv6:2605:bc80:3010:104::8cd3:938])
-	by smtp4.osuosl.org (Postfix) with ESMTPS id EBDA440746;
-	Wed, 18 Aug 2021 12:08:14 +0000 (UTC)
-Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id C65A7C001A;
-	Wed, 18 Aug 2021 12:08:14 +0000 (UTC)
-Received: from smtp3.osuosl.org (smtp3.osuosl.org [140.211.166.136])
- by lists.linuxfoundation.org (Postfix) with ESMTP id F16CFC0024
- for <iommu@lists.linux-foundation.org>; Wed, 18 Aug 2021 12:08:12 +0000 (UTC)
-Received: from localhost (localhost [127.0.0.1])
- by smtp3.osuosl.org (Postfix) with ESMTP id D3CE560B92
- for <iommu@lists.linux-foundation.org>; Wed, 18 Aug 2021 12:08:12 +0000 (UTC)
-X-Virus-Scanned: amavisd-new at osuosl.org
-Authentication-Results: smtp3.osuosl.org (amavisd-new);
- dkim=pass (2048-bit key) header.d=bytedance-com.20150623.gappssmtp.com
 Received: from smtp3.osuosl.org ([127.0.0.1])
- by localhost (smtp3.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id Rd0TJeuRgPTg for <iommu@lists.linux-foundation.org>;
- Wed, 18 Aug 2021 12:08:07 +0000 (UTC)
+	by localhost (smtp3.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+	with ESMTP id uAxNZffG1SO9; Wed, 18 Aug 2021 12:08:15 +0000 (UTC)
+Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [IPv6:2605:bc80:3010:104::8cd3:938])
+	by smtp3.osuosl.org (Postfix) with ESMTPS id 5060D607E1;
+	Wed, 18 Aug 2021 12:08:15 +0000 (UTC)
+Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 13D8CC0023;
+	Wed, 18 Aug 2021 12:08:15 +0000 (UTC)
+Received: from smtp4.osuosl.org (smtp4.osuosl.org [140.211.166.137])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 7B864C000E
+ for <iommu@lists.linux-foundation.org>; Wed, 18 Aug 2021 12:08:13 +0000 (UTC)
+Received: from localhost (localhost [127.0.0.1])
+ by smtp4.osuosl.org (Postfix) with ESMTP id 5AE4940746
+ for <iommu@lists.linux-foundation.org>; Wed, 18 Aug 2021 12:08:13 +0000 (UTC)
+X-Virus-Scanned: amavisd-new at osuosl.org
+Authentication-Results: smtp4.osuosl.org (amavisd-new);
+ dkim=pass (2048-bit key) header.d=bytedance-com.20150623.gappssmtp.com
+Received: from smtp4.osuosl.org ([127.0.0.1])
+ by localhost (smtp4.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+ with ESMTP id HP89YV7sTijK for <iommu@lists.linux-foundation.org>;
+ Wed, 18 Aug 2021 12:08:12 +0000 (UTC)
 X-Greylist: whitelisted by SQLgrey-1.8.0
-Received: from mail-pj1-x102f.google.com (mail-pj1-x102f.google.com
- [IPv6:2607:f8b0:4864:20::102f])
- by smtp3.osuosl.org (Postfix) with ESMTPS id C16CA607E1
- for <iommu@lists.linux-foundation.org>; Wed, 18 Aug 2021 12:08:04 +0000 (UTC)
-Received: by mail-pj1-x102f.google.com with SMTP id
- w13-20020a17090aea0db029017897a5f7bcso2153576pjy.5
- for <iommu@lists.linux-foundation.org>; Wed, 18 Aug 2021 05:08:04 -0700 (PDT)
+Received: from mail-pg1-x533.google.com (mail-pg1-x533.google.com
+ [IPv6:2607:f8b0:4864:20::533])
+ by smtp4.osuosl.org (Postfix) with ESMTPS id 598684073E
+ for <iommu@lists.linux-foundation.org>; Wed, 18 Aug 2021 12:08:12 +0000 (UTC)
+Received: by mail-pg1-x533.google.com with SMTP id s11so2013568pgr.11
+ for <iommu@lists.linux-foundation.org>; Wed, 18 Aug 2021 05:08:12 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
  d=bytedance-com.20150623.gappssmtp.com; s=20150623;
  h=from:to:cc:subject:date:message-id:in-reply-to:references
  :mime-version:content-transfer-encoding;
- bh=Upxg8K2RjM27bp0rNDyYgc14eCE3NIhEIdC+t18pOCs=;
- b=lygAyD3Keugif/7sVDBS0Q0WByJtqD55lFbxdT5snDeED0JPyahQ3wtT1oTmd/nNab
- YI0+3N8u2CnAhouYjLrt5FI/zRDPh+xjkeiBRbuBaw4yBwZcdpS5c+n+kJsgc+cZ59YU
- u2oOzgjEWW5Mpxf4M8OXllJPqNvTAuUYwxr9efXDrsvtc2zMeb2R4jci5Q8LkpOkAGVo
- nBYBnmI5yCDv9ZFIP+4XR0Cc3hWps8F6T+lqRcTYBnCHbMgTRfSATpE+zVZrOIiUH/c2
- ZOw4QXOAhQ7R3EWtb2d6awNdUcI8Gp3/S07gCrocQRhZuxHdS/QRSYuMchNsJXeIysoW
- gwvA==
+ bh=gmTErZoHuljLWy5ftQQYPa0Y5andptGPajJ0BViKZSc=;
+ b=E3gyfzX3p6VBgxg4pWT29QlWqOVlMy2BbTsKDlOSqzh+60rUYJOYzZg/a/5H3opHzL
+ saLXHrsiT1qdodUTrFNAgvKbawgYE3Zbm7sn9ZpSgO/ujOQBcpFtfGY4XwBjUDn6GNal
+ EhHyVOkhOeoCKu7mzikuQ1LEvOCr0QP3Ui1owbajYTEZ06+xgudTTGigvPrJ2d4x58EY
+ MmNck5Ubt3Ii6BQ75nMino2+g6g1YOBh3xKoyB6i659GtUm1nXhgpamk38ax4ZDs77eC
+ LhhnoMrfcRaaR3SJ/oWEsIHbg5n7LcIB7PTvdS74RYTDsSB0MVlf2hh+yaU9DqxCtMbV
+ WlfQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
  d=1e100.net; s=20161025;
  h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
  :references:mime-version:content-transfer-encoding;
- bh=Upxg8K2RjM27bp0rNDyYgc14eCE3NIhEIdC+t18pOCs=;
- b=V5AxFEgctYbtqMuOT+ciYeHVPfNaFnv4xC1SajcCgbZ6McZDW8bApgHQgPL4hLNY8R
- IZy8hzm9HvmYfOPUkVBGhF5JXZB0/ES5Zl41J9HJCM83Z7fExVkcafZ34CPf9wEgiJRt
- BuWqeqY5vuepv/nghwfgQL9uW3h9jH7e28UBgef2JE9E433HZoAIEZkQRhAmJq2ldGN/
- 98jk0qrVZS6Z/jBHGxw9a8l9zbbW9gESzxmrNXg8BmOpMkieu8HRGf0jOOcsB1CzP6k+
- zDm9tXxLM7FA1SrrFZLPdA66WSnWFpXbAIlbDrw6Ytavqs4MIWFrUWgPay+cJ1L712AN
- WiBA==
-X-Gm-Message-State: AOAM532wxKDVTnhCmvJOXOnvQ1Tc/x2koYXU+EJebN+mc2rfW86ayQg9
- tgtjzNDnZXND12J7mYwc4O15
-X-Google-Smtp-Source: ABdhPJx2zpHHk/rm1pUU6+vYW29Qy78558N3aIjYPaB+DOhvx26kSUU8EJK1qwKqbMvnWiWPs1Xy+g==
-X-Received: by 2002:a17:90a:d149:: with SMTP id t9mr8962859pjw.0.1629288484275; 
- Wed, 18 Aug 2021 05:08:04 -0700 (PDT)
+ bh=gmTErZoHuljLWy5ftQQYPa0Y5andptGPajJ0BViKZSc=;
+ b=q6sNlAov3fQmFG6f17el5Ty08ThUz67S87W8/81Af/8SVCGeKRjasgYTfCt70CqWNs
+ zHUk+kl0N5xm4zv4ajXylDqaQGcYOTUvm0utPQjenIXCJ3wCW/BCO93gZasXZFfp/BZ/
+ C/FYbl5B6vR4NODZ3UsU9/T+86VK8Lp89FE27FowS83jmUB+lcwaW/FgVBdDjcsFZLL+
+ CZwY/iOetm2l/wZiDqm11s7oLIy+hZflrye1YkCn4nMSfvAeisZvWhVw2VpYqjwGfEok
+ 3/H+R3hEkbK8thLyAaHfSRngqUCTt/HYMPPImuXSwW5IM7035DZGbHbfz3qVtzBL4iKD
+ cHAg==
+X-Gm-Message-State: AOAM5322ydZJ3JG+8G82+3JM0GwJD3UrlLZ422tKwTuqWfcNw1xUeS6T
+ LczA2BVX+9z4Tfdxpcv92jXM
+X-Google-Smtp-Source: ABdhPJxmHpTevC3n4Gyq6WE+y24vE0c1i9BWHhgK52+NypaaWeKzW65MHbptj1Q4rFojFfdr/JykVQ==
+X-Received: by 2002:a62:8f86:0:b029:32e:33d7:998b with SMTP id
+ n128-20020a628f860000b029032e33d7998bmr9257363pfd.64.1629288491854; 
+ Wed, 18 Aug 2021 05:08:11 -0700 (PDT)
 Received: from localhost ([139.177.225.253])
- by smtp.gmail.com with ESMTPSA id y62sm6138669pfy.183.2021.08.18.05.08.03
+ by smtp.gmail.com with ESMTPSA id u24sm6642220pfm.81.2021.08.18.05.08.10
  (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
- Wed, 18 Aug 2021 05:08:03 -0700 (PDT)
+ Wed, 18 Aug 2021 05:08:11 -0700 (PDT)
 From: Xie Yongji <xieyongji@bytedance.com>
 To: mst@redhat.com, jasowang@redhat.com, stefanha@redhat.com,
  sgarzare@redhat.com, parav@nvidia.com, hch@infradead.org,
@@ -91,9 +91,10 @@ To: mst@redhat.com, jasowang@redhat.com, stefanha@redhat.com,
  dan.carpenter@oracle.com, joro@8bytes.org, gregkh@linuxfoundation.org,
  zhe.he@windriver.com, xiaodong.liu@intel.com, joe@perches.com,
  robin.murphy@arm.com
-Subject: [PATCH v11 05/12] vhost-vdpa: Handle the failure of vdpa_reset()
-Date: Wed, 18 Aug 2021 20:06:35 +0800
-Message-Id: <20210818120642.165-6-xieyongji@bytedance.com>
+Subject: [PATCH v11 07/12] vdpa: Add an opaque pointer for
+ vdpa_config_ops.dma_map()
+Date: Wed, 18 Aug 2021 20:06:37 +0800
+Message-Id: <20210818120642.165-8-xieyongji@bytedance.com>
 X-Mailer: git-send-email 2.25.1
 In-Reply-To: <20210818120642.165-1-xieyongji@bytedance.com>
 References: <20210818120642.165-1-xieyongji@bytedance.com>
@@ -118,45 +119,65 @@ Content-Transfer-Encoding: 7bit
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-The vdpa_reset() may fail now. This adds check to its return
-value and fail the vhost_vdpa_open().
+Add an opaque pointer for DMA mapping.
 
+Suggested-by: Jason Wang <jasowang@redhat.com>
 Signed-off-by: Xie Yongji <xieyongji@bytedance.com>
+Acked-by: Jason Wang <jasowang@redhat.com>
 ---
- drivers/vhost/vdpa.c | 9 ++++++---
- 1 file changed, 6 insertions(+), 3 deletions(-)
+ drivers/vdpa/vdpa_sim/vdpa_sim.c | 6 +++---
+ drivers/vhost/vdpa.c             | 2 +-
+ include/linux/vdpa.h             | 2 +-
+ 3 files changed, 5 insertions(+), 5 deletions(-)
 
+diff --git a/drivers/vdpa/vdpa_sim/vdpa_sim.c b/drivers/vdpa/vdpa_sim/vdpa_sim.c
+index e30d89b399d9..827d613c4eb6 100644
+--- a/drivers/vdpa/vdpa_sim/vdpa_sim.c
++++ b/drivers/vdpa/vdpa_sim/vdpa_sim.c
+@@ -544,14 +544,14 @@ static int vdpasim_set_map(struct vdpa_device *vdpa,
+ }
+ 
+ static int vdpasim_dma_map(struct vdpa_device *vdpa, u64 iova, u64 size,
+-			   u64 pa, u32 perm)
++			   u64 pa, u32 perm, void *opaque)
+ {
+ 	struct vdpasim *vdpasim = vdpa_to_sim(vdpa);
+ 	int ret;
+ 
+ 	spin_lock(&vdpasim->iommu_lock);
+-	ret = vhost_iotlb_add_range(vdpasim->iommu, iova, iova + size - 1, pa,
+-				    perm);
++	ret = vhost_iotlb_add_range_ctx(vdpasim->iommu, iova, iova + size - 1,
++					pa, perm, opaque);
+ 	spin_unlock(&vdpasim->iommu_lock);
+ 
+ 	return ret;
 diff --git a/drivers/vhost/vdpa.c b/drivers/vhost/vdpa.c
-index b1c91b4db0ba..d99d75ad30cc 100644
+index d99d75ad30cc..87ab104792fb 100644
 --- a/drivers/vhost/vdpa.c
 +++ b/drivers/vhost/vdpa.c
-@@ -116,12 +116,13 @@ static void vhost_vdpa_unsetup_vq_irq(struct vhost_vdpa *v, u16 qid)
- 	irq_bypass_unregister_producer(&vq->call_ctx.producer);
- }
+@@ -574,7 +574,7 @@ static int vhost_vdpa_map(struct vhost_vdpa *v,
+ 		return r;
  
--static void vhost_vdpa_reset(struct vhost_vdpa *v)
-+static int vhost_vdpa_reset(struct vhost_vdpa *v)
- {
- 	struct vdpa_device *vdpa = v->vdpa;
+ 	if (ops->dma_map) {
+-		r = ops->dma_map(vdpa, iova, size, pa, perm);
++		r = ops->dma_map(vdpa, iova, size, pa, perm, NULL);
+ 	} else if (ops->set_map) {
+ 		if (!v->in_batch)
+ 			r = ops->set_map(vdpa, dev->iotlb);
+diff --git a/include/linux/vdpa.h b/include/linux/vdpa.h
+index af7ea5ad795f..18f81612217e 100644
+--- a/include/linux/vdpa.h
++++ b/include/linux/vdpa.h
+@@ -271,7 +271,7 @@ struct vdpa_config_ops {
+ 	/* DMA ops */
+ 	int (*set_map)(struct vdpa_device *vdev, struct vhost_iotlb *iotlb);
+ 	int (*dma_map)(struct vdpa_device *vdev, u64 iova, u64 size,
+-		       u64 pa, u32 perm);
++		       u64 pa, u32 perm, void *opaque);
+ 	int (*dma_unmap)(struct vdpa_device *vdev, u64 iova, u64 size);
  
--	vdpa_reset(vdpa);
- 	v->in_batch = 0;
-+
-+	return vdpa_reset(vdpa);
- }
- 
- static long vhost_vdpa_get_device_id(struct vhost_vdpa *v, u8 __user *argp)
-@@ -868,7 +869,9 @@ static int vhost_vdpa_open(struct inode *inode, struct file *filep)
- 		return -EBUSY;
- 
- 	nvqs = v->nvqs;
--	vhost_vdpa_reset(v);
-+	r = vhost_vdpa_reset(v);
-+	if (r)
-+		goto err;
- 
- 	vqs = kmalloc_array(nvqs, sizeof(*vqs), GFP_KERNEL);
- 	if (!vqs) {
+ 	/* Free device resources */
 -- 
 2.11.0
 
