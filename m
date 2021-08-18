@@ -5,53 +5,53 @@ X-Spam-Level:
 X-Spam-Status: No, score=-16.8 required=3.0 tests=BAYES_00,
 	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_CR_TRAILER,INCLUDES_PATCH,
 	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_GIT
-	autolearn=ham autolearn_force=no version=3.4.0
+	autolearn=unavailable autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C85FBC4338F
-	for <iommu@archiver.kernel.org>; Wed, 18 Aug 2021 08:06:01 +0000 (UTC)
-Received: from smtp2.osuosl.org (smtp2.osuosl.org [140.211.166.133])
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 342ECC432BE
+	for <iommu@archiver.kernel.org>; Wed, 18 Aug 2021 08:06:03 +0000 (UTC)
+Received: from smtp4.osuosl.org (smtp4.osuosl.org [140.211.166.137])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 7A13160F39
-	for <iommu@archiver.kernel.org>; Wed, 18 Aug 2021 08:06:01 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.4.1 mail.kernel.org 7A13160F39
+	by mail.kernel.org (Postfix) with ESMTPS id E407560F39
+	for <iommu@archiver.kernel.org>; Wed, 18 Aug 2021 08:06:02 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.4.1 mail.kernel.org E407560F39
 Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=huawei.com
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by smtp2.osuosl.org (Postfix) with ESMTP id 39F8140265;
-	Wed, 18 Aug 2021 08:06:01 +0000 (UTC)
+	by smtp4.osuosl.org (Postfix) with ESMTP id C31D240378;
+	Wed, 18 Aug 2021 08:06:02 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from smtp2.osuosl.org ([127.0.0.1])
-	by localhost (smtp2.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id UFiRwn1AD2su; Wed, 18 Aug 2021 08:05:57 +0000 (UTC)
+Received: from smtp4.osuosl.org ([127.0.0.1])
+	by localhost (smtp4.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+	with ESMTP id M3d3OYrI1nqf; Wed, 18 Aug 2021 08:05:58 +0000 (UTC)
 Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [IPv6:2605:bc80:3010:104::8cd3:938])
-	by smtp2.osuosl.org (Postfix) with ESMTPS id DC02740475;
-	Wed, 18 Aug 2021 08:05:56 +0000 (UTC)
+	by smtp4.osuosl.org (Postfix) with ESMTPS id 5EFF540397;
+	Wed, 18 Aug 2021 08:05:57 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id B811FC001A;
+	by lists.linuxfoundation.org (Postfix) with ESMTP id E1695C0023;
 	Wed, 18 Aug 2021 08:05:56 +0000 (UTC)
-Received: from smtp1.osuosl.org (smtp1.osuosl.org [140.211.166.138])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 8F62FC000E
+Received: from smtp3.osuosl.org (smtp3.osuosl.org [IPv6:2605:bc80:3010::136])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id D463CC000E
  for <iommu@lists.linux-foundation.org>; Wed, 18 Aug 2021 08:05:53 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by smtp1.osuosl.org (Postfix) with ESMTP id 7E7E380D91
+ by smtp3.osuosl.org (Postfix) with ESMTP id C338B60674
  for <iommu@lists.linux-foundation.org>; Wed, 18 Aug 2021 08:05:53 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from smtp1.osuosl.org ([127.0.0.1])
- by localhost (smtp1.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id bGUGjbplM_7z for <iommu@lists.linux-foundation.org>;
- Wed, 18 Aug 2021 08:05:52 +0000 (UTC)
+Received: from smtp3.osuosl.org ([127.0.0.1])
+ by localhost (smtp3.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+ with ESMTP id 6FkbvFq0hVFe for <iommu@lists.linux-foundation.org>;
+ Wed, 18 Aug 2021 08:05:51 +0000 (UTC)
 X-Greylist: domain auto-whitelisted by SQLgrey-1.8.0
-Received: from szxga08-in.huawei.com (szxga08-in.huawei.com [45.249.212.255])
- by smtp1.osuosl.org (Postfix) with ESMTPS id C30D480D60
+Received: from szxga02-in.huawei.com (szxga02-in.huawei.com [45.249.212.188])
+ by smtp3.osuosl.org (Postfix) with ESMTPS id C2E90605E9
  for <iommu@lists.linux-foundation.org>; Wed, 18 Aug 2021 08:05:51 +0000 (UTC)
-Received: from dggemv703-chm.china.huawei.com (unknown [172.30.72.57])
- by szxga08-in.huawei.com (SkyGuard) with ESMTP id 4GqL6s18Sbz1CXBn;
- Wed, 18 Aug 2021 16:05:25 +0800 (CST)
+Received: from dggemv704-chm.china.huawei.com (unknown [172.30.72.55])
+ by szxga02-in.huawei.com (SkyGuard) with ESMTP id 4GqL2d4sM0z8sZm;
+ Wed, 18 Aug 2021 16:01:45 +0800 (CST)
 Received: from dggpemm500006.china.huawei.com (7.185.36.236) by
- dggemv703-chm.china.huawei.com (10.3.19.46) with Microsoft SMTP Server
+ dggemv704-chm.china.huawei.com (10.3.19.47) with Microsoft SMTP Server
  (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2176.2; Wed, 18 Aug 2021 16:05:49 +0800
+ 15.1.2176.2; Wed, 18 Aug 2021 16:05:48 +0800
 Received: from thunder-town.china.huawei.com (10.174.178.242) by
  dggpemm500006.china.huawei.com (7.185.36.236) with Microsoft SMTP Server
  (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
@@ -61,10 +61,10 @@ To: Will Deacon <will@kernel.org>, Robin Murphy <robin.murphy@arm.com>, "Joerg
  Roedel" <joro@8bytes.org>, linux-arm-kernel
  <linux-arm-kernel@lists.infradead.org>, iommu
  <iommu@lists.linux-foundation.org>, <linux-kernel@vger.kernel.org>
-Subject: [PATCH v2 2/2] iommu/arm-smmu-v3: Simplify useless instructions in
+Subject: [PATCH v2 1/2] iommu/arm-smmu-v3: Properly handle the return value of
  arm_smmu_cmdq_build_cmd()
-Date: Wed, 18 Aug 2021 16:04:52 +0800
-Message-ID: <20210818080452.2079-3-thunder.leizhen@huawei.com>
+Date: Wed, 18 Aug 2021 16:04:51 +0800
+Message-ID: <20210818080452.2079-2-thunder.leizhen@huawei.com>
 X-Mailer: git-send-email 2.26.0.windows.1
 In-Reply-To: <20210818080452.2079-1-thunder.leizhen@huawei.com>
 References: <20210818080452.2079-1-thunder.leizhen@huawei.com>
@@ -90,60 +90,61 @@ Content-Transfer-Encoding: 7bit
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-Although the parameter 'cmd' is always passed by a local array variable,
-and only this function modifies it, the compiler does not know this. The
-compiler almost always reads the value of cmd[i] from memory rather than
-directly using the value cached in the register. This generates many
-useless instruction operations and affects the performance to some extent.
-
-To guide the compiler for proper optimization, 'cmd' is defined as a local
-array variable, marked as register, and copied to the output parameter at
-a time when the function is returned.
-
-The optimization effect can be viewed by running the "size arm-smmu-v3.o"
-command.
-
-Before:
-   text    data     bss     dec     hex
-  26954    1348      56   28358    6ec6
-
-After:
-   text    data     bss     dec     hex
-  26762    1348      56   28166    6e06
+1. Build command CMD_SYNC cannot fail. So the return value can be ignored.
+2. The arm_smmu_cmdq_build_cmd() almost never fails, the addition of
+   "unlikely()" can optimize the instruction pipeline.
+3. Check the return value in arm_smmu_cmdq_batch_add().
 
 Signed-off-by: Zhen Lei <thunder.leizhen@huawei.com>
 ---
- drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c | 11 ++++++++---
- 1 file changed, 8 insertions(+), 3 deletions(-)
+ drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c | 18 ++++++++++++------
+ 1 file changed, 12 insertions(+), 6 deletions(-)
 
 diff --git a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
-index 01e95b56ffa07d1..7cec0c967f71d86 100644
+index 3646bf8f021cd4c..01e95b56ffa07d1 100644
 --- a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
 +++ b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
-@@ -234,10 +234,12 @@ static int queue_remove_raw(struct arm_smmu_queue *q, u64 *ent)
+@@ -409,10 +409,7 @@ static void __arm_smmu_cmdq_skip_err(struct arm_smmu_device *smmu,
+ 		dev_err(smmu->dev, "\t0x%016llx\n", (unsigned long long)cmd[i]);
+ 
+ 	/* Convert the erroneous command into a CMD_SYNC */
+-	if (arm_smmu_cmdq_build_cmd(cmd, &cmd_sync)) {
+-		dev_err(smmu->dev, "failed to convert to CMD_SYNC\n");
+-		return;
+-	}
++	arm_smmu_cmdq_build_cmd(cmd, &cmd_sync);
+ 
+ 	queue_write(Q_ENT(q, cons), cmd, q->ent_dwords);
  }
- 
- /* High-level queue accessors */
--static int arm_smmu_cmdq_build_cmd(u64 *cmd, struct arm_smmu_cmdq_ent *ent)
-+static int arm_smmu_cmdq_build_cmd(u64 *out_cmd, struct arm_smmu_cmdq_ent *ent)
+@@ -860,7 +857,7 @@ static int __arm_smmu_cmdq_issue_cmd(struct arm_smmu_device *smmu,
  {
--	memset(cmd, 0, 1 << CMDQ_ENT_SZ_SHIFT);
--	cmd[0] |= FIELD_PREP(CMDQ_0_OP, ent->opcode);
-+	register u64 cmd[CMDQ_ENT_DWORDS];
-+
-+	cmd[0] = FIELD_PREP(CMDQ_0_OP, ent->opcode);
-+	cmd[1] = 0;
+ 	u64 cmd[CMDQ_ENT_DWORDS];
  
- 	switch (ent->opcode) {
- 	case CMDQ_OP_TLBI_EL2_ALL:
-@@ -332,6 +334,9 @@ static int arm_smmu_cmdq_build_cmd(u64 *cmd, struct arm_smmu_cmdq_ent *ent)
- 		return -ENOENT;
+-	if (arm_smmu_cmdq_build_cmd(cmd, ent)) {
++	if (unlikely(arm_smmu_cmdq_build_cmd(cmd, ent))) {
+ 		dev_warn(smmu->dev, "ignoring unknown CMDQ opcode 0x%x\n",
+ 			 ent->opcode);
+ 		return -EINVAL;
+@@ -885,11 +882,20 @@ static void arm_smmu_cmdq_batch_add(struct arm_smmu_device *smmu,
+ 				    struct arm_smmu_cmdq_batch *cmds,
+ 				    struct arm_smmu_cmdq_ent *cmd)
+ {
++	int index;
++
+ 	if (cmds->num == CMDQ_BATCH_ENTRIES) {
+ 		arm_smmu_cmdq_issue_cmdlist(smmu, cmds->cmds, cmds->num, false);
+ 		cmds->num = 0;
  	}
- 
-+	out_cmd[0] = cmd[0];
-+	out_cmd[1] = cmd[1];
+-	arm_smmu_cmdq_build_cmd(&cmds->cmds[cmds->num * CMDQ_ENT_DWORDS], cmd);
 +
- 	return 0;
++	index = cmds->num * CMDQ_ENT_DWORDS;
++	if (unlikely(arm_smmu_cmdq_build_cmd(&cmds->cmds[index], cmd))) {
++		dev_warn(smmu->dev, "ignoring unknown CMDQ opcode 0x%x\n",
++			 cmd->opcode);
++		return;
++	}
++
+ 	cmds->num++;
  }
  
 -- 
