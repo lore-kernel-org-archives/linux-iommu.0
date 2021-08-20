@@ -2,89 +2,90 @@ Return-Path: <SRS0=ckUw=NL=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-13.5 required=3.0 tests=BAYES_00,
-	DKIM_ADSP_CUSTOM_MED,DKIM_INVALID,DKIM_SIGNED,FREEMAIL_FORGED_FROMDOMAIN,
-	FREEMAIL_FROM,HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_CR_TRAILER,
-	INCLUDES_PATCH,MAILING_LIST_MULTI,NICE_REPLY_A,SPF_HELO_NONE,SPF_PASS,
-	URIBL_BLOCKED,USER_AGENT_SANE_1 autolearn=unavailable autolearn_force=no
+X-Spam-Status: No, score=-3.5 required=3.0 tests=BAYES_00,DKIM_ADSP_CUSTOM_MED,
+	DKIM_INVALID,DKIM_SIGNED,FREEMAIL_FORGED_FROMDOMAIN,FREEMAIL_FROM,
+	HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,NICE_REPLY_A,SPF_HELO_NONE,
+	SPF_PASS,URIBL_BLOCKED,USER_AGENT_SANE_1 autolearn=no autolearn_force=no
 	version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 22F13C4320A
-	for <iommu@archiver.kernel.org>; Fri, 20 Aug 2021 15:20:45 +0000 (UTC)
-Received: from smtp3.osuosl.org (smtp3.osuosl.org [140.211.166.136])
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 25D46C43214
+	for <iommu@archiver.kernel.org>; Fri, 20 Aug 2021 15:38:19 +0000 (UTC)
+Received: from smtp1.osuosl.org (smtp1.osuosl.org [140.211.166.138])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id C47CF6113B
-	for <iommu@archiver.kernel.org>; Fri, 20 Aug 2021 15:20:44 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.4.1 mail.kernel.org C47CF6113B
+	by mail.kernel.org (Postfix) with ESMTPS id BF53B6103D
+	for <iommu@archiver.kernel.org>; Fri, 20 Aug 2021 15:38:18 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.4.1 mail.kernel.org BF53B6103D
 Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=gmail.com
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by smtp3.osuosl.org (Postfix) with ESMTP id 9218B60712;
-	Fri, 20 Aug 2021 15:20:44 +0000 (UTC)
+	by smtp1.osuosl.org (Postfix) with ESMTP id 7870A8184F;
+	Fri, 20 Aug 2021 15:38:18 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from smtp3.osuosl.org ([127.0.0.1])
-	by localhost (smtp3.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id F0EBZk5pwkAt; Fri, 20 Aug 2021 15:20:40 +0000 (UTC)
+Received: from smtp1.osuosl.org ([127.0.0.1])
+	by localhost (smtp1.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+	with ESMTP id QaLnzmDOZLnh; Fri, 20 Aug 2021 15:38:14 +0000 (UTC)
 Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [IPv6:2605:bc80:3010:104::8cd3:938])
-	by smtp3.osuosl.org (Postfix) with ESMTPS id 627CD605DC;
-	Fri, 20 Aug 2021 15:20:40 +0000 (UTC)
+	by smtp1.osuosl.org (Postfix) with ESMTPS id 403DC81751;
+	Fri, 20 Aug 2021 15:38:14 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 3921AC001A;
-	Fri, 20 Aug 2021 15:20:40 +0000 (UTC)
-Received: from smtp3.osuosl.org (smtp3.osuosl.org [IPv6:2605:bc80:3010::136])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 5AAA8C000E
- for <iommu@lists.linux-foundation.org>; Fri, 20 Aug 2021 15:20:38 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 21C8DC001A;
+	Fri, 20 Aug 2021 15:38:14 +0000 (UTC)
+Received: from smtp2.osuosl.org (smtp2.osuosl.org [140.211.166.133])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 1EDF3C000E
+ for <iommu@lists.linux-foundation.org>; Fri, 20 Aug 2021 15:38:13 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by smtp3.osuosl.org (Postfix) with ESMTP id 48ABD605E8
- for <iommu@lists.linux-foundation.org>; Fri, 20 Aug 2021 15:20:38 +0000 (UTC)
+ by smtp2.osuosl.org (Postfix) with ESMTP id F16C0401EF
+ for <iommu@lists.linux-foundation.org>; Fri, 20 Aug 2021 15:38:12 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from smtp3.osuosl.org ([127.0.0.1])
- by localhost (smtp3.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id AG1HbiZNZt1x for <iommu@lists.linux-foundation.org>;
- Fri, 20 Aug 2021 15:20:37 +0000 (UTC)
+Authentication-Results: smtp2.osuosl.org (amavisd-new);
+ dkim=pass (2048-bit key) header.d=gmail.com
+Received: from smtp2.osuosl.org ([127.0.0.1])
+ by localhost (smtp2.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+ with ESMTP id UQGX_GLNDt3h for <iommu@lists.linux-foundation.org>;
+ Fri, 20 Aug 2021 15:38:12 +0000 (UTC)
 X-Greylist: whitelisted by SQLgrey-1.8.0
-Received: from mail-pf1-x434.google.com (mail-pf1-x434.google.com
- [IPv6:2607:f8b0:4864:20::434])
- by smtp3.osuosl.org (Postfix) with ESMTPS id 540C1605DC
- for <iommu@lists.linux-foundation.org>; Fri, 20 Aug 2021 15:20:37 +0000 (UTC)
-Received: by mail-pf1-x434.google.com with SMTP id g14so8879482pfm.1
- for <iommu@lists.linux-foundation.org>; Fri, 20 Aug 2021 08:20:37 -0700 (PDT)
+Received: from mail-pg1-x52b.google.com (mail-pg1-x52b.google.com
+ [IPv6:2607:f8b0:4864:20::52b])
+ by smtp2.osuosl.org (Postfix) with ESMTPS id 3100940105
+ for <iommu@lists.linux-foundation.org>; Fri, 20 Aug 2021 15:38:12 +0000 (UTC)
+Received: by mail-pg1-x52b.google.com with SMTP id q2so9525477pgt.6
+ for <iommu@lists.linux-foundation.org>; Fri, 20 Aug 2021 08:38:12 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=gmail.com; s=20161025;
- h=subject:to:cc:references:from:message-id:date:user-agent
+ h=subject:from:to:cc:references:message-id:date:user-agent
  :mime-version:in-reply-to:content-language:content-transfer-encoding;
- bh=lOEOP553DOa54mvzQOTvxqghJgRlAqL/9egTYk51TpA=;
- b=mNTS2gd5G3Ks7sZBiQSqKbxnuIVyWXDolh/tFasaTIp9Tx741ulpCEBBJUeNG6CWbn
- bJhOlYcTmBgVknfCmejlU0pKjFYMNkb+mTQ+mEeg9ITv0adYOUR3hmKmVoC7BoPnsD0I
- XWSBpp9HDsxPIU9RwnpnjWs+5qzfOYMAlk5vuGurnNnqnw7ijhJHg8X5IJWWxqYixCt3
- +tg+SVuZQBaKBNS55ZDk0TnfxHeHQGNWLe/31oj8sgUHgNeRZB8TZc9b01CQkJiBbfS1
- 6m4md9Xn57tauA6eGKdWIXay7jb4zj040dBBFUXZl5hvlW19Wrja0c672M7277VVHF2w
- s3ag==
+ bh=dVOZ4z0XPa7OayGE8ECMnwdJyIdPwvP3nXcnH8MPASM=;
+ b=A/zNrhCd3U9O9ero/5NghZBre9EOOjJ3OGobszwgvGoiOz7/5WsjufLewqFNiAvU0v
+ UdflMS96g40+NfLrBAqJeCjCdymuciBQ80Yx/AQ8ITRU/L7SATQ2tHnIIaF5k29JMsjP
+ WAvdDEXHkH/FVzOYK69bzTjmosbJipBqxfsdB/cAPu2yYaYLLNyru8HIfNH/zhlEl+mU
+ b5+PJ4XRQM2BJW9oXzisu/vOdi7dHLX+vQAJHyTA5vk0DQ7OMESbpxAVqABg7O8/+78J
+ 3nht4WbwZ0TDJVCxNgnUkxAG6lFfKLPK4ZeS+qG0noIJNBwIfI2dl2YXRq8khGR4QbyN
+ AtMQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
  d=1e100.net; s=20161025;
- h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+ h=x-gm-message-state:subject:from:to:cc:references:message-id:date
  :user-agent:mime-version:in-reply-to:content-language
  :content-transfer-encoding;
- bh=lOEOP553DOa54mvzQOTvxqghJgRlAqL/9egTYk51TpA=;
- b=k1LQ3xs7wvOb+U57mgJu0LYk81cInmyaLiqZIDBRjP98ijGg92C9AzCp2EXfoNNbXi
- iO9y971uEjSFJSO1XTLxjF2VmBzJ52BEo1dV9InQ8i9O6cYlSwMmOfy2VbEH0RTdnI3J
- vmp8JJCjcS/7FG1pghF/vOPn8EolIBOQdFIBP0VvGE3AiDmvRT7vyMa/BE9jO/qm7cF5
- h0LV9nWD5wji+ll6KF8TOMUnuotjrRwqajnMnE3J4O/ermZejN4hsqYB7cmNrMjG4IQ9
- oV+Qdupm6d3Q/b8HGOouUSSn352ewHfHgeR8P/n2QEQmpsl7peNP/8nsG9P1IwhUBecX
- ETQg==
-X-Gm-Message-State: AOAM531AN8hfSrZGiyxPij/mUtEEFw/rZYOLvTWn8S8rTniv9p84sSbB
- 6tLJevlOLiiHXIsDWgM5J34=
-X-Google-Smtp-Source: ABdhPJzI2VZH5dwiRm0Ac/QtnJrMRH7ImkxlvumANqaLggfhogz2MaNnTDbHOsxuG4eIDNmSXl+big==
-X-Received: by 2002:aa7:9f12:0:b029:3e0:3224:6cd5 with SMTP id
- g18-20020aa79f120000b02903e032246cd5mr20286867pfr.43.1629472836712; 
- Fri, 20 Aug 2021 08:20:36 -0700 (PDT)
-Received: from ?IPv6:2404:f801:0:5:8000::50b? ([2404:f801:9000:18:efec::50b])
+ bh=dVOZ4z0XPa7OayGE8ECMnwdJyIdPwvP3nXcnH8MPASM=;
+ b=oeqSeoA0fbi+ciQjnlga4cyJjjpshPa0Xp44ukWePO6Zt5Gyh3lCNYRRxTuDhveCtx
+ QLnNYdXlDHqTmArrZbbm3D9hh9NO5bRvoCx4ScQspCeXHEyoYfu6Mkrby7oI1bn0Kjtq
+ 1lQeYXLU2qq74zyjVwzN82Y+E3MkfPmAhNltylpt7nWkK9uB3vpvuzxH2J+DXb2TfDhG
+ eSCbCzfH1kYv8+qNZJFBqhbtgY+wPAslARVaU/p2shStv+B3mZm5lLVMfyN45E0bWaao
+ ZpYwl488lzQOW13zbKzD5Ss0N9H5jUqrHuQ5cxdfnKKBQD5Sv7EJzpep4UItdnUB8/A2
+ INYw==
+X-Gm-Message-State: AOAM531tWpJYoTWi1+ZzA9QKEtCcvz5hGumeNHalMIY4db/aRpm/ynIR
+ rNPhqXDxJUVSxIEkKrfufwg=
+X-Google-Smtp-Source: ABdhPJyVl6KA/n8a2L0ZyHmpD0HkIjOfmbblHOo22Ydnq/pt3+qZWO40wgWo8CzM7IJsFIvGGIvzGQ==
+X-Received: by 2002:a63:1962:: with SMTP id 34mr19583687pgz.14.1629473891609; 
+ Fri, 20 Aug 2021 08:38:11 -0700 (PDT)
+Received: from ?IPv6:2404:f801:0:5:8000::50b? ([2404:f801:9000:1a:efea::50b])
  by smtp.gmail.com with ESMTPSA id
- j5sm12049220pjv.56.2021.08.20.08.20.23
+ i26sm7738720pfu.6.2021.08.20.08.37.57
  (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
- Fri, 20 Aug 2021 08:20:36 -0700 (PDT)
+ Fri, 20 Aug 2021 08:38:11 -0700 (PDT)
 Subject: Re: [PATCH V3 13/13] HV/Storvsc: Add Isolation VM support for storvsc
  driver
+From: Tianyu Lan <ltykernel@gmail.com>
 To: Michael Kelley <mikelley@microsoft.com>, KY Srinivasan
  <kys@microsoft.com>, Haiyang Zhang <haiyangz@microsoft.com>,
  Stephen Hemminger <sthemmin@microsoft.com>,
@@ -125,13 +126,13 @@ To: Michael Kelley <mikelley@microsoft.com>, KY Srinivasan
 References: <20210809175620.720923-1-ltykernel@gmail.com>
  <20210809175620.720923-14-ltykernel@gmail.com>
  <MWHPR21MB1593EEF30FFD5C60ED744985D7C09@MWHPR21MB1593.namprd21.prod.outlook.com>
-From: Tianyu Lan <ltykernel@gmail.com>
-Message-ID: <a96626db-4ac9-3ce4-64e9-92568e4f827a@gmail.com>
-Date: Fri, 20 Aug 2021 23:20:21 +0800
+ <a96626db-4ac9-3ce4-64e9-92568e4f827a@gmail.com>
+Message-ID: <9ae704a9-838c-0a54-9c16-f0f10eaaaefe@gmail.com>
+Date: Fri, 20 Aug 2021 23:37:56 +0800
 User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:78.0) Gecko/20100101
  Thunderbird/78.13.0
 MIME-Version: 1.0
-In-Reply-To: <MWHPR21MB1593EEF30FFD5C60ED744985D7C09@MWHPR21MB1593.namprd21.prod.outlook.com>
+In-Reply-To: <a96626db-4ac9-3ce4-64e9-92568e4f827a@gmail.com>
 Content-Language: en-US
 Cc: "linux-arch@vger.kernel.org" <linux-arch@vger.kernel.org>,
  "parri.andrea@gmail.com" <parri.andrea@gmail.com>,
@@ -154,282 +155,33 @@ List-Post: <mailto:iommu@lists.linux-foundation.org>
 List-Help: <mailto:iommu-request@lists.linux-foundation.org?subject=help>
 List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
  <mailto:iommu-request@lists.linux-foundation.org?subject=subscribe>
-Content-Transfer-Encoding: 7bit
-Content-Type: text/plain; charset="us-ascii"; Format="flowed"
+Content-Transfer-Encoding: base64
+Content-Type: text/plain; charset="utf-8"; Format="flowed"
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-
-
-On 8/20/2021 2:17 AM, Michael Kelley wrote:
-> From: Tianyu Lan <ltykernel@gmail.com> Sent: Monday, August 9, 2021 10:56 AM
->>
-> 
-> Subject line tag should be "scsi: storvsc:"
-> 
->> In Isolation VM, all shared memory with host needs to mark visible
->> to host via hvcall. vmbus_establish_gpadl() has already done it for
->> storvsc rx/tx ring buffer. The page buffer used by vmbus_sendpacket_
->> mpb_desc() still need to handle. Use DMA API to map/umap these
-> 
-> s/need to handle/needs to be handled/
-> 
->> memory during sending/receiving packet and Hyper-V DMA ops callback
->> will use swiotlb function to allocate bounce buffer and copy data
->> from/to bounce buffer.
->>
->> Signed-off-by: Tianyu Lan <Tianyu.Lan@microsoft.com>
->> ---
->>   drivers/scsi/storvsc_drv.c | 68 +++++++++++++++++++++++++++++++++++---
->>   1 file changed, 63 insertions(+), 5 deletions(-)
->>
->> diff --git a/drivers/scsi/storvsc_drv.c b/drivers/scsi/storvsc_drv.c
->> index 328bb961c281..78320719bdd8 100644
->> --- a/drivers/scsi/storvsc_drv.c
->> +++ b/drivers/scsi/storvsc_drv.c
->> @@ -21,6 +21,8 @@
->>   #include <linux/device.h>
->>   #include <linux/hyperv.h>
->>   #include <linux/blkdev.h>
->> +#include <linux/io.h>
->> +#include <linux/dma-mapping.h>
->>   #include <scsi/scsi.h>
->>   #include <scsi/scsi_cmnd.h>
->>   #include <scsi/scsi_host.h>
->> @@ -427,6 +429,8 @@ struct storvsc_cmd_request {
->>   	u32 payload_sz;
->>
->>   	struct vstor_packet vstor_packet;
->> +	u32 hvpg_count;
-> 
-> This count is really the number of entries in the dma_range
-> array, right?  If so, perhaps "dma_range_count" would be
-> a better name so that it is more tightly associated.
-
-Yes, will update.
-
-> 
->> +	struct hv_dma_range *dma_range;
->>   };
->>
->>
->> @@ -509,6 +513,14 @@ struct storvsc_scan_work {
->>   	u8 tgt_id;
->>   };
->>
->> +#define storvsc_dma_map(dev, page, offset, size, dir) \
->> +	dma_map_page(dev, page, offset, size, dir)
->> +
->> +#define storvsc_dma_unmap(dev, dma_range, dir)		\
->> +		dma_unmap_page(dev, dma_range.dma,	\
->> +			       dma_range.mapping_size,	\
->> +			       dir ? DMA_FROM_DEVICE : DMA_TO_DEVICE)
->> +
-> 
-> Each of these macros is used only once.  IMHO, they don't
-> add a lot of value.  Just coding dma_map/unmap_page()
-> inline would be fine and eliminate these lines of code.
-
-OK. Will update.
-
-> 
->>   static void storvsc_device_scan(struct work_struct *work)
->>   {
->>   	struct storvsc_scan_work *wrk;
->> @@ -1260,6 +1272,7 @@ static void storvsc_on_channel_callback(void *context)
->>   	struct hv_device *device;
->>   	struct storvsc_device *stor_device;
->>   	struct Scsi_Host *shost;
->> +	int i;
->>
->>   	if (channel->primary_channel != NULL)
->>   		device = channel->primary_channel->device_obj;
->> @@ -1314,6 +1327,15 @@ static void storvsc_on_channel_callback(void *context)
->>   				request = (struct storvsc_cmd_request *)scsi_cmd_priv(scmnd);
->>   			}
->>
->> +			if (request->dma_range) {
->> +				for (i = 0; i < request->hvpg_count; i++)
->> +					storvsc_dma_unmap(&device->device,
->> +						request->dma_range[i],
->> +						request->vstor_packet.vm_srb.data_in == READ_TYPE);
-> 
-> I think you can directly get the DMA direction as request->cmd->sc_data_direction.
-> 
->> +
->> +				kfree(request->dma_range);
->> +			}
->> +
->>   			storvsc_on_receive(stor_device, packet, request);
->>   			continue;
->>   		}
->> @@ -1810,7 +1832,9 @@ static int storvsc_queuecommand(struct Scsi_Host *host, struct scsi_cmnd *scmnd)
->>   		unsigned int hvpgoff, hvpfns_to_add;
->>   		unsigned long offset_in_hvpg = offset_in_hvpage(sgl->offset);
->>   		unsigned int hvpg_count = HVPFN_UP(offset_in_hvpg + length);
->> +		dma_addr_t dma;
->>   		u64 hvpfn;
->> +		u32 size;
->>
->>   		if (hvpg_count > MAX_PAGE_BUFFER_COUNT) {
->>
->> @@ -1824,6 +1848,13 @@ static int storvsc_queuecommand(struct Scsi_Host *host, struct scsi_cmnd *scmnd)
->>   		payload->range.len = length;
->>   		payload->range.offset = offset_in_hvpg;
->>
->> +		cmd_request->dma_range = kcalloc(hvpg_count,
->> +				 sizeof(*cmd_request->dma_range),
->> +				 GFP_ATOMIC);
-> 
-> With this patch, it appears that storvsc_queuecommand() is always
-> doing bounce buffering, even when running in a non-isolated VM.
-
-In the non-isolated VM, SWIOTLB_FORCE mode isn't enabled and so
-the swiotlb bounce buffer will not work.
-
-> The dma_range is always allocated, and the inner loop below does
-> the dma mapping for every I/O page.  The corresponding code in
-> storvsc_on_channel_callback() that does the dma unmap allows for
-> the dma_range to be NULL, but that never happens.
-
-Yes, dma mapping function will return PA directly in non-isolated VM.
-
-> 
->> +		if (!cmd_request->dma_range) {
->> +			ret = -ENOMEM;
-> 
-> The other memory allocation failure in this function returns
-> SCSI_MLQUEUE_DEVICE_BUSY.   It may be debatable as to whether
-> that's the best approach, but that's a topic for a different patch.  I
-> would suggest being consistent and using the same return code
-> here.
-
-OK. I will keep to return SCSI_MLQUEUE_DEVICE_BUSY here.
-
-> 
->> +			goto free_payload;
->> +		}
->>
->>   		for (i = 0; sgl != NULL; sgl = sg_next(sgl)) {
->>   			/*
->> @@ -1847,9 +1878,29 @@ static int storvsc_queuecommand(struct Scsi_Host *host, struct scsi_cmnd *scmnd)
->>   			 * last sgl should be reached at the same time that
->>   			 * the PFN array is filled.
->>   			 */
->> -			while (hvpfns_to_add--)
->> -				payload->range.pfn_array[i++] =	hvpfn++;
->> +			while (hvpfns_to_add--) {
->> +				size = min(HV_HYP_PAGE_SIZE - offset_in_hvpg,
->> +					   (unsigned long)length);
->> +				dma = storvsc_dma_map(&dev->device, pfn_to_page(hvpfn++),
->> +						      offset_in_hvpg, size,
->> +						      scmnd->sc_data_direction);
->> +				if (dma_mapping_error(&dev->device, dma)) {
->> +					ret = -ENOMEM;
-> 
-> The typical error from dma_map_page() will be running out of
-> bounce buffer memory.   This is a transient condition that should be
-> retried at the higher levels.  So make sure to return an error code
-> that indicates the I/O should be resubmitted.
-
-OK. It looks like error code should be SCSI_MLQUEUE_DEVICE_BUSY here.
-
-> 
->> +					goto free_dma_range;
->> +				}
->> +
->> +				if (offset_in_hvpg) {
->> +					payload->range.offset = dma & ~HV_HYP_PAGE_MASK;
->> +					offset_in_hvpg = 0;
->> +				}
-> 
-> I'm not clear on why payload->range.offset needs to be set again.
-> Even after the dma mapping is done, doesn't the offset in the first
-> page have to be the same?  If it wasn't the same, Hyper-V wouldn't
-> be able to process the PFN list correctly.  In fact, couldn't the above
-> code just always set offset_in_hvpg = 0?
-
-The offset will be changed. The swiotlb bounce buffer is allocated with 
-IO_TLB_SIZE(2K) as unit. So the offset here may be changed.
-
-> 
->> +
->> +				cmd_request->dma_range[i].dma = dma;
->> +				cmd_request->dma_range[i].mapping_size = size;
->> +				payload->range.pfn_array[i++] = dma >> HV_HYP_PAGE_SHIFT;
->> +				length -= size;
->> +			}
->>   		}
->> +		cmd_request->hvpg_count = hvpg_count;
-> 
-> This line just saves the size of the dma_range array.  Could
-> it be moved up with the code that allocates the dma_range
-> array?  To me, it would make more sense to have all that
-> code together in one place.
-
-Sure. Will update.
-
-> 
->>   	}
-> 
-> The whole approach here is to do dma remapping on each individual page
-> of the I/O buffer.  But wouldn't it be possible to use dma_map_sg() to map
-> each scatterlist entry as a unit?  Each scatterlist entry describes a range of
-> physically contiguous memory.  After dma_map_sg(), the resulting dma
-> address must also refer to a physically contiguous range in the swiotlb
-> bounce buffer memory.   So at the top of the "for" loop over the scatterlist
-> entries, do dma_map_sg() if we're in an isolated VM.  Then compute the
-> hvpfn value based on the dma address instead of sg_page().  But everything
-> else is the same, and the inner loop for populating the pfn_arry is unmodified.
-> Furthermore, the dma_range array that you've added is not needed, since
-> scatterlist entries already have a dma_address field for saving the mapped
-> address, and dma_unmap_sg() uses that field.
-
-I don't use dma_map_sg() here in order to avoid introducing one more 
-loop(e,g dma_map_sg()). We already have a loop to populate 
-cmd_request->dma_range[] and so do the dma map in the same loop.
-
-> 
-> One thing:  There's a maximum swiotlb mapping size, which I think works
-> out to be 256 Kbytes.  See swiotlb_max_mapping_size().  We need to make
-> sure that we don't get a scatterlist entry bigger than this size.  But I think
-> this already happens because you set the device->dma_mask field in
-> Patch 11 of this series.  __scsi_init_queue checks for this setting and
-> sets max_sectors to limits transfers to the max mapping size.
-
-I will double check.
-
-> 
->>
->>   	cmd_request->payload = payload;
->> @@ -1860,13 +1911,20 @@ static int storvsc_queuecommand(struct Scsi_Host *host, struct scsi_cmnd *scmnd)
->>   	put_cpu();
->>
->>   	if (ret == -EAGAIN) {
->> -		if (payload_sz > sizeof(cmd_request->mpb))
->> -			kfree(payload);
->>   		/* no more space */
->> -		return SCSI_MLQUEUE_DEVICE_BUSY;
->> +		ret = SCSI_MLQUEUE_DEVICE_BUSY;
->> +		goto free_dma_range;
->>   	}
->>
->>   	return 0;
->> +
->> +free_dma_range:
->> +	kfree(cmd_request->dma_range);
->> +
->> +free_payload:
->> +	if (payload_sz > sizeof(cmd_request->mpb))
->> +		kfree(payload);
->> +	return ret;
->>   }
->>
->>   static struct scsi_host_template scsi_driver = {
->> --
->> 2.25.1
-> 
-_______________________________________________
-iommu mailing list
-iommu@lists.linux-foundation.org
-https://lists.linuxfoundation.org/mailman/listinfo/iommu
+T24gOC8yMC8yMDIxIDExOjIwIFBNLCBUaWFueXUgTGFuIHdyb3RlOgo+PiBUaGUgd2hvbGUgYXBw
+cm9hY2ggaGVyZSBpcyB0byBkbyBkbWEgcmVtYXBwaW5nIG9uIGVhY2ggaW5kaXZpZHVhbCBwYWdl
+Cj4+IG9mIHRoZSBJL08gYnVmZmVyLsKgIEJ1dCB3b3VsZG4ndCBpdCBiZSBwb3NzaWJsZSB0byB1
+c2UgZG1hX21hcF9zZygpIHRvIAo+PiBtYXAKPj4gZWFjaCBzY2F0dGVybGlzdCBlbnRyeSBhcyBh
+IHVuaXQ/wqAgRWFjaCBzY2F0dGVybGlzdCBlbnRyeSBkZXNjcmliZXMgYSAKPj4gcmFuZ2Ugb2YK
+Pj4gcGh5c2ljYWxseSBjb250aWd1b3VzIG1lbW9yeS7CoCBBZnRlciBkbWFfbWFwX3NnKCksIHRo
+ZSByZXN1bHRpbmcgZG1hCj4+IGFkZHJlc3MgbXVzdCBhbHNvIHJlZmVyIHRvIGEgcGh5c2ljYWxs
+eSBjb250aWd1b3VzIHJhbmdlIGluIHRoZSBzd2lvdGxiCj4+IGJvdW5jZSBidWZmZXIgbWVtb3J5
+LsKgwqAgU28gYXQgdGhlIHRvcCBvZiB0aGUgImZvciIgbG9vcCBvdmVyIHRoZSAKPj4gc2NhdHRl
+cmxpc3QKPj4gZW50cmllcywgZG8gZG1hX21hcF9zZygpIGlmIHdlJ3JlIGluIGFuIGlzb2xhdGVk
+IFZNLsKgIFRoZW4gY29tcHV0ZSB0aGUKPj4gaHZwZm4gdmFsdWUgYmFzZWQgb24gdGhlIGRtYSBh
+ZGRyZXNzIGluc3RlYWQgb2Ygc2dfcGFnZSgpLsKgIEJ1dCAKPj4gZXZlcnl0aGluZwo+PiBlbHNl
+IGlzIHRoZSBzYW1lLCBhbmQgdGhlIGlubmVyIGxvb3AgZm9yIHBvcHVsYXRpbmcgdGhlIHBmbl9h
+cnJ5IGlzIAo+PiB1bm1vZGlmaWVkLgo+PiBGdXJ0aGVybW9yZSwgdGhlIGRtYV9yYW5nZSBhcnJh
+eSB0aGF0IHlvdSd2ZSBhZGRlZCBpcyBub3QgbmVlZGVkLCBzaW5jZQo+PiBzY2F0dGVybGlzdCBl
+bnRyaWVzIGFscmVhZHkgaGF2ZSBhIGRtYV9hZGRyZXNzIGZpZWxkIGZvciBzYXZpbmcgdGhlIAo+
+PiBtYXBwZWQKPj4gYWRkcmVzcywgYW5kIGRtYV91bm1hcF9zZygpIHVzZXMgdGhhdCBmaWVsZC4K
+PiAKPiBJIGRvbid0IHVzZSBkbWFfbWFwX3NnKCkgaGVyZSBpbiBvcmRlciB0byBhdm9pZCBpbnRy
+b2R1Y2luZyBvbmUgbW9yZSAKPiBsb29wKGUsZyBkbWFfbWFwX3NnKCkpLiBXZSBhbHJlYWR5IGhh
+dmUgYSBsb29wIHRvIHBvcHVsYXRlIAo+IGNtZF9yZXF1ZXN0LT5kbWFfcmFuZ2VbXSBhbmQgc28g
+ZG8gdGhlIGRtYSBtYXAgaW4gdGhlIHNhbWUgbG9vcC4KClNvcnJ5IGZvciBhIHR5cG8uIHMvY21k
+X3JlcXVlc3QtPmRtYV9yYW5nZVtdL3BheWxvYWQtPnJhbmdlLnBmbl9hcnJheVtdLwpfX19fX19f
+X19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fXwppb21tdSBtYWlsaW5nIGxp
+c3QKaW9tbXVAbGlzdHMubGludXgtZm91bmRhdGlvbi5vcmcKaHR0cHM6Ly9saXN0cy5saW51eGZv
+dW5kYXRpb24ub3JnL21haWxtYW4vbGlzdGluZm8vaW9tbXU=
