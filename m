@@ -2,97 +2,78 @@ Return-Path: <SRS0=4dF3=NP=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-13.5 required=3.0 tests=BAYES_00,DKIM_INVALID,
-	DKIM_SIGNED,HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_CR_TRAILER,INCLUDES_PATCH,
-	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED autolearn=ham
-	autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-5.2 required=3.0 tests=BAYES_00,
+	HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,
+	URIBL_BLOCKED,USER_AGENT_SANE_1 autolearn=no autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D0976C4338F
-	for <iommu@archiver.kernel.org>; Tue, 24 Aug 2021 07:35:44 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 265D7C43214
+	for <iommu@archiver.kernel.org>; Tue, 24 Aug 2021 08:45:44 +0000 (UTC)
 Received: from smtp2.osuosl.org (smtp2.osuosl.org [140.211.166.133])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 75ADD6120A
-	for <iommu@archiver.kernel.org>; Tue, 24 Aug 2021 07:35:44 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.4.1 mail.kernel.org 75ADD6120A
-Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=chromium.org
+	by mail.kernel.org (Postfix) with ESMTPS id C7B8961265
+	for <iommu@archiver.kernel.org>; Tue, 24 Aug 2021 08:45:43 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.4.1 mail.kernel.org C7B8961265
+Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=lst.de
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by smtp2.osuosl.org (Postfix) with ESMTP id 3E8CA400E7;
-	Tue, 24 Aug 2021 07:35:44 +0000 (UTC)
+	by smtp2.osuosl.org (Postfix) with ESMTP id 695F54017C;
+	Tue, 24 Aug 2021 08:45:43 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
 Received: from smtp2.osuosl.org ([127.0.0.1])
 	by localhost (smtp2.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id ibKKrmxP70df; Tue, 24 Aug 2021 07:35:39 +0000 (UTC)
-Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [IPv6:2605:bc80:3010:104::8cd3:938])
-	by smtp2.osuosl.org (Postfix) with ESMTPS id A8472400BA;
-	Tue, 24 Aug 2021 07:35:38 +0000 (UTC)
+	with ESMTP id dyrsi_FbUXKQ; Tue, 24 Aug 2021 08:45:39 +0000 (UTC)
+Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
+	by smtp2.osuosl.org (Postfix) with ESMTPS id 0E965400A8;
+	Tue, 24 Aug 2021 08:45:39 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 73CCEC0010;
-	Tue, 24 Aug 2021 07:35:38 +0000 (UTC)
-Received: from smtp4.osuosl.org (smtp4.osuosl.org [IPv6:2605:bc80:3010::137])
- by lists.linuxfoundation.org (Postfix) with ESMTP id DF4FCC000E
- for <iommu@lists.linux-foundation.org>; Tue, 24 Aug 2021 07:35:36 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id BD525C001A;
+	Tue, 24 Aug 2021 08:45:38 +0000 (UTC)
+Received: from smtp2.osuosl.org (smtp2.osuosl.org [IPv6:2605:bc80:3010::133])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id CDE34C000E
+ for <iommu@lists.linux-foundation.org>; Tue, 24 Aug 2021 08:45:37 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by smtp4.osuosl.org (Postfix) with ESMTP id C78A040494
- for <iommu@lists.linux-foundation.org>; Tue, 24 Aug 2021 07:35:36 +0000 (UTC)
+ by smtp2.osuosl.org (Postfix) with ESMTP id A502D400BA
+ for <iommu@lists.linux-foundation.org>; Tue, 24 Aug 2021 08:45:37 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Authentication-Results: smtp4.osuosl.org (amavisd-new);
- dkim=pass (1024-bit key) header.d=chromium.org
-Received: from smtp4.osuosl.org ([127.0.0.1])
- by localhost (smtp4.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id T2RPBm3QFMWa for <iommu@lists.linux-foundation.org>;
- Tue, 24 Aug 2021 07:35:32 +0000 (UTC)
-X-Greylist: whitelisted by SQLgrey-1.8.0
-Received: from mail-io1-xd35.google.com (mail-io1-xd35.google.com
- [IPv6:2607:f8b0:4864:20::d35])
- by smtp4.osuosl.org (Postfix) with ESMTPS id 022404047E
- for <iommu@lists.linux-foundation.org>; Tue, 24 Aug 2021 07:35:31 +0000 (UTC)
-Received: by mail-io1-xd35.google.com with SMTP id b7so25163629iob.4
- for <iommu@lists.linux-foundation.org>; Tue, 24 Aug 2021 00:35:31 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=chromium.org; s=google;
- h=mime-version:references:in-reply-to:from:date:message-id:subject:to
- :cc; bh=kdn/xtZAvZYiwKwxxhtoDSWZxutSGdv9Zf0EjwepvWk=;
- b=dFmqKGM4M8xwkez/7hO/m5icTM2376t5o0aNOCOsIxs5i4hiT5sr79kQdXWQq4TEDQ
- J/MeqGYzCjKUF5OToXwp6ZB4LNLWm37WAs1DA2MsvaACyMGlWLQz+RR81Uv9YdjMjoG2
- JqhbsZ+4S6XyrncPUOCD08O7+s+aOQbEB5RHU=
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
- d=1e100.net; s=20161025;
- h=x-gm-message-state:mime-version:references:in-reply-to:from:date
- :message-id:subject:to:cc;
- bh=kdn/xtZAvZYiwKwxxhtoDSWZxutSGdv9Zf0EjwepvWk=;
- b=j6WnEdCIxbzNdWatHOVbWBHtnKaaFoclct0IS6zrDDe//80ORwdkkmxQ44sN1Sbxls
- knNd0KzaEytUqXjRjDQhigrPb+wuPjozcgRMhj+yjgBqSxyjt7klHLBbDqJGdvUYHMFj
- lD5qQOt7GKbVLz7MH4zu4HFUW3dM+/cJRwsyR2DQmgwP8HAIYgC5yjfSjRaXFwpnkaCc
- Xon4Fp/vmlvNz2wCszH152CVqQifD7Xv2YlWxxF93cmydoJgIQl4HfVcUGhEJyWslihp
- FV5ccsbR7wv6THSODX/E4Ocg2iMBxs41isXUo+slmqFLdScsk8uw7NRnjjgx3Oh4MMX6
- vXPw==
-X-Gm-Message-State: AOAM532M/cXykXWy6VMibDqImZ6DugSvqoAHohy9BOL9Re2XAJbsy27k
- E/wC9oLy+7Gz62UD9CeQrgHnZGFR3mqVWF7ir2nocQ==
-X-Google-Smtp-Source: ABdhPJzCaKQQqFiKu2GYGl51DjDrCHWW0khxqU+TJuIKD2Qiaa6IC9r0Xva1qe+ermS6tmqpaGovvcP+MP7vZ5pGN64=
-X-Received: by 2002:a6b:6319:: with SMTP id p25mr30729776iog.100.1629790531099; 
- Tue, 24 Aug 2021 00:35:31 -0700 (PDT)
+Received: from smtp2.osuosl.org ([127.0.0.1])
+ by localhost (smtp2.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+ with ESMTP id evt0bJTGKokZ for <iommu@lists.linux-foundation.org>;
+ Tue, 24 Aug 2021 08:45:36 +0000 (UTC)
+X-Greylist: from auto-whitelisted by SQLgrey-1.8.0
+Received: from verein.lst.de (verein.lst.de [213.95.11.211])
+ by smtp2.osuosl.org (Postfix) with ESMTPS id 054C1400A8
+ for <iommu@lists.linux-foundation.org>; Tue, 24 Aug 2021 08:45:35 +0000 (UTC)
+Received: by verein.lst.de (Postfix, from userid 2407)
+ id 45F8F67373; Tue, 24 Aug 2021 10:45:28 +0200 (CEST)
+Date: Tue, 24 Aug 2021 10:45:27 +0200
+From: Christoph Hellwig <hch@lst.de>
+To: Tianyu Lan <ltykernel@gmail.com>
+Subject: Re: [PATCH V3 05/13] HV: Add Write/Read MSR registers via ghcb page
+Message-ID: <20210824084527.GA29844@lst.de>
+References: <20210809175620.720923-1-ltykernel@gmail.com>
+ <20210809175620.720923-6-ltykernel@gmail.com>
 MIME-Version: 1.0
-References: <20210813065324.29220-1-yong.wu@mediatek.com>
- <20210813065324.29220-17-yong.wu@mediatek.com>
-In-Reply-To: <20210813065324.29220-17-yong.wu@mediatek.com>
-From: Hsin-Yi Wang <hsinyi@chromium.org>
-Date: Tue, 24 Aug 2021 15:35:05 +0800
-Message-ID: <CAJMQK-ir-wLy4OHkWEWZf=CZcURMhRvHnOjBLWXaezhukJh2JA@mail.gmail.com>
-Subject: Re: [PATCH v2 16/29] iommu/mediatek: Adjust device link when it is
- sub-common
-To: Yong Wu <yong.wu@mediatek.com>
-Cc: youlin.pei@mediatek.com, Devicetree List <devicetree@vger.kernel.org>,
- Nicolas Boichat <drinkcat@chromium.org>, srv_heupstream@mediatek.com,
- Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>,
- Will Deacon <will@kernel.org>, lkml <linux-kernel@vger.kernel.org>,
- Evan Green <evgreen@chromium.org>, Tomasz Figa <tfiga@google.com>,
- iommu@lists.linux-foundation.org, Rob Herring <robh+dt@kernel.org>,
- "moderated list:ARM/Mediatek SoC support" <linux-mediatek@lists.infradead.org>,
- chao.hao@mediatek.com, Matthias Brugger <matthias.bgg@gmail.com>,
- anan.sun@mediatek.com, Robin Murphy <robin.murphy@arm.com>,
- "moderated list:ARM/FREESCALE IMX / MXC ARM ARCHITECTURE"
- <linux-arm-kernel@lists.infradead.org>
+Content-Disposition: inline
+In-Reply-To: <20210809175620.720923-6-ltykernel@gmail.com>
+User-Agent: Mutt/1.5.17 (2007-11-01)
+Cc: parri.andrea@gmail.com, linux-hyperv@vger.kernel.org, brijesh.singh@amd.com,
+ peterz@infradead.org, dave.hansen@linux.intel.com, vkuznets@redhat.com,
+ hpa@zytor.com, kys@microsoft.com, will@kernel.org, boris.ostrovsky@oracle.com,
+ linux-arch@vger.kernel.org, sfr@canb.auug.org.au, wei.liu@kernel.org,
+ sstabellini@kernel.org, sthemmin@microsoft.com, xen-devel@lists.xenproject.org,
+ linux-scsi@vger.kernel.org, aneesh.kumar@linux.ibm.com, x86@kernel.org,
+ decui@microsoft.com, hch@lst.de, michael.h.kelley@microsoft.com,
+ mingo@redhat.com, pgonda@google.com, rientjes@google.com, kuba@kernel.org,
+ jejb@linux.ibm.com, martin.b.radev@gmail.com, thomas.lendacky@amd.com,
+ Tianyu.Lan@microsoft.com, arnd@arndb.de, konrad.wilk@oracle.com,
+ haiyangz@microsoft.com, bp@alien8.de, luto@kernel.org,
+ krish.sadhukhan@oracle.com, tglx@linutronix.de, akpm@linux-foundation.org,
+ jgross@suse.com, martin.petersen@oracle.com, saravanand@fb.com,
+ netdev@vger.kernel.org, dave.hansen@intel.com, linux-kernel@vger.kernel.org,
+ iommu@lists.linux-foundation.org, rppt@kernel.org, hannes@cmpxchg.org,
+ tj@kernel.org, ardb@kernel.org, robin.murphy@arm.com, davem@davemloft.net,
+ kirill.shutemov@linux.intel.com
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -110,51 +91,8 @@ Content-Transfer-Encoding: 7bit
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-On Fri, Aug 13, 2021 at 3:03 PM Yong Wu <yong.wu@mediatek.com> wrote:
->
-> For MM IOMMU, We always add device link between smi-common and IOMMU HW.
-> In mt8195, we add smi-sub-common. Thus, if the node is sub-common, we still
-> need find again to get smi-common, then do device link.
->
-> Signed-off-by: Yong Wu <yong.wu@mediatek.com>
-> ---
->  drivers/iommu/mtk_iommu.c | 11 +++++++++++
->  1 file changed, 11 insertions(+)
->
-> diff --git a/drivers/iommu/mtk_iommu.c b/drivers/iommu/mtk_iommu.c
-> index a4479916ad33..a72241724adb 100644
-> --- a/drivers/iommu/mtk_iommu.c
-> +++ b/drivers/iommu/mtk_iommu.c
-> @@ -845,6 +845,17 @@ static int mtk_iommu_mm_dts_parse(struct device *dev,
->         if (!smicomm_node)
->                 return -EINVAL;
->
-> +       /* Find smi-common again if this is smi-sub-common */
-> +       if (of_property_read_bool(smicomm_node, "mediatek,smi_sub_common")) {
-> +               of_node_put(smicomm_node); /* put the sub common */
-> +
-> +               smicomm_node = of_parse_phandle(smicomm_node, "mediatek,smi", 0);
-
-This only checks 1 level here, and does not check if the mediatek,smi
-of a sub-common node is not another sub-common node.
-So maybe add a check that the updated node here doesn't have
-mediatek,smi_sub_common property.
-
-> +               if (!smicomm_node) {
-> +                       dev_err(dev, "sub-comm has no common.\n");
-> +                       return -EINVAL;
-> +               }
-> +       }
-> +
->         plarbdev = of_find_device_by_node(smicomm_node);
->         of_node_put(smicomm_node);
->         data->smicomm_dev = &plarbdev->dev;
-> --
-> 2.18.0
-> _______________________________________________
-> Linux-mediatek mailing list
-> Linux-mediatek@lists.infradead.org
-> http://lists.infradead.org/mailman/listinfo/linux-mediatek
+This patch fails to compile when CONFIG_AMD_MEM_ENCRYPT is not enabled,
+in which case there is sev_es_ghcb_hv_call_simple is not defined.
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
