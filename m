@@ -4,99 +4,99 @@ X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 X-Spam-Level: 
 X-Spam-Status: No, score=-13.5 required=3.0 tests=BAYES_00,DKIM_INVALID,
 	DKIM_SIGNED,HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_CR_TRAILER,INCLUDES_PATCH,
-	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED autolearn=unavailable
+	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED autolearn=ham
 	autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id EC354C4338F
-	for <iommu@archiver.kernel.org>; Tue, 24 Aug 2021 11:10:14 +0000 (UTC)
-Received: from smtp4.osuosl.org (smtp4.osuosl.org [140.211.166.137])
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 946C0C4338F
+	for <iommu@archiver.kernel.org>; Tue, 24 Aug 2021 11:12:26 +0000 (UTC)
+Received: from smtp1.osuosl.org (smtp1.osuosl.org [140.211.166.138])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 8E636613AB
-	for <iommu@archiver.kernel.org>; Tue, 24 Aug 2021 11:10:14 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.4.1 mail.kernel.org 8E636613AB
+	by mail.kernel.org (Postfix) with ESMTPS id 501C061245
+	for <iommu@archiver.kernel.org>; Tue, 24 Aug 2021 11:12:26 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.4.1 mail.kernel.org 501C061245
 Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=redhat.com
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by smtp4.osuosl.org (Postfix) with ESMTP id 56FF340424;
-	Tue, 24 Aug 2021 11:10:14 +0000 (UTC)
+	by smtp1.osuosl.org (Postfix) with ESMTP id 1953E80F20;
+	Tue, 24 Aug 2021 11:12:26 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from smtp4.osuosl.org ([127.0.0.1])
-	by localhost (smtp4.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id I37i1b7_WoV3; Tue, 24 Aug 2021 11:10:10 +0000 (UTC)
+Received: from smtp1.osuosl.org ([127.0.0.1])
+	by localhost (smtp1.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+	with ESMTP id JVlDNxt_FX5y; Tue, 24 Aug 2021 11:12:22 +0000 (UTC)
 Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by smtp4.osuosl.org (Postfix) with ESMTPS id 342B24046B;
-	Tue, 24 Aug 2021 11:10:10 +0000 (UTC)
+	by smtp1.osuosl.org (Postfix) with ESMTPS id 03C0280F2B;
+	Tue, 24 Aug 2021 11:12:21 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 077C6C001A;
-	Tue, 24 Aug 2021 11:10:10 +0000 (UTC)
-Received: from smtp4.osuosl.org (smtp4.osuosl.org [IPv6:2605:bc80:3010::137])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 6EA61C000E
- for <iommu@lists.linux-foundation.org>; Tue, 24 Aug 2021 11:10:09 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id B3157C0010;
+	Tue, 24 Aug 2021 11:12:21 +0000 (UTC)
+Received: from smtp1.osuosl.org (smtp1.osuosl.org [140.211.166.138])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id A898FC000E
+ for <iommu@lists.linux-foundation.org>; Tue, 24 Aug 2021 11:12:20 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by smtp4.osuosl.org (Postfix) with ESMTP id 4F6334046B
- for <iommu@lists.linux-foundation.org>; Tue, 24 Aug 2021 11:10:09 +0000 (UTC)
+ by smtp1.osuosl.org (Postfix) with ESMTP id 93A7480F2B
+ for <iommu@lists.linux-foundation.org>; Tue, 24 Aug 2021 11:12:20 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from smtp4.osuosl.org ([127.0.0.1])
- by localhost (smtp4.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id kb2SLcc7m8zO for <iommu@lists.linux-foundation.org>;
- Tue, 24 Aug 2021 11:10:05 +0000 (UTC)
+Received: from smtp1.osuosl.org ([127.0.0.1])
+ by localhost (smtp1.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+ with ESMTP id mKlLkt7aGE3n for <iommu@lists.linux-foundation.org>;
+ Tue, 24 Aug 2021 11:12:19 +0000 (UTC)
 X-Greylist: domain auto-whitelisted by SQLgrey-1.8.0
 Received: from us-smtp-delivery-124.mimecast.com
  (us-smtp-delivery-124.mimecast.com [170.10.133.124])
- by smtp4.osuosl.org (Postfix) with ESMTPS id E241F40424
- for <iommu@lists.linux-foundation.org>; Tue, 24 Aug 2021 11:10:04 +0000 (UTC)
+ by smtp1.osuosl.org (Postfix) with ESMTPS id 6993680F20
+ for <iommu@lists.linux-foundation.org>; Tue, 24 Aug 2021 11:12:19 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
- s=mimecast20190719; t=1629803403;
+ s=mimecast20190719; t=1629803538;
  h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
  to:to:cc:cc:mime-version:mime-version:content-type:content-type:
  in-reply-to:in-reply-to:references:references;
- bh=6MzIVYD6Rkcf1avefY9xlULEY3kI1KocMJ7+mbhVSUk=;
- b=J9zoicPacGc8JCVXDTJ1GPTrxpOvQpo1Q/257vWmOFjmtp5Agg0IF8Dg9Q/xwcx1Ik7eRK
- BWYjpB6K7Aqy5VmftBmDWsYkhPbASYgWnqYorRktJDMywF5vTY/k8HvGljgnemD44ew/Nv
- OpbAykFaiQPxE3CZdd2bEWOOJrxEAyM=
-Received: from mail-ed1-f70.google.com (mail-ed1-f70.google.com
- [209.85.208.70]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-540-fdDwMek2NRSAdFbcmoeKgw-1; Tue, 24 Aug 2021 07:10:02 -0400
-X-MC-Unique: fdDwMek2NRSAdFbcmoeKgw-1
-Received: by mail-ed1-f70.google.com with SMTP id
- r12-20020aa7d14c000000b003c1aa118ad1so4401915edo.2
- for <iommu@lists.linux-foundation.org>; Tue, 24 Aug 2021 04:10:02 -0700 (PDT)
+ bh=sp6r3OzWSMu57KiEYb4z4Sr1QBf9aXwrMsxdCi+UL3c=;
+ b=fwCFyyX7oRdu8peO+jSa1fiJRSfEjVyv0QWVpyGnXRq8rRBlwpUe141y3/LjRb3xfiiS93
+ 1qmxdpW05ocB8b84gSD4H3G+fvEBAixYo9nVjqbLwZfUw9Ph+T58iI5q7UTaGgLv6y/Jbi
+ jCXf3IcpZhJv6TzxU3zoFqUmRwu3hFk=
+Received: from mail-ej1-f70.google.com (mail-ej1-f70.google.com
+ [209.85.218.70]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-522-ET_TDQVTO5K0bmCt7Ao9iQ-1; Tue, 24 Aug 2021 07:12:15 -0400
+X-MC-Unique: ET_TDQVTO5K0bmCt7Ao9iQ-1
+Received: by mail-ej1-f70.google.com with SMTP id
+ t5-20020a1709061f8500b005c74442cb13so739895ejr.1
+ for <iommu@lists.linux-foundation.org>; Tue, 24 Aug 2021 04:12:14 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
  d=1e100.net; s=20161025;
  h=x-gm-message-state:date:from:to:cc:subject:message-id:references
  :mime-version:content-disposition:in-reply-to;
- bh=6MzIVYD6Rkcf1avefY9xlULEY3kI1KocMJ7+mbhVSUk=;
- b=qz3/6FMTxQkWNUozpyb+fs/7Eq67+Q1t9ZalCt0aII9KltAFC164fm5qml5g6AN7HH
- hEvFQTHuv3U0XhOEtwXsXFdaJ2xOCb62fFZt0ZuRH885u42kYQpC0Aolb1iLssgOWvly
- a3fzIDCi4SawnMSNGLACnji71mY7xQQL0i7MAZwJ6pqYPw+5uNkMf/FnVyYehUnZnmKb
- 5+8HcCXAHvpxjgGkjUCjsljAelZIrcO0Ty0feHR3qZcGHob60k0qpyglMQ7cek/i9TYt
- HxqJzRUOrZcIYsVBip1OLlAkcibqbbhjZFtu9GPiiduT/fXkUz/FZIHcnjH6wvs5Oziq
- u1mw==
-X-Gm-Message-State: AOAM533hf0eh04CgmhUGv1AyKUmnV0+OIErOLBtQAdrj/yu0M7JXczRP
- 0vWncj+2vL13icXexVZqDOGz/rKLJpbW3DNXm83beJ8dgG3esUCnVTDTAm8aFMaavXJlrhbADMP
- 6UgzqrXKaqw98P2eCAX7b2zrfAEFnqA==
-X-Received: by 2002:a17:906:9bdc:: with SMTP id
- de28mr40030321ejc.154.1629803401189; 
- Tue, 24 Aug 2021 04:10:01 -0700 (PDT)
-X-Google-Smtp-Source: ABdhPJym2zZCfOfkB6aYg6hvpM9EYCUNutnmi5ZkMGiE/H3YmE4qf/VSJ5+nHLjDGlfYfIZpl2VYMg==
-X-Received: by 2002:a17:906:9bdc:: with SMTP id
- de28mr40030281ejc.154.1629803400969; 
- Tue, 24 Aug 2021 04:10:00 -0700 (PDT)
+ bh=sp6r3OzWSMu57KiEYb4z4Sr1QBf9aXwrMsxdCi+UL3c=;
+ b=EKZZ7cOVtWsWDd8/SqxOakMbfA14R5xHyc1zJwloxUIK/Ajeh6FoEgf6e2AtOXC2XJ
+ uqT/lBPEIOIqJBOVt1bgiJgvGS500k/+N6hkUrbI7GDN5f8w4DYTCXg4/KWAylTtBrXR
+ m1nXlEb3bRnTBWVIG4FXw/SzqsakhQeHbvloaIxUXhRkRDUpoy+kSlpN0eI0lZX9WYuV
+ nsklSuLmr/9iqLZh2vp5o9LeyWCk9tUg5dliVNqO3hi7LfZD/dg+fEY5S0jx2SCatjiG
+ Z789mXjfRhP6yD07r6cXvR10314hf9f9bz+Xq/PMn+jw6UPaLVB1vZ1HtL/+3MiJ8SPc
+ X0nA==
+X-Gm-Message-State: AOAM533uly6gidkeF9pCiMnq9HxLXY8BWuqL1euZKrOq1l81Lxi+1O9O
+ f0tYa4juzv+9bfU4NFaJklxXc16b3l3L6jxk+nhcrD4jb57wMQhqBrBL3wkWyNcc+4wh4QYOTUr
+ PZ8WUoSrZ0UzD805GlAxKcuez4VT8hQ==
+X-Received: by 2002:a17:906:1701:: with SMTP id
+ c1mr40193381eje.425.1629803534057; 
+ Tue, 24 Aug 2021 04:12:14 -0700 (PDT)
+X-Google-Smtp-Source: ABdhPJyDklZBFBy5QnXrgs3+cqOF2EU5CCgdvdd15GqRk67R8P3Nj6qlQx0g2cCYgrph1uoICqAc7Q==
+X-Received: by 2002:a17:906:1701:: with SMTP id
+ c1mr40193358eje.425.1629803533933; 
+ Tue, 24 Aug 2021 04:12:13 -0700 (PDT)
 Received: from steredhat (host-79-45-8-152.retail.telecomitalia.it.
  [79.45.8.152])
- by smtp.gmail.com with ESMTPSA id u2sm9003772ejc.61.2021.08.24.04.09.58
+ by smtp.gmail.com with ESMTPSA id h21sm331619ejb.101.2021.08.24.04.12.10
  (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
- Tue, 24 Aug 2021 04:10:00 -0700 (PDT)
-Date: Tue, 24 Aug 2021 13:09:56 +0200
+ Tue, 24 Aug 2021 04:12:13 -0700 (PDT)
+Date: Tue, 24 Aug 2021 13:12:07 +0200
 From: Stefano Garzarella <sgarzare@redhat.com>
 To: Xie Yongji <xieyongji@bytedance.com>
-Subject: Re: [PATCH v11 03/12] vdpa: Fix some coding style issues
-Message-ID: <20210824110956.gtajf34s2xpm66gx@steredhat>
+Subject: Re: [PATCH v11 05/12] vhost-vdpa: Handle the failure of vdpa_reset()
+Message-ID: <20210824111207.ppvop52hyq5xyny5@steredhat>
 References: <20210818120642.165-1-xieyongji@bytedance.com>
- <20210818120642.165-4-xieyongji@bytedance.com>
+ <20210818120642.165-6-xieyongji@bytedance.com>
 MIME-Version: 1.0
-In-Reply-To: <20210818120642.165-4-xieyongji@bytedance.com>
+In-Reply-To: <20210818120642.165-6-xieyongji@bytedance.com>
 Authentication-Results: relay.mimecast.com;
  auth=pass smtp.auth=CUSA124A263 smtp.mailfrom=sgarzare@redhat.com
 X-Mimecast-Spam-Score: 0
@@ -129,97 +129,16 @@ Content-Type: text/plain; charset="us-ascii"; Format="flowed"
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-On Wed, Aug 18, 2021 at 08:06:33PM +0800, Xie Yongji wrote:
->Fix some code indent issues and following checkpatch warning:
->
->WARNING: Prefer 'unsigned int' to bare use of 'unsigned'
->371: FILE: include/linux/vdpa.h:371:
->+static inline void vdpa_get_config(struct vdpa_device *vdev, unsigned offset,
+On Wed, Aug 18, 2021 at 08:06:35PM +0800, Xie Yongji wrote:
+>The vdpa_reset() may fail now. This adds check to its return
+>value and fail the vhost_vdpa_open().
 >
 >Signed-off-by: Xie Yongji <xieyongji@bytedance.com>
 >---
-> include/linux/vdpa.h | 34 +++++++++++++++++-----------------
-> 1 file changed, 17 insertions(+), 17 deletions(-)
+> drivers/vhost/vdpa.c | 9 ++++++---
+> 1 file changed, 6 insertions(+), 3 deletions(-)
 
 Reviewed-by: Stefano Garzarella <sgarzare@redhat.com>
-
->
->diff --git a/include/linux/vdpa.h b/include/linux/vdpa.h
->index 954b340f6c2f..8a645f8f4476 100644
->--- a/include/linux/vdpa.h
->+++ b/include/linux/vdpa.h
->@@ -43,17 +43,17 @@ struct vdpa_vq_state_split {
->  * @last_used_idx: used index
->  */
-> struct vdpa_vq_state_packed {
->-        u16	last_avail_counter:1;
->-        u16	last_avail_idx:15;
->-        u16	last_used_counter:1;
->-        u16	last_used_idx:15;
->+	u16	last_avail_counter:1;
->+	u16	last_avail_idx:15;
->+	u16	last_used_counter:1;
->+	u16	last_used_idx:15;
-> };
->
-> struct vdpa_vq_state {
->-     union {
->-          struct vdpa_vq_state_split split;
->-          struct vdpa_vq_state_packed packed;
->-     };
->+	union {
->+		struct vdpa_vq_state_split split;
->+		struct vdpa_vq_state_packed packed;
->+	};
-> };
->
-> struct vdpa_mgmt_dev;
->@@ -131,7 +131,7 @@ struct vdpa_iova_range {
->  *				@vdev: vdpa device
->  *				@idx: virtqueue index
->  *				@state: pointer to returned state (last_avail_idx)
->- * @get_vq_notification: 	Get the notification area for a virtqueue
->+ * @get_vq_notification:	Get the notification area for a virtqueue
->  *				@vdev: vdpa device
->  *				@idx: virtqueue index
->  *				Returns the notifcation area
->@@ -353,25 +353,25 @@ static inline struct device *vdpa_get_dma_dev(struct vdpa_device *vdev)
->
-> static inline void vdpa_reset(struct vdpa_device *vdev)
-> {
->-        const struct vdpa_config_ops *ops = vdev->config;
->+	const struct vdpa_config_ops *ops = vdev->config;
->
-> 	vdev->features_valid = false;
->-        ops->set_status(vdev, 0);
->+	ops->set_status(vdev, 0);
-> }
->
-> static inline int vdpa_set_features(struct vdpa_device *vdev, u64 features)
-> {
->-        const struct vdpa_config_ops *ops = vdev->config;
->+	const struct vdpa_config_ops *ops = vdev->config;
->
-> 	vdev->features_valid = true;
->-        return ops->set_features(vdev, features);
->+	return ops->set_features(vdev, features);
-> }
->
->-
->-static inline void vdpa_get_config(struct vdpa_device *vdev, unsigned offset,
->-				   void *buf, unsigned int len)
->+static inline void vdpa_get_config(struct vdpa_device *vdev,
->+				   unsigned int offset, void *buf,
->+				   unsigned int len)
-> {
->-        const struct vdpa_config_ops *ops = vdev->config;
->+	const struct vdpa_config_ops *ops = vdev->config;
->
-> 	/*
-> 	 * Config accesses aren't supposed to trigger before features are set.
->-- 
->2.11.0
->
 
 _______________________________________________
 iommu mailing list
