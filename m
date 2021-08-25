@@ -2,106 +2,102 @@ Return-Path: <SRS0=FkPa=NQ=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-8.6 required=3.0 tests=BAYES_00,DKIM_INVALID,
-	DKIM_SIGNED,HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_CR_TRAILER,
-	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no
-	version=3.4.0
+X-Spam-Status: No, score=-13.6 required=3.0 tests=BAYES_00,DKIM_INVALID,
+	DKIM_SIGNED,HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_CR_TRAILER,INCLUDES_PATCH,
+	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS autolearn=unavailable
+	autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8F9ABC4338F
-	for <iommu@archiver.kernel.org>; Wed, 25 Aug 2021 05:37:31 +0000 (UTC)
-Received: from smtp3.osuosl.org (smtp3.osuosl.org [140.211.166.136])
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 14053C4338F
+	for <iommu@archiver.kernel.org>; Wed, 25 Aug 2021 07:57:37 +0000 (UTC)
+Received: from smtp4.osuosl.org (smtp4.osuosl.org [140.211.166.137])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 08E6161100
-	for <iommu@archiver.kernel.org>; Wed, 25 Aug 2021 05:37:30 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.4.1 mail.kernel.org 08E6161100
+	by mail.kernel.org (Postfix) with ESMTPS id 8132E6138B
+	for <iommu@archiver.kernel.org>; Wed, 25 Aug 2021 07:57:36 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.4.1 mail.kernel.org 8132E6138B
 Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=bytedance.com
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by smtp3.osuosl.org (Postfix) with ESMTP id C7C8F605F9;
-	Wed, 25 Aug 2021 05:37:30 +0000 (UTC)
+	by smtp4.osuosl.org (Postfix) with ESMTP id 4001C406FD;
+	Wed, 25 Aug 2021 07:57:36 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from smtp3.osuosl.org ([127.0.0.1])
-	by localhost (smtp3.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id obZ0TKtJ29Ez; Wed, 25 Aug 2021 05:37:27 +0000 (UTC)
+Received: from smtp4.osuosl.org ([127.0.0.1])
+	by localhost (smtp4.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+	with ESMTP id mki5qKeT7_XT; Wed, 25 Aug 2021 07:57:32 +0000 (UTC)
 Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [IPv6:2605:bc80:3010:104::8cd3:938])
-	by smtp3.osuosl.org (Postfix) with ESMTPS id 8BB856061F;
-	Wed, 25 Aug 2021 05:37:26 +0000 (UTC)
+	by smtp4.osuosl.org (Postfix) with ESMTPS id EF8B440709;
+	Wed, 25 Aug 2021 07:57:31 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 51FB0C0010;
-	Wed, 25 Aug 2021 05:37:26 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id C44C4C0010;
+	Wed, 25 Aug 2021 07:57:31 +0000 (UTC)
 Received: from smtp2.osuosl.org (smtp2.osuosl.org [IPv6:2605:bc80:3010::133])
- by lists.linuxfoundation.org (Postfix) with ESMTP id C8364C000E
- for <iommu@lists.linux-foundation.org>; Wed, 25 Aug 2021 05:37:24 +0000 (UTC)
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 46B59C000E
+ for <iommu@lists.linux-foundation.org>; Wed, 25 Aug 2021 07:57:31 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by smtp2.osuosl.org (Postfix) with ESMTP id A93C040277
- for <iommu@lists.linux-foundation.org>; Wed, 25 Aug 2021 05:37:24 +0000 (UTC)
+ by smtp2.osuosl.org (Postfix) with ESMTP id 03DE1404FA
+ for <iommu@lists.linux-foundation.org>; Wed, 25 Aug 2021 07:57:31 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
 Authentication-Results: smtp2.osuosl.org (amavisd-new);
  dkim=pass (2048-bit key) header.d=bytedance-com.20150623.gappssmtp.com
 Received: from smtp2.osuosl.org ([127.0.0.1])
  by localhost (smtp2.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id C7xJ2DkDL3Rr for <iommu@lists.linux-foundation.org>;
- Wed, 25 Aug 2021 05:37:23 +0000 (UTC)
+ with ESMTP id Ikp5UAf3CiVu for <iommu@lists.linux-foundation.org>;
+ Wed, 25 Aug 2021 07:57:30 +0000 (UTC)
 X-Greylist: whitelisted by SQLgrey-1.8.0
-Received: from mail-ed1-x529.google.com (mail-ed1-x529.google.com
- [IPv6:2a00:1450:4864:20::529])
- by smtp2.osuosl.org (Postfix) with ESMTPS id 47F57401D8
- for <iommu@lists.linux-foundation.org>; Wed, 25 Aug 2021 05:37:22 +0000 (UTC)
-Received: by mail-ed1-x529.google.com with SMTP id s25so22457618edw.0
- for <iommu@lists.linux-foundation.org>; Tue, 24 Aug 2021 22:37:22 -0700 (PDT)
+Received: from mail-ed1-x52e.google.com (mail-ed1-x52e.google.com
+ [IPv6:2a00:1450:4864:20::52e])
+ by smtp2.osuosl.org (Postfix) with ESMTPS id 42DE0403B2
+ for <iommu@lists.linux-foundation.org>; Wed, 25 Aug 2021 07:57:21 +0000 (UTC)
+Received: by mail-ed1-x52e.google.com with SMTP id b7so35660818edu.3
+ for <iommu@lists.linux-foundation.org>; Wed, 25 Aug 2021 00:57:21 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
  d=bytedance-com.20150623.gappssmtp.com; s=20150623;
  h=mime-version:references:in-reply-to:from:date:message-id:subject:to
- :cc; bh=3yeuD/AKt6duI6f+LLwvmXj5/7qzqoMz+rmo5sVDYrk=;
- b=Vp7EsjbsKk4CbMZuzoUYLzrpydiTBr1zHF+HyG9J/wtoW8bsVHI746U+1hvWAKn7pY
- S2KGD1hdXhYpvRVmdQ6WR1fQxGII47CoeOMGBaYQ/Mi4TolUM5hV7u25ftgsXF0RWGh/
- oyRF1xadCZb6aP6wOK20F7wxGFstAZ7BuyRbsRE+aDrQ7ch+4LllkUaJdROcaj8x+KAj
- ZOy85WB4jyz34slTJHHU6QuKku6j+KC19AfzueBsMNFAdKQmlECIKMC6wJ+DZ7prxUj4
- ddL12p3dIBF+Z7rYjgciVlV8upMbYsRSCOxkj2pFlsJcMFqU9/31/TAQO6ln7+ZPJcon
- AYgw==
+ :cc; bh=A3eDvUGO7s6rgbcqfVCZxuvxMbSRmJ1Jj8MfBoaTMPU=;
+ b=I0obnZsM9J3DhGn8Ys+njqxlL+bvBvgmQCONvmFRG3akvZreIl/ty1+M2K3Frb8Fb2
+ hSsA5AFpaI9srN6CIlMZizcgQO8A3NxT+xtcTgs9d/8FlFmBT0j8teuNajfiQhV4UrlU
+ DI4rUsLWVef+y7quOM7/ssYW5S0FO4s1op+sfCFZlto6iKWSI6BCPaEtzhirnHYYVo06
+ mikpSeFfIaI0sbYIAkO/PbG1HKRbajG9sRnjQyNlbNYpw7ddU/f5Svq12UMTS5SgkREH
+ pYTyBM0g3UtNqg9Y7/2GqaKcShwxlSMVjWTG9unOAYYzvataVgFp+/PCUmIBVtPe6b1G
+ 9T/g==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
  d=1e100.net; s=20161025;
  h=x-gm-message-state:mime-version:references:in-reply-to:from:date
  :message-id:subject:to:cc;
- bh=3yeuD/AKt6duI6f+LLwvmXj5/7qzqoMz+rmo5sVDYrk=;
- b=nX0bXZN8QnmVSgmjTJhSpnCCLIuPKUO++7LBoU+oPj9CJfSYhwmGsxlrslp2Mi2e2x
- F+jpSE1NuJc3WjZUJP62JJQgBiIJMDcTn8J8bpz8skdqktVUbJ1rSEslAo7H0n31A9w2
- Xku+BNBAPMjTPP7VUH7HFOVFqi3B/IUQEARKfZnCxXE7RZoA60iXz73f83kzH4IFVZUb
- w+BApOw+JIQHIaOaDQSi9aDi6HeCk1jYuufiVoBAIvWyy7KP3Tu0WrdkLPSqI/u0FAfJ
- KR91VLBLAMqUCEQbDB4OZTAVOPkYlUn1gvy2IbWg1eW2oCLhaocmQF+PbGWOoXnsRzjU
- jolA==
-X-Gm-Message-State: AOAM533Vh08WlBM6Rf/to74AeMCdqOYOY8uP12BEZ339+cqiglApC2Qm
- Qhn6uLFkqPlMU2FIJKQPs07xMlnTNwU6+qc1IEuJ
-X-Google-Smtp-Source: ABdhPJyZTxYAJpwJ1zytuFP4isC6BozsaW7fwdKwUj6HuqFf6QhFlF2KyJtLZvCBCv/uMpGPvMvKn/tLFmS1aI89w14=
-X-Received: by 2002:a50:fd86:: with SMTP id o6mr6104183edt.312.1629869841320; 
- Tue, 24 Aug 2021 22:37:21 -0700 (PDT)
+ bh=A3eDvUGO7s6rgbcqfVCZxuvxMbSRmJ1Jj8MfBoaTMPU=;
+ b=tAWk1Qw0K28zY9DUBuYXiJiPXgcurqXbHfq2yYAu2GA7PGsOZFO4tpZCy9ZFyn6fuB
+ SPVS8xPjEZYRW1YIxinK6fTTKC/Ki4aECqxNNXH34VgkrBDRg+vSTQreGmDZnpXfJRFu
+ 5PrFAzJCCH7weGCEFcGmus3gLvQH1sQp3ksQpJ+oUU2aw8looCPEeyOl4yAPZYNDpDtd
+ eRIQKPndkX7NdCK5gG3dScknuyDWhZxSe+BY2rng2rbchgzNnvBO6eaQdXmI87CDI298
+ HR/+VhsVJ/u7iXGTQkVMsqAaW9EPMv1Sgb5Rmgtd6ACQpLsy6omM8sw6klUAH/cycS8R
+ nbSg==
+X-Gm-Message-State: AOAM532m/tB/bp+eGD533NvdHo2hLtgWKiRK87P3kf9+gm+pubqiEOLb
+ PgG9B0knddMpghXvhYMOA/q3+iJvnOWlTZG5EPzV
+X-Google-Smtp-Source: ABdhPJx++s4yL0aljTFECCTgTqB0y8G0ZDiiFqmfkcPa/z8HtCB9PzVuE2+kCr4soT/hE2Bnuo8u47S4GL5NNC9DCyc=
+X-Received: by 2002:a50:eb95:: with SMTP id y21mr46534633edr.5.1629878239593; 
+ Wed, 25 Aug 2021 00:57:19 -0700 (PDT)
 MIME-Version: 1.0
-References: <20210818120642.165-1-xieyongji@bytedance.com>
- <20210818120642.165-12-xieyongji@bytedance.com>
- <20210824140945-mutt-send-email-mst@kernel.org>
-In-Reply-To: <20210824140945-mutt-send-email-mst@kernel.org>
+References: <CACycT3t1Dgrzsr7LbBrDhRLDa3qZ85ZOgj9H7r1fqPi-kf7r6Q@mail.gmail.com>
+ <20210618084412.18257-1-zhe.he@windriver.com>
+In-Reply-To: <20210618084412.18257-1-zhe.he@windriver.com>
 From: Yongji Xie <xieyongji@bytedance.com>
-Date: Wed, 25 Aug 2021 13:37:10 +0800
-Message-ID: <CACycT3s0Pp+LOD2h_vocPUMEqMhYioJmRPFYGL=Su-eL2p2O3w@mail.gmail.com>
-Subject: Re: [PATCH v11 11/12] vduse: Introduce VDUSE - vDPA Device in
- Userspace
-To: "Michael S. Tsirkin" <mst@redhat.com>
-Cc: kvm <kvm@vger.kernel.org>, Jason Wang <jasowang@redhat.com>,
+Date: Wed, 25 Aug 2021 15:57:08 +0800
+Message-ID: <CACycT3sri2-GyaW08JhS2j1V2DRc7-Cv-tm6-T-dD7XVO=S6Vw@mail.gmail.com>
+Subject: Re: [PATCH] eventfd: Enlarge recursion limit to allow vhost to work
+To: He Zhe <zhe.he@windriver.com>
+Cc: kvm <kvm@vger.kernel.org>, "Michael S. Tsirkin" <mst@redhat.com>,
+ Jason Wang <jasowang@redhat.com>,
  virtualization <virtualization@lists.linux-foundation.org>,
- Christian Brauner <christian.brauner@canonical.com>,
+ Christian Brauner <christian.brauner@canonical.com>, qiang.zhang@windriver.com,
  Jonathan Corbet <corbet@lwn.net>, Matthew Wilcox <willy@infradead.org>,
  Christoph Hellwig <hch@infradead.org>,
  Dan Carpenter <dan.carpenter@oracle.com>,
- Stefano Garzarella <sgarzare@redhat.com>,
- Liu Xiaodong <xiaodong.liu@intel.com>, linux-fsdevel@vger.kernel.org,
- Al Viro <viro@zeniv.linux.org.uk>, Stefan Hajnoczi <stefanha@redhat.com>,
- songmuchun@bytedance.com, Jens Axboe <axboe@kernel.dk>,
- He Zhe <zhe.he@windriver.com>, Greg KH <gregkh@linuxfoundation.org>,
+ Stefano Garzarella <sgarzare@redhat.com>, Al Viro <viro@zeniv.linux.org.uk>,
+ Stefan Hajnoczi <stefanha@redhat.com>, songmuchun@bytedance.com,
+ Jens Axboe <axboe@kernel.dk>, Greg KH <gregkh@linuxfoundation.org>,
  Randy Dunlap <rdunlap@infradead.org>,
  linux-kernel <linux-kernel@vger.kernel.org>, iommu@lists.linux-foundation.org,
- bcrl@kvack.org, netdev@vger.kernel.org, Joe Perches <joe@perches.com>,
- Robin Murphy <robin.murphy@arm.com>,
+ bcrl@kvack.org, linux-fsdevel@vger.kernel.org,
  =?UTF-8?Q?Mika_Penttil=C3=A4?= <mika.penttila@nextfour.com>
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
@@ -120,42 +116,120 @@ Content-Transfer-Encoding: 7bit
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-On Wed, Aug 25, 2021 at 2:10 AM Michael S. Tsirkin <mst@redhat.com> wrote:
->
-> On Wed, Aug 18, 2021 at 08:06:41PM +0800, Xie Yongji wrote:
-> > This VDUSE driver enables implementing software-emulated vDPA
-> > devices in userspace. The vDPA device is created by
-> > ioctl(VDUSE_CREATE_DEV) on /dev/vduse/control. Then a char device
-> > interface (/dev/vduse/$NAME) is exported to userspace for device
-> > emulation.
-> >
-> > In order to make the device emulation more secure, the device's
-> > control path is handled in kernel. A message mechnism is introduced
-> > to forward some dataplane related control messages to userspace.
-> >
-> > And in the data path, the DMA buffer will be mapped into userspace
-> > address space through different ways depending on the vDPA bus to
-> > which the vDPA device is attached. In virtio-vdpa case, the MMU-based
-> > software IOTLB is used to achieve that. And in vhost-vdpa case, the
-> > DMA buffer is reside in a userspace memory region which can be shared
-> > to the VDUSE userspace processs via transferring the shmfd.
-> >
-> > For more details on VDUSE design and usage, please see the follow-on
-> > Documentation commit.
-> >
-> > Signed-off-by: Xie Yongji <xieyongji@bytedance.com>
->
-> Build bot seems unhappy with this patch.
->
+Hi guys,
 
-Yes, this is because the series relies on the unmerged patch:
-
-https://lore.kernel.org/lkml/20210705071910.31965-1-jasowang@redhat.com/
-
-Do I need to remove this dependency in the next version?
+Is there any comments or update for this patch?
 
 Thanks,
 Yongji
+
+On Fri, Jun 18, 2021 at 4:47 PM He Zhe <zhe.he@windriver.com> wrote:
+>
+> commit b5e683d5cab8 ("eventfd: track eventfd_signal() recursion depth")
+> introduces a percpu counter that tracks the percpu recursion depth and
+> warn if it greater than zero, to avoid potential deadlock and stack
+> overflow.
+>
+> However sometimes different eventfds may be used in parallel. Specifically,
+> when heavy network load goes through kvm and vhost, working as below, it
+> would trigger the following call trace.
+>
+> -  100.00%
+>    - 66.51%
+>         ret_from_fork
+>         kthread
+>       - vhost_worker
+>          - 33.47% handle_tx_kick
+>               handle_tx
+>               handle_tx_copy
+>               vhost_tx_batch.isra.0
+>               vhost_add_used_and_signal_n
+>               eventfd_signal
+>          - 33.05% handle_rx_net
+>               handle_rx
+>               vhost_add_used_and_signal_n
+>               eventfd_signal
+>    - 33.49%
+>         ioctl
+>         entry_SYSCALL_64_after_hwframe
+>         do_syscall_64
+>         __x64_sys_ioctl
+>         ksys_ioctl
+>         do_vfs_ioctl
+>         kvm_vcpu_ioctl
+>         kvm_arch_vcpu_ioctl_run
+>         vmx_handle_exit
+>         handle_ept_misconfig
+>         kvm_io_bus_write
+>         __kvm_io_bus_write
+>         eventfd_signal
+>
+> 001: WARNING: CPU: 1 PID: 1503 at fs/eventfd.c:73 eventfd_signal+0x85/0xa0
+> ---- snip ----
+> 001: Call Trace:
+> 001:  vhost_signal+0x15e/0x1b0 [vhost]
+> 001:  vhost_add_used_and_signal_n+0x2b/0x40 [vhost]
+> 001:  handle_rx+0xb9/0x900 [vhost_net]
+> 001:  handle_rx_net+0x15/0x20 [vhost_net]
+> 001:  vhost_worker+0xbe/0x120 [vhost]
+> 001:  kthread+0x106/0x140
+> 001:  ? log_used.part.0+0x20/0x20 [vhost]
+> 001:  ? kthread_park+0x90/0x90
+> 001:  ret_from_fork+0x35/0x40
+> 001: ---[ end trace 0000000000000003 ]---
+>
+> This patch enlarges the limit to 1 which is the maximum recursion depth we
+> have found so far.
+>
+> The credit of modification for eventfd_signal_count goes to
+> Xie Yongji <xieyongji@bytedance.com>
+>
+> Signed-off-by: He Zhe <zhe.he@windriver.com>
+> ---
+>  fs/eventfd.c            | 3 ++-
+>  include/linux/eventfd.h | 5 ++++-
+>  2 files changed, 6 insertions(+), 2 deletions(-)
+>
+> diff --git a/fs/eventfd.c b/fs/eventfd.c
+> index e265b6dd4f34..add6af91cacf 100644
+> --- a/fs/eventfd.c
+> +++ b/fs/eventfd.c
+> @@ -71,7 +71,8 @@ __u64 eventfd_signal(struct eventfd_ctx *ctx, __u64 n)
+>          * it returns true, the eventfd_signal() call should be deferred to a
+>          * safe context.
+>          */
+> -       if (WARN_ON_ONCE(this_cpu_read(eventfd_wake_count)))
+> +       if (WARN_ON_ONCE(this_cpu_read(eventfd_wake_count) >
+> +           EFD_WAKE_COUNT_MAX))
+>                 return 0;
+>
+>         spin_lock_irqsave(&ctx->wqh.lock, flags);
+> diff --git a/include/linux/eventfd.h b/include/linux/eventfd.h
+> index fa0a524baed0..74be152ebe87 100644
+> --- a/include/linux/eventfd.h
+> +++ b/include/linux/eventfd.h
+> @@ -29,6 +29,9 @@
+>  #define EFD_SHARED_FCNTL_FLAGS (O_CLOEXEC | O_NONBLOCK)
+>  #define EFD_FLAGS_SET (EFD_SHARED_FCNTL_FLAGS | EFD_SEMAPHORE)
+>
+> +/* This is the maximum recursion depth we find so far */
+> +#define EFD_WAKE_COUNT_MAX 1
+> +
+>  struct eventfd_ctx;
+>  struct file;
+>
+> @@ -47,7 +50,7 @@ DECLARE_PER_CPU(int, eventfd_wake_count);
+>
+>  static inline bool eventfd_signal_count(void)
+>  {
+> -       return this_cpu_read(eventfd_wake_count);
+> +       return this_cpu_read(eventfd_wake_count) > EFD_WAKE_COUNT_MAX;
+>  }
+>
+>  #else /* CONFIG_EVENTFD */
+> --
+> 2.17.1
+>
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
