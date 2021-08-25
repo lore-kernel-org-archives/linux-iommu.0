@@ -2,93 +2,107 @@ Return-Path: <SRS0=FkPa=NQ=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-11.4 required=3.0 tests=BAYES_00,DKIM_INVALID,
-	DKIM_SIGNED,HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,
-	MENTIONS_GIT_HOSTING,NICE_REPLY_A,SPF_HELO_NONE,SPF_PASS,USER_AGENT_SANE_1
-	autolearn=ham autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-8.6 required=3.0 tests=BAYES_00,DKIM_INVALID,
+	DKIM_SIGNED,HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_CR_TRAILER,
+	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no
+	version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id F0715C4338F
-	for <iommu@archiver.kernel.org>; Wed, 25 Aug 2021 02:11:02 +0000 (UTC)
-Received: from smtp4.osuosl.org (smtp4.osuosl.org [140.211.166.137])
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8F9ABC4338F
+	for <iommu@archiver.kernel.org>; Wed, 25 Aug 2021 05:37:31 +0000 (UTC)
+Received: from smtp3.osuosl.org (smtp3.osuosl.org [140.211.166.136])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 8D6EB61040
-	for <iommu@archiver.kernel.org>; Wed, 25 Aug 2021 02:11:02 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.4.1 mail.kernel.org 8D6EB61040
-Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=apertussolutions.com
+	by mail.kernel.org (Postfix) with ESMTPS id 08E6161100
+	for <iommu@archiver.kernel.org>; Wed, 25 Aug 2021 05:37:30 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.4.1 mail.kernel.org 08E6161100
+Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=bytedance.com
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by smtp4.osuosl.org (Postfix) with ESMTP id 53D9240505;
-	Wed, 25 Aug 2021 02:11:02 +0000 (UTC)
+	by smtp3.osuosl.org (Postfix) with ESMTP id C7C8F605F9;
+	Wed, 25 Aug 2021 05:37:30 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from smtp4.osuosl.org ([127.0.0.1])
-	by localhost (smtp4.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id qzx89sSrGLsw; Wed, 25 Aug 2021 02:10:58 +0000 (UTC)
+Received: from smtp3.osuosl.org ([127.0.0.1])
+	by localhost (smtp3.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+	with ESMTP id obZ0TKtJ29Ez; Wed, 25 Aug 2021 05:37:27 +0000 (UTC)
 Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [IPv6:2605:bc80:3010:104::8cd3:938])
-	by smtp4.osuosl.org (Postfix) with ESMTPS id E490E40506;
-	Wed, 25 Aug 2021 02:10:57 +0000 (UTC)
+	by smtp3.osuosl.org (Postfix) with ESMTPS id 8BB856061F;
+	Wed, 25 Aug 2021 05:37:26 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id A1F8EC001A;
-	Wed, 25 Aug 2021 02:10:57 +0000 (UTC)
-Received: from smtp4.osuosl.org (smtp4.osuosl.org [IPv6:2605:bc80:3010::137])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 852C3C000E
- for <iommu@lists.linux-foundation.org>; Wed, 25 Aug 2021 02:10:56 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 51FB0C0010;
+	Wed, 25 Aug 2021 05:37:26 +0000 (UTC)
+Received: from smtp2.osuosl.org (smtp2.osuosl.org [IPv6:2605:bc80:3010::133])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id C8364C000E
+ for <iommu@lists.linux-foundation.org>; Wed, 25 Aug 2021 05:37:24 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by smtp4.osuosl.org (Postfix) with ESMTP id 6EB0F40506
- for <iommu@lists.linux-foundation.org>; Wed, 25 Aug 2021 02:10:56 +0000 (UTC)
+ by smtp2.osuosl.org (Postfix) with ESMTP id A93C040277
+ for <iommu@lists.linux-foundation.org>; Wed, 25 Aug 2021 05:37:24 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from smtp4.osuosl.org ([127.0.0.1])
- by localhost (smtp4.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id 1eoblUHoVwNa for <iommu@lists.linux-foundation.org>;
- Wed, 25 Aug 2021 02:10:52 +0000 (UTC)
-X-Greylist: from auto-whitelisted by SQLgrey-1.8.0
-Received: from sender4-of-o51.zoho.com (sender4-of-o51.zoho.com
- [136.143.188.51])
- by smtp4.osuosl.org (Postfix) with ESMTPS id 8EF8140505
- for <iommu@lists.linux-foundation.org>; Wed, 25 Aug 2021 02:10:52 +0000 (UTC)
-ARC-Seal: i=1; a=rsa-sha256; t=1629857426; cv=none; 
- d=zohomail.com; s=zohoarc; 
- b=iPNY0Lm2xQU0W7XwDtIE6SOu4GH5QePOWGUQs6Qg0U9PONN9gPMfg5XPiO8SxxbBlVCx6bXt+ta8bmcYtmSrWI0voDWKOl2TC8Khu4j88Xz0jQtpnoPtGx1f2Fpx2qSpx5nQfOp75vjgHX3zwxYPImoshHS0+sMCg8Urj7owoXk=
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=zohomail.com;
- s=zohoarc; t=1629857426;
- h=Content-Type:Content-Transfer-Encoding:Cc:Date:From:In-Reply-To:MIME-Version:Message-ID:References:Subject:To;
- bh=EW4MjGTVwYJgE+935/0lwYuBbIgSXYbtlsZKkKFkB0w=; 
- b=kHJL6VY2fb9JQ2ce5pYYg4xiqFRZkn3QlLPKMIT+MV4WVpPBFH9oEhayRDN/iW4lavPb4wiTkTAXR7z+7LDpw/xrvTQqBNZAkeJmuxbPw8LL3KQHFV7kGJ2SgmurnDzGQSY3mVL07WZI7cC3BOuhLp3Eu6Lc9gy2wuyhf8AiHMY=
-ARC-Authentication-Results: i=1; mx.zohomail.com;
- dkim=pass  header.i=apertussolutions.com;
- spf=pass  smtp.mailfrom=dpsmith@apertussolutions.com;
- dmarc=pass header.from=<dpsmith@apertussolutions.com>
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; t=1629857426; 
- s=zoho; d=apertussolutions.com; i=dpsmith@apertussolutions.com;
- h=To:Cc:References:From:Subject:Message-ID:Date:MIME-Version:In-Reply-To:Content-Type:Content-Transfer-Encoding;
- bh=EW4MjGTVwYJgE+935/0lwYuBbIgSXYbtlsZKkKFkB0w=;
- b=pBV8y4/4zpYQsPzg6Kg66nRFWqt75lKoC9oHsHtBErzcAVDWx9qqTY1/m228IOze
- 441OLy1hueS22Lxu8nHK2P5hs4acGvXFkGYU+QhMwsjScWJa0anUR1LXaA8uuE5RCPH
- GQYkJkzPxmjt58KNVgkd5OWLDfhXOp53oNiWUXcA=
-Received: from [10.10.1.24] (static-72-81-132-2.bltmmd.fios.verizon.net
- [72.81.132.2]) by mx.zohomail.com
- with SMTPS id 162985742413164.47891803749803;
- Tue, 24 Aug 2021 19:10:24 -0700 (PDT)
-To: Jarkko Sakkinen <jarkko@kernel.org>,
- Ross Philipson <ross.philipson@oracle.com>
-References: <1628527136-2478-1-git-send-email-ross.philipson@oracle.com>
- <20210810162320.6rfpvdvzgxi35ylx@kernel.org>
-From: "Daniel P. Smith" <dpsmith@apertussolutions.com>
-Subject: Re: [PATCH v3 00/14] x86: Trenchboot secure dynamic launch Linux
- kernel support
-Message-ID: <1de59a4d-b29f-2a67-1cbe-8d5f80e59ba5@apertussolutions.com>
-Date: Tue, 24 Aug 2021 22:10:21 -0400
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
- Thunderbird/78.13.0
+Authentication-Results: smtp2.osuosl.org (amavisd-new);
+ dkim=pass (2048-bit key) header.d=bytedance-com.20150623.gappssmtp.com
+Received: from smtp2.osuosl.org ([127.0.0.1])
+ by localhost (smtp2.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+ with ESMTP id C7xJ2DkDL3Rr for <iommu@lists.linux-foundation.org>;
+ Wed, 25 Aug 2021 05:37:23 +0000 (UTC)
+X-Greylist: whitelisted by SQLgrey-1.8.0
+Received: from mail-ed1-x529.google.com (mail-ed1-x529.google.com
+ [IPv6:2a00:1450:4864:20::529])
+ by smtp2.osuosl.org (Postfix) with ESMTPS id 47F57401D8
+ for <iommu@lists.linux-foundation.org>; Wed, 25 Aug 2021 05:37:22 +0000 (UTC)
+Received: by mail-ed1-x529.google.com with SMTP id s25so22457618edw.0
+ for <iommu@lists.linux-foundation.org>; Tue, 24 Aug 2021 22:37:22 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+ d=bytedance-com.20150623.gappssmtp.com; s=20150623;
+ h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+ :cc; bh=3yeuD/AKt6duI6f+LLwvmXj5/7qzqoMz+rmo5sVDYrk=;
+ b=Vp7EsjbsKk4CbMZuzoUYLzrpydiTBr1zHF+HyG9J/wtoW8bsVHI746U+1hvWAKn7pY
+ S2KGD1hdXhYpvRVmdQ6WR1fQxGII47CoeOMGBaYQ/Mi4TolUM5hV7u25ftgsXF0RWGh/
+ oyRF1xadCZb6aP6wOK20F7wxGFstAZ7BuyRbsRE+aDrQ7ch+4LllkUaJdROcaj8x+KAj
+ ZOy85WB4jyz34slTJHHU6QuKku6j+KC19AfzueBsMNFAdKQmlECIKMC6wJ+DZ7prxUj4
+ ddL12p3dIBF+Z7rYjgciVlV8upMbYsRSCOxkj2pFlsJcMFqU9/31/TAQO6ln7+ZPJcon
+ AYgw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+ d=1e100.net; s=20161025;
+ h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+ :message-id:subject:to:cc;
+ bh=3yeuD/AKt6duI6f+LLwvmXj5/7qzqoMz+rmo5sVDYrk=;
+ b=nX0bXZN8QnmVSgmjTJhSpnCCLIuPKUO++7LBoU+oPj9CJfSYhwmGsxlrslp2Mi2e2x
+ F+jpSE1NuJc3WjZUJP62JJQgBiIJMDcTn8J8bpz8skdqktVUbJ1rSEslAo7H0n31A9w2
+ Xku+BNBAPMjTPP7VUH7HFOVFqi3B/IUQEARKfZnCxXE7RZoA60iXz73f83kzH4IFVZUb
+ w+BApOw+JIQHIaOaDQSi9aDi6HeCk1jYuufiVoBAIvWyy7KP3Tu0WrdkLPSqI/u0FAfJ
+ KR91VLBLAMqUCEQbDB4OZTAVOPkYlUn1gvy2IbWg1eW2oCLhaocmQF+PbGWOoXnsRzjU
+ jolA==
+X-Gm-Message-State: AOAM533Vh08WlBM6Rf/to74AeMCdqOYOY8uP12BEZ339+cqiglApC2Qm
+ Qhn6uLFkqPlMU2FIJKQPs07xMlnTNwU6+qc1IEuJ
+X-Google-Smtp-Source: ABdhPJyZTxYAJpwJ1zytuFP4isC6BozsaW7fwdKwUj6HuqFf6QhFlF2KyJtLZvCBCv/uMpGPvMvKn/tLFmS1aI89w14=
+X-Received: by 2002:a50:fd86:: with SMTP id o6mr6104183edt.312.1629869841320; 
+ Tue, 24 Aug 2021 22:37:21 -0700 (PDT)
 MIME-Version: 1.0
-In-Reply-To: <20210810162320.6rfpvdvzgxi35ylx@kernel.org>
-Content-Language: en-US
-X-ZohoMailClient: External
-Cc: linux-doc@vger.kernel.org, x86@kernel.org, linux-kernel@vger.kernel.org,
- luto@amacapital.net, iommu@lists.linux-foundation.org, mingo@redhat.com,
- bp@alien8.de, hpa@zytor.com, kanth.ghatraju@oracle.com,
- linux-integrity@vger.kernel.org, trenchboot-devel@googlegroups.com,
- tglx@linutronix.de
+References: <20210818120642.165-1-xieyongji@bytedance.com>
+ <20210818120642.165-12-xieyongji@bytedance.com>
+ <20210824140945-mutt-send-email-mst@kernel.org>
+In-Reply-To: <20210824140945-mutt-send-email-mst@kernel.org>
+From: Yongji Xie <xieyongji@bytedance.com>
+Date: Wed, 25 Aug 2021 13:37:10 +0800
+Message-ID: <CACycT3s0Pp+LOD2h_vocPUMEqMhYioJmRPFYGL=Su-eL2p2O3w@mail.gmail.com>
+Subject: Re: [PATCH v11 11/12] vduse: Introduce VDUSE - vDPA Device in
+ Userspace
+To: "Michael S. Tsirkin" <mst@redhat.com>
+Cc: kvm <kvm@vger.kernel.org>, Jason Wang <jasowang@redhat.com>,
+ virtualization <virtualization@lists.linux-foundation.org>,
+ Christian Brauner <christian.brauner@canonical.com>,
+ Jonathan Corbet <corbet@lwn.net>, Matthew Wilcox <willy@infradead.org>,
+ Christoph Hellwig <hch@infradead.org>,
+ Dan Carpenter <dan.carpenter@oracle.com>,
+ Stefano Garzarella <sgarzare@redhat.com>,
+ Liu Xiaodong <xiaodong.liu@intel.com>, linux-fsdevel@vger.kernel.org,
+ Al Viro <viro@zeniv.linux.org.uk>, Stefan Hajnoczi <stefanha@redhat.com>,
+ songmuchun@bytedance.com, Jens Axboe <axboe@kernel.dk>,
+ He Zhe <zhe.he@windriver.com>, Greg KH <gregkh@linuxfoundation.org>,
+ Randy Dunlap <rdunlap@infradead.org>,
+ linux-kernel <linux-kernel@vger.kernel.org>, iommu@lists.linux-foundation.org,
+ bcrl@kvack.org, netdev@vger.kernel.org, Joe Perches <joe@perches.com>,
+ Robin Murphy <robin.murphy@arm.com>,
+ =?UTF-8?Q?Mika_Penttil=C3=A4?= <mika.penttila@nextfour.com>
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -106,24 +120,42 @@ Content-Transfer-Encoding: 7bit
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-On 8/10/21 12:23 PM, Jarkko Sakkinen wrote:
-> On Mon, Aug 09, 2021 at 12:38:42PM -0400, Ross Philipson wrote:
->> The focus of Trechboot project (https://github.com/TrenchBoot) is to
->> enhance the boot security and integrity. This requires the linux kernel
->                                                              ~~~~~
->                                                              Linux
-> 
-> How does it enhance it? The following sentence explains the requirements
-> for the Linux kernel, i.e. it's a question without answer. And if there
-> is no answer, there is no need to merge this.
+On Wed, Aug 25, 2021 at 2:10 AM Michael S. Tsirkin <mst@redhat.com> wrote:
+>
+> On Wed, Aug 18, 2021 at 08:06:41PM +0800, Xie Yongji wrote:
+> > This VDUSE driver enables implementing software-emulated vDPA
+> > devices in userspace. The vDPA device is created by
+> > ioctl(VDUSE_CREATE_DEV) on /dev/vduse/control. Then a char device
+> > interface (/dev/vduse/$NAME) is exported to userspace for device
+> > emulation.
+> >
+> > In order to make the device emulation more secure, the device's
+> > control path is handled in kernel. A message mechnism is introduced
+> > to forward some dataplane related control messages to userspace.
+> >
+> > And in the data path, the DMA buffer will be mapped into userspace
+> > address space through different ways depending on the vDPA bus to
+> > which the vDPA device is attached. In virtio-vdpa case, the MMU-based
+> > software IOTLB is used to achieve that. And in vhost-vdpa case, the
+> > DMA buffer is reside in a userspace memory region which can be shared
+> > to the VDUSE userspace processs via transferring the shmfd.
+> >
+> > For more details on VDUSE design and usage, please see the follow-on
+> > Documentation commit.
+> >
+> > Signed-off-by: Xie Yongji <xieyongji@bytedance.com>
+>
+> Build bot seems unhappy with this patch.
+>
 
-We have added a documentation patch that provides background
-information, an overview of the capability, and details about the
-implementation. We can reword the cover letter, adding reference to this
-documentation. And ack on fixing the incorrect case on Linux.
+Yes, this is because the series relies on the unmerged patch:
 
-V/r
-dps
+https://lore.kernel.org/lkml/20210705071910.31965-1-jasowang@redhat.com/
+
+Do I need to remove this dependency in the next version?
+
+Thanks,
+Yongji
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
