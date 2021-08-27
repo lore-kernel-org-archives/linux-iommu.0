@@ -2,97 +2,105 @@ Return-Path: <SRS0=n6uX=NS=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-5.7 required=3.0 tests=BAYES_00,
-	HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,NICE_REPLY_A,SPF_HELO_NONE,
-	SPF_PASS,USER_AGENT_SANE_1 autolearn=no autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-3.6 required=3.0 tests=BAYES_00,DKIM_INVALID,
+	DKIM_SIGNED,HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,SPF_HELO_NONE,
+	SPF_PASS autolearn=no autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0330EC432BE
-	for <iommu@archiver.kernel.org>; Fri, 27 Aug 2021 08:59:27 +0000 (UTC)
-Received: from smtp1.osuosl.org (smtp1.osuosl.org [140.211.166.138])
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9F7BAC4320A
+	for <iommu@archiver.kernel.org>; Fri, 27 Aug 2021 09:25:22 +0000 (UTC)
+Received: from smtp4.osuosl.org (smtp4.osuosl.org [140.211.166.137])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 698EE60FDC
-	for <iommu@archiver.kernel.org>; Fri, 27 Aug 2021 08:59:26 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.4.1 mail.kernel.org 698EE60FDC
-Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=huawei.com
+	by mail.kernel.org (Postfix) with ESMTPS id 301FC60EBD
+	for <iommu@archiver.kernel.org>; Fri, 27 Aug 2021 09:25:22 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.4.1 mail.kernel.org 301FC60EBD
+Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=bytedance.com
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by smtp1.osuosl.org (Postfix) with ESMTP id 3506980BDB;
-	Fri, 27 Aug 2021 08:59:26 +0000 (UTC)
+	by smtp4.osuosl.org (Postfix) with ESMTP id EF259403E2;
+	Fri, 27 Aug 2021 09:25:21 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from smtp1.osuosl.org ([127.0.0.1])
-	by localhost (smtp1.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id OV-56WmlzZF9; Fri, 27 Aug 2021 08:59:22 +0000 (UTC)
+Received: from smtp4.osuosl.org ([127.0.0.1])
+	by localhost (smtp4.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+	with ESMTP id b9jJ7u4NyjWm; Fri, 27 Aug 2021 09:25:18 +0000 (UTC)
 Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by smtp1.osuosl.org (Postfix) with ESMTPS id 091F580C08;
-	Fri, 27 Aug 2021 08:59:21 +0000 (UTC)
+	by smtp4.osuosl.org (Postfix) with ESMTPS id BDD8B40412;
+	Fri, 27 Aug 2021 09:25:17 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id B661BC0010;
-	Fri, 27 Aug 2021 08:59:21 +0000 (UTC)
-Received: from smtp4.osuosl.org (smtp4.osuosl.org [IPv6:2605:bc80:3010::137])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 921E9C000E;
- Fri, 27 Aug 2021 08:59:20 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 956A8C001A;
+	Fri, 27 Aug 2021 09:25:17 +0000 (UTC)
+Received: from smtp4.osuosl.org (smtp4.osuosl.org [140.211.166.137])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 23BDAC001A
+ for <iommu@lists.linux-foundation.org>; Fri, 27 Aug 2021 09:25:16 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by smtp4.osuosl.org (Postfix) with ESMTP id 78C49426D7;
- Fri, 27 Aug 2021 08:59:20 +0000 (UTC)
+ by smtp4.osuosl.org (Postfix) with ESMTP id 1247540412
+ for <iommu@lists.linux-foundation.org>; Fri, 27 Aug 2021 09:25:16 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
 Received: from smtp4.osuosl.org ([127.0.0.1])
  by localhost (smtp4.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id 3cTDBw1YzWqn; Fri, 27 Aug 2021 08:59:19 +0000 (UTC)
-X-Greylist: domain auto-whitelisted by SQLgrey-1.8.0
-X-Greylist: domain auto-whitelisted by SQLgrey-1.8.0
-Received: from frasgout.his.huawei.com (frasgout.his.huawei.com
- [185.176.79.56])
- by smtp4.osuosl.org (Postfix) with ESMTPS id 6BF4A426D0;
- Fri, 27 Aug 2021 08:59:19 +0000 (UTC)
-Received: from fraeml711-chm.china.huawei.com (unknown [172.18.147.200])
- by frasgout.his.huawei.com (SkyGuard) with ESMTP id 4GwtsC5YsXz67RyC;
- Fri, 27 Aug 2021 16:57:51 +0800 (CST)
-Received: from lhreml724-chm.china.huawei.com (10.201.108.75) by
- fraeml711-chm.china.huawei.com (10.206.15.60) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2308.8; Fri, 27 Aug 2021 10:59:16 +0200
-Received: from [10.47.92.37] (10.47.92.37) by lhreml724-chm.china.huawei.com
- (10.201.108.75) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256) id 15.1.2308.8; Fri, 27 Aug
- 2021 09:59:14 +0100
-Subject: Re: [PATCH v11 01/12] iova: Export alloc_iova_fast() and
- free_iova_fast()
-To: Yongji Xie <xieyongji@bytedance.com>
-References: <20210818120642.165-1-xieyongji@bytedance.com>
- <20210818120642.165-2-xieyongji@bytedance.com>
- <20210824140758-mutt-send-email-mst@kernel.org>
- <20210825095540.GA24546@willie-the-truck>
- <5f4eadda-5500-9bac-4368-48cfca6d0a4d@huawei.com>
- <CACycT3uWyhNNK_YbfEAEhTk-V9CoxFg1tzVjJnXeKBFpkndnfg@mail.gmail.com>
-From: John Garry <john.garry@huawei.com>
-Message-ID: <d7b5967f-0a43-785a-82b0-74cce5993ba0@huawei.com>
-Date: Fri, 27 Aug 2021 10:03:03 +0100
-User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; rv:68.0) Gecko/20100101
- Thunderbird/68.12.1
+ with ESMTP id CXEtmPb1OP_w for <iommu@lists.linux-foundation.org>;
+ Fri, 27 Aug 2021 09:25:15 +0000 (UTC)
+X-Greylist: whitelisted by SQLgrey-1.8.0
+Received: from mail-ej1-x62b.google.com (mail-ej1-x62b.google.com
+ [IPv6:2a00:1450:4864:20::62b])
+ by smtp4.osuosl.org (Postfix) with ESMTPS id 4788C403E2
+ for <iommu@lists.linux-foundation.org>; Fri, 27 Aug 2021 09:25:15 +0000 (UTC)
+Received: by mail-ej1-x62b.google.com with SMTP id me10so12420626ejb.11
+ for <iommu@lists.linux-foundation.org>; Fri, 27 Aug 2021 02:25:14 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+ d=bytedance-com.20150623.gappssmtp.com; s=20150623;
+ h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+ :cc; bh=CQZSVnOjQTaOC4XZpSSeU/UltZMxftQtIHXd0FC9LUY=;
+ b=Eiyqj+g5ZX6aj2srxpZtcC1FQBOndljXdzjzQhW3jQfg0AKnowg66sDkXhGEBa7ROp
+ +53SIt2MmLtIoE8yXSbpYJx4I/VEj5rzSssq48dyRj2K9LTMGIxWpkX+rBd7bgLzzewm
+ H7LTLql0SrRgfWYFJmh/kVwAwOxH4PN1xEh8cDnMjmoUUMNdlPpdKQKSpqobDjvAldfC
+ cXn76T6Mu1zSuEcmMGjIeXjOf1VizyeMqiQ0WOFK5MjuDVZ5/RoACxnjGi7LF45nwgrQ
+ Nfv9gXViN5n0dobPAoA9idt9BLeLe79P5wpff7nWT0kBWd8juzoAhi6J/RJ88ud8v62V
+ 8eEg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+ d=1e100.net; s=20161025;
+ h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+ :message-id:subject:to:cc;
+ bh=CQZSVnOjQTaOC4XZpSSeU/UltZMxftQtIHXd0FC9LUY=;
+ b=H7jtCQDGnd1bo6G/Vi5DY+xyRGKFFogCu+0pBhrQidVax0pmqJAxnRHPatytYBGIvK
+ Lr6pwaO4TCNN9Mtuj/DX8C0gM5uve0IP/opiBfy/82C/hQHqfWwAeO9sNe1gThSXXUmG
+ 2iNCW0Qs4IPB+/KZv+jp93+X0nH0FHtQX2W3UltQ89YR1d3I0Tlm9YqNNGXeNqscXzHD
+ cgMoX7xdYLaTHpMGQ2cJNbj0oavqAz9lZVYSZCFmL+ngd+lAYkJlNnajXvPCqkrgKBrm
+ VDxSZMDssDgUM9QJyTZv6rfDRN0hY7HgOKAEfnvl3z0Qz6qgu7A7taDSVP7l3dnk0aEE
+ 2f+A==
+X-Gm-Message-State: AOAM530x+9FcTQTWueP14BIIsJYeKM0tx/HEwBtLAPLvRkXF+JGLyyIj
+ a+ck+yZIAeSE0pnJaPAlkzmjkc3L4C5FNPg95ToY
+X-Google-Smtp-Source: ABdhPJwgcugxvkltcJohlXGHniUZmyhYLawWLaSxMYUiHXpZPra5boRHFyGEQTo7QNVw0MBfE++H/HV9ev3Dyf8sBpg=
+X-Received: by 2002:a17:906:659:: with SMTP id
+ t25mr8879799ejb.372.1630056313220; 
+ Fri, 27 Aug 2021 02:25:13 -0700 (PDT)
 MIME-Version: 1.0
-In-Reply-To: <CACycT3uWyhNNK_YbfEAEhTk-V9CoxFg1tzVjJnXeKBFpkndnfg@mail.gmail.com>
-Content-Language: en-US
-X-Originating-IP: [10.47.92.37]
-X-ClientProxiedBy: lhreml706-chm.china.huawei.com (10.201.108.55) To
- lhreml724-chm.china.huawei.com (10.201.108.75)
-X-CFilter-Loop: Reflected
+References: <20210818120642.165-1-xieyongji@bytedance.com>
+ <20210818120642.165-11-xieyongji@bytedance.com>
+ <2d807de3-e245-c2fb-ae5d-7cacbe35dfcb@huawei.com>
+In-Reply-To: <2d807de3-e245-c2fb-ae5d-7cacbe35dfcb@huawei.com>
+From: Yongji Xie <xieyongji@bytedance.com>
+Date: Fri, 27 Aug 2021 17:25:02 +0800
+Message-ID: <CACycT3uRvB2K7LeVpdv+DkGJGjdORMa2uk5T_PYswtddNOjV4A@mail.gmail.com>
+Subject: Re: [PATCH v11 10/12] vduse: Implement an MMU-based software IOTLB
+To: John Garry <john.garry@huawei.com>
 Cc: kvm <kvm@vger.kernel.org>, "Michael S. Tsirkin" <mst@redhat.com>,
  Jason Wang <jasowang@redhat.com>,
  virtualization <virtualization@lists.linux-foundation.org>,
  Christian Brauner <christian.brauner@canonical.com>,
- Will Deacon <will@kernel.org>, Jonathan Corbet <corbet@lwn.net>, Matthew
- Wilcox <willy@infradead.org>, Christoph Hellwig <hch@infradead.org>, Dan
- Carpenter <dan.carpenter@oracle.com>, Stefano Garzarella <sgarzare@redhat.com>,
- Liu Xiaodong <xiaodong.liu@intel.com>, Joe Perches <joe@perches.com>,
- Al Viro <viro@zeniv.linux.org.uk>, Stefan
- Hajnoczi <stefanha@redhat.com>, songmuchun@bytedance.com,
- Jens Axboe <axboe@kernel.dk>, He Zhe <zhe.he@windriver.com>,
- Greg KH <gregkh@linuxfoundation.org>, Randy Dunlap <rdunlap@infradead.org>,
+ Jonathan Corbet <corbet@lwn.net>, Matthew Wilcox <willy@infradead.org>,
+ Christoph Hellwig <hch@infradead.org>,
+ Dan Carpenter <dan.carpenter@oracle.com>,
+ Stefano Garzarella <sgarzare@redhat.com>,
+ Liu Xiaodong <xiaodong.liu@intel.com>, linux-fsdevel@vger.kernel.org,
+ Al Viro <viro@zeniv.linux.org.uk>, Stefan Hajnoczi <stefanha@redhat.com>,
+ songmuchun@bytedance.com, Jens Axboe <axboe@kernel.dk>,
+ He Zhe <zhe.he@windriver.com>, Greg KH <gregkh@linuxfoundation.org>,
+ Randy Dunlap <rdunlap@infradead.org>,
  linux-kernel <linux-kernel@vger.kernel.org>, iommu@lists.linux-foundation.org,
- bcrl@kvack.org, netdev@vger.kernel.org, linux-fsdevel@vger.kernel.org,
+ bcrl@kvack.org, netdev@vger.kernel.org, Joe Perches <joe@perches.com>,
  Robin Murphy <robin.murphy@arm.com>,
- =?UTF-8?Q?Mika_Penttil=c3=a4?= <mika.penttila@nextfour.com>
+ =?UTF-8?Q?Mika_Penttil=C3=A4?= <mika.penttila@nextfour.com>
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -105,38 +113,47 @@ List-Post: <mailto:iommu@lists.linux-foundation.org>
 List-Help: <mailto:iommu-request@lists.linux-foundation.org?subject=help>
 List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
  <mailto:iommu-request@lists.linux-foundation.org?subject=subscribe>
+Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
-Content-Type: text/plain; charset="us-ascii"; Format="flowed"
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-On 25/08/2021 13:17, Yongji Xie wrote:
->> JFYI, There was a preliminary discussion to move the iova rcache code
->> (which the iova fast alloc and free functions are based on) out of the
->> iova code and maybe into dma-iommu (being the only user). There was
->> other motivation.
->>
-> Would it be better to move the code into ./lib as a general library?
+On Fri, Aug 27, 2021 at 4:53 PM John Garry <john.garry@huawei.com> wrote:
+>
+> On 18/08/2021 13:06, Xie Yongji wrote:
+> > +
+> > +static dma_addr_t
+> > +vduse_domain_alloc_iova(struct iova_domain *iovad,
+> > +                     unsigned long size, unsigned long limit)
+> > +{
+> > +     unsigned long shift = iova_shift(iovad);
+> > +     unsigned long iova_len = iova_align(iovad, size) >> shift;
+> > +     unsigned long iova_pfn;
+> > +
+> > +     /*
+> > +      * Freeing non-power-of-two-sized allocations back into the IOVA caches
+> > +      * will come back to bite us badly, so we have to waste a bit of space
+> > +      * rounding up anything cacheable to make sure that can't happen. The
+> > +      * order of the unadjusted size will still match upon freeing.
+> > +      */
+> > +     if (iova_len < (1 << (IOVA_RANGE_CACHE_MAX_SIZE - 1)))
+> > +             iova_len = roundup_pow_of_two(iova_len);
+>
+> Whether it's proper to use this "fast" API or not here, this seems to be
+> copied verbatim from dma-iommu.c, which tells me that something should
+> be factored out.
+>
 
-For a start we/I think that the rcache could be removed from the IOVA 
-code, but prob should stay in drivers/iommu. I had another IOVA issue to 
-solve, which complicates things. No solid plans. Need to talk to Robin more.
+Agreed.
 
-> 
->> https://lore.kernel.org/linux-iommu/83de3911-145d-77c8-17c1-981e4ff825d3@arm.com/
->>
->> Having more users complicates that...
->>
-> Do we have some plan for this work? From our test [1],
-> iova_alloc_fast() is much better than iova_alloc(). So I'd like to use
-> it as much as possible
-> 
-> [1]https://lore.kernel.org/kvm/CACycT3steXFeg7NRbWpo2J59dpYcumzcvM2zcPJAVe40-EvvEg@mail.gmail.com/
+> Indeed, this rounding up seems a requirement of the rcache, so not sure
+> why this is not done there.
+>
 
-Well if you're alloc'ing and free'ing IOVAs a lot then I can imagine it is.
+Me too. I guess it is to let users know that space is wasted.
 
 Thanks,
-John
+Yongji
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
