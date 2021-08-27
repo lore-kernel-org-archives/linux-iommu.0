@@ -7,118 +7,118 @@ X-Spam-Status: No, score=-16.6 required=3.0 tests=BAYES_00,DKIM_INVALID,
 	MAILING_LIST_MULTI,MSGID_FROM_MTA_HEADER,SPF_HELO_NONE,SPF_PASS,
 	USER_AGENT_GIT autolearn=ham autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id AD8D2C25AF0
-	for <iommu@archiver.kernel.org>; Fri, 27 Aug 2021 13:21:25 +0000 (UTC)
-Received: from smtp2.osuosl.org (smtp2.osuosl.org [140.211.166.133])
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 85823C25AF3
+	for <iommu@archiver.kernel.org>; Fri, 27 Aug 2021 13:21:26 +0000 (UTC)
+Received: from smtp3.osuosl.org (smtp3.osuosl.org [140.211.166.136])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 668EC60F91
-	for <iommu@archiver.kernel.org>; Fri, 27 Aug 2021 13:21:25 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.4.1 mail.kernel.org 668EC60F91
+	by mail.kernel.org (Postfix) with ESMTPS id 480CE60F91
+	for <iommu@archiver.kernel.org>; Fri, 27 Aug 2021 13:21:26 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.4.1 mail.kernel.org 480CE60F91
 Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=oracle.com
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by smtp2.osuosl.org (Postfix) with ESMTP id 22315407EB;
-	Fri, 27 Aug 2021 13:21:25 +0000 (UTC)
+	by smtp3.osuosl.org (Postfix) with ESMTP id 24B1161558;
+	Fri, 27 Aug 2021 13:21:26 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from smtp2.osuosl.org ([127.0.0.1])
-	by localhost (smtp2.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id 51GbYwnJnaZB; Fri, 27 Aug 2021 13:21:20 +0000 (UTC)
+Received: from smtp3.osuosl.org ([127.0.0.1])
+	by localhost (smtp3.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+	with ESMTP id JMd73L09OQMH; Fri, 27 Aug 2021 13:21:22 +0000 (UTC)
 Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [IPv6:2605:bc80:3010:104::8cd3:938])
-	by smtp2.osuosl.org (Postfix) with ESMTPS id 7A869407F1;
-	Fri, 27 Aug 2021 13:21:19 +0000 (UTC)
+	by smtp3.osuosl.org (Postfix) with ESMTPS id 0DFED61547;
+	Fri, 27 Aug 2021 13:21:22 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 885A2C0027;
-	Fri, 27 Aug 2021 13:21:18 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 3CA77C002B;
+	Fri, 27 Aug 2021 13:21:20 +0000 (UTC)
 Received: from smtp1.osuosl.org (smtp1.osuosl.org [IPv6:2605:bc80:3010::138])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 70968C0024
- for <iommu@lists.linux-foundation.org>; Fri, 27 Aug 2021 13:21:15 +0000 (UTC)
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 1B2AAC0030
+ for <iommu@lists.linux-foundation.org>; Fri, 27 Aug 2021 13:21:19 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by smtp1.osuosl.org (Postfix) with ESMTP id C4093828DD
- for <iommu@lists.linux-foundation.org>; Fri, 27 Aug 2021 13:21:14 +0000 (UTC)
+ by smtp1.osuosl.org (Postfix) with ESMTP id 8DA2F83339
+ for <iommu@lists.linux-foundation.org>; Fri, 27 Aug 2021 13:21:18 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
 Authentication-Results: smtp1.osuosl.org (amavisd-new);
- dkim=pass (2048-bit key) header.d=oracle.com header.b="fow6/a+8";
- dkim=pass (2048-bit key) header.d=oracle.com header.b="hIgC65Ga";
+ dkim=pass (2048-bit key) header.d=oracle.com header.b="eybtURGT";
+ dkim=pass (2048-bit key) header.d=oracle.com header.b="bNzk/CK7";
  dkim=pass (1024-bit key) header.d=oracle.onmicrosoft.com
- header.b="Z5BcEaGD"
+ header.b="ewc9LLRN"
 Received: from smtp1.osuosl.org ([127.0.0.1])
  by localhost (smtp1.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id FheMvUUtG4ES for <iommu@lists.linux-foundation.org>;
- Fri, 27 Aug 2021 13:21:13 +0000 (UTC)
+ with ESMTP id umO9fpJDe1D5 for <iommu@lists.linux-foundation.org>;
+ Fri, 27 Aug 2021 13:21:16 +0000 (UTC)
 X-Greylist: domain auto-whitelisted by SQLgrey-1.8.0
 Received: from mx0a-00069f02.pphosted.com (mx0a-00069f02.pphosted.com
  [205.220.165.32])
- by smtp1.osuosl.org (Postfix) with ESMTPS id 2DA9A82B1B
- for <iommu@lists.linux-foundation.org>; Fri, 27 Aug 2021 13:21:12 +0000 (UTC)
+ by smtp1.osuosl.org (Postfix) with ESMTPS id ECDA583313
+ for <iommu@lists.linux-foundation.org>; Fri, 27 Aug 2021 13:21:15 +0000 (UTC)
 Received: from pps.filterd (m0246627.ppops.net [127.0.0.1])
- by mx0b-00069f02.pphosted.com (8.16.1.2/8.16.0.43) with SMTP id 17RCCJu0015338;
- Fri, 27 Aug 2021 13:20:51 GMT
+ by mx0b-00069f02.pphosted.com (8.16.1.2/8.16.0.43) with SMTP id 17RC80Kb015347;
+ Fri, 27 Aug 2021 13:21:03 GMT
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=oracle.com;
  h=from : to : cc :
  subject : date : message-id : in-reply-to : references : content-type :
- content-transfer-encoding : mime-version; s=corp-2021-07-09;
- bh=wbARbsBnv0x79gqOC82Uzi6mCnkoaSdr+1qX8j9c4m8=;
- b=fow6/a+8uGF/ojHPy+OSYsKT3/I2XJX9TM3NWEOuVXk0rdBfrTTdm1C3oroLrqCjHO1A
- Iir+PJCoRA3ruAIxVOOHcx7MpB9cu9k8gPCV6S7zPk4SFKXGMWRXK6+mQhdoRdfSHTG0
- bH2R968Eecy+uc8ABMj7ZobnQoYsHoqoJhguZtnwdPYjlZFVQFXQ6RAJdZHDdqphI95A
- VzaINIUj/Kfj/CDYdnt37cRCHZXT+1lNZFE1IQ/uAiqy6NUcGLHecOlV0gUP04HRNFr9
- Wusquh0dMVXWrbgcXSaH1JwLTt+OAMmfSA/RsaukMb5Lp4RtkyTR4Un6SEpGc8ZqDsIJ Jw== 
+ mime-version; s=corp-2021-07-09;
+ bh=lFXvnaXAliVEKN00J6JGw6FZ2uC45ziffS62j09NnHA=;
+ b=eybtURGTmBWV+Fuu3+soQtebWWwBy1wnvyzlqGzF9Cx5ICOXlRvJhiv1zOvvjJ5JCN1g
+ +c1wKI0XhXb6CJs6kh6rvnvVEoQ2+wjd0NvfY3BjwIRGXZlh1TEr20xrHJB5MgRUc391
+ iAcf89U6MUR+qUvDHiJueyvqP4XpziWhkVvxmN0xypJv/XcATU0somsBdMdPZ/2Ai21e
+ wc/1u3Py8qArJ4wDo/sbTcOOOCqlKMqA0Zi15m4JzL2KFHfjfDS4ok6uWJ1w2xdmVxbn
+ TQXZP2oBFCJ8jVwG4vhzwZTPLJHGPCchx40TX10OHNjrOE7meMaGz9T2Tn98f6kbbUyA gQ== 
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=oracle.com;
  h=from : to : cc :
  subject : date : message-id : in-reply-to : references : content-type :
- content-transfer-encoding : mime-version; s=corp-2020-01-29;
- bh=wbARbsBnv0x79gqOC82Uzi6mCnkoaSdr+1qX8j9c4m8=;
- b=hIgC65GaJ023Yl0eiA70B4IP6LJ3+9KMEG6NRr0jXAbcGu5bHsq6bfAJK50o4o4N4Xkh
- pbGNY4orX7wlncJ+xA2u+iLWwStsVUIJTa+tnD6CidHzfwWl3E4/ULWs1r98GmggFlnb
- iPgs02f/9+rk1xFYUCtsMNjsvN3IaIQcd5H5OPEOpLL+TJI8K5j+NFcsJ+eDvMg2wLie
- 3fUHo373pWnAKkwd6mGhlPAeZFfoAz+E7SuQnZDy55/ZgVKiIHIeHt5bJjOWv3n0ImWj
- kuoKT6R5Z3Hy1uq/UFkRZmUTF4k28X5XzpeTk4iu2g21XWSn2vZ5Z3blGixcIWw4dlgO cg== 
-Received: from userp3030.oracle.com (userp3030.oracle.com [156.151.31.80])
- by mx0b-00069f02.pphosted.com with ESMTP id 3apvjr0ktu-1
+ mime-version; s=corp-2020-01-29;
+ bh=lFXvnaXAliVEKN00J6JGw6FZ2uC45ziffS62j09NnHA=;
+ b=bNzk/CK7Y1r3qWO+Un5i9d6rjxCPE9HCRPTEMeQdGDBXKRHgQU+ZnQKQ0jxQsexUWqrw
+ Qy03HsoOEp9DayzgrtoINAtUODRqjSeVrIvqTqGxop41JUSR5W2RcwTEpVbE307Ssp0L
+ EDazArM48Pot37D1p6Pnn6T6JScpyvSilJG8Pj8A894Y+JQVQlb9kt1HYOzmdYWs+toS
+ cT7xi7EhohpFR2GHMpWi4og3sAEsqgLfNRXkkD6C7ROj/2fAMdAbUGke3ZRUWLwdM6jW
+ ov+Xzm8nfbeUuHKLEvBbvBd+Ef/L+svG6kxS2HSg3iTdkMiXNEzULFJ7U5JeDWE9KfD+ vw== 
+Received: from userp3020.oracle.com (userp3020.oracle.com [156.151.31.79])
+ by mx0b-00069f02.pphosted.com with ESMTP id 3apvjr0kue-1
  (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
- Fri, 27 Aug 2021 13:20:51 +0000
-Received: from pps.filterd (userp3030.oracle.com [127.0.0.1])
- by userp3030.oracle.com (8.16.0.42/8.16.0.42) with SMTP id 17RD9ouc076983;
- Fri, 27 Aug 2021 13:20:49 GMT
+ Fri, 27 Aug 2021 13:21:03 +0000
+Received: from pps.filterd (userp3020.oracle.com [127.0.0.1])
+ by userp3020.oracle.com (8.16.0.42/8.16.0.42) with SMTP id 17RDBeGT013130;
+ Fri, 27 Aug 2021 13:21:01 GMT
 Received: from nam02-bn1-obe.outbound.protection.outlook.com
- (mail-bn1nam07lp2041.outbound.protection.outlook.com [104.47.51.41])
- by userp3030.oracle.com with ESMTP id 3ajpm4pqa4-1
+ (mail-bn1nam07lp2040.outbound.protection.outlook.com [104.47.51.40])
+ by userp3020.oracle.com with ESMTP id 3akb924gn5-1
  (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
- Fri, 27 Aug 2021 13:20:49 +0000
+ Fri, 27 Aug 2021 13:21:01 +0000
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=jAhkCFk1Uk2q1gvUyLtciTTZHIq8giEZqUWFwQTzy77vOWTkSjPXTFyWK+gQlwMP4CUDGnOx7xxChSK1gGEZZwKZoOXbXPYTRIW+MxLGceJiySbTdKQZCkO68kvC6w0DPxwhmM1xJBpo9Whovy6Mr7jUCHNxkPXjoz52bhfdoCvY9pPuQBTLarV1j/6Kue/Jph6Dh6jvSoUySSuG0ivjDsDv+h9990Swg9NdnUta7J4HgdQfU0foBjoDZmdu51wLwklVUX9jJ2UdrLrBqaMwcpr+dHu7P0uBq+ZAu49qfEyKafrM0pa4LDFcU00IT/J7N8zFMPZMJq0UD9JMgzcyEw==
+ b=C7lZepQVcRpXZa8Bk9qkcX9gXHeo9LoCZ6IZVmiGVzkX0gR0ZspZkd1jSnYLtYVKa4exDv1FTmkm9eqEIns64I2xyT70JJCpxWfzdc0/Z/Q12iKhKVoOpFcbr82YVOZ+MN8CPpXRcEm3CM2Ewy9FXJY8u0m4/9G1YS1Krv7jnyf1SnxR5JJJSyhFgNlFwinDTMNVrH6Lvy5f43I3r8cAbQFiwRCOmFDraf2uPNMNT/kcBHxrFI0Y/fuWQvbsRSxB7mUYwPq+5fnZAGxSHNqvP3BzbS0eoIp4hRoZ7o7c6CdQIVrNhCYlPtw1Kz76xlNu+XAOq0uMCqX7XK98FoZcZg==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com; 
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=wbARbsBnv0x79gqOC82Uzi6mCnkoaSdr+1qX8j9c4m8=;
- b=VMaGdcFRxYBx7KmeCNGxyP+HgyKcxV0rNH2bwd3pE5tSynN3mrtGHu9G7mZEh/1oC3Qg0K/LYi+yv+p6ozavn2FY2djKye/BHruXa9XxO/UJotdpr7w+nYnftfBETrTyeAbtFVdBFH29FGOlo97pUo5B6nRkv8mc0ZTkmfy11GEecjbbPVzz09nePCs/N3Z4Kz5Nfe2uYWeCxAmcTfDaYTp8qniLihuGMw07zmFBAN1cHP0bRRp6/2j0qS+dsk8MYBX2xgvkuIDXk4mpn6Aymsc2xLkKNbw5aiMgqjEy00H+++42t3nAluG471YVdLnjcyXsfWIO3sWHePrEw9bH7g==
+ bh=lFXvnaXAliVEKN00J6JGw6FZ2uC45ziffS62j09NnHA=;
+ b=e05sMUC43/7E10VKPj2TeC17MZk/acvyzJP0v/YftlGFGAVi2NyH2s5Lt9VgWgj/GyT9k3Qu7O+aSEy1186Bu3cTtW7lxAoKA7jtKBVoCuUrojDxpiqeJNVhy6jmAz+OF+T9oU/XNYvZLU65fIg1HCCfqzHowjeGeoKdcE7YB7KS6CzjiKG+oRPNTpPjT3VsOavkUdGgPaUdHvdwAbA2l08umEDtkcIOq5VGcrcW2bQRax0pwLFxUSPdKynHK3fSnlu2nhtXoyOGsYn8ioQxjvOcBwmjWLxOjFBR37z1mSNDhmy3A8hn1TiX31kWZA3omsDBqG6SIUbOaTsdhg2KZg==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
  smtp.mailfrom=oracle.com; dmarc=pass action=none header.from=oracle.com;
  dkim=pass header.d=oracle.com; arc=none
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
  d=oracle.onmicrosoft.com; s=selector2-oracle-onmicrosoft-com;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=wbARbsBnv0x79gqOC82Uzi6mCnkoaSdr+1qX8j9c4m8=;
- b=Z5BcEaGDPB3dcjCt8V6Rk6GSHID1spAwC50OSwkoBTtHU4LmLz4eQc/LS+5s4OG/4l8HphHKGXjPeQbEGAPl9F9wFw/tNyNCAxc88aRwb76PQtwr/ibbQMWJu1ZLuW9kaUS2UB0gPHWyHPLjeB/PIM5mdyjDYsPAWPBv3kd56QI=
+ bh=lFXvnaXAliVEKN00J6JGw6FZ2uC45ziffS62j09NnHA=;
+ b=ewc9LLRNZMBENnXbFszpxa7/0BJ68dVbf5MvKBJAQPV8goKLQqBpxPhUXEAYLb0Mm79aqCTD6GRLMmTITdB5hKHzrQXEZ5D0LC8iBOvsmOfioqCpraTkdlAOgdTUFzxydsp0RebheAU9be6F5aPSRfuFc5j5v/DOtrvq0MIQ7wo=
 Authentication-Results: vger.kernel.org; dkim=none (message not signed)
  header.d=none; vger.kernel.org; dmarc=none action=none header.from=oracle.com; 
 Received: from BY5PR10MB3793.namprd10.prod.outlook.com (2603:10b6:a03:1f6::14)
  by BYAPR10MB3237.namprd10.prod.outlook.com (2603:10b6:a03:153::30)
  with Microsoft SMTP Server (version=TLS1_2,
  cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4436.23; Fri, 27 Aug
- 2021 13:20:47 +0000
+ 2021 13:20:59 +0000
 Received: from BY5PR10MB3793.namprd10.prod.outlook.com
  ([fe80::e035:720f:86fd:bae3]) by BY5PR10MB3793.namprd10.prod.outlook.com
  ([fe80::e035:720f:86fd:bae3%4]) with mapi id 15.20.4457.020; Fri, 27 Aug 2021
- 13:20:47 +0000
+ 13:20:59 +0000
 From: Ross Philipson <ross.philipson@oracle.com>
 To: linux-kernel@vger.kernel.org, x86@kernel.org,
  iommu@lists.linux-foundation.org, linux-integrity@vger.kernel.org,
  linux-doc@vger.kernel.org
-Subject: [PATCH v4 06/14] x86: Secure Launch main header file
-Date: Fri, 27 Aug 2021 09:28:29 -0400
-Message-Id: <1630070917-9896-7-git-send-email-ross.philipson@oracle.com>
+Subject: [PATCH v4 13/14] x86: Secure Launch late initcall platform module
+Date: Fri, 27 Aug 2021 09:28:36 -0400
+Message-Id: <1630070917-9896-14-git-send-email-ross.philipson@oracle.com>
 X-Mailer: git-send-email 1.8.3.1
 In-Reply-To: <1630070917-9896-1-git-send-email-ross.philipson@oracle.com>
 References: <1630070917-9896-1-git-send-email-ross.philipson@oracle.com>
@@ -130,71 +130,64 @@ X-MS-Exchange-MessageSentRepresentingType: 1
 Received: from lateralus.us.oracle.com (209.17.40.45) by
  SN6PR05CA0011.namprd05.prod.outlook.com (2603:10b6:805:de::24) with Microsoft
  SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.20.4478.8 via Frontend Transport; Fri, 27 Aug 2021 13:20:45 +0000
+ 15.20.4478.8 via Frontend Transport; Fri, 27 Aug 2021 13:20:57 +0000
 X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: 347e2a2c-beda-4fad-af9d-08d9695d7b22
+X-MS-Office365-Filtering-Correlation-Id: 9afda798-cae3-4923-4495-08d9695d823b
 X-MS-TrafficTypeDiagnostic: BYAPR10MB3237:
 X-MS-Exchange-Transport-Forked: True
-X-Microsoft-Antispam-PRVS: <BYAPR10MB323759C016C615975B4594CFE6C89@BYAPR10MB3237.namprd10.prod.outlook.com>
-X-MS-Oob-TLC-OOBClassifiers: OLM:3826;
+X-Microsoft-Antispam-PRVS: <BYAPR10MB323782DEC40D8A99924C232CE6C89@BYAPR10MB3237.namprd10.prod.outlook.com>
+X-MS-Oob-TLC-OOBClassifiers: OLM:1227;
 X-MS-Exchange-SenderADCheck: 1
 X-MS-Exchange-AntiSpam-Relay: 0
 X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: 8CjDf79BEzuIr3bGxGyQGWWm+9t1RBWBBuPAWp/eFUXaq8soeV8k8kDV7hOtiqGTsPbG9Cw1clJjYxJ0NZEdI9j7U1Ex2EF/oz6z/iAHWJKja2heLDNQCIzmjnTZudW66BL05NxVRxivJffVpVkar+WbuUezbuAV72TYl954uC1C7PUwg4VVHr6Q/amlPUtZFg2JvMK/G6ZBQmi2PK+uJN3GD55MEnSxRwDeO8i9EJwv3rMYL1q2T95FlcgRYi5yDB+coF+yDaykRVjBVbiZ8oUOxfQauKt9m3RG5m8BAv62/7k35MSvIl/TiZqndh7WNkJOjRckBd6bb1L7WuZFqWg4IJ/EPUVQw0r8T+7wMSAZObvW40e+tGY5sCuiwD4Y5FmmPkdyGCCnkdtIJv9tw+2jc3NyqtEIKVMrHFYyj2BVhVqzdgaqYZYw1pafhntKT4EQRxCMuGWiVjc4kfwdlfdqlBJSp3y3f7GgKz8hVk1wYxr0ixRf5b7im8B8tpj4+OyHfx/MRIgXMyU9kLXcvc+v5OwneDf3k1FqqfrfXu60/0vEPlMz3kXSUQw+LL5ePg0saaUe6m6Gfb5xDcWnL15x/0VPl1LzAb8yYURAFX4Hl2GxF/HsrEzagg6E5hDw/jZ4q+HZG5eMUIc1kOWPMBY4jN24FOjUSbwaFcz/ONq2wz4p+eJ36w4y3bniElYQtp7cUSiUe0/a0zUCxCDDug==
+X-Microsoft-Antispam-Message-Info: s0EY+afZOX/1DXZdOca+AWMA9w6DuD/9Gfu2kEiXzewOAdl5abmn9gr4hrQ4XbYYYE2Npm3FcthfcqVeXxvd1api5e33yIg+IDAUFI6YkTfOWnH0gFTdOpqa5kiu7LwdVnDfmcs+T9Jf0GMZo4NZgNMkBBeUISI8Y4ltwxj3UF0+irbKmphfACypxbngGMFBmphD7i7YXKr9REKZdKOtwzG63NcAHJ97gOTlPiepdrMNArba9etTQOPcROP+ZvsoAONb4uuVnFiAbb/GalqKy7yxmrqZeDDOwmCgWy7SDb4Teq/EYpvE+vQo7Qg0tpGavCXfqxyLm6ys2+l4zf3UYvG9SRPNeX+HetoYZNCLoVBv+CIptn3FyNOLPjheHDNnuLrXPGF2b9rn5MNDMA0TPFDs6FMHPilH6i2hTuxlPpGVfIWhRhjJKtxWwcBvE3VJBQ3QZXzwD9PabTkzdbgytduxmuQoXF4GKeT9X18fSQ7FGrkutsW/cg1Mlv3bl4qww4ejGZ63aQU2DApF6uD60sbHlTqcRsvzBym6Q/5y6MkuSzwiwxh11Jo2kVdKmIjiffe3pp6rMbGc9JbUT7W/bfiTAeBS5SulWyVb99zuTNOJ/agDsFizWhRTbHryfSbu1RKOu5XG4SjJW44LHRSp3TbwxFoiYZAxfT8UozN1syvTs2nyFzYFOcvQrD1XX7ExBd0HSzu65o/ILXzNpB//Wg==
 X-Forefront-Antispam-Report: CIP:255.255.255.255; CTRY:; LANG:en; SCL:1; SRV:;
  IPV:NLI; SFV:NSPM; H:BY5PR10MB3793.namprd10.prod.outlook.com; PTR:; CAT:NONE;
  SFS:(136003)(39860400002)(366004)(346002)(376002)(396003)(956004)(44832011)(2616005)(30864003)(2906002)(52116002)(26005)(7696005)(478600001)(38350700002)(38100700002)(6486002)(36756003)(186003)(83380400001)(6666004)(86362001)(8936002)(8676002)(316002)(66946007)(66556008)(4326008)(66476007)(7416002)(5660300002);
  DIR:OUT; SFP:1101; 
 X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?utf-8?B?QUFKS1dQWUgrZERVUkFwS2NpRWdpYlo1SExKenNIRzhwOUFLVnlhMEo3Rmxm?=
- =?utf-8?B?TlZkcHQzNDVKd0hZT0lKL3hzUFcrMThvbWE3dDdDeXBtQnR0Y2ZXa1RFYmRY?=
- =?utf-8?B?SEFGTjlxK1oyOFFmNFQ2WUFNdGlXVjd3NlhPd0ExaDJ3OElLbEI0UnFGd081?=
- =?utf-8?B?KzA5V3Z2dzg2UXh2ZFQ0MGlHUi9VVUFmeURtSW40VmoxOWNoSXhkWnpIWVBZ?=
- =?utf-8?B?RXhlbUdoUkFTZHZxY2g1TE1pSHFZb21xaSswemdUOVVOZng0NVJ1NmtvaVlZ?=
- =?utf-8?B?Wkh2QTdBSjNLUzNIbm5GUGxIRCtsdTg5aDY3cFRYZTY2eHFaS2hZQURRUjcx?=
- =?utf-8?B?QURLVlF2MkdrQVBUaS9MdGZ6V05CZ0VZL0NVcXBuMUJuNUpWbHRIYnA1LzdD?=
- =?utf-8?B?MlVFNjZHRjVPTktxQ3lRbWlXNGxKU2VvZUwxZS9yV2ZtcFovQlRINjVVek5n?=
- =?utf-8?B?SUpVOGV3dkdVZm9DekRlUGxCbW5CVEtMckhvSjdrV3dxdXcrWENKVXdVN2xn?=
- =?utf-8?B?MS9nZHA2blRxK0MzVXZ2ZnB1TjgzdGtiSitPRmpBd1RISUZYZ29VTlNQZnI0?=
- =?utf-8?B?TVJ5K2NWd3V6MkEwVzNYaUJrNHI4OUVNdStRYkd2RFN3Y1dRODdFSkZ4Nk9Z?=
- =?utf-8?B?RnozaTlQalArdS9VaUR3djczY1l6M01QY1N1T0p4aSszZ0RUTzAwM0hGbXVZ?=
- =?utf-8?B?ZWZiV3JrRm9jUlowanZPRksxR2V5U2hXL1VrY3pQbEpLMWRuMDVzQjA0VjR2?=
- =?utf-8?B?Q2V5V2lDd1dNZDFGWjltTm0yT1FFMHpnOUpNTlNRUlcvaThpQThYN01wQ1BG?=
- =?utf-8?B?MGVza0MzUC94aW80QVArUitYbGc0Ymd5NnlBMGJZQndXKzdEM3hTN0hYYU9N?=
- =?utf-8?B?T0pHSVp6WWRMTXd2U0NEei9yYUR6cE80SVdQV3FROHdvSjJlbjJQZDF3Y1Rl?=
- =?utf-8?B?Z2tDeXdNTS95eGJpb2JFNkFBVmhTd3hOcXpKa2lBbEJQVW15OGhnd3JENTNC?=
- =?utf-8?B?VGhpektmZVJDNUNCa2w3VGtRTGhDV0NTV2l1RG1JZWQvWGN6MUNWM0JpZ1d5?=
- =?utf-8?B?QTM3MDE1SU5JekF3WlZSMjJYa09yTy8rSFlsOFdjSlFNZU9pdmpyeTFwVXJj?=
- =?utf-8?B?TmlDdTMzWTNvMFlab3JMVzZDN0JGZUxrd05RdERuREYxNEtSakZsZkZBM2R1?=
- =?utf-8?B?NzZwQTkwcVNaRDlvR2lwR08xSEVRdTRCOEZUMEJxR0cxR0ZNTG8xdTZVWGIw?=
- =?utf-8?B?aUZNN0tqakVCZExONFdHVmRRSmtHYU40anFQcFhYb3pDN3pVTEp0bGhqa1BB?=
- =?utf-8?B?bjZXT3RocHBzSHJGVmRtZm14aUx6QitYcmlvQzRWdmFMM01Wb3BxM2VpYXla?=
- =?utf-8?B?b0krQy8vbVRTenFyUXFuWGp1b0VTL1RMZ1pIWjBCOWUzd3pITndaRjlqUFhQ?=
- =?utf-8?B?UEJONVlhYnRoMjRVdTBkZzQxOW94ZWNXMmFhd2lVY3orOHpKcXpjeWVYd2JZ?=
- =?utf-8?B?aHhlOWR5L0plMENhUERWc2c3QjZNWi9lRElscllnbkk4cy9IK0ZiYWJzYnVF?=
- =?utf-8?B?ZXlZZm41WjZUVExoN3Z5a2xZYjQyNzk0allJVnNVcTNBRFpoeXMzREg1Y095?=
- =?utf-8?B?eFRlUWJUdXFZTWg2bWdqZHhKcGMvc1crczVjcWVaTnBSZEJrVnFHVENuUExv?=
- =?utf-8?B?UEJmNkdXVWNxMk00WlZJS0YySm9jcmlQdzB3bENMakRNcTc5ZEt3YzhEV2dB?=
- =?utf-8?Q?iyHxFoffMWB9aCcQGBUQ0LsgUvglTp6El4ZyXoy?=
+X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?Yu4WRt8XumkJGWrF9sS3eB142Di1LJe0CxpY5j1D/YAxoQlUSs1DaY8Z6Qcr?=
+ =?us-ascii?Q?gzJ21ROFDpNAnGZ0ukm+L1ZQyTFo+jKAzZETbaVrLtcvwrtcJC9gsBLAQtQt?=
+ =?us-ascii?Q?NyUMpY31cImGgJnZoNkRtXeSfhfYjIX7H0WL592wAVBnThdbNhHHQ6vqum8Q?=
+ =?us-ascii?Q?nycIZ5KihPyLEKswV7wJvB1A8vkN2RcsjTVKOqALOMzR8ifGSPHq/0f+VPhl?=
+ =?us-ascii?Q?xvrT4esB9RYb1ezWZvOEQ6Mje8fkAoZN30RwNVpdFtsZlDes+J4O30+Slf1K?=
+ =?us-ascii?Q?wEXB64lFuRGgr9qsNwibSl4P9bHK61xt/Xi0Y8uBWldjnDlrDlKQRPpvo7zK?=
+ =?us-ascii?Q?+9suOdmeoqnh8zUKnn/3nTuIyCh/vrjraPh7ayR/tp+ESfhsiMr1DgyySPHr?=
+ =?us-ascii?Q?H89hmkwdP2PTgyv51efFVJB5RfsXQKdRE4wV0WfJsSw+V1IqzIRVlI+rDeHc?=
+ =?us-ascii?Q?VPe9NKXNmdrqvaTmAevikQ0Naim6eXA0NCszOhdzia7yh7XaKpC8YkPbXm1t?=
+ =?us-ascii?Q?bqnuoIjIsl9LoS/nsDtgJMPzZvzZHM2xJLOEXExdwYPNFFraAKWZyurycFG7?=
+ =?us-ascii?Q?CiPOttTSyqwYRlI31fnyg/GxBcA6C4XhbwdAX10FHGUkDqbxRhUIi8AHKUyI?=
+ =?us-ascii?Q?LwyuQFIrQjEYqGg2wAItRVhWyUBdb3QXbJa/VAX9MpRYm1ID1qbotJVu1k2y?=
+ =?us-ascii?Q?r36NplAJ7BTXKmzdYW/FGV9K/Uqi1fVpzVNYYpfrDGNcLVyJO+sXf1bFeA/R?=
+ =?us-ascii?Q?4QQUeRr4w8wW5kX9MMrOTQnPVw5LLqNDXa2LOZki0pUVGWecjmaA1N7rrO62?=
+ =?us-ascii?Q?xfo8huwu633nmRkN5EM6JAR6SniMV+khX+5eVJvTG3ksa4jDoBqHWt8PLFEd?=
+ =?us-ascii?Q?ONYLSmJ71uyTYpVySQ+bsQpXpiZEJh2dipOnPGejFB11PPfSmQOeND2D6kt3?=
+ =?us-ascii?Q?4xXNxDINHi+8jAbsss7glSlr5TNWtQZJptnxOiOePSjEbSntbXpFG7FuLw1i?=
+ =?us-ascii?Q?62LDBJam7PvjC44GTx7AOfbeNdCXNfeqpCUZE2NzBv0eL5BLbQInMu5IC7Vf?=
+ =?us-ascii?Q?DJ1V4JOnx48/0kaoG7vBGCa4YrewU6bLZ4SaAu0Lw4rQ7iqPxIEl4c1BF/UF?=
+ =?us-ascii?Q?v5vghANIRXfQ+sUSi4m3r0MuTfUWl1oflhdB39UpoNvMVGhgWCLNtk7+AKHd?=
+ =?us-ascii?Q?Yv1g/flq3DbMJKgRBTmho8otUpAu6tMH6Y26y86vOyW55LXDVcYQhB/gw7+m?=
+ =?us-ascii?Q?l2TyD7TConN196IWQPwykBX7SJ5fOxrhfgc7hTFv0B/koX1E5ysXiOKs3rz1?=
+ =?us-ascii?Q?zVJm/DNgu/rKLBL9lk3n4o0A?=
 X-OriginatorOrg: oracle.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 347e2a2c-beda-4fad-af9d-08d9695d7b22
+X-MS-Exchange-CrossTenant-Network-Message-Id: 9afda798-cae3-4923-4495-08d9695d823b
 X-MS-Exchange-CrossTenant-AuthSource: BY5PR10MB3793.namprd10.prod.outlook.com
 X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 27 Aug 2021 13:20:46.9900 (UTC)
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 27 Aug 2021 13:20:58.8712 (UTC)
 X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
 X-MS-Exchange-CrossTenant-Id: 4e2c6054-71cb-48f1-bd6c-3a9705aca71b
 X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: LK4DSw9p1UNRkbbuJMoEmfUZLheTV1Fij0+75XkxHLjL+uDruwldGMPQBKWQtsg/jxV+YUEdsLipQTyKrwJ4GMrktq8k/qX/nlLmcwGNR4Q=
+X-MS-Exchange-CrossTenant-UserPrincipalName: AqoCfE6/sOJZ+OWTqdOo6amqIbUWi+BHAtTQeexIr2gBZ6Yh23YCcKB8gbmbdXoESPMQRtr91QT9iW4O/G8e6Nr3gGmSpQjgSc7QoDCqvE4=
 X-MS-Exchange-Transport-CrossTenantHeadersStamped: BYAPR10MB3237
 X-Proofpoint-Virus-Version: vendor=nai engine=6300 definitions=10088
  signatures=668682
-X-Proofpoint-Spam-Details: rule=notspam policy=default score=0 spamscore=0
- phishscore=0 malwarescore=0
- mlxscore=0 bulkscore=0 mlxlogscore=999 suspectscore=0 adultscore=0
+X-Proofpoint-Spam-Details: rule=notspam policy=default score=0 suspectscore=0
+ phishscore=0 spamscore=0
+ bulkscore=0 mlxlogscore=999 malwarescore=0 adultscore=0 mlxscore=0
  classifier=spam adjust=0 reason=mlx scancount=1 engine=8.12.0-2107140000
  definitions=main-2108270086
-X-Proofpoint-GUID: tuWC_Rq9DvL0g4WnQDB91iQT8BFWMr0D
-X-Proofpoint-ORIG-GUID: tuWC_Rq9DvL0g4WnQDB91iQT8BFWMr0D
+X-Proofpoint-GUID: vEG0ghAhCIDfoNNA2uDJ78B-8E1G0Ble
+X-Proofpoint-ORIG-GUID: vEG0ghAhCIDfoNNA2uDJ78B-8E1G0Ble
 Cc: dpsmith@apertussolutions.com, ross.philipson@oracle.com,
  luto@amacapital.net, mingo@redhat.com, bp@alien8.de, hpa@zytor.com,
  kanth.ghatraju@oracle.com, tglx@linutronix.de,
@@ -211,269 +204,547 @@ List-Post: <mailto:iommu@lists.linux-foundation.org>
 List-Help: <mailto:iommu-request@lists.linux-foundation.org?subject=help>
 List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
  <mailto:iommu-request@lists.linux-foundation.org?subject=subscribe>
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-SW50cm9kdWNlIHRoZSBtYWluIFNlY3VyZSBMYXVuY2ggaGVhZGVyIGZpbGUgdXNlZCBpbiB0aGUg
-ZWFybHkgU0wgc3R1YgphbmQgdGhlIGVhcmx5IHNldHVwIGNvZGUuCgpTaWduZWQtb2ZmLWJ5OiBS
-b3NzIFBoaWxpcHNvbiA8cm9zcy5waGlsaXBzb25Ab3JhY2xlLmNvbT4KLS0tCiBpbmNsdWRlL2xp
-bnV4L3NsYXVuY2guaCB8IDUzMiArKysrKysrKysrKysrKysrKysrKysrKysrKysrKysrKysrKysr
-KysrKysrKysrKysKIDEgZmlsZSBjaGFuZ2VkLCA1MzIgaW5zZXJ0aW9ucygrKQogY3JlYXRlIG1v
-ZGUgMTAwNjQ0IGluY2x1ZGUvbGludXgvc2xhdW5jaC5oCgpkaWZmIC0tZ2l0IGEvaW5jbHVkZS9s
-aW51eC9zbGF1bmNoLmggYi9pbmNsdWRlL2xpbnV4L3NsYXVuY2guaApuZXcgZmlsZSBtb2RlIDEw
-MDY0NAppbmRleCAwMDAwMDAwLi5jMTI1YjY3Ci0tLSAvZGV2L251bGwKKysrIGIvaW5jbHVkZS9s
-aW51eC9zbGF1bmNoLmgKQEAgLTAsMCArMSw1MzIgQEAKKy8qIFNQRFgtTGljZW5zZS1JZGVudGlm
-aWVyOiBHUEwtMi4wICovCisvKgorICogTWFpbiBTZWN1cmUgTGF1bmNoIGhlYWRlciBmaWxlLgor
-ICoKKyAqIENvcHlyaWdodCAoYykgMjAyMSwgT3JhY2xlIGFuZC9vciBpdHMgYWZmaWxpYXRlcy4K
-KyAqLworCisjaWZuZGVmIF9MSU5VWF9TTEFVTkNIX0gKKyNkZWZpbmUgX0xJTlVYX1NMQVVOQ0hf
-SAorCisvKgorICogU2VjdXJlIExhdW5jaCBEZWZpbmVkIFN0YXRlIEZsYWdzCisgKi8KKyNkZWZp
-bmUgU0xfRkxBR19BQ1RJVkUJCTB4MDAwMDAwMDEKKyNkZWZpbmUgU0xfRkxBR19BUkNIX1NLSU5J
-VAkweDAwMDAwMDAyCisjZGVmaW5lIFNMX0ZMQUdfQVJDSF9UWFQJMHgwMDAwMDAwNAorCisvKgor
-ICogU2VjdXJlIExhdW5jaCBDUFUgVHlwZQorICovCisjZGVmaW5lIFNMX0NQVV9BTUQJMQorI2Rl
-ZmluZSBTTF9DUFVfSU5URUwJMgorCisjaWYgSVNfRU5BQkxFRChDT05GSUdfU0VDVVJFX0xBVU5D
-SCkKKworI2RlZmluZSBfX1NMMzJfQ1MJMHgwMDA4CisjZGVmaW5lIF9fU0wzMl9EUwkweDAwMTAK
-KworLyoKKyAqIEludGVsIFNhZmVyIE1vZGUgRXh0ZW5zaW9ucyAoU01YKQorICoKKyAqIEludGVs
-IFNNWCBwcm92aWRlcyBhIHByb2dyYW1taW5nIGludGVyZmFjZSB0byBlc3RhYmxpc2ggYSBNZWFz
-dXJlZCBMYXVuY2hlZAorICogRW52aXJvbm1lbnQgKE1MRSkuIFRoZSBtZWFzdXJlbWVudCBhbmQg
-cHJvdGVjdGlvbiBtZWNoYW5pc21zIHN1cHBvcnRlZCBieSB0aGUKKyAqIGNhcGFiaWxpdGllcyBv
-ZiBhbiBJbnRlbCBUcnVzdGVkIEV4ZWN1dGlvbiBUZWNobm9sb2d5IChUWFQpIHBsYXRmb3JtLiBT
-TVggaXMKKyAqIHRoZSBwcm9jZXNzb3LigJlzIHByb2dyYW1taW5nIGludGVyZmFjZSBpbiBhbiBJ
-bnRlbCBUWFQgcGxhdGZvcm0uCisgKgorICogU2VlIEludGVsIFNETSBWb2x1bWUgMiAtIDYuMSAi
-U2FmZXIgTW9kZSBFeHRlbnNpb25zIFJlZmVyZW5jZSIKKyAqLworCisvKgorICogU01YIEdFVFNF
-QyBMZWFmIEZ1bmN0aW9ucworICovCisjZGVmaW5lIFNNWF9YODZfR0VUU0VDX1NFWElUCTUKKyNk
-ZWZpbmUgU01YX1g4Nl9HRVRTRUNfU01DVFJMCTcKKyNkZWZpbmUgU01YX1g4Nl9HRVRTRUNfV0FL
-RVVQCTgKKworLyoKKyAqIEludGVsIFRydXN0ZWQgRXhlY3V0aW9uIFRlY2hub2xvZ3kgTU1JTyBS
-ZWdpc3RlcnMgQmFua3MKKyAqLworI2RlZmluZSBUWFRfUFVCX0NPTkZJR19SRUdTX0JBU0UJMHhm
-ZWQzMDAwMAorI2RlZmluZSBUWFRfUFJJVl9DT05GSUdfUkVHU19CQVNFCTB4ZmVkMjAwMDAKKyNk
-ZWZpbmUgVFhUX05SX0NPTkZJR19QQUdFUyAgICAgKChUWFRfUFVCX0NPTkZJR19SRUdTX0JBU0Ug
-LSBcCisJCQkJICBUWFRfUFJJVl9DT05GSUdfUkVHU19CQVNFKSA+PiBQQUdFX1NISUZUKQorCisv
-KgorICogSW50ZWwgVHJ1c3RlZCBFeGVjdXRpb24gVGVjaG5vbG9neSAoVFhUKSBSZWdpc3RlcnMK
-KyAqLworI2RlZmluZSBUWFRfQ1JfU1RTCQkJMHgwMDAwCisjZGVmaW5lIFRYVF9DUl9FU1RTCQkJ
-MHgwMDA4CisjZGVmaW5lIFRYVF9DUl9FUlJPUkNPREUJCTB4MDAzMAorI2RlZmluZSBUWFRfQ1Jf
-Q01EX1JFU0VUCQkweDAwMzgKKyNkZWZpbmUgVFhUX0NSX0NNRF9DTE9TRV9QUklWQVRFCTB4MDA0
-OAorI2RlZmluZSBUWFRfQ1JfRElEVklECQkJMHgwMTEwCisjZGVmaW5lIFRYVF9DUl9WRVJfRU1J
-RgkJCTB4MDIwMAorI2RlZmluZSBUWFRfQ1JfQ01EX1VOTE9DS19NRU1fQ09ORklHCTB4MDIxOAor
-I2RlZmluZSBUWFRfQ1JfU0lOSVRfQkFTRQkJMHgwMjcwCisjZGVmaW5lIFRYVF9DUl9TSU5JVF9T
-SVpFCQkweDAyNzgKKyNkZWZpbmUgVFhUX0NSX01MRV9KT0lOCQkJMHgwMjkwCisjZGVmaW5lIFRY
-VF9DUl9IRUFQX0JBU0UJCTB4MDMwMAorI2RlZmluZSBUWFRfQ1JfSEVBUF9TSVpFCQkweDAzMDgK
-KyNkZWZpbmUgVFhUX0NSX1NDUkFUQ0hQQUQJCTB4MDM3OAorI2RlZmluZSBUWFRfQ1JfQ01EX09Q
-RU5fTE9DQUxJVFkxCTB4MDM4MAorI2RlZmluZSBUWFRfQ1JfQ01EX0NMT1NFX0xPQ0FMSVRZMQkw
-eDAzODgKKyNkZWZpbmUgVFhUX0NSX0NNRF9PUEVOX0xPQ0FMSVRZMgkweDAzOTAKKyNkZWZpbmUg
-VFhUX0NSX0NNRF9DTE9TRV9MT0NBTElUWTIJMHgwMzk4CisjZGVmaW5lIFRYVF9DUl9DTURfU0VD
-UkVUUwkJMHgwOGUwCisjZGVmaW5lIFRYVF9DUl9DTURfTk9fU0VDUkVUUwkJMHgwOGU4CisjZGVm
-aW5lIFRYVF9DUl9FMlNUUwkJCTB4MDhmMAorCisvKiBUWFQgZGVmYXVsdCByZWdpc3RlciB2YWx1
-ZSAqLworI2RlZmluZSBUWFRfUkVHVkFMVUVfT05FCQkweDFVTEwKKworLyogVFhUQ1JfU1RTIHN0
-YXR1cyBiaXRzICovCisjZGVmaW5lIFRYVF9TRU5URVJfRE9ORV9TVFMJCSgxPDwwKQorI2RlZmlu
-ZSBUWFRfU0VYSVRfRE9ORV9TVFMJCSgxPDwxKQorCisvKgorICogU0lOSVQvTUxFIENhcGFiaWxp
-dGllcyBGaWVsZCBCaXQgRGVmaW5pdGlvbnMKKyAqLworI2RlZmluZSBUWFRfU0lOSVRfTUxFX0NB
-UF9XQUtFX0dFVFNFQwkwCisjZGVmaW5lIFRYVF9TSU5JVF9NTEVfQ0FQX1dBS0VfTU9OSVRPUgkx
-CisKKy8qCisgKiBPUy9NTEUgU2VjdXJlIExhdW5jaCBTcGVjaWZpYyBEZWZpbml0aW9ucworICov
-CisjZGVmaW5lIFRYVF9PU19NTEVfU1RSVUNUX1ZFUlNJT04JMQorI2RlZmluZSBUWFRfT1NfTUxF
-X01BWF9WQVJJQUJMRV9NVFJSUwkzMgorCisvKgorICogVFhUIEhlYXAgVGFibGUgRW51bWVyYXRp
-b24KKyAqLworI2RlZmluZSBUWFRfQklPU19EQVRBX1RBQkxFCQkxCisjZGVmaW5lIFRYVF9PU19N
-TEVfREFUQV9UQUJMRQkJMgorI2RlZmluZSBUWFRfT1NfU0lOSVRfREFUQV9UQUJMRQkJMworI2Rl
-ZmluZSBUWFRfU0lOSVRfTUxFX0RBVEFfVEFCTEUJNAorI2RlZmluZSBUWFRfU0lOSVRfVEFCTEVf
-TUFYCQlUWFRfU0lOSVRfTUxFX0RBVEFfVEFCTEUKKworLyoKKyAqIFNlY3VyZSBMYXVuY2ggRGVm
-aW5lZCBFcnJvciBDb2RlcyB1c2VkIGluIE1MRS1pbml0aWF0ZWQgVFhUIHJlc2V0cy4KKyAqCisg
-KiBUWFQgU3BlY2lmaWNhdGlvbgorICogQXBwZW5kaXggSSBBQ00gRXJyb3IgQ29kZXMKKyAqLwor
-I2RlZmluZSBTTF9FUlJPUl9HRU5FUklDCQkweGMwMDA4MDAxCisjZGVmaW5lIFNMX0VSUk9SX1RQ
-TV9JTklUCQkweGMwMDA4MDAyCisjZGVmaW5lIFNMX0VSUk9SX1RQTV9JTlZBTElEX0xPRzIwCTB4
-YzAwMDgwMDMKKyNkZWZpbmUgU0xfRVJST1JfVFBNX0xPR0dJTkdfRkFJTEVECTB4YzAwMDgwMDQK
-KyNkZWZpbmUgU0xfRVJST1JfUkVHSU9OX1NUUkFERExFXzRHQgkweGMwMDA4MDA1CisjZGVmaW5l
-IFNMX0VSUk9SX1RQTV9FWFRFTkQJCTB4YzAwMDgwMDYKKyNkZWZpbmUgU0xfRVJST1JfTVRSUl9J
-TlZfVkNOVAkJMHhjMDAwODAwNworI2RlZmluZSBTTF9FUlJPUl9NVFJSX0lOVl9ERUZfVFlQRQkw
-eGMwMDA4MDA4CisjZGVmaW5lIFNMX0VSUk9SX01UUlJfSU5WX0JBU0UJCTB4YzAwMDgwMDkKKyNk
-ZWZpbmUgU0xfRVJST1JfTVRSUl9JTlZfTUFTSwkJMHhjMDAwODAwYQorI2RlZmluZSBTTF9FUlJP
-Ul9NU1JfSU5WX01JU0NfRU4JMHhjMDAwODAwYgorI2RlZmluZSBTTF9FUlJPUl9JTlZfQVBfSU5U
-RVJSVVBUCTB4YzAwMDgwMGMKKyNkZWZpbmUgU0xfRVJST1JfSU5URUdFUl9PVkVSRkxPVwkweGMw
-MDA4MDBkCisjZGVmaW5lIFNMX0VSUk9SX0hFQVBfV0FMSwkJMHhjMDAwODAwZQorI2RlZmluZSBT
-TF9FUlJPUl9IRUFQX01BUAkJMHhjMDAwODAwZgorI2RlZmluZSBTTF9FUlJPUl9SRUdJT05fQUJP
-VkVfNEdCCTB4YzAwMDgwMTAKKyNkZWZpbmUgU0xfRVJST1JfSEVBUF9JTlZBTElEX0RNQVIJMHhj
-MDAwODAxMQorI2RlZmluZSBTTF9FUlJPUl9IRUFQX0RNQVJfU0laRQkJMHhjMDAwODAxMgorI2Rl
-ZmluZSBTTF9FUlJPUl9IRUFQX0RNQVJfTUFQCQkweGMwMDA4MDEzCisjZGVmaW5lIFNMX0VSUk9S
-X0hJX1BNUl9CQVNFCQkweGMwMDA4MDE0CisjZGVmaW5lIFNMX0VSUk9SX0hJX1BNUl9TSVpFCQkw
-eGMwMDA4MDE1CisjZGVmaW5lIFNMX0VSUk9SX0xPX1BNUl9CQVNFCQkweGMwMDA4MDE2CisjZGVm
-aW5lIFNMX0VSUk9SX0xPX1BNUl9NTEUJCTB4YzAwMDgwMTcKKyNkZWZpbmUgU0xfRVJST1JfSU5J
-VFJEX1RPT19CSUcJCTB4YzAwMDgwMTgKKyNkZWZpbmUgU0xfRVJST1JfSEVBUF9aRVJPX09GRlNF
-VAkweGMwMDA4MDE5CisjZGVmaW5lIFNMX0VSUk9SX1dBS0VfQkxPQ0tfVE9PX1NNQUxMCTB4YzAw
-MDgwMWEKKyNkZWZpbmUgU0xfRVJST1JfTUxFX0JVRkZFUl9PVkVSTEFQCTB4YzAwMDgwMWIKKyNk
-ZWZpbmUgU0xfRVJST1JfQlVGRkVSX0JFWU9ORF9QTVIJMHhjMDAwODAxYworI2RlZmluZSBTTF9F
-UlJPUl9PU19TSU5JVF9CQURfVkVSU0lPTgkweGMwMDA4MDFkCisjZGVmaW5lIFNMX0VSUk9SX0VW
-RU5UTE9HX01BUAkJMHhjMDAwODAxZQorI2RlZmluZSBTTF9FUlJPUl9UUE1fTlVNQkVSX0FMR1MJ
-MHhjMDAwODAxZgorI2RlZmluZSBTTF9FUlJPUl9UUE1fVU5LTk9XTl9ESUdFU1QJMHhjMDAwODAy
-MAorI2RlZmluZSBTTF9FUlJPUl9UUE1fSU5WQUxJRF9FVkVOVAkweGMwMDA4MDIxCisKKy8qCisg
-KiBTZWN1cmUgTGF1bmNoIERlZmluZWQgTGltaXRzCisgKi8KKyNkZWZpbmUgVFhUX01BWF9DUFVT
-CQk1MTIKKyNkZWZpbmUgVFhUX0JPT1RfU1RBQ0tfU0laRQkyNAorCisvKgorICogU2VjdXJlIExh
-dW5jaCBldmVudCBsb2cgZW50cnkgdHlwZS4gVGhlIFRYVCBzcGVjaWZpY2F0aW9uIGRlZmluZXMg
-dGhlCisgKiBiYXNlIGV2ZW50IHZhbHVlIGFzIDB4NDAwIGZvciBEUlRNIHZhbHVlcy4KKyAqLwor
-I2RlZmluZSBUWFRfRVZUWVBFX0JBU0UJCQkweDQwMAorI2RlZmluZSBUWFRfRVZUWVBFX1NMQVVO
-Q0gJCShUWFRfRVZUWVBFX0JBU0UgKyAweDEwMikKKyNkZWZpbmUgVFhUX0VWVFlQRV9TTEFVTkNI
-X1NUQVJUCShUWFRfRVZUWVBFX0JBU0UgKyAweDEwMykKKyNkZWZpbmUgVFhUX0VWVFlQRV9TTEFV
-TkNIX0VORAkJKFRYVF9FVlRZUEVfQkFTRSArIDB4MTA0KQorCisvKgorICogTWVhc3VyZWQgTGF1
-bmNoIFBDUnMKKyAqLworI2RlZmluZSBTTF9ERUZfSU1BR0VfUENSMTcJMTcgLyogVENHIERldGFp
-bHMgUENSICovCisjZGVmaW5lIFNMX0RFRl9DT05GSUdfUENSMTgJMTggLyogVENHIEF1dGhvcml0
-aWVzIFBDUiAqLworI2RlZmluZSBTTF9BTFRfQ09ORklHX1BDUjE5CTE5CisjZGVmaW5lIFNMX0FM
-VF9JTUFHRV9QQ1IyMAkyMAorCisvKgorICogTUxFIHNjcmF0Y2ggYXJlYSBvZmZzZXRzCisgKi8K
-KyNkZWZpbmUgU0xfU0NSQVRDSF9BUF9FQlgJCTAKKyNkZWZpbmUgU0xfU0NSQVRDSF9BUF9KTVBf
-T0ZGU0VUCTQKKyNkZWZpbmUgU0xfU0NSQVRDSF9BUF9QQVVTRQkJOAorCisjaWZuZGVmIF9fQVNT
-RU1CTFlfXworCisjaW5jbHVkZSA8bGludXgvaW8uaD4KKyNpbmNsdWRlIDxsaW51eC90cG0uaD4K
-KyNpbmNsdWRlIDxsaW51eC90cG1fZXZlbnRsb2cuaD4KKworLyoKKyAqIFNlY3VyZSBMYXVuY2gg
-QVAgd2FrZXVwIGluZm9ybWF0aW9uIGZldGNoZWQgaW4gU01QIGJvb3QgY29kZS4KKyAqLworc3Ry
-dWN0IHNsX2FwX3dha2VfaW5mbyB7CisJdTMyIGFwX3dha2VfYmxvY2s7CisJdTMyIGFwX3dha2Vf
-YmxvY2tfc2l6ZTsKKwl1MzIgYXBfam1wX29mZnNldDsKK307CisKKy8qCisgKiBUWFQgaGVhcCBl
-eHRlbmRlZCBkYXRhIGVsZW1lbnRzLgorICovCitzdHJ1Y3QgdHh0X2hlYXBfZXh0X2RhdGFfZWxl
-bWVudCB7CisJdTMyIHR5cGU7CisJdTMyIHNpemU7CisJLyogRGF0YSAqLworfSBfX3BhY2tlZDsK
-KworI2RlZmluZSBUWFRfSEVBUF9FWFREQVRBX1RZUEVfRU5ECQkJMAorCitzdHJ1Y3QgdHh0X2hl
-YXBfZW5kX2VsZW1lbnQgeworCXUzMiB0eXBlOworCXUzMiBzaXplOworfSBfX3BhY2tlZDsKKwor
-I2RlZmluZSBUWFRfSEVBUF9FWFREQVRBX1RZUEVfVFBNX0VWRU5UX0xPR19QVFIJCTUKKworc3Ry
-dWN0IHR4dF9oZWFwX2V2ZW50X2xvZ19lbGVtZW50IHsKKwl1NjQgZXZlbnRfbG9nX3BoeXNfYWRk
-cjsKK30gX19wYWNrZWQ7CisKKyNkZWZpbmUgVFhUX0hFQVBfRVhUREFUQV9UWVBFX0VWRU5UX0xP
-R19QT0lOVEVSMl8xCTgKKworc3RydWN0IHR4dF9oZWFwX2V2ZW50X2xvZ19wb2ludGVyMl8xX2Vs
-ZW1lbnQgeworCXU2NCBwaHlzX2FkZHI7CisJdTMyIGFsbG9jYXRlZF9ldmVudF9jb250YWluZXJf
-c2l6ZTsKKwl1MzIgZmlyc3RfcmVjb3JkX29mZnNldDsKKwl1MzIgbmV4dF9yZWNvcmRfb2Zmc2V0
-OworfSBfX3BhY2tlZDsKKworLyoKKyAqIFNlY3VyZSBMYXVuY2ggZGVmaW5lZCBNVFJSIHNhdmlu
-ZyBzdHJ1Y3R1cmVzCisgKi8KK3N0cnVjdCB0eHRfbXRycl9wYWlyIHsKKwl1NjQgbXRycl9waHlz
-YmFzZTsKKwl1NjQgbXRycl9waHlzbWFzazsKK30gX19wYWNrZWQ7CisKK3N0cnVjdCB0eHRfbXRy
-cl9zdGF0ZSB7CisJdTY0IGRlZmF1bHRfbWVtX3R5cGU7CisJdTY0IG10cnJfdmNudDsKKwlzdHJ1
-Y3QgdHh0X210cnJfcGFpciBtdHJyX3BhaXJbVFhUX09TX01MRV9NQVhfVkFSSUFCTEVfTVRSUlNd
-OworfSBfX3BhY2tlZDsKKworLyoKKyAqIFNlY3VyZSBMYXVuY2ggZGVmaW5lZCBPUy9NTEUgVFhU
-IEhlYXAgdGFibGUKKyAqLworc3RydWN0IHR4dF9vc19tbGVfZGF0YSB7CisJdTMyIHZlcnNpb247
-CisJdTMyIGJvb3RfcGFyYW1zX2FkZHI7CisJdTY0IHNhdmVkX21pc2NfZW5hYmxlX21zcjsKKwlz
-dHJ1Y3QgdHh0X210cnJfc3RhdGUgc2F2ZWRfYnNwX210cnJzOworCXUzMiBhcF93YWtlX2Jsb2Nr
-OworCXUzMiBhcF93YWtlX2Jsb2NrX3NpemU7CisJdTY0IGV2dGxvZ19hZGRyOworCXUzMiBldnRs
-b2dfc2l6ZTsKKwl1OCBtbGVfc2NyYXRjaFs2NF07Cit9IF9fcGFja2VkOworCisvKgorICogVFhU
-IHNwZWNpZmljYXRpb24gZGVmaW5lZCBCSU9TIGRhdGEgVFhUIEhlYXAgdGFibGUKKyAqLworc3Ry
-dWN0IHR4dF9iaW9zX2RhdGEgeworCXUzMiB2ZXJzaW9uOyAvKiBDdXJyZW50bHkgNSBmb3IgVFBN
-IDEuMiBhbmQgNiBmb3IgVFBNIDIuMCAqLworCXUzMiBiaW9zX3Npbml0X3NpemU7CisJdTY0IHJl
-c2VydmVkMTsKKwl1NjQgcmVzZXJ2ZWQyOworCXUzMiBudW1fbG9naWNhbF9wcm9jczsKKwkvKiBW
-ZXJzaW9ucyA+PSA1IHdpdGggdXBkYXRlcyBpbiB2ZXJzaW9uIDYgKi8KKwl1MzIgc2luaXRfZmxh
-Z3M7CisJdTMyIG1sZV9mbGFnczsKKwkvKiBWZXJzaW9ucyA+PSA0ICovCisJLyogRXh0IERhdGEg
-RWxlbWVudHMgKi8KK30gX19wYWNrZWQ7CisKKy8qCisgKiBUWFQgc3BlY2lmaWNhdGlvbiBkZWZp
-bmVkIE9TL1NJTklUIFRYVCBIZWFwIHRhYmxlCisgKi8KK3N0cnVjdCB0eHRfb3Nfc2luaXRfZGF0
-YSB7CisJdTMyIHZlcnNpb247IC8qIEN1cnJlbnRseSA2IGZvciBUUE0gMS4yIGFuZCA3IGZvciBU
-UE0gMi4wICovCisJdTMyIGZsYWdzOworCXU2NCBtbGVfcHRhYjsKKwl1NjQgbWxlX3NpemU7CisJ
-dTY0IG1sZV9oZHJfYmFzZTsKKwl1NjQgdnRkX3Btcl9sb19iYXNlOworCXU2NCB2dGRfcG1yX2xv
-X3NpemU7CisJdTY0IHZ0ZF9wbXJfaGlfYmFzZTsKKwl1NjQgdnRkX3Btcl9oaV9zaXplOworCXU2
-NCBsY3BfcG9fYmFzZTsKKwl1NjQgbGNwX3BvX3NpemU7CisJdTMyIGNhcGFiaWxpdGllczsKKwkv
-KiBWZXJzaW9uID0gNSAqLworCXU2NCBlZmlfcnNkdF9wdHI7CisJLyogVmVyc2lvbnMgPj0gNiAq
-LworCS8qIEV4dCBEYXRhIEVsZW1lbnRzICovCit9IF9fcGFja2VkOworCisvKgorICogVFhUIHNw
-ZWNpZmljYXRpb24gZGVmaW5lZCBTSU5JVC9NTEUgVFhUIEhlYXAgdGFibGUKKyAqLworc3RydWN0
-IHR4dF9zaW5pdF9tbGVfZGF0YSB7CisJdTMyIHZlcnNpb247ICAgICAgICAgICAgIC8qIEN1cnJl
-bnQgdmFsdWVzIGFyZSA2IHRocm91Z2ggOSAqLworCS8qIFZlcnNpb25zIDw9IDggKi8KKwl1OCBi
-aW9zX2FjbV9pZFsyMF07CisJdTMyIGVkeF9zZW50ZXJfZmxhZ3M7CisJdTY0IG1zZWdfdmFsaWQ7
-CisJdTggc2luaXRfaGFzaFsyMF07CisJdTggbWxlX2hhc2hbMjBdOworCXU4IHN0bV9oYXNoWzIw
-XTsKKwl1OCBsY3BfcG9saWN5X2hhc2hbMjBdOworCXUzMiBsY3BfcG9saWN5X2NvbnRyb2w7CisJ
-LyogVmVyc2lvbnMgPj0gNyAqLworCXUzMiBybHBfd2FrZXVwX2FkZHI7CisJdTMyIHJlc2VydmVk
-OworCXUzMiBudW1fb2Zfc2luaXRfbWRyczsKKwl1MzIgc2luaXRfbWRyc190YWJsZV9vZmZzZXQ7
-CisJdTMyIHNpbml0X3Z0ZF9kbWFyX3RhYmxlX3NpemU7CisJdTMyIHNpbml0X3Z0ZF9kbWFyX3Rh
-YmxlX29mZnNldDsKKwkvKiBWZXJzaW9ucyA+PSA4ICovCisJdTMyIHByb2Nlc3Nvcl9zY3J0bV9z
-dGF0dXM7CisJLyogVmVyc2lvbnMgPj0gOSAqLworCS8qIEV4dCBEYXRhIEVsZW1lbnRzICovCit9
-IF9fcGFja2VkOworCisvKgorICogVFhUIGRhdGEgcmVwb3J0aW5nIHN0cnVjdHVyZSBmb3IgbWVt
-b3J5IHR5cGVzCisgKi8KK3N0cnVjdCB0eHRfc2luaXRfbWVtb3J5X2Rlc2NyaXB0b3JfcmVjb3Jk
-IHsKKwl1NjQgYWRkcmVzczsKKwl1NjQgbGVuZ3RoOworCXU4IHR5cGU7CisJdTggcmVzZXJ2ZWRb
-N107Cit9IF9fcGFja2VkOworCisvKgorICogVFhUIGRhdGEgc3RydWN0dXJlIHVzZWQgYnkgYSBy
-ZXNwb25zaXZlIGxvY2FsIHByb2Nlc3NvciAoUkxQKSB0byBzdGFydAorICogZXhlY3V0aW9uIGlu
-IHJlc3BvbnNlIHRvIGEgR0VUU0VDW1dBS0VVUF0uCisgKi8KK3N0cnVjdCBzbXhfcmxwX21sZV9q
-b2luIHsKKwl1MzIgcmxwX2dkdF9saW1pdDsKKwl1MzIgcmxwX2dkdF9iYXNlOworCXUzMiBybHBf
-c2VnX3NlbDsgICAgIC8qIGNzIChkcywgZXMsIHNzIGFyZSBzZWdfc2VsKzgpICovCisJdTMyIHJs
-cF9lbnRyeV9wb2ludDsgLyogcGh5cyBhZGRyICovCit9IF9fcGFja2VkOworCisvKgorICogVFBN
-IGV2ZW50IGxvZyBzdHJ1Y3R1cmVzIGRlZmluZWQgaW4gYm90aCB0aGUgVFhUIHNwZWNpZmljYXRp
-b24gYW5kCisgKiB0aGUgVENHIGRvY3VtZW50YXRpb24uCisgKi8KKyNkZWZpbmUgVFBNMTJfRVZU
-TE9HX1NJR05BVFVSRSAiVFhUIEV2ZW50IENvbnRhaW5lciIKKworc3RydWN0IHRwbTEyX2V2ZW50
-X2xvZ19oZWFkZXIgeworCWNoYXIgc2lnbmF0dXJlWzIwXTsKKwljaGFyIHJlc2VydmVkWzEyXTsK
-Kwl1OCBjb250YWluZXJfdmVyX21ham9yOworCXU4IGNvbnRhaW5lcl92ZXJfbWlub3I7CisJdTgg
-cGNyX2V2ZW50X3Zlcl9tYWpvcjsKKwl1OCBwY3JfZXZlbnRfdmVyX21pbm9yOworCXUzMiBjb250
-YWluZXJfc2l6ZTsKKwl1MzIgcGNyX2V2ZW50c19vZmZzZXQ7CisJdTMyIG5leHRfZXZlbnRfb2Zm
-c2V0OworCS8qIFBDUkV2ZW50c1tdICovCit9IF9fcGFja2VkOworCisvKgorICogRnVuY3Rpb25z
-IHRvIGV4dHJhY3QgZGF0YSBmcm9tIHRoZSBJbnRlbCBUWFQgSGVhcCBNZW1vcnkuIFRoZSBsYXlv
-dXQKKyAqIG9mIHRoZSBoZWFwIGlzIGFzIGZvbGxvd3M6CisgKiAgKy0tLS0tLS0tLS0tLS0tLS0t
-LS0tLS0tLS0tLS0rCisgKiAgfCBTaXplIEJpb3MgRGF0YSB0YWJsZSAodTY0KSB8CisgKiAgKy0t
-LS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0rCisgKiAgfCBCaW9zIERhdGEgdGFibGUgICAgICAg
-ICAgICB8CisgKiAgKy0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0rCisgKiAgfCBTaXplIE9T
-IE1MRSB0YWJsZSAodTY0KSAgICB8CisgKiAgKy0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0r
-CisgKiAgfCBPUyBNTEUgdGFibGUgICAgICAgICAgICAgICB8CisgKiAgKy0tLS0tLS0tLS0tLS0t
-LS0tLS0tLS0tLS0tLSArCisgKiAgfCBTaXplIE9TIFNJTklUIHRhYmxlICh1NjQpICB8CisgKiAg
-Ky0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0rCisgKiAgfCBPUyBTSU5JVCB0YWJsZSAgICAg
-ICAgICAgICB8CisgKiAgKy0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0rCisgKiAgfCBTaXpl
-IFNJTklUIE1MRSB0YWJsZSAodTY0KSB8CisgKiAgKy0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0t
-LS0rCisgKiAgfCBTSU5JVCBNTEUgdGFibGUgICAgICAgICAgICB8CisgKiAgKy0tLS0tLS0tLS0t
-LS0tLS0tLS0tLS0tLS0tLS0rCisgKgorICogIE5PVEU6IHRoZSB0YWJsZSBzaXplIGZpZWxkcyBp
-bmNsdWRlIHRoZSA4IGJ5dGUgc2l6ZSBmaWVsZCBpdHNlbGYuCisgKi8KK3N0YXRpYyBpbmxpbmUg
-dTY0IHR4dF9iaW9zX2RhdGFfc2l6ZSh2b2lkICpoZWFwKQoreworCXJldHVybiAqKCh1NjQgKilo
-ZWFwKTsKK30KKworc3RhdGljIGlubGluZSB2b2lkICp0eHRfYmlvc19kYXRhX3N0YXJ0KHZvaWQg
-KmhlYXApCit7CisJcmV0dXJuIGhlYXAgKyBzaXplb2YodTY0KTsKK30KKworc3RhdGljIGlubGlu
-ZSB1NjQgdHh0X29zX21sZV9kYXRhX3NpemUodm9pZCAqaGVhcCkKK3sKKwlyZXR1cm4gKigodTY0
-ICopKGhlYXAgKyB0eHRfYmlvc19kYXRhX3NpemUoaGVhcCkpKTsKK30KKworc3RhdGljIGlubGlu
-ZSB2b2lkICp0eHRfb3NfbWxlX2RhdGFfc3RhcnQodm9pZCAqaGVhcCkKK3sKKwlyZXR1cm4gaGVh
-cCArIHR4dF9iaW9zX2RhdGFfc2l6ZShoZWFwKSArIHNpemVvZih1NjQpOworfQorCitzdGF0aWMg
-aW5saW5lIHU2NCB0eHRfb3Nfc2luaXRfZGF0YV9zaXplKHZvaWQgKmhlYXApCit7CisJcmV0dXJu
-ICooKHU2NCAqKShoZWFwICsgdHh0X2Jpb3NfZGF0YV9zaXplKGhlYXApICsKKwkJCXR4dF9vc19t
-bGVfZGF0YV9zaXplKGhlYXApKSk7Cit9CisKK3N0YXRpYyBpbmxpbmUgdm9pZCAqdHh0X29zX3Np
-bml0X2RhdGFfc3RhcnQodm9pZCAqaGVhcCkKK3sKKwlyZXR1cm4gaGVhcCArIHR4dF9iaW9zX2Rh
-dGFfc2l6ZShoZWFwKSArCisJCXR4dF9vc19tbGVfZGF0YV9zaXplKGhlYXApICsgc2l6ZW9mKHU2
-NCk7Cit9CisKK3N0YXRpYyBpbmxpbmUgdTY0IHR4dF9zaW5pdF9tbGVfZGF0YV9zaXplKHZvaWQg
-KmhlYXApCit7CisJcmV0dXJuICooKHU2NCAqKShoZWFwICsgdHh0X2Jpb3NfZGF0YV9zaXplKGhl
-YXApICsKKwkJCXR4dF9vc19tbGVfZGF0YV9zaXplKGhlYXApICsKKwkJCXR4dF9vc19zaW5pdF9k
-YXRhX3NpemUoaGVhcCkpKTsKK30KKworc3RhdGljIGlubGluZSB2b2lkICp0eHRfc2luaXRfbWxl
-X2RhdGFfc3RhcnQodm9pZCAqaGVhcCkKK3sKKwlyZXR1cm4gaGVhcCArIHR4dF9iaW9zX2RhdGFf
-c2l6ZShoZWFwKSArCisJCXR4dF9vc19tbGVfZGF0YV9zaXplKGhlYXApICsKKwkJdHh0X3Npbml0
-X21sZV9kYXRhX3NpemUoaGVhcCkgKyBzaXplb2YodTY0KTsKK30KKworLyoKKyAqIFRQTSBldmVu
-dCBsb2dnaW5nIGZ1bmN0aW9ucy4KKyAqLworc3RhdGljIGlubGluZSBzdHJ1Y3QgdHh0X2hlYXBf
-ZXZlbnRfbG9nX3BvaW50ZXIyXzFfZWxlbWVudCoKK3RwbTIwX2ZpbmRfbG9nMl8xX2VsZW1lbnQo
-c3RydWN0IHR4dF9vc19zaW5pdF9kYXRhICpvc19zaW5pdF9kYXRhKQoreworCXN0cnVjdCB0eHRf
-aGVhcF9leHRfZGF0YV9lbGVtZW50ICpleHRfZWxlbTsKKworCS8qIFRoZSBleHRlbmRlZCBlbGVt
-ZW50IGFycmF5IGFzIGF0IHRoZSBlbmQgb2YgdGhpcyB0YWJsZSAqLworCWV4dF9lbGVtID0gKHN0
-cnVjdCB0eHRfaGVhcF9leHRfZGF0YV9lbGVtZW50ICopCisJCSgodTggKilvc19zaW5pdF9kYXRh
-ICsgc2l6ZW9mKHN0cnVjdCB0eHRfb3Nfc2luaXRfZGF0YSkpOworCisJd2hpbGUgKGV4dF9lbGVt
-LT50eXBlICE9IFRYVF9IRUFQX0VYVERBVEFfVFlQRV9FTkQpIHsKKwkJaWYgKGV4dF9lbGVtLT50
-eXBlID09CisJCSAgICBUWFRfSEVBUF9FWFREQVRBX1RZUEVfRVZFTlRfTE9HX1BPSU5URVIyXzEp
-IHsKKwkJCXJldHVybiAoc3RydWN0IHR4dF9oZWFwX2V2ZW50X2xvZ19wb2ludGVyMl8xX2VsZW1l
-bnQgKikKKwkJCQkoKHU4ICopZXh0X2VsZW0gKworCQkJCQlzaXplb2Yoc3RydWN0IHR4dF9oZWFw
-X2V4dF9kYXRhX2VsZW1lbnQpKTsKKwkJfQorCQlleHRfZWxlbSA9CisJCQkoc3RydWN0IHR4dF9o
-ZWFwX2V4dF9kYXRhX2VsZW1lbnQgKikKKwkJCSgodTggKilleHRfZWxlbSArIGV4dF9lbGVtLT5z
-aXplKTsKKwl9CisKKwlyZXR1cm4gTlVMTDsKK30KKworc3RhdGljIGlubGluZSBpbnQgdHBtMTJf
-bG9nX2V2ZW50KHZvaWQgKmV2dGxvZ19iYXNlLCB1MzIgZXZ0bG9nX3NpemUsCisJCQkJICB1MzIg
-ZXZlbnRfc2l6ZSwgdm9pZCAqZXZlbnQpCit7CisJc3RydWN0IHRwbTEyX2V2ZW50X2xvZ19oZWFk
-ZXIgKmV2dGxvZyA9CisJCShzdHJ1Y3QgdHBtMTJfZXZlbnRfbG9nX2hlYWRlciAqKWV2dGxvZ19i
-YXNlOworCisJaWYgKG1lbWNtcChldnRsb2ctPnNpZ25hdHVyZSwgVFBNMTJfRVZUTE9HX1NJR05B
-VFVSRSwKKwkJICAgc2l6ZW9mKFRQTTEyX0VWVExPR19TSUdOQVRVUkUpKSkKKwkJcmV0dXJuIC1F
-SU5WQUw7CisKKwlpZiAoZXZ0bG9nLT5jb250YWluZXJfc2l6ZSA+IGV2dGxvZ19zaXplKQorCQly
-ZXR1cm4gLUVJTlZBTDsKKworCWlmIChldnRsb2ctPm5leHRfZXZlbnRfb2Zmc2V0ICsgZXZlbnRf
-c2l6ZSA+IGV2dGxvZy0+Y29udGFpbmVyX3NpemUpCisJCXJldHVybiAtRTJCSUc7CisKKwltZW1j
-cHkoZXZ0bG9nX2Jhc2UgKyBldnRsb2ctPm5leHRfZXZlbnRfb2Zmc2V0LCBldmVudCwgZXZlbnRf
-c2l6ZSk7CisJZXZ0bG9nLT5uZXh0X2V2ZW50X29mZnNldCArPSBldmVudF9zaXplOworCisJcmV0
-dXJuIDA7Cit9CisKK3N0YXRpYyBpbmxpbmUgaW50IHRwbTIwX2xvZ19ldmVudChzdHJ1Y3QgdHh0
-X2hlYXBfZXZlbnRfbG9nX3BvaW50ZXIyXzFfZWxlbWVudCAqZWxlbSwKKwkJCQkgIHZvaWQgKmV2
-dGxvZ19iYXNlLCB1MzIgZXZ0bG9nX3NpemUsCisJCQkJICB1MzIgZXZlbnRfc2l6ZSwgdm9pZCAq
-ZXZlbnQpCit7CisJc3RydWN0IHRjZ19wY3JfZXZlbnQgKmhlYWRlciA9CisJCShzdHJ1Y3QgdGNn
-X3Bjcl9ldmVudCAqKWV2dGxvZ19iYXNlOworCisJLyogSGFzIHRvIGJlIGF0IGxlYXN0IGJpZyBl
-bm91Z2ggZm9yIHRoZSBzaWduYXR1cmUgKi8KKwlpZiAoaGVhZGVyLT5ldmVudF9zaXplIDwgc2l6
-ZW9mKFRDR19TUEVDSURfU0lHKSkKKwkJcmV0dXJuIC1FSU5WQUw7CisKKwlpZiAobWVtY21wKCh1
-OCAqKWhlYWRlciArIHNpemVvZihzdHJ1Y3QgdGNnX3Bjcl9ldmVudCksCisJCSAgIFRDR19TUEVD
-SURfU0lHLCBzaXplb2YoVENHX1NQRUNJRF9TSUcpKSkKKwkJcmV0dXJuIC1FSU5WQUw7CisKKwlp
-ZiAoZWxlbS0+YWxsb2NhdGVkX2V2ZW50X2NvbnRhaW5lcl9zaXplID4gZXZ0bG9nX3NpemUpCisJ
-CXJldHVybiAtRUlOVkFMOworCisJaWYgKGVsZW0tPm5leHRfcmVjb3JkX29mZnNldCArIGV2ZW50
-X3NpemUgPgorCSAgICBlbGVtLT5hbGxvY2F0ZWRfZXZlbnRfY29udGFpbmVyX3NpemUpCisJCXJl
-dHVybiAtRTJCSUc7CisKKwltZW1jcHkoZXZ0bG9nX2Jhc2UgKyBlbGVtLT5uZXh0X3JlY29yZF9v
-ZmZzZXQsIGV2ZW50LCBldmVudF9zaXplKTsKKwllbGVtLT5uZXh0X3JlY29yZF9vZmZzZXQgKz0g
-ZXZlbnRfc2l6ZTsKKworCXJldHVybiAwOworfQorCisvKgorICogRXh0ZXJuYWwgZnVuY3Rpb25z
-IGF2YWxhaWxhYmxlIGluIGNvbXByZXNzZWQga2VybmVsLgorICovCitleHRlcm4gdTMyIHNsYXVu
-Y2hfZ2V0X2NwdV90eXBlKHZvaWQpOworCisvKgorICogRXh0ZXJuYWwgZnVuY3Rpb25zIGF2YWxh
-aWxhYmxlIGluIG1haW5saW5lIGtlcm5lbC4KKyAqLworZXh0ZXJuIHZvaWQgc2xhdW5jaF9zZXR1
-cF90eHQodm9pZCk7CitleHRlcm4gdTMyIHNsYXVuY2hfZ2V0X2ZsYWdzKHZvaWQpOworZXh0ZXJu
-IHN0cnVjdCBzbF9hcF93YWtlX2luZm8gKnNsYXVuY2hfZ2V0X2FwX3dha2VfaW5mbyh2b2lkKTsK
-K2V4dGVybiBzdHJ1Y3QgYWNwaV90YWJsZV9oZWFkZXIgKnNsYXVuY2hfZ2V0X2RtYXJfdGFibGUo
-c3RydWN0IGFjcGlfdGFibGVfaGVhZGVyICpkbWFyKTsKK2V4dGVybiB2b2lkIF9fbm9yZXR1cm4g
-c2xhdW5jaF90eHRfcmVzZXQodm9pZCBfX2lvbWVtICp0eHQsCisJCQkJCSBjb25zdCBjaGFyICpt
-c2csIHU2NCBlcnJvcik7CitleHRlcm4gdm9pZCBzbGF1bmNoX2ZpbmFsaXplKGludCBkb19zZXhp
-dCk7CisKKyNlbmRpZiAvKiAhX19BU1NFTUJMWSAqLworCisjZWxzZQorCisjZGVmaW5lIHNsYXVu
-Y2hfZ2V0X2NwdV90eXBlKCkJCTAKKyNkZWZpbmUgc2xhdW5jaF9zZXR1cF90eHQoKQkJZG8geyB9
-IHdoaWxlICgwKQorI2RlZmluZSBzbGF1bmNoX2dldF9mbGFncygpCQkwCisjZGVmaW5lIHNsYXVu
-Y2hfZ2V0X2RtYXJfdGFibGUoZCkJKGQpCisjZGVmaW5lIHNsYXVuY2hfZmluYWxpemUoZCkJCWRv
-IHsgfSB3aGlsZSAoMCkKKworI2VuZGlmIC8qICFJU19FTkFCTEVEKENPTkZJR19TRUNVUkVfTEFV
-TkNIKSAqLworCisjZW5kaWYgLyogX0xJTlVYX1NMQVVOQ0hfSCAqLwotLSAKMS44LjMuMQoKX19f
-X19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX18KaW9tbXUgbWFpbGlu
-ZyBsaXN0CmlvbW11QGxpc3RzLmxpbnV4LWZvdW5kYXRpb24ub3JnCmh0dHBzOi8vbGlzdHMubGlu
-dXhmb3VuZGF0aW9uLm9yZy9tYWlsbWFuL2xpc3RpbmZvL2lvbW11
+From: "Daniel P. Smith" <dpsmith@apertussolutions.com>
+
+The Secure Launch platform module is a late init module. During the
+init call, the TPM event log is read and measurements taken in the
+early boot stub code are located. These measurements are extended
+into the TPM PCRs using the mainline TPM kernel driver.
+
+The platform module also registers the securityfs nodes to allow
+access to TXT register fields on Intel along with the fetching of
+and writing events to the late launch TPM log.
+
+Signed-off-by: Daniel P. Smith <dpsmith@apertussolutions.com>
+Signed-off-by: garnetgrimm <grimmg@ainfosec.com>
+Signed-off-by: Ross Philipson <ross.philipson@oracle.com>
+---
+ arch/x86/kernel/Makefile   |   1 +
+ arch/x86/kernel/slmodule.c | 494 +++++++++++++++++++++++++++++++++++++++++++++
+ 2 files changed, 495 insertions(+)
+ create mode 100644 arch/x86/kernel/slmodule.c
+
+diff --git a/arch/x86/kernel/Makefile b/arch/x86/kernel/Makefile
+index d6ee904..09b730a 100644
+--- a/arch/x86/kernel/Makefile
++++ b/arch/x86/kernel/Makefile
+@@ -81,6 +81,7 @@ obj-$(CONFIG_IA32_EMULATION)	+= tls.o
+ obj-y				+= step.o
+ obj-$(CONFIG_INTEL_TXT)		+= tboot.o
+ obj-$(CONFIG_SECURE_LAUNCH)	+= slaunch.o
++obj-$(CONFIG_SECURE_LAUNCH)	+= slmodule.o
+ obj-$(CONFIG_ISA_DMA_API)	+= i8237.o
+ obj-$(CONFIG_STACKTRACE)	+= stacktrace.o
+ obj-y				+= cpu/
+diff --git a/arch/x86/kernel/slmodule.c b/arch/x86/kernel/slmodule.c
+new file mode 100644
+index 0000000..bad50f0a
+--- /dev/null
++++ b/arch/x86/kernel/slmodule.c
+@@ -0,0 +1,494 @@
++// SPDX-License-Identifier: GPL-2.0
++/*
++ * Secure Launch late validation/setup, securityfs exposure and
++ * finalization support.
++ *
++ * Copyright (c) 2021 Apertus Solutions, LLC
++ * Copyright (c) 2021 Assured Information Security, Inc.
++ * Copyright (c) 2021, Oracle and/or its affiliates.
++ *
++ * Author(s):
++ *     Daniel P. Smith <dpsmith@apertussolutions.com>
++ *     Garnet T. Grimm <grimmg@ainfosec.com>
++ */
++
++#define pr_fmt(fmt) KBUILD_MODNAME ": " fmt
++
++#include <linux/fs.h>
++#include <linux/init.h>
++#include <linux/linkage.h>
++#include <linux/mm.h>
++#include <linux/io.h>
++#include <linux/uaccess.h>
++#include <linux/security.h>
++#include <linux/memblock.h>
++#include <asm/segment.h>
++#include <asm/sections.h>
++#include <crypto/sha2.h>
++#include <linux/slaunch.h>
++
++#define SL_FS_ENTRIES		10
++/* root directory node must be last */
++#define SL_ROOT_DIR_ENTRY	(SL_FS_ENTRIES - 1)
++#define SL_TXT_DIR_ENTRY	(SL_FS_ENTRIES - 2)
++#define SL_TXT_FILE_FIRST	(SL_TXT_DIR_ENTRY - 1)
++#define SL_TXT_ENTRY_COUNT	7
++
++#define DECLARE_TXT_PUB_READ_U(size, fmt, msg_size)			\
++static ssize_t txt_pub_read_u##size(unsigned int offset,		\
++		loff_t *read_offset,					\
++		size_t read_len,					\
++		char __user *buf)					\
++{									\
++	void __iomem *txt;						\
++	char msg_buffer[msg_size];					\
++	u##size reg_value = 0;						\
++	txt = ioremap(TXT_PUB_CONFIG_REGS_BASE,				\
++			TXT_NR_CONFIG_PAGES * PAGE_SIZE);		\
++	if (IS_ERR(txt))						\
++		return PTR_ERR(txt);					\
++	memcpy_fromio(&reg_value, txt + offset, sizeof(u##size));	\
++	iounmap(txt);							\
++	snprintf(msg_buffer, msg_size, fmt, reg_value);			\
++	return simple_read_from_buffer(buf, read_len, read_offset,	\
++			&msg_buffer, msg_size);				\
++}
++
++DECLARE_TXT_PUB_READ_U(8, "%#04x\n", 6);
++DECLARE_TXT_PUB_READ_U(32, "%#010x\n", 12);
++DECLARE_TXT_PUB_READ_U(64, "%#018llx\n", 20);
++
++#define DECLARE_TXT_FOPS(reg_name, reg_offset, reg_size)		\
++static ssize_t txt_##reg_name##_read(struct file *flip,			\
++		char __user *buf, size_t read_len, loff_t *read_offset)	\
++{									\
++	return txt_pub_read_u##reg_size(reg_offset, read_offset,	\
++			read_len, buf);					\
++}									\
++static const struct file_operations reg_name##_ops = {			\
++	.read = txt_##reg_name##_read,					\
++}
++
++DECLARE_TXT_FOPS(sts, TXT_CR_STS, 64);
++DECLARE_TXT_FOPS(ests, TXT_CR_ESTS, 8);
++DECLARE_TXT_FOPS(errorcode, TXT_CR_ERRORCODE, 32);
++DECLARE_TXT_FOPS(didvid, TXT_CR_DIDVID, 64);
++DECLARE_TXT_FOPS(e2sts, TXT_CR_E2STS, 64);
++DECLARE_TXT_FOPS(ver_emif, TXT_CR_VER_EMIF, 32);
++DECLARE_TXT_FOPS(scratchpad, TXT_CR_SCRATCHPAD, 64);
++
++/*
++ * Securityfs exposure
++ */
++struct memfile {
++	char *name;
++	void *addr;
++	size_t size;
++};
++
++static struct memfile sl_evtlog = {"eventlog", 0, 0};
++static void *txt_heap;
++static struct txt_heap_event_log_pointer2_1_element __iomem *evtlog20;
++static DEFINE_MUTEX(sl_evt_log_mutex);
++
++static ssize_t sl_evtlog_read(struct file *file, char __user *buf,
++			      size_t count, loff_t *pos)
++{
++	ssize_t size;
++
++	if (!sl_evtlog.addr)
++		return 0;
++
++	mutex_lock(&sl_evt_log_mutex);
++	size = simple_read_from_buffer(buf, count, pos, sl_evtlog.addr,
++				       sl_evtlog.size);
++	mutex_unlock(&sl_evt_log_mutex);
++
++	return size;
++}
++
++static ssize_t sl_evtlog_write(struct file *file, const char __user *buf,
++				size_t datalen, loff_t *ppos)
++{
++	char *data;
++	ssize_t result;
++
++	if (!sl_evtlog.addr)
++		return 0;
++
++	/* No partial writes. */
++	result = -EINVAL;
++	if (*ppos != 0)
++		goto out;
++
++	data = memdup_user(buf, datalen);
++	if (IS_ERR(data)) {
++		result = PTR_ERR(data);
++		goto out;
++	}
++
++	mutex_lock(&sl_evt_log_mutex);
++	if (evtlog20)
++		result = tpm20_log_event(evtlog20, sl_evtlog.addr,
++					 sl_evtlog.size, datalen, data);
++	else
++		result = tpm12_log_event(sl_evtlog.addr, sl_evtlog.size,
++					 datalen, data);
++	mutex_unlock(&sl_evt_log_mutex);
++
++	kfree(data);
++out:
++	return result;
++}
++
++static const struct file_operations sl_evtlog_ops = {
++	.read = sl_evtlog_read,
++	.write = sl_evtlog_write,
++	.llseek	= default_llseek,
++};
++
++static struct dentry *fs_entries[SL_FS_ENTRIES];
++
++struct sfs_file {
++	int parent;
++	const char *name;
++	const struct file_operations *fops;
++};
++
++static const struct sfs_file sl_files[] = {
++	{ SL_TXT_DIR_ENTRY, "sts", &sts_ops },
++	{ SL_TXT_DIR_ENTRY, "ests", &ests_ops },
++	{ SL_TXT_DIR_ENTRY, "errorcode", &errorcode_ops },
++	{ SL_TXT_DIR_ENTRY, "didvid", &didvid_ops },
++	{ SL_TXT_DIR_ENTRY, "ver_emif", &ver_emif_ops },
++	{ SL_TXT_DIR_ENTRY, "scratchpad", &scratchpad_ops },
++	{ SL_TXT_DIR_ENTRY, "e2sts", &e2sts_ops }
++};
++
++static int sl_create_file(int entry, int parent, const char *name,
++			  const struct file_operations *ops)
++{
++	if (entry < 0 || entry > SL_TXT_DIR_ENTRY)
++		return -EINVAL;
++	fs_entries[entry] =
++		 securityfs_create_file(name, 0440,
++					fs_entries[parent], NULL, ops);
++	if (IS_ERR(fs_entries[entry])) {
++		pr_err("Error creating securityfs %s file\n", name);
++		return PTR_ERR(fs_entries[entry]);
++	}
++	return 0;
++}
++
++static long slaunch_expose_securityfs(void)
++{
++	long ret = 0;
++	int i = 0;
++
++	fs_entries[SL_ROOT_DIR_ENTRY] = securityfs_create_dir("slaunch", NULL);
++	if (IS_ERR(fs_entries[SL_ROOT_DIR_ENTRY])) {
++		pr_err("Error creating securityfs slaunch root directory\n");
++		ret = PTR_ERR(fs_entries[SL_ROOT_DIR_ENTRY]);
++		goto err;
++	}
++
++	if (slaunch_get_flags() & SL_FLAG_ARCH_TXT) {
++		fs_entries[SL_TXT_DIR_ENTRY] =
++			securityfs_create_dir("txt",
++					      fs_entries[SL_ROOT_DIR_ENTRY]);
++		if (IS_ERR(fs_entries[SL_TXT_DIR_ENTRY])) {
++			pr_err("Error creating securityfs txt directory\n");
++			ret = PTR_ERR(fs_entries[SL_TXT_DIR_ENTRY]);
++			goto err_dir;
++		}
++
++		for (i = 0; i < SL_TXT_ENTRY_COUNT; i++) {
++			ret = sl_create_file(SL_TXT_FILE_FIRST - i,
++					     sl_files[i].parent, sl_files[i].name,
++					     sl_files[i].fops);
++			if (ret)
++				goto err_dir;
++		}
++	}
++
++	if (sl_evtlog.addr > 0) {
++		ret = sl_create_file(0, SL_ROOT_DIR_ENTRY, sl_evtlog.name,
++				     &sl_evtlog_ops);
++		if (ret)
++			goto err_dir;
++	}
++
++	return 0;
++
++err_dir:
++	for (i = 0; i <= SL_ROOT_DIR_ENTRY; i++)
++		securityfs_remove(fs_entries[i]);
++err:
++	return ret;
++}
++
++static void slaunch_teardown_securityfs(void)
++{
++	int i;
++
++	for (i = 0; i < SL_FS_ENTRIES; i++)
++		securityfs_remove(fs_entries[i]);
++
++	if (slaunch_get_flags() & SL_FLAG_ARCH_TXT) {
++		if (sl_evtlog.addr) {
++			memunmap(sl_evtlog.addr);
++			sl_evtlog.addr = NULL;
++		}
++		sl_evtlog.size = 0;
++		if (txt_heap) {
++			memunmap(txt_heap);
++			txt_heap = NULL;
++		}
++	}
++}
++
++static void slaunch_intel_evtlog(void __iomem *txt)
++{
++	struct txt_os_mle_data *params;
++	void *os_sinit_data;
++	u64 base, size;
++
++	memcpy_fromio(&base, txt + TXT_CR_HEAP_BASE, sizeof(base));
++	memcpy_fromio(&size, txt + TXT_CR_HEAP_SIZE, sizeof(size));
++
++	/* now map TXT heap */
++	txt_heap = memremap(base, size, MEMREMAP_WB);
++	if (!txt_heap)
++		slaunch_txt_reset(txt,
++			"Error failed to memremap TXT heap\n",
++			SL_ERROR_HEAP_MAP);
++
++	params = (struct txt_os_mle_data *)txt_os_mle_data_start(txt_heap);
++
++	sl_evtlog.size = params->evtlog_size;
++	sl_evtlog.addr = memremap(params->evtlog_addr, params->evtlog_size,
++				  MEMREMAP_WB);
++	if (!sl_evtlog.addr)
++		slaunch_txt_reset(txt,
++			"Error failed to memremap TPM event log\n",
++			SL_ERROR_EVENTLOG_MAP);
++
++	/* Determine if this is TPM 1.2 or 2.0 event log */
++	if (memcmp(sl_evtlog.addr + sizeof(struct tcg_pcr_event),
++		    TCG_SPECID_SIG, sizeof(TCG_SPECID_SIG)))
++		return; /* looks like it is not 2.0 */
++
++	/* For TPM 2.0 logs, the extended heap element must be located */
++	os_sinit_data = txt_os_sinit_data_start(txt_heap);
++
++	evtlog20 = tpm20_find_log2_1_element(os_sinit_data);
++
++	/*
++	 * If this fails, things are in really bad shape. Any attempt to write
++	 * events to the log will fail.
++	 */
++	if (!evtlog20)
++		slaunch_txt_reset(txt,
++			"Error failed to find TPM20 event log element\n",
++			SL_ERROR_TPM_INVALID_LOG20);
++}
++
++static void slaunch_tpm20_extend_event(struct tpm_chip *tpm, void __iomem *txt,
++				       struct tcg_pcr_event2_head *event)
++{
++	struct tpm_digest *digests;
++	u16 *alg_id_field = (u16 *)((u8 *)event +
++				    sizeof(struct tcg_pcr_event2_head));
++	u8 *dptr;
++	int ret;
++	u32 i, j;
++
++	digests = kcalloc(tpm->nr_allocated_banks, sizeof(*digests),
++			  GFP_KERNEL);
++	if (!digests)
++		slaunch_txt_reset(txt,
++			"Failed to allocate array of digests\n",
++			SL_ERROR_GENERIC);
++
++	for (i = 0; i < tpm->nr_allocated_banks; i++)
++		digests[i].alg_id = tpm->allocated_banks[i].alg_id;
++
++
++	/* Early SL code ensured there was a max count of 2 digests */
++	for (i = 0; i < event->count; i++) {
++		dptr = (u8 *)alg_id_field + sizeof(u16);
++
++		for (j = 0; j < tpm->nr_allocated_banks; j++) {
++			if (digests[j].alg_id != *alg_id_field)
++				continue;
++
++			switch (digests[j].alg_id) {
++			case TPM_ALG_SHA256:
++				memcpy(&digests[j].digest[0], dptr,
++				       SHA256_DIGEST_SIZE);
++				alg_id_field = (u16 *)((u8 *)alg_id_field +
++					SHA256_DIGEST_SIZE + sizeof(u16));
++				break;
++			case TPM_ALG_SHA1:
++				memcpy(&digests[j].digest[0], dptr,
++				       SHA1_DIGEST_SIZE);
++				alg_id_field = (u16 *)((u8 *)alg_id_field +
++					SHA1_DIGEST_SIZE + sizeof(u16));
++			default:
++				break;
++			}
++		}
++	}
++
++	ret = tpm_pcr_extend(tpm, event->pcr_idx, digests);
++	if (ret) {
++		pr_err("Error extending TPM20 PCR, result: %d\n", ret);
++		slaunch_txt_reset(txt,
++			"Failed to extend TPM20 PCR\n",
++			SL_ERROR_TPM_EXTEND);
++	}
++
++	kfree(digests);
++}
++
++static void slaunch_tpm20_extend(struct tpm_chip *tpm, void __iomem *txt)
++{
++	struct tcg_pcr_event *event_header =
++		(struct tcg_pcr_event *)(sl_evtlog.addr +
++					 evtlog20->first_record_offset);
++	/* Skip first TPM 1.2 event to get to first TPM 2.0 event */
++	struct tcg_pcr_event2_head *event =
++		(struct tcg_pcr_event2_head *)((u8 *)event_header +
++					       sizeof(struct tcg_pcr_event) +
++					       event_header->event_size);
++	int start = 0, end = 0, size;
++
++	while ((void  *)event < sl_evtlog.addr + evtlog20->next_record_offset) {
++		size = __calc_tpm2_event_size(event, event_header, false);
++		if (!size)
++			slaunch_txt_reset(txt,
++				"TPM20 invalid event in event log\n",
++				SL_ERROR_TPM_INVALID_EVENT);
++
++		/*
++		 * Marker events indicate where the Secure Launch early stub
++		 * started and ended adding post launch events.
++		 */
++		if (event->event_type == TXT_EVTYPE_SLAUNCH_END) {
++			end = 1;
++			break;
++		} else if (event->event_type == TXT_EVTYPE_SLAUNCH_START) {
++			start = 1;
++			goto next;
++		}
++
++		if (start)
++			slaunch_tpm20_extend_event(tpm, txt, event);
++
++next:
++		event = (struct tcg_pcr_event2_head *)((u8 *)event + size);
++	}
++
++	if (!start || !end)
++		slaunch_txt_reset(txt,
++			"Missing start or end events for extending TPM20 PCRs\n",
++			SL_ERROR_TPM_EXTEND);
++}
++
++static void slaunch_tpm12_extend(struct tpm_chip *tpm, void __iomem *txt)
++{
++	struct tpm12_event_log_header *event_header =
++		(struct tpm12_event_log_header *)sl_evtlog.addr;
++	struct tcg_pcr_event *event =
++		(struct tcg_pcr_event *)((u8 *)event_header +
++				sizeof(struct tpm12_event_log_header));
++	struct tpm_digest digest;
++	int start = 0, end = 0, size, ret;
++
++	while ((void  *)event < sl_evtlog.addr + event_header->next_event_offset) {
++		size = sizeof(struct tcg_pcr_event) + event->event_size;
++
++		/*
++		 * Marker events indicate where the Secure Launch early stub
++		 * started and ended adding post launch events.
++		 */
++		if (event->event_type == TXT_EVTYPE_SLAUNCH_END) {
++			end = 1;
++			break;
++		} else if (event->event_type == TXT_EVTYPE_SLAUNCH_START) {
++			start = 1;
++			goto next;
++		}
++
++		if (start) {
++			memset(&digest.digest[0], 0, TPM_MAX_DIGEST_SIZE);
++			digest.alg_id = TPM_ALG_SHA1;
++			memcpy(&digest.digest[0], &event->digest[0],
++			       SHA1_DIGEST_SIZE);
++
++			ret = tpm_pcr_extend(tpm, event->pcr_idx, &digest);
++			if (ret) {
++				pr_err("Error extending TPM12 PCR, result: %d\n", ret);
++				slaunch_txt_reset(txt,
++					"Failed to extend TPM12 PCR\n",
++					SL_ERROR_TPM_EXTEND);
++			}
++		}
++
++next:
++		event = (struct tcg_pcr_event *)((u8 *)event + size);
++	}
++
++	if (!start || !end)
++		slaunch_txt_reset(txt,
++			"Missing start or end events for extending TPM12 PCRs\n",
++			SL_ERROR_TPM_EXTEND);
++}
++
++static void slaunch_pcr_extend(void __iomem *txt)
++{
++	struct tpm_chip *tpm;
++
++	tpm = tpm_default_chip();
++	if (!tpm)
++		slaunch_txt_reset(txt,
++			"Could not get default TPM chip\n",
++			SL_ERROR_TPM_INIT);
++	if (evtlog20)
++		slaunch_tpm20_extend(tpm, txt);
++	else
++		slaunch_tpm12_extend(tpm, txt);
++}
++
++static int __init slaunch_module_init(void)
++{
++	void __iomem *txt;
++
++	/* Check to see if Secure Launch happened */
++	if ((slaunch_get_flags() & (SL_FLAG_ACTIVE|SL_FLAG_ARCH_TXT)) !=
++	    (SL_FLAG_ACTIVE|SL_FLAG_ARCH_TXT))
++		return 0;
++
++	txt = ioremap(TXT_PRIV_CONFIG_REGS_BASE, TXT_NR_CONFIG_PAGES *
++		      PAGE_SIZE);
++	if (!txt)
++		panic("Error ioremap of TXT priv registers\n");
++
++	/* Only Intel TXT is supported at this point */
++	slaunch_intel_evtlog(txt);
++
++	slaunch_pcr_extend(txt);
++
++	iounmap(txt);
++
++	return slaunch_expose_securityfs();
++}
++
++static void __exit slaunch_module_exit(void)
++{
++	slaunch_teardown_securityfs();
++}
++
++late_initcall(slaunch_module_init);
++
++__exitcall(slaunch_module_exit);
+-- 
+1.8.3.1
+
+_______________________________________________
+iommu mailing list
+iommu@lists.linux-foundation.org
+https://lists.linuxfoundation.org/mailman/listinfo/iommu
