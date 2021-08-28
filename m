@@ -7,96 +7,96 @@ X-Spam-Status: No, score=-16.6 required=3.0 tests=BAYES_00,DKIM_INVALID,
 	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_GIT
 	autolearn=ham autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6B5D6C4320E
-	for <iommu@archiver.kernel.org>; Sat, 28 Aug 2021 15:38:31 +0000 (UTC)
-Received: from smtp3.osuosl.org (smtp3.osuosl.org [140.211.166.136])
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9C931C432BE
+	for <iommu@archiver.kernel.org>; Sat, 28 Aug 2021 15:38:33 +0000 (UTC)
+Received: from smtp4.osuosl.org (smtp4.osuosl.org [140.211.166.137])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 29F6E60E78
-	for <iommu@archiver.kernel.org>; Sat, 28 Aug 2021 15:38:31 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.4.1 mail.kernel.org 29F6E60E78
+	by mail.kernel.org (Postfix) with ESMTPS id 5347F60524
+	for <iommu@archiver.kernel.org>; Sat, 28 Aug 2021 15:38:33 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.4.1 mail.kernel.org 5347F60524
 Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=lists.linux-foundation.org
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by smtp3.osuosl.org (Postfix) with ESMTP id 0BFFA606EC;
-	Sat, 28 Aug 2021 15:38:31 +0000 (UTC)
+	by smtp4.osuosl.org (Postfix) with ESMTP id 361A4402C6;
+	Sat, 28 Aug 2021 15:38:33 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from smtp3.osuosl.org ([127.0.0.1])
-	by localhost (smtp3.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id aGUUXIVzIUek; Sat, 28 Aug 2021 15:38:26 +0000 (UTC)
-Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by smtp3.osuosl.org (Postfix) with ESMTPS id 486DA60648;
-	Sat, 28 Aug 2021 15:38:26 +0000 (UTC)
+Received: from smtp4.osuosl.org ([127.0.0.1])
+	by localhost (smtp4.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+	with ESMTP id Brm9vFhDr5zn; Sat, 28 Aug 2021 15:38:28 +0000 (UTC)
+Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [IPv6:2605:bc80:3010:104::8cd3:938])
+	by smtp4.osuosl.org (Postfix) with ESMTPS id 71EB240161;
+	Sat, 28 Aug 2021 15:38:28 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 2593EC0010;
-	Sat, 28 Aug 2021 15:38:26 +0000 (UTC)
-Received: from smtp1.osuosl.org (smtp1.osuosl.org [140.211.166.138])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 133CCC000E
- for <iommu@lists.linux-foundation.org>; Sat, 28 Aug 2021 15:38:25 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 5AB26C0010;
+	Sat, 28 Aug 2021 15:38:28 +0000 (UTC)
+Received: from smtp2.osuosl.org (smtp2.osuosl.org [140.211.166.133])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 305D9C001F
+ for <iommu@lists.linux-foundation.org>; Sat, 28 Aug 2021 15:38:26 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by smtp1.osuosl.org (Postfix) with ESMTP id E8F8383E4C
- for <iommu@lists.linux-foundation.org>; Sat, 28 Aug 2021 15:38:24 +0000 (UTC)
+ by smtp2.osuosl.org (Postfix) with ESMTP id F27F14022F
+ for <iommu@lists.linux-foundation.org>; Sat, 28 Aug 2021 15:38:25 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Authentication-Results: smtp1.osuosl.org (amavisd-new);
- dkim=pass (2048-bit key) header.d=svenpeter.dev header.b="rA2AF9SD";
+Authentication-Results: smtp2.osuosl.org (amavisd-new);
+ dkim=pass (2048-bit key) header.d=svenpeter.dev header.b="PFErue+N";
  dkim=pass (2048-bit key) header.d=messagingengine.com
- header.b="W/mh6OS+"
-Received: from smtp1.osuosl.org ([127.0.0.1])
- by localhost (smtp1.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id ujZd5_nR8MAM for <iommu@lists.linux-foundation.org>;
- Sat, 28 Aug 2021 15:38:20 +0000 (UTC)
+ header.b="s04JViXx"
+Received: from smtp2.osuosl.org ([127.0.0.1])
+ by localhost (smtp2.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+ with ESMTP id ZX8qP6ARrTY2 for <iommu@lists.linux-foundation.org>;
+ Sat, 28 Aug 2021 15:38:22 +0000 (UTC)
 X-Greylist: from auto-whitelisted by SQLgrey-1.8.0
 Received: from new3-smtp.messagingengine.com (new3-smtp.messagingengine.com
  [66.111.4.229])
- by smtp1.osuosl.org (Postfix) with ESMTPS id 8CBFE83B2A
- for <iommu@lists.linux-foundation.org>; Sat, 28 Aug 2021 15:38:20 +0000 (UTC)
-Received: from compute3.internal (compute3.nyi.internal [10.202.2.43])
- by mailnew.nyi.internal (Postfix) with ESMTP id C0B68580A6B;
- Sat, 28 Aug 2021 11:38:19 -0400 (EDT)
+ by smtp2.osuosl.org (Postfix) with ESMTPS id 65DD9401B0
+ for <iommu@lists.linux-foundation.org>; Sat, 28 Aug 2021 15:38:22 +0000 (UTC)
+Received: from compute4.internal (compute4.nyi.internal [10.202.2.44])
+ by mailnew.nyi.internal (Postfix) with ESMTP id 9842A580A70;
+ Sat, 28 Aug 2021 11:38:21 -0400 (EDT)
 Received: from mailfrontend1 ([10.202.2.162])
- by compute3.internal (MEProxy); Sat, 28 Aug 2021 11:38:19 -0400
+ by compute4.internal (MEProxy); Sat, 28 Aug 2021 11:38:21 -0400
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=svenpeter.dev;
  h=from:to:cc:subject:date:message-id:in-reply-to:references
- :mime-version:content-transfer-encoding; s=fm2; bh=UYZp9goIX3db+
- 451Td4TbHlI8QOyAlCJRHIWbYLh0Pc=; b=rA2AF9SDrVGmgwvvIQ/ymfgLrVxeQ
- j3p0ZFR35MjmK8SpH7uLxjKBpoH4JKOnq/Mq2hI9rCkpKaqf9SExOq4i6uz1OPn7
- YIO8+cW1Yew6yXa5rL2BRToLFy7r9hA8/YUc27LJbqOrFna6xRQNqbMrvlyWRbrW
- GYXO7cPi6UqdsklqFWLG7K/PM76dJiiETa1bS+bEKA7oF+Q573dnAVM4yXkJkLKu
- M+em7l1nlLHZDTT0NJTh/hb3nxH6wrk8nBqaPNXMEl5Cq1PszcR5/LCnSJu99iti
- Aa525AGM7vUOdUe7rSEpUOH1xL4DFFyJGJkG6f+REhCROG4Zmfsitzfzw==
+ :mime-version:content-transfer-encoding; s=fm2; bh=PwFP4HxzvK7Rc
+ gD49PhDeopMka3fjX2dpZ9I2SZ3weU=; b=PFErue+NMN/w4km2ChFvzfPySAnh0
+ FBKLGJBUIN3AN6tHZXztsT3wcGs1byVNHn3jXe79yHaIQnB79awWuH0EA+6+KeyS
+ U6Bcu3n+fVXIzOwrYXI22JJwSmxMBEuYX9xM76tWN0zs2+gjoWBt/xeOZyTCIpUF
+ ivVcGHuXfAWYHF4OiqfGS9n73U3YUdjc+Ftyx8XKHiEuYGXeltSL8i38U45osa0z
+ rVgFG+tFDEWq0nkpCrc7sinsLIl7gDwbgLSLCSJsVKg7+FOwZ0w6bGClwcNxrP84
+ 1Qo7UX7i5vGG7CU8JSK78B9lb2XoG8u49h2R+koSOq38+lbp31317Qkhg==
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
  messagingengine.com; h=cc:content-transfer-encoding:date:from
  :in-reply-to:message-id:mime-version:references:subject:to
  :x-me-proxy:x-me-proxy:x-me-sender:x-me-sender:x-sasl-enc; s=
- fm3; bh=UYZp9goIX3db+451Td4TbHlI8QOyAlCJRHIWbYLh0Pc=; b=W/mh6OS+
- xmwG76ds68cQl/CY55NldYEJ0Lrlw2hMyV1uiIVdTilvkA5A9sA3X1hq0JKbwEi/
- LnnCCzWtiUGGBVP9G0vsLkR83huQ0TqcWSTrjDRIpTjkho819lt/GLENODEqlUFm
- /AZMUvlLhwbPDZKe0Tm83HPK00AvSE0g0VFZn43RhjRiIK/LD7SXWGKi/ckIKz6b
- TM4tb4R4s0BfeQ+NaeagiFXXq7BU3XvgtmZ/CPESm5p1M0V8PEam01B2faDhqVrx
- zy/VttZwf1q/Us0eoYLbV+JLfNBbmB/3eecg4hRvHyvAEMd2te+XIAxast2he6t6
- PWmuFNTMfVFCOw==
-X-ME-Sender: <xms:a1gqYUO-X6cH76PihY0y8R3ZpHBvXbFvPanhK6HzuIgagDZxqckCPQ>
- <xme:a1gqYa9QbhDCyp0k19l_XSuUNBEnAca-HNg3ECEd_bPEHIc-CcnH-w9OQnQzJJCHN
- GjiRScR_WOBvO5SWQg>
-X-ME-Received: <xmr:a1gqYbTsKTZnbLmSuwBY-nUKjoDOZghYadN-ehSLyMRv9xBY-dg9Fz8EZ_QSPpfJnwBOO3_S5EKhd-frlv_p3mwU1la-0JnkBcCdLTrhhvYrDI-6kEbT53L2ogsIZg>
+ fm3; bh=PwFP4HxzvK7RcgD49PhDeopMka3fjX2dpZ9I2SZ3weU=; b=s04JViXx
+ /FbAdZ6nCpHBnbia4qXypuoKF9fliCl5/YhXhg2oSV36ZOfsZR7AcID/XqKlXKJK
+ zz8W6rIsFbcUfRRVCkjEwfJNthF9SzF0ZP+XYkoASJjM5szdCBfI6EDKy83uisnf
+ 6ds5BEsVl4A6wUeV8USEsFZv9wj5qhnfZdGEjJeoniBr8V7G7UHoP7CWUiYUpPDS
+ YzCrwhnj6w8fa1yj9p+3mTjRmXcuH62YQh2Wm4BnBvcM2+KXwvyYR8Wndzj8mhY+
+ Ma9+A4aDf3HaZRO9liimSfG2jGEAtjHVSerzjemxYiqTaj2zFKsuhFKHPTLyiOQ1
+ wkWHmu38lWaL6w==
+X-ME-Sender: <xms:bVgqYQFEG5G9OICsXZ_g_3WHR6wlcZkoKEHL5IRjIllzNBC5v9lh0Q>
+ <xme:bVgqYZX2lh6IgJhKlYQv-W8ScJJ16jdXkYJJaXyb1kto1it34mOHy_zYYFO2UBrj7
+ acGaOyuyL2c3GZqe88>
+X-ME-Received: <xmr:bVgqYaIzjSb81IkDOorJTGtpLOeRyb6A1J8CjRC2UqpxzhWvCQAqi-hjceGRh45Bxw-QfNuOww0AE5rZFwbnjH4w1GU7NDJH1hheFQJDj8KDDxNncxFeWceLsPQcTQ>
 X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgedvtddrudduhedgleduucetufdoteggodetrfdotf
  fvucfrrhhofhhilhgvmecuhfgrshhtofgrihhlpdfqfgfvpdfurfetoffkrfgpnffqhgen
  uceurghilhhouhhtmecufedttdenucesvcftvggtihhpihgvnhhtshculddquddttddmne
  cujfgurhephffvufffkffojghfggfgsedtkeertdertddtnecuhfhrohhmpefuvhgvnhcu
  rfgvthgvrhcuoehsvhgvnhesshhvvghnphgvthgvrhdruggvvheqnecuggftrfgrthhtvg
  hrnheptedvkeetleeuffffhfekteetffeggffgveehieelueefvddtueffveevlefhfeej
- necuvehluhhsthgvrhfuihiivgepudenucfrrghrrghmpehmrghilhhfrhhomhepshhvvg
+ necuvehluhhsthgvrhfuihiivgeptdenucfrrghrrghmpehmrghilhhfrhhomhepshhvvg
  hnsehsvhgvnhhpvghtvghrrdguvghv
-X-ME-Proxy: <xmx:a1gqYcvsVk3eJpZ_t5zlteGi8fdLla-2808wXzyewFHEH6zg3QcKUQ>
- <xmx:a1gqYcf4KJgkW5jtkNcc_R4FvcWjma-3M-8MFIAlJxOkJ4mgTXGNCg>
- <xmx:a1gqYQ1TTwOae1ubeMP3DkFcYA4W8BJGQBFc2pYvXcSu5LFULLLHMA>
- <xmx:a1gqYU7W_NlHPYmWCohQz921YdfpvQFDZH4Y1ECnPthq1oesmRtM1w>
+X-ME-Proxy: <xmx:bVgqYSH0vaDpgPtTALhF3ztwtbYF4id_clj6GoVvfC6W8qGNEtx7yQ>
+ <xmx:bVgqYWVc5gLn0dUoPt0yQObgpOxH4zPyyWEQFRyYVab4Tox8i5_yPg>
+ <xmx:bVgqYVOxGneOov6SmST3PCisbBkj-INZVB_aaxND20-cuTnEkQNBqA>
+ <xmx:bVgqYSRfLGhCnUOafyBKTr_Ixb7NYZbSFwBXYH67ZSQclmrzlVOsrQ>
 Received: by mail.messagingengine.com (Postfix) with ESMTPA; Sat,
- 28 Aug 2021 11:38:18 -0400 (EDT)
+ 28 Aug 2021 11:38:19 -0400 (EDT)
 To: iommu@lists.linux-foundation.org
-Subject: [PATCH v2 3/8] iommu/dma: Disable get_sgtable for granule > PAGE_SIZE
-Date: Sat, 28 Aug 2021 17:36:37 +0200
-Message-Id: <20210828153642.19396-4-sven@svenpeter.dev>
+Subject: [PATCH v2 4/8] iommu/dma: Support granule > PAGE_SIZE in dma_map_sg
+Date: Sat, 28 Aug 2021 17:36:38 +0200
+Message-Id: <20210828153642.19396-5-sven@svenpeter.dev>
 X-Mailer: git-send-email 2.30.1 (Apple Git-130)
 In-Reply-To: <20210828153642.19396-1-sven@svenpeter.dev>
 References: <20210828153642.19396-1-sven@svenpeter.dev>
@@ -125,35 +125,66 @@ Content-Transfer-Encoding: 7bit
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-Pretend that iommu_dma_get_sgtable is not implemented when
-granule > PAGE_SIZE since I can neither test this function right now
-nor do I fully understand how it is used.
+Add support to iommu_dma_map_sg's impedance matching to also align
+sg_lists correctly when the IOMMU granule is larger than PAGE_SIZE.
 
+Co-developed-by: Robin Murphy <robin.murphy@arm.com>
+Signed-off-by: Robin Murphy <robin.murphy@arm.com>
 Signed-off-by: Sven Peter <sven@svenpeter.dev>
 ---
- drivers/iommu/dma-iommu.c | 6 ++++++
- 1 file changed, 6 insertions(+)
+ drivers/iommu/dma-iommu.c | 18 ++++++++++--------
+ 1 file changed, 10 insertions(+), 8 deletions(-)
 
 diff --git a/drivers/iommu/dma-iommu.c b/drivers/iommu/dma-iommu.c
-index d6e273ec3de6..64fbd9236820 100644
+index 64fbd9236820..a091cff5829d 100644
 --- a/drivers/iommu/dma-iommu.c
 +++ b/drivers/iommu/dma-iommu.c
-@@ -1315,9 +1315,15 @@ static int iommu_dma_get_sgtable(struct device *dev, struct sg_table *sgt,
- 		void *cpu_addr, dma_addr_t dma_addr, size_t size,
- 		unsigned long attrs)
- {
-+	struct iommu_domain *domain = iommu_get_dma_domain(dev);
-+	struct iommu_dma_cookie *cookie = domain->iova_cookie;
-+	struct iova_domain *iovad = &cookie->iovad;
- 	struct page *page;
- 	int ret;
+@@ -932,8 +932,8 @@ static int __finalise_sg(struct device *dev, struct scatterlist *sg, int nents,
+ 		unsigned int s_length = sg_dma_len(s);
+ 		unsigned int s_iova_len = s->length;
  
-+	if (iovad->granule > PAGE_SIZE)
-+		return -ENXIO;
-+
- 	if (IS_ENABLED(CONFIG_DMA_REMAP) && is_vmalloc_addr(cpu_addr)) {
- 		struct page **pages = dma_common_find_pages(cpu_addr);
+-		s->offset += s_iova_off;
+-		s->length = s_length;
++		sg_set_page(s, phys_to_page(sg_phys(s) + s_iova_off), s_length,
++			    s_iova_off & ~PAGE_MASK);
+ 		sg_dma_address(s) = DMA_MAPPING_ERROR;
+ 		sg_dma_len(s) = 0;
  
+@@ -977,10 +977,11 @@ static void __invalidate_sg(struct scatterlist *sg, int nents)
+ 	int i;
+ 
+ 	for_each_sg(sg, s, nents, i) {
+-		if (sg_dma_address(s) != DMA_MAPPING_ERROR)
+-			s->offset += sg_dma_address(s);
+ 		if (sg_dma_len(s))
+-			s->length = sg_dma_len(s);
++			sg_set_page(s,
++				    phys_to_page(sg_phys(s) + sg_dma_address(s)),
++				    sg_dma_len(s),
++				    sg_dma_address(s) & ~PAGE_MASK);
+ 		sg_dma_address(s) = DMA_MAPPING_ERROR;
+ 		sg_dma_len(s) = 0;
+ 	}
+@@ -1056,15 +1057,16 @@ static int iommu_dma_map_sg(struct device *dev, struct scatterlist *sg,
+ 	 * stashing the unaligned parts in the as-yet-unused DMA fields.
+ 	 */
+ 	for_each_sg(sg, s, nents, i) {
+-		size_t s_iova_off = iova_offset(iovad, s->offset);
++		phys_addr_t s_phys = sg_phys(s);
++		size_t s_iova_off = iova_offset(iovad, s_phys);
+ 		size_t s_length = s->length;
+ 		size_t pad_len = (mask - iova_len + 1) & mask;
+ 
+ 		sg_dma_address(s) = s_iova_off;
+ 		sg_dma_len(s) = s_length;
+-		s->offset -= s_iova_off;
+ 		s_length = iova_align(iovad, s_length + s_iova_off);
+-		s->length = s_length;
++		sg_set_page(s, phys_to_page(s_phys - s_iova_off),
++			    s_length, s->offset & ~s_iova_off);
+ 
+ 		/*
+ 		 * Due to the alignment of our single IOVA allocation, we can
 -- 
 2.25.1
 
