@@ -2,97 +2,106 @@ Return-Path: <SRS0=VAik=NT=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-11.6 required=3.0 tests=BAYES_00,DKIM_INVALID,
-	DKIM_SIGNED,HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,
-	SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_GIT autolearn=unavailable
-	autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-13.8 required=3.0 tests=BAYES_00,DKIM_INVALID,
+	DKIM_SIGNED,HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_CR_TRAILER,INCLUDES_PATCH,
+	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,UNWANTED_LANGUAGE_BODY,
+	URIBL_BLOCKED,USER_AGENT_GIT autolearn=unavailable autolearn_force=no
+	version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5876DC432BE
-	for <iommu@archiver.kernel.org>; Sat, 28 Aug 2021 15:38:26 +0000 (UTC)
-Received: from smtp2.osuosl.org (smtp2.osuosl.org [140.211.166.133])
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 94513C43214
+	for <iommu@archiver.kernel.org>; Sat, 28 Aug 2021 15:38:27 +0000 (UTC)
+Received: from smtp3.osuosl.org (smtp3.osuosl.org [140.211.166.136])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id D9FB360524
-	for <iommu@archiver.kernel.org>; Sat, 28 Aug 2021 15:38:25 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.4.1 mail.kernel.org D9FB360524
+	by mail.kernel.org (Postfix) with ESMTPS id 21F02604AC
+	for <iommu@archiver.kernel.org>; Sat, 28 Aug 2021 15:38:27 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.4.1 mail.kernel.org 21F02604AC
 Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=lists.linux-foundation.org
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by smtp2.osuosl.org (Postfix) with ESMTP id 9D2CD40205;
-	Sat, 28 Aug 2021 15:38:25 +0000 (UTC)
+	by smtp3.osuosl.org (Postfix) with ESMTP id EBFAF606D9;
+	Sat, 28 Aug 2021 15:38:26 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from smtp2.osuosl.org ([127.0.0.1])
-	by localhost (smtp2.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id 8y4Pbf6WYVxA; Sat, 28 Aug 2021 15:38:21 +0000 (UTC)
-Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by smtp2.osuosl.org (Postfix) with ESMTPS id BDC9B4012B;
-	Sat, 28 Aug 2021 15:38:20 +0000 (UTC)
+Received: from smtp3.osuosl.org ([127.0.0.1])
+	by localhost (smtp3.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+	with ESMTP id mekHafBWUOx9; Sat, 28 Aug 2021 15:38:23 +0000 (UTC)
+Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [IPv6:2605:bc80:3010:104::8cd3:938])
+	by smtp3.osuosl.org (Postfix) with ESMTPS id E235D6065C;
+	Sat, 28 Aug 2021 15:38:22 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 91E8BC0010;
-	Sat, 28 Aug 2021 15:38:20 +0000 (UTC)
-Received: from smtp2.osuosl.org (smtp2.osuosl.org [IPv6:2605:bc80:3010::133])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 31A8DC000E
- for <iommu@lists.linux-foundation.org>; Sat, 28 Aug 2021 15:38:20 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id BF32FC0010;
+	Sat, 28 Aug 2021 15:38:22 +0000 (UTC)
+Received: from smtp1.osuosl.org (smtp1.osuosl.org [IPv6:2605:bc80:3010::138])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id BE037C000E
+ for <iommu@lists.linux-foundation.org>; Sat, 28 Aug 2021 15:38:21 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by smtp2.osuosl.org (Postfix) with ESMTP id 0B48340155
- for <iommu@lists.linux-foundation.org>; Sat, 28 Aug 2021 15:38:20 +0000 (UTC)
+ by smtp1.osuosl.org (Postfix) with ESMTP id AB85D83B2B
+ for <iommu@lists.linux-foundation.org>; Sat, 28 Aug 2021 15:38:21 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from smtp2.osuosl.org ([127.0.0.1])
- by localhost (smtp2.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id FOFfkxkJUS8i for <iommu@lists.linux-foundation.org>;
- Sat, 28 Aug 2021 15:38:15 +0000 (UTC)
+Authentication-Results: smtp1.osuosl.org (amavisd-new);
+ dkim=pass (2048-bit key) header.d=svenpeter.dev header.b="GcuCR7By";
+ dkim=pass (2048-bit key) header.d=messagingengine.com
+ header.b="VAraJN/0"
+Received: from smtp1.osuosl.org ([127.0.0.1])
+ by localhost (smtp1.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+ with ESMTP id SLWh4xoIVfQu for <iommu@lists.linux-foundation.org>;
+ Sat, 28 Aug 2021 15:38:17 +0000 (UTC)
 X-Greylist: from auto-whitelisted by SQLgrey-1.8.0
 Received: from new3-smtp.messagingengine.com (new3-smtp.messagingengine.com
  [66.111.4.229])
- by smtp2.osuosl.org (Postfix) with ESMTPS id 510634012B
- for <iommu@lists.linux-foundation.org>; Sat, 28 Aug 2021 15:38:15 +0000 (UTC)
-Received: from compute4.internal (compute4.nyi.internal [10.202.2.44])
- by mailnew.nyi.internal (Postfix) with ESMTP id 6BF45580A6B;
- Sat, 28 Aug 2021 11:38:12 -0400 (EDT)
+ by smtp1.osuosl.org (Postfix) with ESMTPS id 48B3E83B28
+ for <iommu@lists.linux-foundation.org>; Sat, 28 Aug 2021 15:38:17 +0000 (UTC)
+Received: from compute3.internal (compute3.nyi.internal [10.202.2.43])
+ by mailnew.nyi.internal (Postfix) with ESMTP id 58FD5580A6E;
+ Sat, 28 Aug 2021 11:38:15 -0400 (EDT)
 Received: from mailfrontend1 ([10.202.2.162])
- by compute4.internal (MEProxy); Sat, 28 Aug 2021 11:38:12 -0400
+ by compute3.internal (MEProxy); Sat, 28 Aug 2021 11:38:15 -0400
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=svenpeter.dev;
- h=from:to:cc:subject:date:message-id:mime-version
- :content-transfer-encoding; s=fm2; bh=Ir6zYPhgUh57BI7mV5KU6yepjS
- 2qUU8+bficl9p0lPg=; b=ZzqtN+xtBikn+rG2Af9z4cjrVsDvKJxCwzO9123bSk
- pqNYi02jgREEdC3Ty7ZZWni9O0fwjxzHeIswiucb7WUL6uelpXtLOmCeVuzMhoEp
- Dz4/0aKGZIWD59YT39DCkU0LDAEHPFtwrADIbvQR+5OCFdWO/AombyleJK4vPBYu
- o2OeKhxK34EbY+GyfriNm7+/IB5KjVB8OGPqDhd/a/vKUI0HRYqAH3l0g/PpjrYc
- xGT04Hyb2CmgAgmtEqI63TTrNuluR15Dn1UnK7KFYPDNIk+3XfZ2jwsAHG8i/PqN
- eUbHYo7DN9E/YCwcThx+Mw5+RGAzp27FOzwy+KPwy+lQ==
+ h=from:to:cc:subject:date:message-id:in-reply-to:references
+ :mime-version:content-transfer-encoding; s=fm2; bh=VOZYRWe/dCFEY
+ gtDB/y8If80bqsPEhIyIqpzLtzl4Hc=; b=GcuCR7ByuI5yY/6cjLAL1kvR+JGIa
+ tuNNUF5/2iRJ/6dVLNsDj7mDEA6zLgvs/32n/DAocnIwuByEUV1QR4lZoTNkxBWA
+ C2tk2PLuQMFKO1Borr5iY7Kmybdu1OkWljNmWpcOJ0EQ4XTb6x5aeS48XzOnkmuv
+ 3x3aeb60b7PyS0QkTYo1z0rw0F6kJqqmCGIdm7c+aiDvlPOFUZ8hh9ihI/kTWp/N
+ /Vrs1ybSR9h4RSiJg1M6fAoqs4Ma44jfscjhVWBOqRy7cpES+Ciq8lIEGOAyynoo
+ beiO4DuQI+oOtWzhhRwgN6XHcltDOTS3A/4kNyYprA0u0SP20yQNvqscw==
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
  messagingengine.com; h=cc:content-transfer-encoding:date:from
- :message-id:mime-version:subject:to:x-me-proxy:x-me-proxy
- :x-me-sender:x-me-sender:x-sasl-enc; s=fm3; bh=Ir6zYPhgUh57BI7mV
- 5KU6yepjS2qUU8+bficl9p0lPg=; b=P6S4b/wGEncaiDS5vyzG1TU63TRTfOr/H
- aOzU0Y0kbTdO+qonIP5uWUE01Tpa74bsnvSuoZJnlqAxYeZfJEwVkvF+d2z98hDF
- 4MLXetPamxLvlMIJg8bJm/npGEKX2kdIjesLRzzivyj2e5u7Wv7FYIet2BcoD6s4
- 8Hd35pKzxEkdDhyvF9ZdZA9mvco25XQarujj4oCR6p1YuJR+zSF7ge3JUyV7zLA9
- MgMVi3L0JWphoCXtDu4t14aeeWZw1cLKspFadxsUatCVW9tlh4tS7ALYmRelvOYB
- Dkgbg+P7atQXyUe1WX/MKyuwfLE0IkAqjoTyvjg4DG+Xtiyl9ML0g==
-X-ME-Sender: <xms:YVgqYRRfbMZ7h0R5Tnf-A1IsbH0SZw0uE_2GS6f_5xw2PTAtGw_aww>
- <xme:YVgqYayP9h_IzZqe_vobJuT4skLKb59PkhbeJApwaZ1sI5sECXxPnYXQ1-XxvKXm6
- w6AGgIcAJhfi_VVLSE>
-X-ME-Received: <xmr:YVgqYW0MALMAJJJ-37F113Qe0oQz5QJ5eD0OlQAlVQ3xnEqx9LsgcsK_gXg4R13AJ1kOhL1wOBZUF5gzJRy311N2cv36yY8R93QEoi-nA42azmLIb1JiEOeUKosfAw>
+ :in-reply-to:message-id:mime-version:references:subject:to
+ :x-me-proxy:x-me-proxy:x-me-sender:x-me-sender:x-sasl-enc; s=
+ fm3; bh=VOZYRWe/dCFEYgtDB/y8If80bqsPEhIyIqpzLtzl4Hc=; b=VAraJN/0
+ kAZ6lqfus8PZos9W6yuq4IDYrRIBTsEm21ZG0912AOQH3TZf8djPkgB4w5kkromY
+ SxkjONRjzkCCPZ3qeIR/tv7t0r4Dr4pZpJkhTnz75pQmsScdxjVUtg470T6Qr5hJ
+ n0Z0UVwPJv64q2gEZ3uYzwKHsGy4Ukj2xU8Xyq93ssV12lrHo0KKrPiKRQuaE4rR
+ owwI8VjIG7ewoqp+Gzbjd8eHZ2gGqC+Oag2Ajz3F4sN5lsYjI4wXDnx+hAvuku0p
+ BmTxqiMbhVIp7baJ9uEh3A71jzedwvnpzILOJGWUcZ48ZkPTrE1q7b7vbLITwsE5
+ iDB7JHDxWWBhvg==
+X-ME-Sender: <xms:ZlgqYSrZqdJEW73I6l9NEAnYKs57IduFWobdOL1IM3EMtcCakRaliQ>
+ <xme:ZlgqYQpPGzLVYozFO0EXzZXztRXVzBh3aCrahan6pz-WI-SSMmc12tJLGeL6Eshsa
+ MbKrKMGOGcXTs-huBQ>
+X-ME-Received: <xmr:ZlgqYXP7O1-cMmnzj0vh_xa3lNHfhbEE3bTFcDmuZ570e-WcXgW7WdaRHDn8-SIevG8A6CvAo2uHxu7AtnV0iadxp9sHWUTEsLnoq_nE8jU2Vz_rpNC4bLcUwECARQ>
 X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgedvtddrudduhedgleduucetufdoteggodetrfdotf
  fvucfrrhhofhhilhgvmecuhfgrshhtofgrihhlpdfqfgfvpdfurfetoffkrfgpnffqhgen
  uceurghilhhouhhtmecufedttdenucesvcftvggtihhpihgvnhhtshculddquddttddmne
- cujfgurhephffvufffkffoggfgsedtkeertdertddtnecuhfhrohhmpefuvhgvnhcurfgv
- thgvrhcuoehsvhgvnhesshhvvghnphgvthgvrhdruggvvheqnecuggftrfgrthhtvghrnh
- epfeehudeftddvhfehvdduhedtjeejheeuudfftdfgvdekvdelleeuveelgfeflefgnecu
- ffhomhgrihhnpehkvghrnhgvlhdrohhrghenucevlhhushhtvghrufhiiigvpedtnecurf
- grrhgrmhepmhgrihhlfhhrohhmpehsvhgvnhesshhvvghnphgvthgvrhdruggvvh
-X-ME-Proxy: <xmx:YVgqYZCkjoHfAZjHUHRjsGpf6eu4y5KGmVhMv1eZkIROsjLR0Uheag>
- <xmx:YVgqYag1mSKV5Opo0Tg3571o05_DbIRldFdk7Ic4yK0F4H8ifYndyQ>
- <xmx:YVgqYdpkNwnOTVt9SDUiHu8kPVpL-KnnlhzcaJLS8XrB5md7uockyw>
- <xmx:ZFgqYVMJ1rBpesOPvK3NRXWX-Ts75loxeMxpl2Mm8MJbscHK8WWGcg>
+ cujfgurhephffvufffkffojghfggfgsedtkeertdertddtnecuhfhrohhmpefuvhgvnhcu
+ rfgvthgvrhcuoehsvhgvnhesshhvvghnphgvthgvrhdruggvvheqnecuggftrfgrthhtvg
+ hrnheptedvkeetleeuffffhfekteetffeggffgveehieelueefvddtueffveevlefhfeej
+ necuvehluhhsthgvrhfuihiivgeptdenucfrrghrrghmpehmrghilhhfrhhomhepshhvvg
+ hnsehsvhgvnhhpvghtvghrrdguvghv
+X-ME-Proxy: <xmx:ZlgqYR7OWj0z79LYDIyKDcuMpOm7XHTWvuH_OTdk0-le2rhhaPiHVg>
+ <xmx:ZlgqYR57xPj5dQZfkxgqaNa9yChoQfRPysWFtpNodqef-spFFC1C1g>
+ <xmx:ZlgqYRj803aVUiLP_ckN4JOAaWP-_YKM0ctegfBcUZJb_XKf5pmRog>
+ <xmx:Z1gqYWGyVwx0JpOetdhu1Ap1WpqG_sDdXS4p9OyL4JUjfQQsiY4rBQ>
 Received: by mail.messagingengine.com (Postfix) with ESMTPA; Sat,
- 28 Aug 2021 11:38:07 -0400 (EDT)
+ 28 Aug 2021 11:38:12 -0400 (EDT)
 To: iommu@lists.linux-foundation.org
-Subject: [PATCH v2 0/8] Support IOMMU page sizes larger than the CPU page size
-Date: Sat, 28 Aug 2021 17:36:34 +0200
-Message-Id: <20210828153642.19396-1-sven@svenpeter.dev>
+Subject: [PATCH v2 1/8] iommu/dma: Align size for untrusted devs to IOVA
+ granule
+Date: Sat, 28 Aug 2021 17:36:35 +0200
+Message-Id: <20210828153642.19396-2-sven@svenpeter.dev>
 X-Mailer: git-send-email 2.30.1 (Apple Git-130)
+In-Reply-To: <20210828153642.19396-1-sven@svenpeter.dev>
+References: <20210828153642.19396-1-sven@svenpeter.dev>
 MIME-Version: 1.0
 Cc: Arnd Bergmann <arnd@kernel.org>, Sven Peter <sven@svenpeter.dev>,
  Will Deacon <will@kernel.org>, Hector Martin <marcan@marcan.st>,
@@ -118,53 +127,131 @@ Content-Transfer-Encoding: 7bit
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-RFC Patch: https://lore.kernel.org/linux-iommu/20210806155523.50429-1-sven@svenpeter.dev/
+Up until now PAGE_SIZE was always a multiple of iovad->granule
+such that adjacent pages were never exposed to untrusted devices
+due to allocations done as part of the coherent DMA API.
+With PAGE_SIZE < iovad->granule however all these allocations
+must also be aligned to iovad->granule.
 
-Hi,
+Signed-off-by: Sven Peter <sven@svenpeter.dev>
+---
+ drivers/iommu/dma-iommu.c | 40 ++++++++++++++++++++++++++++++++++++++-
+ 1 file changed, 39 insertions(+), 1 deletion(-)
 
-After a very helpful discussion with Robin Murphy on the RFC, here's v2 that is slowly
-starting to look sane.
-I've been running this code for two weeks now and mainly tested it with usb storage devices
-connected to dwc3 and to xhci over pcie on the M1.
-
-Some background: On the Apple M1 the IOMMUs are hardwired to only support 16 KB pages.
-We'd still like to boot Linux with 4KB pages though because that's what most distros
-ship these days. This patch series adds support for that setup to the IOMMU DMA API.
-
-This is essentially done by always mapping the encapsulating IOMMU page and adjusting
-the returned iova offset. There are also changes to only allow DMA domains to make use
-of this and prevent UNMANAGED domains from encountering unexpected situations.
-
-For untrusted devices the allocation size is simply aligned to iovad->granule if they
-don't already go through the swiotlb path. I have not been able to test that part
-so far though since there's no Thunderbolt support for the M1 yet.
-
-The series is based on top of iommu/next (and without the last commit probably also on
-iommu/core). It won't apply cleanly on apple/dart since it already takes Robin's DMA domain
-cleanup series into account.
-
-
-Best,
-
-Sven
+diff --git a/drivers/iommu/dma-iommu.c b/drivers/iommu/dma-iommu.c
+index d0bc8c06e1a4..e8eae34e9e4f 100644
+--- a/drivers/iommu/dma-iommu.c
++++ b/drivers/iommu/dma-iommu.c
+@@ -735,10 +735,16 @@ static void *iommu_dma_alloc_remap(struct device *dev, size_t size,
+ 		dma_addr_t *dma_handle, gfp_t gfp, pgprot_t prot,
+ 		unsigned long attrs)
+ {
++	struct iommu_domain *domain = iommu_get_dma_domain(dev);
++	struct iommu_dma_cookie *cookie = domain->iova_cookie;
++	struct iova_domain *iovad = &cookie->iovad;
+ 	struct page **pages;
+ 	struct sg_table sgt;
+ 	void *vaddr;
  
-Sven Peter (8):
-  iommu/dma: Align size for untrusted devs to IOVA granule
-  iommu/dma: Fail unaligned map requests for untrusted devs
-  iommu/dma: Disable get_sgtable for granule > PAGE_SIZE
-  iommu/dma: Support granule > PAGE_SIZE in dma_map_sg
-  iommu/dma: Support PAGE_SIZE < iovad->granule allocations
-  iommu: Move IOMMU pagesize check to attach_device
-  iommu: Introduce __IOMMU_DOMAIN_LP
-  iommu/dart: Remove force_bypass logic
-
- drivers/iommu/apple-dart.c |  14 +--
- drivers/iommu/dma-iommu.c  | 172 ++++++++++++++++++++++++++++++++-----
- drivers/iommu/iommu.c      |  36 +++++++-
- drivers/iommu/iova.c       |   7 +-
- include/linux/iommu.h      |   8 +-
- 5 files changed, 197 insertions(+), 40 deletions(-)
-
++	if (dev_is_untrusted(dev))
++		size = iova_align(iovad, size);
++
+ 	pages = __iommu_dma_alloc_noncontiguous(dev, size, &sgt, gfp, prot,
+ 						attrs);
+ 	if (!pages)
+@@ -762,12 +768,18 @@ static struct sg_table *iommu_dma_alloc_noncontiguous(struct device *dev,
+ 		size_t size, enum dma_data_direction dir, gfp_t gfp,
+ 		unsigned long attrs)
+ {
++	struct iommu_domain *domain = iommu_get_dma_domain(dev);
++	struct iommu_dma_cookie *cookie = domain->iova_cookie;
++	struct iova_domain *iovad = &cookie->iovad;
+ 	struct dma_sgt_handle *sh;
+ 
+ 	sh = kmalloc(sizeof(*sh), gfp);
+ 	if (!sh)
+ 		return NULL;
+ 
++	if (dev_is_untrusted(dev))
++		size = iova_align(iovad, size);
++
+ 	sh->pages = __iommu_dma_alloc_noncontiguous(dev, size, &sh->sgt, gfp,
+ 						    PAGE_KERNEL, attrs);
+ 	if (!sh->pages) {
+@@ -780,8 +792,15 @@ static struct sg_table *iommu_dma_alloc_noncontiguous(struct device *dev,
+ static void iommu_dma_free_noncontiguous(struct device *dev, size_t size,
+ 		struct sg_table *sgt, enum dma_data_direction dir)
+ {
++	struct iommu_domain *domain = iommu_get_dma_domain(dev);
++	struct iommu_dma_cookie *cookie = domain->iova_cookie;
++	struct iova_domain *iovad = &cookie->iovad;
+ 	struct dma_sgt_handle *sh = sgt_handle(sgt);
+ 
++
++	if (dev_is_untrusted(dev))
++		size = iova_align(iovad, size);
++
+ 	__iommu_dma_unmap(dev, sgt->sgl->dma_address, size);
+ 	__iommu_dma_free_pages(sh->pages, PAGE_ALIGN(size) >> PAGE_SHIFT);
+ 	sg_free_table(&sh->sgt);
+@@ -1127,10 +1146,17 @@ static void iommu_dma_unmap_resource(struct device *dev, dma_addr_t handle,
+ 
+ static void __iommu_dma_free(struct device *dev, size_t size, void *cpu_addr)
+ {
++	struct iommu_domain *domain = iommu_get_dma_domain(dev);
++	struct iommu_dma_cookie *cookie = domain->iova_cookie;
++	struct iova_domain *iovad = &cookie->iovad;
+ 	size_t alloc_size = PAGE_ALIGN(size);
+-	int count = alloc_size >> PAGE_SHIFT;
++	int count;
+ 	struct page *page = NULL, **pages = NULL;
+ 
++	if (dev_is_untrusted(dev))
++		alloc_size = iova_align(iovad, alloc_size);
++	count = alloc_size >> PAGE_SHIFT;
++
+ 	/* Non-coherent atomic allocation? Easy */
+ 	if (IS_ENABLED(CONFIG_DMA_DIRECT_REMAP) &&
+ 	    dma_free_from_pool(dev, cpu_addr, alloc_size))
+@@ -1166,12 +1192,18 @@ static void iommu_dma_free(struct device *dev, size_t size, void *cpu_addr,
+ static void *iommu_dma_alloc_pages(struct device *dev, size_t size,
+ 		struct page **pagep, gfp_t gfp, unsigned long attrs)
+ {
++	struct iommu_domain *domain = iommu_get_dma_domain(dev);
++	struct iommu_dma_cookie *cookie = domain->iova_cookie;
++	struct iova_domain *iovad = &cookie->iovad;
+ 	bool coherent = dev_is_dma_coherent(dev);
+ 	size_t alloc_size = PAGE_ALIGN(size);
+ 	int node = dev_to_node(dev);
+ 	struct page *page = NULL;
+ 	void *cpu_addr;
+ 
++	if (dev_is_untrusted(dev))
++		alloc_size = iova_align(iovad, alloc_size);
++
+ 	page = dma_alloc_contiguous(dev, alloc_size, gfp);
+ 	if (!page)
+ 		page = alloc_pages_node(node, gfp, get_order(alloc_size));
+@@ -1203,6 +1235,9 @@ static void *iommu_dma_alloc_pages(struct device *dev, size_t size,
+ static void *iommu_dma_alloc(struct device *dev, size_t size,
+ 		dma_addr_t *handle, gfp_t gfp, unsigned long attrs)
+ {
++	struct iommu_domain *domain = iommu_get_dma_domain(dev);
++	struct iommu_dma_cookie *cookie = domain->iova_cookie;
++	struct iova_domain *iovad = &cookie->iovad;
+ 	bool coherent = dev_is_dma_coherent(dev);
+ 	int ioprot = dma_info_to_prot(DMA_BIDIRECTIONAL, coherent, attrs);
+ 	struct page *page = NULL;
+@@ -1216,6 +1251,9 @@ static void *iommu_dma_alloc(struct device *dev, size_t size,
+ 				dma_pgprot(dev, PAGE_KERNEL, attrs), attrs);
+ 	}
+ 
++	if (dev_is_untrusted(dev))
++		size = iova_align(iovad, size);
++
+ 	if (IS_ENABLED(CONFIG_DMA_DIRECT_REMAP) &&
+ 	    !gfpflags_allow_blocking(gfp) && !coherent)
+ 		page = dma_alloc_from_pool(dev, PAGE_ALIGN(size), &cpu_addr,
 -- 
 2.25.1
 
