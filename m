@@ -4,83 +4,82 @@ X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 X-Spam-Level: 
 X-Spam-Status: No, score=-16.6 required=3.0 tests=BAYES_00,DKIM_INVALID,
 	DKIM_SIGNED,HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_CR_TRAILER,INCLUDES_PATCH,
-	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,USER_AGENT_GIT autolearn=ham
-	autolearn_force=no version=3.4.0
+	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_GIT
+	autolearn=ham autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7BD8FC432BE
-	for <iommu@archiver.kernel.org>; Mon, 30 Aug 2021 14:22:06 +0000 (UTC)
-Received: from smtp3.osuosl.org (smtp3.osuosl.org [140.211.166.136])
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C5E04C19F3A
+	for <iommu@archiver.kernel.org>; Mon, 30 Aug 2021 14:22:08 +0000 (UTC)
+Received: from smtp1.osuosl.org (smtp1.osuosl.org [140.211.166.138])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 1695160E98
-	for <iommu@archiver.kernel.org>; Mon, 30 Aug 2021 14:22:06 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.4.1 mail.kernel.org 1695160E98
+	by mail.kernel.org (Postfix) with ESMTPS id 8CBF360F46
+	for <iommu@archiver.kernel.org>; Mon, 30 Aug 2021 14:22:08 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.4.1 mail.kernel.org 8CBF360F46
 Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=bytedance.com
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by smtp3.osuosl.org (Postfix) with ESMTP id DBC5D607C0;
-	Mon, 30 Aug 2021 14:22:05 +0000 (UTC)
+	by smtp1.osuosl.org (Postfix) with ESMTP id 6939880F72;
+	Mon, 30 Aug 2021 14:22:08 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from smtp3.osuosl.org ([127.0.0.1])
-	by localhost (smtp3.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id mX8sVfYt3iXl; Mon, 30 Aug 2021 14:22:02 +0000 (UTC)
+Received: from smtp1.osuosl.org ([127.0.0.1])
+	by localhost (smtp1.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+	with ESMTP id qwLfHfSjZ2cJ; Mon, 30 Aug 2021 14:22:04 +0000 (UTC)
 Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by smtp3.osuosl.org (Postfix) with ESMTPS id C0172605E1;
-	Mon, 30 Aug 2021 14:22:01 +0000 (UTC)
+	by smtp1.osuosl.org (Postfix) with ESMTPS id 3D55880F70;
+	Mon, 30 Aug 2021 14:22:04 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 95151C000E;
-	Mon, 30 Aug 2021 14:22:01 +0000 (UTC)
-Received: from smtp4.osuosl.org (smtp4.osuosl.org [IPv6:2605:bc80:3010::137])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 16392C001A
- for <iommu@lists.linux-foundation.org>; Mon, 30 Aug 2021 14:22:00 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 13235C001A;
+	Mon, 30 Aug 2021 14:22:04 +0000 (UTC)
+Received: from smtp1.osuosl.org (smtp1.osuosl.org [IPv6:2605:bc80:3010::138])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 7C263C001B
+ for <iommu@lists.linux-foundation.org>; Mon, 30 Aug 2021 14:22:02 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by smtp4.osuosl.org (Postfix) with ESMTP id EB4EF403CE
- for <iommu@lists.linux-foundation.org>; Mon, 30 Aug 2021 14:21:58 +0000 (UTC)
+ by smtp1.osuosl.org (Postfix) with ESMTP id 5EF5680F70
+ for <iommu@lists.linux-foundation.org>; Mon, 30 Aug 2021 14:22:02 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Authentication-Results: smtp4.osuosl.org (amavisd-new);
- dkim=pass (2048-bit key) header.d=bytedance-com.20150623.gappssmtp.com
-Received: from smtp4.osuosl.org ([127.0.0.1])
- by localhost (smtp4.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id LqO3Vtqc6wwF for <iommu@lists.linux-foundation.org>;
- Mon, 30 Aug 2021 14:21:58 +0000 (UTC)
+Received: from smtp1.osuosl.org ([127.0.0.1])
+ by localhost (smtp1.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+ with ESMTP id xBZhcvfQmit7 for <iommu@lists.linux-foundation.org>;
+ Mon, 30 Aug 2021 14:22:01 +0000 (UTC)
 X-Greylist: whitelisted by SQLgrey-1.8.0
-Received: from mail-pf1-x433.google.com (mail-pf1-x433.google.com
- [IPv6:2607:f8b0:4864:20::433])
- by smtp4.osuosl.org (Postfix) with ESMTPS id 6AE77403C3
- for <iommu@lists.linux-foundation.org>; Mon, 30 Aug 2021 14:21:58 +0000 (UTC)
-Received: by mail-pf1-x433.google.com with SMTP id 2so12308096pfo.8
- for <iommu@lists.linux-foundation.org>; Mon, 30 Aug 2021 07:21:58 -0700 (PDT)
+Received: from mail-pf1-x434.google.com (mail-pf1-x434.google.com
+ [IPv6:2607:f8b0:4864:20::434])
+ by smtp1.osuosl.org (Postfix) with ESMTPS id DB6FE80F6E
+ for <iommu@lists.linux-foundation.org>; Mon, 30 Aug 2021 14:22:01 +0000 (UTC)
+Received: by mail-pf1-x434.google.com with SMTP id u6so11699243pfi.0
+ for <iommu@lists.linux-foundation.org>; Mon, 30 Aug 2021 07:22:01 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
  d=bytedance-com.20150623.gappssmtp.com; s=20150623;
  h=from:to:cc:subject:date:message-id:in-reply-to:references
  :mime-version:content-transfer-encoding;
- bh=9VYKP4BtY52G/QfxOL4ci9LsSwqIuUiAxga6ojIUWhM=;
- b=rX/n04t3hwSmIEK5sY0o788rpIpjsNj/ric5w+RL9Y5fd/jrKYfgCowq9OT4EPJXpk
- WSehnR/Xk3PPjq51bpOHzx0/XcgTsukhRVdAIRbRcmIJAPf8qutfloXIY/3jQ53FkcVL
- uwGwFmQP21tYDGlvAxMdHr7T41mY372Mjmfup9xPngYq8Z43+grlgY7MS7s1iD4/p0Te
- +8mY7L2idpk4uVCt/dNg0r1w6tzsrVR+1eRlwcIdxQ3ekrh6djsf+qArQ9r5h2HE9vv5
- jsSLq/DZd1qxkCzIjIlZR4dqRACGMiEOp+BtamDSNL5nugEl97bDkHPo0M8LPanXAhNC
- JTmQ==
+ bh=/Vl3AHwuQDLe0ZGngtEfFx668CIPSygY8Oaw4ZN4vCo=;
+ b=rOdETcL4sxH6ECF/nEWQheSNSVqzE5EKTelanx7BQ2PKWpnXFO6rmcX6i+tCUi8Q32
+ AYhqQkRrQa8EM7Bg7uRVJpsWguCG/stc4586BP6z6HBxOgZA6tDWfdRMnIhAzki5h5Ae
+ A82GZnSP8cgEvspkQScLL8aSkhfVODJdv20wuKYROYhTPUQtHuCZ+ptiQo11dwBrvO6m
+ JnbAIlSoMDWh/dofuquvv4s679GbOun0rVEEBVvEugywnej8zFSKmn+WI+VcVePqAa9P
+ nSbFhH7u6iJ2ak14mt/Ka7JrjUwobfmDsaC4muwtLv2rse7bm0Cd65KsJK9uWREPsFly
+ Kfbg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
  d=1e100.net; s=20161025;
  h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
  :references:mime-version:content-transfer-encoding;
- bh=9VYKP4BtY52G/QfxOL4ci9LsSwqIuUiAxga6ojIUWhM=;
- b=UOzmLyBMqnLCYoi1TC2DQPbHzR6ZFYMyDr0yGmSVR0+XWdh1WFjz/PTq4TJr98iRid
- 0ejLvvERPgn/diVQSDq6Nu7Ea3vxNAv/oe7uJyMYQNpmTZ+JYTN2obTgfb0iUM2ePZ+k
- shRCxfbpNZ1MA+mNhXdsYm5wrgphh7cwhy7q/7jH9x4bS4wZ+QYvwfAPeuzF8RcXBDp8
- siBeb3twbJKD/ysDRfRjgwNnHPYNJ10tv2NbMxBLE50cDBxGjDEjyFvdBjmv6VGPFCtq
- pjAaLRik1Dmr8rgv4WFch6K0ul/eP+f7f3K/gOSRZNPjuoO3VvqUFeViBV4xHq3j+kLW
- +tdw==
-X-Gm-Message-State: AOAM5311ZXyCWtPMzLUkwYSFJKIDXsoIP3XsGZptFd7RwoDkzDy/zd5e
- l6Rzm4wCLDtdquTxxSRvXcSQ
-X-Google-Smtp-Source: ABdhPJxsbkcgJHKC9l8Nzp6aGuWpGOLQSR5SX63hdPPAsp+Np9TJgCk3tFS4YemV8vWYWRm1YrsWxw==
-X-Received: by 2002:a63:4cd:: with SMTP id 196mr22087854pge.239.1630333317896; 
- Mon, 30 Aug 2021 07:21:57 -0700 (PDT)
+ bh=/Vl3AHwuQDLe0ZGngtEfFx668CIPSygY8Oaw4ZN4vCo=;
+ b=lW6RiggQqTTezTnbYL3m67Cgivm4zvUc9roskIGKBQfRKWIGvKKaJc1LsYE+6mwDcU
+ SahQrbA4+J/YfxqIyA9fPFaqmfDVL3DDmpVzJDz3KMc/7lWOmKxeIiIvOK+G+IwluLLy
+ rzJm6ODf25NYvKiuiVi7Tm3opFh4Y44aZO7V0552IgDXbj20Yz+K0ZQlLYhPr+wYp7mE
+ WTRJfNAIrixmD5Rt+i5+/O91HpUwGzB9sdFKzjuomh+vPnV6um7g1GM0TYmWuvRC30wD
+ W9xC0+sx9K4g14xoNqsBX+iOKjf9XjXRNIxeC5O8gfjxRhATHRqEiPpBrqgmlU2T8qM+
+ czYQ==
+X-Gm-Message-State: AOAM533hcPtMshIHRWH1GjgGmswEq8BRPTFiK7Tuem+MdRr3nEkAVZe/
+ CbH1M6lR+bFTfgguYSSZmVMw
+X-Google-Smtp-Source: ABdhPJyuMdXMw+vCPINhRkPdClG/pBGJOxyP0dOUhBuVr8N6XWMqky+vJCs5bkogn8kzhLBwyta7lQ==
+X-Received: by 2002:aa7:8014:0:b029:3cd:b6f3:5dd6 with SMTP id
+ j20-20020aa780140000b02903cdb6f35dd6mr23512141pfi.39.1630333321384; 
+ Mon, 30 Aug 2021 07:22:01 -0700 (PDT)
 Received: from localhost ([139.177.225.237])
- by smtp.gmail.com with ESMTPSA id gc20sm10539505pjb.17.2021.08.30.07.21.56
+ by smtp.gmail.com with ESMTPSA id b17sm4424962pfo.98.2021.08.30.07.22.00
  (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
- Mon, 30 Aug 2021 07:21:57 -0700 (PDT)
+ Mon, 30 Aug 2021 07:22:01 -0700 (PDT)
 From: Xie Yongji <xieyongji@bytedance.com>
 To: mst@redhat.com, jasowang@redhat.com, stefanha@redhat.com,
  sgarzare@redhat.com, parav@nvidia.com, hch@infradead.org,
@@ -90,9 +89,9 @@ To: mst@redhat.com, jasowang@redhat.com, stefanha@redhat.com,
  dan.carpenter@oracle.com, joro@8bytes.org, gregkh@linuxfoundation.org,
  zhe.he@windriver.com, xiaodong.liu@intel.com, joe@perches.com,
  robin.murphy@arm.com, will@kernel.org, john.garry@huawei.com
-Subject: [PATCH v12 01/13] iova: Export alloc_iova_fast() and free_iova_fast()
-Date: Mon, 30 Aug 2021 22:17:25 +0800
-Message-Id: <20210830141737.181-2-xieyongji@bytedance.com>
+Subject: [PATCH v12 02/13] eventfd: Export eventfd_wake_count to modules
+Date: Mon, 30 Aug 2021 22:17:26 +0800
+Message-Id: <20210830141737.181-3-xieyongji@bytedance.com>
 X-Mailer: git-send-email 2.25.1
 In-Reply-To: <20210830141737.181-1-xieyongji@bytedance.com>
 References: <20210830141737.181-1-xieyongji@bytedance.com>
@@ -117,38 +116,27 @@ Content-Transfer-Encoding: 7bit
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-Export alloc_iova_fast() and free_iova_fast() so that
-some modules can make use of the per-CPU cache to get
-rid of rbtree spinlock in alloc_iova() and free_iova()
-during IOVA allocation.
+Export eventfd_wake_count so that some modules can use
+the eventfd_signal_count() to check whether the
+eventfd_signal() call should be deferred to a safe context.
 
 Signed-off-by: Xie Yongji <xieyongji@bytedance.com>
-Acked-by: Jason Wang <jasowang@redhat.com>
-Acked-by: Will Deacon <will@kernel.org>
 ---
- drivers/iommu/iova.c | 2 ++
- 1 file changed, 2 insertions(+)
+ fs/eventfd.c | 1 +
+ 1 file changed, 1 insertion(+)
 
-diff --git a/drivers/iommu/iova.c b/drivers/iommu/iova.c
-index b6cf5f16123b..3941ed6bb99b 100644
---- a/drivers/iommu/iova.c
-+++ b/drivers/iommu/iova.c
-@@ -521,6 +521,7 @@ alloc_iova_fast(struct iova_domain *iovad, unsigned long size,
+diff --git a/fs/eventfd.c b/fs/eventfd.c
+index e265b6dd4f34..1b3130b8d6c1 100644
+--- a/fs/eventfd.c
++++ b/fs/eventfd.c
+@@ -26,6 +26,7 @@
+ #include <linux/uio.h>
  
- 	return new_iova->pfn_lo;
- }
-+EXPORT_SYMBOL_GPL(alloc_iova_fast);
+ DEFINE_PER_CPU(int, eventfd_wake_count);
++EXPORT_PER_CPU_SYMBOL_GPL(eventfd_wake_count);
  
- /**
-  * free_iova_fast - free iova pfn range into rcache
-@@ -538,6 +539,7 @@ free_iova_fast(struct iova_domain *iovad, unsigned long pfn, unsigned long size)
+ static DEFINE_IDA(eventfd_ida);
  
- 	free_iova(iovad, pfn);
- }
-+EXPORT_SYMBOL_GPL(free_iova_fast);
- 
- #define fq_ring_for_each(i, fq) \
- 	for ((i) = (fq)->head; (i) != (fq)->tail; (i) = ((i) + 1) % IOVA_FQ_SIZE)
 -- 
 2.11.0
 
