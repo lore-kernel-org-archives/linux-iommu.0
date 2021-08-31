@@ -7,78 +7,81 @@ X-Spam-Status: No, score=-16.6 required=3.0 tests=BAYES_00,DKIM_INVALID,
 	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,USER_AGENT_GIT autolearn=ham
 	autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 04629C432BE
-	for <iommu@archiver.kernel.org>; Tue, 31 Aug 2021 10:37:21 +0000 (UTC)
-Received: from smtp4.osuosl.org (smtp4.osuosl.org [140.211.166.137])
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 10DF5C4320A
+	for <iommu@archiver.kernel.org>; Tue, 31 Aug 2021 10:37:23 +0000 (UTC)
+Received: from smtp3.osuosl.org (smtp3.osuosl.org [140.211.166.136])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 8B68C60F42
-	for <iommu@archiver.kernel.org>; Tue, 31 Aug 2021 10:37:20 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.4.1 mail.kernel.org 8B68C60F42
+	by mail.kernel.org (Postfix) with ESMTPS id BE72960FED
+	for <iommu@archiver.kernel.org>; Tue, 31 Aug 2021 10:37:22 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.4.1 mail.kernel.org BE72960FED
 Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=bytedance.com
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by smtp4.osuosl.org (Postfix) with ESMTP id 48FFB4052E;
-	Tue, 31 Aug 2021 10:37:20 +0000 (UTC)
+	by smtp3.osuosl.org (Postfix) with ESMTP id 9110860A57;
+	Tue, 31 Aug 2021 10:37:22 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from smtp4.osuosl.org ([127.0.0.1])
-	by localhost (smtp4.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id MYwngscoWzV0; Tue, 31 Aug 2021 10:37:16 +0000 (UTC)
+Received: from smtp3.osuosl.org ([127.0.0.1])
+	by localhost (smtp3.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+	with ESMTP id gDvrRrHEdJfV; Tue, 31 Aug 2021 10:37:18 +0000 (UTC)
 Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by smtp4.osuosl.org (Postfix) with ESMTPS id 246AF404F9;
-	Tue, 31 Aug 2021 10:37:16 +0000 (UTC)
+	by smtp3.osuosl.org (Postfix) with ESMTPS id 7489560BD2;
+	Tue, 31 Aug 2021 10:37:18 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id E9DDCC0023;
-	Tue, 31 Aug 2021 10:37:15 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 4B75AC001A;
+	Tue, 31 Aug 2021 10:37:18 +0000 (UTC)
 Received: from smtp4.osuosl.org (smtp4.osuosl.org [140.211.166.137])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 1CE8AC0023
- for <iommu@lists.linux-foundation.org>; Tue, 31 Aug 2021 10:37:14 +0000 (UTC)
+ by lists.linuxfoundation.org (Postfix) with ESMTP id B8F63C000E
+ for <iommu@lists.linux-foundation.org>; Tue, 31 Aug 2021 10:37:16 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by smtp4.osuosl.org (Postfix) with ESMTP id E65E7404F9
- for <iommu@lists.linux-foundation.org>; Tue, 31 Aug 2021 10:37:13 +0000 (UTC)
+ by smtp4.osuosl.org (Postfix) with ESMTP id A6E604051B
+ for <iommu@lists.linux-foundation.org>; Tue, 31 Aug 2021 10:37:16 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
+Authentication-Results: smtp4.osuosl.org (amavisd-new);
+ dkim=pass (2048-bit key) header.d=bytedance-com.20150623.gappssmtp.com
 Received: from smtp4.osuosl.org ([127.0.0.1])
  by localhost (smtp4.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id HqeOJ5KpkPcg for <iommu@lists.linux-foundation.org>;
- Tue, 31 Aug 2021 10:37:12 +0000 (UTC)
+ with ESMTP id JqtFJJb-ozRC for <iommu@lists.linux-foundation.org>;
+ Tue, 31 Aug 2021 10:37:15 +0000 (UTC)
 X-Greylist: whitelisted by SQLgrey-1.8.0
-Received: from mail-pf1-x433.google.com (mail-pf1-x433.google.com
- [IPv6:2607:f8b0:4864:20::433])
- by smtp4.osuosl.org (Postfix) with ESMTPS id 1600F40504
- for <iommu@lists.linux-foundation.org>; Tue, 31 Aug 2021 10:37:12 +0000 (UTC)
-Received: by mail-pf1-x433.google.com with SMTP id y17so1234744pfl.13
- for <iommu@lists.linux-foundation.org>; Tue, 31 Aug 2021 03:37:12 -0700 (PDT)
+Received: from mail-pf1-x434.google.com (mail-pf1-x434.google.com
+ [IPv6:2607:f8b0:4864:20::434])
+ by smtp4.osuosl.org (Postfix) with ESMTPS id 97D9F403A3
+ for <iommu@lists.linux-foundation.org>; Tue, 31 Aug 2021 10:37:15 +0000 (UTC)
+Received: by mail-pf1-x434.google.com with SMTP id e16so14174515pfc.6
+ for <iommu@lists.linux-foundation.org>; Tue, 31 Aug 2021 03:37:15 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
  d=bytedance-com.20150623.gappssmtp.com; s=20150623;
  h=from:to:cc:subject:date:message-id:in-reply-to:references
  :mime-version:content-transfer-encoding;
- bh=/Vl3AHwuQDLe0ZGngtEfFx668CIPSygY8Oaw4ZN4vCo=;
- b=wObpuu7touPHyE2FlMtp6j82DVKvgvJGqxVDpQh426PCA4G0/SKGQXKEyHJVZQ8cIm
- L9XkoweTnt+6I4BW0Mn5WMJvosr3G5o8gM7IIYvH3KGm6heQlvcQObzommcU8i7cnUT0
- QRgkYd46omJIk7r6/K6p/cRey3grFpdCYxr0txvNQ+lkyVHC2OMROz/ezIQJEf6W9yvR
- 2jeQJkG2XFVufs6nY4wO6FwV8xejE3tq1kLU6PROTvNysrRr7cvUwW3cLlScU5q9AQEA
- thnUcb8QN1ab0y0YDAkUPLMGlydGB6EUB2ANfuVz00VX5Kyh4O6qNPMi5OPi5yf/pyIu
- 26kg==
+ bh=CkhRtVDUgb41zlq5OfgVAHJFRMwL0PptQO/kVg6fccA=;
+ b=wb1QmOQoMFVShBMn9y6KTytH5q1BZ0H1hJ3YO5uXgTFjLoGaoSepJJ5OlbhccHu/AJ
+ wAiGO67xMVtU0t2LrJWcMBK/NhTSX6ZkR3DOqmyntbAg6jf+Cr1K9Cw8Xhb1KbRfFq5f
+ 0PiM2QpjLxqt7Y8TQAgsTNp6GYrUDvE9Lh/oajmuWt89WT4dDtxIROjBFBxpqguUKBU7
+ LLMz+DXMsZEm4Eg593FHxtTTvCsA6fIWSzAN4+6DPx7X3FPKVNWqVAX/Kck7QYFDzzcC
+ d2NfPV00YlGSbPc1qoUeYTZUD6zpXTRPBo7PsZ9aFWAnnS/G89GxBIlH9Z/mgTPMxFx/
+ rbnA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
  d=1e100.net; s=20161025;
  h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
  :references:mime-version:content-transfer-encoding;
- bh=/Vl3AHwuQDLe0ZGngtEfFx668CIPSygY8Oaw4ZN4vCo=;
- b=sJIBIsx2AApuC4vHRy2VonfV5o/lCNa5+4sXxcePnTEGpvVkxrnx+hXSEE5bwMy2RV
- RRvkDdhjwCF03j2wK1NposxTe8ll7OfQQNxkXrtakhOq/LtVloig2LJC7DOgy/B2N1l9
- 4DwK3ugJ479Az351Jl80bGZpEp/ErwrUZ6pmk3nl3rQHnZKRHU04uo3dFzTe+HPpcXm0
- kKRtWQ0RHeVvoh72Nxg2ytbWZGyiZKgQTSDbGrFcLgaSXQrmXkaFtUit8mnrq9gnMxBD
- spFKZJadCSL0F0LqUGB6AQaoOmozxarRRiy/mxT1tBUFjDf0AJdBGTXeW0ggheOKRV1i
- iFzw==
-X-Gm-Message-State: AOAM530uJ56KwqTieZkw0Sfr3dICXex+vveqyKyH01fkQcn6ySgdNbSo
- mT18h1mXb8XMEJgZJr478uRr
-X-Google-Smtp-Source: ABdhPJypZEfGrqo1WgyHIL6EcT5LWw7WqnAwRGMuQX/YOGdJQ19c5iZukJRXGO5wvdTG9X6CBrVIsA==
-X-Received: by 2002:a63:101c:: with SMTP id f28mr26080762pgl.330.1630406231592; 
- Tue, 31 Aug 2021 03:37:11 -0700 (PDT)
+ bh=CkhRtVDUgb41zlq5OfgVAHJFRMwL0PptQO/kVg6fccA=;
+ b=qDyv3xf+HhAUxninQQQ3DTP3tIB2UwYUHaE0AbEpxrjpsRTb8dV60aTA8bQrmcdqvg
+ +rE+UUuUUss1mIsnwokgBOtZoi6h/s479DRNnzM1/GohHJyzePwEKr7EjWf+Vgd2RPKS
+ Q87nrMqShS3OaezoheT9mxg0tAADeN+AuskopjFmbU1VwOybZ+S7V8eHc4AWgW4vzPzx
+ wfEXZLAwPMQgdtU09Q3y7sF6FWatkX2GvYqXp6notCgCnJKoYT+cm09bpC+5TfSwegg5
+ hip6NwViRQotxyfahiklTrB6/GsB+koXCtLwBSU7WkYMmcFUfrThvJzSeXz41GihvjIP
+ 7CEg==
+X-Gm-Message-State: AOAM530u6d0/vWKNOnztPFR8qBn+gqQvqvmtnOm9v8AKbjRaHT4xm9KS
+ 0HSMcPL8VcUwdMwO8NTw2rek
+X-Google-Smtp-Source: ABdhPJzBeHb26ioOoBceC1KZUNqQKw0qJ8cn0b2Nhenwq0dSjkYw4fqu/cKwDwROR4HestxrtqNmDQ==
+X-Received: by 2002:aa7:999c:0:b0:3f2:8100:79c2 with SMTP id
+ k28-20020aa7999c000000b003f2810079c2mr22685875pfh.80.1630406235060; 
+ Tue, 31 Aug 2021 03:37:15 -0700 (PDT)
 Received: from localhost ([139.177.225.253])
- by smtp.gmail.com with ESMTPSA id x15sm6941154pfq.31.2021.08.31.03.37.10
+ by smtp.gmail.com with ESMTPSA id 15sm2641504pjw.39.2021.08.31.03.37.14
  (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
- Tue, 31 Aug 2021 03:37:11 -0700 (PDT)
+ Tue, 31 Aug 2021 03:37:14 -0700 (PDT)
 From: Xie Yongji <xieyongji@bytedance.com>
 To: mst@redhat.com, jasowang@redhat.com, stefanha@redhat.com,
  sgarzare@redhat.com, parav@nvidia.com, hch@infradead.org,
@@ -88,9 +91,9 @@ To: mst@redhat.com, jasowang@redhat.com, stefanha@redhat.com,
  dan.carpenter@oracle.com, joro@8bytes.org, gregkh@linuxfoundation.org,
  zhe.he@windriver.com, xiaodong.liu@intel.com, joe@perches.com,
  robin.murphy@arm.com, will@kernel.org, john.garry@huawei.com
-Subject: [PATCH v13 02/13] eventfd: Export eventfd_wake_count to modules
-Date: Tue, 31 Aug 2021 18:36:23 +0800
-Message-Id: <20210831103634.33-3-xieyongji@bytedance.com>
+Subject: [PATCH v13 03/13] file: Export receive_fd() to modules
+Date: Tue, 31 Aug 2021 18:36:24 +0800
+Message-Id: <20210831103634.33-4-xieyongji@bytedance.com>
 X-Mailer: git-send-email 2.25.1
 In-Reply-To: <20210831103634.33-1-xieyongji@bytedance.com>
 References: <20210831103634.33-1-xieyongji@bytedance.com>
@@ -115,27 +118,59 @@ Content-Transfer-Encoding: 7bit
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-Export eventfd_wake_count so that some modules can use
-the eventfd_signal_count() to check whether the
-eventfd_signal() call should be deferred to a safe context.
+Export receive_fd() so that some modules can use
+it to pass file descriptor between processes without
+missing any security stuffs.
 
 Signed-off-by: Xie Yongji <xieyongji@bytedance.com>
+Acked-by: Jason Wang <jasowang@redhat.com>
 ---
- fs/eventfd.c | 1 +
- 1 file changed, 1 insertion(+)
+ fs/file.c            | 6 ++++++
+ include/linux/file.h | 7 +++----
+ 2 files changed, 9 insertions(+), 4 deletions(-)
 
-diff --git a/fs/eventfd.c b/fs/eventfd.c
-index e265b6dd4f34..1b3130b8d6c1 100644
---- a/fs/eventfd.c
-+++ b/fs/eventfd.c
-@@ -26,6 +26,7 @@
- #include <linux/uio.h>
+diff --git a/fs/file.c b/fs/file.c
+index 86dc9956af32..210e540672aa 100644
+--- a/fs/file.c
++++ b/fs/file.c
+@@ -1134,6 +1134,12 @@ int receive_fd_replace(int new_fd, struct file *file, unsigned int o_flags)
+ 	return new_fd;
+ }
  
- DEFINE_PER_CPU(int, eventfd_wake_count);
-+EXPORT_PER_CPU_SYMBOL_GPL(eventfd_wake_count);
++int receive_fd(struct file *file, unsigned int o_flags)
++{
++	return __receive_fd(file, NULL, o_flags);
++}
++EXPORT_SYMBOL_GPL(receive_fd);
++
+ static int ksys_dup3(unsigned int oldfd, unsigned int newfd, int flags)
+ {
+ 	int err = -EBADF;
+diff --git a/include/linux/file.h b/include/linux/file.h
+index 2de2e4613d7b..51e830b4fe3a 100644
+--- a/include/linux/file.h
++++ b/include/linux/file.h
+@@ -94,6 +94,9 @@ extern void fd_install(unsigned int fd, struct file *file);
  
- static DEFINE_IDA(eventfd_ida);
+ extern int __receive_fd(struct file *file, int __user *ufd,
+ 			unsigned int o_flags);
++
++extern int receive_fd(struct file *file, unsigned int o_flags);
++
+ static inline int receive_fd_user(struct file *file, int __user *ufd,
+ 				  unsigned int o_flags)
+ {
+@@ -101,10 +104,6 @@ static inline int receive_fd_user(struct file *file, int __user *ufd,
+ 		return -EFAULT;
+ 	return __receive_fd(file, ufd, o_flags);
+ }
+-static inline int receive_fd(struct file *file, unsigned int o_flags)
+-{
+-	return __receive_fd(file, NULL, o_flags);
+-}
+ int receive_fd_replace(int new_fd, struct file *file, unsigned int o_flags);
  
+ extern void flush_delayed_fput(void);
 -- 
 2.11.0
 
