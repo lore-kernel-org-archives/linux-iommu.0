@@ -7,81 +7,82 @@ X-Spam-Status: No, score=-16.6 required=3.0 tests=BAYES_00,DKIM_INVALID,
 	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,USER_AGENT_GIT autolearn=ham
 	autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B421AC432BE
-	for <iommu@archiver.kernel.org>; Tue, 31 Aug 2021 10:37:47 +0000 (UTC)
-Received: from smtp2.osuosl.org (smtp2.osuosl.org [140.211.166.133])
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 58FF3C4320A
+	for <iommu@archiver.kernel.org>; Tue, 31 Aug 2021 10:37:49 +0000 (UTC)
+Received: from smtp3.osuosl.org (smtp3.osuosl.org [140.211.166.136])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 7B714601FD
-	for <iommu@archiver.kernel.org>; Tue, 31 Aug 2021 10:37:47 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.4.1 mail.kernel.org 7B714601FD
+	by mail.kernel.org (Postfix) with ESMTPS id 222DD60F42
+	for <iommu@archiver.kernel.org>; Tue, 31 Aug 2021 10:37:49 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.4.1 mail.kernel.org 222DD60F42
 Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=bytedance.com
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by smtp2.osuosl.org (Postfix) with ESMTP id 4DE5340496;
+	by smtp3.osuosl.org (Postfix) with ESMTP id E735160BE0;
+	Tue, 31 Aug 2021 10:37:48 +0000 (UTC)
+X-Virus-Scanned: amavisd-new at osuosl.org
+Received: from smtp3.osuosl.org ([127.0.0.1])
+	by localhost (smtp3.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+	with ESMTP id ITeZxmhThjSI; Tue, 31 Aug 2021 10:37:47 +0000 (UTC)
+Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
+	by smtp3.osuosl.org (Postfix) with ESMTPS id 41CD760BD7;
 	Tue, 31 Aug 2021 10:37:47 +0000 (UTC)
-X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from smtp2.osuosl.org ([127.0.0.1])
-	by localhost (smtp2.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id 3SWlRmkfCPZ9; Tue, 31 Aug 2021 10:37:43 +0000 (UTC)
-Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [IPv6:2605:bc80:3010:104::8cd3:938])
-	by smtp2.osuosl.org (Postfix) with ESMTPS id E1AFE4048D;
-	Tue, 31 Aug 2021 10:37:42 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id B444BC001A;
-	Tue, 31 Aug 2021 10:37:42 +0000 (UTC)
-Received: from smtp1.osuosl.org (smtp1.osuosl.org [IPv6:2605:bc80:3010::138])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 71386C000E
- for <iommu@lists.linux-foundation.org>; Tue, 31 Aug 2021 10:37:41 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 1E0CEC001D;
+	Tue, 31 Aug 2021 10:37:47 +0000 (UTC)
+Received: from smtp2.osuosl.org (smtp2.osuosl.org [140.211.166.133])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 23D03C000E
+ for <iommu@lists.linux-foundation.org>; Tue, 31 Aug 2021 10:37:46 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by smtp1.osuosl.org (Postfix) with ESMTP id 52A12823DD
- for <iommu@lists.linux-foundation.org>; Tue, 31 Aug 2021 10:37:41 +0000 (UTC)
+ by smtp2.osuosl.org (Postfix) with ESMTP id C96EA40490
+ for <iommu@lists.linux-foundation.org>; Tue, 31 Aug 2021 10:37:45 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Authentication-Results: smtp1.osuosl.org (amavisd-new);
+Authentication-Results: smtp2.osuosl.org (amavisd-new);
  dkim=pass (2048-bit key) header.d=bytedance-com.20150623.gappssmtp.com
-Received: from smtp1.osuosl.org ([127.0.0.1])
- by localhost (smtp1.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id lK6CrKR1IbFB for <iommu@lists.linux-foundation.org>;
- Tue, 31 Aug 2021 10:37:40 +0000 (UTC)
+Received: from smtp2.osuosl.org ([127.0.0.1])
+ by localhost (smtp2.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+ with ESMTP id ghNFNTs1AszZ for <iommu@lists.linux-foundation.org>;
+ Tue, 31 Aug 2021 10:37:43 +0000 (UTC)
 X-Greylist: whitelisted by SQLgrey-1.8.0
-Received: from mail-pj1-x102c.google.com (mail-pj1-x102c.google.com
- [IPv6:2607:f8b0:4864:20::102c])
- by smtp1.osuosl.org (Postfix) with ESMTPS id 5004E82419
- for <iommu@lists.linux-foundation.org>; Tue, 31 Aug 2021 10:37:40 +0000 (UTC)
-Received: by mail-pj1-x102c.google.com with SMTP id c6so1239686pjv.1
- for <iommu@lists.linux-foundation.org>; Tue, 31 Aug 2021 03:37:40 -0700 (PDT)
+Received: from mail-pj1-x1035.google.com (mail-pj1-x1035.google.com
+ [IPv6:2607:f8b0:4864:20::1035])
+ by smtp2.osuosl.org (Postfix) with ESMTPS id C033040496
+ for <iommu@lists.linux-foundation.org>; Tue, 31 Aug 2021 10:37:43 +0000 (UTC)
+Received: by mail-pj1-x1035.google.com with SMTP id
+ u13-20020a17090abb0db0290177e1d9b3f7so1646602pjr.1
+ for <iommu@lists.linux-foundation.org>; Tue, 31 Aug 2021 03:37:43 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
  d=bytedance-com.20150623.gappssmtp.com; s=20150623;
  h=from:to:cc:subject:date:message-id:in-reply-to:references
  :mime-version:content-transfer-encoding;
- bh=03Nd7u7okYdu6gFT64ik5NaZ4PZ8j5m+esOMp2eCUlA=;
- b=EFplu0Nv5ZvVC7+F6A4FAox8fzDvjooAOVa4CHdZHqn8LeHH7KuNYZOwQ7HbExBaRI
- Hi74HKwwJXl7DAp0gNwzUG5IX0dbVTCWTxZG/izY/1CzGtuQo7MvDxr6oztleO2z4COy
- hciuMHDRC3D4s58A6bs7kpPAZ1/Lr5qrHuxG/W8ZOuxeaz7im7kmTmVDwT3faeHrFJmD
- k0o1QYatwqi1RtqbZvlitzWQSWAdTj5JXuB4C41Aw18FKZhqnahYgElsypr0Scs77ThM
- kX0zcSSRIUipSPL/thkps0n/Yyv+xqBVCficA70kFh/g0YyT5ysTZ0AymT/KW7JT28Ci
- 37GA==
+ bh=boDvnumz0Z9HtKt8jJZpmxg2ltpR+//8q/rdCl0P25k=;
+ b=Y+URT+QscBIWAUo3infz7Xi7E3EHgiLpOFo1inoohnt/CXonoCS17bn2AahUEWzhic
+ PcycFZHXGFrt55hsc3HA+d5SW4d/A80khcXCfGKFwfsPE9Z7MksQ/y5BTKWhkMlXtCiN
+ Lr6/5/mZUDTPx2FhngqjXv2063VEsJOoAA/IxHDVblDtBaPuj3sQvxuYS3faS3tFwdPL
+ nDEtaXUlcjsmM+CCbinp7Wtl7PjNPe+GpJ0b5Z3N9q5rEZO8DxdrPxH2BO3i/VEF/Qhw
+ 3GIpeUuyjGrNxq2h9KiXrI5F/Evy4QJlTQ3SgOu8C9c2m2b6X9R3UMdSTHyV6dqwzqe9
+ /Kuw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
  d=1e100.net; s=20161025;
  h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
  :references:mime-version:content-transfer-encoding;
- bh=03Nd7u7okYdu6gFT64ik5NaZ4PZ8j5m+esOMp2eCUlA=;
- b=bqowBNJpowtbpjzspERb05omums7ix/NwByElBX6btd7OoCz4Z7cdb32/cR59hgUgl
- QiOZYey/uX83ofTkRzrd/a7ep0ON8PbBkoDn4EeiDCP9tCsgRP/1ktjfn9lSPhKu5D3r
- QVMHQfzfubBzUifaAvgfEgEDxpytAAon0/72U0a68Ug5SnuDgevdr43eWM06OvBYWOoG
- /YLZYe08rUsSKVWh8iYDR6jlNp0vSlei1vRwjUbc0thYrinmkeOqrVThac46GJ0gwXR6
- TdL3WDPNi1hb5E7tRlA/qrrJlnoqSBqFI0362IZeVr1JrXRHWl24/dqQ9BTi348iKWs/
- DPJQ==
-X-Gm-Message-State: AOAM533CO7w2LNYgdqMvHTe30R4MiV/7EAfLkCCAmjyw/PSKpTDR7kGA
- q6UJvujVHORp0jK6iEnjsNvw
-X-Google-Smtp-Source: ABdhPJySEijLsBATU5VtgDOxkvIujEDgS/kjkjZUXgzX7bM/ioNbDcShciw0Xjb9ZaDp4pnhRewwBA==
-X-Received: by 2002:a17:902:7202:b029:12c:dc6b:928f with SMTP id
- ba2-20020a1709027202b029012cdc6b928fmr4068412plb.55.1630406259582; 
- Tue, 31 Aug 2021 03:37:39 -0700 (PDT)
+ bh=boDvnumz0Z9HtKt8jJZpmxg2ltpR+//8q/rdCl0P25k=;
+ b=YMg5X1mFkpCyCRI8xOR1iqKdLjHxfIx+MyVV82HStRvCT2Kv+A1O1TlwQ5bo7GrWmG
+ BQgK+AVYepnva9fpMjXVDdXPqOGHbSKwQpKAQcmn1HAarvcyW7qaq5l7CUvKTLsLDt7T
+ rYGLnFCQY/cejYfgcVDb5Jt/cn5xptYbCvSEEYzyrzQpbXN3YuC54pQSuhvsBLzUnKp0
+ r5dUhQ9cpFjT1FYct5zXHyPKZLsHXWjdY42B8rfLUxc+7b2S4kXjgaA/CReXF4CGvvok
+ 8ZhFU70iHuY6mDOqgRIMIb9pKC8OrttOTmIqg+wV/CcakOfmxLLj3B9ZEkdemOI1yTWu
+ oYfw==
+X-Gm-Message-State: AOAM530IGbnN46+xJ/hssvQWDtaAXzk7vuOiL+Q/Eo3poc66GaZGUL4+
+ CXYi7W0q3cfk35gMTmS7XCFA
+X-Google-Smtp-Source: ABdhPJyWVzGzeERTAaeNdo3EV+UtR/TBpFB3MWFlyEso1eQESfj3CFAFsyFxSTX85A8hvNgOMcxZmg==
+X-Received: by 2002:a17:902:7e02:b0:138:b604:137b with SMTP id
+ b2-20020a1709027e0200b00138b604137bmr4202828plm.54.1630406263130; 
+ Tue, 31 Aug 2021 03:37:43 -0700 (PDT)
 Received: from localhost ([139.177.225.253])
- by smtp.gmail.com with ESMTPSA id h20sm17985717pfn.173.2021.08.31.03.37.38
+ by smtp.gmail.com with ESMTPSA id p9sm7678060pfq.15.2021.08.31.03.37.42
  (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
- Tue, 31 Aug 2021 03:37:39 -0700 (PDT)
+ Tue, 31 Aug 2021 03:37:42 -0700 (PDT)
 From: Xie Yongji <xieyongji@bytedance.com>
 To: mst@redhat.com, jasowang@redhat.com, stefanha@redhat.com,
  sgarzare@redhat.com, parav@nvidia.com, hch@infradead.org,
@@ -91,10 +92,9 @@ To: mst@redhat.com, jasowang@redhat.com, stefanha@redhat.com,
  dan.carpenter@oracle.com, joro@8bytes.org, gregkh@linuxfoundation.org,
  zhe.he@windriver.com, xiaodong.liu@intel.com, joe@perches.com,
  robin.murphy@arm.com, will@kernel.org, john.garry@huawei.com
-Subject: [PATCH v13 10/13] vdpa: Support transferring virtual addressing
- during DMA mapping
-Date: Tue, 31 Aug 2021 18:36:31 +0800
-Message-Id: <20210831103634.33-11-xieyongji@bytedance.com>
+Subject: [PATCH v13 11/13] vduse: Implement an MMU-based software IOTLB
+Date: Tue, 31 Aug 2021 18:36:32 +0800
+Message-Id: <20210831103634.33-12-xieyongji@bytedance.com>
 X-Mailer: git-send-email 2.25.1
 In-Reply-To: <20210831103634.33-1-xieyongji@bytedance.com>
 References: <20210831103634.33-1-xieyongji@bytedance.com>
@@ -119,359 +119,660 @@ Content-Transfer-Encoding: 7bit
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-This patch introduces an attribute for vDPA device to indicate
-whether virtual address can be used. If vDPA device driver set
-it, vhost-vdpa bus driver will not pin user page and transfer
-userspace virtual address instead of physical address during
-DMA mapping. And corresponding vma->vm_file and offset will be
-also passed as an opaque pointer.
+This implements an MMU-based software IOTLB to support mapping
+kernel dma buffer into userspace dynamically. The basic idea
+behind it is treating MMU (VA->PA) as IOMMU (IOVA->PA). The
+software IOTLB will set up MMU mapping instead of IOMMU mapping
+for the DMA transfer so that the userspace process is able to
+use its virtual address to access the dma buffer in kernel.
 
-Suggested-by: Jason Wang <jasowang@redhat.com>
+To avoid security issue, a bounce-buffering mechanism is
+introduced to prevent userspace accessing the original buffer
+directly which may contain other kernel data. During the mapping,
+unmapping, the software IOTLB will copy the data from the original
+buffer to the bounce buffer and back, depending on the direction
+of the transfer. And the bounce-buffer addresses will be mapped
+into the user address space instead of the original one.
+
 Signed-off-by: Xie Yongji <xieyongji@bytedance.com>
 Acked-by: Jason Wang <jasowang@redhat.com>
 ---
- drivers/vdpa/ifcvf/ifcvf_main.c   |  2 +-
- drivers/vdpa/mlx5/net/mlx5_vnet.c |  2 +-
- drivers/vdpa/vdpa.c               |  9 +++-
- drivers/vdpa/vdpa_sim/vdpa_sim.c  |  2 +-
- drivers/vdpa/virtio_pci/vp_vdpa.c |  2 +-
- drivers/vhost/vdpa.c              | 99 ++++++++++++++++++++++++++++++++++-----
- include/linux/vdpa.h              | 20 ++++++--
- 7 files changed, 117 insertions(+), 19 deletions(-)
+ drivers/vdpa/vdpa_user/iova_domain.c | 545 +++++++++++++++++++++++++++++++++++
+ drivers/vdpa/vdpa_user/iova_domain.h |  73 +++++
+ 2 files changed, 618 insertions(+)
+ create mode 100644 drivers/vdpa/vdpa_user/iova_domain.c
+ create mode 100644 drivers/vdpa/vdpa_user/iova_domain.h
 
-diff --git a/drivers/vdpa/ifcvf/ifcvf_main.c b/drivers/vdpa/ifcvf/ifcvf_main.c
-index 4293481ce910..dcd648e1f7e7 100644
---- a/drivers/vdpa/ifcvf/ifcvf_main.c
-+++ b/drivers/vdpa/ifcvf/ifcvf_main.c
-@@ -515,7 +515,7 @@ static int ifcvf_vdpa_dev_add(struct vdpa_mgmt_dev *mdev, const char *name)
- 	pdev = ifcvf_mgmt_dev->pdev;
- 	dev = &pdev->dev;
- 	adapter = vdpa_alloc_device(struct ifcvf_adapter, vdpa,
--				    dev, &ifc_vdpa_ops, name);
-+				    dev, &ifc_vdpa_ops, name, false);
- 	if (IS_ERR(adapter)) {
- 		IFCVF_ERR(pdev, "Failed to allocate vDPA structure");
- 		return PTR_ERR(adapter);
-diff --git a/drivers/vdpa/mlx5/net/mlx5_vnet.c b/drivers/vdpa/mlx5/net/mlx5_vnet.c
-index 608f6b900cd9..08f39952fa6a 100644
---- a/drivers/vdpa/mlx5/net/mlx5_vnet.c
-+++ b/drivers/vdpa/mlx5/net/mlx5_vnet.c
-@@ -2425,7 +2425,7 @@ static int mlx5_vdpa_dev_add(struct vdpa_mgmt_dev *v_mdev, const char *name)
- 	max_vqs = min_t(u32, max_vqs, MLX5_MAX_SUPPORTED_VQS);
- 
- 	ndev = vdpa_alloc_device(struct mlx5_vdpa_net, mvdev.vdev, mdev->device, &mlx5_vdpa_ops,
--				 name);
-+				 name, false);
- 	if (IS_ERR(ndev))
- 		return PTR_ERR(ndev);
- 
-diff --git a/drivers/vdpa/vdpa.c b/drivers/vdpa/vdpa.c
-index bb3f1d1f0422..8f01d6a7ecc5 100644
---- a/drivers/vdpa/vdpa.c
-+++ b/drivers/vdpa/vdpa.c
-@@ -71,6 +71,7 @@ static void vdpa_release_dev(struct device *d)
-  * @config: the bus operations that is supported by this device
-  * @size: size of the parent structure that contains private data
-  * @name: name of the vdpa device; optional.
-+ * @use_va: indicate whether virtual address must be used by this device
-  *
-  * Driver should use vdpa_alloc_device() wrapper macro instead of
-  * using this directly.
-@@ -80,7 +81,8 @@ static void vdpa_release_dev(struct device *d)
-  */
- struct vdpa_device *__vdpa_alloc_device(struct device *parent,
- 					const struct vdpa_config_ops *config,
--					size_t size, const char *name)
-+					size_t size, const char *name,
-+					bool use_va)
- {
- 	struct vdpa_device *vdev;
- 	int err = -EINVAL;
-@@ -91,6 +93,10 @@ struct vdpa_device *__vdpa_alloc_device(struct device *parent,
- 	if (!!config->dma_map != !!config->dma_unmap)
- 		goto err;
- 
-+	/* It should only work for the device that use on-chip IOMMU */
-+	if (use_va && !(config->dma_map || config->set_map))
-+		goto err;
+diff --git a/drivers/vdpa/vdpa_user/iova_domain.c b/drivers/vdpa/vdpa_user/iova_domain.c
+new file mode 100644
+index 000000000000..1daae2608860
+--- /dev/null
++++ b/drivers/vdpa/vdpa_user/iova_domain.c
+@@ -0,0 +1,545 @@
++// SPDX-License-Identifier: GPL-2.0-only
++/*
++ * MMU-based software IOTLB.
++ *
++ * Copyright (C) 2020-2021 Bytedance Inc. and/or its affiliates. All rights reserved.
++ *
++ * Author: Xie Yongji <xieyongji@bytedance.com>
++ *
++ */
 +
- 	err = -ENOMEM;
- 	vdev = kzalloc(size, GFP_KERNEL);
- 	if (!vdev)
-@@ -106,6 +112,7 @@ struct vdpa_device *__vdpa_alloc_device(struct device *parent,
- 	vdev->index = err;
- 	vdev->config = config;
- 	vdev->features_valid = false;
-+	vdev->use_va = use_va;
- 
- 	if (name)
- 		err = dev_set_name(&vdev->dev, "%s", name);
-diff --git a/drivers/vdpa/vdpa_sim/vdpa_sim.c b/drivers/vdpa/vdpa_sim/vdpa_sim.c
-index a70fd2a08ff1..5f484fff8dbe 100644
---- a/drivers/vdpa/vdpa_sim/vdpa_sim.c
-+++ b/drivers/vdpa/vdpa_sim/vdpa_sim.c
-@@ -251,7 +251,7 @@ struct vdpasim *vdpasim_create(struct vdpasim_dev_attr *dev_attr)
- 		ops = &vdpasim_config_ops;
- 
- 	vdpasim = vdpa_alloc_device(struct vdpasim, vdpa, NULL, ops,
--				    dev_attr->name);
-+				    dev_attr->name, false);
- 	if (IS_ERR(vdpasim)) {
- 		ret = PTR_ERR(vdpasim);
- 		goto err_alloc;
-diff --git a/drivers/vdpa/virtio_pci/vp_vdpa.c b/drivers/vdpa/virtio_pci/vp_vdpa.c
-index cd7718b43a6e..5bcd00246d2e 100644
---- a/drivers/vdpa/virtio_pci/vp_vdpa.c
-+++ b/drivers/vdpa/virtio_pci/vp_vdpa.c
-@@ -446,7 +446,7 @@ static int vp_vdpa_probe(struct pci_dev *pdev, const struct pci_device_id *id)
- 		return ret;
- 
- 	vp_vdpa = vdpa_alloc_device(struct vp_vdpa, vdpa,
--				    dev, &vp_vdpa_ops, NULL);
-+				    dev, &vp_vdpa_ops, NULL, false);
- 	if (IS_ERR(vp_vdpa)) {
- 		dev_err(dev, "vp_vdpa: Failed to allocate vDPA structure\n");
- 		return PTR_ERR(vp_vdpa);
-diff --git a/drivers/vhost/vdpa.c b/drivers/vhost/vdpa.c
-index 49a1f45ccef8..e7b75f49f668 100644
---- a/drivers/vhost/vdpa.c
-+++ b/drivers/vhost/vdpa.c
-@@ -526,8 +526,28 @@ static void vhost_vdpa_pa_unmap(struct vhost_vdpa *v, u64 start, u64 last)
- 	}
- }
- 
-+static void vhost_vdpa_va_unmap(struct vhost_vdpa *v, u64 start, u64 last)
++#include <linux/slab.h>
++#include <linux/file.h>
++#include <linux/anon_inodes.h>
++#include <linux/highmem.h>
++#include <linux/vmalloc.h>
++#include <linux/vdpa.h>
++
++#include "iova_domain.h"
++
++static int vduse_iotlb_add_range(struct vduse_iova_domain *domain,
++				 u64 start, u64 last,
++				 u64 addr, unsigned int perm,
++				 struct file *file, u64 offset)
 +{
-+	struct vhost_dev *dev = &v->vdev;
-+	struct vhost_iotlb *iotlb = dev->iotlb;
-+	struct vhost_iotlb_map *map;
 +	struct vdpa_map_file *map_file;
++	int ret;
 +
-+	while ((map = vhost_iotlb_itree_first(iotlb, start, last)) != NULL) {
++	map_file = kmalloc(sizeof(*map_file), GFP_ATOMIC);
++	if (!map_file)
++		return -ENOMEM;
++
++	map_file->file = get_file(file);
++	map_file->offset = offset;
++
++	ret = vhost_iotlb_add_range_ctx(domain->iotlb, start, last,
++					addr, perm, map_file);
++	if (ret) {
++		fput(map_file->file);
++		kfree(map_file);
++		return ret;
++	}
++	return 0;
++}
++
++static void vduse_iotlb_del_range(struct vduse_iova_domain *domain,
++				  u64 start, u64 last)
++{
++	struct vdpa_map_file *map_file;
++	struct vhost_iotlb_map *map;
++
++	while ((map = vhost_iotlb_itree_first(domain->iotlb, start, last))) {
 +		map_file = (struct vdpa_map_file *)map->opaque;
 +		fput(map_file->file);
 +		kfree(map_file);
-+		vhost_iotlb_map_free(iotlb, map);
++		vhost_iotlb_map_free(domain->iotlb, map);
 +	}
 +}
 +
- static void vhost_vdpa_iotlb_unmap(struct vhost_vdpa *v, u64 start, u64 last)
- {
-+	struct vdpa_device *vdpa = v->vdpa;
-+
-+	if (vdpa->use_va)
-+		return vhost_vdpa_va_unmap(v, start, last);
-+
- 	return vhost_vdpa_pa_unmap(v, start, last);
- }
- 
-@@ -562,21 +582,21 @@ static int perm_to_iommu_flags(u32 perm)
- 	return flags | IOMMU_CACHE;
- }
- 
--static int vhost_vdpa_map(struct vhost_vdpa *v,
--			  u64 iova, u64 size, u64 pa, u32 perm)
-+static int vhost_vdpa_map(struct vhost_vdpa *v, u64 iova,
-+			  u64 size, u64 pa, u32 perm, void *opaque)
- {
- 	struct vhost_dev *dev = &v->vdev;
- 	struct vdpa_device *vdpa = v->vdpa;
- 	const struct vdpa_config_ops *ops = vdpa->config;
- 	int r = 0;
- 
--	r = vhost_iotlb_add_range(dev->iotlb, iova, iova + size - 1,
--				  pa, perm);
-+	r = vhost_iotlb_add_range_ctx(dev->iotlb, iova, iova + size - 1,
-+				      pa, perm, opaque);
- 	if (r)
- 		return r;
- 
- 	if (ops->dma_map) {
--		r = ops->dma_map(vdpa, iova, size, pa, perm, NULL);
-+		r = ops->dma_map(vdpa, iova, size, pa, perm, opaque);
- 	} else if (ops->set_map) {
- 		if (!v->in_batch)
- 			r = ops->set_map(vdpa, dev->iotlb);
-@@ -584,13 +604,15 @@ static int vhost_vdpa_map(struct vhost_vdpa *v,
- 		r = iommu_map(v->domain, iova, pa, size,
- 			      perm_to_iommu_flags(perm));
- 	}
--
--	if (r)
-+	if (r) {
- 		vhost_iotlb_del_range(dev->iotlb, iova, iova + size - 1);
--	else
-+		return r;
-+	}
-+
-+	if (!vdpa->use_va)
- 		atomic64_add(size >> PAGE_SHIFT, &dev->mm->pinned_vm);
- 
--	return r;
-+	return 0;
- }
- 
- static void vhost_vdpa_unmap(struct vhost_vdpa *v, u64 iova, u64 size)
-@@ -611,6 +633,56 @@ static void vhost_vdpa_unmap(struct vhost_vdpa *v, u64 iova, u64 size)
- 	}
- }
- 
-+static int vhost_vdpa_va_map(struct vhost_vdpa *v,
-+			     u64 iova, u64 size, u64 uaddr, u32 perm)
++int vduse_domain_set_map(struct vduse_iova_domain *domain,
++			 struct vhost_iotlb *iotlb)
 +{
-+	struct vhost_dev *dev = &v->vdev;
-+	u64 offset, map_size, map_iova = iova;
 +	struct vdpa_map_file *map_file;
-+	struct vm_area_struct *vma;
++	struct vhost_iotlb_map *map;
++	u64 start = 0ULL, last = ULLONG_MAX;
 +	int ret;
 +
-+	mmap_read_lock(dev->mm);
++	spin_lock(&domain->iotlb_lock);
++	vduse_iotlb_del_range(domain, start, last);
 +
-+	while (size) {
-+		vma = find_vma(dev->mm, uaddr);
-+		if (!vma) {
-+			ret = -EINVAL;
-+			break;
-+		}
-+		map_size = min(size, vma->vm_end - uaddr);
-+		if (!(vma->vm_file && (vma->vm_flags & VM_SHARED) &&
-+			!(vma->vm_flags & (VM_IO | VM_PFNMAP))))
-+			goto next;
-+
-+		map_file = kzalloc(sizeof(*map_file), GFP_KERNEL);
-+		if (!map_file) {
-+			ret = -ENOMEM;
-+			break;
-+		}
-+		offset = (vma->vm_pgoff << PAGE_SHIFT) + uaddr - vma->vm_start;
-+		map_file->offset = offset;
-+		map_file->file = get_file(vma->vm_file);
-+		ret = vhost_vdpa_map(v, map_iova, map_size, uaddr,
-+				     perm, map_file);
-+		if (ret) {
-+			fput(map_file->file);
-+			kfree(map_file);
-+			break;
-+		}
-+next:
-+		size -= map_size;
-+		uaddr += map_size;
-+		map_iova += map_size;
++	for (map = vhost_iotlb_itree_first(iotlb, start, last); map;
++	     map = vhost_iotlb_itree_next(map, start, last)) {
++		map_file = (struct vdpa_map_file *)map->opaque;
++		ret = vduse_iotlb_add_range(domain, map->start, map->last,
++					    map->addr, map->perm,
++					    map_file->file,
++					    map_file->offset);
++		if (ret)
++			goto err;
 +	}
-+	if (ret)
-+		vhost_vdpa_unmap(v, iova, map_iova - iova);
++	spin_unlock(&domain->iotlb_lock);
 +
-+	mmap_read_unlock(dev->mm);
-+
++	return 0;
++err:
++	vduse_iotlb_del_range(domain, start, last);
++	spin_unlock(&domain->iotlb_lock);
 +	return ret;
 +}
 +
- static int vhost_vdpa_pa_map(struct vhost_vdpa *v,
- 			     u64 iova, u64 size, u64 uaddr, u32 perm)
- {
-@@ -677,7 +749,7 @@ static int vhost_vdpa_pa_map(struct vhost_vdpa *v,
- 				csize = (last_pfn - map_pfn + 1) << PAGE_SHIFT;
- 				ret = vhost_vdpa_map(v, iova, csize,
- 						     map_pfn << PAGE_SHIFT,
--						     perm);
-+						     perm, NULL);
- 				if (ret) {
- 					/*
- 					 * Unpin the pages that are left unmapped
-@@ -706,7 +778,7 @@ static int vhost_vdpa_pa_map(struct vhost_vdpa *v,
- 
- 	/* Pin the rest chunk */
- 	ret = vhost_vdpa_map(v, iova, (last_pfn - map_pfn + 1) << PAGE_SHIFT,
--			     map_pfn << PAGE_SHIFT, perm);
-+			     map_pfn << PAGE_SHIFT, perm, NULL);
- out:
- 	if (ret) {
- 		if (nchunks) {
-@@ -739,6 +811,7 @@ static int vhost_vdpa_process_iotlb_update(struct vhost_vdpa *v,
- 					   struct vhost_iotlb_msg *msg)
- {
- 	struct vhost_dev *dev = &v->vdev;
-+	struct vdpa_device *vdpa = v->vdpa;
- 	struct vhost_iotlb *iotlb = dev->iotlb;
- 
- 	if (msg->iova < v->range.first || !msg->size ||
-@@ -750,6 +823,10 @@ static int vhost_vdpa_process_iotlb_update(struct vhost_vdpa *v,
- 				    msg->iova + msg->size - 1))
- 		return -EEXIST;
- 
-+	if (vdpa->use_va)
-+		return vhost_vdpa_va_map(v, msg->iova, msg->size,
-+					 msg->uaddr, msg->perm);
++void vduse_domain_clear_map(struct vduse_iova_domain *domain,
++			    struct vhost_iotlb *iotlb)
++{
++	struct vhost_iotlb_map *map;
++	u64 start = 0ULL, last = ULLONG_MAX;
 +
- 	return vhost_vdpa_pa_map(v, msg->iova, msg->size, msg->uaddr,
- 				 msg->perm);
- }
-diff --git a/include/linux/vdpa.h b/include/linux/vdpa.h
-index f3014aaca47e..3972ab765de1 100644
---- a/include/linux/vdpa.h
-+++ b/include/linux/vdpa.h
-@@ -65,6 +65,7 @@ struct vdpa_mgmt_dev;
-  * @config: the configuration ops for this device.
-  * @index: device index
-  * @features_valid: were features initialized? for legacy guests
-+ * @use_va: indicate whether virtual address must be used by this device
-  * @nvqs: maximum number of supported virtqueues
-  * @mdev: management device pointer; caller must setup when registering device as part
-  *	  of dev_add() mgmtdev ops callback before invoking _vdpa_register_device().
-@@ -75,6 +76,7 @@ struct vdpa_device {
- 	const struct vdpa_config_ops *config;
- 	unsigned int index;
- 	bool features_valid;
-+	bool use_va;
- 	int nvqs;
- 	struct vdpa_mgmt_dev *mdev;
- };
-@@ -90,6 +92,16 @@ struct vdpa_iova_range {
- };
- 
- /**
-+ * Corresponding file area for device memory mapping
-+ * @file: vma->vm_file for the mapping
-+ * @offset: mapping offset in the vm_file
-+ */
-+struct vdpa_map_file {
-+	struct file *file;
-+	u64 offset;
++	spin_lock(&domain->iotlb_lock);
++	for (map = vhost_iotlb_itree_first(iotlb, start, last); map;
++	     map = vhost_iotlb_itree_next(map, start, last)) {
++		vduse_iotlb_del_range(domain, map->start, map->last);
++	}
++	spin_unlock(&domain->iotlb_lock);
++}
++
++static int vduse_domain_map_bounce_page(struct vduse_iova_domain *domain,
++					 u64 iova, u64 size, u64 paddr)
++{
++	struct vduse_bounce_map *map;
++	u64 last = iova + size - 1;
++
++	while (iova <= last) {
++		map = &domain->bounce_maps[iova >> PAGE_SHIFT];
++		if (!map->bounce_page) {
++			map->bounce_page = alloc_page(GFP_ATOMIC);
++			if (!map->bounce_page)
++				return -ENOMEM;
++		}
++		map->orig_phys = paddr;
++		paddr += PAGE_SIZE;
++		iova += PAGE_SIZE;
++	}
++	return 0;
++}
++
++static void vduse_domain_unmap_bounce_page(struct vduse_iova_domain *domain,
++					   u64 iova, u64 size)
++{
++	struct vduse_bounce_map *map;
++	u64 last = iova + size - 1;
++
++	while (iova <= last) {
++		map = &domain->bounce_maps[iova >> PAGE_SHIFT];
++		map->orig_phys = INVALID_PHYS_ADDR;
++		iova += PAGE_SIZE;
++	}
++}
++
++static void do_bounce(phys_addr_t orig, void *addr, size_t size,
++		      enum dma_data_direction dir)
++{
++	unsigned long pfn = PFN_DOWN(orig);
++	unsigned int offset = offset_in_page(orig);
++	char *buffer;
++	unsigned int sz = 0;
++
++	while (size) {
++		sz = min_t(size_t, PAGE_SIZE - offset, size);
++
++		buffer = kmap_atomic(pfn_to_page(pfn));
++		if (dir == DMA_TO_DEVICE)
++			memcpy(addr, buffer + offset, sz);
++		else
++			memcpy(buffer + offset, addr, sz);
++		kunmap_atomic(buffer);
++
++		size -= sz;
++		pfn++;
++		addr += sz;
++		offset = 0;
++	}
++}
++
++static void vduse_domain_bounce(struct vduse_iova_domain *domain,
++				dma_addr_t iova, size_t size,
++				enum dma_data_direction dir)
++{
++	struct vduse_bounce_map *map;
++	unsigned int offset;
++	void *addr;
++	size_t sz;
++
++	if (iova >= domain->bounce_size)
++		return;
++
++	while (size) {
++		map = &domain->bounce_maps[iova >> PAGE_SHIFT];
++		offset = offset_in_page(iova);
++		sz = min_t(size_t, PAGE_SIZE - offset, size);
++
++		if (WARN_ON(!map->bounce_page ||
++			    map->orig_phys == INVALID_PHYS_ADDR))
++			return;
++
++		addr = page_address(map->bounce_page) + offset;
++		do_bounce(map->orig_phys + offset, addr, sz, dir);
++		size -= sz;
++		iova += sz;
++	}
++}
++
++static struct page *
++vduse_domain_get_coherent_page(struct vduse_iova_domain *domain, u64 iova)
++{
++	u64 start = iova & PAGE_MASK;
++	u64 last = start + PAGE_SIZE - 1;
++	struct vhost_iotlb_map *map;
++	struct page *page = NULL;
++
++	spin_lock(&domain->iotlb_lock);
++	map = vhost_iotlb_itree_first(domain->iotlb, start, last);
++	if (!map)
++		goto out;
++
++	page = pfn_to_page((map->addr + iova - map->start) >> PAGE_SHIFT);
++	get_page(page);
++out:
++	spin_unlock(&domain->iotlb_lock);
++
++	return page;
++}
++
++static struct page *
++vduse_domain_get_bounce_page(struct vduse_iova_domain *domain, u64 iova)
++{
++	struct vduse_bounce_map *map;
++	struct page *page = NULL;
++
++	spin_lock(&domain->iotlb_lock);
++	map = &domain->bounce_maps[iova >> PAGE_SHIFT];
++	if (!map->bounce_page)
++		goto out;
++
++	page = map->bounce_page;
++	get_page(page);
++out:
++	spin_unlock(&domain->iotlb_lock);
++
++	return page;
++}
++
++static void
++vduse_domain_free_bounce_pages(struct vduse_iova_domain *domain)
++{
++	struct vduse_bounce_map *map;
++	unsigned long pfn, bounce_pfns;
++
++	bounce_pfns = domain->bounce_size >> PAGE_SHIFT;
++
++	for (pfn = 0; pfn < bounce_pfns; pfn++) {
++		map = &domain->bounce_maps[pfn];
++		if (WARN_ON(map->orig_phys != INVALID_PHYS_ADDR))
++			continue;
++
++		if (!map->bounce_page)
++			continue;
++
++		__free_page(map->bounce_page);
++		map->bounce_page = NULL;
++	}
++}
++
++void vduse_domain_reset_bounce_map(struct vduse_iova_domain *domain)
++{
++	if (!domain->bounce_map)
++		return;
++
++	spin_lock(&domain->iotlb_lock);
++	if (!domain->bounce_map)
++		goto unlock;
++
++	vduse_iotlb_del_range(domain, 0, domain->bounce_size - 1);
++	domain->bounce_map = 0;
++unlock:
++	spin_unlock(&domain->iotlb_lock);
++}
++
++static int vduse_domain_init_bounce_map(struct vduse_iova_domain *domain)
++{
++	int ret = 0;
++
++	if (domain->bounce_map)
++		return 0;
++
++	spin_lock(&domain->iotlb_lock);
++	if (domain->bounce_map)
++		goto unlock;
++
++	ret = vduse_iotlb_add_range(domain, 0, domain->bounce_size - 1,
++				    0, VHOST_MAP_RW, domain->file, 0);
++	if (ret)
++		goto unlock;
++
++	domain->bounce_map = 1;
++unlock:
++	spin_unlock(&domain->iotlb_lock);
++	return ret;
++}
++
++static dma_addr_t
++vduse_domain_alloc_iova(struct iova_domain *iovad,
++			unsigned long size, unsigned long limit)
++{
++	unsigned long shift = iova_shift(iovad);
++	unsigned long iova_len = iova_align(iovad, size) >> shift;
++	unsigned long iova_pfn;
++
++	/*
++	 * Freeing non-power-of-two-sized allocations back into the IOVA caches
++	 * will come back to bite us badly, so we have to waste a bit of space
++	 * rounding up anything cacheable to make sure that can't happen. The
++	 * order of the unadjusted size will still match upon freeing.
++	 */
++	if (iova_len < (1 << (IOVA_RANGE_CACHE_MAX_SIZE - 1)))
++		iova_len = roundup_pow_of_two(iova_len);
++	iova_pfn = alloc_iova_fast(iovad, iova_len, limit >> shift, true);
++
++	return iova_pfn << shift;
++}
++
++static void vduse_domain_free_iova(struct iova_domain *iovad,
++				   dma_addr_t iova, size_t size)
++{
++	unsigned long shift = iova_shift(iovad);
++	unsigned long iova_len = iova_align(iovad, size) >> shift;
++
++	free_iova_fast(iovad, iova >> shift, iova_len);
++}
++
++dma_addr_t vduse_domain_map_page(struct vduse_iova_domain *domain,
++				 struct page *page, unsigned long offset,
++				 size_t size, enum dma_data_direction dir,
++				 unsigned long attrs)
++{
++	struct iova_domain *iovad = &domain->stream_iovad;
++	unsigned long limit = domain->bounce_size - 1;
++	phys_addr_t pa = page_to_phys(page) + offset;
++	dma_addr_t iova = vduse_domain_alloc_iova(iovad, size, limit);
++
++	if (!iova)
++		return DMA_MAPPING_ERROR;
++
++	if (vduse_domain_init_bounce_map(domain))
++		goto err;
++
++	if (vduse_domain_map_bounce_page(domain, (u64)iova, (u64)size, pa))
++		goto err;
++
++	if (dir == DMA_TO_DEVICE || dir == DMA_BIDIRECTIONAL)
++		vduse_domain_bounce(domain, iova, size, DMA_TO_DEVICE);
++
++	return iova;
++err:
++	vduse_domain_free_iova(iovad, iova, size);
++	return DMA_MAPPING_ERROR;
++}
++
++void vduse_domain_unmap_page(struct vduse_iova_domain *domain,
++			     dma_addr_t dma_addr, size_t size,
++			     enum dma_data_direction dir, unsigned long attrs)
++{
++	struct iova_domain *iovad = &domain->stream_iovad;
++
++	if (dir == DMA_FROM_DEVICE || dir == DMA_BIDIRECTIONAL)
++		vduse_domain_bounce(domain, dma_addr, size, DMA_FROM_DEVICE);
++
++	vduse_domain_unmap_bounce_page(domain, (u64)dma_addr, (u64)size);
++	vduse_domain_free_iova(iovad, dma_addr, size);
++}
++
++void *vduse_domain_alloc_coherent(struct vduse_iova_domain *domain,
++				  size_t size, dma_addr_t *dma_addr,
++				  gfp_t flag, unsigned long attrs)
++{
++	struct iova_domain *iovad = &domain->consistent_iovad;
++	unsigned long limit = domain->iova_limit;
++	dma_addr_t iova = vduse_domain_alloc_iova(iovad, size, limit);
++	void *orig = alloc_pages_exact(size, flag);
++
++	if (!iova || !orig)
++		goto err;
++
++	spin_lock(&domain->iotlb_lock);
++	if (vduse_iotlb_add_range(domain, (u64)iova, (u64)iova + size - 1,
++				  virt_to_phys(orig), VHOST_MAP_RW,
++				  domain->file, (u64)iova)) {
++		spin_unlock(&domain->iotlb_lock);
++		goto err;
++	}
++	spin_unlock(&domain->iotlb_lock);
++
++	*dma_addr = iova;
++
++	return orig;
++err:
++	*dma_addr = DMA_MAPPING_ERROR;
++	if (orig)
++		free_pages_exact(orig, size);
++	if (iova)
++		vduse_domain_free_iova(iovad, iova, size);
++
++	return NULL;
++}
++
++void vduse_domain_free_coherent(struct vduse_iova_domain *domain, size_t size,
++				void *vaddr, dma_addr_t dma_addr,
++				unsigned long attrs)
++{
++	struct iova_domain *iovad = &domain->consistent_iovad;
++	struct vhost_iotlb_map *map;
++	struct vdpa_map_file *map_file;
++	phys_addr_t pa;
++
++	spin_lock(&domain->iotlb_lock);
++	map = vhost_iotlb_itree_first(domain->iotlb, (u64)dma_addr,
++				      (u64)dma_addr + size - 1);
++	if (WARN_ON(!map)) {
++		spin_unlock(&domain->iotlb_lock);
++		return;
++	}
++	map_file = (struct vdpa_map_file *)map->opaque;
++	fput(map_file->file);
++	kfree(map_file);
++	pa = map->addr;
++	vhost_iotlb_map_free(domain->iotlb, map);
++	spin_unlock(&domain->iotlb_lock);
++
++	vduse_domain_free_iova(iovad, dma_addr, size);
++	free_pages_exact(phys_to_virt(pa), size);
++}
++
++static vm_fault_t vduse_domain_mmap_fault(struct vm_fault *vmf)
++{
++	struct vduse_iova_domain *domain = vmf->vma->vm_private_data;
++	unsigned long iova = vmf->pgoff << PAGE_SHIFT;
++	struct page *page;
++
++	if (!domain)
++		return VM_FAULT_SIGBUS;
++
++	if (iova < domain->bounce_size)
++		page = vduse_domain_get_bounce_page(domain, iova);
++	else
++		page = vduse_domain_get_coherent_page(domain, iova);
++
++	if (!page)
++		return VM_FAULT_SIGBUS;
++
++	vmf->page = page;
++
++	return 0;
++}
++
++static const struct vm_operations_struct vduse_domain_mmap_ops = {
++	.fault = vduse_domain_mmap_fault,
 +};
 +
-+/**
-  * struct vdpa_config_ops - operations for configuring a vDPA device.
-  * Note: vDPA device drivers are required to implement all of the
-  * operations unless it is mentioned to be optional in the following
-@@ -279,7 +291,8 @@ struct vdpa_config_ops {
- 
- struct vdpa_device *__vdpa_alloc_device(struct device *parent,
- 					const struct vdpa_config_ops *config,
--					size_t size, const char *name);
-+					size_t size, const char *name,
-+					bool use_va);
- 
- /**
-  * vdpa_alloc_device - allocate and initilaize a vDPA device
-@@ -289,15 +302,16 @@ struct vdpa_device *__vdpa_alloc_device(struct device *parent,
-  * @parent: the parent device
-  * @config: the bus operations that is supported by this device
-  * @name: name of the vdpa device
-+ * @use_va: indicate whether virtual address must be used by this device
-  *
-  * Return allocated data structure or ERR_PTR upon error
-  */
--#define vdpa_alloc_device(dev_struct, member, parent, config, name)   \
-+#define vdpa_alloc_device(dev_struct, member, parent, config, name, use_va)   \
- 			  container_of(__vdpa_alloc_device( \
- 				       parent, config, \
- 				       sizeof(dev_struct) + \
- 				       BUILD_BUG_ON_ZERO(offsetof( \
--				       dev_struct, member)), name), \
-+				       dev_struct, member)), name, use_va), \
- 				       dev_struct, member)
- 
- int vdpa_register_device(struct vdpa_device *vdev, int nvqs);
++static int vduse_domain_mmap(struct file *file, struct vm_area_struct *vma)
++{
++	struct vduse_iova_domain *domain = file->private_data;
++
++	vma->vm_flags |= VM_DONTDUMP | VM_DONTEXPAND;
++	vma->vm_private_data = domain;
++	vma->vm_ops = &vduse_domain_mmap_ops;
++
++	return 0;
++}
++
++static int vduse_domain_release(struct inode *inode, struct file *file)
++{
++	struct vduse_iova_domain *domain = file->private_data;
++
++	spin_lock(&domain->iotlb_lock);
++	vduse_iotlb_del_range(domain, 0, ULLONG_MAX);
++	vduse_domain_free_bounce_pages(domain);
++	spin_unlock(&domain->iotlb_lock);
++	put_iova_domain(&domain->stream_iovad);
++	put_iova_domain(&domain->consistent_iovad);
++	vhost_iotlb_free(domain->iotlb);
++	vfree(domain->bounce_maps);
++	kfree(domain);
++
++	return 0;
++}
++
++static const struct file_operations vduse_domain_fops = {
++	.owner = THIS_MODULE,
++	.mmap = vduse_domain_mmap,
++	.release = vduse_domain_release,
++};
++
++void vduse_domain_destroy(struct vduse_iova_domain *domain)
++{
++	fput(domain->file);
++}
++
++struct vduse_iova_domain *
++vduse_domain_create(unsigned long iova_limit, size_t bounce_size)
++{
++	struct vduse_iova_domain *domain;
++	struct file *file;
++	struct vduse_bounce_map *map;
++	unsigned long pfn, bounce_pfns;
++
++	bounce_pfns = PAGE_ALIGN(bounce_size) >> PAGE_SHIFT;
++	if (iova_limit <= bounce_size)
++		return NULL;
++
++	domain = kzalloc(sizeof(*domain), GFP_KERNEL);
++	if (!domain)
++		return NULL;
++
++	domain->iotlb = vhost_iotlb_alloc(0, 0);
++	if (!domain->iotlb)
++		goto err_iotlb;
++
++	domain->iova_limit = iova_limit;
++	domain->bounce_size = PAGE_ALIGN(bounce_size);
++	domain->bounce_maps = vzalloc(bounce_pfns *
++				sizeof(struct vduse_bounce_map));
++	if (!domain->bounce_maps)
++		goto err_map;
++
++	for (pfn = 0; pfn < bounce_pfns; pfn++) {
++		map = &domain->bounce_maps[pfn];
++		map->orig_phys = INVALID_PHYS_ADDR;
++	}
++	file = anon_inode_getfile("[vduse-domain]", &vduse_domain_fops,
++				domain, O_RDWR);
++	if (IS_ERR(file))
++		goto err_file;
++
++	domain->file = file;
++	spin_lock_init(&domain->iotlb_lock);
++	init_iova_domain(&domain->stream_iovad,
++			PAGE_SIZE, IOVA_START_PFN);
++	init_iova_domain(&domain->consistent_iovad,
++			PAGE_SIZE, bounce_pfns);
++
++	return domain;
++err_file:
++	vfree(domain->bounce_maps);
++err_map:
++	vhost_iotlb_free(domain->iotlb);
++err_iotlb:
++	kfree(domain);
++	return NULL;
++}
++
++int vduse_domain_init(void)
++{
++	return iova_cache_get();
++}
++
++void vduse_domain_exit(void)
++{
++	iova_cache_put();
++}
+diff --git a/drivers/vdpa/vdpa_user/iova_domain.h b/drivers/vdpa/vdpa_user/iova_domain.h
+new file mode 100644
+index 000000000000..2722d9b8e21a
+--- /dev/null
++++ b/drivers/vdpa/vdpa_user/iova_domain.h
+@@ -0,0 +1,73 @@
++/* SPDX-License-Identifier: GPL-2.0-only */
++/*
++ * MMU-based software IOTLB.
++ *
++ * Copyright (C) 2020-2021 Bytedance Inc. and/or its affiliates. All rights reserved.
++ *
++ * Author: Xie Yongji <xieyongji@bytedance.com>
++ *
++ */
++
++#ifndef _VDUSE_IOVA_DOMAIN_H
++#define _VDUSE_IOVA_DOMAIN_H
++
++#include <linux/iova.h>
++#include <linux/dma-mapping.h>
++#include <linux/vhost_iotlb.h>
++
++#define IOVA_START_PFN 1
++
++#define INVALID_PHYS_ADDR (~(phys_addr_t)0)
++
++struct vduse_bounce_map {
++	struct page *bounce_page;
++	u64 orig_phys;
++};
++
++struct vduse_iova_domain {
++	struct iova_domain stream_iovad;
++	struct iova_domain consistent_iovad;
++	struct vduse_bounce_map *bounce_maps;
++	size_t bounce_size;
++	unsigned long iova_limit;
++	int bounce_map;
++	struct vhost_iotlb *iotlb;
++	spinlock_t iotlb_lock;
++	struct file *file;
++};
++
++int vduse_domain_set_map(struct vduse_iova_domain *domain,
++			 struct vhost_iotlb *iotlb);
++
++void vduse_domain_clear_map(struct vduse_iova_domain *domain,
++			    struct vhost_iotlb *iotlb);
++
++dma_addr_t vduse_domain_map_page(struct vduse_iova_domain *domain,
++				 struct page *page, unsigned long offset,
++				 size_t size, enum dma_data_direction dir,
++				 unsigned long attrs);
++
++void vduse_domain_unmap_page(struct vduse_iova_domain *domain,
++			     dma_addr_t dma_addr, size_t size,
++			     enum dma_data_direction dir, unsigned long attrs);
++
++void *vduse_domain_alloc_coherent(struct vduse_iova_domain *domain,
++				  size_t size, dma_addr_t *dma_addr,
++				  gfp_t flag, unsigned long attrs);
++
++void vduse_domain_free_coherent(struct vduse_iova_domain *domain, size_t size,
++				void *vaddr, dma_addr_t dma_addr,
++				unsigned long attrs);
++
++void vduse_domain_reset_bounce_map(struct vduse_iova_domain *domain);
++
++void vduse_domain_destroy(struct vduse_iova_domain *domain);
++
++struct vduse_iova_domain *vduse_domain_create(unsigned long iova_limit,
++					      size_t bounce_size);
++
++int vduse_domain_init(void);
++
++void vduse_domain_exit(void);
++
++#endif /* _VDUSE_IOVA_DOMAIN_H */
 -- 
 2.11.0
 
