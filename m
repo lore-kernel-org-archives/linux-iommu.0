@@ -2,116 +2,112 @@ Return-Path: <SRS0=eAvY=NW=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-8.0 required=3.0 tests=BAYES_00,DKIM_ADSP_CUSTOM_MED,
-	DKIM_INVALID,DKIM_SIGNED,FREEMAIL_FORGED_FROMDOMAIN,FREEMAIL_FROM,
-	HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,MENTIONS_GIT_HOSTING,
-	NICE_REPLY_A,SPF_HELO_NONE,SPF_PASS,USER_AGENT_SANE_1 autolearn=no
-	autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-15.1 required=3.0 tests=BAYES_00,DKIM_INVALID,
+	DKIM_SIGNED,HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,
+	MENTIONS_GIT_HOSTING,SPF_HELO_NONE,SPF_PASS,USER_AGENT_SANE_2
+	autolearn=unavailable autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5E8AFC4320A
-	for <iommu@archiver.kernel.org>; Tue, 31 Aug 2021 15:20:31 +0000 (UTC)
-Received: from smtp2.osuosl.org (smtp2.osuosl.org [140.211.166.133])
+	by smtp.lore.kernel.org (Postfix) with ESMTP id EC605C432BE
+	for <iommu@archiver.kernel.org>; Tue, 31 Aug 2021 16:16:03 +0000 (UTC)
+Received: from smtp4.osuosl.org (smtp4.osuosl.org [140.211.166.137])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 184CF6103D
-	for <iommu@archiver.kernel.org>; Tue, 31 Aug 2021 15:20:31 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.4.1 mail.kernel.org 184CF6103D
-Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=gmail.com
+	by mail.kernel.org (Postfix) with ESMTPS id D5C82610C9
+	for <iommu@archiver.kernel.org>; Tue, 31 Aug 2021 16:16:02 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.4.1 mail.kernel.org D5C82610C9
+Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=redhat.com
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by smtp2.osuosl.org (Postfix) with ESMTP id D07C6400C9;
-	Tue, 31 Aug 2021 15:20:30 +0000 (UTC)
+	by smtp4.osuosl.org (Postfix) with ESMTP id 93867406E8;
+	Tue, 31 Aug 2021 16:16:02 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from smtp2.osuosl.org ([127.0.0.1])
-	by localhost (smtp2.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id JGp4lCTY4sQr; Tue, 31 Aug 2021 15:20:26 +0000 (UTC)
-Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by smtp2.osuosl.org (Postfix) with ESMTPS id 64A98404AA;
-	Tue, 31 Aug 2021 15:20:26 +0000 (UTC)
+Received: from smtp4.osuosl.org ([127.0.0.1])
+	by localhost (smtp4.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+	with ESMTP id K2JkEspqllqe; Tue, 31 Aug 2021 16:15:58 +0000 (UTC)
+Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [IPv6:2605:bc80:3010:104::8cd3:938])
+	by smtp4.osuosl.org (Postfix) with ESMTPS id 80A4C406F2;
+	Tue, 31 Aug 2021 16:15:58 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 3B6F6C0010;
-	Tue, 31 Aug 2021 15:20:26 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 6202AC001A;
+	Tue, 31 Aug 2021 16:15:58 +0000 (UTC)
 Received: from smtp2.osuosl.org (smtp2.osuosl.org [140.211.166.133])
- by lists.linuxfoundation.org (Postfix) with ESMTP id ED0DAC000E
- for <iommu@lists.linux-foundation.org>; Tue, 31 Aug 2021 15:20:25 +0000 (UTC)
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 0302EC000E
+ for <iommu@lists.linux-foundation.org>; Tue, 31 Aug 2021 16:15:58 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by smtp2.osuosl.org (Postfix) with ESMTP id CCBE1404AD
- for <iommu@lists.linux-foundation.org>; Tue, 31 Aug 2021 15:20:25 +0000 (UTC)
+ by smtp2.osuosl.org (Postfix) with ESMTP id E441140483
+ for <iommu@lists.linux-foundation.org>; Tue, 31 Aug 2021 16:15:57 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
+Authentication-Results: smtp2.osuosl.org (amavisd-new);
+ dkim=pass (1024-bit key) header.d=redhat.com
 Received: from smtp2.osuosl.org ([127.0.0.1])
  by localhost (smtp2.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id SGeuJ_a0m2Hk for <iommu@lists.linux-foundation.org>;
- Tue, 31 Aug 2021 15:20:21 +0000 (UTC)
-X-Greylist: whitelisted by SQLgrey-1.8.0
-Received: from mail-pg1-x52b.google.com (mail-pg1-x52b.google.com
- [IPv6:2607:f8b0:4864:20::52b])
- by smtp2.osuosl.org (Postfix) with ESMTPS id CF30B400C9
- for <iommu@lists.linux-foundation.org>; Tue, 31 Aug 2021 15:20:21 +0000 (UTC)
-Received: by mail-pg1-x52b.google.com with SMTP id 17so17071842pgp.4
- for <iommu@lists.linux-foundation.org>; Tue, 31 Aug 2021 08:20:21 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=gmail.com; s=20161025;
- h=subject:to:cc:references:from:message-id:date:user-agent
- :mime-version:in-reply-to:content-language:content-transfer-encoding;
- bh=bHjdW+TFSdvqPfi7vbsYmlySYD0qeWma8ZlepyZ1pyA=;
- b=vKMmKg2JfTEH2r2TLKjdeGLs50EV+1jZUgn5bOxg36v536g3yxVJyUm07AJrRe5zpl
- tBmmevtBUhZm2otLHjO+t6XZXSqKFmlgJCMuDJmWa/GXj0SoH6IO4AASbNQrCa0nh7qM
- B7KI7XsRMY0RH1QUZ2VUGE8whdNH2gKq9Z8kV8Ym5rAqaokVsDSlFZJi22dmYwhDgQhT
- USid/NU4WRGPSTarkDcXxdUTAx9LYuGrR6Nv4PIqqo7PphtFsJN7VG6hLWhI5/qBs3Di
- +x+drrXZWdPlOXc87KdUarIUyVQNpVlgBbEDUDQ2DCD3gwGIwD/mm2RVJSZt7qbmg0qd
- mMeg==
+ with ESMTP id cPUNoyj2dO1E for <iommu@lists.linux-foundation.org>;
+ Tue, 31 Aug 2021 16:15:56 +0000 (UTC)
+X-Greylist: domain auto-whitelisted by SQLgrey-1.8.0
+Received: from us-smtp-delivery-124.mimecast.com
+ (us-smtp-delivery-124.mimecast.com [170.10.133.124])
+ by smtp2.osuosl.org (Postfix) with ESMTPS id 871EA400C9
+ for <iommu@lists.linux-foundation.org>; Tue, 31 Aug 2021 16:15:56 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+ s=mimecast20190719; t=1630426555;
+ h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+ to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+ content-transfer-encoding:content-transfer-encoding:
+ in-reply-to:in-reply-to:references:references;
+ bh=iC/vqrnC8agefEfcK8F2l8XU9S2U0FJkOrhS5FcGFpE=;
+ b=aSvAww/6BKbX1a9UE5sPHXFH6C8bZR9Ki4sTE2Kj0n5hCPt4ctnfF2jaE7WKVAZCRjTmaN
+ MzoAYg1QZzSw7PBRQZnKj/FNadiOhQks4LHVGGLSSHH5SK+bwrxbn+hoOWTzVq5Mb/jeRi
+ rYETwzx6VGCgOmfehvr9msH12IzOjec=
+Received: from mail-il1-f197.google.com (mail-il1-f197.google.com
+ [209.85.166.197]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-136-HER3mXE9OB2tHBHNvYzj_A-1; Tue, 31 Aug 2021 12:15:52 -0400
+X-MC-Unique: HER3mXE9OB2tHBHNvYzj_A-1
+Received: by mail-il1-f197.google.com with SMTP id
+ c16-20020a92cf500000b02902243aec7e27so845199ilr.22
+ for <iommu@lists.linux-foundation.org>; Tue, 31 Aug 2021 09:15:52 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
  d=1e100.net; s=20161025;
- h=x-gm-message-state:subject:to:cc:references:from:message-id:date
- :user-agent:mime-version:in-reply-to:content-language
- :content-transfer-encoding;
- bh=bHjdW+TFSdvqPfi7vbsYmlySYD0qeWma8ZlepyZ1pyA=;
- b=GBW7ZYw9d8Rt2FVKas3vyYYtn5N7zNfVee4dPWCnc0xQh/KqzeszudS+vZfVItJ5FQ
- NoF4ZhWCw4hB5S/mT539QcEoPGFbHFtg7nqhI2Nmnz7x5nsDHQl7GbywTwawcqj22QyW
- DgJkQ3NjHltlg5OcABCSF1kXhMUAZGm2CInotey3MWogkQOhT6WC4voHfa53FpTKw/tu
- UC2/rzxszzyNIJZof4WE6xe+nKp30Uwvt5LQsi3IeAXXlp49CAaNSB9yZv3XmsTay/XA
- rWWRvHjfTheHxDxv45vh8L1wHgaXTRdvscprYjuvT8QMv1sdbfnRrBYtvRWmHsqA/ukx
- 8Gig==
-X-Gm-Message-State: AOAM5332HV10iR2PpUhqvIpNqr9JVa4Iu2fTxPiXrVdJP9G0fvhdFAwc
- LyOUht+DbeJX1SsxVz/p0Po=
-X-Google-Smtp-Source: ABdhPJzSdF8ZTtYVUbdAWtHig1Ob457a20faxiqqeItSlT8AzOFj7ZlOHpfBE0oc7/WJzromHshTYw==
-X-Received: by 2002:a62:8144:0:b0:3af:7e99:f48f with SMTP id
- t65-20020a628144000000b003af7e99f48fmr28970407pfd.2.1630423221259; 
- Tue, 31 Aug 2021 08:20:21 -0700 (PDT)
-Received: from ?IPv6:2404:f801:0:5:8000::50b? ([2404:f801:9000:1a:efea::50b])
- by smtp.gmail.com with ESMTPSA id
- x8sm7986672pfj.128.2021.08.31.08.20.07
- (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
- Tue, 31 Aug 2021 08:20:20 -0700 (PDT)
-Subject: Re: [PATCH V4 00/13] x86/Hyper-V: Add Hyper-V Isolation VM support
-To: Christoph Hellwig <hch@lst.de>
-References: <20210827172114.414281-1-ltykernel@gmail.com>
- <20210830120036.GA22005@lst.de>
-From: Tianyu Lan <ltykernel@gmail.com>
-Message-ID: <91b5e997-8d44-77f0-6519-f574b541ba9f@gmail.com>
-Date: Tue, 31 Aug 2021 23:20:06 +0800
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:78.0) Gecko/20100101
- Thunderbird/78.13.0
+ h=x-gm-message-state:date:from:to:cc:subject:message-id:in-reply-to
+ :references:organization:mime-version:content-transfer-encoding;
+ bh=iC/vqrnC8agefEfcK8F2l8XU9S2U0FJkOrhS5FcGFpE=;
+ b=Y6TsLWoe+//KLHVYDCKonFJ5sEEQu7sVwAz9VnQ1teDaEM4kqg3RC/7gfx8s1bAsxX
+ G2kQMD5EbEkl7M1Z85f9SCmQNN10jATrzGr1+Mcqoj4cbAOg1XWRYuhKadIQQD4FvAdN
+ nHxmznX9glEWwmRae4f4eg8C9RF/ylL5jv8VP5hVZ5NP7wSzFXwGOgk1YjK08RiCARsQ
+ EdJZdSuvmnvnwiCJGUZALH326pFxj+NeRh7KHD6zWNWVqGIDVFL6ihgw/TS+cCR3v88a
+ NDAkk1+CTp6gLrSk/K/9n0/22fdSSJpnGB/Foa7W3cXeF55SQ7O2HsQs1tZpr+sZxU5b
+ /EVQ==
+X-Gm-Message-State: AOAM532QOgOc4P+4WKb1Z/BQ6KnVCki14H32GpN67+ncgQ939OXSHipW
+ lRGcaMC4Kg2tga7OacZJUk6XVADrNpowWQxz/3U4l63DLKtQ4JEOtkGWfuMZvDRFmghwLIHXnVz
+ 9XRJQuOwdFKXAB8z+jcKIOkj2dG2a4g==
+X-Received: by 2002:a92:1306:: with SMTP id 6mr10977677ilt.183.1630426552023; 
+ Tue, 31 Aug 2021 09:15:52 -0700 (PDT)
+X-Google-Smtp-Source: ABdhPJyU8Gm8fnWRjCaSBCl5W6DLLHCeLpBofrbxoK/jTZqCPsDHAV1I8o6zW03fTiw16wfuaHsuSQ==
+X-Received: by 2002:a92:1306:: with SMTP id 6mr10977660ilt.183.1630426551786; 
+ Tue, 31 Aug 2021 09:15:51 -0700 (PDT)
+Received: from redhat.com ([198.99.80.109])
+ by smtp.gmail.com with ESMTPSA id u13sm9685406iot.29.2021.08.31.09.15.50
+ (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+ Tue, 31 Aug 2021 09:15:51 -0700 (PDT)
+Date: Tue, 31 Aug 2021 10:15:49 -0600
+From: Alex Williamson <alex.williamson@redhat.com>
+To: Nicolin Chen <nicolinc@nvidia.com>
+Subject: Re: [RFC][PATCH v2 00/13] iommu/arm-smmu-v3: Add NVIDIA implementation
+Message-ID: <20210831101549.237151fa.alex.williamson@redhat.com>
+In-Reply-To: <20210831025923.15812-1-nicolinc@nvidia.com>
+References: <20210831025923.15812-1-nicolinc@nvidia.com>
+Organization: Red Hat
+X-Mailer: Claws Mail 3.18.0 (GTK+ 2.24.33; x86_64-redhat-linux-gnu)
 MIME-Version: 1.0
-In-Reply-To: <20210830120036.GA22005@lst.de>
-Content-Language: en-US
-Cc: parri.andrea@gmail.com, linux-hyperv@vger.kernel.org, brijesh.singh@amd.com,
- peterz@infradead.org, catalin.marinas@arm.com, dave.hansen@linux.intel.com,
- dave.hansen@intel.com, netdev@vger.kernel.org, hpa@zytor.com,
- kys@microsoft.com, will@kernel.org, boris.ostrovsky@oracle.com,
- linux-arch@vger.kernel.org, wei.liu@kernel.org, sstabellini@kernel.org,
- sthemmin@microsoft.com, xen-devel@lists.xenproject.org,
- linux-scsi@vger.kernel.org, aneesh.kumar@linux.ibm.com, x86@kernel.org,
- decui@microsoft.com, ardb@kernel.org, michael.h.kelley@microsoft.com,
- mingo@redhat.com, pgonda@google.com, rientjes@google.com, kuba@kernel.org,
- jejb@linux.ibm.com, martin.b.radev@gmail.com, thomas.lendacky@amd.com,
- Tianyu.Lan@microsoft.com, arnd@arndb.de, konrad.wilk@oracle.com,
- haiyangz@microsoft.com, bp@alien8.de, luto@kernel.org,
- krish.sadhukhan@oracle.com, tglx@linutronix.de, vkuznets@redhat.com,
- linux-arm-kernel@lists.infradead.org, jgross@suse.com,
- martin.petersen@oracle.com, saravanand@fb.com, gregkh@linuxfoundation.org,
- linux-kernel@vger.kernel.org, iommu@lists.linux-foundation.org,
- rppt@kernel.org, hannes@cmpxchg.org, akpm@linux-foundation.org,
- robin.murphy@arm.com, davem@davemloft.net, kirill.shutemov@linux.intel.com
+Authentication-Results: relay.mimecast.com;
+ auth=pass smtp.auth=CUSA124A263 smtp.mailfrom=alex.williamson@redhat.com
+X-Mimecast-Spam-Score: 0
+X-Mimecast-Originator: redhat.com
+Cc: kvm@vger.kernel.org, linux-doc@vger.kernel.org, thierry.reding@gmail.com,
+ will@kernel.org, jean-philippe@linaro.org, corbet@lwn.net,
+ Jason Gunthorpe <jgg@nvidia.com>, "Tian, Kevin" <kevin.tian@intel.com>,
+ linux-tegra@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+ cohuck@redhat.com, linux-kernel@vger.kernel.org,
+ iommu@lists.linux-foundation.org, robin.murphy@arm.com
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -124,87 +120,110 @@ List-Post: <mailto:iommu@lists.linux-foundation.org>
 List-Help: <mailto:iommu-request@lists.linux-foundation.org?subject=help>
 List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
  <mailto:iommu-request@lists.linux-foundation.org?subject=subscribe>
+Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
-Content-Type: text/plain; charset="us-ascii"; Format="flowed"
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-Hi Christoph:
+On Mon, 30 Aug 2021 19:59:10 -0700
+Nicolin Chen <nicolinc@nvidia.com> wrote:
 
-On 8/30/2021 8:00 PM, Christoph Hellwig wrote:
-> Sorry for the delayed answer, but I look at the vmap_pfn usage in the
-> previous version and tried to come up with a better version.  This
-> mostly untested branch:
+> The SMMUv3 devices implemented in the Grace SoC support NVIDIA's custom
+> CMDQ-Virtualization (CMDQV) hardware. Like the new ECMDQ feature first
+> introduced in the ARM SMMUv3.3 specification, CMDQV adds multiple VCMDQ
+> interfaces to supplement the single architected SMMU_CMDQ in an effort
+> to reduce contention.
 > 
-> http://git.infradead.org/users/hch/misc.git/shortlog/refs/heads/hyperv-vmap
-
-No problem. Thank you very much for your suggestion patches and they are 
-very helpful.
-
-
+> This series of patches add CMDQV support with its preparational changes:
 > 
-> get us there for swiotlb and the channel infrastructure  I've started
-> looking at the network driver and didn't get anywhere due to other work.
+> * PATCH-1 to PATCH-8 are related to shared VMID feature: they are used
+>   first to improve TLB utilization, second to bind a shared VMID with a
+>   VCMDQ interface for hardware configuring requirement.
+
+The vfio changes would need to be implemented in alignment with the
+/dev/iommu proposals[1].  AIUI, the VMID is essentially binding
+multiple containers together for TLB invalidation, which I expect in
+the proposal below is largely already taken care of in that a single
+iommu-fd can support multiple I/O address spaces and it's largely
+expected that a hypervisor would use a single iommu-fd so this explicit
+connection by userspace across containers wouldn't be necessary.
+
+We're expecting to talk more about the /dev/iommu approach at Plumbers
+in few weeks.  Thanks,
+
+Alex
+
+[1]https://lore.kernel.org/kvm/BN9PR11MB5433B1E4AE5B0480369F97178C189@BN9PR11MB5433.namprd11.prod.outlook.com/
+
+ 
+> * PATCH-9 and PATCH-10 are to accommodate the NVIDIA implementation with
+>   the existing arm-smmu-v3 driver.
 > 
-> As far as I can tell the network driver does gigantic multi-megabyte
-> vmalloc allocation for the send and receive buffers, which are then
-> passed to the hardware, but always copied to/from when interacting
-> with the networking stack.  Did I see that right?  Are these big
-> buffers actually required unlike the normal buffer management schemes
-> in other Linux network drivers?
-
-
-For send packet, netvsc tries batching packet in send buffer if 
-possible. It passes the original skb pages directly to
-hypervisor when send buffer is not enough or packet length is larger 
-than section size. These packets are sent via 
-vmbus_sendpacket_pagebuffer() finally. Please see netvsc_send() for 
-detail. The following code is to check whether the packet could be 
-copied into send buffer. If not, the packet will be sent with original 
-skb pages.
-
-1239        /* batch packets in send buffer if possible */
-1240        msdp = &nvchan->msd;
-1241        if (msdp->pkt)
-1242                msd_len = msdp->pkt->total_data_buflen;
-1243
-1244        try_batch =  msd_len > 0 && msdp->count < net_device->max_pkt;
-1245        if (try_batch && msd_len + pktlen + net_device->pkt_align <
-1246            net_device->send_section_size) {
-1247                section_index = msdp->pkt->send_buf_index;
-1248
-1249        } else if (try_batch && msd_len + packet->rmsg_size <
-1250                   net_device->send_section_size) {
-1251                section_index = msdp->pkt->send_buf_index;
-1252                packet->cp_partial = true;
-1253
-1254        } else if (pktlen + net_device->pkt_align <
-1255                   net_device->send_section_size) {
-1256                section_index = 
-netvsc_get_next_send_section(net_device);
-1257                if (unlikely(section_index == NETVSC_INVALID_INDEX)) {
-1258                        ++ndev_ctx->eth_stats.tx_send_full;
-1259                } else {
-1260                        move_pkt_msd(&msd_send, &msd_skb, msdp);
-1261                        msd_len = 0;
-1262                }
-1263        }
-1264
-
-
-
-For receive packet, the data is always copied from recv buffer.
-
+> * PATCH-11 borrows the "implementation infrastructure" from the arm-smmu
+>   driver so later change can build upon it.
 > 
-> If so I suspect the best way to allocate them is by not using vmalloc
-> but just discontiguous pages, and then use kmap_local_pfn where the
-> PFN includes the share_gpa offset when actually copying from/to the
-> skbs.
+> * PATCH-12 adds an initial NVIDIA implementation related to host feature,
+>   and also adds implementation specific ->device_reset() and ->get_cmdq()
+>   callback functions.
 > 
-When netvsc needs to copy packet data to send buffer, it needs to 
-caculate position with section_index and send_section_size.
-Please seee netvsc_copy_to_send_buf() detail. So the contiguous virtual 
-address of send buffer is necessary to copy data and batch packets.
+> * PATCH-13 adds virtualization features using VFIO mdev interface, which
+>   allows user space hypervisor to map and get access to one of the VCMDQ
+>   interfaces of CMDQV module.
+> 
+> ( Thinking that reviewers can get a better view of this implementation,
+>   I am attaching QEMU changes here for reference purpose:
+>       https://github.com/nicolinc/qemu/commits/dev/cmdqv_v6.0.0-rc2
+>   The branch has all preparational changes, while I'm still integrating
+>   device model and ARM-VIRT changes, and will push them these two days,
+>   although they might not be in a good shape of being sent to review yet )
+> 
+> Above all, I marked RFC for this series, as I feel that we may come up
+> some better solution. So please kindly share your reviews and insights.
+> 
+> Thank you!
+> 
+> Changelog
+> v1->v2:
+>  * Added mdev interface support for hypervisor and VMs.
+>  * Added preparational changes for mdev interface implementation.
+>  * PATCH-12 Changed ->issue_cmdlist() to ->get_cmdq() for a better
+>    integration with recently merged ECMDQ-related changes.
+> 
+> Nate Watterson (3):
+>   iommu/arm-smmu-v3: Add implementation infrastructure
+>   iommu/arm-smmu-v3: Add support for NVIDIA CMDQ-Virtualization hw
+>   iommu/nvidia-smmu-v3: Add mdev interface support
+> 
+> Nicolin Chen (10):
+>   iommu: Add set_nesting_vmid/get_nesting_vmid functions
+>   vfio: add VFIO_IOMMU_GET_VMID and VFIO_IOMMU_SET_VMID
+>   vfio: Document VMID control for IOMMU Virtualization
+>   vfio: add set_vmid and get_vmid for vfio_iommu_type1
+>   vfio/type1: Implement set_vmid and get_vmid
+>   vfio/type1: Set/get VMID to/from iommu driver
+>   iommu/arm-smmu-v3: Add shared VMID support for NESTING
+>   iommu/arm-smmu-v3: Add VMID alloc/free helpers
+>   iommu/arm-smmu-v3: Pass dev pointer to arm_smmu_detach_dev
+>   iommu/arm-smmu-v3: Pass cmdq pointer in arm_smmu_cmdq_issue_cmdlist()
+> 
+>  Documentation/driver-api/vfio.rst             |   34 +
+>  MAINTAINERS                                   |    2 +
+>  drivers/iommu/arm/arm-smmu-v3/Makefile        |    2 +-
+>  .../iommu/arm/arm-smmu-v3/arm-smmu-v3-impl.c  |   15 +
+>  drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c   |  121 +-
+>  drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.h   |   18 +
+>  .../iommu/arm/arm-smmu-v3/nvidia-smmu-v3.c    | 1249 +++++++++++++++++
+>  drivers/iommu/iommu.c                         |   20 +
+>  drivers/vfio/vfio.c                           |   25 +
+>  drivers/vfio/vfio_iommu_type1.c               |   37 +
+>  include/linux/iommu.h                         |    5 +
+>  include/linux/vfio.h                          |    2 +
+>  include/uapi/linux/vfio.h                     |   26 +
+>  13 files changed, 1537 insertions(+), 19 deletions(-)
+>  create mode 100644 drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3-impl.c
+>  create mode 100644 drivers/iommu/arm/arm-smmu-v3/nvidia-smmu-v3.c
+> 
+
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
