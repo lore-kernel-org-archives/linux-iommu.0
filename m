@@ -2,105 +2,201 @@ Return-Path: <SRS0=eAvY=NW=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-16.6 required=3.0 tests=BAYES_00,DKIM_INVALID,
-	DKIM_SIGNED,HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_CR_TRAILER,INCLUDES_PATCH,
-	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,USER_AGENT_GIT autolearn=ham
-	autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-5.0 required=3.0 tests=BAYES_00,DKIM_INVALID,
+	DKIM_SIGNED,HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,SPF_HELO_NONE,
+	SPF_PASS,UNPARSEABLE_RELAY,USER_AGENT_SANE_2 autolearn=no autolearn_force=no
+	version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 87A27C432BE
-	for <iommu@archiver.kernel.org>; Tue, 31 Aug 2021 10:38:01 +0000 (UTC)
-Received: from smtp3.osuosl.org (smtp3.osuosl.org [140.211.166.136])
+	by smtp.lore.kernel.org (Postfix) with ESMTP id DC6F1C432BE
+	for <iommu@archiver.kernel.org>; Tue, 31 Aug 2021 10:45:33 +0000 (UTC)
+Received: from smtp4.osuosl.org (smtp4.osuosl.org [140.211.166.137])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 4B3DF60C3E
-	for <iommu@archiver.kernel.org>; Tue, 31 Aug 2021 10:38:01 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.4.1 mail.kernel.org 4B3DF60C3E
-Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=bytedance.com
+	by mail.kernel.org (Postfix) with ESMTPS id 825B460F42
+	for <iommu@archiver.kernel.org>; Tue, 31 Aug 2021 10:45:33 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.4.1 mail.kernel.org 825B460F42
+Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=mediatek.com
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by smtp3.osuosl.org (Postfix) with ESMTP id 2F0A560BE3;
-	Tue, 31 Aug 2021 10:38:01 +0000 (UTC)
+	by smtp4.osuosl.org (Postfix) with ESMTP id 4DEB7403F8;
+	Tue, 31 Aug 2021 10:45:33 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from smtp3.osuosl.org ([127.0.0.1])
-	by localhost (smtp3.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id ShrXTze7-CAt; Tue, 31 Aug 2021 10:37:58 +0000 (UTC)
+Received: from smtp4.osuosl.org ([127.0.0.1])
+	by localhost (smtp4.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+	with ESMTP id u10Bl_V3pZxT; Tue, 31 Aug 2021 10:45:29 +0000 (UTC)
 Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [IPv6:2605:bc80:3010:104::8cd3:938])
-	by smtp3.osuosl.org (Postfix) with ESMTPS id E971B60BD2;
-	Tue, 31 Aug 2021 10:37:57 +0000 (UTC)
+	by smtp4.osuosl.org (Postfix) with ESMTPS id D3B2B403B8;
+	Tue, 31 Aug 2021 10:45:28 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id C6F3DC001A;
-	Tue, 31 Aug 2021 10:37:57 +0000 (UTC)
-Received: from smtp2.osuosl.org (smtp2.osuosl.org [IPv6:2605:bc80:3010::133])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 17E12C000E
- for <iommu@lists.linux-foundation.org>; Tue, 31 Aug 2021 10:37:57 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id BBB0CC001A;
+	Tue, 31 Aug 2021 10:45:28 +0000 (UTC)
+Received: from smtp1.osuosl.org (smtp1.osuosl.org [140.211.166.138])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id B9C30C000E
+ for <iommu@lists.linux-foundation.org>; Tue, 31 Aug 2021 10:45:27 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by smtp2.osuosl.org (Postfix) with ESMTP id 097374048D
- for <iommu@lists.linux-foundation.org>; Tue, 31 Aug 2021 10:37:56 +0000 (UTC)
+ by smtp1.osuosl.org (Postfix) with ESMTP id B66A480E94
+ for <iommu@lists.linux-foundation.org>; Tue, 31 Aug 2021 10:45:27 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Authentication-Results: smtp2.osuosl.org (amavisd-new);
- dkim=pass (2048-bit key) header.d=bytedance-com.20150623.gappssmtp.com
-Received: from smtp2.osuosl.org ([127.0.0.1])
- by localhost (smtp2.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id 7q1JdPNPn0Ye for <iommu@lists.linux-foundation.org>;
- Tue, 31 Aug 2021 10:37:51 +0000 (UTC)
-X-Greylist: whitelisted by SQLgrey-1.8.0
-Received: from mail-pl1-x631.google.com (mail-pl1-x631.google.com
- [IPv6:2607:f8b0:4864:20::631])
- by smtp2.osuosl.org (Postfix) with ESMTPS id EB3F240492
- for <iommu@lists.linux-foundation.org>; Tue, 31 Aug 2021 10:37:50 +0000 (UTC)
-Received: by mail-pl1-x631.google.com with SMTP id u1so6554329plq.5
- for <iommu@lists.linux-foundation.org>; Tue, 31 Aug 2021 03:37:50 -0700 (PDT)
+Authentication-Results: smtp1.osuosl.org (amavisd-new);
+ dkim=pass (1024-bit key) header.d=mediatek.com header.b="bHJc8wjr";
+ dkim=pass (1024-bit key) header.d=mediateko365.onmicrosoft.com
+ header.b="icrP/PO7"
+Received: from smtp1.osuosl.org ([127.0.0.1])
+ by localhost (smtp1.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+ with ESMTP id nrySThX_lAaa for <iommu@lists.linux-foundation.org>;
+ Tue, 31 Aug 2021 10:45:23 +0000 (UTC)
+X-Greylist: from auto-whitelisted by SQLgrey-1.8.0
+Received: from mailgw02.mediatek.com (unknown [210.61.82.184])
+ by smtp1.osuosl.org (Postfix) with ESMTPS id 6427180E98
+ for <iommu@lists.linux-foundation.org>; Tue, 31 Aug 2021 10:45:23 +0000 (UTC)
+X-UUID: b6045a5a351a49c0a0b98c205a2f48de-20210831
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=mediatek.com;
+ s=dk; 
+ h=MIME-Version:Content-Transfer-Encoding:Content-ID:Content-Type:In-Reply-To:References:Message-ID:Date:Subject:CC:To:From;
+ bh=phNHXum76mAZ4qYmxK28Mp4u++IBnPR+ThnSGtip/xI=; 
+ b=bHJc8wjrQQX01lRkhQulo48BOhlYo5XR3yWHpBGr+kfHPvSuCGwCKWxqIjPjvLvb+SAzvF7lYeM7mtREPnTEGBbKuI2BM6J5L4wR0Jf9O6xNrAje4DzsM+6iJkpuDr2N3sVyK2LQTT0M2SDqp04UvVqWaE4/XU+2oJJqSbi/iOU=;
+X-UUID: b6045a5a351a49c0a0b98c205a2f48de-20210831
+Received: from mtkexhb01.mediatek.inc [(172.21.101.102)] by
+ mailgw02.mediatek.com (envelope-from <yong.wu@mediatek.com>)
+ (Generic MTA with TLSv1.2 ECDHE-RSA-AES256-SHA384 256/256)
+ with ESMTP id 122042693; Tue, 31 Aug 2021 18:45:16 +0800
+Received: from mtkmbs10n1.mediatek.inc (172.21.101.34) by
+ mtkmbs06n1.mediatek.inc (172.21.101.129) with Microsoft SMTP Server (TLS) id
+ 15.0.1497.2; Tue, 31 Aug 2021 18:45:15 +0800
+Received: from APC01-PU1-obe.outbound.protection.outlook.com (172.21.101.239)
+ by mtkmbs10n1.mediatek.inc (172.21.101.34) with Microsoft SMTP
+ Server id
+ 15.2.792.15 via Frontend Transport; Tue, 31 Aug 2021 18:45:15 +0800
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=EMAXYF/BcmTfpToo49CxrBo96Txabtqqt8ttcUwy3PTjJnc5WbzrNaAJoEffnMKOKwxO30BeQi/UJ1mb9xfY3V4PEIQyG2eBtUKbLybc4IEwskgPRABCSWJ4BCe5WsDamRTrK6egqn3YYs2BucDzL76oeB7p1BH57dvXm9eY0NWGUNhK2Mwwu6xocqYnCQk/cdIOEUTc1Bdal+0INakYmy65RDqPq3dgRkMD+ArC0Hz8O9Xa+qSyOzg5OVg4YNtTxVV525mq1yZ03RT99jTEdBVChmNBR4lj4TQLGg2v7GDbBDxqw4pmFNQZjBYxJ3Ofv0X4vm5g9luwsji2OoEYCg==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com; 
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version; 
+ bh=phNHXum76mAZ4qYmxK28Mp4u++IBnPR+ThnSGtip/xI=;
+ b=MD9SkBwLv/1MiaOq/HmZc8536g+BdmFwIuzH6TLicovUHVvJWPL5PISgKyBIWIqoTOtQm43H++qqauNFbRLpGTd01PYFxOS4HDhyDCnL9vBSwTOn3ESxVl5PSOj0c4fFZ4KQE6Y8BteFp7zfxeNfBLEMesm9KuXkbvbfVQo0Z/LXmqSkv3MrkNXkf/EpXT9F3yq1bPp14rTE7vqcHe4Cqu9UMNy476PGmo+NHv+JR4GrpNDCHa3dmINS8GLBvSconAzQoFPM4UoM1mWGJsf8a/f79Bu6BBO7QJhoeqib95cCHKEk6gpeuMnReoCfa4FQI2wvurZiJi9wdObWoJkyug==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=mediatek.com; dmarc=pass action=none header.from=mediatek.com;
+ dkim=pass header.d=mediatek.com; arc=none
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
- d=bytedance-com.20150623.gappssmtp.com; s=20150623;
- h=from:to:cc:subject:date:message-id:in-reply-to:references
- :mime-version:content-transfer-encoding;
- bh=nNh+cuhjJs3OFS0aHfl+SKfylhnWyvpkdBMP+CFmcGQ=;
- b=cC9RdvfpEZr9j3c/cbFStXaCl2j3V+4M31Y7HIO0JYKKzJajSAk/kH3+/02wcQdoca
- 3gjWeLDSoeZ8eVzJciTTuHTn0W+b40Az+LtYVmikSKWrjzUs5vlYUT2AWL33c4Gvg90l
- 00lleNTK3W3GmXpkD1tigsSrL+8U9L82s5TB/9lYkKlYQQ9A09ZlwYeq7RCjxrwnUrpc
- Mf1FKxTkF9hsNYiMUzcdN2+fOaHcZ4snE5w9UaUTRCdcZINf+Tbxsqi8j9b95V97RLyP
- 5ExLr+ljONAPe4wdkf9WVDzvyI+Ak7U/DbyiPIvD0eXUILDPtot/bxzcpZBnKqYiT3rb
- hcDg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
- d=1e100.net; s=20161025;
- h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
- :references:mime-version:content-transfer-encoding;
- bh=nNh+cuhjJs3OFS0aHfl+SKfylhnWyvpkdBMP+CFmcGQ=;
- b=TZ5QgwvjQQoqMhSH2wQMkJMdaSPWpIY4iMN1jrmMjfaJkTcVFPu3Q2d5rzNUNnGqHK
- CfanoRuZuwYqjp0Bg0e6bqzdd5dg7+SG9o46VMX+ng/+xwSGBbI3rgXLHg6oIB3WlMdc
- 1mGPyChyyBwFHQZOI/zZnbO1fOZ+y38LxwvpHG575QjwvBuakB5PO8SpV+yfHvsMQ8CE
- O6/mzWSdvM3Aq4y3ZutfnQe0YVAGFAGoZhBUou7vfLXIO2gUFm5xWGvYfcvLunSaRBNa
- ycDlHYynHK1lxr7L1LHVWxbVc9Be90rLXpEcca9vaMfUyxPclMxOfj/EMa1EgiIZE3yi
- xOlw==
-X-Gm-Message-State: AOAM533Q9dPQ7s1WMf3k04jfxyjCn2AqwRwnmaTNoJ3izYo4k41SnuEe
- zcMKqZi4dA7g3XJH0F1HEaAr
-X-Google-Smtp-Source: ABdhPJz5ZdYePJ9W7SlMRURLNn+WCedwzK0lYkLxLJnz2MFrrE6yXfiNf5JXlPj6ipxMQMn4nx/s1g==
-X-Received: by 2002:a17:90a:9314:: with SMTP id
- p20mr4688064pjo.87.1630406270341; 
- Tue, 31 Aug 2021 03:37:50 -0700 (PDT)
-Received: from localhost ([139.177.225.253])
- by smtp.gmail.com with ESMTPSA id i24sm6605893pfo.13.2021.08.31.03.37.49
- (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
- Tue, 31 Aug 2021 03:37:49 -0700 (PDT)
-From: Xie Yongji <xieyongji@bytedance.com>
-To: mst@redhat.com, jasowang@redhat.com, stefanha@redhat.com,
- sgarzare@redhat.com, parav@nvidia.com, hch@infradead.org,
- christian.brauner@canonical.com, rdunlap@infradead.org,
- willy@infradead.org, viro@zeniv.linux.org.uk, axboe@kernel.dk,
- bcrl@kvack.org, corbet@lwn.net, mika.penttila@nextfour.com,
- dan.carpenter@oracle.com, joro@8bytes.org, gregkh@linuxfoundation.org,
- zhe.he@windriver.com, xiaodong.liu@intel.com, joe@perches.com,
- robin.murphy@arm.com, will@kernel.org, john.garry@huawei.com
-Subject: [PATCH v13 13/13] Documentation: Add documentation for VDUSE
-Date: Tue, 31 Aug 2021 18:36:34 +0800
-Message-Id: <20210831103634.33-14-xieyongji@bytedance.com>
-X-Mailer: git-send-email 2.25.1
-In-Reply-To: <20210831103634.33-1-xieyongji@bytedance.com>
-References: <20210831103634.33-1-xieyongji@bytedance.com>
+ d=mediateko365.onmicrosoft.com; s=selector2-mediateko365-onmicrosoft-com;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=phNHXum76mAZ4qYmxK28Mp4u++IBnPR+ThnSGtip/xI=;
+ b=icrP/PO7FK+gGiQmcKbZpWaFHOnOD4OTf5TurY5udFhoMpatC7dQwicfIlg8i/dKl9Ca0VCbs1fZg2bsYEh/n0cIcnthgdBHO/H5HTRaLOYATZn4h57FagGF9v0vF3CrU1f9PbN82x2rQybjuha6MmcxQuJ6NY5pEVWW2iBboDY=
+Received: from HK0PR03MB3139.apcprd03.prod.outlook.com (2603:1096:203:4b::11)
+ by HK2PR0302MB2499.apcprd03.prod.outlook.com (2603:1096:202:3::16)
+ with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4478.16; Tue, 31 Aug
+ 2021 10:45:03 +0000
+Received: from HK0PR03MB3139.apcprd03.prod.outlook.com
+ ([fe80::6595:af4e:bda9:801e]) by HK0PR03MB3139.apcprd03.prod.outlook.com
+ ([fe80::6595:af4e:bda9:801e%6]) with mapi id 15.20.4478.017; Tue, 31 Aug 2021
+ 10:45:02 +0000
+From: =?utf-8?B?WW9uZyBXdSAo5ZC05YuHKQ==?= <Yong.Wu@mediatek.com>
+To: "matthias.bgg@gmail.com" <matthias.bgg@gmail.com>
+Subject: Re: [PATCH v7 00/12] Clean up "mediatek,larb"
+Thread-Topic: [PATCH v7 00/12] Clean up "mediatek,larb"
+Thread-Index: AQHXhO4/B+asb7CmWUi2ITwnwJWoI6uNoJ8A
+Date: Tue, 31 Aug 2021 10:45:02 +0000
+Message-ID: <271b63107031f6bfa1b746e70ccdcee6d86db8b7.camel@mediatek.com>
+References: <20210730025238.22456-1-yong.wu@mediatek.com>
+In-Reply-To: <20210730025238.22456-1-yong.wu@mediatek.com>
+Accept-Language: en-US
+Content-Language: en-US
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+x-mailer: Evolution 3.28.5-0ubuntu0.18.04.2 
+authentication-results: gmail.com; dkim=none (message not signed)
+ header.d=none;gmail.com; dmarc=none action=none header.from=mediatek.com;
+x-ms-publictraffictype: Email
+x-ms-office365-filtering-correlation-id: 74c22ace-4c7a-4b3f-8624-08d96c6c635b
+x-ms-traffictypediagnostic: HK2PR0302MB2499:
+x-ld-processed: a7687ede-7a6b-4ef6-bace-642f677fbe31,ExtAddr
+x-ms-exchange-transport-forked: True
+x-microsoft-antispam-prvs: <HK2PR0302MB249906CC89596137FA88C2C898CC9@HK2PR0302MB2499.apcprd03.prod.outlook.com>
+x-ms-oob-tlc-oobclassifiers: OLM:7219;
+x-ms-exchange-senderadcheck: 1
+x-ms-exchange-antispam-relay: 0
+x-microsoft-antispam: BCL:0;
+x-microsoft-antispam-message-info: ICJs5sYJxBYBYD8Oubv8I/7rjityPVUeoC/5N9Imn52AmsSMw76NqBv80QAqEaRLHfWpMo6z98AflyeNViBrDS18tOfkK4WA7/qKaul7n7++EJ4spdQBjXvyY0F6cWtQx3Uybv7yWI760NWTBDekUg07QoE8at20pgw0WzudeWDi/rYOZ6NgwM1eV+skoAaVxCGAKcQftUus43hjsN1MAqm7arPOjwpl/Cb351WCduYV0/UGufzk2YfYgTHAe9IHLcKqXj4UexJWwGp3x/q1dVCGyo7em4FDAaCMqCJBL6v4goGNQOwrn8viAnKU3+hJCehKe1qExYP39Xc1w+H0nBQbtxjuZ82ygIe3o2SlHHIFPMf/SoZAH2vPIKSUDenjX8xMAr154L6HEsEPvmp0ALsSRGh2mNaWJvXB7Sw/AvBw9LVezqoLe5i4E153Fn1Nk8udDIGK6ABixgBw9uYY1CKgA0BEiqvc+/KNbkAZ5A3ygNeLRxwLjPQVU/os+LO09/U+bakaiBLeIllgMxyHf2sQo4RaB+8asKN622wwkEeyJ5GYLMLiS1XJy4tB7PK8/uA4kJILKp4AckfRDuK9pE87zk/QkV/6p6PtbIaLOJbhAc5RzLwOPKHPfREVQFkRkUNtTKJZKE7YOXMRT61bF1BbJgvRwezln6RhL8wRtU0UP9vA/XyCdAH+gcgWbKgYLazyybP+k1MQQ0MPGsuwo+ikgDsYeNJEs4wg8VcwVjUxmAKhrQix3lTxuYvpma/Q9RgR8f2iKrzyO96tkiJPM5zc8GPUCAsvpBfJVZSK2ruGTjCylW/Pejt2Vn6FmnRc8WNZL54h1vwIY5R2isdptY8GULO8f5pVy66HZopXIeA=
+x-forefront-antispam-report: CIP:255.255.255.255; CTRY:; LANG:en; SCL:1; SRV:;
+ IPV:NLI; SFV:NSPM; H:HK0PR03MB3139.apcprd03.prod.outlook.com; PTR:; CAT:NONE;
+ SFS:(4636009)(366004)(85182001)(66476007)(66556008)(64756008)(316002)(38100700002)(66946007)(66446008)(6506007)(122000001)(91956017)(76116006)(6486002)(2906002)(36756003)(6512007)(54906003)(5660300002)(83380400001)(2616005)(71200400001)(966005)(186003)(86362001)(26005)(7416002)(4326008)(6916009)(38070700005)(508600001)(8676002)(8936002)(99106002);
+ DIR:OUT; SFP:1102; 
+x-ms-exchange-antispam-messagedata-chunkcount: 1
+x-ms-exchange-antispam-messagedata-0: =?utf-8?B?dHpPTzRIRnJUWXJQODREV1NIVzd0N1JXeEZLVHNQdWV6eDlmeWR2VUxYaWpS?=
+ =?utf-8?B?eC92VjN5UDNaVXpZSWt0NVRLbHNKU1Z1RXZ1NFE2V0NOUWpVZ3R4RFRGUTlE?=
+ =?utf-8?B?bWFrUXZGQU1NTDJRRlVLdjNMcUEyYlZlRjhUTTU4NUhLM1BGRVM2SHZVK08y?=
+ =?utf-8?B?Q254RTlCbTR0SUpiemJWYmNrcGFKNDBubXVBZWtYaGpaVEpnUGV3SUdibkNw?=
+ =?utf-8?B?TVpndkZjZ1l1ZUNRNjVwODZQSDdNbkFoVnRxa1dYa0Nua2ZZYTNOZnl0QjZQ?=
+ =?utf-8?B?endQemxSSG91WUNrSWZaanpWNWNROGt5TUpSMkszdm5jb1BqbHA4NG56Rmp3?=
+ =?utf-8?B?UDY1OFNPWXhQbWZ5T01MOXJhRHhQbkl1TFhzSERWdXZTc3VWMnEvY2ZubU4r?=
+ =?utf-8?B?ZWJwTExPSkhweFh2VHYvVnVnbkxFcm1PRXFwdlhsYklQYjc0cGtPV1B0QlRT?=
+ =?utf-8?B?YUNuYmsrL0dOa0lhQU1FeVQ5cUNkYlN1R3l1dVVWTk1SVXJzVzdxb3NXS2Va?=
+ =?utf-8?B?TlRnSThDenhZZnZFSlN6ZzJ4SnhqaDdTTDgrNmVIWEIzQUcrNU5iMGRZaDZN?=
+ =?utf-8?B?amxIeFFUUGtGQUhSQ29LTm42cG42Q29YMVdDMS9Bc0RnSzIzQVkvZEkvK0hR?=
+ =?utf-8?B?Uk1OQUVSbXZFeCtObDBlYVlEWndFV0lPb3RJR3o4TjM1c2ltSGRVaVZKalRP?=
+ =?utf-8?B?WVQvd1pNQ1N2dTMyWGNQL2gyZG1uTWwyNDcrWmJCRExMZWRtTTdMQlRWaFBY?=
+ =?utf-8?B?VGdxU04wMUI2MWFjTTJPY3NUNWFUMUFYL05BWUgzTUZpQ3dlYWZRZ24ycXpX?=
+ =?utf-8?B?bVBKYm5hQkk0TGxkUXhmdTZLNkhYaWhzT1U2YjFTNEpteDJXcnErQjNNYUFC?=
+ =?utf-8?B?ZVVGOGVudk9OQmZ1RWVmelFLSFgyaFl4VXBBSnNOekg3YU9HYTF3YlpDelRl?=
+ =?utf-8?B?eVlTYUFHVzJVQzhWTEcrL0I3b3hXTGpITStwcUVqRWNWSThkeWc2bnM2Q1Vn?=
+ =?utf-8?B?TVZOcFgvTUxIOFVBZ3huM2FPVE5PZ0pybGtPZHc1Q1hQd0RieFFVNVRBakt5?=
+ =?utf-8?B?Njc1R3BLeFdZV3NUMEFvK0VuV29Kc0hQbzFlQTV3S2JjYVRBaTNTOWNpZU1l?=
+ =?utf-8?B?d0NyTHd4aXlyRXBMbWNSU0VhZlFUc2FwMjVnUUFtUFF0b0dkazR3WlI0UXlU?=
+ =?utf-8?B?ZzZMb0UydVYxOHFiMXJXbFBRYXU3RUZ5T1pkb09jaS9HVUp4YTNYOUxNT1pl?=
+ =?utf-8?B?T1NLWExTa2xzZFhkcDcreERESVhCQ3VseDZFSFpFdUxubVNFaGpPRzZFMExX?=
+ =?utf-8?B?Rm9HYVhTZW04bElGOTQ0RFFoVkRrdHoxQVRXNDVxMWtFaGlrc3doS2JUL2RY?=
+ =?utf-8?B?MC84TE1RRVdWNlFPdnNIYmNhRDA1bHlSSDVIditHQU92S251M0QySFRDWDFZ?=
+ =?utf-8?B?RlkyWXZtWVd1WG9USXpxNmRHS0tyU2RuWWhRLzBRaGVxeXd4NjcrOTY2Z0NP?=
+ =?utf-8?B?eHJWQTduS0FZVGFQbkdkSFphMkh2UWdlbkFlMlZLaExOcTIyODZUeUNCNzBV?=
+ =?utf-8?B?NFZGQWRjY1JQR0IrVmljYzNuVWhseXlvMit3cWhLWUdRUDN2RUhzTDBBZWo4?=
+ =?utf-8?B?QzlDNXVWVW1kc0lybmJmTHVsc0tlMGIzaC83cEppM0QxdEtJTCs2eEg4Wmhk?=
+ =?utf-8?B?Z0lVRWZ6OVh0VGNHTE02dG96NGxQRFh3MDlMbWt6Um9ZQmlKQ0NUNGoxSjZU?=
+ =?utf-8?Q?UFtR7qKBws/0BmZsw+cQnc3CZiweAiPaGSkWWtk?=
+Content-ID: <985F7259908913478FD1B549BAC23552@apcprd03.prod.outlook.com>
 MIME-Version: 1.0
-Cc: kvm@vger.kernel.org, netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
- virtualization@lists.linux-foundation.org, iommu@lists.linux-foundation.org,
- songmuchun@bytedance.com, linux-fsdevel@vger.kernel.org
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-AuthSource: HK0PR03MB3139.apcprd03.prod.outlook.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 74c22ace-4c7a-4b3f-8624-08d96c6c635b
+X-MS-Exchange-CrossTenant-originalarrivaltime: 31 Aug 2021 10:45:02.5578 (UTC)
+X-MS-Exchange-CrossTenant-fromentityheader: Hosted
+X-MS-Exchange-CrossTenant-id: a7687ede-7a6b-4ef6-bace-642f677fbe31
+X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
+X-MS-Exchange-CrossTenant-userprincipalname: FTX8d5gunTqX53RnrogGC7P0520rFxArZo2rqvwf9WiHMiyrjV8MIR4MY933sB/d0+reTUhoDsKG+Bcra80bMw==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: HK2PR0302MB2499
+X-MTK: N
+Cc: =?utf-8?B?WGlhIEppYW5nICjmsZ/pnJ4p?= <Xia.Jiang@mediatek.com>,
+ "dafna.hirschfeld@collabora.com" <dafna.hirschfeld@collabora.com>,
+ "chunkuang.hu@kernel.org" <chunkuang.hu@kernel.org>,
+ "airlied@linux.ie" <airlied@linux.ie>,
+ "will.deacon@arm.com" <will.deacon@arm.com>,
+ "dri-devel@lists.freedesktop.org" <dri-devel@lists.freedesktop.org>,
+ =?utf-8?B?QW50aG9ueSBIdWFuZyAo6buD5bu65ZiJKQ==?= <Anthony.Huang@mediatek.com>,
+ =?utf-8?B?WW91bGluIFBlaSAo6KO05Y+L5p6XKQ==?= <youlin.pei@mediatek.com>,
+ "drinkcat@chromium.org" <drinkcat@chromium.org>,
+ "krzysztof.kozlowski@canonical.com" <krzysztof.kozlowski@canonical.com>,
+ "evgreen@chromium.org" <evgreen@chromium.org>,
+ "eizan@chromium.org" <eizan@chromium.org>,
+ "mka@chromium.org" <mka@chromium.org>,
+ "linux-media@vger.kernel.org" <linux-media@vger.kernel.org>,
+ "devicetree@vger.kernel.org" <devicetree@vger.kernel.org>,
+ "p.zabel@pengutronix.de" <p.zabel@pengutronix.de>,
+ "frank-w@public-files.de" <frank-w@public-files.de>,
+ "mchehab@kernel.org" <mchehab@kernel.org>,
+ =?utf-8?B?WWkgS3VvICjpg63mh78p?= <Yi.Kuo@mediatek.com>,
+ "robh+dt@kernel.org" <robh+dt@kernel.org>,
+ "linux-mediatek@lists.infradead.org" <linux-mediatek@lists.infradead.org>,
+ "hsinyi@chromium.org" <hsinyi@chromium.org>,
+ =?utf-8?B?TWluZy1GYW4gQ2hlbiAo6Zmz5piO5rGOKQ==?= <Ming-Fan.Chen@mediatek.com>,
+ =?utf-8?B?VGlmZmFueSBMaW4gKOael+aFp+ePiik=?= <tiffany.lin@mediatek.com>,
+ "linux-arm-kernel@lists.infradead.org" <linux-arm-kernel@lists.infradead.org>,
+ =?utf-8?B?QW5hbiBTdW4gKOWtmeWuieWuiSk=?= <Anan.Sun@mediatek.com>,
+ "acourbot@chromium.org" <acourbot@chromium.org>,
+ srv_heupstream <srv_heupstream@mediatek.com>,
+ "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+ "iommu@lists.linux-foundation.org" <iommu@lists.linux-foundation.org>,
+ "daniel@ffwll.ch" <daniel@ffwll.ch>,
+ "robin.murphy@arm.com" <robin.murphy@arm.com>
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -118,271 +214,50 @@ Content-Transfer-Encoding: 7bit
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-VDUSE (vDPA Device in Userspace) is a framework to support
-implementing software-emulated vDPA devices in userspace. This
-document is intended to clarify the VDUSE design and usage.
+Hi Matthias,
 
-Signed-off-by: Xie Yongji <xieyongji@bytedance.com>
-Acked-by: Jason Wang <jasowang@redhat.com>
----
- Documentation/userspace-api/index.rst |   1 +
- Documentation/userspace-api/vduse.rst | 233 ++++++++++++++++++++++++++++++++++
- 2 files changed, 234 insertions(+)
- create mode 100644 Documentation/userspace-api/vduse.rst
+Just ping for this patchset.
 
-diff --git a/Documentation/userspace-api/index.rst b/Documentation/userspace-api/index.rst
-index 0b5eefed027e..c432be070f67 100644
---- a/Documentation/userspace-api/index.rst
-+++ b/Documentation/userspace-api/index.rst
-@@ -27,6 +27,7 @@ place where this information is gathered.
-    iommu
-    media/index
-    sysfs-platform_profile
-+   vduse
- 
- .. only::  subproject and html
- 
-diff --git a/Documentation/userspace-api/vduse.rst b/Documentation/userspace-api/vduse.rst
-new file mode 100644
-index 000000000000..42ef59ea5314
---- /dev/null
-+++ b/Documentation/userspace-api/vduse.rst
-@@ -0,0 +1,233 @@
-+==================================
-+VDUSE - "vDPA Device in Userspace"
-+==================================
-+
-+vDPA (virtio data path acceleration) device is a device that uses a
-+datapath which complies with the virtio specifications with vendor
-+specific control path. vDPA devices can be both physically located on
-+the hardware or emulated by software. VDUSE is a framework that makes it
-+possible to implement software-emulated vDPA devices in userspace. And
-+to make the device emulation more secure, the emulated vDPA device's
-+control path is handled in the kernel and only the data path is
-+implemented in the userspace.
-+
-+Note that only virtio block device is supported by VDUSE framework now,
-+which can reduce security risks when the userspace process that implements
-+the data path is run by an unprivileged user. The support for other device
-+types can be added after the security issue of corresponding device driver
-+is clarified or fixed in the future.
-+
-+Create/Destroy VDUSE devices
-+------------------------
-+
-+VDUSE devices are created as follows:
-+
-+1. Create a new VDUSE instance with ioctl(VDUSE_CREATE_DEV) on
-+   /dev/vduse/control.
-+
-+2. Setup each virtqueue with ioctl(VDUSE_VQ_SETUP) on /dev/vduse/$NAME.
-+
-+3. Begin processing VDUSE messages from /dev/vduse/$NAME. The first
-+   messages will arrive while attaching the VDUSE instance to vDPA bus.
-+
-+4. Send the VDPA_CMD_DEV_NEW netlink message to attach the VDUSE
-+   instance to vDPA bus.
-+
-+VDUSE devices are destroyed as follows:
-+
-+1. Send the VDPA_CMD_DEV_DEL netlink message to detach the VDUSE
-+   instance from vDPA bus.
-+
-+2. Close the file descriptor referring to /dev/vduse/$NAME.
-+
-+3. Destroy the VDUSE instance with ioctl(VDUSE_DESTROY_DEV) on
-+   /dev/vduse/control.
-+
-+The netlink messages can be sent via vdpa tool in iproute2 or use the
-+below sample codes:
-+
-+.. code-block:: c
-+
-+	static int netlink_add_vduse(const char *name, enum vdpa_command cmd)
-+	{
-+		struct nl_sock *nlsock;
-+		struct nl_msg *msg;
-+		int famid;
-+
-+		nlsock = nl_socket_alloc();
-+		if (!nlsock)
-+			return -ENOMEM;
-+
-+		if (genl_connect(nlsock))
-+			goto free_sock;
-+
-+		famid = genl_ctrl_resolve(nlsock, VDPA_GENL_NAME);
-+		if (famid < 0)
-+			goto close_sock;
-+
-+		msg = nlmsg_alloc();
-+		if (!msg)
-+			goto close_sock;
-+
-+		if (!genlmsg_put(msg, NL_AUTO_PORT, NL_AUTO_SEQ, famid, 0, 0, cmd, 0))
-+			goto nla_put_failure;
-+
-+		NLA_PUT_STRING(msg, VDPA_ATTR_DEV_NAME, name);
-+		if (cmd == VDPA_CMD_DEV_NEW)
-+			NLA_PUT_STRING(msg, VDPA_ATTR_MGMTDEV_DEV_NAME, "vduse");
-+
-+		if (nl_send_sync(nlsock, msg))
-+			goto close_sock;
-+
-+		nl_close(nlsock);
-+		nl_socket_free(nlsock);
-+
-+		return 0;
-+	nla_put_failure:
-+		nlmsg_free(msg);
-+	close_sock:
-+		nl_close(nlsock);
-+	free_sock:
-+		nl_socket_free(nlsock);
-+		return -1;
-+	}
-+
-+How VDUSE works
-+---------------
-+
-+As mentioned above, a VDUSE device is created by ioctl(VDUSE_CREATE_DEV) on
-+/dev/vduse/control. With this ioctl, userspace can specify some basic configuration
-+such as device name (uniquely identify a VDUSE device), virtio features, virtio
-+configuration space, the number of virtqueues and so on for this emulated device.
-+Then a char device interface (/dev/vduse/$NAME) is exported to userspace for device
-+emulation. Userspace can use the VDUSE_VQ_SETUP ioctl on /dev/vduse/$NAME to
-+add per-virtqueue configuration such as the max size of virtqueue to the device.
-+
-+After the initialization, the VDUSE device can be attached to vDPA bus via
-+the VDPA_CMD_DEV_NEW netlink message. Userspace needs to read()/write() on
-+/dev/vduse/$NAME to receive/reply some control messages from/to VDUSE kernel
-+module as follows:
-+
-+.. code-block:: c
-+
-+	static int vduse_message_handler(int dev_fd)
-+	{
-+		int len;
-+		struct vduse_dev_request req;
-+		struct vduse_dev_response resp;
-+
-+		len = read(dev_fd, &req, sizeof(req));
-+		if (len != sizeof(req))
-+			return -1;
-+
-+		resp.request_id = req.request_id;
-+
-+		switch (req.type) {
-+
-+		/* handle different types of messages */
-+
-+		}
-+
-+		len = write(dev_fd, &resp, sizeof(resp));
-+		if (len != sizeof(resp))
-+			return -1;
-+
-+		return 0;
-+	}
-+
-+There are now three types of messages introduced by VDUSE framework:
-+
-+- VDUSE_GET_VQ_STATE: Get the state for virtqueue, userspace should return
-+  avail index for split virtqueue or the device/driver ring wrap counters and
-+  the avail and used index for packed virtqueue.
-+
-+- VDUSE_SET_STATUS: Set the device status, userspace should follow
-+  the virtio spec: https://docs.oasis-open.org/virtio/virtio/v1.1/virtio-v1.1.html
-+  to process this message. For example, fail to set the FEATURES_OK device
-+  status bit if the device can not accept the negotiated virtio features
-+  get from the VDUSE_DEV_GET_FEATURES ioctl.
-+
-+- VDUSE_UPDATE_IOTLB: Notify userspace to update the memory mapping for specified
-+  IOVA range, userspace should firstly remove the old mapping, then setup the new
-+  mapping via the VDUSE_IOTLB_GET_FD ioctl.
-+
-+After DRIVER_OK status bit is set via the VDUSE_SET_STATUS message, userspace is
-+able to start the dataplane processing as follows:
-+
-+1. Get the specified virtqueue's information with the VDUSE_VQ_GET_INFO ioctl,
-+   including the size, the IOVAs of descriptor table, available ring and used ring,
-+   the state and the ready status.
-+
-+2. Pass the above IOVAs to the VDUSE_IOTLB_GET_FD ioctl so that those IOVA regions
-+   can be mapped into userspace. Some sample codes is shown below:
-+
-+.. code-block:: c
-+
-+	static int perm_to_prot(uint8_t perm)
-+	{
-+		int prot = 0;
-+
-+		switch (perm) {
-+		case VDUSE_ACCESS_WO:
-+			prot |= PROT_WRITE;
-+			break;
-+		case VDUSE_ACCESS_RO:
-+			prot |= PROT_READ;
-+			break;
-+		case VDUSE_ACCESS_RW:
-+			prot |= PROT_READ | PROT_WRITE;
-+			break;
-+		}
-+
-+		return prot;
-+	}
-+
-+	static void *iova_to_va(int dev_fd, uint64_t iova, uint64_t *len)
-+	{
-+		int fd;
-+		void *addr;
-+		size_t size;
-+		struct vduse_iotlb_entry entry;
-+
-+		entry.start = iova;
-+		entry.last = iova;
-+
-+		/*
-+		 * Find the first IOVA region that overlaps with the specified
-+		 * range [start, last] and return the corresponding file descriptor.
-+		 */
-+		fd = ioctl(dev_fd, VDUSE_IOTLB_GET_FD, &entry);
-+		if (fd < 0)
-+			return NULL;
-+
-+		size = entry.last - entry.start + 1;
-+		*len = entry.last - iova + 1;
-+		addr = mmap(0, size, perm_to_prot(entry.perm), MAP_SHARED,
-+			    fd, entry.offset);
-+		close(fd);
-+		if (addr == MAP_FAILED)
-+			return NULL;
-+
-+		/*
-+		 * Using some data structures such as linked list to store
-+		 * the iotlb mapping. The munmap(2) should be called for the
-+		 * cached mapping when the corresponding VDUSE_UPDATE_IOTLB
-+		 * message is received or the device is reset.
-+		 */
-+
-+		return addr + iova - entry.start;
-+	}
-+
-+3. Setup the kick eventfd for the specified virtqueues with the VDUSE_VQ_SETUP_KICKFD
-+   ioctl. The kick eventfd is used by VDUSE kernel module to notify userspace to
-+   consume the available ring. This is optional since userspace can choose to poll the
-+   available ring instead.
-+
-+4. Listen to the kick eventfd (optional) and consume the available ring. The buffer
-+   described by the descriptors in the descriptor table should be also mapped into
-+   userspace via the VDUSE_IOTLB_GET_FD ioctl before accessing.
-+
-+5. Inject an interrupt for specific virtqueue with the VDUSE_INJECT_VQ_IRQ ioctl
-+   after the used ring is filled.
-+
-+For more details on the uAPI, please see include/uapi/linux/vduse.h.
--- 
-2.11.0
+Thanks.
+
+On Fri, 2021-07-30 at 10:52 +0800, Yong Wu wrote:
+> MediaTek IOMMU block diagram always like below:
+> 
+>         M4U
+>          |
+>     smi-common
+>          |
+>   -------------
+>   |         |  ...
+>   |         |
+> larb1     larb2
+>   |         |
+> vdec       venc
+> 
+> All the consumer connect with smi-larb, then connect with smi-common.
+> 
+> When the consumer works, it should enable the smi-larb's power which
+> also
+> need enable the smi-common's power firstly.
+> 
+> Thus, Firstly, use the device link connect the consumer and the
+> smi-larbs. then add device link between the smi-larb and smi-common.
+> 
+> After adding the device_link, then "mediatek,larb" property can be
+> removed.
+> the iommu consumer don't need call the mtk_smi_larb_get/put to enable
+> the power and clock of smi-larb and smi-common.
+> 
+> Base on v5.14-rc1, and a jpeg[1] and mdp[2] patchset.
+> 
+> [1] 
+> https://lore.kernel.org/linux-mediatek/20210702102304.3346429-1-hsinyi@chromium.org/
+> [2] 
+> https://lore.kernel.org/linux-mediatek/20210709022324.1607884-1-eizan@chromium.org/
+> 
+> Change notes:
+> v7: 1) Fix a arm32 boot fail issue. reported from Frank.
+>     2) Add a return fail in the mtk drm. suggested by Dafna.
 
 _______________________________________________
 iommu mailing list
