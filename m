@@ -2,103 +2,105 @@ Return-Path: <SRS0=1qmC=NX=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-13.6 required=3.0 tests=BAYES_00,DKIM_INVALID,
-	DKIM_SIGNED,HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_CR_TRAILER,INCLUDES_PATCH,
-	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED autolearn=unavailable
-	autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-3.5 required=3.0 tests=BAYES_00,DKIM_INVALID,
+	DKIM_SIGNED,HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,SPF_HELO_NONE,
+	SPF_PASS,URIBL_BLOCKED autolearn=no autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 11D96C432BE
-	for <iommu@archiver.kernel.org>; Wed,  1 Sep 2021 17:07:04 +0000 (UTC)
-Received: from smtp4.osuosl.org (smtp4.osuosl.org [140.211.166.137])
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B06D1C432BE
+	for <iommu@archiver.kernel.org>; Wed,  1 Sep 2021 17:14:59 +0000 (UTC)
+Received: from smtp1.osuosl.org (smtp1.osuosl.org [140.211.166.138])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 85B8761058
-	for <iommu@archiver.kernel.org>; Wed,  1 Sep 2021 17:07:03 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.4.1 mail.kernel.org 85B8761058
+	by mail.kernel.org (Postfix) with ESMTPS id 580EA60F4B
+	for <iommu@archiver.kernel.org>; Wed,  1 Sep 2021 17:14:59 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.4.1 mail.kernel.org 580EA60F4B
 Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=lists.linux-foundation.org
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by smtp4.osuosl.org (Postfix) with ESMTP id 50DAB402DC;
-	Wed,  1 Sep 2021 17:07:03 +0000 (UTC)
+	by smtp1.osuosl.org (Postfix) with ESMTP id 22DFE80E32;
+	Wed,  1 Sep 2021 17:14:59 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from smtp4.osuosl.org ([127.0.0.1])
-	by localhost (smtp4.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id RquLxqw74K5U; Wed,  1 Sep 2021 17:06:59 +0000 (UTC)
-Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by smtp4.osuosl.org (Postfix) with ESMTPS id 6476C4023E;
-	Wed,  1 Sep 2021 17:06:59 +0000 (UTC)
+Received: from smtp1.osuosl.org ([127.0.0.1])
+	by localhost (smtp1.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+	with ESMTP id TJV0ip6A3XPi; Wed,  1 Sep 2021 17:14:54 +0000 (UTC)
+Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [IPv6:2605:bc80:3010:104::8cd3:938])
+	by smtp1.osuosl.org (Postfix) with ESMTPS id 5CA4B80E21;
+	Wed,  1 Sep 2021 17:14:54 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 468F9C0010;
-	Wed,  1 Sep 2021 17:06:59 +0000 (UTC)
-Received: from smtp4.osuosl.org (smtp4.osuosl.org [IPv6:2605:bc80:3010::137])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 98EF8C000E
- for <iommu@lists.linux-foundation.org>; Wed,  1 Sep 2021 17:06:57 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 41542C001A;
+	Wed,  1 Sep 2021 17:14:54 +0000 (UTC)
+Received: from smtp3.osuosl.org (smtp3.osuosl.org [IPv6:2605:bc80:3010::136])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id B1FF9C000E
+ for <iommu@lists.linux-foundation.org>; Wed,  1 Sep 2021 17:14:53 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by smtp4.osuosl.org (Postfix) with ESMTP id 886FA402DC
- for <iommu@lists.linux-foundation.org>; Wed,  1 Sep 2021 17:06:57 +0000 (UTC)
+ by smtp3.osuosl.org (Postfix) with ESMTP id 94952600CA
+ for <iommu@lists.linux-foundation.org>; Wed,  1 Sep 2021 17:14:53 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from smtp4.osuosl.org ([127.0.0.1])
- by localhost (smtp4.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id jQKd09vcaQH7 for <iommu@lists.linux-foundation.org>;
- Wed,  1 Sep 2021 17:06:52 +0000 (UTC)
+Authentication-Results: smtp3.osuosl.org (amavisd-new);
+ dkim=pass (2048-bit key) header.d=svenpeter.dev header.b="UdwBpIi5";
+ dkim=pass (2048-bit key) header.d=messagingengine.com
+ header.b="qy6Y0tkB"
+Received: from smtp3.osuosl.org ([127.0.0.1])
+ by localhost (smtp3.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+ with ESMTP id OOVd_QhtYf7b for <iommu@lists.linux-foundation.org>;
+ Wed,  1 Sep 2021 17:14:49 +0000 (UTC)
 X-Greylist: from auto-whitelisted by SQLgrey-1.8.0
 Received: from out3-smtp.messagingengine.com (out3-smtp.messagingengine.com
  [66.111.4.27])
- by smtp4.osuosl.org (Postfix) with ESMTPS id D0B824023E
- for <iommu@lists.linux-foundation.org>; Wed,  1 Sep 2021 17:06:52 +0000 (UTC)
+ by smtp3.osuosl.org (Postfix) with ESMTPS id 2F39461431
+ for <iommu@lists.linux-foundation.org>; Wed,  1 Sep 2021 17:14:49 +0000 (UTC)
 Received: from compute1.internal (compute1.nyi.internal [10.202.2.41])
- by mailout.nyi.internal (Postfix) with ESMTP id D1B495C021E;
- Wed,  1 Sep 2021 13:06:50 -0400 (EDT)
+ by mailout.nyi.internal (Postfix) with ESMTP id 1BB1B5C0076;
+ Wed,  1 Sep 2021 13:14:48 -0400 (EDT)
 Received: from imap21 ([10.202.2.71])
- by compute1.internal (MEProxy); Wed, 01 Sep 2021 13:06:50 -0400
+ by compute1.internal (MEProxy); Wed, 01 Sep 2021 13:14:48 -0400
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=svenpeter.dev;
  h=mime-version:message-id:in-reply-to:references:date:from:to
- :cc:subject:content-type; s=fm2; bh=qBc6NGv+KiVi1FmpY8tiOqHwVXDU
- wzwD5WdArGVR7k4=; b=ZBzXA17kL8sZYrj4eMIefKDKQMxbniiABJt5+d1sygOn
- v3g5WdRs+C9IQT5gutisj+m1YHyl8EQkL0xFV6ZTRSLQt88X6LT6EG7RZ9uvlV3Z
- UvatcDUJ5EqW/X5rM8nwgw2zjXD8EM54zWRuCwYZlULdiOfdRyRscOP4y97igll0
- NpV2bMDGB5ipHdcKievvYZdAQVc1hBBc0Ew4jZL6u65zpN1tjulV4uxnHMjFjnOy
- bbHyULHJikH9wQ6ZkI3PxP1CXdT4rY6OZfeXS25KIeiUUwih6IloY4a88id0ACpM
- 32Ncq1c1k/sKiNx17IQgkBkckAWyYdUWD4GSzjuvRg==
+ :cc:subject:content-type; s=fm2; bh=PjI/Na3u99SdyJiZLuyCXPem/Uar
+ db9RSRjNBRnAjTs=; b=UdwBpIi5+aPrVMeubICwqzZ+llcAdAR05tucL01juVRT
+ nGKaB+eE/Iy0StUKvrPNyTMRa5Ob/wahSGNbK3/Oa5r70yJ0jp6TBRhoKddJNpeh
+ M3iy54fDqlgE7TitGBKfPp6fj5JKuU44ANcLFXh1oJN9ScYBovp9qTAD3eC2Cfme
+ lp+dz+9mVa/b25VrDfNgxuhyE0zfhA+mbP7OwenJ2zLeNTqkDaOC1DvyzTRsM5A4
+ rxi+OOZ8wncpD9ItTeXVJeL8iaqDaMu6/l2dp8sm0S6bgbHjf2gLsTmff3BA6kE9
+ phgNq7Y44jC0ZvkF6QbkiklatyS3a2eL+YNIlqwZ2A==
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
  messagingengine.com; h=cc:content-type:date:from:in-reply-to
  :message-id:mime-version:references:subject:to:x-me-proxy
- :x-me-proxy:x-me-sender:x-me-sender:x-sasl-enc; s=fm3; bh=qBc6NG
- v+KiVi1FmpY8tiOqHwVXDUwzwD5WdArGVR7k4=; b=q11xj7WilbK8LydS8jeFw2
- RlH3kPXcX1OHNwf6ZgwVuZdgCKhuy0LUtVOWceyPa3S3HAyneF0548XxnSIIxreh
- zg6vQjoQgLbNDzvgGT3+bY/JLq1PY17WW0NlHfzALRU4JfumiOcnHulKqKb+G6i4
- Ey4i6bsw574mrTWl/raawlOtWmxbx3E3oEg81eaYp+I/Q2ebrlfhF1mE6WMV/iQX
- ZakDF5vu537nMozAmAzBWTx/t/XKHbPmI9efwgi9vBu/bQhJQWGvw2+0HEhy61mw
- kEHCNhfNYxtfGvsPrJTV2OskHoEyfYDG/9puuoakPRsHetplYv0PmTcIUhFSE82A
+ :x-me-proxy:x-me-sender:x-me-sender:x-sasl-enc; s=fm3; bh=PjI/Na
+ 3u99SdyJiZLuyCXPem/Uardb9RSRjNBRnAjTs=; b=qy6Y0tkBC5GAe4YphlEuTp
+ Gj2DToBLWWn022elJsSRXYOy7MkorEbyu7ghipPnL0kk+oMwTj/aKIutsJ2Tyhq/
+ ncYlMQ6OUW/OGGQhA2VThCfr33apDPFGbSj3/eYFktwLGT+cA+2I/KfkNkwKc8+k
+ /YyYFMSnArCzb7vq2hOUf9huZl63dlgVo9gk56kPdTs1nUNfr72uc3S81JPx+xJ7
+ 7hVbvT7GJWG964ruks4Ku/cQU3rpbseIgREaa7KPXa6BeYspCUXy6PukuQQZ51YB
+ pb4XDuXp3dU1nQemEnFXmJpvXmSHtIaEeCR/g4GaM/xrelvxYoBe1HT4bczf/7Jw
  ==
-X-ME-Sender: <xms:KLMvYcJuoHHOjuRy2UKJJ_P5kXyF_fW9gjp54yzQTP-AwsAcsGNd3w>
- <xme:KLMvYcKQnyP1TEPR2g4v3YxK5IWgcp9zYKEHx2bgquzyU7BZeil1eqwejwEn8T9rF
- bwtOAzehQXBYfeE8MA>
-X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgedvtddruddvfedguddtkecutefuodetggdotefrod
+X-ME-Sender: <xms:BbUvYQ1sNZhPhSWZ8wIVBe4sSyytxkhOf_z9JCSwcl03vMZPCBfnVA>
+ <xme:BbUvYbHLxPe1UnR19Mh0Iz_PGkO5OCoFmF3Wr_QnrhXk-rmzgzuJDHaoaHfZbcf2n
+ felhpgWMqlinKYmASY>
+X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgedvtddruddvfedguddutdcutefuodetggdotefrod
  ftvfcurfhrohhfihhlvgemucfhrghsthforghilhdpqfgfvfdpuffrtefokffrpgfnqfgh
  necuuegrihhlohhuthemuceftddtnecusecvtfgvtghiphhivghnthhsucdlqddutddtmd
- enucfjughrpefofgggkfgjfhffhffvufgtsehttdertderreejnecuhfhrohhmpedfufhv
+ enucfjughrpefofgggkfgjfhffhffvufgtsehttdertderredtnecuhfhrohhmpedfufhv
  vghnucfrvghtvghrfdcuoehsvhgvnhesshhvvghnphgvthgvrhdruggvvheqnecuggftrf
- grthhtvghrnhepheejgfdttdefleefteejieefudeuheelkedtgedtjeehieetueelheeu
- hfegheegnecuvehluhhsthgvrhfuihiivgeptdenucfrrghrrghmpehmrghilhhfrhhomh
+ grthhtvghrnhepgfeigeeiffeuhfettdejgfetjeetfeelfefgfefgvddvtdfghfffudeh
+ vdefkeffnecuvehluhhsthgvrhfuihiivgeptdenucfrrghrrghmpehmrghilhhfrhhomh
  epshhvvghnsehsvhgvnhhpvghtvghrrdguvghv
-X-ME-Proxy: <xmx:KLMvYctGNy3r6qVEV8TXJ3P701l1UM7m1xfsDexnZh2drk8aAAhr8g>
- <xmx:KLMvYZbyKnzhhzCEBS7aOGmCU6QYpHPEtlSEJv7SgIAg-3Cn5lFaIQ>
- <xmx:KLMvYTbSx2ZfGL0OxKM5wJZwysDFH7oVKhfQ4RMcBAUOsRuu1oSESw>
- <xmx:KrMvYX7P9pSdgi2YImEBA8-THojxOAhnWOAd9kvVtHIp6tbKuelErg>
+X-ME-Proxy: <xmx:BbUvYY4YWIp3Eb0cjlTcK1NGDzD1hrSg7GgJW2rxK-EuY4W2S8kHBw>
+ <xmx:BbUvYZ10XRl0fzvhCwZqF4SUKtlI4YUGzihYB7hXH5q8SHvrCx4PaQ>
+ <xmx:BbUvYTF5j6atbFgqgrjN_jnYqxpqZx84e1kINutI5izBjfKDKxOq5w>
+ <xmx:CLUvYS2kLBGQjA-3vfiLoeN_eHZSpnyrNkz9Yvh7O3ivVbhnvwUvmg>
 Received: by mailuser.nyi.internal (Postfix, from userid 501)
- id 3A6C051C0061; Wed,  1 Sep 2021 13:06:48 -0400 (EDT)
+ id 7845151C0061; Wed,  1 Sep 2021 13:14:45 -0400 (EDT)
 X-Mailer: MessagingEngine.com Webmail Interface
 User-Agent: Cyrus-JMAP/3.5.0-alpha0-1126-g6962059b07-fm-20210901.001-g6962059b
 Mime-Version: 1.0
-Message-Id: <c8bc7f77-3b46-4675-a642-76871fcec963@www.fastmail.com>
-In-Reply-To: <YS6fasuqPURbmC6X@sunset>
+Message-Id: <adee671d-976a-4906-8592-c7391da9906b@www.fastmail.com>
+In-Reply-To: <YS6hl0gAOMoMxNhf@sunset>
 References: <20210828153642.19396-1-sven@svenpeter.dev>
- <20210828153642.19396-4-sven@svenpeter.dev> <YS6fasuqPURbmC6X@sunset>
-Date: Wed, 01 Sep 2021 19:06:27 +0200
+ <20210828153642.19396-7-sven@svenpeter.dev> <YS6hl0gAOMoMxNhf@sunset>
+Date: Wed, 01 Sep 2021 19:14:24 +0200
 To: "Alyssa Rosenzweig" <alyssa@rosenzweig.io>
-Subject: =?UTF-8?Q?Re:_[PATCH_v2_3/8]_iommu/dma:_Disable_get=5Fsgtable_for_granul?=
- =?UTF-8?Q?e_>_PAGE=5FSIZE?=
+Subject: Re: [PATCH v2 6/8] iommu: Move IOMMU pagesize check to attach_device
 Cc: Arnd Bergmann <arnd@kernel.org>, Will Deacon <will@kernel.org>,
  Hector Martin <marcan@marcan.st>, linux-kernel@vger.kernel.org,
  iommu@lists.linux-foundation.org, Alexander Graf <graf@amazon.com>,
@@ -125,81 +127,29 @@ Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
 
 
-On Tue, Aug 31, 2021, at 23:30, Alyssa Rosenzweig wrote:
-> I use this function for cross-device sharing on the M1 display driver.
-> Arguably this is unsafe but it works on 16k kernels and if you want to
-> test the function on 4k, you know where my code is.
+On Tue, Aug 31, 2021, at 23:39, Alyssa Rosenzweig wrote:
+> > +	if ((1 << __ffs(domain->pgsize_bitmap)) > PAGE_SIZE) {
+> 
+> Not a fan of this construction. Could you assign `(1 <<
+> __ffs(domain->pgsize_bitmap))` to an appropriately named temporary (e.g
+> min_io_pgsize) so it's clearer what's going on?
+
+Good point, will do that for the next version.
+
+> 
+> > +		pr_warn("IOMMU page size cannot represent CPU pages.\n");
+> 
+> "Represent" how?
 > 
 
-My biggest issue is that I do not understand how this function is supposed
-to be used correctly. It would work fine as-is if it only ever gets passed buffers
-allocated by the coherent API but there's not way to check or guarantee that.
-There may also be callers making assumptions that no longer hold when
-iovad->granule > PAGE_SIZE.
+Looks like I dropped an "exactly" there when taking this line from iova.c :)
 
 
-Regarding your case: I'm not convinced the function is meant to be used there.
-If I understand it correctly, your code first allocates memory with dma_alloc_coherent
-(which possibly creates a sgt internally and then maps it with iommu_map_sg),
-then coerces that back into a sgt with dma_get_sgtable, and then maps that sgt to
-another iommu domain with dma_map_sg while assuming that the result will be contiguous
-in IOVA space. It'll work out because dma_alloc_coherent is the very thing
-meant to allocate pages that can be mapped into kernel and device VA space
-as a single contiguous block and because both of your IOMMUs are different
-instances of the same HW block. Anything allocated by dma_alloc_coherent for the
-first IOMMU will have the right shape that will allow it to be mapped as
-a single contiguous block for the second IOMMU.
 
-What could be done in your case is to instead use the IOMMU API,
-allocate the pages yourself (while ensuring the sgt your create is made up
-of blocks with size and physaddr aligned to max(domain_a->granule, domain_b->granule))
-and then just use iommu_map_sg for both domains which actually comes with the
-guarantee that the result will be a single contiguous block in IOVA space and
-doesn't required the sgt roundtrip.
-
+Thanks,
 
 
 Sven
-
-
-> On Sat, Aug 28, 2021 at 05:36:37PM +0200, Sven Peter wrote:
-> > Pretend that iommu_dma_get_sgtable is not implemented when
-> > granule > PAGE_SIZE since I can neither test this function right now
-> > nor do I fully understand how it is used.
-> > 
-> > Signed-off-by: Sven Peter <sven@svenpeter.dev>
-> > ---
-> >  drivers/iommu/dma-iommu.c | 6 ++++++
-> >  1 file changed, 6 insertions(+)
-> > 
-> > diff --git a/drivers/iommu/dma-iommu.c b/drivers/iommu/dma-iommu.c
-> > index d6e273ec3de6..64fbd9236820 100644
-> > --- a/drivers/iommu/dma-iommu.c
-> > +++ b/drivers/iommu/dma-iommu.c
-> > @@ -1315,9 +1315,15 @@ static int iommu_dma_get_sgtable(struct device *dev, struct sg_table *sgt,
-> >  		void *cpu_addr, dma_addr_t dma_addr, size_t size,
-> >  		unsigned long attrs)
-> >  {
-> > +	struct iommu_domain *domain = iommu_get_dma_domain(dev);
-> > +	struct iommu_dma_cookie *cookie = domain->iova_cookie;
-> > +	struct iova_domain *iovad = &cookie->iovad;
-> >  	struct page *page;
-> >  	int ret;
-> >  
-> > +	if (iovad->granule > PAGE_SIZE)
-> > +		return -ENXIO;
-> > +
-> >  	if (IS_ENABLED(CONFIG_DMA_REMAP) && is_vmalloc_addr(cpu_addr)) {
-> >  		struct page **pages = dma_common_find_pages(cpu_addr);
-> >  
-> > -- 
-> > 2.25.1
-> > 
-> 
-
-
--- 
-Sven Peter
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
