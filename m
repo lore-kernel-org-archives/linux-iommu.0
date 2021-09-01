@@ -2,181 +2,145 @@ Return-Path: <SRS0=1qmC=NX=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-13.6 required=3.0 tests=BAYES_00,DKIM_INVALID,
-	DKIM_SIGNED,HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,
-	MENTIONS_GIT_HOSTING,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED autolearn=ham
-	autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-16.1 required=3.0 tests=BAYES_00,DKIM_INVALID,
+	DKIM_SIGNED,HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_CR_TRAILER,INCLUDES_PATCH,
+	MAILING_LIST_MULTI,NICE_REPLY_A,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,
+	USER_AGENT_SANE_1 autolearn=unavailable autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 05C9EC432BE
-	for <iommu@archiver.kernel.org>; Wed,  1 Sep 2021 06:56:23 +0000 (UTC)
-Received: from smtp4.osuosl.org (smtp4.osuosl.org [140.211.166.137])
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B238FC432BE
+	for <iommu@archiver.kernel.org>; Wed,  1 Sep 2021 08:59:53 +0000 (UTC)
+Received: from smtp1.osuosl.org (smtp1.osuosl.org [140.211.166.138])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id AAC8461074
-	for <iommu@archiver.kernel.org>; Wed,  1 Sep 2021 06:56:22 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.4.1 mail.kernel.org AAC8461074
-Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=intel.com
+	by mail.kernel.org (Postfix) with ESMTPS id 456AC61057
+	for <iommu@archiver.kernel.org>; Wed,  1 Sep 2021 08:59:53 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.4.1 mail.kernel.org 456AC61057
+Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=samsung.com
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by smtp4.osuosl.org (Postfix) with ESMTP id 722B84022C;
-	Wed,  1 Sep 2021 06:56:22 +0000 (UTC)
+	by smtp1.osuosl.org (Postfix) with ESMTP id 18DBF80CA6;
+	Wed,  1 Sep 2021 08:59:53 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from smtp4.osuosl.org ([127.0.0.1])
-	by localhost (smtp4.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id qo1WngqxlFB4; Wed,  1 Sep 2021 06:56:18 +0000 (UTC)
-Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [IPv6:2605:bc80:3010:104::8cd3:938])
-	by smtp4.osuosl.org (Postfix) with ESMTPS id 4E8F64028D;
-	Wed,  1 Sep 2021 06:56:18 +0000 (UTC)
-Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 1380AC0010;
-	Wed,  1 Sep 2021 06:56:18 +0000 (UTC)
-Received: from smtp1.osuosl.org (smtp1.osuosl.org [IPv6:2605:bc80:3010::138])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 02699C000E
- for <iommu@lists.linux-foundation.org>; Wed,  1 Sep 2021 06:56:17 +0000 (UTC)
-Received: from localhost (localhost [127.0.0.1])
- by smtp1.osuosl.org (Postfix) with ESMTP id D9369823E8
- for <iommu@lists.linux-foundation.org>; Wed,  1 Sep 2021 06:56:16 +0000 (UTC)
-X-Virus-Scanned: amavisd-new at osuosl.org
-Authentication-Results: smtp1.osuosl.org (amavisd-new);
- dkim=pass (1024-bit key) header.d=intel.onmicrosoft.com
 Received: from smtp1.osuosl.org ([127.0.0.1])
- by localhost (smtp1.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id cCrtpMTWdAMx for <iommu@lists.linux-foundation.org>;
- Wed,  1 Sep 2021 06:56:12 +0000 (UTC)
+	by localhost (smtp1.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+	with ESMTP id MK4EoFybNqiH; Wed,  1 Sep 2021 08:59:49 +0000 (UTC)
+Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [IPv6:2605:bc80:3010:104::8cd3:938])
+	by smtp1.osuosl.org (Postfix) with ESMTPS id E00B380C96;
+	Wed,  1 Sep 2021 08:59:48 +0000 (UTC)
+Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
+	by lists.linuxfoundation.org (Postfix) with ESMTP id BB5F3C0010;
+	Wed,  1 Sep 2021 08:59:48 +0000 (UTC)
+Received: from smtp3.osuosl.org (smtp3.osuosl.org [140.211.166.136])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 08A5EC000E
+ for <iommu@lists.linux-foundation.org>; Wed,  1 Sep 2021 08:59:47 +0000 (UTC)
+Received: from localhost (localhost [127.0.0.1])
+ by smtp3.osuosl.org (Postfix) with ESMTP id DB8856061C
+ for <iommu@lists.linux-foundation.org>; Wed,  1 Sep 2021 08:59:47 +0000 (UTC)
+X-Virus-Scanned: amavisd-new at osuosl.org
+Authentication-Results: smtp3.osuosl.org (amavisd-new);
+ dkim=pass (1024-bit key) header.d=samsung.com
+Received: from smtp3.osuosl.org ([127.0.0.1])
+ by localhost (smtp3.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+ with ESMTP id IXr-4OxKlgKo for <iommu@lists.linux-foundation.org>;
+ Wed,  1 Sep 2021 08:59:43 +0000 (UTC)
 X-Greylist: domain auto-whitelisted by SQLgrey-1.8.0
-Received: from mga12.intel.com (mga12.intel.com [192.55.52.136])
- by smtp1.osuosl.org (Postfix) with ESMTPS id D9DCC823C0
- for <iommu@lists.linux-foundation.org>; Wed,  1 Sep 2021 06:56:12 +0000 (UTC)
-X-IronPort-AV: E=McAfee;i="6200,9189,10093"; a="198213640"
-X-IronPort-AV: E=Sophos;i="5.84,368,1620716400"; d="scan'208";a="198213640"
-Received: from fmsmga001.fm.intel.com ([10.253.24.23])
- by fmsmga106.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384;
- 31 Aug 2021 23:56:12 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.84,368,1620716400"; d="scan'208";a="601518542"
-Received: from orsmsx606.amr.corp.intel.com ([10.22.229.19])
- by fmsmga001.fm.intel.com with ESMTP; 31 Aug 2021 23:56:11 -0700
-Received: from orsmsx610.amr.corp.intel.com (10.22.229.23) by
- ORSMSX606.amr.corp.intel.com (10.22.229.19) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2242.12; Tue, 31 Aug 2021 23:56:11 -0700
-Received: from orsmsx604.amr.corp.intel.com (10.22.229.17) by
- ORSMSX610.amr.corp.intel.com (10.22.229.23) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2242.10; Tue, 31 Aug 2021 23:56:11 -0700
-Received: from ORSEDG602.ED.cps.intel.com (10.7.248.7) by
- orsmsx604.amr.corp.intel.com (10.22.229.17) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2242.12 via Frontend Transport; Tue, 31 Aug 2021 23:56:11 -0700
-Received: from NAM10-DM6-obe.outbound.protection.outlook.com (104.47.58.104)
- by edgegateway.intel.com (134.134.137.103) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.1.2242.10; Tue, 31 Aug 2021 23:56:03 -0700
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=jpq1tq+tr51jehWMTHCHH1uKDb+ocTAMon1428moZ1z6+cGsVcsK3SBX/wjHsrdO55MqxEE08yseqmsCRKrdDfzrTAGioY4oJWomxPG6bPtNKlVlKrxx/wyIKjx3thS8mNJ2EgZO1dtZsmGNEWjw0YUglWA/MuVxcgpfbvS2RdjUQoVLXEuCcSEjgMp90288d4bv9uNKDXNdPpC/AWXeX5WFhrzio709dtsu7/pbI1Ng3A6KFz9E1OaXnW9u3F7lwj4SA8Y8x2dNmMtYPk+vev4c9+3nG7rwiXCqd5OZ8y7kOG4cJyZP+jI7ez2Hd4HOUUaevO4HUYsC81XdaV9Qtw==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com; 
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version; 
- bh=iymCBrchEinG7L0Klxgq9Zb4Rfc+4qypI27wMDnZgQU=;
- b=UU9ojMrvq+KrFdSktRXpmF/8804x5FMP9ZQnt6ko5XnQLSvzRMRCOWhznfP4aHFn/ZkNSkfZg6c/09PqFD0AMEpDN9qXJ4D1DL1Uan6xejkEO9WzHATGIzdjT5PZ5A6qlp9Ye90vOXzrHxmoADwPPSmya9A2F6Khykl5rZ1jcm/TrjOKRD5Gl2t3IVMeCbmiyx/O3/YHCIZeEjhq+fsGva0YHnClYip4wX7r4I+epRdhEKleknU5o8FRQ+8uFD8yUpys9GNRigZ7GJaz+lC7oLoMYZuTCnyo2yzueQnv4VvyiktTBZGNdTeaGj983fY5aIAyJDJHEPJbasRwLMdJOQ==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=intel.com; dmarc=pass action=none header.from=intel.com;
- dkim=pass header.d=intel.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=intel.onmicrosoft.com; 
- s=selector2-intel-onmicrosoft-com;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=iymCBrchEinG7L0Klxgq9Zb4Rfc+4qypI27wMDnZgQU=;
- b=O73iwYJBZTaGh9pv9/cKdSs0Xw00juNv/Nrs/00zPZZXVGksN3qc1uiyiPFj8MmSvk+8BBtQ7zC2crwQmkXTkZ2S48ehikvE2tTu7XD2A4+uUKKRC/lvUJG9Q9rxOV5zkkS36ObbgZDSHAZux9lNyesWAhQkcmf+7MYsGboRfzY=
-Received: from BN9PR11MB5433.namprd11.prod.outlook.com (2603:10b6:408:11e::13)
- by BN0PR11MB5711.namprd11.prod.outlook.com (2603:10b6:408:14b::23)
- with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4478.17; Wed, 1 Sep
- 2021 06:55:55 +0000
-Received: from BN9PR11MB5433.namprd11.prod.outlook.com
- ([fe80::ddb7:fa7f:2cc:45df]) by BN9PR11MB5433.namprd11.prod.outlook.com
- ([fe80::ddb7:fa7f:2cc:45df%7]) with mapi id 15.20.4457.025; Wed, 1 Sep 2021
- 06:55:55 +0000
-From: "Tian, Kevin" <kevin.tian@intel.com>
-To: Alex Williamson <alex.williamson@redhat.com>, Nicolin Chen
- <nicolinc@nvidia.com>
-Subject: RE: [RFC][PATCH v2 00/13] iommu/arm-smmu-v3: Add NVIDIA implementation
-Thread-Topic: [RFC][PATCH v2 00/13] iommu/arm-smmu-v3: Add NVIDIA
- implementation
-Thread-Index: AQHXnhVovHekE4RvPUm07KSkZdD8O6uNysGAgADuWNA=
-Date: Wed, 1 Sep 2021 06:55:55 +0000
-Message-ID: <BN9PR11MB5433E064405A1AFEC50C1C9F8CCD9@BN9PR11MB5433.namprd11.prod.outlook.com>
-References: <20210831025923.15812-1-nicolinc@nvidia.com>
- <20210831101549.237151fa.alex.williamson@redhat.com>
-In-Reply-To: <20210831101549.237151fa.alex.williamson@redhat.com>
-Accept-Language: en-US
-Content-Language: en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-dlp-version: 11.5.1.3
-dlp-product: dlpe-windows
-dlp-reaction: no-action
-authentication-results: redhat.com; dkim=none (message not signed)
- header.d=none;redhat.com; dmarc=none action=none header.from=intel.com;
-x-ms-publictraffictype: Email
-x-ms-office365-filtering-correlation-id: f32666a6-9fcc-4a7f-6c5c-08d96d158be5
-x-ms-traffictypediagnostic: BN0PR11MB5711:
-x-microsoft-antispam-prvs: <BN0PR11MB57116712087FBCEC9B94DE198CCD9@BN0PR11MB5711.namprd11.prod.outlook.com>
-x-ms-oob-tlc-oobclassifiers: OLM:8882;
-x-ms-exchange-senderadcheck: 1
-x-ms-exchange-antispam-relay: 0
-x-microsoft-antispam: BCL:0;
-x-microsoft-antispam-message-info: rQ3xXrq3qrKxgJzVgF7Wi2wdDcDOvW7EJ0uoJY0D7aG4ucLEv+EAddqwMta2zM4hUYuiibt0cchtp6HsiEUxUgYxTy5v4pgkdUEVAq9pm4EFqB0pF1LYHZ5mbw76ulVSFB6s1sEgzFwObYNgSe/rIABlq+ONK0BqXqsoRTqnreoF5GQmQhS5dZsesGd2LnrhAZHEUcr1WT5PeAT1fA33Gpl6rwENqww1A1j4b2y1vnVs3Cg1NLvjDx/+Pu7ls/ojMxIZ8c14lTABD0O7umTXFDNvEA269M67f/iS/pwwki7hkO4nerY2o0e9/4az2j2sllJv9xwt8pKHPGDDdPN1Mpj1H6PRZorQRbq4ILqf4R1x1RRC5PzvIMAQlMwWmPuIPY+aV3vYVEqUdhOo++djfKFONtRJ0FK/T/GXnSZgWdTGTVe086lScOWrSb7+F9Vl5qdzuhyi+PpYt4Gy98fnr3Hd8tBQOBG9GmH0kaaAktlMg0uNdH8V0s7IhP2LYSYoD8E+rHYwdk7XCt0/pGN8D0HU39+ALw4ipXblmn78Bwof43c0/dsMKi48TQAhCCjmMXWG4ab3Arpdo0dSfa6vXK7HUTyLPcKewDhiXXhaDc18fIfe8PNRQA1rGXtnUfRMwWNW2+ivV7AGH0Sha+nPmQHyLQg1e/5lo0Q62vO4rRm+xEzkvOt7dv3OhRtRKe0o93Gvjui6roQxrJC0zw+KDIYHr2xNGXqcqSJ7Sil5ufMFNFZrxfMHU5bsopgj4CsUmKRjJcusy2LeA3YzNZ4w+80vrZcuVRvLEnu2v07ILepKt4pM1WZgG1nUWkLOl6gIuoYUuG8bUejvGsVqy5RVWA==
-x-forefront-antispam-report: CIP:255.255.255.255; CTRY:; LANG:en; SCL:1; SRV:;
- IPV:NLI; SFV:NSPM; H:BN9PR11MB5433.namprd11.prod.outlook.com; PTR:; CAT:NONE;
- SFS:(4636009)(366004)(38070700005)(186003)(86362001)(26005)(966005)(66946007)(122000001)(2906002)(52536014)(33656002)(45080400002)(5660300002)(71200400001)(83380400001)(508600001)(38100700002)(110136005)(316002)(8936002)(55016002)(54906003)(66556008)(64756008)(66446008)(4326008)(9686003)(66476007)(6506007)(76116006)(7416002)(7696005)(8676002);
- DIR:OUT; SFP:1102; 
-x-ms-exchange-antispam-messagedata-chunkcount: 1
-x-ms-exchange-antispam-messagedata-0: =?us-ascii?Q?c6U711D11bNjHvtwTMxale9a4D/L72JI2iydJFk4CWx/AZrwfp3IPvAgpHis?=
- =?us-ascii?Q?t7fsokWJnGyU/NVcIALw6Q8VmI2WUdcxdJDm+9/d1SX4rYRdOhzRuYsmAtfi?=
- =?us-ascii?Q?nYHzmnxUG5+iluPlRwuV5Bf7m2pWJz+pdKD6lAfD4unKc/UUbYEb5bM09a1s?=
- =?us-ascii?Q?MG0Rx63xbN3QVZ4LQJzZ+uKigvoAgcblfxU146+EMLQRxPJFFbBnIE5nJt+/?=
- =?us-ascii?Q?shojd/X32BD2eEGjt9s7qd5zreQSjcYbU7kF0T0f2wFzd5afNRX2CvgL5NtG?=
- =?us-ascii?Q?IBzOq9KTvwpJTuCpKWG647qu0MQzz1cqOcVLBtdl68MQ4vTLkFIQ5WwIUYUP?=
- =?us-ascii?Q?AkgFj9Wfw4I/IP5Wo2EbwxVcD92O1pTVHQjAP3HndLz5+7fK44ag0ewwWgSF?=
- =?us-ascii?Q?evdMOeVEDt5TP+w2l5hUxvSvW4Huun3j3XUWQwyFK8weGNR6o5UpvQCLp1zi?=
- =?us-ascii?Q?uRt4RW/Xafq5+YYzLonZiL6zAszuknckZkTqz7eS3PM1kWavXuedOOP/5Qoz?=
- =?us-ascii?Q?MEnWshNhMjBChalmjAMsBYHiDFmZJ+APpKVao1MaOuP8IAV5Jd/CZsnqLbn6?=
- =?us-ascii?Q?NGw1FsXBDaiMAQ/PAO5VkTAiXTr4Oc0Ysh8C8Gk9kda1+FM0JkD4n759A1CA?=
- =?us-ascii?Q?k3umh6b0HKOJzGF3m9X58yi6tzt3YmW3haMIb/Lp/J7abImUOkOKA6/NBo6t?=
- =?us-ascii?Q?4MPFQMGca3dXOkBAiW5AnBr3akS23+4aDswPnU+I7u+Vv+LVCUW3jHEmeYKK?=
- =?us-ascii?Q?57rVXRVVD3RptOhZ/L0+pkONlog8MJZFTM5L5eyFaaTQEs1gv5K97e56duXv?=
- =?us-ascii?Q?g1JMqTFd4qa2NJt/CrYyAFIGs1EYSb85UOS+oMnm8GfJavt97ylI+kfj78Ur?=
- =?us-ascii?Q?2tL8gaS/i/Tdt5QVm5z8hV3bKkkbvZGdi1YgMHNYJPqen1f3ZC666o05WTev?=
- =?us-ascii?Q?UpE7Zzk4tmTBG7Qr0Z7MR8ZoV04bJR26g/bJuyZDeJqOQ0BtY0HojTh6+NnN?=
- =?us-ascii?Q?UPvdVSlp+QE2UcCQgA3GhKxOoIL2pBDL4i/28mXFLNDGUY50S3ZPivsL4bdQ?=
- =?us-ascii?Q?oQmiRFj4ZZAq3ZctDQ6xvWrJFzo601R/2GvDogQr7of2yfBztIZCixmzNtCf?=
- =?us-ascii?Q?hOTA/uAY/RUfP+FsXELmROVt3touWm2e3MKemkyJElFLoWrL/M1suYWH7lO1?=
- =?us-ascii?Q?TgU1IX802mLc2/OrNrgQbYJlk2zH4iYC2zNUOHXTjIRxQQBOKvFvM9XzbPFb?=
- =?us-ascii?Q?1X1Z0jN4lTDLt0Nyw+HE/+cV057F+/A62ZjY/sVCZmCC0AHrQVdgPaiCfEcu?=
- =?us-ascii?Q?wmf1koT5L0Wxj50h5HFY74q/?=
-x-ms-exchange-transport-forked: True
+Received: from mailout1.w1.samsung.com (mailout1.w1.samsung.com
+ [210.118.77.11])
+ by smtp3.osuosl.org (Postfix) with ESMTPS id 3D9E760618
+ for <iommu@lists.linux-foundation.org>; Wed,  1 Sep 2021 08:59:42 +0000 (UTC)
+Received: from eucas1p2.samsung.com (unknown [182.198.249.207])
+ by mailout1.w1.samsung.com (KnoxPortal) with ESMTP id
+ 20210901085938euoutp01ba97c59eb0794425eaa942b67f2c0f03~gpxYSSxGh0723807238euoutp01P
+ for <iommu@lists.linux-foundation.org>; Wed,  1 Sep 2021 08:59:38 +0000 (GMT)
+DKIM-Filter: OpenDKIM Filter v2.11.0 mailout1.w1.samsung.com
+ 20210901085938euoutp01ba97c59eb0794425eaa942b67f2c0f03~gpxYSSxGh0723807238euoutp01P
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=samsung.com;
+ s=mail20170921; t=1630486778;
+ bh=/1GWJyf9MK6LNUf7rLIeoa/dSMUhJddwZqa7qTr55GY=;
+ h=Subject:To:Cc:From:Date:In-Reply-To:References:From;
+ b=d/HQmSx/H9hCQ0lgBqo2maeB6ZIi1anAVuZKyjfssxFM5h4Qh2kxgVPSo4lqBsIpq
+ 5T4NZ6FqF0kNGUnkNkKeBMSUrpupsjeQm2HmBgXWuY3iQOke/h5hrK0aOsXPTOVMeg
+ ZBYu/h8/PITwkXrr+Dln/xY/1VA9WbPVN0+UHjNM=
+Received: from eusmges2new.samsung.com (unknown [203.254.199.244]) by
+ eucas1p1.samsung.com (KnoxPortal) with ESMTP id
+ 20210901085938eucas1p19514e1a426e8cba3cec1948e1ae66667~gpxX_wevz1196611966eucas1p1P;
+ Wed,  1 Sep 2021 08:59:38 +0000 (GMT)
+Received: from eucas1p1.samsung.com ( [182.198.249.206]) by
+ eusmges2new.samsung.com (EUCPMTA) with SMTP id 11.89.42068.9F04F216; Wed,  1
+ Sep 2021 09:59:37 +0100 (BST)
+Received: from eusmtrp2.samsung.com (unknown [182.198.249.139]) by
+ eucas1p2.samsung.com (KnoxPortal) with ESMTPA id
+ 20210901085937eucas1p2d02da65cac797706ca3a10b8a2eb8ba2~gpxXezz5H1730917309eucas1p25;
+ Wed,  1 Sep 2021 08:59:37 +0000 (GMT)
+Received: from eusmgms2.samsung.com (unknown [182.198.249.180]) by
+ eusmtrp2.samsung.com (KnoxPortal) with ESMTP id
+ 20210901085937eusmtrp2c07fabf822921f71f6623492e0635ca4~gpxXd7y330123601236eusmtrp2P;
+ Wed,  1 Sep 2021 08:59:37 +0000 (GMT)
+X-AuditID: cbfec7f4-c71ff7000002a454-2e-612f40f929c8
+Received: from eusmtip1.samsung.com ( [203.254.199.221]) by
+ eusmgms2.samsung.com (EUCPMTA) with SMTP id CE.72.20981.9F04F216; Wed,  1
+ Sep 2021 09:59:37 +0100 (BST)
+Received: from [106.210.134.192] (unknown [106.210.134.192]) by
+ eusmtip1.samsung.com (KnoxPortal) with ESMTPA id
+ 20210901085936eusmtip18900cbf99202977ada04e8db3280ec0c~gpxWrEZrL3209732097eusmtip1z;
+ Wed,  1 Sep 2021 08:59:36 +0000 (GMT)
+Subject: Re: [PATCH v4] iommu/of: Fix pci_request_acs() before enumerating
+ PCI devices
+To: Wang Xingang <wangxingang5@huawei.com>, robh@kernel.org,
+ will@kernel.org, joro@8bytes.org, helgaas@kernel.org
+From: Marek Szyprowski <m.szyprowski@samsung.com>
+Message-ID: <01314d70-41e6-70f9-e496-84091948701a@samsung.com>
+Date: Wed, 1 Sep 2021 10:59:36 +0200
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:78.0)
+ Gecko/20100101 Thunderbird/78.13.0
 MIME-Version: 1.0
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-AuthSource: BN9PR11MB5433.namprd11.prod.outlook.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: f32666a6-9fcc-4a7f-6c5c-08d96d158be5
-X-MS-Exchange-CrossTenant-originalarrivaltime: 01 Sep 2021 06:55:55.7559 (UTC)
-X-MS-Exchange-CrossTenant-fromentityheader: Hosted
-X-MS-Exchange-CrossTenant-id: 46c98d88-e344-4ed4-8496-4ed7712e255d
-X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: XDfn8rDy+j7gLFQZWWOQX3NpG0XP2bkuCMLGGSZK992Rd8gQLWFOExtFJ7RORZuNy+7lAf9MjoM+KZWHR8GIyA==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: BN0PR11MB5711
-X-OriginatorOrg: intel.com
-Cc: "jean-philippe@linaro.org" <jean-philippe@linaro.org>,
- "cohuck@redhat.com" <cohuck@redhat.com>,
- "kvm@vger.kernel.org" <kvm@vger.kernel.org>, "corbet@lwn.net" <corbet@lwn.net>,
- "robin.murphy@arm.com" <robin.murphy@arm.com>,
- "linux-doc@vger.kernel.org" <linux-doc@vger.kernel.org>,
- "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
- "iommu@lists.linux-foundation.org" <iommu@lists.linux-foundation.org>,
- "thierry.reding@gmail.com" <thierry.reding@gmail.com>,
- Jason Gunthorpe <jgg@nvidia.com>,
- "linux-tegra@vger.kernel.org" <linux-tegra@vger.kernel.org>,
- "will@kernel.org" <will@kernel.org>,
+In-Reply-To: <1621566204-37456-1-git-send-email-wangxingang5@huawei.com>
+Content-Language: en-US
+X-Brightmail-Tracker: H4sIAAAAAAAAA+NgFjrBKsWRmVeSWpSXmKPExsWy7djPc7o/HfQTDd5PtrRoXryezeLVmbVs
+ Fgv2W1t0zt7AbrHp8TVWi8u75rBZnJ13nM2ide8Rdov/e3awWxz88ITVYt7NdewWLXdMLXYs
+ ncnuwOvx5OA8Jo8189YwerQcecvqsWlVJ5vH/rlr2D02L6n3mHxjOaPH501yARxRXDYpqTmZ
+ ZalF+nYJXBnnj5xjLFglXHHh3Cv2BsYT/F2MnBwSAiYSp743MnUxcnEICaxglJi7p4sdwvnC
+ KDF/430o5zOjRH/TRmaYlg3XuxghEssZJaZ+bGMBSQgJfGSUaOwKA7GFBSIklrxvB4uLCBRL
+ NG39C2YzCyxgkpjYDVbDJmAo0fW2iw3E5hWwk3i9/haYzSKgInF/016welGBZImJTyaxQtQI
+ Spyc+QQszingIbH0wVKomfIS29/OYYawxSVuPZkP9o+EwGxOiYXXtzNBXO0i8WjyC6gPhCVe
+ Hd/CDmHLSPzfCdPQzCjx8Nxadginh1HictMMRogqa4k7534BnccBtEJTYv0ufYiwo8SaGdtY
+ QcISAnwSN94KQhzBJzFp23RmiDCvREebEES1msSs4+vg1h68cIl5AqPSLCSvzULyziwk78xC
+ 2LuAkWUVo3hqaXFuemqxUV5quV5xYm5xaV66XnJ+7iZGYGI7/e/4lx2My1991DvEyMTBeIhR
+ goNZSYSX9aFeohBvSmJlVWpRfnxRaU5q8SFGaQ4WJXHepC1r4oUE0hNLUrNTUwtSi2CyTByc
+ Ug1MBmfuRlxccu7dB26BrKTboUKl5+vDeIvlvsdvTmWell7tqOry6TnLX47tclIXw7Lvbjy6
+ Ktx7t8XbaFu+VQd5qr6dX+5uNqVJ4FPg3zWyyxTV/Kd4rY1M5qtzUNA149/h8H9Z8pGGPCk2
+ 49S2Cau73K5qzJUOmiDLcbXz45zdy9qjmR9uEjJmtEqrNLCa9v0O7+aS3pTeND/vvHSNJcdW
+ Luf9zbttuTDrtOl9rV9XcX016eK2DmbZu2mpwbL7Aj7n7Z+bb/z/8HLWF9HzYWcvCJR4TvKa
+ cy63fAqbsc6C/usHQvMfvSqTDFm94GMww4eqn28Lz7maftwo/pK94oPxM+eVS0qdmC/lqzxg
+ tU9RYinOSDTUYi4qTgQAOWa029sDAAA=
+X-Brightmail-Tracker: H4sIAAAAAAAAA+NgFrrNIsWRmVeSWpSXmKPExsVy+t/xu7o/HfQTDbbeE7JoXryezeLVmbVs
+ Fgv2W1t0zt7AbrHp8TVWi8u75rBZnJ13nM2ide8Rdov/e3awWxz88ITVYt7NdewWLXdMLXYs
+ ncnuwOvx5OA8Jo8189YwerQcecvqsWlVJ5vH/rlr2D02L6n3mHxjOaPH501yARxRejZF+aUl
+ qQoZ+cUltkrRhhZGeoaWFnpGJpZ6hsbmsVZGpkr6djYpqTmZZalF+nYJehnnj5xjLFglXHHh
+ 3Cv2BsYT/F2MnBwSAiYSG653MXYxcnEICSxllJi67wcrREJG4uS0BihbWOLPtS42iKL3jBLX
+ mp8xgSSEBSIkNr74wwJiiwgUS7x+NIMVpIhZYAGTRM/ar4wgCSEBd4klnz+CTWITMJToegsy
+ iZODV8BO4vX6W2A2i4CKxP1Ne8EGiQokS3w4vZQVokZQ4uTMJ2BxTgEPiaUPloLZzAJmEvM2
+ P2SGsOUltr+dA2WLS9x6Mp9pAqPQLCTts5C0zELSMgtJywJGllWMIqmlxbnpucVGesWJucWl
+ eel6yfm5mxiBsbzt2M8tOxhXvvqod4iRiYPxEKMEB7OSCC/rQ71EId6UxMqq1KL8+KLSnNTi
+ Q4ymQP9MZJYSTc4HJpO8knhDMwNTQxMzSwNTSzNjJXFekyNr4oUE0hNLUrNTUwtSi2D6mDg4
+ pRqY9qrdDD/wL/l0peLHH1+SKo7k9t50rGKYOnuXZFF+YeRWVvaKdZc3TjO7Guv+YP0bft83
+ S3pMOxfri/nxOW3m1XP8yM4w9dZbVfZK6e3CcdvS9LX2x4q0soRGh3WXireoWvz/GRO5Vnxq
+ jkCdQuoyD/vOW4t1pbuyPJ+tU1PUt5/510xKe/6W60ytD4qyd3We49jXFl11jmHn8W1sRxIX
+ PphlfPDKlVuTZKQ/e/sxbUr8WdOc5fbR5bZI77LYOOGMZ+4dxusKzHwaWVOlPG2U9mRILVU7
+ v3/qlXevqzLep8xxudC0n9/5Rk/ef4V9Xfv2pLM8493/KOzKnl3V9m/0pKY0buI5fsLzzrSX
+ 1kxKLMUZiYZazEXFiQCB4iyHbgMAAA==
+X-CMS-MailID: 20210901085937eucas1p2d02da65cac797706ca3a10b8a2eb8ba2
+X-Msg-Generator: CA
+X-RootMTR: 20210901085937eucas1p2d02da65cac797706ca3a10b8a2eb8ba2
+X-EPHeader: CA
+CMS-TYPE: 201P
+X-CMS-RootMailID: 20210901085937eucas1p2d02da65cac797706ca3a10b8a2eb8ba2
+References: <1621566204-37456-1-git-send-email-wangxingang5@huawei.com>
+ <CGME20210901085937eucas1p2d02da65cac797706ca3a10b8a2eb8ba2@eucas1p2.samsung.com>
+Cc: xieyingtai@huawei.com, gregkh@linuxfoundation.org,
+ linux-kernel@vger.kernel.org, iommu@lists.linux-foundation.org,
+ robh+dt@kernel.org, linux-pci@vger.kernel.org,
+ Robin Murphy <robin.murphy@arm.com>,
  "linux-arm-kernel@lists.infradead.org" <linux-arm-kernel@lists.infradead.org>
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
@@ -195,129 +159,75 @@ Content-Transfer-Encoding: 7bit
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-> From: Alex Williamson
-> Sent: Wednesday, September 1, 2021 12:16 AM
-> 
-> On Mon, 30 Aug 2021 19:59:10 -0700
-> Nicolin Chen <nicolinc@nvidia.com> wrote:
-> 
-> > The SMMUv3 devices implemented in the Grace SoC support NVIDIA's
-> custom
-> > CMDQ-Virtualization (CMDQV) hardware. Like the new ECMDQ feature first
-> > introduced in the ARM SMMUv3.3 specification, CMDQV adds multiple
-> VCMDQ
-> > interfaces to supplement the single architected SMMU_CMDQ in an effort
-> > to reduce contention.
-> >
-> > This series of patches add CMDQV support with its preparational changes:
-> >
-> > * PATCH-1 to PATCH-8 are related to shared VMID feature: they are used
-> >   first to improve TLB utilization, second to bind a shared VMID with a
-> >   VCMDQ interface for hardware configuring requirement.
-> 
-> The vfio changes would need to be implemented in alignment with the
-> /dev/iommu proposals[1].  AIUI, the VMID is essentially binding
-> multiple containers together for TLB invalidation, which I expect in
-> the proposal below is largely already taken care of in that a single
-> iommu-fd can support multiple I/O address spaces and it's largely
-> expected that a hypervisor would use a single iommu-fd so this explicit
-> connection by userspace across containers wouldn't be necessary.
+On 21.05.2021 05:03, Wang Xingang wrote:
+> From: Xingang Wang <wangxingang5@huawei.com>
+>
+> When booting with devicetree, the pci_request_acs() is called after the
+> enumeration and initialization of PCI devices, thus the ACS is not
+> enabled. And ACS should be enabled when IOMMU is detected for the
+> PCI host bridge, so add check for IOMMU before probe of PCI host and call
+> pci_request_acs() to make sure ACS will be enabled when enumerating PCI
+> devices.
+>
+> Fixes: 6bf6c24720d33 ("iommu/of: Request ACS from the PCI core when
+> configuring IOMMU linkage")
+> Signed-off-by: Xingang Wang <wangxingang5@huawei.com>
 
-Agree. VMID is equivalent to DID (domain id) in other vendor iommus.
-with /dev/iommu multiple I/O address spaces can share the same VMID
-via nesting. No need of exposing VMID to userspace to build the 
-connection.
+This patch landed in linux-next as commit 57a4ab1584e6 ("iommu/of: Fix 
+pci_request_acs() before enumerating PCI devices"). Sadly it breaks PCI 
+operation on ARM Juno R1 board (arch/arm64/boot/dts/arm/juno-r1.dts). It 
+looks that the IOMMU controller is not probed for some reasons:
 
-Thanks,
-Kevin
+# cat /sys/kernel/debug/devices_deferred
+2b600000.iommu
 
-> 
-> We're expecting to talk more about the /dev/iommu approach at Plumbers
-> in few weeks.  Thanks,
-> 
-> Alex
-> 
-> [1]https://lore.kernel.org/kvm/BN9PR11MB5433B1E4AE5B0480369F97178C1
-> 89@BN9PR11MB5433.namprd11.prod.outlook.com/
-> 
-> 
-> > * PATCH-9 and PATCH-10 are to accommodate the NVIDIA implementation
-> with
-> >   the existing arm-smmu-v3 driver.
-> >
-> > * PATCH-11 borrows the "implementation infrastructure" from the arm-
-> smmu
-> >   driver so later change can build upon it.
-> >
-> > * PATCH-12 adds an initial NVIDIA implementation related to host feature,
-> >   and also adds implementation specific ->device_reset() and ->get_cmdq()
-> >   callback functions.
-> >
-> > * PATCH-13 adds virtualization features using VFIO mdev interface, which
-> >   allows user space hypervisor to map and get access to one of the VCMDQ
-> >   interfaces of CMDQV module.
-> >
-> > ( Thinking that reviewers can get a better view of this implementation,
-> >   I am attaching QEMU changes here for reference purpose:
-> >       https://github.com/nicolinc/qemu/commits/dev/cmdqv_v6.0.0-rc2
-> >   The branch has all preparational changes, while I'm still integrating
-> >   device model and ARM-VIRT changes, and will push them these two days,
-> >   although they might not be in a good shape of being sent to review yet )
-> >
-> > Above all, I marked RFC for this series, as I feel that we may come up
-> > some better solution. So please kindly share your reviews and insights.
-> >
-> > Thank you!
-> >
-> > Changelog
-> > v1->v2:
-> >  * Added mdev interface support for hypervisor and VMs.
-> >  * Added preparational changes for mdev interface implementation.
-> >  * PATCH-12 Changed ->issue_cmdlist() to ->get_cmdq() for a better
-> >    integration with recently merged ECMDQ-related changes.
-> >
-> > Nate Watterson (3):
-> >   iommu/arm-smmu-v3: Add implementation infrastructure
-> >   iommu/arm-smmu-v3: Add support for NVIDIA CMDQ-Virtualization hw
-> >   iommu/nvidia-smmu-v3: Add mdev interface support
-> >
-> > Nicolin Chen (10):
-> >   iommu: Add set_nesting_vmid/get_nesting_vmid functions
-> >   vfio: add VFIO_IOMMU_GET_VMID and VFIO_IOMMU_SET_VMID
-> >   vfio: Document VMID control for IOMMU Virtualization
-> >   vfio: add set_vmid and get_vmid for vfio_iommu_type1
-> >   vfio/type1: Implement set_vmid and get_vmid
-> >   vfio/type1: Set/get VMID to/from iommu driver
-> >   iommu/arm-smmu-v3: Add shared VMID support for NESTING
-> >   iommu/arm-smmu-v3: Add VMID alloc/free helpers
-> >   iommu/arm-smmu-v3: Pass dev pointer to arm_smmu_detach_dev
-> >   iommu/arm-smmu-v3: Pass cmdq pointer in
-> arm_smmu_cmdq_issue_cmdlist()
-> >
-> >  Documentation/driver-api/vfio.rst             |   34 +
-> >  MAINTAINERS                                   |    2 +
-> >  drivers/iommu/arm/arm-smmu-v3/Makefile        |    2 +-
-> >  .../iommu/arm/arm-smmu-v3/arm-smmu-v3-impl.c  |   15 +
-> >  drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c   |  121 +-
-> >  drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.h   |   18 +
-> >  .../iommu/arm/arm-smmu-v3/nvidia-smmu-v3.c    | 1249
-> +++++++++++++++++
-> >  drivers/iommu/iommu.c                         |   20 +
-> >  drivers/vfio/vfio.c                           |   25 +
-> >  drivers/vfio/vfio_iommu_type1.c               |   37 +
-> >  include/linux/iommu.h                         |    5 +
-> >  include/linux/vfio.h                          |    2 +
-> >  include/uapi/linux/vfio.h                     |   26 +
-> >  13 files changed, 1537 insertions(+), 19 deletions(-)
-> >  create mode 100644 drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3-
-> impl.c
-> >  create mode 100644 drivers/iommu/arm/arm-smmu-v3/nvidia-smmu-v3.c
-> >
-> 
-> _______________________________________________
-> iommu mailing list
-> iommu@lists.linux-foundation.org
-> https://lists.linuxfoundation.org/mailman/listinfo/iommu
+Reverting this patch on top of current linux-next fixes this issue. If 
+you need more information to debug this issue, just let me know.
+
+> ---
+>   drivers/iommu/of_iommu.c | 1 -
+>   drivers/pci/of.c         | 8 +++++++-
+>   2 files changed, 7 insertions(+), 2 deletions(-)
+>
+> diff --git a/drivers/iommu/of_iommu.c b/drivers/iommu/of_iommu.c
+> index a9d2df001149..54a14da242cc 100644
+> --- a/drivers/iommu/of_iommu.c
+> +++ b/drivers/iommu/of_iommu.c
+> @@ -205,7 +205,6 @@ const struct iommu_ops *of_iommu_configure(struct device *dev,
+>   			.np = master_np,
+>   		};
+>   
+> -		pci_request_acs();
+>   		err = pci_for_each_dma_alias(to_pci_dev(dev),
+>   					     of_pci_iommu_init, &info);
+>   	} else {
+> diff --git a/drivers/pci/of.c b/drivers/pci/of.c
+> index da5b414d585a..2313c3f848b0 100644
+> --- a/drivers/pci/of.c
+> +++ b/drivers/pci/of.c
+> @@ -581,9 +581,15 @@ static int pci_parse_request_of_pci_ranges(struct device *dev,
+>   
+>   int devm_of_pci_bridge_init(struct device *dev, struct pci_host_bridge *bridge)
+>   {
+> -	if (!dev->of_node)
+> +	struct device_node *node = dev->of_node;
+> +
+> +	if (!node)
+>   		return 0;
+>   
+> +	/* Detect IOMMU and make sure ACS will be enabled */
+> +	if (of_property_read_bool(node, "iommu-map"))
+> +		pci_request_acs();
+> +
+>   	bridge->swizzle_irq = pci_common_swizzle;
+>   	bridge->map_irq = of_irq_parse_and_map_pci;
+>   
+
+Best regards
+-- 
+Marek Szyprowski, PhD
+Samsung R&D Institute Poland
+
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
