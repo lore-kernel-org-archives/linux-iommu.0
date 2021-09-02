@@ -1,74 +1,190 @@
-Return-Path: <SRS0=1qmC=NX=lists.linux-foundation.org=iommu-bounces@kernel.org>
+Return-Path: <SRS0=cE/7=NY=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-6.3 required=3.0 tests=BAYES_00,
-	HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,NICE_REPLY_A,SPF_HELO_NONE,
-	SPF_PASS,URIBL_BLOCKED,USER_AGENT_SANE_1 autolearn=no autolearn_force=no
+X-Spam-Status: No, score=-13.6 required=3.0 tests=BAYES_00,DKIM_INVALID,
+	DKIM_SIGNED,HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_CR_TRAILER,INCLUDES_PATCH,
+	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no
 	version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 05145C432BE
-	for <iommu@archiver.kernel.org>; Wed,  1 Sep 2021 18:53:41 +0000 (UTC)
-Received: from smtp1.osuosl.org (smtp1.osuosl.org [140.211.166.138])
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A5A86C432BE
+	for <iommu@archiver.kernel.org>; Thu,  2 Sep 2021 00:15:15 +0000 (UTC)
+Received: from smtp2.osuosl.org (smtp2.osuosl.org [140.211.166.133])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 9F22D61183
-	for <iommu@archiver.kernel.org>; Wed,  1 Sep 2021 18:53:40 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.4.1 mail.kernel.org 9F22D61183
-Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=arm.com
+	by mail.kernel.org (Postfix) with ESMTPS id 1E93961074
+	for <iommu@archiver.kernel.org>; Thu,  2 Sep 2021 00:15:15 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.4.1 mail.kernel.org 1E93961074
+Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=lists.linux-foundation.org
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by smtp1.osuosl.org (Postfix) with ESMTP id 6B01F80C8C;
-	Wed,  1 Sep 2021 18:53:40 +0000 (UTC)
-X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from smtp1.osuosl.org ([127.0.0.1])
-	by localhost (smtp1.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id Cd0CgwAfoRtT; Wed,  1 Sep 2021 18:53:36 +0000 (UTC)
-Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by smtp1.osuosl.org (Postfix) with ESMTPS id 3404180C7D;
-	Wed,  1 Sep 2021 18:53:36 +0000 (UTC)
-Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 0DB86C0010;
-	Wed,  1 Sep 2021 18:53:36 +0000 (UTC)
-Received: from smtp2.osuosl.org (smtp2.osuosl.org [IPv6:2605:bc80:3010::133])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 2EC51C000E
- for <iommu@lists.linux-foundation.org>; Wed,  1 Sep 2021 18:53:34 +0000 (UTC)
-Received: from localhost (localhost [127.0.0.1])
- by smtp2.osuosl.org (Postfix) with ESMTP id 1520D4011D
- for <iommu@lists.linux-foundation.org>; Wed,  1 Sep 2021 18:53:34 +0000 (UTC)
+	by smtp2.osuosl.org (Postfix) with ESMTP id CDC0440156;
+	Thu,  2 Sep 2021 00:15:14 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
 Received: from smtp2.osuosl.org ([127.0.0.1])
- by localhost (smtp2.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id Wr0fggNjttHN for <iommu@lists.linux-foundation.org>;
- Wed,  1 Sep 2021 18:53:33 +0000 (UTC)
-X-Greylist: domain auto-whitelisted by SQLgrey-1.8.0
-Received: from foss.arm.com (foss.arm.com [217.140.110.172])
- by smtp2.osuosl.org (Postfix) with ESMTP id 352CB400BD
- for <iommu@lists.linux-foundation.org>; Wed,  1 Sep 2021 18:53:32 +0000 (UTC)
-Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
- by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id E847F1063;
- Wed,  1 Sep 2021 11:53:30 -0700 (PDT)
-Received: from [10.57.15.112] (unknown [10.57.15.112])
- by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id 623C13F694;
- Wed,  1 Sep 2021 11:53:29 -0700 (PDT)
-Subject: Re: [PATCH v2 6/8] iommu: Move IOMMU pagesize check to attach_device
-To: Sven Peter <sven@svenpeter.dev>, Alyssa Rosenzweig <alyssa@rosenzweig.io>
-References: <20210828153642.19396-1-sven@svenpeter.dev>
- <20210828153642.19396-7-sven@svenpeter.dev> <YS6hl0gAOMoMxNhf@sunset>
- <adee671d-976a-4906-8592-c7391da9906b@www.fastmail.com>
-From: Robin Murphy <robin.murphy@arm.com>
-Message-ID: <ede06b33-38ff-1ba2-c32c-c5bb3aaddb62@arm.com>
-Date: Wed, 1 Sep 2021 19:53:23 +0100
-User-Agent: Mozilla/5.0 (Windows NT 10.0; rv:78.0) Gecko/20100101
- Thunderbird/78.13.0
+	by localhost (smtp2.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+	with ESMTP id RWE36ZLwWJjE; Thu,  2 Sep 2021 00:15:10 +0000 (UTC)
+Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [IPv6:2605:bc80:3010:104::8cd3:938])
+	by smtp2.osuosl.org (Postfix) with ESMTPS id 60B8740004;
+	Thu,  2 Sep 2021 00:15:10 +0000 (UTC)
+Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 33A8FC0010;
+	Thu,  2 Sep 2021 00:15:10 +0000 (UTC)
+Received: from smtp1.osuosl.org (smtp1.osuosl.org [IPv6:2605:bc80:3010::138])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 488C5C000E
+ for <iommu@lists.linux-foundation.org>; Thu,  2 Sep 2021 00:15:09 +0000 (UTC)
+Received: from localhost (localhost [127.0.0.1])
+ by smtp1.osuosl.org (Postfix) with ESMTP id 232C380D35
+ for <iommu@lists.linux-foundation.org>; Thu,  2 Sep 2021 00:15:09 +0000 (UTC)
+X-Virus-Scanned: amavisd-new at osuosl.org
+Authentication-Results: smtp1.osuosl.org (amavisd-new);
+ dkim=pass (1024-bit key) header.d=microsoft.com
+Received: from smtp1.osuosl.org ([127.0.0.1])
+ by localhost (smtp1.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+ with ESMTP id kwtG5PHNVdG5 for <iommu@lists.linux-foundation.org>;
+ Thu,  2 Sep 2021 00:15:07 +0000 (UTC)
+X-Greylist: whitelisted by SQLgrey-1.8.0
+Received: from outbound.mail.eo.outlook.com
+ (mail-oln040093008003.outbound.protection.outlook.com [40.93.8.3])
+ by smtp1.osuosl.org (Postfix) with ESMTPS id 7078680C18
+ for <iommu@lists.linux-foundation.org>; Thu,  2 Sep 2021 00:15:07 +0000 (UTC)
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=h8BvVlJXCwbhMTEelowaN9kx+nSDBGru5s7InceIX2Po4KWVpJ9roHMd/HCgBjctY+yfPUfYaGNLdP0C7C3/k3ibkdI3yS8myRWQ9hSAdwm3RmSgF4ic3PwzTh+Ohfs+bJc0QJ3CJy2p/VsqBqit7kPKrafI+XuMeCOkvhEidSOTySuNX/5lq7eUVBuymJX//cN1tcVRrsuR/E7FrJDR7mrAww93YjW5uljePBfs9Yzw8nXxhffKaIH97oJ68UrXfRd20GiPMro2luozaSykmfstmHPOP+V/5hqh67T4Bxu/qVIxO3B3mOaE01uFDrbW4avWGix5Zu/9cYBxrFUmLg==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com; 
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version; 
+ bh=2wJZwyg52cCLIvGROM9MWlEN9cOqwTvnQY12hCyFx/M=;
+ b=PBg5e0gbR6i6m1kfUdBM0yttzgG6W3oki6YYMb+OpIhotgMUyPhbW/zmQqSfdenV5yHItttnIcqtZjyZtxHGNhRiM8A2XYeRSl/Cj92gJUdhaWkUgov87B+UkKqmp6oVPKIIEw6ETznyygch+fSUdwnIY4mkFFgzryPgGHDeC+5a2AVdLSONFKAkf+p7Gm+l/PVtc/MOanHkQRSKxFnRaQwT7PxVT8ZlM0PV5eca63f/J7m24zMpHzY9eptYV0Kivpl/xlbRRBI6Po8SGvg4uctJU8fSdJGIJ4njXkQaehViwJQPV9x6bYIHXnI8lEGRt1I4xEPkQKP/+90DvR7wnQ==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=microsoft.com; dmarc=pass action=none
+ header.from=microsoft.com; dkim=pass header.d=microsoft.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=2wJZwyg52cCLIvGROM9MWlEN9cOqwTvnQY12hCyFx/M=;
+ b=aIfunch/uFPwfCEApTqxLCAAZxJPvXnaRb7Pj8i7HYwjQ8P8SbWpTRgpUiYkQLLmQVAKBJZ3ttPxukfts2EM+obZus2xdhUWv56/DaGyXjYJFT/fM0RvR7hCvbagI3R+8jullzbTd+QlKODpqdoy3y4R+/5uzJJAHAHD0vo+GI8=
+Received: from MWHPR21MB1593.namprd21.prod.outlook.com (2603:10b6:301:7c::11)
+ by MWHPR21MB0797.namprd21.prod.outlook.com (2603:10b6:300:11b::23)
+ with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4500.1; Thu, 2 Sep
+ 2021 00:15:03 +0000
+Received: from MWHPR21MB1593.namprd21.prod.outlook.com
+ ([fe80::3c8b:6387:cd5:7d86]) by MWHPR21MB1593.namprd21.prod.outlook.com
+ ([fe80::3c8b:6387:cd5:7d86%8]) with mapi id 15.20.4478.014; Thu, 2 Sep 2021
+ 00:15:03 +0000
+To: Tianyu Lan <ltykernel@gmail.com>, KY Srinivasan <kys@microsoft.com>,
+ Haiyang Zhang <haiyangz@microsoft.com>, Stephen Hemminger
+ <sthemmin@microsoft.com>, "wei.liu@kernel.org" <wei.liu@kernel.org>, Dexuan
+ Cui <decui@microsoft.com>, "catalin.marinas@arm.com"
+ <catalin.marinas@arm.com>, "will@kernel.org" <will@kernel.org>,
+ "tglx@linutronix.de" <tglx@linutronix.de>, "mingo@redhat.com"
+ <mingo@redhat.com>, "bp@alien8.de" <bp@alien8.de>, "x86@kernel.org"
+ <x86@kernel.org>, "hpa@zytor.com" <hpa@zytor.com>,
+ "dave.hansen@linux.intel.com" <dave.hansen@linux.intel.com>,
+ "luto@kernel.org" <luto@kernel.org>, "peterz@infradead.org"
+ <peterz@infradead.org>, "konrad.wilk@oracle.com" <konrad.wilk@oracle.com>,
+ "boris.ostrovsky@oracle.com" <boris.ostrovsky@oracle.com>, "jgross@suse.com"
+ <jgross@suse.com>, "sstabellini@kernel.org" <sstabellini@kernel.org>,
+ "joro@8bytes.org" <joro@8bytes.org>, "davem@davemloft.net"
+ <davem@davemloft.net>, "kuba@kernel.org" <kuba@kernel.org>,
+ "jejb@linux.ibm.com" <jejb@linux.ibm.com>, "martin.petersen@oracle.com"
+ <martin.petersen@oracle.com>, "gregkh@linuxfoundation.org"
+ <gregkh@linuxfoundation.org>, "arnd@arndb.de" <arnd@arndb.de>, "hch@lst.de"
+ <hch@lst.de>, "m.szyprowski@samsung.com" <m.szyprowski@samsung.com>,
+ "robin.murphy@arm.com" <robin.murphy@arm.com>, "brijesh.singh@amd.com"
+ <brijesh.singh@amd.com>, "thomas.lendacky@amd.com" <thomas.lendacky@amd.com>, 
+ Tianyu Lan <Tianyu.Lan@microsoft.com>, "pgonda@google.com"
+ <pgonda@google.com>, "martin.b.radev@gmail.com" <martin.b.radev@gmail.com>,
+ "akpm@linux-foundation.org" <akpm@linux-foundation.org>,
+ "kirill.shutemov@linux.intel.com" <kirill.shutemov@linux.intel.com>,
+ "rppt@kernel.org" <rppt@kernel.org>, "hannes@cmpxchg.org"
+ <hannes@cmpxchg.org>, "aneesh.kumar@linux.ibm.com"
+ <aneesh.kumar@linux.ibm.com>, "krish.sadhukhan@oracle.com"
+ <krish.sadhukhan@oracle.com>, "saravanand@fb.com" <saravanand@fb.com>,
+ "linux-arm-kernel@lists.infradead.org"
+ <linux-arm-kernel@lists.infradead.org>, "xen-devel@lists.xenproject.org"
+ <xen-devel@lists.xenproject.org>, "rientjes@google.com"
+ <rientjes@google.com>, "ardb@kernel.org" <ardb@kernel.org>
+Subject: RE: [PATCH V4 01/13] x86/hyperv: Initialize GHCB page in Isolation VM
+Thread-Topic: [PATCH V4 01/13] x86/hyperv: Initialize GHCB page in Isolation VM
+Thread-Index: AQHXm2f8V9hgDb15oEeIZM6sY/3E8auH7dAA
+Date: Thu, 2 Sep 2021 00:15:03 +0000
+Message-ID: <MWHPR21MB1593366997ACAFCC79EBC0B0D7CE9@MWHPR21MB1593.namprd21.prod.outlook.com>
+References: <20210827172114.414281-1-ltykernel@gmail.com>
+ <20210827172114.414281-2-ltykernel@gmail.com>
+In-Reply-To: <20210827172114.414281-2-ltykernel@gmail.com>
+Accept-Language: en-US
+Content-Language: en-US
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+msip_labels: MSIP_Label_f42aa342-8706-4288-bd11-ebb85995028c_ActionId=11e436c2-915c-4d7c-84ac-3bd04a4dfdb3;
+ MSIP_Label_f42aa342-8706-4288-bd11-ebb85995028c_ContentBits=0;
+ MSIP_Label_f42aa342-8706-4288-bd11-ebb85995028c_Enabled=true;
+ MSIP_Label_f42aa342-8706-4288-bd11-ebb85995028c_Method=Standard;
+ MSIP_Label_f42aa342-8706-4288-bd11-ebb85995028c_Name=Internal;
+ MSIP_Label_f42aa342-8706-4288-bd11-ebb85995028c_SetDate=2021-08-27T22:24:34Z;
+ MSIP_Label_f42aa342-8706-4288-bd11-ebb85995028c_SiteId=72f988bf-86f1-41af-91ab-2d7cd011db47;
+authentication-results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=microsoft.com;
+x-ms-publictraffictype: Email
+x-ms-office365-filtering-correlation-id: a93f77f8-5e8d-4146-86b8-08d96da6b5ec
+x-ms-traffictypediagnostic: MWHPR21MB0797:
+x-ms-exchange-transport-forked: True
+x-ld-processed: 72f988bf-86f1-41af-91ab-2d7cd011db47,ExtAddr
+x-microsoft-antispam-prvs: <MWHPR21MB07976EFF864A059B6428E017D7CE9@MWHPR21MB0797.namprd21.prod.outlook.com>
+x-ms-oob-tlc-oobclassifiers: OLM:3044;
+x-ms-exchange-senderadcheck: 1
+x-ms-exchange-antispam-relay: 0
+x-microsoft-antispam: BCL:0;
+x-microsoft-antispam-message-info: epIsuYLDpNuvDcYJI1k0v+H+bBdkVs7GflPwJ89C7scLQt3PA8qBjBhhCjLcJ3STPnN7wrJytjcvU4hl0MYDSA/M207W9ZMTZ37Wd6OugAl6aezKycuTmFk77kpY88OfUh09NeI0vZ4l6URGi1BH3jkOgO+sBcjXVlellQ8kYwwGTZgl6scPuWO8up0RHHvR4XObjCS7HjHaI42LIbnIFzqWLzxJXgHp8+oIix3fh+zOf65qNMd4iPQv2BVuuaBLCRWplWUr6H6vAJsDFInSEDqIyrmje5XPV1EtXzoD4nLSWfOU/9a2gtMZBFaMWlOl7UAN59dHTNCldAD3s3wEI9/wOLRjXaRJzoBwjuSFBNjl6RzLrbZ89J8F4nI1fw1zrMoMilaQVJ70R0JBJ3ZwpI5Ofnc9WCTeH5wWTQ6Sb+McqQLhvO5+cie/iUTFJD5dls2fMYR6e8/pYxNXIN6EMcUR2KVAg6ys9nRDPECW3zkcnpIqDVHkPioYmSY7FgpGUFN3fA4//FfoMO0FLRP+K7Ce7o48GQ8mGf09t+UBtngfnTv0eBbrJTOu+Sa0H/sM4I1zEIBewjnOW0yLv+eQ4zPILbVDpuUHDPmP6sX8KJNwCtY+VtTxvts+r5CeSerSZ4SqHQKDausoCx4hUmtY+NW/I839xu+E8yjEnKCrz7eHixQWz5DX0oYg0LQdZzN9/TRgoXgK78QrvIGhVO7kFhR6FAN4+CDioU83HC74qgE=
+x-forefront-antispam-report: CIP:255.255.255.255; CTRY:; LANG:en; SCL:1; SRV:;
+ IPV:NLI; SFV:NSPM; H:MWHPR21MB1593.namprd21.prod.outlook.com; PTR:; CAT:NONE;
+ SFS:(4636009)(366004)(2906002)(38070700005)(8936002)(316002)(8676002)(7696005)(71200400001)(5660300002)(52536014)(10290500003)(82960400001)(508600001)(8990500004)(82950400001)(7366002)(7406005)(66446008)(83380400001)(186003)(66476007)(66556008)(122000001)(76116006)(86362001)(921005)(33656002)(66946007)(9686003)(54906003)(55016002)(110136005)(64756008)(6506007)(4326008)(7416002)(38100700002)(26005);
+ DIR:OUT; SFP:1102; 
+x-ms-exchange-antispam-messagedata-chunkcount: 1
+x-ms-exchange-antispam-messagedata-0: =?us-ascii?Q?+SGvGo5LkyV3z+SW3AVjl3lmleGqyjpZ/boSbjjpuWW5SKx1ApAWYE1hlCTO?=
+ =?us-ascii?Q?M7dMdQq8LUMvGbrXI86PorsvIaGjOuHQgc8ceSyzq6p2IEw6aj9e7RoNsLzh?=
+ =?us-ascii?Q?+2RamO64+yd2hERjxFouOqyFd7ereJcl5HrAbIk/6CgQp6X3igVVNtA+OIXb?=
+ =?us-ascii?Q?/V8Jr8+Swayl2Zkek8ng1r0qv6bnyZ4e2yq6vGz3XJIDzVWJQnsPtXRZ4n3Y?=
+ =?us-ascii?Q?hToD/HPrFnHlMOK7KCeeuPruWaF4duxcruMBuYlSYsdvjiX/NYtevhjo4mPk?=
+ =?us-ascii?Q?Pp1BPdyc54XNnenMlC5Rcx4zBjW2lPehSKRIYjtSy3u8A2hT3i/fIZ+rLS1W?=
+ =?us-ascii?Q?skCK43EqJq9ZRA/0ayPuCPeUln685c3+YEU4DDVj/V2Awtfnlmw3Spy978Cl?=
+ =?us-ascii?Q?G4mqEOPp0hFGPKHcY7Ppkz/S6ZkUYqZzKGH9g0lIBlbQVZKSrnVXaT/xpxuM?=
+ =?us-ascii?Q?eO24L6OEKTYxWDhBCkaXqzRgVYLmMXdDCy0+JDoLdIEVBKvUUtzqX0pThptA?=
+ =?us-ascii?Q?pExZRrp8K19Sf2lPHyjS6LtJrHvGRL8qwNHNdxVJCqtyZGpkYERdxwHXNt0K?=
+ =?us-ascii?Q?dzF3dwCHdaOFdglJHBoihyelfe3V1o5d8A2lfM0GWICQOHEcZLQPqeOaOYFt?=
+ =?us-ascii?Q?n4rabWOuGaNTLALS5eIwgjX548KNnEOuoP+77UvnBS1uNcnijusVJEiGF09J?=
+ =?us-ascii?Q?JcgHidD1tXjJTsSNdnFGr+h8DtyEx7eop+uJtdq0dcoqM+UHqXBDG7wIygjG?=
+ =?us-ascii?Q?qzn6p4DT21ArJV8QRDEewJCEdMw6BCtIPj1BXXqIH7dQD62DjHU7VvmUrUhC?=
+ =?us-ascii?Q?JCSGgUn1pxSZDm+E1ydRtgM8UnQzzvSDJLMIyFx0YT3HM3huVz5TFRXqUmJ9?=
+ =?us-ascii?Q?UxGP7a1EUwoftA0kAEj2zLBcTjqblpcnT27wzhwEzMfkRpaqSg7GSF/64xvy?=
+ =?us-ascii?Q?4UB/j/0IBxnyPxY/hwJgVr4zpFAsIKyaYhE8SswCoPSQC1Va3yraTzHVJhJB?=
+ =?us-ascii?Q?GWhOODZX3rIKIUGD0IiXw0IQASfRTS/4+Us/SKfYFOnvhD5PqRIy95JkjsIG?=
+ =?us-ascii?Q?lDPpsidDnekVVuLsMKzaGYmmLSlqdUWCA9gRttqi8MJUyKf5pWY8dFxmGCqv?=
+ =?us-ascii?Q?2y5AmFXa1jJRXarV4vIoPvevlzJqmtbgToTktN+Y1CxX8F4Fvl3wtHsfmZB3?=
+ =?us-ascii?Q?A1ZWW4MKulOUpPCCsBOsVgROJuS9wvCloK1LZKwWqqMbqguRY5EDJ395PM2D?=
+ =?us-ascii?Q?A2bcYFF+ZlueEd2dVCTkguUibyFLiqHbMdXYdvk6Q32xl2Mn8EEvqlAioWsz?=
+ =?us-ascii?Q?H+rz7J+co1poMS4EpHmARJCo?=
 MIME-Version: 1.0
-In-Reply-To: <adee671d-976a-4906-8592-c7391da9906b@www.fastmail.com>
-Content-Language: en-GB
-Cc: Arnd Bergmann <arnd@kernel.org>, Hector Martin <marcan@marcan.st>,
- linux-kernel@vger.kernel.org, iommu@lists.linux-foundation.org,
- Alexander Graf <graf@amazon.com>,
- Mohamed Mediouni <mohamed.mediouni@caramail.com>,
- Will Deacon <will@kernel.org>
+X-OriginatorOrg: microsoft.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-AuthSource: MWHPR21MB1593.namprd21.prod.outlook.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: a93f77f8-5e8d-4146-86b8-08d96da6b5ec
+X-MS-Exchange-CrossTenant-originalarrivaltime: 02 Sep 2021 00:15:03.0983 (UTC)
+X-MS-Exchange-CrossTenant-fromentityheader: Hosted
+X-MS-Exchange-CrossTenant-id: 72f988bf-86f1-41af-91ab-2d7cd011db47
+X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
+X-MS-Exchange-CrossTenant-userprincipalname: p8dISAuhX9IHX9/2j7Bsfwp5edDHyaJ+23+T2AH2eOY3r/aR7IqvRmfOlB8qS0BdABm/bMD8pSHZu6ldb6ZT/WmE/DgBmGyuWoge9svJhZM=
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: MWHPR21MB0797
+Cc: "linux-arch@vger.kernel.org" <linux-arch@vger.kernel.org>,
+ "parri.andrea@gmail.com" <parri.andrea@gmail.com>,
+ "linux-hyperv@vger.kernel.org" <linux-hyperv@vger.kernel.org>,
+ "linux-scsi@vger.kernel.org" <linux-scsi@vger.kernel.org>,
+ "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+ "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+ "dave.hansen@intel.com" <dave.hansen@intel.com>,
+ "iommu@lists.linux-foundation.org" <iommu@lists.linux-foundation.org>,
+ vkuznets <vkuznets@redhat.com>
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -81,45 +197,224 @@ List-Post: <mailto:iommu@lists.linux-foundation.org>
 List-Help: <mailto:iommu-request@lists.linux-foundation.org?subject=help>
 List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
  <mailto:iommu-request@lists.linux-foundation.org?subject=subscribe>
+From: Michael Kelley via iommu <iommu@lists.linux-foundation.org>
+Reply-To: Michael Kelley <mikelley@microsoft.com>
+Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
-Content-Type: text/plain; charset="us-ascii"; Format="flowed"
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-On 2021-09-01 18:14, Sven Peter wrote:
+From: Tianyu Lan <ltykernel@gmail.com> Sent: Friday, August 27, 2021 10:21 AM
 > 
+> Hyperv exposes GHCB page via SEV ES GHCB MSR for SNP guest
+> to communicate with hypervisor. Map GHCB page for all
+> cpus to read/write MSR register and submit hvcall request
+> via ghcb page.
 > 
-> On Tue, Aug 31, 2021, at 23:39, Alyssa Rosenzweig wrote:
->>> +	if ((1 << __ffs(domain->pgsize_bitmap)) > PAGE_SIZE) {
->>
->> Not a fan of this construction. Could you assign `(1 <<
->> __ffs(domain->pgsize_bitmap))` to an appropriately named temporary (e.g
->> min_io_pgsize) so it's clearer what's going on?
+> Signed-off-by: Tianyu Lan <Tianyu.Lan@microsoft.com>
+> ---
+> Chagne since v3:
+>         * Rename ghcb_base to hv_ghcb_pg and move it out of
+> 	  struct ms_hyperv_info.
+> 	* Allocate hv_ghcb_pg before cpuhp_setup_state() and leverage
+> 	  hv_cpu_init() to initialize ghcb page.
+> ---
+>  arch/x86/hyperv/hv_init.c       | 68 +++++++++++++++++++++++++++++----
+>  arch/x86/include/asm/mshyperv.h |  4 ++
+>  arch/x86/kernel/cpu/mshyperv.c  |  3 ++
+>  include/asm-generic/mshyperv.h  |  1 +
+>  4 files changed, 69 insertions(+), 7 deletions(-)
 > 
-> Good point, will do that for the next version.
+> diff --git a/arch/x86/hyperv/hv_init.c b/arch/x86/hyperv/hv_init.c
+> index 708a2712a516..eba10ed4f73e 100644
+> --- a/arch/x86/hyperv/hv_init.c
+> +++ b/arch/x86/hyperv/hv_init.c
+> @@ -20,6 +20,7 @@
+>  #include <linux/kexec.h>
+>  #include <linux/version.h>
+>  #include <linux/vmalloc.h>
+> +#include <linux/io.h>
+>  #include <linux/mm.h>
+>  #include <linux/hyperv.h>
+>  #include <linux/slab.h>
+> @@ -36,12 +37,42 @@ EXPORT_SYMBOL_GPL(hv_current_partition_id);
+>  void *hv_hypercall_pg;
+>  EXPORT_SYMBOL_GPL(hv_hypercall_pg);
+> 
+> +void __percpu **hv_ghcb_pg;
+> +
+>  /* Storage to save the hypercall page temporarily for hibernation */
+>  static void *hv_hypercall_pg_saved;
+> 
+>  struct hv_vp_assist_page **hv_vp_assist_page;
+>  EXPORT_SYMBOL_GPL(hv_vp_assist_page);
+> 
+> +static int hyperv_init_ghcb(void)
+> +{
+> +	u64 ghcb_gpa;
+> +	void *ghcb_va;
+> +	void **ghcb_base;
+> +
+> +	if (!hv_isolation_type_snp())
+> +		return 0;
+> +
+> +	if (!hv_ghcb_pg)
+> +		return -EINVAL;
+> +
+> +	/*
+> +	 * GHCB page is allocated by paravisor. The address
+> +	 * returned by MSR_AMD64_SEV_ES_GHCB is above shared
+> +	 * ghcb boundary and map it here.
 
-Or maybe just test "__ffs(domain->pgsize_bitmap) > PAGE_SHIFT", or 
-perhaps even avoid shifts altogether with something like 
-"domain->pgsize_bitmap & (PAGE_SIZE | PAGE_SIZE - 1)".
+I'm not sure what the "shared ghcb boundary" is.  Did you
+mean "shared_gpa_boundary"?
 
-Robin.
+> +	 */
+> +	rdmsrl(MSR_AMD64_SEV_ES_GHCB, ghcb_gpa);
+> +	ghcb_va = memremap(ghcb_gpa, HV_HYP_PAGE_SIZE, MEMREMAP_WB);
+> +	if (!ghcb_va)
+> +		return -ENOMEM;
+> +
+> +	ghcb_base = (void **)this_cpu_ptr(hv_ghcb_pg);
+> +	*ghcb_base = ghcb_va;
+> +
+> +	return 0;
+> +}
+> +
+>  static int hv_cpu_init(unsigned int cpu)
+>  {
+>  	union hv_vp_assist_msr_contents msr = { 0 };
+> @@ -85,7 +116,7 @@ static int hv_cpu_init(unsigned int cpu)
+>  		}
+>  	}
+> 
+> -	return 0;
+> +	return hyperv_init_ghcb();
+>  }
+> 
+>  static void (*hv_reenlightenment_cb)(void);
+> @@ -177,6 +208,14 @@ static int hv_cpu_die(unsigned int cpu)
+>  {
+>  	struct hv_reenlightenment_control re_ctrl;
+>  	unsigned int new_cpu;
+> +	void **ghcb_va;
+> +
+> +	if (hv_ghcb_pg) {
+> +		ghcb_va = (void **)this_cpu_ptr(hv_ghcb_pg);
+> +		if (*ghcb_va)
+> +			memunmap(*ghcb_va);
+> +		*ghcb_va = NULL;
+> +	}
+> 
+>  	hv_common_cpu_die(cpu);
+> 
+> @@ -366,10 +405,16 @@ void __init hyperv_init(void)
+>  		goto common_free;
+>  	}
+> 
+> +	if (hv_isolation_type_snp()) {
+> +		hv_ghcb_pg = alloc_percpu(void *);
+> +		if (!hv_ghcb_pg)
+> +			goto free_vp_assist_page;
+> +	}
+> +
+>  	cpuhp = cpuhp_setup_state(CPUHP_AP_ONLINE_DYN, "x86/hyperv_init:online",
+>  				  hv_cpu_init, hv_cpu_die);
+>  	if (cpuhp < 0)
+> -		goto free_vp_assist_page;
+> +		goto free_ghcb_page;
+> 
+>  	/*
+>  	 * Setup the hypercall page and enable hypercalls.
+> @@ -383,10 +428,8 @@ void __init hyperv_init(void)
+>  			VMALLOC_END, GFP_KERNEL, PAGE_KERNEL_ROX,
+>  			VM_FLUSH_RESET_PERMS, NUMA_NO_NODE,
+>  			__builtin_return_address(0));
+> -	if (hv_hypercall_pg == NULL) {
+> -		wrmsrl(HV_X64_MSR_GUEST_OS_ID, 0);
+> -		goto remove_cpuhp_state;
+> -	}
+> +	if (hv_hypercall_pg == NULL)
+> +		goto clean_guest_os_id;
+> 
+>  	rdmsrl(HV_X64_MSR_HYPERCALL, hypercall_msr.as_uint64);
+>  	hypercall_msr.enable = 1;
+> @@ -456,8 +499,11 @@ void __init hyperv_init(void)
+>  	hv_query_ext_cap(0);
+>  	return;
+> 
+> -remove_cpuhp_state:
+> +clean_guest_os_id:
+> +	wrmsrl(HV_X64_MSR_GUEST_OS_ID, 0);
+>  	cpuhp_remove_state(cpuhp);
+> +free_ghcb_page:
+> +	free_percpu(hv_ghcb_pg);
+>  free_vp_assist_page:
+>  	kfree(hv_vp_assist_page);
+>  	hv_vp_assist_page = NULL;
+> @@ -559,3 +605,11 @@ bool hv_is_isolation_supported(void)
+>  {
+>  	return hv_get_isolation_type() != HV_ISOLATION_TYPE_NONE;
+>  }
+> +
+> +DEFINE_STATIC_KEY_FALSE(isolation_type_snp);
+> +
+> +bool hv_isolation_type_snp(void)
+> +{
+> +	return static_branch_unlikely(&isolation_type_snp);
+> +}
+> +EXPORT_SYMBOL_GPL(hv_isolation_type_snp);
+> diff --git a/arch/x86/include/asm/mshyperv.h b/arch/x86/include/asm/mshyperv.h
+> index adccbc209169..37739a277ac6 100644
+> --- a/arch/x86/include/asm/mshyperv.h
+> +++ b/arch/x86/include/asm/mshyperv.h
+> @@ -11,6 +11,8 @@
+>  #include <asm/paravirt.h>
+>  #include <asm/mshyperv.h>
+> 
+> +DECLARE_STATIC_KEY_FALSE(isolation_type_snp);
+> +
+>  typedef int (*hyperv_fill_flush_list_func)(
+>  		struct hv_guest_mapping_flush_list *flush,
+>  		void *data);
+> @@ -39,6 +41,8 @@ extern void *hv_hypercall_pg;
+> 
+>  extern u64 hv_current_partition_id;
+> 
+> +extern void __percpu **hv_ghcb_pg;
+> +
+>  int hv_call_deposit_pages(int node, u64 partition_id, u32 num_pages);
+>  int hv_call_add_logical_proc(int node, u32 lp_index, u32 acpi_id);
+>  int hv_call_create_vp(int node, u64 partition_id, u32 vp_index, u32 flags);
+> diff --git a/arch/x86/kernel/cpu/mshyperv.c b/arch/x86/kernel/cpu/mshyperv.c
+> index 6b5835a087a3..20557a9d6e25 100644
+> --- a/arch/x86/kernel/cpu/mshyperv.c
+> +++ b/arch/x86/kernel/cpu/mshyperv.c
+> @@ -316,6 +316,9 @@ static void __init ms_hyperv_init_platform(void)
+> 
+>  		pr_info("Hyper-V: Isolation Config: Group A 0x%x, Group B 0x%x\n",
+>  			ms_hyperv.isolation_config_a, ms_hyperv.isolation_config_b);
+> +
+> +		if (hv_get_isolation_type() == HV_ISOLATION_TYPE_SNP)
+> +			static_branch_enable(&isolation_type_snp);
+>  	}
+> 
+>  	if (hv_max_functions_eax >= HYPERV_CPUID_NESTED_FEATURES) {
+> diff --git a/include/asm-generic/mshyperv.h b/include/asm-generic/mshyperv.h
+> index c1ab6a6e72b5..0924bbd8458e 100644
+> --- a/include/asm-generic/mshyperv.h
+> +++ b/include/asm-generic/mshyperv.h
+> @@ -237,6 +237,7 @@ bool hv_is_hyperv_initialized(void);
+>  bool hv_is_hibernation_supported(void);
+>  enum hv_isolation_type hv_get_isolation_type(void);
+>  bool hv_is_isolation_supported(void);
+> +bool hv_isolation_type_snp(void);
+>  void hyperv_cleanup(void);
+>  bool hv_query_ext_cap(u64 cap_query);
+>  #else /* CONFIG_HYPERV */
+> --
+> 2.25.1
 
-> 
->>
->>> +		pr_warn("IOMMU page size cannot represent CPU pages.\n");
->>
->> "Represent" how?
->>
-> 
-> Looks like I dropped an "exactly" there when taking this line from iova.c :)
-> 
-> 
-> 
-> Thanks,
-> 
-> 
-> Sven
-> 
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
