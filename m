@@ -7,69 +7,71 @@ X-Spam-Status: No, score=-13.6 required=3.0 tests=BAYES_00,DKIM_INVALID,
 	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no
 	version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 197E5C432BE
-	for <iommu@archiver.kernel.org>; Thu,  2 Sep 2021 00:17:47 +0000 (UTC)
-Received: from smtp2.osuosl.org (smtp2.osuosl.org [140.211.166.133])
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C5267C4320A
+	for <iommu@archiver.kernel.org>; Thu,  2 Sep 2021 00:20:40 +0000 (UTC)
+Received: from smtp3.osuosl.org (smtp3.osuosl.org [140.211.166.136])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id B88D7610A8
-	for <iommu@archiver.kernel.org>; Thu,  2 Sep 2021 00:17:46 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.4.1 mail.kernel.org B88D7610A8
+	by mail.kernel.org (Postfix) with ESMTPS id 6A7F561090
+	for <iommu@archiver.kernel.org>; Thu,  2 Sep 2021 00:20:40 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.4.1 mail.kernel.org 6A7F561090
 Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=lists.linux-foundation.org
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by smtp2.osuosl.org (Postfix) with ESMTP id 87DB840121;
-	Thu,  2 Sep 2021 00:17:46 +0000 (UTC)
+	by smtp3.osuosl.org (Postfix) with ESMTP id 36E546144C;
+	Thu,  2 Sep 2021 00:20:40 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from smtp2.osuosl.org ([127.0.0.1])
-	by localhost (smtp2.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id 0_lPtckNI6mj; Thu,  2 Sep 2021 00:17:42 +0000 (UTC)
-Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by smtp2.osuosl.org (Postfix) with ESMTPS id 3ADED40004;
-	Thu,  2 Sep 2021 00:17:42 +0000 (UTC)
+Received: from smtp3.osuosl.org ([127.0.0.1])
+	by localhost (smtp3.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+	with ESMTP id ML_w1cxoNOq9; Thu,  2 Sep 2021 00:20:36 +0000 (UTC)
+Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [IPv6:2605:bc80:3010:104::8cd3:938])
+	by smtp3.osuosl.org (Postfix) with ESMTPS id EA66B60773;
+	Thu,  2 Sep 2021 00:20:35 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 2125CC0010;
-	Thu,  2 Sep 2021 00:17:42 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 9B17FC0010;
+	Thu,  2 Sep 2021 00:20:35 +0000 (UTC)
 Received: from smtp2.osuosl.org (smtp2.osuosl.org [140.211.166.133])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 14E10C000E
- for <iommu@lists.linux-foundation.org>; Thu,  2 Sep 2021 00:17:40 +0000 (UTC)
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 2D737C000E
+ for <iommu@lists.linux-foundation.org>; Thu,  2 Sep 2021 00:20:35 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by smtp2.osuosl.org (Postfix) with ESMTP id E6E5840121
- for <iommu@lists.linux-foundation.org>; Thu,  2 Sep 2021 00:17:39 +0000 (UTC)
+ by smtp2.osuosl.org (Postfix) with ESMTP id 120B040156
+ for <iommu@lists.linux-foundation.org>; Thu,  2 Sep 2021 00:20:35 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
+Authentication-Results: smtp2.osuosl.org (amavisd-new);
+ dkim=pass (1024-bit key) header.d=microsoft.com
 Received: from smtp2.osuosl.org ([127.0.0.1])
  by localhost (smtp2.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id 4XhgqEMinJSz for <iommu@lists.linux-foundation.org>;
- Thu,  2 Sep 2021 00:17:37 +0000 (UTC)
+ with ESMTP id osr2QWZOvMLH for <iommu@lists.linux-foundation.org>;
+ Thu,  2 Sep 2021 00:20:33 +0000 (UTC)
 X-Greylist: whitelisted by SQLgrey-1.8.0
 Received: from outbound.mail.eo.outlook.com
- (mail-oln040093008013.outbound.protection.outlook.com [40.93.8.13])
- by smtp2.osuosl.org (Postfix) with ESMTPS id 5B5E740004
- for <iommu@lists.linux-foundation.org>; Thu,  2 Sep 2021 00:17:37 +0000 (UTC)
+ (mail-oln040093003012.outbound.protection.outlook.com [40.93.3.12])
+ by smtp2.osuosl.org (Postfix) with ESMTPS id 0C92740121
+ for <iommu@lists.linux-foundation.org>; Thu,  2 Sep 2021 00:20:32 +0000 (UTC)
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=LfmIQHlIMHkqsDEAx8MQ1NAfCm8Ro4Ky/wpN3QRZZqC+gl24I3fBOBpaAoJ276Zn4/+W7dy3A4lBJqQ62Whv2d3K48CbNH7Rhos//THmKEOs2CH7ppX0wYO9pTwByCirxd7peIwJwAfWE5182t9MkY34906BI5iNMD6h2WrRZV194+8iA4ckgtIAgH9afbS7KEp6JUx2KXZVhvFMGdYFEU6DIaDUYaSI0WTmQzR57bo04IgRksMlZdnCmswT659u5mbwWNnKf3/v3UZtFlUGgqUemB42CjLGGy8qWMVHgPynoYB1PZ598QH60CxFJTc9m3vcNrrxayo8G3MO3gcnCQ==
+ b=k83v89YVVc0G1XqbkkLj6dfEwTSojS2fSelG4HtWtU1ErvNnbw40jyjzblBtrkNATS2YsG9I2fHM94o5F7gTPrg0ny+D0wMYqlzjt9gVEKHym5j1sMKXGyDhWi/kDeEsFYQbR/32jRqxhltZnFoUBzpHd3jBt9Crv7PeSVZY2sDfC0+PsFzh8Knca7Ecm+Jh6jMQoydr9piR4OHDALSIRw5N+M4xoD5Z6Pj9lMBuzD+8Fpw2wiqUDg86OnmLiQmTaTS1Jfnck5dyum8oSlIv0Ey9pB0g7PTizpg23ILWZn+MIE/Ukoou77lOrbwWbCR3cZKPJWaupYzyYZdWOCQE0Q==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com; 
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version; 
- bh=owhgNgpehRNG4rXYBOXS5bq3vm/tUORmSSFhaZC5C1c=;
- b=J2j5p1zJj6tGbpheajl6tqdPVzbC73oG0tZiZKx1v3FPAHaRsjaUVrpBRw9iwA1npsTobm9MyZgTr9x3WIrOSosPbbar6hb8buls0dvgQlzGachFJosDiQMMwSIF+MCh/CY5Oi9SmDCM+8cbfmRSDTbMb7mHuYS0AELmkGpZX90DB6Mt4O/SZLCe/hr105Yl0c1mRR4V4riLQbDTB3TjyYMCMYMsVgmFAw9IKs6dpWnzV8vyMWyc+lqawHiGXawRyYftzdZ9JCC2/CdR3I+Pgl5RKSB/2uqti0dLVjHFpQr6yOZKPzdBh8JLBbRcVoZbga1ULR64YAqPePd42YNDXg==
+ bh=uSAcrrAsaLphArkTow8aPf5W91AfPrV8zL6lQf1PILA=;
+ b=HFZXSuxknTm3S2CREWA+2VhMCRMANvuHegWkDgbrBCoSrJkX0DoGM08rOXtpsNkqZKNTyziWu2AZ4gOz5OoohBrZMEVUXilTEHQTtJIpWySnKI/El6N/xYBNjGEiTXx9dyxVp3XvV4Vd8DP/IJxSEoiIrFfc2g1TfoTGUrJr+xVKXB41y33Bv25nQSVK0pWohTmadHb4HKhcaSd+ugHZb0GnVDS07y1noam21lnvriqCH8BnSK57ba8UXmxJ3OhFWV/5B9IlEUxDu1lFJMO+Efub9AkIyrK09eiMi43MgK4gMjvsZmmQyrJYmvfxQoDSWGbCB5xa+lwoWeCsfFllJg==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
  smtp.mailfrom=microsoft.com; dmarc=pass action=none
  header.from=microsoft.com; dkim=pass header.d=microsoft.com; arc=none
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=selector2;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=owhgNgpehRNG4rXYBOXS5bq3vm/tUORmSSFhaZC5C1c=;
- b=ZskhXqZeDDAqP6hth/AVqP2hJ6V/pcbzmclUYaXy0ADUh1saL12nGxB4dWFO/MWBYPZYCeVYgOheGEye6uf+eTrppAbd31RRqUORI3N6aLT3qWwiCOWk0qMULnCsK9RhX41zy7/2vLb7BADf+XqyPZaE+Iv/otMaNSzzRljSsKg=
+ bh=uSAcrrAsaLphArkTow8aPf5W91AfPrV8zL6lQf1PILA=;
+ b=AeuGe5LwAEiMrZh5Cu8Mwsy+8XYsLsfMr0CCy6lIyi296lgyc3vps0FxLTvaSFjbS0uYUHIsqc5BI3nSN+2wuVWKzi1ZpmnrMHwQVxvK0do9f0aeRpi+bkoDcm9WY79tnsKMyYxGI5B8AFd3lf9ni2tgjTkIdDkxeN/6sG9Uy+c=
 Received: from MWHPR21MB1593.namprd21.prod.outlook.com (2603:10b6:301:7c::11)
- by CO1PR21MB1314.namprd21.prod.outlook.com (2603:10b6:303:151::16)
+ by MW2PR2101MB1019.namprd21.prod.outlook.com (2603:10b6:302:5::10)
  with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4500.4; Thu, 2 Sep
- 2021 00:17:22 +0000
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4500.6; Thu, 2 Sep
+ 2021 00:20:28 +0000
 Received: from MWHPR21MB1593.namprd21.prod.outlook.com
  ([fe80::3c8b:6387:cd5:7d86]) by MWHPR21MB1593.namprd21.prod.outlook.com
  ([fe80::3c8b:6387:cd5:7d86%8]) with mapi id 15.20.4478.014; Thu, 2 Sep 2021
- 00:17:22 +0000
+ 00:20:28 +0000
 To: Tianyu Lan <ltykernel@gmail.com>, KY Srinivasan <kys@microsoft.com>,
  Haiyang Zhang <haiyangz@microsoft.com>, Stephen Hemminger
  <sthemmin@microsoft.com>, "wei.liu@kernel.org" <wei.liu@kernel.org>, Dexuan
@@ -103,79 +105,77 @@ To: Tianyu Lan <ltykernel@gmail.com>, KY Srinivasan <kys@microsoft.com>,
  <linux-arm-kernel@lists.infradead.org>, "xen-devel@lists.xenproject.org"
  <xen-devel@lists.xenproject.org>, "rientjes@google.com"
  <rientjes@google.com>, "ardb@kernel.org" <ardb@kernel.org>
-Subject: RE: [PATCH V4 04/13] hyperv: Mark vmbus ring buffer visible to host
- in Isolation VM
-Thread-Topic: [PATCH V4 04/13] hyperv: Mark vmbus ring buffer visible to host
- in Isolation VM
-Thread-Index: AQHXm2gHOMlvw7enDEWSDoli9Xi0FquJEt7Q
-Date: Thu, 2 Sep 2021 00:17:21 +0000
-Message-ID: <MWHPR21MB1593907C65C249D00F1A5717D7CE9@MWHPR21MB1593.namprd21.prod.outlook.com>
+Subject: RE: [PATCH V4 06/13] hyperv: Add ghcb hvcall support for SNP VM
+Thread-Topic: [PATCH V4 06/13] hyperv: Add ghcb hvcall support for SNP VM
+Thread-Index: AQHXm2f/0mSKj2OCNkCC+r4DaEQmJquKug9A
+Date: Thu, 2 Sep 2021 00:20:28 +0000
+Message-ID: <MWHPR21MB1593B1F15B489617F39E69F3D7CE9@MWHPR21MB1593.namprd21.prod.outlook.com>
 References: <20210827172114.414281-1-ltykernel@gmail.com>
- <20210827172114.414281-5-ltykernel@gmail.com>
-In-Reply-To: <20210827172114.414281-5-ltykernel@gmail.com>
+ <20210827172114.414281-7-ltykernel@gmail.com>
+In-Reply-To: <20210827172114.414281-7-ltykernel@gmail.com>
 Accept-Language: en-US
 Content-Language: en-US
 X-MS-Has-Attach: 
 X-MS-TNEF-Correlator: 
-msip_labels: MSIP_Label_f42aa342-8706-4288-bd11-ebb85995028c_ActionId=8b920a56-6992-44f3-a51e-d6ed365110c4;
+msip_labels: MSIP_Label_f42aa342-8706-4288-bd11-ebb85995028c_ActionId=6d580330-91d6-4af5-96cd-a8d1305f2392;
  MSIP_Label_f42aa342-8706-4288-bd11-ebb85995028c_ContentBits=0;
  MSIP_Label_f42aa342-8706-4288-bd11-ebb85995028c_Enabled=true;
  MSIP_Label_f42aa342-8706-4288-bd11-ebb85995028c_Method=Standard;
  MSIP_Label_f42aa342-8706-4288-bd11-ebb85995028c_Name=Internal;
- MSIP_Label_f42aa342-8706-4288-bd11-ebb85995028c_SetDate=2021-08-28T15:53:27Z;
+ MSIP_Label_f42aa342-8706-4288-bd11-ebb85995028c_SetDate=2021-08-29T17:08:06Z;
  MSIP_Label_f42aa342-8706-4288-bd11-ebb85995028c_SiteId=72f988bf-86f1-41af-91ab-2d7cd011db47;
 authentication-results: dkim=none (message not signed)
  header.d=none;dmarc=none action=none header.from=microsoft.com;
 x-ms-publictraffictype: Email
-x-ms-office365-filtering-correlation-id: 4cf4ec66-38f2-483e-19b0-08d96da708a2
-x-ms-traffictypediagnostic: CO1PR21MB1314:
+x-ms-office365-filtering-correlation-id: 1ef6e0ca-5957-4140-2dba-08d96da777c1
+x-ms-traffictypediagnostic: MW2PR2101MB1019:
 x-ms-exchange-transport-forked: True
 x-ld-processed: 72f988bf-86f1-41af-91ab-2d7cd011db47,ExtAddr
-x-microsoft-antispam-prvs: <CO1PR21MB131475BC7B28CED23E9D2903D7CE9@CO1PR21MB1314.namprd21.prod.outlook.com>
-x-ms-oob-tlc-oobclassifiers: OLM:56;
+x-microsoft-antispam-prvs: <MW2PR2101MB1019C1F8AA667275B576094CD7CE9@MW2PR2101MB1019.namprd21.prod.outlook.com>
+x-ms-oob-tlc-oobclassifiers: OLM:5236;
 x-ms-exchange-senderadcheck: 1
 x-ms-exchange-antispam-relay: 0
 x-microsoft-antispam: BCL:0;
-x-microsoft-antispam-message-info: JS2keamfM0jx37N7WlgsOSbQHuA0Wn2B+meaecDh668t0uFHu1b6F9vaDvTBLx2VKFqIXQux4S7RdVg5kLwZAzhkddRHN09fdW0rHMs/zwus14Ri4c2uJZAjZNiJJxon53OVVyCnwptUWdC3djGkubA5Iufw+jkPnEqoh2bcjvVZwaJ3a/Spocbf0Z/3W+RTTnAph5VpUoFZW7YcPIUrJe/SdC+L54R1e+bf+r1PkjfCmpcyRDbOZWqSiQSuxWVcbOjJCizQpivEiGiZn3Z0/wpe/hEqtsUKigJRtrud00EoMtoOe7Rew3IEzgVp3SFOzaJaS2L8FQG64zrGBx0ZjbkSn7g5GZYkw4onVe2qtl7nIpkwZC5NAanU2BykM9Zw9nOUzo6RYgFKKtHaEJRJigK8FZccbFPztem2qGOaY+1MJTbSTAragATuoKZ+sz0OhzdupvCIZSb2WBMVG2MbmBGBjhZIjrq8oFj7vNxrPq+8Ad9DzLBivoyGQwKcybt7VHCSw8WwnfKpIc4kczVKYt2owMPsBvIxAoRS9dCpAbMxBVb3GZ3+NmD3iTXbDH8fptRTaCRYgnxB7Hgl4YNWId9Zc77Gcz9Oxk15pklkdCcwpAHlccCF8LsWK4fCFdEN98mOTflZE9UBbLCfDdBWEQuIa/E1jXCYSHt5xDO0T5gHlrFIQcoqLGXCmogNYVv5l0fDox/iMA7wNJEnBou53cOPq2lw5w8WxLGfarsrFWY=
+x-microsoft-antispam-message-info: hh48EIj+igbz1dMXOksKbSyyFrHFlI5LJftl0O2XFLfLUgWQoUQY+o7dG3cKu31K+5Qw055KqyXURz92W1+2KfZnMKi6fBkhlT1YtjLqke2U2qwjHGTTrk2C8Di8BFqsxE340VRpaRxpLqUa0HNwfZIwB8grGSABzGjQKajnFZfCP6ZMyiDwHyuoJXwLLwhci6qoUTePZTEC7YOsUKGRPT0k02KTDRddNI3ZcRZKo5RAcSVaFb1f9kxbHMJZorxewBJxTO37cJnIHbEYmwP+s9zgRaDY1g/lrLcTaM0ueULKPwYbXsX0bfvc28PRA41gwYNCex3cv1tTrVpfZ6gfA21kBWEuTItaZH832AGHqPTd4HXYVUly7MSKFND45t7piGGv3YvrBaU9vif0f2T88Ld04AXSqXU9+KDHvlS+VoKSSVghPyW+Pnrt3jRZqDIb/dr5PA5B9e97lKPfJn24CKl7vakZYKRSa/W2sLAMXpWskUt9Qb+sWlQxArdxzP5flFgPzL510Wsss17jYSOKbWFIB8nUP5AdgAj+QarEa2vVQ+dCMT8DvNfRJv8Tuo1pBkRMPvw5LgGRpvcMdKdePbIFdBhx5GngE+LZYl8FpWO+lBAr1L6SH88ZwgzZ5enyjAibAaIwOga3Q9w3l5bDgHcXQKiajMIuaUvn8aMch6AiXAKzOVsX51nRZ+ptWoBzOu28V9waKu8Mj6VkdejbA9LwFRIx3Bn1V64evmkF2Gs=
 x-forefront-antispam-report: CIP:255.255.255.255; CTRY:; LANG:en; SCL:1; SRV:;
  IPV:NLI; SFV:NSPM; H:MWHPR21MB1593.namprd21.prod.outlook.com; PTR:; CAT:NONE;
- SFS:(4636009)(366004)(26005)(10290500003)(7696005)(186003)(66946007)(6506007)(76116006)(38100700002)(8676002)(110136005)(9686003)(316002)(54906003)(71200400001)(38070700005)(8990500004)(86362001)(55016002)(2906002)(122000001)(508600001)(8936002)(4326008)(7406005)(5660300002)(7416002)(7366002)(33656002)(52536014)(83380400001)(82950400001)(30864003)(66556008)(82960400001)(921005)(66476007)(66446008)(64756008)(579004);
+ SFS:(4636009)(366004)(4326008)(66556008)(66476007)(64756008)(921005)(66446008)(10290500003)(26005)(55016002)(66946007)(2906002)(7416002)(82950400001)(82960400001)(52536014)(7366002)(5660300002)(7406005)(76116006)(6506007)(316002)(508600001)(8676002)(8990500004)(71200400001)(122000001)(9686003)(86362001)(7696005)(38100700002)(83380400001)(38070700005)(33656002)(186003)(8936002)(110136005)(54906003);
  DIR:OUT; SFP:1102; 
 x-ms-exchange-antispam-messagedata-chunkcount: 1
-x-ms-exchange-antispam-messagedata-0: =?us-ascii?Q?myQ8QsXlfAfVc23WymszcgcfUlIfJShxhHjbJ2Aib3aynOpa5jp1m09TdBOP?=
- =?us-ascii?Q?44/cyx/EUsQn02ziq8stvkYyA2AH219MYTbHgkZ0PQO4uphUjo+EoK/6jX93?=
- =?us-ascii?Q?/8+oVNcd0ZzfI8oDPDi4KFFKM+NFIB79Ft6rQpuGGERSF2M9GJajNTIRyu+L?=
- =?us-ascii?Q?1uRGT6XJsA9+5xtqvTSffvm6KHvwD/L0Fk+XLjyzzqBJITEn01Ut/oB8ragL?=
- =?us-ascii?Q?Pe+gfGJlxHYB2GRd1yhJIESJhcX9jO9rIHeeNHguyzgosvuXiY5Kk98mKfqD?=
- =?us-ascii?Q?jnnrbNrvyu1KAQSh3O43imVdxYZVhcmTXw36md5kdZJr0BOJI5J2a+Bnzutj?=
- =?us-ascii?Q?x8Bcqs2PRM2nLaRVLxbU4VHAwd1Oc/pZLE1NimqV1Hrk+G18FlP7b6Hcg1iT?=
- =?us-ascii?Q?B41PuTjVN0HgdNDwzLbtAMjdpYkTYqKRX9Wu0NZnPgAboV8jKSZ8y55xPb9J?=
- =?us-ascii?Q?jYifbwG3d/3ObjcplK7DZIks7DZHsJmRKD7ZTD0L3ESwUMPRS5x9q1jSKUvu?=
- =?us-ascii?Q?IxPHYsR3u2mUH83T4g3F9l47fKXzRGyGB0kHvXiAEU+osfPJh4qGiKiKKLoB?=
- =?us-ascii?Q?u8PO4EDKyBxifNj43NynqQrRaivVnclmt1pvmGeMOOa6v/2c9zVQv4FSXWtK?=
- =?us-ascii?Q?96kaxaam2QlwCfG0kkO51XU7gyKY75KQWnCcntCuK1ONzTJY/8xBXxjw6LDG?=
- =?us-ascii?Q?R9mp2ZsMDUfoJ6pZuMGsczXz5TO1MqYX+ctwvqAMehPtgzigJ4mlXnfkdl+q?=
- =?us-ascii?Q?fG7LSyRXQtKq+gv5Gt2z+BmRgKLPMySLDihIpPqGVdsgh9hNuiwkv9C3bEbI?=
- =?us-ascii?Q?bhNdVeGjZVjKE0408/GwvocD2kymDt0j/+0DIfZu70ZcNoewYNPugEh9fNDG?=
- =?us-ascii?Q?Pi5QQZ8MRjqAlYBk/P2E6/pkwjIxxqLcbK2Oe6c1RqUaK0n2ix/F3e8OydKm?=
- =?us-ascii?Q?i/8FgDCGm+x2AIodelpK2kJlusSYbi9Sg4Y1Ti66LnG1si8mM3wf4V5R5U7w?=
- =?us-ascii?Q?AfqyAEhVwXJgTlZP7ckgQREkdKmpqp4qdott4zlHCxVYQAieh28g+Q17pEfC?=
- =?us-ascii?Q?lYm8rmVfpgxTLCJfM/8I1pOCLh0Nxj/Z6K9ThcY4wmqlKE3pbayzJ6+rwXrN?=
- =?us-ascii?Q?iiY+Ke6HBCWlHS4ZiYUsdqGGDFmZcqRBYEggP4RvI2NfsHaX8jBpzEY5XJOV?=
- =?us-ascii?Q?ZN7D50242CoX0WGg5ksLuGhXcTQo3GUnn1qwBft1qVmXW7hQVqUDMfG7Tufz?=
- =?us-ascii?Q?K+KjAfUJpRQucjdmLeoeEv3zKMTw1x5vYTkgAmexLc43Sko03RTL7tY3S3Z1?=
- =?us-ascii?Q?nvWdQTsTDtPen+Cxg/Z9ym3o?=
+x-ms-exchange-antispam-messagedata-0: =?us-ascii?Q?m6hUatX3Wt0L18oS1Yu9aEWLCF2uuZMJfEdIY7AHScXfuZuS9Vn1i5zr0kMX?=
+ =?us-ascii?Q?UyDb74sjV+Y/mJVP7pmDTaxal7lh4mwvOZiQ+VHsLiSIrG2YLVgJhWrr2r+a?=
+ =?us-ascii?Q?Scr7JKHoBNz3+yZuxgbPZ1zFJxLGdDtxv6Y0RtMQS367vHuFXdFz04f3D+ww?=
+ =?us-ascii?Q?jKgV2pNzpRaFyzQrQbeEfuTDmzNs655TEp/TFFA9YGf4cnyjYzTDOg5m+a5Y?=
+ =?us-ascii?Q?S/IH++PysmFJsXjboHB8rN/UXWNR0lpaEoqE3h8UNWvp3lltNcsrcEhykJcJ?=
+ =?us-ascii?Q?bAnyMXKIGdQzfobT7jCFyyrPoCFGlMCktNWsBM7OsNqQZT3Wg+TgS1aqpXDK?=
+ =?us-ascii?Q?oLXIjMSAx7Q0pu3Ehjk0dAKJM/maCVFKFoY3OVmgmllXgi/WVqms0+m1tU+f?=
+ =?us-ascii?Q?J+z1W0iHOMDQub++FmeOuRPgaXHMIRr57ktzcK1awLP9FoBruaVk1YLFbC7A?=
+ =?us-ascii?Q?0RFLu73/0BzK/7z+pgSrAoCV2+SVWYyZa2hzyWZ0Ba0P7hLCubCJtoKA6ZRx?=
+ =?us-ascii?Q?ltkynVtjd3Jd/gTU+cpguMpE+0eyX66vM8VubA+dBhpLnoE42G+LszgFRAMh?=
+ =?us-ascii?Q?+uQjnXszP5rFOGJhddSIK2RlWeSPcwUXl6KMXsjBWR919E0N2yb0fGhgGQ70?=
+ =?us-ascii?Q?nLNLetSBMA/oyydd6Sojj/aNxR9lgqya8cVLCNR53YwqO/9LakQeyvX6vj3I?=
+ =?us-ascii?Q?qEjf2bmrS/F/P5+fc/RfzTKmQXveg/PgV+FRtYOhXclhfT+4BNeS28UvRXNa?=
+ =?us-ascii?Q?NmT0vvuVDsZoLBbpZCJ63MrwsiP2GoS97FxfijKyvCcNJYEMMSx2RYvVc/xT?=
+ =?us-ascii?Q?hRWHnNrVDJAjIlzLOeq4B+TTxqxq4N3ZqUEAhuNKu6q/Zf9eJpVB97LL022l?=
+ =?us-ascii?Q?xJ1wO91ryKPf8U14K92Yyle6LGG4663Z7+/3zQiDFcD2eOH329G6aWwHuoyW?=
+ =?us-ascii?Q?1QOynDuZ9fk6nfDE4uM/CFH9Pl7/ugNM46BidxO1RrsyRTN4gPPj6zdkGLgE?=
+ =?us-ascii?Q?IBzAV4EzkqKKO9j6h+M2n+IE23ECcRiPMTyxlrjFEgwn19RwPRxdV4jBqdVX?=
+ =?us-ascii?Q?jgRjeyEgAicEeBdwk/iOs17bgx3ovSZxgMmNGixKevcERWyjtnS4EdIH+iR3?=
+ =?us-ascii?Q?Zt9iO7TL8VoNLbH8F1Uqdd1nzK3Kup7b+7Li7tdNirudyfm+aTRQbh4dG0ir?=
+ =?us-ascii?Q?zl0VAIGENIVsisC2yxxoLrn3pidcN0VOl+BCd8ISSux3/3kKRccNT0QliUHz?=
+ =?us-ascii?Q?37EN7y/zvGP+yOt37yjUsOqcpuB0at/dOrdrZ40fn2+e0tIPCJ5XC2ANZa92?=
+ =?us-ascii?Q?dI4XwIEaregrSP4uNqlmiQPU?=
 MIME-Version: 1.0
 X-OriginatorOrg: microsoft.com
 X-MS-Exchange-CrossTenant-AuthAs: Internal
 X-MS-Exchange-CrossTenant-AuthSource: MWHPR21MB1593.namprd21.prod.outlook.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 4cf4ec66-38f2-483e-19b0-08d96da708a2
-X-MS-Exchange-CrossTenant-originalarrivaltime: 02 Sep 2021 00:17:21.8744 (UTC)
+X-MS-Exchange-CrossTenant-Network-Message-Id: 1ef6e0ca-5957-4140-2dba-08d96da777c1
+X-MS-Exchange-CrossTenant-originalarrivaltime: 02 Sep 2021 00:20:28.3182 (UTC)
 X-MS-Exchange-CrossTenant-fromentityheader: Hosted
 X-MS-Exchange-CrossTenant-id: 72f988bf-86f1-41af-91ab-2d7cd011db47
 X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: RvDiBlbiojDhzzfcbdOFBQye/Pw0hBMnWGLgEzVinucglU+0phNLl1XfUwN/S83lBQSENW2MEid4+ZQm1OH2Wai4GCLnrqZil8MQ9Y0w9dU=
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: CO1PR21MB1314
+X-MS-Exchange-CrossTenant-userprincipalname: 3eA+qo79/uH9Dbp62BmlOSNm51w8AwVRPXoN6jwWsBsxnooEZz+t3zwtKNtVVlv0ClKDK/DmKF0WXrAsb3MspbKkw+PcOVzmV2MNKBDKP2I=
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: MW2PR2101MB1019
 Cc: "linux-arch@vger.kernel.org" <linux-arch@vger.kernel.org>,
  "parri.andrea@gmail.com" <parri.andrea@gmail.com>,
  "linux-hyperv@vger.kernel.org" <linux-hyperv@vger.kernel.org>,
@@ -206,583 +206,189 @@ Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
 From: Tianyu Lan <ltykernel@gmail.com> Sent: Friday, August 27, 2021 10:21 AM
 > 
-> Mark vmbus ring buffer visible with set_memory_decrypted() when
-> establish gpadl handle.
+
+Subject line tag should probably be "x86/hyperv:" since the majority
+of the code added is under arch/x86.
+
+> hyperv provides ghcb hvcall to handle VMBus
+> HVCALL_SIGNAL_EVENT and HVCALL_POST_MESSAGE
+> msg in SNP Isolation VM. Add such support.
 > 
 > Signed-off-by: Tianyu Lan <Tianyu.Lan@microsoft.com>
 > ---
 > Change since v3:
->        * Change vmbus_teardown_gpadl() parameter and put gpadl handle,
->        buffer and buffer size in the struct vmbus_gpadl.
+> 	* Add hv_ghcb_hypercall() stub function to avoid
+> 	  compile error for ARM.
 > ---
->  drivers/hv/channel.c            | 36 ++++++++++++++++++++++++++++-----
->  drivers/net/hyperv/hyperv_net.h |  1 +
->  drivers/net/hyperv/netvsc.c     | 16 +++++++++++----
->  drivers/uio/uio_hv_generic.c    | 14 +++++++++++--
->  include/linux/hyperv.h          |  8 +++++++-
->  5 files changed, 63 insertions(+), 12 deletions(-)
+>  arch/x86/hyperv/ivm.c          | 71 ++++++++++++++++++++++++++++++++++
+>  drivers/hv/connection.c        |  6 ++-
+>  drivers/hv/hv.c                |  8 +++-
+>  drivers/hv/hv_common.c         |  6 +++
+>  include/asm-generic/mshyperv.h |  1 +
+>  5 files changed, 90 insertions(+), 2 deletions(-)
 > 
-> diff --git a/drivers/hv/channel.c b/drivers/hv/channel.c
-> index f3761c73b074..82650beb3af0 100644
-> --- a/drivers/hv/channel.c
-> +++ b/drivers/hv/channel.c
-> @@ -17,6 +17,7 @@
->  #include <linux/hyperv.h>
->  #include <linux/uio.h>
->  #include <linux/interrupt.h>
-> +#include <linux/set_memory.h>
->  #include <asm/page.h>
+> diff --git a/arch/x86/hyperv/ivm.c b/arch/x86/hyperv/ivm.c
+> index f56fe4f73000..e761c67e2218 100644
+> --- a/arch/x86/hyperv/ivm.c
+> +++ b/arch/x86/hyperv/ivm.c
+> @@ -17,10 +17,81 @@
+>  #include <asm/io.h>
 >  #include <asm/mshyperv.h>
 > 
-> @@ -474,6 +475,13 @@ static int __vmbus_establish_gpadl(struct vmbus_channel *channel,
->  	if (ret)
->  		return ret;
+> +#define GHCB_USAGE_HYPERV_CALL	1
+> +
+>  union hv_ghcb {
+>  	struct ghcb ghcb;
+> +	struct {
+> +		u64 hypercalldata[509];
+> +		u64 outputgpa;
+> +		union {
+> +			union {
+> +				struct {
+> +					u32 callcode        : 16;
+> +					u32 isfast          : 1;
+> +					u32 reserved1       : 14;
+> +					u32 isnested        : 1;
+> +					u32 countofelements : 12;
+> +					u32 reserved2       : 4;
+> +					u32 repstartindex   : 12;
+> +					u32 reserved3       : 4;
+> +				};
+> +				u64 asuint64;
+> +			} hypercallinput;
+> +			union {
+> +				struct {
+> +					u16 callstatus;
+> +					u16 reserved1;
+> +					u32 elementsprocessed : 12;
+> +					u32 reserved2         : 20;
+> +				};
+> +				u64 asunit64;
+> +			} hypercalloutput;
+> +		};
+> +		u64 reserved2;
+> +	} hypercall;
+>  } __packed __aligned(HV_HYP_PAGE_SIZE);
 > 
-> +	ret = set_memory_decrypted((unsigned long)kbuffer,
-> +				   HVPFN_UP(size));
-> +	if (ret) {
-> +		pr_warn("Failed to set host visibility for new GPADL %d.\n", ret);
-> +		return ret;
+> +u64 hv_ghcb_hypercall(u64 control, void *input, void *output, u32 input_size)
+> +{
+> +	union hv_ghcb *hv_ghcb;
+> +	void **ghcb_base;
+> +	unsigned long flags;
+> +
+> +	if (!hv_ghcb_pg)
+> +		return -EFAULT;
+> +
+> +	WARN_ON(in_nmi());
+> +
+> +	local_irq_save(flags);
+> +	ghcb_base = (void **)this_cpu_ptr(hv_ghcb_pg);
+> +	hv_ghcb = (union hv_ghcb *)*ghcb_base;
+> +	if (!hv_ghcb) {
+> +		local_irq_restore(flags);
+> +		return -EFAULT;
 > +	}
 > +
->  	init_completion(&msginfo->waitevent);
->  	msginfo->waiting_channel = channel;
-> 
-> @@ -549,6 +557,11 @@ static int __vmbus_establish_gpadl(struct vmbus_channel *channel,
->  	}
-> 
->  	kfree(msginfo);
+> +	hv_ghcb->ghcb.protocol_version = GHCB_PROTOCOL_MAX;
+> +	hv_ghcb->ghcb.ghcb_usage = GHCB_USAGE_HYPERV_CALL;
 > +
-> +	if (ret)
-> +		set_memory_encrypted((unsigned long)kbuffer,
-> +				     HVPFN_UP(size));
+> +	hv_ghcb->hypercall.outputgpa = (u64)output;
+> +	hv_ghcb->hypercall.hypercallinput.asuint64 = 0;
+> +	hv_ghcb->hypercall.hypercallinput.callcode = control;
 > +
->  	return ret;
+> +	if (input_size)
+> +		memcpy(hv_ghcb->hypercall.hypercalldata, input, input_size);
+> +
+> +	VMGEXIT();
+> +
+> +	hv_ghcb->ghcb.ghcb_usage = 0xffffffff;
+> +	memset(hv_ghcb->ghcb.save.valid_bitmap, 0,
+> +	       sizeof(hv_ghcb->ghcb.save.valid_bitmap));
+> +
+> +	local_irq_restore(flags);
+> +
+> +	return hv_ghcb->hypercall.hypercalloutput.callstatus;
+
+The hypercall.hypercalloutput.callstatus value must be saved
+in a local variable *before* the call to local_irq_restore().  Then
+the local variable is the return value.  Once local_irq_restore()
+is called, the GHCB page could get reused.
+
+> +}
+> +
+>  void hv_ghcb_msr_write(u64 msr, u64 value)
+>  {
+>  	union hv_ghcb *hv_ghcb;
+> diff --git a/drivers/hv/connection.c b/drivers/hv/connection.c
+> index 5e479d54918c..6d315c1465e0 100644
+> --- a/drivers/hv/connection.c
+> +++ b/drivers/hv/connection.c
+> @@ -447,6 +447,10 @@ void vmbus_set_event(struct vmbus_channel *channel)
+> 
+>  	++channel->sig_events;
+> 
+> -	hv_do_fast_hypercall8(HVCALL_SIGNAL_EVENT, channel->sig_event);
+> +	if (hv_isolation_type_snp())
+> +		hv_ghcb_hypercall(HVCALL_SIGNAL_EVENT, &channel->sig_event,
+> +				NULL, sizeof(u64));
+
+Better to use "sizeof(channel->sig_event)" instead of explicitly coding
+the type.
+
+> +	else
+> +		hv_do_fast_hypercall8(HVCALL_SIGNAL_EVENT, channel->sig_event);
 >  }
+>  EXPORT_SYMBOL_GPL(vmbus_set_event);
+> diff --git a/drivers/hv/hv.c b/drivers/hv/hv.c
+> index 97b21256a9db..d4531c64d9d3 100644
+> --- a/drivers/hv/hv.c
+> +++ b/drivers/hv/hv.c
+> @@ -98,7 +98,13 @@ int hv_post_message(union hv_connection_id connection_id,
+>  	aligned_msg->payload_size = payload_size;
+>  	memcpy((void *)aligned_msg->payload, payload, payload_size);
 > 
-> @@ -639,6 +652,7 @@ static int __vmbus_open(struct vmbus_channel *newchannel,
->  	struct vmbus_channel_open_channel *open_msg;
->  	struct vmbus_channel_msginfo *open_info = NULL;
->  	struct page *page = newchannel->ringbuffer_page;
-> +	struct vmbus_gpadl gpadl;
->  	u32 send_pages, recv_pages;
->  	unsigned long flags;
->  	int err;
-> @@ -759,7 +773,10 @@ static int __vmbus_open(struct vmbus_channel *newchannel,
->  error_free_info:
->  	kfree(open_info);
->  error_free_gpadl:
-> -	vmbus_teardown_gpadl(newchannel, newchannel->ringbuffer_gpadlhandle);
-> +	gpadl.gpadl_handle = newchannel->ringbuffer_gpadlhandle;
-> +	gpadl.buffer = page_address(newchannel->ringbuffer_page);
-> +	gpadl.size = (send_pages + recv_pages) << PAGE_SHIFT;
-> +	vmbus_teardown_gpadl(newchannel, &gpadl);
->  	newchannel->ringbuffer_gpadlhandle = 0;
->  error_clean_ring:
->  	hv_ringbuffer_cleanup(&newchannel->outbound);
-> @@ -806,7 +823,7 @@ EXPORT_SYMBOL_GPL(vmbus_open);
->  /*
->   * vmbus_teardown_gpadl -Teardown the specified GPADL handle
->   */
-> -int vmbus_teardown_gpadl(struct vmbus_channel *channel, u32 gpadl_handle)
-> +int vmbus_teardown_gpadl(struct vmbus_channel *channel, struct vmbus_gpadl *gpadl)
+> -	status = hv_do_hypercall(HVCALL_POST_MESSAGE, aligned_msg, NULL);
+> +	if (hv_isolation_type_snp())
+> +		status = hv_ghcb_hypercall(HVCALL_POST_MESSAGE,
+> +				(void *)aligned_msg, NULL,
+> +				sizeof(struct hv_input_post_message));
+
+As above, use "sizeof(*aligned_msg)".
+
+> +	else
+> +		status = hv_do_hypercall(HVCALL_POST_MESSAGE,
+> +				aligned_msg, NULL);
+> 
+>  	/* Preemption must remain disabled until after the hypercall
+>  	 * so some other thread can't get scheduled onto this cpu and
+> diff --git a/drivers/hv/hv_common.c b/drivers/hv/hv_common.c
+> index 1fc82d237161..7be173a99f27 100644
+> --- a/drivers/hv/hv_common.c
+> +++ b/drivers/hv/hv_common.c
+> @@ -289,3 +289,9 @@ void __weak hyperv_cleanup(void)
 >  {
->  	struct vmbus_channel_gpadl_teardown *msg;
->  	struct vmbus_channel_msginfo *info;
-> @@ -825,7 +842,7 @@ int vmbus_teardown_gpadl(struct vmbus_channel *channel, u32 gpadl_handle)
-> 
->  	msg->header.msgtype = CHANNELMSG_GPADL_TEARDOWN;
->  	msg->child_relid = channel->offermsg.child_relid;
-> -	msg->gpadl = gpadl_handle;
-> +	msg->gpadl = gpadl->gpadl_handle;
-> 
->  	spin_lock_irqsave(&vmbus_connection.channelmsg_lock, flags);
->  	list_add_tail(&info->msglistentry,
-> @@ -859,6 +876,12 @@ int vmbus_teardown_gpadl(struct vmbus_channel *channel, u32 gpadl_handle)
->  	spin_unlock_irqrestore(&vmbus_connection.channelmsg_lock, flags);
-> 
->  	kfree(info);
-> +
-> +	ret = set_memory_encrypted((unsigned long)gpadl->buffer,
-> +				   HVPFN_UP(gpadl->size));
-> +	if (ret)
-> +		pr_warn("Fail to set mem host visibility in GPADL teardown %d.\n", ret);
-> +
->  	return ret;
 >  }
->  EXPORT_SYMBOL_GPL(vmbus_teardown_gpadl);
-> @@ -896,6 +919,7 @@ void vmbus_reset_channel_cb(struct vmbus_channel *channel)
->  static int vmbus_close_internal(struct vmbus_channel *channel)
->  {
->  	struct vmbus_channel_close_channel *msg;
-> +	struct vmbus_gpadl gpadl;
->  	int ret;
-> 
->  	vmbus_reset_channel_cb(channel);
-> @@ -934,8 +958,10 @@ static int vmbus_close_internal(struct vmbus_channel *channel)
-> 
->  	/* Tear down the gpadl for the channel's ring buffer */
->  	else if (channel->ringbuffer_gpadlhandle) {
-> -		ret = vmbus_teardown_gpadl(channel,
-> -					   channel->ringbuffer_gpadlhandle);
-> +		gpadl.gpadl_handle = channel->ringbuffer_gpadlhandle;
-> +		gpadl.buffer = page_address(channel->ringbuffer_page);
-> +		gpadl.size = channel->ringbuffer_pagecount;
-> +		ret = vmbus_teardown_gpadl(channel, &gpadl);
->  		if (ret) {
->  			pr_err("Close failed: teardown gpadl return %d\n", ret);
->  			/*
-> diff --git a/drivers/net/hyperv/hyperv_net.h b/drivers/net/hyperv/hyperv_net.h
-> index bc48855dff10..aa7c9962dbd8 100644
-> --- a/drivers/net/hyperv/hyperv_net.h
-> +++ b/drivers/net/hyperv/hyperv_net.h
-> @@ -1082,6 +1082,7 @@ struct netvsc_device {
-> 
->  	/* Send buffer allocated by us */
->  	void *send_buf;
-> +	u32 send_buf_size;
->  	u32 send_buf_gpadl_handle;
->  	u32 send_section_cnt;
->  	u32 send_section_size;
-> diff --git a/drivers/net/hyperv/netvsc.c b/drivers/net/hyperv/netvsc.c
-> index 7bd935412853..f19bffff6a63 100644
-> --- a/drivers/net/hyperv/netvsc.c
-> +++ b/drivers/net/hyperv/netvsc.c
-> @@ -276,11 +276,14 @@ static void netvsc_teardown_recv_gpadl(struct hv_device *device,
->  				       struct netvsc_device *net_device,
->  				       struct net_device *ndev)
->  {
-> +	struct vmbus_gpadl gpadl;
->  	int ret;
-> 
->  	if (net_device->recv_buf_gpadl_handle) {
-> -		ret = vmbus_teardown_gpadl(device->channel,
-> -					   net_device->recv_buf_gpadl_handle);
-> +		gpadl.gpadl_handle = net_device->recv_buf_gpadl_handle;
-> +		gpadl.buffer = net_device->recv_buf;
-> +		gpadl.size = net_device->recv_buf_size;
-> +		ret = vmbus_teardown_gpadl(device->channel, &gpadl);
-> 
->  		/* If we failed here, we might as well return and have a leak
->  		 * rather than continue and a bugchk
-> @@ -298,11 +301,15 @@ static void netvsc_teardown_send_gpadl(struct hv_device *device,
->  				       struct netvsc_device *net_device,
->  				       struct net_device *ndev)
->  {
-> +	struct vmbus_gpadl gpadl;
->  	int ret;
-> 
->  	if (net_device->send_buf_gpadl_handle) {
-> -		ret = vmbus_teardown_gpadl(device->channel,
-> -					   net_device->send_buf_gpadl_handle);
-> +		gpadl.gpadl_handle = net_device->send_buf_gpadl_handle;
-> +		gpadl.buffer = net_device->send_buf;
-> +		gpadl.size = net_device->send_buf_size;
+>  EXPORT_SYMBOL_GPL(hyperv_cleanup);
 > +
-> +		ret = vmbus_teardown_gpadl(device->channel, &gpadl);
-> 
->  		/* If we failed here, we might as well return and have a leak
->  		 * rather than continue and a bugchk
-> @@ -463,6 +470,7 @@ static int netvsc_init_buf(struct hv_device *device,
->  		ret = -ENOMEM;
->  		goto cleanup;
->  	}
-> +	net_device->send_buf_size = buf_size;
-> 
->  	/* Establish the gpadl handle for this buffer on this
->  	 * channel.  Note: This call uses the vmbus connection rather
-> diff --git a/drivers/uio/uio_hv_generic.c b/drivers/uio/uio_hv_generic.c
-> index 652fe2547587..13c5df8dd11d 100644
-> --- a/drivers/uio/uio_hv_generic.c
-> +++ b/drivers/uio/uio_hv_generic.c
-> @@ -179,14 +179,24 @@ hv_uio_new_channel(struct vmbus_channel *new_sc)
->  static void
->  hv_uio_cleanup(struct hv_device *dev, struct hv_uio_private_data *pdata)
->  {
-> +	struct vmbus_gpadl gpadl;
-> +
->  	if (pdata->send_gpadl) {
-> -		vmbus_teardown_gpadl(dev->channel, pdata->send_gpadl);
-> +		gpadl.gpadl_handle = pdata->send_gpadl;
-> +		gpadl.buffer = pdata->send_buf;
-> +		gpadl.size = SEND_BUFFER_SIZE;
-> +
-> +		vmbus_teardown_gpadl(dev->channel, &gpadl);
->  		pdata->send_gpadl = 0;
->  		vfree(pdata->send_buf);
->  	}
-> 
->  	if (pdata->recv_gpadl) {
-> -		vmbus_teardown_gpadl(dev->channel, pdata->recv_gpadl);
-> +		gpadl.gpadl_handle = pdata->recv_gpadl;
-> +		gpadl.buffer = pdata->recv_buf;
-> +		gpadl.size = RECV_BUFFER_SIZE;
-> +
-> +		vmbus_teardown_gpadl(dev->channel, &gpadl);
->  		pdata->recv_gpadl = 0;
->  		vfree(pdata->recv_buf);
->  	}
-> diff --git a/include/linux/hyperv.h b/include/linux/hyperv.h
-> index ddc8713ce57b..757e09606fd3 100644
-> --- a/include/linux/hyperv.h
-> +++ b/include/linux/hyperv.h
-> @@ -803,6 +803,12 @@ struct vmbus_device {
-> 
->  #define VMBUS_DEFAULT_MAX_PKT_SIZE 4096
-> 
-> +struct vmbus_gpadl {
-> +	u32 gpadl_handle;
-> +	u32 size;
-> +	void *buffer;
-> +};
-> +
->  struct vmbus_channel {
->  	struct list_head listentry;
-> 
-> @@ -1195,7 +1201,7 @@ extern int vmbus_establish_gpadl(struct vmbus_channel *channel,
->  				      u32 *gpadl_handle);
-> 
->  extern int vmbus_teardown_gpadl(struct vmbus_channel *channel,
-> -				     u32 gpadl_handle);
-> +				     struct vmbus_gpadl *gpadl);
-> 
->  void vmbus_reset_channel_cb(struct vmbus_channel *channel);
-> 
+> +u64 __weak hv_ghcb_hypercall(u64 control, void *input, void *output, u32 input_size)
+> +{
+> +	return HV_STATUS_INVALID_PARAMETER;
+> +}
+> +EXPORT_SYMBOL_GPL(hv_ghcb_hypercall);
+> diff --git a/include/asm-generic/mshyperv.h b/include/asm-generic/mshyperv.h
+> index 04a687d95eac..0da45807c36a 100644
+> --- a/include/asm-generic/mshyperv.h
+> +++ b/include/asm-generic/mshyperv.h
+> @@ -250,6 +250,7 @@ bool hv_is_hibernation_supported(void);
+>  enum hv_isolation_type hv_get_isolation_type(void);
+>  bool hv_is_isolation_supported(void);
+>  bool hv_isolation_type_snp(void);
+> +u64 hv_ghcb_hypercall(u64 control, void *input, void *output, u32 input_size);
+>  void hyperv_cleanup(void);
+>  bool hv_query_ext_cap(u64 cap_query);
+>  #else /* CONFIG_HYPERV */
 > --
 > 2.25.1
-
-This isn't quite what I had in mind in my comments on v3 of this
-patch series.  My idea is to store the full struct vmbus_gpadl
-data structure in places where previously just the
-u32 gpadl_handle was stored.  Then pass around a pointer to the
-struct vmbus_gpadl where previously just the gpadl_handle (or a
-pointer to it) was passed. This lets __vmbus_establish_gpadl()
-fill in the actual handle value as well the other info (buffer pointer
-and size) that vmbus_teardown_gpadl() needs.  Callers of the
-gpadl functions don't need to worry about saving or finding
-the right info.  Most of the changes are just tweaking the references
-to what is now a struct instead of a u32.  
-
-Here's a diff of what I had in mind.  My version also has
-vmbus_teardown_gpadl() set the handle field to zero, rather than
-each caller having to do it.  The code compiles, but I
-have not done a runtime test.  This diff is a net +21 lines of code,
-whereas your v3 and v4 patches were both +51 lines of code.
-
-diff --git a/drivers/hv/channel.c b/drivers/hv/channel.c
-index f3761c7..fc041ae 100644
---- a/drivers/hv/channel.c
-+++ b/drivers/hv/channel.c
-@@ -17,6 +17,7 @@
- #include <linux/hyperv.h>
- #include <linux/uio.h>
- #include <linux/interrupt.h>
-+#include <linux/set_memory.h>
- #include <asm/page.h>
- #include <asm/mshyperv.h>
- 
-@@ -456,7 +457,7 @@ static int create_gpadl_header(enum hv_gpadl_type type, void *kbuffer,
- static int __vmbus_establish_gpadl(struct vmbus_channel *channel,
- 				   enum hv_gpadl_type type, void *kbuffer,
- 				   u32 size, u32 send_offset,
--				   u32 *gpadl_handle)
-+				   struct vmbus_gpadl *gpadl_handle)
- {
- 	struct vmbus_channel_gpadl_header *gpadlmsg;
- 	struct vmbus_channel_gpadl_body *gpadl_body;
-@@ -474,6 +475,13 @@ static int __vmbus_establish_gpadl(struct vmbus_channel *channel,
- 	if (ret)
- 		return ret;
- 
-+	ret = set_memory_decrypted((unsigned long)kbuffer,
-+				   HVPFN_UP(size));
-+	if (ret) {
-+		pr_warn("Failed to set host visibility for new GPADL %d.\n", ret);
-+		return ret;
-+	}
-+
- 	init_completion(&msginfo->waitevent);
- 	msginfo->waiting_channel = channel;
- 
-@@ -537,7 +545,9 @@ static int __vmbus_establish_gpadl(struct vmbus_channel *channel,
- 	}
- 
- 	/* At this point, we received the gpadl created msg */
--	*gpadl_handle = gpadlmsg->gpadl;
-+	gpadl_handle->handle = gpadlmsg->gpadl;
-+	gpadl_handle->buffer = kbuffer;
-+	gpadl_handle->size = size;
- 
- cleanup:
- 	spin_lock_irqsave(&vmbus_connection.channelmsg_lock, flags);
-@@ -549,6 +559,11 @@ static int __vmbus_establish_gpadl(struct vmbus_channel *channel,
- 	}
- 
- 	kfree(msginfo);
-+
-+	if (ret)
-+		set_memory_encrypted((unsigned long)kbuffer,
-+				     HVPFN_UP(size));
-+
- 	return ret;
- }
- 
-@@ -561,7 +576,7 @@ static int __vmbus_establish_gpadl(struct vmbus_channel *channel,
-  * @gpadl_handle: some funky thing
-  */
- int vmbus_establish_gpadl(struct vmbus_channel *channel, void *kbuffer,
--			  u32 size, u32 *gpadl_handle)
-+			  u32 size, struct vmbus_gpadl *gpadl_handle)
- {
- 	return __vmbus_establish_gpadl(channel, HV_GPADL_BUFFER, kbuffer, size,
- 				       0U, gpadl_handle);
-@@ -675,7 +690,7 @@ static int __vmbus_open(struct vmbus_channel *newchannel,
- 		goto error_clean_ring;
- 
- 	/* Establish the gpadl for the ring buffer */
--	newchannel->ringbuffer_gpadlhandle = 0;
-+	newchannel->ringbuffer_gpadlhandle.handle = 0;
- 
- 	err = __vmbus_establish_gpadl(newchannel, HV_GPADL_RING,
- 				      page_address(newchannel->ringbuffer_page),
-@@ -701,7 +716,7 @@ static int __vmbus_open(struct vmbus_channel *newchannel,
- 	open_msg->header.msgtype = CHANNELMSG_OPENCHANNEL;
- 	open_msg->openid = newchannel->offermsg.child_relid;
- 	open_msg->child_relid = newchannel->offermsg.child_relid;
--	open_msg->ringbuffer_gpadlhandle = newchannel->ringbuffer_gpadlhandle;
-+	open_msg->ringbuffer_gpadlhandle = newchannel->ringbuffer_gpadlhandle.handle;
- 	/*
- 	 * The unit of ->downstream_ringbuffer_pageoffset is HV_HYP_PAGE and
- 	 * the unit of ->ringbuffer_send_offset (i.e. send_pages) is PAGE, so
-@@ -759,8 +774,7 @@ static int __vmbus_open(struct vmbus_channel *newchannel,
- error_free_info:
- 	kfree(open_info);
- error_free_gpadl:
--	vmbus_teardown_gpadl(newchannel, newchannel->ringbuffer_gpadlhandle);
--	newchannel->ringbuffer_gpadlhandle = 0;
-+	vmbus_teardown_gpadl(newchannel, &newchannel->ringbuffer_gpadlhandle);
- error_clean_ring:
- 	hv_ringbuffer_cleanup(&newchannel->outbound);
- 	hv_ringbuffer_cleanup(&newchannel->inbound);
-@@ -806,7 +820,7 @@ int vmbus_open(struct vmbus_channel *newchannel,
- /*
-  * vmbus_teardown_gpadl -Teardown the specified GPADL handle
-  */
--int vmbus_teardown_gpadl(struct vmbus_channel *channel, u32 gpadl_handle)
-+int vmbus_teardown_gpadl(struct vmbus_channel *channel, struct vmbus_gpadl *gpadl)
- {
- 	struct vmbus_channel_gpadl_teardown *msg;
- 	struct vmbus_channel_msginfo *info;
-@@ -825,7 +839,7 @@ int vmbus_teardown_gpadl(struct vmbus_channel *channel, u32 gpadl_handle)
- 
- 	msg->header.msgtype = CHANNELMSG_GPADL_TEARDOWN;
- 	msg->child_relid = channel->offermsg.child_relid;
--	msg->gpadl = gpadl_handle;
-+	msg->gpadl = gpadl->handle;
- 
- 	spin_lock_irqsave(&vmbus_connection.channelmsg_lock, flags);
- 	list_add_tail(&info->msglistentry,
-@@ -844,6 +858,7 @@ int vmbus_teardown_gpadl(struct vmbus_channel *channel, u32 gpadl_handle)
- 		goto post_msg_err;
- 
- 	wait_for_completion(&info->waitevent);
-+	gpadl->handle = 0;
- 
- post_msg_err:
- 	/*
-@@ -859,6 +874,12 @@ int vmbus_teardown_gpadl(struct vmbus_channel *channel, u32 gpadl_handle)
- 	spin_unlock_irqrestore(&vmbus_connection.channelmsg_lock, flags);
- 
- 	kfree(info);
-+
-+	ret = set_memory_encrypted((unsigned long)gpadl->buffer,
-+				   HVPFN_UP(gpadl->size));
-+	if (ret)
-+		pr_warn("Fail to set mem host visibility in GPADL teardown %d.\n", ret);
-+
- 	return ret;
- }
- EXPORT_SYMBOL_GPL(vmbus_teardown_gpadl);
-@@ -933,9 +954,9 @@ static int vmbus_close_internal(struct vmbus_channel *channel)
- 	}
- 
- 	/* Tear down the gpadl for the channel's ring buffer */
--	else if (channel->ringbuffer_gpadlhandle) {
-+	else if (channel->ringbuffer_gpadlhandle.handle) {
- 		ret = vmbus_teardown_gpadl(channel,
--					   channel->ringbuffer_gpadlhandle);
-+					   &channel->ringbuffer_gpadlhandle);
- 		if (ret) {
- 			pr_err("Close failed: teardown gpadl return %d\n", ret);
- 			/*
-@@ -943,8 +964,6 @@ static int vmbus_close_internal(struct vmbus_channel *channel)
- 			 * it is perhaps better to leak memory.
- 			 */
- 		}
--
--		channel->ringbuffer_gpadlhandle = 0;
- 	}
- 
- 	if (!ret)
-diff --git a/drivers/net/hyperv/hyperv_net.h b/drivers/net/hyperv/hyperv_net.h
-index bc48855..54cbce1 100644
---- a/drivers/net/hyperv/hyperv_net.h
-+++ b/drivers/net/hyperv/hyperv_net.h
-@@ -1075,14 +1075,14 @@ struct netvsc_device {
- 	/* Receive buffer allocated by us but manages by NetVSP */
- 	void *recv_buf;
- 	u32 recv_buf_size; /* allocated bytes */
--	u32 recv_buf_gpadl_handle;
-+	struct vmbus_gpadl recv_buf_gpadl_handle;
- 	u32 recv_section_cnt;
- 	u32 recv_section_size;
- 	u32 recv_completion_cnt;
- 
- 	/* Send buffer allocated by us */
- 	void *send_buf;
--	u32 send_buf_gpadl_handle;
-+	struct vmbus_gpadl send_buf_gpadl_handle;
- 	u32 send_section_cnt;
- 	u32 send_section_size;
- 	unsigned long *send_section_map;
-diff --git a/drivers/net/hyperv/netvsc.c b/drivers/net/hyperv/netvsc.c
-index 7bd9354..585974c 100644
---- a/drivers/net/hyperv/netvsc.c
-+++ b/drivers/net/hyperv/netvsc.c
-@@ -278,9 +278,9 @@ static void netvsc_teardown_recv_gpadl(struct hv_device *device,
- {
- 	int ret;
- 
--	if (net_device->recv_buf_gpadl_handle) {
-+	if (net_device->recv_buf_gpadl_handle.handle) {
- 		ret = vmbus_teardown_gpadl(device->channel,
--					   net_device->recv_buf_gpadl_handle);
-+					   &net_device->recv_buf_gpadl_handle);
- 
- 		/* If we failed here, we might as well return and have a leak
- 		 * rather than continue and a bugchk
-@@ -290,7 +290,6 @@ static void netvsc_teardown_recv_gpadl(struct hv_device *device,
- 				   "unable to teardown receive buffer's gpadl\n");
- 			return;
- 		}
--		net_device->recv_buf_gpadl_handle = 0;
- 	}
- }
- 
-@@ -300,9 +299,9 @@ static void netvsc_teardown_send_gpadl(struct hv_device *device,
- {
- 	int ret;
- 
--	if (net_device->send_buf_gpadl_handle) {
-+	if (net_device->send_buf_gpadl_handle.handle) {
- 		ret = vmbus_teardown_gpadl(device->channel,
--					   net_device->send_buf_gpadl_handle);
-+					   &net_device->send_buf_gpadl_handle);
- 
- 		/* If we failed here, we might as well return and have a leak
- 		 * rather than continue and a bugchk
-@@ -312,7 +311,6 @@ static void netvsc_teardown_send_gpadl(struct hv_device *device,
- 				   "unable to teardown send buffer's gpadl\n");
- 			return;
- 		}
--		net_device->send_buf_gpadl_handle = 0;
- 	}
- }
- 
-@@ -380,7 +378,7 @@ static int netvsc_init_buf(struct hv_device *device,
- 	memset(init_packet, 0, sizeof(struct nvsp_message));
- 	init_packet->hdr.msg_type = NVSP_MSG1_TYPE_SEND_RECV_BUF;
- 	init_packet->msg.v1_msg.send_recv_buf.
--		gpadl_handle = net_device->recv_buf_gpadl_handle;
-+		gpadl_handle = net_device->recv_buf_gpadl_handle.handle;
- 	init_packet->msg.v1_msg.
- 		send_recv_buf.id = NETVSC_RECEIVE_BUFFER_ID;
- 
-@@ -482,7 +480,7 @@ static int netvsc_init_buf(struct hv_device *device,
- 	memset(init_packet, 0, sizeof(struct nvsp_message));
- 	init_packet->hdr.msg_type = NVSP_MSG1_TYPE_SEND_SEND_BUF;
- 	init_packet->msg.v1_msg.send_send_buf.gpadl_handle =
--		net_device->send_buf_gpadl_handle;
-+		net_device->send_buf_gpadl_handle.handle;
- 	init_packet->msg.v1_msg.send_send_buf.id = NETVSC_SEND_BUFFER_ID;
- 
- 	trace_nvsp_send(ndev, init_packet);
-diff --git a/drivers/uio/uio_hv_generic.c b/drivers/uio/uio_hv_generic.c
-index 652fe25..97e08e7 100644
---- a/drivers/uio/uio_hv_generic.c
-+++ b/drivers/uio/uio_hv_generic.c
-@@ -58,11 +58,11 @@ struct hv_uio_private_data {
- 	atomic_t refcnt;
- 
- 	void	*recv_buf;
--	u32	recv_gpadl;
-+	struct vmbus_gpadl recv_gpadl;
- 	char	recv_name[32];	/* "recv_4294967295" */
- 
- 	void	*send_buf;
--	u32	send_gpadl;
-+	struct vmbus_gpadl send_gpadl;
- 	char	send_name[32];
- };
- 
-@@ -179,15 +179,13 @@ static int hv_uio_ring_mmap(struct file *filp, struct kobject *kobj,
- static void
- hv_uio_cleanup(struct hv_device *dev, struct hv_uio_private_data *pdata)
- {
--	if (pdata->send_gpadl) {
--		vmbus_teardown_gpadl(dev->channel, pdata->send_gpadl);
--		pdata->send_gpadl = 0;
-+	if (pdata->send_gpadl.handle) {
-+		vmbus_teardown_gpadl(dev->channel, &pdata->send_gpadl);
- 		vfree(pdata->send_buf);
- 	}
- 
--	if (pdata->recv_gpadl) {
--		vmbus_teardown_gpadl(dev->channel, pdata->recv_gpadl);
--		pdata->recv_gpadl = 0;
-+	if (pdata->recv_gpadl.handle) {
-+		vmbus_teardown_gpadl(dev->channel, &pdata->recv_gpadl);
- 		vfree(pdata->recv_buf);
- 	}
- }
-diff --git a/include/linux/hyperv.h b/include/linux/hyperv.h
-index 2e859d2..a0d64c3 100644
---- a/include/linux/hyperv.h
-+++ b/include/linux/hyperv.h
-@@ -809,6 +809,12 @@ struct vmbus_device {
- 
- #define VMBUS_DEFAULT_MAX_PKT_SIZE 4096
- 
-+struct vmbus_gpadl {
-+	u32 handle;
-+	u32 size;
-+	void *buffer;
-+};
-+
- struct vmbus_channel {
- 	struct list_head listentry;
- 
-@@ -828,7 +834,7 @@ struct vmbus_channel {
- 	bool rescind_ref; /* got rescind msg, got channel reference */
- 	struct completion rescind_event;
- 
--	u32 ringbuffer_gpadlhandle;
-+	struct vmbus_gpadl ringbuffer_gpadlhandle;
- 
- 	/* Allocated memory for ring buffer */
- 	struct page *ringbuffer_page;
-@@ -1208,10 +1214,10 @@ extern int vmbus_sendpacket_mpb_desc(struct vmbus_channel *channel,
- extern int vmbus_establish_gpadl(struct vmbus_channel *channel,
- 				      void *kbuffer,
- 				      u32 size,
--				      u32 *gpadl_handle);
-+				      struct vmbus_gpadl *gpadl_handle);
- 
- extern int vmbus_teardown_gpadl(struct vmbus_channel *channel,
--				     u32 gpadl_handle);
-+				     struct vmbus_gpadl *gpadl);
- 
- void vmbus_reset_channel_cb(struct vmbus_channel *channel);
 
 _______________________________________________
 iommu mailing list
