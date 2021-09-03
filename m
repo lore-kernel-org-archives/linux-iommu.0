@@ -2,85 +2,101 @@ Return-Path: <SRS0=hF+p=NZ=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-13.8 required=3.0 tests=BAYES_00,DKIM_INVALID,
-	DKIM_SIGNED,INCLUDES_CR_TRAILER,INCLUDES_PATCH,MAILING_LIST_MULTI,
-	SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED autolearn=ham autolearn_force=no
-	version=3.4.0
+X-Spam-Status: No, score=-12.0 required=3.0 tests=BAYES_00,
+	DKIM_ADSP_CUSTOM_MED,DKIM_INVALID,DKIM_SIGNED,FREEMAIL_FORGED_FROMDOMAIN,
+	FREEMAIL_FROM,HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_CR_TRAILER,
+	INCLUDES_PATCH,MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,
+	USER_AGENT_SANE_1 autolearn=ham autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D6B8EC433EF
-	for <iommu@archiver.kernel.org>; Fri,  3 Sep 2021 13:21:14 +0000 (UTC)
-Received: from smtp1.osuosl.org (smtp1.osuosl.org [140.211.166.138])
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 097A8C433F5
+	for <iommu@archiver.kernel.org>; Fri,  3 Sep 2021 13:52:18 +0000 (UTC)
+Received: from smtp4.osuosl.org (smtp4.osuosl.org [140.211.166.137])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 87D7261056
-	for <iommu@archiver.kernel.org>; Fri,  3 Sep 2021 13:21:14 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.4.1 mail.kernel.org 87D7261056
-Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=kernel.org
+	by mail.kernel.org (Postfix) with ESMTPS id A0B28610CC
+	for <iommu@archiver.kernel.org>; Fri,  3 Sep 2021 13:52:17 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.4.1 mail.kernel.org A0B28610CC
+Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=gmail.com
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by smtp1.osuosl.org (Postfix) with ESMTP id 4719C83E4F;
-	Fri,  3 Sep 2021 13:21:14 +0000 (UTC)
+	by smtp4.osuosl.org (Postfix) with ESMTP id 694D64268F;
+	Fri,  3 Sep 2021 13:52:17 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from smtp1.osuosl.org ([127.0.0.1])
-	by localhost (smtp1.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id MZ7M6Q0drgce; Fri,  3 Sep 2021 13:21:13 +0000 (UTC)
+Received: from smtp4.osuosl.org ([127.0.0.1])
+	by localhost (smtp4.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+	with ESMTP id zJwsjTEJu_Tx; Fri,  3 Sep 2021 13:52:15 +0000 (UTC)
 Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by smtp1.osuosl.org (Postfix) with ESMTPS id A530680F82;
-	Fri,  3 Sep 2021 13:21:12 +0000 (UTC)
+	by smtp4.osuosl.org (Postfix) with ESMTPS id BED7242683;
+	Fri,  3 Sep 2021 13:52:14 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 81C50C001A;
-	Fri,  3 Sep 2021 13:21:12 +0000 (UTC)
-Received: from smtp1.osuosl.org (smtp1.osuosl.org [IPv6:2605:bc80:3010::138])
- by lists.linuxfoundation.org (Postfix) with ESMTP id D8EF3C000E
- for <iommu@lists.linux-foundation.org>; Fri,  3 Sep 2021 13:21:10 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 8D88FC001A;
+	Fri,  3 Sep 2021 13:52:14 +0000 (UTC)
+Received: from smtp4.osuosl.org (smtp4.osuosl.org [IPv6:2605:bc80:3010::137])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 0110BC000E
+ for <iommu@lists.linux-foundation.org>; Fri,  3 Sep 2021 13:52:12 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by smtp1.osuosl.org (Postfix) with ESMTP id BBC5A83E4F
- for <iommu@lists.linux-foundation.org>; Fri,  3 Sep 2021 13:21:10 +0000 (UTC)
+ by smtp4.osuosl.org (Postfix) with ESMTP id CED5342683
+ for <iommu@lists.linux-foundation.org>; Fri,  3 Sep 2021 13:52:12 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from smtp1.osuosl.org ([127.0.0.1])
- by localhost (smtp1.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id FwfMC6j6sHOD for <iommu@lists.linux-foundation.org>;
- Fri,  3 Sep 2021 13:21:09 +0000 (UTC)
-X-Greylist: domain auto-whitelisted by SQLgrey-1.8.0
-Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
- by smtp1.osuosl.org (Postfix) with ESMTPS id 97F7A80F82
- for <iommu@lists.linux-foundation.org>; Fri,  3 Sep 2021 13:21:09 +0000 (UTC)
-Received: by mail.kernel.org (Postfix) with ESMTPSA id 1C7DB610CC
- for <iommu@lists.linux-foundation.org>; Fri,  3 Sep 2021 13:21:09 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
- s=k20201202; t=1630675269;
- bh=q18fzCYlIJP9sqamPWyFIIhj5t3KCngXs0MS3k/KPOk=;
- h=References:In-Reply-To:From:Date:Subject:To:Cc:From;
- b=HEk0kW5Bfb6+oFQoZEcVB+jqJz+lTgGyK0aBXm98mJHAknuz8Cvn9DLlu6ZuGRtkD
- yVs9wnCceozJJLRm0z2KN0b+X7VT5Ae80xy5C/DwcAkHU2qX2FZjaHT6E2LaxXbLq5
- N1Edh6ysi/XyuXTZvejy1HHpC1JR6sk2d0Pi35w3mE8QqDll5dSwI7J2gWqEHyYCoe
- fb/MLEQZalXCL/g26VRHUNTO3Ro9ZjzCZ3JiFXM3OfMUOv7jSLvcbqjKORVK3IRRpp
- yKLrr15ZtwtDJZ1O0DYuANVmN82dKB4CYWSNPEHuhFhl46jHYDaq9t0sQRvj9OAfKx
- 4Ors1rEBChW7w==
-Received: by mail-ed1-f53.google.com with SMTP id v5so2652864edc.2
- for <iommu@lists.linux-foundation.org>; Fri, 03 Sep 2021 06:21:09 -0700 (PDT)
-X-Gm-Message-State: AOAM532Rc4/99O//ELT3yAQgJ1Em5NacpaPJuMEEk7OVpekhwvLsH0pY
- kAGDuGeRUgHaNMzF0f9fNhiOH8lVrkDVv1ZnOg==
-X-Google-Smtp-Source: ABdhPJynygR5KNcoKxOTQgXiSbACOBDhNfZz+qjn+in0s3I80B7+2FAfTPpJXxNVseKcljnaSHAU9n4ZzOH0Gzy7tME=
-X-Received: by 2002:a05:6402:40cf:: with SMTP id
- z15mr3958785edb.70.1630675267525; 
- Fri, 03 Sep 2021 06:21:07 -0700 (PDT)
-MIME-Version: 1.0
+Received: from smtp4.osuosl.org ([127.0.0.1])
+ by localhost (smtp4.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+ with ESMTP id 89Z8bHEsinrJ for <iommu@lists.linux-foundation.org>;
+ Fri,  3 Sep 2021 13:52:08 +0000 (UTC)
+X-Greylist: whitelisted by SQLgrey-1.8.0
+Received: from mail-wm1-x32a.google.com (mail-wm1-x32a.google.com
+ [IPv6:2a00:1450:4864:20::32a])
+ by smtp4.osuosl.org (Postfix) with ESMTPS id 91570426B4
+ for <iommu@lists.linux-foundation.org>; Fri,  3 Sep 2021 13:52:06 +0000 (UTC)
+Received: by mail-wm1-x32a.google.com with SMTP id g138so3552871wmg.4
+ for <iommu@lists.linux-foundation.org>; Fri, 03 Sep 2021 06:52:06 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=gmail.com; s=20210112;
+ h=date:from:to:cc:subject:message-id:references:mime-version
+ :content-disposition:in-reply-to:user-agent;
+ bh=EnQFsjLHfRSbkFFrk/jmLUJeQadp1wRiJmOtkE4t/kk=;
+ b=jkJAo5lQn9a4GNUXMSWIELWuxBU/ABG/ha385tNsuDrOarAJTeFYheIY0edwCb8ssK
+ mf9bgqVdEfeNG4PlPKuM5FgeiUTtNhKfyWd/Zj7hQP/Vh9sW27zOphWWnWJ1FoilyByW
+ 8yTnxqYTF2bBDCuW3NQ3W99uBvCHfd7gchnLzeUAtKvN44YPPUt9rZGZwTjv+382Wl2K
+ U93ldIidrn3NSnag5e4u0J5sA+q8/ukx9QZE5pTxFcSgEkWLhUwCacsJHbt1utB9r/HS
+ oYWkkKcEyzuwFDxWbv1IdqGQ0ga2VbQgL/jOZ1dntkcfi1zNH8s6fhnWDYWz45HJ5Tb+
+ 38ng==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+ d=1e100.net; s=20161025;
+ h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+ :mime-version:content-disposition:in-reply-to:user-agent;
+ bh=EnQFsjLHfRSbkFFrk/jmLUJeQadp1wRiJmOtkE4t/kk=;
+ b=YUUF6zj75eXpBpqkm4eFK7PxMUdOY272Tmc1FU4LNX7xZJJUQ1zbxIdat9jXD0rSos
+ ALFtIW9tWRgJkcTBK2E/BILpHr0QbccYqZTXouN41681YMzW7OvqQvsKsw9nEDFxctRv
+ 3iXJcDOz6Z6z1nVtIWqtpJ1DM06EI1CqiF10zFsQLIJQOwwcwD8OClGtNy4yHbp75ynU
+ /22ymzcL3qPV4IUeDDRNiwdy1pMPwZ8wjlYbAi7JS72V/GtcX6kIEK83baibUYA+ZZ6X
+ 1G1FbAYeTT2bLIqCZcKfWL+DOk5MWu6zYiTDTcnSq0aKv83d/uqlNFMTH9wOs6/FclMo
+ zUZw==
+X-Gm-Message-State: AOAM532KhnUrZ6S5VzJZLJls0NllpAn6vEaHfd3WTQKf9qyxaeDS03k2
+ x4aI9TbtE22pLR9ZoFlkcJU=
+X-Google-Smtp-Source: ABdhPJxhGux8I7mdFQiNJlgsW+oeFVK4fltNYu6AqoWwxxRLz/5LzJTgeng5pVpgiLZ0p/KuDWA0+A==
+X-Received: by 2002:a7b:c097:: with SMTP id r23mr512255wmh.114.1630677124641; 
+ Fri, 03 Sep 2021 06:52:04 -0700 (PDT)
+Received: from localhost ([217.111.27.204])
+ by smtp.gmail.com with ESMTPSA id r129sm4219932wmr.7.2021.09.03.06.52.03
+ (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+ Fri, 03 Sep 2021 06:52:03 -0700 (PDT)
+Date: Fri, 3 Sep 2021 15:52:02 +0200
+From: Thierry Reding <thierry.reding@gmail.com>
+To: Rob Herring <robh@kernel.org>
+Subject: Re: [PATCH v2 1/5] dt-bindings: reserved-memory: Document memory
+ region specifier
+Message-ID: <YTIogpQDJjqJUTkG@orome.fritz.box>
 References: <20210423163234.3651547-1-thierry.reding@gmail.com>
  <20210423163234.3651547-2-thierry.reding@gmail.com>
  <20210520220306.GA1976116@robh.at.kernel.org>
- <YLEgXyLBF8PEFNw2@orome.fritz.box> <YL+gHN4YZ4vt1vPk@orome.fritz.box>
+ <YLEgXyLBF8PEFNw2@orome.fritz.box>
+ <YL+gHN4YZ4vt1vPk@orome.fritz.box>
  <YN4F/nH/9tDuWDnQ@orome.fritz.box>
  <7995b0ed-a277-ced1-b3d0-e0e7e02817a6@gmail.com>
  <YS+Ke4Ip0InHSnHR@orome.fritz.box>
-In-Reply-To: <YS+Ke4Ip0InHSnHR@orome.fritz.box>
-From: Rob Herring <robh@kernel.org>
-Date: Fri, 3 Sep 2021 08:20:55 -0500
-X-Gmail-Original-Message-ID: <CAL_Jsq+TQeb56UbrO1xKFSb1yo0d8U29DPynw3_jQ6gH6Peatw@mail.gmail.com>
-Message-ID: <CAL_Jsq+TQeb56UbrO1xKFSb1yo0d8U29DPynw3_jQ6gH6Peatw@mail.gmail.com>
-Subject: Re: [PATCH v2 1/5] dt-bindings: reserved-memory: Document memory
- region specifier
-To: Thierry Reding <thierry.reding@gmail.com>
+ <CAL_Jsq+TQeb56UbrO1xKFSb1yo0d8U29DPynw3_jQ6gH6Peatw@mail.gmail.com>
+MIME-Version: 1.0
+In-Reply-To: <CAL_Jsq+TQeb56UbrO1xKFSb1yo0d8U29DPynw3_jQ6gH6Peatw@mail.gmail.com>
+User-Agent: Mutt/2.1.2 (9a92dba0) (2021-08-24)
 Cc: devicetree@vger.kernel.org, Robin Murphy <robin.murphy@arm.com>,
  Linux IOMMU <iommu@lists.linux-foundation.org>,
  dri-devel <dri-devel@lists.freedesktop.org>,
@@ -99,228 +115,364 @@ List-Post: <mailto:iommu@lists.linux-foundation.org>
 List-Help: <mailto:iommu-request@lists.linux-foundation.org?subject=help>
 List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
  <mailto:iommu-request@lists.linux-foundation.org?subject=subscribe>
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
+Content-Type: multipart/mixed; boundary="===============1654067279305915727=="
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-T24gV2VkLCBTZXAgMSwgMjAyMSBhdCA5OjEzIEFNIFRoaWVycnkgUmVkaW5nIDx0aGllcnJ5LnJl
-ZGluZ0BnbWFpbC5jb20+IHdyb3RlOgo+Cj4gT24gRnJpLCBKdWwgMDIsIDIwMjEgYXQgMDU6MTY6
-MjVQTSArMDMwMCwgRG1pdHJ5IE9zaXBlbmtvIHdyb3RlOgo+ID4gMDEuMDcuMjAyMSAyMToxNCwg
-VGhpZXJyeSBSZWRpbmcg0L/QuNGI0LXRgjoKPiA+ID4gT24gVHVlLCBKdW4gMDgsIDIwMjEgYXQg
-MDY6NTE6NDBQTSArMDIwMCwgVGhpZXJyeSBSZWRpbmcgd3JvdGU6Cj4gPiA+PiBPbiBGcmksIE1h
-eSAyOCwgMjAyMSBhdCAwNjo1NDo1NVBNICswMjAwLCBUaGllcnJ5IFJlZGluZyB3cm90ZToKPiA+
-ID4+PiBPbiBUaHUsIE1heSAyMCwgMjAyMSBhdCAwNTowMzowNlBNIC0wNTAwLCBSb2IgSGVycmlu
-ZyB3cm90ZToKPiA+ID4+Pj4gT24gRnJpLCBBcHIgMjMsIDIwMjEgYXQgMDY6MzI6MzBQTSArMDIw
-MCwgVGhpZXJyeSBSZWRpbmcgd3JvdGU6Cj4gPiA+Pj4+PiBGcm9tOiBUaGllcnJ5IFJlZGluZyA8
-dHJlZGluZ0BudmlkaWEuY29tPgo+ID4gPj4+Pj4KPiA+ID4+Pj4+IFJlc2VydmVkIG1lbW9yeSBy
-ZWdpb24gcGhhbmRsZSByZWZlcmVuY2VzIGNhbiBiZSBhY2NvbXBhbmllZCBieSBhCj4gPiA+Pj4+
-PiBzcGVjaWZpZXIgdGhhdCBwcm92aWRlcyBhZGRpdGlvbmFsIGluZm9ybWF0aW9uIGFib3V0IGhv
-dyB0aGF0IHNwZWNpZmljCj4gPiA+Pj4+PiByZWZlcmVuY2Ugc2hvdWxkIGJlIHRyZWF0ZWQuCj4g
-PiA+Pj4+Pgo+ID4gPj4+Pj4gT25lIHVzZS1jYXNlIGlzIHRvIG1hcmsgYSBtZW1vcnkgcmVnaW9u
-IGFzIG5lZWRpbmcgYW4gaWRlbnRpdHkgbWFwcGluZwo+ID4gPj4+Pj4gaW4gdGhlIHN5c3RlbSdz
-IElPTU1VIGZvciB0aGUgZGV2aWNlIHRoYXQgcmVmZXJlbmNlcyB0aGUgcmVnaW9uLiBUaGlzIGlz
-Cj4gPiA+Pj4+PiBuZWVkZWQgZm9yIGV4YW1wbGUgd2hlbiB0aGUgYm9vdGxvYWRlciBoYXMgc2V0
-IHVwIGhhcmR3YXJlIChzdWNoIGFzIGEKPiA+ID4+Pj4+IGRpc3BsYXkgY29udHJvbGxlcikgdG8g
-YWN0aXZlbHkgYWNjZXNzIGEgbWVtb3J5IHJlZ2lvbiAoZS5nLiBhIGJvb3QKPiA+ID4+Pj4+IHNw
-bGFzaCBzY3JlZW4gZnJhbWVidWZmZXIpIGR1cmluZyBib290LiBUaGUgb3BlcmF0aW5nIHN5c3Rl
-bSBjYW4gdXNlIHRoZQo+ID4gPj4+Pj4gaWRlbnRpdHkgbWFwcGluZyBmbGFnIGZyb20gdGhlIHNw
-ZWNpZmllciB0byBtYWtlIHN1cmUgYW4gSU9NTVUgaWRlbnRpdHkKPiA+ID4+Pj4+IG1hcHBpbmcg
-aXMgc2V0IHVwIGZvciB0aGUgZnJhbWVidWZmZXIgYmVmb3JlIElPTU1VIHRyYW5zbGF0aW9ucyBh
-cmUKPiA+ID4+Pj4+IGVuYWJsZWQgZm9yIHRoZSBkaXNwbGF5IGNvbnRyb2xsZXIuCj4gPiA+Pj4+
-Pgo+ID4gPj4+Pj4gU2lnbmVkLW9mZi1ieTogVGhpZXJyeSBSZWRpbmcgPHRyZWRpbmdAbnZpZGlh
-LmNvbT4KPiA+ID4+Pj4+IC0tLQo+ID4gPj4+Pj4gIC4uLi9yZXNlcnZlZC1tZW1vcnkvcmVzZXJ2
-ZWQtbWVtb3J5LnR4dCAgICAgICB8IDIxICsrKysrKysrKysrKysrKysrKysKPiA+ID4+Pj4+ICBp
-bmNsdWRlL2R0LWJpbmRpbmdzL3Jlc2VydmVkLW1lbW9yeS5oICAgICAgICAgfCAgOCArKysrKysr
-Cj4gPiA+Pj4+PiAgMiBmaWxlcyBjaGFuZ2VkLCAyOSBpbnNlcnRpb25zKCspCj4gPiA+Pj4+PiAg
-Y3JlYXRlIG1vZGUgMTAwNjQ0IGluY2x1ZGUvZHQtYmluZGluZ3MvcmVzZXJ2ZWQtbWVtb3J5LmgK
-PiA+ID4+Pj4KPiA+ID4+Pj4gU29ycnkgZm9yIGJlaW5nIHNsb3cgb24gdGhpcy4gSSBoYXZlIDIg
-Y29uY2VybnMuCj4gPiA+Pj4+Cj4gPiA+Pj4+IEZpcnN0LCB0aGlzIGNyZWF0ZXMgYW4gQUJJIGlz
-c3VlLiBBIERUIHdpdGggY2VsbHMgaW4gJ21lbW9yeS1yZWdpb24nCj4gPiA+Pj4+IHdpbGwgbm90
-IGJlIHVuZGVyc3Rvb2QgYnkgYW4gZXhpc3RpbmcgT1MuIEknbSBsZXNzIGNvbmNlcm5lZCBhYm91
-dCB0aGlzCj4gPiA+Pj4+IGlmIHdlIGFkZHJlc3MgdGhhdCB3aXRoIGEgc3RhYmxlIGZpeC4gKFRo
-b3VnaCBJJ20gcHJldHR5IHN1cmUgd2UndmUKPiA+ID4+Pj4gbmFpdmVseSBhZGRlZCAjPy1jZWxs
-cyBpbiB0aGUgcGFzdCBpZ25vcmluZyB0aGlzIGlzc3VlLikKPiA+ID4+Pgo+ID4gPj4+IEEgd2hp
-bGUgYWdvIEkgaGFkIHByb3Bvc2VkIGFkZGluZyBtZW1vcnktcmVnaW9uKnMqIGFzIGFuIGFsdGVy
-bmF0aXZlCj4gPiA+Pj4gbmFtZSBmb3IgbWVtb3J5LXJlZ2lvbiB0byBtYWtlIHRoZSBuYW1pbmcg
-bW9yZSBjb25zaXN0ZW50IHdpdGggb3RoZXIKPiA+ID4+PiB0eXBlcyBvZiBwcm9wZXJ0aWVzICh0
-aGluayBjbG9ja3MsIHJlc2V0cywgZ3Bpb3MsIC4uLikuIElmIHdlIGFkZGVkCj4gPiA+Pj4gdGhh
-dCwgd2UgY291bGQgZWFzaWx5IGRpZmZlcmVudGlhdGUgYmV0d2VlbiB0aGUgImxlZ2FjeSIgY2Fz
-ZXMgd2hlcmUKPiA+ID4+PiBubyAjbWVtb3J5LXJlZ2lvbi1jZWxscyB3YXMgYWxsb3dlZCBhbmQg
-dGhlIG5ldyBjYXNlcyB3aGVyZSBpdCB3YXMuCj4gPiA+Pj4KPiA+ID4+Pj4gU2Vjb25kLCBpdCBj
-b3VsZCBiZSB0aGUgYm9vdGxvYWRlciBzZXR0aW5nIHVwIHRoZSByZXNlcnZlZCByZWdpb24uIElm
-IGEKPiA+ID4+Pj4gbm9kZSBhbHJlYWR5IGhhcyAnbWVtb3J5LXJlZ2lvbicsIHRoZW4gYWRkaW5n
-IG1vcmUgcmVnaW9ucyBpcyBtb3JlCj4gPiA+Pj4+IGNvbXBsaWNhdGVkIGNvbXBhcmVkIHRvIGFk
-ZGluZyBuZXcgcHJvcGVydGllcy4gQW5kIGRlZmluaW5nIHdoYXQgZWFjaAo+ID4gPj4+PiBtZW1v
-cnktcmVnaW9uIGVudHJ5IGlzIG9yIGhvdyBtYW55IGluIHNjaGVtYXMgaXMgaW1wb3NzaWJsZS4K
-PiA+ID4+Pgo+ID4gPj4+IEl0J3MgdHJ1ZSB0aGF0IHVwZGF0aW5nIHRoZSBwcm9wZXJ0eSBnZXRz
-IGEgYml0IGNvbXBsaWNhdGVkLCBidXQgaXQncwo+ID4gPj4+IG5vdCBleGFjdGx5IHJvY2tldCBz
-Y2llbmNlLiBXZSByZWFsbHkganVzdCBuZWVkIHRvIHNwbGljZSB0aGUgYXJyYXkuIEkKPiA+ID4+
-PiBoYXZlIGEgd29ya2luZyBpbXBsZW1lbnRpb24gZm9yIHRoaXMgaW4gVS1Cb290Lgo+ID4gPj4+
-Cj4gPiA+Pj4gRm9yIHdoYXQgaXQncyB3b3J0aCwgd2UgY291bGQgcnVuIGludG8gdGhlIHNhbWUg
-aXNzdWUgd2l0aCBhbnkgbmV3Cj4gPiA+Pj4gcHJvcGVydHkgdGhhdCB3ZSBhZGQuIEV2ZW4gaWYg
-d2UgcmVuYW1lZCB0aGlzIHRvIGlvbW11LW1lbW9yeS1yZWdpb24sCj4gPiA+Pj4gaXQncyBzdGls
-bCBwb3NzaWJsZSB0aGF0IGEgYm9vdGxvYWRlciBtYXkgaGF2ZSB0byB1cGRhdGUgdGhpcyBwcm9w
-ZXJ0eQo+ID4gPj4+IGlmIGl0IGFscmVhZHkgZXhpc3RzIChpdCBjb3VsZCBiZSBoYXJkLWNvZGVk
-IGluIERULCBvciBpdCBjb3VsZCBoYXZlCj4gPiA+Pj4gYmVlbiBhZGRlZCBieSBzb21lIGVhcmxp
-ZXIgYm9vdGxvYWRlciBvciBmaXJtd2FyZSkuCj4gPiA+Pj4KPiA+ID4+Pj4gQm90aCBjb3VsZCBi
-ZSBhZGRyZXNzZWQgd2l0aCBhIG5ldyBwcm9wZXJ0eS4gUGVyaGFwcyBzb21ldGhpbmcgbGlrZQo+
-ID4gPj4+PiAnaW9tbXUtbWVtb3J5LXJlZ2lvbiA9IDwmcGhhbmRsZT47Jy4gSSB0aGluayB0aGUg
-J2lvbW11JyBwcmVmaXggaXMKPiA+ID4+Pj4gYXBwcm9wcmlhdGUgZ2l2ZW4gdGhpcyBpcyBlbnRp
-cmVseSBiZWNhdXNlIG9mIHRoZSBJT01NVSBiZWluZyBpbiB0aGUKPiA+ID4+Pj4gbWl4LiBJIG1p
-Z2h0IGZlZWwgZGlmZmVyZW50bHkgaWYgd2UgaGFkIG90aGVyIHVzZXMgZm9yIGNlbGxzLCBidXQg
-SQo+ID4gPj4+PiBkb24ndCByZWFsbHkgc2VlIGl0IGluIHRoaXMgY2FzZS4KPiA+ID4+Pgo+ID4g
-Pj4+IEknbSBhZnJhaWQgdGhhdCBkb3duIHRoZSByb2FkIHdlJ2xsIGVuZCB1cCB3aXRoIG90aGVy
-IGNhc2VzIGFuZCB0aGVuIHdlCj4gPiA+Pj4gbWlnaHQgcHJvbGlmZXJhdGUgYSBudW1iZXIgb2Yg
-Ki1tZW1vcnktcmVnaW9uIHByb3BlcnRpZXMgd2l0aCB2YXJ5aW5nCj4gPiA+Pj4gcHJlZml4ZXMu
-Cj4gPiA+Pj4KPiA+ID4+PiBJIGFtIGF3YXJlIG9mIG9uZSBvdGhlciBjYXNlIHdoZXJlIHdlIG1p
-Z2h0IG5lZWQgc29tZXRoaW5nIGxpa2UgdGhpczogb24KPiA+ID4+PiBzb21lIFRlZ3JhIFNvQ3Mg
-d2UgaGF2ZSBhdWRpbyBwcm9jZXNzb3JzIHRoYXQgd2lsbCBhY2Nlc3MgbWVtb3J5IGJ1ZmZlcnMK
-PiA+ID4+PiB1c2luZyBhIERNQSBlbmdpbmUuIFRoZXNlIHByb2Nlc3NvcnMgYXJlIGJvb3RlZCBm
-cm9tIGVhcmx5IGZpcm13YXJlCj4gPiA+Pj4gdXNpbmcgZmlybXdhcmUgZnJvbSBzeXN0ZW0gbWVt
-b3J5LiBJbiBvcmRlciB0byBhdm9pZCB0cmFzaGluZyB0aGUKPiA+ID4+PiBmaXJtd2FyZSwgd2Ug
-bmVlZCB0byByZXNlcnZlIG1lbW9yeS4gV2UgY2FuIGRvIHRoaXMgdXNpbmcgcmVzZXJ2ZWQKPiA+
-ID4+PiBtZW1vcnkgbm9kZXMuIEhvd2V2ZXIsIHRoZSBhdWRpbyBETUEgZW5naW5lIGFsc28gdXNl
-cyB0aGUgU01NVSwgc28gd2UKPiA+ID4+PiBuZWVkIHRvIG1ha2Ugc3VyZSB0aGF0IHRoZSBmaXJt
-d2FyZSBtZW1vcnkgaXMgbWFya2VkIGFzIHJlc2VydmVkIHdpdGhpbgo+ID4gPj4+IHRoZSBTTU1V
-LiBUaGlzIGlzIHNpbWlsYXIgdG8gdGhlIGlkZW50aXR5IG1hcHBpbmcgY2FzZSwgYnV0IG5vdCBl
-eGFjdGx5Cj4gPiA+Pj4gdGhlIHNhbWUuIEluc3RlYWQgb2YgY3JlYXRpbmcgYSAxOjEgbWFwcGlu
-Zywgd2UganVzdCB3YW50IHRoYXQgSU9WQQo+ID4gPj4+IHJlZ2lvbiB0byBiZSByZXNlcnZlZCAo
-aS5lLiBJT01NVV9SRVNWX1JFU0VSVkVEIGluc3RlYWQgb2YKPiA+ID4+PiBJT01NVV9SRVNWX0RJ
-UkVDVHssX1JFTEFYQUJMRX0pLgo+ID4gPj4+Cj4gPiA+Pj4gVGhhdCB3b3VsZCBhbHNvIGZhbGwg
-aW50byB0aGUgSU9NTVUgZG9tYWluLCBidXQgd2UgY2FuJ3QgcmV1c2UgdGhlCj4gPiA+Pj4gaW9t
-bXUtbWVtb3J5LXJlZ2lvbiBwcm9wZXJ0eSBmb3IgdGhhdCBiZWNhdXNlIHRoZW4gd2UgZG9uJ3Qg
-aGF2ZSBlbm91Z2gKPiA+ID4+PiBpbmZvcm1hdGlvbiB0byBkZWNpZGUgd2hpY2ggdHlwZSBvZiBy
-ZXNlcnZhdGlvbiB3ZSBuZWVkLgo+ID4gPj4+Cj4gPiA+Pj4gV2UgY291bGQgb2J2aW91c2x5IG1h
-a2UgaW9tbXUtbWVtb3J5LXJlZ2lvbiB0YWtlIGEgc3BlY2lmaWVyLCBidXQgd2UKPiA+ID4+PiBj
-b3VsZCBqdXN0IGFzIHdlbGwgdXNlIG1lbW9yeS1yZWdpb25zIGluIHRoYXQgY2FzZSBzaW5jZSB3
-ZSBoYXZlCj4gPiA+Pj4gc29tZXRoaW5nIG1vcmUgZ2VuZXJpYyBhbnl3YXkuCj4gPiA+Pj4KPiA+
-ID4+PiBXaXRoIHRoZSAjbWVtb3J5LXJlZ2lvbi1jZWxscyBwcm9wb3NhbCwgd2UgY2FuIGVhc2ls
-eSBleHRlbmQgdGhlIGNlbGwgaW4KPiA+ID4+PiB0aGUgc3BlY2lmaWVyIHdpdGggYW4gYWRkaXRp
-b25hbCBNRU1PUllfUkVHSU9OX0lPTU1VX1JFU0VSVkUgZmxhZyB0bwo+ID4gPj4+IHRha2UgdGhh
-dCBvdGhlciB1c2UgY2FzZSBpbnRvIGFjY291bnQuIElmIHdlIHRoYW4gYWxzbyBjaGFuZ2UgdG8g
-dGhlIG5ldwo+ID4gPj4+IG1lbW9yeS1yZWdpb25zIHByb3BlcnR5IG5hbWUsIHdlIGF2b2lkIHRo
-ZSBBQkkgaXNzdWUgKGFuZCB3ZSBnYWluIGEgYml0Cj4gPiA+Pj4gb2YgY29uc2lzdGVuY3kgd2hp
-bGUgYXQgaXQpLgo+ID4gPj4KPiA+ID4+IFBpbmc/IFJvYiwgZG8geW91IHdhbnQgbWUgdG8gYWRk
-IHRoaXMgc2Vjb25kIHVzZS1jYXNlIHRvIHRoZSBwYXRjaAo+ID4gPj4gc2VyaWVzIHRvIG1ha2Ug
-aXQgbW9yZSBvYnZpb3VzIHRoYXQgdGhpcyBpc24ndCBqdXN0IGEgb25lLW9mZiB0aGluZz8gT3IK
-PiA+ID4+IGhvdyBkbyB3ZSBwcm9jZWVkPwo+ID4gPgo+ID4gPiBSb2IsIGdpdmVuIHRoYXQgYWRk
-aXRpb25hbCB1c2UtY2FzZSwgZG8geW91IHdhbnQgbWUgdG8gcnVuIHdpdGggdGhpcwo+ID4gPiBw
-cm9wb3NhbCBhbmQgc2VuZCBvdXQgYW4gdXBkYXRlZCBzZXJpZXM/Cj4gPgo+ID4KPiA+IFdoYXQg
-YWJvdXQgdmFyaWFudCB3aXRoIGEgImRlc2NyaXB0b3IiIHByb3BlcnRpZXMgdGhhdCB3aWxsIGRl
-c2NyaWJlCj4gPiBlYWNoIHJlZ2lvbjoKPiA+Cj4gPiBmYl9kZXNjOiBkaXNwbGF5LWZyYW1lYnVm
-ZmVyLW1lbW9yeS1kZXNjcmlwdG9yIHsKPiA+ICAgICAgIG5lZWRzLWlkZW50aXR5LW1hcHBpbmc7
-Cj4gPiB9Cj4gPgo+ID4gZGlzcGxheUA1MjQwMDAwMCB7Cj4gPiAgICAgICBtZW1vcnktcmVnaW9u
-ID0gPCZmYiAuLi4+Owo+ID4gICAgICAgbWVtb3J5LXJlZ2lvbi1kZXNjcmlwdG9yID0gPCZmYl9k
-ZXNjIC4uLj47Cj4gPiB9Owo+ID4KPiA+IEl0IGNvdWxkIGJlIGEgbW9yZSBmbGV4aWJsZS9leHRl
-bmRpYmxlIHZhcmlhbnQuCj4KPiBUaGlzIHByb2JsZW0gcmVjZW50bHkgY2FtZSB1cCBvbiAjZHJp
-LWRldmVsIGFnYWluLiBBZGRpbmcgQWx5c3NhIGFuZAo+IFN2ZW4gd2hvIGFyZSBmYWNpbmcgYSBz
-aW1pbGFyIGNoYWxsZW5nZSBvbiB0aGVpciB3b3JrIG9uIEFwcGxlIE0xIChpZiBJCj4gdW5kZXJz
-dG9vZCBjb3JyZWN0bHkpLiBBbHNvIGFkZGluZyBkcmktZGV2ZWwgZm9yIHZpc2liaWxpdHkgc2lu
-Y2UgdGhpcwo+IGlzIGEgdmVyeSBjb21tb24gcHJvYmxlbSBmb3IgZGlzcGxheSBpbiBwYXJ0aWN1
-bGFyLgo+Cj4gT24gTTEgdGhlIHNpdHVhdGlvbiBpcyBzbGlnaHRseSBtb3JlIGNvbXBsaWNhdGVk
-OiB0aGUgZmlybXdhcmUgd2lsbAo+IGFsbG9jYXRlIGEgY291cGxlIG9mIGJ1ZmZlcnMgKGluY2x1
-ZGluZyB0aGUgZnJhbWVidWZmZXIpIGluIGhpZ2ggbWVtb3J5Cj4gKD4gNCBHaUIpIGFuZCB1c2Ug
-dGhlIElPTU1VIHRvIG1hcCB0aGF0IGludG8gYW4gSU9WQSByZWdpb24gYmVsb3cgNCBHaUIKPiBz
-byB0aGF0IHRoZSBkaXNwbGF5IGhhcmR3YXJlIGNhbiBhY2Nlc3MgaXQuIFRoaXMgbWFrZXMgaXQg
-aW1wb3NzaWJsZSB0bwo+IGJ5cGFzcyB0aGUgSU9NTVUgbGlrZSB3ZSBkbyBvbiBvdGhlciBjaGlw
-cyAoaW4gcGFydGljdWxhciB0byB3b3JrIGFyb3VuZAo+IHRoZSBmYXVsdC1ieS1kZWZhdWx0IHBv
-bGljeSBvZiB0aGUgQVJNIFNNTVUgZHJpdmVyKS4gSXQgYWxzbyBtZWFucyB0aGF0Cj4gaW4gYWRk
-aXRpb24gdG8gdGhlIHNpbXBsZSByZXNlcnZlZCByZWdpb25zIEkgbWVudGlvbmVkIHdlIG5lZWQg
-Zm9yIGF1ZGlvCj4gdXNlLWNhc2VzIGFuZCBpZGVudGl0eSBtYXBwaW5nIHVzZS1jYXNlcyB3ZSBu
-ZWVkIGZvciBkaXNwbGF5IG9uIFRlZ3JhLAo+IHdlIG5vdyBhbHNvIG5lZWQgdG8gYmUgYWJsZSB0
-byBjb252ZXkgcGh5c2ljYWwgdG8gSU9WQSBtYXBwaW5ncy4KPgo+IEZpdHRpbmcgdGhlIGxhdHRl
-ciBpbnRvIHRoZSBvcmlnaW5hbCBwcm9wb3NhbCBzb3VuZHMgZGlmZmljdWx0LiBBIHF1aWNrCj4g
-Zml4IHdvdWxkJ3ZlIGJlZW4gdG8gZ2VuZXJhdGUgYSBtYXBwaW5nIHRhYmxlIGluIG1lbW9yeSBh
-bmQgcGFzcyB0aGF0IHRvCj4gdGhlIGtlcm5lbCB1c2luZyBhIHJlc2VydmVkLW1lbW9yeSBub2Rl
-IChzaW1pbGFyIHRvIHdoYXQncyBkb25lIGZvcgo+IGV4YW1wbGUgb24gVGVncmEgZm9yIHRoZSBF
-TUMgZnJlcXVlbmN5IHRhYmxlIG9uIFRlZ3JhMjEwKSBhbmQgbWFyayBpdCBhcwo+IHN1Y2ggdXNp
-bmcgYSBzcGVjaWFsIGZsYWcuIEJ1dCB0aGF0IHRoZW4gaW52b2x2ZXMgdHdvIGxheWVycyBvZiBw
-YXJzaW5nLAo+IHdoaWNoIHNlZW1zIGEgYml0IHN1Ym9wdGltYWwuIEFub3RoZXIgd2F5IHRvIHNo
-b2Vob3JuIHRoYXQgaW50byB0aGUKPiBvcmlnaW5hbCBwcm9wb3NhbCB3b3VsZCd2ZSBiZWVuIHRv
-IGFkZCBmbGFncyBmb3IgcGh5c2ljYWwgYW5kIHZpcnR1YWwKPiBhZGRyZXNzIHJlZ2lvbnMgYW5k
-IHVzZSBwYWlycyB0byBwYXNzIHRoZW0gdXNpbmcgc3BlY2lhbCBmbGFncy4gQWdhaW4sCj4gdGhp
-cyBpcyBhIGJpdCB3b25reSBiZWNhdXNlIGl0IG5lZWRzIHRoZXNlIHRvIGJlIGNhcmVmdWxseSBw
-YXJzZWQgYW5kCj4gbWF0Y2hlZCB1cC4KPgo+IEFub3RoZXIgZG93bnNpZGUgaXMgdGhhdCB3ZSBu
-b3cgaGF2ZSBhIHNpdHVhdGlvbiB3aGVyZSBzb21lIG9mIHRoZXNlCj4gcmVnaW9ucyBhcmUgbm8g
-bG9uZ2VyICJyZXNlcnZlZC1tZW1vcnkgcmVnaW9ucyIgaW4gdGhlIHRyYWRpdGlvbmFsCj4gc2Vu
-c2UuIFRoaXMgd291bGQgcmVxdWlyZSBhbiBhZGRpdGlvbmFsIGZsYWcgaW4gdGhlIHJlc2VydmVk
-LW1lbW9yeQo+IHJlZ2lvbiBub2RlcyB0byBwcmV2ZW50IHRoZSBJT1ZBIHJlZ2lvbnMgZnJvbSBi
-ZWluZyByZXNlcnZlZC4gQnkgdGhlCj4gd2F5LCB0aGlzIGlzIHNvbWV0aGluZyB0aGF0IHdvdWxk
-IGFsc28gYmUgbmVlZGVkIGZvciB0aGUgYXVkaW8gdXNlLWNhc2UKPiBJIG1lbnRpb25lZCBiZWZv
-cmUsIGJlY2F1c2UgdGhlIHBoeXNpY2FsIG1lbW9yeSBhdCB0aGF0IGFkZHJlc3MgY2FuCj4gc3Rp
-bGwgYmUgdXNlZCBieSBhbiBvcGVyYXRpbmcgc3lzdGVtLgo+Cj4gQSBtb3JlIGdlbmVyYWwgc29s
-dXRpb24gd291bGQgYmUgdG8gZHJhdyBhIGJpdCBmcm9tIERtaXRyeSdzIHByb3Bvc2FsCj4gYW5k
-IGludHJvZHVjZSBhIG5ldyB0b3AtbGV2ZWwgImlvdi1yZXNlcnZlZC1tZW1vcnkiIG5vZGUuIFRo
-aXMgY291bGQgYmUKPiBtb2RlbGxlZCBvbiB0aGUgZXhpc3RpbmcgcmVzZXJ2ZWQtbWVtb3J5IG5v
-ZGUsIGV4Y2VwdCB0aGF0IHRoZSBwaHlzaWNhbAo+IG1lbW9yeSBwYWdlcyBmb3IgcmVnaW9ucyBy
-ZXByZXNlbnRlZCBieSBjaGlsZCBub2RlcyB3b3VsZCBub3QgYmUgbWFya2VkCj4gYXMgcmVzZXJ2
-ZWQuIE9ubHkgdGhlIElPVkEgcmFuZ2UgZGVzY3JpYmVkIGJ5IHRoZSByZWdpb24gd291bGQgYmUK
-PiByZXNlcnZlZCBzdWJzZXF1ZW50bHkgYnkgdGhlIElPTU1VIGZyYW1ld29yayBhbmQvb3IgSU9N
-TVUgZHJpdmVyLgo+Cj4gVGhlIHNpbXBsZXN0IGNhc2Ugd2hlcmUgd2UganVzdCB3YW50IHRvIHJl
-c2VydmUgc29tZSBJT1ZBIHJlZ2lvbiBjb3VsZAo+IHRoZW4gYmUgZG9uZSBsaWtlIHRoaXM6Cj4K
-PiAgICAgICAgIGlvdi1yZXNlcnZlZC1tZW1vcnkgewo+ICAgICAgICAgICAgICAgICAvKgo+ICAg
-ICAgICAgICAgICAgICAgKiBQcm9iYWJseSBzYWZlc3QgdG8gZGVmYXVsdCB0byA8Mj4sIDwyPiBo
-ZXJlIGdpdmVuCj4gICAgICAgICAgICAgICAgICAqIHRoYXQgbW9zdCBJT01NVXMgc3VwcG9ydCBl
-aXRoZXIgPiAzMiBiaXRzIG9mIElBUwo+ICAgICAgICAgICAgICAgICAgKiBvciBPQVMuCj4gICAg
-ICAgICAgICAgICAgICAqLwo+ICAgICAgICAgICAgICAgICAjYWRkcmVzcy1jZWxscyA9IDwyPjsK
-PiAgICAgICAgICAgICAgICAgI3NpemUtY2VsbHMgPSA8Mj47Cj4KPiAgICAgICAgICAgICAgICAg
-ZmlybXdhcmU6IGZpcm13YXJlQDgwMDAwMDAwIHsKPiAgICAgICAgICAgICAgICAgICAgICAgICBy
-ZWcgPSA8MCAweDgwMDAwMDAwIDAgMHgwMTAwMDAwMD47Cj4gICAgICAgICAgICAgICAgIH07Cj4g
-ICAgICAgICB9Owo+Cj4gICAgICAgICBhdWRpb0AzMDAwMDAwMCB7Cj4gICAgICAgICAgICAgICAg
-IC4uLgo+ICAgICAgICAgICAgICAgICBpb3YtbWVtb3J5LXJlZ2lvbnMgPSA8JmZpcm13YXJlPjsK
-PiAgICAgICAgICAgICAgICAgLi4uCj4gICAgICAgICB9Owo+Cj4gTWFwcGluZ3MgY291bGQgYmUg
-cmVwcmVzZW50ZWQgYnkgYW4gSU9WIHJlc2VydmVkIHJlZ2lvbiB0YWtpbmcgYQo+IHJlZmVyZW5j
-ZSB0byB0aGUgcmVzZXJ2ZWQtcmVnaW9uIHRoYXQgdGhleSBtYXA6Cj4KPiAgICAgICAgIHJlc2Vy
-dmVkLW1lbW9yeSB7Cj4gICAgICAgICAgICAgICAgICNhZGRyZXNzLWNlbGxzID0gPDI+Owo+ICAg
-ICAgICAgICAgICAgICAjc2l6ZS1jZWxscyA9IDwyPjsKPgo+ICAgICAgICAgICAgICAgICAvKiAx
-NiBNaUIgb2YgZnJhbWVidWZmZXIgYXQgdG9wLW9mLW1lbW9yeSAqLwo+ICAgICAgICAgICAgICAg
-ICBmcmFtZWJ1ZmZlcjogZnJhbWVidWZmZXJAMSxmZjAwMDAwMCB7Cj4gICAgICAgICAgICAgICAg
-ICAgICAgICAgcmVnID0gPDB4MSAweGZmMDAwMDAwIDAgMHgwMTAwMDAwMD47Cj4gICAgICAgICAg
-ICAgICAgICAgICAgICAgbm8tbWFwOwo+ICAgICAgICAgICAgICAgICB9Owo+ICAgICAgICAgfTsK
-Pgo+ICAgICAgICAgaW92LXJlc2VydmVkLW1lbW9yeSB7Cj4gICAgICAgICAgICAgICAgIC8qIElP
-TU1VIHN1cHBvcnRzIG9ubHkgMzItYml0IG91dHB1dCBhZGRyZXNzIHNwYWNlICovCj4gICAgICAg
-ICAgICAgICAgICNhZGRyZXNzLWNlbGxzID0gPDE+Owo+ICAgICAgICAgICAgICAgICAjc2l6ZS1j
-ZWxscyA9IDwxPjsKPgo+ICAgICAgICAgICAgICAgICAvKiAxNiBNaUIgb2YgZnJhbWVidWZmZXIg
-bWFwcGVkIHRvIHRvcCBvZiBJT1ZBICovCj4gICAgICAgICAgICAgICAgIGZiOiBmYkBmZjAwMDAw
-MCB7Cj4gICAgICAgICAgICAgICAgICAgICAgICAgcmVnID0gPDAgMHhmZjAwMDAwMCAwIDB4MDEw
-MDAwMDA+Owo+ICAgICAgICAgICAgICAgICAgICAgICAgIG1lbW9yeS1yZWdpb24gPSA8JmZyYW1l
-YnVmZmVyPjsKPiAgICAgICAgICAgICAgICAgfTsKPiAgICAgICAgIH07Cj4KPiAgICAgICAgIGRp
-c3BsYXlANDAwMDAwMDAgewo+ICAgICAgICAgICAgICAgICAuLi4KPiAgICAgICAgICAgICAgICAg
-Lyogb3B0aW9uYWw/ICovCj4gICAgICAgICAgICAgICAgIG1lbW9yeS1yZWdpb24gPSA8JmZyYW1l
-YnVmZmVyPjsKPiAgICAgICAgICAgICAgICAgaW92LW1lbW9yeS1yZWdpb25zID0gPCZmYj47Cj4g
-ICAgICAgICAgICAgICAgIC4uLgo+ICAgICAgICAgfTsKPgo+IEl0J3MgaW50ZXJlc3RpbmcgaG93
-IGlkZW50aXR5IG1hcHBlZCByZWdpb25zIG5vdyBiZWNvbWUgYSB0cml2aWFsCj4gc3BlY2lhbCBj
-YXNlIG9mIG1hcHBpbmdzLiBBbGwgdGhhdCBpcyBuZWVkZWQgaXMgdG8gbWFrZSB0aGUgcmVnIHBy
-b3BlcnR5Cj4gb2YgdGhlIElPViByZXNlcnZlZCByZWdpb24gY29ycmVzcG9uZCB0byB0aGUgcmVn
-IHByb3BlcnR5IG9mIHRoZSBub3JtYWwKPiByZXNlcnZlZCByZWdpb24uIEFsdGVybmF0aXZlbHks
-IGFzIGEgc21hbGwgb3B0aW1pemF0aW9uIGZvciBsYXp5IHBlb3BsZQo+IGxpa2UgbWUsIHdlIGNv
-dWxkIGp1c3QgYWxsb3cgdGhlc2UgY2FzZXMgdG8gb21pdCB0aGUgcmVnIHByb3BlcnR5IGFuZAo+
-IGluc3RlYWQgaW5oZXJpdCBpdCBmcm9tIHRoZSByZWZlcmVuY2VkIHJlc2VydmVkIHJlZ2lvbi4K
-Pgo+IEFzIHRoZSBzZWNvbmQgZXhhbXBsZSBzaG93cyBpdCBtaWdodCBiZSBjb252ZW5pZW50IGlm
-IG1lbW9yeS1yZWdpb24KPiBjb3VsZCBiZSBkZXJpdmVkIGZyb20gaW92LW1lbW9yeS1yZWdpb25z
-LiBUaGlzIGNvdWxkIGJlIHVzZWZ1bCBmb3IgY2FzZXMKPiB3aGVyZSB0aGUgZHJpdmVyIHdhbnRz
-IHRvIGRvIHNvbWV0aGluZyB3aXRoIHRoZSBwaHlzaWNhbCBwYWdlcyBvZiB0aGUKPiByZXNlcnZl
-ZCByZWdpb24gKHN1Y2ggYXMgbWFwcGluZyB0aGVtIGFuZCBjb3B5aW5nIG91dCB0aGUgZnJhbWVi
-dWZmZXIKPiBkYXRhIHRvIGFub3RoZXIgYnVmZmVyIHNvIHRoYXQgdGhlIHJlc2VydmVkIG1lbW9y
-eSBjYW4gYmUgcmVjeWNsZWQpLiBJZgo+IHdlIGhhdmUgdGhlIElPViByZXNlcnZlZCByZWdpb24s
-IHdlIGNvdWxkIHByb3ZpZGUgYW4gQVBJIHRvIGV4dHJhY3QgdGhlCj4gcGh5c2ljYWwgcmVzZXJ2
-ZWQgcmVnaW9uIChpZiBpdCBleGlzdHMpLiBUaGF0IHdheSB3ZSBjb3VsZCBhdm9pZAo+IHJlZmVy
-ZW5jaW5nIGl0IHR3aWNlIGluIERULiBUaGVuIGFnYWluLCB0aGVyZSdzIHNvbWV0aGluZyBlbGVn
-YW50IGFib3V0Cj4gdGhlIGV4cGxpY2l0IHNlY29uZCByZWZlcmVuY2UgdG8uIEl0IGluZGljYXRl
-cyB0aGUgaW50ZW50IHRoYXQgd2UgbWF5Cj4gd2FudCB0byB1c2UgdGhlIHJlZ2lvbiBmb3Igc29t
-ZXRoaW5nIG90aGVyIHRoYW4ganVzdCB0aGUgSU9WIG1hcHBpbmcuCj4KPiBBbnl3YXksIHRoaXMg
-aGFzIGJlZW4gbG9uZyBlbm91Z2guIExldCBtZSBrbm93IHdoYXQgeW91IHRoaW5rLiBBbHlzc2Es
-Cj4gU3ZlbiwgaXQnZCBiZSBpbnRlcmVzdGluZyB0byBoZWFyIGlmIHlvdSB0aGluayB0aGlzIGNv
-dWxkIHdvcmsgYXMgYQo+IHNvbHV0aW9uIHRvIHRoZSBwcm9ibGVtIG9uIE0xLgo+Cj4gUm9iLCBJ
-IHRoaW5rIHlvdSBtaWdodCBsaWtlIHRoaXMgYWx0ZXJuYXRpdmUgYmVjYXVzZSBpdCBiYXNpY2Fs
-bHkgZ2V0cwo+IHJpZCBvZiBhbGwgdGhlIHBvaW50cyBpbiB0aGUgb3JpZ2luYWwgcHJvcG9zYWwg
-dGhhdCB5b3Ugd2VyZSBjb25jZXJuZWQKPiBhYm91dC4gTGV0IG1lIGtub3cgd2hhdCB5b3UgdGhp
-bmsuCgpDb3VsZG4ndCB3ZSBrZWVwIHRoaXMgYWxsIGluIC9yZXNlcnZlZC1tZW1vcnk/IEp1c3Qg
-YWRkIGFuIGlvdmEKdmVyc2lvbiBvZiByZWcuIFBlcmhhcHMgYWJ1c2UgJ2Fzc2lnbmVkLWFkZHJl
-c3MnIGZvciB0aGlzIHB1cnBvc2UuIFRoZQppc3N1ZSBJIHNlZSB3b3VsZCBiZSBoYW5kbGluZyBy
-ZXNlcnZlZCBpb3ZhIGFyZWFzIHdpdGhvdXQgYSBwaHlzaWNhbAphcmVhLiBUaGF0IGNhbiBiZSBo
-YW5kbGVkIHdpdGgganVzdCBhIGlvdmEgYW5kIG5vIHJlZy4gV2UgYWxyZWFkeSBoYXZlCmEgbm8g
-cmVnIGNhc2UuCgpSb2IKX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19f
-X19fX18KaW9tbXUgbWFpbGluZyBsaXN0CmlvbW11QGxpc3RzLmxpbnV4LWZvdW5kYXRpb24ub3Jn
-Cmh0dHBzOi8vbGlzdHMubGludXhmb3VuZGF0aW9uLm9yZy9tYWlsbWFuL2xpc3RpbmZvL2lvbW11
+
+--===============1654067279305915727==
+Content-Type: multipart/signed; micalg=pgp-sha256;
+	protocol="application/pgp-signature"; boundary="9tMQdE4aESM5mGnn"
+Content-Disposition: inline
+
+
+--9tMQdE4aESM5mGnn
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
+
+On Fri, Sep 03, 2021 at 08:20:55AM -0500, Rob Herring wrote:
+> On Wed, Sep 1, 2021 at 9:13 AM Thierry Reding <thierry.reding@gmail.com> =
+wrote:
+> >
+> > On Fri, Jul 02, 2021 at 05:16:25PM +0300, Dmitry Osipenko wrote:
+> > > 01.07.2021 21:14, Thierry Reding =D0=BF=D0=B8=D1=88=D0=B5=D1=82:
+> > > > On Tue, Jun 08, 2021 at 06:51:40PM +0200, Thierry Reding wrote:
+> > > >> On Fri, May 28, 2021 at 06:54:55PM +0200, Thierry Reding wrote:
+> > > >>> On Thu, May 20, 2021 at 05:03:06PM -0500, Rob Herring wrote:
+> > > >>>> On Fri, Apr 23, 2021 at 06:32:30PM +0200, Thierry Reding wrote:
+> > > >>>>> From: Thierry Reding <treding@nvidia.com>
+> > > >>>>>
+> > > >>>>> Reserved memory region phandle references can be accompanied by=
+ a
+> > > >>>>> specifier that provides additional information about how that s=
+pecific
+> > > >>>>> reference should be treated.
+> > > >>>>>
+> > > >>>>> One use-case is to mark a memory region as needing an identity =
+mapping
+> > > >>>>> in the system's IOMMU for the device that references the region=
+=2E This is
+> > > >>>>> needed for example when the bootloader has set up hardware (suc=
+h as a
+> > > >>>>> display controller) to actively access a memory region (e.g. a =
+boot
+> > > >>>>> splash screen framebuffer) during boot. The operating system ca=
+n use the
+> > > >>>>> identity mapping flag from the specifier to make sure an IOMMU =
+identity
+> > > >>>>> mapping is set up for the framebuffer before IOMMU translations=
+ are
+> > > >>>>> enabled for the display controller.
+> > > >>>>>
+> > > >>>>> Signed-off-by: Thierry Reding <treding@nvidia.com>
+> > > >>>>> ---
+> > > >>>>>  .../reserved-memory/reserved-memory.txt       | 21 +++++++++++=
+++++++++
+> > > >>>>>  include/dt-bindings/reserved-memory.h         |  8 +++++++
+> > > >>>>>  2 files changed, 29 insertions(+)
+> > > >>>>>  create mode 100644 include/dt-bindings/reserved-memory.h
+> > > >>>>
+> > > >>>> Sorry for being slow on this. I have 2 concerns.
+> > > >>>>
+> > > >>>> First, this creates an ABI issue. A DT with cells in 'memory-reg=
+ion'
+> > > >>>> will not be understood by an existing OS. I'm less concerned abo=
+ut this
+> > > >>>> if we address that with a stable fix. (Though I'm pretty sure we=
+'ve
+> > > >>>> naively added #?-cells in the past ignoring this issue.)
+> > > >>>
+> > > >>> A while ago I had proposed adding memory-region*s* as an alternat=
+ive
+> > > >>> name for memory-region to make the naming more consistent with ot=
+her
+> > > >>> types of properties (think clocks, resets, gpios, ...). If we add=
+ed
+> > > >>> that, we could easily differentiate between the "legacy" cases wh=
+ere
+> > > >>> no #memory-region-cells was allowed and the new cases where it wa=
+s.
+> > > >>>
+> > > >>>> Second, it could be the bootloader setting up the reserved regio=
+n. If a
+> > > >>>> node already has 'memory-region', then adding more regions is mo=
+re
+> > > >>>> complicated compared to adding new properties. And defining what=
+ each
+> > > >>>> memory-region entry is or how many in schemas is impossible.
+> > > >>>
+> > > >>> It's true that updating the property gets a bit complicated, but =
+it's
+> > > >>> not exactly rocket science. We really just need to splice the arr=
+ay. I
+> > > >>> have a working implemention for this in U-Boot.
+> > > >>>
+> > > >>> For what it's worth, we could run into the same issue with any new
+> > > >>> property that we add. Even if we renamed this to iommu-memory-reg=
+ion,
+> > > >>> it's still possible that a bootloader may have to update this pro=
+perty
+> > > >>> if it already exists (it could be hard-coded in DT, or it could h=
+ave
+> > > >>> been added by some earlier bootloader or firmware).
+> > > >>>
+> > > >>>> Both could be addressed with a new property. Perhaps something l=
+ike
+> > > >>>> 'iommu-memory-region =3D <&phandle>;'. I think the 'iommu' prefi=
+x is
+> > > >>>> appropriate given this is entirely because of the IOMMU being in=
+ the
+> > > >>>> mix. I might feel differently if we had other uses for cells, bu=
+t I
+> > > >>>> don't really see it in this case.
+> > > >>>
+> > > >>> I'm afraid that down the road we'll end up with other cases and t=
+hen we
+> > > >>> might proliferate a number of *-memory-region properties with var=
+ying
+> > > >>> prefixes.
+> > > >>>
+> > > >>> I am aware of one other case where we might need something like t=
+his: on
+> > > >>> some Tegra SoCs we have audio processors that will access memory =
+buffers
+> > > >>> using a DMA engine. These processors are booted from early firmwa=
+re
+> > > >>> using firmware from system memory. In order to avoid trashing the
+> > > >>> firmware, we need to reserve memory. We can do this using reserved
+> > > >>> memory nodes. However, the audio DMA engine also uses the SMMU, s=
+o we
+> > > >>> need to make sure that the firmware memory is marked as reserved =
+within
+> > > >>> the SMMU. This is similar to the identity mapping case, but not e=
+xactly
+> > > >>> the same. Instead of creating a 1:1 mapping, we just want that IO=
+VA
+> > > >>> region to be reserved (i.e. IOMMU_RESV_RESERVED instead of
+> > > >>> IOMMU_RESV_DIRECT{,_RELAXABLE}).
+> > > >>>
+> > > >>> That would also fall into the IOMMU domain, but we can't reuse the
+> > > >>> iommu-memory-region property for that because then we don't have =
+enough
+> > > >>> information to decide which type of reservation we need.
+> > > >>>
+> > > >>> We could obviously make iommu-memory-region take a specifier, but=
+ we
+> > > >>> could just as well use memory-regions in that case since we have
+> > > >>> something more generic anyway.
+> > > >>>
+> > > >>> With the #memory-region-cells proposal, we can easily extend the =
+cell in
+> > > >>> the specifier with an additional MEMORY_REGION_IOMMU_RESERVE flag=
+ to
+> > > >>> take that other use case into account. If we than also change to =
+the new
+> > > >>> memory-regions property name, we avoid the ABI issue (and we gain=
+ a bit
+> > > >>> of consistency while at it).
+> > > >>
+> > > >> Ping? Rob, do you want me to add this second use-case to the patch
+> > > >> series to make it more obvious that this isn't just a one-off thin=
+g? Or
+> > > >> how do we proceed?
+> > > >
+> > > > Rob, given that additional use-case, do you want me to run with this
+> > > > proposal and send out an updated series?
+> > >
+> > >
+> > > What about variant with a "descriptor" properties that will describe
+> > > each region:
+> > >
+> > > fb_desc: display-framebuffer-memory-descriptor {
+> > >       needs-identity-mapping;
+> > > }
+> > >
+> > > display@52400000 {
+> > >       memory-region =3D <&fb ...>;
+> > >       memory-region-descriptor =3D <&fb_desc ...>;
+> > > };
+> > >
+> > > It could be a more flexible/extendible variant.
+> >
+> > This problem recently came up on #dri-devel again. Adding Alyssa and
+> > Sven who are facing a similar challenge on their work on Apple M1 (if I
+> > understood correctly). Also adding dri-devel for visibility since this
+> > is a very common problem for display in particular.
+> >
+> > On M1 the situation is slightly more complicated: the firmware will
+> > allocate a couple of buffers (including the framebuffer) in high memory
+> > (> 4 GiB) and use the IOMMU to map that into an IOVA region below 4 GiB
+> > so that the display hardware can access it. This makes it impossible to
+> > bypass the IOMMU like we do on other chips (in particular to work around
+> > the fault-by-default policy of the ARM SMMU driver). It also means that
+> > in addition to the simple reserved regions I mentioned we need for audio
+> > use-cases and identity mapping use-cases we need for display on Tegra,
+> > we now also need to be able to convey physical to IOVA mappings.
+> >
+> > Fitting the latter into the original proposal sounds difficult. A quick
+> > fix would've been to generate a mapping table in memory and pass that to
+> > the kernel using a reserved-memory node (similar to what's done for
+> > example on Tegra for the EMC frequency table on Tegra210) and mark it as
+> > such using a special flag. But that then involves two layers of parsing,
+> > which seems a bit suboptimal. Another way to shoehorn that into the
+> > original proposal would've been to add flags for physical and virtual
+> > address regions and use pairs to pass them using special flags. Again,
+> > this is a bit wonky because it needs these to be carefully parsed and
+> > matched up.
+> >
+> > Another downside is that we now have a situation where some of these
+> > regions are no longer "reserved-memory regions" in the traditional
+> > sense. This would require an additional flag in the reserved-memory
+> > region nodes to prevent the IOVA regions from being reserved. By the
+> > way, this is something that would also be needed for the audio use-case
+> > I mentioned before, because the physical memory at that address can
+> > still be used by an operating system.
+> >
+> > A more general solution would be to draw a bit from Dmitry's proposal
+> > and introduce a new top-level "iov-reserved-memory" node. This could be
+> > modelled on the existing reserved-memory node, except that the physical
+> > memory pages for regions represented by child nodes would not be marked
+> > as reserved. Only the IOVA range described by the region would be
+> > reserved subsequently by the IOMMU framework and/or IOMMU driver.
+> >
+> > The simplest case where we just want to reserve some IOVA region could
+> > then be done like this:
+> >
+> >         iov-reserved-memory {
+> >                 /*
+> >                  * Probably safest to default to <2>, <2> here given
+> >                  * that most IOMMUs support either > 32 bits of IAS
+> >                  * or OAS.
+> >                  */
+> >                 #address-cells =3D <2>;
+> >                 #size-cells =3D <2>;
+> >
+> >                 firmware: firmware@80000000 {
+> >                         reg =3D <0 0x80000000 0 0x01000000>;
+> >                 };
+> >         };
+> >
+> >         audio@30000000 {
+> >                 ...
+> >                 iov-memory-regions =3D <&firmware>;
+> >                 ...
+> >         };
+> >
+> > Mappings could be represented by an IOV reserved region taking a
+> > reference to the reserved-region that they map:
+> >
+> >         reserved-memory {
+> >                 #address-cells =3D <2>;
+> >                 #size-cells =3D <2>;
+> >
+> >                 /* 16 MiB of framebuffer at top-of-memory */
+> >                 framebuffer: framebuffer@1,ff000000 {
+> >                         reg =3D <0x1 0xff000000 0 0x01000000>;
+> >                         no-map;
+> >                 };
+> >         };
+> >
+> >         iov-reserved-memory {
+> >                 /* IOMMU supports only 32-bit output address space */
+> >                 #address-cells =3D <1>;
+> >                 #size-cells =3D <1>;
+> >
+> >                 /* 16 MiB of framebuffer mapped to top of IOVA */
+> >                 fb: fb@ff000000 {
+> >                         reg =3D <0 0xff000000 0 0x01000000>;
+> >                         memory-region =3D <&framebuffer>;
+> >                 };
+> >         };
+> >
+> >         display@40000000 {
+> >                 ...
+> >                 /* optional? */
+> >                 memory-region =3D <&framebuffer>;
+> >                 iov-memory-regions =3D <&fb>;
+> >                 ...
+> >         };
+> >
+> > It's interesting how identity mapped regions now become a trivial
+> > special case of mappings. All that is needed is to make the reg property
+> > of the IOV reserved region correspond to the reg property of the normal
+> > reserved region. Alternatively, as a small optimization for lazy people
+> > like me, we could just allow these cases to omit the reg property and
+> > instead inherit it from the referenced reserved region.
+> >
+> > As the second example shows it might be convenient if memory-region
+> > could be derived from iov-memory-regions. This could be useful for cases
+> > where the driver wants to do something with the physical pages of the
+> > reserved region (such as mapping them and copying out the framebuffer
+> > data to another buffer so that the reserved memory can be recycled). If
+> > we have the IOV reserved region, we could provide an API to extract the
+> > physical reserved region (if it exists). That way we could avoid
+> > referencing it twice in DT. Then again, there's something elegant about
+> > the explicit second reference to. It indicates the intent that we may
+> > want to use the region for something other than just the IOV mapping.
+> >
+> > Anyway, this has been long enough. Let me know what you think. Alyssa,
+> > Sven, it'd be interesting to hear if you think this could work as a
+> > solution to the problem on M1.
+> >
+> > Rob, I think you might like this alternative because it basically gets
+> > rid of all the points in the original proposal that you were concerned
+> > about. Let me know what you think.
+>=20
+> Couldn't we keep this all in /reserved-memory? Just add an iova
+> version of reg. Perhaps abuse 'assigned-address' for this purpose. The
+> issue I see would be handling reserved iova areas without a physical
+> area. That can be handled with just a iova and no reg. We already have
+> a no reg case.
+
+I had thought about that initially. One thing I'm worried about is that
+every child node in /reserved-memory will effectively cause the memory
+that it described to be reserved. But we don't want that for regions
+that are "virtual only" (i.e. IOMMU reservations).
+
+Obviously we can fix that in Linux, but what about other operating
+systems? Currently "reg" is a required property for statically allocated
+regions (which all of these would be). Do you have an idea of how widely
+that's used? What about other OSes, or bootloaders, what if they
+encounter these nodes that don't have a "reg" property?
+
+If you don't see any concerns with that, I think we could make it work.
+I don't have any strong opinions about the naming for the IOVA regions.
+With a tiny stretch of the imagination, "assigned-addresses" even makes
+sense in this context.
+
+Thierry
+
+--9tMQdE4aESM5mGnn
+Content-Type: application/pgp-signature; name="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+
+iQIzBAABCAAdFiEEiOrDCAFJzPfAjcif3SOs138+s6EFAmEyKH8ACgkQ3SOs138+
+s6FqTBAAlKhmCG618Z1w4bfeFMC3a9Wyv09PXC/Tgl2xY+tEX4I1xKp8y5qzo7Ub
+4AJDq9kDMt5uFBbUhOUA2W+eRVgKdfVRHkw2eBhO2+bvLv2dhNefJOT93usqTc4a
+7FforsOLyXWWOvwD8garSjdEOU3np/2v4m4fH/htkLu7N5fkxqsUGfYIUW0rSzCN
+6mchtWbK2LoCOr2p3SS2L2YK7QuG/vrzEhfrdwrdyIFhFLPhEmGTw6Ci2m2sRrA6
+YHhy2EC7mC3ld1BvX+2wsA1GrGt+3NCslN6VYZO9II8dw30gPPs1zULBn2I9Nmcw
+PY9RmKj4vs3wcqp5uVK5IrVlyVNXySlDV/D+QbbRz3g4mJN4spvgBonel74dY5Nb
++1NuRIIEvLZsrmDPVXoQ5SQ4w0M8+n6nWpLhAUz+di6zeOXtn26hf014tdyUVdH0
+LaCuug2xAPZquskpRroCrNQ3TDAWio9EvsQiq2V4H+PAeKZjTR/UR0yioiMX5WjG
+h4xmPO9ktMWPTCv8Y7+q21xuPiCWW40S4sSrgjVsR+V4A+4puApQpNeGZjpM/poP
+0SKqhXhvVh8zW+drydM0Cldw1ggehTeEqcqhFkQcjrhTDz16WaMmvnJTQujvdLbr
+nAGKeU9Z2K1CexpBddTEsv9E0q7MCzWcPmcv3SFkrbkpJGyEVPA=
+=NFNS
+-----END PGP SIGNATURE-----
+
+--9tMQdE4aESM5mGnn--
+
+--===============1654067279305915727==
+Content-Type: text/plain; charset="us-ascii"
+MIME-Version: 1.0
+Content-Transfer-Encoding: 7bit
+Content-Disposition: inline
+
+_______________________________________________
+iommu mailing list
+iommu@lists.linux-foundation.org
+https://lists.linuxfoundation.org/mailman/listinfo/iommu
+--===============1654067279305915727==--
