@@ -2,110 +2,101 @@ Return-Path: <SRS0=9mGv=N7=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-3.5 required=3.0 tests=BAYES_00,DKIM_INVALID,
-	DKIM_SIGNED,HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,SPF_HELO_NONE,
-	SPF_PASS,URIBL_BLOCKED autolearn=no autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-12.2 required=3.0 tests=BAYES_00,
+	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,NICE_REPLY_A,
+	SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_SANE_1 autolearn=unavailable
+	autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 24301C433F5
-	for <iommu@archiver.kernel.org>; Thu,  9 Sep 2021 06:53:47 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D4A66C433F5
+	for <iommu@archiver.kernel.org>; Thu,  9 Sep 2021 07:25:38 +0000 (UTC)
 Received: from smtp3.osuosl.org (smtp3.osuosl.org [140.211.166.136])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id A4F2561183
-	for <iommu@archiver.kernel.org>; Thu,  9 Sep 2021 06:53:45 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.4.1 mail.kernel.org A4F2561183
-Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=canonical.com
+	by mail.kernel.org (Postfix) with ESMTPS id 7DEDF611AF
+	for <iommu@archiver.kernel.org>; Thu,  9 Sep 2021 07:25:38 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.4.1 mail.kernel.org 7DEDF611AF
+Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=csgroup.eu
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by smtp3.osuosl.org (Postfix) with ESMTP id 5CD5160AC8;
-	Thu,  9 Sep 2021 06:36:45 +0000 (UTC)
+	by smtp3.osuosl.org (Postfix) with ESMTP id 478D060AD0;
+	Thu,  9 Sep 2021 07:25:38 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
 Received: from smtp3.osuosl.org ([127.0.0.1])
 	by localhost (smtp3.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id 4002u01E_5Jf; Thu,  9 Sep 2021 06:36:44 +0000 (UTC)
+	with ESMTP id UO06KMfDaYey; Thu,  9 Sep 2021 07:25:37 +0000 (UTC)
 Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by smtp3.osuosl.org (Postfix) with ESMTPS id 33E5060AC6;
-	Thu,  9 Sep 2021 06:36:44 +0000 (UTC)
+	by smtp3.osuosl.org (Postfix) with ESMTPS id 19FAD60AD1;
+	Thu,  9 Sep 2021 07:25:37 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 0B803C0011;
-	Thu,  9 Sep 2021 06:36:44 +0000 (UTC)
-Received: from smtp2.osuosl.org (smtp2.osuosl.org [140.211.166.133])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 01204C000D
- for <iommu@lists.linux-foundation.org>; Thu,  9 Sep 2021 06:36:42 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id DAFA2C000F;
+	Thu,  9 Sep 2021 07:25:36 +0000 (UTC)
+Received: from smtp2.osuosl.org (smtp2.osuosl.org [IPv6:2605:bc80:3010::133])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 778A8C000D
+ for <iommu@lists.linux-foundation.org>; Thu,  9 Sep 2021 07:25:35 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by smtp2.osuosl.org (Postfix) with ESMTP id CFD09404B8
- for <iommu@lists.linux-foundation.org>; Thu,  9 Sep 2021 06:36:42 +0000 (UTC)
+ by smtp2.osuosl.org (Postfix) with ESMTP id 5E85840519
+ for <iommu@lists.linux-foundation.org>; Thu,  9 Sep 2021 07:25:35 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Authentication-Results: smtp2.osuosl.org (amavisd-new);
- dkim=pass (2048-bit key) header.d=canonical.com
 Received: from smtp2.osuosl.org ([127.0.0.1])
  by localhost (smtp2.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id 9wFyLjs6B2ky for <iommu@lists.linux-foundation.org>;
- Thu,  9 Sep 2021 06:36:39 +0000 (UTC)
-X-Greylist: domain auto-whitelisted by SQLgrey-1.8.0
-Received: from smtp-relay-internal-1.canonical.com
- (smtp-relay-internal-1.canonical.com [185.125.188.123])
- by smtp2.osuosl.org (Postfix) with ESMTPS id C7B07400CB
- for <iommu@lists.linux-foundation.org>; Thu,  9 Sep 2021 06:36:39 +0000 (UTC)
-Received: from mail-ot1-f69.google.com (mail-ot1-f69.google.com
- [209.85.210.69])
- (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
- key-exchange X25519 server-signature RSA-PSS (2048 bits) server-digest SHA256)
- (No client certificate requested)
- by smtp-relay-internal-1.canonical.com (Postfix) with ESMTPS id D0D973FE05
- for <iommu@lists.linux-foundation.org>; Thu,  9 Sep 2021 06:36:33 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=canonical.com;
- s=20210705; t=1631169393;
- bh=akLaMR2Qq8amUpvssgxVNr2WG7Nl5vSl23ypQFllRfM=;
- h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
- To:Cc:Content-Type;
- b=FId84mJTLkMEIkHjzNBAhbZ7b7H4Cd7A/uhlPhOISsn58UDC3jmFnqe251AL7MoOe
- Cy6L/QknptZsvgRF4r7OxWoVEZG9ptHPqLcO2HK77HCIJ9ASFI1hRy/OK94PgdhpvA
- sqEQZv5gmv9nhvMPQMxI96IkhWNadbvCtX7P2ZNXcz7003boH6LpIYt6iwCFZhus/k
- Opvv7qx09ZLTetTCTcCAFZa1LORxaHHqlNTvoE5amFoHWhyfOm2H/+/TfVJk9uymVX
- 6dnIoIvWJdw0X4+uBZ2jSwN7J25wkk1DNtFIab0HYvCculMObuOfKG3DOofGBqgHty
- 2PdHGsz82H0bg==
-Received: by mail-ot1-f69.google.com with SMTP id
- c21-20020a0568301af500b0051af51e2a5bso545779otd.10
- for <iommu@lists.linux-foundation.org>; Wed, 08 Sep 2021 23:36:33 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
- d=1e100.net; s=20210112;
- h=x-gm-message-state:mime-version:references:in-reply-to:from:date
- :message-id:subject:to:cc;
- bh=akLaMR2Qq8amUpvssgxVNr2WG7Nl5vSl23ypQFllRfM=;
- b=xbX5PHpDZz7cDt3KFHYQqBXPlqWWRTaTNVj8ekL/fktpvT7XNsqyGcwFBtTIclOShL
- qrMJgzTJiSwqV7SroDSqLxOdy5VheLWddcUyBOOsJlHLCvSJmFwReZzK2H74AURgpIJB
- 98JpU9wNG059rounVJ1gEDRgbm7EqkFq3nhLC03yuebwphWFrWlMWC6AmKS21tT5GfVp
- etfqZ33Q9U/HNnBRohy5wff10zeIuv5uNMsqgXhCLfsnr02CHFuDKlK3zPHxZKlw+Toi
- SrgwwM2S4BD7iRnXepzWN4m+OuibcQN3oyuQc+szRMPLkon3LkmIVr1g6bp9nmZtxvWU
- GGsw==
-X-Gm-Message-State: AOAM532TsJ9vKLw2bu2+wZze8VGs0u7bgFbg+VsNyqaZj1hp80Wq/mYo
- BjFH0FrRWT6p+0+jQ75IOSlA8/XXTF3Zgjre/7Y+WpxVp9zj5sjqD/BmbCbpjd2NTvJ2RrmWxBv
- GX2j79i0eNxcnJbKTAI7tAZwz7k85loSlAOm9/62NkZws4MzdWoOavMMDNnZI6tk=
-X-Received: by 2002:a05:6830:1355:: with SMTP id
- r21mr1140774otq.11.1631169187448; 
- Wed, 08 Sep 2021 23:33:07 -0700 (PDT)
-X-Google-Smtp-Source: ABdhPJydNUWa4iWIrH1MSc4yRb3P5wiZt7TtCAWb93Z2ahXjOMnItwMOcoXnTS7/j/i2x/EH0tmNaHVVy938jYvOcUc=
-X-Received: by 2002:a05:6830:1355:: with SMTP id
- r21mr1140764otq.11.1631169187145; 
- Wed, 08 Sep 2021 23:33:07 -0700 (PDT)
+ with ESMTP id 2Ggczv_vwiKv for <iommu@lists.linux-foundation.org>;
+ Thu,  9 Sep 2021 07:25:33 +0000 (UTC)
+X-Greylist: from auto-whitelisted by SQLgrey-1.8.0
+Received: from pegase2.c-s.fr (pegase2.c-s.fr [93.17.235.10])
+ by smtp2.osuosl.org (Postfix) with ESMTPS id A7276404B8
+ for <iommu@lists.linux-foundation.org>; Thu,  9 Sep 2021 07:25:33 +0000 (UTC)
+Received: from localhost (mailhub3.si.c-s.fr [172.26.127.67])
+ by localhost (Postfix) with ESMTP id 4H4rBd5z43z9sWc;
+ Thu,  9 Sep 2021 09:25:29 +0200 (CEST)
+X-Virus-Scanned: amavisd-new at c-s.fr
+Received: from pegase2.c-s.fr ([172.26.127.65])
+ by localhost (pegase2.c-s.fr [127.0.0.1]) (amavisd-new, port 10024)
+ with ESMTP id tI4gb1MB9n_o; Thu,  9 Sep 2021 09:25:29 +0200 (CEST)
+Received: from messagerie.si.c-s.fr (messagerie.si.c-s.fr [192.168.25.192])
+ by pegase2.c-s.fr (Postfix) with ESMTP id 4H4rBd4d9gz9sWb;
+ Thu,  9 Sep 2021 09:25:29 +0200 (CEST)
+Received: from localhost (localhost [127.0.0.1])
+ by messagerie.si.c-s.fr (Postfix) with ESMTP id 837618B77E;
+ Thu,  9 Sep 2021 09:25:29 +0200 (CEST)
+X-Virus-Scanned: amavisd-new at c-s.fr
+Received: from messagerie.si.c-s.fr ([127.0.0.1])
+ by localhost (messagerie.si.c-s.fr [127.0.0.1]) (amavisd-new, port 10023)
+ with ESMTP id D01rvl7fvhrg; Thu,  9 Sep 2021 09:25:29 +0200 (CEST)
+Received: from po9476vm.idsi0.si.c-s.fr (po22017.idsi0.si.c-s.fr
+ [192.168.7.20])
+ by messagerie.si.c-s.fr (Postfix) with ESMTP id 9CE478B77D;
+ Thu,  9 Sep 2021 09:25:27 +0200 (CEST)
+Subject: Re: [PATCH v3 8/8] treewide: Replace the use of mem_encrypt_active()
+ with cc_platform_has()
+To: Tom Lendacky <thomas.lendacky@amd.com>, linux-kernel@vger.kernel.org,
+ x86@kernel.org, linuxppc-dev@lists.ozlabs.org, linux-s390@vger.kernel.org,
+ iommu@lists.linux-foundation.org, kvm@vger.kernel.org,
+ linux-efi@vger.kernel.org, platform-driver-x86@vger.kernel.org,
+ linux-graphics-maintainer@vmware.com, amd-gfx@lists.freedesktop.org,
+ dri-devel@lists.freedesktop.org, kexec@lists.infradead.org,
+ linux-fsdevel@vger.kernel.org
+References: <cover.1631141919.git.thomas.lendacky@amd.com>
+ <46a18427dc4e9dda985b10e472965e3e4c769f1d.1631141919.git.thomas.lendacky@amd.com>
+From: Christophe Leroy <christophe.leroy@csgroup.eu>
+Message-ID: <a9d9a6a7-b3b3-570c-ef3d-2f5f0b61eb0b@csgroup.eu>
+Date: Thu, 9 Sep 2021 07:25:25 +0000
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
+ Thunderbird/68.11.0
 MIME-Version: 1.0
-References: <20210708074232.924844-1-kai.heng.feng@canonical.com>
- <YObFJREB9/JlcNZP@8bytes.org> <fde11cec-d1bd-49be-f129-c69a973d1b3b@arm.com>
- <CAAd53p40RcG0oeYr9QAKMjYRtyq7he=d_b_a39n4Rt5JSVScRQ@mail.gmail.com>
- <f3bdedcb-5602-cbca-7df1-019e8b8c4217@arm.com> <YO4odF0EwqxfNLFq@fedora>
- <YO67m/jaBvco+I36@8bytes.org>
-In-Reply-To: <YO67m/jaBvco+I36@8bytes.org>
-From: Kai-Heng Feng <kai.heng.feng@canonical.com>
-Date: Thu, 9 Sep 2021 14:32:55 +0800
-Message-ID: <CAAd53p4138BB_5-++0P9k91B1dCuKzuv1yGjiG77ewhd1MRSbQ@mail.gmail.com>
-Subject: Re: [PATCH] iommu/amd: Enable swiotlb if any device supports iommu v2
- and uses identity mapping
-To: Joerg Roedel <joro@8bytes.org>
-Cc: Konrad Rzeszutek Wilk <konrad@darnok.org>,
- "open list:AMD IOMMU \(AMD-VI\)" <iommu@lists.linux-foundation.org>,
- Robin Murphy <robin.murphy@arm.com>, open list <linux-kernel@vger.kernel.org>,
- will@kernel.org
+In-Reply-To: <46a18427dc4e9dda985b10e472965e3e4c769f1d.1631141919.git.thomas.lendacky@amd.com>
+Content-Language: en-US
+Cc: Brijesh Singh <brijesh.singh@amd.com>, David Airlie <airlied@linux.ie>,
+ Dave Hansen <dave.hansen@linux.intel.com>, Paul Mackerras <paulus@samba.org>,
+ Will Deacon <will@kernel.org>, Andi Kleen <ak@linux.intel.com>,
+ Christian Borntraeger <borntraeger@de.ibm.com>,
+ Christoph Hellwig <hch@infradead.org>, Peter Zijlstra <peterz@infradead.org>,
+ Ingo Molnar <mingo@redhat.com>, Dave Young <dyoung@redhat.com>,
+ Tianyu Lan <Tianyu.Lan@microsoft.com>, Daniel Vetter <daniel@ffwll.ch>,
+ Vasily Gorbik <gor@linux.ibm.com>, Heiko Carstens <hca@linux.ibm.com>,
+ Maarten Lankhorst <maarten.lankhorst@linux.intel.com>,
+ Maxime Ripard <mripard@kernel.org>, Borislav Petkov <bp@alien8.de>,
+ Andy Lutomirski <luto@kernel.org>, Thomas Gleixner <tglx@linutronix.de>,
+ Thomas Zimmermann <tzimmermann@suse.de>
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -118,42 +109,136 @@ List-Post: <mailto:iommu@lists.linux-foundation.org>
 List-Help: <mailto:iommu-request@lists.linux-foundation.org?subject=help>
 List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
  <mailto:iommu-request@lists.linux-foundation.org?subject=subscribe>
-Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset="us-ascii"; Format="flowed"
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-On Wed, Jul 14, 2021 at 6:25 PM Joerg Roedel <joro@8bytes.org> wrote:
->
-> On Tue, Jul 13, 2021 at 07:57:40PM -0400, Konrad Rzeszutek Wilk wrote:
-> > The SWIOTLB does have support to do late initialization (xen-pcifront
-> > does that for example - so if you add devices that can't do 64-bit it
-> > will allocate something like 4MB).
->
-> That sounds like a way to evaluate. I suggest to allocate the SWIOTLB
-> memory at boot and when the IOMMUs are initialized we re-evaluate what
-> we ended up with and free the SWIOTLB memory if its not needed.
->
-> If that turns out to be wrong during runtime (e.g. because a device is
-> switched to a passthrough default domain at runtime), we allocate a
-> small aperture for this device like the above mentioned 4MB.
 
-I am currently working on this but I found that 4MB is not enough,
-16MB is the minimal size to make the device work.
-How do I know the right SWIOTLB size for each device?
 
->
-> (A boot option to always keep the aperture around might also be helpful
->  for some setups)
+On 9/8/21 10:58 PM, Tom Lendacky wrote:
+> 
+> diff --git a/arch/powerpc/include/asm/mem_encrypt.h b/arch/powerpc/include/asm/mem_encrypt.h
+> index ba9dab07c1be..2f26b8fc8d29 100644
+> --- a/arch/powerpc/include/asm/mem_encrypt.h
+> +++ b/arch/powerpc/include/asm/mem_encrypt.h
+> @@ -10,11 +10,6 @@
+>   
+>   #include <asm/svm.h>
+>   
+> -static inline bool mem_encrypt_active(void)
+> -{
+> -	return is_secure_guest();
+> -}
+> -
+>   static inline bool force_dma_unencrypted(struct device *dev)
+>   {
+>   	return is_secure_guest();
+> diff --git a/arch/powerpc/platforms/pseries/svm.c b/arch/powerpc/platforms/pseries/svm.c
+> index 87f001b4c4e4..c083ecbbae4d 100644
+> --- a/arch/powerpc/platforms/pseries/svm.c
+> +++ b/arch/powerpc/platforms/pseries/svm.c
+> @@ -8,6 +8,7 @@
+>   
+>   #include <linux/mm.h>
+>   #include <linux/memblock.h>
+> +#include <linux/cc_platform.h>
+>   #include <asm/machdep.h>
+>   #include <asm/svm.h>
+>   #include <asm/swiotlb.h>
+> @@ -63,7 +64,7 @@ void __init svm_swiotlb_init(void)
+>   
+>   int set_memory_encrypted(unsigned long addr, int numpages)
+>   {
+> -	if (!mem_encrypt_active())
+> +	if (!cc_platform_has(CC_ATTR_MEM_ENCRYPT))
+>   		return 0;
+>   
+>   	if (!PAGE_ALIGNED(addr))
+> @@ -76,7 +77,7 @@ int set_memory_encrypted(unsigned long addr, int numpages)
+>   
+>   int set_memory_decrypted(unsigned long addr, int numpages)
+>   {
+> -	if (!mem_encrypt_active())
+> +	if (!cc_platform_has(CC_ATTR_MEM_ENCRYPT))
+>   		return 0;
+>   
+>   	if (!PAGE_ALIGNED(addr))
 
-OK, will also implement this in next iteration.
+This change unnecessarily complexifies the two functions. This is due to 
+cc_platform_has() being out-line. It should really remain inline.
 
-Kai-Heng
+Before the change we got:
 
->
-> Regards,
->
->         Joerg
+0000000000000000 <.set_memory_encrypted>:
+    0:	7d 20 00 a6 	mfmsr   r9
+    4:	75 29 00 40 	andis.  r9,r9,64
+    8:	41 82 00 48 	beq     50 <.set_memory_encrypted+0x50>
+    c:	78 69 04 20 	clrldi  r9,r3,48
+   10:	2c 29 00 00 	cmpdi   r9,0
+   14:	40 82 00 4c 	bne     60 <.set_memory_encrypted+0x60>
+   18:	7c 08 02 a6 	mflr    r0
+   1c:	7c 85 23 78 	mr      r5,r4
+   20:	78 64 85 02 	rldicl  r4,r3,48,20
+   24:	61 23 f1 34 	ori     r3,r9,61748
+   28:	f8 01 00 10 	std     r0,16(r1)
+   2c:	f8 21 ff 91 	stdu    r1,-112(r1)
+   30:	48 00 00 01 	bl      30 <.set_memory_encrypted+0x30>
+			30: R_PPC64_REL24	.ucall_norets
+   34:	60 00 00 00 	nop
+   38:	38 60 00 00 	li      r3,0
+   3c:	38 21 00 70 	addi    r1,r1,112
+   40:	e8 01 00 10 	ld      r0,16(r1)
+   44:	7c 08 03 a6 	mtlr    r0
+   48:	4e 80 00 20 	blr
+   50:	38 60 00 00 	li      r3,0
+   54:	4e 80 00 20 	blr
+   60:	38 60 ff ea 	li      r3,-22
+   64:	4e 80 00 20 	blr
+
+After the change we get:
+
+0000000000000000 <.set_memory_encrypted>:
+    0:	7c 08 02 a6 	mflr    r0
+    4:	fb c1 ff f0 	std     r30,-16(r1)
+    8:	fb e1 ff f8 	std     r31,-8(r1)
+    c:	7c 7f 1b 78 	mr      r31,r3
+   10:	38 60 00 00 	li      r3,0
+   14:	7c 9e 23 78 	mr      r30,r4
+   18:	f8 01 00 10 	std     r0,16(r1)
+   1c:	f8 21 ff 81 	stdu    r1,-128(r1)
+   20:	48 00 00 01 	bl      20 <.set_memory_encrypted+0x20>
+			20: R_PPC64_REL24	.cc_platform_has
+   24:	60 00 00 00 	nop
+   28:	2c 23 00 00 	cmpdi   r3,0
+   2c:	41 82 00 44 	beq     70 <.set_memory_encrypted+0x70>
+   30:	7b e9 04 20 	clrldi  r9,r31,48
+   34:	2c 29 00 00 	cmpdi   r9,0
+   38:	40 82 00 58 	bne     90 <.set_memory_encrypted+0x90>
+   3c:	38 60 00 00 	li      r3,0
+   40:	7f c5 f3 78 	mr      r5,r30
+   44:	7b e4 85 02 	rldicl  r4,r31,48,20
+   48:	60 63 f1 34 	ori     r3,r3,61748
+   4c:	48 00 00 01 	bl      4c <.set_memory_encrypted+0x4c>
+			4c: R_PPC64_REL24	.ucall_norets
+   50:	60 00 00 00 	nop
+   54:	38 60 00 00 	li      r3,0
+   58:	38 21 00 80 	addi    r1,r1,128
+   5c:	e8 01 00 10 	ld      r0,16(r1)
+   60:	eb c1 ff f0 	ld      r30,-16(r1)
+   64:	eb e1 ff f8 	ld      r31,-8(r1)
+   68:	7c 08 03 a6 	mtlr    r0
+   6c:	4e 80 00 20 	blr
+   70:	38 21 00 80 	addi    r1,r1,128
+   74:	38 60 00 00 	li      r3,0
+   78:	e8 01 00 10 	ld      r0,16(r1)
+   7c:	eb c1 ff f0 	ld      r30,-16(r1)
+   80:	eb e1 ff f8 	ld      r31,-8(r1)
+   84:	7c 08 03 a6 	mtlr    r0
+   88:	4e 80 00 20 	blr
+   90:	38 60 ff ea 	li      r3,-22
+   94:	4b ff ff c4 	b       58 <.set_memory_encrypted+0x58>
+
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
