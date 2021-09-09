@@ -2,92 +2,65 @@ Return-Path: <SRS0=9mGv=N7=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-17.2 required=3.0 tests=BAYES_00,
-	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_CR_TRAILER,INCLUDES_PATCH,
-	MAILING_LIST_MULTI,NICE_REPLY_A,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,
-	USER_AGENT_SANE_1 autolearn=unavailable autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-3.7 required=3.0 tests=BAYES_00,
+	HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,
+	URIBL_BLOCKED autolearn=no autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id ADCAFC433F5
-	for <iommu@archiver.kernel.org>; Thu,  9 Sep 2021 07:41:01 +0000 (UTC)
-Received: from smtp4.osuosl.org (smtp4.osuosl.org [140.211.166.137])
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B5000C433EF
+	for <iommu@archiver.kernel.org>; Thu,  9 Sep 2021 09:36:24 +0000 (UTC)
+Received: from smtp2.osuosl.org (smtp2.osuosl.org [140.211.166.133])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 6473E61108
-	for <iommu@archiver.kernel.org>; Thu,  9 Sep 2021 07:41:01 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.4.1 mail.kernel.org 6473E61108
-Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=csgroup.eu
+	by mail.kernel.org (Postfix) with ESMTPS id 6DF1D60E0B
+	for <iommu@archiver.kernel.org>; Thu,  9 Sep 2021 09:36:23 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.4.1 mail.kernel.org 6DF1D60E0B
+Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=8bytes.org
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by smtp4.osuosl.org (Postfix) with ESMTP id 39096402C2;
-	Thu,  9 Sep 2021 07:41:01 +0000 (UTC)
+	by smtp2.osuosl.org (Postfix) with ESMTP id 3794A40566;
+	Thu,  9 Sep 2021 09:36:23 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from smtp4.osuosl.org ([127.0.0.1])
-	by localhost (smtp4.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id zjAGgrgSYWVh; Thu,  9 Sep 2021 07:41:00 +0000 (UTC)
+Received: from smtp2.osuosl.org ([127.0.0.1])
+	by localhost (smtp2.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+	with ESMTP id swtQq8smFd16; Thu,  9 Sep 2021 09:36:22 +0000 (UTC)
 Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by smtp4.osuosl.org (Postfix) with ESMTPS id 17DAC402BF;
-	Thu,  9 Sep 2021 07:41:00 +0000 (UTC)
+	by smtp2.osuosl.org (Postfix) with ESMTPS id 01E6840185;
+	Thu,  9 Sep 2021 09:36:22 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id EF856C000F;
-	Thu,  9 Sep 2021 07:40:59 +0000 (UTC)
-Received: from smtp4.osuosl.org (smtp4.osuosl.org [140.211.166.137])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 1598BC000D
- for <iommu@lists.linux-foundation.org>; Thu,  9 Sep 2021 07:40:59 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id D49FCC0011;
+	Thu,  9 Sep 2021 09:36:21 +0000 (UTC)
+Received: from smtp2.osuosl.org (smtp2.osuosl.org [140.211.166.133])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 9B18FC000D
+ for <iommu@lists.linux-foundation.org>; Thu,  9 Sep 2021 09:36:20 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by smtp4.osuosl.org (Postfix) with ESMTP id F37C3402C0
- for <iommu@lists.linux-foundation.org>; Thu,  9 Sep 2021 07:40:58 +0000 (UTC)
+ by smtp2.osuosl.org (Postfix) with ESMTP id 89E8040564
+ for <iommu@lists.linux-foundation.org>; Thu,  9 Sep 2021 09:36:20 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from smtp4.osuosl.org ([127.0.0.1])
- by localhost (smtp4.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id asTTYk5uaJIe for <iommu@lists.linux-foundation.org>;
- Thu,  9 Sep 2021 07:40:58 +0000 (UTC)
+Received: from smtp2.osuosl.org ([127.0.0.1])
+ by localhost (smtp2.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+ with ESMTP id RYdFHLMA2NMh for <iommu@lists.linux-foundation.org>;
+ Thu,  9 Sep 2021 09:36:19 +0000 (UTC)
 X-Greylist: from auto-whitelisted by SQLgrey-1.8.0
-Received: from pegase2.c-s.fr (pegase2.c-s.fr [93.17.235.10])
- by smtp4.osuosl.org (Postfix) with ESMTPS id 1F32D402BF
- for <iommu@lists.linux-foundation.org>; Thu,  9 Sep 2021 07:40:57 +0000 (UTC)
-Received: from localhost (mailhub3.si.c-s.fr [172.26.127.67])
- by localhost (Postfix) with ESMTP id 4H4rXR0J6Pz9sWj;
- Thu,  9 Sep 2021 09:40:55 +0200 (CEST)
-X-Virus-Scanned: amavisd-new at c-s.fr
-Received: from pegase2.c-s.fr ([172.26.127.65])
- by localhost (pegase2.c-s.fr [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id a3HcQ-GtdMPM; Thu,  9 Sep 2021 09:40:54 +0200 (CEST)
-Received: from messagerie.si.c-s.fr (messagerie.si.c-s.fr [192.168.25.192])
- by pegase2.c-s.fr (Postfix) with ESMTP id 4H4rXQ622Pz9sWg;
- Thu,  9 Sep 2021 09:40:54 +0200 (CEST)
-Received: from localhost (localhost [127.0.0.1])
- by messagerie.si.c-s.fr (Postfix) with ESMTP id B7DF38B77E;
- Thu,  9 Sep 2021 09:40:54 +0200 (CEST)
-X-Virus-Scanned: amavisd-new at c-s.fr
-Received: from messagerie.si.c-s.fr ([127.0.0.1])
- by localhost (messagerie.si.c-s.fr [127.0.0.1]) (amavisd-new, port 10023)
- with ESMTP id T3QWoD2RrUYV; Thu,  9 Sep 2021 09:40:54 +0200 (CEST)
-Received: from po9476vm.idsi0.si.c-s.fr (po22017.idsi0.si.c-s.fr
- [192.168.7.20])
- by messagerie.si.c-s.fr (Postfix) with ESMTP id 92A3E8B77D;
- Thu,  9 Sep 2021 09:40:53 +0200 (CEST)
-Subject: Re: [PATCH v3 4/8] powerpc/pseries/svm: Add a powerpc version of
- cc_platform_has()
-To: Tom Lendacky <thomas.lendacky@amd.com>, linux-kernel@vger.kernel.org,
- x86@kernel.org, linuxppc-dev@lists.ozlabs.org, linux-s390@vger.kernel.org,
- iommu@lists.linux-foundation.org, kvm@vger.kernel.org,
- linux-efi@vger.kernel.org, platform-driver-x86@vger.kernel.org,
- linux-graphics-maintainer@vmware.com, amd-gfx@lists.freedesktop.org,
- dri-devel@lists.freedesktop.org, kexec@lists.infradead.org,
- linux-fsdevel@vger.kernel.org
-References: <cover.1631141919.git.thomas.lendacky@amd.com>
- <9d4fc3f8ea7b325aaa1879beab1286876f45d450.1631141919.git.thomas.lendacky@amd.com>
-From: Christophe Leroy <christophe.leroy@csgroup.eu>
-Message-ID: <b8a163b3-6357-45c9-f7ef-5d7e900b9ac8@csgroup.eu>
-Date: Thu, 9 Sep 2021 07:40:51 +0000
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
- Thunderbird/68.11.0
+Received: from theia.8bytes.org (8bytes.org
+ [IPv6:2a01:238:4383:600:38bc:a715:4b6d:a889])
+ by smtp2.osuosl.org (Postfix) with ESMTPS id 5278540185
+ for <iommu@lists.linux-foundation.org>; Thu,  9 Sep 2021 09:36:19 +0000 (UTC)
+Received: by theia.8bytes.org (Postfix, from userid 1000)
+ id 724C060F; Thu,  9 Sep 2021 11:36:15 +0200 (CEST)
+Date: Thu, 9 Sep 2021 11:36:09 +0200
+From: Joerg Roedel <joro@8bytes.org>
+To: "Suthikulpanit, Suravee" <suravee.suthikulpanit@amd.com>
+Subject: Re: [PATCH 0/3] iommu/amd: Fix unable to handle page fault due to AVIC
+Message-ID: <YTnViaK3uRNSGK8Q@8bytes.org>
+References: <20210820202957.187572-1-suravee.suthikulpanit@amd.com>
+ <f2ec4e5c-3bb1-b703-8842-34357e084bad@amd.com>
+ <YTB/jWr9vb6xvTQp@8bytes.org>
+ <5c7921f4-70ad-5d14-f44c-22a49c2ac068@amd.com>
 MIME-Version: 1.0
-In-Reply-To: <9d4fc3f8ea7b325aaa1879beab1286876f45d450.1631141919.git.thomas.lendacky@amd.com>
-Content-Language: en-US
-Cc: Andi Kleen <ak@linux.intel.com>, Tianyu Lan <Tianyu.Lan@microsoft.com>,
- Christoph Hellwig <hch@infradead.org>, Borislav Petkov <bp@alien8.de>,
- Brijesh Singh <brijesh.singh@amd.com>, Paul Mackerras <paulus@samba.org>
+Content-Disposition: inline
+In-Reply-To: <5c7921f4-70ad-5d14-f44c-22a49c2ac068@amd.com>
+Cc: iommu@lists.linux-foundation.org, Jon.Grimm@amd.com,
+ linux-kernel@vger.kernel.org, wei.huang2@amd.com
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -100,89 +73,23 @@ List-Post: <mailto:iommu@lists.linux-foundation.org>
 List-Help: <mailto:iommu-request@lists.linux-foundation.org?subject=help>
 List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
  <mailto:iommu-request@lists.linux-foundation.org?subject=subscribe>
+Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
-Content-Type: text/plain; charset="us-ascii"; Format="flowed"
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
+Hi Suravee,
 
+On Thu, Sep 02, 2021 at 09:13:00AM -0700, Suthikulpanit, Suravee wrote:
+> I'll do that.
 
-On 9/8/21 10:58 PM, Tom Lendacky wrote:
-> Introduce a powerpc version of the cc_platform_has() function. This will
-> be used to replace the powerpc mem_encrypt_active() implementation, so
-> the implementation will initially only support the CC_ATTR_MEM_ENCRYPT
-> attribute.
-> 
-> Cc: Michael Ellerman <mpe@ellerman.id.au>
-> Cc: Benjamin Herrenschmidt <benh@kernel.crashing.org>
-> Cc: Paul Mackerras <paulus@samba.org>
-> Signed-off-by: Tom Lendacky <thomas.lendacky@amd.com>
-> ---
->   arch/powerpc/platforms/pseries/Kconfig       |  1 +
->   arch/powerpc/platforms/pseries/Makefile      |  2 ++
->   arch/powerpc/platforms/pseries/cc_platform.c | 26 ++++++++++++++++++++
->   3 files changed, 29 insertions(+)
->   create mode 100644 arch/powerpc/platforms/pseries/cc_platform.c
-> 
-> diff --git a/arch/powerpc/platforms/pseries/Kconfig b/arch/powerpc/platforms/pseries/Kconfig
-> index 5e037df2a3a1..2e57391e0778 100644
-> --- a/arch/powerpc/platforms/pseries/Kconfig
-> +++ b/arch/powerpc/platforms/pseries/Kconfig
-> @@ -159,6 +159,7 @@ config PPC_SVM
->   	select SWIOTLB
->   	select ARCH_HAS_MEM_ENCRYPT
->   	select ARCH_HAS_FORCE_DMA_UNENCRYPTED
-> +	select ARCH_HAS_CC_PLATFORM
->   	help
->   	 There are certain POWER platforms which support secure guests using
->   	 the Protected Execution Facility, with the help of an Ultravisor
-> diff --git a/arch/powerpc/platforms/pseries/Makefile b/arch/powerpc/platforms/pseries/Makefile
-> index 4cda0ef87be0..41d8aee98da4 100644
-> --- a/arch/powerpc/platforms/pseries/Makefile
-> +++ b/arch/powerpc/platforms/pseries/Makefile
-> @@ -31,3 +31,5 @@ obj-$(CONFIG_FA_DUMP)		+= rtas-fadump.o
->   
->   obj-$(CONFIG_SUSPEND)		+= suspend.o
->   obj-$(CONFIG_PPC_VAS)		+= vas.o
-> +
-> +obj-$(CONFIG_ARCH_HAS_CC_PLATFORM)	+= cc_platform.o
-> diff --git a/arch/powerpc/platforms/pseries/cc_platform.c b/arch/powerpc/platforms/pseries/cc_platform.c
-> new file mode 100644
-> index 000000000000..e8021af83a19
-> --- /dev/null
-> +++ b/arch/powerpc/platforms/pseries/cc_platform.c
-> @@ -0,0 +1,26 @@
-> +// SPDX-License-Identifier: GPL-2.0-only
-> +/*
-> + * Confidential Computing Platform Capability checks
-> + *
-> + * Copyright (C) 2021 Advanced Micro Devices, Inc.
-> + *
-> + * Author: Tom Lendacky <thomas.lendacky@amd.com>
-> + */
-> +
-> +#include <linux/export.h>
-> +#include <linux/cc_platform.h>
-> +
-> +#include <asm/machdep.h>
-> +#include <asm/svm.h>
-> +
-> +bool cc_platform_has(enum cc_attr attr)
-> +{
+New plan: I queued them now and added the Fixes tag. Will send a
+pull-request tomorrow to get them upstream together with a couple of
+other fixes.
 
-Please keep this function inline as mem_encrypt_active() is
+Regards,
 
-
-> +	switch (attr) {
-> +	case CC_ATTR_MEM_ENCRYPT:
-> +		return is_secure_guest();
-> +
-> +	default:
-> +		return false;
-> +	}
-> +}
-> +EXPORT_SYMBOL_GPL(cc_platform_has);
-> 
+	Joerg
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
