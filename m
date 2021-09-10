@@ -7,73 +7,73 @@ X-Spam-Status: No, score=-16.8 required=3.0 tests=BAYES_00,DKIM_INVALID,
 	SPF_HELO_NONE,SPF_PASS,USER_AGENT_GIT autolearn=ham autolearn_force=no
 	version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 66738C433F5
-	for <iommu@archiver.kernel.org>; Fri, 10 Sep 2021 00:18:47 +0000 (UTC)
-Received: from smtp1.osuosl.org (smtp1.osuosl.org [140.211.166.138])
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8C489C433EF
+	for <iommu@archiver.kernel.org>; Fri, 10 Sep 2021 00:18:56 +0000 (UTC)
+Received: from smtp3.osuosl.org (smtp3.osuosl.org [140.211.166.136])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 28C00611BD
-	for <iommu@archiver.kernel.org>; Fri, 10 Sep 2021 00:18:47 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.4.1 mail.kernel.org 28C00611BD
+	by mail.kernel.org (Postfix) with ESMTPS id 54845611C2
+	for <iommu@archiver.kernel.org>; Fri, 10 Sep 2021 00:18:56 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.4.1 mail.kernel.org 54845611C2
 Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=kernel.org
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by smtp1.osuosl.org (Postfix) with ESMTP id 0A74184A68;
-	Fri, 10 Sep 2021 00:18:47 +0000 (UTC)
+	by smtp3.osuosl.org (Postfix) with ESMTP id 332306066E;
+	Fri, 10 Sep 2021 00:18:56 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from smtp1.osuosl.org ([127.0.0.1])
-	by localhost (smtp1.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id IFELlskLpxWH; Fri, 10 Sep 2021 00:18:46 +0000 (UTC)
+Received: from smtp3.osuosl.org ([127.0.0.1])
+	by localhost (smtp3.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+	with ESMTP id eoa1Lz1kkLZK; Fri, 10 Sep 2021 00:18:55 +0000 (UTC)
 Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by smtp1.osuosl.org (Postfix) with ESMTPS id E071484A69;
-	Fri, 10 Sep 2021 00:18:45 +0000 (UTC)
+	by smtp3.osuosl.org (Postfix) with ESMTPS id 249B3605F7;
+	Fri, 10 Sep 2021 00:18:55 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id CB1DDC0011;
-	Fri, 10 Sep 2021 00:18:45 +0000 (UTC)
-Received: from smtp3.osuosl.org (smtp3.osuosl.org [IPv6:2605:bc80:3010::136])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 9E6A8C000D
- for <iommu@lists.linux-foundation.org>; Fri, 10 Sep 2021 00:18:44 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 03282C0011;
+	Fri, 10 Sep 2021 00:18:55 +0000 (UTC)
+Received: from smtp3.osuosl.org (smtp3.osuosl.org [140.211.166.136])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id A1904C000D
+ for <iommu@lists.linux-foundation.org>; Fri, 10 Sep 2021 00:18:53 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by smtp3.osuosl.org (Postfix) with ESMTP id 8015160778
- for <iommu@lists.linux-foundation.org>; Fri, 10 Sep 2021 00:18:44 +0000 (UTC)
+ by smtp3.osuosl.org (Postfix) with ESMTP id 91683605FE
+ for <iommu@lists.linux-foundation.org>; Fri, 10 Sep 2021 00:18:53 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Authentication-Results: smtp3.osuosl.org (amavisd-new);
- dkim=pass (2048-bit key) header.d=kernel.org
 Received: from smtp3.osuosl.org ([127.0.0.1])
  by localhost (smtp3.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id kgVN7x3VrGSw for <iommu@lists.linux-foundation.org>;
- Fri, 10 Sep 2021 00:18:43 +0000 (UTC)
+ with ESMTP id slGi_4WdM2cA for <iommu@lists.linux-foundation.org>;
+ Fri, 10 Sep 2021 00:18:52 +0000 (UTC)
 X-Greylist: domain auto-whitelisted by SQLgrey-1.8.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
- by smtp3.osuosl.org (Postfix) with ESMTPS id C7CFE605DE
- for <iommu@lists.linux-foundation.org>; Fri, 10 Sep 2021 00:18:43 +0000 (UTC)
-Received: by mail.kernel.org (Postfix) with ESMTPSA id BEAF261101;
- Fri, 10 Sep 2021 00:18:42 +0000 (UTC)
+ by smtp3.osuosl.org (Postfix) with ESMTPS id CE00A605F7
+ for <iommu@lists.linux-foundation.org>; Fri, 10 Sep 2021 00:18:52 +0000 (UTC)
+Received: by mail.kernel.org (Postfix) with ESMTPSA id 5B538611BF;
+ Fri, 10 Sep 2021 00:18:51 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
- s=k20201202; t=1631233123;
- bh=jAQoBe4VI8WbxoL6SHPTRwai47qCqtUJMMAaZNMIVtk=;
+ s=k20201202; t=1631233132;
+ bh=OUEaFTUxmzuMYtZCNAdBH2YIbdf2jBIIGzpxLUcFF4Q=;
  h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
- b=R5FhD0SdWU1YyuC1nMOy80dUxYk9Wi6zmbytejGMbjc+j9onPqrIh62ZX3SvX/m/0
- lJi57V2eXngEhtUxK4OPxIQ3zdMdpH2fogdz8tFDxzDHaW7z8b8yofzZV+mdjknwDt
- AsuMeDEKD04W93V1Wp/nD9DgfiOnxEYOY0Q7bQQ0/UjlKIUrSew8tvNyy3IHikJ8Og
- 8OPBIYdbcZ0zT1qLoIeJjA7kBfI1Uqm/7M+wLENmXOSnHNDx69EqfHHOpTeF7HF+Uz
- 3FZ7o3q3r3JPSlrNY3dX8g0O/hq5ZCOGD5w0SzznBfhA3cE+Z4sETyX7OhqM15xn6k
- RVS3tY/xV5xKQ==
+ b=WgLWKGi4hxDb+WSq9UXJ6UBwKefgoq0smSCuvEkVSQTvvhdp49S8kr6VyEDczGelE
+ pjF5zgvQPNfBfbvWV/OtmLhKcybSvmdtVj0GF9+SzyCmzlYTzyiGoJZwN9AvFbfQ5H
+ p46YU5hn3rwNWoAq3n3cCb519aYv4KxYfuiD73yxlzjDY6W3qSVB45Jg+yIgQfwsOk
+ RmN7ZFf6VXhDVLPeILuaXweVrzhB+w4X0CuISW8nq6z5SjTGwkD0hXXATHUrxLjrGu
+ vSUzHbnV/p3Hqpbhe3tPFzQjAgIKgXOLQt+/RP31hERauRtybr5hQhlSYt1lAxMzJ+
+ p03tuM45OJLiw==
 From: Sasha Levin <sashal@kernel.org>
 To: linux-kernel@vger.kernel.org,
 	stable@vger.kernel.org
-Subject: [PATCH AUTOSEL 5.13 16/88] iommu/amd: Fix printing of IOMMU events
- when rate limiting kicks in
-Date: Thu,  9 Sep 2021 20:17:08 -0400
-Message-Id: <20210910001820.174272-16-sashal@kernel.org>
+Subject: [PATCH AUTOSEL 5.13 22/88] iommu/amd: Sync once for scatter-gather
+ operations
+Date: Thu,  9 Sep 2021 20:17:14 -0400
+Message-Id: <20210910001820.174272-22-sashal@kernel.org>
 X-Mailer: git-send-email 2.30.2
 In-Reply-To: <20210910001820.174272-1-sashal@kernel.org>
 References: <20210910001820.174272-1-sashal@kernel.org>
 MIME-Version: 1.0
 X-stable: review
 X-Patchwork-Hint: Ignore
-Cc: Sasha Levin <sashal@kernel.org>, iommu@lists.linux-foundation.org,
- Joerg Roedel <jroedel@suse.de>
+Cc: Sasha Levin <sashal@kernel.org>, Joerg Roedel <jroedel@suse.de>,
+ Robin Murphy <robin.murphy@arm.com>, iommu@lists.linux-foundation.org,
+ Nadav Amit <namit@vmware.com>, Jiajun Cao <caojiajun@vmware.com>,
+ Will Deacon <will@kernel.org>
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -91,100 +91,80 @@ Content-Transfer-Encoding: 7bit
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-From: Lennert Buytenhek <buytenh@wantstofly.org>
+From: Nadav Amit <namit@vmware.com>
 
-[ Upstream commit ee974d9625c405977ef5d9aedc476be1d0362ebf ]
+[ Upstream commit 3b122a5666cb7c0bb9a439fba0c9a6cf59f999c3 ]
 
-For the printing of RMP_HW_ERROR / RMP_PAGE_FAULT / IO_PAGE_FAULT
-events, the AMD IOMMU code uses such logic:
+On virtual machines, software must flush the IOTLB after each page table
+entry update.
 
-	if (pdev)
-		dev_data = dev_iommu_priv_get(&pdev->dev);
+The iommu_map_sg() code iterates through the given scatter-gather list
+and invokes iommu_map() for each element in the scatter-gather list,
+which calls into the vendor IOMMU driver through iommu_ops callback. As
+the result, a single sg mapping may lead to multiple IOTLB flushes.
 
-	if (dev_data && __ratelimit(&dev_data->rs)) {
-		pci_err(pdev, ...
-	} else {
-		printk_ratelimit() / pr_err{,_ratelimited}(...
-	}
+Fix this by adding amd_iotlb_sync_map() callback and flushing at this
+point after all sg mappings we set.
 
-This means that if we receive an event for a PCI devid which actually
-does have a struct pci_dev and an attached struct iommu_dev_data, but
-rate limiting kicks in, we'll fall back to the non-PCI branch of the
-test, and print the event in a different format.
+This commit is followed and inspired by commit 933fcd01e97e2
+("iommu/vt-d: Add iotlb_sync_map callback").
 
-Fix this by changing the logic to:
-
-	if (dev_data) {
-		if (__ratelimit(&dev_data->rs)) {
-			pci_err(pdev, ...
-		}
-	} else {
-		pr_err_ratelimited(...
-	}
-
-Suggested-by: Suravee Suthikulpanit <suravee.suthikulpanit@amd.com>
-Signed-off-by: Lennert Buytenhek <buytenh@wantstofly.org>
-Reviewed-by: Suravee Suthikulpanit <suravee.suthikulpanit@amd.com>
-Link: https://lore.kernel.org/r/YPgk1dD1gPMhJXgY@wantstofly.org
+Cc: Joerg Roedel <joro@8bytes.org>
+Cc: Will Deacon <will@kernel.org>
+Cc: Jiajun Cao <caojiajun@vmware.com>
+Cc: Robin Murphy <robin.murphy@arm.com>
+Cc: Lu Baolu <baolu.lu@linux.intel.com>
+Cc: iommu@lists.linux-foundation.org
+Cc: linux-kernel@vger.kernel.org
+Signed-off-by: Nadav Amit <namit@vmware.com>
+Link: https://lore.kernel.org/r/20210723093209.714328-7-namit@vmware.com
 Signed-off-by: Joerg Roedel <jroedel@suse.de>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/iommu/amd/iommu.c | 28 +++++++++++++++++-----------
- 1 file changed, 17 insertions(+), 11 deletions(-)
+ drivers/iommu/amd/iommu.c | 15 ++++++++++++---
+ 1 file changed, 12 insertions(+), 3 deletions(-)
 
 diff --git a/drivers/iommu/amd/iommu.c b/drivers/iommu/amd/iommu.c
-index c46dde88a132..69d441fc1e32 100644
+index 69d441fc1e32..d11386177301 100644
 --- a/drivers/iommu/amd/iommu.c
 +++ b/drivers/iommu/amd/iommu.c
-@@ -425,9 +425,11 @@ static void amd_iommu_report_rmp_hw_error(volatile u32 *event)
- 	if (pdev)
- 		dev_data = dev_iommu_priv_get(&pdev->dev);
+@@ -2028,6 +2028,16 @@ static int amd_iommu_attach_device(struct iommu_domain *dom,
+ 	return ret;
+ }
  
--	if (dev_data && __ratelimit(&dev_data->rs)) {
--		pci_err(pdev, "Event logged [RMP_HW_ERROR vmg_tag=0x%04x, spa=0x%llx, flags=0x%04x]\n",
--			vmg_tag, spa, flags);
-+	if (dev_data) {
-+		if (__ratelimit(&dev_data->rs)) {
-+			pci_err(pdev, "Event logged [RMP_HW_ERROR vmg_tag=0x%04x, spa=0x%llx, flags=0x%04x]\n",
-+				vmg_tag, spa, flags);
-+		}
- 	} else {
- 		pr_err_ratelimited("Event logged [RMP_HW_ERROR device=%02x:%02x.%x, vmg_tag=0x%04x, spa=0x%llx, flags=0x%04x]\n",
- 			PCI_BUS_NUM(devid), PCI_SLOT(devid), PCI_FUNC(devid),
-@@ -456,9 +458,11 @@ static void amd_iommu_report_rmp_fault(volatile u32 *event)
- 	if (pdev)
- 		dev_data = dev_iommu_priv_get(&pdev->dev);
++static void amd_iommu_iotlb_sync_map(struct iommu_domain *dom,
++				     unsigned long iova, size_t size)
++{
++	struct protection_domain *domain = to_pdomain(dom);
++	struct io_pgtable_ops *ops = &domain->iop.iop.ops;
++
++	if (ops->map)
++		domain_flush_np_cache(domain, iova, size);
++}
++
+ static int amd_iommu_map(struct iommu_domain *dom, unsigned long iova,
+ 			 phys_addr_t paddr, size_t page_size, int iommu_prot,
+ 			 gfp_t gfp)
+@@ -2046,10 +2056,8 @@ static int amd_iommu_map(struct iommu_domain *dom, unsigned long iova,
+ 	if (iommu_prot & IOMMU_WRITE)
+ 		prot |= IOMMU_PROT_IW;
  
--	if (dev_data && __ratelimit(&dev_data->rs)) {
--		pci_err(pdev, "Event logged [RMP_PAGE_FAULT vmg_tag=0x%04x, gpa=0x%llx, flags_rmp=0x%04x, flags=0x%04x]\n",
--			vmg_tag, gpa, flags_rmp, flags);
-+	if (dev_data) {
-+		if (__ratelimit(&dev_data->rs)) {
-+			pci_err(pdev, "Event logged [RMP_PAGE_FAULT vmg_tag=0x%04x, gpa=0x%llx, flags_rmp=0x%04x, flags=0x%04x]\n",
-+				vmg_tag, gpa, flags_rmp, flags);
-+		}
- 	} else {
- 		pr_err_ratelimited("Event logged [RMP_PAGE_FAULT device=%02x:%02x.%x, vmg_tag=0x%04x, gpa=0x%llx, flags_rmp=0x%04x, flags=0x%04x]\n",
- 			PCI_BUS_NUM(devid), PCI_SLOT(devid), PCI_FUNC(devid),
-@@ -480,11 +484,13 @@ static void amd_iommu_report_page_fault(u16 devid, u16 domain_id,
- 	if (pdev)
- 		dev_data = dev_iommu_priv_get(&pdev->dev);
+-	if (ops->map) {
++	if (ops->map)
+ 		ret = ops->map(ops, iova, paddr, page_size, prot, gfp);
+-		domain_flush_np_cache(domain, iova, page_size);
+-	}
  
--	if (dev_data && __ratelimit(&dev_data->rs)) {
--		pci_err(pdev, "Event logged [IO_PAGE_FAULT domain=0x%04x address=0x%llx flags=0x%04x]\n",
--			domain_id, address, flags);
--	} else if (printk_ratelimit()) {
--		pr_err("Event logged [IO_PAGE_FAULT device=%02x:%02x.%x domain=0x%04x address=0x%llx flags=0x%04x]\n",
-+	if (dev_data) {
-+		if (__ratelimit(&dev_data->rs)) {
-+			pci_err(pdev, "Event logged [IO_PAGE_FAULT domain=0x%04x address=0x%llx flags=0x%04x]\n",
-+				domain_id, address, flags);
-+		}
-+	} else {
-+		pr_err_ratelimited("Event logged [IO_PAGE_FAULT device=%02x:%02x.%x domain=0x%04x address=0x%llx flags=0x%04x]\n",
- 			PCI_BUS_NUM(devid), PCI_SLOT(devid), PCI_FUNC(devid),
- 			domain_id, address, flags);
- 	}
+ 	return ret;
+ }
+@@ -2197,6 +2205,7 @@ const struct iommu_ops amd_iommu_ops = {
+ 	.attach_dev = amd_iommu_attach_device,
+ 	.detach_dev = amd_iommu_detach_device,
+ 	.map = amd_iommu_map,
++	.iotlb_sync_map	= amd_iommu_iotlb_sync_map,
+ 	.unmap = amd_iommu_unmap,
+ 	.iova_to_phys = amd_iommu_iova_to_phys,
+ 	.probe_device = amd_iommu_probe_device,
 -- 
 2.30.2
 
