@@ -7,74 +7,73 @@ X-Spam-Status: No, score=-16.8 required=3.0 tests=BAYES_00,DKIM_INVALID,
 	SPF_HELO_NONE,SPF_PASS,USER_AGENT_GIT autolearn=ham autolearn_force=no
 	version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D9971C433FE
-	for <iommu@archiver.kernel.org>; Fri, 10 Sep 2021 00:19:16 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 26BFCC433EF
+	for <iommu@archiver.kernel.org>; Fri, 10 Sep 2021 00:19:27 +0000 (UTC)
 Received: from smtp1.osuosl.org (smtp1.osuosl.org [140.211.166.138])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id A38C3610A3
-	for <iommu@archiver.kernel.org>; Fri, 10 Sep 2021 00:19:16 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.4.1 mail.kernel.org A38C3610A3
+	by mail.kernel.org (Postfix) with ESMTPS id E7F96611AF
+	for <iommu@archiver.kernel.org>; Fri, 10 Sep 2021 00:19:26 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.4.1 mail.kernel.org E7F96611AF
 Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=kernel.org
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by smtp1.osuosl.org (Postfix) with ESMTP id 87B1D80F22;
-	Fri, 10 Sep 2021 00:19:16 +0000 (UTC)
+	by smtp1.osuosl.org (Postfix) with ESMTP id C69D9849FC;
+	Fri, 10 Sep 2021 00:19:26 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
 Received: from smtp1.osuosl.org ([127.0.0.1])
 	by localhost (smtp1.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id RULqZYzOHQG2; Fri, 10 Sep 2021 00:19:15 +0000 (UTC)
-Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [IPv6:2605:bc80:3010:104::8cd3:938])
-	by smtp1.osuosl.org (Postfix) with ESMTPS id 7761180EED;
-	Fri, 10 Sep 2021 00:19:15 +0000 (UTC)
+	with ESMTP id 3kAa5laXwDUX; Fri, 10 Sep 2021 00:19:26 +0000 (UTC)
+Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
+	by smtp1.osuosl.org (Postfix) with ESMTPS id A515C849E7;
+	Fri, 10 Sep 2021 00:19:25 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 54FA8C0011;
-	Fri, 10 Sep 2021 00:19:15 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 82D5FC0011;
+	Fri, 10 Sep 2021 00:19:25 +0000 (UTC)
 Received: from smtp3.osuosl.org (smtp3.osuosl.org [140.211.166.136])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 7BCD6C000D
- for <iommu@lists.linux-foundation.org>; Fri, 10 Sep 2021 00:19:13 +0000 (UTC)
+ by lists.linuxfoundation.org (Postfix) with ESMTP id A1B34C000D
+ for <iommu@lists.linux-foundation.org>; Fri, 10 Sep 2021 00:19:24 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by smtp3.osuosl.org (Postfix) with ESMTP id 5DFE9605FE
- for <iommu@lists.linux-foundation.org>; Fri, 10 Sep 2021 00:19:13 +0000 (UTC)
+ by smtp3.osuosl.org (Postfix) with ESMTP id 917BA6066E
+ for <iommu@lists.linux-foundation.org>; Fri, 10 Sep 2021 00:19:24 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
 Authentication-Results: smtp3.osuosl.org (amavisd-new);
  dkim=pass (2048-bit key) header.d=kernel.org
 Received: from smtp3.osuosl.org ([127.0.0.1])
  by localhost (smtp3.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id TVPsgkGiDwr4 for <iommu@lists.linux-foundation.org>;
- Fri, 10 Sep 2021 00:19:12 +0000 (UTC)
+ with ESMTP id BKfj7q5lQz22 for <iommu@lists.linux-foundation.org>;
+ Fri, 10 Sep 2021 00:19:23 +0000 (UTC)
 X-Greylist: domain auto-whitelisted by SQLgrey-1.8.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
- by smtp3.osuosl.org (Postfix) with ESMTPS id A2E59605F7
- for <iommu@lists.linux-foundation.org>; Fri, 10 Sep 2021 00:19:12 +0000 (UTC)
-Received: by mail.kernel.org (Postfix) with ESMTPSA id 8971061167;
- Fri, 10 Sep 2021 00:19:11 +0000 (UTC)
+ by smtp3.osuosl.org (Postfix) with ESMTPS id E159B605FE
+ for <iommu@lists.linux-foundation.org>; Fri, 10 Sep 2021 00:19:23 +0000 (UTC)
+Received: by mail.kernel.org (Postfix) with ESMTPSA id E1D3F610E9;
+ Fri, 10 Sep 2021 00:19:22 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
- s=k20201202; t=1631233152;
- bh=cwsJNauNbuHbFGHrMlendi+VQYdVQon0xwi961peTX8=;
+ s=k20201202; t=1631233163;
+ bh=pP259nBXSIQ7eGjknv8BKsTAJEFR6SACGFYof+psmU0=;
  h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
- b=DLffUEN82rlNXpUyB2M16DfBw6q0G0FzsMymEnG1vEQwSgSCL+0HHTRMsBouzNnX/
- RC01ZUkvX5viMShpQZcIqteZ2C5TLpz/6uVvd/RnDftabzzlCvHeQUKVfA8aHdlq0t
- YhQT+H4AeW6s2E4OXxyRF3hkvoW29rqMdpCeiN4uqD66f937bp7iazZHqiq0BUOV0J
- 1+iI/guijWnriw+L2GN9iMUCKFdbuM97jt9pCo0yYkpW+I57bBoYyQvWSr4LJiKees
- VK/0SBC0bm6E7Mrn60VYCdIkDKTy/6lUs/DvPmb1cSi+xWp6n9k5zkM5H/z9TjEL2R
- X0aTnM84kaqgg==
+ b=a7bBnWPQXQTj9esbi5jnKf2JOJuZjW4qAGAQMz8SExpD9ring6cvt71Y7SYBP5/7t
+ C9MEvq362zQmU6OztT7i9HoPmxy5+rtfE/rRU0ff+L4PJJMJBXX20FYhDUpM5Ypm7+
+ VQgfA6E0hAM9t1gTs01htxLKYZMZ1grxUMxQSnb+gK3cOrjBI7nnqb6aWR1mlR3ER9
+ n4KMZrxBVAB2/hw4vDd8Kaq4zSeCGuy/mLMQ11th9ioe0DAqqzG1YT3Ri3R7+4SjOS
+ vSdoa80SLR4m94Q1XmjVPJ40udTl77ZpfjTsJTzn4bQcC1XxZJRauy+r6S22Ntk8oq
+ Vuee7INKCOyiQ==
 From: Sasha Levin <sashal@kernel.org>
 To: linux-kernel@vger.kernel.org,
 	stable@vger.kernel.org
-Subject: [PATCH AUTOSEL 5.13 36/88] iommu/arm-smmu: Fix race condition during
- iommu_group creation
-Date: Thu,  9 Sep 2021 20:17:28 -0400
-Message-Id: <20210910001820.174272-36-sashal@kernel.org>
+Subject: [PATCH AUTOSEL 5.13 44/88] iommu/vt-d: Add present bit check in pasid
+ entry setup helpers
+Date: Thu,  9 Sep 2021 20:17:36 -0400
+Message-Id: <20210910001820.174272-44-sashal@kernel.org>
 X-Mailer: git-send-email 2.30.2
 In-Reply-To: <20210910001820.174272-1-sashal@kernel.org>
 References: <20210910001820.174272-1-sashal@kernel.org>
 MIME-Version: 1.0
 X-stable: review
 X-Patchwork-Hint: Ignore
-Cc: Sasha Levin <sashal@kernel.org>, Ashish Mhetre <amhetre@nvidia.com>,
- iommu@lists.linux-foundation.org, Will Deacon <will@kernel.org>,
- linux-arm-kernel@lists.infradead.org
+Cc: Sasha Levin <sashal@kernel.org>, iommu@lists.linux-foundation.org,
+ Joerg Roedel <jroedel@suse.de>
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -92,61 +91,71 @@ Content-Transfer-Encoding: 7bit
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-From: Krishna Reddy <vdumpa@nvidia.com>
+From: Liu Yi L <yi.l.liu@intel.com>
 
-[ Upstream commit b1a1347912a742a4e1fcdc9df6302dd9dd2c3405 ]
+[ Upstream commit 423d39d8518c1bba12e0889a92beeddbb1502392 ]
 
-When two devices with same SID are getting probed concurrently through
-iommu_probe_device(), the iommu_group sometimes is getting allocated more
-than once as call to arm_smmu_device_group() is not protected for
-concurrency. Furthermore, it leads to each device holding a different
-iommu_group and domain pointer, separate IOVA space and only one of the
-devices' domain is used for translations from IOMMU. This causes accesses
-from other device to fault or see incorrect translations.
-Fix this by protecting iommu_group allocation from concurrency in
-arm_smmu_device_group().
+The helper functions should not modify the pasid entries which are still
+in use. Add a check against present bit.
 
-Signed-off-by: Krishna Reddy <vdumpa@nvidia.com>
-Signed-off-by: Ashish Mhetre <amhetre@nvidia.com>
-Link: https://lore.kernel.org/r/1628570641-9127-3-git-send-email-amhetre@nvidia.com
-Signed-off-by: Will Deacon <will@kernel.org>
+Signed-off-by: Liu Yi L <yi.l.liu@intel.com>
+Link: https://lore.kernel.org/r/20210817042425.1784279-1-yi.l.liu@intel.com
+Signed-off-by: Lu Baolu <baolu.lu@linux.intel.com>
+Link: https://lore.kernel.org/r/20210818134852.1847070-10-baolu.lu@linux.intel.com
+Signed-off-by: Joerg Roedel <jroedel@suse.de>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/iommu/arm/arm-smmu/arm-smmu.c | 6 +++++-
- 1 file changed, 5 insertions(+), 1 deletion(-)
+ drivers/iommu/intel/pasid.c | 16 ++++++++++++++++
+ 1 file changed, 16 insertions(+)
 
-diff --git a/drivers/iommu/arm/arm-smmu/arm-smmu.c b/drivers/iommu/arm/arm-smmu/arm-smmu.c
-index 1a647e0ea3eb..5b82a08ef4b4 100644
---- a/drivers/iommu/arm/arm-smmu/arm-smmu.c
-+++ b/drivers/iommu/arm/arm-smmu/arm-smmu.c
-@@ -1462,6 +1462,7 @@ static struct iommu_group *arm_smmu_device_group(struct device *dev)
- 	struct iommu_group *group = NULL;
- 	int i, idx;
- 
-+	mutex_lock(&smmu->stream_map_mutex);
- 	for_each_cfg_sme(cfg, fwspec, i, idx) {
- 		if (group && smmu->s2crs[idx].group &&
- 		    group != smmu->s2crs[idx].group)
-@@ -1470,8 +1471,10 @@ static struct iommu_group *arm_smmu_device_group(struct device *dev)
- 		group = smmu->s2crs[idx].group;
- 	}
- 
--	if (group)
-+	if (group) {
-+		mutex_unlock(&smmu->stream_map_mutex);
- 		return iommu_group_ref_get(group);
-+	}
- 
- 	if (dev_is_pci(dev))
- 		group = pci_device_group(dev);
-@@ -1485,6 +1488,7 @@ static struct iommu_group *arm_smmu_device_group(struct device *dev)
- 		for_each_cfg_sme(cfg, fwspec, i, idx)
- 			smmu->s2crs[idx].group = group;
- 
-+	mutex_unlock(&smmu->stream_map_mutex);
- 	return group;
+diff --git a/drivers/iommu/intel/pasid.c b/drivers/iommu/intel/pasid.c
+index 581c694b7cf4..a4e79d52be27 100644
+--- a/drivers/iommu/intel/pasid.c
++++ b/drivers/iommu/intel/pasid.c
+@@ -540,6 +540,10 @@ void intel_pasid_tear_down_entry(struct intel_iommu *iommu, struct device *dev,
+ 		devtlb_invalidation_with_pasid(iommu, dev, pasid);
  }
  
++/*
++ * This function flushes cache for a newly setup pasid table entry.
++ * Caller of it should not modify the in-use pasid table entries.
++ */
+ static void pasid_flush_caches(struct intel_iommu *iommu,
+ 				struct pasid_entry *pte,
+ 			       u32 pasid, u16 did)
+@@ -591,6 +595,10 @@ int intel_pasid_setup_first_level(struct intel_iommu *iommu,
+ 	if (WARN_ON(!pte))
+ 		return -EINVAL;
+ 
++	/* Caller must ensure PASID entry is not in use. */
++	if (pasid_pte_is_present(pte))
++		return -EBUSY;
++
+ 	pasid_clear_entry(pte);
+ 
+ 	/* Setup the first level page table pointer: */
+@@ -690,6 +698,10 @@ int intel_pasid_setup_second_level(struct intel_iommu *iommu,
+ 		return -ENODEV;
+ 	}
+ 
++	/* Caller must ensure PASID entry is not in use. */
++	if (pasid_pte_is_present(pte))
++		return -EBUSY;
++
+ 	pasid_clear_entry(pte);
+ 	pasid_set_domain_id(pte, did);
+ 	pasid_set_slptr(pte, pgd_val);
+@@ -729,6 +741,10 @@ int intel_pasid_setup_pass_through(struct intel_iommu *iommu,
+ 		return -ENODEV;
+ 	}
+ 
++	/* Caller must ensure PASID entry is not in use. */
++	if (pasid_pte_is_present(pte))
++		return -EBUSY;
++
+ 	pasid_clear_entry(pte);
+ 	pasid_set_domain_id(pte, did);
+ 	pasid_set_address_width(pte, iommu->agaw);
 -- 
 2.30.2
 
