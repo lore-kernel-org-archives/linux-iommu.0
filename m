@@ -2,86 +2,66 @@ Return-Path: <SRS0=sav6=OD=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-8.5 required=3.0 tests=BAYES_00,DKIM_INVALID,
-	DKIM_SIGNED,HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,
-	SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED autolearn=ham autolearn_force=no
-	version=3.4.0
+X-Spam-Status: No, score=-16.7 required=3.0 tests=BAYES_00,
+	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_CR_TRAILER,INCLUDES_PATCH,
+	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_GIT
+	autolearn=ham autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3ECC5C433F5
-	for <iommu@archiver.kernel.org>; Mon, 13 Sep 2021 08:22:06 +0000 (UTC)
-Received: from smtp2.osuosl.org (smtp2.osuosl.org [140.211.166.133])
+	by smtp.lore.kernel.org (Postfix) with ESMTP id F360AC433EF
+	for <iommu@archiver.kernel.org>; Mon, 13 Sep 2021 12:40:16 +0000 (UTC)
+Received: from smtp4.osuosl.org (smtp4.osuosl.org [140.211.166.137])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id DBFD660FC0
-	for <iommu@archiver.kernel.org>; Mon, 13 Sep 2021 08:22:05 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.4.1 mail.kernel.org DBFD660FC0
-Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=chromium.org
+	by mail.kernel.org (Postfix) with ESMTPS id 8FC7360FC0
+	for <iommu@archiver.kernel.org>; Mon, 13 Sep 2021 12:40:16 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.4.1 mail.kernel.org 8FC7360FC0
+Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=arm.com
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by smtp2.osuosl.org (Postfix) with ESMTP id 99693401CA;
-	Mon, 13 Sep 2021 08:22:05 +0000 (UTC)
+	by smtp4.osuosl.org (Postfix) with ESMTP id 5B41940301;
+	Mon, 13 Sep 2021 12:40:16 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from smtp2.osuosl.org ([127.0.0.1])
-	by localhost (smtp2.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id vvgbbekTvIpk; Mon, 13 Sep 2021 08:22:04 +0000 (UTC)
-Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [IPv6:2605:bc80:3010:104::8cd3:938])
-	by smtp2.osuosl.org (Postfix) with ESMTPS id 369B3400C8;
-	Mon, 13 Sep 2021 08:22:04 +0000 (UTC)
+Received: from smtp4.osuosl.org ([127.0.0.1])
+	by localhost (smtp4.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+	with ESMTP id aUU14T2kWRn3; Mon, 13 Sep 2021 12:40:15 +0000 (UTC)
+Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
+	by smtp4.osuosl.org (Postfix) with ESMTPS id 5DDD1402A2;
+	Mon, 13 Sep 2021 12:40:15 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 0E5C5C0011;
-	Mon, 13 Sep 2021 08:22:04 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 02A83C0023;
+	Mon, 13 Sep 2021 12:40:15 +0000 (UTC)
 Received: from smtp2.osuosl.org (smtp2.osuosl.org [140.211.166.133])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 1E978C000D
- for <iommu@lists.linux-foundation.org>; Mon, 13 Sep 2021 08:22:03 +0000 (UTC)
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 35885C0011
+ for <iommu@lists.linux-foundation.org>; Mon, 13 Sep 2021 12:40:14 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by smtp2.osuosl.org (Postfix) with ESMTP id 05A75400E8
- for <iommu@lists.linux-foundation.org>; Mon, 13 Sep 2021 08:22:03 +0000 (UTC)
+ by smtp2.osuosl.org (Postfix) with ESMTP id 24AFF4027C
+ for <iommu@lists.linux-foundation.org>; Mon, 13 Sep 2021 12:40:14 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
 Received: from smtp2.osuosl.org ([127.0.0.1])
  by localhost (smtp2.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id AtE1-yMw2Oop for <iommu@lists.linux-foundation.org>;
- Mon, 13 Sep 2021 08:22:01 +0000 (UTC)
-X-Greylist: whitelisted by SQLgrey-1.8.0
-Received: from mail-yb1-xb31.google.com (mail-yb1-xb31.google.com
- [IPv6:2607:f8b0:4864:20::b31])
- by smtp2.osuosl.org (Postfix) with ESMTPS id B98B3400C8
- for <iommu@lists.linux-foundation.org>; Mon, 13 Sep 2021 08:22:01 +0000 (UTC)
-Received: by mail-yb1-xb31.google.com with SMTP id y13so18843642ybi.6
- for <iommu@lists.linux-foundation.org>; Mon, 13 Sep 2021 01:22:01 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=chromium.org; s=google;
- h=mime-version:references:in-reply-to:from:date:message-id:subject:to
- :cc; bh=hA5SjJKuJahGLX31luP7D8mzJxDC+SO2vk0Mq3zJOdo=;
- b=AoG98t+mNqkfbrBywtW3MJma5qtkX/dgD6g7VOb+c5S1n0FjUnL6yOa9luwzbDC0MB
- NnE4WQDAKNb7Je59De5Z5Z9iZwATFiDUbv4xqPOuTLfNgLnIZEiJWmT2uFI8AESauw1f
- PMZNUSu1450/2jJTr/yR85ZtWx7ev71h29DEQ=
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
- d=1e100.net; s=20210112;
- h=x-gm-message-state:mime-version:references:in-reply-to:from:date
- :message-id:subject:to:cc;
- bh=hA5SjJKuJahGLX31luP7D8mzJxDC+SO2vk0Mq3zJOdo=;
- b=ezEyMvTtWTGuPXcCu44bWgKoyAYSUPbHxbGdHg2Wt4ylqiKkK6x7/nK7d9isBw84b4
- xYNXtXVuKj7+gdGCCo+2FyI7N8IyslpVUSpWNP9bwJRFAdkXXFI5DjpzkuDa0e/WM5BM
- xw3OsaCkBEAS9pyibKT0jyucd048CZ9DT6McxMp/qIJ2shLqlYFUqF7yVp/paQhjbTS7
- A8+LAw9XvTWzHTdwEseYAbi1o9nsUPUpQTJpZZuaYBBqm/1EjcgeyJ6U7+Hv/x+URZxP
- uINuTD90TeMxDLbL3od3DBkUgSKC+fK14fik/aTFS4mHbbcgM90zbrbR4TLwSzTrFozI
- GWBQ==
-X-Gm-Message-State: AOAM5321/gOxNQ/2LDhqBLHTBxcJpHZ9gObT4SvPFZhjneM51j8EayiS
- ocwp380ecQeNtsO2LvNoofb4zEWXYf7bliw2nKDvgg==
-X-Google-Smtp-Source: ABdhPJyoIJv0HVf8WwdAxbVU4oGBg51HU76Y7j3Y3KgW0hMXTKS5AxkYn5ltcrEHX348TDlPO+2cPincRl0pRPxOhOo=
-X-Received: by 2002:a25:a522:: with SMTP id h31mr14948997ybi.355.1631521320765; 
- Mon, 13 Sep 2021 01:22:00 -0700 (PDT)
+ with ESMTP id z_FwJbq-SJ-r for <iommu@lists.linux-foundation.org>;
+ Mon, 13 Sep 2021 12:40:13 +0000 (UTC)
+X-Greylist: domain auto-whitelisted by SQLgrey-1.8.0
+Received: from foss.arm.com (foss.arm.com [217.140.110.172])
+ by smtp2.osuosl.org (Postfix) with ESMTP id 827A6400C3
+ for <iommu@lists.linux-foundation.org>; Mon, 13 Sep 2021 12:40:13 +0000 (UTC)
+Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
+ by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id DF066101E;
+ Mon, 13 Sep 2021 05:40:12 -0700 (PDT)
+Received: from 010265703453.arm.com (unknown [10.57.15.112])
+ by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPA id 141793F59C;
+ Mon, 13 Sep 2021 05:40:11 -0700 (PDT)
+From: Robin Murphy <robin.murphy@arm.com>
+To: joro@8bytes.org,
+	will@kernel.org
+Subject: [PATCH 1/2] iommu/dart: Clean up IOVA cookie crumbs
+Date: Mon, 13 Sep 2021 13:40:05 +0100
+Message-Id: <edb72b4965baa8999dd70b8294785d6deebd4183.1631531973.git.robin.murphy@arm.com>
+X-Mailer: git-send-email 2.25.1
+In-Reply-To: <cover.1631531973.git.robin.murphy@arm.com>
+References: <cover.1631531973.git.robin.murphy@arm.com>
 MIME-Version: 1.0
-References: <20210830045925.4163412-1-stevensd@google.com>
-In-Reply-To: <20210830045925.4163412-1-stevensd@google.com>
-From: David Stevens <stevensd@chromium.org>
-Date: Mon, 13 Sep 2021 17:21:49 +0900
-Message-ID: <CAD=HUj5xXci8YX90H8zqY-aY5u_EJ8c8ZMoiMT2QXHz52oMy=w@mail.gmail.com>
-Subject: Re: [PATCH v7 0/7] Fixes for dma-iommu swiotlb bounce buffers
-To: Robin Murphy <robin.murphy@arm.com>, Christoph Hellwig <hch@lst.de>
-Cc: David Stevens <stevensd@google.com>,
- open list <linux-kernel@vger.kernel.org>, Tom Murphy <murphyt7@tcd.ie>,
- iommu@lists.linux-foundation.org, Rajat Jain <rajatja@google.com>,
- Will Deacon <will@kernel.org>
+Cc: iommu@lists.linux-foundation.org, linux-arm-kernel@lists.infradead.org
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -99,85 +79,39 @@ Content-Transfer-Encoding: 7bit
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-Is there further feedback on these patches? Only patch 7 is still
-pending review.
+The addition of the DART driver crossed over with moving IOVA cookie
+management into core code; clean up the now-unnecessary remnants here.
 
--David
+Acked-by: Sven Peter <sven@svenpeter.dev>
+Tested-by: Sven Peter <sven@svenpeter.dev>
+Signed-off-by: Robin Murphy <robin.murphy@arm.com>
+---
+ drivers/iommu/apple-dart.c | 2 --
+ 1 file changed, 2 deletions(-)
 
-On Mon, Aug 30, 2021 at 2:00 PM David Stevens <stevensd@chromium.org> wrote:
->
-> This patch set includes various fixes for dma-iommu's swiotlb bounce
-> buffers for untrusted devices.
->
-> The min_align_mask issue was found when running fio on an untrusted nvme
-> device with bs=512. The other issues were found via code inspection, so
-> I don't have any specific use cases where things were not working, nor
-> any concrete performance numbers.
->
-> There are two issues related to min_align_mask that this patch series
-> does not attempt to fix. First, it does not address the case where
-> min_align_mask is larger than the IOVA granule. Doing so requires
-> changes to IOVA allocation, and is not specific to when swiotlb bounce
-> buffers are used. This is not a problem in practice today, since the
-> only driver which uses min_align_mask is nvme, which sets it to 4096.
->
-> The second issue this series does not address is the fact that extra
-> swiotlb slots adjacent to a bounce buffer can be exposed to untrusted
-> devices whose drivers use min_align_mask. Fixing this requires being
-> able to allocate padding slots at the beginning of a swiotlb allocation.
-> This is a rather significant change that I am not comfortable making.
-> Without being able to handle this, there is also little point to
-> clearing the padding at the start of such a buffer, since we can only
-> clear based on (IO_TLB_SIZE - 1) instead of iova_mask.
->
-> v6 -> v7:
->  - Remove unsafe attempt to clear padding at start of swiotlb buffer
->  - Rewrite commit message for min_align_mask commit to better explain
->    the problem it's fixing
->  - Rebase on iommu/core
->  - Acknowledge unsolved issues in cover letter
->
-> v5 -> v6:
->  - Remove unnecessary line break
->  - Remove redundant config check
->
-> v4 -> v5:
->  - Fix xen build error
->  - Move _swiotlb refactor into its own patch
->
-> v3 -> v4:
->  - Fold _swiotlb functions into _page functions
->  - Add patch to align swiotlb buffer to iovad granule
->  - Combine if checks in iommu_dma_sync_sg_* functions
->
-> v2 -> v3:
->  - Add new patch to address min_align_mask bug
->  - Set SKIP_CPU_SYNC flag after syncing in map/unmap
->  - Properly call arch_sync_dma_for_cpu in iommu_dma_sync_sg_for_cpu
->
-> v1 -> v2:
->  - Split fixes into dedicated patches
->  - Less invasive changes to fix arch_sync when mapping
->  - Leave dev_is_untrusted check for strict iommu
->
-> David Stevens (7):
->   dma-iommu: fix sync_sg with swiotlb
->   dma-iommu: fix arch_sync_dma for map
->   dma-iommu: skip extra sync during unmap w/swiotlb
->   dma-iommu: fold _swiotlb helpers into callers
->   dma-iommu: Check CONFIG_SWIOTLB more broadly
->   swiotlb: support aligned swiotlb buffers
->   dma-iommu: account for min_align_mask w/swiotlb
->
->  drivers/iommu/dma-iommu.c | 188 +++++++++++++++++---------------------
->  drivers/xen/swiotlb-xen.c |   2 +-
->  include/linux/swiotlb.h   |   3 +-
->  kernel/dma/swiotlb.c      |  11 ++-
->  4 files changed, 93 insertions(+), 111 deletions(-)
->
-> --
-> 2.33.0.259.gc128427fd7-goog
->
+diff --git a/drivers/iommu/apple-dart.c b/drivers/iommu/apple-dart.c
+index 559db9259e65..cdc2e83b2186 100644
+--- a/drivers/iommu/apple-dart.c
++++ b/drivers/iommu/apple-dart.c
+@@ -15,7 +15,6 @@
+ #include <linux/bitfield.h>
+ #include <linux/clk.h>
+ #include <linux/dev_printk.h>
+-#include <linux/dma-iommu.h>
+ #include <linux/dma-mapping.h>
+ #include <linux/err.h>
+ #include <linux/interrupt.h>
+@@ -596,7 +595,6 @@ static struct iommu_domain *apple_dart_domain_alloc(unsigned int type)
+ 	if (!dart_domain)
+ 		return NULL;
+ 
+-	iommu_get_dma_cookie(&dart_domain->domain);
+ 	mutex_init(&dart_domain->init_lock);
+ 
+ 	/* no need to allocate pgtbl_ops or do any other finalization steps */
+-- 
+2.25.1
+
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
