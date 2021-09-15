@@ -2,88 +2,89 @@ Return-Path: <SRS0=KP5g=OF=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-13.5 required=3.0 tests=BAYES_00,DKIM_INVALID,
-	DKIM_SIGNED,HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_CR_TRAILER,INCLUDES_PATCH,
-	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED autolearn=unavailable
-	autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-5.3 required=3.0 tests=BAYES_00,DKIM_INVALID,
+	DKIM_SIGNED,MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,
+	USER_AGENT_SANE_1 autolearn=no autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id DF50DC4332F
-	for <iommu@archiver.kernel.org>; Wed, 15 Sep 2021 00:29:11 +0000 (UTC)
-Received: from smtp1.osuosl.org (smtp1.osuosl.org [140.211.166.138])
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E84F0C433EF
+	for <iommu@archiver.kernel.org>; Wed, 15 Sep 2021 01:51:07 +0000 (UTC)
+Received: from smtp3.osuosl.org (smtp3.osuosl.org [140.211.166.136])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 8D86F61242
-	for <iommu@archiver.kernel.org>; Wed, 15 Sep 2021 00:29:11 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.4.1 mail.kernel.org 8D86F61242
-Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=ellerman.id.au
+	by mail.kernel.org (Postfix) with ESMTPS id 97D9461214
+	for <iommu@archiver.kernel.org>; Wed, 15 Sep 2021 01:51:07 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.4.1 mail.kernel.org 97D9461214
+Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=kernel.org
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by smtp1.osuosl.org (Postfix) with ESMTP id 5B1E880AD3;
-	Wed, 15 Sep 2021 00:29:11 +0000 (UTC)
+	by smtp3.osuosl.org (Postfix) with ESMTP id 631D16077D;
+	Wed, 15 Sep 2021 01:51:07 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from smtp1.osuosl.org ([127.0.0.1])
-	by localhost (smtp1.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id Rr8AKdzL9tVd; Wed, 15 Sep 2021 00:29:10 +0000 (UTC)
+Received: from smtp3.osuosl.org ([127.0.0.1])
+	by localhost (smtp3.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+	with ESMTP id UaDsxeP8TmYN; Wed, 15 Sep 2021 01:51:06 +0000 (UTC)
 Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [IPv6:2605:bc80:3010:104::8cd3:938])
-	by smtp1.osuosl.org (Postfix) with ESMTPS id 2FCA180ACF;
-	Wed, 15 Sep 2021 00:29:10 +0000 (UTC)
+	by smtp3.osuosl.org (Postfix) with ESMTPS id 520EF60676;
+	Wed, 15 Sep 2021 01:51:06 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 059FAC000F;
-	Wed, 15 Sep 2021 00:29:10 +0000 (UTC)
-Received: from smtp2.osuosl.org (smtp2.osuosl.org [IPv6:2605:bc80:3010::133])
- by lists.linuxfoundation.org (Postfix) with ESMTP id BB18FC000D
- for <iommu@lists.linux-foundation.org>; Wed, 15 Sep 2021 00:29:08 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 1B1CDC0011;
+	Wed, 15 Sep 2021 01:51:06 +0000 (UTC)
+Received: from smtp3.osuosl.org (smtp3.osuosl.org [IPv6:2605:bc80:3010::136])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 12E20C000D
+ for <iommu@lists.linux-foundation.org>; Wed, 15 Sep 2021 01:51:04 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by smtp2.osuosl.org (Postfix) with ESMTP id 9C598400B9
- for <iommu@lists.linux-foundation.org>; Wed, 15 Sep 2021 00:29:08 +0000 (UTC)
+ by smtp3.osuosl.org (Postfix) with ESMTP id F078660778
+ for <iommu@lists.linux-foundation.org>; Wed, 15 Sep 2021 01:51:03 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Authentication-Results: smtp2.osuosl.org (amavisd-new);
- dkim=pass (2048-bit key) header.d=ellerman.id.au
-Received: from smtp2.osuosl.org ([127.0.0.1])
- by localhost (smtp2.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id bN4cM2rxSK8K for <iommu@lists.linux-foundation.org>;
- Wed, 15 Sep 2021 00:29:06 +0000 (UTC)
-X-Greylist: from auto-whitelisted by SQLgrey-1.8.0
-Received: from ozlabs.org (ozlabs.org [IPv6:2401:3900:2:1::2])
- by smtp2.osuosl.org (Postfix) with ESMTPS id 4BE63404DD
- for <iommu@lists.linux-foundation.org>; Wed, 15 Sep 2021 00:29:05 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ellerman.id.au;
- s=201909; t=1631665743;
- bh=HgCpSqOauKiPM+dBPwX1rVKc5DllbEYyPqTeHP+eUfA=;
- h=From:To:Cc:Subject:In-Reply-To:References:Date:From;
- b=nobrDH5nGZu7v+B+3sYvcmgWwQ6HXMJcFwBQJdDWX9HZxhJmSYRfeLJ5bqM1L8nAT
- Zv7FEyFybAcOR9q2SSYXqyD/igi9xudle6V5yasFwsCuG7S0oozCaRNikxkvD596/w
- 6l43PVixwL61h3NyNDnNd5sNzqDNGCDn9FEcD1fB6an9gsKEzr5R3Isof7M+Dp+CFm
- Flkym9C4vSI8DMWcOL/ydbmO/xhA1U449O7gqRfyeoJq9Tl/sPJDKQcCHDPv+s1Rp6
- 4loBfWLosZBa6f9xlvgT7ZD+EwPUzeNUvScHtwtaoHQpWTi57p46qNn2qlhGqy8rED
- FWCERXkM6X8Sg==
-Received: from authenticated.ozlabs.org (localhost [127.0.0.1])
- (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
- key-exchange ECDHE (P-256) server-signature RSA-PSS (4096 bits) server-digest
- SHA256) (No client certificate requested)
- by mail.ozlabs.org (Postfix) with ESMTPSA id 4H8LgJ0MSWz9sVq;
- Wed, 15 Sep 2021 10:28:59 +1000 (AEST)
-From: Michael Ellerman <mpe@ellerman.id.au>
-To: Borislav Petkov <bp@alien8.de>
-Subject: Re: [PATCH v3 4/8] powerpc/pseries/svm: Add a powerpc version of
- cc_platform_has()
-In-Reply-To: <YUCOTIPPsJJpLO/d@zn.tnic>
-References: <cover.1631141919.git.thomas.lendacky@amd.com>
- <9d4fc3f8ea7b325aaa1879beab1286876f45d450.1631141919.git.thomas.lendacky@amd.com>
- <YUCOTIPPsJJpLO/d@zn.tnic>
-Date: Wed, 15 Sep 2021 10:28:59 +1000
-Message-ID: <87lf3yk7g4.fsf@mpe.ellerman.id.au>
+Received: from smtp3.osuosl.org ([127.0.0.1])
+ by localhost (smtp3.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+ with ESMTP id DbrBHQtYhJFB for <iommu@lists.linux-foundation.org>;
+ Wed, 15 Sep 2021 01:51:03 +0000 (UTC)
+X-Greylist: domain auto-whitelisted by SQLgrey-1.8.0
+Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
+ by smtp3.osuosl.org (Postfix) with ESMTPS id 82E4160676
+ for <iommu@lists.linux-foundation.org>; Wed, 15 Sep 2021 01:51:03 +0000 (UTC)
+Received: by mail.kernel.org (Postfix) with ESMTPSA id CDF8061211;
+ Wed, 15 Sep 2021 01:51:01 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+ s=k20201202; t=1631670662;
+ bh=z0W70Z4JOetSa7g8CfvjNwgRWC4qCwo9bmhv6sh9Bxs=;
+ h=Date:From:To:cc:Subject:In-Reply-To:References:From;
+ b=DhJ6GOb1z9RF8MoKZiSnxeXdJKNkyxJ7YyiEn0qQubMzT9FZtSjTJUt/KUr+QwVKI
+ +frjDgFVeOdxWz9IZc7wervGNYWJ63gSfCERzcvLkSnA46r3ypahZL2U/4IHNXcntT
+ /DqRf5MOYuMRlQ77Uv0SNMsaDJzboDdlLxIhocqe0R7UgiEK7ZBy99L8v0w5K3bX72
+ sJ48QhBWhdiCuNKFPKWm/Qjfkv8EiwrcYFd4jtxEycZyiFEiLrwMg1PFndT/7dOiPM
+ zl0gJLYf7yi4Oohaksg8j8XTXXQSSgFUXRaPI/wIqRfum+bBu2e2ldXr9TpWz6n+3M
+ stAUSLvG5uH7w==
+Date: Tue, 14 Sep 2021 18:51:01 -0700 (PDT)
+From: Stefano Stabellini <sstabellini@kernel.org>
+X-X-Sender: sstabellini@sstabellini-ThinkPad-T480s
+To: rm.skakun@gmail.com
+Subject: Re: [PATCH] swiotlb: set IO TLB segment size via cmdline
+In-Reply-To: <20210914153046.GB815@lst.de>
+Message-ID: <alpine.DEB.2.21.2109141838290.21985@sstabellini-ThinkPad-T480s>
+References: <20210914151016.3174924-1-Roman_Skakun@epam.com>
+ <7c04db79-7de1-93ff-0908-9bad60a287b9@suse.com> <20210914153046.GB815@lst.de>
+User-Agent: Alpine 2.21 (DEB 202 2017-01-01)
 MIME-Version: 1.0
-Cc: linux-efi@vger.kernel.org, Brijesh Singh <brijesh.singh@amd.com>,
- kvm@vger.kernel.org, Benjamin Herrenschmidt <benh@kernel.crashing.org>,
- dri-devel@lists.freedesktop.org, platform-driver-x86@vger.kernel.org,
- Paul Mackerras <paulus@samba.org>, linux-s390@vger.kernel.org,
- Andi Kleen <ak@linux.intel.com>, x86@kernel.org, amd-gfx@lists.freedesktop.org,
- Christoph Hellwig <hch@infradead.org>, linux-graphics-maintainer@vmware.com,
- Tom Lendacky <thomas.lendacky@amd.com>, Tianyu Lan <Tianyu.Lan@microsoft.com>,
- kexec@lists.infradead.org, linux-kernel@vger.kernel.org,
- iommu@lists.linux-foundation.org, linux-fsdevel@vger.kernel.org,
- linuxppc-dev@lists.ozlabs.org
+Cc: Roman Skakun <rm.skakun@gmail.com>, linux-doc@vger.kernel.org,
+ Peter Zijlstra <peterz@infradead.org>, Viresh Kumar <viresh.kumar@linaro.org>,
+ linux-kernel@vger.kernel.org, Paul Mackerras <paulus@samba.org>,
+ Jan Beulich <jbeulich@suse.com>, Will Deacon <will@kernel.org>,
+ Boris Ostrovsky <boris.ostrovsky@oracle.com>,
+ Stefano Stabellini <sstabellini@kernel.org>, Jonathan Corbet <corbet@lwn.net>,
+ Michael Ellerman <mpe@ellerman.id.au>, hch@lst.de,
+ Benjamin Herrenschmidt <benh@kernel.crashing.org>,
+ xen-devel@lists.xenproject.org, "Paul E. McKenney" <paulmck@kernel.org>,
+ Konrad Rzeszutek Wilk <konrad.wilk@oracle.com>,
+ Muchun Song <songmuchun@bytedance.com>, Thomas Gleixner <tglx@linutronix.de>,
+ Juergen Gross <jgross@suse.com>,
+ Thomas Bogendoerfer <tsbogend@alpha.franken.de>,
+ Andrii Anisov <andrii_anisov@epam.com>, linuxppc-dev@lists.ozlabs.org,
+ Randy Dunlap <rdunlap@infradead.org>, linux-mips@vger.kernel.org,
+ iommu@lists.linux-foundation.org, Roman Skakun <roman_skakun@epam.com>,
+ Andrew Morton <akpm@linux-foundation.org>, Robin Murphy <robin.murphy@arm.com>,
+ Mike Rapoport <rppt@kernel.org>, "Maciej W. Rozycki" <macro@orcam.me.uk>
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -101,62 +102,20 @@ Content-Transfer-Encoding: 7bit
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-Borislav Petkov <bp@alien8.de> writes:
-> On Wed, Sep 08, 2021 at 05:58:35PM -0500, Tom Lendacky wrote:
->> Introduce a powerpc version of the cc_platform_has() function. This will
->> be used to replace the powerpc mem_encrypt_active() implementation, so
->> the implementation will initially only support the CC_ATTR_MEM_ENCRYPT
->> attribute.
->> 
->> Cc: Michael Ellerman <mpe@ellerman.id.au>
->> Cc: Benjamin Herrenschmidt <benh@kernel.crashing.org>
->> Cc: Paul Mackerras <paulus@samba.org>
->> Signed-off-by: Tom Lendacky <thomas.lendacky@amd.com>
->> ---
->>  arch/powerpc/platforms/pseries/Kconfig       |  1 +
->>  arch/powerpc/platforms/pseries/Makefile      |  2 ++
->>  arch/powerpc/platforms/pseries/cc_platform.c | 26 ++++++++++++++++++++
->>  3 files changed, 29 insertions(+)
->>  create mode 100644 arch/powerpc/platforms/pseries/cc_platform.c
->
-> Michael,
->
-> can I get an ACK for the ppc bits to carry them through the tip tree
-> pls?
+On Tue, 14 Sep 2021, Christoph Hellwig wrote:
+> On Tue, Sep 14, 2021 at 05:29:07PM +0200, Jan Beulich wrote:
+> > I'm not convinced the swiotlb use describe there falls under "intended
+> > use" - mapping a 1280x720 framebuffer in a single chunk? (As an aside,
+> > the bottom of this page is also confusing, as following "Then we can
+> > confirm the modified swiotlb size in the boot log:" there is a log
+> > fragment showing the same original size of 64Mb.
+> 
+> It doesn't.  We also do not add hacks to the kernel for whacky out
+> of tree modules.
 
-Yeah.
-
-I don't love it, a new C file and an out-of-line call to then call back
-to a static inline that for most configuration will return false ... but
-whatever :)
-
-Acked-by: Michael Ellerman <mpe@ellerman.id.au> (powerpc)
-
-
-> Btw, on a related note, cross-compiling this throws the following error here:
->
-> $ make CROSS_COMPILE=/home/share/src/crosstool/gcc-9.4.0-nolibc/powerpc64-linux/bin/powerpc64-linux- V=1 ARCH=powerpc
->
-> ...
->
-> /home/share/src/crosstool/gcc-9.4.0-nolibc/powerpc64-linux/bin/powerpc64-linux-gcc -Wp,-MD,arch/powerpc/boot/.crt0.o.d -D__ASSEMBLY__ -Wall -Wundef -Wstrict-prototypes -Wno-trigraphs -fno-strict-aliasing -O2 -msoft-float -mno-altivec -mno-vsx -pipe -fomit-frame-pointer -fno-builtin -fPIC -nostdinc -include ./include/linux/compiler_attributes.h -I./arch/powerpc/include -I./arch/powerpc/include/generated  -I./include -I./arch/powerpc/include/uapi -I./arch/powerpc/include/generated/uapi -I./include/uapi -I./include/generated/uapi -include ./include/linux/compiler-version.h -include ./include/linux/kconfig.h -m32 -isystem /home/share/src/crosstool/gcc-9.4.0-nolibc/powerpc64-linux/bin/../lib/gcc/powerpc64-linux/9.4.0/include -mbig-endian -nostdinc -c -o arch/powerpc/boot/crt0.o arch/powerpc/boot/crt0.S
-> In file included from <command-line>:
-> ././include/linux/compiler_attributes.h:62:5: warning: "__has_attribute" is not defined, evaluates to 0 [-Wundef]
->    62 | #if __has_attribute(__assume_aligned__)
->       |     ^~~~~~~~~~~~~~~
-> ././include/linux/compiler_attributes.h:62:20: error: missing binary operator before token "("
->    62 | #if __has_attribute(__assume_aligned__)
->       |                    ^
-> ././include/linux/compiler_attributes.h:88:5: warning: "__has_attribute" is not defined, evaluates to 0 [-Wundef]
->    88 | #if __has_attribute(__copy__)
->       |     ^~~~~~~~~~~~~~~
-> ...
->
-> Known issue?
-
-Yeah, fixed in mainline today, thanks for trying to cross compile :)
-
-cheers
+Also, Option 1 listed in the webpage seems to be a lot better. Any
+reason you can't do that? Because that option both solves the problem
+and increases performance.
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
