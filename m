@@ -2,91 +2,145 @@ Return-Path: <SRS0=vqUx=OG=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-8.6 required=3.0 tests=BAYES_00,DKIM_INVALID,
-	DKIM_SIGNED,HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,
-	SPF_HELO_NONE,SPF_PASS autolearn=unavailable autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-3.5 required=3.0 tests=BAYES_00,DKIM_ADSP_CUSTOM_MED,
+	DKIM_INVALID,DKIM_SIGNED,FREEMAIL_FORGED_FROMDOMAIN,FREEMAIL_FROM,
+	HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,NICE_REPLY_A,SPF_HELO_NONE,
+	SPF_PASS,USER_AGENT_SANE_1 autolearn=no autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7E72EC433F5
-	for <iommu@archiver.kernel.org>; Thu, 16 Sep 2021 11:51:47 +0000 (UTC)
-Received: from smtp3.osuosl.org (smtp3.osuosl.org [140.211.166.136])
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8B813C433F5
+	for <iommu@archiver.kernel.org>; Thu, 16 Sep 2021 13:56:31 +0000 (UTC)
+Received: from smtp2.osuosl.org (smtp2.osuosl.org [140.211.166.133])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 2E48460F8F
-	for <iommu@archiver.kernel.org>; Thu, 16 Sep 2021 11:51:47 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.4.1 mail.kernel.org 2E48460F8F
-Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=ellerman.id.au
+	by mail.kernel.org (Postfix) with ESMTPS id 3BF1361241
+	for <iommu@archiver.kernel.org>; Thu, 16 Sep 2021 13:56:31 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.4.1 mail.kernel.org 3BF1361241
+Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=gmail.com
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by smtp3.osuosl.org (Postfix) with ESMTP id E24B560637;
-	Thu, 16 Sep 2021 11:51:46 +0000 (UTC)
+	by smtp2.osuosl.org (Postfix) with ESMTP id 0369C403C1;
+	Thu, 16 Sep 2021 13:56:31 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from smtp3.osuosl.org ([127.0.0.1])
-	by localhost (smtp3.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id 5w-VvjEyNvuO; Thu, 16 Sep 2021 11:51:46 +0000 (UTC)
-Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [IPv6:2605:bc80:3010:104::8cd3:938])
-	by smtp3.osuosl.org (Postfix) with ESMTPS id A89F1613B8;
-	Thu, 16 Sep 2021 11:51:45 +0000 (UTC)
-Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 783C8C001E;
-	Thu, 16 Sep 2021 11:51:45 +0000 (UTC)
-Received: from smtp2.osuosl.org (smtp2.osuosl.org [140.211.166.133])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 8ED20C000D
- for <iommu@lists.linux-foundation.org>; Thu, 16 Sep 2021 11:51:43 +0000 (UTC)
-Received: from localhost (localhost [127.0.0.1])
- by smtp2.osuosl.org (Postfix) with ESMTP id 88239401FA
- for <iommu@lists.linux-foundation.org>; Thu, 16 Sep 2021 11:51:42 +0000 (UTC)
-X-Virus-Scanned: amavisd-new at osuosl.org
-Authentication-Results: smtp2.osuosl.org (amavisd-new);
- dkim=pass (2048-bit key) header.d=ellerman.id.au
 Received: from smtp2.osuosl.org ([127.0.0.1])
- by localhost (smtp2.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id qJRuR2V4dsMN for <iommu@lists.linux-foundation.org>;
- Thu, 16 Sep 2021 11:51:41 +0000 (UTC)
-X-Greylist: from auto-whitelisted by SQLgrey-1.8.0
-Received: from ozlabs.org (bilbo.ozlabs.org [IPv6:2401:3900:2:1::2])
- by smtp2.osuosl.org (Postfix) with ESMTPS id 228F1403D4
- for <iommu@lists.linux-foundation.org>; Thu, 16 Sep 2021 11:51:40 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ellerman.id.au;
- s=201909; t=1631793098;
- bh=hO8MM7rkDgtjlX2BKCZzkCfApidbr4y2lSSjjuo6Spc=;
- h=From:To:Cc:Subject:In-Reply-To:References:Date:From;
- b=T879eZw4oyZmXCoQBzMn6TSL7TK2u4yA9WcOVdZAZ0H1ES0BfZh+c8qlaAlgIPIpC
- EZnQfXlJ4z5xni7cnClkogAdyVLHlN0VyzknQ+r9zr6EpGugkqsddQqZZrBGZDfrR0
- 9M+jMUqC/HazPpVpqowHJ+tlxvnuziqzSjk0KDQRmXiXxxaF7vMYJKwoebP5X7vITE
- bMJsOzJQ7uNDCIvfTBD7ylQk7c+vA2OSB/um9B8TH/DnrN+ZCARHPzrHaVfJh6WWqX
- eRpDp98PeMg6OvGq/UiCuletGr7nCgKoxmLkqF4TIS7Ah9AEH2oeKN2Got5wDxjEQU
- 5Tn4zy5KEZ4Kw==
-Received: from authenticated.ozlabs.org (localhost [127.0.0.1])
- (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
- key-exchange ECDHE (P-256) server-signature RSA-PSS (4096 bits) server-digest
- SHA256) (No client certificate requested)
- by mail.ozlabs.org (Postfix) with ESMTPSA id 4H9FmR1HjKz9sXS;
- Thu, 16 Sep 2021 21:51:33 +1000 (AEST)
-From: Michael Ellerman <mpe@ellerman.id.au>
-To: Christoph Hellwig <hch@infradead.org>, Christophe Leroy
- <christophe.leroy@csgroup.eu>
-Subject: Re: [PATCH v3 4/8] powerpc/pseries/svm: Add a powerpc version of
- cc_platform_has()
-In-Reply-To: <YULztMRLJ55YLVU9@infradead.org>
-References: <cover.1631141919.git.thomas.lendacky@amd.com>
- <9d4fc3f8ea7b325aaa1879beab1286876f45d450.1631141919.git.thomas.lendacky@amd.com>
- <YUCOTIPPsJJpLO/d@zn.tnic> <87lf3yk7g4.fsf@mpe.ellerman.id.au>
- <YUHGDbtiGrDz5+NS@zn.tnic>
- <f8388f18-5e90-5d0f-d681-0b17f8307dd4@csgroup.eu>
- <YULztMRLJ55YLVU9@infradead.org>
-Date: Thu, 16 Sep 2021 21:51:30 +1000
-Message-ID: <87czp8kabh.fsf@mpe.ellerman.id.au>
+	by localhost (smtp2.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+	with ESMTP id lZ4seoiFGy6m; Thu, 16 Sep 2021 13:56:29 +0000 (UTC)
+Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
+	by smtp2.osuosl.org (Postfix) with ESMTPS id 0E4A140240;
+	Thu, 16 Sep 2021 13:56:28 +0000 (UTC)
+Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
+	by lists.linuxfoundation.org (Postfix) with ESMTP id E40BFC0011;
+	Thu, 16 Sep 2021 13:56:28 +0000 (UTC)
+Received: from smtp3.osuosl.org (smtp3.osuosl.org [IPv6:2605:bc80:3010::136])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 81367C000D
+ for <iommu@lists.linux-foundation.org>; Thu, 16 Sep 2021 13:56:27 +0000 (UTC)
+Received: from localhost (localhost [127.0.0.1])
+ by smtp3.osuosl.org (Postfix) with ESMTP id 63376607A9
+ for <iommu@lists.linux-foundation.org>; Thu, 16 Sep 2021 13:56:27 +0000 (UTC)
+X-Virus-Scanned: amavisd-new at osuosl.org
+Authentication-Results: smtp3.osuosl.org (amavisd-new);
+ dkim=pass (2048-bit key) header.d=gmail.com
+Received: from smtp3.osuosl.org ([127.0.0.1])
+ by localhost (smtp3.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+ with ESMTP id XJs2Y_ELAHW6 for <iommu@lists.linux-foundation.org>;
+ Thu, 16 Sep 2021 13:56:26 +0000 (UTC)
+X-Greylist: whitelisted by SQLgrey-1.8.0
+Received: from mail-pg1-x536.google.com (mail-pg1-x536.google.com
+ [IPv6:2607:f8b0:4864:20::536])
+ by smtp3.osuosl.org (Postfix) with ESMTPS id 63A0360737
+ for <iommu@lists.linux-foundation.org>; Thu, 16 Sep 2021 13:56:26 +0000 (UTC)
+Received: by mail-pg1-x536.google.com with SMTP id g184so6225079pgc.6
+ for <iommu@lists.linux-foundation.org>; Thu, 16 Sep 2021 06:56:26 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=gmail.com; s=20210112;
+ h=subject:to:cc:references:from:message-id:date:user-agent
+ :mime-version:in-reply-to:content-language:content-transfer-encoding;
+ bh=VQdB0cmtRyC2OUQYF1nmKrbKRoOhkmjS2WdWxiwvfV0=;
+ b=CIfTuZFoNILRqkZ8DcW/GNbMyGgDnxBr4dVf4uWbZjU8pjj4lrHMRtQVPwcdxklAuQ
+ JZziDYokWmjzVIErChST09t12g0u5Q0uRpqfgz1HLLBW1rjGMPZLz0kZ+aU/1VtdGCBf
+ ScvmIZdC/KAH9/s5zwFCH/t+wJJgREk4jkxOEav0yNRvD2PeR9Mt0gXD43CEjS0rWa6X
+ 1ojan6I2m/RB70FhK0zBN0wx5wwjfaYXFG9iPhqmYChnfbWqL1/mqLAFucMtI4L4kMUT
+ mDpT/XbuXdWRn1Ki+KD46f09IzCVvENPhyPuOqItQNeOtC2mXKgNu7d+59tp7LLGPGIj
+ mQdg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+ d=1e100.net; s=20210112;
+ h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+ :user-agent:mime-version:in-reply-to:content-language
+ :content-transfer-encoding;
+ bh=VQdB0cmtRyC2OUQYF1nmKrbKRoOhkmjS2WdWxiwvfV0=;
+ b=kApzJ58aMC+IekEov/F4I7hHGg1c5mkFuPHP25YJkSlHg4qkurcTpDMapDT79617c7
+ ptDu8k6p2blNsG/Bmw4T7GY5y60zi1GeuER8ZGHyXyQPZq7D5NoiuhcTSHTaHLlopuYb
+ TFzw3ls5lUo0YvqFq7o+HpmziXrt97zS2sLuQfF3AV+2kvbCLuWadDGApf5EIOrTdQ3Z
+ zhmf0o1ClWqQkj7/D7yW9khoLJs5CBGt0CqkoBNlqLYsRI9G6446dXcce+brXap527m+
+ pod67IhwOIQFg5um7OKpFSew1SgOFdBynTYDf/N+GuxalLzPTeirKKfWow0+7wA9q4MR
+ /j7w==
+X-Gm-Message-State: AOAM5309Dq9tIsCtED00OtNpUvuCu2SBCE0L37vS+LQTFWjUK5Qf045s
+ 1WZEJNSDSwHBpUnOsjOlhSg=
+X-Google-Smtp-Source: ABdhPJwil566vQyG+FPIeqOpCAnK+VdYspH+w8JoanT8EwRLxY95XCPpJH9ls0yqVjdetF6RlrGZEg==
+X-Received: by 2002:a65:44c4:: with SMTP id g4mr5187939pgs.254.1631800585774; 
+ Thu, 16 Sep 2021 06:56:25 -0700 (PDT)
+Received: from ?IPv6:2404:f801:0:5:8000::50b? ([2404:f801:9000:18:efec::50b])
+ by smtp.gmail.com with ESMTPSA id
+ w11sm3376724pfj.65.2021.09.16.06.56.12
+ (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+ Thu, 16 Sep 2021 06:56:25 -0700 (PDT)
+Subject: Re: [PATCH V5 12/12] net: netvsc: Add Isolation VM support for netvsc
+ driver
+To: Haiyang Zhang <haiyangz@microsoft.com>,
+ Michael Kelley <mikelley@microsoft.com>, KY Srinivasan <kys@microsoft.com>,
+ Stephen Hemminger <sthemmin@microsoft.com>,
+ "wei.liu@kernel.org" <wei.liu@kernel.org>, Dexuan Cui <decui@microsoft.com>,
+ "tglx@linutronix.de" <tglx@linutronix.de>,
+ "mingo@redhat.com" <mingo@redhat.com>, "bp@alien8.de" <bp@alien8.de>,
+ "x86@kernel.org" <x86@kernel.org>, "hpa@zytor.com" <hpa@zytor.com>,
+ "dave.hansen@linux.intel.com" <dave.hansen@linux.intel.com>,
+ "luto@kernel.org" <luto@kernel.org>,
+ "peterz@infradead.org" <peterz@infradead.org>,
+ "konrad.wilk@oracle.com" <konrad.wilk@oracle.com>,
+ "boris.ostrovsky@oracle.com" <boris.ostrovsky@oracle.com>,
+ "jgross@suse.com" <jgross@suse.com>,
+ "sstabellini@kernel.org" <sstabellini@kernel.org>,
+ "joro@8bytes.org" <joro@8bytes.org>, "will@kernel.org" <will@kernel.org>,
+ "davem@davemloft.net" <davem@davemloft.net>,
+ "kuba@kernel.org" <kuba@kernel.org>, "jejb@linux.ibm.com"
+ <jejb@linux.ibm.com>, "martin.petersen@oracle.com"
+ <martin.petersen@oracle.com>,
+ "gregkh@linuxfoundation.org" <gregkh@linuxfoundation.org>,
+ "arnd@arndb.de" <arnd@arndb.de>, "hch@lst.de" <hch@lst.de>,
+ "m.szyprowski@samsung.com" <m.szyprowski@samsung.com>,
+ "robin.murphy@arm.com" <robin.murphy@arm.com>,
+ "brijesh.singh@amd.com" <brijesh.singh@amd.com>,
+ Tianyu Lan <Tianyu.Lan@microsoft.com>,
+ "thomas.lendacky@amd.com" <thomas.lendacky@amd.com>,
+ "pgonda@google.com" <pgonda@google.com>,
+ "akpm@linux-foundation.org" <akpm@linux-foundation.org>,
+ "kirill.shutemov@linux.intel.com" <kirill.shutemov@linux.intel.com>,
+ "rppt@kernel.org" <rppt@kernel.org>,
+ "sfr@canb.auug.org.au" <sfr@canb.auug.org.au>,
+ "aneesh.kumar@linux.ibm.com" <aneesh.kumar@linux.ibm.com>,
+ "saravanand@fb.com" <saravanand@fb.com>,
+ "krish.sadhukhan@oracle.com" <krish.sadhukhan@oracle.com>,
+ "xen-devel@lists.xenproject.org" <xen-devel@lists.xenproject.org>,
+ "tj@kernel.org" <tj@kernel.org>, "rientjes@google.com" <rientjes@google.com>
+References: <20210914133916.1440931-1-ltykernel@gmail.com>
+ <20210914133916.1440931-13-ltykernel@gmail.com>
+ <MWHPR21MB15939A5D74CA1DF25EE816ADD7DB9@MWHPR21MB1593.namprd21.prod.outlook.com>
+ <MN2PR21MB12959F10240EC1BB2270B345CADB9@MN2PR21MB1295.namprd21.prod.outlook.com>
+From: Tianyu Lan <ltykernel@gmail.com>
+Message-ID: <31da994f-a032-dd40-a90e-bfdaf313d45d@gmail.com>
+Date: Thu, 16 Sep 2021 21:56:11 +0800
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:78.0) Gecko/20100101
+ Thunderbird/78.14.0
 MIME-Version: 1.0
-Cc: linux-efi@vger.kernel.org, Brijesh Singh <brijesh.singh@amd.com>,
- kvm@vger.kernel.org, dri-devel@lists.freedesktop.org,
- platform-driver-x86@vger.kernel.org, Paul Mackerras <paulus@samba.org>,
- linux-s390@vger.kernel.org, Andi Kleen <ak@linux.intel.com>, x86@kernel.org,
- amd-gfx@lists.freedesktop.org, Christoph Hellwig <hch@infradead.org>,
- linux-graphics-maintainer@vmware.com, Tom Lendacky <thomas.lendacky@amd.com>,
- Tianyu Lan <Tianyu.Lan@microsoft.com>, Borislav Petkov <bp@alien8.de>,
- kexec@lists.infradead.org, linux-kernel@vger.kernel.org,
- iommu@lists.linux-foundation.org, linux-fsdevel@vger.kernel.org,
- linuxppc-dev@lists.ozlabs.org
+In-Reply-To: <MN2PR21MB12959F10240EC1BB2270B345CADB9@MN2PR21MB1295.namprd21.prod.outlook.com>
+Content-Language: en-US
+Cc: "linux-arch@vger.kernel.org" <linux-arch@vger.kernel.org>,
+ "parri.andrea@gmail.com" <parri.andrea@gmail.com>,
+ "linux-hyperv@vger.kernel.org" <linux-hyperv@vger.kernel.org>,
+ "linux-scsi@vger.kernel.org" <linux-scsi@vger.kernel.org>,
+ "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+ "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+ "dave.hansen@intel.com" <dave.hansen@intel.com>,
+ "iommu@lists.linux-foundation.org" <iommu@lists.linux-foundation.org>,
+ vkuznets <vkuznets@redhat.com>
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -99,118 +153,32 @@ List-Post: <mailto:iommu@lists.linux-foundation.org>
 List-Help: <mailto:iommu-request@lists.linux-foundation.org?subject=help>
 List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
  <mailto:iommu-request@lists.linux-foundation.org?subject=subscribe>
-Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset="us-ascii"; Format="flowed"
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-Christoph Hellwig <hch@infradead.org> writes:
-> On Wed, Sep 15, 2021 at 07:18:34PM +0200, Christophe Leroy wrote:
->> Could you please provide more explicit explanation why inlining such an
->> helper is considered as bad practice and messy ?
->
-> Because now we get architectures to all subly differ.  Look at the mess
-> for ioremap and the ioremap* variant.
->
-> The only good reason to allow for inlines if if they are used in a hot
-> path.  Which cc_platform_has is not, especially not on powerpc.
+On 9/16/2021 12:46 AM, Haiyang Zhang wrote:
+>>> +				memset(vmap_pages, 0,
+>>> +				       sizeof(*vmap_pages) * vmap_page_index);
+>>> +				vmap_page_index = 0;
+>>> +
+>>> +				for (j = 0; j < i; j++)
+>>> +					__free_pages(pages[j], alloc_unit);
+>>> +
+>>> +				kfree(pages);
+>>> +				alloc_unit = 1;
+>> This is the case where a large enough contiguous physical memory chunk
+>> could not be found.  But rather than dropping all the way down to single
+>> pages, would it make sense to try something smaller, but not 1?  For
+>> example, cut the alloc_unit in half and try again.  But I'm not sure of
+>> all the implications.
+> I had the same question. But probably gradually decrementing uses too much
+> time?
+> 
 
-Yes I agree, it's not a hot path so it doesn't really matter, which is
-why I Acked it.
-
-I think it is possible to do both, share the declaration across arches
-but also give arches flexibility to use an inline if they prefer, see
-patch below.
-
-I'm not suggesting we actually do that for this series now, but I think
-it would solve the problem if we ever needed to in future.
-
-cheers
-
-
-diff --git a/arch/powerpc/platforms/pseries/cc_platform.c b/arch/powerpc/include/asm/cc_platform.h
-similarity index 74%
-rename from arch/powerpc/platforms/pseries/cc_platform.c
-rename to arch/powerpc/include/asm/cc_platform.h
-index e8021af83a19..6285c3c385a6 100644
---- a/arch/powerpc/platforms/pseries/cc_platform.c
-+++ b/arch/powerpc/include/asm/cc_platform.h
-@@ -7,13 +7,10 @@
-  * Author: Tom Lendacky <thomas.lendacky@amd.com>
-  */
- 
--#include <linux/export.h>
- #include <linux/cc_platform.h>
--
--#include <asm/machdep.h>
- #include <asm/svm.h>
- 
--bool cc_platform_has(enum cc_attr attr)
-+static inline bool arch_cc_platform_has(enum cc_attr attr)
- {
- 	switch (attr) {
- 	case CC_ATTR_MEM_ENCRYPT:
-@@ -23,4 +20,3 @@ bool cc_platform_has(enum cc_attr attr)
- 		return false;
- 	}
- }
--EXPORT_SYMBOL_GPL(cc_platform_has);
-diff --git a/arch/x86/include/asm/cc_platform.h b/arch/x86/include/asm/cc_platform.h
-new file mode 100644
-index 000000000000..0a4220697043
---- /dev/null
-+++ b/arch/x86/include/asm/cc_platform.h
-@@ -0,0 +1,7 @@
-+/* SPDX-License-Identifier: GPL-2.0 */
-+#ifndef _ASM_X86_CC_PLATFORM_H_
-+#define _ASM_X86_CC_PLATFORM_H_
-+
-+bool arch_cc_platform_has(enum cc_attr attr);
-+
-+#endif // _ASM_X86_CC_PLATFORM_H_
-diff --git a/arch/x86/kernel/cc_platform.c b/arch/x86/kernel/cc_platform.c
-index 3c9bacd3c3f3..77e8c3465979 100644
---- a/arch/x86/kernel/cc_platform.c
-+++ b/arch/x86/kernel/cc_platform.c
-@@ -11,11 +11,11 @@
- #include <linux/cc_platform.h>
- #include <linux/mem_encrypt.h>
- 
--bool cc_platform_has(enum cc_attr attr)
-+bool arch_cc_platform_has(enum cc_attr attr)
- {
- 	if (sme_me_mask)
- 		return amd_cc_platform_has(attr);
- 
- 	return false;
- }
--EXPORT_SYMBOL_GPL(cc_platform_has);
-+EXPORT_SYMBOL_GPL(arch_cc_platform_has);
-diff --git a/include/linux/cc_platform.h b/include/linux/cc_platform.h
-index 253f3ea66cd8..f3306647c5d9 100644
---- a/include/linux/cc_platform.h
-+++ b/include/linux/cc_platform.h
-@@ -65,6 +65,8 @@ enum cc_attr {
- 
- #ifdef CONFIG_ARCH_HAS_CC_PLATFORM
- 
-+#include <asm/cc_platform.h>
-+
- /**
-  * cc_platform_has() - Checks if the specified cc_attr attribute is active
-  * @attr: Confidential computing attribute to check
-@@ -77,7 +79,10 @@ enum cc_attr {
-  * * TRUE  - Specified Confidential Computing attribute is active
-  * * FALSE - Specified Confidential Computing attribute is not active
-  */
--bool cc_platform_has(enum cc_attr attr);
-+static inline bool cc_platform_has(enum cc_attr attr)
-+{
-+	return arch_cc_platform_has(attr);
-+}
- 
- #else	/* !CONFIG_ARCH_HAS_CC_PLATFORM */
- 
+This version is to propose the solution. We may optimize this to try
+smaller size until to single page if this is right direction.
 
 
 _______________________________________________
