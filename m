@@ -7,68 +7,68 @@ X-Spam-Status: No, score=-16.6 required=3.0 tests=BAYES_00,DKIM_INVALID,
 	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,USER_AGENT_GIT autolearn=ham
 	autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1D447C28CA7
-	for <iommu@archiver.kernel.org>; Thu, 16 Sep 2021 23:41:32 +0000 (UTC)
-Received: from smtp2.osuosl.org (smtp2.osuosl.org [140.211.166.133])
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 23718C4321E
+	for <iommu@archiver.kernel.org>; Thu, 16 Sep 2021 23:41:33 +0000 (UTC)
+Received: from smtp4.osuosl.org (smtp4.osuosl.org [140.211.166.137])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id D87656120F
-	for <iommu@archiver.kernel.org>; Thu, 16 Sep 2021 23:41:31 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.4.1 mail.kernel.org D87656120F
+	by mail.kernel.org (Postfix) with ESMTPS id DA1FB61246
+	for <iommu@archiver.kernel.org>; Thu, 16 Sep 2021 23:41:32 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.4.1 mail.kernel.org DA1FB61246
 Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=deltatee.com
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by smtp2.osuosl.org (Postfix) with ESMTP id A950B40727;
-	Thu, 16 Sep 2021 23:41:31 +0000 (UTC)
+	by smtp4.osuosl.org (Postfix) with ESMTP id B7C6D415DE;
+	Thu, 16 Sep 2021 23:41:32 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from smtp2.osuosl.org ([127.0.0.1])
-	by localhost (smtp2.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id JXBnDNLoa_QU; Thu, 16 Sep 2021 23:41:30 +0000 (UTC)
-Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by smtp2.osuosl.org (Postfix) with ESMTPS id 72E7F40705;
-	Thu, 16 Sep 2021 23:41:30 +0000 (UTC)
-Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 32F46C001E;
-	Thu, 16 Sep 2021 23:41:30 +0000 (UTC)
-Received: from smtp4.osuosl.org (smtp4.osuosl.org [140.211.166.137])
- by lists.linuxfoundation.org (Postfix) with ESMTP id A003FC000D
- for <iommu@lists.linux-foundation.org>; Thu, 16 Sep 2021 23:41:28 +0000 (UTC)
-Received: from localhost (localhost [127.0.0.1])
- by smtp4.osuosl.org (Postfix) with ESMTP id 8FC00415A7
- for <iommu@lists.linux-foundation.org>; Thu, 16 Sep 2021 23:41:28 +0000 (UTC)
-X-Virus-Scanned: amavisd-new at osuosl.org
-Authentication-Results: smtp4.osuosl.org (amavisd-new);
- dkim=pass (2048-bit key) header.d=deltatee.com
 Received: from smtp4.osuosl.org ([127.0.0.1])
- by localhost (smtp4.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id l4KaRvZ-D3ma for <iommu@lists.linux-foundation.org>;
- Thu, 16 Sep 2021 23:41:28 +0000 (UTC)
+	by localhost (smtp4.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+	with ESMTP id 0z2eajqV1FtG; Thu, 16 Sep 2021 23:41:32 +0000 (UTC)
+Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
+	by smtp4.osuosl.org (Postfix) with ESMTPS id A93B5415A7;
+	Thu, 16 Sep 2021 23:41:31 +0000 (UTC)
+Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 92A15C0011;
+	Thu, 16 Sep 2021 23:41:31 +0000 (UTC)
+Received: from smtp1.osuosl.org (smtp1.osuosl.org [140.211.166.138])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 1F808C0011
+ for <iommu@lists.linux-foundation.org>; Thu, 16 Sep 2021 23:41:29 +0000 (UTC)
+Received: from localhost (localhost [127.0.0.1])
+ by smtp1.osuosl.org (Postfix) with ESMTP id 4178C83FB6
+ for <iommu@lists.linux-foundation.org>; Thu, 16 Sep 2021 23:41:28 +0000 (UTC)
+X-Virus-Scanned: amavisd-new at osuosl.org
+Authentication-Results: smtp1.osuosl.org (amavisd-new);
+ dkim=pass (2048-bit key) header.d=deltatee.com
+Received: from smtp1.osuosl.org ([127.0.0.1])
+ by localhost (smtp1.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+ with ESMTP id 9RXc9FSu7Q8m for <iommu@lists.linux-foundation.org>;
+ Thu, 16 Sep 2021 23:41:27 +0000 (UTC)
 X-Greylist: domain auto-whitelisted by SQLgrey-1.8.0
 Received: from ale.deltatee.com (ale.deltatee.com [204.191.154.188])
- by smtp4.osuosl.org (Postfix) with ESMTPS id 050774159E
+ by smtp1.osuosl.org (Postfix) with ESMTPS id B6E2F83F46
  for <iommu@lists.linux-foundation.org>; Thu, 16 Sep 2021 23:41:27 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
  d=deltatee.com; s=20200525; h=Subject:MIME-Version:References:In-Reply-To:
  Message-Id:Date:Cc:To:From:content-disposition;
- bh=DCe73G/87iDXLgvKp651BN9RlPv5YM0qiz8R3mNA2S8=; b=hN6uw/EdGbq0EBEeo9SVGMf1N/
- uuccSiV6x4AlIRsHAycfNcHtP0J9xZaZqKfwq0x7kPrUaCr0xKBFHh5S57JZ2/MENkhiLWLPIDwoj
- ZLSfDZRcjpGhjVH4ZGvhYGJf7++1l3whp1kdgiNwd0nE8fhTCduxy2vDmaeTPpc10YNnprEgUWfC1
- o5XUV6dEkQ1zRk2gYrQYUWr2wzpOVTkGxDChsmAwu9l0CPtW9PfwL3FYuwyfeQvb7/84ST7otdSWh
- tbMyTw1hL3+DUq1pb5+EUubk2QMB+kTHd5dyphoFznGpfOCrACya0xmAJO9cDItVH9Bf3K0z51OBh
- pE0qZEEA==;
+ bh=0VjpBnfEXTqeS7LssS80lKjFqlCuU84Zlsdnl3oeMpI=; b=WZnD0MBgD7W6AB36XxHV2lNlDa
+ SODeMIPMBb4FiAUu1h8K0BRuZr+wkuBH47ULQS3On7unyZpf6n2CJV/MWBstSHLALzgicjsi48T9A
+ drgEvjZvNkjAGHUa7BgBzPBUfkztBKXx0bzWmS9ibJy8cDLqA8rssls1h5zUTJJ1aKh6TaT98AEcw
+ OJ2zxGyUTYNJj2qBLJsOa0KeqoHb/ALpMZ0NFi1QD3HxqIw1ONRoDaLusfWSWnoV+WGQ/8/v76b2R
+ tRk2S4oSQff3DebCOkRjenq9BSHH0bAStcFQUn6CsAtzk2DqEM5oM9ahRrKwzl30TBdHCiKrZODck
+ kL+MhWUg==;
 Received: from cgy1-donard.priv.deltatee.com ([172.16.1.31])
  by ale.deltatee.com with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
  (Exim 4.92) (envelope-from <gunthorp@deltatee.com>)
- id 1mR108-0008I2-IM; Thu, 16 Sep 2021 17:41:23 -0600
+ id 1mR10A-0008I3-AH; Thu, 16 Sep 2021 17:41:23 -0600
 Received: from gunthorp by cgy1-donard.priv.deltatee.com with local (Exim
  4.94.2) (envelope-from <gunthorp@deltatee.com>)
- id 1mR106-000Vry-PT; Thu, 16 Sep 2021 17:41:06 -0600
+ id 1mR106-000Vrm-7e; Thu, 16 Sep 2021 17:41:06 -0600
 From: Logan Gunthorpe <logang@deltatee.com>
 To: linux-kernel@vger.kernel.org, linux-nvme@lists.infradead.org,
  linux-block@vger.kernel.org, linux-pci@vger.kernel.org, linux-mm@kvack.org,
  iommu@lists.linux-foundation.org
-Date: Thu, 16 Sep 2021 17:41:00 -0600
-Message-Id: <20210916234100.122368-21-logang@deltatee.com>
+Date: Thu, 16 Sep 2021 17:40:57 -0600
+Message-Id: <20210916234100.122368-18-logang@deltatee.com>
 X-Mailer: git-send-email 2.30.2
 In-Reply-To: <20210916234100.122368-1-logang@deltatee.com>
 References: <20210916234100.122368-1-logang@deltatee.com>
@@ -84,7 +84,7 @@ X-SA-Exim-Rcpt-To: linux-nvme@lists.infradead.org, linux-kernel@vger.kernel.org,
  jianxin.xiong@intel.com, ira.weiny@intel.com, robin.murphy@arm.com,
  martin.oliveira@eideticom.com, ckulkarnilinux@gmail.com, logang@deltatee.com
 X-SA-Exim-Mail-From: gunthorp@deltatee.com
-Subject: [PATCH v3 20/20] nvme-pci: allow mmaping the CMB in userspace
+Subject: [PATCH v3 17/20] block: set FOLL_PCI_P2PDMA in bio_map_user_iov()
 X-SA-Exim-Version: 4.2.1 (built Wed, 08 May 2019 21:11:16 +0000)
 X-SA-Exim-Scanned: Yes (on ale.deltatee.com)
 Cc: Minturn Dave B <dave.b.minturn@intel.com>,
@@ -117,113 +117,47 @@ Content-Transfer-Encoding: 7bit
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-Allow userspace to obtain CMB memory by mmaping the controller's
-char device. The mmap call allocates and returns a hunk of CMB memory,
-(the offset is ignored) so userspace does not have control over the
-address within the CMB.
-
-A VMA allocated in this way will only be usable by drivers that set
-FOLL_PCI_P2PDMA when calling GUP. And inter-device support will be
-checked the first time the pages are mapped for DMA.
-
-Currently this is only supported by O_DIRECT to an PCI NVMe device
-or through the NVMe passthrough IOCTL.
+When a bio's queue supports PCI P2PDMA, set FOLL_PCI_P2PDMA for
+iov_iter_get_pages_flags(). This allows PCI P2PDMA pages to be
+passed from userspace and enables the NVMe passthru requests to
+use P2PDMA pages.
 
 Signed-off-by: Logan Gunthorpe <logang@deltatee.com>
 ---
- drivers/nvme/host/core.c | 15 +++++++++++++++
- drivers/nvme/host/nvme.h |  2 ++
- drivers/nvme/host/pci.c  | 18 ++++++++++++++++++
- 3 files changed, 35 insertions(+)
+ block/blk-map.c | 7 ++++++-
+ 1 file changed, 6 insertions(+), 1 deletion(-)
 
-diff --git a/drivers/nvme/host/core.c b/drivers/nvme/host/core.c
-index 916750a54f60..dfc18f0bdeee 100644
---- a/drivers/nvme/host/core.c
-+++ b/drivers/nvme/host/core.c
-@@ -3075,6 +3075,10 @@ static int nvme_dev_open(struct inode *inode, struct file *file)
- 	}
+diff --git a/block/blk-map.c b/block/blk-map.c
+index 4526adde0156..7508448e290c 100644
+--- a/block/blk-map.c
++++ b/block/blk-map.c
+@@ -234,6 +234,7 @@ static int bio_map_user_iov(struct request *rq, struct iov_iter *iter,
+ 		gfp_t gfp_mask)
+ {
+ 	unsigned int max_sectors = queue_max_hw_sectors(rq->q);
++	unsigned int flags = 0;
+ 	struct bio *bio;
+ 	int ret;
+ 	int j;
+@@ -246,13 +247,17 @@ static int bio_map_user_iov(struct request *rq, struct iov_iter *iter,
+ 		return -ENOMEM;
+ 	bio->bi_opf |= req_op(rq);
  
- 	file->private_data = ctrl;
++	if (blk_queue_pci_p2pdma(rq->q))
++		flags |= FOLL_PCI_P2PDMA;
 +
-+	if (ctrl->ops->mmap_file_open)
-+		ctrl->ops->mmap_file_open(ctrl, file);
-+
- 	return 0;
- }
+ 	while (iov_iter_count(iter)) {
+ 		struct page **pages;
+ 		ssize_t bytes;
+ 		size_t offs, added = 0;
+ 		int npages;
  
-@@ -3088,12 +3092,23 @@ static int nvme_dev_release(struct inode *inode, struct file *file)
- 	return 0;
- }
- 
-+static int nvme_dev_mmap(struct file *file, struct vm_area_struct *vma)
-+{
-+	struct nvme_ctrl *ctrl = file->private_data;
-+
-+	if (!ctrl->ops->mmap_cmb)
-+		return -ENODEV;
-+
-+	return ctrl->ops->mmap_cmb(ctrl, vma);
-+}
-+
- static const struct file_operations nvme_dev_fops = {
- 	.owner		= THIS_MODULE,
- 	.open		= nvme_dev_open,
- 	.release	= nvme_dev_release,
- 	.unlocked_ioctl	= nvme_dev_ioctl,
- 	.compat_ioctl	= compat_ptr_ioctl,
-+	.mmap		= nvme_dev_mmap,
- };
- 
- static ssize_t nvme_sysfs_reset(struct device *dev,
-diff --git a/drivers/nvme/host/nvme.h b/drivers/nvme/host/nvme.h
-index fb9bfc52a6d7..1cc721290d4c 100644
---- a/drivers/nvme/host/nvme.h
-+++ b/drivers/nvme/host/nvme.h
-@@ -485,6 +485,8 @@ struct nvme_ctrl_ops {
- 	void (*delete_ctrl)(struct nvme_ctrl *ctrl);
- 	int (*get_address)(struct nvme_ctrl *ctrl, char *buf, int size);
- 	bool (*supports_pci_p2pdma)(struct nvme_ctrl *ctrl);
-+	void (*mmap_file_open)(struct nvme_ctrl *ctrl, struct file *file);
-+	int (*mmap_cmb)(struct nvme_ctrl *ctrl, struct vm_area_struct *vma);
- };
- 
- /*
-diff --git a/drivers/nvme/host/pci.c b/drivers/nvme/host/pci.c
-index e2cd73129a88..9d69e4a3d62e 100644
---- a/drivers/nvme/host/pci.c
-+++ b/drivers/nvme/host/pci.c
-@@ -2870,6 +2870,22 @@ static bool nvme_pci_supports_pci_p2pdma(struct nvme_ctrl *ctrl)
- 	return dma_pci_p2pdma_supported(dev->dev);
- }
- 
-+static void nvme_pci_mmap_file_open(struct nvme_ctrl *ctrl,
-+				    struct file *file)
-+{
-+	struct pci_dev *pdev = to_pci_dev(to_nvme_dev(ctrl)->dev);
-+
-+	pci_p2pdma_mmap_file_open(pdev, file);
-+}
-+
-+static int nvme_pci_mmap_cmb(struct nvme_ctrl *ctrl,
-+			     struct vm_area_struct *vma)
-+{
-+	struct pci_dev *pdev = to_pci_dev(to_nvme_dev(ctrl)->dev);
-+
-+	return pci_mmap_p2pmem(pdev, vma);
-+}
-+
- static const struct nvme_ctrl_ops nvme_pci_ctrl_ops = {
- 	.name			= "pcie",
- 	.module			= THIS_MODULE,
-@@ -2881,6 +2897,8 @@ static const struct nvme_ctrl_ops nvme_pci_ctrl_ops = {
- 	.submit_async_event	= nvme_pci_submit_async_event,
- 	.get_address		= nvme_pci_get_address,
- 	.supports_pci_p2pdma	= nvme_pci_supports_pci_p2pdma,
-+	.mmap_file_open		= nvme_pci_mmap_file_open,
-+	.mmap_cmb		= nvme_pci_mmap_cmb,
- };
- 
- static int nvme_dev_map(struct nvme_dev *dev)
+-		bytes = iov_iter_get_pages_alloc(iter, &pages, LONG_MAX, &offs);
++		bytes = iov_iter_get_pages_alloc_flags(iter, &pages, LONG_MAX,
++						       &offs, flags);
+ 		if (unlikely(bytes <= 0)) {
+ 			ret = bytes ? bytes : -EFAULT;
+ 			goto out_unmap;
 -- 
 2.30.2
 
