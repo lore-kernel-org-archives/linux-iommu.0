@@ -4,71 +4,69 @@ X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 X-Spam-Level: 
 X-Spam-Status: No, score=-16.6 required=3.0 tests=BAYES_00,DKIM_INVALID,
 	DKIM_SIGNED,HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_CR_TRAILER,INCLUDES_PATCH,
-	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,USER_AGENT_GIT
-	autolearn=unavailable autolearn_force=no version=3.4.0
+	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,USER_AGENT_GIT autolearn=ham
+	autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3C648C43219
-	for <iommu@archiver.kernel.org>; Thu, 16 Sep 2021 23:41:19 +0000 (UTC)
-Received: from smtp2.osuosl.org (smtp2.osuosl.org [140.211.166.133])
+	by smtp.lore.kernel.org (Postfix) with ESMTP id BF8FBC4321E
+	for <iommu@archiver.kernel.org>; Thu, 16 Sep 2021 23:41:20 +0000 (UTC)
+Received: from smtp3.osuosl.org (smtp3.osuosl.org [140.211.166.136])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 50A8A61108
-	for <iommu@archiver.kernel.org>; Thu, 16 Sep 2021 23:41:18 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.4.1 mail.kernel.org 50A8A61108
+	by mail.kernel.org (Postfix) with ESMTPS id 8316C6108F
+	for <iommu@archiver.kernel.org>; Thu, 16 Sep 2021 23:41:20 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.4.1 mail.kernel.org 8316C6108F
 Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=deltatee.com
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by smtp2.osuosl.org (Postfix) with ESMTP id 17E0340540;
-	Thu, 16 Sep 2021 23:41:18 +0000 (UTC)
+	by smtp3.osuosl.org (Postfix) with ESMTP id 494A461B8B;
+	Thu, 16 Sep 2021 23:41:20 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from smtp2.osuosl.org ([127.0.0.1])
-	by localhost (smtp2.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id GZW9PmGoDhCn; Thu, 16 Sep 2021 23:41:16 +0000 (UTC)
-Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [IPv6:2605:bc80:3010:104::8cd3:938])
-	by smtp2.osuosl.org (Postfix) with ESMTPS id 7B05340292;
-	Thu, 16 Sep 2021 23:41:16 +0000 (UTC)
+Received: from smtp3.osuosl.org ([127.0.0.1])
+	by localhost (smtp3.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+	with ESMTP id jdMWhvPIpnhc; Thu, 16 Sep 2021 23:41:19 +0000 (UTC)
+Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
+	by smtp3.osuosl.org (Postfix) with ESMTPS id 0EF2561407;
+	Thu, 16 Sep 2021 23:41:19 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 58761C0011;
-	Thu, 16 Sep 2021 23:41:16 +0000 (UTC)
-Received: from smtp4.osuosl.org (smtp4.osuosl.org [140.211.166.137])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 67626C000D
- for <iommu@lists.linux-foundation.org>; Thu, 16 Sep 2021 23:41:15 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id D22A0C0011;
+	Thu, 16 Sep 2021 23:41:18 +0000 (UTC)
+Received: from smtp3.osuosl.org (smtp3.osuosl.org [140.211.166.136])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id BE175C000D
+ for <iommu@lists.linux-foundation.org>; Thu, 16 Sep 2021 23:41:16 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by smtp4.osuosl.org (Postfix) with ESMTP id 437B0414C8
- for <iommu@lists.linux-foundation.org>; Thu, 16 Sep 2021 23:41:15 +0000 (UTC)
+ by smtp3.osuosl.org (Postfix) with ESMTP id BA99B6171A
+ for <iommu@lists.linux-foundation.org>; Thu, 16 Sep 2021 23:41:16 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Authentication-Results: smtp4.osuosl.org (amavisd-new);
- dkim=pass (2048-bit key) header.d=deltatee.com
-Received: from smtp4.osuosl.org ([127.0.0.1])
- by localhost (smtp4.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id ED8qpZhkXyPh for <iommu@lists.linux-foundation.org>;
- Thu, 16 Sep 2021 23:41:14 +0000 (UTC)
+Received: from smtp3.osuosl.org ([127.0.0.1])
+ by localhost (smtp3.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+ with ESMTP id mC0kcHSH-oit for <iommu@lists.linux-foundation.org>;
+ Thu, 16 Sep 2021 23:41:16 +0000 (UTC)
 X-Greylist: domain auto-whitelisted by SQLgrey-1.8.0
 Received: from ale.deltatee.com (ale.deltatee.com [204.191.154.188])
- by smtp4.osuosl.org (Postfix) with ESMTPS id 9EFA1414BE
- for <iommu@lists.linux-foundation.org>; Thu, 16 Sep 2021 23:41:13 +0000 (UTC)
+ by smtp3.osuosl.org (Postfix) with ESMTPS id 13F25608ED
+ for <iommu@lists.linux-foundation.org>; Thu, 16 Sep 2021 23:41:16 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
  d=deltatee.com; s=20200525; h=Subject:MIME-Version:References:In-Reply-To:
  Message-Id:Date:Cc:To:From:content-disposition;
- bh=0gr0ZAbbr4hmlvy2zsxkudfrQw0B8rmcmI8h5mM0Skg=; b=j76116bsJVyOAKWXYwKnPsHG+7
- 3U9XB1c4j0fsergL6coFXRUZrQVra2WAXZm/+G5pQIle+jDdsgeK7AE47KmyG4D1suZqrosg3U3IE
- NlciqoiWo1qYBOJ8rYahHlK7Jafcc41bo43Jcd4lKNOejECvue2Qt89Ms4q3s5JOL/4Jhc0eqax7t
- uwVYsPjqAG2GuHH8dgAOjRl+FjX9bxo+tlDvywDXGCxImuua6QkchTRZv33jasbECUbUXus3qn2C6
- hPlXH/0Ek2KqMBkefIHbxzedNcKij6ugr592vf/kOmBnLD9emlCJfJcNbw6xh5R1BZOqfXS1i0wU0
- PZ9fJKKQ==;
+ bh=Yh3s7oou+riWIjpnPVUvhd3VzsBsTmFRv65+nmaY+5k=; b=tppHiAI/TdKb44VwEvhhhC4wsx
+ y5wfhzjWertX5Lg9x8EiVccYu2qx9gaxSIH2rCVfGmjZPEUAk02sZejYU8dx6UVqn+Gi9uu0l8Szu
+ dUo2zqWOqWd6pRw0Y5UTNxv/9W/dCWOJ6TrgIr7I1OavaQ9oJfMb3l4KxdmEdHL09bXr56qYs95gQ
+ HBn/Zf6aMEM6yRwKJduFboJXkI/YSVXeVzxJSe3w+824RPKX7rZ4rF1tk0Sv60Xc5BfYUDpMJzjZ3
+ vfDwClRQghltgyaA/ThBYMc/0ppFnM+xNno2R3uj5pz4aKWF4SW+JNwNOmgRkTBM5L+ORqBYCRZYQ
+ tbD1hJzA==;
 Received: from cgy1-donard.priv.deltatee.com ([172.16.1.31])
  by ale.deltatee.com with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
  (Exim 4.92) (envelope-from <gunthorp@deltatee.com>)
- id 1mR107-0008I2-JR; Thu, 16 Sep 2021 17:41:08 -0600
+ id 1mR10C-0008I0-EM; Thu, 16 Sep 2021 17:41:13 -0600
 Received: from gunthorp by cgy1-donard.priv.deltatee.com with local (Exim
  4.94.2) (envelope-from <gunthorp@deltatee.com>)
- id 1mR103-000Vqv-SD; Thu, 16 Sep 2021 17:41:03 -0600
+ id 1mR105-000VrW-I0; Thu, 16 Sep 2021 17:41:05 -0600
 From: Logan Gunthorpe <logang@deltatee.com>
 To: linux-kernel@vger.kernel.org, linux-nvme@lists.infradead.org,
  linux-block@vger.kernel.org, linux-pci@vger.kernel.org, linux-mm@kvack.org,
  iommu@lists.linux-foundation.org
-Date: Thu, 16 Sep 2021 17:40:43 -0600
-Message-Id: <20210916234100.122368-4-logang@deltatee.com>
+Date: Thu, 16 Sep 2021 17:40:53 -0600
+Message-Id: <20210916234100.122368-14-logang@deltatee.com>
 X-Mailer: git-send-email 2.30.2
 In-Reply-To: <20210916234100.122368-1-logang@deltatee.com>
 References: <20210916234100.122368-1-logang@deltatee.com>
@@ -84,7 +82,7 @@ X-SA-Exim-Rcpt-To: linux-nvme@lists.infradead.org, linux-kernel@vger.kernel.org,
  jianxin.xiong@intel.com, ira.weiny@intel.com, robin.murphy@arm.com,
  martin.oliveira@eideticom.com, ckulkarnilinux@gmail.com, logang@deltatee.com
 X-SA-Exim-Mail-From: gunthorp@deltatee.com
-Subject: [PATCH v3 03/20] PCI/P2PDMA: make pci_p2pdma_map_type() non-static
+Subject: [PATCH v3 13/20] PCI/P2PDMA: remove pci_p2pdma_[un]map_sg()
 X-SA-Exim-Version: 4.2.1 (built Wed, 08 May 2019 21:11:16 +0000)
 X-SA-Exim-Scanned: Yes (on ale.deltatee.com)
 Cc: Minturn Dave B <dave.b.minturn@intel.com>,
@@ -117,124 +115,141 @@ Content-Transfer-Encoding: 7bit
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-pci_p2pdma_map_type() will be needed by the dma-iommu map_sg
-implementation because it will need to determine the mapping type
-ahead of actually doing the mapping to create the actual iommu mapping.
+This interface is superseded by support in dma_map_sg() which now supports
+heterogeneous scatterlists. There are no longer any users, so remove it.
 
 Signed-off-by: Logan Gunthorpe <logang@deltatee.com>
 ---
- drivers/pci/p2pdma.c       | 24 +++++++++++++---------
- include/linux/pci-p2pdma.h | 41 ++++++++++++++++++++++++++++++++++++++
- 2 files changed, 56 insertions(+), 9 deletions(-)
+ drivers/pci/p2pdma.c       | 65 --------------------------------------
+ include/linux/pci-p2pdma.h | 27 ----------------
+ 2 files changed, 92 deletions(-)
 
 diff --git a/drivers/pci/p2pdma.c b/drivers/pci/p2pdma.c
-index 1192c465ba6d..b656d8c801a7 100644
+index 58c34f1f1473..4478633346bd 100644
 --- a/drivers/pci/p2pdma.c
 +++ b/drivers/pci/p2pdma.c
-@@ -20,13 +20,6 @@
- #include <linux/seq_buf.h>
- #include <linux/xarray.h>
- 
--enum pci_p2pdma_map_type {
--	PCI_P2PDMA_MAP_UNKNOWN = 0,
--	PCI_P2PDMA_MAP_NOT_SUPPORTED,
--	PCI_P2PDMA_MAP_BUS_ADDR,
--	PCI_P2PDMA_MAP_THRU_HOST_BRIDGE,
--};
--
- struct pci_p2pdma {
- 	struct gen_pool *pool;
- 	bool p2pmem_published;
-@@ -841,8 +834,21 @@ void pci_p2pmem_publish(struct pci_dev *pdev, bool publish)
+@@ -878,71 +878,6 @@ enum pci_p2pdma_map_type pci_p2pdma_map_type(struct dev_pagemap *pgmap,
+ 	return type;
  }
- EXPORT_SYMBOL_GPL(pci_p2pmem_publish);
  
--static enum pci_p2pdma_map_type pci_p2pdma_map_type(struct dev_pagemap *pgmap,
--						    struct device *dev)
-+/**
-+ * pci_p2pdma_map_type - return the type of mapping that should be used for
-+ *	a given device and pgmap
-+ * @pgmap: the pagemap of a page to determine the mapping type for
-+ * @dev: device that is mapping the page
-+ *
-+ * Returns one of:
-+ *	PCI_P2PDMA_MAP_NOT_SUPPORTED - The mapping should not be done
-+ *	PCI_P2PDMA_MAP_BUS_ADDR - The mapping should use the PCI bus address
-+ *	PCI_P2PDMA_MAP_THRU_HOST_BRIDGE - The mapping should be done normally
-+ *		using the CPU physical address (in dma-direct) or an IOVA
-+ *		mapping for the IOMMU.
-+ */
-+enum pci_p2pdma_map_type pci_p2pdma_map_type(struct dev_pagemap *pgmap,
-+					     struct device *dev)
- {
- 	enum pci_p2pdma_map_type type = PCI_P2PDMA_MAP_NOT_SUPPORTED;
- 	struct pci_dev *provider = to_p2p_pgmap(pgmap)->provider;
+-static int __pci_p2pdma_map_sg(struct pci_p2pdma_pagemap *p2p_pgmap,
+-		struct device *dev, struct scatterlist *sg, int nents)
+-{
+-	struct scatterlist *s;
+-	int i;
+-
+-	for_each_sg(sg, s, nents, i) {
+-		s->dma_address = sg_phys(s) - p2p_pgmap->bus_offset;
+-		sg_dma_len(s) = s->length;
+-	}
+-
+-	return nents;
+-}
+-
+-/**
+- * pci_p2pdma_map_sg_attrs - map a PCI peer-to-peer scatterlist for DMA
+- * @dev: device doing the DMA request
+- * @sg: scatter list to map
+- * @nents: elements in the scatterlist
+- * @dir: DMA direction
+- * @attrs: DMA attributes passed to dma_map_sg() (if called)
+- *
+- * Scatterlists mapped with this function should be unmapped using
+- * pci_p2pdma_unmap_sg_attrs().
+- *
+- * Returns the number of SG entries mapped or 0 on error.
+- */
+-int pci_p2pdma_map_sg_attrs(struct device *dev, struct scatterlist *sg,
+-		int nents, enum dma_data_direction dir, unsigned long attrs)
+-{
+-	struct pci_p2pdma_pagemap *p2p_pgmap =
+-		to_p2p_pgmap(sg_page(sg)->pgmap);
+-
+-	switch (pci_p2pdma_map_type(sg_page(sg)->pgmap, dev)) {
+-	case PCI_P2PDMA_MAP_THRU_HOST_BRIDGE:
+-		return dma_map_sg_attrs(dev, sg, nents, dir, attrs);
+-	case PCI_P2PDMA_MAP_BUS_ADDR:
+-		return __pci_p2pdma_map_sg(p2p_pgmap, dev, sg, nents);
+-	default:
+-		return 0;
+-	}
+-}
+-EXPORT_SYMBOL_GPL(pci_p2pdma_map_sg_attrs);
+-
+-/**
+- * pci_p2pdma_unmap_sg_attrs - unmap a PCI peer-to-peer scatterlist that was
+- *	mapped with pci_p2pdma_map_sg()
+- * @dev: device doing the DMA request
+- * @sg: scatter list to map
+- * @nents: number of elements returned by pci_p2pdma_map_sg()
+- * @dir: DMA direction
+- * @attrs: DMA attributes passed to dma_unmap_sg() (if called)
+- */
+-void pci_p2pdma_unmap_sg_attrs(struct device *dev, struct scatterlist *sg,
+-		int nents, enum dma_data_direction dir, unsigned long attrs)
+-{
+-	enum pci_p2pdma_map_type map_type;
+-
+-	map_type = pci_p2pdma_map_type(sg_page(sg)->pgmap, dev);
+-
+-	if (map_type == PCI_P2PDMA_MAP_THRU_HOST_BRIDGE)
+-		dma_unmap_sg_attrs(dev, sg, nents, dir, attrs);
+-}
+-EXPORT_SYMBOL_GPL(pci_p2pdma_unmap_sg_attrs);
+-
+ /**
+  * pci_p2pdma_map_segment - map an sg segment determining the mapping type
+  * @state: State structure that should be declared outside of the for_each_sg()
 diff --git a/include/linux/pci-p2pdma.h b/include/linux/pci-p2pdma.h
-index 8318a97c9c61..caac2d023f8f 100644
+index e5a8d5bc0f51..0c33a40a86e7 100644
 --- a/include/linux/pci-p2pdma.h
 +++ b/include/linux/pci-p2pdma.h
-@@ -16,6 +16,40 @@
- struct block_device;
- struct scatterlist;
- 
-+enum pci_p2pdma_map_type {
-+	/*
-+	 * PCI_P2PDMA_MAP_UNKNOWN: Used internally for indicating the mapping
-+	 * type hasn't been calculated yet. Functions that return this enum
-+	 * never return this value.
-+	 */
-+	PCI_P2PDMA_MAP_UNKNOWN = 0,
-+
-+	/*
-+	 * PCI_P2PDMA_MAP_NOT_SUPPORTED: Indicates the transaction will
-+	 * traverse the host bridge and the host bridge is not in the
-+	 * whitelist. DMA Mapping routines should return an error when
-+	 * this is returned.
-+	 */
-+	PCI_P2PDMA_MAP_NOT_SUPPORTED,
-+
-+	/*
-+	 * PCI_P2PDMA_BUS_ADDR: Indicates that two devices can talk to
-+	 * eachother directly through a PCI switch and the transaction will
-+	 * not traverse the host bridge. Such a mapping should program
-+	 * the DMA engine with PCI bus addresses.
-+	 */
-+	PCI_P2PDMA_MAP_BUS_ADDR,
-+
-+	/*
-+	 * PCI_P2PDMA_MAP_THRU_HOST_BRIDGE: Indicates two devices can talk
-+	 * to eachother, but the transaction traverses a host bridge on the
-+	 * whitelist. In this case, a normal mapping either with CPU physical
-+	 * addresses (in the case of dma-direct) or IOVA addresses (in the
-+	 * case of IOMMUs) should be used to program the DMA engine.
-+	 */
-+	PCI_P2PDMA_MAP_THRU_HOST_BRIDGE,
-+};
-+
- #ifdef CONFIG_PCI_P2PDMA
- int pci_p2pdma_add_resource(struct pci_dev *pdev, int bar, size_t size,
- 		u64 offset);
-@@ -30,6 +64,8 @@ struct scatterlist *pci_p2pmem_alloc_sgl(struct pci_dev *pdev,
- 					 unsigned int *nents, u32 length);
- void pci_p2pmem_free_sgl(struct pci_dev *pdev, struct scatterlist *sgl);
+@@ -72,10 +72,6 @@ void pci_p2pmem_free_sgl(struct pci_dev *pdev, struct scatterlist *sgl);
  void pci_p2pmem_publish(struct pci_dev *pdev, bool publish);
-+enum pci_p2pdma_map_type pci_p2pdma_map_type(struct dev_pagemap *pgmap,
-+					     struct device *dev);
- int pci_p2pdma_map_sg_attrs(struct device *dev, struct scatterlist *sg,
- 		int nents, enum dma_data_direction dir, unsigned long attrs);
- void pci_p2pdma_unmap_sg_attrs(struct device *dev, struct scatterlist *sg,
-@@ -83,6 +119,11 @@ static inline void pci_p2pmem_free_sgl(struct pci_dev *pdev,
- static inline void pci_p2pmem_publish(struct pci_dev *pdev, bool publish)
+ enum pci_p2pdma_map_type pci_p2pdma_map_type(struct dev_pagemap *pgmap,
+ 					     struct device *dev);
+-int pci_p2pdma_map_sg_attrs(struct device *dev, struct scatterlist *sg,
+-		int nents, enum dma_data_direction dir, unsigned long attrs);
+-void pci_p2pdma_unmap_sg_attrs(struct device *dev, struct scatterlist *sg,
+-		int nents, enum dma_data_direction dir, unsigned long attrs);
+ enum pci_p2pdma_map_type
+ pci_p2pdma_map_segment(struct pci_p2pdma_map_state *state, struct device *dev,
+ 		       struct scatterlist *sg);
+@@ -135,17 +131,6 @@ pci_p2pdma_map_type(struct dev_pagemap *pgmap, struct device *dev)
  {
+ 	return PCI_P2PDMA_MAP_NOT_SUPPORTED;
  }
-+static inline enum pci_p2pdma_map_type
-+pci_p2pdma_map_type(struct dev_pagemap *pgmap, struct device *dev)
-+{
-+	return PCI_P2PDMA_MAP_NOT_SUPPORTED;
-+}
- static inline int pci_p2pdma_map_sg_attrs(struct device *dev,
- 		struct scatterlist *sg, int nents, enum dma_data_direction dir,
- 		unsigned long attrs)
+-static inline int pci_p2pdma_map_sg_attrs(struct device *dev,
+-		struct scatterlist *sg, int nents, enum dma_data_direction dir,
+-		unsigned long attrs)
+-{
+-	return 0;
+-}
+-static inline void pci_p2pdma_unmap_sg_attrs(struct device *dev,
+-		struct scatterlist *sg, int nents, enum dma_data_direction dir,
+-		unsigned long attrs)
+-{
+-}
+ static inline enum pci_p2pdma_map_type
+ pci_p2pdma_map_segment(struct pci_p2pdma_map_state *state, struct device *dev,
+ 		       struct scatterlist *sg)
+@@ -181,16 +166,4 @@ static inline struct pci_dev *pci_p2pmem_find(struct device *client)
+ 	return pci_p2pmem_find_many(&client, 1);
+ }
+ 
+-static inline int pci_p2pdma_map_sg(struct device *dev, struct scatterlist *sg,
+-				    int nents, enum dma_data_direction dir)
+-{
+-	return pci_p2pdma_map_sg_attrs(dev, sg, nents, dir, 0);
+-}
+-
+-static inline void pci_p2pdma_unmap_sg(struct device *dev,
+-		struct scatterlist *sg, int nents, enum dma_data_direction dir)
+-{
+-	pci_p2pdma_unmap_sg_attrs(dev, sg, nents, dir, 0);
+-}
+-
+ #endif /* _LINUX_PCI_P2P_H */
 -- 
 2.30.2
 
