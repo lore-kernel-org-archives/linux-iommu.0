@@ -4,69 +4,71 @@ X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 X-Spam-Level: 
 X-Spam-Status: No, score=-16.6 required=3.0 tests=BAYES_00,DKIM_INVALID,
 	DKIM_SIGNED,HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_CR_TRAILER,INCLUDES_PATCH,
-	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,USER_AGENT_GIT
-	autolearn=unavailable autolearn_force=no version=3.4.0
+	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,USER_AGENT_GIT autolearn=ham
+	autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7A771C28CB2
-	for <iommu@archiver.kernel.org>; Thu, 16 Sep 2021 23:41:26 +0000 (UTC)
-Received: from smtp1.osuosl.org (smtp1.osuosl.org [140.211.166.138])
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 584A0C28CD7
+	for <iommu@archiver.kernel.org>; Thu, 16 Sep 2021 23:41:27 +0000 (UTC)
+Received: from smtp4.osuosl.org (smtp4.osuosl.org [140.211.166.137])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 3983A61108
-	for <iommu@archiver.kernel.org>; Thu, 16 Sep 2021 23:41:26 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.4.1 mail.kernel.org 3983A61108
+	by mail.kernel.org (Postfix) with ESMTPS id 1BF4961263
+	for <iommu@archiver.kernel.org>; Thu, 16 Sep 2021 23:41:27 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.4.1 mail.kernel.org 1BF4961263
 Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=deltatee.com
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by smtp1.osuosl.org (Postfix) with ESMTP id 1BB5483FBC;
-	Thu, 16 Sep 2021 23:41:26 +0000 (UTC)
+	by smtp4.osuosl.org (Postfix) with ESMTP id 25F2B415D9;
+	Thu, 16 Sep 2021 23:41:25 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from smtp1.osuosl.org ([127.0.0.1])
-	by localhost (smtp1.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id R0MNZjUx0Pag; Thu, 16 Sep 2021 23:41:25 +0000 (UTC)
-Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by smtp1.osuosl.org (Postfix) with ESMTPS id B443A83FB3;
-	Thu, 16 Sep 2021 23:41:24 +0000 (UTC)
-Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 9A309C002D;
+Received: from smtp4.osuosl.org ([127.0.0.1])
+	by localhost (smtp4.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+	with ESMTP id 8x_KHsQF_k3T; Thu, 16 Sep 2021 23:41:24 +0000 (UTC)
+Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [IPv6:2605:bc80:3010:104::8cd3:938])
+	by smtp4.osuosl.org (Postfix) with ESMTPS id 013BE41615;
 	Thu, 16 Sep 2021 23:41:23 +0000 (UTC)
-Received: from smtp1.osuosl.org (smtp1.osuosl.org [140.211.166.138])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 0F035C0029
- for <iommu@lists.linux-foundation.org>; Thu, 16 Sep 2021 23:41:22 +0000 (UTC)
+Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 204DCC0025;
+	Thu, 16 Sep 2021 23:41:23 +0000 (UTC)
+Received: from smtp3.osuosl.org (smtp3.osuosl.org [140.211.166.136])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 16B00C0011
+ for <iommu@lists.linux-foundation.org>; Thu, 16 Sep 2021 23:41:21 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by smtp1.osuosl.org (Postfix) with ESMTP id C181A83FB3
- for <iommu@lists.linux-foundation.org>; Thu, 16 Sep 2021 23:41:19 +0000 (UTC)
+ by smtp3.osuosl.org (Postfix) with ESMTP id E827F61B8C
+ for <iommu@lists.linux-foundation.org>; Thu, 16 Sep 2021 23:41:20 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from smtp1.osuosl.org ([127.0.0.1])
- by localhost (smtp1.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id i795uFUj9S8A for <iommu@lists.linux-foundation.org>;
- Thu, 16 Sep 2021 23:41:19 +0000 (UTC)
+Authentication-Results: smtp3.osuosl.org (amavisd-new);
+ dkim=pass (2048-bit key) header.d=deltatee.com
+Received: from smtp3.osuosl.org ([127.0.0.1])
+ by localhost (smtp3.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+ with ESMTP id HzUFlkdw86EG for <iommu@lists.linux-foundation.org>;
+ Thu, 16 Sep 2021 23:41:20 +0000 (UTC)
 X-Greylist: domain auto-whitelisted by SQLgrey-1.8.0
 Received: from ale.deltatee.com (ale.deltatee.com [204.191.154.188])
- by smtp1.osuosl.org (Postfix) with ESMTPS id 140E483FA1
- for <iommu@lists.linux-foundation.org>; Thu, 16 Sep 2021 23:41:19 +0000 (UTC)
+ by smtp3.osuosl.org (Postfix) with ESMTPS id 59D8861407
+ for <iommu@lists.linux-foundation.org>; Thu, 16 Sep 2021 23:41:20 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
  d=deltatee.com; s=20200525; h=Subject:MIME-Version:References:In-Reply-To:
  Message-Id:Date:Cc:To:From:content-disposition;
- bh=duK4Nl0HGAU2zlVYRbICllLbHxDk16KV4FbuTVYwYb0=; b=pDf9MnIPpVcjtOZLNNkIjiRkWD
- JaSelM9dE68taZKug4nNgqpgqfp5aV9b5zJpT/UcNukN0z1kiUM2wMFeQNWzHIImg2YN7n1yreJyj
- AF2a1gVbWp7FgaMXepDkhd/k3rUN/goiAdNGFW8FeGCdjK1uM800T8PENNWhfxXEz+v9G/GgzPBkb
- IS3YYCqnAGp7jpQ14seNaX3vu8C8SZQnwKp49nKTjQCzEvUc6TLeAdiTvAIufOIk1RHk0lOwKuj9P
- e+gG1ugxOoLZWj0A4rq6KmD1720zdJM3hW+XaAGxkK8+L8yX4Wd7c6OfVEp+uRq2W4PNN7b+7jahz
- l6zNyxWA==;
+ bh=Yz7/Dg6RG5uFdKEWz7fCfOIaPt94X46Gov2AZcvx1yo=; b=Zs5M0NYfy/xXFIpoRhIv/Q09ZY
+ ZNc/ktEXRqFRUQ+RWdFANpv1kwCS8ebErssaGlf7W80S5v4VxCqpX8RXs9LKkKbngodxeBilCfs5e
+ CsjCMmoIudLnULI2ucZuyWZu1VJfOutGm7bhiIuXdjAXF8SnCtNM5TVY25JlXwPjkskE+Ks7mxijw
+ 53vbhVCYOixN7WhIzEfOTo1VcRJet7jxCqs8dGnKkVqyx+aiA/RPQsEPYPPEWgn4+cGJ0kksM+vhV
+ fQjwR64UCzxdbE/QXaFFwtchbj0IzuJ8j8PuKTF3bP28hlTQS/NsojchbXUwKQn8+6YayRpq1UHsl
+ JEwRTA/Q==;
 Received: from cgy1-donard.priv.deltatee.com ([172.16.1.31])
  by ale.deltatee.com with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
  (Exim 4.92) (envelope-from <gunthorp@deltatee.com>)
- id 1mR10F-0008I0-KS; Thu, 16 Sep 2021 17:41:16 -0600
+ id 1mR10H-0008I1-GG; Thu, 16 Sep 2021 17:41:18 -0600
 Received: from gunthorp by cgy1-donard.priv.deltatee.com with local (Exim
  4.94.2) (envelope-from <gunthorp@deltatee.com>)
- id 1mR104-000VrA-Hp; Thu, 16 Sep 2021 17:41:04 -0600
+ id 1mR104-000Vr1-5i; Thu, 16 Sep 2021 17:41:04 -0600
 From: Logan Gunthorpe <logang@deltatee.com>
 To: linux-kernel@vger.kernel.org, linux-nvme@lists.infradead.org,
  linux-block@vger.kernel.org, linux-pci@vger.kernel.org, linux-mm@kvack.org,
  iommu@lists.linux-foundation.org
-Date: Thu, 16 Sep 2021 17:40:48 -0600
-Message-Id: <20210916234100.122368-9-logang@deltatee.com>
+Date: Thu, 16 Sep 2021 17:40:45 -0600
+Message-Id: <20210916234100.122368-6-logang@deltatee.com>
 X-Mailer: git-send-email 2.30.2
 In-Reply-To: <20210916234100.122368-1-logang@deltatee.com>
 References: <20210916234100.122368-1-logang@deltatee.com>
@@ -82,8 +84,8 @@ X-SA-Exim-Rcpt-To: linux-nvme@lists.infradead.org, linux-kernel@vger.kernel.org,
  jianxin.xiong@intel.com, ira.weiny@intel.com, robin.murphy@arm.com,
  martin.oliveira@eideticom.com, ckulkarnilinux@gmail.com, logang@deltatee.com
 X-SA-Exim-Mail-From: gunthorp@deltatee.com
-Subject: [PATCH v3 08/20] iommu/dma: support PCI P2PDMA pages in dma-iommu
- map_sg
+Subject: [PATCH v3 05/20] dma-mapping: allow EREMOTEIO return code for P2PDMA
+ transfers
 X-SA-Exim-Version: 4.2.1 (built Wed, 08 May 2019 21:11:16 +0000)
 X-SA-Exim-Scanned: Yes (on ale.deltatee.com)
 Cc: Minturn Dave B <dave.b.minturn@intel.com>,
@@ -116,169 +118,49 @@ Content-Transfer-Encoding: 7bit
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-When a PCI P2PDMA page is seen, set the IOVA length of the segment
-to zero so that it is not mapped into the IOVA. Then, in finalise_sg(),
-apply the appropriate bus address to the segment. The IOVA is not
-created if the scatterlist only consists of P2PDMA pages.
-
-A P2PDMA page may have three possible outcomes when being mapped:
-  1) If the data path between the two devices doesn't go through
-     the root port, then it should be mapped with a PCI bus address
-  2) If the data path goes through the host bridge, it should be mapped
-     normally with an IOMMU IOVA.
-  3) It is not possible for the two devices to communicate and thus
-     the mapping operation should fail (and it will return -EREMOTEIO).
-
-Similar to dma-direct, the sg_dma_mark_pci_p2pdma() flag is used to
-indicate bus address segments. On unmap, P2PDMA segments are skipped
-over when determining the start and end IOVA addresses.
-
-With this change, the flags variable in the dma_map_ops is set to
-DMA_F_PCI_P2PDMA_SUPPORTED to indicate support for P2PDMA pages.
+Add EREMOTEIO error return to dma_map_sgtable() which will be used
+by .map_sg() implementations that detect P2PDMA pages that the
+underlying DMA device cannot access.
 
 Signed-off-by: Logan Gunthorpe <logang@deltatee.com>
 ---
- drivers/iommu/dma-iommu.c | 68 +++++++++++++++++++++++++++++++++++----
- 1 file changed, 61 insertions(+), 7 deletions(-)
+ kernel/dma/mapping.c | 16 +++++++++-------
+ 1 file changed, 9 insertions(+), 7 deletions(-)
 
-diff --git a/drivers/iommu/dma-iommu.c b/drivers/iommu/dma-iommu.c
-index 896bea04c347..e7c658d04222 100644
---- a/drivers/iommu/dma-iommu.c
-+++ b/drivers/iommu/dma-iommu.c
-@@ -20,6 +20,7 @@
- #include <linux/mm.h>
- #include <linux/mutex.h>
- #include <linux/pci.h>
-+#include <linux/pci-p2pdma.h>
- #include <linux/swiotlb.h>
- #include <linux/scatterlist.h>
- #include <linux/vmalloc.h>
-@@ -911,6 +912,16 @@ static int __finalise_sg(struct device *dev, struct scatterlist *sg, int nents,
- 		sg_dma_address(s) = DMA_MAPPING_ERROR;
- 		sg_dma_len(s) = 0;
+diff --git a/kernel/dma/mapping.c b/kernel/dma/mapping.c
+index 7ee5284bff58..7315ae31cf1d 100644
+--- a/kernel/dma/mapping.c
++++ b/kernel/dma/mapping.c
+@@ -197,7 +197,7 @@ static int __dma_map_sg_attrs(struct device *dev, struct scatterlist *sg,
+ 	if (ents > 0)
+ 		debug_dma_map_sg(dev, sg, nents, ents, dir);
+ 	else if (WARN_ON_ONCE(ents != -EINVAL && ents != -ENOMEM &&
+-			      ents != -EIO))
++			      ents != -EIO && ents != -EREMOTEIO))
+ 		return -EIO;
  
-+		if (is_pci_p2pdma_page(sg_page(s)) && !s_iova_len) {
-+			if (i > 0)
-+				cur = sg_next(cur);
-+
-+			pci_p2pdma_map_bus_segment(s, cur);
-+			count++;
-+			cur_len = 0;
-+			continue;
-+		}
-+
- 		/*
- 		 * Now fill in the real DMA data. If...
- 		 * - there is a valid output segment to append to
-@@ -1008,6 +1019,8 @@ static int iommu_dma_map_sg(struct device *dev, struct scatterlist *sg,
- 	struct iova_domain *iovad = &cookie->iovad;
- 	struct scatterlist *s, *prev = NULL;
- 	int prot = dma_info_to_prot(dir, dev_is_dma_coherent(dev), attrs);
-+	struct dev_pagemap *pgmap = NULL;
-+	enum pci_p2pdma_map_type map_type;
- 	dma_addr_t iova;
- 	size_t iova_len = 0;
- 	unsigned long mask = dma_get_seg_boundary(dev);
-@@ -1042,6 +1055,35 @@ static int iommu_dma_map_sg(struct device *dev, struct scatterlist *sg,
- 		s_length = iova_align(iovad, s_length + s_iova_off);
- 		s->length = s_length;
- 
-+		if (is_pci_p2pdma_page(sg_page(s))) {
-+			if (sg_page(s)->pgmap != pgmap) {
-+				pgmap = sg_page(s)->pgmap;
-+				map_type = pci_p2pdma_map_type(pgmap, dev);
-+			}
-+
-+			switch (map_type) {
-+			case PCI_P2PDMA_MAP_BUS_ADDR:
-+				/*
-+				 * A zero length will be ignored by
-+				 * iommu_map_sg() and then can be detected
-+				 * in __finalise_sg() to actually map the
-+				 * bus address.
-+				 */
-+				s->length = 0;
-+				continue;
-+			case PCI_P2PDMA_MAP_THRU_HOST_BRIDGE:
-+				/*
-+				 * Mapping through host bridge should be
-+				 * mapped with regular IOVAs, thus we
-+				 * do nothing here and continue below.
-+				 */
-+				break;
-+			default:
-+				ret = -EREMOTEIO;
-+				goto out_restore_sg;
-+			}
-+		}
-+
- 		/*
- 		 * Due to the alignment of our single IOVA allocation, we can
- 		 * depend on these assumptions about the segment boundary mask:
-@@ -1064,6 +1106,9 @@ static int iommu_dma_map_sg(struct device *dev, struct scatterlist *sg,
- 		prev = s;
- 	}
- 
-+	if (!iova_len)
-+		return __finalise_sg(dev, sg, nents, 0);
-+
- 	iova = iommu_dma_alloc_iova(domain, iova_len, dma_get_mask(dev), dev);
- 	if (!iova) {
- 		ret = -ENOMEM;
-@@ -1085,7 +1130,7 @@ static int iommu_dma_map_sg(struct device *dev, struct scatterlist *sg,
- out_restore_sg:
- 	__invalidate_sg(sg, nents);
- out:
--	if (ret != -ENOMEM)
-+	if (ret != -ENOMEM && ret != -EREMOTEIO)
- 		return -EINVAL;
- 	return ret;
- }
-@@ -1093,7 +1138,7 @@ static int iommu_dma_map_sg(struct device *dev, struct scatterlist *sg,
- static void iommu_dma_unmap_sg(struct device *dev, struct scatterlist *sg,
- 		int nents, enum dma_data_direction dir, unsigned long attrs)
- {
--	dma_addr_t start, end;
-+	dma_addr_t end, start = DMA_MAPPING_ERROR;
- 	struct scatterlist *tmp;
- 	int i;
- 
-@@ -1109,14 +1154,22 @@ static void iommu_dma_unmap_sg(struct device *dev, struct scatterlist *sg,
- 	 * The scatterlist segments are mapped into a single
- 	 * contiguous IOVA allocation, so this is incredibly easy.
- 	 */
--	start = sg_dma_address(sg);
--	for_each_sg(sg_next(sg), tmp, nents - 1, i) {
-+	for_each_sg(sg, tmp, nents, i) {
-+		if (sg_is_dma_pci_p2pdma(tmp)) {
-+			sg_dma_unmark_pci_p2pdma(tmp);
-+			continue;
-+		}
- 		if (sg_dma_len(tmp) == 0)
- 			break;
--		sg = tmp;
-+
-+		if (start == DMA_MAPPING_ERROR)
-+			start = sg_dma_address(tmp);
-+
-+		end = sg_dma_address(tmp) + sg_dma_len(tmp);
- 	}
--	end = sg_dma_address(sg) + sg_dma_len(sg);
--	__iommu_dma_unmap(dev, start, end - start);
-+
-+	if (start != DMA_MAPPING_ERROR)
-+		__iommu_dma_unmap(dev, start, end - start);
- }
- 
- static dma_addr_t iommu_dma_map_resource(struct device *dev, phys_addr_t phys,
-@@ -1309,6 +1362,7 @@ static unsigned long iommu_dma_get_merge_boundary(struct device *dev)
- }
- 
- static const struct dma_map_ops iommu_dma_ops = {
-+	.flags			= DMA_F_PCI_P2PDMA_SUPPORTED,
- 	.alloc			= iommu_dma_alloc,
- 	.free			= iommu_dma_free,
- 	.alloc_pages		= dma_common_alloc_pages,
+ 	return ents;
+@@ -248,12 +248,14 @@ EXPORT_SYMBOL(dma_map_sg_attrs);
+  * Returns 0 on success or a negative error code on error. The following
+  * error codes are supported with the given meaning:
+  *
+- *   -EINVAL - An invalid argument, unaligned access or other error
+- *	       in usage. Will not succeed if retried.
+- *   -ENOMEM - Insufficient resources (like memory or IOVA space) to
+- *	       complete the mapping. Should succeed if retried later.
+- *   -EIO    - Legacy error code with an unknown meaning. eg. this is
+- *	       returned if a lower level call returned DMA_MAPPING_ERROR.
++ *   -EINVAL	- An invalid argument, unaligned access or other error
++ *		  in usage. Will not succeed if retried.
++ *   -ENOMEM	- Insufficient resources (like memory or IOVA space) to
++ *		  complete the mapping. Should succeed if retried later.
++ *   -EIO	- Legacy error code with an unknown meaning. eg. this is
++ *	          returned if a lower level call returned DMA_MAPPING_ERROR.
++ *   -EREMOTEIO	- The DMA device cannot access P2PDMA memory specified in
++ *		  the sg_table. This will not succeed if retried.
+  */
+ int dma_map_sgtable(struct device *dev, struct sg_table *sgt,
+ 		    enum dma_data_direction dir, unsigned long attrs)
 -- 
 2.30.2
 
