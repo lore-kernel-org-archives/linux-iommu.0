@@ -7,68 +7,68 @@ X-Spam-Status: No, score=-16.6 required=3.0 tests=BAYES_00,DKIM_INVALID,
 	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,USER_AGENT_GIT autolearn=ham
 	autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 797F7C28CB1
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1C228C433F5
 	for <iommu@archiver.kernel.org>; Thu, 16 Sep 2021 23:41:26 +0000 (UTC)
-Received: from smtp4.osuosl.org (smtp4.osuosl.org [140.211.166.137])
+Received: from smtp3.osuosl.org (smtp3.osuosl.org [140.211.166.136])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 399B16120D
-	for <iommu@archiver.kernel.org>; Thu, 16 Sep 2021 23:41:26 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.4.1 mail.kernel.org 399B16120D
+	by mail.kernel.org (Postfix) with ESMTPS id D551D61244
+	for <iommu@archiver.kernel.org>; Thu, 16 Sep 2021 23:41:25 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.4.1 mail.kernel.org D551D61244
 Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=deltatee.com
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by smtp4.osuosl.org (Postfix) with ESMTP id 95D1B415B7;
-	Thu, 16 Sep 2021 23:41:24 +0000 (UTC)
+	by smtp3.osuosl.org (Postfix) with ESMTP id AE4C661B94;
+	Thu, 16 Sep 2021 23:41:25 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from smtp4.osuosl.org ([127.0.0.1])
-	by localhost (smtp4.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id h-MM_U8B3CTY; Thu, 16 Sep 2021 23:41:23 +0000 (UTC)
+Received: from smtp3.osuosl.org ([127.0.0.1])
+	by localhost (smtp3.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+	with ESMTP id T8LzF0XgcrCk; Thu, 16 Sep 2021 23:41:24 +0000 (UTC)
 Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by smtp4.osuosl.org (Postfix) with ESMTPS id 6CA5E4159B;
+	by smtp3.osuosl.org (Postfix) with ESMTPS id D0A36608ED;
 	Thu, 16 Sep 2021 23:41:23 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id AB802C002F;
+	by lists.linuxfoundation.org (Postfix) with ESMTP id D8729C002A;
 	Thu, 16 Sep 2021 23:41:22 +0000 (UTC)
-Received: from smtp2.osuosl.org (smtp2.osuosl.org [140.211.166.133])
- by lists.linuxfoundation.org (Postfix) with ESMTP id B95AEC0011
- for <iommu@lists.linux-foundation.org>; Thu, 16 Sep 2021 23:41:20 +0000 (UTC)
+Received: from smtp4.osuosl.org (smtp4.osuosl.org [IPv6:2605:bc80:3010::137])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 16EC9C001C
+ for <iommu@lists.linux-foundation.org>; Thu, 16 Sep 2021 23:41:21 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by smtp2.osuosl.org (Postfix) with ESMTP id 96C7640713
- for <iommu@lists.linux-foundation.org>; Thu, 16 Sep 2021 23:41:20 +0000 (UTC)
+ by smtp4.osuosl.org (Postfix) with ESMTP id B88A5415A7
+ for <iommu@lists.linux-foundation.org>; Thu, 16 Sep 2021 23:41:19 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Authentication-Results: smtp2.osuosl.org (amavisd-new);
+Authentication-Results: smtp4.osuosl.org (amavisd-new);
  dkim=pass (2048-bit key) header.d=deltatee.com
-Received: from smtp2.osuosl.org ([127.0.0.1])
- by localhost (smtp2.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id 1bgd0cMCuYdJ for <iommu@lists.linux-foundation.org>;
+Received: from smtp4.osuosl.org ([127.0.0.1])
+ by localhost (smtp4.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+ with ESMTP id w6-_JbxuIC4F for <iommu@lists.linux-foundation.org>;
  Thu, 16 Sep 2021 23:41:19 +0000 (UTC)
 X-Greylist: domain auto-whitelisted by SQLgrey-1.8.0
 Received: from ale.deltatee.com (ale.deltatee.com [204.191.154.188])
- by smtp2.osuosl.org (Postfix) with ESMTPS id A413C406B1
- for <iommu@lists.linux-foundation.org>; Thu, 16 Sep 2021 23:41:19 +0000 (UTC)
+ by smtp4.osuosl.org (Postfix) with ESMTPS id 0C510414C8
+ for <iommu@lists.linux-foundation.org>; Thu, 16 Sep 2021 23:41:18 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
  d=deltatee.com; s=20200525; h=Subject:MIME-Version:References:In-Reply-To:
  Message-Id:Date:Cc:To:From:content-disposition;
- bh=SUhj8YW4TKyKXdbuHR1PtoAzIeP797v8JHmvpqp4UGs=; b=US2nbdXeHZ4YK1t/LQVqqQEeKt
- kRiPXEINhZotB2XVMeU6hV6ESntSYVx8GLm+bPNDMQSWD/SydpExElXSEhA3jWSYMYWjBV5TtuoP4
- Cb0TgQ8HhbNQDB79QLXrk44pIErDx2pLRCAgmI83UWV79CO7eOuMmT9HXaQG+RAhs1TpMbe4adklX
- 1q0NaAgfLepzX2aTUFlglmRhTl0ema/QCO86Q4PMC6HahUt1qYuZeiAAVG6u8RuqfCni3MFO38k/1
- rHFuCwDyVo4Yn4sRGaPEtkF32ooybj5KEy/j2DMR4t5p+LLhE0d6n9V0mM0uthlOZMw4yXm0vr8cI
- C8UaQYsw==;
+ bh=GGVshRirD7E8RzSCZM8OwSLnUMUZfCLdvzVEjiU8aQs=; b=raROBzSQH8fRo79uTXssKwk37a
+ 2cwPHscXddUuiSIWM15ZkFgmVARMUXkK5lczgid/1F/A9gpU32ATi+Vt1MBGWnFbBJ5taO9IKSrZG
+ if5C3ZUrbYTDytrdwedU94IXVPCj1b59UUpCOkdRBrN+pFgAY7d/Cx9a8AVRi6cyOp+rX/d2ql7ar
+ pUt6rLvWCa4rmFaKqs5Bu81tUDthk0MkCYy/w3LEEfKMj1Z28iqFGC6ycbk/iaZ6oR3R4zBYSq+TF
+ hmlx/VD3h9UgVlyHCOUbwhYtwVUoTZnNQFKNXDU8SpHVYWl32ROxVoV1hpOzGTtAIGTACcffVyVAB
+ uyfFrP6g==;
 Received: from cgy1-donard.priv.deltatee.com ([172.16.1.31])
  by ale.deltatee.com with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
  (Exim 4.92) (envelope-from <gunthorp@deltatee.com>)
- id 1mR10G-0008I1-Hd; Thu, 16 Sep 2021 17:41:17 -0600
+ id 1mR10F-0008I1-Jm; Thu, 16 Sep 2021 17:41:16 -0600
 Received: from gunthorp by cgy1-donard.priv.deltatee.com with local (Exim
  4.94.2) (envelope-from <gunthorp@deltatee.com>)
- id 1mR104-000Vr7-E3; Thu, 16 Sep 2021 17:41:04 -0600
+ id 1mR104-000VrF-Op; Thu, 16 Sep 2021 17:41:04 -0600
 From: Logan Gunthorpe <logang@deltatee.com>
 To: linux-kernel@vger.kernel.org, linux-nvme@lists.infradead.org,
  linux-block@vger.kernel.org, linux-pci@vger.kernel.org, linux-mm@kvack.org,
  iommu@lists.linux-foundation.org
-Date: Thu, 16 Sep 2021 17:40:47 -0600
-Message-Id: <20210916234100.122368-8-logang@deltatee.com>
+Date: Thu, 16 Sep 2021 17:40:49 -0600
+Message-Id: <20210916234100.122368-10-logang@deltatee.com>
 X-Mailer: git-send-email 2.30.2
 In-Reply-To: <20210916234100.122368-1-logang@deltatee.com>
 References: <20210916234100.122368-1-logang@deltatee.com>
@@ -84,8 +84,8 @@ X-SA-Exim-Rcpt-To: linux-nvme@lists.infradead.org, linux-kernel@vger.kernel.org,
  jianxin.xiong@intel.com, ira.weiny@intel.com, robin.murphy@arm.com,
  martin.oliveira@eideticom.com, ckulkarnilinux@gmail.com, logang@deltatee.com
 X-SA-Exim-Mail-From: gunthorp@deltatee.com
-Subject: [PATCH v3 07/20] dma-mapping: add flags to dma_map_ops to indicate
- PCI P2PDMA support
+Subject: [PATCH v3 09/20] nvme-pci: check DMA ops when indicating support for
+ PCI P2PDMA
 X-SA-Exim-Version: 4.2.1 (built Wed, 08 May 2019 21:11:16 +0000)
 X-SA-Exim-Scanned: Yes (on ale.deltatee.com)
 Cc: Minturn Dave B <dave.b.minturn@intel.com>,
@@ -118,92 +118,82 @@ Content-Transfer-Encoding: 7bit
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-Add a flags member to the dma_map_ops structure with one flag to
-indicate support for PCI P2PDMA.
-
-Also, add a helper to check if a device supports PCI P2PDMA.
+Introduce a supports_pci_p2pdma() operation in nvme_ctrl_ops to
+replace the fixed NVME_F_PCI_P2PDMA flag such that the dma_map_ops
+flags can be checked for PCI P2PDMA support.
 
 Signed-off-by: Logan Gunthorpe <logang@deltatee.com>
 ---
- include/linux/dma-map-ops.h | 10 ++++++++++
- include/linux/dma-mapping.h |  5 +++++
- kernel/dma/mapping.c        | 18 ++++++++++++++++++
- 3 files changed, 33 insertions(+)
+ drivers/nvme/host/core.c |  3 ++-
+ drivers/nvme/host/nvme.h |  2 +-
+ drivers/nvme/host/pci.c  | 11 +++++++++--
+ 3 files changed, 12 insertions(+), 4 deletions(-)
 
-diff --git a/include/linux/dma-map-ops.h b/include/linux/dma-map-ops.h
-index 0d5b06b3a4a6..b60d6870c847 100644
---- a/include/linux/dma-map-ops.h
-+++ b/include/linux/dma-map-ops.h
-@@ -11,7 +11,17 @@
+diff --git a/drivers/nvme/host/core.c b/drivers/nvme/host/core.c
+index 7efb31b87f37..916750a54f60 100644
+--- a/drivers/nvme/host/core.c
++++ b/drivers/nvme/host/core.c
+@@ -3771,7 +3771,8 @@ static void nvme_alloc_ns(struct nvme_ctrl *ctrl, unsigned nsid,
+ 		blk_queue_flag_set(QUEUE_FLAG_STABLE_WRITES, ns->queue);
  
- struct cma;
+ 	blk_queue_flag_set(QUEUE_FLAG_NONROT, ns->queue);
+-	if (ctrl->ops->flags & NVME_F_PCI_P2PDMA)
++	if (ctrl->ops->supports_pci_p2pdma &&
++	    ctrl->ops->supports_pci_p2pdma(ctrl))
+ 		blk_queue_flag_set(QUEUE_FLAG_PCI_P2PDMA, ns->queue);
  
-+/*
-+ * Values for struct dma_map_ops.flags:
-+ *
-+ * DMA_F_PCI_P2PDMA_SUPPORTED: Indicates the dma_map_ops implementation can
-+ * handle PCI P2PDMA pages in the map_sg/unmap_sg operation.
-+ */
-+#define DMA_F_PCI_P2PDMA_SUPPORTED     (1 << 0)
-+
- struct dma_map_ops {
-+	unsigned int flags;
-+
- 	void *(*alloc)(struct device *dev, size_t size,
- 			dma_addr_t *dma_handle, gfp_t gfp,
- 			unsigned long attrs);
-diff --git a/include/linux/dma-mapping.h b/include/linux/dma-mapping.h
-index dca2b1355bb1..f7c61b2b4b5e 100644
---- a/include/linux/dma-mapping.h
-+++ b/include/linux/dma-mapping.h
-@@ -140,6 +140,7 @@ int dma_mmap_attrs(struct device *dev, struct vm_area_struct *vma,
- 		unsigned long attrs);
- bool dma_can_mmap(struct device *dev);
- int dma_supported(struct device *dev, u64 mask);
-+bool dma_pci_p2pdma_supported(struct device *dev);
- int dma_set_mask(struct device *dev, u64 mask);
- int dma_set_coherent_mask(struct device *dev, u64 mask);
- u64 dma_get_required_mask(struct device *dev);
-@@ -250,6 +251,10 @@ static inline int dma_supported(struct device *dev, u64 mask)
- {
- 	return 0;
+ 	ns->ctrl = ctrl;
+diff --git a/drivers/nvme/host/nvme.h b/drivers/nvme/host/nvme.h
+index 9871c0c9374c..fb9bfc52a6d7 100644
+--- a/drivers/nvme/host/nvme.h
++++ b/drivers/nvme/host/nvme.h
+@@ -477,7 +477,6 @@ struct nvme_ctrl_ops {
+ 	unsigned int flags;
+ #define NVME_F_FABRICS			(1 << 0)
+ #define NVME_F_METADATA_SUPPORTED	(1 << 1)
+-#define NVME_F_PCI_P2PDMA		(1 << 2)
+ 	int (*reg_read32)(struct nvme_ctrl *ctrl, u32 off, u32 *val);
+ 	int (*reg_write32)(struct nvme_ctrl *ctrl, u32 off, u32 val);
+ 	int (*reg_read64)(struct nvme_ctrl *ctrl, u32 off, u64 *val);
+@@ -485,6 +484,7 @@ struct nvme_ctrl_ops {
+ 	void (*submit_async_event)(struct nvme_ctrl *ctrl);
+ 	void (*delete_ctrl)(struct nvme_ctrl *ctrl);
+ 	int (*get_address)(struct nvme_ctrl *ctrl, char *buf, int size);
++	bool (*supports_pci_p2pdma)(struct nvme_ctrl *ctrl);
+ };
+ 
+ /*
+diff --git a/drivers/nvme/host/pci.c b/drivers/nvme/host/pci.c
+index b82492cd7503..7d1ef66eac2e 100644
+--- a/drivers/nvme/host/pci.c
++++ b/drivers/nvme/host/pci.c
+@@ -2874,17 +2874,24 @@ static int nvme_pci_get_address(struct nvme_ctrl *ctrl, char *buf, int size)
+ 	return snprintf(buf, size, "%s\n", dev_name(&pdev->dev));
  }
-+static inline bool dma_pci_p2pdma_supported(struct device *dev)
-+{
-+	return false;
-+}
- static inline int dma_set_mask(struct device *dev, u64 mask)
- {
- 	return -EIO;
-diff --git a/kernel/dma/mapping.c b/kernel/dma/mapping.c
-index 7315ae31cf1d..23a02fe1832a 100644
---- a/kernel/dma/mapping.c
-+++ b/kernel/dma/mapping.c
-@@ -727,6 +727,24 @@ int dma_supported(struct device *dev, u64 mask)
- }
- EXPORT_SYMBOL(dma_supported);
  
-+bool dma_pci_p2pdma_supported(struct device *dev)
++static bool nvme_pci_supports_pci_p2pdma(struct nvme_ctrl *ctrl)
 +{
-+	const struct dma_map_ops *ops = get_dma_ops(dev);
++	struct nvme_dev *dev = to_nvme_dev(ctrl);
 +
-+	/* if ops is not set, dma direct will be used which supports P2PDMA */
-+	if (!ops)
-+		return true;
-+
-+	/*
-+	 * Note: dma_ops_bypass is not checked here because P2PDMA should
-+	 * not be used with dma mapping ops that do not have support even
-+	 * if the specific device is bypassing them.
-+	 */
-+
-+	return ops->flags & DMA_F_PCI_P2PDMA_SUPPORTED;
++	return dma_pci_p2pdma_supported(dev->dev);
 +}
-+EXPORT_SYMBOL_GPL(dma_pci_p2pdma_supported);
 +
- #ifdef CONFIG_ARCH_HAS_DMA_SET_MASK
- void arch_dma_set_mask(struct device *dev, u64 mask);
- #else
+ static const struct nvme_ctrl_ops nvme_pci_ctrl_ops = {
+ 	.name			= "pcie",
+ 	.module			= THIS_MODULE,
+-	.flags			= NVME_F_METADATA_SUPPORTED |
+-				  NVME_F_PCI_P2PDMA,
++	.flags			= NVME_F_METADATA_SUPPORTED,
+ 	.reg_read32		= nvme_pci_reg_read32,
+ 	.reg_write32		= nvme_pci_reg_write32,
+ 	.reg_read64		= nvme_pci_reg_read64,
+ 	.free_ctrl		= nvme_pci_free_ctrl,
+ 	.submit_async_event	= nvme_pci_submit_async_event,
+ 	.get_address		= nvme_pci_get_address,
++	.supports_pci_p2pdma	= nvme_pci_supports_pci_p2pdma,
+ };
+ 
+ static int nvme_dev_map(struct nvme_dev *dev)
 -- 
 2.30.2
 
