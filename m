@@ -1,105 +1,92 @@
-Return-Path: <SRS0=KP5g=OF=lists.linux-foundation.org=iommu-bounces@kernel.org>
+Return-Path: <SRS0=vqUx=OG=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-2.0 required=3.0 tests=BAYES_00,DKIM_ADSP_CUSTOM_MED,
-	DKIM_INVALID,DKIM_SIGNED,FREEMAIL_FORGED_FROMDOMAIN,FREEMAIL_FROM,
-	HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,
-	URIBL_BLOCKED,USER_AGENT_SANE_1 autolearn=no autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-3.8 required=3.0 tests=BAYES_00,
+	HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS
+	autolearn=no autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C745AC433FE
-	for <iommu@archiver.kernel.org>; Wed, 15 Sep 2021 22:27:23 +0000 (UTC)
-Received: from smtp4.osuosl.org (smtp4.osuosl.org [140.211.166.137])
+	by smtp.lore.kernel.org (Postfix) with ESMTP id F05D4C433EF
+	for <iommu@archiver.kernel.org>; Thu, 16 Sep 2021 07:26:51 +0000 (UTC)
+Received: from smtp1.osuosl.org (smtp1.osuosl.org [140.211.166.138])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 653D261131
-	for <iommu@archiver.kernel.org>; Wed, 15 Sep 2021 22:27:23 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.4.1 mail.kernel.org 653D261131
-Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=gmail.com
+	by mail.kernel.org (Postfix) with ESMTPS id 777D560F6B
+	for <iommu@archiver.kernel.org>; Thu, 16 Sep 2021 07:26:51 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.4.1 mail.kernel.org 777D560F6B
+Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=huawei.com
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by smtp4.osuosl.org (Postfix) with ESMTP id 21E4D406CB;
-	Wed, 15 Sep 2021 22:27:23 +0000 (UTC)
+	by smtp1.osuosl.org (Postfix) with ESMTP id 2F72C82FE7;
+	Thu, 16 Sep 2021 07:26:51 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from smtp4.osuosl.org ([127.0.0.1])
-	by localhost (smtp4.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id ATzENHAS407C; Wed, 15 Sep 2021 22:27:22 +0000 (UTC)
+Received: from smtp1.osuosl.org ([127.0.0.1])
+	by localhost (smtp1.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+	with ESMTP id 47muUMNT_r1O; Thu, 16 Sep 2021 07:26:50 +0000 (UTC)
 Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by smtp4.osuosl.org (Postfix) with ESMTPS id 0AF1C406CA;
-	Wed, 15 Sep 2021 22:27:21 +0000 (UTC)
+	by smtp1.osuosl.org (Postfix) with ESMTPS id 1408282FEA;
+	Thu, 16 Sep 2021 07:26:50 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id DA598C0011;
-	Wed, 15 Sep 2021 22:27:21 +0000 (UTC)
-Received: from smtp2.osuosl.org (smtp2.osuosl.org [140.211.166.133])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 59615C000D
- for <iommu@lists.linux-foundation.org>; Wed, 15 Sep 2021 22:27:20 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id D95CCC000F;
+	Thu, 16 Sep 2021 07:26:49 +0000 (UTC)
+Received: from smtp1.osuosl.org (smtp1.osuosl.org [140.211.166.138])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 3D4EAC000D
+ for <iommu@lists.linux-foundation.org>; Thu, 16 Sep 2021 07:26:48 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by smtp2.osuosl.org (Postfix) with ESMTP id 3A40540520
- for <iommu@lists.linux-foundation.org>; Wed, 15 Sep 2021 22:27:20 +0000 (UTC)
+ by smtp1.osuosl.org (Postfix) with ESMTP id 1FE7F82FEA
+ for <iommu@lists.linux-foundation.org>; Thu, 16 Sep 2021 07:26:48 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Authentication-Results: smtp2.osuosl.org (amavisd-new);
- dkim=pass (2048-bit key) header.d=gmail.com
-Received: from smtp2.osuosl.org ([127.0.0.1])
- by localhost (smtp2.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id jKXaYAMphJRo for <iommu@lists.linux-foundation.org>;
- Wed, 15 Sep 2021 22:27:19 +0000 (UTC)
-X-Greylist: whitelisted by SQLgrey-1.8.0
-Received: from mail-pg1-x52b.google.com (mail-pg1-x52b.google.com
- [IPv6:2607:f8b0:4864:20::52b])
- by smtp2.osuosl.org (Postfix) with ESMTPS id 693F24010D
- for <iommu@lists.linux-foundation.org>; Wed, 15 Sep 2021 22:27:19 +0000 (UTC)
-Received: by mail-pg1-x52b.google.com with SMTP id k24so4202400pgh.8
- for <iommu@lists.linux-foundation.org>; Wed, 15 Sep 2021 15:27:19 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=gmail.com; s=20210112;
- h=date:from:to:cc:subject:message-id:references:mime-version
- :content-disposition:content-transfer-encoding:in-reply-to
- :user-agent; bh=Xjyd5hMkpqMPk7OhcHiCF4/y/tnGWYGZ0keB+odd2Ng=;
- b=PlXQITEvZmBc1n7tRBdgd+gUsoQd7z+WeqSbwCW0Y6fVI8yT/SQH/gZOWj1rEd5PGH
- swNw22KZC8xoIpuwIOQB0qBuBZBZVQWgdu04NyU6/ozEYdI57WYsUCIzwUwa/fXkskfb
- Alz/fQ0BjBNdtF+77mNK0GKHlJt/0rPr36QxGX+0/Gyr17UmSRlTyBf9gjrH2asTZyW/
- gBPr3uUgJJ/xedmcsnp7l2LPZ4ZTqdm51B1jx6lrUzYPnij2Wz8OZIQrhM6EroN8hPM3
- /F/NaGZD2ImE0QW0yTglhOgYeRTL9MoYcjhqUOgNuIyemHOGS5JDWeTfwft4goXa85x5
- gfvg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
- d=1e100.net; s=20210112;
- h=x-gm-message-state:date:from:to:cc:subject:message-id:references
- :mime-version:content-disposition:content-transfer-encoding
- :in-reply-to:user-agent;
- bh=Xjyd5hMkpqMPk7OhcHiCF4/y/tnGWYGZ0keB+odd2Ng=;
- b=RNa08tTcAaow2mY7G+XMOfsKLtc1qg2Pi5SZGJPaDiUMzMm7OR8oX/jNgeMhAJTY1C
- FxWAi7XRaoKvilZjl5zDkUNhpzTTz99y+Z8kaODWrdWpc7FiIjmN34ZzpQJdoGJlgAwU
- pQubyBrrlXsU3E3uJMoNqrIt0HoKveEsC3lnGvj3GxQ4oL/FLBM8VQTBEJzdtGvHYFhJ
- frxcRUlU176uLGyH2c4PyfzRaXOS3V3oiV+ud75GazxzGm6vNZn2H6PUwWjygY4r8VaK
- csivnFNghOgXjozZXxa1u+8YW72kqsRmmhTWL5VF6mqt8NWMfawCl4zLNKnir0rmRKjC
- vCmQ==
-X-Gm-Message-State: AOAM5310dULEWGMYkaozGckErNGCrYZQl49EexZjx8BZAvzxLRHqqGJ7
- vlWgiraJPZgEXc/1xlu3O/I=
-X-Google-Smtp-Source: ABdhPJw3biDmUuN9v1ueAp+vI6CP+EYWCLxdUEgAvtkkJ6srbsFEnvpRNyy9gQ4borOgaHrubiOtQg==
-X-Received: by 2002:a63:555c:: with SMTP id f28mr1943370pgm.340.1631744838735; 
- Wed, 15 Sep 2021 15:27:18 -0700 (PDT)
-Received: from Asurada-Nvidia (thunderhill.nvidia.com. [216.228.112.22])
- by smtp.gmail.com with ESMTPSA id m12sm556664pjv.29.2021.09.15.15.27.17
- (version=TLS1_2 cipher=ECDHE-ECDSA-CHACHA20-POLY1305 bits=256/256);
- Wed, 15 Sep 2021 15:27:18 -0700 (PDT)
-Date: Wed, 15 Sep 2021 15:19:27 -0700
-From: Nicolin Chen <nicoleotsuka@gmail.com>
-To: Dmitry Osipenko <digetx@gmail.com>
-Subject: Re: [PATCH v6 6/6] iommu/tegra-smmu: Add pagetable mappings to debugfs
-Message-ID: <20210915221902.GA20845@Asurada-Nvidia>
-References: <20210914013858.31192-1-nicoleotsuka@gmail.com>
- <20210914013858.31192-7-nicoleotsuka@gmail.com>
- <31501a62-3312-9f04-3bb8-790d0481746c@gmail.com>
- <20210914184933.GA32705@Asurada-Nvidia>
- <25d68aff-323a-df54-45f9-55b22f3089e0@gmail.com>
- <20210915043806.GA19185@Asurada-Nvidia>
- <a5a77169-8711-2983-d2cb-4b94061741b9@gmail.com>
+Received: from smtp1.osuosl.org ([127.0.0.1])
+ by localhost (smtp1.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+ with ESMTP id r1Uah5EiyhPB for <iommu@lists.linux-foundation.org>;
+ Thu, 16 Sep 2021 07:26:46 +0000 (UTC)
+X-Greylist: domain auto-whitelisted by SQLgrey-1.8.0
+Received: from frasgout.his.huawei.com (frasgout.his.huawei.com
+ [185.176.79.56])
+ by smtp1.osuosl.org (Postfix) with ESMTPS id 7668B82FE7
+ for <iommu@lists.linux-foundation.org>; Thu, 16 Sep 2021 07:26:46 +0000 (UTC)
+Received: from fraeml707-chm.china.huawei.com (unknown [172.18.147.207])
+ by frasgout.his.huawei.com (SkyGuard) with ESMTP id 4H97rF22wjz67PNJ;
+ Thu, 16 Sep 2021 15:24:29 +0800 (CST)
+Received: from lhreml711-chm.china.huawei.com (10.201.108.62) by
+ fraeml707-chm.china.huawei.com (10.206.15.35) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2308.8; Thu, 16 Sep 2021 09:26:42 +0200
+Received: from lhreml710-chm.china.huawei.com (10.201.108.61) by
+ lhreml711-chm.china.huawei.com (10.201.108.62) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2308.8; Thu, 16 Sep 2021 08:26:42 +0100
+Received: from lhreml710-chm.china.huawei.com ([169.254.81.184]) by
+ lhreml710-chm.china.huawei.com ([169.254.81.184]) with mapi id
+ 15.01.2308.008; Thu, 16 Sep 2021 08:26:41 +0100
+From: Shameerali Kolothum Thodi <shameerali.kolothum.thodi@huawei.com>
+To: Jon Nettleton <jon@solid-run.com>, Robin Murphy <robin.murphy@arm.com>
+Subject: RE: [PATCH v7 2/9] ACPI/IORT: Add support for RMR node parsing
+Thread-Topic: [PATCH v7 2/9] ACPI/IORT: Add support for RMR node parsing
+Thread-Index: AQHXidEiKr58723PTUGGkSglF1QKPatlAmqAgDJmwoCAACN+gIAO55og
+Date: Thu, 16 Sep 2021 07:26:41 +0000
+Message-ID: <f3fc713365f7465e966aaed7cdd8870a@huawei.com>
+References: <20210805080724.480-1-shameerali.kolothum.thodi@huawei.com>
+ <20210805080724.480-3-shameerali.kolothum.thodi@huawei.com>
+ <20210805160319.GB23085@lpieralisi>
+ <5d9bebdf-6eb5-49a0-2e8f-490df2d6754d@arm.com>
+ <CABdtJHt-18TDHBFq1X89=qngUbopGoFnqjuXiBOPtZG58vy3sg@mail.gmail.com>
+In-Reply-To: <CABdtJHt-18TDHBFq1X89=qngUbopGoFnqjuXiBOPtZG58vy3sg@mail.gmail.com>
+Accept-Language: en-GB, en-US
+Content-Language: en-US
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+x-originating-ip: [10.47.83.177]
 MIME-Version: 1.0
-Content-Disposition: inline
-In-Reply-To: <a5a77169-8711-2983-d2cb-4b94061741b9@gmail.com>
-User-Agent: Mutt/1.9.4 (2018-02-28)
-Cc: linux-kernel@vger.kernel.org, iommu@lists.linux-foundation.org,
- jonathanh@nvidia.com, thierry.reding@gmail.com, linux-tegra@vger.kernel.org,
- will@kernel.org
+X-CFilter-Loop: Reflected
+Cc: Steven Price <steven.price@arm.com>,
+ ACPI Devel Maling List <linux-acpi@vger.kernel.org>,
+ Linux IOMMU <iommu@lists.linux-foundation.org>,
+ wanghuiqiang <wanghuiqiang@huawei.com>,
+ "Guohanjun \(Hanjun Guo\)" <guohanjun@huawei.com>,
+ yangyicong <yangyicong@huawei.com>, Sami Mujawar <Sami.Mujawar@arm.com>,
+ Will Deacon <will@kernel.org>,
+ linux-arm-kernel <linux-arm-kernel@lists.infradead.org>
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -112,59 +99,93 @@ List-Post: <mailto:iommu@lists.linux-foundation.org>
 List-Help: <mailto:iommu-request@lists.linux-foundation.org?subject=help>
 List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
  <mailto:iommu-request@lists.linux-foundation.org?subject=subscribe>
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-T24gV2VkLCBTZXAgMTUsIDIwMjEgYXQgMDM6MDk6NDhQTSArMDMwMCwgRG1pdHJ5IE9zaXBlbmtv
-IHdyb3RlOgo+IDE1LjA5LjIwMjEgMDc6MzgsIE5pY29saW4gQ2hlbiDQv9C40YjQtdGCOgo+ID4g
-T24gVHVlLCBTZXAgMTQsIDIwMjEgYXQgMTA6MjA6MzBQTSArMDMwMCwgRG1pdHJ5IE9zaXBlbmtv
-IHdyb3RlOgo+ID4+IDE0LjA5LjIwMjEgMjE6NDksIE5pY29saW4gQ2hlbiDQv9C40YjQtdGCOgo+
-ID4+PiBPbiBUdWUsIFNlcCAxNCwgMjAyMSBhdCAwNDoyOToxNVBNICswMzAwLCBEbWl0cnkgT3Np
-cGVua28gd3JvdGU6Cj4gPj4+PiAxNC4wOS4yMDIxIDA0OjM4LCBOaWNvbGluIENoZW4g0L/QuNGI
-0LXRgjoKPiA+Pj4+PiArc3RhdGljIHVuc2lnbmVkIGxvbmcgcGRfcHRfaW5kZXhfaW92YSh1bnNp
-Z25lZCBpbnQgcGRfaW5kZXgsIHVuc2lnbmVkIGludCBwdF9pbmRleCkKPiA+Pj4+PiArewo+ID4+
-Pj4+ICsJcmV0dXJuICgoZG1hX2FkZHJfdClwZF9pbmRleCAmIChTTU1VX05VTV9QREUgLSAxKSkg
-PDwgU01NVV9QREVfU0hJRlQgfAo+ID4+Pj4+ICsJICAgICAgICgoZG1hX2FkZHJfdClwdF9pbmRl
-eCAmIChTTU1VX05VTV9QVEUgLSAxKSkgPDwgU01NVV9QVEVfU0hJRlQ7Cj4gPj4+Pj4gK30KPiA+
-Pj4+Cj4gPj4+PiBXZSBrbm93IHRoYXQgSU9WQSBpcyBmaXhlZCB0byB1MzIgZm9yIHRoaXMgY29u
-dHJvbGxlci4gQ2FuIHdlIGF2b2lkIGFsbAo+ID4+Pj4gdGhlc2UgZG1hX2FkZHJfdCBjYXN0aW5n
-cz8gSXQgc2hvdWxkIG1ha2UgY29kZSBjbGVhbmVyIGEgdGFkLCBJTU8uCj4gPj4+Cj4gPj4+IFRl
-Z3JhMjEwIGFjdHVhbGx5IHN1cHBvcnRzIDM0LWJpdCBJT1ZBLi4uCj4gPj4+Cj4gPj4KPiA+PiBJ
-dCBkb2Vzbid0LiAzNC1iaXQgaXMgUEEsIDMyLWJpdCBpcyBWQS4KPiA+Pgo+ID4+IFF1b3RlIGZy
-b20gVDIxMCBUUk06Cj4gPj4KPiA+PiAiVGhlIFNNTVUgaXMgYSBjZW50cmFsaXplZCB2aXJ0dWFs
-LXRvLXBoeXNpY2FsIHRyYW5zbGF0aW9uIGZvciBNU1MuIEl0Cj4gPj4gbWFwcyBhIDMyLWJpdCB2
-aXJ0dWFsIGFkZHJlc3MgdG8gYSAzNC1iaXQgcGh5c2ljYWwgYWRkcmVzcy4gSWYgdGhlCj4gPj4g
-Y2xpZW50IGFkZHJlc3MgaXMgNDAgYml0cyB0aGVuIGJpdHMgMzk6MzIgYXJlIGlnbm9yZWQuIgo+
-ID4gCj4gPiBJZiB5b3Ugc2Nyb2xsIGRvd24gYnkgYSBjb3VwbGUgb2Ygc2VjdGlvbnMsIHlvdSBj
-YW4gc2VlIDM0LWJpdAo+ID4gdmlydHVhbCBhZGRyZXNzZXMgaW4gc2VjdGlvbiAxOC42LjEuMjsg
-YW5kIGlmIGNoZWNraW5nIG9uZSBBU0lECj4gPiByZWdpc3RlciwgeW91IGNhbiBzZWUgaXQgbWVu
-dGlvbiB0aGUgZXh0cmEgdHdvIGJpdHMgdmFbMzM6MzJdLgo+IAo+IFRoYW5rcyBmb3IgdGhlIHBv
-aW50ZXIuIEl0IHNheXMgdGhhdCBvbmx5IGNlcnRhaW4gbWVtb3J5IGNsaWVudHMgYWxsb3cKPiB0
-byBjb21iaW5lIDQgQVNJRHMgdG8gZm9ybSAzNGJpdCBWQSBzcGFjZS4gSW4gdGhpcyBjYXNlIHRo
-ZSBQQSBzcGFjZSBpcwo+IHNwbGl0IGludG8gNEdCIGFyZWFzIGFuZCB0aGVyZSBhcmUgYWRkaXRp
-b25hbCBiaXRmaWVsZHMgd2hpY2ggY29uZmlndXJlCj4gdGhlIEFTSUQgbWFwcGluZyBvZiBlYWNo
-IDRHQiBhcmVhLiBTdGlsbCBlYWNoIEFTSUQgaXMgMzJiaXQuCgpUcnVlLgoKPiBUaGlzIGlzIHdo
-YXQgVFJNIHNheXM6Cj4gCj4gIkZvciB0aGUgR1BVIGFuZCBvdGhlciBjbGllbnRzIHdpdGggMzQt
-Yml0IGFkZHJlc3MgaW50ZXJmYWNlcywgdGhlIEFTSUQKPiByZWdpc3RlcnMgYXJlIGV4dGVuZGVk
-IHRvIHBvaW50IHRvIGZvdXIgQVNJRHMuIFRoZSBTTU1VIHN1cHBvcnRzIDRHQiBvZgo+IHZpcnR1
-YWwgYWRkcmVzcyBzcGFjZSBwZXIgQVNJRCwgc28gbWFwcGluZyBhZGRyWzMzOjMyXSBpbnRvIEFT
-SURbMTowXQo+IGV4dGVuZHMgdGhlIHZpcnR1YWwgYWRkcmVzcyBzcGFjZSBvZiBhIGNsaWVudCB0
-byAxNkdCLiIKPiAKPiA+IEhvd2V2ZXIsIHRoZSBkcml2ZXIgY3VycmVudGx5IHNldHMgaXRzIGdl
-b21ldHJ5LmFwZXJ0dXJlX2VuZCB0bwo+ID4gMzItYml0LCBhbmQgd2UgY2FuIG9ubHkgZ2V0IDMy
-LWJpdCBJT1ZBcyB1c2luZyBQREUgYW5kIFBURSBvbmx5LAo+ID4gc28gSSB0aGluayBpdCBzaG91
-bGQgYmUgc2FmZSB0byByZW1vdmUgdGhlIGNhc3RpbmdzIGhlcmUuIEknbGwKPiA+IHdhaXQgZm9y
-IGEgY291cGxlIG9mIGRheXMgYW5kIHNlZSBpZiB0aGVyZSdkIGJlIG90aGVyIGNvbW1lbnRzCj4g
-PiBmb3IgbWUgdG8gYWRkcmVzcyBpbiBuZXh0IHZlcnNpb24uCj4gCj4gWW91IHdpbGwgbmVlZCB0
-byByZWFkIHRoZSBzcGVjaWFsICJBU0lEIEFzc2lnbm1lbnQgUmVnaXN0ZXIiIHdoaWNoCj4gc3Vw
-cG9ydHMgNCBzdWItQVNJRHMgdG8gdHJhbnNsYXRlIHRoZSBQQSBhZGRyZXNzIGludG8gdGhlIGFj
-dHVhbCBWQS4gQnkKPiBkZWZhdWx0IGFsbCBjbGllbnRzIGFyZSBsaW1pdGVkIHRvIGEgc2luZ2xl
-IEFTSUQgYW5kIHVwc3RyZWFtIGtlcm5lbAo+IGRvZXNuJ3Qgc3VwcG9ydCBwcm9ncmFtbWluZyBv
-ZiAzNGJpdCBWQXMuIFNvIGRvZXNuJ3Qgd29ydGggdGhlIGVmZm9ydCB0bwo+IGZ1bGx5IHRyYW5z
-bGF0ZSB0aGUgVkEsIElNTy4KClllYS4gSXQnZCBiZSBlYXNpZXIgdG8ganVzdCBzdGF5IGluIDMy
-LWJpdC4gSSB3aWxsIHJlbW92ZSB0aG9zZQpjYXN0aW5ncyBpbiB0aGUgbmV4dCB2ZXJzaW9uLCB3
-YWl0aW5nIGZvciBUaGllcnJ5IHRha2luZyBhIGxvb2sKYXQgdGhpcyB2NiBmaXJzdC4KX19fX19f
-X19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX18KaW9tbXUgbWFpbGluZyBs
-aXN0CmlvbW11QGxpc3RzLmxpbnV4LWZvdW5kYXRpb24ub3JnCmh0dHBzOi8vbGlzdHMubGludXhm
-b3VuZGF0aW9uLm9yZy9tYWlsbWFuL2xpc3RpbmZvL2lvbW11
+
+
+> -----Original Message-----
+> From: Jon Nettleton [mailto:jon@solid-run.com]
+> Sent: 06 September 2021 20:51
+> To: Robin Murphy <robin.murphy@arm.com>
+> Cc: Lorenzo Pieralisi <lorenzo.pieralisi@arm.com>; Shameerali Kolothum Thodi
+> <shameerali.kolothum.thodi@huawei.com>; Laurentiu Tudor
+> <laurentiu.tudor@nxp.com>; linux-arm-kernel
+> <linux-arm-kernel@lists.infradead.org>; ACPI Devel Maling List
+> <linux-acpi@vger.kernel.org>; Linux IOMMU
+> <iommu@lists.linux-foundation.org>; Linuxarm <linuxarm@huawei.com>;
+> Joerg Roedel <joro@8bytes.org>; Will Deacon <will@kernel.org>;
+> wanghuiqiang <wanghuiqiang@huawei.com>; Guohanjun (Hanjun Guo)
+> <guohanjun@huawei.com>; Steven Price <steven.price@arm.com>; Sami
+> Mujawar <Sami.Mujawar@arm.com>; Eric Auger <eric.auger@redhat.com>;
+> yangyicong <yangyicong@huawei.com>
+> Subject: Re: [PATCH v7 2/9] ACPI/IORT: Add support for RMR node parsing
+> 
+[...]
+
+> > >
+> > > On the prot value assignment based on the remapping flag, I'd like
+> > > to hear Robin/Joerg's opinion, I'd avoid being in a situation where
+> > > "normally" this would work but then we have to quirk it.
+> > >
+> > > Is this a valid assumption _always_ ?
+> >
+> > No. Certainly applying IOMMU_CACHE without reference to the device's
+> > _CCA attribute or how CPUs may be accessing a shared buffer could lead
+> > to a loss of coherency. At worst, applying IOMMU_MMIO to a
+> > device-private buffer *could* cause the device to lose coherency with
+> > itself if the memory underlying the RMR may have allocated into system
+> > caches. Note that the expected use for non-remappable RMRs is the
+> > device holding some sort of long-lived private data in system RAM -
+> > the MSI doorbell trick is far more of a niche hack really.
+> >
+> > At the very least I think we need to refer to the device's memory
+> > access properties here.
+> >
+> > Jon, Laurentiu - how do RMRs correspond to the EFI memory map on your
+> > firmware? I'm starting to think that as long as the underlying memory
+> > is described appropriately there then we should be able to infer
+> > correct attributes from the EFI memory type and flags.
+> 
+> The devices are all cache coherent and marked as _CCA, 1.  The Memory
+> regions are in the virt table as ARM_MEMORY_REGION_ATTRIBUTE_DEVICE.
+> 
+> The current chicken and egg problem we have is that during the fsl-mc-bus
+> initialization we call
+> 
+> error = acpi_dma_configure_id(&pdev->dev, DEV_DMA_COHERENT,
+>                                               &mc_stream_id);
+> 
+> which gets deferred because the SMMU has not been initialized yet. Then we
+> initialize the RMR tables but there is no device reference there to be able to
+> query device properties, only the stream id.  After the IORT tables are parsed
+> and the SMMU is setup, on the second device probe we associate everything
+> based on the stream id and the fsl-mc-bus device is able to claim its 1-1 DMA
+> mappings.
+
+Can we solve this order problem by delaying the iommu_alloc_resv_region()
+to the iommu_dma_get_rmr_resv_regions(dev, list) ? We could invoke
+device_get_dma_attr() from there which I believe will return the _CCA attribute.
+
+Or is that still early to invoke that?
+
+Thanks,
+Shameer
+
+> cat /sys/kernel/iommu_groups/0/reserved_regions
+> 0x0000000001000000 0x0000000010ffffff direct-relaxable
+> 0x0000000008000000 0x00000000080fffff msi
+> 0x000000080c000000 0x000000081bffffff direct-relaxable
+> 0x0000001c00000000 0x0000001c001fffff direct-relaxable
+> 0x0000002080000000 0x000000209fffffff direct-relaxable
+> 
+> -Jon
+> 
+> >
+> > Robin.
+_______________________________________________
+iommu mailing list
+iommu@lists.linux-foundation.org
+https://lists.linuxfoundation.org/mailman/listinfo/iommu
