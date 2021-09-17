@@ -2,184 +2,165 @@ Return-Path: <SRS0=dQER=OH=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-6.5 required=3.0 tests=BAYES_00,DKIM_INVALID,
+X-Spam-Status: No, score=-5.0 required=3.0 tests=BAYES_00,DKIM_INVALID,
 	DKIM_SIGNED,HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,
-	MSGID_FROM_MTA_HEADER,NICE_REPLY_A,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,
-	USER_AGENT_SANE_1 autolearn=no autolearn_force=no version=3.4.0
+	MSGID_FROM_MTA_HEADER,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_SANE_1
+	autolearn=no autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 48171C433FE
-	for <iommu@archiver.kernel.org>; Fri, 17 Sep 2021 09:52:26 +0000 (UTC)
-Received: from smtp4.osuosl.org (smtp4.osuosl.org [140.211.166.137])
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 139FDC433FE
+	for <iommu@archiver.kernel.org>; Fri, 17 Sep 2021 10:44:08 +0000 (UTC)
+Received: from smtp1.osuosl.org (smtp1.osuosl.org [140.211.166.138])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id C8926610C8
-	for <iommu@archiver.kernel.org>; Fri, 17 Sep 2021 09:52:25 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.4.1 mail.kernel.org C8926610C8
+	by mail.kernel.org (Postfix) with ESMTPS id B00FF6120D
+	for <iommu@archiver.kernel.org>; Fri, 17 Sep 2021 10:44:07 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.4.1 mail.kernel.org B00FF6120D
 Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=lists.linux-foundation.org
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by smtp4.osuosl.org (Postfix) with ESMTP id 8F2A3415AB;
-	Fri, 17 Sep 2021 09:52:25 +0000 (UTC)
+	by smtp1.osuosl.org (Postfix) with ESMTP id 79B5E80D21;
+	Fri, 17 Sep 2021 10:44:07 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from smtp4.osuosl.org ([127.0.0.1])
-	by localhost (smtp4.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id Qyenoj-tK-Bf; Fri, 17 Sep 2021 09:52:24 +0000 (UTC)
+Received: from smtp1.osuosl.org ([127.0.0.1])
+	by localhost (smtp1.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+	with ESMTP id X4s3BpyB7yGi; Fri, 17 Sep 2021 10:44:06 +0000 (UTC)
 Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [IPv6:2605:bc80:3010:104::8cd3:938])
-	by smtp4.osuosl.org (Postfix) with ESMTPS id 625AD407F2;
-	Fri, 17 Sep 2021 09:52:24 +0000 (UTC)
+	by smtp1.osuosl.org (Postfix) with ESMTPS id 58F3B80D09;
+	Fri, 17 Sep 2021 10:44:06 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 18D3BC000F;
-	Fri, 17 Sep 2021 09:52:24 +0000 (UTC)
-Received: from smtp4.osuosl.org (smtp4.osuosl.org [IPv6:2605:bc80:3010::137])
- by lists.linuxfoundation.org (Postfix) with ESMTP id E4F30C000D
- for <iommu@lists.linux-foundation.org>; Fri, 17 Sep 2021 09:52:22 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 2E957C0011;
+	Fri, 17 Sep 2021 10:44:06 +0000 (UTC)
+Received: from smtp1.osuosl.org (smtp1.osuosl.org [IPv6:2605:bc80:3010::138])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 4E5C2C000D
+ for <iommu@lists.linux-foundation.org>; Fri, 17 Sep 2021 10:44:05 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by smtp4.osuosl.org (Postfix) with ESMTP id BED25415A7
- for <iommu@lists.linux-foundation.org>; Fri, 17 Sep 2021 09:52:22 +0000 (UTC)
+ by smtp1.osuosl.org (Postfix) with ESMTP id 2A03780CE5
+ for <iommu@lists.linux-foundation.org>; Fri, 17 Sep 2021 10:44:05 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from smtp4.osuosl.org ([127.0.0.1])
- by localhost (smtp4.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id RRCeabrZdUjh for <iommu@lists.linux-foundation.org>;
- Fri, 17 Sep 2021 09:52:21 +0000 (UTC)
+Received: from smtp1.osuosl.org ([127.0.0.1])
+ by localhost (smtp1.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+ with ESMTP id xyJOKNrpDIv7 for <iommu@lists.linux-foundation.org>;
+ Fri, 17 Sep 2021 10:44:04 +0000 (UTC)
 X-Greylist: domain auto-whitelisted by SQLgrey-1.8.0
 Received: from de-smtp-delivery-102.mimecast.com
  (de-smtp-delivery-102.mimecast.com [194.104.111.102])
- by smtp4.osuosl.org (Postfix) with ESMTPS id 8847A407F2
- for <iommu@lists.linux-foundation.org>; Fri, 17 Sep 2021 09:52:21 +0000 (UTC)
+ by smtp1.osuosl.org (Postfix) with ESMTPS id 473EC80CD6
+ for <iommu@lists.linux-foundation.org>; Fri, 17 Sep 2021 10:44:04 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.com;
- s=mimecast20200619; t=1631872339;
+ s=mimecast20200619; t=1631875442;
  h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
  to:to:cc:cc:mime-version:mime-version:content-type:content-type:
- content-transfer-encoding:content-transfer-encoding:
- in-reply-to:in-reply-to:references:references;
- bh=GXHtNvXg31UQSdkLZPhgMtWUpYK/lfDRKw9DfFedgMc=;
- b=OF54Xgu3bDNP+32BLf7zECCaYqPHoopDxPAbbHu/fg9DmGRWny3C39Tk+Jr5nFvy/cB4nH
- 7TcIdjKFdiMfkbcQbW7aJj+7cMLjpony6f22x4akX9exyCd456MkNaeDAfEI3vJ4NEkyQ/
- QfNjpezBmiojI27JTuafz/vhirdnU9E=
-Received: from EUR02-AM5-obe.outbound.protection.outlook.com
- (mail-am5eur02lp2052.outbound.protection.outlook.com [104.47.4.52]) (Using
+ content-transfer-encoding:content-transfer-encoding;
+ bh=3fkICs2NUVZw+X2zzeXCMA7XH+sCYDVqsCZWlrdy5Ss=;
+ b=C7yDkLc/0T8/5YgOp/fYUFJIZuf5CWVTNek44KiBVMFUmLfrl08fI8SnL2s5IZ9J6UQ+Am
+ vYHkn9M77BL/9w+H5UESSbntP9H+MS7ItmXHMXuZTy7vsgosRrzaNsWQuKGwexwxSjKgwT
+ UfdophElqd/njBExs4tppXsByXh+r+w=
+Received: from EUR04-HE1-obe.outbound.protection.outlook.com
+ (mail-he1eur04lp2051.outbound.protection.outlook.com [104.47.13.51]) (Using
  TLS) by relay.mimecast.com with ESMTP id
- de-mta-16-NQXKte9aM7SPAoFTTsTJOg-2; Fri, 17 Sep 2021 11:52:17 +0200
-X-MC-Unique: NQXKte9aM7SPAoFTTsTJOg-2
+ de-mta-16-DiK1aySnOY6fT0fXkH_g7Q-2; Fri, 17 Sep 2021 12:44:01 +0200
+X-MC-Unique: DiK1aySnOY6fT0fXkH_g7Q-2
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=KUQsuEEnqhFH6XUniREkRWHldNtvBNSFqKWRJyjQ47DLH6REuqr55XETps2U7VE0eJa6iaSLrU5eR0JWtDh9ngNhOMmjsMpgF/714vi33IOFe1f4w7lnDzIznJa0HYICMcCCNTAGZ+74D4xNSiwSe/al1QkCgXgScJZFWUEKkyjXYrCXOb0Cs0xl7SPH2nYmJqfWvz7f/mis2/CyJ6rHWhDSIfNCnrV7z4wJqhRqnICc50eH9bq1+HL26hL+IIfeZCih3W2AhIFExaBKLTqq+1njywA1hACQ7Epf7Cc8HDrAe65zkhuTFy998jBhQiJrb9DVimV08kpn8tAJfiUAsw==
+ b=EG3bnqdiIIvcL4mJmgRBBqpzMwrrZJ4QeuWPEaA+caDYfYCdtDEhuHxExVBE/Fl6GbSvg6NxXDTn0SZO17eOvHwezoOv1gGUXJTxgzn38oVTYJnuZ59sDG8ofgIF5zTJpxTkXtEE1pzfNzGHr/mPyWAoSXbvYKkNhPo8RnDwjiS3Ye9bUacKCnRChtnqsfvIJUp8vnzA6pg6RfBddbXUT2hXsIHAXw2Dok5Z+Vg76vHv6sVz6fY9aPGshJjtJEGxHgNiy744oXA/Ty4GVC/uk43danmx53MVJgBxJnkldQQxWBPv3vsTASewOx6IUHyq4ouTVFI42itBZC+wUFk8Nw==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com; 
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version; 
- bh=GXHtNvXg31UQSdkLZPhgMtWUpYK/lfDRKw9DfFedgMc=;
- b=OLltJ3gskAm7qdPVBo7pvXAtBW/wT09MdgkntEQTZlOjl26TqZHoVL8MkCPx7/SivPold0Kdwi/2n1In4B2aJE5QDkGywwClTqpTgQPBMbhL86iTgkei6LOMrKIr5xEzPL1Y4V8zt3YsFePbCHP3E+dluRbDmS7Ildru0U6ghPUfhDpbj0e4e6HYxjdh12i2zTH5zHFpG6heZigZVgcHITqGU1mYgmsGTXmagDjiboEz90g5csC3AJMvyT/4qQJ3FA8XPciH9aCCA8ObLe3yTR7YtXoEoCFIGT6GMV86rxiYFqm9OLgj0su3jbQAEk6+7+koQ8uPPgqGIxOQdM2e7Q==
+ bh=3fkICs2NUVZw+X2zzeXCMA7XH+sCYDVqsCZWlrdy5Ss=;
+ b=eoiwDI3QqZn5G6TkbbWM2bMI0/XyH5iDwUBYmqSnjKtzkpc+ROkSyDsRGSi+i0HGtL6zLJNh4+KXCB8gdrQbcEROB0SuMC3M382YJHyJg7uK3H4V3zwt9R5IJ42b2TFvqgbKAoxL235gYZ0TgSm7CSxfs5SwRwdkfqbvrgMyZsFFcygSW3TcpyHE9LVEOjpbPgFRH9x2x0mbmRsUNOkgiIvOyC0IRSy6LNaNUubajbu8oWo/1nD+0yV9J15w1fcL0KSFI8tjBArGrxoGQ7AoG6c4LqlJSYYE7ACX+k+VwOFEnhoBj4EixwrGQFS/ZsaT6svZr8rm0mHmu1EMk7XgCQ==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
  smtp.mailfrom=suse.com; dmarc=pass action=none header.from=suse.com;
  dkim=pass header.d=suse.com; arc=none
-Authentication-Results: lst.de; dkim=none (message not signed)
- header.d=none;lst.de; dmarc=none action=none header.from=suse.com;
+Authentication-Results: lists.linux-foundation.org; dkim=none (message not
+ signed) header.d=none;lists.linux-foundation.org; dmarc=none action=none
+ header.from=suse.com;
 Received: from VI1PR04MB5600.eurprd04.prod.outlook.com (2603:10a6:803:e7::16)
- by VI1PR0402MB3936.eurprd04.prod.outlook.com (2603:10a6:803:23::20)
+ by VI1PR04MB7087.eurprd04.prod.outlook.com (2603:10a6:800:12a::15)
  with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4523.16; Fri, 17 Sep
- 2021 09:52:14 +0000
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4500.14; Fri, 17 Sep
+ 2021 10:43:57 +0000
 Received: from VI1PR04MB5600.eurprd04.prod.outlook.com
  ([fe80::4d37:ec64:4e90:b16b]) by VI1PR04MB5600.eurprd04.prod.outlook.com
  ([fe80::4d37:ec64:4e90:b16b%7]) with mapi id 15.20.4523.016; Fri, 17 Sep 2021
- 09:52:14 +0000
-Subject: Re: [PATCH] swiotlb: set IO TLB segment size via cmdline
-To: Roman Skakun <rm.skakun@gmail.com>
-References: <20210914151016.3174924-1-Roman_Skakun@epam.com>
- <7c04db79-7de1-93ff-0908-9bad60a287b9@suse.com>
- <CADu_u-Ou08tMFm5xU871ae8ct+2YOuvn4rQ=83CMTbg2bx87Pg@mail.gmail.com>
- <84ef7ff7-2c9c-113a-4a2c-cef54a6ded51@suse.com>
- <20210915135321.GA15216@lst.de>
- <CADu_u-OZzgVj+z=iD6kUQOZxUufF5QSMR6-MmpN_hLZ9PyQJhQ@mail.gmail.com>
-Message-ID: <ece0bbcf-2be8-e655-b164-b39b5d535c63@suse.com>
-Date: Fri, 17 Sep 2021 11:52:10 +0200
+ 10:43:57 +0000
+Subject: [PATCH v2 0/4] swiotlb-xen: remaining fixes and adjustments
+To: Juergen Gross <jgross@suse.com>,
+ Boris Ostrovsky <boris.ostrovsky@oracle.com>
+Message-ID: <164e58ff-2edd-2c99-ac3d-e18eb06ff731@suse.com>
+Date: Fri, 17 Sep 2021 12:43:54 +0200
 User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:78.0) Gecko/20100101
  Thunderbird/78.14.0
-In-Reply-To: <CADu_u-OZzgVj+z=iD6kUQOZxUufF5QSMR6-MmpN_hLZ9PyQJhQ@mail.gmail.com>
 Content-Language: en-US
-X-ClientProxiedBy: PR0P264CA0178.FRAP264.PROD.OUTLOOK.COM
- (2603:10a6:100:1c::22) To VI1PR04MB5600.eurprd04.prod.outlook.com
+X-ClientProxiedBy: AM0PR10CA0041.EURPRD10.PROD.OUTLOOK.COM
+ (2603:10a6:20b:150::21) To VI1PR04MB5600.eurprd04.prod.outlook.com
  (2603:10a6:803:e7::16)
 MIME-Version: 1.0
 X-MS-Exchange-MessageSentRepresentingType: 1
 Received: from [10.156.60.236] (37.24.206.209) by
- PR0P264CA0178.FRAP264.PROD.OUTLOOK.COM (2603:10a6:100:1c::22) with Microsoft
- SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.20.4523.14 via Frontend Transport; Fri, 17 Sep 2021 09:52:12 +0000
+ AM0PR10CA0041.EURPRD10.PROD.OUTLOOK.COM (2603:10a6:20b:150::21) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4523.16 via Frontend
+ Transport; Fri, 17 Sep 2021 10:43:56 +0000
 X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: e7dda98c-565b-4ff6-e6d7-08d979c0d3bd
-X-MS-TrafficTypeDiagnostic: VI1PR0402MB3936:
+X-MS-Office365-Filtering-Correlation-Id: 1ad8c43a-c84c-47b7-8258-08d979c80d0b
+X-MS-TrafficTypeDiagnostic: VI1PR04MB7087:
 X-LD-Processed: f7a17af6-1c5c-4a36-aa8b-f5be247aa4ba,ExtFwd
 X-MS-Exchange-Transport-Forked: True
-X-Microsoft-Antispam-PRVS: <VI1PR0402MB393646432D8345BD571CFCD1B3DD9@VI1PR0402MB3936.eurprd04.prod.outlook.com>
-X-MS-Oob-TLC-OOBClassifiers: OLM:6790;
+X-Microsoft-Antispam-PRVS: <VI1PR04MB70875114D12052171888F5CDB3DD9@VI1PR04MB7087.eurprd04.prod.outlook.com>
+X-MS-Oob-TLC-OOBClassifiers: OLM:6430;
 X-MS-Exchange-SenderADCheck: 1
 X-MS-Exchange-AntiSpam-Relay: 0
 X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: VSBJD+Hpucunccno3ObKklm855Ig/SKMAaqRud98vyrGFLRBH+JYmoy/Hy7BzM1qlbD3Hw82yH38E+61gAQGQkTu3F6VBgOutaClbVpzKCSZT7y6lQp7q7B6CwECHBJo+XR4nWT0mxOjpDMXBIqyvkejLaeOLI3TETFOWy6F3goaEqIhYtE778B2kCIH00lndBwLcPzUgKajEsJDnwal0NGWAE1KFPVMg+5dNUZUCo+0Vcr9/UD8AkBN7S6sN74XoJF8PwAO2yFbIvQ0BZ4th5axLvdidJEAyRZ5c0GhOE3L1VznzmUJ0RS9ZBePAX/aPAePS70l9j+c8nmasK9eRkRpHpkdtBU6FCSbfX3wJmWaVG2vRG3FGknSs0iZM4IKkoTsaL+4g9k0MY+93hrFqGx3OkqPBy8WNxo4rSuaYj3O40wXvZ9oYfrmKukwIhNewJxnPlFi08lUXxPFEsvbmFAmgnwEUYqlJdSCsPdIidp9ccPzxVEJMz/KToZFdJZhI4IGT67JZ8rDuGSWvmxKhu0JIBWCDSDs1Q4TjWzRjKoRh/bqyPfqPzUI6N1Zxx+mDJbnyVhqhD6+BrwABQONjTBTHUTYQz7JK2fQmWoOlw1K11eh0RfGoWxrjSJGLif3XP800x6XbphXriKg+BTZwD1I1lZz5d5X4WmViz0NtAXGunYhWnrdPe8+pQb4DGg1vLxFT4C8SCOXez+T5yaQASbH6TzfiDtYiOqYfhG4tRs=
+X-Microsoft-Antispam-Message-Info: IRQwFcetYoGR3tRBeWr+YtIloZxjnKjyVhV/sOKN+zMr8anVIoZeLGCp/cHQmBmdMhow06JNz11oZrbni4bOKpcS0v2f6LoZ2ULKFf6ThNujsrkxl9oOWo+yDPLEqvAEKn4HvI+Z82bSSpMPmbpyUfUojjIqBb8ffkH+IbEPkjQc7Vy3yCBeTt4NLibAr4KvxCA8DCJIZvxOYdW+wP31rupjWH2LEv9rsIhIxfynB5nb6J5K804TQZTQ/ZyjCwmbRemDKgIx0IxvdCrlauDfie+xvuJufSqOM0lI/WraeI5Alf/3s58x546K5CqUxCBO1w7fqHhhTdV2QYoDu5QpxqhRD5DjivRMfnRls2KQLouMzL8ueKsZfVeWsZbU7GzlK0KKD1N2I4eYdmIDL6vJPSmqbAX07toj3G1n3kc7yPENglowPSvwJFdAtW2vbrN4vJTg7xC64Pl3MyY+NrEfAqUJ3NZkSZfBCPFruvDA19kJCK/xySZBPSGt0uczpS1fsfK+DPLL0mxNeLNu+NV6yzHRPdVH9IzxeP0oBGMbQCYpP+scnpxvAgRIiuEoYtKHfazQ9McWn/U3VGBYGWZpO3rB4f2ToMgQM3hQ+pQXYb3cquKnh7p3B4b6ekBtWzMUwu/QxeoNCcbgwS+dD8vRb7G/R/oBEjqjHcCkfUT8CiQs3rrt9wH9Xz1io/Qp/uO/bwnP1xBh+zFJrOeCj1cUZAxuDW4Pa67uWgV1tC3zmfY=
 X-Forefront-Antispam-Report: CIP:255.255.255.255; CTRY:; LANG:en; SCL:1; SRV:;
  IPV:NLI; SFV:NSPM; H:VI1PR04MB5600.eurprd04.prod.outlook.com; PTR:; CAT:NONE;
- SFS:(366004)(6916009)(26005)(4326008)(53546011)(54906003)(7406005)(316002)(66946007)(36756003)(8936002)(5660300002)(2616005)(31686004)(956004)(66556008)(16576012)(83380400001)(66476007)(508600001)(7416002)(6486002)(86362001)(2906002)(4744005)(31696002)(186003)(8676002)(38100700002)(45980500001)(43740500002);
+ SFS:(366004)(396003)(346002)(136003)(376002)(39860400002)(6486002)(36756003)(186003)(5660300002)(8676002)(956004)(26005)(86362001)(2616005)(110136005)(4326008)(16576012)(4744005)(66556008)(2906002)(38100700002)(316002)(66476007)(54906003)(31696002)(83380400001)(8936002)(478600001)(31686004)(66946007)(45980500001)(43740500002);
  DIR:OUT; SFP:1101; 
 X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?utf-8?B?aWh1Qk45cENNVHNnTGcrUnRkYXpQRllDQ0NJZmZvR3dzbGIzTmUzRkdkTmc1?=
- =?utf-8?B?Y2lBck1PdjVNY3BGU24rVlJLSlEzNnNYd1Z1WHA3MUJ0RmoycTE2bVdPckZ2?=
- =?utf-8?B?ZWFFZTBZL2pTdEJpRlNmZHluMEhURVB4dzA5UFVRTU14UURHeUgzWHBxUlRh?=
- =?utf-8?B?b3R5cUgrM3NvWTVtcm5oQkpFelBKdUl0bkFQZldHNE1OczN4eEdLd0NNRS9K?=
- =?utf-8?B?Vmx1WXJrelVQVHlDWndHbER3aWZhdmlkTlByN0I3anRaMFFHVTk5alJiTWU1?=
- =?utf-8?B?SjhOUE9jN3owOVhQQTJUREtFQzdubENkRFpNYmxSa0Z0d3N4R0pWcy8rQW1C?=
- =?utf-8?B?a1p5N3NDdXNRdXZ6OGVoSVZEcitFclJWUHIweU1JclVpOFdUbk12Wm1UMXd3?=
- =?utf-8?B?cWtMZkpFcExIN0JNU0tEMHFlOHVTUTBHZ2lISEhEOTVHb3p5cmpzWm13OVhy?=
- =?utf-8?B?Q3d3WGdnV0hhd2pualBSRm1pR0tzOGVWdnBmOHdsUldHaml0UHY3OHphbTU2?=
- =?utf-8?B?Yk1jb29PQnpFRGFwS3VLTWM4c0VTR0o0Rnd3NEQveTluakpLTGovWkl5M3JN?=
- =?utf-8?B?aWQwY0d2SXZGenFLL0F1c3ZndHJtZ2FFYkt3VjdJNmsxODJCTGxuTGQzWTY5?=
- =?utf-8?B?RFE2ZWJEY0VyY1J0Tk9rV0pwd2JEbkp0ZzJJODJzNCtiRDJkV00rd2k4NnhH?=
- =?utf-8?B?cjRGWWU5RXRsU3M2dkxualBqK09pNXlhUXFleGs3Uk54T2U3aFR5eldMR3Av?=
- =?utf-8?B?ZUJkZ3dVTVZtTk5xZWNxSFQveVloZEFmUVFOemxwc3owSGxQVVhoRG9NM0I0?=
- =?utf-8?B?Q1lXQlpTMk1hN1RUWW5JUnBMUDRjeDV5bWw2UmxZenJWT0R6SW5qN1pTWEs2?=
- =?utf-8?B?TzhnUXIxMlU4MnVCNGxaNkdYcWQxN01TQ29hQUhuSFNxOGEzTm9ESGN3aWtk?=
- =?utf-8?B?UFFtbEd5UWlmVExKcStvTytuOHpyY3RYTzJ3QkkzdVYvTHFwYjBLenZUc09x?=
- =?utf-8?B?Unp1WXdJdTdiZEovdHlSdWs4QXo3VFM4UlRqWjMvWmZYRnNQUTBaUEd1Vm1Q?=
- =?utf-8?B?aEorMjlGbFJZNWpmYlhmNEJhQ2VTbmR5ZXU5eENzV1JMcmVhNFlhb0Z3SUpp?=
- =?utf-8?B?WnhraEcveVhKb2VFR0RDWHNwQXlJWFRIMDB1UFNuNjBMaEhiTGdURWNDTEVw?=
- =?utf-8?B?MUpyajE5dkI4MmthcFRidmo0SmxpQUJVL3NXUFJQbTRpTGQza1NhRVZnNjBk?=
- =?utf-8?B?VEhVblNUTnpDZ2pOaFlLdzNxQkFFbVpWZ0JvZWhtNGp0a1UvWHJLT3ZRWnhq?=
- =?utf-8?B?cUYzU2pTQVlaUjhnWGo0a1dGaTh4SklTbS81WVAxVkZobkdqc1JmeGpQbVlh?=
- =?utf-8?B?UTFxaXdjSTFwRnJCQ000N2RrTm83VGx6clczYkhFcWI3R3BEaVBJK3ZVQW50?=
- =?utf-8?B?Zy9uNjNJNU9wNEFJbjZXcW5JK3RrQ3h6ZnhEY1F6VHl1MC9MVGpWN3I2WlVw?=
- =?utf-8?B?UzBHVmlFaWt2UTlBRk1SV2pNVllBQmR3cTZvRUN6MzhDODFuUnJTVTQwSUZy?=
- =?utf-8?B?QXluT1NTR1poU2hZMXJ6eDQ5UHVaOC93V2lqcDFzOU5HVk5oN1hxNXgyaVRi?=
- =?utf-8?B?aGZkSkVkdHBsSXlvVDg5T2dBd25mWTV3bCtONTNaZnAxNzJNVFVtN0Qrd09M?=
- =?utf-8?B?WWt0UjJoN2RmeW9ZOFZYckdiRWN4N1krb3BwbXROU3g1ZjZLYkpoY21qYkZl?=
- =?utf-8?Q?tXdvUegyoB1lBi98nVCMJcsPYInAOshnLPJ5MAu?=
+X-MS-Exchange-AntiSpam-MessageData-0: =?utf-8?B?TnV4VXp6SE9mSFNldkJoZ05xcmhaYnJvMEJXUWRxY0kyOWU4Y2d2RkF0cVZQ?=
+ =?utf-8?B?Y3FleisvYXd1ZGJpdXBTUjZsRG9lSXlyaHl6TnJWL1lSbFhCVXRvOEdMandm?=
+ =?utf-8?B?cHdkclAxZi9hTzF5WnFCUmdPakIzK1Z4OU91MUJYVlYwVGMxQkRTbW1YV0hQ?=
+ =?utf-8?B?eDJGUkxXVUwzS1lYRnhwbnFFRU1HQXJOemkyQVRxM25oNDFvL1lXZFNXMGVH?=
+ =?utf-8?B?V2piMTdiaGFpcTNQbnA4L0wyRjF1a0paV21SUERVM0c0LzBKblk1QXBhMmFR?=
+ =?utf-8?B?MGRxMTgzS3g5Qy80MUtPNjdzRGxLYWpROTQybHBDWFI2M3Jla0xhU2FXejFR?=
+ =?utf-8?B?U2luZmJXalhsSkJDbGlUZTJNOHZTckdQMWJLeExBRGJpUHNjUWowOWkwU1g0?=
+ =?utf-8?B?aFVFSU9LNS9zbS9paVVocnMvY2xUUDk5b29yWHlYd21VOUlUTURKejZ0SEEv?=
+ =?utf-8?B?UkxveGR3ZmdGeDgxbE85aGN0L25KNmlmQkxMUS9NRTEzQUVaVXNYNlh2eHpT?=
+ =?utf-8?B?U0hFN0dCNmVRQ2NiaFlYR1c1Qmg2dTc3NnpvQVlvTTlRWFNUVjhmSjF0STBm?=
+ =?utf-8?B?Uzdla21sN3FxaUk1K3BSenNGVGRGSDgzb0MyM29KZmtnck1IUFh0K2x6dm1N?=
+ =?utf-8?B?Nlc0MTgvZjZDNDVNNE15aDluYTR0OFFnb25hUExiWnR3bXM1cWZRTUx1VkNy?=
+ =?utf-8?B?S2F0eUtZM1lDVDZqcWpsblViaDhoR3J6WHZlMUU0eGNrMEF0TFRXK2dRZXJ1?=
+ =?utf-8?B?MlV5K042dm5tU2prVm44VGZwNGxUTGt5MDd3b25GWjRaeWVPWU4yai9XTndw?=
+ =?utf-8?B?NnNBeFdvUTBsZmFzNGtka3VYVEtuaEJvazh0Skl5SFJpWFBtdHR3UWF3aitQ?=
+ =?utf-8?B?Q1hkMUxFVTI1ekJPRlRVRk16VnlkdHprb0JyNGdSTHlGSVAzYlI0bHU2VVMr?=
+ =?utf-8?B?bEo1NytBUzRSczJSbVM2V08wS2NhMGZZVlRlT2RjbE9qSEdHMkU3ZGIwZGtx?=
+ =?utf-8?B?cXEwclBhK0FzVkIvY05BanJaMTh4akdxK1N4Vjc4Rm9PRFY2ckRuZVdsQUdo?=
+ =?utf-8?B?QWhoOSszaGZ4QWluZnZVczM2QlhjaHJNSzdqL28zWGJDUkROcmJ6NTJlSjhp?=
+ =?utf-8?B?TUM1Z1lETG50Z3NxbzRUSlJJZm5yckV6cWdaWUJPSVVUeG5BVDN0UWlKcE5a?=
+ =?utf-8?B?SlEyWHhOeFVCU1FwUjN2SmoyM2VYNXBHcXdVelJxV2RGNldqeWtpbzF0R1Nv?=
+ =?utf-8?B?QVZwMy8yMVgxNDczN2pwMy83R09KdlZiTEI0Z3paWHFPNm9TNGZzUFRrZlRz?=
+ =?utf-8?B?NU44WHJBc3BJS0cxNjNjRHdjUUN2S3R2Y2l5THg0OEdIYmUwbmhwZFhnejkz?=
+ =?utf-8?B?akdyZDlFKzB5RXlLSTNWc1FndVlxVmRVQU8vd1dyUXRHSjRubHRyWkhmVW5U?=
+ =?utf-8?B?NXVEb1BTTkZjSDFwdVFQN2RzcmJpSmNpRkVOSlMxeUFmZDZJZWl3UW9kdTVV?=
+ =?utf-8?B?THJPUUViL08xa1oxeHhydmwvZGpwdzFGc01UOWdGL2NBNzhocEhqVGxYY1Mw?=
+ =?utf-8?B?WVZRY1lpOVBnOGUxZUZ3eldxQSttYkJFNFZrOHhvRllreWlGUXRCQU9wOGdq?=
+ =?utf-8?B?dlh5ZHRtSHc4b3BMK0NRM3EvNW1TcGRsd0dodHdralJOK1dqTFkxQVA2OTc5?=
+ =?utf-8?B?QUY3WEY3ZFR2bjRxYnM4c2JPUzUwOElGZlB3T0hYRWNPQU1QZkZZU1pjcG9L?=
+ =?utf-8?Q?21TaPGaJ6xAhpr62qCt52smv5IZm/AEGvAJOCra?=
 X-OriginatorOrg: suse.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: e7dda98c-565b-4ff6-e6d7-08d979c0d3bd
+X-MS-Exchange-CrossTenant-Network-Message-Id: 1ad8c43a-c84c-47b7-8258-08d979c80d0b
 X-MS-Exchange-CrossTenant-AuthSource: VI1PR04MB5600.eurprd04.prod.outlook.com
 X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 17 Sep 2021 09:52:14.4984 (UTC)
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 17 Sep 2021 10:43:56.9593 (UTC)
 X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
 X-MS-Exchange-CrossTenant-Id: f7a17af6-1c5c-4a36-aa8b-f5be247aa4ba
 X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: qdlybJsY7Wdjq7223mSN8+JLrLBqmHTX8mLHVQUV8SHHaEKtzY/812DucDUvDwsb/d20AautVG5LUT35fL2u1Q==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: VI1PR0402MB3936
-Cc: linux-doc@vger.kernel.org, Peter Zijlstra <peterz@infradead.org>,
- Viresh Kumar <viresh.kumar@linaro.org>,
- Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
- Paul Mackerras <paulus@samba.org>, Will Deacon <will@kernel.org>,
- Boris Ostrovsky <boris.ostrovsky@oracle.com>,
- Stefano Stabellini <sstabellini@kernel.org>, Jonathan Corbet <corbet@lwn.net>,
- Michael Ellerman <mpe@ellerman.id.au>, Christoph Hellwig <hch@lst.de>,
- Benjamin Herrenschmidt <benh@kernel.crashing.org>,
- xen-devel@lists.xenproject.org, "Paul E. McKenney" <paulmck@kernel.org>,
- Konrad Rzeszutek Wilk <konrad.wilk@oracle.com>,
- Muchun Song <songmuchun@bytedance.com>, Thomas Gleixner <tglx@linutronix.de>,
- Juergen Gross <jgross@suse.com>,
- Thomas Bogendoerfer <tsbogend@alpha.franken.de>,
- Andrii Anisov <andrii_anisov@epam.com>, linuxppc-dev@lists.ozlabs.org,
- Randy Dunlap <rdunlap@infradead.org>, linux-mips@vger.kernel.org,
- iommu <iommu@lists.linux-foundation.org>, Roman Skakun <roman_skakun@epam.com>,
- Andrew Morton <akpm@linux-foundation.org>,
- "Maciej W. Rozycki" <macro@orcam.me.uk>, Robin Murphy <robin.murphy@arm.com>,
- Mike Rapoport <rppt@kernel.org>
+X-MS-Exchange-CrossTenant-UserPrincipalName: AWGIGYVkloBgfHZ6GNeFSicjF0b+mu48RUrOma40TZQqqdWTYF/JyRCi/2mtc4ez8CKMO+5valWTjm1qLcoYPQ==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: VI1PR04MB7087
+Cc: Stefano Stabellini <sstabellini@kernel.org>,
+ Konrad Wilk <konrad.wilk@oracle.com>, lkml <linux-kernel@vger.kernel.org>,
+ "iommu@lists.linux-foundation.org" <iommu@lists.linux-foundation.org>,
+ "xen-devel@lists.xenproject.org" <xen-devel@lists.xenproject.org>,
+ "hch@lst.de" <hch@lst.de>
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -199,14 +180,13 @@ Content-Transfer-Encoding: 7bit
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-On 17.09.2021 11:36, Roman Skakun wrote:
-> I use Xen PV display. In my case, PV display backend(Dom0) allocates
-> contiguous buffer via DMA-API to
-> to implement zero-copy between Dom0 and DomU.
+The primary intention really was the last patch, there you go (on top
+of what is already in xen/tip.git for-linus-5.15) ...
 
-Why does the buffer need to be allocated by Dom0? If it was allocated
-by DomU, it could use grants to give the backend direct (zero-copy)
-access.
+1: swiotlb-xen: ensure to issue well-formed XENMEM_exchange requests
+2: PCI: only build xen-pcifront in PV-enabled environments
+3: xen/pci-swiotlb: reduce visibility of symbols
+4: swiotlb-xen: this is PV-only on x86
 
 Jan
 
