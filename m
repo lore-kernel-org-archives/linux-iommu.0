@@ -5,62 +5,62 @@ X-Spam-Level:
 X-Spam-Status: No, score=-16.7 required=3.0 tests=BAYES_00,
 	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_CR_TRAILER,INCLUDES_PATCH,
 	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_GIT
-	autolearn=unavailable autolearn_force=no version=3.4.0
+	autolearn=ham autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id CFF05C4332F
-	for <iommu@archiver.kernel.org>; Sun, 19 Sep 2021 06:41:47 +0000 (UTC)
-Received: from smtp4.osuosl.org (smtp4.osuosl.org [140.211.166.137])
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 918ABC433F5
+	for <iommu@archiver.kernel.org>; Sun, 19 Sep 2021 06:41:55 +0000 (UTC)
+Received: from smtp2.osuosl.org (smtp2.osuosl.org [140.211.166.133])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 8363661076
-	for <iommu@archiver.kernel.org>; Sun, 19 Sep 2021 06:41:47 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.4.1 mail.kernel.org 8363661076
+	by mail.kernel.org (Postfix) with ESMTPS id 5AA18610CF
+	for <iommu@archiver.kernel.org>; Sun, 19 Sep 2021 06:41:55 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.4.1 mail.kernel.org 5AA18610CF
 Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=intel.com
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by smtp4.osuosl.org (Postfix) with ESMTP id 549A3404CD;
-	Sun, 19 Sep 2021 06:41:47 +0000 (UTC)
+	by smtp2.osuosl.org (Postfix) with ESMTP id 2E2FD4018F;
+	Sun, 19 Sep 2021 06:41:55 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from smtp4.osuosl.org ([127.0.0.1])
-	by localhost (smtp4.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id eoLB7j-phHgb; Sun, 19 Sep 2021 06:41:46 +0000 (UTC)
+Received: from smtp2.osuosl.org ([127.0.0.1])
+	by localhost (smtp2.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+	with ESMTP id 3U2KElu1PROP; Sun, 19 Sep 2021 06:41:53 +0000 (UTC)
 Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [IPv6:2605:bc80:3010:104::8cd3:938])
-	by smtp4.osuosl.org (Postfix) with ESMTPS id D91B7404E7;
-	Sun, 19 Sep 2021 06:41:45 +0000 (UTC)
+	by smtp2.osuosl.org (Postfix) with ESMTPS id 41C92400D1;
+	Sun, 19 Sep 2021 06:41:53 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id B4254C001B;
-	Sun, 19 Sep 2021 06:41:45 +0000 (UTC)
-Received: from smtp3.osuosl.org (smtp3.osuosl.org [IPv6:2605:bc80:3010::136])
- by lists.linuxfoundation.org (Postfix) with ESMTP id A0792C000D
- for <iommu@lists.linux-foundation.org>; Sun, 19 Sep 2021 06:41:44 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 105F3C001B;
+	Sun, 19 Sep 2021 06:41:53 +0000 (UTC)
+Received: from smtp2.osuosl.org (smtp2.osuosl.org [140.211.166.133])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id AFA18C000D
+ for <iommu@lists.linux-foundation.org>; Sun, 19 Sep 2021 06:41:51 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by smtp3.osuosl.org (Postfix) with ESMTP id 82B3B606C2
- for <iommu@lists.linux-foundation.org>; Sun, 19 Sep 2021 06:41:44 +0000 (UTC)
+ by smtp2.osuosl.org (Postfix) with ESMTP id 902F7401D1
+ for <iommu@lists.linux-foundation.org>; Sun, 19 Sep 2021 06:41:51 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from smtp3.osuosl.org ([127.0.0.1])
- by localhost (smtp3.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id t7cYZwfekX2h for <iommu@lists.linux-foundation.org>;
- Sun, 19 Sep 2021 06:41:43 +0000 (UTC)
+Received: from smtp2.osuosl.org ([127.0.0.1])
+ by localhost (smtp2.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+ with ESMTP id udJr2dCh-Sh6 for <iommu@lists.linux-foundation.org>;
+ Sun, 19 Sep 2021 06:41:50 +0000 (UTC)
 X-Greylist: domain auto-whitelisted by SQLgrey-1.8.0
-Received: from mga17.intel.com (mga17.intel.com [192.55.52.151])
- by smtp3.osuosl.org (Postfix) with ESMTPS id A1AA760648
- for <iommu@lists.linux-foundation.org>; Sun, 19 Sep 2021 06:41:43 +0000 (UTC)
-X-IronPort-AV: E=McAfee;i="6200,9189,10111"; a="203156043"
-X-IronPort-AV: E=Sophos;i="5.85,305,1624345200"; d="scan'208";a="203156043"
+Received: from mga05.intel.com (mga05.intel.com [192.55.52.43])
+ by smtp2.osuosl.org (Postfix) with ESMTPS id 63C3E400D1
+ for <iommu@lists.linux-foundation.org>; Sun, 19 Sep 2021 06:41:50 +0000 (UTC)
+X-IronPort-AV: E=McAfee;i="6200,9189,10111"; a="308537672"
+X-IronPort-AV: E=Sophos;i="5.85,305,1624345200"; d="scan'208";a="308537672"
 Received: from fmsmga008.fm.intel.com ([10.253.24.58])
- by fmsmga107.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384;
- 18 Sep 2021 23:41:43 -0700
+ by fmsmga105.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384;
+ 18 Sep 2021 23:41:49 -0700
 X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.85,305,1624345200"; d="scan'208";a="510701873"
+X-IronPort-AV: E=Sophos;i="5.85,305,1624345200"; d="scan'208";a="510701898"
 Received: from yiliu-dev.bj.intel.com (HELO iov-dual.bj.intel.com)
  ([10.238.156.135])
- by fmsmga008.fm.intel.com with ESMTP; 18 Sep 2021 23:41:36 -0700
+ by fmsmga008.fm.intel.com with ESMTP; 18 Sep 2021 23:41:43 -0700
 From: Liu Yi L <yi.l.liu@intel.com>
 To: alex.williamson@redhat.com, jgg@nvidia.com, hch@lst.de,
  jasowang@redhat.com, joro@8bytes.org
-Subject: [RFC 02/20] vfio: Add device class for /dev/vfio/devices
-Date: Sun, 19 Sep 2021 14:38:30 +0800
-Message-Id: <20210919063848.1476776-3-yi.l.liu@intel.com>
+Subject: [RFC 03/20] vfio: Add vfio_[un]register_device()
+Date: Sun, 19 Sep 2021 14:38:31 +0800
+Message-Id: <20210919063848.1476776-4-yi.l.liu@intel.com>
 X-Mailer: git-send-email 2.25.1
 In-Reply-To: <20210919063848.1476776-1-yi.l.liu@intel.com>
 References: <20210919063848.1476776-1-yi.l.liu@intel.com>
@@ -83,372 +83,182 @@ List-Post: <mailto:iommu@lists.linux-foundation.org>
 List-Help: <mailto:iommu-request@lists.linux-foundation.org?subject=help>
 List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
  <mailto:iommu-request@lists.linux-foundation.org?subject=subscribe>
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-This patch introduces a new interface (/dev/vfio/devices/$DEVICE) for
-userspace to directly open a vfio device w/o relying on container/group
-(/dev/vfio/$GROUP). Anything related to group is now hidden behind
-iommufd (more specifically in iommu core by this RFC) in a device-centric
-manner.
-
-In case a device is exposed in both legacy and new interfaces (see next
-patch for how to decide it), this patch also ensures that when the device
-is already opened via one interface then the other one must be blocked.
-
-Signed-off-by: Liu Yi L <yi.l.liu@intel.com>
----
- drivers/vfio/vfio.c  | 228 +++++++++++++++++++++++++++++++++++++++----
- include/linux/vfio.h |   2 +
- 2 files changed, 213 insertions(+), 17 deletions(-)
-
-diff --git a/drivers/vfio/vfio.c b/drivers/vfio/vfio.c
-index 02cc51ce6891..84436d7abedd 100644
---- a/drivers/vfio/vfio.c
-+++ b/drivers/vfio/vfio.c
-@@ -46,6 +46,12 @@ static struct vfio {
- 	struct mutex			group_lock;
- 	struct cdev			group_cdev;
- 	dev_t				group_devt;
-+	/* Fields for /dev/vfio/devices interface */
-+	struct class			*device_class;
-+	struct cdev			device_cdev;
-+	dev_t				device_devt;
-+	struct mutex			device_lock;
-+	struct idr			device_idr;
- } vfio;
- 
- struct vfio_iommu_driver {
-@@ -81,9 +87,11 @@ struct vfio_group {
- 	struct list_head		container_next;
- 	struct list_head		unbound_list;
- 	struct mutex			unbound_lock;
--	atomic_t			opened;
--	wait_queue_head_t		container_q;
-+	struct mutex			opened_lock;
-+	u32				opened;
-+	bool				opened_by_nongroup_dev;
- 	bool				noiommu;
-+	wait_queue_head_t		container_q;
- 	unsigned int			dev_counter;
- 	struct kvm			*kvm;
- 	struct blocking_notifier_head	notifier;
-@@ -327,7 +335,7 @@ static struct vfio_group *vfio_create_group(struct iommu_group *iommu_group)
- 	INIT_LIST_HEAD(&group->unbound_list);
- 	mutex_init(&group->unbound_lock);
- 	atomic_set(&group->container_users, 0);
--	atomic_set(&group->opened, 0);
-+	mutex_init(&group->opened_lock);
- 	init_waitqueue_head(&group->container_q);
- 	group->iommu_group = iommu_group;
- #ifdef CONFIG_VFIO_NOIOMMU
-@@ -1489,10 +1497,53 @@ static long vfio_group_fops_unl_ioctl(struct file *filep,
- 	return ret;
- }
- 
-+/*
-+ * group->opened is used to ensure that the group can be opened only via
-+ * one of the two interfaces (/dev/vfio/$GROUP and /dev/vfio/devices/
-+ * $DEVICE) instead of both.
-+ *
-+ * We also introduce a new group flag to indicate whether this group is
-+ * opened via /dev/vfio/devices/$DEVICE. For multi-devices group,
-+ * group->opened also tracks how many devices have been opened in the
-+ * group if the new flag is true.
-+ *
-+ * Also add a new lock since two flags are operated here.
-+ */
-+static int vfio_group_try_open(struct vfio_group *group, bool nongroup_dev)
-+{
-+	int ret = 0;
-+
-+	mutex_lock(&group->opened_lock);
-+	if (group->opened) {
-+		if (nongroup_dev && group->opened_by_nongroup_dev)
-+			group->opened++;
-+		else
-+			ret = -EBUSY;
-+		goto out;
-+	}
-+
-+	/*
-+	 * Is something still in use from a previous open? Should
-+	 * not allow new open if it is such case.
-+	 */
-+	if (group->container) {
-+		ret = -EBUSY;
-+		goto out;
-+	}
-+
-+	group->opened = 1;
-+	group->opened_by_nongroup_dev = nongroup_dev;
-+
-+out:
-+	mutex_unlock(&group->opened_lock);
-+
-+	return ret;
-+}
-+
- static int vfio_group_fops_open(struct inode *inode, struct file *filep)
- {
- 	struct vfio_group *group;
--	int opened;
-+	int ret;
- 
- 	group = vfio_group_get_from_minor(iminor(inode));
- 	if (!group)
-@@ -1503,18 +1554,10 @@ static int vfio_group_fops_open(struct inode *inode, struct file *filep)
- 		return -EPERM;
- 	}
- 
--	/* Do we need multiple instances of the group open?  Seems not. */
--	opened = atomic_cmpxchg(&group->opened, 0, 1);
--	if (opened) {
--		vfio_group_put(group);
--		return -EBUSY;
--	}
--
--	/* Is something still in use from a previous open? */
--	if (group->container) {
--		atomic_dec(&group->opened);
-+	ret = vfio_group_try_open(group, false);
-+	if (ret) {
- 		vfio_group_put(group);
--		return -EBUSY;
-+		return ret;
- 	}
- 
- 	/* Warn if previous user didn't cleanup and re-init to drop them */
-@@ -1534,7 +1577,9 @@ static int vfio_group_fops_release(struct inode *inode, struct file *filep)
- 
- 	vfio_group_try_dissolve_container(group);
- 
--	atomic_dec(&group->opened);
-+	mutex_lock(&group->opened_lock);
-+	group->opened--;
-+	mutex_unlock(&group->opened_lock);
- 
- 	vfio_group_put(group);
- 
-@@ -1552,6 +1597,92 @@ static const struct file_operations vfio_group_fops = {
- /**
-  * VFIO Device fd
-  */
-+static struct vfio_device *vfio_device_get_from_minor(int minor)
-+{
-+	struct vfio_device *device;
-+
-+	mutex_lock(&vfio.device_lock);
-+	device = idr_find(&vfio.device_idr, minor);
-+	if (!device || !vfio_device_try_get(device)) {
-+		mutex_unlock(&vfio.device_lock);
-+		return NULL;
-+	}
-+	mutex_unlock(&vfio.device_lock);
-+
-+	return device;
-+}
-+
-+static int vfio_device_fops_open(struct inode *inode, struct file *filep)
-+{
-+	struct vfio_device *device;
-+	struct vfio_group *group;
-+	int ret, opened;
-+
-+	device = vfio_device_get_from_minor(iminor(inode));
-+	if (!device)
-+		return -ENODEV;
-+
-+	/*
-+	 * Check whether the user has opened this device via the legacy
-+	 * container/group interface. If yes, then prevent the user from
-+	 * opening it via device node in /dev/vfio/devices. Otherwise,
-+	 * mark the group as opened to block the group interface. either
-+	 * way, we must ensure only one interface is used to open the
-+	 * device when it supports both legacy and new interfaces.
-+	 */
-+	group = vfio_group_try_get(device->group);
-+	if (group) {
-+		ret = vfio_group_try_open(group, true);
-+		if (ret)
-+			goto err_group_try_open;
-+	}
-+
-+	/*
-+	 * No support of multiple instances of the device open, similar to
-+	 * the policy on the group open.
-+	 */
-+	opened = atomic_cmpxchg(&device->opened, 0, 1);
-+	if (opened) {
-+		ret = -EBUSY;
-+		goto err_device_try_open;
-+	}
-+
-+	if (!try_module_get(device->dev->driver->owner)) {
-+		ret = -ENODEV;
-+		goto err_module_get;
-+	}
-+
-+	ret = device->ops->open(device);
-+	if (ret)
-+		goto err_device_open;
-+
-+	filep->private_data = device;
-+
-+	if (group)
-+		vfio_group_put(group);
-+	return 0;
-+err_device_open:
-+	module_put(device->dev->driver->owner);
-+err_module_get:
-+	atomic_dec(&device->opened);
-+err_device_try_open:
-+	if (group) {
-+		mutex_lock(&group->opened_lock);
-+		group->opened--;
-+		mutex_unlock(&group->opened_lock);
-+	}
-+err_group_try_open:
-+	if (group)
-+		vfio_group_put(group);
-+	vfio_device_put(device);
-+	return ret;
-+}
-+
-+static bool vfio_device_in_container(struct vfio_device *device)
-+{
-+	return !!(device->group && device->group->container);
-+}
-+
- static int vfio_device_fops_release(struct inode *inode, struct file *filep)
- {
- 	struct vfio_device *device = filep->private_data;
-@@ -1560,7 +1691,16 @@ static int vfio_device_fops_release(struct inode *inode, struct file *filep)
- 
- 	module_put(device->dev->driver->owner);
- 
--	vfio_group_try_dissolve_container(device->group);
-+	if (vfio_device_in_container(device)) {
-+		vfio_group_try_dissolve_container(device->group);
-+	} else {
-+		atomic_dec(&device->opened);
-+		if (device->group) {
-+			mutex_lock(&device->group->opened_lock);
-+			device->group->opened--;
-+			mutex_unlock(&device->group->opened_lock);
-+		}
-+	}
- 
- 	vfio_device_put(device);
- 
-@@ -1613,6 +1753,7 @@ static int vfio_device_fops_mmap(struct file *filep, struct vm_area_struct *vma)
- 
- static const struct file_operations vfio_device_fops = {
- 	.owner		= THIS_MODULE,
-+	.open		= vfio_device_fops_open,
- 	.release	= vfio_device_fops_release,
- 	.read		= vfio_device_fops_read,
- 	.write		= vfio_device_fops_write,
-@@ -2295,6 +2436,52 @@ static struct miscdevice vfio_dev = {
- 	.mode = S_IRUGO | S_IWUGO,
- };
- 
-+static char *vfio_device_devnode(struct device *dev, umode_t *mode)
-+{
-+	return kasprintf(GFP_KERNEL, "vfio/devices/%s", dev_name(dev));
-+}
-+
-+static int vfio_init_device_class(void)
-+{
-+	int ret;
-+
-+	mutex_init(&vfio.device_lock);
-+	idr_init(&vfio.device_idr);
-+
-+	/* /dev/vfio/devices/$DEVICE */
-+	vfio.device_class = class_create(THIS_MODULE, "vfio-device");
-+	if (IS_ERR(vfio.device_class))
-+		return PTR_ERR(vfio.device_class);
-+
-+	vfio.device_class->devnode = vfio_device_devnode;
-+
-+	ret = alloc_chrdev_region(&vfio.device_devt, 0, MINORMASK + 1, "vfio-device");
-+	if (ret)
-+		goto err_alloc_chrdev;
-+
-+	cdev_init(&vfio.device_cdev, &vfio_device_fops);
-+	ret = cdev_add(&vfio.device_cdev, vfio.device_devt, MINORMASK + 1);
-+	if (ret)
-+		goto err_cdev_add;
-+	return 0;
-+
-+err_cdev_add:
-+	unregister_chrdev_region(vfio.device_devt, MINORMASK + 1);
-+err_alloc_chrdev:
-+	class_destroy(vfio.device_class);
-+	vfio.device_class = NULL;
-+	return ret;
-+}
-+
-+static void vfio_destroy_device_class(void)
-+{
-+	cdev_del(&vfio.device_cdev);
-+	unregister_chrdev_region(vfio.device_devt, MINORMASK + 1);
-+	class_destroy(vfio.device_class);
-+	vfio.device_class = NULL;
-+	idr_destroy(&vfio.device_idr);
-+}
-+
- static int __init vfio_init(void)
- {
- 	int ret;
-@@ -2329,6 +2516,10 @@ static int __init vfio_init(void)
- 	if (ret)
- 		goto err_cdev_add;
- 
-+	ret = vfio_init_device_class();
-+	if (ret)
-+		goto err_init_device_class;
-+
- 	pr_info(DRIVER_DESC " version: " DRIVER_VERSION "\n");
- 
- #ifdef CONFIG_VFIO_NOIOMMU
-@@ -2336,6 +2527,8 @@ static int __init vfio_init(void)
- #endif
- 	return 0;
- 
-+err_init_device_class:
-+	cdev_del(&vfio.group_cdev);
- err_cdev_add:
- 	unregister_chrdev_region(vfio.group_devt, MINORMASK + 1);
- err_alloc_chrdev:
-@@ -2358,6 +2551,7 @@ static void __exit vfio_cleanup(void)
- 	unregister_chrdev_region(vfio.group_devt, MINORMASK + 1);
- 	class_destroy(vfio.class);
- 	vfio.class = NULL;
-+	vfio_destroy_device_class();
- 	misc_deregister(&vfio_dev);
- }
- 
-diff --git a/include/linux/vfio.h b/include/linux/vfio.h
-index a2c5b30e1763..4a5f3f99eab2 100644
---- a/include/linux/vfio.h
-+++ b/include/linux/vfio.h
-@@ -24,6 +24,8 @@ struct vfio_device {
- 	refcount_t refcount;
- 	struct completion comp;
- 	struct list_head group_next;
-+	int minor;
-+	atomic_t opened;
- };
- 
- /**
--- 
-2.25.1
-
-_______________________________________________
-iommu mailing list
-iommu@lists.linux-foundation.org
-https://lists.linuxfoundation.org/mailman/listinfo/iommu
+V2l0aCAvZGV2L3ZmaW8vZGV2aWNlcyBpbnRyb2R1Y2VkLCBub3cgYSB2ZmlvIGRldmljZSBkcml2
+ZXIgaGFzIHRocmVlCm9wdGlvbnMgdG8gZXhwb3NlIGl0cyBkZXZpY2UgdG8gdXNlcnNwYWNlOgoK
+YSkgIG9ubHkgbGVnYWN5IGdyb3VwIGludGVyZmFjZSwgZm9yIGRldmljZXMgd2hpY2ggaGF2ZW4n
+dCBiZWVuIG1vdmVkIHRvCiAgICBpb21tdWZkIChlLmcuIHBsYXRmb3JtIGRldmljZXMsIHN3IG1k
+ZXYsIGV0Yy4pOwoKYikgIGJvdGggbGVnYWN5IGdyb3VwIGludGVyZmFjZSBhbmQgbmV3IGRldmlj
+ZS1jZW50cmljIGludGVyZmFjZSwgZm9yCiAgICBkZXZpY2VzIHdoaWNoIHN1cHBvcnRzIGlvbW11
+ZmQgYnV0IGFsc28gd2FudHMgdG8ga2VlcCBiYWNrd2FyZAogICAgY29tcGF0aWJpbGl0eSAoZS5n
+LiBwY2kgZGV2aWNlcyBpbiB0aGlzIFJGQyk7CgpjKSAgb25seSBuZXcgZGV2aWNlLWNlbnRyaWMg
+aW50ZXJmYWNlLCBmb3IgbmV3IGRldmljZXMgd2hpY2ggZG9uJ3QgY2FycnkKICAgIGJhY2t3YXJk
+IGNvbXBhdGliaWxpdHkgYnVyZGVuIChlLmcuIGh3IG1kZXYvc3ViZGV2IHdpdGggcGFzaWQpOwoK
+VGhpcyBwYXRjaCBpbnRyb2R1Y2VzIHZmaW9fW3VuXXJlZ2lzdGVyX2RldmljZSgpIGhlbHBlcnMg
+Zm9yIHRoZSBkZXZpY2UKZHJpdmVycyB0byBzcGVjaWZ5IHRoZSBkZXZpY2UgZXhwb3N1cmUgcG9s
+aWN5IHRvIHZmaW8gY29yZS4gSGVuY2UgdGhlCmV4aXN0aW5nIHZmaW9fW3VuXXJlZ2lzdGVyX2dy
+b3VwX2RldigpIGJlY29tZSB0aGUgd3JhcHBlciBvZiB0aGUgbmV3CmhlbHBlciBmdW5jdGlvbnMu
+IFRoZSBuZXcgZGV2aWNlLWNlbnRyaWMgaW50ZXJmYWNlIGlzIGRlc2NyaWJlZCBhcwonbm9uZ3Jv
+dXAnIHRvIGRpZmZlcmVudGlhdGUgZnJvbSBleGlzdGluZyAnZ3JvdXAnIHN0dWZmLgoKVEJEOiB0
+aGlzIHBhdGNoIG5lZWRzIHRvIHJlYmFzZSBvbiB0b3Agb2YgYmVsb3cgc2VyaWVzIGZyb20gQ2hy
+aXN0b3BoIGluCm5leHQgdmVyc2lvbi4KCgkiY2xlYW51cCB2ZmlvIGlvbW11X2dyb3VwIGNyZWF0
+aW9uIgoKTGVnYWN5IHVzZXJzcGFjZSBjb250aW51ZXMgdG8gZm9sbG93IHRoZSBsZWdhY3kgZ3Jv
+dXAgaW50ZXJmYWNlLgoKTmV3ZXIgdXNlcnNwYWNlIGNhbiBmaXJzdCB0cnkgdGhlIG5ldyBkZXZp
+Y2UtY2VudHJpYyBpbnRlcmZhY2UgaWYgdGhlCmRldmljZSBpcyBwcmVzZW50IHVuZGVyIC9kZXYv
+dmZpby9kZXZpY2VzLiBPdGhlcndpc2UgZmFsbCBiYWNrIHRvIHRoZQpncm91cCBpbnRlcmZhY2Uu
+CgpPbmUgb3BlbiBhYm91dCBob3cgdG8gb3JnYW5pemUgdGhlIGRldmljZSBub2RlcyB1bmRlciAv
+ZGV2L3ZmaW8vZGV2aWNlcy8uClRoaXMgUkZDIGFkb3B0cyBhIHNpbXBsZSBwb2xpY3kgYnkga2Vl
+cGluZyBhIGZsYXQgbGF5b3V0IHdpdGggbWl4ZWQgZGV2bmFtZQpmcm9tIGFsbCBraW5kcyBvZiBk
+ZXZpY2VzLiBUaGUgcHJlcmVxdWlzaXRlIG9mIHRoaXMgbW9kZWwgaXMgdGhhdCBkZXZuYW1lcwpm
+cm9tIGRpZmZlcmVudCBidXMgdHlwZXMgYXJlIHVuaXF1ZSBmb3JtYXRzOgoKCS9kZXYvdmZpby9k
+ZXZpY2VzLzAwMDA6MDA6MTQuMiAocGNpKQoJL2Rldi92ZmlvL2RldmljZXMvUE5QMDEwMzowMCAo
+cGxhdGZvcm0pCgkvZGV2L3ZmaW8vZGV2aWNlcy84M2I4ZjRmMi01MDlmLTM4MmYtM2MxZS1lNmJm
+ZTBmYTEwMDEgKG1kZXYpCgpPbmUgYWx0ZXJuYXRpdmUgb3B0aW9uIGlzIHRvIGFycmFuZ2UgZGV2
+aWNlIG5vZGVzIGluIHN1Yi1kaXJlY3RvcmllcyBiYXNlZApvbiB0aGUgZGV2aWNlIHR5cGUuIEJ1
+dCBkb2luZyBzbyBhbHNvIGFkZHMgb25lIHRyb3VibGUgdG8gdXNlcnNwYWNlLiBUaGUKY3VycmVu
+dCB2ZmlvIHVBUEkgaXMgZGVzaWduZWQgdG8gaGF2ZSB0aGUgdXNlciBxdWVyeSBkZXZpY2UgdHlw
+ZSB2aWEKVkZJT19ERVZJQ0VfR0VUX0lORk8gYWZ0ZXIgb3BlbmluZyB0aGUgZGV2aWNlLiBXaXRo
+IHRoaXMgb3B0aW9uIHRoZSB1c2VyCmluc3RlYWQgbmVlZHMgdG8gZmlndXJlIG91dCB0aGUgZGV2
+aWNlIHR5cGUgYmVmb3JlIG9wZW5pbmcgdGhlIGRldmljZSwgdG8KaWRlbnRpZnkgdGhlIHN1Yi1k
+aXJlY3RvcnkuIEFub3RoZXIgdHJpY2t5IHRoaW5nIGlzIHRoYXQgInBkZXYuIHZzLiBtZGV2Igph
+bmQgInBjaSB2cy4gcGxhdGZvcm0gdnMuIGNjdywuLi4iIGFyZSBvcnRob2dvbmFsIGNhdGVnb3Jp
+emF0aW9ucy4gTmVlZAptb3JlIHRob3VnaHRzIG9uIHdoZXRoZXIgYm90aCBvciBqdXN0IG9uZSBj
+YXRlZ29yeSBzaG91bGQgYmUgdXNlZCB0byBkZWZpbmUKdGhlIHN1Yi1kaXJlY3Rvcmllcy4KClNp
+Z25lZC1vZmYtYnk6IExpdSBZaSBMIDx5aS5sLmxpdUBpbnRlbC5jb20+Ci0tLQogZHJpdmVycy92
+ZmlvL3ZmaW8uYyAgfCAxMzcgKysrKysrKysrKysrKysrKysrKysrKysrKysrKysrKysrKysrKysr
+LS0tLQogaW5jbHVkZS9saW51eC92ZmlvLmggfCAgIDkgKysrCiAyIGZpbGVzIGNoYW5nZWQsIDEz
+NCBpbnNlcnRpb25zKCspLCAxMiBkZWxldGlvbnMoLSkKCmRpZmYgLS1naXQgYS9kcml2ZXJzL3Zm
+aW8vdmZpby5jIGIvZHJpdmVycy92ZmlvL3ZmaW8uYwppbmRleCA4NDQzNmQ3YWJlZGQuLjFlODdi
+MjU5NjJmMSAxMDA2NDQKLS0tIGEvZHJpdmVycy92ZmlvL3ZmaW8uYworKysgYi9kcml2ZXJzL3Zm
+aW8vdmZpby5jCkBAIC01MSw2ICs1MSw3IEBAIHN0YXRpYyBzdHJ1Y3QgdmZpbyB7CiAJc3RydWN0
+IGNkZXYJCQlkZXZpY2VfY2RldjsKIAlkZXZfdAkJCQlkZXZpY2VfZGV2dDsKIAlzdHJ1Y3QgbXV0
+ZXgJCQlkZXZpY2VfbG9jazsKKwlzdHJ1Y3QgbGlzdF9oZWFkCQlkZXZpY2VfbGlzdDsKIAlzdHJ1
+Y3QgaWRyCQkJZGV2aWNlX2lkcjsKIH0gdmZpbzsKIApAQCAtNzU3LDcgKzc1OCw3IEBAIHZvaWQg
+dmZpb19pbml0X2dyb3VwX2RldihzdHJ1Y3QgdmZpb19kZXZpY2UgKmRldmljZSwgc3RydWN0IGRl
+dmljZSAqZGV2LAogfQogRVhQT1JUX1NZTUJPTF9HUEwodmZpb19pbml0X2dyb3VwX2Rldik7CiAK
+LWludCB2ZmlvX3JlZ2lzdGVyX2dyb3VwX2RldihzdHJ1Y3QgdmZpb19kZXZpY2UgKmRldmljZSkK
+K3N0YXRpYyBpbnQgX192ZmlvX3JlZ2lzdGVyX2dyb3VwX2RldihzdHJ1Y3QgdmZpb19kZXZpY2Ug
+KmRldmljZSkKIHsKIAlzdHJ1Y3QgdmZpb19kZXZpY2UgKmV4aXN0aW5nX2RldmljZTsKIAlzdHJ1
+Y3QgaW9tbXVfZ3JvdXAgKmlvbW11X2dyb3VwOwpAQCAtNzk0LDggKzc5NSwxMyBAQCBpbnQgdmZp
+b19yZWdpc3Rlcl9ncm91cF9kZXYoc3RydWN0IHZmaW9fZGV2aWNlICpkZXZpY2UpCiAJLyogT3Vy
+IHJlZmVyZW5jZSBvbiBncm91cCBpcyBtb3ZlZCB0byB0aGUgZGV2aWNlICovCiAJZGV2aWNlLT5n
+cm91cCA9IGdyb3VwOwogCi0JLyogUmVmY291bnRpbmcgY2FuJ3Qgc3RhcnQgdW50aWwgdGhlIGRy
+aXZlciBjYWxscyByZWdpc3RlciAqLwotCXJlZmNvdW50X3NldCgmZGV2aWNlLT5yZWZjb3VudCwg
+MSk7CisJLyoKKwkgKiBSZWZjb3VudGluZyBjYW4ndCBzdGFydCB1bnRpbCB0aGUgZHJpdmVyIGNh
+bGwgcmVnaXN0ZXIuIERvbuKAmXQKKwkgKiBzdGFydCB0d2ljZSB3aGVuIHRoZSBkZXZpY2UgaXMg
+ZXhwb3NlZCBpbiBib3RoIGdyb3VwIGFuZCBub25ncm91cAorCSAqIGludGVyZmFjZXMuCisJICov
+CisJaWYgKCFyZWZjb3VudF9yZWFkKCZkZXZpY2UtPnJlZmNvdW50KSkKKwkJcmVmY291bnRfc2V0
+KCZkZXZpY2UtPnJlZmNvdW50LCAxKTsKIAogCW11dGV4X2xvY2soJmdyb3VwLT5kZXZpY2VfbG9j
+ayk7CiAJbGlzdF9hZGQoJmRldmljZS0+Z3JvdXBfbmV4dCwgJmdyb3VwLT5kZXZpY2VfbGlzdCk7
+CkBAIC04MDQsNyArODEwLDc4IEBAIGludCB2ZmlvX3JlZ2lzdGVyX2dyb3VwX2RldihzdHJ1Y3Qg
+dmZpb19kZXZpY2UgKmRldmljZSkKIAogCXJldHVybiAwOwogfQotRVhQT1JUX1NZTUJPTF9HUEwo
+dmZpb19yZWdpc3Rlcl9ncm91cF9kZXYpOworCitzdGF0aWMgaW50IF9fdmZpb19yZWdpc3Rlcl9u
+b25ncm91cF9kZXYoc3RydWN0IHZmaW9fZGV2aWNlICpkZXZpY2UpCit7CisJc3RydWN0IHZmaW9f
+ZGV2aWNlICpleGlzdGluZ19kZXZpY2U7CisJc3RydWN0IGRldmljZSAqZGV2OworCWludCByZXQg
+PSAwLCBtaW5vcjsKKworCW11dGV4X2xvY2soJnZmaW8uZGV2aWNlX2xvY2spOworCWxpc3RfZm9y
+X2VhY2hfZW50cnkoZXhpc3RpbmdfZGV2aWNlLCAmdmZpby5kZXZpY2VfbGlzdCwgdmZpb19uZXh0
+KSB7CisJCWlmIChleGlzdGluZ19kZXZpY2UgPT0gZGV2aWNlKSB7CisJCQlyZXQgPSAtRUJVU1k7
+CisJCQlnb3RvIG91dF91bmxvY2s7CisJCX0KKwl9CisKKwltaW5vciA9IGlkcl9hbGxvYygmdmZp
+by5kZXZpY2VfaWRyLCBkZXZpY2UsIDAsIE1JTk9STUFTSyArIDEsIEdGUF9LRVJORUwpOworCXBy
+X2RlYnVnKCIlcyAtIG1uaW9yOiAlZFxuIiwgX19mdW5jX18sIG1pbm9yKTsKKwlpZiAobWlub3Ig
+PCAwKSB7CisJCXJldCA9IG1pbm9yOworCQlnb3RvIG91dF91bmxvY2s7CisJfQorCisJZGV2ID0g
+ZGV2aWNlX2NyZWF0ZSh2ZmlvLmRldmljZV9jbGFzcywgTlVMTCwKKwkJCSAgICBNS0RFVihNQUpP
+Uih2ZmlvLmRldmljZV9kZXZ0KSwgbWlub3IpLAorCQkJICAgIGRldmljZSwgIiVzIiwgZGV2X25h
+bWUoZGV2aWNlLT5kZXYpKTsKKwlpZiAoSVNfRVJSKGRldikpIHsKKwkJaWRyX3JlbW92ZSgmdmZp
+by5kZXZpY2VfaWRyLCBtaW5vcik7CisJCXJldCA9IFBUUl9FUlIoZGV2KTsKKwkJZ290byBvdXRf
+dW5sb2NrOworCX0KKworCS8qCisJICogUmVmY291bnRpbmcgY2FuJ3Qgc3RhcnQgdW50aWwgdGhl
+IGRyaXZlciBjYWxsIHJlZ2lzdGVyLiBEb27igJl0CisJICogc3RhcnQgdHdpY2Ugd2hlbiB0aGUg
+ZGV2aWNlIGlzIGV4cG9zZWQgaW4gYm90aCBncm91cCBhbmQgbm9uZ3JvdXAKKwkgKiBpbnRlcmZh
+Y2VzLgorCSAqLworCWlmICghcmVmY291bnRfcmVhZCgmZGV2aWNlLT5yZWZjb3VudCkpCisJCXJl
+ZmNvdW50X3NldCgmZGV2aWNlLT5yZWZjb3VudCwgMSk7CisKKwlkZXZpY2UtPm1pbm9yID0gbWlu
+b3I7CisJbGlzdF9hZGQoJmRldmljZS0+dmZpb19uZXh0LCAmdmZpby5kZXZpY2VfbGlzdCk7CisJ
+ZGV2X2luZm8oZGV2aWNlLT5kZXYsICJDcmVhdGVzIERldmljZSBpbnRlcmZhY2Ugc3VjY2Vzc2Z1
+bGx5IVxuIik7CitvdXRfdW5sb2NrOgorCW11dGV4X3VubG9jaygmdmZpby5kZXZpY2VfbG9jayk7
+CisJcmV0dXJuIHJldDsKK30KKworaW50IHZmaW9fcmVnaXN0ZXJfZGV2aWNlKHN0cnVjdCB2Zmlv
+X2RldmljZSAqZGV2aWNlLCB1MzIgZmxhZ3MpCit7CisJaW50IHJldCA9IC1FSU5WQUw7CisKKwlk
+ZXZpY2UtPm1pbm9yID0gLTE7CisJZGV2aWNlLT5ncm91cCA9IE5VTEw7CisJYXRvbWljX3NldCgm
+ZGV2aWNlLT5vcGVuZWQsIDApOworCisJaWYgKGZsYWdzICYgfihWRklPX0RFVk5PREVfR1JPVVAg
+fCBWRklPX0RFVk5PREVfTk9OR1JPVVApKQorCQlyZXR1cm4gcmV0OworCisJaWYgKGZsYWdzICYg
+VkZJT19ERVZOT0RFX0dST1VQKSB7CisJCXJldCA9IF9fdmZpb19yZWdpc3Rlcl9ncm91cF9kZXYo
+ZGV2aWNlKTsKKwkJaWYgKHJldCkKKwkJCXJldHVybiByZXQ7CisJfQorCisJaWYgKGZsYWdzICYg
+VkZJT19ERVZOT0RFX05PTkdST1VQKSB7CisJCXJldCA9IF9fdmZpb19yZWdpc3Rlcl9ub25ncm91
+cF9kZXYoZGV2aWNlKTsKKwkJaWYgKHJldCAmJiBkZXZpY2UtPmdyb3VwKQorCQkJdmZpb191bnJl
+Z2lzdGVyX2RldmljZShkZXZpY2UpOworCX0KKwlyZXR1cm4gcmV0OworfQorRVhQT1JUX1NZTUJP
+TF9HUEwodmZpb19yZWdpc3Rlcl9kZXZpY2UpOwogCiAvKioKICAqIEdldCBhIHJlZmVyZW5jZSB0
+byB0aGUgdmZpb19kZXZpY2UgZm9yIGEgZGV2aWNlLiAgRXZlbiBpZiB0aGUKQEAgLTg2MSwxMyAr
+OTM4LDE0IEBAIHN0YXRpYyBzdHJ1Y3QgdmZpb19kZXZpY2UgKnZmaW9fZGV2aWNlX2dldF9mcm9t
+X25hbWUoc3RydWN0IHZmaW9fZ3JvdXAgKmdyb3VwLAogLyoKICAqIERlY3JlbWVudCB0aGUgZGV2
+aWNlIHJlZmVyZW5jZSBjb3VudCBhbmQgd2FpdCBmb3IgdGhlIGRldmljZSB0byBiZQogICogcmVt
+b3ZlZC4gIE9wZW4gZmlsZSBkZXNjcmlwdG9ycyBmb3IgdGhlIGRldmljZS4uLiAqLwotdm9pZCB2
+ZmlvX3VucmVnaXN0ZXJfZ3JvdXBfZGV2KHN0cnVjdCB2ZmlvX2RldmljZSAqZGV2aWNlKQordm9p
+ZCB2ZmlvX3VucmVnaXN0ZXJfZGV2aWNlKHN0cnVjdCB2ZmlvX2RldmljZSAqZGV2aWNlKQogewog
+CXN0cnVjdCB2ZmlvX2dyb3VwICpncm91cCA9IGRldmljZS0+Z3JvdXA7CiAJc3RydWN0IHZmaW9f
+dW5ib3VuZF9kZXYgKnVuYm91bmQ7CiAJdW5zaWduZWQgaW50IGkgPSAwOwogCWJvb2wgaW50ZXJy
+dXB0ZWQgPSBmYWxzZTsKIAlsb25nIHJjOworCWludCBtaW5vciA9IGRldmljZS0+bWlub3I7CiAK
+IAkvKgogCSAqIFdoZW4gdGhlIGRldmljZSBpcyByZW1vdmVkIGZyb20gdGhlIGdyb3VwLCB0aGUg
+Z3JvdXAgc3VkZGVubHkKQEAgLTg3OCwxNCArOTU2LDIwIEBAIHZvaWQgdmZpb191bnJlZ2lzdGVy
+X2dyb3VwX2RldihzdHJ1Y3QgdmZpb19kZXZpY2UgKmRldmljZSkKIAkgKiBzb2x2ZSB0aGlzLCB3
+ZSB0cmFjayBzdWNoIGRldmljZXMgb24gdGhlIHVuYm91bmRfbGlzdCB0byBicmlkZ2UKIAkgKiB0
+aGUgZ2FwIHVudGlsIHRoZXkncmUgZnVsbHkgdW5ib3VuZC4KIAkgKi8KLQl1bmJvdW5kID0ga3ph
+bGxvYyhzaXplb2YoKnVuYm91bmQpLCBHRlBfS0VSTkVMKTsKLQlpZiAodW5ib3VuZCkgewotCQl1
+bmJvdW5kLT5kZXYgPSBkZXZpY2UtPmRldjsKLQkJbXV0ZXhfbG9jaygmZ3JvdXAtPnVuYm91bmRf
+bG9jayk7Ci0JCWxpc3RfYWRkKCZ1bmJvdW5kLT51bmJvdW5kX25leHQsICZncm91cC0+dW5ib3Vu
+ZF9saXN0KTsKLQkJbXV0ZXhfdW5sb2NrKCZncm91cC0+dW5ib3VuZF9sb2NrKTsKKwlpZiAoZ3Jv
+dXApIHsKKwkJLyoKKwkJICogSWYgY2FsbGVyIGhhc24ndCBjYWxsZWQgdmZpb19yZWdpc3Rlcl9n
+cm91cF9kZXYoKSwgdGhpcworCQkgKiBicmFuY2ggaXMgbm90IG5lY2Vzc2FyeS4KKwkJICovCisJ
+CXVuYm91bmQgPSBremFsbG9jKHNpemVvZigqdW5ib3VuZCksIEdGUF9LRVJORUwpOworCQlpZiAo
+dW5ib3VuZCkgeworCQkJdW5ib3VuZC0+ZGV2ID0gZGV2aWNlLT5kZXY7CisJCQltdXRleF9sb2Nr
+KCZncm91cC0+dW5ib3VuZF9sb2NrKTsKKwkJCWxpc3RfYWRkKCZ1bmJvdW5kLT51bmJvdW5kX25l
+eHQsICZncm91cC0+dW5ib3VuZF9saXN0KTsKKwkJCW11dGV4X3VubG9jaygmZ3JvdXAtPnVuYm91
+bmRfbG9jayk7CisJCX0KKwkJV0FSTl9PTighdW5ib3VuZCk7CiAJfQotCVdBUk5fT04oIXVuYm91
+bmQpOwogCiAJdmZpb19kZXZpY2VfcHV0KGRldmljZSk7CiAJcmMgPSB0cnlfd2FpdF9mb3JfY29t
+cGxldGlvbigmZGV2aWNlLT5jb21wKTsKQEAgLTkxMCw2ICs5OTQsMjEgQEAgdm9pZCB2ZmlvX3Vu
+cmVnaXN0ZXJfZ3JvdXBfZGV2KHN0cnVjdCB2ZmlvX2RldmljZSAqZGV2aWNlKQogCQl9CiAJfQog
+CisJLyogbm9uZ3JvdXAgaW50ZXJmYWNlIHJlbGF0ZWQgY2xlYW51cCAqLworCWlmIChtaW5vciA+
+PSAwKSB7CisJCW11dGV4X2xvY2soJnZmaW8uZGV2aWNlX2xvY2spOworCQlsaXN0X2RlbCgmZGV2
+aWNlLT52ZmlvX25leHQpOworCQlkZXZpY2UtPm1pbm9yID0gLTE7CisJCWRldmljZV9kZXN0cm95
+KHZmaW8uZGV2aWNlX2NsYXNzLAorCQkJICAgICAgIE1LREVWKE1BSk9SKHZmaW8uZGV2aWNlX2Rl
+dnQpLCBtaW5vcikpOworCQlpZHJfcmVtb3ZlKCZ2ZmlvLmRldmljZV9pZHIsIG1pbm9yKTsKKwkJ
+bXV0ZXhfdW5sb2NrKCZ2ZmlvLmRldmljZV9sb2NrKTsKKwl9CisKKwkvKiBObyBuZWVkIGdvIGZ1
+cnRoZXIgaWYgbm8gZ3JvdXAuICovCisJaWYgKCFncm91cCkKKwkJcmV0dXJuOworCiAJbXV0ZXhf
+bG9jaygmZ3JvdXAtPmRldmljZV9sb2NrKTsKIAlsaXN0X2RlbCgmZGV2aWNlLT5ncm91cF9uZXh0
+KTsKIAlncm91cC0+ZGV2X2NvdW50ZXItLTsKQEAgLTkzNSw2ICsxMDM0LDE4IEBAIHZvaWQgdmZp
+b191bnJlZ2lzdGVyX2dyb3VwX2RldihzdHJ1Y3QgdmZpb19kZXZpY2UgKmRldmljZSkKIAkvKiBN
+YXRjaGVzIHRoZSBnZXQgaW4gdmZpb19yZWdpc3Rlcl9ncm91cF9kZXYoKSAqLwogCXZmaW9fZ3Jv
+dXBfcHV0KGdyb3VwKTsKIH0KK0VYUE9SVF9TWU1CT0xfR1BMKHZmaW9fdW5yZWdpc3Rlcl9kZXZp
+Y2UpOworCitpbnQgdmZpb19yZWdpc3Rlcl9ncm91cF9kZXYoc3RydWN0IHZmaW9fZGV2aWNlICpk
+ZXZpY2UpCit7CisJcmV0dXJuIHZmaW9fcmVnaXN0ZXJfZGV2aWNlKGRldmljZSwgVkZJT19ERVZO
+T0RFX0dST1VQKTsKK30KK0VYUE9SVF9TWU1CT0xfR1BMKHZmaW9fcmVnaXN0ZXJfZ3JvdXBfZGV2
+KTsKKwordm9pZCB2ZmlvX3VucmVnaXN0ZXJfZ3JvdXBfZGV2KHN0cnVjdCB2ZmlvX2RldmljZSAq
+ZGV2aWNlKQoreworCXZmaW9fdW5yZWdpc3Rlcl9kZXZpY2UoZGV2aWNlKTsKK30KIEVYUE9SVF9T
+WU1CT0xfR1BMKHZmaW9fdW5yZWdpc3Rlcl9ncm91cF9kZXYpOwogCiAvKioKQEAgLTI0NDcsNiAr
+MjU1OCw3IEBAIHN0YXRpYyBpbnQgdmZpb19pbml0X2RldmljZV9jbGFzcyh2b2lkKQogCiAJbXV0
+ZXhfaW5pdCgmdmZpby5kZXZpY2VfbG9jayk7CiAJaWRyX2luaXQoJnZmaW8uZGV2aWNlX2lkcik7
+CisJSU5JVF9MSVNUX0hFQUQoJnZmaW8uZGV2aWNlX2xpc3QpOwogCiAJLyogL2Rldi92ZmlvL2Rl
+dmljZXMvJERFVklDRSAqLwogCXZmaW8uZGV2aWNlX2NsYXNzID0gY2xhc3NfY3JlYXRlKFRISVNf
+TU9EVUxFLCAidmZpby1kZXZpY2UiKTsKQEAgLTI1NDIsNiArMjY1NCw3IEBAIHN0YXRpYyBpbnQg
+X19pbml0IHZmaW9faW5pdCh2b2lkKQogc3RhdGljIHZvaWQgX19leGl0IHZmaW9fY2xlYW51cCh2
+b2lkKQogewogCVdBUk5fT04oIWxpc3RfZW1wdHkoJnZmaW8uZ3JvdXBfbGlzdCkpOworCVdBUk5f
+T04oIWxpc3RfZW1wdHkoJnZmaW8uZGV2aWNlX2xpc3QpKTsKIAogI2lmZGVmIENPTkZJR19WRklP
+X05PSU9NTVUKIAl2ZmlvX3VucmVnaXN0ZXJfaW9tbXVfZHJpdmVyKCZ2ZmlvX25vaW9tbXVfb3Bz
+KTsKZGlmZiAtLWdpdCBhL2luY2x1ZGUvbGludXgvdmZpby5oIGIvaW5jbHVkZS9saW51eC92Zmlv
+LmgKaW5kZXggNGE1ZjNmOTllYWIyLi45NDQ4Yjc1MWI2NjMgMTAwNjQ0Ci0tLSBhL2luY2x1ZGUv
+bGludXgvdmZpby5oCisrKyBiL2luY2x1ZGUvbGludXgvdmZpby5oCkBAIC0yNiw2ICsyNiw3IEBA
+IHN0cnVjdCB2ZmlvX2RldmljZSB7CiAJc3RydWN0IGxpc3RfaGVhZCBncm91cF9uZXh0OwogCWlu
+dCBtaW5vcjsKIAlhdG9taWNfdCBvcGVuZWQ7CisJc3RydWN0IGxpc3RfaGVhZCB2ZmlvX25leHQ7
+CiB9OwogCiAvKioKQEAgLTczLDYgKzc0LDE0IEBAIGVudW0gdmZpb19pb21tdV9ub3RpZnlfdHlw
+ZSB7CiAJVkZJT19JT01NVV9DT05UQUlORVJfQ0xPU0UgPSAwLAogfTsKIAorLyogVGhlIGRldmlj
+ZSBjYW4gYmUgb3BlbmVkIHZpYSBWRklPX0dST1VQX0dFVF9ERVZJQ0VfRkQgKi8KKyNkZWZpbmUg
+VkZJT19ERVZOT0RFX0dST1VQCUJJVCgwKQorLyogVGhlIGRldmljZSBjYW4gYmUgb3BlbmVkIHZp
+YSAvZGV2L3N5cy9kZXZpY2VzLyR7REVWSUNFfSAqLworI2RlZmluZSBWRklPX0RFVk5PREVfTk9O
+R1JPVVAJQklUKDEpCisKK2V4dGVybiBpbnQgdmZpb19yZWdpc3Rlcl9kZXZpY2Uoc3RydWN0IHZm
+aW9fZGV2aWNlICpkZXZpY2UsIHUzMiBmbGFncyk7CitleHRlcm4gdm9pZCB2ZmlvX3VucmVnaXN0
+ZXJfZGV2aWNlKHN0cnVjdCB2ZmlvX2RldmljZSAqZGV2aWNlKTsKKwogLyoqCiAgKiBzdHJ1Y3Qg
+dmZpb19pb21tdV9kcml2ZXJfb3BzIC0gVkZJTyBJT01NVSBkcml2ZXIgY2FsbGJhY2tzCiAgKi8K
+LS0gCjIuMjUuMQoKX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19f
+X18KaW9tbXUgbWFpbGluZyBsaXN0CmlvbW11QGxpc3RzLmxpbnV4LWZvdW5kYXRpb24ub3JnCmh0
+dHBzOi8vbGlzdHMubGludXhmb3VuZGF0aW9uLm9yZy9tYWlsbWFuL2xpc3RpbmZvL2lvbW11
