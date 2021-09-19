@@ -7,60 +7,61 @@ X-Spam-Status: No, score=-16.7 required=3.0 tests=BAYES_00,
 	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_GIT
 	autolearn=ham autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5FCA9C433F5
-	for <iommu@archiver.kernel.org>; Sun, 19 Sep 2021 06:42:55 +0000 (UTC)
-Received: from smtp1.osuosl.org (smtp1.osuosl.org [140.211.166.138])
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A7250C433EF
+	for <iommu@archiver.kernel.org>; Sun, 19 Sep 2021 06:43:02 +0000 (UTC)
+Received: from smtp3.osuosl.org (smtp3.osuosl.org [140.211.166.136])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 2375D61074
-	for <iommu@archiver.kernel.org>; Sun, 19 Sep 2021 06:42:55 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.4.1 mail.kernel.org 2375D61074
+	by mail.kernel.org (Postfix) with ESMTPS id 6FA2561074
+	for <iommu@archiver.kernel.org>; Sun, 19 Sep 2021 06:43:02 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.4.1 mail.kernel.org 6FA2561074
 Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=intel.com
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by smtp1.osuosl.org (Postfix) with ESMTP id 034AD83B25;
-	Sun, 19 Sep 2021 06:42:55 +0000 (UTC)
+	by smtp3.osuosl.org (Postfix) with ESMTP id 418E6606C2;
+	Sun, 19 Sep 2021 06:43:02 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from smtp1.osuosl.org ([127.0.0.1])
-	by localhost (smtp1.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id hiQ81aXtcahk; Sun, 19 Sep 2021 06:42:54 +0000 (UTC)
-Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [IPv6:2605:bc80:3010:104::8cd3:938])
-	by smtp1.osuosl.org (Postfix) with ESMTPS id E01BA837AC;
-	Sun, 19 Sep 2021 06:42:53 +0000 (UTC)
+Received: from smtp3.osuosl.org ([127.0.0.1])
+	by localhost (smtp3.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+	with ESMTP id IFX_2D5586Kt; Sun, 19 Sep 2021 06:43:01 +0000 (UTC)
+Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
+	by smtp3.osuosl.org (Postfix) with ESMTPS id 2BC1C60648;
+	Sun, 19 Sep 2021 06:43:01 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id CA567C0011;
-	Sun, 19 Sep 2021 06:42:53 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 08BB1C0011;
+	Sun, 19 Sep 2021 06:43:01 +0000 (UTC)
 Received: from smtp4.osuosl.org (smtp4.osuosl.org [IPv6:2605:bc80:3010::137])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 5F345C000D
- for <iommu@lists.linux-foundation.org>; Sun, 19 Sep 2021 06:42:52 +0000 (UTC)
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 5B241C000D
+ for <iommu@lists.linux-foundation.org>; Sun, 19 Sep 2021 06:42:59 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by smtp4.osuosl.org (Postfix) with ESMTP id 41D0F40500
- for <iommu@lists.linux-foundation.org>; Sun, 19 Sep 2021 06:42:52 +0000 (UTC)
+ by smtp4.osuosl.org (Postfix) with ESMTP id 3A25940701
+ for <iommu@lists.linux-foundation.org>; Sun, 19 Sep 2021 06:42:59 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
 Received: from smtp4.osuosl.org ([127.0.0.1])
  by localhost (smtp4.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id 7UhTLkEJW66D for <iommu@lists.linux-foundation.org>;
- Sun, 19 Sep 2021 06:42:51 +0000 (UTC)
+ with ESMTP id QtuwN4fJEc9y for <iommu@lists.linux-foundation.org>;
+ Sun, 19 Sep 2021 06:42:58 +0000 (UTC)
 X-Greylist: domain auto-whitelisted by SQLgrey-1.8.0
-Received: from mga01.intel.com (mga01.intel.com [192.55.52.88])
- by smtp4.osuosl.org (Postfix) with ESMTPS id B298A404E7
- for <iommu@lists.linux-foundation.org>; Sun, 19 Sep 2021 06:42:51 +0000 (UTC)
-X-IronPort-AV: E=McAfee;i="6200,9189,10111"; a="245397278"
-X-IronPort-AV: E=Sophos;i="5.85,305,1624345200"; d="scan'208";a="245397278"
+Received: from mga12.intel.com (mga12.intel.com [192.55.52.136])
+ by smtp4.osuosl.org (Postfix) with ESMTPS id 951D7406DF
+ for <iommu@lists.linux-foundation.org>; Sun, 19 Sep 2021 06:42:58 +0000 (UTC)
+X-IronPort-AV: E=McAfee;i="6200,9189,10111"; a="202493365"
+X-IronPort-AV: E=Sophos;i="5.85,305,1624345200"; d="scan'208";a="202493365"
 Received: from fmsmga008.fm.intel.com ([10.253.24.58])
- by fmsmga101.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384;
- 18 Sep 2021 23:42:51 -0700
+ by fmsmga106.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384;
+ 18 Sep 2021 23:42:57 -0700
 X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.85,305,1624345200"; d="scan'208";a="510702058"
+X-IronPort-AV: E=Sophos;i="5.85,305,1624345200"; d="scan'208";a="510702080"
 Received: from yiliu-dev.bj.intel.com (HELO iov-dual.bj.intel.com)
  ([10.238.156.135])
- by fmsmga008.fm.intel.com with ESMTP; 18 Sep 2021 23:42:44 -0700
+ by fmsmga008.fm.intel.com with ESMTP; 18 Sep 2021 23:42:51 -0700
 From: Liu Yi L <yi.l.liu@intel.com>
 To: alex.williamson@redhat.com, jgg@nvidia.com, hch@lst.de,
  jasowang@redhat.com, joro@8bytes.org
-Subject: [RFC 12/20] iommu/iommufd: Add IOMMU_CHECK_EXTENSION
-Date: Sun, 19 Sep 2021 14:38:40 +0800
-Message-Id: <20210919063848.1476776-13-yi.l.liu@intel.com>
+Subject: [RFC 13/20] iommu: Extend iommu_at[de]tach_device() for multiple
+ devices group
+Date: Sun, 19 Sep 2021 14:38:41 +0800
+Message-Id: <20210919063848.1476776-14-yi.l.liu@intel.com>
 X-Mailer: git-send-email 2.25.1
 In-Reply-To: <20210919063848.1476776-1-yi.l.liu@intel.com>
 References: <20210919063848.1476776-1-yi.l.liu@intel.com>
@@ -88,73 +89,100 @@ Content-Transfer-Encoding: 7bit
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-As aforementioned, userspace should check extension for what formats
-can be specified when allocating an IOASID. This patch adds such
-interface for userspace. In this RFC, iommufd reports EXT_MAP_TYPE1V2
-support and no no-snoop support yet.
+From: Lu Baolu <baolu.lu@linux.intel.com>
 
-Signed-off-by: Liu Yi L <yi.l.liu@intel.com>
+These two helpers could be used when 1) the iommu group is singleton,
+or 2) the upper layer has put the iommu group into the secure state by
+calling iommu_device_init_user_dma().
+
+As we want the iommufd design to be a device-centric model, we want to
+remove any group knowledge in iommufd. Given that we already have
+iommu_at[de]tach_device() interface, we could extend it for iommufd
+simply by doing below:
+
+ - first device in a group does group attach;
+ - last device in a group does group detach.
+
+as long as the group has been put into the secure context.
+
+The commit <426a273834eae> ("iommu: Limit iommu_attach/detach_device to
+device with their own group") deliberately restricts the two interfaces
+to single-device group. To avoid the conflict with existing usages, we
+keep this policy and put the new extension only when the group has been
+marked for user_dma.
+
+Signed-off-by: Lu Baolu <baolu.lu@linux.intel.com>
 ---
- drivers/iommu/iommufd/iommufd.c |  7 +++++++
- include/uapi/linux/iommu.h      | 27 +++++++++++++++++++++++++++
- 2 files changed, 34 insertions(+)
+ drivers/iommu/iommu.c | 25 +++++++++++++++++++++----
+ 1 file changed, 21 insertions(+), 4 deletions(-)
 
-diff --git a/drivers/iommu/iommufd/iommufd.c b/drivers/iommu/iommufd/iommufd.c
-index 4839f128b24a..e45d76359e34 100644
---- a/drivers/iommu/iommufd/iommufd.c
-+++ b/drivers/iommu/iommufd/iommufd.c
-@@ -306,6 +306,13 @@ static long iommufd_fops_unl_ioctl(struct file *filep,
- 		return ret;
+diff --git a/drivers/iommu/iommu.c b/drivers/iommu/iommu.c
+index bffd84e978fb..b6178997aef1 100644
+--- a/drivers/iommu/iommu.c
++++ b/drivers/iommu/iommu.c
+@@ -47,6 +47,7 @@ struct iommu_group {
+ 	struct list_head entry;
+ 	unsigned long user_dma_owner_id;
+ 	refcount_t owner_cnt;
++	refcount_t attach_cnt;
+ };
  
- 	switch (cmd) {
-+	case IOMMU_CHECK_EXTENSION:
-+		switch (arg) {
-+		case EXT_MAP_TYPE1V2:
-+			return 1;
-+		default:
-+			return 0;
-+		}
- 	case IOMMU_DEVICE_GET_INFO:
- 		ret = iommufd_get_device_info(ictx, arg);
- 		break;
-diff --git a/include/uapi/linux/iommu.h b/include/uapi/linux/iommu.h
-index 5cbd300eb0ee..49731be71213 100644
---- a/include/uapi/linux/iommu.h
-+++ b/include/uapi/linux/iommu.h
-@@ -14,6 +14,33 @@
- #define IOMMU_TYPE	(';')
- #define IOMMU_BASE	100
+ struct group_device {
+@@ -1994,7 +1995,7 @@ static int __iommu_attach_device(struct iommu_domain *domain,
+ int iommu_attach_device(struct iommu_domain *domain, struct device *dev)
+ {
+ 	struct iommu_group *group;
+-	int ret;
++	int ret = 0;
  
-+/*
-+ * IOMMU_CHECK_EXTENSION - _IO(IOMMU_TYPE, IOMMU_BASE + 0)
-+ *
-+ * Check whether an uAPI extension is supported.
-+ *
-+ * It's unlikely that all planned capabilities in IOMMU fd will be ready
-+ * in one breath. User should check which uAPI extension is supported
-+ * according to its intended usage.
-+ *
-+ * A rough list of possible extensions may include:
-+ *
-+ *	- EXT_MAP_TYPE1V2 for vfio type1v2 map semantics;
-+ *	- EXT_DMA_NO_SNOOP for no-snoop DMA support;
-+ *	- EXT_MAP_NEWTYPE for an enhanced map semantics;
-+ *	- EXT_MULTIDEV_GROUP for 1:N iommu group;
-+ *	- EXT_IOASID_NESTING for what the name stands;
-+ *	- EXT_USER_PAGE_TABLE for user managed page table;
-+ *	- EXT_USER_PASID_TABLE for user managed PASID table;
-+ *	- EXT_DIRTY_TRACKING for tracking pages dirtied by DMA;
-+ *	- ...
-+ *
-+ * Return: 0 if not supported, 1 if supported.
-+ */
-+#define EXT_MAP_TYPE1V2		1
-+#define EXT_DMA_NO_SNOOP	2
-+#define IOMMU_CHECK_EXTENSION	_IO(IOMMU_TYPE, IOMMU_BASE + 0)
+ 	group = iommu_group_get(dev);
+ 	if (!group)
+@@ -2005,11 +2006,23 @@ int iommu_attach_device(struct iommu_domain *domain, struct device *dev)
+ 	 * change while we are attaching
+ 	 */
+ 	mutex_lock(&group->mutex);
+-	ret = -EINVAL;
+-	if (iommu_group_device_count(group) != 1)
++	if (group->user_dma_owner_id) {
++		if (group->domain) {
++			if (group->domain != domain)
++				ret = -EBUSY;
++			else
++				refcount_inc(&group->attach_cnt);
 +
- /*
-  * IOMMU_DEVICE_GET_INFO - _IOR(IOMMU_TYPE, IOMMU_BASE + 1,
-  *				struct iommu_device_info)
++			goto out_unlock;
++		}
++	} else if (iommu_group_device_count(group) != 1) {
++		ret = -EINVAL;
+ 		goto out_unlock;
++	}
+ 
+ 	ret = __iommu_attach_group(domain, group);
++	if (!ret && group->user_dma_owner_id)
++		refcount_set(&group->attach_cnt, 1);
+ 
+ out_unlock:
+ 	mutex_unlock(&group->mutex);
+@@ -2261,7 +2274,10 @@ void iommu_detach_device(struct iommu_domain *domain, struct device *dev)
+ 		return;
+ 
+ 	mutex_lock(&group->mutex);
+-	if (iommu_group_device_count(group) != 1) {
++	if (group->user_dma_owner_id) {
++		if (!refcount_dec_and_test(&group->attach_cnt))
++			goto out_unlock;
++	} else if (iommu_group_device_count(group) != 1) {
+ 		WARN_ON(1);
+ 		goto out_unlock;
+ 	}
+@@ -3368,6 +3384,7 @@ static int iommu_group_init_user_dma(struct iommu_group *group,
+ 
+ 	group->user_dma_owner_id = owner;
+ 	refcount_set(&group->owner_cnt, 1);
++	refcount_set(&group->attach_cnt, 0);
+ 
+ 	/* default domain is unsafe for user-initiated dma */
+ 	if (group->domain == group->default_domain)
 -- 
 2.25.1
 
