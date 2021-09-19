@@ -3,66 +3,67 @@ X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
 X-Spam-Status: No, score=-16.7 required=3.0 tests=BAYES_00,
-	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,
-	MENTIONS_GIT_HOSTING,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_GIT
-	autolearn=ham autolearn_force=no version=3.4.0
+	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_CR_TRAILER,INCLUDES_PATCH,
+	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_GIT
+	autolearn=unavailable autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9CAC4C433F5
-	for <iommu@archiver.kernel.org>; Sun, 19 Sep 2021 06:41:35 +0000 (UTC)
-Received: from smtp1.osuosl.org (smtp1.osuosl.org [140.211.166.138])
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 966BFC433FE
+	for <iommu@archiver.kernel.org>; Sun, 19 Sep 2021 06:41:41 +0000 (UTC)
+Received: from smtp2.osuosl.org (smtp2.osuosl.org [140.211.166.133])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 48E0A60F12
-	for <iommu@archiver.kernel.org>; Sun, 19 Sep 2021 06:41:35 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.4.1 mail.kernel.org 48E0A60F12
+	by mail.kernel.org (Postfix) with ESMTPS id 51DC761074
+	for <iommu@archiver.kernel.org>; Sun, 19 Sep 2021 06:41:41 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.4.1 mail.kernel.org 51DC761074
 Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=intel.com
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by smtp1.osuosl.org (Postfix) with ESMTP id E39D3837C0;
-	Sun, 19 Sep 2021 06:41:34 +0000 (UTC)
+	by smtp2.osuosl.org (Postfix) with ESMTP id 0C9F940182;
+	Sun, 19 Sep 2021 06:41:41 +0000 (UTC)
+X-Virus-Scanned: amavisd-new at osuosl.org
+Received: from smtp2.osuosl.org ([127.0.0.1])
+	by localhost (smtp2.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+	with ESMTP id FmM_PomSD5Qx; Sun, 19 Sep 2021 06:41:40 +0000 (UTC)
+Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
+	by smtp2.osuosl.org (Postfix) with ESMTPS id A28104018F;
+	Sun, 19 Sep 2021 06:41:39 +0000 (UTC)
+Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 72E39C0011;
+	Sun, 19 Sep 2021 06:41:39 +0000 (UTC)
+Received: from smtp1.osuosl.org (smtp1.osuosl.org [IPv6:2605:bc80:3010::138])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 5ECD5C000D
+ for <iommu@lists.linux-foundation.org>; Sun, 19 Sep 2021 06:41:38 +0000 (UTC)
+Received: from localhost (localhost [127.0.0.1])
+ by smtp1.osuosl.org (Postfix) with ESMTP id 5BE0A83842
+ for <iommu@lists.linux-foundation.org>; Sun, 19 Sep 2021 06:41:38 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
 Received: from smtp1.osuosl.org ([127.0.0.1])
-	by localhost (smtp1.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id buPCAhLyFx-4; Sun, 19 Sep 2021 06:41:33 +0000 (UTC)
-Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by smtp1.osuosl.org (Postfix) with ESMTPS id 718FA837AC;
-	Sun, 19 Sep 2021 06:41:33 +0000 (UTC)
-Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 49E5AC0011;
-	Sun, 19 Sep 2021 06:41:33 +0000 (UTC)
-Received: from smtp3.osuosl.org (smtp3.osuosl.org [IPv6:2605:bc80:3010::136])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 194C4C000D
- for <iommu@lists.linux-foundation.org>; Sun, 19 Sep 2021 06:41:32 +0000 (UTC)
-Received: from localhost (localhost [127.0.0.1])
- by smtp3.osuosl.org (Postfix) with ESMTP id EE2F160684
- for <iommu@lists.linux-foundation.org>; Sun, 19 Sep 2021 06:41:31 +0000 (UTC)
-X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from smtp3.osuosl.org ([127.0.0.1])
- by localhost (smtp3.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id XBT3_o-SOz4u for <iommu@lists.linux-foundation.org>;
- Sun, 19 Sep 2021 06:41:30 +0000 (UTC)
+ by localhost (smtp1.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+ with ESMTP id 6cCcgkFWJ3hl for <iommu@lists.linux-foundation.org>;
+ Sun, 19 Sep 2021 06:41:37 +0000 (UTC)
 X-Greylist: domain auto-whitelisted by SQLgrey-1.8.0
-Received: from mga12.intel.com (mga12.intel.com [192.55.52.136])
- by smtp3.osuosl.org (Postfix) with ESMTPS id A2C7C60648
- for <iommu@lists.linux-foundation.org>; Sun, 19 Sep 2021 06:41:30 +0000 (UTC)
-X-IronPort-AV: E=McAfee;i="6200,9189,10111"; a="202493269"
-X-IronPort-AV: E=Sophos;i="5.85,305,1624345200"; d="scan'208";a="202493269"
+Received: from mga09.intel.com (mga09.intel.com [134.134.136.24])
+ by smtp1.osuosl.org (Postfix) with ESMTPS id 69D7A837AC
+ for <iommu@lists.linux-foundation.org>; Sun, 19 Sep 2021 06:41:37 +0000 (UTC)
+X-IronPort-AV: E=McAfee;i="6200,9189,10111"; a="223030121"
+X-IronPort-AV: E=Sophos;i="5.85,305,1624345200"; d="scan'208";a="223030121"
 Received: from fmsmga008.fm.intel.com ([10.253.24.58])
- by fmsmga106.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384;
- 18 Sep 2021 23:41:29 -0700
+ by orsmga102.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384;
+ 18 Sep 2021 23:41:36 -0700
 X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.85,305,1624345200"; d="scan'208";a="510701821"
+X-IronPort-AV: E=Sophos;i="5.85,305,1624345200"; d="scan'208";a="510701852"
 Received: from yiliu-dev.bj.intel.com (HELO iov-dual.bj.intel.com)
  ([10.238.156.135])
- by fmsmga008.fm.intel.com with ESMTP; 18 Sep 2021 23:41:23 -0700
+ by fmsmga008.fm.intel.com with ESMTP; 18 Sep 2021 23:41:29 -0700
 From: Liu Yi L <yi.l.liu@intel.com>
 To: alex.williamson@redhat.com, jgg@nvidia.com, hch@lst.de,
  jasowang@redhat.com, joro@8bytes.org
-Subject: [RFC 00/20] Introduce /dev/iommu for userspace I/O address space
- management
-Date: Sun, 19 Sep 2021 14:38:28 +0800
-Message-Id: <20210919063848.1476776-1-yi.l.liu@intel.com>
+Subject: [RFC 01/20] iommu/iommufd: Add /dev/iommu core
+Date: Sun, 19 Sep 2021 14:38:29 +0800
+Message-Id: <20210919063848.1476776-2-yi.l.liu@intel.com>
 X-Mailer: git-send-email 2.25.1
+In-Reply-To: <20210919063848.1476776-1-yi.l.liu@intel.com>
+References: <20210919063848.1476776-1-yi.l.liu@intel.com>
 MIME-Version: 1.0
 Cc: kvm@vger.kernel.org, kwankhede@nvidia.com, jean-philippe@linaro.org,
  dave.jiang@intel.com, ashok.raj@intel.com, corbet@lwn.net,
@@ -87,259 +88,196 @@ Content-Transfer-Encoding: 7bit
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-Linux now includes multiple device-passthrough frameworks (e.g. VFIO and
-vDPA) to manage secure device access from the userspace. One critical task
-of those frameworks is to put the assigned device in a secure, IOMMU-
-protected context so user-initiated DMAs are prevented from doing harm to
-the rest of the system.
+/dev/iommu aims to provide a unified interface for managing I/O address
+spaces for devices assigned to userspace. This patch adds the initial
+framework to create a /dev/iommu node. Each open of this node returns an
+iommufd. And this fd is the handle for userspace to initiate its I/O
+address space management.
 
-Currently those frameworks implement their own logic for managing I/O page
-tables to isolate user-initiated DMAs. This doesn't scale to support many
-new IOMMU features, such as PASID-granular DMA remapping, nested translation,
-I/O page fault, IOMMU dirty bit, etc.
+One open:
+- We call this feature as IOMMUFD in Kconfig in this RFC. However this
+  name is not clear enough to indicate its purpose to user. Back to 2010
+  vfio even introduced a /dev/uiommu [1] as the predecessor of its
+  container concept. Is that a better name? Appreciate opinions here.
 
-/dev/iommu is introduced as an unified interface for managing I/O address
-spaces and DMA isolation for passthrough devices. It's originated from the
-upstream discussion for the vSVA enabling work[1].
+[1] https://lore.kernel.org/kvm/4c0eb470.1HMjondO00NIvFM6%25pugs@cisco.com/
 
-This RFC aims to provide a basic skeleton for above proposal, w/o adding
-any new feature beyond what vfio type1 provides today. For an overview of
-future extensions, please refer to the full design proposal [2].
-
-The core concepts in /dev/iommu are iommufd and ioasid. iommufd (by opening
-/dev/iommu) is the container holding multiple I/O address spaces, while
-ioasid is the fd-local software handle representing an I/O address space and
-associated with a single I/O page table. User manages those address spaces
-through fd operations, e.g. by using vfio type1v2 mapping semantics to manage
-respective I/O page tables.
-
-An I/O address space takes effect in the iommu only after it is attached by
-a device. One I/O address space can be attached by multiple devices. One
-device can be only attached to a single I/O address space in this RFC, to
-match vfio type1 behavior as the starting point.
-
-Device must be bound to an iommufd before attach operation can be conducted.
-The binding operation builds the connection between the devicefd (opened via
-device-passthrough framework) and iommufd. Most importantly, the entire
-/dev/iommu framework adopts a device-centric model w/o carrying any container/
-group legacy as current vfio does. This requires the binding operation also
-establishes a security context which prevents the bound device from accessing
-the rest of the system, as the contract for vfio to grant user access to the
-assigned device. Detail explanation of this aspect can be found in patch 06.
-
-Last, the format of an I/O page table must be compatible to the attached 
-devices (or more specifically to the IOMMU which serves the DMA from the
-attached devices). User is responsible for specifying the format when
-allocating an IOASID, according to one or multiple devices which will be
-attached right after. The device IOMMU format can be queried via iommufd
-once a device is successfully bound to the iommufd. Attaching a device to
-an IOASID with incompatible format is simply rejected.
-
-The skeleton is mostly implemented in iommufd, except that bind_iommufd/
-ioasid_attach operations are initiated via device-passthrough framework
-specific uAPIs. This RFC only changes vfio to work with iommufd. vdpa
-support can be added in a later stage.
-
-Basically iommufd provides following uAPIs and helper functions:
-
-- IOMMU_DEVICE_GET_INFO, for querying per-device iommu capability/format;
-- IOMMU_IOASID_ALLOC/FREE, as the name stands;
-- IOMMU_[UN]MAP_DMA, providing vfio type1v2 semantics for managing a
-  specific I/O page table;
-- helper functions for vfio to bind_iommufd/attach_ioasid with devices;
-
-vfio extensions include:
-- A new interface for user to open a device w/o using container/group uAPI;
-- VFIO_DEVICE_BIND_IOMMUFD, for binding a vfio device to an iommufd;
-  * unbind is automatically done when devicefd is closed;
-- VFIO_DEVICE_[DE]ATTACH_IOASID, for attaching/detaching a vfio device
-  to/from an ioasid in the specified iommufd;
-
-[TODO in RFC v2]
-
-We did one temporary hack in v1 by reusing vfio_iommu_type1.c to implement
-IOMMU_[UN]MAP_DMA. This leads to some dirty code in patch 16/17/18. We
-estimated almost 80% of the current type1 code are related to map/unmap.
-It needs non-trivial effort for either duplicating it in iommufd or making
-it shared by both vfio and iommufd. We hope this hack doesn't affect the
-review of the overall skeleton, since the  role of this part is very clear.
-Based on the received feedback we will make a clean implementation in v2.
-
-For userspace our time doesn't afford a clean implementation in Qemu.
-Instead, we just wrote a simple application (similar to the example in
-iommufd.rst) and verified the basic work flow (bind/unbind, alloc/free
-ioasid, attach/detach, map/unmap, multi-devices group, etc.). We did
-verify the I/O page table mappings established as expected, though no
-DMA is conducted. We plan to have a clean implementation in Qemu and
-provide a public link for reference when v2 is sending out.
-
-[TODO out of this RFC]
-
-The entire /dev/iommu project involves lots of tasks. It has to grow in
-a staging approach. Below is a rough list of TODO features. Most of them
-can be developed in parallel after this skeleton is accepted. For more
-detail please refer to the design proposal [2]:
-
-1. Move more vfio device types to iommufd:
-    * device which does no-snoop DMA
-    * software mdev
-    * PPC device
-    * platform device
-
-2. New vfio device type
-    * hardware mdev/subdev (with PASID)
-
-3. vDPA adoption
-
-4. User-managed I/O page table
-    * ioasid nesting (hardware)
-    * ioasid nesting (software)
-    * pasid virtualization
-        o pdev (arm/amd)
-        o pdev/mdev which doesn't support enqcmd (intel)
-        o pdev/mdev which supports enqcmd (intel)
-    * I/O page fault (stage-1)
-
-5. Miscellaneous
-    * I/O page fault (stage-2), for on-demand paging
-    * IOMMU dirty bit, for hardware-assisted dirty page tracking
-    * shared I/O page table (mm, ept, etc.)
-    * vfio/vdpa shim to avoid code duplication for legacy uAPI
-    * hardware-assisted vIOMMU
-
-[1] https://lore.kernel.org/linux-iommu/20210330132830.GO2356281@nvidia.com/
-[2] https://lore.kernel.org/kvm/BN9PR11MB5433B1E4AE5B0480369F97178C189@BN9PR11MB5433.namprd11.prod.outlook.com/
-
-[Series Overview]
-* Basic skeleton:
-  0001-iommu-iommufd-Add-dev-iommu-core.patch
-
-* VFIO PCI creates device-centric interface:
-  0002-vfio-Add-vfio-device-class-for-device-nodes.patch
-  0003-vfio-Add-vfio_-un-register_device.patch
-  0004-iommu-Add-iommu_device_get_info-interface.patch
-  0005-vfio-pci-Register-device-centric-interface.patch
-
-* Bind device fd with iommufd:
-  0006-iommu-Add-iommu_device_init-exit-_user_dma-interface.patch
-  0007-iommu-iommufd-Add-iommufd_-un-bind_device.patch
-  0008-vfio-pci-Add-VFIO_DEVICE_BIND_IOMMUFD.patch
-
-* IOASID allocation:
-  0009-iommu-iommufd-Add-IOMMU_DEVICE_GET_INFO.patch
-  0010-iommu-iommufd-Add-IOMMU_IOASID_ALLOC-FREE.patch
-
-* IOASID [de]attach:
-  0011-iommu-Extend-iommu_at-de-tach_device-for-multiple-de.patch
-  0012-iommu-iommufd-Add-iommufd_device_-de-attach_ioasid.patch
-  0013-vfio-pci-Add-VFIO_DEVICE_-DE-ATTACH_IOASID.patch
-
-* /dev/iommu DMA (un)map:
-  0014-vfio-type1-Export-symbols-for-dma-un-map-code-sharin.patch
-  0015-iommu-iommufd-Report-iova-range-to-userspace.patch
-  0016-iommu-iommufd-Add-IOMMU_-UN-MAP_DMA-on-IOASID.patch
-
-* Report the device info:
-  0017-iommu-vt-d-Implement-device_info-iommu_ops-callback.patch
-
-* Add doc:
-  0018-Doc-Add-documentation-for-dev-iommu.patch
- 
-* Basic skeleton:
-  0001-iommu-iommufd-Add-dev-iommu-core.patch
-
-* VFIO PCI creates device-centric interface:
-  0002-vfio-Add-device-class-for-dev-vfio-devices.patch
-  0003-vfio-Add-vfio_-un-register_device.patch
-  0004-iommu-Add-iommu_device_get_info-interface.patch
-  0005-vfio-pci-Register-device-to-dev-vfio-devices.patch
-
-* Bind device fd with iommufd:
-  0006-iommu-Add-iommu_device_init-exit-_user_dma-interface.patch
-  0007-iommu-iommufd-Add-iommufd_-un-bind_device.patch
-  0008-vfio-pci-Add-VFIO_DEVICE_BIND_IOMMUFD.patch
-
-* IOASID allocation:
-  0009-iommu-Add-page-size-and-address-width-attributes.patch
-  0010-iommu-iommufd-Add-IOMMU_DEVICE_GET_INFO.patch
-  0011-iommu-iommufd-Add-IOMMU_IOASID_ALLOC-FREE.patch
-  0012-iommu-iommufd-Add-IOMMU_CHECK_EXTENSION.patch
-
-* IOASID [de]attach:
-  0013-iommu-Extend-iommu_at-de-tach_device-for-multiple-de.patch
-  0014-iommu-iommufd-Add-iommufd_device_-de-attach_ioasid.patch
-  0015-vfio-pci-Add-VFIO_DEVICE_-DE-ATTACH_IOASID.patch
-
-* DMA (un)map:
-  0016-vfio-type1-Export-symbols-for-dma-un-map-code-sharin.patch
-  0017-iommu-iommufd-Report-iova-range-to-userspace.patch
-  0018-iommu-iommufd-Add-IOMMU_-UN-MAP_DMA-on-IOASID.patch
-
-* Report the device info in vt-d driver to enable whole series:
-  0019-iommu-vt-d-Implement-device_info-iommu_ops-callback.patch
-
-* Add doc:
-  0020-Doc-Add-documentation-for-dev-iommu.patch
-
-Complete code can be found in:
-https://github.com/luxis1999/dev-iommu/commits/dev-iommu-5.14-rfcv1
-
-Thanks for your time!
-
-Regards,
-Yi Liu
+Signed-off-by: Liu Yi L <yi.l.liu@intel.com>
 ---
-
-Liu Yi L (15):
-  iommu/iommufd: Add /dev/iommu core
-  vfio: Add device class for /dev/vfio/devices
-  vfio: Add vfio_[un]register_device()
-  vfio/pci: Register device to /dev/vfio/devices
-  iommu/iommufd: Add iommufd_[un]bind_device()
-  vfio/pci: Add VFIO_DEVICE_BIND_IOMMUFD
-  iommu/iommufd: Add IOMMU_DEVICE_GET_INFO
-  iommu/iommufd: Add IOMMU_IOASID_ALLOC/FREE
-  iommu/iommufd: Add IOMMU_CHECK_EXTENSION
-  iommu/iommufd: Add iommufd_device_[de]attach_ioasid()
-  vfio/pci: Add VFIO_DEVICE_[DE]ATTACH_IOASID
-  vfio/type1: Export symbols for dma [un]map code sharing
-  iommu/iommufd: Report iova range to userspace
-  iommu/iommufd: Add IOMMU_[UN]MAP_DMA on IOASID
-  Doc: Add documentation for /dev/iommu
-
-Lu Baolu (5):
-  iommu: Add iommu_device_get_info interface
-  iommu: Add iommu_device_init[exit]_user_dma interfaces
-  iommu: Add page size and address width attributes
-  iommu: Extend iommu_at[de]tach_device() for multiple devices group
-  iommu/vt-d: Implement device_info iommu_ops callback
-
- Documentation/userspace-api/index.rst   |   1 +
- Documentation/userspace-api/iommufd.rst | 183 ++++++
- drivers/iommu/Kconfig                   |   1 +
- drivers/iommu/Makefile                  |   1 +
- drivers/iommu/intel/iommu.c             |  35 +
- drivers/iommu/iommu.c                   | 188 +++++-
- drivers/iommu/iommufd/Kconfig           |  11 +
- drivers/iommu/iommufd/Makefile          |   2 +
- drivers/iommu/iommufd/iommufd.c         | 832 ++++++++++++++++++++++++
- drivers/vfio/pci/Kconfig                |   1 +
- drivers/vfio/pci/vfio_pci.c             | 179 ++++-
- drivers/vfio/pci/vfio_pci_private.h     |  10 +
- drivers/vfio/vfio.c                     | 366 ++++++++++-
- drivers/vfio/vfio_iommu_type1.c         | 246 ++++++-
- include/linux/iommu.h                   |  35 +
- include/linux/iommufd.h                 |  71 ++
- include/linux/vfio.h                    |  27 +
- include/uapi/linux/iommu.h              | 162 +++++
- include/uapi/linux/vfio.h               |  56 ++
- 19 files changed, 2358 insertions(+), 49 deletions(-)
- create mode 100644 Documentation/userspace-api/iommufd.rst
+ drivers/iommu/Kconfig           |   1 +
+ drivers/iommu/Makefile          |   1 +
+ drivers/iommu/iommufd/Kconfig   |  11 ++++
+ drivers/iommu/iommufd/Makefile  |   2 +
+ drivers/iommu/iommufd/iommufd.c | 112 ++++++++++++++++++++++++++++++++
+ 5 files changed, 127 insertions(+)
  create mode 100644 drivers/iommu/iommufd/Kconfig
  create mode 100644 drivers/iommu/iommufd/Makefile
  create mode 100644 drivers/iommu/iommufd/iommufd.c
- create mode 100644 include/linux/iommufd.h
 
+diff --git a/drivers/iommu/Kconfig b/drivers/iommu/Kconfig
+index 07b7c25cbed8..a83ce0acd09d 100644
+--- a/drivers/iommu/Kconfig
++++ b/drivers/iommu/Kconfig
+@@ -136,6 +136,7 @@ config MSM_IOMMU
+ 
+ source "drivers/iommu/amd/Kconfig"
+ source "drivers/iommu/intel/Kconfig"
++source "drivers/iommu/iommufd/Kconfig"
+ 
+ config IRQ_REMAP
+ 	bool "Support for Interrupt Remapping"
+diff --git a/drivers/iommu/Makefile b/drivers/iommu/Makefile
+index c0fb0ba88143..719c799f23ad 100644
+--- a/drivers/iommu/Makefile
++++ b/drivers/iommu/Makefile
+@@ -29,3 +29,4 @@ obj-$(CONFIG_HYPERV_IOMMU) += hyperv-iommu.o
+ obj-$(CONFIG_VIRTIO_IOMMU) += virtio-iommu.o
+ obj-$(CONFIG_IOMMU_SVA_LIB) += iommu-sva-lib.o io-pgfault.o
+ obj-$(CONFIG_SPRD_IOMMU) += sprd-iommu.o
++obj-$(CONFIG_IOMMUFD) += iommufd/
+diff --git a/drivers/iommu/iommufd/Kconfig b/drivers/iommu/iommufd/Kconfig
+new file mode 100644
+index 000000000000..9fb7769a815d
+--- /dev/null
++++ b/drivers/iommu/iommufd/Kconfig
+@@ -0,0 +1,11 @@
++# SPDX-License-Identifier: GPL-2.0-only
++config IOMMUFD
++	tristate "I/O Address Space management framework for passthrough devices"
++	select IOMMU_API
++	default n
++	help
++	  provides unified I/O address space management framework for
++	  isolating untrusted DMAs via devices which are passed through
++	  to userspace drivers.
++
++	  If you don't know what to do here, say N.
+diff --git a/drivers/iommu/iommufd/Makefile b/drivers/iommu/iommufd/Makefile
+new file mode 100644
+index 000000000000..54381a01d003
+--- /dev/null
++++ b/drivers/iommu/iommufd/Makefile
+@@ -0,0 +1,2 @@
++# SPDX-License-Identifier: GPL-2.0-only
++obj-$(CONFIG_IOMMUFD) += iommufd.o
+diff --git a/drivers/iommu/iommufd/iommufd.c b/drivers/iommu/iommufd/iommufd.c
+new file mode 100644
+index 000000000000..710b7e62988b
+--- /dev/null
++++ b/drivers/iommu/iommufd/iommufd.c
+@@ -0,0 +1,112 @@
++// SPDX-License-Identifier: GPL-2.0-only
++/*
++ * I/O Address Space Management for passthrough devices
++ *
++ * Copyright (C) 2021 Intel Corporation
++ *
++ * Author: Liu Yi L <yi.l.liu@intel.com>
++ */
++
++#define pr_fmt(fmt)    "iommufd: " fmt
++
++#include <linux/file.h>
++#include <linux/fs.h>
++#include <linux/module.h>
++#include <linux/slab.h>
++#include <linux/miscdevice.h>
++#include <linux/mutex.h>
++#include <linux/iommu.h>
++
++/* Per iommufd */
++struct iommufd_ctx {
++	refcount_t refs;
++};
++
++static int iommufd_fops_open(struct inode *inode, struct file *filep)
++{
++	struct iommufd_ctx *ictx;
++	int ret = 0;
++
++	ictx = kzalloc(sizeof(*ictx), GFP_KERNEL);
++	if (!ictx)
++		return -ENOMEM;
++
++	refcount_set(&ictx->refs, 1);
++	filep->private_data = ictx;
++
++	return ret;
++}
++
++static void iommufd_ctx_put(struct iommufd_ctx *ictx)
++{
++	if (refcount_dec_and_test(&ictx->refs))
++		kfree(ictx);
++}
++
++static int iommufd_fops_release(struct inode *inode, struct file *filep)
++{
++	struct iommufd_ctx *ictx = filep->private_data;
++
++	filep->private_data = NULL;
++
++	iommufd_ctx_put(ictx);
++
++	return 0;
++}
++
++static long iommufd_fops_unl_ioctl(struct file *filep,
++				   unsigned int cmd, unsigned long arg)
++{
++	struct iommufd_ctx *ictx = filep->private_data;
++	long ret = -EINVAL;
++
++	if (!ictx)
++		return ret;
++
++	switch (cmd) {
++	default:
++		pr_err_ratelimited("unsupported cmd %u\n", cmd);
++		break;
++	}
++	return ret;
++}
++
++static const struct file_operations iommufd_fops = {
++	.owner		= THIS_MODULE,
++	.open		= iommufd_fops_open,
++	.release	= iommufd_fops_release,
++	.unlocked_ioctl	= iommufd_fops_unl_ioctl,
++};
++
++static struct miscdevice iommu_misc_dev = {
++	.minor = MISC_DYNAMIC_MINOR,
++	.name = "iommu",
++	.fops = &iommufd_fops,
++	.nodename = "iommu",
++	.mode = 0666,
++};
++
++static int __init iommufd_init(void)
++{
++	int ret;
++
++	ret = misc_register(&iommu_misc_dev);
++	if (ret) {
++		pr_err("failed to register misc device\n");
++		return ret;
++	}
++
++	return 0;
++}
++
++static void __exit iommufd_exit(void)
++{
++	misc_deregister(&iommu_misc_dev);
++}
++
++module_init(iommufd_init);
++module_exit(iommufd_exit);
++
++MODULE_AUTHOR("Liu Yi L <yi.l.liu@intel.com>");
++MODULE_DESCRIPTION("I/O Address Space Management for passthrough devices");
++MODULE_LICENSE("GPL v2");
 -- 
 2.25.1
 
