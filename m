@@ -7,53 +7,53 @@ X-Spam-Status: No, score=-16.8 required=3.0 tests=BAYES_00,
 	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,USER_AGENT_GIT autolearn=ham
 	autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 29932C433EF
-	for <iommu@archiver.kernel.org>; Mon, 20 Sep 2021 20:02:24 +0000 (UTC)
-Received: from smtp4.osuosl.org (smtp4.osuosl.org [140.211.166.137])
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 684E4C433F5
+	for <iommu@archiver.kernel.org>; Mon, 20 Sep 2021 20:02:25 +0000 (UTC)
+Received: from smtp3.osuosl.org (smtp3.osuosl.org [140.211.166.136])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id D955161242
-	for <iommu@archiver.kernel.org>; Mon, 20 Sep 2021 20:02:23 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.4.1 mail.kernel.org D955161242
+	by mail.kernel.org (Postfix) with ESMTPS id 2D1B461205
+	for <iommu@archiver.kernel.org>; Mon, 20 Sep 2021 20:02:25 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.4.1 mail.kernel.org 2D1B461205
 Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=intel.com
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by smtp4.osuosl.org (Postfix) with ESMTP id 8044140493;
-	Mon, 20 Sep 2021 20:02:23 +0000 (UTC)
+	by smtp3.osuosl.org (Postfix) with ESMTP id 8A6A360AE5;
+	Mon, 20 Sep 2021 20:02:24 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from smtp4.osuosl.org ([127.0.0.1])
-	by localhost (smtp4.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id Uvqa3F1ufXOO; Mon, 20 Sep 2021 20:02:22 +0000 (UTC)
+Received: from smtp3.osuosl.org ([127.0.0.1])
+	by localhost (smtp3.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+	with ESMTP id uMzprCee7nmZ; Mon, 20 Sep 2021 20:02:23 +0000 (UTC)
 Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by smtp4.osuosl.org (Postfix) with ESMTPS id 326E6403C5;
-	Mon, 20 Sep 2021 20:02:22 +0000 (UTC)
+	by smtp3.osuosl.org (Postfix) with ESMTPS id 3F65F60AC6;
+	Mon, 20 Sep 2021 20:02:23 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 43CBAC0027;
-	Mon, 20 Sep 2021 20:02:21 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 1FA45C0021;
+	Mon, 20 Sep 2021 20:02:23 +0000 (UTC)
 Received: from smtp2.osuosl.org (smtp2.osuosl.org [140.211.166.133])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 5C011C0011
- for <iommu@lists.linux-foundation.org>; Mon, 20 Sep 2021 20:02:20 +0000 (UTC)
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 611D8C0029
+ for <iommu@lists.linux-foundation.org>; Mon, 20 Sep 2021 20:02:21 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by smtp2.osuosl.org (Postfix) with ESMTP id 60FB340364
+ by smtp2.osuosl.org (Postfix) with ESMTP id A251F400CC
  for <iommu@lists.linux-foundation.org>; Mon, 20 Sep 2021 20:02:17 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
 Received: from smtp2.osuosl.org ([127.0.0.1])
  by localhost (smtp2.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id wWD-2KKtoAfw for <iommu@lists.linux-foundation.org>;
+ with ESMTP id Wcm1WXDOM31Q for <iommu@lists.linux-foundation.org>;
  Mon, 20 Sep 2021 20:02:16 +0000 (UTC)
 X-Greylist: domain auto-whitelisted by SQLgrey-1.8.0
 Received: from mga11.intel.com (mga11.intel.com [192.55.52.93])
- by smtp2.osuosl.org (Postfix) with ESMTPS id 46B89400CC
+ by smtp2.osuosl.org (Postfix) with ESMTPS id AE98C401D5
  for <iommu@lists.linux-foundation.org>; Mon, 20 Sep 2021 20:02:16 +0000 (UTC)
-X-IronPort-AV: E=McAfee;i="6200,9189,10113"; a="220033642"
-X-IronPort-AV: E=Sophos;i="5.85,309,1624345200"; d="scan'208";a="220033642"
+X-IronPort-AV: E=McAfee;i="6200,9189,10113"; a="220033647"
+X-IronPort-AV: E=Sophos;i="5.85,309,1624345200"; d="scan'208";a="220033647"
 Received: from fmsmga007.fm.intel.com ([10.253.24.52])
  by fmsmga102.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384;
- 20 Sep 2021 13:02:15 -0700
+ 20 Sep 2021 13:02:16 -0700
 X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.85,309,1624345200"; d="scan'208";a="473779494"
+X-IronPort-AV: E=Sophos;i="5.85,309,1624345200"; d="scan'208";a="473779504"
 Received: from otcwcpicx3.sc.intel.com ([172.25.55.73])
- by fmsmga007.fm.intel.com with ESMTP; 20 Sep 2021 13:02:15 -0700
+ by fmsmga007.fm.intel.com with ESMTP; 20 Sep 2021 13:02:16 -0700
 From: Fenghua Yu <fenghua.yu@intel.com>
 To: "Thomas Gleixner" <tglx@linutronix.de>, "Ingo Molnar" <mingo@redhat.com>,
  "Borislav Petkov" <bp@alien8.de>, "Peter Zijlstra" <peterz@infradead.org>,
@@ -64,9 +64,10 @@ To: "Thomas Gleixner" <tglx@linutronix.de>, "Ingo Molnar" <mingo@redhat.com>,
  "Jacob Jun Pan" <jacob.jun.pan@intel.com>,
  "Ashok Raj" <ashok.raj@intel.com>,
  "Ravi V Shankar" <ravi.v.shankar@intel.com>
-Subject: [PATCH 5/8] x86/mmu: Add mm-based PASID refcounting
-Date: Mon, 20 Sep 2021 19:23:46 +0000
-Message-Id: <20210920192349.2602141-6-fenghua.yu@intel.com>
+Subject: [PATCH 7/8] tools/objtool: Check for use of the ENQCMD instruction in
+ the kernel
+Date: Mon, 20 Sep 2021 19:23:48 +0000
+Message-Id: <20210920192349.2602141-8-fenghua.yu@intel.com>
 X-Mailer: git-send-email 2.33.0
 In-Reply-To: <20210920192349.2602141-1-fenghua.yu@intel.com>
 References: <20210920192349.2602141-1-fenghua.yu@intel.com>
@@ -90,184 +91,113 @@ Content-Transfer-Encoding: 7bit
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-PASIDs are fundamentally hardware resources in a shared address space.
-There is a limited number of them to use ENQCMD on shared workqueue.
-They must be shared and managed. They can not, for instance, be
-statically allocated to processes.
+The ENQCMD implicitly accesses the PASID_MSR to fill in the pasid field
+of the descriptor being submitted to an accelerator. But there is no
+precise (and stable across kernel changes) point at which the PASID_MSR
+is updated from the value for one task to the next.
 
-Free PASID eagerly by sending IPIs in unbind was disabled due to locking
-and other issues in commit 9bfecd058339 ("x86/cpufeatures: Force disable
-X86_FEATURE_ENQCMD and remove update_pasid()").
+Kernel code that uses accelerators must always use the ENQCMDS instruction
+which does not access the PASID_MSR.
 
-Lazy PASID free is implemented in order to re-enable the ENQCMD feature.
-PASIDs are currently reference counted and are centered around device
-usage. To support lazy PASID free, reference counts are tracked in the
-following scenarios:
+Check for use of the ENQCMD instruction in the kernel and warn on its
+usage.
 
-1. The PASID's reference count is initialized as 1 when the PASID is first
-   allocated in bind. This is already implemented.
-2. A reference is taken when a device is bound to the mm and dropped
-   when the device is unbound from the mm. This reference tracks device
-   usage of the PASID. This is already implemented.
-3. A reference is taken when a task's IA32_PASID MSR is initialized in
-   #GP fix up and dropped when the task exits. This reference tracks
-   the task usage of the PASID. It is implemented here.
-
-Once a PASID is allocated to an mm in bind, it's associated to the mm until
-it's freed lazily when its reference count is dropped to zero in unbind or
-exit(2).
-
-ENQCMD requires a valid IA32_PASID MSR with the PASID value and a valid
-PASID table entry for the PASID. Lazy PASID free may cause the process
-still has the valid PASID but the PASID table entry is removed in unbind.
-In this case, workqueue submitted by ENQCMD cannot find the PASID table
-entry and will generate a DMAR fault.
-
-Here is a more detailed explanation of the life cycle of a PASID:
-
-All processes start out without a PASID allocated (because fork(2)
-clears the PASID in the child).
-
-A PASID is allocated on the first open of an accelerator device by
-a call to:
-iommu_sva_bind_device()
--> intel_svm_bind()
-   -> intel_svm_alloc_pasid()
-      -> iommu_sva_alloc_pasid()
-        -> ioasid_alloc()
-
-At this point mm->pasid for the process is initialized, the reference
-count on that PASID is 1, but as yet no tasks within the process have
-set up their MSR_IA32_PASID to be able to execute the ENQCMD instruction.
-
-When a task in the process does execute ENQCMD there is a #GP fault.
-The Linux handler notes that the process has a PASID allocated, and
-attempts to fix the #GP fault by initializing MSR_IA32_PASID for this
-task. It also increments the reference count for the PASID.
-
-Additional threads in the task may also execute ENQCMD, and each
-will add to the reference count of the PASID.
-
-Tasks within the process may open additional accelerator devices.
-In this case the call to iommu_sva_bind_device() merely increments
-the reference count for the PASID. Since all devices use the same
-PASID (all are accessing the same address space).
-
-So the reference count on a PASID is the sum of the number of open
-accelerator devices plus the number of threads that have tried to
-execute ENQCMD.
-
-The reverse happens as a process gives up resources. Each call to
-iommu_sva_unbind_device() will reduce the reference count on the
-PASID. Each task in the process that had set up MSR_IA32_PASID will
-reduce the reference count as it exits.
-
-When the reference count is dropped to 0 in either task exit or
-unbind, the PASID will be freed.
+Checking the invalid instruction is a relatively new use of objtool and
+I'm open to feedback about the approach.
 
 Signed-off-by: Fenghua Yu <fenghua.yu@intel.com>
 Reviewed-by: Tony Luck <tony.luck@intel.com>
 ---
- arch/x86/include/asm/iommu.h       |  6 +++++
- arch/x86/include/asm/mmu_context.h |  2 ++
- drivers/iommu/intel/svm.c          | 39 ++++++++++++++++++++++++++++++
- 3 files changed, 47 insertions(+)
+ tools/objtool/arch/x86/decode.c      | 10 +++++++++-
+ tools/objtool/check.c                | 20 ++++++++++++++++++++
+ tools/objtool/include/objtool/arch.h |  1 +
+ 3 files changed, 30 insertions(+), 1 deletion(-)
 
-diff --git a/arch/x86/include/asm/iommu.h b/arch/x86/include/asm/iommu.h
-index 9c4bf9b0702f..d00f0a3f32fb 100644
---- a/arch/x86/include/asm/iommu.h
-+++ b/arch/x86/include/asm/iommu.h
-@@ -28,4 +28,10 @@ arch_rmrr_sanity_check(struct acpi_dmar_reserved_memory *rmrr)
- 
- bool __fixup_pasid_exception(void);
- 
-+#ifdef CONFIG_INTEL_IOMMU_SVM
-+void pasid_put(struct task_struct *tsk, struct mm_struct *mm);
-+#else
-+static inline void pasid_put(struct task_struct *tsk, struct mm_struct *mm) { }
-+#endif
-+
- #endif /* _ASM_X86_IOMMU_H */
-diff --git a/arch/x86/include/asm/mmu_context.h b/arch/x86/include/asm/mmu_context.h
-index 27516046117a..3a2de87e98a9 100644
---- a/arch/x86/include/asm/mmu_context.h
-+++ b/arch/x86/include/asm/mmu_context.h
-@@ -12,6 +12,7 @@
- #include <asm/tlbflush.h>
- #include <asm/paravirt.h>
- #include <asm/debugreg.h>
-+#include <asm/iommu.h>
- 
- extern atomic64_t last_mm_ctx_id;
- 
-@@ -146,6 +147,7 @@ do {						\
- #else
- #define deactivate_mm(tsk, mm)			\
- do {						\
-+	pasid_put(tsk, mm);			\
- 	load_gs_index(0);			\
- 	loadsegment(fs, 0);			\
- } while (0)
-diff --git a/drivers/iommu/intel/svm.c b/drivers/iommu/intel/svm.c
-index ab65020019b6..8b6b8007ba2c 100644
---- a/drivers/iommu/intel/svm.c
-+++ b/drivers/iommu/intel/svm.c
-@@ -1187,6 +1187,7 @@ int intel_svm_page_response(struct device *dev,
- bool __fixup_pasid_exception(void)
+diff --git a/tools/objtool/arch/x86/decode.c b/tools/objtool/arch/x86/decode.c
+index bc821056aba9..e63b44ba3bd4 100644
+--- a/tools/objtool/arch/x86/decode.c
++++ b/tools/objtool/arch/x86/decode.c
+@@ -110,7 +110,7 @@ int arch_decode_instruction(const struct elf *elf, const struct section *sec,
  {
- 	u32 pasid;
-+	int ret;
+ 	struct insn insn;
+ 	int x86_64, ret;
+-	unsigned char op1, op2,
++	unsigned char op1, op2, op3,
+ 		      rex = 0, rex_b = 0, rex_r = 0, rex_w = 0, rex_x = 0,
+ 		      modrm = 0, modrm_mod = 0, modrm_rm = 0, modrm_reg = 0,
+ 		      sib = 0, /* sib_scale = 0, */ sib_index = 0, sib_base = 0;
+@@ -137,6 +137,7 @@ int arch_decode_instruction(const struct elf *elf, const struct section *sec,
  
- 	/*
- 	 * This function is called only when this #GP was triggered from user
-@@ -1205,9 +1206,47 @@ bool __fixup_pasid_exception(void)
- 	if (current->has_valid_pasid)
- 		return false;
+ 	op1 = insn.opcode.bytes[0];
+ 	op2 = insn.opcode.bytes[1];
++	op3 = insn.opcode.bytes[2];
  
-+	mutex_lock(&pasid_mutex);
-+	/* The mm's pasid has been allocated. Take a reference to it. */
-+	ret = iommu_sva_alloc_pasid(current->mm, PASID_MIN,
-+				    intel_pasid_max_id - 1);
-+	mutex_unlock(&pasid_mutex);
-+	if (ret)
-+		return false;
+ 	if (insn.rex_prefix.nbytes) {
+ 		rex = insn.rex_prefix.bytes[0];
+@@ -489,6 +490,13 @@ int arch_decode_instruction(const struct elf *elf, const struct section *sec,
+ 			/* nopl/nopw */
+ 			*type = INSN_NOP;
+ 
++		} else if (op2 == 0x38 && op3 == 0xf8) {
++			if (insn.prefixes.nbytes == 1 &&
++			    insn.prefixes.bytes[0] == 0xf2) {
++				/* enqcmd */
++				*type = INSN_ENQCMD;
++			}
 +
- 	/* Fix up the MSR by the PASID in the mm. */
- 	fpu__pasid_write(pasid);
- 	current->has_valid_pasid = 1;
+ 		} else if (op2 == 0xa0 || op2 == 0xa8) {
  
- 	return true;
+ 			/* push fs/gs */
+diff --git a/tools/objtool/check.c b/tools/objtool/check.c
+index e5947fbb9e7a..91d13521d9d6 100644
+--- a/tools/objtool/check.c
++++ b/tools/objtool/check.c
+@@ -3133,6 +3133,21 @@ static int validate_reachable_instructions(struct objtool_file *file)
+ 	return 0;
  }
-+
-+/*
-+ * pasid_put - On task exit release a reference to the mm's PASID
-+ *	       and free the PASID if no more reference
-+ * @mm: the mm
-+ *
-+ * When the task exits, release a reference to the mm's PASID if it was
-+ * allocated and the IA32_PASID MSR was fixed up.
-+ *
-+ * If there is no reference, the PASID is freed and can be allocated to
-+ * any process later.
-+ */
-+void pasid_put(struct task_struct *tsk, struct mm_struct *mm)
+ 
++static int validate_enqcmd(struct objtool_file *file)
 +{
-+	if (!cpu_feature_enabled(X86_FEATURE_ENQCMD))
-+		return;
++	struct instruction *insn;
 +
-+	/*
-+	 * Nothing to do if this task doesn't have a reference to the PASID.
-+	 */
-+	if (tsk->has_valid_pasid) {
-+		mutex_lock(&pasid_mutex);
-+		/*
-+		 * The PASID's reference was taken during fix up. Release it
-+		 * now. If the reference count is 0, the PASID is freed.
-+		 */
-+		iommu_sva_free_pasid(mm);
-+		mutex_unlock(&pasid_mutex);
++	for_each_insn(file, insn) {
++		if (insn->type == INSN_ENQCMD) {
++			WARN_FUNC("enqcmd instruction", insn->sec,
++				  insn->offset);
++			return 1;
++		}
 +	}
++
++	return 0;
 +}
++
+ int check(struct objtool_file *file)
+ {
+ 	int ret, warnings = 0;
+@@ -3147,6 +3162,11 @@ int check(struct objtool_file *file)
+ 	if (list_empty(&file->insn_list))
+ 		goto out;
+ 
++	ret = validate_enqcmd(file);
++	if (ret < 0)
++		goto out;
++	warnings += ret;
++
+ 	if (vmlinux && !validate_dup) {
+ 		ret = validate_vmlinux_functions(file);
+ 		if (ret < 0)
+diff --git a/tools/objtool/include/objtool/arch.h b/tools/objtool/include/objtool/arch.h
+index 062bb6e9b865..5147c0762b49 100644
+--- a/tools/objtool/include/objtool/arch.h
++++ b/tools/objtool/include/objtool/arch.h
+@@ -26,6 +26,7 @@ enum insn_type {
+ 	INSN_CLAC,
+ 	INSN_STD,
+ 	INSN_CLD,
++	INSN_ENQCMD,
+ 	INSN_OTHER,
+ };
+ 
 -- 
 2.33.0
 
