@@ -4,149 +4,99 @@ X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 X-Spam-Level: 
 X-Spam-Status: No, score=-13.5 required=3.0 tests=BAYES_00,DKIM_INVALID,
 	DKIM_SIGNED,HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_CR_TRAILER,INCLUDES_PATCH,
-	MAILING_LIST_MULTI,MSGID_FROM_MTA_HEADER,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED
-	autolearn=unavailable autolearn_force=no version=3.4.0
+	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED autolearn=unavailable
+	autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 934ABC433FE
-	for <iommu@archiver.kernel.org>; Tue, 21 Sep 2021 15:57:13 +0000 (UTC)
-Received: from smtp1.osuosl.org (smtp1.osuosl.org [140.211.166.138])
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 26FD7C4332F
+	for <iommu@archiver.kernel.org>; Tue, 21 Sep 2021 15:58:51 +0000 (UTC)
+Received: from smtp4.osuosl.org (smtp4.osuosl.org [140.211.166.137])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 3E77F61166
-	for <iommu@archiver.kernel.org>; Tue, 21 Sep 2021 15:57:13 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.4.1 mail.kernel.org 3E77F61166
-Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=lists.linux-foundation.org
+	by mail.kernel.org (Postfix) with ESMTPS id C52B961168
+	for <iommu@archiver.kernel.org>; Tue, 21 Sep 2021 15:58:50 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.4.1 mail.kernel.org C52B961168
+Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=linaro.org
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by smtp1.osuosl.org (Postfix) with ESMTP id EF52B82F99;
-	Tue, 21 Sep 2021 15:57:12 +0000 (UTC)
+	by smtp4.osuosl.org (Postfix) with ESMTP id 8F4D7402F8;
+	Tue, 21 Sep 2021 15:58:50 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from smtp1.osuosl.org ([127.0.0.1])
-	by localhost (smtp1.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id ETSB8GciDPz4; Tue, 21 Sep 2021 15:57:12 +0000 (UTC)
+Received: from smtp4.osuosl.org ([127.0.0.1])
+	by localhost (smtp4.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+	with ESMTP id pmtxqmEMQWkp; Tue, 21 Sep 2021 15:58:49 +0000 (UTC)
 Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by smtp1.osuosl.org (Postfix) with ESMTPS id DEA6B82F87;
-	Tue, 21 Sep 2021 15:57:11 +0000 (UTC)
+	by smtp4.osuosl.org (Postfix) with ESMTPS id 63155402FF;
+	Tue, 21 Sep 2021 15:58:49 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 9717CC000F;
-	Tue, 21 Sep 2021 15:57:11 +0000 (UTC)
-Received: from smtp2.osuosl.org (smtp2.osuosl.org [IPv6:2605:bc80:3010::133])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 30205C000D
- for <iommu@lists.linux-foundation.org>; Tue, 21 Sep 2021 15:57:10 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 38665C000F;
+	Tue, 21 Sep 2021 15:58:49 +0000 (UTC)
+Received: from smtp3.osuosl.org (smtp3.osuosl.org [IPv6:2605:bc80:3010::136])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id C8624C000D
+ for <iommu@lists.linux-foundation.org>; Tue, 21 Sep 2021 15:58:47 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by smtp2.osuosl.org (Postfix) with ESMTP id 1D0C040188
- for <iommu@lists.linux-foundation.org>; Tue, 21 Sep 2021 15:57:10 +0000 (UTC)
+ by smtp3.osuosl.org (Postfix) with ESMTP id A83D86003C
+ for <iommu@lists.linux-foundation.org>; Tue, 21 Sep 2021 15:58:47 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Authentication-Results: smtp2.osuosl.org (amavisd-new);
- dkim=pass (2048-bit key) header.d=nvidia.com
-Received: from smtp2.osuosl.org ([127.0.0.1])
- by localhost (smtp2.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id DRXSdwxMP7Zf for <iommu@lists.linux-foundation.org>;
- Tue, 21 Sep 2021 15:57:09 +0000 (UTC)
+Authentication-Results: smtp3.osuosl.org (amavisd-new);
+ dkim=pass (2048-bit key) header.d=linaro.org
+Received: from smtp3.osuosl.org ([127.0.0.1])
+ by localhost (smtp3.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+ with ESMTP id GLmTeeIo5HNn for <iommu@lists.linux-foundation.org>;
+ Tue, 21 Sep 2021 15:58:45 +0000 (UTC)
 X-Greylist: whitelisted by SQLgrey-1.8.0
-Received: from NAM02-SN1-obe.outbound.protection.outlook.com
- (mail-sn1anam02on2060.outbound.protection.outlook.com [40.107.96.60])
- by smtp2.osuosl.org (Postfix) with ESMTPS id E57444011A
- for <iommu@lists.linux-foundation.org>; Tue, 21 Sep 2021 15:57:08 +0000 (UTC)
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=ld5V4puCy12FQpESwhoVFBz1sS/oWylPEGHab0WLDvO9aPbb2Z70McBWjVNsRsErl/FkxWVgZbAXlppNfK5CtwNZk4mS4E3BySVF/6CTLO28hPrgNT2pq7Yvn3qTrgX8Y7Sg1eS6G2oBP4xjOdM4lgU9e891oBrf2ez5rVC1fSlniNd08swe7/je6ZC+6G5teJR0a2cBWpCL8n3Dirh4PY4L955oMxPb6PHVJPBwrVT0FpkBjf1ckP+XhbKbnZOerhqDaYcUHdoLBedXIBxrikonFmRT9hOeYo9V1/JjmdeNsQs8DxMdDJwCcwWh9NZhFBUnaDfW1S1wkgNy5OvFTQ==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com; 
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version; 
- bh=YeE/wp+mtbJjp2wLcRq1RoItRW/JQwjGelKZJcXiuwo=;
- b=Z5Jbe3RH+FepcUNm1e63+bGLBALnaVHJ9+T0GQEvuGcsPLOZt7pSmPzMdNjnt807KgkDF3PkQiPN68jDjyUb6BQuUTEcOwWUQTlacE/wK57GAAqxwDEpLiGqFd7uQ9BuZwC6ps9hq74Nrh+OzjiajqWKF8giXIE9Bq7FzNRw0RcXzJbMV/wlSPUdNj3FIS2n1A9l0ZPVjW6u9ygLDIuNxLme9FXM4i1EEHkvS8AaVjVu04YspeRbzZaykplchBP6dTFXQRNhe411wserPi4FnZ9sJmxAyfJMOfINyBThHWWjQYHztaEqQAAn3BN6DENwe3KlwT4jYIu99zji8QsSPg==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=nvidia.com; dmarc=pass action=none header.from=nvidia.com;
- dkim=pass header.d=nvidia.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
- s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=YeE/wp+mtbJjp2wLcRq1RoItRW/JQwjGelKZJcXiuwo=;
- b=Io+EmylyNk1RrT5hVUYSZqClvvxtngy5N5QNQrH1VD+xm8PyU12SLn5pKkOkltS+BpjTzNP1fDLfQw/lb4ydOIe65Hmt8CG3iaasvp9dY4UuuTX7JmfetYN6mGwL85QWZRB3Nb6P8p1SAW9Jk5/MIg0iiDB3f2VHfX+Gs0VRplHUjdOWVQQEcKwj4XkPzQa0OYKxL1m8uYzoZ3csRQVmieg+aBD+0Wx5s4cIGkX2wnHRWbxtKIzAFmuZq2HeqTV3fcuznhlPE2Ih6THpcvE5GE8W67I3Iq4u2J6Y4saec5IMr+TGo5+QVPmqSu158it2RJlpNlHvk9N0H3KOghFopA==
-Authentication-Results: intel.com; dkim=none (message not signed)
- header.d=none;intel.com; dmarc=none action=none header.from=nvidia.com;
-Received: from BL0PR12MB5506.namprd12.prod.outlook.com (2603:10b6:208:1cb::22)
- by BL1PR12MB5157.namprd12.prod.outlook.com (2603:10b6:208:308::15)
- with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4523.14; Tue, 21 Sep
- 2021 15:57:06 +0000
-Received: from BL0PR12MB5506.namprd12.prod.outlook.com
- ([fe80::e8af:232:915e:2f95]) by BL0PR12MB5506.namprd12.prod.outlook.com
- ([fe80::e8af:232:915e:2f95%8]) with mapi id 15.20.4544.013; Tue, 21 Sep 2021
- 15:57:06 +0000
-Date: Tue, 21 Sep 2021 12:57:05 -0300
-To: Liu Yi L <yi.l.liu@intel.com>
-Subject: Re: [RFC 02/20] vfio: Add device class for /dev/vfio/devices
-Message-ID: <20210921155705.GN327412@nvidia.com>
-References: <20210919063848.1476776-1-yi.l.liu@intel.com>
- <20210919063848.1476776-3-yi.l.liu@intel.com>
-Content-Disposition: inline
-In-Reply-To: <20210919063848.1476776-3-yi.l.liu@intel.com>
-X-ClientProxiedBy: BL1P223CA0030.NAMP223.PROD.OUTLOOK.COM
- (2603:10b6:208:2c4::35) To BL0PR12MB5506.namprd12.prod.outlook.com
- (2603:10b6:208:1cb::22)
+Received: from mail-wr1-x42a.google.com (mail-wr1-x42a.google.com
+ [IPv6:2a00:1450:4864:20::42a])
+ by smtp3.osuosl.org (Postfix) with ESMTPS id D11D260757
+ for <iommu@lists.linux-foundation.org>; Tue, 21 Sep 2021 15:58:44 +0000 (UTC)
+Received: by mail-wr1-x42a.google.com with SMTP id d6so40486246wrc.11
+ for <iommu@lists.linux-foundation.org>; Tue, 21 Sep 2021 08:58:44 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linaro.org; s=google;
+ h=date:from:to:cc:subject:message-id:references:mime-version
+ :content-disposition:in-reply-to;
+ bh=rNZaBRo6KuYpkYQWXBblrhd42cpP2Z/LzyFVP0pduSg=;
+ b=owdSaQODCfjwam9yCa/45kwOkRitWJz6P7xw58GNzOuAi9z3vUcDQ6zYY+hKxCkGBg
+ HziiVMWTPnEW3Rpn6kaulnon9zQlShOzupU71xnPlabFe6r2C7IFFIN9svHtz5+8OEve
+ w99a5xLpWckDqllV6ACAFLVupF5vJI1b9Xo8cEUvMD33L05IvqXWGUEer++XtNdJb8VZ
+ et0s9UzBjuv5ETPcV7VjpIqkBfDi4PSvkRfuEONCULtAA0rjLPLwJLA3f/QsMdx2zHyQ
+ qxtRsdQLRxWoF3UsfCC6xTrkkJsR0y7nRjXfJr5LXGz/bON5L4+UX42F0CqRGSTgPsDU
+ yukQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+ d=1e100.net; s=20210112;
+ h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+ :mime-version:content-disposition:in-reply-to;
+ bh=rNZaBRo6KuYpkYQWXBblrhd42cpP2Z/LzyFVP0pduSg=;
+ b=QZ7nkwKNK0lhjN+OIKh3eeQ4pKDdiYuFu0xyeV1yxBFb5txC2wbvgieXGkV1s3UjgM
+ tUM3poosFUcIKmdyzip/U1bl3CBb2uFtNGN3AEvRiz4sD4dZ1xX/bzU+PL5DFi1d2mG5
+ 3CTAyivHPdd8OVCdmIdLbvlFEbWA+8NxL+zKJnRy6kqbXjqH8/JWS3sGje32CwIEPcSg
+ cl7EzCfxhcT0lHShYKRXdBqhk49sJUN1wGrAZMEOeVf1jeuxDYLiwacI6Jn88AawY3HE
+ HNzQLZvsINity7VXKdUXuKsjDLzV8k1uXf6Yia1d/CtqpbB+6plzpIJRN2o3VG9Nn8B1
+ qLRw==
+X-Gm-Message-State: AOAM531LJ+aMN3sCFnQyWxVAyHQs7Z7L8l/nI6aS6Ccoz5QLTVnBriZT
+ VJPuOih1+Sxssz1dFcP5zUDlrg==
+X-Google-Smtp-Source: ABdhPJzCu4pXqY9304sJsjOUOKqLOE9NZBXLU1E16vU0ec0UFC0QKS3WsIUo6q+DMz8jdf+Bi/MtVQ==
+X-Received: by 2002:a5d:598c:: with SMTP id n12mr35092715wri.391.1632239922976; 
+ Tue, 21 Sep 2021 08:58:42 -0700 (PDT)
+Received: from myrica (cpc92880-cmbg19-2-0-cust679.5-4.cable.virginm.net.
+ [82.27.106.168])
+ by smtp.gmail.com with ESMTPSA id q10sm3272495wmq.12.2021.09.21.08.58.41
+ (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+ Tue, 21 Sep 2021 08:58:42 -0700 (PDT)
+Date: Tue, 21 Sep 2021 16:58:20 +0100
+From: Jean-Philippe Brucker <jean-philippe@linaro.org>
+To: Vivek Gautam <vivek.gautam@arm.com>
+Subject: Re: [PATCH RFC v1 01/11] uapi/virtio-iommu: Add page request grp-id
+ and flags information
+Message-ID: <YUoBHA6NZaz8wlkA@myrica>
+References: <20210423095147.27922-1-vivek.gautam@arm.com>
+ <20210423095147.27922-2-vivek.gautam@arm.com>
 MIME-Version: 1.0
-Received: from mlx.ziepe.ca (142.162.113.129) by
- BL1P223CA0030.NAMP223.PROD.OUTLOOK.COM (2603:10b6:208:2c4::35) with Microsoft
- SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.20.4544.13 via Frontend Transport; Tue, 21 Sep 2021 15:57:06 +0000
-Received: from jgg by mlx with local (Exim 4.94)	(envelope-from
- <jgg@nvidia.com>)	id 1mSi8n-003VKR-8T; Tue, 21 Sep 2021 12:57:05 -0300
-X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: e199b9e9-4afd-4377-7241-08d97d1875ed
-X-MS-TrafficTypeDiagnostic: BL1PR12MB5157:
-X-MS-Exchange-Transport-Forked: True
-X-Microsoft-Antispam-PRVS: <BL1PR12MB5157E652627F4FFEB131DE6BC2A19@BL1PR12MB5157.namprd12.prod.outlook.com>
-X-MS-Oob-TLC-OOBClassifiers: OLM:8273;
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: 32hB2pMeYGv1AYmZUisScEM3r6e7pZsTFaDBOPr1PDZSbU3C0DyfW5dyJDoctNLlb9/9hYzh10cZ5bK2iJ00pc8nqael2xC5uvJYI6bUe0qAOJqZkyZZt8XTsDp9rNC5p8CMFQ+l62z0OI8rfFFdszaGIRK1cxgmQpGXXO20mD64q03ow3D8ryxvP3MOi6ZYDy+asH0v6ElxvaJCpgwXpsf5IQ/Jba377YbScWillz+IW98yqr/cfDgBoddUCtofk3IjnNw25dyHQnDDI2PNloTO/gkaMg4C5YhVmlkwZfer8HaC4x/RPi5vm0XFjKXjiLDJxLk1gMJZPCSc85zsueObs0hivMZHr2A9CsH0r/Bgq/CUrInE8pFt0Xy+2Kpdt+Hx0loCYN7IvdoUzxBATl8CbwT4PWa4lE3ewQURWruVg+Bytokl+fJWhgZ5Pa1Q1IVIf3WddfePgUsRw4+6zQ8CVG58y34sn+88Bw9jobcwQHWE2ga7h99fzIGXFTvtD+QVNgYKlBBBboUBu6T1Ei0WCz0/JKPPuPIFBlAfKxYJz6S3sd2BdJ2NQ3rD4256KdvhgvVV9Aa4Mws2U3gQYvoO7H7aT4PAN9inl8SHHAhGqfyIZ06uCZq5gIcQq44hYwnUnl2C7PjolOCabsQ/FaAaJ05VI7LwfqKxIGKBsQB08WrRRHw2DBxck6o1m3Qb
-X-Forefront-Antispam-Report: CIP:255.255.255.255; CTRY:; LANG:en; SCL:1; SRV:;
- IPV:NLI; SFV:NSPM; H:BL0PR12MB5506.namprd12.prod.outlook.com; PTR:; CAT:NONE;
- SFS:(4636009)(366004)(1076003)(508600001)(8936002)(426003)(66476007)(83380400001)(33656002)(66946007)(36756003)(8676002)(86362001)(66556008)(2616005)(6916009)(4326008)(2906002)(107886003)(5660300002)(186003)(7416002)(26005)(9746002)(9786002)(316002)(38100700002)(27376004);
- DIR:OUT; SFP:1101; 
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?gmti37FuoC2EKgRQnxpQlAYYuqDRA6azyU7oowJr1IZ3d6zGYt83LhqWQR+F?=
- =?us-ascii?Q?M3Ohfg5Bev2kdB9uncMbhAdfkIWJjjnFZUHmrm3dQbaDZDrwCKYOi9NbQCnl?=
- =?us-ascii?Q?16eCUNzf2dPFH5MsoAmED/qxZS3gYnC0V0SX6bf042Og5h3jtc0twmDAFcSO?=
- =?us-ascii?Q?wXbdRwINtILG5XeOvO80MHjweo5ePq46jWoe3q2rzoXeDSvvmouaWGCPFLGK?=
- =?us-ascii?Q?/K+s1VAAg+E+enfGiEGbdsnf86qvncrSNWDjEChoKlFGrG9Snyuwv7kVkuGM?=
- =?us-ascii?Q?0ppvRxs1J6teq8eagb+YTdLinIkZeE/LgMEUcueT0Bl+dv5Of0218Pv4W86N?=
- =?us-ascii?Q?QV/aD2jb99DdJX0trs+Zcl2oaSH2DPnhq8uwQ31iDpO5stxhb/rH+5ro2XDk?=
- =?us-ascii?Q?hXRrqm36ZwWDH9qe2Zgpayg30C4Wpj+kQyORHiw5W9o/cn+83g2+Qty0mfiA?=
- =?us-ascii?Q?G48W8+QF8k5dkDgnOz+fqqxVQR/I3OnyGnchPU+362T3PgyRnjd7yK2geo+9?=
- =?us-ascii?Q?bsxwT2eK6P/ai2A0+QpH3rRAf0xljvQtzdF7+PzyJkeH4LClX94eTQ5aqE3T?=
- =?us-ascii?Q?vkQVfToTLNalQ03XAhg4xgZOd9aeyUS4SvbfU4MmYqFWF9uZV6p3Geaa17SQ?=
- =?us-ascii?Q?qwF+7od8icMUdqA6dvbGnYopthGnAYXVf0EXMSn3IV1FixLBvyO480o2jYvA?=
- =?us-ascii?Q?z9yzyJaO3PoonCwgyRHl6rpnegV46haRXZcgmKsFjXyL53tCegmYC5fxbU3i?=
- =?us-ascii?Q?GQZeiBufVdmEBh8RcqmQC95C36fELyNSBX0PG5ieYAkRmDsJ4zNBoSLgGJHJ?=
- =?us-ascii?Q?dAr372M1OmJZVXQImcwsRvjUvPzvZDm9V8YIALtxW61/FVnReCLjvvbohrkv?=
- =?us-ascii?Q?sYyAivdut97K0IwVt9dGrxUHMUBa80+CqgeXLSXCER/pswUbUFFja+X6m09H?=
- =?us-ascii?Q?1GSsY8cNPwL5/bhfPqOODe+jkwnJ0ELCPfD9EG8kqulA2mISLuyI6e0xAlcL?=
- =?us-ascii?Q?MR5vCgSCmZjcGa1NiMQgr1aLV122JXq5OB2InHiDnJ53oX+Wb3l90i87PPYV?=
- =?us-ascii?Q?UsIM7DMjZJ0fIDD0q8duc0aTqjVdsnydGs1z9N7Ka8uFXq73WeLTNjY4Onxa?=
- =?us-ascii?Q?Y3djJ7Foqyh1rbsrzbYVtsLcHZByA/dE06xWMmeFqhqHmLao9Gn8eG3+j9Qm?=
- =?us-ascii?Q?OhjLHir1oZZpPf44iR+eVbVqojGWlyTfxgXk2Gpb5M40GcZXMDGj4OOMCq06?=
- =?us-ascii?Q?lafQ3xNn07HVF8QYCiLqTndqAJ6f2R07sRzYTy0n91EzD+ORynbTq9C6N89a?=
- =?us-ascii?Q?soVdof+Z371VHxY3Qsf8+zQG?=
-X-OriginatorOrg: Nvidia.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: e199b9e9-4afd-4377-7241-08d97d1875ed
-X-MS-Exchange-CrossTenant-AuthSource: BL0PR12MB5506.namprd12.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 21 Sep 2021 15:57:06.4960 (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: mcZdEx7FzhclTIUnSzh2W1CRzugQKfqxsOK2sryBbm4QseiuHQfPa8No9w9V5IBd
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: BL1PR12MB5157
-Cc: kvm@vger.kernel.org, jasowang@redhat.com, kwankhede@nvidia.com, hch@lst.de,
- jean-philippe@linaro.org, dave.jiang@intel.com, ashok.raj@intel.com,
- corbet@lwn.net, kevin.tian@intel.com, parav@mellanox.com,
- alex.williamson@redhat.com, lkml@metux.net, david@gibson.dropbear.id.au,
- dwmw2@infradead.org, jun.j.tian@intel.com, linux-kernel@vger.kernel.org,
- lushenming@huawei.com, iommu@lists.linux-foundation.org, pbonzini@redhat.com,
- robin.murphy@arm.com
+Content-Disposition: inline
+In-Reply-To: <20210423095147.27922-2-vivek.gautam@arm.com>
+X-TUID: Sphz2dU6TdZ7
+Cc: kevin.tian@intel.com, Alex Williamson <alex.williamson@redhat.com>,
+ mst@redhat.com, will.deacon@arm.com, linux-kernel@vger.kernel.org,
+ virtualization@lists.linux-foundation.org, iommu@lists.linux-foundation.org,
+ robin.murphy@arm.com, linux-arm-kernel@lists.infradead.org
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -159,85 +109,147 @@ List-Post: <mailto:iommu@lists.linux-foundation.org>
 List-Help: <mailto:iommu-request@lists.linux-foundation.org?subject=help>
 List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
  <mailto:iommu-request@lists.linux-foundation.org?subject=subscribe>
-From: Jason Gunthorpe via iommu <iommu@lists.linux-foundation.org>
-Reply-To: Jason Gunthorpe <jgg@nvidia.com>
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-On Sun, Sep 19, 2021 at 02:38:30PM +0800, Liu Yi L wrote:
-> This patch introduces a new interface (/dev/vfio/devices/$DEVICE) for
-> userspace to directly open a vfio device w/o relying on container/group
-> (/dev/vfio/$GROUP). Anything related to group is now hidden behind
-> iommufd (more specifically in iommu core by this RFC) in a device-centric
-> manner.
+Hi Vivek,
+
+Thanks a lot for your work on this
+
+On Fri, Apr 23, 2021 at 03:21:37PM +0530, Vivek Gautam wrote:
+> Add fault information for group-id and necessary flags for page
+> request faults that can be handled by page fault handler in
+> virtio-iommu driver.
 > 
-> In case a device is exposed in both legacy and new interfaces (see next
-> patch for how to decide it), this patch also ensures that when the device
-> is already opened via one interface then the other one must be blocked.
-> 
-> Signed-off-by: Liu Yi L <yi.l.liu@intel.com>
+> Signed-off-by: Vivek Gautam <vivek.gautam@arm.com>
+> Cc: Joerg Roedel <joro@8bytes.org>
+> Cc: Will Deacon <will.deacon@arm.com>
+> Cc: Robin Murphy <robin.murphy@arm.com>
+> Cc: Jean-Philippe Brucker <jean-philippe@linaro.org>
+> Cc: Eric Auger <eric.auger@redhat.com>
+> Cc: Alex Williamson <alex.williamson@redhat.com>
+> Cc: Kevin Tian <kevin.tian@intel.com>
+> Cc: Jacob Pan <jacob.jun.pan@linux.intel.com>
+> Cc: Liu Yi L <yi.l.liu@intel.com>
+> Cc: Lorenzo Pieralisi <lorenzo.pieralisi@arm.com>
+> Cc: Shameerali Kolothum Thodi <shameerali.kolothum.thodi@huawei.com>
 > ---
->  drivers/vfio/vfio.c  | 228 +++++++++++++++++++++++++++++++++++++++----
->  include/linux/vfio.h |   2 +
->  2 files changed, 213 insertions(+), 17 deletions(-)
+>  include/uapi/linux/virtio_iommu.h | 13 +++++++++++++
+>  1 file changed, 13 insertions(+)
+> 
+> diff --git a/include/uapi/linux/virtio_iommu.h b/include/uapi/linux/virtio_iommu.h
+> index f8bf927a0689..accc3318ce46 100644
+> --- a/include/uapi/linux/virtio_iommu.h
+> +++ b/include/uapi/linux/virtio_iommu.h
+> @@ -307,14 +307,27 @@ struct virtio_iommu_req_invalidate {
+>  #define VIRTIO_IOMMU_FAULT_F_DMA_UNRECOV	1
+>  #define VIRTIO_IOMMU_FAULT_F_PAGE_REQ		2
+>  
+> +#define VIRTIO_IOMMU_FAULT_PRQ_F_PASID_VALID		(1 << 0)
+> +#define VIRTIO_IOMMU_FAULT_PRQ_F_LAST_PAGE		(1 << 1)
+> +#define VIRTIO_IOMMU_FAULT_PRQ_F_PRIV_DATA		(1 << 2)
+> +#define VIRTIO_IOMMU_FAULT_PRQ_F_NEEDS_PASID		(1 << 3)
 
-> +static int vfio_init_device_class(void)
-> +{
-> +	int ret;
+I don't think this one is necessary here. The NEEDS_PASID flags added by
+commit 970471914c67 ("iommu: Allow page responses without PASID") mainly
+helps Linux keep track of things internally. It does tell the fault
+handler whether to reply with PASID or not, but we don't need that here.
+The virtio-iommu driver knows whether a PASID is required by looking at
+the "PRG Response PASID Required" bit in the PCIe capability. For non-PCIe
+faults (e.g. SMMU stall), I'm guessing we'll need a PROBE property to
+declare that the endpoint supports recoverable faults anyway, so "PASID
+required in response" can go through there as well.
+
 > +
-> +	mutex_init(&vfio.device_lock);
-> +	idr_init(&vfio.device_idr);
+> +#define VIRTIO_IOMMU_FAULT_UNREC_F_PASID_VALID		(1 << 0)
+> +#define VIRTIO_IOMMU_FAULT_UNREC_F_ADDR_VALID		(1 << 1)
+> +#define VIRTIO_IOMMU_FAULT_UNREC_F_FETCH_ADDR_VALID	(1 << 2)
 > +
-> +	/* /dev/vfio/devices/$DEVICE */
-> +	vfio.device_class = class_create(THIS_MODULE, "vfio-device");
-> +	if (IS_ERR(vfio.device_class))
-> +		return PTR_ERR(vfio.device_class);
-> +
-> +	vfio.device_class->devnode = vfio_device_devnode;
-> +
-> +	ret = alloc_chrdev_region(&vfio.device_devt, 0, MINORMASK + 1, "vfio-device");
-> +	if (ret)
-> +		goto err_alloc_chrdev;
-> +
-> +	cdev_init(&vfio.device_cdev, &vfio_device_fops);
-> +	ret = cdev_add(&vfio.device_cdev, vfio.device_devt, MINORMASK + 1);
-> +	if (ret)
-> +		goto err_cdev_add;
+>  struct virtio_iommu_fault {
+>  	__u8					reason;
+>  	__u8					reserved[3];
+>  	__le16					flt_type;
+>  	__u8					reserved2[2];
+> +	/* flags is actually permission flags */
 
-Huh? This is not how cdevs are used. This patch needs rewriting.
+It's also used for declaring validity of fields.
+VIRTIO_IOMMU_FAULT_F_ADDRESS already tells whether the address field is
+valid, so all the other flags introduced by this patch can go in here.
 
-The struct vfio_device should gain a 'struct device' and 'struct cdev'
-as non-pointer members
+>  	__le32					flags;
+> +	/* flags for PASID and Page request handling info */
+> +	__le32					pr_evt_flags;
+>  	__le32					endpoint;
+>  	__le32					pasid;
+> +	__le32					grpid;
 
-vfio register path should end up doing cdev_device_add() for each
-vfio_device
+I'm not sure why we made it 32-bit in Linux UAPI, it's a little wasteful.
+PCIe PRGI is 9-bits and SMMU STAG is 16-bits. Since the scope of the grpid
+is the endpoint, 16-bit means 64k in-flight faults per endpoint, which
+seems more than enough.
 
-vfio_unregister path should do cdev_device_del()
+New fields must be appended at the end of the struct, because old drivers
+will expect to find the 'endpoint' field at this offset. You could remove
+'reserved3' while adding 'grpid', to keep the struct layout.
 
-No idr should be needed, an ida is used to allocate minor numbers
+>  	__u8					reserved3[4];
+>  	__le64					address;
+>  	__u8					reserved4[8];
 
-The struct device release function should trigger a kfree which
-requires some reworking of the callers
 
-vfio_init_group_dev() should do a device_initialize()
-vfio_uninit_group_dev() should do a device_put()
+So the base structure, currently in the spec, looks like this:
 
-The opened atomic is aweful. A newly created fd should start in a
-state where it has a disabled fops
+	struct virtio_iommu_fault {
+		u8   reason;
+		u8   reserved[3];
+		le32 flags;
+		le32 endpoint;
+		le32 reserved1;
+		le64 address;
+	};
 
-The only thing the disabled fops can do is register the device to the
-iommu fd. When successfully registered the device gets the normal fops.
+	#define VIRTIO_IOMMU_FAULT_F_READ	(1 << 0)
+	#define VIRTIO_IOMMU_FAULT_F_WRITE	(1 << 1)
+	#define VIRTIO_IOMMU_FAULT_F_ADDRESS	(1 << 8)
 
-The registration steps should be done under a normal lock inside the
-vfio_device. If a vfio_device is already registered then further
-registration should fail.
+The extended struct could be:
 
-Getting the device fd via the group fd triggers the same sequence as
-above.
+	struct virtio_iommu_fault {
+		u8   reason;
+		u8   reserved[3];
+		le32 flags;
+		le32 endpoint;
+		le32 pasid;
+		le64 address;
+		/* Page request group ID */
+		le16 group_id;
+		u8   reserved1[6];
+		/* For VT-d private data */
+		le64 private_data[2];
+	};
 
-Jason
+	#define VIRTIO_IOMMU_FAULT_F_READ	(1 << 0)
+	#define VIRTIO_IOMMU_FAULT_F_WRITE	(1 << 1)
+	#define VIRTIO_IOMMU_FAULT_F_EXEC	(1 << 2)
+	#define VIRTIO_IOMMU_FAULT_F_PRIVILEGED	(1 << 3)
+	/* Last fault in group */
+	#define VIRTIO_IOMMU_FAULT_F_LAST	(1 << 4)
+	/* Fault is a recoverable page request and requires a response */
+	#define VIRTIO_IOMMU_FAULT_F_PAGE_REQ	(1 << 5)
+
+	/* address field is valid */
+	#define VIRTIO_IOMMU_FAULT_F_ADDRESS	(1 << 8)
+	/* pasid field is valid */
+	#define VIRTIO_IOMMU_FAULT_F_PASID	(1 << 9)
+	/* group_id field is valid */
+	#define VIRTIO_IOMMU_FAULT_F_GROUP_ID	(1 << 10)
+	/* private data field is valid */
+	#define VIRTIO_IOMMU_FAULT_F_PRIV_DATA	(1 << 11)
+
+Thanks,
+Jean
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
