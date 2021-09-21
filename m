@@ -2,101 +2,152 @@ Return-Path: <SRS0=55Rd=OL=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-16.5 required=3.0 tests=BAYES_00,DKIM_INVALID,
+X-Spam-Status: No, score=-13.5 required=3.0 tests=BAYES_00,DKIM_INVALID,
 	DKIM_SIGNED,HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_CR_TRAILER,INCLUDES_PATCH,
-	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_GIT
-	autolearn=unavailable autolearn_force=no version=3.4.0
+	MAILING_LIST_MULTI,MSGID_FROM_MTA_HEADER,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED
+	autolearn=ham autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8D624C433EF
-	for <iommu@archiver.kernel.org>; Tue, 21 Sep 2021 15:40:19 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E29A0C433F5
+	for <iommu@archiver.kernel.org>; Tue, 21 Sep 2021 15:41:48 +0000 (UTC)
 Received: from smtp2.osuosl.org (smtp2.osuosl.org [140.211.166.133])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 29D6560F44
-	for <iommu@archiver.kernel.org>; Tue, 21 Sep 2021 15:40:19 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.4.1 mail.kernel.org 29D6560F44
+	by mail.kernel.org (Postfix) with ESMTPS id 751E760E08
+	for <iommu@archiver.kernel.org>; Tue, 21 Sep 2021 15:41:48 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.4.1 mail.kernel.org 751E760E08
 Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=lists.linux-foundation.org
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by smtp2.osuosl.org (Postfix) with ESMTP id E3B064011A;
-	Tue, 21 Sep 2021 15:40:18 +0000 (UTC)
+	by smtp2.osuosl.org (Postfix) with ESMTP id 42A0040102;
+	Tue, 21 Sep 2021 15:41:48 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
 Received: from smtp2.osuosl.org ([127.0.0.1])
 	by localhost (smtp2.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id GtL40n47kX5l; Tue, 21 Sep 2021 15:40:17 +0000 (UTC)
+	with ESMTP id EUHvdH6ipgRb; Tue, 21 Sep 2021 15:41:46 +0000 (UTC)
 Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [IPv6:2605:bc80:3010:104::8cd3:938])
-	by smtp2.osuosl.org (Postfix) with ESMTPS id 3EB76400EB;
-	Tue, 21 Sep 2021 15:40:17 +0000 (UTC)
+	by smtp2.osuosl.org (Postfix) with ESMTPS id 7DABD400EB;
+	Tue, 21 Sep 2021 15:41:46 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 12DBBC000F;
-	Tue, 21 Sep 2021 15:40:17 +0000 (UTC)
-Received: from smtp2.osuosl.org (smtp2.osuosl.org [140.211.166.133])
- by lists.linuxfoundation.org (Postfix) with ESMTP id A2D23C000D
- for <iommu@lists.linux-foundation.org>; Tue, 21 Sep 2021 15:40:15 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 612C0C000F;
+	Tue, 21 Sep 2021 15:41:46 +0000 (UTC)
+Received: from smtp3.osuosl.org (smtp3.osuosl.org [IPv6:2605:bc80:3010::136])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id D9659C000D
+ for <iommu@lists.linux-foundation.org>; Tue, 21 Sep 2021 15:41:44 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by smtp2.osuosl.org (Postfix) with ESMTP id 8525C40102
- for <iommu@lists.linux-foundation.org>; Tue, 21 Sep 2021 15:40:15 +0000 (UTC)
+ by smtp3.osuosl.org (Postfix) with ESMTP id B8A7D6059F
+ for <iommu@lists.linux-foundation.org>; Tue, 21 Sep 2021 15:41:44 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from smtp2.osuosl.org ([127.0.0.1])
- by localhost (smtp2.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id mqSICU4KHA0x for <iommu@lists.linux-foundation.org>;
- Tue, 21 Sep 2021 15:40:14 +0000 (UTC)
-X-Greylist: from auto-whitelisted by SQLgrey-1.8.0
-Received: from out1-smtp.messagingengine.com (out1-smtp.messagingengine.com
- [66.111.4.25])
- by smtp2.osuosl.org (Postfix) with ESMTPS id 161ED400EB
- for <iommu@lists.linux-foundation.org>; Tue, 21 Sep 2021 15:40:13 +0000 (UTC)
-Received: from compute4.internal (compute4.nyi.internal [10.202.2.44])
- by mailout.nyi.internal (Postfix) with ESMTP id DEE225C0219;
- Tue, 21 Sep 2021 11:40:12 -0400 (EDT)
-Received: from mailfrontend2 ([10.202.2.163])
- by compute4.internal (MEProxy); Tue, 21 Sep 2021 11:40:12 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=svenpeter.dev;
- h=from:to:cc:subject:date:message-id:mime-version
- :content-transfer-encoding; s=fm2; bh=NeiQiZ92CcyzMH6Gasfs+HCvVC
- zePzXrLSjQOYzGqBw=; b=kQWcAUPqB9sppmE47DfvKxYCcBMpwNv5PqHLy1zBqJ
- mE6b4cmfvlydNJ/8yJqDzTcuPEfiP5kYbncQt6zDhJGNxIT4W+xknSsipOtAQ9qx
- U6y+pkuFDDgy5xVoc117+B27zX59E82QMbN6xrc5VGml2TC8dqUzefh+K09kAgJq
- 2lpNgDaa7Pp8yZGBQyFxYq9wuHZItFqcwLwADVk3BxlBvAN0nWvHH0A/Gw5yVX0B
- 2pLbF9Z+LhvU0dnf8ifhUT+E3zo2wrUGB0nnHlCq2EKHf2DJv7Fj4preatyDtkUL
- hTV0tAl0pIho0+bPZW7GOtgUSfENQX+13iCSsGgC7yvQ==
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
- messagingengine.com; h=cc:content-transfer-encoding:date:from
- :message-id:mime-version:subject:to:x-me-proxy:x-me-proxy
- :x-me-sender:x-me-sender:x-sasl-enc; s=fm3; bh=NeiQiZ92CcyzMH6Ga
- sfs+HCvVCzePzXrLSjQOYzGqBw=; b=Q5MfkIVh64zoQcghFJBj7Ze+5Whkzzk0L
- bCZvNi4FACRgI8/L2z4Ag1doix6JL5jw004VmSEpxXA4J+diC9jXLFBjocnwCNVb
- k5l/pBLUr/pL4RT4pREiRTL5KllCWD/7UN6MegS45X0/HGONFvGK4izKUX1uDRgq
- IfK3TEY3o/chEJVnGQ/Zlt5ewg00g0UIDPwBXuQEye2A05xG9wjCVWntOBEWgi/+
- 6I7L4LrYnV9q7r2A0GvuL24WMuGufxIh8ksh8ZfE3LOnZJ04BKpwpKldgtSb6YTi
- ogx8olPNsgAi1RobBH2P1wmxjpwx8knt/YWj3jShYmzX11gyIPjAw==
-X-ME-Sender: <xms:3PxJYX4gxcN4lt-Ue5QakfuYbmQ46itxYJLlg77Fr54a_fZU39y4SQ>
- <xme:3PxJYc4lPvb6Mo3UniX4zikBhlfS1xWEymC7J-ditStRBBJuKiahL2Gubekbn8hXr
- ty16ynrh0laMtM5AWQ>
-X-ME-Received: <xmr:3PxJYeeEtSOfux14z-mN5WlWr-2fhvNa15YU0z5bi35wVIYNmBo37Rccw5alAZU3mHBZtFbOEDq6mF9ks1xghnBKCpG09E4d--3vKEq5DQ7P_5LcpU-DXXw>
-X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgedvtddrudeigedgledvucetufdoteggodetrfdotf
- fvucfrrhhofhhilhgvmecuhfgrshhtofgrihhlpdfqfgfvpdfurfetoffkrfgpnffqhgen
- uceurghilhhouhhtmecufedttdenucesvcftvggtihhpihgvnhhtshculddquddttddmne
- cujfgurhephffvufffkffoggfgsedtkeertdertddtnecuhfhrohhmpefuvhgvnhcurfgv
- thgvrhcuoehsvhgvnhesshhvvghnphgvthgvrhdruggvvheqnecuggftrfgrthhtvghrnh
- epuefgleekvddtjefffeejheevleefveekgfduudfhgefhfeegtdehveejfefffffgnecu
- vehluhhsthgvrhfuihiivgeptdenucfrrghrrghmpehmrghilhhfrhhomhepshhvvghnse
- hsvhgvnhhpvghtvghrrdguvghv
-X-ME-Proxy: <xmx:3PxJYYKMiGURmBDapgMQPSyOV4QTLjhhV3GorhLaxtd45bwDs6H2HA>
- <xmx:3PxJYbJjfGlZ4VEjc1AsKUicULDV6YGVRz0CL9hu5SUjkwzy5ZSufA>
- <xmx:3PxJYRz7hnDw2t4HmwCCagGdaZGvPVs7LCXuCtqr8a8YTP_82pDPIw>
- <xmx:3PxJYYGPRMT-rZ6CdoiLQCVWB3472hPk0Ms0qX_0G5km5Xq-vn0nRA>
-Received: by mail.messagingengine.com (Postfix) with ESMTPA; Tue,
- 21 Sep 2021 11:40:11 -0400 (EDT)
-To: Joerg Roedel <joro@8bytes.org>,
-	Will Deacon <will@kernel.org>
-Subject: [PATCH] iommu/dart: Remove iommu_flush_ops
-Date: Tue, 21 Sep 2021 17:39:34 +0200
-Message-Id: <20210921153934.35647-1-sven@svenpeter.dev>
-X-Mailer: git-send-email 2.30.1 (Apple Git-130)
+Authentication-Results: smtp3.osuosl.org (amavisd-new);
+ dkim=pass (2048-bit key) header.d=nvidia.com
+Received: from smtp3.osuosl.org ([127.0.0.1])
+ by localhost (smtp3.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+ with ESMTP id 6hrwQ9hrEI20 for <iommu@lists.linux-foundation.org>;
+ Tue, 21 Sep 2021 15:41:41 +0000 (UTC)
+X-Greylist: whitelisted by SQLgrey-1.8.0
+Received: from NAM11-CO1-obe.outbound.protection.outlook.com
+ (mail-co1nam11on2082.outbound.protection.outlook.com [40.107.220.82])
+ by smtp3.osuosl.org (Postfix) with ESMTPS id BA44360595
+ for <iommu@lists.linux-foundation.org>; Tue, 21 Sep 2021 15:41:41 +0000 (UTC)
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=mixHylHuImoarzezI2SwjCT59+ATn4WfJQTFN/IskG0FE0Xpq0TH0KkouTvv4UyamPjz64LKwMdivHazKDTlxeqrD6ImO9BT5HS1FLmltnrYk1Ew9VfhBahKNOTAxypBnQcQXJE2MVmMLpbX4qJbm3qQWKyCUqLjSqoVL1vaFocW13zdhfGbUp9P2rkXo1pTvfXR3SnpeauKSvlAmiYsllM3G3YoAr2dlID7ze0GBiqs4TUU+9dtyQRoK5+2LOC4bHVA+wWGvh8PDkwO6FfqvbuylNBqbTeS+v+nNtczPmI/2uzIJSDUgsX3NWVskbZi4DLoVrPuMXFomjZXGFyZkQ==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com; 
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version; 
+ bh=jIxSM94+E+xXvDRL1GTcsZbEjHR1uu6VEWmOspluNZ8=;
+ b=ABxiVBzD6Ubmw8NhUUZaNOa5dlMZrXtR7+LV6tpm0e5uEuW6iLBuNCYSAwTMMUyVWCYwNNzTswsuO3GzRvqsgc40HLMzcZ8iTxT6BFlUJgwnGzquAtDO8JLkUdOkIADGKT7Zy0dLsK8GOPuYRrd3PGttw7udD2IsdDI983FsKh+vRY7xnZIcRNfuvotiwalKQzXy6iVZD8dNppa/3zUTWJF0UKZ667Eyqvd+UZKRa/GIsS3oMTy2eDurBVOKE8hzh4N21UnRXJtpOce/eVvvO2eZDJqCBL5jJFKcLFQqmz9H3ny3eHiVNpq5XVf6hOSXEiml/YKKxn+vv7BcRZNmRA==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=nvidia.com; dmarc=pass action=none header.from=nvidia.com;
+ dkim=pass header.d=nvidia.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
+ s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=jIxSM94+E+xXvDRL1GTcsZbEjHR1uu6VEWmOspluNZ8=;
+ b=tqbfp19BmOTrlk/qrR4+lX4AF/joojidzJUV5UwiQ2+djBbzk3f/5iNcVIR1zEgksaNgqNGKHpNsUO0nT/0Mu2ctLOzo+9EFUV+xIwjDsbn8Qf4vAaUl4IMrKWPbWqLsP9emNahxzdXWn1wDU17Ye7G6r+MuiSTfry3qXvgilmowg6F/ze66ODd8TXf4Q0wDnsyNo0ZO0JQdRtZIOuMhDROAsAM8yI+Ru5eZCVxE65NuBvw2hjf+Dfl2SQNieg+E1URnHq7bbWG+xA1NR6Xv0+smd5g93Ij+7iX3Cc1iawZrm+KD34p5cTLedDJxpGAS51163SKKaokjhjx0HEYNWg==
+Authentication-Results: intel.com; dkim=none (message not signed)
+ header.d=none;intel.com; dmarc=none action=none header.from=nvidia.com;
+Received: from BL0PR12MB5506.namprd12.prod.outlook.com (2603:10b6:208:1cb::22)
+ by BL1PR12MB5157.namprd12.prod.outlook.com (2603:10b6:208:308::15)
+ with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4523.14; Tue, 21 Sep
+ 2021 15:41:39 +0000
+Received: from BL0PR12MB5506.namprd12.prod.outlook.com
+ ([fe80::e8af:232:915e:2f95]) by BL0PR12MB5506.namprd12.prod.outlook.com
+ ([fe80::e8af:232:915e:2f95%8]) with mapi id 15.20.4544.013; Tue, 21 Sep 2021
+ 15:41:39 +0000
+Date: Tue, 21 Sep 2021 12:41:38 -0300
+To: Liu Yi L <yi.l.liu@intel.com>
+Subject: Re: [RFC 01/20] iommu/iommufd: Add /dev/iommu core
+Message-ID: <20210921154138.GM327412@nvidia.com>
+References: <20210919063848.1476776-1-yi.l.liu@intel.com>
+ <20210919063848.1476776-2-yi.l.liu@intel.com>
+Content-Disposition: inline
+In-Reply-To: <20210919063848.1476776-2-yi.l.liu@intel.com>
+X-ClientProxiedBy: BL1PR13CA0085.namprd13.prod.outlook.com
+ (2603:10b6:208:2b8::30) To BL0PR12MB5506.namprd12.prod.outlook.com
+ (2603:10b6:208:1cb::22)
 MIME-Version: 1.0
-Cc: Marc Zyngier <maz@kernel.org>, iommu@lists.linux-foundation.org,
- linux-kernel@vger.kernel.org, Sven Peter <sven@svenpeter.dev>
+Received: from mlx.ziepe.ca (142.162.113.129) by
+ BL1PR13CA0085.namprd13.prod.outlook.com (2603:10b6:208:2b8::30) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4544.6 via Frontend
+ Transport; Tue, 21 Sep 2021 15:41:39 +0000
+Received: from jgg by mlx with local (Exim 4.94)	(envelope-from
+ <jgg@nvidia.com>)	id 1mShtq-003V0Q-Cx; Tue, 21 Sep 2021 12:41:38 -0300
+X-MS-PublicTrafficType: Email
+X-MS-Office365-Filtering-Correlation-Id: ed06cd25-d775-467d-601b-08d97d164d7e
+X-MS-TrafficTypeDiagnostic: BL1PR12MB5157:
+X-MS-Exchange-Transport-Forked: True
+X-Microsoft-Antispam-PRVS: <BL1PR12MB5157537A91B1B36640A47FDEC2A19@BL1PR12MB5157.namprd12.prod.outlook.com>
+X-MS-Oob-TLC-OOBClassifiers: OLM:7691;
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: AQ21ZTJKiLEmRGOZfLO6j4JGIEWBNlTBg+IR6dbMmPPYSi4uRjqtBOIOtyTB9TGzTt4CyDvzS00YL1k9O6gutxXzlAwOrSLL0VsC3EY1TgRqlS61lmHi5c1RQP31+DWUwZqGjSR7ozGjc2qCV7TKHf/M5BOR4uevNe9ovkA6eec1doPERaMark4fQyD5Micau32fRnC6/mOJldPfl7yaSOn4MW4ypvrjjBBDXQr2vaHwdZrkr2CGwToymfgdm7tSwXunseG/QALkaizxHPTT6PgcmuHcvjfkk6F3m/baoS2th2ybKHKv+mzSqgpMV0DBQxW4LZeiSk7K+MQPhjQlkLY/o5WkwufZo+g1zIDj3aFpUsleazqjL1WcZsi0+gL3wJXjMU2tbvvFc8XIwGaKkcWW9cueSPse2SkwVYFPJBXedQbwLQ1xSUDE8NfVglELSCig3mKLHl44wbqjnka6N1XfbDYzbmP0Ne1qLMPk4ldIerCiQWMzjhrERXTz2MqIoGtpp1Bs/qomRzl/okVTDem+6RYF6/qz0xfJrU90JH1dYmCUAtO5pqP3R5nnO0EQLE0Ss1quwKtOS3KZqOvU5coiNIfFIL9H0ctSU9zXTa2ZKzMhUyxf3hkpLska4oxzf4wXzer9PsY3HqnJDHlAoGp1DlIl7xhdfn2YlBR0NP+GLwUsX6W4k0K7/dDOE2+3b0ikpMS3InErUYneQfvBdnXK5GxJoAKzOEePwIkaPlFJ0+2hfWb6uaK3BZ9j2Buj1h0E6I1BzE0N3VcJiM22SA==
+X-Forefront-Antispam-Report: CIP:255.255.255.255; CTRY:; LANG:en; SCL:1; SRV:;
+ IPV:NLI; SFV:NSPM; H:BL0PR12MB5506.namprd12.prod.outlook.com; PTR:; CAT:NONE;
+ SFS:(4636009)(366004)(7416002)(26005)(186003)(9746002)(107886003)(5660300002)(9786002)(966005)(38100700002)(316002)(66946007)(66476007)(83380400001)(33656002)(36756003)(508600001)(1076003)(426003)(8936002)(66556008)(6916009)(4326008)(2906002)(2616005)(8676002)(86362001)(27376004);
+ DIR:OUT; SFP:1101; 
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?p4N2/kzxcnNYCLp14JKx30+zDbWg/6LdFh+gzZEuNGShGswxuFwoqz8M2Haa?=
+ =?us-ascii?Q?FNURdHYZobsbjzXCnX7EbSaTdP3D9/1mSkcY8NHsTn4STFYfooeeiTGS0DQE?=
+ =?us-ascii?Q?WnLqi0UIfSWWMvom+D9n3+JsiErfjfcXLwVJxnAD4mPGHSCNhKLUvZED23YR?=
+ =?us-ascii?Q?C3u2VSRB5MnXsS408lRjMohKN6Y/1PKyjvGjPkWKUNcoCFcfGnbhOPklRAlf?=
+ =?us-ascii?Q?ZIA7BdyvfWzhjkDl+nACbUaoTnfjPzM4418LadEeXww/rSmkuYQdVF/AMUAW?=
+ =?us-ascii?Q?sGic1OcqH7MaPWyp1r/4ZSHTUErmzWswxNYmCz1d6jvGqt/HHPYOaqbQao3E?=
+ =?us-ascii?Q?zP+MAtIXmxdhegeLwUbR6iOrQrB/1tsZc/5tMUPYtO9t34iBCBUEjxf46TXN?=
+ =?us-ascii?Q?BueEHV6NT95nyZgvgZWzaJxNqI1VKIRwNSBw7g2EFRbE7Jm7LYbycQdfQwcU?=
+ =?us-ascii?Q?DjdINhcNsxhHwBWL98EmS/wLxXhQTuZPtbhAwvWqGN+j/UwKYi0HVuWBioZ1?=
+ =?us-ascii?Q?mJ1P5uyg0Sgw0Sfk2sVr1xpKIRS2+rUuU2evqvu6kbgCpG9HX3a42VGTXk+z?=
+ =?us-ascii?Q?s/G1NsbMGu87WJN7l18XdqRSvYsBea5u2XDgE19drjnXr+GydWCKAkK/6OqN?=
+ =?us-ascii?Q?oKVhB51fg7XBQkNergxfWt8w4dAiOE1jOnAggNLSyFWuMqVuQfGwUqrcDBHU?=
+ =?us-ascii?Q?qaNmwGu6GoMqxxwGLdZ0/Zm663JUp0XYEPmQaow1KQanWerON0IfRqRQYXmD?=
+ =?us-ascii?Q?iJh2MJwLiooffL6uvCTS9dauE6TdDLKlwLW5KCUXPdrmUFndQcZJshT6JVvl?=
+ =?us-ascii?Q?OxZXVdw4QMSHVOezm94lL1vIyUJUymItR2oYsvzNeTTzmeCA+LtI9kIMSCJR?=
+ =?us-ascii?Q?PHAnwcB0EFKPj7INZIZa6GTWFjdWJ2XikzqDtfvEL11KQJuKVAKs4+K52nWW?=
+ =?us-ascii?Q?5jw4vg9Ub64Vjq9Twz4ZK9OJCtyF+yvFWDbVDerp3rjD2D/X6HSzqmYnt4Ts?=
+ =?us-ascii?Q?tQF5YvYEwO+L5MuPCutrVHVAGIb5cBgqaG7UIqzZUUgaHOknetQ3UfgDljur?=
+ =?us-ascii?Q?XjHVq5A5L+eGqG0qgRAQ2O7IwnJXYsbTPwg7tV4Z3FEVzP68Gjf6bYFEBxR6?=
+ =?us-ascii?Q?PlNnOKshcnCCwnU/3cNqyAPzndWNj2qrrje4XvYYZGE38zHZCxqyZ/En7CYg?=
+ =?us-ascii?Q?Rncc6DKy4iws4pHF2vXJb0lnaGlczRN5GrejQjBJ4R5malQ6DuTem97wLnbh?=
+ =?us-ascii?Q?H+IHpqHJz1f+NHmoK627U1Rr3gm1k7SNADE37hr8+zDATMVQmJmb8DLqlbW1?=
+ =?us-ascii?Q?BKb4qbej1uVxMF0ZChHKoqjw?=
+X-OriginatorOrg: Nvidia.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: ed06cd25-d775-467d-601b-08d97d164d7e
+X-MS-Exchange-CrossTenant-AuthSource: BL0PR12MB5506.namprd12.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 21 Sep 2021 15:41:39.5592 (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: wyRo61G1sb2p5FbKlgXnyrGsnuKUSlsxXps6w5QG1wpGaclcumki2ZqCUToUgL3E
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: BL1PR12MB5157
+Cc: kvm@vger.kernel.org, jasowang@redhat.com, kwankhede@nvidia.com, hch@lst.de,
+ jean-philippe@linaro.org, dave.jiang@intel.com, ashok.raj@intel.com,
+ corbet@lwn.net, kevin.tian@intel.com, parav@mellanox.com,
+ alex.williamson@redhat.com, lkml@metux.net, david@gibson.dropbear.id.au,
+ dwmw2@infradead.org, jun.j.tian@intel.com, linux-kernel@vger.kernel.org,
+ lushenming@huawei.com, iommu@lists.linux-foundation.org, pbonzini@redhat.com,
+ robin.murphy@arm.com
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -109,90 +160,172 @@ List-Post: <mailto:iommu@lists.linux-foundation.org>
 List-Help: <mailto:iommu-request@lists.linux-foundation.org?subject=help>
 List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
  <mailto:iommu-request@lists.linux-foundation.org?subject=subscribe>
-From: Sven Peter via iommu <iommu@lists.linux-foundation.org>
-Reply-To: Sven Peter <sven@svenpeter.dev>
+From: Jason Gunthorpe via iommu <iommu@lists.linux-foundation.org>
+Reply-To: Jason Gunthorpe <jgg@nvidia.com>
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-apple_dart_tlb_flush_{all,walk} expect to get a struct apple_dart_domain
-but instead get a struct iommu_domain right now. This breaks those two
-functions and can lead to kernel panics like the one below.
-DART can only invalidate the entire TLB and apple_dart_iotlb_sync will
-already flush everything. There's no need to do that again inside those
-two functions. Let's just drop them.
+On Sun, Sep 19, 2021 at 02:38:29PM +0800, Liu Yi L wrote:
+> /dev/iommu aims to provide a unified interface for managing I/O address
+> spaces for devices assigned to userspace. This patch adds the initial
+> framework to create a /dev/iommu node. Each open of this node returns an
+> iommufd. And this fd is the handle for userspace to initiate its I/O
+> address space management.
+> 
+> One open:
+> - We call this feature as IOMMUFD in Kconfig in this RFC. However this
+>   name is not clear enough to indicate its purpose to user. Back to 2010
+>   vfio even introduced a /dev/uiommu [1] as the predecessor of its
+>   container concept. Is that a better name? Appreciate opinions here.
+> 
+> [1] https://lore.kernel.org/kvm/4c0eb470.1HMjondO00NIvFM6%25pugs@cisco.com/
+> 
+> Signed-off-by: Liu Yi L <yi.l.liu@intel.com>
+>  drivers/iommu/Kconfig           |   1 +
+>  drivers/iommu/Makefile          |   1 +
+>  drivers/iommu/iommufd/Kconfig   |  11 ++++
+>  drivers/iommu/iommufd/Makefile  |   2 +
+>  drivers/iommu/iommufd/iommufd.c | 112 ++++++++++++++++++++++++++++++++
+>  5 files changed, 127 insertions(+)
+>  create mode 100644 drivers/iommu/iommufd/Kconfig
+>  create mode 100644 drivers/iommu/iommufd/Makefile
+>  create mode 100644 drivers/iommu/iommufd/iommufd.c
+> 
+> diff --git a/drivers/iommu/Kconfig b/drivers/iommu/Kconfig
+> index 07b7c25cbed8..a83ce0acd09d 100644
+> +++ b/drivers/iommu/Kconfig
+> @@ -136,6 +136,7 @@ config MSM_IOMMU
+>  
+>  source "drivers/iommu/amd/Kconfig"
+>  source "drivers/iommu/intel/Kconfig"
+> +source "drivers/iommu/iommufd/Kconfig"
+>  
+>  config IRQ_REMAP
+>  	bool "Support for Interrupt Remapping"
+> diff --git a/drivers/iommu/Makefile b/drivers/iommu/Makefile
+> index c0fb0ba88143..719c799f23ad 100644
+> +++ b/drivers/iommu/Makefile
+> @@ -29,3 +29,4 @@ obj-$(CONFIG_HYPERV_IOMMU) += hyperv-iommu.o
+>  obj-$(CONFIG_VIRTIO_IOMMU) += virtio-iommu.o
+>  obj-$(CONFIG_IOMMU_SVA_LIB) += iommu-sva-lib.o io-pgfault.o
+>  obj-$(CONFIG_SPRD_IOMMU) += sprd-iommu.o
+> +obj-$(CONFIG_IOMMUFD) += iommufd/
+> diff --git a/drivers/iommu/iommufd/Kconfig b/drivers/iommu/iommufd/Kconfig
+> new file mode 100644
+> index 000000000000..9fb7769a815d
+> +++ b/drivers/iommu/iommufd/Kconfig
+> @@ -0,0 +1,11 @@
+> +# SPDX-License-Identifier: GPL-2.0-only
+> +config IOMMUFD
+> +	tristate "I/O Address Space management framework for passthrough devices"
+> +	select IOMMU_API
+> +	default n
+> +	help
+> +	  provides unified I/O address space management framework for
+> +	  isolating untrusted DMAs via devices which are passed through
+> +	  to userspace drivers.
+> +
+> +	  If you don't know what to do here, say N.
+> diff --git a/drivers/iommu/iommufd/Makefile b/drivers/iommu/iommufd/Makefile
+> new file mode 100644
+> index 000000000000..54381a01d003
+> +++ b/drivers/iommu/iommufd/Makefile
+> @@ -0,0 +1,2 @@
+> +# SPDX-License-Identifier: GPL-2.0-only
+> +obj-$(CONFIG_IOMMUFD) += iommufd.o
+> diff --git a/drivers/iommu/iommufd/iommufd.c b/drivers/iommu/iommufd/iommufd.c
+> new file mode 100644
+> index 000000000000..710b7e62988b
+> +++ b/drivers/iommu/iommufd/iommufd.c
+> @@ -0,0 +1,112 @@
+> +// SPDX-License-Identifier: GPL-2.0-only
+> +/*
+> + * I/O Address Space Management for passthrough devices
+> + *
+> + * Copyright (C) 2021 Intel Corporation
+> + *
+> + * Author: Liu Yi L <yi.l.liu@intel.com>
+> + */
+> +
+> +#define pr_fmt(fmt)    "iommufd: " fmt
+> +
+> +#include <linux/file.h>
+> +#include <linux/fs.h>
+> +#include <linux/module.h>
+> +#include <linux/slab.h>
+> +#include <linux/miscdevice.h>
+> +#include <linux/mutex.h>
+> +#include <linux/iommu.h>
+> +
+> +/* Per iommufd */
+> +struct iommufd_ctx {
+> +	refcount_t refs;
+> +};
 
-  pci 0000:03:00.0: Removing from iommu group 1
-  Unable to handle kernel paging request at virtual address 0000000100000023
-  [...]
-  Call trace:
-   _raw_spin_lock_irqsave+0x54/0xbc
-   apple_dart_hw_stream_command.constprop.0+0x2c/0x130
-   apple_dart_tlb_flush_all+0x48/0x90
-   free_io_pgtable_ops+0x40/0x70
-   apple_dart_domain_free+0x2c/0x44
-   iommu_group_release+0x68/0xac
-   kobject_cleanup+0x4c/0x1fc
-   kobject_cleanup+0x14c/0x1fc
-   kobject_put+0x64/0x84
-   iommu_group_remove_device+0x110/0x180
-   iommu_release_device+0x50/0xa0
-  [...]
+A private_data of a struct file should avoid having a refcount (and
+this should have been a kref anyhow)
 
-Fixes: 46d1fb072e76b161 ("iommu/dart: Add DART iommu driver")
-Reported-by: Marc Zyngier <maz@kernel.org>
-Signed-off-by: Sven Peter <sven@svenpeter.dev>
----
- drivers/iommu/apple-dart.c | 18 ------------------
- 1 file changed, 18 deletions(-)
+Use the refcount on the struct file instead.
 
-diff --git a/drivers/iommu/apple-dart.c b/drivers/iommu/apple-dart.c
-index c37fb4790e8a..47ffe9e49abb 100644
---- a/drivers/iommu/apple-dart.c
-+++ b/drivers/iommu/apple-dart.c
-@@ -181,7 +181,6 @@ struct apple_dart_master_cfg {
- 
- static struct platform_driver apple_dart_driver;
- static const struct iommu_ops apple_dart_iommu_ops;
--static const struct iommu_flush_ops apple_dart_tlb_ops;
- 
- static struct apple_dart_domain *to_dart_domain(struct iommu_domain *dom)
- {
-@@ -336,22 +335,6 @@ static void apple_dart_iotlb_sync_map(struct iommu_domain *domain,
- 	apple_dart_domain_flush_tlb(to_dart_domain(domain));
- }
- 
--static void apple_dart_tlb_flush_all(void *cookie)
--{
--	apple_dart_domain_flush_tlb(cookie);
--}
--
--static void apple_dart_tlb_flush_walk(unsigned long iova, size_t size,
--				      size_t granule, void *cookie)
--{
--	apple_dart_domain_flush_tlb(cookie);
--}
--
--static const struct iommu_flush_ops apple_dart_tlb_ops = {
--	.tlb_flush_all = apple_dart_tlb_flush_all,
--	.tlb_flush_walk = apple_dart_tlb_flush_walk,
--};
--
- static phys_addr_t apple_dart_iova_to_phys(struct iommu_domain *domain,
- 					   dma_addr_t iova)
- {
-@@ -433,7 +416,6 @@ static int apple_dart_finalize_domain(struct iommu_domain *domain,
- 		.ias = 32,
- 		.oas = 36,
- 		.coherent_walk = 1,
--		.tlb = &apple_dart_tlb_ops,
- 		.iommu_dev = dart->dev,
- 	};
- 
--- 
-2.25.1
+In general the lifetime models look overly convoluted to me with
+refcounts being used as locks and going in all manner of directions.
 
+- No refcount on iommufd_ctx, this should use the fget on the fd.
+  The driver facing version of the API has the driver holds a fget
+  inside the iommufd_device.
+
+- Put a rwlock inside the iommufd_ioas that is a
+  'destroying_lock'. The rwlock starts out unlocked.
+  
+  Acquire from the xarray is
+   rcu_lock()
+   ioas = xa_load()
+   if (ioas)
+      if (down_read_trylock(&ioas->destroying_lock))
+           // success
+  Unacquire is just up_read()
+
+  Do down_write when the ioas is to be destroyed, do not return ebusy.
+
+ - Delete the iommufd_ctx->lock. Use RCU to protect load, erase/alloc does
+   not need locking (order it properly too, it is in the wrong order), and
+   don't check for duplicate devices or dev_cookie duplication, that
+   is user error and is harmless to the kernel.
+  
+> +static int iommufd_fops_release(struct inode *inode, struct file *filep)
+> +{
+> +	struct iommufd_ctx *ictx = filep->private_data;
+> +
+> +	filep->private_data = NULL;
+
+unnecessary
+
+> +	iommufd_ctx_put(ictx);
+> +
+> +	return 0;
+> +}
+> +
+> +static long iommufd_fops_unl_ioctl(struct file *filep,
+> +				   unsigned int cmd, unsigned long arg)
+> +{
+> +	struct iommufd_ctx *ictx = filep->private_data;
+> +	long ret = -EINVAL;
+> +
+> +	if (!ictx)
+> +		return ret;
+
+impossible
+
+> +
+> +	switch (cmd) {
+> +	default:
+> +		pr_err_ratelimited("unsupported cmd %u\n", cmd);
+
+don't log user triggerable events
+
+Jason
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
