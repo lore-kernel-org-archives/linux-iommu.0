@@ -2,111 +2,111 @@ Return-Path: <SRS0=55Rd=OL=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-5.0 required=3.0 tests=BAYES_00,DKIM_INVALID,
-	DKIM_SIGNED,HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,SPF_HELO_NONE,
-	SPF_PASS,URIBL_BLOCKED,USER_AGENT_SANE_2 autolearn=no autolearn_force=no
-	version=3.4.0
+X-Spam-Status: No, score=-13.5 required=3.0 tests=BAYES_00,DKIM_INVALID,
+	DKIM_SIGNED,HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,
+	MENTIONS_GIT_HOSTING,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED autolearn=ham
+	autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C187AC433F5
-	for <iommu@archiver.kernel.org>; Tue, 21 Sep 2021 21:09:41 +0000 (UTC)
-Received: from smtp1.osuosl.org (smtp1.osuosl.org [140.211.166.138])
+	by smtp.lore.kernel.org (Postfix) with ESMTP id F2CD3C433F5
+	for <iommu@archiver.kernel.org>; Tue, 21 Sep 2021 21:21:05 +0000 (UTC)
+Received: from smtp4.osuosl.org (smtp4.osuosl.org [140.211.166.137])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 4FC0B60F38
-	for <iommu@archiver.kernel.org>; Tue, 21 Sep 2021 21:09:41 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.4.1 mail.kernel.org 4FC0B60F38
-Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=redhat.com
+	by mail.kernel.org (Postfix) with ESMTPS id A1B5C60F38
+	for <iommu@archiver.kernel.org>; Tue, 21 Sep 2021 21:21:05 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.4.1 mail.kernel.org A1B5C60F38
+Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=shutemov.name
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by smtp1.osuosl.org (Postfix) with ESMTP id 1C20F81501;
-	Tue, 21 Sep 2021 21:09:41 +0000 (UTC)
+	by smtp4.osuosl.org (Postfix) with ESMTP id 61DC44053F;
+	Tue, 21 Sep 2021 21:21:05 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from smtp1.osuosl.org ([127.0.0.1])
-	by localhost (smtp1.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id eqsnzMx5IKHT; Tue, 21 Sep 2021 21:09:40 +0000 (UTC)
+Received: from smtp4.osuosl.org ([127.0.0.1])
+	by localhost (smtp4.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+	with ESMTP id LwWAJxPh_Tr7; Tue, 21 Sep 2021 21:21:04 +0000 (UTC)
 Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by smtp1.osuosl.org (Postfix) with ESMTPS id EB99080F5F;
-	Tue, 21 Sep 2021 21:09:39 +0000 (UTC)
+	by smtp4.osuosl.org (Postfix) with ESMTPS id 2FB7F40504;
+	Tue, 21 Sep 2021 21:21:04 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id CC3B4C000F;
-	Tue, 21 Sep 2021 21:09:39 +0000 (UTC)
-Received: from smtp1.osuosl.org (smtp1.osuosl.org [140.211.166.138])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 1F7B6C000D
- for <iommu@lists.linux-foundation.org>; Tue, 21 Sep 2021 21:09:38 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 0EB95C0011;
+	Tue, 21 Sep 2021 21:21:04 +0000 (UTC)
+Received: from smtp4.osuosl.org (smtp4.osuosl.org [140.211.166.137])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id C08E7C000D
+ for <iommu@lists.linux-foundation.org>; Tue, 21 Sep 2021 21:21:02 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by smtp1.osuosl.org (Postfix) with ESMTP id 01C278105C
- for <iommu@lists.linux-foundation.org>; Tue, 21 Sep 2021 21:09:38 +0000 (UTC)
+ by smtp4.osuosl.org (Postfix) with ESMTP id 937DB40527
+ for <iommu@lists.linux-foundation.org>; Tue, 21 Sep 2021 21:21:02 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from smtp1.osuosl.org ([127.0.0.1])
- by localhost (smtp1.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id 3PALWxtG2Hpv for <iommu@lists.linux-foundation.org>;
- Tue, 21 Sep 2021 21:09:37 +0000 (UTC)
-X-Greylist: domain auto-whitelisted by SQLgrey-1.8.0
-Received: from us-smtp-delivery-124.mimecast.com
- (us-smtp-delivery-124.mimecast.com [216.205.24.124])
- by smtp1.osuosl.org (Postfix) with ESMTPS id 160D780F5F
- for <iommu@lists.linux-foundation.org>; Tue, 21 Sep 2021 21:09:36 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
- s=mimecast20190719; t=1632258575;
- h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
- to:to:cc:cc:mime-version:mime-version:content-type:content-type:
- content-transfer-encoding:content-transfer-encoding:
- in-reply-to:in-reply-to:references:references;
- bh=MlpLbPlo4KBTm6av7Erxbr1sl480yKpqTzkq1T4fFto=;
- b=TCkyNfbRuqsk8jROr5iyRuLkPuVtwkIGoGtnyIC061bD7LwA5xPL8mfK/3FY0rcrI4zmyQ
- gYSV2uR6k6hn8rz3JYU5T0AGwoD5hkpMNzpXy2rWltfuhFnCR3QTAwRYbIglK3W453CnVE
- TrtjXkbghCRZFLAew7mhwHpSlA6PvO0=
-Received: from mail-oi1-f198.google.com (mail-oi1-f198.google.com
- [209.85.167.198]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-459-po3H3y-eP0ynGklwFNTBvQ-1; Tue, 21 Sep 2021 17:09:32 -0400
-X-MC-Unique: po3H3y-eP0ynGklwFNTBvQ-1
-Received: by mail-oi1-f198.google.com with SMTP id
- q22-20020a0568080a9600b002695b5be070so413451oij.8
- for <iommu@lists.linux-foundation.org>; Tue, 21 Sep 2021 14:09:32 -0700 (PDT)
+Received: from smtp4.osuosl.org ([127.0.0.1])
+ by localhost (smtp4.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+ with ESMTP id K2r3y_MCLDy7 for <iommu@lists.linux-foundation.org>;
+ Tue, 21 Sep 2021 21:21:01 +0000 (UTC)
+X-Greylist: whitelisted by SQLgrey-1.8.0
+Received: from mail-lf1-x130.google.com (mail-lf1-x130.google.com
+ [IPv6:2a00:1450:4864:20::130])
+ by smtp4.osuosl.org (Postfix) with ESMTPS id 20F6D40504
+ for <iommu@lists.linux-foundation.org>; Tue, 21 Sep 2021 21:21:00 +0000 (UTC)
+Received: by mail-lf1-x130.google.com with SMTP id m3so3099591lfu.2
+ for <iommu@lists.linux-foundation.org>; Tue, 21 Sep 2021 14:21:00 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+ d=shutemov-name.20210112.gappssmtp.com; s=20210112;
+ h=date:from:to:cc:subject:message-id:references:mime-version
+ :content-disposition:in-reply-to;
+ bh=GYWKxxwDs0cZgU7zoLo4TUhsJ8M50sSfexrGGa7nvK0=;
+ b=6GA+nKi4dJGN5Y/djnNixBrKu6T3pljCu3U/BgzvrwouwWOron03nG2FotSmE1IvQS
+ MgoEePxggSU/gxjqerZifjJ0UmN+Rpgv4VXnbx+GeN6FcHZXKGVGGXh/gwowELfGRgeB
+ k1v+6RGz165vVjf8qTg9T5T2FYUEcrHSwLBk5fRy4e1eic4Bwe7QkdtvB988rBItCSlw
+ 5pJbiBObITlEWIumnOpwgWSOod/vvf6//SPAXj5IzXKsXsn8DowBeLy2GH+tdsAPmUH0
+ ZbwUoQIW4DTzzxX46eJW+ys3iupLGzexzYNkzIcWmfRnNP3AUY1kX51pUUaEoehoA6Yb
+ KPPw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
  d=1e100.net; s=20210112;
- h=x-gm-message-state:date:from:to:cc:subject:message-id:in-reply-to
- :references:mime-version:content-transfer-encoding;
- bh=MlpLbPlo4KBTm6av7Erxbr1sl480yKpqTzkq1T4fFto=;
- b=zJbalnARDSkgOkf6fzaktjUSZ8eJhTnoEce8CdsSEu/CHhfvD0qv9t/MEHUjMSA1GF
- ANf+TtREtawhCEXwVCU3GEZenp6CrGDRORYDbQNUqlQur4qpCb0oqcuhVZLlt1sYjPzG
- MXuz1V4GCGffSCKJM0bcUpbXQJ2ED9dUBz+l4IGDrqB3c58DCuUNN3JZIu/Fy6RyI9jT
- y1l+Ph+u1+lbtqvGU3umwD545thG9FcwvmQ/fwYVYTpUV5GUa9W4r4jCB7cEvJbvAJG+
- 3EksjdelaiA0hbkiLm1Ufa3XobH09aB+1ULS5fBVJPtCTtoV4WPxP5RbKXu/SJfdcIDb
- POjA==
-X-Gm-Message-State: AOAM530dYYEBpWbrU1/DtJw9gerwy5GiSYxhIkHuLODXdxjP5cuO+r4m
- 11qyKmHVpsjP4Ug+MgpBqzWpgkC0JCu1THVYbELrqnxY51JCNSpu07+TQQAtX6GC6arkXs1QyGM
- JTN7QsOUnUkE7V9o/i2yQJGw2acffVQ==
-X-Received: by 2002:aca:120f:: with SMTP id 15mr1525419ois.62.1632258571931;
- Tue, 21 Sep 2021 14:09:31 -0700 (PDT)
-X-Google-Smtp-Source: ABdhPJyhqVoP+OVs+kyF/lfOuiIjVaG7CDYwxfFsiO8jsmgxqmlxGTrRDnls5rys+4wGpfrkbujdyw==
-X-Received: by 2002:aca:120f:: with SMTP id 15mr1525386ois.62.1632258571725;
- Tue, 21 Sep 2021 14:09:31 -0700 (PDT)
-Received: from redhat.com ([198.99.80.109])
- by smtp.gmail.com with ESMTPSA id k23sm55513ood.12.2021.09.21.14.09.30
+ h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+ :mime-version:content-disposition:in-reply-to;
+ bh=GYWKxxwDs0cZgU7zoLo4TUhsJ8M50sSfexrGGa7nvK0=;
+ b=VkpM9K7kTcfDU0JHLerYfFQZw8JLnAZqYdEOR5fet4B06XuI1yrHMXGNBmd4Gu3/R/
+ ucfW+ZCzlcYGq7/+AAXpKW/VGm6JEgbiNfctkLZPQkkk8v+GFBrH1t0xqqZBMZJ/BM6O
+ 9XbimVR3Vvt3Xkc2APvG7ddNPThPq4BmmZg9OQH7WOIHNvLp9II9DCMAe2yy4b1lAMZf
+ +4rvqZWKrktngsQTuhVLbqYY54h3X0TV6VC9fWQ9ytoUml9LxFT5q/lKpgw6jriTjgwt
+ nAqvbUoiavju6H0dSfSKH+ux075eHC70q2vhIDD/UL1QqrLMOrPMu0a6DbCV5kJOUQWC
+ 9KcA==
+X-Gm-Message-State: AOAM530hv0D92Gq8rw6pzFnhS7DvpbWWi5BC+eJOU59qDx30Dvo9wVFO
+ 1wT2eXtQQ2x/gZbbMW1WqQVd3g==
+X-Google-Smtp-Source: ABdhPJwekUVL/x16ZZDpG4z5bQ8XnWA1mYPT1pSdbtQA7F8rIf0C+IYx6L1iOsCNob4BliQK4ObStw==
+X-Received: by 2002:a2e:5009:: with SMTP id e9mr25102801ljb.245.1632259258818; 
+ Tue, 21 Sep 2021 14:20:58 -0700 (PDT)
+Received: from box.localdomain ([86.57.175.117])
+ by smtp.gmail.com with ESMTPSA id t12sm13948lfc.55.2021.09.21.14.20.57
  (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
- Tue, 21 Sep 2021 14:09:31 -0700 (PDT)
-Date: Tue, 21 Sep 2021 15:09:29 -0600
-From: Alex Williamson <alex.williamson@redhat.com>
-To: Jason Gunthorpe <jgg@nvidia.com>
-Subject: Re: [RFC 05/20] vfio/pci: Register device to /dev/vfio/devices
-Message-ID: <20210921150929.5977702c.alex.williamson@redhat.com>
-In-Reply-To: <20210921164001.GR327412@nvidia.com>
-References: <20210919063848.1476776-1-yi.l.liu@intel.com>
- <20210919063848.1476776-6-yi.l.liu@intel.com>
- <20210921164001.GR327412@nvidia.com>
-X-Mailer: Claws Mail 3.18.0 (GTK+ 2.24.33; x86_64-redhat-linux-gnu)
+ Tue, 21 Sep 2021 14:20:58 -0700 (PDT)
+Received: by box.localdomain (Postfix, from userid 1000)
+ id 1B39910305C; Wed, 22 Sep 2021 00:20:59 +0300 (+03)
+Date: Wed, 22 Sep 2021 00:20:59 +0300
+From: "Kirill A. Shutemov" <kirill@shutemov.name>
+To: Borislav Petkov <bp@alien8.de>
+Subject: Re: [PATCH v3 5/8] x86/sme: Replace occurrences of sme_active() with
+ cc_platform_has()
+Message-ID: <20210921212059.wwlytlmxoft4cdth@box.shutemov.name>
+References: <cover.1631141919.git.thomas.lendacky@amd.com>
+ <367624d43d35d61d5c97a8b289d9ddae223636e9.1631141919.git.thomas.lendacky@amd.com>
+ <20210920192341.maue7db4lcbdn46x@box.shutemov.name>
+ <77df37e1-0496-aed5-fd1d-302180f1edeb@amd.com>
+ <YUoao0LlqQ6+uBrq@zn.tnic>
 MIME-Version: 1.0
-Authentication-Results: relay.mimecast.com;
- auth=pass smtp.auth=CUSA124A263 smtp.mailfrom=alex.williamson@redhat.com
-X-Mimecast-Spam-Score: 0
-X-Mimecast-Originator: redhat.com
-Cc: kvm@vger.kernel.org, jasowang@redhat.com, kwankhede@nvidia.com, hch@lst.de,
- jean-philippe@linaro.org, dave.jiang@intel.com, ashok.raj@intel.com,
- corbet@lwn.net, kevin.tian@intel.com, parav@mellanox.com, lkml@metux.net,
- david@gibson.dropbear.id.au, dwmw2@infradead.org, jun.j.tian@intel.com,
- linux-kernel@vger.kernel.org, lushenming@huawei.com,
- iommu@lists.linux-foundation.org, pbonzini@redhat.com, robin.murphy@arm.com
+Content-Disposition: inline
+In-Reply-To: <YUoao0LlqQ6+uBrq@zn.tnic>
+Cc: linux-efi@vger.kernel.org, Brijesh Singh <brijesh.singh@amd.com>,
+ kvm@vger.kernel.org, Peter Zijlstra <peterz@infradead.org>,
+ Dave Hansen <dave.hansen@linux.intel.com>, dri-devel@lists.freedesktop.org,
+ platform-driver-x86@vger.kernel.org, Will Deacon <will@kernel.org>,
+ linux-s390@vger.kernel.org, Andi Kleen <ak@linux.intel.com>, x86@kernel.org,
+ amd-gfx@lists.freedesktop.org, Christoph Hellwig <hch@infradead.org>,
+ Ingo Molnar <mingo@redhat.com>, linux-graphics-maintainer@vmware.com,
+ Tom Lendacky <thomas.lendacky@amd.com>, Tianyu Lan <Tianyu.Lan@microsoft.com>,
+ Andy Lutomirski <luto@kernel.org>, Thomas Gleixner <tglx@linutronix.de>,
+ kexec@lists.infradead.org, linux-kernel@vger.kernel.org,
+ iommu@lists.linux-foundation.org, linux-fsdevel@vger.kernel.org,
+ linuxppc-dev@lists.ozlabs.org
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -124,60 +124,58 @@ Content-Transfer-Encoding: 7bit
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-On Tue, 21 Sep 2021 13:40:01 -0300
-Jason Gunthorpe <jgg@nvidia.com> wrote:
+On Tue, Sep 21, 2021 at 07:47:15PM +0200, Borislav Petkov wrote:
+> On Tue, Sep 21, 2021 at 12:04:58PM -0500, Tom Lendacky wrote:
+> > Looks like instrumentation during early boot. I worked with Boris offline to
+> > exclude arch/x86/kernel/cc_platform.c from some of the instrumentation and
+> > that allowed an allyesconfig to boot.
+> 
+> And here's the lineup I have so far, I'd appreciate it if ppc and s390 folks
+> could run it too:
+> 
+> https://git.kernel.org/pub/scm/linux/kernel/git/bp/bp.git/log/?h=rc2-cc
 
-> On Sun, Sep 19, 2021 at 02:38:33PM +0800, Liu Yi L wrote:
-> > This patch exposes the device-centric interface for vfio-pci devices. To
-> > be compatiable with existing users, vfio-pci exposes both legacy group
-> > interface and device-centric interface.
-> > 
-> > As explained in last patch, this change doesn't apply to devices which
-> > cannot be forced to snoop cache by their upstream iommu. Such devices
-> > are still expected to be opened via the legacy group interface.
+Still broken for me with allyesconfig.
 
-This doesn't make much sense to me.  The previous patch indicates
-there's work to be done in updating the kvm-vfio contract to understand
-DMA coherency, so you're trying to limit use cases to those where the
-IOMMU enforces coherency, but there's QEMU work to be done to support
-the iommufd uAPI at all.  Isn't part of that work to understand how KVM
-will be told about non-coherent devices rather than "meh, skip it in the
-kernel"?  Also let's not forget that vfio is not only for KVM.
+gcc version 11.2.0 (Gentoo 11.2.0 p1)
+GNU ld (Gentoo 2.37_p1 p0) 2.37
+
+I still believe calling cc_platform_has() from __startup_64() is totally
+broken as it lacks proper wrapping while accessing global variables.
+
+I think sme_get_me_mask() has the same problem. I just happened to work
+(until next compiler update).
+
+This hack makes kernel boot again:
+
+diff --git a/arch/x86/kernel/head64.c b/arch/x86/kernel/head64.c
+index f98c76a1d16c..e9110a44bf1b 100644
+--- a/arch/x86/kernel/head64.c
++++ b/arch/x86/kernel/head64.c
+@@ -285,7 +285,7 @@ unsigned long __head __startup_64(unsigned long physaddr,
+ 	 * there is no need to zero it after changing the memory encryption
+ 	 * attribute.
+ 	 */
+-	if (cc_platform_has(CC_ATTR_MEM_ENCRYPT)) {
++	if (0 && cc_platform_has(CC_ATTR_MEM_ENCRYPT)) {
+ 		vaddr = (unsigned long)__start_bss_decrypted;
+ 		vaddr_end = (unsigned long)__end_bss_decrypted;
+ 		for (; vaddr < vaddr_end; vaddr += PMD_SIZE) {
+diff --git a/arch/x86/mm/mem_encrypt_identity.c b/arch/x86/mm/mem_encrypt_identity.c
+index eff4d19f9cb4..91638ed0b1db 100644
+--- a/arch/x86/mm/mem_encrypt_identity.c
++++ b/arch/x86/mm/mem_encrypt_identity.c
+@@ -288,7 +288,7 @@ void __init sme_encrypt_kernel(struct boot_params *bp)
+ 	unsigned long pgtable_area_len;
+ 	unsigned long decrypted_base;
  
-> > When the device is opened via /dev/vfio/devices, vfio-pci should prevent
-> > the user from accessing the assigned device because the device is still
-> > attached to the default domain which may allow user-initiated DMAs to
-> > touch arbitrary place. The user access must be blocked until the device
-> > is later bound to an iommufd (see patch 08). The binding acts as the
-> > contract for putting the device in a security context which ensures user-
-> > initiated DMAs via this device cannot harm the rest of the system.
-> > 
-> > This patch introduces a vdev->block_access flag for this purpose. It's set
-> > when the device is opened via /dev/vfio/devices and cleared after binding
-> > to iommufd succeeds. mmap and r/w handlers check this flag to decide whether
-> > user access should be blocked or not.  
-> 
-> This should not be in vfio_pci.
-> 
-> AFAIK there is no condition where a vfio driver can work without being
-> connected to some kind of iommu back end, so the core code should
-> handle this interlock globally. A vfio driver's ops should not be
-> callable until the iommu is connected.
-> 
-> The only vfio_pci patch in this series should be adding a new callback
-> op to take in an iommufd and register the pci_device as a iommufd
-> device.
-
-Couldn't the same argument be made that registering a $bus device as an
-iommufd device is a common interface that shouldn't be the
-responsibility of the vfio device driver?  Is userspace opening the
-non-group device anything more than a reservation of that device if
-access is withheld until iommu isolation?  I also don't really want to
-predict how ioctls might evolve to guess whether only blocking .read,
-.write, and .mmap callbacks are sufficient.  Thanks,
-
-Alex
-
+-	if (!cc_platform_has(CC_ATTR_HOST_MEM_ENCRYPT))
++	if (1 || !cc_platform_has(CC_ATTR_HOST_MEM_ENCRYPT))
+ 		return;
+ 
+ 	/*
+-- 
+ Kirill A. Shutemov
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
