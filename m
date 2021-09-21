@@ -7,139 +7,139 @@ X-Spam-Status: No, score=-13.5 required=3.0 tests=BAYES_00,DKIM_INVALID,
 	MAILING_LIST_MULTI,MSGID_FROM_MTA_HEADER,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED
 	autolearn=unavailable autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4D4FBC433EF
-	for <iommu@archiver.kernel.org>; Tue, 21 Sep 2021 17:40:57 +0000 (UTC)
-Received: from smtp3.osuosl.org (smtp3.osuosl.org [140.211.166.136])
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E47D5C433EF
+	for <iommu@archiver.kernel.org>; Tue, 21 Sep 2021 17:44:47 +0000 (UTC)
+Received: from smtp1.osuosl.org (smtp1.osuosl.org [140.211.166.138])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id E9817611C6
-	for <iommu@archiver.kernel.org>; Tue, 21 Sep 2021 17:40:56 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.4.1 mail.kernel.org E9817611C6
+	by mail.kernel.org (Postfix) with ESMTPS id 9162961178
+	for <iommu@archiver.kernel.org>; Tue, 21 Sep 2021 17:44:47 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.4.1 mail.kernel.org 9162961178
 Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=lists.linux-foundation.org
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by smtp3.osuosl.org (Postfix) with ESMTP id BA0B5607E3;
-	Tue, 21 Sep 2021 17:40:56 +0000 (UTC)
+	by smtp1.osuosl.org (Postfix) with ESMTP id 5ADFB828DD;
+	Tue, 21 Sep 2021 17:44:47 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from smtp3.osuosl.org ([127.0.0.1])
-	by localhost (smtp3.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id ibuHva2kclBp; Tue, 21 Sep 2021 17:40:55 +0000 (UTC)
+Received: from smtp1.osuosl.org ([127.0.0.1])
+	by localhost (smtp1.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+	with ESMTP id ZfYls4CPj7t9; Tue, 21 Sep 2021 17:44:46 +0000 (UTC)
 Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [IPv6:2605:bc80:3010:104::8cd3:938])
-	by smtp3.osuosl.org (Postfix) with ESMTPS id 6B00A605AB;
-	Tue, 21 Sep 2021 17:40:55 +0000 (UTC)
+	by smtp1.osuosl.org (Postfix) with ESMTPS id 1432D828C5;
+	Tue, 21 Sep 2021 17:44:46 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 44BEEC000F;
-	Tue, 21 Sep 2021 17:40:55 +0000 (UTC)
-Received: from smtp4.osuosl.org (smtp4.osuosl.org [IPv6:2605:bc80:3010::137])
- by lists.linuxfoundation.org (Postfix) with ESMTP id D4B72C000D
- for <iommu@lists.linux-foundation.org>; Tue, 21 Sep 2021 17:40:53 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id E524DC000F;
+	Tue, 21 Sep 2021 17:44:45 +0000 (UTC)
+Received: from smtp4.osuosl.org (smtp4.osuosl.org [140.211.166.137])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 97DE8C000D
+ for <iommu@lists.linux-foundation.org>; Tue, 21 Sep 2021 17:44:44 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by smtp4.osuosl.org (Postfix) with ESMTP id C2A5A40515
- for <iommu@lists.linux-foundation.org>; Tue, 21 Sep 2021 17:40:53 +0000 (UTC)
+ by smtp4.osuosl.org (Postfix) with ESMTP id 79F324057C
+ for <iommu@lists.linux-foundation.org>; Tue, 21 Sep 2021 17:44:44 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
 Authentication-Results: smtp4.osuosl.org (amavisd-new);
  dkim=pass (2048-bit key) header.d=nvidia.com
 Received: from smtp4.osuosl.org ([127.0.0.1])
  by localhost (smtp4.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id 122IwVEDfE9f for <iommu@lists.linux-foundation.org>;
- Tue, 21 Sep 2021 17:40:52 +0000 (UTC)
+ with ESMTP id D2ZmIAAnWhXH for <iommu@lists.linux-foundation.org>;
+ Tue, 21 Sep 2021 17:44:42 +0000 (UTC)
 X-Greylist: whitelisted by SQLgrey-1.8.0
-Received: from NAM11-DM6-obe.outbound.protection.outlook.com
- (mail-dm6nam11on2049.outbound.protection.outlook.com [40.107.223.49])
- by smtp4.osuosl.org (Postfix) with ESMTPS id 998FD40505
- for <iommu@lists.linux-foundation.org>; Tue, 21 Sep 2021 17:40:52 +0000 (UTC)
+Received: from NAM11-CO1-obe.outbound.protection.outlook.com
+ (mail-co1nam11on2056.outbound.protection.outlook.com [40.107.220.56])
+ by smtp4.osuosl.org (Postfix) with ESMTPS id AD4D74053F
+ for <iommu@lists.linux-foundation.org>; Tue, 21 Sep 2021 17:44:42 +0000 (UTC)
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=necqnQudCGikMlBWus9JSlaleXGUV4EhnORS1MaggfhgTnFt4mN10OTuYyxA5VDYNwRLswVB1sXgxgSXbBcTHl35VZ+7G6deHbg1+Gw8Uppci5ZvF/mlvR3JMmIaSjTkKzAk8+NHiTFK2UyHvBdmQP+X0jPaNAklVl66ONy9BH99VEoFsDASThs2OgtqPBgLTzsJULbhUeYCllD5QpAoOjo4eAUccgVUi5ogvsdrjYzzk/UuFE7h1+wGanRAsWnOl7G8ETOE18pIzm2KpKlrM+i8rn5u4cPIUQXm9FsFIaPMbSsfKhC0ndK+do3uHQmLg0BDdVked2mJmfnYGs87RQ==
+ b=hVY7iorAheveUduDLPN9uEZwknorkf6Eu3ehKZd1jg5eVeRKbCkSocIO8I+EV8ByhAhKpgpFST1GXQuixJKxeyCZWN46JZ4HiHl8Ot16vwrG4XbBGSoWHdA8VFqt4dkERF1m629oaQyJYSc3Euqiyy1+Xn2nS//4NW/Ps6gsKqCIc5K8JJLGRjO/7Kn8bmbVNJjIveaJ2f+hghMPkiMlr9MG2Czy4rKJ9enzGNyckA7f0sd/ZLkgmXErb2ZNodrFl9MyzwRSTV5mLnHb7sPdFrD90UeS9vHFgemgR+pzLQsFwkND/UbsyLMJIlfoc8wM+L+1xa64/6kXmWxu2h3TVQ==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com; 
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version; 
- bh=AjD50/xqq7YV1Y2BzjDuQtCCQCZgtJ9ex67/1l7P6PM=;
- b=bTZli6NAJB+bveQN9kaTf8Rz2ituEbLNTo/BAkmcYUrETZPhOIzcipw9RXK2UoxgeK8Z0hsSbTDL73qgu2qUZota2bA/KeqUekgpMxtr1OYp+XoTXngm2wLLjrAn3giUSzI/IyLFnrvi2SPw8KqxmrP1PnU2Fl+zKUCmPVMZZFq9NRr0Lahk9fHbtjWCpQknryM1Lo6O9kbwz9wVeDY1xa4YOCPHYSyDqsimHW6pl/SjmTMAhUUvl0OC2pCR1YMdKflv/gOwTGMCtrCsvp3lBKBJc7VKP69z+kTMus1SnfdItKvVNooI5ao7eidvIhGH7FQ+ovlBF/N5SeoaW+4LQg==
+ bh=mpvTgkPWW9/7ALFmDuqobETccHm85ScQnyKr3eW8uQ8=;
+ b=Oa/7cg+yFYkDX/J6TWykc5C4dnlrmvBMC8XSMCdqUdUP4lvYs9YG2wLdLmJgKgMxeJtPnefbM5RDVj/eOosjPk/SAJjMgMJUWUpuzMYueSJpdm7IzWsmGziYjGjqGi/fAZpdFsogLgSx71d7hHyqjdlC7LHMMW+zA8U5P2kbUISMkqd20XKyg4I0KVBFbcRKT+p4GxAq+B8h8z1d5Txk1lcj7JvTs0145Veiy31V3PiPe+UfITQmnEG1do8pfDDSLbUkNoNYfNkWMxtoU3ADDzKXjmwuf1hU/ahtrLq5mr159d7mvxqtNk7Hsi5UBR2heio6BrEi4CrFrppHk2WblQ==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
  smtp.mailfrom=nvidia.com; dmarc=pass action=none header.from=nvidia.com;
  dkim=pass header.d=nvidia.com; arc=none
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
  s=selector2;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=AjD50/xqq7YV1Y2BzjDuQtCCQCZgtJ9ex67/1l7P6PM=;
- b=uNmJ7puZdFwrhgicEGJbPGcji4Jq5EklQ/zP19iL5cPYj5czBKvvx6yCoVsdgBbOWB89tHtLE9MLxwq0AOIb86z4SidFntTb5ORZbGkFhq2ilCreIKqvNb0kWuCEAPjEvtfAIm2RBI0dPffGrw6xsIQK+MgqUATFpeD2oYbXZtVe9W8g8BNQofboG3VI875UybfNXe32cX993UDIwua63FrOKNDIDSgGe2eILG/r7KSehmn1lKlTxtbWoOIJ6wiJEoeJN/4NIRtkHpmJEJkxwLnb2/WGCF2xW9ppmg+057j843RPlmVGrwepUVJWTl1Cxzj3T0ujdRM5FIhjVAvXRQ==
+ bh=mpvTgkPWW9/7ALFmDuqobETccHm85ScQnyKr3eW8uQ8=;
+ b=V+a8mj/YB838cJsxTCfxg00gy8RA4Z9HXz//5m3sIY17hGobKCMlzFrHz3L0047+gO8rm1os9+gPevUcEetLBxf+Xmm/EqM5yEucSIG6cGMT+V7R40jFU4O5WVS8SIHOqgm5J5y7B4DXaxGfchlSBmqhW0LHsvt7u3kbELi09bxHtl6h8xawbZVemZPh+7M0hUARkY1cRIGIospzdHGdCe8AcqKJ1i8exbF3zKAsZzeuikgNnmYilar+gcEkXMWfDu62MLGWQPhcsWZL5ZC5L/m0XD5JFtK7SE3vwBbbjDX2fa3W6fXihVSsHiJvVXbNnPSMKJ6lNZr2jvXIEXr1Xg==
 Authentication-Results: intel.com; dkim=none (message not signed)
  header.d=none;intel.com; dmarc=none action=none header.from=nvidia.com;
 Received: from BL0PR12MB5506.namprd12.prod.outlook.com (2603:10b6:208:1cb::22)
- by BL1PR12MB5144.namprd12.prod.outlook.com (2603:10b6:208:316::6)
+ by BL1PR12MB5303.namprd12.prod.outlook.com (2603:10b6:208:317::14)
  with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4544.13; Tue, 21 Sep
- 2021 17:40:50 +0000
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4523.14; Tue, 21 Sep
+ 2021 17:44:39 +0000
 Received: from BL0PR12MB5506.namprd12.prod.outlook.com
  ([fe80::e8af:232:915e:2f95]) by BL0PR12MB5506.namprd12.prod.outlook.com
  ([fe80::e8af:232:915e:2f95%8]) with mapi id 15.20.4544.013; Tue, 21 Sep 2021
- 17:40:50 +0000
-Date: Tue, 21 Sep 2021 14:40:49 -0300
+ 17:44:39 +0000
+Date: Tue, 21 Sep 2021 14:44:38 -0300
 To: Liu Yi L <yi.l.liu@intel.com>
-Subject: Re: [RFC 10/20] iommu/iommufd: Add IOMMU_DEVICE_GET_INFO
-Message-ID: <20210921174049.GV327412@nvidia.com>
+Subject: Re: [RFC 11/20] iommu/iommufd: Add IOMMU_IOASID_ALLOC/FREE
+Message-ID: <20210921174438.GW327412@nvidia.com>
 References: <20210919063848.1476776-1-yi.l.liu@intel.com>
- <20210919063848.1476776-11-yi.l.liu@intel.com>
+ <20210919063848.1476776-12-yi.l.liu@intel.com>
 Content-Disposition: inline
-In-Reply-To: <20210919063848.1476776-11-yi.l.liu@intel.com>
-X-ClientProxiedBy: BL0PR01CA0002.prod.exchangelabs.com (2603:10b6:208:71::15)
- To BL0PR12MB5506.namprd12.prod.outlook.com
+In-Reply-To: <20210919063848.1476776-12-yi.l.liu@intel.com>
+X-ClientProxiedBy: MN2PR12CA0022.namprd12.prod.outlook.com
+ (2603:10b6:208:a8::35) To BL0PR12MB5506.namprd12.prod.outlook.com
  (2603:10b6:208:1cb::22)
 MIME-Version: 1.0
 Received: from mlx.ziepe.ca (142.162.113.129) by
- BL0PR01CA0002.prod.exchangelabs.com (2603:10b6:208:71::15) with Microsoft
+ MN2PR12CA0022.namprd12.prod.outlook.com (2603:10b6:208:a8::35) with Microsoft
  SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.20.4544.13 via Frontend Transport; Tue, 21 Sep 2021 17:40:49 +0000
+ 15.20.4544.13 via Frontend Transport; Tue, 21 Sep 2021 17:44:39 +0000
 Received: from jgg by mlx with local (Exim 4.94)	(envelope-from
- <jgg@nvidia.com>)	id 1mSjlB-003Wzb-38; Tue, 21 Sep 2021 14:40:49 -0300
+ <jgg@nvidia.com>)	id 1mSjos-003X2i-MJ; Tue, 21 Sep 2021 14:44:38 -0300
 X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: a271b1c3-bbf8-4e64-cf4a-08d97d26f38e
-X-MS-TrafficTypeDiagnostic: BL1PR12MB5144:
+X-MS-Office365-Filtering-Correlation-Id: 437b6f8e-ff70-496f-71bb-08d97d277c63
+X-MS-TrafficTypeDiagnostic: BL1PR12MB5303:
 X-MS-Exchange-Transport-Forked: True
-X-Microsoft-Antispam-PRVS: <BL1PR12MB5144D1FBE8BB35E1CEB8FAF1C2A19@BL1PR12MB5144.namprd12.prod.outlook.com>
-X-MS-Oob-TLC-OOBClassifiers: OLM:10000;
+X-Microsoft-Antispam-PRVS: <BL1PR12MB53034E4AA483ADCAECDC7C30C2A19@BL1PR12MB5303.namprd12.prod.outlook.com>
+X-MS-Oob-TLC-OOBClassifiers: OLM:9508;
 X-MS-Exchange-SenderADCheck: 1
 X-MS-Exchange-AntiSpam-Relay: 0
 X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: u6FlW8PA3myNyIhvWBWlu0i3+RwBswooP3Y5JYvnBJDwNzb0EXSGF2Mpjt2msUjj8Tx2l6tRh7DtbdA5MCYOjjJHqYyGHZh/m6m9F4FIzzYZ4BqGzSawgsc77MlQtELegEvcmJF/4QOGrFKuZ9p3xb2eOs4ip9cok8XsqVSPtuvUeur3U85uhYMmK9yDXsnwzqI5JU9ueX08vbz2ZHDOdEActuKfmnaI/Mw7FohuqeQgWTQhAUsCUOJlBQExfprrlAXMbdiIAHKl4wWwuGJM140nZ3NKM+AaUfmq6ty/CMILGcj2vBMtGZDvUPyPhQEt1x4Ze4z0GlniysiIEOZRNcsW/yDyzj1cZSQQD6pQQvX3+P1HRYuyiV6od9IlVG4OE8BinqqxBVkXz3oOVzcBQw4qOHIBsu5Cl1cPYSSrLW+6lFRsbyBv40zK/f6dDG8G6ZcrP3fijxo81pCQHVzVX1aSgIyR8Q77YYfXsXbkI5IROg1etUTp95jfhbsT0o02CuFDJ30U5DCjHWWQzGgmVrd4dM4oy8YZWMV+vmUlrCo5KW+RaHnPrFU3OQZyeF/Cw8jRXiTlDl80ahXKKyW2jR/dMKjWiUHLyg3dE4ewPLRzx+DJkL4eTmN+nzCwoU3fr5V9j4a9L3Cjgh0KYQYSCckJ5wqKVpbYkyrOl/WNiKRRQG1Wv6jENjn/2Y45Y7Oh
+X-Microsoft-Antispam-Message-Info: DYfN+Pg43rQC383RbaTg2aQ3Sd/YqIO5CvyGlvilsXjyDI3YfjAEyrQAT6mTM/PKU9ordtVhHneSeKrihN41JmtA50F2BGmUzNDU+zuR0D/vBzKK1+OQBJ5rbHbr79NKY9Rxm8NDpSKa1Ybk6GcTYRIYKJf8wMSMaPDVRi/UC1mjUZqenrcJH7oMa8yhyUl1rynPXEhsPn/EJ3LEEe63ptLMh8Ggs1dfeFkWxw2gnhYvcKeO5FYct1qHEHeanW/kZtk98oKUIu4mvwwrKiNnG5ln8zysxhr+TsTWtngCDPFj3yB0AT4sqgPb97LZVmFK/F3nB+zEkIMNqb1B5hoUeai/5g2XXqyIQeByuTlwNCmd7FXy1NDrP8gqPIOQoDTdOcDwe6Srjh7GfMfeBdcM9mDaklw6N4e2ucLqty8YsqZRllzn6vW9jKjoORODm9rwj1ZN9/3mueBMCuF8XS+rLCI/ite3YsJ1tUp7MLi+djHBsUe1OiSSpweylWE81za42bRrWGWTvzb0Dhy7tWWm/jIntwE8fuP702KW1mbKxdjRXW+kIfoRMOfV55A1MkpQqcQ+HZ/jbj4eIdqld7DkE3imnkz8y9VvD0Ug617t+kiuWvy8jFqwoZf6OKEymDh+5TGgBgh+vAAA/cvAnqagFzCcD48g+Hjj4TSUxqQ3K6ZFGHFBxqb/sdcjOQoayDYgIz1r8Vr+OM97OBZuFuO9YftYJAzxXKxwQldXD4qOxoI=
 X-Forefront-Antispam-Report: CIP:255.255.255.255; CTRY:; LANG:en; SCL:1; SRV:;
  IPV:NLI; SFV:NSPM; H:BL0PR12MB5506.namprd12.prod.outlook.com; PTR:; CAT:NONE;
- SFS:(4636009)(366004)(8936002)(66556008)(107886003)(36756003)(186003)(26005)(2906002)(426003)(33656002)(66946007)(86362001)(5660300002)(8676002)(4326008)(9786002)(9746002)(2616005)(66476007)(508600001)(6916009)(7416002)(1076003)(316002)(38100700002)(27376004);
+ SFS:(4636009)(366004)(5660300002)(6916009)(186003)(33656002)(83380400001)(86362001)(8676002)(9746002)(2906002)(36756003)(66476007)(66556008)(4326008)(2616005)(66946007)(9786002)(426003)(508600001)(1076003)(38100700002)(26005)(107886003)(316002)(8936002)(7416002)(27376004)(84603001);
  DIR:OUT; SFP:1101; 
 X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?heINA7s3zuIgTP4zUmXkD9P8K/srZAJEq9L1BrCgnvNJWx5Nm7buTW2s5KC/?=
- =?us-ascii?Q?KmXazhCxIpdECddk4YaQs14zxMuKUdvZuuO7F0oxW9wtH+TC5WybddaXnTgS?=
- =?us-ascii?Q?WXci4AoBzMGoZ20B5fsDEpj1Ku6l/bK+2HWDQGOKHJEienc0lND+tZlChYLu?=
- =?us-ascii?Q?uxu3dqqbHqK+JWG5TGjS7VZVN8k6WTTIG07qsTJVKj1SaxyiXRHlFSkGVjQM?=
- =?us-ascii?Q?gn62j/MZ4LTp3IEgsvUkinV538MjJ/WyMuSuAxv5Rm0R7fxbDSJmo1WI2u6x?=
- =?us-ascii?Q?OoQs5NDze+REkzD+KO/TL2oLpBpOym6GKej4VTR0a8K8AILIchnUieBPo4Bu?=
- =?us-ascii?Q?OQF4d8urQdqEX99qwxbzQSxolEwPaELXG2LIEKmbJnMr/zVx+YLnFjKsLvV6?=
- =?us-ascii?Q?JCdsaPQ82el1yrlifGd4W6uoxwjMqeEAHZRKgPb1bRsDSac62x4s5k1KNLt9?=
- =?us-ascii?Q?LvqR9P75BfA1tfPBmGazm6VvPzGnmIfQLjfAHJU267OPyF6JFzjRuLdEYdOV?=
- =?us-ascii?Q?h6uE7ZshKh+EgZIpdQegaFCzYwHpotVLh69rdO7KrarY1BAlbtt2o4u/1S+p?=
- =?us-ascii?Q?Xtjp8nMjE3VID8o7SSQU/ogvz6mCJmuxXw1menI9Qkuj9TpbXPxTRB+iscDw?=
- =?us-ascii?Q?2VUMYDWW2xBZlyrve+ePXwc7Oq9Ejixy6Zs45Xnv3vXwNQQyYQ2b3guSYMQ2?=
- =?us-ascii?Q?Abm9NSYS5fkCXtuh3RD4W3FBjl606oVIE7aEh0ETcPAmdhAF9+aVfBzavNPn?=
- =?us-ascii?Q?LaHp46YPt02XUNv3RPeDEIwosUOkuf2wrzYMICAgkAR69XoQrm6C/tAKqHiL?=
- =?us-ascii?Q?3TmKJh+emW4eU0Gc7MZYGsdXn38UB9BbUro5AODRf8DLPdKfMQF1MGwn2qXK?=
- =?us-ascii?Q?0vI74vWLX8J+rIy/P3rWq/l8dB+5is8H79p/b+fTuNWudadBSzS803Gl0hM6?=
- =?us-ascii?Q?vpQXAFjZNR4WMZMidw6cXlXui1PojpJiktnSZh+esfrimj+6iCoC1wmdAkUs?=
- =?us-ascii?Q?upGSfznnh3iWc0TnSNzY+Jg/7F5gaejZTn7Bfm5UlY61mfFBW25nITlbfnH1?=
- =?us-ascii?Q?IQEson+xQP6JzP5zyVoQX3z8MC+4jISVtFCZWcrnF7BarLIbWNcjSddfYV0/?=
- =?us-ascii?Q?feHcDZppZCIZDb3dlJ8DV/DCCjs28bix8Owi4Ha8B3Sx+mFMTZcrYtiVxtgp?=
- =?us-ascii?Q?/1sHLEtdgCTmho/TEfFDXgNJ5hf1gUggvB+TA+aYGjckQ16hB9BUSJXYb8B3?=
- =?us-ascii?Q?wjW7IAYb77VfRJEaw4/Q+AdLBNS/dEk+S3xpX7c3YkCtlYKW2Db9vIsgXAmO?=
- =?us-ascii?Q?kEDfCJYQ4p4kPmnfKzX7cMP/?=
+X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?ODcqI36tS0FVjupGscPem6SzTLUQlMNFfA7u81BB1hT/E8QxdXBg7eGnp4r3?=
+ =?us-ascii?Q?XnVWucAeKinhkeRUsqByfdw3/drbCXQDFfCAPn+vmeAfXZqyaZGTMc0uHhtL?=
+ =?us-ascii?Q?DUfbpA2CBrFGn1C721o+URM3cyhrhtlwm6R4vQvv//dLnRn8ULJC2Xn+4oCN?=
+ =?us-ascii?Q?yLmZk+AlLUzqZXJUIVVonkzdNrWK+owE6Ry2evuoGiBeuBwO+5Fn1qnDFTWg?=
+ =?us-ascii?Q?S2FlMmr3/7lCuTxYFji/xXMpm0LPmv3w2InlAN1tLiChnv27/AIs/2KYWf8P?=
+ =?us-ascii?Q?XlexSgmbMQHchBKvLPliqJxyg9hNTJU6qqju8VAsovI8/BzrZLyYqcJzjYPH?=
+ =?us-ascii?Q?6cyzV+KoIGY/L+2vfavuSqf5zRgrNMmmQQ5Op9I7qfNwbfdospIEoXMAmmKd?=
+ =?us-ascii?Q?8DCvS163VKu12j4V+wD+tcbgg79EoMxVsLSQb0rrt5q1zJVtKOR4WmnAEg1i?=
+ =?us-ascii?Q?J1qByJBD/Di9+P+6gynEoRBrq86pgiBeO1iS2Y/eocnd+j06W3BI7/3dTdul?=
+ =?us-ascii?Q?1XjfzRGmapdoK606usaa84vNTry3bVGmaYVfdr5TjSU8f0jIexnIvVmwKFhY?=
+ =?us-ascii?Q?b31FC/Kcf3u9l6LwDQy0AqDy6zAmvPKFXRlFvsVArcYuf2A5rZTzCvM0RVxS?=
+ =?us-ascii?Q?b4v4jkZjWEYyjJz5aMse57+2K5CFOVBpwrALEAlZKRSwMrOfwVxXIgHfwTXz?=
+ =?us-ascii?Q?TtBAwDZkJRJkUzbY8diyDVnq1dC3WWMBQvYYkqbBwGp5Kck/L+GpNNKvMszT?=
+ =?us-ascii?Q?urlKu3Ot9d7+/cDxIDQi8omnrWyR9FRGtYqppWe7TRfCHwqzSuLB1shMsMM2?=
+ =?us-ascii?Q?ggNg6ncbikOpn9uYWKjOvr9XU6KPV+Pxo5ne4mm3CdMXGqSzEhqV4cKFkGm7?=
+ =?us-ascii?Q?M142VJrNBsHBJuxTkgQxwqYMCF6ioDbIp+iFeHJbnTCiQIWubdpXTjj1+2n/?=
+ =?us-ascii?Q?zx9G0ieKBmL/p3sh9j42gpEb2ws3mE8DQ/vURHk+vG/8fgFQORUnRO/LowMB?=
+ =?us-ascii?Q?9t88oMZaEaC7BX+ZyHHJpqjeQxbAwczjImaRhTXvqkrKGAwdURSqForv5aqb?=
+ =?us-ascii?Q?3F8Ew+QiXYDzJjtIlKJS+1bS2uGDGFYGhaa6L7XivygkYEqhtZs/zw2j2fV6?=
+ =?us-ascii?Q?e3sXfJ3FKPPq+N5em5WgpA/fLbcH8EHyftcz/gUuHn2oxnj09sCBY8rQ2z4n?=
+ =?us-ascii?Q?mjO0o1ntSFmBD72+7WMzrvsi1aj+4OCu1Jm+BRGI/e9s+vXlwjFo8yX4AYCT?=
+ =?us-ascii?Q?vn1x6WWyg8oMEykVbxc/E2Wqy+J2dOcno8Yl1D4fVcavDd5UqDWE6Ctlknup?=
+ =?us-ascii?Q?YHLOnBTARKGOitGnW3chYcEc?=
 X-OriginatorOrg: Nvidia.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: a271b1c3-bbf8-4e64-cf4a-08d97d26f38e
+X-MS-Exchange-CrossTenant-Network-Message-Id: 437b6f8e-ff70-496f-71bb-08d97d277c63
 X-MS-Exchange-CrossTenant-AuthSource: BL0PR12MB5506.namprd12.prod.outlook.com
 X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 21 Sep 2021 17:40:50.0576 (UTC)
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 21 Sep 2021 17:44:39.6621 (UTC)
 X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
 X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
 X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: XueyFe4nxjdYjIyaDTPkJdMXTDve45vQTGSULLgppeg/XHa0btLGLnOGw2nouHdY
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: BL1PR12MB5144
+X-MS-Exchange-CrossTenant-UserPrincipalName: ZxiHgtY5UDp3RtxsXwn5NZWjKYxrWfp6jTE7fUOcqLg4Hm1sI0SADHF3/p9EuVH5
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: BL1PR12MB5303
 Cc: kvm@vger.kernel.org, jasowang@redhat.com, kwankhede@nvidia.com, hch@lst.de,
  jean-philippe@linaro.org, dave.jiang@intel.com, ashok.raj@intel.com,
  corbet@lwn.net, kevin.tian@intel.com, parav@mellanox.com,
@@ -166,111 +166,74 @@ Content-Transfer-Encoding: 7bit
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-On Sun, Sep 19, 2021 at 02:38:38PM +0800, Liu Yi L wrote:
-> After a device is bound to the iommufd, userspace can use this interface
-> to query the underlying iommu capability and format info for this device.
-> Based on this information the user then creates I/O address space in a
-> compatible format with the to-be-attached devices.
+On Sun, Sep 19, 2021 at 02:38:39PM +0800, Liu Yi L wrote:
+> This patch adds IOASID allocation/free interface per iommufd. When
+> allocating an IOASID, userspace is expected to specify the type and
+> format information for the target I/O page table.
 > 
-> Device cookie which is registered at binding time is used to mark the
-> device which is being queried here.
+> This RFC supports only one type (IOMMU_IOASID_TYPE_KERNEL_TYPE1V2),
+> implying a kernel-managed I/O page table with vfio type1v2 mapping
+> semantics. For this type the user should specify the addr_width of
+> the I/O address space and whether the I/O page table is created in
+> an iommu enfore_snoop format. enforce_snoop must be true at this point,
+> as the false setting requires additional contract with KVM on handling
+> WBINVD emulation, which can be added later.
 > 
+> Userspace is expected to call IOMMU_CHECK_EXTENSION (see next patch)
+> for what formats can be specified when allocating an IOASID.
+> 
+> Open:
+> - Devices on PPC platform currently use a different iommu driver in vfio.
+>   Per previous discussion they can also use vfio type1v2 as long as there
+>   is a way to claim a specific iova range from a system-wide address space.
+>   This requirement doesn't sound PPC specific, as addr_width for pci devices
+>   can be also represented by a range [0, 2^addr_width-1]. This RFC hasn't
+>   adopted this design yet. We hope to have formal alignment in v1 discussion
+>   and then decide how to incorporate it in v2.
+
+I think the request was to include a start/end IO address hint when
+creating the ios. When the kernel creates it then it can return the
+actual geometry including any holes via a query.
+
+> - Currently ioasid term has already been used in the kernel (drivers/iommu/
+>   ioasid.c) to represent the hardware I/O address space ID in the wire. It
+>   covers both PCI PASID (Process Address Space ID) and ARM SSID (Sub-Stream
+>   ID). We need find a way to resolve the naming conflict between the hardware
+>   ID and software handle. One option is to rename the existing ioasid to be
+>   pasid or ssid, given their full names still sound generic. Appreciate more
+>   thoughts on this open!
+
+ioas works well here I think. Use ioas_id to refer to the xarray
+index.
+
 > Signed-off-by: Liu Yi L <yi.l.liu@intel.com>
->  drivers/iommu/iommufd/iommufd.c | 68 +++++++++++++++++++++++++++++++++
->  include/uapi/linux/iommu.h      | 49 ++++++++++++++++++++++++
->  2 files changed, 117 insertions(+)
+>  drivers/iommu/iommufd/iommufd.c | 120 ++++++++++++++++++++++++++++++++
+>  include/linux/iommufd.h         |   3 +
+>  include/uapi/linux/iommu.h      |  54 ++++++++++++++
+>  3 files changed, 177 insertions(+)
 > 
 > diff --git a/drivers/iommu/iommufd/iommufd.c b/drivers/iommu/iommufd/iommufd.c
-> index e16ca21e4534..641f199f2d41 100644
+> index 641f199f2d41..4839f128b24a 100644
 > +++ b/drivers/iommu/iommufd/iommufd.c
-> @@ -117,6 +117,71 @@ static int iommufd_fops_release(struct inode *inode, struct file *filep)
->  	return 0;
->  }
+> @@ -24,6 +24,7 @@
+>  struct iommufd_ctx {
+>  	refcount_t refs;
+>  	struct mutex lock;
+> +	struct xarray ioasid_xa; /* xarray of ioasids */
+>  	struct xarray device_xa; /* xarray of bound devices */
+>  };
 >  
-> +static struct device *
-> +iommu_find_device_from_cookie(struct iommufd_ctx *ictx, u64 dev_cookie)
-> +{
+> @@ -42,6 +43,16 @@ struct iommufd_device {
+>  	u64 dev_cookie;
+>  };
+>  
+> +/* Represent an I/O address space */
+> +struct iommufd_ioas {
+> +	int ioasid;
 
-We have an xarray ID for the device, why are we allowing userspace to
-use the dev_cookie as input?
+xarray id's should consistently be u32s everywhere.
 
-Userspace should always pass in the ID. The only place dev_cookie
-should appear is if the kernel generates an event back to
-userspace. Then the kernel should return both the ID and the
-dev_cookie in the event to allow userspace to correlate it.
-
-> +static void iommu_device_build_info(struct device *dev,
-> +				    struct iommu_device_info *info)
-> +{
-> +	bool snoop;
-> +	u64 awidth, pgsizes;
-> +
-> +	if (!iommu_device_get_info(dev, IOMMU_DEV_INFO_FORCE_SNOOP, &snoop))
-> +		info->flags |= snoop ? IOMMU_DEVICE_INFO_ENFORCE_SNOOP : 0;
-> +
-> +	if (!iommu_device_get_info(dev, IOMMU_DEV_INFO_PAGE_SIZE, &pgsizes)) {
-> +		info->pgsize_bitmap = pgsizes;
-> +		info->flags |= IOMMU_DEVICE_INFO_PGSIZES;
-> +	}
-> +
-> +	if (!iommu_device_get_info(dev, IOMMU_DEV_INFO_ADDR_WIDTH, &awidth)) {
-> +		info->addr_width = awidth;
-> +		info->flags |= IOMMU_DEVICE_INFO_ADDR_WIDTH;
-> +	}
-
-Another good option is to push the iommu_device_info uAPI struct down
-through to the iommu driver to fill it in and forget about the crazy
-enum.
-
-A big part of thinking of this iommu interface is a way to bind the HW
-IOMMU driver to a uAPI and allow the HW driver to expose its unique
-functionalities.
-
-> +static int iommufd_get_device_info(struct iommufd_ctx *ictx,
-> +				   unsigned long arg)
-> +{
-> +	struct iommu_device_info info;
-> +	unsigned long minsz;
-> +	struct device *dev;
-> +
-> +	minsz = offsetofend(struct iommu_device_info, addr_width);
-> +
-> +	if (copy_from_user(&info, (void __user *)arg, minsz))
-> +		return -EFAULT;
-> +
-> +	if (info.argsz < minsz)
-> +		return -EINVAL;
-
-All of these patterns everywhere are wrongly coded for forward/back
-compatibility.
-
-static int iommufd_get_device_info(struct iommufd_ctx *ictx,
-                   struct iommu_device_info __user *arg, size_t usize)
-{
-	struct iommu_device_info info;
-	int ret;
-
-	if (usize < offsetofend(struct iommu_device_info, addr_flags))
-           return -EINVAL;
-
-        ret = copy_struct_from_user(&info, sizeof(info), arg, usize);
-        if (ret)
-	      return ret;
-
-'usize' should be in a 'common' header extracted by the main ioctl handler.
-
-> +struct iommu_device_info {
-> +	__u32	argsz;
-> +	__u32	flags;
-> +#define IOMMU_DEVICE_INFO_ENFORCE_SNOOP	(1 << 0) /* IOMMU enforced snoop */
-> +#define IOMMU_DEVICE_INFO_PGSIZES	(1 << 1) /* supported page sizes */
-> +#define IOMMU_DEVICE_INFO_ADDR_WIDTH	(1 << 2) /* addr_wdith field valid */
-> +	__u64	dev_cookie;
-> +	__u64   pgsize_bitmap;
-> +	__u32	addr_width;
-> +};
-
-Be explicit with padding here too.
+Many of the same prior comments repeated here
 
 Jason
 _______________________________________________
