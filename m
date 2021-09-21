@@ -7,139 +7,139 @@ X-Spam-Status: No, score=-13.5 required=3.0 tests=BAYES_00,DKIM_INVALID,
 	MAILING_LIST_MULTI,MSGID_FROM_MTA_HEADER,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED
 	autolearn=unavailable autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4C90FC433F5
-	for <iommu@archiver.kernel.org>; Tue, 21 Sep 2021 17:29:49 +0000 (UTC)
-Received: from smtp2.osuosl.org (smtp2.osuosl.org [140.211.166.133])
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4D4FBC433EF
+	for <iommu@archiver.kernel.org>; Tue, 21 Sep 2021 17:40:57 +0000 (UTC)
+Received: from smtp3.osuosl.org (smtp3.osuosl.org [140.211.166.136])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id E674C610A1
-	for <iommu@archiver.kernel.org>; Tue, 21 Sep 2021 17:29:48 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.4.1 mail.kernel.org E674C610A1
+	by mail.kernel.org (Postfix) with ESMTPS id E9817611C6
+	for <iommu@archiver.kernel.org>; Tue, 21 Sep 2021 17:40:56 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.4.1 mail.kernel.org E9817611C6
 Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=lists.linux-foundation.org
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by smtp2.osuosl.org (Postfix) with ESMTP id AC484403F9;
-	Tue, 21 Sep 2021 17:29:48 +0000 (UTC)
+	by smtp3.osuosl.org (Postfix) with ESMTP id BA0B5607E3;
+	Tue, 21 Sep 2021 17:40:56 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from smtp2.osuosl.org ([127.0.0.1])
-	by localhost (smtp2.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id wqtxo0W-CD69; Tue, 21 Sep 2021 17:29:47 +0000 (UTC)
-Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by smtp2.osuosl.org (Postfix) with ESMTPS id EC71940109;
-	Tue, 21 Sep 2021 17:29:46 +0000 (UTC)
+Received: from smtp3.osuosl.org ([127.0.0.1])
+	by localhost (smtp3.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+	with ESMTP id ibuHva2kclBp; Tue, 21 Sep 2021 17:40:55 +0000 (UTC)
+Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [IPv6:2605:bc80:3010:104::8cd3:938])
+	by smtp3.osuosl.org (Postfix) with ESMTPS id 6B00A605AB;
+	Tue, 21 Sep 2021 17:40:55 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id CF771C000F;
-	Tue, 21 Sep 2021 17:29:46 +0000 (UTC)
-Received: from smtp4.osuosl.org (smtp4.osuosl.org [140.211.166.137])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 8BD74C000D
- for <iommu@lists.linux-foundation.org>; Tue, 21 Sep 2021 17:29:45 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 44BEEC000F;
+	Tue, 21 Sep 2021 17:40:55 +0000 (UTC)
+Received: from smtp4.osuosl.org (smtp4.osuosl.org [IPv6:2605:bc80:3010::137])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id D4B72C000D
+ for <iommu@lists.linux-foundation.org>; Tue, 21 Sep 2021 17:40:53 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by smtp4.osuosl.org (Postfix) with ESMTP id 7AC8F40327
- for <iommu@lists.linux-foundation.org>; Tue, 21 Sep 2021 17:29:45 +0000 (UTC)
+ by smtp4.osuosl.org (Postfix) with ESMTP id C2A5A40515
+ for <iommu@lists.linux-foundation.org>; Tue, 21 Sep 2021 17:40:53 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
 Authentication-Results: smtp4.osuosl.org (amavisd-new);
  dkim=pass (2048-bit key) header.d=nvidia.com
 Received: from smtp4.osuosl.org ([127.0.0.1])
  by localhost (smtp4.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id fMIsRQncWJOt for <iommu@lists.linux-foundation.org>;
- Tue, 21 Sep 2021 17:29:43 +0000 (UTC)
+ with ESMTP id 122IwVEDfE9f for <iommu@lists.linux-foundation.org>;
+ Tue, 21 Sep 2021 17:40:52 +0000 (UTC)
 X-Greylist: whitelisted by SQLgrey-1.8.0
-Received: from NAM04-BN8-obe.outbound.protection.outlook.com
- (mail-bn8nam08on2043.outbound.protection.outlook.com [40.107.100.43])
- by smtp4.osuosl.org (Postfix) with ESMTPS id 7540F4031C
- for <iommu@lists.linux-foundation.org>; Tue, 21 Sep 2021 17:29:43 +0000 (UTC)
+Received: from NAM11-DM6-obe.outbound.protection.outlook.com
+ (mail-dm6nam11on2049.outbound.protection.outlook.com [40.107.223.49])
+ by smtp4.osuosl.org (Postfix) with ESMTPS id 998FD40505
+ for <iommu@lists.linux-foundation.org>; Tue, 21 Sep 2021 17:40:52 +0000 (UTC)
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=B2mbow1ybSbv42yRvcfPiSY4QR8avnHoNbvFz9PYcL3sLWeTD9u+LZza5agJjxS76A6ABM+JJDwfEz4ODCjsUDJpL7Mf4J235k4M+JJ1lHBfp/fIUtCTscywpGDHKFYCD2D+J+C9Ypn/nKDgmCEyDgoFDv7MNsvBlqJYYe8JgkuH9gyO34Djx9wODuLUvG9+5tQuTX7awABFGeSRc9HR2GskxDsPtm9FUOnlOc54MZtmke0qmG3b/O0+1oLr5m6tbMKBNxJj8/mTwa8byBykQkLjbIS/lqCAE7jI3BU774V1DJoE/T5DOW46//Fx848LHqRoimB0gNm4+VNeqZvsfQ==
+ b=necqnQudCGikMlBWus9JSlaleXGUV4EhnORS1MaggfhgTnFt4mN10OTuYyxA5VDYNwRLswVB1sXgxgSXbBcTHl35VZ+7G6deHbg1+Gw8Uppci5ZvF/mlvR3JMmIaSjTkKzAk8+NHiTFK2UyHvBdmQP+X0jPaNAklVl66ONy9BH99VEoFsDASThs2OgtqPBgLTzsJULbhUeYCllD5QpAoOjo4eAUccgVUi5ogvsdrjYzzk/UuFE7h1+wGanRAsWnOl7G8ETOE18pIzm2KpKlrM+i8rn5u4cPIUQXm9FsFIaPMbSsfKhC0ndK+do3uHQmLg0BDdVked2mJmfnYGs87RQ==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com; 
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version; 
- bh=ebk1Vo8/Fhs4WRsQO/NiOYEkR5RuafN9agT1FmWO8HQ=;
- b=bvN8mtqLRNeWgROS17LjAEiU+O+FYrj5QcSY5wVUfOuXuMAFhWPM62YGjHFDY8VODMj45HTh7UUSvXVxWhfxyjV3lMUZEr+6wYfN0yqhV7r0LIr+YK7aDS58wGnDfMdKzdKNSc8LtA+sOYpSf3vEEfL0If2fSI4ibAoXJLhZ0YQdH9h4At5RO0MFLsPYQaMwa+u1SxuIPNPl2+oCIq0dqMKSLAGNQaPOhc0EPJb5gFlSiwNGfBjkB72AtZdn/LfUjX2YWjXRfJ/RaRAjknJs2WMKA+0hBUNEqtM3NgQIsHpQx/YM6TbyitmroPBs4EQMOsAAc7NpMvJ1U2LKjRFylQ==
+ bh=AjD50/xqq7YV1Y2BzjDuQtCCQCZgtJ9ex67/1l7P6PM=;
+ b=bTZli6NAJB+bveQN9kaTf8Rz2ituEbLNTo/BAkmcYUrETZPhOIzcipw9RXK2UoxgeK8Z0hsSbTDL73qgu2qUZota2bA/KeqUekgpMxtr1OYp+XoTXngm2wLLjrAn3giUSzI/IyLFnrvi2SPw8KqxmrP1PnU2Fl+zKUCmPVMZZFq9NRr0Lahk9fHbtjWCpQknryM1Lo6O9kbwz9wVeDY1xa4YOCPHYSyDqsimHW6pl/SjmTMAhUUvl0OC2pCR1YMdKflv/gOwTGMCtrCsvp3lBKBJc7VKP69z+kTMus1SnfdItKvVNooI5ao7eidvIhGH7FQ+ovlBF/N5SeoaW+4LQg==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
  smtp.mailfrom=nvidia.com; dmarc=pass action=none header.from=nvidia.com;
  dkim=pass header.d=nvidia.com; arc=none
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
  s=selector2;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=ebk1Vo8/Fhs4WRsQO/NiOYEkR5RuafN9agT1FmWO8HQ=;
- b=kNllRd2cHFE79E9h/dAR3Dv4CG+8xUdcYNjTcRn4Fe6iY7Car1oh9aLq/9Ty1ZTn6Y6UTxNxv8GxYMJp4iZGnSfa09SBEig39qC3/Bp7UDxaIGoCDxobmUoRug/R369EZzMvWRKEPbBbknMTEcS/xMbar+d0pqTcymOtZopeOrl4lP/E9XfX6DKHVSxYuSOtaJN58fFL8zECUJ54tKTcf9zdpWRUA7+rToPduc2wHDDGZg4VKY27u0ca0H0MhBr1WQE/c6OuMyIKpx8TAZJdi3u4yYyL541GyK8J2388nPrp7aI4QuCeZPVJHYqVpZjj2iZGUL7I/V7bKePdUXZDuQ==
+ bh=AjD50/xqq7YV1Y2BzjDuQtCCQCZgtJ9ex67/1l7P6PM=;
+ b=uNmJ7puZdFwrhgicEGJbPGcji4Jq5EklQ/zP19iL5cPYj5czBKvvx6yCoVsdgBbOWB89tHtLE9MLxwq0AOIb86z4SidFntTb5ORZbGkFhq2ilCreIKqvNb0kWuCEAPjEvtfAIm2RBI0dPffGrw6xsIQK+MgqUATFpeD2oYbXZtVe9W8g8BNQofboG3VI875UybfNXe32cX993UDIwua63FrOKNDIDSgGe2eILG/r7KSehmn1lKlTxtbWoOIJ6wiJEoeJN/4NIRtkHpmJEJkxwLnb2/WGCF2xW9ppmg+057j843RPlmVGrwepUVJWTl1Cxzj3T0ujdRM5FIhjVAvXRQ==
 Authentication-Results: intel.com; dkim=none (message not signed)
  header.d=none;intel.com; dmarc=none action=none header.from=nvidia.com;
 Received: from BL0PR12MB5506.namprd12.prod.outlook.com (2603:10b6:208:1cb::22)
- by BL1PR12MB5380.namprd12.prod.outlook.com (2603:10b6:208:314::7)
+ by BL1PR12MB5144.namprd12.prod.outlook.com (2603:10b6:208:316::6)
  with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4500.18; Tue, 21 Sep
- 2021 17:29:41 +0000
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4544.13; Tue, 21 Sep
+ 2021 17:40:50 +0000
 Received: from BL0PR12MB5506.namprd12.prod.outlook.com
  ([fe80::e8af:232:915e:2f95]) by BL0PR12MB5506.namprd12.prod.outlook.com
  ([fe80::e8af:232:915e:2f95%8]) with mapi id 15.20.4544.013; Tue, 21 Sep 2021
- 17:29:40 +0000
-Date: Tue, 21 Sep 2021 14:29:39 -0300
+ 17:40:50 +0000
+Date: Tue, 21 Sep 2021 14:40:49 -0300
 To: Liu Yi L <yi.l.liu@intel.com>
-Subject: Re: [RFC 08/20] vfio/pci: Add VFIO_DEVICE_BIND_IOMMUFD
-Message-ID: <20210921172939.GU327412@nvidia.com>
+Subject: Re: [RFC 10/20] iommu/iommufd: Add IOMMU_DEVICE_GET_INFO
+Message-ID: <20210921174049.GV327412@nvidia.com>
 References: <20210919063848.1476776-1-yi.l.liu@intel.com>
- <20210919063848.1476776-9-yi.l.liu@intel.com>
+ <20210919063848.1476776-11-yi.l.liu@intel.com>
 Content-Disposition: inline
-In-Reply-To: <20210919063848.1476776-9-yi.l.liu@intel.com>
-X-ClientProxiedBy: MN2PR02CA0008.namprd02.prod.outlook.com
- (2603:10b6:208:fc::21) To BL0PR12MB5506.namprd12.prod.outlook.com
+In-Reply-To: <20210919063848.1476776-11-yi.l.liu@intel.com>
+X-ClientProxiedBy: BL0PR01CA0002.prod.exchangelabs.com (2603:10b6:208:71::15)
+ To BL0PR12MB5506.namprd12.prod.outlook.com
  (2603:10b6:208:1cb::22)
 MIME-Version: 1.0
 Received: from mlx.ziepe.ca (142.162.113.129) by
- MN2PR02CA0008.namprd02.prod.outlook.com (2603:10b6:208:fc::21) with Microsoft
+ BL0PR01CA0002.prod.exchangelabs.com (2603:10b6:208:71::15) with Microsoft
  SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.20.4523.14 via Frontend Transport; Tue, 21 Sep 2021 17:29:40 +0000
+ 15.20.4544.13 via Frontend Transport; Tue, 21 Sep 2021 17:40:49 +0000
 Received: from jgg by mlx with local (Exim 4.94)	(envelope-from
- <jgg@nvidia.com>)	id 1mSjaN-003Wo1-Fp; Tue, 21 Sep 2021 14:29:39 -0300
+ <jgg@nvidia.com>)	id 1mSjlB-003Wzb-38; Tue, 21 Sep 2021 14:40:49 -0300
 X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: 2c558eab-2d0b-40d6-d345-08d97d2564a4
-X-MS-TrafficTypeDiagnostic: BL1PR12MB5380:
+X-MS-Office365-Filtering-Correlation-Id: a271b1c3-bbf8-4e64-cf4a-08d97d26f38e
+X-MS-TrafficTypeDiagnostic: BL1PR12MB5144:
 X-MS-Exchange-Transport-Forked: True
-X-Microsoft-Antispam-PRVS: <BL1PR12MB5380ECEB0C0478CFB6C8AD0BC2A19@BL1PR12MB5380.namprd12.prod.outlook.com>
-X-MS-Oob-TLC-OOBClassifiers: OLM:8273;
+X-Microsoft-Antispam-PRVS: <BL1PR12MB5144D1FBE8BB35E1CEB8FAF1C2A19@BL1PR12MB5144.namprd12.prod.outlook.com>
+X-MS-Oob-TLC-OOBClassifiers: OLM:10000;
 X-MS-Exchange-SenderADCheck: 1
 X-MS-Exchange-AntiSpam-Relay: 0
 X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: wl5fXXm5Mx17vUh6Kq8AQ2E4LnfINmojQfpoEIrI08NIv5r91O31ejcOd9zk37pcMocraLgKbdulvZP7MsNIVzoldqTBY0komTbQ3giXNsQ2i2SoXItOISh6fuVvI4+1tPzDNX9B7c+6+HOC1kOpfRwVyZZW4G+ZHelnwR6TRznEx22tDweCvBa9xJU/ncYQx5nV9N9cAvJ7wYTqMyRA/gF09kRNP2MhFWsPv6MByM4Iy5hFgzbIOypDNbgGfWm5KxV85EZ1GLjajGlSVeX/gBWCdkf6WDfBQfkQGc6RsimKsiLgLEHniTUddjcPknRp7haWCrXcwX9kYNidizGCtDR+jo7QbV08rWq2M5Km8HgXiU8MyNetOuY+EZX7Ci/jWiP2ivaznNGic130XpbbOB1UeuBx8D0OiArnVSDHcThUySs4e0TcDzyOphuCiMqmkITuoZIp+bq02Ad5wfTadStVUiMiRBnhUTqXfs7Dnk4prU0wDLfx03+1scNm3siR0uHd1YuQaVe1H/Sg8GNlkcPIIQA4C2Jz5Oy3yrrpFToXIelQoqWwQgVLzLp5CY1732yqgHy0rB3TsXKr4rblA6M0+bdEp9NOtw7h31ZRm/aMhw1cyS9aBp/nJu5iKB5lp9SMlGhueY3V/ElMECO6/TB0VDEp86oOMK6BK1sTcxzLXyXkQV8UXCN9jWXs/nwo
+X-Microsoft-Antispam-Message-Info: u6FlW8PA3myNyIhvWBWlu0i3+RwBswooP3Y5JYvnBJDwNzb0EXSGF2Mpjt2msUjj8Tx2l6tRh7DtbdA5MCYOjjJHqYyGHZh/m6m9F4FIzzYZ4BqGzSawgsc77MlQtELegEvcmJF/4QOGrFKuZ9p3xb2eOs4ip9cok8XsqVSPtuvUeur3U85uhYMmK9yDXsnwzqI5JU9ueX08vbz2ZHDOdEActuKfmnaI/Mw7FohuqeQgWTQhAUsCUOJlBQExfprrlAXMbdiIAHKl4wWwuGJM140nZ3NKM+AaUfmq6ty/CMILGcj2vBMtGZDvUPyPhQEt1x4Ze4z0GlniysiIEOZRNcsW/yDyzj1cZSQQD6pQQvX3+P1HRYuyiV6od9IlVG4OE8BinqqxBVkXz3oOVzcBQw4qOHIBsu5Cl1cPYSSrLW+6lFRsbyBv40zK/f6dDG8G6ZcrP3fijxo81pCQHVzVX1aSgIyR8Q77YYfXsXbkI5IROg1etUTp95jfhbsT0o02CuFDJ30U5DCjHWWQzGgmVrd4dM4oy8YZWMV+vmUlrCo5KW+RaHnPrFU3OQZyeF/Cw8jRXiTlDl80ahXKKyW2jR/dMKjWiUHLyg3dE4ewPLRzx+DJkL4eTmN+nzCwoU3fr5V9j4a9L3Cjgh0KYQYSCckJ5wqKVpbYkyrOl/WNiKRRQG1Wv6jENjn/2Y45Y7Oh
 X-Forefront-Antispam-Report: CIP:255.255.255.255; CTRY:; LANG:en; SCL:1; SRV:;
  IPV:NLI; SFV:NSPM; H:BL0PR12MB5506.namprd12.prod.outlook.com; PTR:; CAT:NONE;
- SFS:(4636009)(366004)(38100700002)(66946007)(33656002)(86362001)(7416002)(2906002)(6916009)(508600001)(186003)(5660300002)(36756003)(8676002)(9746002)(1076003)(426003)(83380400001)(2616005)(9786002)(66476007)(66556008)(316002)(107886003)(26005)(4326008)(8936002)(27376004);
+ SFS:(4636009)(366004)(8936002)(66556008)(107886003)(36756003)(186003)(26005)(2906002)(426003)(33656002)(66946007)(86362001)(5660300002)(8676002)(4326008)(9786002)(9746002)(2616005)(66476007)(508600001)(6916009)(7416002)(1076003)(316002)(38100700002)(27376004);
  DIR:OUT; SFP:1101; 
 X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?WE8FlwrT6C4b7yOQ/7DtmIw8CRUgAo+Gmuqq0nmnESpqMoVAHzZudArSX3sp?=
- =?us-ascii?Q?d3i1uwAZFHNFP9vndSdh3BoVkJs0qGPB0rnZEAzpTjuXpRvFwJxYEc2zLit2?=
- =?us-ascii?Q?HQ/8w6PfB2MU+SkFeU7ot4fLUusEcf7ZXK5TO0D2FqdgJeMjQ0YtnLG0JYC6?=
- =?us-ascii?Q?pku8vd3jobwRBJl8dBV1tnKXGSH3PnGkwB4uTvvQfh0gHnzeRsFZcHXp+mgE?=
- =?us-ascii?Q?t+PzgyXr0c6crHgnJG9oveS7TCaHo7C8edEuOUPUY56C2ppTboCQjKab3cRZ?=
- =?us-ascii?Q?dUX6qQPrvh+NxcUWxx5aJpeQQTSQrSAv3fELflYpk1/FM99EyLaZXhfDn6V1?=
- =?us-ascii?Q?dH8MrKT32RegeTzK9jDYAaGPL+HB3dIWKXO7nl3/GvAUOJu8/8htxl+Wozog?=
- =?us-ascii?Q?kxTRZxq7MJEpF5f6zfvUvpHGrTPPDrHxs4L7RbGHQ3P7ltdu72C3GY51hsZG?=
- =?us-ascii?Q?UGKwYY0I3wI/DiSMjktVGrzepM5VkLkvJqkCHtxW+tr3HRSJ7cTh+0douRIA?=
- =?us-ascii?Q?h+ONkFvEJqiI71BJzwhsce5ToUUZvL/egQabn/A5ggazuweRhWnJZR932KMv?=
- =?us-ascii?Q?E4M1punwkccl0Y+/bI7iD2n/EKxQSptao8BZTA0cRpt7JV+qXTN7GBe6WbPv?=
- =?us-ascii?Q?5GxzcMPHMPgWScPw/wxdnsLlpTZNQ3yAGfor5KW+YC5QIowyqnYlW++Q8tgV?=
- =?us-ascii?Q?oaNLr8Ixy+sZmP2V5/0ctR6MuKLSW3AzqzNb976QmmFW28o/ixls0kLc6HYs?=
- =?us-ascii?Q?v+Vbmr7V3gYOoIr6wmKmxD/5HiNnAbQu4LbLsUJoByDY3jUVO4+dTK4dEY1E?=
- =?us-ascii?Q?yAudrhhVQbyFh1fjgCtff2XynMSlLNsRKbomhVWY5mJGMtzWanWJjZuDMPLn?=
- =?us-ascii?Q?BBw/K68dMp0u1Q2Lp2MRQm3jAAusCcZGPu+4Ofhuma6azdOo+5m11/qDLpDq?=
- =?us-ascii?Q?n0zC4ENCfArUGy6p6XCfcMtagQoZ0rQn5yxQ//urXk3s761ZzVtn7HDrUsku?=
- =?us-ascii?Q?qeKot9kOveCGraIAeWy2gJRY7PlmV7g0LdgAn8m+y9QJSrPOYPcdL2YxZ4xY?=
- =?us-ascii?Q?b7teHCr8tXQXVaP3wg+F1BzL9oCOu4tctgdQr0r7v1+lgC0KSZa2Hrxd0GAG?=
- =?us-ascii?Q?xRJy2nQsPF3UptBMa50qR5dbcSdUQiLM1+/yVFfURr9fQWsgxZGTTyIDa3PT?=
- =?us-ascii?Q?IH/HYl/+QleK+WBpwUqMmjpHPTMn/1UB/6bYnjK7WiSpH5dFBg71NgJDqZ5m?=
- =?us-ascii?Q?rGMZ+DEhHjtAxriOPSKnk97HE5nrtv3PU14Aggr6t4wpKy6cVFg8lY3RveuZ?=
- =?us-ascii?Q?fDR+FafsfEXUDGxzhsvRzYNv?=
+X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?heINA7s3zuIgTP4zUmXkD9P8K/srZAJEq9L1BrCgnvNJWx5Nm7buTW2s5KC/?=
+ =?us-ascii?Q?KmXazhCxIpdECddk4YaQs14zxMuKUdvZuuO7F0oxW9wtH+TC5WybddaXnTgS?=
+ =?us-ascii?Q?WXci4AoBzMGoZ20B5fsDEpj1Ku6l/bK+2HWDQGOKHJEienc0lND+tZlChYLu?=
+ =?us-ascii?Q?uxu3dqqbHqK+JWG5TGjS7VZVN8k6WTTIG07qsTJVKj1SaxyiXRHlFSkGVjQM?=
+ =?us-ascii?Q?gn62j/MZ4LTp3IEgsvUkinV538MjJ/WyMuSuAxv5Rm0R7fxbDSJmo1WI2u6x?=
+ =?us-ascii?Q?OoQs5NDze+REkzD+KO/TL2oLpBpOym6GKej4VTR0a8K8AILIchnUieBPo4Bu?=
+ =?us-ascii?Q?OQF4d8urQdqEX99qwxbzQSxolEwPaELXG2LIEKmbJnMr/zVx+YLnFjKsLvV6?=
+ =?us-ascii?Q?JCdsaPQ82el1yrlifGd4W6uoxwjMqeEAHZRKgPb1bRsDSac62x4s5k1KNLt9?=
+ =?us-ascii?Q?LvqR9P75BfA1tfPBmGazm6VvPzGnmIfQLjfAHJU267OPyF6JFzjRuLdEYdOV?=
+ =?us-ascii?Q?h6uE7ZshKh+EgZIpdQegaFCzYwHpotVLh69rdO7KrarY1BAlbtt2o4u/1S+p?=
+ =?us-ascii?Q?Xtjp8nMjE3VID8o7SSQU/ogvz6mCJmuxXw1menI9Qkuj9TpbXPxTRB+iscDw?=
+ =?us-ascii?Q?2VUMYDWW2xBZlyrve+ePXwc7Oq9Ejixy6Zs45Xnv3vXwNQQyYQ2b3guSYMQ2?=
+ =?us-ascii?Q?Abm9NSYS5fkCXtuh3RD4W3FBjl606oVIE7aEh0ETcPAmdhAF9+aVfBzavNPn?=
+ =?us-ascii?Q?LaHp46YPt02XUNv3RPeDEIwosUOkuf2wrzYMICAgkAR69XoQrm6C/tAKqHiL?=
+ =?us-ascii?Q?3TmKJh+emW4eU0Gc7MZYGsdXn38UB9BbUro5AODRf8DLPdKfMQF1MGwn2qXK?=
+ =?us-ascii?Q?0vI74vWLX8J+rIy/P3rWq/l8dB+5is8H79p/b+fTuNWudadBSzS803Gl0hM6?=
+ =?us-ascii?Q?vpQXAFjZNR4WMZMidw6cXlXui1PojpJiktnSZh+esfrimj+6iCoC1wmdAkUs?=
+ =?us-ascii?Q?upGSfznnh3iWc0TnSNzY+Jg/7F5gaejZTn7Bfm5UlY61mfFBW25nITlbfnH1?=
+ =?us-ascii?Q?IQEson+xQP6JzP5zyVoQX3z8MC+4jISVtFCZWcrnF7BarLIbWNcjSddfYV0/?=
+ =?us-ascii?Q?feHcDZppZCIZDb3dlJ8DV/DCCjs28bix8Owi4Ha8B3Sx+mFMTZcrYtiVxtgp?=
+ =?us-ascii?Q?/1sHLEtdgCTmho/TEfFDXgNJ5hf1gUggvB+TA+aYGjckQ16hB9BUSJXYb8B3?=
+ =?us-ascii?Q?wjW7IAYb77VfRJEaw4/Q+AdLBNS/dEk+S3xpX7c3YkCtlYKW2Db9vIsgXAmO?=
+ =?us-ascii?Q?kEDfCJYQ4p4kPmnfKzX7cMP/?=
 X-OriginatorOrg: Nvidia.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 2c558eab-2d0b-40d6-d345-08d97d2564a4
+X-MS-Exchange-CrossTenant-Network-Message-Id: a271b1c3-bbf8-4e64-cf4a-08d97d26f38e
 X-MS-Exchange-CrossTenant-AuthSource: BL0PR12MB5506.namprd12.prod.outlook.com
 X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 21 Sep 2021 17:29:40.8846 (UTC)
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 21 Sep 2021 17:40:50.0576 (UTC)
 X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
 X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
 X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: /5R27aTak5rqO0W4L6XSspnxtiEDgEWpVXoVazeIGYTTKtmmh4lPIsMwn07+Ks3w
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: BL1PR12MB5380
+X-MS-Exchange-CrossTenant-UserPrincipalName: XueyFe4nxjdYjIyaDTPkJdMXTDve45vQTGSULLgppeg/XHa0btLGLnOGw2nouHdY
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: BL1PR12MB5144
 Cc: kvm@vger.kernel.org, jasowang@redhat.com, kwankhede@nvidia.com, hch@lst.de,
  jean-philippe@linaro.org, dave.jiang@intel.com, ashok.raj@intel.com,
  corbet@lwn.net, kevin.tian@intel.com, parav@mellanox.com,
@@ -166,182 +166,111 @@ Content-Transfer-Encoding: 7bit
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-On Sun, Sep 19, 2021 at 02:38:36PM +0800, Liu Yi L wrote:
-> This patch adds VFIO_DEVICE_BIND_IOMMUFD for userspace to bind the vfio
-> device to an iommufd. No VFIO_DEVICE_UNBIND_IOMMUFD interface is provided
-> because it's implicitly done when the device fd is closed.
+On Sun, Sep 19, 2021 at 02:38:38PM +0800, Liu Yi L wrote:
+> After a device is bound to the iommufd, userspace can use this interface
+> to query the underlying iommu capability and format info for this device.
+> Based on this information the user then creates I/O address space in a
+> compatible format with the to-be-attached devices.
 > 
-> In concept a vfio device can be bound to multiple iommufds, each hosting
-> a subset of I/O address spaces attached by this device. However as a
-> starting point (matching current vfio), only one I/O address space is
-> supported per vfio device. It implies one device can only be attached
-> to one iommufd at this point.
+> Device cookie which is registered at binding time is used to mark the
+> device which is being queried here.
 > 
 > Signed-off-by: Liu Yi L <yi.l.liu@intel.com>
->  drivers/vfio/pci/Kconfig            |  1 +
->  drivers/vfio/pci/vfio_pci.c         | 72 ++++++++++++++++++++++++++++-
->  drivers/vfio/pci/vfio_pci_private.h |  8 ++++
->  include/uapi/linux/vfio.h           | 30 ++++++++++++
->  4 files changed, 110 insertions(+), 1 deletion(-)
+>  drivers/iommu/iommufd/iommufd.c | 68 +++++++++++++++++++++++++++++++++
+>  include/uapi/linux/iommu.h      | 49 ++++++++++++++++++++++++
+>  2 files changed, 117 insertions(+)
 > 
-> diff --git a/drivers/vfio/pci/Kconfig b/drivers/vfio/pci/Kconfig
-> index 5e2e1b9a9fd3..3abfb098b4dc 100644
-> +++ b/drivers/vfio/pci/Kconfig
-> @@ -5,6 +5,7 @@ config VFIO_PCI
->  	depends on MMU
->  	select VFIO_VIRQFD
->  	select IRQ_BYPASS_MANAGER
-> +	select IOMMUFD
->  	help
->  	  Support for the PCI VFIO bus driver.  This is required to make
->  	  use of PCI drivers using the VFIO framework.
-> diff --git a/drivers/vfio/pci/vfio_pci.c b/drivers/vfio/pci/vfio_pci.c
-> index 145addde983b..20006bb66430 100644
-> +++ b/drivers/vfio/pci/vfio_pci.c
-> @@ -552,6 +552,16 @@ static void vfio_pci_release(struct vfio_device *core_vdev)
->  			vdev->req_trigger = NULL;
->  		}
->  		mutex_unlock(&vdev->igate);
-> +
-> +		mutex_lock(&vdev->videv_lock);
-> +		if (vdev->videv) {
-> +			struct vfio_iommufd_device *videv = vdev->videv;
-> +
-> +			vdev->videv = NULL;
-> +			iommufd_unbind_device(videv->idev);
-> +			kfree(videv);
-> +		}
-> +		mutex_unlock(&vdev->videv_lock);
->  	}
+> diff --git a/drivers/iommu/iommufd/iommufd.c b/drivers/iommu/iommufd/iommufd.c
+> index e16ca21e4534..641f199f2d41 100644
+> +++ b/drivers/iommu/iommufd/iommufd.c
+> @@ -117,6 +117,71 @@ static int iommufd_fops_release(struct inode *inode, struct file *filep)
+>  	return 0;
+>  }
 >  
->  	mutex_unlock(&vdev->reflck->lock);
-> @@ -780,7 +790,66 @@ static long vfio_pci_ioctl(struct vfio_device *core_vdev,
->  		container_of(core_vdev, struct vfio_pci_device, vdev);
->  	unsigned long minsz;
->  
-> -	if (cmd == VFIO_DEVICE_GET_INFO) {
-> +	if (cmd == VFIO_DEVICE_BIND_IOMMUFD) {
+> +static struct device *
+> +iommu_find_device_from_cookie(struct iommufd_ctx *ictx, u64 dev_cookie)
+> +{
 
-Choosing to implement this through the ioctl multiplexor is what is
-causing so much ugly gyration in the previous patches
+We have an xarray ID for the device, why are we allowing userspace to
+use the dev_cookie as input?
 
-This should be a straightforward new function and ops:
+Userspace should always pass in the ID. The only place dev_cookie
+should appear is if the kernel generates an event back to
+userspace. Then the kernel should return both the ID and the
+dev_cookie in the event to allow userspace to correlate it.
 
-struct iommufd_device *vfio_pci_bind_iommufd(struct vfio_device *)
+> +static void iommu_device_build_info(struct device *dev,
+> +				    struct iommu_device_info *info)
+> +{
+> +	bool snoop;
+> +	u64 awidth, pgsizes;
+> +
+> +	if (!iommu_device_get_info(dev, IOMMU_DEV_INFO_FORCE_SNOOP, &snoop))
+> +		info->flags |= snoop ? IOMMU_DEVICE_INFO_ENFORCE_SNOOP : 0;
+> +
+> +	if (!iommu_device_get_info(dev, IOMMU_DEV_INFO_PAGE_SIZE, &pgsizes)) {
+> +		info->pgsize_bitmap = pgsizes;
+> +		info->flags |= IOMMU_DEVICE_INFO_PGSIZES;
+> +	}
+> +
+> +	if (!iommu_device_get_info(dev, IOMMU_DEV_INFO_ADDR_WIDTH, &awidth)) {
+> +		info->addr_width = awidth;
+> +		info->flags |= IOMMU_DEVICE_INFO_ADDR_WIDTH;
+> +	}
+
+Another good option is to push the iommu_device_info uAPI struct down
+through to the iommu driver to fill it in and forget about the crazy
+enum.
+
+A big part of thinking of this iommu interface is a way to bind the HW
+IOMMU driver to a uAPI and allow the HW driver to expose its unique
+functionalities.
+
+> +static int iommufd_get_device_info(struct iommufd_ctx *ictx,
+> +				   unsigned long arg)
+> +{
+> +	struct iommu_device_info info;
+> +	unsigned long minsz;
+> +	struct device *dev;
+> +
+> +	minsz = offsetofend(struct iommu_device_info, addr_width);
+> +
+> +	if (copy_from_user(&info, (void __user *)arg, minsz))
+> +		return -EFAULT;
+> +
+> +	if (info.argsz < minsz)
+> +		return -EINVAL;
+
+All of these patterns everywhere are wrongly coded for forward/back
+compatibility.
+
+static int iommufd_get_device_info(struct iommufd_ctx *ictx,
+                   struct iommu_device_info __user *arg, size_t usize)
 {
-		iommu_dev = iommufd_bind_device(bind_data.iommu_fd,
-					   &vdev->pdev->dev,
-					   bind_data.dev_cookie);
-                if (!iommu_dev) return ERR
-                vdev->iommu_dev = iommu_dev;
-}
-static const struct vfio_device_ops vfio_pci_ops = {
-   .bind_iommufd = &*vfio_pci_bind_iommufd
+	struct iommu_device_info info;
+	int ret;
 
-If you do the other stuff I said then you'll notice that the
-iommufd_bind_device() will provide automatic exclusivity.
+	if (usize < offsetofend(struct iommu_device_info, addr_flags))
+           return -EINVAL;
 
-The thread that sees ops->bind_device succeed will know it is the only
-thread that can see that (by definition, the iommu enable user stuff
-has to be exclusive and race free) thus it can go ahead and store the
-iommu pointer.
+        ret = copy_struct_from_user(&info, sizeof(info), arg, usize);
+        if (ret)
+	      return ret;
 
-The other half of the problem '&vdev->block_access' is solved by
-manipulating the filp->f_ops. Start with a fops that can ONLY call the
-above op. When the above op succeeds switch the fops to the normal
-full ops. .
+'usize' should be in a 'common' header extracted by the main ioctl handler.
 
-The same flow happens when the group fd spawns the device fd, just
-parts of iommfd_bind_device are open coded into the vfio code, but the
-whole flow and sequence should be the same.
-
-> +		/*
-> +		 * Reject the request if the device is already opened and
-> +		 * attached to a container.
-> +		 */
-> +		if (vfio_device_in_container(core_vdev))
-> +			return -ENOTTY;
-
-This is wrongly locked
-
-> +
-> +		minsz = offsetofend(struct vfio_device_iommu_bind_data, dev_cookie);
-> +
-> +		if (copy_from_user(&bind_data, (void __user *)arg, minsz))
-> +			return -EFAULT;
-> +
-> +		if (bind_data.argsz < minsz ||
-> +		    bind_data.flags || bind_data.iommu_fd < 0)
-> +			return -EINVAL;
-> +
-> +		mutex_lock(&vdev->videv_lock);
-> +		/*
-> +		 * Allow only one iommufd per device until multiple
-> +		 * address spaces (e.g. vSVA) support is introduced
-> +		 * in the future.
-> +		 */
-> +		if (vdev->videv) {
-> +			mutex_unlock(&vdev->videv_lock);
-> +			return -EBUSY;
-> +		}
-> +
-> +		idev = iommufd_bind_device(bind_data.iommu_fd,
-> +					   &vdev->pdev->dev,
-> +					   bind_data.dev_cookie);
-> +		if (IS_ERR(idev)) {
-> +			mutex_unlock(&vdev->videv_lock);
-> +			return PTR_ERR(idev);
-> +		}
-> +
-> +		videv = kzalloc(sizeof(*videv), GFP_KERNEL);
-> +		if (!videv) {
-> +			iommufd_unbind_device(idev);
-> +			mutex_unlock(&vdev->videv_lock);
-> +			return -ENOMEM;
-> +		}
-> +		videv->idev = idev;
-> +		videv->iommu_fd = bind_data.iommu_fd;
-
-No need for more memory, a struct vfio_device can be attached to a
-single iommu context. If idev then the context and all the other
-information is valid.
-
-> +		if (atomic_read(&vdev->block_access))
-> +			atomic_set(&vdev->block_access, 0);
-
-I'm sure I'll tell you this is all wrongly locked too if I look
-closely.
-
-> +/*
-> + * VFIO_DEVICE_BIND_IOMMUFD - _IOR(VFIO_TYPE, VFIO_BASE + 19,
-> + *				struct vfio_device_iommu_bind_data)
-> + *
-> + * Bind a vfio_device to the specified iommufd
-> + *
-> + * The user should provide a device cookie when calling this ioctl. The
-> + * cookie is later used in iommufd for capability query, iotlb invalidation
-> + * and I/O fault handling.
-> + *
-> + * User is not allowed to access the device before the binding operation
-> + * is completed.
-> + *
-> + * Unbind is automatically conducted when device fd is closed.
-> + *
-> + * Input parameters:
-> + *	- iommu_fd;
-> + *	- dev_cookie;
-> + *
-> + * Return: 0 on success, -errno on failure.
-> + */
-> +struct vfio_device_iommu_bind_data {
+> +struct iommu_device_info {
 > +	__u32	argsz;
 > +	__u32	flags;
-> +	__s32	iommu_fd;
+> +#define IOMMU_DEVICE_INFO_ENFORCE_SNOOP	(1 << 0) /* IOMMU enforced snoop */
+> +#define IOMMU_DEVICE_INFO_PGSIZES	(1 << 1) /* supported page sizes */
+> +#define IOMMU_DEVICE_INFO_ADDR_WIDTH	(1 << 2) /* addr_wdith field valid */
 > +	__u64	dev_cookie;
+> +	__u64   pgsize_bitmap;
+> +	__u32	addr_width;
+> +};
 
-Missing explicit padding
-
-Always use __aligned_u64 in uapi headers, fix all the patches.
+Be explicit with padding here too.
 
 Jason
 _______________________________________________
