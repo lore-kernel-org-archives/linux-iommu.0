@@ -2,83 +2,152 @@ Return-Path: <SRS0=55Rd=OL=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-16.5 required=3.0 tests=BAYES_00,DKIM_INVALID,
-	DKIM_SIGNED,HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_CR_TRAILER,INCLUDES_PATCH,
-	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_GIT
-	autolearn=unavailable autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-3.5 required=3.0 tests=BAYES_00,DKIM_INVALID,
+	DKIM_SIGNED,HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,
+	MSGID_FROM_MTA_HEADER,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED autolearn=no
+	autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E3018C433F5
-	for <iommu@archiver.kernel.org>; Tue, 21 Sep 2021 12:19:25 +0000 (UTC)
-Received: from smtp1.osuosl.org (smtp1.osuosl.org [140.211.166.138])
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 84CE9C433F5
+	for <iommu@archiver.kernel.org>; Tue, 21 Sep 2021 13:45:17 +0000 (UTC)
+Received: from smtp2.osuosl.org (smtp2.osuosl.org [140.211.166.133])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 7B36A60F4C
-	for <iommu@archiver.kernel.org>; Tue, 21 Sep 2021 12:19:25 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.4.1 mail.kernel.org 7B36A60F4C
+	by mail.kernel.org (Postfix) with ESMTPS id 21CA261156
+	for <iommu@archiver.kernel.org>; Tue, 21 Sep 2021 13:45:17 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.4.1 mail.kernel.org 21CA261156
 Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=lists.linux-foundation.org
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by smtp1.osuosl.org (Postfix) with ESMTP id 4661D814A1;
-	Tue, 21 Sep 2021 12:19:25 +0000 (UTC)
+	by smtp2.osuosl.org (Postfix) with ESMTP id DB8A2402A0;
+	Tue, 21 Sep 2021 13:45:16 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from smtp1.osuosl.org ([127.0.0.1])
-	by localhost (smtp1.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id lid5UGLTWsEt; Tue, 21 Sep 2021 12:19:24 +0000 (UTC)
-Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by smtp1.osuosl.org (Postfix) with ESMTPS id E001381016;
-	Tue, 21 Sep 2021 12:19:23 +0000 (UTC)
+Received: from smtp2.osuosl.org ([127.0.0.1])
+	by localhost (smtp2.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+	with ESMTP id SuLvaFa2yHRt; Tue, 21 Sep 2021 13:45:15 +0000 (UTC)
+Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [IPv6:2605:bc80:3010:104::8cd3:938])
+	by smtp2.osuosl.org (Postfix) with ESMTPS id 71E20400C1;
+	Tue, 21 Sep 2021 13:45:15 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id BA755C0011;
-	Tue, 21 Sep 2021 12:19:23 +0000 (UTC)
-Received: from smtp3.osuosl.org (smtp3.osuosl.org [IPv6:2605:bc80:3010::136])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 3DA58C000D
- for <iommu@lists.linux-foundation.org>; Tue, 21 Sep 2021 11:44:23 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 49607C000F;
+	Tue, 21 Sep 2021 13:45:15 +0000 (UTC)
+Received: from smtp4.osuosl.org (smtp4.osuosl.org [IPv6:2605:bc80:3010::137])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 08EEEC000D
+ for <iommu@lists.linux-foundation.org>; Tue, 21 Sep 2021 13:45:14 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by smtp3.osuosl.org (Postfix) with ESMTP id 2D55060AF1
- for <iommu@lists.linux-foundation.org>; Tue, 21 Sep 2021 11:44:23 +0000 (UTC)
+ by smtp4.osuosl.org (Postfix) with ESMTP id E2AFA4036D
+ for <iommu@lists.linux-foundation.org>; Tue, 21 Sep 2021 13:45:13 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Authentication-Results: smtp3.osuosl.org (amavisd-new);
- dkim=pass (1024-bit key) header.d=amazon.com
-Received: from smtp3.osuosl.org ([127.0.0.1])
- by localhost (smtp3.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id 1N8cjcMI98Qk for <iommu@lists.linux-foundation.org>;
- Tue, 21 Sep 2021 11:44:22 +0000 (UTC)
+Authentication-Results: smtp4.osuosl.org (amavisd-new);
+ dkim=pass (2048-bit key) header.d=nvidia.com
+Received: from smtp4.osuosl.org ([127.0.0.1])
+ by localhost (smtp4.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+ with ESMTP id u7A2wzkXZtMN for <iommu@lists.linux-foundation.org>;
+ Tue, 21 Sep 2021 13:45:12 +0000 (UTC)
 X-Greylist: whitelisted by SQLgrey-1.8.0
-Received: from smtp-fw-6001.amazon.com (smtp-fw-6001.amazon.com [52.95.48.154])
- by smtp3.osuosl.org (Postfix) with ESMTPS id 2DFB3606A5
- for <iommu@lists.linux-foundation.org>; Tue, 21 Sep 2021 11:44:21 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
- d=amazon.com; i=@amazon.com; q=dns/txt; s=amazon201209;
- t=1632224663; x=1663760663;
- h=from:to:cc:subject:date:message-id:mime-version:
- content-transfer-encoding;
- bh=L6/uiASrjWcY7OR+4ZxkhVbDc2ez+fKTbcMMZwXQK08=;
- b=bWuKXEE928EInvynG0y2w1OJ+m6gYLIFjGkr3bp84WczlsEv4tXG7Sgh
- qqkPF4b4RfC4L302wK/+TSn0lxsM0r0vGw5+OY7SLJPOZxn6TG7Kh2A6e
- mzQI8nMb7CT4nCZnaWt7v3E+W84rxbfaDL4xPolK/+3li+D9oWh3HfsNE o=;
-X-IronPort-AV: E=Sophos;i="5.85,311,1624320000"; d="scan'208";a="143399945"
-Received: from iad12-co-svc-p1-lb1-vlan3.amazon.com (HELO
- email-inbound-relay-pdx-2a-ff3df2fe.us-west-2.amazon.com) ([10.43.8.6])
- by smtp-border-fw-6001.iad6.amazon.com with ESMTP; 21 Sep 2021 11:44:13 +0000
-Received: from EX13D03EUA004.ant.amazon.com
- (pdx1-ws-svc-p6-lb9-vlan3.pdx.amazon.com [10.236.137.198])
- by email-inbound-relay-pdx-2a-ff3df2fe.us-west-2.amazon.com (Postfix) with
- ESMTPS id 99211418E5; Tue, 21 Sep 2021 11:44:11 +0000 (UTC)
-Received: from u898248c994d452.ant.amazon.com (10.43.162.248) by
- EX13D03EUA004.ant.amazon.com (10.43.165.93) with Microsoft SMTP Server (TLS)
- id 15.0.1497.23; Tue, 21 Sep 2021 11:44:06 +0000
-To: <will@kernel.org>, <robin.murphy@arm.com>
-Subject: [PATCH] iommu/arm-smmu-v3: poll cmdq until it has space
-Date: Tue, 21 Sep 2021 13:43:38 +0200
-Message-ID: <20210921114338.1144521-1-sieberf@amazon.com>
-X-Mailer: git-send-email 2.25.1
+Received: from NAM10-DM6-obe.outbound.protection.outlook.com
+ (mail-dm6nam10on2068.outbound.protection.outlook.com [40.107.93.68])
+ by smtp4.osuosl.org (Postfix) with ESMTPS id 9C8B04035F
+ for <iommu@lists.linux-foundation.org>; Tue, 21 Sep 2021 13:45:12 +0000 (UTC)
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=R75jtLS1xM5yJxXr+PE8H+2Ec/+IN5lW+HuuXEaprKAbReg7bpg/77fd+F4/qG4atPHRX5P5dn1RByW2s/o0iU6QklGpmAgO9fE8gJhzyMCnocQz7pd2F0bH4mQfvW4KsKYkgAwpfvfHylwszTumTnzq59icZ4lpiCzUisSmw+E/iBMVDU3g4d/8++AnmyrbInge7m9Oi/jSt1yIUGS6fCX265vPrqwAzDy+na7sT/hrtXlvjCl4DEZZktlI+tXh6DA1mPhY+hIO77G2gagasyS266g+0n6c2YmUIUV76H9t+Q+G2k7JiqC0cK1DJ3ljXExm8EyiFF+BSw2uz4BPEw==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com; 
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version; 
+ bh=Nc+1R6n9uacoJl6dRDPvcVxljHhtW21u21zWiNRIc78=;
+ b=X8fbqMs0Q1T6PlgE6OTrgaWr2Fvo0ZPuyo9RxF0lPwdxVLaVGepwjkLUL7Kev69EZnJfeS5rk6pP+kfe9RzHTfjhU0D14A+RCH+5QSxv6841eYf/nvM69iDYoLps+NicE+ht+eqaap3xnfnrDSA9rLmNxA6oClbmO0pnNxQORDl40SSbIT7Du0dCr8rAcOwC/5AE4bzO5kw0L4YN5uz/gpxyz6eIfiwCP7kaDaqj+yi5mrwz475Qcx6ALNNE2RSVr1EG6iw+VaC/yRlyf8VoLIJ+gIdeO9VY2kYRsuGz/sQ0PEiiozOpZDIXq1nceAITkLOYxz0SgCOd8R8XLFPHSw==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=nvidia.com; dmarc=pass action=none header.from=nvidia.com;
+ dkim=pass header.d=nvidia.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
+ s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=Nc+1R6n9uacoJl6dRDPvcVxljHhtW21u21zWiNRIc78=;
+ b=YznDBPPMOY0/eE58uGOFreNm69+PS4NZNJSc5Po5wYBhUqQzCcoJ+t7VzBD8n50oBKmxRZG3dX/jPh9YZ83LYW4LV5lpsKMmUMcD4H/c07g9U+B6ohmj7WD6kMFfcqzKH9NQqgUnxGgrrAKNN60RzhSKvTXisZptp3n8+ixW33JOcVI0vuu6cmr5tHmbGtTx9ldfO6rkjoMHxgpiXgn5MqJgenxZDe1ISWIDNy+c0pBUne5l1Lotv2E6cRf8uIwHYTwAC4xSvOaRpsAKPRxiz+oPeKsPm6SiJ4+qN1Snaaq9BoeEIPvPjeCR3zlfS+cFtHD6jai8hfST1arqQ9mJaQ==
+Authentication-Results: intel.com; dkim=none (message not signed)
+ header.d=none;intel.com; dmarc=none action=none header.from=nvidia.com;
+Received: from BL0PR12MB5506.namprd12.prod.outlook.com (2603:10b6:208:1cb::22)
+ by BL1PR12MB5221.namprd12.prod.outlook.com (2603:10b6:208:30b::9)
+ with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4523.14; Tue, 21 Sep
+ 2021 13:45:10 +0000
+Received: from BL0PR12MB5506.namprd12.prod.outlook.com
+ ([fe80::e8af:232:915e:2f95]) by BL0PR12MB5506.namprd12.prod.outlook.com
+ ([fe80::e8af:232:915e:2f95%8]) with mapi id 15.20.4544.013; Tue, 21 Sep 2021
+ 13:45:10 +0000
+Date: Tue, 21 Sep 2021 10:45:08 -0300
+To: Liu Yi L <yi.l.liu@intel.com>
+Subject: Re: [RFC 00/20] Introduce /dev/iommu for userspace I/O address space
+ management
+Message-ID: <20210921134508.GL327412@nvidia.com>
+References: <20210919063848.1476776-1-yi.l.liu@intel.com>
+Content-Disposition: inline
+In-Reply-To: <20210919063848.1476776-1-yi.l.liu@intel.com>
+X-ClientProxiedBy: MN2PR10CA0018.namprd10.prod.outlook.com
+ (2603:10b6:208:120::31) To BL0PR12MB5506.namprd12.prod.outlook.com
+ (2603:10b6:208:1cb::22)
 MIME-Version: 1.0
-X-Originating-IP: [10.43.162.248]
-X-ClientProxiedBy: EX13D13UWB003.ant.amazon.com (10.43.161.233) To
- EX13D03EUA004.ant.amazon.com (10.43.165.93)
-X-Mailman-Approved-At: Tue, 21 Sep 2021 12:19:22 +0000
-Cc: Fernand Sieber <sieberf@amazon.com>, iommu@lists.linux-foundation.org,
- linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org
+Received: from mlx.ziepe.ca (142.162.113.129) by
+ MN2PR10CA0018.namprd10.prod.outlook.com (2603:10b6:208:120::31) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4544.13 via Frontend
+ Transport; Tue, 21 Sep 2021 13:45:09 +0000
+Received: from jgg by mlx with local (Exim 4.94)	(envelope-from
+ <jgg@nvidia.com>)	id 1mSg56-003Shl-Vn; Tue, 21 Sep 2021 10:45:09 -0300
+X-MS-PublicTrafficType: Email
+X-MS-Office365-Filtering-Correlation-Id: d615b4d4-890f-4ce0-29f8-08d97d06077a
+X-MS-TrafficTypeDiagnostic: BL1PR12MB5221:
+X-MS-Exchange-Transport-Forked: True
+X-Microsoft-Antispam-PRVS: <BL1PR12MB5221A7E41CA9A5DB2547F497C2A19@BL1PR12MB5221.namprd12.prod.outlook.com>
+X-MS-Oob-TLC-OOBClassifiers: OLM:480;
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: pPD36VXbO9At6kr/wWl+CaHqx3W1u9u0tjqhKiSaE/TXQRTMpczesMA3ZfF+9IzddYwbVNKAQJ6EPfDx6Nsrq5wXg1BneqmbfLFvZtGnN8wdQ2RtbgWVhY6o7cA+q8zWBjzPilQTHGWlkDt3Kp+QmmSjmV/eNv7ilMLo5LsWrms1Ho9YVFBdkGJPbIDYzybIF8kzWw1WfGtqtXrOQiMWDhQDC+8fmtyRFLVI9NHsC66PxZKDqebYaTguSDyfvLwOdYua2Lgr+sxrU4AsZQDNJgDwYwq4MtoOyVqzeg2JOHyjo2RUrgrxjOs0OfABa2O1he7TsYUwZwyADuSC3eH/n88hqFqrSUon9eVAzbbVUBC68saeuwvv8d5AqQ3nOQBJUs5ZhNtmTCNla30avfWEIzNwujq9b6f/GMJdPoyBkZNpMr6ApMVXUfA4QPYYGlarvASXKyU8/kvEQZaGQFBhgyUJ67KFzFAkgTVWlD00QH2WOtI/2BHPpX8E0HoulHFRzcR6quM3b0Ozzi0vEFwL7hppqiGJavcGQw6AhLc8Rfapq0q6yKqS0vdBA6EETw3mKXYuGGOhSpXHWl11w6n8cLkobahRyj+Z0FM3PVZW48LrU3ChmCua+CnQj3Zq5jpuu8b4ZThs/xV9npWiY9Suht4r/lfh38Q9S26HKq4t3S13eujbouPp2n5wQKrW3l4d
+X-Forefront-Antispam-Report: CIP:255.255.255.255; CTRY:; LANG:en; SCL:1; SRV:;
+ IPV:NLI; SFV:NSPM; H:BL0PR12MB5506.namprd12.prod.outlook.com; PTR:; CAT:NONE;
+ SFS:(4636009)(366004)(186003)(86362001)(26005)(426003)(1076003)(8676002)(2616005)(8936002)(2906002)(66946007)(66476007)(107886003)(36756003)(38100700002)(4326008)(83380400001)(33656002)(9746002)(508600001)(316002)(5660300002)(7416002)(9786002)(66556008)(6916009)(27376004);
+ DIR:OUT; SFP:1101; 
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?kNlgUgIKJuwgssXD/cYJ6xuD64uoug/UV0bEXfN6WmVUtb381FpRPvgtqGwZ?=
+ =?us-ascii?Q?eMmCJT2sO9oZrrp5s01Osnudj9AiQU7we5xtbZSDZ0oHXgWVllI4WH6eH+Vq?=
+ =?us-ascii?Q?GV1u4mpPMA6r9LnssxReahgqZgrDy6dPYNl3tOWLckPibWNLz93/818fqc/x?=
+ =?us-ascii?Q?8t9IYkiqMgsDlTLS5w2Jvy2mo651a747pcblLfGERJHrDvA+OHQSE4cfo9TG?=
+ =?us-ascii?Q?lyNGbO9U9SWH98b3t3xeF8nHPzo57owzNSDBtrbN1T5UTi/GjJFw89IEQYFP?=
+ =?us-ascii?Q?FDMYmwB2FuD/rYGhqBa78RF0wfykr8zmbj74cbNo8iW4OWQj9nzms/f1t9ns?=
+ =?us-ascii?Q?qxezLyuXe3e++uG7ReBTsNbPLPObV4a3aKT8TVSMcryzbea48+1xcIH1Sv0F?=
+ =?us-ascii?Q?J3npZXE5m4Q7cKDUnd3rV5hoDcoL6aSOjX6897MLPtxvMkm0iMfOA7DkHxPv?=
+ =?us-ascii?Q?p22rKnSRyKPYT1GwiZqA5hC1XtZDnKX/FW6cP9i3nP2r6L4aOROBQ52l9xbV?=
+ =?us-ascii?Q?XGm/DZrKIdLgcK/K2jhsFiP93zsRBIpFm1sTeKR/uVgOi/dYOEC8/0gEQDmt?=
+ =?us-ascii?Q?BAUZ/WYbJFv4sGgVe8+PL52uHiPKUZ1LBic6qq8OH1POJdFeWZ4L9hgITVno?=
+ =?us-ascii?Q?8SZWt0521WssI59rUUTDdTqxvUO8/FqiQgDc+rzjmexIqI6avPa0g36pemJ1?=
+ =?us-ascii?Q?bHQwR/qyE9O3SEV2Dsa8zPS0w8CoeKLkwzxhCWqO6xjIOS/OAXCaLYJOBxtt?=
+ =?us-ascii?Q?HbhvZAkwvG7UvaBy7drtSOSWUyZSfNZwDIgtbEpUUFTIOqhF7ViUJJFTQ0jW?=
+ =?us-ascii?Q?w0iWVTFaigZYlugRhuEFmozs6N+w8WcizeRLuug3Tg8bgou4ufpRoWQZSTFY?=
+ =?us-ascii?Q?xhwYIA9ux5oTiT36J464YOMI6TqUdW/x5AIFMV8dPM0A27CARVWm6kupPgAZ?=
+ =?us-ascii?Q?H6uNPRB7CthsqWHUU9p0Ld7J5fEC1SEQQjpe3o7JRp5lb4HwBQZ22GekPZ3p?=
+ =?us-ascii?Q?Fg8lJC2DrYNMVQW1HsnMTSML+i86brhC8QgdZ4Zts1Swc6w4BVE+ajHgHi2p?=
+ =?us-ascii?Q?aPw4K+74lzLHzQcCXVN/feRtaobNii2BxJsr3tY4JLUVDtPl28oUUok2Ih0t?=
+ =?us-ascii?Q?DWg/FPr89uWDcOEpGn7Hx3f+UbcNKdFZIe22Mz1kY8Isvs3ecvruGY54riev?=
+ =?us-ascii?Q?eQ2n7CdNfU7OmoPaGQhlxDJ1P3aajhazzryWUkAdyZ7t9hcDtEHg+x6/Kklw?=
+ =?us-ascii?Q?GXlRI8dAzC8itf9n+uGOnBdR+eV7EZxLXsQwtt4mdFU0ta3bY84tgLcJeiNu?=
+ =?us-ascii?Q?i2xdwMoqOg8opHiDctpf9znz?=
+X-OriginatorOrg: Nvidia.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: d615b4d4-890f-4ce0-29f8-08d97d06077a
+X-MS-Exchange-CrossTenant-AuthSource: BL0PR12MB5506.namprd12.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 21 Sep 2021 13:45:10.1126 (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: phWVkSgZ6pg1QXj0j41IVwWqGBcQHApB4o833pkXQnur2ztxA5Vly4PPti0im5oo
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: BL1PR12MB5221
+Cc: kvm@vger.kernel.org, jasowang@redhat.com, kwankhede@nvidia.com, hch@lst.de,
+ jean-philippe@linaro.org, dave.jiang@intel.com, ashok.raj@intel.com,
+ corbet@lwn.net, kevin.tian@intel.com, parav@mellanox.com,
+ alex.williamson@redhat.com, lkml@metux.net, david@gibson.dropbear.id.au,
+ dwmw2@infradead.org, jun.j.tian@intel.com, linux-kernel@vger.kernel.org,
+ lushenming@huawei.com, iommu@lists.linux-foundation.org, pbonzini@redhat.com,
+ robin.murphy@arm.com
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -91,159 +160,60 @@ List-Post: <mailto:iommu@lists.linux-foundation.org>
 List-Help: <mailto:iommu-request@lists.linux-foundation.org?subject=help>
 List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
  <mailto:iommu-request@lists.linux-foundation.org?subject=subscribe>
-From: Fernand Sieber via iommu <iommu@lists.linux-foundation.org>
-Reply-To: Fernand Sieber <sieberf@amazon.com>
+From: Jason Gunthorpe via iommu <iommu@lists.linux-foundation.org>
+Reply-To: Jason Gunthorpe <jgg@nvidia.com>
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-When a thread sends commands to the SMMU, it needs to allocate some
-space to write its commands in a ring buffer.
+On Sun, Sep 19, 2021 at 02:38:28PM +0800, Liu Yi L wrote:
+> Linux now includes multiple device-passthrough frameworks (e.g. VFIO and
+> vDPA) to manage secure device access from the userspace. One critical task
+> of those frameworks is to put the assigned device in a secure, IOMMU-
+> protected context so user-initiated DMAs are prevented from doing harm to
+> the rest of the system.
 
-The allocation algorithms works as follows: until enough free spaced is
-available in the queue, repeat the following outer loop. First, try to
-acquire an exclusive lock to read the consumer index from the SMMU
-register over MMIO. If that fails, it means that another thread holds
-the lock (or multiple threads, in shared mode, for sync commands). The
-current code guarantees that when a thread is holding the lock, the
-consumer index will be updated from the SMMU register. So then when the
-acquisition of the exclusive lock fails, we can safely assume that
-another thread will eventually update the consumer index and enter an
-inner waiting loop until that happens.
+Some bot will probably send this too, but it has compile warnings and
+needs to be rebased to 5.15-rc1
 
-The problem that this patch fixes is that the waiting loop exits as soon
-as any space is available in the queue, so it is possible that it exits
-immediately if there's some space available but not enough to write the
-thread's commands. That means the cmdq allocation queue will fail (outer
-loop) and the thread will spin attempting to acquire the exclusive lock
-to update the consumer index from the SMMU register.
+drivers/iommu/iommufd/iommufd.c:269:6: warning: variable 'ret' is used uninitialized whenever 'if' condition is false [-Wsometimes-uninitialized]
+        if (refcount_read(&ioas->refs) > 1) {
+            ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+drivers/iommu/iommufd/iommufd.c:277:9: note: uninitialized use occurs here
+        return ret;
+               ^~~
+drivers/iommu/iommufd/iommufd.c:269:2: note: remove the 'if' if its condition is always true
+        if (refcount_read(&ioas->refs) > 1) {
+        ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+drivers/iommu/iommufd/iommufd.c:253:17: note: initialize the variable 'ret' to silence this warning
+        int ioasid, ret;
+                       ^
+                        = 0
+drivers/iommu/iommufd/iommufd.c:727:7: warning: variable 'ret' is used uninitialized whenever 'if' condition is true [-Wsometimes-uninitialized]
+                if (idev->dev == dev || idev->dev_cookie == dev_cookie) {
+                    ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+drivers/iommu/iommufd/iommufd.c:767:17: note: uninitialized use occurs here
+        return ERR_PTR(ret);
+                       ^~~
+drivers/iommu/iommufd/iommufd.c:727:3: note: remove the 'if' if its condition is always false
+                if (idev->dev == dev || idev->dev_cookie == dev_cookie) {
+                ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+drivers/iommu/iommufd/iommufd.c:727:7: warning: variable 'ret' is used uninitialized whenever '||' condition is true [-Wsometimes-uninitialized]
+                if (idev->dev == dev || idev->dev_cookie == dev_cookie) {
+                    ^~~~~~~~~~~~~~~~
+drivers/iommu/iommufd/iommufd.c:767:17: note: uninitialized use occurs here
+        return ERR_PTR(ret);
+                       ^~~
+drivers/iommu/iommufd/iommufd.c:727:7: note: remove the '||' if its condition is always false
+                if (idev->dev == dev || idev->dev_cookie == dev_cookie) {
+                    ^~~~~~~~~~~~~~~~~~~
+drivers/iommu/iommufd/iommufd.c:717:9: note: initialize the variable 'ret' to silence this warning
+        int ret;
+               ^
+                = 0
 
-If a lot of threads are failing to allocate commands, this can cause
-heavy contention on the lock, to the point where the system slowdown or
-livelocks. The livelock is possible if some other threads are attempting
-to execute synchronous commands. These threads need to ensure that they
-control updates to the consumer index so that they can correctly observe
-when their command is executed, they enforce that by acquiring the lock
-in shared mode. If there's too much contention, they never succeed to
-acquire the lock via the read+cmpxchg mechanism, and their progress
-stall. But because they already hold allocated space in the command
-queue, their stall prevents progress from other threads attempting to
-allocate space in the cmdq. This causes a livelock.
-
-This patch makes the waiting loop exit as soon as enough space is
-available, rather than as soon as any space is available. This means
-that when two threads are competing for the exclusive lock when
-allocating space in the queue, one of them will fail to acquiire the
-lock in exclusive lock and be knocked to the waiting loop and stay there
-until there's enough free space rather than exiting it immediately when
-any space is available. Threads in the waiting loop do not compete for
-the lock, reducing contention enough to enable synchronous threads to
-make progress, when applicable.
-
-Note that we cannot afford to have all threads parked in the waiting
-loop unless there are synchronous threads executing concurrenty,
-otherwise no thread is observing the SMMU register and updating the
-consumer index. Thus if we succeed to acquire the lock in exclusive
-mode, we cannot enter the waiting loop because we could be the last
-thread observing the SMMU. Similarly, if the producer index is updated,
-we need to exit the waiting loop because it could mean that the latest
-thread to observe the SMMU has succeeded to allocate commands and thus
-has moved on.
-
-Signed-off-by: Fernand Sieber <sieberf@amazon.com>
----
- drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c | 41 +++++++++++++++------
- 1 file changed, 29 insertions(+), 12 deletions(-)
-
-diff --git a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
-index a388e318f86e..9ccda3bd5402 100644
---- a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
-+++ b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
-@@ -118,12 +118,6 @@ static bool queue_has_space(struct arm_smmu_ll_queue *q, u32 n)
- 	return space >= n;
- }
-
--static bool queue_full(struct arm_smmu_ll_queue *q)
--{
--	return Q_IDX(q, q->prod) == Q_IDX(q, q->cons) &&
--	       Q_WRP(q, q->prod) != Q_WRP(q, q->cons);
--}
--
- static bool queue_empty(struct arm_smmu_ll_queue *q)
- {
- 	return Q_IDX(q, q->prod) == Q_IDX(q, q->cons) &&
-@@ -582,14 +576,16 @@ static void arm_smmu_cmdq_poll_valid_map(struct arm_smmu_cmdq *cmdq,
- 	__arm_smmu_cmdq_poll_set_valid_map(cmdq, sprod, eprod, false);
- }
-
--/* Wait for the command queue to become non-full */
--static int arm_smmu_cmdq_poll_until_not_full(struct arm_smmu_device *smmu,
--					     struct arm_smmu_ll_queue *llq)
-+/* Wait for the command queue to have enough space */
-+static int arm_smmu_cmdq_poll_until_has_space(struct arm_smmu_device *smmu,
-+					      struct arm_smmu_ll_queue *llq,
-+					      u32 n)
- {
- 	unsigned long flags;
- 	struct arm_smmu_queue_poll qp;
- 	struct arm_smmu_cmdq *cmdq = arm_smmu_get_cmdq(smmu);
- 	int ret = 0;
-+	int prod;
-
- 	/*
- 	 * Try to update our copy of cons by grabbing exclusive cmdq access. If
-@@ -599,15 +595,36 @@ static int arm_smmu_cmdq_poll_until_not_full(struct arm_smmu_device *smmu,
- 		WRITE_ONCE(cmdq->q.llq.cons, readl_relaxed(cmdq->q.cons_reg));
- 		arm_smmu_cmdq_exclusive_unlock_irqrestore(cmdq, flags);
- 		llq->val = READ_ONCE(cmdq->q.llq.val);
--		return 0;
-+
-+		/*
-+		 * We must return here even if there's no space, because we could be
-+		 * the last thread observing the SMMU progress. Thus, we cannot enter
-+		 * the waiting loop below as it relies on another thread updating
-+		 * llq->val.
-+		 */
-+		if (queue_has_space(llq, n))
-+			return 0;
-+		else
-+			return -EAGAIN;
- 	}
-
- 	queue_poll_init(smmu, &qp);
-+	prod = llq->prod;
- 	do {
- 		llq->val = READ_ONCE(cmdq->q.llq.val);
--		if (!queue_full(llq))
-+		if (!queue_has_space(llq, n))
- 			break;
-
-+		/*
-+		 * We must return here even if there's no space, because the producer
-+		 * having moved forward could mean that the last thread observing the
-+		 * SMMU progress has allocated space in the cmdq and moved on, leaving
-+		 * us in this waiting loop with no other thread updating
-+		 * llq->state->val.
-+		 */
-+		if (llq->prod != prod)
-+			return -EAGAIN;
-+
- 		ret = queue_poll(&qp);
- 	} while (!ret);
-
-@@ -755,7 +772,7 @@ static int arm_smmu_cmdq_issue_cmdlist(struct arm_smmu_device *smmu,
-
- 		while (!queue_has_space(&llq, n + sync)) {
- 			local_irq_restore(flags);
--			if (arm_smmu_cmdq_poll_until_not_full(smmu, &llq))
-+			if (arm_smmu_cmdq_poll_until_has_space(smmu, &llq, n + sync) == -ETIMEDOUT)
- 				dev_err_ratelimited(smmu->dev, "CMDQ timeout\n");
- 			local_irq_save(flags);
- 		}
---
-2.25.1
-
+Jason
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
