@@ -2,156 +2,104 @@ Return-Path: <SRS0=55Rd=OL=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-5.0 required=3.0 tests=BAYES_00,DKIM_INVALID,
-	DKIM_SIGNED,HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,
-	MSGID_FROM_MTA_HEADER,NICE_REPLY_A,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,
-	USER_AGENT_SANE_1 autolearn=no autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-3.5 required=3.0 tests=BAYES_00,DKIM_INVALID,
+	DKIM_SIGNED,HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,SPF_HELO_NONE,
+	SPF_PASS,URIBL_BLOCKED autolearn=no autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 06B1CC433EF
-	for <iommu@archiver.kernel.org>; Tue, 21 Sep 2021 21:44:12 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id EE914C433F5
+	for <iommu@archiver.kernel.org>; Tue, 21 Sep 2021 21:58:35 +0000 (UTC)
 Received: from smtp1.osuosl.org (smtp1.osuosl.org [140.211.166.138])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 9E98960527
-	for <iommu@archiver.kernel.org>; Tue, 21 Sep 2021 21:44:11 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.4.1 mail.kernel.org 9E98960527
-Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=lists.linux-foundation.org
+	by mail.kernel.org (Postfix) with ESMTPS id A741361019
+	for <iommu@archiver.kernel.org>; Tue, 21 Sep 2021 21:58:35 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.4.1 mail.kernel.org A741361019
+Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=shutemov.name
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by smtp1.osuosl.org (Postfix) with ESMTP id 69E7D80E69;
-	Tue, 21 Sep 2021 21:44:11 +0000 (UTC)
+	by smtp1.osuosl.org (Postfix) with ESMTP id 7411183E8E;
+	Tue, 21 Sep 2021 21:58:35 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
 Received: from smtp1.osuosl.org ([127.0.0.1])
 	by localhost (smtp1.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id VPlr3oFSdRQ1; Tue, 21 Sep 2021 21:44:10 +0000 (UTC)
-Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by smtp1.osuosl.org (Postfix) with ESMTPS id 310F680E13;
-	Tue, 21 Sep 2021 21:44:10 +0000 (UTC)
+	with ESMTP id Zanv2_HAFIJc; Tue, 21 Sep 2021 21:58:34 +0000 (UTC)
+Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [IPv6:2605:bc80:3010:104::8cd3:938])
+	by smtp1.osuosl.org (Postfix) with ESMTPS id 5C6F183E90;
+	Tue, 21 Sep 2021 21:58:34 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 08D03C0011;
-	Tue, 21 Sep 2021 21:44:10 +0000 (UTC)
-Received: from smtp2.osuosl.org (smtp2.osuosl.org [IPv6:2605:bc80:3010::133])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 59759C000D
- for <iommu@lists.linux-foundation.org>; Tue, 21 Sep 2021 21:44:08 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 17A91C0011;
+	Tue, 21 Sep 2021 21:58:34 +0000 (UTC)
+Received: from smtp3.osuosl.org (smtp3.osuosl.org [140.211.166.136])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 151C0C000D
+ for <iommu@lists.linux-foundation.org>; Tue, 21 Sep 2021 21:58:33 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by smtp2.osuosl.org (Postfix) with ESMTP id 2B6D4401B8
- for <iommu@lists.linux-foundation.org>; Tue, 21 Sep 2021 21:44:08 +0000 (UTC)
+ by smtp3.osuosl.org (Postfix) with ESMTP id 039F9608B6
+ for <iommu@lists.linux-foundation.org>; Tue, 21 Sep 2021 21:58:33 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Authentication-Results: smtp2.osuosl.org (amavisd-new);
- dkim=pass (1024-bit key) header.d=amd.com
-Received: from smtp2.osuosl.org ([127.0.0.1])
- by localhost (smtp2.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id YLwbeTo0mhoJ for <iommu@lists.linux-foundation.org>;
- Tue, 21 Sep 2021 21:44:07 +0000 (UTC)
+Authentication-Results: smtp3.osuosl.org (amavisd-new);
+ dkim=pass (2048-bit key) header.d=shutemov-name.20210112.gappssmtp.com
+Received: from smtp3.osuosl.org ([127.0.0.1])
+ by localhost (smtp3.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+ with ESMTP id lTWPPy5mvb4D for <iommu@lists.linux-foundation.org>;
+ Tue, 21 Sep 2021 21:58:32 +0000 (UTC)
 X-Greylist: whitelisted by SQLgrey-1.8.0
-Received: from NAM10-DM6-obe.outbound.protection.outlook.com
- (mail-dm6nam10on2066.outbound.protection.outlook.com [40.107.93.66])
- by smtp2.osuosl.org (Postfix) with ESMTPS id 9877F400CF
- for <iommu@lists.linux-foundation.org>; Tue, 21 Sep 2021 21:44:06 +0000 (UTC)
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=U8Ry2A0Xbt9y09XOtdXfSnXeZngjTYoOdr2tOxu+cphZsrZsUFpClUiXQrE+ltvrcqNtM7AEKdRWcvvGEaiINOu578Qa9/MA5eAXk4pqeqzma5Vzw6NyuXfv4TARHoUavtZsCtK9r6BsXrhCTaNCgSgXEgWu7Zdk5vjA2ZMCNHbVRU7QUFs1YA1u2HyK7KgHZ0jqTw1pI57+ooqJ880Xt37WDzRapA+MkE/8R9CNdUGURm7EhkoE4SLx0Bi8Ew8JeE7Rw534mx9R5xEopRxGAvE7lu5h0CwSIUx1fdbcQ0xzynl6uBHH78Un+0JHcDOTD8zpm5si5GY0KNRamM3ErQ==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com; 
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version; 
- bh=fQYhxtWS3XapED/SUZYhPZ7Wrv178Ijbv0gyN/UGxJw=;
- b=VyETEN2gXm0AnB670oU1q3nbVxRjiANAmJL2i7rxuV/pa+6tKMAoNkKiCRmf72zoGF7CpoDsG3BFgKTjrph65wgOJvOckJOAjt1jCLb/QAliiY2ChDV7aHgJY6ty5BNCDWECKrz+oKePo4xiBGDbcq30yUiwbpQdLFAwxPtt16V6MHDpvvWsI39gCpv6NaBkIKPNKnlqHP6J2JpQR4nR5gbHtvXXYCq76S1tqol03/5unO4DVgERCoer/gSv70u+o1s3rg0FEv8k3GLxS1AjRdRiXox/gloPHB/i+VmNGJ2CVdq6p8BPQzQivY7GTpWSxaD4I1J4qwLvkIMV6HRA/A==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=amd.com; dmarc=pass action=none header.from=amd.com; dkim=pass
- header.d=amd.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=amd.com; s=selector1; 
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=fQYhxtWS3XapED/SUZYhPZ7Wrv178Ijbv0gyN/UGxJw=;
- b=AFgSSDEerfzpcgng+OrkI7sto/JvTeMV/EXGkusjDCcsj//P7OOTDtlvEuxlSn7MCBgcG6GoxKgwiwft//30J8yqxeX1vwu8dv9uNcOweazTeC94F+ZWSfjcRT1gRQJOf38KppdiU0r+NZB6+2jGRDUSXfL4h2Pi4b3kfWO8gPI=
-Authentication-Results: kernel.org; dkim=none (message not signed)
- header.d=none;kernel.org; dmarc=none action=none header.from=amd.com;
-Received: from DM4PR12MB5229.namprd12.prod.outlook.com (2603:10b6:5:398::12)
- by DM4PR12MB5343.namprd12.prod.outlook.com (2603:10b6:5:39f::19) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4544.13; Tue, 21 Sep
- 2021 21:44:02 +0000
-Received: from DM4PR12MB5229.namprd12.prod.outlook.com
- ([fe80::d560:d21:cd59:9418]) by DM4PR12MB5229.namprd12.prod.outlook.com
- ([fe80::d560:d21:cd59:9418%8]) with mapi id 15.20.4523.018; Tue, 21 Sep 2021
- 21:44:02 +0000
+Received: from mail-lf1-x134.google.com (mail-lf1-x134.google.com
+ [IPv6:2a00:1450:4864:20::134])
+ by smtp3.osuosl.org (Postfix) with ESMTPS id F1F4A60839
+ for <iommu@lists.linux-foundation.org>; Tue, 21 Sep 2021 21:58:31 +0000 (UTC)
+Received: by mail-lf1-x134.google.com with SMTP id z24so3134984lfu.13
+ for <iommu@lists.linux-foundation.org>; Tue, 21 Sep 2021 14:58:31 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+ d=shutemov-name.20210112.gappssmtp.com; s=20210112;
+ h=date:from:to:cc:subject:message-id:references:mime-version
+ :content-disposition:in-reply-to;
+ bh=3LA4/O2mCyOef4VI1WFdoR8n1dGVVw7qzM7cBS6DVhU=;
+ b=uz74/2S9fGGuaG1ODTSPcqBPXWYPIeYWZ5doyMS2bRw5AX5Q0Ua+uMdim4ZuJxyrxA
+ jJZQO4P96OqxH5cKvegadiVeIhPzNJbdYGDNOj6HudiXM/SjkCNrO1WvHS6o1vufFzsX
+ 2aSN3AaXAf4xQbbvR+FPssTEArjutFFJ66GH7RUNHyFCNozOqySWjjTExvVocPFb39xr
+ 6cGXTnJkbxFWnWohqMtGSjOnjJQnu/xNRG5R8l2FsElk/Lpvl66TfQOcwUYfJ1TTZ5xS
+ XHIL9Tea6doFMlP16r8MNgBnWMAMa0JaH2OsWma5jit+qxznz4qqyPPj9R612HR9czFp
+ 8TyQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+ d=1e100.net; s=20210112;
+ h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+ :mime-version:content-disposition:in-reply-to;
+ bh=3LA4/O2mCyOef4VI1WFdoR8n1dGVVw7qzM7cBS6DVhU=;
+ b=h7A6v9Q6Mi69VP6PrnwaxaQr8y91QVk95/+2A9Vma+Dsq4LGWuts1ViJVwTDiIxh/W
+ xJIQYDGJQEPudRHs0Zq2f8MaLhNNtocFW6drOv7El5aHzdYlQw8/nLFZSagOViDNHLZ8
+ 9UHSEWZuLBgY3C4XdmBRbE6FLLZDWJ8j42n1pipGs4QGrlpPZvgQxYbQTQ6F33aaKMEu
+ SdrMQRScEHf8nghNt1+ec3BcHooeoukfL4vCLGU0GStOFR1UjclF82zUSihObE0nQUKw
+ 7l1l5abHNYr/mTmJjz4gJCZlLMglrS8JBumaIWL/AGMb5FqFVY4ayZ+i1u1T6b7dW3Rn
+ JgSA==
+X-Gm-Message-State: AOAM531nZnlxvxMcg2aOH+ZzshzzYmpIrcjzlsih+rZJqcRs+r6WYQjF
+ Tl/txy8tMpAD+P8k0dsaPmjl4w==
+X-Google-Smtp-Source: ABdhPJwDR/A8UmkVQG/A20LQ6G5BoWJFTrnWNencwdMb7p0WPRY497q9Nuc+l8sjchxpIRdzv87pHg==
+X-Received: by 2002:a2e:86ce:: with SMTP id n14mr11214294ljj.211.1632261509754; 
+ Tue, 21 Sep 2021 14:58:29 -0700 (PDT)
+Received: from box.localdomain ([86.57.175.117])
+ by smtp.gmail.com with ESMTPSA id q7sm16555ljg.137.2021.09.21.14.58.29
+ (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+ Tue, 21 Sep 2021 14:58:29 -0700 (PDT)
+Received: by box.localdomain (Postfix, from userid 1000)
+ id 5DF1710305C; Wed, 22 Sep 2021 00:58:30 +0300 (+03)
+Date: Wed, 22 Sep 2021 00:58:30 +0300
+From: "Kirill A. Shutemov" <kirill@shutemov.name>
+To: Tom Lendacky <thomas.lendacky@amd.com>
 Subject: Re: [PATCH v3 5/8] x86/sme: Replace occurrences of sme_active() with
  cc_platform_has()
-To: "Kirill A. Shutemov" <kirill@shutemov.name>, Borislav Petkov <bp@alien8.de>
+Message-ID: <20210921215830.vqxd75r4eyau6cxy@box.shutemov.name>
 References: <cover.1631141919.git.thomas.lendacky@amd.com>
  <367624d43d35d61d5c97a8b289d9ddae223636e9.1631141919.git.thomas.lendacky@amd.com>
  <20210920192341.maue7db4lcbdn46x@box.shutemov.name>
- <77df37e1-0496-aed5-fd1d-302180f1edeb@amd.com> <YUoao0LlqQ6+uBrq@zn.tnic>
+ <77df37e1-0496-aed5-fd1d-302180f1edeb@amd.com>
+ <YUoao0LlqQ6+uBrq@zn.tnic>
  <20210921212059.wwlytlmxoft4cdth@box.shutemov.name>
  <YUpONYwM4dQXAOJr@zn.tnic>
  <20210921213401.i2pzaotgjvn4efgg@box.shutemov.name>
-Message-ID: <00f52bf8-cbc6-3721-f40e-2f51744751b0@amd.com>
-Date: Tue, 21 Sep 2021 16:43:59 -0500
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
- Thunderbird/78.13.0
-In-Reply-To: <20210921213401.i2pzaotgjvn4efgg@box.shutemov.name>
-Content-Language: en-US
-X-ClientProxiedBy: SA0PR11CA0182.namprd11.prod.outlook.com
- (2603:10b6:806:1bc::7) To DM4PR12MB5229.namprd12.prod.outlook.com
- (2603:10b6:5:398::12)
+ <00f52bf8-cbc6-3721-f40e-2f51744751b0@amd.com>
 MIME-Version: 1.0
-Received: from [10.236.30.241] (165.204.77.1) by
- SA0PR11CA0182.namprd11.prod.outlook.com (2603:10b6:806:1bc::7) with Microsoft
- SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.20.4544.13 via Frontend Transport; Tue, 21 Sep 2021 21:44:00 +0000
-X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: dd576e0c-98cc-4962-8996-08d97d48ed2c
-X-MS-TrafficTypeDiagnostic: DM4PR12MB5343:
-X-MS-Exchange-Transport-Forked: True
-X-Microsoft-Antispam-PRVS: <DM4PR12MB53435AA7AFE37A6877E3579DECA19@DM4PR12MB5343.namprd12.prod.outlook.com>
-X-MS-Oob-TLC-OOBClassifiers: OLM:6108;
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: 5wecxMBEfdY+h/31tPLgPz2VrPi2w3W6J5Khwm5Z4Aoz0lErVES/4fi1Z9SKXSgqMnHurkjp1aOicZLqyufKctKPeiLxCKgFT3nc86QteH4HphParWq96HdmAr65+q9xXxtnelNXGJ4iI4w52RaK+QRc7NUHRSYrKS6aSu5MQ6XruqyKYYufENkDmpb8xXWlyewXXNwxa5qY3h7Lrf4a0vhX6I82imbx3jiv1fdx5B/IzJR854rrgy8QruLLxf0XtaFFq7mteZHWm6sQbf2s0/6CpSeqNntOwsGUYx0c3dUaY8NrGaRM2hrKwAfL7Xhv/q4XJQ95GbGL2W4xZkKuMCeY60/OndGx9u9afCi8CQEWY3770yZiDnoJUzNzGH4TxU2ShJDPL2h3CMZtq05/BjPSw/0mV+UFWddKb1wLkZYlSN5pT/sncXBvmCxwQbr3FcDHFqDqt8VkdNgWhaPtKzS99t6fyq4VVml64Aolz0jP0D4WPskhVZ3tuIIsivu593k0ms106jIF3K9JWMv6kaMiwcIVD5tQOud18r5qHwKdjfie+IR411DstjdvXElkUrNWH15lj6jFZtsyrG+EiGUTWKgb5QkyR4EHwMLdIST1wnXH5cY7VeakDYgO5Wb7qPYZBdMDSttSs346ud5zSHadT5BaSLqJnOSOXkhH6m5q0XQTMNoOdX8bnKEH88RR/1QEAfxxOT+bFNJv/v1LnN201OKtdas3kGUiauWrsjA=
-X-Forefront-Antispam-Report: CIP:255.255.255.255; CTRY:; LANG:en; SCL:1; SRV:;
- IPV:NLI; SFV:NSPM; H:DM4PR12MB5229.namprd12.prod.outlook.com; PTR:; CAT:NONE;
- SFS:(4636009)(366004)(6486002)(53546011)(4326008)(7416002)(186003)(26005)(2906002)(2616005)(508600001)(956004)(31696002)(4744005)(110136005)(86362001)(5660300002)(66946007)(83380400001)(36756003)(54906003)(66476007)(8936002)(16576012)(66556008)(8676002)(316002)(31686004)(38100700002)(43740500002)(45980500001);
- DIR:OUT; SFP:1101; 
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?utf-8?B?MWdxUWEzWjIwU1FORjZIdm9zOU9ud1A5NUVmZjN3RjBUQ2MxSlRYR0IzMWN1?=
- =?utf-8?B?U2Q5NVJDZWRtU2IxTkk0Ym4xTHk1elo5Y205bnFhZ2M5WnVrZE01SFB4eTZF?=
- =?utf-8?B?di8vaGp6Qlc2OVlGS1dGS3k3RmV3SzFZaExERTdpZkFjR0M2NHR4VFdLVlhp?=
- =?utf-8?B?Tmw1RGZzTDRRLzM5ZWFHWlphMjhjK1F5SmZQVDR4dVprc01zZXlscFI1VTdo?=
- =?utf-8?B?NXVwaGtvdDNCUTdNSThaME9Kb2xiNGpXM2dPMG1OSjVxRTR2T1JPSVIxQ2lV?=
- =?utf-8?B?cG9hSUNvWGh6YmEyMHQrUXR1dUxiN3ZON0tJUWlXZlNHUnp2QkJFRE9janZM?=
- =?utf-8?B?dE5VWXRheUJYQkloL0ZiUHU1WVFYb3ZhcGMrNWFqa0JwT3l2N1ZKbDQwd3hs?=
- =?utf-8?B?MGN3Zk9XV1FBYlhUL1lPcmdKTXdkNVFxVjFPMEV1UllCc2t5cldBT1hMUFNk?=
- =?utf-8?B?alkxclNpTDc2eVNFMlNaUUtUTllxVzRnb2Y0S0V4SmxUZ0NmSStKU25vanJ3?=
- =?utf-8?B?amIxRzNNY0I2SVRDc0N3c3NpNEZDWlR5VVBPbGx0V3hVaHZjbGpFM2NVWXVI?=
- =?utf-8?B?ckwwUU5Wa2dZZ05zWVhYQ21IUnQ4S1RUZFVuYW1NVlZSb2VyVmhnUUYvSnMz?=
- =?utf-8?B?YTFXWDFYeE0rS2JjbVBGOGpEbnFlclRRK1h2cmVrbEROaUt6NDJ0dllEOGlW?=
- =?utf-8?B?KzRYTmw0YWd6bVB3YUJCRWw4dWRmNnpZdCtoOVhISUNZbjBKNlVCMTduRHJj?=
- =?utf-8?B?MnpNUW53MUlLVDhEbG9yMC9US2dCazlWS2lwV25zankwdk90N3RCbEgrOHFS?=
- =?utf-8?B?R2JjQzJBd1BhY3VTZ0ZYSS83TnRsNElLS2VWOUhoZlNlNXlhNHVsSGZ3UDJj?=
- =?utf-8?B?RWQyc1pLSUtIUlE0WFhDMDF6SDJtR3U2M3lqTW10Yi9keUtsT2xadk5CQ1Z2?=
- =?utf-8?B?eDh1OFpnbG11a1pvcG02Zk13TnFWMEFQR0k0MStKOXc2dUZqemEzMDZyQzAy?=
- =?utf-8?B?bk9MdVZqQWhQZ2U0MUNpcVlhaU0yQUZKVDgxWkZsSzMyQzZwWDErVGF0TS9B?=
- =?utf-8?B?Nml1UmYyQndyajVTdEhYaHBZYmFWR3I4clJSYjVGdGwrckFKdVVGaGlJQ1Ro?=
- =?utf-8?B?cjBGUTBQZTVTV1hkTWJqZTAwd1J2b2lHSzJqNzZZOXIxZ0s4R0VyaTNvSmx1?=
- =?utf-8?B?bE5TWk5PU0pZdGpSdlZjZ2g2KzR3My9rMTIzK1FYT2lTTG5vd0xLN1lWd0pa?=
- =?utf-8?B?bzEvNnUySnZnVHJJVDd6YWZNdnhmRnpvcnc0MFdHOE9Ec2ZsR2oyc0RKdTBI?=
- =?utf-8?B?TmRsWDEvZzUxeDVPN1RLWnFsaWo1RXRCL3Y2RmJST1Jzd1paQkJkWkszWFlP?=
- =?utf-8?B?Y09oWUZKWWZTZ0Nyc2pBWUMzN2xCdVE1bTUzOWZ0dzZpOXE5NFE5dHlRMlJT?=
- =?utf-8?B?TTNWengyZ1lmRHpqd2NNMW5BbmYrTFgvek5QOHB4VEdYSk9xMHA0aVRxT2l0?=
- =?utf-8?B?UGZrYmVZWG4rSjAwSjgyR1BsNXRzNitCcWVVU0ZReko3UDFSY2x0NVJOVXFT?=
- =?utf-8?B?dW1KT0xKdFhHamlJSW0rODkyek8yUU5HNGdWK20vT0FBUllGYzdqMU5tV3p4?=
- =?utf-8?B?RzZEZGUxV0FoZVNhWDNUVWVqNHhHTUt5UGxiNkhFSVNtbXpSbEdRZVNHQzBz?=
- =?utf-8?B?U2RUSkxzL0dxN2RyUHRqNGdIVUpRT1FiV3hJRG9BbjkxU2FvUVc0cDdvMDJE?=
- =?utf-8?Q?/rfrtJoFD7NJgdMb35vizhwWOy438GUP72fExYr?=
-X-OriginatorOrg: amd.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: dd576e0c-98cc-4962-8996-08d97d48ed2c
-X-MS-Exchange-CrossTenant-AuthSource: DM4PR12MB5229.namprd12.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 21 Sep 2021 21:44:02.1554 (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 3dd8961f-e488-4e60-8e11-a82d994e183d
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: 357RE1QcrcNdtKal/87mRyt50fI3GPiLv7Zp/xV+Fv2D41sPneNctgot1NAL4OUiFyg6lrFCG+BcrHCiAutFug==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: DM4PR12MB5343
+Content-Disposition: inline
+In-Reply-To: <00f52bf8-cbc6-3721-f40e-2f51744751b0@amd.com>
 Cc: linux-efi@vger.kernel.org, Brijesh Singh <brijesh.singh@amd.com>,
  kvm@vger.kernel.org, Peter Zijlstra <peterz@infradead.org>,
  Dave Hansen <dave.hansen@linux.intel.com>, dri-devel@lists.freedesktop.org,
@@ -159,10 +107,11 @@ Cc: linux-efi@vger.kernel.org, Brijesh Singh <brijesh.singh@amd.com>,
  linux-s390@vger.kernel.org, Andi Kleen <ak@linux.intel.com>, x86@kernel.org,
  amd-gfx@lists.freedesktop.org, Christoph Hellwig <hch@infradead.org>,
  Ingo Molnar <mingo@redhat.com>, linux-graphics-maintainer@vmware.com,
- Tianyu Lan <Tianyu.Lan@microsoft.com>, Andy Lutomirski <luto@kernel.org>,
- Thomas Gleixner <tglx@linutronix.de>, kexec@lists.infradead.org,
- linux-kernel@vger.kernel.org, iommu@lists.linux-foundation.org,
- linux-fsdevel@vger.kernel.org, linuxppc-dev@lists.ozlabs.org
+ Tianyu Lan <Tianyu.Lan@microsoft.com>, Borislav Petkov <bp@alien8.de>,
+ Andy Lutomirski <luto@kernel.org>, Thomas Gleixner <tglx@linutronix.de>,
+ kexec@lists.infradead.org, linux-kernel@vger.kernel.org,
+ iommu@lists.linux-foundation.org, linux-fsdevel@vger.kernel.org,
+ linuxppc-dev@lists.ozlabs.org
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -175,34 +124,37 @@ List-Post: <mailto:iommu@lists.linux-foundation.org>
 List-Help: <mailto:iommu-request@lists.linux-foundation.org?subject=help>
 List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
  <mailto:iommu-request@lists.linux-foundation.org?subject=subscribe>
-From: Tom Lendacky via iommu <iommu@lists.linux-foundation.org>
-Reply-To: Tom Lendacky <thomas.lendacky@amd.com>
+Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
-Content-Type: text/plain; charset="us-ascii"; Format="flowed"
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-On 9/21/21 4:34 PM, Kirill A. Shutemov wrote:
-> On Tue, Sep 21, 2021 at 11:27:17PM +0200, Borislav Petkov wrote:
->> On Wed, Sep 22, 2021 at 12:20:59AM +0300, Kirill A. Shutemov wrote:
->>> I still believe calling cc_platform_has() from __startup_64() is totally
->>> broken as it lacks proper wrapping while accessing global variables.
->>
->> Well, one of the issues on the AMD side was using boot_cpu_data too
->> early and the Intel side uses it too. Can you replace those checks with
->> is_tdx_guest() or whatever was the helper's name which would check
->> whether the the kernel is running as a TDX guest, and see if that helps?
+On Tue, Sep 21, 2021 at 04:43:59PM -0500, Tom Lendacky wrote:
+> On 9/21/21 4:34 PM, Kirill A. Shutemov wrote:
+> > On Tue, Sep 21, 2021 at 11:27:17PM +0200, Borislav Petkov wrote:
+> > > On Wed, Sep 22, 2021 at 12:20:59AM +0300, Kirill A. Shutemov wrote:
+> > > > I still believe calling cc_platform_has() from __startup_64() is totally
+> > > > broken as it lacks proper wrapping while accessing global variables.
+> > > 
+> > > Well, one of the issues on the AMD side was using boot_cpu_data too
+> > > early and the Intel side uses it too. Can you replace those checks with
+> > > is_tdx_guest() or whatever was the helper's name which would check
+> > > whether the the kernel is running as a TDX guest, and see if that helps?
+> > 
+> > There's no need in Intel check this early. Only AMD need it. Maybe just
+> > opencode them?
 > 
-> There's no need in Intel check this early. Only AMD need it. Maybe just
-> opencode them?
+> Any way you can put a gzipped/bzipped copy of your vmlinux file somewhere I
+> can grab it from and take a look at it?
 
-Any way you can put a gzipped/bzipped copy of your vmlinux file somewhere 
-I can grab it from and take a look at it?
+You can find broken vmlinux and bzImage here:
 
-Thanks,
-Tom
+https://drive.google.com/drive/folders/1n74vUQHOGebnF70Im32qLFY8iS3wvjIs?usp=sharing
 
-> 
+Let me know when I can remove it.
+
+-- 
+ Kirill A. Shutemov
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
