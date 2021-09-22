@@ -2,118 +2,100 @@ Return-Path: <SRS0=Rn8G=OM=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-3.6 required=3.0 tests=BAYES_00,DKIM_INVALID,
-	DKIM_SIGNED,HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,SPF_HELO_NONE,
-	SPF_PASS autolearn=no autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-8.6 required=3.0 tests=BAYES_00,DKIM_INVALID,
+	DKIM_SIGNED,HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,
+	SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A8C93C433FE
-	for <iommu@archiver.kernel.org>; Wed, 22 Sep 2021 14:31:48 +0000 (UTC)
-Received: from smtp4.osuosl.org (smtp4.osuosl.org [140.211.166.137])
+	by smtp.lore.kernel.org (Postfix) with ESMTP id AACC4C433F5
+	for <iommu@archiver.kernel.org>; Wed, 22 Sep 2021 14:50:08 +0000 (UTC)
+Received: from smtp1.osuosl.org (smtp1.osuosl.org [140.211.166.138])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 50A2660FE6
-	for <iommu@archiver.kernel.org>; Wed, 22 Sep 2021 14:31:48 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.4.1 mail.kernel.org 50A2660FE6
-Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=shutemov.name
+	by mail.kernel.org (Postfix) with ESMTPS id 5BA11611CA
+	for <iommu@archiver.kernel.org>; Wed, 22 Sep 2021 14:50:08 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.4.1 mail.kernel.org 5BA11611CA
+Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=linaro.org
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by smtp4.osuosl.org (Postfix) with ESMTP id 1E24340794;
-	Wed, 22 Sep 2021 14:31:48 +0000 (UTC)
+	by smtp1.osuosl.org (Postfix) with ESMTP id 20A5C818EC;
+	Wed, 22 Sep 2021 14:50:08 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from smtp4.osuosl.org ([127.0.0.1])
-	by localhost (smtp4.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id naNmGZTpFf6l; Wed, 22 Sep 2021 14:31:47 +0000 (UTC)
-Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by smtp4.osuosl.org (Postfix) with ESMTPS id 0A09F4067E;
-	Wed, 22 Sep 2021 14:31:47 +0000 (UTC)
-Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id CDA82C0011;
-	Wed, 22 Sep 2021 14:31:46 +0000 (UTC)
-Received: from smtp1.osuosl.org (smtp1.osuosl.org [140.211.166.138])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 175DFC000D
- for <iommu@lists.linux-foundation.org>; Wed, 22 Sep 2021 14:31:46 +0000 (UTC)
-Received: from localhost (localhost [127.0.0.1])
- by smtp1.osuosl.org (Postfix) with ESMTP id ED0F884089
- for <iommu@lists.linux-foundation.org>; Wed, 22 Sep 2021 14:31:45 +0000 (UTC)
-X-Virus-Scanned: amavisd-new at osuosl.org
-Authentication-Results: smtp1.osuosl.org (amavisd-new);
- dkim=pass (2048-bit key) header.d=shutemov-name.20210112.gappssmtp.com
 Received: from smtp1.osuosl.org ([127.0.0.1])
- by localhost (smtp1.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id sczJfxOzjHGE for <iommu@lists.linux-foundation.org>;
- Wed, 22 Sep 2021 14:31:45 +0000 (UTC)
+	by localhost (smtp1.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+	with ESMTP id DASqF3E4TNfn; Wed, 22 Sep 2021 14:50:07 +0000 (UTC)
+Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
+	by smtp1.osuosl.org (Postfix) with ESMTPS id 0FE0181770;
+	Wed, 22 Sep 2021 14:50:07 +0000 (UTC)
+Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
+	by lists.linuxfoundation.org (Postfix) with ESMTP id D66C9C0011;
+	Wed, 22 Sep 2021 14:50:06 +0000 (UTC)
+Received: from smtp4.osuosl.org (smtp4.osuosl.org [140.211.166.137])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 2C675C000D
+ for <iommu@lists.linux-foundation.org>; Wed, 22 Sep 2021 14:50:05 +0000 (UTC)
+Received: from localhost (localhost [127.0.0.1])
+ by smtp4.osuosl.org (Postfix) with ESMTP id 0B8E840715
+ for <iommu@lists.linux-foundation.org>; Wed, 22 Sep 2021 14:50:05 +0000 (UTC)
+X-Virus-Scanned: amavisd-new at osuosl.org
+Authentication-Results: smtp4.osuosl.org (amavisd-new);
+ dkim=pass (2048-bit key) header.d=linaro.org
+Received: from smtp4.osuosl.org ([127.0.0.1])
+ by localhost (smtp4.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+ with ESMTP id WGJ4L8RJQMrv for <iommu@lists.linux-foundation.org>;
+ Wed, 22 Sep 2021 14:50:04 +0000 (UTC)
 X-Greylist: whitelisted by SQLgrey-1.8.0
-Received: from mail-lf1-x132.google.com (mail-lf1-x132.google.com
- [IPv6:2a00:1450:4864:20::132])
- by smtp1.osuosl.org (Postfix) with ESMTPS id D618B84085
- for <iommu@lists.linux-foundation.org>; Wed, 22 Sep 2021 14:31:44 +0000 (UTC)
-Received: by mail-lf1-x132.google.com with SMTP id b20so12925384lfv.3
- for <iommu@lists.linux-foundation.org>; Wed, 22 Sep 2021 07:31:44 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
- d=shutemov-name.20210112.gappssmtp.com; s=20210112;
+Received: from mail-ed1-x52d.google.com (mail-ed1-x52d.google.com
+ [IPv6:2a00:1450:4864:20::52d])
+ by smtp4.osuosl.org (Postfix) with ESMTPS id D7D6E406CA
+ for <iommu@lists.linux-foundation.org>; Wed, 22 Sep 2021 14:50:03 +0000 (UTC)
+Received: by mail-ed1-x52d.google.com with SMTP id eg28so11090218edb.1
+ for <iommu@lists.linux-foundation.org>; Wed, 22 Sep 2021 07:50:03 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linaro.org; s=google;
  h=date:from:to:cc:subject:message-id:references:mime-version
  :content-disposition:in-reply-to;
- bh=ayCGrHt4GWDBHksaWpDlFPsTDgmCQyv1ZQQyBUlWV+I=;
- b=vKVQE5RUe8kMs0wun4XuDGO3eTujOGs2RwESdLhyIqK2JwxlqZrlSJy3MrsXJkRafX
- gBAYy/nccugQKoUll1gn8VoFbzjQhjrLzptB1R76SapyouDJT5ZGJIWbG+FX4hwJyS6V
- RHRd5aepSbIC42CmHtd5u+dR4xuEL++muo/z0NTk8BMGL92wAA2PmP9KOi2aYe71/Bfr
- QklC4Nhk0K/0QbQiJZijepS1OZ+jtAxihfchh+jQ4jf5+4U17tQ1xXPBbmD5a5nhc0Gd
- SVGSB9p7xAW0QvKqL518rFLXTD4w7KZA2wBif/Kp2RKz31Lh+5HyNQaqaSmkfOyisrNC
- k+Nw==
+ bh=TDrEpOj5z77SP2jdIw8cDIbvUad+t7NAXsCzDrXUEuo=;
+ b=Ew0C8IKjSewOIfs1ywupioINHT/n6wPGtq2fNW0XmEFgFckhAnNx18kVuxyeob5MSb
+ cG6vPdVQgy2y/2wCxrRgFAVzYfZgiGTRAFY3tcx6CIPvOZav9+pzr2A0g2V9jt2k0cSq
+ 9HHpBz6+Sfe0bQsurN4lUeiDAbqyklaJsw449YG114/qp9WKYRH5zxvga2tXVvb3mBga
+ Cp+1KKZGvZQEC1wAnFvKoWVHGqnD2mGmydz+QUuPFHn2wQYUaZSi2A1opiUYI1VjnPGd
+ EZHj0i05y8g9gyXadz3X1/RTTTyBrx7N4tTAhBK9sP7DGVVpXSKcFO8kZKq7qkBWjYyo
+ S4Nw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
  d=1e100.net; s=20210112;
  h=x-gm-message-state:date:from:to:cc:subject:message-id:references
  :mime-version:content-disposition:in-reply-to;
- bh=ayCGrHt4GWDBHksaWpDlFPsTDgmCQyv1ZQQyBUlWV+I=;
- b=dZDT1XgPYIAruNzjTiCfQF65hjz/FId6dn/qu/QMKG18B6156UEgWp4qwSZaepD+td
- 04iPjmSTTutQsj/DHddCTV9qtLtRt3jV9vGwdfmIS9xd6FktvIaIoNpbCCcTocTAXyv6
- St9UpXQTZxklY+LRUL9Yo1hVI+RvWfJDxqR/uc2eu3qel4MVqIEMkx3WqOI8SIcnyQbI
- D81lt1JC9xwRYhD04xhyxvYWukFRc1BzsJV9bOxk5nmbVqE/bkvbyH3SoLZxLkz/3Q+d
- dXZEZifdHHCyQ2TuhPhZZY5XM/PYe7HWcHPs7VcuLPKVFymlG9EQ4mcT100FKt6D4o52
- Iekg==
-X-Gm-Message-State: AOAM532zy3fbJgTiWCQRonFIMjHJUx6m8XMyQ8rsYLUtOgOFZQ/nDggs
- uwsP6hSCrZISXCi1gVgXIfmjIA==
-X-Google-Smtp-Source: ABdhPJz3SPlP/oK9QpFHL+xKtQ0nQUgNyOd556PIkN1KxMSQUqIwOiDbPwtupEbWOJByEgde/ChetQ==
-X-Received: by 2002:a05:651c:512:: with SMTP id
- o18mr35155713ljp.199.1632321016184; 
- Wed, 22 Sep 2021 07:30:16 -0700 (PDT)
-Received: from box.localdomain ([86.57.175.117])
- by smtp.gmail.com with ESMTPSA id y9sm205960lfl.240.2021.09.22.07.30.15
+ bh=TDrEpOj5z77SP2jdIw8cDIbvUad+t7NAXsCzDrXUEuo=;
+ b=TJ8R1/xQgAKzEjkle8YFbBEfb2Rsf5z//qy5IhaACb0On529hJ0UeH8ieUAb6B2ArJ
+ +haE6LnK0pOsDKVRtpbl//42jDT2WrI2dz3P8/jXSpjNY9/p025CWhCvJq1js8iA6DbG
+ s0ESUwwmDx6XiwOEwsMtwfQnkxYCyr2tERnNkFdo+YP+TxDGtUukvMsKtPuY4jkd2ECx
+ wIOkXhnHYGF3ZNX86xq6HAT0hX9camV+7zE+Z2QiPCwNIxujr1oB9RjkNSizTtPa5yqT
+ bKMY4yGsQFME5hPpqgl+yjoCslnLgwF62TM6kXX5qvULbd6Fnqi37tMqe8R0fn8pCxYt
+ PScg==
+X-Gm-Message-State: AOAM531++IaRpR2H1gq2X6EMJjYS8A9X+6ZRLWM0FPGCh6q7kZ9wqRvh
+ WxStiSoSx6dwUD4BtGgq2tM6YwcY74NOgw==
+X-Google-Smtp-Source: ABdhPJxMpjDOCwgilrcdezM3QInKUMDiNn1/siG8KtEO0JxOOJ9kWoOrqZ1UQupWEHroXThfagdnpQ==
+X-Received: by 2002:a5d:66c6:: with SMTP id k6mr11823034wrw.382.1632322167122; 
+ Wed, 22 Sep 2021 07:49:27 -0700 (PDT)
+Received: from myrica (cpc92880-cmbg19-2-0-cust679.5-4.cable.virginm.net.
+ [82.27.106.168])
+ by smtp.gmail.com with ESMTPSA id z17sm2151265wml.24.2021.09.22.07.49.25
  (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
- Wed, 22 Sep 2021 07:30:15 -0700 (PDT)
-Received: by box.localdomain (Postfix, from userid 1000)
- id E147C10304D; Wed, 22 Sep 2021 17:30:15 +0300 (+03)
-Date: Wed, 22 Sep 2021 17:30:15 +0300
-From: "Kirill A. Shutemov" <kirill@shutemov.name>
-To: Tom Lendacky <thomas.lendacky@amd.com>
-Subject: Re: [PATCH v3 5/8] x86/sme: Replace occurrences of sme_active() with
- cc_platform_has()
-Message-ID: <20210922143015.vvxvh6ec73lffvkf@box.shutemov.name>
-References: <367624d43d35d61d5c97a8b289d9ddae223636e9.1631141919.git.thomas.lendacky@amd.com>
- <20210920192341.maue7db4lcbdn46x@box.shutemov.name>
- <77df37e1-0496-aed5-fd1d-302180f1edeb@amd.com>
- <YUoao0LlqQ6+uBrq@zn.tnic>
- <20210921212059.wwlytlmxoft4cdth@box.shutemov.name>
- <YUpONYwM4dQXAOJr@zn.tnic>
- <20210921213401.i2pzaotgjvn4efgg@box.shutemov.name>
- <00f52bf8-cbc6-3721-f40e-2f51744751b0@amd.com>
- <20210921215830.vqxd75r4eyau6cxy@box.shutemov.name>
- <01891f59-7ec3-cf62-a8fc-79f79ca76587@amd.com>
+ Wed, 22 Sep 2021 07:49:26 -0700 (PDT)
+Date: Wed, 22 Sep 2021 15:49:05 +0100
+From: Jean-Philippe Brucker <jean-philippe@linaro.org>
+To: Liu Yi L <yi.l.liu@intel.com>
+Subject: Re: [RFC 17/20] iommu/iommufd: Report iova range to userspace
+Message-ID: <YUtCYZI3oQcwKrUh@myrica>
+References: <20210919063848.1476776-1-yi.l.liu@intel.com>
+ <20210919063848.1476776-18-yi.l.liu@intel.com>
 MIME-Version: 1.0
 Content-Disposition: inline
-In-Reply-To: <01891f59-7ec3-cf62-a8fc-79f79ca76587@amd.com>
-Cc: linux-efi@vger.kernel.org, Brijesh Singh <brijesh.singh@amd.com>,
- kvm@vger.kernel.org, Peter Zijlstra <peterz@infradead.org>,
- Dave Hansen <dave.hansen@linux.intel.com>, dri-devel@lists.freedesktop.org,
- platform-driver-x86@vger.kernel.org, Will Deacon <will@kernel.org>,
- linux-s390@vger.kernel.org, Andi Kleen <ak@linux.intel.com>, x86@kernel.org,
- amd-gfx@lists.freedesktop.org, Christoph Hellwig <hch@infradead.org>,
- Ingo Molnar <mingo@redhat.com>, linux-graphics-maintainer@vmware.com,
- Tianyu Lan <Tianyu.Lan@microsoft.com>, Borislav Petkov <bp@alien8.de>,
- Andy Lutomirski <luto@kernel.org>, Thomas Gleixner <tglx@linutronix.de>,
- kexec@lists.infradead.org, linux-kernel@vger.kernel.org,
- iommu@lists.linux-foundation.org, linux-fsdevel@vger.kernel.org,
- linuxppc-dev@lists.ozlabs.org
+In-Reply-To: <20210919063848.1476776-18-yi.l.liu@intel.com>
+Cc: kvm@vger.kernel.org, jasowang@redhat.com, kwankhede@nvidia.com, hch@lst.de,
+ dave.jiang@intel.com, ashok.raj@intel.com, corbet@lwn.net, jgg@nvidia.com,
+ kevin.tian@intel.com, parav@mellanox.com, alex.williamson@redhat.com,
+ lkml@metux.net, david@gibson.dropbear.id.au, dwmw2@infradead.org,
+ jun.j.tian@intel.com, linux-kernel@vger.kernel.org, lushenming@huawei.com,
+ iommu@lists.linux-foundation.org, pbonzini@redhat.com, robin.murphy@arm.com
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -131,49 +113,55 @@ Content-Transfer-Encoding: 7bit
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-On Wed, Sep 22, 2021 at 08:40:43AM -0500, Tom Lendacky wrote:
-> On 9/21/21 4:58 PM, Kirill A. Shutemov wrote:
-> > On Tue, Sep 21, 2021 at 04:43:59PM -0500, Tom Lendacky wrote:
-> > > On 9/21/21 4:34 PM, Kirill A. Shutemov wrote:
-> > > > On Tue, Sep 21, 2021 at 11:27:17PM +0200, Borislav Petkov wrote:
-> > > > > On Wed, Sep 22, 2021 at 12:20:59AM +0300, Kirill A. Shutemov wrote:
-> > > > > > I still believe calling cc_platform_has() from __startup_64() is totally
-> > > > > > broken as it lacks proper wrapping while accessing global variables.
-> > > > > 
-> > > > > Well, one of the issues on the AMD side was using boot_cpu_data too
-> > > > > early and the Intel side uses it too. Can you replace those checks with
-> > > > > is_tdx_guest() or whatever was the helper's name which would check
-> > > > > whether the the kernel is running as a TDX guest, and see if that helps?
-> > > > 
-> > > > There's no need in Intel check this early. Only AMD need it. Maybe just
-> > > > opencode them?
-> > > 
-> > > Any way you can put a gzipped/bzipped copy of your vmlinux file somewhere I
-> > > can grab it from and take a look at it?
-> > 
-> > You can find broken vmlinux and bzImage here:
-> > 
-> > https://nam11.safelinks.protection.outlook.com/?url=https%3A%2F%2Fdrive.google.com%2Fdrive%2Ffolders%2F1n74vUQHOGebnF70Im32qLFY8iS3wvjIs%3Fusp%3Dsharing&amp;data=04%7C01%7Cthomas.lendacky%40amd.com%7C1c7adf380cbe4c1a6bb708d97d4af6ff%7C3dd8961fe4884e608e11a82d994e183d%7C0%7C0%7C637678583935705530%7CUnknown%7CTWFpbGZsb3d8eyJWIjoiMC4wLjAwMDAiLCJQIjoiV2luMzIiLCJBTiI6Ik1haWwiLCJXVCI6Mn0%3D%7C3000&amp;sdata=gA30x%2Bfu97tUx0p2UqI8HgjiL8bxDbK1GqgJBbUrUE4%3D&amp;reserved=0
-> > 
-> > Let me know when I can remove it.
+On Sun, Sep 19, 2021 at 02:38:45PM +0800, Liu Yi L wrote:
+> [HACK. will fix in v2]
 > 
-> Looking at everything, it is all RIP relative addressing, so those
-> accesses should be fine.
+> IOVA range is critical info for userspace to manage DMA for an I/O address
+> space. This patch reports the valid iova range info of a given device.
+> 
+> Due to aforementioned hack, this info comes from the hacked vfio type1
+> driver. To follow the same format in vfio, we also introduce a cap chain
+> format in IOMMU_DEVICE_GET_INFO to carry the iova range info.
+[...]
+> diff --git a/include/uapi/linux/iommu.h b/include/uapi/linux/iommu.h
+> index 49731be71213..f408ad3c8ade 100644
+> --- a/include/uapi/linux/iommu.h
+> +++ b/include/uapi/linux/iommu.h
+> @@ -68,6 +68,7 @@
+>   *		   +---------------+------------+
+>   *		   ...
+>   * @addr_width:    the address width of supported I/O address spaces.
+> + * @cap_offset:	   Offset within info struct of first cap
+>   *
+>   * Availability: after device is bound to iommufd
+>   */
+> @@ -77,9 +78,11 @@ struct iommu_device_info {
+>  #define IOMMU_DEVICE_INFO_ENFORCE_SNOOP	(1 << 0) /* IOMMU enforced snoop */
+>  #define IOMMU_DEVICE_INFO_PGSIZES	(1 << 1) /* supported page sizes */
+>  #define IOMMU_DEVICE_INFO_ADDR_WIDTH	(1 << 2) /* addr_wdith field valid */
+> +#define IOMMU_DEVICE_INFO_CAPS		(1 << 3) /* info supports cap chain */
+>  	__u64	dev_cookie;
+>  	__u64   pgsize_bitmap;
+>  	__u32	addr_width;
+> +	__u32   cap_offset;
 
-Not fine, but waiting to blowup with random build environment change.
+We can also add vendor-specific page table and PASID table properties as
+capabilities, otherwise we'll need giant unions in the iommu_device_info
+struct. That made me wonder whether pgsize and addr_width should also be
+separate capabilities for consistency, but this way might be good enough.
+There won't be many more generic capabilities. I have "output address
+width" and "PASID width", the rest is specific to Arm and SMMU table
+formats.
 
-> Your image has the intel_cc_platform_has()
-> function, does it work if you remove that call? Because I think it may be
-> the early call into that function which looks like it has instrumentation
-> that uses %gs in __sanitizer_cov_trace_pc and %gs is not setup properly
-> yet. And since boot_cpu_data.x86_vendor will likely be zero this early it
-> will match X86_VENDOR_INTEL and call into that function.
+Thanks,
+Jean
 
-Right removing call to intel_cc_platform_has() or moving it to
-cc_platform.c fixes the issue.
-
--- 
- Kirill A. Shutemov
+>  };
+>  
+>  #define IOMMU_DEVICE_GET_INFO	_IO(IOMMU_TYPE, IOMMU_BASE + 1)
+> -- 
+> 2.25.1
+> 
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
