@@ -2,170 +2,118 @@ Return-Path: <SRS0=Rn8G=OM=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-5.1 required=3.0 tests=BAYES_00,DKIM_INVALID,
-	DKIM_SIGNED,HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,
-	MSGID_FROM_MTA_HEADER,NICE_REPLY_A,SPF_HELO_NONE,SPF_PASS,USER_AGENT_SANE_1
-	autolearn=no autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-15.1 required=3.0 tests=BAYES_00,DKIM_INVALID,
+	DKIM_SIGNED,HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_CR_TRAILER,INCLUDES_PATCH,
+	MAILING_LIST_MULTI,NICE_REPLY_A,SPF_HELO_NONE,SPF_PASS,USER_AGENT_SANE_1
+	autolearn=ham autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7CAA3C433FE
-	for <iommu@archiver.kernel.org>; Wed, 22 Sep 2021 13:40:55 +0000 (UTC)
-Received: from smtp4.osuosl.org (smtp4.osuosl.org [140.211.166.137])
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B5DD6C433FE
+	for <iommu@archiver.kernel.org>; Wed, 22 Sep 2021 13:43:06 +0000 (UTC)
+Received: from smtp3.osuosl.org (smtp3.osuosl.org [140.211.166.136])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 05E9F611B0
-	for <iommu@archiver.kernel.org>; Wed, 22 Sep 2021 13:40:54 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.4.1 mail.kernel.org 05E9F611B0
-Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=lists.linux-foundation.org
+	by mail.kernel.org (Postfix) with ESMTPS id 6BC94610D1
+	for <iommu@archiver.kernel.org>; Wed, 22 Sep 2021 13:43:06 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.4.1 mail.kernel.org 6BC94610D1
+Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=redhat.com
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by smtp4.osuosl.org (Postfix) with ESMTP id C611D407F9;
-	Wed, 22 Sep 2021 13:40:54 +0000 (UTC)
+	by smtp3.osuosl.org (Postfix) with ESMTP id 2AFAC613DD;
+	Wed, 22 Sep 2021 13:43:06 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from smtp4.osuosl.org ([127.0.0.1])
-	by localhost (smtp4.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id cZXuLPEBO8iQ; Wed, 22 Sep 2021 13:40:53 +0000 (UTC)
-Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by smtp4.osuosl.org (Postfix) with ESMTPS id 8890D407A5;
-	Wed, 22 Sep 2021 13:40:53 +0000 (UTC)
-Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 5C7F6C000F;
-	Wed, 22 Sep 2021 13:40:53 +0000 (UTC)
-Received: from smtp3.osuosl.org (smtp3.osuosl.org [IPv6:2605:bc80:3010::136])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 36C71C000D
- for <iommu@lists.linux-foundation.org>; Wed, 22 Sep 2021 13:40:52 +0000 (UTC)
-Received: from localhost (localhost [127.0.0.1])
- by smtp3.osuosl.org (Postfix) with ESMTP id 1A9D160B9F
- for <iommu@lists.linux-foundation.org>; Wed, 22 Sep 2021 13:40:52 +0000 (UTC)
-X-Virus-Scanned: amavisd-new at osuosl.org
-Authentication-Results: smtp3.osuosl.org (amavisd-new);
- dkim=pass (1024-bit key) header.d=amd.com
 Received: from smtp3.osuosl.org ([127.0.0.1])
- by localhost (smtp3.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id uxgFrZnM7ujA for <iommu@lists.linux-foundation.org>;
- Wed, 22 Sep 2021 13:40:50 +0000 (UTC)
-X-Greylist: whitelisted by SQLgrey-1.8.0
-Received: from NAM11-CO1-obe.outbound.protection.outlook.com
- (mail-co1nam11on2066.outbound.protection.outlook.com [40.107.220.66])
- by smtp3.osuosl.org (Postfix) with ESMTPS id B3AF060B99
- for <iommu@lists.linux-foundation.org>; Wed, 22 Sep 2021 13:40:50 +0000 (UTC)
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=bHWAW7mH0kmMH0avURL3Da/dfCOO5C5cd9Iq7KnbOnJos0w32zX+FLmotnLZmIkTpH/8B6HQvK0SWKC5OYU7lh0wcTdfO5yKJhEaLq4cPqXzxEoWNtp4xKP+B3H/JrV0xPG83zKHUa/KyxM8DyFCd8MBF7Rs5kfD3UYm8+V/s8Hp952n75DRzhcchquzCIAw9EibF2IUo/0aRx033OS96wnqtfYF5e2o7tlfhiVhwt77nWf6NIY7yI/dtl6H7x8XjKeK26KCG0xVmwuCOMdLnDb73OYss0GJURK79x3YJ2ypsQkLtZ+FdifHjq7LKq53T2iKmqeAb2+cA8doGi0SBA==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com; 
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version; 
- bh=kczV+bsyzKfw/AOd0vHcQFHzYG83YqjWyI28eFPOe5E=;
- b=I7loZhdFgXlWWJLa3yekVn8xh4SkCKNfk2C2OfUmvMfP+pHfY+Jt/bEPTNPp/+GRqC7ikB4d9onimR40W8irXFT++Dg+4FWcYyWyCdAqJGMok1jnQiKiHO9FfhjLzA6ogrt2EOLvuEYntnyRzWf1mW2C4ykX7+HJUKX4atUxmqgdKcAj3Q3hUruJ/TCRIE/900eXAZLf1bIrLv7j9edMpWDcpyhqDfN8gVcNaeayu7JocziY0QPVZYWxnBbmja6zjRxdIqKb1g9UtH8UKApTuFyGEl2MGb+s8Rwktfwz7Ap0OyZIHlIY2W8nZI6H2g6jLhlh1YNotxOw0YsiuMXNng==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=amd.com; dmarc=pass action=none header.from=amd.com; dkim=pass
- header.d=amd.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=amd.com; s=selector1; 
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=kczV+bsyzKfw/AOd0vHcQFHzYG83YqjWyI28eFPOe5E=;
- b=n5cnWUGzkbockvyaqButB1AhbebdKRCXEy4EQa5KBh2ooIOxARw1N4sutRIWWoRUYPOwSN2ilIYrztpoFNi7EdhA7FBrg2J3lyj9T/WH5aGb1XSqllQ/Z3JK4EEd9hIbIbQ0vs2t86fyq0vHyzzC0O9QKUjoN//7IteX8UaBanI=
-Authentication-Results: kernel.org; dkim=none (message not signed)
- header.d=none;kernel.org; dmarc=none action=none header.from=amd.com;
-Received: from DM4PR12MB5229.namprd12.prod.outlook.com (2603:10b6:5:398::12)
- by DM4PR12MB5376.namprd12.prod.outlook.com (2603:10b6:5:39a::9) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4544.14; Wed, 22 Sep
- 2021 13:40:46 +0000
-Received: from DM4PR12MB5229.namprd12.prod.outlook.com
- ([fe80::d560:d21:cd59:9418]) by DM4PR12MB5229.namprd12.prod.outlook.com
- ([fe80::d560:d21:cd59:9418%8]) with mapi id 15.20.4523.018; Wed, 22 Sep 2021
- 13:40:46 +0000
-Subject: Re: [PATCH v3 5/8] x86/sme: Replace occurrences of sme_active() with
- cc_platform_has()
-To: "Kirill A. Shutemov" <kirill@shutemov.name>
-References: <cover.1631141919.git.thomas.lendacky@amd.com>
- <367624d43d35d61d5c97a8b289d9ddae223636e9.1631141919.git.thomas.lendacky@amd.com>
- <20210920192341.maue7db4lcbdn46x@box.shutemov.name>
- <77df37e1-0496-aed5-fd1d-302180f1edeb@amd.com> <YUoao0LlqQ6+uBrq@zn.tnic>
- <20210921212059.wwlytlmxoft4cdth@box.shutemov.name>
- <YUpONYwM4dQXAOJr@zn.tnic>
- <20210921213401.i2pzaotgjvn4efgg@box.shutemov.name>
- <00f52bf8-cbc6-3721-f40e-2f51744751b0@amd.com>
- <20210921215830.vqxd75r4eyau6cxy@box.shutemov.name>
-Message-ID: <01891f59-7ec3-cf62-a8fc-79f79ca76587@amd.com>
-Date: Wed, 22 Sep 2021 08:40:43 -0500
+	by localhost (smtp3.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+	with ESMTP id I52N_QQc0jEB; Wed, 22 Sep 2021 13:43:05 +0000 (UTC)
+Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [IPv6:2605:bc80:3010:104::8cd3:938])
+	by smtp3.osuosl.org (Postfix) with ESMTPS id E69B760BBF;
+	Wed, 22 Sep 2021 13:43:04 +0000 (UTC)
+Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
+	by lists.linuxfoundation.org (Postfix) with ESMTP id BB1C8C000F;
+	Wed, 22 Sep 2021 13:43:04 +0000 (UTC)
+Received: from smtp2.osuosl.org (smtp2.osuosl.org [140.211.166.133])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 5951CC000D
+ for <iommu@lists.linux-foundation.org>; Wed, 22 Sep 2021 13:43:03 +0000 (UTC)
+Received: from localhost (localhost [127.0.0.1])
+ by smtp2.osuosl.org (Postfix) with ESMTP id 2F09D404FE
+ for <iommu@lists.linux-foundation.org>; Wed, 22 Sep 2021 13:43:03 +0000 (UTC)
+X-Virus-Scanned: amavisd-new at osuosl.org
+Authentication-Results: smtp2.osuosl.org (amavisd-new);
+ dkim=pass (1024-bit key) header.d=redhat.com
+Received: from smtp2.osuosl.org ([127.0.0.1])
+ by localhost (smtp2.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+ with ESMTP id J4tIQbDlSKUc for <iommu@lists.linux-foundation.org>;
+ Wed, 22 Sep 2021 13:43:02 +0000 (UTC)
+X-Greylist: domain auto-whitelisted by SQLgrey-1.8.0
+Received: from us-smtp-delivery-124.mimecast.com
+ (us-smtp-delivery-124.mimecast.com [170.10.133.124])
+ by smtp2.osuosl.org (Postfix) with ESMTPS id 4EF5640480
+ for <iommu@lists.linux-foundation.org>; Wed, 22 Sep 2021 13:43:02 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+ s=mimecast20190719; t=1632318181;
+ h=from:from:reply-to:reply-to:subject:subject:date:date:
+ message-id:message-id:to:to:cc:cc:mime-version:mime-version:
+ content-type:content-type:
+ content-transfer-encoding:content-transfer-encoding:
+ in-reply-to:in-reply-to:references:references;
+ bh=+JWo7IWTXSlpZNK2XfHGpxPNo71k2+QBHUACSQR7vWo=;
+ b=GHFJwUI086HVY05vs8d1cqZhdlwS/KTz1bWGtM6DD6Dn6wGR0//T+nGXZwJGO7cA2Ca4UD
+ QscSiI+PN4VQWnvlAOFSYHAoahOZkGuuaJg8Al3+z975KoDz2gXZBeA3lw1vsiuBYIFxMH
+ zJH6qOBkHL1m+xziZ6wEsGaousMPWCw=
+Received: from mail-wr1-f71.google.com (mail-wr1-f71.google.com
+ [209.85.221.71]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-494-8JKOf0_yPiyTS4aHAxNbLg-1; Wed, 22 Sep 2021 09:42:59 -0400
+X-MC-Unique: 8JKOf0_yPiyTS4aHAxNbLg-1
+Received: by mail-wr1-f71.google.com with SMTP id
+ s13-20020a5d69cd000000b00159d49442cbso2198218wrw.13
+ for <iommu@lists.linux-foundation.org>; Wed, 22 Sep 2021 06:42:59 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+ d=1e100.net; s=20210112;
+ h=x-gm-message-state:reply-to:subject:to:cc:references:from
+ :message-id:date:user-agent:mime-version:in-reply-to
+ :content-transfer-encoding:content-language;
+ bh=+JWo7IWTXSlpZNK2XfHGpxPNo71k2+QBHUACSQR7vWo=;
+ b=44tS7MfAXTPGGUF3qVvnB40iC0cjlOWN3z/zhtoSpTdj2YuF16CPu/rlknhFvPMbqb
+ lRYFUNBDkL9P8qa22YlfG881wQ+JC1qhHtwgS7QYTfKeiFovFHXDS0KB6YnsqNFZEtB8
+ 8m3Q2tWvh0FDpKG4PFeLtoLU1sEOFttdYGOjqZrFb/RrGN3LjYwVTQk98s1Nf/9noIn5
+ Usx3+jgZ/5Ovspb9XOrp1B6ALHXlK42Av0WMAT7ppN0HXLwCW9yt8958h55UyAURVbYY
+ mkEcMUycApscEBjTMmXuB9XfQKrux+pN/AHuzrYyAoqUFIIWojulLGM3YDcWnaNY5y5n
+ qhow==
+X-Gm-Message-State: AOAM532e5V2bVAYIO6bhdl4X6KekkIpiw87gSyji0no2Z23ndL+V/cRQ
+ 8sCFU8hUI4+wJdfdTWt2KXaMLiiNXES80/LOjXx9N38yFCaq5eqW2VXM1ao4HU5MM2HhHOGWjI6
+ yvvixd/Zl6twbSJNUQjCRhD5EVhv91Q==
+X-Received: by 2002:a5d:526f:: with SMTP id l15mr41168341wrc.0.1632318178793; 
+ Wed, 22 Sep 2021 06:42:58 -0700 (PDT)
+X-Google-Smtp-Source: ABdhPJznc1KSiF5aPkuH636x53Cc3ByiW8cBM1EzDuEwJOc+UzPa3JyVYA67rj7GZoExD7VAGn/rhA==
+X-Received: by 2002:a5d:526f:: with SMTP id l15mr41168305wrc.0.1632318178583; 
+ Wed, 22 Sep 2021 06:42:58 -0700 (PDT)
+Received: from ?IPv6:2a01:e0a:59e:9d80:527b:9dff:feef:3874?
+ ([2a01:e0a:59e:9d80:527b:9dff:feef:3874])
+ by smtp.gmail.com with ESMTPSA id v8sm2207321wrt.12.2021.09.22.06.42.56
+ (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+ Wed, 22 Sep 2021 06:42:57 -0700 (PDT)
+Subject: Re: [RFC 09/20] iommu: Add page size and address width attributes
+To: Liu Yi L <yi.l.liu@intel.com>, alex.williamson@redhat.com,
+ jgg@nvidia.com, hch@lst.de, jasowang@redhat.com, joro@8bytes.org
+References: <20210919063848.1476776-1-yi.l.liu@intel.com>
+ <20210919063848.1476776-10-yi.l.liu@intel.com>
+From: Eric Auger <eric.auger@redhat.com>
+Message-ID: <e158380d-cb13-c1aa-6dd6-77032fe72106@redhat.com>
+Date: Wed, 22 Sep 2021 15:42:55 +0200
 User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
- Thunderbird/78.13.0
-In-Reply-To: <20210921215830.vqxd75r4eyau6cxy@box.shutemov.name>
-Content-Language: en-US
-X-ClientProxiedBy: SA0PR11CA0097.namprd11.prod.outlook.com
- (2603:10b6:806:d1::12) To DM4PR12MB5229.namprd12.prod.outlook.com
- (2603:10b6:5:398::12)
+ Thunderbird/78.10.1
 MIME-Version: 1.0
-Received: from [10.236.30.241] (165.204.77.1) by
- SA0PR11CA0097.namprd11.prod.outlook.com (2603:10b6:806:d1::12) with Microsoft
- SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.20.4544.13 via Frontend Transport; Wed, 22 Sep 2021 13:40:44 +0000
-X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: 962f08c3-6e68-4d0e-722d-08d97dce94bb
-X-MS-TrafficTypeDiagnostic: DM4PR12MB5376:
-X-MS-Exchange-Transport-Forked: True
-X-Microsoft-Antispam-PRVS: <DM4PR12MB5376AADDD5A9E5F8B3CBBB9EECA29@DM4PR12MB5376.namprd12.prod.outlook.com>
-X-MS-Oob-TLC-OOBClassifiers: OLM:4714;
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: 3SUZAc30vVQ3ulvk93dOan28qKWd0xjO2n450QZOatA0Rg3/4+vd5u+8oWzbrR0UaNy2q/s6guD7rKNBr0fTdeuAITOMijc/2/sSwqcIlyOKduSxpVEpclG5X9R6y2f+gwR0pacFYMrOMKyEXLiMy0Vq4UOacgjZphDaPI/o+Ga3CG7Z1B0jd/RdAIFUzoL3QC2fD+mZhLgjT0iJ1upUxo+QuZdCZ1HNcuuGKZVlnZa5FlPcKnfmFA0et1jdBWjxBaf1FRD1rQB6mqBR3J40hKbZQJqzWPI8NYS5yAmPh5Nqfcn9KbBvpDxBI0huKhC0Z3FTEwtwdqJVG0ndxe1FrBAXdsXotb9/2uIQcGo4wYfi6AyMZJ5tTon5HMyoY3h9ysrAF2B3Q86UrAN1U7nJkMEBLl4rWBK/9UaImQyl0xE1zI29ZLF2HiyX+BGTAMBhPfz90N+vs05/9PEfEANL3FMRl/ZAhKz+mMLoK6hC/LJSypRPCsw3RojbQ1QxYiItsqT6CyDdAMS+qaSrZeGeUlMZi7ytAlUwo8mHj9yqhwgekgCEuTmq0AIxk/RyCXvEy6NUivlJgiMLUqQchUOdPzF2yrU0dimpesbg0bzBtkTnJ1mcykaxzUsIWBI/t56gR5bk46l2CyLMp3lbaqiMdwUMDQUWA7Yv5TFRPxw3xD5ge6O1kwY/8HfgrIX+LazHCKxmouJ3JVCrqFfIhwy6Z/YGCkn8QEHlsRn69OjZkqGHBQbQvoa8Qn/N+OqKyc7k1m1OX8u8bx5cQqMRaQ9BkHhnAGalQ4SJtq9PReQidYgsXrgR2P+OyLGximlEHX08
-X-Forefront-Antispam-Report: CIP:255.255.255.255; CTRY:; LANG:en; SCL:1; SRV:;
- IPV:NLI; SFV:NSPM; H:DM4PR12MB5229.namprd12.prod.outlook.com; PTR:; CAT:NONE;
- SFS:(4636009)(366004)(6916009)(45080400002)(7416002)(86362001)(83380400001)(508600001)(66476007)(66556008)(8676002)(66946007)(6486002)(966005)(31696002)(38100700002)(2616005)(956004)(186003)(316002)(16576012)(5660300002)(8936002)(54906003)(4326008)(31686004)(2906002)(36756003)(26005)(53546011)(43740500002)(45980500001);
- DIR:OUT; SFP:1101; 
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?utf-8?B?aGVVTkEwV09JWUxyMXBlM2haZ1h1YkR6VGRJdnJaSlowcTFXLzJZdG5kUUd2?=
- =?utf-8?B?azZVdEY2YklzVTdKbmsyREhIOTlFL01EMHhkSWxDMFZUL25hWXFOY2JHSUVo?=
- =?utf-8?B?ODkxcnozUmZlL0VabGdWT1NxdVV6RTdJalRwbXlzZWJSYnpJcWFqQ1FSSks4?=
- =?utf-8?B?SCtZS2xoZytKNW5VeW1BdW4wSlZLTmtCNVpKZjFjSHVHc0ZtaUkvRk83ajlO?=
- =?utf-8?B?U1Axa3U3YnFuQk9ZNUI0M1QxSXZodkdhZGx3bXIwNTZEL0JlTUk4a01uM1JJ?=
- =?utf-8?B?VmlvbWd1VzFHMnk0ZmJqRllFK0tEeVhCRFdhSThBeHhCblQxMFNHZm1jOXVn?=
- =?utf-8?B?b0x6eWI5YWZObDR5amtPQksrWlZmeFphVXdSMG1COVViN0tBclVSbnQwZVhD?=
- =?utf-8?B?TUZ4MzdGNmtaQTFhd05UU0N1Tk1SRElOSThnNlE2c0U5VmE2ZjRJd3JPOGRV?=
- =?utf-8?B?SDBmbHdPUVFMLzc5c2gzTUhDY2c1dHByZmlUeUxIQm5RODZkeUtBRnRKS0cz?=
- =?utf-8?B?dTZHaHI0djdsODNtS3plK3crWlI0MW9hR0orbmgyd0t6UFFoNkhuSllZVFBy?=
- =?utf-8?B?dEE5L3JpYWpYR1huQnAzRUkzY2FTTGNzU2c1UW1vWjVsVWZ0dEdjL2s3L1dG?=
- =?utf-8?B?UWlGNUx4WkY2eFUrRkZqS1ZFTS9aWXFQaG04YzAyc1VSZ3FES0VVT3lJTjFE?=
- =?utf-8?B?ME9Wc2R5clUwK1VvVTNNNkNZVGFpYmJxc0NjVzBRTXpaSjE3UGxQL1krbWZH?=
- =?utf-8?B?RGlzeGkyUjlGMUd0UGxBTisxS2hjRnBScE1ZN1Z6Z2xuMVpPU1lxRXAyQTFv?=
- =?utf-8?B?WFpzbTByY3dKb0swUWZzb0djUXdhMXlsSXRWOGU5ZUxxT2kweVUvbnRpcUVN?=
- =?utf-8?B?UkZoN2JaUlZDcWdjQTVFSmZhQk9CTGVPbjdSR0Z2V1NnVUU5UVh0c2R1WkF1?=
- =?utf-8?B?VDVKaS8ydHc1K2VNVnhCVS9vSlFIbVpsajJsZlVHdkFMU0ZONDhtM2IrVk91?=
- =?utf-8?B?RWs3cGZpUGJiYzBVdHk4Y1JiYmJOWkMvT0hlSlhFQmtUaUtla1U4dU1zZHpD?=
- =?utf-8?B?cUd6NlZCRWV4dWpQZVRzRWFyTHZmNkcrTlEybXZ2NW9KdUxJbXl6OGhuamts?=
- =?utf-8?B?UXhqTGNDWE5TYTMvVk8zUUl6aU5LRERHbkV5OEtNekhZRS9YVVVkRm5KVkF0?=
- =?utf-8?B?aEoyTTF0OVV1YWFGWHdTSW5aNmFkTVlUbHlpekd4TUVHd3JJeDU4WWcydTk3?=
- =?utf-8?B?c2htcG5xREhWN1h0N2w4L2h5YytHcHp0TW5WSFQ0Zm9EWDVzT2o4ayt0dnJu?=
- =?utf-8?B?TGgxQWtsYTBQeldRVVI1QXhGZ0l1cXlncmVmV29IVnpJVktsSllDMnE2ZFZT?=
- =?utf-8?B?RTlnVjl3dzZyZEdpT3EyQ0I5Q3haUXA4MUdLR3NZTkpCS0ZtU29wRTZUaU1t?=
- =?utf-8?B?cmpQMDNrdnNpaVZ3aEFidG1aSTR2ejVmdk9YY0FuNlRycTJnSTlSbVg3SUpq?=
- =?utf-8?B?S2dSUTMvSlFGVVZteUtJZ3FjYm5MSmQvaG55MURObWFiUU8vMkd3ZkJhekFZ?=
- =?utf-8?B?WEZyTGVtSW4vMTIreGx0M2UwQTdvejM5Y05idXloVkFRRm1ZcHJlQ1lGQkVy?=
- =?utf-8?B?cXkxOFVlTFBENlNwamRobEFVUEpWWUkxZnhVZlVtTUNSTFdKUThZZ0EzM3Yz?=
- =?utf-8?B?RnExczdjenNiZWpwTEQxNFpGR3RwWXptb3ljRXErd2dXSWMvZmcvRUdPYytI?=
- =?utf-8?Q?1ASInNOqJerRPhp4JciLJlkccorkNHlcfwyJoCE?=
-X-OriginatorOrg: amd.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 962f08c3-6e68-4d0e-722d-08d97dce94bb
-X-MS-Exchange-CrossTenant-AuthSource: DM4PR12MB5229.namprd12.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 22 Sep 2021 13:40:46.4192 (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 3dd8961f-e488-4e60-8e11-a82d994e183d
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: T/z7WrTCeKv9MglFoZ9KuZWgaTkiXC2OrjnMBxQu2WeFWiiFrfTKL/XjWjIQobPpp6yIkm37tE1R511i3IyQxQ==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: DM4PR12MB5376
-Cc: linux-efi@vger.kernel.org, Brijesh Singh <brijesh.singh@amd.com>,
- kvm@vger.kernel.org, Peter Zijlstra <peterz@infradead.org>,
- Dave Hansen <dave.hansen@linux.intel.com>, dri-devel@lists.freedesktop.org,
- platform-driver-x86@vger.kernel.org, Will Deacon <will@kernel.org>,
- linux-s390@vger.kernel.org, Andi Kleen <ak@linux.intel.com>, x86@kernel.org,
- amd-gfx@lists.freedesktop.org, Christoph Hellwig <hch@infradead.org>,
- Ingo Molnar <mingo@redhat.com>, linux-graphics-maintainer@vmware.com,
- Tianyu Lan <Tianyu.Lan@microsoft.com>, Borislav Petkov <bp@alien8.de>,
- Andy Lutomirski <luto@kernel.org>, Thomas Gleixner <tglx@linutronix.de>,
- kexec@lists.infradead.org, linux-kernel@vger.kernel.org,
- iommu@lists.linux-foundation.org, linux-fsdevel@vger.kernel.org,
- linuxppc-dev@lists.ozlabs.org
+In-Reply-To: <20210919063848.1476776-10-yi.l.liu@intel.com>
+Authentication-Results: relay.mimecast.com;
+ auth=pass smtp.auth=CUSA124A263 smtp.mailfrom=eric.auger@redhat.com
+X-Mimecast-Spam-Score: 0
+X-Mimecast-Originator: redhat.com
+Content-Language: en-US
+Cc: kvm@vger.kernel.org, kwankhede@nvidia.com, jean-philippe@linaro.org,
+ dave.jiang@intel.com, ashok.raj@intel.com, corbet@lwn.net,
+ kevin.tian@intel.com, parav@mellanox.com, lkml@metux.net,
+ david@gibson.dropbear.id.au, robin.murphy@arm.com, jun.j.tian@intel.com,
+ linux-kernel@vger.kernel.org, lushenming@huawei.com,
+ iommu@lists.linux-foundation.org, pbonzini@redhat.com, dwmw2@infradead.org
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -178,64 +126,50 @@ List-Post: <mailto:iommu@lists.linux-foundation.org>
 List-Help: <mailto:iommu-request@lists.linux-foundation.org?subject=help>
 List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
  <mailto:iommu-request@lists.linux-foundation.org?subject=subscribe>
-From: Tom Lendacky via iommu <iommu@lists.linux-foundation.org>
-Reply-To: Tom Lendacky <thomas.lendacky@amd.com>
+Reply-To: eric.auger@redhat.com
+Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
-Content-Type: text/plain; charset="us-ascii"; Format="flowed"
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-On 9/21/21 4:58 PM, Kirill A. Shutemov wrote:
-> On Tue, Sep 21, 2021 at 04:43:59PM -0500, Tom Lendacky wrote:
->> On 9/21/21 4:34 PM, Kirill A. Shutemov wrote:
->>> On Tue, Sep 21, 2021 at 11:27:17PM +0200, Borislav Petkov wrote:
->>>> On Wed, Sep 22, 2021 at 12:20:59AM +0300, Kirill A. Shutemov wrote:
->>>>> I still believe calling cc_platform_has() from __startup_64() is totally
->>>>> broken as it lacks proper wrapping while accessing global variables.
->>>>
->>>> Well, one of the issues on the AMD side was using boot_cpu_data too
->>>> early and the Intel side uses it too. Can you replace those checks with
->>>> is_tdx_guest() or whatever was the helper's name which would check
->>>> whether the the kernel is running as a TDX guest, and see if that helps?
->>>
->>> There's no need in Intel check this early. Only AMD need it. Maybe just
->>> opencode them?
->>
->> Any way you can put a gzipped/bzipped copy of your vmlinux file somewhere I
->> can grab it from and take a look at it?
-> 
-> You can find broken vmlinux and bzImage here:
-> 
-> https://nam11.safelinks.protection.outlook.com/?url=https%3A%2F%2Fdrive.google.com%2Fdrive%2Ffolders%2F1n74vUQHOGebnF70Im32qLFY8iS3wvjIs%3Fusp%3Dsharing&amp;data=04%7C01%7Cthomas.lendacky%40amd.com%7C1c7adf380cbe4c1a6bb708d97d4af6ff%7C3dd8961fe4884e608e11a82d994e183d%7C0%7C0%7C637678583935705530%7CUnknown%7CTWFpbGZsb3d8eyJWIjoiMC4wLjAwMDAiLCJQIjoiV2luMzIiLCJBTiI6Ik1haWwiLCJXVCI6Mn0%3D%7C3000&amp;sdata=gA30x%2Bfu97tUx0p2UqI8HgjiL8bxDbK1GqgJBbUrUE4%3D&amp;reserved=0
-> 
-> Let me know when I can remove it.
+Hi,
 
-Looking at everything, it is all RIP relative addressing, so those
-accesses should be fine. Your image has the intel_cc_platform_has()
-function, does it work if you remove that call? Because I think it may be
-the early call into that function which looks like it has instrumentation
-that uses %gs in __sanitizer_cov_trace_pc and %gs is not setup properly
-yet. And since boot_cpu_data.x86_vendor will likely be zero this early it
-will match X86_VENDOR_INTEL and call into that function.
+On 9/19/21 8:38 AM, Liu Yi L wrote:
+> From: Lu Baolu <baolu.lu@linux.intel.com>
+>
+> This exposes PAGE_SIZE and ADDR_WIDTH attributes. The iommufd could use
+> them to define the IOAS.
+>
+> Signed-off-by: Lu Baolu <baolu.lu@linux.intel.com>
+> ---
+>  include/linux/iommu.h | 4 ++++
+>  1 file changed, 4 insertions(+)
+>
+> diff --git a/include/linux/iommu.h b/include/linux/iommu.h
+> index 943de6897f56..86d34e4ce05e 100644
+> --- a/include/linux/iommu.h
+> +++ b/include/linux/iommu.h
+> @@ -153,9 +153,13 @@ enum iommu_dev_features {
+>  /**
+>   * enum iommu_devattr - Per device IOMMU attributes
+>   * @IOMMU_DEV_INFO_FORCE_SNOOP [bool]: IOMMU can force DMA to be snooped.
+> + * @IOMMU_DEV_INFO_PAGE_SIZE [u64]: Page sizes that iommu supports.
+> + * @IOMMU_DEV_INFO_ADDR_WIDTH [u32]: Address width supported.
+I think this deserves additional info. What address width do we talk
+about, input, output, what stage if the IOMMU does support multiple stages
 
-ffffffff8124f880 <intel_cc_platform_has>:
-ffffffff8124f880:       e8 bb 64 06 00          callq  ffffffff812b5d40 <__fentry__>
-ffffffff8124f885:       e8 36 ca 42 00          callq  ffffffff8167c2c0 <__sanitizer_cov_trace_pc>
-ffffffff8124f88a:       31 c0                   xor    %eax,%eax
-ffffffff8124f88c:       c3                      retq
+Thanks
 
+Eric
+>   */
+>  enum iommu_devattr {
+>  	IOMMU_DEV_INFO_FORCE_SNOOP,
+> +	IOMMU_DEV_INFO_PAGE_SIZE,
+> +	IOMMU_DEV_INFO_ADDR_WIDTH,
+>  };
+>  
+>  #define IOMMU_PASID_INVALID	(-1U)
 
-ffffffff8167c2c0 <__sanitizer_cov_trace_pc>:
-ffffffff8167c2c0:       65 8b 05 39 ad 9a 7e    mov    %gs:0x7e9aad39(%rip),%eax        # 27000 <__preempt_count>
-ffffffff8167c2c7:       89 c6                   mov    %eax,%esi
-ffffffff8167c2c9:       48 8b 0c 24             mov    (%rsp),%rcx
-ffffffff8167c2cd:       81 e6 00 01 00 00       and    $0x100,%esi
-ffffffff8167c2d3:       65 48 8b 14 25 40 70    mov    %gs:0x27040,%rdx
-
-Thanks,
-Tom
-
-> 
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
