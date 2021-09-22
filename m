@@ -2,97 +2,122 @@ Return-Path: <SRS0=Rn8G=OM=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-3.8 required=3.0 tests=BAYES_00,
-	HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS
-	autolearn=no autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-5.3 required=3.0 tests=BAYES_00,
+	HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,NICE_REPLY_A,SPF_HELO_NONE,
+	SPF_PASS,USER_AGENT_SANE_1 autolearn=no autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B4451C433EF
-	for <iommu@archiver.kernel.org>; Wed, 22 Sep 2021 21:26:29 +0000 (UTC)
-Received: from smtp1.osuosl.org (smtp1.osuosl.org [140.211.166.138])
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2EE12C433FE
+	for <iommu@archiver.kernel.org>; Wed, 22 Sep 2021 21:33:18 +0000 (UTC)
+Received: from smtp3.osuosl.org (smtp3.osuosl.org [140.211.166.136])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 71BF96115A
-	for <iommu@archiver.kernel.org>; Wed, 22 Sep 2021 21:26:29 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.4.1 mail.kernel.org 71BF96115A
+	by mail.kernel.org (Postfix) with ESMTPS id C1C0761168
+	for <iommu@archiver.kernel.org>; Wed, 22 Sep 2021 21:33:17 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.4.1 mail.kernel.org C1C0761168
 Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=intel.com
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by smtp1.osuosl.org (Postfix) with ESMTP id 42CB784052;
-	Wed, 22 Sep 2021 21:26:29 +0000 (UTC)
+	by smtp3.osuosl.org (Postfix) with ESMTP id 644AA61502;
+	Wed, 22 Sep 2021 21:33:17 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from smtp1.osuosl.org ([127.0.0.1])
-	by localhost (smtp1.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id TnFS6baiW8vV; Wed, 22 Sep 2021 21:26:28 +0000 (UTC)
+Received: from smtp3.osuosl.org ([127.0.0.1])
+	by localhost (smtp3.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+	with ESMTP id FVCl_3oChMbH; Wed, 22 Sep 2021 21:33:16 +0000 (UTC)
 Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [IPv6:2605:bc80:3010:104::8cd3:938])
-	by smtp1.osuosl.org (Postfix) with ESMTPS id F12B08404E;
-	Wed, 22 Sep 2021 21:26:27 +0000 (UTC)
+	by smtp3.osuosl.org (Postfix) with ESMTPS id 2DE5A614FE;
+	Wed, 22 Sep 2021 21:33:16 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id C8A61C000F;
-	Wed, 22 Sep 2021 21:26:27 +0000 (UTC)
-Received: from smtp4.osuosl.org (smtp4.osuosl.org [140.211.166.137])
- by lists.linuxfoundation.org (Postfix) with ESMTP id E8539C000D
- for <iommu@lists.linux-foundation.org>; Wed, 22 Sep 2021 21:26:26 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id E6511C0022;
+	Wed, 22 Sep 2021 21:33:15 +0000 (UTC)
+Received: from smtp2.osuosl.org (smtp2.osuosl.org [IPv6:2605:bc80:3010::133])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 75D02C000D
+ for <iommu@lists.linux-foundation.org>; Wed, 22 Sep 2021 21:33:14 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by smtp4.osuosl.org (Postfix) with ESMTP id CA74D40794
- for <iommu@lists.linux-foundation.org>; Wed, 22 Sep 2021 21:26:26 +0000 (UTC)
+ by smtp2.osuosl.org (Postfix) with ESMTP id 613D94060C
+ for <iommu@lists.linux-foundation.org>; Wed, 22 Sep 2021 21:33:14 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from smtp4.osuosl.org ([127.0.0.1])
- by localhost (smtp4.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id Zwi4KnToK0SE for <iommu@lists.linux-foundation.org>;
- Wed, 22 Sep 2021 21:26:26 +0000 (UTC)
+Received: from smtp2.osuosl.org ([127.0.0.1])
+ by localhost (smtp2.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+ with ESMTP id 3EnBPkYGXCnh for <iommu@lists.linux-foundation.org>;
+ Wed, 22 Sep 2021 21:33:13 +0000 (UTC)
 X-Greylist: domain auto-whitelisted by SQLgrey-1.8.0
-Received: from mga01.intel.com (mga01.intel.com [192.55.52.88])
- by smtp4.osuosl.org (Postfix) with ESMTPS id 202A740704
- for <iommu@lists.linux-foundation.org>; Wed, 22 Sep 2021 21:26:26 +0000 (UTC)
-X-IronPort-AV: E=McAfee;i="6200,9189,10115"; a="246148892"
-X-IronPort-AV: E=Sophos;i="5.85,315,1624345200"; d="scan'208";a="246148892"
-Received: from orsmga006.jf.intel.com ([10.7.209.51])
- by fmsmga101.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384;
- 22 Sep 2021 14:26:11 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.85,315,1624345200"; d="scan'208";a="435587347"
-Received: from fmsmsx604.amr.corp.intel.com ([10.18.126.84])
- by orsmga006.jf.intel.com with ESMTP; 22 Sep 2021 14:26:11 -0700
-Received: from fmsmsx611.amr.corp.intel.com (10.18.126.91) by
- fmsmsx604.amr.corp.intel.com (10.18.126.84) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2242.12; Wed, 22 Sep 2021 14:26:10 -0700
-Received: from fmsmsx610.amr.corp.intel.com (10.18.126.90) by
- fmsmsx611.amr.corp.intel.com (10.18.126.91) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2242.12; Wed, 22 Sep 2021 14:26:10 -0700
-Received: from fmsmsx610.amr.corp.intel.com ([10.18.126.90]) by
- fmsmsx610.amr.corp.intel.com ([10.18.126.90]) with mapi id 15.01.2242.012;
- Wed, 22 Sep 2021 14:26:10 -0700
-From: "Luck, Tony" <tony.luck@intel.com>
-To: Peter Zijlstra <peterz@infradead.org>, "Yu, Fenghua" <fenghua.yu@intel.com>
-Subject: RE: [PATCH 4/8] x86/traps: Demand-populate PASID MSR via #GP
-Thread-Topic: [PATCH 4/8] x86/traps: Demand-populate PASID MSR via #GP
-Thread-Index: AQHXrlppUXtiT4Ul9UCq0y1lpkQn1quxBE8AgAABOoD//4u5UA==
-Date: Wed, 22 Sep 2021 21:26:10 +0000
-Message-ID: <abfbdfbc9a68477f985eeb4192839fca@intel.com>
+Received: from mga17.intel.com (mga17.intel.com [192.55.52.151])
+ by smtp2.osuosl.org (Postfix) with ESMTPS id 21F2540121
+ for <iommu@lists.linux-foundation.org>; Wed, 22 Sep 2021 21:33:12 +0000 (UTC)
+X-IronPort-AV: E=McAfee;i="6200,9189,10115"; a="203860861"
+X-IronPort-AV: E=Sophos;i="5.85,315,1624345200"; d="scan'208";a="203860861"
+Received: from fmsmga005.fm.intel.com ([10.253.24.32])
+ by fmsmga107.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384;
+ 22 Sep 2021 14:33:12 -0700
+X-IronPort-AV: E=Sophos;i="5.85,315,1624345200"; d="scan'208";a="704191017"
+Received: from slaxmina-mobl1.amr.corp.intel.com (HELO [10.209.53.12])
+ ([10.209.53.12])
+ by fmsmga005-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384;
+ 22 Sep 2021 14:33:12 -0700
+Subject: Re: [PATCH 4/8] x86/traps: Demand-populate PASID MSR via #GP
+To: Peter Zijlstra <peterz@infradead.org>, Fenghua Yu <fenghua.yu@intel.com>
 References: <20210920192349.2602141-1-fenghua.yu@intel.com>
  <20210920192349.2602141-5-fenghua.yu@intel.com>
  <20210922210722.GV4323@worktop.programming.kicks-ass.net>
  <20210922211145.GF5106@worktop.programming.kicks-ass.net>
-In-Reply-To: <20210922211145.GF5106@worktop.programming.kicks-ass.net>
-Accept-Language: en-US
-Content-Language: en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-dlp-product: dlpe-windows
-dlp-reaction: no-action
-dlp-version: 11.6.200.16
-x-originating-ip: [10.1.200.100]
+From: Dave Hansen <dave.hansen@intel.com>
+Autocrypt: addr=dave.hansen@intel.com; keydata=
+ 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
+ z5cecg==
+Message-ID: <a5944e66-0552-d919-bd11-d9eced48bb45@intel.com>
+Date: Wed, 22 Sep 2021 14:33:09 -0700
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
+ Thunderbird/68.10.0
 MIME-Version: 1.0
-Cc: "Shankar, Ravi V" <ravi.v.shankar@intel.com>, "Jiang,
- Dave" <dave.jiang@intel.com>, "Raj, Ashok" <ashok.raj@intel.com>,
- x86 <x86@kernel.org>, linux-kernel <linux-kernel@vger.kernel.org>, "Hansen, 
- Dave" <dave.hansen@intel.com>,
- "iommu@lists.linux-foundation.org" <iommu@lists.linux-foundation.org>,
- Ingo Molnar <mingo@redhat.com>, Borislav Petkov <bp@alien8.de>, "Pan,
- Jacob jun" <jacob.jun.pan@intel.com>, Andy Lutomirski <luto@kernel.org>,
- Josh Poimboeuf <jpoimboe@redhat.com>, Thomas Gleixner <tglx@linutronix.de>
+In-Reply-To: <20210922211145.GF5106@worktop.programming.kicks-ass.net>
+Content-Language: en-US
+Cc: Ravi V Shankar <ravi.v.shankar@intel.com>, Tony Luck <tony.luck@intel.com>,
+ Dave Jiang <dave.jiang@intel.com>, Ashok Raj <ashok.raj@intel.com>,
+ x86 <x86@kernel.org>, linux-kernel <linux-kernel@vger.kernel.org>,
+ iommu@lists.linux-foundation.org, Ingo Molnar <mingo@redhat.com>,
+ Borislav Petkov <bp@alien8.de>, Jacob Jun Pan <jacob.jun.pan@intel.com>,
+ Andy Lutomirski <luto@kernel.org>, Josh Poimboeuf <jpoimboe@redhat.com>,
+ Thomas Gleixner <tglx@linutronix.de>
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -110,40 +135,46 @@ Content-Transfer-Encoding: 7bit
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
->> > +static bool fixup_pasid_exception(void)
->> > +{
->> > +	if (!cpu_feature_enabled(X86_FEATURE_ENQCMD))
->> > +		return false;
->> > +
->> > +	return __fixup_pasid_exception();
->> > +}
->
+On 9/22/21 2:11 PM, Peter Zijlstra wrote:
+>>> +static bool fixup_pasid_exception(void)
+>>> +{
+>>> +	if (!cpu_feature_enabled(X86_FEATURE_ENQCMD))
+>>> +		return false;
+>>> +
+>>> +	return __fixup_pasid_exception();
+>>> +}
 > That is, shouldn't the above at the very least decode the instruction
 > causing the #GP and check it's this ENQCMD thing?
 
-It can't reliably do that because some other thread in the process may
-have re-written the memory that regs->ip points at (bizarre case, but
-I think Dave Hansen brought it up).
+To reiterate: on systems with no X86_FEATURE_ENQCMD, there is basically
+no additional overhead.  It isn't worth doing decoding there.
 
-So it would just add extra code, and still only be a hint.
+On systems with X86_FEATURE_ENQCMD, but where it is unused, the #GP
+handler gets some new overhead on every #GP.  Basically:
 
-Without the check this sequence is possible:
+> +	pasid = current->mm->pasid;
+> +	if (pasid == PASID_DISABLED)
+> +		return false;
 
-1) Process binds an accelerator (so mm->pasid is set)
-2) Task in the process executes something other than ENQCMD that gets a #GP
-3) Kernel says "Oh, mm->pasid is set, I'll initialize the IA32_PASID MSR to see if that fixes it"
-4) Nope. Re-executing the instruction at step #2 just gives another #GP
-5) Kernel says "I already set IA32_PASID, so this must be something else ... do regular #GP actions"
+That's still pretty cheap.  Probably not worth doing decoding there either.
 
-Now if the task catches the signal that results from step #5 and avoids termination, it will have
-IA32_PASID set ... but to the right value should it go on to actually execute ENQCMD at some
-future point.
+So, that leaves us with if you are:
+1. On system with X86_FEATURE_ENQCMD
+2. In a process/mm that has an allocated pasid
+3. Your *task* does not have the MSR set
+4. You get a #GP for some other reason
 
-So the corner case from not knowing whether this #GP was from ENQCMD or not is harmless.
+Then, you'll do this double-#GP dance.
 
--Tony
+So, instruction decoding could absolutely be added between steps 3 and
+4.  It would absolutely save doing the double-#GP in cases where 1/2/3
+are met.  But, I wouldn't move it up above and of the 1/2/3 checks
+because they're way cheaper than instruction decoding.
 
+In the end, it didn't seem worth it to me to be optimizing a relatively
+rare path which 99% of the time ends up in a crash.
 
+If you want instruction decoding in here, though, just say the word. :)
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
