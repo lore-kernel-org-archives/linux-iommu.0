@@ -2,83 +2,105 @@ Return-Path: <SRS0=900o=ON=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-15.3 required=3.0 tests=BAYES_00,
-	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_CR_TRAILER,INCLUDES_PATCH,
-	MAILING_LIST_MULTI,NICE_REPLY_A,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,
-	USER_AGENT_SANE_1 autolearn=unavailable autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-3.8 required=3.0 tests=BAYES_00,DKIM_INVALID,
+	DKIM_SIGNED,MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED
+	autolearn=no autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 53E37C433F5
-	for <iommu@archiver.kernel.org>; Thu, 23 Sep 2021 21:46:54 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 13A71C433EF
+	for <iommu@archiver.kernel.org>; Thu, 23 Sep 2021 23:09:48 +0000 (UTC)
 Received: from smtp2.osuosl.org (smtp2.osuosl.org [140.211.166.133])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id CCF0761152
-	for <iommu@archiver.kernel.org>; Thu, 23 Sep 2021 21:46:53 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.4.1 mail.kernel.org CCF0761152
-Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=linux.intel.com
+	by mail.kernel.org (Postfix) with ESMTPS id 9FF226128B
+	for <iommu@archiver.kernel.org>; Thu, 23 Sep 2021 23:09:47 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.4.1 mail.kernel.org 9FF226128B
+Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=kernel.org
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by smtp2.osuosl.org (Postfix) with ESMTP id 862B3403BC;
-	Thu, 23 Sep 2021 21:46:53 +0000 (UTC)
+	by smtp2.osuosl.org (Postfix) with ESMTP id 6351640025;
+	Thu, 23 Sep 2021 23:09:47 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
 Received: from smtp2.osuosl.org ([127.0.0.1])
 	by localhost (smtp2.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id QoQVNKNxqaXG; Thu, 23 Sep 2021 21:46:52 +0000 (UTC)
+	with ESMTP id m0bYpbxRKqJy; Thu, 23 Sep 2021 23:09:46 +0000 (UTC)
 Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [IPv6:2605:bc80:3010:104::8cd3:938])
-	by smtp2.osuosl.org (Postfix) with ESMTPS id BACAB400F2;
-	Thu, 23 Sep 2021 21:46:51 +0000 (UTC)
+	by smtp2.osuosl.org (Postfix) with ESMTPS id 113B040004;
+	Thu, 23 Sep 2021 23:09:46 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 92D39C0011;
-	Thu, 23 Sep 2021 21:46:51 +0000 (UTC)
-Received: from smtp3.osuosl.org (smtp3.osuosl.org [140.211.166.136])
- by lists.linuxfoundation.org (Postfix) with ESMTP id B5074C000D
- for <iommu@lists.linux-foundation.org>; Thu, 23 Sep 2021 21:37:27 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id D94C4C000F;
+	Thu, 23 Sep 2021 23:09:45 +0000 (UTC)
+Received: from smtp2.osuosl.org (smtp2.osuosl.org [IPv6:2605:bc80:3010::133])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 11B70C000D
+ for <iommu@lists.linux-foundation.org>; Thu, 23 Sep 2021 23:09:45 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by smtp3.osuosl.org (Postfix) with ESMTP id 9D568606B3
- for <iommu@lists.linux-foundation.org>; Thu, 23 Sep 2021 21:37:27 +0000 (UTC)
+ by smtp2.osuosl.org (Postfix) with ESMTP id E173840025
+ for <iommu@lists.linux-foundation.org>; Thu, 23 Sep 2021 23:09:44 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from smtp3.osuosl.org ([127.0.0.1])
- by localhost (smtp3.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id W2LQzUf6f2NA for <iommu@lists.linux-foundation.org>;
- Thu, 23 Sep 2021 21:37:26 +0000 (UTC)
+Received: from smtp2.osuosl.org ([127.0.0.1])
+ by localhost (smtp2.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+ with ESMTP id ljntTCoipkFw for <iommu@lists.linux-foundation.org>;
+ Thu, 23 Sep 2021 23:09:44 +0000 (UTC)
 X-Greylist: domain auto-whitelisted by SQLgrey-1.8.0
-Received: from mga17.intel.com (mga17.intel.com [192.55.52.151])
- by smtp3.osuosl.org (Postfix) with ESMTPS id 694E2606AE
- for <iommu@lists.linux-foundation.org>; Thu, 23 Sep 2021 21:37:26 +0000 (UTC)
-X-IronPort-AV: E=McAfee;i="6200,9189,10116"; a="204104127"
-X-IronPort-AV: E=Sophos;i="5.85,317,1624345200"; d="scan'208";a="204104127"
-Received: from fmsmga008.fm.intel.com ([10.253.24.58])
- by fmsmga107.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384;
- 23 Sep 2021 14:37:25 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.85,317,1624345200"; d="scan'208";a="514273504"
-Received: from linux.intel.com ([10.54.29.200])
- by fmsmga008.fm.intel.com with ESMTP; 23 Sep 2021 14:37:25 -0700
-Received: from [10.212.150.227] (kliang2-MOBL.ccr.corp.intel.com
- [10.212.150.227])
- (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
- (No client certificate requested)
- by linux.intel.com (Postfix) with ESMTPS id BED9D580AD6;
- Thu, 23 Sep 2021 14:37:23 -0700 (PDT)
-Subject: Re: [PATCH v2 6/9] PCI: Add pci_find_dvsec_capability to find
- designated VSEC
-To: Ben Widawsky <ben.widawsky@intel.com>, linux-cxl@vger.kernel.org
-References: <20210923172647.72738-1-ben.widawsky@intel.com>
- <20210923172647.72738-7-ben.widawsky@intel.com>
-From: "Liang, Kan" <kan.liang@linux.intel.com>
-Message-ID: <8dbea1cb-acf8-d77e-aafd-537331cf0588@linux.intel.com>
-Date: Thu, 23 Sep 2021 17:37:22 -0400
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:78.0) Gecko/20100101
- Thunderbird/78.14.0
-MIME-Version: 1.0
-In-Reply-To: <20210923172647.72738-7-ben.widawsky@intel.com>
-Content-Language: en-US
-X-Mailman-Approved-At: Thu, 23 Sep 2021 21:46:50 +0000
-Cc: Andrew Donnellan <ajd@linux.ibm.com>, linux-pci@vger.kernel.org,
- iommu@lists.linux-foundation.org, Bjorn Helgaas <helgaas@kernel.org>,
- "David E . Box" <david.e.box@linux.intel.com>,
- Bjorn Helgaas <bhelgaas@google.com>, Dan Williams <dan.j.williams@intel.com>,
- linuxppc-dev@lists.ozlabs.org, David Woodhouse <dwmw2@infradead.org>
+Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
+ by smtp2.osuosl.org (Postfix) with ESMTPS id 4056940004
+ for <iommu@lists.linux-foundation.org>; Thu, 23 Sep 2021 23:09:44 +0000 (UTC)
+Received: by mail.kernel.org (Postfix) with ESMTPSA id 837A861107;
+ Thu, 23 Sep 2021 23:09:42 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+ s=k20201202; t=1632438583;
+ bh=N5cuTMmeZEkv0jHourxdJkh/zB3vziTEXWj25gMIcvE=;
+ h=In-Reply-To:References:Date:From:To:Cc:Subject:From;
+ b=VwhSiUXbg4mGx+IRNOlnUS918ijpj2HG2O8Is2jqB4Oz1ZrnuGA+cFWCCZWYlAXHK
+ vcdntZnT5F/brH6v+e9fYJC1EApmRkhmdXyhc1yWG9RpMw31SzH5V58ayjhLM2vcE7
+ 40xVEbjdkJAqxOI1HGqyMJ68f/SAkPHqI9dY0ENHif0CCMnGGhx9BnLWEbM83bpKa5
+ +vbqWClgc6UzmcQB5urCiaMENKHDEM0kFJFEFh7gGHLLihPkJkFWx8o3jygHSJFfie
+ R0Cv2ryb6FMDHab3/BkbymwIpJTH6LnlS4iNy7OK4yI3L8ZJpcg7We+tZIlkbMF2Hr
+ fn+Uy9mZbZzKg==
+Received: from compute6.internal (compute6.nyi.internal [10.202.2.46])
+ by mailauth.nyi.internal (Postfix) with ESMTP id A49FF27C0054;
+ Thu, 23 Sep 2021 19:09:41 -0400 (EDT)
+Received: from imap48 ([10.202.2.98])
+ by compute6.internal (MEProxy); Thu, 23 Sep 2021 19:09:41 -0400
+X-ME-Sender: <xms:NAlNYUPxuW4mPlQRY1kmKKFbkWbULHi5tN1tp2V25yzw4RxhuNA4FQ>
+ <xme:NAlNYa8HqP9hoU2iNxhr3wQ0nQR5nw24sylsUaxdAjFI6leDkEY3qb662heZa8szp
+ 5B1xzXDKgtq1ldvf6Y>
+X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgedvtddrudejtddgudejucetufdoteggodetrfdotf
+ fvucfrrhhofhhilhgvmecuhfgrshhtofgrihhlpdfqfgfvpdfurfetoffkrfgpnffqhgen
+ uceurghilhhouhhtmecufedttdenucesvcftvggtihhpihgvnhhtshculddquddttddmne
+ cujfgurhepofgfggfkjghffffhvffutgesthdtredtreertdenucfhrhhomhepfdetnhgu
+ hicunfhuthhomhhirhhskhhifdcuoehluhhtoheskhgvrhhnvghlrdhorhhgqeenucggtf
+ frrghtthgvrhhnpedthfehtedtvdetvdetudfgueeuhfdtudegvdelveelfedvteelfffg
+ fedvkeegfeenucevlhhushhtvghrufhiiigvpedtnecurfgrrhgrmhepmhgrihhlfhhroh
+ hmpegrnhguhidomhgvshhmthhprghuthhhphgvrhhsohhnrghlihhthidqudduiedukeeh
+ ieefvddqvdeifeduieeitdekqdhluhhtoheppehkvghrnhgvlhdrohhrgheslhhinhhugi
+ drlhhuthhordhush
+X-ME-Proxy: <xmx:NAlNYbTXJqDoilPp5cJwxwEUVir6uZvRqpNEgC00yT5WrEyURImaYA>
+ <xmx:NAlNYcv7KE2E1sOTQk5mRZG-VDoaafqZ87W_AOdD4CsDvKGgKJ_QFg>
+ <xmx:NAlNYcdbExK4hyiY5nJU042jB-a_PawzLwTprTOn-Mm74raSBsIuUw>
+ <xmx:NQlNYX35C_oPaXrDIfQ7VDo2GM4FoLpk54lU8SsS3723_P1yoRfbYto0Hig>
+Received: by mailuser.nyi.internal (Postfix, from userid 501)
+ id AFE5521E0063; Thu, 23 Sep 2021 19:09:40 -0400 (EDT)
+X-Mailer: MessagingEngine.com Webmail Interface
+User-Agent: Cyrus-JMAP/3.5.0-alpha0-1303-gb2406efd75-fm-20210922.002-gb2406efd
+Mime-Version: 1.0
+Message-Id: <d5f00e34-f9fc-4421-8571-48c45237141c@www.fastmail.com>
+In-Reply-To: <20210920192349.2602141-6-fenghua.yu@intel.com>
+References: <20210920192349.2602141-1-fenghua.yu@intel.com>
+ <20210920192349.2602141-6-fenghua.yu@intel.com>
+Date: Thu, 23 Sep 2021 16:09:18 -0700
+From: "Andy Lutomirski" <luto@kernel.org>
+To: "Fenghua Yu" <fenghua.yu@intel.com>,
+ "Thomas Gleixner" <tglx@linutronix.de>, "Ingo Molnar" <mingo@redhat.com>,
+ "Borislav Petkov" <bp@alien8.de>,
+ "Peter Zijlstra (Intel)" <peterz@infradead.org>,
+ "Dave Hansen" <dave.hansen@intel.com>, "Tony Luck" <tony.luck@intel.com>,
+ "Lu Baolu" <baolu.lu@linux.intel.com>, "Joerg Roedel" <joro@8bytes.org>,
+ "Josh Poimboeuf" <jpoimboe@redhat.com>, "Dave Jiang" <dave.jiang@intel.com>,
+ "Jacob Jun Pan" <jacob.jun.pan@intel.com>, "Raj Ashok" <ashok.raj@intel.com>, 
+ "Shankar, Ravi V" <ravi.v.shankar@intel.com>
+Subject: Re: [PATCH 5/8] x86/mmu: Add mm-based PASID refcounting
+Cc: iommu@lists.linux-foundation.org, the arch/x86 maintainers <x86@kernel.org>,
+ Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -91,218 +113,40 @@ List-Post: <mailto:iommu@lists.linux-foundation.org>
 List-Help: <mailto:iommu-request@lists.linux-foundation.org?subject=help>
 List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
  <mailto:iommu-request@lists.linux-foundation.org?subject=subscribe>
+Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
-Content-Type: text/plain; charset="us-ascii"; Format="flowed"
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
+On Mon, Sep 20, 2021, at 12:23 PM, Fenghua Yu wrote:
+> PASIDs are fundamentally hardware resources in a shared address space.
+> There is a limited number of them to use ENQCMD on shared workqueue.
+> They must be shared and managed. They can not, for instance, be
+> statically allocated to processes.
+>
+> Free PASID eagerly by sending IPIs in unbind was disabled due to locking
+> and other issues in commit 9bfecd058339 ("x86/cpufeatures: Force disable
+> X86_FEATURE_ENQCMD and remove update_pasid()").
+>
+> Lazy PASID free is implemented in order to re-enable the ENQCMD feature.
+> PASIDs are currently reference counted and are centered around device
+> usage. To support lazy PASID free, reference counts are tracked in the
+> following scenarios:
+>
+> 1. The PASID's reference count is initialized as 1 when the PASID is first
+>    allocated in bind. This is already implemented.
+> 2. A reference is taken when a device is bound to the mm and dropped
+>    when the device is unbound from the mm. This reference tracks device
+>    usage of the PASID. This is already implemented.
+> 3. A reference is taken when a task's IA32_PASID MSR is initialized in
+>    #GP fix up and dropped when the task exits. This reference tracks
+>    the task usage of the PASID. It is implemented here.
 
+I think this is unnecessarily complicated because it's buying in to the existing ISA misconception that PASID has anything to do with a task.  A PASID belongs to an mm, full stop.  Now the ISA is nasty and we have tasks that have *noticed* that their mm has a PASID and tasks that have not noticed this fact, but that should be irrelevant to essentially everything except the fault handler.
 
-On 9/23/2021 1:26 PM, Ben Widawsky wrote:
-> Add pci_find_dvsec_capability to locate a Designated Vendor-Specific
-> Extended Capability with the specified DVSEC ID.
-> 
-> The Designated Vendor-Specific Extended Capability (DVSEC) allows one or
-> more vendor specific capabilities that aren't tied to the vendor ID of
-> the PCI component.
-> 
-> DVSEC is critical for both the Compute Express Link (CXL) driver as well
-> as the driver for OpenCAPI coherent accelerator (OCXL).
-> 
-> Cc: David E. Box <david.e.box@linux.intel.com>
-> Cc: Jonathan Cameron <Jonathan.Cameron@huawei.com>
-> Cc: Bjorn Helgaas <bhelgaas@google.com>
-> Cc: Dan Williams <dan.j.williams@intel.com>
-> Cc: linux-pci@vger.kernel.org
-> Cc: linuxppc-dev@lists.ozlabs.org
-> Cc: Andrew Donnellan <ajd@linux.ibm.com>
-> Cc: Lu Baolu <baolu.lu@linux.intel.com>
-> Reviewed-by: Frederic Barrat <fbarrat@linux.ibm.com>
-> Signed-off-by: Ben Widawsky <ben.widawsky@intel.com>
+So just refcount the thing the obvious way: take a reference when you stick the PASID in the mm_struct and drop the reference in __mmdrop().  Problem solved.  You could probably drop it more aggressively in __mmput(), and the comment explaining why is left as an exercise to the reader -- if a kernel thread starts doing ENQCMD, we have worse things to worry about :)
 
-Applied the interface for the perf uncore driver as below. The interface 
-works properly.
-
-Tested-by: Kan Liang <kan.liang@linux.intel.com>
-
-
- From ebb69ba386dca91fb372522b13af9feb84adcbc0 Mon Sep 17 00:00:00 2001
-From: Kan Liang <kan.liang@linux.intel.com>
-Date: Thu, 23 Sep 2021 13:59:24 -0700
-Subject: [PATCH] perf/x86/intel/uncore: Use pci core's DVSEC functionality
-
-Apply standard interface pci_find_dvsec_capability for perf uncore
-driver and remove unused macros.
-
-Reduce maintenance burden of DVSEC query implementation.
-
-Signed-off-by: Kan Liang <kan.liang@linux.intel.com>
----
-  arch/x86/events/intel/uncore_discovery.c | 41 
-+++++++++++++++-----------------
-  arch/x86/events/intel/uncore_discovery.h |  6 -----
-  2 files changed, 19 insertions(+), 28 deletions(-)
-
-diff --git a/arch/x86/events/intel/uncore_discovery.c 
-b/arch/x86/events/intel/uncore_discovery.c
-index 3049c64..f8ea092 100644
---- a/arch/x86/events/intel/uncore_discovery.c
-+++ b/arch/x86/events/intel/uncore_discovery.c
-@@ -21,7 +21,7 @@ static bool has_generic_discovery_table(void)
-  		return false;
-
-  	/* A discovery table device has the unique capability ID. */
--	dvsec = pci_find_next_ext_capability(dev, 0, UNCORE_EXT_CAP_ID_DISCOVERY);
-+	dvsec = pci_find_next_ext_capability(dev, 0, PCI_EXT_CAP_ID_DVSEC);
-  	pci_dev_put(dev);
-  	if (dvsec)
-  		return true;
-@@ -260,7 +260,7 @@ static int parse_discovery_table(struct pci_dev 
-*dev, int die,
-
-  bool intel_uncore_has_discovery_tables(void)
-  {
--	u32 device, val, entry_id, bar_offset;
-+	u32 device, val, bar_offset;
-  	int die, dvsec = 0, ret = true;
-  	struct pci_dev *dev = NULL;
-  	bool parsed = false;
-@@ -275,27 +275,24 @@ bool intel_uncore_has_discovery_tables(void)
-  	 * the discovery table devices.
-  	 */
-  	while ((dev = pci_get_device(PCI_VENDOR_ID_INTEL, device, dev)) != 
-NULL) {
--		while ((dvsec = pci_find_next_ext_capability(dev, dvsec, 
-UNCORE_EXT_CAP_ID_DISCOVERY))) {
--			pci_read_config_dword(dev, dvsec + UNCORE_DISCOVERY_DVSEC_OFFSET, &val);
--			entry_id = val & UNCORE_DISCOVERY_DVSEC_ID_MASK;
--			if (entry_id != UNCORE_DISCOVERY_DVSEC_ID_PMON)
--				continue;
--
--			pci_read_config_dword(dev, dvsec + UNCORE_DISCOVERY_DVSEC2_OFFSET, 
-&val);
--
--			if (val & ~UNCORE_DISCOVERY_DVSEC2_BIR_MASK) {
--				ret = false;
--				goto err;
--			}
--			bar_offset = UNCORE_DISCOVERY_BIR_BASE +
--				     (val & UNCORE_DISCOVERY_DVSEC2_BIR_MASK) * 
-UNCORE_DISCOVERY_BIR_STEP;
--
--			die = get_device_die_id(dev);
--			if (die < 0)
--				continue;
--
--			parse_discovery_table(dev, die, bar_offset, &parsed);
-+		dvsec = pci_find_dvsec_capability(dev, PCI_VENDOR_ID_INTEL, 
-UNCORE_DISCOVERY_DVSEC_ID_PMON);
-+		if (!dvsec)
-+			continue;
-+
-+		pci_read_config_dword(dev, dvsec + UNCORE_DISCOVERY_DVSEC2_OFFSET, &val);
-+
-+		if (val & ~UNCORE_DISCOVERY_DVSEC2_BIR_MASK) {
-+			ret = false;
-+			goto err;
-  		}
-+		bar_offset = UNCORE_DISCOVERY_BIR_BASE +
-+			     (val & UNCORE_DISCOVERY_DVSEC2_BIR_MASK) * 
-UNCORE_DISCOVERY_BIR_STEP;
-+
-+		die = get_device_die_id(dev);
-+		if (die < 0)
-+			continue;
-+
-+		parse_discovery_table(dev, die, bar_offset, &parsed);
-  	}
-
-  	/* None of the discovery tables are available */
-diff --git a/arch/x86/events/intel/uncore_discovery.h 
-b/arch/x86/events/intel/uncore_discovery.h
-index 6d735611..84d56e5 100644
---- a/arch/x86/events/intel/uncore_discovery.h
-+++ b/arch/x86/events/intel/uncore_discovery.h
-@@ -2,12 +2,6 @@
-
-  /* Generic device ID of a discovery table device */
-  #define UNCORE_DISCOVERY_TABLE_DEVICE		0x09a7
--/* Capability ID for a discovery table device */
--#define UNCORE_EXT_CAP_ID_DISCOVERY		0x23
--/* First DVSEC offset */
--#define UNCORE_DISCOVERY_DVSEC_OFFSET		0x8
--/* Mask of the supported discovery entry type */
--#define UNCORE_DISCOVERY_DVSEC_ID_MASK		0xffff
-  /* PMON discovery entry type ID */
-  #define UNCORE_DISCOVERY_DVSEC_ID_PMON		0x1
-  /* Second DVSEC offset */
--- 
-2.7.4
-
-Thanks,
-Kan
-
-> ---
->   drivers/pci/pci.c   | 32 ++++++++++++++++++++++++++++++++
->   include/linux/pci.h |  1 +
->   2 files changed, 33 insertions(+)
-> 
-> diff --git a/drivers/pci/pci.c b/drivers/pci/pci.c
-> index ce2ab62b64cf..94ac86ff28b0 100644
-> --- a/drivers/pci/pci.c
-> +++ b/drivers/pci/pci.c
-> @@ -732,6 +732,38 @@ u16 pci_find_vsec_capability(struct pci_dev *dev, u16 vendor, int cap)
->   }
->   EXPORT_SYMBOL_GPL(pci_find_vsec_capability);
->   
-> +/**
-> + * pci_find_dvsec_capability - Find DVSEC for vendor
-> + * @dev: PCI device to query
-> + * @vendor: Vendor ID to match for the DVSEC
-> + * @dvsec: Designated Vendor-specific capability ID
-> + *
-> + * If DVSEC has Vendor ID @vendor and DVSEC ID @dvsec return the capability
-> + * offset in config space; otherwise return 0.
-> + */
-> +u16 pci_find_dvsec_capability(struct pci_dev *dev, u16 vendor, u16 dvsec)
-> +{
-> +	int pos;
-> +
-> +	pos = pci_find_ext_capability(dev, PCI_EXT_CAP_ID_DVSEC);
-> +	if (!pos)
-> +		return 0;
-> +
-> +	while (pos) {
-> +		u16 v, id;
-> +
-> +		pci_read_config_word(dev, pos + PCI_DVSEC_HEADER1, &v);
-> +		pci_read_config_word(dev, pos + PCI_DVSEC_HEADER2, &id);
-> +		if (vendor == v && dvsec == id)
-> +			return pos;
-> +
-> +		pos = pci_find_next_ext_capability(dev, pos, PCI_EXT_CAP_ID_DVSEC);
-> +	}
-> +
-> +	return 0;
-> +}
-> +EXPORT_SYMBOL_GPL(pci_find_dvsec_capability);
-> +
->   /**
->    * pci_find_parent_resource - return resource region of parent bus of given
->    *			      region
-> diff --git a/include/linux/pci.h b/include/linux/pci.h
-> index cd8aa6fce204..c93ccfa4571b 100644
-> --- a/include/linux/pci.h
-> +++ b/include/linux/pci.h
-> @@ -1130,6 +1130,7 @@ u16 pci_find_ext_capability(struct pci_dev *dev, int cap);
->   u16 pci_find_next_ext_capability(struct pci_dev *dev, u16 pos, int cap);
->   struct pci_bus *pci_find_next_bus(const struct pci_bus *from);
->   u16 pci_find_vsec_capability(struct pci_dev *dev, u16 vendor, int cap);
-> +u16 pci_find_dvsec_capability(struct pci_dev *dev, u16 vendor, u16 dvsec);
->   
->   u64 pci_get_dsn(struct pci_dev *dev);
->   
-> 
+--Andy
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
