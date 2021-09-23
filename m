@@ -2,184 +2,92 @@ Return-Path: <SRS0=900o=ON=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-3.6 required=3.0 tests=BAYES_00,DKIM_INVALID,
-	DKIM_SIGNED,HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,SPF_HELO_NONE,
-	SPF_PASS,URIBL_BLOCKED autolearn=no autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-15.3 required=3.0 tests=BAYES_00,
+	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_CR_TRAILER,INCLUDES_PATCH,
+	MAILING_LIST_MULTI,NICE_REPLY_A,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,
+	USER_AGENT_SANE_1 autolearn=ham autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4C073C433EF
-	for <iommu@archiver.kernel.org>; Thu, 23 Sep 2021 09:15:20 +0000 (UTC)
-Received: from smtp3.osuosl.org (smtp3.osuosl.org [140.211.166.136])
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E2B6AC4332F
+	for <iommu@archiver.kernel.org>; Thu, 23 Sep 2021 09:48:00 +0000 (UTC)
+Received: from smtp2.osuosl.org (smtp2.osuosl.org [140.211.166.133])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id DF61A6124D
-	for <iommu@archiver.kernel.org>; Thu, 23 Sep 2021 09:15:19 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.4.1 mail.kernel.org DF61A6124D
-Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=intel.com
+	by mail.kernel.org (Postfix) with ESMTPS id 9589B6121F
+	for <iommu@archiver.kernel.org>; Thu, 23 Sep 2021 09:48:00 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.4.1 mail.kernel.org 9589B6121F
+Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=csgroup.eu
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by smtp3.osuosl.org (Postfix) with ESMTP id 9BF5760B36;
-	Thu, 23 Sep 2021 09:15:19 +0000 (UTC)
+	by smtp2.osuosl.org (Postfix) with ESMTP id 5189640155;
+	Thu, 23 Sep 2021 09:48:00 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from smtp3.osuosl.org ([127.0.0.1])
-	by localhost (smtp3.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id o33iXKpV-DBe; Thu, 23 Sep 2021 09:15:18 +0000 (UTC)
+Received: from smtp2.osuosl.org ([127.0.0.1])
+	by localhost (smtp2.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+	with ESMTP id YJ7kFPgALWJu; Thu, 23 Sep 2021 09:47:59 +0000 (UTC)
 Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by smtp3.osuosl.org (Postfix) with ESMTPS id 61B87607A5;
-	Thu, 23 Sep 2021 09:15:18 +0000 (UTC)
+	by smtp2.osuosl.org (Postfix) with ESMTPS id 1B6B940151;
+	Thu, 23 Sep 2021 09:47:59 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 2BC78C0011;
-	Thu, 23 Sep 2021 09:15:18 +0000 (UTC)
-Received: from smtp2.osuosl.org (smtp2.osuosl.org [IPv6:2605:bc80:3010::133])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 1A76BC000D
- for <iommu@lists.linux-foundation.org>; Thu, 23 Sep 2021 09:15:17 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id E02AEC0011;
+	Thu, 23 Sep 2021 09:47:58 +0000 (UTC)
+Received: from smtp2.osuosl.org (smtp2.osuosl.org [140.211.166.133])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 99C2CC000D
+ for <iommu@lists.linux-foundation.org>; Thu, 23 Sep 2021 09:47:57 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by smtp2.osuosl.org (Postfix) with ESMTP id E841440713
- for <iommu@lists.linux-foundation.org>; Thu, 23 Sep 2021 09:15:16 +0000 (UTC)
+ by smtp2.osuosl.org (Postfix) with ESMTP id 717FC40155
+ for <iommu@lists.linux-foundation.org>; Thu, 23 Sep 2021 09:47:57 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Authentication-Results: smtp2.osuosl.org (amavisd-new);
- dkim=pass (1024-bit key) header.d=intel.onmicrosoft.com
 Received: from smtp2.osuosl.org ([127.0.0.1])
  by localhost (smtp2.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id Eu6Fd9JFcmbn for <iommu@lists.linux-foundation.org>;
- Thu, 23 Sep 2021 09:15:15 +0000 (UTC)
-X-Greylist: domain auto-whitelisted by SQLgrey-1.8.0
-Received: from mga18.intel.com (mga18.intel.com [134.134.136.126])
- by smtp2.osuosl.org (Postfix) with ESMTPS id 53D7440151
- for <iommu@lists.linux-foundation.org>; Thu, 23 Sep 2021 09:15:15 +0000 (UTC)
-X-IronPort-AV: E=McAfee;i="6200,9189,10115"; a="210878351"
-X-IronPort-AV: E=Sophos;i="5.85,316,1624345200"; d="scan'208";a="210878351"
-Received: from orsmga005.jf.intel.com ([10.7.209.41])
- by orsmga106.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384;
- 23 Sep 2021 02:15:04 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.85,316,1624345200"; d="scan'208";a="653595765"
-Received: from fmsmsx605.amr.corp.intel.com ([10.18.126.85])
- by orsmga005.jf.intel.com with ESMTP; 23 Sep 2021 02:15:04 -0700
-Received: from fmsmsx612.amr.corp.intel.com (10.18.126.92) by
- fmsmsx605.amr.corp.intel.com (10.18.126.85) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2242.12; Thu, 23 Sep 2021 02:15:03 -0700
-Received: from fmsmsx611.amr.corp.intel.com (10.18.126.91) by
- fmsmsx612.amr.corp.intel.com (10.18.126.92) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2242.12; Thu, 23 Sep 2021 02:15:03 -0700
-Received: from FMSEDG603.ED.cps.intel.com (10.1.192.133) by
- fmsmsx611.amr.corp.intel.com (10.18.126.91) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2242.12 via Frontend Transport; Thu, 23 Sep 2021 02:15:03 -0700
-Received: from NAM10-MW2-obe.outbound.protection.outlook.com (104.47.55.109)
- by edgegateway.intel.com (192.55.55.68) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.1.2242.12; Thu, 23 Sep 2021 02:15:03 -0700
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=RbijrnbErYrLAJxBI+9cvZ0OAFgdUuKpW6gzvE3RVb6vyiSedep/n9Fisk82nAVxHgMYDoONvqEaj/8w7t1S+mZqJIzj1bzwALhMLRFhDrdT2Ke2C4l6fzW4+N5bEG+qvFQ9bYAO60FiTrrExBr9U35bVc5xdovljswT392t3Q5t4mZABHLkA35Jy8nbeo6A4O5iHU6mmekQqDMoEEGbpxWvzOg1NMpptyp7vdEdPw41Htp4V+GlpAvxwJYL+afHo20tix/KRYurRptGCCPJMFtEeX9cl5JOFBtdFPe9qSD7DEkydS0tjh581dVoXj52G8W+mFtPS1zTt10lLoSEpw==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com; 
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version; 
- bh=ykHhi308yYleTiYaxcTjdclWmESQ/EtedYw5h4fczaE=;
- b=lEGutTMTzaGjtNX+jbVrmpmqBEiNLlzp9LCzg/K6QrISJ7v1woT6s9YmsSmxvvxTEmOUL6iQWl34dJgHMC9wkOhQ1vdnS/KNy5HOTFbQDAqYCpAahq662BW7Ez4RYeoQTk/rZlyfk+T11Bw3rcEsv689KTPX7vaX+DgiQqwKIWW7KY06kjWHTVD7jPd+9IS9c+z9ZNekEyup8xYK4i2XR16m8tqx1swLQyu5VOIKGqwvF6lMk0qxISPas+3eNggisRCsFmFCyQ04Oq8Nu7oZBjQpX0t0AM7Cnj2Ssa9xjoqkiD6HOr+LC1yeR+xQTnkX30tLd2Q8lfgLpx3l5GgagQ==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=intel.com; dmarc=pass action=none header.from=intel.com;
- dkim=pass header.d=intel.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=intel.onmicrosoft.com; 
- s=selector2-intel-onmicrosoft-com;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=ykHhi308yYleTiYaxcTjdclWmESQ/EtedYw5h4fczaE=;
- b=rEWstepvVVq8RifAq1cBVZDeKxYZy3MxYNl+pcPMNBU8ZgeqtdJvL1qFdZBE08xVj7OdqDp3n3ydERjWPdVpGOMLoMrRM8t2Q2alUncQBsVpKbiKNT5HC0X5bxS5Vnsicr6dTR5O5awbfLTmhcCaeN6NG/6H/decuDUCxyHrOxs=
-Received: from BN9PR11MB5433.namprd11.prod.outlook.com (2603:10b6:408:11e::13)
- by BN7PR11MB2852.namprd11.prod.outlook.com (2603:10b6:406:a9::26)
- with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4544.14; Thu, 23 Sep
- 2021 09:14:59 +0000
-Received: from BN9PR11MB5433.namprd11.prod.outlook.com
- ([fe80::ddb7:fa7f:2cc:45df]) by BN9PR11MB5433.namprd11.prod.outlook.com
- ([fe80::ddb7:fa7f:2cc:45df%8]) with mapi id 15.20.4544.015; Thu, 23 Sep 2021
- 09:14:59 +0000
-From: "Tian, Kevin" <kevin.tian@intel.com>
-To: Jason Gunthorpe <jgg@nvidia.com>
-Subject: RE: [RFC 11/20] iommu/iommufd: Add IOMMU_IOASID_ALLOC/FREE
-Thread-Topic: [RFC 11/20] iommu/iommufd: Add IOMMU_IOASID_ALLOC/FREE
-Thread-Index: AQHXrSGPLoYXtOF3o0iA7Cse+/LM66uuxm8AgACjoWCAALKBgIABNQdA
-Date: Thu, 23 Sep 2021 09:14:58 +0000
-Message-ID: <BN9PR11MB5433A47FFA0A8C51643AA33C8CA39@BN9PR11MB5433.namprd11.prod.outlook.com>
-References: <20210919063848.1476776-1-yi.l.liu@intel.com>
- <20210919063848.1476776-12-yi.l.liu@intel.com>
- <20210921174438.GW327412@nvidia.com>
- <BN9PR11MB543362CEBDAD02DA9F06D8ED8CA29@BN9PR11MB5433.namprd11.prod.outlook.com>
- <20210922140911.GT327412@nvidia.com>
-In-Reply-To: <20210922140911.GT327412@nvidia.com>
-Accept-Language: en-US
-Content-Language: en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-authentication-results: nvidia.com; dkim=none (message not signed)
- header.d=none;nvidia.com; dmarc=none action=none header.from=intel.com;
-x-ms-publictraffictype: Email
-x-ms-office365-filtering-correlation-id: edaf3c84-45e0-4478-ca6c-08d97e729de6
-x-ms-traffictypediagnostic: BN7PR11MB2852:
-x-ld-processed: 46c98d88-e344-4ed4-8496-4ed7712e255d,ExtAddr
-x-ms-exchange-transport-forked: True
-x-microsoft-antispam-prvs: <BN7PR11MB2852015A11EF47D4AFCFBF538CA39@BN7PR11MB2852.namprd11.prod.outlook.com>
-x-ms-oob-tlc-oobclassifiers: OLM:9508;
-x-ms-exchange-senderadcheck: 1
-x-ms-exchange-antispam-relay: 0
-x-microsoft-antispam: BCL:0;
-x-microsoft-antispam-message-info: UZ6d9pMQoD4WqoIIxZrEN+9EpXds6I5cr0KwM3plbsaUX6cIk1ailYpw8vkcMedut+5wr4oGQRSfTiF6ZiIRUmHbSxMPFAhqSPVyZ9ecKrLAdI36KFUXuHC5SHyuxi19wDPBmqQWtmLOoYziEn0MyDwJybJSszuoT23mpCqadaSBsqrLcdPAwgQl5YLfvW2XsW8D/Wghj+I5jy4i6v+n1cPsKCdFM2B9CmSbjNLQrBgK3hpg3J47lnnTQ/yRqj1hqP1ptp0AeJSzRHtw4Hyx3XpePZhhZUnlujMUmmBe0APkpjJ1DTebpbHh3m8T0cZEvH8KPPnCqKwphiFFmisu4VFV1Mvg4wHjFA50+vNa7UjYe+dATPvNMiEnfQNnfYrykPEZkm2ycG2UC8+RWtV+AVdojtkVWvaxq+6kewNWTF75kXNQ6O8LhbOtjUpGowMjRo4jc0xhXnW6Y1ERA3g4S0p0cFzJ6c34vEYesBcqtWcnRaV/DDpZtDekGEIcPPxvNdIFnsSqOEO9MJqQ46RkSlMqrojO69B6aGJEwQa+cGSrMmfIImXDiYPkNTJDtjToaoyustARNV+3dAqITFWRlkBWCkzN4CMJBE48gtxlNkj7lO9mmQgHUfjDvHbBUMEGSjGa6tF4F91tBJjvn7dBZD80CJPwNJbM4d7TWE3sBbzwduZoxHK32a8mWud/rixXji49KqKZYFQ/AgrUmHRLDlLXvPSAMpu6Ad7sZKBLnKWKupqSONfkjMjAbMdPBOCp9JTqITIeAztzKQhqHLL9fYfOl1Msh3aIH4ch1FSG1Lpme8tx1hsxZzvpKWBnrr6n6qD3T1FjCy2Jb6VzXckt9DYFePsuygjWUWBMTKbfmgAxcu7Fw0FcGKcs6J56WXKr
-x-forefront-antispam-report: CIP:255.255.255.255; CTRY:; LANG:en; SCL:1; SRV:;
- IPV:NLI; SFV:NSPM; H:BN9PR11MB5433.namprd11.prod.outlook.com; PTR:; CAT:NONE;
- SFS:(4636009)(366004)(8936002)(52536014)(6506007)(26005)(66476007)(6916009)(33656002)(2906002)(5660300002)(122000001)(38100700002)(186003)(7696005)(54906003)(66946007)(55016002)(966005)(83380400001)(76116006)(7416002)(38070700005)(508600001)(4326008)(66446008)(9686003)(64756008)(8676002)(71200400001)(86362001)(316002)(66556008)(21314003)(84603001);
- DIR:OUT; SFP:1102; 
-x-ms-exchange-antispam-messagedata-chunkcount: 1
-x-ms-exchange-antispam-messagedata-0: =?us-ascii?Q?op0X2wkq7Tn38SLdQ1CWwRjiVbJuZKB0QBMWJbINVHAj0tkDWa9cziP9e8YZ?=
- =?us-ascii?Q?VQSZNpBs8oZHwXWXkUDTb+2Vys2HOzGSfvlzS0rklZDvzB92D1Cwp+4mkeIN?=
- =?us-ascii?Q?TQ5s2PIE0ZcOYQIS/ycFk/6H/VfHQjcuR4hAlw5R/HIiqSXTanyMq2/VOFpW?=
- =?us-ascii?Q?f5IDvkNGZ7v1HvFSLOZLdT+U3Z6ThTUQ/PVYS9mt0PpCMWYENRxD7xRSg8co?=
- =?us-ascii?Q?6Tv+zk6FiFKXNFk+mp3DdLcYelBkKldfWEwcsXnxAr8sPxecSLVdZ2Bf/HJw?=
- =?us-ascii?Q?eoohAOaadmwZX5xpAYQUqxoblO3HWm/6xHfxMkZiptuEnTlrZeHoBrpG0Ffr?=
- =?us-ascii?Q?XDtCrKEvsAoUPo28WF3IAUarZODV1mZeJZponi2wcN1XrRUUlhiaCG4xce9o?=
- =?us-ascii?Q?tvTroz7Lsqio8MqMym/gMcNEg9Vrd6EHdel5zZ+L6W+xarF6ApvLTokIHBT8?=
- =?us-ascii?Q?QGtW12sysEiNz8KpyqYzPl+mX5HP+4j8TX8LbKUi1Vy4dp5fgI7QuS5eYRLl?=
- =?us-ascii?Q?8RbW6rk1Knyf8UzCF0JAsDRbsRdBmFVh+q+0m8GPnap3kGMWbVxJFl3SXvjf?=
- =?us-ascii?Q?ZWjDUMQXo0dftxvIi5fmshsigOHx9iXcVS3BmfbrU0CR8o3FA52idFGhXFkh?=
- =?us-ascii?Q?OX9AGo7tZ0l0iet2TXQ2Z4/c+SP7BqzgopjTlwdqCdcynLEbbeL2ZAc3VvQP?=
- =?us-ascii?Q?qvBS5sHH3bi59/btyoWTgPT3zbz98Y8q/6N2D9EA9hYlxODH7ebFCvj7DGa/?=
- =?us-ascii?Q?7/nXyxpVuebMh4J7Tu/nlbihtmvi844nI1kBzgd2/XR/M+aYha38YVCZ44ZF?=
- =?us-ascii?Q?oOCaxlnMH0XlNBogPJiSX49R0lxLyRn49mybRkS46O3MHL/LVuDOuhSS73e6?=
- =?us-ascii?Q?tzFGoHS8lu7DcEYAHnZP0w+ecaghc3jYyIVDLnkeLWFJIC5gbXDTwKA+k/1f?=
- =?us-ascii?Q?9IhTh/NPOCME0B3GJOkFs2xZ6TiN4FyYjyly8WmVQXLo8J7xQd8U68x4FmyI?=
- =?us-ascii?Q?yvPdrG8ZVZDx28a0UbLIqQT0NpduipZ+sQ9eeIvazx1jCyNXsNRfFaXAwDfJ?=
- =?us-ascii?Q?av8/tWUHldviIkuWshQbE0uKFm/QsDeBu57GfDAJkp5MmseutJinYOKATS07?=
- =?us-ascii?Q?Q97KnQ97PC8aGwXEPkEt6qDSyAITG32BkjSH77IpWxJrlwvYSZrnhUF+tMgh?=
- =?us-ascii?Q?Hb8hIYvmkv9yXXzk9e9DS/cTerP2oy/JY+dw+z6hfGiWSPqHWSR7raAdW4ur?=
- =?us-ascii?Q?/Z3348gxyNN7jTLbd5IXKTzeO1+lB01D7fWebsAipufcl3IZBYDg/OqIKfFc?=
- =?us-ascii?Q?vL1BL3fJ8Rvmw87iBfxibiZW?=
+ with ESMTP id yFEtugPJ09Q2 for <iommu@lists.linux-foundation.org>;
+ Thu, 23 Sep 2021 09:47:56 +0000 (UTC)
+X-Greylist: from auto-whitelisted by SQLgrey-1.8.0
+Received: from pegase2.c-s.fr (pegase2.c-s.fr [93.17.235.10])
+ by smtp2.osuosl.org (Postfix) with ESMTPS id 09A4440151
+ for <iommu@lists.linux-foundation.org>; Thu, 23 Sep 2021 09:47:55 +0000 (UTC)
+Received: from localhost (mailhub3.si.c-s.fr [172.26.127.67])
+ by localhost (Postfix) with ESMTP id 4HFVhS1HTcz9sTZ;
+ Thu, 23 Sep 2021 11:47:52 +0200 (CEST)
+X-Virus-Scanned: amavisd-new at c-s.fr
+Received: from pegase2.c-s.fr ([172.26.127.65])
+ by localhost (pegase2.c-s.fr [127.0.0.1]) (amavisd-new, port 10024)
+ with ESMTP id N2iojAvTUjrW; Thu, 23 Sep 2021 11:47:52 +0200 (CEST)
+Received: from messagerie.si.c-s.fr (messagerie.si.c-s.fr [192.168.25.192])
+ by pegase2.c-s.fr (Postfix) with ESMTP id 4HFVhS0G8Vz9sTX;
+ Thu, 23 Sep 2021 11:47:52 +0200 (CEST)
+Received: from localhost (localhost [127.0.0.1])
+ by messagerie.si.c-s.fr (Postfix) with ESMTP id E65698B775;
+ Thu, 23 Sep 2021 11:47:51 +0200 (CEST)
+X-Virus-Scanned: amavisd-new at c-s.fr
+Received: from messagerie.si.c-s.fr ([127.0.0.1])
+ by localhost (messagerie.si.c-s.fr [127.0.0.1]) (amavisd-new, port 10023)
+ with ESMTP id HEg50hnqH7U5; Thu, 23 Sep 2021 11:47:51 +0200 (CEST)
+Received: from PO20335.IDSI0.si.c-s.fr (unknown [192.168.202.200])
+ by messagerie.si.c-s.fr (Postfix) with ESMTP id 224928B763;
+ Thu, 23 Sep 2021 11:47:50 +0200 (CEST)
+Subject: Re: [PATCH 3/3] memblock: cleanup memblock_free interface
+To: Mike Rapoport <rppt@kernel.org>,
+ Linus Torvalds <torvalds@linux-foundation.org>
+References: <20210923074335.12583-1-rppt@kernel.org>
+ <20210923074335.12583-4-rppt@kernel.org>
+From: Christophe Leroy <christophe.leroy@csgroup.eu>
+Message-ID: <1101e3c7-fcb7-a632-8e22-47f4a01ea02e@csgroup.eu>
+Date: Thu, 23 Sep 2021 11:47:48 +0200
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
+ Thunderbird/78.11.0
 MIME-Version: 1.0
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-AuthSource: BN9PR11MB5433.namprd11.prod.outlook.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: edaf3c84-45e0-4478-ca6c-08d97e729de6
-X-MS-Exchange-CrossTenant-originalarrivaltime: 23 Sep 2021 09:14:58.8423 (UTC)
-X-MS-Exchange-CrossTenant-fromentityheader: Hosted
-X-MS-Exchange-CrossTenant-id: 46c98d88-e344-4ed4-8496-4ed7712e255d
-X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: KfIiOm94Qxn3APEya1EscEr5MQ1za8WeXfAkWsgrJuVyM33glgK5Q/7koPiGbo3mPZPR+pGipSZ4eDsQzLSc+w==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: BN7PR11MB2852
-X-OriginatorOrg: intel.com
-Cc: "kvm@vger.kernel.org" <kvm@vger.kernel.org>,
- "jasowang@redhat.com" <jasowang@redhat.com>,
- "kwankhede@nvidia.com" <kwankhede@nvidia.com>, "hch@lst.de" <hch@lst.de>,
- "jean-philippe@linaro.org" <jean-philippe@linaro.org>, "Jiang,
- Dave" <dave.jiang@intel.com>, "Raj, Ashok" <ashok.raj@intel.com>,
- "corbet@lwn.net" <corbet@lwn.net>, "parav@mellanox.com" <parav@mellanox.com>,
- "alex.williamson@redhat.com" <alex.williamson@redhat.com>,
- "lkml@metux.net" <lkml@metux.net>,
- "david@gibson.dropbear.id.au" <david@gibson.dropbear.id.au>,
- "dwmw2@infradead.org" <dwmw2@infradead.org>, "Tian,
- Jun J" <jun.j.tian@intel.com>,
- "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
- "lushenming@huawei.com" <lushenming@huawei.com>,
- "iommu@lists.linux-foundation.org" <iommu@lists.linux-foundation.org>,
- "pbonzini@redhat.com" <pbonzini@redhat.com>,
- "robin.murphy@arm.com" <robin.murphy@arm.com>
+In-Reply-To: <20210923074335.12583-4-rppt@kernel.org>
+Content-Language: fr-FR
+Cc: devicetree@vger.kernel.org, linux-snps-arc@lists.infradead.org,
+ linux-efi@vger.kernel.org, kvm@vger.kernel.org, linux-sh@vger.kernel.org,
+ linux-s390@vger.kernel.org, linux-usb@vger.kernel.org,
+ linux-um@lists.infradead.org, linux-kernel@vger.kernel.org,
+ kasan-dev@googlegroups.com, Mike Rapoport <rppt@linux.ibm.com>,
+ linux-mm@kvack.org, iommu@lists.linux-foundation.org,
+ linux-alpha@vger.kernel.org, sparclinux@vger.kernel.org,
+ xen-devel@lists.xenproject.org, Andrew Morton <akpm@linux-foundation.org>,
+ linux-mips@vger.kernel.org, linuxppc-dev@lists.ozlabs.org,
+ linux-riscv@lists.infradead.org, linux-arm-kernel@lists.infradead.org
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -192,156 +100,58 @@ List-Post: <mailto:iommu@lists.linux-foundation.org>
 List-Help: <mailto:iommu-request@lists.linux-foundation.org?subject=help>
 List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
  <mailto:iommu-request@lists.linux-foundation.org?subject=subscribe>
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: base64
+Content-Type: text/plain; charset="utf-8"; Format="flowed"
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-> From: Jason Gunthorpe <jgg@nvidia.com>
-> Sent: Wednesday, September 22, 2021 10:09 PM
-> 
-> On Wed, Sep 22, 2021 at 03:40:25AM +0000, Tian, Kevin wrote:
-> > > From: Jason Gunthorpe <jgg@nvidia.com>
-> > > Sent: Wednesday, September 22, 2021 1:45 AM
-> > >
-> > > On Sun, Sep 19, 2021 at 02:38:39PM +0800, Liu Yi L wrote:
-> > > > This patch adds IOASID allocation/free interface per iommufd. When
-> > > > allocating an IOASID, userspace is expected to specify the type and
-> > > > format information for the target I/O page table.
-> > > >
-> > > > This RFC supports only one type
-> (IOMMU_IOASID_TYPE_KERNEL_TYPE1V2),
-> > > > implying a kernel-managed I/O page table with vfio type1v2 mapping
-> > > > semantics. For this type the user should specify the addr_width of
-> > > > the I/O address space and whether the I/O page table is created in
-> > > > an iommu enfore_snoop format. enforce_snoop must be true at this
-> point,
-> > > > as the false setting requires additional contract with KVM on handling
-> > > > WBINVD emulation, which can be added later.
-> > > >
-> > > > Userspace is expected to call IOMMU_CHECK_EXTENSION (see next
-> patch)
-> > > > for what formats can be specified when allocating an IOASID.
-> > > >
-> > > > Open:
-> > > > - Devices on PPC platform currently use a different iommu driver in vfio.
-> > > >   Per previous discussion they can also use vfio type1v2 as long as there
-> > > >   is a way to claim a specific iova range from a system-wide address
-> space.
-> > > >   This requirement doesn't sound PPC specific, as addr_width for pci
-> > > devices
-> > > >   can be also represented by a range [0, 2^addr_width-1]. This RFC
-> hasn't
-> > > >   adopted this design yet. We hope to have formal alignment in v1
-> > > discussion
-> > > >   and then decide how to incorporate it in v2.
-> > >
-> > > I think the request was to include a start/end IO address hint when
-> > > creating the ios. When the kernel creates it then it can return the
-> >
-> > is the hint single-range or could be multiple-ranges?
-> 
-> David explained it here:
-> 
-> https://lore.kernel.org/kvm/YMrKksUeNW%2FPEGPM@yekko/
-> 
-> qeumu needs to be able to chooose if it gets the 32 bit range or 64
-> bit range.
-> 
-> So a 'range hint' will do the job
-> 
-> David also suggested this:
-> 
-> https://lore.kernel.org/kvm/YL6%2FbjHyuHJTn4Rd@yekko/
-> 
-> So I like this better:
-> 
-> struct iommu_ioasid_alloc {
-> 	__u32	argsz;
-> 
-> 	__u32	flags;
-> #define IOMMU_IOASID_ENFORCE_SNOOP	(1 << 0)
-> #define IOMMU_IOASID_HINT_BASE_IOVA	(1 << 1)
-> 
-> 	__aligned_u64 max_iova_hint;
-> 	__aligned_u64 base_iova_hint; // Used only if
-> IOMMU_IOASID_HINT_BASE_IOVA
-> 
-> 	// For creating nested page tables
-> 	__u32 parent_ios_id;
-> 	__u32 format;
-> #define IOMMU_FORMAT_KERNEL 0
-> #define IOMMU_FORMAT_PPC_XXX 2
-> #define IOMMU_FORMAT_[..]
-> 	u32 format_flags; // Layout depends on format above
-> 
-> 	__aligned_u64 user_page_directory;  // Used if parent_ios_id != 0
-> };
-> 
-> Again 'type' as an overall API indicator should not exist, feature
-> flags need to have clear narrow meanings.
-
-currently the type is aimed to differentiate three usages:
-
-- kernel-managed I/O page table
-- user-managed I/O page table
-- shared I/O page table (e.g. with mm, or ept)
-
-we can remove 'type', but is FORMAT_KENREL/USER/SHARED a good
-indicator? their difference is not about format.
-
-> 
-> This does both of David's suggestions at once. If quemu wants the 1G
-> limited region it could specify max_iova_hint = 1G, if it wants the
-> extend 64bit region with the hole it can give either the high base or
-> a large max_iova_hint. format/format_flags allows a further
-
-Dave's links didn't answer one puzzle from me. Does PPC needs accurate
-range information or be ok with a large range including holes (then let
-the kernel to figure out where the holes locate)?
-
-> device-specific escape if more specific customization is needed and is
-> needed to specify user space page tables anyhow.
-
-and I didn't understand the 2nd link. How does user-managed page
-table jump into this range claim problem? I'm getting confused...
-
-> 
-> > > ioas works well here I think. Use ioas_id to refer to the xarray
-> > > index.
-> >
-> > What about when introducing pasid to this uAPI? Then use ioas_id
-> > for the xarray index
-> 
-> Yes, ioas_id should always be the xarray index.
-> 
-> PASID needs to be called out as PASID or as a generic "hw description"
-> blob.
-
-ARM doesn't use PASID. So we need a generic blob, e.g. ioas_hwid?
-
-and still we have both ioas_id (iommufd) and ioasid (ioasid.c) in the
-kernel. Do we want to clear this confusion? Or possibly it's fine because
-ioas_id is never used outside of iommufd and iommufd doesn't directly
-call ioasid_alloc() from ioasid.c?
-
-> 
-> kvm's API to program the vPASID translation table should probably take
-> in a (iommufd,ioas_id,device_id) tuple and extract the IOMMU side
-> information using an in-kernel API. Userspace shouldn't have to
-> shuttle it around.
-
-the vPASID info is carried in VFIO_DEVICE_ATTACH_IOASID uAPI. 
-when kvm calls iommufd with above tuple, vPASID->pPASID is
-returned to kvm. So we still need a generic blob to represent
-vPASID in the uAPI.
-
-> 
-> I'm starting to feel like the struct approach for describing this uAPI
-> might not scale well, but lets see..
-> 
-> Jason
-_______________________________________________
-iommu mailing list
-iommu@lists.linux-foundation.org
-https://lists.linuxfoundation.org/mailman/listinfo/iommu
+CgpMZSAyMy8wOS8yMDIxIMOgIDA5OjQzLCBNaWtlIFJhcG9wb3J0IGEgw6ljcml0wqA6Cj4gRnJv
+bTogTWlrZSBSYXBvcG9ydCA8cnBwdEBsaW51eC5pYm0uY29tPgo+IAo+IEZvciBhZ2VzIG1lbWJs
+b2NrX2ZyZWUoKSBpbnRlcmZhY2UgZGVhbHQgd2l0aCBwaHlzaWNhbCBhZGRyZXNzZXMgZXZlbgo+
+IGRlc3BpdGUgdGhlIGV4aXN0ZW5jZSBvZiBtZW1ibG9ja19hbGxvY194eCgpIGZ1bmN0aW9ucyB0
+aGF0IHJldHVybiBhCj4gdmlydHVhbCBwb2ludGVyLgo+IAo+IEludHJvZHVjZSBtZW1ibG9ja19w
+aHlzX2ZyZWUoKSBmb3IgZnJlZWluZyBwaHlzaWNhbCByYW5nZXMgYW5kIHJlcHVycG9zZQo+IG1l
+bWJsb2NrX2ZyZWUoKSB0byBmcmVlIHZpcnR1YWwgcG9pbnRlcnMgdG8gbWFrZSB0aGUgZm9sbG93
+aW5nIHBhaXJpbmcKPiBhYnVuZGFudGx5IGNsZWFyOgo+IAo+IAlpbnQgbWVtYmxvY2tfcGh5c19m
+cmVlKHBoeXNfYWRkcl90IGJhc2UsIHBoeXNfYWRkcl90IHNpemUpOwo+IAlwaHlzX2FkZHJfdCBt
+ZW1ibG9ja19waHlzX2FsbG9jKHBoeXNfYWRkcl90IGJhc2UsIHBoeXNfYWRkcl90IHNpemUpOwo+
+IAo+IAl2b2lkICptZW1ibG9ja19hbGxvYyhwaHlzX2FkZHJfdCBzaXplLCBwaHlzX2FkZHJfdCBh
+bGlnbik7Cj4gCXZvaWQgbWVtYmxvY2tfZnJlZSh2b2lkICpwdHIsIHNpemVfdCBzaXplKTsKPiAK
+PiBSZXBsYWNlIGludGVybWVkaWF0ZSBtZW1ibG9ja19mcmVlX3B0cigpIHdpdGggbWVtYmxvY2tf
+ZnJlZSgpIGFuZCBkcm9wCj4gdW5uZWNlc3NhcnkgYWxpYXNlcyBtZW1ibG9ja19mcmVlX2Vhcmx5
+KCkgYW5kIG1lbWJsb2NrX2ZyZWVfZWFybHlfbmlkKCkuCj4gCj4gU3VnZ2VzdGVkLWJ5OiBMaW51
+cyBUb3J2YWxkcyA8dG9ydmFsZHNAbGludXgtZm91bmRhdGlvbi5vcmc+Cj4gU2lnbmVkLW9mZi1i
+eTogTWlrZSBSYXBvcG9ydCA8cnBwdEBsaW51eC5pYm0uY29tPgo+IC0tLQoKPiBkaWZmIC0tZ2l0
+IGEvYXJjaC9zMzkwL2tlcm5lbC9zbXAuYyBiL2FyY2gvczM5MC9rZXJuZWwvc21wLmMKPiBpbmRl
+eCAxYTA0ZTViZGY2NTUuLjM3ODI2ZDhjNGY3NCAxMDA2NDQKPiAtLS0gYS9hcmNoL3MzOTAva2Vy
+bmVsL3NtcC5jCj4gKysrIGIvYXJjaC9zMzkwL2tlcm5lbC9zbXAuYwo+IEBAIC03MjMsNyArNzIz
+LDcgQEAgdm9pZCBfX2luaXQgc21wX3NhdmVfZHVtcF9jcHVzKHZvaWQpCj4gICAJCQkvKiBHZXQg
+dGhlIENQVSByZWdpc3RlcnMgKi8KPiAgIAkJCXNtcF9zYXZlX2NwdV9yZWdzKHNhLCBhZGRyLCBp
+c19ib290X2NwdSwgcGFnZSk7Cj4gICAJfQo+IC0JbWVtYmxvY2tfZnJlZShwYWdlLCBQQUdFX1NJ
+WkUpOwo+ICsJbWVtYmxvY2tfcGh5c19mcmVlKHBhZ2UsIFBBR0VfU0laRSk7Cj4gICAJZGlhZ19h
+bW9kZTMxX29wcy5kaWFnMzA4X3Jlc2V0KCk7Cj4gICAJcGNwdV9zZXRfc210KDApOwo+ICAgfQo+
+IEBAIC04ODAsNyArODgwLDcgQEAgdm9pZCBfX2luaXQgc21wX2RldGVjdF9jcHVzKHZvaWQpCj4g
+ICAKPiAgIAkvKiBBZGQgQ1BVcyBwcmVzZW50IGF0IGJvb3QgKi8KPiAgIAlfX3NtcF9yZXNjYW5f
+Y3B1cyhpbmZvLCB0cnVlKTsKPiAtCW1lbWJsb2NrX2ZyZWVfZWFybHkoKHVuc2lnbmVkIGxvbmcp
+aW5mbywgc2l6ZW9mKCppbmZvKSk7Cj4gKwltZW1ibG9ja19mcmVlKGluZm8sIHNpemVvZigqaW5m
+bykpOwo+ICAgfQo+ICAgCj4gICAvKgoKSSdtIGEgYml0IGxvc3QuIElJVUMgbWVtYmxvY2tfZnJl
+ZV9lYXJseSgpIGFuZCBtZW1ibG9ja19mcmVlKCkgd2hlcmUgCmlkZW50aWNhbC4KCkluIHRoZSBm
+aXJzdCBodW5rIG1lbWJsb2NrX2ZyZWUoKSBnZXRzIHJlcGxhY2VkIGJ5IG1lbWJsb2NrX3BoeXNf
+ZnJlZSgpCkluIHRoZSBzZWNvbmQgaHVuayBtZW1ibG9ja19mcmVlX2Vhcmx5KCkgZ2V0cyByZXBs
+YWNlZCBieSBtZW1ibG9ja19mcmVlKCkKCkkgdGhpbmsgaXQgd291bGQgYmUgZWFzaWVyIHRvIGZv
+bGxvdyBpZiB5b3UgY291bGQgc3BsaXQgaXQgaW4gc2V2ZXJhbCAKcGF0Y2hlczoKLSBGaXJzdCBw
+YXRjaDogQ3JlYXRlIG1lbWJsb2NrX3BoeXNfZnJlZSgpIGFuZCBjaGFuZ2UgYWxsIHJlbGV2YW50
+IAptZW1ibG9ja19mcmVlKCkgdG8gbWVtYmxvY2tfcGh5c19mcmVlKCkgLSBPciBjaGFuZ2UgbWVt
+YmxvY2tfZnJlZSgpIHRvIAptZW1ibG9ja19waHlzX2ZyZWUoKSBhbmQgbWFrZSBtZW1ibG9ja19m
+cmVlKCkgYW4gYWxpYXMgb2YgaXQuCi0gU2Vjb25kIHBhdGNoOiBNYWtlIG1lbWJsb2NrX2ZyZWVf
+cHRyKCkgYmVjb21lIG1lbWJsb2NrX2ZyZWUoKSBhbmQgCmNoYW5nZSBhbGwgcmVtYWluaW5nIGNh
+bGxlcnMgdG8gdGhlIG5ldyBzZW1hbnRpY3MgKElJVUMgCm1lbWJsb2NrX2ZyZWUoX19wYShwdHIp
+KSBiZWNvbWVzIG1lbWJsb2NrX2ZyZWUocHRyKSBhbmQgbWFrZSAKbWVtYmxvY2tfZnJlZV9wdHIo
+KSBhbiBhbGlhcyBvZiBtZW1ibG9ja19mcmVlKCkKLSBGb3VydGggcGF0Y2g6IFJlcGxhY2UgYW5k
+IGRyb3AgbWVtYmxvY2tfZnJlZV9wdHIoKQotIEZpZnRoIHBhdGNoOiBEcm9wIG1lbWJsb2NrX2Zy
+ZWVfZWFybHkoKSBhbmQgbWVtYmxvY2tfZnJlZV9lYXJseV9uaWQoKSAKKEFsbCB1c2VycyBzaG91
+bGQgaGF2ZSBiZWVuIHVwZ3JhZGVkIHRvIG1lbWJsb2NrX2ZyZWVfcGh5cygpIGluIHBhdGNoIDEg
+Cm9yIG1lbWJsb2NrX2ZyZWUoKSBpbiBwYXRjaCAyKQoKQ2hyaXN0b3BoZQpfX19fX19fX19fX19f
+X19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fXwppb21tdSBtYWlsaW5nIGxpc3QKaW9t
+bXVAbGlzdHMubGludXgtZm91bmRhdGlvbi5vcmcKaHR0cHM6Ly9saXN0cy5saW51eGZvdW5kYXRp
+b24ub3JnL21haWxtYW4vbGlzdGluZm8vaW9tbXU=
