@@ -2,76 +2,73 @@ Return-Path: <SRS0=900o=ON=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-8.8 required=3.0 tests=BAYES_00,
-	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,SPF_HELO_NONE,
-	SPF_PASS,URIBL_BLOCKED autolearn=ham autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-16.8 required=3.0 tests=BAYES_00,
+	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_CR_TRAILER,INCLUDES_PATCH,
+	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_GIT
+	autolearn=ham autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E8F7BC433EF
-	for <iommu@archiver.kernel.org>; Thu, 23 Sep 2021 17:14:50 +0000 (UTC)
-Received: from smtp3.osuosl.org (smtp3.osuosl.org [140.211.166.136])
+	by smtp.lore.kernel.org (Postfix) with ESMTP id CA73FC433F5
+	for <iommu@archiver.kernel.org>; Thu, 23 Sep 2021 17:43:13 +0000 (UTC)
+Received: from smtp1.osuosl.org (smtp1.osuosl.org [140.211.166.138])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 9B1CC610A0
-	for <iommu@archiver.kernel.org>; Thu, 23 Sep 2021 17:14:50 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.4.1 mail.kernel.org 9B1CC610A0
+	by mail.kernel.org (Postfix) with ESMTPS id 8165C61241
+	for <iommu@archiver.kernel.org>; Thu, 23 Sep 2021 17:43:13 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.4.1 mail.kernel.org 8165C61241
 Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=intel.com
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by smtp3.osuosl.org (Postfix) with ESMTP id 62D79607BA;
-	Thu, 23 Sep 2021 17:14:50 +0000 (UTC)
+	by smtp1.osuosl.org (Postfix) with ESMTP id 5413184142;
+	Thu, 23 Sep 2021 17:43:13 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from smtp3.osuosl.org ([127.0.0.1])
-	by localhost (smtp3.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id XTifvF8tVvv3; Thu, 23 Sep 2021 17:14:49 +0000 (UTC)
-Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [IPv6:2605:bc80:3010:104::8cd3:938])
-	by smtp3.osuosl.org (Postfix) with ESMTPS id 4600860774;
-	Thu, 23 Sep 2021 17:14:49 +0000 (UTC)
+Received: from smtp1.osuosl.org ([127.0.0.1])
+	by localhost (smtp1.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+	with ESMTP id e1AjhxJza1ud; Thu, 23 Sep 2021 17:43:12 +0000 (UTC)
+Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
+	by smtp1.osuosl.org (Postfix) with ESMTPS id 361F18410D;
+	Thu, 23 Sep 2021 17:43:12 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id EBF28C0011;
-	Thu, 23 Sep 2021 17:14:48 +0000 (UTC)
-Received: from smtp4.osuosl.org (smtp4.osuosl.org [IPv6:2605:bc80:3010::137])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 9F83CC000D
- for <iommu@lists.linux-foundation.org>; Thu, 23 Sep 2021 17:14:47 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 9AE65C0023;
+	Thu, 23 Sep 2021 17:43:11 +0000 (UTC)
+Received: from smtp2.osuosl.org (smtp2.osuosl.org [140.211.166.133])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 233ADC000D
+ for <iommu@lists.linux-foundation.org>; Thu, 23 Sep 2021 17:26:56 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by smtp4.osuosl.org (Postfix) with ESMTP id 80B9140517
- for <iommu@lists.linux-foundation.org>; Thu, 23 Sep 2021 17:14:47 +0000 (UTC)
+ by smtp2.osuosl.org (Postfix) with ESMTP id ED9C0403FF
+ for <iommu@lists.linux-foundation.org>; Thu, 23 Sep 2021 17:26:54 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from smtp4.osuosl.org ([127.0.0.1])
- by localhost (smtp4.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id lDbRH9n2JKTk for <iommu@lists.linux-foundation.org>;
- Thu, 23 Sep 2021 17:14:45 +0000 (UTC)
+Received: from smtp2.osuosl.org ([127.0.0.1])
+ by localhost (smtp2.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+ with ESMTP id I1Ea6AyvAm2V for <iommu@lists.linux-foundation.org>;
+ Thu, 23 Sep 2021 17:26:53 +0000 (UTC)
 X-Greylist: domain auto-whitelisted by SQLgrey-1.8.0
-Received: from mga12.intel.com (mga12.intel.com [192.55.52.136])
- by smtp4.osuosl.org (Postfix) with ESMTPS id A48AE40505
- for <iommu@lists.linux-foundation.org>; Thu, 23 Sep 2021 17:14:45 +0000 (UTC)
-X-IronPort-AV: E=McAfee;i="6200,9189,10116"; a="203396644"
-X-IronPort-AV: E=Sophos;i="5.85,316,1624345200"; d="scan'208";a="203396644"
-Received: from fmsmga003.fm.intel.com ([10.253.24.29])
- by fmsmga106.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384;
- 23 Sep 2021 10:14:44 -0700
-X-IronPort-AV: E=Sophos;i="5.85,316,1624345200"; d="scan'208";a="551227833"
-Received: from agluck-desk2.sc.intel.com (HELO
- agluck-desk2.amr.corp.intel.com) ([10.3.52.146])
- by fmsmga003-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384;
- 23 Sep 2021 10:14:44 -0700
-Date: Thu, 23 Sep 2021 10:14:42 -0700
-From: "Luck, Tony" <tony.luck@intel.com>
-To: Peter Zijlstra <peterz@infradead.org>
-Subject: Re: [PATCH 4/8] x86/traps: Demand-populate PASID MSR via #GP
-Message-ID: <YUy2AmabA4ODOgAC@agluck-desk2.amr.corp.intel.com>
-References: <20210920192349.2602141-1-fenghua.yu@intel.com>
- <20210920192349.2602141-5-fenghua.yu@intel.com>
- <20210922210722.GV4323@worktop.programming.kicks-ass.net>
+Received: from mga09.intel.com (mga09.intel.com [134.134.136.24])
+ by smtp2.osuosl.org (Postfix) with ESMTPS id B6410400B5
+ for <iommu@lists.linux-foundation.org>; Thu, 23 Sep 2021 17:26:53 +0000 (UTC)
+X-IronPort-AV: E=McAfee;i="6200,9189,10116"; a="223933655"
+X-IronPort-AV: E=Sophos;i="5.85,316,1624345200"; d="scan'208";a="223933655"
+Received: from fmsmga005.fm.intel.com ([10.253.24.32])
+ by orsmga102.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384;
+ 23 Sep 2021 10:26:52 -0700
+X-IronPort-AV: E=Sophos;i="5.85,316,1624345200"; d="scan'208";a="704832519"
+Received: from unknown (HELO bad-guy.kumite) ([10.252.132.140])
+ by fmsmga005-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384;
+ 23 Sep 2021 10:26:51 -0700
+From: Ben Widawsky <ben.widawsky@intel.com>
+To: linux-cxl@vger.kernel.org
+Subject: [PATCH v2 1/9] cxl: Convert "RBI" to enum
+Date: Thu, 23 Sep 2021 10:26:39 -0700
+Message-Id: <20210923172647.72738-2-ben.widawsky@intel.com>
+X-Mailer: git-send-email 2.33.0
+In-Reply-To: <20210923172647.72738-1-ben.widawsky@intel.com>
+References: <20210923172647.72738-1-ben.widawsky@intel.com>
 MIME-Version: 1.0
-Content-Disposition: inline
-In-Reply-To: <20210922210722.GV4323@worktop.programming.kicks-ass.net>
-Cc: Fenghua Yu <fenghua.yu@intel.com>, Dave Jiang <dave.jiang@intel.com>,
- Ashok Raj <ashok.raj@intel.com>, Ravi V Shankar <ravi.v.shankar@intel.com>,
- x86 <x86@kernel.org>, linux-kernel <linux-kernel@vger.kernel.org>,
- Dave Hansen <dave.hansen@intel.com>, iommu@lists.linux-foundation.org,
- Ingo Molnar <mingo@redhat.com>, Borislav Petkov <bp@alien8.de>,
- Jacob Jun Pan <jacob.jun.pan@intel.com>, Andy Lutomirski <luto@kernel.org>,
- Josh Poimboeuf <jpoimboe@redhat.com>, Thomas Gleixner <tglx@linutronix.de>
+X-Mailman-Approved-At: Thu, 23 Sep 2021 17:43:10 +0000
+Cc: Ben Widawsky <ben.widawsky@intel.com>, Andrew Donnellan <ajd@linux.ibm.com>,
+ linux-pci@vger.kernel.org, linuxppc-dev@lists.ozlabs.org,
+ iommu@lists.linux-foundation.org, Bjorn Helgaas <helgaas@kernel.org>,
+ "David E. Box" <david.e.box@linux.intel.com>,
+ David Woodhouse <dwmw2@infradead.org>, Kan Liang <kan.liang@linux.intel.com>
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -89,28 +86,51 @@ Content-Transfer-Encoding: 7bit
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-On Wed, Sep 22, 2021 at 11:07:22PM +0200, Peter Zijlstra wrote:
-> On Mon, Sep 20, 2021 at 07:23:45PM +0000, Fenghua Yu wrote:
-> > @@ -538,6 +547,9 @@ DEFINE_IDTENTRY_ERRORCODE(exc_general_protection)
-> >  
-> >  	cond_local_irq_enable(regs);
-> >  
-> > +	if (user_mode(regs) && fixup_pasid_exception())
-> > +		goto exit;
-> > +
+In preparation for passing around the Register Block Indicator (RBI) as
+a parameter, it is desirable to convert the type to an enum so that the
+interface can use a well defined type checked parameter.
 
-> So you're eating any random #GP that might or might not be PASID
-> related. And all that witout a comment... Enlighten?
+As a result of this change, should future versions of the spec add
+sparsely defined identifiers, it could become a problem if checking for
+invalid identifiers since the code currently checks for the max
+identifier. This is not an issue with current spec, and the algorithm to
+obtain the register blocks will change before those possible additions
+are made.
 
-This is moderately well commented inside the fixup_pasid_exception()
-function. Another copy of the comments here at the call-site seems
-overkill.
+Signed-off-by: Ben Widawsky <ben.widawsky@intel.com>
+---
+ drivers/cxl/pci.h | 14 ++++++++------
+ 1 file changed, 8 insertions(+), 6 deletions(-)
 
-Would it help to change the name to try_fixup_pasid_exception()
-to make it clearer that this is just a heuristic that may or may
-not fix this particular #GP?
+diff --git a/drivers/cxl/pci.h b/drivers/cxl/pci.h
+index 8c1a58813816..7d3e4bf06b45 100644
+--- a/drivers/cxl/pci.h
++++ b/drivers/cxl/pci.h
+@@ -20,13 +20,15 @@
+ #define CXL_REGLOC_BIR_MASK GENMASK(2, 0)
+ 
+ /* Register Block Identifier (RBI) */
+-#define CXL_REGLOC_RBI_MASK GENMASK(15, 8)
+-#define CXL_REGLOC_RBI_EMPTY 0
+-#define CXL_REGLOC_RBI_COMPONENT 1
+-#define CXL_REGLOC_RBI_VIRT 2
+-#define CXL_REGLOC_RBI_MEMDEV 3
+-#define CXL_REGLOC_RBI_TYPES CXL_REGLOC_RBI_MEMDEV + 1
++enum cxl_regloc_type {
++	CXL_REGLOC_RBI_EMPTY = 0,
++	CXL_REGLOC_RBI_COMPONENT,
++	CXL_REGLOC_RBI_VIRT,
++	CXL_REGLOC_RBI_MEMDEV,
++	CXL_REGLOC_RBI_TYPES
++};
+ 
++#define CXL_REGLOC_RBI_MASK GENMASK(15, 8)
+ #define CXL_REGLOC_ADDR_MASK GENMASK(31, 16)
+ 
+ #endif /* __CXL_PCI_H__ */
+-- 
+2.33.0
 
--Tony
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
