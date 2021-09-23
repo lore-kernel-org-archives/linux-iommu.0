@@ -7,63 +7,63 @@ X-Spam-Status: No, score=-16.8 required=3.0 tests=BAYES_00,
 	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,UNPARSEABLE_RELAY,URIBL_BLOCKED,
 	USER_AGENT_GIT autolearn=ham autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 89C4BC433EF
-	for <iommu@archiver.kernel.org>; Thu, 23 Sep 2021 11:59:59 +0000 (UTC)
-Received: from smtp3.osuosl.org (smtp3.osuosl.org [140.211.166.136])
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8BA18C433EF
+	for <iommu@archiver.kernel.org>; Thu, 23 Sep 2021 12:00:11 +0000 (UTC)
+Received: from smtp1.osuosl.org (smtp1.osuosl.org [140.211.166.138])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 553B56115A
-	for <iommu@archiver.kernel.org>; Thu, 23 Sep 2021 11:59:59 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.4.1 mail.kernel.org 553B56115A
+	by mail.kernel.org (Postfix) with ESMTPS id 4C7B161241
+	for <iommu@archiver.kernel.org>; Thu, 23 Sep 2021 12:00:11 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.4.1 mail.kernel.org 4C7B161241
 Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=mediatek.com
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by smtp3.osuosl.org (Postfix) with ESMTP id 34AAB61575;
-	Thu, 23 Sep 2021 11:59:59 +0000 (UTC)
+	by smtp1.osuosl.org (Postfix) with ESMTP id 240A684275;
+	Thu, 23 Sep 2021 12:00:11 +0000 (UTC)
+X-Virus-Scanned: amavisd-new at osuosl.org
+Received: from smtp1.osuosl.org ([127.0.0.1])
+	by localhost (smtp1.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+	with ESMTP id g1tNmOII4TDH; Thu, 23 Sep 2021 12:00:10 +0000 (UTC)
+Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
+	by smtp1.osuosl.org (Postfix) with ESMTPS id 0BEEE84376;
+	Thu, 23 Sep 2021 12:00:09 +0000 (UTC)
+Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
+	by lists.linuxfoundation.org (Postfix) with ESMTP id E9615C0011;
+	Thu, 23 Sep 2021 12:00:09 +0000 (UTC)
+Received: from smtp3.osuosl.org (smtp3.osuosl.org [IPv6:2605:bc80:3010::136])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 9BDEEC000D
+ for <iommu@lists.linux-foundation.org>; Thu, 23 Sep 2021 12:00:08 +0000 (UTC)
+Received: from localhost (localhost [127.0.0.1])
+ by smtp3.osuosl.org (Postfix) with ESMTP id 943486157F
+ for <iommu@lists.linux-foundation.org>; Thu, 23 Sep 2021 12:00:08 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
 Received: from smtp3.osuosl.org ([127.0.0.1])
-	by localhost (smtp3.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id OPTNuPqBWu7a; Thu, 23 Sep 2021 11:59:58 +0000 (UTC)
-Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [IPv6:2605:bc80:3010:104::8cd3:938])
-	by smtp3.osuosl.org (Postfix) with ESMTPS id 2F59A61403;
-	Thu, 23 Sep 2021 11:59:58 +0000 (UTC)
-Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 0DAAEC0011;
-	Thu, 23 Sep 2021 11:59:58 +0000 (UTC)
-Received: from smtp2.osuosl.org (smtp2.osuosl.org [IPv6:2605:bc80:3010::133])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 67B5FC000D
- for <iommu@lists.linux-foundation.org>; Thu, 23 Sep 2021 11:59:57 +0000 (UTC)
-Received: from localhost (localhost [127.0.0.1])
- by smtp2.osuosl.org (Postfix) with ESMTP id 55C8240654
- for <iommu@lists.linux-foundation.org>; Thu, 23 Sep 2021 11:59:57 +0000 (UTC)
-X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from smtp2.osuosl.org ([127.0.0.1])
- by localhost (smtp2.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id JP_P_TNil4mE for <iommu@lists.linux-foundation.org>;
- Thu, 23 Sep 2021 11:59:56 +0000 (UTC)
+ by localhost (smtp3.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+ with ESMTP id A5ysS5q0VraL for <iommu@lists.linux-foundation.org>;
+ Thu, 23 Sep 2021 12:00:08 +0000 (UTC)
 X-Greylist: from auto-whitelisted by SQLgrey-1.8.0
-Received: from mailgw01.mediatek.com (unknown [60.244.123.138])
- by smtp2.osuosl.org (Postfix) with ESMTPS id 5DF8840638
- for <iommu@lists.linux-foundation.org>; Thu, 23 Sep 2021 11:59:56 +0000 (UTC)
-X-UUID: 473eaf70bac34e6d94392abf69853f42-20210923
-X-UUID: 473eaf70bac34e6d94392abf69853f42-20210923
-Received: from mtkmbs10n1.mediatek.inc [(172.21.101.34)] by
- mailgw01.mediatek.com (envelope-from <yong.wu@mediatek.com>)
- (Generic MTA with TLSv1.2 ECDHE-RSA-AES256-GCM-SHA384 256/256)
- with ESMTP id 1097137229; Thu, 23 Sep 2021 19:59:49 +0800
+Received: from mailgw02.mediatek.com (unknown [210.61.82.184])
+ by smtp3.osuosl.org (Postfix) with ESMTPS id DCB256157C
+ for <iommu@lists.linux-foundation.org>; Thu, 23 Sep 2021 12:00:07 +0000 (UTC)
+X-UUID: a091ec003b2f48c58465015fe50087f8-20210923
+X-UUID: a091ec003b2f48c58465015fe50087f8-20210923
+Received: from mtkcas06.mediatek.inc [(172.21.101.30)] by mailgw02.mediatek.com
+ (envelope-from <yong.wu@mediatek.com>)
+ (Generic MTA with TLSv1.2 ECDHE-RSA-AES256-SHA384 256/256)
+ with ESMTP id 2123898657; Thu, 23 Sep 2021 20:00:02 +0800
 Received: from MTKCAS06.mediatek.inc (172.21.101.30) by
  mtkmbs07n2.mediatek.inc (172.21.101.141) with Microsoft SMTP Server (TLS) id
- 15.0.1497.2; Thu, 23 Sep 2021 19:59:48 +0800
+ 15.0.1497.2; Thu, 23 Sep 2021 20:00:00 +0800
 Received: from localhost.localdomain (10.17.3.154) by MTKCAS06.mediatek.inc
  (172.21.101.73) with Microsoft SMTP Server id 15.0.1497.2 via Frontend
- Transport; Thu, 23 Sep 2021 19:59:47 +0800
+ Transport; Thu, 23 Sep 2021 19:59:59 +0800
 From: Yong Wu <yong.wu@mediatek.com>
 To: Joerg Roedel <joro@8bytes.org>, Rob Herring <robh+dt@kernel.org>, Matthias
  Brugger <matthias.bgg@gmail.com>, Will Deacon <will@kernel.org>,
  Robin Murphy <robin.murphy@arm.com>
-Subject: [PATCH v3 06/33] iommu/mediatek: Add 12G~16G support for multi domains
-Date: Thu, 23 Sep 2021 19:58:13 +0800
-Message-ID: <20210923115840.17813-7-yong.wu@mediatek.com>
+Subject: [PATCH v3 07/33] iommu/mediatek: Add a flag DCM_DISABLE
+Date: Thu, 23 Sep 2021 19:58:14 +0800
+Message-ID: <20210923115840.17813-8-yong.wu@mediatek.com>
 X-Mailer: git-send-email 2.18.0
 In-Reply-To: <20210923115840.17813-1-yong.wu@mediatek.com>
 References: <20210923115840.17813-1-yong.wu@mediatek.com>
@@ -93,40 +93,47 @@ Content-Transfer-Encoding: 7bit
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-In mt8192, we preassign 0-4G; 4G-8G; 8G-12G for different multimedia
-engines. This depends on the "dma-ranges=" in the iommu consumer's dtsi
-node.
-
-Adds 12G-16G region here. and reword the previous comment. we don't limit
-which master locate in which region.
-
-CCU still is 8G-12G. Don't change it here.
+In the infra iommu, we should disable DCM. add a new flag for this.
 
 Signed-off-by: Yong Wu <yong.wu@mediatek.com>
 ---
- drivers/iommu/mtk_iommu.c | 8 +++++---
- 1 file changed, 5 insertions(+), 3 deletions(-)
+ drivers/iommu/mtk_iommu.c | 9 ++++++++-
+ 1 file changed, 8 insertions(+), 1 deletion(-)
 
 diff --git a/drivers/iommu/mtk_iommu.c b/drivers/iommu/mtk_iommu.c
-index ee10c56e8f96..00d9ae3dc88a 100644
+index 00d9ae3dc88a..4e1b01fd58b0 100644
 --- a/drivers/iommu/mtk_iommu.c
 +++ b/drivers/iommu/mtk_iommu.c
-@@ -178,10 +178,12 @@ static const struct mtk_iommu_iova_region single_domain[] = {
- };
+@@ -51,6 +51,8 @@
+ #define F_MMU_STANDARD_AXI_MODE_MASK		(BIT(3) | BIT(19))
  
- static const struct mtk_iommu_iova_region mt8192_multi_dom[] = {
--	{ .iova_base = 0x0,		.size = SZ_4G},		/* disp: 0 ~ 4G */
-+	{ .iova_base = 0x0,		.size = SZ_4G},		/* 0 ~ 4G */
- 	#if IS_ENABLED(CONFIG_ARCH_DMA_ADDR_T_64BIT)
--	{ .iova_base = SZ_4G,		.size = SZ_4G},		/* vdec: 4G ~ 8G */
--	{ .iova_base = SZ_4G * 2,	.size = SZ_4G},		/* CAM/MDP: 8G ~ 12G */
-+	{ .iova_base = SZ_4G,		.size = SZ_4G},		/* 4G ~ 8G */
-+	{ .iova_base = SZ_4G * 2,	.size = SZ_4G},		/* 8G ~ 12G */
-+	{ .iova_base = SZ_4G * 3,	.size = SZ_4G},		/* 12G ~ 16G */
+ #define REG_MMU_DCM_DIS				0x050
++#define F_MMU_DCM				BIT(8)
 +
- 	{ .iova_base = 0x240000000ULL,	.size = 0x4000000},	/* CCU0 */
- 	{ .iova_base = 0x244000000ULL,	.size = 0x4000000},	/* CCU1 */
- 	#endif
+ #define REG_MMU_WR_LEN_CTRL			0x054
+ #define F_MMU_WR_THROT_DIS_MASK			(BIT(5) | BIT(21))
+ 
+@@ -119,6 +121,7 @@
+ #define HAS_LEGACY_IVRP_PADDR		BIT(7)
+ #define IOVA_34_EN			BIT(8)
+ #define SHARE_PGTABLE			BIT(9) /* 2 HW share pgtable */
++#define DCM_DISABLE			BIT(10)
+ 
+ #define MTK_IOMMU_HAS_FLAG(pdata, _x) \
+ 		((((pdata)->flags) & (_x)) == (_x))
+@@ -722,7 +725,11 @@ static int mtk_iommu_hw_init(const struct mtk_iommu_data *data)
+ 		regval = F_MMU_VLD_PA_RNG(7, 4);
+ 		writel_relaxed(regval, data->base + REG_MMU_VLD_PA_RNG);
+ 	}
+-	writel_relaxed(0, data->base + REG_MMU_DCM_DIS);
++	if (MTK_IOMMU_HAS_FLAG(data->plat_data, DCM_DISABLE))
++		writel_relaxed(F_MMU_DCM, data->base + REG_MMU_DCM_DIS);
++	else
++		writel_relaxed(0, data->base + REG_MMU_DCM_DIS);
++
+ 	if (MTK_IOMMU_HAS_FLAG(data->plat_data, WR_THROT_EN)) {
+ 		/* write command throttling mode */
+ 		regval = readl_relaxed(data->base + REG_MMU_WR_LEN_CTRL);
 -- 
 2.18.0
 
