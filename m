@@ -2,126 +2,80 @@ Return-Path: <SRS0=900o=ON=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-13.6 required=3.0 tests=BAYES_00,DKIM_INVALID,
-	DKIM_SIGNED,HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_CR_TRAILER,INCLUDES_PATCH,
-	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED autolearn=unavailable
-	autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-16.8 required=3.0 tests=BAYES_00,
+	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_CR_TRAILER,INCLUDES_PATCH,
+	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,UNPARSEABLE_RELAY,URIBL_BLOCKED,
+	USER_AGENT_GIT autolearn=ham autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4DE30C433FE
-	for <iommu@archiver.kernel.org>; Thu, 23 Sep 2021 12:01:33 +0000 (UTC)
-Received: from smtp2.osuosl.org (smtp2.osuosl.org [140.211.166.133])
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0D4B1C433F5
+	for <iommu@archiver.kernel.org>; Thu, 23 Sep 2021 12:01:37 +0000 (UTC)
+Received: from smtp1.osuosl.org (smtp1.osuosl.org [140.211.166.138])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 0F35B60F11
-	for <iommu@archiver.kernel.org>; Thu, 23 Sep 2021 12:01:33 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.4.1 mail.kernel.org 0F35B60F11
-Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=linux.ibm.com
+	by mail.kernel.org (Postfix) with ESMTPS id BFEAA60F11
+	for <iommu@archiver.kernel.org>; Thu, 23 Sep 2021 12:01:36 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.4.1 mail.kernel.org BFEAA60F11
+Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=mediatek.com
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by smtp2.osuosl.org (Postfix) with ESMTP id D7DFB40192;
-	Thu, 23 Sep 2021 12:01:32 +0000 (UTC)
+	by smtp1.osuosl.org (Postfix) with ESMTP id 9F24F843C0;
+	Thu, 23 Sep 2021 12:01:36 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from smtp2.osuosl.org ([127.0.0.1])
-	by localhost (smtp2.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id jUkyUbJpdSW5; Thu, 23 Sep 2021 12:01:31 +0000 (UTC)
-Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [IPv6:2605:bc80:3010:104::8cd3:938])
-	by smtp2.osuosl.org (Postfix) with ESMTPS id 663B34063B;
-	Thu, 23 Sep 2021 12:01:31 +0000 (UTC)
+Received: from smtp1.osuosl.org ([127.0.0.1])
+	by localhost (smtp1.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+	with ESMTP id OWStqxJrjSDb; Thu, 23 Sep 2021 12:01:35 +0000 (UTC)
+Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
+	by smtp1.osuosl.org (Postfix) with ESMTPS id 87ABE84275;
+	Thu, 23 Sep 2021 12:01:35 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 417B5C0011;
-	Thu, 23 Sep 2021 12:01:31 +0000 (UTC)
-Received: from smtp4.osuosl.org (smtp4.osuosl.org [140.211.166.137])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 53998C0011
- for <iommu@lists.linux-foundation.org>; Thu, 23 Sep 2021 12:01:30 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 726BEC0011;
+	Thu, 23 Sep 2021 12:01:35 +0000 (UTC)
+Received: from smtp3.osuosl.org (smtp3.osuosl.org [IPv6:2605:bc80:3010::136])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id EC1A5C000D
+ for <iommu@lists.linux-foundation.org>; Thu, 23 Sep 2021 12:01:33 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by smtp4.osuosl.org (Postfix) with ESMTP id 3AFF1414BA
- for <iommu@lists.linux-foundation.org>; Thu, 23 Sep 2021 12:01:30 +0000 (UTC)
+ by smtp3.osuosl.org (Postfix) with ESMTP id CE06D61403
+ for <iommu@lists.linux-foundation.org>; Thu, 23 Sep 2021 12:01:33 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Authentication-Results: smtp4.osuosl.org (amavisd-new);
- dkim=pass (2048-bit key) header.d=ibm.com
-Received: from smtp4.osuosl.org ([127.0.0.1])
- by localhost (smtp4.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id cNQZkZxYN1e4 for <iommu@lists.linux-foundation.org>;
- Thu, 23 Sep 2021 12:01:29 +0000 (UTC)
-X-Greylist: domain auto-whitelisted by SQLgrey-1.8.0
-Received: from mx0a-001b2d01.pphosted.com (mx0a-001b2d01.pphosted.com
- [148.163.156.1])
- by smtp4.osuosl.org (Postfix) with ESMTPS id 5D74440650
- for <iommu@lists.linux-foundation.org>; Thu, 23 Sep 2021 12:01:29 +0000 (UTC)
-Received: from pps.filterd (m0098410.ppops.net [127.0.0.1])
- by mx0a-001b2d01.pphosted.com (8.16.1.2/8.16.1.2) with SMTP id 18NAdUcU003364; 
- Thu, 23 Sep 2021 08:01:15 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com;
- h=date : from : to : cc :
- subject : message-id : references : mime-version : content-type :
- content-transfer-encoding : in-reply-to; s=pp1;
- bh=pXzEf65A4Oe5+XzfRr8terVnfyIyuO6PQs0+F8aXgGc=;
- b=ZCv5VVg5Axl96NC4/j5oW2leA+TyRu7PTszC85LX7OnyuvdR/QPrxFJvHee6+ph9/1Ah
- rUd/1Dr4tZ5yXYAiKoNA4l0g4riJzCer09eV4KmKCsnovao7Ujg6/MQzQ6IVb2C5LRSL
- 6WitPRreJzNPlii4WW55mXNNAxhzlImWjS7TBI5y3E9CuYqxTL+hR1eRpZFENX5WHVgo
- 3bzeScRRqqA6eAdFzB/5aWdZYhNxC/HkliRolmuo1Xv4pKsUbXkIzU8GEpyYBQunYUKJ
- 0M08Qqduz9x2e5o+taGQrQG0ce7A7g963Zzijz3wHvEhl/y43e2FXQI9OwpYg11CHmgU 9g== 
-Received: from ppma06fra.de.ibm.com (48.49.7a9f.ip4.static.sl-reverse.com
- [159.122.73.72])
- by mx0a-001b2d01.pphosted.com with ESMTP id 3b8p4dcmbn-1
- (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
- Thu, 23 Sep 2021 08:01:14 -0400
-Received: from pps.filterd (ppma06fra.de.ibm.com [127.0.0.1])
- by ppma06fra.de.ibm.com (8.16.1.2/8.16.1.2) with SMTP id 18NBvwov029624;
- Thu, 23 Sep 2021 12:01:11 GMT
-Received: from b06cxnps4074.portsmouth.uk.ibm.com
- (d06relay11.portsmouth.uk.ibm.com [9.149.109.196])
- by ppma06fra.de.ibm.com with ESMTP id 3b7q6ps42c-1
- (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
- Thu, 23 Sep 2021 12:01:11 +0000
-Received: from d06av22.portsmouth.uk.ibm.com (d06av22.portsmouth.uk.ibm.com
- [9.149.105.58])
- by b06cxnps4074.portsmouth.uk.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id
- 18NC18Jk56885734
- (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
- Thu, 23 Sep 2021 12:01:08 GMT
-Received: from d06av22.portsmouth.uk.ibm.com (unknown [127.0.0.1])
- by IMSVA (Postfix) with ESMTP id 810B04C08B;
- Thu, 23 Sep 2021 12:01:08 +0000 (GMT)
-Received: from d06av22.portsmouth.uk.ibm.com (unknown [127.0.0.1])
- by IMSVA (Postfix) with ESMTP id 64DD54C089;
- Thu, 23 Sep 2021 12:01:06 +0000 (GMT)
-Received: from linux.ibm.com (unknown [9.145.159.121])
- by d06av22.portsmouth.uk.ibm.com (Postfix) with ESMTPS;
- Thu, 23 Sep 2021 12:01:06 +0000 (GMT)
-Date: Thu, 23 Sep 2021 15:01:04 +0300
-From: Mike Rapoport <rppt@linux.ibm.com>
-To: Christophe Leroy <christophe.leroy@csgroup.eu>
-Subject: Re: [PATCH 3/3] memblock: cleanup memblock_free interface
-Message-ID: <YUxsgN/uolhn1Ok+@linux.ibm.com>
-References: <20210923074335.12583-1-rppt@kernel.org>
- <20210923074335.12583-4-rppt@kernel.org>
- <1101e3c7-fcb7-a632-8e22-47f4a01ea02e@csgroup.eu>
+Received: from smtp3.osuosl.org ([127.0.0.1])
+ by localhost (smtp3.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+ with ESMTP id zKPVnyr3tvVK for <iommu@lists.linux-foundation.org>;
+ Thu, 23 Sep 2021 12:01:33 +0000 (UTC)
+X-Greylist: from auto-whitelisted by SQLgrey-1.8.0
+Received: from mailgw02.mediatek.com (unknown [210.61.82.184])
+ by smtp3.osuosl.org (Postfix) with ESMTPS id DAFC86081C
+ for <iommu@lists.linux-foundation.org>; Thu, 23 Sep 2021 12:01:32 +0000 (UTC)
+X-UUID: de75ff1568dd4b97bb8de1ecef275f70-20210923
+X-UUID: de75ff1568dd4b97bb8de1ecef275f70-20210923
+Received: from mtkcas11.mediatek.inc [(172.21.101.40)] by mailgw02.mediatek.com
+ (envelope-from <yong.wu@mediatek.com>)
+ (Generic MTA with TLSv1.2 ECDHE-RSA-AES256-SHA384 256/256)
+ with ESMTP id 1203991211; Thu, 23 Sep 2021 20:01:28 +0800
+Received: from MTKCAS06.mediatek.inc (172.21.101.30) by
+ mtkmbs07n2.mediatek.inc (172.21.101.141) with Microsoft SMTP Server (TLS) id
+ 15.0.1497.2; Thu, 23 Sep 2021 20:01:27 +0800
+Received: from localhost.localdomain (10.17.3.154) by MTKCAS06.mediatek.inc
+ (172.21.101.73) with Microsoft SMTP Server id 15.0.1497.2 via Frontend
+ Transport; Thu, 23 Sep 2021 20:01:26 +0800
+From: Yong Wu <yong.wu@mediatek.com>
+To: Joerg Roedel <joro@8bytes.org>, Rob Herring <robh+dt@kernel.org>, Matthias
+ Brugger <matthias.bgg@gmail.com>, Will Deacon <will@kernel.org>,
+ Robin Murphy <robin.murphy@arm.com>
+Subject: [PATCH v3 15/33] iommu/mediatek: Add SUB_COMMON_3BITS flag
+Date: Thu, 23 Sep 2021 19:58:22 +0800
+Message-ID: <20210923115840.17813-16-yong.wu@mediatek.com>
+X-Mailer: git-send-email 2.18.0
+In-Reply-To: <20210923115840.17813-1-yong.wu@mediatek.com>
+References: <20210923115840.17813-1-yong.wu@mediatek.com>
 MIME-Version: 1.0
-Content-Disposition: inline
-In-Reply-To: <1101e3c7-fcb7-a632-8e22-47f4a01ea02e@csgroup.eu>
-X-TM-AS-GCONF: 00
-X-Proofpoint-GUID: fe2SFaLdoxw706nrVmE8bleSLkHdGrzC
-X-Proofpoint-ORIG-GUID: fe2SFaLdoxw706nrVmE8bleSLkHdGrzC
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.182.1,Aquarius:18.0.790,Hydra:6.0.391,FMLib:17.0.607.475
- definitions=2021-09-23_04,2021-09-23_01,2020-04-07_01
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0
- adultscore=0 mlxscore=0
- lowpriorityscore=0 phishscore=0 clxscore=1011 bulkscore=0 spamscore=0
- mlxlogscore=613 impostorscore=0 priorityscore=1501 malwarescore=0
- suspectscore=0 classifier=spam adjust=0 reason=mlx scancount=1
- engine=8.12.0-2109200000 definitions=main-2109230076
-Cc: linux-efi@vger.kernel.org, kvm@vger.kernel.org, linux-sh@vger.kernel.org,
- linux-mips@vger.kernel.org, linux-mm@kvack.org, sparclinux@vger.kernel.org,
- linux-riscv@lists.infradead.org, linux-s390@vger.kernel.org,
- kasan-dev@googlegroups.com, xen-devel@lists.xenproject.org,
- linux-snps-arc@lists.infradead.org, devicetree@vger.kernel.org,
- linux-um@lists.infradead.org, linux-arm-kernel@lists.infradead.org,
- Linus Torvalds <torvalds@linux-foundation.org>, linux-usb@vger.kernel.org,
- linux-kernel@vger.kernel.org, iommu@lists.linux-foundation.org,
- linux-alpha@vger.kernel.org, Andrew Morton <akpm@linux-foundation.org>,
- linuxppc-dev@lists.ozlabs.org, Mike Rapoport <rppt@kernel.org>
+X-MTK: N
+Cc: youlin.pei@mediatek.com, devicetree@vger.kernel.org,
+ srv_heupstream@mediatek.com,
+ Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>,
+ linux-kernel@vger.kernel.org, yen-chang.chen@mediatek.com,
+ chao.hao@mediatek.com, iommu@lists.linux-foundation.org,
+ linux-mediatek@lists.infradead.org, Hsin-Yi Wang <hsinyi@chromium.org>,
+ anan.sun@mediatek.com, linux-arm-kernel@lists.infradead.org
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -134,115 +88,105 @@ List-Post: <mailto:iommu@lists.linux-foundation.org>
 List-Help: <mailto:iommu-request@lists.linux-foundation.org?subject=help>
 List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
  <mailto:iommu-request@lists.linux-foundation.org?subject=subscribe>
-Content-Type: text/plain; charset="iso-8859-1"
-Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-On Thu, Sep 23, 2021 at 11:47:48AM +0200, Christophe Leroy wrote:
-> =
+In prevous SoC, the sub common id occupy 2 bits. the mt8195's sub common
+id has 3bits. Add a new flag for this. and rename the prevous flag to
+_2BITS. For readable, I put these two flags together, then move the
+other flags. no functional change.
 
-> =
+Signed-off-by: Yong Wu <yong.wu@mediatek.com>
+---
+ drivers/iommu/mtk_iommu.c | 26 ++++++++++++++++----------
+ drivers/iommu/mtk_iommu.h |  2 +-
+ 2 files changed, 17 insertions(+), 11 deletions(-)
 
-> Le 23/09/2021 =E0 09:43, Mike Rapoport a =E9crit=A0:
-> > From: Mike Rapoport <rppt@linux.ibm.com>
-> > =
+diff --git a/drivers/iommu/mtk_iommu.c b/drivers/iommu/mtk_iommu.c
+index ef98f19ce86e..d557c3437d67 100644
+--- a/drivers/iommu/mtk_iommu.c
++++ b/drivers/iommu/mtk_iommu.c
+@@ -105,6 +105,8 @@
+ #define REG_MMU1_INT_ID				0x154
+ #define F_MMU_INT_ID_COMM_ID(a)			(((a) >> 9) & 0x7)
+ #define F_MMU_INT_ID_SUB_COMM_ID(a)		(((a) >> 7) & 0x3)
++#define F_MMU_INT_ID_COMM_ID_EXT(a)		(((a) >> 10) & 0x7)
++#define F_MMU_INT_ID_SUB_COMM_ID_EXT(a)		(((a) >> 7) & 0x7)
+ #define F_MMU_INT_ID_LARB_ID(a)			(((a) >> 7) & 0x7)
+ #define F_MMU_INT_ID_PORT_ID(a)			(((a) >> 2) & 0x1f)
+ 
+@@ -116,13 +118,14 @@
+ #define HAS_VLD_PA_RNG			BIT(2)
+ #define RESET_AXI			BIT(3)
+ #define OUT_ORDER_WR_EN			BIT(4)
+-#define HAS_SUB_COMM			BIT(5)
+-#define WR_THROT_EN			BIT(6)
+-#define HAS_LEGACY_IVRP_PADDR		BIT(7)
+-#define IOVA_34_EN			BIT(8)
+-#define SHARE_PGTABLE			BIT(9) /* 2 HW share pgtable */
+-#define DCM_DISABLE			BIT(10)
+-#define NOT_STD_AXI_MODE		BIT(11)
++#define HAS_SUB_COMM_2BITS		BIT(5)
++#define HAS_SUB_COMM_3BITS		BIT(6)
++#define WR_THROT_EN			BIT(7)
++#define HAS_LEGACY_IVRP_PADDR		BIT(8)
++#define IOVA_34_EN			BIT(9)
++#define SHARE_PGTABLE			BIT(10) /* 2 HW share pgtable */
++#define DCM_DISABLE			BIT(11)
++#define NOT_STD_AXI_MODE		BIT(12)
+ 
+ #define MTK_IOMMU_HAS_FLAG(pdata, _x) \
+ 		((((pdata)->flags) & (_x)) == (_x))
+@@ -296,9 +299,12 @@ static irqreturn_t mtk_iommu_isr(int irq, void *dev_id)
+ 	fault_pa |= (u64)pa34_32 << 32;
+ 
+ 	fault_port = F_MMU_INT_ID_PORT_ID(regval);
+-	if (MTK_IOMMU_HAS_FLAG(data->plat_data, HAS_SUB_COMM)) {
++	if (MTK_IOMMU_HAS_FLAG(data->plat_data, HAS_SUB_COMM_2BITS)) {
+ 		fault_larb = F_MMU_INT_ID_COMM_ID(regval);
+ 		sub_comm = F_MMU_INT_ID_SUB_COMM_ID(regval);
++	} else if (MTK_IOMMU_HAS_FLAG(data->plat_data, HAS_SUB_COMM_3BITS)) {
++		fault_larb = F_MMU_INT_ID_COMM_ID_EXT(regval);
++		sub_comm = F_MMU_INT_ID_SUB_COMM_ID_EXT(regval);
+ 	} else {
+ 		fault_larb = F_MMU_INT_ID_LARB_ID(regval);
+ 	}
+@@ -1027,7 +1033,7 @@ static const struct mtk_iommu_plat_data mt2712_data = {
+ 
+ static const struct mtk_iommu_plat_data mt6779_data = {
+ 	.m4u_plat      = M4U_MT6779,
+-	.flags         = HAS_SUB_COMM | OUT_ORDER_WR_EN | WR_THROT_EN |
++	.flags         = HAS_SUB_COMM_2BITS | OUT_ORDER_WR_EN | WR_THROT_EN |
+ 			 NOT_STD_AXI_MODE,
+ 	.inv_sel_reg   = REG_MMU_INV_SEL_GEN2,
+ 	.iova_region   = single_domain,
+@@ -1065,7 +1071,7 @@ static const struct mtk_iommu_plat_data mt8183_data = {
+ 
+ static const struct mtk_iommu_plat_data mt8192_data = {
+ 	.m4u_plat       = M4U_MT8192,
+-	.flags          = HAS_BCLK | HAS_SUB_COMM | OUT_ORDER_WR_EN |
++	.flags          = HAS_BCLK | HAS_SUB_COMM_2BITS | OUT_ORDER_WR_EN |
+ 			  WR_THROT_EN | IOVA_34_EN | NOT_STD_AXI_MODE,
+ 	.inv_sel_reg    = REG_MMU_INV_SEL_GEN2,
+ 	.iova_region    = mt8192_multi_dom,
+diff --git a/drivers/iommu/mtk_iommu.h b/drivers/iommu/mtk_iommu.h
+index 027a42396557..5b32277fee99 100644
+--- a/drivers/iommu/mtk_iommu.h
++++ b/drivers/iommu/mtk_iommu.h
+@@ -20,7 +20,7 @@
+ #include <dt-bindings/memory/mtk-memory-port.h>
+ 
+ #define MTK_LARB_COM_MAX	8
+-#define MTK_LARB_SUBCOM_MAX	4
++#define MTK_LARB_SUBCOM_MAX	8
+ 
+ #define MTK_IOMMU_GROUP_MAX	8
+ 
+-- 
+2.18.0
 
-> > For ages memblock_free() interface dealt with physical addresses even
-> > despite the existence of memblock_alloc_xx() functions that return a
-> > virtual pointer.
-> > =
-
-> > Introduce memblock_phys_free() for freeing physical ranges and repurpose
-> > memblock_free() to free virtual pointers to make the following pairing
-> > abundantly clear:
-> > =
-
-> > 	int memblock_phys_free(phys_addr_t base, phys_addr_t size);
-> > 	phys_addr_t memblock_phys_alloc(phys_addr_t base, phys_addr_t size);
-> > =
-
-> > 	void *memblock_alloc(phys_addr_t size, phys_addr_t align);
-> > 	void memblock_free(void *ptr, size_t size);
-> > =
-
-> > Replace intermediate memblock_free_ptr() with memblock_free() and drop
-> > unnecessary aliases memblock_free_early() and memblock_free_early_nid().
-> > =
-
-> > Suggested-by: Linus Torvalds <torvalds@linux-foundation.org>
-> > Signed-off-by: Mike Rapoport <rppt@linux.ibm.com>
-> > ---
-> =
-
-> > diff --git a/arch/s390/kernel/smp.c b/arch/s390/kernel/smp.c
-> > index 1a04e5bdf655..37826d8c4f74 100644
-> > --- a/arch/s390/kernel/smp.c
-> > +++ b/arch/s390/kernel/smp.c
-> > @@ -723,7 +723,7 @@ void __init smp_save_dump_cpus(void)
-> >   			/* Get the CPU registers */
-> >   			smp_save_cpu_regs(sa, addr, is_boot_cpu, page);
-> >   	}
-> > -	memblock_free(page, PAGE_SIZE);
-> > +	memblock_phys_free(page, PAGE_SIZE);
-> >   	diag_amode31_ops.diag308_reset();
-> >   	pcpu_set_smt(0);
-> >   }
-> > @@ -880,7 +880,7 @@ void __init smp_detect_cpus(void)
-> >   	/* Add CPUs present at boot */
-> >   	__smp_rescan_cpus(info, true);
-> > -	memblock_free_early((unsigned long)info, sizeof(*info));
-> > +	memblock_free(info, sizeof(*info));
-> >   }
-> >   /*
-> =
-
-> I'm a bit lost. IIUC memblock_free_early() and memblock_free() where
-> identical.
-
-Yes, they were, but all calls to memblock_free_early() were using
-__pa(vaddr) because they had a virtual address at hand.
-
-> In the first hunk memblock_free() gets replaced by memblock_phys_free()
-> In the second hunk memblock_free_early() gets replaced by memblock_free()
-
-In the first hunk the memory is allocated with memblock_phys_alloc() and we
-have a physical range to free. In the second hunk the memory is allocated
-with memblock_alloc() and we are freeing a virtual pointer.
- =
-
-> I think it would be easier to follow if you could split it in several
-> patches:
-
-It was an explicit request from Linus to make it a single commit:
-
-  but the actual commit can and should be just a single commit that just
-  fixes 'memblock_free()' to have sane interfaces.
-
-I don't feel strongly about splitting it (except my laziness really
-objects), but I don't think doing the conversion in several steps worth the
-churn.
-
-> - First patch: Create memblock_phys_free() and change all relevant
-> memblock_free() to memblock_phys_free() - Or change memblock_free() to
-> memblock_phys_free() and make memblock_free() an alias of it.
-> - Second patch: Make memblock_free_ptr() become memblock_free() and change
-> all remaining callers to the new semantics (IIUC memblock_free(__pa(ptr))
-> becomes memblock_free(ptr) and make memblock_free_ptr() an alias of
-> memblock_free()
-> - Fourth patch: Replace and drop memblock_free_ptr()
-> - Fifth patch: Drop memblock_free_early() and memblock_free_early_nid() (=
-All
-> users should have been upgraded to memblock_free_phys() in patch 1 or
-> memblock_free() in patch 2)
-> =
-
-> Christophe
-
--- =
-
-Sincerely yours,
-Mike.
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
