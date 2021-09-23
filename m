@@ -2,130 +2,78 @@ Return-Path: <SRS0=900o=ON=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-10.1 required=3.0 tests=BAYES_00,DKIM_INVALID,
-	DKIM_SIGNED,HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,
-	MENTIONS_GIT_HOSTING,NICE_REPLY_A,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,
-	USER_AGENT_SANE_1 autolearn=ham autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-11.8 required=3.0 tests=BAYES_00,DKIM_INVALID,
+	DKIM_SIGNED,INCLUDES_PATCH,MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,
+	URIBL_BLOCKED,USER_AGENT_GIT autolearn=unavailable autolearn_force=no
+	version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 49041C433EF
-	for <iommu@archiver.kernel.org>; Thu, 23 Sep 2021 07:25:43 +0000 (UTC)
-Received: from smtp2.osuosl.org (smtp2.osuosl.org [140.211.166.133])
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 59F76C433EF
+	for <iommu@archiver.kernel.org>; Thu, 23 Sep 2021 07:43:50 +0000 (UTC)
+Received: from smtp3.osuosl.org (smtp3.osuosl.org [140.211.166.136])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id EAD0A60F70
-	for <iommu@archiver.kernel.org>; Thu, 23 Sep 2021 07:25:42 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.4.1 mail.kernel.org EAD0A60F70
-Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=redhat.com
+	by mail.kernel.org (Postfix) with ESMTPS id 1353761107
+	for <iommu@archiver.kernel.org>; Thu, 23 Sep 2021 07:43:50 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.4.1 mail.kernel.org 1353761107
+Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=kernel.org
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by smtp2.osuosl.org (Postfix) with ESMTP id B8560406F1;
-	Thu, 23 Sep 2021 07:25:42 +0000 (UTC)
+	by smtp3.osuosl.org (Postfix) with ESMTP id D12316153D;
+	Thu, 23 Sep 2021 07:43:49 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from smtp2.osuosl.org ([127.0.0.1])
-	by localhost (smtp2.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id DJUEh2cE4SFW; Thu, 23 Sep 2021 07:25:41 +0000 (UTC)
-Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [IPv6:2605:bc80:3010:104::8cd3:938])
-	by smtp2.osuosl.org (Postfix) with ESMTPS id 59F3A40151;
-	Thu, 23 Sep 2021 07:25:41 +0000 (UTC)
+Received: from smtp3.osuosl.org ([127.0.0.1])
+	by localhost (smtp3.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+	with ESMTP id JZ1q2aFEK64H; Thu, 23 Sep 2021 07:43:49 +0000 (UTC)
+Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
+	by smtp3.osuosl.org (Postfix) with ESMTPS id A0D95607A3;
+	Thu, 23 Sep 2021 07:43:48 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 3BC0DC0011;
-	Thu, 23 Sep 2021 07:25:41 +0000 (UTC)
-Received: from smtp4.osuosl.org (smtp4.osuosl.org [140.211.166.137])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 80113C000D
- for <iommu@lists.linux-foundation.org>; Thu, 23 Sep 2021 07:25:39 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 49B4BC0011;
+	Thu, 23 Sep 2021 07:43:48 +0000 (UTC)
+Received: from smtp3.osuosl.org (smtp3.osuosl.org [IPv6:2605:bc80:3010::136])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id ABB2DC000D
+ for <iommu@lists.linux-foundation.org>; Thu, 23 Sep 2021 07:43:46 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by smtp4.osuosl.org (Postfix) with ESMTP id 685D9415F9
- for <iommu@lists.linux-foundation.org>; Thu, 23 Sep 2021 07:25:39 +0000 (UTC)
+ by smtp3.osuosl.org (Postfix) with ESMTP id 943BA6153D
+ for <iommu@lists.linux-foundation.org>; Thu, 23 Sep 2021 07:43:46 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Authentication-Results: smtp4.osuosl.org (amavisd-new);
- dkim=pass (1024-bit key) header.d=redhat.com
-Received: from smtp4.osuosl.org ([127.0.0.1])
- by localhost (smtp4.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id z3KMeVrrWIAL for <iommu@lists.linux-foundation.org>;
- Thu, 23 Sep 2021 07:25:38 +0000 (UTC)
+Received: from smtp3.osuosl.org ([127.0.0.1])
+ by localhost (smtp3.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+ with ESMTP id 4-gT5Kc2tr3o for <iommu@lists.linux-foundation.org>;
+ Thu, 23 Sep 2021 07:43:45 +0000 (UTC)
 X-Greylist: domain auto-whitelisted by SQLgrey-1.8.0
-Received: from us-smtp-delivery-124.mimecast.com
- (us-smtp-delivery-124.mimecast.com [170.10.133.124])
- by smtp4.osuosl.org (Postfix) with ESMTPS id 23AAE4158E
- for <iommu@lists.linux-foundation.org>; Thu, 23 Sep 2021 07:25:37 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
- s=mimecast20190719; t=1632381936;
- h=from:from:reply-to:reply-to:subject:subject:date:date:
- message-id:message-id:to:to:cc:cc:mime-version:mime-version:
- content-type:content-type:
- content-transfer-encoding:content-transfer-encoding:
- in-reply-to:in-reply-to:references:references;
- bh=FvNkPyLF+1kcsTR6hdilBDqHZDnrfR2QQ6CleyZplLs=;
- b=Ffv5dO7vp4qwq9e0lpQSn7WhOrYIaQ8yKfsTI3ZPkycRU8cDcgSirkn/qMLnqr78+XBh4K
- 7fBzQfHKybgVUPA+oMvKcxMleG2POcD2ajPd+pJb2LIsa5JPlNzcJYjqIctHAUrUz2tW5A
- vxZ0VwYSbeHxLjl1hUytGHylmmIF0Ek=
-Received: from mail-wr1-f72.google.com (mail-wr1-f72.google.com
- [209.85.221.72]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-304-uGtbkPv8Ns6YMhY2x-66BA-1; Thu, 23 Sep 2021 03:25:31 -0400
-X-MC-Unique: uGtbkPv8Ns6YMhY2x-66BA-1
-Received: by mail-wr1-f72.google.com with SMTP id
- f7-20020a5d50c7000000b0015e288741a4so4363620wrt.9
- for <iommu@lists.linux-foundation.org>; Thu, 23 Sep 2021 00:25:31 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
- d=1e100.net; s=20210112;
- h=x-gm-message-state:reply-to:subject:to:cc:references:from
- :message-id:date:user-agent:mime-version:in-reply-to
- :content-transfer-encoding:content-language;
- bh=FvNkPyLF+1kcsTR6hdilBDqHZDnrfR2QQ6CleyZplLs=;
- b=TSkwNn0A/XC0M+HY53vXnI/MFDhSmU2/jZjlyayx/Mnk0diXsAUqbHFv1Jykwkebo0
- +TiZ3ckJfWmnxkggGgkmZzCzOIu7j8vN6e0O28ksjZiPncvwCIL4vx36aj7qlpynpk2V
- 2px3Ezq9N3EzDAikK9yZzk14+IQ+61PdxRhso88KqO9TTWlIpylljaz84XQ0NVBKrItI
- e05RDXag9t2Tdm+pRFvk4h+3bycoyVhuppySB5fw+WrpOahRQzcH6yt6JZ85bwyPalF6
- KCl9hEk2DiEYyWpG1zB5E7P/UBO+G2iqROnDPHNOjODE9jxTL4ZrQYXOMVDvIlAmt+Zn
- AGOQ==
-X-Gm-Message-State: AOAM530tPU10eFw9OZtz5b6ajr1xunNrs04lTPDAW6FUPfBL9MV6LshR
- u/7TQNXN9URHZXNIZ02xGv+WoUO6wazQadWKWjESKkHRiS/jzPoRvXUWUHF3E64qrH1989AhP4l
- sPWQfqWhYcT5C+yD4xvVQ93T8mSwj5A==
-X-Received: by 2002:a5d:4e90:: with SMTP id e16mr3162711wru.243.1632381930664; 
- Thu, 23 Sep 2021 00:25:30 -0700 (PDT)
-X-Google-Smtp-Source: ABdhPJwGEfOyPkvpzZWpr9l9SkDYU2vwNuyGcQuSIPfvYxfPQ2pBpa+znyeIdD2Ff7pAnFgXSYPtrQ==
-X-Received: by 2002:a5d:4e90:: with SMTP id e16mr3162668wru.243.1632381930433; 
- Thu, 23 Sep 2021 00:25:30 -0700 (PDT)
-Received: from ?IPv6:2a01:e0a:59e:9d80:527b:9dff:feef:3874?
- ([2a01:e0a:59e:9d80:527b:9dff:feef:3874])
- by smtp.gmail.com with ESMTPSA id r9sm4325952wru.2.2021.09.23.00.25.28
- (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
- Thu, 23 Sep 2021 00:25:29 -0700 (PDT)
-Subject: Re: [RFC 03/20] vfio: Add vfio_[un]register_device()
-To: Jason Gunthorpe <jgg@nvidia.com>, "Tian, Kevin" <kevin.tian@intel.com>
-References: <20210919063848.1476776-1-yi.l.liu@intel.com>
- <20210919063848.1476776-4-yi.l.liu@intel.com>
- <20210921160108.GO327412@nvidia.com>
- <BN9PR11MB54330421CA825F5CAA44BAC98CA29@BN9PR11MB5433.namprd11.prod.outlook.com>
- <20210922010014.GE327412@nvidia.com>
-From: Eric Auger <eric.auger@redhat.com>
-Message-ID: <7d717ad0-fb9b-2af0-7818-147dc5d21373@redhat.com>
-Date: Thu, 23 Sep 2021 09:25:27 +0200
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
- Thunderbird/78.10.1
+Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
+ by smtp3.osuosl.org (Postfix) with ESMTPS id CA8AD6153B
+ for <iommu@lists.linux-foundation.org>; Thu, 23 Sep 2021 07:43:45 +0000 (UTC)
+Received: by mail.kernel.org (Postfix) with ESMTPSA id 3D07E60EC0;
+ Thu, 23 Sep 2021 07:43:40 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+ s=k20201202; t=1632383025;
+ bh=3uVNPtFfbPBZRQaNfQKwTwtev9YVKUZqny4BWnp3ztY=;
+ h=From:To:Cc:Subject:Date:From;
+ b=Vold8Z9hLOut5Y57D9YqGfAPpL4eeU2GGKe6N2/G2K+rSChme5BK2bVJUGQMhNnD5
+ tlc7pIoxBTA8mtBmkSbcvxOA4ol2fbYKLvd84RUIoei3PfOrgW7d8UvcqmHNvAAnqH
+ 2rTOLkAFW6DycEheiJuAByIZSW1Mb0ht/+wW3EsUTQK66rudMrHlsuHTSWtaF9pCtZ
+ zz2eXREGQLaTYVqwKNRZd1xLM2W36l4O1x9wg+UbZ8351+5wCVj9XzBQPxb3HkA2G0
+ kjff1rDe9w+gBCM2bpBWj7skIwT6XMoMhVQl3RcYgUgyL/ulxZSnczTeB3j1RHlvfS
+ d5Zxibdoq1rzA==
+From: Mike Rapoport <rppt@kernel.org>
+To: Linus Torvalds <torvalds@linux-foundation.org>
+Subject: [PATCH 0/3] memblock: cleanup memblock_free interface
+Date: Thu, 23 Sep 2021 10:43:32 +0300
+Message-Id: <20210923074335.12583-1-rppt@kernel.org>
+X-Mailer: git-send-email 2.28.0
 MIME-Version: 1.0
-In-Reply-To: <20210922010014.GE327412@nvidia.com>
-Authentication-Results: relay.mimecast.com;
- auth=pass smtp.auth=CUSA124A263 smtp.mailfrom=eric.auger@redhat.com
-X-Mimecast-Spam-Score: 0
-X-Mimecast-Originator: redhat.com
-Content-Language: en-US
-Cc: "kvm@vger.kernel.org" <kvm@vger.kernel.org>,
- "jasowang@redhat.com" <jasowang@redhat.com>,
- "kwankhede@nvidia.com" <kwankhede@nvidia.com>, "hch@lst.de" <hch@lst.de>,
- "jean-philippe@linaro.org" <jean-philippe@linaro.org>, "Jiang,
- Dave" <dave.jiang@intel.com>, "Raj, Ashok" <ashok.raj@intel.com>,
- "corbet@lwn.net" <corbet@lwn.net>, "parav@mellanox.com" <parav@mellanox.com>,
- "alex.williamson@redhat.com" <alex.williamson@redhat.com>,
- "lkml@metux.net" <lkml@metux.net>,
- "david@gibson.dropbear.id.au" <david@gibson.dropbear.id.au>,
- "robin.murphy@arm.com" <robin.murphy@arm.com>, "Tian,
- Jun J" <jun.j.tian@intel.com>,
- "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
- "lushenming@huawei.com" <lushenming@huawei.com>,
- "iommu@lists.linux-foundation.org" <iommu@lists.linux-foundation.org>,
- "pbonzini@redhat.com" <pbonzini@redhat.com>,
- "dwmw2@infradead.org" <dwmw2@infradead.org>
+Cc: devicetree@vger.kernel.org, linux-efi@vger.kernel.org,
+ Mike Rapoport <rppt@linux.ibm.com>, kvm@vger.kernel.org,
+ linux-s390@vger.kernel.org, linux-sh@vger.kernel.org,
+ linux-um@lists.infradead.org, linux-kernel@vger.kernel.org,
+ kasan-dev@googlegroups.com, linux-mips@vger.kernel.org, linux-mm@kvack.org,
+ iommu@lists.linux-foundation.org, linux-usb@vger.kernel.org,
+ linux-alpha@vger.kernel.org, sparclinux@vger.kernel.org,
+ xen-devel@lists.xenproject.org, Andrew Morton <akpm@linux-foundation.org>,
+ linux-snps-arc@lists.infradead.org, linuxppc-dev@lists.ozlabs.org,
+ linux-riscv@lists.infradead.org, linux-arm-kernel@lists.infradead.org
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -138,65 +86,98 @@ List-Post: <mailto:iommu@lists.linux-foundation.org>
 List-Help: <mailto:iommu-request@lists.linux-foundation.org?subject=help>
 List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
  <mailto:iommu-request@lists.linux-foundation.org?subject=subscribe>
-Reply-To: eric.auger@redhat.com
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
+From: Mike Rapoport <rppt@linux.ibm.com>
+
 Hi,
 
-On 9/22/21 3:00 AM, Jason Gunthorpe wrote:
-> On Wed, Sep 22, 2021 at 12:54:02AM +0000, Tian, Kevin wrote:
->>> From: Jason Gunthorpe <jgg@nvidia.com>
->>> Sent: Wednesday, September 22, 2021 12:01 AM
->>>
->>>>  One open about how to organize the device nodes under
->>> /dev/vfio/devices/.
->>>> This RFC adopts a simple policy by keeping a flat layout with mixed
->>> devname
->>>> from all kinds of devices. The prerequisite of this model is that devnames
->>>> from different bus types are unique formats:
->>> This isn't reliable, the devname should just be vfio0, vfio1, etc
->>>
->>> The userspace can learn the correct major/minor by inspecting the
->>> sysfs.
->>>
->>> This whole concept should disappear into the prior patch that adds the
->>> struct device in the first place, and I think most of the code here
->>> can be deleted once the struct device is used properly.
->>>
->> Can you help elaborate above flow? This is one area where we need
->> more guidance.
->>
->> When Qemu accepts an option "-device vfio-pci,host=DDDD:BB:DD.F",
->> how does Qemu identify which vifo0/1/... is associated with the specified 
->> DDDD:BB:DD.F? 
-> When done properly in the kernel the file:
->
-> /sys/bus/pci/devices/DDDD:BB:DD.F/vfio/vfioX/dev
->
-> Will contain the major:minor of the VFIO device.
->
-> Userspace then opens the /dev/vfio/devices/vfioX and checks with fstat
-> that the major:minor matches.
->
-> in the above pattern "pci" and "DDDD:BB:DD.FF" are the arguments passed
-> to qemu.
-I guess this would be the same for platform devices, for instance
-/sys/bus/platform/devices/AMDI8001:01/vfio/vfioX/dev, right?
+Following the discussion on [1] this is the fix for memblock freeing APIs
+mismatch. 
 
-Thanks
+The first patch is a cleanup of numa_distance allocation in arch_numa I've
+spotted during the conversion.
+The second patch is a fix for Xen memory freeing on some of the error
+paths.
 
-Eric
->
-> You can look at this for some general over engineered code to handle
-> opening from a sysfs handle like above:
->
-> https://github.com/linux-rdma/rdma-core/blob/master/util/open_cdev.c
->
-> Jason
->
+The core change is in the third patch that makes memblock_free() a
+counterpart of memblock_alloc() and adds memblock_phys_alloc() to be a
+counterpart of memblock_phys_alloc().
+
+Since scripts/get_maintainer.pl returned more than 100 addresses I've
+trimmed the distribution list only to the relevant lists.
+
+[1] https://lore.kernel.org/all/CAHk-=wj9k4LZTz+svCxLYs5Y1=+yKrbAUArH1+ghyG3OLd8VVg@mail.gmail.com
+
+Mike Rapoport (3):
+  arch_numa: simplify numa_distance allocation
+  xen/x86: free_p2m_page: use memblock_free_ptr() to free a virtual pointer
+  memblock: cleanup memblock_free interface
+
+ arch/alpha/kernel/core_irongate.c         |  2 +-
+ arch/arc/mm/init.c                        |  2 +-
+ arch/arm/mach-hisi/platmcpm.c             |  2 +-
+ arch/arm/mm/init.c                        |  2 +-
+ arch/arm64/mm/mmu.c                       |  4 ++--
+ arch/mips/mm/init.c                       |  2 +-
+ arch/mips/sgi-ip30/ip30-setup.c           |  6 +++---
+ arch/powerpc/kernel/dt_cpu_ftrs.c         |  2 +-
+ arch/powerpc/kernel/paca.c                |  4 ++--
+ arch/powerpc/kernel/setup-common.c        |  2 +-
+ arch/powerpc/kernel/setup_64.c            |  2 +-
+ arch/powerpc/platforms/powernv/pci-ioda.c |  2 +-
+ arch/powerpc/platforms/pseries/svm.c      |  4 +---
+ arch/riscv/kernel/setup.c                 |  4 ++--
+ arch/s390/kernel/setup.c                  |  8 ++++----
+ arch/s390/kernel/smp.c                    |  4 ++--
+ arch/s390/kernel/uv.c                     |  2 +-
+ arch/s390/mm/kasan_init.c                 |  2 +-
+ arch/sh/boards/mach-ap325rxa/setup.c      |  2 +-
+ arch/sh/boards/mach-ecovec24/setup.c      |  4 ++--
+ arch/sh/boards/mach-kfr2r09/setup.c       |  2 +-
+ arch/sh/boards/mach-migor/setup.c         |  2 +-
+ arch/sh/boards/mach-se/7724/setup.c       |  4 ++--
+ arch/sparc/kernel/smp_64.c                |  2 +-
+ arch/um/kernel/mem.c                      |  2 +-
+ arch/x86/kernel/setup.c                   |  4 ++--
+ arch/x86/kernel/setup_percpu.c            |  2 +-
+ arch/x86/mm/init.c                        |  2 +-
+ arch/x86/mm/kasan_init_64.c               |  4 ++--
+ arch/x86/mm/numa.c                        |  2 +-
+ arch/x86/mm/numa_emulation.c              |  2 +-
+ arch/x86/xen/mmu_pv.c                     |  6 +++---
+ arch/x86/xen/p2m.c                        |  2 +-
+ arch/x86/xen/setup.c                      |  6 +++---
+ drivers/base/arch_numa.c                  | 10 ++++------
+ drivers/firmware/efi/memmap.c             |  2 +-
+ drivers/macintosh/smu.c                   |  2 +-
+ drivers/of/kexec.c                        |  2 +-
+ drivers/of/of_reserved_mem.c              |  4 ++--
+ drivers/s390/char/sclp_early.c            |  2 +-
+ drivers/usb/early/xhci-dbc.c              | 10 +++++-----
+ drivers/xen/swiotlb-xen.c                 |  2 +-
+ include/linux/memblock.h                  | 16 ++--------------
+ init/initramfs.c                          |  2 +-
+ init/main.c                               |  2 +-
+ kernel/dma/swiotlb.c                      |  2 +-
+ kernel/printk/printk.c                    |  4 ++--
+ lib/bootconfig.c                          |  2 +-
+ lib/cpumask.c                             |  2 +-
+ mm/cma.c                                  |  2 +-
+ mm/memblock.c                             | 20 ++++++++++----------
+ mm/memory_hotplug.c                       |  2 +-
+ mm/percpu.c                               |  8 ++++----
+ mm/sparse.c                               |  2 +-
+ tools/bootconfig/include/linux/memblock.h |  2 +-
+ 55 files changed, 94 insertions(+), 110 deletions(-)
+
+
+base-commit: e4e737bb5c170df6135a127739a9e6148ee3da82
+-- 
+2.28.0
 
 _______________________________________________
 iommu mailing list
