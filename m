@@ -5,60 +5,60 @@ X-Spam-Level:
 X-Spam-Status: No, score=-16.8 required=3.0 tests=BAYES_00,
 	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_CR_TRAILER,INCLUDES_PATCH,
 	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_GIT
-	autolearn=unavailable autolearn_force=no version=3.4.0
+	autolearn=ham autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5B474C4332F
-	for <iommu@archiver.kernel.org>; Thu, 23 Sep 2021 17:43:15 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5F710C433FE
+	for <iommu@archiver.kernel.org>; Thu, 23 Sep 2021 17:43:14 +0000 (UTC)
 Received: from smtp3.osuosl.org (smtp3.osuosl.org [140.211.166.136])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 1875B6109E
-	for <iommu@archiver.kernel.org>; Thu, 23 Sep 2021 17:43:15 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.4.1 mail.kernel.org 1875B6109E
+	by mail.kernel.org (Postfix) with ESMTPS id 278F960F4C
+	for <iommu@archiver.kernel.org>; Thu, 23 Sep 2021 17:43:14 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.4.1 mail.kernel.org 278F960F4C
 Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=intel.com
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by smtp3.osuosl.org (Postfix) with ESMTP id ECC55606AE;
-	Thu, 23 Sep 2021 17:43:14 +0000 (UTC)
+	by smtp3.osuosl.org (Postfix) with ESMTP id E538F60BE8;
+	Thu, 23 Sep 2021 17:43:13 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
 Received: from smtp3.osuosl.org ([127.0.0.1])
 	by localhost (smtp3.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id YgFb3Dvu-c3c; Thu, 23 Sep 2021 17:43:14 +0000 (UTC)
-Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by smtp3.osuosl.org (Postfix) with ESMTPS id 95E1D60B97;
-	Thu, 23 Sep 2021 17:43:13 +0000 (UTC)
-Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 86690C0030;
+	with ESMTP id 9dJ7l9hcE8ja; Thu, 23 Sep 2021 17:43:13 +0000 (UTC)
+Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [IPv6:2605:bc80:3010:104::8cd3:938])
+	by smtp3.osuosl.org (Postfix) with ESMTPS id D79F760ADB;
 	Thu, 23 Sep 2021 17:43:12 +0000 (UTC)
+Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
+	by lists.linuxfoundation.org (Postfix) with ESMTP id D68A4C0027;
+	Thu, 23 Sep 2021 17:43:11 +0000 (UTC)
 Received: from smtp2.osuosl.org (smtp2.osuosl.org [140.211.166.133])
- by lists.linuxfoundation.org (Postfix) with ESMTP id C64B8C000D
- for <iommu@lists.linux-foundation.org>; Thu, 23 Sep 2021 17:27:00 +0000 (UTC)
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 40845C000D
+ for <iommu@lists.linux-foundation.org>; Thu, 23 Sep 2021 17:26:57 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by smtp2.osuosl.org (Postfix) with ESMTP id 5279B4000B
- for <iommu@lists.linux-foundation.org>; Thu, 23 Sep 2021 17:26:56 +0000 (UTC)
+ by smtp2.osuosl.org (Postfix) with ESMTP id 2C09240201
+ for <iommu@lists.linux-foundation.org>; Thu, 23 Sep 2021 17:26:55 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
 Received: from smtp2.osuosl.org ([127.0.0.1])
  by localhost (smtp2.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id BpQbFNnieF-Q for <iommu@lists.linux-foundation.org>;
- Thu, 23 Sep 2021 17:26:55 +0000 (UTC)
+ with ESMTP id NZDaQMUp_Jmr for <iommu@lists.linux-foundation.org>;
+ Thu, 23 Sep 2021 17:26:54 +0000 (UTC)
 X-Greylist: domain auto-whitelisted by SQLgrey-1.8.0
 Received: from mga09.intel.com (mga09.intel.com [134.134.136.24])
- by smtp2.osuosl.org (Postfix) with ESMTPS id 97CBA40117
- for <iommu@lists.linux-foundation.org>; Thu, 23 Sep 2021 17:26:55 +0000 (UTC)
-X-IronPort-AV: E=McAfee;i="6200,9189,10116"; a="223933662"
-X-IronPort-AV: E=Sophos;i="5.85,316,1624345200"; d="scan'208";a="223933662"
+ by smtp2.osuosl.org (Postfix) with ESMTPS id 7133A401B2
+ for <iommu@lists.linux-foundation.org>; Thu, 23 Sep 2021 17:26:54 +0000 (UTC)
+X-IronPort-AV: E=McAfee;i="6200,9189,10116"; a="223933658"
+X-IronPort-AV: E=Sophos;i="5.85,316,1624345200"; d="scan'208";a="223933658"
 Received: from fmsmga005.fm.intel.com ([10.253.24.32])
  by orsmga102.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384;
- 23 Sep 2021 10:26:55 -0700
-X-IronPort-AV: E=Sophos;i="5.85,316,1624345200"; d="scan'208";a="704832548"
+ 23 Sep 2021 10:26:54 -0700
+X-IronPort-AV: E=Sophos;i="5.85,316,1624345200"; d="scan'208";a="704832533"
 Received: from unknown (HELO bad-guy.kumite) ([10.252.132.140])
  by fmsmga005-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384;
- 23 Sep 2021 10:26:54 -0700
+ 23 Sep 2021 10:26:53 -0700
 From: Ben Widawsky <ben.widawsky@intel.com>
 To: linux-cxl@vger.kernel.org
-Subject: [PATCH v2 5/9] cxl/pci: Make more use of cxl_register_map
-Date: Thu, 23 Sep 2021 10:26:43 -0700
-Message-Id: <20210923172647.72738-6-ben.widawsky@intel.com>
+Subject: [PATCH v2 3/9] cxl/pci: Remove pci request/release regions
+Date: Thu, 23 Sep 2021 10:26:41 -0700
+Message-Id: <20210923172647.72738-4-ben.widawsky@intel.com>
 X-Mailer: git-send-email 2.33.0
 In-Reply-To: <20210923172647.72738-1-ben.widawsky@intel.com>
 References: <20210923172647.72738-1-ben.widawsky@intel.com>
@@ -68,7 +68,8 @@ Cc: Ben Widawsky <ben.widawsky@intel.com>, Andrew Donnellan <ajd@linux.ibm.com>,
  linux-pci@vger.kernel.org, linuxppc-dev@lists.ozlabs.org,
  iommu@lists.linux-foundation.org, Bjorn Helgaas <helgaas@kernel.org>,
  "David E. Box" <david.e.box@linux.intel.com>,
- David Woodhouse <dwmw2@infradead.org>, Kan Liang <kan.liang@linux.intel.com>
+ Dan Williams <dan.j.williams@intel.com>, David Woodhouse <dwmw2@infradead.org>,
+ Kan Liang <kan.liang@linux.intel.com>
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -86,117 +87,41 @@ Content-Transfer-Encoding: 7bit
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-The structure exists to pass around information about register mapping.
-Using it more extensively cleans up many existing functions.
+Quoting Dan, "... the request + release regions should probably just be
+dropped. It's not like any of the register enumeration would collide
+with someone else who already has the registers mapped. The collision
+only comes when the registers are mapped for their final usage, and that
+will have more precision in the request."
 
+Recommended-by: Dan Williams <dan.j.williams@intel.com>
 Signed-off-by: Ben Widawsky <ben.widawsky@intel.com>
 ---
- drivers/cxl/cxl.h |  1 +
- drivers/cxl/pci.c | 36 +++++++++++++++++-------------------
- 2 files changed, 18 insertions(+), 19 deletions(-)
+ drivers/cxl/pci.c | 5 -----
+ 1 file changed, 5 deletions(-)
 
-diff --git a/drivers/cxl/cxl.h b/drivers/cxl/cxl.h
-index 7d6b011dd963..3b128ce71564 100644
---- a/drivers/cxl/cxl.h
-+++ b/drivers/cxl/cxl.h
-@@ -140,6 +140,7 @@ struct cxl_device_reg_map {
- };
- 
- struct cxl_register_map {
-+	void __iomem *base;
- 	u64 block_offset;
- 	u8 reg_type;
- 	u8 barno;
 diff --git a/drivers/cxl/pci.c b/drivers/cxl/pci.c
-index bbbacbc94fbf..5eaf2736f779 100644
+index ccc7c2573ddc..7256c236fdb3 100644
 --- a/drivers/cxl/pci.c
 +++ b/drivers/cxl/pci.c
-@@ -306,35 +306,36 @@ static int cxl_pci_setup_mailbox(struct cxl_mem *cxlm)
- 	return 0;
- }
- 
--static void __iomem *cxl_pci_map_regblock(struct cxl_mem *cxlm,
--					  u8 bar, u64 offset)
-+static int cxl_pci_map_regblock(struct cxl_mem *cxlm, struct cxl_register_map *map)
- {
--	void __iomem *addr;
-+	int bar = map->barno;
- 	struct device *dev = cxlm->dev;
- 	struct pci_dev *pdev = to_pci_dev(dev);
-+	resource_size_t offset = map->block_offset;
- 
- 	/* Basic sanity check that BAR is big enough */
- 	if (pci_resource_len(pdev, bar) < offset) {
- 		dev_err(dev, "BAR%d: %pr: too small (offset: %#llx)\n", bar,
- 			&pdev->resource[bar], (unsigned long long)offset);
--		return IOMEM_ERR_PTR(-ENXIO);
-+		return -ENXIO;
+@@ -453,9 +453,6 @@ static int cxl_pci_setup_regs(struct cxl_mem *cxlm)
+ 		return -ENXIO;
  	}
  
--	addr = pci_iomap(pdev, bar, 0);
--	if (!addr) {
-+	map->base = pci_iomap(pdev, bar, 0);
-+	if (!map->base) {
- 		dev_err(dev, "failed to map registers\n");
--		return addr;
-+		return PTR_ERR(map->base);
+-	if (pci_request_mem_regions(pdev, pci_name(pdev)))
+-		return -ENODEV;
+-
+ 	/* Get the size of the Register Locator DVSEC */
+ 	pci_read_config_dword(pdev, regloc + PCI_DVSEC_HEADER1, &regloc_size);
+ 	regloc_size = FIELD_GET(PCI_DVSEC_HEADER1_LENGTH_MASK, regloc_size);
+@@ -499,8 +496,6 @@ static int cxl_pci_setup_regs(struct cxl_mem *cxlm)
+ 		n_maps++;
  	}
  
- 	dev_dbg(dev, "Mapped CXL Memory Device resource bar %u @ %#llx\n",
- 		bar, offset);
- 
--	return addr;
-+	return 0;
- }
- 
--static void cxl_pci_unmap_regblock(struct cxl_mem *cxlm, void __iomem *base)
-+static void cxl_pci_unmap_regblock(struct cxl_mem *cxlm, struct cxl_register_map *map)
- {
--	pci_iounmap(to_pci_dev(cxlm->dev), base);
-+	pci_iounmap(to_pci_dev(cxlm->dev), map->base);
-+	map->base = 0;
- }
- 
- static int cxl_pci_dvsec(struct pci_dev *pdev, int dvsec)
-@@ -360,9 +361,9 @@ static int cxl_pci_dvsec(struct pci_dev *pdev, int dvsec)
- 	return 0;
- }
- 
--static int cxl_probe_regs(struct cxl_mem *cxlm, void __iomem *base,
--			  struct cxl_register_map *map)
-+static int cxl_probe_regs(struct cxl_mem *cxlm, struct cxl_register_map *map)
- {
-+	void __iomem *base = map->base + map->block_offset;
- 	struct cxl_component_reg_map *comp_map;
- 	struct cxl_device_reg_map *dev_map;
- 	struct device *dev = cxlm->dev;
-@@ -487,7 +488,6 @@ static int cxl_pci_setup_regs(struct cxl_mem *cxlm)
- 
- 	for (i = 0; i < ARRAY_SIZE(types); i++) {
- 		struct cxl_register_map map;
--		void __iomem *base;
- 
- 		rc = find_register_block(pdev, types[i], &map);
- 		if (rc) {
-@@ -498,14 +498,12 @@ static int cxl_pci_setup_regs(struct cxl_mem *cxlm)
- 			break;
- 		}
- 
--		base = cxl_pci_map_regblock(cxlm, map.barno, map.block_offset);
--		if (!base) {
--			rc = -ENOMEM;
-+		rc = cxl_pci_map_regblock(cxlm, &map);
-+		if (rc)
- 			break;
--		}
- 
--		rc = cxl_probe_regs(cxlm, base + map.block_offset, &map);
--		cxl_pci_unmap_regblock(cxlm, base);
-+		rc = cxl_probe_regs(cxlm, &map);
-+		cxl_pci_unmap_regblock(cxlm, &map);
- 		if (rc)
- 			break;
- 
+-	pci_release_mem_regions(pdev);
+-
+ 	for (i = 0; i < n_maps; i++) {
+ 		ret = cxl_map_regs(cxlm, &maps[i]);
+ 		if (ret)
 -- 
 2.33.0
 
