@@ -2,102 +2,153 @@ Return-Path: <SRS0=900o=ON=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-3.6 required=3.0 tests=BAYES_00,DKIM_INVALID,
-	DKIM_SIGNED,HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,SPF_HELO_NONE,
-	SPF_PASS,URIBL_BLOCKED autolearn=no autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-3.5 required=3.0 tests=BAYES_00,DKIM_INVALID,
+	DKIM_SIGNED,HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,
+	MSGID_FROM_MTA_HEADER,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED autolearn=no
+	autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 89373C433FE
-	for <iommu@archiver.kernel.org>; Thu, 23 Sep 2021 10:15:55 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8086EC433EF
+	for <iommu@archiver.kernel.org>; Thu, 23 Sep 2021 11:27:25 +0000 (UTC)
 Received: from smtp3.osuosl.org (smtp3.osuosl.org [140.211.166.136])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 2C4F86103D
-	for <iommu@archiver.kernel.org>; Thu, 23 Sep 2021 10:15:55 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.4.1 mail.kernel.org 2C4F86103D
-Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=linaro.org
+	by mail.kernel.org (Postfix) with ESMTPS id 21CFE611C6
+	for <iommu@archiver.kernel.org>; Thu, 23 Sep 2021 11:27:25 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.4.1 mail.kernel.org 21CFE611C6
+Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=lists.linux-foundation.org
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by smtp3.osuosl.org (Postfix) with ESMTP id E76B361565;
-	Thu, 23 Sep 2021 10:15:54 +0000 (UTC)
+	by smtp3.osuosl.org (Postfix) with ESMTP id D911360C1C;
+	Thu, 23 Sep 2021 11:27:24 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
 Received: from smtp3.osuosl.org ([127.0.0.1])
 	by localhost (smtp3.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id bBuEN12r1ZoV; Thu, 23 Sep 2021 10:15:53 +0000 (UTC)
+	with ESMTP id NJG7ulUi2ADZ; Thu, 23 Sep 2021 11:27:24 +0000 (UTC)
 Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by smtp3.osuosl.org (Postfix) with ESMTPS id 0EBC661567;
-	Thu, 23 Sep 2021 10:15:53 +0000 (UTC)
+	by smtp3.osuosl.org (Postfix) with ESMTPS id D0D836077A;
+	Thu, 23 Sep 2021 11:27:23 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id D8424C000F;
-	Thu, 23 Sep 2021 10:15:52 +0000 (UTC)
-Received: from smtp1.osuosl.org (smtp1.osuosl.org [IPv6:2605:bc80:3010::138])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 9A643C000D
- for <iommu@lists.linux-foundation.org>; Thu, 23 Sep 2021 10:15:52 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id B961FC0011;
+	Thu, 23 Sep 2021 11:27:23 +0000 (UTC)
+Received: from smtp2.osuosl.org (smtp2.osuosl.org [140.211.166.133])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 6CDD5C000D
+ for <iommu@lists.linux-foundation.org>; Thu, 23 Sep 2021 11:27:22 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by smtp1.osuosl.org (Postfix) with ESMTP id 8316981DA0
- for <iommu@lists.linux-foundation.org>; Thu, 23 Sep 2021 10:15:52 +0000 (UTC)
+ by smtp2.osuosl.org (Postfix) with ESMTP id 4A7C7400C8
+ for <iommu@lists.linux-foundation.org>; Thu, 23 Sep 2021 11:27:22 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Authentication-Results: smtp1.osuosl.org (amavisd-new);
- dkim=pass (2048-bit key) header.d=linaro.org
-Received: from smtp1.osuosl.org ([127.0.0.1])
- by localhost (smtp1.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id lhj0q5d3hVNd for <iommu@lists.linux-foundation.org>;
- Thu, 23 Sep 2021 10:15:49 +0000 (UTC)
+Authentication-Results: smtp2.osuosl.org (amavisd-new);
+ dkim=pass (2048-bit key) header.d=nvidia.com
+Received: from smtp2.osuosl.org ([127.0.0.1])
+ by localhost (smtp2.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+ with ESMTP id xfE4bPi_a30H for <iommu@lists.linux-foundation.org>;
+ Thu, 23 Sep 2021 11:27:21 +0000 (UTC)
 X-Greylist: whitelisted by SQLgrey-1.8.0
-Received: from mail-wr1-x431.google.com (mail-wr1-x431.google.com
- [IPv6:2a00:1450:4864:20::431])
- by smtp1.osuosl.org (Postfix) with ESMTPS id 6A2C281AD7
- for <iommu@lists.linux-foundation.org>; Thu, 23 Sep 2021 10:15:49 +0000 (UTC)
-Received: by mail-wr1-x431.google.com with SMTP id t28so2258656wra.7
- for <iommu@lists.linux-foundation.org>; Thu, 23 Sep 2021 03:15:49 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linaro.org; s=google;
- h=date:from:to:cc:subject:message-id:references:mime-version
- :content-disposition:in-reply-to;
- bh=aae/RsodGlMaQv4cjf+Ghj6Vk8G4MtoQty47v2BpJnw=;
- b=vumkcNAOnHSQBaIWxGSauDBhoAHX288enF91Bo6RYzchogAsW50lE6QrWtENkUmPNt
- RfGLdLB2s5dSIhHUA3rVTAkZb00Sm6EhxzgTUOtMMozh9vHQx6jqcMe9Q8uCUexL5d9g
- AWIIskbIulJYxQzhhadfrHtT42eCYtx5raZQpt61t2J4JntsJnMbF80e5EBzt0DJAOB7
- VnUJfUncA+06CW7pkiCtp8wLtXiJvTKLWUvu9kNzUG4Nrco6knEHyqHv5xcWf9zWDsAx
- Zg/kjWtiFewwgf7M3KacTifr6nC2cImyfaiuNgMdTcGrTgkK1OKwt83ERj+WVI8YO1T7
- OPtA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
- d=1e100.net; s=20210112;
- h=x-gm-message-state:date:from:to:cc:subject:message-id:references
- :mime-version:content-disposition:in-reply-to;
- bh=aae/RsodGlMaQv4cjf+Ghj6Vk8G4MtoQty47v2BpJnw=;
- b=U76/woa9ynHi4dgsx9Dk2GXPhDXw8Nz8Po/yJp/Ga415Hi/LfeXsfvP4sMzJ/wd07u
- esqDrEoTAMVMoXLhsgnn4x5wRDxGtTG4onw8FZsuXzVaqJu8MRjpOFk8+q0kr9KsK4s+
- anR5Lo72iGIXiIwLpjyiGPZgUaETRTUFSmXIBNpCZ4B/GF0lxoO6OyrUCgJeIBazvAxw
- BFrgWKbGEsDh5u8/emc2NnWt5+HzO8boMw0mHjE/0FQpYJ3p9QRRC6R3/H17PjvyN/9a
- 9epSVlZ/TSvwqOTyzqAahsC7VAd9FnZvfNtxasW7fSaKn5H6Cq2AEwVXwCtxmHbHBRhC
- I/9w==
-X-Gm-Message-State: AOAM533LjYgkYQJDT7tIiGBGRaMDkXj5prKXf866jfKmGDppE8ZTAzVj
- T5sldHpVe8Ll4XSLwM/Qk098gg==
-X-Google-Smtp-Source: ABdhPJxzYm05k77WJjrg1d4RZ92vsoJbfB5r3datoj+8v6STPIYXQuPQSgea8Kui3L4uijDIy+CkuQ==
-X-Received: by 2002:adf:f391:: with SMTP id m17mr4122306wro.294.1632392147392; 
- Thu, 23 Sep 2021 03:15:47 -0700 (PDT)
-Received: from myrica (cpc92880-cmbg19-2-0-cust679.5-4.cable.virginm.net.
- [82.27.106.168])
- by smtp.gmail.com with ESMTPSA id 198sm4881488wma.16.2021.09.23.03.15.45
- (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
- Thu, 23 Sep 2021 03:15:46 -0700 (PDT)
-Date: Thu, 23 Sep 2021 11:15:24 +0100
-From: Jean-Philippe Brucker <jean-philippe@linaro.org>
-To: "Tian, Kevin" <kevin.tian@intel.com>
+Received: from NAM12-MW2-obe.outbound.protection.outlook.com
+ (mail-mw2nam12on2069.outbound.protection.outlook.com [40.107.244.69])
+ by smtp2.osuosl.org (Postfix) with ESMTPS id ECCA0400C5
+ for <iommu@lists.linux-foundation.org>; Thu, 23 Sep 2021 11:27:20 +0000 (UTC)
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=YVsAPxu4cb+ak56UrN2i+8UOSyP+iNjoxWBPz883znrbfz5/q/ypy2cmrRFQOj3QBsYmuMtzLaAkoPgQuilHnIPEkpF2JKF0r6YlGQ/EFDuJa64VYJbRVpTDv4hBtOdRaCYauD+L9xjIwi7HbqSFQHe/cEqwAhFjI1FUZszvaQz8EPJZziIm4jNqhQTEjTZcec45ZRnJeC/Mxa+6Owq1awmNTDoB1sWRLToa8PU9+FAu+8OQnP5zwt9wJYBvSQEwL9Dn//DX4Hi3/dCzN+H1GHBpGnF17qgTMSWlySsClJNEImNbHnXPj+qE/ffirChEZMqokIjsgpokxSW66RLAyw==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com; 
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version; 
+ bh=3p2LR8qxnj4vuE95BhZjDAlBYig4f9Bo93FLg5b9Ukc=;
+ b=eww+CJWc6rFzplNQf8iwrCyuLHzeySJe5WzSYVT78KzESTaz3+Pdv9Ps1qZ/tZD1w5fi6Su6NKjcufyETrWJYieda/YtIrrLRzRgnmVDedHmKnk7EnIwfG+51ui05ilS0FhH/xXtD4uCwf5T1h2lVqBGfJ0re+ElYyyHWC1mlX2YUMOW/meMZtfpDv+C0VlJ49flRFPnOUSSmF5K+KrhyeWqPEtIPAVVsqFg6Vs2WhCOx4Jp/rFGUjghvi+wXNMy6IYqc4Hcrpufwu8GqYcSTiDGFLJXfp8PepywaRm2oMmEID3cZdeWfpgSUUGCCxobU4xUiAxvMtStgEtymYJd6A==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=nvidia.com; dmarc=pass action=none header.from=nvidia.com;
+ dkim=pass header.d=nvidia.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
+ s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=3p2LR8qxnj4vuE95BhZjDAlBYig4f9Bo93FLg5b9Ukc=;
+ b=nfmqVVZj1EgxvDplMgQTDAn9qB4+rHB60+WDKYDsChuauhWza6zGpnJz8KlTxVeJ+cO3RCVZTdkCGA43ZMRYqXZGmajTnatecCRorvxIE5/5fbHjAsTrfQHlY0DcxzeWTliKZ/MtB9P4uNljXGaovrJFOyryuhHbWaqWauhgY/PLQfiSpy3RntxqrjZSkRoLOurknnH9/omowG9ueV3Ff5nS4/4P3dHKnfIbqxWFKhTMYuFOBpU5fueSQ0YvUAi2qGlK8rAJqRujOmEXAVLYsBMT4bzifp9JpfmxgB9hLtpx5vDcnprJrUR5GdZ1CMphttEMCa4RoS2zWlm+E1OCHA==
+Authentication-Results: linaro.org; dkim=none (message not signed)
+ header.d=none;linaro.org; dmarc=none action=none header.from=nvidia.com;
+Received: from BL0PR12MB5506.namprd12.prod.outlook.com (2603:10b6:208:1cb::22)
+ by BL0PR12MB5556.namprd12.prod.outlook.com (2603:10b6:208:1cf::7)
+ with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4544.13; Thu, 23 Sep
+ 2021 11:27:18 +0000
+Received: from BL0PR12MB5506.namprd12.prod.outlook.com
+ ([fe80::e8af:232:915e:2f95]) by BL0PR12MB5506.namprd12.prod.outlook.com
+ ([fe80::e8af:232:915e:2f95%8]) with mapi id 15.20.4544.015; Thu, 23 Sep 2021
+ 11:27:18 +0000
+Date: Thu, 23 Sep 2021 08:27:16 -0300
+To: Jean-Philippe Brucker <jean-philippe@linaro.org>
 Subject: Re: [RFC 10/20] iommu/iommufd: Add IOMMU_DEVICE_GET_INFO
-Message-ID: <YUxTvCt1mYDntO8z@myrica>
+Message-ID: <20210923112716.GE964074@nvidia.com>
 References: <20210919063848.1476776-1-yi.l.liu@intel.com>
  <20210919063848.1476776-11-yi.l.liu@intel.com>
  <20210922152407.1bfa6ff7.alex.williamson@redhat.com>
  <20210922234954.GB964074@nvidia.com>
  <BN9PR11MB543333AD3C81312115686AAA8CA39@BN9PR11MB5433.namprd11.prod.outlook.com>
-MIME-Version: 1.0
+ <YUxTvCt1mYDntO8z@myrica>
 Content-Disposition: inline
-In-Reply-To: <BN9PR11MB543333AD3C81312115686AAA8CA39@BN9PR11MB5433.namprd11.prod.outlook.com>
+In-Reply-To: <YUxTvCt1mYDntO8z@myrica>
+X-ClientProxiedBy: BL0PR02CA0115.namprd02.prod.outlook.com
+ (2603:10b6:208:35::20) To BL0PR12MB5506.namprd12.prod.outlook.com
+ (2603:10b6:208:1cb::22)
+MIME-Version: 1.0
+Received: from mlx.ziepe.ca (142.162.113.129) by
+ BL0PR02CA0115.namprd02.prod.outlook.com (2603:10b6:208:35::20) with Microsoft
+ SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.20.4544.15 via Frontend Transport; Thu, 23 Sep 2021 11:27:18 +0000
+Received: from jgg by mlx with local (Exim 4.94)	(envelope-from
+ <jgg@nvidia.com>)	id 1mTMsm-004O9R-O2; Thu, 23 Sep 2021 08:27:16 -0300
+X-MS-PublicTrafficType: Email
+X-MS-Office365-Filtering-Correlation-Id: bd1e458e-e515-4132-f645-08d97e8519ee
+X-MS-TrafficTypeDiagnostic: BL0PR12MB5556:
+X-MS-Exchange-Transport-Forked: True
+X-Microsoft-Antispam-PRVS: <BL0PR12MB55562D567A706E37B244F0FBC2A39@BL0PR12MB5556.namprd12.prod.outlook.com>
+X-MS-Oob-TLC-OOBClassifiers: OLM:7691;
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: DnNLm6Cs4y7cgkKM+xq1cA7K/jtoz6TZ0cEehy0CE261Jr+sx6hxTHJSjN4PKpBPlOEJg/JFxgMjgRFNYrNcrU47/XnXV5Pap4peiaO6T1NSaLyjxewTifGfvA+S5zqrALESdzHWiJ9bt9aLaznaYe2xMLTIaWLTrgCA5xkAjx771FK02ZyCvON/bPIPhALsK2ouKMPVq09qlDvGsDm3wjn8kebqXTgMBtf2yhNxz36d4ZR/bp4zVbVlLgAnSUHZI6xcAyDsny0XUGMzyqNmeUy1LKYaZMVhwI3EXjg7ADkAIoKQUy2dqKC72Si9ORKozIGwozzIqvWfpecx9W1+JzBvM+WHxp2APrvQQJWhdJh1xLb0L2blOspHDTm+K6zE50h0OqrG+/2E/avHtEuLTmF4viXudza+I1++RuN2zac1zAwyqgHdVAiZLuM1WOdb1Jy+JYRWulPIgWGVdkBgxgiiSSAdgj4SJ5J2A6A9jXaCFwl7O/ChNtkr8F3Qxvf21LraBPZH3pOVbwsck5kg/uJqtTB6G9AKx+L6Wb0yS7ep0DbkDI5nd7eWw6QGV3Ctn4vpcM68ei90JDx2Ea06f36tQYiONCbcBpG+SFm9yoNu1e/6muWSDfqDutvMUDm5PaoxvWrDfq43wUfhtvGTstqLoXy1n+BxcG3DQei0JqWLQYkGQC+O2bipfvvcRGKf
+X-Forefront-Antispam-Report: CIP:255.255.255.255; CTRY:; LANG:en; SCL:1; SRV:;
+ IPV:NLI; SFV:NSPM; H:BL0PR12MB5506.namprd12.prod.outlook.com; PTR:; CAT:NONE;
+ SFS:(4636009)(366004)(316002)(6916009)(66476007)(66556008)(54906003)(66946007)(26005)(36756003)(5660300002)(4326008)(83380400001)(8676002)(508600001)(33656002)(426003)(107886003)(8936002)(2906002)(2616005)(7416002)(86362001)(9746002)(9786002)(1076003)(38100700002)(186003)(27376004);
+ DIR:OUT; SFP:1101; 
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?pC9gAMM6iD8O6S5wmHn8+gSBP+HXIcvO5TxISG0ZOypTaNPDn1FYmyJZHXgb?=
+ =?us-ascii?Q?P3BZ49nYz8SDxso10KIoRuz3nEuESsjO8v9fgJKNz52x+RT70NyQ2lXzUqMP?=
+ =?us-ascii?Q?+XNxsQcVeYMcHCmO5t7yOZA6PoqNPWwQRSe2zykZ3Fl+YQtycjQoAAd8n+VD?=
+ =?us-ascii?Q?7UZgKW/q5nSG94YbcDJGIoRAMxOYoqB+QXqOA6qeNuaphx7IktZbJi76Wb3k?=
+ =?us-ascii?Q?b/o0EFZDeJLLX8ctHZn3laU7C2J3vB3Ns9F6azsMw3YKeNChuhDzXhPISS95?=
+ =?us-ascii?Q?P5pabjfY2D6xT5lEsl0bSsVwqIMFg+TI+03asOIw0j77zIcokLg70s+sAmUu?=
+ =?us-ascii?Q?3hfYkIkEFeniEUKNSkgf8g4YdRjBUkEb2KYuOIRKKlEHdYGlUoscWPogtoKz?=
+ =?us-ascii?Q?4fXrO7+8zvSXad+hhEhkXaNZP+P7GXop3voILWUUwrPkxAjfH/rSr89+z8n4?=
+ =?us-ascii?Q?13AZhHIG5CkRFIwj1nY2Iu6MR60rtmv6f9YqUerSmw5yw7D4wBiX3gEKOjsk?=
+ =?us-ascii?Q?LOnVux47qDGEWuTOqaeoCTUj9WhHJx7q9ytS4JoYK5esBAS6lmoYxgfJkMOt?=
+ =?us-ascii?Q?plnYPDJ9RNtPMUwc4YQzc0hOh1h15qfWfkWwu6YmAKDTzlgzHzywqzVHpJsy?=
+ =?us-ascii?Q?l6WNjTVyKOB4TcO3mUrd/sZkKI9cVYlutOCv8t1a1ijk6i2q25Y5gC+y5MOT?=
+ =?us-ascii?Q?Fed4JrtCpYfUqeJpDfnXJfq1sIsKOgKxEMQ237klrj20PX12QBnUNUL3hpiv?=
+ =?us-ascii?Q?llPopHCTYuLp7v8e7oo2wjSoYFMYbkJZ+Q4MAkzk9JdNd9y0QGAaf7h5XnA4?=
+ =?us-ascii?Q?CoCfys4q2cq+tD5ngfwNKe7R6GGPF2WgIZWiP2hkZCvlbuURFSyc/OJ8n+DR?=
+ =?us-ascii?Q?Y+YVjB2+7gFz2O+62iFmpnCugXA+FDJzdnVtGrTjTsifPm6xg9DfVOeDPRsJ?=
+ =?us-ascii?Q?JjN0Rbb+hpcl6VPA9GIDEKL2HrYctsMYLwrQa8UI4gjpDU3cgDAP8NfcX1IZ?=
+ =?us-ascii?Q?/Nk4vgBBPle7kn/6u/L0wCYhqU72pHzCTwGIV4dJfAQGlkjzg+5HgjqoWikw?=
+ =?us-ascii?Q?5QnIbndJRlkSGhaXZIOBBPiAHl3WcYJ79gxaoIjpNkDsiwvEvPAIFvYGFohk?=
+ =?us-ascii?Q?X36HfCefmWTCbwNAxugT+74SDQ9DpcGoRKVyHGzTvsozj7aKsCI4eCweU+f+?=
+ =?us-ascii?Q?zJ7g+ROYVcQ9PfIyQ93MB1/RZuQS9IgL0Dzx05ACo7zjCtcpTFGCuqSXusCI?=
+ =?us-ascii?Q?zL6hUlu1W47aowDjPnGRP/jWGdKQh8GVHqfxipTZVZ/YARMsLO7NOrWN1hKP?=
+ =?us-ascii?Q?L1lciYfR87NyOmwh0TeLGJ+2?=
+X-OriginatorOrg: Nvidia.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: bd1e458e-e515-4132-f645-08d97e8519ee
+X-MS-Exchange-CrossTenant-AuthSource: BL0PR12MB5506.namprd12.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 23 Sep 2021 11:27:18.3882 (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: fr1VvfeT5xYexIRk00zT6CQ8A6LRbnpze5Pkftj0lCVgXmsIcnBASPztpTi2QABM
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: BL0PR12MB5556
 Cc: "kvm@vger.kernel.org" <kvm@vger.kernel.org>,
  "jasowang@redhat.com" <jasowang@redhat.com>,
  "kwankhede@nvidia.com" <kwankhede@nvidia.com>, "hch@lst.de" <hch@lst.de>,
  "Jiang, Dave" <dave.jiang@intel.com>, "Raj, Ashok" <ashok.raj@intel.com>,
- "corbet@lwn.net" <corbet@lwn.net>, Jason Gunthorpe <jgg@nvidia.com>,
+ "corbet@lwn.net" <corbet@lwn.net>, "Tian, Kevin" <kevin.tian@intel.com>,
  "parav@mellanox.com" <parav@mellanox.com>,
  Alex Williamson <alex.williamson@redhat.com>,
  "lkml@metux.net" <lkml@metux.net>,
@@ -121,166 +172,39 @@ List-Post: <mailto:iommu@lists.linux-foundation.org>
 List-Help: <mailto:iommu-request@lists.linux-foundation.org?subject=help>
 List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
  <mailto:iommu-request@lists.linux-foundation.org?subject=subscribe>
+From: Jason Gunthorpe via iommu <iommu@lists.linux-foundation.org>
+Reply-To: Jason Gunthorpe <jgg@nvidia.com>
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-On Thu, Sep 23, 2021 at 03:10:47AM +0000, Tian, Kevin wrote:
-> > From: Jason Gunthorpe <jgg@nvidia.com>
-> > Sent: Thursday, September 23, 2021 7:50 AM
-> > 
-> > On Wed, Sep 22, 2021 at 03:24:07PM -0600, Alex Williamson wrote:
-> > > On Sun, 19 Sep 2021 14:38:38 +0800
-> > > Liu Yi L <yi.l.liu@intel.com> wrote:
-> > >
-> > > > +struct iommu_device_info {
-> > > > +	__u32	argsz;
-> > > > +	__u32	flags;
-> > > > +#define IOMMU_DEVICE_INFO_ENFORCE_SNOOP	(1 << 0) /* IOMMU
-> > enforced snoop */
-> > >
-> > > Is this too PCI specific, or perhaps too much of the mechanism rather
-> 
-> Isn't snoop vs. !snoop a general concept not pci specific?
-> 
-> > > than the result?  ie. should we just indicate if the IOMMU guarantees
-> > > coherent DMA?  Thanks,
-> > 
-> > I think the name of "coherent DMA" for this feature inside the kernel
-> > is very, very confusing. We already have something called coherent dma
-> > and this usage on Intel has nothing at all to do with that.
-> > 
-> > In fact it looks like this confusing name has already caused
-> > implementation problems as I see dma-iommu, is connecting
-> > dev->dma_coherent to IOMMU_CACHE! eg in dma_info_to_prot(). This is
-> > completely wrong if IOMMU_CACHE is linked to no_snoop.
-> > 
-> > And ARM seems to have fallen out of step with x86 as the ARM IOMMU
-> > drivers are mapping IOMMU_CACHE to ARM_LPAE_PTE_MEMATTR_OIWB,
-> > ARM_LPAE_MAIR_ATTR_IDX_CACHE
-> > 
-> > The SMMU spec for ARMv8 is pretty clear:
-> > 
-> >  13.6.1.1 No_snoop
-> > 
-> >  Support for No_snoop is system-dependent and, if implemented, No_snoop
-> >  transforms a final access attribute of a Normal cacheable type to
-> >  Normal-iNC-oNC-OSH downstream of (or appearing to be performed
-> >  downstream of) the SMMU. No_snoop does not transform a final access
-> >  attribute of any-Device.
-> > 
-> > Meaning setting ARM_LPAE_MAIR_ATTR_IDX_CACHE from IOMMU_CACHE
-> > does NOT
-> > block non-snoop, in fact it *enables* it - the reverse of what Intel
-> > is doing!
-> 
-> Checking the code:
-> 
->         if (data->iop.fmt == ARM_64_LPAE_S2 ||
->             data->iop.fmt == ARM_32_LPAE_S2) {
->                 if (prot & IOMMU_MMIO)
->                         pte |= ARM_LPAE_PTE_MEMATTR_DEV;
->                 else if (prot & IOMMU_CACHE)
->                         pte |= ARM_LPAE_PTE_MEMATTR_OIWB;
->                 else
->                         pte |= ARM_LPAE_PTE_MEMATTR_NC;
-> 
-> It does set attribute to WB for IOMMU_CACHE and then NC (Non-cacheable)
-> for !IOMMU_CACHE. The main difference between Intel and ARM is that Intel
-> by default allows both snoop and non-snoop traffic with one additional bit
-> to enforce snoop, while ARM requires explicit SMMU configuration for snoop
-> and non-snoop respectively.
-> 
->         } else {
->                 if (prot & IOMMU_MMIO)
->                         pte |= (ARM_LPAE_MAIR_ATTR_IDX_DEV
->                                 << ARM_LPAE_PTE_ATTRINDX_SHIFT);
->                 else if (prot & IOMMU_CACHE)
->                         pte |= (ARM_LPAE_MAIR_ATTR_IDX_CACHE
->                                 << ARM_LPAE_PTE_ATTRINDX_SHIFT);
->         }
-> 
-> same for this one. MAIR_ELx register is programmed to ARM_LPAE_MAIR_
-> ATTR_WBRWA for IDX_CACHE bit. I'm not sure why it doesn't use 
-> IDX_NC though, when !IOMMU_CACHE.
+On Thu, Sep 23, 2021 at 11:15:24AM +0100, Jean-Philippe Brucker wrote:
 
-It is in effect since IDX_NC == 0
+> So we can only tell userspace "No_snoop is not supported" (provided we
+> even want to allow them to enable No_snoop). Users in control of stage-1
+> tables can create non-cacheable mappings through MAIR attributes.
 
-> 
-> > 
-> > So this is all a mess.
-> > 
-> > Better to start clear and unambiguous names in the uAPI and someone
-> > can try to clean up the kernel eventually.
-> > 
-> > The required behavior for iommufd is to have the IOMMU ignore the
-> > no-snoop bit so that Intel HW can disable wbinvd. This bit should be
-> > clearly documented for its exact purpose and if other arches also have
-> > instructions that need to be disabled if snoop TLPs are allowed then
-> > they can re-use this bit. It appears ARM does not have this issue and
-> > does not need the bit.
-> 
-> Disabling wbinvd is one purpose. imo the more important intention
-> is that iommu vendor uses different PTE formats between snoop and
-> !snoop. As long as we want allow userspace to opt in case of isoch 
-> performance requirement (unlike current vfio which always choose
-> snoop format if available), such mechanism is required for all vendors.
-> 
-> When creating an ioas there could be three snoop modes:
-> 
-> 1) snoop for all attached devices;
-> 2) non-snoop for all attached devices;
-> 3) device-selected snoop;
-> 
-> Intel supports 1) <enforce-snoop on> and 3) <enforce-snoop off>. snoop
-> and nonsnoop devices can be attached to a same ioas in 3).
-> 
-> ARM supports 1) <snoop format> and 2) <nonsnoop format>. snoop devices
-> and nonsnoop devices must be attached to different ioas's in 1) and 2)
-> respectively.
+My point is that ARM is using IOMMU_CACHE to control the overall
+cachability of the DMA 
 
-I think Arm mainly supports 3), ie. No_snoop PCI transactions on pages
-mapped cacheable become non-cacheable memory accesses.
+ie not specifying IOMMU_CACHE requires using the arch specific DMA
+cache flushers. 
 
-But the Arm Base System Architecture 1.0
-(https://developer.arm.com/documentation/den0094/a) states that it's
-implementation dependent whether the system supports No_snoop.
+Intel never uses arch specifc DMA cache flushers, and instead is
+abusing IOMMU_CACHE to mean IOMMU_BLOCK_NO_SNOOP on DMA that is always
+cachable.
 
-    In the case where the system has a System MMU translating and
-    attributing the transactions from the root complex, the PCI Express
-    transactions must keep the memory attributes assigned by the System
-    MMU. If the System MMU-assigned attribute is cacheable then it is
-    IMPLEMENTATION DEFINED if No_snoop transactions replace the attribute
-    with non-cached.
+These are different things and need different bits. Since the ARM path
+has a lot more code supporting it, I'd suggest Intel should change
+their code to use IOMMU_BLOCK_NO_SNOOP and abandon IOMMU_CACHE.
 
-So we can only tell userspace "No_snoop is not supported" (provided we
-even want to allow them to enable No_snoop). Users in control of stage-1
-tables can create non-cacheable mappings through MAIR attributes.
+Which clarifies what to do here as uAPI - these things need to have
+different bits and Intel's should still have NO SNOOP in the
+name. What the no-snoop bit is called on other busses can be clarified
+in comments if that case ever arises.
 
-Thanks,
-Jean
-
-> 
-> Then the device info should reports:
-> 
-> /* iommu enforced snoop */
-> +#define IOMMU_DEVICE_INFO_ENFORCE_SNOOP	(1 << 0)
-> /* iommu enforced nonsnoop */
-> +#define IOMMU_DEVICE_INFO_ENFORCE_NONSNOOP	(1 << 1)
-> /* device selected snoop */
-> +#define IOMMU_DEVICE_INFO_DEVICE_SNOOP	(1 << 2)
-> 
-> > 
-> > What ARM is doing with IOMMU_CACHE is unclear to me, and I'm unclear
-> > if/how iommufd should expose it as a controllable PTE flag. The ARM
-> > 
-> 
-> Based on above analysis I think the ARM usage with IOMMU_CACHE
-> doesn't change. 
-> 
-> Thanks
-> Kevin
+Jason
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
