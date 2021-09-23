@@ -7,81 +7,80 @@ X-Spam-Status: No, score=-10.1 required=3.0 tests=BAYES_00,DKIM_INVALID,
 	MAILING_LIST_MULTI,NICE_REPLY_A,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,
 	USER_AGENT_SANE_1 autolearn=ham autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 36E6AC4332F
-	for <iommu@archiver.kernel.org>; Thu, 23 Sep 2021 08:10:10 +0000 (UTC)
-Received: from smtp2.osuosl.org (smtp2.osuosl.org [140.211.166.133])
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B3BE0C4332F
+	for <iommu@archiver.kernel.org>; Thu, 23 Sep 2021 08:15:19 +0000 (UTC)
+Received: from smtp4.osuosl.org (smtp4.osuosl.org [140.211.166.137])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id D073961278
-	for <iommu@archiver.kernel.org>; Thu, 23 Sep 2021 08:10:09 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.4.1 mail.kernel.org D073961278
+	by mail.kernel.org (Postfix) with ESMTPS id 4E37E6124E
+	for <iommu@archiver.kernel.org>; Thu, 23 Sep 2021 08:15:19 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.4.1 mail.kernel.org 4E37E6124E
 Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=lists.linux-foundation.org
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by smtp2.osuosl.org (Postfix) with ESMTP id 8F6044017A;
-	Thu, 23 Sep 2021 08:10:09 +0000 (UTC)
+	by smtp4.osuosl.org (Postfix) with ESMTP id 16CD0406B7;
+	Thu, 23 Sep 2021 08:15:19 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from smtp2.osuosl.org ([127.0.0.1])
-	by localhost (smtp2.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id ryjwlfjMaUZN; Thu, 23 Sep 2021 08:10:08 +0000 (UTC)
-Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by smtp2.osuosl.org (Postfix) with ESMTPS id 237F040151;
-	Thu, 23 Sep 2021 08:10:08 +0000 (UTC)
+Received: from smtp4.osuosl.org ([127.0.0.1])
+	by localhost (smtp4.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+	with ESMTP id B7W59l3oWfUx; Thu, 23 Sep 2021 08:15:18 +0000 (UTC)
+Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [IPv6:2605:bc80:3010:104::8cd3:938])
+	by smtp4.osuosl.org (Postfix) with ESMTPS id CDFD54068F;
+	Thu, 23 Sep 2021 08:15:17 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 03262C0011;
-	Thu, 23 Sep 2021 08:10:08 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id AE6EAC000F;
+	Thu, 23 Sep 2021 08:15:17 +0000 (UTC)
 Received: from smtp1.osuosl.org (smtp1.osuosl.org [140.211.166.138])
- by lists.linuxfoundation.org (Postfix) with ESMTP id EA76FC000D
- for <iommu@lists.linux-foundation.org>; Thu, 23 Sep 2021 08:10:06 +0000 (UTC)
+ by lists.linuxfoundation.org (Postfix) with ESMTP id D06A0C000D
+ for <iommu@lists.linux-foundation.org>; Thu, 23 Sep 2021 08:15:16 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by smtp1.osuosl.org (Postfix) with ESMTP id C5A3784119
- for <iommu@lists.linux-foundation.org>; Thu, 23 Sep 2021 08:10:06 +0000 (UTC)
+ by smtp1.osuosl.org (Postfix) with ESMTP id AA6F783EA5
+ for <iommu@lists.linux-foundation.org>; Thu, 23 Sep 2021 08:15:16 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
 Authentication-Results: smtp1.osuosl.org (amavisd-new);
  dkim=pass (1024-bit key) header.d=suse.com
 Received: from smtp1.osuosl.org ([127.0.0.1])
  by localhost (smtp1.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id EOCfDBfi9I3y for <iommu@lists.linux-foundation.org>;
- Thu, 23 Sep 2021 08:10:06 +0000 (UTC)
+ with ESMTP id bNQyncT9urwQ for <iommu@lists.linux-foundation.org>;
+ Thu, 23 Sep 2021 08:15:15 +0000 (UTC)
 X-Greylist: domain auto-whitelisted by SQLgrey-1.8.0
-Received: from smtp-out1.suse.de (smtp-out1.suse.de [195.135.220.28])
- by smtp1.osuosl.org (Postfix) with ESMTPS id 29400840B5
- for <iommu@lists.linux-foundation.org>; Thu, 23 Sep 2021 08:10:05 +0000 (UTC)
+Received: from smtp-out2.suse.de (smtp-out2.suse.de [195.135.220.29])
+ by smtp1.osuosl.org (Postfix) with ESMTPS id 730C283EA1
+ for <iommu@lists.linux-foundation.org>; Thu, 23 Sep 2021 08:15:15 +0000 (UTC)
 Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
  (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
  key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
  (No client certificate requested)
- by smtp-out1.suse.de (Postfix) with ESMTPS id 1ED1B221D4;
- Thu, 23 Sep 2021 08:10:03 +0000 (UTC)
+ by smtp-out2.suse.de (Postfix) with ESMTPS id A60422027D;
+ Thu, 23 Sep 2021 08:15:12 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.com; s=susede1;
- t=1632384603; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+ t=1632384912; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
  mime-version:mime-version:content-type:content-type:
  in-reply-to:in-reply-to:references:references;
- bh=yCmYQKyQ1CegwpuFA1biRZgl2wD61Tp1f0chBfFWd8E=;
- b=Zo9jK3BESoN14AcEe1BU9TlyBOM5vIu7qEY3xWT70OoJZfYRozRIjKKOglOdiFf+TrLBEk
- 4Qe+Daxrgzlk9cBOtPI08MTMcWVKBHZOyBtMsEY1ZNIOMoFLH5eYd3sSKzrfEDby3x/F+o
- VQfB1yri9FWEgzsgQNNNznPuWHkZIp4=
+ bh=QSLhmvEk1Pq1iiswl5snzLhelQGabqOAvRi47xucKUc=;
+ b=dQkZNFnVmjFTdqDDt9GU9DTIEjBGZRbIA2ofbDcmiIB8bDqVrDggJ8ZwgPcJOAAnibhKSk
+ wohDp1nG/Y0sL0SW/01jfOSBK8tJNu5AzCDV/dTnleWkyjK5RMbnhh0I5Wt/IQmwJHm3zx
+ ZvfeJvE8TpXAAdEAgm6wdTBm9F+eeO8=
 Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
  (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
  key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
  (No client certificate requested)
- by imap2.suse-dmz.suse.de (Postfix) with ESMTPS id 82C6313DC7;
- Thu, 23 Sep 2021 08:10:02 +0000 (UTC)
+ by imap2.suse-dmz.suse.de (Postfix) with ESMTPS id 13F2613DC7;
+ Thu, 23 Sep 2021 08:15:12 +0000 (UTC)
 Received: from dovecot-director2.suse.de ([192.168.254.65])
- by imap2.suse-dmz.suse.de with ESMTPSA id hYWfHlo2TGGbEgAAMHmgww
- (envelope-from <jgross@suse.com>); Thu, 23 Sep 2021 08:10:02 +0000
-Subject: Re: [PATCH 2/3] xen/x86: free_p2m_page: use memblock_free_ptr() to
- free a virtual pointer
+ by imap2.suse-dmz.suse.de with ESMTPSA id ojiaA5A3TGF2FQAAMHmgww
+ (envelope-from <jgross@suse.com>); Thu, 23 Sep 2021 08:15:12 +0000
+Subject: Re: [PATCH 3/3] memblock: cleanup memblock_free interface
 To: Mike Rapoport <rppt@kernel.org>,
  Linus Torvalds <torvalds@linux-foundation.org>
 References: <20210923074335.12583-1-rppt@kernel.org>
- <20210923074335.12583-3-rppt@kernel.org>
-Message-ID: <69c60441-d6d0-96e2-a04e-5bdf87241b4b@suse.com>
-Date: Thu, 23 Sep 2021 10:10:01 +0200
+ <20210923074335.12583-4-rppt@kernel.org>
+Message-ID: <60c0d0f9-e4c6-ef66-b85b-0d091f8cba15@suse.com>
+Date: Thu, 23 Sep 2021 10:15:11 +0200
 User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
  Thunderbird/78.12.0
 MIME-Version: 1.0
-In-Reply-To: <20210923074335.12583-3-rppt@kernel.org>
+In-Reply-To: <20210923074335.12583-4-rppt@kernel.org>
 Cc: devicetree@vger.kernel.org, linux-efi@vger.kernel.org,
  Mike Rapoport <rppt@linux.ibm.com>, kvm@vger.kernel.org,
  linux-s390@vger.kernel.org, linux-sh@vger.kernel.org,
@@ -106,19 +105,19 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
  <mailto:iommu-request@lists.linux-foundation.org?subject=subscribe>
 From: Juergen Gross via iommu <iommu@lists.linux-foundation.org>
 Reply-To: Juergen Gross <jgross@suse.com>
-Content-Type: multipart/mixed; boundary="===============5297061330444658522=="
+Content-Type: multipart/mixed; boundary="===============5325098094985149305=="
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
 This is an OpenPGP/MIME signed message (RFC 4880 and 3156)
---===============5297061330444658522==
+--===============5325098094985149305==
 Content-Type: multipart/signed; micalg=pgp-sha256;
  protocol="application/pgp-signature";
- boundary="Ou4UW1xPRLuVMrznu7nRrBvD9qxXwPwpI"
+ boundary="zppOVwffTjZ5Oe49Vq0wbEbRvLUF4dOID"
 
 This is an OpenPGP/MIME signed message (RFC 4880 and 3156)
---Ou4UW1xPRLuVMrznu7nRrBvD9qxXwPwpI
-Content-Type: multipart/mixed; boundary="Opwz8FSwCRvDNIt0szi2Ea4VaFO0qhLYD";
+--zppOVwffTjZ5Oe49Vq0wbEbRvLUF4dOID
+Content-Type: multipart/mixed; boundary="AxmgW1XtM0JJFTzWHwG0o4gfWFl7DFvoM";
  protected-headers="v1"
 From: Juergen Gross <jgross@suse.com>
 To: Mike Rapoport <rppt@kernel.org>,
@@ -134,42 +133,53 @@ Cc: Andrew Morton <akpm@linux-foundation.org>, devicetree@vger.kernel.org,
  linux-usb@vger.kernel.org, linuxppc-dev@lists.ozlabs.org,
  sparclinux@vger.kernel.org, xen-devel@lists.xenproject.org,
  Mike Rapoport <rppt@linux.ibm.com>
-Message-ID: <69c60441-d6d0-96e2-a04e-5bdf87241b4b@suse.com>
-Subject: Re: [PATCH 2/3] xen/x86: free_p2m_page: use memblock_free_ptr() to
- free a virtual pointer
+Message-ID: <60c0d0f9-e4c6-ef66-b85b-0d091f8cba15@suse.com>
+Subject: Re: [PATCH 3/3] memblock: cleanup memblock_free interface
 References: <20210923074335.12583-1-rppt@kernel.org>
- <20210923074335.12583-3-rppt@kernel.org>
-In-Reply-To: <20210923074335.12583-3-rppt@kernel.org>
+ <20210923074335.12583-4-rppt@kernel.org>
+In-Reply-To: <20210923074335.12583-4-rppt@kernel.org>
 
---Opwz8FSwCRvDNIt0szi2Ea4VaFO0qhLYD
+--AxmgW1XtM0JJFTzWHwG0o4gfWFl7DFvoM
 Content-Type: multipart/mixed;
- boundary="------------7FABCF9287BBEACE094F562B"
+ boundary="------------CFB99E0866EE66F8CFC01FC3"
 Content-Language: en-US
 
 This is a multi-part message in MIME format.
---------------7FABCF9287BBEACE094F562B
+--------------CFB99E0866EE66F8CFC01FC3
 Content-Type: text/plain; charset=utf-8; format=flowed
 Content-Transfer-Encoding: quoted-printable
 
 On 23.09.21 09:43, Mike Rapoport wrote:
 > From: Mike Rapoport <rppt@linux.ibm.com>
 >=20
-> free_p2m_page() wrongly passes a virtual pointer to memblock_free() tha=
-t
-> treats it as a physical address.
+> For ages memblock_free() interface dealt with physical addresses even
+> despite the existence of memblock_alloc_xx() functions that return a
+> virtual pointer.
 >=20
-> Call memblock_free_ptr() instead that gets a virtual address to free th=
+> Introduce memblock_phys_free() for freeing physical ranges and repurpos=
 e
-> memory.
+> memblock_free() to free virtual pointers to make the following pairing
+> abundantly clear:
 >=20
+> 	int memblock_phys_free(phys_addr_t base, phys_addr_t size);
+> 	phys_addr_t memblock_phys_alloc(phys_addr_t base, phys_addr_t size);
+>=20
+> 	void *memblock_alloc(phys_addr_t size, phys_addr_t align);
+> 	void memblock_free(void *ptr, size_t size);
+>=20
+> Replace intermediate memblock_free_ptr() with memblock_free() and drop
+> unnecessary aliases memblock_free_early() and memblock_free_early_nid()=
+=2E
+>=20
+> Suggested-by: Linus Torvalds <torvalds@linux-foundation.org>
 > Signed-off-by: Mike Rapoport <rppt@linux.ibm.com>
 
-Reviewed-by: Juergen Gross <jgross@suse.com>
+arch/x86/xen/ parts: Reviewed-by: Juergen Gross <jgross@suse.com>
 
 
 Juergen
 
---------------7FABCF9287BBEACE094F562B
+--------------CFB99E0866EE66F8CFC01FC3
 Content-Type: application/pgp-keys;
  name="OpenPGP_0xB0DE9DD628BF132F.asc"
 Content-Transfer-Encoding: quoted-printable
@@ -261,29 +271,29 @@ ZDn8R38=3D
 =3D2wuH
 -----END PGP PUBLIC KEY BLOCK-----
 
---------------7FABCF9287BBEACE094F562B--
+--------------CFB99E0866EE66F8CFC01FC3--
 
---Opwz8FSwCRvDNIt0szi2Ea4VaFO0qhLYD--
+--AxmgW1XtM0JJFTzWHwG0o4gfWFl7DFvoM--
 
---Ou4UW1xPRLuVMrznu7nRrBvD9qxXwPwpI
+--zppOVwffTjZ5Oe49Vq0wbEbRvLUF4dOID
 Content-Type: application/pgp-signature; name="OpenPGP_signature.asc"
 Content-Description: OpenPGP digital signature
 Content-Disposition: attachment; filename="OpenPGP_signature"
 
 -----BEGIN PGP SIGNATURE-----
 
-wsB5BAABCAAjFiEEhRJncuj2BJSl0Jf3sN6d1ii/Ey8FAmFMNlkFAwAAAAAACgkQsN6d1ii/Ey/u
-jwf/Wc7bKSwtYpm6kgk3TsHmpeJbPgh0Zpv1wT9MtIr5veUKbFZsg/Ji0X/gETRJ/GzFem6QpjrD
-qfZjjrHW84FjHmrikrdzulZV8SZVqYLSdZWQRL4dja5oWLHT7nPkOtdmNelKufQ3CxAmy1JmVzVb
-Mx6gmnvelfR4gvjcbXXvmtdNZvJIKIQ3zLsqDK8z5H0AA3wt7EG/6FFaIZD/lYSqQAmpBXhbvdZe
-EmLrt4FExY741RXXb6HIT7WjiQ+iFHRiGgNjAF7OZlY2xzR14fRVqNF56oq8GYvMSJU1knueE60N
-Y+1NbMVNCzWoYzBjFB95UGbdvzgBy6XOzZ21ar2IPQ==
-=DYUR
+wsB5BAABCAAjFiEEhRJncuj2BJSl0Jf3sN6d1ii/Ey8FAmFMN48FAwAAAAAACgkQsN6d1ii/Ey8D
+fwf/WV3EUVWvjXkc64q0a0it6LMGy2AtQrh8KdDecuLV8iH5bKTnqNAZOUoV6sYTeiLsSSnRTLOt
+yKKjkWsC9/gUsyuO0B8Zw/VX/zoXJqp7T57FfmW+37qcslFuLzImqvDxdU65n/jEbme+VExmw6UF
+yy1ATxxxhQIxeTDXB3SfE0f6rX4Fw1DUqQc25bFNpD1wzdp1xG6qhH31/CWUI/V/frEfuzZrrN5F
+Uimkqk3+xjrqqpYh2fb/Pwpd77LFOdIrV4gH0oyl0NA3x3QMNi+67FrbMtuRHZij1jnpwoY1RiUc
+uVxzINJ+LJh0g8836hHAkPh5tQNBjV7C6V7LXddn6g==
+=Fnkp
 -----END PGP SIGNATURE-----
 
---Ou4UW1xPRLuVMrznu7nRrBvD9qxXwPwpI--
+--zppOVwffTjZ5Oe49Vq0wbEbRvLUF4dOID--
 
---===============5297061330444658522==
+--===============5325098094985149305==
 Content-Type: text/plain; charset="us-ascii"
 MIME-Version: 1.0
 Content-Transfer-Encoding: 7bit
@@ -293,4 +303,4 @@ _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
 https://lists.linuxfoundation.org/mailman/listinfo/iommu
---===============5297061330444658522==--
+--===============5325098094985149305==--
