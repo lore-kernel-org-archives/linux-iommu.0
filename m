@@ -2,95 +2,130 @@ Return-Path: <SRS0=900o=ON=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-8.6 required=3.0 tests=BAYES_00,DKIM_INVALID,
-	DKIM_SIGNED,HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,
-	SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED autolearn=ham autolearn_force=no
-	version=3.4.0
+X-Spam-Status: No, score=-10.1 required=3.0 tests=BAYES_00,DKIM_INVALID,
+	DKIM_SIGNED,HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,
+	MENTIONS_GIT_HOSTING,NICE_REPLY_A,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,
+	USER_AGENT_SANE_1 autolearn=ham autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 95E45C433F5
-	for <iommu@archiver.kernel.org>; Thu, 23 Sep 2021 07:17:17 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 49041C433EF
+	for <iommu@archiver.kernel.org>; Thu, 23 Sep 2021 07:25:43 +0000 (UTC)
 Received: from smtp2.osuosl.org (smtp2.osuosl.org [140.211.166.133])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 40EFD61050
-	for <iommu@archiver.kernel.org>; Thu, 23 Sep 2021 07:17:17 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.4.1 mail.kernel.org 40EFD61050
-Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=infradead.org
+	by mail.kernel.org (Postfix) with ESMTPS id EAD0A60F70
+	for <iommu@archiver.kernel.org>; Thu, 23 Sep 2021 07:25:42 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.4.1 mail.kernel.org EAD0A60F70
+Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=redhat.com
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by smtp2.osuosl.org (Postfix) with ESMTP id 0815340704;
-	Thu, 23 Sep 2021 07:17:17 +0000 (UTC)
+	by smtp2.osuosl.org (Postfix) with ESMTP id B8560406F1;
+	Thu, 23 Sep 2021 07:25:42 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
 Received: from smtp2.osuosl.org ([127.0.0.1])
 	by localhost (smtp2.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id jr0D6IbnN6OG; Thu, 23 Sep 2021 07:17:15 +0000 (UTC)
-Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by smtp2.osuosl.org (Postfix) with ESMTPS id 73B5F406F1;
-	Thu, 23 Sep 2021 07:17:15 +0000 (UTC)
+	with ESMTP id DJUEh2cE4SFW; Thu, 23 Sep 2021 07:25:41 +0000 (UTC)
+Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [IPv6:2605:bc80:3010:104::8cd3:938])
+	by smtp2.osuosl.org (Postfix) with ESMTPS id 59F3A40151;
+	Thu, 23 Sep 2021 07:25:41 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 4AE3DC000F;
-	Thu, 23 Sep 2021 07:17:15 +0000 (UTC)
-Received: from smtp1.osuosl.org (smtp1.osuosl.org [IPv6:2605:bc80:3010::138])
- by lists.linuxfoundation.org (Postfix) with ESMTP id E99BFC000D
- for <iommu@lists.linux-foundation.org>; Thu, 23 Sep 2021 07:17:13 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 3BC0DC0011;
+	Thu, 23 Sep 2021 07:25:41 +0000 (UTC)
+Received: from smtp4.osuosl.org (smtp4.osuosl.org [140.211.166.137])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 80113C000D
+ for <iommu@lists.linux-foundation.org>; Thu, 23 Sep 2021 07:25:39 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by smtp1.osuosl.org (Postfix) with ESMTP id C3E448434A
- for <iommu@lists.linux-foundation.org>; Thu, 23 Sep 2021 07:17:13 +0000 (UTC)
+ by smtp4.osuosl.org (Postfix) with ESMTP id 685D9415F9
+ for <iommu@lists.linux-foundation.org>; Thu, 23 Sep 2021 07:25:39 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Authentication-Results: smtp1.osuosl.org (amavisd-new);
- dkim=pass (2048-bit key) header.d=infradead.org
-Received: from smtp1.osuosl.org ([127.0.0.1])
- by localhost (smtp1.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id vsdNImj2Xl0f for <iommu@lists.linux-foundation.org>;
- Thu, 23 Sep 2021 07:17:13 +0000 (UTC)
+Authentication-Results: smtp4.osuosl.org (amavisd-new);
+ dkim=pass (1024-bit key) header.d=redhat.com
+Received: from smtp4.osuosl.org ([127.0.0.1])
+ by localhost (smtp4.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+ with ESMTP id z3KMeVrrWIAL for <iommu@lists.linux-foundation.org>;
+ Thu, 23 Sep 2021 07:25:38 +0000 (UTC)
 X-Greylist: domain auto-whitelisted by SQLgrey-1.8.0
-Received: from desiato.infradead.org (desiato.infradead.org
- [IPv6:2001:8b0:10b:1:d65d:64ff:fe57:4e05])
- by smtp1.osuosl.org (Postfix) with ESMTPS id 1A0D18428C
- for <iommu@lists.linux-foundation.org>; Thu, 23 Sep 2021 07:17:12 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
- d=infradead.org; s=desiato.20200630; h=In-Reply-To:Content-Type:MIME-Version:
- References:Message-ID:Subject:Cc:To:From:Date:Sender:Reply-To:
- Content-Transfer-Encoding:Content-ID:Content-Description;
- bh=wiTqtJ6sksxlMa3WLP5zy8iX0qeEG49ono78xA+0et0=; b=McpsbcT3Fqx+WK3yjJcovN6ZlR
- 54WeOwpZBhEq9CWctYQaLbYB3uj/0LiX0f8rpBoFqR6kG+ZXmMHSDyJVs61KfLSyD7M22BULUIE/T
- 95d/NWPFB+Bc/bYJTI16yApIL5fITZbTKv08c8ACw9BbJtU0ngiM/7LpC9W2lvpIXyIT10ltVQOSd
- 8HUwwrmP7Nz9YsQ+NPJwBG2iVmyUA8eDQVJbIASqLU4DZ+PmADSMLwbDYCqivS0Q37PSJG7GZOiAD
- h5InkYL8Y4cmgQ/6HBXo+b1z1OMhGmpL3HE5rkZXJP5+OzdvkCvEhp+0NzsD3rsq3GT8lz2tC80Ov
- hVJHiJzQ==;
-Received: from j217100.upc-j.chello.nl ([24.132.217.100]
- helo=noisy.programming.kicks-ass.net)
- by desiato.infradead.org with esmtpsa (Exim 4.94.2 #2 (Red Hat Linux))
- id 1mTIyc-005AeP-Tr; Thu, 23 Sep 2021 07:17:03 +0000
-Received: from hirez.programming.kicks-ass.net
- (hirez.programming.kicks-ass.net [192.168.1.225])
- (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
- key-exchange X25519 server-signature RSA-PSS (2048 bits))
- (Client did not present a certificate)
- by noisy.programming.kicks-ass.net (Postfix) with ESMTPS id 1754A300250;
- Thu, 23 Sep 2021 09:17:02 +0200 (CEST)
-Received: by hirez.programming.kicks-ass.net (Postfix, from userid 1000)
- id F2BDA2133B1A2; Thu, 23 Sep 2021 09:17:01 +0200 (CEST)
-Date: Thu, 23 Sep 2021 09:17:01 +0200
-From: Peter Zijlstra <peterz@infradead.org>
-To: Fenghua Yu <fenghua.yu@intel.com>
-Subject: Re: [PATCH 7/8] tools/objtool: Check for use of the ENQCMD
- instruction in the kernel
-Message-ID: <YUwp7VkjApRQr/pb@hirez.programming.kicks-ass.net>
-References: <20210920192349.2602141-1-fenghua.yu@intel.com>
- <20210920192349.2602141-8-fenghua.yu@intel.com>
- <20210922210343.GU4323@worktop.programming.kicks-ass.net>
- <YUu/6YPYwvaDwthy@otcwcpicx3.sc.intel.com>
+Received: from us-smtp-delivery-124.mimecast.com
+ (us-smtp-delivery-124.mimecast.com [170.10.133.124])
+ by smtp4.osuosl.org (Postfix) with ESMTPS id 23AAE4158E
+ for <iommu@lists.linux-foundation.org>; Thu, 23 Sep 2021 07:25:37 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+ s=mimecast20190719; t=1632381936;
+ h=from:from:reply-to:reply-to:subject:subject:date:date:
+ message-id:message-id:to:to:cc:cc:mime-version:mime-version:
+ content-type:content-type:
+ content-transfer-encoding:content-transfer-encoding:
+ in-reply-to:in-reply-to:references:references;
+ bh=FvNkPyLF+1kcsTR6hdilBDqHZDnrfR2QQ6CleyZplLs=;
+ b=Ffv5dO7vp4qwq9e0lpQSn7WhOrYIaQ8yKfsTI3ZPkycRU8cDcgSirkn/qMLnqr78+XBh4K
+ 7fBzQfHKybgVUPA+oMvKcxMleG2POcD2ajPd+pJb2LIsa5JPlNzcJYjqIctHAUrUz2tW5A
+ vxZ0VwYSbeHxLjl1hUytGHylmmIF0Ek=
+Received: from mail-wr1-f72.google.com (mail-wr1-f72.google.com
+ [209.85.221.72]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-304-uGtbkPv8Ns6YMhY2x-66BA-1; Thu, 23 Sep 2021 03:25:31 -0400
+X-MC-Unique: uGtbkPv8Ns6YMhY2x-66BA-1
+Received: by mail-wr1-f72.google.com with SMTP id
+ f7-20020a5d50c7000000b0015e288741a4so4363620wrt.9
+ for <iommu@lists.linux-foundation.org>; Thu, 23 Sep 2021 00:25:31 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+ d=1e100.net; s=20210112;
+ h=x-gm-message-state:reply-to:subject:to:cc:references:from
+ :message-id:date:user-agent:mime-version:in-reply-to
+ :content-transfer-encoding:content-language;
+ bh=FvNkPyLF+1kcsTR6hdilBDqHZDnrfR2QQ6CleyZplLs=;
+ b=TSkwNn0A/XC0M+HY53vXnI/MFDhSmU2/jZjlyayx/Mnk0diXsAUqbHFv1Jykwkebo0
+ +TiZ3ckJfWmnxkggGgkmZzCzOIu7j8vN6e0O28ksjZiPncvwCIL4vx36aj7qlpynpk2V
+ 2px3Ezq9N3EzDAikK9yZzk14+IQ+61PdxRhso88KqO9TTWlIpylljaz84XQ0NVBKrItI
+ e05RDXag9t2Tdm+pRFvk4h+3bycoyVhuppySB5fw+WrpOahRQzcH6yt6JZ85bwyPalF6
+ KCl9hEk2DiEYyWpG1zB5E7P/UBO+G2iqROnDPHNOjODE9jxTL4ZrQYXOMVDvIlAmt+Zn
+ AGOQ==
+X-Gm-Message-State: AOAM530tPU10eFw9OZtz5b6ajr1xunNrs04lTPDAW6FUPfBL9MV6LshR
+ u/7TQNXN9URHZXNIZ02xGv+WoUO6wazQadWKWjESKkHRiS/jzPoRvXUWUHF3E64qrH1989AhP4l
+ sPWQfqWhYcT5C+yD4xvVQ93T8mSwj5A==
+X-Received: by 2002:a5d:4e90:: with SMTP id e16mr3162711wru.243.1632381930664; 
+ Thu, 23 Sep 2021 00:25:30 -0700 (PDT)
+X-Google-Smtp-Source: ABdhPJwGEfOyPkvpzZWpr9l9SkDYU2vwNuyGcQuSIPfvYxfPQ2pBpa+znyeIdD2Ff7pAnFgXSYPtrQ==
+X-Received: by 2002:a5d:4e90:: with SMTP id e16mr3162668wru.243.1632381930433; 
+ Thu, 23 Sep 2021 00:25:30 -0700 (PDT)
+Received: from ?IPv6:2a01:e0a:59e:9d80:527b:9dff:feef:3874?
+ ([2a01:e0a:59e:9d80:527b:9dff:feef:3874])
+ by smtp.gmail.com with ESMTPSA id r9sm4325952wru.2.2021.09.23.00.25.28
+ (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+ Thu, 23 Sep 2021 00:25:29 -0700 (PDT)
+Subject: Re: [RFC 03/20] vfio: Add vfio_[un]register_device()
+To: Jason Gunthorpe <jgg@nvidia.com>, "Tian, Kevin" <kevin.tian@intel.com>
+References: <20210919063848.1476776-1-yi.l.liu@intel.com>
+ <20210919063848.1476776-4-yi.l.liu@intel.com>
+ <20210921160108.GO327412@nvidia.com>
+ <BN9PR11MB54330421CA825F5CAA44BAC98CA29@BN9PR11MB5433.namprd11.prod.outlook.com>
+ <20210922010014.GE327412@nvidia.com>
+From: Eric Auger <eric.auger@redhat.com>
+Message-ID: <7d717ad0-fb9b-2af0-7818-147dc5d21373@redhat.com>
+Date: Thu, 23 Sep 2021 09:25:27 +0200
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
+ Thunderbird/78.10.1
 MIME-Version: 1.0
-Content-Disposition: inline
-In-Reply-To: <YUu/6YPYwvaDwthy@otcwcpicx3.sc.intel.com>
-Cc: Ravi V Shankar <ravi.v.shankar@intel.com>, Tony Luck <tony.luck@intel.com>,
- Dave Jiang <dave.jiang@intel.com>, Ashok Raj <ashok.raj@intel.com>,
- x86 <x86@kernel.org>, linux-kernel <linux-kernel@vger.kernel.org>,
- Dave Hansen <dave.hansen@intel.com>, iommu@lists.linux-foundation.org,
- Ingo Molnar <mingo@redhat.com>, Borislav Petkov <bp@alien8.de>,
- Jacob Jun Pan <jacob.jun.pan@intel.com>, Andy Lutomirski <luto@kernel.org>,
- Josh Poimboeuf <jpoimboe@redhat.com>, Thomas Gleixner <tglx@linutronix.de>
+In-Reply-To: <20210922010014.GE327412@nvidia.com>
+Authentication-Results: relay.mimecast.com;
+ auth=pass smtp.auth=CUSA124A263 smtp.mailfrom=eric.auger@redhat.com
+X-Mimecast-Spam-Score: 0
+X-Mimecast-Originator: redhat.com
+Content-Language: en-US
+Cc: "kvm@vger.kernel.org" <kvm@vger.kernel.org>,
+ "jasowang@redhat.com" <jasowang@redhat.com>,
+ "kwankhede@nvidia.com" <kwankhede@nvidia.com>, "hch@lst.de" <hch@lst.de>,
+ "jean-philippe@linaro.org" <jean-philippe@linaro.org>, "Jiang,
+ Dave" <dave.jiang@intel.com>, "Raj, Ashok" <ashok.raj@intel.com>,
+ "corbet@lwn.net" <corbet@lwn.net>, "parav@mellanox.com" <parav@mellanox.com>,
+ "alex.williamson@redhat.com" <alex.williamson@redhat.com>,
+ "lkml@metux.net" <lkml@metux.net>,
+ "david@gibson.dropbear.id.au" <david@gibson.dropbear.id.au>,
+ "robin.murphy@arm.com" <robin.murphy@arm.com>, "Tian,
+ Jun J" <jun.j.tian@intel.com>,
+ "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+ "lushenming@huawei.com" <lushenming@huawei.com>,
+ "iommu@lists.linux-foundation.org" <iommu@lists.linux-foundation.org>,
+ "pbonzini@redhat.com" <pbonzini@redhat.com>,
+ "dwmw2@infradead.org" <dwmw2@infradead.org>
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -103,63 +138,66 @@ List-Post: <mailto:iommu@lists.linux-foundation.org>
 List-Help: <mailto:iommu-request@lists.linux-foundation.org?subject=help>
 List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
  <mailto:iommu-request@lists.linux-foundation.org?subject=subscribe>
+Reply-To: eric.auger@redhat.com
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-On Wed, Sep 22, 2021 at 11:44:41PM +0000, Fenghua Yu wrote:
+Hi,
 
-> > Since you're making it a fatal error, before doing much of anything
-> > else, you might at well fail decode and keep it all in the x86/decode.c
-> > file, no need to spread this 'knowledge' any further.
+On 9/22/21 3:00 AM, Jason Gunthorpe wrote:
+> On Wed, Sep 22, 2021 at 12:54:02AM +0000, Tian, Kevin wrote:
+>>> From: Jason Gunthorpe <jgg@nvidia.com>
+>>> Sent: Wednesday, September 22, 2021 12:01 AM
+>>>
+>>>>  One open about how to organize the device nodes under
+>>> /dev/vfio/devices/.
+>>>> This RFC adopts a simple policy by keeping a flat layout with mixed
+>>> devname
+>>>> from all kinds of devices. The prerequisite of this model is that devnames
+>>>> from different bus types are unique formats:
+>>> This isn't reliable, the devname should just be vfio0, vfio1, etc
+>>>
+>>> The userspace can learn the correct major/minor by inspecting the
+>>> sysfs.
+>>>
+>>> This whole concept should disappear into the prior patch that adds the
+>>> struct device in the first place, and I think most of the code here
+>>> can be deleted once the struct device is used properly.
+>>>
+>> Can you help elaborate above flow? This is one area where we need
+>> more guidance.
+>>
+>> When Qemu accepts an option "-device vfio-pci,host=DDDD:BB:DD.F",
+>> how does Qemu identify which vifo0/1/... is associated with the specified 
+>> DDDD:BB:DD.F? 
+> When done properly in the kernel the file:
+>
+> /sys/bus/pci/devices/DDDD:BB:DD.F/vfio/vfioX/dev
+>
+> Will contain the major:minor of the VFIO device.
+>
+> Userspace then opens the /dev/vfio/devices/vfioX and checks with fstat
+> that the major:minor matches.
+>
+> in the above pattern "pci" and "DDDD:BB:DD.FF" are the arguments passed
+> to qemu.
+I guess this would be the same for platform devices, for instance
+/sys/bus/platform/devices/AMDI8001:01/vfio/vfioX/dev, right?
 
-> Is the following updated patch a right one?
+Thanks
 
-Yes, that's what I was thinking of.
+Eric
+>
+> You can look at this for some general over engineered code to handle
+> opening from a sysfs handle like above:
+>
+> https://github.com/linux-rdma/rdma-core/blob/master/util/open_cdev.c
+>
+> Jason
+>
 
-> diff --git a/tools/objtool/arch/x86/decode.c b/tools/objtool/arch/x86/decode.c
-> index bc821056aba9..3e0f928e28a5 100644
-> --- a/tools/objtool/arch/x86/decode.c
-> +++ b/tools/objtool/arch/x86/decode.c
-> @@ -110,7 +110,7 @@ int arch_decode_instruction(const struct elf *elf, const struct section *sec,
->  {
->  	struct insn insn;
->  	int x86_64, ret;
-> -	unsigned char op1, op2,
-> +	unsigned char op1, op2, op3,
->  		      rex = 0, rex_b = 0, rex_r = 0, rex_w = 0, rex_x = 0,
->  		      modrm = 0, modrm_mod = 0, modrm_rm = 0, modrm_reg = 0,
->  		      sib = 0, /* sib_scale = 0, */ sib_index = 0, sib_base = 0;
-> @@ -137,6 +137,7 @@ int arch_decode_instruction(const struct elf *elf, const struct section *sec,
->  
->  	op1 = insn.opcode.bytes[0];
->  	op2 = insn.opcode.bytes[1];
-> +	op3 = insn.opcode.bytes[2];
->  
->  	if (insn.rex_prefix.nbytes) {
->  		rex = insn.rex_prefix.bytes[0];
-> @@ -489,6 +490,16 @@ int arch_decode_instruction(const struct elf *elf, const struct section *sec,
->  			/* nopl/nopw */
->  			*type = INSN_NOP;
->  
-> +		} else if (op2 == 0x38 && op3 == 0xf8) {
-> +			if (insn.prefixes.nbytes == 1 &&
-> +			    insn.prefixes.bytes[0] == 0xf2) {
-> +				/* ENQCMD cannot be used in the kernel. */
-> +				WARN("ENQCMD instruction at %s:%lx", sec->name,
-> +				     offset);
-> +
-> +				return -1;
-> +			}
-
-The only concern here is if we want it to be fatal or not. But otherwise
-this seems to be all that's required.
-
-> +
->  		} else if (op2 == 0xa0 || op2 == 0xa8) {
->  
->  			/* push fs/gs */
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
