@@ -2,206 +2,186 @@ Return-Path: <SRS0=900o=ON=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-8.6 required=3.0 tests=BAYES_00,DKIM_INVALID,
-	DKIM_SIGNED,HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_CR_TRAILER,
-	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED autolearn=ham
-	autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-3.6 required=3.0 tests=BAYES_00,DKIM_INVALID,
+	DKIM_SIGNED,HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,SPF_HELO_NONE,
+	SPF_PASS,URIBL_BLOCKED autolearn=no autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C1BCAC433EF
-	for <iommu@archiver.kernel.org>; Thu, 23 Sep 2021 13:19:05 +0000 (UTC)
-Received: from smtp3.osuosl.org (smtp3.osuosl.org [140.211.166.136])
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4559CC43217
+	for <iommu@archiver.kernel.org>; Thu, 23 Sep 2021 13:21:05 +0000 (UTC)
+Received: from smtp1.osuosl.org (smtp1.osuosl.org [140.211.166.138])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 607BF61164
-	for <iommu@archiver.kernel.org>; Thu, 23 Sep 2021 13:19:05 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.4.1 mail.kernel.org 607BF61164
-Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=lists.linux-foundation.org
+	by mail.kernel.org (Postfix) with ESMTPS id 0A11161216
+	for <iommu@archiver.kernel.org>; Thu, 23 Sep 2021 13:21:04 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.4.1 mail.kernel.org 0A11161216
+Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=intel.com
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by smtp3.osuosl.org (Postfix) with ESMTP id 2A146605CC;
-	Thu, 23 Sep 2021 13:19:05 +0000 (UTC)
+	by smtp1.osuosl.org (Postfix) with ESMTP id C6AEF84281;
+	Thu, 23 Sep 2021 13:21:04 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from smtp3.osuosl.org ([127.0.0.1])
-	by localhost (smtp3.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id aYFBjkj6Whto; Thu, 23 Sep 2021 13:19:04 +0000 (UTC)
-Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [IPv6:2605:bc80:3010:104::8cd3:938])
-	by smtp3.osuosl.org (Postfix) with ESMTPS id 03FF8605FD;
-	Thu, 23 Sep 2021 13:19:04 +0000 (UTC)
+Received: from smtp1.osuosl.org ([127.0.0.1])
+	by localhost (smtp1.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+	with ESMTP id K2HMCHjivF4M; Thu, 23 Sep 2021 13:21:03 +0000 (UTC)
+Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
+	by smtp1.osuosl.org (Postfix) with ESMTPS id 79A4084274;
+	Thu, 23 Sep 2021 13:21:03 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id C9099C0011;
-	Thu, 23 Sep 2021 13:19:03 +0000 (UTC)
-Received: from smtp3.osuosl.org (smtp3.osuosl.org [140.211.166.136])
- by lists.linuxfoundation.org (Postfix) with ESMTP id AD582C000D
- for <iommu@lists.linux-foundation.org>; Thu, 23 Sep 2021 12:54:00 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 523C2C0011;
+	Thu, 23 Sep 2021 13:21:03 +0000 (UTC)
+Received: from smtp3.osuosl.org (smtp3.osuosl.org [IPv6:2605:bc80:3010::136])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 3CBD4C000D
+ for <iommu@lists.linux-foundation.org>; Thu, 23 Sep 2021 13:21:02 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by smtp3.osuosl.org (Postfix) with ESMTP id 9A70B6064B
- for <iommu@lists.linux-foundation.org>; Thu, 23 Sep 2021 12:54:00 +0000 (UTC)
+ by smtp3.osuosl.org (Postfix) with ESMTP id 29EE860612
+ for <iommu@lists.linux-foundation.org>; Thu, 23 Sep 2021 13:21:02 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
+Authentication-Results: smtp3.osuosl.org (amavisd-new);
+ dkim=pass (1024-bit key) header.d=intel.onmicrosoft.com
 Received: from smtp3.osuosl.org ([127.0.0.1])
  by localhost (smtp3.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id GnccSH1UgAs4 for <iommu@lists.linux-foundation.org>;
- Thu, 23 Sep 2021 12:53:59 +0000 (UTC)
-X-Greylist: delayed 00:09:26 by SQLgrey-1.8.0
-Received: from smtprelay-out1.synopsys.com (smtprelay-out1.synopsys.com
- [149.117.73.133])
- by smtp3.osuosl.org (Postfix) with ESMTPS id 4607B60635
- for <iommu@lists.linux-foundation.org>; Thu, 23 Sep 2021 12:53:59 +0000 (UTC)
-Received: from mailhost.synopsys.com (badc-mailhost4.synopsys.com
- [10.192.0.82])
- (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits))
- (Client CN "mailhost.synopsys.com", Issuer "SNPSica2" (verified OK))
- by smtprelay-out1.synopsys.com (Postfix) with ESMTPS id 885924151D;
- Thu, 23 Sep 2021 12:44:30 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=synopsys.com; s=mail;
- t=1632401072; bh=p8yypIUjB8D1QtzMPOfUh/V1qIMQJPRo2PqJWZ5SYsY=;
- h=From:To:CC:Subject:Date:References:In-Reply-To:From;
- b=Gvq9P4b8YntKHRuxkqZ3tF0YGuSDOH+oVCDf+VSwXXjmaGxF2cK8X33R7WTWMZdxB
- GEf7t9gTDEWUF/5zMlhaPic0Gw9SioFA146VuyVbXAQDD0BMWeYiU9orEq2KpGk5hQ
- i5sYd3qIUy1129LF03W2RQe+YxmxznJiJIdmrk3SdS3mqJQGmbc2z3+ie826v+rXmf
- y2mWag8+iQ0DLDwtixGft2C9TjYEL1Y/KL5EtNn3IHbRSVbKs1VbfEHZw/WNdd8Ppi
- MF1tAfYhy87PyuwzOIovDHwB4mk2cbJzuZ3GcC+8Od9h1/aYntxCPPc7gvFZv9ewLf
- 2ywh1lMEodcdA==
-Received: from o365relay-in.synopsys.com (us03-o365relay3.synopsys.com
- [10.4.161.139])
- (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits))
- (Client CN "o365relay-in.synopsys.com",
- Issuer "Entrust Certification Authority - L1K" (verified OK))
- by mailhost.synopsys.com (Postfix) with ESMTPS id DAA1AA005C;
- Thu, 23 Sep 2021 12:44:26 +0000 (UTC)
-Received: from NAM02-SN1-obe.outbound.protection.outlook.com
- (mail-sn1anam02lp2047.outbound.protection.outlook.com [104.47.57.47])
- (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
- (Client CN "mail.protection.outlook.com",
- Issuer "DigiCert Cloud Services CA-1" (verified OK))
- by o365relay-in.synopsys.com (Postfix) with ESMTPS id 5410280151;
- Thu, 23 Sep 2021 12:44:22 +0000 (UTC)
-Authentication-Results: o365relay-in.synopsys.com;
- dmarc=pass (p=reject dis=none) header.from=synopsys.com
-Authentication-Results: o365relay-in.synopsys.com;
- spf=pass smtp.mailfrom=shahab@synopsys.com
-Authentication-Results: o365relay-in.synopsys.com; dkim=pass (1024-bit key;
- unprotected) header.d=synopsys.com header.i=@synopsys.com header.b="XjlMBsSZ";
- dkim-atps=neutral
+ with ESMTP id YtiZz6Igfg1G for <iommu@lists.linux-foundation.org>;
+ Thu, 23 Sep 2021 13:21:01 +0000 (UTC)
+X-Greylist: domain auto-whitelisted by SQLgrey-1.8.0
+Received: from mga02.intel.com (mga02.intel.com [134.134.136.20])
+ by smtp3.osuosl.org (Postfix) with ESMTPS id 196DF605FD
+ for <iommu@lists.linux-foundation.org>; Thu, 23 Sep 2021 13:21:00 +0000 (UTC)
+X-IronPort-AV: E=McAfee;i="6200,9189,10115"; a="211080122"
+X-IronPort-AV: E=Sophos;i="5.85,316,1624345200"; d="scan'208";a="211080122"
+Received: from orsmga003.jf.intel.com ([10.7.209.27])
+ by orsmga101.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384;
+ 23 Sep 2021 06:21:00 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.85,316,1624345200"; d="scan'208";a="436595068"
+Received: from orsmsx603.amr.corp.intel.com ([10.22.229.16])
+ by orsmga003.jf.intel.com with ESMTP; 23 Sep 2021 06:20:59 -0700
+Received: from orsmsx603.amr.corp.intel.com (10.22.229.16) by
+ ORSMSX603.amr.corp.intel.com (10.22.229.16) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2242.12; Thu, 23 Sep 2021 06:20:59 -0700
+Received: from orsedg603.ED.cps.intel.com (10.7.248.4) by
+ orsmsx603.amr.corp.intel.com (10.22.229.16) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2242.12 via Frontend Transport; Thu, 23 Sep 2021 06:20:59 -0700
+Received: from NAM11-CO1-obe.outbound.protection.outlook.com (104.47.56.174)
+ by edgegateway.intel.com (134.134.137.100) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.1.2242.12; Thu, 23 Sep 2021 06:20:59 -0700
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=Ql0OQazr/pNI1ie5lP8Ht8iY8eOUSaANgcsKDZeanbY5JGm2DYN7ViWFq0GSn7YuEdL/lqgPOUwfp6yIwIN7w682q4qOhfVMJJ030VSQuyLahcjVTcTLbj1waahXj9HMRlxKs4Vgg7OqUkLGVtxBHm8v4qbfy5zOmVpGOEgRFzdV+WPfmxr/w2EuS62IYorK7D6PicnCLwUU80cPNmSxzQBIwvJv9I4RLgCW7/OIo59UBGn6ngK54KflPmdMqyk3NB/if51/2tt090fXxKBAVjzRQMpUc9bdssSpKr5TVg7jvM9I1dvnobtwPMo1Rf+9jG2KB1ZQOFtNAl2+M4q1/w==
+ b=j38oVn5j/bqzoMkIFXTAUGJ49B2oaV87LVTKUHvCNsf6r1dOgoa7mKSbW0pU3u+cXgX7l6MFnvxCvqjkSCUJYK363KzyGDIe36OqeZWfqZTW4kY+EVNI8U/f8s8vItF3R2CVWzUtVQCHqRPGQ5B9oeoOzfiKa5bOoRaZ6kPW/m6OKwe5O703kc2REsPYDWxGcbwFRnlhyv6+1HCgPedJ3aXXZjdA0riBTXSYxWaoPN3bd2AMiMuVdo46ON1s3JUKcRgFEkdgCpGoGR1HOjJ0/Ci3QZugqTnyFonB/zPgdaxBvI2+dvkVZQaQQly8tt23cq+g3gHgIATitjnjI6o2BA==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com; 
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version; 
- bh=p8yypIUjB8D1QtzMPOfUh/V1qIMQJPRo2PqJWZ5SYsY=;
- b=lB/dfGY6qGnlPCzk6jrqPkumxuD6Zle3JmpqYxFguRB+KFcNp6CEFP4jl5p0h3ScILyRfGJGJ6iKV9p6EUIXLi3OjLbHITHcmB3i9qnwN5UvUJ+iHOJpN9M6l6uzRQOqvLaLkjNjU0E+Phxy2TgG8aeY9o8aw+1/5wA0gAX08oYdQXqbqMe4QzUPO3Eju5H0KcnbEjLg54k/UTSE87WlvYxpA0bDlhO5ZZxMYqTaMkGZjoBOqwIIH33tyS1+bGTyH3MjjzIeRu+PbYAUtyPAxkMPpz55xCAno4NSztx5WB43EDkbi0NVyhaRoI8RaQ+rK40gjT3/SxJpzhaG68Z+6Q==
+ bh=fzciJ0z+mWoRrtc0oFpebyaV5+Q8Pepdpm0ci2jY/As=;
+ b=TX+SY2AwGQ7p2y7cAz5u8s7azalNVGTdyp4zlA+XzLDNEn4XSRiAC0MKvFeqLc8fMYDDfBqTwTFxqtXYLQBOz18cdPoKXJD4ZW7Kf++Fau/3fxhxymgGbfY7dqKC7E4R8DSLmbnAmU50bE/gTPwxTcr6WAgiHPFrJGvsEcw110hOi3j5wXj8jYVdht44ZWnrQ9ZzH46MqhCrBWwuDX2YraYfUEtzRTk/L1/WghcEMPybvitAUh5ut6uq8VM/PTPklZRyi++cQQCY+zbsnUalepyiYYGwQb4EgqpADm2PLQ7w6gymBKx2AK6qnf5WBGeiEaCUPd/6P+Vwac2/ECfX1Q==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=synopsys.com; dmarc=pass action=none header.from=synopsys.com;
- dkim=pass header.d=synopsys.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=synopsys.com;
- s=selector1;
+ smtp.mailfrom=intel.com; dmarc=pass action=none header.from=intel.com;
+ dkim=pass header.d=intel.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=intel.onmicrosoft.com; 
+ s=selector2-intel-onmicrosoft-com;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=p8yypIUjB8D1QtzMPOfUh/V1qIMQJPRo2PqJWZ5SYsY=;
- b=XjlMBsSZIIeMIcn3BV4fq6QTuHKmTlq2wcWFtDSMYpHRIbCRUXHI1j/6Nvc788nfl1iWUG0VjTTkqniwaPBMQvx+hnxM47SXxJ8BHG5lMxGTgpN1OoKMXR+iJA+dKngwgvBc0glcR5Dz2K32DkEYfbZDkaHe+kbDS5mZMs/JArQ=
-Received: from CY4PR12MB1160.namprd12.prod.outlook.com (2603:10b6:903:38::12)
- by CY4PR1201MB0200.namprd12.prod.outlook.com (2603:10b6:910:1d::17)
+ bh=fzciJ0z+mWoRrtc0oFpebyaV5+Q8Pepdpm0ci2jY/As=;
+ b=FIFEiiwBgdp8iRxNikNVEaMvWyL3MBxQFiVEearpU8o0nx9uHBYKMQye8cPr+SH+G3rwIMzLTL7Ibws6sreWROXItYtukjaHkruK6KZdpSS9tsX0yEar/wnxvfU+5VUtfkggc15H9TquDuvPtpt6zhbes7aYKo0zvY5NyCaoj+c=
+Received: from BN9PR11MB5433.namprd11.prod.outlook.com (2603:10b6:408:11e::13)
+ by BN6PR11MB0050.namprd11.prod.outlook.com (2603:10b6:405:68::32)
  with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4544.15; Thu, 23 Sep
- 2021 12:44:19 +0000
-Received: from CY4PR12MB1160.namprd12.prod.outlook.com
- ([fe80::2d3a:44fe:fd31:11e2]) by CY4PR12MB1160.namprd12.prod.outlook.com
- ([fe80::2d3a:44fe:fd31:11e2%7]) with mapi id 15.20.4523.018; Thu, 23 Sep 2021
- 12:44:19 +0000
-X-SNPS-Relay: synopsys.com
-To: Mike Rapoport <rppt@kernel.org>, Linus Torvalds
- <torvalds@linux-foundation.org>
-Subject: Re: [PATCH 3/3] memblock: cleanup memblock_free interface
-Thread-Topic: [PATCH 3/3] memblock: cleanup memblock_free interface
-Thread-Index: AQHXsE7r2Z9Q1x5PbkCRzXvVc2eiLKuxkQqA
-Date: Thu, 23 Sep 2021 12:44:18 +0000
-Message-ID: <70364d6d-7569-3cd8-acce-559878ce4596@synopsys.com>
-References: <20210923074335.12583-1-rppt@kernel.org>
- <20210923074335.12583-4-rppt@kernel.org>
-In-Reply-To: <20210923074335.12583-4-rppt@kernel.org>
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4544.13; Thu, 23 Sep
+ 2021 13:20:56 +0000
+Received: from BN9PR11MB5433.namprd11.prod.outlook.com
+ ([fe80::ddb7:fa7f:2cc:45df]) by BN9PR11MB5433.namprd11.prod.outlook.com
+ ([fe80::ddb7:fa7f:2cc:45df%8]) with mapi id 15.20.4544.015; Thu, 23 Sep 2021
+ 13:20:56 +0000
+From: "Tian, Kevin" <kevin.tian@intel.com>
+To: Jason Gunthorpe <jgg@nvidia.com>
+Subject: RE: [RFC 11/20] iommu/iommufd: Add IOMMU_IOASID_ALLOC/FREE
+Thread-Topic: [RFC 11/20] iommu/iommufd: Add IOMMU_IOASID_ALLOC/FREE
+Thread-Index: AQHXrSGPLoYXtOF3o0iA7Cse+/LM66uuxm8AgACjoWCAALKBgIABNQdAgAA7IoCAAAByIIAABmEAgAAAUDCAAAgmgIAAAWow
+Date: Thu, 23 Sep 2021 13:20:55 +0000
+Message-ID: <BN9PR11MB5433B300CF82CB09326A00978CA39@BN9PR11MB5433.namprd11.prod.outlook.com>
+References: <20210919063848.1476776-1-yi.l.liu@intel.com>
+ <20210919063848.1476776-12-yi.l.liu@intel.com>
+ <20210921174438.GW327412@nvidia.com>
+ <BN9PR11MB543362CEBDAD02DA9F06D8ED8CA29@BN9PR11MB5433.namprd11.prod.outlook.com>
+ <20210922140911.GT327412@nvidia.com>
+ <BN9PR11MB5433A47FFA0A8C51643AA33C8CA39@BN9PR11MB5433.namprd11.prod.outlook.com>
+ <20210923120653.GK964074@nvidia.com>
+ <BN9PR11MB543309C4D55D628278B95E008CA39@BN9PR11MB5433.namprd11.prod.outlook.com>
+ <20210923123118.GN964074@nvidia.com>
+ <BN9PR11MB5433F297E3FA20DDC05020E18CA39@BN9PR11MB5433.namprd11.prod.outlook.com>
+ <20210923130135.GO964074@nvidia.com>
+In-Reply-To: <20210923130135.GO964074@nvidia.com>
 Accept-Language: en-US
 Content-Language: en-US
 X-MS-Has-Attach: 
 X-MS-TNEF-Correlator: 
-authentication-results: kernel.org; dkim=none (message not signed)
- header.d=none;kernel.org; dmarc=none action=none header.from=synopsys.com;
+authentication-results: nvidia.com; dkim=none (message not signed)
+ header.d=none;nvidia.com; dmarc=none action=none header.from=intel.com;
 x-ms-publictraffictype: Email
-x-ms-office365-filtering-correlation-id: c1e5f238-9c40-4f49-2da5-08d97e8fdc67
-x-ms-traffictypediagnostic: CY4PR1201MB0200:
-x-microsoft-antispam-prvs: <CY4PR1201MB02008C7112226A9E691D827CA6A39@CY4PR1201MB0200.namprd12.prod.outlook.com>
-x-ms-oob-tlc-oobclassifiers: OLM:2958;
+x-ms-office365-filtering-correlation-id: 36be0240-1cc3-4fd2-9226-08d97e94f9c8
+x-ms-traffictypediagnostic: BN6PR11MB0050:
+x-ld-processed: 46c98d88-e344-4ed4-8496-4ed7712e255d,ExtAddr
+x-ms-exchange-transport-forked: True
+x-microsoft-antispam-prvs: <BN6PR11MB00506A154A9AD3657750EC518CA39@BN6PR11MB0050.namprd11.prod.outlook.com>
+x-ms-oob-tlc-oobclassifiers: OLM:8882;
 x-ms-exchange-senderadcheck: 1
 x-ms-exchange-antispam-relay: 0
 x-microsoft-antispam: BCL:0;
-x-microsoft-antispam-message-info: OamkW3UO1/WqFADz4A194HFP4oBQk8gtqnKNjVuDksrLnfE6l+GVJQhwsaegPUSH7gx9t8lMJ1FdmgYJCgJ4OZ3EhKf8RZTD3Ts0zaaHTLojOQ5TBH4ZPl6xEabh2XoGqBvwUOEEFr9uSp9MQZp9dSBW+UcQqhYiFNaSTPWozfT9nTMipLej1e9xdNsDzJwkWvc4Nqfx9vJUpUl1b2y3wVZ1oitLTB5EUrRSlKgJTGqIekv1SR1YFUhPDs3nw9WEL9bXMu/EvTL8nA8XhyS8T5AggLricxDpUq9wYUHjECvPt7tEppOAD3ENQzfE8EgYlSeEkDpjU97d+AXoZrfhgqvMnmxfIN2HYaS9mEsbHWU/v+kC/37zYn4F+xyL7BZ7yyVP3OXhFEbyRjeA1fu5yW3MacAsdznAi8uIZTlBVJnpBYFOXwFAXJRBkzH6xa4sV/7hMat8LxK4cZD3yPIhI0AN4eK6rNxYmtVdMz7h6nIy+EuGpBn1s07XirzbDNP3itQCWqt0TOrchOPjGN3ZLRqsKltq5PAMjMXOxRZdN2dqnUFCweBuWWfCwgrV5044fj0vvvSEUUfHpFWJLJRnyg4c3Eh2g6Ee+cAC9QDPHcsmAgajEJma1cFC1eRoIfuvfIe6apmOy46ssLpPZuMbub2YhBZ5/KLzyz/ik0j7m6nXwWbxN1QdS/7wnLeRcvfuaqggkqHcyct/8HQb0MRs9FG7LhwusDW07wtmQYsIsLg=
+x-microsoft-antispam-message-info: uLzoYySy3vbyYZZoWN042uUFPzLUu7qa+qUODDpZ6HLQqVEtgNYPjJd7kn48q7wozWQW2X6hvYsMs/hE4g8Goi82XVh5o2VA4+iJDq8oMlW+YnRB9s0Hz871RMJFilaEa9Mt5Lfg/MuyxuUIMP0Bh/41pKpyY7GZZrVSd8M2zrEWnXxdZCw2SERdO/qcS7GsbC3ho/cTSp9io4dW86hdqEH9npOeEYUwtuYbSWN2BWk/XgkhXKasVRMdJSs4LeY1Pd6OvrcHngt1M4q+xqk7epICw4IpG8HwOBpQgLkT1yzab0y1taXhtz+yXkql6BKgnPd3oKIMDQ8Njn39Th9a0mfFKFOacDy109jGMQUIB9JTn0/NMQALct99/g8zdf9u5rLwgWQn6bLQi4oGoIz15SRj4ddJWpxe68C1AqwyEgU2Ekw2aVsIC9efAlTCJ+AXAudOz6a64jXdwTbV5iJQy5bXRipxoOJ4UaDlVHbfRQzQYJ+jXitZwBZfDAmQx7CTvB/miiuUMsU5DQ7N0G3YMGD+OyocR/iA5cXkb7jGprqw6x5msw5azkhjQMiu0a5JXVzsS14GdajTY/IIbOjFNuyJn/8GG5ulSMshgkLtzRdj72qSj4CFN3BuYLNttqr/ueDe1FFqBGc5cZLHdUGK4DbkA7Tn1mDsoI7kfCC66jb48sWtC12/oY/av3vsU8pek+GJUfJRGlLhMYzaa8lWUScEyj9iouSodujaPvpXLK4=
 x-forefront-antispam-report: CIP:255.255.255.255; CTRY:; LANG:en; SCL:1; SRV:;
- IPV:NLI; SFV:NSPM; H:CY4PR12MB1160.namprd12.prod.outlook.com; PTR:; CAT:NONE;
- SFS:(366004)(38100700002)(71200400001)(86362001)(2906002)(83380400001)(54906003)(31686004)(110136005)(38070700005)(91956017)(66946007)(508600001)(66446008)(64756008)(66556008)(66476007)(76116006)(7416002)(5660300002)(8676002)(186003)(8936002)(31696002)(122000001)(6512007)(4744005)(36756003)(53546011)(6506007)(6486002)(2616005)(4326008)(316002)(45980500001);
+ IPV:NLI; SFV:NSPM; H:BN9PR11MB5433.namprd11.prod.outlook.com; PTR:; CAT:NONE;
+ SFS:(4636009)(366004)(33656002)(316002)(8676002)(26005)(6916009)(7416002)(6506007)(38070700005)(66446008)(66556008)(508600001)(64756008)(122000001)(54906003)(7696005)(186003)(66946007)(55016002)(76116006)(4326008)(66476007)(2906002)(38100700002)(8936002)(52536014)(71200400001)(86362001)(5660300002)(9686003)(84603001);
  DIR:OUT; SFP:1102; 
 x-ms-exchange-antispam-messagedata-chunkcount: 1
-x-ms-exchange-antispam-messagedata-0: =?utf-8?B?Z3E1Q1p2dDJNR052VkZ1TG1nK2ZKSGJNWWxCdkIxdlgvemFlRHNZdG55SnAz?=
- =?utf-8?B?NFZnVDlEWVZHN3c5dTc1U2pCY2lTdkhTeXB3QU0xV1pocFhjTHZlUFkzSkhl?=
- =?utf-8?B?UDlnbWhORjBYYXFRUUFnNDM5ZFdHbFlZSVFEa3lIUUxnREc5d2ducFNGY0pt?=
- =?utf-8?B?V2NTVGdxdVFMNlRLemlvQ1M2VUJHMVVYL0ZkaXZ2dEVBQnc3Y0EvQVQzQmo5?=
- =?utf-8?B?dzZDbWtxejJRZnFkN210bmIwczlpMGprc0JqY3Rza01pV2JLU29CWkw0SFRJ?=
- =?utf-8?B?bnNoQVBFbzZIRnBndm5VR2tHWWo5ejdEWURZTktZbGthMkdKbU1rcFNTcWxQ?=
- =?utf-8?B?K0tyNG9pRTNuZEY5NXIxUEF6U1k3Nlg5RVlTT0hTTzlQUWYzNVdiRVlpY1ND?=
- =?utf-8?B?eHRxRmg1aHEvVE9mcTVmZU1kalNoR1NBZmwzSUZmSEFwa2xPL1ZuUWd6ZHll?=
- =?utf-8?B?TS9vNDMzNVY4SUxOVTA3S0hQVjRsODRLWC9abmp1MGg4R1c5YmhlM25sK1Jq?=
- =?utf-8?B?WE1BOEM2bWE3RDN6YWs1TUdCOUdZZm5LaW4wYUVuWVR1SFg3RVRoeXZOSTFY?=
- =?utf-8?B?MjNROHlxdHlWejJzN05uZlBQUGZPVXRSOHl5ZnRlTUFkVndJTHNyTS9CZWtn?=
- =?utf-8?B?ckYycndlMSt4bTk5TlEvZE1HOWFXZlRDRmJtOHY3MTdPZ3NhblhLVFZMYWx1?=
- =?utf-8?B?RFd1NXNBcjZCcjVYZWFyWDZGQzBTSmhzV09qZmZEUkdyOENUdFpteXNqQmFF?=
- =?utf-8?B?ejVtUldNT0swSzllQkNnc251RHhQZVJlN3JpdWlWVksyb3ZHMGZRcE0vOVJJ?=
- =?utf-8?B?U0xCQ0hnN294VDBXT1lOZXdKZEM4ZjZoOHdmVStLVnVSUElvNVZFRm1LWDBP?=
- =?utf-8?B?SVBaUjhXUHhHcEdId2hjRXorVkxiNTNISzFjTzkzb0dMMHBIRUtxZmF1aHRk?=
- =?utf-8?B?NEI0a3lZN0prRlNQTGtGTmNWT3VJSjYvVWltOWswWVAreU9BUkxaOHFhOFdq?=
- =?utf-8?B?TkZBZGdXVE9Icnlyd0YraDFNZHR5TDdrVGZmbVVJRXZDRXFtclFFc21TNEk0?=
- =?utf-8?B?WVdjOUJoRHdPdEpMY1pKMDFiK1RuMFZsbFRJMGRLVklCNTQ2bS9CanI4VENx?=
- =?utf-8?B?RkloOG1BZmU2ZnlRTmJCZjJXdDlYaFJnSzhkTFFTbFJSWFBFOGQrcS80NXVU?=
- =?utf-8?B?YjNqOHVwWVM0TkY1NktBVEVmMnVVV1ZYNWp4Z0xySVJFTC9BSm9qNkNzdmZM?=
- =?utf-8?B?MXFFOEIxWDdieU5BQ1pGZlFWWTFaZjhFbi9XUSs1Y0JHemtQUXhrNElVTzU2?=
- =?utf-8?B?K1JtOG1aQUN4UUVyR1ArNmpvbWdscWFPdlJWTi9mKytoSTN5ZUkvc2dvMDEw?=
- =?utf-8?B?c0lmWWFvcWxLRkNiUFU1VTF1QnRoMDJrVkpNK0FtN2FFUVhqKzV3ZHVVTzh4?=
- =?utf-8?B?RkxWQS9YcnZwcklycTcrZy8rWDhxSEdJalZaMllBQ0FHZEhHL1YzTTJsWUpT?=
- =?utf-8?B?MmNvbnFxYmk4ZllDcnJ5U2UycExRUHRmVEJLTEI4UHFOeDJUWjN3UjdkcU9T?=
- =?utf-8?B?RjBtOTJ0M3VPeTdNVVpSbHQxeXVsVDU3LzBMM2RnNkNCd1BuZlZEalZLbTNG?=
- =?utf-8?B?cHQwc3luVmpwc2ZJWVZEY3IzVENiRTdrRHp5NzM3b2xvRnA5LzlCcWpuTE43?=
- =?utf-8?B?ZkFzTUNlWkxVdlFGQ1NtdDBvZS95aGRTUkNaSlBIQ1NNY2FabGNSWFp5dVpr?=
- =?utf-8?Q?zxZX1W1RS474i7oyqAN1Twr11o31hFkPD6o09yZ?=
-x-ms-exchange-transport-forked: True
-Content-ID: <BEE0BCB4DA8E9D4FA42EB8E75B22E457@namprd12.prod.outlook.com>
+x-ms-exchange-antispam-messagedata-0: =?us-ascii?Q?MfxVJVmnxPx3js8xza1BV//MG8BgX0O+vddwk0WJj+3/1Qua9oUt2lPSXTpp?=
+ =?us-ascii?Q?9sgum8XxJOso2Q8OXZe5RqVnPUKpk0cIccyY630Atzwqcwx1838qPSvaquMl?=
+ =?us-ascii?Q?lBQMF/9sKVx0TXNkT2N0YNmJqCg4ZFTjBpIhdsc2b1iypiaf3UXRQtZ6dwTa?=
+ =?us-ascii?Q?XJbnMAS9vs9UWoQjcbv+fp+yfEiFnURDbuuGkquETI/Rp40xhG8d8G/e93U3?=
+ =?us-ascii?Q?bUsNUQq4qBcN7rv4RJBKvtdihSVR7vER+kgy/aj2iz+LySQ/CYW9QJw6lp3e?=
+ =?us-ascii?Q?YrU6J9hdzeiKZ5wCZ3CHHpgZEArOA/EfiAI7xrDOJK58WJRx5lg6K7vQOEbV?=
+ =?us-ascii?Q?vYXBguuZS390ugT6+VcQTYuQVjVo663wDz3t1ggo55oNhIKQQpovmcssg+sq?=
+ =?us-ascii?Q?LEkazK6I1ZDrQeFLE7IKd2qIDXzTZM+xrCJn8bYp3Nr/TlOaHPhOf15OMBsf?=
+ =?us-ascii?Q?OCnXWQ7mA0/hDBH7I5Vi2kzoFl716NQumsXjSb+BNqNI+VNAgkjdtO91s5/h?=
+ =?us-ascii?Q?g7fZKg/BJxKTlSp2XPJ5u3hdVXXHOeCYWayTYyh63VEXNUoM3jti7417iMmV?=
+ =?us-ascii?Q?AsjQvfRfnGd7mMtM4FU+m73+RioapCoNA9pgfdVXRqFE51N1GrsqKhfPBGRs?=
+ =?us-ascii?Q?s2sjcK7FrXlAtl3PocjBZ6RKtiSlLsmVpb9GX9PrL4s9W90OaqJspsFLp5g2?=
+ =?us-ascii?Q?Y7mGW/dR3+gq7v5/3a3NDqMTQ4YlSjWpEKLdC6LWA9D/QqYt4dYB2hNhdNlX?=
+ =?us-ascii?Q?z9NA2wGpXJ4bx4k3HKhbyVP9EqgCi+SPLlLwMfDr3vZ598NtzB2FHnK97WFQ?=
+ =?us-ascii?Q?OTMc6CuBXqnqaD19XQyQhlQIXNszGRbk439Cwg9UwCZLKL5JekYkq+onoQ79?=
+ =?us-ascii?Q?5nBtJAi43WxOcC4SUaZgMx+unVgOSwUuzim0nBKFOLNVVIduBT4BKhldpq+C?=
+ =?us-ascii?Q?IFTMNR39MquGgThJZnL6sVzmlKEDmhYYxQLivOeS72L2DTpwUyEpgY72ytYv?=
+ =?us-ascii?Q?p35Z3wxIsA5dl2DGtAW+kIq+S0vSAyjCa/wXccb38th1EBB6rmTyfmwoSKgI?=
+ =?us-ascii?Q?LnqB0qVeXZcIIYMt1DAtsgm68qs32MYD/Ls+7AcFqFRq1EFqqpqRgcIwqcxu?=
+ =?us-ascii?Q?Y3NHrIrl97xhvj2xkXGppBJ9ciF+/XlAz9IJu/DpTNP1dqz8ToBnta6Wkc0b?=
+ =?us-ascii?Q?Y1QMjQMWMSgtUAWv88OYijN31wWKqRc8GBt9Jg8ZxTANyAREwsgvNXt2Z1/4?=
+ =?us-ascii?Q?RRwEwq7urX6Azdjdd+tvMXzH9BUIhMsEVkDy08lTkefENxr0lIJq2o2HyTc1?=
+ =?us-ascii?Q?XFRA9B/JAiWg7IUsnL8i6hle?=
 MIME-Version: 1.0
-X-OriginatorOrg: synopsys.com
 X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-AuthSource: CY4PR12MB1160.namprd12.prod.outlook.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: c1e5f238-9c40-4f49-2da5-08d97e8fdc67
-X-MS-Exchange-CrossTenant-originalarrivaltime: 23 Sep 2021 12:44:19.0739 (UTC)
+X-MS-Exchange-CrossTenant-AuthSource: BN9PR11MB5433.namprd11.prod.outlook.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 36be0240-1cc3-4fd2-9226-08d97e94f9c8
+X-MS-Exchange-CrossTenant-originalarrivaltime: 23 Sep 2021 13:20:55.8993 (UTC)
 X-MS-Exchange-CrossTenant-fromentityheader: Hosted
-X-MS-Exchange-CrossTenant-id: c33c9f88-1eb7-4099-9700-16013fd9e8aa
+X-MS-Exchange-CrossTenant-id: 46c98d88-e344-4ed4-8496-4ed7712e255d
 X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: YXVpj8MQIzNFMgREFPcSyNOhb48DBCQjuuwYd+4/FTIRz+7n+fNOo/94DmdqxSrRhwhnoAWwsgrHeewqRJ+nSA==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: CY4PR1201MB0200
-X-Mailman-Approved-At: Thu, 23 Sep 2021 13:19:02 +0000
-Cc: "devicetree@vger.kernel.org" <devicetree@vger.kernel.org>,
- "linux-efi@vger.kernel.org" <linux-efi@vger.kernel.org>,
- Mike Rapoport <rppt@linux.ibm.com>,
- "kvm@vger.kernel.org" <kvm@vger.kernel.org>,
- "linux-s390@vger.kernel.org" <linux-s390@vger.kernel.org>,
- "linux-sh@vger.kernel.org" <linux-sh@vger.kernel.org>,
- "linux-um@lists.infradead.org" <linux-um@lists.infradead.org>,
+X-MS-Exchange-CrossTenant-userprincipalname: BXumsiC8jmV5DdxzAfMLtkdV1cEipC4zYLm8V2YrqwkJi18dzxGcnipp/4MUNC0Ph1uDqxgkDd2UTn6o1lvR6w==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: BN6PR11MB0050
+X-OriginatorOrg: intel.com
+Cc: "kvm@vger.kernel.org" <kvm@vger.kernel.org>,
+ "jasowang@redhat.com" <jasowang@redhat.com>,
+ "kwankhede@nvidia.com" <kwankhede@nvidia.com>, "hch@lst.de" <hch@lst.de>,
+ "jean-philippe@linaro.org" <jean-philippe@linaro.org>, "Jiang,
+ Dave" <dave.jiang@intel.com>, "Raj, Ashok" <ashok.raj@intel.com>,
+ "corbet@lwn.net" <corbet@lwn.net>, "parav@mellanox.com" <parav@mellanox.com>,
+ "alex.williamson@redhat.com" <alex.williamson@redhat.com>,
+ "lkml@metux.net" <lkml@metux.net>,
+ "david@gibson.dropbear.id.au" <david@gibson.dropbear.id.au>,
+ "dwmw2@infradead.org" <dwmw2@infradead.org>, "Tian,
+ Jun J" <jun.j.tian@intel.com>,
  "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
- "kasan-dev@googlegroups.com" <kasan-dev@googlegroups.com>,
- "linux-mips@vger.kernel.org" <linux-mips@vger.kernel.org>,
- "linux-mm@kvack.org" <linux-mm@kvack.org>,
+ "lushenming@huawei.com" <lushenming@huawei.com>,
  "iommu@lists.linux-foundation.org" <iommu@lists.linux-foundation.org>,
- "linux-usb@vger.kernel.org" <linux-usb@vger.kernel.org>,
- "linux-alpha@vger.kernel.org" <linux-alpha@vger.kernel.org>,
- "sparclinux@vger.kernel.org" <sparclinux@vger.kernel.org>,
- "xen-devel@lists.xenproject.org" <xen-devel@lists.xenproject.org>,
- Andrew Morton <akpm@linux-foundation.org>,
- "linux-snps-arc@lists.infradead.org" <linux-snps-arc@lists.infradead.org>,
- "linuxppc-dev@lists.ozlabs.org" <linuxppc-dev@lists.ozlabs.org>,
- "linux-riscv@lists.infradead.org" <linux-riscv@lists.infradead.org>,
- "linux-arm-kernel@lists.infradead.org" <linux-arm-kernel@lists.infradead.org>
+ "pbonzini@redhat.com" <pbonzini@redhat.com>,
+ "robin.murphy@arm.com" <robin.murphy@arm.com>
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -214,41 +194,147 @@ List-Post: <mailto:iommu@lists.linux-foundation.org>
 List-Help: <mailto:iommu-request@lists.linux-foundation.org?subject=help>
 List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
  <mailto:iommu-request@lists.linux-foundation.org?subject=subscribe>
-From: Shahab Vahedi via iommu <iommu@lists.linux-foundation.org>
-Reply-To: Shahab Vahedi <Shahab.Vahedi@synopsys.com>
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-On 9/23/21 9:43 AM, Mike Rapoport wrote:
-> From: Mike Rapoport <rppt@linux.ibm.com>
+> From: Jason Gunthorpe <jgg@nvidia.com>
+> Sent: Thursday, September 23, 2021 9:02 PM
 > 
-> For ages memblock_free() interface dealt with physical addresses even
-> despite the existence of memblock_alloc_xx() functions that return a
-> virtual pointer.
+> On Thu, Sep 23, 2021 at 12:45:17PM +0000, Tian, Kevin wrote:
+> > > From: Jason Gunthorpe <jgg@nvidia.com>
+> > > Sent: Thursday, September 23, 2021 8:31 PM
+> > >
+> > > On Thu, Sep 23, 2021 at 12:22:23PM +0000, Tian, Kevin wrote:
+> > > > > From: Jason Gunthorpe <jgg@nvidia.com>
+> > > > > Sent: Thursday, September 23, 2021 8:07 PM
+> > > > >
+> > > > > On Thu, Sep 23, 2021 at 09:14:58AM +0000, Tian, Kevin wrote:
+> > > > >
+> > > > > > currently the type is aimed to differentiate three usages:
+> > > > > >
+> > > > > > - kernel-managed I/O page table
+> > > > > > - user-managed I/O page table
+> > > > > > - shared I/O page table (e.g. with mm, or ept)
+> > > > >
+> > > > > Creating a shared ios is something that should probably be a different
+> > > > > command.
+> > > >
+> > > > why? I didn't understand the criteria here...
+> > >
+> > > I suspect the input args will be very different, no?
+> >
+> > yes, but can't the structure be extended to incorporate it?
 > 
-> Introduce memblock_phys_free() for freeing physical ranges and repurpose
-> memblock_free() to free virtual pointers to make the following pairing
-> abundantly clear:
-> 
-> 	int memblock_phys_free(phys_addr_t base, phys_addr_t size);
-> 	phys_addr_t memblock_phys_alloc(phys_addr_t base, phys_addr_t size);
-> 
-> 	void *memblock_alloc(phys_addr_t size, phys_addr_t align);
-> 	void memblock_free(void *ptr, size_t size);
-> 
-> Replace intermediate memblock_free_ptr() with memblock_free() and drop
-> unnecessary aliases memblock_free_early() and memblock_free_early_nid().
-> 
-> Suggested-by: Linus Torvalds <torvalds@linux-foundation.org>
-> Signed-off-by: Mike Rapoport <rppt@linux.ibm.com>
+> You need to be thoughtful, giant structures with endless combinations
+> of optional fields turn out very hard. I haven't even seen what args
+> this shared thing will need, but I'm guessing it is almost none, so
+> maybe a new call is OK?
 
-arch/arc part: Reviewed-by: Shahab Vahedi <shahab@synopsys.com>
+To judge this looks we may have to do some practice on this front
+e.g. coming up an example structure for future intended usages and
+then see whether one structure can fit? 
 
+> 
+> If it is literally just 'give me an ioas for current mm' then it has
+> no args or complexity at all.
 
-Thanks,
-Shahab
+for mm, yes, should be simple. for ept it might be more complex e.g.
+requiring a handle in kvm and some other format info to match ept
+page table.
+
+> 
+> > > > > > we can remove 'type', but is FORMAT_KENREL/USER/SHARED a good
+> > > > > > indicator? their difference is not about format.
+> > > > >
+> > > > > Format should be
+> > > > >
+> > > > >
+> FORMAT_KERNEL/FORMAT_INTEL_PTE_V1/FORMAT_INTEL_PTE_V2/etc
+> > > >
+> > > > INTEL_PTE_V1/V2 are formats. Why is kernel-managed called a format?
+> > >
+> > > So long as we are using structs we need to have values then the field
+> > > isn't being used. FORMAT_KERNEL is a reasonable value to have when we
+> > > are not creating a userspace page table.
+> > >
+> > > Alternatively a userspace page table could have a different API
+> >
+> > I don't know. Your comments really confused me on what's the right
+> > way to design the uAPI. If you still remember, the original v1 proposal
+> > introduced different uAPIs for kernel/user-managed cases. Then you
+> > recommended to consolidate everything related to ioas in one allocation
+> > command.
+> 
+> This is because you had almost completely duplicated the input args
+> between the two calls.
+> 
+> If it turns out they have very different args, then they should have
+> different calls.
+> 
+> > > > - open iommufd
+> > > > - create an ioas
+> > > > - attach vfio device to ioasid, with vPASID info
+> > > > 	* vfio converts vPASID to pPASID and then call
+> > > iommufd_device_attach_ioasid()
+> > > > 	* the latter then installs ioas to the IOMMU with RID/PASID
+> > >
+> > > This was your flow for mdev's, I've always been talking about wanting
+> > > to see this supported for all use cases, including physical PCI
+> > > devices w/ PASID support.
+> >
+> > this is not a flow for mdev. It's also required for pdev on Intel platform,
+> > because the pasid table is in HPA space thus must be managed by host
+> > kernel. Even no translation we still need the user to provide the pasid info.
+> 
+> There should be no mandatory vPASID stuff in most of these flows, that
+> is just a special thing ENQCMD virtualization needs. If userspace
+> isn't doing ENQCMD virtualization it shouldn't need to touch this
+> stuff.
+
+No. for one, we also support SVA w/o using ENQCMD. For two, the key
+is that the PASID table cannot be delegated to the userspace like ARM
+or AMD. This implies that for any pasid that the userspace wants to
+enable, it must be configured via the kernel.
+
+> 
+> > as explained earlier, on Intel platform the user always needs to provide
+> > a PASID in the attaching call. whether it's directly used (for pdev)
+> > or translated (for mdev) is the underlying driver thing. From kernel
+> > p.o.v, since this PASID is provided by the user, it's fine to call it vPASID
+> > in the uAPI.
+> 
+> I've always disagreed with this. There should be an option for the
+> kernel to pick an appropriate PASID for portability to other IOMMUs
+> and simplicity of the interface.
+> 
+> You need to keep it clear what is in the minimum basic path and what
+> is needed for special cases, like ENQCMD virtualization.
+> 
+> Not every user of iommufd is doing virtualization.
+> 
+
+just for a short summary of PASID model from previous design RFC:
+
+for arm/amd:
+	- pasid space delegated to userspace
+	- pasid table delegated to userspace
+	- just one call to bind pasid_table() then pasids are fully managed by user
+
+for intel:
+	- pasid table is always managed by kernel
+	- for pdev,
+		- pasid space is delegated to userspace
+		- attach_ioasid(dev, ioasid, pasid) so the kernel can setup the pasid entry
+	- for mdev,
+		- pasid space is managed by userspace
+		- attach_ioasid(dev, ioasid, vpasid). vfio converts vpasid to ppasid. iommufd setups the ppasid entry
+		- additional a contract to kvm for setup CPU pasid translation if enqcmd is used
+	- to unify pdev/mdev, just always call it vpasid in attach_ioasid(). let underlying driver to figure out whether vpasid should be translated.
+
+Thanks
+Kevin
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
