@@ -2,129 +2,78 @@ Return-Path: <SRS0=LkSb=OO=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-13.6 required=3.0 tests=BAYES_00,DKIM_INVALID,
-	DKIM_SIGNED,HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_CR_TRAILER,INCLUDES_PATCH,
-	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS autolearn=unavailable
-	autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-3.6 required=3.0 tests=BAYES_00,DKIM_INVALID,
+	DKIM_SIGNED,HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,SPF_HELO_NONE,
+	SPF_PASS autolearn=no autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B25A3C433F5
-	for <iommu@archiver.kernel.org>; Fri, 24 Sep 2021 05:32:45 +0000 (UTC)
-Received: from smtp3.osuosl.org (smtp3.osuosl.org [140.211.166.136])
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0A9F0C43219
+	for <iommu@archiver.kernel.org>; Fri, 24 Sep 2021 06:44:38 +0000 (UTC)
+Received: from smtp1.osuosl.org (smtp1.osuosl.org [140.211.166.138])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 456FE61039
-	for <iommu@archiver.kernel.org>; Fri, 24 Sep 2021 05:32:45 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.4.1 mail.kernel.org 456FE61039
-Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=linux.ibm.com
+	by mail.kernel.org (Postfix) with ESMTPS id B833A61283
+	for <iommu@archiver.kernel.org>; Fri, 24 Sep 2021 06:44:37 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.4.1 mail.kernel.org B833A61283
+Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=infradead.org
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by smtp3.osuosl.org (Postfix) with ESMTP id 0E8B560656;
-	Fri, 24 Sep 2021 05:32:45 +0000 (UTC)
+	by smtp1.osuosl.org (Postfix) with ESMTP id 836A68495C;
+	Fri, 24 Sep 2021 06:44:37 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from smtp3.osuosl.org ([127.0.0.1])
-	by localhost (smtp3.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id dwYfr8SmSfCZ; Fri, 24 Sep 2021 05:32:44 +0000 (UTC)
+Received: from smtp1.osuosl.org ([127.0.0.1])
+	by localhost (smtp1.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+	with ESMTP id pDeMlMNxDrxq; Fri, 24 Sep 2021 06:44:36 +0000 (UTC)
 Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by smtp3.osuosl.org (Postfix) with ESMTPS id BF5FA60632;
-	Fri, 24 Sep 2021 05:32:43 +0000 (UTC)
+	by smtp1.osuosl.org (Postfix) with ESMTPS id 2CE3983E66;
+	Fri, 24 Sep 2021 06:44:36 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 74173C000F;
-	Fri, 24 Sep 2021 05:32:43 +0000 (UTC)
-Received: from smtp4.osuosl.org (smtp4.osuosl.org [140.211.166.137])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 8A8D1C000D
- for <iommu@lists.linux-foundation.org>; Fri, 24 Sep 2021 05:32:42 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 0FBC0C0011;
+	Fri, 24 Sep 2021 06:44:36 +0000 (UTC)
+Received: from smtp1.osuosl.org (smtp1.osuosl.org [140.211.166.138])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id B1A74C000D
+ for <iommu@lists.linux-foundation.org>; Fri, 24 Sep 2021 06:44:34 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by smtp4.osuosl.org (Postfix) with ESMTP id 6F7A140712
- for <iommu@lists.linux-foundation.org>; Fri, 24 Sep 2021 05:32:42 +0000 (UTC)
+ by smtp1.osuosl.org (Postfix) with ESMTP id 8D27783EC7
+ for <iommu@lists.linux-foundation.org>; Fri, 24 Sep 2021 06:44:34 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Authentication-Results: smtp4.osuosl.org (amavisd-new);
- dkim=pass (2048-bit key) header.d=ibm.com
-Received: from smtp4.osuosl.org ([127.0.0.1])
- by localhost (smtp4.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id d3pvKvK5pPnn for <iommu@lists.linux-foundation.org>;
- Fri, 24 Sep 2021 05:32:40 +0000 (UTC)
-X-Greylist: domain auto-whitelisted by SQLgrey-1.8.0
-Received: from mx0a-001b2d01.pphosted.com (mx0b-001b2d01.pphosted.com
- [148.163.158.5])
- by smtp4.osuosl.org (Postfix) with ESMTPS id 50F484070F
- for <iommu@lists.linux-foundation.org>; Fri, 24 Sep 2021 05:32:40 +0000 (UTC)
-Received: from pps.filterd (m0098419.ppops.net [127.0.0.1])
- by mx0b-001b2d01.pphosted.com (8.16.1.2/8.16.1.2) with SMTP id 18O4TxLE003727; 
- Fri, 24 Sep 2021 01:32:30 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com;
- h=date : from : to : cc :
- subject : message-id : references : content-type : in-reply-to :
- content-transfer-encoding : mime-version; s=pp1;
- bh=LcclFexTC3W4CGWQ05F30N7TENmKQs3CWJF8lIJhAyA=;
- b=fM5r0pOd7rJd2mnURChsSfJfJrX/C+3BofObflhTYGzVXv/HEJS9Aw8BgIC//ggGIR4j
- CZ5JxdcP59VcALFL5IzVij2oY4zwlRyWWbJs8bYZFXoi5eLF6aEHqAyx0sRU0twQi+Nx
- uTzT35Ud5rz3mMLTSHcDte6njyO8gAKbwGxAXdnivxmbV3hoFkXGse9K5ImTnY3FP/yx
- Dcg6IMAClTzZSYBturZR2pFZSHk8drui/RqjiPVFtbOoDuEmvxDYqAtOWfweNAxqZrTZ
- HQI3Eeh+Tf3jj5APaqHV6+/E8KJV71sFQyUh51zWXPgx91EVjartcf89ESTdpFpWq0zU zQ== 
-Received: from ppma03ams.nl.ibm.com (62.31.33a9.ip4.static.sl-reverse.com
- [169.51.49.98])
- by mx0b-001b2d01.pphosted.com with ESMTP id 3b97px199p-1
- (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
- Fri, 24 Sep 2021 01:32:30 -0400
-Received: from pps.filterd (ppma03ams.nl.ibm.com [127.0.0.1])
- by ppma03ams.nl.ibm.com (8.16.1.2/8.16.1.2) with SMTP id 18O5WBU3010032;
- Fri, 24 Sep 2021 05:32:28 GMT
-Received: from b06avi18878370.portsmouth.uk.ibm.com
- (b06avi18878370.portsmouth.uk.ibm.com [9.149.26.194])
- by ppma03ams.nl.ibm.com with ESMTP id 3b93gb1yvs-1
- (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
- Fri, 24 Sep 2021 05:32:28 +0000
-Received: from d06av22.portsmouth.uk.ibm.com (d06av22.portsmouth.uk.ibm.com
- [9.149.105.58])
- by b06avi18878370.portsmouth.uk.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP
- id 18O5RWr150528586
- (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
- Fri, 24 Sep 2021 05:27:32 GMT
-Received: from d06av22.portsmouth.uk.ibm.com (unknown [127.0.0.1])
- by IMSVA (Postfix) with ESMTP id A77234C04E;
- Fri, 24 Sep 2021 05:32:25 +0000 (GMT)
-Received: from d06av22.portsmouth.uk.ibm.com (unknown [127.0.0.1])
- by IMSVA (Postfix) with ESMTP id 26CB04C050;
- Fri, 24 Sep 2021 05:32:23 +0000 (GMT)
-Received: from linux.ibm.com (unknown [9.145.159.121])
- by d06av22.portsmouth.uk.ibm.com (Postfix) with ESMTPS;
- Fri, 24 Sep 2021 05:32:23 +0000 (GMT)
-Date: Fri, 24 Sep 2021 08:32:21 +0300
-From: Mike Rapoport <rppt@linux.ibm.com>
-To: Christophe Leroy <christophe.leroy@csgroup.eu>
-Subject: Re: [PATCH 3/3] memblock: cleanup memblock_free interface
-Message-ID: <YU1i5YyldfS1HH0j@linux.ibm.com>
-References: <20210923074335.12583-1-rppt@kernel.org>
- <20210923074335.12583-4-rppt@kernel.org>
- <1101e3c7-fcb7-a632-8e22-47f4a01ea02e@csgroup.eu>
- <YUxsgN/uolhn1Ok+@linux.ibm.com>
- <96e3da9f-70ff-e5c0-ef2e-cf0b636e5695@csgroup.eu>
-Content-Disposition: inline
-In-Reply-To: <96e3da9f-70ff-e5c0-ef2e-cf0b636e5695@csgroup.eu>
-X-TM-AS-GCONF: 00
-X-Proofpoint-ORIG-GUID: EYYWPQtbK60SNKLXoEtnrAemGAQvCJn5
-X-Proofpoint-GUID: EYYWPQtbK60SNKLXoEtnrAemGAQvCJn5
-X-Proofpoint-UnRewURL: 0 URL was un-rewritten
+Received: from smtp1.osuosl.org ([127.0.0.1])
+ by localhost (smtp1.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+ with ESMTP id K8xnwRObmmCN for <iommu@lists.linux-foundation.org>;
+ Fri, 24 Sep 2021 06:44:33 +0000 (UTC)
+X-Greylist: from auto-whitelisted by SQLgrey-1.8.0
+Received: from casper.infradead.org (casper.infradead.org
+ [IPv6:2001:8b0:10b:1236::1])
+ by smtp1.osuosl.org (Postfix) with ESMTPS id EAC1083E66
+ for <iommu@lists.linux-foundation.org>; Fri, 24 Sep 2021 06:44:32 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+ d=infradead.org; s=casper.20170209; h=In-Reply-To:Content-Type:MIME-Version:
+ References:Message-ID:Subject:Cc:To:From:Date:Sender:Reply-To:
+ Content-Transfer-Encoding:Content-ID:Content-Description;
+ bh=yk37TJ1pv0m2OGjoSFSGGxlGCD0GciEiUSGDQBv+q1U=; b=ExiK0QjAHvn7VukF4+rlC/14Vm
+ LC2bgapE+fU1Ac5IN8TOH7oMV+JoT56Q2EMxin+FgHZWhyPvGOovy1m5chiiewrMkZi50AYtvs8iB
+ pYFykWdvAjVPdZnO8zNGvYREoJONApQKBAvoldhvcUIXGDxNvgXJFjDxT1h7aYXh7OLq9V0j0mSJE
+ xpMrPWN/21I8lYyUIK6h+1Z1pWcC7FyCesrmVbVftrBKyiCG/ZXfEkOyeNrRFw9b3nnBd01G6OeSY
+ qh6cZyXTYQxnMVWHZUSRscGikh2QWgRJOEVSELa57arYvW1uwiPhtKx174wgdL3BFb1A0hiwg0D9O
+ qncrghsQ==;
+Received: from hch by casper.infradead.org with local (Exim 4.94.2 #2 (Red Hat
+ Linux)) id 1mTeuh-006vf6-60; Fri, 24 Sep 2021 06:43:02 +0000
+Date: Fri, 24 Sep 2021 07:42:27 +0100
+From: Christoph Hellwig <hch@infradead.org>
+To: Ben Widawsky <ben.widawsky@intel.com>
+Subject: Re: [PATCH v2 9/9] iommu/vt-d: Use pci core's DVSEC functionality
+Message-ID: <YU1zU2jn/mGYDThY@infradead.org>
+References: <20210923172647.72738-1-ben.widawsky@intel.com>
+ <20210923172647.72738-10-ben.widawsky@intel.com>
 MIME-Version: 1.0
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.182.1,Aquarius:18.0.790,Hydra:6.0.391,FMLib:17.0.607.475
- definitions=2021-09-24_01,2021-09-23_01,2020-04-07_01
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0
- malwarescore=0
- impostorscore=0 mlxscore=0 lowpriorityscore=0 bulkscore=0 spamscore=0
- clxscore=1015 mlxlogscore=856 adultscore=0 phishscore=0 suspectscore=0
- priorityscore=1501 classifier=spam adjust=0 reason=mlx scancount=1
- engine=8.12.0-2109230001 definitions=main-2109240031
-Cc: linux-efi@vger.kernel.org, kvm@vger.kernel.org, linux-sh@vger.kernel.org,
- linux-mips@vger.kernel.org, linux-mm@kvack.org, sparclinux@vger.kernel.org,
- linux-riscv@lists.infradead.org, linux-s390@vger.kernel.org,
- kasan-dev@googlegroups.com, xen-devel@lists.xenproject.org,
- linux-snps-arc@lists.infradead.org, devicetree@vger.kernel.org,
- linux-um@lists.infradead.org, linux-arm-kernel@lists.infradead.org,
- Linus Torvalds <torvalds@linux-foundation.org>, linux-usb@vger.kernel.org,
- linux-kernel@vger.kernel.org, iommu@lists.linux-foundation.org,
- linux-alpha@vger.kernel.org, Andrew Morton <akpm@linux-foundation.org>,
- linuxppc-dev@lists.ozlabs.org, Mike Rapoport <rppt@kernel.org>
+Content-Disposition: inline
+In-Reply-To: <20210923172647.72738-10-ben.widawsky@intel.com>
+X-SRS-Rewrite: SMTP reverse-path rewritten from <hch@infradead.org> by
+ casper.infradead.org. See http://www.infradead.org/rpr.html
+Cc: Andrew Donnellan <ajd@linux.ibm.com>, linux-pci@vger.kernel.org,
+ linuxppc-dev@lists.ozlabs.org, linux-cxl@vger.kernel.org,
+ iommu@lists.linux-foundation.org, Bjorn Helgaas <helgaas@kernel.org>,
+ "David E. Box" <david.e.box@linux.intel.com>,
+ Kan Liang <kan.liang@linux.intel.com>, David Woodhouse <dwmw2@infradead.org>
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -137,101 +86,23 @@ List-Post: <mailto:iommu@lists.linux-foundation.org>
 List-Help: <mailto:iommu-request@lists.linux-foundation.org?subject=help>
 List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
  <mailto:iommu-request@lists.linux-foundation.org?subject=subscribe>
-Content-Type: text/plain; charset="iso-8859-1"
-Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-On Thu, Sep 23, 2021 at 03:54:46PM +0200, Christophe Leroy wrote:
-> =
+On Thu, Sep 23, 2021 at 10:26:47AM -0700, Ben Widawsky wrote:
+>   */
+>  static int siov_find_pci_dvsec(struct pci_dev *pdev)
+>  {
+> +	return pci_find_dvsec_capability(pdev, PCI_VENDOR_ID_INTEL, 5);
+>  }
 
-> Le 23/09/2021 =E0 14:01, Mike Rapoport a =E9crit=A0:
-> > On Thu, Sep 23, 2021 at 11:47:48AM +0200, Christophe Leroy wrote:
-> > > =
+I hink the siov_find_pci_dvsec helper is pretty pointless now and can be
+folded into its only caller.  And independent of that: this capability
+really needs a symbolic name.  Especially for a vendor like Intel that
+might have a few there should be a list of them somewhere.
 
-> > > =
-
-> > > Le 23/09/2021 =E0 09:43, Mike Rapoport a =E9crit=A0:
-> > > > From: Mike Rapoport <rppt@linux.ibm.com>
-> > > > =
-
-> > > > For ages memblock_free() interface dealt with physical addresses ev=
-en
-> > > > despite the existence of memblock_alloc_xx() functions that return a
-> > > > virtual pointer.
-> > > > =
-
-> > > > Introduce memblock_phys_free() for freeing physical ranges and repu=
-rpose
-> > > > memblock_free() to free virtual pointers to make the following pair=
-ing
-> > > > abundantly clear:
-> > > > =
-
-> > > > 	int memblock_phys_free(phys_addr_t base, phys_addr_t size);
-> > > > 	phys_addr_t memblock_phys_alloc(phys_addr_t base, phys_addr_t size=
-);
-> > > > =
-
-> > > > 	void *memblock_alloc(phys_addr_t size, phys_addr_t align);
-> > > > 	void memblock_free(void *ptr, size_t size);
-> > > > =
-
-> > > > Replace intermediate memblock_free_ptr() with memblock_free() and d=
-rop
-> > > > unnecessary aliases memblock_free_early() and memblock_free_early_n=
-id().
-> > > > =
-
-> > > > Suggested-by: Linus Torvalds <torvalds@linux-foundation.org>
-> > > > Signed-off-by: Mike Rapoport <rppt@linux.ibm.com>
-> > > > ---
-> > > =
-
-> > > > diff --git a/arch/s390/kernel/smp.c b/arch/s390/kernel/smp.c
-> > > > index 1a04e5bdf655..37826d8c4f74 100644
-> > > > --- a/arch/s390/kernel/smp.c
-> > > > +++ b/arch/s390/kernel/smp.c
-> > > > @@ -723,7 +723,7 @@ void __init smp_save_dump_cpus(void)
-> > > >    			/* Get the CPU registers */
-> > > >    			smp_save_cpu_regs(sa, addr, is_boot_cpu, page);
-> > > >    	}
-> > > > -	memblock_free(page, PAGE_SIZE);
-> > > > +	memblock_phys_free(page, PAGE_SIZE);
-> > > >    	diag_amode31_ops.diag308_reset();
-> > > >    	pcpu_set_smt(0);
-> > > >    }
-> > > > @@ -880,7 +880,7 @@ void __init smp_detect_cpus(void)
-> > > >    	/* Add CPUs present at boot */
-> > > >    	__smp_rescan_cpus(info, true);
-> > > > -	memblock_free_early((unsigned long)info, sizeof(*info));
-> > > > +	memblock_free(info, sizeof(*info));
-> > > >    }
-> > > >    /*
-> > > =
-
-> > > I'm a bit lost. IIUC memblock_free_early() and memblock_free() where
-> > > identical.
-> > =
-
-> > Yes, they were, but all calls to memblock_free_early() were using
-> > __pa(vaddr) because they had a virtual address at hand.
-> =
-
-> I'm still not following. In the above memblock_free_early() was taking
-> (unsigned long)info . Was it a bug ? =
-
-
-Not really because s390 has pa =3D=3D va:
-
-https://elixir.bootlin.com/linux/latest/source/arch/s390/include/asm/page.h=
-#L169
-
-
--- =
-
-Sincerely yours,
-Mike.
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
