@@ -4,66 +4,66 @@ X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 X-Spam-Level: 
 X-Spam-Status: No, score=-16.8 required=3.0 tests=BAYES_00,
 	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_CR_TRAILER,INCLUDES_PATCH,
-	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,USER_AGENT_GIT
-	autolearn=unavailable autolearn_force=no version=3.4.0
+	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,USER_AGENT_GIT autolearn=ham
+	autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7382AC433EF
-	for <iommu@archiver.kernel.org>; Fri, 24 Sep 2021 10:07:18 +0000 (UTC)
-Received: from smtp4.osuosl.org (smtp4.osuosl.org [140.211.166.137])
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5F338C433F5
+	for <iommu@archiver.kernel.org>; Fri, 24 Sep 2021 10:07:24 +0000 (UTC)
+Received: from smtp1.osuosl.org (smtp1.osuosl.org [140.211.166.138])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 2B4946124B
-	for <iommu@archiver.kernel.org>; Fri, 24 Sep 2021 10:07:18 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.4.1 mail.kernel.org 2B4946124B
+	by mail.kernel.org (Postfix) with ESMTPS id 289D961164
+	for <iommu@archiver.kernel.org>; Fri, 24 Sep 2021 10:07:24 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.4.1 mail.kernel.org 289D961164
 Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=huawei.com
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by smtp4.osuosl.org (Postfix) with ESMTP id F31C2415CD;
-	Fri, 24 Sep 2021 10:07:17 +0000 (UTC)
+	by smtp1.osuosl.org (Postfix) with ESMTP id 09B0D84100;
+	Fri, 24 Sep 2021 10:07:24 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from smtp4.osuosl.org ([127.0.0.1])
-	by localhost (smtp4.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id zxvCj8_S_TTP; Fri, 24 Sep 2021 10:07:16 +0000 (UTC)
+Received: from smtp1.osuosl.org ([127.0.0.1])
+	by localhost (smtp1.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+	with ESMTP id xjwt0G9KkCmm; Fri, 24 Sep 2021 10:07:22 +0000 (UTC)
 Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by smtp4.osuosl.org (Postfix) with ESMTPS id 99157415B9;
-	Fri, 24 Sep 2021 10:07:16 +0000 (UTC)
+	by smtp1.osuosl.org (Postfix) with ESMTPS id E70C48435F;
+	Fri, 24 Sep 2021 10:07:21 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 777CDC001C;
-	Fri, 24 Sep 2021 10:07:16 +0000 (UTC)
-Received: from smtp4.osuosl.org (smtp4.osuosl.org [140.211.166.137])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 15D89C0027;
- Fri, 24 Sep 2021 10:07:14 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id D0661C000F;
+	Fri, 24 Sep 2021 10:07:21 +0000 (UTC)
+Received: from smtp3.osuosl.org (smtp3.osuosl.org [140.211.166.136])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 19595C000D;
+ Fri, 24 Sep 2021 10:07:20 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by smtp4.osuosl.org (Postfix) with ESMTP id DD690415B9;
- Fri, 24 Sep 2021 10:07:12 +0000 (UTC)
+ by smtp3.osuosl.org (Postfix) with ESMTP id F077D61386;
+ Fri, 24 Sep 2021 10:07:19 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from smtp4.osuosl.org ([127.0.0.1])
- by localhost (smtp4.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id z7L2SAX0VvEg; Fri, 24 Sep 2021 10:07:11 +0000 (UTC)
+Received: from smtp3.osuosl.org ([127.0.0.1])
+ by localhost (smtp3.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+ with ESMTP id n2_fIocSj7-3; Fri, 24 Sep 2021 10:07:18 +0000 (UTC)
 X-Greylist: domain auto-whitelisted by SQLgrey-1.8.0
 X-Greylist: domain auto-whitelisted by SQLgrey-1.8.0
 Received: from frasgout.his.huawei.com (frasgout.his.huawei.com
  [185.176.79.56])
- by smtp4.osuosl.org (Postfix) with ESMTPS id 9950D415A2;
- Fri, 24 Sep 2021 10:07:11 +0000 (UTC)
-Received: from fraeml740-chm.china.huawei.com (unknown [172.18.147.201])
- by frasgout.his.huawei.com (SkyGuard) with ESMTP id 4HG71D48HZz67WFS;
- Fri, 24 Sep 2021 18:04:32 +0800 (CST)
+ by smtp3.osuosl.org (Postfix) with ESMTPS id 2A78A6138F;
+ Fri, 24 Sep 2021 10:07:18 +0000 (UTC)
+Received: from fraeml736-chm.china.huawei.com (unknown [172.18.147.201])
+ by frasgout.his.huawei.com (SkyGuard) with ESMTP id 4HG71M4qtqz67N2l;
+ Fri, 24 Sep 2021 18:04:39 +0800 (CST)
 Received: from lhreml724-chm.china.huawei.com (10.201.108.75) by
- fraeml740-chm.china.huawei.com (10.206.15.221) with Microsoft SMTP Server
+ fraeml736-chm.china.huawei.com (10.206.15.217) with Microsoft SMTP Server
  (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2308.8; Fri, 24 Sep 2021 12:07:08 +0200
+ 15.1.2308.8; Fri, 24 Sep 2021 12:07:15 +0200
 Received: from localhost.localdomain (10.69.192.58) by
  lhreml724-chm.china.huawei.com (10.201.108.75) with Microsoft SMTP Server
  (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2308.8; Fri, 24 Sep 2021 11:07:05 +0100
+ 15.1.2308.8; Fri, 24 Sep 2021 11:07:12 +0100
 From: John Garry <john.garry@huawei.com>
 To: <joro@8bytes.org>, <will@kernel.org>, <mst@redhat.com>,
  <jasowang@redhat.com>, <robin.murphy@arm.com>
-Subject: [PATCH 2/5] iommu: Separate flush queue memories from IOVA domain
+Subject: [PATCH 4/5] iommu: Separate IOVA rcache memories from iova_domain
  structure
-Date: Fri, 24 Sep 2021 18:01:54 +0800
-Message-ID: <1632477717-5254-3-git-send-email-john.garry@huawei.com>
+Date: Fri, 24 Sep 2021 18:01:56 +0800
+Message-ID: <1632477717-5254-5-git-send-email-john.garry@huawei.com>
 X-Mailer: git-send-email 2.8.1
 In-Reply-To: <1632477717-5254-1-git-send-email-john.garry@huawei.com>
 References: <1632477717-5254-1-git-send-email-john.garry@huawei.com>
@@ -91,475 +91,782 @@ Content-Transfer-Encoding: 7bit
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-Only dma-iommu.c uses the FQ, so it is wasteful and slightly disorganised
-to hold all the FQ memories in the iova_domain structure.
+Only dma-iommu.c and vdpa actually use the "fast" mode of IOVA alloc and
+free. As such, it's wasteful that all other IOVA domains hold the rcache
+memories.
 
-So create a new structure, fq_domain, which is a new separate member in
-iommu_dma_cookie for DMA IOVA type.
+In addition, the current IOVA domain init implementation is poor
+(init_iova_domain()), in that errors are ignored and not passed to the
+caller. The only errors can come from the IOVA rcache init, and fixing up
+all the IOVA domain init callsites to handle the errors would take some
+work.
+
+Separate the IOVA rache out of the IOVA domain, and create a new IOVA
+domain structure, iova_caching_domain.
 
 Signed-off-by: John Garry <john.garry@huawei.com>
 ---
- drivers/iommu/dma-iommu.c | 37 ++++++++++-----
- drivers/iommu/iova.c      | 98 +++++++++++++++++++--------------------
- include/linux/iova.h      | 30 ++++++++----
- 3 files changed, 94 insertions(+), 71 deletions(-)
+ drivers/iommu/dma-iommu.c            |  56 +++++++-----
+ drivers/iommu/iova.c                 | 125 ++++++++++++++++++---------
+ drivers/vdpa/vdpa_user/iova_domain.c |  53 +++++++-----
+ drivers/vdpa/vdpa_user/iova_domain.h |   4 +-
+ include/linux/iova.h                 |  18 ++--
+ 5 files changed, 166 insertions(+), 90 deletions(-)
 
 diff --git a/drivers/iommu/dma-iommu.c b/drivers/iommu/dma-iommu.c
-index a99b3445fef8..279ee13bceb2 100644
+index fd669bad96e1..70651f1a688d 100644
 --- a/drivers/iommu/dma-iommu.c
 +++ b/drivers/iommu/dma-iommu.c
-@@ -41,7 +41,10 @@ struct iommu_dma_cookie {
- 	enum iommu_dma_cookie_type	type;
+@@ -92,8 +92,8 @@ struct iommu_dma_cookie {
  	union {
  		/* Full allocator for IOMMU_DMA_IOVA_COOKIE */
--		struct iova_domain	iovad;
-+		struct {
-+			struct iova_domain	iovad;
-+			struct fq_domain	fq;
-+		};
+ 		struct {
+-			struct iova_domain	iovad;
+-			struct fq_domain	fq;
++			struct iova_caching_domain	rcached;
++			struct fq_domain		fq;
+ 		};
  		/* Trivial linear page allocator for IOMMU_DMA_MSI_COOKIE */
  		dma_addr_t		msi_iova;
- 	};
-@@ -162,8 +165,10 @@ void iommu_put_dma_cookie(struct iommu_domain *domain)
+@@ -197,7 +197,6 @@ static void fq_ring_free(struct fq_domain *fq_domain, struct fq *fq)
+ 	struct iommu_dma_cookie *cookie = container_of(fq_domain,
+ 						       struct iommu_dma_cookie,
+ 						       fq);
+-	struct iova_domain *iovad = &cookie->iovad;
+ 	u64 counter = atomic64_read(&fq_domain->fq_flush_finish_cnt);
+ 	unsigned idx;
+ 
+@@ -211,7 +210,7 @@ static void fq_ring_free(struct fq_domain *fq_domain, struct fq *fq)
+ 		if (fq_domain->entry_dtor)
+ 			fq_domain->entry_dtor(fq->entries[idx].data);
+ 
+-		free_iova_fast(iovad,
++		free_iova_fast(&cookie->rcached,
+ 			       fq->entries[idx].iova_pfn,
+ 			       fq->entries[idx].pages);
+ 
+@@ -330,7 +329,7 @@ static int init_flush_queue(struct fq_domain *fq_domain,
+ static inline size_t cookie_msi_granule(struct iommu_dma_cookie *cookie)
+ {
+ 	if (cookie->type == IOMMU_DMA_IOVA_COOKIE)
+-		return cookie->iovad.granule;
++		return cookie->rcached.iovad.granule;
+ 	return PAGE_SIZE;
+ }
+ 
+@@ -413,9 +412,10 @@ void iommu_put_dma_cookie(struct iommu_domain *domain)
  	if (!cookie)
  		return;
  
--	if (cookie->type == IOMMU_DMA_IOVA_COOKIE && cookie->iovad.granule)
-+	if (cookie->type == IOMMU_DMA_IOVA_COOKIE && cookie->iovad.granule) {
-+		iova_free_flush_queue(&cookie->fq);
- 		put_iova_domain(&cookie->iovad);
-+	}
+-	if (cookie->type == IOMMU_DMA_IOVA_COOKIE && cookie->iovad.granule) {
++	if (cookie->type == IOMMU_DMA_IOVA_COOKIE &&
++	    cookie->rcached.iovad.granule) {
+ 		free_flush_queue(&cookie->fq);
+-		put_iova_domain(&cookie->iovad);
++		put_iova_caching_domain(&cookie->rcached);
+ 	}
  
  	list_for_each_entry_safe(msi, tmp, &cookie->msi_page_list, list) {
- 		list_del(&msi->list);
-@@ -301,12 +306,12 @@ static int iova_reserve_iommu_regions(struct device *dev,
- 	return ret;
- }
- 
--static void iommu_dma_flush_iotlb_all(struct iova_domain *iovad)
-+static void iommu_dma_flush_iotlb_all(struct fq_domain *fq_domain)
+@@ -449,7 +449,7 @@ EXPORT_SYMBOL(iommu_dma_get_resv_regions);
+ static int cookie_init_hw_msi_region(struct iommu_dma_cookie *cookie,
+ 		phys_addr_t start, phys_addr_t end)
  {
- 	struct iommu_dma_cookie *cookie;
- 	struct iommu_domain *domain;
+-	struct iova_domain *iovad = &cookie->iovad;
++	struct iova_domain *iovad = &cookie->rcached.iovad;
+ 	struct iommu_dma_msi_page *msi_page;
+ 	int i, num_pages;
  
--	cookie = container_of(iovad, struct iommu_dma_cookie, iovad);
-+	cookie = container_of(fq_domain, struct iommu_dma_cookie, fq);
- 	domain = cookie->fq_domain;
- 
- 	domain->ops->flush_iotlb_all(domain);
-@@ -321,17 +326,21 @@ static bool dev_is_untrusted(struct device *dev)
- int iommu_dma_init_fq(struct iommu_domain *domain)
+@@ -520,7 +520,8 @@ static int iova_reserve_iommu_regions(struct device *dev,
+ 		struct iommu_domain *domain)
  {
  	struct iommu_dma_cookie *cookie = domain->iova_cookie;
-+	struct fq_domain *fq = &cookie->fq;
- 	int ret;
- 
- 	if (cookie->fq_domain)
- 		return 0;
- 
--	ret = init_iova_flush_queue(&cookie->iovad, iommu_dma_flush_iotlb_all,
-+	ret = init_iova_flush_queue(fq, iommu_dma_flush_iotlb_all,
- 				    iommu_dma_entry_dtor);
- 	if (ret) {
- 		pr_warn("iova flush queue initialization failed\n");
- 		return ret;
- 	}
-+
-+	fq->iovad = &cookie->iovad;
-+
- 	/*
- 	 * Prevent incomplete iovad->fq being observable. Pairs with path from
- 	 * __iommu_dma_unmap() through iommu_dma_free_iova() to queue_iova()
-@@ -359,11 +368,13 @@ static int iommu_dma_init_domain(struct iommu_domain *domain, dma_addr_t base,
+-	struct iova_domain *iovad = &cookie->iovad;
++	struct iova_caching_domain *rcached = &cookie->rcached;
++	struct iova_domain *iovad = &rcached->iovad;
+ 	struct iommu_resv_region *region;
+ 	LIST_HEAD(resv_regions);
+ 	int ret = 0;
+@@ -612,14 +613,17 @@ static int iommu_dma_init_domain(struct iommu_domain *domain, dma_addr_t base,
+ 				 dma_addr_t limit, struct device *dev)
+ {
  	struct iommu_dma_cookie *cookie = domain->iova_cookie;
++	struct iova_caching_domain *rcached;
  	unsigned long order, base_pfn;
  	struct iova_domain *iovad;
-+	struct fq_domain *fq;
+ 	struct fq_domain *fq;
++	int ret;
  
  	if (!cookie || cookie->type != IOMMU_DMA_IOVA_COOKIE)
  		return -EINVAL;
  
- 	iovad = &cookie->iovad;
-+	fq = &cookie->fq;
+-	iovad = &cookie->iovad;
++	rcached = &cookie->rcached;
++	iovad = &rcached->iovad;
+ 	fq = &cookie->fq;
  
  	/* Use the smallest supported page size for IOVA granularity */
- 	order = __ffs(domain->pgsize_bitmap);
-@@ -392,6 +403,9 @@ static int iommu_dma_init_domain(struct iommu_domain *domain, dma_addr_t base,
- 		return 0;
- 	}
+@@ -652,7 +656,11 @@ static int iommu_dma_init_domain(struct iommu_domain *domain, dma_addr_t base,
+ 	fq->flush_cb = NULL;
+ 	fq->fq = NULL;
  
-+	fq->flush_cb = NULL;
-+	fq->fq = NULL;
-+
- 	init_iova_domain(iovad, 1UL << order, base_pfn);
+-	init_iova_domain(iovad, 1UL << order, base_pfn);
++	ret = init_iova_caching_domain(rcached, 1UL << order, base_pfn);
++	if (ret) {
++		dev_err(dev, "init_iova_caching_domain failed (%d)\n", ret);
++		return ret;
++	}
  
  	/* If the FQ fails we can simply fall back to strict mode */
-@@ -468,15 +482,16 @@ static void iommu_dma_free_iova(struct iommu_dma_cookie *cookie,
- 	struct iova_domain *iovad = &cookie->iovad;
+ 	if (domain->type == IOMMU_DOMAIN_DMA_FQ && iommu_dma_init_fq(domain))
+@@ -694,13 +702,16 @@ static dma_addr_t iommu_dma_alloc_iova(struct iommu_domain *domain,
+ 		size_t size, u64 dma_limit, struct device *dev)
+ {
+ 	struct iommu_dma_cookie *cookie = domain->iova_cookie;
+-	struct iova_domain *iovad = &cookie->iovad;
++	struct iova_caching_domain *rcached;
++	struct iova_domain *iovad;
+ 	unsigned long shift, iova_len, iova = 0;
+ 
+ 	if (cookie->type == IOMMU_DMA_MSI_COOKIE) {
+ 		cookie->msi_iova += size;
+ 		return cookie->msi_iova - size;
+ 	}
++	rcached = &cookie->rcached;
++	iovad = &rcached->iovad;
+ 
+ 	shift = iova_shift(iovad);
+ 	iova_len = size >> shift;
+@@ -712,11 +723,11 @@ static dma_addr_t iommu_dma_alloc_iova(struct iommu_domain *domain,
+ 
+ 	/* Try to get PCI devices a SAC address */
+ 	if (dma_limit > DMA_BIT_MASK(32) && !iommu_dma_forcedac && dev_is_pci(dev))
+-		iova = alloc_iova_fast(iovad, iova_len,
++		iova = alloc_iova_fast(rcached, iova_len,
+ 				       DMA_BIT_MASK(32) >> shift, false);
+ 
+ 	if (!iova)
+-		iova = alloc_iova_fast(iovad, iova_len, dma_limit >> shift,
++		iova = alloc_iova_fast(rcached, iova_len, dma_limit >> shift,
+ 				       true);
+ 
+ 	return (dma_addr_t)iova << shift;
+@@ -725,7 +736,8 @@ static dma_addr_t iommu_dma_alloc_iova(struct iommu_domain *domain,
+ static void iommu_dma_free_iova(struct iommu_dma_cookie *cookie,
+ 		dma_addr_t iova, size_t size, struct iommu_iotlb_gather *gather)
+ {
+-	struct iova_domain *iovad = &cookie->iovad;
++	struct iova_caching_domain *rcached = &cookie->rcached;
++	struct iova_domain *iovad = &rcached->iovad;
  
  	/* The MSI case is only ever cleaning up its most recent allocation */
--	if (cookie->type == IOMMU_DMA_MSI_COOKIE)
-+	if (cookie->type == IOMMU_DMA_MSI_COOKIE) {
- 		cookie->msi_iova -= size;
--	else if (gather && gather->queued)
--		queue_iova(iovad, iova_pfn(iovad, iova),
--				size >> iova_shift(iovad),
--				(unsigned long)gather->freelist);
--	else
-+	} else if (gather && gather->queued) {
-+		queue_iova(&cookie->fq, iova_pfn(iovad, iova),
-+			   size >> iova_shift(iovad),
-+			   (unsigned long)gather->freelist);
-+	} else {
- 		free_iova_fast(iovad, iova_pfn(iovad, iova),
+ 	if (cookie->type == IOMMU_DMA_MSI_COOKIE) {
+@@ -735,7 +747,7 @@ static void iommu_dma_free_iova(struct iommu_dma_cookie *cookie,
+ 			   size >> iova_shift(iovad),
+ 			   (unsigned long)gather->freelist);
+ 	} else {
+-		free_iova_fast(iovad, iova_pfn(iovad, iova),
++		free_iova_fast(rcached, iova_pfn(iovad, iova),
  				size >> iova_shift(iovad));
-+	}
+ 	}
  }
+@@ -745,7 +757,7 @@ static void __iommu_dma_unmap(struct device *dev, dma_addr_t dma_addr,
+ {
+ 	struct iommu_domain *domain = iommu_get_dma_domain(dev);
+ 	struct iommu_dma_cookie *cookie = domain->iova_cookie;
+-	struct iova_domain *iovad = &cookie->iovad;
++	struct iova_domain *iovad = &cookie->rcached.iovad;
+ 	size_t iova_off = iova_offset(iovad, dma_addr);
+ 	struct iommu_iotlb_gather iotlb_gather;
+ 	size_t unmapped;
+@@ -785,7 +797,7 @@ static dma_addr_t __iommu_dma_map(struct device *dev, phys_addr_t phys,
+ {
+ 	struct iommu_domain *domain = iommu_get_dma_domain(dev);
+ 	struct iommu_dma_cookie *cookie = domain->iova_cookie;
+-	struct iova_domain *iovad = &cookie->iovad;
++	struct iova_domain *iovad = &cookie->rcached.iovad;
+ 	size_t iova_off = iova_offset(iovad, phys);
+ 	dma_addr_t iova;
  
- static void __iommu_dma_unmap(struct device *dev, dma_addr_t dma_addr,
+@@ -813,7 +825,7 @@ static dma_addr_t __iommu_dma_map_swiotlb(struct device *dev, phys_addr_t phys,
+ 	int prot = dma_info_to_prot(dir, coherent, attrs);
+ 	struct iommu_domain *domain = iommu_get_dma_domain(dev);
+ 	struct iommu_dma_cookie *cookie = domain->iova_cookie;
+-	struct iova_domain *iovad = &cookie->iovad;
++	struct iova_domain *iovad = &cookie->rcached.iovad;
+ 	size_t aligned_size = org_size;
+ 	void *padding_start;
+ 	size_t padding_size;
+@@ -924,7 +936,8 @@ static struct page **__iommu_dma_alloc_noncontiguous(struct device *dev,
+ {
+ 	struct iommu_domain *domain = iommu_get_dma_domain(dev);
+ 	struct iommu_dma_cookie *cookie = domain->iova_cookie;
+-	struct iova_domain *iovad = &cookie->iovad;
++	struct iova_caching_domain *rcached = &cookie->rcached;
++	struct iova_domain *iovad = &rcached->iovad;
+ 	bool coherent = dev_is_dma_coherent(dev);
+ 	int ioprot = dma_info_to_prot(DMA_BIDIRECTIONAL, coherent, attrs);
+ 	unsigned int count, min_size, alloc_sizes = domain->pgsize_bitmap;
+@@ -1258,7 +1271,8 @@ static int iommu_dma_map_sg(struct device *dev, struct scatterlist *sg,
+ {
+ 	struct iommu_domain *domain = iommu_get_dma_domain(dev);
+ 	struct iommu_dma_cookie *cookie = domain->iova_cookie;
+-	struct iova_domain *iovad = &cookie->iovad;
++	struct iova_caching_domain *rcached = &cookie->rcached;
++	struct iova_domain *iovad = &rcached->iovad;
+ 	struct scatterlist *s, *prev = NULL;
+ 	int prot = dma_info_to_prot(dir, dev_is_dma_coherent(dev), attrs);
+ 	dma_addr_t iova;
 diff --git a/drivers/iommu/iova.c b/drivers/iommu/iova.c
-index ff567cbc42f7..262a08eb547f 100644
+index 104fdc9d6c6a..30eb128b1581 100644
 --- a/drivers/iommu/iova.c
 +++ b/drivers/iommu/iova.c
-@@ -24,7 +24,7 @@ static unsigned long iova_rcache_get(struct iova_domain *iovad,
- static void init_iova_rcaches(struct iova_domain *iovad);
- static void free_cpu_cached_iovas(unsigned int cpu, struct iova_domain *iovad);
- static void free_iova_rcaches(struct iova_domain *iovad);
--static void fq_destroy_all_entries(struct iova_domain *iovad);
-+static void fq_destroy_all_entries(struct fq_domain *fq_domain);
- static void fq_flush_timeout(struct timer_list *t);
+@@ -15,27 +15,29 @@
+ /* The anchor node sits above the top of the usable address space */
+ #define IOVA_ANCHOR	~0UL
+ 
+-static bool iova_rcache_insert(struct iova_domain *iovad,
++static bool iova_rcache_insert(struct iova_caching_domain *rcached,
+ 			       unsigned long pfn,
+ 			       unsigned long size);
+-static unsigned long iova_rcache_get(struct iova_domain *iovad,
++static unsigned long iova_rcache_get(struct iova_caching_domain *rcached,
+ 				     unsigned long size,
+ 				     unsigned long limit_pfn);
+-static void init_iova_rcaches(struct iova_domain *iovad);
+-static void free_cpu_cached_iovas(unsigned int cpu, struct iova_domain *iovad);
+-static void free_iova_rcaches(struct iova_domain *iovad);
++static int init_iova_rcaches(struct iova_caching_domain *rcached);
++static void free_cpu_cached_iovas(unsigned int cpu,
++				  struct iova_caching_domain *rcached);
++static void free_iova_rcaches(struct iova_caching_domain *rcached);
  
  static int iova_cpuhp_dead(unsigned int cpu, struct hlist_node *node)
-@@ -63,8 +63,6 @@ init_iova_domain(struct iova_domain *iovad, unsigned long granule,
- 	iovad->start_pfn = start_pfn;
- 	iovad->dma_32bit_pfn = 1UL << (32 - iova_shift(iovad));
- 	iovad->max32_alloc_size = iovad->dma_32bit_pfn;
--	iovad->flush_cb = NULL;
--	iovad->fq = NULL;
+ {
+-	struct iova_domain *iovad;
++	struct iova_caching_domain *rcached;
+ 
+-	iovad = hlist_entry_safe(node, struct iova_domain, cpuhp_dead);
++	rcached = hlist_entry_safe(node, struct iova_caching_domain,
++				   cpuhp_dead);
+ 
+-	free_cpu_cached_iovas(cpu, iovad);
++	free_cpu_cached_iovas(cpu, rcached);
+ 	return 0;
+ }
+ 
+-static void free_global_cached_iovas(struct iova_domain *iovad);
++static void free_global_cached_iovas(struct iova_caching_domain *rcached);
+ 
+ static struct iova *to_iova(struct rb_node *node)
+ {
+@@ -64,11 +66,32 @@ init_iova_domain(struct iova_domain *iovad, unsigned long granule,
  	iovad->anchor.pfn_lo = iovad->anchor.pfn_hi = IOVA_ANCHOR;
  	rb_link_node(&iovad->anchor.node, NULL, &iovad->rbroot.rb_node);
  	rb_insert_color(&iovad->anchor.node, &iovad->rbroot);
-@@ -73,43 +71,44 @@ init_iova_domain(struct iova_domain *iovad, unsigned long granule,
+-	cpuhp_state_add_instance_nocalls(CPUHP_IOMMU_IOVA_DEAD, &iovad->cpuhp_dead);
+-	init_iova_rcaches(iovad);
  }
  EXPORT_SYMBOL_GPL(init_iova_domain);
  
--static bool has_iova_flush_queue(struct iova_domain *iovad)
-+static bool has_iova_flush_queue(struct fq_domain *fq_domain)
++int init_iova_caching_domain(struct iova_caching_domain *rcached,
++			     unsigned long granule, unsigned long start_pfn)
++{
++	int ret;
++
++	ret = cpuhp_state_add_instance_nocalls(CPUHP_IOMMU_IOVA_DEAD,
++					       &rcached->cpuhp_dead);
++	if (ret)
++		return ret;
++
++	ret = init_iova_rcaches(rcached);
++	if (ret) {
++		cpuhp_state_remove_instance_nocalls(CPUHP_IOMMU_IOVA_DEAD,
++						    &rcached->cpuhp_dead);
++		return ret;
++	}
++
++	init_iova_domain(&rcached->iovad, granule, start_pfn);
++
++	return 0;
++}
++EXPORT_SYMBOL_GPL(init_iova_caching_domain);
++
+ static struct rb_node *
+ __get_cached_rbnode(struct iova_domain *iovad, unsigned long limit_pfn)
  {
--	return !!iovad->fq;
-+	return !!fq_domain->fq;
- }
+@@ -422,7 +445,7 @@ EXPORT_SYMBOL_GPL(free_iova);
  
--static void free_iova_flush_queue(struct iova_domain *iovad)
-+void iova_free_flush_queue(struct fq_domain *fq_domain)
+ /**
+  * alloc_iova_fast - allocates an iova from rcache
+- * @iovad: - iova domain in question
++ * @rcached: - iova caching domain in question
+  * @size: - size of page frames to allocate
+  * @limit_pfn: - max limit address
+  * @flush_rcache: - set to flush rcache on regular allocation failure
+@@ -431,7 +454,7 @@ EXPORT_SYMBOL_GPL(free_iova);
+  * fails too and the flush_rcache flag is set then the rcache will be flushed.
+ */
+ unsigned long
+-alloc_iova_fast(struct iova_domain *iovad, unsigned long size,
++alloc_iova_fast(struct iova_caching_domain *rcached, unsigned long size,
+ 		unsigned long limit_pfn, bool flush_rcache)
  {
--	if (!has_iova_flush_queue(iovad))
-+	if (!has_iova_flush_queue(fq_domain))
+ 	unsigned long iova_pfn;
+@@ -446,12 +469,12 @@ alloc_iova_fast(struct iova_domain *iovad, unsigned long size,
+ 	if (size < (1 << (IOVA_RANGE_CACHE_MAX_SIZE - 1)))
+ 		size = roundup_pow_of_two(size);
+ 
+-	iova_pfn = iova_rcache_get(iovad, size, limit_pfn + 1);
++	iova_pfn = iova_rcache_get(rcached, size, limit_pfn + 1);
+ 	if (iova_pfn)
+ 		return iova_pfn;
+ 
+ retry:
+-	new_iova = alloc_iova(iovad, size, limit_pfn, true);
++	new_iova = alloc_iova(&rcached->iovad, size, limit_pfn, true);
+ 	if (!new_iova) {
+ 		unsigned int cpu;
+ 
+@@ -461,8 +484,8 @@ alloc_iova_fast(struct iova_domain *iovad, unsigned long size,
+ 		/* Try replenishing IOVAs by flushing rcache. */
+ 		flush_rcache = false;
+ 		for_each_online_cpu(cpu)
+-			free_cpu_cached_iovas(cpu, iovad);
+-		free_global_cached_iovas(iovad);
++			free_cpu_cached_iovas(cpu, rcached);
++		free_global_cached_iovas(rcached);
+ 		goto retry;
+ 	}
+ 
+@@ -472,21 +495,22 @@ EXPORT_SYMBOL_GPL(alloc_iova_fast);
+ 
+ /**
+  * free_iova_fast - free iova pfn range into rcache
+- * @iovad: - iova domain in question.
++ * @rcached: - iova caching domain in question.
+  * @pfn: - pfn that is allocated previously
+  * @size: - # of pages in range
+  * This functions frees an iova range by trying to put it into the rcache,
+  * falling back to regular iova deallocation via free_iova() if this fails.
+  */
+-void
+-free_iova_fast(struct iova_domain *iovad, unsigned long pfn, unsigned long size)
++void free_iova_fast(struct iova_caching_domain *rcached, unsigned long pfn,
++		    unsigned long size)
+ {
+-	if (iova_rcache_insert(iovad, pfn, size))
++	if (iova_rcache_insert(rcached, pfn, size))
  		return;
  
--	if (timer_pending(&iovad->fq_timer))
--		del_timer(&iovad->fq_timer);
-+	if (timer_pending(&fq_domain->fq_timer))
-+		del_timer(&fq_domain->fq_timer);
- 
--	fq_destroy_all_entries(iovad);
-+	fq_destroy_all_entries(fq_domain);
- 
--	free_percpu(iovad->fq);
-+	free_percpu(fq_domain->fq);
- 
--	iovad->fq         = NULL;
--	iovad->flush_cb   = NULL;
--	iovad->entry_dtor = NULL;
-+	fq_domain->fq         = NULL;
-+	fq_domain->flush_cb   = NULL;
-+	fq_domain->entry_dtor = NULL;
-+	fq_domain->iovad      = NULL;
+-	free_iova(iovad, pfn);
++	free_iova(&rcached->iovad, pfn);
  }
- 
--int init_iova_flush_queue(struct iova_domain *iovad,
-+int init_iova_flush_queue(struct fq_domain *fq_domain,
- 			  iova_flush_cb flush_cb, iova_entry_dtor entry_dtor)
+ EXPORT_SYMBOL_GPL(free_iova_fast);
++
+ /**
+  * put_iova_domain - destroys the iova domain
+  * @iovad: - iova domain in question.
+@@ -496,15 +520,23 @@ void put_iova_domain(struct iova_domain *iovad)
  {
- 	struct iova_fq __percpu *queue;
- 	int cpu;
+ 	struct iova *iova, *tmp;
  
--	atomic64_set(&iovad->fq_flush_start_cnt,  0);
--	atomic64_set(&iovad->fq_flush_finish_cnt, 0);
-+	atomic64_set(&fq_domain->fq_flush_start_cnt,  0);
-+	atomic64_set(&fq_domain->fq_flush_finish_cnt, 0);
- 
- 	queue = alloc_percpu(struct iova_fq);
- 	if (!queue)
- 		return -ENOMEM;
- 
--	iovad->flush_cb   = flush_cb;
--	iovad->entry_dtor = entry_dtor;
-+	fq_domain->flush_cb   = flush_cb;
-+	fq_domain->entry_dtor = entry_dtor;
- 
- 	for_each_possible_cpu(cpu) {
- 		struct iova_fq *fq;
-@@ -121,10 +120,10 @@ int init_iova_flush_queue(struct iova_domain *iovad,
- 		spin_lock_init(&fq->lock);
- 	}
- 
--	iovad->fq = queue;
-+	fq_domain->fq = queue;
- 
--	timer_setup(&iovad->fq_timer, fq_flush_timeout, 0);
--	atomic_set(&iovad->fq_timer_on, 0);
-+	timer_setup(&fq_domain->fq_timer, fq_flush_timeout, 0);
-+	atomic_set(&fq_domain->fq_timer_on, 0);
- 
- 	return 0;
- }
-@@ -568,9 +567,9 @@ static inline unsigned fq_ring_add(struct iova_fq *fq)
- 	return idx;
- }
- 
--static void fq_ring_free(struct iova_domain *iovad, struct iova_fq *fq)
-+static void fq_ring_free(struct fq_domain *fq_domain, struct iova_fq *fq)
- {
--	u64 counter = atomic64_read(&iovad->fq_flush_finish_cnt);
-+	u64 counter = atomic64_read(&fq_domain->fq_flush_finish_cnt);
- 	unsigned idx;
- 
- 	assert_spin_locked(&fq->lock);
-@@ -580,10 +579,10 @@ static void fq_ring_free(struct iova_domain *iovad, struct iova_fq *fq)
- 		if (fq->entries[idx].counter >= counter)
- 			break;
- 
--		if (iovad->entry_dtor)
--			iovad->entry_dtor(fq->entries[idx].data);
-+		if (fq_domain->entry_dtor)
-+			fq_domain->entry_dtor(fq->entries[idx].data);
- 
--		free_iova_fast(iovad,
-+		free_iova_fast(fq_domain->iovad,
- 			       fq->entries[idx].iova_pfn,
- 			       fq->entries[idx].pages);
- 
-@@ -591,14 +590,14 @@ static void fq_ring_free(struct iova_domain *iovad, struct iova_fq *fq)
- 	}
- }
- 
--static void iova_domain_flush(struct iova_domain *iovad)
-+static void iova_domain_flush(struct fq_domain *fq_domain)
- {
--	atomic64_inc(&iovad->fq_flush_start_cnt);
--	iovad->flush_cb(iovad);
--	atomic64_inc(&iovad->fq_flush_finish_cnt);
-+	atomic64_inc(&fq_domain->fq_flush_start_cnt);
-+	fq_domain->flush_cb(fq_domain);
-+	atomic64_inc(&fq_domain->fq_flush_finish_cnt);
- }
- 
--static void fq_destroy_all_entries(struct iova_domain *iovad)
-+static void fq_destroy_all_entries(struct fq_domain *fq_domain)
- {
- 	int cpu;
- 
-@@ -607,38 +606,38 @@ static void fq_destroy_all_entries(struct iova_domain *iovad)
- 	 * bother to free iovas, just call the entry_dtor on all remaining
- 	 * entries.
- 	 */
--	if (!iovad->entry_dtor)
-+	if (!fq_domain->entry_dtor)
- 		return;
- 
- 	for_each_possible_cpu(cpu) {
--		struct iova_fq *fq = per_cpu_ptr(iovad->fq, cpu);
-+		struct iova_fq *fq = per_cpu_ptr(fq_domain->fq, cpu);
- 		int idx;
- 
- 		fq_ring_for_each(idx, fq)
--			iovad->entry_dtor(fq->entries[idx].data);
-+			fq_domain->entry_dtor(fq->entries[idx].data);
- 	}
- }
- 
- static void fq_flush_timeout(struct timer_list *t)
- {
--	struct iova_domain *iovad = from_timer(iovad, t, fq_timer);
-+	struct fq_domain *fq_domain = from_timer(fq_domain, t, fq_timer);
- 	int cpu;
- 
--	atomic_set(&iovad->fq_timer_on, 0);
--	iova_domain_flush(iovad);
-+	atomic_set(&fq_domain->fq_timer_on, 0);
-+	iova_domain_flush(fq_domain);
- 
- 	for_each_possible_cpu(cpu) {
- 		unsigned long flags;
- 		struct iova_fq *fq;
- 
--		fq = per_cpu_ptr(iovad->fq, cpu);
-+		fq = per_cpu_ptr(fq_domain->fq, cpu);
- 		spin_lock_irqsave(&fq->lock, flags);
--		fq_ring_free(iovad, fq);
-+		fq_ring_free(fq_domain, fq);
- 		spin_unlock_irqrestore(&fq->lock, flags);
- 	}
- }
- 
--void queue_iova(struct iova_domain *iovad,
-+void queue_iova(struct fq_domain *fq_domain,
- 		unsigned long pfn, unsigned long pages,
- 		unsigned long data)
- {
-@@ -655,7 +654,7 @@ void queue_iova(struct iova_domain *iovad,
- 	 */
- 	smp_mb();
- 
--	fq = raw_cpu_ptr(iovad->fq);
-+	fq = raw_cpu_ptr(fq_domain->fq);
- 	spin_lock_irqsave(&fq->lock, flags);
- 
- 	/*
-@@ -663,11 +662,11 @@ void queue_iova(struct iova_domain *iovad,
- 	 * flushed out on another CPU. This makes the fq_full() check below less
- 	 * likely to be true.
- 	 */
--	fq_ring_free(iovad, fq);
-+	fq_ring_free(fq_domain, fq);
- 
- 	if (fq_full(fq)) {
--		iova_domain_flush(iovad);
--		fq_ring_free(iovad, fq);
-+		iova_domain_flush(fq_domain);
-+		fq_ring_free(fq_domain, fq);
- 	}
- 
- 	idx = fq_ring_add(fq);
-@@ -675,14 +674,14 @@ void queue_iova(struct iova_domain *iovad,
- 	fq->entries[idx].iova_pfn = pfn;
- 	fq->entries[idx].pages    = pages;
- 	fq->entries[idx].data     = data;
--	fq->entries[idx].counter  = atomic64_read(&iovad->fq_flush_start_cnt);
-+	fq->entries[idx].counter  = atomic64_read(&fq_domain->fq_flush_start_cnt);
- 
- 	spin_unlock_irqrestore(&fq->lock, flags);
- 
- 	/* Avoid false sharing as much as possible. */
--	if (!atomic_read(&iovad->fq_timer_on) &&
--	    !atomic_xchg(&iovad->fq_timer_on, 1))
--		mod_timer(&iovad->fq_timer,
-+	if (!atomic_read(&fq_domain->fq_timer_on) &&
-+	    !atomic_xchg(&fq_domain->fq_timer_on, 1))
-+		mod_timer(&fq_domain->fq_timer,
- 			  jiffies + msecs_to_jiffies(IOVA_FQ_TIMEOUT));
- }
- 
-@@ -698,7 +697,6 @@ void put_iova_domain(struct iova_domain *iovad)
- 	cpuhp_state_remove_instance_nocalls(CPUHP_IOMMU_IOVA_DEAD,
- 					    &iovad->cpuhp_dead);
- 
--	free_iova_flush_queue(iovad);
- 	free_iova_rcaches(iovad);
+-	cpuhp_state_remove_instance_nocalls(CPUHP_IOMMU_IOVA_DEAD,
+-					    &iovad->cpuhp_dead);
+-
+-	free_iova_rcaches(iovad);
  	rbtree_postorder_for_each_entry_safe(iova, tmp, &iovad->rbroot, node)
  		free_iova_mem(iova);
+ }
+ EXPORT_SYMBOL_GPL(put_iova_domain);
+ 
++void put_iova_caching_domain(struct iova_caching_domain *rcached)
++{
++	struct iova_domain *iovad = &rcached->iovad;
++
++	cpuhp_state_remove_instance_nocalls(CPUHP_IOMMU_IOVA_DEAD,
++					    &rcached->cpuhp_dead);
++	free_iova_rcaches(rcached);
++
++	put_iova_domain(iovad);
++}
++EXPORT_SYMBOL_GPL(put_iova_caching_domain);
++
+ static int
+ __is_range_overlap(struct rb_node *node,
+ 	unsigned long pfn_lo, unsigned long pfn_hi)
+@@ -693,7 +725,7 @@ static void iova_magazine_push(struct iova_magazine *mag, unsigned long pfn)
+ 	mag->pfns[mag->size++] = pfn;
+ }
+ 
+-static void init_iova_rcaches(struct iova_domain *iovad)
++static int init_iova_rcaches(struct iova_caching_domain *rcached)
+ {
+ 	struct iova_cpu_rcache *cpu_rcache;
+ 	struct iova_rcache *rcache;
+@@ -701,12 +733,12 @@ static void init_iova_rcaches(struct iova_domain *iovad)
+ 	int i;
+ 
+ 	for (i = 0; i < IOVA_RANGE_CACHE_MAX_SIZE; ++i) {
+-		rcache = &iovad->rcaches[i];
++		rcache = &rcached->rcaches[i];
+ 		spin_lock_init(&rcache->lock);
+ 		rcache->depot_size = 0;
+ 		rcache->cpu_rcaches = __alloc_percpu(sizeof(*cpu_rcache), cache_line_size());
+-		if (WARN_ON(!rcache->cpu_rcaches))
+-			continue;
++		if (!rcache->cpu_rcaches)
++			goto err;
+ 		for_each_possible_cpu(cpu) {
+ 			cpu_rcache = per_cpu_ptr(rcache->cpu_rcaches, cpu);
+ 			spin_lock_init(&cpu_rcache->lock);
+@@ -714,6 +746,12 @@ static void init_iova_rcaches(struct iova_domain *iovad)
+ 			cpu_rcache->prev = iova_magazine_alloc(GFP_KERNEL);
+ 		}
+ 	}
++
++	return 0;
++
++err:
++	free_iova_rcaches(rcached);
++	return -ENOMEM;
+ }
+ 
+ /*
+@@ -722,7 +760,7 @@ static void init_iova_rcaches(struct iova_domain *iovad)
+  * space, and free_iova() (our only caller) will then return the IOVA
+  * range to the rbtree instead.
+  */
+-static bool __iova_rcache_insert(struct iova_domain *iovad,
++static bool __iova_rcache_insert(struct iova_caching_domain *rcached,
+ 				 struct iova_rcache *rcache,
+ 				 unsigned long iova_pfn)
+ {
+@@ -763,14 +801,14 @@ static bool __iova_rcache_insert(struct iova_domain *iovad,
+ 	spin_unlock_irqrestore(&cpu_rcache->lock, flags);
+ 
+ 	if (mag_to_free) {
+-		iova_magazine_free_pfns(mag_to_free, iovad);
++		iova_magazine_free_pfns(mag_to_free, &rcached->iovad);
+ 		iova_magazine_free(mag_to_free);
+ 	}
+ 
+ 	return can_insert;
+ }
+ 
+-static bool iova_rcache_insert(struct iova_domain *iovad, unsigned long pfn,
++static bool iova_rcache_insert(struct iova_caching_domain *rcached, unsigned long pfn,
+ 			       unsigned long size)
+ {
+ 	unsigned int log_size = order_base_2(size);
+@@ -778,7 +816,7 @@ static bool iova_rcache_insert(struct iova_domain *iovad, unsigned long pfn,
+ 	if (log_size >= IOVA_RANGE_CACHE_MAX_SIZE)
+ 		return false;
+ 
+-	return __iova_rcache_insert(iovad, &iovad->rcaches[log_size], pfn);
++	return __iova_rcache_insert(rcached, &rcached->rcaches[log_size], pfn);
+ }
+ 
+ /*
+@@ -825,7 +863,7 @@ static unsigned long __iova_rcache_get(struct iova_rcache *rcache,
+  * size is too big or the DMA limit we are given isn't satisfied by the
+  * top element in the magazine.
+  */
+-static unsigned long iova_rcache_get(struct iova_domain *iovad,
++static unsigned long iova_rcache_get(struct iova_caching_domain *rcached,
+ 				     unsigned long size,
+ 				     unsigned long limit_pfn)
+ {
+@@ -834,13 +872,13 @@ static unsigned long iova_rcache_get(struct iova_domain *iovad,
+ 	if (log_size >= IOVA_RANGE_CACHE_MAX_SIZE)
+ 		return 0;
+ 
+-	return __iova_rcache_get(&iovad->rcaches[log_size], limit_pfn - size);
++	return __iova_rcache_get(&rcached->rcaches[log_size], limit_pfn - size);
+ }
+ 
+ /*
+  * free rcache data structures.
+  */
+-static void free_iova_rcaches(struct iova_domain *iovad)
++static void free_iova_rcaches(struct iova_caching_domain *rcached)
+ {
+ 	struct iova_rcache *rcache;
+ 	struct iova_cpu_rcache *cpu_rcache;
+@@ -848,7 +886,7 @@ static void free_iova_rcaches(struct iova_domain *iovad)
+ 	int i, j;
+ 
+ 	for (i = 0; i < IOVA_RANGE_CACHE_MAX_SIZE; ++i) {
+-		rcache = &iovad->rcaches[i];
++		rcache = &rcached->rcaches[i];
+ 		for_each_possible_cpu(cpu) {
+ 			cpu_rcache = per_cpu_ptr(rcache->cpu_rcaches, cpu);
+ 			iova_magazine_free(cpu_rcache->loaded);
+@@ -863,15 +901,17 @@ static void free_iova_rcaches(struct iova_domain *iovad)
+ /*
+  * free all the IOVA ranges cached by a cpu (used when cpu is unplugged)
+  */
+-static void free_cpu_cached_iovas(unsigned int cpu, struct iova_domain *iovad)
++static void free_cpu_cached_iovas(unsigned int cpu,
++				  struct iova_caching_domain *rcached)
+ {
++	struct iova_domain *iovad = &rcached->iovad;
+ 	struct iova_cpu_rcache *cpu_rcache;
+ 	struct iova_rcache *rcache;
+ 	unsigned long flags;
+ 	int i;
+ 
+ 	for (i = 0; i < IOVA_RANGE_CACHE_MAX_SIZE; ++i) {
+-		rcache = &iovad->rcaches[i];
++		rcache = &rcached->rcaches[i];
+ 		cpu_rcache = per_cpu_ptr(rcache->cpu_rcaches, cpu);
+ 		spin_lock_irqsave(&cpu_rcache->lock, flags);
+ 		iova_magazine_free_pfns(cpu_rcache->loaded, iovad);
+@@ -883,14 +923,15 @@ static void free_cpu_cached_iovas(unsigned int cpu, struct iova_domain *iovad)
+ /*
+  * free all the IOVA ranges of global cache
+  */
+-static void free_global_cached_iovas(struct iova_domain *iovad)
++static void free_global_cached_iovas(struct iova_caching_domain *rcached)
+ {
++	struct iova_domain *iovad = &rcached->iovad;
+ 	struct iova_rcache *rcache;
+ 	unsigned long flags;
+ 	int i, j;
+ 
+ 	for (i = 0; i < IOVA_RANGE_CACHE_MAX_SIZE; ++i) {
+-		rcache = &iovad->rcaches[i];
++		rcache = &rcached->rcaches[i];
+ 		spin_lock_irqsave(&rcache->lock, flags);
+ 		for (j = 0; j < rcache->depot_size; ++j) {
+ 			iova_magazine_free_pfns(rcache->depot[j], iovad);
+diff --git a/drivers/vdpa/vdpa_user/iova_domain.c b/drivers/vdpa/vdpa_user/iova_domain.c
+index 2b1143f11d8f..d2ffdbf5f29c 100644
+--- a/drivers/vdpa/vdpa_user/iova_domain.c
++++ b/drivers/vdpa/vdpa_user/iova_domain.c
+@@ -285,25 +285,28 @@ static int vduse_domain_init_bounce_map(struct vduse_iova_domain *domain)
+ }
+ 
+ static dma_addr_t
+-vduse_domain_alloc_iova(struct iova_domain *iovad,
++vduse_domain_alloc_iova(struct iova_caching_domain *rcached,
+ 			unsigned long size, unsigned long limit)
+ {
++	struct iova_domain *iovad = &rcached->iovad;
+ 	unsigned long shift = iova_shift(iovad);
+ 	unsigned long iova_len = iova_align(iovad, size) >> shift;
+ 	unsigned long iova_pfn;
+ 
+-	iova_pfn = alloc_iova_fast(iovad, iova_len, limit >> shift, true);
++	iova_pfn = alloc_iova_fast(rcached, iova_len, limit >> shift, true);
+ 
+ 	return iova_pfn << shift;
+ }
+ 
+-static void vduse_domain_free_iova(struct iova_domain *iovad,
++static void vduse_domain_free_iova(struct iova_caching_domain *rcached,
+ 				   dma_addr_t iova, size_t size)
+ {
++	struct iova_domain *iovad = &rcached->iovad;
++
+ 	unsigned long shift = iova_shift(iovad);
+ 	unsigned long iova_len = iova_align(iovad, size) >> shift;
+ 
+-	free_iova_fast(iovad, iova >> shift, iova_len);
++	free_iova_fast(rcached, iova >> shift, iova_len);
+ }
+ 
+ dma_addr_t vduse_domain_map_page(struct vduse_iova_domain *domain,
+@@ -311,10 +314,10 @@ dma_addr_t vduse_domain_map_page(struct vduse_iova_domain *domain,
+ 				 size_t size, enum dma_data_direction dir,
+ 				 unsigned long attrs)
+ {
+-	struct iova_domain *iovad = &domain->stream_iovad;
++	struct iova_caching_domain *rcached = &domain->stream_iovad;
+ 	unsigned long limit = domain->bounce_size - 1;
+ 	phys_addr_t pa = page_to_phys(page) + offset;
+-	dma_addr_t iova = vduse_domain_alloc_iova(iovad, size, limit);
++	dma_addr_t iova = vduse_domain_alloc_iova(rcached, size, limit);
+ 
+ 	if (!iova)
+ 		return DMA_MAPPING_ERROR;
+@@ -330,7 +333,7 @@ dma_addr_t vduse_domain_map_page(struct vduse_iova_domain *domain,
+ 
+ 	return iova;
+ err:
+-	vduse_domain_free_iova(iovad, iova, size);
++	vduse_domain_free_iova(rcached, iova, size);
+ 	return DMA_MAPPING_ERROR;
+ }
+ 
+@@ -338,22 +341,22 @@ void vduse_domain_unmap_page(struct vduse_iova_domain *domain,
+ 			     dma_addr_t dma_addr, size_t size,
+ 			     enum dma_data_direction dir, unsigned long attrs)
+ {
+-	struct iova_domain *iovad = &domain->stream_iovad;
++	struct iova_caching_domain *rcached = &domain->stream_iovad;
+ 
+ 	if (dir == DMA_FROM_DEVICE || dir == DMA_BIDIRECTIONAL)
+ 		vduse_domain_bounce(domain, dma_addr, size, DMA_FROM_DEVICE);
+ 
+ 	vduse_domain_unmap_bounce_page(domain, (u64)dma_addr, (u64)size);
+-	vduse_domain_free_iova(iovad, dma_addr, size);
++	vduse_domain_free_iova(rcached, dma_addr, size);
+ }
+ 
+ void *vduse_domain_alloc_coherent(struct vduse_iova_domain *domain,
+ 				  size_t size, dma_addr_t *dma_addr,
+ 				  gfp_t flag, unsigned long attrs)
+ {
+-	struct iova_domain *iovad = &domain->consistent_iovad;
++	struct iova_caching_domain *rcached = &domain->consistent_iovad;
+ 	unsigned long limit = domain->iova_limit;
+-	dma_addr_t iova = vduse_domain_alloc_iova(iovad, size, limit);
++	dma_addr_t iova = vduse_domain_alloc_iova(rcached, size, limit);
+ 	void *orig = alloc_pages_exact(size, flag);
+ 
+ 	if (!iova || !orig)
+@@ -376,7 +379,7 @@ void *vduse_domain_alloc_coherent(struct vduse_iova_domain *domain,
+ 	if (orig)
+ 		free_pages_exact(orig, size);
+ 	if (iova)
+-		vduse_domain_free_iova(iovad, iova, size);
++		vduse_domain_free_iova(rcached, iova, size);
+ 
+ 	return NULL;
+ }
+@@ -385,7 +388,7 @@ void vduse_domain_free_coherent(struct vduse_iova_domain *domain, size_t size,
+ 				void *vaddr, dma_addr_t dma_addr,
+ 				unsigned long attrs)
+ {
+-	struct iova_domain *iovad = &domain->consistent_iovad;
++	struct iova_caching_domain *rcached = &domain->consistent_iovad;
+ 	struct vhost_iotlb_map *map;
+ 	struct vdpa_map_file *map_file;
+ 	phys_addr_t pa;
+@@ -404,7 +407,7 @@ void vduse_domain_free_coherent(struct vduse_iova_domain *domain, size_t size,
+ 	vhost_iotlb_map_free(domain->iotlb, map);
+ 	spin_unlock(&domain->iotlb_lock);
+ 
+-	vduse_domain_free_iova(iovad, dma_addr, size);
++	vduse_domain_free_iova(rcached, dma_addr, size);
+ 	free_pages_exact(phys_to_virt(pa), size);
+ }
+ 
+@@ -453,8 +456,8 @@ static int vduse_domain_release(struct inode *inode, struct file *file)
+ 	vduse_iotlb_del_range(domain, 0, ULLONG_MAX);
+ 	vduse_domain_free_bounce_pages(domain);
+ 	spin_unlock(&domain->iotlb_lock);
+-	put_iova_domain(&domain->stream_iovad);
+-	put_iova_domain(&domain->consistent_iovad);
++	put_iova_caching_domain(&domain->stream_iovad);
++	put_iova_caching_domain(&domain->consistent_iovad);
+ 	vhost_iotlb_free(domain->iotlb);
+ 	vfree(domain->bounce_maps);
+ 	kfree(domain);
+@@ -480,6 +483,7 @@ vduse_domain_create(unsigned long iova_limit, size_t bounce_size)
+ 	struct file *file;
+ 	struct vduse_bounce_map *map;
+ 	unsigned long pfn, bounce_pfns;
++	int ret;
+ 
+ 	bounce_pfns = PAGE_ALIGN(bounce_size) >> PAGE_SHIFT;
+ 	if (iova_limit <= bounce_size)
+@@ -511,12 +515,21 @@ vduse_domain_create(unsigned long iova_limit, size_t bounce_size)
+ 
+ 	domain->file = file;
+ 	spin_lock_init(&domain->iotlb_lock);
+-	init_iova_domain(&domain->stream_iovad,
+-			PAGE_SIZE, IOVA_START_PFN);
+-	init_iova_domain(&domain->consistent_iovad,
+-			PAGE_SIZE, bounce_pfns);
++	ret = init_iova_caching_domain(&domain->stream_iovad,
++				       PAGE_SIZE, IOVA_START_PFN);
++	if (ret)
++		goto err_stream_domain;
++	ret = init_iova_caching_domain(&domain->consistent_iovad,
++				       PAGE_SIZE, bounce_pfns);
++	if (ret)
++		goto err_consistent_domain;
+ 
+ 	return domain;
++
++err_consistent_domain:
++	put_iova_caching_domain(&domain->stream_iovad);
++err_stream_domain:
++	fput(domain->file);
+ err_file:
+ 	vfree(domain->bounce_maps);
+ err_map:
+diff --git a/drivers/vdpa/vdpa_user/iova_domain.h b/drivers/vdpa/vdpa_user/iova_domain.h
+index 2722d9b8e21a..38576e1d3b2c 100644
+--- a/drivers/vdpa/vdpa_user/iova_domain.h
++++ b/drivers/vdpa/vdpa_user/iova_domain.h
+@@ -25,8 +25,8 @@ struct vduse_bounce_map {
+ };
+ 
+ struct vduse_iova_domain {
+-	struct iova_domain stream_iovad;
+-	struct iova_domain consistent_iovad;
++	struct iova_caching_domain stream_iovad;
++	struct iova_caching_domain consistent_iovad;
+ 	struct vduse_bounce_map *bounce_maps;
+ 	size_t bounce_size;
+ 	unsigned long iova_limit;
 diff --git a/include/linux/iova.h b/include/linux/iova.h
-index 71d8a2de6635..4975b65ab810 100644
+index ef3b0f8f8a31..858ca7a5f1fa 100644
 --- a/include/linux/iova.h
 +++ b/include/linux/iova.h
-@@ -36,12 +36,13 @@ struct iova_rcache {
- };
- 
- struct iova_domain;
-+struct fq_domain;
- 
- /* Call-Back from IOVA code into IOMMU drivers */
--typedef void (* iova_flush_cb)(struct iova_domain *domain);
-+typedef void (*iova_flush_cb)(struct fq_domain *fq_domain);
- 
- /* Destructor for per-entry data */
--typedef void (* iova_entry_dtor)(unsigned long data);
-+typedef void (*iova_entry_dtor)(unsigned long data);
- 
- /* Number of entries per Flush Queue */
- #define IOVA_FQ_SIZE	256
-@@ -74,6 +75,12 @@ struct iova_domain {
- 	unsigned long	start_pfn;	/* Lower limit for this domain */
+@@ -48,6 +48,10 @@ struct iova_domain {
  	unsigned long	dma_32bit_pfn;
  	unsigned long	max32_alloc_size; /* Size of last failed allocation */
-+	struct iova	anchor;		/* rbtree lookup anchor */
-+	struct iova_rcache rcaches[IOVA_RANGE_CACHE_MAX_SIZE];	/* IOVA range caches */
-+	struct hlist_node	cpuhp_dead;
+ 	struct iova	anchor;		/* rbtree lookup anchor */
 +};
 +
-+struct fq_domain {
- 	struct iova_fq __percpu *fq;	/* Flush Queue */
- 
- 	atomic64_t	fq_flush_start_cnt;	/* Number of TLB flushes that
-@@ -82,9 +89,6 @@ struct iova_domain {
- 	atomic64_t	fq_flush_finish_cnt;	/* Number of TLB flushes that
- 						   have been finished */
- 
--	struct iova	anchor;		/* rbtree lookup anchor */
--	struct iova_rcache rcaches[IOVA_RANGE_CACHE_MAX_SIZE];	/* IOVA range caches */
--
- 	iova_flush_cb	flush_cb;	/* Call-Back function to flush IOMMU
- 					   TLBs */
- 
-@@ -95,7 +99,7 @@ struct iova_domain {
- 						   flush-queues */
- 	atomic_t fq_timer_on;			/* 1 when timer is active, 0
- 						   when not */
--	struct hlist_node	cpuhp_dead;
-+	struct iova_domain *iovad;
++struct iova_caching_domain {
++	struct iova_domain	iovad;
+ 	struct iova_rcache rcaches[IOVA_RANGE_CACHE_MAX_SIZE];	/* IOVA range caches */
+ 	struct hlist_node	cpuhp_dead;
  };
- 
- static inline unsigned long iova_size(struct iova *iova)
-@@ -144,7 +148,7 @@ struct iova *alloc_iova(struct iova_domain *iovad, unsigned long size,
+@@ -96,16 +100,20 @@ void __free_iova(struct iova_domain *iovad, struct iova *iova);
+ struct iova *alloc_iova(struct iova_domain *iovad, unsigned long size,
+ 	unsigned long limit_pfn,
  	bool size_aligned);
- void free_iova_fast(struct iova_domain *iovad, unsigned long pfn,
+-void free_iova_fast(struct iova_domain *iovad, unsigned long pfn,
++void free_iova_fast(struct iova_caching_domain *rcached, unsigned long pfn,
  		    unsigned long size);
--void queue_iova(struct iova_domain *iovad,
-+void queue_iova(struct fq_domain *fq_domain,
- 		unsigned long pfn, unsigned long pages,
- 		unsigned long data);
- unsigned long alloc_iova_fast(struct iova_domain *iovad, unsigned long size,
-@@ -153,8 +157,10 @@ struct iova *reserve_iova(struct iova_domain *iovad, unsigned long pfn_lo,
+-unsigned long alloc_iova_fast(struct iova_domain *iovad, unsigned long size,
+-			      unsigned long limit_pfn, bool flush_rcache);
++unsigned long alloc_iova_fast(struct iova_caching_domain *rcached,
++			      unsigned long size, unsigned long limit_pfn,
++			      bool flush_rcache);
+ struct iova *reserve_iova(struct iova_domain *iovad, unsigned long pfn_lo,
  	unsigned long pfn_hi);
  void init_iova_domain(struct iova_domain *iovad, unsigned long granule,
  	unsigned long start_pfn);
--int init_iova_flush_queue(struct iova_domain *iovad,
-+int init_iova_flush_queue(struct fq_domain *fq_domain,
- 			  iova_flush_cb flush_cb, iova_entry_dtor entry_dtor);
-+void iova_free_flush_queue(struct fq_domain *fq_domain);
-+
  struct iova *find_iova(struct iova_domain *iovad, unsigned long pfn);
  void put_iova_domain(struct iova_domain *iovad);
++void put_iova_caching_domain(struct iova_caching_domain *rcached);
++int init_iova_caching_domain(struct iova_caching_domain *rcached,
++			     unsigned long granule, unsigned long start_pfn);
  #else
-@@ -189,7 +195,7 @@ static inline void free_iova_fast(struct iova_domain *iovad,
+ static inline int iova_cache_get(void)
+ {
+@@ -132,13 +140,13 @@ static inline struct iova *alloc_iova(struct iova_domain *iovad,
+ 	return NULL;
+ }
+ 
+-static inline void free_iova_fast(struct iova_domain *iovad,
++static inline void free_iova_fast(struct iova_caching_domain *rcached,
+ 				  unsigned long pfn,
+ 				  unsigned long size)
  {
  }
  
--static inline void queue_iova(struct iova_domain *iovad,
-+static inline void queue_iova(struct fq_domain *fq_domain,
- 			      unsigned long pfn, unsigned long pages,
- 			      unsigned long data)
- {
-@@ -216,13 +222,17 @@ static inline void init_iova_domain(struct iova_domain *iovad,
- {
- }
- 
--static inline int init_iova_flush_queue(struct iova_domain *iovad,
-+static inline int init_iova_flush_queue(struct fq_domain *fq_domain,
- 					iova_flush_cb flush_cb,
- 					iova_entry_dtor entry_dtor)
- {
- 	return -ENODEV;
- }
- 
-+static inline void iova_free_flush_queue(struct fq_domain *fq_domain)
-+{
-+}
-+
- static inline struct iova *find_iova(struct iova_domain *iovad,
- 				     unsigned long pfn)
- {
+-static inline unsigned long alloc_iova_fast(struct iova_domain *iovad,
++static inline unsigned long alloc_iova_fast(struct iova_caching_domain *rcached,
+ 					    unsigned long size,
+ 					    unsigned long limit_pfn,
+ 					    bool flush_rcache)
 -- 
 2.26.2
 
