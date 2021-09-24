@@ -6,74 +6,113 @@ X-Spam-Status: No, score=-3.6 required=3.0 tests=BAYES_00,DKIM_INVALID,
 	DKIM_SIGNED,HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,SPF_HELO_NONE,
 	SPF_PASS autolearn=no autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0A9F0C43219
-	for <iommu@archiver.kernel.org>; Fri, 24 Sep 2021 06:44:38 +0000 (UTC)
-Received: from smtp1.osuosl.org (smtp1.osuosl.org [140.211.166.138])
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6E3EFC433EF
+	for <iommu@archiver.kernel.org>; Fri, 24 Sep 2021 09:41:36 +0000 (UTC)
+Received: from smtp2.osuosl.org (smtp2.osuosl.org [140.211.166.133])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id B833A61283
-	for <iommu@archiver.kernel.org>; Fri, 24 Sep 2021 06:44:37 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.4.1 mail.kernel.org B833A61283
-Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=infradead.org
+	by mail.kernel.org (Postfix) with ESMTPS id 2420760E97
+	for <iommu@archiver.kernel.org>; Fri, 24 Sep 2021 09:41:36 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.4.1 mail.kernel.org 2420760E97
+Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=shutemov.name
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by smtp1.osuosl.org (Postfix) with ESMTP id 836A68495C;
-	Fri, 24 Sep 2021 06:44:37 +0000 (UTC)
+	by smtp2.osuosl.org (Postfix) with ESMTP id CF52F403E1;
+	Fri, 24 Sep 2021 09:41:35 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from smtp1.osuosl.org ([127.0.0.1])
-	by localhost (smtp1.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id pDeMlMNxDrxq; Fri, 24 Sep 2021 06:44:36 +0000 (UTC)
+Received: from smtp2.osuosl.org ([127.0.0.1])
+	by localhost (smtp2.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+	with ESMTP id ZWh32Xa7XeuG; Fri, 24 Sep 2021 09:41:34 +0000 (UTC)
 Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by smtp1.osuosl.org (Postfix) with ESMTPS id 2CE3983E66;
-	Fri, 24 Sep 2021 06:44:36 +0000 (UTC)
+	by smtp2.osuosl.org (Postfix) with ESMTPS id 7C2B5403E0;
+	Fri, 24 Sep 2021 09:41:34 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 0FBC0C0011;
-	Fri, 24 Sep 2021 06:44:36 +0000 (UTC)
-Received: from smtp1.osuosl.org (smtp1.osuosl.org [140.211.166.138])
- by lists.linuxfoundation.org (Postfix) with ESMTP id B1A74C000D
- for <iommu@lists.linux-foundation.org>; Fri, 24 Sep 2021 06:44:34 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 5020AC000F;
+	Fri, 24 Sep 2021 09:41:34 +0000 (UTC)
+Received: from smtp3.osuosl.org (smtp3.osuosl.org [IPv6:2605:bc80:3010::136])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 9DCE6C000D
+ for <iommu@lists.linux-foundation.org>; Fri, 24 Sep 2021 09:41:33 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by smtp1.osuosl.org (Postfix) with ESMTP id 8D27783EC7
- for <iommu@lists.linux-foundation.org>; Fri, 24 Sep 2021 06:44:34 +0000 (UTC)
+ by smtp3.osuosl.org (Postfix) with ESMTP id 77CB760701
+ for <iommu@lists.linux-foundation.org>; Fri, 24 Sep 2021 09:41:33 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from smtp1.osuosl.org ([127.0.0.1])
- by localhost (smtp1.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id K8xnwRObmmCN for <iommu@lists.linux-foundation.org>;
- Fri, 24 Sep 2021 06:44:33 +0000 (UTC)
-X-Greylist: from auto-whitelisted by SQLgrey-1.8.0
-Received: from casper.infradead.org (casper.infradead.org
- [IPv6:2001:8b0:10b:1236::1])
- by smtp1.osuosl.org (Postfix) with ESMTPS id EAC1083E66
- for <iommu@lists.linux-foundation.org>; Fri, 24 Sep 2021 06:44:32 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
- d=infradead.org; s=casper.20170209; h=In-Reply-To:Content-Type:MIME-Version:
- References:Message-ID:Subject:Cc:To:From:Date:Sender:Reply-To:
- Content-Transfer-Encoding:Content-ID:Content-Description;
- bh=yk37TJ1pv0m2OGjoSFSGGxlGCD0GciEiUSGDQBv+q1U=; b=ExiK0QjAHvn7VukF4+rlC/14Vm
- LC2bgapE+fU1Ac5IN8TOH7oMV+JoT56Q2EMxin+FgHZWhyPvGOovy1m5chiiewrMkZi50AYtvs8iB
- pYFykWdvAjVPdZnO8zNGvYREoJONApQKBAvoldhvcUIXGDxNvgXJFjDxT1h7aYXh7OLq9V0j0mSJE
- xpMrPWN/21I8lYyUIK6h+1Z1pWcC7FyCesrmVbVftrBKyiCG/ZXfEkOyeNrRFw9b3nnBd01G6OeSY
- qh6cZyXTYQxnMVWHZUSRscGikh2QWgRJOEVSELa57arYvW1uwiPhtKx174wgdL3BFb1A0hiwg0D9O
- qncrghsQ==;
-Received: from hch by casper.infradead.org with local (Exim 4.94.2 #2 (Red Hat
- Linux)) id 1mTeuh-006vf6-60; Fri, 24 Sep 2021 06:43:02 +0000
-Date: Fri, 24 Sep 2021 07:42:27 +0100
-From: Christoph Hellwig <hch@infradead.org>
-To: Ben Widawsky <ben.widawsky@intel.com>
-Subject: Re: [PATCH v2 9/9] iommu/vt-d: Use pci core's DVSEC functionality
-Message-ID: <YU1zU2jn/mGYDThY@infradead.org>
-References: <20210923172647.72738-1-ben.widawsky@intel.com>
- <20210923172647.72738-10-ben.widawsky@intel.com>
+Authentication-Results: smtp3.osuosl.org (amavisd-new);
+ dkim=pass (2048-bit key) header.d=shutemov-name.20210112.gappssmtp.com
+Received: from smtp3.osuosl.org ([127.0.0.1])
+ by localhost (smtp3.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+ with ESMTP id F5rpfu499rmh for <iommu@lists.linux-foundation.org>;
+ Fri, 24 Sep 2021 09:41:32 +0000 (UTC)
+X-Greylist: whitelisted by SQLgrey-1.8.0
+Received: from mail-lf1-x12d.google.com (mail-lf1-x12d.google.com
+ [IPv6:2a00:1450:4864:20::12d])
+ by smtp3.osuosl.org (Postfix) with ESMTPS id 9A7496061C
+ for <iommu@lists.linux-foundation.org>; Fri, 24 Sep 2021 09:41:32 +0000 (UTC)
+Received: by mail-lf1-x12d.google.com with SMTP id i25so38290943lfg.6
+ for <iommu@lists.linux-foundation.org>; Fri, 24 Sep 2021 02:41:32 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+ d=shutemov-name.20210112.gappssmtp.com; s=20210112;
+ h=date:from:to:cc:subject:message-id:references:mime-version
+ :content-disposition:in-reply-to;
+ bh=7QWYmDDdQ14wxTTMWtNorG+4hnmrm04qfz4ZOujDnZs=;
+ b=a94RXEUJuMmQvxSDKok9kJbMV98Mo28f1Csi4Z4iwvW7+MkRyX5SrQhnYAAaonglNs
+ TqzSbC141ptsWvvzM0S2r5099PgvSLUTd+llMs5cQH1O/KYv2VKwA3rHbEQ17XEUoJiN
+ b88sf+8/Kq6CN5gKqNMDbt0WofHePWjCWhJfrHH/URopiQYKQJViZtb5wMUubTQfdu6m
+ e490qkHKD0Pb0R4D5rMx+0JuhhDDbQUkFWETXBCjCVPYNSZnkKFRM+sk+iiLVm+sara7
+ E1aPac0dVliF4TZMk0iL6yousngzwZf3UFxxtnempLUEnPswt9hwLB+6ECQ/gPgJLFvg
+ u+ag==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+ d=1e100.net; s=20210112;
+ h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+ :mime-version:content-disposition:in-reply-to;
+ bh=7QWYmDDdQ14wxTTMWtNorG+4hnmrm04qfz4ZOujDnZs=;
+ b=NkdC4x0lWcENebXVkjrIIz/Jro2ROtj2L2IaGiLwswD6Ke7G+uSnKTHVJPT6zVK3S9
+ kNaSYrtcY0ylHWYsZ6ZduSbF5GvDxSM8dvp/cyvJPhr67D+BxzI78QmytkmhfiwUGU97
+ zn5M5qlqLpWrAjaKaU4OX2tMZeg/CXxiST3ZmQk0e9LzasCbniHj9rBMsvM4bvJ0Xxio
+ sXfdEvCpJbrHMzppf8uurQNdr1izWNNqvhKLid0H/HP+R0hessoec2zn9Cdlzj0VoebP
+ 8nLedFIloTcqa3KVp/Mmf7razohJaBP/thLl4b0oX8RrHkRIEO34ma8fRwNlsEL1R2yE
+ aNbA==
+X-Gm-Message-State: AOAM530ScFLhYCShjLy2fVwHJDGXlKTRCQfAvvw2LUqcwTMss1MQXGgL
+ UHfO/8T0h33DD5W1PTXcg+ZXrg==
+X-Google-Smtp-Source: ABdhPJz+tcQG7FGy3FlEBQPrN+mpMikLwlc4Lo7J+ey+pIvMNuRrMxCLd7yfmXFIncsb4Qxt6AJb6g==
+X-Received: by 2002:a2e:804c:: with SMTP id p12mr10420673ljg.344.1632476490492; 
+ Fri, 24 Sep 2021 02:41:30 -0700 (PDT)
+Received: from box.localdomain ([86.57.175.117])
+ by smtp.gmail.com with ESMTPSA id k21sm952544lji.81.2021.09.24.02.41.29
+ (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+ Fri, 24 Sep 2021 02:41:29 -0700 (PDT)
+Received: by box.localdomain (Postfix, from userid 1000)
+ id 84289103068; Fri, 24 Sep 2021 12:41:32 +0300 (+03)
+Date: Fri, 24 Sep 2021 12:41:32 +0300
+From: "Kirill A. Shutemov" <kirill@shutemov.name>
+To: Borislav Petkov <bp@alien8.de>
+Subject: Re: [PATCH v3 5/8] x86/sme: Replace occurrences of sme_active() with
+ cc_platform_has()
+Message-ID: <20210924094132.gxyqp4z3qdk5w4j6@box.shutemov.name>
+References: <20210921212059.wwlytlmxoft4cdth@box.shutemov.name>
+ <YUpONYwM4dQXAOJr@zn.tnic>
+ <20210921213401.i2pzaotgjvn4efgg@box.shutemov.name>
+ <00f52bf8-cbc6-3721-f40e-2f51744751b0@amd.com>
+ <20210921215830.vqxd75r4eyau6cxy@box.shutemov.name>
+ <01891f59-7ec3-cf62-a8fc-79f79ca76587@amd.com>
+ <20210922143015.vvxvh6ec73lffvkf@box.shutemov.name>
+ <YUuJZ2qOgbdpfk6N@zn.tnic>
+ <20210922210558.itofvu3725dap5xx@box.shutemov.name>
+ <YUzFj+yH79XRc3F3@zn.tnic>
 MIME-Version: 1.0
 Content-Disposition: inline
-In-Reply-To: <20210923172647.72738-10-ben.widawsky@intel.com>
-X-SRS-Rewrite: SMTP reverse-path rewritten from <hch@infradead.org> by
- casper.infradead.org. See http://www.infradead.org/rpr.html
-Cc: Andrew Donnellan <ajd@linux.ibm.com>, linux-pci@vger.kernel.org,
- linuxppc-dev@lists.ozlabs.org, linux-cxl@vger.kernel.org,
- iommu@lists.linux-foundation.org, Bjorn Helgaas <helgaas@kernel.org>,
- "David E. Box" <david.e.box@linux.intel.com>,
- Kan Liang <kan.liang@linux.intel.com>, David Woodhouse <dwmw2@infradead.org>
+In-Reply-To: <YUzFj+yH79XRc3F3@zn.tnic>
+Cc: linux-efi@vger.kernel.org, Brijesh Singh <brijesh.singh@amd.com>,
+ kvm@vger.kernel.org, Peter Zijlstra <peterz@infradead.org>,
+ Dave Hansen <dave.hansen@linux.intel.com>, dri-devel@lists.freedesktop.org,
+ platform-driver-x86@vger.kernel.org, Will Deacon <will@kernel.org>,
+ linux-s390@vger.kernel.org, Andi Kleen <ak@linux.intel.com>, x86@kernel.org,
+ amd-gfx@lists.freedesktop.org, Christoph Hellwig <hch@infradead.org>,
+ Ingo Molnar <mingo@redhat.com>, linux-graphics-maintainer@vmware.com,
+ Tom Lendacky <thomas.lendacky@amd.com>, Tianyu Lan <Tianyu.Lan@microsoft.com>,
+ Andy Lutomirski <luto@kernel.org>, Thomas Gleixner <tglx@linutronix.de>,
+ kexec@lists.infradead.org, linux-kernel@vger.kernel.org,
+ iommu@lists.linux-foundation.org, linux-fsdevel@vger.kernel.org,
+ linuxppc-dev@lists.ozlabs.org
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -91,18 +130,37 @@ Content-Transfer-Encoding: 7bit
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-On Thu, Sep 23, 2021 at 10:26:47AM -0700, Ben Widawsky wrote:
->   */
->  static int siov_find_pci_dvsec(struct pci_dev *pdev)
->  {
-> +	return pci_find_dvsec_capability(pdev, PCI_VENDOR_ID_INTEL, 5);
->  }
+On Thu, Sep 23, 2021 at 08:21:03PM +0200, Borislav Petkov wrote:
+> On Thu, Sep 23, 2021 at 12:05:58AM +0300, Kirill A. Shutemov wrote:
+> > Unless we find other way to guarantee RIP-relative access, we must use
+> > fixup_pointer() to access any global variables.
+> 
+> Yah, I've asked compiler folks about any guarantees we have wrt
+> rip-relative addresses but it doesn't look good. Worst case, we'd have
+> to do the fixup_pointer() thing.
+> 
+> In the meantime, Tom and I did some more poking at this and here's a
+> diff ontop.
+> 
+> The direction being that we'll stick both the AMD and Intel
+> *cc_platform_has() call into cc_platform.c for which instrumentation
+> will be disabled so no issues with that.
+> 
+> And that will keep all that querying all together in a single file.
 
-I hink the siov_find_pci_dvsec helper is pretty pointless now and can be
-folded into its only caller.  And independent of that: this capability
-really needs a symbolic name.  Especially for a vendor like Intel that
-might have a few there should be a list of them somewhere.
+And still do cc_platform_has() calls in __startup_64() codepath?
 
+It's broken.
+
+Intel detection in cc_platform_has() relies on boot_cpu_data.x86_vendor
+which is not initialized until early_cpu_init() in setup_arch(). Given
+that X86_VENDOR_INTEL is 0 it leads to false-positive.
+
+I think opencode these two calls is the way forward. Maybe also move the
+check from sme_encrypt_kernel() to __startup_64().
+
+-- 
+ Kirill A. Shutemov
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
