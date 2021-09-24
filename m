@@ -2,81 +2,67 @@ Return-Path: <SRS0=LkSb=OO=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-3.8 required=3.0 tests=BAYES_00,
-	HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS
-	autolearn=no autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-16.8 required=3.0 tests=BAYES_00,
+	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_CR_TRAILER,INCLUDES_PATCH,
+	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,USER_AGENT_GIT
+	autolearn=unavailable autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 03AD0C433FE
-	for <iommu@archiver.kernel.org>; Fri, 24 Sep 2021 00:57:51 +0000 (UTC)
-Received: from smtp3.osuosl.org (smtp3.osuosl.org [140.211.166.136])
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B3930C433EF
+	for <iommu@archiver.kernel.org>; Fri, 24 Sep 2021 02:33:07 +0000 (UTC)
+Received: from smtp4.osuosl.org (smtp4.osuosl.org [140.211.166.137])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 8FDF061214
-	for <iommu@archiver.kernel.org>; Fri, 24 Sep 2021 00:57:50 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.4.1 mail.kernel.org 8FDF061214
-Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=intel.com
+	by mail.kernel.org (Postfix) with ESMTPS id 2A36261019
+	for <iommu@archiver.kernel.org>; Fri, 24 Sep 2021 02:33:07 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.4.1 mail.kernel.org 2A36261019
+Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=linux.intel.com
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by smtp3.osuosl.org (Postfix) with ESMTP id 55AD260687;
-	Fri, 24 Sep 2021 00:57:50 +0000 (UTC)
+	by smtp4.osuosl.org (Postfix) with ESMTP id D96764036E;
+	Fri, 24 Sep 2021 02:33:06 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from smtp3.osuosl.org ([127.0.0.1])
-	by localhost (smtp3.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id AUbR9MbiMBak; Fri, 24 Sep 2021 00:57:49 +0000 (UTC)
-Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [IPv6:2605:bc80:3010:104::8cd3:938])
-	by smtp3.osuosl.org (Postfix) with ESMTPS id 3C9986064B;
-	Fri, 24 Sep 2021 00:57:49 +0000 (UTC)
+Received: from smtp4.osuosl.org ([127.0.0.1])
+	by localhost (smtp4.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+	with ESMTP id VG0MOtI45fTO; Fri, 24 Sep 2021 02:33:06 +0000 (UTC)
+Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
+	by smtp4.osuosl.org (Postfix) with ESMTPS id AE76B40341;
+	Fri, 24 Sep 2021 02:33:05 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 1405EC000F;
-	Fri, 24 Sep 2021 00:57:49 +0000 (UTC)
-Received: from smtp3.osuosl.org (smtp3.osuosl.org [IPv6:2605:bc80:3010::136])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 91A4FC000D
- for <iommu@lists.linux-foundation.org>; Fri, 24 Sep 2021 00:57:48 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 72A77C000F;
+	Fri, 24 Sep 2021 02:33:05 +0000 (UTC)
+Received: from smtp4.osuosl.org (smtp4.osuosl.org [140.211.166.137])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id B645FC000D
+ for <iommu@lists.linux-foundation.org>; Fri, 24 Sep 2021 02:33:03 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by smtp3.osuosl.org (Postfix) with ESMTP id 6D54960687
- for <iommu@lists.linux-foundation.org>; Fri, 24 Sep 2021 00:57:48 +0000 (UTC)
+ by smtp4.osuosl.org (Postfix) with ESMTP id AE7A140365
+ for <iommu@lists.linux-foundation.org>; Fri, 24 Sep 2021 02:33:03 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from smtp3.osuosl.org ([127.0.0.1])
- by localhost (smtp3.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id eQ8Of42J94uW for <iommu@lists.linux-foundation.org>;
- Fri, 24 Sep 2021 00:57:47 +0000 (UTC)
+Received: from smtp4.osuosl.org ([127.0.0.1])
+ by localhost (smtp4.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+ with ESMTP id qnoy5-hG-LMr for <iommu@lists.linux-foundation.org>;
+ Fri, 24 Sep 2021 02:33:03 +0000 (UTC)
 X-Greylist: domain auto-whitelisted by SQLgrey-1.8.0
-Received: from mga18.intel.com (mga18.intel.com [134.134.136.126])
- by smtp3.osuosl.org (Postfix) with ESMTPS id C3BE06064B
- for <iommu@lists.linux-foundation.org>; Fri, 24 Sep 2021 00:57:47 +0000 (UTC)
-X-IronPort-AV: E=McAfee;i="6200,9189,10116"; a="211051501"
-X-IronPort-AV: E=Sophos;i="5.85,318,1624345200"; d="scan'208";a="211051501"
-Received: from fmsmga008.fm.intel.com ([10.253.24.58])
- by orsmga106.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384;
- 23 Sep 2021 17:57:47 -0700
-X-IronPort-AV: E=Sophos;i="5.85,318,1624345200"; d="scan'208";a="514332940"
-Received: from otcwcpicx3.sc.intel.com ([172.25.55.73])
- by fmsmga008-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384;
- 23 Sep 2021 17:57:46 -0700
-Date: Fri, 24 Sep 2021 00:57:40 +0000
-From: Fenghua Yu <fenghua.yu@intel.com>
-To: Josh Poimboeuf <jpoimboe@redhat.com>
-Subject: Re: [PATCH 7/8] tools/objtool: Check for use of the ENQCMD
- instruction in the kernel
-Message-ID: <YU0ihC6EYBZCSylV@otcwcpicx3.sc.intel.com>
-References: <20210920192349.2602141-1-fenghua.yu@intel.com>
- <20210920192349.2602141-8-fenghua.yu@intel.com>
- <20210922210343.GU4323@worktop.programming.kicks-ass.net>
- <YUu/6YPYwvaDwthy@otcwcpicx3.sc.intel.com>
- <YUwp7VkjApRQr/pb@hirez.programming.kicks-ass.net>
- <YUycliX+lPSMhWfR@otcwcpicx3.sc.intel.com>
- <20210924005540.kunsfif7hdta6dlp@treble>
+Received: from mga02.intel.com (mga02.intel.com [134.134.136.20])
+ by smtp4.osuosl.org (Postfix) with ESMTPS id E231540341
+ for <iommu@lists.linux-foundation.org>; Fri, 24 Sep 2021 02:33:02 +0000 (UTC)
+X-IronPort-AV: E=McAfee;i="6200,9189,10116"; a="211225067"
+X-IronPort-AV: E=Sophos;i="5.85,318,1624345200"; d="scan'208";a="211225067"
+Received: from orsmga007.jf.intel.com ([10.7.209.58])
+ by orsmga101.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384;
+ 23 Sep 2021 19:33:01 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.85,318,1624345200"; d="scan'208";a="475054299"
+Received: from allen-box.sh.intel.com ([10.239.159.118])
+ by orsmga007.jf.intel.com with ESMTP; 23 Sep 2021 19:32:59 -0700
+From: Lu Baolu <baolu.lu@linux.intel.com>
+To: Joerg Roedel <joro@8bytes.org>
+Subject: [PATCH 1/1] iommu/vt-d: Use second level for GPA->HPA translation
+Date: Fri, 24 Sep 2021 10:29:31 +0800
+Message-Id: <20210924022931.780963-1-baolu.lu@linux.intel.com>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
-Content-Disposition: inline
-In-Reply-To: <20210924005540.kunsfif7hdta6dlp@treble>
-Cc: Ravi V Shankar <ravi.v.shankar@intel.com>, Tony Luck <tony.luck@intel.com>,
- Dave Jiang <dave.jiang@intel.com>, Ashok Raj <ashok.raj@intel.com>,
- Peter Zijlstra <peterz@infradead.org>, x86 <x86@kernel.org>,
- linux-kernel <linux-kernel@vger.kernel.org>,
- Dave Hansen <dave.hansen@intel.com>, iommu@lists.linux-foundation.org,
- Ingo Molnar <mingo@redhat.com>, Borislav Petkov <bp@alien8.de>,
- Jacob Jun Pan <jacob.jun.pan@intel.com>, Andy Lutomirski <luto@kernel.org>,
- Thomas Gleixner <tglx@linutronix.de>
+Cc: Kevin Tian <kevin.tian@intel.com>, Ashok Raj <ashok.raj@intel.com>,
+ linux-kernel@vger.kernel.org, iommu@lists.linux-foundation.org
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -94,41 +80,116 @@ Content-Transfer-Encoding: 7bit
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-Hi, Josh,
+The IOMMU VT-d implementation uses the first level for GPA->HPA translation
+by default. Although both the first level and the second level could handle
+the DMA translation, they are different in some way. For example, the second
+level translation has separate controls for the Access/Dirty page tracking
+and the page-level forcing snoop. With first level translation, there're
+no such controls. This uses the second level for GPA->HPA translation so
+that it could provide a consistent hardware interface for use cases like
+dirty page tracking during the VM live migration.
 
-On Thu, Sep 23, 2021 at 05:55:40PM -0700, Josh Poimboeuf wrote:
-> On Thu, Sep 23, 2021 at 03:26:14PM +0000, Fenghua Yu wrote:
-> > > > +		} else if (op2 == 0x38 && op3 == 0xf8) {
-> > > > +			if (insn.prefixes.nbytes == 1 &&
-> > > > +			    insn.prefixes.bytes[0] == 0xf2) {
-> > > > +				/* ENQCMD cannot be used in the kernel. */
-> > > > +				WARN("ENQCMD instruction at %s:%lx", sec->name,
-> > > > +				     offset);
-> > > > +
-> > > > +				return -1;
-> > > > +			}
-> > > 
-> > > The only concern here is if we want it to be fatal or not. But otherwise
-> > > this seems to be all that's required.
-> > 
-> > objtool doesn't fail kernel build on this fatal warning.
-> > 
-> > Returning -1 here stops checking the rest of the file and won't report any
-> > further warnings unless this ENQCMD warning is fixed. Not returning -1
-> > continues checking the rest of the file and may report more warnings.
-> > Seems that's the only difference b/w them.
-> > 
-> > Should I keep this "return -1" or not? Please advice.
-> 
-> I'd say remove the "return -1" since it's not a fatal-type analysis
-> error and there's nothing to prevent objtool from analyzing the rest of
-> the file.
+Signed-off-by: Lu Baolu <baolu.lu@linux.intel.com>
+---
+ include/linux/intel-iommu.h |  7 ++-----
+ drivers/iommu/intel/iommu.c | 21 +++++++++++++--------
+ 2 files changed, 15 insertions(+), 13 deletions(-)
 
-Sure. It does make sense to remove "return -1". I will remove it.
+diff --git a/include/linux/intel-iommu.h b/include/linux/intel-iommu.h
+index 05a65eb155f7..a5fb20702201 100644
+--- a/include/linux/intel-iommu.h
++++ b/include/linux/intel-iommu.h
+@@ -517,22 +517,19 @@ struct context_entry {
+ 	u64 hi;
+ };
+ 
+-/* si_domain contains mulitple devices */
+-#define DOMAIN_FLAG_STATIC_IDENTITY		BIT(0)
+-
+ /*
+  * When VT-d works in the scalable mode, it allows DMA translation to
+  * happen through either first level or second level page table. This
+  * bit marks that the DMA translation for the domain goes through the
+  * first level page table, otherwise, it goes through the second level.
+  */
+-#define DOMAIN_FLAG_USE_FIRST_LEVEL		BIT(1)
++#define DOMAIN_FLAG_USE_FIRST_LEVEL		BIT(0)
+ 
+ /*
+  * Domain represents a virtual machine which demands iommu nested
+  * translation mode support.
+  */
+-#define DOMAIN_FLAG_NESTING_MODE		BIT(2)
++#define DOMAIN_FLAG_NESTING_MODE		BIT(1)
+ 
+ struct dmar_domain {
+ 	int	nid;			/* node id */
+diff --git a/drivers/iommu/intel/iommu.c b/drivers/iommu/intel/iommu.c
+index d75f59ae28e6..c814fea0522e 100644
+--- a/drivers/iommu/intel/iommu.c
++++ b/drivers/iommu/intel/iommu.c
+@@ -522,7 +522,7 @@ static inline void free_devinfo_mem(void *vaddr)
+ 
+ static inline int domain_type_is_si(struct dmar_domain *domain)
+ {
+-	return domain->flags & DOMAIN_FLAG_STATIC_IDENTITY;
++	return domain->domain.type == IOMMU_DOMAIN_IDENTITY;
+ }
+ 
+ static inline bool domain_use_first_level(struct dmar_domain *domain)
+@@ -1874,12 +1874,18 @@ static void free_dmar_iommu(struct intel_iommu *iommu)
+  * Check and return whether first level is used by default for
+  * DMA translation.
+  */
+-static bool first_level_by_default(void)
++static bool first_level_by_default(unsigned int type)
+ {
+-	return scalable_mode_support() && intel_cap_flts_sanity();
++	if (type == IOMMU_DOMAIN_UNMANAGED)
++		return false;
++
++	if (!scalable_mode_support() || !intel_cap_flts_sanity())
++		return false;
++
++	return true;
+ }
+ 
+-static struct dmar_domain *alloc_domain(int flags)
++static struct dmar_domain *alloc_domain(unsigned int type)
+ {
+ 	struct dmar_domain *domain;
+ 
+@@ -1889,8 +1895,7 @@ static struct dmar_domain *alloc_domain(int flags)
+ 
+ 	memset(domain, 0, sizeof(*domain));
+ 	domain->nid = NUMA_NO_NODE;
+-	domain->flags = flags;
+-	if (first_level_by_default())
++	if (first_level_by_default(type))
+ 		domain->flags |= DOMAIN_FLAG_USE_FIRST_LEVEL;
+ 	domain->has_iotlb_device = false;
+ 	INIT_LIST_HEAD(&domain->devices);
+@@ -2708,7 +2713,7 @@ static int __init si_domain_init(int hw)
+ 	struct device *dev;
+ 	int i, nid, ret;
+ 
+-	si_domain = alloc_domain(DOMAIN_FLAG_STATIC_IDENTITY);
++	si_domain = alloc_domain(IOMMU_DOMAIN_IDENTITY);
+ 	if (!si_domain)
+ 		return -EFAULT;
+ 
+@@ -4517,7 +4522,7 @@ static struct iommu_domain *intel_iommu_domain_alloc(unsigned type)
+ 	case IOMMU_DOMAIN_DMA:
+ 	case IOMMU_DOMAIN_DMA_FQ:
+ 	case IOMMU_DOMAIN_UNMANAGED:
+-		dmar_domain = alloc_domain(0);
++		dmar_domain = alloc_domain(type);
+ 		if (!dmar_domain) {
+ 			pr_err("Can't allocate dmar_domain\n");
+ 			return NULL;
+-- 
+2.25.1
 
-Thanks.
-
--Fenghua
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
