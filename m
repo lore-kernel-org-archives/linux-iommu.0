@@ -2,67 +2,79 @@ Return-Path: <SRS0=LkSb=OO=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-16.8 required=3.0 tests=BAYES_00,
+X-Spam-Status: No, score=-13.8 required=3.0 tests=BAYES_00,
 	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_CR_TRAILER,INCLUDES_PATCH,
-	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,USER_AGENT_GIT
-	autolearn=unavailable autolearn_force=no version=3.4.0
+	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS autolearn=unavailable
+	autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B3930C433EF
-	for <iommu@archiver.kernel.org>; Fri, 24 Sep 2021 02:33:07 +0000 (UTC)
-Received: from smtp4.osuosl.org (smtp4.osuosl.org [140.211.166.137])
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 58EB9C433F5
+	for <iommu@archiver.kernel.org>; Fri, 24 Sep 2021 02:56:26 +0000 (UTC)
+Received: from smtp2.osuosl.org (smtp2.osuosl.org [140.211.166.133])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 2A36261019
-	for <iommu@archiver.kernel.org>; Fri, 24 Sep 2021 02:33:07 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.4.1 mail.kernel.org 2A36261019
-Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=linux.intel.com
+	by mail.kernel.org (Postfix) with ESMTPS id EE5AB61214
+	for <iommu@archiver.kernel.org>; Fri, 24 Sep 2021 02:56:25 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.4.1 mail.kernel.org EE5AB61214
+Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=intel.com
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by smtp4.osuosl.org (Postfix) with ESMTP id D96764036E;
-	Fri, 24 Sep 2021 02:33:06 +0000 (UTC)
+	by smtp2.osuosl.org (Postfix) with ESMTP id AB8BB40195;
+	Fri, 24 Sep 2021 02:56:25 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from smtp4.osuosl.org ([127.0.0.1])
-	by localhost (smtp4.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id VG0MOtI45fTO; Fri, 24 Sep 2021 02:33:06 +0000 (UTC)
+Received: from smtp2.osuosl.org ([127.0.0.1])
+	by localhost (smtp2.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+	with ESMTP id hJzLxjJvI5Ny; Fri, 24 Sep 2021 02:56:24 +0000 (UTC)
 Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by smtp4.osuosl.org (Postfix) with ESMTPS id AE76B40341;
-	Fri, 24 Sep 2021 02:33:05 +0000 (UTC)
+	by smtp2.osuosl.org (Postfix) with ESMTPS id 0E264400ED;
+	Fri, 24 Sep 2021 02:56:24 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 72A77C000F;
-	Fri, 24 Sep 2021 02:33:05 +0000 (UTC)
-Received: from smtp4.osuosl.org (smtp4.osuosl.org [140.211.166.137])
- by lists.linuxfoundation.org (Postfix) with ESMTP id B645FC000D
- for <iommu@lists.linux-foundation.org>; Fri, 24 Sep 2021 02:33:03 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id D4032C000F;
+	Fri, 24 Sep 2021 02:56:23 +0000 (UTC)
+Received: from smtp1.osuosl.org (smtp1.osuosl.org [IPv6:2605:bc80:3010::138])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 09D43C000D
+ for <iommu@lists.linux-foundation.org>; Fri, 24 Sep 2021 02:56:23 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by smtp4.osuosl.org (Postfix) with ESMTP id AE7A140365
- for <iommu@lists.linux-foundation.org>; Fri, 24 Sep 2021 02:33:03 +0000 (UTC)
+ by smtp1.osuosl.org (Postfix) with ESMTP id F3D3E84331
+ for <iommu@lists.linux-foundation.org>; Fri, 24 Sep 2021 02:56:22 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from smtp4.osuosl.org ([127.0.0.1])
- by localhost (smtp4.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id qnoy5-hG-LMr for <iommu@lists.linux-foundation.org>;
- Fri, 24 Sep 2021 02:33:03 +0000 (UTC)
+Received: from smtp1.osuosl.org ([127.0.0.1])
+ by localhost (smtp1.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+ with ESMTP id sYBnVWcqAWDy for <iommu@lists.linux-foundation.org>;
+ Fri, 24 Sep 2021 02:56:22 +0000 (UTC)
 X-Greylist: domain auto-whitelisted by SQLgrey-1.8.0
-Received: from mga02.intel.com (mga02.intel.com [134.134.136.20])
- by smtp4.osuosl.org (Postfix) with ESMTPS id E231540341
- for <iommu@lists.linux-foundation.org>; Fri, 24 Sep 2021 02:33:02 +0000 (UTC)
-X-IronPort-AV: E=McAfee;i="6200,9189,10116"; a="211225067"
-X-IronPort-AV: E=Sophos;i="5.85,318,1624345200"; d="scan'208";a="211225067"
-Received: from orsmga007.jf.intel.com ([10.7.209.58])
- by orsmga101.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384;
- 23 Sep 2021 19:33:01 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.85,318,1624345200"; d="scan'208";a="475054299"
-Received: from allen-box.sh.intel.com ([10.239.159.118])
- by orsmga007.jf.intel.com with ESMTP; 23 Sep 2021 19:32:59 -0700
-From: Lu Baolu <baolu.lu@linux.intel.com>
-To: Joerg Roedel <joro@8bytes.org>
-Subject: [PATCH 1/1] iommu/vt-d: Use second level for GPA->HPA translation
-Date: Fri, 24 Sep 2021 10:29:31 +0800
-Message-Id: <20210924022931.780963-1-baolu.lu@linux.intel.com>
-X-Mailer: git-send-email 2.25.1
+Received: from mga05.intel.com (mga05.intel.com [192.55.52.43])
+ by smtp1.osuosl.org (Postfix) with ESMTPS id E48718432C
+ for <iommu@lists.linux-foundation.org>; Fri, 24 Sep 2021 02:56:21 +0000 (UTC)
+X-IronPort-AV: E=McAfee;i="6200,9189,10116"; a="309545800"
+X-IronPort-AV: E=Sophos;i="5.85,318,1624345200"; d="scan'208";a="309545800"
+Received: from fmsmga003.fm.intel.com ([10.253.24.29])
+ by fmsmga105.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384;
+ 23 Sep 2021 19:56:20 -0700
+X-IronPort-AV: E=Sophos;i="5.85,318,1624345200"; d="scan'208";a="551396204"
+Received: from otcwcpicx3.sc.intel.com ([172.25.55.73])
+ by fmsmga003-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384;
+ 23 Sep 2021 19:56:20 -0700
+Date: Fri, 24 Sep 2021 02:56:19 +0000
+From: Fenghua Yu <fenghua.yu@intel.com>
+To: Andy Lutomirski <luto@kernel.org>
+Subject: Re: [PATCH 4/8] x86/traps: Demand-populate PASID MSR via #GP
+Message-ID: <YU0+U8AEEOWMgio+@otcwcpicx3.sc.intel.com>
+References: <20210920192349.2602141-1-fenghua.yu@intel.com>
+ <20210920192349.2602141-5-fenghua.yu@intel.com>
+ <1aae375d-3cd4-4ab8-9c64-9e387916e6c0@www.fastmail.com>
 MIME-Version: 1.0
-Cc: Kevin Tian <kevin.tian@intel.com>, Ashok Raj <ashok.raj@intel.com>,
- linux-kernel@vger.kernel.org, iommu@lists.linux-foundation.org
+Content-Disposition: inline
+In-Reply-To: <1aae375d-3cd4-4ab8-9c64-9e387916e6c0@www.fastmail.com>
+Cc: "Shankar, Ravi V" <ravi.v.shankar@intel.com>,
+ Tony Luck <tony.luck@intel.com>, Dave Jiang <dave.jiang@intel.com>,
+ Raj Ashok <ashok.raj@intel.com>,
+ "Peter Zijlstra \(Intel\)" <peterz@infradead.org>,
+ the arch/x86 maintainers <x86@kernel.org>,
+ Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+ Dave Hansen <dave.hansen@intel.com>, iommu@lists.linux-foundation.org,
+ Ingo Molnar <mingo@redhat.com>, Borislav Petkov <bp@alien8.de>,
+ Jacob Jun Pan <jacob.jun.pan@intel.com>, Josh Poimboeuf <jpoimboe@redhat.com>,
+ Thomas Gleixner <tglx@linutronix.de>
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -80,116 +92,170 @@ Content-Transfer-Encoding: 7bit
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-The IOMMU VT-d implementation uses the first level for GPA->HPA translation
-by default. Although both the first level and the second level could handle
-the DMA translation, they are different in some way. For example, the second
-level translation has separate controls for the Access/Dirty page tracking
-and the page-level forcing snoop. With first level translation, there're
-no such controls. This uses the second level for GPA->HPA translation so
-that it could provide a consistent hardware interface for use cases like
-dirty page tracking during the VM live migration.
+Hi, Andy,
 
-Signed-off-by: Lu Baolu <baolu.lu@linux.intel.com>
----
- include/linux/intel-iommu.h |  7 ++-----
- drivers/iommu/intel/iommu.c | 21 +++++++++++++--------
- 2 files changed, 15 insertions(+), 13 deletions(-)
+On Thu, Sep 23, 2021 at 04:17:05PM -0700, Andy Lutomirski wrote:
+> On Mon, Sep 20, 2021, at 12:23 PM, Fenghua Yu wrote:
+> > ENQCMD requires the IA32_PASID MSR has a valid PASID value which was
+> > allocated to the process during bind. The MSR could be populated eagerly
+> > by an IPI after the PASID is allocated in bind. But the method was
+> > disabled in commit 9bfecd058339 ("x86/cpufeatures: Force disable
+> > X86_FEATURE_ENQCMD and remove update_pasid()")' due to locking and other
+> > issues.
+> >
+> > Since the MSR was cleared in fork()/clone(), the first ENQCMD will
+> > generate a #GP fault. The #GP fault handler will initialize the MSR
+> > if a PASID has been allocated for this process.
+> >
+> > The lazy enabling of the PASID MSR in the #GP handler is not an elegant
+> > solution. But it has the least complexity that fits with h/w behavior.
+> >
+> > Signed-off-by: Fenghua Yu <fenghua.yu@intel.com>
+> > Reviewed-by: Tony Luck <tony.luck@intel.com>
+> > ---
+> >  arch/x86/include/asm/fpu/api.h |  6 ++++
+> >  arch/x86/include/asm/iommu.h   |  2 ++
+> >  arch/x86/kernel/fpu/xstate.c   | 59 ++++++++++++++++++++++++++++++++++
+> >  arch/x86/kernel/traps.c        | 12 +++++++
+> >  drivers/iommu/intel/svm.c      | 32 ++++++++++++++++++
+> >  5 files changed, 111 insertions(+)
+> >
+> > diff --git a/arch/x86/include/asm/fpu/api.h 
+> > b/arch/x86/include/asm/fpu/api.h
+> > index ca4d0dee1ecd..f146849e5c8c 100644
+> > --- a/arch/x86/include/asm/fpu/api.h
+> > +++ b/arch/x86/include/asm/fpu/api.h
+> > @@ -106,4 +106,10 @@ extern int cpu_has_xfeatures(u64 xfeatures_mask, 
+> > const char **feature_name);
+> >   */
+> >  #define PASID_DISABLED	0
+> > 
+> > +#ifdef CONFIG_INTEL_IOMMU_SVM
+> > +void fpu__pasid_write(u32 pasid);
+> > +#else
+> > +static inline void fpu__pasid_write(u32 pasid) { }
+> > +#endif
+> > +
+> >  #endif /* _ASM_X86_FPU_API_H */
+> > diff --git a/arch/x86/include/asm/iommu.h b/arch/x86/include/asm/iommu.h
+> > index bf1ed2ddc74b..9c4bf9b0702f 100644
+> > --- a/arch/x86/include/asm/iommu.h
+> > +++ b/arch/x86/include/asm/iommu.h
+> > @@ -26,4 +26,6 @@ arch_rmrr_sanity_check(struct acpi_dmar_reserved_memory *rmrr)
+> >  	return -EINVAL;
+> >  }
+> > 
+> > +bool __fixup_pasid_exception(void);
+> > +
+> >  #endif /* _ASM_X86_IOMMU_H */
+> > diff --git a/arch/x86/kernel/fpu/xstate.c b/arch/x86/kernel/fpu/xstate.c
+> > index c8def1b7f8fb..8a89b2cecd77 100644
+> > --- a/arch/x86/kernel/fpu/xstate.c
+> > +++ b/arch/x86/kernel/fpu/xstate.c
+> > @@ -1289,3 +1289,62 @@ int proc_pid_arch_status(struct seq_file *m, 
+> > struct pid_namespace *ns,
+> >  	return 0;
+> >  }
+> >  #endif /* CONFIG_PROC_PID_ARCH_STATUS */
+> > +
+> > +#ifdef CONFIG_INTEL_IOMMU_SVM
+> > +/**
+> > + * fpu__pasid_write - Write the current task's PASID state/MSR.
+> > + * @pasid:	the PASID
+> > + *
+> > + * The PASID is written to the IA32_PASID MSR directly if the MSR is 
+> > active.
+> > + * Otherwise it's written to the PASID. The IA32_PASID MSR should 
+> > contain
+> > + * the PASID after returning to the user.
+> > + *
+> > + * This is called only when ENQCMD is enabled.
+> > + */
+> > +void fpu__pasid_write(u32 pasid)
+> > +{
+> > +	struct xregs_state *xsave = &current->thread.fpu.state.xsave;
+> > +	u64 msr_val = pasid | MSR_IA32_PASID_VALID;
+> > +	struct fpu *fpu = &current->thread.fpu;
+> > +
+> > +	/*
+> > +	 * ENQCMD always uses the compacted XSAVE format. Ensure the buffer
+> > +	 * has space for the PASID.
+> > +	 */
+> > +	BUG_ON(!(xsave->header.xcomp_bv & XFEATURE_MASK_PASID));
+> > +
+> > +	fpregs_lock();
+> > +
+> > +	/*
+> > +	 * If the task's FPU doesn't need to be loaded or is valid, directly
+> > +	 * write the IA32_PASID MSR. Otherwise, write the PASID state and
+> > +	 * the MSR will be loaded from the PASID state before returning to
+> > +	 * the user.
+> > +	 */
+> > +	if (!test_thread_flag(TIF_NEED_FPU_LOAD) ||
+> > +	    fpregs_state_valid(fpu, smp_processor_id())) {
+> > +		wrmsrl(MSR_IA32_PASID, msr_val);
+> 
+> Let me try to decode this.
+> 
+> If the current task's FPU state is live or if the state is in memory but the CPU regs just happen to match the copy in memory, then write the MSR.  Else write the value to memory.
+> 
+> This is wrong.  If !TIF_NEED_FPU_LOAD && fpregs_state_valid, you MUST NOT MODIFY FPU STATE.
 
-diff --git a/include/linux/intel-iommu.h b/include/linux/intel-iommu.h
-index 05a65eb155f7..a5fb20702201 100644
---- a/include/linux/intel-iommu.h
-+++ b/include/linux/intel-iommu.h
-@@ -517,22 +517,19 @@ struct context_entry {
- 	u64 hi;
- };
- 
--/* si_domain contains mulitple devices */
--#define DOMAIN_FLAG_STATIC_IDENTITY		BIT(0)
--
- /*
-  * When VT-d works in the scalable mode, it allows DMA translation to
-  * happen through either first level or second level page table. This
-  * bit marks that the DMA translation for the domain goes through the
-  * first level page table, otherwise, it goes through the second level.
-  */
--#define DOMAIN_FLAG_USE_FIRST_LEVEL		BIT(1)
-+#define DOMAIN_FLAG_USE_FIRST_LEVEL		BIT(0)
- 
- /*
-  * Domain represents a virtual machine which demands iommu nested
-  * translation mode support.
-  */
--#define DOMAIN_FLAG_NESTING_MODE		BIT(2)
-+#define DOMAIN_FLAG_NESTING_MODE		BIT(1)
- 
- struct dmar_domain {
- 	int	nid;			/* node id */
-diff --git a/drivers/iommu/intel/iommu.c b/drivers/iommu/intel/iommu.c
-index d75f59ae28e6..c814fea0522e 100644
---- a/drivers/iommu/intel/iommu.c
-+++ b/drivers/iommu/intel/iommu.c
-@@ -522,7 +522,7 @@ static inline void free_devinfo_mem(void *vaddr)
- 
- static inline int domain_type_is_si(struct dmar_domain *domain)
- {
--	return domain->flags & DOMAIN_FLAG_STATIC_IDENTITY;
-+	return domain->domain.type == IOMMU_DOMAIN_IDENTITY;
- }
- 
- static inline bool domain_use_first_level(struct dmar_domain *domain)
-@@ -1874,12 +1874,18 @@ static void free_dmar_iommu(struct intel_iommu *iommu)
-  * Check and return whether first level is used by default for
-  * DMA translation.
-  */
--static bool first_level_by_default(void)
-+static bool first_level_by_default(unsigned int type)
- {
--	return scalable_mode_support() && intel_cap_flts_sanity();
-+	if (type == IOMMU_DOMAIN_UNMANAGED)
-+		return false;
-+
-+	if (!scalable_mode_support() || !intel_cap_flts_sanity())
-+		return false;
-+
-+	return true;
- }
- 
--static struct dmar_domain *alloc_domain(int flags)
-+static struct dmar_domain *alloc_domain(unsigned int type)
- {
- 	struct dmar_domain *domain;
- 
-@@ -1889,8 +1895,7 @@ static struct dmar_domain *alloc_domain(int flags)
- 
- 	memset(domain, 0, sizeof(*domain));
- 	domain->nid = NUMA_NO_NODE;
--	domain->flags = flags;
--	if (first_level_by_default())
-+	if (first_level_by_default(type))
- 		domain->flags |= DOMAIN_FLAG_USE_FIRST_LEVEL;
- 	domain->has_iotlb_device = false;
- 	INIT_LIST_HEAD(&domain->devices);
-@@ -2708,7 +2713,7 @@ static int __init si_domain_init(int hw)
- 	struct device *dev;
- 	int i, nid, ret;
- 
--	si_domain = alloc_domain(DOMAIN_FLAG_STATIC_IDENTITY);
-+	si_domain = alloc_domain(IOMMU_DOMAIN_IDENTITY);
- 	if (!si_domain)
- 		return -EFAULT;
- 
-@@ -4517,7 +4522,7 @@ static struct iommu_domain *intel_iommu_domain_alloc(unsigned type)
- 	case IOMMU_DOMAIN_DMA:
- 	case IOMMU_DOMAIN_DMA_FQ:
- 	case IOMMU_DOMAIN_UNMANAGED:
--		dmar_domain = alloc_domain(0);
-+		dmar_domain = alloc_domain(type);
- 		if (!dmar_domain) {
- 			pr_err("Can't allocate dmar_domain\n");
- 			return NULL;
--- 
-2.25.1
+But the FPU state is not modified if !TIF_NEED_FPU_LOAD && fpregs_state_valid.
 
+The FPU state is modified only if TIF_NEED_FPU_LOAD && !fpregs_state_valid.
+In this case, the FPU state will be restored to the IA32_PASID MSR when
+exiting to the user. In all other cases, the FPU state will be not be
+restored on exiting to the user and thus the IA32_PASID MSR is directly
+written here.
+
+Is it right?
+
+>  This is not negotiable -- you will break coherence between CPU regs and the memory image.
+
+fpregs_assert_state_consistent() warns on !TIF_NEED_FPU_LOAD &&
+!fpregs_state_valid. Is that breaking coherence you are talking?
+
+>  The way you modify the current task's state is either you modify it in CPU regs (if the kernel knows that the CPU regs are the one and only source of truth) OR you modify it in memory and invalidate any preserved copies (by zapping last_cpu). 
+> 
+> In any event, that particular bit of logic really doesn't belong in here -- it belongs in some helper that gets it right, once.
+> 
+> > +
+> > +/*
+> > + * Try to figure out if there is a PASID MSR value to propagate to the
+> > + * thread taking the #GP.
+> > + */
+> > +bool __fixup_pasid_exception(void)
+> > +{
+> > +	u32 pasid;
+> > +
+> > +	/*
+> > +	 * This function is called only when this #GP was triggered from user
+> > +	 * space. So the mm cannot be NULL.
+> > +	 */
+> > +	pasid = current->mm->pasid;
+> > +
+> > +	/* If no PASID is allocated, there is nothing to propagate. */
+> > +	if (pasid == PASID_DISABLED)
+> > +		return false;
+> > +
+> > +	/*
+> > +	 * If the current task already has a valid PASID MSR, then the #GP
+> > +	 * fault must be for some non-ENQCMD related reason.
+> > +	 */
+> > +	if (current->has_valid_pasid)
+> > +		return false;
+> 
+> IMO "has_valid_pasid" is a poor name.  An mm can have a PASID.  A task has noticed or it hasn't.
+> 
+> If you really need an in-memory cache, call it "pasid_msr_is_loaded".  Or just read the field out of FPU state, but that might be painfully slow.
+
+Agree. Thomas wants to change "has_valid_pasid" to "holds_pasid_ref" to
+represents if the task takes a reference to the PASID.
+
+Thanks.
+
+-Fenghua
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
