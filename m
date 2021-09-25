@@ -2,55 +2,87 @@ Return-Path: <SRS0=58fP=OP=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1083AC433EF
-	for <iommu@archiver.kernel.org>; Sat, 25 Sep 2021 14:18:10 +0000 (UTC)
-Received: from smtp4.osuosl.org (smtp4.osuosl.org [140.211.166.137])
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D758CC433F5
+	for <iommu@archiver.kernel.org>; Sat, 25 Sep 2021 23:13:59 +0000 (UTC)
+Received: from smtp3.osuosl.org (smtp3.osuosl.org [140.211.166.136])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 26F8461051
-	for <iommu@archiver.kernel.org>; Sat, 25 Sep 2021 14:18:09 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.4.1 mail.kernel.org 26F8461051
-Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=wantstofly.org
+	by mail.kernel.org (Postfix) with ESMTPS id 3C6CB6108C
+	for <iommu@archiver.kernel.org>; Sat, 25 Sep 2021 23:13:59 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.4.1 mail.kernel.org 3C6CB6108C
+Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=linutronix.de
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by smtp4.osuosl.org (Postfix) with ESMTP id DD849403FD;
-	Sat, 25 Sep 2021 14:18:08 +0000 (UTC)
-X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from smtp4.osuosl.org ([127.0.0.1])
-	by localhost (smtp4.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id LafCw_0y3pBj; Sat, 25 Sep 2021 14:18:08 +0000 (UTC)
-Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by smtp4.osuosl.org (Postfix) with ESMTPS id 9F8A1403DD;
-	Sat, 25 Sep 2021 14:18:07 +0000 (UTC)
-Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 72745C000F;
-	Sat, 25 Sep 2021 14:18:07 +0000 (UTC)
-Received: from smtp3.osuosl.org (smtp3.osuosl.org [140.211.166.136])
- by lists.linuxfoundation.org (Postfix) with ESMTP id C9528C000D
- for <iommu@lists.linux-foundation.org>; Sat, 25 Sep 2021 14:18:05 +0000 (UTC)
-Received: from localhost (localhost [127.0.0.1])
- by smtp3.osuosl.org (Postfix) with ESMTP id B7B20605D7
- for <iommu@lists.linux-foundation.org>; Sat, 25 Sep 2021 14:18:05 +0000 (UTC)
+	by smtp3.osuosl.org (Postfix) with ESMTP id F03B2605FA;
+	Sat, 25 Sep 2021 23:13:58 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
 Received: from smtp3.osuosl.org ([127.0.0.1])
- by localhost (smtp3.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id ZQ0YPnxLKk8P for <iommu@lists.linux-foundation.org>;
- Sat, 25 Sep 2021 14:18:04 +0000 (UTC)
-X-Greylist: from auto-whitelisted by SQLgrey-1.8.0
-Received: from mail.wantstofly.org (hmm.wantstofly.org [213.239.204.108])
- by smtp3.osuosl.org (Postfix) with ESMTPS id AFA636059A
- for <iommu@lists.linux-foundation.org>; Sat, 25 Sep 2021 14:18:04 +0000 (UTC)
-Received: by mail.wantstofly.org (Postfix, from userid 1000)
- id 6D4D97F5DA; Sat, 25 Sep 2021 17:18:02 +0300 (EEST)
-Date: Sat, 25 Sep 2021 17:18:02 +0300
-From: Lennert Buytenhek <buytenh@wantstofly.org>
-To: Joerg Roedel <joro@8bytes.org>,
- "Suthikulpanit, Suravee" <suravee.suthikulpanit@amd.com>
-Subject: [PATCH v4] iommu/amd: Use report_iommu_fault()
-Message-ID: <YU8vmufv54arwMOa@wantstofly.org>
+	by localhost (smtp3.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+	with ESMTP id O3sZvcPhYa2U; Sat, 25 Sep 2021 23:13:58 +0000 (UTC)
+Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
+	by smtp3.osuosl.org (Postfix) with ESMTPS id BBCF7605F7;
+	Sat, 25 Sep 2021 23:13:57 +0000 (UTC)
+Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 9149AC0011;
+	Sat, 25 Sep 2021 23:13:57 +0000 (UTC)
+Received: from smtp1.osuosl.org (smtp1.osuosl.org [IPv6:2605:bc80:3010::138])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id EEEECC000D
+ for <iommu@lists.linux-foundation.org>; Sat, 25 Sep 2021 23:13:55 +0000 (UTC)
+Received: from localhost (localhost [127.0.0.1])
+ by smtp1.osuosl.org (Postfix) with ESMTP id E5325827F3
+ for <iommu@lists.linux-foundation.org>; Sat, 25 Sep 2021 23:13:55 +0000 (UTC)
+X-Virus-Scanned: amavisd-new at osuosl.org
+Authentication-Results: smtp1.osuosl.org (amavisd-new);
+ dkim=pass (2048-bit key) header.d=linutronix.de header.b="aRMjDoov";
+ dkim=neutral reason="invalid (unsupported algorithm ed25519-sha256)"
+ header.d=linutronix.de header.b="2fn9k0dg"
+Received: from smtp1.osuosl.org ([127.0.0.1])
+ by localhost (smtp1.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+ with ESMTP id UgbZzP7_pvld for <iommu@lists.linux-foundation.org>;
+ Sat, 25 Sep 2021 23:13:55 +0000 (UTC)
+X-Greylist: domain auto-whitelisted by SQLgrey-1.8.0
+Received: from galois.linutronix.de (Galois.linutronix.de
+ [IPv6:2a0a:51c0:0:12e:550::1])
+ by smtp1.osuosl.org (Postfix) with ESMTPS id C890582882
+ for <iommu@lists.linux-foundation.org>; Sat, 25 Sep 2021 23:13:54 +0000 (UTC)
+From: Thomas Gleixner <tglx@linutronix.de>
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linutronix.de;
+ s=2020; t=1632611631;
+ h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+ to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+ in-reply-to:in-reply-to:references:references;
+ bh=9J1ZoWGzgKNdZv1+1GPUZPbyfLKSZPwa1SsfVGgVfHQ=;
+ b=aRMjDoovmn+6TE0WowDE7NBKLJwoTt1uwyIORPZK27b9OMiXyryB1E5SS4hw/rshuEXGye
+ Ah1OKFBcr5BncroOYMPCaIHJe3+O+NUponQX2zG57PTH0f50+I7nzRa9hHgO81r/1sv2yV
+ 0P5v2TJwBWMsGr10qHpOhv2NCw6zjK9Jk7rXUMh3JuNOHakxqbI02i9RqL1mTMaKpPhihW
+ Qck3urRos4+/D6rV/Jj26mcU6FSyRtKLgi7MrTJYXX2CTRFqybEPw4sdtA0fiGkC+ZYDi8
+ sdGEmAvW7046MpL/Ls0ZC+WyXD02IAIMT1rjztCsqil/vADHfwpYVX/zW1K2ng==
+DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=linutronix.de;
+ s=2020e; t=1632611631;
+ h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+ to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+ in-reply-to:in-reply-to:references:references;
+ bh=9J1ZoWGzgKNdZv1+1GPUZPbyfLKSZPwa1SsfVGgVfHQ=;
+ b=2fn9k0dgSRbyGhKEwcwH3kl5WrR5oObMGA0cPN5ttKpUdYJCWHgIHtKO+PbifQ/Ymveede
+ RMneKVoWKNgXQDAA==
+To: Fenghua Yu <fenghua.yu@intel.com>
+Subject: Re: [PATCH 5/8] x86/mmu: Add mm-based PASID refcounting
+In-Reply-To: <YU34+1J4v0cn9ZRs@otcwcpicx3.sc.intel.com>
+References: <20210920192349.2602141-1-fenghua.yu@intel.com>
+ <20210920192349.2602141-6-fenghua.yu@intel.com> <87y27nfjel.ffs@tglx>
+ <YUyuEjlrcOeCp4qQ@agluck-desk2.amr.corp.intel.com> <87o88jfajo.ffs@tglx>
+ <87k0j6dsdn.ffs@tglx> <YU34+1J4v0cn9ZRs@otcwcpicx3.sc.intel.com>
+Date: Sun, 26 Sep 2021 01:13:50 +0200
+Message-ID: <87mto0ckpd.ffs@tglx>
 MIME-Version: 1.0
-Content-Disposition: inline
-Cc: iommu@lists.linux-foundation.org
+Cc: Ravi V Shankar <ravi.v.shankar@intel.com>, "Luck,
+ Tony" <tony.luck@intel.com>, Dave Jiang <dave.jiang@intel.com>,
+ Ashok Raj <ashok.raj@intel.com>, Peter Zijlstra <peterz@infradead.org>,
+ x86 <x86@kernel.org>, linux-kernel <linux-kernel@vger.kernel.org>,
+ Dave Hansen <dave.hansen@intel.com>, iommu@lists.linux-foundation.org,
+ Ingo Molnar <mingo@redhat.com>, Borislav Petkov <bp@alien8.de>,
+ Jacob Jun Pan <jacob.jun.pan@intel.com>, Andy Lutomirski <luto@kernel.org>,
+ Josh Poimboeuf <jpoimboe@redhat.com>
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -68,110 +100,112 @@ Content-Transfer-Encoding: 7bit
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-This patch makes iommu/amd call report_iommu_fault() when an I/O page
-fault occurs, which has two effects:
+Fenghua,
 
-1) It allows device drivers to register a callback to be notified of
-   I/O page faults, via the iommu_set_fault_handler() API.
+On Fri, Sep 24 2021 at 16:12, Fenghua Yu wrote:
+> On Fri, Sep 24, 2021 at 03:18:12PM +0200, Thomas Gleixner wrote:
+>> But OTOH why do you need a per task reference count on the PASID at all?
+>> 
+>> The PASID is fundamentaly tied to the mm and the mm can't go away before
+>> the threads have gone away unless this magically changed after I checked
+>> that ~20 years ago.
+>
+> There are up to 1M PASIDs because PASID is 20-bit. I think there are a few ways
+> to allocate and free PASID:
+>
+> 1. Statically allocate a PASID once a mm is created and free it in mm
+>    exit. No PASID allocation/free during the mm's lifetime. Then
+>    up to 1M processes can be created due to 1M PASIDs limitation.
+>    We don't want this method because the 1M processes limitation.
 
-2) It triggers the io_page_fault tracepoint in report_iommu_fault()
-   when an I/O page fault occurs.
+I'm not so worried about the 1M limitation, but it obviously makes sense
+to avoid that because allocating stuff which is not used is pointless in
+general.
 
-The latter point is the main aim of this patch, as it allows
-rasdaemon-like daemons to be notified of I/O page faults, and to
-possibly initiate corrective action in response.
+> 2. A PASID is allocated to the mm in open(dev)->bind(dev, mm). There
+>    are three ways to free it:
+>    (a) Actively free it in close(fd)->unbind(dev, mm) by sending
+>        IPIs to tell all tasks using the PASID to clear the IA32_PASID
+>        MSR. This has locking issues similar to the actively loading
+>        IA32_PASID MSR which was force disabled in upstream. So won't work.
 
-A number of other IOMMU drivers already use report_iommu_fault(), and
-I/O page faults on those IOMMUs therefore already trigger this
-tracepoint -- but this isn't yet the case for AMD-Vi and Intel DMAR.
+Exactly.
 
-The AMD IOMMU specification suggests that the bit in an I/O page fault
-event log entry that signals whether an I/O page fault was for a read
-request or for a write request is only meaningful when the faulting
-access was to a present page, but some testing on a Ryzen 3700X suggests
-that this bit encodes the correct value even for I/O page faults to
-non-present pages, and therefore, this patch passes the R/W information
-up the stack even for I/O page faults to non-present pages.
+>    (b) Passively free the PASID in destroy_context(mm) in mm exit. Once
+>        the PASID is allocated, it stays with the process for the lifetime. It's
+>        better than #1 because the PASID is allocated only on demand.
 
-Signed-off-by: Lennert Buytenhek <buytenh@arista.com>
----
-Tested on v5.15-rc2 on a Ryzen 3700X, where it has the desired effect.
+Which is simple and makes a lot of sense. See below.
 
-Changes for v4:
-- Unconditionally pass through RW bit, after testing that suggests 
-  that this bit is reliable even for I/O page faults to non-present
-  pages.
+>    (c) Passively free the PASID in deactive_mm(mm) or unbind() whenever there
+>        is no usage as implemented in this series. Tracking the PASID usage
+>        per task provides a chance to free the PASID on task exit. The
+>        PASID has a better chance to be freed earlier than mm exit in #(b).
+>
+> This series uses #2 and #(c) to allocate and free the PASID for a better
+> chance to ease the 1M PASIDs limitation pressure. For example, a thread
+> doing open(dev)->ENQCMD->close(fd)->exit(2) will not occupy a PASID while
+> its sibling threads are still running.
 
-Changes for v3:
-- Test fault flags via macros.  (Suggested by Suravee Suthikulpanit.)
+I'm not seeing that as a realistic problem. Applications which use this
+kind of devices are unlikely to behave exactly that way.
 
-Changes for v2:
-- Don't call report_iommu_fault() for IRQ remapping faults.
-  (Suggested by Joerg Roedel.)
+2^20 PASIDs are really plenty and just adding code for the theoretical
+case of PASID pressure is a pointless exercise IMO. It just adds
+complexity for no reason.
 
- drivers/iommu/amd/amd_iommu_types.h |  2 ++
- drivers/iommu/amd/iommu.c           | 19 +++++++++++++++++++
- 2 files changed, 21 insertions(+)
+IMO reality will be that either you have long lived processes with tons
+of threads which use such devices over and over or short lived forked
+processes which open the device, do the job, close and exit. Both
+scenarios are fine with allocate on first use and drop on process exit.
 
-diff --git a/drivers/iommu/amd/amd_iommu_types.h b/drivers/iommu/amd/amd_iommu_types.h
-index 8dbe61e2b3c1..867535eb0ce9 100644
---- a/drivers/iommu/amd/amd_iommu_types.h
-+++ b/drivers/iommu/amd/amd_iommu_types.h
-@@ -138,6 +138,8 @@
- #define EVENT_DOMID_MASK_HI	0xf0000
- #define EVENT_FLAGS_MASK	0xfff
- #define EVENT_FLAGS_SHIFT	0x10
-+#define EVENT_FLAG_RW		0x020
-+#define EVENT_FLAG_I		0x008
- 
- /* feature control bits */
- #define CONTROL_IOMMU_EN        0x00ULL
-diff --git a/drivers/iommu/amd/iommu.c b/drivers/iommu/amd/iommu.c
-index 1722bb161841..7b592aba06f5 100644
---- a/drivers/iommu/amd/iommu.c
-+++ b/drivers/iommu/amd/iommu.c
-@@ -473,6 +473,12 @@ static void amd_iommu_report_rmp_fault(volatile u32 *event)
- 		pci_dev_put(pdev);
- }
- 
-+#define IS_IOMMU_MEM_TRANSACTION(flags)		\
-+	(((flags) & EVENT_FLAG_I) == 0)
-+
-+#define IS_WRITE_REQUEST(flags)			\
-+	((flags) & EVENT_FLAG_RW)
-+
- static void amd_iommu_report_page_fault(u16 devid, u16 domain_id,
- 					u64 address, int flags)
- {
-@@ -484,6 +490,18 @@ static void amd_iommu_report_page_fault(u16 devid, u16 domain_id,
- 	if (pdev)
- 		dev_data = dev_iommu_priv_get(&pdev->dev);
- 
-+	/*
-+	 * If this is a DMA fault (for which the I(nterrupt) bit will
-+	 * be unset), allow report_iommu_fault() to prevent logging it.
-+	 */
-+	if (dev_data && IS_IOMMU_MEM_TRANSACTION(flags)) {
-+		if (!report_iommu_fault(&dev_data->domain->domain,
-+					&pdev->dev, address,
-+					IS_WRITE_REQUEST(flags) ?
-+					IOMMU_FAULT_WRITE : IOMMU_FAULT_READ))
-+			goto out;
-+	}
-+
- 	if (dev_data) {
- 		if (__ratelimit(&dev_data->rs)) {
- 			pci_err(pdev, "Event logged [IO_PAGE_FAULT domain=0x%04x address=0x%llx flags=0x%04x]\n",
-@@ -495,6 +513,7 @@ static void amd_iommu_report_page_fault(u16 devid, u16 domain_id,
- 			domain_id, address, flags);
- 	}
- 
-+out:
- 	if (pdev)
- 		pci_dev_put(pdev);
- }
--- 
-2.31.1
+I think with your approach you create overhead for applications which
+use thread pools where the threads get work thrown at them and do open()
+-> do_stuff() -> close() and then go back to wait for the next job which
+will do exactly the same thing. So you add the overhead of refcounts in
+general and in the worst case if the refcount drops to zero then the
+next worker has to allocate a new PASID instead of just moving on.
+
+So unless you have a really compelling real world usecase argument, I'm
+arguing that the PASID pressure problem is a purely academic exercise.
+
+I think you are conflating two things here:
+
+  1) PASID lifetime
+  2) PASID MSR overhead
+
+Which is not correct: You still can and have to optimize the per thread
+behaviour vs. the PASID MSR: Track per thread whether it ever needed the
+PASID and act upon that.
+
+If the thread just does EMQCMD once in it's lifetime, then so be
+it. That's not a realistic use case, really.
+
+And if someone does this then this does not mean we have to optimize for
+that. Optimizing for possible stupid implementations is the wrong
+approach. There is no technial measure against stupidity. If that would
+exist the world would be a much better place.
+
+You really have to think about the problem space you are working
+on. There are problems which need a 'get it right at the first shot'
+solution because they create user space ABI or otheer hard to fix
+dependencies.
+
+That's absolutely not the case here.
+
+Get the basic simple support correct and work from there. Trying to
+solve all possible theoretical problems upfront is simply not possible
+and a guarantee for not making progress.
+
+"Keep it simple" and "correctness first" are still the best working
+engineering principles.
+
+They do not prevent us from revisiting this _if_ there is a real world
+problem which makes enough sense to implement a finer grained solution.
+
+Thanks,
+
+        tglx
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
