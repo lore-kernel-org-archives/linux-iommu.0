@@ -1,88 +1,70 @@
-Return-Path: <SRS0=58fP=OP=lists.linux-foundation.org=iommu-bounces@kernel.org>
+Return-Path: <SRS0=RzN/=OQ=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D758CC433F5
-	for <iommu@archiver.kernel.org>; Sat, 25 Sep 2021 23:13:59 +0000 (UTC)
-Received: from smtp3.osuosl.org (smtp3.osuosl.org [140.211.166.136])
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 378F7C433F5
+	for <iommu@archiver.kernel.org>; Sun, 26 Sep 2021 02:46:48 +0000 (UTC)
+Received: from smtp1.osuosl.org (smtp1.osuosl.org [140.211.166.138])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 3C6CB6108C
-	for <iommu@archiver.kernel.org>; Sat, 25 Sep 2021 23:13:59 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.4.1 mail.kernel.org 3C6CB6108C
-Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=linutronix.de
+	by mail.kernel.org (Postfix) with ESMTPS id B832960F58
+	for <iommu@archiver.kernel.org>; Sun, 26 Sep 2021 02:46:47 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.4.1 mail.kernel.org B832960F58
+Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=linux.intel.com
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by smtp3.osuosl.org (Postfix) with ESMTP id F03B2605FA;
-	Sat, 25 Sep 2021 23:13:58 +0000 (UTC)
+	by smtp1.osuosl.org (Postfix) with ESMTP id 75EB681BC0;
+	Sun, 26 Sep 2021 02:46:47 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from smtp3.osuosl.org ([127.0.0.1])
-	by localhost (smtp3.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id O3sZvcPhYa2U; Sat, 25 Sep 2021 23:13:58 +0000 (UTC)
-Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by smtp3.osuosl.org (Postfix) with ESMTPS id BBCF7605F7;
-	Sat, 25 Sep 2021 23:13:57 +0000 (UTC)
-Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 9149AC0011;
-	Sat, 25 Sep 2021 23:13:57 +0000 (UTC)
-Received: from smtp1.osuosl.org (smtp1.osuosl.org [IPv6:2605:bc80:3010::138])
- by lists.linuxfoundation.org (Postfix) with ESMTP id EEEECC000D
- for <iommu@lists.linux-foundation.org>; Sat, 25 Sep 2021 23:13:55 +0000 (UTC)
-Received: from localhost (localhost [127.0.0.1])
- by smtp1.osuosl.org (Postfix) with ESMTP id E5325827F3
- for <iommu@lists.linux-foundation.org>; Sat, 25 Sep 2021 23:13:55 +0000 (UTC)
-X-Virus-Scanned: amavisd-new at osuosl.org
-Authentication-Results: smtp1.osuosl.org (amavisd-new);
- dkim=pass (2048-bit key) header.d=linutronix.de header.b="aRMjDoov";
- dkim=neutral reason="invalid (unsupported algorithm ed25519-sha256)"
- header.d=linutronix.de header.b="2fn9k0dg"
 Received: from smtp1.osuosl.org ([127.0.0.1])
- by localhost (smtp1.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id UgbZzP7_pvld for <iommu@lists.linux-foundation.org>;
- Sat, 25 Sep 2021 23:13:55 +0000 (UTC)
+	by localhost (smtp1.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+	with ESMTP id MdBjjVIpUf5l; Sun, 26 Sep 2021 02:46:46 +0000 (UTC)
+Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [IPv6:2605:bc80:3010:104::8cd3:938])
+	by smtp1.osuosl.org (Postfix) with ESMTPS id 40E6681BA9;
+	Sun, 26 Sep 2021 02:46:46 +0000 (UTC)
+Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 17935C000F;
+	Sun, 26 Sep 2021 02:46:46 +0000 (UTC)
+Received: from smtp2.osuosl.org (smtp2.osuosl.org [140.211.166.133])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id B0017C000D
+ for <iommu@lists.linux-foundation.org>; Sun, 26 Sep 2021 02:46:44 +0000 (UTC)
+Received: from localhost (localhost [127.0.0.1])
+ by smtp2.osuosl.org (Postfix) with ESMTP id 8857B401E4
+ for <iommu@lists.linux-foundation.org>; Sun, 26 Sep 2021 02:46:44 +0000 (UTC)
+X-Virus-Scanned: amavisd-new at osuosl.org
+Received: from smtp2.osuosl.org ([127.0.0.1])
+ by localhost (smtp2.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+ with ESMTP id RHAul7JIHiO1 for <iommu@lists.linux-foundation.org>;
+ Sun, 26 Sep 2021 02:46:43 +0000 (UTC)
 X-Greylist: domain auto-whitelisted by SQLgrey-1.8.0
-Received: from galois.linutronix.de (Galois.linutronix.de
- [IPv6:2a0a:51c0:0:12e:550::1])
- by smtp1.osuosl.org (Postfix) with ESMTPS id C890582882
- for <iommu@lists.linux-foundation.org>; Sat, 25 Sep 2021 23:13:54 +0000 (UTC)
-From: Thomas Gleixner <tglx@linutronix.de>
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linutronix.de;
- s=2020; t=1632611631;
- h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
- to:to:cc:cc:mime-version:mime-version:content-type:content-type:
- in-reply-to:in-reply-to:references:references;
- bh=9J1ZoWGzgKNdZv1+1GPUZPbyfLKSZPwa1SsfVGgVfHQ=;
- b=aRMjDoovmn+6TE0WowDE7NBKLJwoTt1uwyIORPZK27b9OMiXyryB1E5SS4hw/rshuEXGye
- Ah1OKFBcr5BncroOYMPCaIHJe3+O+NUponQX2zG57PTH0f50+I7nzRa9hHgO81r/1sv2yV
- 0P5v2TJwBWMsGr10qHpOhv2NCw6zjK9Jk7rXUMh3JuNOHakxqbI02i9RqL1mTMaKpPhihW
- Qck3urRos4+/D6rV/Jj26mcU6FSyRtKLgi7MrTJYXX2CTRFqybEPw4sdtA0fiGkC+ZYDi8
- sdGEmAvW7046MpL/Ls0ZC+WyXD02IAIMT1rjztCsqil/vADHfwpYVX/zW1K2ng==
-DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=linutronix.de;
- s=2020e; t=1632611631;
- h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
- to:to:cc:cc:mime-version:mime-version:content-type:content-type:
- in-reply-to:in-reply-to:references:references;
- bh=9J1ZoWGzgKNdZv1+1GPUZPbyfLKSZPwa1SsfVGgVfHQ=;
- b=2fn9k0dgSRbyGhKEwcwH3kl5WrR5oObMGA0cPN5ttKpUdYJCWHgIHtKO+PbifQ/Ymveede
- RMneKVoWKNgXQDAA==
-To: Fenghua Yu <fenghua.yu@intel.com>
-Subject: Re: [PATCH 5/8] x86/mmu: Add mm-based PASID refcounting
-In-Reply-To: <YU34+1J4v0cn9ZRs@otcwcpicx3.sc.intel.com>
-References: <20210920192349.2602141-1-fenghua.yu@intel.com>
- <20210920192349.2602141-6-fenghua.yu@intel.com> <87y27nfjel.ffs@tglx>
- <YUyuEjlrcOeCp4qQ@agluck-desk2.amr.corp.intel.com> <87o88jfajo.ffs@tglx>
- <87k0j6dsdn.ffs@tglx> <YU34+1J4v0cn9ZRs@otcwcpicx3.sc.intel.com>
-Date: Sun, 26 Sep 2021 01:13:50 +0200
-Message-ID: <87mto0ckpd.ffs@tglx>
+Received: from mga05.intel.com (mga05.intel.com [192.55.52.43])
+ by smtp2.osuosl.org (Postfix) with ESMTPS id 218EB4010D
+ for <iommu@lists.linux-foundation.org>; Sun, 26 Sep 2021 02:46:42 +0000 (UTC)
+X-IronPort-AV: E=McAfee;i="6200,9189,10118"; a="309864194"
+X-IronPort-AV: E=Sophos;i="5.85,322,1624345200"; d="scan'208";a="309864194"
+Received: from orsmga007.jf.intel.com ([10.7.209.58])
+ by fmsmga105.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384;
+ 25 Sep 2021 19:46:42 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.85,322,1624345200"; d="scan'208";a="475573998"
+Received: from allen-box.sh.intel.com (HELO [10.239.159.118])
+ ([10.239.159.118])
+ by orsmga007.jf.intel.com with ESMTP; 25 Sep 2021 19:46:39 -0700
+Subject: Re: [PATCH 1/1] iommu/vt-d: Use second level for GPA->HPA translation
+To: "Tian, Kevin" <kevin.tian@intel.com>, Joerg Roedel <joro@8bytes.org>
+References: <20210924022931.780963-1-baolu.lu@linux.intel.com>
+ <BN9PR11MB54338F4F946F5E9BD3D4D5388CA49@BN9PR11MB5433.namprd11.prod.outlook.com>
+From: Lu Baolu <baolu.lu@linux.intel.com>
+Message-ID: <047dec82-4530-ab93-d8f1-a21405a1d955@linux.intel.com>
+Date: Sun, 26 Sep 2021 10:43:11 +0800
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
+ Thunderbird/78.13.0
 MIME-Version: 1.0
-Cc: Ravi V Shankar <ravi.v.shankar@intel.com>, "Luck,
- Tony" <tony.luck@intel.com>, Dave Jiang <dave.jiang@intel.com>,
- Ashok Raj <ashok.raj@intel.com>, Peter Zijlstra <peterz@infradead.org>,
- x86 <x86@kernel.org>, linux-kernel <linux-kernel@vger.kernel.org>,
- Dave Hansen <dave.hansen@intel.com>, iommu@lists.linux-foundation.org,
- Ingo Molnar <mingo@redhat.com>, Borislav Petkov <bp@alien8.de>,
- Jacob Jun Pan <jacob.jun.pan@intel.com>, Andy Lutomirski <luto@kernel.org>,
- Josh Poimboeuf <jpoimboe@redhat.com>
+In-Reply-To: <BN9PR11MB54338F4F946F5E9BD3D4D5388CA49@BN9PR11MB5433.namprd11.prod.outlook.com>
+Content-Language: en-US
+Cc: "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+ "iommu@lists.linux-foundation.org" <iommu@lists.linux-foundation.org>, "Raj,
+ Ashok" <ashok.raj@intel.com>
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -95,117 +77,169 @@ List-Post: <mailto:iommu@lists.linux-foundation.org>
 List-Help: <mailto:iommu-request@lists.linux-foundation.org?subject=help>
 List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
  <mailto:iommu-request@lists.linux-foundation.org?subject=subscribe>
-Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset="us-ascii"; Format="flowed"
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-Fenghua,
+Hi Kevin,
 
-On Fri, Sep 24 2021 at 16:12, Fenghua Yu wrote:
-> On Fri, Sep 24, 2021 at 03:18:12PM +0200, Thomas Gleixner wrote:
->> But OTOH why do you need a per task reference count on the PASID at all?
->> 
->> The PASID is fundamentaly tied to the mm and the mm can't go away before
->> the threads have gone away unless this magically changed after I checked
->> that ~20 years ago.
->
-> There are up to 1M PASIDs because PASID is 20-bit. I think there are a few ways
-> to allocate and free PASID:
->
-> 1. Statically allocate a PASID once a mm is created and free it in mm
->    exit. No PASID allocation/free during the mm's lifetime. Then
->    up to 1M processes can be created due to 1M PASIDs limitation.
->    We don't want this method because the 1M processes limitation.
+Thanks for reviewing my patch.
 
-I'm not so worried about the 1M limitation, but it obviously makes sense
-to avoid that because allocating stuff which is not used is pointless in
-general.
+On 9/24/21 11:16 AM, Tian, Kevin wrote:
+>> From: Lu Baolu <baolu.lu@linux.intel.com>
+>> Sent: Friday, September 24, 2021 10:30 AM
+>>
+>> The IOMMU VT-d implementation uses the first level for GPA->HPA
+>> translation
+>> by default. Although both the first level and the second level could handle
+>> the DMA translation, they are different in some way. For example, the
+>> second
+>> level translation has separate controls for the Access/Dirty page tracking
+>> and the page-level forcing snoop. With first level translation, there're
+>> no such controls. This uses the second level for GPA->HPA translation so
+> 
+> first-level has no page-granular snoop control, but has a global control
+> in pasid entry.
 
-> 2. A PASID is allocated to the mm in open(dev)->bind(dev, mm). There
->    are three ways to free it:
->    (a) Actively free it in close(fd)->unbind(dev, mm) by sending
->        IPIs to tell all tasks using the PASID to clear the IA32_PASID
->        MSR. This has locking issues similar to the actively loading
->        IA32_PASID MSR which was force disabled in upstream. So won't work.
+Agreed. Will add this.
 
-Exactly.
+> 
+>> that it could provide a consistent hardware interface for use cases like
+>> dirty page tracking during the VM live migration.
+>>
+>> Signed-off-by: Lu Baolu <baolu.lu@linux.intel.com>
+>> ---
+>>   include/linux/intel-iommu.h |  7 ++-----
+>>   drivers/iommu/intel/iommu.c | 21 +++++++++++++--------
+>>   2 files changed, 15 insertions(+), 13 deletions(-)
+>>
+>> diff --git a/include/linux/intel-iommu.h b/include/linux/intel-iommu.h
+>> index 05a65eb155f7..a5fb20702201 100644
+>> --- a/include/linux/intel-iommu.h
+>> +++ b/include/linux/intel-iommu.h
+>> @@ -517,22 +517,19 @@ struct context_entry {
+>>   	u64 hi;
+>>   };
+>>
+>> -/* si_domain contains mulitple devices */
+>> -#define DOMAIN_FLAG_STATIC_IDENTITY		BIT(0)
+> 
+> this is a separate cleanup. better mention it in the commit msg or
+> put in another patch.
 
->    (b) Passively free the PASID in destroy_context(mm) in mm exit. Once
->        the PASID is allocated, it stays with the process for the lifetime. It's
->        better than #1 because the PASID is allocated only on demand.
+Sure.
 
-Which is simple and makes a lot of sense. See below.
+> 
+>> -
+>>   /*
+>>    * When VT-d works in the scalable mode, it allows DMA translation to
+>>    * happen through either first level or second level page table. This
+>>    * bit marks that the DMA translation for the domain goes through the
+>>    * first level page table, otherwise, it goes through the second level.
+>>    */
+>> -#define DOMAIN_FLAG_USE_FIRST_LEVEL		BIT(1)
+>> +#define DOMAIN_FLAG_USE_FIRST_LEVEL		BIT(0)
+>>
+>>   /*
+>>    * Domain represents a virtual machine which demands iommu nested
+>>    * translation mode support.
+>>    */
+>> -#define DOMAIN_FLAG_NESTING_MODE		BIT(2)
+>> +#define DOMAIN_FLAG_NESTING_MODE		BIT(1)
+>>
+>>   struct dmar_domain {
+>>   	int	nid;			/* node id */
+>> diff --git a/drivers/iommu/intel/iommu.c b/drivers/iommu/intel/iommu.c
+>> index d75f59ae28e6..c814fea0522e 100644
+>> --- a/drivers/iommu/intel/iommu.c
+>> +++ b/drivers/iommu/intel/iommu.c
+>> @@ -522,7 +522,7 @@ static inline void free_devinfo_mem(void *vaddr)
+>>
+>>   static inline int domain_type_is_si(struct dmar_domain *domain)
+>>   {
+>> -	return domain->flags & DOMAIN_FLAG_STATIC_IDENTITY;
+>> +	return domain->domain.type == IOMMU_DOMAIN_IDENTITY;
+>>   }
+>>
+>>   static inline bool domain_use_first_level(struct dmar_domain *domain)
+>> @@ -1874,12 +1874,18 @@ static void free_dmar_iommu(struct
+>> intel_iommu *iommu)
+>>    * Check and return whether first level is used by default for
+>>    * DMA translation.
+>>    */
+>> -static bool first_level_by_default(void)
+>> +static bool first_level_by_default(unsigned int type)
+>>   {
+>> -	return scalable_mode_support() && intel_cap_flts_sanity();
+>> +	if (type == IOMMU_DOMAIN_UNMANAGED)
+>> +		return false;
+>> +
+> 
+> I think the order is not correct. what about 2nd level is even not
+> present?
 
->    (c) Passively free the PASID in deactive_mm(mm) or unbind() whenever there
->        is no usage as implemented in this series. Tracking the PASID usage
->        per task provides a chance to free the PASID on task exit. The
->        PASID has a better chance to be freed earlier than mm exit in #(b).
->
-> This series uses #2 and #(c) to allocate and free the PASID for a better
-> chance to ease the 1M PASIDs limitation pressure. For example, a thread
-> doing open(dev)->ENQCMD->close(fd)->exit(2) will not occupy a PASID while
-> its sibling threads are still running.
+Fair enough. How about
 
-I'm not seeing that as a realistic problem. Applications which use this
-kind of devices are unlikely to behave exactly that way.
+#1) hardware only capable of first level, return true
+#2) hardware only capable of second level, return false
 
-2^20 PASIDs are really plenty and just adding code for the theoretical
-case of PASID pressure is a pointless exercise IMO. It just adds
-complexity for no reason.
+(we fail iommu initialization if neither FL nor SL)
+Then, both FL and SL are supported.
 
-IMO reality will be that either you have long lived processes with tons
-of threads which use such devices over and over or short lived forked
-processes which open the device, do the job, close and exit. Both
-scenarios are fine with allocate on first use and drop on process exit.
+#3) domain is type of UNMANAGED, return false
+#4) otherwise, return true.
 
-I think with your approach you create overhead for applications which
-use thread pools where the threads get work thrown at them and do open()
--> do_stuff() -> close() and then go back to wait for the next job which
-will do exactly the same thing. So you add the overhead of refcounts in
-general and in the worst case if the refcount drops to zero then the
-next worker has to allocate a new PASID instead of just moving on.
+Does this make sense?
 
-So unless you have a really compelling real world usecase argument, I'm
-arguing that the PASID pressure problem is a purely academic exercise.
+> 
+> 
+>> +	if (!scalable_mode_support() || !intel_cap_flts_sanity())
+>> +		return false;
+>> +
+>> +	return true;
+>>   }
+>>
+>> -static struct dmar_domain *alloc_domain(int flags)
+>> +static struct dmar_domain *alloc_domain(unsigned int type)
+>>   {
+>>   	struct dmar_domain *domain;
+>>
+>> @@ -1889,8 +1895,7 @@ static struct dmar_domain *alloc_domain(int flags)
+>>
+>>   	memset(domain, 0, sizeof(*domain));
+>>   	domain->nid = NUMA_NO_NODE;
+>> -	domain->flags = flags;
+>> -	if (first_level_by_default())
+>> +	if (first_level_by_default(type))
+>>   		domain->flags |= DOMAIN_FLAG_USE_FIRST_LEVEL;
+>>   	domain->has_iotlb_device = false;
+>>   	INIT_LIST_HEAD(&domain->devices);
+>> @@ -2708,7 +2713,7 @@ static int __init si_domain_init(int hw)
+>>   	struct device *dev;
+>>   	int i, nid, ret;
+>>
+>> -	si_domain = alloc_domain(DOMAIN_FLAG_STATIC_IDENTITY);
+>> +	si_domain = alloc_domain(IOMMU_DOMAIN_IDENTITY);
+>>   	if (!si_domain)
+>>   		return -EFAULT;
+>>
+>> @@ -4517,7 +4522,7 @@ static struct iommu_domain
+>> *intel_iommu_domain_alloc(unsigned type)
+>>   	case IOMMU_DOMAIN_DMA:
+>>   	case IOMMU_DOMAIN_DMA_FQ:
+>>   	case IOMMU_DOMAIN_UNMANAGED:
+>> -		dmar_domain = alloc_domain(0);
+>> +		dmar_domain = alloc_domain(type);
+>>   		if (!dmar_domain) {
+>>   			pr_err("Can't allocate dmar_domain\n");
+>>   			return NULL;
+>> --
+>> 2.25.1
+> 
 
-I think you are conflating two things here:
-
-  1) PASID lifetime
-  2) PASID MSR overhead
-
-Which is not correct: You still can and have to optimize the per thread
-behaviour vs. the PASID MSR: Track per thread whether it ever needed the
-PASID and act upon that.
-
-If the thread just does EMQCMD once in it's lifetime, then so be
-it. That's not a realistic use case, really.
-
-And if someone does this then this does not mean we have to optimize for
-that. Optimizing for possible stupid implementations is the wrong
-approach. There is no technial measure against stupidity. If that would
-exist the world would be a much better place.
-
-You really have to think about the problem space you are working
-on. There are problems which need a 'get it right at the first shot'
-solution because they create user space ABI or otheer hard to fix
-dependencies.
-
-That's absolutely not the case here.
-
-Get the basic simple support correct and work from there. Trying to
-solve all possible theoretical problems upfront is simply not possible
-and a guarantee for not making progress.
-
-"Keep it simple" and "correctness first" are still the best working
-engineering principles.
-
-They do not prevent us from revisiting this _if_ there is a real world
-problem which makes enough sense to implement a finer grained solution.
-
-Thanks,
-
-        tglx
+Best regards,
+baolu
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
