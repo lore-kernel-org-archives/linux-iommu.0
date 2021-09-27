@@ -2,91 +2,119 @@ Return-Path: <SRS0=QBaT=OR=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E2579C433EF
-	for <iommu@archiver.kernel.org>; Mon, 27 Sep 2021 23:13:53 +0000 (UTC)
-Received: from smtp2.osuosl.org (smtp2.osuosl.org [140.211.166.133])
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0E97CC433F5
+	for <iommu@archiver.kernel.org>; Mon, 27 Sep 2021 23:51:35 +0000 (UTC)
+Received: from smtp3.osuosl.org (smtp3.osuosl.org [140.211.166.136])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 8CBDD611BD
-	for <iommu@archiver.kernel.org>; Mon, 27 Sep 2021 23:13:53 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.4.1 mail.kernel.org 8CBDD611BD
+	by mail.kernel.org (Postfix) with ESMTPS id AEBEB600CC
+	for <iommu@archiver.kernel.org>; Mon, 27 Sep 2021 23:51:34 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.4.1 mail.kernel.org AEBEB600CC
 Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=intel.com
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by smtp2.osuosl.org (Postfix) with ESMTP id 44A0440519;
-	Mon, 27 Sep 2021 23:13:53 +0000 (UTC)
+	by smtp3.osuosl.org (Postfix) with ESMTP id 6FA8E60ABF;
+	Mon, 27 Sep 2021 23:51:34 +0000 (UTC)
+X-Virus-Scanned: amavisd-new at osuosl.org
+Received: from smtp3.osuosl.org ([127.0.0.1])
+	by localhost (smtp3.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+	with ESMTP id AU7QriY5ZS7o; Mon, 27 Sep 2021 23:51:33 +0000 (UTC)
+Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
+	by smtp3.osuosl.org (Postfix) with ESMTPS id 3D20060799;
+	Mon, 27 Sep 2021 23:51:33 +0000 (UTC)
+Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
+	by lists.linuxfoundation.org (Postfix) with ESMTP id ED8C1C0011;
+	Mon, 27 Sep 2021 23:51:32 +0000 (UTC)
+Received: from smtp2.osuosl.org (smtp2.osuosl.org [140.211.166.133])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 27B7CC000D
+ for <iommu@lists.linux-foundation.org>; Mon, 27 Sep 2021 23:51:31 +0000 (UTC)
+Received: from localhost (localhost [127.0.0.1])
+ by smtp2.osuosl.org (Postfix) with ESMTP id 15CE4401FC
+ for <iommu@lists.linux-foundation.org>; Mon, 27 Sep 2021 23:51:31 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
 Received: from smtp2.osuosl.org ([127.0.0.1])
-	by localhost (smtp2.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id FjPBLUY24ODZ; Mon, 27 Sep 2021 23:13:52 +0000 (UTC)
-Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [IPv6:2605:bc80:3010:104::8cd3:938])
-	by smtp2.osuosl.org (Postfix) with ESMTPS id CFD74402A6;
-	Mon, 27 Sep 2021 23:13:51 +0000 (UTC)
-Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id A3EDDC0011;
-	Mon, 27 Sep 2021 23:13:51 +0000 (UTC)
-Received: from smtp1.osuosl.org (smtp1.osuosl.org [140.211.166.138])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 59DFEC000D
- for <iommu@lists.linux-foundation.org>; Mon, 27 Sep 2021 23:13:51 +0000 (UTC)
-Received: from localhost (localhost [127.0.0.1])
- by smtp1.osuosl.org (Postfix) with ESMTP id 3AB7480F9F
- for <iommu@lists.linux-foundation.org>; Mon, 27 Sep 2021 23:13:51 +0000 (UTC)
-X-Virus-Scanned: amavisd-new at osuosl.org
-Authentication-Results: smtp1.osuosl.org (amavisd-new);
- dkim=pass (2048-bit key) header.d=intel-com.20210112.gappssmtp.com
-Received: from smtp1.osuosl.org ([127.0.0.1])
- by localhost (smtp1.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id sPKMusbeV2jJ for <iommu@lists.linux-foundation.org>;
- Mon, 27 Sep 2021 23:13:49 +0000 (UTC)
-X-Greylist: whitelisted by SQLgrey-1.8.0
-Received: from mail-pg1-x52d.google.com (mail-pg1-x52d.google.com
- [IPv6:2607:f8b0:4864:20::52d])
- by smtp1.osuosl.org (Postfix) with ESMTPS id CDD8180F95
- for <iommu@lists.linux-foundation.org>; Mon, 27 Sep 2021 23:13:49 +0000 (UTC)
-Received: by mail-pg1-x52d.google.com with SMTP id y186so7889040pgd.0
- for <iommu@lists.linux-foundation.org>; Mon, 27 Sep 2021 16:13:49 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
- d=intel-com.20210112.gappssmtp.com; s=20210112;
- h=mime-version:references:in-reply-to:from:date:message-id:subject:to
- :cc; bh=l4MzJ0yx9cD5fkatxhkgcIgfFDenItN2Wh8q8r9GPSA=;
- b=y3IML/IiRF9nk6cBsuR66v5EtYFXcqv9+kamXCWPCMEmblkdaeE1LDv5amUzTxiTzH
- smbfxg0LwR2V218iRSPpiFuCgmVRLUSkj7pYqhqmgQnV5vv2TqB24J5ubT28yxUUYXTo
- D0zbXxwlcZAJWgl4utsPM0PlopLNEmdM3vvLKn57U+H86myKPhwnJQq7IG/s2DwoyAAJ
- nYdarsvxXFoR6m5U8Ax9XOiRnxhWpSyPG8W9Gzhas3B0QBaG653TjG/ZCDCl3ABXKDFA
- NhSdzNY1WenPjh42aOdKY/IDxtuxgqRAmxJI5ZgWIONXlzwMUE/HGOxi3qv7aXY9d0cU
- 8TFQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
- d=1e100.net; s=20210112;
- h=x-gm-message-state:mime-version:references:in-reply-to:from:date
- :message-id:subject:to:cc;
- bh=l4MzJ0yx9cD5fkatxhkgcIgfFDenItN2Wh8q8r9GPSA=;
- b=JA8MXnDXj3IIpOuo0P1Dgvhi7IHcS6tZ6and58o7MBCo8kNkcJu53za4OnxuY5k26Q
- z9+sUwffDje/CaXqKrKtm3dOqJw1xN41D9hcFetu8vx1Vi37y38aeAg8bTEVe8rBHnok
- ahSnmnpdZAZltBE4R1/7YuquN8fph8aZfe7ZZcaDxG0Gok48Wupln3owlH3NJb9uCeYK
- B6GQsP/nDJl/cHTIolMyu288Mt46QwfCkil4lXWzCOl2Pabsxyv+9dQPXZbA5eY6kLKi
- sW9gFj4ZF7kT3+WxdhP0RNHSnzbTniKujIB6fW/mkvvARzT+Z7Lux+npYwpyKpbx+cWk
- XLBQ==
-X-Gm-Message-State: AOAM532SRJP/sbbqPuarwR+U+SNfHBp6NL+NMklbP93tAXbdj8LI5wsg
- yJqqyooWooSLkXsE4zl4R7BakkdecHIM4t2MmsSufw==
-X-Google-Smtp-Source: ABdhPJzlhMrLY74o1cFWM7LDOyTRznwGcz5LuxyrnypmeeMmsbLgr6YqtHQ2yRKjvE547QjRsLHUH/2m9VYlflG4fcU=
-X-Received: by 2002:a62:7f87:0:b0:444:b077:51ef with SMTP id
- a129-20020a627f87000000b00444b07751efmr2120157pfd.61.1632784429227; Mon, 27
- Sep 2021 16:13:49 -0700 (PDT)
+ by localhost (smtp2.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+ with ESMTP id lE6A2pxA0iXI for <iommu@lists.linux-foundation.org>;
+ Mon, 27 Sep 2021 23:51:30 +0000 (UTC)
+X-Greylist: domain auto-whitelisted by SQLgrey-1.8.0
+Received: from mga03.intel.com (mga03.intel.com [134.134.136.65])
+ by smtp2.osuosl.org (Postfix) with ESMTPS id 33BF0401E6
+ for <iommu@lists.linux-foundation.org>; Mon, 27 Sep 2021 23:51:30 +0000 (UTC)
+X-IronPort-AV: E=McAfee;i="6200,9189,10120"; a="224655040"
+X-IronPort-AV: E=Sophos;i="5.85,327,1624345200"; d="scan'208";a="224655040"
+Received: from fmsmga003.fm.intel.com ([10.253.24.29])
+ by orsmga103.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384;
+ 27 Sep 2021 16:51:29 -0700
+X-IronPort-AV: E=Sophos;i="5.85,327,1624345200"; d="scan'208";a="553548753"
+Received: from hasanmoh-mobl.amr.corp.intel.com (HELO [10.209.53.41])
+ ([10.209.53.41])
+ by fmsmga003-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384;
+ 27 Sep 2021 16:51:28 -0700
+Subject: Re: [PATCH 4/8] x86/traps: Demand-populate PASID MSR via #GP
+To: "Luck, Tony" <tony.luck@intel.com>, Andy Lutomirski <luto@kernel.org>
+References: <20210920192349.2602141-1-fenghua.yu@intel.com>
+ <20210920192349.2602141-5-fenghua.yu@intel.com>
+ <1aae375d-3cd4-4ab8-9c64-9e387916e6c0@www.fastmail.com>
+ <YVIxeBh3IKYYK711@agluck-desk2.amr.corp.intel.com>
+From: Dave Hansen <dave.hansen@intel.com>
+Autocrypt: addr=dave.hansen@intel.com; keydata=
+ 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
+ z5cecg==
+Message-ID: <035290e6-d914-a113-ea6c-e845d71069cf@intel.com>
+Date: Mon, 27 Sep 2021 16:51:25 -0700
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
+ Thunderbird/68.10.0
 MIME-Version: 1.0
-References: <20210923172647.72738-1-ben.widawsky@intel.com>
- <20210923172647.72738-2-ben.widawsky@intel.com>
-In-Reply-To: <20210923172647.72738-2-ben.widawsky@intel.com>
-From: Dan Williams <dan.j.williams@intel.com>
-Date: Mon, 27 Sep 2021 16:13:41 -0700
-Message-ID: <CAPcyv4gXiW7ap3dULCwcWLy1qkGOrgdJTBonfw5V7h6ZOQ-+AQ@mail.gmail.com>
-Subject: Re: [PATCH v2 1/9] cxl: Convert "RBI" to enum
-To: Ben Widawsky <ben.widawsky@intel.com>
-Cc: Andrew Donnellan <ajd@linux.ibm.com>, Linux PCI <linux-pci@vger.kernel.org>,
- linuxppc-dev <linuxppc-dev@lists.ozlabs.org>, linux-cxl@vger.kernel.org,
- "open list:DMA MAPPING HELPERS" <iommu@lists.linux-foundation.org>,
- Bjorn Helgaas <helgaas@kernel.org>,
- "David E. Box" <david.e.box@linux.intel.com>,
- David Woodhouse <dwmw2@infradead.org>, Kan Liang <kan.liang@linux.intel.com>
+In-Reply-To: <YVIxeBh3IKYYK711@agluck-desk2.amr.corp.intel.com>
+Content-Language: en-US
+Cc: Fenghua Yu <fenghua.yu@intel.com>, Dave Jiang <dave.jiang@intel.com>,
+ Raj Ashok <ashok.raj@intel.com>, "Shankar, Ravi V" <ravi.v.shankar@intel.com>,
+ "Peter Zijlstra \(Intel\)" <peterz@infradead.org>,
+ the arch/x86 maintainers <x86@kernel.org>,
+ Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+ iommu@lists.linux-foundation.org, Ingo Molnar <mingo@redhat.com>,
+ Borislav Petkov <bp@alien8.de>, Jacob Jun Pan <jacob.jun.pan@intel.com>,
+ Josh Poimboeuf <jpoimboe@redhat.com>, Thomas Gleixner <tglx@linutronix.de>
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -104,33 +132,69 @@ Content-Transfer-Encoding: 7bit
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-Please spell out "register block indicator" in the subject so that the
-shortlog remains somewhat readable.
+On 9/27/21 2:02 PM, Luck, Tony wrote:
+> Or are you thinking of a helper that does both the check
+> and the update ... so the code here could be:
+> 
+> 	update_one_xsave_feature(XFEATURE_PASID, &msr_val, sizeof(msr_val));
+> 
+> With the helper being something like:
+> 
+> void update_one_xsave_feature(enum xfeature xfeature, void *data, size_t size)
+> {
+> 	if (xsave_state_in_memory(args ...)) {
+> 		addr = get_xsave_addr(xsave, xfeature);
+> 		memcpy(addr, data, size);
+> 		xsave->header.xfeatures |= (1 << xfeature);
+> 		return;
+> 	}
+> 
+> 	switch (xfeature) {
+> 	case XFEATURE_PASID:
+> 		wrmsrl(MSR_IA32_PASID, *(u64 *)data);
+> 		break;
+> 
+> 	case each_of_the_other_XFEATURE_enums:
+> 		code to update registers for that XFEATURE
+> 	}
+> }
+> 
+> either way needs the definitive correct coding for xsave_state_in_memory()
 
-On Thu, Sep 23, 2021 at 10:27 AM Ben Widawsky <ben.widawsky@intel.com> wrote:
->
-> In preparation for passing around the Register Block Indicator (RBI) as
-> a parameter, it is desirable to convert the type to an enum so that the
-> interface can use a well defined type checked parameter.
+That's close to what we want.
 
-C wouldn't type check this unless it failed an integer conversion,
-right? It would need to be a struct to get useful type checking.
+The size should probably be implicit.  If it isn't implicit, it needs to
+at least be double-checked against the state sizes.
 
-I don't mind this for the self documenting properties it has for the
-functions that will take this as a parameter, but maybe clarify what
-you mean by type checked parameter?
+Not to get too fancy, but I think we also want to have a "replace"
+operation which is separate from the "update".  Think of a case where
+you are trying to set a bit:
 
->
-> As a result of this change, should future versions of the spec add
-> sparsely defined identifiers, it could become a problem if checking for
-> invalid identifiers since the code currently checks for the max
-> identifier. This is not an issue with current spec, and the algorithm to
-> obtain the register blocks will change before those possible additions
-> are made.
+	struct pkru_state *pk = start_update_xstate(tsk, XSTATE_PKRU);
+	pk->pkru |= 0x100;
+	finish_update_xstate(tsk, XSTATE_PKRU, pk);
 
-In general let's not spend changelog space trying to guess what future
-specs may or may not do. I.e. I think this text can be dropped,
-especially because enums can support sparse number spaces.
+versus setting a whole new value:
+
+	struct pkru_state *pk = start_replace_xstate(tsk, XSTATE_PKRU);
+	memset(pkru, sizeof(*pk), 0);
+	pk->pkru = 0x1234;
+	finish_replace_xstate(tsk, XSTATE_PKRU, pk);
+
+They look similar, but they actually might have very different costs for
+big states like AMX.  We can also do some very different debugging for
+them.  In normal operation, these _can_ just return pointers directly to
+the fpu...->xstate in some case.  But, if we're debugging, we could
+kmalloc() a buffer and do sanity checking before it goes into the task
+buffer.
+
+We don't have to do any of that fancy stuff now.  We don't even need to
+do an "update" if all we need for now for XFEATURE_PASID is a "replace".
+
+1. Hide whether we need to write to real registers
+2. Hide whether we need to update the in-memory image
+3. Hide other FPU infrastructure like the TIF flag.
+4. Make the users deal with a *whole* state in the replace API
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
