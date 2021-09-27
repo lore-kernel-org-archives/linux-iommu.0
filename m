@@ -2,98 +2,74 @@ Return-Path: <SRS0=QBaT=OR=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 48D26C433FE
-	for <iommu@archiver.kernel.org>; Mon, 27 Sep 2021 20:48:09 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 54754C433FE
+	for <iommu@archiver.kernel.org>; Mon, 27 Sep 2021 21:02:55 +0000 (UTC)
 Received: from smtp4.osuosl.org (smtp4.osuosl.org [140.211.166.137])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id E44E86103B
-	for <iommu@archiver.kernel.org>; Mon, 27 Sep 2021 20:48:08 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.4.1 mail.kernel.org E44E86103B
-Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=kernel.org
+	by mail.kernel.org (Postfix) with ESMTPS id CBAA161178
+	for <iommu@archiver.kernel.org>; Mon, 27 Sep 2021 21:02:54 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.4.1 mail.kernel.org CBAA161178
+Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=intel.com
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by smtp4.osuosl.org (Postfix) with ESMTP id B4C91404B8;
-	Mon, 27 Sep 2021 20:48:08 +0000 (UTC)
+	by smtp4.osuosl.org (Postfix) with ESMTP id 89CEB404B8;
+	Mon, 27 Sep 2021 21:02:54 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
 Received: from smtp4.osuosl.org ([127.0.0.1])
 	by localhost (smtp4.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id BGuxqyir2eU7; Mon, 27 Sep 2021 20:48:08 +0000 (UTC)
-Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by smtp4.osuosl.org (Postfix) with ESMTPS id 9DC1F404B9;
-	Mon, 27 Sep 2021 20:48:07 +0000 (UTC)
+	with ESMTP id Xltt21meS2st; Mon, 27 Sep 2021 21:02:53 +0000 (UTC)
+Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [IPv6:2605:bc80:3010:104::8cd3:938])
+	by smtp4.osuosl.org (Postfix) with ESMTPS id 5A6F140053;
+	Mon, 27 Sep 2021 21:02:53 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 570CCC001C;
-	Mon, 27 Sep 2021 20:48:07 +0000 (UTC)
-Received: from smtp4.osuosl.org (smtp4.osuosl.org [140.211.166.137])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 3C08FC000F
- for <iommu@lists.linux-foundation.org>; Mon, 27 Sep 2021 20:48:06 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 13A43C001C;
+	Mon, 27 Sep 2021 21:02:53 +0000 (UTC)
+Received: from smtp4.osuosl.org (smtp4.osuosl.org [IPv6:2605:bc80:3010::137])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 7FF77C000F
+ for <iommu@lists.linux-foundation.org>; Mon, 27 Sep 2021 21:02:51 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by smtp4.osuosl.org (Postfix) with ESMTP id 1389640536
- for <iommu@lists.linux-foundation.org>; Mon, 27 Sep 2021 20:48:06 +0000 (UTC)
+ by smtp4.osuosl.org (Postfix) with ESMTP id 67B1740053
+ for <iommu@lists.linux-foundation.org>; Mon, 27 Sep 2021 21:02:51 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
 Received: from smtp4.osuosl.org ([127.0.0.1])
  by localhost (smtp4.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id rjzX-RkBehEg for <iommu@lists.linux-foundation.org>;
- Mon, 27 Sep 2021 20:48:05 +0000 (UTC)
+ with ESMTP id 1gdKNGuU9t_l for <iommu@lists.linux-foundation.org>;
+ Mon, 27 Sep 2021 21:02:50 +0000 (UTC)
 X-Greylist: domain auto-whitelisted by SQLgrey-1.8.0
-Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
- by smtp4.osuosl.org (Postfix) with ESMTPS id 8DCB2404D6
- for <iommu@lists.linux-foundation.org>; Mon, 27 Sep 2021 20:48:05 +0000 (UTC)
-Received: by mail.kernel.org (Postfix) with ESMTPSA id 20B4761074
- for <iommu@lists.linux-foundation.org>; Mon, 27 Sep 2021 20:48:05 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
- s=k20201202; t=1632775685;
- bh=GHCCCNNGDh7j8AzsSAwR+7WjFwTTkZQkWzBp4yf5Anw=;
- h=References:In-Reply-To:From:Date:Subject:To:Cc:From;
- b=EtTYXuV99xHvDuCezChTC1fYR0ncVq3Rk1GokwMu8SQwpY+EmUiFM+RJIajTO8jW3
- VrmnSOnx8ztK/horbiFLR4Q1ZWDBNyvy7tKy9OeuG4ddMCv7tR6NZWpZqi+5myOFRZ
- fUlC6Cg5AZEODAOrfOLYA3DADysDTM/85vB/lrkAnFddU4ZJYrY9Qs93uwL2IgXWp2
- ShOzsV013bF2pbhJUOsUOYV7NBfbitxpmzxjeFzmgMdmeTIB3GqmWBkk202+UoozT6
- QbwxnW2Yp/G+PD6grSc1VyWUP3kS05HQi/kIejRv/Gb69g5//VZRJWFOBSMsttdGMH
- imsrWEit+NvGQ==
-Received: by mail-wr1-f48.google.com with SMTP id x20so9466312wrg.10
- for <iommu@lists.linux-foundation.org>; Mon, 27 Sep 2021 13:48:05 -0700 (PDT)
-X-Gm-Message-State: AOAM5316lrK1DTCYc+HLXVwh/2qXQPaGfFJjttqRgxfTtO/vdspCxqPa
- mct4+Ozletf00bFJagU1p5NIl6E1mJPVPZN9HXU=
-X-Google-Smtp-Source: ABdhPJyr//9nG+qcYuFmIIHo02EBLzzoRAIp7o7Kc5vnLIs/c/42qbXfOQSeIjG8WR8ZxK+L1GxrgnNIqE5zvhpeDJ8=
-X-Received: by 2002:a5d:6a08:: with SMTP id m8mr2207127wru.336.1632775683762; 
- Mon, 27 Sep 2021 13:48:03 -0700 (PDT)
+Received: from mga12.intel.com (mga12.intel.com [192.55.52.136])
+ by smtp4.osuosl.org (Postfix) with ESMTPS id BE821401BC
+ for <iommu@lists.linux-foundation.org>; Mon, 27 Sep 2021 21:02:50 +0000 (UTC)
+X-IronPort-AV: E=McAfee;i="6200,9189,10120"; a="204053401"
+X-IronPort-AV: E=Sophos;i="5.85,327,1624345200"; d="scan'208";a="204053401"
+Received: from fmsmga008.fm.intel.com ([10.253.24.58])
+ by fmsmga106.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384;
+ 27 Sep 2021 14:02:50 -0700
+X-IronPort-AV: E=Sophos;i="5.85,327,1624345200"; d="scan'208";a="518731694"
+Received: from agluck-desk2.sc.intel.com (HELO
+ agluck-desk2.amr.corp.intel.com) ([10.3.52.146])
+ by fmsmga008-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384;
+ 27 Sep 2021 14:02:50 -0700
+Date: Mon, 27 Sep 2021 14:02:48 -0700
+From: "Luck, Tony" <tony.luck@intel.com>
+To: Andy Lutomirski <luto@kernel.org>
+Subject: Re: [PATCH 4/8] x86/traps: Demand-populate PASID MSR via #GP
+Message-ID: <YVIxeBh3IKYYK711@agluck-desk2.amr.corp.intel.com>
+References: <20210920192349.2602141-1-fenghua.yu@intel.com>
+ <20210920192349.2602141-5-fenghua.yu@intel.com>
+ <1aae375d-3cd4-4ab8-9c64-9e387916e6c0@www.fastmail.com>
 MIME-Version: 1.0
-References: <20210927152412.2900928-1-arnd@kernel.org>
- <YVIg9CxJGaJr1vpp@ripper>
- <CAK8P3a1fEuFsQVY9b1oGdTOHzr8pu9wvrSBCMn2iOvgWqtHNnA@mail.gmail.com>
- <YVIsrgKiOG/gFVdT@ripper>
-In-Reply-To: <YVIsrgKiOG/gFVdT@ripper>
-From: Arnd Bergmann <arnd@kernel.org>
-Date: Mon, 27 Sep 2021 22:47:47 +0200
-X-Gmail-Original-Message-ID: <CAK8P3a1WRBA4mP691fO82ZhYdPhHLGjLH=VhcUxGNeGRMX8knw@mail.gmail.com>
-Message-ID: <CAK8P3a1WRBA4mP691fO82ZhYdPhHLGjLH=VhcUxGNeGRMX8knw@mail.gmail.com>
-Subject: Re: [PATCH] [RFC] qcom_scm: hide Kconfig symbol
-To: Bjorn Andersson <bjorn.andersson@linaro.org>
-Cc: Mark Rutland <mark.rutland@arm.com>, Ulf Hansson <ulf.hansson@linaro.org>,
- David Airlie <airlied@linux.ie>,
- linux-wireless <linux-wireless@vger.kernel.org>,
- Linus Walleij <linus.walleij@linaro.org>,
- dri-devel <dri-devel@lists.freedesktop.org>, ath10k@lists.infradead.org,
- Will Deacon <will@kernel.org>,
- "open list:IOMMU DRIVERS" <iommu@lists.linux-foundation.org>,
- Jernej Skrabec <jernej.skrabec@gmail.com>, Chen-Yu Tsai <wens@csie.org>,
- Andy Gross <agross@kernel.org>,
- Linux ARM <linux-arm-kernel@lists.infradead.org>,
- Jakub Kicinski <kuba@kernel.org>, linux-sunxi@lists.linux.dev,
- Linux Media Mailing List <linux-media@vger.kernel.org>,
- Arnd Bergmann <arnd@arndb.de>, linux-arm-msm <linux-arm-msm@vger.kernel.org>,
- Maxime Ripard <mripard@kernel.org>,
- "open list:GPIO SUBSYSTEM" <linux-gpio@vger.kernel.org>,
- John Stultz <john.stultz@linaro.org>,
- Mauro Carvalho Chehab <mchehab@kernel.org>, Sean Paul <sean@poorly.run>,
- Kalle Valo <kvalo@codeaurora.org>, Alex Elder <elder@kernel.org>,
- Networking <netdev@vger.kernel.org>, linux-mmc <linux-mmc@vger.kernel.org>,
+Content-Disposition: inline
+In-Reply-To: <1aae375d-3cd4-4ab8-9c64-9e387916e6c0@www.fastmail.com>
+Cc: Fenghua Yu <fenghua.yu@intel.com>, Dave Jiang <dave.jiang@intel.com>,
+ Raj Ashok <ashok.raj@intel.com>, "Shankar, Ravi V" <ravi.v.shankar@intel.com>,
+ "Peter Zijlstra \(Intel\)" <peterz@infradead.org>,
+ the arch/x86 maintainers <x86@kernel.org>,
  Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
- Daniel Vetter <daniel@ffwll.ch>, Sudeep Holla <sudeep.holla@arm.com>,
- freedreno <freedreno@lists.freedesktop.org>,
- "David S. Miller" <davem@davemloft.net>
+ Dave Hansen <dave.hansen@intel.com>, iommu@lists.linux-foundation.org,
+ Ingo Molnar <mingo@redhat.com>, Borislav Petkov <bp@alien8.de>,
+ Jacob Jun Pan <jacob.jun.pan@intel.com>, Josh Poimboeuf <jpoimboe@redhat.com>,
+ Thomas Gleixner <tglx@linutronix.de>
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -111,32 +87,69 @@ Content-Transfer-Encoding: 7bit
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-On Mon, Sep 27, 2021 at 10:42 PM Bjorn Andersson
-<bjorn.andersson@linaro.org> wrote:
-> On Mon 27 Sep 13:15 PDT 2021, Arnd Bergmann wrote:
-> > On Mon, Sep 27, 2021 at 9:52 PM Bjorn Andersson <bjorn.andersson@linaro.org> wrote:
-> >
-> > An easier option might be to find a way to build QCOM_SCM without
-> > RESET_CONTROLLER for compile testing purposes. I don't know
-> > what would break from that.
-> >
->
-> Afaict the reset API is properly stubbed and RESET_CONTROLLER is a bool,
-> so I think we can simply drop the "select" and the kernel will still
-> compile fine in all combinations.
->
-> When it comes to runtime, we currently select RESET_CONTROLLER from the
-> Qualcomm common clocks. If that is dropped (why would it...) it seems
-> possible to build a custom kernel for msm8916 that we can boot and miss
-> the stubbed out "mss restart" reset line from the SCM.
->
->
-> So, let's just drop the select RESET_CONTROLLER from SCM for now.
+On Thu, Sep 23, 2021 at 04:17:05PM -0700, Andy Lutomirski wrote:
+> > +	fpregs_lock();
+> > +
+> > +	/*
+> > +	 * If the task's FPU doesn't need to be loaded or is valid, directly
+> > +	 * write the IA32_PASID MSR. Otherwise, write the PASID state and
+> > +	 * the MSR will be loaded from the PASID state before returning to
+> > +	 * the user.
+> > +	 */
+> > +	if (!test_thread_flag(TIF_NEED_FPU_LOAD) ||
+> > +	    fpregs_state_valid(fpu, smp_processor_id())) {
+> > +		wrmsrl(MSR_IA32_PASID, msr_val);
+> 
+> Let me try to decode this.
+> 
+> If the current task's FPU state is live or if the state is in memory but the CPU regs just happen to match the copy in memory, then write the MSR.  Else write the value to memory.
+> 
+> This is wrong.  If !TIF_NEED_FPU_LOAD && fpregs_state_valid, you MUST NOT MODIFY FPU STATE.  This is not negotiable -- you will break coherence between CPU regs and the memory image.  The way you modify the current task's state is either you modify it in CPU regs (if the kernel knows that the CPU regs are the one and only source of truth) OR you modify it in memory and invalidate any preserved copies (by zapping last_cpu). 
+> 
+> In any event, that particular bit of logic really doesn't belong in here -- it belongs in some helper that gets it right, once.
 
-Ok, I've made that change locally, giving it more time on the randconfig
-build box now.
+Andy,
 
-       Arnd
+A helper sounds like a good idea. Can you flesh out what
+you would like that to look like?
+
+Is it just the "where is the live register state?" so the
+above could be written:
+
+	if (xsave_state_in_memory(args ...))
+		update pasid bit of xsave state in memory
+	else
+		wrmsrl(MSR_IA32_PASID, msr_val);
+
+Or are you thinking of a helper that does both the check
+and the update ... so the code here could be:
+
+	update_one_xsave_feature(XFEATURE_PASID, &msr_val, sizeof(msr_val));
+
+With the helper being something like:
+
+void update_one_xsave_feature(enum xfeature xfeature, void *data, size_t size)
+{
+	if (xsave_state_in_memory(args ...)) {
+		addr = get_xsave_addr(xsave, xfeature);
+		memcpy(addr, data, size);
+		xsave->header.xfeatures |= (1 << xfeature);
+		return;
+	}
+
+	switch (xfeature) {
+	case XFEATURE_PASID:
+		wrmsrl(MSR_IA32_PASID, *(u64 *)data);
+		break;
+
+	case each_of_the_other_XFEATURE_enums:
+		code to update registers for that XFEATURE
+	}
+}
+
+either way needs the definitive correct coding for xsave_state_in_memory()
+
+-Tony
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
