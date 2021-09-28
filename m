@@ -2,56 +2,61 @@ Return-Path: <SRS0=IJZW=OS=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4A2C8C433EF
-	for <iommu@archiver.kernel.org>; Tue, 28 Sep 2021 09:55:09 +0000 (UTC)
-Received: from smtp4.osuosl.org (smtp4.osuosl.org [140.211.166.137])
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0090CC433EF
+	for <iommu@archiver.kernel.org>; Tue, 28 Sep 2021 10:00:06 +0000 (UTC)
+Received: from smtp2.osuosl.org (smtp2.osuosl.org [140.211.166.133])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id DBCE46023B
-	for <iommu@archiver.kernel.org>; Tue, 28 Sep 2021 09:55:08 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.4.1 mail.kernel.org DBCE46023B
+	by mail.kernel.org (Postfix) with ESMTPS id 938D36023B
+	for <iommu@archiver.kernel.org>; Tue, 28 Sep 2021 10:00:05 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.4.1 mail.kernel.org 938D36023B
 Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=8bytes.org
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by smtp4.osuosl.org (Postfix) with ESMTP id AF401403EF;
-	Tue, 28 Sep 2021 09:55:08 +0000 (UTC)
+	by smtp2.osuosl.org (Postfix) with ESMTP id 5E3C4401F7;
+	Tue, 28 Sep 2021 10:00:05 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from smtp4.osuosl.org ([127.0.0.1])
-	by localhost (smtp4.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id OXHbzhQE0KAx; Tue, 28 Sep 2021 09:55:08 +0000 (UTC)
+Received: from smtp2.osuosl.org ([127.0.0.1])
+	by localhost (smtp2.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+	with ESMTP id ZbpZlIhkcETy; Tue, 28 Sep 2021 10:00:04 +0000 (UTC)
 Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by smtp4.osuosl.org (Postfix) with ESMTPS id 9BF48403A8;
-	Tue, 28 Sep 2021 09:55:07 +0000 (UTC)
+	by smtp2.osuosl.org (Postfix) with ESMTPS id 4AF76400D8;
+	Tue, 28 Sep 2021 10:00:04 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 57D44C000F;
-	Tue, 28 Sep 2021 09:55:07 +0000 (UTC)
-Received: from smtp1.osuosl.org (smtp1.osuosl.org [140.211.166.138])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 3C9DFC000D
- for <iommu@lists.linux-foundation.org>; Tue, 28 Sep 2021 09:55:06 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 0EC95C000F;
+	Tue, 28 Sep 2021 10:00:04 +0000 (UTC)
+Received: from smtp2.osuosl.org (smtp2.osuosl.org [140.211.166.133])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 10543C000D
+ for <iommu@lists.linux-foundation.org>; Tue, 28 Sep 2021 10:00:02 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by smtp1.osuosl.org (Postfix) with ESMTP id 2C22080DF6
- for <iommu@lists.linux-foundation.org>; Tue, 28 Sep 2021 09:55:06 +0000 (UTC)
+ by smtp2.osuosl.org (Postfix) with ESMTP id E3ED8401F7
+ for <iommu@lists.linux-foundation.org>; Tue, 28 Sep 2021 10:00:01 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from smtp1.osuosl.org ([127.0.0.1])
- by localhost (smtp1.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id b3yAn1Bhfzux for <iommu@lists.linux-foundation.org>;
- Tue, 28 Sep 2021 09:55:05 +0000 (UTC)
+Received: from smtp2.osuosl.org ([127.0.0.1])
+ by localhost (smtp2.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+ with ESMTP id w8EbJ-E1lcwc for <iommu@lists.linux-foundation.org>;
+ Tue, 28 Sep 2021 10:00:01 +0000 (UTC)
 X-Greylist: from auto-whitelisted by SQLgrey-1.8.0
 Received: from theia.8bytes.org (8bytes.org [81.169.241.247])
- by smtp1.osuosl.org (Postfix) with ESMTPS id 9695180DB3
- for <iommu@lists.linux-foundation.org>; Tue, 28 Sep 2021 09:55:05 +0000 (UTC)
+ by smtp2.osuosl.org (Postfix) with ESMTPS id 3769B400D8
+ for <iommu@lists.linux-foundation.org>; Tue, 28 Sep 2021 10:00:01 +0000 (UTC)
 Received: by theia.8bytes.org (Postfix, from userid 1000)
- id B794F2FF; Tue, 28 Sep 2021 11:55:03 +0200 (CEST)
-Date: Tue, 28 Sep 2021 11:55:00 +0200
+ id 3D4852FF; Tue, 28 Sep 2021 11:59:59 +0200 (CEST)
+Date: Tue, 28 Sep 2021 11:59:57 +0200
 From: Joerg Roedel <joro@8bytes.org>
-To: Lennert Buytenhek <buytenh@wantstofly.org>
-Subject: Re: [PATCH v4] iommu/amd: Use report_iommu_fault()
-Message-ID: <YVLmdD7s68r9ngNZ@8bytes.org>
-References: <YU8vmufv54arwMOa@wantstofly.org>
+To: Arnd Bergmann <arnd@kernel.org>
+Subject: Re: [PATCH] iommu/mediatek: fix out-of-range warning with clang
+Message-ID: <YVLnnQ+7U/P2vA8A@8bytes.org>
+References: <20210927121857.941160-1-arnd@kernel.org>
 MIME-Version: 1.0
 Content-Disposition: inline
-In-Reply-To: <YU8vmufv54arwMOa@wantstofly.org>
-Cc: iommu@lists.linux-foundation.org
+In-Reply-To: <20210927121857.941160-1-arnd@kernel.org>
+Cc: Arnd Bergmann <arnd@arndb.de>, Robin Murphy <robin.murphy@arm.com>,
+ llvm@lists.linux.dev, Nick Desaulniers <ndesaulniers@google.com>,
+ linux-kernel@vger.kernel.org, Nathan Chancellor <nathan@kernel.org>,
+ iommu@lists.linux-foundation.org, linux-mediatek@lists.infradead.org,
+ linux-arm-kernel@lists.infradead.org,
+ Matthias Brugger <matthias.bgg@gmail.com>, Will Deacon <will@kernel.org>
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -69,39 +74,12 @@ Content-Transfer-Encoding: 7bit
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-On Sat, Sep 25, 2021 at 05:18:02PM +0300, Lennert Buytenhek wrote:
-> +#define IS_IOMMU_MEM_TRANSACTION(flags)		\
-> +	(((flags) & EVENT_FLAG_I) == 0)
-> +
-> +#define IS_WRITE_REQUEST(flags)			\
-> +	((flags) & EVENT_FLAG_RW)
-> +
->  static void amd_iommu_report_page_fault(u16 devid, u16 domain_id,
->  					u64 address, int flags)
->  {
-> @@ -484,6 +490,18 @@ static void amd_iommu_report_page_fault(u16 devid, u16 domain_id,
->  	if (pdev)
->  		dev_data = dev_iommu_priv_get(&pdev->dev);
->  
-> +	/*
-> +	 * If this is a DMA fault (for which the I(nterrupt) bit will
-> +	 * be unset), allow report_iommu_fault() to prevent logging it.
-> +	 */
-> +	if (dev_data && IS_IOMMU_MEM_TRANSACTION(flags)) {
-> +		if (!report_iommu_fault(&dev_data->domain->domain,
-> +					&pdev->dev, address,
-> +					IS_WRITE_REQUEST(flags) ?
-> +					IOMMU_FAULT_WRITE : IOMMU_FAULT_READ))
-> +			goto out;
+On Mon, Sep 27, 2021 at 02:18:44PM +0200, Arnd Bergmann wrote:
+>  drivers/iommu/mtk_iommu.c | 4 +++-
+>  1 file changed, 3 insertions(+), 1 deletion(-)
 
-This is better placed inside the 'if (dev_data)' statement below.
+Applied, thanks.
 
-Otherwise it looks good to me.
-
-
-Regards,
-
-	Joerg
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
