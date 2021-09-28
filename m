@@ -2,122 +2,97 @@ Return-Path: <SRS0=IJZW=OS=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7D354C433F5
-	for <iommu@archiver.kernel.org>; Tue, 28 Sep 2021 06:55:21 +0000 (UTC)
-Received: from smtp3.osuosl.org (smtp3.osuosl.org [140.211.166.136])
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4BD5FC433EF
+	for <iommu@archiver.kernel.org>; Tue, 28 Sep 2021 07:08:05 +0000 (UTC)
+Received: from smtp4.osuosl.org (smtp4.osuosl.org [140.211.166.137])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 30015611BD
-	for <iommu@archiver.kernel.org>; Tue, 28 Sep 2021 06:55:21 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.4.1 mail.kernel.org 30015611BD
-Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=linux.ibm.com
+	by mail.kernel.org (Postfix) with ESMTPS id E0A8E611C0
+	for <iommu@archiver.kernel.org>; Tue, 28 Sep 2021 07:08:04 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.4.1 mail.kernel.org E0A8E611C0
+Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=codeaurora.org
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by smtp3.osuosl.org (Postfix) with ESMTP id D7A5560ACB;
-	Tue, 28 Sep 2021 06:55:20 +0000 (UTC)
+	by smtp4.osuosl.org (Postfix) with ESMTP id 6F0F6406FA;
+	Tue, 28 Sep 2021 07:08:04 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from smtp3.osuosl.org ([127.0.0.1])
-	by localhost (smtp3.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id Fg9xWdH3eOik; Tue, 28 Sep 2021 06:55:20 +0000 (UTC)
+Received: from smtp4.osuosl.org ([127.0.0.1])
+	by localhost (smtp4.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+	with ESMTP id MtQ1A35s427w; Tue, 28 Sep 2021 07:08:03 +0000 (UTC)
 Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [IPv6:2605:bc80:3010:104::8cd3:938])
-	by smtp3.osuosl.org (Postfix) with ESMTPS id B550160ADA;
-	Tue, 28 Sep 2021 06:55:19 +0000 (UTC)
+	by smtp4.osuosl.org (Postfix) with ESMTPS id 3ACC9404A6;
+	Tue, 28 Sep 2021 07:08:03 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 573BEC0023;
-	Tue, 28 Sep 2021 06:55:19 +0000 (UTC)
-Received: from smtp2.osuosl.org (smtp2.osuosl.org [IPv6:2605:bc80:3010::133])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 9F634C000D
- for <iommu@lists.linux-foundation.org>; Tue, 28 Sep 2021 05:52:51 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 10573C0011;
+	Tue, 28 Sep 2021 07:08:03 +0000 (UTC)
+Received: from smtp4.osuosl.org (smtp4.osuosl.org [IPv6:2605:bc80:3010::137])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 73F26C000D
+ for <iommu@lists.linux-foundation.org>; Tue, 28 Sep 2021 07:08:02 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by smtp2.osuosl.org (Postfix) with ESMTP id 7B94C402B9
- for <iommu@lists.linux-foundation.org>; Tue, 28 Sep 2021 05:52:51 +0000 (UTC)
+ by smtp4.osuosl.org (Postfix) with UTF8SMTP id 4F6F3404A6
+ for <iommu@lists.linux-foundation.org>; Tue, 28 Sep 2021 07:08:02 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Authentication-Results: smtp2.osuosl.org (amavisd-new);
- dkim=pass (2048-bit key) header.d=ibm.com
-Received: from smtp2.osuosl.org ([127.0.0.1])
- by localhost (smtp2.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id M-9-dPyf8M3O for <iommu@lists.linux-foundation.org>;
- Tue, 28 Sep 2021 05:52:50 +0000 (UTC)
-X-Greylist: domain auto-whitelisted by SQLgrey-1.8.0
-Received: from mx0a-001b2d01.pphosted.com (mx0a-001b2d01.pphosted.com
- [148.163.156.1])
- by smtp2.osuosl.org (Postfix) with ESMTPS id D66BB4019B
- for <iommu@lists.linux-foundation.org>; Tue, 28 Sep 2021 05:52:50 +0000 (UTC)
-Received: from pps.filterd (m0187473.ppops.net [127.0.0.1])
- by mx0a-001b2d01.pphosted.com (8.16.1.2/8.16.1.2) with SMTP id 18S2MjX9036435; 
- Tue, 28 Sep 2021 01:52:46 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com;
- h=subject : to : cc :
- references : from : message-id : date : mime-version : in-reply-to :
- content-type : content-transfer-encoding; s=pp1;
- bh=kHULtq2vCMS9C99h1wo9Sj7LNJHpQWEoPhR9H48N/ok=;
- b=TOOXwqC0nCYmRxuVcHw5WtCEjy0er/V96K69puaC5glUNV0KhLprbnZ3T+h0EwkF3jqy
- HNN7vt09FxccRnXX0lzKavj+gopNBoY6nNhZSuUOnJLGEtPQxMWrqTQiFQ90ZTcTQTBM
- XHX8QqziyJBt+MbXMre/b+nw77DR6cxR6t7WSW/+Gtbd4dk38szXtumLkuDnJIw1gX8F
- ARd96+WYn/4/3sxl3Bf4pZSAE+BwtXJi8v7PTfoI/0z8y0eFvBGsp1nw1xI13GaFVcjr
- /Q38xHNo9bcXElFQRPvA+vFI8EN3SfXE0zW6rTcAwzyzaDGLsey4K1ttOzqMpDBQ5wDR yg== 
-Received: from ppma03ams.nl.ibm.com (62.31.33a9.ip4.static.sl-reverse.com
- [169.51.49.98])
- by mx0a-001b2d01.pphosted.com with ESMTP id 3bagrge8y5-1
- (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
- Tue, 28 Sep 2021 01:52:46 -0400
-Received: from pps.filterd (ppma03ams.nl.ibm.com [127.0.0.1])
- by ppma03ams.nl.ibm.com (8.16.1.2/8.16.1.2) with SMTP id 18S5Rr5s011914;
- Tue, 28 Sep 2021 05:52:44 GMT
-Received: from b06cxnps3074.portsmouth.uk.ibm.com
- (d06relay09.portsmouth.uk.ibm.com [9.149.109.194])
- by ppma03ams.nl.ibm.com with ESMTP id 3b9ud9t53n-1
- (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
- Tue, 28 Sep 2021 05:52:44 +0000
-Received: from d06av24.portsmouth.uk.ibm.com (d06av24.portsmouth.uk.ibm.com
- [9.149.105.60])
- by b06cxnps3074.portsmouth.uk.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id
- 18S5qfYi45941232
- (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
- Tue, 28 Sep 2021 05:52:41 GMT
-Received: from d06av24.portsmouth.uk.ibm.com (unknown [127.0.0.1])
- by IMSVA (Postfix) with ESMTP id 7A5E642049;
- Tue, 28 Sep 2021 05:52:41 +0000 (GMT)
-Received: from d06av24.portsmouth.uk.ibm.com (unknown [127.0.0.1])
- by IMSVA (Postfix) with ESMTP id 2944B4204D;
- Tue, 28 Sep 2021 05:52:41 +0000 (GMT)
-Received: from ozlabs.au.ibm.com (unknown [9.192.253.14])
- by d06av24.portsmouth.uk.ibm.com (Postfix) with ESMTP;
- Tue, 28 Sep 2021 05:52:41 +0000 (GMT)
-Received: from [9.81.209.82] (unknown [9.81.209.82])
- (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
- (No client certificate requested)
- by ozlabs.au.ibm.com (Postfix) with ESMTPSA id 3FFB06035F;
- Tue, 28 Sep 2021 15:52:39 +1000 (AEST)
-Subject: Re: [PATCH v2 8/9] ocxl: Use pci core's DVSEC functionality
-To: Ben Widawsky <ben.widawsky@intel.com>, linux-cxl@vger.kernel.org
-References: <20210923172647.72738-1-ben.widawsky@intel.com>
- <20210923172647.72738-9-ben.widawsky@intel.com>
-From: Andrew Donnellan <ajd@linux.ibm.com>
-Message-ID: <70917485-8f6b-d602-45d6-dc1e873db050@linux.ibm.com>
-Date: Tue, 28 Sep 2021 15:52:38 +1000
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
- Thunderbird/78.14.0
+Received: from smtp4.osuosl.org ([127.0.0.1])
+ by localhost (smtp4.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+ with UTF8SMTP id K1qyPO17NHTq for <iommu@lists.linux-foundation.org>;
+ Tue, 28 Sep 2021 07:08:00 +0000 (UTC)
+X-Greylist: from auto-whitelisted by SQLgrey-1.8.0
+Received: from so254-9.mailgun.net (so254-9.mailgun.net [198.61.254.9])
+ by smtp4.osuosl.org (Postfix) with UTF8SMTPS id 155CA404A2
+ for <iommu@lists.linux-foundation.org>; Tue, 28 Sep 2021 07:07:55 +0000 (UTC)
+DKIM-Signature: a=rsa-sha256; v=1; c=relaxed/relaxed; d=mg.codeaurora.org;
+ q=dns/txt; 
+ s=smtp; t=1632812880; h=Content-Type: MIME-Version: Message-ID:
+ In-Reply-To: Date: References: Subject: Cc: To: From: Sender;
+ bh=mcC+NI9lbMYVHDFKxEvKMLG3JdbT8e+is/T3jV6QeT8=;
+ b=TfPhU5x5QM+ggvLtWOJwlyHWvSMWlU6gn9O8Oj1fBCPP1zCn8SykTiMn2dh6YQfPafa44sGW
+ KUv5WBy7YgZvpq+DdfxKLmC8OHms5cIkt6nHxjIuGfCFOQW1iFUzGMEsEOzKHcssvsOwVu+J
+ AbW+0pL7Iz1GNV4TbqpFY4JJi7o=
+X-Mailgun-Sending-Ip: 198.61.254.9
+X-Mailgun-Sid: WyI3NDkwMCIsICJpb21tdUBsaXN0cy5saW51eC1mb3VuZGF0aW9uLm9yZyIsICJiZTllNGEiXQ==
+Received: from smtp.codeaurora.org
+ (ec2-35-166-182-171.us-west-2.compute.amazonaws.com [35.166.182.171]) by
+ smtp-out-n03.prod.us-west-2.postgun.com with SMTP id
+ 6152be4b3cc3a01f26b648c6 (version=TLS1.2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256); Tue, 28 Sep 2021 07:03:39
+ GMT
+Received: by smtp.codeaurora.org (Postfix, from userid 1001)
+ id 24A08C43635; Tue, 28 Sep 2021 07:03:38 +0000 (UTC)
+Received: from tykki (tynnyri.adurom.net [51.15.11.48])
+ (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+ (No client certificate requested) (Authenticated sender: kvalo)
+ by smtp.codeaurora.org (Postfix) with ESMTPSA id 9DA53C4338F;
+ Tue, 28 Sep 2021 07:03:29 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.4.1 smtp.codeaurora.org 9DA53C4338F
+Authentication-Results: aws-us-west-2-caf-mail-1.web.codeaurora.org;
+ dmarc=none (p=none dis=none) header.from=codeaurora.org
+Authentication-Results: aws-us-west-2-caf-mail-1.web.codeaurora.org;
+ spf=fail smtp.mailfrom=codeaurora.org
+From: Kalle Valo <kvalo@codeaurora.org>
+To: Arnd Bergmann <arnd@kernel.org>
+Subject: Re: [PATCH] [RFC] qcom_scm: hide Kconfig symbol
+References: <20210927152412.2900928-1-arnd@kernel.org>
+Date: Tue, 28 Sep 2021 10:03:25 +0300
+In-Reply-To: <20210927152412.2900928-1-arnd@kernel.org> (Arnd Bergmann's
+ message of "Mon, 27 Sep 2021 17:22:13 +0200")
+Message-ID: <87k0j1qj0i.fsf@codeaurora.org>
+User-Agent: Gnus/5.13 (Gnus v5.13) Emacs/26.1 (gnu/linux)
 MIME-Version: 1.0
-In-Reply-To: <20210923172647.72738-9-ben.widawsky@intel.com>
-Content-Language: en-US
-X-TM-AS-GCONF: 00
-X-Proofpoint-GUID: LoGoudR3s7_zyFsgpCAcskiJYmAWByyl
-X-Proofpoint-ORIG-GUID: LoGoudR3s7_zyFsgpCAcskiJYmAWByyl
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.182.1,Aquarius:18.0.790,Hydra:6.0.391,FMLib:17.0.607.475
- definitions=2021-09-28_03,2021-09-24_02,2020-04-07_01
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0
- mlxlogscore=999
- impostorscore=0 suspectscore=0 spamscore=0 malwarescore=0
- lowpriorityscore=0 priorityscore=1501 bulkscore=0 phishscore=0 mlxscore=0
- adultscore=0 clxscore=1015 classifier=spam adjust=0 reason=mlx scancount=1
- engine=8.12.0-2109230001 definitions=main-2109280033
-X-Mailman-Approved-At: Tue, 28 Sep 2021 06:55:17 +0000
-Cc: David Woodhouse <dwmw2@infradead.org>, iommu@lists.linux-foundation.org,
- Bjorn Helgaas <helgaas@kernel.org>,
- "David E. Box" <david.e.box@linux.intel.com>, linux-pci@vger.kernel.org,
- linuxppc-dev@lists.ozlabs.org, Kan Liang <kan.liang@linux.intel.com>
+Cc: Mark Rutland <mark.rutland@arm.com>, Ulf Hansson <ulf.hansson@linaro.org>,
+ David Airlie <airlied@linux.ie>, linux-wireless@vger.kernel.org,
+ Linus Walleij <linus.walleij@linaro.org>, dri-devel@lists.freedesktop.org,
+ ath10k@lists.infradead.org, Will Deacon <will@kernel.org>,
+ iommu@lists.linux-foundation.org, Jernej Skrabec <jernej.skrabec@gmail.com>,
+ Chen-Yu Tsai <wens@csie.org>, Andy Gross <agross@kernel.org>,
+ Jakub Kicinski <kuba@kernel.org>, linux-sunxi@lists.linux.dev,
+ linux-media@vger.kernel.org, Arnd Bergmann <arnd@arndb.de>,
+ linux-arm-msm@vger.kernel.org, Maxime Ripard <mripard@kernel.org>,
+ linux-gpio@vger.kernel.org, Mauro Carvalho Chehab <mchehab@kernel.org>,
+ Sean Paul <sean@poorly.run>, linux-arm-kernel@lists.infradead.org,
+ Alex Elder <elder@kernel.org>, netdev@vger.kernel.org,
+ linux-mmc@vger.kernel.org, linux-kernel@vger.kernel.org,
+ Daniel Vetter <daniel@ffwll.ch>, Sudeep Holla <sudeep.holla@arm.com>,
+ freedreno@lists.freedesktop.org, "David S. Miller" <davem@davemloft.net>
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -130,32 +105,83 @@ List-Post: <mailto:iommu@lists.linux-foundation.org>
 List-Help: <mailto:iommu-request@lists.linux-foundation.org?subject=help>
 List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
  <mailto:iommu-request@lists.linux-foundation.org?subject=subscribe>
+Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
-Content-Type: text/plain; charset="us-ascii"; Format="flowed"
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-On 24/9/21 3:26 am, Ben Widawsky wrote:
-> Reduce maintenance burden of DVSEC query implementation by using the
-> centralized PCI core implementation.
-> 
-> There are two obvious places to simply drop in the new core
-> implementation. There remains find_dvsec_from_pos() which would benefit
-> from using a core implementation. As that change is less trivial it is
-> reserved for later.
-> 
-> Cc: linuxppc-dev@lists.ozlabs.org
-> Cc: Andrew Donnellan <ajd@linux.ibm.com>
-> Acked-by: Frederic Barrat <fbarrat@linux.ibm.com> (v1)
-> Signed-off-by: Ben Widawsky <ben.widawsky@intel.com>
+Arnd Bergmann <arnd@kernel.org> writes:
 
-Looks fine, but we should clean up find_dvsec_from_pos() afterwards.
+> From: Arnd Bergmann <arnd@arndb.de>
+>
+> Now that SCM can be a loadable module, we have to add another
+> dependency to avoid link failures when ipa or adreno-gpu are
+> built-in:
+>
+> aarch64-linux-ld: drivers/net/ipa/ipa_main.o: in function `ipa_probe':
+> ipa_main.c:(.text+0xfc4): undefined reference to `qcom_scm_is_available'
+>
+> ld.lld: error: undefined symbol: qcom_scm_is_available
+>>>> referenced by adreno_gpu.c
+>>>>               gpu/drm/msm/adreno/adreno_gpu.o:(adreno_zap_shader_load)
+>>>> in archive drivers/built-in.a
+>
+> This can happen when CONFIG_ARCH_QCOM is disabled and we don't select
+> QCOM_MDT_LOADER, but some other module selects QCOM_SCM. Ideally we'd
+> use a similar dependency here to what we have for QCOM_RPROC_COMMON,
+> but that causes dependency loops from other things selecting QCOM_SCM.
+>
+> This appears to be an endless problem, so try something different this
+> time:
+>
+>  - CONFIG_QCOM_SCM becomes a hidden symbol that nothing 'depends on'
+>    but that is simply selected by all of its users
+>
+>  - All the stubs in include/linux/qcom_scm.h can go away
+>
+>  - arm-smccc.h needs to provide a stub for __arm_smccc_smc() to
+>    allow compile-testing QCOM_SCM on all architectures.
+>
+>  - To avoid a circular dependency chain involving RESET_CONTROLLER
+>    and PINCTRL_SUNXI, change the 'depends on RESET_CONTROLLER' in
+>    the latter one to 'select'.
+>
+> The last bit is rather annoying, as drivers should generally never
+> 'select' another subsystem, and about half the users of the reset
+> controller interface do this anyway.
+>
+> Nevertheless, this version seems to pass all my randconfig tests
+> and is more robust than any of the prior versions.
+>
+> Comments?
+>
+> Signed-off-by: Arnd Bergmann <arnd@arndb.de>
 
-Reviewed-by: Andrew Donnellan <ajd@linux.ibm.com>
+[...]
+
+> diff --git a/drivers/net/wireless/ath/ath10k/Kconfig b/drivers/net/wireless/ath/ath10k/Kconfig
+> index 741289e385d5..ca007b800f75 100644
+> --- a/drivers/net/wireless/ath/ath10k/Kconfig
+> +++ b/drivers/net/wireless/ath/ath10k/Kconfig
+> @@ -44,7 +44,7 @@ config ATH10K_SNOC
+>  	tristate "Qualcomm ath10k SNOC support"
+>  	depends on ATH10K
+>  	depends on ARCH_QCOM || COMPILE_TEST
+> -	depends on QCOM_SCM || !QCOM_SCM #if QCOM_SCM=m this can't be =y
+> +	select QCOM_SCM
+>  	select QCOM_QMI_HELPERS
+>  	help
+>  	  This module adds support for integrated WCN3990 chip connected
+
+I assume I can continue to build test ATH10K_SNOC with x86 as before?
+That's important for me. If yes, then:
+
+Acked-by: Kalle Valo <kvalo@codeaurora.org>
 
 -- 
-Andrew Donnellan              OzLabs, ADL Canberra
-ajd@linux.ibm.com             IBM Australia Limited
+https://patchwork.kernel.org/project/linux-wireless/list/
+
+https://wireless.wiki.kernel.org/en/developers/documentation/submittingpatches
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
