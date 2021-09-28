@@ -2,85 +2,106 @@ Return-Path: <SRS0=IJZW=OS=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0F558C433EF
-	for <iommu@archiver.kernel.org>; Tue, 28 Sep 2021 19:19:58 +0000 (UTC)
-Received: from smtp4.osuosl.org (smtp4.osuosl.org [140.211.166.137])
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 21225C433FE
+	for <iommu@archiver.kernel.org>; Tue, 28 Sep 2021 19:43:33 +0000 (UTC)
+Received: from smtp2.osuosl.org (smtp2.osuosl.org [140.211.166.133])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id CCBF761374
-	for <iommu@archiver.kernel.org>; Tue, 28 Sep 2021 19:19:57 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.4.1 mail.kernel.org CCBF761374
-Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=linux.intel.com
+	by mail.kernel.org (Postfix) with ESMTPS id A3DA961139
+	for <iommu@archiver.kernel.org>; Tue, 28 Sep 2021 19:43:32 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.4.1 mail.kernel.org A3DA961139
+Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=ziepe.ca
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by smtp4.osuosl.org (Postfix) with ESMTP id A4AAC4040B;
-	Tue, 28 Sep 2021 19:19:57 +0000 (UTC)
+	by smtp2.osuosl.org (Postfix) with ESMTP id 6791B4000B;
+	Tue, 28 Sep 2021 19:43:32 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from smtp4.osuosl.org ([127.0.0.1])
-	by localhost (smtp4.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id DvGwJTvzGUHB; Tue, 28 Sep 2021 19:19:56 +0000 (UTC)
+Received: from smtp2.osuosl.org ([127.0.0.1])
+	by localhost (smtp2.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+	with ESMTP id 2rOzJh5RlBFM; Tue, 28 Sep 2021 19:43:31 +0000 (UTC)
 Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by smtp4.osuosl.org (Postfix) with ESMTPS id 81B26403BB;
-	Tue, 28 Sep 2021 19:19:56 +0000 (UTC)
+	by smtp2.osuosl.org (Postfix) with ESMTPS id 0BD6D4014C;
+	Tue, 28 Sep 2021 19:43:31 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 49DC2C000F;
-	Tue, 28 Sep 2021 19:19:56 +0000 (UTC)
-Received: from smtp4.osuosl.org (smtp4.osuosl.org [140.211.166.137])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 46ADDC000D
- for <iommu@lists.linux-foundation.org>; Tue, 28 Sep 2021 19:19:55 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id ABBFBC000F;
+	Tue, 28 Sep 2021 19:43:30 +0000 (UTC)
+Received: from smtp1.osuosl.org (smtp1.osuosl.org [IPv6:2605:bc80:3010::138])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 1E32EC000D
+ for <iommu@lists.linux-foundation.org>; Tue, 28 Sep 2021 19:43:29 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by smtp4.osuosl.org (Postfix) with ESMTP id 28D18403C0
- for <iommu@lists.linux-foundation.org>; Tue, 28 Sep 2021 19:19:55 +0000 (UTC)
+ by smtp1.osuosl.org (Postfix) with ESMTP id 13E8F829B6
+ for <iommu@lists.linux-foundation.org>; Tue, 28 Sep 2021 19:43:29 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from smtp4.osuosl.org ([127.0.0.1])
- by localhost (smtp4.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id qqdp3U_1481s for <iommu@lists.linux-foundation.org>;
- Tue, 28 Sep 2021 19:19:54 +0000 (UTC)
-X-Greylist: domain auto-whitelisted by SQLgrey-1.8.0
-Received: from mga02.intel.com (mga02.intel.com [134.134.136.20])
- by smtp4.osuosl.org (Postfix) with ESMTPS id 748A2403BB
- for <iommu@lists.linux-foundation.org>; Tue, 28 Sep 2021 19:19:54 +0000 (UTC)
-X-IronPort-AV: E=McAfee;i="6200,9189,10121"; a="212038816"
-X-IronPort-AV: E=Sophos;i="5.85,330,1624345200"; d="scan'208";a="212038816"
-Received: from fmsmga003.fm.intel.com ([10.253.24.29])
- by orsmga101.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384;
- 28 Sep 2021 12:19:53 -0700
-X-IronPort-AV: E=Sophos;i="5.85,330,1624345200"; d="scan'208";a="554270019"
-Received: from oogunmoy-mobl1.amr.corp.intel.com (HELO
- skuppusw-mobl5.amr.corp.intel.com) ([10.212.221.219])
- by fmsmga003-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384;
- 28 Sep 2021 12:19:51 -0700
-Subject: Re: [PATCH v4 0/8] Implement generic cc_platform_has() helper function
-To: Borislav Petkov <bp@alien8.de>, LKML <linux-kernel@vger.kernel.org>
-References: <20210928191009.32551-1-bp@alien8.de>
-From: "Kuppuswamy, Sathyanarayanan"
- <sathyanarayanan.kuppuswamy@linux.intel.com>
-Message-ID: <80593893-c63b-d481-45f1-42a3a6fd762a@linux.intel.com>
-Date: Tue, 28 Sep 2021 12:19:49 -0700
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
- Firefox/78.0 Thunderbird/78.13.0
+Authentication-Results: smtp1.osuosl.org (amavisd-new);
+ dkim=pass (2048-bit key) header.d=ziepe.ca
+Received: from smtp1.osuosl.org ([127.0.0.1])
+ by localhost (smtp1.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+ with ESMTP id Etf4Rx9CgN4g for <iommu@lists.linux-foundation.org>;
+ Tue, 28 Sep 2021 19:43:28 +0000 (UTC)
+X-Greylist: whitelisted by SQLgrey-1.8.0
+Received: from mail-io1-xd2b.google.com (mail-io1-xd2b.google.com
+ [IPv6:2607:f8b0:4864:20::d2b])
+ by smtp1.osuosl.org (Postfix) with ESMTPS id 6FF45829B1
+ for <iommu@lists.linux-foundation.org>; Tue, 28 Sep 2021 19:43:28 +0000 (UTC)
+Received: by mail-io1-xd2b.google.com with SMTP id y197so42321iof.11
+ for <iommu@lists.linux-foundation.org>; Tue, 28 Sep 2021 12:43:28 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ziepe.ca; s=google;
+ h=date:from:to:cc:subject:message-id:references:mime-version
+ :content-disposition:in-reply-to;
+ bh=rjLk0h/mLxEL3Q6/W9L7mqQkVvY6tzCz4tgaLSgLx3s=;
+ b=hhjthCUJo5WhNKDnLCpo+MVqy6n87T1pJjZguVrbGVB7rs1TEqj8vSzkH1OSVJ4aHY
+ Y4CBMG1r9Rmy0NZyrlH5NzTg+Y8qxZoKLG0AvCFUREnWT/psrYWEBqSqvzXvNv5yTDIr
+ on4+mWLbQe9rhU1sJ0QNKudA3/36oLT7Zw6sZzQBD1xnoS8UNH2nV0XaX4yDc24jjF2F
+ 7QkD0f5nx2AT5EawBHny0YCDHI8greowW1MBzYmGKp/2RhkC/7+QDf784bbYh0ttqPja
+ SIBG9NG6TFsrj3x8A3HpfCET+Sjd2Z1Hfpwi/GMS9Z23rUtCt6WAlr+9cdU9alzqPn1Q
+ 1OpA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+ d=1e100.net; s=20210112;
+ h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+ :mime-version:content-disposition:in-reply-to;
+ bh=rjLk0h/mLxEL3Q6/W9L7mqQkVvY6tzCz4tgaLSgLx3s=;
+ b=7dcVAJagtmI37y0doKvqrCWeHfaxu722MYyUF8oRrbL5shwwFXbA9zT7ugFP4t5BYd
+ 941bZp3qDouorDe1QOBBfU5d0o52lackG+FaTg3dq2AUOgHpAc2lOvfSH5LRBTM7oWLa
+ Gv0HVA/Y4hi4nONZkUlT+WhUXRAmL3Jz4bLKXgRtr2j44+3NqM2WeuttEDVV7kNaanfB
+ HGFJehyM8fr7icaZmmUAKHvWgojygWYCkzsTd0SfUMxw+mSx78VmLZnSBRFc80gngAXN
+ PYMhYVPD4tppQPxTb5R7J2X6AfpZsTRwLTquLFj+9IIWzpnxsQdNzz7yFOGQCm6F7486
+ 8wsw==
+X-Gm-Message-State: AOAM533PDACoFYMaa2RNQBc8ehgWxLA/X6IjOvhOBaBhn7ER9AGrWkYq
+ iJ3avIpOMYBI17sHYPngQfPHCw==
+X-Google-Smtp-Source: ABdhPJxTc9Esg662iHYF19mOveiU9FtR9gwP3ZO8mFkHuFuDP2iiQ1yQeLzvOs2cq2YVQPchFaVZug==
+X-Received: by 2002:a02:b91a:: with SMTP id v26mr6047050jan.78.1632858207605; 
+ Tue, 28 Sep 2021 12:43:27 -0700 (PDT)
+Received: from ziepe.ca ([206.223.160.26])
+ by smtp.gmail.com with ESMTPSA id a11sm12090741ilm.36.2021.09.28.12.43.26
+ (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+ Tue, 28 Sep 2021 12:43:27 -0700 (PDT)
+Received: from jgg by mlx with local (Exim 4.94) (envelope-from <jgg@ziepe.ca>)
+ id 1mVJ0f-007GWk-Q4; Tue, 28 Sep 2021 16:43:25 -0300
+Date: Tue, 28 Sep 2021 16:43:25 -0300
+From: Jason Gunthorpe <jgg@ziepe.ca>
+To: Logan Gunthorpe <logang@deltatee.com>
+Subject: Re: [PATCH v3 12/20] RDMA/rw: use dma_map_sgtable()
+Message-ID: <20210928194325.GS3544071@ziepe.ca>
+References: <20210916234100.122368-1-logang@deltatee.com>
+ <20210916234100.122368-13-logang@deltatee.com>
 MIME-Version: 1.0
-In-Reply-To: <20210928191009.32551-1-bp@alien8.de>
-Content-Language: en-US
-Cc: linux-efi@vger.kernel.org, kvm@vger.kernel.org,
- David Airlie <airlied@linux.ie>,
- Benjamin Herrenschmidt <benh@kernel.crashing.org>,
- dri-devel@lists.freedesktop.org, platform-driver-x86@vger.kernel.org,
- Paul Mackerras <paulus@samba.org>, Will Deacon <will@kernel.org>,
- Ard Biesheuvel <ardb@kernel.org>, linux-s390@vger.kernel.org,
- Andi Kleen <ak@linux.intel.com>, Michael Ellerman <mpe@ellerman.id.au>,
- x86@kernel.org, amd-gfx@lists.freedesktop.org,
- Christoph Hellwig <hch@infradead.org>,
- Christian Borntraeger <borntraeger@de.ibm.com>,
- VMware Graphics <linux-graphics-maintainer@vmware.com>,
- Dave Young <dyoung@redhat.com>, Tom Lendacky <thomas.lendacky@amd.com>,
- Thomas Zimmermann <tzimmermann@suse.de>, Vasily Gorbik <gor@linux.ibm.com>,
- Heiko Carstens <hca@linux.ibm.com>,
- Maarten Lankhorst <maarten.lankhorst@linux.intel.com>,
- Maxime Ripard <mripard@kernel.org>, Andy Lutomirski <luto@kernel.org>,
- "Kirill A. Shutemov" <kirill@shutemov.name>, kexec@lists.infradead.org,
- iommu@lists.linux-foundation.org, Daniel Vetter <daniel@ffwll.ch>,
- linuxppc-dev@lists.ozlabs.org
+Content-Disposition: inline
+In-Reply-To: <20210916234100.122368-13-logang@deltatee.com>
+Cc: linux-pci@vger.kernel.org, Dave Hansen <dave.hansen@linux.intel.com>,
+ linux-nvme@lists.infradead.org, Stephen Bates <sbates@raithlin.com>,
+ linux-mm@kvack.org, Jason Ekstrand <jason@jlekstrand.net>,
+ Ira Weiny <ira.weiny@intel.com>, Christoph Hellwig <hch@lst.de>,
+ Minturn Dave B <dave.b.minturn@intel.com>,
+ Martin Oliveira <martin.oliveira@eideticom.com>,
+ Matthew Wilcox <willy@infradead.org>,
+ Chaitanya Kulkarni <ckulkarnilinux@gmail.com>,
+ Bjorn Helgaas <helgaas@kernel.org>, Daniel Vetter <daniel.vetter@ffwll.ch>,
+ John Hubbard <jhubbard@nvidia.com>, linux-block@vger.kernel.org,
+ Dan Williams <dan.j.williams@intel.com>,
+ Jakowski Andrzej <andrzej.jakowski@intel.com>,
+ Xiong Jianxin <jianxin.xiong@intel.com>, linux-kernel@vger.kernel.org,
+ iommu@lists.linux-foundation.org, Robin Murphy <robin.murphy@arm.com>,
+ Christian =?utf-8?B?S8O2bmln?= <christian.koenig@amd.com>
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -93,89 +114,36 @@ List-Post: <mailto:iommu@lists.linux-foundation.org>
 List-Help: <mailto:iommu-request@lists.linux-foundation.org?subject=help>
 List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
  <mailto:iommu-request@lists.linux-foundation.org?subject=subscribe>
+Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
-Content-Type: text/plain; charset="us-ascii"; Format="flowed"
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
+On Thu, Sep 16, 2021 at 05:40:52PM -0600, Logan Gunthorpe wrote:
+> dma_map_sg() now supports the use of P2PDMA pages so pci_p2pdma_map_sg()
+> is no longer necessary and may be dropped.
+> 
+> Switch to the dma_map_sgtable() interface which will allow for better
+> error reporting if the P2PDMA pages are unsupported.
+> 
+> The change to sgtable also appears to fix a couple subtle error path
+> bugs:
+> 
+>   - In rdma_rw_ctx_init(), dma_unmap would be called with an sg
+>     that could have been incremented from the original call, as
+>     well as an nents that was not the original number of nents
+>     called when mapped.
+>   - Similarly in rdma_rw_ctx_signature_init, both sg and prot_sg
+>     were unmapped with the incorrect number of nents.
 
+Those bugs should definately get fixed.. I might extract the sgtable
+conversion into a stand alone patch to do it.
 
-On 9/28/21 12:10 PM, Borislav Petkov wrote:
-> From: Borislav Petkov <bp@suse.de>
-> 
-> Hi all,
-> 
-> here's v4 of the cc_platform_has() patchset with feedback incorporated.
-> 
-> I'm going to route this through tip if there are no objections.
+But as it is, this looks fine
 
-Intel CC support patch is not included in this series. You want me
-to address the issue raised by Joerg before merging it?
+Reviewed-by: Jason Gunthorpe <jgg@nvidia.com>
 
-> 
-> Thx.
-> 
-> Tom Lendacky (8):
->    x86/ioremap: Selectively build arch override encryption functions
->    arch/cc: Introduce a function to check for confidential computing
->      features
->    x86/sev: Add an x86 version of cc_platform_has()
->    powerpc/pseries/svm: Add a powerpc version of cc_platform_has()
->    x86/sme: Replace occurrences of sme_active() with cc_platform_has()
->    x86/sev: Replace occurrences of sev_active() with cc_platform_has()
->    x86/sev: Replace occurrences of sev_es_active() with cc_platform_has()
->    treewide: Replace the use of mem_encrypt_active() with
->      cc_platform_has()
-> 
->   arch/Kconfig                                 |  3 +
->   arch/powerpc/include/asm/mem_encrypt.h       |  5 --
->   arch/powerpc/platforms/pseries/Kconfig       |  1 +
->   arch/powerpc/platforms/pseries/Makefile      |  2 +
->   arch/powerpc/platforms/pseries/cc_platform.c | 26 ++++++
->   arch/powerpc/platforms/pseries/svm.c         |  5 +-
->   arch/s390/include/asm/mem_encrypt.h          |  2 -
->   arch/x86/Kconfig                             |  1 +
->   arch/x86/include/asm/io.h                    |  8 ++
->   arch/x86/include/asm/kexec.h                 |  2 +-
->   arch/x86/include/asm/mem_encrypt.h           | 12 +--
->   arch/x86/kernel/Makefile                     |  6 ++
->   arch/x86/kernel/cc_platform.c                | 69 +++++++++++++++
->   arch/x86/kernel/crash_dump_64.c              |  4 +-
->   arch/x86/kernel/head64.c                     |  9 +-
->   arch/x86/kernel/kvm.c                        |  3 +-
->   arch/x86/kernel/kvmclock.c                   |  4 +-
->   arch/x86/kernel/machine_kexec_64.c           | 19 +++--
->   arch/x86/kernel/pci-swiotlb.c                |  9 +-
->   arch/x86/kernel/relocate_kernel_64.S         |  2 +-
->   arch/x86/kernel/sev.c                        |  6 +-
->   arch/x86/kvm/svm/svm.c                       |  3 +-
->   arch/x86/mm/ioremap.c                        | 18 ++--
->   arch/x86/mm/mem_encrypt.c                    | 55 ++++--------
->   arch/x86/mm/mem_encrypt_identity.c           |  9 +-
->   arch/x86/mm/pat/set_memory.c                 |  3 +-
->   arch/x86/platform/efi/efi_64.c               |  9 +-
->   arch/x86/realmode/init.c                     |  8 +-
->   drivers/gpu/drm/amd/amdgpu/amdgpu_drv.c      |  4 +-
->   drivers/gpu/drm/drm_cache.c                  |  4 +-
->   drivers/gpu/drm/vmwgfx/vmwgfx_drv.c          |  4 +-
->   drivers/gpu/drm/vmwgfx/vmwgfx_msg.c          |  6 +-
->   drivers/iommu/amd/init.c                     |  7 +-
->   drivers/iommu/amd/iommu.c                    |  3 +-
->   drivers/iommu/amd/iommu_v2.c                 |  3 +-
->   drivers/iommu/iommu.c                        |  3 +-
->   fs/proc/vmcore.c                             |  6 +-
->   include/linux/cc_platform.h                  | 88 ++++++++++++++++++++
->   include/linux/mem_encrypt.h                  |  4 -
->   kernel/dma/swiotlb.c                         |  4 +-
->   40 files changed, 310 insertions(+), 129 deletions(-)
->   create mode 100644 arch/powerpc/platforms/pseries/cc_platform.c
->   create mode 100644 arch/x86/kernel/cc_platform.c
->   create mode 100644 include/linux/cc_platform.h
-> 
-
--- 
-Sathyanarayanan Kuppuswamy
-Linux Kernel Developer
+Jason
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
