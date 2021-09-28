@@ -2,106 +2,78 @@ Return-Path: <SRS0=IJZW=OS=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8D4FAC433EF
-	for <iommu@archiver.kernel.org>; Tue, 28 Sep 2021 20:05:14 +0000 (UTC)
-Received: from smtp2.osuosl.org (smtp2.osuosl.org [140.211.166.133])
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D7869C433FE
+	for <iommu@archiver.kernel.org>; Tue, 28 Sep 2021 20:28:30 +0000 (UTC)
+Received: from smtp4.osuosl.org (smtp4.osuosl.org [140.211.166.137])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 4841F6044F
-	for <iommu@archiver.kernel.org>; Tue, 28 Sep 2021 20:05:14 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.4.1 mail.kernel.org 4841F6044F
-Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=ziepe.ca
+	by mail.kernel.org (Postfix) with ESMTPS id 661BA6127C
+	for <iommu@archiver.kernel.org>; Tue, 28 Sep 2021 20:28:30 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.4.1 mail.kernel.org 661BA6127C
+Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=intel.com
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by smtp2.osuosl.org (Postfix) with ESMTP id EB29F405F4;
-	Tue, 28 Sep 2021 20:05:13 +0000 (UTC)
+	by smtp4.osuosl.org (Postfix) with ESMTP id 2A8B640105;
+	Tue, 28 Sep 2021 20:28:30 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from smtp2.osuosl.org ([127.0.0.1])
-	by localhost (smtp2.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id gH4cW1XaItau; Tue, 28 Sep 2021 20:05:12 +0000 (UTC)
-Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by smtp2.osuosl.org (Postfix) with ESMTPS id 5A226405FB;
-	Tue, 28 Sep 2021 20:05:12 +0000 (UTC)
-Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 3A43EC0011;
-	Tue, 28 Sep 2021 20:05:12 +0000 (UTC)
-Received: from smtp4.osuosl.org (smtp4.osuosl.org [140.211.166.137])
- by lists.linuxfoundation.org (Postfix) with ESMTP id BA6FCC000D
- for <iommu@lists.linux-foundation.org>; Tue, 28 Sep 2021 20:05:10 +0000 (UTC)
-Received: from localhost (localhost [127.0.0.1])
- by smtp4.osuosl.org (Postfix) with ESMTP id 9CF5D4159D
- for <iommu@lists.linux-foundation.org>; Tue, 28 Sep 2021 20:05:10 +0000 (UTC)
-X-Virus-Scanned: amavisd-new at osuosl.org
-Authentication-Results: smtp4.osuosl.org (amavisd-new);
- dkim=pass (2048-bit key) header.d=ziepe.ca
 Received: from smtp4.osuosl.org ([127.0.0.1])
- by localhost (smtp4.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id JufdGB0Lb59Y for <iommu@lists.linux-foundation.org>;
- Tue, 28 Sep 2021 20:05:10 +0000 (UTC)
-X-Greylist: whitelisted by SQLgrey-1.8.0
-Received: from mail-qv1-xf2f.google.com (mail-qv1-xf2f.google.com
- [IPv6:2607:f8b0:4864:20::f2f])
- by smtp4.osuosl.org (Postfix) with ESMTPS id D0D004159E
- for <iommu@lists.linux-foundation.org>; Tue, 28 Sep 2021 20:05:09 +0000 (UTC)
-Received: by mail-qv1-xf2f.google.com with SMTP id x8so99217qvp.1
- for <iommu@lists.linux-foundation.org>; Tue, 28 Sep 2021 13:05:09 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ziepe.ca; s=google;
- h=date:from:to:cc:subject:message-id:references:mime-version
- :content-disposition:in-reply-to;
- bh=cW8g3RMiiX7YozMyBpzJQ3i0X8a1a6uo52SxjKINHuA=;
- b=mXg4nC/0EIy5mcGZgRBdVGh4+PtQ/R7qKfJdIHvckLXvlCgA6RG20VZtoVAC7XwA0/
- 1Q9jV1hRPeuiqNHTfiF2xEDf/GmdCrABm9VW4FZUzunFeWsbqWbu0OIpkB0K7pTzfgbd
- 6AZsXvNDXNRBaOqQHwB6uloUHcpht9y8ZbZWcpcNkXzVJmyDxhAzyVOeTC4gm52ORmXN
- mB9dfyB6upC6rckPem/56kkVq6mMDb0monvwsJpjKud0G8lLORhrGaRbWZcJi7ULZ9Wj
- 5fjO0VyJ8XxtZ4Gi+c3kBFto+M+PTYIof3BPLlQNFsws5BUO2HFuvQyKhOfpgnkZotGZ
- sdyw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
- d=1e100.net; s=20210112;
- h=x-gm-message-state:date:from:to:cc:subject:message-id:references
- :mime-version:content-disposition:in-reply-to;
- bh=cW8g3RMiiX7YozMyBpzJQ3i0X8a1a6uo52SxjKINHuA=;
- b=quYXto6Bnc0sriIy4oentTAUPbxa4of/2zCmOKUonMB1YeM2mxlMtKiinYKVpOiSao
- z+DxsDweYqTqYbU4m8mN/EJNjV7cAnn0t3ryF9HjDukFTwZr4FuThYA3pu/bBmSdZcE2
- qb9pCBXEybUTOmjBh//dctmeMnlqq2RQsOgndv+Y5zZYK7Ldmk7yHQBscA2HvDWz2+ou
- Yze4eSNKFc12ikdbTRViORWAKhAk/osvxYmsIlmz2LBGC4MNnZTNnIO98NnLjjEM1DcU
- +kbc0KACr37OX0QGYsdlPZhwuXBhzo1kLfrrvFNHyDkc/UcXATmu65Mm1eSZ6eD3wsWL
- /Dzw==
-X-Gm-Message-State: AOAM5307V9OcFSqOpFIQ/uGLIL95QlIw+/F/AK4nNqEiINGKONfvaWzx
- CUzuTJvRzSgZ9D0xtyuMLniupw==
-X-Google-Smtp-Source: ABdhPJzKbJYaBmt9+b2JfarRag3/wc7athe6CPjiFKF1JovwH1BSJxbPc5yOuJ/qnsZmJUt2zTx5pQ==
-X-Received: by 2002:a0c:9043:: with SMTP id o61mr7850968qvo.54.1632859508704; 
- Tue, 28 Sep 2021 13:05:08 -0700 (PDT)
-Received: from ziepe.ca ([206.223.160.26])
- by smtp.gmail.com with ESMTPSA id x125sm118440qkd.8.2021.09.28.13.05.07
- (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
- Tue, 28 Sep 2021 13:05:07 -0700 (PDT)
-Received: from jgg by mlx with local (Exim 4.94) (envelope-from <jgg@ziepe.ca>)
- id 1mVJLe-007GuE-T8; Tue, 28 Sep 2021 17:05:06 -0300
-Date: Tue, 28 Sep 2021 17:05:06 -0300
-From: Jason Gunthorpe <jgg@ziepe.ca>
-To: Logan Gunthorpe <logang@deltatee.com>
-Subject: Re: [PATCH v3 19/20] PCI/P2PDMA: introduce pci_mmap_p2pmem()
-Message-ID: <20210928200506.GX3544071@ziepe.ca>
-References: <20210916234100.122368-1-logang@deltatee.com>
- <20210916234100.122368-20-logang@deltatee.com>
+	by localhost (smtp4.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+	with ESMTP id dmsdBehmypHA; Tue, 28 Sep 2021 20:28:29 +0000 (UTC)
+Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [IPv6:2605:bc80:3010:104::8cd3:938])
+	by smtp4.osuosl.org (Postfix) with ESMTPS id D37DA4159B;
+	Tue, 28 Sep 2021 20:28:28 +0000 (UTC)
+Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
+	by lists.linuxfoundation.org (Postfix) with ESMTP id A6B55C0011;
+	Tue, 28 Sep 2021 20:28:28 +0000 (UTC)
+Received: from smtp3.osuosl.org (smtp3.osuosl.org [140.211.166.136])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id ED817C000D
+ for <iommu@lists.linux-foundation.org>; Tue, 28 Sep 2021 20:28:26 +0000 (UTC)
+Received: from localhost (localhost [127.0.0.1])
+ by smtp3.osuosl.org (Postfix) with ESMTP id C92C160B5D
+ for <iommu@lists.linux-foundation.org>; Tue, 28 Sep 2021 20:28:26 +0000 (UTC)
+X-Virus-Scanned: amavisd-new at osuosl.org
+Received: from smtp3.osuosl.org ([127.0.0.1])
+ by localhost (smtp3.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+ with ESMTP id PdU4RRr-FPaz for <iommu@lists.linux-foundation.org>;
+ Tue, 28 Sep 2021 20:28:26 +0000 (UTC)
+X-Greylist: domain auto-whitelisted by SQLgrey-1.8.0
+Received: from mga18.intel.com (mga18.intel.com [134.134.136.126])
+ by smtp3.osuosl.org (Postfix) with ESMTPS id C7D02606B6
+ for <iommu@lists.linux-foundation.org>; Tue, 28 Sep 2021 20:28:25 +0000 (UTC)
+X-IronPort-AV: E=McAfee;i="6200,9189,10121"; a="211882297"
+X-IronPort-AV: E=Sophos;i="5.85,330,1624345200"; d="scan'208";a="211882297"
+Received: from fmsmga003.fm.intel.com ([10.253.24.29])
+ by orsmga106.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384;
+ 28 Sep 2021 13:28:25 -0700
+X-IronPort-AV: E=Sophos;i="5.85,330,1624345200"; d="scan'208";a="554291749"
+Received: from agluck-desk2.sc.intel.com (HELO
+ agluck-desk2.amr.corp.intel.com) ([10.3.52.146])
+ by fmsmga003-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384;
+ 28 Sep 2021 13:28:24 -0700
+Date: Tue, 28 Sep 2021 13:28:23 -0700
+From: "Luck, Tony" <tony.luck@intel.com>
+To: Dave Hansen <dave.hansen@intel.com>
+Subject: Re: [PATCH 4/8] x86/traps: Demand-populate PASID MSR via #GP
+Message-ID: <YVN652x14dMgyE85@agluck-desk2.amr.corp.intel.com>
+References: <20210920192349.2602141-1-fenghua.yu@intel.com>
+ <20210920192349.2602141-5-fenghua.yu@intel.com>
+ <1aae375d-3cd4-4ab8-9c64-9e387916e6c0@www.fastmail.com>
+ <YVIxeBh3IKYYK711@agluck-desk2.amr.corp.intel.com>
+ <035290e6-d914-a113-ea6c-e845d71069cf@intel.com>
+ <YVNj8sm8iectc6iU@agluck-desk2.amr.corp.intel.com>
+ <3f97b77e-a609-997b-3be7-f44ff7312b0d@intel.com>
 MIME-Version: 1.0
 Content-Disposition: inline
-In-Reply-To: <20210916234100.122368-20-logang@deltatee.com>
-Cc: linux-pci@vger.kernel.org, Dave Hansen <dave.hansen@linux.intel.com>,
- linux-nvme@lists.infradead.org, Stephen Bates <sbates@raithlin.com>,
- linux-mm@kvack.org, Jason Ekstrand <jason@jlekstrand.net>,
- Ira Weiny <ira.weiny@intel.com>, Christoph Hellwig <hch@lst.de>,
- Minturn Dave B <dave.b.minturn@intel.com>,
- Martin Oliveira <martin.oliveira@eideticom.com>,
- Matthew Wilcox <willy@infradead.org>,
- Chaitanya Kulkarni <ckulkarnilinux@gmail.com>,
- Bjorn Helgaas <helgaas@kernel.org>, Daniel Vetter <daniel.vetter@ffwll.ch>,
- John Hubbard <jhubbard@nvidia.com>, linux-block@vger.kernel.org,
- Dan Williams <dan.j.williams@intel.com>,
- Jakowski Andrzej <andrzej.jakowski@intel.com>,
- Xiong Jianxin <jianxin.xiong@intel.com>, linux-kernel@vger.kernel.org,
- iommu@lists.linux-foundation.org, Robin Murphy <robin.murphy@arm.com>,
- Christian =?utf-8?B?S8O2bmln?= <christian.koenig@amd.com>
+In-Reply-To: <3f97b77e-a609-997b-3be7-f44ff7312b0d@intel.com>
+Cc: Fenghua Yu <fenghua.yu@intel.com>, Dave Jiang <dave.jiang@intel.com>,
+ Raj Ashok <ashok.raj@intel.com>, "Shankar, Ravi V" <ravi.v.shankar@intel.com>,
+ "Peter Zijlstra \(Intel\)" <peterz@infradead.org>,
+ the arch/x86 maintainers <x86@kernel.org>,
+ Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+ iommu@lists.linux-foundation.org, Ingo Molnar <mingo@redhat.com>,
+ Borislav Petkov <bp@alien8.de>, Jacob Jun Pan <jacob.jun.pan@intel.com>,
+ Andy Lutomirski <luto@kernel.org>, Josh Poimboeuf <jpoimboe@redhat.com>,
+ Thomas Gleixner <tglx@linutronix.de>
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -119,30 +91,148 @@ Content-Transfer-Encoding: 7bit
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-On Thu, Sep 16, 2021 at 05:40:59PM -0600, Logan Gunthorpe wrote:
+On Tue, Sep 28, 2021 at 12:19:22PM -0700, Dave Hansen wrote:
+> On 9/28/21 11:50 AM, Luck, Tony wrote:
+> > On Mon, Sep 27, 2021 at 04:51:25PM -0700, Dave Hansen wrote:
+> ...
+> >> 1. Hide whether we need to write to real registers
+> >> 2. Hide whether we need to update the in-memory image
+> >> 3. Hide other FPU infrastructure like the TIF flag.
+> >> 4. Make the users deal with a *whole* state in the replace API
+> > 
+> > Is that difference just whether you need to save the
+> > state from registers to memory (for the "update" case)
+> > or not (for the "replace" case ... where you can ignore
+> > the current register, overwrite the whole per-feature
+> > xsave area and mark it to be restored to registers).
+> > 
+> > If so, just a "bool full" argument might do the trick?
+> 
+> I want to be able to hide the complexity of where the old state comes
+> from.  It might be in registers or it might be in memory or it might be
+> *neither*.  It's possible we're running with stale register state and a
+> current->...->xsave buffer that has XFEATURES&XFEATURE_FOO 0.
+> 
+> In that case, the "old" copy might be memcpy'd out of the init_task.
+> Or, for pkeys, we might build it ourselves with init_pkru_val.
 
-> +static void pci_p2pdma_unmap_mappings(void *data)
-> +{
-> +	struct pci_dev *pdev = data;
-> +	struct pci_p2pdma *p2pdma = rcu_dereference_protected(pdev->p2pdma, 1);
-> +
-> +	p2pdma->active = false;
-> +	synchronize_rcu();
-> +	unmap_mapping_range(p2pdma->inode->i_mapping, 0, 0, 1);
-> +	pci_p2pdma_free_mappings(p2pdma->inode->i_mapping);
-> +}
+So should there be an error case if there isn't an "old" state, and
+the user calls:
 
-If this is going to rely on unmap_mapping_range then GUP should also
-reject this memory for FOLL_LONGTERM..
+	p = begin_update_one_xsave_feature(XFEATURE_something, false);
 
-What along this control flow:
+Maybe instead of an error, just fill it in with the init state for the feature?
 
-> +       error = devm_add_action_or_reset(&pdev->dev, pci_p2pdma_unmap_mappings,
-> +                                        pdev);
+> > Also - you have a "tsk" argument in your pseudo code. Is
+> > this needed? Are there places where we need to perform
+> > these operations on something other than "current"?
+> 
+> Two cases come to mind:
+> 1. Fork/clone where we are doing things to our child's XSAVE buffer
+> 2. ptrace() where we are poking into another task's state
+> 
+> ptrace() goes for the *whole* buffer now.  I'm not sure it would need
+> this per-feature API.  I just call it out as something that we might
+> need in the future.
 
-Waits for all the page refcounts to go to zero?
+Ok - those seem ok ... it is up to the caller to make sure that the
+target task is in some "not running, and can't suddenly start running"
+state before calling these functions.
 
-Jason
+> 
+> > pseudo-code:
+> > 
+> > void *begin_update_one_xsave_feature(enum xfeature xfeature, bool full)
+> > {
+> > 	void *addr;
+> > 
+> > 	BUG_ON(!(xsave->header.xcomp_bv & xfeature));
+> > 
+> > 	addr = __raw_xsave_addr(xsave, xfeature);
+> > 
+> > 	fpregs_lock();
+> > 
+> > 	if (full)
+> > 		return addr;
+> 
+> If the feature is marked as in the init state in the buffer
+> (XSTATE_BV[feature]==0), this addr *could* contain total garbage.  So,
+> we'd want to make sure that the memory contents have the init state
+> written before handing them back to the caller.  That's not strictly
+> required if the user is writing the whole thing, but it's the nice thing
+> to do.
+
+Nice guys waste CPU cycles writing to memory that is just going to get
+written again.
+
+> 
+> > 	if (xfeature registers are "live")
+> > 		xsaves(xstate, 1 << xfeature);
+> 
+> One little note: I don't think we would necessarily need to do an XSAVES
+> here.  For PKRU, for instance, we could just do a rdpkru.
+
+Like this?
+
+	if (tsk == current) {
+		switch (xfeature) {
+		case XFEATURE_PKRU:
+			*(u32 *)addr = rdpkru();
+			break;
+		case XFEATURE_PASID:
+			rdmsrl(MSR_IA32_PASID, msr);
+			*(u64 *)addr = msr;
+			break;
+		... any other "easy" states ...
+		default:
+			xsaves(xstate, 1 << xfeature);
+			break;
+		}
+	}
+
+> 
+> > 	return addr;
+> > }
+> > 
+> > void finish_update_one_xsave_feature(enum xfeature xfeature)
+> > {
+> > 	mark feature modified
+> 
+> I think we'd want to do this at the "begin" time.  Also, do you mean we
+> should set XSTATE_BV[feature]?
+
+Begin? End? It's all inside fpregs_lock(). But whatever seems best.
+
+Yes, I think that this means set XSTATE_BV[feature] ... but I'm
+relying on you as the xsave expert to help get the subtle bits right so
+the Andy Lutomirski can smile at this code.
+
+> > 	set TIF bit
+> 
+> Since the XSAVE buffer was updated, it now contains the canonical FPU
+> state.  It may have diverged from the register state, thus we need to
+> set TIF_NEED_FPU_LOAD.
+
+Yes, that's the TIF bit my pseudo-code intended.
+
+> It's also worth noting that we *could*:
+> 
+> 	xrstors(xstate, 1<<xfeature);
+> 
+> as well.  That would bring the registers back up to day and we could
+> keep TIF_NEED_FPU_LOAD==0.
+
+Only makes sense if "tsk == current". But does this help. The work seems
+to be the same whether we do it now, or later. We don't know for sure
+that we will directly return to the task. We might context switch to
+another task, so loading the state into registers now would just be
+wasted time.
+
+> 
+> > 	fpregs_unlock();
+> > }
+
+-Tony
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
