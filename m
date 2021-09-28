@@ -2,106 +2,76 @@ Return-Path: <SRS0=IJZW=OS=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3812AC433EF
-	for <iommu@archiver.kernel.org>; Tue, 28 Sep 2021 18:48:55 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id AE529C433FE
+	for <iommu@archiver.kernel.org>; Tue, 28 Sep 2021 18:50:34 +0000 (UTC)
 Received: from smtp3.osuosl.org (smtp3.osuosl.org [140.211.166.136])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id DBE9461209
-	for <iommu@archiver.kernel.org>; Tue, 28 Sep 2021 18:48:54 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.4.1 mail.kernel.org DBE9461209
-Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=ziepe.ca
+	by mail.kernel.org (Postfix) with ESMTPS id 649A661361
+	for <iommu@archiver.kernel.org>; Tue, 28 Sep 2021 18:50:34 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.4.1 mail.kernel.org 649A661361
+Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=intel.com
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by smtp3.osuosl.org (Postfix) with ESMTP id ABA8A6067A;
-	Tue, 28 Sep 2021 18:48:54 +0000 (UTC)
+	by smtp3.osuosl.org (Postfix) with ESMTP id 29F3260B34;
+	Tue, 28 Sep 2021 18:50:34 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
 Received: from smtp3.osuosl.org ([127.0.0.1])
 	by localhost (smtp3.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id jItsjnCm1Xjg; Tue, 28 Sep 2021 18:48:54 +0000 (UTC)
-Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [IPv6:2605:bc80:3010:104::8cd3:938])
-	by smtp3.osuosl.org (Postfix) with ESMTPS id A1E5960B50;
-	Tue, 28 Sep 2021 18:48:53 +0000 (UTC)
+	with ESMTP id 4CPgHkcwTCxO; Tue, 28 Sep 2021 18:50:33 +0000 (UTC)
+Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
+	by smtp3.osuosl.org (Postfix) with ESMTPS id 0C9AA60B24;
+	Tue, 28 Sep 2021 18:50:32 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 7C58CC0011;
-	Tue, 28 Sep 2021 18:48:53 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id D35A9C0011;
+	Tue, 28 Sep 2021 18:50:32 +0000 (UTC)
 Received: from smtp4.osuosl.org (smtp4.osuosl.org [140.211.166.137])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 99EA9C000D
- for <iommu@lists.linux-foundation.org>; Tue, 28 Sep 2021 18:48:51 +0000 (UTC)
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 8BBD6C000D
+ for <iommu@lists.linux-foundation.org>; Tue, 28 Sep 2021 18:50:31 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by smtp4.osuosl.org (Postfix) with ESMTP id 7C0D2403A8
- for <iommu@lists.linux-foundation.org>; Tue, 28 Sep 2021 18:48:51 +0000 (UTC)
+ by smtp4.osuosl.org (Postfix) with ESMTP id 87CCE4149B
+ for <iommu@lists.linux-foundation.org>; Tue, 28 Sep 2021 18:50:31 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Authentication-Results: smtp4.osuosl.org (amavisd-new);
- dkim=pass (2048-bit key) header.d=ziepe.ca
 Received: from smtp4.osuosl.org ([127.0.0.1])
  by localhost (smtp4.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id FIxjGmAYIpDV for <iommu@lists.linux-foundation.org>;
- Tue, 28 Sep 2021 18:48:51 +0000 (UTC)
-X-Greylist: whitelisted by SQLgrey-1.8.0
-Received: from mail-qt1-x834.google.com (mail-qt1-x834.google.com
- [IPv6:2607:f8b0:4864:20::834])
- by smtp4.osuosl.org (Postfix) with ESMTPS id DF3B140374
- for <iommu@lists.linux-foundation.org>; Tue, 28 Sep 2021 18:48:50 +0000 (UTC)
-Received: by mail-qt1-x834.google.com with SMTP id j13so20849400qtq.6
- for <iommu@lists.linux-foundation.org>; Tue, 28 Sep 2021 11:48:50 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ziepe.ca; s=google;
- h=date:from:to:cc:subject:message-id:references:mime-version
- :content-disposition:in-reply-to;
- bh=V9OdhKHkz+bDWOgw519ym53HGQqRyLuvFdP/XrS7z5w=;
- b=U6Cle1ar5YMOX4vRLBQAyCUIzflL0rP5DDqpOBJE+YXNQaN+2OCi9d0Iy1j+ZqEb0q
- ldJaiLHkalWypayZHQx3L3YPO9DcOqCmj/7fnNa9sm7+IILMYJgnEeoBHOfV3+5sIA1G
- 7PoT13IhlGy54nJMnWjX2JC+DO7VxjDE7MqR0TIZG4kkDyH5MeFimp+WrD7+H8fZcSrr
- rjU6GjV1RHVgJefkq1bsjD7HjG42edUR2AMuNMVNVDWGsf2VmvclfT7eJ7t5/82dwAMV
- kHPwsALEwDASPTTgXVp7pyVtxMvNs1y+xdofJ6ktmPZVIieklzttcPQ7dqgixshVYpDP
- cjwQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
- d=1e100.net; s=20210112;
- h=x-gm-message-state:date:from:to:cc:subject:message-id:references
- :mime-version:content-disposition:in-reply-to;
- bh=V9OdhKHkz+bDWOgw519ym53HGQqRyLuvFdP/XrS7z5w=;
- b=xF8elQYUPbwFDY/YvYrYDXnoJPUCODVThmaecEYde5gL66uh93IlVTo/v3PEWIBiP9
- /QRtF3Q3+FUgz3QahK0Ad1kNQyLLre/B8HJoK996f/B1kl3sTS+3Hv3uqlyG1KLvVS8f
- +kXuuR3PjwEUVL1oTtfSH2ttYA/MQjPD/Wt3BQWkGYpep+Z3kYUvmHSOBOyCgWSm+pbU
- MEpbeBsW6HvQPnqaXVCGlFVunAGW7gIKdkqVn4bIKH1lG05CHG0vsz+MJshYlBi6ePNW
- SRQnDDjPqW1by3eBXtvEpUCLxzE0SXEOJxKZGTyiv9yhG7Lc5+DBtAWmtr9idgpPVxvG
- lKQw==
-X-Gm-Message-State: AOAM533oWbkFrI3f5n65FiIlQN2ND+Rrc1kCs+cNqMrkF7ZpRgqka7dR
- 5qDphNH7MkXaiU3nLSzh+CMBXw==
-X-Google-Smtp-Source: ABdhPJxMh4uLV/Co2Bi0Uj4NMD1oETxTUQz1ehKuaeVQOMiXGKhC5tKssJhY1an+RZ/0cNTGVGgAwg==
-X-Received: by 2002:ac8:46c8:: with SMTP id h8mr7389965qto.341.1632854929767; 
- Tue, 28 Sep 2021 11:48:49 -0700 (PDT)
-Received: from ziepe.ca ([206.223.160.26])
- by smtp.gmail.com with ESMTPSA id b65sm15601470qkc.46.2021.09.28.11.48.49
- (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
- Tue, 28 Sep 2021 11:48:49 -0700 (PDT)
-Received: from jgg by mlx with local (Exim 4.94) (envelope-from <jgg@ziepe.ca>)
- id 1mVI9o-007FZ4-5q; Tue, 28 Sep 2021 15:48:48 -0300
-Date: Tue, 28 Sep 2021 15:48:48 -0300
-From: Jason Gunthorpe <jgg@ziepe.ca>
-To: Logan Gunthorpe <logang@deltatee.com>
-Subject: Re: [PATCH v3 03/20] PCI/P2PDMA: make pci_p2pdma_map_type() non-static
-Message-ID: <20210928184848.GK3544071@ziepe.ca>
-References: <20210916234100.122368-1-logang@deltatee.com>
- <20210916234100.122368-4-logang@deltatee.com>
+ with ESMTP id 1HwAp0wqOJf1 for <iommu@lists.linux-foundation.org>;
+ Tue, 28 Sep 2021 18:50:30 +0000 (UTC)
+X-Greylist: domain auto-whitelisted by SQLgrey-1.8.0
+Received: from mga07.intel.com (mga07.intel.com [134.134.136.100])
+ by smtp4.osuosl.org (Postfix) with ESMTPS id A43DA41486
+ for <iommu@lists.linux-foundation.org>; Tue, 28 Sep 2021 18:50:30 +0000 (UTC)
+X-IronPort-AV: E=McAfee;i="6200,9189,10121"; a="288439817"
+X-IronPort-AV: E=Sophos;i="5.85,330,1624345200"; d="scan'208";a="288439817"
+Received: from fmsmga008.fm.intel.com ([10.253.24.58])
+ by orsmga105.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384;
+ 28 Sep 2021 11:50:30 -0700
+X-IronPort-AV: E=Sophos;i="5.85,330,1624345200"; d="scan'208";a="519215652"
+Received: from agluck-desk2.sc.intel.com (HELO
+ agluck-desk2.amr.corp.intel.com) ([10.3.52.146])
+ by fmsmga008-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384;
+ 28 Sep 2021 11:50:29 -0700
+Date: Tue, 28 Sep 2021 11:50:26 -0700
+From: "Luck, Tony" <tony.luck@intel.com>
+To: Dave Hansen <dave.hansen@intel.com>
+Subject: Re: [PATCH 4/8] x86/traps: Demand-populate PASID MSR via #GP
+Message-ID: <YVNj8sm8iectc6iU@agluck-desk2.amr.corp.intel.com>
+References: <20210920192349.2602141-1-fenghua.yu@intel.com>
+ <20210920192349.2602141-5-fenghua.yu@intel.com>
+ <1aae375d-3cd4-4ab8-9c64-9e387916e6c0@www.fastmail.com>
+ <YVIxeBh3IKYYK711@agluck-desk2.amr.corp.intel.com>
+ <035290e6-d914-a113-ea6c-e845d71069cf@intel.com>
 MIME-Version: 1.0
 Content-Disposition: inline
-In-Reply-To: <20210916234100.122368-4-logang@deltatee.com>
-Cc: linux-pci@vger.kernel.org, Dave Hansen <dave.hansen@linux.intel.com>,
- linux-nvme@lists.infradead.org, Stephen Bates <sbates@raithlin.com>,
- linux-mm@kvack.org, Jason Ekstrand <jason@jlekstrand.net>,
- Ira Weiny <ira.weiny@intel.com>, Christoph Hellwig <hch@lst.de>,
- Minturn Dave B <dave.b.minturn@intel.com>,
- Martin Oliveira <martin.oliveira@eideticom.com>,
- Matthew Wilcox <willy@infradead.org>,
- Chaitanya Kulkarni <ckulkarnilinux@gmail.com>,
- Bjorn Helgaas <helgaas@kernel.org>, Daniel Vetter <daniel.vetter@ffwll.ch>,
- John Hubbard <jhubbard@nvidia.com>, linux-block@vger.kernel.org,
- Dan Williams <dan.j.williams@intel.com>,
- Jakowski Andrzej <andrzej.jakowski@intel.com>,
- Xiong Jianxin <jianxin.xiong@intel.com>, linux-kernel@vger.kernel.org,
- iommu@lists.linux-foundation.org, Robin Murphy <robin.murphy@arm.com>,
- Christian =?utf-8?B?S8O2bmln?= <christian.koenig@amd.com>
+In-Reply-To: <035290e6-d914-a113-ea6c-e845d71069cf@intel.com>
+Cc: Fenghua Yu <fenghua.yu@intel.com>, Dave Jiang <dave.jiang@intel.com>,
+ Raj Ashok <ashok.raj@intel.com>, "Shankar, Ravi V" <ravi.v.shankar@intel.com>,
+ "Peter Zijlstra \(Intel\)" <peterz@infradead.org>,
+ the arch/x86 maintainers <x86@kernel.org>,
+ Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+ iommu@lists.linux-foundation.org, Ingo Molnar <mingo@redhat.com>,
+ Borislav Petkov <bp@alien8.de>, Jacob Jun Pan <jacob.jun.pan@intel.com>,
+ Andy Lutomirski <luto@kernel.org>, Josh Poimboeuf <jpoimboe@redhat.com>,
+ Thomas Gleixner <tglx@linutronix.de>
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -119,53 +89,83 @@ Content-Transfer-Encoding: 7bit
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-On Thu, Sep 16, 2021 at 05:40:43PM -0600, Logan Gunthorpe wrote:
-> +enum pci_p2pdma_map_type {
-> +	/*
-> +	 * PCI_P2PDMA_MAP_UNKNOWN: Used internally for indicating the mapping
-> +	 * type hasn't been calculated yet. Functions that return this enum
-> +	 * never return this value.
-> +	 */
-> +	PCI_P2PDMA_MAP_UNKNOWN = 0,
-> +
-> +	/*
-> +	 * PCI_P2PDMA_MAP_NOT_SUPPORTED: Indicates the transaction will
-> +	 * traverse the host bridge and the host bridge is not in the
-> +	 * whitelist. DMA Mapping routines should return an error when
+On Mon, Sep 27, 2021 at 04:51:25PM -0700, Dave Hansen wrote:
+> That's close to what we want.
+> 
+> The size should probably be implicit.  If it isn't implicit, it needs to
+> at least be double-checked against the state sizes.
+> 
+> Not to get too fancy, but I think we also want to have a "replace"
+> operation which is separate from the "update".  Think of a case where
+> you are trying to set a bit:
+> 
+> 	struct pkru_state *pk = start_update_xstate(tsk, XSTATE_PKRU);
+> 	pk->pkru |= 0x100;
+> 	finish_update_xstate(tsk, XSTATE_PKRU, pk);
+> 
+> versus setting a whole new value:
+> 
+> 	struct pkru_state *pk = start_replace_xstate(tsk, XSTATE_PKRU);
+> 	memset(pkru, sizeof(*pk), 0);
+> 	pk->pkru = 0x1234;
+> 	finish_replace_xstate(tsk, XSTATE_PKRU, pk);
+> 
+> They look similar, but they actually might have very different costs for
+> big states like AMX.  We can also do some very different debugging for
+> them.  In normal operation, these _can_ just return pointers directly to
+> the fpu...->xstate in some case.  But, if we're debugging, we could
+> kmalloc() a buffer and do sanity checking before it goes into the task
+> buffer.
+> 
+> We don't have to do any of that fancy stuff now.  We don't even need to
+> do an "update" if all we need for now for XFEATURE_PASID is a "replace".
+> 
+> 1. Hide whether we need to write to real registers
+> 2. Hide whether we need to update the in-memory image
+> 3. Hide other FPU infrastructure like the TIF flag.
+> 4. Make the users deal with a *whole* state in the replace API
 
-I gather we are supposed to type allowlist now
+Is that difference just whether you need to save the
+state from registers to memory (for the "update" case)
+or not (for the "replace" case ... where you can ignore
+the current register, overwrite the whole per-feature
+xsave area and mark it to be restored to registers).
 
-> +	 * this is returned.
-> +	 */
-> +	PCI_P2PDMA_MAP_NOT_SUPPORTED,
-> +
-> +	/*
-> +	 * PCI_P2PDMA_BUS_ADDR: Indicates that two devices can talk to
-> +	 * eachother directly through a PCI switch and the transaction will
+If so, just a "bool full" argument might do the trick?
 
-'each other'
+Also - you have a "tsk" argument in your pseudo code. Is
+this needed? Are there places where we need to perform
+these operations on something other than "current"?
 
-> +	 * not traverse the host bridge. Such a mapping should program
-> +	 * the DMA engine with PCI bus addresses.
-> +	 */
-> +	PCI_P2PDMA_MAP_BUS_ADDR,
-> +
-> +	/*
-> +	 * PCI_P2PDMA_MAP_THRU_HOST_BRIDGE: Indicates two devices can talk
-> +	 * to eachother, but the transaction traverses a host bridge on the
+pseudo-code:
 
-'each other'
+void *begin_update_one_xsave_feature(enum xfeature xfeature, bool full)
+{
+	void *addr;
 
-> +	 * whitelist. In this case, a normal mapping either with CPU physical
-> +	 * addresses (in the case of dma-direct) or IOVA addresses (in the
-> +	 * case of IOMMUs) should be used to program the DMA engine.
-> +	 */
-> +	PCI_P2PDMA_MAP_THRU_HOST_BRIDGE,
-> +};
+	BUG_ON(!(xsave->header.xcomp_bv & xfeature));
 
-Reviewed-by: Jason Gunthorpe <jgg@nvidia.com>
+	addr = __raw_xsave_addr(xsave, xfeature);
 
-Jason
+	fpregs_lock();
+
+	if (full)
+		return addr;
+
+	if (xfeature registers are "live")
+		xsaves(xstate, 1 << xfeature);
+
+	return addr;
+}
+
+void finish_update_one_xsave_feature(enum xfeature xfeature)
+{
+	mark feature modified
+	set TIF bit
+	fpregs_unlock();
+}
+
+-Tony
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
