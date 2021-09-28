@@ -2,65 +2,71 @@ Return-Path: <SRS0=IJZW=OS=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 17425C4321E
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7C98EC4167D
 	for <iommu@archiver.kernel.org>; Tue, 28 Sep 2021 19:10:31 +0000 (UTC)
-Received: from smtp4.osuosl.org (smtp4.osuosl.org [140.211.166.137])
+Received: from smtp3.osuosl.org (smtp3.osuosl.org [140.211.166.136])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id C4C016139E
-	for <iommu@archiver.kernel.org>; Tue, 28 Sep 2021 19:10:30 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.4.1 mail.kernel.org C4C016139E
+	by mail.kernel.org (Postfix) with ESMTPS id 426256139E
+	for <iommu@archiver.kernel.org>; Tue, 28 Sep 2021 19:10:31 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.4.1 mail.kernel.org 426256139E
 Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=alien8.de
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by smtp4.osuosl.org (Postfix) with ESMTP id 8FA4B41586;
-	Tue, 28 Sep 2021 19:10:30 +0000 (UTC)
+	by smtp3.osuosl.org (Postfix) with ESMTP id 1921160B52;
+	Tue, 28 Sep 2021 19:10:31 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from smtp4.osuosl.org ([127.0.0.1])
-	by localhost (smtp4.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id ez4gIjCNdH9n; Tue, 28 Sep 2021 19:10:29 +0000 (UTC)
+Received: from smtp3.osuosl.org ([127.0.0.1])
+	by localhost (smtp3.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+	with ESMTP id eMjphDBzkFLK; Tue, 28 Sep 2021 19:10:30 +0000 (UTC)
 Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by smtp4.osuosl.org (Postfix) with ESMTPS id 69AA340802;
+	by smtp3.osuosl.org (Postfix) with ESMTPS id DF5E6606B1;
 	Tue, 28 Sep 2021 19:10:29 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 4F843C000F;
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 80AFFC0023;
 	Tue, 28 Sep 2021 19:10:29 +0000 (UTC)
-Received: from smtp4.osuosl.org (smtp4.osuosl.org [140.211.166.137])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 04461C000D
+Received: from smtp1.osuosl.org (smtp1.osuosl.org [140.211.166.138])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 25912C000D
  for <iommu@lists.linux-foundation.org>; Tue, 28 Sep 2021 19:10:27 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by smtp4.osuosl.org (Postfix) with ESMTP id E73B941582
- for <iommu@lists.linux-foundation.org>; Tue, 28 Sep 2021 19:10:26 +0000 (UTC)
+ by smtp1.osuosl.org (Postfix) with ESMTP id 016EF80F48
+ for <iommu@lists.linux-foundation.org>; Tue, 28 Sep 2021 19:10:27 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from smtp4.osuosl.org ([127.0.0.1])
- by localhost (smtp4.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id 7hNIS2zINglH for <iommu@lists.linux-foundation.org>;
- Tue, 28 Sep 2021 19:10:24 +0000 (UTC)
+Authentication-Results: smtp1.osuosl.org (amavisd-new);
+ dkim=pass (1024-bit key) header.d=alien8.de
+Received: from smtp1.osuosl.org ([127.0.0.1])
+ by localhost (smtp1.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+ with ESMTP id JiKwDVYe5cWv for <iommu@lists.linux-foundation.org>;
+ Tue, 28 Sep 2021 19:10:23 +0000 (UTC)
 X-Greylist: from auto-whitelisted by SQLgrey-1.8.0
 Received: from mail.skyhub.de (mail.skyhub.de [5.9.137.197])
- by smtp4.osuosl.org (Postfix) with ESMTPS id 7AC2540802
+ by smtp1.osuosl.org (Postfix) with ESMTPS id 59D8580EEF
  for <iommu@lists.linux-foundation.org>; Tue, 28 Sep 2021 19:10:22 +0000 (UTC)
 Received: from zn.tnic (p200300ec2f13b20078349fd04295260b.dip0.t-ipconnect.de
  [IPv6:2003:ec:2f13:b200:7834:9fd0:4295:260b])
  (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
  (No client certificate requested)
- by mail.skyhub.de (SuperMail on ZX Spectrum 128k) with ESMTPSA id 394BC1EC067E;
- Tue, 28 Sep 2021 21:10:18 +0200 (CEST)
+ by mail.skyhub.de (SuperMail on ZX Spectrum 128k) with ESMTPSA id 03EEF1EC0731;
+ Tue, 28 Sep 2021 21:10:20 +0200 (CEST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=alien8.de; s=dkim;
- t=1632856218;
+ t=1632856220;
  h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
  to:to:cc:cc:mime-version:mime-version:content-type:
- content-transfer-encoding:content-transfer-encoding:in-reply-to:
- references; bh=GCnPTyFFnPSLiurFbR8iLYuDvIM/ZylVNPX31loBg1U=;
- b=PgysYne7oRqig38Wg3EljqkqTDirqwkPAzRh5HiMtoiV+jJbJHTdrk3tVWUMlO9AliXjoI
- QYxOn8YzMjaQP86uf/uYhrT2bAzVSbUmsndVFpCY5/rue9vmSI/Ae0ek/NbRQmmnCheeB1
- XkhBbUOn81FbH/ZWzpMG01inkCayyvg=
+ content-transfer-encoding:content-transfer-encoding:
+ in-reply-to:in-reply-to:references:references;
+ bh=J+XdhoQGzIN8rz2Q4VHmTGzW5OUUAI4zbVurx/C+SFw=;
+ b=Yo909OX92n3M/cGLqS77ordtgA2tox4iPDFQFfqj90ti7VPQU2IrUuYwnMJGopwHyUg8Ex
+ 7pnCy6+oJgxD0E3vHZ0scxdMTXevKG3dVm9jvPA9z/Saeugp83kcj6Kifc6iNEhP1gH4KW
+ aK+6e6Rz0t6QBeUqkA4X9sqEff7rZcg=
 From: Borislav Petkov <bp@alien8.de>
 To: LKML <linux-kernel@vger.kernel.org>
-Subject: [PATCH v4 0/8] Implement generic cc_platform_has() helper function
-Date: Tue, 28 Sep 2021 21:10:01 +0200
-Message-Id: <20210928191009.32551-1-bp@alien8.de>
+Subject: [PATCH 2/8] arch/cc: Introduce a function to check for confidential
+ computing features
+Date: Tue, 28 Sep 2021 21:10:03 +0200
+Message-Id: <20210928191009.32551-3-bp@alien8.de>
 X-Mailer: git-send-email 2.29.2
+In-Reply-To: <20210928191009.32551-1-bp@alien8.de>
+References: <20210928191009.32551-1-bp@alien8.de>
 MIME-Version: 1.0
 Cc: linux-efi@vger.kernel.org, kvm@vger.kernel.org,
  David Airlie <airlied@linux.ie>,
@@ -98,73 +104,137 @@ Content-Transfer-Encoding: 7bit
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-From: Borislav Petkov <bp@suse.de>
+From: Tom Lendacky <thomas.lendacky@amd.com>
 
-Hi all,
+In preparation for other confidential computing technologies, introduce
+a generic helper function, cc_platform_has(), that can be used to
+check for specific active confidential computing attributes, like
+memory encryption. This is intended to eliminate having to add multiple
+technology-specific checks to the code (e.g. if (sev_active() ||
+tdx_active() || ... ).
 
-here's v4 of the cc_platform_has() patchset with feedback incorporated.
+ [ bp: s/_CC_PLATFORM_H/_LINUX_CC_PLATFORM_H/g ]
 
-I'm going to route this through tip if there are no objections.
-
-Thx.
-
-Tom Lendacky (8):
-  x86/ioremap: Selectively build arch override encryption functions
-  arch/cc: Introduce a function to check for confidential computing
-    features
-  x86/sev: Add an x86 version of cc_platform_has()
-  powerpc/pseries/svm: Add a powerpc version of cc_platform_has()
-  x86/sme: Replace occurrences of sme_active() with cc_platform_has()
-  x86/sev: Replace occurrences of sev_active() with cc_platform_has()
-  x86/sev: Replace occurrences of sev_es_active() with cc_platform_has()
-  treewide: Replace the use of mem_encrypt_active() with
-    cc_platform_has()
-
- arch/Kconfig                                 |  3 +
- arch/powerpc/include/asm/mem_encrypt.h       |  5 --
- arch/powerpc/platforms/pseries/Kconfig       |  1 +
- arch/powerpc/platforms/pseries/Makefile      |  2 +
- arch/powerpc/platforms/pseries/cc_platform.c | 26 ++++++
- arch/powerpc/platforms/pseries/svm.c         |  5 +-
- arch/s390/include/asm/mem_encrypt.h          |  2 -
- arch/x86/Kconfig                             |  1 +
- arch/x86/include/asm/io.h                    |  8 ++
- arch/x86/include/asm/kexec.h                 |  2 +-
- arch/x86/include/asm/mem_encrypt.h           | 12 +--
- arch/x86/kernel/Makefile                     |  6 ++
- arch/x86/kernel/cc_platform.c                | 69 +++++++++++++++
- arch/x86/kernel/crash_dump_64.c              |  4 +-
- arch/x86/kernel/head64.c                     |  9 +-
- arch/x86/kernel/kvm.c                        |  3 +-
- arch/x86/kernel/kvmclock.c                   |  4 +-
- arch/x86/kernel/machine_kexec_64.c           | 19 +++--
- arch/x86/kernel/pci-swiotlb.c                |  9 +-
- arch/x86/kernel/relocate_kernel_64.S         |  2 +-
- arch/x86/kernel/sev.c                        |  6 +-
- arch/x86/kvm/svm/svm.c                       |  3 +-
- arch/x86/mm/ioremap.c                        | 18 ++--
- arch/x86/mm/mem_encrypt.c                    | 55 ++++--------
- arch/x86/mm/mem_encrypt_identity.c           |  9 +-
- arch/x86/mm/pat/set_memory.c                 |  3 +-
- arch/x86/platform/efi/efi_64.c               |  9 +-
- arch/x86/realmode/init.c                     |  8 +-
- drivers/gpu/drm/amd/amdgpu/amdgpu_drv.c      |  4 +-
- drivers/gpu/drm/drm_cache.c                  |  4 +-
- drivers/gpu/drm/vmwgfx/vmwgfx_drv.c          |  4 +-
- drivers/gpu/drm/vmwgfx/vmwgfx_msg.c          |  6 +-
- drivers/iommu/amd/init.c                     |  7 +-
- drivers/iommu/amd/iommu.c                    |  3 +-
- drivers/iommu/amd/iommu_v2.c                 |  3 +-
- drivers/iommu/iommu.c                        |  3 +-
- fs/proc/vmcore.c                             |  6 +-
- include/linux/cc_platform.h                  | 88 ++++++++++++++++++++
- include/linux/mem_encrypt.h                  |  4 -
- kernel/dma/swiotlb.c                         |  4 +-
- 40 files changed, 310 insertions(+), 129 deletions(-)
- create mode 100644 arch/powerpc/platforms/pseries/cc_platform.c
- create mode 100644 arch/x86/kernel/cc_platform.c
+Co-developed-by: Andi Kleen <ak@linux.intel.com>
+Signed-off-by: Andi Kleen <ak@linux.intel.com>
+Co-developed-by: Kuppuswamy Sathyanarayanan <sathyanarayanan.kuppuswamy@linux.intel.com>
+Signed-off-by: Kuppuswamy Sathyanarayanan <sathyanarayanan.kuppuswamy@linux.intel.com>
+Signed-off-by: Tom Lendacky <thomas.lendacky@amd.com>
+Signed-off-by: Borislav Petkov <bp@suse.de>
+---
+ arch/Kconfig                |  3 ++
+ include/linux/cc_platform.h | 88 +++++++++++++++++++++++++++++++++++++
+ 2 files changed, 91 insertions(+)
  create mode 100644 include/linux/cc_platform.h
 
+diff --git a/arch/Kconfig b/arch/Kconfig
+index 8df1c7102643..d1e69d6e8498 100644
+--- a/arch/Kconfig
++++ b/arch/Kconfig
+@@ -1234,6 +1234,9 @@ config RELR
+ config ARCH_HAS_MEM_ENCRYPT
+ 	bool
+ 
++config ARCH_HAS_CC_PLATFORM
++	bool
++
+ config HAVE_SPARSE_SYSCALL_NR
+        bool
+        help
+diff --git a/include/linux/cc_platform.h b/include/linux/cc_platform.h
+new file mode 100644
+index 000000000000..a075b70b9a70
+--- /dev/null
++++ b/include/linux/cc_platform.h
+@@ -0,0 +1,88 @@
++/* SPDX-License-Identifier: GPL-2.0-only */
++/*
++ * Confidential Computing Platform Capability checks
++ *
++ * Copyright (C) 2021 Advanced Micro Devices, Inc.
++ *
++ * Author: Tom Lendacky <thomas.lendacky@amd.com>
++ */
++
++#ifndef _LINUX_CC_PLATFORM_H
++#define _LINUX_CC_PLATFORM_H
++
++#include <linux/types.h>
++#include <linux/stddef.h>
++
++/**
++ * enum cc_attr - Confidential computing attributes
++ *
++ * These attributes represent confidential computing features that are
++ * currently active.
++ */
++enum cc_attr {
++	/**
++	 * @CC_ATTR_MEM_ENCRYPT: Memory encryption is active
++	 *
++	 * The platform/OS is running with active memory encryption. This
++	 * includes running either as a bare-metal system or a hypervisor
++	 * and actively using memory encryption or as a guest/virtual machine
++	 * and actively using memory encryption.
++	 *
++	 * Examples include SME, SEV and SEV-ES.
++	 */
++	CC_ATTR_MEM_ENCRYPT,
++
++	/**
++	 * @CC_ATTR_HOST_MEM_ENCRYPT: Host memory encryption is active
++	 *
++	 * The platform/OS is running as a bare-metal system or a hypervisor
++	 * and actively using memory encryption.
++	 *
++	 * Examples include SME.
++	 */
++	CC_ATTR_HOST_MEM_ENCRYPT,
++
++	/**
++	 * @CC_ATTR_GUEST_MEM_ENCRYPT: Guest memory encryption is active
++	 *
++	 * The platform/OS is running as a guest/virtual machine and actively
++	 * using memory encryption.
++	 *
++	 * Examples include SEV and SEV-ES.
++	 */
++	CC_ATTR_GUEST_MEM_ENCRYPT,
++
++	/**
++	 * @CC_ATTR_GUEST_STATE_ENCRYPT: Guest state encryption is active
++	 *
++	 * The platform/OS is running as a guest/virtual machine and actively
++	 * using memory encryption and register state encryption.
++	 *
++	 * Examples include SEV-ES.
++	 */
++	CC_ATTR_GUEST_STATE_ENCRYPT,
++};
++
++#ifdef CONFIG_ARCH_HAS_CC_PLATFORM
++
++/**
++ * cc_platform_has() - Checks if the specified cc_attr attribute is active
++ * @attr: Confidential computing attribute to check
++ *
++ * The cc_platform_has() function will return an indicator as to whether the
++ * specified Confidential Computing attribute is currently active.
++ *
++ * Context: Any context
++ * Return:
++ * * TRUE  - Specified Confidential Computing attribute is active
++ * * FALSE - Specified Confidential Computing attribute is not active
++ */
++bool cc_platform_has(enum cc_attr attr);
++
++#else	/* !CONFIG_ARCH_HAS_CC_PLATFORM */
++
++static inline bool cc_platform_has(enum cc_attr attr) { return false; }
++
++#endif	/* CONFIG_ARCH_HAS_CC_PLATFORM */
++
++#endif	/* _LINUX_CC_PLATFORM_H */
 -- 
 2.29.2
 
