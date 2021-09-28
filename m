@@ -2,83 +2,84 @@ Return-Path: <SRS0=IJZW=OS=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C6C98C433FE
-	for <iommu@archiver.kernel.org>; Tue, 28 Sep 2021 17:41:40 +0000 (UTC)
-Received: from smtp3.osuosl.org (smtp3.osuosl.org [140.211.166.136])
+	by smtp.lore.kernel.org (Postfix) with ESMTP id CF515C433EF
+	for <iommu@archiver.kernel.org>; Tue, 28 Sep 2021 17:43:36 +0000 (UTC)
+Received: from smtp2.osuosl.org (smtp2.osuosl.org [140.211.166.133])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 6BD6A61355
-	for <iommu@archiver.kernel.org>; Tue, 28 Sep 2021 17:41:40 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.4.1 mail.kernel.org 6BD6A61355
+	by mail.kernel.org (Postfix) with ESMTPS id 680F661357
+	for <iommu@archiver.kernel.org>; Tue, 28 Sep 2021 17:43:36 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.4.1 mail.kernel.org 680F661357
 Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=intel.com
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by smtp3.osuosl.org (Postfix) with ESMTP id 336F560B2E;
-	Tue, 28 Sep 2021 17:41:40 +0000 (UTC)
+	by smtp2.osuosl.org (Postfix) with ESMTP id 20A7A4047F;
+	Tue, 28 Sep 2021 17:43:36 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from smtp3.osuosl.org ([127.0.0.1])
-	by localhost (smtp3.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id C-pN4Ul07yMX; Tue, 28 Sep 2021 17:41:39 +0000 (UTC)
-Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by smtp3.osuosl.org (Postfix) with ESMTPS id 2F21360B15;
-	Tue, 28 Sep 2021 17:41:39 +0000 (UTC)
-Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 062F9C000F;
-	Tue, 28 Sep 2021 17:41:39 +0000 (UTC)
-Received: from smtp2.osuosl.org (smtp2.osuosl.org [IPv6:2605:bc80:3010::133])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 6AC67C000D
- for <iommu@lists.linux-foundation.org>; Tue, 28 Sep 2021 17:41:38 +0000 (UTC)
-Received: from localhost (localhost [127.0.0.1])
- by smtp2.osuosl.org (Postfix) with ESMTP id 4C84B4029F
- for <iommu@lists.linux-foundation.org>; Tue, 28 Sep 2021 17:41:38 +0000 (UTC)
-X-Virus-Scanned: amavisd-new at osuosl.org
-Authentication-Results: smtp2.osuosl.org (amavisd-new);
- dkim=pass (2048-bit key) header.d=intel-com.20210112.gappssmtp.com
 Received: from smtp2.osuosl.org ([127.0.0.1])
- by localhost (smtp2.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id 5lB8PatrDwai for <iommu@lists.linux-foundation.org>;
- Tue, 28 Sep 2021 17:41:37 +0000 (UTC)
+	by localhost (smtp2.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+	with ESMTP id J2tXUh6VrKXn; Tue, 28 Sep 2021 17:43:35 +0000 (UTC)
+Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
+	by smtp2.osuosl.org (Postfix) with ESMTPS id D346E40105;
+	Tue, 28 Sep 2021 17:43:34 +0000 (UTC)
+Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 961D8C0022;
+	Tue, 28 Sep 2021 17:43:34 +0000 (UTC)
+Received: from smtp4.osuosl.org (smtp4.osuosl.org [IPv6:2605:bc80:3010::137])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 9AA3CC000D
+ for <iommu@lists.linux-foundation.org>; Tue, 28 Sep 2021 17:43:33 +0000 (UTC)
+Received: from localhost (localhost [127.0.0.1])
+ by smtp4.osuosl.org (Postfix) with ESMTP id 7DC27401A2
+ for <iommu@lists.linux-foundation.org>; Tue, 28 Sep 2021 17:43:33 +0000 (UTC)
+X-Virus-Scanned: amavisd-new at osuosl.org
+Authentication-Results: smtp4.osuosl.org (amavisd-new);
+ dkim=pass (2048-bit key) header.d=intel-com.20210112.gappssmtp.com
+Received: from smtp4.osuosl.org ([127.0.0.1])
+ by localhost (smtp4.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+ with ESMTP id XSLyFr992eMF for <iommu@lists.linux-foundation.org>;
+ Tue, 28 Sep 2021 17:43:32 +0000 (UTC)
 X-Greylist: whitelisted by SQLgrey-1.8.0
-Received: from mail-pg1-x52f.google.com (mail-pg1-x52f.google.com
- [IPv6:2607:f8b0:4864:20::52f])
- by smtp2.osuosl.org (Postfix) with ESMTPS id 9FD8240105
- for <iommu@lists.linux-foundation.org>; Tue, 28 Sep 2021 17:41:37 +0000 (UTC)
-Received: by mail-pg1-x52f.google.com with SMTP id g184so21980263pgc.6
- for <iommu@lists.linux-foundation.org>; Tue, 28 Sep 2021 10:41:37 -0700 (PDT)
+Received: from mail-pf1-x431.google.com (mail-pf1-x431.google.com
+ [IPv6:2607:f8b0:4864:20::431])
+ by smtp4.osuosl.org (Postfix) with ESMTPS id 5F1E340185
+ for <iommu@lists.linux-foundation.org>; Tue, 28 Sep 2021 17:43:32 +0000 (UTC)
+Received: by mail-pf1-x431.google.com with SMTP id w14so19560621pfu.2
+ for <iommu@lists.linux-foundation.org>; Tue, 28 Sep 2021 10:43:32 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
  d=intel-com.20210112.gappssmtp.com; s=20210112;
  h=mime-version:references:in-reply-to:from:date:message-id:subject:to
- :cc; bh=WkidfBLNDflGiXs0oP3mDBZ5il/79hD91IY+k5Xsxuc=;
- b=bA7yAxAI4PivPTDL2tmtUWSug8cFLm+Lp/M/J8tWpOX7VThwyhD1uHRnHWyn1gypjz
- /XzmjC9sfErVDuGFsyJvSSHvvhu9nQ7Kso3E+RGxpZnlV1rpwx4LYj/P5l6Z38Y/UEfp
- dNeWL6kK9unlsA8wG5GEhkIZ+4tvRDOMk+TJy7HzL9rdoix0FJNsfZcPFnfoMkxbst93
- a/G0KXVU8o79EfFIKtiBKh5+QiY7b/PJds1zfTAHCkczgYa7RB5dkQrraBWKo6v3QHEl
- TcfvQ5mM+1T1aqcT9TKMJNtVWXVgUrfew9Eem3OwSym9y2/TAeOib1Yk9gpHI3xIahD9
- clDg==
+ :cc; bh=imp5I7p53F2DZ1YVYnsTH+B34q59d+HgTV0CrYjuwxo=;
+ b=FKSA5duzWRw87ND8p4lngfxsNUmCYFC44YeU70RM2fO3H/yHuH9M8QAsg6bBXTVGqG
+ 3FzsJWZner5fSvs4m//3O3KT4Er9dHUAKbxccSn9HST/Muq0BTHUTTxiAAVbsVwLn32F
+ kMu5q37rLliYt0miOzAML2ekRzAjfDa2oIa9haIsSoVwsZQmx1vS1WDTYixCibF16NoD
+ PysTgZlSI4xgn682PA88sYHTzF2Ripl8Xt/5ETc7WmqGsbfvX47bK9Mv0Tv6ZetpFN1f
+ 4iJKT3z+f1Hd5msRz+IxwpazFQn4bqCPJrKXdTaNL+9xpv6VObc7DAnRAvZcn6ijId1S
+ hTKA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
  d=1e100.net; s=20210112;
  h=x-gm-message-state:mime-version:references:in-reply-to:from:date
  :message-id:subject:to:cc;
- bh=WkidfBLNDflGiXs0oP3mDBZ5il/79hD91IY+k5Xsxuc=;
- b=6zarjvKK+jZ6KYITJHEftDQcwRpVniO/YuJG5ItSGrZV2ZmH+CiWjQyi2f896eXlbr
- p1PMP5TXqD6k1SJBnvWIwU1TSVQt6x2m/NGRSzJ+zKF0Nl2Id8yiCtQ/cz2KHaj6lhPb
- BKp8tDMC6JrAkT1EtbJFKMPiGV6yc8K7SPqxYKe4t+Mlu2v01YjsFN7IE8e3AvChfm4I
- Cqjf6ZNesypo8OW/OMDfxdVhymTqtEkOZUT0KrWZZBS3zcu6BPPK7DJhELAsZ5BdkhJ+
- rtJ1QkJqBSdW8pgnT6fBzWtPl37T6m2WbGfmDJ/yaZB6/pTVYG9Hzny1JvO7TUx0SxSx
- r3gQ==
-X-Gm-Message-State: AOAM531mbtDfp92IvEl90cpN58DHAEvYbIHr76ImzaODOiyDOxT1Z8yA
- D6xF1q6xHIfp/scveFjsA5DpYwYqN1mtDcmvnk6+wu69jfU=
-X-Google-Smtp-Source: ABdhPJxE685ihjSuTSw0+w9d2q6ixqqWA3MsNeG+SfMab1LeeuIrmS8uWL0F1Ylm1UNzWyahPTQwxwoyCoYk+d5LLKY=
-X-Received: by 2002:a63:1e0e:: with SMTP id e14mr5684055pge.5.1632850896968;
- Tue, 28 Sep 2021 10:41:36 -0700 (PDT)
+ bh=imp5I7p53F2DZ1YVYnsTH+B34q59d+HgTV0CrYjuwxo=;
+ b=BjdxEnCHSpsgTiSOauQS+gcEJGw7ThDEXcr4dgZIt2Ov86kaYg8kqS0sivN3gJL3bv
+ 6Z907c921rSV/Sb1XyWOWvUi3ICW5Dqc1qvWlvhFUa0KMAgLEfj7R8YYKL6aaFVNCgZL
+ GKeNWNWs5YcdazhqQiMv0mHW/+eJmins9PB+lmgPE7nhwTxOkZyHWhaLB42KE0/H+j0C
+ Gy9JzTgralY0gPpJ5J4bA+WXCz0mu6hHv+2UCMIWd/vWmkIqhzRqZipM0XcOWKLEAy1W
+ DFqd2J2UIxrRSk9OHMd3g21dXC/4WfJq3q2TDGxJvz3rZa7boqWgdmqryrwv270dUAbl
+ S2Gg==
+X-Gm-Message-State: AOAM5322fecwItAqdyuypp+Yr4Ld6V0gZ63pzpwSRNuMK2pZOt+msLSf
+ LLGJokxMUtumtbRcT0UpJF5g+GyUlGyIamx4VXERfw==
+X-Google-Smtp-Source: ABdhPJzjFahY5zlVRdQpZP5HYQgI99KxcTCTyAuujDoILwq7WhTATCP0bUPpo4Bx1rVGm7VXzxNZyVmeIZH5CGfCiSk=
+X-Received: by 2002:a62:7f87:0:b0:444:b077:51ef with SMTP id
+ a129-20020a627f87000000b00444b07751efmr6437884pfd.61.1632851011800; Tue, 28
+ Sep 2021 10:43:31 -0700 (PDT)
 MIME-Version: 1.0
 References: <20210923172647.72738-1-ben.widawsky@intel.com>
- <20210923172647.72738-6-ben.widawsky@intel.com>
-In-Reply-To: <20210923172647.72738-6-ben.widawsky@intel.com>
+ <20210923172647.72738-8-ben.widawsky@intel.com>
+In-Reply-To: <20210923172647.72738-8-ben.widawsky@intel.com>
 From: Dan Williams <dan.j.williams@intel.com>
-Date: Tue, 28 Sep 2021 10:41:24 -0700
-Message-ID: <CAPcyv4j5aRTEX=FDjYv21J0uDWbP66j-xaDPkvjmwdnKmvAWDA@mail.gmail.com>
-Subject: Re: [PATCH v2 5/9] cxl/pci: Make more use of cxl_register_map
+Date: Tue, 28 Sep 2021 10:43:19 -0700
+Message-ID: <CAPcyv4jHnio-4vcJ5Y7yhcYKT+Gy73Rgfn5YuRn68_CKbbWnmw@mail.gmail.com>
+Subject: Re: [PATCH v2 7/9] cxl/pci: Use pci core's DVSEC functionality
 To: Ben Widawsky <ben.widawsky@intel.com>
 Cc: Andrew Donnellan <ajd@linux.ibm.com>, Linux PCI <linux-pci@vger.kernel.org>,
  linuxppc-dev <linuxppc-dev@lists.ozlabs.org>, linux-cxl@vger.kernel.org,
@@ -105,16 +106,24 @@ Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
 On Thu, Sep 23, 2021 at 10:27 AM Ben Widawsky <ben.widawsky@intel.com> wrote:
 >
-> The structure exists to pass around information about register mapping.
-> Using it more extensively cleans up many existing functions.
+> Reduce maintenance burden of DVSEC query implementation by using the
+> centralized PCI core implementation.
+>
+> Signed-off-by: Ben Widawsky <ben.widawsky@intel.com>
+> ---
+>  drivers/cxl/pci.c | 20 +-------------------
+>  1 file changed, 1 insertion(+), 19 deletions(-)
+>
+> diff --git a/drivers/cxl/pci.c b/drivers/cxl/pci.c
+> index 5eaf2736f779..79d4d9b16d83 100644
+> --- a/drivers/cxl/pci.c
+> +++ b/drivers/cxl/pci.c
+> @@ -340,25 +340,7 @@ static void cxl_pci_unmap_regblock(struct cxl_mem *cxlm, struct cxl_register_map
+>
+>  static int cxl_pci_dvsec(struct pci_dev *pdev, int dvsec)
 
-I would have liked to have seen "add @base to cxl_register_map" and
-"use @map for @bar and @offset arguments" somewhere in this changelog
-to set expectations for what changes are included. That would have
-also highlighted that adding a @base to cxl_register_map deserves its
-own patch vs the conversion of @bar and @offset to instead use
-@map->bar and @map->offset. Can you resend with that split and those
-mentions?
+cxl_pci_dvsec() has no reason to exist anymore. Let's just have the
+caller use pci_find_dvsec_capability() directly.
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
