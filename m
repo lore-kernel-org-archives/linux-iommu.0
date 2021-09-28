@@ -2,69 +2,68 @@ Return-Path: <SRS0=IJZW=OS=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 11014C433FE
-	for <iommu@archiver.kernel.org>; Tue, 28 Sep 2021 20:32:10 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 37AC3C433F5
+	for <iommu@archiver.kernel.org>; Tue, 28 Sep 2021 20:48:57 +0000 (UTC)
 Received: from smtp4.osuosl.org (smtp4.osuosl.org [140.211.166.137])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id B8B276127C
-	for <iommu@archiver.kernel.org>; Tue, 28 Sep 2021 20:32:09 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.4.1 mail.kernel.org B8B276127C
-Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=alien8.de
+	by mail.kernel.org (Postfix) with ESMTPS id C9E2861390
+	for <iommu@archiver.kernel.org>; Tue, 28 Sep 2021 20:48:56 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.4.1 mail.kernel.org C9E2861390
+Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=linux.intel.com
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by smtp4.osuosl.org (Postfix) with ESMTP id 8665041598;
-	Tue, 28 Sep 2021 20:32:09 +0000 (UTC)
+	by smtp4.osuosl.org (Postfix) with ESMTP id 9C93240240;
+	Tue, 28 Sep 2021 20:48:56 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
 Received: from smtp4.osuosl.org ([127.0.0.1])
 	by localhost (smtp4.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id O8fwIqVQ7FDO; Tue, 28 Sep 2021 20:32:08 +0000 (UTC)
-Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [IPv6:2605:bc80:3010:104::8cd3:938])
-	by smtp4.osuosl.org (Postfix) with ESMTPS id 7477F41576;
-	Tue, 28 Sep 2021 20:32:08 +0000 (UTC)
+	with ESMTP id wPmV4iyCt4xI; Tue, 28 Sep 2021 20:48:55 +0000 (UTC)
+Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
+	by smtp4.osuosl.org (Postfix) with ESMTPS id 002BE40213;
+	Tue, 28 Sep 2021 20:48:54 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 41629C0011;
-	Tue, 28 Sep 2021 20:32:08 +0000 (UTC)
-Received: from smtp4.osuosl.org (smtp4.osuosl.org [IPv6:2605:bc80:3010::137])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 2EFC7C000D
- for <iommu@lists.linux-foundation.org>; Tue, 28 Sep 2021 20:32:06 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id CDB46C0011;
+	Tue, 28 Sep 2021 20:48:54 +0000 (UTC)
+Received: from smtp4.osuosl.org (smtp4.osuosl.org [140.211.166.137])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 39DEFC000D
+ for <iommu@lists.linux-foundation.org>; Tue, 28 Sep 2021 20:48:53 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by smtp4.osuosl.org (Postfix) with ESMTP id 0A39F41576
- for <iommu@lists.linux-foundation.org>; Tue, 28 Sep 2021 20:32:06 +0000 (UTC)
+ by smtp4.osuosl.org (Postfix) with ESMTP id 157B740240
+ for <iommu@lists.linux-foundation.org>; Tue, 28 Sep 2021 20:48:53 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
 Received: from smtp4.osuosl.org ([127.0.0.1])
  by localhost (smtp4.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id dnTZBBDluu-G for <iommu@lists.linux-foundation.org>;
- Tue, 28 Sep 2021 20:32:05 +0000 (UTC)
-X-Greylist: from auto-whitelisted by SQLgrey-1.8.0
-Received: from mail.skyhub.de (mail.skyhub.de [IPv6:2a01:4f8:190:11c2::b:1457])
- by smtp4.osuosl.org (Postfix) with ESMTPS id 3400F40418
- for <iommu@lists.linux-foundation.org>; Tue, 28 Sep 2021 20:32:05 +0000 (UTC)
-Received: from zn.tnic (p200300ec2f13b200371079131a9f19c8.dip0.t-ipconnect.de
- [IPv6:2003:ec:2f13:b200:3710:7913:1a9f:19c8])
- (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
- (No client certificate requested)
- by mail.skyhub.de (SuperMail on ZX Spectrum 128k) with ESMTPSA id 052251EC0758;
- Tue, 28 Sep 2021 22:32:02 +0200 (CEST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=alien8.de; s=dkim;
- t=1632861122;
- h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
- to:to:cc:cc:mime-version:mime-version:content-type:content-type:
- content-transfer-encoding:in-reply-to:in-reply-to:  references:references;
- bh=qbX+tgbw05504BlKd+vjCTQM+czUsH5nYZVV4FM0DG8=;
- b=PQ4PKcJl3Lyadkflmx+j1VA5OiwXAdXTaEvbm7ew7wHmPI94m7AJwZOzgrvxFt4MxHlIwN
- LDaduODsYvATrWtH3svQYbrndDcAuYcHl9AIp7EwQK4gZbGRwjVVHLxwvW78GbTZv51eLK
- ObLlpU/8EnxkbEHepMYe/Hen7N4ZKDo=
-Date: Tue, 28 Sep 2021 22:31:56 +0200
-From: Borislav Petkov <bp@alien8.de>
-To: "Kuppuswamy, Sathyanarayanan" <sathyanarayanan.kuppuswamy@linux.intel.com>
+ with ESMTP id 5ypP4x-dkCdf for <iommu@lists.linux-foundation.org>;
+ Tue, 28 Sep 2021 20:48:52 +0000 (UTC)
+X-Greylist: domain auto-whitelisted by SQLgrey-1.8.0
+Received: from mga12.intel.com (mga12.intel.com [192.55.52.136])
+ by smtp4.osuosl.org (Postfix) with ESMTPS id 4671640213
+ for <iommu@lists.linux-foundation.org>; Tue, 28 Sep 2021 20:48:52 +0000 (UTC)
+X-IronPort-AV: E=McAfee;i="6200,9189,10121"; a="204290577"
+X-IronPort-AV: E=Sophos;i="5.85,330,1624345200"; d="scan'208";a="204290577"
+Received: from fmsmga003.fm.intel.com ([10.253.24.29])
+ by fmsmga106.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384;
+ 28 Sep 2021 13:48:51 -0700
+X-IronPort-AV: E=Sophos;i="5.85,330,1624345200"; d="scan'208";a="554299062"
+Received: from oogunmoy-mobl1.amr.corp.intel.com (HELO
+ skuppusw-mobl5.amr.corp.intel.com) ([10.212.221.219])
+ by fmsmga003-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384;
+ 28 Sep 2021 13:48:48 -0700
 Subject: Re: [PATCH v4 0/8] Implement generic cc_platform_has() helper function
-Message-ID: <YVN7vPE/7jecXcJ/@zn.tnic>
+To: Borislav Petkov <bp@alien8.de>
 References: <20210928191009.32551-1-bp@alien8.de>
  <80593893-c63b-d481-45f1-42a3a6fd762a@linux.intel.com>
+ <YVN7vPE/7jecXcJ/@zn.tnic>
+From: "Kuppuswamy, Sathyanarayanan"
+ <sathyanarayanan.kuppuswamy@linux.intel.com>
+Message-ID: <7319b756-55dc-c4d1-baf6-4686f0156ac4@linux.intel.com>
+Date: Tue, 28 Sep 2021 13:48:46 -0700
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
+ Firefox/78.0 Thunderbird/78.13.0
 MIME-Version: 1.0
-Content-Disposition: inline
-In-Reply-To: <80593893-c63b-d481-45f1-42a3a6fd762a@linux.intel.com>
+In-Reply-To: <YVN7vPE/7jecXcJ/@zn.tnic>
+Content-Language: en-US
 Cc: linux-efi@vger.kernel.org, kvm@vger.kernel.org,
  David Airlie <airlied@linux.ie>,
  Benjamin Herrenschmidt <benh@kernel.crashing.org>,
@@ -96,26 +95,33 @@ List-Post: <mailto:iommu@lists.linux-foundation.org>
 List-Help: <mailto:iommu-request@lists.linux-foundation.org?subject=help>
 List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
  <mailto:iommu-request@lists.linux-foundation.org?subject=subscribe>
-Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset="us-ascii"; Format="flowed"
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-On Tue, Sep 28, 2021 at 12:19:49PM -0700, Kuppuswamy, Sathyanarayanan wrote:
-> Intel CC support patch is not included in this series. You want me
-> to address the issue raised by Joerg before merging it?
 
-Did you not see my email to you today:
 
-https://lkml.kernel.org/r/YVL4ZUGhfsh1QfRX@zn.tnic
+On 9/28/21 1:31 PM, Borislav Petkov wrote:
+> On Tue, Sep 28, 2021 at 12:19:49PM -0700, Kuppuswamy, Sathyanarayanan wrote:
+>> Intel CC support patch is not included in this series. You want me
+>> to address the issue raised by Joerg before merging it?
+> 
+> Did you not see my email to you today:
+> 
+> https://lkml.kernel.org/r/YVL4ZUGhfsh1QfRX@zn.tnic
 
-?
+Just read it. If you want to use cpuid_has_tdx_guest() directly in
+cc_platform_has(), then you want to rename intel_cc_platform_has() to
+tdx_cc_platform_has()?
+
+> 
+> ?
+> 
 
 -- 
-Regards/Gruss,
-    Boris.
-
-https://people.kernel.org/tglx/notes-about-netiquette
+Sathyanarayanan Kuppuswamy
+Linux Kernel Developer
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
