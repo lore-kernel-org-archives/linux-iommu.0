@@ -2,122 +2,85 @@ Return-Path: <SRS0=IJZW=OS=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E58B0C433F5
-	for <iommu@archiver.kernel.org>; Tue, 28 Sep 2021 19:19:46 +0000 (UTC)
-Received: from smtp3.osuosl.org (smtp3.osuosl.org [140.211.166.136])
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0F558C433EF
+	for <iommu@archiver.kernel.org>; Tue, 28 Sep 2021 19:19:58 +0000 (UTC)
+Received: from smtp4.osuosl.org (smtp4.osuosl.org [140.211.166.137])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 9CE0C61371
-	for <iommu@archiver.kernel.org>; Tue, 28 Sep 2021 19:19:46 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.4.1 mail.kernel.org 9CE0C61371
-Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=intel.com
+	by mail.kernel.org (Postfix) with ESMTPS id CCBF761374
+	for <iommu@archiver.kernel.org>; Tue, 28 Sep 2021 19:19:57 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.4.1 mail.kernel.org CCBF761374
+Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=linux.intel.com
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by smtp3.osuosl.org (Postfix) with ESMTP id 6885560B4B;
-	Tue, 28 Sep 2021 19:19:46 +0000 (UTC)
+	by smtp4.osuosl.org (Postfix) with ESMTP id A4AAC4040B;
+	Tue, 28 Sep 2021 19:19:57 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from smtp3.osuosl.org ([127.0.0.1])
-	by localhost (smtp3.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id 7Qc1UVmYJJtT; Tue, 28 Sep 2021 19:19:45 +0000 (UTC)
+Received: from smtp4.osuosl.org ([127.0.0.1])
+	by localhost (smtp4.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+	with ESMTP id DvGwJTvzGUHB; Tue, 28 Sep 2021 19:19:56 +0000 (UTC)
 Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by smtp3.osuosl.org (Postfix) with ESMTPS id 4376360668;
-	Tue, 28 Sep 2021 19:19:45 +0000 (UTC)
+	by smtp4.osuosl.org (Postfix) with ESMTPS id 81B26403BB;
+	Tue, 28 Sep 2021 19:19:56 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 1294BC000F;
-	Tue, 28 Sep 2021 19:19:45 +0000 (UTC)
-Received: from smtp2.osuosl.org (smtp2.osuosl.org [140.211.166.133])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 240D8C000D
- for <iommu@lists.linux-foundation.org>; Tue, 28 Sep 2021 19:19:43 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 49DC2C000F;
+	Tue, 28 Sep 2021 19:19:56 +0000 (UTC)
+Received: from smtp4.osuosl.org (smtp4.osuosl.org [140.211.166.137])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 46ADDC000D
+ for <iommu@lists.linux-foundation.org>; Tue, 28 Sep 2021 19:19:55 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by smtp2.osuosl.org (Postfix) with ESMTP id 026EA4059B
- for <iommu@lists.linux-foundation.org>; Tue, 28 Sep 2021 19:19:43 +0000 (UTC)
+ by smtp4.osuosl.org (Postfix) with ESMTP id 28D18403C0
+ for <iommu@lists.linux-foundation.org>; Tue, 28 Sep 2021 19:19:55 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from smtp2.osuosl.org ([127.0.0.1])
- by localhost (smtp2.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id wY7xJHRpUIhk for <iommu@lists.linux-foundation.org>;
- Tue, 28 Sep 2021 19:19:41 +0000 (UTC)
+Received: from smtp4.osuosl.org ([127.0.0.1])
+ by localhost (smtp4.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+ with ESMTP id qqdp3U_1481s for <iommu@lists.linux-foundation.org>;
+ Tue, 28 Sep 2021 19:19:54 +0000 (UTC)
 X-Greylist: domain auto-whitelisted by SQLgrey-1.8.0
-Received: from mga17.intel.com (mga17.intel.com [192.55.52.151])
- by smtp2.osuosl.org (Postfix) with ESMTPS id 95E4140586
- for <iommu@lists.linux-foundation.org>; Tue, 28 Sep 2021 19:19:41 +0000 (UTC)
-X-IronPort-AV: E=McAfee;i="6200,9189,10121"; a="204935723"
-X-IronPort-AV: E=Sophos;i="5.85,330,1624345200"; d="scan'208";a="204935723"
+Received: from mga02.intel.com (mga02.intel.com [134.134.136.20])
+ by smtp4.osuosl.org (Postfix) with ESMTPS id 748A2403BB
+ for <iommu@lists.linux-foundation.org>; Tue, 28 Sep 2021 19:19:54 +0000 (UTC)
+X-IronPort-AV: E=McAfee;i="6200,9189,10121"; a="212038816"
+X-IronPort-AV: E=Sophos;i="5.85,330,1624345200"; d="scan'208";a="212038816"
 Received: from fmsmga003.fm.intel.com ([10.253.24.29])
- by fmsmga107.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384;
- 28 Sep 2021 12:19:25 -0700
-X-IronPort-AV: E=Sophos;i="5.85,330,1624345200"; d="scan'208";a="554269887"
-Received: from gpfry-mobl1.amr.corp.intel.com (HELO [10.251.22.193])
- ([10.251.22.193])
+ by orsmga101.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384;
+ 28 Sep 2021 12:19:53 -0700
+X-IronPort-AV: E=Sophos;i="5.85,330,1624345200"; d="scan'208";a="554270019"
+Received: from oogunmoy-mobl1.amr.corp.intel.com (HELO
+ skuppusw-mobl5.amr.corp.intel.com) ([10.212.221.219])
  by fmsmga003-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384;
- 28 Sep 2021 12:19:24 -0700
-Subject: Re: [PATCH 4/8] x86/traps: Demand-populate PASID MSR via #GP
-To: "Luck, Tony" <tony.luck@intel.com>
-References: <20210920192349.2602141-1-fenghua.yu@intel.com>
- <20210920192349.2602141-5-fenghua.yu@intel.com>
- <1aae375d-3cd4-4ab8-9c64-9e387916e6c0@www.fastmail.com>
- <YVIxeBh3IKYYK711@agluck-desk2.amr.corp.intel.com>
- <035290e6-d914-a113-ea6c-e845d71069cf@intel.com>
- <YVNj8sm8iectc6iU@agluck-desk2.amr.corp.intel.com>
-From: Dave Hansen <dave.hansen@intel.com>
-Autocrypt: addr=dave.hansen@intel.com; keydata=
- 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
- z5cecg==
-Message-ID: <3f97b77e-a609-997b-3be7-f44ff7312b0d@intel.com>
-Date: Tue, 28 Sep 2021 12:19:22 -0700
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
- Thunderbird/68.10.0
+ 28 Sep 2021 12:19:51 -0700
+Subject: Re: [PATCH v4 0/8] Implement generic cc_platform_has() helper function
+To: Borislav Petkov <bp@alien8.de>, LKML <linux-kernel@vger.kernel.org>
+References: <20210928191009.32551-1-bp@alien8.de>
+From: "Kuppuswamy, Sathyanarayanan"
+ <sathyanarayanan.kuppuswamy@linux.intel.com>
+Message-ID: <80593893-c63b-d481-45f1-42a3a6fd762a@linux.intel.com>
+Date: Tue, 28 Sep 2021 12:19:49 -0700
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
+ Firefox/78.0 Thunderbird/78.13.0
 MIME-Version: 1.0
-In-Reply-To: <YVNj8sm8iectc6iU@agluck-desk2.amr.corp.intel.com>
+In-Reply-To: <20210928191009.32551-1-bp@alien8.de>
 Content-Language: en-US
-Cc: Fenghua Yu <fenghua.yu@intel.com>, Dave Jiang <dave.jiang@intel.com>,
- Raj Ashok <ashok.raj@intel.com>, "Shankar, Ravi V" <ravi.v.shankar@intel.com>,
- "Peter Zijlstra \(Intel\)" <peterz@infradead.org>,
- the arch/x86 maintainers <x86@kernel.org>,
- Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
- iommu@lists.linux-foundation.org, Ingo Molnar <mingo@redhat.com>,
- Borislav Petkov <bp@alien8.de>, Jacob Jun Pan <jacob.jun.pan@intel.com>,
- Andy Lutomirski <luto@kernel.org>, Josh Poimboeuf <jpoimboe@redhat.com>,
- Thomas Gleixner <tglx@linutronix.de>
+Cc: linux-efi@vger.kernel.org, kvm@vger.kernel.org,
+ David Airlie <airlied@linux.ie>,
+ Benjamin Herrenschmidt <benh@kernel.crashing.org>,
+ dri-devel@lists.freedesktop.org, platform-driver-x86@vger.kernel.org,
+ Paul Mackerras <paulus@samba.org>, Will Deacon <will@kernel.org>,
+ Ard Biesheuvel <ardb@kernel.org>, linux-s390@vger.kernel.org,
+ Andi Kleen <ak@linux.intel.com>, Michael Ellerman <mpe@ellerman.id.au>,
+ x86@kernel.org, amd-gfx@lists.freedesktop.org,
+ Christoph Hellwig <hch@infradead.org>,
+ Christian Borntraeger <borntraeger@de.ibm.com>,
+ VMware Graphics <linux-graphics-maintainer@vmware.com>,
+ Dave Young <dyoung@redhat.com>, Tom Lendacky <thomas.lendacky@amd.com>,
+ Thomas Zimmermann <tzimmermann@suse.de>, Vasily Gorbik <gor@linux.ibm.com>,
+ Heiko Carstens <hca@linux.ibm.com>,
+ Maarten Lankhorst <maarten.lankhorst@linux.intel.com>,
+ Maxime Ripard <mripard@kernel.org>, Andy Lutomirski <luto@kernel.org>,
+ "Kirill A. Shutemov" <kirill@shutemov.name>, kexec@lists.infradead.org,
+ iommu@lists.linux-foundation.org, Daniel Vetter <daniel@ffwll.ch>,
+ linuxppc-dev@lists.ozlabs.org
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -130,104 +93,89 @@ List-Post: <mailto:iommu@lists.linux-foundation.org>
 List-Help: <mailto:iommu-request@lists.linux-foundation.org?subject=help>
 List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
  <mailto:iommu-request@lists.linux-foundation.org?subject=subscribe>
-Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset="us-ascii"; Format="flowed"
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-On 9/28/21 11:50 AM, Luck, Tony wrote:
-> On Mon, Sep 27, 2021 at 04:51:25PM -0700, Dave Hansen wrote:
-...
->> 1. Hide whether we need to write to real registers
->> 2. Hide whether we need to update the in-memory image
->> 3. Hide other FPU infrastructure like the TIF flag.
->> 4. Make the users deal with a *whole* state in the replace API
+
+
+On 9/28/21 12:10 PM, Borislav Petkov wrote:
+> From: Borislav Petkov <bp@suse.de>
 > 
-> Is that difference just whether you need to save the
-> state from registers to memory (for the "update" case)
-> or not (for the "replace" case ... where you can ignore
-> the current register, overwrite the whole per-feature
-> xsave area and mark it to be restored to registers).
+> Hi all,
 > 
-> If so, just a "bool full" argument might do the trick?
-
-I want to be able to hide the complexity of where the old state comes
-from.  It might be in registers or it might be in memory or it might be
-*neither*.  It's possible we're running with stale register state and a
-current->...->xsave buffer that has XFEATURES&XFEATURE_FOO 0.
-
-In that case, the "old" copy might be memcpy'd out of the init_task.
-Or, for pkeys, we might build it ourselves with init_pkru_val.
-
-> Also - you have a "tsk" argument in your pseudo code. Is
-> this needed? Are there places where we need to perform
-> these operations on something other than "current"?
-
-Two cases come to mind:
-1. Fork/clone where we are doing things to our child's XSAVE buffer
-2. ptrace() where we are poking into another task's state
-
-ptrace() goes for the *whole* buffer now.  I'm not sure it would need
-this per-feature API.  I just call it out as something that we might
-need in the future.
-
-> pseudo-code:
+> here's v4 of the cc_platform_has() patchset with feedback incorporated.
 > 
-> void *begin_update_one_xsave_feature(enum xfeature xfeature, bool full)
-> {
-> 	void *addr;
+> I'm going to route this through tip if there are no objections.
+
+Intel CC support patch is not included in this series. You want me
+to address the issue raised by Joerg before merging it?
+
 > 
-> 	BUG_ON(!(xsave->header.xcomp_bv & xfeature));
+> Thx.
 > 
-> 	addr = __raw_xsave_addr(xsave, xfeature);
+> Tom Lendacky (8):
+>    x86/ioremap: Selectively build arch override encryption functions
+>    arch/cc: Introduce a function to check for confidential computing
+>      features
+>    x86/sev: Add an x86 version of cc_platform_has()
+>    powerpc/pseries/svm: Add a powerpc version of cc_platform_has()
+>    x86/sme: Replace occurrences of sme_active() with cc_platform_has()
+>    x86/sev: Replace occurrences of sev_active() with cc_platform_has()
+>    x86/sev: Replace occurrences of sev_es_active() with cc_platform_has()
+>    treewide: Replace the use of mem_encrypt_active() with
+>      cc_platform_has()
 > 
-> 	fpregs_lock();
-> 
-> 	if (full)
-> 		return addr;
-
-If the feature is marked as in the init state in the buffer
-(XSTATE_BV[feature]==0), this addr *could* contain total garbage.  So,
-we'd want to make sure that the memory contents have the init state
-written before handing them back to the caller.  That's not strictly
-required if the user is writing the whole thing, but it's the nice thing
-to do.
-
-> 	if (xfeature registers are "live")
-> 		xsaves(xstate, 1 << xfeature);
-
-One little note: I don't think we would necessarily need to do an XSAVES
-here.  For PKRU, for instance, we could just do a rdpkru.
-
-> 	return addr;
-> }
-> 
-> void finish_update_one_xsave_feature(enum xfeature xfeature)
-> {
-> 	mark feature modified
-
-I think we'd want to do this at the "begin" time.  Also, do you mean we
-should set XSTATE_BV[feature]?
-
-> 	set TIF bit
-
-Since the XSAVE buffer was updated, it now contains the canonical FPU
-state.  It may have diverged from the register state, thus we need to
-set TIF_NEED_FPU_LOAD.
-
-It's also worth noting that we *could*:
-
-	xrstors(xstate, 1<<xfeature);
-
-as well.  That would bring the registers back up to day and we could
-keep TIF_NEED_FPU_LOAD==0.
-
-> 	fpregs_unlock();
-> }
-> 
-> -Tony
+>   arch/Kconfig                                 |  3 +
+>   arch/powerpc/include/asm/mem_encrypt.h       |  5 --
+>   arch/powerpc/platforms/pseries/Kconfig       |  1 +
+>   arch/powerpc/platforms/pseries/Makefile      |  2 +
+>   arch/powerpc/platforms/pseries/cc_platform.c | 26 ++++++
+>   arch/powerpc/platforms/pseries/svm.c         |  5 +-
+>   arch/s390/include/asm/mem_encrypt.h          |  2 -
+>   arch/x86/Kconfig                             |  1 +
+>   arch/x86/include/asm/io.h                    |  8 ++
+>   arch/x86/include/asm/kexec.h                 |  2 +-
+>   arch/x86/include/asm/mem_encrypt.h           | 12 +--
+>   arch/x86/kernel/Makefile                     |  6 ++
+>   arch/x86/kernel/cc_platform.c                | 69 +++++++++++++++
+>   arch/x86/kernel/crash_dump_64.c              |  4 +-
+>   arch/x86/kernel/head64.c                     |  9 +-
+>   arch/x86/kernel/kvm.c                        |  3 +-
+>   arch/x86/kernel/kvmclock.c                   |  4 +-
+>   arch/x86/kernel/machine_kexec_64.c           | 19 +++--
+>   arch/x86/kernel/pci-swiotlb.c                |  9 +-
+>   arch/x86/kernel/relocate_kernel_64.S         |  2 +-
+>   arch/x86/kernel/sev.c                        |  6 +-
+>   arch/x86/kvm/svm/svm.c                       |  3 +-
+>   arch/x86/mm/ioremap.c                        | 18 ++--
+>   arch/x86/mm/mem_encrypt.c                    | 55 ++++--------
+>   arch/x86/mm/mem_encrypt_identity.c           |  9 +-
+>   arch/x86/mm/pat/set_memory.c                 |  3 +-
+>   arch/x86/platform/efi/efi_64.c               |  9 +-
+>   arch/x86/realmode/init.c                     |  8 +-
+>   drivers/gpu/drm/amd/amdgpu/amdgpu_drv.c      |  4 +-
+>   drivers/gpu/drm/drm_cache.c                  |  4 +-
+>   drivers/gpu/drm/vmwgfx/vmwgfx_drv.c          |  4 +-
+>   drivers/gpu/drm/vmwgfx/vmwgfx_msg.c          |  6 +-
+>   drivers/iommu/amd/init.c                     |  7 +-
+>   drivers/iommu/amd/iommu.c                    |  3 +-
+>   drivers/iommu/amd/iommu_v2.c                 |  3 +-
+>   drivers/iommu/iommu.c                        |  3 +-
+>   fs/proc/vmcore.c                             |  6 +-
+>   include/linux/cc_platform.h                  | 88 ++++++++++++++++++++
+>   include/linux/mem_encrypt.h                  |  4 -
+>   kernel/dma/swiotlb.c                         |  4 +-
+>   40 files changed, 310 insertions(+), 129 deletions(-)
+>   create mode 100644 arch/powerpc/platforms/pseries/cc_platform.c
+>   create mode 100644 arch/x86/kernel/cc_platform.c
+>   create mode 100644 include/linux/cc_platform.h
 > 
 
+-- 
+Sathyanarayanan Kuppuswamy
+Linux Kernel Developer
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
