@@ -2,63 +2,64 @@ Return-Path: <SRS0=Xpq5=OT=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 40933C433FE
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6E208C433F5
 	for <iommu@archiver.kernel.org>; Wed, 29 Sep 2021 03:34:01 +0000 (UTC)
-Received: from smtp2.osuosl.org (smtp2.osuosl.org [140.211.166.133])
+Received: from smtp4.osuosl.org (smtp4.osuosl.org [140.211.166.137])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id B0A43613E8
-	for <iommu@archiver.kernel.org>; Wed, 29 Sep 2021 03:34:00 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.4.1 mail.kernel.org B0A43613E8
+	by mail.kernel.org (Postfix) with ESMTPS id 2530F613D1
+	for <iommu@archiver.kernel.org>; Wed, 29 Sep 2021 03:34:01 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.4.1 mail.kernel.org 2530F613D1
 Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=gibson.dropbear.id.au
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by smtp2.osuosl.org (Postfix) with ESMTP id 80CF440258;
+	by smtp4.osuosl.org (Postfix) with ESMTP id E33A7415B6;
 	Wed, 29 Sep 2021 03:34:00 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from smtp2.osuosl.org ([127.0.0.1])
-	by localhost (smtp2.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id Em2JFIjLKncJ; Wed, 29 Sep 2021 03:33:59 +0000 (UTC)
+Received: from smtp4.osuosl.org ([127.0.0.1])
+	by localhost (smtp4.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+	with ESMTP id GWoy2wv2-0mX; Wed, 29 Sep 2021 03:34:00 +0000 (UTC)
 Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [IPv6:2605:bc80:3010:104::8cd3:938])
-	by smtp2.osuosl.org (Postfix) with ESMTPS id E61BF40249;
-	Wed, 29 Sep 2021 03:33:58 +0000 (UTC)
+	by smtp4.osuosl.org (Postfix) with ESMTPS id A135C40775;
+	Wed, 29 Sep 2021 03:33:59 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 8524DC0022;
+	by lists.linuxfoundation.org (Postfix) with ESMTP id ADBD5C0027;
 	Wed, 29 Sep 2021 03:33:58 +0000 (UTC)
 Received: from smtp2.osuosl.org (smtp2.osuosl.org [140.211.166.133])
- by lists.linuxfoundation.org (Postfix) with ESMTP id E64ECC000F
- for <iommu@lists.linux-foundation.org>; Wed, 29 Sep 2021 03:33:56 +0000 (UTC)
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 1F883C000D
+ for <iommu@lists.linux-foundation.org>; Wed, 29 Sep 2021 03:33:57 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by smtp2.osuosl.org (Postfix) with ESMTP id D939F4026F
+ by smtp2.osuosl.org (Postfix) with ESMTP id EF8BD40249
  for <iommu@lists.linux-foundation.org>; Wed, 29 Sep 2021 03:33:56 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
+Authentication-Results: smtp2.osuosl.org (amavisd-new);
+ dkim=pass (1024-bit key) header.d=gibson.dropbear.id.au
 Received: from smtp2.osuosl.org ([127.0.0.1])
  by localhost (smtp2.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id TuAGZa5GtDkD for <iommu@lists.linux-foundation.org>;
- Wed, 29 Sep 2021 03:33:55 +0000 (UTC)
-X-Greylist: delayed 00:05:48 by SQLgrey-1.8.0
-Received: from gandalf.ozlabs.org (gandalf.ozlabs.org
- [IPv6:2404:9400:2:0:216:3eff:fee2:21ea])
- by smtp2.osuosl.org (Postfix) with ESMTPS id A930340249
+ with ESMTP id ngeyv5X0nizH for <iommu@lists.linux-foundation.org>;
+ Wed, 29 Sep 2021 03:33:56 +0000 (UTC)
+X-Greylist: delayed 00:05:45 by SQLgrey-1.8.0
+Received: from gandalf.ozlabs.org (gandalf.ozlabs.org [150.107.74.76])
+ by smtp2.osuosl.org (Postfix) with ESMTPS id D22844026B
  for <iommu@lists.linux-foundation.org>; Wed, 29 Sep 2021 03:33:55 +0000 (UTC)
 Received: by gandalf.ozlabs.org (Postfix, from userid 1007)
- id 4HK1zN6nb2z4xbV; Wed, 29 Sep 2021 13:28:00 +1000 (AEST)
+ id 4HK1zN6KgDz4xZJ; Wed, 29 Sep 2021 13:28:00 +1000 (AEST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
  d=gibson.dropbear.id.au; s=201602; t=1632886080;
- bh=Lh+wqN85LusSTOWoTTGpIhxEKSNXglqDi5cXmcybyPM=;
+ bh=or14ij/yBL19FjOCDsq0iAERcyiiYaHgFexNi04sb48=;
  h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
- b=m7I2czU/ggIlbJAAyXgNdK8RQLIITkNN0SyDYxNIKsDzIiU5uNcek1Cfjb7jJp1WR
- YwqoJQfaA1ULr8RKCo/228A0SIauH0eZFDoXW7OUbeei1V22P6MVvNhW4rciYaFQA/
- 9cfwuWQaJGiCzNlMpKNOef7AQANPmV5yDZ3dOncw=
-Date: Wed, 29 Sep 2021 12:52:35 +1000
+ b=jK76m0XsvCYgqc5O5vt60FBITyisxy37c72l0yhrARzYXhnqOHbuEDZXS3rqSNwKa
+ LDl3EBUKF3iXf6FoCnHsokBb8jPZenL2TYKf+4WEHthw3EjMsbu+Bw17crMQDvL7fv
+ MGdaUPaeiRdaBOALa7efNweYMOueSg3zZgFhhlD0=
+Date: Wed, 29 Sep 2021 12:08:59 +1000
 From: David Gibson <david@gibson.dropbear.id.au>
 To: Liu Yi L <yi.l.liu@intel.com>
-Subject: Re: [RFC 04/20] iommu: Add iommu_device_get_info interface
-Message-ID: <YVPU89utk3JFPzS7@yekko>
+Subject: Re: [RFC 02/20] vfio: Add device class for /dev/vfio/devices
+Message-ID: <YVPKu/F3IpPMtGCh@yekko>
 References: <20210919063848.1476776-1-yi.l.liu@intel.com>
- <20210919063848.1476776-5-yi.l.liu@intel.com>
+ <20210919063848.1476776-3-yi.l.liu@intel.com>
 MIME-Version: 1.0
-In-Reply-To: <20210919063848.1476776-5-yi.l.liu@intel.com>
+In-Reply-To: <20210919063848.1476776-3-yi.l.liu@intel.com>
 Cc: kvm@vger.kernel.org, jasowang@redhat.com, kwankhede@nvidia.com, hch@lst.de,
  jean-philippe@linaro.org, dave.jiang@intel.com, ashok.raj@intel.com,
  corbet@lwn.net, jgg@nvidia.com, kevin.tian@intel.com, parav@mellanox.com,
@@ -77,138 +78,90 @@ List-Post: <mailto:iommu@lists.linux-foundation.org>
 List-Help: <mailto:iommu-request@lists.linux-foundation.org?subject=help>
 List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
  <mailto:iommu-request@lists.linux-foundation.org?subject=subscribe>
-Content-Type: multipart/mixed; boundary="===============0055948241095760027=="
+Content-Type: multipart/mixed; boundary="===============3783268896302698385=="
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
 
---===============0055948241095760027==
+--===============3783268896302698385==
 Content-Type: multipart/signed; micalg=pgp-sha256;
-	protocol="application/pgp-signature"; boundary="sQ2hNteQVd2DEBye"
+	protocol="application/pgp-signature"; boundary="rFAAVZBIABvNkDR9"
 Content-Disposition: inline
 
 
---sQ2hNteQVd2DEBye
+--rFAAVZBIABvNkDR9
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
 Content-Transfer-Encoding: quoted-printable
 
-On Sun, Sep 19, 2021 at 02:38:32PM +0800, Liu Yi L wrote:
-> From: Lu Baolu <baolu.lu@linux.intel.com>
+On Sun, Sep 19, 2021 at 02:38:30PM +0800, Liu Yi L wrote:
+> This patch introduces a new interface (/dev/vfio/devices/$DEVICE) for
+> userspace to directly open a vfio device w/o relying on container/group
+> (/dev/vfio/$GROUP). Anything related to group is now hidden behind
+> iommufd (more specifically in iommu core by this RFC) in a device-centric
+> manner.
 >=20
-> This provides an interface for upper layers to get the per-device iommu
-> attributes.
+> In case a device is exposed in both legacy and new interfaces (see next
+> patch for how to decide it), this patch also ensures that when the device
+> is already opened via one interface then the other one must be blocked.
 >=20
->     int iommu_device_get_info(struct device *dev,
->                               enum iommu_devattr attr, void *data);
+> Signed-off-by: Liu Yi L <yi.l.liu@intel.com>
+[snip]
 
-That fact that this interface doesn't let you know how to size the
-data buffer, other than by just knowing the right size for each attr
-concerns me.
-
->=20
-> The first attribute (IOMMU_DEV_INFO_FORCE_SNOOP) is added. It tells if
-> the iommu can force DMA to snoop cache. At this stage, only PCI devices
-> which have this attribute set could use the iommufd, this is due to
-> supporting no-snoop DMA requires additional refactoring work on the
-> current kvm-vfio contract. The following patch will have vfio check this
-> attribute to decide whether a pci device can be exposed through
-> /dev/vfio/devices.
->=20
-> Signed-off-by: Lu Baolu <baolu.lu@linux.intel.com>
-> ---
->  drivers/iommu/iommu.c | 16 ++++++++++++++++
->  include/linux/iommu.h | 19 +++++++++++++++++++
->  2 files changed, 35 insertions(+)
->=20
-> diff --git a/drivers/iommu/iommu.c b/drivers/iommu/iommu.c
-> index 63f0af10c403..5ea3a007fd7c 100644
-> --- a/drivers/iommu/iommu.c
-> +++ b/drivers/iommu/iommu.c
-> @@ -3260,3 +3260,19 @@ static ssize_t iommu_group_store_type(struct iommu=
-_group *group,
-> =20
->  	return ret;
->  }
-> +
-> +/* Expose per-device iommu attributes. */
-> +int iommu_device_get_info(struct device *dev, enum iommu_devattr attr, v=
-oid *data)
+> +static bool vfio_device_in_container(struct vfio_device *device)
 > +{
-> +	const struct iommu_ops *ops;
-> +
-> +	if (!dev->bus || !dev->bus->iommu_ops)
-> +		return -EINVAL;
-> +
-> +	ops =3D dev->bus->iommu_ops;
-> +	if (unlikely(!ops->device_info))
-> +		return -ENODEV;
-> +
-> +	return ops->device_info(dev, attr, data);
+> +	return !!(device->group && device->group->container);
+
+You don't need !! here.  && is already a logical operation, so returns
+a valid bool.
+
 > +}
-> +EXPORT_SYMBOL_GPL(iommu_device_get_info);
-> diff --git a/include/linux/iommu.h b/include/linux/iommu.h
-> index 32d448050bf7..52a6d33c82dc 100644
-> --- a/include/linux/iommu.h
-> +++ b/include/linux/iommu.h
-> @@ -150,6 +150,14 @@ enum iommu_dev_features {
->  	IOMMU_DEV_FEAT_IOPF,
->  };
-> =20
-> +/**
-> + * enum iommu_devattr - Per device IOMMU attributes
-> + * @IOMMU_DEV_INFO_FORCE_SNOOP [bool]: IOMMU can force DMA to be snooped.
-> + */
-> +enum iommu_devattr {
-> +	IOMMU_DEV_INFO_FORCE_SNOOP,
-> +};
 > +
->  #define IOMMU_PASID_INVALID	(-1U)
-> =20
->  #ifdef CONFIG_IOMMU_API
-> @@ -215,6 +223,7 @@ struct iommu_iotlb_gather {
->   *		- IOMMU_DOMAIN_IDENTITY: must use an identity domain
->   *		- IOMMU_DOMAIN_DMA: must use a dma domain
->   *		- 0: use the default setting
-> + * @device_info: query per-device iommu attributes
->   * @pgsize_bitmap: bitmap of all possible supported page sizes
->   * @owner: Driver module providing these ops
->   */
-> @@ -283,6 +292,8 @@ struct iommu_ops {
-> =20
->  	int (*def_domain_type)(struct device *dev);
-> =20
-> +	int (*device_info)(struct device *dev, enum iommu_devattr attr, void *d=
-ata);
-> +
->  	unsigned long pgsize_bitmap;
->  	struct module *owner;
->  };
-> @@ -604,6 +615,8 @@ struct iommu_sva *iommu_sva_bind_device(struct device=
- *dev,
->  void iommu_sva_unbind_device(struct iommu_sva *handle);
->  u32 iommu_sva_get_pasid(struct iommu_sva *handle);
-> =20
-> +int iommu_device_get_info(struct device *dev, enum iommu_devattr attr, v=
-oid *data);
-> +
->  #else /* CONFIG_IOMMU_API */
-> =20
->  struct iommu_ops {};
-> @@ -999,6 +1012,12 @@ static inline struct iommu_fwspec *dev_iommu_fwspec=
-_get(struct device *dev)
+>  static int vfio_device_fops_release(struct inode *inode, struct file *fi=
+lep)
 >  {
->  	return NULL;
->  }
-> +
-> +static inline int iommu_device_get_info(struct device *dev,
-> +					enum iommu_devattr type, void *data)
-> +{
-> +	return -ENODEV;
-> +}
->  #endif /* CONFIG_IOMMU_API */
+>  	struct vfio_device *device =3D filep->private_data;
+> @@ -1560,7 +1691,16 @@ static int vfio_device_fops_release(struct inode *=
+inode, struct file *filep)
 > =20
->  /**
+>  	module_put(device->dev->driver->owner);
+> =20
+> -	vfio_group_try_dissolve_container(device->group);
+> +	if (vfio_device_in_container(device)) {
+> +		vfio_group_try_dissolve_container(device->group);
+> +	} else {
+> +		atomic_dec(&device->opened);
+> +		if (device->group) {
+> +			mutex_lock(&device->group->opened_lock);
+> +			device->group->opened--;
+> +			mutex_unlock(&device->group->opened_lock);
+> +		}
+> +	}
+> =20
+>  	vfio_device_put(device);
+> =20
+> @@ -1613,6 +1753,7 @@ static int vfio_device_fops_mmap(struct file *filep=
+, struct vm_area_struct *vma)
+> =20
+>  static const struct file_operations vfio_device_fops =3D {
+>  	.owner		=3D THIS_MODULE,
+> +	.open		=3D vfio_device_fops_open,
+>  	.release	=3D vfio_device_fops_release,
+>  	.read		=3D vfio_device_fops_read,
+>  	.write		=3D vfio_device_fops_write,
+> @@ -2295,6 +2436,52 @@ static struct miscdevice vfio_dev =3D {
+>  	.mode =3D S_IRUGO | S_IWUGO,
+>  };
+> =20
+> +static char *vfio_device_devnode(struct device *dev, umode_t *mode)
+> +{
+> +	return kasprintf(GFP_KERNEL, "vfio/devices/%s", dev_name(dev));
+
+Others have pointed out some problems with the use of dev_name()
+here.  I'll add that I think you'll make things much easier if instead
+of using one huge "devices" subdir, you use a separate subdir for each
+vfio sub-driver (so, one for PCI, one for each type of mdev, one for
+platform, etc.).  That should make avoiding name conflicts a lot simpler.
 
 --=20
 David Gibson			| I'll have my music baroque, and my code
@@ -216,29 +169,29 @@ david AT gibson.dropbear.id.au	| minimalist, thank you.  NOT _the_ _other_
 				| _way_ _around_!
 http://www.ozlabs.org/~dgibson
 
---sQ2hNteQVd2DEBye
+--rFAAVZBIABvNkDR9
 Content-Type: application/pgp-signature; name="signature.asc"
 
 -----BEGIN PGP SIGNATURE-----
 
-iQIzBAEBCAAdFiEEdfRlhq5hpmzETofcbDjKyiDZs5IFAmFT1PMACgkQbDjKyiDZ
-s5Kp4xAAuqP94XHXa8idfiJzr+Zmk3LlF5iLCDGNb7As35wm2B95WzFXrIvnG0PR
-9GuRnTDbazPssJA5PSwrI8g10LpZ52exjVV00iv1sU62Nk64xahNK+1jpLq5Ktsf
-621axCsT3ZqGHy7IQDfERmgJccl4FNdU2Jiv+uUiCcfeUTPNEx6UOggtUGfHMapF
-/RYgmuGlI34vI9TUz2y+SxBdfiDp9ySjhNnD5PEjggGy731te7iWKF3nJv4WBPPH
-1E0vEaj4ttoY9CnA3ta1waG8pZDJXtNcX3kXC+VE0hmd0KiazEIGt1cqqkZZ9khq
-40y+9nfCu2mzsD10qD8VMy3vwoDRnPChsepZRQdT884+J5OjlOk9shLZHdp8mjRh
-YDAyqlMyg6dNyHfH/scB7W+eTASkas6FkyNCNvGMFj1nGjGt4xssWFC3mUtHYE1s
-Bnd8g5HGZspQKn/hzaXoDgvi6TdNQzApVzIwY+I0AdKFnr3v3kFtIhOptfzKGYGT
-q0Ar3JXZAdppywVBThSRKWjMOIBUHbCkXUl6TVdo+ebmeKOJjceKY2BC3SQoDKiG
-Pv0vraoPolTkSq1iaKMnR+xwVmATYdZ6wAuKG4TIZ5I7yGAzK+0s5d6zS2mm66kN
-uBaU2bfeBKTDdz2xj1fxiK2vZ88TB0rDXoKagGCeKHAigohc82Y=
-=EJNn
+iQIzBAEBCAAdFiEEdfRlhq5hpmzETofcbDjKyiDZs5IFAmFTyrkACgkQbDjKyiDZ
+s5LDRxAA45DlpAfiA499JLduAg68fEU3Bdr3uqrAxaxXW5bnLJVw9BLOv1YV6Izb
+GffTAoUJE/gceiS+dIPmE1A8Zxsdb3vCT3Ci8gKEevQ/zMcqBdnO5KZ//nRAlrMl
+vsDahtaUQy/3uxRqSA8r2jlEujuHfdFJzi5pNosxfLQkCiSkYzAG7ePdxDOEBhJv
+bqay3ZBkns2E8RjTZ8ytDBV2zHqQW3G2/kqFAK7qx8eefGROcDAv7NoroHt8EB8+
+EYBXZgj+4nQChP+wQoEmXkRzkDocPtS4IKODB1YjTTCKW4O0YI8TfuvnCCPRLrku
+VZFk4PNw9sADsqB4plA+3/QkeDLskC23/GTZ/+djAVcsSAs+Oyiisw63I7LibeKg
+h5LKefqlBoOURSgk9f0AHIYwaxoE7qXgsf7zGKcI80waLoVWkOQXSj5/D0asFtGf
+sZrthpsKPKAl40jH+lA35r98Acb/m8uJdICPUoG/QTtc8F/0UIjWKsZxJH8Wtss8
+FaCAP1lw3gKK76Trdi2XavMZFkRmWNatPKTiCaNY8qQRyt/RvAteJjnwR1R2RKji
+fAQo8P1ZNxAhrGdYI9QzAsy0pYyO0Va/TPy0lf9KRQHIH4ff2DGHQB0azLwyJ+JF
+3x7clC6gMiPwmHmWUMwTgrenfi6br6zggTRWzC2sWbs0iJCzIRo=
+=C+J/
 -----END PGP SIGNATURE-----
 
---sQ2hNteQVd2DEBye--
+--rFAAVZBIABvNkDR9--
 
---===============0055948241095760027==
+--===============3783268896302698385==
 Content-Type: text/plain; charset="us-ascii"
 MIME-Version: 1.0
 Content-Transfer-Encoding: 7bit
@@ -248,4 +201,4 @@ _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
 https://lists.linuxfoundation.org/mailman/listinfo/iommu
---===============0055948241095760027==--
+--===============3783268896302698385==--
