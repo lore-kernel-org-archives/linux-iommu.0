@@ -2,65 +2,65 @@ Return-Path: <SRS0=Xpq5=OT=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 80E3FC433EF
-	for <iommu@archiver.kernel.org>; Wed, 29 Sep 2021 01:38:53 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2A7DDC433EF
+	for <iommu@archiver.kernel.org>; Wed, 29 Sep 2021 01:39:03 +0000 (UTC)
 Received: from smtp3.osuosl.org (smtp3.osuosl.org [140.211.166.136])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 3DC1761407
-	for <iommu@archiver.kernel.org>; Wed, 29 Sep 2021 01:38:53 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.4.1 mail.kernel.org 3DC1761407
+	by mail.kernel.org (Postfix) with ESMTPS id E9713613E6
+	for <iommu@archiver.kernel.org>; Wed, 29 Sep 2021 01:39:02 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.4.1 mail.kernel.org E9713613E6
 Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=mediatek.com
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by smtp3.osuosl.org (Postfix) with ESMTP id 1DC3E6060E;
-	Wed, 29 Sep 2021 01:38:53 +0000 (UTC)
+	by smtp3.osuosl.org (Postfix) with ESMTP id CC7EA6060E;
+	Wed, 29 Sep 2021 01:39:02 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
 Received: from smtp3.osuosl.org ([127.0.0.1])
 	by localhost (smtp3.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id R0H4SGRNvzpM; Wed, 29 Sep 2021 01:38:52 +0000 (UTC)
-Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by smtp3.osuosl.org (Postfix) with ESMTPS id EE4EF605EF;
-	Wed, 29 Sep 2021 01:38:51 +0000 (UTC)
+	with ESMTP id ETQ4pViv_I5I; Wed, 29 Sep 2021 01:39:01 +0000 (UTC)
+Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [IPv6:2605:bc80:3010:104::8cd3:938])
+	by smtp3.osuosl.org (Postfix) with ESMTPS id 47A0A605EF;
+	Wed, 29 Sep 2021 01:39:01 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id D8A3EC000F;
-	Wed, 29 Sep 2021 01:38:51 +0000 (UTC)
-Received: from smtp1.osuosl.org (smtp1.osuosl.org [IPv6:2605:bc80:3010::138])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 60B8BC000D
- for <iommu@lists.linux-foundation.org>; Wed, 29 Sep 2021 01:38:51 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 1F81EC000F;
+	Wed, 29 Sep 2021 01:39:01 +0000 (UTC)
+Received: from smtp1.osuosl.org (smtp1.osuosl.org [140.211.166.138])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 9450CC000D
+ for <iommu@lists.linux-foundation.org>; Wed, 29 Sep 2021 01:39:00 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by smtp1.osuosl.org (Postfix) with ESMTP id 4306F82A72
- for <iommu@lists.linux-foundation.org>; Wed, 29 Sep 2021 01:38:51 +0000 (UTC)
+ by smtp1.osuosl.org (Postfix) with ESMTP id 839F482AED
+ for <iommu@lists.linux-foundation.org>; Wed, 29 Sep 2021 01:39:00 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
 Received: from smtp1.osuosl.org ([127.0.0.1])
  by localhost (smtp1.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id DfpzNrjT0cw9 for <iommu@lists.linux-foundation.org>;
- Wed, 29 Sep 2021 01:38:50 +0000 (UTC)
+ with ESMTP id hJKEo4kE6YwB for <iommu@lists.linux-foundation.org>;
+ Wed, 29 Sep 2021 01:38:59 +0000 (UTC)
 X-Greylist: from auto-whitelisted by SQLgrey-1.8.0
 Received: from mailgw02.mediatek.com (unknown [210.61.82.184])
- by smtp1.osuosl.org (Postfix) with ESMTPS id 43008829A9
- for <iommu@lists.linux-foundation.org>; Wed, 29 Sep 2021 01:38:50 +0000 (UTC)
-X-UUID: c388716951ff49f0a0bbd5145e7fe5c8-20210929
-X-UUID: c388716951ff49f0a0bbd5145e7fe5c8-20210929
-Received: from mtkmbs10n2.mediatek.inc [(172.21.101.183)] by
- mailgw02.mediatek.com (envelope-from <yong.wu@mediatek.com>)
- (Generic MTA with TLSv1.2 ECDHE-RSA-AES256-GCM-SHA384 256/256)
- with ESMTP id 1180063787; Wed, 29 Sep 2021 09:38:47 +0800
+ by smtp1.osuosl.org (Postfix) with ESMTPS id 6848F82AAA
+ for <iommu@lists.linux-foundation.org>; Wed, 29 Sep 2021 01:38:59 +0000 (UTC)
+X-UUID: 04baad5312564cfc8b7f84213b911131-20210929
+X-UUID: 04baad5312564cfc8b7f84213b911131-20210929
+Received: from mtkcas11.mediatek.inc [(172.21.101.40)] by mailgw02.mediatek.com
+ (envelope-from <yong.wu@mediatek.com>)
+ (Generic MTA with TLSv1.2 ECDHE-RSA-AES256-SHA384 256/256)
+ with ESMTP id 857943189; Wed, 29 Sep 2021 09:38:55 +0800
 Received: from mtkcas07.mediatek.inc (172.21.101.84) by
- mtkmbs10n2.mediatek.inc (172.21.101.183) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id 15.2.792.3; 
- Wed, 29 Sep 2021 09:38:46 +0800
+ mtkmbs10n1.mediatek.inc (172.21.101.34) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id
+ 15.2.792.15; Wed, 29 Sep 2021 09:38:53 +0800
 Received: from localhost.localdomain (10.17.3.154) by mtkcas07.mediatek.inc
  (172.21.101.73) with Microsoft SMTP Server id 15.0.1497.2 via Frontend
- Transport; Wed, 29 Sep 2021 09:38:44 +0800
+ Transport; Wed, 29 Sep 2021 09:38:52 +0800
 From: Yong Wu <yong.wu@mediatek.com>
 To: Matthias Brugger <matthias.bgg@gmail.com>, Joerg Roedel <joro@8bytes.org>, 
  Rob Herring <robh+dt@kernel.org>, Krzysztof Kozlowski
  <krzysztof.kozlowski@canonical.com>, David Airlie <airlied@linux.ie>, "Mauro
  Carvalho Chehab" <mchehab@kernel.org>
-Subject: [PATCH v8 08/12] drm/mediatek: Get rid of mtk_smi_larb_get/put
-Date: Wed, 29 Sep 2021 09:37:15 +0800
-Message-ID: <20210929013719.25120-9-yong.wu@mediatek.com>
+Subject: [PATCH v8 09/12] media: mtk-vcodec: Get rid of mtk_smi_larb_get/put
+Date: Wed, 29 Sep 2021 09:37:16 +0800
+Message-ID: <20210929013719.25120-10-yong.wu@mediatek.com>
 X-Mailer: git-send-email 2.18.0
 In-Reply-To: <20210929013719.25120-1-yong.wu@mediatek.com>
 References: <20210929013719.25120-1-yong.wu@mediatek.com>
@@ -69,11 +69,11 @@ X-MTK: N
 Cc: Dafna Hirschfeld <dafna.hirschfeld@collabora.com>,
  Chun-Kuang Hu <chunkuang.hu@kernel.org>, Will Deacon <will.deacon@arm.com>,
  dri-devel@lists.freedesktop.org, anthony.huang@mediatek.com,
- youlin.pei@mediatek.com, Evan Green <evgreen@chromium.org>,
- Eizan Miyamoto <eizan@chromium.org>, Matthias Kaehlcke <mka@chromium.org>,
- linux-arm-kernel@lists.infradead.org, CK
- Hu <ck.hu@mediatek.com>, linux-media@vger.kernel.org,
- devicetree@vger.kernel.org, Philipp Zabel <p.zabel@pengutronix.de>,
+ youlin.pei@mediatek.com, Irui Wang <irui.wang@mediatek.com>,
+ Evan Green <evgreen@chromium.org>, Eizan Miyamoto <eizan@chromium.org>,
+ Matthias Kaehlcke <mka@chromium.org>, linux-arm-kernel@lists.infradead.org,
+ linux-media@vger.kernel.org, devicetree@vger.kernel.org,
+ Philipp Zabel <p.zabel@pengutronix.de>,
  Frank Wunderlich <frank-w@public-files.de>, yi.kuo@mediatek.com,
  linux-mediatek@lists.infradead.org, Hsin-Yi Wang <hsinyi@chromium.org>,
  Tiffany Lin <tiffany.lin@mediatek.com>, anan.sun@mediatek.com,
@@ -98,156 +98,275 @@ Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
 MediaTek IOMMU has already added the device_link between the consumer
-and smi-larb device. If the drm device call the pm_runtime_get_sync,
+and smi-larb device. If the vcodec device call the pm_runtime_get_sync,
 the smi-larb's pm_runtime_get_sync also be called automatically.
 
-CC: CK Hu <ck.hu@mediatek.com>
-CC: Philipp Zabel <p.zabel@pengutronix.de>
+CC: Tiffany Lin <tiffany.lin@mediatek.com>
+CC: Irui Wang <irui.wang@mediatek.com>
 Signed-off-by: Yong Wu <yong.wu@mediatek.com>
 Reviewed-by: Evan Green <evgreen@chromium.org>
-Acked-by: Chun-Kuang Hu <chunkuang.hu@kernel.org>
+Acked-by: Tiffany Lin <tiffany.lin@mediatek.com>
 Reviewed-by: Dafna Hirschfeld <dafna.hirschfeld@collabora.com>
-Tested-by: Frank Wunderlich <frank-w@public-files.de> # BPI-R2/MT7623
 ---
- drivers/gpu/drm/mediatek/mtk_drm_crtc.c     | 10 ------
- drivers/gpu/drm/mediatek/mtk_drm_ddp_comp.c | 36 ++-------------------
- drivers/gpu/drm/mediatek/mtk_drm_ddp_comp.h |  1 -
- drivers/gpu/drm/mediatek/mtk_drm_drv.c      |  5 +--
- 4 files changed, 3 insertions(+), 49 deletions(-)
+ .../platform/mtk-vcodec/mtk_vcodec_dec_pm.c   | 37 +++-------------
+ .../platform/mtk-vcodec/mtk_vcodec_drv.h      |  3 --
+ .../platform/mtk-vcodec/mtk_vcodec_enc.c      |  1 -
+ .../platform/mtk-vcodec/mtk_vcodec_enc_pm.c   | 44 +++----------------
+ 4 files changed, 10 insertions(+), 75 deletions(-)
 
-diff --git a/drivers/gpu/drm/mediatek/mtk_drm_crtc.c b/drivers/gpu/drm/mediatek/mtk_drm_crtc.c
-index 455ea23c6130..445c30cc823f 100644
---- a/drivers/gpu/drm/mediatek/mtk_drm_crtc.c
-+++ b/drivers/gpu/drm/mediatek/mtk_drm_crtc.c
-@@ -12,7 +12,6 @@
- #include <linux/soc/mediatek/mtk-mutex.h>
- 
- #include <asm/barrier.h>
+diff --git a/drivers/media/platform/mtk-vcodec/mtk_vcodec_dec_pm.c b/drivers/media/platform/mtk-vcodec/mtk_vcodec_dec_pm.c
+index 6038db96f71c..d0bf9aa3b29d 100644
+--- a/drivers/media/platform/mtk-vcodec/mtk_vcodec_dec_pm.c
++++ b/drivers/media/platform/mtk-vcodec/mtk_vcodec_dec_pm.c
+@@ -8,14 +8,12 @@
+ #include <linux/of_address.h>
+ #include <linux/of_platform.h>
+ #include <linux/pm_runtime.h>
 -#include <soc/mediatek/smi.h>
  
- #include <drm/drm_atomic.h>
- #include <drm/drm_atomic_helper.h>
-@@ -643,22 +642,14 @@ static void mtk_drm_crtc_atomic_enable(struct drm_crtc *crtc,
+ #include "mtk_vcodec_dec_pm.h"
+ #include "mtk_vcodec_util.h"
  
- 	DRM_DEBUG_DRIVER("%s %d\n", __func__, crtc->base.id);
- 
--	ret = mtk_smi_larb_get(comp->larb_dev);
--	if (ret) {
--		DRM_ERROR("Failed to get larb: %d\n", ret);
--		return;
--	}
--
- 	ret = pm_runtime_resume_and_get(comp->dev);
- 	if (ret < 0) {
--		mtk_smi_larb_put(comp->larb_dev);
- 		DRM_DEV_ERROR(comp->dev, "Failed to enable power domain: %d\n", ret);
- 		return;
- 	}
- 
- 	ret = mtk_crtc_ddp_hw_init(mtk_crtc);
- 	if (ret) {
--		mtk_smi_larb_put(comp->larb_dev);
- 		pm_runtime_put(comp->dev);
- 		return;
- 	}
-@@ -695,7 +686,6 @@ static void mtk_drm_crtc_atomic_disable(struct drm_crtc *crtc,
- 
- 	drm_crtc_vblank_off(crtc);
- 	mtk_crtc_ddp_hw_fini(mtk_crtc);
--	mtk_smi_larb_put(comp->larb_dev);
- 	ret = pm_runtime_put(comp->dev);
- 	if (ret < 0)
- 		DRM_DEV_ERROR(comp->dev, "Failed to disable power domain: %d\n", ret);
-diff --git a/drivers/gpu/drm/mediatek/mtk_drm_ddp_comp.c b/drivers/gpu/drm/mediatek/mtk_drm_ddp_comp.c
-index 99cbf44463e4..48642e814370 100644
---- a/drivers/gpu/drm/mediatek/mtk_drm_ddp_comp.c
-+++ b/drivers/gpu/drm/mediatek/mtk_drm_ddp_comp.c
-@@ -414,37 +414,15 @@ unsigned int mtk_drm_find_possible_crtc_by_comp(struct drm_device *drm,
- 	return ret;
- }
- 
--static int mtk_ddp_get_larb_dev(struct device_node *node, struct mtk_ddp_comp *comp,
--				struct device *dev)
--{
--	struct device_node *larb_node;
--	struct platform_device *larb_pdev;
--
--	larb_node = of_parse_phandle(node, "mediatek,larb", 0);
--	if (!larb_node) {
--		dev_err(dev, "Missing mediadek,larb phandle in %pOF node\n", node);
--		return -EINVAL;
--	}
--
--	larb_pdev = of_find_device_by_node(larb_node);
--	if (!larb_pdev) {
--		dev_warn(dev, "Waiting for larb device %pOF\n", larb_node);
--		of_node_put(larb_node);
--		return -EPROBE_DEFER;
--	}
--	of_node_put(larb_node);
--	comp->larb_dev = &larb_pdev->dev;
--
--	return 0;
--}
--
- int mtk_ddp_comp_init(struct device_node *node, struct mtk_ddp_comp *comp,
- 		      enum mtk_ddp_comp_id comp_id)
+ int mtk_vcodec_init_dec_pm(struct mtk_vcodec_dev *mtkdev)
  {
- 	struct platform_device *comp_pdev;
- 	enum mtk_ddp_comp_type type;
- 	struct mtk_ddp_comp_dev *priv;
-+#if IS_REACHABLE(CONFIG_MTK_CMDQ)
- 	int ret;
-+#endif
+-	struct device_node *node;
+ 	struct platform_device *pdev;
+ 	struct mtk_vcodec_pm *pm;
+ 	struct mtk_vcodec_clk *dec_clk;
+@@ -26,18 +24,7 @@ int mtk_vcodec_init_dec_pm(struct mtk_vcodec_dev *mtkdev)
+ 	pm = &mtkdev->pm;
+ 	pm->mtkdev = mtkdev;
+ 	dec_clk = &pm->vdec_clk;
+-	node = of_parse_phandle(pdev->dev.of_node, "mediatek,larb", 0);
+-	if (!node) {
+-		mtk_v4l2_err("of_parse_phandle mediatek,larb fail!");
+-		return -1;
+-	}
  
- 	if (comp_id < 0 || comp_id >= DDP_COMPONENT_ID_MAX)
- 		return -EINVAL;
-@@ -460,16 +438,6 @@ int mtk_ddp_comp_init(struct device_node *node, struct mtk_ddp_comp *comp,
+-	pdev = of_find_device_by_node(node);
+-	of_node_put(node);
+-	if (WARN_ON(!pdev)) {
+-		return -1;
+-	}
+-	pm->larbvdec = &pdev->dev;
+ 	pdev = mtkdev->plat_dev;
+ 	pm->dev = &pdev->dev;
+ 
+@@ -47,14 +34,11 @@ int mtk_vcodec_init_dec_pm(struct mtk_vcodec_dev *mtkdev)
+ 		dec_clk->clk_info = devm_kcalloc(&pdev->dev,
+ 			dec_clk->clk_num, sizeof(*clk_info),
+ 			GFP_KERNEL);
+-		if (!dec_clk->clk_info) {
+-			ret = -ENOMEM;
+-			goto put_device;
+-		}
++		if (!dec_clk->clk_info)
++			return -ENOMEM;
+ 	} else {
+ 		mtk_v4l2_err("Failed to get vdec clock count");
+-		ret = -EINVAL;
+-		goto put_device;
++		return -EINVAL;
  	}
- 	comp->dev = &comp_pdev->dev;
  
--	/* Only DMA capable components need the LARB property */
--	if (type == MTK_DISP_OVL ||
--	    type == MTK_DISP_OVL_2L ||
--	    type == MTK_DISP_RDMA ||
--	    type == MTK_DISP_WDMA) {
--		ret = mtk_ddp_get_larb_dev(node, comp, comp->dev);
--		if (ret)
--			return ret;
--	}
--
- 	if (type == MTK_DISP_AAL ||
- 	    type == MTK_DISP_BLS ||
- 	    type == MTK_DISP_CCORR ||
-diff --git a/drivers/gpu/drm/mediatek/mtk_drm_ddp_comp.h b/drivers/gpu/drm/mediatek/mtk_drm_ddp_comp.h
-index bb914d976cf5..1b582262b682 100644
---- a/drivers/gpu/drm/mediatek/mtk_drm_ddp_comp.h
-+++ b/drivers/gpu/drm/mediatek/mtk_drm_ddp_comp.h
-@@ -70,7 +70,6 @@ struct mtk_ddp_comp_funcs {
- struct mtk_ddp_comp {
- 	struct device *dev;
- 	int irq;
--	struct device *larb_dev;
- 	enum mtk_ddp_comp_id id;
- 	const struct mtk_ddp_comp_funcs *funcs;
- };
-diff --git a/drivers/gpu/drm/mediatek/mtk_drm_drv.c b/drivers/gpu/drm/mediatek/mtk_drm_drv.c
-index aec39724ebeb..c234293fc2c3 100644
---- a/drivers/gpu/drm/mediatek/mtk_drm_drv.c
-+++ b/drivers/gpu/drm/mediatek/mtk_drm_drv.c
-@@ -603,11 +603,8 @@ static int mtk_drm_probe(struct platform_device *pdev)
- 	pm_runtime_disable(dev);
- err_node:
- 	of_node_put(private->mutex_node);
--	for (i = 0; i < DDP_COMPONENT_ID_MAX; i++) {
-+	for (i = 0; i < DDP_COMPONENT_ID_MAX; i++)
- 		of_node_put(private->comp_node[i]);
--		if (private->ddp_comp[i].larb_dev)
--			put_device(private->ddp_comp[i].larb_dev);
--	}
- 	return ret;
+ 	for (i = 0; i < dec_clk->clk_num; i++) {
+@@ -63,29 +47,24 @@ int mtk_vcodec_init_dec_pm(struct mtk_vcodec_dev *mtkdev)
+ 			"clock-names", i, &clk_info->clk_name);
+ 		if (ret) {
+ 			mtk_v4l2_err("Failed to get clock name id = %d", i);
+-			goto put_device;
++			return ret;
+ 		}
+ 		clk_info->vcodec_clk = devm_clk_get(&pdev->dev,
+ 			clk_info->clk_name);
+ 		if (IS_ERR(clk_info->vcodec_clk)) {
+ 			mtk_v4l2_err("devm_clk_get (%d)%s fail", i,
+ 				clk_info->clk_name);
+-			ret = PTR_ERR(clk_info->vcodec_clk);
+-			goto put_device;
++			return PTR_ERR(clk_info->vcodec_clk);
+ 		}
+ 	}
+ 
+ 	pm_runtime_enable(&pdev->dev);
+ 	return 0;
+-put_device:
+-	put_device(pm->larbvdec);
+-	return ret;
  }
  
+ void mtk_vcodec_release_dec_pm(struct mtk_vcodec_dev *dev)
+ {
+ 	pm_runtime_disable(dev->pm.dev);
+-	put_device(dev->pm.larbvdec);
+ }
+ 
+ int mtk_vcodec_dec_pw_on(struct mtk_vcodec_pm *pm)
+@@ -122,11 +101,6 @@ void mtk_vcodec_dec_clock_on(struct mtk_vcodec_pm *pm)
+ 		}
+ 	}
+ 
+-	ret = mtk_smi_larb_get(pm->larbvdec);
+-	if (ret) {
+-		mtk_v4l2_err("mtk_smi_larb_get larbvdec fail %d", ret);
+-		goto error;
+-	}
+ 	return;
+ 
+ error:
+@@ -139,7 +113,6 @@ void mtk_vcodec_dec_clock_off(struct mtk_vcodec_pm *pm)
+ 	struct mtk_vcodec_clk *dec_clk = &pm->vdec_clk;
+ 	int i = 0;
+ 
+-	mtk_smi_larb_put(pm->larbvdec);
+ 	for (i = dec_clk->clk_num - 1; i >= 0; i--)
+ 		clk_disable_unprepare(dec_clk->clk_info[i].vcodec_clk);
+ }
+diff --git a/drivers/media/platform/mtk-vcodec/mtk_vcodec_drv.h b/drivers/media/platform/mtk-vcodec/mtk_vcodec_drv.h
+index c6c7672fecfb..64b73dd880ce 100644
+--- a/drivers/media/platform/mtk-vcodec/mtk_vcodec_drv.h
++++ b/drivers/media/platform/mtk-vcodec/mtk_vcodec_drv.h
+@@ -189,10 +189,7 @@ struct mtk_vcodec_clk {
+  */
+ struct mtk_vcodec_pm {
+ 	struct mtk_vcodec_clk	vdec_clk;
+-	struct device	*larbvdec;
+-
+ 	struct mtk_vcodec_clk	venc_clk;
+-	struct device	*larbvenc;
+ 	struct device	*dev;
+ 	struct mtk_vcodec_dev	*mtkdev;
+ };
+diff --git a/drivers/media/platform/mtk-vcodec/mtk_vcodec_enc.c b/drivers/media/platform/mtk-vcodec/mtk_vcodec_enc.c
+index 416f356af363..9a1515cf862d 100644
+--- a/drivers/media/platform/mtk-vcodec/mtk_vcodec_enc.c
++++ b/drivers/media/platform/mtk-vcodec/mtk_vcodec_enc.c
+@@ -8,7 +8,6 @@
+ #include <media/v4l2-event.h>
+ #include <media/v4l2-mem2mem.h>
+ #include <media/videobuf2-dma-contig.h>
+-#include <soc/mediatek/smi.h>
+ #include <linux/pm_runtime.h>
+ 
+ #include "mtk_vcodec_drv.h"
+diff --git a/drivers/media/platform/mtk-vcodec/mtk_vcodec_enc_pm.c b/drivers/media/platform/mtk-vcodec/mtk_vcodec_enc_pm.c
+index 1b2e4930ed27..dffb190267ed 100644
+--- a/drivers/media/platform/mtk-vcodec/mtk_vcodec_enc_pm.c
++++ b/drivers/media/platform/mtk-vcodec/mtk_vcodec_enc_pm.c
+@@ -8,58 +8,36 @@
+ #include <linux/of_address.h>
+ #include <linux/of_platform.h>
+ #include <linux/pm_runtime.h>
+-#include <soc/mediatek/smi.h>
+ 
+ #include "mtk_vcodec_enc_pm.h"
+ #include "mtk_vcodec_util.h"
+ 
+ int mtk_vcodec_init_enc_pm(struct mtk_vcodec_dev *mtkdev)
+ {
+-	struct device_node *node;
+ 	struct platform_device *pdev;
+ 	struct mtk_vcodec_pm *pm;
+ 	struct mtk_vcodec_clk *enc_clk;
+ 	struct mtk_vcodec_clk_info *clk_info;
+ 	int ret = 0, i = 0;
+-	struct device *dev;
+ 
+ 	pdev = mtkdev->plat_dev;
+ 	pm = &mtkdev->pm;
+ 	memset(pm, 0, sizeof(struct mtk_vcodec_pm));
+ 	pm->mtkdev = mtkdev;
+ 	pm->dev = &pdev->dev;
+-	dev = &pdev->dev;
+ 	enc_clk = &pm->venc_clk;
+ 
+-	node = of_parse_phandle(dev->of_node, "mediatek,larb", 0);
+-	if (!node) {
+-		mtk_v4l2_err("no mediatek,larb found");
+-		return -ENODEV;
+-	}
+-	pdev = of_find_device_by_node(node);
+-	of_node_put(node);
+-	if (!pdev) {
+-		mtk_v4l2_err("no mediatek,larb device found");
+-		return -ENODEV;
+-	}
+-	pm->larbvenc = &pdev->dev;
+-	pdev = mtkdev->plat_dev;
+-	pm->dev = &pdev->dev;
+-
+ 	enc_clk->clk_num = of_property_count_strings(pdev->dev.of_node,
+ 		"clock-names");
+ 	if (enc_clk->clk_num > 0) {
+ 		enc_clk->clk_info = devm_kcalloc(&pdev->dev,
+ 			enc_clk->clk_num, sizeof(*clk_info),
+ 			GFP_KERNEL);
+-		if (!enc_clk->clk_info) {
+-			ret = -ENOMEM;
+-			goto put_larbvenc;
+-		}
++		if (!enc_clk->clk_info)
++			return -ENOMEM;
+ 	} else {
+ 		mtk_v4l2_err("Failed to get venc clock count");
+-		ret = -EINVAL;
+-		goto put_larbvenc;
++		return -EINVAL;
+ 	}
+ 
+ 	for (i = 0; i < enc_clk->clk_num; i++) {
+@@ -68,29 +46,23 @@ int mtk_vcodec_init_enc_pm(struct mtk_vcodec_dev *mtkdev)
+ 			"clock-names", i, &clk_info->clk_name);
+ 		if (ret) {
+ 			mtk_v4l2_err("venc failed to get clk name %d", i);
+-			goto put_larbvenc;
++			return ret;
+ 		}
+ 		clk_info->vcodec_clk = devm_clk_get(&pdev->dev,
+ 			clk_info->clk_name);
+ 		if (IS_ERR(clk_info->vcodec_clk)) {
+ 			mtk_v4l2_err("venc devm_clk_get (%d)%s fail", i,
+ 				clk_info->clk_name);
+-			ret = PTR_ERR(clk_info->vcodec_clk);
+-			goto put_larbvenc;
++			return PTR_ERR(clk_info->vcodec_clk);
+ 		}
+ 	}
+ 
+ 	return 0;
+-
+-put_larbvenc:
+-	put_device(pm->larbvenc);
+-	return ret;
+ }
+ 
+ void mtk_vcodec_release_enc_pm(struct mtk_vcodec_dev *mtkdev)
+ {
+ 	pm_runtime_disable(mtkdev->pm.dev);
+-	put_device(mtkdev->pm.larbvenc);
+ }
+ 
+ 
+@@ -108,11 +80,6 @@ void mtk_vcodec_enc_clock_on(struct mtk_vcodec_pm *pm)
+ 		}
+ 	}
+ 
+-	ret = mtk_smi_larb_get(pm->larbvenc);
+-	if (ret) {
+-		mtk_v4l2_err("mtk_smi_larb_get larb3 fail %d", ret);
+-		goto clkerr;
+-	}
+ 	return;
+ 
+ clkerr:
+@@ -125,7 +92,6 @@ void mtk_vcodec_enc_clock_off(struct mtk_vcodec_pm *pm)
+ 	struct mtk_vcodec_clk *enc_clk = &pm->venc_clk;
+ 	int i = 0;
+ 
+-	mtk_smi_larb_put(pm->larbvenc);
+ 	for (i = enc_clk->clk_num - 1; i >= 0; i--)
+ 		clk_disable_unprepare(enc_clk->clk_info[i].vcodec_clk);
+ }
 -- 
 2.18.0
 
