@@ -2,79 +2,62 @@ Return-Path: <SRS0=Xpq5=OT=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 85A27C433EF
-	for <iommu@archiver.kernel.org>; Wed, 29 Sep 2021 07:12:38 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A8611C433F5
+	for <iommu@archiver.kernel.org>; Wed, 29 Sep 2021 07:24:14 +0000 (UTC)
 Received: from smtp2.osuosl.org (smtp2.osuosl.org [140.211.166.133])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 1558A613C8
-	for <iommu@archiver.kernel.org>; Wed, 29 Sep 2021 07:12:38 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.4.1 mail.kernel.org 1558A613C8
-Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=gibson.dropbear.id.au
+	by mail.kernel.org (Postfix) with ESMTPS id 5623561042
+	for <iommu@archiver.kernel.org>; Wed, 29 Sep 2021 07:24:14 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.4.1 mail.kernel.org 5623561042
+Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=linux.intel.com
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by smtp2.osuosl.org (Postfix) with ESMTP id D17D140425;
-	Wed, 29 Sep 2021 07:12:37 +0000 (UTC)
+	by smtp2.osuosl.org (Postfix) with ESMTP id D852340323;
+	Wed, 29 Sep 2021 07:24:13 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
 Received: from smtp2.osuosl.org ([127.0.0.1])
 	by localhost (smtp2.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id 0Ac4lAofIpO3; Wed, 29 Sep 2021 07:12:36 +0000 (UTC)
-Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [IPv6:2605:bc80:3010:104::8cd3:938])
-	by smtp2.osuosl.org (Postfix) with ESMTPS id 3E4B3402EF;
-	Wed, 29 Sep 2021 07:12:36 +0000 (UTC)
+	with ESMTP id QSf_i8-TnA7Q; Wed, 29 Sep 2021 07:24:12 +0000 (UTC)
+Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
+	by smtp2.osuosl.org (Postfix) with ESMTPS id 7775B402EF;
+	Wed, 29 Sep 2021 07:24:12 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 1141AC0011;
-	Wed, 29 Sep 2021 07:12:36 +0000 (UTC)
-Received: from smtp2.osuosl.org (smtp2.osuosl.org [IPv6:2605:bc80:3010::133])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 3C022C000D
- for <iommu@lists.linux-foundation.org>; Wed, 29 Sep 2021 07:12:35 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 4E985C0011;
+	Wed, 29 Sep 2021 07:24:12 +0000 (UTC)
+Received: from smtp3.osuosl.org (smtp3.osuosl.org [IPv6:2605:bc80:3010::136])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 36CCFC000D
+ for <iommu@lists.linux-foundation.org>; Wed, 29 Sep 2021 07:24:11 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by smtp2.osuosl.org (Postfix) with ESMTP id 1F11E40425
- for <iommu@lists.linux-foundation.org>; Wed, 29 Sep 2021 07:12:35 +0000 (UTC)
+ by smtp3.osuosl.org (Postfix) with ESMTP id 1319460663
+ for <iommu@lists.linux-foundation.org>; Wed, 29 Sep 2021 07:24:11 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from smtp2.osuosl.org ([127.0.0.1])
- by localhost (smtp2.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id L2dcX0XCibcy for <iommu@lists.linux-foundation.org>;
- Wed, 29 Sep 2021 07:12:34 +0000 (UTC)
-X-Greylist: from auto-whitelisted by SQLgrey-1.8.0
-Received: from gandalf.ozlabs.org (gandalf.ozlabs.org [150.107.74.76])
- by smtp2.osuosl.org (Postfix) with ESMTPS id 23EDE40323
- for <iommu@lists.linux-foundation.org>; Wed, 29 Sep 2021 07:12:34 +0000 (UTC)
-Received: by gandalf.ozlabs.org (Postfix, from userid 1007)
- id 4HK6yQ59Mkz4xbQ; Wed, 29 Sep 2021 17:12:30 +1000 (AEST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
- d=gibson.dropbear.id.au; s=201602; t=1632899550;
- bh=L08JZ1sawezeS015D9zgg+63/giIa2dhEn00NU5Gl9Y=;
- h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
- b=kzcjZkVIb+59YwusaTa7TDofa176Y01SfMixfjEpvF52DXXtqMYoo/cnit3cVnrbz
- FJpEABiRoF+LPSQAebuks5Y7LnwA+nuDbC3P74eseDZ6sXQrWSonXxWlTdus9grc8d
- /fuzX/44k4p1mGzQ7m6ubwhzdVIm/+dkjaVtCTps=
-Date: Wed, 29 Sep 2021 16:35:19 +1000
-From: David Gibson <david@gibson.dropbear.id.au>
-To: "Tian, Kevin" <kevin.tian@intel.com>
-Subject: Re: [RFC 06/20] iommu: Add iommu_device_init[exit]_user_dma interfaces
-Message-ID: <YVQJJ/ZlRoJbAt0+@yekko>
-References: <20210919063848.1476776-1-yi.l.liu@intel.com>
- <20210919063848.1476776-7-yi.l.liu@intel.com>
- <YVPxzad5TYHAc1H/@yekko>
- <BN9PR11MB5433E1BF538C7D3632F4C6188CA99@BN9PR11MB5433.namprd11.prod.outlook.com>
+Received: from smtp3.osuosl.org ([127.0.0.1])
+ by localhost (smtp3.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+ with ESMTP id s6XbE5N_uxO7 for <iommu@lists.linux-foundation.org>;
+ Wed, 29 Sep 2021 07:24:10 +0000 (UTC)
+X-Greylist: domain auto-whitelisted by SQLgrey-1.8.0
+Received: from mga06.intel.com (mga06.intel.com [134.134.136.31])
+ by smtp3.osuosl.org (Postfix) with ESMTPS id 2058C60656
+ for <iommu@lists.linux-foundation.org>; Wed, 29 Sep 2021 07:24:10 +0000 (UTC)
+X-IronPort-AV: E=McAfee;i="6200,9189,10121"; a="285894381"
+X-IronPort-AV: E=Sophos;i="5.85,331,1624345200"; d="scan'208";a="285894381"
+Received: from orsmga007.jf.intel.com ([10.7.209.58])
+ by orsmga104.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384;
+ 29 Sep 2021 00:24:09 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.85,331,1624345200"; d="scan'208";a="476553453"
+Received: from allen-box.sh.intel.com ([10.239.159.118])
+ by orsmga007.jf.intel.com with ESMTP; 29 Sep 2021 00:24:07 -0700
+From: Lu Baolu <baolu.lu@linux.intel.com>
+To: Joerg Roedel <joro@8bytes.org>
+Subject: [PATCH 1/1] iommu/vt-d: Delete dev_has_feat callback
+Date: Wed, 29 Sep 2021 15:20:30 +0800
+Message-Id: <20210929072030.1330225-1-baolu.lu@linux.intel.com>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
-In-Reply-To: <BN9PR11MB5433E1BF538C7D3632F4C6188CA99@BN9PR11MB5433.namprd11.prod.outlook.com>
-Cc: "kvm@vger.kernel.org" <kvm@vger.kernel.org>,
- "jasowang@redhat.com" <jasowang@redhat.com>,
- "kwankhede@nvidia.com" <kwankhede@nvidia.com>, "hch@lst.de" <hch@lst.de>,
- "jean-philippe@linaro.org" <jean-philippe@linaro.org>, "Jiang,
- Dave" <dave.jiang@intel.com>, "Raj, Ashok" <ashok.raj@intel.com>,
- "corbet@lwn.net" <corbet@lwn.net>, "jgg@nvidia.com" <jgg@nvidia.com>,
- "parav@mellanox.com" <parav@mellanox.com>,
- "alex.williamson@redhat.com" <alex.williamson@redhat.com>,
- "lkml@metux.net" <lkml@metux.net>, "dwmw2@infradead.org" <dwmw2@infradead.org>,
- "Tian, Jun J" <jun.j.tian@intel.com>,
- "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
- "lushenming@huawei.com" <lushenming@huawei.com>,
- "iommu@lists.linux-foundation.org" <iommu@lists.linux-foundation.org>,
- "pbonzini@redhat.com" <pbonzini@redhat.com>,
- "robin.murphy@arm.com" <robin.murphy@arm.com>
+Cc: iommu@lists.linux-foundation.org, Will Deacon <will@kernel.org>,
+ linux-kernel@vger.kernel.org
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -87,114 +70,112 @@ List-Post: <mailto:iommu@lists.linux-foundation.org>
 List-Help: <mailto:iommu-request@lists.linux-foundation.org?subject=help>
 List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
  <mailto:iommu-request@lists.linux-foundation.org?subject=subscribe>
-Content-Type: multipart/mixed; boundary="===============1779005028126098109=="
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
+The commit 262948f8ba573 ("iommu: Delete iommu_dev_has_feature()") has
+deleted the iommu_dev_has_feature() interface. Remove the dev_has_feat
+callback to avoid dead code.
 
---===============1779005028126098109==
-Content-Type: multipart/signed; micalg=pgp-sha256;
-	protocol="application/pgp-signature"; boundary="vlpAh7yLskJZWF4V"
-Content-Disposition: inline
+Signed-off-by: Lu Baolu <baolu.lu@linux.intel.com>
+---
+ drivers/iommu/intel/iommu.c | 59 ++++---------------------------------
+ 1 file changed, 5 insertions(+), 54 deletions(-)
 
-
---vlpAh7yLskJZWF4V
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
-
-On Wed, Sep 29, 2021 at 05:38:56AM +0000, Tian, Kevin wrote:
-> > From: David Gibson <david@gibson.dropbear.id.au>
-> > Sent: Wednesday, September 29, 2021 12:56 PM
-> >=20
-> > >
-> > > Unlike vfio, iommufd adopts a device-centric design with all group
-> > > logistics hidden behind the fd. Binding a device to iommufd serves
-> > > as the contract to get security context established (and vice versa
-> > > for unbinding). One additional requirement in iommufd is to manage the
-> > > switch between multiple security contexts due to decoupled bind/attac=
-h:
-> > >
-> > > 1)  Open a device in "/dev/vfio/devices" with user access blocked;
-> >=20
-> > Probably worth clarifying that (1) must happen for *all* devices in
-> > the group before (2) happens for any device in the group.
->=20
-> No. User access is naturally blocked for other devices as long as they
-> are not opened yet.
-
-Uh... my point is that everything in the group has to be removed from
-regular kernel drivers before we reach step (2).  Is the plan that you
-must do that before you can even open them?  That's a reasonable
-choice, but then I think you should show that step in this description
-as well.
-
-> > > 2)  Bind the device to an iommufd with an initial security context
-> > >     (an empty iommu domain which blocks dma) established for its
-> > >     group, with user access unblocked;
-> > >
-> > > 3)  Attach the device to a user-specified ioasid (shared by all devic=
-es
-> > >     attached to this ioasid). Before attaching, the device should be =
-first
-> > >     detached from the initial context;
-> >=20
-> > So, this step can implicitly but observably change the behaviour for
-> > other devices in the group as well.  I don't love that kind of
-> > difficult to predict side effect, which is why I'm *still* not totally
-> > convinced by the device-centric model.
->=20
-> which side-effect is predicted here? The user anyway needs to be
-> aware of such group restriction regardless whether it uses group
-> or nongroup interface.
-
-Yes, exactly.  And with a group interface it's obvious it has to
-understand it.  With the non-group interface, you can get to this
-stage in ignorance of groups.  It will even work as long as you are
-lucky enough only to try with singleton-group devices.  Then you try
-it with two devices in the one group and doing (3) on device A will
-implicitly change the DMA environment of device B.
-
-(or at least, it will if they share a group because they don't have
-distinguishable RIDs.  That's not the only multi-device group case,
-but it's one of them).
-
---=20
-David Gibson			| I'll have my music baroque, and my code
-david AT gibson.dropbear.id.au	| minimalist, thank you.  NOT _the_ _other_
-				| _way_ _around_!
-http://www.ozlabs.org/~dgibson
-
---vlpAh7yLskJZWF4V
-Content-Type: application/pgp-signature; name="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-
-iQIzBAEBCAAdFiEEdfRlhq5hpmzETofcbDjKyiDZs5IFAmFUCSUACgkQbDjKyiDZ
-s5Knfw//Rw2uKWKlVgUYBuPqXP7H/GPzP0d7Hg2xFwsv688tH/erKlqjFroLLZFv
-2Kh4rygO7LibaX6bR5U8t+Dr6xms44sDRhSmcEYqIh2WiE0BlLIAjSQg8YhxIb4J
-s6E3xJ0xgDTH/c2ebBZPckFg4jXFZsCtJ5YykxCMZOVZsO7Go236aE9JvIuscatR
-TqYIEd2CDV5EELOnRItwWqF/FjfrrbhfavYENVQZU3qdbjQ90Ii1OpWe+wd9jWcd
-pudHU2xLjlvchw391gxc2y8qkLEev6E5ZbfOSKa/f6N3aLb55PcN8rqi+zfne9Na
-lzs30Gy5TRtEhT/VwsHXHnGz71ueqYPQcLMCBX7J/KgMIxnRtuQtLvYCxM9fzLFb
-7DGIXfPpAqla94JMsp4Z6R27pH2QFJQmORJDjJBOkN2UbF3ZkTqFoYxYPbAXQfZH
-UPVM7mdAsGtUEKEszBBqAUJG0wQhJweg63WEeczQh4gPR1J6g+ye2l5rXK9Mtl0s
-O3DQdpqXkp+dnEjvi2Ybzv0uPvfUbc+pX00a/N0vPB/OO6UfQiYcXx1t5k/A8bO+
-8TCgk8WUVMu1z48IG2k6QqQHuO5rMs8NH2NEIs4IownQuZcOtSUDs5p6IwbuNMEv
-scg9c+qzutZvCv/flGStpYdrSHMs9iF9n46ce8v9eovGQ99Nubk=
-=uIA1
------END PGP SIGNATURE-----
-
---vlpAh7yLskJZWF4V--
-
---===============1779005028126098109==
-Content-Type: text/plain; charset="us-ascii"
-MIME-Version: 1.0
-Content-Transfer-Encoding: 7bit
-Content-Disposition: inline
+diff --git a/drivers/iommu/intel/iommu.c b/drivers/iommu/intel/iommu.c
+index 01162b0b9712..dc733de9eea5 100644
+--- a/drivers/iommu/intel/iommu.c
++++ b/drivers/iommu/intel/iommu.c
+@@ -5516,62 +5516,14 @@ static int intel_iommu_disable_sva(struct device *dev)
+ 	return ret;
+ }
+ 
+-/*
+- * A PCI express designated vendor specific extended capability is defined
+- * in the section 3.7 of Intel scalable I/O virtualization technical spec
+- * for system software and tools to detect endpoint devices supporting the
+- * Intel scalable IO virtualization without host driver dependency.
+- *
+- * Returns the address of the matching extended capability structure within
+- * the device's PCI configuration space or 0 if the device does not support
+- * it.
+- */
+-static int siov_find_pci_dvsec(struct pci_dev *pdev)
+-{
+-	int pos;
+-	u16 vendor, id;
+-
+-	pos = pci_find_next_ext_capability(pdev, 0, 0x23);
+-	while (pos) {
+-		pci_read_config_word(pdev, pos + 4, &vendor);
+-		pci_read_config_word(pdev, pos + 8, &id);
+-		if (vendor == PCI_VENDOR_ID_INTEL && id == 5)
+-			return pos;
+-
+-		pos = pci_find_next_ext_capability(pdev, pos, 0x23);
+-	}
+-
+-	return 0;
+-}
+-
+-static bool
+-intel_iommu_dev_has_feat(struct device *dev, enum iommu_dev_features feat)
++static int intel_iommu_enable_iopf(struct device *dev)
+ {
+ 	struct device_domain_info *info = get_domain_info(dev);
+ 
+-	if (feat == IOMMU_DEV_FEAT_AUX) {
+-		int ret;
+-
+-		if (!dev_is_pci(dev) || dmar_disabled ||
+-		    !scalable_mode_support() || !pasid_mode_support())
+-			return false;
+-
+-		ret = pci_pasid_features(to_pci_dev(dev));
+-		if (ret < 0)
+-			return false;
+-
+-		return !!siov_find_pci_dvsec(to_pci_dev(dev));
+-	}
+-
+-	if (feat == IOMMU_DEV_FEAT_IOPF)
+-		return info && info->pri_supported;
+-
+-	if (feat == IOMMU_DEV_FEAT_SVA)
+-		return info && (info->iommu->flags & VTD_FLAG_SVM_CAPABLE) &&
+-			info->pasid_supported && info->pri_supported &&
+-			info->ats_supported;
++	if (info && info->pri_supported)
++		return 0;
+ 
+-	return false;
++	return -ENODEV;
+ }
+ 
+ static int
+@@ -5582,7 +5534,7 @@ intel_iommu_dev_enable_feat(struct device *dev, enum iommu_dev_features feat)
+ 		return intel_iommu_enable_auxd(dev);
+ 
+ 	case IOMMU_DEV_FEAT_IOPF:
+-		return intel_iommu_dev_has_feat(dev, feat) ? 0 : -ENODEV;
++		return intel_iommu_enable_iopf(dev);
+ 
+ 	case IOMMU_DEV_FEAT_SVA:
+ 		return intel_iommu_enable_sva(dev);
+@@ -5708,7 +5660,6 @@ const struct iommu_ops intel_iommu_ops = {
+ 	.get_resv_regions	= intel_iommu_get_resv_regions,
+ 	.put_resv_regions	= generic_iommu_put_resv_regions,
+ 	.device_group		= intel_iommu_device_group,
+-	.dev_has_feat		= intel_iommu_dev_has_feat,
+ 	.dev_feat_enabled	= intel_iommu_dev_feat_enabled,
+ 	.dev_enable_feat	= intel_iommu_dev_enable_feat,
+ 	.dev_disable_feat	= intel_iommu_dev_disable_feat,
+-- 
+2.25.1
 
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
 https://lists.linuxfoundation.org/mailman/listinfo/iommu
---===============1779005028126098109==--
