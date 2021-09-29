@@ -2,74 +2,102 @@ Return-Path: <SRS0=Xpq5=OT=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B1DDDC433F5
-	for <iommu@archiver.kernel.org>; Wed, 29 Sep 2021 01:40:00 +0000 (UTC)
-Received: from smtp3.osuosl.org (smtp3.osuosl.org [140.211.166.136])
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3225AC433EF
+	for <iommu@archiver.kernel.org>; Wed, 29 Sep 2021 01:56:32 +0000 (UTC)
+Received: from smtp2.osuosl.org (smtp2.osuosl.org [140.211.166.133])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 73F12613E8
-	for <iommu@archiver.kernel.org>; Wed, 29 Sep 2021 01:40:00 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.4.1 mail.kernel.org 73F12613E8
-Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=linux.intel.com
+	by mail.kernel.org (Postfix) with ESMTPS id C1EBD613C8
+	for <iommu@archiver.kernel.org>; Wed, 29 Sep 2021 01:56:31 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.4.1 mail.kernel.org C1EBD613C8
+Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=intel.com
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by smtp3.osuosl.org (Postfix) with ESMTP id 49539606A3;
-	Wed, 29 Sep 2021 01:40:00 +0000 (UTC)
-X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from smtp3.osuosl.org ([127.0.0.1])
-	by localhost (smtp3.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id PvMyUQaVD2Pr; Wed, 29 Sep 2021 01:39:59 +0000 (UTC)
-Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by smtp3.osuosl.org (Postfix) with ESMTPS id 26E746060E;
-	Wed, 29 Sep 2021 01:39:59 +0000 (UTC)
-Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 0DA15C000F;
-	Wed, 29 Sep 2021 01:39:59 +0000 (UTC)
-Received: from smtp2.osuosl.org (smtp2.osuosl.org [140.211.166.133])
- by lists.linuxfoundation.org (Postfix) with ESMTP id D4009C000D
- for <iommu@lists.linux-foundation.org>; Wed, 29 Sep 2021 01:39:57 +0000 (UTC)
-Received: from localhost (localhost [127.0.0.1])
- by smtp2.osuosl.org (Postfix) with ESMTP id C25464026B
- for <iommu@lists.linux-foundation.org>; Wed, 29 Sep 2021 01:39:57 +0000 (UTC)
+	by smtp2.osuosl.org (Postfix) with ESMTP id 8C22340258;
+	Wed, 29 Sep 2021 01:56:31 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
 Received: from smtp2.osuosl.org ([127.0.0.1])
- by localhost (smtp2.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id NgQcddr8uuAq for <iommu@lists.linux-foundation.org>;
- Wed, 29 Sep 2021 01:39:57 +0000 (UTC)
+	by localhost (smtp2.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+	with ESMTP id 5bww57C4gW2H; Wed, 29 Sep 2021 01:56:30 +0000 (UTC)
+Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
+	by smtp2.osuosl.org (Postfix) with ESMTPS id 17C9B4026F;
+	Wed, 29 Sep 2021 01:56:30 +0000 (UTC)
+Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
+	by lists.linuxfoundation.org (Postfix) with ESMTP id D04F8C000F;
+	Wed, 29 Sep 2021 01:56:29 +0000 (UTC)
+Received: from smtp1.osuosl.org (smtp1.osuosl.org [140.211.166.138])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 369D6C000D
+ for <iommu@lists.linux-foundation.org>; Wed, 29 Sep 2021 01:56:28 +0000 (UTC)
+Received: from localhost (localhost [127.0.0.1])
+ by smtp1.osuosl.org (Postfix) with ESMTP id 126DC80E56
+ for <iommu@lists.linux-foundation.org>; Wed, 29 Sep 2021 01:56:28 +0000 (UTC)
+X-Virus-Scanned: amavisd-new at osuosl.org
+Received: from smtp1.osuosl.org ([127.0.0.1])
+ by localhost (smtp1.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+ with ESMTP id 1S7exNW0Qvqe for <iommu@lists.linux-foundation.org>;
+ Wed, 29 Sep 2021 01:56:26 +0000 (UTC)
 X-Greylist: domain auto-whitelisted by SQLgrey-1.8.0
-Received: from mga06.intel.com (mga06.intel.com [134.134.136.31])
- by smtp2.osuosl.org (Postfix) with ESMTPS id 02E94401EC
- for <iommu@lists.linux-foundation.org>; Wed, 29 Sep 2021 01:39:56 +0000 (UTC)
-X-IronPort-AV: E=McAfee;i="6200,9189,10121"; a="285854285"
-X-IronPort-AV: E=Sophos;i="5.85,331,1624345200"; d="scan'208";a="285854285"
-Received: from orsmga007.jf.intel.com ([10.7.209.58])
- by orsmga104.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384;
- 28 Sep 2021 18:39:56 -0700
+Received: from mga07.intel.com (mga07.intel.com [134.134.136.100])
+ by smtp1.osuosl.org (Postfix) with ESMTPS id 5A51980E52
+ for <iommu@lists.linux-foundation.org>; Wed, 29 Sep 2021 01:56:26 +0000 (UTC)
+X-IronPort-AV: E=McAfee;i="6200,9189,10121"; a="288499707"
+X-IronPort-AV: E=Sophos;i="5.85,331,1624345200"; d="scan'208";a="288499707"
+Received: from orsmga005.jf.intel.com ([10.7.209.41])
+ by orsmga105.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384;
+ 28 Sep 2021 18:56:25 -0700
 X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.85,331,1624345200"; d="scan'208";a="476486375"
-Received: from allen-box.sh.intel.com (HELO [10.239.159.118])
- ([10.239.159.118])
- by orsmga007.jf.intel.com with ESMTP; 28 Sep 2021 18:39:53 -0700
-Subject: Re: [PATCH v2 9/9] iommu/vt-d: Use pci core's DVSEC functionality
-To: Dan Williams <dan.j.williams@intel.com>,
- Ben Widawsky <ben.widawsky@intel.com>
-References: <20210923172647.72738-1-ben.widawsky@intel.com>
- <20210923172647.72738-10-ben.widawsky@intel.com>
- <CAPcyv4i4T4XLW-P=CzdO47mZ8+_Mih7GMeDEXAtgEE+gO9JQHw@mail.gmail.com>
-From: Lu Baolu <baolu.lu@linux.intel.com>
-Message-ID: <6bca371c-44e4-3ba7-b49d-78c55a40d3a5@linux.intel.com>
-Date: Wed, 29 Sep 2021 09:36:20 +0800
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
- Thunderbird/78.13.0
-MIME-Version: 1.0
-In-Reply-To: <CAPcyv4i4T4XLW-P=CzdO47mZ8+_Mih7GMeDEXAtgEE+gO9JQHw@mail.gmail.com>
+X-IronPort-AV: E=Sophos;i="5.85,331,1624345200"; d="scan'208";a="655329177"
+Received: from orsmsx601.amr.corp.intel.com ([10.22.229.14])
+ by orsmga005.jf.intel.com with ESMTP; 28 Sep 2021 18:56:24 -0700
+Received: from orsmsx612.amr.corp.intel.com (10.22.229.25) by
+ ORSMSX601.amr.corp.intel.com (10.22.229.14) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2242.12; Tue, 28 Sep 2021 18:56:24 -0700
+Received: from orsmsx611.amr.corp.intel.com (10.22.229.24) by
+ ORSMSX612.amr.corp.intel.com (10.22.229.25) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2242.12; Tue, 28 Sep 2021 18:56:23 -0700
+Received: from orsmsx611.amr.corp.intel.com ([10.22.229.24]) by
+ ORSMSX611.amr.corp.intel.com ([10.22.229.24]) with mapi id 15.01.2242.012;
+ Tue, 28 Sep 2021 18:56:23 -0700
+From: "Yu, Fenghua" <fenghua.yu@intel.com>
+To: "Luck, Tony" <tony.luck@intel.com>
+Subject: RE: [PATCH 4/8] x86/traps: Demand-populate PASID MSR via #GP
+Thread-Topic: [PATCH 4/8] x86/traps: Demand-populate PASID MSR via #GP
+Thread-Index: AQHXrlpps8sdI0y1ikyhBinC7AfU6auyuuKAgAYjzwCAAC8cgIABPj0AgAAIFQCAABNJgIAAB6kAgAAlrYD//5XdAIAAeikA//+nYIA=
+Date: Wed, 29 Sep 2021 01:56:23 +0000
+Message-ID: <840148c7b70f4358852c4f1ccbc5d567@intel.com>
+References: <20210920192349.2602141-5-fenghua.yu@intel.com>
+ <1aae375d-3cd4-4ab8-9c64-9e387916e6c0@www.fastmail.com>
+ <YVIxeBh3IKYYK711@agluck-desk2.amr.corp.intel.com>
+ <035290e6-d914-a113-ea6c-e845d71069cf@intel.com>
+ <YVNj8sm8iectc6iU@agluck-desk2.amr.corp.intel.com>
+ <3f97b77e-a609-997b-3be7-f44ff7312b0d@intel.com>
+ <YVN652x14dMgyE85@agluck-desk2.amr.corp.intel.com>
+ <f6014b16-7b4c-cbb6-c975-1ec34092956f@intel.com>
+ <YVOg7zgpdQlc7Zjt@agluck-desk2.amr.corp.intel.com>
+ <YVOp60LOL+bfh3iT@otcwcpicx3.sc.intel.com>
+ <YVOuYAFaTG6Khotb@agluck-desk2.amr.corp.intel.com>
+In-Reply-To: <YVOuYAFaTG6Khotb@agluck-desk2.amr.corp.intel.com>
+Accept-Language: en-US
 Content-Language: en-US
-Cc: Andrew Donnellan <ajd@linux.ibm.com>, Linux PCI <linux-pci@vger.kernel.org>,
- linuxppc-dev <linuxppc-dev@lists.ozlabs.org>, linux-cxl@vger.kernel.org,
- "open list:DMA MAPPING HELPERS" <iommu@lists.linux-foundation.org>,
- Bjorn Helgaas <helgaas@kernel.org>,
- "David E. Box" <david.e.box@linux.intel.com>,
- Kan Liang <kan.liang@linux.intel.com>, David Woodhouse <dwmw2@infradead.org>
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+dlp-product: dlpe-windows
+dlp-reaction: no-action
+dlp-version: 11.6.200.16
+x-originating-ip: [10.1.200.100]
+MIME-Version: 1.0
+Cc: "Shankar, Ravi V" <ravi.v.shankar@intel.com>, "Jiang,
+ Dave" <dave.jiang@intel.com>, "Raj, 
+ Ashok" <ashok.raj@intel.com>, "Peter Zijlstra \(Intel\)" <peterz@infradead.org>,
+ the arch/x86 maintainers <x86@kernel.org>,
+ Linux Kernel Mailing List <linux-kernel@vger.kernel.org>, "Hansen,
+ Dave" <dave.hansen@intel.com>,
+ "iommu@lists.linux-foundation.org" <iommu@lists.linux-foundation.org>,
+ Ingo Molnar <mingo@redhat.com>, Borislav Petkov <bp@alien8.de>, "Pan,
+ Jacob jun" <jacob.jun.pan@intel.com>, Andy Lutomirski <luto@kernel.org>,
+ Josh Poimboeuf <jpoimboe@redhat.com>, Thomas Gleixner <tglx@linutronix.de>
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -82,63 +110,63 @@ List-Post: <mailto:iommu@lists.linux-foundation.org>
 List-Help: <mailto:iommu-request@lists.linux-foundation.org?subject=help>
 List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
  <mailto:iommu-request@lists.linux-foundation.org?subject=subscribe>
+Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
-Content-Type: text/plain; charset="us-ascii"; Format="flowed"
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-Hi Dan,
+Hi, Tony,
 
-On 9/29/21 1:54 AM, Dan Williams wrote:
-> On Thu, Sep 23, 2021 at 10:27 AM Ben Widawsky <ben.widawsky@intel.com> wrote:
->>
->> Reduce maintenance burden of DVSEC query implementation by using the
->> centralized PCI core implementation.
->>
->> Cc: iommu@lists.linux-foundation.org
->> Cc: David Woodhouse <dwmw2@infradead.org>
->> Cc: Lu Baolu <baolu.lu@linux.intel.com>
->> Signed-off-by: Ben Widawsky <ben.widawsky@intel.com>
->> ---
->>   drivers/iommu/intel/iommu.c | 15 +--------------
->>   1 file changed, 1 insertion(+), 14 deletions(-)
->>
->> diff --git a/drivers/iommu/intel/iommu.c b/drivers/iommu/intel/iommu.c
->> index d75f59ae28e6..30c97181f0ae 100644
->> --- a/drivers/iommu/intel/iommu.c
->> +++ b/drivers/iommu/intel/iommu.c
->> @@ -5398,20 +5398,7 @@ static int intel_iommu_disable_sva(struct device *dev)
->>    */
->>   static int siov_find_pci_dvsec(struct pci_dev *pdev)
->>   {
->> -       int pos;
->> -       u16 vendor, id;
->> -
->> -       pos = pci_find_next_ext_capability(pdev, 0, 0x23);
->> -       while (pos) {
->> -               pci_read_config_word(pdev, pos + 4, &vendor);
->> -               pci_read_config_word(pdev, pos + 8, &id);
->> -               if (vendor == PCI_VENDOR_ID_INTEL && id == 5)
->> -                       return pos;
->> -
->> -               pos = pci_find_next_ext_capability(pdev, pos, 0x23);
->> -       }
->> -
->> -       return 0;
->> +       return pci_find_dvsec_capability(pdev, PCI_VENDOR_ID_INTEL, 5);
->>   }
+> void *begin_update_one_xsave_feature(struct task_struct *tsk,
+> 				     enum xfeature xfeature, bool full) {
+> 	struct xregs_state *xsave = &tsk->thread.fpu.state.xsave;
+> 	struct xregs_state *xinit = &init_fpstate.xsave;
+> 	u64 fmask = 1ull << xfeature;
+> 	void *addr;
 > 
-> Same comments as the CXL patch, siov_find_pci_dvsec() doesn't seem to
-> have a reason to exist anymore. What is 5?
+> 	BUG_ON(!(xsave->header.xcomp_bv & fmask));
+> 
+> 	fpregs_lock();
+> 
+> 	addr = __raw_xsave_addr(xsave, xfeature);
+> 
+> 	if (full || tsk != current) {
+> 		memcpy(addr, __raw_xsave_addr(xinit, xfeature),
+> xstate_sizes[xfeature]);
+> 		goto out;
+> 	}
+> 
+> 	if (!(xsave->header.xfeatures & fmask)) {
+> 		xsave->header.xfeatures |= fmask;	//<<<<<
+> 		xsaves(xsave, fmask);
+> 	}
 
-"5" is DVSEC ID for Scalable IOV.
+I'm not sure why the FPU state is initialized here.
 
-Anyway, the siov_find_pci_dvsec() has been dead code since commit
-262948f8ba57 ("iommu: Delete iommu_dev_has_feature()"). I have a patch
-to clean it up. No need to care about it in this series.
+For updating the PASID state, it's unnecessary to init the PASID state.
 
-Best regards,
-baolu
+Maybe it is necessary in other cases?
+
+> 
+> out:
+> 	xsave->header.xfeatures |= fmask;
+
+Setting the xfeatures bit plus updating the PASID state is enough
+to restore the PASID state to the IA32_PASID MSR.
+
+> 	return addr;
+> }
+> 
+> void finish_update_one_xsave_feature(struct task_struct *tsk) {
+> 	set_ti_thread_flag(task_thread_info(tsk), TIF_NEED_FPU_LOAD);
+> 	if (tsk == current)				//<<<<<
+> 		__cpu_invalidate_fpregs_state();	//<<<<<
+> 	fpregs_unlock();
+> }
+
+Thanks.
+
+-Fenghua
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
