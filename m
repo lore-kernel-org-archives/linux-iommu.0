@@ -2,80 +2,108 @@ Return-Path: <SRS0=Xpq5=OT=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 721BBC433EF
-	for <iommu@archiver.kernel.org>; Wed, 29 Sep 2021 18:31:32 +0000 (UTC)
-Received: from smtp3.osuosl.org (smtp3.osuosl.org [140.211.166.136])
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5FBCDC433EF
+	for <iommu@archiver.kernel.org>; Wed, 29 Sep 2021 19:05:34 +0000 (UTC)
+Received: from smtp2.osuosl.org (smtp2.osuosl.org [140.211.166.133])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 2FE5361501
-	for <iommu@archiver.kernel.org>; Wed, 29 Sep 2021 18:31:32 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.4.1 mail.kernel.org 2FE5361501
-Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=intel.com
+	by mail.kernel.org (Postfix) with ESMTPS id 0A021613CE
+	for <iommu@archiver.kernel.org>; Wed, 29 Sep 2021 19:05:33 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.4.1 mail.kernel.org 0A021613CE
+Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=redhat.com
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by smtp3.osuosl.org (Postfix) with ESMTP id F100460752;
-	Wed, 29 Sep 2021 18:31:31 +0000 (UTC)
+	by smtp2.osuosl.org (Postfix) with ESMTP id B6FF34071F;
+	Wed, 29 Sep 2021 19:05:33 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from smtp3.osuosl.org ([127.0.0.1])
-	by localhost (smtp3.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id n-sh4EjpNeYN; Wed, 29 Sep 2021 18:31:31 +0000 (UTC)
-Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [IPv6:2605:bc80:3010:104::8cd3:938])
-	by smtp3.osuosl.org (Postfix) with ESMTPS id C756660736;
-	Wed, 29 Sep 2021 18:31:30 +0000 (UTC)
+Received: from smtp2.osuosl.org ([127.0.0.1])
+	by localhost (smtp2.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+	with ESMTP id ptpkgo8CXWHD; Wed, 29 Sep 2021 19:05:32 +0000 (UTC)
+Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
+	by smtp2.osuosl.org (Postfix) with ESMTPS id 2397C400D9;
+	Wed, 29 Sep 2021 19:05:32 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id A5369C000F;
-	Wed, 29 Sep 2021 18:31:30 +0000 (UTC)
-Received: from smtp3.osuosl.org (smtp3.osuosl.org [140.211.166.136])
- by lists.linuxfoundation.org (Postfix) with ESMTP id D32F5C000D
- for <iommu@lists.linux-foundation.org>; Wed, 29 Sep 2021 18:31:29 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id EE310C000F;
+	Wed, 29 Sep 2021 19:05:31 +0000 (UTC)
+Received: from smtp4.osuosl.org (smtp4.osuosl.org [140.211.166.137])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 9FC92C000D
+ for <iommu@lists.linux-foundation.org>; Wed, 29 Sep 2021 19:05:30 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by smtp3.osuosl.org (Postfix) with ESMTP id CED8060752
- for <iommu@lists.linux-foundation.org>; Wed, 29 Sep 2021 18:31:29 +0000 (UTC)
+ by smtp4.osuosl.org (Postfix) with ESMTP id 7ACE64235B
+ for <iommu@lists.linux-foundation.org>; Wed, 29 Sep 2021 19:05:30 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from smtp3.osuosl.org ([127.0.0.1])
- by localhost (smtp3.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id 9q2RLvzwe9ri for <iommu@lists.linux-foundation.org>;
- Wed, 29 Sep 2021 18:31:29 +0000 (UTC)
+Authentication-Results: smtp4.osuosl.org (amavisd-new);
+ dkim=pass (1024-bit key) header.d=redhat.com
+Received: from smtp4.osuosl.org ([127.0.0.1])
+ by localhost (smtp4.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+ with ESMTP id avIxYfmmUw2b for <iommu@lists.linux-foundation.org>;
+ Wed, 29 Sep 2021 19:05:29 +0000 (UTC)
 X-Greylist: domain auto-whitelisted by SQLgrey-1.8.0
-Received: from mga04.intel.com (mga04.intel.com [192.55.52.120])
- by smtp3.osuosl.org (Postfix) with ESMTPS id 227CD60736
- for <iommu@lists.linux-foundation.org>; Wed, 29 Sep 2021 18:31:28 +0000 (UTC)
-X-IronPort-AV: E=McAfee;i="6200,9189,10122"; a="223123512"
-X-IronPort-AV: E=Sophos;i="5.85,332,1624345200"; d="scan'208";a="223123512"
-Received: from fmsmga002.fm.intel.com ([10.253.24.26])
- by fmsmga104.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384;
- 29 Sep 2021 11:31:28 -0700
-X-IronPort-AV: E=Sophos;i="5.85,332,1624345200"; d="scan'208";a="563481249"
-Received: from agluck-desk2.sc.intel.com (HELO
- agluck-desk2.amr.corp.intel.com) ([10.3.52.146])
- by fmsmga002-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384;
- 29 Sep 2021 11:31:28 -0700
-Date: Wed, 29 Sep 2021 11:31:27 -0700
-From: "Luck, Tony" <tony.luck@intel.com>
-To: Fenghua Yu <fenghua.yu@intel.com>
-Subject: Re: [PATCH 5/8] x86/mmu: Add mm-based PASID refcounting
-Message-ID: <YVSw/6BAFvh9C+ct@agluck-desk2.amr.corp.intel.com>
-References: <87o88jfajo.ffs@tglx> <87k0j6dsdn.ffs@tglx>
- <YU3414QT0J7EN4w9@agluck-desk2.amr.corp.intel.com>
- <a77ee33c-6fa7-468c-8fc0-a0a2ce725e75@www.fastmail.com>
- <YVQ3wc/XjeOHpGCX@hirez.programming.kicks-ass.net>
- <87r1d78t2e.ffs@tglx>
- <75e95acc-6730-ddcf-d722-66e575076256@kernel.org>
- <877dez8fqu.ffs@tglx>
- <YVSlVv/j+WKftUU5@agluck-desk2.amr.corp.intel.com>
- <YVSrWouhMo2JxRCC@otcwcpicx3.sc.intel.com>
+Received: from us-smtp-delivery-124.mimecast.com
+ (us-smtp-delivery-124.mimecast.com [216.205.24.124])
+ by smtp4.osuosl.org (Postfix) with ESMTPS id 0A31641964
+ for <iommu@lists.linux-foundation.org>; Wed, 29 Sep 2021 19:05:28 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+ s=mimecast20190719; t=1632942327;
+ h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+ to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+ content-transfer-encoding:content-transfer-encoding:
+ in-reply-to:in-reply-to:references:references;
+ bh=85NOeq9kRcTFRqNT/gP4PrOFWq1cbQJO0LsYgy0Arqs=;
+ b=WbgEBH+TRdu9jrH1yEgbqr1FyLGxF7oVgPwsBsDqG1PPIE5MyZ2udYpyeZYAEPwdXASEHy
+ 1goXdfZrKOnk9gK2jtVAg85ZQpHLnkPn26Q/8AvOH5kbE++tZa0A8DY8kwfFJQ7SHJSx5k
+ 0AD2LXfWxRqG8FkmYmeYS1GJbJrAHPo=
+Received: from mail-oo1-f71.google.com (mail-oo1-f71.google.com
+ [209.85.161.71]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-217-d8GRnuXMPHm2Qjj7fl-LZw-1; Wed, 29 Sep 2021 15:05:24 -0400
+X-MC-Unique: d8GRnuXMPHm2Qjj7fl-LZw-1
+Received: by mail-oo1-f71.google.com with SMTP id
+ o16-20020a4a3850000000b002ac67e1a6e9so2850109oof.14
+ for <iommu@lists.linux-foundation.org>; Wed, 29 Sep 2021 12:05:24 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+ d=1e100.net; s=20210112;
+ h=x-gm-message-state:date:from:to:cc:subject:message-id:in-reply-to
+ :references:mime-version:content-transfer-encoding;
+ bh=85NOeq9kRcTFRqNT/gP4PrOFWq1cbQJO0LsYgy0Arqs=;
+ b=wiZFWO7j5zd5+jR+xPjYqro7UJDRY2Wd8xGP6G3mNLkN/DqeLzR62Oeut33k845Y7i
+ V7bwKCLIolJAKcCjk5CA8tQaiRxM/jVJ9iPbUyF5uh0jyaXPJyv/qCiBiHWUXeW1w8B4
+ 9g/zTimcRAM2WC07NyKA88EPnsFe9dkSORKDHdcvcb2oAKtE99T7oEswfryijz4u6tLo
+ 91qP43Pe6bUHGtMcw2ndE3eu6lDNmgpDrhfYYs0pBMTwp+7fQobaQgnlzrMyZS0xNsvW
+ C7W0V8PVjW9d5a1pjoz4CnPzce9cnFaZmJJIrx0PxF6qGcvl0FIk31TUZPlr9zt2gTfg
+ Q/ew==
+X-Gm-Message-State: AOAM531byGEc1GF51W5GgXAZfwkzo4vhw9RBYc3fACqBuEAXpsaHuTPY
+ EzAm2ahNYqORUq1LFNU4Ye5wL4WxNOz2SO71c+s0UKOY82kRgOK5UpEqmSEKd6HzH2YeCCriGRs
+ Yc9gUBE3k/45sH68n+al38tw5DFI1Lg==
+X-Received: by 2002:a9d:4705:: with SMTP id a5mr1401111otf.237.1632942323877; 
+ Wed, 29 Sep 2021 12:05:23 -0700 (PDT)
+X-Google-Smtp-Source: ABdhPJx+KGp/sh/UihDrTdyYD4Z3RDCBe5RWKG52xsBpGNBpcqEB4R141NFhp0vsmLjZ8H3+PuwzlA==
+X-Received: by 2002:a9d:4705:: with SMTP id a5mr1401070otf.237.1632942323621; 
+ Wed, 29 Sep 2021 12:05:23 -0700 (PDT)
+Received: from redhat.com ([198.99.80.109])
+ by smtp.gmail.com with ESMTPSA id p9sm111523ots.66.2021.09.29.12.05.21
+ (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+ Wed, 29 Sep 2021 12:05:23 -0700 (PDT)
+Date: Wed, 29 Sep 2021 13:05:21 -0600
+From: Alex Williamson <alex.williamson@redhat.com>
+To: David Gibson <david@gibson.dropbear.id.au>
+Subject: Re: [RFC 02/20] vfio: Add device class for /dev/vfio/devices
+Message-ID: <20210929130521.738c56ed.alex.williamson@redhat.com>
+In-Reply-To: <YVPKu/F3IpPMtGCh@yekko>
+References: <20210919063848.1476776-1-yi.l.liu@intel.com>
+ <20210919063848.1476776-3-yi.l.liu@intel.com>
+ <YVPKu/F3IpPMtGCh@yekko>
+X-Mailer: Claws Mail 3.18.0 (GTK+ 2.24.33; x86_64-redhat-linux-gnu)
 MIME-Version: 1.0
-Content-Disposition: inline
-In-Reply-To: <YVSrWouhMo2JxRCC@otcwcpicx3.sc.intel.com>
-Cc: "Shankar, Ravi V" <ravi.v.shankar@intel.com>,
- Dave Jiang <dave.jiang@intel.com>, Raj Ashok <ashok.raj@intel.com>,
- Peter Zijlstra <peterz@infradead.org>,
- the arch/x86 maintainers <x86@kernel.org>,
- Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
- Dave Hansen <dave.hansen@intel.com>, iommu@lists.linux-foundation.org,
- Ingo Molnar <mingo@redhat.com>, Borislav Petkov <bp@alien8.de>,
- Jacob Jun Pan <jacob.jun.pan@intel.com>, Andy Lutomirski <luto@kernel.org>,
- Josh Poimboeuf <jpoimboe@redhat.com>, Thomas Gleixner <tglx@linutronix.de>
+Authentication-Results: relay.mimecast.com;
+ auth=pass smtp.auth=CUSA124A263 smtp.mailfrom=alex.williamson@redhat.com
+X-Mimecast-Spam-Score: 0
+X-Mimecast-Originator: redhat.com
+Cc: kvm@vger.kernel.org, jasowang@redhat.com, kwankhede@nvidia.com, hch@lst.de,
+ jean-philippe@linaro.org, dave.jiang@intel.com, ashok.raj@intel.com,
+ corbet@lwn.net, jgg@nvidia.com, kevin.tian@intel.com, parav@mellanox.com,
+ lkml@metux.net, dwmw2@infradead.org, jun.j.tian@intel.com,
+ linux-kernel@vger.kernel.org, lushenming@huawei.com,
+ iommu@lists.linux-foundation.org, pbonzini@redhat.com, robin.murphy@arm.com
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -93,84 +121,82 @@ Content-Transfer-Encoding: 7bit
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-On Wed, Sep 29, 2021 at 06:07:22PM +0000, Fenghua Yu wrote:
-> Add
-> +#ifdef CONFIG_IOMMU_SUPPORT
-> because mm->pasid and current-pasid_activated are defined only if
-> CONFIG_IOMMU_SUPPORT is defined.
+On Wed, 29 Sep 2021 12:08:59 +1000
+David Gibson <david@gibson.dropbear.id.au> wrote:
+
+> On Sun, Sep 19, 2021 at 02:38:30PM +0800, Liu Yi L wrote:
+> > This patch introduces a new interface (/dev/vfio/devices/$DEVICE) for
+> > userspace to directly open a vfio device w/o relying on container/group
+> > (/dev/vfio/$GROUP). Anything related to group is now hidden behind
+> > iommufd (more specifically in iommu core by this RFC) in a device-centric
+> > manner.
+> > 
+> > In case a device is exposed in both legacy and new interfaces (see next
+> > patch for how to decide it), this patch also ensures that when the device
+> > is already opened via one interface then the other one must be blocked.
+> > 
+> > Signed-off-by: Liu Yi L <yi.l.liu@intel.com>  
+> [snip]
 > 
-> > +	if (user_mode(regs) && current->mm->pasid && !current->pasid_activated) {
+> > +static bool vfio_device_in_container(struct vfio_device *device)
+> > +{
+> > +	return !!(device->group && device->group->container);  
 > 
-> Maybe need to add "&& cpu_feature_enabled(X86_FEATURE_ENQCMD)" because
-> the IA32_PASID MSR is only used when ENQCMD is enabled?
+> You don't need !! here.  && is already a logical operation, so returns
+> a valid bool.
 > 
-> > +		current->pasid_activated = 1;
-> > +		wrmsrl(MSR_IA32_PASID, current->mm->pasid | MSR_IA32_PASID_VALID);
-> > +		return;
-> > +	}
+> > +}
 > > +
+> >  static int vfio_device_fops_release(struct inode *inode, struct file *filep)
+> >  {
+> >  	struct vfio_device *device = filep->private_data;
+> > @@ -1560,7 +1691,16 @@ static int vfio_device_fops_release(struct inode *inode, struct file *filep)
+> >  
+> >  	module_put(device->dev->driver->owner);
+> >  
+> > -	vfio_group_try_dissolve_container(device->group);
+> > +	if (vfio_device_in_container(device)) {
+> > +		vfio_group_try_dissolve_container(device->group);
+> > +	} else {
+> > +		atomic_dec(&device->opened);
+> > +		if (device->group) {
+> > +			mutex_lock(&device->group->opened_lock);
+> > +			device->group->opened--;
+> > +			mutex_unlock(&device->group->opened_lock);
+> > +		}
+> > +	}
+> >  
+> >  	vfio_device_put(device);
+> >  
+> > @@ -1613,6 +1753,7 @@ static int vfio_device_fops_mmap(struct file *filep, struct vm_area_struct *vma)
+> >  
+> >  static const struct file_operations vfio_device_fops = {
+> >  	.owner		= THIS_MODULE,
+> > +	.open		= vfio_device_fops_open,
+> >  	.release	= vfio_device_fops_release,
+> >  	.read		= vfio_device_fops_read,
+> >  	.write		= vfio_device_fops_write,
+> > @@ -2295,6 +2436,52 @@ static struct miscdevice vfio_dev = {
+> >  	.mode = S_IRUGO | S_IWUGO,
+> >  };
+> >  
+> > +static char *vfio_device_devnode(struct device *dev, umode_t *mode)
+> > +{
+> > +	return kasprintf(GFP_KERNEL, "vfio/devices/%s", dev_name(dev));  
 > 
-> +endif
+> Others have pointed out some problems with the use of dev_name()
+> here.  I'll add that I think you'll make things much easier if instead
+> of using one huge "devices" subdir, you use a separate subdir for each
+> vfio sub-driver (so, one for PCI, one for each type of mdev, one for
+> platform, etc.).  That should make avoiding name conflicts a lot simpler.
 
-New version that addresses those issues.  Has ugly #ifdef in C
-code :-(  If that's unacceptable, then could create some stub
-functions, or add a call to __try_fixup_pasid() that's in a
-file in the iommu code that is only built when CONFIG_IOMMU_SUPPORT
-is set.  But either of those move the details far away from the
-#GP handler so make extra work for anyone trying to follow along
-with what is happening here.
+It seems like this is unnecessary if we use the vfioX naming approach.
+Conflicts are trivial to ignore if we don't involve dev_name() and
+looking for the correct major:minor chardev in the correct subdirectory
+seems like a hassle for userspace.  Thanks,
 
--Tony
+Alex
 
----
-
-diff --git a/arch/x86/kernel/traps.c b/arch/x86/kernel/traps.c
-index a58800973aed..5a3c87fd65de 100644
---- a/arch/x86/kernel/traps.c
-+++ b/arch/x86/kernel/traps.c
-@@ -528,6 +528,32 @@ static enum kernel_gp_hint get_kernel_gp_address(struct pt_regs *regs,
- 
- #define GPFSTR "general protection fault"
- 
-+/*
-+ * When a user executes the ENQCMD instruction it will #GP
-+ * fault if the IA32_PASID MSR has not been set up with a
-+ * valid PASID.
-+ * So if the process has been allocated a PASID (mm->pasid)
-+ * AND the IA32_PASID MSR has not been initialized, try to
-+ * fix this #GP by initializing the IA32_PASID MSR.
-+ * If the #GP was for some other reason, it will trigger
-+ * again, but this routine will return false and the #GP
-+ * will be processed.
-+ */
-+static void try_fixup_pasid(void)
-+{
-+	if (!cpu_feature_enabled(X86_FEATURE_ENQCMD))
-+		return false;
-+
-+#ifdef CONFIG_IOMMU_SUPPORT
-+	if (current->mm->pasid && !current->pasid_activated) {
-+		current->pasid_activated = 1;
-+		wrmsrl(MSR_IA32_PASID, current->mm->pasid);
-+		return true;
-+	}
-+#endif
-+	return false;
-+}
-+
- DEFINE_IDTENTRY_ERRORCODE(exc_general_protection)
- {
- 	char desc[sizeof(GPFSTR) + 50 + 2*sizeof(unsigned long) + 1] = GPFSTR;
-@@ -536,6 +562,9 @@ DEFINE_IDTENTRY_ERRORCODE(exc_general_protection)
- 	unsigned long gp_addr;
- 	int ret;
- 
-+	if (user_mode(regs) && try_fixup_pasid())
-+		return;
-+
- 	cond_local_irq_enable(regs);
- 
- 	if (static_cpu_has(X86_FEATURE_UMIP)) {
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
