@@ -2,83 +2,84 @@ Return-Path: <SRS0=Xpq5=OT=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A9DF2C433FE
-	for <iommu@archiver.kernel.org>; Wed, 29 Sep 2021 02:33:34 +0000 (UTC)
-Received: from smtp3.osuosl.org (smtp3.osuosl.org [140.211.166.136])
+	by smtp.lore.kernel.org (Postfix) with ESMTP id DD4D5C433F5
+	for <iommu@archiver.kernel.org>; Wed, 29 Sep 2021 02:33:38 +0000 (UTC)
+Received: from smtp4.osuosl.org (smtp4.osuosl.org [140.211.166.137])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 717EE6124A
-	for <iommu@archiver.kernel.org>; Wed, 29 Sep 2021 02:33:34 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.4.1 mail.kernel.org 717EE6124A
+	by mail.kernel.org (Postfix) with ESMTPS id A74FE613DB
+	for <iommu@archiver.kernel.org>; Wed, 29 Sep 2021 02:33:38 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.4.1 mail.kernel.org A74FE613DB
 Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=chromium.org
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by smtp3.osuosl.org (Postfix) with ESMTP id 35F1160BD4;
-	Wed, 29 Sep 2021 02:33:34 +0000 (UTC)
+	by smtp4.osuosl.org (Postfix) with ESMTP id 7688F415F2;
+	Wed, 29 Sep 2021 02:33:38 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from smtp3.osuosl.org ([127.0.0.1])
-	by localhost (smtp3.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id jFUlESkYsMSn; Wed, 29 Sep 2021 02:33:33 +0000 (UTC)
-Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [IPv6:2605:bc80:3010:104::8cd3:938])
-	by smtp3.osuosl.org (Postfix) with ESMTPS id DE7B76077A;
-	Wed, 29 Sep 2021 02:33:32 +0000 (UTC)
+Received: from smtp4.osuosl.org ([127.0.0.1])
+	by localhost (smtp4.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+	with ESMTP id xLPMUoyyPg3f; Wed, 29 Sep 2021 02:33:37 +0000 (UTC)
+Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
+	by smtp4.osuosl.org (Postfix) with ESMTPS id 5B331414CA;
+	Wed, 29 Sep 2021 02:33:37 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id CAE66C0011;
-	Wed, 29 Sep 2021 02:33:32 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 29012C0011;
+	Wed, 29 Sep 2021 02:33:37 +0000 (UTC)
 Received: from smtp1.osuosl.org (smtp1.osuosl.org [IPv6:2605:bc80:3010::138])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 96638C000D
- for <iommu@lists.linux-foundation.org>; Wed, 29 Sep 2021 02:33:31 +0000 (UTC)
+ by lists.linuxfoundation.org (Postfix) with ESMTP id B634DC000D
+ for <iommu@lists.linux-foundation.org>; Wed, 29 Sep 2021 02:33:35 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by smtp1.osuosl.org (Postfix) with ESMTP id 74F7B82C7D
- for <iommu@lists.linux-foundation.org>; Wed, 29 Sep 2021 02:33:31 +0000 (UTC)
+ by smtp1.osuosl.org (Postfix) with ESMTP id A66CD82CAC
+ for <iommu@lists.linux-foundation.org>; Wed, 29 Sep 2021 02:33:35 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
 Authentication-Results: smtp1.osuosl.org (amavisd-new);
  dkim=pass (1024-bit key) header.d=chromium.org
 Received: from smtp1.osuosl.org ([127.0.0.1])
  by localhost (smtp1.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id EOqsmGjUbTgS for <iommu@lists.linux-foundation.org>;
- Wed, 29 Sep 2021 02:33:30 +0000 (UTC)
+ with ESMTP id GfrpKWTivGZe for <iommu@lists.linux-foundation.org>;
+ Wed, 29 Sep 2021 02:33:34 +0000 (UTC)
 X-Greylist: whitelisted by SQLgrey-1.8.0
-Received: from mail-pl1-x62d.google.com (mail-pl1-x62d.google.com
- [IPv6:2607:f8b0:4864:20::62d])
- by smtp1.osuosl.org (Postfix) with ESMTPS id C06C582C8E
- for <iommu@lists.linux-foundation.org>; Wed, 29 Sep 2021 02:33:30 +0000 (UTC)
-Received: by mail-pl1-x62d.google.com with SMTP id j14so487141plx.4
- for <iommu@lists.linux-foundation.org>; Tue, 28 Sep 2021 19:33:30 -0700 (PDT)
+Received: from mail-pf1-x432.google.com (mail-pf1-x432.google.com
+ [IPv6:2607:f8b0:4864:20::432])
+ by smtp1.osuosl.org (Postfix) with ESMTPS id 8DA8A82C9C
+ for <iommu@lists.linux-foundation.org>; Wed, 29 Sep 2021 02:33:34 +0000 (UTC)
+Received: by mail-pf1-x432.google.com with SMTP id w19so648775pfn.12
+ for <iommu@lists.linux-foundation.org>; Tue, 28 Sep 2021 19:33:34 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=chromium.org; s=google;
  h=from:to:cc:subject:date:message-id:in-reply-to:references
  :mime-version:content-transfer-encoding;
- bh=Avq5RbT/lx2fFWwn1+oBZcpxY4DeWLbxCwAyQKZBr6Q=;
- b=RsreUQtZHkHMdFYzbWrJEWkO7v8DByvMn1Cm55K01vrJ1BdE5FqMiOk5XvGjmjn13/
- wSIaJmMt0JynoNYnAzFDSVZrdZYO3yC+c5NuctFmkYv98pT7ka6WOlQwreGFcPNdDx0z
- s0hS+MgpU3CYbpJ+OckbEQsOtASV0wdfMOErM=
+ bh=bifqveMoD+L7a+BkifhXbHMP299/fP3BA6FwcjHOu8U=;
+ b=Qfi0+r5tVULanmJv+N99Q1ew1u31Dv6gEoof70sEQMS8lLpXoeSMIg0eQfypX1XUlr
+ GJYy94surBh+efHLDOSECMlumtC1qqv0Ci5zcqbwYCysAU10SQ/muyxqnHfy99nzjZQ6
+ YL9laEnGqREwlEhBoMl6qip6osiIio0K6vWIU=
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
  d=1e100.net; s=20210112;
  h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
  :references:mime-version:content-transfer-encoding;
- bh=Avq5RbT/lx2fFWwn1+oBZcpxY4DeWLbxCwAyQKZBr6Q=;
- b=bURZ2vQ7BKuJbZM9MMvnAAgUZNa5odizZWp/KJUM1Pg5AJengCG4jcitWIZeFcPNlZ
- m+ZGLk2B5hu1qu93YLB0bzyEr9th0tA0miZ7alPQWNuXEvnUTYqRMyspPgrAlBMlWA9c
- E598EH4I2wE/P9LFKF2VixPT4BPQwoGy0cmjoz8kgZqchhjGx5KMg+gCq0tKI8xHdIdc
- gSHeLViMkkOrJn4TM3jcL/wvBApoBO+LvbybJEieLFgCLV473EC5D1R2WsiQHiiU5o8L
- i/c5YIzS0ZCvO/pxdwrSGdkM1ci3yeNtXd8aPPDMaq/8dDL5ngX1t6MnyrL4khSaKA/j
- gh3Q==
-X-Gm-Message-State: AOAM5325vYrqgPPulHvPth+ax6DHXgogvAYIdOFJfdgQJL53d//2NgnA
- D39WH91vRfSllTfKTiwtmhdUww==
-X-Google-Smtp-Source: ABdhPJyoSPNVeVmBl31+olu0YXEa5foZN5sfKsQOK+2mvMYcLDsnB8Wy+WaCIoBB0kmqTaWZjrbMdw==
-X-Received: by 2002:a17:90a:49:: with SMTP id 9mr3654873pjb.80.1632882810263; 
- Tue, 28 Sep 2021 19:33:30 -0700 (PDT)
+ bh=bifqveMoD+L7a+BkifhXbHMP299/fP3BA6FwcjHOu8U=;
+ b=wyua9aZxAVeBdJOxzLFEEdLt05ncH+0Qzxwdm1Cgjq91NdxW0FMxprXka9VcWBXpVr
+ yqn1hlqbT2CMrBYmxS2agCl02lo/RxPrN7bP8xV/rSNxoVnoxLOr6Qaq0RXlo5BzmL7J
+ ZMZflkzVanNTSbwC0IO2fOOqKRQrMCF25HQXcf06LkVHXgQslWnSFAkvgE5GvvrBnNMj
+ Po1H7XFONW8P14LGjUoUNrE2ErBNu31bz6OOALA8ZO58KGL8JPtFg7ljuKjH1y+KWzmy
+ PMii+d6CGCR7EdVu6myVJQN6VITqCcmAOYCecDSP8yZoarPiNbkmijYlFtyve3Eao/aw
+ neHQ==
+X-Gm-Message-State: AOAM531t7GtGUAUN/7C32oCoUz6FwTwoSJKpSVrXX/v7ZCPF7LpBIh3j
+ XzbKZ7aWCuolqlOFUQRWV1M8YQ==
+X-Google-Smtp-Source: ABdhPJw27pMB23kgpmhVZX2L2AIGhZtQaqqAMV/LtgNMVaKj3LNpYLnEy3RtB8rB+h/QUo2m93QOuA==
+X-Received: by 2002:aa7:9d02:0:b0:43d:ea96:5882 with SMTP id
+ k2-20020aa79d02000000b0043dea965882mr8696404pfp.23.1632882814085; 
+ Tue, 28 Sep 2021 19:33:34 -0700 (PDT)
 Received: from localhost ([2401:fa00:8f:203:f818:368:93ef:fa36])
- by smtp.gmail.com with UTF8SMTPSA id k3sm27354pjg.43.2021.09.28.19.33.28
+ by smtp.gmail.com with UTF8SMTPSA id t6sm27379pjr.36.2021.09.28.19.33.31
  (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
- Tue, 28 Sep 2021 19:33:30 -0700 (PDT)
+ Tue, 28 Sep 2021 19:33:33 -0700 (PDT)
 From: David Stevens <stevensd@chromium.org>
 X-Google-Original-From: David Stevens <stevensd@google.com>
 To: Robin Murphy <robin.murphy@arm.com>,
 	Christoph Hellwig <hch@lst.de>
-Subject: [PATCH v8 5/7] dma-iommu: Check CONFIG_SWIOTLB more broadly
-Date: Wed, 29 Sep 2021 11:32:58 +0900
-Message-Id: <20210929023300.335969-6-stevensd@google.com>
+Subject: [PATCH v8 6/7] swiotlb: support aligned swiotlb buffers
+Date: Wed, 29 Sep 2021 11:32:59 +0900
+Message-Id: <20210929023300.335969-7-stevensd@google.com>
 X-Mailer: git-send-email 2.33.0.685.g46640cef36-goog
 In-Reply-To: <20210929023300.335969-1-stevensd@google.com>
 References: <20210929023300.335969-1-stevensd@google.com>
@@ -105,98 +106,123 @@ Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
 From: David Stevens <stevensd@chromium.org>
 
-Introduce a new dev_use_swiotlb function to guard swiotlb code, instead
-of overloading dev_is_untrusted. This allows CONFIG_SWIOTLB to be
-checked more broadly, so the swiotlb related code can be removed more
-aggressively.
+Add an argument to swiotlb_tbl_map_single that specifies the desired
+alignment of the allocated buffer. This is used by dma-iommu to ensure
+the buffer is aligned to the iova granule size when using swiotlb with
+untrusted sub-granule mappings. This addresses an issue where adjacent
+slots could be exposed to the untrusted device if IO_TLB_SIZE < iova
+granule < PAGE_SIZE.
 
 Signed-off-by: David Stevens <stevensd@chromium.org>
-Reviewed-by: Robin Murphy <robin.murphy@arm.com>
 Reviewed-by: Christoph Hellwig <hch@lst.de>
 ---
- drivers/iommu/dma-iommu.c | 20 ++++++++++++--------
- 1 file changed, 12 insertions(+), 8 deletions(-)
+ drivers/iommu/dma-iommu.c |  4 ++--
+ drivers/xen/swiotlb-xen.c |  2 +-
+ include/linux/swiotlb.h   |  3 ++-
+ kernel/dma/swiotlb.c      | 13 ++++++++-----
+ 4 files changed, 13 insertions(+), 9 deletions(-)
 
 diff --git a/drivers/iommu/dma-iommu.c b/drivers/iommu/dma-iommu.c
-index 4f77c44eaf14..85a005b268f6 100644
+index 85a005b268f6..289c49ead01a 100644
 --- a/drivers/iommu/dma-iommu.c
 +++ b/drivers/iommu/dma-iommu.c
-@@ -317,6 +317,11 @@ static bool dev_is_untrusted(struct device *dev)
- 	return dev_is_pci(dev) && to_pci_dev(dev)->untrusted;
- }
- 
-+static bool dev_use_swiotlb(struct device *dev)
-+{
-+	return IS_ENABLED(CONFIG_SWIOTLB) && dev_is_untrusted(dev);
-+}
-+
- /* sysfs updates are serialised by the mutex of the group owning @domain */
- int iommu_dma_init_fq(struct iommu_domain *domain)
- {
-@@ -731,7 +736,7 @@ static void iommu_dma_sync_single_for_cpu(struct device *dev,
- {
- 	phys_addr_t phys;
- 
--	if (dev_is_dma_coherent(dev) && !dev_is_untrusted(dev))
-+	if (dev_is_dma_coherent(dev) && !dev_use_swiotlb(dev))
- 		return;
- 
- 	phys = iommu_iova_to_phys(iommu_get_dma_domain(dev), dma_handle);
-@@ -747,7 +752,7 @@ static void iommu_dma_sync_single_for_device(struct device *dev,
- {
- 	phys_addr_t phys;
- 
--	if (dev_is_dma_coherent(dev) && !dev_is_untrusted(dev))
-+	if (dev_is_dma_coherent(dev) && !dev_use_swiotlb(dev))
- 		return;
- 
- 	phys = iommu_iova_to_phys(iommu_get_dma_domain(dev), dma_handle);
-@@ -765,7 +770,7 @@ static void iommu_dma_sync_sg_for_cpu(struct device *dev,
- 	struct scatterlist *sg;
- 	int i;
- 
--	if (dev_is_untrusted(dev))
-+	if (dev_use_swiotlb(dev))
- 		for_each_sg(sgl, sg, nelems, i)
- 			iommu_dma_sync_single_for_cpu(dev, sg_dma_address(sg),
- 						      sg->length, dir);
-@@ -781,7 +786,7 @@ static void iommu_dma_sync_sg_for_device(struct device *dev,
- 	struct scatterlist *sg;
- 	int i;
- 
--	if (dev_is_untrusted(dev))
-+	if (dev_use_swiotlb(dev))
- 		for_each_sg(sgl, sg, nelems, i)
- 			iommu_dma_sync_single_for_device(dev,
- 							 sg_dma_address(sg),
-@@ -808,8 +813,7 @@ static dma_addr_t iommu_dma_map_page(struct device *dev, struct page *page,
- 	 * If both the physical buffer start address and size are
- 	 * page aligned, we don't need to use a bounce page.
- 	 */
--	if (IS_ENABLED(CONFIG_SWIOTLB) && dev_is_untrusted(dev) &&
--	    iova_offset(iovad, phys | size)) {
-+	if (dev_use_swiotlb(dev) && iova_offset(iovad, phys | size)) {
- 		void *padding_start;
+@@ -818,8 +818,8 @@ static dma_addr_t iommu_dma_map_page(struct device *dev, struct page *page,
  		size_t padding_size;
  
-@@ -994,7 +998,7 @@ static int iommu_dma_map_sg(struct device *dev, struct scatterlist *sg,
- 		goto out;
+ 		aligned_size = iova_align(iovad, size);
+-		phys = swiotlb_tbl_map_single(dev, phys, size,
+-					      aligned_size, dir, attrs);
++		phys = swiotlb_tbl_map_single(dev, phys, size, aligned_size,
++					      iova_mask(iovad), dir, attrs);
+ 
+ 		if (phys == DMA_MAPPING_ERROR)
+ 			return DMA_MAPPING_ERROR;
+diff --git a/drivers/xen/swiotlb-xen.c b/drivers/xen/swiotlb-xen.c
+index e56a5faac395..cbdff8979980 100644
+--- a/drivers/xen/swiotlb-xen.c
++++ b/drivers/xen/swiotlb-xen.c
+@@ -380,7 +380,7 @@ static dma_addr_t xen_swiotlb_map_page(struct device *dev, struct page *page,
+ 	 */
+ 	trace_swiotlb_bounced(dev, dev_addr, size, swiotlb_force);
+ 
+-	map = swiotlb_tbl_map_single(dev, phys, size, size, dir, attrs);
++	map = swiotlb_tbl_map_single(dev, phys, size, size, 0, dir, attrs);
+ 	if (map == (phys_addr_t)DMA_MAPPING_ERROR)
+ 		return DMA_MAPPING_ERROR;
+ 
+diff --git a/include/linux/swiotlb.h b/include/linux/swiotlb.h
+index b0cb2a9973f4..569272871375 100644
+--- a/include/linux/swiotlb.h
++++ b/include/linux/swiotlb.h
+@@ -45,7 +45,8 @@ extern void __init swiotlb_update_mem_attributes(void);
+ 
+ phys_addr_t swiotlb_tbl_map_single(struct device *hwdev, phys_addr_t phys,
+ 		size_t mapping_size, size_t alloc_size,
+-		enum dma_data_direction dir, unsigned long attrs);
++		unsigned int alloc_aligned_mask, enum dma_data_direction dir,
++		unsigned long attrs);
+ 
+ extern void swiotlb_tbl_unmap_single(struct device *hwdev,
+ 				     phys_addr_t tlb_addr,
+diff --git a/kernel/dma/swiotlb.c b/kernel/dma/swiotlb.c
+index 87c40517e822..019672b3da1d 100644
+--- a/kernel/dma/swiotlb.c
++++ b/kernel/dma/swiotlb.c
+@@ -459,7 +459,7 @@ static unsigned int wrap_index(struct io_tlb_mem *mem, unsigned int index)
+  * allocate a buffer from that IO TLB pool.
+  */
+ static int swiotlb_find_slots(struct device *dev, phys_addr_t orig_addr,
+-			      size_t alloc_size)
++			      size_t alloc_size, unsigned int alloc_align_mask)
+ {
+ 	struct io_tlb_mem *mem = dev->dma_io_tlb_mem;
+ 	unsigned long boundary_mask = dma_get_seg_boundary(dev);
+@@ -483,6 +483,7 @@ static int swiotlb_find_slots(struct device *dev, phys_addr_t orig_addr,
+ 	stride = (iotlb_align_mask >> IO_TLB_SHIFT) + 1;
+ 	if (alloc_size >= PAGE_SIZE)
+ 		stride = max(stride, stride << (PAGE_SHIFT - IO_TLB_SHIFT));
++	stride = max(stride, (alloc_align_mask >> IO_TLB_SHIFT) + 1);
+ 
+ 	spin_lock_irqsave(&mem->lock, flags);
+ 	if (unlikely(nslots > mem->nslabs - mem->used))
+@@ -541,7 +542,8 @@ static int swiotlb_find_slots(struct device *dev, phys_addr_t orig_addr,
+ 
+ phys_addr_t swiotlb_tbl_map_single(struct device *dev, phys_addr_t orig_addr,
+ 		size_t mapping_size, size_t alloc_size,
+-		enum dma_data_direction dir, unsigned long attrs)
++		unsigned int alloc_align_mask, enum dma_data_direction dir,
++		unsigned long attrs)
+ {
+ 	struct io_tlb_mem *mem = dev->dma_io_tlb_mem;
+ 	unsigned int offset = swiotlb_align_offset(dev, orig_addr);
+@@ -561,7 +563,8 @@ phys_addr_t swiotlb_tbl_map_single(struct device *dev, phys_addr_t orig_addr,
+ 		return (phys_addr_t)DMA_MAPPING_ERROR;
  	}
  
--	if (dev_is_untrusted(dev))
-+	if (dev_use_swiotlb(dev))
- 		return iommu_dma_map_sg_swiotlb(dev, sg, nents, dir, attrs);
+-	index = swiotlb_find_slots(dev, orig_addr, alloc_size + offset);
++	index = swiotlb_find_slots(dev, orig_addr,
++				   alloc_size + offset, alloc_align_mask);
+ 	if (index == -1) {
+ 		if (!(attrs & DMA_ATTR_NO_WARN))
+ 			dev_warn_ratelimited(dev,
+@@ -675,7 +678,7 @@ dma_addr_t swiotlb_map(struct device *dev, phys_addr_t paddr, size_t size,
+ 	trace_swiotlb_bounced(dev, phys_to_dma(dev, paddr), size,
+ 			      swiotlb_force);
  
- 	if (!(attrs & DMA_ATTR_SKIP_CPU_SYNC))
-@@ -1072,7 +1076,7 @@ static void iommu_dma_unmap_sg(struct device *dev, struct scatterlist *sg,
- 	struct scatterlist *tmp;
- 	int i;
+-	swiotlb_addr = swiotlb_tbl_map_single(dev, paddr, size, size, dir,
++	swiotlb_addr = swiotlb_tbl_map_single(dev, paddr, size, size, 0, dir,
+ 			attrs);
+ 	if (swiotlb_addr == (phys_addr_t)DMA_MAPPING_ERROR)
+ 		return DMA_MAPPING_ERROR;
+@@ -759,7 +762,7 @@ struct page *swiotlb_alloc(struct device *dev, size_t size)
+ 	if (!mem)
+ 		return NULL;
  
--	if (dev_is_untrusted(dev)) {
-+	if (dev_use_swiotlb(dev)) {
- 		iommu_dma_unmap_sg_swiotlb(dev, sg, nents, dir, attrs);
- 		return;
- 	}
+-	index = swiotlb_find_slots(dev, 0, size);
++	index = swiotlb_find_slots(dev, 0, size, 0);
+ 	if (index == -1)
+ 		return NULL;
+ 
 -- 
 2.33.0.685.g46640cef36-goog
 
