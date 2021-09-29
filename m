@@ -2,79 +2,100 @@ Return-Path: <SRS0=Xpq5=OT=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5FBA5C433F5
-	for <iommu@archiver.kernel.org>; Wed, 29 Sep 2021 18:07:37 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D9DF4C433F5
+	for <iommu@archiver.kernel.org>; Wed, 29 Sep 2021 18:30:55 +0000 (UTC)
 Received: from smtp2.osuosl.org (smtp2.osuosl.org [140.211.166.133])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id ED4C4615E0
-	for <iommu@archiver.kernel.org>; Wed, 29 Sep 2021 18:07:36 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.4.1 mail.kernel.org ED4C4615E0
-Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=intel.com
+	by mail.kernel.org (Postfix) with ESMTPS id 921C061501
+	for <iommu@archiver.kernel.org>; Wed, 29 Sep 2021 18:30:55 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.4.1 mail.kernel.org 921C061501
+Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=kernel.org
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by smtp2.osuosl.org (Postfix) with ESMTP id 8E2F240724;
-	Wed, 29 Sep 2021 18:07:36 +0000 (UTC)
+	by smtp2.osuosl.org (Postfix) with ESMTP id 5E22340133;
+	Wed, 29 Sep 2021 18:30:55 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
 Received: from smtp2.osuosl.org ([127.0.0.1])
 	by localhost (smtp2.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id mXBIVGKzJWNY; Wed, 29 Sep 2021 18:07:35 +0000 (UTC)
+	with ESMTP id z3pDxQgwszR0; Wed, 29 Sep 2021 18:30:54 +0000 (UTC)
 Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [IPv6:2605:bc80:3010:104::8cd3:938])
-	by smtp2.osuosl.org (Postfix) with ESMTPS id 417F240133;
-	Wed, 29 Sep 2021 18:07:35 +0000 (UTC)
+	by smtp2.osuosl.org (Postfix) with ESMTPS id B580640122;
+	Wed, 29 Sep 2021 18:30:53 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id EEEF9C000F;
-	Wed, 29 Sep 2021 18:07:34 +0000 (UTC)
-Received: from smtp4.osuosl.org (smtp4.osuosl.org [IPv6:2605:bc80:3010::137])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 19AAAC000D
- for <iommu@lists.linux-foundation.org>; Wed, 29 Sep 2021 18:07:33 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 65BB1C000F;
+	Wed, 29 Sep 2021 18:30:53 +0000 (UTC)
+Received: from smtp1.osuosl.org (smtp1.osuosl.org [140.211.166.138])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 62925C000D
+ for <iommu@lists.linux-foundation.org>; Wed, 29 Sep 2021 18:30:52 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by smtp4.osuosl.org (Postfix) with ESMTP id 0F6E641967
- for <iommu@lists.linux-foundation.org>; Wed, 29 Sep 2021 18:07:33 +0000 (UTC)
+ by smtp1.osuosl.org (Postfix) with ESMTP id 4A24B80EF3
+ for <iommu@lists.linux-foundation.org>; Wed, 29 Sep 2021 18:30:52 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from smtp4.osuosl.org ([127.0.0.1])
- by localhost (smtp4.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id UcBKWh6MLkg1 for <iommu@lists.linux-foundation.org>;
- Wed, 29 Sep 2021 18:07:31 +0000 (UTC)
+Authentication-Results: smtp1.osuosl.org (amavisd-new);
+ dkim=pass (2048-bit key) header.d=kernel.org
+Received: from smtp1.osuosl.org ([127.0.0.1])
+ by localhost (smtp1.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+ with ESMTP id xcqlEPfyx8P3 for <iommu@lists.linux-foundation.org>;
+ Wed, 29 Sep 2021 18:30:50 +0000 (UTC)
 X-Greylist: domain auto-whitelisted by SQLgrey-1.8.0
-Received: from mga04.intel.com (mga04.intel.com [192.55.52.120])
- by smtp4.osuosl.org (Postfix) with ESMTPS id 5A654415C2
- for <iommu@lists.linux-foundation.org>; Wed, 29 Sep 2021 18:07:31 +0000 (UTC)
-X-IronPort-AV: E=McAfee;i="6200,9189,10122"; a="223118729"
-X-IronPort-AV: E=Sophos;i="5.85,332,1624345200"; d="scan'208";a="223118729"
-Received: from fmsmga005.fm.intel.com ([10.253.24.32])
- by fmsmga104.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384;
- 29 Sep 2021 11:07:30 -0700
-X-IronPort-AV: E=Sophos;i="5.85,332,1624345200"; d="scan'208";a="708463491"
-Received: from otcwcpicx3.sc.intel.com ([172.25.55.73])
- by fmsmga005-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384;
- 29 Sep 2021 11:07:30 -0700
-Date: Wed, 29 Sep 2021 18:07:22 +0000
-From: Fenghua Yu <fenghua.yu@intel.com>
-To: "Luck, Tony" <tony.luck@intel.com>
-Subject: Re: [PATCH 5/8] x86/mmu: Add mm-based PASID refcounting
-Message-ID: <YVSrWouhMo2JxRCC@otcwcpicx3.sc.intel.com>
-References: <YUyuEjlrcOeCp4qQ@agluck-desk2.amr.corp.intel.com>
- <87o88jfajo.ffs@tglx> <87k0j6dsdn.ffs@tglx>
- <YU3414QT0J7EN4w9@agluck-desk2.amr.corp.intel.com>
- <a77ee33c-6fa7-468c-8fc0-a0a2ce725e75@www.fastmail.com>
- <YVQ3wc/XjeOHpGCX@hirez.programming.kicks-ass.net>
- <87r1d78t2e.ffs@tglx>
- <75e95acc-6730-ddcf-d722-66e575076256@kernel.org>
- <877dez8fqu.ffs@tglx>
- <YVSlVv/j+WKftUU5@agluck-desk2.amr.corp.intel.com>
+Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
+ by smtp1.osuosl.org (Postfix) with ESMTPS id 53BDE80EEE
+ for <iommu@lists.linux-foundation.org>; Wed, 29 Sep 2021 18:30:50 +0000 (UTC)
+Received: by mail.kernel.org (Postfix) with ESMTPSA id B47C0615E0
+ for <iommu@lists.linux-foundation.org>; Wed, 29 Sep 2021 18:30:49 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+ s=k20201202; t=1632940249;
+ bh=gjF28VMTIug2m1bl/FU/M9snQ4rR61AFv5fVsRKalNI=;
+ h=References:In-Reply-To:From:Date:Subject:To:Cc:From;
+ b=CISl9Rl7R+M6haM6b37hM8Y55j2HAbcMi0eojp8x2X5LO3rMaVS5sudmIbZDpY2Fa
+ v3jkZlxqIQsgk7xdc/KNDPDNwnRYggSWDCUgB/s/FiZxlhlKX24dWHVpR7Wt0mlN/7
+ mhK6ym9B69BkMQdp4WI4pKJ+rr90hmai+tmZp9rhMJtK7ONWh9AhmLAFD2pHKhaUG3
+ HMRbEb2CCpVxIrKjjd6yE6ttU5SikyGGITOLPKJu1L7QFLNrx8p43TXVkgBvbCSBJk
+ HoUf+R5uDfbywO7AlRlXS5uX8pbpj5u56JSH5+uMScUwkPlS/zeQ1/1lCIAk541NMv
+ d88464bdH/fHQ==
+Received: by mail-wr1-f46.google.com with SMTP id x20so5794347wrg.10
+ for <iommu@lists.linux-foundation.org>; Wed, 29 Sep 2021 11:30:49 -0700 (PDT)
+X-Gm-Message-State: AOAM531AKSqlQ45iQsMPn1okqwpIn78RixJ5CWjiVorQ2LNQ+qWvS+NM
+ h2YdlmaTbRLgM//HI2cyCZmAhLwRWwPZJlX3SS8=
+X-Google-Smtp-Source: ABdhPJznh64DeD5YLkqLyCdpGZrw2eJDCFhsGINcOBsXO/6p1u7dAzpxKDez727ElHRBigRMgHpji/X6aGMkMR1n8h4=
+X-Received: by 2002:a05:6000:1561:: with SMTP id
+ 1mr1607418wrz.369.1632940247984; 
+ Wed, 29 Sep 2021 11:30:47 -0700 (PDT)
 MIME-Version: 1.0
-Content-Disposition: inline
-In-Reply-To: <YVSlVv/j+WKftUU5@agluck-desk2.amr.corp.intel.com>
-Cc: "Shankar, Ravi V" <ravi.v.shankar@intel.com>,
- Dave Jiang <dave.jiang@intel.com>, Raj Ashok <ashok.raj@intel.com>,
- Peter Zijlstra <peterz@infradead.org>,
- the arch/x86 maintainers <x86@kernel.org>,
+References: <20210927152412.2900928-1-arnd@kernel.org>
+ <20210929095107.GA21057@willie-the-truck>
+ <CAK8P3a2QnJkYCoEWhziYYXQusb-25_wUhA5ZTGtBsyfFx3NWzQ@mail.gmail.com>
+ <YVR8Q7LO0weiFin+@yoga>
+In-Reply-To: <YVR8Q7LO0weiFin+@yoga>
+From: Arnd Bergmann <arnd@kernel.org>
+Date: Wed, 29 Sep 2021 20:30:30 +0200
+X-Gmail-Original-Message-ID: <CAK8P3a2Kk6Y1Hs98z2UFEis8cWekREFt8YKg2Nbu3G5WQJ7Fag@mail.gmail.com>
+Message-ID: <CAK8P3a2Kk6Y1Hs98z2UFEis8cWekREFt8YKg2Nbu3G5WQJ7Fag@mail.gmail.com>
+Subject: Re: [PATCH] [RFC] qcom_scm: hide Kconfig symbol
+To: Bjorn Andersson <bjorn.andersson@linaro.org>
+Cc: Mark Rutland <mark.rutland@arm.com>, Ulf Hansson <ulf.hansson@linaro.org>,
+ David Airlie <airlied@linux.ie>,
+ linux-wireless <linux-wireless@vger.kernel.org>,
+ Linus Walleij <linus.walleij@linaro.org>,
+ dri-devel <dri-devel@lists.freedesktop.org>, ath10k@lists.infradead.org,
+ Will Deacon <will@kernel.org>,
+ "open list:IOMMU DRIVERS" <iommu@lists.linux-foundation.org>,
+ Jernej Skrabec <jernej.skrabec@gmail.com>, Chen-Yu Tsai <wens@csie.org>,
+ Andy Gross <agross@kernel.org>,
+ Linux ARM <linux-arm-kernel@lists.infradead.org>,
+ Jakub Kicinski <kuba@kernel.org>, linux-sunxi@lists.linux.dev,
+ Linux Media Mailing List <linux-media@vger.kernel.org>,
+ Arnd Bergmann <arnd@arndb.de>, linux-arm-msm <linux-arm-msm@vger.kernel.org>,
+ Maxime Ripard <mripard@kernel.org>,
+ "open list:GPIO SUBSYSTEM" <linux-gpio@vger.kernel.org>,
+ Mauro Carvalho Chehab <mchehab@kernel.org>, Sean Paul <sean@poorly.run>,
+ Kalle Valo <kvalo@codeaurora.org>, Alex Elder <elder@kernel.org>,
+ Networking <netdev@vger.kernel.org>, linux-mmc <linux-mmc@vger.kernel.org>,
  Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
- Dave Hansen <dave.hansen@intel.com>, iommu@lists.linux-foundation.org,
- Ingo Molnar <mingo@redhat.com>, Borislav Petkov <bp@alien8.de>,
- Jacob Jun Pan <jacob.jun.pan@intel.com>, Andy Lutomirski <luto@kernel.org>,
- Josh Poimboeuf <jpoimboe@redhat.com>, Thomas Gleixner <tglx@linutronix.de>
+ Daniel Vetter <daniel@ffwll.ch>, Sudeep Holla <sudeep.holla@arm.com>,
+ freedreno <freedreno@lists.freedesktop.org>,
+ "David S. Miller" <davem@davemloft.net>
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -92,65 +113,107 @@ Content-Transfer-Encoding: 7bit
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-Hi, Tony,
-
-On Wed, Sep 29, 2021 at 10:41:42AM -0700, Luck, Tony wrote:
-> On Wed, Sep 29, 2021 at 07:15:53PM +0200, Thomas Gleixner wrote:
-> > On Wed, Sep 29 2021 at 09:59, Andy Lutomirski wrote:
-> > > On 9/29/21 05:28, Thomas Gleixner wrote:
-> > >> Looking at that patch again, none of this muck in fpu__pasid_write() is
-> > >> required at all. The whole exception fixup is:
-> > >> 
-> > >>      if (!user_mode(regs))
-> > >>               return false;
-> > >> 
-> > >>      if (!current->mm->pasid)
-> > >>               return false;
-> > >> 
-> > >>      if (current->pasid_activated)
-> > >>      	     return false;
+On Wed, Sep 29, 2021 at 4:46 PM Bjorn Andersson
+<bjorn.andersson@linaro.org> wrote:
+>
+> On Wed 29 Sep 05:04 CDT 2021, Arnd Bergmann wrote:
+>
+> > On Wed, Sep 29, 2021 at 11:51 AM Will Deacon <will@kernel.org> wrote:
+> > > On Mon, Sep 27, 2021 at 05:22:13PM +0200, Arnd Bergmann wrote:
+> > > >
+> > > > diff --git a/drivers/iommu/Kconfig b/drivers/iommu/Kconfig
+> > > > index 124c41adeca1..989c83acbfee 100644
+> > > > --- a/drivers/iommu/Kconfig
+> > > > +++ b/drivers/iommu/Kconfig
+> > > > @@ -308,7 +308,7 @@ config APPLE_DART
+> > > >  config ARM_SMMU
+> > > >       tristate "ARM Ltd. System MMU (SMMU) Support"
+> > > >       depends on ARM64 || ARM || (COMPILE_TEST && !GENERIC_ATOMIC64)
+> > > > -     depends on QCOM_SCM || !QCOM_SCM #if QCOM_SCM=m this can't be =y
+> > > > +     select QCOM_SCM
+> > > >       select IOMMU_API
+> > > >       select IOMMU_IO_PGTABLE_LPAE
+> > > >       select ARM_DMA_USE_IOMMU if ARM
 > > >
-> > > <-- preemption or BH here: kaboom.
-> > 
-> > Sigh, this had obviously to run in the early portion of #GP, i.e. before
-> > enabling interrupts.
-> 
-> Like this? Obviously with some comment about why this is being done.
-> 
-> diff --git a/arch/x86/kernel/traps.c b/arch/x86/kernel/traps.c
-> index a58800973aed..a848a59291e7 100644
-> --- a/arch/x86/kernel/traps.c
-> +++ b/arch/x86/kernel/traps.c
-> @@ -536,6 +536,12 @@ DEFINE_IDTENTRY_ERRORCODE(exc_general_protection)
->  	unsigned long gp_addr;
->  	int ret;
->  
+> > > I don't want to get in the way of this patch because I'm also tired of the
+> > > randconfig failures caused by QCOM_SCM. However, ARM_SMMU is applicable to
+> > > a wide variety of (non-qcom) SoCs and so it seems a shame to require the
+> > > QCOM_SCM code to be included for all of those when it's not strictly needed
+> > > at all.
+> >
+> > Good point, I agree that needs to be fixed. I think this additional
+> > change should do the trick:
+> >
+>
+> ARM_SMMU and QCOM_IOMMU are two separate implementations and both uses
+> QCOM_SCM. So both of them should select QCOM_SCM.
 
-Add
-+#ifdef CONFIG_IOMMU_SUPPORT
-because mm->pasid and current-pasid_activated are defined only if
-CONFIG_IOMMU_SUPPORT is defined.
+Right, I figured that out later as well.
 
-> +	if (user_mode(regs) && current->mm->pasid && !current->pasid_activated) {
+> "Unfortunately" the Qualcomm portion of ARM_SMMU is builtin
+> unconditionally, so going with something like select QCOM_SCM if
+> ARCH_QCOM would still require the stubs in qcom_scm.h.
 
-Maybe need to add "&& cpu_feature_enabled(X86_FEATURE_ENQCMD)" because
-the IA32_PASID MSR is only used when ENQCMD is enabled?
+Yes, sounds good. I also noticed that I still need one hack in there
+if I do this:
 
-> +		current->pasid_activated = 1;
-> +		wrmsrl(MSR_IA32_PASID, current->mm->pasid | MSR_IA32_PASID_VALID);
-> +		return;
-> +	}
-> +
+diff --git a/drivers/iommu/arm/arm-smmu/arm-smmu-qcom.c
+b/drivers/iommu/arm/arm-smmu/arm-smmu-qcom.c
+index 55690af1b25d..36c304a8fc9b 100644
+--- a/drivers/iommu/arm/arm-smmu/arm-smmu-qcom.c
++++ b/drivers/iommu/arm/arm-smmu/arm-smmu-qcom.c
+@@ -427,6 +427,9 @@ struct arm_smmu_device *qcom_smmu_impl_init(struct
+arm_smmu_device *smmu)
+ {
+        const struct device_node *np = smmu->dev->of_node;
 
-+endif
++       if (!IS_ENABLED(CONFIG_QCOM_SCM))
++               return ERR_PTR(-ENXIO);
++
+ #ifdef CONFIG_ACPI
+        if (np == NULL) {
+                /* Match platform for ACPI boot */
 
->  	cond_local_irq_enable(regs);
->  
->  	if (static_cpu_has(X86_FEATURE_UMIP)) {
 
-Thanks.
+Otherwise it still breaks with ARM_SMMU=y and QCOM_SCM=m.
 
--Fenghua
+Splitting out the qualcomm portion of the arm_smmu driver using
+a separate 'bool' symbol should also work, if  you prefer that
+and can suggest a name and help text for that symbol. It would
+look like
+
+diff --git a/drivers/iommu/arm/arm-smmu/Makefile
+b/drivers/iommu/arm/arm-smmu/Makefile
+index e240a7bcf310..b0cc01aa20c9 100644
+--- a/drivers/iommu/arm/arm-smmu/Makefile
++++ b/drivers/iommu/arm/arm-smmu/Makefile
+@@ -1,4 +1,5 @@
+ # SPDX-License-Identifier: GPL-2.0
+ obj-$(CONFIG_QCOM_IOMMU) += qcom_iommu.o
+ obj-$(CONFIG_ARM_SMMU) += arm_smmu.o
+-arm_smmu-objs += arm-smmu.o arm-smmu-impl.o arm-smmu-nvidia.o arm-smmu-qcom.o
++arm_smmu-objs += arm-smmu.o arm-smmu-impl.o arm-smmu-nvidia.o
++arm_smmu-$(CONFIG_ARM_SMMU_QCOM) += arm-smmu-qcom.o
+diff --git a/drivers/iommu/arm/arm-smmu/arm-smmu-impl.c
+b/drivers/iommu/arm/arm-smmu/arm-smmu-impl.c
+index 9f465e146799..2c25cce38060 100644
+--- a/drivers/iommu/arm/arm-smmu/arm-smmu-impl.c
++++ b/drivers/iommu/arm/arm-smmu/arm-smmu-impl.c
+@@ -215,7 +215,8 @@ struct arm_smmu_device *arm_smmu_impl_init(struct
+arm_smmu_device *smmu)
+            of_device_is_compatible(np, "nvidia,tegra186-smmu"))
+                return nvidia_smmu_impl_init(smmu);
+
+-       smmu = qcom_smmu_impl_init(smmu);
++       if (IS_ENABLED(CONFIG_ARM_SMMU_QCOM))
++               smmu = qcom_smmu_impl_init(smmu);
+
+        if (of_device_is_compatible(np, "marvell,ap806-smmu-500"))
+                smmu->impl = &mrvl_mmu500_impl;
+
+
+
+       Arnd
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
