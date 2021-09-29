@@ -2,69 +2,71 @@ Return-Path: <SRS0=Xpq5=OT=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 573C8C433EF
-	for <iommu@archiver.kernel.org>; Wed, 29 Sep 2021 21:42:19 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4BD6EC433EF
+	for <iommu@archiver.kernel.org>; Wed, 29 Sep 2021 21:47:06 +0000 (UTC)
 Received: from smtp3.osuosl.org (smtp3.osuosl.org [140.211.166.136])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 0356061528
-	for <iommu@archiver.kernel.org>; Wed, 29 Sep 2021 21:42:16 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.4.1 mail.kernel.org 0356061528
+	by mail.kernel.org (Postfix) with ESMTPS id E1552613A6
+	for <iommu@archiver.kernel.org>; Wed, 29 Sep 2021 21:47:05 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.4.1 mail.kernel.org E1552613A6
 Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=deltatee.com
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by smtp3.osuosl.org (Postfix) with ESMTP id C005760780;
-	Wed, 29 Sep 2021 21:42:16 +0000 (UTC)
+	by smtp3.osuosl.org (Postfix) with ESMTP id A20EE60775;
+	Wed, 29 Sep 2021 21:47:05 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
 Received: from smtp3.osuosl.org ([127.0.0.1])
 	by localhost (smtp3.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id 3gEgZI-2yt_e; Wed, 29 Sep 2021 21:42:16 +0000 (UTC)
+	with ESMTP id i9zmYwiXgGLj; Wed, 29 Sep 2021 21:47:04 +0000 (UTC)
 Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by smtp3.osuosl.org (Postfix) with ESMTPS id A6E896076A;
-	Wed, 29 Sep 2021 21:42:15 +0000 (UTC)
+	by smtp3.osuosl.org (Postfix) with ESMTPS id 83DB760762;
+	Wed, 29 Sep 2021 21:47:04 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 7FF24C0011;
-	Wed, 29 Sep 2021 21:42:15 +0000 (UTC)
-Received: from smtp3.osuosl.org (smtp3.osuosl.org [IPv6:2605:bc80:3010::136])
- by lists.linuxfoundation.org (Postfix) with ESMTP id F35B9C000D
- for <iommu@lists.linux-foundation.org>; Wed, 29 Sep 2021 21:42:13 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 49ABDC0011;
+	Wed, 29 Sep 2021 21:47:04 +0000 (UTC)
+Received: from smtp2.osuosl.org (smtp2.osuosl.org [140.211.166.133])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id C9E0FC000D
+ for <iommu@lists.linux-foundation.org>; Wed, 29 Sep 2021 21:47:02 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by smtp3.osuosl.org (Postfix) with ESMTP id DC0566076A
- for <iommu@lists.linux-foundation.org>; Wed, 29 Sep 2021 21:42:13 +0000 (UTC)
+ by smtp2.osuosl.org (Postfix) with ESMTP id B17B940215
+ for <iommu@lists.linux-foundation.org>; Wed, 29 Sep 2021 21:47:02 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from smtp3.osuosl.org ([127.0.0.1])
- by localhost (smtp3.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id 0nfgQwGZRrsx for <iommu@lists.linux-foundation.org>;
- Wed, 29 Sep 2021 21:42:13 +0000 (UTC)
+Authentication-Results: smtp2.osuosl.org (amavisd-new);
+ dkim=pass (2048-bit key) header.d=deltatee.com
+Received: from smtp2.osuosl.org ([127.0.0.1])
+ by localhost (smtp2.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+ with ESMTP id h9zaa7B5OR37 for <iommu@lists.linux-foundation.org>;
+ Wed, 29 Sep 2021 21:47:02 +0000 (UTC)
 X-Greylist: domain auto-whitelisted by SQLgrey-1.8.0
 Received: from ale.deltatee.com (ale.deltatee.com [204.191.154.188])
- by smtp3.osuosl.org (Postfix) with ESMTPS id 504FD60762
- for <iommu@lists.linux-foundation.org>; Wed, 29 Sep 2021 21:42:13 +0000 (UTC)
+ by smtp2.osuosl.org (Postfix) with ESMTPS id 0D190400DA
+ for <iommu@lists.linux-foundation.org>; Wed, 29 Sep 2021 21:47:01 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
  d=deltatee.com; s=20200525; h=Subject:In-Reply-To:MIME-Version:Date:
  Message-ID:From:References:Cc:To:content-disposition;
- bh=3WA1KpyUg4a9gkCdh4NdRSTCNhCxgDrQHUyIFuEcPKQ=; b=YQ7Pgy3UA4s4WDhJgR56ldVLZa
- aarTUnhSWeZoaQ9XqoPtb8J4kCHbW5DZWtfpd6kiFewgouwOGQmyuMkSarYIcMeXLTQt4tDJSPf4a
- s3Cles1vcGAIVK5HH+sKtExXol+X/LJ0ITXpylU2RUjtAfnFitq7egHhPN+vnbLfsjBT727eeJJYW
- H7b2kX4EmNJ56lcfRB71Eg53F9hf8LVdioB4nnhm6Gm5kaDhd+o1XSlQkhJU859u9pc2Kf8Ej5LEB
- QjScyz4JhjwVsjawSaxV3AQfZ0qXHixKZL72zEfKVQ17MznS+q5nLDZ+sbw85NHk2exob1mrzGBrY
- X59623ew==;
+ bh=E0+dWT8gAeYt6sxwFEz+vMLQHximHDqyya3XwSsMquA=; b=B1+ojUPj4nQ9gfTcjrhn2ItoGQ
+ aINPbvBXV9Nds1L0hVw7x1w9p2f358U5Fu3wsB7LxIEcnVMidcZxVp9bnuYVbm+woQWShpT40RVzU
+ OWcloGv5IVDL4LO1/uqKO7qJp8yyXESOWL5Pk908ezjO+8d79gGLYr04akWdskoQQITHB9DMMIHmA
+ 92BxFHqUONXLFywx+DHgJ56IhJUbz68+CmbfX8Rw8Ao+P9/K4WRFREHY1Dgj8ZBtJ3HAi1EpCtHUm
+ l5AU9JEaCtAhOL0zCRMIIQj6PRFACLBxlb8WUFdKUs9k94DRCRe5C1KpsFdiatomWcFHdJ3AjXAfr
+ abJCdzRA==;
 Received: from s0106a84e3fe8c3f3.cg.shawcable.net ([24.64.144.200]
  helo=[192.168.0.10])
  by ale.deltatee.com with esmtpsa (TLS1.3:ECDHE_RSA_AES_128_GCM_SHA256:128)
  (Exim 4.92) (envelope-from <logang@deltatee.com>)
- id 1mVhL0-0006W2-Fd; Wed, 29 Sep 2021 15:42:03 -0600
+ id 1mVhPY-0006ZO-78; Wed, 29 Sep 2021 15:46:45 -0600
 To: Jason Gunthorpe <jgg@ziepe.ca>
 References: <20210916234100.122368-1-logang@deltatee.com>
  <20210916234100.122368-20-logang@deltatee.com>
- <20210928195518.GV3544071@ziepe.ca>
+ <20210928200506.GX3544071@ziepe.ca>
 From: Logan Gunthorpe <logang@deltatee.com>
-Message-ID: <8d386273-c721-c919-9749-fc0a7dc1ed8b@deltatee.com>
-Date: Wed, 29 Sep 2021 15:42:00 -0600
+Message-ID: <3dfbfb6c-321c-f717-8adf-a37956f15678@deltatee.com>
+Date: Wed, 29 Sep 2021 15:46:40 -0600
 User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
  Thunderbird/78.14.0
 MIME-Version: 1.0
-In-Reply-To: <20210928195518.GV3544071@ziepe.ca>
+In-Reply-To: <20210928200506.GX3544071@ziepe.ca>
 Content-Language: en-CA
 X-SA-Exim-Connect-IP: 24.64.144.200
 X-SA-Exim-Rcpt-To: ckulkarnilinux@gmail.com, martin.oliveira@eideticom.com,
@@ -114,60 +116,40 @@ Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
 
 
-On 2021-09-28 1:55 p.m., Jason Gunthorpe wrote:
+
+On 2021-09-28 2:05 p.m., Jason Gunthorpe wrote:
 > On Thu, Sep 16, 2021 at 05:40:59PM -0600, Logan Gunthorpe wrote:
->> +int pci_mmap_p2pmem(struct pci_dev *pdev, struct vm_area_struct *vma)
->> +{
->> +	struct pci_p2pdma_map *pmap;
->> +	struct pci_p2pdma *p2pdma;
->> +	int ret;
->> +
->> +	/* prevent private mappings from being established */
->> +	if ((vma->vm_flags & VM_MAYSHARE) != VM_MAYSHARE) {
->> +		pci_info_ratelimited(pdev,
->> +				     "%s: fail, attempted private mapping\n",
->> +				     current->comm);
->> +		return -EINVAL;
->> +	}
->> +
->> +	pmap = pci_p2pdma_map_alloc(pdev, vma->vm_end - vma->vm_start);
->> +	if (!pmap)
->> +		return -ENOMEM;
->> +
->> +	rcu_read_lock();
->> +	p2pdma = rcu_dereference(pdev->p2pdma);
->> +	if (!p2pdma) {
->> +		ret = -ENODEV;
->> +		goto out;
->> +	}
->> +
->> +	ret = simple_pin_fs(&pci_p2pdma_fs_type, &pci_p2pdma_fs_mnt,
->> +			    &pci_p2pdma_fs_cnt);
->> +	if (ret)
->> +		goto out;
->> +
->> +	ihold(p2pdma->inode);
->> +	pmap->inode = p2pdma->inode;
->> +	rcu_read_unlock();
->> +
->> +	vma->vm_flags |= VM_MIXEDMAP;
 > 
-> Why is this a VM_MIXEDMAP? Everything fault sticks in here has a
-> struct page, right?
+>> +static void pci_p2pdma_unmap_mappings(void *data)
+>> +{
+>> +	struct pci_dev *pdev = data;
+>> +	struct pci_p2pdma *p2pdma = rcu_dereference_protected(pdev->p2pdma, 1);
+>> +
+>> +	p2pdma->active = false;
+>> +	synchronize_rcu();
+>> +	unmap_mapping_range(p2pdma->inode->i_mapping, 0, 0, 1);
+>> +	pci_p2pdma_free_mappings(p2pdma->inode->i_mapping);
+>> +}
+> 
+> If this is going to rely on unmap_mapping_range then GUP should also
+> reject this memory for FOLL_LONGTERM..
 
-Yes. This decision is not so simple, I tried a few variations before
-settling on this.
+Right, makes sense.
 
-The main reason is probably this: if we don't use VM_MIXEDMAP, then we
-can't set pte_devmap(). If we don't set pte_devmap(), then every single
-page that GUP processes needs to check if it's a ZONE_DEVICE page and
-also if it's a P2PDMA page (thus dereferencing pgmap) in order to
-satisfy the requirements of FOLL_PCI_P2PDMA.
+> 
+> What along this control flow:
+> 
+>> +       error = devm_add_action_or_reset(&pdev->dev, pci_p2pdma_unmap_mappings,
+>> +                                        pdev);
+> 
+> Waits for all the page refcounts to go to zero?
 
-I didn't think other developers would go for that kind of performance
-hit. With VM_MIXEDMAP we hide the performance penalty behind the
-existing check. And with the current pgmap code as is, we only need to
-do that check once for every new pgmap pointer.
+That's already in the existing code as part of memunmap_pages() which
+puts the original reference to all the pages and then waits for the
+reference to go to zero.
+
+This new action unmaps all the VMAs so that the subsequent call to
+memunmap_pages() doesn't block on userspace processes.
 
 Logan
 _______________________________________________
