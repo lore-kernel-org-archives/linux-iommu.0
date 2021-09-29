@@ -2,80 +2,158 @@ Return-Path: <SRS0=Xpq5=OT=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4F9B6C433EF
-	for <iommu@archiver.kernel.org>; Wed, 29 Sep 2021 12:13:10 +0000 (UTC)
-Received: from smtp2.osuosl.org (smtp2.osuosl.org [140.211.166.133])
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4FC04C43217
+	for <iommu@archiver.kernel.org>; Wed, 29 Sep 2021 12:15:25 +0000 (UTC)
+Received: from smtp4.osuosl.org (smtp4.osuosl.org [140.211.166.137])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 0A0D361440
-	for <iommu@archiver.kernel.org>; Wed, 29 Sep 2021 12:13:09 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.4.1 mail.kernel.org 0A0D361440
-Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=collabora.com
+	by mail.kernel.org (Postfix) with ESMTPS id DA3E46140F
+	for <iommu@archiver.kernel.org>; Wed, 29 Sep 2021 12:15:24 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.4.1 mail.kernel.org DA3E46140F
+Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=lists.linux-foundation.org
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by smtp2.osuosl.org (Postfix) with ESMTP id B81D940370;
-	Wed, 29 Sep 2021 12:13:09 +0000 (UTC)
+	by smtp4.osuosl.org (Postfix) with ESMTP id 92DD441619;
+	Wed, 29 Sep 2021 12:15:24 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from smtp2.osuosl.org ([127.0.0.1])
-	by localhost (smtp2.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id 7J-cSjtBZOeX; Wed, 29 Sep 2021 12:13:08 +0000 (UTC)
+Received: from smtp4.osuosl.org ([127.0.0.1])
+	by localhost (smtp4.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+	with ESMTP id m4msAFmncMag; Wed, 29 Sep 2021 12:15:23 +0000 (UTC)
 Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [IPv6:2605:bc80:3010:104::8cd3:938])
-	by smtp2.osuosl.org (Postfix) with ESMTPS id E245540012;
-	Wed, 29 Sep 2021 12:13:07 +0000 (UTC)
+	by smtp4.osuosl.org (Postfix) with ESMTPS id 55D0A414C0;
+	Wed, 29 Sep 2021 12:15:23 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id B85D0C000F;
-	Wed, 29 Sep 2021 12:13:07 +0000 (UTC)
-Received: from smtp1.osuosl.org (smtp1.osuosl.org [140.211.166.138])
- by lists.linuxfoundation.org (Postfix) with ESMTP id A275DC000D
- for <iommu@lists.linux-foundation.org>; Wed, 29 Sep 2021 12:13:06 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 1E6BAC000F;
+	Wed, 29 Sep 2021 12:15:23 +0000 (UTC)
+Received: from smtp4.osuosl.org (smtp4.osuosl.org [140.211.166.137])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 4F8AFC000D
+ for <iommu@lists.linux-foundation.org>; Wed, 29 Sep 2021 12:15:21 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by smtp1.osuosl.org (Postfix) with ESMTP id 9081D82EC7
- for <iommu@lists.linux-foundation.org>; Wed, 29 Sep 2021 12:13:06 +0000 (UTC)
+ by smtp4.osuosl.org (Postfix) with ESMTP id 383154157A
+ for <iommu@lists.linux-foundation.org>; Wed, 29 Sep 2021 12:15:21 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from smtp1.osuosl.org ([127.0.0.1])
- by localhost (smtp1.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id 1urmfFNnT17K for <iommu@lists.linux-foundation.org>;
- Wed, 29 Sep 2021 12:13:05 +0000 (UTC)
-X-Greylist: domain auto-whitelisted by SQLgrey-1.8.0
-Received: from bhuna.collabora.co.uk (bhuna.collabora.co.uk
- [IPv6:2a00:1098:0:82:1000:25:2eeb:e3e3])
- by smtp1.osuosl.org (Postfix) with ESMTPS id 49EDE82E9C
- for <iommu@lists.linux-foundation.org>; Wed, 29 Sep 2021 12:13:05 +0000 (UTC)
-Received: from [IPv6:2a02:810a:880:f54:fd5c:7cb1:aaa8:78b1] (unknown
- [IPv6:2a02:810a:880:f54:fd5c:7cb1:aaa8:78b1])
- (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
- (No client certificate requested) (Authenticated sender: dafna)
- by bhuna.collabora.co.uk (Postfix) with ESMTPSA id 67C511F4428D;
- Wed, 29 Sep 2021 13:13:02 +0100 (BST)
-Subject: Re: [PATCH v8 09/12] media: mtk-vcodec: Get rid of
- mtk_smi_larb_get/put
-To: Yong Wu <yong.wu@mediatek.com>, Matthias Brugger
- <matthias.bgg@gmail.com>, Joerg Roedel <joro@8bytes.org>,
- Rob Herring <robh+dt@kernel.org>,
- Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>,
- David Airlie <airlied@linux.ie>, Mauro Carvalho Chehab <mchehab@kernel.org>
-References: <20210929013719.25120-1-yong.wu@mediatek.com>
- <20210929013719.25120-10-yong.wu@mediatek.com>
-From: Dafna Hirschfeld <dafna.hirschfeld@collabora.com>
-Message-ID: <02f444d5-9633-3f9c-2d1f-97ce073d1180@collabora.com>
-Date: Wed, 29 Sep 2021 14:13:00 +0200
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
- Thunderbird/78.13.0
+Received: from smtp4.osuosl.org ([127.0.0.1])
+ by localhost (smtp4.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+ with ESMTP id X6VyvAj4GB-T for <iommu@lists.linux-foundation.org>;
+ Wed, 29 Sep 2021 12:15:19 +0000 (UTC)
+X-Greylist: whitelisted by SQLgrey-1.8.0
+Received: from NAM04-BN8-obe.outbound.protection.outlook.com
+ (mail-bn8nam08on2061b.outbound.protection.outlook.com
+ [IPv6:2a01:111:f400:7e8d::61b])
+ by smtp4.osuosl.org (Postfix) with ESMTPS id 29B3C414C0
+ for <iommu@lists.linux-foundation.org>; Wed, 29 Sep 2021 12:15:19 +0000 (UTC)
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=LWyXWHyqkuIXmkZFx70Fz4WOFKRPkgsrLUPurhEwGZ/PkbZWaQinUJQhtaUsWhZSGuO3w1i7QLCzbcI7JG0HQ1M38QghoQ7PnXwLDUi4sVWt2RmvyEL9DZRkR1K7uWw1hSfVQ15hDI8KKSorTTNTnEGC1OkFbuXqAAtHZGGJ448Y2zR/8R5y1nfJuhYR9ADGHotDFNif/8+MynU2DyAWIVQMNYG4Pm1FVjmn/UQ/fp5khC/PYikmn6egw+70uG6wruFFhURMEGolf72FY49iZM8gM5iFkuxxegmAwfvO68Fwq/q7eLLspHVxyiYkiS4nUAw8u4wBDEEry6YecCS0YA==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com; 
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version; 
+ bh=M9ci2mDogamEBptGuYbYNBcAL2Pfd9fjPMMMnqowemE=;
+ b=b6na8DA9y3VHr4isxrSpuaPzpPn+YrKknaZ3J37Lv1DaCygZAM8YbJGvHhKjoEsz8oO4Ic6UllT8go/vcx3tGYL07SItwmKBcPKlyLQ9sfw0fyqrC1oJdwEOHjCz0G2Rr64HXAqajXtJ+sqPxGhDoyFbce7le1cDjXHrtnDojhLVYaew9+2KevWWEkMc7NY4tPX2Wy0bdrRx4VZzFtqORlUwkOU5mK2nKOxNvxm8cHW5ldhycGoKNf7IAJA4NGQyX0pLm3QDHrJu3GqPM6Un+sT9fPDsF6QLjFqZSxrtKrhB3HbYXHT8DFZf/ehz9Zf+FrvkuKMjbofXEsCBEZVPKw==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=nvidia.com; dmarc=pass action=none header.from=nvidia.com;
+ dkim=pass header.d=nvidia.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
+ s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=M9ci2mDogamEBptGuYbYNBcAL2Pfd9fjPMMMnqowemE=;
+ b=dV6WCmCOquBGz+O6XSWNmgk6fPxT390MCgk/id4uPlrTkmjtt0JU3bbXWO6xHRsEKWcciWR9tpo3k1yrocrcmQSyJfW1NMkcBoPOJIWToHuazct1kpM615PGw/7dRhNLGy4H9dxFAp6CWaMwSWfGDGRREoa17/tARLPHME1kU7oqgj9FhNgy5KrRR31M7yizA/fRXZtmONV+RL72A8XJYIw95FY3RSz6431+CkDDEY57YXWL5wxRgFzFDhWa0jViVZAWuuQE3emql79vUDDqanHTwAslvJGnZquPMxGJI6c1Rh2UISZRYynO1NRQRCA4990hYAXlana+hjlFe74uOg==
+Authentication-Results: redhat.com; dkim=none (message not signed)
+ header.d=none;redhat.com; dmarc=none action=none header.from=nvidia.com;
+Received: from BL0PR12MB5506.namprd12.prod.outlook.com (2603:10b6:208:1cb::22)
+ by BL1PR12MB5175.namprd12.prod.outlook.com (2603:10b6:208:318::8)
+ with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4544.15; Wed, 29 Sep
+ 2021 12:15:17 +0000
+Received: from BL0PR12MB5506.namprd12.prod.outlook.com
+ ([fe80::e8af:232:915e:2f95]) by BL0PR12MB5506.namprd12.prod.outlook.com
+ ([fe80::e8af:232:915e:2f95%8]) with mapi id 15.20.4566.015; Wed, 29 Sep 2021
+ 12:15:17 +0000
+Date: Wed, 29 Sep 2021 09:15:15 -0300
+To: Cornelia Huck <cohuck@redhat.com>
+Subject: Re: [RFC 03/20] vfio: Add vfio_[un]register_device()
+Message-ID: <20210929121515.GN964074@nvidia.com>
+References: <20210919063848.1476776-1-yi.l.liu@intel.com>
+ <20210919063848.1476776-4-yi.l.liu@intel.com>
+ <YVPS43bNjvzdxdiM@yekko>
+ <BN9PR11MB543356CD7AD9F45793D1ED118CA99@BN9PR11MB5433.namprd11.prod.outlook.com>
+ <871r576eqe.fsf@redhat.com>
+Content-Disposition: inline
+In-Reply-To: <871r576eqe.fsf@redhat.com>
+X-ClientProxiedBy: MN2PR03CA0027.namprd03.prod.outlook.com
+ (2603:10b6:208:23a::32) To BL0PR12MB5506.namprd12.prod.outlook.com
+ (2603:10b6:208:1cb::22)
 MIME-Version: 1.0
-In-Reply-To: <20210929013719.25120-10-yong.wu@mediatek.com>
-Content-Language: en-US
-Cc: Chun-Kuang Hu <chunkuang.hu@kernel.org>, Will Deacon <will.deacon@arm.com>,
- dri-devel@lists.freedesktop.org, anthony.huang@mediatek.com,
- youlin.pei@mediatek.com, Irui Wang <irui.wang@mediatek.com>,
- Evan Green <evgreen@chromium.org>, Eizan Miyamoto <eizan@chromium.org>,
- Matthias Kaehlcke <mka@chromium.org>, linux-media@vger.kernel.org,
- devicetree@vger.kernel.org, Philipp Zabel <p.zabel@pengutronix.de>,
- Frank Wunderlich <frank-w@public-files.de>, yi.kuo@mediatek.com,
- linux-mediatek@lists.infradead.org, Hsin-Yi Wang <hsinyi@chromium.org>,
- Tiffany Lin <tiffany.lin@mediatek.com>, linux-arm-kernel@lists.infradead.org,
- anan.sun@mediatek.com, srv_heupstream@mediatek.com, acourbot@chromium.org,
- linux-kernel@vger.kernel.org, iommu@lists.linux-foundation.org,
- Daniel Vetter <daniel@ffwll.ch>, Robin Murphy <robin.murphy@arm.com>
+Received: from mlx.ziepe.ca (142.162.113.129) by
+ MN2PR03CA0027.namprd03.prod.outlook.com (2603:10b6:208:23a::32) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4566.14 via Frontend
+ Transport; Wed, 29 Sep 2021 12:15:16 +0000
+Received: from jgg by mlx with local (Exim 4.94)	(envelope-from
+ <jgg@nvidia.com>)	id 1mVYUV-007YUZ-Oi; Wed, 29 Sep 2021 09:15:15 -0300
+X-MS-PublicTrafficType: Email
+X-MS-Office365-Filtering-Correlation-Id: 29cdbf0e-eace-4f8d-53a7-08d98342cc21
+X-MS-TrafficTypeDiagnostic: BL1PR12MB5175:
+X-MS-Exchange-Transport-Forked: True
+X-Microsoft-Antispam-PRVS: <BL1PR12MB51750B2E0195FC973BB0C58DC2A99@BL1PR12MB5175.namprd12.prod.outlook.com>
+X-MS-Oob-TLC-OOBClassifiers: OLM:9508;
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: stltqf/tyTENBn48sI1RjToh2XcQz2P6uZJn6deRZrzwFcvA1U+7qpVnot4j10LkPHL7WBsHLw+jauWQYEi6AO8hN/39wAeysTYjvQPQxQS2TTHR/GpX3ZG6DPSsNWQiNJIqlVdA2xCTTkp9nhMQ+EWHhznmpQRuGeaAj1hnjPNcPWDmkdoPQSI3byDnhysqBq/jCyKy3KVuH5kCheGICb7vBG3msy+6Qhl+WFtWdVdZBnHaB+TWpszlwqurb/wdH0cLwAZvURNaJXS99tei7Uf40EfEvPX7mWgiybjnv1CNSEsMiMXE9UK314csZUtfWxB3cH8iM7t4aJNDCttkpdrQrSkNMffdeQWGJBMaxrwpo7im/jy4fj5fsj9Y1GR3fuOgbX8Xdi+qEhDygGYDOlfSWFCkaQ6GsMhwGOVeyDbWbPXxNelbUYOG5eLQI1OiUWggXhNL9jW5y0b7eZBSCEt4JoRK02MhoBBqNU5gJX011RRk034oJzeLQabsM+uaFFfWay3aL/07IlCFDz3AcISdjDVXem9LJ2/i0ZCVZT4JWKYpRtuLgikqmfv6bXyDy0sn3ohy3WFDCMI9c5Xw7XusoayZttPF8Pu+nfNos//ehTWJ8rcoEmXs97xOZxx77B5IkW2xa5ibFPSUhVyf4riFrhpPM/n0qh9qj5u8i/G5u5nJlMIC8gaRZJ1l9x03
+X-Forefront-Antispam-Report: CIP:255.255.255.255; CTRY:; LANG:en; SCL:1; SRV:;
+ IPV:NLI; SFV:NSPM; H:BL0PR12MB5506.namprd12.prod.outlook.com; PTR:; CAT:NONE;
+ SFS:(4636009)(366004)(66556008)(426003)(66946007)(66476007)(316002)(4326008)(508600001)(186003)(107886003)(26005)(38100700002)(36756003)(7416002)(9786002)(9746002)(5660300002)(86362001)(33656002)(54906003)(6916009)(2906002)(8936002)(83380400001)(8676002)(2616005)(1076003)(27376004);
+ DIR:OUT; SFP:1101; 
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?ncATi2Y/2ikXDFPo4IvgpZj+NcwV54K4e3WtKY94PpZHVEJI3zFjITcaaXSv?=
+ =?us-ascii?Q?KJoz7N0cbU8BBKyhnFSkAfLUNAlJ77R4DUVZ0khIAlC+uyV1d68iiaUpwpw8?=
+ =?us-ascii?Q?duXzQAoLecarMeNu0j1W7ZtVSUfmMKgNdqhIxF7AkzG95oZPWiDrWOOk1ys6?=
+ =?us-ascii?Q?m3rvSzAFOpQCFIlLyMQ1YO7LeetyD0j5AxIAUuchMkcaJ80MXkedpkZT/Cbq?=
+ =?us-ascii?Q?GKkv0jrUnhDHh6z71lzMhPWFayUjxs0VhKu6G5H85RBX9cxfqNnOfe5uobX+?=
+ =?us-ascii?Q?JaaAUI8At/1Alt3vn1cD9S3H3y/AzKL+DyZc9ipQ9t3rlhidKTRP8bD0PNCH?=
+ =?us-ascii?Q?42mAlhyOVMNRzaUKDxhVaP1p+MD6WH1m65Cy73Az8Lw5Qua662q/TgIhtoVC?=
+ =?us-ascii?Q?aUEDPaDfUot+NvT/zGdNSRnrDmLgeeg3NWVX6hYssN9TJuEFxpYJINLY3VYa?=
+ =?us-ascii?Q?aTXM6eYcftD43ssJHQnKTQmpRBVAFXMUNAdYlaRofRKVPfuiadAS45UC4lWm?=
+ =?us-ascii?Q?rlFGHaNzRBTKvG1fgLD63D5WN7WimRrryBTf2WqCWBtz10aPPpDN6YjMKVHD?=
+ =?us-ascii?Q?uQ8Dx//czBCMYUmQyckls4S0AhcahaULF9F5oe0SETN8wDdMrRDfIm3DSLDN?=
+ =?us-ascii?Q?qICECsqWFWqrPBNxPyE8mP+U6tV67yKuiQaDWpcGHCVMRutjerugrOoifr1/?=
+ =?us-ascii?Q?pCjyC8HWzytoU0cq6iaPAaApy9+jHj4+2LzGiss5ul368Y6jZHsyZBs/FFhZ?=
+ =?us-ascii?Q?heBlkUEuPhlh/0Lhs0dNodTpsUsD+6dA+s9tJ7tGhjIMyEOyh3CQvflYrl02?=
+ =?us-ascii?Q?iUdJVtr0MOi1ZPYauwfvCVl4HAUfnvUKTTn8HeF/2IFw21qXTh4ZYtkylbgu?=
+ =?us-ascii?Q?jFBgI6Mjw81+bt+o34Do9aQVR6TQXE+SW3zh5CGb/Fl+kidhiIBeKkKgipMW?=
+ =?us-ascii?Q?r1GVIglalD7y8m3h4RXC8mCH8KA1OW33MCUY1K0H3hOxEvq1qKp8U6L4+CE7?=
+ =?us-ascii?Q?6QhDcuLdxNVno99pXkJKbFEXB/SNmSB5rtYQKzzeLXJIPxdiRe6Dw2+VU9ot?=
+ =?us-ascii?Q?GPo1V/rLE2QyutcraFaFlMETnDQYJ4BKgyYp9QrhZtTh3idfIWHA/xNWgCaz?=
+ =?us-ascii?Q?RLf7S7hm4z3uHOg1LcfgNy+e9PCNa7LvIe2aY6HbfuKIqf52eDBqw749LNpU?=
+ =?us-ascii?Q?70LV/TmkC0K+gssvmesl65ADz04z1iwqSXYGHMIN4oH7c2RunxUCo3YECFdy?=
+ =?us-ascii?Q?1nabYcKR+KwfkwLJSondd7NQ/2l0Pf/rONaBhx0uvLLnr63zdS8AvCOLxfCP?=
+ =?us-ascii?Q?3GVC4Y/wcPZ+xi091qsa9wJF?=
+X-OriginatorOrg: Nvidia.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 29cdbf0e-eace-4f8d-53a7-08d98342cc21
+X-MS-Exchange-CrossTenant-AuthSource: BL0PR12MB5506.namprd12.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 29 Sep 2021 12:15:16.9484 (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: 0+D2hjJsEzrvg3Cs2J66n8cQB/8tQvblYQWeyOFxFtFlmyt76Ru0RSc0mxfmItGY
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: BL1PR12MB5175
+Cc: "kvm@vger.kernel.org" <kvm@vger.kernel.org>,
+ "jasowang@redhat.com" <jasowang@redhat.com>,
+ "kwankhede@nvidia.com" <kwankhede@nvidia.com>, "hch@lst.de" <hch@lst.de>,
+ "jean-philippe@linaro.org" <jean-philippe@linaro.org>, "Jiang,
+ Dave" <dave.jiang@intel.com>, "Raj, Ashok" <ashok.raj@intel.com>,
+ "corbet@lwn.net" <corbet@lwn.net>, "Tian, Kevin" <kevin.tian@intel.com>,
+ "parav@mellanox.com" <parav@mellanox.com>,
+ "alex.williamson@redhat.com" <alex.williamson@redhat.com>,
+ "lkml@metux.net" <lkml@metux.net>, David Gibson <david@gibson.dropbear.id.au>,
+ "dwmw2@infradead.org" <dwmw2@infradead.org>, "Tian,
+ Jun J" <jun.j.tian@intel.com>,
+ "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+ "lushenming@huawei.com" <lushenming@huawei.com>,
+ "iommu@lists.linux-foundation.org" <iommu@lists.linux-foundation.org>,
+ "pbonzini@redhat.com" <pbonzini@redhat.com>,
+ "robin.murphy@arm.com" <robin.murphy@arm.com>
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -88,293 +166,76 @@ List-Post: <mailto:iommu@lists.linux-foundation.org>
 List-Help: <mailto:iommu-request@lists.linux-foundation.org?subject=help>
 List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
  <mailto:iommu-request@lists.linux-foundation.org?subject=subscribe>
+From: Jason Gunthorpe via iommu <iommu@lists.linux-foundation.org>
+Reply-To: Jason Gunthorpe <jgg@nvidia.com>
+Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
-Content-Type: text/plain; charset="us-ascii"; Format="flowed"
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-
-
-On 29.09.21 03:37, Yong Wu wrote:
-> MediaTek IOMMU has already added the device_link between the consumer
-> and smi-larb device. If the vcodec device call the pm_runtime_get_sync,
-> the smi-larb's pm_runtime_get_sync also be called automatically.
+On Wed, Sep 29, 2021 at 09:08:25AM +0200, Cornelia Huck wrote:
+> On Wed, Sep 29 2021, "Tian, Kevin" <kevin.tian@intel.com> wrote:
 > 
-> CC: Tiffany Lin <tiffany.lin@mediatek.com>
-> CC: Irui Wang <irui.wang@mediatek.com>
-> Signed-off-by: Yong Wu <yong.wu@mediatek.com>
-> Reviewed-by: Evan Green <evgreen@chromium.org>
-> Acked-by: Tiffany Lin <tiffany.lin@mediatek.com>
-> Reviewed-by: Dafna Hirschfeld <dafna.hirschfeld@collabora.com>
-> ---
->   .../platform/mtk-vcodec/mtk_vcodec_dec_pm.c   | 37 +++-------------
->   .../platform/mtk-vcodec/mtk_vcodec_drv.h      |  3 --
->   .../platform/mtk-vcodec/mtk_vcodec_enc.c      |  1 -
->   .../platform/mtk-vcodec/mtk_vcodec_enc_pm.c   | 44 +++----------------
->   4 files changed, 10 insertions(+), 75 deletions(-)
+> >> From: David Gibson <david@gibson.dropbear.id.au>
+> >> Sent: Wednesday, September 29, 2021 10:44 AM
+> >> 
+> >> > One alternative option is to arrange device nodes in sub-directories based
+> >> > on the device type. But doing so also adds one trouble to userspace. The
+> >> > current vfio uAPI is designed to have the user query device type via
+> >> > VFIO_DEVICE_GET_INFO after opening the device. With this option the user
+> >> > instead needs to figure out the device type before opening the device, to
+> >> > identify the sub-directory.
+> >> 
+> >> Wouldn't this be up to the operator / configuration, rather than the
+> >> actual software though?  I would assume that typically the VFIO
+> >> program would be pointed at a specific vfio device node file to use,
+> >> e.g.
+> >> 	my-vfio-prog -d /dev/vfio/pci/0000:0a:03.1
+> >> 
+> >> Or more generally, if you're expecting userspace to know a name in a
+> >> uniqu pattern, they can equally well know a "type/name" pair.
+> >> 
+> >
+> > You are correct. Currently:
+> >
+> > -device, vfio-pci,host=DDDD:BB:DD.F
+> > -device, vfio-pci,sysfdev=/sys/bus/pci/devices/ DDDD:BB:DD.F
+> > -device, vfio-platform,sysdev=/sys/bus/platform/devices/PNP0103:00
+> >
+> > above is definitely type/name information to find the related node. 
+> >
+> > Actually even for Jason's proposal we still need such information to
+> > identify the sysfs path.
+> >
+> > Then I feel type-based sub-directory does work. Adding another link
+> > to sysfs sounds unnecessary now. But I'm not sure whether we still
+> > want to create /dev/vfio/devices/vfio0 thing and related udev rule
+> > thing that you pointed out in another mail.
 > 
-> diff --git a/drivers/media/platform/mtk-vcodec/mtk_vcodec_dec_pm.c b/drivers/media/platform/mtk-vcodec/mtk_vcodec_dec_pm.c
-> index 6038db96f71c..d0bf9aa3b29d 100644
-> --- a/drivers/media/platform/mtk-vcodec/mtk_vcodec_dec_pm.c
-> +++ b/drivers/media/platform/mtk-vcodec/mtk_vcodec_dec_pm.c
-> @@ -8,14 +8,12 @@
->   #include <linux/of_address.h>
->   #include <linux/of_platform.h>
->   #include <linux/pm_runtime.h>
-> -#include <soc/mediatek/smi.h>
->   
->   #include "mtk_vcodec_dec_pm.h"
->   #include "mtk_vcodec_util.h"
->   
->   int mtk_vcodec_init_dec_pm(struct mtk_vcodec_dev *mtkdev)
->   {
-> -	struct device_node *node;
->   	struct platform_device *pdev;
->   	struct mtk_vcodec_pm *pm;
->   	struct mtk_vcodec_clk *dec_clk;
-> @@ -26,18 +24,7 @@ int mtk_vcodec_init_dec_pm(struct mtk_vcodec_dev *mtkdev)
->   	pm = &mtkdev->pm;
->   	pm->mtkdev = mtkdev;
->   	dec_clk = &pm->vdec_clk;
-> -	node = of_parse_phandle(pdev->dev.of_node, "mediatek,larb", 0);
-> -	if (!node) {
-> -		mtk_v4l2_err("of_parse_phandle mediatek,larb fail!");
-> -		return -1;
-> -	}
->   
-> -	pdev = of_find_device_by_node(node);
-> -	of_node_put(node);
-> -	if (WARN_ON(!pdev)) {
-> -		return -1;
-> -	}
-> -	pm->larbvdec = &pdev->dev;
->   	pdev = mtkdev->plat_dev;
->   	pm->dev = &pdev->dev;
->   
-> @@ -47,14 +34,11 @@ int mtk_vcodec_init_dec_pm(struct mtk_vcodec_dev *mtkdev)
->   		dec_clk->clk_info = devm_kcalloc(&pdev->dev,
->   			dec_clk->clk_num, sizeof(*clk_info),
->   			GFP_KERNEL);
-> -		if (!dec_clk->clk_info) {
-> -			ret = -ENOMEM;
-> -			goto put_device;
-> -		}
-> +		if (!dec_clk->clk_info)
-> +			return -ENOMEM;
->   	} else {
->   		mtk_v4l2_err("Failed to get vdec clock count");
-> -		ret = -EINVAL;
-> -		goto put_device;
-> +		return -EINVAL;
->   	}
->   
->   	for (i = 0; i < dec_clk->clk_num; i++) {
-> @@ -63,29 +47,24 @@ int mtk_vcodec_init_dec_pm(struct mtk_vcodec_dev *mtkdev)
->   			"clock-names", i, &clk_info->clk_name);
->   		if (ret) {
->   			mtk_v4l2_err("Failed to get clock name id = %d", i);
-> -			goto put_device;
-> +			return ret;
->   		}
->   		clk_info->vcodec_clk = devm_clk_get(&pdev->dev,
->   			clk_info->clk_name);
->   		if (IS_ERR(clk_info->vcodec_clk)) {
->   			mtk_v4l2_err("devm_clk_get (%d)%s fail", i,
->   				clk_info->clk_name);
-> -			ret = PTR_ERR(clk_info->vcodec_clk);
-> -			goto put_device;
-> +			return PTR_ERR(clk_info->vcodec_clk);
->   		}
->   	}
->   
->   	pm_runtime_enable(&pdev->dev);
->   	return 0;
-> -put_device:
-> -	put_device(pm->larbvdec);
-> -	return ret;
->   }
->   
->   void mtk_vcodec_release_dec_pm(struct mtk_vcodec_dev *dev)
->   {
->   	pm_runtime_disable(dev->pm.dev);
-> -	put_device(dev->pm.larbvdec);
->   }
+> Still reading through this whole thread, but type-based subdirectories
+> also make the most sense to me. I don't really see userspace wanting to
+> grab just any device and then figure out whether it is the device it was
+> looking for, but rather immediately go to a specific device or at least
+> a device of a specific type.
 
-Now that functions only do  'pm_runtime_disable(dev->pm.dev);' so it will be more
-readable to remove the function mtk_vcodec_release_dec_pm
-and replace with pm_runtime_disable(dev->pm.dev);
-Same for the 'enc' equivalent.
+Even so the kernel should not be creating this, that is a job for
+udev and some symlinks
 
-Thanks,
-Dafna
+> Sequentially-numbered devices tend to become really unwieldy in my
+> experience if you are working on a system with loads of devices.
 
->   
->   int mtk_vcodec_dec_pw_on(struct mtk_vcodec_pm *pm)
-> @@ -122,11 +101,6 @@ void mtk_vcodec_dec_clock_on(struct mtk_vcodec_pm *pm)
->   		}
->   	}
->   
-> -	ret = mtk_smi_larb_get(pm->larbvdec);
-> -	if (ret) {
-> -		mtk_v4l2_err("mtk_smi_larb_get larbvdec fail %d", ret);
-> -		goto error;
-> -	}>   	return;
->   
->   error:
-> @@ -139,7 +113,6 @@ void mtk_vcodec_dec_clock_off(struct mtk_vcodec_pm *pm)
->   	struct mtk_vcodec_clk *dec_clk = &pm->vdec_clk;
->   	int i = 0;
->   
-> -	mtk_smi_larb_put(pm->larbvdec);
->   	for (i = dec_clk->clk_num - 1; i >= 0; i--)
->   		clk_disable_unprepare(dec_clk->clk_info[i].vcodec_clk);
->   }
-> diff --git a/drivers/media/platform/mtk-vcodec/mtk_vcodec_drv.h b/drivers/media/platform/mtk-vcodec/mtk_vcodec_drv.h
-> index c6c7672fecfb..64b73dd880ce 100644
-> --- a/drivers/media/platform/mtk-vcodec/mtk_vcodec_drv.h
-> +++ b/drivers/media/platform/mtk-vcodec/mtk_vcodec_drv.h
-> @@ -189,10 +189,7 @@ struct mtk_vcodec_clk {
->    */
->   struct mtk_vcodec_pm {
->   	struct mtk_vcodec_clk	vdec_clk;
-> -	struct device	*larbvdec;
-> -
->   	struct mtk_vcodec_clk	venc_clk;
-> -	struct device	*larbvenc;
->   	struct device	*dev;
->   	struct mtk_vcodec_dev	*mtkdev;
->   };
-> diff --git a/drivers/media/platform/mtk-vcodec/mtk_vcodec_enc.c b/drivers/media/platform/mtk-vcodec/mtk_vcodec_enc.c
-> index 416f356af363..9a1515cf862d 100644
-> --- a/drivers/media/platform/mtk-vcodec/mtk_vcodec_enc.c
-> +++ b/drivers/media/platform/mtk-vcodec/mtk_vcodec_enc.c
-> @@ -8,7 +8,6 @@
->   #include <media/v4l2-event.h>
->   #include <media/v4l2-mem2mem.h>
->   #include <media/videobuf2-dma-contig.h>
-> -#include <soc/mediatek/smi.h>
->   #include <linux/pm_runtime.h>
->   
->   #include "mtk_vcodec_drv.h"
-> diff --git a/drivers/media/platform/mtk-vcodec/mtk_vcodec_enc_pm.c b/drivers/media/platform/mtk-vcodec/mtk_vcodec_enc_pm.c
-> index 1b2e4930ed27..dffb190267ed 100644
-> --- a/drivers/media/platform/mtk-vcodec/mtk_vcodec_enc_pm.c
-> +++ b/drivers/media/platform/mtk-vcodec/mtk_vcodec_enc_pm.c
-> @@ -8,58 +8,36 @@
->   #include <linux/of_address.h>
->   #include <linux/of_platform.h>
->   #include <linux/pm_runtime.h>
-> -#include <soc/mediatek/smi.h>
->   
->   #include "mtk_vcodec_enc_pm.h"
->   #include "mtk_vcodec_util.h"
->   
->   int mtk_vcodec_init_enc_pm(struct mtk_vcodec_dev *mtkdev)
->   {
-> -	struct device_node *node;
->   	struct platform_device *pdev;
->   	struct mtk_vcodec_pm *pm;
->   	struct mtk_vcodec_clk *enc_clk;
->   	struct mtk_vcodec_clk_info *clk_info;
->   	int ret = 0, i = 0;
-> -	struct device *dev;
->   
->   	pdev = mtkdev->plat_dev;
->   	pm = &mtkdev->pm;
->   	memset(pm, 0, sizeof(struct mtk_vcodec_pm));
->   	pm->mtkdev = mtkdev;
->   	pm->dev = &pdev->dev;
-> -	dev = &pdev->dev;
->   	enc_clk = &pm->venc_clk;
->   
-> -	node = of_parse_phandle(dev->of_node, "mediatek,larb", 0);
-> -	if (!node) {
-> -		mtk_v4l2_err("no mediatek,larb found");
-> -		return -ENODEV;
-> -	}
-> -	pdev = of_find_device_by_node(node);
-> -	of_node_put(node);
-> -	if (!pdev) {
-> -		mtk_v4l2_err("no mediatek,larb device found");
-> -		return -ENODEV;
-> -	}
-> -	pm->larbvenc = &pdev->dev;
-> -	pdev = mtkdev->plat_dev;
-> -	pm->dev = &pdev->dev;
-> -
->   	enc_clk->clk_num = of_property_count_strings(pdev->dev.of_node,
->   		"clock-names");
->   	if (enc_clk->clk_num > 0) {
->   		enc_clk->clk_info = devm_kcalloc(&pdev->dev,
->   			enc_clk->clk_num, sizeof(*clk_info),
->   			GFP_KERNEL);
-> -		if (!enc_clk->clk_info) {
-> -			ret = -ENOMEM;
-> -			goto put_larbvenc;
-> -		}
-> +		if (!enc_clk->clk_info)
-> +			return -ENOMEM;
->   	} else {
->   		mtk_v4l2_err("Failed to get venc clock count");
-> -		ret = -EINVAL;
-> -		goto put_larbvenc;
-> +		return -EINVAL;
->   	}
->   
->   	for (i = 0; i < enc_clk->clk_num; i++) {
-> @@ -68,29 +46,23 @@ int mtk_vcodec_init_enc_pm(struct mtk_vcodec_dev *mtkdev)
->   			"clock-names", i, &clk_info->clk_name);
->   		if (ret) {
->   			mtk_v4l2_err("venc failed to get clk name %d", i);
-> -			goto put_larbvenc;
-> +			return ret;
->   		}
->   		clk_info->vcodec_clk = devm_clk_get(&pdev->dev,
->   			clk_info->clk_name);
->   		if (IS_ERR(clk_info->vcodec_clk)) {
->   			mtk_v4l2_err("venc devm_clk_get (%d)%s fail", i,
->   				clk_info->clk_name);
-> -			ret = PTR_ERR(clk_info->vcodec_clk);
-> -			goto put_larbvenc;
-> +			return PTR_ERR(clk_info->vcodec_clk);
->   		}
->   	}
->   
->   	return 0;
-> -
-> -put_larbvenc:
-> -	put_device(pm->larbvenc);
-> -	return ret;
->   }
->   
->   void mtk_vcodec_release_enc_pm(struct mtk_vcodec_dev *mtkdev)
->   {
->   	pm_runtime_disable(mtkdev->pm.dev);
-> -	put_device(mtkdev->pm.larbvenc);
->   }
->   
->   
-> @@ -108,11 +80,6 @@ void mtk_vcodec_enc_clock_on(struct mtk_vcodec_pm *pm)
->   		}
->   	}
->   
-> -	ret = mtk_smi_larb_get(pm->larbvenc);
-> -	if (ret) {
-> -		mtk_v4l2_err("mtk_smi_larb_get larb3 fail %d", ret);
-> -		goto clkerr;
-> -	}
->   	return;
->   
->   clkerr:
-> @@ -125,7 +92,6 @@ void mtk_vcodec_enc_clock_off(struct mtk_vcodec_pm *pm)
->   	struct mtk_vcodec_clk *enc_clk = &pm->venc_clk;
->   	int i = 0;
->   
-> -	mtk_smi_larb_put(pm->larbvenc);
->   	for (i = enc_clk->clk_num - 1; i >= 0; i--)
->   		clk_disable_unprepare(enc_clk->clk_info[i].vcodec_clk);
->   }
-> 
+If the user experiance is always to refer to the sysfs node as Kevin
+shows above then the user never sees the integer.
+
+It is very much like how the group number works already, programs
+always start at the sysfs, do the readlink thing on iommu_group and
+then get the group number to go to /dev/vfio/X
+
+So it is already the case that every piece of software can construct a
+sysfs path to the device, we are just changing from
+readlink(iommu_group) to readdir(vfio/vfio_device_XX)
+
+Jason
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
