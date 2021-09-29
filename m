@@ -2,62 +2,178 @@ Return-Path: <SRS0=Xpq5=OT=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A8611C433F5
-	for <iommu@archiver.kernel.org>; Wed, 29 Sep 2021 07:24:14 +0000 (UTC)
-Received: from smtp2.osuosl.org (smtp2.osuosl.org [140.211.166.133])
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5EB25C433EF
+	for <iommu@archiver.kernel.org>; Wed, 29 Sep 2021 07:31:25 +0000 (UTC)
+Received: from smtp4.osuosl.org (smtp4.osuosl.org [140.211.166.137])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 5623561042
-	for <iommu@archiver.kernel.org>; Wed, 29 Sep 2021 07:24:14 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.4.1 mail.kernel.org 5623561042
-Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=linux.intel.com
+	by mail.kernel.org (Postfix) with ESMTPS id 03A62613CE
+	for <iommu@archiver.kernel.org>; Wed, 29 Sep 2021 07:31:24 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.4.1 mail.kernel.org 03A62613CE
+Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=intel.com
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by smtp2.osuosl.org (Postfix) with ESMTP id D852340323;
-	Wed, 29 Sep 2021 07:24:13 +0000 (UTC)
+	by smtp4.osuosl.org (Postfix) with ESMTP id C0230415C0;
+	Wed, 29 Sep 2021 07:31:24 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from smtp2.osuosl.org ([127.0.0.1])
-	by localhost (smtp2.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id QSf_i8-TnA7Q; Wed, 29 Sep 2021 07:24:12 +0000 (UTC)
+Received: from smtp4.osuosl.org ([127.0.0.1])
+	by localhost (smtp4.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+	with ESMTP id XzRhxPwWRYjP; Wed, 29 Sep 2021 07:31:23 +0000 (UTC)
 Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by smtp2.osuosl.org (Postfix) with ESMTPS id 7775B402EF;
-	Wed, 29 Sep 2021 07:24:12 +0000 (UTC)
+	by smtp4.osuosl.org (Postfix) with ESMTPS id 827FD415B6;
+	Wed, 29 Sep 2021 07:31:23 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 4E985C0011;
-	Wed, 29 Sep 2021 07:24:12 +0000 (UTC)
-Received: from smtp3.osuosl.org (smtp3.osuosl.org [IPv6:2605:bc80:3010::136])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 36CCFC000D
- for <iommu@lists.linux-foundation.org>; Wed, 29 Sep 2021 07:24:11 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 23024C0011;
+	Wed, 29 Sep 2021 07:31:23 +0000 (UTC)
+Received: from smtp4.osuosl.org (smtp4.osuosl.org [IPv6:2605:bc80:3010::137])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 2F644C000D
+ for <iommu@lists.linux-foundation.org>; Wed, 29 Sep 2021 07:31:22 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by smtp3.osuosl.org (Postfix) with ESMTP id 1319460663
- for <iommu@lists.linux-foundation.org>; Wed, 29 Sep 2021 07:24:11 +0000 (UTC)
+ by smtp4.osuosl.org (Postfix) with ESMTP id 185C3415BB
+ for <iommu@lists.linux-foundation.org>; Wed, 29 Sep 2021 07:31:22 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from smtp3.osuosl.org ([127.0.0.1])
- by localhost (smtp3.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id s6XbE5N_uxO7 for <iommu@lists.linux-foundation.org>;
- Wed, 29 Sep 2021 07:24:10 +0000 (UTC)
+Received: from smtp4.osuosl.org ([127.0.0.1])
+ by localhost (smtp4.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+ with ESMTP id 5oCaAcX2TRh1 for <iommu@lists.linux-foundation.org>;
+ Wed, 29 Sep 2021 07:31:21 +0000 (UTC)
 X-Greylist: domain auto-whitelisted by SQLgrey-1.8.0
-Received: from mga06.intel.com (mga06.intel.com [134.134.136.31])
- by smtp3.osuosl.org (Postfix) with ESMTPS id 2058C60656
- for <iommu@lists.linux-foundation.org>; Wed, 29 Sep 2021 07:24:10 +0000 (UTC)
-X-IronPort-AV: E=McAfee;i="6200,9189,10121"; a="285894381"
-X-IronPort-AV: E=Sophos;i="5.85,331,1624345200"; d="scan'208";a="285894381"
-Received: from orsmga007.jf.intel.com ([10.7.209.58])
- by orsmga104.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384;
- 29 Sep 2021 00:24:09 -0700
+Received: from mga11.intel.com (mga11.intel.com [192.55.52.93])
+ by smtp4.osuosl.org (Postfix) with ESMTPS id 11C5F415B6
+ for <iommu@lists.linux-foundation.org>; Wed, 29 Sep 2021 07:31:20 +0000 (UTC)
+X-IronPort-AV: E=McAfee;i="6200,9189,10121"; a="221676430"
+X-IronPort-AV: E=Sophos;i="5.85,331,1624345200"; d="scan'208";a="221676430"
+Received: from fmsmga004.fm.intel.com ([10.253.24.48])
+ by fmsmga102.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384;
+ 29 Sep 2021 00:31:20 -0700
 X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.85,331,1624345200"; d="scan'208";a="476553453"
-Received: from allen-box.sh.intel.com ([10.239.159.118])
- by orsmga007.jf.intel.com with ESMTP; 29 Sep 2021 00:24:07 -0700
-From: Lu Baolu <baolu.lu@linux.intel.com>
-To: Joerg Roedel <joro@8bytes.org>
-Subject: [PATCH 1/1] iommu/vt-d: Delete dev_has_feat callback
-Date: Wed, 29 Sep 2021 15:20:30 +0800
-Message-Id: <20210929072030.1330225-1-baolu.lu@linux.intel.com>
-X-Mailer: git-send-email 2.25.1
+X-IronPort-AV: E=Sophos;i="5.85,331,1624345200"; d="scan'208";a="538713188"
+Received: from fmsmsx606.amr.corp.intel.com ([10.18.126.86])
+ by fmsmga004.fm.intel.com with ESMTP; 29 Sep 2021 00:31:20 -0700
+Received: from fmsmsx609.amr.corp.intel.com (10.18.126.89) by
+ fmsmsx606.amr.corp.intel.com (10.18.126.86) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2242.12; Wed, 29 Sep 2021 00:31:19 -0700
+Received: from fmsmsx604.amr.corp.intel.com (10.18.126.84) by
+ fmsmsx609.amr.corp.intel.com (10.18.126.89) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2242.12; Wed, 29 Sep 2021 00:31:19 -0700
+Received: from fmsedg602.ED.cps.intel.com (10.1.192.136) by
+ fmsmsx604.amr.corp.intel.com (10.18.126.84) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2242.12 via Frontend Transport; Wed, 29 Sep 2021 00:31:19 -0700
+Received: from NAM12-DM6-obe.outbound.protection.outlook.com (104.47.59.175)
+ by edgegateway.intel.com (192.55.55.71) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.1.2242.12; Wed, 29 Sep 2021 00:31:14 -0700
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=d/II652fmFcsE4Ub7jQgV0JKgT6i+pi8AB7bD875fFtfdo1+r1KYLw/oSitOUd2O+EyxIMfDP1FmyURDNn5UK5lFPkZV8qdekojazK2FKt5vZuVUCWmTonWbmrjNCG3+J2a28elQ0cGzb1vm96NaeYIyvQ2CG/Wf47D4oTuliRJZIt3KgrisaUwGYznMKcVXiZrxIVAJshg3ogP4JyWIirr8OEEvNd1Xw1uAAa5BQPssp2dBf8s/0Zh4FwbYRiacqr9GNUJgvFkuQ027aVLRyE2AhVclA0QHqOQpEqwlG3zUgYFD4R+GTt0xC2bZzbvBcXlH+EF9mivWb8mapQjfIA==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com; 
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version; 
+ bh=UUNRWvOwRddHjE5VFCfuv4MUPh5SRnnBC+Floa3KH+M=;
+ b=mICbD/kuX+mb+EbOV6zmCrUnaW7JWhiMDgP5QZc/wU0G40CI9Yi1gKEpqE1WUglZk8YZ+oFJ5vK1BXMpdW0/3mo17eSwq1v5JiLioAw4LZ/69t9fMuq9ZsygLwCLOuHqGGsHAG21rK+1ggIWS8cuZ8z+2X65PnfLtTDfXnD2UJnC4padfeDnRX+TdNW2+h4BHijP0RpbE9yvEhynobnbECMmarH2K4LZKkgo3R/RwB2OFr1mPtUw5dXA94NDbz/l5SFWc023c/vz5+1ZJ9x3kDjIAudJS2RH9tmunSn0qOR0VN8elBK/hEuUeBITx0JeHwS08qa4R2Y5Vab8QbQb+w==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=intel.com; dmarc=pass action=none header.from=intel.com;
+ dkim=pass header.d=intel.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=intel.onmicrosoft.com; 
+ s=selector2-intel-onmicrosoft-com;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=UUNRWvOwRddHjE5VFCfuv4MUPh5SRnnBC+Floa3KH+M=;
+ b=ca+3cXA7Ql2ANFR6DjNC8iqwmEbr/MpE7NB//q79MNsieTZ7CZi8kuPW/JN3yAzQARELq1Clkid89QY8YJfT2rHP2c0nz6LeqKM5gjuENGQiDte063MAs+dZGHqAAi5RngeAgbxkcXaYy6qfC8QK5er5mBRxdDufAfPXDwFRY2I=
+Received: from BN9PR11MB5433.namprd11.prod.outlook.com (2603:10b6:408:11e::13)
+ by BN0PR11MB5709.namprd11.prod.outlook.com (2603:10b6:408:148::6)
+ with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4544.13; Wed, 29 Sep
+ 2021 07:31:08 +0000
+Received: from BN9PR11MB5433.namprd11.prod.outlook.com
+ ([fe80::ddb7:fa7f:2cc:45df]) by BN9PR11MB5433.namprd11.prod.outlook.com
+ ([fe80::ddb7:fa7f:2cc:45df%8]) with mapi id 15.20.4544.021; Wed, 29 Sep 2021
+ 07:31:08 +0000
+From: "Tian, Kevin" <kevin.tian@intel.com>
+To: David Gibson <david@gibson.dropbear.id.au>
+Subject: RE: [RFC 06/20] iommu: Add iommu_device_init[exit]_user_dma interfaces
+Thread-Topic: [RFC 06/20] iommu: Add iommu_device_init[exit]_user_dma
+ interfaces
+Thread-Index: AQHXrSF9WDj+Z+DU+UqMJ7tQK2Edmau6gj6AgAAJv4CAABIXgIAADaYw
+Date: Wed, 29 Sep 2021 07:31:08 +0000
+Message-ID: <BN9PR11MB54335B4BA1134B14E1408D358CA99@BN9PR11MB5433.namprd11.prod.outlook.com>
+References: <20210919063848.1476776-1-yi.l.liu@intel.com>
+ <20210919063848.1476776-7-yi.l.liu@intel.com> <YVPxzad5TYHAc1H/@yekko>
+ <BN9PR11MB5433E1BF538C7D3632F4C6188CA99@BN9PR11MB5433.namprd11.prod.outlook.com>
+ <YVQJJ/ZlRoJbAt0+@yekko>
+In-Reply-To: <YVQJJ/ZlRoJbAt0+@yekko>
+Accept-Language: en-US
+Content-Language: en-US
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+authentication-results: gibson.dropbear.id.au; dkim=none (message not signed)
+ header.d=none; gibson.dropbear.id.au;
+ dmarc=none action=none header.from=intel.com;
+x-ms-publictraffictype: Email
+x-ms-office365-filtering-correlation-id: 9c08e964-6789-4e12-ef2c-08d9831b1ad9
+x-ms-traffictypediagnostic: BN0PR11MB5709:
+x-ld-processed: 46c98d88-e344-4ed4-8496-4ed7712e255d,ExtAddr
+x-ms-exchange-transport-forked: True
+x-microsoft-antispam-prvs: <BN0PR11MB57090B5444492A760F1D4B618CA99@BN0PR11MB5709.namprd11.prod.outlook.com>
+x-ms-oob-tlc-oobclassifiers: OLM:9508;
+x-ms-exchange-senderadcheck: 1
+x-ms-exchange-antispam-relay: 0
+x-microsoft-antispam: BCL:0;
+x-microsoft-antispam-message-info: h5N/cr1nQodQXXL9TmlcY5nv8NzVS3q5Ydi3Oz+Ok0fVRFznE9tb/ILdxG+56UZMLxuV7nvjKMzGiNmRc9niHdjJs7Ppks87c9JKBtdO7Iy2Qvg1paw6O/b9OnKMQnm4dvcOkqqV54Wh7OXA0+ZTXUbul5kYDt35ilgUGPHboxh6vBGjsQVZeRAD/C9YE8nIL44G+q3cu8UZnVEoe+M3xr0CiWRwwtK4/rPclwgNn9pYq14T0eh+3Fx8ehQ9ER+K7wslDzYgM4tPRZaDfR8kUyElxEvEZwOuWvDco1eo1XAK08EII/cG7to6Jz+aamgNTADgAXwYVKufemHdzuJvWVNo+K9RaylqUkPjeBHfNXjLRuvQJL81WDJ+nZqdv4EzkSy4QGK2UkMg7VvqlUVjBvOB6hNG60EdPNhUuCMN49KDdFE+TZCvFstKkT2HBeUw/l5vTSSko8U0Sr65qKRedvJnh6G1h6kNtQRzXstQExXJwsNPdoPb8j03SL5gOl8f/tppmat//UU1Ydhxj6lLlIZlmQ+fLb4sF43KehqY032agxelw/RPoCW359p88+dCE9fch9LJL4G1JXqKieUY86fQ/i10M7FJLKF8EKst7KpM3mD86aYSorOua1tjJ+k0wSVnYJEQEVJOUv7UdTaPpzhBjtSo949X8ppfcBiHXpUmchn6KAp3oWIIRCM0n6+c+XZ+zuG9ZC4o20vPzl6dA9IyQS6M84wuNKHRSvLd4eKKofrlEDB12I//QBUgI8LAwe4ePzxocltVGINVwMMa4AIq0roHLe94DNssUUltq3c=
+x-forefront-antispam-report: CIP:255.255.255.255; CTRY:; LANG:en; SCL:1; SRV:;
+ IPV:NLI; SFV:NSPM; H:BN9PR11MB5433.namprd11.prod.outlook.com; PTR:; CAT:NONE;
+ SFS:(4636009)(366004)(8676002)(2906002)(33656002)(26005)(9686003)(6506007)(83380400001)(186003)(66446008)(71200400001)(55016002)(8936002)(66946007)(52536014)(66476007)(66556008)(6916009)(64756008)(38100700002)(122000001)(5660300002)(76116006)(38070700005)(966005)(54906003)(7696005)(7416002)(4326008)(316002)(86362001)(508600001);
+ DIR:OUT; SFP:1102; 
+x-ms-exchange-antispam-messagedata-chunkcount: 1
+x-ms-exchange-antispam-messagedata-0: =?us-ascii?Q?wwfti/r1ZuBpJ7zh4Nys6bmo9/ZO0U8yqYcj76Onu5ssB7+LMgqdNSsIsZJY?=
+ =?us-ascii?Q?u002g8MSz7Hg5puAyfhJHv1+cI8YfUbWnNuqieyAFruJwi1OM0KAyNT5fWYL?=
+ =?us-ascii?Q?jCx7Ofylwx8yywAa5eXCS46h4XPsp/vIpCJY0lTIN6z+tubH48ff4fVyz+Ul?=
+ =?us-ascii?Q?iVnoNchh2HM9GY7VvPVo0Srkm1DYXZO/U/ehcxajDe4gzX3EY3aGcc8NYizG?=
+ =?us-ascii?Q?dNfqZfXClyS7phzipwrMMphOnNSD5rZmh4Ayr0jhznOqHw4vecAlZ9thEO0o?=
+ =?us-ascii?Q?GDme5JJ3UjwdL/hGxQ1EAeAsTF9ynVSjbSAvmlCwLv/HUAIRvJjpWMSNzs7Z?=
+ =?us-ascii?Q?a2N6enTwqoV4ZXUURZANJ91lxzcF071PgIwix8BNlNNGwNVufZDd/Sv0sRq3?=
+ =?us-ascii?Q?0Wh+vPPAG5DuyXylmx3129ohAoiqhZtYVS+JYUzWVQ7U1qQSGnhrzI7641U6?=
+ =?us-ascii?Q?thUHA2L+pKMUi4XAP+qvGHyXM48u09vy88fzNUCXWItRErK8zhDjsB5a+Wzr?=
+ =?us-ascii?Q?ssvrwQOWWxGmZk9JCx81lyhULyHPRGc+ubQJKbA48umPYTKxeil1ObkyAUEH?=
+ =?us-ascii?Q?mLtjkpsi28q/S+bsj8e55SElLZJl5Z4hLt+UiGIrDvd+RmEkrathSDtCIqO1?=
+ =?us-ascii?Q?8AiPhg6qauJhLMaWk2YqSkkj2dDl8OKceFDQEaYshOMJaNSotIzgtV9u6HDm?=
+ =?us-ascii?Q?/7sKAFJX6EttD1LA6x6Gz0JhqQ9+jGN86WM3RVQSkDM6ACSseUQOaQYWSq7j?=
+ =?us-ascii?Q?ZVpqnVfH7XfyBkhqYks24DjqxKa1o+I+kf51D9GZ+eadtmKmwCfup+MlF/fW?=
+ =?us-ascii?Q?2KJNDXciErlMwV3OPpu+Vuy3qzjzaJprLiyqjAxanIIXQvVvgup0ZGhWseRc?=
+ =?us-ascii?Q?KIiU3vZy2cYIHqU6iyHH0dLUmDPka0vMgsBjDQJexACJRV/mLGr70pKE7VdB?=
+ =?us-ascii?Q?KLOEG+FIoQiY/Vh6SiU8GZ37n/dP/XNeRIv8rFbvXTtbSo/WYhVNuNICbdl2?=
+ =?us-ascii?Q?PmDSPSKh06y9naiZyUZsKwTWAK7wJ/yLoF+wtuNKqpd/vPo37YEK+YSQJXcm?=
+ =?us-ascii?Q?klOB/rM5Vr6yp0+DcR+9tSXoENU6KEMPNb6/WeXGQqTeAO86a30RbLqnR9l3?=
+ =?us-ascii?Q?fag+bC9J/QDszm7+BK/JFIQKapGTMzuzCvPWdLbFK8oP4K9grAOBZGgj3OkY?=
+ =?us-ascii?Q?+0dY3v8xZ5K+0anfa7nwn4CvkJICjLeqR+VieBlTA1OebXtCGq+GlQXzSPYF?=
+ =?us-ascii?Q?IUSzamzt+rotXLIcAMWThjULM4nPtAIyFRX5FLW+sSPfOz6eJ33RhE1pjJVh?=
+ =?us-ascii?Q?60+tz3Az6pWM137ZN8udOD7w?=
 MIME-Version: 1.0
-Cc: iommu@lists.linux-foundation.org, Will Deacon <will@kernel.org>,
- linux-kernel@vger.kernel.org
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-AuthSource: BN9PR11MB5433.namprd11.prod.outlook.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 9c08e964-6789-4e12-ef2c-08d9831b1ad9
+X-MS-Exchange-CrossTenant-originalarrivaltime: 29 Sep 2021 07:31:08.6695 (UTC)
+X-MS-Exchange-CrossTenant-fromentityheader: Hosted
+X-MS-Exchange-CrossTenant-id: 46c98d88-e344-4ed4-8496-4ed7712e255d
+X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
+X-MS-Exchange-CrossTenant-userprincipalname: dxinozHndpLYswpcECCeHEVYLKSOZCHcJvzJG5Kri7fDJOb9BiKu4+jWgxsPMbLP+3sHkeEjOgMy6KWPA+3LDg==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: BN0PR11MB5709
+X-OriginatorOrg: intel.com
+Cc: "jean-philippe@linaro.org" <jean-philippe@linaro.org>,
+ "lushenming@huawei.com" <lushenming@huawei.com>, "Jiang,
+ Dave" <dave.jiang@intel.com>, "Raj, 
+ Ashok" <ashok.raj@intel.com>, "kvm@vger.kernel.org" <kvm@vger.kernel.org>,
+ "corbet@lwn.net" <corbet@lwn.net>,
+ "robin.murphy@arm.com" <robin.murphy@arm.com>,
+ "jasowang@redhat.com" <jasowang@redhat.com>,
+ "alex.williamson@redhat.com" <alex.williamson@redhat.com>,
+ "iommu@lists.linux-foundation.org" <iommu@lists.linux-foundation.org>,
+ "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, "Tian,
+ Jun J" <jun.j.tian@intel.com>, "kwankhede@nvidia.com" <kwankhede@nvidia.com>,
+ "lkml@metux.net" <lkml@metux.net>, "jgg@nvidia.com" <jgg@nvidia.com>,
+ "pbonzini@redhat.com" <pbonzini@redhat.com>,
+ "dwmw2@infradead.org" <dwmw2@infradead.org>, "hch@lst.de" <hch@lst.de>,
+ "parav@mellanox.com" <parav@mellanox.com>
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -75,106 +191,76 @@ Content-Transfer-Encoding: 7bit
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-The commit 262948f8ba573 ("iommu: Delete iommu_dev_has_feature()") has
-deleted the iommu_dev_has_feature() interface. Remove the dev_has_feat
-callback to avoid dead code.
+> From: David Gibson
+> Sent: Wednesday, September 29, 2021 2:35 PM
+> 
+> On Wed, Sep 29, 2021 at 05:38:56AM +0000, Tian, Kevin wrote:
+> > > From: David Gibson <david@gibson.dropbear.id.au>
+> > > Sent: Wednesday, September 29, 2021 12:56 PM
+> > >
+> > > >
+> > > > Unlike vfio, iommufd adopts a device-centric design with all group
+> > > > logistics hidden behind the fd. Binding a device to iommufd serves
+> > > > as the contract to get security context established (and vice versa
+> > > > for unbinding). One additional requirement in iommufd is to manage
+> the
+> > > > switch between multiple security contexts due to decoupled
+> bind/attach:
+> > > >
+> > > > 1)  Open a device in "/dev/vfio/devices" with user access blocked;
+> > >
+> > > Probably worth clarifying that (1) must happen for *all* devices in
+> > > the group before (2) happens for any device in the group.
+> >
+> > No. User access is naturally blocked for other devices as long as they
+> > are not opened yet.
+> 
+> Uh... my point is that everything in the group has to be removed from
+> regular kernel drivers before we reach step (2).  Is the plan that you
+> must do that before you can even open them?  That's a reasonable
+> choice, but then I think you should show that step in this description
+> as well.
 
-Signed-off-by: Lu Baolu <baolu.lu@linux.intel.com>
----
- drivers/iommu/intel/iommu.c | 59 ++++---------------------------------
- 1 file changed, 5 insertions(+), 54 deletions(-)
+Agree. I think below proposal can meet above requirement and ensure
+it's not broken in the whole process when the group is operated by the
+userspace:
 
-diff --git a/drivers/iommu/intel/iommu.c b/drivers/iommu/intel/iommu.c
-index 01162b0b9712..dc733de9eea5 100644
---- a/drivers/iommu/intel/iommu.c
-+++ b/drivers/iommu/intel/iommu.c
-@@ -5516,62 +5516,14 @@ static int intel_iommu_disable_sva(struct device *dev)
- 	return ret;
- }
- 
--/*
-- * A PCI express designated vendor specific extended capability is defined
-- * in the section 3.7 of Intel scalable I/O virtualization technical spec
-- * for system software and tools to detect endpoint devices supporting the
-- * Intel scalable IO virtualization without host driver dependency.
-- *
-- * Returns the address of the matching extended capability structure within
-- * the device's PCI configuration space or 0 if the device does not support
-- * it.
-- */
--static int siov_find_pci_dvsec(struct pci_dev *pdev)
--{
--	int pos;
--	u16 vendor, id;
--
--	pos = pci_find_next_ext_capability(pdev, 0, 0x23);
--	while (pos) {
--		pci_read_config_word(pdev, pos + 4, &vendor);
--		pci_read_config_word(pdev, pos + 8, &id);
--		if (vendor == PCI_VENDOR_ID_INTEL && id == 5)
--			return pos;
--
--		pos = pci_find_next_ext_capability(pdev, pos, 0x23);
--	}
--
--	return 0;
--}
--
--static bool
--intel_iommu_dev_has_feat(struct device *dev, enum iommu_dev_features feat)
-+static int intel_iommu_enable_iopf(struct device *dev)
- {
- 	struct device_domain_info *info = get_domain_info(dev);
- 
--	if (feat == IOMMU_DEV_FEAT_AUX) {
--		int ret;
--
--		if (!dev_is_pci(dev) || dmar_disabled ||
--		    !scalable_mode_support() || !pasid_mode_support())
--			return false;
--
--		ret = pci_pasid_features(to_pci_dev(dev));
--		if (ret < 0)
--			return false;
--
--		return !!siov_find_pci_dvsec(to_pci_dev(dev));
--	}
--
--	if (feat == IOMMU_DEV_FEAT_IOPF)
--		return info && info->pri_supported;
--
--	if (feat == IOMMU_DEV_FEAT_SVA)
--		return info && (info->iommu->flags & VTD_FLAG_SVM_CAPABLE) &&
--			info->pasid_supported && info->pri_supported &&
--			info->ats_supported;
-+	if (info && info->pri_supported)
-+		return 0;
- 
--	return false;
-+	return -ENODEV;
- }
- 
- static int
-@@ -5582,7 +5534,7 @@ intel_iommu_dev_enable_feat(struct device *dev, enum iommu_dev_features feat)
- 		return intel_iommu_enable_auxd(dev);
- 
- 	case IOMMU_DEV_FEAT_IOPF:
--		return intel_iommu_dev_has_feat(dev, feat) ? 0 : -ENODEV;
-+		return intel_iommu_enable_iopf(dev);
- 
- 	case IOMMU_DEV_FEAT_SVA:
- 		return intel_iommu_enable_sva(dev);
-@@ -5708,7 +5660,6 @@ const struct iommu_ops intel_iommu_ops = {
- 	.get_resv_regions	= intel_iommu_get_resv_regions,
- 	.put_resv_regions	= generic_iommu_put_resv_regions,
- 	.device_group		= intel_iommu_device_group,
--	.dev_has_feat		= intel_iommu_dev_has_feat,
- 	.dev_feat_enabled	= intel_iommu_dev_feat_enabled,
- 	.dev_enable_feat	= intel_iommu_dev_enable_feat,
- 	.dev_disable_feat	= intel_iommu_dev_disable_feat,
--- 
-2.25.1
+https://lore.kernel.org/kvm/20210928140712.GL964074@nvidia.com/
 
+and definitely an updated description will be provided when sending out
+the new proposal.
+
+> 
+> > > > 2)  Bind the device to an iommufd with an initial security context
+> > > >     (an empty iommu domain which blocks dma) established for its
+> > > >     group, with user access unblocked;
+> > > >
+> > > > 3)  Attach the device to a user-specified ioasid (shared by all devices
+> > > >     attached to this ioasid). Before attaching, the device should be first
+> > > >     detached from the initial context;
+> > >
+> > > So, this step can implicitly but observably change the behaviour for
+> > > other devices in the group as well.  I don't love that kind of
+> > > difficult to predict side effect, which is why I'm *still* not totally
+> > > convinced by the device-centric model.
+> >
+> > which side-effect is predicted here? The user anyway needs to be
+> > aware of such group restriction regardless whether it uses group
+> > or nongroup interface.
+> 
+> Yes, exactly.  And with a group interface it's obvious it has to
+> understand it.  With the non-group interface, you can get to this
+> stage in ignorance of groups.  It will even work as long as you are
+> lucky enough only to try with singleton-group devices.  Then you try
+> it with two devices in the one group and doing (3) on device A will
+> implicitly change the DMA environment of device B.
+
+for non-group we can also document it obviously in uAPI that the user
+must understand group restriction and violating it will get failure
+when attaching to different IOAS's for devices in the same group.
+
+Thanks
+Kevin
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
