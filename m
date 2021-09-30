@@ -2,73 +2,90 @@ Return-Path: <SRS0=YF8t=OU=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 40F24C433F5
-	for <iommu@archiver.kernel.org>; Thu, 30 Sep 2021 11:26:16 +0000 (UTC)
-Received: from smtp1.osuosl.org (smtp1.osuosl.org [140.211.166.138])
+	by smtp.lore.kernel.org (Postfix) with ESMTP id ABB9EC433EF
+	for <iommu@archiver.kernel.org>; Thu, 30 Sep 2021 13:44:18 +0000 (UTC)
+Received: from smtp2.osuosl.org (smtp2.osuosl.org [140.211.166.133])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id C1E8C615E0
-	for <iommu@archiver.kernel.org>; Thu, 30 Sep 2021 11:26:15 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.4.1 mail.kernel.org C1E8C615E0
-Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=collabora.com
+	by mail.kernel.org (Postfix) with ESMTPS id 5EF2261353
+	for <iommu@archiver.kernel.org>; Thu, 30 Sep 2021 13:44:18 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.4.1 mail.kernel.org 5EF2261353
+Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=linux.intel.com
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by smtp1.osuosl.org (Postfix) with ESMTP id 908C8840E2;
-	Thu, 30 Sep 2021 11:26:15 +0000 (UTC)
+	by smtp2.osuosl.org (Postfix) with ESMTP id 1C0F840787;
+	Thu, 30 Sep 2021 13:44:18 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from smtp1.osuosl.org ([127.0.0.1])
-	by localhost (smtp1.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id kQPVSMmBDrCB; Thu, 30 Sep 2021 11:26:14 +0000 (UTC)
-Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [IPv6:2605:bc80:3010:104::8cd3:938])
-	by smtp1.osuosl.org (Postfix) with ESMTPS id 6F4B8840DE;
-	Thu, 30 Sep 2021 11:26:14 +0000 (UTC)
+Received: from smtp2.osuosl.org ([127.0.0.1])
+	by localhost (smtp2.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+	with ESMTP id bFZ-ia2q5sAY; Thu, 30 Sep 2021 13:44:17 +0000 (UTC)
+Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
+	by smtp2.osuosl.org (Postfix) with ESMTPS id BF26940179;
+	Thu, 30 Sep 2021 13:44:16 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 1F043C000F;
-	Thu, 30 Sep 2021 11:26:14 +0000 (UTC)
-Received: from smtp3.osuosl.org (smtp3.osuosl.org [140.211.166.136])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 39F35C000D
- for <iommu@lists.linux-foundation.org>; Thu, 30 Sep 2021 11:26:13 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id A05B5C0011;
+	Thu, 30 Sep 2021 13:44:16 +0000 (UTC)
+Received: from smtp2.osuosl.org (smtp2.osuosl.org [IPv6:2605:bc80:3010::133])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id BD246C000D
+ for <iommu@lists.linux-foundation.org>; Thu, 30 Sep 2021 13:44:14 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by smtp3.osuosl.org (Postfix) with ESMTP id 309B16071F
- for <iommu@lists.linux-foundation.org>; Thu, 30 Sep 2021 11:26:13 +0000 (UTC)
+ by smtp2.osuosl.org (Postfix) with ESMTP id A0BD140760
+ for <iommu@lists.linux-foundation.org>; Thu, 30 Sep 2021 13:44:14 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from smtp3.osuosl.org ([127.0.0.1])
- by localhost (smtp3.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id 4kISQncRyUOo for <iommu@lists.linux-foundation.org>;
- Thu, 30 Sep 2021 11:26:12 +0000 (UTC)
+Received: from smtp2.osuosl.org ([127.0.0.1])
+ by localhost (smtp2.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+ with ESMTP id jWxX9EZLhn4w for <iommu@lists.linux-foundation.org>;
+ Thu, 30 Sep 2021 13:44:14 +0000 (UTC)
 X-Greylist: domain auto-whitelisted by SQLgrey-1.8.0
-Received: from bhuna.collabora.co.uk (bhuna.collabora.co.uk
- [IPv6:2a00:1098:0:82:1000:25:2eeb:e3e3])
- by smtp3.osuosl.org (Postfix) with ESMTPS id 8D0F960715
- for <iommu@lists.linux-foundation.org>; Thu, 30 Sep 2021 11:26:12 +0000 (UTC)
-Received: from [IPv6:2a02:810a:880:f54:fd5c:7cb1:aaa8:78b1] (unknown
- [IPv6:2a02:810a:880:f54:fd5c:7cb1:aaa8:78b1])
- (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
- (No client certificate requested) (Authenticated sender: dafna)
- by bhuna.collabora.co.uk (Postfix) with ESMTPSA id E54671F44AE1;
- Thu, 30 Sep 2021 12:26:09 +0100 (BST)
-Subject: Re: [PATCH v2 11/29] iommu/mediatek: Always pm_runtime_get while tlb
- flush
-To: Yong Wu <yong.wu@mediatek.com>, Joerg Roedel <joro@8bytes.org>,
- Rob Herring <robh+dt@kernel.org>, Matthias Brugger <matthias.bgg@gmail.com>,
- Will Deacon <will@kernel.org>, Robin Murphy <robin.murphy@arm.com>
-References: <20210813065324.29220-1-yong.wu@mediatek.com>
- <20210813065324.29220-12-yong.wu@mediatek.com>
-From: Dafna Hirschfeld <dafna.hirschfeld@collabora.com>
-Message-ID: <11fe281d-4873-245b-f506-452900f33d3b@collabora.com>
-Date: Thu, 30 Sep 2021 13:26:07 +0200
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
- Thunderbird/78.13.0
+Received: from mga03.intel.com (mga03.intel.com [134.134.136.65])
+ by smtp2.osuosl.org (Postfix) with ESMTPS id E0B87400F0
+ for <iommu@lists.linux-foundation.org>; Thu, 30 Sep 2021 13:44:13 +0000 (UTC)
+X-IronPort-AV: E=McAfee;i="6200,9189,10122"; a="225265223"
+X-IronPort-AV: E=Sophos;i="5.85,336,1624345200"; d="scan'208";a="225265223"
+Received: from fmsmga002.fm.intel.com ([10.253.24.26])
+ by orsmga103.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384;
+ 30 Sep 2021 06:44:11 -0700
+X-IronPort-AV: E=Sophos;i="5.85,336,1624345200"; d="scan'208";a="564177724"
+Received: from blu2-mobl3.ccr.corp.intel.com (HELO [10.254.214.141])
+ ([10.254.214.141])
+ by fmsmga002-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384;
+ 30 Sep 2021 06:44:00 -0700
+To: "Tian, Kevin" <kevin.tian@intel.com>, Jason Gunthorpe <jgg@nvidia.com>,
+ "Lu, Baolu" <baolu.lu@intel.com>
+References: <20210919063848.1476776-1-yi.l.liu@intel.com>
+ <20210919063848.1476776-11-yi.l.liu@intel.com>
+ <20210922152407.1bfa6ff7.alex.williamson@redhat.com>
+ <20210922234954.GB964074@nvidia.com>
+ <BN9PR11MB543333AD3C81312115686AAA8CA39@BN9PR11MB5433.namprd11.prod.outlook.com>
+ <YUxTvCt1mYDntO8z@myrica> <20210923112716.GE964074@nvidia.com>
+ <BN9PR11MB5433BCFCF3B0CB657E9BFE898CA39@BN9PR11MB5433.namprd11.prod.outlook.com>
+ <20210923122220.GL964074@nvidia.com>
+ <BN9PR11MB5433F33CB7CFBCD41BE2F5C68CAA9@BN9PR11MB5433.namprd11.prod.outlook.com>
+From: Lu Baolu <baolu.lu@linux.intel.com>
+Subject: Re: [RFC 10/20] iommu/iommufd: Add IOMMU_DEVICE_GET_INFO
+Message-ID: <9a04c421-4a25-f1de-a896-321026b3f0ce@linux.intel.com>
+Date: Thu, 30 Sep 2021 21:43:58 +0800
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:78.0) Gecko/20100101
+ Thunderbird/78.14.0
 MIME-Version: 1.0
-In-Reply-To: <20210813065324.29220-12-yong.wu@mediatek.com>
+In-Reply-To: <BN9PR11MB5433F33CB7CFBCD41BE2F5C68CAA9@BN9PR11MB5433.namprd11.prod.outlook.com>
 Content-Language: en-US
-Cc: youlin.pei@mediatek.com, devicetree@vger.kernel.org,
- Nicolas Boichat <drinkcat@chromium.org>, srv_heupstream@mediatek.com,
- Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>,
- linux-kernel@vger.kernel.org, Evan Green <evgreen@chromium.org>,
- Tomasz Figa <tfiga@google.com>, iommu@lists.linux-foundation.org,
- linux-mediatek@lists.infradead.org, chao.hao@mediatek.com,
- anan.sun@mediatek.com, linux-arm-kernel@lists.infradead.org
+Cc: "kvm@vger.kernel.org" <kvm@vger.kernel.org>,
+ "jasowang@redhat.com" <jasowang@redhat.com>,
+ "kwankhede@nvidia.com" <kwankhede@nvidia.com>, "hch@lst.de" <hch@lst.de>,
+ Jean-Philippe Brucker <jean-philippe@linaro.org>, "Jiang,
+ Dave" <dave.jiang@intel.com>, "Raj, Ashok" <ashok.raj@intel.com>,
+ "corbet@lwn.net" <corbet@lwn.net>, "parav@mellanox.com" <parav@mellanox.com>,
+ Alex Williamson <alex.williamson@redhat.com>,
+ "lkml@metux.net" <lkml@metux.net>,
+ "david@gibson.dropbear.id.au" <david@gibson.dropbear.id.au>,
+ "dwmw2@infradead.org" <dwmw2@infradead.org>, "Tian,
+ Jun J" <jun.j.tian@intel.com>,
+ "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+ "lushenming@huawei.com" <lushenming@huawei.com>,
+ "iommu@lists.linux-foundation.org" <iommu@lists.linux-foundation.org>,
+ "pbonzini@redhat.com" <pbonzini@redhat.com>,
+ "robin.murphy@arm.com" <robin.murphy@arm.com>
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -86,61 +103,59 @@ Content-Type: text/plain; charset="us-ascii"; Format="flowed"
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
+On 2021/9/30 16:49, Tian, Kevin wrote:
+>> From: Jason Gunthorpe <jgg@nvidia.com>
+>> Sent: Thursday, September 23, 2021 8:22 PM
+>>
+>>>> These are different things and need different bits. Since the ARM path
+>>>> has a lot more code supporting it, I'd suggest Intel should change
+>>>> their code to use IOMMU_BLOCK_NO_SNOOP and abandon
+>> IOMMU_CACHE.
+>>>
+>>> I didn't fully get this point. The end result is same, i.e. making the DMA
+>>> cache-coherent when IOMMU_CACHE is set. Or if you help define the
+>>> behavior of IOMMU_CACHE, what will you define now?
+>>
+>> It is clearly specifying how the kernel API works:
+>>
+>>   !IOMMU_CACHE
+>>     must call arch cache flushers
+>>   IOMMU_CACHE -
+>>     do not call arch cache flushers
+>>   IOMMU_CACHE|IOMMU_BLOCK_NO_SNOOP -
+>>     dot not arch cache flushers, and ignore the no snoop bit.
+> 
+> Who will set IOMMU_BLOCK_NO_SNOOP? I feel this is arch specific
+> knowledge about how cache coherency is implemented, i.e.
+> when IOMMU_CACHE is set intel-iommu driver just maps it to
+> blocking no-snoop. It's not necessarily to be an attribute in
+> the same level as IOMMU_CACHE?
+> 
+>>
+>> On Intel it should refuse to create a !IOMMU_CACHE since the HW can't
+>> do that.
+> 
+> Agree. In reality I guess this is not hit because all devices are marked
+> coherent on Intel platforms...
+> 
+> Baolu, any insight here?
 
+I am trying to follow the discussion here. Please guide me if I didn't
+get the right context.
 
-On 13.08.21 08:53, Yong Wu wrote:
-> Prepare for 2 HWs that sharing pgtable in different power-domains.
-> 
-> The previous SoC don't have PM. Only mt8192 has power-domain,
-> and it is display's power-domain which nearly always is enabled.
+Here, we are discussing arch_sync_dma_for_cpu() and
+arch_sync_dma_for_device(). The x86 arch has clflush to sync dma buffer
+for device, but I can't see any instruction to sync dma buffer for cpu
+if the device is not cache coherent. Is that the reason why x86 can't
+have an implementation for arch_sync_dma_for_cpu(), hence all devices
+are marked coherent?
 
-hi, I see that in mt1873.dtsi, many devices that uses the iommu have the
-'power-domains' property.
-
-> 
-> When there are 2 M4U HWs, it may has problem.
-> In this function, we get the pm_status via the m4u dev, but it don't
-> reflect the real power-domain status of the HW since there may be other
-> HW also use that power-domain.
-> 
-> Currently we could not get the real power-domain status, thus always
-> pm_runtime_get here.
-> 
-> Prepare for mt8195, thus, no need fix tags here.
-> 
-> This patch may drop the performance, we expect the user could
-> pm_runtime_get_sync before dma_alloc_attrs which need tlb ops.
+> Thanks
+> Kevin
 > 
 
-Could you explain this sentence a bit? should the user call pm_runtime_get_sync
-before calling dma_alloc_attrs?
-
-Thanks,
-Dafna
-
-> Signed-off-by: Yong Wu <yong.wu@mediatek.com>
-> ---
->   drivers/iommu/mtk_iommu.c | 5 ++++-
->   1 file changed, 4 insertions(+), 1 deletion(-)
-> 
-> diff --git a/drivers/iommu/mtk_iommu.c b/drivers/iommu/mtk_iommu.c
-> index add23a36a5e2..abc721a1da21 100644
-> --- a/drivers/iommu/mtk_iommu.c
-> +++ b/drivers/iommu/mtk_iommu.c
-> @@ -238,8 +238,11 @@ static void mtk_iommu_tlb_flush_range_sync(unsigned long iova, size_t size,
->   
->   	for_each_m4u(data, head) {
->   		if (has_pm) {
-> -			if (pm_runtime_get_if_in_use(data->dev) <= 0)
-> +			ret = pm_runtime_resume_and_get(data->dev);
-> +			if (ret < 0) {
-> +				dev_err(data->dev, "tlb flush: pm get fail %d.\n", ret);
->   				continue;
-> +			}
->   		}
->   
->   		spin_lock_irqsave(&data->tlb_lock, flags);
-> 
+Best regards,
+baolu
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
