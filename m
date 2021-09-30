@@ -2,111 +2,178 @@ Return-Path: <SRS0=YF8t=OU=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id BD051C433EF
-	for <iommu@archiver.kernel.org>; Thu, 30 Sep 2021 09:48:11 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B285CC433F5
+	for <iommu@archiver.kernel.org>; Thu, 30 Sep 2021 09:51:18 +0000 (UTC)
 Received: from smtp1.osuosl.org (smtp1.osuosl.org [140.211.166.138])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 5E30B61875
-	for <iommu@archiver.kernel.org>; Thu, 30 Sep 2021 09:48:11 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.4.1 mail.kernel.org 5E30B61875
-Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=redhat.com
+	by mail.kernel.org (Postfix) with ESMTPS id 6DC4C61361
+	for <iommu@archiver.kernel.org>; Thu, 30 Sep 2021 09:51:18 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.4.1 mail.kernel.org 6DC4C61361
+Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=arm.com
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by smtp1.osuosl.org (Postfix) with ESMTP id 1C965840A8;
-	Thu, 30 Sep 2021 09:48:11 +0000 (UTC)
+	by smtp1.osuosl.org (Postfix) with ESMTP id 3F7848409F;
+	Thu, 30 Sep 2021 09:51:18 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
 Received: from smtp1.osuosl.org ([127.0.0.1])
 	by localhost (smtp1.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id baKh7NuX03jK; Thu, 30 Sep 2021 09:48:10 +0000 (UTC)
-Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by smtp1.osuosl.org (Postfix) with ESMTPS id D097F8406C;
-	Thu, 30 Sep 2021 09:48:09 +0000 (UTC)
+	with ESMTP id UL2Gmd_prJTG; Thu, 30 Sep 2021 09:51:16 +0000 (UTC)
+Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [IPv6:2605:bc80:3010:104::8cd3:938])
+	by smtp1.osuosl.org (Postfix) with ESMTPS id 5C8B584092;
+	Thu, 30 Sep 2021 09:51:16 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 95308C000F;
-	Thu, 30 Sep 2021 09:48:09 +0000 (UTC)
-Received: from smtp2.osuosl.org (smtp2.osuosl.org [IPv6:2605:bc80:3010::133])
- by lists.linuxfoundation.org (Postfix) with ESMTP id DBA76C000D
- for <iommu@lists.linux-foundation.org>; Thu, 30 Sep 2021 09:48:07 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 2CBF0C000F;
+	Thu, 30 Sep 2021 09:51:16 +0000 (UTC)
+Received: from smtp3.osuosl.org (smtp3.osuosl.org [140.211.166.136])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 7D18CC000D;
+ Thu, 30 Sep 2021 09:51:14 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by smtp2.osuosl.org (Postfix) with ESMTP id BC06640154
- for <iommu@lists.linux-foundation.org>; Thu, 30 Sep 2021 09:48:07 +0000 (UTC)
+ by smtp3.osuosl.org (Postfix) with ESMTP id 58E3D613CA;
+ Thu, 30 Sep 2021 09:51:14 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Authentication-Results: smtp2.osuosl.org (amavisd-new);
- dkim=pass (1024-bit key) header.d=redhat.com
-Received: from smtp2.osuosl.org ([127.0.0.1])
- by localhost (smtp2.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id x0lC7MM_uONc for <iommu@lists.linux-foundation.org>;
- Thu, 30 Sep 2021 09:48:06 +0000 (UTC)
-X-Greylist: domain auto-whitelisted by SQLgrey-1.8.0
-Received: from us-smtp-delivery-124.mimecast.com
- (us-smtp-delivery-124.mimecast.com [170.10.133.124])
- by smtp2.osuosl.org (Postfix) with ESMTPS id 10A6F400DD
- for <iommu@lists.linux-foundation.org>; Thu, 30 Sep 2021 09:48:05 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
- s=mimecast20190719; t=1632995285;
- h=from:from:reply-to:reply-to:subject:subject:date:date:
- message-id:message-id:to:to:cc:cc:mime-version:mime-version:
- content-type:content-type:
- content-transfer-encoding:content-transfer-encoding:
- in-reply-to:in-reply-to:references:references;
- bh=AkERdnxjQvWX8y2vZWvMiljBX7L/3S/wCVIkI75JXx8=;
- b=eRA6rNDbfXQ+CHQ4prJEGkj3iHFbsP44iYL+I2aLayIdDWaLxQ7lav6x5n+rSoYOw+PnOH
- pZRSVB60HmUk+kTvvvD510ug4S+547lEdgc9qMZhRq3Y93jnNkdamItdfo6FeKSldbqS3c
- j752mrlFkM7YdROCFpV956uxh3dhMWA=
-Received: from mail-wm1-f71.google.com (mail-wm1-f71.google.com
- [209.85.128.71]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-102-hYkGxI6vMy257GJq23dlUA-1; Thu, 30 Sep 2021 05:48:02 -0400
-X-MC-Unique: hYkGxI6vMy257GJq23dlUA-1
-Received: by mail-wm1-f71.google.com with SMTP id
- 75-20020a1c004e000000b00307b9b32cc9so883022wma.1
- for <iommu@lists.linux-foundation.org>; Thu, 30 Sep 2021 02:48:02 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
- d=1e100.net; s=20210112;
- h=x-gm-message-state:reply-to:subject:to:cc:references:from
- :message-id:date:user-agent:mime-version:in-reply-to
- :content-transfer-encoding:content-language;
- bh=AkERdnxjQvWX8y2vZWvMiljBX7L/3S/wCVIkI75JXx8=;
- b=a2cA2iDZrpFRl+zAtR6pzxon5w7lJq63R78hJ+nMEQEDiEs3zZxqZNA1RUD4EZ4XHf
- tmm6Ii8pW5jcyp29VzsKessN22rA9acg2M4mGE0L7lzx4DKnr4pJ8QtSSSqwNM7ZR1k4
- pkWv3yXcRaSQB4lsMSi2xn7S4bQLIHRBKtyL4eEYRuGfBk808HWXW1qNtViS0Xi97le9
- iK8wm3beeIFuFGizbuh1ALodP94PCLv350PBVrI7yMc92HAmUttv56LwXH98abO3Saoa
- W2ddsw4yxv124lMd7UFl8ErVSkKfVu1WjilolGlq9FNSUmgHIPpMyQfKz+VeUNEJSvQz
- +X5A==
-X-Gm-Message-State: AOAM531S+KpGLJj7HvKRLpACKX8LVdNJMFLmfFKQ0EOlpiT2qYWfgLNQ
- iy4nOaZMhlOh/shV/dGAQVsf+NQFq8JMiRpxUeDAP98cnIhi7crq36dmWGKFwWwkgXhIstAV6KY
- tC1kVnxfnu3jkLwyZGlE6kHQI82bQvw==
-X-Received: by 2002:a5d:4a4e:: with SMTP id v14mr4994005wrs.271.1632995281421; 
- Thu, 30 Sep 2021 02:48:01 -0700 (PDT)
-X-Google-Smtp-Source: ABdhPJzaDvcFZ2x9w+vQ0EkZIMR3CDNEjtRYvJj08zAq6M2jLFo3lEyLjpSfSP2fGPPBTZ+aX+mPiw==
-X-Received: by 2002:a5d:4a4e:: with SMTP id v14mr4993985wrs.271.1632995281178; 
- Thu, 30 Sep 2021 02:48:01 -0700 (PDT)
-Received: from ?IPv6:2a01:e0a:59e:9d80:527b:9dff:feef:3874?
- ([2a01:e0a:59e:9d80:527b:9dff:feef:3874])
- by smtp.gmail.com with ESMTPSA id c18sm2430699wmb.27.2021.09.30.02.47.59
- (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
- Thu, 30 Sep 2021 02:48:00 -0700 (PDT)
-Subject: Re: [PATCH v7 0/9] ACPI/IORT: Support for IORT RMR node
-To: Shameer Kolothum <shameerali.kolothum.thodi@huawei.com>,
- linux-arm-kernel@lists.infradead.org, linux-acpi@vger.kernel.org,
- iommu@lists.linux-foundation.org,
- Jean-Philippe Brucker <Jean-Philippe.Brucker@arm.com>
-References: <20210805080724.480-1-shameerali.kolothum.thodi@huawei.com>
-From: Eric Auger <eric.auger@redhat.com>
-Message-ID: <b546b40c-d047-87a4-1892-1bb9575ecab7@redhat.com>
-Date: Thu, 30 Sep 2021 11:47:58 +0200
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
- Thunderbird/78.10.1
-MIME-Version: 1.0
-In-Reply-To: <20210805080724.480-1-shameerali.kolothum.thodi@huawei.com>
-Authentication-Results: relay.mimecast.com;
- auth=pass smtp.auth=CUSA124A263 smtp.mailfrom=eric.auger@redhat.com
-X-Mimecast-Spam-Score: 0
-X-Mimecast-Originator: redhat.com
+Authentication-Results: smtp3.osuosl.org (amavisd-new);
+ dkim=pass (1024-bit key) header.d=armh.onmicrosoft.com
+ header.b="cv7YwsKh"; dkim=pass (1024-bit key)
+ header.d=armh.onmicrosoft.com header.b="cv7YwsKh"
+Received: from smtp3.osuosl.org ([127.0.0.1])
+ by localhost (smtp3.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+ with ESMTP id I4TxIcrj5sTo; Thu, 30 Sep 2021 09:51:09 +0000 (UTC)
+X-Greylist: whitelisted by SQLgrey-1.8.0
+X-Greylist: whitelisted by SQLgrey-1.8.0
+Received: from EUR04-VI1-obe.outbound.protection.outlook.com
+ (mail-eopbgr80074.outbound.protection.outlook.com [40.107.8.74])
+ by smtp3.osuosl.org (Postfix) with ESMTPS id 6A192613C7;
+ Thu, 30 Sep 2021 09:51:09 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=armh.onmicrosoft.com; 
+ s=selector2-armh-onmicrosoft-com;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=Vd8Ojwayiqz5YwJz2k7GkWT/DMc0gqGK28RBq79ZC+0=;
+ b=cv7YwsKhxwxilqLP7nBzHHFH4hgSyo01rrAIsQMCs9Pl4QmdirLLK97CvuhIxSuwgSHzWH84HnhEkCCJkrx9Ga3BbZY1aOiTG8IUXNkgw+HPiXLUSayAT3dUMtCUjfmZ8p/NQLJmd/v2fD6+oFgx9H+T+Aq33W3uPPz1ZeZfSSY=
+Received: from AM6PR05CA0026.eurprd05.prod.outlook.com (2603:10a6:20b:2e::39)
+ by AM4PR0802MB2194.eurprd08.prod.outlook.com (2603:10a6:200:5c::20)
+ with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4566.15; Thu, 30 Sep
+ 2021 09:51:02 +0000
+Received: from AM5EUR03FT032.eop-EUR03.prod.protection.outlook.com
+ (2603:10a6:20b:2e:cafe::3a) by AM6PR05CA0026.outlook.office365.com
+ (2603:10a6:20b:2e::39) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4566.14 via Frontend
+ Transport; Thu, 30 Sep 2021 09:51:02 +0000
+X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 63.33.187.114)
+ smtp.mailfrom=arm.com; lists.linux-foundation.org; dkim=pass (signature was
+ verified) header.d=armh.onmicrosoft.com;lists.linux-foundation.org;
+ dmarc=pass action=none header.from=arm.com;
+Received-SPF: Pass (protection.outlook.com: domain of arm.com designates
+ 63.33.187.114 as permitted sender) receiver=protection.outlook.com;
+ client-ip=63.33.187.114; helo=64aa7808-outbound-2.mta.getcheckrecipient.com;
+Received: from 64aa7808-outbound-2.mta.getcheckrecipient.com (63.33.187.114)
+ by AM5EUR03FT032.mail.protection.outlook.com (10.152.16.84) with Microsoft
+ SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.20.4566.14 via Frontend Transport; Thu, 30 Sep 2021 09:51:00 +0000
+Received: ("Tessian outbound 173d710607ad:v103");
+ Thu, 30 Sep 2021 09:51:00 +0000
+X-CheckRecipientChecked: true
+X-CR-MTA-CID: d20d9d04b3432dae
+X-CR-MTA-TID: 64aa7808
+Received: from c4fb74305dda.3
+ by 64aa7808-outbound-1.mta.getcheckrecipient.com id
+ E087028A-0C39-4014-9DFF-0059C59E4772.1; 
+ Thu, 30 Sep 2021 09:50:49 +0000
+Received: from EUR01-VE1-obe.outbound.protection.outlook.com
+ by 64aa7808-outbound-1.mta.getcheckrecipient.com with ESMTPS id c4fb74305dda.3
+ (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384);
+ Thu, 30 Sep 2021 09:50:49 +0000
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=Bp9Yx8nTtRaS33pooSZYyPCjc+YJhN4VkZQ9evNG3OerFxjRpfW6GxDVBtOUGgnZOIO5NmaY+un3B4txd6yHcM+O+D7+Es62ZofkhTzRSsMd03eVbuo+S2CSE95Ud1Jv+LtSnWjldmDP10XU0L8n/EPea4N1AGfAiSlSgR529+JvRS8/5QNv5spk0bJbCcDnD/7+qnG2Mzrn7miCHNqsykA06Hm10rnenEZ/IsQJXlx2Bz6SKG4VzkJKzcV9LreBGWD/+bC6VjUFR5zgavzKAjYj+S/7wCBjCvwPrIpPy22QNDk+VkJ+HTsY2NWRSRCFNrenGBW4hspstJzJTGuPaA==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com; 
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version; 
+ bh=Vd8Ojwayiqz5YwJz2k7GkWT/DMc0gqGK28RBq79ZC+0=;
+ b=oC7zaIA7uMg+2cYB/JpQXd9y+mi6hgU7pOcdO4ue4V5Nnf+LCl4FLBXJ+WO+y9VyrYqakFVOcdPtsD3W7X1hogs2xc+Vd7/c+1F65ESK7goA8H+5opjBdeHBVnl9wlI/4IQYZYBmpm+Uf36YnemcyVzU+NbK0/Lj0E32V3Rzm6h5jVQvXjyv+YG6Gw4wKfaLXNVsV4jcjXCPnO51KAt0tRIRKPAVuHv7NoRd6I7woRBzpovpyv3Aa91WImP/B5YrYl0wTwSzjQ5G9TbktEHCKJFfVtFU1rMDwHkmaPR5RBOorAJMH4BNXKJ+UVvQB8JZ3I911hYkuOkbOE3UVCkCiw==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=arm.com; dmarc=pass action=none header.from=arm.com; dkim=pass
+ header.d=arm.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=armh.onmicrosoft.com; 
+ s=selector2-armh-onmicrosoft-com;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=Vd8Ojwayiqz5YwJz2k7GkWT/DMc0gqGK28RBq79ZC+0=;
+ b=cv7YwsKhxwxilqLP7nBzHHFH4hgSyo01rrAIsQMCs9Pl4QmdirLLK97CvuhIxSuwgSHzWH84HnhEkCCJkrx9Ga3BbZY1aOiTG8IUXNkgw+HPiXLUSayAT3dUMtCUjfmZ8p/NQLJmd/v2fD6+oFgx9H+T+Aq33W3uPPz1ZeZfSSY=
+Authentication-Results-Original: huawei.com; dkim=none (message not signed)
+ header.d=none;huawei.com; dmarc=none action=none header.from=arm.com;
+Received: from DB6PR08MB2645.eurprd08.prod.outlook.com (2603:10a6:6:24::25) by
+ DB9PR08MB6410.eurprd08.prod.outlook.com (2603:10a6:10:262::8) with
+ Microsoft
+ SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.20.4566.15; Thu, 30 Sep 2021 09:50:46 +0000
+Received: from DB6PR08MB2645.eurprd08.prod.outlook.com
+ ([fe80::2cb2:fad6:c5f7:4501]) by DB6PR08MB2645.eurprd08.prod.outlook.com
+ ([fe80::2cb2:fad6:c5f7:4501%6]) with mapi id 15.20.4544.021; Thu, 30 Sep 2021
+ 09:50:46 +0000
+Subject: Re: [PATCH RFC v1 08/11] iommu/arm-smmu-v3: Implement shared context
+ alloc and free ops
+To: Jean-Philippe Brucker <jean-philippe@linaro.org>
+References: <20210423095147.27922-1-vivek.gautam@arm.com>
+ <20210423095147.27922-9-vivek.gautam@arm.com> <YUoDTv0bhbfcu4MS@myrica>
+From: Vivek Kumar Gautam <vivek.gautam@arm.com>
+Message-ID: <6f8b1656-5ca0-c106-db7d-366e536f5575@arm.com>
+Date: Thu, 30 Sep 2021 15:20:31 +0530
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
+ Thunderbird/68.10.0
+In-Reply-To: <YUoDTv0bhbfcu4MS@myrica>
 Content-Language: en-US
-Cc: robin.murphy@arm.com, jon@solid-run.com, linuxarm@huawei.com,
- steven.price@arm.com, guohanjun@huawei.com, yangyicong@huawei.com,
- Sami.Mujawar@arm.com, will@kernel.org, wanghuiqiang@huawei.com
+X-ClientProxiedBy: BMXPR01CA0017.INDPRD01.PROD.OUTLOOK.COM
+ (2603:1096:b00:d::27) To DB6PR08MB2645.eurprd08.prod.outlook.com
+ (2603:10a6:6:24::25)
+MIME-Version: 1.0
+Received: from [10.162.16.71] (217.140.105.56) by
+ BMXPR01CA0017.INDPRD01.PROD.OUTLOOK.COM (2603:1096:b00:d::27) with Microsoft
+ SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.20.4566.15 via Frontend Transport; Thu, 30 Sep 2021 09:50:35 +0000
+X-MS-PublicTrafficType: Email
+X-MS-Office365-Filtering-Correlation-Id: 9f4839a8-d5fb-42b9-ca17-08d983f7cf71
+X-MS-TrafficTypeDiagnostic: DB9PR08MB6410:|AM4PR0802MB2194:
+X-MS-Exchange-Transport-Forked: True
+X-Microsoft-Antispam-PRVS: <AM4PR0802MB2194FEE2114DC4ED0B07E67C89AA9@AM4PR0802MB2194.eurprd08.prod.outlook.com>
+x-checkrecipientrouted: true
+NoDisclaimer: true
+X-MS-Oob-TLC-OOBClassifiers: OLM:10000;OLM:10000;
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam-Untrusted: BCL:0;
+X-Microsoft-Antispam-Message-Info-Original: iin10Gs/ynEOUNTWCDkazHStSSb4G83BR9lbBXnDtrPzCDwiFkFogGSpkXuOFQuaxJPkPGDPIzEvHXw0HhOM+Lo1/HY039sLDEf7viLHYvPJ/Tz59N1NBm3rigKMlWqS5vrB5fC4cdZE6YPo2ETy/uZfERWu/akKp52c0SOlDVb/QobaTAanspB2pTMZasTcWJRiOcpC3A+6bqX8M6sqKuFVNguIUgrY/3qOfpzqmhdUZMAZ7+ebjNEa/xOPvFzY2eqzLvMnN5MArZRlajahCcI3ubuCoKs2qrqPDgFzuneUYD+5wSy7+0yMNN39djySIDEZIR6dPlLiLB/nET2/RBQ8tABOzbTJFn5GKBURBcSr2lpp8zmhJl8bqx5wrXkwnb3Hv07ma1UDMtisoV40nj4CIYighs5URdIDXA5t5umNxhJ00U/XlOaQJZU+PDfjdBiMVyxk8ZFWn8IWsXeGkXoYaNKNqIARu7+Mv/MIKY6Al2wFaYC5VyGMkmyxLDP9phV6OCro92ejDIp+Bu19JWoCjfFzXV/qB/413WKuAl0EiTvAvJQPD7VS0Rm0xrQ8MFqDFrFsl5qcbq78VJwFogkiEGfI7ZrKIbD4LoTa3bX/0M1l42EyVGCHirDiRcds81LHLAOOAEL69+43SnBZChYGChmeCSoddaxWSHVI2mvF/y+1N5dEJfXc8W9Sc0fEdQRKCMr5DQC+OkryYQQ1RVaKdn4wOZVQyFOa/IeBcKVnazHby3zxLbd8j5vtHHtGFUr52GBbeHyyI68cTjIWkA==
+X-Forefront-Antispam-Report-Untrusted: CIP:255.255.255.255; CTRY:; LANG:en;
+ SCL:1; SRV:; IPV:NLI; SFV:NSPM; H:DB6PR08MB2645.eurprd08.prod.outlook.com;
+ PTR:; CAT:NONE;
+ SFS:(4636009)(366004)(508600001)(31696002)(316002)(6486002)(16576012)(956004)(2616005)(5660300002)(53546011)(30864003)(186003)(7416002)(66476007)(66556008)(2906002)(38350700002)(38100700002)(6666004)(6916009)(26005)(31686004)(86362001)(66946007)(52116002)(8936002)(36756003)(8676002)(83380400001)(4326008)(43740500002)(45980500001);
+ DIR:OUT; SFP:1101; 
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: DB9PR08MB6410
+Original-Authentication-Results: huawei.com; dkim=none (message not signed)
+ header.d=none;huawei.com; dmarc=none action=none header.from=arm.com;
+X-EOPAttributedMessage: 0
+X-MS-Exchange-Transport-CrossTenantHeadersStripped: AM5EUR03FT032.eop-EUR03.prod.protection.outlook.com
+X-MS-Office365-Filtering-Correlation-Id-Prvs: af59c037-c146-4d37-9e18-08d983f7c1bb
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: 3J7iNIC8mG373TchtjZq8Hj2tlN4jn0CMb5PBItAulAuNOkX8eTNKj8dUefMWn7dH+/S8mIDVU12c0CABthSGoryhvStuuTLFb/whL4c1q/ZKQ4gjK3TLcu3QsFEXAlrcbDHvobdGFrJbB1GNwBhSIFfjBbbKwsVGPwxzqEs4lvumcRdsHSggelLIUxurajfwKcCnPdBYIFlbRacCHfiAGx3n9dXUdWFFYfUz0F6LQ14Dw/Vl14EfZI3OxSiCD469ce1I6phEE1UAFcRCCCNCW4+R2hzxp/JWGSRo1duKnktGyjMQY69AEizEDxSrmyWcJQR+HdNoHETZfZ8prI7NUub/MDGyAiiAoE4raKvZpy9eUHOA74i9nJivHD/016Sa2GdN73D3lY5ZqI3YzOo9CDo/zEmaetvZZeTzAwq7xrvd2oWDW5QqNavswey78zGK4NwyfS4oErqzMaAIAm0SMLfTKJpWJfK848+AxHr2AIJXqt0O6iA6RhOSvhzJL9LRwE35FA3T3J3jyk5P4kRyEMRWM5wnRZEDcLVBN3KqwKiovoTiczJyyULsqYRGaUt1sYuP8ync1pYnxCq4fMXoMh56OFFk/wfPwYZ3/YdeHTaHmLHJVYK0HAXM8BnjU5RRU+dLYNP3f8S8JGRaFSRPT90nWlwYoI/CboT0XxhgGGiUooiL5vwSg71y2mlD5rRzR+op/CgnwYq8p6Za+XamB3cK5+v4fKiM+FJ0vN7+cc=
+X-Forefront-Antispam-Report: CIP:63.33.187.114; CTRY:IE; LANG:en; SCL:1; SRV:;
+ IPV:CAL; SFV:NSPM; H:64aa7808-outbound-2.mta.getcheckrecipient.com;
+ PTR:ec2-63-33-187-114.eu-west-1.compute.amazonaws.com; CAT:NONE;
+ SFS:(4636009)(36840700001)(46966006)(81166007)(82310400003)(83380400001)(356005)(36756003)(26005)(508600001)(336012)(186003)(36860700001)(6666004)(53546011)(16576012)(316002)(8676002)(30864003)(31686004)(6862004)(86362001)(70586007)(107886003)(5660300002)(956004)(2906002)(6486002)(47076005)(31696002)(4326008)(450100002)(70206006)(8936002)(2616005)(43740500002);
+ DIR:OUT; SFP:1101; 
+X-OriginatorOrg: arm.com
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 30 Sep 2021 09:51:00.9158 (UTC)
+X-MS-Exchange-CrossTenant-Network-Message-Id: 9f4839a8-d5fb-42b9-ca17-08d983f7cf71
+X-MS-Exchange-CrossTenant-Id: f34e5979-57d9-4aaa-ad4d-b122a662184d
+X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=f34e5979-57d9-4aaa-ad4d-b122a662184d; Ip=[63.33.187.114];
+ Helo=[64aa7808-outbound-2.mta.getcheckrecipient.com]
+X-MS-Exchange-CrossTenant-AuthSource: AM5EUR03FT032.eop-EUR03.prod.protection.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Anonymous
+X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: AM4PR0802MB2194
+Cc: kevin.tian@intel.com, mst@redhat.com, will.deacon@arm.com,
+ linux-kernel@vger.kernel.org, virtualization@lists.linux-foundation.org,
+ iommu@lists.linux-foundation.org, robin.murphy@arm.com,
+ linux-arm-kernel@lists.infradead.org
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -119,106 +186,397 @@ List-Post: <mailto:iommu@lists.linux-foundation.org>
 List-Help: <mailto:iommu-request@lists.linux-foundation.org?subject=help>
 List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
  <mailto:iommu-request@lists.linux-foundation.org?subject=subscribe>
-Reply-To: eric.auger@redhat.com
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
+Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset="us-ascii"; Format="flowed"
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-SGkgU2hhbWVlciwKCk9uIDgvNS8yMSAxMDowNyBBTSwgU2hhbWVlciBLb2xvdGh1bSB3cm90ZToK
-PiBIaSwKPgo+IFRoZSBzZXJpZXMgYWRkcyBzdXBwb3J0IHRvIElPUlQgUk1SIG5vZGVzIHNwZWNp
-ZmllZCBpbiBJT1JUCj4gUmV2aXNpb24gRS5iIC1BUk0gREVOIDAwNDlFWzBdLiBSTVIgbm9kZXMg
-YXJlIHVzZWQgdG8gZGVzY3JpYmUKPiBtZW1vcnkgcmFuZ2VzIHRoYXQgYXJlIHVzZWQgYnkgZW5k
-cG9pbnRzIGFuZCByZXF1aXJlIGEgdW5pdHkKPiBtYXBwaW5nIGluIFNNTVUuCgpJIHVzZWQgeW91
-ciBzZXJpZXMgYW5kIFJNUnMgdG8gZm9yY2UgYSBndWVzdCBpb21tdSAodlNNTVV2MyBuZXN0ZWQg
-c3RhZ2UKdXNlIGNhc2UpIHRvIGhhdmUgYSBmbGF0IG1hcHBpbmcgZm9yIElPVkFzIHdpdGhpbiBb
-MHg4MDAwMDAwLCAweDgxMDAwMDBdCihtYXRjaGluZyBNU0lfSU9WQV9CQVNFIGFuZCBNU0lfSU9W
-QV9MRU5HVEgpIHVzZWQgYnkgdGhlIGhvc3QgdG8gbWFwIE1TSQpwaHlzaWNhbCBkb29yYmVsbHMu
-CgpUaGF0IHdheSB3aGVuIGFuIGFzc2lnbmVkIGRldmljZSBwcm90ZWN0ZWQgYnkgYSB2U01NVXYz
-IGltcGxlbWVudGVkIHVwb24KbmVzdGVkIHN0YWdlIGlzc3VlcyBhbiBNU0kgdHJhbnNhY3Rpb24s
-IGxldCdzIHNheSB1c2luZyBJT1ZBPTB4ODAwMDAwMCwKd2Ugd291bGQgZ2V0OgrCoMKgwqAgwqDC
-oMKgIMKgwqDCoCDCoMKgwqAgwqDCoMKgIFMxIChndWVzdCkgwqDCoCDCoMKgwqAgwqDCoCBTMiAo
-aG9zdCkKMHg4MDAwMDAwwqDCoMKgIMKgwqDCoCDCoMKgwqAgMHg4MDAwMDAwwqDCoMKgIMKgwqDC
-oCDCoMKgwqAgUGh5c2ljYWwgREIKClRoaXMgbWV0aG9kIHdhcyBzdWdnZXN0ZWQgYnkgSmVhbi1Q
-aGlsaXBwZSAoYWRkZWQgaW4gQ0MpIGFuZCBpdApzaW1wbGlmaWVzIHRoZSBuZXN0ZWQgc3RhZ2Ug
-aW50ZWdyYXRpb24gYmVjYXVzZSB3ZSBkb24ndCBoYXZlIHRvIGNhcmUKYWJvdXQgbmVzdGVkIHN0
-YWdlIE1TSSBiaW5kaW5ncy4KCkhvd2V2ZXIgaWYgSSB1bmRlcnN0YW5kIGNvcnJlY3RseSB3ZSBj
-YW5ub3QgZGVmaW5lIGEgcmFuZ2Ugb2YgU0lEcyB1c2luZwp0aGUgc2FtZSBSTVIgKGR1ZSB0byB0
-aGUgc2luZ2xlIG1hcHBpbmcgYml0IHdoaWNoIG11c3QgYmUgc2V0LCBUYWJsZSA1CmZsYWdzIGZv
-cm1hdCkuIFRoaXMgaXMgYSBzcGVjIHJlc3RyaWN0aW9uIGFuZCBub3QgYW4gaXNzdWUgd2l0aCB5
-b3VyIHNlcmllcy4KCkFzIFZGSU8gZGV2aWNlcyBjYW4gYmUgaG90LXBsdWdnZWQgd2UgdGh1cyBu
-ZWVkIHRvIGNyZWF0ZSBhcyBtYW55IFJNUgpub2RlcyBhcyBwb3RlbnRpYWwgQkRGcywgbGVhZGlu
-ZyB0byAyNTYgKiA2ID0gMTUzNiBSTVIgbm9kZXMgaWYgeW91IGhhdmUKNSBwY2llIHJvb3QgcG9y
-dHMgYXMgaXQgaXMgdXN1YWwgaW4gVk1zLiBUaGVuIHRoaXMgY2F1c2VzIHNvbWUgdHJvdWJsZQph
-dCBxZW11IGxldmVsIGZvciBpbnN0YW5jZSwgd3J0IG1pZ3JhdGlvbi4gU2VlIFtSRkNdCmh3L2Fy
-bS92aXJ0LWFjcGktYnVpbGQ6IEFkZCBJT1JUIFJNUiByZWdpb25zIHRvIGhhbmRsZSBNU0kgbmVz
-dGVkIGJpbmRpbmcuCgpEbyB5b3Uga25vdyBpZiB0aGVyZSBpcyBhIHBsYW4gdG8gcmVtb3ZlIHRo
-ZSBzaW5nbGUgbWFwcGluZyBsaW1pdGF0aW9uCmluIHRoZSBzcGVjPwoKVGhhbmtzCgpFcmljCj4K
-PiBXZSBoYXZlIGZhY2VkIGlzc3VlcyB3aXRoIDM0MDhpTVIgUkFJRCBjb250cm9sbGVyIGNhcmRz
-IHdoaWNoCj4gZmFpbCB0byBib290IHdoZW4gU01NVSBpcyBlbmFibGVkLiBUaGlzIGlzIGJlY2F1
-c2UgdGhlc2UKPiBjb250cm9sbGVycyBtYWtlIHVzZSBvZiBob3N0IG1lbW9yeSBmb3IgdmFyaW91
-cyBjYWNoaW5nIHJlbGF0ZWQKPiBwdXJwb3NlcyBhbmQgd2hlbiBTTU1VIGlzIGVuYWJsZWQgdGhl
-IGlNUiBmaXJtd2FyZSBmYWlscyB0byAKPiBhY2Nlc3MgdGhlc2UgbWVtb3J5IHJlZ2lvbnMgYXMg
-dGhlcmUgaXMgbm8gbWFwcGluZyBmb3IgdGhlbS4KPiBJT1JUIFJNUiBwcm92aWRlcyBhIHdheSBm
-b3IgVUVGSSB0byBkZXNjcmliZSBhbmQgcmVwb3J0IHRoZXNlCj4gbWVtb3J5IHJlZ2lvbnMgc28g
-dGhhdCB0aGUga2VybmVsIGNhbiBtYWtlIGEgdW5pdHkgbWFwcGluZyBmb3IKPiB0aGVzZSBpbiBT
-TU1VLgo+Cj4gQ2hhbmdlIEhpc3Rvcnk6IAo+Cj4gdjYgLS0+IHY3Cj4KPiBUaGUgb25seSBjaGFu
-Z2UgZnJvbSB2NiBpcyB0aGUgZml4IHBvaW50ZWQgb3V0IGJ5IFN0ZXZlIHRvCj4gdGhlIFNNTVV2
-MiBTTVIgYnlwYXNzIGluc3RhbGwgaW4gcGF0Y2ggIzguCj4KPiBUaGFua3MgdG8gdGhlIFRlc3Rl
-ZC1ieSB0YWdzIGJ5IExhdXJlbnRpdSB3aXRoIFNNTVV2MiBhbmQKPiBIYW5qdW4vSHVpcWlhbmcg
-d2l0aCBTTU1VdjMgZm9yIHY2LiBJIGhhdmVuJ3QgYWRkZWQgdGhlIHRhZ3MKPiB5ZXQgYXMgdGhl
-IHNlcmllcyBzdGlsbCBuZWVkcyBtb3JlIHJldmlld1sxXS4KPgo+IEZlZWRiYWNrIGFuZCB0ZXN0
-cyBvbiB0aGlzIHNlcmllcyBpcyB2ZXJ5IG11Y2ggYXBwcmVjaWF0ZWQuCj4KPiB2NSAtLT4gdjYK
-PiAtIEFkZHJlc3NlZCBjb21tZW50cyBmcm9tIFJvYmluICYgTG9yZW56by4KPiAgIDogTW92ZWQg
-aW9ydF9wYXJzZV9ybXIoKSB0byBhY3BpX2lvcnRfaW5pdCgpIGZyb20KPiAgICAgaW9ydF9pbml0
-X3BsYXRmb3JtX2RldmljZXMoKS4KPiAgIDogUmVtb3ZlZCB1c2Ugb2Ygc3RydWN0IGlvcnRfcm1y
-X2VudHJ5IGR1cmluZyB0aGUgaW5pdGlhbAo+ICAgICBwYXJzZS4gVXNpbmcgc3RydWN0IGlvbW11
-X3Jlc3ZfcmVnaW9uIGluc3RlYWQuCj4gICA6IFJlcG9ydCBSTVIgYWRkcmVzcyBhbGlnbm1lbnQg
-YW5kIG92ZXJsYXAgZXJyb3JzLCBidXQgY29udGludWUuCj4gICA6IFJld29ya2VkIGFybV9zbW11
-X2luaXRfYnlwYXNzX3N0ZXMoKSAocGF0Y2ggIyA2KS4KPiAtIFVwZGF0ZWQgU01NVXYyIGJ5cGFz
-cyBTTVIgY29kZS4gVGhhbmtzIHRvIEpvbiBOIChwYXRjaCAjOCkuCj4gLSBTZXQgSU9NTVUgcHJv
-dGVjdGlvbiBmbGFncyhJT01NVV9DQUNIRSwgSU9NTVVfTU1JTykgYmFzZWQKPiAgIG9uIFR5cGUg
-b2YgUk1SIHJlZ2lvbi4gU3VnZ2VzdGVkIGJ5IEpvbiBOLgo+Cj4gVGhhbmtzLAo+IFNoYW1lZXIK
-PiBbMF0gaHR0cHM6Ly9kZXZlbG9wZXIuYXJtLmNvbS9kb2N1bWVudGF0aW9uL2RlbjAwNDkvbGF0
-ZXN0Lwo+IFsxXSBodHRwczovL2xvcmUua2VybmVsLm9yZy9saW51eC1hY3BpLzIwMjEwNzE2MDgz
-NDQyLjE3MDgtMS1zaGFtZWVyYWxpLmtvbG90aHVtLnRob2RpQGh1YXdlaS5jb20vVC8jbTA0M2M5
-NWI4Njk5NzNhODM0YjJmZDU3ZjNlMWVkMDMyNWM4NGYzYjcKPiAtLS0tLS0KPiB2NCAtLT4gdjUK
-PiAgLUFkZGVkIGEgZndfZGF0YSB1bmlvbiB0byBzdHJ1Y3QgaW9tbXVfcmVzdl9yZWdpb24gYW5k
-IHJlbW92ZWQKPiAgIHN0cnVjdCBpb21tdV9ybXIgKEJhc2VkIG9uIGNvbW1lbnRzIGZyb20gSm9l
-cmcvUm9iaW4pLgo+ICAtQWRkZWQgaW9tbXVfcHV0X3JtcnMoKSB0byByZWxlYXNlIG1lbS4KPiAg
-LVRoYW5rcyB0byBTdGV2ZSBmb3IgdmVyaWZ5aW5nIG9uIFNNTVV2MiwgYnV0IG5vdCBhZGRlZCB0
-aGUgVGVzdGVkLWJ5Cj4gICB5ZXQgYmVjYXVzZSBvZiB0aGUgYWJvdmUgY2hhbmdlcy4KPgo+IHYz
-IC0tPnY0Cj4gLUluY2x1ZGVkIHRoZSBTTU1VdjIgU01SIGJ5cGFzcyBpbnN0YWxsIGNoYW5nZXMg
-c3VnZ2VzdGVkIGJ5Cj4gIFN0ZXZlKHBhdGNoICM3KQo+IC1BcyBwZXIgUm9iaW4ncyBjb21tZW50
-cywgUk1SIHJlc2VydmUgaW1wbGVtZW50YXRpb24gaXMgbm93Cj4gIG1vcmUgZ2VuZXJpYyAgKHBh
-dGNoICM4KSBhbmQgZHJvcHBlZCB2MyBwYXRjaGVzIDggYW5kIDEwLgo+IC1SZWJhc2UgdG8gNS4x
-My1yYzEKPgo+IFJGQyB2MiAtLT4gdjMKPiAgLURyb3BwZWQgUkZDIHRhZyBhcyB0aGUgQUNQSUNB
-IGhlYWRlciBjaGFuZ2VzIGFyZSBub3cgcmVhZHkgdG8gYmUKPiAgIHBhcnQgb2YgNS4xM1swXS4g
-QnV0IHRoaXMgc2VyaWVzIHN0aWxsIGhhcyBhIGRlcGVuZGVuY3kgb24gdGhhdCBwYXRjaC4KPiAg
-LUFkZGVkIElPUlQgRS5iIHJlbGF0ZWQgY2hhbmdlcyhub2RlIGZsYWdzLCBfRFNNIGZ1bmN0aW9u
-IDUgY2hlY2tzIGZvcgo+ICAgUENJZSkuCj4gIC1DaGFuZ2VkIFJNUiB0byBzdHJlYW0gaWQgbWFw
-cGluZyBmcm9tIE06TiB0byBNOjEgYXMgcGVyIHRoZSBzcGVjIGFuZAo+ICAgZGlzY3Vzc2lvbiBo
-ZXJlWzFdLgo+ICAtTGFzdCB0d28gcGF0Y2hlcyBhZGQgc3VwcG9ydCBmb3IgU01NVXYyKFRoYW5r
-cyB0byBKb24gTmV0dGxldG9uISkKPiAtLS0tLS0KPgo+IEpvbiBOZXR0bGV0b24gKDEpOgo+ICAg
-aW9tbXUvYXJtLXNtbXU6IEdldCBhc3NvY2lhdGVkIFJNUiBpbmZvIGFuZCBpbnN0YWxsIGJ5cGFz
-cyBTTVIKPgo+IFNoYW1lZXIgS29sb3RodW0gKDgpOgo+ICAgaW9tbXU6IEludHJvZHVjZSBhIHVu
-aW9uIHRvIHN0cnVjdCBpb21tdV9yZXN2X3JlZ2lvbgo+ICAgQUNQSS9JT1JUOiBBZGQgc3VwcG9y
-dCBmb3IgUk1SIG5vZGUgcGFyc2luZwo+ICAgaW9tbXUvZG1hOiBJbnRyb2R1Y2UgZ2VuZXJpYyBo
-ZWxwZXIgdG8gcmV0cmlldmUgUk1SIGluZm8KPiAgIEFDUEkvSU9SVDogQWRkIGEgaGVscGVyIHRv
-IHJldHJpZXZlIFJNUiBtZW1vcnkgcmVnaW9ucwo+ICAgaW9tbXUvYXJtLXNtbXUtdjM6IEludHJv
-ZHVjZSBzdHJ0YWIgaW5pdCBoZWxwZXIKPiAgIGlvbW11L2FybS1zbW11LXYzOiBSZWZhY3RvcsKg
-YXJtX3NtbXVfaW5pdF9ieXBhc3Nfc3RlcygpIHRvIGZvcmNlCj4gICAgIGJ5cGFzcwo+ICAgaW9t
-bXUvYXJtLXNtbXUtdjM6IEdldCBhc3NvY2lhdGVkIFJNUiBpbmZvIGFuZCBpbnN0YWxsIGJ5cGFz
-cyBTVEUKPiAgIGlvbW11L2RtYTogUmVzZXJ2ZSBhbnkgUk1SIHJlZ2lvbnMgYXNzb2NpYXRlZCB3
-aXRoIGEgZGV2Cj4KPiAgZHJpdmVycy9hY3BpL2FybTY0L2lvcnQuYyAgICAgICAgICAgICAgICAg
-ICB8IDE3MiArKysrKysrKysrKysrKysrKysrLQo+ICBkcml2ZXJzL2lvbW11L2FybS9hcm0tc21t
-dS12My9hcm0tc21tdS12My5jIHwgIDc2ICsrKysrKystLQo+ICBkcml2ZXJzL2lvbW11L2FybS9h
-cm0tc21tdS9hcm0tc21tdS5jICAgICAgIHwgIDQ4ICsrKysrKwo+ICBkcml2ZXJzL2lvbW11L2Rt
-YS1pb21tdS5jICAgICAgICAgICAgICAgICAgIHwgIDg5ICsrKysrKysrKy0KPiAgaW5jbHVkZS9s
-aW51eC9hY3BpX2lvcnQuaCAgICAgICAgICAgICAgICAgICB8ICAgNyArCj4gIGluY2x1ZGUvbGlu
-dXgvZG1hLWlvbW11LmggICAgICAgICAgICAgICAgICAgfCAgMTMgKysKPiAgaW5jbHVkZS9saW51
-eC9pb21tdS5oICAgICAgICAgICAgICAgICAgICAgICB8ICAxMSArKwo+ICA3IGZpbGVzIGNoYW5n
-ZWQsIDM5MyBpbnNlcnRpb25zKCspLCAyMyBkZWxldGlvbnMoLSkKPgoKX19fX19fX19fX19fX19f
-X19fX19fX19fX19fX19fX19fX19fX19fX19fX19fX18KaW9tbXUgbWFpbGluZyBsaXN0CmlvbW11
-QGxpc3RzLmxpbnV4LWZvdW5kYXRpb24ub3JnCmh0dHBzOi8vbGlzdHMubGludXhmb3VuZGF0aW9u
-Lm9yZy9tYWlsbWFuL2xpc3RpbmZvL2lvbW11
+Hi Jean,
+
+
+On 9/21/21 9:37 PM, Jean-Philippe Brucker wrote:
+> On Fri, Apr 23, 2021 at 03:21:44PM +0530, Vivek Gautam wrote:
+>> Implementing the alloc_shared_cd and free_shared_cd in cd-lib, and
+>> start using them for arm-smmu-v3-sva implementation.
+>>
+>> Signed-off-by: Vivek Gautam <vivek.gautam@arm.com>
+>> ---
+>>   .../arm/arm-smmu-v3/arm-smmu-v3-cd-lib.c      | 71 ++++++++--------
+>>   .../iommu/arm/arm-smmu-v3/arm-smmu-v3-sva.c   | 83 ++++++++-----------
+>>   drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c   |  1 -
+>>   drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.h   | 14 ----
+>>   4 files changed, 73 insertions(+), 96 deletions(-)
+>>
+>> diff --git a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3-cd-lib.c b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3-cd-lib.c
+>> index 537b7c784d40..b87829796596 100644
+>> --- a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3-cd-lib.c
+>> +++ b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3-cd-lib.c
+>> @@ -285,16 +285,14 @@ static bool arm_smmu_free_asid(struct xarray *xa, void *cookie_cd)
+>>    * descriptor is using it, try to replace it.
+>>    */
+>>   static struct arm_smmu_ctx_desc *
+>> -arm_smmu_share_asid(struct mm_struct *mm, u16 asid)
+>> +arm_smmu_share_asid(struct iommu_pasid_table *tbl, struct mm_struct *mm,
+>> +		    struct xarray *xa, u16 asid, u32 asid_bits)
+> 
+> xa and asid_bits could be stored in some arch-specific section of the
+> iommu_pasid_table struct. Other table drivers wouldn't need those
+> arguments.
+
+Okay, will move them to a separate structure section.
+
+> 
+> More a comment for the parent series: it may be clearer to give a
+> different prefix to functions in this file (arm_smmu_cd_, pst_arm_?).
+> Reading this patch I'm a little confused by what belongs in the IOMMU
+> driver and what is done by this library. (I also keep reading 'tbl' as
+> 'tlb'. Maybe we could make it 'table' since that doesn't take a lot more
+> space)
+
+Yea, this may be confusing. I will fix these namings in my next version.
+
+> 
+>>   {
+>>   	int ret;
+>>   	u32 new_asid;
+>>   	struct arm_smmu_ctx_desc *cd;
+>> -	struct arm_smmu_device *smmu;
+>> -	struct arm_smmu_domain *smmu_domain;
+>> -	struct iommu_pasid_table *tbl;
+>>   
+>> -	cd = xa_load(&arm_smmu_asid_xa, asid);
+>> +	cd = xa_load(xa, asid);
+>>   	if (!cd)
+>>   		return NULL;
+>>   
+>> @@ -306,12 +304,8 @@ arm_smmu_share_asid(struct mm_struct *mm, u16 asid)
+>>   		return cd;
+>>   	}
+>>   
+>> -	smmu_domain = container_of(cd, struct arm_smmu_domain, s1_cfg.cd);
+>> -	smmu = smmu_domain->smmu;
+>> -	tbl = smmu_domain->tbl;
+>> -
+>> -	ret = xa_alloc(&arm_smmu_asid_xa, &new_asid, cd,
+>> -		       XA_LIMIT(1, (1 << smmu->asid_bits) - 1), GFP_KERNEL);
+>> +	ret = xa_alloc(xa, &new_asid, cd, XA_LIMIT(1, (1 << asid_bits) - 1),
+>> +		       GFP_KERNEL);
+>>   	if (ret)
+>>   		return ERR_PTR(-ENOSPC);
+>>   	/*
+>> @@ -325,48 +319,52 @@ arm_smmu_share_asid(struct mm_struct *mm, u16 asid)
+>>   	 * be some overlap between use of both ASIDs, until we invalidate the
+>>   	 * TLB.
+>>   	 */
+>> -	ret = iommu_psdtable_write(tbl, &tbl->cfg, 0, cd);
+>> +	ret = arm_smmu_write_ctx_desc(&tbl->cfg, 0, cd);
+>>   	if (ret)
+>>   		return ERR_PTR(-ENOSYS);
+>>   
+>>   	/* Invalidate TLB entries previously associated with that context */
+>> -	iommu_psdtable_flush_tlb(tbl, smmu_domain, asid);
+>> +	iommu_psdtable_flush_tlb(tbl, tbl->cookie, asid);
+>>   
+>> -	xa_erase(&arm_smmu_asid_xa, asid);
+>> +	xa_erase(xa, asid);
+>>   	return NULL;
+>>   }
+>>   
+>> -struct arm_smmu_ctx_desc *
+>> -arm_smmu_alloc_shared_cd(struct iommu_pasid_table *tbl, struct mm_struct *mm)
+>> +static struct iommu_psdtable_mmu_notifier *
+>> +arm_smmu_alloc_shared_cd(struct iommu_pasid_table *tbl, struct mm_struct *mm,
+>> +			 struct xarray *xa, u32 asid_bits)
+>>   {
+>>   	u16 asid;
+>>   	int err = 0;
+>>   	u64 tcr, par, reg;
+>>   	struct arm_smmu_ctx_desc *cd;
+>>   	struct arm_smmu_ctx_desc *ret = NULL;
+>> +	struct iommu_psdtable_mmu_notifier *pst_mn;
+>>   
+>>   	asid = arm64_mm_context_get(mm);
+>>   	if (!asid)
+>>   		return ERR_PTR(-ESRCH);
+>>   
+>> +	pst_mn = kzalloc(sizeof(*pst_mn), GFP_KERNEL);
+>> +	if (!pst_mn) {
+>> +		err = -ENOMEM;
+>> +		goto out_put_context;
+>> +	}
+>> +
+>>   	cd = kzalloc(sizeof(*cd), GFP_KERNEL);
+>>   	if (!cd) {
+>>   		err = -ENOMEM;
+>> -		goto out_put_context;
+>> +		goto out_free_mn;
+>>   	}
+>>   
+>>   	refcount_set(&cd->refs, 1);
+>>   
+>> -	mutex_lock(&arm_smmu_asid_lock);
+>> -	ret = arm_smmu_share_asid(mm, asid);
+>> +	ret = arm_smmu_share_asid(tbl, mm, xa, asid, asid_bits);
+>>   	if (ret) {
+>> -		mutex_unlock(&arm_smmu_asid_lock);
+>>   		goto out_free_cd;
+>>   	}
+>>   
+>> -	err = xa_insert(&arm_smmu_asid_xa, asid, cd, GFP_KERNEL);
+>> -	mutex_unlock(&arm_smmu_asid_lock);
+>> -
+>> +	err = xa_insert(xa, asid, cd, GFP_KERNEL);
+>>   	if (err)
+>>   		goto out_free_asid;
+>>   
+>> @@ -406,21 +404,26 @@ arm_smmu_alloc_shared_cd(struct iommu_pasid_table *tbl, struct mm_struct *mm)
+>>   	cd->asid = asid;
+>>   	cd->mm = mm;
+>>   
+>> -	return cd;
+>> +	pst_mn->vendor.cd = cd;
+>> +	return pst_mn;
+>>   
+>>   out_free_asid:
+>> -	iommu_psdtable_free_asid(tbl, &arm_smmu_asid_xa, cd);
+>> +	arm_smmu_free_asid(xa, cd);
+>>   out_free_cd:
+>>   	kfree(cd);
+>> +out_free_mn:
+>> +	kfree(pst_mn);
+>>   out_put_context:
+>>   	arm64_mm_context_put(mm);
+>>   	return err < 0 ? ERR_PTR(err) : ret;
+>>   }
+>>   
+>> -void arm_smmu_free_shared_cd(struct iommu_pasid_table *tbl,
+>> -			     struct arm_smmu_ctx_desc *cd)
+>> +static void arm_smmu_free_shared_cd(struct iommu_pasid_table *tbl,
+>> +				    struct xarray *xa, void *cookie)
+> 
+> Could we pass a struct iommu_psdtable_mmu_notifier, since that's what
+> alloc_shared() returns?
+
+Sure, will update this.
+
+> 
+>>   {
+>> -	if (iommu_psdtable_free_asid(tbl, &arm_smmu_asid_xa, cd)) {
+>> +	struct arm_smmu_ctx_desc *cd = cookie;
+>> +
+>> +	if (iommu_psdtable_free_asid(tbl, xa, cd)) {
+>>   		/* Unpin ASID */
+>>   		arm64_mm_context_put(cd->mm);
+>>   		kfree(cd);
+>> @@ -428,11 +431,13 @@ void arm_smmu_free_shared_cd(struct iommu_pasid_table *tbl,
+>>   }
+>>   
+>>   struct iommu_vendor_psdtable_ops arm_cd_table_ops = {
+>> -	.alloc	 = arm_smmu_alloc_cd_tables,
+>> -	.free	 = arm_smmu_free_cd_tables,
+>> -	.prepare = arm_smmu_prepare_cd,
+>> -	.write	 = arm_smmu_write_ctx_desc,
+>> -	.free_asid = arm_smmu_free_asid,
+>> +	.alloc		= arm_smmu_alloc_cd_tables,
+>> +	.free		= arm_smmu_free_cd_tables,
+>> +	.prepare	= arm_smmu_prepare_cd,
+>> +	.write		= arm_smmu_write_ctx_desc,
+>> +	.free_asid	= arm_smmu_free_asid,
+>> +	.alloc_shared	= arm_smmu_alloc_shared_cd,
+>> +	.free_shared	= arm_smmu_free_shared_cd,
+>>   };
+>>   
+>>   struct iommu_pasid_table *
+>> diff --git a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3-sva.c b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3-sva.c
+>> index da35d4cc0c1e..ef28d0c409da 100644
+>> --- a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3-sva.c
+>> +++ b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3-sva.c
+>> @@ -13,23 +13,12 @@
+>>   #include "../../io-pgtable-arm.h"
+>>   #include "../../iommu-pasid-table.h"
+>>   
+>> -struct arm_smmu_mmu_notifier {
+>> -	struct mmu_notifier		mn;
+>> -	struct arm_smmu_ctx_desc	*cd;
+>> -	bool				cleared;
+>> -	refcount_t			refs;
+>> -	struct list_head		list;
+>> -	struct arm_smmu_domain		*domain;
+>> -};
+>> -
+>> -#define mn_to_smmu(mn) container_of(mn, struct arm_smmu_mmu_notifier, mn)
+>> -
+>>   struct arm_smmu_bond {
+>> -	struct iommu_sva		sva;
+>> -	struct mm_struct		*mm;
+>> -	struct arm_smmu_mmu_notifier	*smmu_mn;
+>> -	struct list_head		list;
+>> -	refcount_t			refs;
+>> +	struct iommu_sva			sva;
+>> +	struct mm_struct			*mm;
+>> +	struct iommu_psdtable_mmu_notifier	*smmu_mn;
+>> +	struct list_head			list;
+>> +	refcount_t				refs;
+>>   };
+>>   
+>>   #define sva_to_bond(handle) \
+>> @@ -41,20 +30,22 @@ static void arm_smmu_mm_invalidate_range(struct mmu_notifier *mn,
+>>   					 struct mm_struct *mm,
+>>   					 unsigned long start, unsigned long end)
+>>   {
+>> -	struct arm_smmu_mmu_notifier *smmu_mn = mn_to_smmu(mn);
+>> -	struct arm_smmu_domain *smmu_domain = smmu_mn->domain;
+>> +	struct iommu_psdtable_mmu_notifier *smmu_mn = mn_to_pstiommu(mn);
+>> +	struct arm_smmu_domain *smmu_domain = smmu_mn->cookie;
+>> +	struct arm_smmu_ctx_desc *cd = smmu_mn->vendor.cd;
+>>   	size_t size = end - start + 1;
+>>   
+>>   	if (!(smmu_domain->smmu->features & ARM_SMMU_FEAT_BTM))
+>> -		arm_smmu_tlb_inv_range_asid(start, size, smmu_mn->cd->asid,
+>> +		arm_smmu_tlb_inv_range_asid(start, size, cd->asid,
+>>   					    PAGE_SIZE, false, smmu_domain);
+>>   	arm_smmu_atc_inv_domain(smmu_domain, mm->pasid, start, size);
+>>   }
+>>   
+>>   static void arm_smmu_mm_release(struct mmu_notifier *mn, struct mm_struct *mm)
+>>   {
+>> -	struct arm_smmu_mmu_notifier *smmu_mn = mn_to_smmu(mn);
+>> -	struct arm_smmu_domain *smmu_domain = smmu_mn->domain;
+>> +	struct iommu_psdtable_mmu_notifier *smmu_mn = mn_to_pstiommu(mn);
+>> +	struct arm_smmu_domain *smmu_domain = smmu_mn->cookie;
+>> +	struct arm_smmu_ctx_desc *cd = smmu_mn->vendor.cd;
+>>   	struct iommu_pasid_table *tbl = smmu_domain->tbl;
+>>   
+>>   	mutex_lock(&sva_lock);
+>> @@ -69,7 +60,7 @@ static void arm_smmu_mm_release(struct mmu_notifier *mn, struct mm_struct *mm)
+>>   	 */
+>>   	iommu_psdtable_write(tbl, &tbl->cfg, mm->pasid, &quiet_cd);
+> 
+> Another comment for the parent series: I'd prefer making this a
+> "iommu_psdtable_quiesce()" call, instead of passing "quiet_cd" between
+> driver and library. Because that won't work if the SMMU driver is a module
+> or disabled - build of virtio-iommu will probably fail since quiet_cd will
+> be undefined. We could make the library built-in and move quiet_cd there,
+> but an explicit library call seems cleaner.
+
+Right, having a separte library method would look cleaner. I will update 
+this and the below flush_tlb() call.
+
+> 
+>>   
+>> -	iommu_psdtable_flush_tlb(tbl, smmu_domain, smmu_mn->cd->asid);
+>> +	iommu_psdtable_flush_tlb(tbl, smmu_domain, cd->asid);
+> 
+> We can directly call arm_smmu_tlb_inv* here. iommu_psdtable_flush_tlb()
+> should only be called from the library. But with the previous comment,
+> this invalidation would move to the library.
+> 
+>>   	arm_smmu_atc_inv_domain(smmu_domain, mm->pasid, 0, 0);
+>>   
+>>   	smmu_mn->cleared = true;
+>> @@ -78,7 +69,7 @@ static void arm_smmu_mm_release(struct mmu_notifier *mn, struct mm_struct *mm)
+>>   
+>>   static void arm_smmu_mmu_notifier_free(struct mmu_notifier *mn)
+>>   {
+>> -	kfree(mn_to_smmu(mn));
+>> +	kfree(mn_to_pstiommu(mn));
+>>   }
+>>   
+>>   static struct mmu_notifier_ops arm_smmu_mmu_notifier_ops = {
+>> @@ -88,63 +79,59 @@ static struct mmu_notifier_ops arm_smmu_mmu_notifier_ops = {
+>>   };
+>>   
+>>   /* Allocate or get existing MMU notifier for this {domain, mm} pair */
+>> -static struct arm_smmu_mmu_notifier *
+>> +static struct iommu_psdtable_mmu_notifier *
+>>   arm_smmu_mmu_notifier_get(struct arm_smmu_domain *smmu_domain,
+>>   			  struct mm_struct *mm)
+>>   {
+>>   	int ret;
+>> -	struct arm_smmu_ctx_desc *cd;
+>> -	struct arm_smmu_mmu_notifier *smmu_mn;
+>> +	struct iommu_psdtable_mmu_notifier *smmu_mn;
+>> +	struct arm_smmu_device *smmu = smmu_domain->smmu;
+>>   	struct iommu_pasid_table *tbl = smmu_domain->tbl;
+>>   
+>> -	list_for_each_entry(smmu_mn, &smmu_domain->mmu_notifiers, list) {
+>> +	list_for_each_entry(smmu_mn, &tbl->mmu_notifiers, list) {
+>>   		if (smmu_mn->mn.mm == mm) {
+>>   			refcount_inc(&smmu_mn->refs);
+>>   			return smmu_mn;
+>>   		}
+>>   	}
+>>   
+>> -	cd = arm_smmu_alloc_shared_cd(tbl, mm);
+>> -	if (IS_ERR(cd))
+>> -		return ERR_CAST(cd);
+>> -
+>> -	smmu_mn = kzalloc(sizeof(*smmu_mn), GFP_KERNEL);
+>> -	if (!smmu_mn) {
+>> -		ret = -ENOMEM;
+>> -		goto err_free_cd;
+>> -	}
+>> +	mutex_lock(&arm_smmu_asid_lock);
+>> +	smmu_mn = iommu_psdtable_alloc_shared(tbl, mm, &arm_smmu_asid_xa,
+>> +					      smmu->asid_bits);
+>> +	mutex_unlock(&arm_smmu_asid_lock);
+>> +	if (IS_ERR(smmu_mn))
+>> +		return ERR_CAST(smmu_mn);
+>>   
+>>   	refcount_set(&smmu_mn->refs, 1);
+>> -	smmu_mn->cd = cd;
+>> -	smmu_mn->domain = smmu_domain;
+>> +	smmu_mn->cookie = smmu_domain;
+>>   	smmu_mn->mn.ops = &arm_smmu_mmu_notifier_ops;
+>>   
+>>   	ret = mmu_notifier_register(&smmu_mn->mn, mm);
+>> -	if (ret) {
+>> -		kfree(smmu_mn);
+>> +	if (ret)
+>>   		goto err_free_cd;
+>> -	}
+>>   
+>> -	ret = iommu_psdtable_write(tbl, &tbl->cfg, mm->pasid, cd);
+>> +	ret = iommu_psdtable_write(tbl, &tbl->cfg, mm->pasid,
+>> +				   smmu_mn->vendor.cd);
+> 
+> Pass smmu_mn here, and let the library code get the cd (to allow for other
+> pasid table implementations)
+
+Okay.
+
+> 
+>>   	if (ret)
+>>   		goto err_put_notifier;
+>>   
+>> -	list_add(&smmu_mn->list, &smmu_domain->mmu_notifiers);
+>> +	list_add(&smmu_mn->list, &tbl->mmu_notifiers);
+> 
+> I'd keep the mmu_notifiers list in domain if the library doesn't use it
+> for anything.
+> 
+> That made me wonder whether the whole of arm_smmu_mmu_notifer_get/put()
+> could move to the library, since the virtio-iommu version seems to be the
+> same. They probably belong in iommu-sva-lib but we can revisit that when
+> there are more users.
+
+Yea, I will move these notifier calls to the library. This makes it 
+easier for virtio-iommu too.
+
+Best regards
+Vivek
+
+> 
+> Thanks,
+> Jean
+> 
+
+[snip]
+
+>> -- 
+>> 2.17.1
+>>
+_______________________________________________
+iommu mailing list
+iommu@lists.linux-foundation.org
+https://lists.linuxfoundation.org/mailman/listinfo/iommu
