@@ -2,71 +2,86 @@ Return-Path: <SRS0=Y/Kh=OV=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 95BFAC43217
-	for <iommu@archiver.kernel.org>; Fri,  1 Oct 2021 06:30:51 +0000 (UTC)
-Received: from smtp1.osuosl.org (smtp1.osuosl.org [140.211.166.138])
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5350AC4167D
+	for <iommu@archiver.kernel.org>; Fri,  1 Oct 2021 06:30:53 +0000 (UTC)
+Received: from smtp4.osuosl.org (smtp4.osuosl.org [140.211.166.137])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 29BEB61AA3
-	for <iommu@archiver.kernel.org>; Fri,  1 Oct 2021 06:30:51 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.4.1 mail.kernel.org 29BEB61AA3
+	by mail.kernel.org (Postfix) with ESMTPS id 1EB9961A71
+	for <iommu@archiver.kernel.org>; Fri,  1 Oct 2021 06:30:53 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.4.1 mail.kernel.org 1EB9961A71
 Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=gibson.dropbear.id.au
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by smtp1.osuosl.org (Postfix) with ESMTP id 422CD843F4;
-	Fri,  1 Oct 2021 06:30:50 +0000 (UTC)
+	by smtp4.osuosl.org (Postfix) with ESMTP id 59EAB4068A;
+	Fri,  1 Oct 2021 06:30:52 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from smtp1.osuosl.org ([127.0.0.1])
-	by localhost (smtp1.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id PFSaw5GXhHBy; Fri,  1 Oct 2021 06:30:49 +0000 (UTC)
-Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by smtp1.osuosl.org (Postfix) with ESMTPS id A6A35843EE;
-	Fri,  1 Oct 2021 06:30:48 +0000 (UTC)
+Received: from smtp4.osuosl.org ([127.0.0.1])
+	by localhost (smtp4.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+	with ESMTP id EV_qd91hF5TD; Fri,  1 Oct 2021 06:30:50 +0000 (UTC)
+Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [IPv6:2605:bc80:3010:104::8cd3:938])
+	by smtp4.osuosl.org (Postfix) with ESMTPS id D377C4067D;
+	Fri,  1 Oct 2021 06:30:49 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 31E8CC0023;
-	Fri,  1 Oct 2021 06:30:48 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id A4368C0023;
+	Fri,  1 Oct 2021 06:30:49 +0000 (UTC)
 Received: from smtp3.osuosl.org (smtp3.osuosl.org [IPv6:2605:bc80:3010::136])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 83D36C000D
- for <iommu@lists.linux-foundation.org>; Fri,  1 Oct 2021 06:30:47 +0000 (UTC)
+ by lists.linuxfoundation.org (Postfix) with ESMTP id D374BC000D
+ for <iommu@lists.linux-foundation.org>; Fri,  1 Oct 2021 06:30:48 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by smtp3.osuosl.org (Postfix) with ESMTP id 71DDD6149E
- for <iommu@lists.linux-foundation.org>; Fri,  1 Oct 2021 06:30:47 +0000 (UTC)
+ by smtp3.osuosl.org (Postfix) with ESMTP id C2BBD614AA
+ for <iommu@lists.linux-foundation.org>; Fri,  1 Oct 2021 06:30:48 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
 Authentication-Results: smtp3.osuosl.org (amavisd-new);
  dkim=pass (1024-bit key) header.d=gibson.dropbear.id.au
 Received: from smtp3.osuosl.org ([127.0.0.1])
  by localhost (smtp3.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id MXBJbS-lLlkW for <iommu@lists.linux-foundation.org>;
- Fri,  1 Oct 2021 06:30:46 +0000 (UTC)
+ with ESMTP id 5u-CwiyxooYN for <iommu@lists.linux-foundation.org>;
+ Fri,  1 Oct 2021 06:30:47 +0000 (UTC)
 X-Greylist: from auto-whitelisted by SQLgrey-1.8.0
 Received: from gandalf.ozlabs.org (gandalf.ozlabs.org
  [IPv6:2404:9400:2:0:216:3eff:fee2:21ea])
- by smtp3.osuosl.org (Postfix) with ESMTPS id D703661492
- for <iommu@lists.linux-foundation.org>; Fri,  1 Oct 2021 06:30:45 +0000 (UTC)
+ by smtp3.osuosl.org (Postfix) with ESMTPS id 9AAB561492
+ for <iommu@lists.linux-foundation.org>; Fri,  1 Oct 2021 06:30:47 +0000 (UTC)
 Received: by gandalf.ozlabs.org (Postfix, from userid 1007)
- id 4HLKxG54zmz4xbR; Fri,  1 Oct 2021 16:30:42 +1000 (AEST)
+ id 4HLKxG63RSz4xbZ; Fri,  1 Oct 2021 16:30:42 +1000 (AEST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
  d=gibson.dropbear.id.au; s=201602; t=1633069842;
- bh=K4BHDoiWTjnYxEiM7KxTgO/MtSIfmeycDfNJ3LKXLAc=;
+ bh=lR34utpaPRCNI/perdpBGfzIkAS0BNV6Vs/MdnmoqpQ=;
  h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
- b=ZJh1+ik15KtihcPpVhMIA1lM1tPQU3tk2wJJAY76tdzCmGvzInhCE7xcfJ3fUlCBj
- 8L9IDL7KSQMFp/OCBJijEQsoQ/uXL4pE0NF7Xrq3s5P+cgfzGniZveXZ44udupPiqf
- Fww12/h5/fTXIGHZQYNYE5zBrIaLAEhpb5pGQ7o8=
-Date: Fri, 1 Oct 2021 16:11:14 +1000
-From: David Gibson <david@gibson.dropbear.id.au>
-To: Liu Yi L <yi.l.liu@intel.com>
+ b=Gy+VlReRYd8SAM46lfmZR/ktoSy73PwBURgZBuyyfb16MyPR9LgF8g9STm4/0hZ0f
+ KGVknRjzdBFqFsgzUp3mMhTDJhJkUvofB6SPqKUd6BEOrMGGumiZmuGWLJPUNS6Suu
+ EMOJ2zGcOhnkF++aTF2sf1PuuGSi6CNYVJh8QKBA=
+Date: Fri, 1 Oct 2021 16:30:05 +1000
+From: "david@gibson.dropbear.id.au" <david@gibson.dropbear.id.au>
+To: "Tian, Kevin" <kevin.tian@intel.com>
 Subject: Re: [RFC 11/20] iommu/iommufd: Add IOMMU_IOASID_ALLOC/FREE
-Message-ID: <YVamgnMzuv3TCQiX@yekko>
+Message-ID: <YVaq7a5uzUMd9vVL@yekko>
 References: <20210919063848.1476776-1-yi.l.liu@intel.com>
  <20210919063848.1476776-12-yi.l.liu@intel.com>
+ <20210921174438.GW327412@nvidia.com>
+ <BN9PR11MB543362CEBDAD02DA9F06D8ED8CA29@BN9PR11MB5433.namprd11.prod.outlook.com>
+ <20210922140911.GT327412@nvidia.com>
+ <BN9PR11MB5433A47FFA0A8C51643AA33C8CA39@BN9PR11MB5433.namprd11.prod.outlook.com>
+ <20210923120653.GK964074@nvidia.com>
+ <BN9PR11MB543309C4D55D628278B95E008CA39@BN9PR11MB5433.namprd11.prod.outlook.com>
 MIME-Version: 1.0
-In-Reply-To: <20210919063848.1476776-12-yi.l.liu@intel.com>
-Cc: kvm@vger.kernel.org, jasowang@redhat.com, kwankhede@nvidia.com, hch@lst.de,
- jean-philippe@linaro.org, dave.jiang@intel.com, ashok.raj@intel.com,
- corbet@lwn.net, jgg@nvidia.com, kevin.tian@intel.com, parav@mellanox.com,
- alex.williamson@redhat.com, lkml@metux.net, dwmw2@infradead.org,
- jun.j.tian@intel.com, linux-kernel@vger.kernel.org, lushenming@huawei.com,
- iommu@lists.linux-foundation.org, pbonzini@redhat.com, robin.murphy@arm.com
+In-Reply-To: <BN9PR11MB543309C4D55D628278B95E008CA39@BN9PR11MB5433.namprd11.prod.outlook.com>
+Cc: "kvm@vger.kernel.org" <kvm@vger.kernel.org>,
+ "jasowang@redhat.com" <jasowang@redhat.com>,
+ "kwankhede@nvidia.com" <kwankhede@nvidia.com>, "hch@lst.de" <hch@lst.de>,
+ "jean-philippe@linaro.org" <jean-philippe@linaro.org>, "Jiang,
+ Dave" <dave.jiang@intel.com>, "Raj, Ashok" <ashok.raj@intel.com>,
+ "corbet@lwn.net" <corbet@lwn.net>, Jason Gunthorpe <jgg@nvidia.com>,
+ "parav@mellanox.com" <parav@mellanox.com>,
+ "alex.williamson@redhat.com" <alex.williamson@redhat.com>,
+ "lkml@metux.net" <lkml@metux.net>, "dwmw2@infradead.org" <dwmw2@infradead.org>,
+ "Tian, Jun J" <jun.j.tian@intel.com>,
+ "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+ "lushenming@huawei.com" <lushenming@huawei.com>,
+ "iommu@lists.linux-foundation.org" <iommu@lists.linux-foundation.org>,
+ "pbonzini@redhat.com" <pbonzini@redhat.com>,
+ "robin.murphy@arm.com" <robin.murphy@arm.com>
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -79,423 +94,169 @@ List-Post: <mailto:iommu@lists.linux-foundation.org>
 List-Help: <mailto:iommu-request@lists.linux-foundation.org?subject=help>
 List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
  <mailto:iommu-request@lists.linux-foundation.org?subject=subscribe>
-Content-Type: multipart/mixed; boundary="===============8374961800968506660=="
+Content-Type: multipart/mixed; boundary="===============2280195275246654692=="
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
 
---===============8374961800968506660==
+--===============2280195275246654692==
 Content-Type: multipart/signed; micalg=pgp-sha256;
-	protocol="application/pgp-signature"; boundary="emeUklQwaw/5Jbba"
+	protocol="application/pgp-signature"; boundary="lzq0sKp3RnTlTiJP"
 Content-Disposition: inline
 
 
---emeUklQwaw/5Jbba
+--lzq0sKp3RnTlTiJP
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
 Content-Transfer-Encoding: quoted-printable
 
-On Sun, Sep 19, 2021 at 02:38:39PM +0800, Liu Yi L wrote:
-> This patch adds IOASID allocation/free interface per iommufd. When
-> allocating an IOASID, userspace is expected to specify the type and
-> format information for the target I/O page table.
+On Thu, Sep 23, 2021 at 12:22:23PM +0000, Tian, Kevin wrote:
+> > From: Jason Gunthorpe <jgg@nvidia.com>
+> > Sent: Thursday, September 23, 2021 8:07 PM
+> >=20
+> > On Thu, Sep 23, 2021 at 09:14:58AM +0000, Tian, Kevin wrote:
+> >=20
+> > > currently the type is aimed to differentiate three usages:
+> > >
+> > > - kernel-managed I/O page table
+> > > - user-managed I/O page table
+> > > - shared I/O page table (e.g. with mm, or ept)
+> >=20
+> > Creating a shared ios is something that should probably be a different
+> > command.
 >=20
-> This RFC supports only one type (IOMMU_IOASID_TYPE_KERNEL_TYPE1V2),
-> implying a kernel-managed I/O page table with vfio type1v2 mapping
-> semantics. For this type the user should specify the addr_width of
-> the I/O address space and whether the I/O page table is created in
-> an iommu enfore_snoop format. enforce_snoop must be true at this point,
-> as the false setting requires additional contract with KVM on handling
-> WBINVD emulation, which can be added later.
+> why? I didn't understand the criteria here...
 >=20
-> Userspace is expected to call IOMMU_CHECK_EXTENSION (see next patch)
-> for what formats can be specified when allocating an IOASID.
+> >=20
+> > > we can remove 'type', but is FORMAT_KENREL/USER/SHARED a good
+> > > indicator? their difference is not about format.
+> >=20
+> > Format should be
+> >=20
+> > FORMAT_KERNEL/FORMAT_INTEL_PTE_V1/FORMAT_INTEL_PTE_V2/etc
 >=20
-> Open:
-> - Devices on PPC platform currently use a different iommu driver in vfio.
->   Per previous discussion they can also use vfio type1v2 as long as there
->   is a way to claim a specific iova range from a system-wide address spac=
-e.
->   This requirement doesn't sound PPC specific, as addr_width for pci devi=
-ces
->   can be also represented by a range [0, 2^addr_width-1]. This RFC hasn't
->   adopted this design yet. We hope to have formal alignment in v1 discuss=
-ion
->   and then decide how to incorporate it in v2.
-
-Ok, there are several things we need for ppc.  None of which are
-inherently ppc specific and some of which will I think be useful for
-most platforms.  So, starting from most general to most specific
-here's basically what's needed:
-
-1. We need to represent the fact that the IOMMU can only translate
-   *some* IOVAs, not a full 64-bit range.  You have the addr_width
-   already, but I'm entirely sure if the translatable range on ppc
-   (or other platforms) is always a power-of-2 size.  It usually will
-   be, of course, but I'm not sure that's a hard requirement.  So
-   using a size/max rather than just a number of bits might be safer.
-
-   I think basically every platform will need this.  Most platforms
-   don't actually implement full 64-bit translation in any case, but
-   rather some smaller number of bits that fits their page table
-   format.
-
-2. The translatable range of IOVAs may not begin at 0.  So we need to
-   advertise to userspace what the base address is, as well as the
-   size.  POWER's main IOVA range begins at 2^59 (at least on the
-   models I know about).
-
-   I think a number of platforms are likely to want this, though I
-   couldn't name them apart from POWER.  Putting the translated IOVA
-   window at some huge address is a pretty obvious approach to making
-   an IOMMU which can translate a wide address range without colliding
-   with any legacy PCI addresses down low (the IOMMU can check if this
-   transaction is for it by just looking at some high bits in the
-   address).
-
-3. There might be multiple translatable ranges.  So, on POWER the
-   IOMMU can typically translate IOVAs from 0..2GiB, and also from
-   2^59..2^59+<RAM size>.  The two ranges have completely separate IO
-   page tables, with (usually) different layouts.  (The low range will
-   nearly always be a single-level page table with 4kiB or 64kiB
-   entries, the high one will be multiple levels depending on the size
-   of the range and pagesize).
-
-   This may be less common, but I suspect POWER won't be the only
-   platform to do something like this.  As above, using a high range
-   is a pretty obvious approach, but clearly won't handle older
-   devices which can't do 64-bit DMA.  So adding a smaller range for
-   those devices is again a pretty obvious solution.  Any platform
-   with an "IO hole" can be treated as having two ranges, one below
-   the hole and one above it (although in that case they may well not
-   have separate page tables=20
-
-4. The translatable ranges might not be fixed.  On ppc that 0..2GiB
-   and 2^59..whatever ranges are kernel conventions, not specified by
-   the hardware or firmware.  When running as a guest (which is the
-   normal case on POWER), there are explicit hypercalls for
-   configuring the allowed IOVA windows (along with pagesize, number
-   of levels etc.).  At the moment it is fixed in hardware that there
-   are only 2 windows, one starting at 0 and one at 2^59 but there's
-   no inherent reason those couldn't also be configurable.
-
-   This will probably be rarer, but I wouldn't be surprised if it
-   appears on another platform.  If you were designing an IOMMU ASIC
-   for use in a variety of platforms, making the base address and size
-   of the translatable range(s) configurable in registers would make
-   sense.
-
-
-Now, for (3) and (4), representing lists of windows explicitly in
-ioctl()s is likely to be pretty ugly.  We might be able to avoid that,
-for at least some of the interfaces, by using the nested IOAS stuff.
-One way or another, though, the IOASes which are actually attached to
-devices need to represent both windows.
-
-e.g.
-Create a "top-level" IOAS <A> representing the device's view.  This
-would be either TYPE_KERNEL or maybe a special type.  Into that you'd
-make just two iomappings one for each of the translation windows,
-pointing to IOASes <B> and <C>.  IOAS <B> and <C> would have a single
-window, and would represent the IO page tables for each of the
-translation windows.  These could be either TYPE_KERNEL or (say)
-TYPE_POWER_TCE for a user managed table.  Well.. in theory, anyway.
-The way paravirtualization on POWER is done might mean user managed
-tables aren't really possible for other reasons, but that's not
-relevant here.
-
-The next problem here is that we don't want userspace to have to do
-different things for POWER, at least not for the easy case of a
-userspace driver that just wants a chunk of IOVA space and doesn't
-really care where it is.
-
-In general I think the right approach to handle that is to
-de-emphasize "info" or "query" interfaces.  We'll probably still need
-some for debugging and edge cases, but in the normal case userspace
-should just specify what it *needs* and (ideally) no more with
-optional hints, and the kernel will either supply that or fail.
-
-e.g. A simple userspace driver would simply say "I need an IOAS with
-at least 1GiB of IOVA space" and the kernel says "Ok, you can use
-2^59..2^59+2GiB".  qemu, emulating the POWER vIOMMU might say "I need
-an IOAS with translatable addresses from 0..2GiB with 4kiB page size
-and from 2^59..2^59+1TiB with 64kiB page size" and the kernel would
-either say "ok", or "I can't do that".
-
-> - Currently ioasid term has already been used in the kernel (drivers/iomm=
-u/
->   ioasid.c) to represent the hardware I/O address space ID in the wire. It
->   covers both PCI PASID (Process Address Space ID) and ARM SSID (Sub-Stre=
-am
->   ID). We need find a way to resolve the naming conflict between the hard=
-ware
->   ID and software handle. One option is to rename the existing ioasid to =
-be
->   pasid or ssid, given their full names still sound generic. Appreciate m=
-ore
->   thoughts on this open!
+> INTEL_PTE_V1/V2 are formats. Why is kernel-managed called a format?
 >=20
-> Signed-off-by: Liu Yi L <yi.l.liu@intel.com>
-> ---
->  drivers/iommu/iommufd/iommufd.c | 120 ++++++++++++++++++++++++++++++++
->  include/linux/iommufd.h         |   3 +
->  include/uapi/linux/iommu.h      |  54 ++++++++++++++
->  3 files changed, 177 insertions(+)
+> >=20
+> > > Dave's links didn't answer one puzzle from me. Does PPC needs accurate
+> > > range information or be ok with a large range including holes (then l=
+et
+> > > the kernel to figure out where the holes locate)?
+> >=20
+> > My impression was it only needed a way to select between the two
+> > different cases as they are exclusive. I'd see this API as being a
+> > hint and userspace should query the exact ranges to learn what was
+> > actually created.
 >=20
-> diff --git a/drivers/iommu/iommufd/iommufd.c b/drivers/iommu/iommufd/iomm=
-ufd.c
-> index 641f199f2d41..4839f128b24a 100644
-> --- a/drivers/iommu/iommufd/iommufd.c
-> +++ b/drivers/iommu/iommufd/iommufd.c
-> @@ -24,6 +24,7 @@
->  struct iommufd_ctx {
->  	refcount_t refs;
->  	struct mutex lock;
-> +	struct xarray ioasid_xa; /* xarray of ioasids */
->  	struct xarray device_xa; /* xarray of bound devices */
->  };
-> =20
-> @@ -42,6 +43,16 @@ struct iommufd_device {
->  	u64 dev_cookie;
->  };
-> =20
-> +/* Represent an I/O address space */
-> +struct iommufd_ioas {
-> +	int ioasid;
-> +	u32 type;
-> +	u32 addr_width;
-> +	bool enforce_snoop;
-> +	struct iommufd_ctx *ictx;
-> +	refcount_t refs;
-> +};
-> +
->  static int iommufd_fops_open(struct inode *inode, struct file *filep)
->  {
->  	struct iommufd_ctx *ictx;
-> @@ -53,6 +64,7 @@ static int iommufd_fops_open(struct inode *inode, struc=
-t file *filep)
-> =20
->  	refcount_set(&ictx->refs, 1);
->  	mutex_init(&ictx->lock);
-> +	xa_init_flags(&ictx->ioasid_xa, XA_FLAGS_ALLOC);
->  	xa_init_flags(&ictx->device_xa, XA_FLAGS_ALLOC);
->  	filep->private_data =3D ictx;
-> =20
-> @@ -102,16 +114,118 @@ static void iommufd_ctx_put(struct iommufd_ctx *ic=
-tx)
->  	if (!refcount_dec_and_test(&ictx->refs))
->  		return;
-> =20
-> +	WARN_ON(!xa_empty(&ictx->ioasid_xa));
->  	WARN_ON(!xa_empty(&ictx->device_xa));
->  	kfree(ictx);
->  }
-> =20
-> +/* Caller should hold ictx->lock */
-> +static void ioas_put_locked(struct iommufd_ioas *ioas)
-> +{
-> +	struct iommufd_ctx *ictx =3D ioas->ictx;
-> +	int ioasid =3D ioas->ioasid;
-> +
-> +	if (!refcount_dec_and_test(&ioas->refs))
-> +		return;
-> +
-> +	xa_erase(&ictx->ioasid_xa, ioasid);
-> +	iommufd_ctx_put(ictx);
-> +	kfree(ioas);
-> +}
-> +
-> +static int iommufd_ioasid_alloc(struct iommufd_ctx *ictx, unsigned long =
-arg)
-> +{
-> +	struct iommu_ioasid_alloc req;
-> +	struct iommufd_ioas *ioas;
-> +	unsigned long minsz;
-> +	int ioasid, ret;
-> +
-> +	minsz =3D offsetofend(struct iommu_ioasid_alloc, addr_width);
-> +
-> +	if (copy_from_user(&req, (void __user *)arg, minsz))
-> +		return -EFAULT;
-> +
-> +	if (req.argsz < minsz || !req.addr_width ||
-> +	    req.flags !=3D IOMMU_IOASID_ENFORCE_SNOOP ||
-> +	    req.type !=3D IOMMU_IOASID_TYPE_KERNEL_TYPE1V2)
-> +		return -EINVAL;
-> +
-> +	ioas =3D kzalloc(sizeof(*ioas), GFP_KERNEL);
-> +	if (!ioas)
-> +		return -ENOMEM;
-> +
-> +	mutex_lock(&ictx->lock);
-> +	ret =3D xa_alloc(&ictx->ioasid_xa, &ioasid, ioas,
-> +		       XA_LIMIT(IOMMUFD_IOASID_MIN, IOMMUFD_IOASID_MAX),
-> +		       GFP_KERNEL);
-> +	mutex_unlock(&ictx->lock);
-> +	if (ret) {
-> +		pr_err_ratelimited("Failed to alloc ioasid\n");
-> +		kfree(ioas);
-> +		return ret;
-> +	}
-> +
-> +	ioas->ioasid =3D ioasid;
-> +
-> +	/* only supports kernel managed I/O page table so far */
-> +	ioas->type =3D IOMMU_IOASID_TYPE_KERNEL_TYPE1V2;
-> +
-> +	ioas->addr_width =3D req.addr_width;
-> +
-> +	/* only supports enforce snoop today */
-> +	ioas->enforce_snoop =3D true;
-> +
-> +	iommufd_ctx_get(ictx);
-> +	ioas->ictx =3D ictx;
-> +
-> +	refcount_set(&ioas->refs, 1);
-> +
-> +	return ioasid;
-> +}
-> +
-> +static int iommufd_ioasid_free(struct iommufd_ctx *ictx, unsigned long a=
-rg)
-> +{
-> +	struct iommufd_ioas *ioas =3D NULL;
-> +	int ioasid, ret;
-> +
-> +	if (copy_from_user(&ioasid, (void __user *)arg, sizeof(ioasid)))
-> +		return -EFAULT;
-> +
-> +	if (ioasid < 0)
-> +		return -EINVAL;
-> +
-> +	mutex_lock(&ictx->lock);
-> +	ioas =3D xa_load(&ictx->ioasid_xa, ioasid);
-> +	if (IS_ERR(ioas)) {
-> +		ret =3D -EINVAL;
-> +		goto out_unlock;
-> +	}
-> +
-> +	/* Disallow free if refcount is not 1 */
-> +	if (refcount_read(&ioas->refs) > 1) {
-> +		ret =3D -EBUSY;
-> +		goto out_unlock;
-> +	}
-> +
-> +	ioas_put_locked(ioas);
-> +out_unlock:
-> +	mutex_unlock(&ictx->lock);
-> +	return ret;
-> +};
-> +
->  static int iommufd_fops_release(struct inode *inode, struct file *filep)
->  {
->  	struct iommufd_ctx *ictx =3D filep->private_data;
-> +	struct iommufd_ioas *ioas;
-> +	unsigned long index;
-> =20
->  	filep->private_data =3D NULL;
-> =20
-> +	mutex_lock(&ictx->lock);
-> +	xa_for_each(&ictx->ioasid_xa, index, ioas)
-> +		ioas_put_locked(ioas);
-> +	mutex_unlock(&ictx->lock);
-> +
->  	iommufd_ctx_put(ictx);
-> =20
->  	return 0;
-> @@ -195,6 +309,12 @@ static long iommufd_fops_unl_ioctl(struct file *file=
-p,
->  	case IOMMU_DEVICE_GET_INFO:
->  		ret =3D iommufd_get_device_info(ictx, arg);
->  		break;
-> +	case IOMMU_IOASID_ALLOC:
-> +		ret =3D iommufd_ioasid_alloc(ictx, arg);
-> +		break;
-> +	case IOMMU_IOASID_FREE:
-> +		ret =3D iommufd_ioasid_free(ictx, arg);
-> +		break;
->  	default:
->  		pr_err_ratelimited("unsupported cmd %u\n", cmd);
->  		break;
-> diff --git a/include/linux/iommufd.h b/include/linux/iommufd.h
-> index 1603a13937e9..1dd6515e7816 100644
-> --- a/include/linux/iommufd.h
-> +++ b/include/linux/iommufd.h
-> @@ -14,6 +14,9 @@
->  #include <linux/err.h>
->  #include <linux/device.h>
-> =20
-> +#define IOMMUFD_IOASID_MAX	((unsigned int)(0x7FFFFFFF))
-> +#define IOMMUFD_IOASID_MIN	0
-> +
->  #define IOMMUFD_DEVID_MAX	((unsigned int)(0x7FFFFFFF))
->  #define IOMMUFD_DEVID_MIN	0
-> =20
-> diff --git a/include/uapi/linux/iommu.h b/include/uapi/linux/iommu.h
-> index 76b71f9d6b34..5cbd300eb0ee 100644
-> --- a/include/uapi/linux/iommu.h
-> +++ b/include/uapi/linux/iommu.h
-> @@ -57,6 +57,60 @@ struct iommu_device_info {
-> =20
->  #define IOMMU_DEVICE_GET_INFO	_IO(IOMMU_TYPE, IOMMU_BASE + 1)
-> =20
-> +/*
-> + * IOMMU_IOASID_ALLOC	- _IOWR(IOMMU_TYPE, IOMMU_BASE + 2,
-> + *				struct iommu_ioasid_alloc)
-> + *
-> + * Allocate an IOASID.
-> + *
-> + * IOASID is the FD-local software handle representing an I/O address
-> + * space. Each IOASID is associated with a single I/O page table. User
-> + * must call this ioctl to get an IOASID for every I/O address space
-> + * that is intended to be tracked by the kernel.
-> + *
-> + * User needs to specify the attributes of the IOASID and associated
-> + * I/O page table format information according to one or multiple devices
-> + * which will be attached to this IOASID right after. The I/O page table
-> + * is activated in the IOMMU when it's attached by a device. Incompatible
-> + * format between device and IOASID will lead to attaching failure in
-> + * device side.
-> + *
-> + * Currently only one flag (IOMMU_IOASID_ENFORCE_SNOOP) is supported and
-> + * must be always set.
-> + *
-> + * Only one I/O page table type (kernel-managed) is supported, with vfio
-> + * type1v2 mapping semantics.
-> + *
-> + * User should call IOMMU_CHECK_EXTENSION for future extensions.
-> + *
-> + * @argsz:	    user filled size of this data.
-> + * @flags:	    additional information for IOASID allocation.
-> + * @type:	    I/O address space page table type.
-> + * @addr_width:    address width of the I/O address space.
-> + *
-> + * Return: allocated ioasid on success, -errno on failure.
-> + */
-> +struct iommu_ioasid_alloc {
-> +	__u32	argsz;
-> +	__u32	flags;
-> +#define IOMMU_IOASID_ENFORCE_SNOOP	(1 << 0)
-> +	__u32	type;
-> +#define IOMMU_IOASID_TYPE_KERNEL_TYPE1V2	1
-> +	__u32	addr_width;
-> +};
-> +
-> +#define IOMMU_IOASID_ALLOC		_IO(IOMMU_TYPE, IOMMU_BASE + 2)
-> +
-> +/**
-> + * IOMMU_IOASID_FREE - _IOWR(IOMMU_TYPE, IOMMU_BASE + 3, int)
-> + *
-> + * Free an IOASID.
-> + *
-> + * returns: 0 on success, -errno on failure
-> + */
-> +
-> +#define IOMMU_IOASID_FREE		_IO(IOMMU_TYPE, IOMMU_BASE + 3)
-> +
->  #define IOMMU_FAULT_PERM_READ	(1 << 0) /* read */
->  #define IOMMU_FAULT_PERM_WRITE	(1 << 1) /* write */
->  #define IOMMU_FAULT_PERM_EXEC	(1 << 2) /* exec */
+> yes, the user can query the permitted range using DEVICE_GET_INFO.
+> But in the end if the user wants two separate regions, I'm afraid that=20
+> the underlying iommu driver wants to know the exact info. iirc PPC
+> has one global system address space shared by all devices.
+
+I think certain POWER models do this, yes, there's *protection*
+between DMAs from different devices, but you can't translate the same
+address to different places for different devices.  I *think* that's a
+firmware/hypervisor convention rather than a hardware limitation, but
+I'm not entirely sure.  We don't do things this way when emulating the
+POWER vIOMMU in POWER, but PowerVM might and we still have to deal
+with that when running as a POWERVM guest.
+
+> It is possible
+> that the user may want to claim range-A and range-C, with range-B
+> in-between but claimed by another user. Then simply using one hint
+> range [A-lowend, C-highend] might not work.
+>=20
+> >=20
+> > > > device-specific escape if more specific customization is needed and=
+ is
+> > > > needed to specify user space page tables anyhow.
+> > >
+> > > and I didn't understand the 2nd link. How does user-managed page
+> > > table jump into this range claim problem? I'm getting confused...
+> >=20
+> > PPC could also model it using a FORMAT_KERNEL_PPC_X,
+> > FORMAT_KERNEL_PPC_Y
+> > though it is less nice..
+>=20
+> yes PPC can use different format, but I didn't understand why it is=20
+> related user-managed page table which further requires nesting. sound
+> disconnected topics here...
+>=20
+> >=20
+> > > > Yes, ioas_id should always be the xarray index.
+> > > >
+> > > > PASID needs to be called out as PASID or as a generic "hw descripti=
+on"
+> > > > blob.
+> > >
+> > > ARM doesn't use PASID. So we need a generic blob, e.g. ioas_hwid?
+> >=20
+> > ARM *does* need PASID! PASID is the label of the DMA on the PCI bus,
+> > and it MUST be exposed in that format to be programmed into the PCI
+> > device itself.
+>=20
+> In the entire discussion in previous design RFC, I kept an impression that
+> ARM-equivalent PASID is called SSID. If we can use PASID as a general
+> term in iommufd context, definitely it's much better!
+>=20
+> >=20
+> > All of this should be able to support a userspace, like DPDK, creating
+> > a PASID on its own without any special VFIO drivers.
+> >=20
+> > - Open iommufd
+> > - Attach the vfio device FD
+> > - Request a PASID device id
+> > - Create an ios against the pasid device id
+> > - Query the ios for the PCI PASID #
+> > - Program the HW to issue TLPs with the PASID
+>=20
+> this all makes me very confused, and completely different from what
+> we agreed in previous v2 design proposal:
+>=20
+> - open iommufd
+> - create an ioas
+> - attach vfio device to ioasid, with vPASID info
+> 	* vfio converts vPASID to pPASID and then call iommufd_device_attach_ioa=
+sid()
+> 	* the latter then installs ioas to the IOMMU with RID/PASID
+>=20
+> >=20
+> > > and still we have both ioas_id (iommufd) and ioasid (ioasid.c) in the
+> > > kernel. Do we want to clear this confusion? Or possibly it's fine bec=
+ause
+> > > ioas_id is never used outside of iommufd and iommufd doesn't directly
+> > > call ioasid_alloc() from ioasid.c?
+> >=20
+> > As long as it is ioas_id and ioasid it is probably fine..
+>=20
+> let's align with others in a few hours.
+>=20
+> >=20
+> > > > kvm's API to program the vPASID translation table should probably t=
+ake
+> > > > in a (iommufd,ioas_id,device_id) tuple and extract the IOMMU side
+> > > > information using an in-kernel API. Userspace shouldn't have to
+> > > > shuttle it around.
+> > >
+> > > the vPASID info is carried in VFIO_DEVICE_ATTACH_IOASID uAPI.
+> > > when kvm calls iommufd with above tuple, vPASID->pPASID is
+> > > returned to kvm. So we still need a generic blob to represent
+> > > vPASID in the uAPI.
+> >=20
+> > I think you have to be clear about what the value is being used
+> > for. Is it an IOMMU page table handle or is it a PCI PASID value?
+> >=20
+> > AFAICT I think it is the former in the Intel scheme as the "vPASID" is
+> > really about presenting a consistent IOMMU handle to the guest across
+> > migration, it is not the value that shows up on the PCI bus.
+> >=20
+>=20
+> It's the former. But vfio driver needs to maintain vPASID->pPASID
+> translation in the mediation path, since what guest programs is vPASID.
+>=20
+> Thanks
+> Kevin
+>=20
 
 --=20
 David Gibson			| I'll have my music baroque, and my code
@@ -503,29 +264,29 @@ david AT gibson.dropbear.id.au	| minimalist, thank you.  NOT _the_ _other_
 				| _way_ _around_!
 http://www.ozlabs.org/~dgibson
 
---emeUklQwaw/5Jbba
+--lzq0sKp3RnTlTiJP
 Content-Type: application/pgp-signature; name="signature.asc"
 
 -----BEGIN PGP SIGNATURE-----
 
-iQIyBAEBCAAdFiEEdfRlhq5hpmzETofcbDjKyiDZs5IFAmFWpoAACgkQbDjKyiDZ
-s5KAag/yAoYoDdwVglF9/hA+gs1yNHBnEodRj4fXPKdOeR3UFQhvqiYpsHskHG6+
-37zal7BDrh4uRh3rvISQoWa5Q97nIjw8rXVrSd8Us/PD2RP3SE9H2tGuntz0lzuV
-Pps4kWauTm/DBKX3YYFpbWmMBHijUNA7fihgx4W+I9eYefYLYxnbb4z7yrs1nxCq
-lq99qVWKQEID6r32FqJGGl37GSIsqwdXdDB6EbpimtbpICRux3xvxqidZkBPFCNv
-2KI5eUA0pUGNF6bbCH1xdTFnGwHmukHkvxrOGdgmfGOI6cN97V5cxsDDKCzLkVit
-Byr/mWyG11hqaFXNmxAamyd4YcX0xx1uf6o2Wol5a1/zV0SUE9S+NgPlIti/i6UU
-Tx9jhSUvdl9KBC1HUYg1+4acJc8dX0PUSZdQI6FT9fqWBywbCqK5rU0R2Ekwn64F
-DtqHMDIN3FK0FMvvO5I+fYSMTEhTi4qBqC6neyTIzjYI2uzFbdks1DI4kxzYAoKq
-q81vzXeO8BifZqgUXg9DB2VnzYOgXqnUj+SoWI7hnrKZfLbbDjq20RTafm6TJvDf
-Ja+zg7cFf9oTFKkVdkNxej6vmZaMVO5I1iGCzoMn39zoO2rannO1CfULfpc1LbAs
-RDsvVT9E75rooh4rujJgCESvAnvF5Fti+G8XkmKh6yN83oyhgQ==
-=WQqD
+iQIzBAEBCAAdFiEEdfRlhq5hpmzETofcbDjKyiDZs5IFAmFWqu0ACgkQbDjKyiDZ
+s5L/4A/8Cn9Xa+7dGRlje4LCugxjf/YGtuwbSe+gdeSt0mR/aMa7c67dyHPzYg4y
+fJNNQo/1Tzi6IdeBVY4edZ8zr52ovu+A59SlBISCM85AUe/vx3fD6obImquWsaFW
+QXME9WCEIouqfP0p50UVeIl9Xp3mTrElPyMbA36B0QKl7t3kgMx3PFqlQiiiXktR
+T9GPce+4GWSLL1aZKDDbMADpmd9+RwD97ZXtcJ+BmlXURFiYnkid+ZYHY3mJ7gFD
+y4QFBZIeBxB/VHbAYXsXzEuEtAXKeiPXzf1nQMUdtmyM989H6FxwsPqgWs6mE8gt
+FvklyPSmNeq78WeiU/DlTwXCzgbuAvhiNFpmXQMmGZn7X1+p2Bexv6rbCh9Dj9MU
+5mKNcz/7g8mp+i5Ka08EHEqv1BKBPpn9TY6ftVRURg5XY5ZsPKWNzJCpRShs281l
+xjjz8DAV9kkm8CGJtFkxFY55/xh3cz/xmwxMq8D1bMRTH5OqYizBsKVf1N2NgOF7
+HKM80qtfTQi3QvaPJSaBlidR0CJR5o3ZvHj/XyL4Dogpa2+67q1BLWuIm1+gCuPZ
+ghR1jaAtOazvIesBJWKR7XLxMDuV2lAU5yu3uh9ezQlGrdWP+j7mf6LKwplZeib4
+o0hcfmwMtnmvLCWoF4w7Q7hCx9VVRTkFRbjo4mbWBZ1sH8HrAlQ=
+=uDs1
 -----END PGP SIGNATURE-----
 
---emeUklQwaw/5Jbba--
+--lzq0sKp3RnTlTiJP--
 
---===============8374961800968506660==
+--===============2280195275246654692==
 Content-Type: text/plain; charset="us-ascii"
 MIME-Version: 1.0
 Content-Transfer-Encoding: 7bit
@@ -535,4 +296,4 @@ _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
 https://lists.linuxfoundation.org/mailman/listinfo/iommu
---===============8374961800968506660==--
+--===============2280195275246654692==--
