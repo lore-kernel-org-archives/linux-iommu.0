@@ -2,149 +2,119 @@ Return-Path: <SRS0=Y/Kh=OV=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 35142C433EF
-	for <iommu@archiver.kernel.org>; Fri,  1 Oct 2021 12:43:32 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C1412C433EF
+	for <iommu@archiver.kernel.org>; Fri,  1 Oct 2021 12:53:20 +0000 (UTC)
 Received: from smtp3.osuosl.org (smtp3.osuosl.org [140.211.166.136])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id C93EF619EE
-	for <iommu@archiver.kernel.org>; Fri,  1 Oct 2021 12:43:31 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.4.1 mail.kernel.org C93EF619EE
-Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=lists.linux-foundation.org
+	by mail.kernel.org (Postfix) with ESMTPS id 65D6861A58
+	for <iommu@archiver.kernel.org>; Fri,  1 Oct 2021 12:53:20 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.4.1 mail.kernel.org 65D6861A58
+Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=linux.ibm.com
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by smtp3.osuosl.org (Postfix) with ESMTP id 9011C613E1;
-	Fri,  1 Oct 2021 12:43:31 +0000 (UTC)
+	by smtp3.osuosl.org (Postfix) with ESMTP id 2A0CE614B2;
+	Fri,  1 Oct 2021 12:53:20 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
 Received: from smtp3.osuosl.org ([127.0.0.1])
 	by localhost (smtp3.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id Z0L0Q25Sd8Cy; Fri,  1 Oct 2021 12:43:30 +0000 (UTC)
-Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by smtp3.osuosl.org (Postfix) with ESMTPS id 7701960644;
-	Fri,  1 Oct 2021 12:43:30 +0000 (UTC)
+	with ESMTP id vmPe_ND-lIuV; Fri,  1 Oct 2021 12:53:19 +0000 (UTC)
+Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [IPv6:2605:bc80:3010:104::8cd3:938])
+	by smtp3.osuosl.org (Postfix) with ESMTPS id F28FC607DF;
+	Fri,  1 Oct 2021 12:53:18 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 51F56C0011;
-	Fri,  1 Oct 2021 12:43:30 +0000 (UTC)
-Received: from smtp4.osuosl.org (smtp4.osuosl.org [IPv6:2605:bc80:3010::137])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 331EEC000D
- for <iommu@lists.linux-foundation.org>; Fri,  1 Oct 2021 12:43:29 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id A648DC0011;
+	Fri,  1 Oct 2021 12:53:18 +0000 (UTC)
+Received: from smtp4.osuosl.org (smtp4.osuosl.org [140.211.166.137])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 1761DC000D
+ for <iommu@lists.linux-foundation.org>; Fri,  1 Oct 2021 12:53:17 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by smtp4.osuosl.org (Postfix) with ESMTP id 0383840024
- for <iommu@lists.linux-foundation.org>; Fri,  1 Oct 2021 12:43:29 +0000 (UTC)
+ by smtp4.osuosl.org (Postfix) with ESMTP id E71944068D
+ for <iommu@lists.linux-foundation.org>; Fri,  1 Oct 2021 12:53:16 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
 Authentication-Results: smtp4.osuosl.org (amavisd-new);
- dkim=pass (2048-bit key) header.d=nvidia.com
+ dkim=pass (2048-bit key) header.d=ibm.com
 Received: from smtp4.osuosl.org ([127.0.0.1])
  by localhost (smtp4.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id gOayUeaPp5xm for <iommu@lists.linux-foundation.org>;
- Fri,  1 Oct 2021 12:43:28 +0000 (UTC)
-X-Greylist: whitelisted by SQLgrey-1.8.0
-Received: from NAM02-BN1-obe.outbound.protection.outlook.com
- (mail-bn1nam07on2073.outbound.protection.outlook.com [40.107.212.73])
- by smtp4.osuosl.org (Postfix) with ESMTPS id 4973240470
- for <iommu@lists.linux-foundation.org>; Fri,  1 Oct 2021 12:43:28 +0000 (UTC)
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=jPjKzokxFncJ3J8qrZ8SPCdtgUd9stIIRDf6khhSnuk2v6n61GV3M/bgy1TeDRJWK5Zzq4MllEcqlv7hBwizwvVvo5UCphXHvXsecPu0y+prrQFdSArJtruMh6gbG6SPeSX2HJUSS1EkGRRkMCw+lqbtk7tRqxOWhQaqmKsW/feEPpju8hndphaSeSanCzi4JIDJxG/TaskNHL1MB0Gu7BcK5VKdfvPfOvPy0Dvk2Ufxs2d/oeETZrYdO+QoFO7NKrk+cHoHkBUvWYfMoNvAe0J5clBa3JXB4YME5Ij1JtEvE92/Z166oCNobrDel8+smVJKCtlfLwPosktVfVjEKg==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com; 
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=T47JWvKdKniBPqWNE8dBIrTHX6kQ+847Sibkum+9UGo=;
- b=Zt1hNuaD7aOFoEs+1XvO8qyoWdyImb5mUPXNWnfpCkcVJft02gRse6iobSR9+YkrGoEV26xiqC5OZnBSsEhijamJjTxwSxzi/TE6Fag5c12Ul9Ww1fOs86WwOVPYTd0uwmlVde2Wrbs6JiZ2qBanuZnbQvyX0++NMUJwa2QVHMIJqrYjTH3QzykI3fp209Bj6jdahOauiQppS5+qXNabKVQK8Lb66BEkyDrsX58fdhrkPQyTjlSd19nZZWBgiriCpyZfNZLZWehN32VtvN6KCiXLxh8N5oblIUujRlyUygcfoiMJX8YMVuEmVBgb2NKzrOnAGVIEkaVHgVSLWPUnzQ==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=nvidia.com; dmarc=pass action=none header.from=nvidia.com;
- dkim=pass header.d=nvidia.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
- s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=T47JWvKdKniBPqWNE8dBIrTHX6kQ+847Sibkum+9UGo=;
- b=DE+5EJZvs7h0qpYhDWqYFIZGEzoSOkL2tjPBsWPm7pKddLx5JND/FqwAmkm579wYIVzetpZpR3otqPqEemaOVIizYrSF/ZhoPhK7cq/YnSHBvspKZIphMGSHsaanjqmaOopERb+vhCXeZXP/b5xOrQ5wv0CfY8QDvT904s9QvCtX4rP9tWs3955+v0iizKC5CFrQx1LiNWzQ+I8ol6nHl/FpmRjOGI2watJ1ZqjhaU5S34ODBGbl0pWINrdbPaOhtFiJ176WPGl5csSkdr6ExW13BMjXdF/bfK6qoJHTZW3rSAnEmyhoTF82bIMROrYLxHezpeBs8wDc1oQq5kTQyQ==
-Authentication-Results: gibson.dropbear.id.au; dkim=none (message not signed)
- header.d=none; gibson.dropbear.id.au;
- dmarc=none action=none header.from=nvidia.com;
-Received: from BL0PR12MB5506.namprd12.prod.outlook.com (2603:10b6:208:1cb::22)
- by BL1PR12MB5256.namprd12.prod.outlook.com (2603:10b6:208:319::8)
- with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4566.14; Fri, 1 Oct
- 2021 12:43:23 +0000
-Received: from BL0PR12MB5506.namprd12.prod.outlook.com
- ([fe80::e8af:232:915e:2f95]) by BL0PR12MB5506.namprd12.prod.outlook.com
- ([fe80::e8af:232:915e:2f95%8]) with mapi id 15.20.4566.019; Fri, 1 Oct 2021
- 12:43:23 +0000
-Date: Fri, 1 Oct 2021 09:43:22 -0300
-To: David Gibson <david@gibson.dropbear.id.au>
-Subject: Re: [RFC 07/20] iommu/iommufd: Add iommufd_[un]bind_device()
-Message-ID: <20211001124322.GN964074@nvidia.com>
-References: <20210919063848.1476776-1-yi.l.liu@intel.com>
- <20210919063848.1476776-8-yi.l.liu@intel.com>
- <YVP44v4FVYJBSEEF@yekko> <20210929122457.GP964074@nvidia.com>
- <YVUqpff7DUtTLYKx@yekko>
-Content-Disposition: inline
-In-Reply-To: <YVUqpff7DUtTLYKx@yekko>
-X-ClientProxiedBy: BL1PR13CA0159.namprd13.prod.outlook.com
- (2603:10b6:208:2bd::14) To BL0PR12MB5506.namprd12.prod.outlook.com
- (2603:10b6:208:1cb::22)
+ with ESMTP id FX7sburxrFMa for <iommu@lists.linux-foundation.org>;
+ Fri,  1 Oct 2021 12:53:16 +0000 (UTC)
+X-Greylist: domain auto-whitelisted by SQLgrey-1.8.0
+Received: from mx0a-001b2d01.pphosted.com (mx0b-001b2d01.pphosted.com
+ [148.163.158.5])
+ by smtp4.osuosl.org (Postfix) with ESMTPS id 1425540641
+ for <iommu@lists.linux-foundation.org>; Fri,  1 Oct 2021 12:53:15 +0000 (UTC)
+Received: from pps.filterd (m0098413.ppops.net [127.0.0.1])
+ by mx0b-001b2d01.pphosted.com (8.16.1.2/8.16.1.2) with SMTP id 191BfekC013864; 
+ Fri, 1 Oct 2021 08:53:04 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com;
+ h=date : from : to : cc :
+ subject : message-id : in-reply-to : references : mime-version :
+ content-type : content-transfer-encoding; s=pp1;
+ bh=9afJ2qjLSKuBEwPIpFU1S7G+NnaAmmNbXe5Ffp/3qDs=;
+ b=BIdyLzU8+DR4xEHOZMM3pkRvuryxZNpz3CHw984QmRmBX6OkBaBQc1ScWYU5rkPyP+1L
+ heu1TEUtLHYh/cnmeC2Hn290SBLHD/MGO3e0h+xw6pk3pMrCW9kjG3UJNxjN7are4S7i
+ kY/+W1ZaoKJVC+dpuBJTZ1zIdPU3kPpoCFIkBmunQwZmsOkCFD3pMeSeb0C+LDSLtTcc
+ Bd231YXS9zAM7tPx4rm46PZQjxAgJFqHU+/OB/jZqKzZHPzPt2+lxEGgjlW+1lm+tLdx
+ RLaPdrV/84CUAZQT1OOMqagJGF3wdAh6HGRTg9hs1iG8jeYJu5Sh1NSdGKH3fI9wn+Ag tg== 
+Received: from ppma06fra.de.ibm.com (48.49.7a9f.ip4.static.sl-reverse.com
+ [159.122.73.72])
+ by mx0b-001b2d01.pphosted.com with ESMTP id 3be1p7snef-1
+ (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+ Fri, 01 Oct 2021 08:53:04 -0400
+Received: from pps.filterd (ppma06fra.de.ibm.com [127.0.0.1])
+ by ppma06fra.de.ibm.com (8.16.1.2/8.16.1.2) with SMTP id 191CmIrO007842;
+ Fri, 1 Oct 2021 12:53:02 GMT
+Received: from b06avi18878370.portsmouth.uk.ibm.com
+ (b06avi18878370.portsmouth.uk.ibm.com [9.149.26.194])
+ by ppma06fra.de.ibm.com with ESMTP id 3b9u1ku464-1
+ (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+ Fri, 01 Oct 2021 12:53:02 +0000
+Received: from d06av21.portsmouth.uk.ibm.com (d06av21.portsmouth.uk.ibm.com
+ [9.149.105.232])
+ by b06avi18878370.portsmouth.uk.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP
+ id 191ClmNf49676696
+ (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+ Fri, 1 Oct 2021 12:47:48 GMT
+Received: from d06av21.portsmouth.uk.ibm.com (unknown [127.0.0.1])
+ by IMSVA (Postfix) with ESMTP id A282D5205F;
+ Fri,  1 Oct 2021 12:52:58 +0000 (GMT)
+Received: from thinkpad (unknown [9.171.7.108])
+ by d06av21.portsmouth.uk.ibm.com (Postfix) with SMTP id EFA3E52051;
+ Fri,  1 Oct 2021 12:52:57 +0000 (GMT)
+Date: Fri, 1 Oct 2021 14:52:56 +0200
+From: Gerald Schaefer <gerald.schaefer@linux.ibm.com>
+To: Karsten Graul <kgraul@linux.ibm.com>
+Subject: Re: DPAA2 triggers, [PATCH] dma debug: report -EEXIST errors in
+ add_dma_entry
+Message-ID: <20211001145256.0323957a@thinkpad>
+In-Reply-To: <185e7ee4-3749-4ccb-6d2e-da6bc8f30c04@linux.ibm.com>
+References: <20210518125443.34148-1-someguy@effective-light.com>
+ <fd67fbac-64bf-f0ea-01e1-5938ccfab9d0@arm.com>
+ <20210914154504.z6vqxuh3byqwgfzx@skbuf>
+ <185e7ee4-3749-4ccb-6d2e-da6bc8f30c04@linux.ibm.com>
+X-Mailer: Claws Mail 3.18.0 (GTK+ 2.24.33; x86_64-redhat-linux-gnu)
 MIME-Version: 1.0
-Received: from mlx.ziepe.ca (142.162.113.129) by
- BL1PR13CA0159.namprd13.prod.outlook.com (2603:10b6:208:2bd::14) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4587.7 via Frontend
- Transport; Fri, 1 Oct 2021 12:43:23 +0000
-Received: from jgg by mlx with local (Exim 4.94)	(envelope-from
- <jgg@nvidia.com>)	id 1mWHso-008PiH-Bj; Fri, 01 Oct 2021 09:43:22 -0300
-X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: 5ea59dc0-dae7-4485-e743-08d984d90e4b
-X-MS-TrafficTypeDiagnostic: BL1PR12MB5256:
-X-MS-Exchange-Transport-Forked: True
-X-Microsoft-Antispam-PRVS: <BL1PR12MB52560E180CAFD19B622BF8C1C2AB9@BL1PR12MB5256.namprd12.prod.outlook.com>
-X-MS-Oob-TLC-OOBClassifiers: OLM:5516;
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: VtNUNyhN8L8xpHOJoit8ODNQFIZo8ySiH1b7vMR+u3SDZXXncmeNkUljuuNhN3PzidMMx/GoSsuSQsSL5O5PNWaIv8MbiDuKaiU/v0aD44FuDwP00w8LBtqVyDJ/Eo+Lyg0twz1QXJSE8wwoyIzOgYDU+dMHc1stURIOkenT0iH1WFJAmk1btBGqsxtZ73OQ38Y60uWKNHmas+BNhFO40oeDa4WH488uiTZn1FesCp74qfsAsTE5QA/WW+lK0I/guRRfHiidZnD05tZnn5R7HmvzA3z3ZhUgxO4Mt83kqAIjmy3+A7XgmGJXyD3P5papTFZC+cBX0IcA0N562S1aREVsIA8TNo/EjpRCYZ28oDuoMwdWHXFxQhB4504uzKI96nm+jiGTI4uM/x0aZaioWolTzEfhRxYBYv/Yaqb+cBh01ZD6/z/uY5trIZY2/Gt+p5vGJuqGT+sgE7Vlblj/47Zw+jI2oW6VjOpBrIpW37nm5FZ4JiDaLPh1rLkjbDn9qPYQD2JLM7xBkzwgzGERb9TLqW9uUEzyScACrQakEvuH8gtYhMIhPoRux+GV0+tLfhbWl90pwBK8MoxvcqFu5mpXbshcu2UD4xEaFHygLDtXpY5yc6bUNeSkjeNmC3jTwccDzEAUt7zVUh0irFd+aFf+q7BhJwIdWwGz392D9agrL05T4w6Yr3RjzEtbyXJbjIPZ3QIP1PwLuZnRVMbyOQ==
-X-Forefront-Antispam-Report: CIP:255.255.255.255; CTRY:; LANG:en; SCL:1; SRV:;
- IPV:NLI; SFV:NSPM; H:BL0PR12MB5506.namprd12.prod.outlook.com; PTR:; CAT:NONE;
- SFS:(4636009)(366004)(186003)(86362001)(426003)(36756003)(107886003)(8936002)(1076003)(33656002)(26005)(6916009)(5660300002)(2616005)(4326008)(9746002)(66946007)(66476007)(508600001)(66556008)(9786002)(7416002)(8676002)(38100700002)(2906002)(316002)(27376004);
- DIR:OUT; SFP:1101; 
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?UUX5mLGje05Mcjz9YJKtCXrb4objHRb4cqbbr2+7dPgM30rDCgAMQPlRWzQM?=
- =?us-ascii?Q?O+0f5u1iwg2gmgU6hDOukGVfImZmT19RML4ptRPzXcP/v5VQsm4dR96h/Z72?=
- =?us-ascii?Q?z+uTp/Bu4HcPTBeLrYA9BbvChlhuVn/rDnYCskaJYvz2M2KkHE+yrYyV7otP?=
- =?us-ascii?Q?+EU0YPUnhUYalnovqL4YvInK1MXz/jDcKO1mMuFYrlVj2s5SKFjKXMYPmnru?=
- =?us-ascii?Q?37UFdDcXxvMpwV/zCZkynJVC8P/Uup0YC3guK13ZZufyOj87b8IH/FOF3E3w?=
- =?us-ascii?Q?D3+i9qyf9T7XMi2qjuCszYBYp/zR24cRjzuuLuntmqsr8tmyZwu0FKKNUt5Q?=
- =?us-ascii?Q?VBjE+357/j3523JtBdrEZ6f4/D2RbqrwIv3X8giDHo6+DZjwkpQ6KYtJPZa0?=
- =?us-ascii?Q?vpwQH/OgtNwb9iThShjsdVQXxbon/DNW4ptuMFstG9dhqg24JYvx+woRKSoV?=
- =?us-ascii?Q?9LauWEn4W9BvTsN1S87mx9/FK9OB11xDegL/6VpwjeEjwt87XA0zr7Dph28T?=
- =?us-ascii?Q?LiBcVHwhTgaiT02LPVLH00ukXPOWTvM2PawoM4+MXSRU/0IrWfocA3x2NFbI?=
- =?us-ascii?Q?zDtHs0712C3pnk0D2/B0MdvYWlXoI9wSf5ylOISqSUUmAtk5/4LPE0MsZ/yC?=
- =?us-ascii?Q?KjhZkuSTvdtd0EgRdJs728JdZVLk4mXukliynkB4TMmItmcaxGg0wWSOustm?=
- =?us-ascii?Q?tSpqPPgQ3AnE3d5ubo9iqSntzOYO2v7m9F/kb4tDO1axOGz4w+3nQMjO1EzS?=
- =?us-ascii?Q?pR+meNX0gVBXatV3b52uP3TEzIRGL06ux7nwGdTNmc8IAcu35BDrEGLBj0N/?=
- =?us-ascii?Q?OLLcRT+10aeF0kQB3jm8pSdCH9QtyM70T8xkoPLvd6wKrSmcMYN9kpug7/06?=
- =?us-ascii?Q?QnjKnnKJ6YtU3QBZxgSlf/IgCvWkQeZggLa1afVyM5dPoiSjBZQ0AyVcG6NE?=
- =?us-ascii?Q?FqcNjPbVpL7IZ+8IUdJ9NcdzOB9V30ihAK4dEMvHUiNi0ABeawbGl2jcg4pK?=
- =?us-ascii?Q?FumePUyGAQECLV5Qv6DJUdFV64N9QqwJ/F0otYaEDkL4MVRpfVPKPlCUdADs?=
- =?us-ascii?Q?dXg1MAd04WnUq01Muo51t/VADga01ln/F1ErnmLNAKB77XOBHUe7vWDxU7xa?=
- =?us-ascii?Q?k2zA9UB6C/8HxrE7A5Z16V4WZ/s3bnj8PddRFbY2vdSWa6tCZ+nU2M3qk71d?=
- =?us-ascii?Q?mNxh59BlMtl4PBLbtlSviP2B/OkCMVmTandBuuM15Od+MXGb+DjaT5vxmMoD?=
- =?us-ascii?Q?GassRVnyPZ3F8lJa2RidAjjSO+YZRM982yKi3dFambNOpg97ieOIwwC+KXct?=
- =?us-ascii?Q?IZtsShWwWkE79xaJyN+SkEQl1cx8cj6lOpTvkd5NbWMc5Q=3D=3D?=
-X-OriginatorOrg: Nvidia.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 5ea59dc0-dae7-4485-e743-08d984d90e4b
-X-MS-Exchange-CrossTenant-AuthSource: BL0PR12MB5506.namprd12.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 01 Oct 2021 12:43:23.4939 (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: qOkSG1vYDotwECsZH3/UOdgBQEC28NIqILAa97/hMdicIGPw/qG0bZdmuzRYwc44
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: BL1PR12MB5256
-Cc: kvm@vger.kernel.org, jasowang@redhat.com, kwankhede@nvidia.com, hch@lst.de,
- jean-philippe@linaro.org, dave.jiang@intel.com, ashok.raj@intel.com,
- corbet@lwn.net, kevin.tian@intel.com, parav@mellanox.com,
- alex.williamson@redhat.com, lkml@metux.net, dwmw2@infradead.org,
- jun.j.tian@intel.com, linux-kernel@vger.kernel.org, lushenming@huawei.com,
- iommu@lists.linux-foundation.org, pbonzini@redhat.com, robin.murphy@arm.com
+X-TM-AS-GCONF: 00
+X-Proofpoint-ORIG-GUID: F9ueB-YXoaqxOVwjoXdiCvjjdDtsFi5z
+X-Proofpoint-GUID: F9ueB-YXoaqxOVwjoXdiCvjjdDtsFi5z
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.182.1,Aquarius:18.0.790,Hydra:6.0.391,FMLib:17.0.607.475
+ definitions=2021-10-01_02,2021-10-01_02,2020-04-07_01
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0
+ suspectscore=0 adultscore=0
+ priorityscore=1501 malwarescore=0 bulkscore=0 mlxscore=0
+ lowpriorityscore=0 spamscore=0 impostorscore=0 phishscore=0 clxscore=1011
+ mlxlogscore=999 classifier=spam adjust=0 reason=mlx scancount=1
+ engine=8.12.0-2109230001 definitions=main-2110010079
+Cc: linux-s390 <linux-s390@vger.kernel.org>,
+ Hamza Mahfooz <someguy@effective-light.com>,
+ "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+ "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+ Jeremy Linton <jeremy.linton@arm.com>,
+ "iommu@lists.linux-foundation.org" <iommu@lists.linux-foundation.org>,
+ Ioana Ciornei <ioana.ciornei@nxp.com>, Dan Williams <dan.j.williams@intel.com>,
+ Gerald Schaefer <gerald.schaefer@linux.ibm.com>,
+ Robin Murphy <robin.murphy@arm.com>, Christoph Hellwig <hch@lst.de>
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -157,50 +127,78 @@ List-Post: <mailto:iommu@lists.linux-foundation.org>
 List-Help: <mailto:iommu-request@lists.linux-foundation.org?subject=help>
 List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
  <mailto:iommu-request@lists.linux-foundation.org?subject=subscribe>
-From: Jason Gunthorpe via iommu <iommu@lists.linux-foundation.org>
-Reply-To: Jason Gunthorpe <jgg@nvidia.com>
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-On Thu, Sep 30, 2021 at 01:10:29PM +1000, David Gibson wrote:
-> On Wed, Sep 29, 2021 at 09:24:57AM -0300, Jason Gunthorpe wrote:
-> 65;6402;1c> On Wed, Sep 29, 2021 at 03:25:54PM +1000, David Gibson wrote:
+On Thu, 30 Sep 2021 15:37:33 +0200
+Karsten Graul <kgraul@linux.ibm.com> wrote:
+
+> On 14/09/2021 17:45, Ioana Ciornei wrote:
+> > On Wed, Sep 08, 2021 at 10:33:26PM -0500, Jeremy Linton wrote:
+> >> +DPAA2, netdev maintainers
+> >> Hi,
+> >>
+> >> On 5/18/21 7:54 AM, Hamza Mahfooz wrote:
+> >>> Since, overlapping mappings are not supported by the DMA API we should
+> >>> report an error if active_cacheline_insert returns -EEXIST.
+> >>
+> >> It seems this patch found a victim. I was trying to run iperf3 on a
+> >> honeycomb (5.14.0, fedora 35) and the console is blasting this error message
+> >> at 100% cpu. So, I changed it to a WARN_ONCE() to get the call trace, which
+> >> is attached below.
+> >>
 > > 
-> > > > +struct iommufd_device {
-> > > > +	unsigned int id;
-> > > > +	struct iommufd_ctx *ictx;
-> > > > +	struct device *dev; /* always be the physical device */
-> > > > +	u64 dev_cookie;
-> > > 
-> > > Why do you need both an 'id' and a 'dev_cookie'?  Since they're both
-> > > unique, couldn't you just use the cookie directly as the index into
-> > > the xarray?
+> > These frags are allocated by the stack, transformed into a scatterlist
+> > by skb_to_sgvec and then DMA mapped with dma_map_sg. It was not the
+> > dpaa2-eth's decision to use two fragments from the same page (that will
+> > also end un in the same cacheline) in two different in-flight skbs.
 > > 
-> > ID is the kernel value in the xarray - xarray is much more efficient &
-> > safe with small kernel controlled values.
+> > Is this behavior normal?
 > > 
-> > dev_cookie is a user assigned value that may not be unique. It's
-> > purpose is to allow userspace to receive and event and go back to its
-> > structure. Most likely userspace will store a pointer here, but it is
-> > also possible userspace could not use it.
-> > 
-> > It is a pretty normal pattern
 > 
-> Hm, ok.  Could you point me at an example?
+> We see the same problem here and it started with 5.15-rc2 in our nightly CI runs.
+> The CI has panic_on_warn enabled so we see the panic every day now.
 
-For instance user_data vs fd in io_uring
+Adding a WARN for a case that be detected false-positive seems not
+acceptable, exactly for this reason (kernel panic on unaffected
+systems).
 
-RDMA has many similar examples.
+So I guess it boils down to the question if the behavior that Ioana
+described is legit behavior, on a system that is dma coherent. We
+are apparently hitting the same scenario, although it could not yet be
+reproduced with debug printks for some reason.
 
-More or less anytime you want to allow the kernel to async retun some
-information providing a 64 bit user_data lets userspace have an easier
-time to deal with it.
+If the answer is yes, than please remove at lease the WARN, so that
+it will not make systems crash that behave valid, and have
+panic_on_warn set. Even a normal printk feels wrong to me in that
+case, it really sounds rather like you want to fix / better refine
+the overlap check, if you want to report anything here.
 
-Jason 
+BTW, there is already a WARN in the add_dma_entry() path, related
+to cachlline overlap and -EEXIST:
 
+add_dma_entry() -> active_cacheline_insert() -> -EEXIST ->
+active_cacheline_inc_overlap()
 
+That will only trigger when "overlap > ACTIVE_CACHELINE_MAX_OVERLAP".
+Not familiar with that code, but it seems that there are now two
+warnings for more or less the same, and the new warning is much more
+prone to false-positives.
+
+How do these 2 warnings relate, are they both really necessary?
+I think the new warning was only introduced because of some old
+TODO comment in add_dma_entry(), see commit 2b4bbc6231d78
+("dma-debug: report -EEXIST errors in add_dma_entry").
+
+That comment was initially added by Dan long time ago, and he
+added several fix-ups for overlap detection after that, including
+the "overlap > ACTIVE_CACHELINE_MAX_OVERLAP" stuff in
+active_cacheline_inc_overlap(). So could it be that the TODO
+comment was simply not valid any more, and better be removed
+instead of adding new / double warnings, that also generate
+false-positives and kernel crashes?
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
