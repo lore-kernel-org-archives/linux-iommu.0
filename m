@@ -1,111 +1,74 @@
-Return-Path: <SRS0=yzib=O2=lists.linux-foundation.org=iommu-bounces@kernel.org>
+Return-Path: <SRS0=VyMr=O3=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 510C1C433EF
-	for <iommu@archiver.kernel.org>; Wed,  6 Oct 2021 20:20:12 +0000 (UTC)
-Received: from smtp2.osuosl.org (smtp2.osuosl.org [140.211.166.133])
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B65F6C433F5
+	for <iommu@archiver.kernel.org>; Thu,  7 Oct 2021 01:23:32 +0000 (UTC)
+Received: from smtp1.osuosl.org (smtp1.osuosl.org [140.211.166.138])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id D21D46103D
-	for <iommu@archiver.kernel.org>; Wed,  6 Oct 2021 20:20:11 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.4.1 mail.kernel.org D21D46103D
-Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=linux.ibm.com
+	by mail.kernel.org (Postfix) with ESMTPS id 3A59F611CA
+	for <iommu@archiver.kernel.org>; Thu,  7 Oct 2021 01:23:32 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.4.1 mail.kernel.org 3A59F611CA
+Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=gibson.dropbear.id.au
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by smtp2.osuosl.org (Postfix) with ESMTP id 9244C407F9;
-	Wed,  6 Oct 2021 20:20:11 +0000 (UTC)
+	by smtp1.osuosl.org (Postfix) with ESMTP id F0B9A841D9;
+	Thu,  7 Oct 2021 01:23:31 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from smtp2.osuosl.org ([127.0.0.1])
-	by localhost (smtp2.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id 5uUgt-9NwqVS; Wed,  6 Oct 2021 20:20:10 +0000 (UTC)
-Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by smtp2.osuosl.org (Postfix) with ESMTPS id 2505C40111;
-	Wed,  6 Oct 2021 20:20:10 +0000 (UTC)
+Received: from smtp1.osuosl.org ([127.0.0.1])
+	by localhost (smtp1.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+	with ESMTP id 1SMvCzFmAxIu; Thu,  7 Oct 2021 01:23:30 +0000 (UTC)
+Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [IPv6:2605:bc80:3010:104::8cd3:938])
+	by smtp1.osuosl.org (Postfix) with ESMTPS id A16CE841C9;
+	Thu,  7 Oct 2021 01:23:29 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id F1C31C000F;
-	Wed,  6 Oct 2021 20:20:09 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 82DC8C0011;
+	Thu,  7 Oct 2021 01:23:29 +0000 (UTC)
 Received: from smtp3.osuosl.org (smtp3.osuosl.org [140.211.166.136])
- by lists.linuxfoundation.org (Postfix) with ESMTP id B1E74C000D
- for <iommu@lists.linux-foundation.org>; Wed,  6 Oct 2021 20:20:08 +0000 (UTC)
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 45FBBC000D
+ for <iommu@lists.linux-foundation.org>; Thu,  7 Oct 2021 01:23:28 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by smtp3.osuosl.org (Postfix) with ESMTP id AE82160F3E
- for <iommu@lists.linux-foundation.org>; Wed,  6 Oct 2021 20:20:08 +0000 (UTC)
+ by smtp3.osuosl.org (Postfix) with ESMTP id 1AF0C60678
+ for <iommu@lists.linux-foundation.org>; Thu,  7 Oct 2021 01:23:28 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
 Authentication-Results: smtp3.osuosl.org (amavisd-new);
- dkim=pass (2048-bit key) header.d=ibm.com
+ dkim=pass (1024-bit key) header.d=gibson.dropbear.id.au
 Received: from smtp3.osuosl.org ([127.0.0.1])
  by localhost (smtp3.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id pJcEJ_Qt6t0i for <iommu@lists.linux-foundation.org>;
- Wed,  6 Oct 2021 20:20:07 +0000 (UTC)
-X-Greylist: domain auto-whitelisted by SQLgrey-1.8.0
-Received: from mx0a-001b2d01.pphosted.com (mx0b-001b2d01.pphosted.com
- [148.163.158.5])
- by smtp3.osuosl.org (Postfix) with ESMTPS id BD71960629
- for <iommu@lists.linux-foundation.org>; Wed,  6 Oct 2021 20:20:07 +0000 (UTC)
-Received: from pps.filterd (m0098413.ppops.net [127.0.0.1])
- by mx0b-001b2d01.pphosted.com (8.16.1.2/8.16.1.2) with SMTP id 196JiVUt015907; 
- Wed, 6 Oct 2021 16:20:03 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com;
- h=from : to : cc : subject
- : date : message-id : content-transfer-encoding : mime-version; s=pp1;
- bh=M41UkCw+LRaLXHLWRVrNOY4v6ynlGS293Of0HYK1TNc=;
- b=B+U92Wp9Lxx/TOm+cfpa0qN49Mh5ikAbvqukl40su9Rj3HsyQGU1FJQEOAwJ2n51IpSq
- egMRKoVoOlaRTjC4+MxcW4UmdDVoV1KK3cOjwEYtc041t1n8psbPZ5K2Ve3Va9uscUJx
- ptyjXPgbaOFNiI9RQYJuTOY2CxnV4+gwmRtCY37uTSk09rsOfUkiRUMHb3P4aVbFxIHO
- FPAL3E5X7A2jObBY20tc0as738ga7gSUE6s+/3TCgQDDzr6rsWSuhHuKU4p+6BPS2nkY
- I3paKgsSNhWisKE8rln/0umbVqCdkoXlGGDL55G2CGCI9S4+dB/aqGbypeROX5Oq0svg eg== 
-Received: from ppma04fra.de.ibm.com (6a.4a.5195.ip4.static.sl-reverse.com
- [149.81.74.106])
- by mx0b-001b2d01.pphosted.com with ESMTP id 3bh0fdxamk-1
- (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
- Wed, 06 Oct 2021 16:20:03 -0400
-Received: from pps.filterd (ppma04fra.de.ibm.com [127.0.0.1])
- by ppma04fra.de.ibm.com (8.16.1.2/8.16.1.2) with SMTP id 196KCtwx000619;
- Wed, 6 Oct 2021 20:20:01 GMT
-Received: from b06avi18626390.portsmouth.uk.ibm.com
- (b06avi18626390.portsmouth.uk.ibm.com [9.149.26.192])
- by ppma04fra.de.ibm.com with ESMTP id 3bef2ae99b-1
- (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
- Wed, 06 Oct 2021 20:20:01 +0000
-Received: from d06av25.portsmouth.uk.ibm.com (d06av25.portsmouth.uk.ibm.com
- [9.149.105.61])
- by b06avi18626390.portsmouth.uk.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP
- id 196KEc0A59900228
- (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
- Wed, 6 Oct 2021 20:14:38 GMT
-Received: from d06av25.portsmouth.uk.ibm.com (unknown [127.0.0.1])
- by IMSVA (Postfix) with ESMTP id D15F811C04C;
- Wed,  6 Oct 2021 20:19:57 +0000 (GMT)
-Received: from d06av25.portsmouth.uk.ibm.com (unknown [127.0.0.1])
- by IMSVA (Postfix) with ESMTP id 79CA111C04A;
- Wed,  6 Oct 2021 20:19:57 +0000 (GMT)
-Received: from tuxmaker.boeblingen.de.ibm.com (unknown [9.152.85.9])
- by d06av25.portsmouth.uk.ibm.com (Postfix) with ESMTP;
- Wed,  6 Oct 2021 20:19:57 +0000 (GMT)
-From: Gerald Schaefer <gerald.schaefer@linux.ibm.com>
-To: Christoph Hellwig <hch@lst.de>, <iommu@lists.linux-foundation.org>
-Subject: [PATCH] dma-debug: fix sg checks in debug_dma_map_sg()
-Date: Wed,  6 Oct 2021 22:19:43 +0200
-Message-Id: <20211006201943.1272825-1-gerald.schaefer@linux.ibm.com>
-X-Mailer: git-send-email 2.25.1
-X-TM-AS-GCONF: 00
-X-Proofpoint-GUID: KRLNGAIPTo9wf9ZECrqkn06d0zY6MFB6
-X-Proofpoint-ORIG-GUID: KRLNGAIPTo9wf9ZECrqkn06d0zY6MFB6
-X-Proofpoint-UnRewURL: 0 URL was un-rewritten
+ with ESMTP id orLDw76fibxs for <iommu@lists.linux-foundation.org>;
+ Thu,  7 Oct 2021 01:23:27 +0000 (UTC)
+X-Greylist: from auto-whitelisted by SQLgrey-1.8.0
+Received: from gandalf.ozlabs.org (gandalf.ozlabs.org
+ [IPv6:2404:9400:2:0:216:3eff:fee2:21ea])
+ by smtp3.osuosl.org (Postfix) with ESMTPS id 1356560813
+ for <iommu@lists.linux-foundation.org>; Thu,  7 Oct 2021 01:23:26 +0000 (UTC)
+Received: by gandalf.ozlabs.org (Postfix, from userid 1007)
+ id 4HPtqp36Vbz4xbG; Thu,  7 Oct 2021 12:23:18 +1100 (AEDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+ d=gibson.dropbear.id.au; s=201602; t=1633569798;
+ bh=qstVtDT91XWliCaW5kitB3WljFF05mjQismqLt2KJ+A=;
+ h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+ b=n70FR0j9KTEGEzxwCxf2JDFXaUu8zShyp+4N0lscr1waf+K/ZgaxwyX9ZowdEeqyT
+ 93j/gp22nAcMRYODT0LPRwZZf8hod6y0LuY2l71D1O/R3Do5F53fEXCE37Ph8arTyB
+ 8uacyxaJkPxNRjhkPqJtBB70Xzz+taoWwt0m2ERk=
+Date: Thu, 7 Oct 2021 12:23:13 +1100
+From: David Gibson <david@gibson.dropbear.id.au>
+To: Jason Gunthorpe <jgg@nvidia.com>
+Subject: Re: [RFC 07/20] iommu/iommufd: Add iommufd_[un]bind_device()
+Message-ID: <YV5MAdzR6c2knowf@yekko>
+References: <20210919063848.1476776-1-yi.l.liu@intel.com>
+ <20210919063848.1476776-8-yi.l.liu@intel.com>
+ <YVP44v4FVYJBSEEF@yekko> <20210929122457.GP964074@nvidia.com>
+ <YVUqpff7DUtTLYKx@yekko> <20211001124322.GN964074@nvidia.com>
 MIME-Version: 1.0
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.182.1,Aquarius:18.0.790,Hydra:6.0.391,FMLib:17.0.607.475
- definitions=2021-10-06_04,2021-10-06_01,2020-04-07_01
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0
- mlxscore=0 suspectscore=0
- bulkscore=0 adultscore=0 mlxlogscore=999 spamscore=0 priorityscore=1501
- lowpriorityscore=0 phishscore=0 malwarescore=0 impostorscore=0
- clxscore=1015 classifier=spam adjust=0 reason=mlx scancount=1
- engine=8.12.0-2109230001 definitions=main-2110060125
-Cc: linux-s390 <linux-s390@vger.kernel.org>,
- Robin Murphy <robin.murphy@arm.com>, LKML <linux-kernel@vger.kernel.org>,
- Niklas Schnelle <schnelle@linux.ibm.com>
+In-Reply-To: <20211001124322.GN964074@nvidia.com>
+Cc: kvm@vger.kernel.org, jasowang@redhat.com, kwankhede@nvidia.com, hch@lst.de,
+ jean-philippe@linaro.org, dave.jiang@intel.com, ashok.raj@intel.com,
+ corbet@lwn.net, kevin.tian@intel.com, parav@mellanox.com,
+ alex.williamson@redhat.com, lkml@metux.net, dwmw2@infradead.org,
+ jun.j.tian@intel.com, linux-kernel@vger.kernel.org, lushenming@huawei.com,
+ iommu@lists.linux-foundation.org, pbonzini@redhat.com, robin.murphy@arm.com
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -118,81 +81,109 @@ List-Post: <mailto:iommu@lists.linux-foundation.org>
 List-Help: <mailto:iommu-request@lists.linux-foundation.org?subject=help>
 List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
  <mailto:iommu-request@lists.linux-foundation.org?subject=subscribe>
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
+Content-Type: multipart/mixed; boundary="===============0798083812396306327=="
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-The following warning occurred sporadically on s390:
-DMA-API: nvme 0006:00:00.0: device driver maps memory from kernel text or rodata [addr=0000000048cc5e2f] [len=131072]
-WARNING: CPU: 4 PID: 825 at kernel/dma/debug.c:1083 check_for_illegal_area+0xa8/0x138
 
-It is a false-positive warning, due to broken logic in debug_dma_map_sg().
-check_for_illegal_area() checks for overlay of sg elements with kernel text
-or rodata. It is called with sg_dma_len(s) instead of s->length as
-parameter. After the call to ->map_sg(), sg_dma_len() will contain the
-length of possibly combined sg elements in the DMA address space, and not
-the individual sg element length, which would be s->length.
+--===============0798083812396306327==
+Content-Type: multipart/signed; micalg=pgp-sha256;
+	protocol="application/pgp-signature"; boundary="KDKmP08LDN9ERU6o"
+Content-Disposition: inline
 
-The check will then use the physical start address of an sg element, and
-add the DMA length for the overlap check, which could result in the false
-warning, because the DMA length can be larger than the actual single sg
-element length.
 
-In addition, the call to check_for_illegal_area() happens in the iteration
-over mapped_ents, which will not include all individual sg elements if
-any of them were combined in ->map_sg().
+--KDKmP08LDN9ERU6o
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
 
-Fix this by using s->length instead of sg_dma_len(s). Also put the call to
-check_for_illegal_area() in a separate loop, iterating over all the
-individual sg elements ("nents" instead of "mapped_ents").
+On Fri, Oct 01, 2021 at 09:43:22AM -0300, Jason Gunthorpe wrote:
+> On Thu, Sep 30, 2021 at 01:10:29PM +1000, David Gibson wrote:
+> > On Wed, Sep 29, 2021 at 09:24:57AM -0300, Jason Gunthorpe wrote:
+> > > On Wed, Sep 29, 2021 at 03:25:54PM +1000, David Gibson wrote:
+> > >=20
+> > > > > +struct iommufd_device {
+> > > > > +	unsigned int id;
+> > > > > +	struct iommufd_ctx *ictx;
+> > > > > +	struct device *dev; /* always be the physical device */
+> > > > > +	u64 dev_cookie;
+> > > >=20
+> > > > Why do you need both an 'id' and a 'dev_cookie'?  Since they're both
+> > > > unique, couldn't you just use the cookie directly as the index into
+> > > > the xarray?
+> > >=20
+> > > ID is the kernel value in the xarray - xarray is much more efficient &
+> > > safe with small kernel controlled values.
+> > >=20
+> > > dev_cookie is a user assigned value that may not be unique. It's
+> > > purpose is to allow userspace to receive and event and go back to its
+> > > structure. Most likely userspace will store a pointer here, but it is
+> > > also possible userspace could not use it.
+> > >=20
+> > > It is a pretty normal pattern
+> >=20
+> > Hm, ok.  Could you point me at an example?
+>=20
+> For instance user_data vs fd in io_uring
 
-While at it, as suggested by Robin Murphy, also move check_for_stack()
-inside the new loop, as it is similarly concerned with validating the
-individual sg elements.
+Ok, but one of those is an fd, which is an existing type of handle.
+Here we're introducing two different unique handles that aren't an
+existing kernel concept.
 
-Link: https://lore.kernel.org/lkml/20210705185252.4074653-1-gerald.schaefer@linux.ibm.com
-Fixes: 884d05970bfb ("dma-debug: use sg_dma_len accessor")
-Signed-off-by: Gerald Schaefer <gerald.schaefer@linux.ibm.com>
----
- kernel/dma/debug.c | 13 +++++++------
- 1 file changed, 7 insertions(+), 6 deletions(-)
+> RDMA has many similar examples.
+>=20
+> More or less anytime you want to allow the kernel to async retun some
+> information providing a 64 bit user_data lets userspace have an easier
+> time to deal with it.
 
-diff --git a/kernel/dma/debug.c b/kernel/dma/debug.c
-index 95445bd6eb72..d968a429f0d1 100644
---- a/kernel/dma/debug.c
-+++ b/kernel/dma/debug.c
-@@ -1289,6 +1289,13 @@ void debug_dma_map_sg(struct device *dev, struct scatterlist *sg,
- 	if (unlikely(dma_debug_disabled()))
- 		return;
- 
-+	for_each_sg(sg, s, nents, i) {
-+		check_for_stack(dev, sg_page(s), s->offset);
-+		if (!PageHighMem(sg_page(s))) {
-+			check_for_illegal_area(dev, sg_virt(s), s->length);
-+		}
-+	}
-+
- 	for_each_sg(sg, s, mapped_ents, i) {
- 		entry = dma_entry_alloc();
- 		if (!entry)
-@@ -1304,12 +1311,6 @@ void debug_dma_map_sg(struct device *dev, struct scatterlist *sg,
- 		entry->sg_call_ents   = nents;
- 		entry->sg_mapped_ents = mapped_ents;
- 
--		check_for_stack(dev, sg_page(s), s->offset);
--
--		if (!PageHighMem(sg_page(s))) {
--			check_for_illegal_area(dev, sg_virt(s), sg_dma_len(s));
--		}
--
- 		check_sg_segment(dev, s);
- 
- 		add_dma_entry(entry);
--- 
-2.25.1
+I absolutely see the need for user_data.  What I'm questioning is
+having two different, user-visible unique handles, neither of which is
+an fd.
+
+
+That said... is there any strong reason why user_data needs to be
+unique?  I can imagine userspace applications where you don't care
+which device the notification is coming from - or at least don't care
+down to the same granularity that /dev/iommu is using.  In which case
+having the kernel provided unique handle and the
+not-necessarily-unique user_data would make perfect sense.
+
+--=20
+David Gibson			| I'll have my music baroque, and my code
+david AT gibson.dropbear.id.au	| minimalist, thank you.  NOT _the_ _other_
+				| _way_ _around_!
+http://www.ozlabs.org/~dgibson
+
+--KDKmP08LDN9ERU6o
+Content-Type: application/pgp-signature; name="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+
+iQIzBAEBCAAdFiEEdfRlhq5hpmzETofcbDjKyiDZs5IFAmFeTAAACgkQbDjKyiDZ
+s5IHfA//dHZrmxuC2Eg7GpSZRzPqLOFtDPTlZ/fOS0A3Ww2bU6S+CuugltvCz+U2
+KZ65d6W7oAiRDmaxTdPARsY/JsYFSu+jGnVfYI4ZUf/N6v0NIInS5L5z31og1nhu
+VYPLtYEPenL5Ikj/e3Ul9E6l5AqLcRqRw/j5G83ygQB3Wk93LdeF/p8wdEvEt599
+U5V8JbGKUYzBySYD4+m6EhhYpAEagGRRltJE10AZm4WB9w6KbjkrQryg7zSfbbEo
+ulwVrlY/IBzHmbBi82IQOiXFIZkdbvuigelt34UPdMSVj50Wmo4t/bxyTbRGk9O8
+YMGa0Y5l0bH6gtl1M/e9Gq3rEwGrjSP/GyvLCZSv1D3nAti/WK7INv9NVEz1E74O
+frugTJBSsodRVz31hMt+WDT5NTTv+F+xQjEnFZTcCeogHvDissXh2wnhUXSi5kQq
+g8GcJfG621SrtvulFlFIhjgtXqxPzRJm+uXWTI5ESCA7+3g79Pr5kKo9UTiRK1c1
+HtB8mM70Hp+vOmWSZ5D3wYZX4ImXpcWdHk0y0c1O0QQVmFF07iyqjVXu+A6r/A5y
+ly8PwxvM0gnM7Ewuz37YXpGTgeiCTVaUVPITz09GN1mMqYa2V0l1X3q/G5iwb/g8
+0SqR8HFGjS87nbngGm/vjD/AscCOHePTMrFQvN/GFytfMWdJO3c=
+=VYju
+-----END PGP SIGNATURE-----
+
+--KDKmP08LDN9ERU6o--
+
+--===============0798083812396306327==
+Content-Type: text/plain; charset="us-ascii"
+MIME-Version: 1.0
+Content-Transfer-Encoding: 7bit
+Content-Disposition: inline
 
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
 https://lists.linuxfoundation.org/mailman/listinfo/iommu
+--===============0798083812396306327==--
