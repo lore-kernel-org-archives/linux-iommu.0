@@ -2,152 +2,91 @@ Return-Path: <SRS0=VyMr=O3=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id DDDD2C433FE
-	for <iommu@archiver.kernel.org>; Thu,  7 Oct 2021 17:48:33 +0000 (UTC)
-Received: from smtp1.osuosl.org (smtp1.osuosl.org [140.211.166.138])
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 300C3C433F5
+	for <iommu@archiver.kernel.org>; Thu,  7 Oct 2021 18:03:05 +0000 (UTC)
+Received: from smtp3.osuosl.org (smtp3.osuosl.org [140.211.166.136])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 86F1E6121F
-	for <iommu@archiver.kernel.org>; Thu,  7 Oct 2021 17:48:33 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.4.1 mail.kernel.org 86F1E6121F
-Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=lists.linux-foundation.org
+	by mail.kernel.org (Postfix) with ESMTPS id D0E9D61261
+	for <iommu@archiver.kernel.org>; Thu,  7 Oct 2021 18:03:04 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.4.1 mail.kernel.org D0E9D61261
+Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=gmail.com
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by smtp1.osuosl.org (Postfix) with ESMTP id 55BF38439F;
-	Thu,  7 Oct 2021 17:48:33 +0000 (UTC)
+	by smtp3.osuosl.org (Postfix) with ESMTP id 9A85760ABA;
+	Thu,  7 Oct 2021 18:03:04 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from smtp1.osuosl.org ([127.0.0.1])
-	by localhost (smtp1.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id GBpzZC_ODSju; Thu,  7 Oct 2021 17:48:32 +0000 (UTC)
+Received: from smtp3.osuosl.org ([127.0.0.1])
+	by localhost (smtp3.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+	with ESMTP id V3g9JL7uWY-l; Thu,  7 Oct 2021 18:03:03 +0000 (UTC)
 Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by smtp1.osuosl.org (Postfix) with ESMTPS id 46F2584372;
-	Thu,  7 Oct 2021 17:48:32 +0000 (UTC)
+	by smtp3.osuosl.org (Postfix) with ESMTPS id 86A966080B;
+	Thu,  7 Oct 2021 18:03:03 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 1C5A5C000F;
-	Thu,  7 Oct 2021 17:48:32 +0000 (UTC)
-Received: from smtp2.osuosl.org (smtp2.osuosl.org [IPv6:2605:bc80:3010::133])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 54D95C000D
- for <iommu@lists.linux-foundation.org>; Thu,  7 Oct 2021 17:48:30 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 5A073C000F;
+	Thu,  7 Oct 2021 18:03:03 +0000 (UTC)
+Received: from smtp2.osuosl.org (smtp2.osuosl.org [140.211.166.133])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id B6F94C000D
+ for <iommu@lists.linux-foundation.org>; Thu,  7 Oct 2021 18:03:01 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by smtp2.osuosl.org (Postfix) with ESMTP id 3661A4036F
- for <iommu@lists.linux-foundation.org>; Thu,  7 Oct 2021 17:48:30 +0000 (UTC)
+ by smtp2.osuosl.org (Postfix) with ESMTP id A458140489
+ for <iommu@lists.linux-foundation.org>; Thu,  7 Oct 2021 18:03:01 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
 Authentication-Results: smtp2.osuosl.org (amavisd-new);
- dkim=pass (2048-bit key) header.d=nvidia.com
+ dkim=pass (2048-bit key) header.d=gmail.com
 Received: from smtp2.osuosl.org ([127.0.0.1])
  by localhost (smtp2.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id 9Jbmfb6_vfB8 for <iommu@lists.linux-foundation.org>;
- Thu,  7 Oct 2021 17:48:29 +0000 (UTC)
+ with ESMTP id Tj7wzH9FKeVg for <iommu@lists.linux-foundation.org>;
+ Thu,  7 Oct 2021 18:03:01 +0000 (UTC)
 X-Greylist: whitelisted by SQLgrey-1.8.0
-Received: from NAM10-BN7-obe.outbound.protection.outlook.com
- (mail-bn7nam10on2089.outbound.protection.outlook.com [40.107.92.89])
- by smtp2.osuosl.org (Postfix) with ESMTPS id D64754020A
- for <iommu@lists.linux-foundation.org>; Thu,  7 Oct 2021 17:48:26 +0000 (UTC)
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=fxoMRKgyMv1pJf+ty0Ebmn/yJ0YAcWd8AQXgOYPkEkOugG/uVPGDKq9Z2zVKc0F7v6o//MmaVb6wkTjK1uolrycVje1b8eZ83oIR4QQ1m2oNRIsjmHplcOmtUOu/7INOQPOMmjijAyk8fofTBu10+p654vqbGjGTFz+6MyF8jOeecgssc4kaQXqC0YHC+5G+BV+3GOFniasY/6bKBTLLQaQcWPIv5AxBEA5LEApOlcr6FQieuQnfLMGPsSzezLa2SVJDucFfrPKEZ5MdHnNl9RZk00oVN2O18SWXT4Kh92/tRW/fe9lJHc7DXf68ZLvvBTPbtTVHmgt0XE9O4Iwhww==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com; 
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=rofns8odPiWSMocyGmbWA8hSIahAd4kXc72Naa2saVw=;
- b=Gew1Sn7As8Fe6xwMawLtqIgCe6FMmezlJiSxyX+AWg45m1KJmtkeDxDoYyHHoZ5WmkdLF550dRl2OaTNULFjYd2KglrGxvA0KJS8B8fTPWYHjh/qcsPaOpkmeqQGvri+fHetxTLJwnd6mZnTnSV+uykhgZZ5T/tHNhfQI92REF7PgZ9DsSnc2MwjWAEmjpIRKjL7SPhxMXDyQkk6WKJ13FmegHPzd6kh9evt3oAU4UF9uxeHBRdaKK6gCAtguQhn/qTFLCub1Dv4TkhSkeuuz3IjGx4pTmlI9xfZ1XfEJir6Dr9lv6CLJ1uVUx6yUW7Qv0cNn4mn9zTXyouVJKrtng==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=nvidia.com; dmarc=pass action=none header.from=nvidia.com;
- dkim=pass header.d=nvidia.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
- s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=rofns8odPiWSMocyGmbWA8hSIahAd4kXc72Naa2saVw=;
- b=EFrDxI52GDsQ+RUsrthzV0h+kjmZC1reI59StpAKjrzpmiWRJwvb26lVKJ4NBqp5qhb5wjaNvS4vg3YeSKqLs1yxbMYwaf/qg+EAojHXUL71SGffTqrcIxEHgiHu7IuEiOs5zKo/Cjfxqj4Kf3OQWoaIqJIc5JGLDL6UheiN00eW01MVyyhTF3voxmjPn7wSKNICyNnXjYVA2FFWyNdyC8UT90UxsHOLDBDGEjYssUD8/erqu+rhK6IpVaTj69DkuwGUPqqbNOmRqI+7vcm8B3m3odSOQlxsG+Wm1KpRPDVYpYaTdbgWbWOWvBdHeTBex5XYZXMQl61IeKHHwdw35g==
-Authentication-Results: linux.intel.com; dkim=none (message not signed)
- header.d=none; linux.intel.com; dmarc=none action=none header.from=nvidia.com; 
-Received: from BL0PR12MB5506.namprd12.prod.outlook.com (2603:10b6:208:1cb::22)
- by BL1PR12MB5032.namprd12.prod.outlook.com (2603:10b6:208:30a::12)
- with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4587.18; Thu, 7 Oct
- 2021 17:48:23 +0000
-Received: from BL0PR12MB5506.namprd12.prod.outlook.com
- ([fe80::e8af:232:915e:2f95]) by BL0PR12MB5506.namprd12.prod.outlook.com
- ([fe80::e8af:232:915e:2f95%7]) with mapi id 15.20.4587.020; Thu, 7 Oct 2021
- 17:48:23 +0000
-Date: Thu, 7 Oct 2021 14:48:22 -0300
-To: Jacob Pan <jacob.jun.pan@linux.intel.com>
-Subject: Re: [RFC 0/7] Support in-kernel DMA with PASID and SVA
-Message-ID: <20211007174822.GK2744544@nvidia.com>
-References: <CAGsJ_4z=2y2nVStXP-aAPnQrJJbMmv78mjaMwNc9P9Ec+gCtGw@mail.gmail.com>
- <20211001123623.GM964074@nvidia.com>
- <CAGsJ_4wfkrJp-eFKiXsLdiZCb3eS_zqZtJvXQTBafoTWY2yWKQ@mail.gmail.com>
- <20211004094003.527222e5@jacob-builder>
- <20211004182142.GM964074@nvidia.com>
- <CAGsJ_4w+ed78cnJusM_enEZpdGghzvjgt0aYDPpfwk4z7PQqxQ@mail.gmail.com>
- <20211007113221.GF2744544@nvidia.com>
- <CAGsJ_4x2UEmNXCVhJAVRyB8568VMrTkOLeVCNp8CyP6xZJwCig@mail.gmail.com>
- <20211007115918.GH2744544@nvidia.com>
- <20211007105010.33d706cf@jacob-builder>
-Content-Disposition: inline
-In-Reply-To: <20211007105010.33d706cf@jacob-builder>
-X-ClientProxiedBy: MN2PR15CA0054.namprd15.prod.outlook.com
- (2603:10b6:208:237::23) To BL0PR12MB5506.namprd12.prod.outlook.com
- (2603:10b6:208:1cb::22)
+Received: from mail-wr1-x430.google.com (mail-wr1-x430.google.com
+ [IPv6:2a00:1450:4864:20::430])
+ by smtp2.osuosl.org (Postfix) with ESMTPS id CA8F040480
+ for <iommu@lists.linux-foundation.org>; Thu,  7 Oct 2021 18:03:00 +0000 (UTC)
+Received: by mail-wr1-x430.google.com with SMTP id i12so9054256wrb.7
+ for <iommu@lists.linux-foundation.org>; Thu, 07 Oct 2021 11:03:00 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=gmail.com; s=20210112;
+ h=date:from:to:cc:subject:message-id:references:mime-version
+ :content-disposition:in-reply-to:user-agent;
+ bh=LzYgfKlvwHIBL3wW8fhtlH1KhCgihQqD0wQewNy3gTQ=;
+ b=CnrKfrCI/7b7P9niH6/3IP1Wt0eRn43RT4hn5SxwlYELYRR0SK5WKU/Vr/4eE2NQcv
+ Yg66RubvO6t+h58bUDi2pYnddx5mcj/CSK0pfE7DHvrb7yGY7Qhv/ZfWriK3aJqLFTg3
+ tAq/5wyD2bVUOe3NJNMdEP5hqzRwlSdreV3jtphDHyFNmrZEBU+M2Nhh+qmIEU2f8UHO
+ 1VrYqfFkAbntzETc89XOlZd4C8rgPMX0beOiVqcuePDLJ2kAT5ax66nkwRbYc1Mrj1bq
+ wrfWIk9XqGS0KT08W9SaFguWb6nyttqseHLSsNtV3xtO8REQ8QIiT8KkOnOT6/8q6LhC
+ T7rA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+ d=1e100.net; s=20210112;
+ h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+ :mime-version:content-disposition:in-reply-to:user-agent;
+ bh=LzYgfKlvwHIBL3wW8fhtlH1KhCgihQqD0wQewNy3gTQ=;
+ b=CRy6RWxkBaWcmgwopsDd5hEW/c0OBHitZ8XkEdgKswwlto9kANZ50N6JhBgk8c7ir+
+ jXcPEB0+/Bh40N3mBYD7+20ZWH0eekBDKq36Xt6mZKDXrmHIn3H077iwnaAkMuxAF9wb
+ +mxc/fVvGNeoUH28FmV+LMgZMtPJkw7vibxOYZdcUbEptU38Uj0GK/1d0Ro7iUQF/Go9
+ NOYn3uAdTKhqhFflVdSJdtPCVwfb92ODxfxKbAcbSzFwqW0rMT350MIhte+DuQQFG6P5
+ 9MIN/YTCfa3lhymgK2+CExsvTPmucqHGhLRCYwRzjIUflzN70cux3L/pdycJeUJUWJUY
+ z5wQ==
+X-Gm-Message-State: AOAM530jn1/S4Z6nTC4ISzaxD8jcjeXg6TzCTOWqASehOP4vPFlFgaDf
+ 90koznxnL4tlTg9siC92ypc=
+X-Google-Smtp-Source: ABdhPJzLFQShRWgexENr9TAiLhixQbONosI4QunNbNjX2FeAqLNG3BVRbZG2LBnMAFnm0kRccGzhCw==
+X-Received: by 2002:a1c:f01a:: with SMTP id a26mr6084520wmb.150.1633629778982; 
+ Thu, 07 Oct 2021 11:02:58 -0700 (PDT)
+Received: from localhost ([217.111.27.204])
+ by smtp.gmail.com with ESMTPSA id g2sm67566wrb.20.2021.10.07.11.02.58
+ (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+ Thu, 07 Oct 2021 11:02:58 -0700 (PDT)
+Date: Thu, 7 Oct 2021 20:02:57 +0200
+From: Thierry Reding <thierry.reding@gmail.com>
+To: Christophe JAILLET <christophe.jaillet@wanadoo.fr>
+Subject: Re: [PATCH] iommu/tegra-smmu: Use devm_bitmap_zalloc when applicable
+Message-ID: <YV82USMgonpRzoWd@orome.fritz.box>
+References: <2c0f4da80c3b5ef83299c651f69a563034c1c6cb.1632661557.git.christophe.jaillet@wanadoo.fr>
 MIME-Version: 1.0
-Received: from mlx.ziepe.ca (142.162.113.129) by
- MN2PR15CA0054.namprd15.prod.outlook.com (2603:10b6:208:237::23) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4587.18 via Frontend
- Transport; Thu, 7 Oct 2021 17:48:23 +0000
-Received: from jgg by mlx with local (Exim 4.94)	(envelope-from
- <jgg@nvidia.com>)	id 1mYXVG-00C4EM-FU; Thu, 07 Oct 2021 14:48:22 -0300
-X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: 914a82b7-8e7b-4010-aad4-08d989baa886
-X-MS-TrafficTypeDiagnostic: BL1PR12MB5032:
-X-Microsoft-Antispam-PRVS: <BL1PR12MB50323622E773D4C2B2FB25F3C2B19@BL1PR12MB5032.namprd12.prod.outlook.com>
-X-MS-Oob-TLC-OOBClassifiers: OLM:3276;
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: VnNRr6draYSl+hTwF0OFuLmkTqqFbxtZS2AMgcngs9ZHPLdmiyFxZovemuuxr9mFzWEFMBRLCKMGra106Qrz0HetOavSlhCybwC9AEaKAmJbgUYlo6uycIIis/+vQqkrNHF6zfJNeThvhaVguDMWy9RqCQHse5l7pKY0/Wh8rUK70YD+disI+2wYdZDh6tY8PbcKN0i4HWrj75AvrzlzocvSGwle0U2t9SkZgMItxAVN3WGSY06+Hxf1xDQq6g0lvWA9C+stsZQTeBvMt2yxE9vKWU3Kt+i+iMM4Bun+GnEGv+5G5m5jacndC02qJHxD39CBn+J2WBsraPpk8q7VujRf2P5NJqOQmYX4ZJZB2dgwyemxmI9NHKjiajkh8Vh0f2EiJsWFkcbeCQ66HhVoJiWNMz0TfUwftrqEDrYnatUL2TZA9XKBr7r5Wvd3P/H3XlbcGTCLpktx6EX7hUIEg74y8cmuj/UE37fKd3VTjECPzNoy7ebWdRgFxZyiTCR+fN7IjKgG2GKc2pxdApIvnj8qb/DFH7tGgBZdaNjbTvRvmssQ4zMo49GY02sBl0DXJIBz345xfP11Llt5jIPaoJFw9q2WzCf0iFK0W4PErpqKUh52OW/5gjUGDAjEMhNtKBXB5VJ301vZdtNXH+S2lg==
-X-Forefront-Antispam-Report: CIP:255.255.255.255; CTRY:; LANG:en; SCL:1; SRV:;
- IPV:NLI; SFV:NSPM; H:BL0PR12MB5506.namprd12.prod.outlook.com; PTR:; CAT:NONE;
- SFS:(4636009)(366004)(54906003)(4326008)(7416002)(2616005)(316002)(186003)(26005)(508600001)(6916009)(426003)(2906002)(9746002)(86362001)(8676002)(8936002)(66946007)(9786002)(66476007)(36756003)(66556008)(5660300002)(38100700002)(4744005)(33656002)(1076003);
- DIR:OUT; SFP:1101; 
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?sF1Hj8wI8Vkw8ndiDrTkfa1amh4woGGpCyKyfPSMQrOyjX9Ket0oQ3CKvOwv?=
- =?us-ascii?Q?IfVURTvjPXSVjAOxjPcbEu+q/X9hIYpBF8xMoA+MYzK+gTJNblxxKwVGbUi7?=
- =?us-ascii?Q?OKb1e22dgI3PWYj2I4jpJ83cvx9z/DKBk3kjfT3OlnCwcWIF6W1hCqRUQ4ku?=
- =?us-ascii?Q?A5w3WPM4Xiwjmcj2sKa/P8Hwjr9b42cQJSUgDze9k4G9fYzE+QLHvlY7e/PD?=
- =?us-ascii?Q?JypwmCBug0fgMj5GAeNp/ycZPq3ydb8pmkSz+25/t+F/CV+L2ar+Nsxsr/gU?=
- =?us-ascii?Q?aWuQdPV/pV6FXANA+dHPFITih0YdqrNWhT0YWpfxB4IcrAfAG0N42vAOL8px?=
- =?us-ascii?Q?7w4eE7GZE3lgL9zR4f/N7RVNGV8GX3i9OfX5PHGv95hOhW7oMXlVN3WyW7Ig?=
- =?us-ascii?Q?IoKxrYnenwctZCZIEmP0I857pDWZEICQaxItlMSvagM3yH2f+x7HPOAB3sQP?=
- =?us-ascii?Q?JtZAaTj6MZstDXA61CLwI07adiGq2xQcZAqp10vOsm71NINLZ9JC1Y2/fHaV?=
- =?us-ascii?Q?fuLxhKm43PccxXEP3bgw9Wc5S6DIr82Cr+M9aZzewy9DvAvaPhJXUcHEpvX8?=
- =?us-ascii?Q?BNXI1NptaURlI/RFg0ER+ptXmh+QpIKx2AGEpaXzXyCiWaH7/rneqVuYBJfc?=
- =?us-ascii?Q?jBMxaPtTEN18MbUvo+UGun3n+aESfwSBT5ddB/yYA6FAiP9EMwKqYHms7UUf?=
- =?us-ascii?Q?m5J/UfUDeHkUoNPtXlg05btE2QQ7MugYdpK6+JTKSJ5nH6hyaxTv/MVHWKHd?=
- =?us-ascii?Q?vyz4n/kIkk29Ulw+rsQoS5yvCw8gcj9iVlDsK3Q9ASnPYsq/trkdmRGqJwUO?=
- =?us-ascii?Q?0C2qj92L3JvdpRhfTx8wKsiHZcn/ah1nN3vGAz53oYnPExNbYsU0m7xfx7oO?=
- =?us-ascii?Q?aPH0vOwEme3Va4PG0ohGHV1MKZMh7mwq77FaATni5UXAil1GCHHz0mh0G+Gj?=
- =?us-ascii?Q?+THNJakK0cBc9XDiYaakLtFLIXvO0XRoMVSJB3OmgiO3l7TK1pOzh9sIG7Wd?=
- =?us-ascii?Q?ZaJYduyu15IOIq76K6yvP+D7L53V11U9pWBXmnrqpYXKyfpT49NvRS+REaF5?=
- =?us-ascii?Q?ygRL0DFkg8sqFo2XF/++wuVPrPLdtHdPaNkNld9cT0VAoDPuoC81GkwhXxcj?=
- =?us-ascii?Q?dTwCK5M7WaV4Bm+vyPqX9wx/owCsFFiot9gFeQVdoK0mXImeT2jrsEr5Ujhr?=
- =?us-ascii?Q?PwsvY9W8iHIeHHDFYS9qql7MIMtUAXQ3RbIg03rE6dAYHbGwsEGa8RJEHKAH?=
- =?us-ascii?Q?uJvIpPcd/Pa918KCnIuiVG3WsTOQB2Gs8FQHeroFKYJaQP9yP1vCjTwB++BI?=
- =?us-ascii?Q?mP10BXwt24wsTejnS803rNqO?=
-X-OriginatorOrg: Nvidia.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 914a82b7-8e7b-4010-aad4-08d989baa886
-X-MS-Exchange-CrossTenant-AuthSource: BL0PR12MB5506.namprd12.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 07 Oct 2021 17:48:23.5459 (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: pA0X2/g5kYpAsbKjk4DKsz4rziUigDkGHg1+8MW8KibmU3VgPMCHeMOFFn24xc38
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: BL1PR12MB5032
-Cc: "Tian, Kevin" <kevin.tian@intel.com>, Tony Luck <tony.luck@intel.com>,
- Dave Jiang <dave.jiang@intel.com>, Raj Ashok <ashok.raj@intel.com>, "Kumar,
- Sanjay K" <sanjay.k.kumar@intel.com>, Barry Song <21cnbao@gmail.com>,
- LKML <linux-kernel@vger.kernel.org>, Christoph Hellwig <hch@infradead.org>,
- iommu@lists.linux-foundation.org, mike.campin@intel.com
+In-Reply-To: <2c0f4da80c3b5ef83299c651f69a563034c1c6cb.1632661557.git.christophe.jaillet@wanadoo.fr>
+User-Agent: Mutt/2.1.3 (987dde4c) (2021-09-10)
+Cc: linux-kernel@vger.kernel.org, kernel-janitors@vger.kernel.org,
+ iommu@lists.linux-foundation.org, jonathanh@nvidia.com,
+ linux-tegra@vger.kernel.org, will@kernel.org
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -160,27 +99,64 @@ List-Post: <mailto:iommu@lists.linux-foundation.org>
 List-Help: <mailto:iommu-request@lists.linux-foundation.org?subject=help>
 List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
  <mailto:iommu-request@lists.linux-foundation.org?subject=subscribe>
-From: Jason Gunthorpe via iommu <iommu@lists.linux-foundation.org>
-Reply-To: Jason Gunthorpe <jgg@nvidia.com>
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 7bit
+Content-Type: multipart/mixed; boundary="===============0003973509652963898=="
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-On Thu, Oct 07, 2021 at 10:50:10AM -0700, Jacob Pan wrote:
 
-> On platforms that are DMA snooped, this barrier is not needed. But I think
-> your point is that once we convert to DMA API, the sync/barrier is covered
-> by DMA APIs if !dev_is_dma_coherent(dev). Then all archs are good.
+--===============0003973509652963898==
+Content-Type: multipart/signed; micalg=pgp-sha256;
+	protocol="application/pgp-signature"; boundary="YJJooXTg9A0B1Lju"
+Content-Disposition: inline
 
-No.. my point is that a CPU store release is not necessary a DMA
-visiable event on all platforms and things like dma_wmb/rmb() may
-still be necessary. This all needs to be architected before anyone
-starts writing drivers that assume a coherent DMA model without using
-a coherent DMA allocation.
 
-Jason
+--YJJooXTg9A0B1Lju
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
+
+On Sun, Sep 26, 2021 at 03:07:18PM +0200, Christophe JAILLET wrote:
+> 'smmu->asids' is a bitmap. So use 'devm_kzalloc()' to simplify code,
+> improve the semantic of the code and avoid some open-coded arithmetic in
+> allocator arguments.
+>=20
+> Signed-off-by: Christophe JAILLET <christophe.jaillet@wanadoo.fr>
+> ---
+>  drivers/iommu/tegra-smmu.c | 5 +----
+>  1 file changed, 1 insertion(+), 4 deletions(-)
+
+Acked-by: Thierry Reding <treding@nvidia.com>
+
+--YJJooXTg9A0B1Lju
+Content-Type: application/pgp-signature; name="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+
+iQIzBAABCAAdFiEEiOrDCAFJzPfAjcif3SOs138+s6EFAmFfNlEACgkQ3SOs138+
+s6Ex8g/9FzkP6Q72V90vFaRIUz/isfotGtkN2TgNhkMcQ1nfh8YNMPDVdFOS0tPN
+eTBbg2moh1JaDxrQ6V6SWNypCZYzoN4fzCYrLOmCa2mC7Yteq5m5zXlIqt9wMmdd
+i1UAVw0u57F/Nyw9dH0bQxDZYNAYJzrhq8FUIlZ3UroysSKF+ipjf07k8ANtovrj
+Wq0q+xm+vn6MJS5TElVeCd0fLQWJvUwq6lZ9YUtB44uszvhciCy04xeMJ4sLAvdA
+0VA3BjOHglRi4bEivpviSMMw5viABX1ZedM5lrxkAZDzcoPEu4cNuri77aaAwcge
+XSDX/jViJASF73nqt5AI3mhDa8RUbtgKBDFbWi7dgpVSF9JAPdNbeWQKR/lNWdos
+7vLch3cbR7Zc6AGerOld5s7XDLAN85ocp5CexAr1Wj3UgYGmjk5RuvXQH6aHJ5Zr
+RJ1AV5yzu8FY6CzvKGR6ywoJbmzZTAK5R+XrhyBSDO0IuIKLPByRH12vOnzS8bEX
+5aJYrih3ugVLCgOLMda/qsRiKjhHZOeZYlFMxuXKqxLXsdOXcu27VuQg2Vu9mb53
+wJdioW3oDctaL6La9upYSerpBxzOxjcP+0aSBMAu1hUqOIU5m+0ktn05xl06OyY0
+sZ22iw1pYgmE7WGTmq2rTHksIX2WP1PipyJNpuJF4Xh5df/QOVY=
+=EYc+
+-----END PGP SIGNATURE-----
+
+--YJJooXTg9A0B1Lju--
+
+--===============0003973509652963898==
+Content-Type: text/plain; charset="us-ascii"
+MIME-Version: 1.0
+Content-Transfer-Encoding: 7bit
+Content-Disposition: inline
+
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
 https://lists.linuxfoundation.org/mailman/listinfo/iommu
+--===============0003973509652963898==--
