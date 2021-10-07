@@ -2,84 +2,92 @@ Return-Path: <SRS0=VyMr=O3=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id F3765C433F5
-	for <iommu@archiver.kernel.org>; Thu,  7 Oct 2021 11:43:28 +0000 (UTC)
-Received: from smtp2.osuosl.org (smtp2.osuosl.org [140.211.166.133])
+	by smtp.lore.kernel.org (Postfix) with ESMTP id AB5C4C433F5
+	for <iommu@archiver.kernel.org>; Thu,  7 Oct 2021 11:55:10 +0000 (UTC)
+Received: from smtp4.osuosl.org (smtp4.osuosl.org [140.211.166.137])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id AEB9E61139
-	for <iommu@archiver.kernel.org>; Thu,  7 Oct 2021 11:43:28 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.4.1 mail.kernel.org AEB9E61139
-Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=huawei.com
+	by mail.kernel.org (Postfix) with ESMTPS id 5435461261
+	for <iommu@archiver.kernel.org>; Thu,  7 Oct 2021 11:55:10 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.4.1 mail.kernel.org 5435461261
+Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=gmail.com
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by smtp2.osuosl.org (Postfix) with ESMTP id 69524403B8;
-	Thu,  7 Oct 2021 11:43:28 +0000 (UTC)
+	by smtp4.osuosl.org (Postfix) with ESMTP id 1B27C409DF;
+	Thu,  7 Oct 2021 11:55:10 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from smtp2.osuosl.org ([127.0.0.1])
-	by localhost (smtp2.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id kgwxaL8zEImr; Thu,  7 Oct 2021 11:43:27 +0000 (UTC)
+Received: from smtp4.osuosl.org ([127.0.0.1])
+	by localhost (smtp4.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+	with ESMTP id 1RIlUny0mRA7; Thu,  7 Oct 2021 11:55:09 +0000 (UTC)
 Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by smtp2.osuosl.org (Postfix) with ESMTPS id 1A4644015E;
-	Thu,  7 Oct 2021 11:43:27 +0000 (UTC)
+	by smtp4.osuosl.org (Postfix) with ESMTPS id 028CF40A04;
+	Thu,  7 Oct 2021 11:55:08 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id E1168C000F;
-	Thu,  7 Oct 2021 11:43:26 +0000 (UTC)
-Received: from smtp4.osuosl.org (smtp4.osuosl.org [140.211.166.137])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 155F3C000D
- for <iommu@lists.linux-foundation.org>; Thu,  7 Oct 2021 11:43:26 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id CE17FC000F;
+	Thu,  7 Oct 2021 11:55:08 +0000 (UTC)
+Received: from smtp4.osuosl.org (smtp4.osuosl.org [IPv6:2605:bc80:3010::137])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 45DCAC000D
+ for <iommu@lists.linux-foundation.org>; Thu,  7 Oct 2021 11:55:07 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by smtp4.osuosl.org (Postfix) with ESMTP id 0BF6A409DA
- for <iommu@lists.linux-foundation.org>; Thu,  7 Oct 2021 11:43:26 +0000 (UTC)
+ by smtp4.osuosl.org (Postfix) with ESMTP id 303E240A02
+ for <iommu@lists.linux-foundation.org>; Thu,  7 Oct 2021 11:55:07 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
 Received: from smtp4.osuosl.org ([127.0.0.1])
  by localhost (smtp4.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id v0uFf7CkyehS for <iommu@lists.linux-foundation.org>;
- Thu,  7 Oct 2021 11:43:25 +0000 (UTC)
-X-Greylist: domain auto-whitelisted by SQLgrey-1.8.0
-Received: from szxga01-in.huawei.com (szxga01-in.huawei.com [45.249.212.187])
- by smtp4.osuosl.org (Postfix) with ESMTPS id 863504097D
- for <iommu@lists.linux-foundation.org>; Thu,  7 Oct 2021 11:43:24 +0000 (UTC)
-Received: from dggemv711-chm.china.huawei.com (unknown [172.30.72.55])
- by szxga01-in.huawei.com (SkyGuard) with ESMTP id 4HQ8YT0PGdzWlbJ;
- Thu,  7 Oct 2021 19:41:49 +0800 (CST)
-Received: from dggpemm100005.china.huawei.com (7.185.36.231) by
- dggemv711-chm.china.huawei.com (10.1.198.66) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2308.8; Thu, 7 Oct 2021 19:43:18 +0800
-Received: from dggpeml100016.china.huawei.com (7.185.36.216) by
- dggpemm100005.china.huawei.com (7.185.36.231) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2308.8; Thu, 7 Oct 2021 19:43:18 +0800
-Received: from dggpeml100016.china.huawei.com ([7.185.36.216]) by
- dggpeml100016.china.huawei.com ([7.185.36.216]) with mapi id 15.01.2308.008;
- Thu, 7 Oct 2021 19:43:18 +0800
-From: "Longpeng (Mike, Cloud Infrastructure Service Product Dept.)"
- <longpeng2@huawei.com>
-To: Lu Baolu <baolu.lu@linux.intel.com>, "dwmw2@infradead.org"
- <dwmw2@infradead.org>, "will@kernel.org" <will@kernel.org>, "joro@8bytes.org"
- <joro@8bytes.org>
-Subject: RE: [PATCH v2 1/2] iommu/vt-d: convert the return type of
- first_pte_in_page to bool
-Thread-Topic: [PATCH v2 1/2] iommu/vt-d: convert the return type of
- first_pte_in_page to bool
-Thread-Index: AQHXufzwnJ0IkXVZ70aRussks8pnnKvGjCOAgADf3UA=
-Date: Thu, 7 Oct 2021 11:43:18 +0000
-Message-ID: <046cdaae8b204c3da442ec44fcc6c25d@huawei.com>
-References: <20211005152308.1061-1-longpeng2@huawei.com>
- <20211005152308.1061-2-longpeng2@huawei.com>
- <62016e41-5d9d-2d42-e16f-59809f9f1f75@linux.intel.com>
-In-Reply-To: <62016e41-5d9d-2d42-e16f-59809f9f1f75@linux.intel.com>
-Accept-Language: zh-CN, en-US
-Content-Language: zh-CN
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-x-originating-ip: [10.174.148.223]
+ with ESMTP id 5sGyQPoxVh1m for <iommu@lists.linux-foundation.org>;
+ Thu,  7 Oct 2021 11:55:06 +0000 (UTC)
+X-Greylist: whitelisted by SQLgrey-1.8.0
+Received: from mail-ed1-x529.google.com (mail-ed1-x529.google.com
+ [IPv6:2a00:1450:4864:20::529])
+ by smtp4.osuosl.org (Postfix) with ESMTPS id D37B3409E8
+ for <iommu@lists.linux-foundation.org>; Thu,  7 Oct 2021 11:55:05 +0000 (UTC)
+Received: by mail-ed1-x529.google.com with SMTP id x7so21434374edd.6
+ for <iommu@lists.linux-foundation.org>; Thu, 07 Oct 2021 04:55:05 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=gmail.com; s=20210112;
+ h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+ :cc; bh=2Sc46Q9eMcwlaMy2IZJgD2QwpVCcYg9+SD8cXYZgbr4=;
+ b=RT9YmSKnUjHCEr3v6bar51e1fzGq7K8YE+IB7ejWFNs9jODGQtkmWkzq2hgZujJCUJ
+ mnennI/hqWHn0R1mtQCCEqvymetd/bl2VgplLcGb/U/N0sjVCoyKEwx/mkoc9MmETaWb
+ ceVbHfdd9xnvcaN9u+osChdyCUu9BQJsE2WJ1gkkcj9kLDP7jXmcIiWdLsxl9rKdDTIf
+ H3EuUUBia7VJlzi8PEgVftWKFBtcQ65f0EUzVoBGCFv1cdIyTgp1RMdXi/gD1rVfq7g4
+ IPgNqk9yxnkGrT6gy6s2iNHiSDmFQpfjA2B5eyN0gQHdihyPlscJUjXMjZzUJB7bbr1L
+ Wh+Q==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+ d=1e100.net; s=20210112;
+ h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+ :message-id:subject:to:cc;
+ bh=2Sc46Q9eMcwlaMy2IZJgD2QwpVCcYg9+SD8cXYZgbr4=;
+ b=5ctfI5MbyDQgcrgmtE36/HY05JadNyz1mmqfw96fThE93i5nkyoavI7suhXXPlI//X
+ 5a2B+AUQ7fTaIi3EhJL5jIWoN8Jo3dg3Wkd32nWDFBMOHefb9p0Pqd14PRP3U395pFvu
+ xAFbM9D6YaFNQn9yWCnxPQkds21s6QJwmyyL7N4lakoG+6LzABXypW8FOmg0YN4eUPc7
+ VQFslivCWma0BZCNZfqFsNDNRqzFR7ezqqew8kYa19d5+N9fG1pz8+JH2OX+/Pc8EiZk
+ YZyB94DNRPnxYbCyjb9ahFsNFrBFMqY0QIdTimx/ZcpV2k5O0V04a/9PqE/PkEXvw/B8
+ LP+Q==
+X-Gm-Message-State: AOAM533dveR+8gtj/jq8mucevsj8GMhz1DkNpRj2OS/K/A0PPO1j6zyo
+ CmrGtH3MLhYKPQu+EO2iyQR4pPOSijrfW0sJVBc=
+X-Google-Smtp-Source: ABdhPJyCXK/u3V2xMWIJIiVDE8gg9vaOTOj4ckAKIeY5EmY50zW1eFNxbthRtAZ1ldJbNFWWIlCpZCQBCqK/PKY06k8=
+X-Received: by 2002:a17:906:3383:: with SMTP id
+ v3mr5173329eja.213.1633607703888; 
+ Thu, 07 Oct 2021 04:55:03 -0700 (PDT)
 MIME-Version: 1.0
-X-CFilter-Loop: Reflected
-Cc: "iommu@lists.linux-foundation.org" <iommu@lists.linux-foundation.org>,
- "Gonglei \(Arei\)" <arei.gonglei@huawei.com>,
- "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
+References: <1632256181-36071-1-git-send-email-jacob.jun.pan@linux.intel.com>
+ <CAGsJ_4z=2y2nVStXP-aAPnQrJJbMmv78mjaMwNc9P9Ec+gCtGw@mail.gmail.com>
+ <20211001123623.GM964074@nvidia.com>
+ <CAGsJ_4wfkrJp-eFKiXsLdiZCb3eS_zqZtJvXQTBafoTWY2yWKQ@mail.gmail.com>
+ <20211004094003.527222e5@jacob-builder> <20211004182142.GM964074@nvidia.com>
+ <CAGsJ_4w+ed78cnJusM_enEZpdGghzvjgt0aYDPpfwk4z7PQqxQ@mail.gmail.com>
+ <20211007113221.GF2744544@nvidia.com>
+In-Reply-To: <20211007113221.GF2744544@nvidia.com>
+From: Barry Song <21cnbao@gmail.com>
+Date: Fri, 8 Oct 2021 00:54:52 +1300
+Message-ID: <CAGsJ_4x2UEmNXCVhJAVRyB8568VMrTkOLeVCNp8CyP6xZJwCig@mail.gmail.com>
+Subject: Re: [RFC 0/7] Support in-kernel DMA with PASID and SVA
+To: Jason Gunthorpe <jgg@nvidia.com>
+Cc: "Tian, Kevin" <kevin.tian@intel.com>, Dave Jiang <dave.jiang@intel.com>,
+ Raj Ashok <ashok.raj@intel.com>, "Kumar, Sanjay K" <sanjay.k.kumar@intel.com>,
+ LKML <linux-kernel@vger.kernel.org>, Christoph Hellwig <hch@infradead.org>,
+ iommu@lists.linux-foundation.org, Tony Luck <tony.luck@intel.com>,
+ mike.campin@intel.com
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -97,54 +105,34 @@ Content-Transfer-Encoding: 7bit
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
+On Fri, Oct 8, 2021 at 12:32 AM Jason Gunthorpe <jgg@nvidia.com> wrote:
+>
+> On Thu, Oct 07, 2021 at 06:43:33PM +1300, Barry Song wrote:
+>
+> > So do we have a case where devices can directly access the kernel's data
+> > structure such as a list/graph/tree with pointers to a kernel virtual address?
+> > then devices don't need to translate the address of pointers in a structure.
+> > I assume this is one of the most useful features userspace SVA can provide.
+>
+> AFIACT that is the only good case for KVA, but it is also completely
+> against the endianess, word size and DMA portability design of the
+> kernel.
+>
+> Going there requires some new set of portable APIs for gobally
+> coherent KVA dma.
 
+yep. I agree. it would be very weird if accelerators/gpu are sharing
+kernel' data struct, but for each "DMA" operation - reading or writing
+the data struct, we have to call dma_map_single/sg or
+dma_sync_single_for_cpu/device etc. It seems once devices and cpus
+are sharing virtual address(SVA), code doesn't need to do explicit
+map/sync each time.
 
-> -----Original Message-----
-> From: Lu Baolu [mailto:baolu.lu@linux.intel.com]
-> Sent: Thursday, October 7, 2021 2:18 PM
-> To: Longpeng (Mike, Cloud Infrastructure Service Product Dept.)
-> <longpeng2@huawei.com>; dwmw2@infradead.org; will@kernel.org;
-> joro@8bytes.org
-> Cc: baolu.lu@linux.intel.com; iommu@lists.linux-foundation.org;
-> linux-kernel@vger.kernel.org; Gonglei (Arei) <arei.gonglei@huawei.com>
-> Subject: Re: [PATCH v2 1/2] iommu/vt-d: convert the return type of
-> first_pte_in_page to bool
-> 
-> On 2021/10/5 23:23, Longpeng(Mike) wrote:
-> > first_pte_in_page() returns boolean value, so let's convert its
-> > return type to bool.
-> >
-> > Signed-off-by: Longpeng(Mike) <longpeng2@huawei.com>
-> > ---
-> >   include/linux/intel-iommu.h | 2 +-
-> >   1 file changed, 1 insertion(+), 1 deletion(-)
-> >
-> > diff --git a/include/linux/intel-iommu.h b/include/linux/intel-iommu.h
-> > index 05a65eb..a590b00 100644
-> > --- a/include/linux/intel-iommu.h
-> > +++ b/include/linux/intel-iommu.h
-> > @@ -708,7 +708,7 @@ static inline bool dma_pte_superpage(struct dma_pte *pte)
-> >   	return (pte->val & DMA_PTE_LARGE_PAGE);
-> >   }
-> >
-> > -static inline int first_pte_in_page(struct dma_pte *pte)
-> > +static inline bool first_pte_in_page(struct dma_pte *pte)
-> >   {
-> >   	return !((unsigned long)pte & ~VTD_PAGE_MASK);
-> >   }
-> >
-> 
-> Probably,
-> 
-> 	return IS_ALIGNED((unsigned long)pte, VTD_PAGE_SIZE);
-> 
-> looks neater?
-> 
+>
+> Jason
 
-Looks better! I'll include this optimization in v3.
-
-> Best regards,
-> baolu
+Thanks
+barry
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
