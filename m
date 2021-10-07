@@ -2,76 +2,125 @@ Return-Path: <SRS0=VyMr=O3=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1C3A6C433EF
-	for <iommu@archiver.kernel.org>; Thu,  7 Oct 2021 15:10:34 +0000 (UTC)
-Received: from smtp1.osuosl.org (smtp1.osuosl.org [140.211.166.138])
+	by smtp.lore.kernel.org (Postfix) with ESMTP id CCCE5C433F5
+	for <iommu@archiver.kernel.org>; Thu,  7 Oct 2021 16:41:41 +0000 (UTC)
+Received: from smtp2.osuosl.org (smtp2.osuosl.org [140.211.166.133])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id C9D0461260
-	for <iommu@archiver.kernel.org>; Thu,  7 Oct 2021 15:10:33 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.4.1 mail.kernel.org C9D0461260
-Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=kernel.org
+	by mail.kernel.org (Postfix) with ESMTPS id 55E5E6120D
+	for <iommu@archiver.kernel.org>; Thu,  7 Oct 2021 16:41:41 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.4.1 mail.kernel.org 55E5E6120D
+Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=linux.ibm.com
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by smtp1.osuosl.org (Postfix) with ESMTP id A66FE8407B;
-	Thu,  7 Oct 2021 15:10:33 +0000 (UTC)
+	by smtp2.osuosl.org (Postfix) with ESMTP id 17917402E9;
+	Thu,  7 Oct 2021 16:41:41 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from smtp1.osuosl.org ([127.0.0.1])
-	by localhost (smtp1.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id ulluYK0qjuFU; Thu,  7 Oct 2021 15:10:32 +0000 (UTC)
-Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by smtp1.osuosl.org (Postfix) with ESMTPS id 30DE083F89;
-	Thu,  7 Oct 2021 15:10:32 +0000 (UTC)
+Received: from smtp2.osuosl.org ([127.0.0.1])
+	by localhost (smtp2.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+	with ESMTP id ck9qhYLzlfNt; Thu,  7 Oct 2021 16:41:40 +0000 (UTC)
+Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [IPv6:2605:bc80:3010:104::8cd3:938])
+	by smtp2.osuosl.org (Postfix) with ESMTPS id 8CBDB401CF;
+	Thu,  7 Oct 2021 16:41:39 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 0E6BBC0011;
-	Thu,  7 Oct 2021 15:10:32 +0000 (UTC)
-Received: from smtp3.osuosl.org (smtp3.osuosl.org [140.211.166.136])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 59343C000D
- for <iommu@lists.linux-foundation.org>; Thu,  7 Oct 2021 15:10:30 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 54198C0011;
+	Thu,  7 Oct 2021 16:41:39 +0000 (UTC)
+Received: from smtp1.osuosl.org (smtp1.osuosl.org [IPv6:2605:bc80:3010::138])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id B31DFC000D
+ for <iommu@lists.linux-foundation.org>; Thu,  7 Oct 2021 16:41:37 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by smtp3.osuosl.org (Postfix) with ESMTP id 48A47607D7
- for <iommu@lists.linux-foundation.org>; Thu,  7 Oct 2021 15:10:30 +0000 (UTC)
+ by smtp1.osuosl.org (Postfix) with ESMTP id 921288430C
+ for <iommu@lists.linux-foundation.org>; Thu,  7 Oct 2021 16:41:37 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Authentication-Results: smtp3.osuosl.org (amavisd-new);
- dkim=pass (2048-bit key) header.d=kernel.org
-Received: from smtp3.osuosl.org ([127.0.0.1])
- by localhost (smtp3.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id hZ66_tlUHsco for <iommu@lists.linux-foundation.org>;
- Thu,  7 Oct 2021 15:10:29 +0000 (UTC)
+Authentication-Results: smtp1.osuosl.org (amavisd-new);
+ dkim=pass (2048-bit key) header.d=ibm.com
+Received: from smtp1.osuosl.org ([127.0.0.1])
+ by localhost (smtp1.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+ with ESMTP id JVB8NISvMu8D for <iommu@lists.linux-foundation.org>;
+ Thu,  7 Oct 2021 16:41:37 +0000 (UTC)
 X-Greylist: domain auto-whitelisted by SQLgrey-1.8.0
-Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
- by smtp3.osuosl.org (Postfix) with ESMTPS id 54E4560754
- for <iommu@lists.linux-foundation.org>; Thu,  7 Oct 2021 15:10:29 +0000 (UTC)
-Received: by mail.kernel.org (Postfix) with ESMTPSA id ACD6661245;
- Thu,  7 Oct 2021 15:10:25 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
- s=k20201202; t=1633619429;
- bh=JbP3u6z5HQuqnmWLruM9RdfFpU2qgop0fFjGQDuIZxQ=;
- h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
- b=V8/yyfNYLU57EydIpKKA3rXfdUdQpNHPnxs2fvUwtJTTjVngUbX58IFXCRHacsKWk
- I2ACEGE2JRF6eoklgQ0rk3C1t4UPA8y8qIZ6uk3qYz0wEaKX7TA0noCIAdexMXiM+L
- Q3S1l+UvfetGR8aHMDp1vNwpKF5rBthi4Y6Vy2HPxm4LfPxbEYWlQA7imWut0fPRgC
- kpA4fNPu9gbrfrMXYCo6AEZ+CVtpw25f++4axV+M7NuYCnZO6K//cs6FzP8T7MHAKL
- nswKhq7llI9vu9BM7bPVd3IdVKs/auB/P0z0t60LE7YAF7DZuFe+GFJzTcWq9vg0bE
- IlLA30E7mJBQA==
-From: Arnd Bergmann <arnd@kernel.org>
-To: linux-kernel@vger.kernel.org
-Subject: [PATCH v2 2/2] qcom_scm: hide Kconfig symbol
-Date: Thu,  7 Oct 2021 17:10:10 +0200
-Message-Id: <20211007151010.333516-2-arnd@kernel.org>
-X-Mailer: git-send-email 2.29.2
-In-Reply-To: <20211007151010.333516-1-arnd@kernel.org>
-References: <20211007151010.333516-1-arnd@kernel.org>
+Received: from mx0a-001b2d01.pphosted.com (mx0b-001b2d01.pphosted.com
+ [148.163.158.5])
+ by smtp1.osuosl.org (Postfix) with ESMTPS id DDC8D842FF
+ for <iommu@lists.linux-foundation.org>; Thu,  7 Oct 2021 16:41:36 +0000 (UTC)
+Received: from pps.filterd (m0098413.ppops.net [127.0.0.1])
+ by mx0b-001b2d01.pphosted.com (8.16.1.2/8.16.1.2) with SMTP id 197GCXWP031997; 
+ Thu, 7 Oct 2021 12:40:52 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com;
+ h=date : from : to : cc :
+ subject : message-id : in-reply-to : references : mime-version :
+ content-type : content-transfer-encoding; s=pp1;
+ bh=JMFa7K9Yp8vP5sePEvczmlANz93yOQFEUa5LSRKZ17Q=;
+ b=aRdT6Wh1miGJc6ObqkIOdTmpP+oYLMUmsSbFZ3njtfW7UjbzrkUUn4FIygvgg5m3m9UU
+ kzWJ4o2B4oXG9B53LQZkpsIj3NbU+19Rl9GlTIQY7OYhjJ+ZUC3CNhjRkBZWVlptx9+Q
+ Vhluykkbin9iFA+Mbxp0r7nBXVCKMYNXn83lWUMK8PR3P35OhEk+6MzNgUv0lSIWcXmg
+ +ymUeJ7rGi7WNk5LVKyVtBKKJCyzg917AMvBVHVRZkXN03/GUY1+L3VbcQQ+JMNn79ji
+ dk9dr/r2fDUAESVDnZW4RUtzOggyHLVMVLdqXeJycdpsu5on9E1aJnZrwmDUuxsWys/Q 0w== 
+Received: from ppma03ams.nl.ibm.com (62.31.33a9.ip4.static.sl-reverse.com
+ [169.51.49.98])
+ by mx0b-001b2d01.pphosted.com with ESMTP id 3bhx6djf3b-1
+ (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+ Thu, 07 Oct 2021 12:40:52 -0400
+Received: from pps.filterd (ppma03ams.nl.ibm.com [127.0.0.1])
+ by ppma03ams.nl.ibm.com (8.16.1.2/8.16.1.2) with SMTP id 197GXoPt011418;
+ Thu, 7 Oct 2021 16:40:50 GMT
+Received: from b06cxnps3074.portsmouth.uk.ibm.com
+ (d06relay09.portsmouth.uk.ibm.com [9.149.109.194])
+ by ppma03ams.nl.ibm.com with ESMTP id 3bef2atbj0-1
+ (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+ Thu, 07 Oct 2021 16:40:50 +0000
+Received: from b06wcsmtp001.portsmouth.uk.ibm.com
+ (b06wcsmtp001.portsmouth.uk.ibm.com [9.149.105.160])
+ by b06cxnps3074.portsmouth.uk.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id
+ 197Gek4f46203366
+ (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+ Thu, 7 Oct 2021 16:40:46 GMT
+Received: from b06wcsmtp001.portsmouth.uk.ibm.com (unknown [127.0.0.1])
+ by IMSVA (Postfix) with ESMTP id 7A214A406F;
+ Thu,  7 Oct 2021 16:40:46 +0000 (GMT)
+Received: from b06wcsmtp001.portsmouth.uk.ibm.com (unknown [127.0.0.1])
+ by IMSVA (Postfix) with ESMTP id CC7E9A405B;
+ Thu,  7 Oct 2021 16:40:45 +0000 (GMT)
+Received: from thinkpad (unknown [9.171.6.122])
+ by b06wcsmtp001.portsmouth.uk.ibm.com (Postfix) with SMTP;
+ Thu,  7 Oct 2021 16:40:45 +0000 (GMT)
+Date: Thu, 7 Oct 2021 18:40:43 +0200
+From: Gerald Schaefer <gerald.schaefer@linux.ibm.com>
+To: Karsten Graul <kgraul@linux.ibm.com>
+Subject: Re: DPAA2 triggers, [PATCH] dma debug: report -EEXIST errors in
+ add_dma_entry
+Message-ID: <20211007184043.6fdfc57e@thinkpad>
+In-Reply-To: <fd4a2d8d-3f9d-51f3-1c86-8009ad50e6a1@linux.ibm.com>
+References: <20210518125443.34148-1-someguy@effective-light.com>
+ <fd67fbac-64bf-f0ea-01e1-5938ccfab9d0@arm.com>
+ <20210914154504.z6vqxuh3byqwgfzx@skbuf>
+ <185e7ee4-3749-4ccb-6d2e-da6bc8f30c04@linux.ibm.com>
+ <20211001145256.0323957a@thinkpad>
+ <20211006151043.61fe9613@thinkpad>
+ <4a96b583-1119-8b26-cc85-f77a6b4550a2@arm.com>
+ <fd4a2d8d-3f9d-51f3-1c86-8009ad50e6a1@linux.ibm.com>
+X-Mailer: Claws Mail 3.18.0 (GTK+ 2.24.33; x86_64-redhat-linux-gnu)
 MIME-Version: 1.0
-Cc: linux-wireless@vger.kernel.org, linux-ia64@vger.kernel.org,
- Arnd Bergmann <arnd@arndb.de>, linux-parisc@vger.kernel.org,
- linux-arm-msm@vger.kernel.org, Alex Elder <elder@linaro.org>,
- linux-mmc@vger.kernel.org, linux-mips@vger.kernel.org,
- dri-devel@lists.freedesktop.org, Kalle Valo <kvalo@codeaurora.org>,
- linux-gpio@vger.kernel.org, iommu@lists.linux-foundation.org,
- ath10k@lists.infradead.org, netdev@vger.kernel.org,
- linux-riscv@lists.infradead.org, freedreno@lists.freedesktop.org,
- linux-arm-kernel@lists.infradead.org, linux-media@vger.kernel.org
+X-TM-AS-GCONF: 00
+X-Proofpoint-ORIG-GUID: bJjvj8kg36i1WNR5Qp1yt3YVP6OAr_dz
+X-Proofpoint-GUID: bJjvj8kg36i1WNR5Qp1yt3YVP6OAr_dz
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.182.1,Aquarius:18.0.790,Hydra:6.0.391,FMLib:17.0.607.475
+ definitions=2021-10-07_02,2021-10-07_02,2020-04-07_01
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0
+ adultscore=0 mlxscore=0
+ lowpriorityscore=0 priorityscore=1501 impostorscore=0 malwarescore=0
+ suspectscore=0 mlxlogscore=999 spamscore=0 clxscore=1015 bulkscore=0
+ phishscore=0 classifier=spam adjust=0 reason=mlx scancount=1
+ engine=8.12.0-2109230001 definitions=main-2110070105
+Cc: linux-s390 <linux-s390@vger.kernel.org>,
+ Hamza Mahfooz <someguy@effective-light.com>,
+ "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+ "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+ Jeremy Linton <jeremy.linton@arm.com>,
+ "iommu@lists.linux-foundation.org" <iommu@lists.linux-foundation.org>,
+ Ioana Ciornei <ioana.ciornei@nxp.com>, Dan Williams <dan.j.williams@intel.com>,
+ Robin Murphy <robin.murphy@arm.com>, Christoph Hellwig <hch@lst.de>
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -89,328 +138,50 @@ Content-Transfer-Encoding: 7bit
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-From: Arnd Bergmann <arnd@arndb.de>
+On Thu, 7 Oct 2021 12:59:32 +0200
+Karsten Graul <kgraul@linux.ibm.com> wrote:
 
-Now that SCM can be a loadable module, we have to add another
-dependency to avoid link failures when ipa or adreno-gpu are
-built-in:
+[...]
+> > 
+> >>> BTW, there is already a WARN in the add_dma_entry() path, related
+> >>> to cachlline overlap and -EEXIST:
+> >>>
+> >>> add_dma_entry() -> active_cacheline_insert() -> -EEXIST ->
+> >>> active_cacheline_inc_overlap()
+> >>>
+> >>> That will only trigger when "overlap > ACTIVE_CACHELINE_MAX_OVERLAP".
+> >>> Not familiar with that code, but it seems that there are now two
+> >>> warnings for more or less the same, and the new warning is much more
+> >>> prone to false-positives.
+> >>>
+> >>> How do these 2 warnings relate, are they both really necessary?
+> >>> I think the new warning was only introduced because of some old
+> >>> TODO comment in add_dma_entry(), see commit 2b4bbc6231d78
+> >>> ("dma-debug: report -EEXIST errors in add_dma_entry").
+> > 
+> > AFAICS they are different things. I believe the new warning is supposed to be for the fundementally incorrect API usage (as above) of mapping different regions overlapping within the same cacheline. The existing one is about dma-debug losing internal consistency when tracking the *same* region being mapped multiple times, which is a legal thing to do - e.g. buffer sharing between devices - but if anyone's doing it to excess that's almost certainly a bug (i.e. they probably intended to unmap it in between but missed that out).
+> 
+> Thanks for the explanation Robin. 
+> 
+> In our case its really that a buffer is mapped twice for 2 different devices which we use in SMC to provide failover capabilities. We see that -EEXIST is returned when a buffer is mapped for the second device. Since there is a maximum of 2 parallel mappings we never see the warning shown by active_cacheline_inc_overlap() because we don't exceed ACTIVE_CACHELINE_MAX_OVERLAP.
+> 
+> So how to deal with this kind of "legal thing", looks like there is no way to suppress the newly introduced EEXIST warning for that case?
 
-aarch64-linux-ld: drivers/net/ipa/ipa_main.o: in function `ipa_probe':
-ipa_main.c:(.text+0xfc4): undefined reference to `qcom_scm_is_available'
+Thanks Karsten, very interesting. We assumed so far that we hit the
+same case as Ioana, i.e. having multiple sg elements in one cacheline.
+With debug output it now seems that we hit a completely different
+case, not at all related to any cacheline or coherency issues.
 
-ld.lld: error: undefined symbol: qcom_scm_is_available
->>> referenced by adreno_gpu.c
->>>               gpu/drm/msm/adreno/adreno_gpu.o:(adreno_zap_shader_load) in archive drivers/built-in.a
+So it really seems that the new warning is basically the same
+as the already present one, with the difference that it already
+triggers on the first occurrence. Looking at the code again, it
+also seems rather obvious now...
 
-This can happen when CONFIG_ARCH_QCOM is disabled and we don't select
-QCOM_MDT_LOADER, but some other module selects QCOM_SCM. Ideally we'd
-use a similar dependency here to what we have for QCOM_RPROC_COMMON,
-but that causes dependency loops from other things selecting QCOM_SCM.
-
-This appears to be an endless problem, so try something different this
-time:
-
- - CONFIG_QCOM_SCM becomes a hidden symbol that nothing 'depends on'
-   but that is simply selected by all of its users
-
- - All the stubs in include/linux/qcom_scm.h can go away
-
- - arm-smccc.h needs to provide a stub for __arm_smccc_smc() to
-   allow compile-testing QCOM_SCM on all architectures.
-
- - To avoid a circular dependency chain involving RESET_CONTROLLER
-   and PINCTRL_SUNXI, drop the 'select RESET_CONTROLLER' statement.
-   According to my testing this still builds fine, and the QCOM
-   platform selects this symbol already.
-
-Acked-by: Kalle Valo <kvalo@codeaurora.org>
-Acked-by: Alex Elder <elder@linaro.org>
-Signed-off-by: Arnd Bergmann <arnd@arndb.de>
----
-Changes in v2:
-- fix the iommu dependencies
-
-I've queued this version as a bugfix along with patch 1/2
-in my asm-generic tree.
-
- drivers/firmware/Kconfig                   |  5 +-
- drivers/gpu/drm/msm/Kconfig                |  4 +-
- drivers/iommu/Kconfig                      |  3 +-
- drivers/iommu/arm/arm-smmu/Makefile        |  3 +-
- drivers/iommu/arm/arm-smmu/arm-smmu-impl.c |  3 +-
- drivers/media/platform/Kconfig             |  2 +-
- drivers/mmc/host/Kconfig                   |  2 +-
- drivers/net/ipa/Kconfig                    |  1 +
- drivers/net/wireless/ath/ath10k/Kconfig    |  2 +-
- drivers/pinctrl/qcom/Kconfig               |  3 +-
- include/linux/arm-smccc.h                  | 10 +++
- include/linux/qcom_scm.h                   | 71 ----------------------
- 12 files changed, 24 insertions(+), 85 deletions(-)
-
-diff --git a/drivers/firmware/Kconfig b/drivers/firmware/Kconfig
-index 220a58cf0a44..cda7d7162cbb 100644
---- a/drivers/firmware/Kconfig
-+++ b/drivers/firmware/Kconfig
-@@ -203,10 +203,7 @@ config INTEL_STRATIX10_RSU
- 	  Say Y here if you want Intel RSU support.
- 
- config QCOM_SCM
--	tristate "Qcom SCM driver"
--	depends on ARM || ARM64
--	depends on HAVE_ARM_SMCCC
--	select RESET_CONTROLLER
-+	tristate
- 
- config QCOM_SCM_DOWNLOAD_MODE_DEFAULT
- 	bool "Qualcomm download mode enabled by default"
-diff --git a/drivers/gpu/drm/msm/Kconfig b/drivers/gpu/drm/msm/Kconfig
-index e9c6af78b1d7..3ddf739a6f9b 100644
---- a/drivers/gpu/drm/msm/Kconfig
-+++ b/drivers/gpu/drm/msm/Kconfig
-@@ -17,7 +17,7 @@ config DRM_MSM
- 	select DRM_SCHED
- 	select SHMEM
- 	select TMPFS
--	select QCOM_SCM if ARCH_QCOM
-+	select QCOM_SCM
- 	select WANT_DEV_COREDUMP
- 	select SND_SOC_HDMI_CODEC if SND_SOC
- 	select SYNC_FILE
-@@ -55,7 +55,7 @@ config DRM_MSM_GPU_SUDO
- 
- config DRM_MSM_HDMI_HDCP
- 	bool "Enable HDMI HDCP support in MSM DRM driver"
--	depends on DRM_MSM && QCOM_SCM
-+	depends on DRM_MSM
- 	default y
- 	help
- 	  Choose this option to enable HDCP state machine
-diff --git a/drivers/iommu/Kconfig b/drivers/iommu/Kconfig
-index 124c41adeca1..c5c71b7ab7e8 100644
---- a/drivers/iommu/Kconfig
-+++ b/drivers/iommu/Kconfig
-@@ -308,7 +308,6 @@ config APPLE_DART
- config ARM_SMMU
- 	tristate "ARM Ltd. System MMU (SMMU) Support"
- 	depends on ARM64 || ARM || (COMPILE_TEST && !GENERIC_ATOMIC64)
--	depends on QCOM_SCM || !QCOM_SCM #if QCOM_SCM=m this can't be =y
- 	select IOMMU_API
- 	select IOMMU_IO_PGTABLE_LPAE
- 	select ARM_DMA_USE_IOMMU if ARM
-@@ -438,7 +437,7 @@ config QCOM_IOMMU
- 	# Note: iommu drivers cannot (yet?) be built as modules
- 	bool "Qualcomm IOMMU Support"
- 	depends on ARCH_QCOM || (COMPILE_TEST && !GENERIC_ATOMIC64)
--	depends on QCOM_SCM=y
-+	select QCOM_SCM
- 	select IOMMU_API
- 	select IOMMU_IO_PGTABLE_LPAE
- 	select ARM_DMA_USE_IOMMU
-diff --git a/drivers/iommu/arm/arm-smmu/Makefile b/drivers/iommu/arm/arm-smmu/Makefile
-index e240a7bcf310..b0cc01aa20c9 100644
---- a/drivers/iommu/arm/arm-smmu/Makefile
-+++ b/drivers/iommu/arm/arm-smmu/Makefile
-@@ -1,4 +1,5 @@
- # SPDX-License-Identifier: GPL-2.0
- obj-$(CONFIG_QCOM_IOMMU) += qcom_iommu.o
- obj-$(CONFIG_ARM_SMMU) += arm_smmu.o
--arm_smmu-objs += arm-smmu.o arm-smmu-impl.o arm-smmu-nvidia.o arm-smmu-qcom.o
-+arm_smmu-objs += arm-smmu.o arm-smmu-impl.o arm-smmu-nvidia.o
-+arm_smmu-$(CONFIG_ARM_SMMU_QCOM) += arm-smmu-qcom.o
-diff --git a/drivers/iommu/arm/arm-smmu/arm-smmu-impl.c b/drivers/iommu/arm/arm-smmu/arm-smmu-impl.c
-index 9f465e146799..2c25cce38060 100644
---- a/drivers/iommu/arm/arm-smmu/arm-smmu-impl.c
-+++ b/drivers/iommu/arm/arm-smmu/arm-smmu-impl.c
-@@ -215,7 +215,8 @@ struct arm_smmu_device *arm_smmu_impl_init(struct arm_smmu_device *smmu)
- 	    of_device_is_compatible(np, "nvidia,tegra186-smmu"))
- 		return nvidia_smmu_impl_init(smmu);
- 
--	smmu = qcom_smmu_impl_init(smmu);
-+	if (IS_ENABLED(CONFIG_ARM_SMMU_QCOM))
-+		smmu = qcom_smmu_impl_init(smmu);
- 
- 	if (of_device_is_compatible(np, "marvell,ap806-smmu-500"))
- 		smmu->impl = &mrvl_mmu500_impl;
-diff --git a/drivers/media/platform/Kconfig b/drivers/media/platform/Kconfig
-index 157c924686e4..80321e03809a 100644
---- a/drivers/media/platform/Kconfig
-+++ b/drivers/media/platform/Kconfig
-@@ -565,7 +565,7 @@ config VIDEO_QCOM_VENUS
- 	depends on VIDEO_DEV && VIDEO_V4L2 && QCOM_SMEM
- 	depends on (ARCH_QCOM && IOMMU_DMA) || COMPILE_TEST
- 	select QCOM_MDT_LOADER if ARCH_QCOM
--	select QCOM_SCM if ARCH_QCOM
-+	select QCOM_SCM
- 	select VIDEOBUF2_DMA_CONTIG
- 	select V4L2_MEM2MEM_DEV
- 	help
-diff --git a/drivers/mmc/host/Kconfig b/drivers/mmc/host/Kconfig
-index 71313961cc54..95b3511b0560 100644
---- a/drivers/mmc/host/Kconfig
-+++ b/drivers/mmc/host/Kconfig
-@@ -547,7 +547,7 @@ config MMC_SDHCI_MSM
- 	depends on MMC_SDHCI_PLTFM
- 	select MMC_SDHCI_IO_ACCESSORS
- 	select MMC_CQHCI
--	select QCOM_SCM if MMC_CRYPTO && ARCH_QCOM
-+	select QCOM_SCM if MMC_CRYPTO
- 	help
- 	  This selects the Secure Digital Host Controller Interface (SDHCI)
- 	  support present in Qualcomm SOCs. The controller supports
-diff --git a/drivers/net/ipa/Kconfig b/drivers/net/ipa/Kconfig
-index 8f99cfa14680..d037682fb7ad 100644
---- a/drivers/net/ipa/Kconfig
-+++ b/drivers/net/ipa/Kconfig
-@@ -4,6 +4,7 @@ config QCOM_IPA
- 	depends on ARCH_QCOM || COMPILE_TEST
- 	depends on QCOM_RPROC_COMMON || (QCOM_RPROC_COMMON=n && COMPILE_TEST)
- 	select QCOM_MDT_LOADER if ARCH_QCOM
-+	select QCOM_SCM
- 	select QCOM_QMI_HELPERS
- 	help
- 	  Choose Y or M here to include support for the Qualcomm
-diff --git a/drivers/net/wireless/ath/ath10k/Kconfig b/drivers/net/wireless/ath/ath10k/Kconfig
-index 741289e385d5..ca007b800f75 100644
---- a/drivers/net/wireless/ath/ath10k/Kconfig
-+++ b/drivers/net/wireless/ath/ath10k/Kconfig
-@@ -44,7 +44,7 @@ config ATH10K_SNOC
- 	tristate "Qualcomm ath10k SNOC support"
- 	depends on ATH10K
- 	depends on ARCH_QCOM || COMPILE_TEST
--	depends on QCOM_SCM || !QCOM_SCM #if QCOM_SCM=m this can't be =y
-+	select QCOM_SCM
- 	select QCOM_QMI_HELPERS
- 	help
- 	  This module adds support for integrated WCN3990 chip connected
-diff --git a/drivers/pinctrl/qcom/Kconfig b/drivers/pinctrl/qcom/Kconfig
-index 32ea2a8ec02b..5ff4207df66e 100644
---- a/drivers/pinctrl/qcom/Kconfig
-+++ b/drivers/pinctrl/qcom/Kconfig
-@@ -3,7 +3,8 @@ if (ARCH_QCOM || COMPILE_TEST)
- 
- config PINCTRL_MSM
- 	tristate "Qualcomm core pin controller driver"
--	depends on GPIOLIB && (QCOM_SCM || !QCOM_SCM) #if QCOM_SCM=m this can't be =y
-+	depends on GPIOLIB
-+	select QCOM_SCM
- 	select PINMUX
- 	select PINCONF
- 	select GENERIC_PINCONF
-diff --git a/include/linux/arm-smccc.h b/include/linux/arm-smccc.h
-index 7d1cabe15262..63ccb5252190 100644
---- a/include/linux/arm-smccc.h
-+++ b/include/linux/arm-smccc.h
-@@ -321,10 +321,20 @@ asmlinkage unsigned long __arm_smccc_sve_check(unsigned long x0);
-  * from register 0 to 3 on return from the SMC instruction.  An optional
-  * quirk structure provides vendor specific behavior.
-  */
-+#ifdef CONFIG_HAVE_ARM_SMCCC
- asmlinkage void __arm_smccc_smc(unsigned long a0, unsigned long a1,
- 			unsigned long a2, unsigned long a3, unsigned long a4,
- 			unsigned long a5, unsigned long a6, unsigned long a7,
- 			struct arm_smccc_res *res, struct arm_smccc_quirk *quirk);
-+#else
-+static inline void __arm_smccc_smc(unsigned long a0, unsigned long a1,
-+			unsigned long a2, unsigned long a3, unsigned long a4,
-+			unsigned long a5, unsigned long a6, unsigned long a7,
-+			struct arm_smccc_res *res, struct arm_smccc_quirk *quirk)
-+{
-+	*res = (struct arm_smccc_res){};
-+}
-+#endif
- 
- /**
-  * __arm_smccc_hvc() - make HVC calls
-diff --git a/include/linux/qcom_scm.h b/include/linux/qcom_scm.h
-index c0475d1c9885..81cad9e1e412 100644
---- a/include/linux/qcom_scm.h
-+++ b/include/linux/qcom_scm.h
-@@ -61,7 +61,6 @@ enum qcom_scm_ice_cipher {
- #define QCOM_SCM_PERM_RW (QCOM_SCM_PERM_READ | QCOM_SCM_PERM_WRITE)
- #define QCOM_SCM_PERM_RWX (QCOM_SCM_PERM_RW | QCOM_SCM_PERM_EXEC)
- 
--#if IS_ENABLED(CONFIG_QCOM_SCM)
- extern bool qcom_scm_is_available(void);
- 
- extern int qcom_scm_set_cold_boot_addr(void *entry, const cpumask_t *cpus);
-@@ -115,74 +114,4 @@ extern int qcom_scm_lmh_dcvsh(u32 payload_fn, u32 payload_reg, u32 payload_val,
- extern int qcom_scm_lmh_profile_change(u32 profile_id);
- extern bool qcom_scm_lmh_dcvsh_available(void);
- 
--#else
--
--#include <linux/errno.h>
--
--static inline bool qcom_scm_is_available(void) { return false; }
--
--static inline int qcom_scm_set_cold_boot_addr(void *entry,
--		const cpumask_t *cpus) { return -ENODEV; }
--static inline int qcom_scm_set_warm_boot_addr(void *entry,
--		const cpumask_t *cpus) { return -ENODEV; }
--static inline void qcom_scm_cpu_power_down(u32 flags) {}
--static inline u32 qcom_scm_set_remote_state(u32 state,u32 id)
--		{ return -ENODEV; }
--
--static inline int qcom_scm_pas_init_image(u32 peripheral, const void *metadata,
--		size_t size) { return -ENODEV; }
--static inline int qcom_scm_pas_mem_setup(u32 peripheral, phys_addr_t addr,
--		phys_addr_t size) { return -ENODEV; }
--static inline int qcom_scm_pas_auth_and_reset(u32 peripheral)
--		{ return -ENODEV; }
--static inline int qcom_scm_pas_shutdown(u32 peripheral) { return -ENODEV; }
--static inline bool qcom_scm_pas_supported(u32 peripheral) { return false; }
--
--static inline int qcom_scm_io_readl(phys_addr_t addr, unsigned int *val)
--		{ return -ENODEV; }
--static inline int qcom_scm_io_writel(phys_addr_t addr, unsigned int val)
--		{ return -ENODEV; }
--
--static inline bool qcom_scm_restore_sec_cfg_available(void) { return false; }
--static inline int qcom_scm_restore_sec_cfg(u32 device_id, u32 spare)
--		{ return -ENODEV; }
--static inline int qcom_scm_iommu_secure_ptbl_size(u32 spare, size_t *size)
--		{ return -ENODEV; }
--static inline int qcom_scm_iommu_secure_ptbl_init(u64 addr, u32 size, u32 spare)
--		{ return -ENODEV; }
--extern inline int qcom_scm_mem_protect_video_var(u32 cp_start, u32 cp_size,
--						 u32 cp_nonpixel_start,
--						 u32 cp_nonpixel_size)
--		{ return -ENODEV; }
--static inline int qcom_scm_assign_mem(phys_addr_t mem_addr, size_t mem_sz,
--		unsigned int *src, const struct qcom_scm_vmperm *newvm,
--		unsigned int dest_cnt) { return -ENODEV; }
--
--static inline bool qcom_scm_ocmem_lock_available(void) { return false; }
--static inline int qcom_scm_ocmem_lock(enum qcom_scm_ocmem_client id, u32 offset,
--		u32 size, u32 mode) { return -ENODEV; }
--static inline int qcom_scm_ocmem_unlock(enum qcom_scm_ocmem_client id,
--		u32 offset, u32 size) { return -ENODEV; }
--
--static inline bool qcom_scm_ice_available(void) { return false; }
--static inline int qcom_scm_ice_invalidate_key(u32 index) { return -ENODEV; }
--static inline int qcom_scm_ice_set_key(u32 index, const u8 *key, u32 key_size,
--				       enum qcom_scm_ice_cipher cipher,
--				       u32 data_unit_size) { return -ENODEV; }
--
--static inline bool qcom_scm_hdcp_available(void) { return false; }
--static inline int qcom_scm_hdcp_req(struct qcom_scm_hdcp_req *req, u32 req_cnt,
--		u32 *resp) { return -ENODEV; }
--
--static inline int qcom_scm_qsmmu500_wait_safe_toggle(bool en)
--		{ return -ENODEV; }
--
--static inline int qcom_scm_lmh_dcvsh(u32 payload_fn, u32 payload_reg, u32 payload_val,
--				     u64 limit_node, u32 node_id, u64 version)
--		{ return -ENODEV; }
--
--static inline int qcom_scm_lmh_profile_change(u32 profile_id) { return -ENODEV; }
--
--static inline bool qcom_scm_lmh_dcvsh_available(void) { return -ENODEV; }
--#endif
- #endif
--- 
-2.29.2
-
+IIUC, from what Robin described, this means that the "legal thing
+to do - e.g. buffer sharing between devices" will now immediately
+trigger the new warning? Not sure if I missed something (again),
+because then I would expect much more reports on this, and of
+course it would then obviously be false-positive.
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
