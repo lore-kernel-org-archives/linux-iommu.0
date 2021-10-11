@@ -2,77 +2,99 @@ Return-Path: <SRS0=5Hhm=O7=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 62E28C433F5
-	for <iommu@archiver.kernel.org>; Mon, 11 Oct 2021 08:11:29 +0000 (UTC)
-Received: from smtp1.osuosl.org (smtp1.osuosl.org [140.211.166.138])
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 97F09C433F5
+	for <iommu@archiver.kernel.org>; Mon, 11 Oct 2021 08:50:27 +0000 (UTC)
+Received: from smtp3.osuosl.org (smtp3.osuosl.org [140.211.166.136])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 1455560F02
-	for <iommu@archiver.kernel.org>; Mon, 11 Oct 2021 08:11:29 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.4.1 mail.kernel.org 1455560F02
-Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=arm.com
+	by mail.kernel.org (Postfix) with ESMTPS id 4058860F35
+	for <iommu@archiver.kernel.org>; Mon, 11 Oct 2021 08:50:27 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.4.1 mail.kernel.org 4058860F35
+Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=linaro.org
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by smtp1.osuosl.org (Postfix) with ESMTP id D4E4D81069;
-	Mon, 11 Oct 2021 08:11:28 +0000 (UTC)
+	by smtp3.osuosl.org (Postfix) with ESMTP id 0EE1B60786;
+	Mon, 11 Oct 2021 08:50:27 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from smtp1.osuosl.org ([127.0.0.1])
-	by localhost (smtp1.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id dK-2J2SE8mtg; Mon, 11 Oct 2021 08:11:27 +0000 (UTC)
+Received: from smtp3.osuosl.org ([127.0.0.1])
+	by localhost (smtp3.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+	with ESMTP id 7ttv3W0esgXc; Mon, 11 Oct 2021 08:50:26 +0000 (UTC)
 Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by smtp1.osuosl.org (Postfix) with ESMTPS id 6F3A581066;
-	Mon, 11 Oct 2021 08:11:27 +0000 (UTC)
+	by smtp3.osuosl.org (Postfix) with ESMTPS id EA54760715;
+	Mon, 11 Oct 2021 08:50:25 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 4C4ECC0011;
-	Mon, 11 Oct 2021 08:11:27 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id BF438C000F;
+	Mon, 11 Oct 2021 08:50:25 +0000 (UTC)
 Received: from smtp1.osuosl.org (smtp1.osuosl.org [140.211.166.138])
- by lists.linuxfoundation.org (Postfix) with ESMTP id C9E4FC000D;
- Mon, 11 Oct 2021 08:11:25 +0000 (UTC)
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 27EE2C000D
+ for <iommu@lists.linux-foundation.org>; Mon, 11 Oct 2021 08:50:25 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by smtp1.osuosl.org (Postfix) with ESMTP id ABCBE81066;
- Mon, 11 Oct 2021 08:11:25 +0000 (UTC)
+ by smtp1.osuosl.org (Postfix) with ESMTP id 068CD814B1
+ for <iommu@lists.linux-foundation.org>; Mon, 11 Oct 2021 08:50:25 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
+Authentication-Results: smtp1.osuosl.org (amavisd-new);
+ dkim=pass (2048-bit key) header.d=linaro.org
 Received: from smtp1.osuosl.org ([127.0.0.1])
  by localhost (smtp1.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id zD5wwgsLyjGt; Mon, 11 Oct 2021 08:11:24 +0000 (UTC)
-X-Greylist: domain auto-whitelisted by SQLgrey-1.8.0
-X-Greylist: domain auto-whitelisted by SQLgrey-1.8.0
-Received: from foss.arm.com (foss.arm.com [217.140.110.172])
- by smtp1.osuosl.org (Postfix) with ESMTP id 44FA381069;
- Mon, 11 Oct 2021 08:11:24 +0000 (UTC)
-Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
- by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 5C4431063;
- Mon, 11 Oct 2021 01:11:23 -0700 (PDT)
-Received: from mail-pj1-f48.google.com (unknown [172.31.20.19])
- by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id 4739F3F66F;
- Mon, 11 Oct 2021 01:11:23 -0700 (PDT)
-Received: by mail-pj1-f48.google.com with SMTP id
- na16-20020a17090b4c1000b0019f5bb661f9so12917707pjb.0; 
- Mon, 11 Oct 2021 01:11:23 -0700 (PDT)
-X-Gm-Message-State: AOAM530D8Mpy2Lx/vTiLKbYLfjwFe8cUdCbtV9QKvOGm56iSRWS1V9+Q
- Fydx1bhKb4fcCsDCeHnrXvWUVzqj9ngktiqc4z8=
-X-Google-Smtp-Source: ABdhPJxpgWkq2JXuhyC5cSUsG8YBYjnxKFd9JFYfb0AdYL4fS13p9K2CJ10dWF5pg4KXSn5b2Uhp22eVuQguQX4tG9g=
-X-Received: by 2002:a17:90a:46c2:: with SMTP id
- x2mr29707698pjg.207.1633939878591; 
- Mon, 11 Oct 2021 01:11:18 -0700 (PDT)
+ with ESMTP id 7EUS_EkyqaH1 for <iommu@lists.linux-foundation.org>;
+ Mon, 11 Oct 2021 08:50:22 +0000 (UTC)
+X-Greylist: whitelisted by SQLgrey-1.8.0
+Received: from mail-wr1-x429.google.com (mail-wr1-x429.google.com
+ [IPv6:2a00:1450:4864:20::429])
+ by smtp1.osuosl.org (Postfix) with ESMTPS id 2AA3B81045
+ for <iommu@lists.linux-foundation.org>; Mon, 11 Oct 2021 08:50:22 +0000 (UTC)
+Received: by mail-wr1-x429.google.com with SMTP id t2so53661736wrb.8
+ for <iommu@lists.linux-foundation.org>; Mon, 11 Oct 2021 01:50:22 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linaro.org; s=google;
+ h=date:from:to:cc:subject:message-id:references:mime-version
+ :content-disposition:in-reply-to;
+ bh=sk2vwHpDMapSB20kMOT3PpeVWQ3nV2u+hdesFvlhlXY=;
+ b=sQAx9Y55PmndkkUA9JgbLSEHf3wecXknr9PmN8XlAGjxLyHPxu+BHmo1eXm9nYNm8H
+ EhgZTCAikbV4yKa5OEEV9/sNqub8qLpMgx07yHaMbB1MwZSFwO7vMTjTBIbYDcJRTC4D
+ uHh5ZHWqw7gnMN9popQqddpv4yE+SKKA+mjSlefLb2ZOC25Agj+2S+SoJqdENxlkELTN
+ js52PoywEeVWqdQz836ClJ6+Q6wdubCG8sQYQYCJYXPD80YePUXmkgJAvArP0gEQaa5o
+ flZ8DHcxIkiQVesPqVbKEaWwo480lb2JwDOSVFwNfhTqQpQL6qtj+2PypAO0EtgGDBWo
+ ivPw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+ d=1e100.net; s=20210112;
+ h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+ :mime-version:content-disposition:in-reply-to;
+ bh=sk2vwHpDMapSB20kMOT3PpeVWQ3nV2u+hdesFvlhlXY=;
+ b=4iPjwhwnHgp2q+BxtWVGjRM7mSuQBKqUmKj2VU+1ZGmeyfYHTJAo2XGjk+NOGQc/Ny
+ UtTtshSUF+nDyyTXL+03SIn+NOUrbt8MEeXgb1dlyyTTazZdOBMhL/3t6pdGPe89jvRE
+ yub4Xy9R3ArWi13l6ga4oS1cvv28OGCuKEUOyBmWKfHsaeiijhc6HCnsijhWbrutXvZC
+ 4duLQzhqhW326kC7Vf0i+Ta5Q0TmTm38mKM5LGEuhA3rvMjck1YPgAuRM0IQFdt43EEp
+ 7s9Plh7WlpOI0m7wqqmz/Q6QGQX0H7fHNJ9fGrV5VaFfvmfggkSixUbPLBK8S3TQDQ5p
+ ThTg==
+X-Gm-Message-State: AOAM533np6otM1fRK4L1TKijz2NN1RzQAmO4GQQ6ST0mmhv6LmR2uYyn
+ AN46rytioAvRLFHOnyvC5gjNTQ==
+X-Google-Smtp-Source: ABdhPJzU/1wA9A5uHZLtCS/EoNkG6y371Lka8wmYuBYDzHsaXCr/VdFzCzKHlkRdGz3TZTk0YVvlOQ==
+X-Received: by 2002:a05:600c:2109:: with SMTP id
+ u9mr13026461wml.68.1633942220114; 
+ Mon, 11 Oct 2021 01:50:20 -0700 (PDT)
+Received: from myrica (cpc92880-cmbg19-2-0-cust679.5-4.cable.virginm.net.
+ [82.27.106.168])
+ by smtp.gmail.com with ESMTPSA id g188sm7226525wmg.46.2021.10.11.01.50.18
+ (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+ Mon, 11 Oct 2021 01:50:19 -0700 (PDT)
+Date: Mon, 11 Oct 2021 09:49:57 +0100
+From: Jean-Philippe Brucker <jean-philippe@linaro.org>
+To: David Gibson <david@gibson.dropbear.id.au>
+Subject: Re: [RFC 11/20] iommu/iommufd: Add IOMMU_IOASID_ALLOC/FREE
+Message-ID: <YWP6tblC2+/2RQtN@myrica>
+References: <20210919063848.1476776-1-yi.l.liu@intel.com>
+ <20210919063848.1476776-12-yi.l.liu@intel.com>
+ <20210921174438.GW327412@nvidia.com> <YVanJqG2pt6g+ROL@yekko>
+ <20211001122225.GK964074@nvidia.com> <YWPTWdHhoI4k0Ksc@yekko>
 MIME-Version: 1.0
-References: <20210423095147.27922-1-vivek.gautam@arm.com>
- <20210423095147.27922-4-vivek.gautam@arm.com>
- <YUoCTV6WYxxE10qj@myrica>
-In-Reply-To: <YUoCTV6WYxxE10qj@myrica>
-From: Vivek Gautam <vivek.gautam@arm.com>
-Date: Mon, 11 Oct 2021 13:41:15 +0530
-X-Gmail-Original-Message-ID: <CAFp+6iEM7K8YOnQ4vSNoM+HuHQ-7pr=G3aui-77dGipyJ0+RjQ@mail.gmail.com>
-Message-ID: <CAFp+6iEM7K8YOnQ4vSNoM+HuHQ-7pr=G3aui-77dGipyJ0+RjQ@mail.gmail.com>
-Subject: Re: [PATCH RFC v1 03/11] iommu/virtio: Handle incoming page faults
-To: Jean-Philippe Brucker <jean-philippe@linaro.org>
-Cc: "Tian, Kevin" <kevin.tian@intel.com>, mst@redhat.com,
- Will Deacon <will.deacon@arm.com>, open list <linux-kernel@vger.kernel.org>,
- virtualization@lists.linux-foundation.org,
- "list@263.net:IOMMU DRIVERS <iommu@lists.linux-foundation.org>,
- Joerg Roedel <joro@8bytes.org>, " <iommu@lists.linux-foundation.org>,
- Robin Murphy <robin.murphy@arm.com>,
- Linux ARM <linux-arm-kernel@lists.infradead.org>
+Content-Disposition: inline
+In-Reply-To: <YWPTWdHhoI4k0Ksc@yekko>
+Cc: kvm@vger.kernel.org, jasowang@redhat.com, kwankhede@nvidia.com, hch@lst.de,
+ dave.jiang@intel.com, ashok.raj@intel.com, corbet@lwn.net,
+ Jason Gunthorpe <jgg@nvidia.com>, kevin.tian@intel.com, parav@mellanox.com,
+ alex.williamson@redhat.com, lkml@metux.net, dwmw2@infradead.org,
+ jun.j.tian@intel.com, linux-kernel@vger.kernel.org, lushenming@huawei.com,
+ iommu@lists.linux-foundation.org, pbonzini@redhat.com, robin.murphy@arm.com
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -90,230 +112,29 @@ Content-Transfer-Encoding: 7bit
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-Hi Jean,
+On Mon, Oct 11, 2021 at 05:02:01PM +1100, David Gibson wrote:
+> qemu wants to emulate a PAPR vIOMMU, so it says (via interfaces yet to
+> be determined) that it needs an IOAS where things can be mapped in the
+> range 0..2GiB (for the 32-bit window) and 2^59..2^59+1TiB (for the
+> 64-bit window).
+> 
+> Ideally the host /dev/iommu will say "ok!", since both those ranges
+> are within the 0..2^60 translated range of the host IOMMU, and don't
+> touch the IO hole.  When the guest calls the IO mapping hypercalls,
+> qemu translates those into DMA_MAP operations, and since they're all
+> within the previously verified windows, they should work fine.
 
+Seems like we don't need the negotiation part?  The host kernel
+communicates available IOVA ranges to userspace including holes (patch
+17), and userspace can check that the ranges it needs are within the IOVA
+space boundaries. That part is necessary for DPDK as well since it needs
+to know about holes in the IOVA space where DMA wouldn't work as expected
+(MSI doorbells for example). And there already is a negotiation happening,
+when the host kernel rejects MAP ioctl outside the advertised area.
 
-On Tue, Sep 21, 2021 at 9:33 PM Jean-Philippe Brucker
-<jean-philippe@linaro.org> wrote:
->
-> On Fri, Apr 23, 2021 at 03:21:39PM +0530, Vivek Gautam wrote:
-> > Redirect the incoming page faults to the registered fault handler
-> > that can take the fault information such as, pasid, page request
-> > group-id, address and pasid flags.
-> >
-> > Signed-off-by: Vivek Gautam <vivek.gautam@arm.com>
-> > ---
-> >  drivers/iommu/virtio-iommu.c      | 80 ++++++++++++++++++++++++++++++-
-> >  include/uapi/linux/virtio_iommu.h |  1 +
-> >  2 files changed, 80 insertions(+), 1 deletion(-)
-> >
-> > diff --git a/drivers/iommu/virtio-iommu.c b/drivers/iommu/virtio-iommu.c
-> > index c970f386f031..fd237cad1ce5 100644
-> > --- a/drivers/iommu/virtio-iommu.c
-> > +++ b/drivers/iommu/virtio-iommu.c
-> > @@ -37,6 +37,13 @@
-> >  /* Some architectures need an Address Space ID for each page table */
-> >  DEFINE_XARRAY_ALLOC1(viommu_asid_xa);
-> >
-> > +struct viommu_dev_pri_work {
-> > +     struct work_struct              work;
-> > +     struct viommu_dev               *dev;
-> > +     struct virtio_iommu_fault       *vfault;
-> > +     u32                             endpoint;
-> > +};
-> > +
-> >  struct viommu_dev {
-> >       struct iommu_device             iommu;
-> >       struct device                   *dev;
-> > @@ -49,6 +56,8 @@ struct viommu_dev {
-> >       struct list_head                requests;
-> >       void                            *evts;
-> >       struct list_head                endpoints;
-> > +     struct workqueue_struct         *pri_wq;
-> > +     struct viommu_dev_pri_work      *pri_work;
->
-> IOPF already has a workqueue, so the driver doesn't need one.
-> iommu_report_device_fault() should be fast enough to be called from the
-> event handler.
+Thanks,
+Jean
 
-Sure, will call iommu_report_device_fault() directly from
-viommu_fault_handler().
-
->
-> >
-> >       /* Device configuration */
-> >       struct iommu_domain_geometry    geometry;
-> > @@ -666,6 +675,58 @@ static int viommu_probe_endpoint(struct viommu_dev *viommu, struct device *dev)
-> >       return ret;
-> >  }
-> >
-> > +static void viommu_handle_ppr(struct work_struct *work)
-> > +{
-> > +     struct viommu_dev_pri_work *pwork =
-> > +                             container_of(work, struct viommu_dev_pri_work, work);
-> > +     struct viommu_dev *viommu = pwork->dev;
-> > +     struct virtio_iommu_fault *vfault = pwork->vfault;
-> > +     struct viommu_endpoint *vdev;
-> > +     struct viommu_ep_entry *ep;
-> > +     struct iommu_fault_event fault_evt = {
-> > +             .fault.type = IOMMU_FAULT_PAGE_REQ,
-> > +     };
-> > +     struct iommu_fault_page_request *prq = &fault_evt.fault.prm;
-> > +
-> > +     u32 flags       = le32_to_cpu(vfault->flags);
-> > +     u32 prq_flags   = le32_to_cpu(vfault->pr_evt_flags);
-> > +     u32 endpoint    = pwork->endpoint;
-> > +
-> > +     memset(prq, 0, sizeof(struct iommu_fault_page_request));
->
-> The fault_evt struct is already initialized
-
-Right, I will remove this line.
-
->
-> > +     prq->addr = le64_to_cpu(vfault->address);
-> > +
-> > +     if (prq_flags & VIRTIO_IOMMU_FAULT_PRQ_F_LAST_PAGE)
-> > +             prq->flags |= IOMMU_FAULT_PAGE_REQUEST_LAST_PAGE;
-> > +     if (prq_flags & VIRTIO_IOMMU_FAULT_PRQ_F_PASID_VALID) {
-> > +             prq->flags |= IOMMU_FAULT_PAGE_REQUEST_PASID_VALID;
-> > +             prq->pasid = le32_to_cpu(vfault->pasid);
-> > +             prq->grpid = le32_to_cpu(vfault->grpid);
-> > +     }
-> > +
-> > +     if (flags & VIRTIO_IOMMU_FAULT_F_READ)
-> > +             prq->perm |= IOMMU_FAULT_PERM_READ;
-> > +     if (flags & VIRTIO_IOMMU_FAULT_F_WRITE)
-> > +             prq->perm |= IOMMU_FAULT_PERM_WRITE;
-> > +     if (flags & VIRTIO_IOMMU_FAULT_F_EXEC)
-> > +             prq->perm |= IOMMU_FAULT_PERM_EXEC;
-> > +     if (flags & VIRTIO_IOMMU_FAULT_F_PRIV)
-> > +             prq->perm |= IOMMU_FAULT_PERM_PRIV;
-> > +
-> > +     list_for_each_entry(ep, &viommu->endpoints, list) {
-> > +             if (ep->eid == endpoint) {
-> > +                     vdev = ep->vdev;
-
-I have a question here though -
-Is endpoint-ID unique across all the endpoints available per 'viommu_dev' or
-per 'viommu_domain'?
-If it is per 'viommu_domain' then the above list is also incorrect.
-As you pointed to in the patch [1] -
-[PATCH RFC v1 02/11] iommu/virtio: Maintain a list of endpoints served
-by viommu_dev
-I am planning to add endpoint ID into a static global xarray in
-viommu_probe_device() as below:
-
-        vdev_for_each_id(i, eid, vdev) {
-                ret = xa_insert(&viommu_ep_ids, eid, vdev, GFP_KERNEL);
-                if (ret)
-                        goto err_free_dev;
-        }
-
-and replace the above list traversal as below:
-
-                xa_lock_irqsave(&viommu_ep_ids, flags);
-                xa_for_each(&viommu_ep_ids, eid, vdev) {
-                        if (eid == endpoint) {
-                                ret =
-iommu_report_device_fault(vdev->dev, &fault_evt);
-                                if (ret)
-                                        dev_err(vdev->dev, "Couldn't
-handle page request\n");
-                        }
-                }
-                xa_unlock_irqrestore(&viommu_ep_ids, flags);
-
-But using a global xarray would also be incorrect if the endpointsID are global
-across 'viommu_domain'.
-
-I need to find the correct 'viommu_endpoint' to call iommu_report_device_fault()
-with the correct device.
-
-> > +                     break;
-> > +             }
-> > +     }
-> > +
-> > +     if ((prq_flags & VIRTIO_IOMMU_FAULT_PRQ_F_PASID_VALID) &&
-> > +         (prq_flags & VIRTIO_IOMMU_FAULT_PRQ_F_NEEDS_PASID))
-> > +             prq->flags |= IOMMU_FAULT_PAGE_RESPONSE_NEEDS_PASID;
-> > +
-> > +     if (iommu_report_device_fault(vdev->dev, &fault_evt))
-> > +             dev_err(vdev->dev, "Couldn't handle page request\n");
->
-> An error likely means that nobody registered a fault handler, but we could
-> display a few more details about the fault that would help debug the
-> endpoint
-
-Sure, will add more debug info to this log.
-
->
-> > +}
-> > +
-> >  static int viommu_fault_handler(struct viommu_dev *viommu,
-> >                               struct virtio_iommu_fault *fault)
-> >  {
-> > @@ -679,7 +740,13 @@ static int viommu_fault_handler(struct viommu_dev *viommu,
-> >       u32 pasid       = le32_to_cpu(fault->pasid);
-> >
-> >       if (type == VIRTIO_IOMMU_FAULT_F_PAGE_REQ) {
-> > -             dev_info(viommu->dev, "Page request fault - unhandled\n");
-> > +             dev_info_ratelimited(viommu->dev,
-> > +                                  "Page request fault from EP %u\n",
-> > +                                  endpoint);
->
-> That's rather for debugging the virtio-iommu driver, so should be
-> dev_dbg() (or removed entirely)
-
-I will remove this log.
-
->
-> > +
-> > +             viommu->pri_work->vfault = fault;
-> > +             viommu->pri_work->endpoint = endpoint;
-> > +             queue_work(viommu->pri_wq, &viommu->pri_work->work);
-> >               return 0;
-> >       }
-> >
-> > @@ -1683,6 +1750,17 @@ static int viommu_probe(struct virtio_device *vdev)
-> >               goto err_free_vqs;
-> >       }
-> >
-> > +     viommu->pri_work = kzalloc(sizeof(*viommu->pri_work), GFP_KERNEL);
-> > +     if (!viommu->pri_work)
-> > +             return -ENOMEM;
-> > +
-> > +     viommu->pri_work->dev = viommu;
-> > +
-> > +     INIT_WORK(&viommu->pri_work->work, viommu_handle_ppr);
-> > +     viommu->pri_wq = create_singlethread_workqueue("viommu-pri-wq");
-> > +     if (!viommu->pri_wq)
-> > +             return -ENOMEM;
-> > +
-> >       viommu->map_flags = VIRTIO_IOMMU_MAP_F_READ | VIRTIO_IOMMU_MAP_F_WRITE;
-> >       viommu->last_domain = ~0U;
-> >
-> > diff --git a/include/uapi/linux/virtio_iommu.h b/include/uapi/linux/virtio_iommu.h
-> > index accc3318ce46..53aa88e6b077 100644
-> > --- a/include/uapi/linux/virtio_iommu.h
-> > +++ b/include/uapi/linux/virtio_iommu.h
-> > @@ -302,6 +302,7 @@ struct virtio_iommu_req_invalidate {
-> >  #define VIRTIO_IOMMU_FAULT_F_READ            (1 << 0)
-> >  #define VIRTIO_IOMMU_FAULT_F_WRITE           (1 << 1)
-> >  #define VIRTIO_IOMMU_FAULT_F_EXEC            (1 << 2)
-> > +#define VIRTIO_IOMMU_FAULT_F_PRIV            (1 << 3)
->
-> Should go in the previous patch. (I'd also prefer 'privileged' because in
-> this context 'priv' is easily read as 'private')
-
-Sure, will move this to the previous patch.
-
-Thanks & regards
-Vivek
-
-[1] https://lore.kernel.org/all/YUoBW13+CvIljUgc@myrica/#t
-
-[snip]
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
