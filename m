@@ -2,95 +2,99 @@ Return-Path: <SRS0=5Hhm=O7=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id CF662C433EF
-	for <iommu@archiver.kernel.org>; Mon, 11 Oct 2021 09:09:36 +0000 (UTC)
-Received: from smtp4.osuosl.org (smtp4.osuosl.org [140.211.166.137])
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1E82BC433EF
+	for <iommu@archiver.kernel.org>; Mon, 11 Oct 2021 09:17:02 +0000 (UTC)
+Received: from smtp2.osuosl.org (smtp2.osuosl.org [140.211.166.133])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 829C360F5B
-	for <iommu@archiver.kernel.org>; Mon, 11 Oct 2021 09:09:36 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.4.1 mail.kernel.org 829C360F5B
+	by mail.kernel.org (Postfix) with ESMTPS id BD38B60F92
+	for <iommu@archiver.kernel.org>; Mon, 11 Oct 2021 09:17:01 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.4.1 mail.kernel.org BD38B60F92
 Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=linaro.org
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by smtp4.osuosl.org (Postfix) with ESMTP id 53A7B403B9;
-	Mon, 11 Oct 2021 09:09:36 +0000 (UTC)
+	by smtp2.osuosl.org (Postfix) with ESMTP id 4CE1140285;
+	Mon, 11 Oct 2021 09:17:01 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from smtp4.osuosl.org ([127.0.0.1])
-	by localhost (smtp4.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id msRyVhhVrq5G; Mon, 11 Oct 2021 09:09:35 +0000 (UTC)
-Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by smtp4.osuosl.org (Postfix) with ESMTPS id 373E6403C2;
-	Mon, 11 Oct 2021 09:09:35 +0000 (UTC)
+Received: from smtp2.osuosl.org ([127.0.0.1])
+	by localhost (smtp2.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+	with ESMTP id pcOeLapgEKEH; Mon, 11 Oct 2021 09:17:00 +0000 (UTC)
+Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [IPv6:2605:bc80:3010:104::8cd3:938])
+	by smtp2.osuosl.org (Postfix) with ESMTPS id E386540292;
+	Mon, 11 Oct 2021 09:16:59 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 006B2C000F;
-	Mon, 11 Oct 2021 09:09:35 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 4564EC0023;
+	Mon, 11 Oct 2021 09:16:59 +0000 (UTC)
 Received: from smtp3.osuosl.org (smtp3.osuosl.org [IPv6:2605:bc80:3010::136])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 3A1FDC000D
- for <iommu@lists.linux-foundation.org>; Mon, 11 Oct 2021 09:09:34 +0000 (UTC)
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 9E63CC000D
+ for <iommu@lists.linux-foundation.org>; Mon, 11 Oct 2021 09:16:58 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by smtp3.osuosl.org (Postfix) with ESMTP id 27F7C60778
- for <iommu@lists.linux-foundation.org>; Mon, 11 Oct 2021 09:09:34 +0000 (UTC)
+ by smtp3.osuosl.org (Postfix) with ESMTP id 98C0660723
+ for <iommu@lists.linux-foundation.org>; Mon, 11 Oct 2021 09:16:57 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
 Authentication-Results: smtp3.osuosl.org (amavisd-new);
  dkim=pass (2048-bit key) header.d=linaro.org
 Received: from smtp3.osuosl.org ([127.0.0.1])
  by localhost (smtp3.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id j9ytTsB1EIpq for <iommu@lists.linux-foundation.org>;
- Mon, 11 Oct 2021 09:09:33 +0000 (UTC)
+ with ESMTP id B-lQS0YiPtuJ for <iommu@lists.linux-foundation.org>;
+ Mon, 11 Oct 2021 09:16:56 +0000 (UTC)
 X-Greylist: whitelisted by SQLgrey-1.8.0
-Received: from mail-qk1-x733.google.com (mail-qk1-x733.google.com
- [IPv6:2607:f8b0:4864:20::733])
- by smtp3.osuosl.org (Postfix) with ESMTPS id 3A53260723
- for <iommu@lists.linux-foundation.org>; Mon, 11 Oct 2021 09:09:33 +0000 (UTC)
-Received: by mail-qk1-x733.google.com with SMTP id p4so15898017qki.3
- for <iommu@lists.linux-foundation.org>; Mon, 11 Oct 2021 02:09:33 -0700 (PDT)
+Received: from mail-wr1-x42f.google.com (mail-wr1-x42f.google.com
+ [IPv6:2a00:1450:4864:20::42f])
+ by smtp3.osuosl.org (Postfix) with ESMTPS id 4F58C607A1
+ for <iommu@lists.linux-foundation.org>; Mon, 11 Oct 2021 09:16:56 +0000 (UTC)
+Received: by mail-wr1-x42f.google.com with SMTP id t2so53905181wrb.8
+ for <iommu@lists.linux-foundation.org>; Mon, 11 Oct 2021 02:16:56 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linaro.org; s=google;
- h=mime-version:references:in-reply-to:from:date:message-id:subject:to
- :cc; bh=mmIaLKrbsPcdQfNFBZqmZSPhrHWq8Kaob/N8FHo8Fls=;
- b=bngqbi74I3OBcqTY+RIZ8kWeuOyHiNmThFK5GldqFngvi3XfTkB/kMa4N7aEWxGf4C
- kmh669p4sU54vplIHzevZ6ejfSTv8hQ21EVKnM3Jwjd1juoNN9ok18sOGEGqKGm5O9aH
- yhIP76S1l/RUi3QUGSxRbqeKPvS+o6qroqohq5p8ltaBoa+yfGFdtK5ZE3EMpU4WKzMe
- CJMphtVwLtgfuCENg9doUy6BDJckfpz3LduUs/nX7anoP4IElpegKccrPUZlfiuoxQCR
- waBzIhbVBdiKwgqZ5Bw+t2UKyjagxdCSTYIJcAMPGNUOLWOYTDu/jgsdMw45ow121n44
- 6s+g==
+ h=date:from:to:cc:subject:message-id:references:mime-version
+ :content-disposition:in-reply-to;
+ bh=0nkxjPYEpK6G/BSPxshK+If3Vx5Dign77+8NPOgdp5A=;
+ b=o5bhT6O7zjOThtxY/SJmo4tsUFG2/zdzUm67PXqH2uM3Esme6jlzv21/ETV6z4c7RR
+ wzk8ZM9TcGX+XY6xe2WX3EPIG5a8uot5ytWGlgBDE+cXGvtHArsho3kAovfIYHDvBBMT
+ EmqoNKrLNr5HvSpSfSUoAD+YZa/+XjXLE7bIok+S+QqWx699qRA/778xoMcmdT8TNzQi
+ 9+Ed+xbGf0D/DcsbK7tM/jj8umMxvEla2ovIJULkjMPNVZ9uo1HYBO0KieMZguX13pfQ
+ xNVC1AxlTATx4mu/mfVe6OYfPdJ3kiaOfm6cOUOakTMFchkCtVp7AKjIxMPCOlagfxXg
+ 7LWg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
  d=1e100.net; s=20210112;
- h=x-gm-message-state:mime-version:references:in-reply-to:from:date
- :message-id:subject:to:cc;
- bh=mmIaLKrbsPcdQfNFBZqmZSPhrHWq8Kaob/N8FHo8Fls=;
- b=SQhkbArF/Ce1lZ2R6fa4idOXWH0LV6K/EBQJeMOfQAjUZsZ8fw4PRsXxZMxXC7BA9c
- YJc/8tbfEZCgfJLAodVme5KKFIplVmif6kFLiKikHhsq+M7Qbf8tpiFINqccyHyy4G0q
- qA9rFTZJCvL9lIn8OnMHQvgFeaXkyuSNCStcScV2j9xy8t19MIlK1mKbARUFyne9UZtR
- Dt6wlWDKhR5coqzsUTIFY1wYFdHWBkSwlbJZvfDgxs//o/XGfeivIH/Kd9IPFnyt+/n/
- uHMaaDRSO3GlMUyp1bBMys0Lqi1ADnpqcKODla7ibAp3o7lj0nYk+9jPte/pHrfWibCj
- o/mw==
-X-Gm-Message-State: AOAM530Z4Wna0srtbK8M7XdFLk2nopzGb19EOgriSz1mhN+FhE8kjx+G
- FQ5GtZp8Zif0BQKPWTY32VaxVhEQRQRtxgZ/YxzxtA==
-X-Google-Smtp-Source: ABdhPJzCAxoh0kT9ewt0cklMxy0VT0v9K2ZuPa0Z4w1Vsd8VSQc2Y+VzTMDaIihHeM05/lPiH0fVvh6FpbA5nCRCiuM=
-X-Received: by 2002:a37:bac6:: with SMTP id
- k189mr13621788qkf.186.1633943372114; 
- Mon, 11 Oct 2021 02:09:32 -0700 (PDT)
+ h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+ :mime-version:content-disposition:in-reply-to;
+ bh=0nkxjPYEpK6G/BSPxshK+If3Vx5Dign77+8NPOgdp5A=;
+ b=czpw4fOFNfhG9Hj+ybUw0nb6HCec51PaL0ETnly8uXE0DdnBCZyF/ZrfmujQyJckER
+ DhxwEMRjL8kIQZKFS+B8/9sVhBVv1wzT4tQVf3JiAo6n3QKskSJUTDcWB7xiFrLtwJHq
+ k7AWmxS184OrdvZQBeYm8gZHqRPPEVrWBlDLkTBy9iwoNukEJcUHoogYgJDUfuyLlBK2
+ 2F8TKBgpND7c8b+vKPXs/LePzw9EpaZlwefUFJYSWHPW/WPHcDT+Nnehegnei1xsuwHK
+ A0DyxF24CfR79u6T4c4cTeveNg4RCjZ6eMzjGuiPbrwSDWoI7lndB0JcTvmzoJM06II+
+ Jtdg==
+X-Gm-Message-State: AOAM531RhcFBKT1ZV31tf7ov8KuQvM2qu9oseQyYLO5YpBJPkZzzRL7r
+ CntS1MojGym9ENuCi16uoK3TXg==
+X-Google-Smtp-Source: ABdhPJzmZPpxlzZgyZ5KgwS2WYv6prD2WVEkkWH0I0HXdlYIksxaPY0vrb+dREOxa4LLg5+rfZGlMQ==
+X-Received: by 2002:adf:bb8d:: with SMTP id q13mr23299307wrg.327.1633943814314; 
+ Mon, 11 Oct 2021 02:16:54 -0700 (PDT)
+Received: from myrica (cpc92880-cmbg19-2-0-cust679.5-4.cable.virginm.net.
+ [82.27.106.168])
+ by smtp.gmail.com with ESMTPSA id v185sm15278013wme.35.2021.10.11.02.16.53
+ (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+ Mon, 11 Oct 2021 02:16:53 -0700 (PDT)
+Date: Mon, 11 Oct 2021 10:16:32 +0100
+From: Jean-Philippe Brucker <jean-philippe@linaro.org>
+To: Vivek Gautam <vivek.gautam@arm.com>
+Subject: Re: [PATCH RFC v1 03/11] iommu/virtio: Handle incoming page faults
+Message-ID: <YWQA8JLXfmQ4DMXv@myrica>
+References: <20210423095147.27922-1-vivek.gautam@arm.com>
+ <20210423095147.27922-4-vivek.gautam@arm.com>
+ <YUoCTV6WYxxE10qj@myrica>
+ <CAFp+6iEM7K8YOnQ4vSNoM+HuHQ-7pr=G3aui-77dGipyJ0+RjQ@mail.gmail.com>
 MIME-Version: 1.0
-References: <20211010023350.978638-1-dmitry.baryshkov@linaro.org>
- <YWJpJnaQ2Nr4PUwr@yoga>
- <CAK8P3a3irqEVH2e9wCK4MSSBKRW-n8pFSzYBks9ri-hepewkUw@mail.gmail.com>
- <CAA8EJpoD4Th1tdwYQLnZur2oA0xX0LojSrNFLyJqdi6+rnB3YQ@mail.gmail.com>
- <CAK8P3a3JwQP1b0KeLRN0UCMmzFn3+gY2oexYUwGyt2bOqC0P4A@mail.gmail.com>
-In-Reply-To: <CAK8P3a3JwQP1b0KeLRN0UCMmzFn3+gY2oexYUwGyt2bOqC0P4A@mail.gmail.com>
-From: Dmitry Baryshkov <dmitry.baryshkov@linaro.org>
-Date: Mon, 11 Oct 2021 12:09:21 +0300
-Message-ID: <CAA8EJppAx_bweNhQuQuA5pQkWpyvtYNqttL-fiKgqpJpRqHMKw@mail.gmail.com>
-Subject: Re: [PATCH] iommu: fix ARM_SMMU vs QCOM_SCM compilation
-To: Arnd Bergmann <arnd@arndb.de>
-Cc: Will Deacon <will@kernel.org>, Daniel Lezcano <daniel.lezcano@linaro.org>,
- Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
- "open list:IOMMU DRIVERS" <iommu@lists.linux-foundation.org>,
- Andy Gross <agross@kernel.org>,
- Linux ARM <linux-arm-kernel@lists.infradead.org>,
- linux-arm-msm <linux-arm-msm@vger.kernel.org>,
- Thierry Reding <treding@nvidia.com>, Robin Murphy <robin.murphy@arm.com>,
- Kalle Valo <kvalo@codeaurora.org>
+Content-Disposition: inline
+In-Reply-To: <CAFp+6iEM7K8YOnQ4vSNoM+HuHQ-7pr=G3aui-77dGipyJ0+RjQ@mail.gmail.com>
+Cc: "Tian, Kevin" <kevin.tian@intel.com>, mst@redhat.com,
+ Will Deacon <will.deacon@arm.com>, open list <linux-kernel@vger.kernel.org>,
+ virtualization@lists.linux-foundation.org,
+ "list@263.net:IOMMU DRIVERS <iommu@lists.linux-foundation.org>,
+ Joerg Roedel <joro@8bytes.org>, " <iommu@lists.linux-foundation.org>,
+ Robin Murphy <robin.murphy@arm.com>,
+ Linux ARM <linux-arm-kernel@lists.infradead.org>
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -108,54 +112,57 @@ Content-Transfer-Encoding: 7bit
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-On Mon, 11 Oct 2021 at 09:09, Arnd Bergmann <arnd@arndb.de> wrote:
->
-> On Mon, Oct 11, 2021 at 6:11 AM Dmitry Baryshkov
-> <dmitry.baryshkov@linaro.org> wrote:
-> > On Sun, 10 Oct 2021 at 20:42, Arnd Bergmann <arnd@arndb.de> wrote:
-> >
-> > The patch seems correct, but it becomes overcomplicated. What about:
-> > - restoring QCOM_SCM stubs
->
-> The stubs are what has led to the previous bugs in this area to often
-> go unnoticed for too long, as illustrated by your suggestion
->
-> > - making ARM_SMMU select QCOM_SCM if ARM_SMMU_QCOM
->
-> I assume you meant "select QCOM_SCM if ARCH_QCOM",
-> after we stop using ARM_SMMU_QCOM?
->
-> > This would have almost the same result as with your patch, but without
-> > extra ARM_SMMU_QCOM Kconfig symbol.
->
-> The "almost" is the problem: consider the case of
->
-> CONFIG_ARM=y
-> CONFIG_COMPILE_TEST=y
-> CONFIG_ARCH_QCOM=n
-> CONFIG_ARM_SMMU=y
-> CONFIG_DRM_MSM=m
-> CONFIG_QCOM_SCM=m (selected by DRM_MSM)
->
-> The stubs here lead to ARM_SMMU linking against the QCOM_SCM
-> driver from built-in code, which fails because QCOM_SCM itself
-> is a loadable module.
+Hi Vivek,
 
-I see. The idealist in me wishes to change my suggestion to
-'select QCOM_SCM if ARCH_QCOM || COMPILE_TEST'
-but I have the subtle feeling that this also might fail somehow.
+On Mon, Oct 11, 2021 at 01:41:15PM +0530, Vivek Gautam wrote:
+> > > +     list_for_each_entry(ep, &viommu->endpoints, list) {
+> > > +             if (ep->eid == endpoint) {
+> > > +                     vdev = ep->vdev;
+> 
+> I have a question here though -
+> Is endpoint-ID unique across all the endpoints available per 'viommu_dev' or
+> per 'viommu_domain'?
+> If it is per 'viommu_domain' then the above list is also incorrect.
+> As you pointed to in the patch [1] -
+> [PATCH RFC v1 02/11] iommu/virtio: Maintain a list of endpoints served
+> by viommu_dev
+> I am planning to add endpoint ID into a static global xarray in
+> viommu_probe_device() as below:
+> 
+>         vdev_for_each_id(i, eid, vdev) {
+>                 ret = xa_insert(&viommu_ep_ids, eid, vdev, GFP_KERNEL);
+>                 if (ret)
+>                         goto err_free_dev;
+>         }
+> 
+> and replace the above list traversal as below:
+> 
+>                 xa_lock_irqsave(&viommu_ep_ids, flags);
+>                 xa_for_each(&viommu_ep_ids, eid, vdev) {
+>                         if (eid == endpoint) {
+>                                 ret =
+> iommu_report_device_fault(vdev->dev, &fault_evt);
+>                                 if (ret)
+>                                         dev_err(vdev->dev, "Couldn't
+> handle page request\n");
+>                         }
+>                 }
+>                 xa_unlock_irqrestore(&viommu_ep_ids, flags);
+> 
+> But using a global xarray would also be incorrect if the endpointsID are global
+> across 'viommu_domain'.
+> 
+> I need to find the correct 'viommu_endpoint' to call iommu_report_device_fault()
+> with the correct device.
 
->
-> We can move the "select QCOM_SCM" in the ARM_SMMU_QCOM
-> symbol if we make that a tristate though, if you want to separate it
-> a little more.
+The endpoint IDs are only unique across viommu_dev, so a global xarray
+wouldn't work but one in viommu_dev would. In vdomain it doesn't work
+either because we can't get to the domain from the fault handler without
+first finding the endpoint
 
-This would complicate things a bit, as we would no longer be able to
-use 'arm-smmu-$(CONFIG_ARM_SMMU_QCOM) +=' construct.
+Thanks,
+Jean
 
--- 
-With best wishes
-Dmitry
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
