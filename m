@@ -1,150 +1,101 @@
-Return-Path: <SRS0=5Hhm=O7=lists.linux-foundation.org=iommu-bounces@kernel.org>
+Return-Path: <SRS0=nyYM=PA=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 47C1BC433EF
-	for <iommu@archiver.kernel.org>; Mon, 11 Oct 2021 23:38:27 +0000 (UTC)
-Received: from smtp1.osuosl.org (smtp1.osuosl.org [140.211.166.138])
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B3A5FC433FE
+	for <iommu@archiver.kernel.org>; Tue, 12 Oct 2021 03:11:40 +0000 (UTC)
+Received: from smtp4.osuosl.org (smtp4.osuosl.org [140.211.166.137])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id C982960F22
-	for <iommu@archiver.kernel.org>; Mon, 11 Oct 2021 23:38:26 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.4.1 mail.kernel.org C982960F22
-Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=lists.linux-foundation.org
+	by mail.kernel.org (Postfix) with ESMTPS id 49DDA608FE
+	for <iommu@archiver.kernel.org>; Tue, 12 Oct 2021 03:11:40 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.4.1 mail.kernel.org 49DDA608FE
+Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=linaro.org
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by smtp1.osuosl.org (Postfix) with ESMTP id 7CF6880FDD;
-	Mon, 11 Oct 2021 23:38:26 +0000 (UTC)
+	by smtp4.osuosl.org (Postfix) with ESMTP id 03EB9402A8;
+	Tue, 12 Oct 2021 03:11:40 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from smtp1.osuosl.org ([127.0.0.1])
-	by localhost (smtp1.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id cBJh1CHAvgD4; Mon, 11 Oct 2021 23:38:25 +0000 (UTC)
-Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [IPv6:2605:bc80:3010:104::8cd3:938])
-	by smtp1.osuosl.org (Postfix) with ESMTPS id 6020E80FD8;
-	Mon, 11 Oct 2021 23:38:25 +0000 (UTC)
+Received: from smtp4.osuosl.org ([127.0.0.1])
+	by localhost (smtp4.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+	with ESMTP id RwkMEMxqdfqk; Tue, 12 Oct 2021 03:11:39 +0000 (UTC)
+Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
+	by smtp4.osuosl.org (Postfix) with ESMTPS id 769CB402A4;
+	Tue, 12 Oct 2021 03:11:38 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 0F5FEC000F;
-	Mon, 11 Oct 2021 23:38:25 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 3C8C2C000F;
+	Tue, 12 Oct 2021 03:11:38 +0000 (UTC)
 Received: from smtp2.osuosl.org (smtp2.osuosl.org [IPv6:2605:bc80:3010::133])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 94069C000D
- for <iommu@lists.linux-foundation.org>; Mon, 11 Oct 2021 23:38:23 +0000 (UTC)
+ by lists.linuxfoundation.org (Postfix) with ESMTP id B7635C000D
+ for <iommu@lists.linux-foundation.org>; Tue, 12 Oct 2021 03:11:36 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by smtp2.osuosl.org (Postfix) with ESMTP id 65C69401AE
- for <iommu@lists.linux-foundation.org>; Mon, 11 Oct 2021 23:38:23 +0000 (UTC)
+ by smtp2.osuosl.org (Postfix) with ESMTP id 9716F401AE
+ for <iommu@lists.linux-foundation.org>; Tue, 12 Oct 2021 03:11:36 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
 Authentication-Results: smtp2.osuosl.org (amavisd-new);
- dkim=pass (2048-bit key) header.d=nvidia.com
+ dkim=pass (2048-bit key) header.d=linaro.org
 Received: from smtp2.osuosl.org ([127.0.0.1])
  by localhost (smtp2.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id ktSeqRBwQK6q for <iommu@lists.linux-foundation.org>;
- Mon, 11 Oct 2021 23:38:22 +0000 (UTC)
+ with ESMTP id vZuv0S3JwZek for <iommu@lists.linux-foundation.org>;
+ Tue, 12 Oct 2021 03:11:35 +0000 (UTC)
 X-Greylist: whitelisted by SQLgrey-1.8.0
-Received: from NAM12-MW2-obe.outbound.protection.outlook.com
- (mail-mw2nam12on2071.outbound.protection.outlook.com [40.107.244.71])
- by smtp2.osuosl.org (Postfix) with ESMTPS id F17D340109
- for <iommu@lists.linux-foundation.org>; Mon, 11 Oct 2021 23:38:21 +0000 (UTC)
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=PKFIRfpskXVUyc/V0p3xlV1eFuTfzLklNkZBjtSfSrL4p8AiEMOiULBNogCR6+1Q/VyIq5kKAaWbw71IFgRcbkbkxpLtybHpq2rWnlgllN0g79v2FQR30sYhLyyGoaEdz2BZx+WtZKxH24Qg59+Knj202wPORGZ16LBw53ZmlphCYyWqBOdQsLIecYjSjEWdt1z4IZMic2NsG11At02gsAXV/KfX85X7gfa6nVJTBVkjvSsFVM+gjNmF/tvkZJYZOq+mTR1jrZuVeaY8pJV7XUxsd9tWjtu/6J1yo2iGCPiZzLIb8UYwWdM4pf+12dawZD1kC1SeLWKsbipdZTjzig==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com; 
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=UKDRZik7goDCVADuC1h4MTS/WwzO6U5QM880owsp+Yw=;
- b=YI21aNaAR/iBUmD2FZUKRw0wkEjtypK2QMiUw9FOgTZb6Hm/E5WSOcYNwHwIcdBP/tbUbz8+oVV85GDSnMQZrU6uJo4ZGMdaTb4kbezyK6yrPIuGaAmTiES8mpi31qHbq7xHnMTgPbgkGtbmp/mHJufgAogB8soMRVgsGW64VOJza6DRgpELKRPDYjjRXqWLRBf7QKl5j8w/Ns9zH94AeE/ogp+fd8ogjvU72pJHPt8cff1oWxWGPfWKetdf6HLzHfawBiPbb3qwtW8MBMRGMjADXdZSzbmJFnhktnw9/2hfMX1yusje7jc2mr+2nZLTaJrCPIJa/KXLj73HdKY4oA==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=nvidia.com; dmarc=pass action=none header.from=nvidia.com;
- dkim=pass header.d=nvidia.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
- s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=UKDRZik7goDCVADuC1h4MTS/WwzO6U5QM880owsp+Yw=;
- b=PLEPghsmVjbOiUYhsN4I23cm8jK6Ml3FMoKxklYZm1efnbDgfydSKv5Tgsw8CqxriM/OGhzGavyrQk9G2eZSKW2nPRyTryFt12mPB5j7smsCA3DlowkRP632pJFOswkXvbBZOsxjALMkRUxseXFefeYP50ZtpZQd9BLPEu44XZibHHMk+NEGMP+Y0m+tnieLXc1cwkBZlC/6J5NGAyjcu5xAfx7Lvn6hf8KrIGdUItzDTB3ZDWQAv659cx3SzE0xWmM+mqk/tp5a1vNRyPVTK1sggGCPdSe0b3PKY+62wlU+8XPUdypTj3+OSp73b1uKDNjR/mgySAg5mJxiadOChQ==
-Authentication-Results: linaro.org; dkim=none (message not signed)
- header.d=none;linaro.org; dmarc=none action=none header.from=nvidia.com;
-Received: from BL0PR12MB5506.namprd12.prod.outlook.com (2603:10b6:208:1cb::22)
- by BL1PR12MB5304.namprd12.prod.outlook.com (2603:10b6:208:314::13)
- with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4587.18; Mon, 11 Oct
- 2021 23:38:19 +0000
-Received: from BL0PR12MB5506.namprd12.prod.outlook.com
- ([fe80::e8af:232:915e:2f95]) by BL0PR12MB5506.namprd12.prod.outlook.com
- ([fe80::e8af:232:915e:2f95%7]) with mapi id 15.20.4587.026; Mon, 11 Oct 2021
- 23:38:19 +0000
-Date: Mon, 11 Oct 2021 20:38:17 -0300
-To: Jean-Philippe Brucker <jean-philippe@linaro.org>
-Subject: Re: [RFC 11/20] iommu/iommufd: Add IOMMU_IOASID_ALLOC/FREE
-Message-ID: <20211011233817.GS2744544@nvidia.com>
-References: <20210919063848.1476776-1-yi.l.liu@intel.com>
- <20210919063848.1476776-12-yi.l.liu@intel.com>
- <20210921174438.GW327412@nvidia.com> <YVanJqG2pt6g+ROL@yekko>
- <20211001122225.GK964074@nvidia.com> <YWPTWdHhoI4k0Ksc@yekko>
- <YWP6tblC2+/2RQtN@myrica>
-Content-Disposition: inline
-In-Reply-To: <YWP6tblC2+/2RQtN@myrica>
-X-ClientProxiedBy: MN2PR04CA0006.namprd04.prod.outlook.com
- (2603:10b6:208:d4::19) To BL0PR12MB5506.namprd12.prod.outlook.com
- (2603:10b6:208:1cb::22)
+Received: from mail-lf1-x12c.google.com (mail-lf1-x12c.google.com
+ [IPv6:2a00:1450:4864:20::12c])
+ by smtp2.osuosl.org (Postfix) with ESMTPS id 353C940172
+ for <iommu@lists.linux-foundation.org>; Tue, 12 Oct 2021 03:11:35 +0000 (UTC)
+Received: by mail-lf1-x12c.google.com with SMTP id x27so81823494lfu.5
+ for <iommu@lists.linux-foundation.org>; Mon, 11 Oct 2021 20:11:35 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linaro.org; s=google;
+ h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+ :cc; bh=w2FJM5xq0hHLOwYkxQq9HjtkvFRksFK+c9CUBnhMlUA=;
+ b=ECxgpBAgFN57M9Muv6HgPW+2gsbKzFTgbdkbk/wcoXHhkLozGpRLLlOMDYegVvygHN
+ 2py0lXASeUR5ykVbr81UL/hPafzHt+NJHhyIvmIYcmytMQ6GdAJ8dUABYBTqcJvXUoDk
+ df377gxkJR4hl2XnoHq6H5fg1PhPosrjlO+vw06vz95++L7FV4HiYbwq2J1WFfNnN/jf
+ Mx2ogkRKfRgA5smJ82Ca1+NvpsHAbDGCT+LpTXs64ymH6okmPAuVxvDsTmmJO9KVLgUG
+ pZxdks765lI2PhK8KGoyJxBi3yRR/GHoeDDoq3qeWcq50tyooD3LpiVGlx8t8P9OlzUu
+ Hbhg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+ d=1e100.net; s=20210112;
+ h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+ :message-id:subject:to:cc;
+ bh=w2FJM5xq0hHLOwYkxQq9HjtkvFRksFK+c9CUBnhMlUA=;
+ b=UmdRd8gyjwAGuE0yOJRYZUWoBgBO2L6VkHulfUuLfRfjYxqrVC9Yv/8WDGcm+Tgwyc
+ W29iVi9uR6S1CQlh7zu7v03OAOyCa0+mOtMgtyJNe18owITrRkmMZOBTFQVJW9joIiBd
+ ULbBxeubfHZOjjOZYy5zQniVavEJa6n8V6s/ativl2bShClvqMS9w5aB7BOI+Xd0/MBD
+ HWQVIJ2/pbyHMn3MPUr7JP7WqfT/oMFXIRl9/vo/aCxocoaIYy6eCx5r3g9Cho+3gDHO
+ io2OsorOM8q8IBAOq9qnNej7zLaoDXTp5GfkeStZOmq2HYoPK8D6bc9b6PHb0I3WWg37
+ DR9w==
+X-Gm-Message-State: AOAM533WsEGs/oRKWrqqgOGnvPGsJWHzo6TNR4qA6KMxCJCMpC6lDb0O
+ 0hcWW+DjCkhjOtlX7/Ukyy4wcL0GgUWFzQkjcobrYA==
+X-Google-Smtp-Source: ABdhPJyrNsMKS3+CiKmx5Tie0/Y10h5OgwLQcjWxqMC9cxgYiRdOXIj2B1esdvuIxFjjlUZ3q1gGQg9rDQ/7FbCROq4=
+X-Received: by 2002:a05:651c:b21:: with SMTP id
+ b33mr25766490ljr.515.1634008293091; 
+ Mon, 11 Oct 2021 20:11:33 -0700 (PDT)
 MIME-Version: 1.0
-Received: from mlx.ziepe.ca (142.162.113.129) by
- MN2PR04CA0006.namprd04.prod.outlook.com (2603:10b6:208:d4::19) with Microsoft
- SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.20.4587.19 via Frontend Transport; Mon, 11 Oct 2021 23:38:19 +0000
-Received: from jgg by mlx with local (Exim 4.94)	(envelope-from
- <jgg@nvidia.com>)	id 1ma4s6-00DkFs-0J; Mon, 11 Oct 2021 20:38:18 -0300
-X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: a5389f93-f076-40b2-eddc-08d98d10348a
-X-MS-TrafficTypeDiagnostic: BL1PR12MB5304:
-X-MS-Exchange-Transport-Forked: True
-X-Microsoft-Antispam-PRVS: <BL1PR12MB5304477DB10F24B952CFBB00C2B59@BL1PR12MB5304.namprd12.prod.outlook.com>
-X-MS-Oob-TLC-OOBClassifiers: OLM:8273;
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: /l4hOpEr5IPxfW4YSkQ5cfqg8WTHWJjJjkExNBWdGStfaPNCygxFkBYTEUed2cgueJdcEtTBCg0VJBBGk28Y8FIPFCxoCcNst3dbJlPN3XrK3CsmZSJI/30pjXTE4OY1R7fHqazH8g7d56++9olcTEcDG+m/SQZFFn9aAtSNjWvEQJhDcBfcerlOh75mdEkMoNaZjiT3qyJkBE/p0JOSx52uKXk7U9MXurftYBTXRMD6B/LSUxatGrnZ3/Zc7d/krC5MQsdbxwthHAESBbAYlHuxSQt1gtwaXRCkrqlTyWgz9iRaiCD/hmNAi1Ciw/9FCBxVv6a9u1uuOvF394BOxGWasZ3uefB85BkLpjDJ9vKgRFLdf1Qc/CiePO52Q59xRjX1O689HnsdmZgtqNZOrZWyLm2cbMfA5rAviUZsBq/avg7998yjL1Oh9btBXagvyh0hwepMzGCEuQCgvByOg2klR1M9+Zq6DAq8DCy9Q7DttPpAnnxtmKSNvwtoCrJOX6jpvyNHodbruQUZ2v2VVxsJABTer3tof/nIg6HohHWL6bKyDLzh/PfcPWcX7gciHkPsylJiKLlTgQE6em3vsSBl/3DulYeJlU7mL7T9p0cqtx8wYTU7a4Q0R4Y8eG4YIM70ssduHKuNyKwGEQ9KZTOHSe2svNesoMos5zpB9GWUjsY3VJ047Gy4hsTwuVNc0n+xQDaI00lVcMBLlhiwtA==
-X-Forefront-Antispam-Report: CIP:255.255.255.255; CTRY:; LANG:en; SCL:1; SRV:;
- IPV:NLI; SFV:NSPM; H:BL0PR12MB5506.namprd12.prod.outlook.com; PTR:; CAT:NONE;
- SFS:(4636009)(366004)(6916009)(66946007)(2906002)(508600001)(1076003)(66476007)(9746002)(9786002)(38100700002)(66556008)(33656002)(4744005)(316002)(2616005)(26005)(8936002)(5660300002)(4326008)(86362001)(186003)(107886003)(36756003)(7416002)(426003)(8676002)(83380400001)(54906003)(84603001);
- DIR:OUT; SFP:1101; 
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?f3SZYwr36k9KOjsbESUNqTCSos//S3NJNKlNqhOmJiCQmUag7zbGlHEuVHb7?=
- =?us-ascii?Q?DkTby/2FkqEBUzZHgyAcjtvRPIghwUgz0btr80qac8JhjzB3qsOn5NVJrns2?=
- =?us-ascii?Q?NH9Jp60/rmMlqh2tZoAWom9PUYuWYhDTIMTQBxOIz9o8ouWa84j8la0S6HNc?=
- =?us-ascii?Q?quxZZCXHfqL9csbQNNFGcXCbrkM8+Wkq8jR8ElXJfeR1YxSkws6PentxgQEJ?=
- =?us-ascii?Q?Z6gvqwcdUs8Jxr0rrnUwI6WvygwZuX9mm/vo5jpD42w/GN7H0P5MVECWMVBN?=
- =?us-ascii?Q?9qq+G2wqfBtoiaiTa65Ksdw/Q5nqjcspz/h0t877yLl7AVrnVOqzeZA3eiQs?=
- =?us-ascii?Q?puH+kTWadzI0Ly3XG8W9ev8rbQZr9ERS8dVWgiSHUWj1yCXnNdbdWaon5kTz?=
- =?us-ascii?Q?9Pe0BVdsvYLKOXn2mhrerrhcK37YOAQGCx492wo/OzXxbFLuVnbEypVtKdKe?=
- =?us-ascii?Q?PtJWUkqH4DnsvdQlkdjSnmfyOGvmbC2kqurLbc9U+Xjd4RI+yw/unFX6g1V+?=
- =?us-ascii?Q?UTjLTWgHWJpBBlmoREz5CExg7uu1RxScrpXwh8YAVNoQlW0DmyQvjd3svkor?=
- =?us-ascii?Q?ar11rJnken+7A2+dCd3qFB4v/iCIWXVL0bY8wXY/8QTkEc09Tf0hGfXa7ggL?=
- =?us-ascii?Q?eeaurQ+szsYLeMyVdZhh8+Hka9TuRB290lR7EiGC2f6/NWY8b0Yvsj4ESdGo?=
- =?us-ascii?Q?Mf2dKAdVn8EgUF+tfUSbcuqRn2f7RgLI8U3h27SvQkvDUJyZH7aVXRZy3Avf?=
- =?us-ascii?Q?+ixwOTlajOOZAJwXUcr2YiRFJeGC5HaI+1mQBSGQYOOZyKaIZNg6yBeMtwsu?=
- =?us-ascii?Q?nYoH9bKrnK6IZbcUt5pyofQR0VeQy04kS0YtBK123fQ6owSvDKQQpttrii6G?=
- =?us-ascii?Q?xTlc9nSmgvu7cVbOZRzaPkf6e9Gf/VV3AUjg34qDc3PSgFCeipXFOsM0cdO0?=
- =?us-ascii?Q?hkRYnLQDbXAysFD64K7aqDiwgqX/5fEc3AS7k/lH5AMDmdNt07wqHj4CRVJt?=
- =?us-ascii?Q?QbUj1/1aB/B/hh021iqzK5stssWuedm80bq+Si83UQWE8/hLJSshuJMPoNU1?=
- =?us-ascii?Q?zeqidrXXe8MnaQDBhAvhvDuLZwdqQK6oTW3Uy//Av90LjfZNvTogROv2HAim?=
- =?us-ascii?Q?kMsZqTYlhpKJSkpJ21Mmu2biDbNQm/TybQOL1TNCFVxPJKQteeGH79QGPSaw?=
- =?us-ascii?Q?vZZLDvAy+gBEHfPqHSq5TXQeVOB1BiA98uiYRdZW0hj59W6OScfXmtIZqcNe?=
- =?us-ascii?Q?13rdMW5YiNM42GT/PKy0Kyu9h4Y8IDqq1La9lluiRbkP+zFwDFrv1UqtEbYC?=
- =?us-ascii?Q?2USjwUGesEcSQbNvvQAYjSKs?=
-X-OriginatorOrg: Nvidia.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: a5389f93-f076-40b2-eddc-08d98d10348a
-X-MS-Exchange-CrossTenant-AuthSource: BL0PR12MB5506.namprd12.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 11 Oct 2021 23:38:19.2707 (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: ArP/7uZjlF/koGMR7j/RTLIhX6G/6gSG4V7lGgsrglEb7aFpHSwnui/vkAxUI23P
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: BL1PR12MB5304
-Cc: kvm@vger.kernel.org, jasowang@redhat.com, kwankhede@nvidia.com, hch@lst.de,
- dave.jiang@intel.com, ashok.raj@intel.com, corbet@lwn.net,
- kevin.tian@intel.com, parav@mellanox.com, alex.williamson@redhat.com,
- lkml@metux.net, David Gibson <david@gibson.dropbear.id.au>,
- dwmw2@infradead.org, jun.j.tian@intel.com, linux-kernel@vger.kernel.org,
- lushenming@huawei.com, iommu@lists.linux-foundation.org, pbonzini@redhat.com,
- robin.murphy@arm.com
+References: <20211007151010.333516-1-arnd@kernel.org>
+ <20211007151010.333516-2-arnd@kernel.org>
+In-Reply-To: <20211007151010.333516-2-arnd@kernel.org>
+From: John Stultz <john.stultz@linaro.org>
+Date: Mon, 11 Oct 2021 20:11:20 -0700
+Message-ID: <CALAqxLVVEi67HQbjCSvfDPmfjeeZ4ROvqa8yfYMnRmeyi34Ddw@mail.gmail.com>
+Subject: Re: [PATCH v2 2/2] qcom_scm: hide Kconfig symbol
+To: Arnd Bergmann <arnd@kernel.org>,
+ Bjorn Andersson <bjorn.andersson@linaro.org>
+Cc: Amit Pundir <amit.pundir@linaro.org>, linux-wireless@vger.kernel.org,
+ Caleb Connolly <caleb.connolly@linaro.org>, linux-ia64@vger.kernel.org,
+ Arnd Bergmann <arnd@arndb.de>, linux-parisc@vger.kernel.org,
+ linux-arm-msm <linux-arm-msm@vger.kernel.org>, Alex Elder <elder@linaro.org>,
+ linux-mmc <linux-mmc@vger.kernel.org>, lkml <linux-kernel@vger.kernel.org>,
+ dri-devel <dri-devel@lists.freedesktop.org>, linux-mips@vger.kernel.org,
+ Kalle Valo <kvalo@codeaurora.org>,
+ "open list:GPIO SUBSYSTEM" <linux-gpio@vger.kernel.org>,
+ "list@263.net:IOMMU DRIVERS <iommu@lists.linux-foundation.org>,
+ Joerg Roedel <joro@8bytes.org>, " <iommu@lists.linux-foundation.org>,
+ ath10k <ath10k@lists.infradead.org>,
+ Network Development <netdev@vger.kernel.org>, linux-riscv@lists.infradead.org,
+ "open list:DRM DRIVER FOR MSM ADRENO GPU" <freedreno@lists.freedesktop.org>,
+ linux-arm-kernel <linux-arm-kernel@lists.infradead.org>,
+ linux-media <linux-media@vger.kernel.org>
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -157,35 +108,103 @@ List-Post: <mailto:iommu@lists.linux-foundation.org>
 List-Help: <mailto:iommu-request@lists.linux-foundation.org?subject=help>
 List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
  <mailto:iommu-request@lists.linux-foundation.org?subject=subscribe>
-From: Jason Gunthorpe via iommu <iommu@lists.linux-foundation.org>
-Reply-To: Jason Gunthorpe <jgg@nvidia.com>
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-On Mon, Oct 11, 2021 at 09:49:57AM +0100, Jean-Philippe Brucker wrote:
+On Thu, Oct 7, 2021 at 8:10 AM Arnd Bergmann <arnd@kernel.org> wrote:
+>
+> From: Arnd Bergmann <arnd@arndb.de>
+>
+> Now that SCM can be a loadable module, we have to add another
+> dependency to avoid link failures when ipa or adreno-gpu are
+> built-in:
+>
+> aarch64-linux-ld: drivers/net/ipa/ipa_main.o: in function `ipa_probe':
+> ipa_main.c:(.text+0xfc4): undefined reference to `qcom_scm_is_available'
+>
+> ld.lld: error: undefined symbol: qcom_scm_is_available
+> >>> referenced by adreno_gpu.c
+> >>>               gpu/drm/msm/adreno/adreno_gpu.o:(adreno_zap_shader_load) in archive drivers/built-in.a
+>
+> This can happen when CONFIG_ARCH_QCOM is disabled and we don't select
+> QCOM_MDT_LOADER, but some other module selects QCOM_SCM. Ideally we'd
+> use a similar dependency here to what we have for QCOM_RPROC_COMMON,
+> but that causes dependency loops from other things selecting QCOM_SCM.
+>
+> This appears to be an endless problem, so try something different this
+> time:
+>
+>  - CONFIG_QCOM_SCM becomes a hidden symbol that nothing 'depends on'
+>    but that is simply selected by all of its users
+>
+>  - All the stubs in include/linux/qcom_scm.h can go away
+>
+>  - arm-smccc.h needs to provide a stub for __arm_smccc_smc() to
+>    allow compile-testing QCOM_SCM on all architectures.
+>
+>  - To avoid a circular dependency chain involving RESET_CONTROLLER
+>    and PINCTRL_SUNXI, drop the 'select RESET_CONTROLLER' statement.
+>    According to my testing this still builds fine, and the QCOM
+>    platform selects this symbol already.
+>
+> Acked-by: Kalle Valo <kvalo@codeaurora.org>
+> Acked-by: Alex Elder <elder@linaro.org>
+> Signed-off-by: Arnd Bergmann <arnd@arndb.de>
+> ---
+> Changes in v2:
+> - fix the iommu dependencies
 
-> Seems like we don't need the negotiation part?  The host kernel
-> communicates available IOVA ranges to userspace including holes (patch
-> 17), and userspace can check that the ranges it needs are within the IOVA
-> space boundaries. That part is necessary for DPDK as well since it needs
-> to know about holes in the IOVA space where DMA wouldn't work as expected
-> (MSI doorbells for example). 
+Hey Arnd,
+   Thanks again so much for working out these details. Also my
+apologies, as Bjorn asked for me to test this patch, but I wasn't able
+to get to it before it landed.  Unfortunately I've hit an issue that
+is keeping the db845c from booting with this.
 
-I haven't looked super closely at DPDK, but the other simple VFIO app
-I am aware of struggled to properly implement this semantic (Indeed it
-wasn't even clear to the author this was even needed).
+> diff --git a/drivers/iommu/arm/arm-smmu/Makefile b/drivers/iommu/arm/arm-smmu/Makefile
+> index e240a7bcf310..b0cc01aa20c9 100644
+> --- a/drivers/iommu/arm/arm-smmu/Makefile
+> +++ b/drivers/iommu/arm/arm-smmu/Makefile
+> @@ -1,4 +1,5 @@
+>  # SPDX-License-Identifier: GPL-2.0
+>  obj-$(CONFIG_QCOM_IOMMU) += qcom_iommu.o
+>  obj-$(CONFIG_ARM_SMMU) += arm_smmu.o
+> -arm_smmu-objs += arm-smmu.o arm-smmu-impl.o arm-smmu-nvidia.o arm-smmu-qcom.o
+> +arm_smmu-objs += arm-smmu.o arm-smmu-impl.o arm-smmu-nvidia.o
+> +arm_smmu-$(CONFIG_ARM_SMMU_QCOM) += arm-smmu-qcom.o
+> diff --git a/drivers/iommu/arm/arm-smmu/arm-smmu-impl.c b/drivers/iommu/arm/arm-smmu/arm-smmu-impl.c
+> index 9f465e146799..2c25cce38060 100644
+> --- a/drivers/iommu/arm/arm-smmu/arm-smmu-impl.c
+> +++ b/drivers/iommu/arm/arm-smmu/arm-smmu-impl.c
+> @@ -215,7 +215,8 @@ struct arm_smmu_device *arm_smmu_impl_init(struct arm_smmu_device *smmu)
+>             of_device_is_compatible(np, "nvidia,tegra186-smmu"))
+>                 return nvidia_smmu_impl_init(smmu);
+>
+> -       smmu = qcom_smmu_impl_init(smmu);
+> +       if (IS_ENABLED(CONFIG_ARM_SMMU_QCOM))
+> +               smmu = qcom_smmu_impl_init(smmu);
+>
+>         if (of_device_is_compatible(np, "marvell,ap806-smmu-500"))
+>                 smmu->impl = &mrvl_mmu500_impl;
 
-It requires interval tree logic inside the application which is not a
-trivial algorithm to implement in C.
 
-I do wonder if the "simple" interface should have an option more like
-the DMA API where userspace just asks to DMA map some user memory and
-gets back the dma_addr_t to use. Kernel manages the allocation
-space/etc.
+The problem with these two chunks is that there is currently no
+CONFIG_ARM_SMMU_QCOM option. :)
 
-Jason
+Was that something you intended to add in the patch?
+
+I'm working up a Kconfig patch to do so, so I'll send that out in a
+second here, but let me know if you already have that somewhere (I
+suspect you implemented it and just forgot to add the change to the
+commit), as I'm sure your Kconfig help text will be better than mine.
+:)
+
+Again, I'm so sorry I didn't get over to testing your patch before
+seeing this here!
+
+thanks
+-john
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
