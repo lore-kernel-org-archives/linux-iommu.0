@@ -2,92 +2,69 @@ Return-Path: <SRS0=nyYM=PA=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 75047C433F5
-	for <iommu@archiver.kernel.org>; Tue, 12 Oct 2021 03:36:08 +0000 (UTC)
-Received: from smtp4.osuosl.org (smtp4.osuosl.org [140.211.166.137])
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8A39AC433EF
+	for <iommu@archiver.kernel.org>; Tue, 12 Oct 2021 05:54:47 +0000 (UTC)
+Received: from smtp3.osuosl.org (smtp3.osuosl.org [140.211.166.136])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 1832E6101D
-	for <iommu@archiver.kernel.org>; Tue, 12 Oct 2021 03:36:08 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.4.1 mail.kernel.org 1832E6101D
-Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=linaro.org
+	by mail.kernel.org (Postfix) with ESMTPS id 2591360EDF
+	for <iommu@archiver.kernel.org>; Tue, 12 Oct 2021 05:54:47 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.4.1 mail.kernel.org 2591360EDF
+Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=effective-light.com
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by smtp4.osuosl.org (Postfix) with ESMTP id D28434043A;
-	Tue, 12 Oct 2021 03:36:07 +0000 (UTC)
+	by smtp3.osuosl.org (Postfix) with ESMTP id DE77260759;
+	Tue, 12 Oct 2021 05:54:46 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from smtp4.osuosl.org ([127.0.0.1])
-	by localhost (smtp4.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id tIIl9l_y3sRD; Tue, 12 Oct 2021 03:36:06 +0000 (UTC)
-Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [IPv6:2605:bc80:3010:104::8cd3:938])
-	by smtp4.osuosl.org (Postfix) with ESMTPS id 976BD40370;
-	Tue, 12 Oct 2021 03:36:06 +0000 (UTC)
-Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 68426C000F;
-	Tue, 12 Oct 2021 03:36:06 +0000 (UTC)
-Received: from smtp3.osuosl.org (smtp3.osuosl.org [140.211.166.136])
- by lists.linuxfoundation.org (Postfix) with ESMTP id F0791C000D
- for <iommu@lists.linux-foundation.org>; Tue, 12 Oct 2021 03:36:04 +0000 (UTC)
-Received: from localhost (localhost [127.0.0.1])
- by smtp3.osuosl.org (Postfix) with ESMTP id D206D6070D
- for <iommu@lists.linux-foundation.org>; Tue, 12 Oct 2021 03:36:04 +0000 (UTC)
-X-Virus-Scanned: amavisd-new at osuosl.org
-Authentication-Results: smtp3.osuosl.org (amavisd-new);
- dkim=pass (2048-bit key) header.d=linaro.org
 Received: from smtp3.osuosl.org ([127.0.0.1])
- by localhost (smtp3.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id 6JjSjzX_85sV for <iommu@lists.linux-foundation.org>;
- Tue, 12 Oct 2021 03:36:04 +0000 (UTC)
-X-Greylist: whitelisted by SQLgrey-1.8.0
-Received: from mail-qv1-xf2d.google.com (mail-qv1-xf2d.google.com
- [IPv6:2607:f8b0:4864:20::f2d])
- by smtp3.osuosl.org (Postfix) with ESMTPS id 1F49260672
- for <iommu@lists.linux-foundation.org>; Tue, 12 Oct 2021 03:36:04 +0000 (UTC)
-Received: by mail-qv1-xf2d.google.com with SMTP id d20so12157508qvm.8
- for <iommu@lists.linux-foundation.org>; Mon, 11 Oct 2021 20:36:04 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linaro.org; s=google;
- h=mime-version:references:in-reply-to:from:date:message-id:subject:to
- :cc; bh=PuQBYQiE0//qwdR0lx7ufC/zx2o6SBXy6e/jdiWZvrU=;
- b=os/NuwEqCmcu0BrOeQfB4+n7QKmw1s47pBPDW8YOBVogWBAmvvbRsvbsJA46s5un4n
- eIzjs6xSLG8TCx9TycSaw6F9URHG/10SY7z/h9OBcxjvvNVWs0F15ZI/fMSyHTaGiGY/
- gjLYecaGaHCYDEEtMUERWa8As1PEiyzLLFvGQWUqhPHcMJ4RlG1LXh1MpyV7a8nJ/ubX
- 6rVk6jca+FTiUatOC3sYtLC3jRs4hxLAIT2mkIWF4khFzpcSUdeY1xsGIxbnPai9Ckwd
- 03jBu5odwiHeSOV9gnYJJTuDUSG6gnsbQVRAYkV3ADgfGRa0UaoyWB5ysNN0imlQWFsq
- ipvQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
- d=1e100.net; s=20210112;
- h=x-gm-message-state:mime-version:references:in-reply-to:from:date
- :message-id:subject:to:cc;
- bh=PuQBYQiE0//qwdR0lx7ufC/zx2o6SBXy6e/jdiWZvrU=;
- b=35m7z0MExWq6nAR6BDlsVYACKxovdsYWyTkKAG1Jhcl1oRzUUDKYurU1zfEjUBsBXe
- 4t5eo9ky1u6ULcidhWNKVgpoyIUL+hbPgiY+dngrS4ZJpJ5JP0lN+uUhxdNOrBFdBnmw
- wepFmnoM6WQgo+GojcWuwxd4+jumd5ngeCtgYXdL52ECnM/AEpUlD8lPbMXPRIdCuT/J
- Ya1UeiBQra626olbhNDYaqa+ej+W/Bacb7sxlH+KrfjscjOAPUH/b+R+B2a6R8UNPoeV
- xPeYf4u0H5+F7drzA9zH4CBzLp7FU+2pDoTJe4WuFPzpQlziIf+XppodGQkmk4fuw6j6
- NQAA==
-X-Gm-Message-State: AOAM5326nlxXyheYVc1hGwfTzqAAU8q5JCbKoOin865/T1DBbu3w0FAy
- RG+JACiYLM5J9RctyNCn3OpCrdgosHvHE/m5GPnw7w==
-X-Google-Smtp-Source: ABdhPJxlbpmzun2i5ifUkeHpsWQA8qd+5ZG5Cd31eOgNJQa6VTEb8HUSywYsLuVpWrVbDUjc6Uz4EsHBYXxFEF/i6bg=
-X-Received: by 2002:a0c:fad0:: with SMTP id p16mr255245qvo.3.1634009763022;
- Mon, 11 Oct 2021 20:36:03 -0700 (PDT)
+	by localhost (smtp3.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+	with ESMTP id qD6LZeCJxA30; Tue, 12 Oct 2021 05:54:45 +0000 (UTC)
+Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
+	by smtp3.osuosl.org (Postfix) with ESMTPS id 7A5DD605E0;
+	Tue, 12 Oct 2021 05:54:45 +0000 (UTC)
+Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 4F583C0011;
+	Tue, 12 Oct 2021 05:54:45 +0000 (UTC)
+Received: from smtp2.osuosl.org (smtp2.osuosl.org [140.211.166.133])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 29746C000D
+ for <iommu@lists.linux-foundation.org>; Tue, 12 Oct 2021 05:54:44 +0000 (UTC)
+Received: from localhost (localhost [127.0.0.1])
+ by smtp2.osuosl.org (Postfix) with ESMTP id 0A0054020E
+ for <iommu@lists.linux-foundation.org>; Tue, 12 Oct 2021 05:54:44 +0000 (UTC)
+X-Virus-Scanned: amavisd-new at osuosl.org
+Received: from smtp2.osuosl.org ([127.0.0.1])
+ by localhost (smtp2.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+ with ESMTP id Tt-I46yHpNAR for <iommu@lists.linux-foundation.org>;
+ Tue, 12 Oct 2021 05:54:43 +0000 (UTC)
+X-Greylist: from auto-whitelisted by SQLgrey-1.8.0
+Received: from h4.fbrelay.privateemail.com (h4.fbrelay.privateemail.com
+ [131.153.2.45])
+ by smtp2.osuosl.org (Postfix) with ESMTPS id D64E9401B2
+ for <iommu@lists.linux-foundation.org>; Tue, 12 Oct 2021 05:54:42 +0000 (UTC)
+Received: from MTA-12-3.privateemail.com (mta-12-1.privateemail.com
+ [198.54.122.106])
+ (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+ (No client certificate requested)
+ by h3.fbrelay.privateemail.com (Postfix) with ESMTPS id 4710180AA7
+ for <iommu@lists.linux-foundation.org>; Tue, 12 Oct 2021 01:54:41 -0400 (EDT)
+Received: from mta-12.privateemail.com (localhost [127.0.0.1])
+ by mta-12.privateemail.com (Postfix) with ESMTP id 6585A18000A7;
+ Tue, 12 Oct 2021 01:54:38 -0400 (EDT)
+Received: from hal-station.. (unknown [10.20.151.235])
+ by mta-12.privateemail.com (Postfix) with ESMTPA id 68C5B18000A0;
+ Tue, 12 Oct 2021 01:54:37 -0400 (EDT)
+From: Hamza Mahfooz <someguy@effective-light.com>
+To: linux-kernel@vger.kernel.org
+Subject: [PATCH] dma-debug: teach add_dma_entry() about DMA_ATTR_SKIP_CPU_SYNC
+Date: Tue, 12 Oct 2021 01:54:03 -0400
+Message-Id: <20211012055404.88571-1-someguy@effective-light.com>
+X-Mailer: git-send-email 2.33.0
 MIME-Version: 1.0
-References: <20211010023350.978638-1-dmitry.baryshkov@linaro.org>
- <YWJpJnaQ2Nr4PUwr@yoga>
- <CAK8P3a3irqEVH2e9wCK4MSSBKRW-n8pFSzYBks9ri-hepewkUw@mail.gmail.com>
-In-Reply-To: <CAK8P3a3irqEVH2e9wCK4MSSBKRW-n8pFSzYBks9ri-hepewkUw@mail.gmail.com>
-From: Dmitry Baryshkov <dmitry.baryshkov@linaro.org>
-Date: Tue, 12 Oct 2021 06:35:51 +0300
-Message-ID: <CAA8EJpo7kg2h3dJEW+ZCrRhqZ4rvNrs_7WRiX+-adGXXAtu=BA@mail.gmail.com>
-Subject: Re: [PATCH] iommu: fix ARM_SMMU vs QCOM_SCM compilation
-To: Arnd Bergmann <arnd@arndb.de>
-Cc: Will Deacon <will@kernel.org>, Daniel Lezcano <daniel.lezcano@linaro.org>,
- Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
- "open list:IOMMU DRIVERS" <iommu@lists.linux-foundation.org>,
- Andy Gross <agross@kernel.org>,
- Linux ARM <linux-arm-kernel@lists.infradead.org>,
- linux-arm-msm <linux-arm-msm@vger.kernel.org>,
- Thierry Reding <treding@nvidia.com>, Robin Murphy <robin.murphy@arm.com>,
- Kalle Valo <kvalo@codeaurora.org>
+X-Virus-Scanned: ClamAV using ClamSMTP
+Cc: Hamza Mahfooz <someguy@effective-light.com>,
+ Karsten Graul <kgraul@linux.ibm.com>, iommu@lists.linux-foundation.org,
+ Gerald Schaefer <gerald.schaefer@linux.ibm.com>,
+ Robin Murphy <robin.murphy@arm.com>, Christoph Hellwig <hch@lst.de>
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -105,94 +82,256 @@ Content-Transfer-Encoding: 7bit
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-On Sun, 10 Oct 2021 at 20:42, Arnd Bergmann <arnd@arndb.de> wrote:
->
-> On Sun, Oct 10, 2021 at 6:17 AM Bjorn Andersson
-> <bjorn.andersson@linaro.org> wrote:
-> >
-> > On Sat 09 Oct 21:33 CDT 2021, Dmitry Baryshkov wrote:
-> >
-> > > After commit 424953cf3c66 ("qcom_scm: hide Kconfig symbol") arm-smmu got
-> > > qcom_smmu_impl_init() call guarded by IS_ENABLED(CONFIG_ARM_SMMU_QCOM).
-> > > However the CONFIG_ARM_SMMU_QCOM Kconfig entry does not exist, so the
-> > > qcom_smmu_impl_init() is never called.
-> > >
-> > > So, let's fix this by always calling qcom_smmu_impl_init(). It does not
-> > > touch the smmu passed unless the device is a non-Qualcomm one. Make
-> > > ARM_SMMU select QCOM_SCM for ARCH_QCOM.
->
-> Sorry about this bug. I was sure I had it working, but I lost part of the commit
-> during a rebase, and my randconfig builds still succeeded without it, so I
-> sent a wrong version.
->
-> > Arnd's intention was to not force QCOM_SCM to be built on non-Qualcomm
-> > devices. But as Daniel experienced, attempting to boot most Qualcomm
-> > boards without this results in a instant reboot.
-> >
-> > I think it's okay if we tinker with CONFIG_ARM_SMMU_QCOM for v5.16, but
-> > we're getting late in v5.15 so I would prefer if we make sure this works
-> > out of the box.
->
-> Yes, makes sense. For reference, see below for how I would fix this properly,
-> this is what I had intended to have in the patch. Feel free to pick
-> either version
-> as the immediate bugfix. I'll give the below a little more randconfig testing
-> overnight though. The pasted version of the patch is probably
-> whitespace-damaged,
-> let me know if you would like me to send it as a proper patch.
->
->        Arnd
->
-> 8<-----
-> Subject: iommu: fix ARM_SMMU_QCOM compilation
->
-> My previous bugfix ended up making things worse for the QCOM IOMMU
-> driver when it forgot to add the Kconfig symbol that is getting used to
-> control the compilation of the SMMU implementation specific code
-> for Qualcomm.
->
-> Fixes: 424953cf3c66 ("qcom_scm: hide Kconfig symbol")
-> Reported-by: Daniel Lezcano <daniel.lezcano@linaro.org>
-> Reported-by: Dmitry Baryshkov <dmitry.baryshkov@linaro.org>
-> Signed-off-by: Arnd Bergmann <arnd@arndb.de>
+Mapping something twice should be possible as long as,
+DMA_ATTR_SKIP_CPU_SYNC is passed to the strictly speaking second relevant
+mapping operation (that attempts to map the same thing). So, don't issue a
+warning if the specified condition is met in add_dma_entry().
 
-Reviewed-by: Dmitry Baryshkov <dmitry.baryshkov@linaro.org>
+Signed-off-by: Hamza Mahfooz <someguy@effective-light.com>
+---
+ kernel/dma/debug.c   | 24 ++++++++++++++----------
+ kernel/dma/debug.h   | 24 ++++++++++++++++--------
+ kernel/dma/mapping.c | 12 ++++++------
+ 3 files changed, 36 insertions(+), 24 deletions(-)
 
-Let's get either of them in.
-
-> ----
-> diff --git a/drivers/iommu/Kconfig b/drivers/iommu/Kconfig
-> index c5c71b7ab7e8..2dfe744ddd97 100644
-> --- a/drivers/iommu/Kconfig
-> +++ b/drivers/iommu/Kconfig
-> @@ -311,6 +311,7 @@ config ARM_SMMU
->         select IOMMU_API
->         select IOMMU_IO_PGTABLE_LPAE
->         select ARM_DMA_USE_IOMMU if ARM
-> +       select QCOM_SCM if ARM_SMMU_QCOM
->         help
->           Support for implementations of the ARM System MMU architecture
->           versions 1 and 2.
-> @@ -355,6 +356,13 @@ config ARM_SMMU_DISABLE_BYPASS_BY_DEFAULT
->           'arm-smmu.disable_bypass' will continue to override this
->           config.
->
-> +config ARM_SMMU_QCOM
-> +       def_bool y
-> +       depends on ARM_SMMU && ARCH_QCOM
-> +       help
-> +         When running on a Qualcomm platform that has the custom variant
-> +         of the ARM SMMU, this needs to be built into the SMMU driver.
-> +
->  config ARM_SMMU_V3
->         tristate "ARM Ltd. System MMU Version 3 (SMMUv3) Support"
->         depends on ARM64
-
-
-
+diff --git a/kernel/dma/debug.c b/kernel/dma/debug.c
+index 95445bd6eb72..c4128df3de41 100644
+--- a/kernel/dma/debug.c
++++ b/kernel/dma/debug.c
+@@ -552,7 +552,7 @@ static void active_cacheline_remove(struct dma_debug_entry *entry)
+  * Wrapper function for adding an entry to the hash.
+  * This function takes care of locking itself.
+  */
+-static void add_dma_entry(struct dma_debug_entry *entry)
++static void add_dma_entry(struct dma_debug_entry *entry, unsigned long attrs)
+ {
+ 	struct hash_bucket *bucket;
+ 	unsigned long flags;
+@@ -566,7 +566,7 @@ static void add_dma_entry(struct dma_debug_entry *entry)
+ 	if (rc == -ENOMEM) {
+ 		pr_err("cacheline tracking ENOMEM, dma-debug disabled\n");
+ 		global_disable = true;
+-	} else if (rc == -EEXIST) {
++	} else if ((rc == -EEXIST) && !(attrs & DMA_ATTR_SKIP_CPU_SYNC)) {
+ 		err_printk(entry->dev, entry,
+ 			"cacheline tracking EEXIST, overlapping mappings aren't supported\n");
+ 	}
+@@ -1191,7 +1191,8 @@ void debug_dma_map_single(struct device *dev, const void *addr,
+ EXPORT_SYMBOL(debug_dma_map_single);
+ 
+ void debug_dma_map_page(struct device *dev, struct page *page, size_t offset,
+-			size_t size, int direction, dma_addr_t dma_addr)
++			size_t size, int direction, dma_addr_t dma_addr,
++			unsigned long attrs)
+ {
+ 	struct dma_debug_entry *entry;
+ 
+@@ -1222,7 +1223,7 @@ void debug_dma_map_page(struct device *dev, struct page *page, size_t offset,
+ 		check_for_illegal_area(dev, addr, size);
+ 	}
+ 
+-	add_dma_entry(entry);
++	add_dma_entry(entry, attrs);
+ }
+ 
+ void debug_dma_mapping_error(struct device *dev, dma_addr_t dma_addr)
+@@ -1280,7 +1281,8 @@ void debug_dma_unmap_page(struct device *dev, dma_addr_t addr,
+ }
+ 
+ void debug_dma_map_sg(struct device *dev, struct scatterlist *sg,
+-		      int nents, int mapped_ents, int direction)
++		      int nents, int mapped_ents, int direction,
++		      unsigned long attrs)
+ {
+ 	struct dma_debug_entry *entry;
+ 	struct scatterlist *s;
+@@ -1312,7 +1314,7 @@ void debug_dma_map_sg(struct device *dev, struct scatterlist *sg,
+ 
+ 		check_sg_segment(dev, s);
+ 
+-		add_dma_entry(entry);
++		add_dma_entry(entry, attrs);
+ 	}
+ }
+ 
+@@ -1368,7 +1370,8 @@ void debug_dma_unmap_sg(struct device *dev, struct scatterlist *sglist,
+ }
+ 
+ void debug_dma_alloc_coherent(struct device *dev, size_t size,
+-			      dma_addr_t dma_addr, void *virt)
++			      dma_addr_t dma_addr, void *virt,
++			      unsigned long attrs)
+ {
+ 	struct dma_debug_entry *entry;
+ 
+@@ -1398,7 +1401,7 @@ void debug_dma_alloc_coherent(struct device *dev, size_t size,
+ 	else
+ 		entry->pfn = page_to_pfn(virt_to_page(virt));
+ 
+-	add_dma_entry(entry);
++	add_dma_entry(entry, attrs);
+ }
+ 
+ void debug_dma_free_coherent(struct device *dev, size_t size,
+@@ -1429,7 +1432,8 @@ void debug_dma_free_coherent(struct device *dev, size_t size,
+ }
+ 
+ void debug_dma_map_resource(struct device *dev, phys_addr_t addr, size_t size,
+-			    int direction, dma_addr_t dma_addr)
++			    int direction, dma_addr_t dma_addr,
++			    unsigned long attrs)
+ {
+ 	struct dma_debug_entry *entry;
+ 
+@@ -1449,7 +1453,7 @@ void debug_dma_map_resource(struct device *dev, phys_addr_t addr, size_t size,
+ 	entry->direction	= direction;
+ 	entry->map_err_type	= MAP_ERR_NOT_CHECKED;
+ 
+-	add_dma_entry(entry);
++	add_dma_entry(entry, attrs);
+ }
+ 
+ void debug_dma_unmap_resource(struct device *dev, dma_addr_t dma_addr,
+diff --git a/kernel/dma/debug.h b/kernel/dma/debug.h
+index 83643b3010b2..f525197d3cae 100644
+--- a/kernel/dma/debug.h
++++ b/kernel/dma/debug.h
+@@ -11,26 +11,30 @@
+ #ifdef CONFIG_DMA_API_DEBUG
+ extern void debug_dma_map_page(struct device *dev, struct page *page,
+ 			       size_t offset, size_t size,
+-			       int direction, dma_addr_t dma_addr);
++			       int direction, dma_addr_t dma_addr,
++			       unsigned long attrs);
+ 
+ extern void debug_dma_unmap_page(struct device *dev, dma_addr_t addr,
+ 				 size_t size, int direction);
+ 
+ extern void debug_dma_map_sg(struct device *dev, struct scatterlist *sg,
+-			     int nents, int mapped_ents, int direction);
++			     int nents, int mapped_ents, int direction,
++			     unsigned long attrs);
+ 
+ extern void debug_dma_unmap_sg(struct device *dev, struct scatterlist *sglist,
+ 			       int nelems, int dir);
+ 
+ extern void debug_dma_alloc_coherent(struct device *dev, size_t size,
+-				     dma_addr_t dma_addr, void *virt);
++				     dma_addr_t dma_addr, void *virt,
++				     unsigned long attrs);
+ 
+ extern void debug_dma_free_coherent(struct device *dev, size_t size,
+ 				    void *virt, dma_addr_t addr);
+ 
+ extern void debug_dma_map_resource(struct device *dev, phys_addr_t addr,
+ 				   size_t size, int direction,
+-				   dma_addr_t dma_addr);
++				   dma_addr_t dma_addr,
++				   unsigned long attrs);
+ 
+ extern void debug_dma_unmap_resource(struct device *dev, dma_addr_t dma_addr,
+ 				     size_t size, int direction);
+@@ -53,7 +57,8 @@ extern void debug_dma_sync_sg_for_device(struct device *dev,
+ #else /* CONFIG_DMA_API_DEBUG */
+ static inline void debug_dma_map_page(struct device *dev, struct page *page,
+ 				      size_t offset, size_t size,
+-				      int direction, dma_addr_t dma_addr)
++				      int direction, dma_addr_t dma_addr,
++				      unsigned long attrs)
+ {
+ }
+ 
+@@ -63,7 +68,8 @@ static inline void debug_dma_unmap_page(struct device *dev, dma_addr_t addr,
+ }
+ 
+ static inline void debug_dma_map_sg(struct device *dev, struct scatterlist *sg,
+-				    int nents, int mapped_ents, int direction)
++				    int nents, int mapped_ents, int direction,
++				    unsigned long attrs)
+ {
+ }
+ 
+@@ -74,7 +80,8 @@ static inline void debug_dma_unmap_sg(struct device *dev,
+ }
+ 
+ static inline void debug_dma_alloc_coherent(struct device *dev, size_t size,
+-					    dma_addr_t dma_addr, void *virt)
++					    dma_addr_t dma_addr, void *virt,
++					    unsigned long attrs)
+ {
+ }
+ 
+@@ -85,7 +92,8 @@ static inline void debug_dma_free_coherent(struct device *dev, size_t size,
+ 
+ static inline void debug_dma_map_resource(struct device *dev, phys_addr_t addr,
+ 					  size_t size, int direction,
+-					  dma_addr_t dma_addr)
++					  dma_addr_t dma_addr,
++					  unsigned long attrs)
+ {
+ }
+ 
+diff --git a/kernel/dma/mapping.c b/kernel/dma/mapping.c
+index 06fec5547e7c..17c6d217f8fb 100644
+--- a/kernel/dma/mapping.c
++++ b/kernel/dma/mapping.c
+@@ -156,7 +156,7 @@ dma_addr_t dma_map_page_attrs(struct device *dev, struct page *page,
+ 		addr = dma_direct_map_page(dev, page, offset, size, dir, attrs);
+ 	else
+ 		addr = ops->map_page(dev, page, offset, size, dir, attrs);
+-	debug_dma_map_page(dev, page, offset, size, dir, addr);
++	debug_dma_map_page(dev, page, offset, size, dir, addr, attrs);
+ 
+ 	return addr;
+ }
+@@ -195,7 +195,7 @@ static int __dma_map_sg_attrs(struct device *dev, struct scatterlist *sg,
+ 		ents = ops->map_sg(dev, sg, nents, dir, attrs);
+ 
+ 	if (ents > 0)
+-		debug_dma_map_sg(dev, sg, nents, ents, dir);
++		debug_dma_map_sg(dev, sg, nents, ents, dir, attrs);
+ 	else if (WARN_ON_ONCE(ents != -EINVAL && ents != -ENOMEM &&
+ 			      ents != -EIO))
+ 		return -EIO;
+@@ -305,7 +305,7 @@ dma_addr_t dma_map_resource(struct device *dev, phys_addr_t phys_addr,
+ 	else if (ops->map_resource)
+ 		addr = ops->map_resource(dev, phys_addr, size, dir, attrs);
+ 
+-	debug_dma_map_resource(dev, phys_addr, size, dir, addr);
++	debug_dma_map_resource(dev, phys_addr, size, dir, addr, attrs);
+ 	return addr;
+ }
+ EXPORT_SYMBOL(dma_map_resource);
+@@ -510,7 +510,7 @@ void *dma_alloc_attrs(struct device *dev, size_t size, dma_addr_t *dma_handle,
+ 	else
+ 		return NULL;
+ 
+-	debug_dma_alloc_coherent(dev, size, *dma_handle, cpu_addr);
++	debug_dma_alloc_coherent(dev, size, *dma_handle, cpu_addr, attrs);
+ 	return cpu_addr;
+ }
+ EXPORT_SYMBOL(dma_alloc_attrs);
+@@ -566,7 +566,7 @@ struct page *dma_alloc_pages(struct device *dev, size_t size,
+ 	struct page *page = __dma_alloc_pages(dev, size, dma_handle, dir, gfp);
+ 
+ 	if (page)
+-		debug_dma_map_page(dev, page, 0, size, dir, *dma_handle);
++		debug_dma_map_page(dev, page, 0, size, dir, *dma_handle, 0);
+ 	return page;
+ }
+ EXPORT_SYMBOL_GPL(dma_alloc_pages);
+@@ -644,7 +644,7 @@ struct sg_table *dma_alloc_noncontiguous(struct device *dev, size_t size,
+ 
+ 	if (sgt) {
+ 		sgt->nents = 1;
+-		debug_dma_map_sg(dev, sgt->sgl, sgt->orig_nents, 1, dir);
++		debug_dma_map_sg(dev, sgt->sgl, sgt->orig_nents, 1, dir, attrs);
+ 	}
+ 	return sgt;
+ }
 -- 
-With best wishes
-Dmitry
+2.33.0
+
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
