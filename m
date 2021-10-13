@@ -2,63 +2,84 @@ Return-Path: <SRS0=x0pP=PB=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7815BC433FE
-	for <iommu@archiver.kernel.org>; Wed, 13 Oct 2021 19:20:57 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D6FB4C433F5
+	for <iommu@archiver.kernel.org>; Wed, 13 Oct 2021 19:32:02 +0000 (UTC)
 Received: from smtp1.osuosl.org (smtp1.osuosl.org [140.211.166.138])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 17D43611F0
-	for <iommu@archiver.kernel.org>; Wed, 13 Oct 2021 19:20:57 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.4.1 mail.kernel.org 17D43611F0
-Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=arm.com
+	by mail.kernel.org (Postfix) with ESMTPS id 7A6C0611CC
+	for <iommu@archiver.kernel.org>; Wed, 13 Oct 2021 19:32:02 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.4.1 mail.kernel.org 7A6C0611CC
+Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=kernel.org
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by smtp1.osuosl.org (Postfix) with ESMTP id DD703831AE;
-	Wed, 13 Oct 2021 19:20:56 +0000 (UTC)
+	by smtp1.osuosl.org (Postfix) with ESMTP id 4845183281;
+	Wed, 13 Oct 2021 19:32:02 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
 Received: from smtp1.osuosl.org ([127.0.0.1])
 	by localhost (smtp1.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id DCdyEUWfIRjI; Wed, 13 Oct 2021 19:20:56 +0000 (UTC)
-Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by smtp1.osuosl.org (Postfix) with ESMTPS id BC93D831A7;
-	Wed, 13 Oct 2021 19:20:55 +0000 (UTC)
+	with ESMTP id yAoqK4JFBhJW; Wed, 13 Oct 2021 19:32:01 +0000 (UTC)
+Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [IPv6:2605:bc80:3010:104::8cd3:938])
+	by smtp1.osuosl.org (Postfix) with ESMTPS id 214DA8305A;
+	Wed, 13 Oct 2021 19:32:01 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id A4A4FC0011;
-	Wed, 13 Oct 2021 19:20:55 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 03453C0011;
+	Wed, 13 Oct 2021 19:32:01 +0000 (UTC)
 Received: from smtp1.osuosl.org (smtp1.osuosl.org [IPv6:2605:bc80:3010::138])
- by lists.linuxfoundation.org (Postfix) with ESMTP id C1248C000D
- for <iommu@lists.linux-foundation.org>; Wed, 13 Oct 2021 19:20:54 +0000 (UTC)
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 484A8C000D
+ for <iommu@lists.linux-foundation.org>; Wed, 13 Oct 2021 19:31:59 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by smtp1.osuosl.org (Postfix) with ESMTP id B1566831AC
- for <iommu@lists.linux-foundation.org>; Wed, 13 Oct 2021 19:20:54 +0000 (UTC)
+ by smtp1.osuosl.org (Postfix) with ESMTP id 196E083281
+ for <iommu@lists.linux-foundation.org>; Wed, 13 Oct 2021 19:31:59 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
 Received: from smtp1.osuosl.org ([127.0.0.1])
  by localhost (smtp1.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id M5LxqoJfFXXZ for <iommu@lists.linux-foundation.org>;
- Wed, 13 Oct 2021 19:20:53 +0000 (UTC)
+ with ESMTP id vjA6Dgni6PZC for <iommu@lists.linux-foundation.org>;
+ Wed, 13 Oct 2021 19:31:58 +0000 (UTC)
 X-Greylist: domain auto-whitelisted by SQLgrey-1.8.0
-Received: from foss.arm.com (foss.arm.com [217.140.110.172])
- by smtp1.osuosl.org (Postfix) with ESMTP id 9B072831A7
- for <iommu@lists.linux-foundation.org>; Wed, 13 Oct 2021 19:20:53 +0000 (UTC)
-Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
- by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id A69F21063;
- Wed, 13 Oct 2021 12:20:52 -0700 (PDT)
-Received: from [10.57.95.157] (unknown [10.57.95.157])
- by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id 300FF3F70D;
- Wed, 13 Oct 2021 12:20:51 -0700 (PDT)
-Subject: Re: [PATCH] iommu/iova: Add support for IOVA max alignment tuning
-To: Georgi Djakov <quic_c_gdjako@quicinc.com>, joro@8bytes.org, will@kernel.org
-References: <1634148667-409263-1-git-send-email-quic_c_gdjako@quicinc.com>
-From: Robin Murphy <robin.murphy@arm.com>
-Message-ID: <a72ccd19-4888-d823-5ec6-9ca891b4fe66@arm.com>
-Date: Wed, 13 Oct 2021 20:20:45 +0100
-User-Agent: Mozilla/5.0 (Windows NT 10.0; rv:78.0) Gecko/20100101
- Thunderbird/78.14.0
+Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
+ by smtp1.osuosl.org (Postfix) with ESMTPS id A73D38305A
+ for <iommu@lists.linux-foundation.org>; Wed, 13 Oct 2021 19:31:58 +0000 (UTC)
+Received: by mail.kernel.org (Postfix) with ESMTPSA id 3E9BC611ED
+ for <iommu@lists.linux-foundation.org>; Wed, 13 Oct 2021 19:31:58 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+ s=k20201202; t=1634153518;
+ bh=I/2CgLAJMkMSOwsk84BPKoW2tEY0CQSRXkhHcU4catA=;
+ h=References:In-Reply-To:From:Date:Subject:To:Cc:From;
+ b=Jc0h2Eox3PHwnp3y6+KwW6rc676RHlq60iUsVFXvyJHUONF/8+wCv7kMGDfeBO6y2
+ GPWS6SQjmff55/E2i5cD+Mr+zO2Lc2RJtbmuK2gvzy9DVngY7rraVzc2fWIZu48k5n
+ Hb/TJU+tzAqr9CdFN5toxT+Ro+jTM7SSURe7MClO3xVhI8Fo+65ezKIVGHEuq6DMSA
+ XX/bdFqngmGFumE/JlnHOo4fkkrU49VLgYcUWhe29veD59gis/TgtncvUIuc4uEzAY
+ ZQRhPkwEVgfZXLz2moilx6A7+n6PQRDbm5MOSzqJGV7f01iMZXu6204a9IFiOs5sfU
+ RP5Pr6L7xjDpw==
+Received: by mail-wr1-f54.google.com with SMTP id m22so12044461wrb.0
+ for <iommu@lists.linux-foundation.org>; Wed, 13 Oct 2021 12:31:58 -0700 (PDT)
+X-Gm-Message-State: AOAM530J1wFUAmaMOMSGvm1xfTNm2WUxvSYcGrMJplqeKyVkCzVsr6ss
+ 3A8PeAIBF0S8xx4+OSXwNRJSbh+F/q0riNxRv4E=
+X-Google-Smtp-Source: ABdhPJwcHRsa/5PmSl69f+dfHjeFIK64+QOndFfYOm6WuQn3kJkoiwT4wmudegInJ/4TOeZwKrZ/YtLZ+k7ty3IYRl4=
+X-Received: by 2002:a05:600c:1548:: with SMTP id
+ f8mr1223250wmg.35.1634153516635; 
+ Wed, 13 Oct 2021 12:31:56 -0700 (PDT)
 MIME-Version: 1.0
-In-Reply-To: <1634148667-409263-1-git-send-email-quic_c_gdjako@quicinc.com>
-Content-Language: en-GB
-Cc: corbet@lwn.net, linux-doc@vger.kernel.org, linux-kernel@vger.kernel.org,
- iommu@lists.linux-foundation.org, akpm@linux-foundation.org
+References: <20211012151841.2639732-1-arnd@kernel.org>
+ <20211013075803.GB6701@willie-the-truck>
+ <CAK8P3a1GaQ1kjkjOP09eTUu6MR+RjhSDU9s-49MPQ1FSOMUDEg@mail.gmail.com>
+ <20211013162024.GA7134@willie-the-truck>
+In-Reply-To: <20211013162024.GA7134@willie-the-truck>
+From: Arnd Bergmann <arnd@kernel.org>
+Date: Wed, 13 Oct 2021 21:31:40 +0200
+X-Gmail-Original-Message-ID: <CAK8P3a0aLKv76AjuLO4kMa3hDj8LwsGxGhGToX935pdfsr15KQ@mail.gmail.com>
+Message-ID: <CAK8P3a0aLKv76AjuLO4kMa3hDj8LwsGxGhGToX935pdfsr15KQ@mail.gmail.com>
+Subject: Re: [PATCH] iommu/arm: fix ARM_SMMU_QCOM compilation
+To: Will Deacon <will@kernel.org>
+Cc: Jean-Philippe Brucker <jean-philippe@linaro.org>,
+ Alex Elder <elder@linaro.org>, Arnd Bergmann <arnd@arndb.de>,
+ Daniel Lezcano <daniel.lezcano@linaro.org>,
+ Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+ "open list:IOMMU DRIVERS" <iommu@lists.linux-foundation.org>,
+ John Stultz <john.stultz@linaro.org>, Kalle Valo <kvalo@codeaurora.org>,
+ Dmitry Baryshkov <dmitry.baryshkov@linaro.org>,
+ Robin Murphy <robin.murphy@arm.com>
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -71,112 +92,31 @@ List-Post: <mailto:iommu@lists.linux-foundation.org>
 List-Help: <mailto:iommu-request@lists.linux-foundation.org?subject=help>
 List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
  <mailto:iommu-request@lists.linux-foundation.org?subject=subscribe>
+Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
-Content-Type: text/plain; charset="us-ascii"; Format="flowed"
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-On 2021-10-13 19:11, Georgi Djakov wrote:
-> IOVAs are aligned to the smallest PAGE_SIZE order, where the requested
-> IOVA can fit. But this might not work for all use-cases. It can cause
-> IOVA fragmentation in some multimedia and 8K video use-cases that may
-> require larger buffers to be allocated and mapped.
-> 
-> When the above allocation pattern is used with the current alignment
-> scheme, the IOVA space could be quickly exhausted for 32bit devices.
-> 
-> In order to get better IOVA space utilization and reduce fragmentation,
-> a new kernel command line parameter is introduced to make the alignment
-> limit configurable by the user during boot.
-> 
-> Signed-off-by: Georgi Djakov <quic_c_gdjako@quicinc.com>
-> ---
->   Documentation/admin-guide/kernel-parameters.txt |  8 ++++++++
->   drivers/iommu/iova.c                            | 26 ++++++++++++++++++++++++-
+On Wed, Oct 13, 2021 at 6:20 PM Will Deacon <will@kernel.org> wrote:
+> On Wed, Oct 13, 2021 at 10:33:55AM +0200, Arnd Bergmann wrote:
+> > On Wed, Oct 13, 2021 at 9:58 AM Will Deacon <will@kernel.org> wrote:
+> > > On Tue, Oct 12, 2021 at 05:18:00PM +0200, Arnd Bergmann wrote:
 
-I see no good reason for the IOVA layer to lie to its callers. If they 
-don't need an aligned IOVA, they shouldn't ask for one in the first 
-place. If callers still need some intermediate degree of alignment then 
-the IOVA API might want to grow something more expressive than "bool 
-size_aligned", but it should still be the callers' responsibility to 
-pass an appropriate value.
+> > I was hoping you and Joerg could just pick your preferred patch
+> > into the iommu fixes tree for v5.15.
+> >
+> > I currently have nothing else pending for my asm-generic tree that
+> > introduced the regression, but I can take it through there if that helps
+> > you.
+>
+> I also don't have any fixes pending, and I don't see any in Joerg's tree so
+> it's probably quickest if you send it on yourself. Is that ok?
 
-Thanks,
-Robin.
+Sure, no problem. I ended up adding it to the arm/fixes branch of the
+soc tree, as I just merged some other fixes there, and it seems as good
+as any of the other trees.
 
->   2 files changed, 33 insertions(+), 1 deletion(-)
-> 
-> diff --git a/Documentation/admin-guide/kernel-parameters.txt b/Documentation/admin-guide/kernel-parameters.txt
-> index ad94a2aa9819..630246dc691f 100644
-> --- a/Documentation/admin-guide/kernel-parameters.txt
-> +++ b/Documentation/admin-guide/kernel-parameters.txt
-> @@ -2056,6 +2056,14 @@
->   			  forcing Dual Address Cycle for PCI cards supporting
->   			  greater than 32-bit addressing.
->   
-> +	iommu.max_align_shift=
-> +			[ARM64, X86] Limit the alignment of IOVAs to a maximum
-> +			PAGE_SIZE order. Larger IOVAs will be aligned to this
-> +			specified order. The order is expressed as a power of
-> +			two multiplied by the PAGE_SIZE.
-> +			Format: { "4" | "5" | "6" | "7" | "8" | "9" }
-> +			Default: 9
-> +
->   	iommu.strict=	[ARM64, X86] Configure TLB invalidation behaviour
->   			Format: { "0" | "1" }
->   			0 - Lazy mode.
-> diff --git a/drivers/iommu/iova.c b/drivers/iommu/iova.c
-> index 9e8bc802ac05..5a8c86871735 100644
-> --- a/drivers/iommu/iova.c
-> +++ b/drivers/iommu/iova.c
-> @@ -15,6 +15,9 @@
->   /* The anchor node sits above the top of the usable address space */
->   #define IOVA_ANCHOR	~0UL
->   
-> +#define IOMMU_DEFAULT_IOVA_MAX_ALIGN_SHIFT	9
-> +static unsigned long iommu_max_align_shift __read_mostly = IOMMU_DEFAULT_IOVA_MAX_ALIGN_SHIFT;
-> +
->   static bool iova_rcache_insert(struct iova_domain *iovad,
->   			       unsigned long pfn,
->   			       unsigned long size);
-> @@ -27,6 +30,27 @@ static void free_iova_rcaches(struct iova_domain *iovad);
->   static void fq_destroy_all_entries(struct iova_domain *iovad);
->   static void fq_flush_timeout(struct timer_list *t);
->   
-> +static unsigned long limit_align_shift(struct iova_domain *iovad, unsigned long shift)
-> +{
-> +	unsigned long max_align_shift;
-> +
-> +	max_align_shift = iommu_max_align_shift + PAGE_SHIFT - iova_shift(iovad);
-> +	return min_t(unsigned long, max_align_shift, shift);
-> +}
-> +
-> +static int __init iommu_set_def_max_align_shift(char *str)
-> +{
-> +	unsigned long max_align_shift;
-> +
-> +	int ret = kstrtoul(str, 10, &max_align_shift);
-> +
-> +	if (!ret)
-> +		iommu_max_align_shift = max_align_shift;
-> +
-> +	return 0;
-> +}
-> +early_param("iommu.max_align_shift", iommu_set_def_max_align_shift);
-> +
->   static int iova_cpuhp_dead(unsigned int cpu, struct hlist_node *node)
->   {
->   	struct iova_domain *iovad;
-> @@ -242,7 +266,7 @@ static int __alloc_and_insert_iova_range(struct iova_domain *iovad,
->   	unsigned long high_pfn = limit_pfn, low_pfn = iovad->start_pfn;
->   
->   	if (size_aligned)
-> -		align_mask <<= fls_long(size - 1);
-> +		align_mask <<= limit_align_shift(iovad, fls_long(size - 1));
->   
->   	/* Walk the tree backwards */
->   	spin_lock_irqsave(&iovad->iova_rbtree_lock, flags);
-> 
+      Arnd
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
