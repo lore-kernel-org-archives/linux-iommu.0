@@ -1,74 +1,173 @@
-Return-Path: <SRS0=nyYM=PA=lists.linux-foundation.org=iommu-bounces@kernel.org>
+Return-Path: <SRS0=x0pP=PB=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 66D89C433F5
-	for <iommu@archiver.kernel.org>; Tue, 12 Oct 2021 15:18:53 +0000 (UTC)
-Received: from smtp2.osuosl.org (smtp2.osuosl.org [140.211.166.133])
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 12948C433EF
+	for <iommu@archiver.kernel.org>; Wed, 13 Oct 2021 07:01:27 +0000 (UTC)
+Received: from smtp1.osuosl.org (smtp1.osuosl.org [140.211.166.138])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 10D2660E54
-	for <iommu@archiver.kernel.org>; Tue, 12 Oct 2021 15:18:53 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.4.1 mail.kernel.org 10D2660E54
-Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=kernel.org
+	by mail.kernel.org (Postfix) with ESMTPS id BB64261027
+	for <iommu@archiver.kernel.org>; Wed, 13 Oct 2021 07:01:26 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.4.1 mail.kernel.org BB64261027
+Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=intel.com
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by smtp2.osuosl.org (Postfix) with ESMTP id C6421403D4;
-	Tue, 12 Oct 2021 15:18:52 +0000 (UTC)
+	by smtp1.osuosl.org (Postfix) with ESMTP id 8805E82803;
+	Wed, 13 Oct 2021 07:01:26 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from smtp2.osuosl.org ([127.0.0.1])
-	by localhost (smtp2.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id P0fvQ97EiNMc; Tue, 12 Oct 2021 15:18:51 +0000 (UTC)
+Received: from smtp1.osuosl.org ([127.0.0.1])
+	by localhost (smtp1.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+	with ESMTP id 9msT2Oy75Ozk; Wed, 13 Oct 2021 07:01:25 +0000 (UTC)
 Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by smtp2.osuosl.org (Postfix) with ESMTPS id 8F57B40139;
-	Tue, 12 Oct 2021 15:18:51 +0000 (UTC)
+	by smtp1.osuosl.org (Postfix) with ESMTPS id 192C8827F3;
+	Wed, 13 Oct 2021 07:01:25 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 70969C000F;
-	Tue, 12 Oct 2021 15:18:51 +0000 (UTC)
-Received: from smtp3.osuosl.org (smtp3.osuosl.org [140.211.166.136])
- by lists.linuxfoundation.org (Postfix) with ESMTP id AC11EC000D
- for <iommu@lists.linux-foundation.org>; Tue, 12 Oct 2021 15:18:50 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id CF023C000F;
+	Wed, 13 Oct 2021 07:01:24 +0000 (UTC)
+Received: from smtp1.osuosl.org (smtp1.osuosl.org [140.211.166.138])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 750D6C000D
+ for <iommu@lists.linux-foundation.org>; Wed, 13 Oct 2021 07:01:23 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by smtp3.osuosl.org (Postfix) with ESMTP id 81D4A605A7
- for <iommu@lists.linux-foundation.org>; Tue, 12 Oct 2021 15:18:50 +0000 (UTC)
+ by smtp1.osuosl.org (Postfix) with ESMTP id 4789A827F3
+ for <iommu@lists.linux-foundation.org>; Wed, 13 Oct 2021 07:01:23 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Authentication-Results: smtp3.osuosl.org (amavisd-new);
- dkim=pass (2048-bit key) header.d=kernel.org
-Received: from smtp3.osuosl.org ([127.0.0.1])
- by localhost (smtp3.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id 6-bPwxhIQFYP for <iommu@lists.linux-foundation.org>;
- Tue, 12 Oct 2021 15:18:49 +0000 (UTC)
+Received: from smtp1.osuosl.org ([127.0.0.1])
+ by localhost (smtp1.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+ with ESMTP id W16PnqWbwMpY for <iommu@lists.linux-foundation.org>;
+ Wed, 13 Oct 2021 07:01:22 +0000 (UTC)
 X-Greylist: domain auto-whitelisted by SQLgrey-1.8.0
-Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
- by smtp3.osuosl.org (Postfix) with ESMTPS id 6937E600C6
- for <iommu@lists.linux-foundation.org>; Tue, 12 Oct 2021 15:18:49 +0000 (UTC)
-Received: by mail.kernel.org (Postfix) with ESMTPSA id 8A63B60E0B;
- Tue, 12 Oct 2021 15:18:46 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
- s=k20201202; t=1634051929;
- bh=JiebhzwuHVXY80Oic6utfrmJONJx8VfAP7QNQDVcqMs=;
- h=From:To:Cc:Subject:Date:From;
- b=uR/kT2xSoizS9rasOuK34HL8QIyL1MeUKiN6cCH7xbeVXoqQdGga8pdfpOgEEWcKm
- K60YyUfG/XcGQWkQw57Yz7uLcF+5aLJ50tqKanW87C69WAMmp/MwV6/MK9q6bLvlph
- +cU+OmijhxAN+h3oV/4/rOVfq4Tf8iwIdOYjqIhXhHaPVYn0r33J605soOFJHSjhMa
- exXEIB11fwoCOuoYxCWuqbEggd6k8oUzjCnGkGtEWA1RXodyXvVQiaWvaCLN0Y4RBZ
- Hh4V81oUQX0ISzfYmfrzhv5/mELKa+USfhAzPFWHVv4kSVh8s7Nd52y2SgmF/VSESs
- e8u0cLRb13ZAA==
-From: Arnd Bergmann <arnd@kernel.org>
-To: Joerg Roedel <joro@8bytes.org>,
-	Will Deacon <will@kernel.org>
-Subject: [PATCH] iommu/arm: fix ARM_SMMU_QCOM compilation
-Date: Tue, 12 Oct 2021 17:18:00 +0200
-Message-Id: <20211012151841.2639732-1-arnd@kernel.org>
-X-Mailer: git-send-email 2.29.2
+Received: from mga04.intel.com (mga04.intel.com [192.55.52.120])
+ by smtp1.osuosl.org (Postfix) with ESMTPS id 33A35827F0
+ for <iommu@lists.linux-foundation.org>; Wed, 13 Oct 2021 07:01:22 +0000 (UTC)
+X-IronPort-AV: E=McAfee;i="6200,9189,10135"; a="226138209"
+X-IronPort-AV: E=Sophos;i="5.85,369,1624345200"; d="scan'208";a="226138209"
+Received: from orsmga002.jf.intel.com ([10.7.209.21])
+ by fmsmga104.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384;
+ 13 Oct 2021 00:01:01 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.85,369,1624345200"; d="scan'208";a="460671542"
+Received: from orsmsx604.amr.corp.intel.com ([10.22.229.17])
+ by orsmga002.jf.intel.com with ESMTP; 13 Oct 2021 00:01:00 -0700
+Received: from orsmsx602.amr.corp.intel.com (10.22.229.15) by
+ ORSMSX604.amr.corp.intel.com (10.22.229.17) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2242.12; Wed, 13 Oct 2021 00:01:00 -0700
+Received: from orsedg603.ED.cps.intel.com (10.7.248.4) by
+ orsmsx602.amr.corp.intel.com (10.22.229.15) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2242.12 via Frontend Transport; Wed, 13 Oct 2021 00:01:00 -0700
+Received: from NAM10-MW2-obe.outbound.protection.outlook.com (104.47.55.108)
+ by edgegateway.intel.com (134.134.137.100) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.1.2242.12; Wed, 13 Oct 2021 00:00:59 -0700
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=mbc84q21I5wPARsIo8l4Wm8HTFQo7GuF1Lnoy3rGDdIPY7o3tcNNEIbjxEcXIVT9CZpQkNufCPZeqZE0bd/IOGe8TpKgiNjajCq81gu6rnzx/zXA4sbVYW2FIL/bv0sn74h4SZNmad+tyG/6bPMEsiUqJ/T7cqV7wEbkrmbtNuOdAqGA9xz8qPAUQL4cRJ4DW3GU53yNm2/SIooZSv8tXdwtDQU68XvED5u/oIkAspS6304bCTbou8Mk2wUUwExNvZIDDR8+uBIbVYVlfpNz3EmzVvdRxRVXeRM8BgzrfeqlQ644mBLZbfcJHzyvGMaFHlY+0dSqH9Fsh6Z6lmKmqA==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com; 
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=JW+2NMQNKskhvkuP73CI9j53M4KPMxy+IfhzO57ZngM=;
+ b=Q9cAf/rZNmh+oNYxbd0W9TNsO9cGQUDUKthY79yllUbgpjGGIgrYWZz/66wZpkKAqchZMe0IDIxf945kEHudycTFEblubo0ARZB3G1e74KblpvJcUN05VDOJJ7oDdzAL7Co0JnF7lZbb1sZ3e/8ARAD87s7hRuKtaNUxnf8ITmoYZADm28bFi1nCL56G3aDvYJbGQexT3IkWKswEnyJOm58jMniHimA1FMctFkxO5scNPKaHiCG7C7czUeQSKNvK8kZYSB/pN6+o8duakVHOmgFs07xHCjW7k/H0Sq/rS7Q101+AKI3KM1JcU4xh5vnuP2qJVc+3PQH/YAWeDHVZ3Q==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=intel.com; dmarc=pass action=none header.from=intel.com;
+ dkim=pass header.d=intel.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=intel.onmicrosoft.com; 
+ s=selector2-intel-onmicrosoft-com;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=JW+2NMQNKskhvkuP73CI9j53M4KPMxy+IfhzO57ZngM=;
+ b=X6ccnEJudGDqhCO9btSX95dth5CiYJkmYas/g0q2oEodOtMZK9oCdEH4/k9qfuiE8gwOPpSKQi2jLhNpnVqf4u3pycNv9f21C4JFuR3y2VwCX8fI/B2FeqtrLNkcM7tuHkBHnHP0efBFmT5TRgnRyYTRhnO7QrPKmGQM+ugG8NY=
+Received: from BN9PR11MB5433.namprd11.prod.outlook.com (2603:10b6:408:11e::13)
+ by BN6PR1101MB2083.namprd11.prod.outlook.com (2603:10b6:405:58::22)
+ with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4608.15; Wed, 13 Oct
+ 2021 07:00:58 +0000
+Received: from BN9PR11MB5433.namprd11.prod.outlook.com
+ ([fe80::ddb7:fa7f:2cc:45df]) by BN9PR11MB5433.namprd11.prod.outlook.com
+ ([fe80::ddb7:fa7f:2cc:45df%9]) with mapi id 15.20.4587.026; Wed, 13 Oct 2021
+ 07:00:58 +0000
+From: "Tian, Kevin" <kevin.tian@intel.com>
+To: David Gibson <david@gibson.dropbear.id.au>, "Liu, Yi L"
+ <yi.l.liu@intel.com>
+Subject: RE: [RFC 11/20] iommu/iommufd: Add IOMMU_IOASID_ALLOC/FREE
+Thread-Topic: [RFC 11/20] iommu/iommufd: Add IOMMU_IOASID_ALLOC/FREE
+Thread-Index: AQHXrSGPLoYXtOF3o0iA7Cse+/LM66u9vAMAgBLi5DA=
+Date: Wed, 13 Oct 2021 07:00:58 +0000
+Message-ID: <BN9PR11MB5433E3BE7550BBF176636F8A8CB79@BN9PR11MB5433.namprd11.prod.outlook.com>
+References: <20210919063848.1476776-1-yi.l.liu@intel.com>
+ <20210919063848.1476776-12-yi.l.liu@intel.com> <YVamgnMzuv3TCQiX@yekko>
+In-Reply-To: <YVamgnMzuv3TCQiX@yekko>
+Accept-Language: en-US
+Content-Language: en-US
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+authentication-results: gibson.dropbear.id.au; dkim=none (message not signed)
+ header.d=none; gibson.dropbear.id.au;
+ dmarc=none action=none header.from=intel.com;
+x-ms-publictraffictype: Email
+x-ms-office365-filtering-correlation-id: 47aafb7e-c2fc-47bf-47f3-08d98e173597
+x-ms-traffictypediagnostic: BN6PR1101MB2083:
+x-ld-processed: 46c98d88-e344-4ed4-8496-4ed7712e255d,ExtAddr
+x-ms-exchange-transport-forked: True
+x-microsoft-antispam-prvs: <BN6PR1101MB20837AD3C080EAD0C4B7F37D8CB79@BN6PR1101MB2083.namprd11.prod.outlook.com>
+x-ms-oob-tlc-oobclassifiers: OLM:8882;
+x-ms-exchange-senderadcheck: 1
+x-ms-exchange-antispam-relay: 0
+x-microsoft-antispam: BCL:0;
+x-microsoft-antispam-message-info: hVVPTUD72EBspZF9CZPjvlODpxytdmV4Aek9UKTV/l6+U8m2hr/zz6xHHVBaAY/TJ0Ll0GhMrgnlyVPJhjIpkL2vblx0R7j4SqzzcY8NG/qdJM4v3VTvfzcV98fmWEa1ZdUZUQVhhpmLnQfObiIdyiIxCtnKl1vTYX5WmMDBFmn7Cubt4ptieb9Y1S1gXcsihHyN3McZXJ8jKCVA4L55vEFvouTHhuZ1DGVdTVeZtr4nOspzLQqtlNi9REJgauZlv1O5Sx/DlQS1i/78g87q34Zh73NZDIam6yDa3cROvI5YkbWV0jSIedzOeTD0LGBUGfY7liBY1gBKOQI8bX9DWJ/ahowFFRFg2xr5vvWYMbok/LxweOxQ6bd11e+03NEH/7y2daJIOOCQh33+f6LWLTIYzg/Yr3jCgEBUiIkW0pNUHS4w2CxqifsCkvVK0wdwd4/6jYAM8up+UBF4OXVTeM6dxb1Nmx4W+ZiM+47Bi/DubwCKZ2ZOZrT5q7FO/o0O+Y+RoZE6CAHTVX4SbIytumrNFInjr6rrZ+AGv+EJH4nS8EuJ6vZLJsLlxCQWYnjzdcf18tnvod8LiokWlTkQ7WdVR6HiO0mWBZB+Lq5LudZvz/Z8At/DR46R3HCmQ1jgwUR+yWFMQui3Q3zgy3vtmeYXXLRxT0Kh6H3ZUTnEmYnf2urkNycZVwt1a2JztGbPb+EPayRrAelXSCtbRXXhDJb6S2mZ75Nidi884LcTd1Y=
+x-forefront-antispam-report: CIP:255.255.255.255; CTRY:; LANG:en; SCL:1; SRV:;
+ IPV:NLI; SFV:NSPM; H:BN9PR11MB5433.namprd11.prod.outlook.com; PTR:; CAT:NONE;
+ SFS:(4636009)(366004)(6506007)(83380400001)(8936002)(8676002)(5660300002)(26005)(7416002)(4326008)(6636002)(2906002)(122000001)(33656002)(186003)(52536014)(38100700002)(7696005)(86362001)(76116006)(38070700005)(66946007)(64756008)(66556008)(55016002)(66476007)(71200400001)(54906003)(9686003)(110136005)(66446008)(316002)(82960400001)(508600001)(84603001);
+ DIR:OUT; SFP:1102; 
+x-ms-exchange-antispam-messagedata-chunkcount: 1
+x-ms-exchange-antispam-messagedata-0: =?us-ascii?Q?3DEK3PFPGsKawMVkQahLGtGUTsx46P6C6J1NdXAjxGwc9XgN+IWzXezFvYvi?=
+ =?us-ascii?Q?gHAn9sFXxIQIhKbxQvVjqA2OYR0sIDcq9rBkWGDhcOATKvP153WXgswBkzCc?=
+ =?us-ascii?Q?FKAsFos1979zrKfMO65QnoVJF4AbN5Z9SBFC+SnY1EM3V987Zem2qYP8C/gO?=
+ =?us-ascii?Q?uwJAqcJWKjuSFI5wsuylP92xs4xOPA64B2t7eMMVtML+4N1icgldl4z8JUit?=
+ =?us-ascii?Q?7r7xstdamX7zO5aB6Su7A5JSP1Gk2x41E0fzPv7zeIUWSK02paN8x/bdwStT?=
+ =?us-ascii?Q?o+L1Ynzd9tTfmidStSXj5DFtAcklyIlaSP3RUtM5uUmp9lNhphs6UxPbRZM1?=
+ =?us-ascii?Q?fOA7Kdq2SRVJKUW4wK0KIrVY5TtvhGAB5xmh2vKzCTIxmQPpeAG+BR1ZJisa?=
+ =?us-ascii?Q?RF1k9TPtvbgo6+VyPl04ndDUAo/pKRU/idJhHaj9b0iu0cGI6vh3pkBp1VKt?=
+ =?us-ascii?Q?vHkyI32hwlOS8vltWD19oOrOJs2yKev2zLZFWxTyP+ObeQCBVNLr3NIDhwk6?=
+ =?us-ascii?Q?87E1HrkPcKAp7NILxIEpmNZnqKxOH04I0jW5lFIho9tcDLvGpbkPRf5sTbcU?=
+ =?us-ascii?Q?DMZqjXFXTFpGeQaT8tYGoI+drKYNBmHDa+DWudlIrpy3yaq8qksTYqSCQypU?=
+ =?us-ascii?Q?Ce2TkHRx542Ck9k6XXCunbBYjzzrkkj+eejdkMctU8qwKviX0joHiiTlka8Q?=
+ =?us-ascii?Q?EF5F/BQ3IjTvNtgaZrYX45hBosG0YHxNK9Ku2u9xiJGb+uBhI1YSFdo2UY9I?=
+ =?us-ascii?Q?39XZO465TbZ0jgQjW1rI8DVpdOtiP3FFsUYlXExUfJABLNvGKYBWYedY1jB6?=
+ =?us-ascii?Q?Oo7ql7MDsiYqo1uyOrX8ufJljkDgRRnHZX8mxG6Z7HQCv+9AVVjumb6rsDhm?=
+ =?us-ascii?Q?31kNbf9WuzOmsSHQTaGFoE5evwCc94fVis1qP+PuuKH+ZT9a4YdOMQH7BPWH?=
+ =?us-ascii?Q?KYhONUiurVH50h/7jwMeFaUCm0gyp9CdjaiG6HHggFcwqta3edZ573co+/f3?=
+ =?us-ascii?Q?eSQchmg+SVbwTjxR8nyBdsPZynglRLk97xE3tA5PLGmoEiFJq7Ru2MpG/GDF?=
+ =?us-ascii?Q?hBbYtoW89NJHdhcBUDGA65HedTTx0mMcOHJlQLChXL0lbSAzzmabppTq6+9k?=
+ =?us-ascii?Q?QkM1oVLtvpGrd/77oIao6ZF3ZRJXXiqh4wDI2ft38Vp5RwnQlRylFWtMHdqJ?=
+ =?us-ascii?Q?kueoljmoVESF6kW3nX3xuo+1rG6lvoHW0hlqsk7ZiYO4XZzB0Fpoj5DxYPnP?=
+ =?us-ascii?Q?3begKWueTQkREwJpJXCK4UtGMztv2P/eGMyeZ9rcmU+xTpNYt9Z+KWm0rBo4?=
+ =?us-ascii?Q?AzAXcxAYxls/V+Upe+qqoQ2B?=
 MIME-Version: 1.0
-Cc: Jean-Philippe Brucker <jean-philippe@linaro.org>,
- Alex Elder <elder@linaro.org>, Arnd Bergmann <arnd@arndb.de>,
- Daniel Lezcano <daniel.lezcano@linaro.org>, linux-kernel@vger.kernel.org,
- iommu@lists.linux-foundation.org, John Stultz <john.stultz@linaro.org>,
- Kalle Valo <kvalo@codeaurora.org>,
- Dmitry Baryshkov <dmitry.baryshkov@linaro.org>,
- Robin Murphy <robin.murphy@arm.com>
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-AuthSource: BN9PR11MB5433.namprd11.prod.outlook.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 47aafb7e-c2fc-47bf-47f3-08d98e173597
+X-MS-Exchange-CrossTenant-originalarrivaltime: 13 Oct 2021 07:00:58.3119 (UTC)
+X-MS-Exchange-CrossTenant-fromentityheader: Hosted
+X-MS-Exchange-CrossTenant-id: 46c98d88-e344-4ed4-8496-4ed7712e255d
+X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
+X-MS-Exchange-CrossTenant-userprincipalname: 7gbNLME2hSi5SBg+5g6mHNYmZzpiPTMrtFy+lqTEzo3mKmwZBuT3Z/SVRjqax0Ur4E+5bO+bVXdX5gZLyXZkag==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: BN6PR1101MB2083
+X-OriginatorOrg: intel.com
+Cc: "jean-philippe@linaro.org" <jean-philippe@linaro.org>,
+ "lushenming@huawei.com" <lushenming@huawei.com>, "Jiang,
+ Dave" <dave.jiang@intel.com>, "Raj, 
+ Ashok" <ashok.raj@intel.com>, "kvm@vger.kernel.org" <kvm@vger.kernel.org>,
+ "corbet@lwn.net" <corbet@lwn.net>,
+ "robin.murphy@arm.com" <robin.murphy@arm.com>,
+ "jasowang@redhat.com" <jasowang@redhat.com>,
+ "alex.williamson@redhat.com" <alex.williamson@redhat.com>,
+ "iommu@lists.linux-foundation.org" <iommu@lists.linux-foundation.org>,
+ "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, "Tian,
+ Jun J" <jun.j.tian@intel.com>, "kwankhede@nvidia.com" <kwankhede@nvidia.com>,
+ "lkml@metux.net" <lkml@metux.net>, "jgg@nvidia.com" <jgg@nvidia.com>,
+ "pbonzini@redhat.com" <pbonzini@redhat.com>,
+ "dwmw2@infradead.org" <dwmw2@infradead.org>, "hch@lst.de" <hch@lst.de>,
+ "parav@mellanox.com" <parav@mellanox.com>
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -86,49 +185,164 @@ Content-Transfer-Encoding: 7bit
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-From: Arnd Bergmann <arnd@arndb.de>
+> From: David Gibson
+> Sent: Friday, October 1, 2021 2:11 PM
+> 
+> On Sun, Sep 19, 2021 at 02:38:39PM +0800, Liu Yi L wrote:
+> > This patch adds IOASID allocation/free interface per iommufd. When
+> > allocating an IOASID, userspace is expected to specify the type and
+> > format information for the target I/O page table.
+> >
+> > This RFC supports only one type (IOMMU_IOASID_TYPE_KERNEL_TYPE1V2),
+> > implying a kernel-managed I/O page table with vfio type1v2 mapping
+> > semantics. For this type the user should specify the addr_width of
+> > the I/O address space and whether the I/O page table is created in
+> > an iommu enfore_snoop format. enforce_snoop must be true at this point,
+> > as the false setting requires additional contract with KVM on handling
+> > WBINVD emulation, which can be added later.
+> >
+> > Userspace is expected to call IOMMU_CHECK_EXTENSION (see next patch)
+> > for what formats can be specified when allocating an IOASID.
+> >
+> > Open:
+> > - Devices on PPC platform currently use a different iommu driver in vfio.
+> >   Per previous discussion they can also use vfio type1v2 as long as there
+> >   is a way to claim a specific iova range from a system-wide address space.
+> >   This requirement doesn't sound PPC specific, as addr_width for pci
+> devices
+> >   can be also represented by a range [0, 2^addr_width-1]. This RFC hasn't
+> >   adopted this design yet. We hope to have formal alignment in v1
+> discussion
+> >   and then decide how to incorporate it in v2.
+> 
+> Ok, there are several things we need for ppc.  None of which are
+> inherently ppc specific and some of which will I think be useful for
+> most platforms.  So, starting from most general to most specific
+> here's basically what's needed:
+> 
+> 1. We need to represent the fact that the IOMMU can only translate
+>    *some* IOVAs, not a full 64-bit range.  You have the addr_width
+>    already, but I'm entirely sure if the translatable range on ppc
+>    (or other platforms) is always a power-of-2 size.  It usually will
+>    be, of course, but I'm not sure that's a hard requirement.  So
+>    using a size/max rather than just a number of bits might be safer.
+> 
+>    I think basically every platform will need this.  Most platforms
+>    don't actually implement full 64-bit translation in any case, but
+>    rather some smaller number of bits that fits their page table
+>    format.
+> 
+> 2. The translatable range of IOVAs may not begin at 0.  So we need to
+>    advertise to userspace what the base address is, as well as the
+>    size.  POWER's main IOVA range begins at 2^59 (at least on the
+>    models I know about).
+> 
+>    I think a number of platforms are likely to want this, though I
+>    couldn't name them apart from POWER.  Putting the translated IOVA
+>    window at some huge address is a pretty obvious approach to making
+>    an IOMMU which can translate a wide address range without colliding
+>    with any legacy PCI addresses down low (the IOMMU can check if this
+>    transaction is for it by just looking at some high bits in the
+>    address).
+> 
+> 3. There might be multiple translatable ranges.  So, on POWER the
+>    IOMMU can typically translate IOVAs from 0..2GiB, and also from
+>    2^59..2^59+<RAM size>.  The two ranges have completely separate IO
+>    page tables, with (usually) different layouts.  (The low range will
+>    nearly always be a single-level page table with 4kiB or 64kiB
+>    entries, the high one will be multiple levels depending on the size
+>    of the range and pagesize).
+> 
+>    This may be less common, but I suspect POWER won't be the only
+>    platform to do something like this.  As above, using a high range
+>    is a pretty obvious approach, but clearly won't handle older
+>    devices which can't do 64-bit DMA.  So adding a smaller range for
+>    those devices is again a pretty obvious solution.  Any platform
+>    with an "IO hole" can be treated as having two ranges, one below
+>    the hole and one above it (although in that case they may well not
+>    have separate page tables
 
-My previous bugfix ended up making things worse for the QCOM IOMMU
-driver when it forgot to add the Kconfig symbol that is getting used to
-control the compilation of the SMMU implementation specific code
-for Qualcomm.
+1-3 are common on all platforms with fixed reserved ranges. Current
+vfio already reports permitted iova ranges to user via VFIO_IOMMU_
+TYPE1_INFO_CAP_IOVA_RANGE and the user is expected to construct
+maps only in those ranges. iommufd can follow the same logic for the
+baseline uAPI.
 
-Fixes: 424953cf3c66 ("qcom_scm: hide Kconfig symbol")
-Reported-by: Daniel Lezcano <daniel.lezcano@linaro.org>
-Reported-by: Dmitry Baryshkov <dmitry.baryshkov@linaro.org>
-Reported-by: John Stultz <john.stultz@linaro.org>
-Link: https://lore.kernel.org/lkml/20211010023350.978638-1-dmitry.baryshkov@linaro.org/
-Signed-off-by: Arnd Bergmann <arnd@arndb.de>
----
-In case we want fix it this way after all, here is the patch
-I made. Either this one or Dmitry patch from the link above
-is required for v5.15
----
- drivers/iommu/Kconfig | 8 ++++++++
- 1 file changed, 8 insertions(+)
+For above cases a [base, max] hint can be provided by the user per
+Jason's recommendation. It is a hint as no additional restriction is
+imposed, since the kernel only cares about no violation on permitted
+ranges that it reports to the user. Underlying iommu driver may use 
+this hint to optimize e.g. deciding how many levels are used for
+the kernel-managed page table according to max addr.
 
-diff --git a/drivers/iommu/Kconfig b/drivers/iommu/Kconfig
-index c5c71b7ab7e8..3eb68fa1b8cc 100644
---- a/drivers/iommu/Kconfig
-+++ b/drivers/iommu/Kconfig
-@@ -355,6 +355,14 @@ config ARM_SMMU_DISABLE_BYPASS_BY_DEFAULT
- 	  'arm-smmu.disable_bypass' will continue to override this
- 	  config.
- 
-+config ARM_SMMU_QCOM
-+	def_tristate y
-+	depends on ARM_SMMU && ARCH_QCOM
-+	select QCOM_SCM
-+	help
-+	  When running on a Qualcomm platform that has the custom variant
-+	  of the ARM SMMU, this needs to be built into the SMMU driver.
-+
- config ARM_SMMU_V3
- 	tristate "ARM Ltd. System MMU Version 3 (SMMUv3) Support"
- 	depends on ARM64
--- 
-2.29.2
+> 
+> 4. The translatable ranges might not be fixed.  On ppc that 0..2GiB
+>    and 2^59..whatever ranges are kernel conventions, not specified by
+>    the hardware or firmware.  When running as a guest (which is the
+>    normal case on POWER), there are explicit hypercalls for
+>    configuring the allowed IOVA windows (along with pagesize, number
+>    of levels etc.).  At the moment it is fixed in hardware that there
+>    are only 2 windows, one starting at 0 and one at 2^59 but there's
+>    no inherent reason those couldn't also be configurable.
 
+If ppc iommu driver needs to configure hardware according to the 
+specified ranges, then it requires more than a hint thus better be
+conveyed via ppc specific cmd as Jason suggested.
+
+> 
+>    This will probably be rarer, but I wouldn't be surprised if it
+>    appears on another platform.  If you were designing an IOMMU ASIC
+>    for use in a variety of platforms, making the base address and size
+>    of the translatable range(s) configurable in registers would make
+>    sense.
+> 
+> 
+> Now, for (3) and (4), representing lists of windows explicitly in
+> ioctl()s is likely to be pretty ugly.  We might be able to avoid that,
+> for at least some of the interfaces, by using the nested IOAS stuff.
+> One way or another, though, the IOASes which are actually attached to
+> devices need to represent both windows.
+> 
+> e.g.
+> Create a "top-level" IOAS <A> representing the device's view.  This
+> would be either TYPE_KERNEL or maybe a special type.  Into that you'd
+> make just two iomappings one for each of the translation windows,
+> pointing to IOASes <B> and <C>.  IOAS <B> and <C> would have a single
+> window, and would represent the IO page tables for each of the
+> translation windows.  These could be either TYPE_KERNEL or (say)
+> TYPE_POWER_TCE for a user managed table.  Well.. in theory, anyway.
+> The way paravirtualization on POWER is done might mean user managed
+> tables aren't really possible for other reasons, but that's not
+> relevant here.
+> 
+> The next problem here is that we don't want userspace to have to do
+> different things for POWER, at least not for the easy case of a
+> userspace driver that just wants a chunk of IOVA space and doesn't
+> really care where it is.
+> 
+> In general I think the right approach to handle that is to
+> de-emphasize "info" or "query" interfaces.  We'll probably still need
+> some for debugging and edge cases, but in the normal case userspace
+> should just specify what it *needs* and (ideally) no more with
+> optional hints, and the kernel will either supply that or fail.
+> 
+> e.g. A simple userspace driver would simply say "I need an IOAS with
+> at least 1GiB of IOVA space" and the kernel says "Ok, you can use
+> 2^59..2^59+2GiB".  qemu, emulating the POWER vIOMMU might say "I need
+> an IOAS with translatable addresses from 0..2GiB with 4kiB page size
+> and from 2^59..2^59+1TiB with 64kiB page size" and the kernel would
+> either say "ok", or "I can't do that".
+> 
+
+This doesn't work for other platforms, which don't have vIOMMU 
+mandatory as on ppc. For those platforms, the initial address space
+is GPA (for vm case) and Qemu needs to mark those GPA holes as 
+reserved in firmware structure. I don't think anyone wants a tedious
+try-and-fail process to figure out how many holes exists in a 64bit
+address space...
+
+Thanks
+Kevin
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
