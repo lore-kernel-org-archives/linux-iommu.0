@@ -2,123 +2,55 @@ Return-Path: <SRS0=x0pP=PB=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6D73AC43217
-	for <iommu@archiver.kernel.org>; Wed, 13 Oct 2021 13:16:38 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1EEF5C433EF
+	for <iommu@archiver.kernel.org>; Wed, 13 Oct 2021 13:19:44 +0000 (UTC)
 Received: from smtp1.osuosl.org (smtp1.osuosl.org [140.211.166.138])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 1E32B61130
-	for <iommu@archiver.kernel.org>; Wed, 13 Oct 2021 13:16:38 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.4.1 mail.kernel.org 1E32B61130
-Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=redhat.com
+	by mail.kernel.org (Postfix) with ESMTPS id CA3AE610D0
+	for <iommu@archiver.kernel.org>; Wed, 13 Oct 2021 13:19:43 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.4.1 mail.kernel.org CA3AE610D0
+Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=rosenzweig.io
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by smtp1.osuosl.org (Postfix) with ESMTP id CC689826F5;
-	Wed, 13 Oct 2021 13:16:37 +0000 (UTC)
+	by smtp1.osuosl.org (Postfix) with ESMTP id 98629825B1;
+	Wed, 13 Oct 2021 13:19:43 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
 Received: from smtp1.osuosl.org ([127.0.0.1])
 	by localhost (smtp1.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id fk4uS9aWB4NJ; Wed, 13 Oct 2021 13:16:37 +0000 (UTC)
+	with ESMTP id 7kNSirzL40dj; Wed, 13 Oct 2021 13:19:42 +0000 (UTC)
 Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by smtp1.osuosl.org (Postfix) with ESMTPS id A5AE182611;
-	Wed, 13 Oct 2021 13:16:36 +0000 (UTC)
+	by smtp1.osuosl.org (Postfix) with ESMTPS id 918F482611;
+	Wed, 13 Oct 2021 13:19:42 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 6D500C0011;
-	Wed, 13 Oct 2021 13:16:36 +0000 (UTC)
-Received: from smtp4.osuosl.org (smtp4.osuosl.org [IPv6:2605:bc80:3010::137])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 3E544C000D
- for <iommu@lists.linux-foundation.org>; Wed, 13 Oct 2021 13:16:35 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 4EE6EC0011;
+	Wed, 13 Oct 2021 13:19:42 +0000 (UTC)
+Received: from smtp2.osuosl.org (smtp2.osuosl.org [IPv6:2605:bc80:3010::133])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 56575C000D
+ for <iommu@lists.linux-foundation.org>; Wed, 13 Oct 2021 13:19:40 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by smtp4.osuosl.org (Postfix) with ESMTP id 12A2A40657
- for <iommu@lists.linux-foundation.org>; Wed, 13 Oct 2021 13:16:35 +0000 (UTC)
+ by smtp2.osuosl.org (Postfix) with ESMTP id 34716404D7
+ for <iommu@lists.linux-foundation.org>; Wed, 13 Oct 2021 13:19:40 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Authentication-Results: smtp4.osuosl.org (amavisd-new);
- dkim=pass (1024-bit key) header.d=redhat.com
-Received: from smtp4.osuosl.org ([127.0.0.1])
- by localhost (smtp4.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id CNZkXumsfd9U for <iommu@lists.linux-foundation.org>;
- Wed, 13 Oct 2021 13:16:34 +0000 (UTC)
-X-Greylist: domain auto-whitelisted by SQLgrey-1.8.0
-Received: from us-smtp-delivery-124.mimecast.com
- (us-smtp-delivery-124.mimecast.com [170.10.133.124])
- by smtp4.osuosl.org (Postfix) with ESMTPS id 4741640456
- for <iommu@lists.linux-foundation.org>; Wed, 13 Oct 2021 13:16:34 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
- s=mimecast20190719; t=1634130993;
- h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
- to:to:cc:cc:mime-version:mime-version:content-type:content-type:
- in-reply-to:in-reply-to:references:references;
- bh=3UweUBspHinuJSQhguEdx6WU40R4nh4wg670z3EQDCs=;
- b=N9DOpLi6ciGUwBrxKQ9ffOhc5mGMwOI3tkVi5n7Wnt101pu2mf6nRDse+lTnviWvJ77Gtm
- BUkSyFQdDSFqg6EKfj+ifNOS4dVdzHFtQJNBN2kv/ZipH9hhhvNvJTcYyXsAyHLhwLnd2u
- 0BwmIpNaoMZu6+GATu1hON/hRB1f9CA=
-Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
- [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-54-lYDb9o67Mf-rDMq57zxd3g-1; Wed, 13 Oct 2021 09:16:31 -0400
-X-MC-Unique: lYDb9o67Mf-rDMq57zxd3g-1
-Received: from smtp.corp.redhat.com (int-mx04.intmail.prod.int.phx2.redhat.com
- [10.5.11.14])
- (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
- (No client certificate requested)
- by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 41EC3100CCC0;
- Wed, 13 Oct 2021 13:16:24 +0000 (UTC)
-Received: from horse.redhat.com (unknown [10.22.33.167])
- by smtp.corp.redhat.com (Postfix) with ESMTP id 9599DADD0;
- Wed, 13 Oct 2021 13:16:20 +0000 (UTC)
-Received: by horse.redhat.com (Postfix, from userid 10451)
- id DEFAB22023A; Wed, 13 Oct 2021 09:16:19 -0400 (EDT)
-Date: Wed, 13 Oct 2021 09:16:19 -0400
-From: Vivek Goyal <vgoyal@redhat.com>
-To: "Michael S. Tsirkin" <mst@redhat.com>
-Subject: Re: [PATCH RFC] virtio: wrap config->reset calls
-Message-ID: <YWbcI15YOkhnPh5x@redhat.com>
-References: <20211013105226.20225-1-mst@redhat.com>
+Received: from smtp2.osuosl.org ([127.0.0.1])
+ by localhost (smtp2.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+ with ESMTP id Kr_ajr_PvL3c for <iommu@lists.linux-foundation.org>;
+ Wed, 13 Oct 2021 13:19:39 +0000 (UTC)
+X-Greylist: from auto-whitelisted by SQLgrey-1.8.0
+Received: from rosenzweig.io (rosenzweig.io [138.197.143.207])
+ by smtp2.osuosl.org (Postfix) with ESMTPS id 118014018D
+ for <iommu@lists.linux-foundation.org>; Wed, 13 Oct 2021 13:19:38 +0000 (UTC)
+Date: Wed, 13 Oct 2021 08:51:04 -0400
+From: Alyssa Rosenzweig <alyssa@rosenzweig.io>
+To: Wan Jiabing <wanjiabing@vivo.com>
+Subject: Re: [PATCH] iommu/dart: use kmemdup instead of kzalloc and memcpy
+Message-ID: <YWbWOMlMtx3h32Ei@sunset>
+References: <20211013063441.29888-1-wanjiabing@vivo.com>
 MIME-Version: 1.0
-In-Reply-To: <20211013105226.20225-1-mst@redhat.com>
-X-Scanned-By: MIMEDefang 2.79 on 10.5.11.14
-Authentication-Results: relay.mimecast.com;
- auth=pass smtp.auth=CUSA124A263 smtp.mailfrom=vgoyal@redhat.com
-X-Mimecast-Spam-Score: 0
-X-Mimecast-Originator: redhat.com
 Content-Disposition: inline
-Cc: Latchesar Ionkov <lucho@ionkov.net>, nvdimm@lists.linux.dev,
- v9fs-developer@lists.sourceforge.net, Stefan Hajnoczi <stefanha@redhat.com>,
- kvm@vger.kernel.org, David Hildenbrand <david@redhat.com>,
- David Airlie <airlied@linux.ie>, Viresh Kumar <vireshk@kernel.org>,
- Jason Wang <jasowang@redhat.com>, linux-remoteproc@vger.kernel.org,
- alsa-devel@alsa-project.org, dri-devel@lists.freedesktop.org,
- netdev@vger.kernel.org, Gerd Hoffmann <kraxel@redhat.com>,
- linux-scsi@vger.kernel.org, Will Deacon <will@kernel.org>,
- Anton Ivanov <anton.ivanov@cambridgegreys.com>,
- Jean-Philippe Brucker <jean-philippe@linaro.org>,
- Linus Walleij <linus.walleij@linaro.org>, Dave Jiang <dave.jiang@intel.com>,
- Herbert Xu <herbert@gondor.apana.org.au>, linux-arm-kernel@lists.infradead.org,
- Miklos Szeredi <miklos@szeredi.hu>, Richard Weinberger <richard@nod.at>,
- Bartosz Golaszewski <brgl@bgdev.pl>, Takashi Iwai <tiwai@suse.com>,
- Gonglei <arei.gonglei@huawei.com>, Kalle Valo <kvalo@codeaurora.org>,
- "Martin K. Petersen" <martin.petersen@oracle.com>,
- "James E.J. Bottomley" <jejb@linux.ibm.com>, Jakub Kicinski <kuba@kernel.org>,
- Ira Weiny <ira.weiny@intel.com>, virtualization@lists.linux-foundation.org,
- Jeff Dike <jdike@addtoit.com>, Dominique Martinet <asmadeus@codewreck.org>,
- Stefano Garzarella <sgarzare@redhat.com>, Ohad Ben-Cohen <ohad@wizery.com>,
- Johan Hedberg <johan.hedberg@gmail.com>, Arnd Bergmann <arnd@arndb.de>,
- Amit Shah <amit@kernel.org>, Eric Van Hensbergen <ericvh@gmail.com>,
- Marcel Holtmann <marcel@holtmann.org>, linux-um@lists.infradead.org,
- linux-crypto@vger.kernel.org, linux-block@vger.kernel.org,
- Vishal Verma <vishal.l.verma@intel.com>,
- Luiz Augusto von Dentz <luiz.dentz@gmail.com>, Matt Mackall <mpm@selenic.com>,
- Dan Williams <dan.j.williams@intel.com>, Jaroslav Kysela <perex@perex.cz>,
- Cristian Marussi <cristian.marussi@arm.com>, Jens Axboe <axboe@kernel.dk>,
- Jie Deng <jie.deng@intel.com>, Mathieu Poirier <mathieu.poirier@linaro.org>,
- linux-gpio@vger.kernel.org, Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
- linux-wireless@vger.kernel.org, linux-kernel@vger.kernel.org,
- linux-i2c@vger.kernel.org, linux-bluetooth@vger.kernel.org,
- iommu@lists.linux-foundation.org,
- Anton Yakovlev <anton.yakovlev@opensynergy.com>,
- Daniel Vetter <daniel@ffwll.ch>, Sudeep Holla <sudeep.holla@arm.com>,
- linux-fsdevel@vger.kernel.org, Paolo Bonzini <pbonzini@redhat.com>,
- Johannes Berg <johannes@sipsolutions.net>, "Enrico Weigelt,
- metux IT consult" <info@metux.net>, "David S. Miller" <davem@davemloft.net>
+In-Reply-To: <20211013063441.29888-1-wanjiabing@vivo.com>
+Cc: linux-kernel@vger.kernel.org, iommu@lists.linux-foundation.org,
+ kael_w@yeah.net, Will Deacon <will@kernel.org>
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -136,71 +68,39 @@ Content-Transfer-Encoding: 7bit
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-On Wed, Oct 13, 2021 at 06:55:31AM -0400, Michael S. Tsirkin wrote:
-> This will enable cleanups down the road.
-> The idea is to disable cbs, then add "flush_queued_cbs" callback
-> as a parameter, this way drivers can flush any work
-> queued after callbacks have been disabled.
+Reviewed-by: Alyssa Rosenzweig <alyssa@rosenzweig.io>
+
+On Wed, Oct 13, 2021 at 02:34:41AM -0400, Wan Jiabing wrote:
+> Fix following coccicheck warning:
+> drivers/iommu/apple-dart.c:704:20-27: WARNING opportunity for kmemdup
 > 
-> Signed-off-by: Michael S. Tsirkin <mst@redhat.com>
+> Signed-off-by: Wan Jiabing <wanjiabing@vivo.com>
 > ---
->  arch/um/drivers/virt-pci.c                 | 2 +-
->  drivers/block/virtio_blk.c                 | 4 ++--
->  drivers/bluetooth/virtio_bt.c              | 2 +-
->  drivers/char/hw_random/virtio-rng.c        | 2 +-
->  drivers/char/virtio_console.c              | 4 ++--
->  drivers/crypto/virtio/virtio_crypto_core.c | 8 ++++----
->  drivers/firmware/arm_scmi/virtio.c         | 2 +-
->  drivers/gpio/gpio-virtio.c                 | 2 +-
->  drivers/gpu/drm/virtio/virtgpu_kms.c       | 2 +-
->  drivers/i2c/busses/i2c-virtio.c            | 2 +-
->  drivers/iommu/virtio-iommu.c               | 2 +-
->  drivers/net/caif/caif_virtio.c             | 2 +-
->  drivers/net/virtio_net.c                   | 4 ++--
->  drivers/net/wireless/mac80211_hwsim.c      | 2 +-
->  drivers/nvdimm/virtio_pmem.c               | 2 +-
->  drivers/rpmsg/virtio_rpmsg_bus.c           | 2 +-
->  drivers/scsi/virtio_scsi.c                 | 2 +-
->  drivers/virtio/virtio.c                    | 5 +++++
->  drivers/virtio/virtio_balloon.c            | 2 +-
->  drivers/virtio/virtio_input.c              | 2 +-
->  drivers/virtio/virtio_mem.c                | 2 +-
->  fs/fuse/virtio_fs.c                        | 4 ++--
-
-fs/fuse/virtio_fs.c changes look good to me.
-
-Reviewed-by: Vivek Goyal <vgoyal@redhat.com>
-
-Vivek
-
-[..]
-> diff --git a/fs/fuse/virtio_fs.c b/fs/fuse/virtio_fs.c
-> index 0ad89c6629d7..27c3b74070a2 100644
-> --- a/fs/fuse/virtio_fs.c
-> +++ b/fs/fuse/virtio_fs.c
-> @@ -895,7 +895,7 @@ static int virtio_fs_probe(struct virtio_device *vdev)
->  	return 0;
+>  drivers/iommu/apple-dart.c | 3 +--
+>  1 file changed, 1 insertion(+), 2 deletions(-)
+> 
+> diff --git a/drivers/iommu/apple-dart.c b/drivers/iommu/apple-dart.c
+> index 280ff8df728d..5eeb8d6b72e2 100644
+> --- a/drivers/iommu/apple-dart.c
+> +++ b/drivers/iommu/apple-dart.c
+> @@ -701,13 +701,12 @@ static struct iommu_group *apple_dart_device_group(struct device *dev)
+>  	if (!group)
+>  		goto out;
 >  
->  out_vqs:
-> -	vdev->config->reset(vdev);
-> +	virtio_reset_device(vdev);
->  	virtio_fs_cleanup_vqs(vdev, fs);
->  	kfree(fs->vqs);
+> -	group_master_cfg = kzalloc(sizeof(*group_master_cfg), GFP_KERNEL);
+> +	group_master_cfg = kmemdup(cfg, sizeof(*group_master_cfg), GFP_KERNEL);
+>  	if (!group_master_cfg) {
+>  		iommu_group_put(group);
+>  		goto out;
+>  	}
 >  
-> @@ -927,7 +927,7 @@ static void virtio_fs_remove(struct virtio_device *vdev)
->  	list_del_init(&fs->list);
->  	virtio_fs_stop_all_queues(fs);
->  	virtio_fs_drain_all_queues_locked(fs);
-> -	vdev->config->reset(vdev);
-> +	virtio_reset_device(vdev);
->  	virtio_fs_cleanup_vqs(vdev, fs);
+> -	memcpy(group_master_cfg, cfg, sizeof(*group_master_cfg));
+>  	iommu_group_set_iommudata(group, group_master_cfg,
+>  		apple_dart_release_group);
 >  
->  	vdev->priv = NULL;
-
-
-Thanks
-Vivek
-
+> -- 
+> 2.20.1
+> 
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
