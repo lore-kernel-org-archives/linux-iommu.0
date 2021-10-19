@@ -2,74 +2,78 @@ Return-Path: <SRS0=0fjx=PH=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6857FC433FE
-	for <iommu@archiver.kernel.org>; Tue, 19 Oct 2021 16:39:00 +0000 (UTC)
-Received: from smtp3.osuosl.org (smtp3.osuosl.org [140.211.166.136])
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E2748C433EF
+	for <iommu@archiver.kernel.org>; Tue, 19 Oct 2021 16:39:02 +0000 (UTC)
+Received: from smtp2.osuosl.org (smtp2.osuosl.org [140.211.166.133])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 146A761057
-	for <iommu@archiver.kernel.org>; Tue, 19 Oct 2021 16:39:00 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.4.1 mail.kernel.org 146A761057
+	by mail.kernel.org (Postfix) with ESMTPS id 9BDDC61260
+	for <iommu@archiver.kernel.org>; Tue, 19 Oct 2021 16:39:02 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.4.1 mail.kernel.org 9BDDC61260
 Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=lists.linux-foundation.org
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by smtp3.osuosl.org (Postfix) with ESMTP id ECB90600CC;
-	Tue, 19 Oct 2021 16:38:59 +0000 (UTC)
+	by smtp2.osuosl.org (Postfix) with ESMTP id 75E9B40546;
+	Tue, 19 Oct 2021 16:39:02 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from smtp3.osuosl.org ([127.0.0.1])
-	by localhost (smtp3.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id EBWhot2eqO1h; Tue, 19 Oct 2021 16:38:59 +0000 (UTC)
-Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [IPv6:2605:bc80:3010:104::8cd3:938])
-	by smtp3.osuosl.org (Postfix) with ESMTPS id B844E60723;
-	Tue, 19 Oct 2021 16:38:58 +0000 (UTC)
+Received: from smtp2.osuosl.org ([127.0.0.1])
+	by localhost (smtp2.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+	with ESMTP id mXVjDkZ_0-ZG; Tue, 19 Oct 2021 16:39:01 +0000 (UTC)
+Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
+	by smtp2.osuosl.org (Postfix) with ESMTPS id 292F740561;
+	Tue, 19 Oct 2021 16:39:01 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id A397BC000F;
-	Tue, 19 Oct 2021 16:38:58 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id D66B8C000F;
+	Tue, 19 Oct 2021 16:39:00 +0000 (UTC)
 Received: from smtp3.osuosl.org (smtp3.osuosl.org [140.211.166.136])
- by lists.linuxfoundation.org (Postfix) with ESMTP id B2FA1C000D
- for <iommu@lists.linux-foundation.org>; Tue, 19 Oct 2021 16:38:57 +0000 (UTC)
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 62503C000D
+ for <iommu@lists.linux-foundation.org>; Tue, 19 Oct 2021 16:38:59 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by smtp3.osuosl.org (Postfix) with ESMTP id 96208606EC
- for <iommu@lists.linux-foundation.org>; Tue, 19 Oct 2021 16:38:57 +0000 (UTC)
+ by smtp3.osuosl.org (Postfix) with ESMTP id 5084560745
+ for <iommu@lists.linux-foundation.org>; Tue, 19 Oct 2021 16:38:59 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
+Authentication-Results: smtp3.osuosl.org (amavisd-new);
+ dkim=pass (2048-bit key) header.d=svenpeter.dev header.b="Bmoc8dCa";
+ dkim=pass (2048-bit key) header.d=messagingengine.com
+ header.b="nLaaDYZG"
 Received: from smtp3.osuosl.org ([127.0.0.1])
  by localhost (smtp3.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id k-iVLosTbomz for <iommu@lists.linux-foundation.org>;
- Tue, 19 Oct 2021 16:38:56 +0000 (UTC)
+ with ESMTP id hkRpIALeEbdZ for <iommu@lists.linux-foundation.org>;
+ Tue, 19 Oct 2021 16:38:58 +0000 (UTC)
 X-Greylist: from auto-whitelisted by SQLgrey-1.8.0
 Received: from new3-smtp.messagingengine.com (new3-smtp.messagingengine.com
  [66.111.4.229])
- by smtp3.osuosl.org (Postfix) with ESMTPS id C3FCC606B6
- for <iommu@lists.linux-foundation.org>; Tue, 19 Oct 2021 16:38:56 +0000 (UTC)
-Received: from compute6.internal (compute6.nyi.internal [10.202.2.46])
- by mailnew.nyi.internal (Postfix) with ESMTP id DEAC8580FAB;
- Tue, 19 Oct 2021 12:38:55 -0400 (EDT)
+ by smtp3.osuosl.org (Postfix) with ESMTPS id 9E7FF60667
+ for <iommu@lists.linux-foundation.org>; Tue, 19 Oct 2021 16:38:58 +0000 (UTC)
+Received: from compute4.internal (compute4.nyi.internal [10.202.2.44])
+ by mailnew.nyi.internal (Postfix) with ESMTP id DD7B1580FA5;
+ Tue, 19 Oct 2021 12:38:57 -0400 (EDT)
 Received: from mailfrontend1 ([10.202.2.162])
- by compute6.internal (MEProxy); Tue, 19 Oct 2021 12:38:55 -0400
+ by compute4.internal (MEProxy); Tue, 19 Oct 2021 12:38:57 -0400
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=svenpeter.dev;
  h=from:to:cc:subject:date:message-id:in-reply-to:references
- :mime-version:content-transfer-encoding; s=fm2; bh=Lm167NMYXwDZM
- 5T2X52d4c+cqmvc3ib0uOll8ogRyr0=; b=kaFG4MWkopcsn6C2h32z1M2E86eHt
- LnPKVoJ9uAfRyWkPDgmLzfl2GGIDe6V5vb7IQ3Xfb7hninoKFCiTnFJQrF/xZy4k
- wpST3OuxZHvZRbZoaJQnEZwaxCBaJUzmF+XKQD/P4UTwMX66Xk11UbEhMti3lTHp
- ygRjw7I+B5Glrm59a6jrlecgDwWqKlT5+EU18S/t5fNHxUJ6MjpeoSayW/bVWQ3b
- vi0gaB5/6FTHcleRRrVlrLs7I4dldLyx54VGTxNp1Ss4RYaYll5o/HK81GmAYmUy
- L9UCDGBZ1KyULAxu6uts9KvVT239ftIgrEVAlLnZNEI5eB/uoFtmhxQWQ==
+ :mime-version:content-transfer-encoding; s=fm2; bh=mUxFOhf4FPGG2
+ wGC5ii+fwrgIB1PK7ggmQy9Gi+FDDc=; b=Bmoc8dCaGevTZngBfyDKv9gFVU3x5
+ 4szr37nykRc38nZ/BiXYAjopZsOH2GWQb22Wm+RAn9OAZw6hEt9rZoPAG2HJXWRT
+ N18URP30eUAlZTVzSAYYLMKclNxMmArMmpMi7ulFd4qfFg2ZoejMfLW1UWkg5AiX
+ 5XZEk73zHK0Hv8H+I5gFfsr0TiuarD0O/21Pthm/BbwQIZqIj6iRwAL1A5boOxAu
+ 3eB5jXb6vedd27+nG4kZKYssDr9CKl9LVQtoWIV11oMpq+zIRhOTii1brAN1/Gp0
+ iAkWR0bM9nPioCuyb6gPGLVlYu4aCG2oKjAjmleqiz/ZHNT8cQIobRZHA==
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
  messagingengine.com; h=cc:content-transfer-encoding:date:from
  :in-reply-to:message-id:mime-version:references:subject:to
  :x-me-proxy:x-me-proxy:x-me-sender:x-me-sender:x-sasl-enc; s=
- fm1; bh=Lm167NMYXwDZM5T2X52d4c+cqmvc3ib0uOll8ogRyr0=; b=YvQyiO+z
- TrGQoiI9DO5Xd+flepqOgobBH2hQ20alakaelO0QnNPFYJsJws2z0U67BvdN2R2x
- 73ezK08KmTj3DKrQRbKhmuGOwxfZjUFZGro0c4oknlwsfPSvCjr5+mnKg7BeE84w
- zPqWctDJvspTfMdgcmhSJ9pGC5ZxT1sV1ikGlqGwsl6us/jqaycMp7m5bEQVc7mM
- rf33zXbmleKyI4RKuKBDYh00GyrvloqGqcnJ1Y7d+F5bxw7kj2bG9l96qcHjq+GD
- JZu9r13hXeA+x0SCsEIrCc/Z1dOkX42f17O5ji7VnbOq4/XZ8nUsMvZ5xqCEtc71
- F4RL8YkfE5lXfQ==
-X-ME-Sender: <xms:n_RuYZwxo5_cJqP9Ru1HE-k7isbhyRcmOvky9_LGC_EDVBkG7NDKeQ>
- <xme:n_RuYZRj1OJGNiBpiwE11P0e-d9s2mx73D9CeZ769N2WLYAl8Dj-0A716korSHzgD
- yy7HttuqSftKwQ48_A>
-X-ME-Received: <xmr:n_RuYTW2tYH31tyFj-CnTUwzf09jGA1i3IR1GvCuM-gvZO4kOUIEeP3uo4ReBsst8pDo8REntc5d0dV-EbhDO-HZgk47lqFCq02a5pkP-MFQtJTdr4V3Quc>
+ fm1; bh=mUxFOhf4FPGG2wGC5ii+fwrgIB1PK7ggmQy9Gi+FDDc=; b=nLaaDYZG
+ IfDEQ1mQsGdYRxJS8wSes6/Y5ROtxQLResvCXv5qJ14/X4jiZUVc77duxBn0vbl6
+ GytzPqo1nvFU+oN5gn5zN0uHdvFD3W9w04kjf6/rJ7pXRV157yNYz0yl3N7ZZp/p
+ YIh5Z121W74mxNcNr7+92O61H4Y7qkFoAIEwfmn2O5OxOrIZdc3W82CRSPx/J5n1
+ OeJlPxhhsORzsIb0eiCIKM4Y1TaoO7gSVop6onXy8esUuTqOJf+BDRb7HaoFgYhQ
+ JZlDCk8kPydUBtUyyQOzaNhu5drV0ytO1SGjPI7Hn4PT9zPDFLbGdfRQiocdJgjc
+ pDBvlXYR+c5dCQ==
+X-ME-Sender: <xms:ofRuYZ9gcA3St1WGre702N3UPNC6mUo09R3XYnv7ROIXdLBlNER20Q>
+ <xme:ofRuYdsZMuzN-smlA7UO4aze64-yNKsOJ_xeLAa2nik84SnR3iCApYVdnabFkZsWR
+ dgp5S_q_B8rmc-4UkI>
+X-ME-Received: <xmr:ofRuYXAc1Eum-0fuGWasN57ZjusFLsxYq__x5WGQaJQXNU5X5o1W85YLu22zUM28kgf42a4vk2OzrIX-DazMqYsCHA8WoK77fXCDki8w--t5-xI7OLto19E>
 X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgedvtddrvddvvddgleekucetufdoteggodetrfdotf
  fvucfrrhhofhhilhgvmecuhfgrshhtofgrihhlpdfqfgfvpdfurfetoffkrfgpnffqhgen
  uceurghilhhouhhtmecufedttdenucesvcftvggtihhpihgvnhhtshculddquddttddmne
@@ -78,17 +82,17 @@ X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgedvtddrvddvvddgleekucetufdoteggod
  hrnheptedvkeetleeuffffhfekteetffeggffgveehieelueefvddtueffveevlefhfeej
  necuvehluhhsthgvrhfuihiivgepudenucfrrghrrghmpehmrghilhhfrhhomhepshhvvg
  hnsehsvhgvnhhpvghtvghrrdguvghv
-X-ME-Proxy: <xmx:n_RuYbie0a8SOzf1LUhz0oGMRZKKfjS9PFriz044fVQLx4QWMg2kdg>
- <xmx:n_RuYbCovU7J3FtAMwjJ_TtbOD19-ZCa3z7BotRC_y6tIG8hi1w0mQ>
- <xmx:n_RuYUKPdY8hoDx0zPuBYDXfDlEQClFwpsgSSLkDv8GvPOabreNb_w>
- <xmx:n_RuYf7Gn3nKaUmPoAmqX_WLY7KUeID-N9VQMh2pY8AHj3ZYHk4iNQ>
+X-ME-Proxy: <xmx:ofRuYdcnAHfsHVEcAxKJE8q91g1q9cBOPRuFsQthpOkY040GYzurZA>
+ <xmx:ofRuYePkUzdc7s8Kf0NPiTblxc7-5kIC8BCDoVjCFjHiewvf_aCAcA>
+ <xmx:ofRuYfkCh0r6IQLNzf_CcQsbZfVxnOr0MZEa_4Du1j7NIQpUL8ypaw>
+ <xmx:ofRuYfF1WRtVKzEyLR-e3LPSULpmyCsNMIrmGgD2tIOHiyaxf3tV7g>
 Received: by mail.messagingengine.com (Postfix) with ESMTPA; Tue,
- 19 Oct 2021 12:38:54 -0400 (EDT)
+ 19 Oct 2021 12:38:56 -0400 (EDT)
 To: iommu@lists.linux-foundation.org,
 	Robin Murphy <robin.murphy@arm.com>
-Subject: [PATCH v3 3/6] iommu/dma: Support granule > PAGE_SIZE allocations
-Date: Tue, 19 Oct 2021 18:37:34 +0200
-Message-Id: <20211019163737.46269-4-sven@svenpeter.dev>
+Subject: [PATCH v3 4/6] iommu: Move IOMMU pagesize check to attach_device
+Date: Tue, 19 Oct 2021 18:37:35 +0200
+Message-Id: <20211019163737.46269-5-sven@svenpeter.dev>
 X-Mailer: git-send-email 2.30.1 (Apple Git-130)
 In-Reply-To: <20211019163737.46269-1-sven@svenpeter.dev>
 References: <20211019163737.46269-1-sven@svenpeter.dev>
@@ -117,194 +121,114 @@ Content-Transfer-Encoding: 7bit
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-Noncontiguous allocations must be made up of individual blocks
-in a way that allows those blocks to be mapped contiguously in IOVA space.
-For IOMMU page sizes larger than the CPU page size this can be done
-by allocating all individual blocks from pools with
-order >= get_order(iovad->granule). Some spillover pages might be
-allocated at the end, which can however immediately be freed.
+The iova allocator is capable of handling any granularity which is a power
+of two. Remove the much stronger condition that the granularity must be
+smaller or equal to the CPU page size from a BUG_ON there.
+Instead, check this condition during __iommu_attach_device and fail
+gracefully.
 
 Signed-off-by: Sven Peter <sven@svenpeter.dev>
 ---
- drivers/iommu/dma-iommu.c | 103 ++++++++++++++++++++++++++++++++++----
- 1 file changed, 93 insertions(+), 10 deletions(-)
+ drivers/iommu/iommu.c | 35 ++++++++++++++++++++++++++++++++---
+ drivers/iommu/iova.c  |  7 ++++---
+ include/linux/iommu.h |  5 +++++
+ 3 files changed, 41 insertions(+), 6 deletions(-)
 
-diff --git a/drivers/iommu/dma-iommu.c b/drivers/iommu/dma-iommu.c
-index ea799e70fc98..579a5a89d1ec 100644
---- a/drivers/iommu/dma-iommu.c
-+++ b/drivers/iommu/dma-iommu.c
-@@ -17,6 +17,7 @@
- #include <linux/iommu.h>
- #include <linux/iova.h>
- #include <linux/irq.h>
-+#include <linux/kernel.h>
- #include <linux/mm.h>
- #include <linux/mutex.h>
- #include <linux/pfn.h>
-@@ -547,6 +548,9 @@ static struct page **__iommu_dma_alloc_pages(struct device *dev,
- {
- 	struct page **pages;
- 	unsigned int i = 0, nid = dev_to_node(dev);
-+	unsigned int j;
-+	unsigned long min_order = __fls(order_mask);
-+	unsigned int min_order_size = 1U << min_order;
+diff --git a/drivers/iommu/iommu.c b/drivers/iommu/iommu.c
+index dd7863e453a5..28896739964b 100644
+--- a/drivers/iommu/iommu.c
++++ b/drivers/iommu/iommu.c
+@@ -80,6 +80,8 @@ static struct iommu_domain *__iommu_domain_alloc(struct bus_type *bus,
+ 						 unsigned type);
+ static int __iommu_attach_device(struct iommu_domain *domain,
+ 				 struct device *dev);
++static void __iommu_detach_device(struct iommu_domain *domain,
++				  struct device *dev);
+ static int __iommu_attach_group(struct iommu_domain *domain,
+ 				struct iommu_group *group);
+ static void __iommu_detach_group(struct iommu_domain *domain,
+@@ -1974,6 +1976,19 @@ void iommu_domain_free(struct iommu_domain *domain)
+ }
+ EXPORT_SYMBOL_GPL(iommu_domain_free);
  
- 	order_mask &= (2U << MAX_ORDER) - 1;
- 	if (!order_mask)
-@@ -586,15 +590,37 @@ static struct page **__iommu_dma_alloc_pages(struct device *dev,
- 				split_page(page, order);
- 			break;
- 		}
--		if (!page) {
--			__iommu_dma_free_pages(pages, i);
--			return NULL;
++static int iommu_check_page_size(struct iommu_domain *domain)
++{
++	if (!iommu_is_paging_domain(domain))
++		return 0;
 +
-+		/*
-+		 * If we have no valid page here we might be trying to allocate
-+		 * the last block consisting of 1<<order pages (to guarantee
-+		 * alignment) but actually need less pages than that.
-+		 * In that case we just try to allocate the entire block and
-+		 * directly free the spillover pages again.
-+		 */
-+		if (!page && !order_mask && count < min_order_size) {
-+			page = alloc_pages_node(nid, gfp, min_order);
-+			if (!page)
-+				goto free_pages;
-+			split_page(page, min_order);
++	if (!(domain->pgsize_bitmap & (PAGE_SIZE | (PAGE_SIZE - 1)))) {
++		pr_warn("IOMMU pages cannot exactly represent CPU pages.\n");
++		return -EFAULT;
++	}
 +
-+			for (j = count; j < min_order_size; ++j)
-+				__free_page(page + j);
++	return 0;
++}
 +
-+			order_size = count;
- 		}
+ static int __iommu_attach_device(struct iommu_domain *domain,
+ 				 struct device *dev)
+ {
+@@ -1983,9 +1998,23 @@ static int __iommu_attach_device(struct iommu_domain *domain,
+ 		return -ENODEV;
+ 
+ 	ret = domain->ops->attach_dev(domain, dev);
+-	if (!ret)
+-		trace_attach_device_to_domain(dev);
+-	return ret;
++	if (ret)
++		return ret;
 +
-+		if (!page)
-+			goto free_pages;
- 		count -= order_size;
- 		while (order_size--)
- 			pages[i++] = page++;
- 	}
- 	return pages;
++	/*
++	 * Check that CPU pages can be represented by the IOVA granularity.
++	 * This has to be done after ops->attach_dev since many IOMMU drivers
++	 * only limit domain->pgsize_bitmap after having attached the first
++	 * device.
++	 */
++	ret = iommu_check_page_size(domain);
++	if (ret) {
++		__iommu_detach_device(domain, dev);
++		return ret;
++	}
 +
-+free_pages:
-+	__iommu_dma_free_pages(pages, i);
-+	return NULL;
++	trace_attach_device_to_domain(dev);
++	return 0;
  }
  
- /*
-@@ -611,15 +637,27 @@ static struct page **__iommu_dma_alloc_noncontiguous(struct device *dev,
- 	bool coherent = dev_is_dma_coherent(dev);
- 	int ioprot = dma_info_to_prot(DMA_BIDIRECTIONAL, coherent, attrs);
- 	unsigned int count, min_size, alloc_sizes = domain->pgsize_bitmap;
-+	struct sg_append_table sgt_append = {};
-+	struct scatterlist *last_sg;
- 	struct page **pages;
- 	dma_addr_t iova;
-+	phys_addr_t orig_s_phys;
-+	size_t orig_s_len, orig_s_off, s_iova_off, iova_size;
+ int iommu_attach_device(struct iommu_domain *domain, struct device *dev)
+diff --git a/drivers/iommu/iova.c b/drivers/iommu/iova.c
+index 9e8bc802ac05..707eb0ceb29f 100644
+--- a/drivers/iommu/iova.c
++++ b/drivers/iommu/iova.c
+@@ -50,10 +50,11 @@ init_iova_domain(struct iova_domain *iovad, unsigned long granule,
+ {
+ 	/*
+ 	 * IOVA granularity will normally be equal to the smallest
+-	 * supported IOMMU page size; both *must* be capable of
+-	 * representing individual CPU pages exactly.
++	 * supported IOMMU page size; while both usually are capable of
++	 * representing individual CPU pages exactly the IOVA allocator
++	 * supports any granularities that are an exact power of two.
+ 	 */
+-	BUG_ON((granule > PAGE_SIZE) || !is_power_of_2(granule));
++	BUG_ON(!is_power_of_2(granule));
  
- 	if (static_branch_unlikely(&iommu_deferred_attach_enabled) &&
- 	    iommu_deferred_attach(dev, domain))
- 		return NULL;
+ 	spin_lock_init(&iovad->iova_rbtree_lock);
+ 	iovad->rbroot = RB_ROOT;
+diff --git a/include/linux/iommu.h b/include/linux/iommu.h
+index d2f3435e7d17..cabd25879613 100644
+--- a/include/linux/iommu.h
++++ b/include/linux/iommu.h
+@@ -101,6 +101,11 @@ static inline bool iommu_is_dma_domain(struct iommu_domain *domain)
+ 	return domain->type & __IOMMU_DOMAIN_DMA_API;
+ }
  
- 	min_size = alloc_sizes & -alloc_sizes;
--	if (min_size < PAGE_SIZE) {
-+	if (iovad->granule > PAGE_SIZE) {
-+		if (size < iovad->granule) {
-+			/* ensure a single contiguous allocation */
-+			min_size = ALIGN(size, PAGE_SIZE*(1U<<get_order(size)));
-+			alloc_sizes = min_size;
-+		}
++static inline bool iommu_is_paging_domain(struct iommu_domain *domain)
++{
++	return domain->type & __IOMMU_DOMAIN_PAGING;
++}
 +
-+		size = PAGE_ALIGN(size);
-+	} else if (min_size < PAGE_SIZE) {
- 		min_size = PAGE_SIZE;
- 		alloc_sizes |= PAGE_SIZE;
- 	} else {
-@@ -634,13 +672,17 @@ static struct page **__iommu_dma_alloc_noncontiguous(struct device *dev,
- 	if (!pages)
- 		return NULL;
- 
--	size = iova_align(iovad, size);
--	iova = iommu_dma_alloc_iova(domain, size, dev->coherent_dma_mask, dev);
-+	iova_size = iova_align(iovad, size);
-+	iova = iommu_dma_alloc_iova(domain, iova_size, dev->coherent_dma_mask, dev);
- 	if (!iova)
- 		goto out_free_pages;
- 
--	if (sg_alloc_table_from_pages(sgt, pages, count, 0, size, GFP_KERNEL))
-+	/* append_table is only used to get a pointer to the last entry */
-+	if (sg_alloc_append_table_from_pages(&sgt_append, pages, count, 0,
-+					iova_size, UINT_MAX, 0, GFP_KERNEL))
- 		goto out_free_iova;
-+	memcpy(sgt, &sgt_append.sgt, sizeof(*sgt));
-+	last_sg = sgt_append.prv;
- 
- 	if (!(ioprot & IOMMU_CACHE)) {
- 		struct scatterlist *sg;
-@@ -650,18 +692,59 @@ static struct page **__iommu_dma_alloc_noncontiguous(struct device *dev,
- 			arch_dma_prep_coherent(sg_page(sg), sg->length);
- 	}
- 
-+	if (iovad->granule > PAGE_SIZE) {
-+		if (size < iovad->granule) {
-+			/*
-+			 * we only have a single sg list entry here that is
-+			 * likely not aligned to iovad->granule. adjust the
-+			 * entry to represent the encapsulating IOMMU page
-+			 * and then later restore everything to its original
-+			 * values, similar to the impedance matching done in
-+			 * iommu_dma_map_sg.
-+			 */
-+			orig_s_phys = sg_phys(sgt->sgl);
-+			orig_s_len = sgt->sgl->length;
-+			orig_s_off = sgt->sgl->offset;
-+			s_iova_off = iova_offset(iovad, orig_s_phys);
-+
-+			sg_set_page(sgt->sgl,
-+				pfn_to_page(PHYS_PFN(orig_s_phys - s_iova_off)),
-+				iova_align(iovad, orig_s_len + s_iova_off),
-+				sgt->sgl->offset & ~s_iova_off);
-+		} else {
-+			/*
-+			 * convince iommu_map_sg_atomic to map the last block
-+			 * even though it may be too small.
-+			 */
-+			orig_s_len = last_sg->length;
-+			last_sg->length = iova_align(iovad, last_sg->length);
-+		}
-+	}
-+
- 	if (iommu_map_sg_atomic(domain, iova, sgt->sgl, sgt->orig_nents, ioprot)
--			< size)
-+			< iova_size)
- 		goto out_free_sg;
- 
-+	if (iovad->granule > PAGE_SIZE) {
-+		if (size < iovad->granule) {
-+			sg_set_page(sgt->sgl,
-+				pfn_to_page(PHYS_PFN(orig_s_phys)),
-+				orig_s_len, orig_s_off);
-+
-+			iova += s_iova_off;
-+		} else {
-+			last_sg->length = orig_s_len;
-+		}
-+	}
-+
- 	sgt->sgl->dma_address = iova;
--	sgt->sgl->dma_length = size;
-+	sgt->sgl->dma_length = iova_size;
- 	return pages;
- 
- out_free_sg:
- 	sg_free_table(sgt);
- out_free_iova:
--	iommu_dma_free_iova(cookie, iova, size, NULL);
-+	iommu_dma_free_iova(cookie, iova, iova_size, NULL);
- out_free_pages:
- 	__iommu_dma_free_pages(pages, count);
- 	return NULL;
+ enum iommu_cap {
+ 	IOMMU_CAP_CACHE_COHERENCY,	/* IOMMU can enforce cache coherent DMA
+ 					   transactions */
 -- 
 2.25.1
 
