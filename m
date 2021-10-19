@@ -2,101 +2,102 @@ Return-Path: <SRS0=0fjx=PH=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1F030C433EF
-	for <iommu@archiver.kernel.org>; Tue, 19 Oct 2021 16:23:46 +0000 (UTC)
-Received: from smtp2.osuosl.org (smtp2.osuosl.org [140.211.166.133])
+	by smtp.lore.kernel.org (Postfix) with ESMTP id EC84DC433FE
+	for <iommu@archiver.kernel.org>; Tue, 19 Oct 2021 16:38:55 +0000 (UTC)
+Received: from smtp3.osuosl.org (smtp3.osuosl.org [140.211.166.136])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id B2B816113B
-	for <iommu@archiver.kernel.org>; Tue, 19 Oct 2021 16:23:45 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.4.1 mail.kernel.org B2B816113B
+	by mail.kernel.org (Postfix) with ESMTPS id 8EFA661260
+	for <iommu@archiver.kernel.org>; Tue, 19 Oct 2021 16:38:55 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.4.1 mail.kernel.org 8EFA661260
 Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=lists.linux-foundation.org
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by smtp2.osuosl.org (Postfix) with ESMTP id 72ABF40565;
-	Tue, 19 Oct 2021 16:23:45 +0000 (UTC)
+	by smtp3.osuosl.org (Postfix) with ESMTP id 5D16B600CC;
+	Tue, 19 Oct 2021 16:38:55 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from smtp2.osuosl.org ([127.0.0.1])
-	by localhost (smtp2.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id nmTV4a0iOi_e; Tue, 19 Oct 2021 16:23:44 +0000 (UTC)
-Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by smtp2.osuosl.org (Postfix) with ESMTPS id 3C660400CB;
-	Tue, 19 Oct 2021 16:23:44 +0000 (UTC)
-Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 0D14FC000F;
-	Tue, 19 Oct 2021 16:23:44 +0000 (UTC)
-Received: from smtp3.osuosl.org (smtp3.osuosl.org [IPv6:2605:bc80:3010::136])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 3DFD3C000D
- for <iommu@lists.linux-foundation.org>; Tue, 19 Oct 2021 16:23:42 +0000 (UTC)
-Received: from localhost (localhost [127.0.0.1])
- by smtp3.osuosl.org (Postfix) with ESMTP id 2617A60BF0
- for <iommu@lists.linux-foundation.org>; Tue, 19 Oct 2021 16:23:42 +0000 (UTC)
-X-Virus-Scanned: amavisd-new at osuosl.org
-Authentication-Results: smtp3.osuosl.org (amavisd-new);
- dkim=pass (2048-bit key) header.d=svenpeter.dev header.b="GgSDP4yz";
- dkim=pass (2048-bit key) header.d=messagingengine.com
- header.b="EACkSxiE"
 Received: from smtp3.osuosl.org ([127.0.0.1])
- by localhost (smtp3.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id g2YEy1XDDeGx for <iommu@lists.linux-foundation.org>;
- Tue, 19 Oct 2021 16:23:39 +0000 (UTC)
+	by localhost (smtp3.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+	with ESMTP id 9eCyjHcjbj0a; Tue, 19 Oct 2021 16:38:54 +0000 (UTC)
+Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
+	by smtp3.osuosl.org (Postfix) with ESMTPS id 32678605B2;
+	Tue, 19 Oct 2021 16:38:54 +0000 (UTC)
+Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 072C5C000F;
+	Tue, 19 Oct 2021 16:38:54 +0000 (UTC)
+Received: from smtp1.osuosl.org (smtp1.osuosl.org [IPv6:2605:bc80:3010::138])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 12C26C000D
+ for <iommu@lists.linux-foundation.org>; Tue, 19 Oct 2021 16:38:52 +0000 (UTC)
+Received: from localhost (localhost [127.0.0.1])
+ by smtp1.osuosl.org (Postfix) with ESMTP id 01B7E82D12
+ for <iommu@lists.linux-foundation.org>; Tue, 19 Oct 2021 16:38:52 +0000 (UTC)
+X-Virus-Scanned: amavisd-new at osuosl.org
+Authentication-Results: smtp1.osuosl.org (amavisd-new);
+ dkim=pass (2048-bit key) header.d=svenpeter.dev header.b="J2L3osf5";
+ dkim=pass (2048-bit key) header.d=messagingengine.com
+ header.b="LSwMOpqk"
+Received: from smtp1.osuosl.org ([127.0.0.1])
+ by localhost (smtp1.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+ with ESMTP id hn3dzw7vlG5A for <iommu@lists.linux-foundation.org>;
+ Tue, 19 Oct 2021 16:38:51 +0000 (UTC)
 X-Greylist: from auto-whitelisted by SQLgrey-1.8.0
-Received: from out3-smtp.messagingengine.com (out3-smtp.messagingengine.com
- [66.111.4.27])
- by smtp3.osuosl.org (Postfix) with ESMTPS id 34256606B6
- for <iommu@lists.linux-foundation.org>; Tue, 19 Oct 2021 16:23:39 +0000 (UTC)
-Received: from compute6.internal (compute6.nyi.internal [10.202.2.46])
- by mailout.nyi.internal (Postfix) with ESMTP id 526685C010E;
- Tue, 19 Oct 2021 12:23:38 -0400 (EDT)
+Received: from new3-smtp.messagingengine.com (new3-smtp.messagingengine.com
+ [66.111.4.229])
+ by smtp1.osuosl.org (Postfix) with ESMTPS id 117FE80DF4
+ for <iommu@lists.linux-foundation.org>; Tue, 19 Oct 2021 16:38:50 +0000 (UTC)
+Received: from compute1.internal (compute1.nyi.internal [10.202.2.41])
+ by mailnew.nyi.internal (Postfix) with ESMTP id 17E5D580FA5;
+ Tue, 19 Oct 2021 12:38:50 -0400 (EDT)
 Received: from mailfrontend1 ([10.202.2.162])
- by compute6.internal (MEProxy); Tue, 19 Oct 2021 12:23:38 -0400
+ by compute1.internal (MEProxy); Tue, 19 Oct 2021 12:38:50 -0400
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=svenpeter.dev;
- h=from:to:cc:subject:date:message-id:mime-version:content-type
- :content-transfer-encoding; s=fm2; bh=tmiWcW1U2H7HD7ZqjARSJDD89e
- tBKl7zqS3q5UFeQW8=; b=GgSDP4yzzqrXdJCTO3IzT6b+dw0FWxdVZj7vubJw9v
- ygV8QvgwBr/TFHrxKbsGEBdhVw6ZwlY79LFjRR7r+i91PSrcMTBlK0k1eZneE3VK
- mtS+ey16k63aTAnLEFnl6SxRREBruq4whCOUOQcB/6slYJHyBkVHapMjwnj/AHI8
- pKI8RGsT10X66hn1l02wxZ3TTHzw4VkMwqlhB97WEtD4Od0B0gA80mis6DkRUDGx
- zJVSdJZBlCgpgOpgDK9rIISzv1J9rYRAgVtaebpKrR7RxxtKPIgEoOh0WfVoj1rf
- TldFo+P1vL6Fo0hfB7eg8gJXb8IELv0gmq6DnaQfiDwg==
+ h=from:to:cc:subject:date:message-id:mime-version
+ :content-transfer-encoding; s=fm2; bh=i44Zg+dk2G8UzNjKJx/clmoHyO
+ 7G3q1KIpDDZTV8ztk=; b=J2L3osf5Ze6kpCYL57tdnuL4nc0bObyqpKRSxx+bPe
+ eh2+f/AY2OxGYdyXXlT2wjon9VI9jGfiDyTeMMF9opD890dzHeoIXehAMfss3x5O
+ I+kWXK6Yawym280LGgZNIqirV63EGRx+Mi0DZlMdXTUxuLMMq0Nm6tn88aWgzsxl
+ gyBwaCADxK6je+pBpp9qWzvdeVZ711VdF6SSeAmjQ18eoxGgM3HH/XbmESdLzVCF
+ dNXAIrGAHRv72aPwumKF6orzsw93wv8eSLDRy6HA3F7BwsTXp2plSXBUsH4+ODjr
+ IvjxJ3Q7S0whoTaUf8Ee/EObVqQ/I1TebGPEUxFxcHzQ==
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
- messagingengine.com; h=cc:content-transfer-encoding:content-type
- :date:from:message-id:mime-version:subject:to:x-me-proxy
- :x-me-proxy:x-me-sender:x-me-sender:x-sasl-enc; s=fm1; bh=tmiWcW
- 1U2H7HD7ZqjARSJDD89etBKl7zqS3q5UFeQW8=; b=EACkSxiEcdtJsunW1aiL4t
- 1uKch5SVjndL8BY1nXBJKjF2p01rm02vLBoXFZONla9v2OWuXd+Br3gTUqRDd4fM
- REuyv8E0fZxyQ0eKKBwowK5Yzu8pygIORlTf7eSR16K5y/cnziebBqJKcwkdCZSm
- hNkzQuVj3eClI3FpLo6QRGjcP3vDxiWIJ7FsstVGNRDOa2vbRVxFIttjPt5vGXyl
- ZUpQgW6NxTnG9s8oMf78k3h+HbWuXSe6+E730QYEs4Yp/vdxT7rNuqmTezNLZwSR
- L6uf0LEG2WVAUzLkINAo1FuJ99uMoWxIeCT3NLDQF58vilk4EeIZofoQYwXu0Qtg
- ==
-X-ME-Sender: <xms:CPFuYez-x0h7JmJyfNRvnugKRkj58IiDPanAh8f8O30-PCwAiUVOjw>
- <xme:CPFuYaSutZ0mcq7JlVgVVjWwE6pzioOxihRm5vx7ye0ziCdY9Umt2hAaUI06Dc-dd
- usk7CapvZCAdE8AVJI>
-X-ME-Received: <xmr:CPFuYQUM04-ztrYu-Ne0HQxVKI8UeCvcI6-ynmrCqn1eKQN7_KlYTpugcy9cpZjhH3bhkX15V7tMlKJkEXfGoooEZOLOII6AjyjlEZcvUopfbMkJTueuaSU>
-X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgedvtddrvddvvddgleehucetufdoteggodetrfdotf
+ messagingengine.com; h=cc:content-transfer-encoding:date:from
+ :message-id:mime-version:subject:to:x-me-proxy:x-me-proxy
+ :x-me-sender:x-me-sender:x-sasl-enc; s=fm1; bh=i44Zg+dk2G8UzNjKJ
+ x/clmoHyO7G3q1KIpDDZTV8ztk=; b=LSwMOpqkjE94C0FXnJLpyFfkL8ue/1aKV
+ Llso7UU5GE6k3bftdiTVwvwuDQkICATTvt/Y0NnJv650UVgkP3UFY0LEsDa4hiCS
+ pKcejmELgIVerx1AgCN1ZRIZY9wu6d4jq3vEXK8VcCvKXuNA0KHxnNH0K2pITnSm
+ EbxRGt2gJ1JYb/a2x2SiLwLsp91eSYRJzginDAvNBzhvxzEueM+q7eXt16aQ5LcG
+ yFmXhqkTlhxKqjyYD5ZAcupQoalGAsaM+f6ZMqfL1hpqxDSAduYPjt9hvdnrWmlN
+ 2FZWOirryxvd0WeJmhauOPfosq1nbGhSd1UhQ3NaVQmwVP8SsXZGw==
+X-ME-Sender: <xms:mfRuYbEUK9xq7NgiLhca8Dn9S8KLaJzLo7oK4Ow-bdX0cHgaf-V_UA>
+ <xme:mfRuYYXxEEz2sWZ1k8xep73_ScNx0a4w4Lv6InLNA5Uc0BM0ihTxrGUUJ1lT5LU4k
+ 6rydvpWF0-JkSmZCu0>
+X-ME-Received: <xmr:mfRuYdKrMJB_BqVJkxrSvz-oJIq2CwBHFXwIK5NmS-EKoGf08h3rtqOFjrse2ke7uW2rRJwpUlbRRXfopRUqcSsvfVcW6kqVS2M3HnuwU1DSdEvxCYYanAI>
+X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgedvtddrvddvvddgleekucetufdoteggodetrfdotf
  fvucfrrhhofhhilhgvmecuhfgrshhtofgrihhlpdfqfgfvpdfurfetoffkrfgpnffqhgen
  uceurghilhhouhhtmecufedttdenucesvcftvggtihhpihgvnhhtshculddquddttddmne
- cujfgurhephffvufffkffogggtgfesthekredtredtjeenucfhrhhomhepufhvvghnucfr
- vghtvghruceoshhvvghnsehsvhgvnhhpvghtvghrrdguvghvqeenucggtffrrghtthgvrh
- hnpeduheehieetkeejfffggfelkeeivdefvdeuvdeihedvveekvdetgfejieeikefhieen
- ucevlhhushhtvghrufhiiigvpedtnecurfgrrhgrmhepmhgrihhlfhhrohhmpehsvhgvnh
- esshhvvghnphgvthgvrhdruggvvh
-X-ME-Proxy: <xmx:CPFuYUgIKIm4bP8Mmw67iKaBcTpYQw2DYbg2R8c30CHVXD9CzS07Ag>
- <xmx:CPFuYQD7H6wejsKieYgASxV_MB4AqMyfHSZYUwE5EoySKfK0OesJAw>
- <xmx:CPFuYVJ7BurBPjwyU_JF690ga4nBzO6LiaqYkedFmPqrVixyi3LJ4w>
- <xmx:CvFuYS33IrnCmcVFoCmCnvQ1h1gXM2kymW5SGyke5zPplgwkuIG9YQ>
+ cujfgurhephffvufffkffoggfgsedtkeertdertddtnecuhfhrohhmpefuvhgvnhcurfgv
+ thgvrhcuoehsvhgvnhesshhvvghnphgvthgvrhdruggvvheqnecuggftrfgrthhtvghrnh
+ epfeehudeftddvhfehvdduhedtjeejheeuudfftdfgvdekvdelleeuveelgfeflefgnecu
+ ffhomhgrihhnpehkvghrnhgvlhdrohhrghenucevlhhushhtvghrufhiiigvpedtnecurf
+ grrhgrmhepmhgrihhlfhhrohhmpehsvhgvnhesshhvvghnphgvthgvrhdruggvvh
+X-ME-Proxy: <xmx:mfRuYZFAk-VVY5zeIPV8kQwQaCW8hF7RjxM1xECCnIiNbVbKB3GaSg>
+ <xmx:mfRuYRWIpIulohQCa2EPey_PsX172KUt0h_2K_rO3XERcnd_itSAjA>
+ <xmx:mfRuYUNrk3FklWjIVO9RFd5TnJrYDHts49ZUY_RuxigpJ0z0YjXeTQ>
+ <xmx:mvRuYaNJwddulYrMwAHmiECV5rSYanq4IlXAQMa5L1vAGOmuQrdAdg>
 Received: by mail.messagingengine.com (Postfix) with ESMTPA; Tue,
- 19 Oct 2021 12:23:35 -0400 (EDT)
-To: Joerg Roedel <joro@8bytes.org>
-Subject: [PATCH] iommu/dart: Initialize DART_STREAMS_ENABLE
-Date: Tue, 19 Oct 2021 18:22:53 +0200
-Message-Id: <20211019162253.45919-1-sven@svenpeter.dev>
+ 19 Oct 2021 12:38:47 -0400 (EDT)
+To: iommu@lists.linux-foundation.org,
+	Robin Murphy <robin.murphy@arm.com>
+Subject: [PATCH v3 0/6] Support IOMMU page sizes larger than the CPU page size
+Date: Tue, 19 Oct 2021 18:37:31 +0200
+Message-Id: <20211019163737.46269-1-sven@svenpeter.dev>
 X-Mailer: git-send-email 2.30.1 (Apple Git-130)
 MIME-Version: 1.0
-Cc: =?UTF-8?q?Martin=20Povi=C5=A1er?= <povik@protonmail.com>,
- Sven Peter <sven@svenpeter.dev>, Hector Martin <marcan@marcan.st>,
- linux-kernel@vger.kernel.org, iommu@lists.linux-foundation.org,
+Cc: Arnd Bergmann <arnd@kernel.org>, Sven Peter <sven@svenpeter.dev>,
+ Marc Zyngier <maz@kernel.org>, Hector Martin <marcan@marcan.st>,
+ linux-kernel@vger.kernel.org, Alexander Graf <graf@amazon.com>,
+ Mohamed Mediouni <mohamed.mediouni@caramail.com>,
  Will Deacon <will@kernel.org>, Alyssa Rosenzweig <alyssa@rosenzweig.io>
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
@@ -112,41 +113,69 @@ List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
  <mailto:iommu-request@lists.linux-foundation.org?subject=subscribe>
 From: Sven Peter via iommu <iommu@lists.linux-foundation.org>
 Reply-To: Sven Peter <sven@svenpeter.dev>
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 7bit
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-REFSVCBoYXMgYW4gYWRkaXRpb25hbCBnbG9iYWwgcmVnaXN0ZXIgdG8gY29udHJvbCB3aGljaCBz
-dHJlYW1zIGFyZQppc29sYXRlZC4gVGhpcyByZWdpc3RlciBpcyBhIGJpdCByZWR1bmRhbnQgc2lu
-Y2UgREFSVF9UQ1IgY2FuIGFscmVhZHkKYmUgdXNlZCB0byBjb250cm9sIGlzb2xhdGlvbiBhbmQg
-aXMgdXN1YWxseSBpbml0aWFsaXplZCB0byBEQVJUX1NUUkVBTV9BTEwKYnkgdGhlIHRpbWUgd2Ug
-Z2V0IGNvbnRyb2wuIFNvbWUgREFSVHMgKG5hbWVseSB0aGUgb25lIHVzZWQgZm9yIHRoZSBhdWRp
-bwpjb250cm9sbGVyKSBob3dldmVyIGhhdmUgc29tZSBzdHJlYW1zIGRpc2FibGVkIGluaXRpYWxs
-eS4gTWFrZSBzdXJlIHRob3NlCndvcmsgYnkgaW5pdGlhbGl6aW5nIERBUlRfU1RSRUFNU19FTkFC
-TEUgZHVyaW5nIHJlc2V0LgoKUmVwb3J0ZWQtYnk6IE1hcnRpbiBQb3ZpxaFlciA8cG92aWtAcHJv
-dG9ubWFpbC5jb20+ClNpZ25lZC1vZmYtYnk6IFN2ZW4gUGV0ZXIgPHN2ZW5Ac3ZlbnBldGVyLmRl
-dj4KLS0tCgpXaGlsZSB0aGlzIGNvdWxkIHRlY2huaWNhbGx5IGNvdW50IGFzIGEgZml4IEkgZG9u
-J3QgdGhpbmsgaXQgbmVlZHMgdG8gZ28gdG8KNS4xNSBzaW5jZSBubyBkcml2ZXIgdGhhdCByZXF1
-aXJlcyB0aGlzIGlzIGluIHRoZXJlLiBUaGUgZmlyc3QgZHJpdmVyCnRoYXQgbmVlZHMgdGhpcyB3
-aWxsIGxpa2VseSBvbmx5IGJlIHJlYWR5IGZvciB0aGUgNS4xNyBtZXJnZSB3aW5kb3cuCgogZHJp
-dmVycy9pb21tdS9hcHBsZS1kYXJ0LmMgfCA1ICsrKysrCiAxIGZpbGUgY2hhbmdlZCwgNSBpbnNl
-cnRpb25zKCspCgpkaWZmIC0tZ2l0IGEvZHJpdmVycy9pb21tdS9hcHBsZS1kYXJ0LmMgYi9kcml2
-ZXJzL2lvbW11L2FwcGxlLWRhcnQuYwppbmRleCBjZTkyMTk1ZGI2MzguLjZmOGMyNDBkOGQ0MCAx
-MDA2NDQKLS0tIGEvZHJpdmVycy9pb21tdS9hcHBsZS1kYXJ0LmMKKysrIGIvZHJpdmVycy9pb21t
-dS9hcHBsZS1kYXJ0LmMKQEAgLTcwLDYgKzcwLDggQEAKICNkZWZpbmUgREFSVF9FUlJPUl9BRERS
-X0hJIDB4NTQKICNkZWZpbmUgREFSVF9FUlJPUl9BRERSX0xPIDB4NTAKIAorI2RlZmluZSBEQVJU
-X1NUUkVBTVNfRU5BQkxFIDB4ZmMKKwogI2RlZmluZSBEQVJUX1RDUihzaWQpICgweDEwMCArIDQg
-KiAoc2lkKSkKICNkZWZpbmUgREFSVF9UQ1JfVFJBTlNMQVRFX0VOQUJMRSBCSVQoNykKICNkZWZp
-bmUgREFSVF9UQ1JfQllQQVNTMF9FTkFCTEUgQklUKDgpCkBAIC0yOTksNiArMzAxLDkgQEAgc3Rh
-dGljIGludCBhcHBsZV9kYXJ0X2h3X3Jlc2V0KHN0cnVjdCBhcHBsZV9kYXJ0ICpkYXJ0KQogCWFw
-cGxlX2RhcnRfaHdfZGlzYWJsZV9kbWEoJnN0cmVhbV9tYXApOwogCWFwcGxlX2RhcnRfaHdfY2xl
-YXJfYWxsX3R0YnJzKCZzdHJlYW1fbWFwKTsKIAorCS8qIGVuYWJsZSBhbGwgc3RyZWFtcyBnbG9i
-YWxseSBzaW5jZSBUQ1IgaXMgdXNlZCB0byBjb250cm9sIGlzb2xhdGlvbiAqLworCXdyaXRlbChE
-QVJUX1NUUkVBTV9BTEwsIGRhcnQtPnJlZ3MgKyBEQVJUX1NUUkVBTVNfRU5BQkxFKTsKKwogCS8q
-IGNsZWFyIGFueSBwZW5kaW5nIGVycm9ycyBiZWZvcmUgdGhlIGludGVycnVwdCBpcyB1bm1hc2tl
-ZCAqLwogCXdyaXRlbChyZWFkbChkYXJ0LT5yZWdzICsgREFSVF9FUlJPUiksIGRhcnQtPnJlZ3Mg
-KyBEQVJUX0VSUk9SKTsKIAotLSAKMi4yNS4xCgpfX19fX19fX19fX19fX19fX19fX19fX19fX19f
-X19fX19fX19fX19fX19fX19fXwppb21tdSBtYWlsaW5nIGxpc3QKaW9tbXVAbGlzdHMubGludXgt
-Zm91bmRhdGlvbi5vcmcKaHR0cHM6Ly9saXN0cy5saW51eGZvdW5kYXRpb24ub3JnL21haWxtYW4v
-bGlzdGluZm8vaW9tbXU=
+Hi,
+
+RFC: https://lore.kernel.org/linux-iommu/20210806155523.50429-1-sven@svenpeter.dev/
+ v2: https://lore.kernel.org/linux-iommu/20210828153642.19396-1-sven@svenpeter.dev/
+
+Time to revive this series:
+
+v2 -> v3:
+  - Dropped support for untrusted devices since swiotlb currently does not
+    allow aligning buffers to granularities bigger than PAGE_SIZE.
+    Getting this to work is possibly but a bit tricky together with min_align_mask.
+    Right now there are no untrusted device on the M1 anyway and this series already
+    feels big enough. I've therefore decided to address this in a follow up.
+  - Replaced phys_to_page with pfn_to_page(PHYS_PFN(..)) since not all architectures
+    define phys_to_page
+  - Replaced the PAGE_SIZE > granule check in iommu_check_page_size with
+    domain->pgsize_bitmap & (PAGE_SIZE | (PAGE_SIZE - 1)) as suggested by Robin
+  - Rebased on the latest rc which required to introduce sg_alloc_append_table_from_pages
+    since __sg_alloc_table_from_pages no longer exists 
+
+RFC -> v2:
+  - essentially a comlpetely rewrite of the first approach which just padded every
+    allocation
+
+Some background: On the Apple M1 the IOMMUs are hardwired to only support 16 KB pages.
+We'd still like to boot Linux with 4KB pages though because that's what most distros
+ship these days. I've been told this also helps with Android userspace compatibility
+and x86 emulation.
+This patch series adds support for that setup to the IOMMU DMA API.
+
+This is essentially done by always mapping the encapsulating IOMMU page and adjusting
+the returned iova offset. There are also changes to only allow DMA domains to make use
+of this and prevent UNMANAGED domains from encountering unexpected situations.
+
+
+Best,
+
+Sven
+
+Sven Peter (6):
+  iommu/dma: Disable get_sgtable for granule > PAGE_SIZE
+  iommu/dma: Support granule > PAGE_SIZE in dma_map_sg
+  iommu/dma: Support granule > PAGE_SIZE allocations
+  iommu: Move IOMMU pagesize check to attach_device
+  iommu: Introduce __IOMMU_DOMAIN_LP
+  iommu/dart: Remove force_bypass logic
+
+ drivers/iommu/apple-dart.c |  14 +---
+ drivers/iommu/dma-iommu.c  | 134 +++++++++++++++++++++++++++++++------
+ drivers/iommu/iommu.c      |  40 ++++++++++-
+ drivers/iommu/iova.c       |   7 +-
+ include/linux/iommu.h      |  18 ++++-
+ 5 files changed, 174 insertions(+), 39 deletions(-)
+
+-- 
+2.25.1
+
+_______________________________________________
+iommu mailing list
+iommu@lists.linux-foundation.org
+https://lists.linuxfoundation.org/mailman/listinfo/iommu
