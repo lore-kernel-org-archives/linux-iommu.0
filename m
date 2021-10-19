@@ -2,99 +2,69 @@ Return-Path: <SRS0=0fjx=PH=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 78F0CC433F5
-	for <iommu@archiver.kernel.org>; Tue, 19 Oct 2021 01:22:33 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5958AC433EF
+	for <iommu@archiver.kernel.org>; Tue, 19 Oct 2021 12:29:27 +0000 (UTC)
 Received: from smtp1.osuosl.org (smtp1.osuosl.org [140.211.166.138])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 0C2176134F
-	for <iommu@archiver.kernel.org>; Tue, 19 Oct 2021 01:22:32 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.4.1 mail.kernel.org 0C2176134F
-Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=redhat.com
+	by mail.kernel.org (Postfix) with ESMTPS id 9A85461154
+	for <iommu@archiver.kernel.org>; Tue, 19 Oct 2021 12:29:26 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.4.1 mail.kernel.org 9A85461154
+Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=lst.de
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by smtp1.osuosl.org (Postfix) with ESMTP id AD7F883BEA;
-	Tue, 19 Oct 2021 01:22:32 +0000 (UTC)
+	by smtp1.osuosl.org (Postfix) with ESMTP id 5E68A80F0C;
+	Tue, 19 Oct 2021 12:29:26 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
 Received: from smtp1.osuosl.org ([127.0.0.1])
 	by localhost (smtp1.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id Lmr7G4n1V6Wn; Tue, 19 Oct 2021 01:22:31 +0000 (UTC)
+	with ESMTP id P1no3uLhFBLn; Tue, 19 Oct 2021 12:29:25 +0000 (UTC)
 Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by smtp1.osuosl.org (Postfix) with ESMTPS id 753FE83BE9;
-	Tue, 19 Oct 2021 01:22:31 +0000 (UTC)
+	by smtp1.osuosl.org (Postfix) with ESMTPS id 616C280E73;
+	Tue, 19 Oct 2021 12:29:25 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 4C962C000F;
-	Tue, 19 Oct 2021 01:22:31 +0000 (UTC)
-Received: from smtp1.osuosl.org (smtp1.osuosl.org [IPv6:2605:bc80:3010::138])
- by lists.linuxfoundation.org (Postfix) with ESMTP id CDC64C000D
- for <iommu@lists.linux-foundation.org>; Tue, 19 Oct 2021 01:22:30 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 314EDC000F;
+	Tue, 19 Oct 2021 12:29:25 +0000 (UTC)
+Received: from smtp3.osuosl.org (smtp3.osuosl.org [140.211.166.136])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id E4DE2C000D
+ for <iommu@lists.linux-foundation.org>; Tue, 19 Oct 2021 12:29:23 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by smtp1.osuosl.org (Postfix) with ESMTP id BD44683BE9
- for <iommu@lists.linux-foundation.org>; Tue, 19 Oct 2021 01:22:30 +0000 (UTC)
+ by smtp3.osuosl.org (Postfix) with ESMTP id C03BD60B96
+ for <iommu@lists.linux-foundation.org>; Tue, 19 Oct 2021 12:29:23 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from smtp1.osuosl.org ([127.0.0.1])
- by localhost (smtp1.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id K3s44K1Sv5Iv for <iommu@lists.linux-foundation.org>;
- Tue, 19 Oct 2021 01:22:30 +0000 (UTC)
-X-Greylist: domain auto-whitelisted by SQLgrey-1.8.0
-Received: from us-smtp-delivery-124.mimecast.com
- (us-smtp-delivery-124.mimecast.com [170.10.133.124])
- by smtp1.osuosl.org (Postfix) with ESMTPS id CD53E83BE5
- for <iommu@lists.linux-foundation.org>; Tue, 19 Oct 2021 01:22:29 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
- s=mimecast20190719; t=1634606548;
- h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
- to:to:cc:cc:mime-version:mime-version:content-type:content-type:
- in-reply-to:in-reply-to:references:references;
- bh=PAWMrVJYLpXAoOvCUd/tM5Gm44xehWjfXcNdmzTezCc=;
- b=eOE42G7nv4RZyuieKssCzYHUXckoLp29MkpHYXSO6p1vjWF4XjJV8YhGl4rCsHwR5BhBdo
- I0SsRjhftBcNhpb9rjpOu1HpK4rRgcdV6HxLVeWeHESmKSapG3zbswd4P47E8NyazEk9Kg
- zzz2kULpH7DZgSjlN8x+4zl9Aqz6bsI=
-Received: from mail-lf1-f70.google.com (mail-lf1-f70.google.com
- [209.85.167.70]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-112-szNKq9-2NT2PagcqvxYKHw-1; Mon, 18 Oct 2021 21:22:27 -0400
-X-MC-Unique: szNKq9-2NT2PagcqvxYKHw-1
-Received: by mail-lf1-f70.google.com with SMTP id
- i1-20020a056512340100b003fdd5b951e0so732626lfr.22
- for <iommu@lists.linux-foundation.org>; Mon, 18 Oct 2021 18:22:26 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
- d=1e100.net; s=20210112;
- h=x-gm-message-state:mime-version:references:in-reply-to:from:date
- :message-id:subject:to:cc;
- bh=PAWMrVJYLpXAoOvCUd/tM5Gm44xehWjfXcNdmzTezCc=;
- b=A8TS1ajROT1/3rmiQEIyNWHGggqbIoyWBq/YqrISvnbvWe8S0ps66gyYAJFne57vDO
- 9lPIGBEjMgR3shq7AP+qseqdIzHHTSMC8FZfx9G5AlSo3M2/n7yDpLFOMIsYo7SLiUMt
- OP2HoDBqk5w5DFV3VZCxxDVHfkncwrynqCiHKrhv/4q/ipDATVNH85nVD/lyblGyaD8M
- N737SM+pJOcoIVk08d7UCJE+JRpvwZz0LPNbIpSl2RtqIu3jVCpGywt6cKrRUBlfg4xq
- eoB+lKWywLzARaiwEKSqMCwmIqYeSzZlyIxXGRw5Zc0qwur1JFdETdt6XA9AiAI2KaCn
- xgCQ==
-X-Gm-Message-State: AOAM532vqWCXey3F737tODPzF9ko9O2xbpiLTI8TM5dS7sO3PsT8PKYa
- D7veusMYdTHN39/WVWIWO4Ymc+GFMGEPLa0uec7SOIdqUAWHqOUXnelAvakZP6jyO0q6s4yCykV
- K8xB2QMRG5O1UpnM4+bh44XaYp8eTDIA8RlwwizYV0CqUow==
-X-Received: by 2002:a2e:5344:: with SMTP id t4mr3438888ljd.362.1634606545558; 
- Mon, 18 Oct 2021 18:22:25 -0700 (PDT)
-X-Google-Smtp-Source: ABdhPJzx2VZpO94ATTLdLFfRE+4QfWp6/JFORuL5M9U6kAQ0JTPA55qnbYtwgWI3nfmFfTLzmXBBmOcvD4FuX2UkHI0=
-X-Received: by 2002:a2e:5344:: with SMTP id t4mr3438859ljd.362.1634606545252; 
- Mon, 18 Oct 2021 18:22:25 -0700 (PDT)
+Authentication-Results: smtp3.osuosl.org (amavisd-new);
+ dkim=pass (2048-bit key) header.d=infradead.org
+Received: from smtp3.osuosl.org ([127.0.0.1])
+ by localhost (smtp3.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+ with ESMTP id vEew3aFXYQdj for <iommu@lists.linux-foundation.org>;
+ Tue, 19 Oct 2021 12:29:21 +0000 (UTC)
+X-Greylist: from auto-whitelisted by SQLgrey-1.8.0
+Received: from bombadil.infradead.org (unknown [IPv6:2607:7c80:54:e::133])
+ by smtp3.osuosl.org (Postfix) with ESMTPS id 9751B60B95
+ for <iommu@lists.linux-foundation.org>; Tue, 19 Oct 2021 12:29:20 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+ d=infradead.org; s=bombadil.20210309; h=Content-Transfer-Encoding:
+ MIME-Version:Message-Id:Date:Subject:Cc:To:From:Sender:Reply-To:Content-Type:
+ Content-ID:Content-Description:In-Reply-To:References;
+ bh=D2EdOHj3w1D+ALquOX8L67YwOi2t62nGC9hbUIODr5k=; b=MKwPHE2+v+MztLO3oqiU5WaBeW
+ h+DrgvIbqISIlJm55nVM5PoSBRu+FPuEvxbEBMRWso5BTOmeHQ13zIqd9e395i85Aee8bKbBiujk5
+ vu9kQxX5cQXjk+mBwwDo+K8PSd+Kvt7ntIdiE0w50Gu0WS4SXmaYa+MKIkHGl/RYaS72dd4SSVIMP
+ pYTRk+iqcUCMOaTGApyFOZZYigB1bh77jNqNggvMR3MyvxkTdLkF4oafE9OgPxKPXGg4GjOIK/79g
+ 76FStza+S11Q9H2pWDsu3MQcdRy9XDrOHFhBN8kgTCqum2Cw5eS/mC9Dul6AzS9xWle37IH1FTKx0
+ fdL5axlg==;
+Received: from [2001:4bb8:180:8777:c70:4a89:bc61:2] (helo=localhost)
+ by bombadil.infradead.org with esmtpsa (Exim 4.94.2 #2 (Red Hat Linux))
+ id 1mcoF4-001C1x-Tr; Tue, 19 Oct 2021 12:29:19 +0000
+From: Christoph Hellwig <hch@lst.de>
+To: iommu@lists.linux-foundation.org
+Subject: dma-direct cleanups
+Date: Tue, 19 Oct 2021 14:29:12 +0200
+Message-Id: <20211019122916.2468032-1-hch@lst.de>
+X-Mailer: git-send-email 2.30.2
 MIME-Version: 1.0
-References: <20211013121052.518113-1-jean-philippe@linaro.org>
- <BN9PR11MB5433EFF47E5FABC1D7D95F6F8CB89@BN9PR11MB5433.namprd11.prod.outlook.com>
- <YW2RfXJwAxFYOYzs@myrica> <20211018113237-mutt-send-email-mst@kernel.org>
-In-Reply-To: <20211018113237-mutt-send-email-mst@kernel.org>
-From: Jason Wang <jasowang@redhat.com>
-Date: Tue, 19 Oct 2021 09:22:13 +0800
-Message-ID: <CACGkMEuJrQcPSMdRJ9wmc3riLK_3Q6t9596b5ida-j00Yf7+WQ@mail.gmail.com>
-Subject: Re: [PATCH 0/5] iommu/virtio: Add identity domains
-To: "Michael S. Tsirkin" <mst@redhat.com>
-Authentication-Results: relay.mimecast.com;
- auth=pass smtp.auth=CUSA124A263 smtp.mailfrom=jasowang@redhat.com
-X-Mimecast-Spam-Score: 0
-X-Mimecast-Originator: redhat.com
-Cc: Jean-Philippe Brucker <jean-philippe@linaro.org>, "Tian,
- Kevin" <kevin.tian@intel.com>, "virtualization@lists.linux-foundation.org"
- <virtualization@lists.linux-foundation.org>,
- "iommu@lists.linux-foundation.org" <iommu@lists.linux-foundation.org>, "Boeuf,
- Sebastien" <sebastien.boeuf@intel.com>, "will@kernel.org" <will@kernel.org>
+X-SRS-Rewrite: SMTP reverse-path rewritten from <hch@infradead.org> by
+ bombadil.infradead.org. See http://www.infradead.org/rpr.html
+Cc: Robin Murphy <robin.murphy@arm.com>, id Rientjes <rientjes@google.com>
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -112,96 +82,15 @@ Content-Transfer-Encoding: 7bit
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-On Mon, Oct 18, 2021 at 11:35 PM Michael S. Tsirkin <mst@redhat.com> wrote:
->
-> On Mon, Oct 18, 2021 at 04:23:41PM +0100, Jean-Philippe Brucker wrote:
-> > On Thu, Oct 14, 2021 at 03:00:38AM +0000, Tian, Kevin wrote:
-> > > > From: Jean-Philippe Brucker <jean-philippe@linaro.org>
-> > > > Sent: Wednesday, October 13, 2021 8:11 PM
-> > > >
-> > > > Support identity domains, allowing to only enable IOMMU protection for a
-> > > > subset of endpoints (those assigned to userspace, for example). Users
-> > > > may enable identity domains at compile time
-> > > > (CONFIG_IOMMU_DEFAULT_PASSTHROUGH), boot time
-> > > > (iommu.passthrough=1) or
-> > > > runtime (/sys/kernel/iommu_groups/*/type = identity).
-> > >
-> > > Do we want to use consistent terms between spec (bypass domain)
-> > > and code (identity domain)?
-> >
-> > I don't think we have to. Linux uses "identity" domains and "passthrough"
-> > IOMMU. The old virtio-iommu feature was "bypass" so we should keep that
-> > for the new one, to be consistent. And then I've used "bypass" for domains
-> > as well, in the spec, because it would look strange to use a different
-> > term for the same concept. I find that it sort of falls into place: Linux'
-> > identity domains can be implemented either with bypass or identity-mapped
-> > virtio-iommu domains.
-> >
-> > > >
-> > > > Patches 1-2 support identity domains using the optional
-> > > > VIRTIO_IOMMU_F_BYPASS_CONFIG feature. The feature bit is not yet in the
-> > > > spec, see [1] for the latest proposal.
-> > > >
-> > > > Patches 3-5 add a fallback to identity mappings, when the feature is not
-> > > > supported.
-> > > >
-> > > > Note that this series doesn't touch the global bypass bit added by
-> > > > VIRTIO_IOMMU_F_BYPASS_CONFIG. All endpoints managed by the IOMMU
-> > > > should
-> > > > be attached to a domain, so global bypass isn't in use after endpoints
-> > >
-> > > I saw a concept of deferred attach in iommu core. See iommu_is_
-> > > attach_deferred(). Currently this is vendor specific and I haven't
-> > > looked into the exact reason why some vendor sets it now. Just
-> > > be curious whether the same reason might be applied to virtio-iommu.
-> > >
-> > > > are probed. Before that, the global bypass policy is decided by the
-> > > > hypervisor and firmware. So I don't think Linux needs to touch the
-> > >
-> > > This reminds me one thing. The spec says that the global bypass
-> > > bit is sticky and not affected by reset.
-> >
-> > The spec talks about *device* reset, triggered by software writing 0 to
-> > the status register, but it doesn't mention system reset. Would be good to
-> > clarify that. Something like:
-> >
-> >     If the device offers the VIRTIO_IOMMU_F_BYPASS_CONFIG feature, it MAY
-> >     initialize the \field{bypass} field to 1. Field \field{bypass} SHOULD
-> >     NOT change on device reset, but SHOULD be restored to its initial
-> >     value on system reset.
-> >
-> > > This implies that in the case
-> > > of rebooting the VM into a different OS, the previous OS actually
-> > > has the right to override this setting for the next OS. Is it a right
-> > > design? Even the firmware itself is unable to identify the original
-> > > setting enforced by the hypervisor after reboot. I feel the hypervisor
-> > > setting should be recovered after reset since it reflects the
-> > > security measure enforced by the virtual platform?
-> >
-> > So I think clarifying system reset should address your questions.
-> > I believe we should leave bypass sticky across device reset, so a FW->OS
-> > transition, where the OS resets the device, does not open a vulnerability
-> > (if bypass was enabled at boot and then left disabled by FW.)
-> >
-> > It's still a good idea for the OS to restore on shutdown the bypass value
-> > it was booted with. So it can kexec into an OS that doesn't support
-> > virtio-iommu, for example.
-> >
-> > Thanks,
-> > Jean
->
-> Is this stickiness really important? Can't this be addressed just by
-> hypervisor disabling bypass at boot?
+Hi all,
 
-And I'm not sure if sticky can survive transport reset.
+Linus complained about the complex flow in dma_direct_alloc, so this
+tries to simplify it a bit, and while I was at it I also made sure that
+unencrypted pages never leak back into the page allocator.
 
-Thanks
-
->
-> --
-> MST
->
-
+Diffstat
+ direct.c |  133 +++++++++++++++++++++++++++++++++++----------------------------
+ 1 file changed, 74 insertions(+), 59 deletions(-)
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
