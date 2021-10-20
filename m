@@ -2,81 +2,70 @@ Return-Path: <SRS0=Y7tz=PI=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2F8F8C433FE
-	for <iommu@archiver.kernel.org>; Wed, 20 Oct 2021 14:23:04 +0000 (UTC)
-Received: from smtp4.osuosl.org (smtp4.osuosl.org [140.211.166.137])
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9BB82C433EF
+	for <iommu@archiver.kernel.org>; Wed, 20 Oct 2021 17:15:01 +0000 (UTC)
+Received: from smtp1.osuosl.org (smtp1.osuosl.org [140.211.166.138])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id DA72C61374
-	for <iommu@archiver.kernel.org>; Wed, 20 Oct 2021 14:23:03 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.4.1 mail.kernel.org DA72C61374
-Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=kernel.org
+	by mail.kernel.org (Postfix) with ESMTPS id 381076138F
+	for <iommu@archiver.kernel.org>; Wed, 20 Oct 2021 17:15:01 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.4.1 mail.kernel.org 381076138F
+Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=infradead.org
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by smtp4.osuosl.org (Postfix) with ESMTP id 9E34340649;
-	Wed, 20 Oct 2021 14:23:03 +0000 (UTC)
+	by smtp1.osuosl.org (Postfix) with ESMTP id 0183582662;
+	Wed, 20 Oct 2021 17:15:01 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from smtp4.osuosl.org ([127.0.0.1])
-	by localhost (smtp4.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id tUNbq-7hNEcc; Wed, 20 Oct 2021 14:23:02 +0000 (UTC)
-Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [IPv6:2605:bc80:3010:104::8cd3:938])
-	by smtp4.osuosl.org (Postfix) with ESMTPS id 539914040A;
-	Wed, 20 Oct 2021 14:23:02 +0000 (UTC)
+Received: from smtp1.osuosl.org ([127.0.0.1])
+	by localhost (smtp1.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+	with ESMTP id AwXYAcJlRxtF; Wed, 20 Oct 2021 17:15:00 +0000 (UTC)
+Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
+	by smtp1.osuosl.org (Postfix) with ESMTPS id D27CE80FDE;
+	Wed, 20 Oct 2021 17:14:59 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 30898C0011;
-	Wed, 20 Oct 2021 14:23:02 +0000 (UTC)
-Received: from smtp3.osuosl.org (smtp3.osuosl.org [IPv6:2605:bc80:3010::136])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 767F7C000D
- for <iommu@lists.linux-foundation.org>; Wed, 20 Oct 2021 14:23:00 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id B57A6C000F;
+	Wed, 20 Oct 2021 17:14:59 +0000 (UTC)
+Received: from smtp3.osuosl.org (smtp3.osuosl.org [140.211.166.136])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id A80E3C000D
+ for <iommu@lists.linux-foundation.org>; Wed, 20 Oct 2021 17:14:57 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by smtp3.osuosl.org (Postfix) with ESMTP id 513E360631
- for <iommu@lists.linux-foundation.org>; Wed, 20 Oct 2021 14:23:00 +0000 (UTC)
+ by smtp3.osuosl.org (Postfix) with ESMTP id 9E6D360B13
+ for <iommu@lists.linux-foundation.org>; Wed, 20 Oct 2021 17:14:57 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
+Authentication-Results: smtp3.osuosl.org (amavisd-new);
+ dkim=pass (2048-bit key) header.d=infradead.org
 Received: from smtp3.osuosl.org ([127.0.0.1])
  by localhost (smtp3.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id Vo7HUDAt13mm for <iommu@lists.linux-foundation.org>;
- Wed, 20 Oct 2021 14:22:59 +0000 (UTC)
-X-Greylist: domain auto-whitelisted by SQLgrey-1.8.0
-Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
- by smtp3.osuosl.org (Postfix) with ESMTPS id 52E44605D7
- for <iommu@lists.linux-foundation.org>; Wed, 20 Oct 2021 14:22:59 +0000 (UTC)
-Received: from disco-boy.misterjones.org (disco-boy.misterjones.org
- [51.254.78.96])
- (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
- (No client certificate requested)
- by mail.kernel.org (Postfix) with ESMTPSA id F27F86112D;
- Wed, 20 Oct 2021 14:22:58 +0000 (UTC)
-Received: from sofa.misterjones.org ([185.219.108.64] helo=why.misterjones.org)
- by disco-boy.misterjones.org with esmtpsa (TLS1.3) tls
- TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384 (Exim 4.94.2)
- (envelope-from <maz@kernel.org>)
- id 1mdCUa-000S7a-Uq; Wed, 20 Oct 2021 15:22:57 +0100
-Date: Wed, 20 Oct 2021 15:22:56 +0100
-Message-ID: <8735ovdbcv.wl-maz@kernel.org>
-From: Marc Zyngier <maz@kernel.org>
-To: Lu Baolu <baolu.lu@linux.intel.com>
-Subject: Re: [PATCH v3 4/6] iommu: Move IOMMU pagesize check to attach_device
-In-Reply-To: <9e25f2c0-d9d3-475d-e973-63be1891f9a5@linux.intel.com>
-References: <20211019163737.46269-1-sven@svenpeter.dev>
- <20211019163737.46269-5-sven@svenpeter.dev>
- <9e25f2c0-d9d3-475d-e973-63be1891f9a5@linux.intel.com>
-User-Agent: Wanderlust/2.15.9 (Almost Unreal) SEMI-EPG/1.14.7 (Harue)
- FLIM-LB/1.14.9 (=?UTF-8?B?R29qxY0=?=) APEL-LB/10.8 EasyPG/1.0.0 Emacs/27.1
- (x86_64-pc-linux-gnu) MULE/6.0 (HANACHIRUSATO)
-MIME-Version: 1.0 (generated by SEMI-EPG 1.14.7 - "Harue")
-X-SA-Exim-Connect-IP: 185.219.108.64
-X-SA-Exim-Rcpt-To: baolu.lu@linux.intel.com, sven@svenpeter.dev,
- iommu@lists.linux-foundation.org, robin.murphy@arm.com, arnd@kernel.org,
- marcan@marcan.st, linux-kernel@vger.kernel.org, graf@amazon.com,
- mohamed.mediouni@caramail.com, will@kernel.org, alyssa@rosenzweig.io
-X-SA-Exim-Mail-From: maz@kernel.org
-X-SA-Exim-Scanned: No (on disco-boy.misterjones.org);
- SAEximRunCond expanded to false
-Cc: Arnd Bergmann <arnd@kernel.org>, Will Deacon <will@kernel.org>,
- Hector Martin <marcan@marcan.st>, linux-kernel@vger.kernel.org,
- iommu@lists.linux-foundation.org, Alexander Graf <graf@amazon.com>,
- Mohamed Mediouni <mohamed.mediouni@caramail.com>,
- Robin Murphy <robin.murphy@arm.com>, Alyssa Rosenzweig <alyssa@rosenzweig.io>
+ with ESMTP id IkeJ6-Sw9jCv for <iommu@lists.linux-foundation.org>;
+ Wed, 20 Oct 2021 17:14:55 +0000 (UTC)
+X-Greylist: from auto-whitelisted by SQLgrey-1.8.0
+Received: from bombadil.infradead.org (bombadil.infradead.org
+ [IPv6:2607:7c80:54:e::133])
+ by smtp3.osuosl.org (Postfix) with ESMTPS id D38AF60639
+ for <iommu@lists.linux-foundation.org>; Wed, 20 Oct 2021 17:14:55 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+ d=infradead.org; s=bombadil.20210309; h=Content-Type:MIME-Version:Message-ID:
+ Subject:Cc:To:From:Date:Sender:Reply-To:Content-Transfer-Encoding:Content-ID:
+ Content-Description:In-Reply-To:References;
+ bh=dlA2zg6fiC2H+IJzS881hgO1rZ9WRlHQjA0SQx8l/68=; b=n7cUPV57gIINXpdjNb7An9Eso+
+ SdAG4G8HgYNzVQhGwaQDR8g3FFNs1y9VYZv6t1zrrmi7dC/pVtETiabJJmbNod4l5KOUuHCgXncaa
+ Qn37iQxzKV8KdgXhlNQH8xDaXirhN5rXxZR+1mVQjot6e6LwFCUdsXqXMyvSPHWr70R356rzig1S1
+ eQX12I+TEbLbPQfR/vF4hTxscTosIocHd6HLpXykRl2jNQdumGAmllZzYIigyqvAqf9eXfXuyU72F
+ HmFwFU/uG2Br1meu2TRpXRIe2N1FSWT0O/i9ul3eekOt+LqLIjDPzGpgPkcYjIDQnUenZu+/GWPw/
+ haKXc7+Q==;
+Received: from [2001:4bb8:180:8777:a130:d02a:a9b5:7d80] (helo=localhost)
+ by bombadil.infradead.org with esmtpsa (Exim 4.94.2 #2 (Red Hat Linux))
+ id 1mdFB0-005IqL-6f; Wed, 20 Oct 2021 17:14:54 +0000
+Date: Wed, 20 Oct 2021 19:14:51 +0200
+From: Christoph Hellwig <hch@infradead.org>
+To: Linus Torvalds <torvalds@linux-foundation.org>
+Subject: [GIT PULL] dma-mapping fixes for Linux 5.15
+Message-ID: <YXBOiy+yS4pwwHeQ@infradead.org>
+MIME-Version: 1.0
+Content-Disposition: inline
+X-SRS-Rewrite: SMTP reverse-path rewritten from <hch@infradead.org> by
+ bombadil.infradead.org. See http://www.infradead.org/rpr.html
+Cc: iommu@lists.linux-foundation.org, linux-kernel@vger.kernel.org
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -94,89 +83,38 @@ Content-Transfer-Encoding: 7bit
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-On Wed, 20 Oct 2021 06:21:44 +0100,
-Lu Baolu <baolu.lu@linux.intel.com> wrote:
-> 
-> On 2021/10/20 0:37, Sven Peter via iommu wrote:
-> > The iova allocator is capable of handling any granularity which is a power
-> > of two. Remove the much stronger condition that the granularity must be
-> > smaller or equal to the CPU page size from a BUG_ON there.
-> > Instead, check this condition during __iommu_attach_device and fail
-> > gracefully.
-> > 
-> > Signed-off-by: Sven Peter<sven@svenpeter.dev>
-> > ---
-> >   drivers/iommu/iommu.c | 35 ++++++++++++++++++++++++++++++++---
-> >   drivers/iommu/iova.c  |  7 ++++---
-> >   include/linux/iommu.h |  5 +++++
-> >   3 files changed, 41 insertions(+), 6 deletions(-)
-> > 
-> > diff --git a/drivers/iommu/iommu.c b/drivers/iommu/iommu.c
-> > index dd7863e453a5..28896739964b 100644
-> > --- a/drivers/iommu/iommu.c
-> > +++ b/drivers/iommu/iommu.c
-> > @@ -80,6 +80,8 @@ static struct iommu_domain *__iommu_domain_alloc(struct bus_type *bus,
-> >   						 unsigned type);
-> >   static int __iommu_attach_device(struct iommu_domain *domain,
-> >   				 struct device *dev);
-> > +static void __iommu_detach_device(struct iommu_domain *domain,
-> > +				  struct device *dev);
-> >   static int __iommu_attach_group(struct iommu_domain *domain,
-> >   				struct iommu_group *group);
-> >   static void __iommu_detach_group(struct iommu_domain *domain,
-> > @@ -1974,6 +1976,19 @@ void iommu_domain_free(struct iommu_domain *domain)
-> >   }
-> >   EXPORT_SYMBOL_GPL(iommu_domain_free);
-> >   +static int iommu_check_page_size(struct iommu_domain *domain)
-> > +{
-> > +	if (!iommu_is_paging_domain(domain))
-> > +		return 0;
-> > +
-> > +	if (!(domain->pgsize_bitmap & (PAGE_SIZE | (PAGE_SIZE - 1)))) {
-> > +		pr_warn("IOMMU pages cannot exactly represent CPU pages.\n");
-> > +		return -EFAULT;
-> > +	}
-> > +
-> > +	return 0;
-> > +}
-> > +
-> >   static int __iommu_attach_device(struct iommu_domain *domain,
-> >   				 struct device *dev)
-> >   {
-> > @@ -1983,9 +1998,23 @@ static int __iommu_attach_device(struct iommu_domain *domain,
-> >   		return -ENODEV;
-> >     	ret = domain->ops->attach_dev(domain, dev);
-> > -	if (!ret)
-> > -		trace_attach_device_to_domain(dev);
-> > -	return ret;
-> > +	if (ret)
-> > +		return ret;
-> > +
-> > +	/*
-> > +	 * Check that CPU pages can be represented by the IOVA granularity.
-> > +	 * This has to be done after ops->attach_dev since many IOMMU drivers
-> > +	 * only limit domain->pgsize_bitmap after having attached the first
-> > +	 * device.
-> > +	 */
-> > +	ret = iommu_check_page_size(domain);
-> > +	if (ret) {
-> > +		__iommu_detach_device(domain, dev);
-> > +		return ret;
-> > +	}
-> 
-> It looks odd. __iommu_attach_device() attaches an I/O page table for a
-> device. How does it relate to CPU pages? Why is it a failure case if CPU
-> page size is not covered?
+The following changes since commit 59583f747664046aaae5588d56d5954fab66cce8:
 
-If you allocate a CPU PAGE_SIZE'd region, and point it at a device
-that now can DMA to more than what you have allocated because the
-IOMMU's own page size is larger, the device has now access to data it
-shouldn't see. In my book, that's a pretty bad thing.
+  sparc32: page align size in arch_dma_alloc (2021-09-14 14:35:17 +0200)
 
-	M.
+are available in the Git repository at:
 
--- 
-Without deviation from the norm, progress is not possible.
+  git://git.infradead.org/users/hch/dma-mapping.git tags/dma-mapping-5.15-2
+
+for you to fetch changes up to c2bbf9d1e9ac7d4fdd503b190bc1ba8a6302bc49:
+
+  dma-debug: teach add_dma_entry() about DMA_ATTR_SKIP_CPU_SYNC (2021-10-18 12:46:45 +0200)
+
+----------------------------------------------------------------
+dma-mapping fixes for Linux 5.15
+
+ - fix more dma-debug fallout (Gerald Schaefer, Hamza Mahfooz)
+ - fix a kerneldoc warning (Logan Gunthorpe)
+
+----------------------------------------------------------------
+Gerald Schaefer (1):
+      dma-debug: fix sg checks in debug_dma_map_sg()
+
+Hamza Mahfooz (1):
+      dma-debug: teach add_dma_entry() about DMA_ATTR_SKIP_CPU_SYNC
+
+Logan Gunthorpe (1):
+      dma-mapping: fix the kerneldoc for dma_map_sgtable()
+
+ kernel/dma/debug.c   | 36 ++++++++++++++++++++----------------
+ kernel/dma/debug.h   | 24 ++++++++++++++++--------
+ kernel/dma/mapping.c | 24 ++++++++++++------------
+ 3 files changed, 48 insertions(+), 36 deletions(-)
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
