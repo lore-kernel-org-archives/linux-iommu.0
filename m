@@ -1,92 +1,73 @@
-Return-Path: <SRS0=0fjx=PH=lists.linux-foundation.org=iommu-bounces@kernel.org>
+Return-Path: <SRS0=Y7tz=PI=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A9D78C433EF
-	for <iommu@archiver.kernel.org>; Tue, 19 Oct 2021 19:57:57 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4BEABC433F5
+	for <iommu@archiver.kernel.org>; Wed, 20 Oct 2021 05:21:57 +0000 (UTC)
 Received: from smtp3.osuosl.org (smtp3.osuosl.org [140.211.166.136])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 52EBD610CC
-	for <iommu@archiver.kernel.org>; Tue, 19 Oct 2021 19:57:57 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.4.1 mail.kernel.org 52EBD610CC
-Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=lists.linux-foundation.org
+	by mail.kernel.org (Postfix) with ESMTPS id CA91760698
+	for <iommu@archiver.kernel.org>; Wed, 20 Oct 2021 05:21:56 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.4.1 mail.kernel.org CA91760698
+Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=linux.intel.com
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by smtp3.osuosl.org (Postfix) with ESMTP id 1C62960A49;
-	Tue, 19 Oct 2021 19:57:57 +0000 (UTC)
+	by smtp3.osuosl.org (Postfix) with ESMTP id 8015960819;
+	Wed, 20 Oct 2021 05:21:56 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
 Received: from smtp3.osuosl.org ([127.0.0.1])
 	by localhost (smtp3.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id tdhD_TgNiY6M; Tue, 19 Oct 2021 19:57:56 +0000 (UTC)
-Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by smtp3.osuosl.org (Postfix) with ESMTPS id 14FC560886;
-	Tue, 19 Oct 2021 19:57:56 +0000 (UTC)
+	with ESMTP id G-_Kjte-O_kn; Wed, 20 Oct 2021 05:21:53 +0000 (UTC)
+Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [IPv6:2605:bc80:3010:104::8cd3:938])
+	by smtp3.osuosl.org (Postfix) with ESMTPS id 4740060752;
+	Wed, 20 Oct 2021 05:21:53 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id E5DDAC0011;
-	Tue, 19 Oct 2021 19:57:55 +0000 (UTC)
-Received: from smtp2.osuosl.org (smtp2.osuosl.org [140.211.166.133])
- by lists.linuxfoundation.org (Postfix) with ESMTP id CB43CC000D
- for <iommu@lists.linux-foundation.org>; Tue, 19 Oct 2021 19:57:54 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 06772C0011;
+	Wed, 20 Oct 2021 05:21:53 +0000 (UTC)
+Received: from smtp2.osuosl.org (smtp2.osuosl.org [IPv6:2605:bc80:3010::133])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id D825CC000D
+ for <iommu@lists.linux-foundation.org>; Wed, 20 Oct 2021 05:21:51 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by smtp2.osuosl.org (Postfix) with ESMTP id AC17D402B6
- for <iommu@lists.linux-foundation.org>; Tue, 19 Oct 2021 19:57:54 +0000 (UTC)
+ by smtp2.osuosl.org (Postfix) with ESMTP id BF1B1401EE
+ for <iommu@lists.linux-foundation.org>; Wed, 20 Oct 2021 05:21:51 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Authentication-Results: smtp2.osuosl.org (amavisd-new);
- dkim=pass (2048-bit key) header.d=google.com
 Received: from smtp2.osuosl.org ([127.0.0.1])
  by localhost (smtp2.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id QzF9J1LlMQ4K for <iommu@lists.linux-foundation.org>;
- Tue, 19 Oct 2021 19:57:54 +0000 (UTC)
-X-Greylist: whitelisted by SQLgrey-1.8.0
-Received: from mail-pj1-x1036.google.com (mail-pj1-x1036.google.com
- [IPv6:2607:f8b0:4864:20::1036])
- by smtp2.osuosl.org (Postfix) with ESMTPS id 1C6E3400E7
- for <iommu@lists.linux-foundation.org>; Tue, 19 Oct 2021 19:57:53 +0000 (UTC)
-Received: by mail-pj1-x1036.google.com with SMTP id
- nn3-20020a17090b38c300b001a03bb6c4ebso777861pjb.1
- for <iommu@lists.linux-foundation.org>; Tue, 19 Oct 2021 12:57:53 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=google.com; s=20210112;
- h=date:from:to:cc:subject:in-reply-to:message-id:references
- :mime-version; bh=RlOfhqZOeIlYyON71bYTz5/GFP47325drgTt8RSwEno=;
- b=cRtG2LMW7JoH5dabE38+V1teGIRxs1h5XgXxNj5F46z/Tu/J2eJnspsr+sVG/LPSCY
- ztiPZfT3tTlA4agk1p7hq16btX2WdMBn7abo4lWDFmRJfgaF2MaUJIS08c/6MeFkhBcq
- SAtdrrfOyjJ+2J6rbyQ9JMAdsu7kOn0a6NWI0Qg0BtAGidWjeCR4WA5LSY+uv1QFMYdf
- WUp2cBdk+hOk0QFwZc6rA660zrYylHoRtvncOUK4DJH0SYMla6PI9VzMG80FzchlAZBS
- VEUFDQ2Y/suFoPCjAlBjf5Sg4y5w3Ebc6prIWoywWM4b0ASX0g2g2Tq/N5GIzc+glb6l
- zuiw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
- d=1e100.net; s=20210112;
- h=x-gm-message-state:date:from:to:cc:subject:in-reply-to:message-id
- :references:mime-version;
- bh=RlOfhqZOeIlYyON71bYTz5/GFP47325drgTt8RSwEno=;
- b=T7EP1LWv99atFvRF1CCdCr/95otzz3N+p3hjWAc1PCNNTruW/LIeunpiH3mZpc7mNH
- ME12n2iXfsqsO4G9WRCZEkvc14zbZz39qJaUwpWor/3zrU4vckA6pwp4SXl3+X7zWdpE
- bWd38ebCitbXaGp1Q7QicBZS+h9Z653R+6Bg5b1mpYLDl5pwn70msuoh5uDNVKQJJsLc
- yM3FwXupm5/RFCQ+KLXy8co7l6XFucK9zfSqdtgK3xyIwK9IGxONIa0CPS1lVjelQd7e
- olEbmGc/Ld9KIClcc3m8Itv+3FP3Sq8ejXzRhYvhbJQInl/W3EBvriiZb9Jt8Bo7NCi+
- 9MZg==
-X-Gm-Message-State: AOAM530b98q6jj0GlLFh58U5gcvhlHhfxSunQRThF2rb4yeIkMPm0WsK
- xTBRQMtzx9Kld6fdDsFjRdCMBQ==
-X-Google-Smtp-Source: ABdhPJx4fFf2YxsdOA6ESC1SRpIyjznDIr5copYJgEOOeu4Vyh4yDmaEnsbywVzi77OV98EPFwNFYw==
-X-Received: by 2002:a17:90b:251:: with SMTP id
- fz17mr2195626pjb.52.1634673473401; 
- Tue, 19 Oct 2021 12:57:53 -0700 (PDT)
-Received: from [2620:15c:17:3:346:b4cf:84da:678d]
- ([2620:15c:17:3:346:b4cf:84da:678d])
- by smtp.gmail.com with ESMTPSA id om5sm4396pjb.36.2021.10.19.12.57.52
- (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
- Tue, 19 Oct 2021 12:57:52 -0700 (PDT)
-Date: Tue, 19 Oct 2021 12:57:52 -0700 (PDT)
-To: Christoph Hellwig <hch@lst.de>
-Subject: Re: [PATCH 4/4] dma-direct: factor out a helper for
- DMA_ATTR_NO_KERNEL_MAPPING allocations
-In-Reply-To: <20211019122916.2468032-5-hch@lst.de>
-Message-ID: <13523682-5fbc-d6ea-c1ed-13946e26524b@google.com>
-References: <20211019122916.2468032-1-hch@lst.de>
- <20211019122916.2468032-5-hch@lst.de>
+ with ESMTP id voR61tlX2p1M for <iommu@lists.linux-foundation.org>;
+ Wed, 20 Oct 2021 05:21:50 +0000 (UTC)
+X-Greylist: domain auto-whitelisted by SQLgrey-1.8.0
+Received: from mga17.intel.com (mga17.intel.com [192.55.52.151])
+ by smtp2.osuosl.org (Postfix) with ESMTPS id 821A1400C4
+ for <iommu@lists.linux-foundation.org>; Wed, 20 Oct 2021 05:21:50 +0000 (UTC)
+X-IronPort-AV: E=McAfee;i="6200,9189,10142"; a="209490400"
+X-IronPort-AV: E=Sophos;i="5.87,165,1631602800"; d="scan'208";a="209490400"
+Received: from orsmga004.jf.intel.com ([10.7.209.38])
+ by fmsmga107.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384;
+ 19 Oct 2021 22:21:49 -0700
+X-IronPort-AV: E=Sophos;i="5.87,165,1631602800"; d="scan'208";a="594517234"
+Received: from qsu-mobl.ccr.corp.intel.com (HELO [10.254.215.183])
+ ([10.254.215.183])
+ by orsmga004-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384;
+ 19 Oct 2021 22:21:46 -0700
+Message-ID: <9e25f2c0-d9d3-475d-e973-63be1891f9a5@linux.intel.com>
+Date: Wed, 20 Oct 2021 13:21:44 +0800
 MIME-Version: 1.0
-Cc: iommu@lists.linux-foundation.org, Robin Murphy <robin.murphy@arm.com>
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
+ Thunderbird/91.2.0
+Subject: Re: [PATCH v3 4/6] iommu: Move IOMMU pagesize check to attach_device
+Content-Language: en-US
+To: Sven Peter <sven@svenpeter.dev>, iommu@lists.linux-foundation.org,
+ Robin Murphy <robin.murphy@arm.com>
+References: <20211019163737.46269-1-sven@svenpeter.dev>
+ <20211019163737.46269-5-sven@svenpeter.dev>
+From: Lu Baolu <baolu.lu@linux.intel.com>
+In-Reply-To: <20211019163737.46269-5-sven@svenpeter.dev>
+Cc: Arnd Bergmann <arnd@kernel.org>, Marc Zyngier <maz@kernel.org>,
+ Hector Martin <marcan@marcan.st>, linux-kernel@vger.kernel.org,
+ Alexander Graf <graf@amazon.com>,
+ Mohamed Mediouni <mohamed.mediouni@caramail.com>,
+ Will Deacon <will@kernel.org>, Alyssa Rosenzweig <alyssa@rosenzweig.io>
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -99,23 +80,86 @@ List-Post: <mailto:iommu@lists.linux-foundation.org>
 List-Help: <mailto:iommu-request@lists.linux-foundation.org?subject=help>
 List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
  <mailto:iommu-request@lists.linux-foundation.org?subject=subscribe>
-From: David Rientjes via iommu <iommu@lists.linux-foundation.org>
-Reply-To: David Rientjes <rientjes@google.com>
-Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset="us-ascii"; Format="flowed"
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-On Tue, 19 Oct 2021, Christoph Hellwig wrote:
-
-> Split the code for DMA_ATTR_NO_KERNEL_MAPPING allocations into a separate
-> helper to make dma_direct_alloc a little more readable.
+On 2021/10/20 0:37, Sven Peter via iommu wrote:
+> The iova allocator is capable of handling any granularity which is a power
+> of two. Remove the much stronger condition that the granularity must be
+> smaller or equal to the CPU page size from a BUG_ON there.
+> Instead, check this condition during __iommu_attach_device and fail
+> gracefully.
 > 
-> Signed-off-by: Christoph Hellwig <hch@lst.de>
+> Signed-off-by: Sven Peter<sven@svenpeter.dev>
+> ---
+>   drivers/iommu/iommu.c | 35 ++++++++++++++++++++++++++++++++---
+>   drivers/iommu/iova.c  |  7 ++++---
+>   include/linux/iommu.h |  5 +++++
+>   3 files changed, 41 insertions(+), 6 deletions(-)
+> 
+> diff --git a/drivers/iommu/iommu.c b/drivers/iommu/iommu.c
+> index dd7863e453a5..28896739964b 100644
+> --- a/drivers/iommu/iommu.c
+> +++ b/drivers/iommu/iommu.c
+> @@ -80,6 +80,8 @@ static struct iommu_domain *__iommu_domain_alloc(struct bus_type *bus,
+>   						 unsigned type);
+>   static int __iommu_attach_device(struct iommu_domain *domain,
+>   				 struct device *dev);
+> +static void __iommu_detach_device(struct iommu_domain *domain,
+> +				  struct device *dev);
+>   static int __iommu_attach_group(struct iommu_domain *domain,
+>   				struct iommu_group *group);
+>   static void __iommu_detach_group(struct iommu_domain *domain,
+> @@ -1974,6 +1976,19 @@ void iommu_domain_free(struct iommu_domain *domain)
+>   }
+>   EXPORT_SYMBOL_GPL(iommu_domain_free);
+>   
+> +static int iommu_check_page_size(struct iommu_domain *domain)
+> +{
+> +	if (!iommu_is_paging_domain(domain))
+> +		return 0;
+> +
+> +	if (!(domain->pgsize_bitmap & (PAGE_SIZE | (PAGE_SIZE - 1)))) {
+> +		pr_warn("IOMMU pages cannot exactly represent CPU pages.\n");
+> +		return -EFAULT;
+> +	}
+> +
+> +	return 0;
+> +}
+> +
+>   static int __iommu_attach_device(struct iommu_domain *domain,
+>   				 struct device *dev)
+>   {
+> @@ -1983,9 +1998,23 @@ static int __iommu_attach_device(struct iommu_domain *domain,
+>   		return -ENODEV;
+>   
+>   	ret = domain->ops->attach_dev(domain, dev);
+> -	if (!ret)
+> -		trace_attach_device_to_domain(dev);
+> -	return ret;
+> +	if (ret)
+> +		return ret;
+> +
+> +	/*
+> +	 * Check that CPU pages can be represented by the IOVA granularity.
+> +	 * This has to be done after ops->attach_dev since many IOMMU drivers
+> +	 * only limit domain->pgsize_bitmap after having attached the first
+> +	 * device.
+> +	 */
+> +	ret = iommu_check_page_size(domain);
+> +	if (ret) {
+> +		__iommu_detach_device(domain, dev);
+> +		return ret;
+> +	}
 
-Acked-by: David Rientjes <rientjes@google.com>
+It looks odd. __iommu_attach_device() attaches an I/O page table for a
+device. How does it relate to CPU pages? Why is it a failure case if CPU
+page size is not covered?
 
-(I think my name got mangled in your To: field on the original emails :)
+Best regards,
+baolu
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
