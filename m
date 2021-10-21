@@ -2,66 +2,66 @@ Return-Path: <SRS0=0R9D=PJ=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4C960C433EF
-	for <iommu@archiver.kernel.org>; Thu, 21 Oct 2021 09:06:46 +0000 (UTC)
-Received: from smtp1.osuosl.org (smtp1.osuosl.org [140.211.166.138])
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E26A5C433EF
+	for <iommu@archiver.kernel.org>; Thu, 21 Oct 2021 09:06:49 +0000 (UTC)
+Received: from smtp2.osuosl.org (smtp2.osuosl.org [140.211.166.133])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 15A8A60F56
-	for <iommu@archiver.kernel.org>; Thu, 21 Oct 2021 09:06:46 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.4.1 mail.kernel.org 15A8A60F56
+	by mail.kernel.org (Postfix) with ESMTPS id AB422610CB
+	for <iommu@archiver.kernel.org>; Thu, 21 Oct 2021 09:06:49 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.4.1 mail.kernel.org AB422610CB
 Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=lst.de
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by smtp1.osuosl.org (Postfix) with ESMTP id ECF9783B71;
-	Thu, 21 Oct 2021 09:06:45 +0000 (UTC)
+	by smtp2.osuosl.org (Postfix) with ESMTP id 88D56405E2;
+	Thu, 21 Oct 2021 09:06:49 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from smtp1.osuosl.org ([127.0.0.1])
-	by localhost (smtp1.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id Iq6qT4bwvFbk; Thu, 21 Oct 2021 09:06:45 +0000 (UTC)
+Received: from smtp2.osuosl.org ([127.0.0.1])
+	by localhost (smtp2.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+	with ESMTP id hLGGDRqndItg; Thu, 21 Oct 2021 09:06:48 +0000 (UTC)
 Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [IPv6:2605:bc80:3010:104::8cd3:938])
-	by smtp1.osuosl.org (Postfix) with ESMTPS id E286083B3B;
-	Thu, 21 Oct 2021 09:06:44 +0000 (UTC)
+	by smtp2.osuosl.org (Postfix) with ESMTPS id 17E92401DE;
+	Thu, 21 Oct 2021 09:06:48 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id BE0A0C001C;
-	Thu, 21 Oct 2021 09:06:44 +0000 (UTC)
-Received: from smtp4.osuosl.org (smtp4.osuosl.org [IPv6:2605:bc80:3010::137])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 00310C0011
- for <iommu@lists.linux-foundation.org>; Thu, 21 Oct 2021 09:06:42 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id ED4ADC001C;
+	Thu, 21 Oct 2021 09:06:47 +0000 (UTC)
+Received: from smtp3.osuosl.org (smtp3.osuosl.org [140.211.166.136])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 5E7CBC0011
+ for <iommu@lists.linux-foundation.org>; Thu, 21 Oct 2021 09:06:46 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by smtp4.osuosl.org (Postfix) with ESMTP id E44B0407D5
- for <iommu@lists.linux-foundation.org>; Thu, 21 Oct 2021 09:06:42 +0000 (UTC)
+ by smtp3.osuosl.org (Postfix) with ESMTP id 420B760EAF
+ for <iommu@lists.linux-foundation.org>; Thu, 21 Oct 2021 09:06:46 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Authentication-Results: smtp4.osuosl.org (amavisd-new);
+Authentication-Results: smtp3.osuosl.org (amavisd-new);
  dkim=pass (2048-bit key) header.d=infradead.org
-Received: from smtp4.osuosl.org ([127.0.0.1])
- by localhost (smtp4.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id jvvD1b-61rS5 for <iommu@lists.linux-foundation.org>;
- Thu, 21 Oct 2021 09:06:42 +0000 (UTC)
+Received: from smtp3.osuosl.org ([127.0.0.1])
+ by localhost (smtp3.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+ with ESMTP id 1YMHpewFgxSb for <iommu@lists.linux-foundation.org>;
+ Thu, 21 Oct 2021 09:06:45 +0000 (UTC)
 X-Greylist: from auto-whitelisted by SQLgrey-1.8.0
 Received: from bombadil.infradead.org (bombadil.infradead.org
  [IPv6:2607:7c80:54:e::133])
- by smtp4.osuosl.org (Postfix) with ESMTPS id 6ECEA407CE
- for <iommu@lists.linux-foundation.org>; Thu, 21 Oct 2021 09:06:42 +0000 (UTC)
+ by smtp3.osuosl.org (Postfix) with ESMTPS id C31E760EA6
+ for <iommu@lists.linux-foundation.org>; Thu, 21 Oct 2021 09:06:45 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
  d=infradead.org; s=bombadil.20210309; h=Content-Transfer-Encoding:
  MIME-Version:References:In-Reply-To:Message-Id:Date:Subject:Cc:To:From:Sender
  :Reply-To:Content-Type:Content-ID:Content-Description;
- bh=tL678UByyN9JeCxcwTAfw/47e/4mMuEzIRqYeD6LdHw=; b=VxWT4WTtkcD7msngrFktRHRoI/
- NMVcKD++MtC2QuNr2XUD+vUO3JyHKM2JA4Wq6d3JkEtoDmGDa0+xWNofMknS5j+CAnfo2hDRP79wZ
- 2lXx5TgJ1nI2saZmg1EIpqzjR9meWRQmqrMDPNjQjXekl0ixeLEATNz8Gf5IB3umXZ/lOgY4F/1CH
- pLuPXJin/ZnzStcy5NDb3H3go0AcVcApid709Gm8tEoarzjy8kEJljv0s0CXBuDagu17aEqy/NF6P
- d94yvWq+DOWV9Bki/VGExWJSqVhzkl47MtY7YjPwDs835neOQDdYnuZ3wSyp2UCd/Q1ql2fsWaQc4
- K0hb+6IQ==;
+ bh=geSHn+OKy9FQggkm2OH+aFo6fis8v5WVlLI2M5PRqq0=; b=c7K1J8MiDAsm3Y+oZ5xeQ798mV
+ L//N5G4yja3Lc/OoJqfoF88M7GvolI0sS4+O//4Fsx9ZcTCAwTVf5+zbg4a7foEPj+xWFSHXRPAlZ
+ rv967c7UeFCb+kvS9b3rpPUHsKXgGnrvCkIFHyHqUb2yp/WmJgSxGmIihjOpF1qZREnKnKr74PHk5
+ 9uuiFaqe+4GkGC1QlO7Y9qj83Tril3HvRQnT8Q596zLfC+trAcYFJxm8WXNez4aKOd4T72Kzv03tB
+ QQFHhjFGN2XlNNMks8jkwcurAuItdwl+TCJfO22uibOGoBLY4Ap3VOlGWuV2mtkImTb8kwxdemTVM
+ MTCApRQw==;
 Received: from [2001:4bb8:180:8777:7df0:a8d8:40cc:3310] (helo=localhost)
  by bombadil.infradead.org with esmtpsa (Exim 4.94.2 #2 (Red Hat Linux))
- id 1mdU25-006xyi-6o; Thu, 21 Oct 2021 09:06:41 +0000
+ id 1mdU28-006xze-GT; Thu, 21 Oct 2021 09:06:45 +0000
 From: Christoph Hellwig <hch@lst.de>
 To: iommu@lists.linux-foundation.org
-Subject: [PATCH 08/10] dma-direct: drop two CONFIG_DMA_RESTRICTED_POOL
- conditionals
-Date: Thu, 21 Oct 2021 11:06:09 +0200
-Message-Id: <20211021090611.488281-9-hch@lst.de>
+Subject: [PATCH 09/10] dma-direct: factor the swiotlb code out of
+ __dma_direct_alloc_pages
+Date: Thu, 21 Oct 2021 11:06:10 +0200
+Message-Id: <20211021090611.488281-10-hch@lst.de>
 X-Mailer: git-send-email 2.30.2
 In-Reply-To: <20211021090611.488281-1-hch@lst.de>
 References: <20211021090611.488281-1-hch@lst.de>
@@ -86,38 +86,59 @@ Content-Transfer-Encoding: 7bit
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-swiotlb_alloc and swiotlb_free are properly stubbed out if
-CONFIG_DMA_RESTRICTED_POOL is not set, so skip the extra checks.
+Add a new helper to deal with the swiotlb case.  This keeps the code
+nicely boundled and removes the not required call to
+dma_direct_optimal_gfp_mask for the swiotlb case.
 
 Signed-off-by: Christoph Hellwig <hch@lst.de>
 ---
- kernel/dma/direct.c | 6 ++----
- 1 file changed, 2 insertions(+), 4 deletions(-)
+ kernel/dma/direct.c | 24 +++++++++++++++---------
+ 1 file changed, 15 insertions(+), 9 deletions(-)
 
 diff --git a/kernel/dma/direct.c b/kernel/dma/direct.c
-index 680fe10410645..f4ac2e1cdf469 100644
+index f4ac2e1cdf469..f2ec40f5733fc 100644
 --- a/kernel/dma/direct.c
 +++ b/kernel/dma/direct.c
-@@ -92,8 +92,7 @@ static int dma_set_encrypted(struct device *dev, void *vaddr, size_t size)
- static void __dma_direct_free_pages(struct device *dev, struct page *page,
- 				    size_t size)
- {
--	if (IS_ENABLED(CONFIG_DMA_RESTRICTED_POOL) &&
--	    swiotlb_free(dev, page, size))
-+	if (swiotlb_free(dev, page, size))
- 		return;
+@@ -97,6 +97,18 @@ static void __dma_direct_free_pages(struct device *dev, struct page *page,
  	dma_free_contiguous(dev, page, size);
  }
-@@ -109,8 +108,7 @@ static struct page *__dma_direct_alloc_pages(struct device *dev, size_t size,
  
++static struct page *dma_direct_alloc_swiotlb(struct device *dev, size_t size)
++{
++	struct page *page = swiotlb_alloc(dev, size);
++
++	if (page && !dma_coherent_ok(dev, page_to_phys(page), size)) {
++		swiotlb_free(dev, page, size);
++		return NULL;
++	}
++
++	return page;
++}
++
+ static struct page *__dma_direct_alloc_pages(struct device *dev, size_t size,
+ 		gfp_t gfp)
+ {
+@@ -106,17 +118,11 @@ static struct page *__dma_direct_alloc_pages(struct device *dev, size_t size,
+ 
+ 	WARN_ON_ONCE(!PAGE_ALIGNED(size));
+ 
++	if (is_swiotlb_for_alloc(dev))
++		return dma_direct_alloc_swiotlb(dev, size);
++
  	gfp |= dma_direct_optimal_gfp_mask(dev, dev->coherent_dma_mask,
  					   &phys_limit);
--	if (IS_ENABLED(CONFIG_DMA_RESTRICTED_POOL) &&
--	    is_swiotlb_for_alloc(dev)) {
-+	if (is_swiotlb_for_alloc(dev)) {
- 		page = swiotlb_alloc(dev, size);
- 		if (page && !dma_coherent_ok(dev, page_to_phys(page), size)) {
- 			__dma_direct_free_pages(dev, page, size);
+-	if (is_swiotlb_for_alloc(dev)) {
+-		page = swiotlb_alloc(dev, size);
+-		if (page && !dma_coherent_ok(dev, page_to_phys(page), size)) {
+-			__dma_direct_free_pages(dev, page, size);
+-			return NULL;
+-		}
+-		return page;
+-	}
+-
+ 	page = dma_alloc_contiguous(dev, size, gfp);
+ 	if (page && !dma_coherent_ok(dev, page_to_phys(page), size)) {
+ 		dma_free_contiguous(dev, page, size);
 -- 
 2.30.2
 
