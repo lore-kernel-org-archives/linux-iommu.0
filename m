@@ -2,60 +2,83 @@ Return-Path: <SRS0=0R9D=PJ=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8B5E1C433F5
-	for <iommu@archiver.kernel.org>; Thu, 21 Oct 2021 07:22:41 +0000 (UTC)
-Received: from smtp1.osuosl.org (smtp1.osuosl.org [140.211.166.138])
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A0E6EC433F5
+	for <iommu@archiver.kernel.org>; Thu, 21 Oct 2021 08:10:56 +0000 (UTC)
+Received: from smtp3.osuosl.org (smtp3.osuosl.org [140.211.166.136])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 081B36109F
-	for <iommu@archiver.kernel.org>; Thu, 21 Oct 2021 07:22:40 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.4.1 mail.kernel.org 081B36109F
-Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=lst.de
+	by mail.kernel.org (Postfix) with ESMTPS id 55EE361205
+	for <iommu@archiver.kernel.org>; Thu, 21 Oct 2021 08:10:56 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.4.1 mail.kernel.org 55EE361205
+Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=kernel.org
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by smtp1.osuosl.org (Postfix) with ESMTP id BE328835C9;
-	Thu, 21 Oct 2021 07:22:40 +0000 (UTC)
+	by smtp3.osuosl.org (Postfix) with ESMTP id 3032860EA4;
+	Thu, 21 Oct 2021 08:10:56 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from smtp1.osuosl.org ([127.0.0.1])
-	by localhost (smtp1.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id UJv6c59x8885; Thu, 21 Oct 2021 07:22:40 +0000 (UTC)
-Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by smtp1.osuosl.org (Postfix) with ESMTPS id B3ED083372;
-	Thu, 21 Oct 2021 07:22:39 +0000 (UTC)
+Received: from smtp3.osuosl.org ([127.0.0.1])
+	by localhost (smtp3.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+	with ESMTP id 6D2nS0UhrL_E; Thu, 21 Oct 2021 08:10:55 +0000 (UTC)
+Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [IPv6:2605:bc80:3010:104::8cd3:938])
+	by smtp3.osuosl.org (Postfix) with ESMTPS id EADF960EA5;
+	Thu, 21 Oct 2021 08:10:54 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 95543C001C;
-	Thu, 21 Oct 2021 07:22:39 +0000 (UTC)
-Received: from smtp4.osuosl.org (smtp4.osuosl.org [140.211.166.137])
- by lists.linuxfoundation.org (Postfix) with ESMTP id CB13BC0011
- for <iommu@lists.linux-foundation.org>; Thu, 21 Oct 2021 07:22:38 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id B7C4BC0033;
+	Thu, 21 Oct 2021 08:10:54 +0000 (UTC)
+Received: from smtp4.osuosl.org (smtp4.osuosl.org [IPv6:2605:bc80:3010::137])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 9E256C0011
+ for <iommu@lists.linux-foundation.org>; Thu, 21 Oct 2021 08:10:53 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by smtp4.osuosl.org (Postfix) with ESMTP id AC97E4010A
- for <iommu@lists.linux-foundation.org>; Thu, 21 Oct 2021 07:22:38 +0000 (UTC)
+ by smtp4.osuosl.org (Postfix) with ESMTP id 8C38840790
+ for <iommu@lists.linux-foundation.org>; Thu, 21 Oct 2021 08:10:53 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
 Received: from smtp4.osuosl.org ([127.0.0.1])
  by localhost (smtp4.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id r-rv7FKxlE2S for <iommu@lists.linux-foundation.org>;
- Thu, 21 Oct 2021 07:22:38 +0000 (UTC)
-X-Greylist: from auto-whitelisted by SQLgrey-1.8.0
-Received: from verein.lst.de (verein.lst.de [213.95.11.211])
- by smtp4.osuosl.org (Postfix) with ESMTPS id 316D94007A
- for <iommu@lists.linux-foundation.org>; Thu, 21 Oct 2021 07:22:38 +0000 (UTC)
-Received: by verein.lst.de (Postfix, from userid 2407)
- id D34B168BEB; Thu, 21 Oct 2021 09:22:33 +0200 (CEST)
-Date: Thu, 21 Oct 2021 09:22:33 +0200
-From: Christoph Hellwig <hch@lst.de>
-To: David Rientjes <rientjes@google.com>
-Subject: Re: [PATCH 2/4] dma-direct: leak memory that can't be re-encrypted
-Message-ID: <20211021072233.GA29169@lst.de>
-References: <20211019122916.2468032-1-hch@lst.de>
- <20211019122916.2468032-3-hch@lst.de>
- <c116b963-1a53-bb5a-feab-2abaee6fd86@google.com>
-MIME-Version: 1.0
-Content-Disposition: inline
-In-Reply-To: <c116b963-1a53-bb5a-feab-2abaee6fd86@google.com>
-User-Agent: Mutt/1.5.17 (2007-11-01)
-Cc: iommu@lists.linux-foundation.org, Robin Murphy <robin.murphy@arm.com>,
- Christoph Hellwig <hch@lst.de>
+ with ESMTP id Y0LsWFeSCEnn for <iommu@lists.linux-foundation.org>;
+ Thu, 21 Oct 2021 08:10:53 +0000 (UTC)
+X-Greylist: domain auto-whitelisted by SQLgrey-1.8.0
+Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
+ by smtp4.osuosl.org (Postfix) with ESMTPS id 05F354078E
+ for <iommu@lists.linux-foundation.org>; Thu, 21 Oct 2021 08:10:52 +0000 (UTC)
+Received: from disco-boy.misterjones.org (disco-boy.misterjones.org
+ [51.254.78.96])
+ (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+ (No client certificate requested)
+ by mail.kernel.org (Postfix) with ESMTPSA id 457B560FDA;
+ Thu, 21 Oct 2021 08:10:52 +0000 (UTC)
+Received: from sofa.misterjones.org ([185.219.108.64] helo=why.misterjones.org)
+ by disco-boy.misterjones.org with esmtpsa (TLS1.3) tls
+ TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384 (Exim 4.94.2)
+ (envelope-from <maz@kernel.org>)
+ id 1mdTA2-000eLF-32; Thu, 21 Oct 2021 09:10:50 +0100
+Date: Thu, 21 Oct 2021 09:10:49 +0100
+Message-ID: <87wnm6bxx2.wl-maz@kernel.org>
+From: Marc Zyngier <maz@kernel.org>
+To: Lu Baolu <baolu.lu@linux.intel.com>
+Subject: Re: [PATCH v3 4/6] iommu: Move IOMMU pagesize check to attach_device
+In-Reply-To: <6a886030-cbc6-9e92-bf79-77b659da2915@linux.intel.com>
+References: <20211019163737.46269-1-sven@svenpeter.dev>
+ <20211019163737.46269-5-sven@svenpeter.dev>
+ <9e25f2c0-d9d3-475d-e973-63be1891f9a5@linux.intel.com>
+ <8735ovdbcv.wl-maz@kernel.org>
+ <6a886030-cbc6-9e92-bf79-77b659da2915@linux.intel.com>
+User-Agent: Wanderlust/2.15.9 (Almost Unreal) SEMI-EPG/1.14.7 (Harue)
+ FLIM-LB/1.14.9 (=?UTF-8?B?R29qxY0=?=) APEL-LB/10.8 EasyPG/1.0.0 Emacs/27.1
+ (x86_64-pc-linux-gnu) MULE/6.0 (HANACHIRUSATO)
+MIME-Version: 1.0 (generated by SEMI-EPG 1.14.7 - "Harue")
+X-SA-Exim-Connect-IP: 185.219.108.64
+X-SA-Exim-Rcpt-To: baolu.lu@linux.intel.com, sven@svenpeter.dev,
+ iommu@lists.linux-foundation.org, robin.murphy@arm.com, arnd@kernel.org,
+ marcan@marcan.st, linux-kernel@vger.kernel.org, graf@amazon.com,
+ mohamed.mediouni@caramail.com, will@kernel.org, alyssa@rosenzweig.io
+X-SA-Exim-Mail-From: maz@kernel.org
+X-SA-Exim-Scanned: No (on disco-boy.misterjones.org);
+ SAEximRunCond expanded to false
+Cc: Arnd Bergmann <arnd@kernel.org>, Will Deacon <will@kernel.org>,
+ Hector Martin <marcan@marcan.st>, linux-kernel@vger.kernel.org,
+ iommu@lists.linux-foundation.org, Alexander Graf <graf@amazon.com>,
+ Mohamed Mediouni <mohamed.mediouni@caramail.com>,
+ Robin Murphy <robin.murphy@arm.com>, Alyssa Rosenzweig <alyssa@rosenzweig.io>
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -73,16 +96,51 @@ Content-Transfer-Encoding: 7bit
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-On Tue, Oct 19, 2021 at 12:56:36PM -0700, David Rientjes wrote:
-> > -	dma_set_encrypted(dev, vaddr, 1 << page_order);
-> > +	if (dma_set_encrypted(dev, vaddr, 1 << page_order)) {
-> > +		pr_warn_ratelimited(
-> > +			"leaking DMA memory that can't be re-encrypted\n");
-> > +	}
+On Thu, 21 Oct 2021 03:22:30 +0100,
+Lu Baolu <baolu.lu@linux.intel.com> wrote:
 > 
-> Is this actually leaking the memory?
+> On 10/20/21 10:22 PM, Marc Zyngier wrote:
+> > On Wed, 20 Oct 2021 06:21:44 +0100,
+> > Lu Baolu <baolu.lu@linux.intel.com> wrote:
+> >> 
+> >> On 2021/10/20 0:37, Sven Peter via iommu wrote:
+> >>> +	/*
+> >>> +	 * Check that CPU pages can be represented by the IOVA granularity.
+> >>> +	 * This has to be done after ops->attach_dev since many IOMMU drivers
+> >>> +	 * only limit domain->pgsize_bitmap after having attached the first
+> >>> +	 * device.
+> >>> +	 */
+> >>> +	ret = iommu_check_page_size(domain);
+> >>> +	if (ret) {
+> >>> +		__iommu_detach_device(domain, dev);
+> >>> +		return ret;
+> >>> +	}
+> >> 
+> >> It looks odd. __iommu_attach_device() attaches an I/O page table for a
+> >> device. How does it relate to CPU pages? Why is it a failure case if CPU
+> >> page size is not covered?
+> > 
+> > If you allocate a CPU PAGE_SIZE'd region, and point it at a device
+> > that now can DMA to more than what you have allocated because the
+> > IOMMU's own page size is larger, the device has now access to data it
+> > shouldn't see. In my book, that's a pretty bad thing.
+> 
+> But even you enforce the CPU page size check here, this problem still
+> exists unless all DMA buffers are PAGE_SIZE aligned and sized, right?
 
-Yes, it should return here.
+Let me take a CPU analogy: you have a page that contains some user
+data *and* a kernel secret. How do you map this page into userspace
+without leaking the kernel secret?
+
+PAGE_SIZE allocations are the unit of isolation, and this applies to
+both CPU and IOMMU. If you have allocated a DMA buffer that is less
+than a page, you then have to resort to bounce buffering, or accept
+that your data isn't safe.
+
+	M.
+
+-- 
+Without deviation from the norm, progress is not possible.
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
