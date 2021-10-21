@@ -2,72 +2,114 @@ Return-Path: <SRS0=0R9D=PJ=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0DCA8C433F5
-	for <iommu@archiver.kernel.org>; Thu, 21 Oct 2021 09:06:53 +0000 (UTC)
-Received: from smtp2.osuosl.org (smtp2.osuosl.org [140.211.166.133])
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B1019C433FE
+	for <iommu@archiver.kernel.org>; Thu, 21 Oct 2021 14:58:31 +0000 (UTC)
+Received: from smtp1.osuosl.org (smtp1.osuosl.org [140.211.166.138])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id C6D2A610CB
-	for <iommu@archiver.kernel.org>; Thu, 21 Oct 2021 09:06:52 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.4.1 mail.kernel.org C6D2A610CB
-Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=lst.de
+	by mail.kernel.org (Postfix) with ESMTPS id 60503611CE
+	for <iommu@archiver.kernel.org>; Thu, 21 Oct 2021 14:58:31 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.4.1 mail.kernel.org 60503611CE
+Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=linaro.org
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by smtp2.osuosl.org (Postfix) with ESMTP id A5DB8405E2;
-	Thu, 21 Oct 2021 09:06:52 +0000 (UTC)
+	by smtp1.osuosl.org (Postfix) with ESMTP id 0CBA683C08;
+	Thu, 21 Oct 2021 14:58:31 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from smtp2.osuosl.org ([127.0.0.1])
-	by localhost (smtp2.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id NE4-Sm8C_c6k; Thu, 21 Oct 2021 09:06:51 +0000 (UTC)
-Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by smtp2.osuosl.org (Postfix) with ESMTPS id 4DE9E405E5;
-	Thu, 21 Oct 2021 09:06:51 +0000 (UTC)
+Received: from smtp1.osuosl.org ([127.0.0.1])
+	by localhost (smtp1.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+	with ESMTP id 2wCzih4qJyFA; Thu, 21 Oct 2021 14:58:30 +0000 (UTC)
+Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [IPv6:2605:bc80:3010:104::8cd3:938])
+	by smtp1.osuosl.org (Postfix) with ESMTPS id DCD3983BEA;
+	Thu, 21 Oct 2021 14:58:29 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 2B251C001C;
-	Thu, 21 Oct 2021 09:06:51 +0000 (UTC)
-Received: from smtp3.osuosl.org (smtp3.osuosl.org [140.211.166.136])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 0F8E4C0011
- for <iommu@lists.linux-foundation.org>; Thu, 21 Oct 2021 09:06:50 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id AE7EFC0033;
+	Thu, 21 Oct 2021 14:58:29 +0000 (UTC)
+Received: from smtp2.osuosl.org (smtp2.osuosl.org [IPv6:2605:bc80:3010::133])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id A62E6C0011
+ for <iommu@lists.linux-foundation.org>; Thu, 21 Oct 2021 14:58:28 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by smtp3.osuosl.org (Postfix) with ESMTP id 0049460EB3
- for <iommu@lists.linux-foundation.org>; Thu, 21 Oct 2021 09:06:50 +0000 (UTC)
+ by smtp2.osuosl.org (Postfix) with ESMTP id 7F3F4406D6
+ for <iommu@lists.linux-foundation.org>; Thu, 21 Oct 2021 14:58:28 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Authentication-Results: smtp3.osuosl.org (amavisd-new);
- dkim=pass (2048-bit key) header.d=infradead.org
-Received: from smtp3.osuosl.org ([127.0.0.1])
- by localhost (smtp3.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id rukfCc87xz2F for <iommu@lists.linux-foundation.org>;
- Thu, 21 Oct 2021 09:06:49 +0000 (UTC)
-X-Greylist: from auto-whitelisted by SQLgrey-1.8.0
-Received: from bombadil.infradead.org (bombadil.infradead.org
- [IPv6:2607:7c80:54:e::133])
- by smtp3.osuosl.org (Postfix) with ESMTPS id 6F93C60EAC
- for <iommu@lists.linux-foundation.org>; Thu, 21 Oct 2021 09:06:49 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
- d=infradead.org; s=bombadil.20210309; h=Content-Transfer-Encoding:
- MIME-Version:References:In-Reply-To:Message-Id:Date:Subject:Cc:To:From:Sender
- :Reply-To:Content-Type:Content-ID:Content-Description;
- bh=JJBZ5oxINsBB2qtE4L5UUxGSdj/2PlX2eIqfKS/VI/4=; b=I3RQeW2MP2VbM3KQfI2RDrlITo
- e2/ZP96S58WeVMMAtY7Ngz1v9n1mokGN+rO5DF5j6TUN/llHHAbLpaCq0wwr9FJBUssoWGZDcBTzA
- 71oRzn/h9V4KkH9vSKhCGQ6bay0IYzOi30wtzyKSxBNS/J3xfxTQX8UHpPbGoSWYY0qhPdbZP8atJ
- xKNBnVCH1XBtrxAcXz52qo/z5u+uRnssC/pTuPqenGtAZwCPLSJsH/S2EREy7cb+tR9NXdigzS30W
- 9tPvYMS7AnaVoMongCKQ++1Ns+d77VfTrMdedWgEePUcCXZpBsZkJbcj3rNsdKdOHf3+sb3MuKPEF
- mxXOayQQ==;
-Received: from [2001:4bb8:180:8777:7df0:a8d8:40cc:3310] (helo=localhost)
- by bombadil.infradead.org with esmtpsa (Exim 4.94.2 #2 (Red Hat Linux))
- id 1mdU2C-006y0X-9N; Thu, 21 Oct 2021 09:06:48 +0000
-From: Christoph Hellwig <hch@lst.de>
-To: iommu@lists.linux-foundation.org
-Subject: [PATCH 10/10] dma-direct: add a dma_direct_use_pool helper
-Date: Thu, 21 Oct 2021 11:06:11 +0200
-Message-Id: <20211021090611.488281-11-hch@lst.de>
-X-Mailer: git-send-email 2.30.2
-In-Reply-To: <20211021090611.488281-1-hch@lst.de>
-References: <20211021090611.488281-1-hch@lst.de>
+Authentication-Results: smtp2.osuosl.org (amavisd-new);
+ dkim=pass (2048-bit key) header.d=linaro.org
+Received: from smtp2.osuosl.org ([127.0.0.1])
+ by localhost (smtp2.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+ with ESMTP id 1-VEruR-LuOv for <iommu@lists.linux-foundation.org>;
+ Thu, 21 Oct 2021 14:58:27 +0000 (UTC)
+X-Greylist: whitelisted by SQLgrey-1.8.0
+Received: from mail-wr1-x433.google.com (mail-wr1-x433.google.com
+ [IPv6:2a00:1450:4864:20::433])
+ by smtp2.osuosl.org (Postfix) with ESMTPS id 493FE40017
+ for <iommu@lists.linux-foundation.org>; Thu, 21 Oct 2021 14:58:27 +0000 (UTC)
+Received: by mail-wr1-x433.google.com with SMTP id e12so1589137wra.4
+ for <iommu@lists.linux-foundation.org>; Thu, 21 Oct 2021 07:58:27 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linaro.org; s=google;
+ h=date:from:to:cc:subject:message-id:references:mime-version
+ :content-disposition:in-reply-to;
+ bh=9NBqHjMa3wMvruHtwVGUR1gd7leMzib5uaeU+3Io4Fg=;
+ b=qBP2L8NVoLfZGeQzfQjTFTNz0gG7byHV4/NfKy7g3ACmXnfyTURs/kJuCENa0ErjIS
+ 9gMeeYKQSF1EERRPA76Ma8B/Z6HgB6SfFqm9Il709BrqR/YoDXAldgU5CKMlgADTSnN2
+ +xWx7oJkoq0MVJEHZ5Q30hgftm1JS1Tc3a1bbSPvAJb5xXVPzI2AcsY9t8VjUaYhnSP6
+ TWAeS06C5u3UV5FCNmiy9Xh37uKHLLnkG2a0XPDHvr/phujaMvRMutXBnYx4hChmpAKu
+ +6yYVvun+7Oh3nH135puLcVD82OOGl5Hh8iajWjPrmyw7VlXzrBoqR+P+P9nNKdBh9FR
+ 6ezQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+ d=1e100.net; s=20210112;
+ h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+ :mime-version:content-disposition:in-reply-to;
+ bh=9NBqHjMa3wMvruHtwVGUR1gd7leMzib5uaeU+3Io4Fg=;
+ b=6uvgwVPLj3UDD5e6ZU0gmn4l1/mAYMOxnNxWHsYK0T2OacS2YyDmu2ORDhfYN1jVzO
+ 5GbDETsIleoNrP23xgmLJdapDo4+xdGAnFRENR0UNLCXI2fqA8m2xD0xQSQDAtRkabpV
+ G9yxcm26EpJ+WE7CfubZKO8KvMk/Yn9EdODv9iDtPuO0IoWEx8beHuanuyR9D5Jxr9iX
+ jru/Mqc6cV6tlADclobWWQpB0Ij0iQYzseq5GSW7KSJNLB9FR+59cUDuqW13FrWSducg
+ u/O66XUNwG0Y7SKFW1fcAyqRK1AkXwzCZhhTaNyYpbjVWny3JWpVrd5Of8sq+dbLIGnf
+ Jd2g==
+X-Gm-Message-State: AOAM530vbP5RJeEPE7DkbH4Fn50uy6Ax4F/ny5auOL/gyTSzwvapOqF2
+ 0ctDUsZgmTip964gMlLmBJX6sQ==
+X-Google-Smtp-Source: ABdhPJx5RVth8E6qcEBrzprytwqqvFi257rdO6QMjjNBkE3Npatj68fYhqVFmrNYJlMyrm2jHzKLvw==
+X-Received: by 2002:a5d:55cd:: with SMTP id i13mr8018641wrw.410.1634828305512; 
+ Thu, 21 Oct 2021 07:58:25 -0700 (PDT)
+Received: from myrica (cpc92880-cmbg19-2-0-cust679.5-4.cable.virginm.net.
+ [82.27.106.168])
+ by smtp.gmail.com with ESMTPSA id d24sm4977061wmb.35.2021.10.21.07.58.23
+ (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+ Thu, 21 Oct 2021 07:58:24 -0700 (PDT)
+Date: Thu, 21 Oct 2021 15:58:02 +0100
+From: Jean-Philippe Brucker <jean-philippe@linaro.org>
+To: "Tian, Kevin" <kevin.tian@intel.com>
+Subject: Re: [RFC 10/20] iommu/iommufd: Add IOMMU_DEVICE_GET_INFO
+Message-ID: <YXF/+jxRtjnlXU7w@myrica>
+References: <20210922234954.GB964074@nvidia.com>
+ <BN9PR11MB5433409DF766AAEF1BB2CF258CA39@BN9PR11MB5433.namprd11.prod.outlook.com>
+ <BN9PR11MB54333BDB1E58387FD9999DF18CA39@BN9PR11MB5433.namprd11.prod.outlook.com>
+ <20210923114219.GG964074@nvidia.com>
+ <BN9PR11MB5433519229319BA951CA97638CAA9@BN9PR11MB5433.namprd11.prod.outlook.com>
+ <20210930222355.GH964074@nvidia.com>
+ <BN9PR11MB5433530032DC8400B71FCB788CB89@BN9PR11MB5433.namprd11.prod.outlook.com>
+ <20211014154259.GT2744544@nvidia.com>
+ <BN9PR11MB543327BB6D58AEF91AD2C9D18CB99@BN9PR11MB5433.namprd11.prod.outlook.com>
+ <BL1PR11MB5429973588E4FBCEC8F519A88CBF9@BL1PR11MB5429.namprd11.prod.outlook.com>
 MIME-Version: 1.0
-X-SRS-Rewrite: SMTP reverse-path rewritten from <hch@infradead.org> by
- bombadil.infradead.org. See http://www.infradead.org/rpr.html
-Cc: Robin Murphy <robin.murphy@arm.com>, David Rientjes <rientjes@google.com>
+Content-Disposition: inline
+In-Reply-To: <BL1PR11MB5429973588E4FBCEC8F519A88CBF9@BL1PR11MB5429.namprd11.prod.outlook.com>
+Cc: "kvm@vger.kernel.org" <kvm@vger.kernel.org>,
+ "jasowang@redhat.com" <jasowang@redhat.com>,
+ "kwankhede@nvidia.com" <kwankhede@nvidia.com>, "hch@lst.de" <hch@lst.de>,
+ "Jiang, Dave" <dave.jiang@intel.com>, "Raj, Ashok" <ashok.raj@intel.com>,
+ "corbet@lwn.net" <corbet@lwn.net>, Jason Gunthorpe <jgg@nvidia.com>,
+ "parav@mellanox.com" <parav@mellanox.com>,
+ Alex Williamson <alex.williamson@redhat.com>,
+ "lkml@metux.net" <lkml@metux.net>,
+ "david@gibson.dropbear.id.au" <david@gibson.dropbear.id.au>,
+ "dwmw2@infradead.org" <dwmw2@infradead.org>, "Tian,
+ Jun J" <jun.j.tian@intel.com>,
+ "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+ "lushenming@huawei.com" <lushenming@huawei.com>,
+ "iommu@lists.linux-foundation.org" <iommu@lists.linux-foundation.org>,
+ "pbonzini@redhat.com" <pbonzini@redhat.com>,
+ "robin.murphy@arm.com" <robin.murphy@arm.com>
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -85,66 +127,30 @@ Content-Transfer-Encoding: 7bit
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-Add a helper to check if a potentially blocking operation should
-dip into the atomic pools.
+On Thu, Oct 21, 2021 at 02:26:00AM +0000, Tian, Kevin wrote:
+> > I'll leave it to Jean to confirm. If only coherent DMA can be used in
+> > the guest on other platforms, suppose VFIO should not blindly set
+> > IOMMU_CACHE and in concept it should deny assigning a non-coherent
+> > device since no co-ordination with guest exists today.
+> 
+> Jean, what's your opinion?
 
-Signed-off-by: Christoph Hellwig <hch@lst.de>
----
- kernel/dma/direct.c | 18 ++++++++++++------
- 1 file changed, 12 insertions(+), 6 deletions(-)
+Yes a sanity check to prevent assigning non-coherent devices would be
+good, though I'm not particularly worried about non-coherent devices. PCIe
+on Arm should be coherent (according to the Base System Architecture). So
+vfio-pci devices should be coherent, but vfio-platform and mdev are
+case-by-case (hopefully all coherent since it concerns newer platforms).
 
-diff --git a/kernel/dma/direct.c b/kernel/dma/direct.c
-index f2ec40f5733fc..babf79c16c041 100644
---- a/kernel/dma/direct.c
-+++ b/kernel/dma/direct.c
-@@ -151,6 +151,15 @@ static struct page *__dma_direct_alloc_pages(struct device *dev, size_t size,
- 	return page;
- }
- 
-+/*
-+ * Check if a potentially blocking operations needs to dip into the atomic
-+ * pools for the given device/gfp.
-+ */
-+static bool dma_direct_use_pool(struct device *dev, gfp_t gfp)
-+{
-+	return gfpflags_allow_blocking(gfp) && !is_swiotlb_for_alloc(dev);
-+}
-+
- static void *dma_direct_alloc_from_pool(struct device *dev, size_t size,
- 		dma_addr_t *dma_handle, gfp_t gfp)
- {
-@@ -229,8 +238,7 @@ void *dma_direct_alloc(struct device *dev, size_t size,
- 		 * instead have to dip into the atomic pools.
- 		 */
- 		if (IS_ENABLED(CONFIG_DMA_DIRECT_REMAP)) {
--			if (!gfpflags_allow_blocking(gfp) &&
--			    !is_swiotlb_for_alloc(dev))
-+			if (dma_direct_use_pool(dev, gfp))
- 				return dma_direct_alloc_from_pool(dev, size,
- 						dma_handle, gfp);
- 			remap = true;
-@@ -241,8 +249,7 @@ void *dma_direct_alloc(struct device *dev, size_t size,
- 	 * Decrypting memory may block, so allocate the memory from the atomic
- 	 * pools if we can't block.
- 	 */
--	if (force_dma_unencrypted(dev) && !gfpflags_allow_blocking(gfp) &&
--	    !is_swiotlb_for_alloc(dev))
-+	if (force_dma_unencrypted(dev) && dma_direct_use_pool(dev, gfp))
- 		return dma_direct_alloc_from_pool(dev, size, dma_handle, gfp);
- 
- 	/* we always manually zero the memory once we are done */
-@@ -359,8 +366,7 @@ struct page *dma_direct_alloc_pages(struct device *dev, size_t size,
- 	struct page *page;
- 	void *ret;
- 
--	if (force_dma_unencrypted(dev) && !gfpflags_allow_blocking(gfp) &&
--	    !is_swiotlb_for_alloc(dev))
-+	if (force_dma_unencrypted(dev) && dma_direct_use_pool(dev, gfp))
- 		return dma_direct_alloc_from_pool(dev, size, dma_handle, gfp);
- 
- 	page = __dma_direct_alloc_pages(dev, size, gfp);
--- 
-2.30.2
+More worrying, I thought we disabled No-Snoop for VFIO but I was wrong,
+it's left enabled. On Arm I don't think userspace can perform the right
+cache maintenance operations to maintain coherency with a device that
+issues No-Snoop writes. Userspace can issue clean+invalidate but not
+invalidate alone, so there is no equivalent to arch_sync_dma_for_cpu().
+I think the worse that can happen is the device owner shooting itself in
+the foot by using No-Snoop, but would it hurt to disable it?
+
+Thanks,
+Jean
 
 _______________________________________________
 iommu mailing list
