@@ -2,73 +2,72 @@ Return-Path: <SRS0=cgap=PK=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id EA33CC433F5
-	for <iommu@archiver.kernel.org>; Fri, 22 Oct 2021 13:39:52 +0000 (UTC)
-Received: from smtp2.osuosl.org (smtp2.osuosl.org [140.211.166.133])
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7A831C433EF
+	for <iommu@archiver.kernel.org>; Fri, 22 Oct 2021 14:03:29 +0000 (UTC)
+Received: from smtp3.osuosl.org (smtp3.osuosl.org [140.211.166.136])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 8447161205
-	for <iommu@archiver.kernel.org>; Fri, 22 Oct 2021 13:39:52 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.4.1 mail.kernel.org 8447161205
-Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=arm.com
+	by mail.kernel.org (Postfix) with ESMTPS id 2409F60FC3
+	for <iommu@archiver.kernel.org>; Fri, 22 Oct 2021 14:03:29 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.4.1 mail.kernel.org 2409F60FC3
+Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=collabora.com
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by smtp2.osuosl.org (Postfix) with ESMTP id 3D83640273;
-	Fri, 22 Oct 2021 13:39:52 +0000 (UTC)
-X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from smtp2.osuosl.org ([127.0.0.1])
-	by localhost (smtp2.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id rWo_J8zEfHc2; Fri, 22 Oct 2021 13:39:51 +0000 (UTC)
-Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [IPv6:2605:bc80:3010:104::8cd3:938])
-	by smtp2.osuosl.org (Postfix) with ESMTPS id A8C3F40153;
-	Fri, 22 Oct 2021 13:39:50 +0000 (UTC)
-Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 88489C001F;
-	Fri, 22 Oct 2021 13:39:50 +0000 (UTC)
-Received: from smtp3.osuosl.org (smtp3.osuosl.org [140.211.166.136])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 9EB5BC001E
- for <iommu@lists.linux-foundation.org>; Fri, 22 Oct 2021 13:39:48 +0000 (UTC)
-Received: from localhost (localhost [127.0.0.1])
- by smtp3.osuosl.org (Postfix) with ESMTP id 85DB96084C
- for <iommu@lists.linux-foundation.org>; Fri, 22 Oct 2021 13:39:48 +0000 (UTC)
+	by smtp3.osuosl.org (Postfix) with ESMTP id DB7946085E;
+	Fri, 22 Oct 2021 14:03:28 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
 Received: from smtp3.osuosl.org ([127.0.0.1])
- by localhost (smtp3.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id oheDqoHUA8KO for <iommu@lists.linux-foundation.org>;
- Fri, 22 Oct 2021 13:39:47 +0000 (UTC)
+	by localhost (smtp3.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+	with ESMTP id BR5fpII4M1dW; Fri, 22 Oct 2021 14:03:28 +0000 (UTC)
+Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [IPv6:2605:bc80:3010:104::8cd3:938])
+	by smtp3.osuosl.org (Postfix) with ESMTPS id 976CB60858;
+	Fri, 22 Oct 2021 14:03:27 +0000 (UTC)
+Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 60689C001F;
+	Fri, 22 Oct 2021 14:03:27 +0000 (UTC)
+Received: from smtp2.osuosl.org (smtp2.osuosl.org [IPv6:2605:bc80:3010::133])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 60E9CC001E
+ for <iommu@lists.linux-foundation.org>; Fri, 22 Oct 2021 14:03:25 +0000 (UTC)
+Received: from localhost (localhost [127.0.0.1])
+ by smtp2.osuosl.org (Postfix) with ESMTP id 38E4240153
+ for <iommu@lists.linux-foundation.org>; Fri, 22 Oct 2021 14:03:25 +0000 (UTC)
+X-Virus-Scanned: amavisd-new at osuosl.org
+Received: from smtp2.osuosl.org ([127.0.0.1])
+ by localhost (smtp2.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+ with ESMTP id iqM0JrWOCIPq for <iommu@lists.linux-foundation.org>;
+ Fri, 22 Oct 2021 14:03:24 +0000 (UTC)
 X-Greylist: domain auto-whitelisted by SQLgrey-1.8.0
-Received: from foss.arm.com (foss.arm.com [217.140.110.172])
- by smtp3.osuosl.org (Postfix) with ESMTP id 90A6A607DB
- for <iommu@lists.linux-foundation.org>; Fri, 22 Oct 2021 13:39:47 +0000 (UTC)
-Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
- by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 9736F1FB;
- Fri, 22 Oct 2021 06:39:46 -0700 (PDT)
-Received: from [10.57.27.231] (unknown [10.57.27.231])
- by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id E25DB3F694;
- Fri, 22 Oct 2021 06:39:44 -0700 (PDT)
-Subject: Re: [PATCH v3 4/6] iommu: Move IOMMU pagesize check to attach_device
-To: Marc Zyngier <maz@kernel.org>, Lu Baolu <baolu.lu@linux.intel.com>
-References: <20211019163737.46269-1-sven@svenpeter.dev>
- <20211019163737.46269-5-sven@svenpeter.dev>
- <9e25f2c0-d9d3-475d-e973-63be1891f9a5@linux.intel.com>
- <8735ovdbcv.wl-maz@kernel.org>
- <6a886030-cbc6-9e92-bf79-77b659da2915@linux.intel.com>
- <87wnm6bxx2.wl-maz@kernel.org>
- <106088e3-2928-dace-e1b6-e1e74ffec366@linux.intel.com>
- <87pmrxbi0v.wl-maz@kernel.org>
-From: Robin Murphy <robin.murphy@arm.com>
-Message-ID: <ccc3c517-fa3a-6866-e139-5b3983080e6c@arm.com>
-Date: Fri, 22 Oct 2021 14:39:38 +0100
-User-Agent: Mozilla/5.0 (Windows NT 10.0; rv:78.0) Gecko/20100101
- Thunderbird/78.14.0
+Received: from bhuna.collabora.co.uk (bhuna.collabora.co.uk [46.235.227.227])
+ by smtp2.osuosl.org (Postfix) with ESMTPS id 1E3EC400C3
+ for <iommu@lists.linux-foundation.org>; Fri, 22 Oct 2021 14:03:24 +0000 (UTC)
+Received: from [IPv6:2a02:810a:880:f54:50fa:5c7d:20f4:e8d3] (unknown
+ [IPv6:2a02:810a:880:f54:50fa:5c7d:20f4:e8d3])
+ (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+ (No client certificate requested) (Authenticated sender: dafna)
+ by bhuna.collabora.co.uk (Postfix) with ESMTPSA id 3DBD31F454AB;
+ Fri, 22 Oct 2021 15:03:21 +0100 (BST)
+Subject: Re: [PATCH v3 13/33] iommu/mediatek: Remove the power status checking
+ in tlb flush all
+To: Yong Wu <yong.wu@mediatek.com>, Joerg Roedel <joro@8bytes.org>,
+ Rob Herring <robh+dt@kernel.org>, Matthias Brugger <matthias.bgg@gmail.com>,
+ Will Deacon <will@kernel.org>, Robin Murphy <robin.murphy@arm.com>
+References: <20210923115840.17813-1-yong.wu@mediatek.com>
+ <20210923115840.17813-14-yong.wu@mediatek.com>
+From: Dafna Hirschfeld <dafna.hirschfeld@collabora.com>
+Message-ID: <6cff0b97-b861-e02d-e76f-2510c962c452@collabora.com>
+Date: Fri, 22 Oct 2021 16:03:19 +0200
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
+ Thunderbird/78.13.0
 MIME-Version: 1.0
-In-Reply-To: <87pmrxbi0v.wl-maz@kernel.org>
-Content-Language: en-GB
-Cc: Arnd Bergmann <arnd@kernel.org>, Hector Martin <marcan@marcan.st>,
- linux-kernel@vger.kernel.org, iommu@lists.linux-foundation.org,
- Alexander Graf <graf@amazon.com>,
- Mohamed Mediouni <mohamed.mediouni@caramail.com>,
- Will Deacon <will@kernel.org>, Alyssa Rosenzweig <alyssa@rosenzweig.io>
+In-Reply-To: <20210923115840.17813-14-yong.wu@mediatek.com>
+Content-Language: en-US
+Cc: youlin.pei@mediatek.com, devicetree@vger.kernel.org,
+ Collabora Kernel ML <kernel@collabora.com>, srv_heupstream@mediatek.com,
+ Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>,
+ linux-kernel@vger.kernel.org, yen-chang.chen@mediatek.com,
+ chao.hao@mediatek.com, iommu@lists.linux-foundation.org,
+ linux-mediatek@lists.infradead.org, Hsin-Yi Wang <hsinyi@chromium.org>,
+ anan.sun@mediatek.com, linux-arm-kernel@lists.infradead.org
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -86,75 +85,104 @@ Content-Type: text/plain; charset="us-ascii"; Format="flowed"
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-On 2021-10-22 09:06, Marc Zyngier wrote:
-> On Fri, 22 Oct 2021 03:52:38 +0100,
-> Lu Baolu <baolu.lu@linux.intel.com> wrote:
->>
->> On 10/21/21 4:10 PM, Marc Zyngier wrote:
->>> On Thu, 21 Oct 2021 03:22:30 +0100,
->>> Lu Baolu <baolu.lu@linux.intel.com> wrote:
->>>>
->>>> On 10/20/21 10:22 PM, Marc Zyngier wrote:
->>>>> On Wed, 20 Oct 2021 06:21:44 +0100,
->>>>> Lu Baolu <baolu.lu@linux.intel.com> wrote:
->>>>>>
->>>>>> On 2021/10/20 0:37, Sven Peter via iommu wrote:
->>>>>>> +	/*
->>>>>>> +	 * Check that CPU pages can be represented by the IOVA granularity.
->>>>>>> +	 * This has to be done after ops->attach_dev since many IOMMU drivers
->>>>>>> +	 * only limit domain->pgsize_bitmap after having attached the first
->>>>>>> +	 * device.
->>>>>>> +	 */
->>>>>>> +	ret = iommu_check_page_size(domain);
->>>>>>> +	if (ret) {
->>>>>>> +		__iommu_detach_device(domain, dev);
->>>>>>> +		return ret;
->>>>>>> +	}
->>>>>>
->>>>>> It looks odd. __iommu_attach_device() attaches an I/O page table for a
->>>>>> device. How does it relate to CPU pages? Why is it a failure case if CPU
->>>>>> page size is not covered?
->>>>>
->>>>> If you allocate a CPU PAGE_SIZE'd region, and point it at a device
->>>>> that now can DMA to more than what you have allocated because the
->>>>> IOMMU's own page size is larger, the device has now access to data it
->>>>> shouldn't see. In my book, that's a pretty bad thing.
->>>>
->>>> But even you enforce the CPU page size check here, this problem still
->>>> exists unless all DMA buffers are PAGE_SIZE aligned and sized, right?
->>>
->>> Let me take a CPU analogy: you have a page that contains some user
->>> data *and* a kernel secret. How do you map this page into userspace
->>> without leaking the kernel secret?
->>>
->>> PAGE_SIZE allocations are the unit of isolation, and this applies to
->>> both CPU and IOMMU. If you have allocated a DMA buffer that is less
->>> than a page, you then have to resort to bounce buffering, or accept
->>> that your data isn't safe.
->>
->> I can understand the problems when IOMMU page sizes is larger than CPU
->> page size. But the code itself is not clean. The vendor iommu drivers
->> know more hardware details than the iommu core. It looks odd that the
->> vendor iommu says "okay, I can attach this I/O page table to the
->> device", but the iommu core says "no, you can't" and rolls everything
->> back.
-> 
-> If your IOMMU driver can do things behind the core's back and
-> contradict the view that the core has, then it is probably time to fix
-> your IOMMU driver and make the core aware of what is going on.
-> Supported page sizes is one of these things.
-> 
-> In general, keeping the IOMMU driver as dumb as possible is a worthy
-> design goal, and this is why we have these abstractions.
+Hi
 
-In this case it's the abstractions that are the problem, though. Any 
-driver which supports heterogeneous IOMMU instances with potentially 
-differing page sizes currently has no choice but to do horrible bodges 
-to make the bus-based iommu_domain_alloc() paradigm work *at all*. 
-Fixing that from the fundamental API level upwards has been on the to-do 
-list for some time now, but won't be straightforward.
 
-Robin.
+On 23.09.21 13:58, Yong Wu wrote:
+> To simplify the code, Remove the power status checking in the
+> tlb_flush_all, remove this:
+>     if (pm_runtime_get_if_in_use(data->dev) <= 0)
+> 	    continue;
+> 
+> After this patch, the mtk_iommu_tlb_flush_all will be called from
+> a) isr
+> b) pm runtime resume callback
+> c) tlb flush range fail case
+> d) iommu_create_device_direct_mappings
+>     -> iommu_flush_iotlb_all
+> In first three cases, the power and clock always are enabled; d) is direct
+
+Regarding case "c) tlb flush range fail case", I found out that this often happens
+when the iommu is used while it is runtime suspended. For example the mtk-vcodec
+encoder driver calls "pm_runtime_resume_and_get" only when it starts streaming but
+buffers allocation is done in 'v4l2_reqbufs' before "pm_runtime_resume_and_get" is called
+and then I see the warning "Partial TLB flush timed out, falling back to full flush"
+I am not sure how to fix that issue, but it seems that case 'c)' might indicate that
+power and clock are actually not enabled.
+
+> mapping, the tlb flush is unnecessay since we already have tlb_flush_all
+> in the pm_runtime_resume callback. When the iommu's power status is
+> changed to active, the tlb always is clean.
+> 
+> In addition, there still are 2 reasons that don't add PM status checking
+> in the tlb flush all:
+> a) Write tlb flush all register also is ok even though the HW has no
+> power and clocks. Write ignore.
+> b) pm_runtime_get_if_in_use(m4udev) is 0 when the tlb_flush_all
+> is called frm pm_runtime_resume cb. From this point, we can not add
+> this code above in this tlb_flush_all.
+> 
+> Signed-off-by: Yong Wu <yong.wu@mediatek.com>
+> ---
+>   drivers/iommu/mtk_iommu.c | 20 +++++++-------------
+>   1 file changed, 7 insertions(+), 13 deletions(-)
+> 
+> diff --git a/drivers/iommu/mtk_iommu.c b/drivers/iommu/mtk_iommu.c
+> index e9e94944ed91..4a33b6c6b1db 100644
+> --- a/drivers/iommu/mtk_iommu.c
+> +++ b/drivers/iommu/mtk_iommu.c
+> @@ -204,10 +204,14 @@ static struct mtk_iommu_domain *to_mtk_domain(struct iommu_domain *dom)
+>   	return container_of(dom, struct mtk_iommu_domain, domain);
+>   }
+>   
+> -static void mtk_iommu_tlb_do_flush_all(struct mtk_iommu_data *data)
+> +static void mtk_iommu_tlb_flush_all(struct mtk_iommu_data *data)
+>   {
+>   	unsigned long flags;
+>   
+> +	/*
+> +	 * No need get power status since the HW PM status nearly is active
+> +	 * when entering here.
+> +	 */
+>   	spin_lock_irqsave(&data->tlb_lock, flags);
+>   	writel_relaxed(F_INVLD_EN1 | F_INVLD_EN0,
+>   		       data->base + data->plat_data->inv_sel_reg);
+> @@ -216,16 +220,6 @@ static void mtk_iommu_tlb_do_flush_all(struct mtk_iommu_data *data)
+>   	spin_unlock_irqrestore(&data->tlb_lock, flags);
+>   }
+>   
+> -static void mtk_iommu_tlb_flush_all(struct mtk_iommu_data *data)
+> -{
+> -	if (pm_runtime_get_if_in_use(data->dev) <= 0)
+> -		return;
+> -
+> -	mtk_iommu_tlb_do_flush_all(data);
+> -
+> -	pm_runtime_put(data->dev);
+> -}
+> -
+>   static void mtk_iommu_tlb_flush_range_sync(unsigned long iova, size_t size,
+>   					   struct mtk_iommu_data *data)
+>   {
+> @@ -263,7 +257,7 @@ static void mtk_iommu_tlb_flush_range_sync(unsigned long iova, size_t size,
+>   		if (ret) {
+>   			dev_warn(data->dev,
+>   				 "Partial TLB flush timed out, falling back to full flush\n");
+> -			mtk_iommu_tlb_do_flush_all(data);
+> +			mtk_iommu_tlb_flush_all(data);
+>   		}
+>   
+>   		if (has_pm)
+> @@ -993,7 +987,7 @@ static int __maybe_unused mtk_iommu_runtime_resume(struct device *dev)
+>   	 *
+>   	 * Thus, Make sure the tlb always is clean after each PM resume.
+>   	 */
+> -	mtk_iommu_tlb_do_flush_all(data);
+> +	mtk_iommu_tlb_flush_all(data);
+>   
+>   	/*
+>   	 * Uppon first resume, only enable the clk and return, since the values of the
+> 
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
