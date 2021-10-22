@@ -2,72 +2,85 @@ Return-Path: <SRS0=cgap=PK=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7A831C433EF
-	for <iommu@archiver.kernel.org>; Fri, 22 Oct 2021 14:03:29 +0000 (UTC)
-Received: from smtp3.osuosl.org (smtp3.osuosl.org [140.211.166.136])
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 613B5C433EF
+	for <iommu@archiver.kernel.org>; Fri, 22 Oct 2021 17:34:15 +0000 (UTC)
+Received: from smtp1.osuosl.org (smtp1.osuosl.org [140.211.166.138])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 2409F60FC3
-	for <iommu@archiver.kernel.org>; Fri, 22 Oct 2021 14:03:29 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.4.1 mail.kernel.org 2409F60FC3
-Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=collabora.com
+	by mail.kernel.org (Postfix) with ESMTPS id 011A061108
+	for <iommu@archiver.kernel.org>; Fri, 22 Oct 2021 17:34:14 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.4.1 mail.kernel.org 011A061108
+Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=gmail.com
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by smtp3.osuosl.org (Postfix) with ESMTP id DB7946085E;
-	Fri, 22 Oct 2021 14:03:28 +0000 (UTC)
+	by smtp1.osuosl.org (Postfix) with ESMTP id B94EC80C18;
+	Fri, 22 Oct 2021 17:34:14 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from smtp3.osuosl.org ([127.0.0.1])
-	by localhost (smtp3.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id BR5fpII4M1dW; Fri, 22 Oct 2021 14:03:28 +0000 (UTC)
+Received: from smtp1.osuosl.org ([127.0.0.1])
+	by localhost (smtp1.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+	with ESMTP id tPOjiIJDeqlR; Fri, 22 Oct 2021 17:34:13 +0000 (UTC)
 Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [IPv6:2605:bc80:3010:104::8cd3:938])
-	by smtp3.osuosl.org (Postfix) with ESMTPS id 976CB60858;
-	Fri, 22 Oct 2021 14:03:27 +0000 (UTC)
+	by smtp1.osuosl.org (Postfix) with ESMTPS id 4A0BB80C0D;
+	Fri, 22 Oct 2021 17:34:13 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 60689C001F;
-	Fri, 22 Oct 2021 14:03:27 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 23157C001F;
+	Fri, 22 Oct 2021 17:34:13 +0000 (UTC)
 Received: from smtp2.osuosl.org (smtp2.osuosl.org [IPv6:2605:bc80:3010::133])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 60E9CC001E
- for <iommu@lists.linux-foundation.org>; Fri, 22 Oct 2021 14:03:25 +0000 (UTC)
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 74381C001E
+ for <iommu@lists.linux-foundation.org>; Fri, 22 Oct 2021 17:34:11 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by smtp2.osuosl.org (Postfix) with ESMTP id 38E4240153
- for <iommu@lists.linux-foundation.org>; Fri, 22 Oct 2021 14:03:25 +0000 (UTC)
+ by smtp2.osuosl.org (Postfix) with ESMTP id 5513E400F6
+ for <iommu@lists.linux-foundation.org>; Fri, 22 Oct 2021 17:34:11 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
+Authentication-Results: smtp2.osuosl.org (amavisd-new);
+ dkim=pass (2048-bit key) header.d=gmail.com
 Received: from smtp2.osuosl.org ([127.0.0.1])
  by localhost (smtp2.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id iqM0JrWOCIPq for <iommu@lists.linux-foundation.org>;
- Fri, 22 Oct 2021 14:03:24 +0000 (UTC)
-X-Greylist: domain auto-whitelisted by SQLgrey-1.8.0
-Received: from bhuna.collabora.co.uk (bhuna.collabora.co.uk [46.235.227.227])
- by smtp2.osuosl.org (Postfix) with ESMTPS id 1E3EC400C3
- for <iommu@lists.linux-foundation.org>; Fri, 22 Oct 2021 14:03:24 +0000 (UTC)
-Received: from [IPv6:2a02:810a:880:f54:50fa:5c7d:20f4:e8d3] (unknown
- [IPv6:2a02:810a:880:f54:50fa:5c7d:20f4:e8d3])
- (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
- (No client certificate requested) (Authenticated sender: dafna)
- by bhuna.collabora.co.uk (Postfix) with ESMTPSA id 3DBD31F454AB;
- Fri, 22 Oct 2021 15:03:21 +0100 (BST)
-Subject: Re: [PATCH v3 13/33] iommu/mediatek: Remove the power status checking
- in tlb flush all
-To: Yong Wu <yong.wu@mediatek.com>, Joerg Roedel <joro@8bytes.org>,
- Rob Herring <robh+dt@kernel.org>, Matthias Brugger <matthias.bgg@gmail.com>,
- Will Deacon <will@kernel.org>, Robin Murphy <robin.murphy@arm.com>
-References: <20210923115840.17813-1-yong.wu@mediatek.com>
- <20210923115840.17813-14-yong.wu@mediatek.com>
-From: Dafna Hirschfeld <dafna.hirschfeld@collabora.com>
-Message-ID: <6cff0b97-b861-e02d-e76f-2510c962c452@collabora.com>
-Date: Fri, 22 Oct 2021 16:03:19 +0200
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
- Thunderbird/78.13.0
+ with ESMTP id RnjBdfS_6xqd for <iommu@lists.linux-foundation.org>;
+ Fri, 22 Oct 2021 17:34:10 +0000 (UTC)
+X-Greylist: whitelisted by SQLgrey-1.8.0
+Received: from mail-oi1-x235.google.com (mail-oi1-x235.google.com
+ [IPv6:2607:f8b0:4864:20::235])
+ by smtp2.osuosl.org (Postfix) with ESMTPS id DA2654011A
+ for <iommu@lists.linux-foundation.org>; Fri, 22 Oct 2021 17:34:09 +0000 (UTC)
+Received: by mail-oi1-x235.google.com with SMTP id u69so5955549oie.3
+ for <iommu@lists.linux-foundation.org>; Fri, 22 Oct 2021 10:34:09 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=gmail.com; s=20210112;
+ h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+ :cc; bh=O/T8JT2zelvn/zbCB5W0fkYXIuA+ozhU4d8Jex1kzRg=;
+ b=XOnlx/Yy3xKYACo8edXxd62IVvXb7ZusuX7SodOvqqI0nNJXrGtMffG1CH3Cv+VEyI
+ I+mwnzdxYquAXkUMMevibNWVV4hikhi9ayEMrS5ctqbyIonLDyeSy5YTcQS8xy/zLNCK
+ oTAjmJO4pZrVyxwrEIUrY9y0bTiDXeMhG15blnIQtFaRIyJyq2i162VCzCojozntsHOz
+ G0EpduFmRHL2lcjhAPs9tMn/rHssmTFpcj4MdlrZgEGbhhrScUr88m3NIaNEobG4ynjJ
+ fjC1x+mc+nGCDEj6GCKCNXYRMcTipu98VbxMPQRLJSoKQHfoYSCSwhLkCXGVcfro2AbO
+ 0CIg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+ d=1e100.net; s=20210112;
+ h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+ :message-id:subject:to:cc;
+ bh=O/T8JT2zelvn/zbCB5W0fkYXIuA+ozhU4d8Jex1kzRg=;
+ b=sXAWZ6cvCPr52OOdgEB6rHwqefwIufbuUx2qQXc9nN9VyzYX2I5lZgrTtf+Og4EIjJ
+ cvnjjwAR8RfRAjej3wPQkUad3WaHyfsQUAsLg3Z8sc4M40yUZHeJI18U5qfp1NTIywA3
+ NsypjDZF7W+K3SxGaHB5O44gjZopJtGQXt5xqzVwyeBngtc0ZnhtMSsORyd20xXEqGsB
+ OQrPkNZQ9S61WtEhzAmJEqPq3T+t6XMtHvc28vcQ148IrZXXeOOEniYMTJuCYxHh0481
+ kZK1t78DeQvoBFlBwzVI5nvUqNj4Km+UFN/C8eVrXeGjsa7i3/DB/f/6YUPp0HPoYJ1B
+ hcmQ==
+X-Gm-Message-State: AOAM5331xc0G8+9AAgW9+K/EGKQVZQDEkXxIT+cv6Ak6YWuwQfOaQ8dm
+ REbcHtSRUHr9Du3ROcYI1L7F9M2uqsMxjq+zlCWMiSgFzX0DOg==
+X-Google-Smtp-Source: ABdhPJwtbkveb24tN1nTAsqTjkU/7ntm56Uko6XnTYEXnPVStYt7ktMRB6/iJ3dhja2VYav74mM420W++o7HSXT9Fi8=
+X-Received: by 2002:a05:6808:1388:: with SMTP id
+ c8mr796795oiw.91.1634924048459; 
+ Fri, 22 Oct 2021 10:34:08 -0700 (PDT)
 MIME-Version: 1.0
-In-Reply-To: <20210923115840.17813-14-yong.wu@mediatek.com>
-Content-Language: en-US
-Cc: youlin.pei@mediatek.com, devicetree@vger.kernel.org,
- Collabora Kernel ML <kernel@collabora.com>, srv_heupstream@mediatek.com,
- Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>,
- linux-kernel@vger.kernel.org, yen-chang.chen@mediatek.com,
- chao.hao@mediatek.com, iommu@lists.linux-foundation.org,
- linux-mediatek@lists.infradead.org, Hsin-Yi Wang <hsinyi@chromium.org>,
- anan.sun@mediatek.com, linux-arm-kernel@lists.infradead.org
+References: <20211012135653.3852-1-ajaygargnsit@gmail.com>
+In-Reply-To: <20211012135653.3852-1-ajaygargnsit@gmail.com>
+From: Ajay Garg <ajaygargnsit@gmail.com>
+Date: Fri, 22 Oct 2021 23:03:56 +0530
+Message-ID: <CAHP4M8VGwyOA1kTHVFkEkWchnGgUDoxeLnmWK-FOO206XRdHVA@mail.gmail.com>
+Subject: Re: [PATCH v2] iommu: intel: do deep dma-unmapping,
+ to avoid kernel-flooding.
+To: iommu@lists.linux-foundation.org
+Cc: Alex Williamson <alex.williamson@redhat.com>
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -80,109 +93,191 @@ List-Post: <mailto:iommu@lists.linux-foundation.org>
 List-Help: <mailto:iommu-request@lists.linux-foundation.org?subject=help>
 List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
  <mailto:iommu-request@lists.linux-foundation.org?subject=subscribe>
+Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
-Content-Type: text/plain; charset="us-ascii"; Format="flowed"
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-Hi
+Ping ..
+
+Any updates please on this?
+
+It will be great to have the fix upstreamed (properly of course).
+
+Right now, the patch contains the change as suggested, of
+explicitly/properly clearing out dma-mappings when unmap is called.
+Please let me know in whatever way I can help, including
+testing/debugging for other approaches if required.
 
 
-On 23.09.21 13:58, Yong Wu wrote:
-> To simplify the code, Remove the power status checking in the
-> tlb_flush_all, remove this:
->     if (pm_runtime_get_if_in_use(data->dev) <= 0)
-> 	    continue;
-> 
-> After this patch, the mtk_iommu_tlb_flush_all will be called from
-> a) isr
-> b) pm runtime resume callback
-> c) tlb flush range fail case
-> d) iommu_create_device_direct_mappings
->     -> iommu_flush_iotlb_all
-> In first three cases, the power and clock always are enabled; d) is direct
+Many thanks to Alex and Lu for their continued support on the issue.
 
-Regarding case "c) tlb flush range fail case", I found out that this often happens
-when the iommu is used while it is runtime suspended. For example the mtk-vcodec
-encoder driver calls "pm_runtime_resume_and_get" only when it starts streaming but
-buffers allocation is done in 'v4l2_reqbufs' before "pm_runtime_resume_and_get" is called
-and then I see the warning "Partial TLB flush timed out, falling back to full flush"
-I am not sure how to fix that issue, but it seems that case 'c)' might indicate that
-power and clock are actually not enabled.
 
-> mapping, the tlb flush is unnecessay since we already have tlb_flush_all
-> in the pm_runtime_resume callback. When the iommu's power status is
-> changed to active, the tlb always is clean.
-> 
-> In addition, there still are 2 reasons that don't add PM status checking
-> in the tlb flush all:
-> a) Write tlb flush all register also is ok even though the HW has no
-> power and clocks. Write ignore.
-> b) pm_runtime_get_if_in_use(m4udev) is 0 when the tlb_flush_all
-> is called frm pm_runtime_resume cb. From this point, we can not add
-> this code above in this tlb_flush_all.
-> 
-> Signed-off-by: Yong Wu <yong.wu@mediatek.com>
+
+P.S. :
+
+I might have missed mentioning the information about the device that
+causes flooding.
+Please find it below :
+
+######################################
+sudo lspci -vvv
+
+0a:00.0 SD Host controller: O2 Micro, Inc. OZ600FJ0/OZ900FJ0/OZ600FJS
+SD/MMC Card Reader Controller (rev 05) (prog-if 01)
+    Subsystem: Dell OZ600FJ0/OZ900FJ0/OZ600FJS SD/MMC Card Reader Controller
+    Control: I/O- Mem+ BusMaster+ SpecCycle- MemWINV- VGASnoop-
+ParErr- Stepping- SERR- FastB2B- DisINTx-
+    Status: Cap+ 66MHz- UDF- FastB2B- ParErr- DEVSEL=fast >TAbort-
+<TAbort- <MAbort- >SERR- <PERR- INTx-
+    Latency: 0, Cache Line Size: 64 bytes
+    Interrupt: pin A routed to IRQ 17
+    IOMMU group: 14
+    Region 0: Memory at e2c20000 (32-bit, non-prefetchable) [size=512]
+    Capabilities: [a0] Power Management version 3
+        Flags: PMEClk- DSI- D1+ D2+ AuxCurrent=0mA
+PME(D0+,D1+,D2+,D3hot+,D3cold+)
+        Status: D0 NoSoftRst- PME-Enable- DSel=0 DScale=0 PME-
+    Capabilities: [48] MSI: Enable- Count=1/1 Maskable+ 64bit+
+        Address: 0000000000000000  Data: 0000
+        Masking: 00000000  Pending: 00000000
+    Capabilities: [80] Express (v1) Endpoint, MSI 00
+        DevCap:    MaxPayload 128 bytes, PhantFunc 0, Latency L0s <4us, L1 <64us
+            ExtTag- AttnBtn- AttnInd- PwrInd- RBE+ FLReset-
+SlotPowerLimit 10.000W
+        DevCtl:    CorrErr- NonFatalErr- FatalErr- UnsupReq-
+            RlxdOrd+ ExtTag- PhantFunc- AuxPwr- NoSnoop+
+            MaxPayload 128 bytes, MaxReadReq 512 bytes
+        DevSta:    CorrErr- NonFatalErr- FatalErr- UnsupReq- AuxPwr- TransPend-
+        LnkCap:    Port #0, Speed 2.5GT/s, Width x1, ASPM L0s L1, Exit
+Latency L0s <512ns, L1 <64us
+            ClockPM+ Surprise- LLActRep- BwNot- ASPMOptComp-
+        LnkCtl:    ASPM L0s Enabled; RCB 64 bytes, Disabled- CommClk-
+            ExtSynch- ClockPM+ AutWidDis- BWInt- AutBWInt-
+        LnkSta:    Speed 2.5GT/s (ok), Width x1 (ok)
+            TrErr- Train- SlotClk- DLActive- BWMgmt- ABWMgmt-
+    Capabilities: [100 v1] Virtual Channel
+        Caps:    LPEVC=0 RefClk=100ns PATEntryBits=1
+        Arb:    Fixed- WRR32- WRR64- WRR128-
+        Ctrl:    ArbSelect=Fixed
+        Status:    InProgress-
+        VC0:    Caps:    PATOffset=00 MaxTimeSlots=1 RejSnoopTrans-
+            Arb:    Fixed- WRR32- WRR64- WRR128- TWRR128- WRR256-
+            Ctrl:    Enable+ ID=0 ArbSelect=Fixed TC/VC=ff
+            Status:    NegoPending- InProgress-
+    Capabilities: [200 v1] Advanced Error Reporting
+        UESta:    DLP- SDES- TLP- FCP- CmpltTO- CmpltAbrt- UnxCmplt-
+RxOF- MalfTLP- ECRC- UnsupReq- ACSViol-
+        UEMsk:    DLP- SDES- TLP- FCP- CmpltTO- CmpltAbrt- UnxCmplt-
+RxOF- MalfTLP- ECRC- UnsupReq- ACSViol-
+        UESvrt:    DLP+ SDES+ TLP- FCP+ CmpltTO- CmpltAbrt- UnxCmplt-
+RxOF+ MalfTLP+ ECRC- UnsupReq- ACSViol-
+        CESta:    RxErr- BadTLP- BadDLLP- Rollover- Timeout- AdvNonFatalErr-
+        CEMsk:    RxErr- BadTLP- BadDLLP- Rollover- Timeout- AdvNonFatalErr+
+        AERCap:    First Error Pointer: 00, ECRCGenCap- ECRCGenEn-
+ECRCChkCap- ECRCChkEn-
+            MultHdrRecCap- MultHdrRecEn- TLPPfxPres- HdrLogCap-
+        HeaderLog: 00000000 00000000 00000000 00000000
+    Kernel driver in use: sdhci-pci
+    Kernel modules: sdhci_pci
+######################################
+
+
+
+Thanks and Regards,
+Ajay
+
+On Tue, Oct 12, 2021 at 7:27 PM Ajay Garg <ajaygargnsit@gmail.com> wrote:
+>
+> Origins at :
+> https://lists.linuxfoundation.org/pipermail/iommu/2021-October/thread.html
+>
+> === Changes from v1 => v2 ===
+>
+> a)
+> Improved patch-description.
+>
+> b)
+> A more root-level fix, as suggested by
+>
+>         1.
+>         Alex Williamson <alex.williamson@redhat.com>
+>
+>         2.
+>         Lu Baolu <baolu.lu@linux.intel.com>
+>
+>
+>
+> === Issue ===
+>
+> Kernel-flooding is seen, when an x86_64 L1 guest (Ubuntu-21) is booted in qemu/kvm
+> on a x86_64 host (Ubuntu-21), with a host-pci-device attached.
+>
+> Following kind of logs, along with the stacktraces, cause the flood :
+>
+> ......
+>  DMAR: ERROR: DMA PTE for vPFN 0x428ec already set (to 3f6ec003 not 3f6ec003)
+>  DMAR: ERROR: DMA PTE for vPFN 0x428ed already set (to 3f6ed003 not 3f6ed003)
+>  DMAR: ERROR: DMA PTE for vPFN 0x428ee already set (to 3f6ee003 not 3f6ee003)
+>  DMAR: ERROR: DMA PTE for vPFN 0x428ef already set (to 3f6ef003 not 3f6ef003)
+>  DMAR: ERROR: DMA PTE for vPFN 0x428f0 already set (to 3f6f0003 not 3f6f0003)
+> ......
+>
+>
+>
+> === Current Behaviour, leading to the issue ===
+>
+> Currently, when we do a dma-unmapping, we unmap/unlink the mappings, but
+> the pte-entries are not cleared.
+>
+> Thus, following sequencing would flood the kernel-logs :
+>
+> i)
+> A dma-unmapping makes the real/leaf-level pte-slot invalid, but the
+> pte-content itself is not cleared.
+>
+> ii)
+> Now, during some later dma-mapping procedure, as the pte-slot is about
+> to hold a new pte-value, the intel-iommu checks if a prior
+> pte-entry exists in the pte-slot. If it exists, it logs a kernel-error,
+> along with a corresponding stacktrace.
+>
+> iii)
+> Step ii) runs in abundance, and the kernel-logs run insane.
+>
+>
+>
+> === Fix ===
+>
+> We ensure that as part of a dma-unmapping, each (unmapped) pte-slot
+> is also cleared of its value/content (at the leaf-level, where the
+> real mapping from a iova => pfn mapping is stored).
+>
+> This completes a "deep" dma-unmapping.
+>
+>
+>
+> Signed-off-by: Ajay Garg <ajaygargnsit@gmail.com>
 > ---
->   drivers/iommu/mtk_iommu.c | 20 +++++++-------------
->   1 file changed, 7 insertions(+), 13 deletions(-)
-> 
-> diff --git a/drivers/iommu/mtk_iommu.c b/drivers/iommu/mtk_iommu.c
-> index e9e94944ed91..4a33b6c6b1db 100644
-> --- a/drivers/iommu/mtk_iommu.c
-> +++ b/drivers/iommu/mtk_iommu.c
-> @@ -204,10 +204,14 @@ static struct mtk_iommu_domain *to_mtk_domain(struct iommu_domain *dom)
->   	return container_of(dom, struct mtk_iommu_domain, domain);
->   }
->   
-> -static void mtk_iommu_tlb_do_flush_all(struct mtk_iommu_data *data)
-> +static void mtk_iommu_tlb_flush_all(struct mtk_iommu_data *data)
->   {
->   	unsigned long flags;
->   
-> +	/*
-> +	 * No need get power status since the HW PM status nearly is active
-> +	 * when entering here.
-> +	 */
->   	spin_lock_irqsave(&data->tlb_lock, flags);
->   	writel_relaxed(F_INVLD_EN1 | F_INVLD_EN0,
->   		       data->base + data->plat_data->inv_sel_reg);
-> @@ -216,16 +220,6 @@ static void mtk_iommu_tlb_do_flush_all(struct mtk_iommu_data *data)
->   	spin_unlock_irqrestore(&data->tlb_lock, flags);
->   }
->   
-> -static void mtk_iommu_tlb_flush_all(struct mtk_iommu_data *data)
-> -{
-> -	if (pm_runtime_get_if_in_use(data->dev) <= 0)
-> -		return;
-> -
-> -	mtk_iommu_tlb_do_flush_all(data);
-> -
-> -	pm_runtime_put(data->dev);
-> -}
-> -
->   static void mtk_iommu_tlb_flush_range_sync(unsigned long iova, size_t size,
->   					   struct mtk_iommu_data *data)
->   {
-> @@ -263,7 +257,7 @@ static void mtk_iommu_tlb_flush_range_sync(unsigned long iova, size_t size,
->   		if (ret) {
->   			dev_warn(data->dev,
->   				 "Partial TLB flush timed out, falling back to full flush\n");
-> -			mtk_iommu_tlb_do_flush_all(data);
-> +			mtk_iommu_tlb_flush_all(data);
->   		}
->   
->   		if (has_pm)
-> @@ -993,7 +987,7 @@ static int __maybe_unused mtk_iommu_runtime_resume(struct device *dev)
->   	 *
->   	 * Thus, Make sure the tlb always is clean after each PM resume.
->   	 */
-> -	mtk_iommu_tlb_do_flush_all(data);
-> +	mtk_iommu_tlb_flush_all(data);
->   
->   	/*
->   	 * Uppon first resume, only enable the clk and return, since the values of the
-> 
+>  drivers/iommu/intel/iommu.c | 2 ++
+>  1 file changed, 2 insertions(+)
+>
+> diff --git a/drivers/iommu/intel/iommu.c b/drivers/iommu/intel/iommu.c
+> index d75f59ae28e6..485a8ea71394 100644
+> --- a/drivers/iommu/intel/iommu.c
+> +++ b/drivers/iommu/intel/iommu.c
+> @@ -5090,6 +5090,8 @@ static size_t intel_iommu_unmap(struct iommu_domain *domain,
+>         gather->freelist = domain_unmap(dmar_domain, start_pfn,
+>                                         last_pfn, gather->freelist);
+>
+> +       dma_pte_clear_range(dmar_domain, start_pfn, last_pfn);
+> +
+>         if (dmar_domain->max_addr == iova + size)
+>                 dmar_domain->max_addr = iova;
+>
+> --
+> 2.30.2
+>
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
