@@ -2,92 +2,73 @@ Return-Path: <SRS0=cgap=PK=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E9806C433EF
-	for <iommu@archiver.kernel.org>; Fri, 22 Oct 2021 12:26:33 +0000 (UTC)
-Received: from smtp4.osuosl.org (smtp4.osuosl.org [140.211.166.137])
+	by smtp.lore.kernel.org (Postfix) with ESMTP id EA33CC433F5
+	for <iommu@archiver.kernel.org>; Fri, 22 Oct 2021 13:39:52 +0000 (UTC)
+Received: from smtp2.osuosl.org (smtp2.osuosl.org [140.211.166.133])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 8DC4B60EB2
-	for <iommu@archiver.kernel.org>; Fri, 22 Oct 2021 12:26:33 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.4.1 mail.kernel.org 8DC4B60EB2
-Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=linaro.org
+	by mail.kernel.org (Postfix) with ESMTPS id 8447161205
+	for <iommu@archiver.kernel.org>; Fri, 22 Oct 2021 13:39:52 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.4.1 mail.kernel.org 8447161205
+Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=arm.com
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by smtp4.osuosl.org (Postfix) with ESMTP id 59102403E4;
-	Fri, 22 Oct 2021 12:26:33 +0000 (UTC)
+	by smtp2.osuosl.org (Postfix) with ESMTP id 3D83640273;
+	Fri, 22 Oct 2021 13:39:52 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from smtp4.osuosl.org ([127.0.0.1])
-	by localhost (smtp4.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id 5eSLANAO4Db1; Fri, 22 Oct 2021 12:26:32 +0000 (UTC)
+Received: from smtp2.osuosl.org ([127.0.0.1])
+	by localhost (smtp2.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+	with ESMTP id rWo_J8zEfHc2; Fri, 22 Oct 2021 13:39:51 +0000 (UTC)
 Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [IPv6:2605:bc80:3010:104::8cd3:938])
-	by smtp4.osuosl.org (Postfix) with ESMTPS id 3BA2A403EF;
-	Fri, 22 Oct 2021 12:26:32 +0000 (UTC)
+	by smtp2.osuosl.org (Postfix) with ESMTPS id A8C3F40153;
+	Fri, 22 Oct 2021 13:39:50 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id AD028C0037;
-	Fri, 22 Oct 2021 12:26:31 +0000 (UTC)
-Received: from smtp4.osuosl.org (smtp4.osuosl.org [IPv6:2605:bc80:3010::137])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 93669C0020
- for <iommu@lists.linux-foundation.org>; Fri, 22 Oct 2021 12:26:29 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 88489C001F;
+	Fri, 22 Oct 2021 13:39:50 +0000 (UTC)
+Received: from smtp3.osuosl.org (smtp3.osuosl.org [140.211.166.136])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 9EB5BC001E
+ for <iommu@lists.linux-foundation.org>; Fri, 22 Oct 2021 13:39:48 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by smtp4.osuosl.org (Postfix) with ESMTP id 7F8CC4029A
- for <iommu@lists.linux-foundation.org>; Fri, 22 Oct 2021 12:26:29 +0000 (UTC)
+ by smtp3.osuosl.org (Postfix) with ESMTP id 85DB96084C
+ for <iommu@lists.linux-foundation.org>; Fri, 22 Oct 2021 13:39:48 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from smtp4.osuosl.org ([127.0.0.1])
- by localhost (smtp4.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id 9EAsydTb7tBG for <iommu@lists.linux-foundation.org>;
- Fri, 22 Oct 2021 12:26:28 +0000 (UTC)
-X-Greylist: whitelisted by SQLgrey-1.8.0
-Received: from mail-wm1-x333.google.com (mail-wm1-x333.google.com
- [IPv6:2a00:1450:4864:20::333])
- by smtp4.osuosl.org (Postfix) with ESMTPS id 3999940283
- for <iommu@lists.linux-foundation.org>; Fri, 22 Oct 2021 12:26:28 +0000 (UTC)
-Received: by mail-wm1-x333.google.com with SMTP id
- 67-20020a1c1946000000b0030d4c90fa87so2346900wmz.2
- for <iommu@lists.linux-foundation.org>; Fri, 22 Oct 2021 05:26:28 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linaro.org; s=google;
- h=date:from:to:cc:subject:message-id:references:mime-version
- :content-disposition:in-reply-to;
- bh=aZFQvfnZGEdbwBxw5pEGK7J96oJw/3Vm2ifW0dTky58=;
- b=NzCAVP49FrO/VizJ86Sr62CXSjtbsytSvEpnjvgBlcsRPk/0y8ys1oJaVf2mefU0gw
- vaKkcoLf0BDtoP0AUDFAAt3NbOGdNNi1kQRl9BHiq1UUGv6LHBPabKWbEfhIkcfj7AS4
- JNlwMqJTx5Nm5NFn8dIo20sskfnls7VR0NlDnz6UJBjQjNa1l4OhapY88fxNFzSJ1lIF
- 96tvzMY8KOQk616Bayn9n+P8kX0IGYwQ6Q95lFWthg4hzaArSMuzIzqyXA1DI0ST7KHS
- htRsHceqwJP29Sj8DpmJYK8vGniNXDSOnnqA7rxXaByG6iUnTbb2bkhrZ16QuaJK6g59
- VneA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
- d=1e100.net; s=20210112;
- h=x-gm-message-state:date:from:to:cc:subject:message-id:references
- :mime-version:content-disposition:in-reply-to;
- bh=aZFQvfnZGEdbwBxw5pEGK7J96oJw/3Vm2ifW0dTky58=;
- b=y9+dFccCPy/WaffyP7WhWYWVWdgc7ecO669g/df0EnR1w6ANmCTfyAwPqtnVuqKHoh
- 2vTknnNh4i3qKuXSYcwXQb9Tc3UnUAY7PQb4QNLlb/C7wwvSOuP2tiNy58fedvBGawyf
- rI4cY//Ea0iiy9f+8UhHTsEnHdQu1LCJkZu3+KOmpS+Py3+vnNYpTZ5ppYX9M3epI+bt
- NMz+BaLjSAuEghP0Y0QSreGcAv239JI5lYMUbo4gaYFAuvY3ucqMi5VveBx6+P/G8qlp
- cPNQtwMWYt+Jm8g/vvHAd6WuYcKs4aFrq3y9iGEg69SfXF0ryy0d9T1YgsQK8cZjszse
- AInA==
-X-Gm-Message-State: AOAM530z6pPjwmPBNrXtw3zKMbIA59PtGtgPB0Tq2QU/FmZavj+KPWwL
- aUTmHzhxrME96YWRDGqijR/eyQ==
-X-Google-Smtp-Source: ABdhPJwZI+vDwgweaPkgQuwmBfFhOyUYS630RJCMu60Wx4XKBGfH2vpzgZWCofA03tTISCIDafT8Hw==
-X-Received: by 2002:a1c:7e4f:: with SMTP id z76mr3510994wmc.10.1634905586526; 
- Fri, 22 Oct 2021 05:26:26 -0700 (PDT)
-Received: from myrica (cpc92880-cmbg19-2-0-cust679.5-4.cable.virginm.net.
- [82.27.106.168])
- by smtp.gmail.com with ESMTPSA id h22sm8554130wmq.42.2021.10.22.05.26.25
- (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
- Fri, 22 Oct 2021 05:26:26 -0700 (PDT)
-Date: Fri, 22 Oct 2021 13:26:03 +0100
-From: Jean-Philippe Brucker <jean-philippe@linaro.org>
-To: "Michael S. Tsirkin" <mst@redhat.com>
-Subject: Re: [PATCH 0/5] iommu/virtio: Add identity domains
-Message-ID: <YXKt2x59VQHnpIWj@myrica>
-References: <20211013121052.518113-1-jean-philippe@linaro.org>
- <20211022061534-mutt-send-email-mst@kernel.org>
+Received: from smtp3.osuosl.org ([127.0.0.1])
+ by localhost (smtp3.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+ with ESMTP id oheDqoHUA8KO for <iommu@lists.linux-foundation.org>;
+ Fri, 22 Oct 2021 13:39:47 +0000 (UTC)
+X-Greylist: domain auto-whitelisted by SQLgrey-1.8.0
+Received: from foss.arm.com (foss.arm.com [217.140.110.172])
+ by smtp3.osuosl.org (Postfix) with ESMTP id 90A6A607DB
+ for <iommu@lists.linux-foundation.org>; Fri, 22 Oct 2021 13:39:47 +0000 (UTC)
+Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
+ by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 9736F1FB;
+ Fri, 22 Oct 2021 06:39:46 -0700 (PDT)
+Received: from [10.57.27.231] (unknown [10.57.27.231])
+ by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id E25DB3F694;
+ Fri, 22 Oct 2021 06:39:44 -0700 (PDT)
+Subject: Re: [PATCH v3 4/6] iommu: Move IOMMU pagesize check to attach_device
+To: Marc Zyngier <maz@kernel.org>, Lu Baolu <baolu.lu@linux.intel.com>
+References: <20211019163737.46269-1-sven@svenpeter.dev>
+ <20211019163737.46269-5-sven@svenpeter.dev>
+ <9e25f2c0-d9d3-475d-e973-63be1891f9a5@linux.intel.com>
+ <8735ovdbcv.wl-maz@kernel.org>
+ <6a886030-cbc6-9e92-bf79-77b659da2915@linux.intel.com>
+ <87wnm6bxx2.wl-maz@kernel.org>
+ <106088e3-2928-dace-e1b6-e1e74ffec366@linux.intel.com>
+ <87pmrxbi0v.wl-maz@kernel.org>
+From: Robin Murphy <robin.murphy@arm.com>
+Message-ID: <ccc3c517-fa3a-6866-e139-5b3983080e6c@arm.com>
+Date: Fri, 22 Oct 2021 14:39:38 +0100
+User-Agent: Mozilla/5.0 (Windows NT 10.0; rv:78.0) Gecko/20100101
+ Thunderbird/78.14.0
 MIME-Version: 1.0
-Content-Disposition: inline
-In-Reply-To: <20211022061534-mutt-send-email-mst@kernel.org>
-Cc: kevin.tian@intel.com, virtualization@lists.linux-foundation.org,
- iommu@lists.linux-foundation.org, sebastien.boeuf@intel.com, will@kernel.org,
- jasowang@redhat.com
+In-Reply-To: <87pmrxbi0v.wl-maz@kernel.org>
+Content-Language: en-GB
+Cc: Arnd Bergmann <arnd@kernel.org>, Hector Martin <marcan@marcan.st>,
+ linux-kernel@vger.kernel.org, iommu@lists.linux-foundation.org,
+ Alexander Graf <graf@amazon.com>,
+ Mohamed Mediouni <mohamed.mediouni@caramail.com>,
+ Will Deacon <will@kernel.org>, Alyssa Rosenzweig <alyssa@rosenzweig.io>
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -100,31 +81,80 @@ List-Post: <mailto:iommu@lists.linux-foundation.org>
 List-Help: <mailto:iommu-request@lists.linux-foundation.org?subject=help>
 List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
  <mailto:iommu-request@lists.linux-foundation.org?subject=subscribe>
-Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset="us-ascii"; Format="flowed"
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-On Fri, Oct 22, 2021 at 06:16:27AM -0400, Michael S. Tsirkin wrote:
-> On Wed, Oct 13, 2021 at 01:10:48PM +0100, Jean-Philippe Brucker wrote:
-> > Support identity domains, allowing to only enable IOMMU protection for a
-> > subset of endpoints (those assigned to userspace, for example). Users
-> > may enable identity domains at compile time
-> > (CONFIG_IOMMU_DEFAULT_PASSTHROUGH), boot time (iommu.passthrough=1) or
-> > runtime (/sys/kernel/iommu_groups/*/type = identity).
+On 2021-10-22 09:06, Marc Zyngier wrote:
+> On Fri, 22 Oct 2021 03:52:38 +0100,
+> Lu Baolu <baolu.lu@linux.intel.com> wrote:
+>>
+>> On 10/21/21 4:10 PM, Marc Zyngier wrote:
+>>> On Thu, 21 Oct 2021 03:22:30 +0100,
+>>> Lu Baolu <baolu.lu@linux.intel.com> wrote:
+>>>>
+>>>> On 10/20/21 10:22 PM, Marc Zyngier wrote:
+>>>>> On Wed, 20 Oct 2021 06:21:44 +0100,
+>>>>> Lu Baolu <baolu.lu@linux.intel.com> wrote:
+>>>>>>
+>>>>>> On 2021/10/20 0:37, Sven Peter via iommu wrote:
+>>>>>>> +	/*
+>>>>>>> +	 * Check that CPU pages can be represented by the IOVA granularity.
+>>>>>>> +	 * This has to be done after ops->attach_dev since many IOMMU drivers
+>>>>>>> +	 * only limit domain->pgsize_bitmap after having attached the first
+>>>>>>> +	 * device.
+>>>>>>> +	 */
+>>>>>>> +	ret = iommu_check_page_size(domain);
+>>>>>>> +	if (ret) {
+>>>>>>> +		__iommu_detach_device(domain, dev);
+>>>>>>> +		return ret;
+>>>>>>> +	}
+>>>>>>
+>>>>>> It looks odd. __iommu_attach_device() attaches an I/O page table for a
+>>>>>> device. How does it relate to CPU pages? Why is it a failure case if CPU
+>>>>>> page size is not covered?
+>>>>>
+>>>>> If you allocate a CPU PAGE_SIZE'd region, and point it at a device
+>>>>> that now can DMA to more than what you have allocated because the
+>>>>> IOMMU's own page size is larger, the device has now access to data it
+>>>>> shouldn't see. In my book, that's a pretty bad thing.
+>>>>
+>>>> But even you enforce the CPU page size check here, this problem still
+>>>> exists unless all DMA buffers are PAGE_SIZE aligned and sized, right?
+>>>
+>>> Let me take a CPU analogy: you have a page that contains some user
+>>> data *and* a kernel secret. How do you map this page into userspace
+>>> without leaking the kernel secret?
+>>>
+>>> PAGE_SIZE allocations are the unit of isolation, and this applies to
+>>> both CPU and IOMMU. If you have allocated a DMA buffer that is less
+>>> than a page, you then have to resort to bounce buffering, or accept
+>>> that your data isn't safe.
+>>
+>> I can understand the problems when IOMMU page sizes is larger than CPU
+>> page size. But the code itself is not clean. The vendor iommu drivers
+>> know more hardware details than the iommu core. It looks odd that the
+>> vendor iommu says "okay, I can attach this I/O page table to the
+>> device", but the iommu core says "no, you can't" and rolls everything
+>> back.
 > 
+> If your IOMMU driver can do things behind the core's back and
+> contradict the view that the core has, then it is probably time to fix
+> your IOMMU driver and make the core aware of what is going on.
+> Supported page sizes is one of these things.
 > 
-> I put this in my branch so it can get testing under linux-next,
-> but pls notice if the ballot does not conclude in time
-> for the merge window I won't send it to Linus.
+> In general, keeping the IOMMU driver as dumb as possible is a worthy
+> design goal, and this is why we have these abstractions.
 
-Makes sense, thank you. I sent a new version of the spec change with
-clarifications
-https://www.mail-archive.com/virtio-dev@lists.oasis-open.org/msg07969.html
+In this case it's the abstractions that are the problem, though. Any 
+driver which supports heterogeneous IOMMU instances with potentially 
+differing page sizes currently has no choice but to do horrible bodges 
+to make the bus-based iommu_domain_alloc() paradigm work *at all*. 
+Fixing that from the fundamental API level upwards has been on the to-do 
+list for some time now, but won't be straightforward.
 
-Thanks,
-Jean
-
+Robin.
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
