@@ -2,95 +2,87 @@ Return-Path: <SRS0=+9ml=PN=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 04490C433EF
-	for <iommu@archiver.kernel.org>; Mon, 25 Oct 2021 03:57:57 +0000 (UTC)
-Received: from smtp2.osuosl.org (smtp2.osuosl.org [140.211.166.133])
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B6831C433F5
+	for <iommu@archiver.kernel.org>; Mon, 25 Oct 2021 04:04:04 +0000 (UTC)
+Received: from smtp4.osuosl.org (smtp4.osuosl.org [140.211.166.137])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id A949B60F46
-	for <iommu@archiver.kernel.org>; Mon, 25 Oct 2021 03:57:56 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.4.1 mail.kernel.org A949B60F46
+	by mail.kernel.org (Postfix) with ESMTPS id 4DF3760F46
+	for <iommu@archiver.kernel.org>; Mon, 25 Oct 2021 04:04:04 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.4.1 mail.kernel.org 4DF3760F46
 Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=mediatek.com
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by smtp2.osuosl.org (Postfix) with ESMTP id 63AF840144;
-	Mon, 25 Oct 2021 03:57:56 +0000 (UTC)
+	by smtp4.osuosl.org (Postfix) with ESMTP id 094FB40281;
+	Mon, 25 Oct 2021 04:04:04 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from smtp2.osuosl.org ([127.0.0.1])
-	by localhost (smtp2.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id PPjAcJ_iz2Bj; Mon, 25 Oct 2021 03:57:55 +0000 (UTC)
+Received: from smtp4.osuosl.org ([127.0.0.1])
+	by localhost (smtp4.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+	with ESMTP id a4elroDngx6M; Mon, 25 Oct 2021 04:04:03 +0000 (UTC)
 Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by smtp2.osuosl.org (Postfix) with ESMTPS id DB357400D4;
-	Mon, 25 Oct 2021 03:57:54 +0000 (UTC)
+	by smtp4.osuosl.org (Postfix) with ESMTPS id AF6DD40161;
+	Mon, 25 Oct 2021 04:04:02 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id BAB6EC0019;
-	Mon, 25 Oct 2021 03:57:54 +0000 (UTC)
-Received: from smtp1.osuosl.org (smtp1.osuosl.org [IPv6:2605:bc80:3010::138])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 62F71C000E
- for <iommu@lists.linux-foundation.org>; Mon, 25 Oct 2021 03:57:53 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 8634CC0019;
+	Mon, 25 Oct 2021 04:04:02 +0000 (UTC)
+Received: from smtp2.osuosl.org (smtp2.osuosl.org [140.211.166.133])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 0C1E1C000E
+ for <iommu@lists.linux-foundation.org>; Mon, 25 Oct 2021 04:04:02 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by smtp1.osuosl.org (Postfix) with ESMTP id 3F1C780E49
- for <iommu@lists.linux-foundation.org>; Mon, 25 Oct 2021 03:57:53 +0000 (UTC)
+ by smtp2.osuosl.org (Postfix) with ESMTP id EEF0A400F1
+ for <iommu@lists.linux-foundation.org>; Mon, 25 Oct 2021 04:04:01 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Authentication-Results: smtp1.osuosl.org (amavisd-new);
+Authentication-Results: smtp2.osuosl.org (amavisd-new);
  dkim=pass (1024-bit key) header.d=mediatek.com
-Received: from smtp1.osuosl.org ([127.0.0.1])
- by localhost (smtp1.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id kjT-_cI06lS9 for <iommu@lists.linux-foundation.org>;
- Mon, 25 Oct 2021 03:57:47 +0000 (UTC)
+Received: from smtp2.osuosl.org ([127.0.0.1])
+ by localhost (smtp2.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+ with ESMTP id op4skBIhpy84 for <iommu@lists.linux-foundation.org>;
+ Mon, 25 Oct 2021 04:04:00 +0000 (UTC)
 X-Greylist: from auto-whitelisted by SQLgrey-1.8.0
-Received: from mailgw01.mediatek.com (unknown [60.244.123.138])
- by smtp1.osuosl.org (Postfix) with ESMTPS id 7A9B380E42
- for <iommu@lists.linux-foundation.org>; Mon, 25 Oct 2021 03:57:46 +0000 (UTC)
-X-UUID: 6cf5dab4038e407b895180c1d1649248-20211025
+Received: from mailgw02.mediatek.com (unknown [210.61.82.184])
+ by smtp2.osuosl.org (Postfix) with ESMTPS id ED219400D4
+ for <iommu@lists.linux-foundation.org>; Mon, 25 Oct 2021 04:03:59 +0000 (UTC)
+X-UUID: 6658fb226bc848409323020410b70184-20211025
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=mediatek.com;
  s=dk; 
  h=Content-Transfer-Encoding:MIME-Version:Content-Type:References:In-Reply-To:Date:CC:To:From:Subject:Message-ID;
- bh=cV6dg7PsYHB6+UKop/Sg0rROLJ+oreSSfppKhlC8xGE=; 
- b=nBkGbQeC+Sa3c4WFbs6Ky01mc0hcpUC1VdMIVgp0Ci+nREwXGSXct8xkBhX2s3ToXb8z7bOAWuCxF6sm2/w1ZbvpyLWXSZSkGdcufbA7YrxHi4qeoC1Ri9RoqAAxoOpOmRoxjwmLJ+sjifSy3adpDDGLiZMJznJ7HwbTckMDANs=;
-X-UUID: 6cf5dab4038e407b895180c1d1649248-20211025
-Received: from mtkmbs10n1.mediatek.inc [(172.21.101.34)] by
- mailgw01.mediatek.com (envelope-from <yong.wu@mediatek.com>)
+ bh=ccPzK7FNitJAyHQG9gzX9D65Nz6meMuwCPEHC4/A0GA=; 
+ b=r5seQ1fGfzsuTK8P0fgBSzHG20y0QJCY6I3lVZpilypgZhQW7W/sJ56QAib/aRno9IthBvuzl8Aym7bKLG7kXC4YrnHSiei8y3P+8Fdqt6iolRRP/ECQKKcmVAAxIZhAPUK5fDgfPuti4Q8DPOdq71dS/GOKfAu93IXb7q1jvss=;
+X-UUID: 6658fb226bc848409323020410b70184-20211025
+Received: from mtkmbs10n2.mediatek.inc [(172.21.101.183)] by
+ mailgw02.mediatek.com (envelope-from <yong.wu@mediatek.com>)
  (Generic MTA with TLSv1.2 ECDHE-RSA-AES256-GCM-SHA384 256/256)
- with ESMTP id 77251011; Mon, 25 Oct 2021 11:57:42 +0800
-Received: from mtkcas11.mediatek.inc (172.21.101.40) by
+ with ESMTP id 1449531537; Mon, 25 Oct 2021 12:03:54 +0800
+Received: from mtkcas10.mediatek.inc (172.21.101.39) by
  mtkmbs10n2.mediatek.inc (172.21.101.183) with Microsoft SMTP Server
  (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id 15.2.792.3; 
- Mon, 25 Oct 2021 11:57:40 +0800
-Received: from mhfsdcap04 (10.17.3.154) by mtkcas11.mediatek.inc
+ Mon, 25 Oct 2021 12:03:54 +0800
+Received: from mhfsdcap04 (10.17.3.154) by mtkcas10.mediatek.inc
  (172.21.101.73) with Microsoft SMTP Server id 15.0.1497.2 via Frontend
- Transport; Mon, 25 Oct 2021 11:57:39 +0800
-Message-ID: <15d4ccb984f9e3919d6d7535d05aec0332dbe301.camel@mediatek.com>
-Subject: Re: [PATCH v8 04/12] iommu/mediatek: Add device_link between the
- consumer and the larb devices
+ Transport; Mon, 25 Oct 2021 12:03:53 +0800
+Message-ID: <f0e2ebf98481ee2ae8b88565a337e773532ddffd.camel@mediatek.com>
+Subject: Re: [PATCH v3 13/33] iommu/mediatek: Remove the power status
+ checking in tlb flush all
 From: Yong Wu <yong.wu@mediatek.com>
-To: Dafna Hirschfeld <dafna.hirschfeld@collabora.com>, Matthias Brugger
- <matthias.bgg@gmail.com>, Joerg Roedel <joro@8bytes.org>, Rob Herring
- <robh+dt@kernel.org>, Krzysztof Kozlowski
- <krzysztof.kozlowski@canonical.com>, David Airlie <airlied@linux.ie>, "Mauro
- Carvalho Chehab" <mchehab@kernel.org>
-Date: Mon, 25 Oct 2021 11:57:39 +0800
-In-Reply-To: <da5934de-65ad-4bac-c510-eb0d40d96d70@collabora.com>
-References: <20210929013719.25120-1-yong.wu@mediatek.com>
- <20210929013719.25120-5-yong.wu@mediatek.com>
- <e00b92db-0562-27ca-2f96-1f03ff824988@collabora.com>
- <e4c98036dd73b91b8352a162f80240171e2b3f0f.camel@mediatek.com>
- <da5934de-65ad-4bac-c510-eb0d40d96d70@collabora.com>
+To: Dafna Hirschfeld <dafna.hirschfeld@collabora.com>, Joerg Roedel
+ <joro@8bytes.org>, Rob Herring <robh+dt@kernel.org>, Matthias Brugger
+ <matthias.bgg@gmail.com>, Will Deacon <will@kernel.org>, Robin Murphy
+ <robin.murphy@arm.com>
+Date: Mon, 25 Oct 2021 12:03:53 +0800
+In-Reply-To: <6cff0b97-b861-e02d-e76f-2510c962c452@collabora.com>
+References: <20210923115840.17813-1-yong.wu@mediatek.com>
+ <20210923115840.17813-14-yong.wu@mediatek.com>
+ <6cff0b97-b861-e02d-e76f-2510c962c452@collabora.com>
 X-Mailer: Evolution 3.28.5-0ubuntu0.18.04.2 
 MIME-Version: 1.0
 X-MTK: N
-Cc: Chun-Kuang Hu <chunkuang.hu@kernel.org>, Will Deacon <will.deacon@arm.com>,
- dri-devel@lists.freedesktop.org, anthony.huang@mediatek.com,
- youlin.pei@mediatek.com, Evan Green <evgreen@chromium.org>,
- Eizan Miyamoto <eizan@chromium.org>, Matthias Kaehlcke <mka@chromium.org>,
- linux-media@vger.kernel.org, devicetree@vger.kernel.org, Philipp
- Zabel <p.zabel@pengutronix.de>, Frank Wunderlich <frank-w@public-files.de>,
- yi.kuo@mediatek.com, linux-mediatek@lists.infradead.org,
- Hsin-Yi Wang <hsinyi@chromium.org>, Tiffany Lin <tiffany.lin@mediatek.com>,
- linux-arm-kernel@lists.infradead.org, anan.sun@mediatek.com,
- srv_heupstream@mediatek.com, acourbot@chromium.org,
- linux-kernel@vger.kernel.org, iommu@lists.linux-foundation.org, Daniel
- Vetter <daniel@ffwll.ch>, Robin Murphy <robin.murphy@arm.com>
+Cc: youlin.pei@mediatek.com, devicetree@vger.kernel.org,
+ Collabora Kernel ML <kernel@collabora.com>, srv_heupstream@mediatek.com,
+ Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>,
+ linux-kernel@vger.kernel.org, yen-chang.chen@mediatek.com,
+ chao.hao@mediatek.com, iommu@lists.linux-foundation.org,
+ linux-mediatek@lists.infradead.org, Hsin-Yi Wang <hsinyi@chromium.org>,
+ anan.sun@mediatek.com, linux-arm-kernel@lists.infradead.org
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -108,153 +100,138 @@ Content-Transfer-Encoding: 7bit
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-On Mon, 2021-10-18 at 09:13 +0200, Dafna Hirschfeld wrote:
+On Fri, 2021-10-22 at 16:03 +0200, Dafna Hirschfeld wrote:
+> Hi
 > 
-> On 16.10.21 04:23, Yong Wu wrote:
-> > On Mon, 2021-10-11 at 14:36 +0200, Dafna Hirschfeld wrote:
-> > > 
-> > > On 29.09.21 03:37, Yong Wu wrote:
-> > > > MediaTek IOMMU-SMI diagram is like below. all the consumer
-> > > > connect
-> > > > with
-> > > > smi-larb, then connect with smi-common.
-> > > > 
-> > > >           M4U
-> > > >            |
-> > > >       smi-common
-> > > >            |
-> > > >     -------------
-> > > >     |         |    ...
-> > > >     |         |
-> > > > larb1     larb2
-> > > >     |         |
-> > > > vdec       venc
-> > > > 
-> > > > When the consumer works, it should enable the smi-larb's power
-> > > > which
-> > > > also need enable the smi-common's power firstly.
-> > > > 
-> > > > Thus, First of all, use the device link connect the consumer
-> > > > and
-> > > > the
-> > > > smi-larbs. then add device link between the smi-larb and smi-
-> > > > common.
-> > > > 
-> > > > This patch adds device_link between the consumer and the larbs.
-> > > > 
-> > > > When device_link_add, I add the flag DL_FLAG_STATELESS to avoid
-> > > > calling
-> > > > pm_runtime_xx to keep the original status of clocks. It can
-> > > > avoid
-> > > > two
-> > > > issues:
-> > > > 1) Display HW show fastlogo abnormally reported in [1]. At the
-> > > > beggining,
-> > > > all the clocks are enabled before entering kernel, but the
-> > > > clocks
-> > > > for
-> > > > display HW(always in larb0) will be gated after clk_enable and
-> > > > clk_disable
-> > > > called from device_link_add(->pm_runtime_resume) and rpm_idle.
-> > > > The
-> > > > clock
-> > > > operation happened before display driver probe. At that time,
-> > > > the
-> > > > display
-> > > > HW will be abnormal.
-> > > > 
-> > > > 2) A deadlock issue reported in [2]. Use DL_FLAG_STATELESS to
-> > > > skip
-> > > > pm_runtime_xx to avoid the deadlock.
-> > > > 
-> > > > Corresponding, DL_FLAG_AUTOREMOVE_CONSUMER can't be added, then
-> > > > device_link_removed should be added explicitly.
-> > > > 
-> > > > [1]
-> > > > 
-https://lore.kernel.org/linux-mediatek/1564213888.22908.4.camel@mhfsdcap03/
-> > > > [2] https://lore.kernel.org/patchwork/patch/1086569/
-> > > > 
-> > > > Suggested-by: Tomasz Figa <tfiga@chromium.org>
-> > > > Signed-off-by: Yong Wu <yong.wu@mediatek.com>
-> > > > Tested-by: Frank Wunderlich <frank-w@public-files.de> # BPI-
-> > > > R2/MT7623
-> > > > ---
-> > > >    drivers/iommu/mtk_iommu.c    | 22 ++++++++++++++++++++++
-> > > >    drivers/iommu/mtk_iommu_v1.c | 20 +++++++++++++++++++-
-> > > >    2 files changed, 41 insertions(+), 1 deletion(-)
-> > > > 
-> > > > diff --git a/drivers/iommu/mtk_iommu.c
-> > > > b/drivers/iommu/mtk_iommu.c
-> > > > index d5848f78a677..a2fa55899434 100644
-> > > > --- a/drivers/iommu/mtk_iommu.c
-> > > > +++ b/drivers/iommu/mtk_iommu.c
-> > > > @@ -560,22 +560,44 @@ static struct iommu_device
-> > > > *mtk_iommu_probe_device(struct device *dev)
-> > > >    {
-> > > >    	struct iommu_fwspec *fwspec =
-> > > > dev_iommu_fwspec_get(dev);
-> > > >    	struct mtk_iommu_data *data;
-> > > > +	struct device_link *link;
-> > > > +	struct device *larbdev;
-> > > > +	unsigned int larbid;
-> > > >    
-> > > >    	if (!fwspec || fwspec->ops != &mtk_iommu_ops)
-> > > >    		return ERR_PTR(-ENODEV); /* Not a iommu client
-> > > > device
-> > > > */
-> > > >    
-> > > >    	data = dev_iommu_priv_get(dev);
-> > > >    
-> > > > +	/*
-> > > > +	 * Link the consumer device with the smi-larb
-> > > > device(supplier)
-> > > > +	 * The device in each a larb is a independent HW. thus
-> > > > only
-> > > > link
-> > > > +	 * one larb here.
-> > > > +	 */
-> > > > +	larbid = MTK_M4U_TO_LARB(fwspec->ids[0]);
-> > > 
-> > > so larbid is always the same for all the ids of a device?
-> > 
-> > Yes. For me, each a dtsi node should represent a HW unit which can
-> > only
-> > connect one larb.
-> > 
-> > > If so maybe it worth testing it and return error if this is not
-> > > the
-> > > case.
-> > 
-> > Thanks for the suggestion. This is very helpful. I did see someone
-> > put
-> > the different larbs in one node. I will check this, and add return
 > 
-> I am working on bugs found on media drivers, could you please point
-> me to
-> that wrong node?
-> Will you send a fix to that node in the dtsi?
+> On 23.09.21 13:58, Yong Wu wrote:
+> > To simplify the code, Remove the power status checking in the
+> > tlb_flush_all, remove this:
+> >     if (pm_runtime_get_if_in_use(data->dev) <= 0)
+> > 	    continue;
+> > 
+> > After this patch, the mtk_iommu_tlb_flush_all will be called from
+> > a) isr
+> > b) pm runtime resume callback
+> > c) tlb flush range fail case
+> > d) iommu_create_device_direct_mappings
+> >     -> iommu_flush_iotlb_all
+> > In first three cases, the power and clock always are enabled; d) is
+> > direct
+> 
+> Regarding case "c) tlb flush range fail case", I found out that this
+> often happens when the iommu is used while it is runtime suspended. 
 
-sorry. I mean it happened in the internal branch and it has already
-been fixed internally,  all the upstream nodes are ok for this.
+Which SoC and branch are you testing on?
 
-Thanks
+> For example the mtk-vcodec encoder driver calls
+> "pm_runtime_resume_and_get" only when it starts
+> streaming but
+> buffers allocation is done in 'v4l2_reqbufs' before
+> "pm_runtime_resume_and_get" is called
+
+This is the case I tried to fix in [14/33].
+pm_runtime_get_if_in_use should return when the iommu device's pm is
+not active when vcodec allocate buffer before pm_runtime_resume_and
+get.
+
+Do you have the devicelink patchset in your branch? if not, the vcodec
+should call mtk_smi_larb_get to enable the power/clock for larbs, then
+the iommu's device is active via devicelink between smi and iommu
+device.
+
+> and then I see the warning "Partial TLB flush timed out, falling back
+> to full flush"
+> I am not sure how to fix that issue, but it seems that case 'c)'
+> might indicate that
+> power and clock are actually not enabled.
 > 
-> 
-> Thanks,
-> Dafna
-> 
-> > EINVAL for this case.
-> 
-> 
-> 
+> > mapping, the tlb flush is unnecessay since we already have
+> > tlb_flush_all
+> > in the pm_runtime_resume callback. When the iommu's power status is
+> > changed to active, the tlb always is clean.
 > > 
-> > > 
-> > > Thanks,
-> > > Dafna
+> > In addition, there still are 2 reasons that don't add PM status
+> > checking
+> > in the tlb flush all:
+> > a) Write tlb flush all register also is ok even though the HW has
+> > no
+> > power and clocks. Write ignore.
+> > b) pm_runtime_get_if_in_use(m4udev) is 0 when the tlb_flush_all
+> > is called frm pm_runtime_resume cb. From this point, we can not add
+> > this code above in this tlb_flush_all.
 > > 
+> > Signed-off-by: Yong Wu <yong.wu@mediatek.com>
+> > ---
+> >   drivers/iommu/mtk_iommu.c | 20 +++++++-------------
+> >   1 file changed, 7 insertions(+), 13 deletions(-)
+> > 
+> > diff --git a/drivers/iommu/mtk_iommu.c b/drivers/iommu/mtk_iommu.c
+> > index e9e94944ed91..4a33b6c6b1db 100644
+> > --- a/drivers/iommu/mtk_iommu.c
+> > +++ b/drivers/iommu/mtk_iommu.c
+> > @@ -204,10 +204,14 @@ static struct mtk_iommu_domain
+> > *to_mtk_domain(struct iommu_domain *dom)
+> >   	return container_of(dom, struct mtk_iommu_domain, domain);
+> >   }
 > >   
-> > > > 
+> > -static void mtk_iommu_tlb_do_flush_all(struct mtk_iommu_data
+> > *data)
+> > +static void mtk_iommu_tlb_flush_all(struct mtk_iommu_data *data)
+> >   {
+> >   	unsigned long flags;
+> >   
+> > +	/*
+> > +	 * No need get power status since the HW PM status nearly is
+> > active
+> > +	 * when entering here.
+> > +	 */
+> >   	spin_lock_irqsave(&data->tlb_lock, flags);
+> >   	writel_relaxed(F_INVLD_EN1 | F_INVLD_EN0,
+> >   		       data->base + data->plat_data->inv_sel_reg);
+> > @@ -216,16 +220,6 @@ static void mtk_iommu_tlb_do_flush_all(struct
+> > mtk_iommu_data *data)
+> >   	spin_unlock_irqrestore(&data->tlb_lock, flags);
+> >   }
+> >   
+> > -static void mtk_iommu_tlb_flush_all(struct mtk_iommu_data *data)
+> > -{
+> > -	if (pm_runtime_get_if_in_use(data->dev) <= 0)
+> > -		return;
+> > -
+> > -	mtk_iommu_tlb_do_flush_all(data);
+> > -
+> > -	pm_runtime_put(data->dev);
+> > -}
+> > -
+> >   static void mtk_iommu_tlb_flush_range_sync(unsigned long iova,
+> > size_t size,
+> >   					   struct mtk_iommu_data *data)
+> >   {
+> > @@ -263,7 +257,7 @@ static void
+> > mtk_iommu_tlb_flush_range_sync(unsigned long iova, size_t size,
+> >   		if (ret) {
+> >   			dev_warn(data->dev,
+> >   				 "Partial TLB flush timed out, falling
+> > back to full flush\n");
+> > -			mtk_iommu_tlb_do_flush_all(data);
+> > +			mtk_iommu_tlb_flush_all(data);
+> >   		}
+> >   
+> >   		if (has_pm)
+> > @@ -993,7 +987,7 @@ static int __maybe_unused
+> > mtk_iommu_runtime_resume(struct device *dev)
+> >   	 *
+> >   	 * Thus, Make sure the tlb always is clean after each PM
+> > resume.
+> >   	 */
+> > -	mtk_iommu_tlb_do_flush_all(data);
+> > +	mtk_iommu_tlb_flush_all(data);
+> >   
+> >   	/*
+> >   	 * Uppon first resume, only enable the clk and return, since
+> > the values of the
+> > 
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
