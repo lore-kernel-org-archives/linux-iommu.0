@@ -2,152 +2,84 @@ Return-Path: <SRS0=EsFc=PR=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5D8DCC4332F
-	for <iommu@archiver.kernel.org>; Fri, 29 Oct 2021 12:45:03 +0000 (UTC)
-Received: from smtp2.osuosl.org (smtp2.osuosl.org [140.211.166.133])
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D641EC433EF
+	for <iommu@archiver.kernel.org>; Fri, 29 Oct 2021 13:44:10 +0000 (UTC)
+Received: from smtp4.osuosl.org (smtp4.osuosl.org [140.211.166.137])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 0634D61167
-	for <iommu@archiver.kernel.org>; Fri, 29 Oct 2021 12:45:02 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.4.1 mail.kernel.org 0634D61167
-Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=lists.linux-foundation.org
+	by mail.kernel.org (Postfix) with ESMTPS id 68C5161100
+	for <iommu@archiver.kernel.org>; Fri, 29 Oct 2021 13:44:10 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.4.1 mail.kernel.org 68C5161100
+Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=kernel.org
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by smtp2.osuosl.org (Postfix) with ESMTP id BB35C4014C;
-	Fri, 29 Oct 2021 12:45:02 +0000 (UTC)
+	by smtp4.osuosl.org (Postfix) with ESMTP id 2D7D940184;
+	Fri, 29 Oct 2021 13:44:10 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from smtp2.osuosl.org ([127.0.0.1])
-	by localhost (smtp2.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id EOZX3xIlDS-t; Fri, 29 Oct 2021 12:45:01 +0000 (UTC)
+Received: from smtp4.osuosl.org ([127.0.0.1])
+	by localhost (smtp4.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+	with ESMTP id m28eoevqcJM0; Fri, 29 Oct 2021 13:44:07 +0000 (UTC)
 Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by smtp2.osuosl.org (Postfix) with ESMTPS id 7776440018;
-	Fri, 29 Oct 2021 12:45:01 +0000 (UTC)
+	by smtp4.osuosl.org (Postfix) with ESMTPS id 88FFE40154;
+	Fri, 29 Oct 2021 13:44:07 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 48EF9C0019;
-	Fri, 29 Oct 2021 12:45:01 +0000 (UTC)
-Received: from smtp3.osuosl.org (smtp3.osuosl.org [140.211.166.136])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 784C5C000E
- for <iommu@lists.linux-foundation.org>; Fri, 29 Oct 2021 12:45:00 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 47770C001E;
+	Fri, 29 Oct 2021 13:44:07 +0000 (UTC)
+Received: from smtp4.osuosl.org (smtp4.osuosl.org [140.211.166.137])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 9ACB4C0012
+ for <iommu@lists.linux-foundation.org>; Fri, 29 Oct 2021 13:44:05 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by smtp3.osuosl.org (Postfix) with ESMTP id 672286060F
- for <iommu@lists.linux-foundation.org>; Fri, 29 Oct 2021 12:45:00 +0000 (UTC)
+ by smtp4.osuosl.org (Postfix) with ESMTP id 7CD4440174
+ for <iommu@lists.linux-foundation.org>; Fri, 29 Oct 2021 13:44:05 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Authentication-Results: smtp3.osuosl.org (amavisd-new);
- dkim=pass (2048-bit key) header.d=nvidia.com
-Received: from smtp3.osuosl.org ([127.0.0.1])
- by localhost (smtp3.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id hc3YfoNsdk20 for <iommu@lists.linux-foundation.org>;
- Fri, 29 Oct 2021 12:44:58 +0000 (UTC)
+Received: from smtp4.osuosl.org ([127.0.0.1])
+ by localhost (smtp4.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+ with ESMTP id w65jS3F30MUM for <iommu@lists.linux-foundation.org>;
+ Fri, 29 Oct 2021 13:44:03 +0000 (UTC)
 X-Greylist: whitelisted by SQLgrey-1.8.0
-Received: from NAM10-BN7-obe.outbound.protection.outlook.com
- (mail-bn7nam10on20600.outbound.protection.outlook.com
- [IPv6:2a01:111:f400:7e8a::600])
- by smtp3.osuosl.org (Postfix) with ESMTPS id 3036E605FB
- for <iommu@lists.linux-foundation.org>; Fri, 29 Oct 2021 12:44:58 +0000 (UTC)
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=fcm65KIwwV4AU+9hCsFW5aUcoNj4AE5v3pKQ+qNNThCmYY2Put0t93zDcjZSuFG0rN1D235OsqwdCnGpTwXyX2qfd5cZ58deMH1hsZquvRGiGpo2BfVnu3kesH1ccv59Bq0nVVD1i/VpS8+4Jm6psX70Ek+0vCxy1A6c6i/nE5Dp0IY1ZSBliimE34/pr5TL0BTVUJqa7hSJSTFK9jTd/6gsBfiW3rlfKZBDJVYKYl/MDi8P1mXXjo/sj9O/HFzMpT3wN8W8ifGhMML66QI4h70J5e/jyiQdJnRrqZJBJMTkd9TYpQeefYSn8JVuL430hwDnfGVJbW0u2JWe0JrVig==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com; 
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=Qnk0xEp4YArqZwFVKdS34i4OLTlfweZv3UstK1nUZTg=;
- b=GUWNSC4mSztJMl36MuaVI/w+6LKokVgZ+pSeh+qtjywd4SnT6tbvBbQp7Qp14p/HKF2NVla6k2khwNlwRKBwE3U7AwZURLUn8UIBRQHLJm7ktOLzJex3zQ9NWjaZyjPexLcDC3XIUji5tSQWjkwooqD2yWl4MKcuM6oyhmIhQJHQ0vHMyO5+OkwnZJiB1XeA+b5z9ZHAUuZzoLPDYEDo0De+ogSRkvgXDwK9gibUF3PVegBRqKvDez559/JfhMsGP/WUFLkp6pDKv078PEgApJjHQycDkG1Rl3C6ouK0Q1SI1gbMDnSQV7NjmzXEW+EUTxIrv5hfe5u1l8btF3BV5w==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=nvidia.com; dmarc=pass action=none header.from=nvidia.com;
- dkim=pass header.d=nvidia.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
- s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=Qnk0xEp4YArqZwFVKdS34i4OLTlfweZv3UstK1nUZTg=;
- b=imVIvT/Xlykj6rf23+opzVIDQhpM+RbDAMtqpkEEXJD24KFcUEHqGJ+r0+YJ0aCfHACXv90lFciLee6IJcuBB3SWJpCFa9yWlWbeejPALbn8v5qjAJT3b9ONb2IFey1pJLsK2oOxcCWch+Moy04Q4aQiS85Uy8OBDJa1wQ8q9f5QtBH7H6ZayxdEKa3smDekM8r9xuTZ7KtJWAFnluXDvMU3cQWeidIy50pyR5LdBFjqEUmMKXd+YXjmePafi7T7nLqUPOv6mR9TKrc5lOebrvDPVs09fkJzBgt9tkKPHHS69Ia/mqOWzAYIuWQURm5/59bq1cBg4WW31iNmtaPR7A==
-Authentication-Results: gibson.dropbear.id.au; dkim=none (message not signed)
- header.d=none; gibson.dropbear.id.au;
- dmarc=none action=none header.from=nvidia.com;
-Received: from BL0PR12MB5506.namprd12.prod.outlook.com (2603:10b6:208:1cb::22)
- by BL1PR12MB5288.namprd12.prod.outlook.com (2603:10b6:208:314::23)
- with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4649.13; Fri, 29 Oct
- 2021 12:44:54 +0000
-Received: from BL0PR12MB5506.namprd12.prod.outlook.com
- ([fe80::e8af:232:915e:2f95]) by BL0PR12MB5506.namprd12.prod.outlook.com
- ([fe80::e8af:232:915e:2f95%8]) with mapi id 15.20.4649.015; Fri, 29 Oct 2021
- 12:44:54 +0000
-Date: Fri, 29 Oct 2021 09:44:52 -0300
-To: David Gibson <david@gibson.dropbear.id.au>
-Subject: Re: [RFC 20/20] Doc: Add documentation for /dev/iommu
-Message-ID: <20211029124452.GW2744544@nvidia.com>
-References: <20210919063848.1476776-1-yi.l.liu@intel.com>
- <20210919063848.1476776-21-yi.l.liu@intel.com>
- <YXs9IwqYHvUUXePO@yekko>
-Content-Disposition: inline
-In-Reply-To: <YXs9IwqYHvUUXePO@yekko>
-X-ClientProxiedBy: YTOPR0101CA0046.CANPRD01.PROD.OUTLOOK.COM
- (2603:10b6:b00:14::23) To BL0PR12MB5506.namprd12.prod.outlook.com
- (2603:10b6:208:1cb::22)
+Received: from mail-oi1-f180.google.com (mail-oi1-f180.google.com
+ [209.85.167.180])
+ by smtp4.osuosl.org (Postfix) with ESMTPS id 9CE2740154
+ for <iommu@lists.linux-foundation.org>; Fri, 29 Oct 2021 13:44:03 +0000 (UTC)
+Received: by mail-oi1-f180.google.com with SMTP id x8so9086998oix.2
+ for <iommu@lists.linux-foundation.org>; Fri, 29 Oct 2021 06:44:03 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+ d=1e100.net; s=20210112;
+ h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+ :mime-version:content-disposition:in-reply-to;
+ bh=Q4j8kz+vDYmA/tiJro/01MgX0r2fELTiXn0N7Y88aTA=;
+ b=bFhuDAth6M02i98gJ3xy1LCydanDLp4DaqiNprYPkgRPFsls9C/viihgYHu6OyeB5v
+ z2+8RGJP7TLauUA+s1gVimfnMB5slyjwXezCCMwEVVPRgVcRIaESK6iWkF0svCdq1GyP
+ LWBYDN3bwpwHSouKBgB1w2GfEqOUqtMnIUXkWz9CrsXV3Kgb2HRJ2ytcVMX29e+V5BVm
+ nGKgKqeYbFt/HXnwV6nmREeViaNGNBjCq8U5M2d1ZMljQk4ThEhvWQX9upb3yghlE/Yw
+ 9rhuMYbSoh3C4OLng9yvZQNhRiqy5CaB/GwBSQ+fiXb1Vtghue2G0e1bOY5TS4mBj7qL
+ yLWg==
+X-Gm-Message-State: AOAM532oml+GFRjbdrMnxB8sI5yAEacfKUa6Pl5oe9GjWde70QnlwixX
+ edkcN0q/dRwErhLICz2LLA==
+X-Google-Smtp-Source: ABdhPJxXlg3PkICo5KK9L0xBEvGyufxGFE4IcST0wAx/bcQ2X3qjfMkNzhIl5Qv/WmDQdG6kIWuXqw==
+X-Received: by 2002:aca:3455:: with SMTP id b82mr13883274oia.102.1635515042228; 
+ Fri, 29 Oct 2021 06:44:02 -0700 (PDT)
+Received: from robh.at.kernel.org (66-90-148-213.dyn.grandenetworks.net.
+ [66.90.148.213])
+ by smtp.gmail.com with ESMTPSA id d7sm1871463otl.19.2021.10.29.06.44.01
+ (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+ Fri, 29 Oct 2021 06:44:01 -0700 (PDT)
+Received: (nullmailer pid 2250889 invoked by uid 1000);
+ Fri, 29 Oct 2021 13:44:00 -0000
+Date: Fri, 29 Oct 2021 08:44:00 -0500
+From: Rob Herring <robh@kernel.org>
+To: David Heidelberg <david@ixit.cz>
+Subject: Re: [PATCH] dt-bindings: arm-smmu: Add compatible for the SDX55 SoC
+Message-ID: <YXv6oMe4pw6DgIha@robh.at.kernel.org>
+References: <20211020231701.278846-1-david@ixit.cz>
+ <YXsYnG+H8gQu4Prc@robh.at.kernel.org>
 MIME-Version: 1.0
-Received: from mlx.ziepe.ca (206.223.160.26) by
- YTOPR0101CA0046.CANPRD01.PROD.OUTLOOK.COM (2603:10b6:b00:14::23) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4608.18 via Frontend
- Transport; Fri, 29 Oct 2021 12:44:54 +0000
-Received: from jgg by mlx with local (Exim 4.94)	(envelope-from
- <jgg@nvidia.com>)	id 1mgRFc-003S1H-MB; Fri, 29 Oct 2021 09:44:52 -0300
-X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: 4d41d750-81fb-4edb-b981-08d99ad9e80e
-X-MS-TrafficTypeDiagnostic: BL1PR12MB5288:
-X-Microsoft-Antispam-PRVS: <BL1PR12MB52888B4382B277F09F6561CCC2879@BL1PR12MB5288.namprd12.prod.outlook.com>
-X-MS-Oob-TLC-OOBClassifiers: OLM:5797;
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: g4pmQiYIhYh3mqVfmnW57QL549msHjh3hfvBKA/HICz1Jqa41ytjRtbz3qE9yiQFFvgaO8RKYb3nYje77WZUBXWlp49ZfLxIy+SoqAr61okEg9Bho7lF7zOzDIGvMKyO1B0rAMNnTSFxujgnlzWm9i4u35WRN7BoNypX6nYtUZmhE2K9lw4BGVND+oBMfjLdWNnLvZwUSVVu7fMeW6jOAvHjqhSvbKfhzDuBJBNOz7wgFYEyyuTLJuaX/PqmCHkDoL+T5szxkGDWm6g5QHKZSTfZ3/kl2b297YDb7/i9zJSKLSF4vFGo3cFWAd9gjJnggedbmEAzYnWcqgoJXz8UTjkBVahQyF0uyFelPN9qgWHZZB+g2jUkLCSlEj87n7IAE4MwY+a3Xo9iiaMXXwqNh6HXnj9PxI5jVC+tei9oZvWcRyIiMV8BfdxEZrMj89IakzE37T+JwJsmBc7Le9UPOZQm2f7oLbwnnz2ijHz7qP3bZNm0d3hjZ5rYxOAW37m55funyOT+OG5ugjvA9LZG2C/tPhzI99lZhNLzWJvCXSJNafNmuS8wHJoSJSN2Z4m7xU9wnI//be3bjFfE6u/8he/c61GW0+iyBO+gAsrS8soaDWz9ary3My/DnLE/7arg/GX5MTK26s+d+gMOxMgw5w==
-X-Forefront-Antispam-Report: CIP:255.255.255.255; CTRY:; LANG:en; SCL:1; SRV:;
- IPV:NLI; SFV:NSPM; H:BL0PR12MB5506.namprd12.prod.outlook.com; PTR:; CAT:NONE;
- SFS:(4636009)(366004)(1076003)(5660300002)(8936002)(316002)(4326008)(86362001)(33656002)(26005)(8676002)(66946007)(4744005)(36756003)(9746002)(9786002)(186003)(66476007)(38100700002)(107886003)(83380400001)(426003)(7416002)(508600001)(6916009)(2616005)(66556008)(2906002);
- DIR:OUT; SFP:1101; 
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?cx9bd1RUVR6B6gzOX3YC0H6trKkQeIhIOPZMGy22qOT2Z7LOmCTi4P75Hqg5?=
- =?us-ascii?Q?GN9ftXMoBd6w06PQkD4TvBqpT0uYe7EOnpoqfEbcydMGY8JC2jQ9SxBO/CpZ?=
- =?us-ascii?Q?AbdYBGgJXtKbeDucV1SqJESeN82wfMIUe+xp0nrQ2fzCx/r89pGUCFSsKAdd?=
- =?us-ascii?Q?uFei0GgfLlMik9RnzanVUs/qmoK0PXOxA1lSEectiJx3+7EiOJFhrY9EI5QJ?=
- =?us-ascii?Q?Ao6tavHOopYbf78ew3EN77wLLe+TWZgrESDJoWizJ88e2WrZFabZvaIZx3SO?=
- =?us-ascii?Q?JDRsdCZhsId9EenhQbsEEouzA7+nH8NyGl0RN8vlxY/hR6q6Sc1VMurS3J+A?=
- =?us-ascii?Q?UZNmBlVU7uXYe65agJgGxFzd5KUtdHq3UJzK+AE5IiDTMBjiynegarzSrAo1?=
- =?us-ascii?Q?/kRp+jWCq7BtVeWvCV0OIokfGfCBl1yvklm0aWLvACxOqnbVsQjwWrlM50y6?=
- =?us-ascii?Q?gR9Yzvr19b6YknQ8DVztsUAyvFm4USqSMAfB1eqc9ldbPJoU8s7EIA0mjR4+?=
- =?us-ascii?Q?OE63jwQFBxQnmTfuAYNqhJve5YC9m1hhuXfreW+0sVZFLrXdunLsbF4cZF4x?=
- =?us-ascii?Q?HUO9yAvMXywztKXvEMBbeJA9+z8RHzVyVf+CNE/RKyRuDnCOXDWalnVhoW0G?=
- =?us-ascii?Q?Yz6b0SAkTF3LGQ5/HJQj3ZIwpDkLmiFowzAbqkU9xYTleojhurHdj0QqV/5I?=
- =?us-ascii?Q?OR1u10jeQWi8ziHGBfYz85T7Q14/7XY4opxaNbEoU0saumruluGd4TxsqriM?=
- =?us-ascii?Q?xVS3k9Bxm9GnnxhIeGXIb2ThR2L3rhoRHAySRTGlYN5Wm0sIlJxhQPirWkJb?=
- =?us-ascii?Q?Y2r/RdOwpUiXsFtjuX7JH+oZcN4G1wBdoEQ4skHBezZz46RB82BUtL7CHnGX?=
- =?us-ascii?Q?ygD2Bx661QS7lfvYZIC80Jjhe+u5B7QTacfqEWFieF4AkMxkNhHBGVw68WOL?=
- =?us-ascii?Q?rEnX9Htc9Lx89hxiEhhsc5wt6w92hMM0Xnj146+GuCwobG43CWP0MAG7cbNb?=
- =?us-ascii?Q?l/XTO74nhQrMEvyTa3/s3DUqIwBCetHRuVRbpXiT1oj6g62CJt+8j/6y3d1Z?=
- =?us-ascii?Q?Kx4AITNl4wITVAkdXnVv8Fx5FFl1QU3vMGf0kkujoWKTkOzok8ZRlm3IVz3z?=
- =?us-ascii?Q?aPjVBe91n2hwall1Krn23eJUtR9HWIjMiYxrI1FyGgcPc3SXvRWCZivlhIAy?=
- =?us-ascii?Q?7XvEKsUxP+OWkuKy6ddb2mChg1lNCbuchw7JWNYupBbmpmwKJz+Q1JUIGWOF?=
- =?us-ascii?Q?/4e4L0wDyszFxuQcu5mEFYIAxnCHI4ZFnF5kvrE6kuCsbpdcxZSxVj0tkmYC?=
- =?us-ascii?Q?XK1CU02vZ0ZA3K1fOG5E06/BkPRJiMgIVCCpEmYyT5lBfpiycuAlYerTwBPC?=
- =?us-ascii?Q?hV3pheicupg2web1hL3km9E6TLH1+dgex7fienvijSakBlY7o9LfId/eeGx7?=
- =?us-ascii?Q?LYW9N93Pz3m12V3iHawWzGEVotwsYtm/mzfSiwZF1hv8v6oaJpR4DtWm74HV?=
- =?us-ascii?Q?AkKZosk9jadiEIfMkEo2vbJkpzYSdkl8YIlWiyEd6csKpYUx5fYy1bDPs1eM?=
- =?us-ascii?Q?DZxO5ctAXJpqk+Bswi8=3D?=
-X-OriginatorOrg: Nvidia.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 4d41d750-81fb-4edb-b981-08d99ad9e80e
-X-MS-Exchange-CrossTenant-AuthSource: BL0PR12MB5506.namprd12.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 29 Oct 2021 12:44:54.3855 (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: pj8naDd3dda/DY+F+z+qUZ4Jiv8bmq6BG9TYA8/Zv/pe5Q4Pyz/UP4PVTHL7AIrv
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: BL1PR12MB5288
-Cc: kvm@vger.kernel.org, jasowang@redhat.com, kwankhede@nvidia.com, hch@lst.de,
- jean-philippe@linaro.org, dave.jiang@intel.com, ashok.raj@intel.com,
- corbet@lwn.net, kevin.tian@intel.com, parav@mellanox.com,
- alex.williamson@redhat.com, lkml@metux.net, dwmw2@infradead.org,
- jun.j.tian@intel.com, linux-kernel@vger.kernel.org, lushenming@huawei.com,
- iommu@lists.linux-foundation.org, pbonzini@redhat.com, robin.murphy@arm.com
+Content-Disposition: inline
+In-Reply-To: <YXsYnG+H8gQu4Prc@robh.at.kernel.org>
+Cc: devicetree@vger.kernel.org, Robin Murphy <robin.murphy@arm.com>,
+ linux-kernel@vger.kernel.org, iommu@lists.linux-foundation.org,
+ Will Deacon <will@kernel.org>, ~okias/devicetree@lists.sr.ht,
+ linux-arm-kernel@lists.infradead.org
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -160,36 +92,26 @@ List-Post: <mailto:iommu@lists.linux-foundation.org>
 List-Help: <mailto:iommu-request@lists.linux-foundation.org?subject=help>
 List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
  <mailto:iommu-request@lists.linux-foundation.org?subject=subscribe>
-From: Jason Gunthorpe via iommu <iommu@lists.linux-foundation.org>
-Reply-To: Jason Gunthorpe <jgg@nvidia.com>
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-On Fri, Oct 29, 2021 at 11:15:31AM +1100, David Gibson wrote:
-
-> > +Device must be bound to an iommufd before the attach operation can
-> > +be conducted. The binding operation builds the connection between
-> > +the devicefd (opened via device-passthrough framework) and IOMMUFD.
-> > +IOMMU-protected security context is esbliashed when the binding
-> > +operation is completed.
+On Thu, Oct 28, 2021 at 04:39:40PM -0500, Rob Herring wrote:
+> On Thu, 21 Oct 2021 01:17:00 +0200, David Heidelberg wrote:
+> > Add missing compatible for the SDX55 SoC.
+> > 
+> > Signed-off-by: David Heidelberg <david@ixit.cz>
+> > ---
+> >  Documentation/devicetree/bindings/iommu/arm,smmu.yaml | 1 +
+> >  1 file changed, 1 insertion(+)
+> > 
 > 
-> This can't be quite right.  You can't establish a safe security
-> context until all devices in the groun are bound, but you can only
-> bind them one at a time.
+> Applied, thanks!
 
-When any device is bound the entire group is implicitly adopted to
-this iommufd and the whole group enters a safe-for-userspace state.
+Now dropped. This conflicts with Will's tree, so he should take it. 
 
-It is symmetrical with the kernel side which is also device focused,
-when any struct device is bound to a kernel driver the entire group is
-implicitly adopted to kernel mode.
-
-Lu should send a patch series soon that harmonize how this works, it
-is a very nice cleanup.
-
-Jason
+Rob
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
