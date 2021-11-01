@@ -2,84 +2,73 @@ Return-Path: <SRS0=fO5g=PU=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5C3DEC433EF
-	for <iommu@archiver.kernel.org>; Mon,  1 Nov 2021 10:41:14 +0000 (UTC)
-Received: from smtp2.osuosl.org (smtp2.osuosl.org [140.211.166.133])
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 873C6C433F5
+	for <iommu@archiver.kernel.org>; Mon,  1 Nov 2021 12:08:13 +0000 (UTC)
+Received: from smtp1.osuosl.org (smtp1.osuosl.org [140.211.166.138])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 0672960524
-	for <iommu@archiver.kernel.org>; Mon,  1 Nov 2021 10:41:13 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.4.1 mail.kernel.org 0672960524
+	by mail.kernel.org (Postfix) with ESMTPS id 3210760FE8
+	for <iommu@archiver.kernel.org>; Mon,  1 Nov 2021 12:08:13 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.4.1 mail.kernel.org 3210760FE8
 Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=mediatek.com
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by smtp2.osuosl.org (Postfix) with ESMTP id BF107401D6;
-	Mon,  1 Nov 2021 10:41:13 +0000 (UTC)
+	by smtp1.osuosl.org (Postfix) with ESMTP id D22C980D32;
+	Mon,  1 Nov 2021 12:08:12 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from smtp2.osuosl.org ([127.0.0.1])
-	by localhost (smtp2.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id cRTKGQUpxzmE; Mon,  1 Nov 2021 10:41:12 +0000 (UTC)
+Received: from smtp1.osuosl.org ([127.0.0.1])
+	by localhost (smtp1.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+	with ESMTP id fQcLvbTd369M; Mon,  1 Nov 2021 12:08:09 +0000 (UTC)
 Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [IPv6:2605:bc80:3010:104::8cd3:938])
-	by smtp2.osuosl.org (Postfix) with ESMTPS id 2730640010;
-	Mon,  1 Nov 2021 10:41:12 +0000 (UTC)
+	by smtp1.osuosl.org (Postfix) with ESMTPS id 821FC80D16;
+	Mon,  1 Nov 2021 12:08:08 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 0C7EAC0019;
-	Mon,  1 Nov 2021 10:41:12 +0000 (UTC)
-Received: from smtp3.osuosl.org (smtp3.osuosl.org [140.211.166.136])
- by lists.linuxfoundation.org (Postfix) with ESMTP id A6485C000E
- for <iommu@lists.linux-foundation.org>; Mon,  1 Nov 2021 10:41:10 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 5B79FC0012;
+	Mon,  1 Nov 2021 12:08:08 +0000 (UTC)
+Received: from smtp4.osuosl.org (smtp4.osuosl.org [140.211.166.137])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 9B2FAC000E
+ for <iommu@lists.linux-foundation.org>; Mon,  1 Nov 2021 12:08:07 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by smtp3.osuosl.org (Postfix) with ESMTP id 8795C60592
- for <iommu@lists.linux-foundation.org>; Mon,  1 Nov 2021 10:41:10 +0000 (UTC)
+ by smtp4.osuosl.org (Postfix) with ESMTP id 7B2F740146
+ for <iommu@lists.linux-foundation.org>; Mon,  1 Nov 2021 12:08:07 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Authentication-Results: smtp3.osuosl.org (amavisd-new);
- dkim=pass (1024-bit key) header.d=mediatek.com
-Received: from smtp3.osuosl.org ([127.0.0.1])
- by localhost (smtp3.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id MeX9Ty4lCu3W for <iommu@lists.linux-foundation.org>;
- Mon,  1 Nov 2021 10:41:02 +0000 (UTC)
+Received: from smtp4.osuosl.org ([127.0.0.1])
+ by localhost (smtp4.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+ with ESMTP id rA849X6WmwAn for <iommu@lists.linux-foundation.org>;
+ Mon,  1 Nov 2021 12:08:02 +0000 (UTC)
 X-Greylist: domain auto-whitelisted by SQLgrey-1.8.0
 Received: from mailgw01.mediatek.com (unknown [60.244.123.138])
- by smtp3.osuosl.org (Postfix) with ESMTPS id 9076660591
- for <iommu@lists.linux-foundation.org>; Mon,  1 Nov 2021 10:41:01 +0000 (UTC)
-X-UUID: 66bb92f5f0c74b52954d9f3d793eb446-20211101
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=mediatek.com;
- s=dk; 
- h=Content-Transfer-Encoding:MIME-Version:Content-Type:References:In-Reply-To:Date:CC:To:From:Subject:Message-ID;
- bh=0yNRMy91uWzpVLqngjuJ072kcSyVfPnPyUeqGNc4EY0=; 
- b=XmxLfBfMTgKVUbsXbSZ52y2ZhsMdHCrO5NS23ZQDEa8JI/mphaIc08rVKsaE/vmTlawY+C8zQltUz9zPR//ZABAZbq2uXvkF+I0ZXBd2LBnBcilDgAZTTIzsxl1lxXDudS7pv82NdmfAq6ic745mnDVh4ksXrAYzQHteZKnr564=;
-X-UUID: 66bb92f5f0c74b52954d9f3d793eb446-20211101
-Received: from mtkmbs10n2.mediatek.inc [(172.21.101.183)] by
- mailgw01.mediatek.com (envelope-from <yong.wu@mediatek.com>)
- (Generic MTA with TLSv1.2 ECDHE-RSA-AES256-GCM-SHA384 256/256)
- with ESMTP id 276154276; Mon, 01 Nov 2021 18:40:57 +0800
-Received: from mtkmbs10n2.mediatek.inc (172.21.101.183) by
+ by smtp4.osuosl.org (Postfix) with ESMTPS id 7E4524012C
+ for <iommu@lists.linux-foundation.org>; Mon,  1 Nov 2021 12:08:02 +0000 (UTC)
+X-UUID: 96666a0304944cc38cc087434f5944a7-20211101
+X-UUID: 96666a0304944cc38cc087434f5944a7-20211101
+Received: from mtkexhb02.mediatek.inc [(172.21.101.103)] by
+ mailgw01.mediatek.com (envelope-from <walter-zh.wu@mediatek.com>)
+ (Generic MTA with TLSv1.2 ECDHE-RSA-AES256-SHA384 256/256)
+ with ESMTP id 909134349; Mon, 01 Nov 2021 20:07:56 +0800
+Received: from mtkcas11.mediatek.inc (172.21.101.40) by
  mtkmbs10n2.mediatek.inc (172.21.101.183) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.792.3; 
- Mon, 1 Nov 2021 18:40:56 +0800
-Received: from mhfsdcap04 (10.17.3.154) by mtkmbs10n2.mediatek.inc
- (172.21.101.73) with Microsoft SMTP Server id 15.2.792.3 via Frontend
- Transport; Mon, 1 Nov 2021 18:40:55 +0800
-Message-ID: <45cc8d0e25bdb73d8262f59166cac6ea3c80770b.camel@mediatek.com>
-Subject: Re: [PATCH] memory: mtk-smi: Fix a null dereference for the ostd
-From: Yong Wu <yong.wu@mediatek.com>
-To: Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>
-Date: Mon, 1 Nov 2021 18:40:53 +0800
-In-Reply-To: <82835e3d-11a3-32e4-0782-d827a5e3d78e@canonical.com>
-References: <20211028055056.26378-1-yong.wu@mediatek.com>
- <23b036d1-bdc4-da55-a800-03fc3dabd48e@canonical.com>
- <9e4f327511fd85ba8613ec27644fbc29bc4ddb6b.camel@mediatek.com>
- <82835e3d-11a3-32e4-0782-d827a5e3d78e@canonical.com>
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id 15.2.792.3; 
+ Mon, 1 Nov 2021 20:07:54 +0800
+Received: from mtksdccf07 (172.21.84.99) by mtkcas11.mediatek.inc
+ (172.21.101.73) with Microsoft SMTP Server id 15.0.1497.2 via Frontend
+ Transport; Mon, 1 Nov 2021 20:07:54 +0800
+Message-ID: <73d900564ce9b0d773c801efe8b8689946bef150.camel@mediatek.com>
+Subject: Re: [PATCH] dma-direct: fix DMA_ATTR_NO_KERNEL_MAPPING
+From: Walter Wu <walter-zh.wu@mediatek.com>
+To: Robin Murphy <robin.murphy@arm.com>, Christoph Hellwig <hch@lst.de>, Marek
+ Szyprowski <m.szyprowski@samsung.com>, Matthias Brugger
+ <matthias.bgg@gmail.com>
+Date: Mon, 1 Nov 2021 20:07:54 +0800
+In-Reply-To: <0316e4f0-b0ad-c702-676f-36347b4ebcb1@arm.com>
+References: <20211101031558.7184-1-walter-zh.wu@mediatek.com>
+ <0316e4f0-b0ad-c702-676f-36347b4ebcb1@arm.com>
 X-Mailer: Evolution 3.28.5-0ubuntu0.18.04.2 
 MIME-Version: 1.0
 X-MTK: N
-Cc: youlin.pei@mediatek.com, anan.sun@mediatek.com, srv_heupstream@mediatek.com,
- Will Deacon <will@kernel.org>, linux-kernel@vger.kernel.org,
- Krzysztof Kozlowski <krzk@kernel.org>, iommu@lists.linux-foundation.org,
- linux-mediatek@lists.infradead.org, Matthias
- Brugger <matthias.bgg@gmail.com>, anthony.huang@mediatek.com,
- yi.kuo@mediatek.com, Robin Murphy <robin.murphy@arm.com>,
- Ikjoon Jang <ikjn@chromium.org>, linux-arm-kernel@lists.infradead.org
+Cc: wsd_upstream <wsd_upstream@mediatek.com>, linux-kernel@vger.kernel.org,
+ iommu@lists.linux-foundation.org, linux-mediatek@lists.infradead.org, Andrew
+ Morton <akpm@linux-foundation.org>, linux-arm-kernel@lists.infradead.org
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -97,137 +86,99 @@ Content-Transfer-Encoding: 7bit
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-On Mon, 2021-11-01 at 09:45 +0100, Krzysztof Kozlowski wrote:
-> On 01/11/2021 07:09, Yong Wu wrote:
-> > On Fri, 2021-10-29 at 19:35 +0200, Krzysztof Kozlowski wrote:
-> > > On 28/10/2021 07:50, Yong Wu wrote:
-> > > > We add the ostd setting for mt8195. It introduces a abort for
-> > > > the
-> > > > previous SoC which doesn't have ostd setting. This is the log:
-> > > > 
-> > > > Unable to handle kernel NULL pointer dereference at virtual
-> > > > address
-> > > > 0000000000000080
-> > > > ...
-> > > > pc : mtk_smi_larb_config_port_gen2_general+0x64/0x130
-> > > > lr : mtk_smi_larb_resume+0x54/0x98
-> > > > ...
-> > > > Call trace:
-> > > >  mtk_smi_larb_config_port_gen2_general+0x64/0x130
-> > > >  pm_generic_runtime_resume+0x2c/0x48
-> > > >  __genpd_runtime_resume+0x30/0xa8
-> > > >  genpd_runtime_resume+0x94/0x2c8
-> > > >  __rpm_callback+0x44/0x150
-> > > >  rpm_callback+0x6c/0x78
-> > > >  rpm_resume+0x310/0x558
-> > > >  __pm_runtime_resume+0x3c/0x88
-> > > > 
-> > > > In the code: larbostd = larb->larb_gen->ostd[larb->larbid],
-> > > > if "larb->larb_gen->ostd" is null, the "larbostd" is the
-> > > > offset, it
-> > > > is
-> > > > also a valid value, thus, use the larb->larb_gen->ostd as the
-> > > > condition
-> > > > inside the "for" loop.
-> > > 
-> > > You need to write more clearly, what you are fixing here.
-> > > 
-> > > > 
-> > > > Signed-off-by: Yong Wu <yong.wu@mediatek.com>
-> > > > ---
-> > > > Hi Krzysztof,
-> > > > Could you help review and conside this as a fix for the mt8195
-> > > > patchset?
-> > > > The mt8195 patchset are not in mainline, thus, I don't know its
-> > > > sha-id,
-> > > > and don't add Fixes tag.
-> > > > Thanks
-> > > > ---
-> > > >  drivers/memory/mtk-smi.c | 2 +-
-> > > >  1 file changed, 1 insertion(+), 1 deletion(-)
-> > > > 
-> > > > diff --git a/drivers/memory/mtk-smi.c b/drivers/memory/mtk-
-> > > > smi.c
-> > > > index b883dcc0bbfa..0262a59a2d6e 100644
-> > > > --- a/drivers/memory/mtk-smi.c
-> > > > +++ b/drivers/memory/mtk-smi.c
-> > > > @@ -257,7 +257,7 @@ static void
-> > > > mtk_smi_larb_config_port_gen2_general(struct device *dev)
-> > > >  	if (MTK_SMI_CAPS(flags_general, MTK_SMI_FLAG_SW_FLAG))
-> > > >  		writel_relaxed(SMI_LARB_SW_FLAG_1, larb->base +
-> > > > SMI_LARB_SW_FLAG);
-> > > >  
-> > > > -	for (i = 0; i < SMI_LARB_PORT_NR_MAX && larbostd &&
-> > > > !!larbostd[i]; i++)
-> > > > +	for (i = 0; i < SMI_LARB_PORT_NR_MAX && larb->larb_gen-
-> > > > >ostd &&
-> > > > !!larbostd[i]; i++)
-> > > >  		writel_relaxed(larbostd[i], larb->base +
-> > > > SMI_LARB_OSTDL_PORTx(i));
-> > > 
-> > > The code does not look good. You have already a dereference at
-> > > line
-> > > 244:
-> > > 
-> > > 	const u8 *larbostd = larb->larb_gen->ostd[larb->larbid];
+Hi Robin,
+
+On Mon, 2021-11-01 at 10:29 +0000, Robin Murphy wrote:
+> On 2021-11-01 03:15, Walter Wu wrote:
+> > DMA_ATTR_NO_KERNEL_MAPPING is to avoid creating a kernel mapping
+> > for the allocated buffer, but current implementation is that
+> > PTE of allocated buffer in kernel page table is valid. So we
+> > should set invalid for PTE of allocate buffer so that there are
+> > no kernel mapping for the allocated buffer.
+> 
+> No, the semantic of NO_KERNEL_MAPPING is an indication that the
+> *caller* 
+> does not need a mapping, such that the DMA API implementation may
+> choose 
+> to optimise for that internally. It has never given any guarantee of
+> any 
+> particular behaviour - like most attributes it is only a hint.
+> 
+> > In some cases, we don't hope the allocated buffer to be read
+> > by cpu or speculative execution, so we use
+> > DMA_ATTR_NO_KERNEL_MAPPING
+> > to get no kernel mapping in order to achieve this goal.
+> 
+> If it's important that no CPU accesses to this memory can happen,
+> then I 
+> think the only way to absolutely guarantee that is to exclude it
+> from 
+> the kernel's memory map in the first place, e.g. as a DT reserved-
+> memory 
+> region with the "no-map" property.
+> 
+
+Yes, this is our previous implementation, but we hope to use kernel
+memory to fix it.
+
+Thanks for your suggestion.
+
+Walter
+
+> Robin.
+> 
+> > Signed-off-by: Walter Wu <walter-zh.wu@mediatek.com>
+> > Cc: Christoph Hellwig <hch@lst.de>
+> > Cc: Marek Szyprowski <m.szyprowski@samsung.com>
+> > Cc: Robin Murphy <robin.murphy@arm.com>
+> > Cc: Matthias Brugger <matthias.bgg@gmail.com>
+> > Cc: Andrew Morton <akpm@linux-foundation.org>
+> > ---
+> >   kernel/dma/direct.c | 8 ++++++++
+> >   1 file changed, 8 insertions(+)
 > > 
-> > if larb->larb_gen->ostd is null, larbostd is the offset, e.g. 0x80
-> > in
-> > the log above. thus, we can not use "larbostd[i]" in the "for"
-> > loop.
+> > diff --git a/kernel/dma/direct.c b/kernel/dma/direct.c
+> > index 4c6c5e0635e3..aa10b4c5d762 100644
+> > --- a/kernel/dma/direct.c
+> > +++ b/kernel/dma/direct.c
+> > @@ -13,6 +13,7 @@
+> >   #include <linux/vmalloc.h>
+> >   #include <linux/set_memory.h>
+> >   #include <linux/slab.h>
+> > +#include <asm/cacheflush.h>
+> >   #include "direct.h"
+> >   
+> >   /*
+> > @@ -169,6 +170,9 @@ void *dma_direct_alloc(struct device *dev,
+> > size_t size,
+> >   		if (!PageHighMem(page))
+> >   			arch_dma_prep_coherent(page, size);
+> >   		*dma_handle = phys_to_dma_direct(dev,
+> > page_to_phys(page));
+> > +		/* remove kernel mapping for pages */
+> > +		set_memory_valid((unsigned
+> > long)phys_to_virt(dma_to_phys(dev, *dma_handle)),
+> > +				size >> PAGE_SHIFT, 0);
+> >   		/* return the page pointer as the opaque cookie */
+> >   		return page;
+> >   	}
+> > @@ -278,6 +282,10 @@ void dma_direct_free(struct device *dev,
+> > size_t size,
+> >   
+> >   	if ((attrs & DMA_ATTR_NO_KERNEL_MAPPING) &&
+> >   	    !force_dma_unencrypted(dev) && !is_swiotlb_for_alloc(dev))
+> > {
+> > +		size = PAGE_ALIGN(size);
+> > +		/* create kernel mapping for pages */
+> > +		set_memory_valid((unsigned
+> > long)phys_to_virt(dma_to_phys(dev, dma_addr)),
+> > +				size >> PAGE_SHIFT, 1);
+> >   		/* cpu_addr is a struct page cookie, not a kernel
+> > address */
+> >   		dma_free_contiguous(dev, cpu_addr, size);
+> >   		return;
 > > 
-> > sorry for the unreadable. In this case, is the change ok?
-> 
-> No, it's ok, I did not check the type of ostd and it's confusing a
-> bit
-> that it is defined as a pointer to an array but you actually use it
-> as
-> array of pointers to 32-elemenet arrays... Anyway I was mistaken and
-> there will be indeed no dereference at the assignment, but for code
-> clarity I would still prefer to do the check earlier, so:
-> 
-> > 
-> > or like this:
-> > 
-> > -const u8 *larbostd = larb->larb_gen->ostd[larb->larbid];
-> > +const u8 *larbostd = larb->larb_gen->ostd ? larb->larb_gen-
-> > ostd[larb-
-> > > larbid] : NULL;
-> 
-> Although I think now the proper type should be explicit.
-> mtk_smi_larb_mt8195_ostd is an 28-element array of
-> SMI_LARB_PORT_NR_MAX-element u8 arrays, therefore struct
-> mtk_smi_larb_gen should be:
-> 	const u8 (*ostd)[][SMI_LARB_PORT_NR_MAX];
 
-mt8195_ostd only is a 2 dimensional array,
-static const u8 mtk_smi_larb_mt8195_ostd[][SMI_LARB_PORT_NR_MAX];
-
-If using this, it will cause build fail:
-
-.../drivers/memory/mtk-smi.c:359:23: error: initialization from
-incompatible pointer type [-Werror=incompatible-pointer-types]
-  .ostd              = mtk_smi_larb_mt8195_ostd,
-                       ^~~~~~~~~~~~~~~~~~~~~~~~
-
-More background about this 2 dimensional array:
-The platform have many larbs(up to MTK_LARB_NR_MAX), each a larb have
-many ports(up to SMI_LARB_PORT_NR_MAX). In the
-function(*_config_port_gen2_general), we will update the value for each
-a port inside a larb, thus we need a pointer point to the line of that
-larb.
-
-If I miss something, please tell me. or how to manage this will be
-better.
-
-Thanks.
-
-> 
-> Right?
-> 
-> 
-> Best regards,
-> Krzysztof
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
