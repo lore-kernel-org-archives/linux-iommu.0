@@ -2,68 +2,87 @@ Return-Path: <SRS0=5Ucf=P3=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0A55DC433EF
-	for <iommu@archiver.kernel.org>; Mon,  8 Nov 2021 02:22:51 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 72244C433EF
+	for <iommu@archiver.kernel.org>; Mon,  8 Nov 2021 03:08:14 +0000 (UTC)
 Received: from smtp2.osuosl.org (smtp2.osuosl.org [140.211.166.133])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id A21346134F
-	for <iommu@archiver.kernel.org>; Mon,  8 Nov 2021 02:22:50 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.4.1 mail.kernel.org A21346134F
-Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=linux.intel.com
+	by mail.kernel.org (Postfix) with ESMTPS id F069061242
+	for <iommu@archiver.kernel.org>; Mon,  8 Nov 2021 03:08:13 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.4.1 mail.kernel.org F069061242
+Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=lists.linux-foundation.org
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by smtp2.osuosl.org (Postfix) with ESMTP id 6830140272;
-	Mon,  8 Nov 2021 02:22:50 +0000 (UTC)
+	by smtp2.osuosl.org (Postfix) with ESMTP id 8874540260;
+	Mon,  8 Nov 2021 03:08:13 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
 Received: from smtp2.osuosl.org ([127.0.0.1])
 	by localhost (smtp2.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id wMksGKEtm_GQ; Mon,  8 Nov 2021 02:22:49 +0000 (UTC)
+	with ESMTP id NYfp2EpebwLm; Mon,  8 Nov 2021 03:08:12 +0000 (UTC)
 Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by smtp2.osuosl.org (Postfix) with ESMTPS id 1B64D40276;
-	Mon,  8 Nov 2021 02:22:49 +0000 (UTC)
+	by smtp2.osuosl.org (Postfix) with ESMTPS id 45676400CD;
+	Mon,  8 Nov 2021 03:08:12 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id D1B23C0012;
-	Mon,  8 Nov 2021 02:22:48 +0000 (UTC)
-Received: from smtp2.osuosl.org (smtp2.osuosl.org [140.211.166.133])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 25742C000E
- for <iommu@lists.linux-foundation.org>; Mon,  8 Nov 2021 02:22:47 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 1A918C0019;
+	Mon,  8 Nov 2021 03:08:12 +0000 (UTC)
+Received: from smtp2.osuosl.org (smtp2.osuosl.org [IPv6:2605:bc80:3010::133])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 3369BC000E
+ for <iommu@lists.linux-foundation.org>; Sun,  7 Nov 2021 22:53:41 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by smtp2.osuosl.org (Postfix) with ESMTP id 131DA40267
- for <iommu@lists.linux-foundation.org>; Mon,  8 Nov 2021 02:22:47 +0000 (UTC)
+ by smtp2.osuosl.org (Postfix) with ESMTP id 222C740256
+ for <iommu@lists.linux-foundation.org>; Sun,  7 Nov 2021 22:53:41 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
 Received: from smtp2.osuosl.org ([127.0.0.1])
  by localhost (smtp2.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id 5WI60_2GxkS0 for <iommu@lists.linux-foundation.org>;
- Mon,  8 Nov 2021 02:22:46 +0000 (UTC)
-X-Greylist: domain auto-whitelisted by SQLgrey-1.8.0
-Received: from mga11.intel.com (mga11.intel.com [192.55.52.93])
- by smtp2.osuosl.org (Postfix) with ESMTPS id 8B77540275
- for <iommu@lists.linux-foundation.org>; Mon,  8 Nov 2021 02:22:45 +0000 (UTC)
-X-IronPort-AV: E=McAfee;i="6200,9189,10161"; a="229612130"
-X-IronPort-AV: E=Sophos;i="5.87,217,1631602800"; d="scan'208";a="229612130"
-Received: from orsmga006.jf.intel.com ([10.7.209.51])
- by fmsmga102.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384;
- 07 Nov 2021 18:22:42 -0800
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.87,217,1631602800"; d="scan'208";a="451304727"
-Received: from allen-box.sh.intel.com (HELO [10.239.159.118])
- ([10.239.159.118])
- by orsmga006.jf.intel.com with ESMTP; 07 Nov 2021 18:22:35 -0800
-Subject: Re: [PATCH] iommu/vt-d: Fix an unbalanced
- rcu_read_lock/rcu_read_unlock()
-To: Christophe JAILLET <christophe.jaillet@wanadoo.fr>, dwmw2@infradead.org,
- joro@8bytes.org, will@kernel.org, kevin.tian@intel.com
-References: <40cc077ca5f543614eab2a10e84d29dd190273f6.1636217517.git.christophe.jaillet@wanadoo.fr>
-From: Lu Baolu <baolu.lu@linux.intel.com>
-Message-ID: <c7ac5f27-d7b6-6f19-75cc-c047ad590696@linux.intel.com>
-Date: Mon, 8 Nov 2021 10:18:17 +0800
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
- Thunderbird/78.13.0
+ with ESMTP id BD60Jb2im2DE for <iommu@lists.linux-foundation.org>;
+ Sun,  7 Nov 2021 22:53:39 +0000 (UTC)
+X-Greylist: whitelisted by SQLgrey-1.8.0
+Received: from mail-ot1-x335.google.com (mail-ot1-x335.google.com
+ [IPv6:2607:f8b0:4864:20::335])
+ by smtp2.osuosl.org (Postfix) with ESMTPS id E080A40255
+ for <iommu@lists.linux-foundation.org>; Sun,  7 Nov 2021 22:53:38 +0000 (UTC)
+Received: by mail-ot1-x335.google.com with SMTP id
+ b5-20020a9d60c5000000b0055c6349ff22so12047669otk.13
+ for <iommu@lists.linux-foundation.org>; Sun, 07 Nov 2021 14:53:38 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=usp.br; s=usp-google;
+ h=date:from:to:cc:subject:message-id:mime-version:content-disposition
+ :content-transfer-encoding;
+ bh=jm4HkC4WuEFuj0T0GbogyNYTH9ILCYVGsH89yM0+sVY=;
+ b=un0ROogmycQPFx5MqbulloXygKairZ+6ICrLoIPL2vYLlsh789nazo6Hsv2mzEp9si
+ KxsA2GvDQwJ1CyowwYEETVMYITQwhBWuAm3qQK4mf1aJAaNttM9T7LG0qRfer46RBS73
+ 4agnUB02PckB5CFsfjvJFJbR34Uuy1nZK8Pqn/daNB8SX5IJA/LGNmzDxi4IMbeDlyiK
+ TECXtEA50ld1oexOL7TBN9Rkd/sqAN3UJjwQPu1x4ILChGrpIuyJicdLF0ScWXMNEW+v
+ taJxAHI4D5Aw0ZUbUtiFlVenJMm3qLYvN3Q9ImTAHcDBa2oDSkdy0pWNwOOGrtIghQM+
+ BDFw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+ d=1e100.net; s=20210112;
+ h=x-gm-message-state:date:from:to:cc:subject:message-id:mime-version
+ :content-disposition:content-transfer-encoding;
+ bh=jm4HkC4WuEFuj0T0GbogyNYTH9ILCYVGsH89yM0+sVY=;
+ b=6oFltVVExmJpkx5+Z3YH/VFuPWPCuCdNDqyjCExKEkB6WldwSszwtawV8VGrKpFKfX
+ x5707y8lgyxy8i+vwzfgrGlsb9M0zruCsTK55YKUCiwwnjVVklfKWP16gch+4J4y3OGA
+ 7GXjGJXB2bEE8KJF06eitENxL+Rp4EHIe6+sg+PKmWkhIQtRK4SpKIfRhjgG8dxArWiG
+ wRQvh+eFsRvb4iVBN7sbfjd8BlzoKsLeksztP/NhatVl0EkjlhfFQbDUwDoCWcsqK6Vm
+ Q0yX44eKzZgUs7xcwmKKVumGxHg4mXD7djEFry6w0MtrfZWONUo3gpzkUaKHAKWBItWL
+ InAw==
+X-Gm-Message-State: AOAM530/xKCVVPSIIwlZl//BlvETDM5jqbWMwih0k2duOo5aEYVYUrbG
+ jK5JUPPDssgA78ePRwvQzw9hlA==
+X-Google-Smtp-Source: ABdhPJysbhbn4/+ndMMNZXqbf3gQjWDNDbQttUiUK/XLCQDWvKwg4RdzkreaUtPvwYgM+hv/FRLoRw==
+X-Received: by 2002:a9d:2f42:: with SMTP id h60mr10652072otb.159.1636325617800; 
+ Sun, 07 Nov 2021 14:53:37 -0800 (PST)
+Received: from fedora ([187.64.134.142])
+ by smtp.gmail.com with ESMTPSA id r22sm1841169oij.36.2021.11.07.14.53.34
+ (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+ Sun, 07 Nov 2021 14:53:37 -0800 (PST)
+Date: Sun, 7 Nov 2021 19:53:32 -0300
+To: dwmw2@infradead.org, baolu.lu@linux.intel.com, joro@8bytes.org,
+ will@kernel.org, nathan@kernel.org, ndesaulniers@google.com
+Subject: [PATCH] iommu/vt-d: Remove unused dma_to_mm_pfn function
+Message-ID: <YYhY7GqlrcTZlzuA@fedora>
 MIME-Version: 1.0
-In-Reply-To: <40cc077ca5f543614eab2a10e84d29dd190273f6.1636217517.git.christophe.jaillet@wanadoo.fr>
-Content-Language: en-US
-Cc: iommu@lists.linux-foundation.org, kernel-janitors@vger.kernel.org,
+Content-Disposition: inline
+X-Mailman-Approved-At: Mon, 08 Nov 2021 03:08:11 +0000
+Cc: iommu@lists.linux-foundation.org, llvm@lists.linux.dev,
  linux-kernel@vger.kernel.org
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
@@ -77,58 +96,50 @@ List-Post: <mailto:iommu@lists.linux-foundation.org>
 List-Help: <mailto:iommu-request@lists.linux-foundation.org?subject=help>
 List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
  <mailto:iommu-request@lists.linux-foundation.org?subject=subscribe>
-Content-Transfer-Encoding: 7bit
-Content-Type: text/plain; charset="us-ascii"; Format="flowed"
+From: =?iso-8859-1?Q?Ma=EDra?= Canal via iommu
+ <iommu@lists.linux-foundation.org>
+Reply-To: =?iso-8859-1?Q?Ma=EDra?= Canal <maira.canal@usp.br>
+Content-Type: text/plain; charset="iso-8859-1"
+Content-Transfer-Encoding: quoted-printable
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-On 11/7/21 12:53 AM, Christophe JAILLET wrote:
-> If we return -EOPNOTSUPP, the rcu lock remains lock. This is spurious.
-> Go through the end of the function instead. This way, the missing
-> 'rcu_read_unlock()' is called.
-> 
-> Fixes: 7afd7f6aa21a ("iommu/vt-d: Check FL and SL capability sanity in scalable mode")
-> Signed-off-by: Christophe JAILLET <christophe.jaillet@wanadoo.fr>
-> ---
-> This patch is speculative, review with care.
-> ---
->   drivers/iommu/intel/cap_audit.c | 5 +++--
->   1 file changed, 3 insertions(+), 2 deletions(-)
-> 
-> diff --git a/drivers/iommu/intel/cap_audit.c b/drivers/iommu/intel/cap_audit.c
-> index b39d223926a4..71596fc62822 100644
-> --- a/drivers/iommu/intel/cap_audit.c
-> +++ b/drivers/iommu/intel/cap_audit.c
-> @@ -144,6 +144,7 @@ static int cap_audit_static(struct intel_iommu *iommu, enum cap_audit_type type)
->   {
->   	struct dmar_drhd_unit *d;
->   	struct intel_iommu *i;
-> +	int rc = 0;
->   
->   	rcu_read_lock();
->   	if (list_empty(&dmar_drhd_units))
-> @@ -169,11 +170,11 @@ static int cap_audit_static(struct intel_iommu *iommu, enum cap_audit_type type)
->   	 */
->   	if (intel_cap_smts_sanity() &&
->   	    !intel_cap_flts_sanity() && !intel_cap_slts_sanity())
-> -		return -EOPNOTSUPP;
-> +		rc = -EOPNOTSUPP;
->   
->   out:
->   	rcu_read_unlock();
-> -	return 0;
-> +	return rc;
->   }
->   
->   int intel_cap_audit(enum cap_audit_type type, struct intel_iommu *iommu)
-> 
+Remove dma_to_buf_pfn function, which is not used in the codebase.
 
-Nice catch! Thank you!
+This was pointed by clang with the following warning:
 
-I will queue this for v5.16.
+drivers/iommu/intel/iommu.c:136:29: warning: unused function
+'dma_to_mm_pfn' [-Wunused-function]
+static inline unsigned long dma_to_mm_pfn(unsigned long dma_pfn)
+                            ^
 
-Best regards,
-baolu
+Signed-off-by: Ma=EDra Canal <maira.canal@usp.br>
+---
+ drivers/iommu/intel/iommu.c | 5 -----
+ 1 file changed, 5 deletions(-)
+
+diff --git a/drivers/iommu/intel/iommu.c b/drivers/iommu/intel/iommu.c
+index 0bde0c8b4126..35300b5b69f7 100644
+--- a/drivers/iommu/intel/iommu.c
++++ b/drivers/iommu/intel/iommu.c
+@@ -133,11 +133,6 @@ static inline unsigned long lvl_to_nr_pages(unsigned i=
+nt lvl)
+ =
+
+ /* VT-d pages must always be _smaller_ than MM pages. Otherwise things
+    are never going to work. */
+-static inline unsigned long dma_to_mm_pfn(unsigned long dma_pfn)
+-{
+-	return dma_pfn >> (PAGE_SHIFT - VTD_PAGE_SHIFT);
+-}
+-
+ static inline unsigned long mm_to_dma_pfn(unsigned long mm_pfn)
+ {
+ 	return mm_pfn << (PAGE_SHIFT - VTD_PAGE_SHIFT);
+-- =
+
+2.31.1
+
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
