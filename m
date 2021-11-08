@@ -2,80 +2,95 @@ Return-Path: <SRS0=5Ucf=P3=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6CBFAC433EF
-	for <iommu@archiver.kernel.org>; Mon,  8 Nov 2021 10:37:08 +0000 (UTC)
-Received: from smtp1.osuosl.org (smtp1.osuosl.org [140.211.166.138])
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2BEECC433EF
+	for <iommu@archiver.kernel.org>; Mon,  8 Nov 2021 17:12:32 +0000 (UTC)
+Received: from smtp2.osuosl.org (smtp2.osuosl.org [140.211.166.133])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id E8863611C4
-	for <iommu@archiver.kernel.org>; Mon,  8 Nov 2021 10:37:07 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.4.1 mail.kernel.org E8863611C4
-Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=kapsi.fi
+	by mail.kernel.org (Postfix) with ESMTPS id C3BAE6109E
+	for <iommu@archiver.kernel.org>; Mon,  8 Nov 2021 17:12:31 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.4.1 mail.kernel.org C3BAE6109E
+Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=gmail.com
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by smtp1.osuosl.org (Postfix) with ESMTP id A08F780E2B;
-	Mon,  8 Nov 2021 10:37:07 +0000 (UTC)
+	by smtp2.osuosl.org (Postfix) with ESMTP id 8835A40195;
+	Mon,  8 Nov 2021 17:12:31 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from smtp1.osuosl.org ([127.0.0.1])
-	by localhost (smtp1.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id YWweJJ_MmTRJ; Mon,  8 Nov 2021 10:37:06 +0000 (UTC)
-Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [IPv6:2605:bc80:3010:104::8cd3:938])
-	by smtp1.osuosl.org (Postfix) with ESMTPS id 71D2880DC3;
-	Mon,  8 Nov 2021 10:37:06 +0000 (UTC)
+Received: from smtp2.osuosl.org ([127.0.0.1])
+	by localhost (smtp2.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+	with ESMTP id l0IBZAUTaIub; Mon,  8 Nov 2021 17:12:30 +0000 (UTC)
+Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
+	by smtp2.osuosl.org (Postfix) with ESMTPS id 48FB240150;
+	Mon,  8 Nov 2021 17:12:30 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 374B4C0019;
-	Mon,  8 Nov 2021 10:37:06 +0000 (UTC)
-Received: from smtp1.osuosl.org (smtp1.osuosl.org [IPv6:2605:bc80:3010::138])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 9AE96C000E
- for <iommu@lists.linux-foundation.org>; Mon,  8 Nov 2021 10:37:04 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 22273C0012;
+	Mon,  8 Nov 2021 17:12:30 +0000 (UTC)
+Received: from smtp4.osuosl.org (smtp4.osuosl.org [140.211.166.137])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 3A9A2C000E
+ for <iommu@lists.linux-foundation.org>; Mon,  8 Nov 2021 17:12:29 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by smtp1.osuosl.org (Postfix) with ESMTP id 7BE6A80E21
- for <iommu@lists.linux-foundation.org>; Mon,  8 Nov 2021 10:37:04 +0000 (UTC)
+ by smtp4.osuosl.org (Postfix) with ESMTP id 2816640271
+ for <iommu@lists.linux-foundation.org>; Mon,  8 Nov 2021 17:12:29 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from smtp1.osuosl.org ([127.0.0.1])
- by localhost (smtp1.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id wB7oLWM--YqQ for <iommu@lists.linux-foundation.org>;
- Mon,  8 Nov 2021 10:37:03 +0000 (UTC)
-X-Greylist: from auto-whitelisted by SQLgrey-1.8.0
-Received: from mail.kapsi.fi (mail.kapsi.fi [IPv6:2001:67c:1be8::25])
- by smtp1.osuosl.org (Postfix) with ESMTPS id 1BB1F80DC3
- for <iommu@lists.linux-foundation.org>; Mon,  8 Nov 2021 10:37:02 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=kapsi.fi;
- s=20161220; h=Content-Transfer-Encoding:Content-Type:In-Reply-To:
- MIME-Version:Date:Message-ID:From:References:Cc:To:Subject:Sender:Reply-To:
- Content-ID:Content-Description:Resent-Date:Resent-From:Resent-Sender:
- Resent-To:Resent-Cc:Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:
- List-Subscribe:List-Post:List-Owner:List-Archive;
- bh=i/cmFLJWXjRGackmQbyW+VCsyR/4I0WIJ6EqrdSA6JY=; b=TgVDqLVO+s5RobZKj0e0tc5fNy
- sQ7s4SFC8WtG6elM+NAEv4mjxfpoy7JVFvonGPrL7zQr/ez3Zy+k/cZUaqJiRecRCcNi2P7VbkE8F
- ka3tcQvpeAovYzNEd+HkVHsCfpaMi0A8MmEWp93+1bfLdOoI1b6w4GoA214JujO2mNRUBzstQdeGa
- bLpBKQN1PyJKDS+X8rDt5TmKrMO9LNSjG+242s85JwTjTX7Vrv0uE+3eFdT/Lgf1H4RdXtzWOLNPt
- n83LDUWPlVc+rTMI2qPSbTvt1fc9jEFAk7Sd+yh6crFCPnwJUgWt/1tb+cKxoGcaWvVttLk2IRflv
- xP/M3HYw==;
-Received: from dsl-hkibng22-54f986-236.dhcp.inet.fi ([84.249.134.236]
- helo=[192.168.1.10])
- by mail.kapsi.fi with esmtpsa (TLS1.2:ECDHE_RSA_AES_128_GCM_SHA256:128)
- (Exim 4.89) (envelope-from <cyndis@kapsi.fi>)
- id 1mk21D-0008PS-Od; Mon, 08 Nov 2021 12:36:51 +0200
-Subject: Re: [PATCH v2 0/8] Host1x context isolation support
-To: Mikko Perttunen <mperttunen@nvidia.com>, thierry.reding@gmail.com,
- jonathanh@nvidia.com, joro@8bytes.org, will@kernel.org, robh+dt@kernel.org,
- robin.murphy@arm.com
-References: <20210916143302.2024933-1-mperttunen@nvidia.com>
-From: Mikko Perttunen <cyndis@kapsi.fi>
-Message-ID: <10de82cf-27a5-8890-93a5-0e58c74e5bcc@kapsi.fi>
-Date: Mon, 8 Nov 2021 12:36:51 +0200
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
- Thunderbird/78.12.0
+Authentication-Results: smtp4.osuosl.org (amavisd-new);
+ dkim=pass (2048-bit key) header.d=gmail.com
+Received: from smtp4.osuosl.org ([127.0.0.1])
+ by localhost (smtp4.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+ with ESMTP id 8vT7oJBI0P5W for <iommu@lists.linux-foundation.org>;
+ Mon,  8 Nov 2021 17:12:28 +0000 (UTC)
+X-Greylist: whitelisted by SQLgrey-1.8.0
+Received: from mail-pg1-x52d.google.com (mail-pg1-x52d.google.com
+ [IPv6:2607:f8b0:4864:20::52d])
+ by smtp4.osuosl.org (Postfix) with ESMTPS id A7C09402EC
+ for <iommu@lists.linux-foundation.org>; Mon,  8 Nov 2021 17:12:28 +0000 (UTC)
+Received: by mail-pg1-x52d.google.com with SMTP id b4so15706790pgh.10
+ for <iommu@lists.linux-foundation.org>; Mon, 08 Nov 2021 09:12:28 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=gmail.com; s=20210112;
+ h=from:to:cc:subject:date:message-id:mime-version
+ :content-transfer-encoding;
+ bh=hGvO+FT4c2EJbxVYCDLmWLN/y9tCrxnSNXxEMsXuwNQ=;
+ b=PEXo9EJ8iyOs6JYtLc/77yuf3gv2+qmOaRxZ/t9gKovlJPftYz0nG0N+vgAMQrzQ4i
+ kNkOdJBlkeE/hZ6MODTHJLLrwXgvJnT/K6EX0chnqcK2yGVtopLE3UZg2leAGvZbl3LN
+ 64kttVS3G4UKARK1dMYKiUjOGmY8M4KlUB4uGdl56x8atLwBvciap3B2qM5Ve4ah0rbR
+ JHeHvQRBp6QyA02S3Ok6G2ObBMX0tOjwcBU/elZbj5iChuMAeeb29F1iO9YXCuDr0WmS
+ 3dA5OVsnzNLM6MuM5kv8tGGk+wI0/n1LaF7IdCi20tMea79itbKo6koYALO1VLXF6R48
+ n96g==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+ d=1e100.net; s=20210112;
+ h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+ :content-transfer-encoding;
+ bh=hGvO+FT4c2EJbxVYCDLmWLN/y9tCrxnSNXxEMsXuwNQ=;
+ b=mUS4NJ+9MstPf9o54dFCksqKYhhbyk4BsqtazKa8KAjCZ7mxD73UJ8OdxVEOtwAKFx
+ F0eqWPWA/1aijGXPj9geBOgAN1mRx2uW33CA6SdXnYtKyQtrQZR0zEg1aKZePuZfhySP
+ 0SspZ8KmKfMBhF4DjbBZIY0kA/yWuEVco50MozfyWen01CuJ33tavsVv/rIa3n9mBfj3
+ AnQrOTK2sJsN3udRgenayt6g1wi8kyT5w4ZLdsfejwNmpWhbWc+gCzZlNBZnX5KxXz5x
+ FT8GqdElmKVzJkbaUHlO2uEzvN6j+Ob6ecuJm6/JAdea4DXw56d2g1D5ITB1/R7zIRd5
+ nYgQ==
+X-Gm-Message-State: AOAM530dFaZGGIYV/p5fZLFduR6IaeAznDy+PaqKgfQyZRlpx0rdtFXt
+ WxeK8mKxD+54P0akJkAIjmZJUFQtkBI=
+X-Google-Smtp-Source: ABdhPJzliYBpPaMk022dk/QMrNH7Vg6W2agrDSJIDzTqNmxTzHAPQJOF1S2MqpYK5Ecosi0pxfxalA==
+X-Received: by 2002:a62:5ec2:0:b0:44d:47e2:4b3b with SMTP id
+ s185-20020a625ec2000000b0044d47e24b3bmr82851281pfb.38.1636391547336; 
+ Mon, 08 Nov 2021 09:12:27 -0800 (PST)
+Received: from localhost (c-73-25-156-94.hsd1.or.comcast.net. [73.25.156.94])
+ by smtp.gmail.com with ESMTPSA id
+ p16sm12810610pgd.78.2021.11.08.09.12.25
+ (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+ Mon, 08 Nov 2021 09:12:26 -0800 (PST)
+From: Rob Clark <robdclark@gmail.com>
+To: iommu@lists.linux-foundation.org
+Subject: [PATCH] iommu/arm-smmu-qcom: Fix TTBR0 read
+Date: Mon,  8 Nov 2021 09:17:23 -0800
+Message-Id: <20211108171724.470973-1-robdclark@gmail.com>
+X-Mailer: git-send-email 2.31.1
 MIME-Version: 1.0
-In-Reply-To: <20210916143302.2024933-1-mperttunen@nvidia.com>
-Content-Language: en-US
-X-SA-Exim-Connect-IP: 84.249.134.236
-X-SA-Exim-Mail-From: cyndis@kapsi.fi
-X-SA-Exim-Scanned: No (on mail.kapsi.fi); SAEximRunCond expanded to false
-Cc: devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
- dri-devel@lists.freedesktop.org, iommu@lists.linux-foundation.org,
- linux-tegra@vger.kernel.org, linux-arm-kernel@lists.infradead.org
+Cc: Rob Clark <robdclark@chromium.org>, freedreno@lists.freedesktop.org,
+ Sai Prakash Ranjan <saiprakash.ranjan@codeaurora.org>,
+ Shawn Guo <shawn.guo@linaro.org>, open list <linux-kernel@vger.kernel.org>,
+ linux-arm-msm@vger.kernel.org, Robin Murphy <robin.murphy@arm.com>,
+ dri-devel@lists.freedesktop.org, Eric Anholt <eric@anholt.net>,
+ Will Deacon <will@kernel.org>,
+ "moderated list:ARM SMMU DRIVERS" <linux-arm-kernel@lists.infradead.org>
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -88,97 +103,37 @@ List-Post: <mailto:iommu@lists.linux-foundation.org>
 List-Help: <mailto:iommu-request@lists.linux-foundation.org?subject=help>
 List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
  <mailto:iommu-request@lists.linux-foundation.org?subject=subscribe>
+Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
-Content-Type: text/plain; charset="us-ascii"; Format="flowed"
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-On 9/16/21 5:32 PM, Mikko Perttunen wrote:
-> Hi all,
-> 
-> ***
-> New in v2:
-> 
-> Added support for Tegra194
-> Use standard iommu-map property instead of custom mechanism
-> ***
-> 
-> this series adds support for Host1x 'context isolation'. Since
-> when programming engines through Host1x, userspace can program in
-> any addresses it wants, we need some way to isolate the engines'
-> memory spaces. Traditionally this has either been done imperfectly
-> with a single shared IOMMU domain, or by copying and verifying the
-> programming command stream at submit time (Host1x firewall).
-> 
-> Since Tegra186 there is a privileged (only usable by kernel)
-> Host1x opcode that allows setting the stream ID sent by the engine
-> to the SMMU. So, by allocating a number of context banks and stream
-> IDs for this purpose, and using this opcode at the beginning of
-> each job, we can implement isolation. Due to the limited number of
-> context banks only each process gets its own context, and not
-> each channel.
-> 
-> This feature also allows sharing engines among multiple VMs when
-> used with Host1x's hardware virtualization support - up to 8 VMs
-> can be configured with a subset of allowed stream IDs, enforced
-> at hardware level.
-> 
-> To implement this, this series adds a new host1x context bus, which
-> will contain the 'struct device's corresponding to each context
-> bank / stream ID, changes to device tree and SMMU code to allow
-> registering the devices and using the bus, as well as the Host1x
-> stream ID programming code and support in TegraDRM.
-> 
-> Device tree bindings are not updated yet pending consensus that the
-> proposed changes make sense.
-> 
-> Thanks,
-> Mikko
-> 
-> Mikko Perttunen (8):
->    gpu: host1x: Add context bus
->    gpu: host1x: Add context device management code
->    gpu: host1x: Program context stream ID on submission
->    iommu/arm-smmu: Attach to host1x context device bus
->    arm64: tegra: Add Host1x context stream IDs on Tegra186+
->    drm/tegra: falcon: Set DMACTX field on DMA transactions
->    drm/tegra: vic: Implement get_streamid_offset
->    drm/tegra: Support context isolation
-> 
->   arch/arm64/boot/dts/nvidia/tegra186.dtsi  |  12 ++
->   arch/arm64/boot/dts/nvidia/tegra194.dtsi  |  12 ++
->   drivers/gpu/Makefile                      |   3 +-
->   drivers/gpu/drm/tegra/drm.h               |   2 +
->   drivers/gpu/drm/tegra/falcon.c            |   8 +
->   drivers/gpu/drm/tegra/falcon.h            |   1 +
->   drivers/gpu/drm/tegra/submit.c            |  13 ++
->   drivers/gpu/drm/tegra/uapi.c              |  34 ++++-
->   drivers/gpu/drm/tegra/vic.c               |  38 +++++
->   drivers/gpu/host1x/Kconfig                |   5 +
->   drivers/gpu/host1x/Makefile               |   2 +
->   drivers/gpu/host1x/context.c              | 174 ++++++++++++++++++++++
->   drivers/gpu/host1x/context.h              |  27 ++++
->   drivers/gpu/host1x/context_bus.c          |  31 ++++
->   drivers/gpu/host1x/dev.c                  |  12 +-
->   drivers/gpu/host1x/dev.h                  |   2 +
->   drivers/gpu/host1x/hw/channel_hw.c        |  52 ++++++-
->   drivers/gpu/host1x/hw/host1x06_hardware.h |  10 ++
->   drivers/gpu/host1x/hw/host1x07_hardware.h |  10 ++
->   drivers/iommu/arm/arm-smmu/arm-smmu.c     |  13 ++
->   include/linux/host1x.h                    |  21 +++
->   include/linux/host1x_context_bus.h        |  15 ++
->   22 files changed, 488 insertions(+), 9 deletions(-)
->   create mode 100644 drivers/gpu/host1x/context.c
->   create mode 100644 drivers/gpu/host1x/context.h
->   create mode 100644 drivers/gpu/host1x/context_bus.c
->   create mode 100644 include/linux/host1x_context_bus.h
-> 
+From: Rob Clark <robdclark@chromium.org>
 
-IOMMU/DT folks, any thoughts about this approach? The patches that are 
-of interest outside of Host1x/TegraDRM specifics are patches 1, 2, 4, and 5.
+It is a 64b register, lets not lose the upper bits.
 
-Thanks,
-Mikko
+Fixes: ab5df7b953d8 ("iommu/arm-smmu-qcom: Add an adreno-smmu-priv callback to get pagefault info")
+Signed-off-by: Rob Clark <robdclark@chromium.org>
+---
+ drivers/iommu/arm/arm-smmu/arm-smmu-qcom.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/drivers/iommu/arm/arm-smmu/arm-smmu-qcom.c b/drivers/iommu/arm/arm-smmu/arm-smmu-qcom.c
+index 55690af1b25d..c998960495b4 100644
+--- a/drivers/iommu/arm/arm-smmu/arm-smmu-qcom.c
++++ b/drivers/iommu/arm/arm-smmu/arm-smmu-qcom.c
+@@ -51,7 +51,7 @@ static void qcom_adreno_smmu_get_fault_info(const void *cookie,
+ 	info->fsynr1 = arm_smmu_cb_read(smmu, cfg->cbndx, ARM_SMMU_CB_FSYNR1);
+ 	info->far = arm_smmu_cb_readq(smmu, cfg->cbndx, ARM_SMMU_CB_FAR);
+ 	info->cbfrsynra = arm_smmu_gr1_read(smmu, ARM_SMMU_GR1_CBFRSYNRA(cfg->cbndx));
+-	info->ttbr0 = arm_smmu_cb_read(smmu, cfg->cbndx, ARM_SMMU_CB_TTBR0);
++	info->ttbr0 = arm_smmu_cb_readq(smmu, cfg->cbndx, ARM_SMMU_CB_TTBR0);
+ 	info->contextidr = arm_smmu_cb_read(smmu, cfg->cbndx, ARM_SMMU_CB_CONTEXTIDR);
+ }
+ 
+-- 
+2.31.1
+
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
