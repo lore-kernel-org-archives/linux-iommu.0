@@ -2,73 +2,80 @@ Return-Path: <SRS0=5Ucf=P3=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9A562C433F5
-	for <iommu@archiver.kernel.org>; Mon,  8 Nov 2021 08:24:49 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6CBFAC433EF
+	for <iommu@archiver.kernel.org>; Mon,  8 Nov 2021 10:37:08 +0000 (UTC)
 Received: from smtp1.osuosl.org (smtp1.osuosl.org [140.211.166.138])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 4B75F61265
-	for <iommu@archiver.kernel.org>; Mon,  8 Nov 2021 08:24:49 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.4.1 mail.kernel.org 4B75F61265
-Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=mediatek.com
+	by mail.kernel.org (Postfix) with ESMTPS id E8863611C4
+	for <iommu@archiver.kernel.org>; Mon,  8 Nov 2021 10:37:07 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.4.1 mail.kernel.org E8863611C4
+Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=kapsi.fi
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by smtp1.osuosl.org (Postfix) with ESMTP id 166A580D22;
-	Mon,  8 Nov 2021 08:24:49 +0000 (UTC)
+	by smtp1.osuosl.org (Postfix) with ESMTP id A08F780E2B;
+	Mon,  8 Nov 2021 10:37:07 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
 Received: from smtp1.osuosl.org ([127.0.0.1])
 	by localhost (smtp1.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id dm5FvGj1UXJF; Mon,  8 Nov 2021 08:24:48 +0000 (UTC)
-Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by smtp1.osuosl.org (Postfix) with ESMTPS id 0CCF580D10;
-	Mon,  8 Nov 2021 08:24:47 +0000 (UTC)
+	with ESMTP id YWweJJ_MmTRJ; Mon,  8 Nov 2021 10:37:06 +0000 (UTC)
+Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [IPv6:2605:bc80:3010:104::8cd3:938])
+	by smtp1.osuosl.org (Postfix) with ESMTPS id 71D2880DC3;
+	Mon,  8 Nov 2021 10:37:06 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id DF8E2C0019;
-	Mon,  8 Nov 2021 08:24:47 +0000 (UTC)
-Received: from smtp4.osuosl.org (smtp4.osuosl.org [140.211.166.137])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 425F4C000E
- for <iommu@lists.linux-foundation.org>; Mon,  8 Nov 2021 08:24:47 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 374B4C0019;
+	Mon,  8 Nov 2021 10:37:06 +0000 (UTC)
+Received: from smtp1.osuosl.org (smtp1.osuosl.org [IPv6:2605:bc80:3010::138])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 9AE96C000E
+ for <iommu@lists.linux-foundation.org>; Mon,  8 Nov 2021 10:37:04 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by smtp4.osuosl.org (Postfix) with ESMTP id 216064011E
- for <iommu@lists.linux-foundation.org>; Mon,  8 Nov 2021 08:24:47 +0000 (UTC)
+ by smtp1.osuosl.org (Postfix) with ESMTP id 7BE6A80E21
+ for <iommu@lists.linux-foundation.org>; Mon,  8 Nov 2021 10:37:04 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from smtp4.osuosl.org ([127.0.0.1])
- by localhost (smtp4.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id gSdgHzVPTWW4 for <iommu@lists.linux-foundation.org>;
- Mon,  8 Nov 2021 08:24:42 +0000 (UTC)
-X-Greylist: domain auto-whitelisted by SQLgrey-1.8.0
-Received: from mailgw02.mediatek.com (unknown [210.61.82.184])
- by smtp4.osuosl.org (Postfix) with ESMTPS id 282254011A
- for <iommu@lists.linux-foundation.org>; Mon,  8 Nov 2021 08:24:41 +0000 (UTC)
-X-UUID: 7f2e25ffd2c746c1928d5b134a5e2d14-20211108
-X-UUID: 7f2e25ffd2c746c1928d5b134a5e2d14-20211108
-Received: from mtkmbs10n1.mediatek.inc [(172.21.101.34)] by
- mailgw02.mediatek.com (envelope-from <yong.wu@mediatek.com>)
- (Generic MTA with TLSv1.2 ECDHE-RSA-AES256-GCM-SHA384 256/256)
- with ESMTP id 1300905659; Mon, 08 Nov 2021 16:24:37 +0800
-Received: from mtkmbs10n2.mediatek.inc (172.21.101.183) by
- mtkmbs10n1.mediatek.inc (172.21.101.34) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.2.792.15; Mon, 8 Nov 2021 16:24:36 +0800
-Received: from localhost.localdomain (10.17.3.154) by mtkmbs10n2.mediatek.inc
- (172.21.101.73) with Microsoft SMTP Server id 15.2.792.3 via Frontend
- Transport; Mon, 8 Nov 2021 16:24:35 +0800
-From: Yong Wu <yong.wu@mediatek.com>
-To: Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>, Matthias Brugger
- <matthias.bgg@gmail.com>
-Subject: [PATCH v2] memory: mtk-smi: Fix a null dereference for the ostd
-Date: Mon, 8 Nov 2021 16:24:29 +0800
-Message-ID: <20211108082429.15080-1-yong.wu@mediatek.com>
-X-Mailer: git-send-email 2.18.0
+Received: from smtp1.osuosl.org ([127.0.0.1])
+ by localhost (smtp1.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+ with ESMTP id wB7oLWM--YqQ for <iommu@lists.linux-foundation.org>;
+ Mon,  8 Nov 2021 10:37:03 +0000 (UTC)
+X-Greylist: from auto-whitelisted by SQLgrey-1.8.0
+Received: from mail.kapsi.fi (mail.kapsi.fi [IPv6:2001:67c:1be8::25])
+ by smtp1.osuosl.org (Postfix) with ESMTPS id 1BB1F80DC3
+ for <iommu@lists.linux-foundation.org>; Mon,  8 Nov 2021 10:37:02 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=kapsi.fi;
+ s=20161220; h=Content-Transfer-Encoding:Content-Type:In-Reply-To:
+ MIME-Version:Date:Message-ID:From:References:Cc:To:Subject:Sender:Reply-To:
+ Content-ID:Content-Description:Resent-Date:Resent-From:Resent-Sender:
+ Resent-To:Resent-Cc:Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:
+ List-Subscribe:List-Post:List-Owner:List-Archive;
+ bh=i/cmFLJWXjRGackmQbyW+VCsyR/4I0WIJ6EqrdSA6JY=; b=TgVDqLVO+s5RobZKj0e0tc5fNy
+ sQ7s4SFC8WtG6elM+NAEv4mjxfpoy7JVFvonGPrL7zQr/ez3Zy+k/cZUaqJiRecRCcNi2P7VbkE8F
+ ka3tcQvpeAovYzNEd+HkVHsCfpaMi0A8MmEWp93+1bfLdOoI1b6w4GoA214JujO2mNRUBzstQdeGa
+ bLpBKQN1PyJKDS+X8rDt5TmKrMO9LNSjG+242s85JwTjTX7Vrv0uE+3eFdT/Lgf1H4RdXtzWOLNPt
+ n83LDUWPlVc+rTMI2qPSbTvt1fc9jEFAk7Sd+yh6crFCPnwJUgWt/1tb+cKxoGcaWvVttLk2IRflv
+ xP/M3HYw==;
+Received: from dsl-hkibng22-54f986-236.dhcp.inet.fi ([84.249.134.236]
+ helo=[192.168.1.10])
+ by mail.kapsi.fi with esmtpsa (TLS1.2:ECDHE_RSA_AES_128_GCM_SHA256:128)
+ (Exim 4.89) (envelope-from <cyndis@kapsi.fi>)
+ id 1mk21D-0008PS-Od; Mon, 08 Nov 2021 12:36:51 +0200
+Subject: Re: [PATCH v2 0/8] Host1x context isolation support
+To: Mikko Perttunen <mperttunen@nvidia.com>, thierry.reding@gmail.com,
+ jonathanh@nvidia.com, joro@8bytes.org, will@kernel.org, robh+dt@kernel.org,
+ robin.murphy@arm.com
+References: <20210916143302.2024933-1-mperttunen@nvidia.com>
+From: Mikko Perttunen <cyndis@kapsi.fi>
+Message-ID: <10de82cf-27a5-8890-93a5-0e58c74e5bcc@kapsi.fi>
+Date: Mon, 8 Nov 2021 12:36:51 +0200
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
+ Thunderbird/78.12.0
 MIME-Version: 1.0
-X-MTK: N
-Cc: youlin.pei@mediatek.com, anan.sun@mediatek.com, srv_heupstream@mediatek.com,
- Will Deacon <will@kernel.org>, linux-kernel@vger.kernel.org,
- Krzysztof Kozlowski <krzk@kernel.org>, iommu@lists.linux-foundation.org,
- linux-mediatek@lists.infradead.org, Hsin-Yi Wang <hsinyi@chromium.org>,
- anthony.huang@mediatek.com, yi.kuo@mediatek.com,
- Robin Murphy <robin.murphy@arm.com>, Ikjoon Jang <ikjn@chromium.org>,
- linux-arm-kernel@lists.infradead.org
+In-Reply-To: <20210916143302.2024933-1-mperttunen@nvidia.com>
+Content-Language: en-US
+X-SA-Exim-Connect-IP: 84.249.134.236
+X-SA-Exim-Mail-From: cyndis@kapsi.fi
+X-SA-Exim-Scanned: No (on mail.kapsi.fi); SAEximRunCond expanded to false
+Cc: devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
+ dri-devel@lists.freedesktop.org, iommu@lists.linux-foundation.org,
+ linux-tegra@vger.kernel.org, linux-arm-kernel@lists.infradead.org
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -81,61 +88,97 @@ List-Post: <mailto:iommu@lists.linux-foundation.org>
 List-Help: <mailto:iommu-request@lists.linux-foundation.org?subject=help>
 List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
  <mailto:iommu-request@lists.linux-foundation.org?subject=subscribe>
-Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset="us-ascii"; Format="flowed"
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-We add the ostd setting for mt8195. It introduces a KE for the
-previous SoC which doesn't have ostd setting. This is the log:
+On 9/16/21 5:32 PM, Mikko Perttunen wrote:
+> Hi all,
+> 
+> ***
+> New in v2:
+> 
+> Added support for Tegra194
+> Use standard iommu-map property instead of custom mechanism
+> ***
+> 
+> this series adds support for Host1x 'context isolation'. Since
+> when programming engines through Host1x, userspace can program in
+> any addresses it wants, we need some way to isolate the engines'
+> memory spaces. Traditionally this has either been done imperfectly
+> with a single shared IOMMU domain, or by copying and verifying the
+> programming command stream at submit time (Host1x firewall).
+> 
+> Since Tegra186 there is a privileged (only usable by kernel)
+> Host1x opcode that allows setting the stream ID sent by the engine
+> to the SMMU. So, by allocating a number of context banks and stream
+> IDs for this purpose, and using this opcode at the beginning of
+> each job, we can implement isolation. Due to the limited number of
+> context banks only each process gets its own context, and not
+> each channel.
+> 
+> This feature also allows sharing engines among multiple VMs when
+> used with Host1x's hardware virtualization support - up to 8 VMs
+> can be configured with a subset of allowed stream IDs, enforced
+> at hardware level.
+> 
+> To implement this, this series adds a new host1x context bus, which
+> will contain the 'struct device's corresponding to each context
+> bank / stream ID, changes to device tree and SMMU code to allow
+> registering the devices and using the bus, as well as the Host1x
+> stream ID programming code and support in TegraDRM.
+> 
+> Device tree bindings are not updated yet pending consensus that the
+> proposed changes make sense.
+> 
+> Thanks,
+> Mikko
+> 
+> Mikko Perttunen (8):
+>    gpu: host1x: Add context bus
+>    gpu: host1x: Add context device management code
+>    gpu: host1x: Program context stream ID on submission
+>    iommu/arm-smmu: Attach to host1x context device bus
+>    arm64: tegra: Add Host1x context stream IDs on Tegra186+
+>    drm/tegra: falcon: Set DMACTX field on DMA transactions
+>    drm/tegra: vic: Implement get_streamid_offset
+>    drm/tegra: Support context isolation
+> 
+>   arch/arm64/boot/dts/nvidia/tegra186.dtsi  |  12 ++
+>   arch/arm64/boot/dts/nvidia/tegra194.dtsi  |  12 ++
+>   drivers/gpu/Makefile                      |   3 +-
+>   drivers/gpu/drm/tegra/drm.h               |   2 +
+>   drivers/gpu/drm/tegra/falcon.c            |   8 +
+>   drivers/gpu/drm/tegra/falcon.h            |   1 +
+>   drivers/gpu/drm/tegra/submit.c            |  13 ++
+>   drivers/gpu/drm/tegra/uapi.c              |  34 ++++-
+>   drivers/gpu/drm/tegra/vic.c               |  38 +++++
+>   drivers/gpu/host1x/Kconfig                |   5 +
+>   drivers/gpu/host1x/Makefile               |   2 +
+>   drivers/gpu/host1x/context.c              | 174 ++++++++++++++++++++++
+>   drivers/gpu/host1x/context.h              |  27 ++++
+>   drivers/gpu/host1x/context_bus.c          |  31 ++++
+>   drivers/gpu/host1x/dev.c                  |  12 +-
+>   drivers/gpu/host1x/dev.h                  |   2 +
+>   drivers/gpu/host1x/hw/channel_hw.c        |  52 ++++++-
+>   drivers/gpu/host1x/hw/host1x06_hardware.h |  10 ++
+>   drivers/gpu/host1x/hw/host1x07_hardware.h |  10 ++
+>   drivers/iommu/arm/arm-smmu/arm-smmu.c     |  13 ++
+>   include/linux/host1x.h                    |  21 +++
+>   include/linux/host1x_context_bus.h        |  15 ++
+>   22 files changed, 488 insertions(+), 9 deletions(-)
+>   create mode 100644 drivers/gpu/host1x/context.c
+>   create mode 100644 drivers/gpu/host1x/context.h
+>   create mode 100644 drivers/gpu/host1x/context_bus.c
+>   create mode 100644 include/linux/host1x_context_bus.h
+> 
 
-Unable to handle kernel NULL pointer dereference at virtual address
-0000000000000080
-...
-pc : mtk_smi_larb_config_port_gen2_general+0x64/0x130
-lr : mtk_smi_larb_resume+0x54/0x98
-...
-Call trace:
- mtk_smi_larb_config_port_gen2_general+0x64/0x130
- pm_generic_runtime_resume+0x2c/0x48
- __genpd_runtime_resume+0x30/0xa8
- genpd_runtime_resume+0x94/0x2c8
- __rpm_callback+0x44/0x150
- rpm_callback+0x6c/0x78
- rpm_resume+0x310/0x558
- __pm_runtime_resume+0x3c/0x88
+IOMMU/DT folks, any thoughts about this approach? The patches that are 
+of interest outside of Host1x/TegraDRM specifics are patches 1, 2, 4, and 5.
 
-In the code: larbostd = larb->larb_gen->ostd[larb->larbid],
-if "larb->larb_gen->ostd" is null, the "larbostd" is the offset(e.g.
-0x80 above), it's also a valid value, then accessing "larbostd[i]" in the
-"for" loop will cause the KE above. To avoid this issue, initialize
-"larbostd" to NULL when the SoC doesn't have ostd setting.
-
-Signed-off-by: Yong Wu <yong.wu@mediatek.com>
----
-change note: Reword the commit message to show why it KE. and update the
-solution via initializing "larbostd" is NULL explicitly in the non-ostd
-case.
----
- drivers/memory/mtk-smi.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
-
-diff --git a/drivers/memory/mtk-smi.c b/drivers/memory/mtk-smi.c
-index b883dcc0bbfa..e201e5976f34 100644
---- a/drivers/memory/mtk-smi.c
-+++ b/drivers/memory/mtk-smi.c
-@@ -241,7 +241,7 @@ static void mtk_smi_larb_config_port_gen2_general(struct device *dev)
- {
- 	struct mtk_smi_larb *larb = dev_get_drvdata(dev);
- 	u32 reg, flags_general = larb->larb_gen->flags_general;
--	const u8 *larbostd = larb->larb_gen->ostd[larb->larbid];
-+	const u8 *larbostd = larb->larb_gen->ostd ? larb->larb_gen->ostd[larb->larbid] : NULL;
- 	int i;
- 
- 	if (BIT(larb->larbid) & larb->larb_gen->larb_direct_to_common_mask)
--- 
-2.18.0
-
+Thanks,
+Mikko
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
