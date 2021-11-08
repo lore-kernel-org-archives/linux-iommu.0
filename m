@@ -2,64 +2,73 @@ Return-Path: <SRS0=5Ucf=P3=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 99A26C433F5
-	for <iommu@archiver.kernel.org>; Mon,  8 Nov 2021 06:18:21 +0000 (UTC)
-Received: from smtp4.osuosl.org (smtp4.osuosl.org [140.211.166.137])
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9A562C433F5
+	for <iommu@archiver.kernel.org>; Mon,  8 Nov 2021 08:24:49 +0000 (UTC)
+Received: from smtp1.osuosl.org (smtp1.osuosl.org [140.211.166.138])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id F139C610D2
-	for <iommu@archiver.kernel.org>; Mon,  8 Nov 2021 06:18:20 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.4.1 mail.kernel.org F139C610D2
-Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=linux.intel.com
+	by mail.kernel.org (Postfix) with ESMTPS id 4B75F61265
+	for <iommu@archiver.kernel.org>; Mon,  8 Nov 2021 08:24:49 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.4.1 mail.kernel.org 4B75F61265
+Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=mediatek.com
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by smtp4.osuosl.org (Postfix) with ESMTP id AEDD8400C6;
-	Mon,  8 Nov 2021 06:18:20 +0000 (UTC)
+	by smtp1.osuosl.org (Postfix) with ESMTP id 166A580D22;
+	Mon,  8 Nov 2021 08:24:49 +0000 (UTC)
+X-Virus-Scanned: amavisd-new at osuosl.org
+Received: from smtp1.osuosl.org ([127.0.0.1])
+	by localhost (smtp1.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+	with ESMTP id dm5FvGj1UXJF; Mon,  8 Nov 2021 08:24:48 +0000 (UTC)
+Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
+	by smtp1.osuosl.org (Postfix) with ESMTPS id 0CCF580D10;
+	Mon,  8 Nov 2021 08:24:47 +0000 (UTC)
+Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
+	by lists.linuxfoundation.org (Postfix) with ESMTP id DF8E2C0019;
+	Mon,  8 Nov 2021 08:24:47 +0000 (UTC)
+Received: from smtp4.osuosl.org (smtp4.osuosl.org [140.211.166.137])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 425F4C000E
+ for <iommu@lists.linux-foundation.org>; Mon,  8 Nov 2021 08:24:47 +0000 (UTC)
+Received: from localhost (localhost [127.0.0.1])
+ by smtp4.osuosl.org (Postfix) with ESMTP id 216064011E
+ for <iommu@lists.linux-foundation.org>; Mon,  8 Nov 2021 08:24:47 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
 Received: from smtp4.osuosl.org ([127.0.0.1])
-	by localhost (smtp4.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id LQfUMdkY1aEB; Mon,  8 Nov 2021 06:18:20 +0000 (UTC)
-Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by smtp4.osuosl.org (Postfix) with ESMTPS id AF0F7400BB;
-	Mon,  8 Nov 2021 06:18:19 +0000 (UTC)
-Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 850D2C0019;
-	Mon,  8 Nov 2021 06:18:19 +0000 (UTC)
-Received: from smtp3.osuosl.org (smtp3.osuosl.org [140.211.166.136])
- by lists.linuxfoundation.org (Postfix) with ESMTP id F11E8C000E
- for <iommu@lists.linux-foundation.org>; Mon,  8 Nov 2021 06:18:17 +0000 (UTC)
-Received: from localhost (localhost [127.0.0.1])
- by smtp3.osuosl.org (Postfix) with ESMTP id CCAC060769
- for <iommu@lists.linux-foundation.org>; Mon,  8 Nov 2021 06:18:17 +0000 (UTC)
-X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from smtp3.osuosl.org ([127.0.0.1])
- by localhost (smtp3.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id t6YdxhMQtvAX for <iommu@lists.linux-foundation.org>;
- Mon,  8 Nov 2021 06:18:17 +0000 (UTC)
+ by localhost (smtp4.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+ with ESMTP id gSdgHzVPTWW4 for <iommu@lists.linux-foundation.org>;
+ Mon,  8 Nov 2021 08:24:42 +0000 (UTC)
 X-Greylist: domain auto-whitelisted by SQLgrey-1.8.0
-Received: from mga18.intel.com (mga18.intel.com [134.134.136.126])
- by smtp3.osuosl.org (Postfix) with ESMTPS id 4294160756
- for <iommu@lists.linux-foundation.org>; Mon,  8 Nov 2021 06:18:17 +0000 (UTC)
-X-IronPort-AV: E=McAfee;i="6200,9189,10161"; a="219071414"
-X-IronPort-AV: E=Sophos;i="5.87,217,1631602800"; d="scan'208";a="219071414"
-Received: from orsmga007.jf.intel.com ([10.7.209.58])
- by orsmga106.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384;
- 07 Nov 2021 22:18:16 -0800
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.87,217,1631602800"; d="scan'208";a="491091846"
-Received: from allen-box.sh.intel.com ([10.239.159.118])
- by orsmga007.jf.intel.com with ESMTP; 07 Nov 2021 22:18:13 -0800
-From: Lu Baolu <baolu.lu@linux.intel.com>
-To: Joerg Roedel <joro@8bytes.org>,
-	Will Deacon <will@kernel.org>
-Subject: [PATCH 1/1] iommu: Extend mutex lock scope in iommu_probe_device()
-Date: Mon,  8 Nov 2021 14:13:49 +0800
-Message-Id: <20211108061349.1985579-1-baolu.lu@linux.intel.com>
-X-Mailer: git-send-email 2.25.1
+Received: from mailgw02.mediatek.com (unknown [210.61.82.184])
+ by smtp4.osuosl.org (Postfix) with ESMTPS id 282254011A
+ for <iommu@lists.linux-foundation.org>; Mon,  8 Nov 2021 08:24:41 +0000 (UTC)
+X-UUID: 7f2e25ffd2c746c1928d5b134a5e2d14-20211108
+X-UUID: 7f2e25ffd2c746c1928d5b134a5e2d14-20211108
+Received: from mtkmbs10n1.mediatek.inc [(172.21.101.34)] by
+ mailgw02.mediatek.com (envelope-from <yong.wu@mediatek.com>)
+ (Generic MTA with TLSv1.2 ECDHE-RSA-AES256-GCM-SHA384 256/256)
+ with ESMTP id 1300905659; Mon, 08 Nov 2021 16:24:37 +0800
+Received: from mtkmbs10n2.mediatek.inc (172.21.101.183) by
+ mtkmbs10n1.mediatek.inc (172.21.101.34) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.2.792.15; Mon, 8 Nov 2021 16:24:36 +0800
+Received: from localhost.localdomain (10.17.3.154) by mtkmbs10n2.mediatek.inc
+ (172.21.101.73) with Microsoft SMTP Server id 15.2.792.3 via Frontend
+ Transport; Mon, 8 Nov 2021 16:24:35 +0800
+From: Yong Wu <yong.wu@mediatek.com>
+To: Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>, Matthias Brugger
+ <matthias.bgg@gmail.com>
+Subject: [PATCH v2] memory: mtk-smi: Fix a null dereference for the ostd
+Date: Mon, 8 Nov 2021 16:24:29 +0800
+Message-ID: <20211108082429.15080-1-yong.wu@mediatek.com>
+X-Mailer: git-send-email 2.18.0
 MIME-Version: 1.0
-Cc: kevin.tian@intel.com, ashok.raj@intel.com, linux-kernel@vger.kernel.org,
- iommu@lists.linux-foundation.org, Jason Gunthorpe <jgg@nvidia.com>,
- Ashish Mhetre <amhetre@nvidia.com>
+X-MTK: N
+Cc: youlin.pei@mediatek.com, anan.sun@mediatek.com, srv_heupstream@mediatek.com,
+ Will Deacon <will@kernel.org>, linux-kernel@vger.kernel.org,
+ Krzysztof Kozlowski <krzk@kernel.org>, iommu@lists.linux-foundation.org,
+ linux-mediatek@lists.infradead.org, Hsin-Yi Wang <hsinyi@chromium.org>,
+ anthony.huang@mediatek.com, yi.kuo@mediatek.com,
+ Robin Murphy <robin.murphy@arm.com>, Ikjoon Jang <ikjn@chromium.org>,
+ linux-arm-kernel@lists.infradead.org
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -77,43 +86,55 @@ Content-Transfer-Encoding: 7bit
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-Extend the scope of holding group->mutex so that it can cover the default
-domain check/attachment and direct mappings of reserved regions.
+We add the ostd setting for mt8195. It introduces a KE for the
+previous SoC which doesn't have ostd setting. This is the log:
 
-Cc: Ashish Mhetre <amhetre@nvidia.com>
-Fixes: 211ff31b3d33b ("iommu: Fix race condition during default domain allocation")
-Signed-off-by: Lu Baolu <baolu.lu@linux.intel.com>
+Unable to handle kernel NULL pointer dereference at virtual address
+0000000000000080
+...
+pc : mtk_smi_larb_config_port_gen2_general+0x64/0x130
+lr : mtk_smi_larb_resume+0x54/0x98
+...
+Call trace:
+ mtk_smi_larb_config_port_gen2_general+0x64/0x130
+ pm_generic_runtime_resume+0x2c/0x48
+ __genpd_runtime_resume+0x30/0xa8
+ genpd_runtime_resume+0x94/0x2c8
+ __rpm_callback+0x44/0x150
+ rpm_callback+0x6c/0x78
+ rpm_resume+0x310/0x558
+ __pm_runtime_resume+0x3c/0x88
+
+In the code: larbostd = larb->larb_gen->ostd[larb->larbid],
+if "larb->larb_gen->ostd" is null, the "larbostd" is the offset(e.g.
+0x80 above), it's also a valid value, then accessing "larbostd[i]" in the
+"for" loop will cause the KE above. To avoid this issue, initialize
+"larbostd" to NULL when the SoC doesn't have ostd setting.
+
+Signed-off-by: Yong Wu <yong.wu@mediatek.com>
 ---
- drivers/iommu/iommu.c | 3 ++-
- 1 file changed, 2 insertions(+), 1 deletion(-)
+change note: Reword the commit message to show why it KE. and update the
+solution via initializing "larbostd" is NULL explicitly in the non-ostd
+case.
+---
+ drivers/memory/mtk-smi.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/drivers/iommu/iommu.c b/drivers/iommu/iommu.c
-index dd7863e453a5..8b86406b7162 100644
---- a/drivers/iommu/iommu.c
-+++ b/drivers/iommu/iommu.c
-@@ -288,11 +288,11 @@ int iommu_probe_device(struct device *dev)
- 	 */
- 	mutex_lock(&group->mutex);
- 	iommu_alloc_default_domain(group, dev);
--	mutex_unlock(&group->mutex);
+diff --git a/drivers/memory/mtk-smi.c b/drivers/memory/mtk-smi.c
+index b883dcc0bbfa..e201e5976f34 100644
+--- a/drivers/memory/mtk-smi.c
++++ b/drivers/memory/mtk-smi.c
+@@ -241,7 +241,7 @@ static void mtk_smi_larb_config_port_gen2_general(struct device *dev)
+ {
+ 	struct mtk_smi_larb *larb = dev_get_drvdata(dev);
+ 	u32 reg, flags_general = larb->larb_gen->flags_general;
+-	const u8 *larbostd = larb->larb_gen->ostd[larb->larbid];
++	const u8 *larbostd = larb->larb_gen->ostd ? larb->larb_gen->ostd[larb->larbid] : NULL;
+ 	int i;
  
- 	if (group->default_domain) {
- 		ret = __iommu_attach_device(group->default_domain, dev);
- 		if (ret) {
-+			mutex_unlock(&group->mutex);
- 			iommu_group_put(group);
- 			goto err_release;
- 		}
-@@ -300,6 +300,7 @@ int iommu_probe_device(struct device *dev)
- 
- 	iommu_create_device_direct_mappings(group, dev);
- 
-+	mutex_unlock(&group->mutex);
- 	iommu_group_put(group);
- 
- 	if (ops->probe_finalize)
+ 	if (BIT(larb->larbid) & larb->larb_gen->larb_direct_to_common_mask)
 -- 
-2.25.1
+2.18.0
 
 _______________________________________________
 iommu mailing list
