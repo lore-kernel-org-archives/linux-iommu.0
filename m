@@ -2,81 +2,98 @@ Return-Path: <SRS0=5Ucf=P3=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 26A81C433F5
-	for <iommu@archiver.kernel.org>; Mon,  8 Nov 2021 17:18:28 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 75ECAC433EF
+	for <iommu@archiver.kernel.org>; Mon,  8 Nov 2021 17:55:51 +0000 (UTC)
 Received: from smtp3.osuosl.org (smtp3.osuosl.org [140.211.166.136])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id C5E8D611C4
-	for <iommu@archiver.kernel.org>; Mon,  8 Nov 2021 17:18:27 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.4.1 mail.kernel.org C5E8D611C4
-Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=linux.com
+	by mail.kernel.org (Postfix) with ESMTPS id 1E06261506
+	for <iommu@archiver.kernel.org>; Mon,  8 Nov 2021 17:55:51 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.4.1 mail.kernel.org 1E06261506
+Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=linaro.org
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by smtp3.osuosl.org (Postfix) with ESMTP id 7AB996062F;
-	Mon,  8 Nov 2021 17:18:27 +0000 (UTC)
+	by smtp3.osuosl.org (Postfix) with ESMTP id DC06460838;
+	Mon,  8 Nov 2021 17:55:50 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
 Received: from smtp3.osuosl.org ([127.0.0.1])
 	by localhost (smtp3.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id gVRR5hI7G244; Mon,  8 Nov 2021 17:18:26 +0000 (UTC)
+	with ESMTP id VOccXA5-YiDC; Mon,  8 Nov 2021 17:55:50 +0000 (UTC)
 Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by smtp3.osuosl.org (Postfix) with ESMTPS id 68A74605E1;
-	Mon,  8 Nov 2021 17:18:26 +0000 (UTC)
+	by smtp3.osuosl.org (Postfix) with ESMTPS id CE20D60830;
+	Mon,  8 Nov 2021 17:55:49 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 52102C0012;
-	Mon,  8 Nov 2021 17:18:26 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 9D66FC0012;
+	Mon,  8 Nov 2021 17:55:49 +0000 (UTC)
 Received: from smtp2.osuosl.org (smtp2.osuosl.org [IPv6:2605:bc80:3010::133])
- by lists.linuxfoundation.org (Postfix) with ESMTP id C47A9C000E
- for <iommu@lists.linux-foundation.org>; Mon,  8 Nov 2021 17:18:24 +0000 (UTC)
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 31BEBC000E
+ for <iommu@lists.linux-foundation.org>; Mon,  8 Nov 2021 17:55:48 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by smtp2.osuosl.org (Postfix) with ESMTP id B1EC740157
- for <iommu@lists.linux-foundation.org>; Mon,  8 Nov 2021 17:18:24 +0000 (UTC)
+ by smtp2.osuosl.org (Postfix) with ESMTP id 18C91400B5
+ for <iommu@lists.linux-foundation.org>; Mon,  8 Nov 2021 17:55:48 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
+Authentication-Results: smtp2.osuosl.org (amavisd-new);
+ dkim=pass (2048-bit key) header.d=linaro.org
 Received: from smtp2.osuosl.org ([127.0.0.1])
  by localhost (smtp2.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id aVqq2OY2kIDB for <iommu@lists.linux-foundation.org>;
- Mon,  8 Nov 2021 17:18:23 +0000 (UTC)
+ with ESMTP id s_j4WDt39RWz for <iommu@lists.linux-foundation.org>;
+ Mon,  8 Nov 2021 17:55:44 +0000 (UTC)
 X-Greylist: whitelisted by SQLgrey-1.8.0
-Received: from mail-wr1-f49.google.com (mail-wr1-f49.google.com
- [209.85.221.49])
- by smtp2.osuosl.org (Postfix) with ESMTPS id 63DFA400BF
- for <iommu@lists.linux-foundation.org>; Mon,  8 Nov 2021 17:18:23 +0000 (UTC)
-Received: by mail-wr1-f49.google.com with SMTP id u18so28147049wrg.5
- for <iommu@lists.linux-foundation.org>; Mon, 08 Nov 2021 09:18:23 -0800 (PST)
+Received: from mail-oi1-x234.google.com (mail-oi1-x234.google.com
+ [IPv6:2607:f8b0:4864:20::234])
+ by smtp2.osuosl.org (Postfix) with ESMTPS id D994740003
+ for <iommu@lists.linux-foundation.org>; Mon,  8 Nov 2021 17:55:43 +0000 (UTC)
+Received: by mail-oi1-x234.google.com with SMTP id r26so7594570oiw.5
+ for <iommu@lists.linux-foundation.org>; Mon, 08 Nov 2021 09:55:43 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linaro.org; s=google;
+ h=date:from:to:cc:subject:message-id:references:mime-version
+ :content-disposition:in-reply-to;
+ bh=LhWfz+5JE21inJr4S250OgcbtsWmt4NJR6DvKNs5YBk=;
+ b=NLZ/NWmaut34l69Gi0IMn3FhSPoI8MJxyT511eGKct44ivuZgMwua7hT0tOyLsDZUP
+ TrgDXxUaUA7ChA+L3cFnC1wxXZ9OKrp2DAiclSjd/0dAqPiEQUMxdLhwh7TJBeW62J0y
+ sxa7L/gO7PUUgBqELeaWYWMpjfyrDPN5orMWbR0tgee7qH946wvFrwRkNxmCE20baibN
+ k+IRalaydJaBo+7hWaDZNjCRUOsSOX8GaiuqRGVUZ8nIAxdWVmPEL4ubW46Kx7KoptLH
+ NXfufoYJtTJtYYpAQh2ZV1xuOG4OC8fEO2gNDc7SVhOr6lUM1CgDwpMx+e8MVxkv1JSD
+ yRuA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
  d=1e100.net; s=20210112;
  h=x-gm-message-state:date:from:to:cc:subject:message-id:references
  :mime-version:content-disposition:in-reply-to;
- bh=k+xBEZ60gaFRX6TewmJXrlZ7gEV8kWXNlWQ1p+Qwerc=;
- b=tylg3WMyJzjHKD/AuBFYwm4sTJrCCB7p8z9qmReROGEUmKTiR2I/NZWbGzcvxFJ6Qx
- x1XXVAY/8WwROJcsuikAGPlh7nFdJBCVnCx61geyTP+gwS85Wl8WKrzbPHEW612w9ri6
- +xFyxs4jS7qkbKsHqzPT+vvq0MKH/lk7cbVX1gtE43W4uzaC4hL5x0ipSW3s30HvsT4P
- 2dqTOyM/+yucbrMe03Y+U05gDlUl5up6eItt3RFmT04f8ego26SA924etCuazTv6/DOx
- xmWlH2BnDG5+MbIe5dJgmiCeVTJBkqoc/b0vLXNQJZzvfubWeP1eJll5cVOKutR1eC30
- PjAA==
-X-Gm-Message-State: AOAM533gW8r0lVvnEpeCLUHei9eQNatq3y/NKu0p1a/2j3S4bfqEPiFE
- IY/8bbSGPp6Qn/NAWUu62L8=
-X-Google-Smtp-Source: ABdhPJyhia6d85wm25bZ2YttwtRNLe8TYhS/6mtXkEsdSSvLaOR+qPwM+MSHCuDa9WsPVoLocUfggQ==
-X-Received: by 2002:a5d:45cc:: with SMTP id b12mr912657wrs.164.1636391901696; 
- Mon, 08 Nov 2021 09:18:21 -0800 (PST)
-Received: from rocinante ([95.155.85.46])
- by smtp.gmail.com with ESMTPSA id f18sm17208547wre.7.2021.11.08.09.18.20
+ bh=LhWfz+5JE21inJr4S250OgcbtsWmt4NJR6DvKNs5YBk=;
+ b=zlzHVq7najId2EzwYd7tL6gLZSvxj9MBKcmtLqOq6sE3st46pTKWgYTbFIZWm6LMu3
+ 5saMlI5g40deejNLxXynCaDLyTj1b49UFxIChgLNe4EP/PTPO/26ws2aSb8x3+uesUzF
+ qGV/yqba22uE3DKpvpSkaecg3xTDFdmiB5u3CUtHLMrYot8fG2+kdMuOl2Pfyy4rhpJY
+ MY85CdAF6ayJuYDDR9qYOszFH2YpCp3vD9pmfXHqs+YCheBAfFgWDCB1EvxUyshELfZx
+ 7T3CJmT6WLgvh6gv8PnAKZKBF0hskmGPPjHMP6tZGdmGAMK4pdVIz1YvJacVnLwk/7fd
+ 2fhw==
+X-Gm-Message-State: AOAM531uoJ9bFtO4ipj+qPQnnYCHF+Au6ntp5XGtqbhgwFKzkkQ4MPiY
+ h9B6QgsNHjecRI+XxllYMAIeCg==
+X-Google-Smtp-Source: ABdhPJz9eQvKIrPc8ta+sw34+CJDdEJVNU0OWR59hAmfrup/u3GDs03M3CvU50HHVxV7g2TUwoHwZA==
+X-Received: by 2002:a05:6808:128d:: with SMTP id
+ a13mr98463oiw.29.1636394142851; 
+ Mon, 08 Nov 2021 09:55:42 -0800 (PST)
+Received: from ripper (104-57-184-186.lightspeed.austtx.sbcglobal.net.
+ [104.57.184.186])
+ by smtp.gmail.com with ESMTPSA id c16sm6822645oiw.31.2021.11.08.09.55.41
  (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
- Mon, 08 Nov 2021 09:18:21 -0800 (PST)
-Date: Mon, 8 Nov 2021 18:18:19 +0100
-From: Krzysztof =?utf-8?Q?Wilczy=C5=84ski?= <kw@linux.com>
-To: Paul Menzel <pmenzel@molgen.mpg.de>
-Subject: Re: How to reduce PCI initialization from 5 s (1.5 s adding them to
- IOMMU groups)
-Message-ID: <YYlb2w1UVaiVYigW@rocinante>
-References: <de6706b2-4ea5-ce68-6b72-02090b98630f@molgen.mpg.de>
+ Mon, 08 Nov 2021 09:55:42 -0800 (PST)
+Date: Mon, 8 Nov 2021 09:57:19 -0800
+From: Bjorn Andersson <bjorn.andersson@linaro.org>
+To: Rob Clark <robdclark@gmail.com>
+Subject: Re: [PATCH] iommu/arm-smmu-qcom: Fix TTBR0 read
+Message-ID: <YYlk/2VZCzX6tokf@ripper>
+References: <20211108171724.470973-1-robdclark@gmail.com>
 MIME-Version: 1.0
 Content-Disposition: inline
-In-Reply-To: <de6706b2-4ea5-ce68-6b72-02090b98630f@molgen.mpg.de>
-Cc: linux-pci@vger.kernel.org, x86@kernel.org,
- LKML <linux-kernel@vger.kernel.org>, iommu@lists.linux-foundation.org,
- Ingo Molnar <mingo@redhat.com>, Borislav Petkov <bp@alien8.de>,
- Bjorn Helgaas <bhelgaas@google.com>, Thomas Gleixner <tglx@linutronix.de>
+In-Reply-To: <20211108171724.470973-1-robdclark@gmail.com>
+Cc: Rob Clark <robdclark@chromium.org>,
+ Sai Prakash Ranjan <saiprakash.ranjan@codeaurora.org>,
+ open list <linux-kernel@vger.kernel.org>, Will Deacon <will@kernel.org>,
+ linux-arm-msm@vger.kernel.org, Robin Murphy <robin.murphy@arm.com>,
+ dri-devel@lists.freedesktop.org, Eric Anholt <eric@anholt.net>,
+ iommu@lists.linux-foundation.org, Shawn Guo <shawn.guo@linaro.org>,
+ freedreno@lists.freedesktop.org,
+ "moderated list:ARM SMMU DRIVERS" <linux-arm-kernel@lists.infradead.org>
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -94,40 +111,40 @@ Content-Transfer-Encoding: 7bit
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-Hi Paul,
+On Mon 08 Nov 09:17 PST 2021, Rob Clark wrote:
 
-> On a PowerEdge T440/021KCD, BIOS 2.11.2 04/22/2021, Linux 5.10.70 takes
-> almost five seconds to initialize PCI. According to the timestamps, 1.5 s
-> are from assigning the PCI devices to the 142 IOMMU groups.
-[...]
-> Is there anything that could be done to reduce the time?
+> From: Rob Clark <robdclark@chromium.org>
+> 
+> It is a 64b register, lets not lose the upper bits.
+> 
+> Fixes: ab5df7b953d8 ("iommu/arm-smmu-qcom: Add an adreno-smmu-priv callback to get pagefault info")
+> Signed-off-by: Rob Clark <robdclark@chromium.org>
 
-I am curious - why is this a problem?  Are you power-cycling your servers
-so often to the point where the cumulative time spent in enumerating PCI
-devices and adding them later to IOMMU groups is a problem? 
+Reviewed-by: Bjorn Andersson <bjorn.andersson@linaro.org>
 
-I am simply wondering why you decided to signal out the PCI enumeration as
-slow in particular, especially given that a large server hardware tends to
-have (most of the time, as per my experience) rather long initialisation
-time either from being powered off or after being power cycled.  I can take
-a while before the actual operating system itself will start.
+Regards,
+Bjorn
 
-We talked about this briefly with Bjorn, and there might be an option to
-perhaps add some caching, as we suspect that the culprit here is doing PCI
-configuration space read for each device, which can be slow on some
-platforms.
-
-However, we would need to profile this to get some quantitative data to see
-whether doing anything would even be worthwhile.  It would definitely help
-us understand better where the bottlenecks really are and of what magnitude.
-
-I personally don't have access to such a large hardware like the one you
-have access to, thus I was wondering whether you would have some time, and
-be willing, to profile this for us on the hardware you have.
-
-Let me know what do you think?
-
-	Krzysztof
+> ---
+>  drivers/iommu/arm/arm-smmu/arm-smmu-qcom.c | 2 +-
+>  1 file changed, 1 insertion(+), 1 deletion(-)
+> 
+> diff --git a/drivers/iommu/arm/arm-smmu/arm-smmu-qcom.c b/drivers/iommu/arm/arm-smmu/arm-smmu-qcom.c
+> index 55690af1b25d..c998960495b4 100644
+> --- a/drivers/iommu/arm/arm-smmu/arm-smmu-qcom.c
+> +++ b/drivers/iommu/arm/arm-smmu/arm-smmu-qcom.c
+> @@ -51,7 +51,7 @@ static void qcom_adreno_smmu_get_fault_info(const void *cookie,
+>  	info->fsynr1 = arm_smmu_cb_read(smmu, cfg->cbndx, ARM_SMMU_CB_FSYNR1);
+>  	info->far = arm_smmu_cb_readq(smmu, cfg->cbndx, ARM_SMMU_CB_FAR);
+>  	info->cbfrsynra = arm_smmu_gr1_read(smmu, ARM_SMMU_GR1_CBFRSYNRA(cfg->cbndx));
+> -	info->ttbr0 = arm_smmu_cb_read(smmu, cfg->cbndx, ARM_SMMU_CB_TTBR0);
+> +	info->ttbr0 = arm_smmu_cb_readq(smmu, cfg->cbndx, ARM_SMMU_CB_TTBR0);
+>  	info->contextidr = arm_smmu_cb_read(smmu, cfg->cbndx, ARM_SMMU_CB_CONTEXTIDR);
+>  }
+>  
+> -- 
+> 2.31.1
+> 
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
