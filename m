@@ -2,66 +2,66 @@ Return-Path: <SRS0=Rhk0=P6=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 31DF7C433FE
-	for <iommu@archiver.kernel.org>; Thu, 11 Nov 2021 06:50:40 +0000 (UTC)
-Received: from smtp4.osuosl.org (smtp4.osuosl.org [140.211.166.137])
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5E9B7C4332F
+	for <iommu@archiver.kernel.org>; Thu, 11 Nov 2021 06:50:41 +0000 (UTC)
+Received: from smtp3.osuosl.org (smtp3.osuosl.org [140.211.166.136])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id B7C6761037
-	for <iommu@archiver.kernel.org>; Thu, 11 Nov 2021 06:50:39 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.4.1 mail.kernel.org B7C6761037
+	by mail.kernel.org (Postfix) with ESMTPS id 21B5661269
+	for <iommu@archiver.kernel.org>; Thu, 11 Nov 2021 06:50:41 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.4.1 mail.kernel.org 21B5661269
 Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=lst.de
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by smtp4.osuosl.org (Postfix) with ESMTP id 84912404DF;
+	by smtp3.osuosl.org (Postfix) with ESMTP id 34A7560B14;
+	Thu, 11 Nov 2021 06:50:40 +0000 (UTC)
+X-Virus-Scanned: amavisd-new at osuosl.org
+Received: from smtp3.osuosl.org ([127.0.0.1])
+	by localhost (smtp3.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+	with ESMTP id p3_Nn425Ln2U; Thu, 11 Nov 2021 06:50:39 +0000 (UTC)
+Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [IPv6:2605:bc80:3010:104::8cd3:938])
+	by smtp3.osuosl.org (Postfix) with ESMTPS id 0B9F360B0F;
 	Thu, 11 Nov 2021 06:50:39 +0000 (UTC)
-X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from smtp4.osuosl.org ([127.0.0.1])
-	by localhost (smtp4.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id MMgeSAPKzwrq; Thu, 11 Nov 2021 06:50:38 +0000 (UTC)
-Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by smtp4.osuosl.org (Postfix) with ESMTPS id 6804E404EA;
-	Thu, 11 Nov 2021 06:50:38 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 4628BC0020;
+	by lists.linuxfoundation.org (Postfix) with ESMTP id DB9DFC0036;
 	Thu, 11 Nov 2021 06:50:38 +0000 (UTC)
-Received: from smtp2.osuosl.org (smtp2.osuosl.org [140.211.166.133])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 97907C0020
- for <iommu@lists.linux-foundation.org>; Thu, 11 Nov 2021 06:50:36 +0000 (UTC)
+Received: from smtp1.osuosl.org (smtp1.osuosl.org [140.211.166.138])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 3A21DC003C
+ for <iommu@lists.linux-foundation.org>; Thu, 11 Nov 2021 06:50:37 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by smtp2.osuosl.org (Postfix) with ESMTP id D32A7400C9
- for <iommu@lists.linux-foundation.org>; Thu, 11 Nov 2021 06:50:35 +0000 (UTC)
+ by smtp1.osuosl.org (Postfix) with ESMTP id 246D881A33
+ for <iommu@lists.linux-foundation.org>; Thu, 11 Nov 2021 06:50:37 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Authentication-Results: smtp2.osuosl.org (amavisd-new);
+Authentication-Results: smtp1.osuosl.org (amavisd-new);
  dkim=pass (2048-bit key) header.d=infradead.org
-Received: from smtp2.osuosl.org ([127.0.0.1])
- by localhost (smtp2.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id 1pWWDWfxHB5Q for <iommu@lists.linux-foundation.org>;
- Thu, 11 Nov 2021 06:50:35 +0000 (UTC)
+Received: from smtp1.osuosl.org ([127.0.0.1])
+ by localhost (smtp1.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+ with ESMTP id aBx180_kJEVG for <iommu@lists.linux-foundation.org>;
+ Thu, 11 Nov 2021 06:50:36 +0000 (UTC)
 X-Greylist: from auto-whitelisted by SQLgrey-1.8.0
 Received: from casper.infradead.org (casper.infradead.org
  [IPv6:2001:8b0:10b:1236::1])
- by smtp2.osuosl.org (Postfix) with ESMTPS id 049F9400FB
- for <iommu@lists.linux-foundation.org>; Thu, 11 Nov 2021 06:50:34 +0000 (UTC)
+ by smtp1.osuosl.org (Postfix) with ESMTPS id 6713C81A0D
+ for <iommu@lists.linux-foundation.org>; Thu, 11 Nov 2021 06:50:36 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
  d=infradead.org; s=casper.20170209; h=Content-Transfer-Encoding:MIME-Version:
  References:In-Reply-To:Message-Id:Date:Subject:Cc:To:From:Sender:Reply-To:
  Content-Type:Content-ID:Content-Description;
- bh=1WOvyqEQIYPJu8OHmBDb4GQnNqqjABzGe1DFQzws+Ig=; b=X0tmSUWgTYLpDf3Ad7Y/XgybNP
- XhjDToP2PDAK4xYQYNSBdYoZ4LeaU351MCcWWfWklhO9n6WhJ9MmUC7KTBbu2hWOlGKOAhXObG7tb
- kwA/Y6WOY7va6qdeHmqBucCDXYgU79nXcDIXnsTnkJcYUjOoxeQiBsn8g94U25chJOjON1XyWMHES
- EsAWvAyBbD7ouV5HQalYbEIQC3F9re8UNVIUKMV8Zm90yBIe6r6jHfFFh2uxjd++ThnRHfE5Rr1Cl
- Njtc40MXJ9F5Yi/v84NyS25k4/9iqYVSL1hiHUe5pfcN9X+C1REl28jImp5UIA1YLN4p4OPgdnRHW
- 2TRAkHAA==;
+ bh=haBuFuwrjV4edODOQFGCEcPRaZ3DiSObrSPQ8bp7Yes=; b=feQpuTzoizrRn/Vtt5ctIbvZsf
+ m3qZRBFkAzYhHk3MLm2bI4rTvFGyAUzT9hcBW1bd+pBTmzpwdoXBmfqktLBp6IHvA9CiQYqXB8k52
+ VV3gta+ZOrXPdu9UEgM4PnTLYE+zJaVBNU+OE5uBhKHLL2kyYsYT66iZwsanesgSA5x+tnj4lINFw
+ YgXBo1UVhsp0PlmRYbtfdaxB5yHUlYNU2iT9Qdh8omozIF55EM6xlZmynoKAQW5pFxuRnRhwzbIc9
+ R5IkwkHTwRINY7+fLSzi8HxbJ+Z9VrGwvDDzkDkVLKmBLrhjp/t6Lu8BHSrSjnFUKXAJl7CJ0aHrs
+ f+YMiJKQ==;
 Received: from [2001:4bb8:19a:7ee7:dc25:8b64:278b:ff22] (helo=localhost)
  by casper.infradead.org with esmtpsa (Exim 4.94.2 #2 (Red Hat Linux))
- id 1ml3uq-002Vx8-4N; Thu, 11 Nov 2021 06:50:33 +0000
+ id 1ml3ur-002VxP-C6; Thu, 11 Nov 2021 06:50:34 +0000
 From: Christoph Hellwig <hch@lst.de>
 To: iommu@lists.linux-foundation.org
-Subject: [PATCH 03/11] dma-direct: always leak memory that can't be
- re-encrypted
-Date: Thu, 11 Nov 2021 07:50:19 +0100
-Message-Id: <20211111065028.32761-4-hch@lst.de>
+Subject: [PATCH 04/11] dma-direct: clean up the remapping checks in
+ dma_direct_alloc
+Date: Thu, 11 Nov 2021 07:50:20 +0100
+Message-Id: <20211111065028.32761-5-hch@lst.de>
 X-Mailer: git-send-email 2.30.2
 In-Reply-To: <20211111065028.32761-1-hch@lst.de>
 References: <20211111065028.32761-1-hch@lst.de>
@@ -86,62 +86,96 @@ Content-Transfer-Encoding: 7bit
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-We must never unencryped memory go back into the general page pool.
-So if we fail to set it back to encrypted when freeing DMA memory, leak
-the memory insted and warn the user.
+Add two local variables to track if we want to remap the returned
+address using vmap or call dma_set_uncached and use that to simplify
+the code flow.
 
 Signed-off-by: Christoph Hellwig <hch@lst.de>
 ---
- kernel/dma/direct.c | 14 ++++++++++----
- 1 file changed, 10 insertions(+), 4 deletions(-)
+ kernel/dma/direct.c | 48 ++++++++++++++++++++++++---------------------
+ 1 file changed, 26 insertions(+), 22 deletions(-)
 
 diff --git a/kernel/dma/direct.c b/kernel/dma/direct.c
-index 996ba4edb2fa3..d7a489be48470 100644
+index d7a489be48470..3d1718dc077e9 100644
 --- a/kernel/dma/direct.c
 +++ b/kernel/dma/direct.c
-@@ -84,9 +84,14 @@ static int dma_set_decrypted(struct device *dev, void *vaddr, size_t size)
- 
- static int dma_set_encrypted(struct device *dev, void *vaddr, size_t size)
+@@ -171,6 +171,7 @@ static void *dma_direct_alloc_from_pool(struct device *dev, size_t size,
+ void *dma_direct_alloc(struct device *dev, size_t size,
+ 		dma_addr_t *dma_handle, gfp_t gfp, unsigned long attrs)
  {
-+	int ret;
-+
- 	if (!force_dma_unencrypted(dev))
- 		return 0;
--	return set_memory_encrypted((unsigned long)vaddr, 1 << get_order(size));
-+	ret = set_memory_encrypted((unsigned long)vaddr, 1 << get_order(size));
-+	if (ret)
-+		pr_warn_ratelimited("leaking DMA memory that can't be re-encrypted\n");
-+	return ret;
- }
++	bool remap = false, set_uncached = false;
+ 	struct page *page;
+ 	void *ret;
  
- static void __dma_direct_free_pages(struct device *dev, struct page *page,
-@@ -261,7 +266,6 @@ void *dma_direct_alloc(struct device *dev, size_t size,
- 	return ret;
- 
- out_encrypt_pages:
--	/* If memory cannot be re-encrypted, it must be leaked */
- 	if (dma_set_encrypted(dev, page_address(page), size))
+@@ -222,9 +223,25 @@ void *dma_direct_alloc(struct device *dev, size_t size,
+ 	if (!page)
  		return NULL;
- out_free_pages:
-@@ -307,7 +311,8 @@ void dma_direct_free(struct device *dev, size_t size,
- 	} else {
- 		if (IS_ENABLED(CONFIG_ARCH_HAS_DMA_CLEAR_UNCACHED))
- 			arch_dma_clear_uncached(cpu_addr, size);
--		dma_set_encrypted(dev, cpu_addr, 1 << page_order);
-+		if (dma_set_encrypted(dev, cpu_addr, 1 << page_order))
-+			return;
+ 
+-	if ((IS_ENABLED(CONFIG_DMA_DIRECT_REMAP) &&
+-	     !dev_is_dma_coherent(dev)) ||
+-	    (IS_ENABLED(CONFIG_DMA_REMAP) && PageHighMem(page))) {
++	if (!dev_is_dma_coherent(dev) && IS_ENABLED(CONFIG_DMA_DIRECT_REMAP)) {
++		remap = true;
++	} else if (PageHighMem(page)) {
++		/*
++		 * Depending on the cma= arguments and per-arch setup,
++		 * dma_alloc_contiguous could return highmem pages.
++		 * Without remapping there is no way to return them here, so
++		 * log an error and fail.
++		 */
++		if (!IS_ENABLED(CONFIG_DMA_REMAP)) {
++			dev_info(dev, "Rejecting highmem page from CMA.\n");
++			goto out_free_pages;
++		}
++		remap = true;
++	} else if (!dev_is_dma_coherent(dev) &&
++		   IS_ENABLED(CONFIG_ARCH_HAS_DMA_SET_UNCACHED))
++		set_uncached = true;
++
++	if (remap) {
+ 		/* remove any dirty cache lines on the kernel alias */
+ 		arch_dma_prep_coherent(page, size);
+ 
+@@ -234,34 +251,21 @@ void *dma_direct_alloc(struct device *dev, size_t size,
+ 				__builtin_return_address(0));
+ 		if (!ret)
+ 			goto out_free_pages;
+-		memset(ret, 0, size);
+-		goto done;
+-	}
+-
+-	if (PageHighMem(page)) {
+-		/*
+-		 * Depending on the cma= arguments and per-arch setup
+-		 * dma_alloc_contiguous could return highmem pages.
+-		 * Without remapping there is no way to return them here,
+-		 * so log an error and fail.
+-		 */
+-		dev_info(dev, "Rejecting highmem page from CMA.\n");
+-		goto out_free_pages;
++	} else {
++		ret = page_address(page);
++		if (dma_set_decrypted(dev, ret, size))
++			goto out_free_pages;
  	}
  
- 	__dma_direct_free_pages(dev, dma_direct_to_page(dev, dma_addr), size);
-@@ -361,7 +366,8 @@ void dma_direct_free_pages(struct device *dev, size_t size,
- 	    dma_free_from_pool(dev, vaddr, size))
- 		return;
+-	ret = page_address(page);
+-	if (dma_set_decrypted(dev, ret, size))
+-		goto out_free_pages;
+ 	memset(ret, 0, size);
  
--	dma_set_encrypted(dev, vaddr, 1 << page_order);
-+	if (dma_set_encrypted(dev, vaddr, 1 << page_order))
-+		return;
- 	__dma_direct_free_pages(dev, page, size);
- }
+-	if (IS_ENABLED(CONFIG_ARCH_HAS_DMA_SET_UNCACHED) &&
+-	    !dev_is_dma_coherent(dev)) {
++	if (set_uncached) {
+ 		arch_dma_prep_coherent(page, size);
+ 		ret = arch_dma_set_uncached(ret, size);
+ 		if (IS_ERR(ret))
+ 			goto out_encrypt_pages;
+ 	}
+-done:
++
+ 	*dma_handle = phys_to_dma_direct(dev, page_to_phys(page));
+ 	return ret;
  
 -- 
 2.30.2
