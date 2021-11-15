@@ -2,102 +2,100 @@ Return-Path: <SRS0=xEY5=QC=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8DEF5C433FE
-	for <iommu@archiver.kernel.org>; Mon, 15 Nov 2021 19:55:34 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 57527C43217
+	for <iommu@archiver.kernel.org>; Mon, 15 Nov 2021 19:55:35 +0000 (UTC)
 Received: from smtp3.osuosl.org (smtp3.osuosl.org [140.211.166.136])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 4DC0D61B49
-	for <iommu@archiver.kernel.org>; Mon, 15 Nov 2021 19:55:34 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.4.1 mail.kernel.org 4DC0D61B49
+	by mail.kernel.org (Postfix) with ESMTPS id 1F24861B51
+	for <iommu@archiver.kernel.org>; Mon, 15 Nov 2021 19:55:35 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.4.1 mail.kernel.org 1F24861B51
 Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=sent.com
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by smtp3.osuosl.org (Postfix) with ESMTP id F0419607C2;
-	Mon, 15 Nov 2021 19:55:33 +0000 (UTC)
+	by smtp3.osuosl.org (Postfix) with ESMTP id 35AE1607BA;
+	Mon, 15 Nov 2021 19:55:34 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
 Received: from smtp3.osuosl.org ([127.0.0.1])
 	by localhost (smtp3.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id KVZc5Uizz0i9; Mon, 15 Nov 2021 19:55:33 +0000 (UTC)
-Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [IPv6:2605:bc80:3010:104::8cd3:938])
-	by smtp3.osuosl.org (Postfix) with ESMTPS id AF0B7607BA;
+	with ESMTP id lAClqentNJvK; Mon, 15 Nov 2021 19:55:33 +0000 (UTC)
+Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
+	by smtp3.osuosl.org (Postfix) with ESMTPS id E157A607BB;
 	Mon, 15 Nov 2021 19:55:32 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id CCCF3C003E;
-	Mon, 15 Nov 2021 19:55:31 +0000 (UTC)
-Received: from smtp4.osuosl.org (smtp4.osuosl.org [140.211.166.137])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 82397C0031;
- Mon, 15 Nov 2021 19:46:01 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 17926C0032;
+	Mon, 15 Nov 2021 19:55:32 +0000 (UTC)
+Received: from smtp1.osuosl.org (smtp1.osuosl.org [IPv6:2605:bc80:3010::138])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 9AC56C0012;
+ Mon, 15 Nov 2021 19:46:02 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by smtp4.osuosl.org (Postfix) with ESMTP id 5626540278;
+ by smtp1.osuosl.org (Postfix) with ESMTP id 878DB80C79;
  Mon, 15 Nov 2021 19:46:01 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Authentication-Results: smtp4.osuosl.org (amavisd-new);
- dkim=pass (2048-bit key) header.d=sent.com header.b="0KSmGcem";
+Authentication-Results: smtp1.osuosl.org (amavisd-new);
+ dkim=pass (2048-bit key) header.d=sent.com header.b="Ed1fz5Ur";
  dkim=pass (2048-bit key) header.d=messagingengine.com
- header.b="AG6W7724"
-Received: from smtp4.osuosl.org ([127.0.0.1])
- by localhost (smtp4.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id 6zep9wp4efIe; Mon, 15 Nov 2021 19:46:00 +0000 (UTC)
+ header.b="A4kmEJ1u"
+Received: from smtp1.osuosl.org ([127.0.0.1])
+ by localhost (smtp1.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+ with ESMTP id kWm1L0j_ZgQm; Mon, 15 Nov 2021 19:46:00 +0000 (UTC)
 X-Greylist: from auto-whitelisted by SQLgrey-1.8.0
 X-Greylist: from auto-whitelisted by SQLgrey-1.8.0
 Received: from new3-smtp.messagingengine.com (new3-smtp.messagingengine.com
  [66.111.4.229])
- by smtp4.osuosl.org (Postfix) with ESMTPS id 824294026F;
+ by smtp1.osuosl.org (Postfix) with ESMTPS id 83BCE80D44;
  Mon, 15 Nov 2021 19:46:00 +0000 (UTC)
-Received: from compute6.internal (compute6.nyi.internal [10.202.2.46])
- by mailnew.nyi.internal (Postfix) with ESMTP id 490E5580631;
- Mon, 15 Nov 2021 14:37:52 -0500 (EST)
+Received: from compute5.internal (compute5.nyi.internal [10.202.2.45])
+ by mailnew.nyi.internal (Postfix) with ESMTP id E184A5805B1;
+ Mon, 15 Nov 2021 14:37:48 -0500 (EST)
 Received: from mailfrontend2 ([10.202.2.163])
- by compute6.internal (MEProxy); Mon, 15 Nov 2021 14:37:52 -0500
+ by compute5.internal (MEProxy); Mon, 15 Nov 2021 14:37:48 -0500
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=sent.com; h=from
- :to:cc:subject:date:message-id:in-reply-to:references:reply-to
- :mime-version:content-transfer-encoding; s=fm2; bh=YFFMYVihWiPWk
- tyuxrOQDQ9eoOlotAMNNpVZGNCElO4=; b=0KSmGcem0XSmBLi02KfOtT89MOTZm
- Z4IwFx+QEXZqMm9++dx+bVPqeYflclLgTijihCkbG3s6+Eky5F2lf6aFaXEqLRHD
- QXWVVps72mZG/SDaBR48uA/py4FZ/lrH/C8H4IYNePPY1SMkE7zG7RLQBeJ6iOgb
- NWmjiIROVXymlsb3OlpA9NcHUZYGin1/sGkSx5cV33lSBFFerYaA4a042ztvizP9
- lYIZ/7miQQEPhi3OzlywV4dxvBWTb/4LVxVzhZqHze5C2nL8kZ0+Szraiw+sWqSL
- YhaD1bH8jWoPpwRqkwRJkpLfmSo75LU4pv8XDfIkpXx9LtFqufoufdDtA==
+ :to:cc:subject:date:message-id:reply-to:mime-version
+ :content-transfer-encoding; s=fm2; bh=orTWr/BdFPg59h4hngLif2VhgL
+ B0bl+rFHZpRRyIkS0=; b=Ed1fz5UrkY2HQYKDvFsL0C7TFBad1qpGnzrhTYEF98
+ KYuyT3C6YrqBfrBYHy5ug+pBvAyxQ9UGWT2ebj7Q05NFslhNaL7PQda+4qZi8H4j
+ UmX2z3ghjiwLir/83wjyS5DiCKwP1f0PVZsqJ5vC97JLFBZGIC9tgqeyvT8nbAoG
+ j15IXPObAN8p5piwWNUyljS9qw1IbngUmC5K5eC9j223Q0beaRbwr7U/UnjbjDj9
+ T+UoBHPE2Iyd5z++uBPQ2sVHoVFSnMfTfD5G5LUyv0oLN2Qv1oBvNxOJFHP/vJWh
+ ZREZtNLZ+aeqDWNSZ325NYGpEDahpCeefqEXz3idyzKw==
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
  messagingengine.com; h=cc:content-transfer-encoding:date:from
- :in-reply-to:message-id:mime-version:references:reply-to:subject
- :to:x-me-proxy:x-me-proxy:x-me-sender:x-me-sender:x-sasl-enc; s=
- fm1; bh=YFFMYVihWiPWktyuxrOQDQ9eoOlotAMNNpVZGNCElO4=; b=AG6W7724
- w7Vhj06SHRZjFE5aU+pnidCinTGfjv2nhxJZ6TS6uRSphj9r4DRwfRzwtAlwiyIu
- bfcqb9UuKAeHnI7c65ujBBKh4zFj/kh8Lv5pexFDa4EtIURbKPur0FTkBPl2Qzag
- dfp0NU1PZ+tTPSTFvTb40cpl9zNtKGA4Vv5Mtqxs4NqEQE7zaPJsCcFtjyYVOnMJ
- CM4rCwlCYtDhE/5L2eyV2fVmI2iPcdD994UiDrGP05p3G3gzrFnzL74Bm7/4In48
- NG1l/W0XuYMPkAR0fI4Haw8j13qj2IUs7iW/Dp20cmR+VZ7XEeUkvCxrdv08tiJU
- JTsrAy3/AJdG6A==
-X-ME-Sender: <xms:D7eSYR6F2OCY0aXFjolRkyiLBwUm32hkrpDW71yH2l3z9yq8yQcirQ>
- <xme:D7eSYe69Z0e0J9imxreIuQ7ljrcXkMShhzOi7Hiyiin8CWsdHLManl2sSfm1bZoL7
- 353LyVjCu3k_AXYlw>
-X-ME-Received: <xmr:D7eSYYcKmA6JuI4rVsFCUxaAaWia70Hkyp3ZR9MO9sMh6Mmwt0A2cv0pf2oFWt0QncpB6bI9>
+ :message-id:mime-version:reply-to:subject:to:x-me-proxy
+ :x-me-proxy:x-me-sender:x-me-sender:x-sasl-enc; s=fm1; bh=orTWr/
+ BdFPg59h4hngLif2VhgLB0bl+rFHZpRRyIkS0=; b=A4kmEJ1ugobNUsOlhtU9Ik
+ Vb7h5/Y2ujIFuSMek1uU+5yqMBc4Zk8fQgiFUYIrt1EeSXvzeTWMqOZMgwFbg1jX
+ H6CFQswsi6GNSyIfemmH4VETAewa4eEpVybaxyQ5Wkeg+Wi5Es0i9W73AqcEbetT
+ YncaPU0a3cxLloc4ujX4Xf/vBA1j51tonN1oD+5b0bdDrIoRi1MhmZ0ELSBuM11G
+ w4hcEHpAFl5VRHqnSGTA9Mr5R3bLIl8qnelTsIrcnpHryU7BOKQG6DoOR94mOdkH
+ zh++T/Fm0ls+BQmlMwPCffSNO3tQmODoFvG9tE6yVnf1U8X/HepwE8u6EipnVZhw
+ ==
+X-ME-Sender: <xms:C7eSYVXFk7JmR9-1n-lfZNecRv0L2HfJvcd9GZIEJeaEcwTxkcY5cw>
+ <xme:C7eSYVl_h7QJsI-RfFnobMcPfT7N8UNLbsLNZuKe76VIpV9nfWCWWOg9Q-kCQlxbs
+ seUqVGwX7mU3oTSXA>
+X-ME-Received: <xmr:C7eSYRaHhyU-FxOxc_yzKNnpWM8qbnNEeyNn_Bg_on1LJzAk0pJr1s447nOnDYdGZ6B6AweR>
 X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgedvuddrfedtgddutddtucetufdoteggodetrfdotf
  fvucfrrhhofhhilhgvmecuhfgrshhtofgrihhlpdfqfgfvpdfurfetoffkrfgpnffqhgen
  uceurghilhhouhhtmecufedttdenucesvcftvggtihhpihgvnhhtshculddquddttddmne
- cujfgurhephffvufffkffojghfrhgggfestdhqredtredttdenucfhrhhomhepkghiucgj
- rghnuceoiihirdihrghnsehsvghnthdrtghomheqnecuggftrfgrthhtvghrnhepieejue
- dvueduuefhgefhheeiuedvtedvuefgieegveetueeiueehtdegudehfeelnecuvehluhhs
- thgvrhfuihiivgeptdenucfrrghrrghmpehmrghilhhfrhhomhepiihirdihrghnsehsvg
- hnthdrtghomh
-X-ME-Proxy: <xmx:D7eSYaIxidt93JQnvs-8VA9VlQE9H9wWsjtj_jteON4m098vlZF6Fw>
- <xmx:D7eSYVJynTUv1E1Gn2kLXcxam7_4OfTH85AuqAk3OrDZU0k1gkO-rQ>
- <xmx:D7eSYTz1PUmixsZoMw4rWRLueT399yXJBV5agTa10jzreI5ii-_DkA>
- <xmx:ELeSYeX-tSoOAwwfRfuGF2owt7JF4z9ZpWx6we5_tg1jp0WhR_Q9Jg>
+ cujfgurhephffvufffkfforhgggfestdhqredtredttdenucfhrhhomhepkghiucgjrghn
+ uceoiihirdihrghnsehsvghnthdrtghomheqnecuggftrfgrthhtvghrnhepteeiiedtje
+ fghfefueekjedvueeftddvudelhfetudffiefgfeetheeghfdvgedunecuffhomhgrihhn
+ pehkvghrnhgvlhdrohhrghenucevlhhushhtvghrufhiiigvpedtnecurfgrrhgrmhepmh
+ grihhlfhhrohhmpeiiihdrhigrnhesshgvnhhtrdgtohhm
+X-ME-Proxy: <xmx:C7eSYYW0PZ-OaD6zFoQJg2937ANlsMaGnaz86EkAFahT-usXJa0ssw>
+ <xmx:C7eSYfkeVTrkSW9plAacUahXN7oJnoopoWkV6nDN80Fcwuvfih28oQ>
+ <xmx:C7eSYVeChEzqCpejz1a6-1nlYfnXpTIZR_hoK4SVdTUqtd3rZdDfow>
+ <xmx:DLeSYYgAbbOso3y3JuXIID0BiejBpUjgP3A8s-Tdof442Ed_vIBzYA>
 Received: by mail.messagingengine.com (Postfix) with ESMTPA; Mon,
- 15 Nov 2021 14:37:51 -0500 (EST)
+ 15 Nov 2021 14:37:47 -0500 (EST)
 From: Zi Yan <zi.yan@sent.com>
 To: David Hildenbrand <david@redhat.com>,
 	linux-mm@kvack.org
-Subject: [RFC PATCH 3/3] arch: powerpc: adjust fadump alignment to pageblock
- aligned.
-Date: Mon, 15 Nov 2021 14:37:25 -0500
-Message-Id: <20211115193725.737539-5-zi.yan@sent.com>
+Subject: [RFC PATCH 0/3] Use pageblock_order for cma and alloc_contig_range
+ alignment.
+Date: Mon, 15 Nov 2021 14:37:21 -0500
+Message-Id: <20211115193725.737539-1-zi.yan@sent.com>
 X-Mailer: git-send-email 2.33.0
-In-Reply-To: <20211115193725.737539-1-zi.yan@sent.com>
-References: <20211115193725.737539-1-zi.yan@sent.com>
 MIME-Version: 1.0
 X-Mailman-Approved-At: Mon, 15 Nov 2021 19:55:29 +0000
 Cc: Michael Ellerman <mpe@ellerman.id.au>, Robin Murphy <robin.murphy@arm.com>,
@@ -124,28 +122,46 @@ Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
 From: Zi Yan <ziy@nvidia.com>
 
-CMA only requires pageblock alignment. Change fadump too.
+Hi David,
 
-Signed-off-by: Zi Yan <ziy@nvidia.com>
----
- arch/powerpc/include/asm/fadump-internal.h | 4 +---
- 1 file changed, 1 insertion(+), 3 deletions(-)
+You suggested to make alloc_contig_range() deal with pageblock_order instead of
+MAX_ORDER - 1 and get rid of MAX_ORDER - 1 dependency in virtio_mem[1]. This
+patchset is my attempt to achieve that. Please take a look and let me know if
+I am doing it correctly or not.
 
-diff --git a/arch/powerpc/include/asm/fadump-internal.h b/arch/powerpc/include/asm/fadump-internal.h
-index 8d61c8f3fec4..9198f20b6b68 100644
---- a/arch/powerpc/include/asm/fadump-internal.h
-+++ b/arch/powerpc/include/asm/fadump-internal.h
-@@ -20,9 +20,7 @@
- #define memblock_num_regions(memblock_type)	(memblock.memblock_type.cnt)
- 
- /* Alignment per CMA requirement. */
--#define FADUMP_CMA_ALIGNMENT	(PAGE_SIZE <<				\
--				 max_t(unsigned long, MAX_ORDER - 1,	\
--				 pageblock_order))
-+#define FADUMP_CMA_ALIGNMENT	(PAGE_SIZE << pageblock_order)
- 
- /* FAD commands */
- #define FADUMP_REGISTER			1
+From what my understanding, cma required alignment of
+max(MAX_ORDER - 1, pageblock_order), because when MIGRATE_CMA was introduced,
+__free_one_page() does not prevent merging two different pageblocks, when
+MAX_ORDER - 1 > pageblock_order. But current __free_one_page() implementation
+does prevent that. It should be OK to just align cma to pageblock_order.
+alloc_contig_range() relies on MIGRATE_CMA to get free pages, so it can use
+pageblock_order as alignment too.
+
+In terms of virtio_mem, if I understand correctly, it relies on
+alloc_contig_range() to obtain contiguous free pages and offlines them to reduce
+guest memory size. As the result of alloc_contig_range() alignment change,
+virtio_mem should be able to just align PFNs to pageblock_order.
+
+Thanks.
+
+
+[1] https://lore.kernel.org/linux-mm/28b57903-fae6-47ac-7e1b-a1dd41421349@redhat.com/
+
+Zi Yan (3):
+  mm: cma: alloc_contig_range: use pageblock_order as the single
+    alignment.
+  drivers: virtio_mem: use pageblock size as the minimum virtio_mem
+    size.
+  arch: powerpc: adjust fadump alignment to be pageblock aligned.
+
+ arch/powerpc/include/asm/fadump-internal.h |  4 +---
+ drivers/virtio/virtio_mem.c                |  6 ++----
+ include/linux/mmzone.h                     |  5 +----
+ kernel/dma/contiguous.c                    |  2 +-
+ mm/cma.c                                   |  6 ++----
+ mm/page_alloc.c                            | 12 +++++-------
+ 6 files changed, 12 insertions(+), 23 deletions(-)
+
 -- 
 2.33.0
 
