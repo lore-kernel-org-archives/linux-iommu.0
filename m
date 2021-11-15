@@ -2,110 +2,72 @@ Return-Path: <SRS0=xEY5=QC=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 967FAC433F5
-	for <iommu@archiver.kernel.org>; Mon, 15 Nov 2021 14:10:36 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6D340C433FE
+	for <iommu@archiver.kernel.org>; Mon, 15 Nov 2021 15:14:59 +0000 (UTC)
 Received: from smtp4.osuosl.org (smtp4.osuosl.org [140.211.166.137])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 3E81761C4F
-	for <iommu@archiver.kernel.org>; Mon, 15 Nov 2021 14:10:36 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.4.1 mail.kernel.org 3E81761C4F
-Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=canonical.com
+	by mail.kernel.org (Postfix) with ESMTPS id 0CC8963222
+	for <iommu@archiver.kernel.org>; Mon, 15 Nov 2021 15:14:58 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.4.1 mail.kernel.org 0CC8963222
+Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=arm.com
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by smtp4.osuosl.org (Postfix) with ESMTP id 07974402BC;
-	Mon, 15 Nov 2021 14:10:36 +0000 (UTC)
+	by smtp4.osuosl.org (Postfix) with ESMTP id C994C4022E;
+	Mon, 15 Nov 2021 15:14:58 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
 Received: from smtp4.osuosl.org ([127.0.0.1])
 	by localhost (smtp4.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id JOvughptB-Mw; Mon, 15 Nov 2021 14:10:35 +0000 (UTC)
+	with ESMTP id 2IyZHUdt9Oko; Mon, 15 Nov 2021 15:14:58 +0000 (UTC)
 Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [IPv6:2605:bc80:3010:104::8cd3:938])
-	by smtp4.osuosl.org (Postfix) with ESMTPS id EEFA1402C1;
-	Mon, 15 Nov 2021 14:10:34 +0000 (UTC)
+	by smtp4.osuosl.org (Postfix) with ESMTPS id A045040218;
+	Mon, 15 Nov 2021 15:14:57 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id CD287C001E;
-	Mon, 15 Nov 2021 14:10:34 +0000 (UTC)
-Received: from smtp3.osuosl.org (smtp3.osuosl.org [140.211.166.136])
- by lists.linuxfoundation.org (Postfix) with ESMTP id A3BB8C0012
- for <iommu@lists.linux-foundation.org>; Mon, 15 Nov 2021 14:10:33 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 67849C002E;
+	Mon, 15 Nov 2021 15:14:57 +0000 (UTC)
+Received: from smtp2.osuosl.org (smtp2.osuosl.org [140.211.166.133])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 23A5FC0012
+ for <iommu@lists.linux-foundation.org>; Mon, 15 Nov 2021 15:14:56 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by smtp3.osuosl.org (Postfix) with ESMTP id 91E64605FC
- for <iommu@lists.linux-foundation.org>; Mon, 15 Nov 2021 14:10:33 +0000 (UTC)
+ by smtp2.osuosl.org (Postfix) with ESMTP id 10D4040178
+ for <iommu@lists.linux-foundation.org>; Mon, 15 Nov 2021 15:14:56 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Authentication-Results: smtp3.osuosl.org (amavisd-new);
- dkim=pass (2048-bit key) header.d=canonical.com
-Received: from smtp3.osuosl.org ([127.0.0.1])
- by localhost (smtp3.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id FcohMQX7AeEB for <iommu@lists.linux-foundation.org>;
- Mon, 15 Nov 2021 14:10:32 +0000 (UTC)
+Received: from smtp2.osuosl.org ([127.0.0.1])
+ by localhost (smtp2.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+ with ESMTP id WbhXB6-PX1ty for <iommu@lists.linux-foundation.org>;
+ Mon, 15 Nov 2021 15:14:54 +0000 (UTC)
 X-Greylist: domain auto-whitelisted by SQLgrey-1.8.0
-Received: from smtp-relay-internal-1.canonical.com
- (smtp-relay-internal-1.canonical.com [185.125.188.123])
- by smtp3.osuosl.org (Postfix) with ESMTPS id CFD7F605F9
- for <iommu@lists.linux-foundation.org>; Mon, 15 Nov 2021 14:10:32 +0000 (UTC)
-Received: from mail-lj1-f199.google.com (mail-lj1-f199.google.com
- [209.85.208.199])
- (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
- key-exchange X25519 server-signature RSA-PSS (2048 bits) server-digest SHA256)
- (No client certificate requested)
- by smtp-relay-internal-1.canonical.com (Postfix) with ESMTPS id E254B3F1CC
- for <iommu@lists.linux-foundation.org>; Mon, 15 Nov 2021 14:10:29 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=canonical.com;
- s=20210705; t=1636985429;
- bh=pfr1cDNzcAoQOpDJQS2N+lpkCMkGHO9LO6u1gxB8aGM=;
- h=From:To:Cc:Subject:Date:Message-Id:In-Reply-To:References:
- MIME-Version:Content-Type;
- b=ctNqT7HEX4QQTepOUtE/pPA69s+PbJpIXCDGH07HxDEie0T5HH0oRzR8kidQ3M6Wq
- QxCzGr4xpdId0V5CgDg6TGaydn0dptwB8DWjy6W5aVaLN5kR9WxQOty5ZcNDDbrgdq
- i3nk7+kWfxr2kFTwHB11GU53AjxO+Jq/qugipgE7oEhVwF49j7NnamPisA1Ge6qq67
- i57xPXmHTVru/Y1jfHIubA08VuL8Z08SUbwZVZOgHn2UpZti79IKE6NR0JV9ZwHz/P
- Hkat6arT3SLctNw+X8tbt3sUktB0/wvZTyAC6PeGyNi69LJzLa+zo610LtnlDx+jib
- uWOtb8wIHVNdA==
-Received: by mail-lj1-f199.google.com with SMTP id
- g19-20020a2eb5d3000000b00219f21cb32bso3850968ljn.7
- for <iommu@lists.linux-foundation.org>; Mon, 15 Nov 2021 06:10:29 -0800 (PST)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
- d=1e100.net; s=20210112;
- h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
- :references:mime-version:content-transfer-encoding;
- bh=pfr1cDNzcAoQOpDJQS2N+lpkCMkGHO9LO6u1gxB8aGM=;
- b=6nul4fa7E1dHwyhuUaRbNrnbY4Xxuz6qPddjmFj8rnwuTkrwu0LgHPKEiY4aQBAmq+
- SjsqNPfGEvg8dmurusgC45YlOCFESsAoD6bCQAd4TyIzpi8Cxumzn9c7t360pZtjqi2O
- oJ/Njr9Ui8Qt/UnWg4PQJKXnSK53C0vMwyeraJmZcaji8MNZMrDpbihUQlfr6UUxKGn/
- WLo14fcWVn7FU9D1k6TIeuJkJ9/D7xgCBX5lSsXuS0thCHH+38hPmdnrF0uXXBDx+2OE
- Ye8uz02cgdlJzGhM19ZAjpPm/MnLMvcIE9aaqsvwh4nd7RNpn+1i2BniGI/Cx1gaUzB+
- wrog==
-X-Gm-Message-State: AOAM533fx0jrBq/mpRuXO3x02bGbY9WCdUNcA5KmodDVpcFAuoicu3Eo
- ht9wk0wiTiY7LNCJYLhkJRxLP1ECkIyl781+8rDsdCBZYU7bdf8zHersPs2GlPKKE3hr4a18Q0G
- KIphHJ/ROvaldEzSfGYy+eAoPVVTdlN49TvNIKScU9RUNccY=
-X-Received: by 2002:a05:6512:20e:: with SMTP id
- a14mr18304388lfo.192.1636985429217; 
- Mon, 15 Nov 2021 06:10:29 -0800 (PST)
-X-Google-Smtp-Source: ABdhPJw+mI02/0nQEVJ716rf5CIjp6Bip28AWoCb8f30KO4Aj7CFe5qZ574+bCxyzb4bWi3fMN8Ywg==
-X-Received: by 2002:a05:6512:20e:: with SMTP id
- a14mr18304343lfo.192.1636985428995; 
- Mon, 15 Nov 2021 06:10:28 -0800 (PST)
-Received: from krzk-bin.lan (89-77-68-124.dynamic.chello.pl. [89.77.68.124])
- by smtp.gmail.com with ESMTPSA id p17sm1508215ljm.138.2021.11.15.06.10.27
- (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
- Mon, 15 Nov 2021 06:10:28 -0800 (PST)
-From: Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>
-To: Matthias Brugger <matthias.bgg@gmail.com>, Yong Wu <yong.wu@mediatek.com>
-Subject: Re: [PATCH v2] memory: mtk-smi: Fix a null dereference for the ostd
-Date: Mon, 15 Nov 2021 15:10:25 +0100
-Message-Id: <163698542257.136651.14853548122836494400.b4-ty@canonical.com>
-X-Mailer: git-send-email 2.32.0
-In-Reply-To: <20211108082429.15080-1-yong.wu@mediatek.com>
-References: <20211108082429.15080-1-yong.wu@mediatek.com>
+Received: from foss.arm.com (foss.arm.com [217.140.110.172])
+ by smtp2.osuosl.org (Postfix) with ESMTP id 9330F40106
+ for <iommu@lists.linux-foundation.org>; Mon, 15 Nov 2021 15:14:54 +0000 (UTC)
+Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
+ by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id AD01E6D;
+ Mon, 15 Nov 2021 07:14:53 -0800 (PST)
+Received: from [10.57.82.45] (unknown [10.57.82.45])
+ by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id 3E86B3F766;
+ Mon, 15 Nov 2021 07:14:51 -0800 (PST)
+Message-ID: <495c65e4-bd97-5f29-d39b-43671acfec78@arm.com>
+Date: Mon, 15 Nov 2021 15:14:49 +0000
 MIME-Version: 1.0
-Cc: anan.sun@mediatek.com, youlin.pei@mediatek.com, srv_heupstream@mediatek.com,
- Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>,
- Robin Murphy <robin.murphy@arm.com>, linux-kernel@vger.kernel.org,
- Krzysztof Kozlowski <krzk@kernel.org>, yi.kuo@mediatek.com,
- iommu@lists.linux-foundation.org, linux-mediatek@lists.infradead.org,
- Hsin-Yi Wang <hsinyi@chromium.org>, anthony.huang@mediatek.com,
- Will Deacon <will@kernel.org>, Ikjoon Jang <ikjn@chromium.org>,
- linux-arm-kernel@lists.infradead.org
+User-Agent: Mozilla/5.0 (Windows NT 10.0; rv:91.0) Gecko/20100101
+ Thunderbird/91.3.0
+Subject: Re: [PATCH 03/11] PCI: pci_stub: Suppress kernel DMA ownership
+ auto-claiming
+Content-Language: en-GB
+To: Jason Gunthorpe <jgg@nvidia.com>, Christoph Hellwig <hch@infradead.org>
+References: <20211115020552.2378167-1-baolu.lu@linux.intel.com>
+ <20211115020552.2378167-4-baolu.lu@linux.intel.com>
+ <YZJe1jquP+osF+Wn@infradead.org> <20211115133107.GB2379906@nvidia.com>
+From: Robin Murphy <robin.murphy@arm.com>
+In-Reply-To: <20211115133107.GB2379906@nvidia.com>
+Cc: Alex Williamson <alex.williamson@redhat.com>,
+ Kevin Tian <kevin.tian@intel.com>, Chaitanya Kulkarni <kch@nvidia.com>,
+ Ashok Raj <ashok.raj@intel.com>, kvm@vger.kernel.org, rafael@kernel.org,
+ Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+ Cornelia Huck <cohuck@redhat.com>, linux-kernel@vger.kernel.org,
+ iommu@lists.linux-foundation.org, Jacob jun Pan <jacob.jun.pan@intel.com>,
+ linux-pci@vger.kernel.org, Bjorn Helgaas <bhelgaas@google.com>,
+ Will Deacon <will@kernel.org>, Diana Craciun <diana.craciun@oss.nxp.com>
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -118,41 +80,67 @@ List-Post: <mailto:iommu@lists.linux-foundation.org>
 List-Help: <mailto:iommu-request@lists.linux-foundation.org?subject=help>
 List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
  <mailto:iommu-request@lists.linux-foundation.org?subject=subscribe>
-Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset="us-ascii"; Format="flowed"
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-On Mon, 8 Nov 2021 16:24:29 +0800, Yong Wu wrote:
-> We add the ostd setting for mt8195. It introduces a KE for the
-> previous SoC which doesn't have ostd setting. This is the log:
+On 2021-11-15 13:31, Jason Gunthorpe via iommu wrote:
+> On Mon, Nov 15, 2021 at 05:21:26AM -0800, Christoph Hellwig wrote:
+>> On Mon, Nov 15, 2021 at 10:05:44AM +0800, Lu Baolu wrote:
+>>> pci_stub allows the admin to block driver binding on a device and make
+>>> it permanently shared with userspace. Since pci_stub does not do DMA,
+>>> it is safe.
+>>
+>> If an IOMMU is setup and dma-iommu or friends are not used nothing is
+>> unsafe anyway, it just is that IOMMU won't work..
+>>
+>>> However the admin must understand that using pci_stub allows
+>>> userspace to attack whatever device it was bound to.
+>>
+>> I don't understand this sentence at all.
 > 
-> Unable to handle kernel NULL pointer dereference at virtual address
-> 0000000000000080
-> ...
-> pc : mtk_smi_larb_config_port_gen2_general+0x64/0x130
-> lr : mtk_smi_larb_resume+0x54/0x98
-> ...
-> Call trace:
->  mtk_smi_larb_config_port_gen2_general+0x64/0x130
->  pm_generic_runtime_resume+0x2c/0x48
->  __genpd_runtime_resume+0x30/0xa8
->  genpd_runtime_resume+0x94/0x2c8
->  __rpm_callback+0x44/0x150
->  rpm_callback+0x6c/0x78
->  rpm_resume+0x310/0x558
->  __pm_runtime_resume+0x3c/0x88
+> If userspace has control of device A and can cause A to issue DMA to
+> arbitary DMA addresses then there are certain PCI topologies where A
+> can now issue peer to peer DMA and manipulate the MMMIO registers in
+> device B.
 > 
-> [...]
+> A kernel driver on device B is thus subjected to concurrent
+> manipulation of the device registers from userspace.
+> 
+> So, a 'safe' kernel driver is one that can tolerate this, and an
+> 'unsafe' driver is one where userspace can break kernel integrity.
 
-Applied, thanks!
+You mean in the case where the kernel driver is trying to use device B 
+in a purely PIO mode, such that userspace might potentially be able to 
+interfere with data being transferred in and out of the kernel? Perhaps 
+it's not so clear to put that under a notion of "DMA ownership", since 
+device B's DMA is irrelevant and it's really much more equivalent to 
+/dev/mem access or mmaping BARs to userspace while a driver is bound.
 
-[1/1] memory: mtk-smi: Fix a null dereference for the ostd
-      commit: 8c5ba21c16bd7f8e23b8740dead6eaf164b8caa0
+> The second issue is DMA - because there is only one iommu_domain
+> underlying many devices if we give that iommu_domain to userspace it
+> means the kernel DMA API on other devices no longer works.
 
-Best regards,
--- 
-Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>
+Actually, the DMA API itself via iommu-dma will "work" just fine in the 
+sense that it will still successfully perform all its operations in the 
+unattached default domain, it's just that if the driver then programs 
+the device to access the returned DMA address, the device is likely to 
+get a nasty surprise.
+
+> So no kernel driver doing DMA can work at all, under any PCI topology,
+> if userspace owns the IO page table.
+
+This isn't really about userspace at all - it's true of any case where a 
+kernel driver wants to attach a grouped device to its own unmanaged 
+domain. The fact that the VFIO kernel driver uses its unmanaged domains 
+to map user pages upon user requests is merely a VFIO detail, and VFIO 
+happens to be the only common case where unmanaged domains and 
+non-singleton groups intersect. I'd say that, logically, if you want to 
+put policy on mutual driver/usage compatibility anywhere it should be in 
+iommu_attach_group().
+
+Robin.
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
