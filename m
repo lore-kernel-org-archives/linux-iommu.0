@@ -2,72 +2,96 @@ Return-Path: <SRS0=xEY5=QC=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6D340C433FE
-	for <iommu@archiver.kernel.org>; Mon, 15 Nov 2021 15:14:59 +0000 (UTC)
-Received: from smtp4.osuosl.org (smtp4.osuosl.org [140.211.166.137])
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E355DC433FE
+	for <iommu@archiver.kernel.org>; Mon, 15 Nov 2021 15:31:34 +0000 (UTC)
+Received: from smtp3.osuosl.org (smtp3.osuosl.org [140.211.166.136])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 0CC8963222
-	for <iommu@archiver.kernel.org>; Mon, 15 Nov 2021 15:14:58 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.4.1 mail.kernel.org 0CC8963222
-Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=arm.com
+	by mail.kernel.org (Postfix) with ESMTPS id 8521161B4C
+	for <iommu@archiver.kernel.org>; Mon, 15 Nov 2021 15:31:34 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.4.1 mail.kernel.org 8521161B4C
+Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=canonical.com
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by smtp4.osuosl.org (Postfix) with ESMTP id C994C4022E;
-	Mon, 15 Nov 2021 15:14:58 +0000 (UTC)
+	by smtp3.osuosl.org (Postfix) with ESMTP id 4954B605E1;
+	Mon, 15 Nov 2021 15:31:34 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from smtp4.osuosl.org ([127.0.0.1])
-	by localhost (smtp4.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id 2IyZHUdt9Oko; Mon, 15 Nov 2021 15:14:58 +0000 (UTC)
-Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [IPv6:2605:bc80:3010:104::8cd3:938])
-	by smtp4.osuosl.org (Postfix) with ESMTPS id A045040218;
-	Mon, 15 Nov 2021 15:14:57 +0000 (UTC)
+Received: from smtp3.osuosl.org ([127.0.0.1])
+	by localhost (smtp3.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+	with ESMTP id z6MToa8yeh44; Mon, 15 Nov 2021 15:31:33 +0000 (UTC)
+Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
+	by smtp3.osuosl.org (Postfix) with ESMTPS id 0321C60594;
+	Mon, 15 Nov 2021 15:31:32 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 67849C002E;
-	Mon, 15 Nov 2021 15:14:57 +0000 (UTC)
-Received: from smtp2.osuosl.org (smtp2.osuosl.org [140.211.166.133])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 23A5FC0012
- for <iommu@lists.linux-foundation.org>; Mon, 15 Nov 2021 15:14:56 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id CCAFCC002E;
+	Mon, 15 Nov 2021 15:31:32 +0000 (UTC)
+Received: from smtp4.osuosl.org (smtp4.osuosl.org [140.211.166.137])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 672BEC0012
+ for <iommu@lists.linux-foundation.org>; Mon, 15 Nov 2021 04:32:49 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by smtp2.osuosl.org (Postfix) with ESMTP id 10D4040178
- for <iommu@lists.linux-foundation.org>; Mon, 15 Nov 2021 15:14:56 +0000 (UTC)
+ by smtp4.osuosl.org (Postfix) with ESMTP id 4B65A40317
+ for <iommu@lists.linux-foundation.org>; Mon, 15 Nov 2021 04:32:49 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from smtp2.osuosl.org ([127.0.0.1])
- by localhost (smtp2.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id WbhXB6-PX1ty for <iommu@lists.linux-foundation.org>;
- Mon, 15 Nov 2021 15:14:54 +0000 (UTC)
+Authentication-Results: smtp4.osuosl.org (amavisd-new);
+ dkim=pass (2048-bit key) header.d=canonical.com
+Received: from smtp4.osuosl.org ([127.0.0.1])
+ by localhost (smtp4.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+ with ESMTP id 0OGMyp0u-eXr for <iommu@lists.linux-foundation.org>;
+ Mon, 15 Nov 2021 04:32:48 +0000 (UTC)
 X-Greylist: domain auto-whitelisted by SQLgrey-1.8.0
-Received: from foss.arm.com (foss.arm.com [217.140.110.172])
- by smtp2.osuosl.org (Postfix) with ESMTP id 9330F40106
- for <iommu@lists.linux-foundation.org>; Mon, 15 Nov 2021 15:14:54 +0000 (UTC)
-Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
- by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id AD01E6D;
- Mon, 15 Nov 2021 07:14:53 -0800 (PST)
-Received: from [10.57.82.45] (unknown [10.57.82.45])
- by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id 3E86B3F766;
- Mon, 15 Nov 2021 07:14:51 -0800 (PST)
-Message-ID: <495c65e4-bd97-5f29-d39b-43671acfec78@arm.com>
-Date: Mon, 15 Nov 2021 15:14:49 +0000
+Received: from smtp-relay-internal-0.canonical.com
+ (smtp-relay-internal-0.canonical.com [185.125.188.122])
+ by smtp4.osuosl.org (Postfix) with ESMTPS id E2DC140315
+ for <iommu@lists.linux-foundation.org>; Mon, 15 Nov 2021 04:32:47 +0000 (UTC)
+Received: from mail-pf1-f200.google.com (mail-pf1-f200.google.com
+ [209.85.210.200])
+ (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+ key-exchange X25519 server-signature RSA-PSS (2048 bits) server-digest SHA256)
+ (No client certificate requested)
+ by smtp-relay-internal-0.canonical.com (Postfix) with ESMTPS id 3464B3F175
+ for <iommu@lists.linux-foundation.org>; Mon, 15 Nov 2021 04:32:44 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=canonical.com;
+ s=20210705; t=1636950764;
+ bh=r4ZWGl3iCPA6hDwfXpoPdrYcadHNqNqEtZJMc3MEasI=;
+ h=MIME-Version:From:Date:Message-ID:Subject:To:Cc:Content-Type;
+ b=RtQ01VWK+RahGOS4kE38L8Mz+OYZ3KUaJrtV053u73JkwAiqC/+u3hB3JzOZIKHPv
+ aMpW/TkcG3uMV0YMnXRKA6SiXNF5IbP7eO8bJhAmKC6AuTm7wDerxGIaZzlF8ZaQ6T
+ +fYuyZ2vRIOeFRgvjCIsrW0qebO3XJTXBClJAPhujsPd3I5b5r48QHNKyLn8/1dchf
+ fpvgMSmH9ziPz1iELzAXfMAuE7cORAl+uyJMbvnsEBHbQov0WBFvf1yd4Sn6JggQhf
+ ivZuzVSSnz9elRkpewa/OmPbnoPNeM/38dDsxu7gyLWUi3gvLUQwZaloba115PZj0v
+ jyiWOCFmNWE2g==
+Received: by mail-pf1-f200.google.com with SMTP id
+ l7-20020a622507000000b00494608c84a4so9407308pfl.6
+ for <iommu@lists.linux-foundation.org>; Sun, 14 Nov 2021 20:32:44 -0800 (PST)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+ d=1e100.net; s=20210112;
+ h=x-gm-message-state:mime-version:from:date:message-id:subject:to:cc;
+ bh=r4ZWGl3iCPA6hDwfXpoPdrYcadHNqNqEtZJMc3MEasI=;
+ b=w03TPkwjI1JnmrE2PVNIrajJ1s13mxUpEMp8xn9tBOX76ERH25CWBcnhUOqGnq3z3c
+ omLeN9wFLpRP+VTD6L0tfKjTH2cdP0OxYpSQEAKWMHYTxv8diDjgCLyq8Mhb1Ex4/OSP
+ Yaz16o1ZlLe24/kBZqcsJ0onEMGAL2ch2gklw8yAfF8QJD4+2MVHtoAj77VyBH9QjYFz
+ r4fKWl88MidccQva6lNfyBibI+OWT0vnho72CYRhyM/gKT30A43UyNVoSDkzn0K5Xpp8
+ G/ARWYb3ta4uKmJ7xeaDChKk3DCbNY1sG7kgfswLTVXCD+GgZtThqbugU2MfFBx3Yqw/
+ 42mQ==
+X-Gm-Message-State: AOAM531hmxxUGm+sPXwlQdp5KQIZKmuxmjHC1WuYKkFyuAlDBqgpyvIf
+ obqgzVxwy2LkTPOefDh1gXg80eL6leCNJA7XbwzORlt6eZ9HfS6X6OhbabRpY+IxHIvkOS4O7pg
+ BzzX/Tpw8AckbSk7zrEMAuLpPCP04Fet/Ouc6l0Ai5sfbO5PDr3KMNBnfdrGnjxA=
+X-Received: by 2002:a65:6a4b:: with SMTP id o11mr22666648pgu.305.1636950762752; 
+ Sun, 14 Nov 2021 20:32:42 -0800 (PST)
+X-Google-Smtp-Source: ABdhPJzK3IH5Wl3v139keC34aAowOOjNz1B+4mSvW9CmmCutt4A9c/e138vdG3ipPqwlnRHQB8H048T5Duy6TNx+hJU=
+X-Received: by 2002:a65:6a4b:: with SMTP id o11mr22666635pgu.305.1636950762477; 
+ Sun, 14 Nov 2021 20:32:42 -0800 (PST)
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Windows NT 10.0; rv:91.0) Gecko/20100101
- Thunderbird/91.3.0
-Subject: Re: [PATCH 03/11] PCI: pci_stub: Suppress kernel DMA ownership
- auto-claiming
-Content-Language: en-GB
-To: Jason Gunthorpe <jgg@nvidia.com>, Christoph Hellwig <hch@infradead.org>
-References: <20211115020552.2378167-1-baolu.lu@linux.intel.com>
- <20211115020552.2378167-4-baolu.lu@linux.intel.com>
- <YZJe1jquP+osF+Wn@infradead.org> <20211115133107.GB2379906@nvidia.com>
-From: Robin Murphy <robin.murphy@arm.com>
-In-Reply-To: <20211115133107.GB2379906@nvidia.com>
+From: Matthew Ruffell <matthew.ruffell@canonical.com>
+Date: Mon, 15 Nov 2021 17:32:31 +1300
+Message-ID: <CAKAwkKvOmBFJwE7pQTAZd8b582sOdcnthe=FOEufxYhzQ00jWQ@mail.gmail.com>
+Subject: [PROBLEM] crashkernel gets stuck at DMAR-IR: Copied IR table for
+ dmar1 from previous kernel
+To: iommu@lists.linux-foundation.org
+X-Mailman-Approved-At: Mon, 15 Nov 2021 15:31:32 +0000
 Cc: Alex Williamson <alex.williamson@redhat.com>,
- Kevin Tian <kevin.tian@intel.com>, Chaitanya Kulkarni <kch@nvidia.com>,
- Ashok Raj <ashok.raj@intel.com>, kvm@vger.kernel.org, rafael@kernel.org,
- Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
- Cornelia Huck <cohuck@redhat.com>, linux-kernel@vger.kernel.org,
- iommu@lists.linux-foundation.org, Jacob jun Pan <jacob.jun.pan@intel.com>,
- linux-pci@vger.kernel.org, Bjorn Helgaas <bhelgaas@google.com>,
- Will Deacon <will@kernel.org>, Diana Craciun <diana.craciun@oss.nxp.com>
+ lkml <linux-kernel@vger.kernel.org>,
+ nathan.langford@xcelesunifiedtechnologies.com
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -80,67 +104,109 @@ List-Post: <mailto:iommu@lists.linux-foundation.org>
 List-Help: <mailto:iommu-request@lists.linux-foundation.org?subject=help>
 List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
  <mailto:iommu-request@lists.linux-foundation.org?subject=subscribe>
+Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
-Content-Type: text/plain; charset="us-ascii"; Format="flowed"
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-On 2021-11-15 13:31, Jason Gunthorpe via iommu wrote:
-> On Mon, Nov 15, 2021 at 05:21:26AM -0800, Christoph Hellwig wrote:
->> On Mon, Nov 15, 2021 at 10:05:44AM +0800, Lu Baolu wrote:
->>> pci_stub allows the admin to block driver binding on a device and make
->>> it permanently shared with userspace. Since pci_stub does not do DMA,
->>> it is safe.
->>
->> If an IOMMU is setup and dma-iommu or friends are not used nothing is
->> unsafe anyway, it just is that IOMMU won't work..
->>
->>> However the admin must understand that using pci_stub allows
->>> userspace to attack whatever device it was bound to.
->>
->> I don't understand this sentence at all.
-> 
-> If userspace has control of device A and can cause A to issue DMA to
-> arbitary DMA addresses then there are certain PCI topologies where A
-> can now issue peer to peer DMA and manipulate the MMMIO registers in
-> device B.
-> 
-> A kernel driver on device B is thus subjected to concurrent
-> manipulation of the device registers from userspace.
-> 
-> So, a 'safe' kernel driver is one that can tolerate this, and an
-> 'unsafe' driver is one where userspace can break kernel integrity.
+Dear IOMMU Subsystem Maintainers,
 
-You mean in the case where the kernel driver is trying to use device B 
-in a purely PIO mode, such that userspace might potentially be able to 
-interfere with data being transferred in and out of the kernel? Perhaps 
-it's not so clear to put that under a notion of "DMA ownership", since 
-device B's DMA is irrelevant and it's really much more equivalent to 
-/dev/mem access or mmaping BARs to userspace while a driver is bound.
+I have been debugging an issue with Nathan Langford, CC here, for some months
+now, along with Alex Williamson on the linux-pci mailing list, and I just wanted
+to check that we aren't also running into an IOMMU bug when enabling IRQ
+remapping in the crashkernel.
 
-> The second issue is DMA - because there is only one iommu_domain
-> underlying many devices if we give that iommu_domain to userspace it
-> means the kernel DMA API on other devices no longer works.
+Nathan has a system with 8x 2080TI graphics cards, and we are passing through
+multiple GPUs to a KVM VM via vfio-pci. When we pass through 2x GPUs that share
+the same upstream PCI switch, and reboot the VM a handful of times, an IRQ storm
+occurs, and locks up the host system.
 
-Actually, the DMA API itself via iommu-dma will "work" just fine in the 
-sense that it will still successfully perform all its operations in the 
-unattached default domain, it's just that if the driver then programs 
-the device to access the returned DMA address, the device is likely to 
-get a nasty surprise.
+System Information:
+- SuperMicro X9DRG-O(T)F
+- 8x Nvidia GeForce RTX 2080 Ti GPUs
+- Ubuntu 20.04 LTS
+- 5.14.0 mainline kernel
+- libvirt 6.0.0-0ubuntu8.10
+- qemu 4.2-3ubuntu6.16
+- intel_iommu=on
 
-> So no kernel driver doing DMA can work at all, under any PCI topology,
-> if userspace owns the IO page table.
+In the logs we see:
 
-This isn't really about userspace at all - it's true of any case where a 
-kernel driver wants to attach a grouped device to its own unmanaged 
-domain. The fact that the VFIO kernel driver uses its unmanaged domains 
-to map user pages upon user requests is merely a VFIO detail, and VFIO 
-happens to be the only common case where unmanaged domains and 
-non-singleton groups intersect. I'd say that, logically, if you want to 
-put policy on mutual driver/usage compatibility anywhere it should be in 
-iommu_attach_group().
+irq 31: nobody cared (try booting with the "irqpoll" option)
+Call Trace:
+ <IRQ>
+ dump_stack_lvl+0x4a/0x5f
+ dump_stack+0x10/0x12
+ __report_bad_irq+0x3a/0xaf
+ note_interrupt.cold+0xb/0x60
+ handle_irq_event_percpu+0x72/0x80
+ handle_irq_event+0x3b/0x60
+ handle_fasteoi_irq+0x9c/0x150
+ __common_interrupt+0x4b/0xb0
+ common_interrupt+0x4a/0xa0
+ asm_common_interrupt+0x1e/0x40
+RIP: 0010:__do_softirq+0x73/0x2ae
+handlers:
+[<00000000b16da31d>] vfio_intx_handler
+Disabling IRQ #31
 
-Robin.
+Extra details on LKML / linux-pci:
+https://lkml.org/lkml/2021/9/13/85
+
+Now, Nathan has "kernel.hardlockup_panic = 1" set, which causes the kernel to
+panic, and reboot to the crashkernel, and this is where the IOMMU issues begin.
+
+The crashkernel loads, and gets as far as:
+
+DMAR: Host address width 46
+DMAR: DRHD base: 0x000000fbffe000 flags: 0x0
+DMAR: dmar0: reg_base_addr fbffe000 ver 1:0 cap d2078c106f0466 ecap f020de
+DMAR: DRHD base: 0x000000cbffc000 flags: 0x1
+DMAR: dmar1: reg_base_addr cbffc000 ver 1:0 cap d2078c106f0466 ecap f020de
+DMAR: RMRR base: 0x0000005f21a000 end: 0x0000005f228fff
+DMAR: ATSR flags: 0x0
+DMAR: RHSA base: 0x000000fbffe000 proximity domain: 0x1
+DMAR: RHSA base: 0x000000cbffc000 proximity domain: 0x0
+DMAR-IR: IOAPIC id 3 under DRHD base  0xfbffe000 IOMMU 0
+DMAR-IR: IOAPIC id 0 under DRHD base  0xcbffc000 IOMMU 1
+DMAR-IR: IOAPIC id 2 under DRHD base  0xcbffc000 IOMMU 1
+DMAR-IR: HPET id 0 under DRHD base 0xcbffc000
+[    3.271530] DMAR-IR: Queued invalidation will be enabled to support
+x2apic and Intr-remapping.
+[    3.282572] DMAR-IR: Copied IR table for dmar0 from previous kernel
+[   13.291319] DMAR-IR: Copied IR table for dmar1 from previous kernel
+
+I added the timestamps for the last couple entries. There is a ten second hang
+between copying the IR table from dmar0 and copying the IR table from dmar1.
+
+After this, the kernel just hangs, and the system has to be hard rebooted.
+
+Full dmesg:
+https://paste.ubuntu.com/p/M7Bdyk9YV7/
+
+We never see the next message that usually happens with plain old sysrq-trigger,
+which is:
+
+DMAR-IR: Enabled IRQ remapping in x2apic mode
+
+Would an ongoing IRQ storm prevent IRQ remapping being enabled?
+
+From my understanding, when we start the crashkernel, PCI devices are in an
+undefined state, and could keep on sending DMA or IRQ requests to the
+crashkernel, which could break things through data corruption or causing IRQs to
+be blocked if we get too many spurious IRQs. This would then cause problems if
+we try and re-initialise these PCI devices and they have IRQs blocked.
+
+Which is why we copy the old IR tables from dmar regions, and unblock blocked
+IRQs. But if an IRQ storm is ongoing, is there anything we can really do? Is it
+a bug to just hang here, or is it an indication that the system administrator
+needs to go and do a full hardware reset?
+
+Please let us know if you need any additional debugging information, we can
+build patched kernels if you need extra debug output.
+
+Thanks,
+Matthew
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
