@@ -2,110 +2,79 @@ Return-Path: <SRS0=BhyV=QD=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 88171C433F5
-	for <iommu@archiver.kernel.org>; Tue, 16 Nov 2021 08:58:36 +0000 (UTC)
-Received: from smtp3.osuosl.org (smtp3.osuosl.org [140.211.166.136])
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 50D54C433F5
+	for <iommu@archiver.kernel.org>; Tue, 16 Nov 2021 09:39:29 +0000 (UTC)
+Received: from smtp4.osuosl.org (smtp4.osuosl.org [140.211.166.137])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 1F10F63219
-	for <iommu@archiver.kernel.org>; Tue, 16 Nov 2021 08:58:36 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.4.1 mail.kernel.org 1F10F63219
-Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=redhat.com
+	by mail.kernel.org (Postfix) with ESMTPS id D95E461263
+	for <iommu@archiver.kernel.org>; Tue, 16 Nov 2021 09:39:28 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.4.1 mail.kernel.org D95E461263
+Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=lists.linux-foundation.org
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by smtp3.osuosl.org (Postfix) with ESMTP id DA017607CE;
-	Tue, 16 Nov 2021 08:58:35 +0000 (UTC)
+	by smtp4.osuosl.org (Postfix) with ESMTP id A33F540424;
+	Tue, 16 Nov 2021 09:39:28 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from smtp3.osuosl.org ([127.0.0.1])
-	by localhost (smtp3.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id 2EalMY_PSYCx; Tue, 16 Nov 2021 08:58:34 +0000 (UTC)
+Received: from smtp4.osuosl.org ([127.0.0.1])
+	by localhost (smtp4.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+	with ESMTP id 3isJvax8W_BH; Tue, 16 Nov 2021 09:39:27 +0000 (UTC)
 Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [IPv6:2605:bc80:3010:104::8cd3:938])
-	by smtp3.osuosl.org (Postfix) with ESMTPS id 6BFBA60093;
-	Tue, 16 Nov 2021 08:58:34 +0000 (UTC)
+	by smtp4.osuosl.org (Postfix) with ESMTPS id 52BBE401D7;
+	Tue, 16 Nov 2021 09:39:27 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 3BBDAC002E;
-	Tue, 16 Nov 2021 08:58:34 +0000 (UTC)
-Received: from smtp2.osuosl.org (smtp2.osuosl.org [IPv6:2605:bc80:3010::133])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 8187BC0012
- for <iommu@lists.linux-foundation.org>; Tue, 16 Nov 2021 08:58:32 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 2A6CBC001E;
+	Tue, 16 Nov 2021 09:39:27 +0000 (UTC)
+Received: from smtp2.osuosl.org (smtp2.osuosl.org [140.211.166.133])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 4A23DC0012
+ for <iommu@lists.linux-foundation.org>; Tue, 16 Nov 2021 09:09:15 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by smtp2.osuosl.org (Postfix) with ESMTP id 4D907403F6
- for <iommu@lists.linux-foundation.org>; Tue, 16 Nov 2021 08:58:32 +0000 (UTC)
+ by smtp2.osuosl.org (Postfix) with ESMTP id 1F0C3403F6
+ for <iommu@lists.linux-foundation.org>; Tue, 16 Nov 2021 09:09:15 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Authentication-Results: smtp2.osuosl.org (amavisd-new);
- dkim=pass (1024-bit key) header.d=redhat.com
 Received: from smtp2.osuosl.org ([127.0.0.1])
  by localhost (smtp2.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id RXO7AQhfbPJa for <iommu@lists.linux-foundation.org>;
- Tue, 16 Nov 2021 08:58:29 +0000 (UTC)
+ with ESMTP id fMmr24zhmo_l for <iommu@lists.linux-foundation.org>;
+ Tue, 16 Nov 2021 09:09:14 +0000 (UTC)
 X-Greylist: domain auto-whitelisted by SQLgrey-1.8.0
-Received: from us-smtp-delivery-124.mimecast.com
- (us-smtp-delivery-124.mimecast.com [170.10.133.124])
- by smtp2.osuosl.org (Postfix) with ESMTPS id 5FBD5403F5
- for <iommu@lists.linux-foundation.org>; Tue, 16 Nov 2021 08:58:29 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
- s=mimecast20190719; t=1637053108;
- h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
- to:to:cc:cc:mime-version:mime-version:content-type:content-type:
- content-transfer-encoding:content-transfer-encoding:
- in-reply-to:in-reply-to:references:references;
- bh=4284vAzYHLAxGcEEtHPUG4T3Bgo3Ms3nj1In/yM7t9U=;
- b=RilFCKKXJ+OsMz9k9GYBNHcHPqIPDy3vcSUG/1H52dpUpziF4YQFgvtTByCC8FlWxL/bmB
- 3qxPjHJ3wVtq6DI/QSjoHJoB4qmZw1DbCMQhlAZfqAC6sXRgeJfpgVSNxvgyGSnq6oZlhA
- YeMaSXIUCBezI+YIy8pWcnoJCrBOnBs=
-Received: from mail-wm1-f71.google.com (mail-wm1-f71.google.com
- [209.85.128.71]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-122-KhqlmjwDPMuYvRiSOe7SYQ-1; Tue, 16 Nov 2021 03:58:26 -0500
-X-MC-Unique: KhqlmjwDPMuYvRiSOe7SYQ-1
-Received: by mail-wm1-f71.google.com with SMTP id
- 145-20020a1c0197000000b0032efc3eb9bcso915788wmb.0
- for <iommu@lists.linux-foundation.org>; Tue, 16 Nov 2021 00:58:26 -0800 (PST)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
- d=1e100.net; s=20210112;
- h=x-gm-message-state:message-id:date:mime-version:user-agent
- :content-language:to:cc:references:from:organization:subject
- :in-reply-to:content-transfer-encoding;
- bh=4284vAzYHLAxGcEEtHPUG4T3Bgo3Ms3nj1In/yM7t9U=;
- b=pCUjt5zqhs/ynpX4cVSsqF537zV9fDLLjseC66PEygMyBnle+CAtbaf7gPMHRW4YR/
- QUPuXrWcH3tr3YTJLzEG5kAByyVznDiWbgo6R/BxHCvrdvx68TjyweLJg4tes7YbIsQX
- VrBJc0hrUdK2XYcB3gLBqlyPak1eJTly1CPvsHv5V/p0yECTQNnFJ/ZgzljQMhEoMdS4
- TroMfgHNLpxErt/CyO5eFnmQiK4A6mDYIsW4MMCjvzuDufpIdxLJNL5xY2O/Qr4M4PKX
- KDBx4S8NU794h6wFFO5/syyDd+ONKqa3GxzmREorFpBB+8sjGqODMQUPMDWyaT2QkPr9
- VKbw==
-X-Gm-Message-State: AOAM532tMbPoOCEGllcdz0wpOSQdubWMjw0cArtEBBlaQ/+8UI+nzYYJ
- nAievJF7VV+P4SoBFUBX2icX65/p3s+JzFwvq4insV4G0c62fjf10XPeaKVPrdSCGWhAYgBRNKc
- DnUoBA54xxnAwOIghsZM0+bJ/9AAhCA==
-X-Received: by 2002:adf:e8c8:: with SMTP id k8mr7111269wrn.135.1637053105603; 
- Tue, 16 Nov 2021 00:58:25 -0800 (PST)
-X-Google-Smtp-Source: ABdhPJwNnhYnmoiEKmhWbgITaAMbH06RYzALBRVXN/xZ5keEiGtxNnsHeJdzCkwXHAfqWjFKt7cxCw==
-X-Received: by 2002:adf:e8c8:: with SMTP id k8mr7111233wrn.135.1637053105277; 
- Tue, 16 Nov 2021 00:58:25 -0800 (PST)
-Received: from [192.168.3.132] (p4ff23d3a.dip0.t-ipconnect.de. [79.242.61.58])
- by smtp.gmail.com with ESMTPSA id
- r17sm2015005wmq.11.2021.11.16.00.58.24
- (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
- Tue, 16 Nov 2021 00:58:24 -0800 (PST)
-Message-ID: <d19fb078-cb9b-f60f-e310-fdeea1b947d2@redhat.com>
-Date: Tue, 16 Nov 2021 09:58:24 +0100
+Received: from szxga02-in.huawei.com (szxga02-in.huawei.com [45.249.212.188])
+ by smtp2.osuosl.org (Postfix) with ESMTPS id D5D93400C9
+ for <iommu@lists.linux-foundation.org>; Tue, 16 Nov 2021 09:09:12 +0000 (UTC)
+Received: from dggemv703-chm.china.huawei.com (unknown [172.30.72.56])
+ by szxga02-in.huawei.com (SkyGuard) with ESMTP id 4HtgGT3hNbz918F;
+ Tue, 16 Nov 2021 17:08:49 +0800 (CST)
+Received: from dggema772-chm.china.huawei.com (10.1.198.214) by
+ dggemv703-chm.china.huawei.com (10.3.19.46) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256) id
+ 15.1.2308.20; Tue, 16 Nov 2021 17:09:09 +0800
+Received: from localhost.localdomain (10.67.165.2) by
+ dggema772-chm.china.huawei.com (10.1.198.214) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id
+ 15.1.2308.20; Tue, 16 Nov 2021 17:09:09 +0800
+To: <gregkh@linuxfoundation.org>, <helgaas@kernel.org>,
+ <alexander.shishkin@linux.intel.com>, <lorenzo.pieralisi@arm.com>,
+ <will@kernel.org>, <mark.rutland@arm.com>, <mathieu.poirier@linaro.org>,
+ <suzuki.poulose@arm.com>, <mike.leach@linaro.org>, <leo.yan@linaro.org>,
+ <jonathan.cameron@huawei.com>, <daniel.thompson@linaro.org>,
+ <joro@8bytes.org>, <john.garry@huawei.com>,
+ <shameerali.kolothum.thodi@huawei.com>, <linux-kernel@vger.kernel.org>,
+ <linux-arm-kernel@lists.infradead.org>, <coresight@lists.linaro.org>,
+ <linux-pci@vger.kernel.org>, <linux-perf-users@vger.kernel.org>,
+ <iommu@lists.linux-foundation.org>
+Subject: [PATCH v2 1/6] iommu: Export iommu_{get,put}_resv_regions()
+Date: Tue, 16 Nov 2021 17:06:20 +0800
+Message-ID: <20211116090625.53702-2-yangyicong@hisilicon.com>
+X-Mailer: git-send-email 2.31.0
+In-Reply-To: <20211116090625.53702-1-yangyicong@hisilicon.com>
+References: <20211116090625.53702-1-yangyicong@hisilicon.com>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.2.0
-To: Zi Yan <ziy@nvidia.com>, linux-mm@kvack.org
-References: <20211115193725.737539-1-zi.yan@sent.com>
-From: David Hildenbrand <david@redhat.com>
-Organization: Red Hat
-Subject: Re: [RFC PATCH 0/3] Use pageblock_order for cma and
- alloc_contig_range alignment.
-In-Reply-To: <20211115193725.737539-1-zi.yan@sent.com>
-Authentication-Results: relay.mimecast.com;
- auth=pass smtp.auth=CUSA124A263 smtp.mailfrom=david@redhat.com
-X-Mimecast-Spam-Score: 0
-X-Mimecast-Originator: redhat.com
-Content-Language: en-US
-Cc: Michael Ellerman <mpe@ellerman.id.au>, Robin Murphy <robin.murphy@arm.com>,
- linux-kernel@vger.kernel.org, iommu@lists.linux-foundation.org,
- virtualization@lists.linux-foundation.org, linuxppc-dev@lists.ozlabs.org,
- Christoph Hellwig <hch@lst.de>
+X-Originating-IP: [10.67.165.2]
+X-ClientProxiedBy: dggems701-chm.china.huawei.com (10.3.19.178) To
+ dggema772-chm.china.huawei.com (10.1.198.214)
+X-CFilter-Loop: Reflected
+X-Mailman-Approved-At: Tue, 16 Nov 2021 09:39:26 +0000
+Cc: prime.zeng@huawei.com, linuxarm@huawei.com, yangyicong@hisilicon.com,
+ zhangshaokun@hisilicon.com, liuqi115@huawei.com
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -118,176 +87,59 @@ List-Post: <mailto:iommu@lists.linux-foundation.org>
 List-Help: <mailto:iommu-request@lists.linux-foundation.org?subject=help>
 List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
  <mailto:iommu-request@lists.linux-foundation.org?subject=subscribe>
+From: Yicong Yang via iommu <iommu@lists.linux-foundation.org>
+Reply-To: Yicong Yang <yangyicong@hisilicon.com>
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-On 15.11.21 20:37, Zi Yan wrote:
-> From: Zi Yan <ziy@nvidia.com>
-> 
-> Hi David,
+Export iommu_{get,put}_resv_regions() to the modules so that the driver
+can retrieve and use the reserved regions of the device.
 
-Hi,
+Signed-off-by: Yicong Yang <yangyicong@hisilicon.com>
+---
+ drivers/iommu/iommu.c | 2 ++
+ include/linux/iommu.h | 4 ++--
+ 2 files changed, 4 insertions(+), 2 deletions(-)
 
-thanks for looking into this.
-
-> 
-> You suggested to make alloc_contig_range() deal with pageblock_order instead of
-> MAX_ORDER - 1 and get rid of MAX_ORDER - 1 dependency in virtio_mem[1]. This
-> patchset is my attempt to achieve that. Please take a look and let me know if
-> I am doing it correctly or not.
-> 
-> From what my understanding, cma required alignment of
-> max(MAX_ORDER - 1, pageblock_order), because when MIGRATE_CMA was introduced,
-> __free_one_page() does not prevent merging two different pageblocks, when
-> MAX_ORDER - 1 > pageblock_order. But current __free_one_page() implementation
-> does prevent that. It should be OK to just align cma to pageblock_order.
-> alloc_contig_range() relies on MIGRATE_CMA to get free pages, so it can use
-> pageblock_order as alignment too.
-
-I wonder if that's sufficient. Especially the outer_start logic in
-alloc_contig_range() might be problematic. There are some ugly corner
-cases with free pages/allocations spanning multiple pageblocks and we
-only isolated a single pageblock.
-
-
-Regarding CMA, we have to keep the following cases working:
-
-a) Different pageblock types (MIGRATE_CMA and !MIGRATE_CMA) in MAX_ORDER
-   - 1 page:
-   [       MAX_ ORDER - 1     ]
-   [ pageblock 0 | pageblock 1]
-
-Assume either pageblock 0 is MIGRATE_CMA or pageblock 1 is MIGRATE_CMA,
-but not both. We have to make sure alloc_contig_range() keeps working
-correctly. This should be the case even with your change, as we won't
-merging pages accross differing migratetypes.
-
-b) Migrating/freeing a MAX_ ORDER - 1 page while partially isolated:
-   [       MAX_ ORDER - 1     ]
-   [ pageblock 0 | pageblock 1]
-
-Assume both are MIGRATE_CMA. Assume we want to either allocate from
-pageblock 0 or pageblock 1. Especially, assume we want to allocate from
-pageblock 1. While we would isolate pageblock 1, we wouldn't isolate
-pageblock 0.
-
-What happens if we either have a free page spanning the MAX_ORDER - 1
-range already OR if we have to migrate a MAX_ORDER - 1 page, resulting
-in a free MAX_ORDER - 1 page of which only the second pageblock is
-isolated? We would end up essentially freeing a page that has mixed
-pageblocks, essentially placing it in !MIGRATE_ISOLATE free lists ... I
-might be wrong but I have the feeling that this would be problematic.
-
-c) Concurrent allocations:
-    [       MAX_ ORDER - 1     ]
-    [ pageblock 0 | pageblock 1]
-
-Assume b) but we have two concurrent CMA allocations to pageblock 0 and
-pageblock 1, which would now be possible as start_isolate_page_range()
-isolate would succeed on both.
-
-
-Regarding virtio-mem, we care about the following cases:
-
-a) Allocating parts from completely movable MAX_ ORDER - 1 page:
-   [       MAX_ ORDER - 1     ]
-   [ pageblock 0 | pageblock 1]
-
-Assume pageblock 0 and pageblock 1 are either free or contain only
-movable pages. Assume we allocated pageblock 0. We have to make sure we
-can allocate pageblock 1. The other way around, assume we allocated
-pageblock 1, we have to make sure we can allocate pageblock 0.
-
-Free pages spanning both pageblocks might be problematic.
-
-b) Allocate parts of partially movable MAX_ ORDER - 1 page:
-   [       MAX_ ORDER - 1     ]
-   [ pageblock 0 | pageblock 1]
-
-Assume pageblock 0 contains unmovable data but pageblock 1 not: we have
-to make sure we can allocate pageblock 1. Similarly, assume pageblock 1
-contains unmovable data but pageblock 0 no: we have to make sure we can
-allocate pageblock 1. has_unmovable_pages() might allow for that.
-
-But, we want to fail early in case we want to allocate a single
-pageblock but it contains unmovable data. This could be either directly
-or indirectly.
-
-If we have an unmovable (compound) MAX_ ORDER - 1 and we'd try isolating
-pageblock 1, has_unmovable_pages() would always return "false" because
-we'd simply be skiping over any tail pages, and not detect the
-un-movability.
-
-c) Migrating/freeing a MAX_ ORDER - 1 page while partially isolated:
-
-Same concern as for CMA b)
-
-
-So the biggest concern I have is dealing with migrating/freeing >
-pageblock_order pages while only having isolated a single pageblock.
-
-> 
-> In terms of virtio_mem, if I understand correctly, it relies on
-> alloc_contig_range() to obtain contiguous free pages and offlines them to reduce
-> guest memory size. As the result of alloc_contig_range() alignment change,
-> virtio_mem should be able to just align PFNs to pageblock_order.
-
-For virtio-mem it will most probably be desirable to first try
-allocating the MAX_ORDER -1 range if possible and then fallback to
-pageblock_order. But that's an additional change on top in virtio-mem code.
-
-
-
-My take to teach alloc_contig_range() to properly handle would be the
-following:
-
-a) Convert MIGRATE_ISOLATE into a separate pageblock flag
-
-We would want to convert MIGRATE_ISOLATE into a separate pageblock
-flags, such that when we isolate a page block we preserve the original
-migratetype. While start_isolate_page_range() would set that bit,
-undo_isolate_page_range() would simply clear that bit. The buddy would
-use a single MIGRATE_ISOLATE queue as is: the original migratetype is
-only used for restoring the correct migratetype. This would allow for
-restoring e.g., MIGRATE_UNMOVABLE after isolating an unmovable pageblock
-(below) and not simply setting all such pageblocks to MIGRATE_MOVABLE
-when un-isolating.
-
-Ideally, we'd get rid of the "migratetype" parameter for
-alloc_contig_range(). However, even with the above change we have to
-make sure that memory offlining and ordinary alloc_contig_range() users
-will fail on MIGRATE_CMA pageblocks (has_unmovable_page() checks that as
-of today). We could achieve that differently, though (e.g., bool
-cma_alloc parameter instead).
-
-
-b) Allow isolating pageblocks with unmovable pages
-
-We'd pass the actual range of interest to start_isolate_page_range() and
-rework the code to check has_unmovable_pages() only on the range of
-interest, but considering overlapping larger allocations. E.g., if we
-stumble over a compound page, lookup the head an test if that page is
-movable/unmovable.
-
-c) Change alloc_contig_range() to not "extend" the range of interest to
-include pageblock of different type. Assume we're isolating a
-MIGRATE_CMA pageblock, only isolate a neighboring MIGRATE_CMA pageblock,
-not other pageblocks.
-
-
-So we'd keep isolating complete MAX_ORDER - 1 pages unless c) prevents
-it. We'd allow isolating even pageblocks that contain unmovable pages on
-ZONE_NORMAL, and check via has_unmovable_pages() only if the range of
-interest contains unmovable pages, not the whole MAX_ORDER -1 range or
-even the whole pageblock. We'd not silently overwrite the pageblock type
-when restoring but instead restore the old migratetype.
-
+diff --git a/drivers/iommu/iommu.c b/drivers/iommu/iommu.c
+index dd7863e453a5..e96711eee965 100644
+--- a/drivers/iommu/iommu.c
++++ b/drivers/iommu/iommu.c
+@@ -2792,6 +2792,7 @@ void iommu_get_resv_regions(struct device *dev, struct list_head *list)
+ 	if (ops && ops->get_resv_regions)
+ 		ops->get_resv_regions(dev, list);
+ }
++EXPORT_SYMBOL_GPL(iommu_get_resv_regions);
+ 
+ void iommu_put_resv_regions(struct device *dev, struct list_head *list)
+ {
+@@ -2800,6 +2801,7 @@ void iommu_put_resv_regions(struct device *dev, struct list_head *list)
+ 	if (ops && ops->put_resv_regions)
+ 		ops->put_resv_regions(dev, list);
+ }
++EXPORT_SYMBOL_GPL(iommu_put_resv_regions);
+ 
+ /**
+  * generic_iommu_put_resv_regions - Reserved region driver helper
+diff --git a/include/linux/iommu.h b/include/linux/iommu.h
+index d2f3435e7d17..1b7b0f370e28 100644
+--- a/include/linux/iommu.h
++++ b/include/linux/iommu.h
+@@ -450,8 +450,8 @@ extern phys_addr_t iommu_iova_to_phys(struct iommu_domain *domain, dma_addr_t io
+ extern void iommu_set_fault_handler(struct iommu_domain *domain,
+ 			iommu_fault_handler_t handler, void *token);
+ 
+-extern void iommu_get_resv_regions(struct device *dev, struct list_head *list);
+-extern void iommu_put_resv_regions(struct device *dev, struct list_head *list);
++void iommu_get_resv_regions(struct device *dev, struct list_head *list);
++void iommu_put_resv_regions(struct device *dev, struct list_head *list);
+ extern void generic_iommu_put_resv_regions(struct device *dev,
+ 					   struct list_head *list);
+ extern void iommu_set_default_passthrough(bool cmd_line);
 -- 
-Thanks,
-
-David / dhildenb
+2.33.0
 
 _______________________________________________
 iommu mailing list
