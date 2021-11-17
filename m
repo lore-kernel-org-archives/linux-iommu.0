@@ -2,156 +2,108 @@ Return-Path: <SRS0=sOBO=QE=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id AAC54C433EF
-	for <iommu@archiver.kernel.org>; Wed, 17 Nov 2021 13:35:26 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1024DC433EF
+	for <iommu@archiver.kernel.org>; Wed, 17 Nov 2021 14:00:28 +0000 (UTC)
 Received: from smtp3.osuosl.org (smtp3.osuosl.org [140.211.166.136])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 4D4316152B
-	for <iommu@archiver.kernel.org>; Wed, 17 Nov 2021 13:35:26 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.4.1 mail.kernel.org 4D4316152B
-Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=lists.linux-foundation.org
+	by mail.kernel.org (Postfix) with ESMTPS id AB52461B6F
+	for <iommu@archiver.kernel.org>; Wed, 17 Nov 2021 14:00:27 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.4.1 mail.kernel.org AB52461B6F
+Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=gmail.com
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by smtp3.osuosl.org (Postfix) with ESMTP id 0983E60615;
-	Wed, 17 Nov 2021 13:35:26 +0000 (UTC)
+	by smtp3.osuosl.org (Postfix) with ESMTP id 57A1560645;
+	Wed, 17 Nov 2021 14:00:27 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
 Received: from smtp3.osuosl.org ([127.0.0.1])
 	by localhost (smtp3.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id E-ODvarYlu9s; Wed, 17 Nov 2021 13:35:25 +0000 (UTC)
+	with ESMTP id vX2qxU_ubTrU; Wed, 17 Nov 2021 14:00:25 +0000 (UTC)
 Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [IPv6:2605:bc80:3010:104::8cd3:938])
-	by smtp3.osuosl.org (Postfix) with ESMTPS id AAED360625;
-	Wed, 17 Nov 2021 13:35:24 +0000 (UTC)
+	by smtp3.osuosl.org (Postfix) with ESMTPS id 14CEF60631;
+	Wed, 17 Nov 2021 14:00:25 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 7FA22C002E;
-	Wed, 17 Nov 2021 13:35:24 +0000 (UTC)
-Received: from smtp1.osuosl.org (smtp1.osuosl.org [IPv6:2605:bc80:3010::138])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 01CD2C0012
- for <iommu@lists.linux-foundation.org>; Wed, 17 Nov 2021 13:35:23 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id D9533C002E;
+	Wed, 17 Nov 2021 14:00:24 +0000 (UTC)
+Received: from smtp1.osuosl.org (smtp1.osuosl.org [140.211.166.138])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id F12ACC0012
+ for <iommu@lists.linux-foundation.org>; Wed, 17 Nov 2021 14:00:22 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by smtp1.osuosl.org (Postfix) with ESMTP id D7D5080E0E
- for <iommu@lists.linux-foundation.org>; Wed, 17 Nov 2021 13:35:22 +0000 (UTC)
+ by smtp1.osuosl.org (Postfix) with ESMTP id DA42180CFB
+ for <iommu@lists.linux-foundation.org>; Wed, 17 Nov 2021 14:00:22 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
 Authentication-Results: smtp1.osuosl.org (amavisd-new);
- dkim=pass (2048-bit key) header.d=nvidia.com
+ dkim=pass (2048-bit key) header.d=gmail.com
 Received: from smtp1.osuosl.org ([127.0.0.1])
  by localhost (smtp1.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id 4-DGYP5CjZ4O for <iommu@lists.linux-foundation.org>;
- Wed, 17 Nov 2021 13:35:21 +0000 (UTC)
+ with ESMTP id 5dVh1fcSU_Wj for <iommu@lists.linux-foundation.org>;
+ Wed, 17 Nov 2021 14:00:20 +0000 (UTC)
 X-Greylist: whitelisted by SQLgrey-1.8.0
-Received: from NAM10-DM6-obe.outbound.protection.outlook.com
- (mail-dm6nam10on2075.outbound.protection.outlook.com [40.107.93.75])
- by smtp1.osuosl.org (Postfix) with ESMTPS id E420A80D0B
- for <iommu@lists.linux-foundation.org>; Wed, 17 Nov 2021 13:35:20 +0000 (UTC)
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=M2a8qEReOQ6HBPeVVkMhEimrRD3qj2OhziNc24OsobqP8h1dtjRE/J0Cduzt4blNTRriGftr4QzJ7CwAtIBgKfNgHqX7RyUARSkY2PUVd5Ywvml1YleObEhFnKI0+JhGLmXM+zb72os9je661m0DA+ZoZ6E96ENH8qD7lEikjIWQPxZY6Vi71+4IZLDEv4uTUedRs8xZj5R4H4ZxkDHoWxVWE1WCO22oC4I2vD1Y7yl8K5XnGBSe5Aq47UuHwk1/N3REIKtxxWyQoGJdEd93jrW0RxDh9EQ2M2rsD4o4lVcNd8n4f4N8DSRaRZQAjfDqvy0B+v4sCyF1VHcejEj7mg==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com; 
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=2RsCU+EPIijVxuTRaIxKQUK772pvK7BBuVVKScZJHZ8=;
- b=emmyFhylHA07tUOqLWrguwvt/7kI0V9LS9w0WZIwXjmBVRvROX00rhU2XhLNtR+rLXMd2apiPrWgNSLZwO23tdPbeQyWbNGEt1gq34aF9fi/g/KxA30rWSat4DKaT+ptQex9mBmUtHHU15d/1WUBsjmOp4vhZMIWkNi5jXfw3r00KC88Lnq7Ad5bequl2fe/GDLa+2UWceXPYkIfDrHT6MTW8HaSGZrTNsx+Xdyv7j0Rn3PP0O0uHZdlJL6YtyfJ++mp1y88uSJV7GxRSbNj17IcSdQUJI/lwSNkEA1qkTKVUoIOiQInrKNshoZBSyzZKRB4Hbtx/2V8VSyWxkmGcA==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=nvidia.com; dmarc=pass action=none header.from=nvidia.com;
- dkim=pass header.d=nvidia.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
- s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=2RsCU+EPIijVxuTRaIxKQUK772pvK7BBuVVKScZJHZ8=;
- b=NnCad5aODnc3eJ8DV/sCQmxgnkYY7LNeBufI8fDi2idVZrfb8jcURdEWrx3yo7aD9ZU43K38J/RkfmD8Hg9L8sbschzKSx+pPSyjQJjPkioFvoIpQqFb89sXd5Ombi/nRKhWpzejfaM3Ud/5Lo7vzrSjJ0SHTUBrGQGhOZiU5RJfxKMXPWMzLV1MyvlpRseVXaHihuJgFUqmZXJty+TaieSYfwKdsEbYz1KH2mHxfGRHGcjy+hvAVYSAKaD/Zw4PhbZwePm5aiAYN1dbn/TLvxd2ijA7YdTs8zolH7PxCfDDEydM8xEIxf1Dal2sIRQMuSc2MRbOeCqW6R2CTknWMg==
-Authentication-Results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=nvidia.com;
-Received: from BL0PR12MB5506.namprd12.prod.outlook.com (2603:10b6:208:1cb::22)
- by BL1PR12MB5144.namprd12.prod.outlook.com (2603:10b6:208:316::6)
- with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4713.19; Wed, 17 Nov
- 2021 13:35:18 +0000
-Received: from BL0PR12MB5506.namprd12.prod.outlook.com
- ([fe80::5897:83b2:a704:7909]) by BL0PR12MB5506.namprd12.prod.outlook.com
- ([fe80::5897:83b2:a704:7909%7]) with mapi id 15.20.4713.021; Wed, 17 Nov 2021
- 13:35:18 +0000
-Date: Wed, 17 Nov 2021 09:35:17 -0400
-To: Lu Baolu <baolu.lu@linux.intel.com>
-Subject: Re: [PATCH 01/11] iommu: Add device dma ownership set/release
- interfaces
-Message-ID: <20211117133517.GJ2105516@nvidia.com>
-References: <20211115020552.2378167-1-baolu.lu@linux.intel.com>
- <20211115020552.2378167-2-baolu.lu@linux.intel.com>
- <YZJdJH4AS+vm0j06@infradead.org>
- <cc7ce6f4-b1ec-49ef-e245-ab6c330154c2@linux.intel.com>
- <20211116134603.GA2105516@nvidia.com>
- <d79acc01-eeaf-e6ac-0415-af498c355a00@linux.intel.com>
-Content-Disposition: inline
-In-Reply-To: <d79acc01-eeaf-e6ac-0415-af498c355a00@linux.intel.com>
-X-ClientProxiedBy: MN2PR12CA0031.namprd12.prod.outlook.com
- (2603:10b6:208:a8::44) To BL0PR12MB5506.namprd12.prod.outlook.com
- (2603:10b6:208:1cb::22)
+Received: from mail-pl1-x635.google.com (mail-pl1-x635.google.com
+ [IPv6:2607:f8b0:4864:20::635])
+ by smtp1.osuosl.org (Postfix) with ESMTPS id 304FE80D07
+ for <iommu@lists.linux-foundation.org>; Wed, 17 Nov 2021 14:00:20 +0000 (UTC)
+Received: by mail-pl1-x635.google.com with SMTP id u11so2253953plf.3
+ for <iommu@lists.linux-foundation.org>; Wed, 17 Nov 2021 06:00:20 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=gmail.com; s=20210112;
+ h=message-id:date:mime-version:user-agent:subject:content-language:to
+ :cc:references:from:in-reply-to:content-transfer-encoding;
+ bh=pfKT7vWJtxV2smk9CnW5qMlXjmk0IHKeJrqLf4YFRis=;
+ b=Rjj9c6AtN53lwjrZL6EQMTK4S9B6EyjLDiTKAEZtG92IG/z5eW4MmmZjuNMEaPPtjf
+ LSOJT/vIwEcxXU1K7Ca+hnK+LznG3PkqsB9P36idDXcWR6yBZ0TKu/gYYNIynsfa6uwl
+ wwXh4cR3P9Fphh3Ru4IOABiaCcVVd3dR/Z+YDRN5tiFV3q6iF+hOXqmMcg2FfSxJRFzw
+ 2zMMFPxbuq+GlPyeaD3MgQIipxxSO7TRApycEHsiuMj7dn5MGNWFoo8smcQRSoTJRhJs
+ ZsXAJgdRa8E0sMFr5/frJselNGMJAjuNu9fCWyvPs//KwOW3T6zPAQdpgf+k/6JRtRmA
+ Pl4g==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+ d=1e100.net; s=20210112;
+ h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+ :content-language:to:cc:references:from:in-reply-to
+ :content-transfer-encoding;
+ bh=pfKT7vWJtxV2smk9CnW5qMlXjmk0IHKeJrqLf4YFRis=;
+ b=S0D5Hyx2pbFFE5MX//c31ocedqYM2pyTjchOtY13qS67MXGU747YqJAUoAVPSoI3Xh
+ tvJFSZyqmKQ3W/DNB3O+PGXBLU67A5st4e3uRjHTJA+OMoT04s3f9NRn7Y4+jcYDnro/
+ dz+qG57ynrW3b2wLhMbjXSzcJv4hxl+xseqhBqR3PA/KT38OQOWuKD/O0D4PvQV7WXJZ
+ AC6VGiu4iqNORcxABaaijpuyhLHOBPXbpbCEIdkcxWVyv+ur8HwpfX9l638uRAa3Yi7u
+ B1GWIKlgN6dAn28yTkCnaXvDSnh0ENdkQ87iFKUpc7TBQU64T3V4pfDRlDAmoxIqrGRT
+ SfJA==
+X-Gm-Message-State: AOAM530AVOBbB+Rd4WjD2QUevcm8ghkumH/5f8IIcrfes/w10SbBUbTY
+ /cPTAZxcJq9y8ioUAuFV7p0=
+X-Google-Smtp-Source: ABdhPJz045G1qOXv6u71zRNaxnc6W77FjMF/vz0ksg1+BccDMfhcBoN3nBp5JPhXQCiAcID15bfAZg==
+X-Received: by 2002:a17:903:32c2:b0:141:eed4:ec1c with SMTP id
+ i2-20020a17090332c200b00141eed4ec1cmr56123455plr.33.1637157619685; 
+ Wed, 17 Nov 2021 06:00:19 -0800 (PST)
+Received: from ?IPV6:2404:f801:0:5:8000::50b? ([2404:f801:9000:18:efec::50b])
+ by smtp.gmail.com with ESMTPSA id
+ 95sm5490056pjo.2.2021.11.17.06.00.09
+ (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+ Wed, 17 Nov 2021 06:00:19 -0800 (PST)
+Message-ID: <c93bf3d4-75c1-bc3d-2789-1d65e7c19158@gmail.com>
+Date: Wed, 17 Nov 2021 22:00:08 +0800
 MIME-Version: 1.0
-Received: from mlx.ziepe.ca (142.162.113.129) by
- MN2PR12CA0031.namprd12.prod.outlook.com (2603:10b6:208:a8::44) with Microsoft
- SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.20.4713.20 via Frontend Transport; Wed, 17 Nov 2021 13:35:18 +0000
-Received: from jgg by mlx with local (Exim 4.94)	(envelope-from
- <jgg@nvidia.com>)	id 1mnL5p-00BQxf-Fe; Wed, 17 Nov 2021 09:35:17 -0400
-X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: 1d486066-5db4-49ea-5459-08d9a9cf187d
-X-MS-TrafficTypeDiagnostic: BL1PR12MB5144:
-X-Microsoft-Antispam-PRVS: <BL1PR12MB51445DE0D12E19BE034F1FC5C29A9@BL1PR12MB5144.namprd12.prod.outlook.com>
-X-MS-Oob-TLC-OOBClassifiers: OLM:8882;
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: OHy0s8YCB239Q9e49Vq2ru55qBN00gvpYOJhxPXpZMYyLEKDAQ1mKOxmFSN4Ohup/4xnN4FzjR2T7HRERFg2jjQ7AgWxcPZ7A4NkLwcNdLZzuQ5PrqHgKyWB/HfsuKF8Rjzv4iPndxntOf6CZymEEkSjcP1j03DmhBWve91jGSGPo6dhNhf9dId3S+SL5i4epi8m/a1KVWJdIYJd27xWMRLgpSQDbXbngOy5Oc58NRU0a+0uRjbqxlkXvSMNux34f5qJcKVUczD47pdU+X7g0r0N8DFnqUAWWjmy5/vzKpObXI6k1RaEiC4oeLhFzBHdB/Egtdn2oSfaCZHtDjg0/TaaKw1DjR4ieABmfIj6JS1ISVuRzprAlB7dGZwfeFVmsQvqd4E33/ZXOm4QGXcRam9thXiutow8xm6yI9qB8RP0ZWCltzLuzzluYx+Pws/RHvML0oOjmyHtPU4vW9my1uugEac0vo6i/YyGMan4NgTn4ith9+G1kO4Y1T3NtbO9Tjq3SUqJs48cSV5rL0rc0baJjxgmulDHqpzPj38pbPuS9Js6d5qpVzXAot2D/emkPBh4m88orBDWsRaDRIIE8l3rhkoQ5ITSRArjhyqtDXz/VAQLQCNiTGIeiZNQO9+NHkl0fszB0n7rDMHsKy/HmA==
-X-Forefront-Antispam-Report: CIP:255.255.255.255; CTRY:; LANG:en; SCL:1; SRV:;
- IPV:NLI; SFV:NSPM; H:BL0PR12MB5506.namprd12.prod.outlook.com; PTR:; CAT:NONE;
- SFS:(4636009)(366004)(86362001)(7416002)(53546011)(1076003)(2906002)(6916009)(508600001)(5660300002)(426003)(26005)(186003)(8676002)(38100700002)(33656002)(66946007)(66556008)(2616005)(8936002)(9746002)(9786002)(66476007)(316002)(54906003)(4326008)(36756003);
- DIR:OUT; SFP:1101; 
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?TqhqSp7JrzWeadA8/37WIBnJ2gyG0aFICHIbx672RsUcuNNj/0qhbRTjaO8Y?=
- =?us-ascii?Q?zlk/b4n3l1+3ZF9FeOLmnMzhKjSJ6Z7t0UYBLH492wP8PS0DBXcS4GcmBkrq?=
- =?us-ascii?Q?AQAKveySsF/PAx4KT+S5kW7sOtz1xHLvyTMkZb7bgqCK3anMBdw3rgww9WUM?=
- =?us-ascii?Q?j2QJ/uVOUWe+1seHGvnnwFkpAkxV4gkUIv8bMd6N9kwFK1/zdDPkGOBBQzVX?=
- =?us-ascii?Q?qXknW6ieSB7aUOa+/nPtmEhKRow5FZHjxnvO4Q8ccT3uUv/38PwryEfw21z4?=
- =?us-ascii?Q?o/IJLxOTzyoCPBFCeA7UFdQ4RMoyygIB98v1OHW7HqvmAjDQZbvSPGC34coZ?=
- =?us-ascii?Q?xQrH5R7Rdf92+1eCT8EfzTq6as5gRTYTJIxPbMzS+6IX0uoPPcY+x+z8DUsr?=
- =?us-ascii?Q?MlwMErAFts2819nGWeI38Uz5tqbI+O4FO0QJ86zBOfzbm6kuH2tuzDMVLYxn?=
- =?us-ascii?Q?Qw3ajfvkdz1439DkC0oCRWT/uVXECN9+KMeF4wBlMIj6ZxBO5L1sfhrQhbib?=
- =?us-ascii?Q?Cjeq6mD7faD3y+hikZWdtOcZ4UYcmpSlZBZxYrdyH5eFJPLAXVNG8ygydqNB?=
- =?us-ascii?Q?Bw+wPjMxBAkhqxTa/yUkpeuZuE6X94mfJDzcxZWCuZYwhDtJQCMV/E2fQ90U?=
- =?us-ascii?Q?Ed2oDnzhYtDE8k70ev2fPXuLCy73L7FUc0aKcWSqqFZWDRt4z50yJIhVCrF/?=
- =?us-ascii?Q?OxBLKECKlPObQaiYkPAftjVnRd0KgK7E2ppPq5DC5+T5taWQYDfAdtQ8D3Jt?=
- =?us-ascii?Q?IbG8BdXzVOLl7NkG3N8+ft4oUrI5Eo8thGkoOp6incTQezHqOcFaqRwyZq+M?=
- =?us-ascii?Q?a80mgtU7o4ppUxAZ/WVdLVybsO7GPh7/EtRNh+LdYUhxbBd60hqRC9HrCwwd?=
- =?us-ascii?Q?jfWZirur3x2wNrL1trcrywBX12V23rqUEtGLwbgrTAfgj2xfrxo9kN9IXgiX?=
- =?us-ascii?Q?fiiG7wbciXZu011Y+kSPTujSdkrx9J8OQ39dj3bOnQkMw7faeFmDKWarV2tM?=
- =?us-ascii?Q?nSfsHdD7B6cPi67n3cnwfEpWKZj8bI69iSaSJYGS4AZdFkJn0XoO1LUYtHCy?=
- =?us-ascii?Q?66LVC0+SxwBTjUnMAfikkYar55Ya86c3+7ZSUzBR5fP4Undiy49HpwtGIdaE?=
- =?us-ascii?Q?AUjJmo05l/T8r7sG/VyuCyAlTM6wI36KcZ0xDKXNwLk/CRz7xRTXQeuLtZb5?=
- =?us-ascii?Q?xGezt+weiabmdD4Jh55m9+QAYbxWg9kK4tc2ngvTJ3H12LmaMi6NTsSL37eV?=
- =?us-ascii?Q?TZ4rSRByAIMdVNhHYxS5PgzWuo0GhJzee3TDu5ceGufgVAvxp1/9GF3obT32?=
- =?us-ascii?Q?fzcupJ8ngH4Lu1deFljDwU2/E73bPbq8D69zDFlvEVuXZo4docXeJbx/rbRb?=
- =?us-ascii?Q?zY/suhzeNzLKdmMRFSozCJIPRterdEMKHO4YL40onc+zW94nvDuFUbG01sk9?=
- =?us-ascii?Q?XNUBpp/nbJqinmUaxkYXNXrbeEO0snMasW98RGcsmEmGV7uv2qrdlTLvrzu4?=
- =?us-ascii?Q?8fG3LNUCdGIrZFlXoXyhdZmgxWo4MagYIqYwLWDYv6/4ZO2VxpcnpbwiwxwE?=
- =?us-ascii?Q?WKN7oqBxv5yc95fsK2Y=3D?=
-X-OriginatorOrg: Nvidia.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 1d486066-5db4-49ea-5459-08d9a9cf187d
-X-MS-Exchange-CrossTenant-AuthSource: BL0PR12MB5506.namprd12.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 17 Nov 2021 13:35:18.5240 (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: 4RbPVBxuHDWpwRKhJ1+M2rLsJRrBvez6dQh/BSwR6AFVHUEPb+2S8sd/3YeP8DpA
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: BL1PR12MB5144
-Cc: Kevin Tian <kevin.tian@intel.com>, Chaitanya Kulkarni <kch@nvidia.com>,
- Ashok Raj <ashok.raj@intel.com>, kvm@vger.kernel.org, rafael@kernel.org,
- Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
- Cornelia Huck <cohuck@redhat.com>, Will Deacon <will@kernel.org>,
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
+ Thunderbird/91.3.1
+Subject: Re: [PATCH 3/5] hyperv/IOMMU: Enable swiotlb bounce buffer for
+ Isolation VM
+Content-Language: en-US
+To: Christoph Hellwig <hch@lst.de>
+References: <20211116153923.196763-1-ltykernel@gmail.com>
+ <20211116153923.196763-4-ltykernel@gmail.com> <20211117100142.GB10330@lst.de>
+From: Tianyu Lan <ltykernel@gmail.com>
+In-Reply-To: <20211117100142.GB10330@lst.de>
+Cc: linux-hyperv@vger.kernel.org, brijesh.singh@amd.com, peterz@infradead.org,
+ dave.hansen@linux.intel.com, dave.hansen@intel.com, hpa@zytor.com,
+ kys@microsoft.com, will@kernel.org, boris.ostrovsky@oracle.com,
+ wei.liu@kernel.org, sstabellini@kernel.org, sthemmin@microsoft.com,
+ linux-scsi@vger.kernel.org, x86@kernel.org, decui@microsoft.com,
+ michael.h.kelley@microsoft.com, mingo@redhat.com, kuba@kernel.org,
+ haiyangz@microsoft.com, parri.andrea@gmail.com, thomas.lendacky@amd.com,
+ Tianyu Lan <Tianyu.Lan@microsoft.com>, konrad.wilk@oracle.com,
+ jejb@linux.ibm.com, bp@alien8.de, luto@kernel.org,
+ xen-devel@lists.xenproject.org, tglx@linutronix.de, jgross@suse.com,
+ martin.petersen@oracle.com, netdev@vger.kernel.org,
  linux-kernel@vger.kernel.org, iommu@lists.linux-foundation.org,
- Christoph Hellwig <hch@infradead.org>,
- Alex Williamson <alex.williamson@redhat.com>,
- Jacob jun Pan <jacob.jun.pan@intel.com>, linux-pci@vger.kernel.org,
- Bjorn Helgaas <bhelgaas@google.com>, Diana Craciun <diana.craciun@oss.nxp.com>
+ vkuznets@redhat.com, robin.murphy@arm.com, davem@davemloft.net
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -164,70 +116,27 @@ List-Post: <mailto:iommu@lists.linux-foundation.org>
 List-Help: <mailto:iommu-request@lists.linux-foundation.org?subject=help>
 List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
  <mailto:iommu-request@lists.linux-foundation.org?subject=subscribe>
-From: Jason Gunthorpe via iommu <iommu@lists.linux-foundation.org>
-Reply-To: Jason Gunthorpe <jgg@nvidia.com>
-Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset="us-ascii"; Format="flowed"
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-On Wed, Nov 17, 2021 at 01:22:19PM +0800, Lu Baolu wrote:
-> Hi Jason,
+On 11/17/2021 6:01 PM, Christoph Hellwig wrote:
+> This doesn't really have much to do with normal DMA mapping,
+> so why does this direct through the dma ops?
 > 
-> On 11/16/21 9:46 PM, Jason Gunthorpe wrote:
-> > On Tue, Nov 16, 2021 at 09:57:30AM +0800, Lu Baolu wrote:
-> > > Hi Christoph,
-> > > 
-> > > On 11/15/21 9:14 PM, Christoph Hellwig wrote:
-> > > > On Mon, Nov 15, 2021 at 10:05:42AM +0800, Lu Baolu wrote:
-> > > > > +enum iommu_dma_owner {
-> > > > > +	DMA_OWNER_NONE,
-> > > > > +	DMA_OWNER_KERNEL,
-> > > > > +	DMA_OWNER_USER,
-> > > > > +};
-> > > > > +
-> > > > 
-> > > > > +	enum iommu_dma_owner dma_owner;
-> > > > > +	refcount_t owner_cnt;
-> > > > > +	struct file *owner_user_file;
-> > > > 
-> > > > I'd just overload the ownership into owner_user_file,
-> > > > 
-> > > >    NULL			-> no owner
-> > > >    (struct file *)1UL)	-> kernel
-> > > >    real pointer		-> user
-> > > > 
-> > > > Which could simplify a lot of the code dealing with the owner.
-> > > > 
-> > > 
-> > > Yeah! Sounds reasonable. I will make this in the next version.
-> > 
-> > It would be good to figure out how to make iommu_attach_device()
-> > enforce no other driver binding as a kernel user without a file *, as
-> > Robin pointed to, before optimizing this.
-> > 
-> > This fixes an existing bug where iommu_attach_device() only checks the
-> > group size and is vunerable to a hot plug increasing the group size
-> > after it returns. That check should be replaced by this series's logic
-> > instead.
-> 
-> As my my understanding, the essence of this problem is that only the
-> user owner of the iommu_group could attach an UNMANAGED domain to it.
-> If I understand it right, how about introducing a new interface to
-> allocate a user managed domain and storing the user file pointer in it.
 
-For iommu_attach_device() the semantic is simple non-sharing, so there
-is no need for the file * at all, it can just be NULL.
+According to the previous discussion, dma_alloc_noncontigous()
+and dma_vmap_noncontiguous() may be used to handle the noncontigous
+memory alloc/map in the netvsc driver. So add alloc/free and vmap/vunmap
+callbacks here to handle the case. The previous patch v4 & v5 handles
+the allocation and map in the netvsc driver. If this should not go 
+though dma ops, We also may make it as vmbus specific function and keep
+the function in the vmbus driver.
 
-> Does above help here?
+https://lkml.org/lkml/2021/9/28/51
 
-No, iommu_attach_device() is kernel only and should not interact with
-userspace.
 
-I'm also going to see if I can learn what Tegra is doing with
-iommu_attach_group()
-
-Jason
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
