@@ -2,102 +2,81 @@ Return-Path: <SRS0=sOBO=QE=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5CADFC4321E
-	for <iommu@archiver.kernel.org>; Wed, 17 Nov 2021 21:54:49 +0000 (UTC)
-Received: from smtp1.osuosl.org (smtp1.osuosl.org [140.211.166.138])
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1D7ECC433F5
+	for <iommu@archiver.kernel.org>; Wed, 17 Nov 2021 23:20:08 +0000 (UTC)
+Received: from smtp2.osuosl.org (smtp2.osuosl.org [140.211.166.133])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 20A736152B
-	for <iommu@archiver.kernel.org>; Wed, 17 Nov 2021 21:54:49 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.4.1 mail.kernel.org 20A736152B
-Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=deltatee.com
+	by mail.kernel.org (Postfix) with ESMTPS id C09F261BB6
+	for <iommu@archiver.kernel.org>; Wed, 17 Nov 2021 23:20:07 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.4.1 mail.kernel.org C09F261BB6
+Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=kernel.org
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by smtp1.osuosl.org (Postfix) with ESMTP id AED2382548;
-	Wed, 17 Nov 2021 21:54:46 +0000 (UTC)
+	by smtp2.osuosl.org (Postfix) with ESMTP id 7C817404CD;
+	Wed, 17 Nov 2021 23:20:07 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from smtp1.osuosl.org ([127.0.0.1])
-	by localhost (smtp1.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id hzApDfboxQVW; Wed, 17 Nov 2021 21:54:45 +0000 (UTC)
-Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by smtp1.osuosl.org (Postfix) with ESMTPS id 0C1CB8263D;
-	Wed, 17 Nov 2021 21:54:45 +0000 (UTC)
-Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id BDD93C0038;
-	Wed, 17 Nov 2021 21:54:43 +0000 (UTC)
-Received: from smtp2.osuosl.org (smtp2.osuosl.org [140.211.166.133])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 8F331C0057
- for <iommu@lists.linux-foundation.org>; Wed, 17 Nov 2021 21:54:40 +0000 (UTC)
-Received: from localhost (localhost [127.0.0.1])
- by smtp2.osuosl.org (Postfix) with ESMTP id 6060C405DC
- for <iommu@lists.linux-foundation.org>; Wed, 17 Nov 2021 21:54:40 +0000 (UTC)
-X-Virus-Scanned: amavisd-new at osuosl.org
-Authentication-Results: smtp2.osuosl.org (amavisd-new);
- dkim=pass (2048-bit key) header.d=deltatee.com
 Received: from smtp2.osuosl.org ([127.0.0.1])
- by localhost (smtp2.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id jhQlNsBgcTQ9 for <iommu@lists.linux-foundation.org>;
- Wed, 17 Nov 2021 21:54:39 +0000 (UTC)
+	by localhost (smtp2.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+	with ESMTP id D27FxXlGIcnJ; Wed, 17 Nov 2021 23:20:06 +0000 (UTC)
+Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
+	by smtp2.osuosl.org (Postfix) with ESMTPS id EF4FE4024E;
+	Wed, 17 Nov 2021 23:20:05 +0000 (UTC)
+Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
+	by lists.linuxfoundation.org (Postfix) with ESMTP id CBB6DC002E;
+	Wed, 17 Nov 2021 23:20:05 +0000 (UTC)
+Received: from smtp1.osuosl.org (smtp1.osuosl.org [IPv6:2605:bc80:3010::138])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 664F7C0012
+ for <iommu@lists.linux-foundation.org>; Wed, 17 Nov 2021 23:20:05 +0000 (UTC)
+Received: from localhost (localhost [127.0.0.1])
+ by smtp1.osuosl.org (Postfix) with ESMTP id 413AC82477
+ for <iommu@lists.linux-foundation.org>; Wed, 17 Nov 2021 23:20:05 +0000 (UTC)
+X-Virus-Scanned: amavisd-new at osuosl.org
+Authentication-Results: smtp1.osuosl.org (amavisd-new);
+ dkim=pass (2048-bit key) header.d=kernel.org
+Received: from smtp1.osuosl.org ([127.0.0.1])
+ by localhost (smtp1.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+ with ESMTP id jDp0JycyOOIe for <iommu@lists.linux-foundation.org>;
+ Wed, 17 Nov 2021 23:20:04 +0000 (UTC)
 X-Greylist: domain auto-whitelisted by SQLgrey-1.8.0
-Received: from ale.deltatee.com (ale.deltatee.com [204.191.154.188])
- by smtp2.osuosl.org (Postfix) with ESMTPS id 7B909405C6
- for <iommu@lists.linux-foundation.org>; Wed, 17 Nov 2021 21:54:39 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
- d=deltatee.com; s=20200525; h=Subject:MIME-Version:References:In-Reply-To:
- Message-Id:Date:Cc:To:From:content-disposition;
- bh=xZbUylKBSsKfa1WupiMgdNHqVWdsfajuGq94ozdCsxA=; b=GQlvthLNky1Ky13tzwnFV9+STl
- yKfZhCVsQdK2MmEPPJiMZH5riLcsVNf83eF9sbIHhNKsW0n9WG0LUW+5elS2RueHaagktsGbjMZ81
- OEFSLcSXg8M0/yIAaAEzNv462Alz0H4tlYy7fVmlbqasT17gZH1oAwd/O19UYT3QbCfwfjlYOrhog
- 5Od1fosmn1C1HbjslATTBPFB+vkg7JjdnH8o7Ob4bnZ6pyLC9gICvkqNHu2pZxhUcFX3cI+NyQViy
- DrPOrHcN5bRtOthfaKp8mWE3IjgMNej3PuepjvFAeOqIbYej+zPFrubWmASudppnvuxv7CO8mqKQ1
- BKz/PSUQ==;
-Received: from cgy1-donard.priv.deltatee.com ([172.16.1.31])
- by ale.deltatee.com with esmtps (TLS1.3) tls
- TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384 (Exim 4.94.2)
- (envelope-from <gunthorp@deltatee.com>)
- id 1mnSss-000Zo7-ES; Wed, 17 Nov 2021 14:54:27 -0700
-Received: from gunthorp by cgy1-donard.priv.deltatee.com with local (Exim
- 4.94.2) (envelope-from <gunthorp@deltatee.com>)
- id 1mnSsf-0000z0-WE; Wed, 17 Nov 2021 14:54:14 -0700
-From: Logan Gunthorpe <logang@deltatee.com>
-To: linux-kernel@vger.kernel.org, linux-nvme@lists.infradead.org,
- linux-block@vger.kernel.org, linux-pci@vger.kernel.org, linux-mm@kvack.org,
- iommu@lists.linux-foundation.org
-Date: Wed, 17 Nov 2021 14:53:52 -0700
-Message-Id: <20211117215410.3695-6-logang@deltatee.com>
-X-Mailer: git-send-email 2.30.2
-In-Reply-To: <20211117215410.3695-1-logang@deltatee.com>
-References: <20211117215410.3695-1-logang@deltatee.com>
+Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
+ by smtp1.osuosl.org (Postfix) with ESMTPS id 240198246D
+ for <iommu@lists.linux-foundation.org>; Wed, 17 Nov 2021 23:20:04 +0000 (UTC)
+Received: by mail.kernel.org (Postfix) with ESMTPSA id B1CF761BD3
+ for <iommu@lists.linux-foundation.org>; Wed, 17 Nov 2021 23:20:03 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+ s=k20201202; t=1637191203;
+ bh=ljTiLvzG7o9miaf+PiBSRpKybCCJX219LlLPvIIbSRk=;
+ h=References:In-Reply-To:From:Date:Subject:To:Cc:From;
+ b=RHRfyZMKroozcJehDE7vGjJEy5SiGQ7hpHla3uoiKAtnc71hBaHIxTBQrVWQBHD7U
+ DTyJzu/tAVgFlPbQ+OMb68sz50/mhnsVKi+bnts86Hzk6lDJYmZ9ZRhoPhgBtdRhkc
+ 7HTbyws/dqmUI6DJxw1f4HFYySATti/yMt9vQxYZaHndmOiVdYC8w4kPMP+GKI4lmL
+ uGuSGlgx8zg4TGyRZfUg6DXEdLP43MQ8Z1gDhbyxzyUeUdIQLB1nkKpD+It8FrA0/r
+ rYLphcaUrMVNFdOP0cKl5RqjAs65QG8BjTHffseODOqtfTKtxGA1eoveATnOE7VEhv
+ nE0T4al5bRGcA==
+Received: by mail-qv1-f46.google.com with SMTP id jo22so3182268qvb.13
+ for <iommu@lists.linux-foundation.org>; Wed, 17 Nov 2021 15:20:03 -0800 (PST)
+X-Gm-Message-State: AOAM532FRO/fUrUOEOQgeYJnVXAEY1Us3gmAjSy3iNtgxlK76ojyDR+6
+ VNu/7SGgQPRT70j0uz/MutBJgMNQHBHOF7RolQ==
+X-Google-Smtp-Source: ABdhPJyl4UtXwfvOz/nvoaclbR+2WYqHAJ7Xq6Wh5OV9pYS9fvtIjN2HCdJ+OgdYl6Z3NYwl5T/xYfAWmTWXKdFYjdY=
+X-Received: by 2002:a05:6214:27ee:: with SMTP id
+ jt14mr59508225qvb.5.1637191202788; 
+ Wed, 17 Nov 2021 15:20:02 -0800 (PST)
 MIME-Version: 1.0
-X-SA-Exim-Connect-IP: 172.16.1.31
-X-SA-Exim-Rcpt-To: linux-nvme@lists.infradead.org, linux-kernel@vger.kernel.org,
- linux-block@vger.kernel.org, linux-pci@vger.kernel.org, linux-mm@kvack.org,
- iommu@lists.linux-foundation.org, sbates@raithlin.com, hch@lst.de,
- jgg@ziepe.ca, christian.koenig@amd.com, jhubbard@nvidia.com,
- ddutile@redhat.com, willy@infradead.org, daniel.vetter@ffwll.ch,
- jason@jlekstrand.net, dave.hansen@linux.intel.com, helgaas@kernel.org,
- dan.j.williams@intel.com, andrzej.jakowski@intel.com, dave.b.minturn@intel.com,
- jianxin.xiong@intel.com, ira.weiny@intel.com, robin.murphy@arm.com,
- martin.oliveira@eideticom.com, ckulkarnilinux@gmail.com, logang@deltatee.com,
- bhelgaas@google.com
-X-SA-Exim-Mail-From: gunthorp@deltatee.com
-Subject: [PATCH v4 05/23] PCI/P2PDMA: Introduce helpers for dma_map_sg
- implementations
-X-SA-Exim-Version: 4.2.1 (built Sat, 13 Feb 2021 17:57:42 +0000)
-X-SA-Exim-Scanned: Yes (on ale.deltatee.com)
-Cc: Minturn Dave B <dave.b.minturn@intel.com>,
- Martin Oliveira <martin.oliveira@eideticom.com>,
- Ira Weiny <ira.weiny@intel.com>, John Hubbard <jhubbard@nvidia.com>,
- Dave Hansen <dave.hansen@linux.intel.com>, Robin Murphy <robin.murphy@arm.com>,
- Matthew Wilcox <willy@infradead.org>,
- =?UTF-8?q?Christian=20K=C3=B6nig?= <christian.koenig@amd.com>,
- Jason Gunthorpe <jgg@ziepe.ca>, Logan Gunthorpe <logang@deltatee.com>,
- Chaitanya Kulkarni <ckulkarnilinux@gmail.com>,
- Jason Ekstrand <jason@jlekstrand.net>, Daniel Vetter <daniel.vetter@ffwll.ch>,
- Bjorn Helgaas <bhelgaas@google.com>, Bjorn Helgaas <helgaas@kernel.org>,
- Dan Williams <dan.j.williams@intel.com>, Stephen Bates <sbates@raithlin.com>,
- Jakowski Andrzej <andrzej.jakowski@intel.com>, Christoph Hellwig <hch@lst.de>,
- Xiong Jianxin <jianxin.xiong@intel.com>
+References: <20211116113536.69758-1-jean-philippe@linaro.org>
+ <20211116113536.69758-2-jean-philippe@linaro.org>
+In-Reply-To: <20211116113536.69758-2-jean-philippe@linaro.org>
+From: Rob Herring <robh+dt@kernel.org>
+Date: Wed, 17 Nov 2021 17:19:51 -0600
+X-Gmail-Original-Message-ID: <CAL_JsqJ6v6HKA3ifQoeVh+2iABL7fBPCS0ntTXb0BA8LO0vi8g@mail.gmail.com>
+Message-ID: <CAL_JsqJ6v6HKA3ifQoeVh+2iABL7fBPCS0ntTXb0BA8LO0vi8g@mail.gmail.com>
+Subject: Re: [PATCH 1/2] dt-bindings: Add Arm SMMUv3 PMCG binding
+To: Jean-Philippe Brucker <jean-philippe@linaro.org>
+Cc: Mark Rutland <mark.rutland@arm.com>, devicetree@vger.kernel.org,
+ Robin Murphy <robin.murphy@arm.com>,
+ Linux IOMMU <iommu@lists.linux-foundation.org>, uchida.jun@socionext.com,
+ Leo Yan <leo.yan@linaro.org>, Will Deacon <will@kernel.org>,
+ linux-arm-kernel <linux-arm-kernel@lists.infradead.org>
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -115,148 +94,118 @@ Content-Transfer-Encoding: 7bit
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-Add pci_p2pdma_map_segment() as a helper for simple dma_map_sg()
-implementations. It takes an scatterlist segment that must point to a
-pci_p2pdma struct page and will map it if the mapping requires a bus
-address.
+On Tue, Nov 16, 2021 at 5:52 AM Jean-Philippe Brucker
+<jean-philippe@linaro.org> wrote:
+>
+> Add binding for the Arm SMMUv3 PMU. Each node represents a PMCG, and is
+> placed as a sibling node of the SMMU. Although the PMCGs registers may
+> be within the SMMU MMIO region, they are separate devices, and there can
+> be multiple PMCG devices for each SMMU (for example one for the TCU and
+> one for each TBU).
+>
+> Signed-off-by: Jean-Philippe Brucker <jean-philippe@linaro.org>
+> ---
+>  .../bindings/iommu/arm,smmu-v3-pmcg.yaml      | 67 +++++++++++++++++++
+>  1 file changed, 67 insertions(+)
+>  create mode 100644 Documentation/devicetree/bindings/iommu/arm,smmu-v3-pmcg.yaml
+>
+> diff --git a/Documentation/devicetree/bindings/iommu/arm,smmu-v3-pmcg.yaml b/Documentation/devicetree/bindings/iommu/arm,smmu-v3-pmcg.yaml
+> new file mode 100644
+> index 000000000000..a893e071fdb4
+> --- /dev/null
+> +++ b/Documentation/devicetree/bindings/iommu/arm,smmu-v3-pmcg.yaml
+> @@ -0,0 +1,67 @@
+> +# SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause)
+> +%YAML 1.2
+> +---
+> +$id: http://devicetree.org/schemas/iommu/arm,smmu-v3-pmcg.yaml#
+> +$schema: http://devicetree.org/meta-schemas/core.yaml#
+> +
+> +title: Arm SMMUv3 Performance Monitor Counter Group
+> +
+> +maintainers:
+> +  - Will Deacon <will@kernel.org>
+> +  - Robin Murphy <Robin.Murphy@arm.com>
+> +
+> +description: |+
 
-The return value indicates whether the mapping required a bus address
-or whether the caller still needs to map the segment normally. If the
-segment should not be mapped, -EREMOTEIO is returned.
+Don't need '|+' if no formatting to preserve.
 
-This helper uses a state structure to track the changes to the
-pgmap across calls and avoid needing to lookup into the xarray for
-every page.
+> +  An SMMUv3 may have several Performance Monitor Counter Group (PMCG).
+> +  They are standalone performance monitoring units that support both
+> +  architected and IMPLEMENTATION DEFINED event counters.
 
-Also add pci_p2pdma_map_bus_segment() which is useful for IOMMU
-dma_map_sg() implementations where the sg segment containing the page
-differs from the sg segment containing the DMA address.
+Humm, I don't know that I agree they are standalone. They could be I
+guess, but looking at the MMU-600 spec the PMCG looks like it's just a
+subset of registers in a larger block. This seems similar to MPAM
+(which I'm working on a binding for) where it's just a register map
+and interrupts, but every other possible resource is unspecified by
+the architecture.
 
-Prototypes for these helpers are added to dma-map-ops.h as they are only
-useful to dma map implementations and don't need to pollute the public
-pci-p2pdma header.
+The simplest change from this would be just specifying that the PMCG
+is child node(s) of whatever it is part of. The extreme would be this
+is all part of the SMMU binding (i.e. reg entry X is PMCG registers,
+interrupts entry Y is pmu irq).
 
-Signed-off-by: Logan Gunthorpe <logang@deltatee.com>
-Acked-by: Bjorn Helgaas <bhelgaas@google.com>
----
- drivers/pci/p2pdma.c        | 59 +++++++++++++++++++++++++++++++++++++
- include/linux/dma-map-ops.h | 21 +++++++++++++
- 2 files changed, 80 insertions(+)
+> +
+> +properties:
+> +  $nodename:
+> +    pattern: "^pmu@[0-9a-f]*"
 
-diff --git a/drivers/pci/p2pdma.c b/drivers/pci/p2pdma.c
-index 02a13a5ac680..6ad3a8816677 100644
---- a/drivers/pci/p2pdma.c
-+++ b/drivers/pci/p2pdma.c
-@@ -944,6 +944,65 @@ void pci_p2pdma_unmap_sg_attrs(struct device *dev, struct scatterlist *sg,
- }
- EXPORT_SYMBOL_GPL(pci_p2pdma_unmap_sg_attrs);
- 
-+/**
-+ * pci_p2pdma_map_segment - map an sg segment determining the mapping type
-+ * @state: State structure that should be declared outside of the for_each_sg()
-+ *	loop and initialized to zero.
-+ * @dev: DMA device that's doing the mapping operation
-+ * @sg: scatterlist segment to map
-+ *
-+ * This is a helper to be used by non-IOMMU dma_map_sg() implementations where
-+ * the sg segment is the same for the page_link and the dma_address.
-+ *
-+ * Attempt to map a single segment in an SGL with the PCI bus address.
-+ * The segment must point to a PCI P2PDMA page and thus must be
-+ * wrapped in a is_pci_p2pdma_page(sg_page(sg)) check.
-+ *
-+ * Returns the type of mapping used and maps the page if the type is
-+ * PCI_P2PDMA_MAP_BUS_ADDR.
-+ */
-+enum pci_p2pdma_map_type
-+pci_p2pdma_map_segment(struct pci_p2pdma_map_state *state, struct device *dev,
-+		       struct scatterlist *sg)
-+{
-+	if (state->pgmap != sg_page(sg)->pgmap) {
-+		state->pgmap = sg_page(sg)->pgmap;
-+		state->map = pci_p2pdma_map_type(state->pgmap, dev);
-+		state->bus_off = to_p2p_pgmap(state->pgmap)->bus_offset;
-+	}
-+
-+	if (state->map == PCI_P2PDMA_MAP_BUS_ADDR) {
-+		sg->dma_address = sg_phys(sg) + state->bus_off;
-+		sg_dma_len(sg) = sg->length;
-+		sg_dma_mark_bus_address(sg);
-+	}
-+
-+	return state->map;
-+}
-+
-+/**
-+ * pci_p2pdma_map_bus_segment - map an sg segment pre determined to
-+ *	be mapped with PCI_P2PDMA_MAP_BUS_ADDR
-+ * @pg_sg: scatterlist segment with the page to map
-+ * @dma_sg: scatterlist segment to assign a DMA address to
-+ *
-+ * This is a helper for iommu dma_map_sg() implementations when the
-+ * segment for the DMA address differs from the segment containing the
-+ * source page.
-+ *
-+ * pci_p2pdma_map_type() must have already been called on the pg_sg and
-+ * returned PCI_P2PDMA_MAP_BUS_ADDR.
-+ */
-+void pci_p2pdma_map_bus_segment(struct scatterlist *pg_sg,
-+				struct scatterlist *dma_sg)
-+{
-+	struct pci_p2pdma_pagemap *pgmap = to_p2p_pgmap(sg_page(pg_sg)->pgmap);
-+
-+	dma_sg->dma_address = sg_phys(pg_sg) + pgmap->bus_offset;
-+	sg_dma_len(dma_sg) = pg_sg->length;
-+	sg_dma_mark_bus_address(dma_sg);
-+}
-+
- /**
-  * pci_p2pdma_enable_store - parse a configfs/sysfs attribute store
-  *		to enable p2pdma
-diff --git a/include/linux/dma-map-ops.h b/include/linux/dma-map-ops.h
-index d693a0e33bac..752f91e5eb5d 100644
---- a/include/linux/dma-map-ops.h
-+++ b/include/linux/dma-map-ops.h
-@@ -413,15 +413,36 @@ enum pci_p2pdma_map_type {
- 	PCI_P2PDMA_MAP_THRU_HOST_BRIDGE,
- };
- 
-+struct pci_p2pdma_map_state {
-+	struct dev_pagemap *pgmap;
-+	int map;
-+	u64 bus_off;
-+};
-+
- #ifdef CONFIG_PCI_P2PDMA
- enum pci_p2pdma_map_type pci_p2pdma_map_type(struct dev_pagemap *pgmap,
- 					     struct device *dev);
-+enum pci_p2pdma_map_type
-+pci_p2pdma_map_segment(struct pci_p2pdma_map_state *state, struct device *dev,
-+		       struct scatterlist *sg);
-+void pci_p2pdma_map_bus_segment(struct scatterlist *pg_sg,
-+				struct scatterlist *dma_sg);
- #else /* CONFIG_PCI_P2PDMA */
- static inline enum pci_p2pdma_map_type
- pci_p2pdma_map_type(struct dev_pagemap *pgmap, struct device *dev)
- {
- 	return PCI_P2PDMA_MAP_NOT_SUPPORTED;
- }
-+static inline enum pci_p2pdma_map_type
-+pci_p2pdma_map_segment(struct pci_p2pdma_map_state *state, struct device *dev,
-+		       struct scatterlist *sg)
-+{
-+	return PCI_P2PDMA_MAP_NOT_SUPPORTED;
-+}
-+static inline void pci_p2pdma_map_bus_segment(struct scatterlist *pg_sg,
-+					      struct scatterlist *dma_sg)
-+{
-+}
- #endif /* CONFIG_PCI_P2PDMA */
- 
- #endif /* _LINUX_DMA_MAP_OPS_H */
--- 
-2.30.2
+s/*/+/
 
+Need at least 1 digit.
+
+> +  compatible:
+> +    oneOf:
+> +      - items:
+> +        - enum:
+> +          - hisilicon,smmu-v3-pmcg-hip08
+> +        - const: arm,smmu-v3-pmcg
+> +      - const: arm,smmu-v3-pmcg
+> +
+> +  reg:
+> +    description: |
+> +      Base addresses of the PMCG registers. Either a single address for Page 0
+> +      or an additional address for Page 1, where some registers can be
+> +      relocated with SMMU_PMCG_CFGR.RELOC_CTRS.
+> +    minItems: 1
+> +    maxItems: 2
+> +
+> +  interrupts:
+> +    maxItems: 1
+> +
+> +  msi-parent: true
+> +
+> +required:
+> +  - compatible
+> +  - reg
+> +
+> +additionalProperties: false
+> +
+> +examples:
+> +  - |+
+> +    #include <dt-bindings/interrupt-controller/arm-gic.h>
+> +    #include <dt-bindings/interrupt-controller/irq.h>
+> +
+> +    pmu@2b420000 {
+> +            compatible = "arm,smmu-v3-pmcg";
+> +            reg = <0 0x2b420000 0 0x1000>,
+> +                  <0 0x2b430000 0 0x1000>;
+> +            interrupts = <GIC_SPI 80 IRQ_TYPE_EDGE_RISING>;
+> +            msi-parent = <&its 0xff0000>;
+> +    };
+> +
+> +    pmu@2b440000 {
+> +            compatible = "arm,smmu-v3-pmcg";
+> +            reg = <0 0x2b440000 0 0x1000>,
+> +                  <0 0x2b450000 0 0x1000>;
+> +            interrupts = <GIC_SPI 81 IRQ_TYPE_EDGE_RISING>;
+> +            msi-parent = <&its 0xff0000>;
+> +    };
+> --
+> 2.33.1
+>
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
