@@ -1,82 +1,82 @@
-Return-Path: <SRS0=sOBO=QE=lists.linux-foundation.org=iommu-bounces@kernel.org>
+Return-Path: <SRS0=SEpV=QF=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1D7ECC433F5
-	for <iommu@archiver.kernel.org>; Wed, 17 Nov 2021 23:20:08 +0000 (UTC)
-Received: from smtp2.osuosl.org (smtp2.osuosl.org [140.211.166.133])
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C6EBFC433F5
+	for <iommu@archiver.kernel.org>; Thu, 18 Nov 2021 01:17:20 +0000 (UTC)
+Received: from smtp4.osuosl.org (smtp4.osuosl.org [140.211.166.137])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id C09F261BB6
-	for <iommu@archiver.kernel.org>; Wed, 17 Nov 2021 23:20:07 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.4.1 mail.kernel.org C09F261BB6
-Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=kernel.org
+	by mail.kernel.org (Postfix) with ESMTPS id 6838861B62
+	for <iommu@archiver.kernel.org>; Thu, 18 Nov 2021 01:17:20 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.4.1 mail.kernel.org 6838861B62
+Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=linux.intel.com
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by smtp2.osuosl.org (Postfix) with ESMTP id 7C817404CD;
-	Wed, 17 Nov 2021 23:20:07 +0000 (UTC)
+	by smtp4.osuosl.org (Postfix) with ESMTP id 1CC4D402B1;
+	Thu, 18 Nov 2021 01:17:20 +0000 (UTC)
+X-Virus-Scanned: amavisd-new at osuosl.org
+Received: from smtp4.osuosl.org ([127.0.0.1])
+	by localhost (smtp4.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+	with ESMTP id yosALLvcv9hS; Thu, 18 Nov 2021 01:17:19 +0000 (UTC)
+Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
+	by smtp4.osuosl.org (Postfix) with ESMTPS id 1257D402AD;
+	Thu, 18 Nov 2021 01:17:19 +0000 (UTC)
+Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
+	by lists.linuxfoundation.org (Postfix) with ESMTP id E1BF9C002E;
+	Thu, 18 Nov 2021 01:17:18 +0000 (UTC)
+Received: from smtp2.osuosl.org (smtp2.osuosl.org [IPv6:2605:bc80:3010::133])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 48F46C0012
+ for <iommu@lists.linux-foundation.org>; Thu, 18 Nov 2021 01:17:17 +0000 (UTC)
+Received: from localhost (localhost [127.0.0.1])
+ by smtp2.osuosl.org (Postfix) with ESMTP id 27DAF4010B
+ for <iommu@lists.linux-foundation.org>; Thu, 18 Nov 2021 01:17:17 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
 Received: from smtp2.osuosl.org ([127.0.0.1])
-	by localhost (smtp2.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id D27FxXlGIcnJ; Wed, 17 Nov 2021 23:20:06 +0000 (UTC)
-Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by smtp2.osuosl.org (Postfix) with ESMTPS id EF4FE4024E;
-	Wed, 17 Nov 2021 23:20:05 +0000 (UTC)
-Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id CBB6DC002E;
-	Wed, 17 Nov 2021 23:20:05 +0000 (UTC)
-Received: from smtp1.osuosl.org (smtp1.osuosl.org [IPv6:2605:bc80:3010::138])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 664F7C0012
- for <iommu@lists.linux-foundation.org>; Wed, 17 Nov 2021 23:20:05 +0000 (UTC)
-Received: from localhost (localhost [127.0.0.1])
- by smtp1.osuosl.org (Postfix) with ESMTP id 413AC82477
- for <iommu@lists.linux-foundation.org>; Wed, 17 Nov 2021 23:20:05 +0000 (UTC)
-X-Virus-Scanned: amavisd-new at osuosl.org
-Authentication-Results: smtp1.osuosl.org (amavisd-new);
- dkim=pass (2048-bit key) header.d=kernel.org
-Received: from smtp1.osuosl.org ([127.0.0.1])
- by localhost (smtp1.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id jDp0JycyOOIe for <iommu@lists.linux-foundation.org>;
- Wed, 17 Nov 2021 23:20:04 +0000 (UTC)
+ by localhost (smtp2.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+ with ESMTP id sM9AuiDN8r9H for <iommu@lists.linux-foundation.org>;
+ Thu, 18 Nov 2021 01:17:16 +0000 (UTC)
 X-Greylist: domain auto-whitelisted by SQLgrey-1.8.0
-Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
- by smtp1.osuosl.org (Postfix) with ESMTPS id 240198246D
- for <iommu@lists.linux-foundation.org>; Wed, 17 Nov 2021 23:20:04 +0000 (UTC)
-Received: by mail.kernel.org (Postfix) with ESMTPSA id B1CF761BD3
- for <iommu@lists.linux-foundation.org>; Wed, 17 Nov 2021 23:20:03 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
- s=k20201202; t=1637191203;
- bh=ljTiLvzG7o9miaf+PiBSRpKybCCJX219LlLPvIIbSRk=;
- h=References:In-Reply-To:From:Date:Subject:To:Cc:From;
- b=RHRfyZMKroozcJehDE7vGjJEy5SiGQ7hpHla3uoiKAtnc71hBaHIxTBQrVWQBHD7U
- DTyJzu/tAVgFlPbQ+OMb68sz50/mhnsVKi+bnts86Hzk6lDJYmZ9ZRhoPhgBtdRhkc
- 7HTbyws/dqmUI6DJxw1f4HFYySATti/yMt9vQxYZaHndmOiVdYC8w4kPMP+GKI4lmL
- uGuSGlgx8zg4TGyRZfUg6DXEdLP43MQ8Z1gDhbyxzyUeUdIQLB1nkKpD+It8FrA0/r
- rYLphcaUrMVNFdOP0cKl5RqjAs65QG8BjTHffseODOqtfTKtxGA1eoveATnOE7VEhv
- nE0T4al5bRGcA==
-Received: by mail-qv1-f46.google.com with SMTP id jo22so3182268qvb.13
- for <iommu@lists.linux-foundation.org>; Wed, 17 Nov 2021 15:20:03 -0800 (PST)
-X-Gm-Message-State: AOAM532FRO/fUrUOEOQgeYJnVXAEY1Us3gmAjSy3iNtgxlK76ojyDR+6
- VNu/7SGgQPRT70j0uz/MutBJgMNQHBHOF7RolQ==
-X-Google-Smtp-Source: ABdhPJyl4UtXwfvOz/nvoaclbR+2WYqHAJ7Xq6Wh5OV9pYS9fvtIjN2HCdJ+OgdYl6Z3NYwl5T/xYfAWmTWXKdFYjdY=
-X-Received: by 2002:a05:6214:27ee:: with SMTP id
- jt14mr59508225qvb.5.1637191202788; 
- Wed, 17 Nov 2021 15:20:02 -0800 (PST)
+Received: from mga18.intel.com (mga18.intel.com [134.134.136.126])
+ by smtp2.osuosl.org (Postfix) with ESMTPS id 4BF93400C4
+ for <iommu@lists.linux-foundation.org>; Thu, 18 Nov 2021 01:17:16 +0000 (UTC)
+X-IronPort-AV: E=McAfee;i="6200,9189,10171"; a="220973085"
+X-IronPort-AV: E=Sophos;i="5.87,243,1631602800"; d="scan'208";a="220973085"
+Received: from orsmga007.jf.intel.com ([10.7.209.58])
+ by orsmga106.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384;
+ 17 Nov 2021 17:17:15 -0800
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.87,243,1631602800"; d="scan'208";a="495157953"
+Received: from allen-box.sh.intel.com (HELO [10.239.159.118])
+ ([10.239.159.118])
+ by orsmga007.jf.intel.com with ESMTP; 17 Nov 2021 17:17:09 -0800
+Subject: Re: [PATCH 01/11] iommu: Add device dma ownership set/release
+ interfaces
+To: Jason Gunthorpe <jgg@nvidia.com>
+References: <20211115020552.2378167-1-baolu.lu@linux.intel.com>
+ <20211115020552.2378167-2-baolu.lu@linux.intel.com>
+ <YZJdJH4AS+vm0j06@infradead.org>
+ <cc7ce6f4-b1ec-49ef-e245-ab6c330154c2@linux.intel.com>
+ <20211116134603.GA2105516@nvidia.com>
+ <d79acc01-eeaf-e6ac-0415-af498c355a00@linux.intel.com>
+ <20211117133517.GJ2105516@nvidia.com>
+From: Lu Baolu <baolu.lu@linux.intel.com>
+Message-ID: <5901c54b-a6eb-b060-aa52-15de7708d703@linux.intel.com>
+Date: Thu, 18 Nov 2021 09:12:41 +0800
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
+ Thunderbird/78.13.0
 MIME-Version: 1.0
-References: <20211116113536.69758-1-jean-philippe@linaro.org>
- <20211116113536.69758-2-jean-philippe@linaro.org>
-In-Reply-To: <20211116113536.69758-2-jean-philippe@linaro.org>
-From: Rob Herring <robh+dt@kernel.org>
-Date: Wed, 17 Nov 2021 17:19:51 -0600
-X-Gmail-Original-Message-ID: <CAL_JsqJ6v6HKA3ifQoeVh+2iABL7fBPCS0ntTXb0BA8LO0vi8g@mail.gmail.com>
-Message-ID: <CAL_JsqJ6v6HKA3ifQoeVh+2iABL7fBPCS0ntTXb0BA8LO0vi8g@mail.gmail.com>
-Subject: Re: [PATCH 1/2] dt-bindings: Add Arm SMMUv3 PMCG binding
-To: Jean-Philippe Brucker <jean-philippe@linaro.org>
-Cc: Mark Rutland <mark.rutland@arm.com>, devicetree@vger.kernel.org,
- Robin Murphy <robin.murphy@arm.com>,
- Linux IOMMU <iommu@lists.linux-foundation.org>, uchida.jun@socionext.com,
- Leo Yan <leo.yan@linaro.org>, Will Deacon <will@kernel.org>,
- linux-arm-kernel <linux-arm-kernel@lists.infradead.org>
+In-Reply-To: <20211117133517.GJ2105516@nvidia.com>
+Content-Language: en-US
+Cc: Kevin Tian <kevin.tian@intel.com>, Chaitanya Kulkarni <kch@nvidia.com>,
+ Ashok Raj <ashok.raj@intel.com>, kvm@vger.kernel.org, rafael@kernel.org,
+ Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+ Cornelia Huck <cohuck@redhat.com>, Will Deacon <will@kernel.org>,
+ linux-kernel@vger.kernel.org, iommu@lists.linux-foundation.org,
+ Christoph Hellwig <hch@infradead.org>,
+ Alex Williamson <alex.williamson@redhat.com>,
+ Jacob jun Pan <jacob.jun.pan@intel.com>, linux-pci@vger.kernel.org,
+ Bjorn Helgaas <bhelgaas@google.com>, Diana Craciun <diana.craciun@oss.nxp.com>
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -89,123 +89,86 @@ List-Post: <mailto:iommu@lists.linux-foundation.org>
 List-Help: <mailto:iommu-request@lists.linux-foundation.org?subject=help>
 List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
  <mailto:iommu-request@lists.linux-foundation.org?subject=subscribe>
-Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset="us-ascii"; Format="flowed"
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-On Tue, Nov 16, 2021 at 5:52 AM Jean-Philippe Brucker
-<jean-philippe@linaro.org> wrote:
->
-> Add binding for the Arm SMMUv3 PMU. Each node represents a PMCG, and is
-> placed as a sibling node of the SMMU. Although the PMCGs registers may
-> be within the SMMU MMIO region, they are separate devices, and there can
-> be multiple PMCG devices for each SMMU (for example one for the TCU and
-> one for each TBU).
->
-> Signed-off-by: Jean-Philippe Brucker <jean-philippe@linaro.org>
-> ---
->  .../bindings/iommu/arm,smmu-v3-pmcg.yaml      | 67 +++++++++++++++++++
->  1 file changed, 67 insertions(+)
->  create mode 100644 Documentation/devicetree/bindings/iommu/arm,smmu-v3-pmcg.yaml
->
-> diff --git a/Documentation/devicetree/bindings/iommu/arm,smmu-v3-pmcg.yaml b/Documentation/devicetree/bindings/iommu/arm,smmu-v3-pmcg.yaml
-> new file mode 100644
-> index 000000000000..a893e071fdb4
-> --- /dev/null
-> +++ b/Documentation/devicetree/bindings/iommu/arm,smmu-v3-pmcg.yaml
-> @@ -0,0 +1,67 @@
-> +# SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause)
-> +%YAML 1.2
-> +---
-> +$id: http://devicetree.org/schemas/iommu/arm,smmu-v3-pmcg.yaml#
-> +$schema: http://devicetree.org/meta-schemas/core.yaml#
-> +
-> +title: Arm SMMUv3 Performance Monitor Counter Group
-> +
-> +maintainers:
-> +  - Will Deacon <will@kernel.org>
-> +  - Robin Murphy <Robin.Murphy@arm.com>
-> +
-> +description: |+
+On 11/17/21 9:35 PM, Jason Gunthorpe wrote:
+> On Wed, Nov 17, 2021 at 01:22:19PM +0800, Lu Baolu wrote:
+>> Hi Jason,
+>>
+>> On 11/16/21 9:46 PM, Jason Gunthorpe wrote:
+>>> On Tue, Nov 16, 2021 at 09:57:30AM +0800, Lu Baolu wrote:
+>>>> Hi Christoph,
+>>>>
+>>>> On 11/15/21 9:14 PM, Christoph Hellwig wrote:
+>>>>> On Mon, Nov 15, 2021 at 10:05:42AM +0800, Lu Baolu wrote:
+>>>>>> +enum iommu_dma_owner {
+>>>>>> +	DMA_OWNER_NONE,
+>>>>>> +	DMA_OWNER_KERNEL,
+>>>>>> +	DMA_OWNER_USER,
+>>>>>> +};
+>>>>>> +
+>>>>>
+>>>>>> +	enum iommu_dma_owner dma_owner;
+>>>>>> +	refcount_t owner_cnt;
+>>>>>> +	struct file *owner_user_file;
+>>>>>
+>>>>> I'd just overload the ownership into owner_user_file,
+>>>>>
+>>>>>     NULL			-> no owner
+>>>>>     (struct file *)1UL)	-> kernel
+>>>>>     real pointer		-> user
+>>>>>
+>>>>> Which could simplify a lot of the code dealing with the owner.
+>>>>>
+>>>>
+>>>> Yeah! Sounds reasonable. I will make this in the next version.
+>>>
+>>> It would be good to figure out how to make iommu_attach_device()
+>>> enforce no other driver binding as a kernel user without a file *, as
+>>> Robin pointed to, before optimizing this.
+>>>
+>>> This fixes an existing bug where iommu_attach_device() only checks the
+>>> group size and is vunerable to a hot plug increasing the group size
+>>> after it returns. That check should be replaced by this series's logic
+>>> instead.
+>>
+>> As my my understanding, the essence of this problem is that only the
+>> user owner of the iommu_group could attach an UNMANAGED domain to it.
+>> If I understand it right, how about introducing a new interface to
+>> allocate a user managed domain and storing the user file pointer in it.
+> 
+> For iommu_attach_device() the semantic is simple non-sharing, so there
+> is no need for the file * at all, it can just be NULL.
 
-Don't need '|+' if no formatting to preserve.
+The file * being NULL means the device is only owned by the kernel
+driver. Perhaps we can check this pointer in iommu_attach_device() to
+avoid using it for user domain attachment.
 
-> +  An SMMUv3 may have several Performance Monitor Counter Group (PMCG).
-> +  They are standalone performance monitoring units that support both
-> +  architected and IMPLEMENTATION DEFINED event counters.
+> 
+>> Does above help here?
+> 
+> No, iommu_attach_device() is kernel only and should not interact with
+> userspace.
 
-Humm, I don't know that I agree they are standalone. They could be I
-guess, but looking at the MMU-600 spec the PMCG looks like it's just a
-subset of registers in a larger block. This seems similar to MPAM
-(which I'm working on a binding for) where it's just a register map
-and interrupts, but every other possible resource is unspecified by
-the architecture.
+The existing iommu_attach_device() allows only for singleton group. As
+we have added group ownership attribute, we can enforce this interface
+only for kernel domain usage.
 
-The simplest change from this would be just specifying that the PMCG
-is child node(s) of whatever it is part of. The extreme would be this
-is all part of the SMMU binding (i.e. reg entry X is PMCG registers,
-interrupts entry Y is pmu irq).
+> 
+> I'm also going to see if I can learn what Tegra is doing with
+> iommu_attach_group()
 
-> +
-> +properties:
-> +  $nodename:
-> +    pattern: "^pmu@[0-9a-f]*"
+Okay! Thank you!
 
-s/*/+/
+> 
+> Jason
+> 
 
-Need at least 1 digit.
-
-> +  compatible:
-> +    oneOf:
-> +      - items:
-> +        - enum:
-> +          - hisilicon,smmu-v3-pmcg-hip08
-> +        - const: arm,smmu-v3-pmcg
-> +      - const: arm,smmu-v3-pmcg
-> +
-> +  reg:
-> +    description: |
-> +      Base addresses of the PMCG registers. Either a single address for Page 0
-> +      or an additional address for Page 1, where some registers can be
-> +      relocated with SMMU_PMCG_CFGR.RELOC_CTRS.
-> +    minItems: 1
-> +    maxItems: 2
-> +
-> +  interrupts:
-> +    maxItems: 1
-> +
-> +  msi-parent: true
-> +
-> +required:
-> +  - compatible
-> +  - reg
-> +
-> +additionalProperties: false
-> +
-> +examples:
-> +  - |+
-> +    #include <dt-bindings/interrupt-controller/arm-gic.h>
-> +    #include <dt-bindings/interrupt-controller/irq.h>
-> +
-> +    pmu@2b420000 {
-> +            compatible = "arm,smmu-v3-pmcg";
-> +            reg = <0 0x2b420000 0 0x1000>,
-> +                  <0 0x2b430000 0 0x1000>;
-> +            interrupts = <GIC_SPI 80 IRQ_TYPE_EDGE_RISING>;
-> +            msi-parent = <&its 0xff0000>;
-> +    };
-> +
-> +    pmu@2b440000 {
-> +            compatible = "arm,smmu-v3-pmcg";
-> +            reg = <0 0x2b440000 0 0x1000>,
-> +                  <0 0x2b450000 0 0x1000>;
-> +            interrupts = <GIC_SPI 81 IRQ_TYPE_EDGE_RISING>;
-> +            msi-parent = <&its 0xff0000>;
-> +    };
-> --
-> 2.33.1
->
+Best regards,
+baolu
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
