@@ -2,85 +2,94 @@ Return-Path: <SRS0=KWJS=QG=lists.linux-foundation.org=iommu-bounces@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 75F65C433EF
-	for <iommu@archiver.kernel.org>; Fri, 19 Nov 2021 11:14:23 +0000 (UTC)
-Received: from smtp4.osuosl.org (smtp4.osuosl.org [140.211.166.137])
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1EB7DC433EF
+	for <iommu@archiver.kernel.org>; Fri, 19 Nov 2021 12:33:13 +0000 (UTC)
+Received: from smtp3.osuosl.org (smtp3.osuosl.org [140.211.166.136])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by mail.kernel.org (Postfix) with ESMTPS id 118FC619E5
-	for <iommu@archiver.kernel.org>; Fri, 19 Nov 2021 11:14:23 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.4.1 mail.kernel.org 118FC619E5
-Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=linux.intel.com
+	by mail.kernel.org (Postfix) with ESMTPS id A5B8A61ACE
+	for <iommu@archiver.kernel.org>; Fri, 19 Nov 2021 12:33:12 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.4.1 mail.kernel.org A5B8A61ACE
+Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=suse.cz
 Authentication-Results: mail.kernel.org; spf=pass smtp.mailfrom=lists.linux-foundation.org
 Received: from localhost (localhost [127.0.0.1])
-	by smtp4.osuosl.org (Postfix) with ESMTP id D0CF74047E;
-	Fri, 19 Nov 2021 11:14:22 +0000 (UTC)
+	by smtp3.osuosl.org (Postfix) with ESMTP id 65E5261BF5;
+	Fri, 19 Nov 2021 12:33:12 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from smtp4.osuosl.org ([127.0.0.1])
-	by localhost (smtp4.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id b8rA1nPtYSIG; Fri, 19 Nov 2021 11:14:21 +0000 (UTC)
-Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [IPv6:2605:bc80:3010:104::8cd3:938])
-	by smtp4.osuosl.org (Postfix) with ESMTPS id 91E10409BD;
-	Fri, 19 Nov 2021 11:14:21 +0000 (UTC)
+Received: from smtp3.osuosl.org ([127.0.0.1])
+	by localhost (smtp3.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+	with ESMTP id 878dNvyzXBSA; Fri, 19 Nov 2021 12:33:11 +0000 (UTC)
+Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
+	by smtp3.osuosl.org (Postfix) with ESMTPS id 3588C60621;
+	Fri, 19 Nov 2021 12:33:11 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 3D787C002E;
-	Fri, 19 Nov 2021 11:14:21 +0000 (UTC)
-Received: from smtp2.osuosl.org (smtp2.osuosl.org [140.211.166.133])
- by lists.linuxfoundation.org (Postfix) with ESMTP id AA727C0012
- for <iommu@lists.linux-foundation.org>; Fri, 19 Nov 2021 11:14:19 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 093D5C001E;
+	Fri, 19 Nov 2021 12:33:11 +0000 (UTC)
+Received: from smtp3.osuosl.org (smtp3.osuosl.org [IPv6:2605:bc80:3010::136])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 7E7A4C0012;
+ Fri, 19 Nov 2021 12:33:09 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by smtp2.osuosl.org (Postfix) with ESMTP id 828A9401C0
- for <iommu@lists.linux-foundation.org>; Fri, 19 Nov 2021 11:14:19 +0000 (UTC)
+ by smtp3.osuosl.org (Postfix) with ESMTP id 5614F61BF6;
+ Fri, 19 Nov 2021 12:33:09 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from smtp2.osuosl.org ([127.0.0.1])
- by localhost (smtp2.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id 9OXtZNZ2ALmk for <iommu@lists.linux-foundation.org>;
- Fri, 19 Nov 2021 11:14:18 +0000 (UTC)
+Received: from smtp3.osuosl.org ([127.0.0.1])
+ by localhost (smtp3.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+ with ESMTP id 0-7NFhd3j9oM; Fri, 19 Nov 2021 12:33:08 +0000 (UTC)
 X-Greylist: domain auto-whitelisted by SQLgrey-1.8.0
-Received: from mga05.intel.com (mga05.intel.com [192.55.52.43])
- by smtp2.osuosl.org (Postfix) with ESMTPS id B3DF740587
- for <iommu@lists.linux-foundation.org>; Fri, 19 Nov 2021 11:14:18 +0000 (UTC)
-X-IronPort-AV: E=McAfee;i="6200,9189,10172"; a="320612642"
-X-IronPort-AV: E=Sophos;i="5.87,247,1631602800"; d="scan'208";a="320612642"
-Received: from orsmga008.jf.intel.com ([10.7.209.65])
- by fmsmga105.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384;
- 19 Nov 2021 03:14:17 -0800
-X-IronPort-AV: E=Sophos;i="5.87,247,1631602800"; d="scan'208";a="507861408"
-Received: from blu2-mobl3.ccr.corp.intel.com (HELO [10.254.208.131])
- ([10.254.208.131])
- by orsmga008-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384;
- 19 Nov 2021 03:14:13 -0800
-Message-ID: <75100dfd-9cfe-9f3d-531d-b4d30de03e76@linux.intel.com>
-Date: Fri, 19 Nov 2021 19:14:10 +0800
+X-Greylist: domain auto-whitelisted by SQLgrey-1.8.0
+Received: from smtp-out2.suse.de (smtp-out2.suse.de [195.135.220.29])
+ by smtp3.osuosl.org (Postfix) with ESMTPS id 32E9261BF5;
+ Fri, 19 Nov 2021 12:33:07 +0000 (UTC)
+Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
+ (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+ key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
+ (No client certificate requested)
+ by smtp-out2.suse.de (Postfix) with ESMTPS id 014CB1FD3B;
+ Fri, 19 Nov 2021 12:33:05 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.cz; s=susede2_rsa;
+ t=1637325185; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+ mime-version:mime-version:content-type:content-type:
+ content-transfer-encoding:content-transfer-encoding:
+ in-reply-to:in-reply-to:references:references;
+ bh=4eXQRQkyOnlkfqIjP+4InF8CkZnCxzQH+4oBGRF5bzQ=;
+ b=Rj0Bb7aNc9Pq/SEl+lwV4pZ0xaw0YNXnDB8He3zLmNU/uVGsBdvudyeinMU5nS85cF1Z+4
+ j6sydHcbBQiWua8myjFS7weVD8guJQlxemgIa32po//oxhMSYutsZwDLfrpTOEc5UeCTWl
+ A9LRFyBxKr+Zc5EgfzvvwhM3VaJHzyM=
+DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=suse.cz;
+ s=susede2_ed25519; t=1637325185;
+ h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+ mime-version:mime-version:content-type:content-type:
+ content-transfer-encoding:content-transfer-encoding:
+ in-reply-to:in-reply-to:references:references;
+ bh=4eXQRQkyOnlkfqIjP+4InF8CkZnCxzQH+4oBGRF5bzQ=;
+ b=37Ndmb7me3fMnFCMahzCk8SVpCAyZepl+YuAvScQn2siBak0RgVSkgkQs5eYMHcvE3YEfp
+ Z71c+vJs+cLXasAA==
+Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
+ (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+ key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
+ (No client certificate requested)
+ by imap2.suse-dmz.suse.de (Postfix) with ESMTPS id CB59D13B2A;
+ Fri, 19 Nov 2021 12:33:04 +0000 (UTC)
+Received: from dovecot-director2.suse.de ([192.168.254.65])
+ by imap2.suse-dmz.suse.de with ESMTPSA id 04/sMICZl2F8SwAAMHmgww
+ (envelope-from <vbabka@suse.cz>); Fri, 19 Nov 2021 12:33:04 +0000
+Message-ID: <3083463d-978b-fbe6-dadf-670d400ed437@suse.cz>
+Date: Fri, 19 Nov 2021 13:33:04 +0100
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
  Thunderbird/91.3.1
+Subject: Re: [RFC PATCH 0/3] Use pageblock_order for cma and
+ alloc_contig_range alignment.
 Content-Language: en-US
-To: "Tian, Kevin" <kevin.tian@intel.com>, Jason Gunthorpe <jgg@nvidia.com>
-References: <20211115020552.2378167-1-baolu.lu@linux.intel.com>
- <20211115020552.2378167-2-baolu.lu@linux.intel.com>
- <YZJdJH4AS+vm0j06@infradead.org>
- <cc7ce6f4-b1ec-49ef-e245-ab6c330154c2@linux.intel.com>
- <20211116134603.GA2105516@nvidia.com>
- <BN9PR11MB5433639E43C37C5D2462BD718C9B9@BN9PR11MB5433.namprd11.prod.outlook.com>
- <20211118133325.GO2105516@nvidia.com>
- <BN9PR11MB5433E5B63E575E2232DFBBE48C9C9@BN9PR11MB5433.namprd11.prod.outlook.com>
-From: Lu Baolu <baolu.lu@linux.intel.com>
-Subject: Re: [PATCH 01/11] iommu: Add device dma ownership set/release
- interfaces
-In-Reply-To: <BN9PR11MB5433E5B63E575E2232DFBBE48C9C9@BN9PR11MB5433.namprd11.prod.outlook.com>
-Cc: Chaitanya Kulkarni <kch@nvidia.com>, "Raj, Ashok" <ashok.raj@intel.com>,
- "kvm@vger.kernel.org" <kvm@vger.kernel.org>,
- "rafael@kernel.org" <rafael@kernel.org>,
- Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
- Cornelia Huck <cohuck@redhat.com>, Will Deacon <will@kernel.org>,
- "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
- "iommu@lists.linux-foundation.org" <iommu@lists.linux-foundation.org>,
- Christoph Hellwig <hch@infradead.org>,
- Alex Williamson <alex.williamson@redhat.com>, "Pan,
- Jacob jun" <jacob.jun.pan@intel.com>,
- "linux-pci@vger.kernel.org" <linux-pci@vger.kernel.org>,
- Bjorn Helgaas <bhelgaas@google.com>, Diana Craciun <diana.craciun@oss.nxp.com>
+To: Zi Yan <ziy@nvidia.com>, David Hildenbrand <david@redhat.com>,
+ linux-mm@kvack.org
+References: <20211115193725.737539-1-zi.yan@sent.com>
+From: Vlastimil Babka <vbabka@suse.cz>
+In-Reply-To: <20211115193725.737539-1-zi.yan@sent.com>
+Cc: Michael Ellerman <mpe@ellerman.id.au>, Robin Murphy <robin.murphy@arm.com>,
+ linux-kernel@vger.kernel.org, iommu@lists.linux-foundation.org,
+ virtualization@lists.linux-foundation.org, linuxppc-dev@lists.ozlabs.org,
+ Christoph Hellwig <hch@lst.de>
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -93,65 +102,61 @@ List-Post: <mailto:iommu@lists.linux-foundation.org>
 List-Help: <mailto:iommu-request@lists.linux-foundation.org?subject=help>
 List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
  <mailto:iommu-request@lists.linux-foundation.org?subject=subscribe>
+Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
-Content-Type: text/plain; charset="us-ascii"; Format="flowed"
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-On 2021/11/19 13:44, Tian, Kevin wrote:
->> From: Jason Gunthorpe <jgg@nvidia.com>
->> Sent: Thursday, November 18, 2021 9:33 PM
->>
->>> In concept a singleton group is different from a
->>> multi-devices group which has only one device bound to driver...
->>
->> Really? Why? I don't see it that way..
->>
->> A singleton group is just a multi-device group that hasn't been
->> hotplugged yet.
->>
->> We don't seem to have the concept of a "true" singleton group which is
->> permanently single due to HW features.
->>
->>> This series aims to avoid conflict having both user and kernel drivers
->>> mixed in a multi-devices group.
+On 11/15/21 20:37, Zi Yan wrote:
+> From: Zi Yan <ziy@nvidia.com>
 > 
-> Well, the difference is just in literal. I don't know the background
-> why the existing iommu_attach_device() users want to do it this
-> way. But given the condition in iommu_attach_device() it could
-> in theory imply some unknown hardware-level side effect which
-> may break the desired functionality once the group size grows
-> beyond singleton. Is it a real case? I don't know...
+> Hi David,
 > 
-> You are now redefining that condition from singleton group to
-> multi-devices group with single driver bound. As long as no object
-> from existing driver users, I'm fine with it. But still want to raise
-> awareness as it does change the existing semantics (though might
-> be considered as an imperfect way).
+> You suggested to make alloc_contig_range() deal with pageblock_order instead of
+> MAX_ORDER - 1 and get rid of MAX_ORDER - 1 dependency in virtio_mem[1]. This
+> patchset is my attempt to achieve that. Please take a look and let me know if
+> I am doing it correctly or not.
+> 
+> From what my understanding, cma required alignment of
+> max(MAX_ORDER - 1, pageblock_order), because when MIGRATE_CMA was introduced,
+> __free_one_page() does not prevent merging two different pageblocks, when
+> MAX_ORDER - 1 > pageblock_order. But current __free_one_page() implementation
+> does prevent that.
 
-The singleton group requirement for iommu_attach/detach_device() was
-added by below commit:
+But it does prevent that only for isolated pageblock, not CMA, and yout
+patchset doesn't seem to expand that to CMA? Or am I missing something.
 
-commit 426a273834eae65abcfc7132a21a85b3151e0bce
-Author: Joerg Roedel <jroedel@suse.de>
-Date:   Thu May 28 18:41:30 2015 +0200
 
-     iommu: Limit iommu_attach/detach_device to devices with their own group
+> It should be OK to just align cma to pageblock_order.
+> alloc_contig_range() relies on MIGRATE_CMA to get free pages, so it can use
+> pageblock_order as alignment too.
+> 
+> In terms of virtio_mem, if I understand correctly, it relies on
+> alloc_contig_range() to obtain contiguous free pages and offlines them to reduce
+> guest memory size. As the result of alloc_contig_range() alignment change,
+> virtio_mem should be able to just align PFNs to pageblock_order.
+> 
+> Thanks.
+> 
+> 
+> [1] https://lore.kernel.org/linux-mm/28b57903-fae6-47ac-7e1b-a1dd41421349@redhat.com/
+> 
+> Zi Yan (3):
+>   mm: cma: alloc_contig_range: use pageblock_order as the single
+>     alignment.
+>   drivers: virtio_mem: use pageblock size as the minimum virtio_mem
+>     size.
+>   arch: powerpc: adjust fadump alignment to be pageblock aligned.
+> 
+>  arch/powerpc/include/asm/fadump-internal.h |  4 +---
+>  drivers/virtio/virtio_mem.c                |  6 ++----
+>  include/linux/mmzone.h                     |  5 +----
+>  kernel/dma/contiguous.c                    |  2 +-
+>  mm/cma.c                                   |  6 ++----
+>  mm/page_alloc.c                            | 12 +++++-------
+>  6 files changed, 12 insertions(+), 23 deletions(-)
+> 
 
-     This patch changes the behavior of the iommu_attach_device
-     and iommu_detach_device functions. With this change these
-     functions only work on devices that have their own group.
-     For all other devices the iommu_group_attach/detach
-     functions must be used.
-
-     Signed-off-by: Joerg Roedel <jroedel@suse.de>
-
-Joerg,can you please shed some light on the background of this
-requirement? Does above idea of transition from singleton group
-to group with single driver bound make sense to you?
-
-Best regards,
-baolu
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
