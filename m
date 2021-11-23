@@ -1,105 +1,173 @@
 Return-Path: <iommu-bounces@lists.linux-foundation.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
-Received: from smtp1.osuosl.org (smtp1.osuosl.org [140.211.166.138])
+Received: from smtp4.osuosl.org (smtp4.osuosl.org [140.211.166.137])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.lore.kernel.org (Postfix) with ESMTPS id 9C51BC433FE
-	for <iommu@archiver.kernel.org>; Tue, 23 Nov 2021 16:54:42 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTPS id 93AD4C433EF
+	for <iommu@archiver.kernel.org>; Tue, 23 Nov 2021 17:15:13 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
-	by smtp1.osuosl.org (Postfix) with ESMTP id 44D2080D49;
-	Tue, 23 Nov 2021 16:54:42 +0000 (UTC)
+	by smtp4.osuosl.org (Postfix) with ESMTP id 26C57402D2;
+	Tue, 23 Nov 2021 17:15:13 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from smtp1.osuosl.org ([127.0.0.1])
-	by localhost (smtp1.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id ZYXod4kIjm-W; Tue, 23 Nov 2021 16:54:41 +0000 (UTC)
+Received: from smtp4.osuosl.org ([127.0.0.1])
+	by localhost (smtp4.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+	with ESMTP id 7hCQRUOsShZs; Tue, 23 Nov 2021 17:15:12 +0000 (UTC)
 Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by smtp1.osuosl.org (Postfix) with ESMTPS id A03B580D4A;
-	Tue, 23 Nov 2021 16:54:40 +0000 (UTC)
+	by smtp4.osuosl.org (Postfix) with ESMTPS id CBA4E40385;
+	Tue, 23 Nov 2021 17:15:11 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 0ECEFC0037;
-	Tue, 23 Nov 2021 16:54:40 +0000 (UTC)
-Received: from smtp1.osuosl.org (smtp1.osuosl.org [IPv6:2605:bc80:3010::138])
- by lists.linuxfoundation.org (Postfix) with ESMTP id BAF0DC0012
- for <iommu@lists.linux-foundation.org>; Tue, 23 Nov 2021 16:54:38 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 9F34DC002E;
+	Tue, 23 Nov 2021 17:15:11 +0000 (UTC)
+Received: from smtp2.osuosl.org (smtp2.osuosl.org [IPv6:2605:bc80:3010::133])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 61409C0012
+ for <iommu@lists.linux-foundation.org>; Tue, 23 Nov 2021 17:15:10 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by smtp1.osuosl.org (Postfix) with ESMTP id A9D2E80D48
- for <iommu@lists.linux-foundation.org>; Tue, 23 Nov 2021 16:54:38 +0000 (UTC)
+ by smtp2.osuosl.org (Postfix) with ESMTP id 4CE2140373
+ for <iommu@lists.linux-foundation.org>; Tue, 23 Nov 2021 17:15:10 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from smtp1.osuosl.org ([127.0.0.1])
- by localhost (smtp1.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id Uwu2fcgoClEB for <iommu@lists.linux-foundation.org>;
- Tue, 23 Nov 2021 16:54:37 +0000 (UTC)
-X-Greylist: domain auto-whitelisted by SQLgrey-1.8.0
-Received: from us-smtp-delivery-124.mimecast.com
- (us-smtp-delivery-124.mimecast.com [170.10.129.124])
- by smtp1.osuosl.org (Postfix) with ESMTPS id 3F4C780D45
- for <iommu@lists.linux-foundation.org>; Tue, 23 Nov 2021 16:54:36 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
- s=mimecast20190719; t=1637686476;
- h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
- to:to:cc:cc:mime-version:mime-version:content-type:content-type:
- content-transfer-encoding:content-transfer-encoding:
- in-reply-to:in-reply-to:references:references;
- bh=aciHBgOPYUjXvQ93eMaFUYSRPYuVBl2T8inUXnPM1DI=;
- b=BqWXir209ftETRhV5Vk2ivyeFI9FEazvbI5x7aJBpimAfoyi6cQ6bkbxvyxtQNLAU0Mj/C
- HV5uzguWp+A4gUckpNmBZyCOriTinXc02Jg66dXJxuIOuWUhCAAvfOT0ce+IjDD5Ruy3tJ
- dz4FIhrOzmwPQRUoqfMJqqNocc3mMMM=
-Received: from mail-wr1-f72.google.com (mail-wr1-f72.google.com
- [209.85.221.72]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-145-TAoiqj9nNH-hOwEcDofzxg-1; Tue, 23 Nov 2021 11:54:34 -0500
-X-MC-Unique: TAoiqj9nNH-hOwEcDofzxg-1
-Received: by mail-wr1-f72.google.com with SMTP id
- x17-20020a5d6511000000b0019838caab88so488052wru.6
- for <iommu@lists.linux-foundation.org>; Tue, 23 Nov 2021 08:54:34 -0800 (PST)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
- d=1e100.net; s=20210112;
- h=x-gm-message-state:message-id:date:mime-version:user-agent
- :content-language:to:cc:references:from:organization:subject
- :in-reply-to:content-transfer-encoding;
- bh=aciHBgOPYUjXvQ93eMaFUYSRPYuVBl2T8inUXnPM1DI=;
- b=6PMm1ovjtcLZWrulIoriohFqBwKg5f1qKyqa8nk9wDyskCXw1dKZR0f/NyhvgdE7nb
- lApnqXtoCtnBG7OERU4K7E/itPlcloQOrzijtjrNQVOTtMliCnh4dur9BxN2oHudK4yj
- jtgY5OG5GY0Cs7raUA794w9e6n4sUFTJWgqSp/YQhIjFAw0hgJc1ceOqvzgyWT+K99y3
- A0azHn0ArgdrDsAhw+OclfOe9mr4SizBELZyCOzauxTOZxgniSIvu+UIZP3CRFBRFstx
- gHArRaUSj9C99WfNeC6a9D1IxOxB33NLGt1crOarIcl/T3IHxOctZSiIbcgiV41zlIFJ
- sQ4w==
-X-Gm-Message-State: AOAM533goRExCJm/hDLWytmF6jLFltZzHwvppr4STCNbi4oBhalLP5yt
- IKDeoIg77PFtgNjzv5Ag2jdGG+1cF60lR/GiMARMV9XE+QrUcTYT+4LUf22BvFrN+AGnoNauu/k
- 3UbSYU38s0DfNs9CiHBHHXiZf4OF58w==
-X-Received: by 2002:a1c:2d5:: with SMTP id 204mr4949237wmc.47.1637686473514;
- Tue, 23 Nov 2021 08:54:33 -0800 (PST)
-X-Google-Smtp-Source: ABdhPJzwCJ9kqIZ1afGl9dtKnbyb539MClO63tVvd/xZetuV1ttuaLkE63sS63XqpG4w9XhQeDN2Gg==
-X-Received: by 2002:a1c:2d5:: with SMTP id 204mr4949133wmc.47.1637686472942;
- Tue, 23 Nov 2021 08:54:32 -0800 (PST)
-Received: from [192.168.3.132] (p5b0c6765.dip0.t-ipconnect.de. [91.12.103.101])
- by smtp.gmail.com with ESMTPSA id m20sm2100400wmq.11.2021.11.23.08.54.31
- (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
- Tue, 23 Nov 2021 08:54:32 -0800 (PST)
-Message-ID: <4c5311c7-bae4-4e48-7006-787f2ee19fb3@redhat.com>
-Date: Tue, 23 Nov 2021 17:54:31 +0100
-MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.2.0
-To: Zi Yan <ziy@nvidia.com>
-References: <20211115193725.737539-1-zi.yan@sent.com>
- <d19fb078-cb9b-f60f-e310-fdeea1b947d2@redhat.com>
- <C99EE864-DF71-469D-A047-4446400B2AE8@nvidia.com>
-From: David Hildenbrand <david@redhat.com>
-Organization: Red Hat
-Subject: Re: [RFC PATCH 0/3] Use pageblock_order for cma and
- alloc_contig_range alignment.
-In-Reply-To: <C99EE864-DF71-469D-A047-4446400B2AE8@nvidia.com>
-Authentication-Results: relay.mimecast.com;
- auth=pass smtp.auth=CUSA124A263 smtp.mailfrom=david@redhat.com
-X-Mimecast-Spam-Score: 0
-X-Mimecast-Originator: redhat.com
+Authentication-Results: smtp2.osuosl.org (amavisd-new);
+ dkim=pass (1024-bit key) header.d=microsoft.com
+Received: from smtp2.osuosl.org ([127.0.0.1])
+ by localhost (smtp2.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+ with ESMTP id 7kEZAlLcgQb8 for <iommu@lists.linux-foundation.org>;
+ Tue, 23 Nov 2021 17:15:08 +0000 (UTC)
+X-Greylist: whitelisted by SQLgrey-1.8.0
+Received: from na01-obe.outbound.protection.outlook.com
+ (mail-cusazon11021024.outbound.protection.outlook.com [52.101.62.24])
+ by smtp2.osuosl.org (Postfix) with ESMTPS id AEC0040140
+ for <iommu@lists.linux-foundation.org>; Tue, 23 Nov 2021 17:15:08 +0000 (UTC)
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=ofeO3IbaEIXYKeT1TsuF9vyBcAiDKIr63Pl2J/XmdOCi1FIpB/mi2WUn0I50trgVBsDltAsalGa8wL3WcpDTqdbVwHO5yQ2egWCpC8h2vQSmQSVaf65CpBAEiR0ZRvBhnheWyxBvFROViLj01G7vRBBsWlW1zdypPDmZYcE7VxbedfICMhAit54G5jNJIgngIGYtDeP6btB2Cl4qbP21aDbpfqe1NPDo5cQaDzzx33Qch2L1SDiO9DExoUVFnyNkBiRVnzeTkKyiGWq7so9piqGLjrfJTOUABVYEDyCPsvJGjkBtsNXfka4+MR16M0lhTdaDRwHuJJQFahuh33jWNQ==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com; 
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=P/AgrRAsE3e8DwVFyZb8mhen++/8s7P4Fv34JlkvGGY=;
+ b=VzXLSexfFuAhvdqPvnPnrCNAa5dbJi3hJbMyMb5OG/NvlTeOKpW37ZnTJ21aFz4dCHjQLgYf0CVaAR+OUXl7cbYeaGHRItM8Yjz4JysfCh1UZy1lQcwdntQmRHhpl59ROVlA2AFPM7t7UG6mdONlh/Lhxyqqfcqr8C7WZO8hKRyiGHoz8V1zU66Jewo0nHle/DhZQNw9Sg30cqKebxYCMBaHXyv9UVJi+U9JFcnFMZpDJO5pgWdk66Au1en/gqXbvrky8iLIHpC2XurwygspZEd9twJhDZorX+nnSXL0xiJeG0iHwJZhi/mdX1bFyNyl+L619KaqhlIFViQIYMPtDw==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=microsoft.com; dmarc=pass action=none
+ header.from=microsoft.com; dkim=pass header.d=microsoft.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=P/AgrRAsE3e8DwVFyZb8mhen++/8s7P4Fv34JlkvGGY=;
+ b=LRbON/l4Wn4pQbkGozGRsjGU4x/WFNw2ml93FZI5b39xp+wBEipFK6g5tZ91ZMrIIy3Udqq+AdtEdOzOvVoPflvUvq7/8PsIp9ZYnKa+P3n7ABQ54NVu9A7RIh4Q+a9eSRAJan6wEVG4SIW+3Y5rP4OSurHxJwx9RQZ+y1dJIBU=
+Received: from MWHPR21MB1593.namprd21.prod.outlook.com (2603:10b6:301:7c::11)
+ by MW4PR21MB1971.namprd21.prod.outlook.com (2603:10b6:303:7d::23)
+ with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4755.2; Tue, 23 Nov
+ 2021 17:15:05 +0000
+Received: from MWHPR21MB1593.namprd21.prod.outlook.com
+ ([fe80::9401:9c8b:c334:4336]) by MWHPR21MB1593.namprd21.prod.outlook.com
+ ([fe80::9401:9c8b:c334:4336%2]) with mapi id 15.20.4755.001; Tue, 23 Nov 2021
+ 17:15:05 +0000
+To: Tianyu Lan <ltykernel@gmail.com>, "tglx@linutronix.de"
+ <tglx@linutronix.de>, "mingo@redhat.com" <mingo@redhat.com>, "bp@alien8.de"
+ <bp@alien8.de>, "dave.hansen@linux.intel.com" <dave.hansen@linux.intel.com>,
+ "x86@kernel.org" <x86@kernel.org>, "hpa@zytor.com" <hpa@zytor.com>,
+ "luto@kernel.org" <luto@kernel.org>, "peterz@infradead.org"
+ <peterz@infradead.org>, "jgross@suse.com" <jgross@suse.com>,
+ "sstabellini@kernel.org" <sstabellini@kernel.org>,
+ "boris.ostrovsky@oracle.com" <boris.ostrovsky@oracle.com>, KY Srinivasan
+ <kys@microsoft.com>, Haiyang Zhang <haiyangz@microsoft.com>, Stephen
+ Hemminger <sthemmin@microsoft.com>, "wei.liu@kernel.org"
+ <wei.liu@kernel.org>, Dexuan Cui <decui@microsoft.com>, "joro@8bytes.org"
+ <joro@8bytes.org>, "will@kernel.org" <will@kernel.org>, "davem@davemloft.net"
+ <davem@davemloft.net>, "kuba@kernel.org" <kuba@kernel.org>,
+ "jejb@linux.ibm.com" <jejb@linux.ibm.com>, "martin.petersen@oracle.com"
+ <martin.petersen@oracle.com>, "hch@lst.de" <hch@lst.de>,
+ "m.szyprowski@samsung.com" <m.szyprowski@samsung.com>, "robin.murphy@arm.com"
+ <robin.murphy@arm.com>, Tianyu Lan <Tianyu.Lan@microsoft.com>,
+ "thomas.lendacky@amd.com" <thomas.lendacky@amd.com>,
+ "xen-devel@lists.xenproject.org" <xen-devel@lists.xenproject.org>
+Subject: RE: [PATCH V2 1/6] Swiotlb: Add Swiotlb bounce buffer remap function
+ for HV IVM
+Thread-Topic: [PATCH V2 1/6] Swiotlb: Add Swiotlb bounce buffer remap function
+ for HV IVM
+Thread-Index: AQHX4HeSpdu4+UVN+0mZE44Ng5xByawRUlog
+Date: Tue, 23 Nov 2021 17:15:05 +0000
+Message-ID: <MWHPR21MB1593169593AD833A91DF553FD7609@MWHPR21MB1593.namprd21.prod.outlook.com>
+References: <20211123143039.331929-1-ltykernel@gmail.com>
+ <20211123143039.331929-2-ltykernel@gmail.com>
+In-Reply-To: <20211123143039.331929-2-ltykernel@gmail.com>
+Accept-Language: en-US
 Content-Language: en-US
-Cc: Michael Ellerman <mpe@ellerman.id.au>, linuxppc-dev@lists.ozlabs.org,
- linux-kernel@vger.kernel.org, virtualization@lists.linux-foundation.org,
- linux-mm@kvack.org, iommu@lists.linux-foundation.org,
- Robin Murphy <robin.murphy@arm.com>, Christoph Hellwig <hch@lst.de>
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+msip_labels: MSIP_Label_f42aa342-8706-4288-bd11-ebb85995028c_ActionId=20ac84dd-6068-4158-8f23-31c48ca2fb69;
+ MSIP_Label_f42aa342-8706-4288-bd11-ebb85995028c_ContentBits=0;
+ MSIP_Label_f42aa342-8706-4288-bd11-ebb85995028c_Enabled=true;
+ MSIP_Label_f42aa342-8706-4288-bd11-ebb85995028c_Method=Standard;
+ MSIP_Label_f42aa342-8706-4288-bd11-ebb85995028c_Name=Internal;
+ MSIP_Label_f42aa342-8706-4288-bd11-ebb85995028c_SetDate=2021-11-23T16:46:20Z;
+ MSIP_Label_f42aa342-8706-4288-bd11-ebb85995028c_SiteId=72f988bf-86f1-41af-91ab-2d7cd011db47;
+authentication-results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=microsoft.com;
+x-ms-publictraffictype: Email
+x-ms-office365-filtering-correlation-id: 53492aa7-ed12-4d2a-c4a9-08d9aea4cb26
+x-ms-traffictypediagnostic: MW4PR21MB1971:
+x-ld-processed: 72f988bf-86f1-41af-91ab-2d7cd011db47,ExtAddr
+x-microsoft-antispam-prvs: <MW4PR21MB1971D59BCDA7CB082BD583D7D7609@MW4PR21MB1971.namprd21.prod.outlook.com>
+x-ms-oob-tlc-oobclassifiers: OLM:33;
+x-ms-exchange-senderadcheck: 1
+x-ms-exchange-antispam-relay: 0
+x-microsoft-antispam: BCL:0;
+x-microsoft-antispam-message-info: BXFhhPGWjUIhW86hag+IGKX2AN6z4EyarBn7Qc4McNDeHg6TSwJhkEjOVl8neYr5gw9gmvUkK1he8hJEL3RWGJsKBFuqMf3HkP7+mTGE9QuDCeYxkhVU4QbTsfmsmlN7I1of0apRzOR1MU6r5/BETidQkc9iakKkJOGZ5kOZrjKvUX3TXesk3f73eY+jMw4/A0cKuiHdFWFeLZSkinZFfAIOzrN1xYY4uEHVnsSqNMHSAGoEYhN9B2J2oCLrZYm+Fgi/Y7s3ZQtCiMPpV1ogEsvAo7fUOQD43miXe4pebQDEMcs66JTHcmrhH0PsWQNVtIpLWefxaLx8YzV7EFWX40GVIe5pu5LGpgkYcWLU5BDZkYfYQjKGJ/kBfxgKuQGtobD2h372cW4tciiAQV/zy9xkl1tlCM6fs+CGcp5E/LOtiq8gRbjL7PF04j/AWMT+ej4t8H2O2yikWNwCLVqVuQIs3PQwOhL/jHKj22tOxni5Tw8FuxPHsRdgieyc9GuhzWRgvDS+1nejLoQhVh1RrbKjX+/vq0PCWfWi1hESEYNDj/Fzjqe/BfJKlqEHEx+B8/tnjZ0uJxT6ZB7D7waL8jOpXr/jPuaLzP4WE8+9rHPNnm9Rgsh/3qM4zRwUwIOLkim3ZXr35Bt12VhdJmmF9JCgx7faa57NTRxZhNAK4r1jVafXdzO4vKiNS+CJ+/Ahfs2XYQoShEK2Tg8X3+LKL9dc5nJe6Kck1npvgPoBsuemdGLEIGRjR5Junx2rxLFo10+zmiXhtlCN8Kbeoa4d6Q==
+x-forefront-antispam-report: CIP:255.255.255.255; CTRY:; LANG:en; SCL:1; SRV:;
+ IPV:NLI; SFV:NSPM; H:MWHPR21MB1593.namprd21.prod.outlook.com; PTR:; CAT:NONE;
+ SFS:(13230001)(4636009)(366004)(10290500003)(8676002)(52536014)(122000001)(86362001)(66446008)(38100700002)(4326008)(55016003)(316002)(64756008)(2906002)(83380400001)(66946007)(33656002)(66556008)(9686003)(76116006)(8936002)(110136005)(921005)(66476007)(38070700005)(54906003)(82960400001)(508600001)(8990500004)(7406005)(7416002)(5660300002)(7696005)(71200400001)(6506007)(26005)(186003)(82950400001)(20210929001);
+ DIR:OUT; SFP:1102; 
+x-ms-exchange-antispam-messagedata-chunkcount: 1
+x-ms-exchange-antispam-messagedata-0: =?us-ascii?Q?qISMY46OkQlgn6H3Q+Fooujnc0qtjjsuFvjmlGqNjADwI/t3dApfBKnJQqAi?=
+ =?us-ascii?Q?LhSqbZ4AxJDpwRrzc7u1RpQ+vm19FSk54j0IGjA8EZf8YBnEsZSd2lkcZsCu?=
+ =?us-ascii?Q?dUigtnQaRzHbRlHnnmL2EiIcpunEfZORCYU54REGEKHCxXkqgUwBpD2Kg/8T?=
+ =?us-ascii?Q?4Uc6D6hKnsxUKvmul/pGVPO4nOwPWI8QHnq7DiBTEspZ7W63uncbzodNk/+H?=
+ =?us-ascii?Q?E+D1J1aoZbS76vHWva0rutqG5Aj1fH71UabpZuNyVafpvdZwlDkOT5kMAL3M?=
+ =?us-ascii?Q?KZuQS/IJvggbG69rmEjXMWg0QllMCme3BuGdlo6TSGNeBfBjHFeDAdGEmSMl?=
+ =?us-ascii?Q?+Ge9bM5HUeB/GW6BUpQ5tMN1nmAIMBIZY81yYLq+79Ve+T98OnkevqKHZVKw?=
+ =?us-ascii?Q?c3+igq9hp1gJnF6JRWIX8iXQA5TgmA4ebDCQ8i4bP6LKlOUTj8CgaVXMsC+j?=
+ =?us-ascii?Q?T99OJbyIB8tnxcfSDJlFGs0V67X5E5tvT7Ee+F4uGkUDUrOhsCeZSflUgKTZ?=
+ =?us-ascii?Q?XbVxwt9u62qbLoS8za9VMuXovi96lh9D71Fz4gEd8P0+o/r2OrtUq3LMF9aa?=
+ =?us-ascii?Q?W8yXsrbbwrm5l7ji8eiEby+c5cinyfcLDIuBN/ir6xnpdUmzk3a+f9Ell675?=
+ =?us-ascii?Q?Ae+rZDIVmaabImPhIDmR6iXXBVt9SB05GwplFjiKhd3iQbTKd/DrZQQ3pVHf?=
+ =?us-ascii?Q?+8oFJtp3TqPekFbovgX251rIwdV/p9/I352mSFPyL0pAQw1ifSgqRhYtSMPa?=
+ =?us-ascii?Q?A2vrcrwD72Wk0ibEmkHXfxe6Wr8ynV7TqUIqwnfBizNH639fD0R6b/488Dab?=
+ =?us-ascii?Q?b1VWosuelySMOZ5zuNTEl2Ea9p2V1VHUYQrrhS6AzP0YNnh26TRhuPKGJJzz?=
+ =?us-ascii?Q?chOkU2DW9ZEHoTrO+D/JLqb6YwXee0/Q6IOkIqyjo5deCmHB2iVbCKZlLL6/?=
+ =?us-ascii?Q?QueJUgp2TMBWdT8KkG4eNBIXiuk3UzHadn3fJ6JChhgpwRRI+kLVG8vn8IO/?=
+ =?us-ascii?Q?hG0Zw5+QM48RQfjF0p0KH461iCBThm5eFtz1DDPPcmNQZV1xY9NGll81QafF?=
+ =?us-ascii?Q?bmVYddjSjStF2l27QNQKz6i9oowIcmmIFpMuToGaHbFw+D9375NzjntEYuk4?=
+ =?us-ascii?Q?XBpD/oArQTrL2dQFXirXMkkolf8YgunNxPSGM7vzVNf5opxyOb77/XCpsQ6w?=
+ =?us-ascii?Q?qQjXjav1pCVM4H2KedC3HZUFnhElwJRaUWuTU0yGtUZwk6055N28FKWHs+mG?=
+ =?us-ascii?Q?gwmrF0h7fL+0hpQwqsz+HNAf3Xb7NWgm0fvUk7868SZ+kGfvVd2zM8F7/rJ3?=
+ =?us-ascii?Q?dp/I0NkxJjnp77x11byGMidgQMmO3bDc2bvSZ39R2q7fKDYvwx79zMz/btYV?=
+ =?us-ascii?Q?rzomLqrftvhqjFRRqnjI92Nq3FiWvQd9hKaYVLbuhG0sah3NjLL1c1JtUT7t?=
+ =?us-ascii?Q?yEoPliQvo13G9VVGtpHkoFcImQGKS5j5MzGGQ3Cw6s9gc0Xl5H6+aZQq0+EX?=
+ =?us-ascii?Q?+CGBAaxcQq5P0MNzzJKQb95OhpNbia3wRecfEWqRarcgzZWZKAAn7T4kfwOK?=
+ =?us-ascii?Q?pqedMNb2NTnq/RJlpwcJnIRsZv3vCGVip+jzRUNco/pGQDBteTSfEmoTLqG4?=
+ =?us-ascii?Q?nR4tYLXJh6KcBCwvTUjlBDjJGXLrVctJqC6VX7bGJ2FfXRBidEDIPihqIswO?=
+ =?us-ascii?Q?u6uoCQ=3D=3D?=
+MIME-Version: 1.0
+X-OriginatorOrg: microsoft.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-AuthSource: MWHPR21MB1593.namprd21.prod.outlook.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 53492aa7-ed12-4d2a-c4a9-08d9aea4cb26
+X-MS-Exchange-CrossTenant-originalarrivaltime: 23 Nov 2021 17:15:05.4451 (UTC)
+X-MS-Exchange-CrossTenant-fromentityheader: Hosted
+X-MS-Exchange-CrossTenant-id: 72f988bf-86f1-41af-91ab-2d7cd011db47
+X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
+X-MS-Exchange-CrossTenant-userprincipalname: qOra8OzZ1qzl4uDv+Uqevz5sK8v2xfxSnG8vFqHfIOM0Oy922aI0mTzsdUUVDZVH/Wnt8KuFdM80KvCyac4asMKfi1SHXugr+JXT1telu3Q=
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: MW4PR21MB1971
+Cc: "parri.andrea@gmail.com" <parri.andrea@gmail.com>,
+ "linux-hyperv@vger.kernel.org" <linux-hyperv@vger.kernel.org>,
+ "brijesh.singh@amd.com" <brijesh.singh@amd.com>,
+ "linux-scsi@vger.kernel.org" <linux-scsi@vger.kernel.org>,
+ "konrad.wilk@oracle.com" <konrad.wilk@oracle.com>,
+ "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+ "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+ "dave.hansen@intel.com" <dave.hansen@intel.com>,
+ "iommu@lists.linux-foundation.org" <iommu@lists.linux-foundation.org>,
+ vkuznets <vkuznets@redhat.com>
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -112,332 +180,220 @@ List-Post: <mailto:iommu@lists.linux-foundation.org>
 List-Help: <mailto:iommu-request@lists.linux-foundation.org?subject=help>
 List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
  <mailto:iommu-request@lists.linux-foundation.org?subject=subscribe>
+From: "Michael Kelley \(LINUX\) via iommu" <iommu@lists.linux-foundation.org>
+Reply-To: "Michael Kelley \(LINUX\)" <mikelley@microsoft.com>
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-On 17.11.21 04:04, Zi Yan wrote:
-> On 16 Nov 2021, at 3:58, David Hildenbrand wrote:
+From: Tianyu Lan <ltykernel@gmail.com> Sent: Tuesday, November 23, 2021 6:31 AM
 > 
->> On 15.11.21 20:37, Zi Yan wrote:
->>> From: Zi Yan <ziy@nvidia.com>
->>>
->>> Hi David,
->>
->> Hi,
->>
->> thanks for looking into this.
->>
+> In Isolation VM with AMD SEV, bounce buffer needs to be accessed via
+> extra address space which is above shared_gpa_boundary (E.G 39 bit
+> address line) reported by Hyper-V CPUID ISOLATION_CONFIG. The access
+> physical address will be original physical address + shared_gpa_boundary.
+> The shared_gpa_boundary in the AMD SEV SNP spec is called virtual top of
+> memory(vTOM). Memory addresses below vTOM are automatically treated as
+> private while memory above vTOM is treated as shared.
+> 
+> Expose swiotlb_unencrypted_base for platforms to set unencrypted
+> memory base offset and platform calls swiotlb_update_mem_attributes()
+> to remap swiotlb mem to unencrypted address space. memremap() can
+> not be called in the early stage and so put remapping code into
+> swiotlb_update_mem_attributes(). Store remap address and use it to copy
+> data from/to swiotlb bounce buffer.
+> 
+> Signed-off-by: Tianyu Lan <Tianyu.Lan@microsoft.com>
+> ---
+> Change since v1:
+> 	* Rework comment in the swiotlb_init_io_tlb_mem()
+> 	* Make swiotlb_init_io_tlb_mem() back to return void.
+> ---
+>  include/linux/swiotlb.h |  6 +++++
+>  kernel/dma/swiotlb.c    | 53 +++++++++++++++++++++++++++++++++++++----
+>  2 files changed, 54 insertions(+), 5 deletions(-)
+> 
+> diff --git a/include/linux/swiotlb.h b/include/linux/swiotlb.h
+> index 569272871375..f6c3638255d5 100644
+> --- a/include/linux/swiotlb.h
+> +++ b/include/linux/swiotlb.h
+> @@ -73,6 +73,9 @@ extern enum swiotlb_force swiotlb_force;
+>   * @end:	The end address of the swiotlb memory pool. Used to do a quick
+>   *		range check to see if the memory was in fact allocated by this
+>   *		API.
+> + * @vaddr:	The vaddr of the swiotlb memory pool. The swiotlb memory pool
+> + *		may be remapped in the memory encrypted case and store virtual
+> + *		address for bounce buffer operation.
+>   * @nslabs:	The number of IO TLB blocks (in groups of 64) between @start and
+>   *		@end. For default swiotlb, this is command line adjustable via
+>   *		setup_io_tlb_npages.
+> @@ -92,6 +95,7 @@ extern enum swiotlb_force swiotlb_force;
+>  struct io_tlb_mem {
+>  	phys_addr_t start;
+>  	phys_addr_t end;
+> +	void *vaddr;
+>  	unsigned long nslabs;
+>  	unsigned long used;
+>  	unsigned int index;
+> @@ -186,4 +190,6 @@ static inline bool is_swiotlb_for_alloc(struct device *dev)
+>  }
+>  #endif /* CONFIG_DMA_RESTRICTED_POOL */
+> 
+> +extern phys_addr_t swiotlb_unencrypted_base;
+> +
+>  #endif /* __LINUX_SWIOTLB_H */
+> diff --git a/kernel/dma/swiotlb.c b/kernel/dma/swiotlb.c
+> index 8e840fbbed7c..c303fdeba82f 100644
+> --- a/kernel/dma/swiotlb.c
+> +++ b/kernel/dma/swiotlb.c
+> @@ -50,6 +50,7 @@
+>  #include <asm/io.h>
+>  #include <asm/dma.h>
+> 
+> +#include <linux/io.h>
+>  #include <linux/init.h>
+>  #include <linux/memblock.h>
+>  #include <linux/iommu-helper.h>
+> @@ -72,6 +73,8 @@ enum swiotlb_force swiotlb_force;
+> 
+>  struct io_tlb_mem io_tlb_default_mem;
+> 
+> +phys_addr_t swiotlb_unencrypted_base;
+> +
+>  /*
+>   * Max segment that we can provide which (if pages are contingous) will
+>   * not be bounced (unless SWIOTLB_FORCE is set).
+> @@ -155,6 +158,31 @@ static inline unsigned long nr_slots(u64 val)
+>  	return DIV_ROUND_UP(val, IO_TLB_SIZE);
+>  }
+> 
+> +/*
+> + * Remap swioltb memory in the unencrypted physical address space
+> + * when swiotlb_unencrypted_base is set. (e.g. for Hyper-V AMD SEV-SNP
+> + * Isolation VMs).
+> + */
+> +void *swiotlb_mem_remap(struct io_tlb_mem *mem, unsigned long bytes)
+> +{
+> +	void *vaddr;
+> +
+> +	if (swiotlb_unencrypted_base) {
+> +		phys_addr_t paddr = mem->start + swiotlb_unencrypted_base;
+> +
+> +		vaddr = memremap(paddr, bytes, MEMREMAP_WB);
+> +		if (!vaddr) {
+> +			pr_err("Failed to map the unencrypted memory %llx size %lx.\n",
+> +			       paddr, bytes);
+> +			return NULL;
+> +		}
+> +
+> +		return vaddr;
+> +	}
+> +
+> +	return phys_to_virt(mem->start);
+> +}
+> +
+>  /*
+>   * Early SWIOTLB allocation may be too early to allow an architecture to
+>   * perform the desired operations.  This function allows the architecture to
+> @@ -172,7 +200,14 @@ void __init swiotlb_update_mem_attributes(void)
+>  	vaddr = phys_to_virt(mem->start);
+>  	bytes = PAGE_ALIGN(mem->nslabs << IO_TLB_SHIFT);
+>  	set_memory_decrypted((unsigned long)vaddr, bytes >> PAGE_SHIFT);
+> -	memset(vaddr, 0, bytes);
+> +
+> +	mem->vaddr = swiotlb_mem_remap(mem, bytes);
+> +	if (!mem->vaddr) {
+> +		pr_err("Fail to remap swiotlb mem.\n");
+> +		return;
+> +	}
+> +
+> +	memset(mem->vaddr, 0, bytes);
+>  }
 
-Hi,
+In the error case, do you want to leave mem->vaddr as NULL?  Or is it
+better to leave it as the virtual address of mem-start?  Your code leaves it
+as NULL.
 
-sorry for the delay, I wasn't "actually working" last week, so now I'm
-back from holiday :)
+The interaction between swiotlb_update_mem_attributes() and the helper
+function swiotlb_memo_remap() seems kind of clunky.  phys_to_virt() gets called
+twice, for example, and two error messages are printed.  The code would be
+more straightforward by just putting the helper function inline:
 
->>>
->>> You suggested to make alloc_contig_range() deal with pageblock_order instead of
->>> MAX_ORDER - 1 and get rid of MAX_ORDER - 1 dependency in virtio_mem[1]. This
->>> patchset is my attempt to achieve that. Please take a look and let me know if
->>> I am doing it correctly or not.
->>>
->>> From what my understanding, cma required alignment of
->>> max(MAX_ORDER - 1, pageblock_order), because when MIGRATE_CMA was introduced,
->>> __free_one_page() does not prevent merging two different pageblocks, when
->>> MAX_ORDER - 1 > pageblock_order. But current __free_one_page() implementation
->>> does prevent that. It should be OK to just align cma to pageblock_order.
->>> alloc_contig_range() relies on MIGRATE_CMA to get free pages, so it can use
->>> pageblock_order as alignment too.
->>
->> I wonder if that's sufficient. Especially the outer_start logic in
->> alloc_contig_range() might be problematic. There are some ugly corner
->> cases with free pages/allocations spanning multiple pageblocks and we
->> only isolated a single pageblock.
-> 
-> Thank you a lot for writing the list of these corner cases. They are
-> very helpful!
-> 
->>
->>
->> Regarding CMA, we have to keep the following cases working:
->>
->> a) Different pageblock types (MIGRATE_CMA and !MIGRATE_CMA) in MAX_ORDER
->>    - 1 page:
->>    [       MAX_ ORDER - 1     ]
->>    [ pageblock 0 | pageblock 1]
->>
->> Assume either pageblock 0 is MIGRATE_CMA or pageblock 1 is MIGRATE_CMA,
->> but not both. We have to make sure alloc_contig_range() keeps working
->> correctly. This should be the case even with your change, as we won't
->> merging pages accross differing migratetypes.
-> 
-> Yes.
-> 
->>
->> b) Migrating/freeing a MAX_ ORDER - 1 page while partially isolated:
->>    [       MAX_ ORDER - 1     ]
->>    [ pageblock 0 | pageblock 1]
->>
->> Assume both are MIGRATE_CMA. Assume we want to either allocate from
->> pageblock 0 or pageblock 1. Especially, assume we want to allocate from
->> pageblock 1. While we would isolate pageblock 1, we wouldn't isolate
->> pageblock 0.
->>
->> What happens if we either have a free page spanning the MAX_ORDER - 1
->> range already OR if we have to migrate a MAX_ORDER - 1 page, resulting
->> in a free MAX_ORDER - 1 page of which only the second pageblock is
->> isolated? We would end up essentially freeing a page that has mixed
->> pageblocks, essentially placing it in !MIGRATE_ISOLATE free lists ... I
->> might be wrong but I have the feeling that this would be problematic.
->>
-> 
-> This could happen when start_isolate_page_range() stumbles upon a compound
-> page with order >= pageblock_order or a free page with order >=
-> pageblock_order, but should not. start_isolate_page_range() should check
-> the actual page size, either compound page size or free page size, and set
-> the migratetype across pageblocks if the page is bigger than pageblock size.
-> More precisely set_migratetype_isolate() should do that.
+mem->vaddr = phys_to_virt(mem->start);
+bytes = PAGE_ALIGN(mem->nslabs << IO_TLB_SHIFT);
+set_memory_decrypted((unsigned long)(mem->vaddr), bytes >> PAGE_SHIFT);
 
-Right -- but then we have to extend the isolation range from within
-set_migratetype_isolate() :/ E.g., how should we know what we have to
-unisolate later ..
+if (swiotlb_unencrypted_base) {
+	phys_addr_t paddr = mem->start + swiotlb_unencrypted_base;
 
-> 
-> 
->> c) Concurrent allocations:
->>     [       MAX_ ORDER - 1     ]
->>     [ pageblock 0 | pageblock 1]
->>
->> Assume b) but we have two concurrent CMA allocations to pageblock 0 and
->> pageblock 1, which would now be possible as start_isolate_page_range()
->> isolate would succeed on both.
-> 
-> Two isolations will be serialized by the zone lock taken by
-> set_migratetype_isolate(), so the concurrent allocation would not be a problem.
-> If it is a MAX_ORDER-1 free page, the first comer should split it and only
-> isolate one of the pageblock then second one can isolate the other pageblock.
+	mem->vaddr = memremap(paddr, bytes, MEMREMAP_WB);
+	if (!mem->vaddr) {
+		pr_err("Failed to map the unencrypted memory %llx size %lx.\n",
+			       paddr, bytes);
+		return;
+	}
+}
 
-Right, the issue is essentially b) above.
+memset(mem->vaddr, 0, bytes);
 
-> If it is a MAX_ORDER-1 compound page, the first comer should isolate both
-> pageblocks, then the second one would fail. WDYT?
-
-Possibly we could even have two independent CMA areas "colliding" within
-a MAX_ ORDER - 1 page. I guess the surprise would be getting an
-"-EAGAIN" from isolation, but the caller should properly handle that.
-
-Maybe it's really easier to do something along the lines I proposed
-below and always isolate the complete MAX_ORDER-1 range in
-alloc_contig_range(). We just have to "fix" isolation as I drafted.
-
-> 
-> 
-> In sum, it seems to me that the issue is page isolation code only sees
-> pageblock without check the actual page. When there are multiple pageblocks
-> belonging to one page, the problem appears. This should be fixed.
-> 
->>
->>
->> Regarding virtio-mem, we care about the following cases:
->>
->> a) Allocating parts from completely movable MAX_ ORDER - 1 page:
->>    [       MAX_ ORDER - 1     ]
->>    [ pageblock 0 | pageblock 1]
->>
->> Assume pageblock 0 and pageblock 1 are either free or contain only
->> movable pages. Assume we allocated pageblock 0. We have to make sure we
->> can allocate pageblock 1. The other way around, assume we allocated
->> pageblock 1, we have to make sure we can allocate pageblock 0.
->>
->> Free pages spanning both pageblocks might be problematic.
-> 
-> Can you elaborate a bit? If either of pageblock 0 and 1 is used by
-> virtio-mem, why do we care the other? If pageblock 0 and 1 belong to
-> the same page (either free or compound), they should have the same
-> migratetype. If we want to just allocate one of them, we can split
-> the free page or migrate the compound page then split the remaining
-> free page.
-
-The thing is: it has to work on ZONE_NORMAL and ZONE_MOVABLE as well.
-It's essentially the same issue as a) and b) in the CMA case, so it
-should be covered by these.
-
-> 
->>
->> b) Allocate parts of partially movable MAX_ ORDER - 1 page:
->>    [       MAX_ ORDER - 1     ]
->>    [ pageblock 0 | pageblock 1]
->>
->> Assume pageblock 0 contains unmovable data but pageblock 1 not: we have
->> to make sure we can allocate pageblock 1. Similarly, assume pageblock 1
->> contains unmovable data but pageblock 0 no: we have to make sure we can
->> allocate pageblock 1. has_unmovable_pages() might allow for that.
->>
->> But, we want to fail early in case we want to allocate a single
->> pageblock but it contains unmovable data. This could be either directly
->> or indirectly.
->>
->> If we have an unmovable (compound) MAX_ ORDER - 1 and we'd try isolating
->> pageblock 1, has_unmovable_pages() would always return "false" because
->> we'd simply be skiping over any tail pages, and not detect the
->> un-movability.
-> 
-> OK. It seems to me that has_unmovable_pages() needs to be fixed to handle
-> such a situation.
-
-Right.
+(This version also leaves mem->vaddr as NULL in the error case.)
 
 > 
->>
->> c) Migrating/freeing a MAX_ ORDER - 1 page while partially isolated:
->>
->> Same concern as for CMA b)
->>
->>
->> So the biggest concern I have is dealing with migrating/freeing >
->> pageblock_order pages while only having isolated a single pageblock.
+>  static void swiotlb_init_io_tlb_mem(struct io_tlb_mem *mem, phys_addr_t start,
+> @@ -196,7 +231,18 @@ static void swiotlb_init_io_tlb_mem(struct io_tlb_mem *mem, phys_addr_t start,
+>  		mem->slots[i].orig_addr = INVALID_PHYS_ADDR;
+>  		mem->slots[i].alloc_size = 0;
+>  	}
+> +
+> +	/*
+> +	 * If swiotlb_unencrypted_base is set, the bounce buffer memory will
+> +	 * be remapped and cleared in swiotlb_update_mem_attributes.
+> +	 */
+> +	if (swiotlb_unencrypted_base)
+> +		return;
+> +
+> +	set_memory_decrypted((unsigned long)vaddr, bytes >> PAGE_SHIFT);
+
+Prior to this patch, and here in the new version as well, the return value from
+set_memory_decrypted() is ignored in several places in this file.  As previously
+discussed, swiotlb_init_io_tlb_mem() is a void function, so there's no place to
+return an error. Is that OK?
+
+>  	memset(vaddr, 0, bytes);
+> +	mem->vaddr = vaddr;
+> +	return;
+>  }
 > 
-> I agree. I think isolation code needs to be aware of >pageblock_order
-> pages and act accordingly. If it is a free page, split the page to
-> avoid isolating a subset of the page. If it is a compound page, either
-> fail the isolation or isolate the entire compound page instead.
+>  int __init swiotlb_init_with_tbl(char *tlb, unsigned long nslabs, int verbose)
+> @@ -318,7 +364,6 @@ swiotlb_late_init_with_tbl(char *tlb, unsigned long nslabs)
+>  	if (!mem->slots)
+>  		return -ENOMEM;
 > 
->>
->>>
->>> In terms of virtio_mem, if I understand correctly, it relies on
->>> alloc_contig_range() to obtain contiguous free pages and offlines them to reduce
->>> guest memory size. As the result of alloc_contig_range() alignment change,
->>> virtio_mem should be able to just align PFNs to pageblock_order.
->>
->> For virtio-mem it will most probably be desirable to first try
->> allocating the MAX_ORDER -1 range if possible and then fallback to
->> pageblock_order. But that's an additional change on top in virtio-mem code.
->>
+> -	set_memory_decrypted((unsigned long)tlb, bytes >> PAGE_SHIFT);
+>  	swiotlb_init_io_tlb_mem(mem, virt_to_phys(tlb), nslabs, true);
 > 
-> Just to understand the motivation, is this because MAX_ORDER-1 range
-> would be faster than pageblock_order? What if MAX_ORDER-1 goes beyond
-> a memory section size (like my WIP patchset to increase MAX_ORDER
-> beyond the memory section size)? virtio-mem could first try PAGES_PER_SECTION,
-> then fall back to pageblock_order, right?
-
-My comment is only in the context of this patch series, not in context
-of eventually raising MAX_ORDER to exceed eventually a single memory
-section or even a memory block.
-
-Yes, it would be faster. What we do right now (if the complete memory
-block is used by Linux and thus not allocated by virtio-mem yet):
-
-a) Try allocating the the complete memory block.
-b) If it fails, fallback to essentially MAX_ORDER - 1 chunks
-
-In the context of this patch it would be reasonable to
-
-a) Try allocating the the complete memory block.
-b) If it fails, fallback to essentially MAX_ORDER - 1 chunks
-c) If it fails, fallback to essentially pageblock order chunks
-
-Things will be different if we change MAX_ORDER - 1.
-
->>
->>
->> My take to teach alloc_contig_range() to properly handle would be the
->> following:
->>
->> a) Convert MIGRATE_ISOLATE into a separate pageblock flag
->>
->> We would want to convert MIGRATE_ISOLATE into a separate pageblock
->> flags, such that when we isolate a page block we preserve the original
->> migratetype. While start_isolate_page_range() would set that bit,
->> undo_isolate_page_range() would simply clear that bit. The buddy would
->> use a single MIGRATE_ISOLATE queue as is: the original migratetype is
->> only used for restoring the correct migratetype. This would allow for
->> restoring e.g., MIGRATE_UNMOVABLE after isolating an unmovable pageblock
->> (below) and not simply setting all such pageblocks to MIGRATE_MOVABLE
->> when un-isolating.
->>
->> Ideally, we'd get rid of the "migratetype" parameter for
->> alloc_contig_range(). However, even with the above change we have to
->> make sure that memory offlining and ordinary alloc_contig_range() users
->> will fail on MIGRATE_CMA pageblocks (has_unmovable_page() checks that as
->> of today). We could achieve that differently, though (e.g., bool
->> cma_alloc parameter instead).
+>  	swiotlb_print_info();
+> @@ -371,7 +416,7 @@ static void swiotlb_bounce(struct device *dev, phys_addr_t tlb_addr, size_t size
+>  	phys_addr_t orig_addr = mem->slots[index].orig_addr;
+>  	size_t alloc_size = mem->slots[index].alloc_size;
+>  	unsigned long pfn = PFN_DOWN(orig_addr);
+> -	unsigned char *vaddr = phys_to_virt(tlb_addr);
+> +	unsigned char *vaddr = mem->vaddr + tlb_addr - mem->start;
+>  	unsigned int tlb_offset, orig_addr_offset;
 > 
-> This might need to be done in a separate patch, since pageblock bits require
-> to be word aligned and it is 4 now. To convert MIGRATE_ISOLATE to a separate
-> bit, either NR_PAGEBLOCK_BITS needs to be increased to 8 or a separate
-> isolation bitmap array needs to be allocated. Or the migratetype information
-> can be stored temporarily during isolation process. I can look into it later.
-
-Right, we'd need 8 instead of 4 bits. But we could preserve the previous
-migratettype (MOVABLE, UNMOVABLE, CMA) ... when isolating and wouldn't
-have to magically punch in whatever someone told us.
-
+>  	if (orig_addr == INVALID_PHYS_ADDR)
+> @@ -806,8 +851,6 @@ static int rmem_swiotlb_device_init(struct reserved_mem *rmem,
+>  			return -ENOMEM;
+>  		}
 > 
-> 
->>
->>
->> b) Allow isolating pageblocks with unmovable pages
->>
->> We'd pass the actual range of interest to start_isolate_page_range() and
->> rework the code to check has_unmovable_pages() only on the range of
->> interest, but considering overlapping larger allocations. E.g., if we
->> stumble over a compound page, lookup the head an test if that page is
->> movable/unmovable.
-> 
-> This is an optimization to reduce isolation failure rate, right? This only
-> applies to the pageblocks at the beginning and the end of a range of interest.
-
-Right. And with a) we can simply isolate+unisolate without always
-changing the migratetype e.g., to MIGRATE_MOVABLE in case of virtio-mem.
-
-> 
->>
->> c) Change alloc_contig_range() to not "extend" the range of interest to
->> include pageblock of different type. Assume we're isolating a
->> MIGRATE_CMA pageblock, only isolate a neighboring MIGRATE_CMA pageblock,
->> not other pageblocks.
-> 
-> But alloc_contig_range() would return these extended pageblocks at the end.
-> And if pageblock migratetype can be preserved during isolation (item (a) above),
-> this would not be a problem, right?
-
-We have to make sure that ordinary alloc_contig_range() and memory
-offlining don't allocate MIGRATE_CMA ranges. So when actually isolating
-we have to refuse isolating MIGRATE_CMA pageblocks. Handling that in the
-caller when adjusting the range keeps the logic in the actual isolation
-code is one option (cma=false - bail out when wanting to isolate
-MIGRATE_CMA).
-
-But there might be alternatives. Most probably we'd just have to check
-for the "range of interest". If cma=false we just have to make sure to
-not isolate MIGRATE_CMA inside the "range of interest". Yes that should
-work as well.
-
-> 
->>
->>
->> So we'd keep isolating complete MAX_ORDER - 1 pages unless c) prevents
->> it. We'd allow isolating even pageblocks that contain unmovable pages on
->> ZONE_NORMAL, and check via has_unmovable_pages() only if the range of
->> interest contains unmovable pages, not the whole MAX_ORDER -1 range or
->> even the whole pageblock. We'd not silently overwrite the pageblock type
->> when restoring but instead restore the old migratetype.
->>
-> I assume MAX_ORDER - 1 is an optimization for faster isolation speed.
-> If MAX_ORDER goes beyond a memory section size, I guess PAGES_PER_SECTION
-> is what you want, right? FYI, I am preparing a follow-up patch to replace
-> any MAX_ORDER use that is intended to indicate maximum physically contiguous
-> size with a new variable, MAX_PHYS_CONTIG_ORDER, which is PFN_SECTION_SHIFT
-> when SPARSEMEM and MAX_ORDER when FLATMEM. I would replace MAX_ORDER here
-> with the new variable.
-
-Yes, with MAX_ORDER changes it will be a different story. We could
-detect at runtime what actually makes sense.
-
--- 
-Thanks,
-
-David / dhildenb
+> -		set_memory_decrypted((unsigned long)phys_to_virt(rmem->base),
+> -				     rmem->size >> PAGE_SHIFT);
+>  		swiotlb_init_io_tlb_mem(mem, rmem->base, nslabs, false);
+>  		mem->force_bounce = true;
+>  		mem->for_alloc = true;
+> --
+> 2.25.1
 
 _______________________________________________
 iommu mailing list
