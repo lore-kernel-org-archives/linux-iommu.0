@@ -1,78 +1,79 @@
 Return-Path: <iommu-bounces@lists.linux-foundation.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
-Received: from smtp3.osuosl.org (smtp3.osuosl.org [140.211.166.136])
+Received: from smtp2.osuosl.org (smtp2.osuosl.org [140.211.166.133])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.lore.kernel.org (Postfix) with ESMTPS id 2A1EFC433F5
-	for <iommu@archiver.kernel.org>; Tue, 23 Nov 2021 11:21:20 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTPS id E6739C433FE
+	for <iommu@archiver.kernel.org>; Tue, 23 Nov 2021 11:21:21 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
-	by smtp3.osuosl.org (Postfix) with ESMTP id C0F206065D;
-	Tue, 23 Nov 2021 11:21:19 +0000 (UTC)
+	by smtp2.osuosl.org (Postfix) with ESMTP id 5710E4025E;
+	Tue, 23 Nov 2021 11:21:21 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from smtp3.osuosl.org ([127.0.0.1])
-	by localhost (smtp3.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id asxVOJq9VzOG; Tue, 23 Nov 2021 11:21:19 +0000 (UTC)
-Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by smtp3.osuosl.org (Postfix) with ESMTPS id B8D3A606EE;
-	Tue, 23 Nov 2021 11:21:18 +0000 (UTC)
-Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id A5AF4C002E;
-	Tue, 23 Nov 2021 11:21:18 +0000 (UTC)
-Received: from smtp2.osuosl.org (smtp2.osuosl.org [140.211.166.133])
- by lists.linuxfoundation.org (Postfix) with ESMTP id DD98DC0012
- for <iommu@lists.linux-foundation.org>; Tue, 23 Nov 2021 11:21:16 +0000 (UTC)
-Received: from localhost (localhost [127.0.0.1])
- by smtp2.osuosl.org (Postfix) with ESMTP id C4AFF4025C
- for <iommu@lists.linux-foundation.org>; Tue, 23 Nov 2021 11:21:16 +0000 (UTC)
-X-Virus-Scanned: amavisd-new at osuosl.org
-Authentication-Results: smtp2.osuosl.org (amavisd-new);
- dkim=pass (1024-bit key) header.d=chromium.org
 Received: from smtp2.osuosl.org ([127.0.0.1])
- by localhost (smtp2.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id NWf9IqTGJmTa for <iommu@lists.linux-foundation.org>;
- Tue, 23 Nov 2021 11:21:16 +0000 (UTC)
+	by localhost (smtp2.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+	with ESMTP id N2NcNVA8MSjV; Tue, 23 Nov 2021 11:21:20 +0000 (UTC)
+Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [IPv6:2605:bc80:3010:104::8cd3:938])
+	by smtp2.osuosl.org (Postfix) with ESMTPS id 021FB4025C;
+	Tue, 23 Nov 2021 11:21:20 +0000 (UTC)
+Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
+	by lists.linuxfoundation.org (Postfix) with ESMTP id CAFA8C002E;
+	Tue, 23 Nov 2021 11:21:19 +0000 (UTC)
+Received: from smtp3.osuosl.org (smtp3.osuosl.org [IPv6:2605:bc80:3010::136])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id F05D7C0036
+ for <iommu@lists.linux-foundation.org>; Tue, 23 Nov 2021 11:21:18 +0000 (UTC)
+Received: from localhost (localhost [127.0.0.1])
+ by smtp3.osuosl.org (Postfix) with ESMTP id EC148606F1
+ for <iommu@lists.linux-foundation.org>; Tue, 23 Nov 2021 11:21:18 +0000 (UTC)
+X-Virus-Scanned: amavisd-new at osuosl.org
+Authentication-Results: smtp3.osuosl.org (amavisd-new);
+ dkim=pass (1024-bit key) header.d=chromium.org
+Received: from smtp3.osuosl.org ([127.0.0.1])
+ by localhost (smtp3.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+ with ESMTP id ol6-mnXcM34F for <iommu@lists.linux-foundation.org>;
+ Tue, 23 Nov 2021 11:21:18 +0000 (UTC)
 X-Greylist: whitelisted by SQLgrey-1.8.0
-Received: from mail-pg1-x52f.google.com (mail-pg1-x52f.google.com
- [IPv6:2607:f8b0:4864:20::52f])
- by smtp2.osuosl.org (Postfix) with ESMTPS id 190C4401E2
- for <iommu@lists.linux-foundation.org>; Tue, 23 Nov 2021 11:21:16 +0000 (UTC)
-Received: by mail-pg1-x52f.google.com with SMTP id t4so10721715pgn.9
- for <iommu@lists.linux-foundation.org>; Tue, 23 Nov 2021 03:21:16 -0800 (PST)
+Received: from mail-pj1-x1034.google.com (mail-pj1-x1034.google.com
+ [IPv6:2607:f8b0:4864:20::1034])
+ by smtp3.osuosl.org (Postfix) with ESMTPS id 7A20D6065D
+ for <iommu@lists.linux-foundation.org>; Tue, 23 Nov 2021 11:21:18 +0000 (UTC)
+Received: by mail-pj1-x1034.google.com with SMTP id
+ n15-20020a17090a160f00b001a75089daa3so1842606pja.1
+ for <iommu@lists.linux-foundation.org>; Tue, 23 Nov 2021 03:21:18 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=chromium.org; s=google;
  h=from:to:cc:subject:date:message-id:in-reply-to:references
  :mime-version:content-transfer-encoding;
- bh=z+/tM6AGO8qVa/0Ves95KRNhzSUdOxRaqnGgKB5D++M=;
- b=XpXqNAebRwgXhworSNtt028SsP5KTorBtVnPQ2NDJ5AqE0w8IT8BOg6T3ewnDOxn0x
- QaNyBlTudA5wA6HUsP3tTtdlTWjvrE8GuQPbTwT1fW+w1gEOlQN/lkvuxJNQ4SJKqEYn
- we3ePUFjfo44/HkRFeRMoGLKvp+vx0wcGlvTA=
+ bh=mq8nc34v9wy9BHUcdNCchv5TcJtzwaMW4yDN1UOKTXs=;
+ b=JpDT/+FDBCbI5IBaWeaKfzyOwUUOyTt+Vw1ovqm0zuzKZZrjqWO3dJqGL1pzmsZRcz
+ WEzphSwzny6i8imySPh8owk0bZ7mV09ROF7m2cIZELwxwLD3zWFbiIveEf0Sy/YacdFK
+ n/sQubJ/NkmPIgp5pbeN1xtI08xQWQungcwqY=
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
  d=1e100.net; s=20210112;
  h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
  :references:mime-version:content-transfer-encoding;
- bh=z+/tM6AGO8qVa/0Ves95KRNhzSUdOxRaqnGgKB5D++M=;
- b=6QGiY1z6hW8PLJQ2E5hMJCMfgBvT+OkiFCAJu6twoE3LzIy1cKGFz55S9w+Ked1Kpb
- /UeLPZU4Z/eEA7lobEWCLv/czkCEEhNCeSXnd+hH3ear3IyuiCrfbStcRHVoC3XOCJcd
- voRcCtkAUkqO504ZGOwikPpvD8Z4geZEFrcwxTZhkDyWZRunYLVpV1uCBEZmT0R3QCBS
- +WIvMho5EsqSxEPxLM6NDqyZJ7VfgKz8BhoHbVH3q+w+YWYutdD2G9CrIToZi7H12Ezv
- 3vQ3Vdvm/ER1GaHXErg9yRu8kNmHOzK0wcgN2rjL/DUivlttUVqMCRK7T8shGFD8hdzz
- Zp1g==
-X-Gm-Message-State: AOAM530eCzq99pY+pOpFsFtYyTbFqQcbyQlWg9IEhGaPwmhFtbdz6K2T
- sNxxVaM+bVqVgBVXM/v/gxdBkA==
-X-Google-Smtp-Source: ABdhPJxETkQVjZ/TElThsyh1V0RdLsnWog1QFLXL9SdSSg23n2Tff5mZqtPLZT8Oh2DPEEUzXXmy1w==
-X-Received: by 2002:a63:f64:: with SMTP id 36mr3117696pgp.464.1637666475417;
- Tue, 23 Nov 2021 03:21:15 -0800 (PST)
+ bh=mq8nc34v9wy9BHUcdNCchv5TcJtzwaMW4yDN1UOKTXs=;
+ b=hoRk6Pf2EX0BllzVgZHLhZqAliROmXgas8NQA9xNw9xC4x5D6iNFn0KEi032CLdGZX
+ IUmcGr5by5ST5Gb3POvnu7SraVo0g37X9s++hG1Pz/2+Tly6j3CbR1Cyez5Ob4tKn98i
+ RkoPfLscGm/CathTBj64OWqbEjCCTeo5Gt3V4YhSqekqTSEVEHBB9UqVEIrEuvWGanGx
+ EBaNvjmNhxGlkMb/IC34L7dnzK3Q6Ml990tTv3wpMvWWT6QvW2aSrx6eFbE4BIOSgPHO
+ 46jUD2MUmMqZTMcATAB4i/YjUkBAe/vXHXgVJLmJb9ZkxOk9k9oiPGRwtwqoI2PCx/3C
+ XbGA==
+X-Gm-Message-State: AOAM532Jg7YyB0a4c+7Pqfi3ZOFRu4Vn7U/niPpCGurZm9HSx+y6tnGr
+ nxaq4DMuP37Sqgn0KXrBCO4kRw==
+X-Google-Smtp-Source: ABdhPJxp5J8vQC13ZWDo2EQlaskUNOPku9PaqV5etdp5QIpELJ9fUxb88Pk4hXN6hRe8tLOckb6fGg==
+X-Received: by 2002:a17:902:7d96:b0:142:87dc:7dd3 with SMTP id
+ a22-20020a1709027d9600b0014287dc7dd3mr5260273plm.11.1637666477920; 
+ Tue, 23 Nov 2021 03:21:17 -0800 (PST)
 Received: from hsinyi-z840.tpe.corp.google.com
  ([2401:fa00:1:10:d1ae:c331:ed2a:15e9])
- by smtp.gmail.com with ESMTPSA id 63sm11093914pfz.119.2021.11.23.03.21.13
+ by smtp.gmail.com with ESMTPSA id 63sm11093914pfz.119.2021.11.23.03.21.15
  (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
- Tue, 23 Nov 2021 03:21:15 -0800 (PST)
+ Tue, 23 Nov 2021 03:21:17 -0800 (PST)
 From: Hsin-Yi Wang <hsinyi@chromium.org>
 To: Christoph Hellwig <hch@infradead.org>
-Subject: [PATCH 2/3] dt-bindings: Add io-tlb-segsize property for
- restricted-dma-pool
-Date: Tue, 23 Nov 2021 19:21:03 +0800
-Message-Id: <20211123112104.3530135-3-hsinyi@chromium.org>
+Subject: [PATCH 3/3] arm64: dts: mt8183: use restricted swiotlb for scp mem
+Date: Tue, 23 Nov 2021 19:21:04 +0800
+Message-Id: <20211123112104.3530135-4-hsinyi@chromium.org>
 X-Mailer: git-send-email 2.34.0.rc2.393.gf8c9666880-goog
 In-Reply-To: <20211123112104.3530135-1-hsinyi@chromium.org>
 References: <20211123112104.3530135-1-hsinyi@chromium.org>
@@ -100,34 +101,31 @@ Content-Transfer-Encoding: 7bit
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-Add a io-tlb-segsize property that each restricted-dma-pool can set its
-own io_tlb_segsize since some use cases require slabs larger than default
-value (128).
+Use restricted-dma-pool for mtk_scp's reserved memory. And set the
+io-tlb-segsize to 4096 since the driver needs at least 2560 slabs to
+allocate memory.
 
 Signed-off-by: Hsin-Yi Wang <hsinyi@chromium.org>
 ---
- .../bindings/reserved-memory/shared-dma-pool.yaml         | 8 ++++++++
- 1 file changed, 8 insertions(+)
+ arch/arm64/boot/dts/mediatek/mt8183-kukui.dtsi | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
-diff --git a/Documentation/devicetree/bindings/reserved-memory/shared-dma-pool.yaml b/Documentation/devicetree/bindings/reserved-memory/shared-dma-pool.yaml
-index a4bf757d6881de..6198bf6b76f0b2 100644
---- a/Documentation/devicetree/bindings/reserved-memory/shared-dma-pool.yaml
-+++ b/Documentation/devicetree/bindings/reserved-memory/shared-dma-pool.yaml
-@@ -56,6 +56,14 @@ properties:
-       If this property is present, then Linux will use the region for
-       the default pool of the consistent DMA allocator.
+diff --git a/arch/arm64/boot/dts/mediatek/mt8183-kukui.dtsi b/arch/arm64/boot/dts/mediatek/mt8183-kukui.dtsi
+index 94c13c45919445..de94b2fd7f33e7 100644
+--- a/arch/arm64/boot/dts/mediatek/mt8183-kukui.dtsi
++++ b/arch/arm64/boot/dts/mediatek/mt8183-kukui.dtsi
+@@ -109,9 +109,9 @@ reserved_memory: reserved-memory {
+ 		ranges;
  
-+  io-tlb-segsize:
-+    type: u32
-+    description: >
-+      Each restricted-dma-pool can use this property to set its own
-+      io_tlb_segsize. If not set, it will use the default value
-+      IO_TLB_SEGSIZE defined in include/linux/swiotlb.h. The value has
-+      to be a power of 2, otherwise it will fall back to IO_TLB_SEGSIZE.
-+
- unevaluatedProperties: false
+ 		scp_mem_reserved: scp_mem_region {
+-			compatible = "shared-dma-pool";
++			compatible = "restricted-dma-pool";
+ 			reg = <0 0x50000000 0 0x2900000>;
+-			no-map;
++			io-tlb-segsize = <4096>;
+ 		};
+ 	};
  
- examples:
 -- 
 2.34.0.rc2.393.gf8c9666880-goog
 
