@@ -1,171 +1,67 @@
 Return-Path: <iommu-bounces@lists.linux-foundation.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
-Received: from smtp3.osuosl.org (smtp3.osuosl.org [140.211.166.136])
+Received: from smtp1.osuosl.org (smtp1.osuosl.org [140.211.166.138])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.lore.kernel.org (Postfix) with ESMTPS id 901B6C433EF
-	for <iommu@archiver.kernel.org>; Wed, 24 Nov 2021 17:03:48 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTPS id 972CAC433EF
+	for <iommu@archiver.kernel.org>; Wed, 24 Nov 2021 17:22:00 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
-	by smtp3.osuosl.org (Postfix) with ESMTP id 1FFAD61BB7;
-	Wed, 24 Nov 2021 17:03:48 +0000 (UTC)
+	by smtp1.osuosl.org (Postfix) with ESMTP id 2F3E081C56;
+	Wed, 24 Nov 2021 17:22:00 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from smtp3.osuosl.org ([127.0.0.1])
-	by localhost (smtp3.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id V27VLI298yCr; Wed, 24 Nov 2021 17:03:47 +0000 (UTC)
-Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by smtp3.osuosl.org (Postfix) with ESMTPS id C324E605EC;
-	Wed, 24 Nov 2021 17:03:46 +0000 (UTC)
+Received: from smtp1.osuosl.org ([127.0.0.1])
+	by localhost (smtp1.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+	with ESMTP id iO0moHq68po2; Wed, 24 Nov 2021 17:21:59 +0000 (UTC)
+Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [IPv6:2605:bc80:3010:104::8cd3:938])
+	by smtp1.osuosl.org (Postfix) with ESMTPS id 1657881B98;
+	Wed, 24 Nov 2021 17:21:59 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 9E735C001E;
-	Wed, 24 Nov 2021 17:03:46 +0000 (UTC)
-Received: from smtp3.osuosl.org (smtp3.osuosl.org [140.211.166.136])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 64A08C0012
- for <iommu@lists.linux-foundation.org>; Wed, 24 Nov 2021 17:03:44 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id E1EC3C001E;
+	Wed, 24 Nov 2021 17:21:58 +0000 (UTC)
+Received: from smtp4.osuosl.org (smtp4.osuosl.org [IPv6:2605:bc80:3010::137])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 80B2EC0012
+ for <iommu@lists.linux-foundation.org>; Wed, 24 Nov 2021 17:21:57 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by smtp3.osuosl.org (Postfix) with ESMTP id 52073605EC
- for <iommu@lists.linux-foundation.org>; Wed, 24 Nov 2021 17:03:44 +0000 (UTC)
+ by smtp4.osuosl.org (Postfix) with ESMTP id 67C3A4024B
+ for <iommu@lists.linux-foundation.org>; Wed, 24 Nov 2021 17:21:57 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from smtp3.osuosl.org ([127.0.0.1])
- by localhost (smtp3.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id 68vywP3MJGG9 for <iommu@lists.linux-foundation.org>;
- Wed, 24 Nov 2021 17:03:42 +0000 (UTC)
-X-Greylist: whitelisted by SQLgrey-1.8.0
-Received: from na01-obe.outbound.protection.outlook.com
- (mail-cusazlp17010008.outbound.protection.outlook.com [40.93.13.8])
- by smtp3.osuosl.org (Postfix) with ESMTPS id 9A0D2605A7
- for <iommu@lists.linux-foundation.org>; Wed, 24 Nov 2021 17:03:42 +0000 (UTC)
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=NJSew702kt1SBq/iP+d0p4PpwIrVLZwzRSwBbg1PWN4NPsgCv/+v9GiYcp9Yvs1HjpMV0WV2TPEb/8hwN7SE0cDQKiaB+jtcUpEtYvIemIDeQtqpd1Yc3/aKvtoOIyoAvtd3PLSGZCKGso02BeV9f5X+UjJSWUAorYuOz2Shz1WOjRHW4qiijWUiknKAmr/kGGS0tNGYZyaWxaDSDSVskAJUrpmmEeTwNrXRuIcxjFMMrhARtuO8hkmNIFHhOwYHHyRP5PuC8P8n7+uqWuCd4UtSUUjrvRoEcDp0sONT9hDTGtO/zzgQIs9tH+EA8Nb3RUxY1l/XA8OQbsaO83cYuw==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com; 
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=BD9wKKo11ShnaAQ2qihISDt0mNPkCMxLNXXSL2rmFyE=;
- b=A0qXvqeGYO36sQXuR8NTZYeJjezeZniCtq/HxfHg3OevkFYSGCBxOGrybjWAhGUyLpE68/pVUyYH9uvzA6Hy9X+aHNBG73lJ6B9M9PQJ3dCIHFmGThkwzIMQd8lYUoG2B35zZIoBuaoaqKdXI9HyiPJUqi8dK1Rm9byLLr8RUXyminrAKhxCnlJix1p67NFCiIqFhvylPkkyazaFOpvion0DqvTwRu8eZy57bPaw39UA2fobUPdwxmaMMe5wIfMoOEajzuuP063z3jnpJejY+SuP22a8P5OM4X3eSR2pRqVoTK189HVRtvTLereFL7LkKpoenboqpQ7ohNMmwHBcYQ==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=microsoft.com; dmarc=pass action=none
- header.from=microsoft.com; dkim=pass header.d=microsoft.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=BD9wKKo11ShnaAQ2qihISDt0mNPkCMxLNXXSL2rmFyE=;
- b=UkUcwtpQTsE3e/3mDhS9QbXgBnLY/1K3N7504xrxZvVrf9luaUQ3kEvpqloXPVUSmx2x0qHXhmzBuFoiqbFsUttiyr3QqXvbEOJVNcbn3RfUJzFOZAJK5OPbW+y1YZGROwduvUBcJgOCx13A7WRwA+AH0yUVEDtvfnkGl9/PALQ=
-Received: from MWHPR21MB1593.namprd21.prod.outlook.com (2603:10b6:301:7c::11)
- by MWHPR21MB0160.namprd21.prod.outlook.com (2603:10b6:300:78::18)
- with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4755.6; Wed, 24 Nov
- 2021 17:03:27 +0000
-Received: from MWHPR21MB1593.namprd21.prod.outlook.com
- ([fe80::9401:9c8b:c334:4336]) by MWHPR21MB1593.namprd21.prod.outlook.com
- ([fe80::9401:9c8b:c334:4336%2]) with mapi id 15.20.4755.001; Wed, 24 Nov 2021
- 17:03:27 +0000
-To: Tianyu Lan <ltykernel@gmail.com>, "tglx@linutronix.de"
- <tglx@linutronix.de>, "mingo@redhat.com" <mingo@redhat.com>, "bp@alien8.de"
- <bp@alien8.de>, "dave.hansen@linux.intel.com" <dave.hansen@linux.intel.com>,
- "x86@kernel.org" <x86@kernel.org>, "hpa@zytor.com" <hpa@zytor.com>,
- "luto@kernel.org" <luto@kernel.org>, "peterz@infradead.org"
- <peterz@infradead.org>, "jgross@suse.com" <jgross@suse.com>,
- "sstabellini@kernel.org" <sstabellini@kernel.org>,
- "boris.ostrovsky@oracle.com" <boris.ostrovsky@oracle.com>, KY Srinivasan
- <kys@microsoft.com>, Haiyang Zhang <haiyangz@microsoft.com>, Stephen
- Hemminger <sthemmin@microsoft.com>, "wei.liu@kernel.org"
- <wei.liu@kernel.org>, Dexuan Cui <decui@microsoft.com>, "joro@8bytes.org"
- <joro@8bytes.org>, "will@kernel.org" <will@kernel.org>, "davem@davemloft.net"
- <davem@davemloft.net>, "kuba@kernel.org" <kuba@kernel.org>,
- "jejb@linux.ibm.com" <jejb@linux.ibm.com>, "martin.petersen@oracle.com"
- <martin.petersen@oracle.com>, "hch@lst.de" <hch@lst.de>,
- "m.szyprowski@samsung.com" <m.szyprowski@samsung.com>, "robin.murphy@arm.com"
- <robin.murphy@arm.com>, Tianyu Lan <Tianyu.Lan@microsoft.com>,
- "thomas.lendacky@amd.com" <thomas.lendacky@amd.com>,
- "xen-devel@lists.xenproject.org" <xen-devel@lists.xenproject.org>
-Subject: RE: [PATCH V2 5/6] net: netvsc: Add Isolation VM support for netvsc
- driver
-Thread-Topic: [PATCH V2 5/6] net: netvsc: Add Isolation VM support for netvsc
- driver
-Thread-Index: AQHX4HeYtAEila+YgkS3X1o35FDXYawS2g7g
-Date: Wed, 24 Nov 2021 17:03:26 +0000
-Message-ID: <MWHPR21MB1593093B61DC506B64986B14D7619@MWHPR21MB1593.namprd21.prod.outlook.com>
-References: <20211123143039.331929-1-ltykernel@gmail.com>
- <20211123143039.331929-6-ltykernel@gmail.com>
-In-Reply-To: <20211123143039.331929-6-ltykernel@gmail.com>
-Accept-Language: en-US
-Content-Language: en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-msip_labels: MSIP_Label_f42aa342-8706-4288-bd11-ebb85995028c_ActionId=4391e0e8-47f1-4dc5-aa3c-c57814906b25;
- MSIP_Label_f42aa342-8706-4288-bd11-ebb85995028c_ContentBits=0;
- MSIP_Label_f42aa342-8706-4288-bd11-ebb85995028c_Enabled=true;
- MSIP_Label_f42aa342-8706-4288-bd11-ebb85995028c_Method=Standard;
- MSIP_Label_f42aa342-8706-4288-bd11-ebb85995028c_Name=Internal;
- MSIP_Label_f42aa342-8706-4288-bd11-ebb85995028c_SetDate=2021-11-24T16:08:18Z;
- MSIP_Label_f42aa342-8706-4288-bd11-ebb85995028c_SiteId=72f988bf-86f1-41af-91ab-2d7cd011db47;
-authentication-results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=microsoft.com;
-x-ms-publictraffictype: Email
-x-ms-office365-filtering-correlation-id: 645ba359-8c0b-4f2f-7b48-08d9af6c554b
-x-ms-traffictypediagnostic: MWHPR21MB0160:
-x-ld-processed: 72f988bf-86f1-41af-91ab-2d7cd011db47,ExtAddr
-x-microsoft-antispam-prvs: <MWHPR21MB0160D2B6E06F66610394FB38D7619@MWHPR21MB0160.namprd21.prod.outlook.com>
-x-ms-oob-tlc-oobclassifiers: OLM:8882;
-x-ms-exchange-senderadcheck: 1
-x-ms-exchange-antispam-relay: 0
-x-microsoft-antispam: BCL:0;
-x-microsoft-antispam-message-info: lgCok9YPWjAorBazHS+K/zK0iUKclUi/gDhMV1adSOrVIzDHGcaJeLc9mWOtg5DFOjPG2BjtBuEz9a4nsye2BSa/saMA1zBZjXmh7WAae4okWK5XD2+lm0SiigzSQzGL+VKFCbGTd7t1tPeWJUmc5E63Cbeg9IdIrdHkzw7SYTkVXOhc0LtNSKLasHs/FD/M+nwB5Z6D6lqvESYdChEADB+5LHr6jPOqHwiVUp6+GZ9VS95bKo0mCZv1UD9zNxd++gxK0Evx8uxgUpCX5+O8m7eQXny27KQ3b1oMCge95Ijx2RM9yI3qFyQzypEQdJqeFyjONfstRR3ztpSKgDLWJ/y6x4TjUJDTpgOtH3HawjLrjoggMoatL55AcgXrr9nersomuAezohLes/8W2KePLvIGKfb6AUUg0o9UmO1LSD/FZLz3d0OBYBVK4C3P8iRnYP1IFWg0HW7fhR3X9itBzooTHhTIysNZfChaY0rCbkvBFmD92Dk1BLorb26CgHdLaWyGfTuaFwc62Ldot+XMic80/UKwIYzvw47SJ5fffxUW4uCNJc2fKOR/u1bcenUVVE9iajcB4aJqX7agdBwMvnmfgK0i+aORU0ZGlXqmRc/jeYD7cqluGJCVqrbDx7cqKm89I/lfGAeh7TMELgvmxks/sU13zSfvNGDfxCuHGo6E0YEL1MvMp7TaDLLM/kk/zunkwiuafrAb+k3+WBfplbbPVyA3rEdCWrNiqwPZinBdoio8yUDlEyASDkr7ZDfNcE+xmvPzCOkaUZbFrezmEw==
-x-forefront-antispam-report: CIP:255.255.255.255; CTRY:; LANG:en; SCL:1; SRV:;
- IPV:NLI; SFV:NSPM; H:MWHPR21MB1593.namprd21.prod.outlook.com; PTR:; CAT:NONE;
- SFS:(13230001)(4636009)(366004)(7696005)(71200400001)(6506007)(508600001)(82950400001)(8990500004)(55016003)(10290500003)(33656002)(66476007)(66556008)(64756008)(66446008)(8676002)(4326008)(83380400001)(186003)(2906002)(8936002)(54906003)(7406005)(86362001)(5660300002)(7416002)(122000001)(110136005)(26005)(316002)(76116006)(9686003)(52536014)(66946007)(82960400001)(921005)(38100700002)(38070700005)(20210929001);
- DIR:OUT; SFP:1102; 
-x-ms-exchange-antispam-messagedata-chunkcount: 1
-x-ms-exchange-antispam-messagedata-0: =?us-ascii?Q?AwExHU+M29eSnSe5BLN2W/8ii8uIVdNmFv8oHC+RkSnXcHjP36HUkX+PaTU4?=
- =?us-ascii?Q?H25bZgnMWSEygiei+0jPiJE50Jq32E9pKjqctjxK0pEmXAJL6Rl7jSwwA+5k?=
- =?us-ascii?Q?VDxphfgxPSOwWLZJ73FRZsITZnilA5QRrVDgUsomXr7ApvNg537Sc1W+5oj3?=
- =?us-ascii?Q?fmj+qvljLh+Dte8BngcvUY2l4Wh2NwozL6RhdwyxxZk3TYdwFiMbQJGSDMfJ?=
- =?us-ascii?Q?wviKLA0WrpNudd61XGpwHiClzTM/g6j9FE1iIOgaJFbGfpwtQM/1D5o4FdxK?=
- =?us-ascii?Q?shSL3/EzQFqacqG6hDvJtGUvxldK79sn13sJA1chUjpLfjY9mSXyQr/gUjcc?=
- =?us-ascii?Q?YqPgoIR2mHBbnxF4kYsgkkRHIejQZNXZrf7wgvATddtOXEpJF2F1PZvtDdvb?=
- =?us-ascii?Q?EMwZVTyTlW5hY+UYk9Z9ZENM+NLCt851qy0B0V5NiIpK8X3gIwx0/+6D7FuY?=
- =?us-ascii?Q?sqRO8dDviPsslQJveWn0FUUf/k4rmRFEmq2VoRDleKpYX7mR512esQDxvgsF?=
- =?us-ascii?Q?eYV3J24bFO4zhPkt8L6WfPWYwqzWfxeNf/7bWzdImiQB50VYGHCVeBoLBeP/?=
- =?us-ascii?Q?oyTNpMXwIgngjAbNxHUAowi7NsrZ3HcD/dedi9L1sb7jmta3GgIxaTwPZVNS?=
- =?us-ascii?Q?CjIoX61Hnrr+AyNbXS0ifdbiPcW0Qm54fy6ec+s/WUSHypUutpT2espkFFYq?=
- =?us-ascii?Q?XnTMytXLiMuBbNQBbCW5McHkZZJbs2w+J6Fp5I2TrQRBksI2NJg1ldPOCTax?=
- =?us-ascii?Q?d6hDsdbXpHttpIjHLTl5T1l+7IdhQwCQSkcOWznccUjaj8G7vnPZMlL0kkWB?=
- =?us-ascii?Q?b3t35lSvZ15wZBQWqnMEWbW3zzAHwS9/uJZ+QCzjgenjGWlqgVMSPekKjjP/?=
- =?us-ascii?Q?dI6MSG4Yd7oHPkI0f9F0W6v5ZP6l4CJ1q776PUFSRB3cD0Wv11QYNfiMvKFk?=
- =?us-ascii?Q?vpU/2Ke6280PatYJ8kiB0+yNF9f9qKtBfA3rQucSl9rtD/Y9K0Tive4qf69C?=
- =?us-ascii?Q?Jm3qIRyvFyLOrEA4YmvCuxMs6MpE+nXAFf9OsXda3O4P9z5B1KhiQrvvMrtr?=
- =?us-ascii?Q?+GWAVb+JkkL1a+kuq4Fx1qEezMeD+kyFaLzV84zZfLTikgdJjS6DRhks9k5T?=
- =?us-ascii?Q?wgFapZXNg72Ww3tEX35HmX5BpSjhPSsSj5XqvODVG9LEVLnztLvBFLSj5NI2?=
- =?us-ascii?Q?6HMwsOzsinDjly33+sqaEIUaB4/+X97kg4KOYKR5jooRPDzaLvPDlHbD4YUB?=
- =?us-ascii?Q?G8Jw5wqbh3VbYQWP44TS07YhY7buoS+fiuY02Ic1yenN4psAiSCe0NaF7f3Z?=
- =?us-ascii?Q?Uz4i3N/smEpuAM4yf7SwMug2aiiMKJrFHrzr6KtkpD3EF24hg5RFu1Qsm9L7?=
- =?us-ascii?Q?EwqRMGm9QFWcwpbgrQURnDh6SYlhuM1foch9MzA/l099HA18X1IR1Fv77QO6?=
- =?us-ascii?Q?Edd//vvaOFI+3524x/IVc2M9OhGwxQjYBzeyxyrtVZn886YxUV+KZPQqt98+?=
- =?us-ascii?Q?I2Pi3V6cYfoMbl7LYP6T+U+oQIwJd27KaEX57gnKVTijaJCtnx7AKqqMHJtk?=
- =?us-ascii?Q?tZvES3IOLJ7mNUnpZymggJ/cks9moO8Ntx3g8B1rW3dDIh1osPTUN8MflkbT?=
- =?us-ascii?Q?9FJk/Z4DwoggfhKZI/57+yOwnasNq+pZuO5t602X/oJvRjh1USkAgNmUlJzK?=
- =?us-ascii?Q?ZJ0WYg=3D=3D?=
+Received: from smtp4.osuosl.org ([127.0.0.1])
+ by localhost (smtp4.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+ with ESMTP id ExzBeCtBfjmU for <iommu@lists.linux-foundation.org>;
+ Wed, 24 Nov 2021 17:21:55 +0000 (UTC)
+X-Greylist: domain auto-whitelisted by SQLgrey-1.8.0
+Received: from frasgout.his.huawei.com (frasgout.his.huawei.com
+ [185.176.79.56])
+ by smtp4.osuosl.org (Postfix) with ESMTPS id AF5A6401FC
+ for <iommu@lists.linux-foundation.org>; Wed, 24 Nov 2021 17:21:55 +0000 (UTC)
+Received: from fraeml742-chm.china.huawei.com (unknown [172.18.147.206])
+ by frasgout.his.huawei.com (SkyGuard) with ESMTP id 4Hznq50kqBz67vp0;
+ Thu, 25 Nov 2021 01:21:21 +0800 (CST)
+Received: from lhreml724-chm.china.huawei.com (10.201.108.75) by
+ fraeml742-chm.china.huawei.com (10.206.15.223) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2308.20; Wed, 24 Nov 2021 18:21:51 +0100
+Received: from [10.202.227.179] (10.202.227.179) by
+ lhreml724-chm.china.huawei.com (10.201.108.75) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2308.20; Wed, 24 Nov 2021 17:21:50 +0000
+Subject: Re: [PATCH 0/9] iommu: Refactor flush queues into iommu-dma
+To: Robin Murphy <robin.murphy@arm.com>, <joro@8bytes.org>, <will@kernel.org>
+References: <cover.1637671820.git.robin.murphy@arm.com>
+Message-ID: <7f7daf42-8aff-b9ed-0f48-d4158896012e@huawei.com>
+Date: Wed, 24 Nov 2021 17:21:50 +0000
+User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; rv:68.0) Gecko/20100101
+ Thunderbird/68.12.1
 MIME-Version: 1.0
-X-OriginatorOrg: microsoft.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-AuthSource: MWHPR21MB1593.namprd21.prod.outlook.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 645ba359-8c0b-4f2f-7b48-08d9af6c554b
-X-MS-Exchange-CrossTenant-originalarrivaltime: 24 Nov 2021 17:03:26.9566 (UTC)
-X-MS-Exchange-CrossTenant-fromentityheader: Hosted
-X-MS-Exchange-CrossTenant-id: 72f988bf-86f1-41af-91ab-2d7cd011db47
-X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: mssEEe4NcS1WKOFFxFXYt+L4MFp7zB/b0GO6xguhSCkVDE+e9DLJeWgVrPf5wyWnWE38To/33ZeymL6sVo2/EASlOOtjmwDP3druvvzuWBY=
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: MWHPR21MB0160
-Cc: "parri.andrea@gmail.com" <parri.andrea@gmail.com>,
- "linux-hyperv@vger.kernel.org" <linux-hyperv@vger.kernel.org>,
- "brijesh.singh@amd.com" <brijesh.singh@amd.com>,
- "linux-scsi@vger.kernel.org" <linux-scsi@vger.kernel.org>,
- "konrad.wilk@oracle.com" <konrad.wilk@oracle.com>,
- "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
- "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
- "dave.hansen@intel.com" <dave.hansen@intel.com>,
- "iommu@lists.linux-foundation.org" <iommu@lists.linux-foundation.org>,
- vkuznets <vkuznets@redhat.com>
+In-Reply-To: <cover.1637671820.git.robin.murphy@arm.com>
+Content-Language: en-US
+X-Originating-IP: [10.202.227.179]
+X-ClientProxiedBy: lhreml721-chm.china.huawei.com (10.201.108.72) To
+ lhreml724-chm.china.huawei.com (10.201.108.75)
+X-CFilter-Loop: Reflected
+Cc: linux-kernel@vger.kernel.org, iommu@lists.linux-foundation.org,
+ willy@infradead.org
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -178,96 +74,49 @@ List-Post: <mailto:iommu@lists.linux-foundation.org>
 List-Help: <mailto:iommu-request@lists.linux-foundation.org?subject=help>
 List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
  <mailto:iommu-request@lists.linux-foundation.org?subject=subscribe>
-From: "Michael Kelley \(LINUX\) via iommu" <iommu@lists.linux-foundation.org>
-Reply-To: "Michael Kelley \(LINUX\)" <mikelley@microsoft.com>
-Content-Type: text/plain; charset="us-ascii"
+From: John Garry via iommu <iommu@lists.linux-foundation.org>
+Reply-To: John Garry <john.garry@huawei.com>
 Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset="us-ascii"; Format="flowed"
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-From: Tianyu Lan <ltykernel@gmail.com> Sent: Tuesday, November 23, 2021 6:31 AM
+On 23/11/2021 14:10, Robin Murphy wrote:
+> As promised, this series cleans up the flush queue code and streamlines
+> it directly into iommu-dma. Since we no longer have per-driver DMA ops
+> implementations, a lot of the abstraction is now no longer necessary, so
+> there's a nice degree of simplification in the process. Un-abstracting
+> the queued page freeing mechanism is also the perfect opportunity to
+> revise which struct page fields we use so we can be better-behaved
+> from the MM point of view, thanks to Matthew.
 > 
-> In Isolation VM, all shared memory with host needs to mark visible
-> to host via hvcall. vmbus_establish_gpadl() has already done it for
-> netvsc rx/tx ring buffer. The page buffer used by vmbus_sendpacket_
-> pagebuffer() stills need to be handled. Use DMA API to map/umap
-> these memory during sending/receiving packet and Hyper-V swiotlb
-> bounce buffer dma address will be returned. The swiotlb bounce buffer
-> has been masked to be visible to host during boot up.
+> These changes should also make it viable to start using the gather
+> freelist in io-pgtable-arm, and eliminate some more synchronous
+> invalidations from the normal flow there, but that is proving to need a
+> bit more careful thought than I have time for in this cycle, so I've
+> parked that again for now and will revisit it in the new year.
 > 
-> Allocate rx/tx ring buffer via dma_alloc_noncontiguous() in Isolation
-> VM. After calling vmbus_establish_gpadl() which marks these pages visible
-> to host, map these pages unencrypted addes space via dma_vmap_noncontiguous().
+> For convenience, branch at:
+>    https://gitlab.arm.com/linux-arm/linux-rm/-/tree/iommu/iova
 > 
+> I've build-tested for x86_64, and boot-tested arm64 to the point of
+> confirming that put_pages_list() gets passed a valid empty list when
+> flushing, while everything else still works.
+My interest is in patches 2, 3, 7, 8, 9, and they look ok. I did a bit 
+of testing for strict and non-strict mode on my arm64 system and no 
+problems.
 
-The big unresolved topic is how best to do the allocation and mapping of the big
-netvsc send and receive buffers.  Let me summarize and make a recommendation.
+Apart from this, I noticed that one possible optimization could be to 
+avoid so many reads of fq_flush_finish_cnt, as we seem to have a pattern 
+of fq_flush_iotlb()->atomic64_inc(fq_flush_finish_cnt) followed by a 
+read of fq_flush_finish_cnt in fq_ring_free(), so we could use 
+atomic64_inc_return(fq_flush_finish_cnt) and reuse the value. I think 
+that any racing in fq_flush_finish_cnt accesses are latent, but maybe 
+there is a flaw in this. However I tried something along these lines and 
+got a 2.4% throughput gain for my storage scenario.
 
-Background
-==========
-1.  Each Hyper-V synthetic network device requires a large pre-allocated receive
-     buffer (defaults to 16 Mbytes) and a similar send buffer (defaults to 1 Mbyte).
-2.  The buffers are allocated in guest memory and shared with the Hyper-V host.
-     As such, in the Hyper-V SNP environment, the memory must be unencrypted
-     and accessed in the Hyper-V guest with shared_gpa_boundary (i.e., VTOM)
-     added to the physical memory address.
-3.  The buffers need *not* be contiguous in guest physical memory, but must be
-     contiguously mapped in guest kernel virtual space.
-4.  Network devices may come and go during the life of the VM, so allocation of
-     these buffers and their mappings may be done after Linux has been running for
-     a long time.
-5.  Performance of the allocation and mapping process is not an issue since it is
-     done only on synthetic network device add/remove.
-6.  So the primary goals are an appropriate logical abstraction, code that is
-     simple and straightforward, and efficient memory usage.
-
-Approaches
-==========
-During the development of these patches, four approaches have been
-implemented:
-
-1.  Two virtual mappings:  One from vmalloc() to allocate the guest memory, and
-     the second from vmap_pfns() after adding the shared_gpa_boundary.   This is
-     implemented in Hyper-V or netvsc specific code, with no use of DMA APIs.
-     No separate list of physical pages is maintained, so for creating the second
-     mapping, the PFN list is assembled temporarily by doing virt-to-phys()
-     page-by-page on the vmalloc mapping, and then discarded because it is no
-     longer needed.  [v4 of the original patch series.]
-
-2.  Two virtual mappings as in (1) above, but implemented via new DMA calls
-     dma_map_decrypted() and dma_unmap_encrypted().  [v3 of the original
-     patch series.]
-
-3.  Two virtual mappings as in (1) above, but implemented via DMA noncontiguous
-      allocation and mapping calls, as enhanced to allow for custom map/unmap
-      implementations.  A list of physical pages is maintained in the dma_sgt_handle
-      as expected by the DMA noncontiguous API.  [New split-off patch series v1 & v2]
-
-4.   Single virtual mapping from vmap_pfns().  The netvsc driver allocates physical
-      memory via alloc_pages() with as much contiguity as possible, and maintains a
-      list of physical pages and ranges.   Single virtual map is setup with vmap_pfns()
-      after adding shared_gpa_boundary.  [v5 of the original patch series.]
-
-Both implementations using DMA APIs use very little of the existing DMA
-machinery.  Both require extensions to the DMA APIs, and custom ops functions.
-While in some sense the netvsc send and receive buffers involve DMA, they
-do not require any DMA actions on a per-I/O basis.  It seems better to me to
-not try to fit these two buffers into the DMA model as a one-off.  Let's just
-use Hyper-V specific code to allocate and map them, as is done with the
-Hyper-V VMbus channel ring buffers.
-
-That leaves approaches (1) and (4) above.  Between those two, (1) is
-simpler even though there are two virtual mappings.  Using alloc_pages() as
-in (4) is messy and there's no real benefit to using higher order allocations.
-(4) also requires maintaining a separate list of PFNs and ranges, which offsets
-some of the benefits to having only one virtual mapping active at any point in
-time.
-
-I don't think there's a clear "right" answer, so it's a judgment call.  We've
-explored what other approaches would look like, and I'd say let's go with
-(1) as the simpler approach.  Thoughts?
-
-Michael
+Thanks,
+John
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
