@@ -1,68 +1,93 @@
 Return-Path: <iommu-bounces@lists.linux-foundation.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
-Received: from smtp1.osuosl.org (smtp1.osuosl.org [140.211.166.138])
+Received: from smtp4.osuosl.org (smtp4.osuosl.org [140.211.166.137])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.lore.kernel.org (Postfix) with ESMTPS id 24158C433EF
-	for <iommu@archiver.kernel.org>; Wed, 24 Nov 2021 17:25:30 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTPS id 769C2C433F5
+	for <iommu@archiver.kernel.org>; Wed, 24 Nov 2021 17:51:20 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
-	by smtp1.osuosl.org (Postfix) with ESMTP id A5C9180D1C;
-	Wed, 24 Nov 2021 17:25:29 +0000 (UTC)
+	by smtp4.osuosl.org (Postfix) with ESMTP id 1E194403AE;
+	Wed, 24 Nov 2021 17:51:20 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from smtp1.osuosl.org ([127.0.0.1])
-	by localhost (smtp1.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id nwcK0O1yWijH; Wed, 24 Nov 2021 17:25:28 +0000 (UTC)
-Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [140.211.9.56])
-	by smtp1.osuosl.org (Postfix) with ESMTPS id 8E8C780CAD;
-	Wed, 24 Nov 2021 17:25:28 +0000 (UTC)
+Received: from smtp4.osuosl.org ([127.0.0.1])
+	by localhost (smtp4.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+	with ESMTP id HuRWMjmuHXew; Wed, 24 Nov 2021 17:51:19 +0000 (UTC)
+Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [IPv6:2605:bc80:3010:104::8cd3:938])
+	by smtp4.osuosl.org (Postfix) with ESMTPS id EEFD8403A4;
+	Wed, 24 Nov 2021 17:51:18 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id 7181BC001E;
-	Wed, 24 Nov 2021 17:25:28 +0000 (UTC)
-Received: from smtp3.osuosl.org (smtp3.osuosl.org [IPv6:2605:bc80:3010::136])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 270A3C0012
- for <iommu@lists.linux-foundation.org>; Wed, 24 Nov 2021 17:25:27 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id C378BC001E;
+	Wed, 24 Nov 2021 17:51:18 +0000 (UTC)
+Received: from smtp2.osuosl.org (smtp2.osuosl.org [140.211.166.133])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 5B43FC0012
+ for <iommu@lists.linux-foundation.org>; Wed, 24 Nov 2021 17:51:17 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by smtp3.osuosl.org (Postfix) with ESMTP id 086AA600D4
- for <iommu@lists.linux-foundation.org>; Wed, 24 Nov 2021 17:25:27 +0000 (UTC)
+ by smtp2.osuosl.org (Postfix) with ESMTP id 40D9C404B5
+ for <iommu@lists.linux-foundation.org>; Wed, 24 Nov 2021 17:51:17 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from smtp3.osuosl.org ([127.0.0.1])
- by localhost (smtp3.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id e-7f9BSLVLJM for <iommu@lists.linux-foundation.org>;
- Wed, 24 Nov 2021 17:25:26 +0000 (UTC)
-X-Greylist: domain auto-whitelisted by SQLgrey-1.8.0
-Received: from frasgout.his.huawei.com (frasgout.his.huawei.com
- [185.176.79.56])
- by smtp3.osuosl.org (Postfix) with ESMTPS id 73E47600CA
- for <iommu@lists.linux-foundation.org>; Wed, 24 Nov 2021 17:25:26 +0000 (UTC)
-Received: from fraeml741-chm.china.huawei.com (unknown [172.18.147.206])
- by frasgout.his.huawei.com (SkyGuard) with ESMTP id 4HznqG0SXmz67rcd;
- Thu, 25 Nov 2021 01:21:30 +0800 (CST)
-Received: from lhreml724-chm.china.huawei.com (10.201.108.75) by
- fraeml741-chm.china.huawei.com (10.206.15.222) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2308.20; Wed, 24 Nov 2021 18:25:23 +0100
-Received: from [10.202.227.179] (10.202.227.179) by
- lhreml724-chm.china.huawei.com (10.201.108.75) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2308.20; Wed, 24 Nov 2021 17:25:23 +0000
-Subject: Re: [PATCH 9/9] iommu: Move flush queue data into iommu_dma_cookie
-To: Robin Murphy <robin.murphy@arm.com>, <joro@8bytes.org>, <will@kernel.org>
-References: <cover.1637671820.git.robin.murphy@arm.com>
- <49bfd9636fd21c4b40e07558db6bfbbf82a449ac.1637674723.git.robin.murphy@arm.com>
-Message-ID: <9dece0b8-2832-f467-91f3-f63ef0f70d16@huawei.com>
-Date: Wed, 24 Nov 2021 17:25:22 +0000
-User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; rv:68.0) Gecko/20100101
- Thunderbird/68.12.1
+Authentication-Results: smtp2.osuosl.org (amavisd-new);
+ dkim=pass (2048-bit key) header.d=linaro.org
+Received: from smtp2.osuosl.org ([127.0.0.1])
+ by localhost (smtp2.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+ with ESMTP id 0bFubmq2V5vw for <iommu@lists.linux-foundation.org>;
+ Wed, 24 Nov 2021 17:51:16 +0000 (UTC)
+X-Greylist: whitelisted by SQLgrey-1.8.0
+Received: from mail-pg1-x533.google.com (mail-pg1-x533.google.com
+ [IPv6:2607:f8b0:4864:20::533])
+ by smtp2.osuosl.org (Postfix) with ESMTPS id 47A12400DA
+ for <iommu@lists.linux-foundation.org>; Wed, 24 Nov 2021 17:51:16 +0000 (UTC)
+Received: by mail-pg1-x533.google.com with SMTP id r138so2799542pgr.13
+ for <iommu@lists.linux-foundation.org>; Wed, 24 Nov 2021 09:51:16 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linaro.org; s=google;
+ h=date:from:to:cc:subject:message-id:references:mime-version
+ :content-disposition:in-reply-to;
+ bh=oTDchkafpOp/46IgeNxQuNHz+bM7M0+5Ox+wOnWqwfQ=;
+ b=Qb2R4+I+DtEcOkXq0TYH/CagTNAxs9vdwiKlDdzULoiuVos13Xj0bBoEZSIPlJijzR
+ C478wnOgwX2OIroiZLUXmkCPPl7ne/tYZ6BhKk2rJK6CwWNPOkQPdhuayJPTVdRrDcgL
+ lYvMSdRGlCmlv6Yx0LePe8p8yv07r0peWf6/ErtsteaCes01s8SNwZ2q+UfiZQEciJ5R
+ 14+qbgLpmXR5b1sK15zTGPdKVkRwKQ9vgA4LZtRxlhr6dxnNSySqCpZULAsRTj6j4ZuC
+ AymmMd7hKuQHEFmtp6YoDZPpoqm3daj0NDEv0m+0NdMYu4USrjQ47MKRLlI/ImkVjBPx
+ BcWg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+ d=1e100.net; s=20210112;
+ h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+ :mime-version:content-disposition:in-reply-to;
+ bh=oTDchkafpOp/46IgeNxQuNHz+bM7M0+5Ox+wOnWqwfQ=;
+ b=JSciZP2SUZA3Im53bJaJoe178u0waB6W9EXygjK7H7b/EKWrRIpH78A7W5B+E1AnnE
+ s/2y0IFG7Cl+V6vtaqFJL8Qet+HOjxGeJd6pQMp7MhioWXpUss37HAyS9+rpwESEKut8
+ Q7/GJcda9rqWii9KCAHRqg0WHndhngZ5ic3f/h0D4mFG5QBmXv7h8wJJQPJccH4va3IZ
+ VvCWnZBVAoP/Yy3jdhFkZaJCUrm5uMU/QVXOaKIBQFCyoVRsv+F28SFh5lSUnMLBgqu0
+ 2wINNTGXa8oKevLRuK5jZVry9JLPVUz/c9MJLDgMMlJISc1FpL3by13DYKlDkpoZpC/5
+ SADg==
+X-Gm-Message-State: AOAM53245lGirSQ/7EYoAXyaqDHooFj7+exJl8Pf4z71bJxSth5nZN0L
+ QuEJ9IeDjPIhZBWazaWikMdZMw==
+X-Google-Smtp-Source: ABdhPJwuLqZldVSYdI75Ai+PcBDkHa+xkpmfqt3+9vDSJ2R9/PWi5Orovy471RaYzID644RlCM4n+A==
+X-Received: by 2002:aa7:9404:0:b0:494:6e78:67cd with SMTP id
+ x4-20020aa79404000000b004946e7867cdmr7671622pfo.84.1637776275657; 
+ Wed, 24 Nov 2021 09:51:15 -0800 (PST)
+Received: from p14s (S0106889e681aac74.cg.shawcable.net. [68.147.0.187])
+ by smtp.gmail.com with ESMTPSA id d2sm330981pfu.203.2021.11.24.09.51.13
+ (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+ Wed, 24 Nov 2021 09:51:14 -0800 (PST)
+Date: Wed, 24 Nov 2021 10:51:11 -0700
+From: Mathieu Poirier <mathieu.poirier@linaro.org>
+To: Yicong Yang <yangyicong@hisilicon.com>
+Subject: Re: [PATCH v2 1/6] iommu: Export iommu_{get,put}_resv_regions()
+Message-ID: <20211124175111.GA35341@p14s>
+References: <20211116090625.53702-1-yangyicong@hisilicon.com>
+ <20211116090625.53702-2-yangyicong@hisilicon.com>
 MIME-Version: 1.0
-In-Reply-To: <49bfd9636fd21c4b40e07558db6bfbbf82a449ac.1637674723.git.robin.murphy@arm.com>
-Content-Language: en-US
-X-Originating-IP: [10.202.227.179]
-X-ClientProxiedBy: lhreml721-chm.china.huawei.com (10.201.108.72) To
- lhreml724-chm.china.huawei.com (10.201.108.75)
-X-CFilter-Loop: Reflected
-Cc: linux-kernel@vger.kernel.org, iommu@lists.linux-foundation.org,
- willy@infradead.org
+Content-Disposition: inline
+In-Reply-To: <20211116090625.53702-2-yangyicong@hisilicon.com>
+Cc: mark.rutland@arm.com, prime.zeng@huawei.com,
+ alexander.shishkin@linux.intel.com, linux-pci@vger.kernel.org,
+ linuxarm@huawei.com, will@kernel.org, daniel.thompson@linaro.org,
+ helgaas@kernel.org, liuqi115@huawei.com, mike.leach@linaro.org,
+ suzuki.poulose@arm.com, coresight@lists.linaro.org, zhangshaokun@hisilicon.com,
+ linux-arm-kernel@lists.infradead.org, gregkh@linuxfoundation.org,
+ linux-kernel@vger.kernel.org, linux-perf-users@vger.kernel.org,
+ iommu@lists.linux-foundation.org, leo.yan@linaro.org
 X-BeenThere: iommu@lists.linux-foundation.org
 X-Mailman-Version: 2.1.15
 Precedence: list
@@ -75,39 +100,62 @@ List-Post: <mailto:iommu@lists.linux-foundation.org>
 List-Help: <mailto:iommu-request@lists.linux-foundation.org?subject=help>
 List-Subscribe: <https://lists.linuxfoundation.org/mailman/listinfo/iommu>,
  <mailto:iommu-request@lists.linux-foundation.org?subject=subscribe>
-From: John Garry via iommu <iommu@lists.linux-foundation.org>
-Reply-To: John Garry <john.garry@huawei.com>
+Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: 7bit
-Content-Type: text/plain; charset="us-ascii"; Format="flowed"
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-On 23/11/2021 14:10, Robin Murphy wrote:
-> ruct iommu_dma_msi_page {
->   	struct list_head	list;
-> @@ -41,7 +43,19 @@ struct iommu_dma_cookie {
->   	enum iommu_dma_cookie_type	type;
->   	union {
->   		/* Full allocator for IOMMU_DMA_IOVA_COOKIE */
-> -		struct iova_domain	iovad;
-> +		struct {
-> +			struct iova_domain	iovad;
-> +
-> +			struct iova_fq __percpu *fq;	/* Flush queue */
-> +			/* Number of TLB flushes that have been started */
-> +			atomic64_t		fq_flush_start_cnt;
-> +			/* Number of TLB flushes that have been finished */
-> +			atomic64_t		fq_flush_finish_cnt;
-> +			/* Timer to regularily empty the flush queues */
-> +			struct timer_list	fq_timer;
-> +			/* 1 when timer is active, 0 when not */
-> +			atomic_t		fq_timer_on;
+On Tue, Nov 16, 2021 at 05:06:20PM +0800, Yicong Yang wrote:
+> Export iommu_{get,put}_resv_regions() to the modules so that the driver
+> can retrieve and use the reserved regions of the device.
+> 
+> Signed-off-by: Yicong Yang <yangyicong@hisilicon.com>
+> ---
+>  drivers/iommu/iommu.c | 2 ++
+>  include/linux/iommu.h | 4 ++--
+>  2 files changed, 4 insertions(+), 2 deletions(-)
+> 
+> diff --git a/drivers/iommu/iommu.c b/drivers/iommu/iommu.c
+> index dd7863e453a5..e96711eee965 100644
+> --- a/drivers/iommu/iommu.c
+> +++ b/drivers/iommu/iommu.c
+> @@ -2792,6 +2792,7 @@ void iommu_get_resv_regions(struct device *dev, struct list_head *list)
+>  	if (ops && ops->get_resv_regions)
+>  		ops->get_resv_regions(dev, list);
+>  }
+> +EXPORT_SYMBOL_GPL(iommu_get_resv_regions);
+>  
+>  void iommu_put_resv_regions(struct device *dev, struct list_head *list)
+>  {
+> @@ -2800,6 +2801,7 @@ void iommu_put_resv_regions(struct device *dev, struct list_head *list)
+>  	if (ops && ops->put_resv_regions)
+>  		ops->put_resv_regions(dev, list);
+>  }
+> +EXPORT_SYMBOL_GPL(iommu_put_resv_regions);
+>  
+>  /**
+>   * generic_iommu_put_resv_regions - Reserved region driver helper
+> diff --git a/include/linux/iommu.h b/include/linux/iommu.h
+> index d2f3435e7d17..1b7b0f370e28 100644
+> --- a/include/linux/iommu.h
+> +++ b/include/linux/iommu.h
+> @@ -450,8 +450,8 @@ extern phys_addr_t iommu_iova_to_phys(struct iommu_domain *domain, dma_addr_t io
+>  extern void iommu_set_fault_handler(struct iommu_domain *domain,
+>  			iommu_fault_handler_t handler, void *token);
+>  
+> -extern void iommu_get_resv_regions(struct device *dev, struct list_head *list);
+> -extern void iommu_put_resv_regions(struct device *dev, struct list_head *list);
+> +void iommu_get_resv_regions(struct device *dev, struct list_head *list);
+> +void iommu_put_resv_regions(struct device *dev, struct list_head *list);
 
-I thought that putting all the FQ stuff in its own structure would be 
-neater, but that's just personal preference.
+Acked-by: Mathieu Poirier <mathieu.poirier@linaro.org>
 
-Thanks,
-John
+>  extern void generic_iommu_put_resv_regions(struct device *dev,
+>  					   struct list_head *list);
+>  extern void iommu_set_default_passthrough(bool cmd_line);
+> -- 
+> 2.33.0
+> 
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
