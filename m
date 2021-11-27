@@ -1,67 +1,65 @@
 Return-Path: <iommu-bounces@lists.linux-foundation.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
-Received: from smtp1.osuosl.org (smtp1.osuosl.org [140.211.166.138])
+Received: from smtp4.osuosl.org (smtp4.osuosl.org [140.211.166.137])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.lore.kernel.org (Postfix) with ESMTPS id 94667C433F5
-	for <iommu@archiver.kernel.org>; Sat, 27 Nov 2021 01:20:18 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTPS id D3D3CC4332F
+	for <iommu@archiver.kernel.org>; Sat, 27 Nov 2021 01:20:19 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
-	by smtp1.osuosl.org (Postfix) with ESMTP id 412F282410;
-	Sat, 27 Nov 2021 01:20:18 +0000 (UTC)
+	by smtp4.osuosl.org (Postfix) with ESMTP id 840ED40339;
+	Sat, 27 Nov 2021 01:20:19 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Received: from smtp1.osuosl.org ([127.0.0.1])
-	by localhost (smtp1.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
-	with ESMTP id tVWAI4UinO6c; Sat, 27 Nov 2021 01:20:17 +0000 (UTC)
+Received: from smtp4.osuosl.org ([127.0.0.1])
+	by localhost (smtp4.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+	with ESMTP id jPqSQBuqHwon; Sat, 27 Nov 2021 01:20:18 +0000 (UTC)
 Received: from lists.linuxfoundation.org (lf-lists.osuosl.org [IPv6:2605:bc80:3010:104::8cd3:938])
-	by smtp1.osuosl.org (Postfix) with ESMTPS id 268B58100D;
-	Sat, 27 Nov 2021 01:20:17 +0000 (UTC)
+	by smtp4.osuosl.org (Postfix) with ESMTPS id 384AB40424;
+	Sat, 27 Nov 2021 01:20:18 +0000 (UTC)
 Received: from lf-lists.osuosl.org (localhost [127.0.0.1])
-	by lists.linuxfoundation.org (Postfix) with ESMTP id D699FC001C;
-	Sat, 27 Nov 2021 01:20:16 +0000 (UTC)
-Received: from smtp2.osuosl.org (smtp2.osuosl.org [140.211.166.133])
- by lists.linuxfoundation.org (Postfix) with ESMTP id 443FCC000A
- for <iommu@lists.linux-foundation.org>; Sat, 27 Nov 2021 01:20:15 +0000 (UTC)
+	by lists.linuxfoundation.org (Postfix) with ESMTP id 21605C001C;
+	Sat, 27 Nov 2021 01:20:18 +0000 (UTC)
+Received: from smtp4.osuosl.org (smtp4.osuosl.org [IPv6:2605:bc80:3010::137])
+ by lists.linuxfoundation.org (Postfix) with ESMTP id 3C8EBC000A
+ for <iommu@lists.linux-foundation.org>; Sat, 27 Nov 2021 01:20:17 +0000 (UTC)
 Received: from localhost (localhost [127.0.0.1])
- by smtp2.osuosl.org (Postfix) with ESMTP id 1D664403B7
- for <iommu@lists.linux-foundation.org>; Sat, 27 Nov 2021 01:20:15 +0000 (UTC)
+ by smtp4.osuosl.org (Postfix) with ESMTP id 2AE0C405EE
+ for <iommu@lists.linux-foundation.org>; Sat, 27 Nov 2021 01:20:17 +0000 (UTC)
 X-Virus-Scanned: amavisd-new at osuosl.org
-Authentication-Results: smtp2.osuosl.org (amavisd-new);
- dkim=pass (2048-bit key) header.d=linutronix.de header.b="01xVLTHM";
- dkim=neutral reason="invalid (unsupported algorithm ed25519-sha256)"
- header.d=linutronix.de header.b="+xLyiosP"
-Received: from smtp2.osuosl.org ([127.0.0.1])
- by localhost (smtp2.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
- with ESMTP id HA1IOM0_p3qN for <iommu@lists.linux-foundation.org>;
- Sat, 27 Nov 2021 01:20:14 +0000 (UTC)
+Received: from smtp4.osuosl.org ([127.0.0.1])
+ by localhost (smtp4.osuosl.org [127.0.0.1]) (amavisd-new, port 10024)
+ with ESMTP id HlepDGEQ2cTr for <iommu@lists.linux-foundation.org>;
+ Sat, 27 Nov 2021 01:20:11 +0000 (UTC)
 X-Greylist: domain auto-whitelisted by SQLgrey-1.8.0
-Received: from galois.linutronix.de (Galois.linutronix.de [193.142.43.55])
- by smtp2.osuosl.org (Postfix) with ESMTPS id 5B09A4035C
- for <iommu@lists.linux-foundation.org>; Sat, 27 Nov 2021 01:20:14 +0000 (UTC)
-Message-ID: <20211126230524.112845775@linutronix.de>
+Received: from galois.linutronix.de (Galois.linutronix.de
+ [IPv6:2a0a:51c0:0:12e:550::1])
+ by smtp4.osuosl.org (Postfix) with ESMTPS id 1A13940339
+ for <iommu@lists.linux-foundation.org>; Sat, 27 Nov 2021 01:20:10 +0000 (UTC)
+Message-ID: <20211126224100.303046749@linutronix.de>
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linutronix.de;
- s=2020; t=1637976012;
+ s=2020; t=1637976007;
  h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
  to:to:cc:cc:mime-version:mime-version:content-type:content-type:
- references:references; bh=PN3ExRN1k42hfHq1uj98iHzkfSIuhUpOYD8o8PLDemE=;
- b=01xVLTHMPuXuTeYCxg++1loVxFY22XwJw5EINvUVSLR8b6vSaVnJ4Eu3iDunii/+YGqLM6
- 1drlMi0SdMVbvjgfsBIj/PC0bDlRQRAjJbK5kv8969+ScHcA2xWUiPoos8LQZuh/d5d6jO
- D4ZE4rS/9iuO7f9eC1ny9luoPcBYIsrAVb7FPZeswFUjFFtIZXaqBBRhGMZLS9/8GAr3AR
- er7pPeOso93vK8TDq62PmgRQUj0m+taEbDUNcx8zjRG0i4QrPGMjYK76RagxwJyeeMhyiP
- I1tFT/vQYHZYOcsSJT14z3970ncLT74pAvEx8q/OQY2M3Dhgv2UuT9sGxMkwXw==
+ content-transfer-encoding:content-transfer-encoding;
+ bh=//Pymxq2YmulklNSLiTyVoYeHXlxeXwqBLpbcyzsxUc=;
+ b=JkixINpLAG7IwgBGTy3CNwpiuZfzHjbD0o7N8tqoQWlATN4Ndsb8bIrIROKXtiKlXXH4GG
+ MuxUB+Ktb5WxDEUxj2hmUVioMC0S6XogZC0QBqP0n+59kQsexsga3U2PHkEY4HyE1alk3f
+ p8JV7bIX1mUBs68OkmizpXJOseMHtntJOwtcs0IAjZTjy4idbl2a5YBbxpARhFIhTTGekr
+ EldqDDwR37StwenotF0nYTzMzKdSTWQU5SvHBGlDLfvw/DxaC3ri1p6QJ/Ff1dY+2pL77p
+ 2HNO/WH+51ff6rsss6Dk4dUyVwiaR3HbRC4amhWedJ7RpbR4+i6kKfF/bSo/Qg==
 DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=linutronix.de;
- s=2020e; t=1637976012;
+ s=2020e; t=1637976007;
  h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
  to:to:cc:cc:mime-version:mime-version:content-type:content-type:
- references:references; bh=PN3ExRN1k42hfHq1uj98iHzkfSIuhUpOYD8o8PLDemE=;
- b=+xLyiosPdGZFZyXGwvjUBwEVY8q/I9iXLgSGR5i+pmeNwky76oEsuTtAiA8kT8N3t4LbfE
- qeYgv7hKS+NIrRAQ==
+ content-transfer-encoding:content-transfer-encoding;
+ bh=//Pymxq2YmulklNSLiTyVoYeHXlxeXwqBLpbcyzsxUc=;
+ b=4aHit6zQT94D+jGrMxPhFPEQhGcg7bSgzNhpj51vxTFnMj1QhhHwGsqkp86iv7vimNWe86
+ R8qcqzX4FWAmGqAg==
 From: Thomas Gleixner <tglx@linutronix.de>
 To: LKML <linux-kernel@vger.kernel.org>
-Subject: [patch 03/37] PCI/MSI: Allocate MSI device data on first use
-References: <20211126224100.303046749@linutronix.de>
+Subject: [patch 00/37] genirq/msi, PCI/MSI: Spring cleaning - Part 2
 MIME-Version: 1.0
-Date: Sat, 27 Nov 2021 02:20:11 +0100 (CET)
+Date: Sat, 27 Nov 2021 02:20:06 +0100 (CET)
 Cc: Nishanth Menon <nm@ti.com>, Mark Rutland <mark.rutland@arm.com>,
  Stuart Yoder <stuyoder@gmail.com>, linux-pci@vger.kernel.org,
  Will Deacon <will@kernel.org>, Ashok Raj <ashok.raj@intel.com>,
@@ -91,60 +89,92 @@ Content-Transfer-Encoding: 7bit
 Errors-To: iommu-bounces@lists.linux-foundation.org
 Sender: "iommu" <iommu-bounces@lists.linux-foundation.org>
 
-Allocate MSI device data on first use, i.e. when a PCI driver invokes one
-of the PCI/MSI enablement functions.
+This is the second part of [PCI]MSI refactoring which aims to provide the
+ability of expanding MSI-X vectors after enabling MSI-X.
 
-Signed-off-by: Thomas Gleixner <tglx@linutronix.de>
+The first part of this work can be found here:
+
+    https://lore.kernel.org/r/20211126222700.862407977@linutronix.de
+
+This second part has the following important changes:
+
+   1) Cleanup of the MSI related data in struct device
+
+      struct device contains at the moment various MSI related parts. Some
+      of them (the irq domain pointer) cannot be moved out, but the rest
+      can be allocated on first use. This is in preparation of adding more
+      per device MSI data later on.
+
+   2) Consolidation of sysfs handling
+
+      As a first step this moves the sysfs pointer from struct msi_desc
+      into the new per device MSI data structure where it belongs.
+
+      Later changes will cleanup this code further, but that's not possible
+      at this point.
+
+   3) Store per device properties in the per device MSI data to avoid
+      looking up MSI descriptors and analysing their data. Cleanup all
+      related use cases.
+
+   4) Provide a function to retrieve the Linux interrupt number for a given
+      MSI index similar to pci_irq_vector() and cleanup all open coded
+      variants.
+
+This second series is based on:
+
+     git://git.kernel.org/pub/scm/linux/kernel/git/tglx/devel.git msi-v1-part-1
+
+and also available from git:
+
+     git://git.kernel.org/pub/scm/linux/kernel/git/tglx/devel.git msi-v1-part-2
+
+For the curious who can't wait for the next part to arrive the full series
+is available via:
+
+     git://git.kernel.org/pub/scm/linux/kernel/git/tglx/devel.git msi-v1-part-4
+
+Thanks,
+
+	tglx
 ---
- drivers/pci/msi/msi.c |   20 +++++++++++++++-----
- 1 file changed, 15 insertions(+), 5 deletions(-)
-
---- a/drivers/pci/msi/msi.c
-+++ b/drivers/pci/msi/msi.c
-@@ -889,10 +889,12 @@ static int __pci_enable_msi_range(struct
- /* deprecated, don't use */
- int pci_enable_msi(struct pci_dev *dev)
- {
--	int rc = __pci_enable_msi_range(dev, 1, 1, NULL);
--	if (rc < 0)
--		return rc;
--	return 0;
-+	int rc = msi_setup_device_data(&dev->dev);
-+
-+	if (!rc)
-+		rc = __pci_enable_msi_range(dev, 1, 1, NULL);
-+
-+	return rc < 0 ? rc : 0;
- }
- EXPORT_SYMBOL(pci_enable_msi);
- 
-@@ -947,7 +949,11 @@ static int __pci_enable_msix_range(struc
- int pci_enable_msix_range(struct pci_dev *dev, struct msix_entry *entries,
- 		int minvec, int maxvec)
- {
--	return __pci_enable_msix_range(dev, entries, minvec, maxvec, NULL, 0);
-+	int ret = msi_setup_device_data(&dev->dev);
-+
-+	if (!ret)
-+		ret = __pci_enable_msix_range(dev, entries, minvec, maxvec, NULL, 0);
-+	return ret;
- }
- EXPORT_SYMBOL(pci_enable_msix_range);
- 
-@@ -974,8 +980,12 @@ int pci_alloc_irq_vectors_affinity(struc
- 				   struct irq_affinity *affd)
- {
- 	struct irq_affinity msi_default_affd = {0};
-+	int ret = msi_setup_device_data(&dev->dev);
- 	int nvecs = -ENOSPC;
- 
-+	if (ret)
-+		return ret;
-+
- 	if (flags & PCI_IRQ_AFFINITY) {
- 		if (!affd)
- 			affd = &msi_default_affd;
-
+ arch/powerpc/platforms/cell/axon_msi.c              |    6 
+ arch/powerpc/platforms/pseries/msi.c                |   38 +---
+ arch/x86/kernel/apic/msi.c                          |    5 
+ arch/x86/pci/xen.c                                  |    8 
+ drivers/base/core.c                                 |    1 
+ drivers/base/platform-msi.c                         |  152 ++++++++---------
+ drivers/bus/fsl-mc/dprc-driver.c                    |    8 
+ drivers/bus/fsl-mc/fsl-mc-allocator.c               |    9 -
+ drivers/bus/fsl-mc/fsl-mc-msi.c                     |   26 +--
+ drivers/dma/mv_xor_v2.c                             |   16 -
+ drivers/dma/qcom/hidma.c                            |   44 ++---
+ drivers/dma/ti/k3-udma-private.c                    |    6 
+ drivers/dma/ti/k3-udma.c                            |   14 -
+ drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c         |   23 --
+ drivers/irqchip/irq-mbigen.c                        |    4 
+ drivers/irqchip/irq-mvebu-icu.c                     |   12 -
+ drivers/irqchip/irq-ti-sci-inta.c                   |    2 
+ drivers/mailbox/bcm-flexrm-mailbox.c                |    9 -
+ drivers/net/ethernet/freescale/dpaa2/dpaa2-eth.c    |    4 
+ drivers/net/ethernet/freescale/dpaa2/dpaa2-ptp.c    |    4 
+ drivers/net/ethernet/freescale/dpaa2/dpaa2-switch.c |    5 
+ drivers/pci/msi/irqdomain.c                         |   20 +-
+ drivers/pci/msi/legacy.c                            |    6 
+ drivers/pci/msi/msi.c                               |  118 +++++--------
+ drivers/pci/xen-pcifront.c                          |    2 
+ drivers/perf/arm_smmuv3_pmu.c                       |    5 
+ drivers/soc/fsl/dpio/dpio-driver.c                  |    8 
+ drivers/soc/ti/k3-ringacc.c                         |    6 
+ drivers/soc/ti/ti_sci_inta_msi.c                    |   22 --
+ drivers/vfio/fsl-mc/vfio_fsl_mc_intr.c              |    4 
+ include/linux/device.h                              |   26 ++-
+ include/linux/fsl/mc.h                              |    4 
+ include/linux/msi.h                                 |  118 +++++++------
+ include/linux/pci.h                                 |    1 
+ include/linux/soc/ti/ti_sci_inta_msi.h              |    1 
+ kernel/irq/msi.c                                    |  171 +++++++++++++++-----
+ 36 files changed, 463 insertions(+), 445 deletions(-)
 _______________________________________________
 iommu mailing list
 iommu@lists.linux-foundation.org
